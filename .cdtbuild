@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?fileVersion 3.0.0?>
+
+<ManagedProjectBuildInfo>
+<project id="ct-Bot.cdt.managedbuild.target.gnu.exe.449611534" name="Executable (Gnu)" projectType="cdt.managedbuild.target.gnu.exe">
+<configuration artifactExtension="exe" artifactName="ct-Bot" cleanCommand="rm -rf" description="Windows mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.1077176217" name="Debug-W32" parent="cdt.managedbuild.config.gnu.exe.debug">
+<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1011694867" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
+<builder command="mingw32-make" id="cdt.managedbuild.target.gnu.builder.exe.debug.1690147207" name="Gnu Make.Debug" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
+<tool command="gcc" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.629250704" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
+<option id="gnu.c.compiler.option.include.paths.387475860" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="//Ctprod/dfs/datenaustausch/meinpostfach/ctSim_2006/CODE/Listing/ct-Bot"/>
+<listOptionValue builtIn="false" value="//Ctprod/dfs/datenaustausch/meinpostfach/ctSim_2006/CODE/Listing/ct-Bot/include"/>
+<listOptionValue builtIn="false" value="&quot;C:\Programme\MinGW\include&quot;"/>
+<listOptionValue builtIn="false" value="&quot;C:\Programme\pthreads\pthreads.2&quot;"/>
+</option>
+<option id="gnu.c.compiler.option.preprocessor.def.symbols.1823712582" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="PC"/>
+<listOptionValue builtIn="false" value="WIN32"/>
+</option>
+</tool>
+<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.919152894" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug"/>
+<tool command="gcc" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1189819022" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug">
+<option id="gnu.c.link.option.libs.1949526381" superClass="gnu.c.link.option.libs" valueType="libs">
+<listOptionValue builtIn="false" value="wsock32"/>
+<listOptionValue builtIn="false" value="pthreadGC2"/>
+</option>
+<option id="gnu.c.link.option.paths.142594843" superClass="gnu.c.link.option.paths" valueType="stringList">
+<listOptionValue builtIn="false" value="&quot;C:\Programme\pthreads\Pre-built.2\lib&quot;"/>
+<listOptionValue builtIn="false" value="&quot;C:\Programme\MinGW\lib&quot;"/>
+</option>
+<option id="gnu.c.link.option.noshared.1812776571" superClass="gnu.c.link.option.noshared" value="true" valueType="boolean"/>
+</tool>
+<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1957316739" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
+<tool command="as" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.149224953" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug"/>
+<macros/>
+</toolChain>
+</configuration>
+<configuration artifactName="ct-Bot" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.release.1181183675" name="Release" parent="cdt.managedbuild.config.gnu.exe.release">
+<toolChain id="cdt.managedbuild.toolchain.gnu.exe.release.510588697" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.release">
+<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.release.1146417472" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.release"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.75280107" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release"/>
+<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.release.1065963860" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.release"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.1913499732" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release"/>
+<tool id="cdt.managedbuild.tool.gnu.assembler.exe.release.56645534" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.release"/>
+<macros/>
+</toolChain>
+</configuration>
+<configuration artifactExtension="elf" artifactName="ct-Bot" cleanCommand="rm -rf" description="Linux mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.2039935845" name="Debug-Linux" parent="cdt.managedbuild.config.gnu.exe.debug">
+<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.699734591" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
+<builder command="make" id="cdt.managedbuild.target.gnu.builder.exe.debug.1049987635" name="Gnu Make" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
+<tool command="gcc" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1730575762" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
+<option id="gnu.c.compiler.option.include.paths.540485352" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="/home/cttest/Documents/artikel/0602/ct-Bot/Listing/ct-Bot/include"/>
+<listOptionValue builtIn="false" value="/home/cttest/Documents/artikel/0602/ct-Bot/Listing/ct-Bot"/>
+<listOptionValue builtIn="false" value="/usr/include"/>
+</option>
+<option id="gnu.c.compiler.option.preprocessor.def.symbols.934712041" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="PC"/>
+</option>
+</tool>
+<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.949610982" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug"/>
+<tool command="gcc" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1315268416" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug">
+<option id="gnu.c.link.option.libs.369911061" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs">
+<listOptionValue builtIn="false" value="pthread"/>
+</option>
+<option id="gnu.c.link.option.paths.551816040" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="stringList">
+<listOptionValue builtIn="false" value="/usr/lib"/>
+</option>
+<option id="gnu.c.link.option.noshared.1657974289" name="No shared libraries (-static)" superClass="gnu.c.link.option.noshared" value="false" valueType="boolean"/>
+</tool>
+<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1840155456" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
+<tool command="as" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1863865265" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug"/>
+<macros/>
+</toolChain>
+</configuration>
+<configuration artifactExtension="elf" artifactName="ct-Bot" cleanCommand="rm -rf" description="Mikrocontroller mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.1197043799" name="Debug-MCU-Linux" parent="cdt.managedbuild.config.gnu.exe.debug" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep">
+<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1344160083" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
+<builder command="make" id="cdt.managedbuild.target.gnu.builder.exe.debug.865699592" name="Gnu Make" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
+<tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1998007787" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
+<option id="gnu.c.compiler.option.include.paths.796809135" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="/usr/local/avr/include"/>
+<listOptionValue builtIn="false" value="/home/cttest/Documents/artikel/0602/ct-Bot/Listing/ct-Bot/include"/>
+<listOptionValue builtIn="false" value="/home/cttest/Documents/artikel/0602/ct-Bot/Listing/ct-Bot"/>
+</option>
+<option id="gnu.c.compiler.option.preprocessor.def.symbols.258987088" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="MCU"/>
+</option>
+<option id="gnu.c.compiler.option.misc.other.1122958060" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega32" valueType="string"/>
+</tool>
+<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.565798556" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug"/>
+<tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.802239009" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug">
+<option id="gnu.c.link.option.libs.836351171" name="Libraries (-l)" superClass="gnu.c.link.option.libs"/>
+<option id="gnu.c.link.option.paths.972012367" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="stringList">
+<listOptionValue builtIn="false" value="/usr/local/avr"/>
+</option>
+<option id="gnu.c.link.option.noshared.1381459017" name="No shared libraries (-static)" superClass="gnu.c.link.option.noshared" value="false" valueType="boolean"/>
+<option id="gnu.c.link.option.ldflags.174201475" superClass="gnu.c.link.option.ldflags" value="-mmcu=atmega32" valueType="string"/>
+</tool>
+<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1899644885" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
+<tool command="as" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1825020912" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug"/>
+<macros/>
+</toolChain>
+</configuration>
+<configuration artifactExtension="elf" artifactName="ct-Bot" cleanCommand="rm -rf" description="Mikrocontroller mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.1150677647" name="Debug-MCU-W32" parent="cdt.managedbuild.config.gnu.exe.debug" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep">
+<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.84194754" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
+<builder command="make" id="cdt.managedbuild.target.gnu.builder.exe.debug.239679071" name="Gnu Make" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
+<tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.113274235" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
+<option id="gnu.c.compiler.option.include.paths.818995866" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="&quot;C:/Dokumente und Einstellungen/cttest/Desktop/0602/ct-Bot/Listing/ct-Bot&quot;"/>
+<listOptionValue builtIn="false" value="&quot;C:/Dokumente und Einstellungen/cttest/Desktop/0602/ct-Bot/Listing/ct-Bot/include&quot;"/>
+</option>
+<option id="gnu.c.compiler.option.preprocessor.def.symbols.736140060" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="MCU"/>
+</option>
+<option id="gnu.c.compiler.option.misc.other.462981231" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega32" valueType="string"/>
+</tool>
+<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1457522364" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug"/>
+<tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1422052481" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug">
+<option id="gnu.c.link.option.libs.1944124942" name="Libraries (-l)" superClass="gnu.c.link.option.libs"/>
+<option id="gnu.c.link.option.paths.1035619079" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="stringList">
+<listOptionValue builtIn="false" value="&quot;C:\WinAVR\lib&quot;"/>
+</option>
+<option id="gnu.c.link.option.noshared.456282519" name="No shared libraries (-static)" superClass="gnu.c.link.option.noshared" value="false" valueType="boolean"/>
+<option id="gnu.c.link.option.ldflags.918822459" name="Linker flags" superClass="gnu.c.link.option.ldflags" value="-mmcu=atmega32" valueType="string"/>
+</tool>
+<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1073017226" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
+<tool command="as" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.212943627" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug"/>
+<macros/>
+</toolChain>
+</configuration>
+<macros/>
+</project>
+</ManagedProjectBuildInfo>

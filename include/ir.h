@@ -1,0 +1,34 @@
+/*! @file 	ir.h
+ * @brief 	Routinen für die Dekodierung von RC5-Fernbedienungs-Codes
+ * @author 	Benjamin Benz (bbe@heise.de)
+ * @date 	20.12.05
+*/
+
+#include "ct-Bot.h"
+#include "global.h"
+
+#ifdef MCU
+	#define IR_PORT		PORTA			///< Port B
+	#define IR_DDR		DDRA			///< DDR of Port B
+	#define IR_PIN		PINA			///< Port B input
+	#define IR_BIT		0x80			///< Bit 7 of Port B (IO13, PA7)
+#endif
+
+extern volatile uint16	ir_data;	///< letztes komplett gelesenes RC5-paket
+
+/*!
+ * Init IR-System
+ */
+void 	ir_init		(void);
+
+/*!
+ * IR-Daten lesen
+ * @return wert von ir_data, löscht anschliessend ir_data
+ */
+uint16 	ir_read		(void);
+
+/*!
+ * Interrupt Serviceroutine
+ * wird ca alle 177.8us aufgerufen
+ */
+void 	ir_isr		(void);
