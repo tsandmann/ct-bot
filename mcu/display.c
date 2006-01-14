@@ -17,9 +17,13 @@
 #include "led.h"
 #include "delay.h"
 #include "shift.h"
+#include "display.h"
+
+#define DISPLAY_LENGTH	20
 
 volatile char display_update=0;	///< Muss das Display aktualisiert werden?
 
+char display_buf[DISPLAY_BUFFER];		///< Pufferstring für Displayausgaben
 
 #define DISPLAY_CLEAR 0x01		///< Kommando zum Löschen
 #define DISPLAY_CURSORHOME 0x02	///< Kommando für den Cursor
@@ -32,7 +36,7 @@ volatile char display_update=0;	///< Muss das Display aktualisiert werden?
 #define DPC (DISPLAY_PORT && ~DISPLAY_OUT)	///< Port des Displays
 //#define DRC (DDRC & ~DISPLAY_PINS)
 
-#define DISPLAY_READY_PORT		PINC		///< Port an dem das Ready-Flag des Display hängt
+#define DISPLAY_READY_PINC		PINC		///< Port an dem das Ready-Flag des Display hängt
 #define DISPLAY_READY_DDR		DDRC		///< Port an dem das Ready-Flag des Display hängt
 #define DISPLAY_READY_PIN		(1<<5)		///< Pin  an dem das Ready-Flag des Display hängt
 
@@ -68,33 +72,54 @@ volatile char display_update=0;	///< Muss das Display aktualisiert werden?
 /*!
  * Warte bis Display fertig
  */
-void wait_busy(void){ //warten bis Busy-Flag vom Display aus
+/*void wait_busy(void){ //warten bis Busy-Flag vom Display aus
+	int i;
+	// normalerweise sollten 37µs ausreichen!
+	for (i=0; i<10; i++)
+			asm("nop"); 
+*/
+/*
+	char i;
 	char data=DISPLAY_READY_PIN;
 
-	while (data==DISPLAY_READY_PIN){
-		DISPLAY_PORT = DPC |  DISPLAY_RW ; // RS=0, RW=1, E=0
-		asm("nop");  asm("nop");
-		DISPLAY_PORT= DPC |  DISPLAY_RW | DISPLAY_EN	;  // RS=0, RW=1, E=1
-		asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop"); //warten bis Busy-Flag bereit
-		data= (DISPLAY_READY_PORT & DISPLAY_READY_PIN);	// Flag lesen
-		asm("nop"); asm("nop");	
-		DISPLAY_PORT= DPC |  DISPLAY_RW ; // RS=0, RW=1, E=0 zurücksetzen
+	DISPLAY_PORT |= DISPLAY_RW ; // Wir wollen das Busy-Flag lesen
+								 // Gleichzeitig hängen wir das Schieberegister ab
+
+	for (i=0; i<10; i++){
+		asm("nop"); 
+	}
+
+	while (data == DISPLAY_READY_PIN){
+		for (i=0; i<10; i++){
+			asm("nop"); 
+		}
+		DISPLAY_PORT |= DISPLAY_EN	;  // Enable setzen!
+		asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop"); 
+		DISPLAY_PORT &= ~DISPLAY_EN	;  // Enable löschen!
+		for (i=0; i<10; i++){
+			asm("nop"); 
+		}
+		data= (DISPLAY_READY_PINC & DISPLAY_READY_PIN);	// Flag lesen
 	}	
+
     DISPLAY_PORT=DPC;	// Alles zurück setzen 
-}
+    */
+//}
 
 /*! 
  * Übertrage Kommando an das Display
  * @param cmd Kommando
  */
 void display_cmd(char cmd){		//ein Kommando cmd an das Display senden
-       int i;
-		shift_data_out(cmd,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
-        for (i=0; i<2000; i++){
-                asm("nop");
-        }
-        DISPLAY_PORT=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
-        wait_busy();
+//	uint8 i;
+	shift_data_out(cmd,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
+	// Enable muss für mind. 450 ns High bleiben, bevor es fallen darf!
+	// ==> Also mind. 8 Zyklen warten
+/*	for (i=0; i<4; i++){
+	        asm("nop");
+	}
+*/	DISPLAY_PORT=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
+//	wait_busy();
 }
 
 
@@ -103,16 +128,16 @@ void display_cmd(char cmd){		//ein Kommando cmd an das Display senden
  * @param data Das Zeichen
  */
 void display_data(char data){ //ein Zeichen aus data in den Displayspeicher schreiben
-        int i;
+//        int i;
 		shift_data_out(data,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY|DISPLAY_RS);
 		
 		// Enable muss für mind. 450 ns High bleiben, bevor es fallen darf!
 		// ==> Also mind. 8 Zyklen warten
-        for (i=0; i<2000; i++){
+/*        for (i=0; i<4; i++){
                 asm("nop");
         }
-        PORTC=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
-        wait_busy();
+*/      DISPLAY_PORT=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
+//        wait_busy();
 }
 
 /*!
@@ -146,25 +171,42 @@ void display_cursor (int row, int column) {
    }
 }
 
+//void display_test();
+
 /*! 
  * Init Display
  */
 void display_init(void){
 	shift_init();
+
 	DISPLAY_DDR |= DISPLAY_OUT;		// Ausgänge
 	DISPLAY_DDR &= ~DISPLAY_IN;		// Eingänge
 
-	display_cmd(0x38);  		//Display auf 8 Bit Betrieb
+	delay(15);		// Display steht erst 10ms nach dem Booten bereit
+	
+	// Register in 8-Bit-Modus 3x Übertragen, dazwischen warten
+	shift_data_out(0x38,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
+	DISPLAY_PORT= DPC;
+	delay(5);		
+	shift_data_out(0x38,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
+	DISPLAY_PORT= DPC;
+	delay(5);		
+	shift_data_out(0x38,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
+	DISPLAY_PORT= DPC;
+	delay(5);		
+	
 	display_cmd(0x0f);  		//Display On, Cursor On, Cursor Blink
 	
 	display_cmd(DISPLAY_CLEAR); // Display l�schen, Cursor Home
+	
+	display_data('i');
 }
 
 /*! 
  * Zeigt einen String an 
  * @return -1 falls string zuende 0 falls Zeile (20 zeichen) zuende
  */
-int display_string(char data[20]){
+/*int display_string(char data[20]){
 	int i=0;
 	
 	while ((i<20) && (data[i] != 0x00)){ 	// Abbruch, sobald ein Nullstring erreicht wird
@@ -174,15 +216,33 @@ int display_string(char data[20]){
 	
 	// return -1 falls string zuende, 0 falls zeile (20 zeichen) zuende
 	if (data[i]==0x00)	return -1;	else return 0;
+} 
+*/
+/*! 
+ * Zeigt den String an, der in display_buffer steht. 
+ * @return 0 falls 0x00-Zeichen erreicht; -1, falls DISPLAY_LENGTH oder DISPLAY_BUFFER Zeichen ausgegeben wurden
+ */
+int display_buffer(){
+	uint8 i=0;
+
+	// Ausgeben bis Puffer leer, Zeile voll oder Null-Zeichen erreicht	
+	while ((i<DISPLAY_LENGTH)&& (i<DISPLAY_BUFFER) && (display_buf[i] != 0x00)){ 	
+						// oder 20 Zeichen gesendet sind
+		display_data(display_buf[i++]);	// einzelnes Zeichen schicken
+	}
+	
+	if (display_buf[i]==0x00)	return 0;	
+	else return -1;
 }
 
 /*
 void display_test(){
 	shift_init();	
 
-	shift_data(0xAA,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
+//	shift_data_out(0xAA,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
 	
 	display_cmd(0x38);  		//Display auf 8 Bit Betrieb
+	for(;;){}
 	display_cmd(0x0f);  		//Display On, Cursor On, Cursor Blink
 	
 	display_cmd(DISPLAY_CLEAR); // Display l�schen, Cursor Home

@@ -43,7 +43,8 @@ void shift_data_out(char data, char latch_data, char latch_store){
 		SHIFT_PORT |= latch_data ;	    		// und ins jeweilige Storageregister latchen
 		data= data << 1;		      	// data links schieben
 		SHIFT_PORT &= ~SHIFT_OUT;		// und wieder clear
-	}	
+	}
+	
 	SHIFT_PORT |= latch_store;			// alles vom Storage ins Output register latchen
 }
 

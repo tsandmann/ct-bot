@@ -68,28 +68,29 @@ void init(void){
 		PORTD=0; DDRD=0;
 	#endif
 
-	#ifdef LED_AVAILABLE
-		LED_init();
-	#endif
-
 	#ifdef DISPLAY_AVAILABLE
 		display_init();
 		display_update=1;
 	#endif
 
+	#ifdef LED_AVAILABLE
+		LED_init();
+	#endif
+
+
 	#ifdef PC
 		bot_2_sim_init();
 	#endif
 
+	bot_mot_init();
 
 	
 	bot_sens_init();
 	
 	#ifdef MCU
-//		timer_2_init();	// Für IR-Krams
+		timer_2_init();	// Für IR-Krams
 	#endif
 	
-	bot_mot_init();
 	
 
 /*	#ifdef UART_AVAILABLE	
@@ -118,38 +119,35 @@ void init(void){
 }
 
 #ifdef DISPLAY_AVAILABLE
+
 /*!
  * Zeige ein paar Infos an
  */
 	void display(void){
-		char hex[20];
 		if (display_update >0){
-
 			display_cursor(1,1);
-			sprintf(hex,"P=%3d %3d D=%3d %3d ",sensLDRL,sensLDRR,sensDistL,sensDistR);
-			display_string(hex);
+			sprintf(display_buf,"P=%3d %3d D=%3d %3d ",sensLDRL,sensLDRR,sensDistL,sensDistR);
+			display_buffer();
 
 			display_cursor(2,1);
-			sprintf(hex,"B=%3d %3d L=%3d %3d ",sensBorderL,sensBorderR,sensLineL,sensLineR);
-			display_string(hex);
+			sprintf(display_buf,"B=%3d %3d L=%3d %3d ",sensBorderL,sensBorderR,sensLineL,sensLineR);
+			display_buffer();
 
 			display_cursor(3,1);
-//			sprintf(hex,"Rad=%d %d Err=%d Kla=%d",sensEncL,sensEncR,sensError,sensDoor);
-			sprintf(hex,"R=%d %d F=%d K=%d T=%d ",sensEncL,sensEncR,sensError,sensDoor,sensTrans);
-			display_string(hex);
-
-			display_cursor(4,1);
-//			sprintf(hex,"I=%4x M=%d %d",RC5_Code,setSensMouseDX,setSensMouseDY);
-//			display_string(hex);
-
+//			sprintf(display_buf,"Rad=%d %d Err=%d Kla=%d",sensEncL,sensEncR,sensError,sensDoor);
+			sprintf(display_buf,"R=%d %d F=%d K=%d T=%d ",sensEncL,sensEncR,sensError,sensDoor,sensTrans);
+			display_buffer();
 			
+			display_cursor(4,1);
+			sprintf(display_buf,"I=%4x M=%d %d",RC5_Code,setSensMouseDX,setSensMouseDY);
+			display_buffer();			
 			
 			
 			
 			#ifdef MAUS_AVAILABLE
 				display_cursor(2,1);
-				sprintf(hex,"y: %4d x: %4d",maus_y,maus_x);
-				display_string(hex);
+				sprintf(display_buffer,"y: %4d x: %4d",maus_y,maus_x);
+				display_string(display_buffer);
 			#endif
 	
 			
@@ -212,6 +210,19 @@ void init(void){
     
     
 #endif
+/*	DDRC|=1;
+	for(;;){
+		PORTC =1;
+		PORTC = 0;
+		PORTC =1;
+		PORTC = 0;
+		PORTC =1;
+		PORTC = 0;
+		PORTC =1;
+		PORTC = 0;
+	}
+*/	
+	
 	
 	init();		
 	
@@ -227,9 +238,9 @@ void init(void){
 		#ifdef MCU
 			bot_sens_isr();
 		#endif
-//		rc5_control();
+		rc5_control();
 		display();	
-		delay(10000);
+		delay(1000);
 		
 //		delay(10000); 
 //		servo_set(SERVO2,SERVO_LEFT);
