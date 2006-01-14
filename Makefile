@@ -34,7 +34,7 @@
 
 # MCU name
 #MCU = atmega8535
-MCU = atmega16
+MCU = atmega32
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
@@ -49,7 +49,7 @@ DEVICE = MCU
 MSG_DEVICE = Target device is $(DEVICE)
 
 # List C source files here. (C dependencies are automatically generated.)
-SRCMCU = mcu/adc.c mcu/bot-mot.c mcu/bot-sens.c mcu/delay.c mcu/display.c mcu/event.c mcu/ir.c mcu/key.c mcu/key_dreh.c mcu/led.c mcu/mouse.c mcu/timer.c mcu/uart.c
+SRCMCU = mcu/adc.c mcu/bot-mot.c mcu/bot-sens.c mcu/delay.c mcu/display.c mcu/event.c mcu/ir.c mcu/key.c mcu/led.c mcu/mouse.c mcu/timer.c mcu/uart.c mcu/ena.c mcu/shift.c
 
 SRCPC = pc/display_pc.c pc/bot-mot_pc.c pc/bot-sens_pc.c pc/led_pc.c pc/delay_pc.c pc/ir_pc.c pc/bot-2-sim.c pc/tcp.c pc/tcp-server.c
 

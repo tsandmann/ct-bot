@@ -52,9 +52,9 @@ uint16 RC5_Code;        ///< Letzter empfangener RC5-Code
  */
 void rc5_control(void){
 	uint16 rc5=ir_read();
-	printf("RC5-Control %x\n",rc5);
 	if (rc5 !=0) {
 		RC5_Code=rc5|0x0800;
+		
 		switch(RC5_Code){
 			case RC5_CODE_PWR:	
 					speed_l=BOT_SPEED_STOP;
