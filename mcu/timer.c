@@ -20,82 +20,6 @@
 #include "ir.h"
 
 
-
-/*!
- * Interrupt Handler for Timer/Counter 0 
- */
-SIGNAL (SIG_OUTPUT_COMPARE0){
-	#ifdef RTC_AVAILABLE
-		rtc_isr();
-	#endif
-	#ifdef KEY_AVAILABLE
-		key_isr();
-	#endif
-	#ifdef DREH_AVAILABLE		
-		dreh_isr();
-	#endif
-}
-
-/*!
- * initilaisiert Timer 0 und startet ihn 
- */
-void timer_0_init(void){
-	TCNT0  = 0x00;            // TIMER0 vorladen
-	
-	// �ndert man den Prescaler muss man die Formel f�r OCR0 anpassen !!!
-	// use CLK/1024 prescale value, clear timer/counter on compare0 match   
-	TCCR0 = _BV(WGM01) | _BV(CS00) | _BV(CS02);
-	
-	//Compare Register !!!Achtung nur 8-Bit breit --> evtl. teiler anpassen
-	OCR0 = ((XTAL/1024/TIMER_0_CLOCK) - 1 );
-	
-	// enable Output Compare 0 overflow interrupt
-	TIMSK  |= _BV(OCIE0);
-	sei();                       // enable interrupts
-}
-
-
-// ---- Timer 1 ------
-
-/*!
- * Interrupt Handler for Timer/Counter 1A 
- */
-SIGNAL (SIG_OUTPUT_COMPARE1A){
-	bot_sens_isr();		// Sensoren aktualisieren
-//	bot_behave();
-	motor_isr();		// Motoren aktualisieren
-}
-
-/*!
- * Interrupt Handler for Timer/Counter 1B 
- */
-SIGNAL (SIG_OUTPUT_COMPARE1B){
-}
-
-/*!
- * initilaisiert Timer 1 und startet ihn 
- */
-void timer_1_init(void){
-	
-	TCCR1A = 0;	// Normal operation Output pins disconnected
-	TCNT1= 0x000;	//reset counter
-
-	// �ndert man den Prescaler muss man die Formel f�r OCR1A anpassen !!!
-	// use CLK/1024 prescale value, clear timer/counter on compareA match   
-	TCCR1B = _BV(CS10) | _BV(CS11)  | _BV(WGM12);
-	
-	// preset timer1 high/low byte
-	OCR1A = ((XTAL/64/TIMER_1_CLOCK) - 1 );	
-	
-	OCR1B = 0;
-	
-	// enable Output Compare 1 overflow interrupt
-	TIMSK|= _BV(OCIE1A) | _BV(OCIE1B);
-	//TIMSK|=  _BV(OCIE1B);
-	
-	sei();                       // enable interrupts
-}
-
 // ---- Timer 2 ------
 
 /*!
@@ -104,7 +28,7 @@ void timer_1_init(void){
 SIGNAL (SIG_OUTPUT_COMPARE2){
 	#ifdef IR_AVAILABLE
 		ir_isr();
-	#endif
+	#endif	
 }
 
 /*!

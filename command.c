@@ -118,44 +118,44 @@ int command_evaluate(void){
 				LED_set(received_command.data_l & 255);
 				break;
 		#endif
-
-		case CMD_SENS_IR:
-			sensDistL=received_command.data_l;
-			sensDistR=received_command.data_r;
-			break;
-		case CMD_SENS_ENC:
-			if (mot_l_dir==1)	// Drehrichtung beachten
-				encoderL+=received_command.data_l;	//vorwaerts
-			else 
-				encoderL-=received_command.data_l;	//rueckwaerts
-
-			if (mot_r_dir==1)	// Drehrichtung beachten
-				encoderR+=received_command.data_r;	//vorwaerts
-			else 
-				encoderR-=received_command.data_r;	//rueckwaerts
-			break;
-		case CMD_SENS_BORDER:
-			sensBorderL=received_command.data_l;
-			sensBorderR=received_command.data_r;
-			break;
-		case CMD_SENS_LINE:
-			sensLineL=received_command.data_l;
-			sensLlineR=received_command.data_r;
-			break;
-		case CMD_SENS_LDR:
-			sensLdrL=received_command.data_l;
-			sensLdrR=received_command.data_l;
-			break;
-		case CMD_SENS_TRANS:
-			sensTrans=(char)received_command.data_l;
-			break;
-		case CMD_SENS_ERROR:
-			sensError=(char)received_command.data_l;
-			break;
-		case CMD_SENS_RC5:
-			ir_data=received_command.data_l;
-			printf("RC5: %x Data_R %d\n",ir_data,received_command.data_r);
-			break;
+		#ifdef PC
+			case CMD_SENS_IR:
+				sensDistL=received_command.data_l;
+				sensDistR=received_command.data_r;
+				break;
+			case CMD_SENS_ENC:
+				if (mot_l_dir==1)	// Drehrichtung beachten
+					sensEncL+=received_command.data_l;	//vorwaerts
+				else 
+					sensEncL-=received_command.data_l;	//rueckwaerts
+	
+				if (mot_r_dir==1)	// Drehrichtung beachten
+					sensEncR+=received_command.data_r;	//vorwaerts
+				else 
+					sensEncR-=received_command.data_r;	//rueckwaerts
+				break;
+			case CMD_SENS_BORDER:
+				sensBorderL=received_command.data_l;
+				sensBorderR=received_command.data_r;
+				break;
+			case CMD_SENS_LINE:
+				sensLineL=received_command.data_l;
+				sensLineR=received_command.data_r;
+				break;
+			case CMD_SENS_LDR:
+				sensLdrL=received_command.data_l;
+				sensLdrR=received_command.data_l;
+				break;
+			case CMD_SENS_TRANS:
+				sensTrans=(char)received_command.data_l;
+				break;
+			case CMD_SENS_ERROR:
+				sensError=(char)received_command.data_l;
+				break;
+			case CMD_SENS_RC5:
+				ir_data=received_command.data_l;
+				break;
+		#endif
 		default:
 			analyzed=0;		// Command was not analysed yet
 			break;

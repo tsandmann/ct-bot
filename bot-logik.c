@@ -6,7 +6,6 @@
 
 #include "bot-mot.h"
 #include "bot-sens.h"
-#include "rc5.h"
 #include <stdlib.h>
 
 #define	BORDER_DANGEROUS	500		///< Wert, ab dem wir sicher sind, dass es eine Kante ist
@@ -38,8 +37,8 @@ void bot_goto(int left, int right){
 	mot_r_goto=right;
 
 	// Encoder Zur�cksetzen
-	encoderL=0;
-	encoderR=0;
+	sensEncL=0;
+	sensEncR=0;
 	
 	//Goto-System aktivieren
 	if (left !=0) mot_goto_l= MOT_GOTO_MAX; 
@@ -54,7 +53,8 @@ void bot_goto(int left, int right){
  * @see bot_goto()
  */
 void bot_goto_system(void){
-	int diff_l = encoderL - mot_l_goto;	// Restdistanz links
+/*
+  	int diff_l = encoderL - mot_l_goto;	// Restdistanz links
 	int diff_r = encoderR - mot_r_goto;	// Restdistanz rechts	
 	
 	// Motor L hat noch keine MOT_GOTO_MAX Nulldurchg�nge gehabt
@@ -102,6 +102,7 @@ void bot_goto_system(void){
 		if (((speed_r<0)&& (mot_r_dir==1))|| ( (speed_r>0) && (mot_r_dir==0) ) ) 
 			mot_goto_r--;		// Nulldurchgang merken
 	}
+	*/
 }
 
 /*!
@@ -150,8 +151,9 @@ void bot_avoid_border(){
  * Dies ist der richtige Platz für eigene Routinen, um den Bot zu steuern
  */
 void bot_behave(void){	
-
-	rc5_control();
+	#ifdef RC5_AVAILABLE
+		rc5_control();
+	#endif
 
 	bot_avoid_col();		// changes speed_l_col, speed_r_col
 

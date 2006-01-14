@@ -9,31 +9,37 @@
 #include <avr/io.h>
 #include "led.h"
 #include "ct-Bot.h"
+#include "shift.h"
 
 #ifdef LED_AVAILABLE
 
+volatile char led =0;
 /*!
  * Initialisiert die LEDs
  */
 void LED_init(){
-	DDRD|= LED_ALL;	// LED-Ports als Ausgang
+	shift_init();
 	LED_off(LED_ALL);
 }
 
-/*! Schaltet eine LEd an
- * 
- * @param LED HEX-Code der LED
+/*! 
+ * Schaltet einzelne LEDs an
+ * andere werden nicht beeinflusst
+ * @param LED Bitmaske der anzuschaltenden LEDs
  */
 void LED_on(char LED){
-	PORTD &= ~(LED & LED_ALL);
+	led |= LED;
+	LED_set(led);
 }
 
-/*! Schaltet eine LEd aus
- * 
- * @param LED HEX-Code der LED
+/*! 
+ * Schaltet einzelne LEDs aus
+ * andere werden nicht beeinflusst
+ * @param LED Bitmaske der anzuschaltenden LEDs
  */
 void LED_off(char LED){
-	PORTD |= (LED & LED_ALL);	// LED ausschalten
+	led &= ~LED;
+	LED_set(led);
 }
 
 /*!
@@ -41,7 +47,8 @@ void LED_off(char LED){
  * @param LED Wert der gezeigt werden soll
  */
 void LED_set(char LED){
-	PORTD= (PORTD & ~LED_ALL) | ((~LED << 3) & LED_ALL); 
+	led=LED;
+	shift_data(led,SHIFT_REGISTER_LED); 
 }
 
 #endif

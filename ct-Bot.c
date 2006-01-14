@@ -26,6 +26,8 @@
 #include "global.h"
 #include "display.h"
 #include "led.h"
+#include "ena.h"
+#include "shift.h"
 #include "key.h"
 #include "delay.h"
 #include "uart.h"
@@ -66,23 +68,31 @@ void init(void){
 		PORTD=0; DDRD=0;
 	#endif
 
-	#ifdef DISPLAY_AVAILABLE
-		display_init();
-		display_update=1;
-	#endif
-	
-	#ifdef PC
-		bot_2_sim_init();
-	#endif
-	
-	bot_mot_init();
-	bot_sens_init();
-	
 	#ifdef LED_AVAILABLE
 		LED_init();
 	#endif
 
-	#ifdef UART_AVAILABLE	
+	#ifdef DISPLAY_AVAILABLE
+		display_init();
+		display_update=1;
+	#endif
+
+	#ifdef PC
+		bot_2_sim_init();
+	#endif
+
+
+	
+	bot_sens_init();
+	
+	#ifdef MCU
+//		timer_2_init();	// Für IR-Krams
+	#endif
+	
+	bot_mot_init();
+	
+
+/*	#ifdef UART_AVAILABLE	
 		uart_init();
 	#endif
 	
@@ -104,6 +114,7 @@ void init(void){
 	#ifdef MAUS_AVAILABLE
 		maus_sens_init();
 	#endif
+*/
 }
 
 #ifdef DISPLAY_AVAILABLE
@@ -113,22 +124,37 @@ void init(void){
 	void display(void){
 		char hex[20];
 		if (display_update >0){
-			#ifdef TICKER_AVAILABLE
-				display_cursor(1,1);
-				display_string(ticker);
-			#endif
+
+			display_cursor(1,1);
+			sprintf(hex,"P=%3d %3d D=%3d %3d ",sensLDRL,sensLDRR,sensDistL,sensDistR);
+			display_string(hex);
+
+			display_cursor(2,1);
+			sprintf(hex,"B=%3d %3d L=%3d %3d ",sensBorderL,sensBorderR,sensLineL,sensLineR);
+			display_string(hex);
+
+			display_cursor(3,1);
+//			sprintf(hex,"Rad=%d %d Err=%d Kla=%d",sensEncL,sensEncR,sensError,sensDoor);
+			sprintf(hex,"R=%d %d F=%d K=%d T=%d ",sensEncL,sensEncR,sensError,sensDoor,sensTrans);
+			display_string(hex);
+
+			display_cursor(4,1);
+//			sprintf(hex,"I=%4x M=%d %d",RC5_Code,setSensMouseDX,setSensMouseDY);
+//			display_string(hex);
+
+			
+			
+			
 			
 			#ifdef MAUS_AVAILABLE
-				display_cursor(1,1);
-				sprintf(hex,"y: %4d",maus_y);
-				display_string(hex);
-			
-				display_cursor(1,10);
-				sprintf(hex,"x: %4d",maus_x);
+				display_cursor(2,1);
+				sprintf(hex,"y: %4d x: %4d",maus_y,maus_x);
 				display_string(hex);
 			#endif
+	
 			
-			display_cursor(2,1);
+			
+/*			display_cursor(2,1);
 			display_string("L=");
 			sprintf(hex,"%5d",encoderL);
 			display_string(hex);			
@@ -157,6 +183,7 @@ void init(void){
 			display_string("dr=");
 			sprintf(hex,"%5d",sensDistR);
 			display_string(hex);	
+*/			
 		}
 	}
 #endif
@@ -185,22 +212,39 @@ void init(void){
     
     
 #endif
+	
 	init();		
 	
 	#ifdef WELCOME_AVAILABLE
 		display_cursor(1,1);
 		display_string("c't-Roboter");
+		LED_set(0x00);
 	#endif
+		
+//	OCR0=127;
+	
+	for(;;){
+		bot_sens_isr();
+//		rc5_control();
+		display();	
+		delay(10000);
+		
+//		delay(10000); 
+//		servo_set(SERVO2,SERVO_LEFT);
+//		delay(10000);
+//		servo_set(SERVO2,SERVO_RIGHT);
+//		servo_set(SERVO1,SERVO_RIGHT);		
+	}
 	
 	/// Hauptschleife des Bots
 	for(;;){
 				
 		#ifdef PC
 //			wait_for_time(100000);
-			wait_for_time(10000);
+			wait_for_time(100000);
 		#endif
 		
-		bot_behave();
+//		bot_behave();
 		
 		#ifdef DISPLAY_AVAILABLE
 			display();

@@ -29,6 +29,12 @@
 				    // Byte ist, beschr�nken wir uns hier auf ein
 				    // Minimum von 250 Samples
 
+#define IR_PORT	PORTB			///< Port B
+#define IR_DDR		DDRB			///< DDR of Port B
+#define IR_PINR	PINB			///< Port B input
+#define IR_PIN		1				///< Pin 1
+
+
 
 volatile static byte ir_lastsample = 0;  ///< zuletzt gelesenes Sample
 volatile static byte ir_bittimer   = 0;  ///< zählt die Aufrufe von ir_isr()
@@ -36,7 +42,7 @@ volatile static byte ir_bittimer   = 0;  ///< zählt die Aufrufe von ir_isr()
 volatile static uint16 	ir_data_tmp = 0;  ///< RC5-Bitstream
 volatile static byte	ir_bitcount = 0;  ///< anzahl gelesener bits
 
-volatile static uint16	ir_data	= 0;	///< letztes komplett gelesenes RC5-paket
+volatile uint16	ir_data	= 0;	///< letztes komplett gelesenes RC5-paket
 
 /*!
  * Interrupt Serviceroutine
@@ -46,7 +52,7 @@ void ir_isr(void) {
 	// sample lesen
 	byte sample = 1;
 	
-	if ((IR_PIN & IR_BIT) != 0) {
+	if ((IR_PINR & (1<<IR_PIN)) != 0) {
 		sample = 0;
 	}
 	
@@ -126,8 +132,8 @@ uint16 ir_read(void) {
  * Init IR-System
  */
 void ir_init(void) {
-	IR_DDR  &= ~IR_BIT; 	// Pin auf Input
-	IR_PORT |= IR_BIT;	// Pullup an
+	IR_DDR  &= ~IR_PIN; 	// Pin auf Input
+	IR_PORT |= IR_PIN;		// Pullup an
 }
 #endif
 #endif
