@@ -61,13 +61,15 @@
 
 #ifdef PC
 	#undef UART_AVAILABLE
+	#define COMMAND_AVAILABLE
 #endif
 
-#ifndef UART_AVAILABLE
-	#undef COMMAND_AVAILABLE
-	#undef RTC_HTTPTIME_AVAILABLE
+#ifdef MCU
+	#ifndef UART_AVAILABLE
+		#undef COMMAND_AVAILABLE
+		#undef RTC_HTTPTIME_AVAILABLE
+	#endif
 #endif
-
 
 
 #define F_CPU	16000000L    ///< Crystal frequency in Hz

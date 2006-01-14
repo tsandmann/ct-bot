@@ -224,7 +224,9 @@ void init(void){
 //	OCR0=127;
 	
 	for(;;){
-		bot_sens_isr();
+		#ifdef MCU
+			bot_sens_isr();
+		#endif
 //		rc5_control();
 		display();	
 		delay(10000);
