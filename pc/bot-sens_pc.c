@@ -18,14 +18,14 @@
 volatile int16 sensDistL=0;		///< Distanz linker IR-Sensor
 volatile int16 sensDistR=0;		///< Distanz rechter IR-Sensor
 
-volatile int16 encoderL=0;		///< aufbereiteter Encoder linker Motor
-volatile int16 encoderR=0;		///< Encoder rechter Motor
+volatile int16 sensEncL=0;		///< aufbereiteter Encoder linker Motor
+volatile int16 sensEncR=0;		///< Encoder rechter Motor
 
 volatile int16 sensBorderL=0;	///< Abgrundsensor links
 volatile int16 sensBorderR=0;	///< Abgrundsensor rechts
 
 volatile int16 sensLineL=0;		///< Lininensensor links
-volatile int16 sensLlineR=0;	///< Lininensensor rechts
+volatile int16 sensLineR=0;	///< Lininensensor rechts
 
 volatile int16 sensLdrL=0;		///< Helligkeitssensor links
 volatile int16 sensLdrR=0;		///< Helligkeitssensor links
