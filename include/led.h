@@ -4,11 +4,16 @@
  * @date 	26.12.05
 */
 
-#define LED_GRUEN  0x40		///< LED Grüne
-#define LED_GELB   0x20		///< LED Gelb
-#define LED_ORANGE 0x10		///< LED Orange
-#define LED_ROT    0x08		///< LED Rot
-#define LED_ALL    0x78		///< LED Alle
+#define LED_RECHTS	(1<<0)
+#define LED_LINKS	(1<<1)
+#define LED_ROT     (1<<2)		///< LED Rot
+#define LED_ORANGE  (1<<3)		///< LED Orange
+#define LED_GELB    (1<<4)		///< LED Gelb
+#define LED_GRUEN   (1<<5)		///< LED Grüne
+#define LED_TUERKIS (1<<6)		///< LED Tuerkis
+#define LED_WEISS   (1<<7)		///< LED WEISS
+
+#define LED_ALL    0xFF		///< LED Alle
 
 /*!
  * Initialisiert die LEDs

@@ -7,12 +7,6 @@
 #include "ct-Bot.h"
 #include "global.h"
 
-#ifdef MCU
-	#define IR_PORT		PORTA			///< Port B
-	#define IR_DDR		DDRA			///< DDR of Port B
-	#define IR_PIN		PINA			///< Port B input
-	#define IR_BIT		0x80			///< Bit 7 of Port B (IO13, PA7)
-#endif
 
 extern volatile uint16	ir_data;	///< letztes komplett gelesenes RC5-paket
 

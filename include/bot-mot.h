@@ -5,18 +5,23 @@
 */
 
 #define BOT_SPEED_STOP		0		///< Motor aus
-#define BOT_SPEED_SLOW		1		///< langsame Fahrt
-#define BOT_SPEED_NORMAL	4		///< normale Fahrt
-#define BOT_SPEED_FAST		12		///< schnelle Fahrt
-#define BOT_SPEED_MAX		20		///< maximale Fahrt
+#define BOT_SPEED_SLOW		10		///< langsame Fahrt
+#define BOT_SPEED_NORMAL	50		///< normale Fahrt
+#define BOT_SPEED_FAST		150		///< schnelle Fahrt
+#define BOT_SPEED_MAX		255		///< maximale Fahrt
+
+#define SERVO_LEFT 	8
+#define SERVO_RIGHT	16
+#define SERVO_MIDDLE   ((SERVO_RIGHT- SERVO-LEFT)/2)
+
+#define SERVO1 1
+#define SERVO2 2
 
 extern int volatile speed_l;			///< Geschwindigkeit des linken Motors
 extern int volatile speed_r;			///< Geschwindigkeit des rechten Motors
-extern volatile char mot_l_dir;			///< Drehrichtung linker Motor
-extern volatile char mot_r_dir;			///< Drehrichtung rechter Motor
 
 /*!
- *  Initilisiert alles für die Motosteuerung 
+ *  Initialisiert alles für die Motosteuerung 
  */
 void bot_mot_init(void);
 
@@ -42,12 +47,13 @@ void motor_goto(int left, int right);
 /*!
  * unmittelbarere Zugriff auf die beiden Motoren
  * normalerweise NICHT verwenden!!!!!
- * @param left PWM links
- * @param right PWM rechts
+ * @param left speed links
+ * @param right speed rechts
 */
 void bot_motor(int left, int right);
 
 /*!
- * PWM-Steuerung und Co 
+ * Stellt die Servos
+ * Sinnvolle Werte liegen zwischen 8 und 16
  */
-void motor_isr(void);
+void servo_set(char servo, char pos);

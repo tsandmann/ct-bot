@@ -28,3 +28,5 @@ void display_clear(void);
  * @param column Spalte
  */
 void display_cursor (int row, int column) ;
+
+//void display_test();

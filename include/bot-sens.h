@@ -9,14 +9,18 @@
 extern int16 sensDistL;				///< Distanz linker IR-Sensor
 extern int16 sensDistR;				///< Distanz rechter IR-Sensor
 
-extern volatile int16 encoderL;		///< Encoder linker Motor
-extern volatile int16 encoderR;		///< Encoder rechter Motor
+extern volatile int16 sensLDRL;		///< Lichtsensor links
+extern volatile int16 sensLDRR;		///< Lichtsensor rechts
+
+
+extern volatile int16 sensEncL;		///< Encoder linker Motor
+extern volatile int16 sensEncR;		///< Encoder rechter Motor
 
 extern volatile int16 sensBorderL;	///< Abgrundsensor links
 extern volatile int16 sensBorderR;	///<  Abgrundsensor rechts
 
 extern volatile int16 sensLineL;	///<  Lininensensor links
-extern volatile int16 sensLlineR;	///<  Lininensensor rechts
+extern volatile int16 sensLineR;	///<  Lininensensor rechts
 
 extern volatile int16 sensLdrL;		///< Helligkeitssensor links
 extern volatile int16 sensLdrR;		///< Helligkeitssensor links
@@ -27,6 +31,10 @@ extern volatile char sensDoor;		///< Sensor Überwachung Klappe
 
 extern volatile char sensError;		///< Überwachung Motor oder Batteriefehler
 
+//extern volatile int sensRc5;			///< Fernbedienungssensor
+
+extern volatile char setSensMouseDX;	///< Maussensor Delta X
+extern volatile char setSensMouseDY;	///< Maussensor Delta X
 /*!
  * Initialisiere alle Sensoren
  */
