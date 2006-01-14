@@ -83,26 +83,4 @@ void motor_set(int left, int right){
 	
 	bot_2_sim_tell(CMD_AKT_MOT, SUB_CMD_NORM ,&tmp_l,&tmp_r);
 }
-
-
-/*!
- * PWM-Steuerung und Co 
- */
-void motor_isr(){	
-	mot_pwm_cnt++; 
-	if (mot_pwm_cnt >= BOT_SPEED_MAX) 
-		mot_pwm_cnt=0;
-	
-	if (mot_l_high > mot_pwm_cnt){
-//		PWM_L(1);
-	} else {
-//		PWM_L(0);
-	}
-
-	if (mot_r_high > mot_pwm_cnt){
-//		PWM_R(1);
-	} else {
-//		PWM_R(0);
-	}
-}
 #endif
