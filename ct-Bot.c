@@ -126,62 +126,20 @@ void init(void){
 	void display(void){
 		if (display_update >0){
 			display_cursor(1,1);
-			sprintf(display_buf,"P=%3d %3d D=%3d %3d ",sensLDRL,sensLDRR,sensDistL,sensDistR);
+			sprintf(display_buf,"P=%03X %03X D=%03X %03X ",sensLDRL,sensLDRR,sensDistL,sensDistR);
 			display_buffer();
 
 			display_cursor(2,1);
-			sprintf(display_buf,"B=%3d %3d L=%3d %3d ",sensBorderL,sensBorderR,sensLineL,sensLineR);
+			sprintf(display_buf,"B=%03X %03X L=%3X %03X ",sensBorderL,sensBorderR,sensLineL,sensLineR);
 			display_buffer();
 
 			display_cursor(3,1);
-//			sprintf(display_buf,"Rad=%d %d Err=%d Kla=%d",sensEncL,sensEncR,sensError,sensDoor);
 			sprintf(display_buf,"R=%d %d F=%d K=%d T=%d ",sensEncL,sensEncR,sensError,sensDoor,sensTrans);
 			display_buffer();
 			
 			display_cursor(4,1);
-			sprintf(display_buf,"I=%4x M=%d %d",RC5_Code,setSensMouseDX,setSensMouseDY);
-			display_buffer();			
-			
-			
-			
-			#ifdef MAUS_AVAILABLE
-				display_cursor(2,1);
-				sprintf(display_buffer,"y: %4d x: %4d",maus_y,maus_x);
-				display_string(display_buffer);
-			#endif
-	
-			
-			
-/*			display_cursor(2,1);
-			display_string("L=");
-			sprintf(hex,"%5d",encoderL);
-			display_string(hex);			
-
-			display_cursor(2,10);
-			display_string("R=");
-			sprintf(hex,"%5d",encoderR);
-			display_string(hex);			
-
-			#ifdef RC5_AVAILABLE
-				display_cursor(3,1);
-				display_string(" RC=");
-				to_hex((char)(RC5_Code>>8),hex);
-				display_string(hex);
-				to_hex((char)(RC5_Code & 0xFF),hex);
-				display_string(hex);
-			#endif		
-
-			
-			display_cursor(1,1);
-			display_string("dl=");
-			sprintf(hex,"%5d",sensDistL);
-			display_string(hex);			
-
-			display_cursor(1,10);
-			display_string("dr=");
-			sprintf(hex,"%5d",sensDistR);
-			display_string(hex);	
-*/			
+			sprintf(display_buf,"I=%04X M=%02X %02X",RC5_Code,setSensMouseDX,setSensMouseDY);
+			display_buffer();				
 		}
 	}
 #endif

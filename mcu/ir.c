@@ -4,6 +4,9 @@
  * @date 	20.12.05
 */
 
+// Infos ueber RC6: http://www.xs4all.nl/~sbp/knowledge/ir/rc6.htm
+// http://www.xs4all.nl/~sbp/knowledge/ir/ir.htm
+
 // ========================================================================
 // RC5 Infrarot-Empf�nger
 // ========================================================================

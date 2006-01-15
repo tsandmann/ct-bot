@@ -158,8 +158,10 @@ void bot_sens_isr(void){
 	sensLineL = adc_read(SENS_M_L);
 	sensLineR = adc_read(SENS_M_R);
 
-//	sensDistL= adc_read(SENS_ABST_L);
-//	sensDistR= adc_read(SENS_ABST_R);
+	//Aktualisiere Distanz-Sensoren
+	// TODO Umrechnen in mm
+	sensDistL= adc_read(SENS_ABST_L);
+	sensDistR= adc_read(SENS_ABST_R);
 		
 	sensDoor = (SENS_DOOR_PINR >> SENS_DOOR) & 0x01;
 	
