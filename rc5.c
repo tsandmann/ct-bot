@@ -77,8 +77,11 @@ void rc5_control(void){
 		RC5_Code= rc5 & RC5_MASK;		// Alle uninteressanten Bits ausblenden
 		switch(RC5_Code){
 			case RC5_CODE_PWR:	
+					// clear target Speed
 					target_speed_l=BOT_SPEED_STOP;
-					target_speed_r=BOT_SPEED_STOP;	
+					target_speed_r=BOT_SPEED_STOP;
+					// Clear goto system
+					bot_goto(0,0);
 				break;		
 
 			case RC5_CODE_UP:	

@@ -57,60 +57,60 @@ void bot_goto(int left, int right){
 }
 
 /*!
- * Kümmert sich intern um dsie ausführung der goto-Kommandos
+ * Kümmert sich intern um die ausführung der goto-Kommandos
+ * veraendert target_speed_l und target_speed_r
  * @see bot_goto()
  */
 void bot_goto_system(void){
-/*
-  	int diff_l = encoderL - mot_l_goto;	// Restdistanz links
-	int diff_r = encoderR - mot_r_goto;	// Restdistanz rechts	
+
+  	int diff_l = sensEncL - mot_l_goto;	// Restdistanz links
+	int diff_r = sensEncR - mot_r_goto;	// Restdistanz rechts	
 	
 	// Motor L hat noch keine MOT_GOTO_MAX Nulldurchg�nge gehabt
 	if (mot_goto_l >0){
 		if (abs(diff_l) <= 2){			// 2 Encoderst�nde genauigkeit reicht
-			speed_l = BOT_SPEED_STOP;	//Stop
+			target_speed_l = BOT_SPEED_STOP;	//Stop
 			mot_goto_l--;			// wie Nulldurchgang behandeln
 		}else if (abs(diff_l) < 4)
-			speed_l= BOT_SPEED_SLOW;
+			target_speed_l= BOT_SPEED_SLOW;
 		else if (abs(diff_l) < 10)
-			speed_l= BOT_SPEED_NORMAL;
+			target_speed_l= BOT_SPEED_NORMAL;
 		else if (abs(diff_l) < 40)
-			speed_l= BOT_SPEED_FAST;
-		else speed_l= BOT_SPEED_MAX;
+			target_speed_l= BOT_SPEED_FAST;
+		else target_speed_l= BOT_SPEED_MAX;
 
 		// Richtung	
 		if (diff_l>0) {		// Wenn �bersteurt
-			speed_l= -speed_l;	//Richtung umkehren
+			target_speed_l= -target_speed_l;	//Richtung umkehren
 		}
 		
 		// Wenn neue Richtung ungleich alter Richtung
-		if (((speed_l<0)&& (mot_l_dir==1))|| ( (speed_l>0) && (mot_l_dir==0) ) ) 
+		if (((target_speed_l<0)&& (speed_l>0))|| ( (target_speed_l>0) && (speed_l<0) ) ) 
 			mot_goto_l--;		// Nulldurchgang merken
 	}
 
 	// Motor R hat noch keine MOT_GOTO_MAX Nulldurchg�nge gehabt
 	if (mot_goto_r >0){
 		if (abs(diff_r) <= 2){			// 2 Encoderst�nde genauigkeit reicht
-			speed_r = BOT_SPEED_STOP;	//Stop
+			target_speed_r = BOT_SPEED_STOP;	//Stop
 			mot_goto_r--;			// wie Nulldurchgang behandeln
 		}else if (abs(diff_r) < 4)
-			speed_r= BOT_SPEED_SLOW;
+			target_speed_r= BOT_SPEED_SLOW;
 		else if (abs(diff_r) < 10)
-			speed_r= BOT_SPEED_NORMAL;
+			target_speed_r= BOT_SPEED_NORMAL;
 		else if (abs(diff_r) < 40)
-			speed_r= BOT_SPEED_FAST;
-		else speed_r= BOT_SPEED_MAX;
+			target_speed_r= BOT_SPEED_FAST;
+		else target_speed_r= BOT_SPEED_MAX;
 
 		// Richtung	
 		if (diff_r>0) {		// Wenn �bersteurt
-			speed_r= -speed_r;	//Richtung umkehren
+			target_speed_r= -target_speed_r;	//Richtung umkehren
 		}
 
 		// Wenn neue Richtung ungleich alter Richtung
-		if (((speed_r<0)&& (mot_r_dir==1))|| ( (speed_r>0) && (mot_r_dir==0) ) ) 
+		if (((target_speed_r<0)&& (speed_r>0))|| ( (target_speed_r>0) && (speed_r<0) ) ) 
 			mot_goto_r--;		// Nulldurchgang merken
 	}
-	*/
 }
 
 /*!
@@ -174,7 +174,7 @@ void bot_behave(void){
 
 //	bot_avoid_border();		// changes goto-system and speed_l_col, speed_r_col
 	
-//	bot_goto_system();		//changes speed_r, speed_l
+	bot_goto_system();		//changes speed_r, speed_l
 	
 	motor_set(target_speed_l+speed_l_col,target_speed_r+speed_r_col);	
 

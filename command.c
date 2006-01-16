@@ -123,15 +123,8 @@ int command_evaluate(void){
 				sensDistR=received_command.data_r;
 				break;
 			case CMD_SENS_ENC:
-				if (speed_l > 0)	// Drehrichtung beachten
-					sensEncL+=received_command.data_l;	//vorwaerts
-				else 
-					sensEncL-=received_command.data_l;	//rueckwaerts
-	
-				if (speed_r> 0)	// Drehrichtung beachten
-					sensEncR+=received_command.data_r;	//vorwaerts
-				else 
-					sensEncR-=received_command.data_r;	//rueckwaerts
+				sensEncL+=received_command.data_l;
+				sensEncR+=received_command.data_r;
 				break;
 			case CMD_SENS_BORDER:
 				sensBorderL=received_command.data_l;
