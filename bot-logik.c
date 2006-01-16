@@ -1,5 +1,7 @@
 /*! @file 	bot-logik.c
  * @brief 	High-Level Routinen für die Steuerung des c't-Bots
+ * Diese Datei sollte der Einstiegspunkt für eigene Experimente sein, 
+ * um den Roboter zu steuern.
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	01.12.05
 */
@@ -15,9 +17,22 @@
 #define	BORDER_DANGEROUS	500		///< Wert, ab dem wir sicher sind, dass es eine Kante ist
 
 
-#define	COL_CLOSEST			50		///< Abstand in mm den wir als zu nah betrachten
+#define	COL_CLOSEST			100		///< Abstand in mm den wir als zu nah betrachten
 #define	COL_NEAR			200		///< Nahbereich
 #define	COL_FAR				400		///< Fernbereich
+
+#define ZONE_CLOSEST	0			///< Zone für extremen Nahbereich
+#define ZONE_NEAR		1			///< Zone für Nahbereich
+#define ZONE_FAR		2			///< Zone für Fernbereich
+#define ZONE_CLEAR		3			///< Zone für Freien Bereich
+
+#define BRAKE_CLOSEST 	2			///< Bremsfaktor für extrmen Nahbereich ( <1 ==> bremsen >1 ==> rückwärts)
+#define BRAKE_NEAR		0.6			///< Bremsfaktor für Nahbereich ( <1 ==> bremsen >1 ==> rückwärts)
+#define BRAKE_FAR		0.2			///< Bremsfaktor für Fernbereich ( <1 ==> bremsen >1 ==> rückwärts)
+
+char col_zone_l=ZONE_CLEAR;			///< Kollisionszone in der sich der linke Sensor befindet
+char col_zone_r=ZONE_CLEAR;			///< Kollisionszone in der sich der rechte Sensor befindet
+
 
 #define MOT_GOTO_MAX  3 		///< Richtungsänderungen, bis goto erreicht sein muss
 
@@ -57,7 +72,7 @@ void bot_goto(int left, int right){
 }
 
 /*!
- * Kümmert sich intern um die ausführung der goto-Kommandos
+ * Kümmert sich intern um die Ausführung der goto-Kommandos
  * veraendert target_speed_l und target_speed_r
  * @see bot_goto()
  */
@@ -114,26 +129,105 @@ void bot_goto_system(void){
 }
 
 /*!
- * Passt auf, dass keine Kollision mit Hindernissen an der Front geschieht.
+ * TODO: Diese Funktion ist nur ein Dummy Beispiel, wie soetwas aussehen
+ * könnte. Hier ist ein guter Einstiegspunkt für eigene Experimente und Algorithmen!
+ * Passt auf, dass keine Kollision mit Hindernissen an der Front 
+ * geschieht.
+ * verändert speed_l_col und speed_r_col
  */ 
 void bot_avoid_col(void){	
 	if (sensDistR < COL_CLOSEST)	// sehr nah
+		col_zone_r=ZONE_CLOSEST;	// dann auf jedenfall CLOSEST Zone
+	else 
+	// sind wir näher als Near und nicht in der inneren Zone gewesen
+	if ((sensDistR < COL_NEAR) && (col_zone_r > ZONE_CLOSEST))
+		col_zone_r=ZONE_NEAR;	// dann auf  in die NEAR Zone
+	else
+	// sind wir näher als FAR und nicht in der NEAR Zone gewesen
+	if ((sensDistR < COL_FAR) && (col_zone_r > ZONE_NEAR))
+		col_zone_r=ZONE_FAR;	// dann auf  in die FAR Zone
+	else
+	// wir waren in einer engeren Zone und verlassen sie in Richtung Near
+	if (sensDistR < (COL_NEAR * 0.50))
+		col_zone_r=ZONE_NEAR;	// dann auf  in die NEAR Zone
+	else
+	if (sensDistR < (COL_FAR * 0.50))
+		col_zone_r=ZONE_FAR;	// dann auf  in die NEAR Zone
+	else
+		col_zone_r=ZONE_CLEAR;	// dann auf  in die NEAR Zone
+	
+	if (sensDistL < COL_CLOSEST)	// sehr nah
+		col_zone_l=ZONE_CLOSEST;	// dann auf jedenfall CLOSEST Zone
+	else 
+	// sind wir näher als Near und nicht in der inneren Zone gewesen
+	if ((sensDistL < COL_NEAR) && (col_zone_l > ZONE_CLOSEST))
+		col_zone_l=ZONE_NEAR;	// dann auf  in die NEAR Zone
+	else
+	// sind wir näher als FAR und nicht in der NEAR Zone gewesen
+	if ((sensDistL < COL_FAR) && (col_zone_l > ZONE_NEAR))
+		col_zone_l=ZONE_FAR;	// dann auf  in die FAR Zone
+	else
+	// wir waren in einer engeren Zone und verlassen sie in Richtung Near
+	if (sensDistL < (COL_NEAR * 0.50))
+		col_zone_l=ZONE_NEAR;	// dann auf  in die NEAR Zone
+	else
+	if (sensDistL < (COL_FAR * 0.50))
+		col_zone_l=ZONE_FAR;	// dann auf  in die NEAR Zone
+	else
+		col_zone_l=ZONE_CLEAR;	// dann auf  in die NEAR Zone
+	
+	
+	switch (col_zone_l){
+		case ZONE_CLOSEST:
+			speed_r_col=-target_speed_r * BRAKE_CLOSEST;
+			break;
+		case ZONE_NEAR:
+			speed_r_col=-target_speed_r  * BRAKE_NEAR;
+			break;
+		case ZONE_FAR:
+			speed_r_col=-target_speed_r  * BRAKE_FAR;
+			break;
+		case ZONE_CLEAR:
+			speed_r_col=0;
+			break;
+		default: col_zone_l=ZONE_CLEAR;
+			break;
+	}
+		
+	switch (col_zone_r){
+		case ZONE_CLOSEST:
+			speed_l_col=-target_speed_l * BRAKE_CLOSEST;
+			break;
+		case ZONE_NEAR:
+			speed_l_col=-target_speed_l  * BRAKE_NEAR;
+			break;
+		case ZONE_FAR:
+			speed_l_col=-target_speed_l  * BRAKE_FAR;
+			break;
+		case ZONE_CLEAR:
+			speed_l_col=0;
+			break;
+		default: col_zone_r=ZONE_CLEAR;
+			break;
+	}	
+	
+/*	if (sensDistR < COL_CLOSEST)	// sehr nah
 		speed_l_col=-target_speed_l-BOT_SPEED_NORMAL;	// rückwärts fahren
 	else if (sensDistR < COL_NEAR)	//  nah
-		speed_l_col=-target_speed_l * 0.7;		// langsamer werden
+		speed_l_col=-target_speed_l * 0.9;		// langsamer werden
 	else if (sensDistR < COL_FAR)	//  fern
-		speed_l_col=-target_speed_r * 0.5;		// langsamer werden
+		speed_l_col=-target_speed_r * 0.65;		// langsamer werden
     else speed_l_col=0;			// nichts tun
-	
+
 	if (sensDistL < COL_CLOSEST)	// sehr nah
 		speed_r_col=-target_speed_r-BOT_SPEED_NORMAL;	// rückwärts fahren
 	else if (sensDistL < COL_NEAR)	//  nah
-		speed_r_col=-target_speed_r  * 0.7;
+		speed_r_col=-target_speed_r  * 0.9;
 	else if (sensDistL < COL_FAR)	//  fern
-		speed_r_col=-target_speed_r  * 0.5;
+		speed_r_col=-target_speed_r  * 0.65;
 	     else speed_r_col=0;
-	     
-	if ((sensDistR < COL_CLOSEST)&&(sensDistL < COL_CLOSEST)){
+*/	     
+	if ((col_zone_r == ZONE_CLOSEST)&&(col_zone_l == ZONE_CLOSEST)){
 		speed_l_col=-target_speed_l + BOT_SPEED_MAX;
 		speed_r_col=-target_speed_r - BOT_SPEED_MAX;
 	}
@@ -155,6 +249,7 @@ void bot_avoid_border(){
 	
 	if ((gotoL>0)||(gotoR>0)){
 		bot_goto(gotoL,gotoR);
+		// Kollisionsschutz überschreiben
 		speed_l_col=0;
 		speed_r_col=0;
 	}
@@ -163,7 +258,8 @@ void bot_avoid_border(){
 /*! 
  * Zentrale Verhaltens Routine 
  * Wird regelmässig aufgerufen. 
- * Dies ist der richtige Platz für eigene Routinen, um den Bot zu steuern
+ * Dies ist der richtige Platz für eigene Routinen, 
+ * um den Bot zu steuern
  */
 void bot_behave(void){	
 	#ifdef RC5_AVAILABLE
@@ -177,5 +273,4 @@ void bot_behave(void){
 	bot_goto_system();		//changes speed_r, speed_l
 	
 	motor_set(target_speed_l+speed_l_col,target_speed_r+speed_r_col);	
-
 }
