@@ -4,6 +4,10 @@
  * @date 	26.12.05
 */
 
+#ifndef UART_H_
+#define UART_H_
+
+
 extern char uart_timeout;	///< 0, wenn uart_read/uart_send erfolgreich 1, wenn timeout erreicht
 
 /*!
@@ -28,3 +32,4 @@ void uart_init(void);
  * Liest Zeichen von der UART
  */
 char uart_read(char* data, int length);
+#endif

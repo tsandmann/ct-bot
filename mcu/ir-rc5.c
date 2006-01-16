@@ -15,7 +15,8 @@
 #ifdef IR_AVAILABLE
 
 #include <avr/io.h>
-#include "ir.h"
+#include "ir-rc5.h"
+#include "timer.h"
 
 
 // -----------------------------------------------------------------------------
@@ -137,6 +138,7 @@ uint16 ir_read(void) {
 void ir_init(void) {
 	IR_DDR  &= ~IR_PIN; 	// Pin auf Input
 	IR_PORT |= IR_PIN;		// Pullup an
+	timer_2_init();	// Für IR-Krams
 }
 #endif
 #endif

@@ -9,15 +9,11 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/signal.h>
-#include "ct-Bot.h"
-#include "adc.h"
-#include "key.h"
 
-#include "bot-mot.h"
-#include "bot-sens.h"
-#include "bot-logik.h"
+#include "ct-Bot.h"
+
 #include "timer.h"
-#include "ir.h"
+#include "ir-rc5.h"
 
 
 // ---- Timer 2 ------

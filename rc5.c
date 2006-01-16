@@ -6,8 +6,8 @@
  * @date 	20.12.05
 */
 #include "ct-Bot.h"
-#include "ir.h"
-#include "bot-mot.h"
+#include "ir-rc5.h"
+#include "motor.h"
 #include "bot-logik.h"
 
 #ifdef RC5_AVAILABLE
@@ -75,36 +75,35 @@ void rc5_control(void){
 	uint16 rc5=ir_read();
 	if (rc5 !=0) {
 		RC5_Code= rc5 & RC5_MASK;		// Alle uninteressanten Bits ausblenden
-		
 		switch(RC5_Code){
 			case RC5_CODE_PWR:	
-					speed_l=BOT_SPEED_STOP;
-					speed_r=BOT_SPEED_STOP;	
+					target_speed_l=BOT_SPEED_STOP;
+					target_speed_r=BOT_SPEED_STOP;	
 				break;		
 
 			case RC5_CODE_UP:	
-					speed_l+=1;
-					speed_r+=1;
+					target_speed_l+=10;
+					target_speed_r+=10;
 				break;
 			case RC5_CODE_DOWN:	
-					speed_l-=1;
-					speed_r-=1;
+					target_speed_l-=10;
+					target_speed_r-=10;
 				break;
 			case RC5_CODE_LEFT:	
-					speed_l-=1;
+					target_speed_l-=10;
 				break;
 			case RC5_CODE_RIGHT:	
-					speed_r-=1;
+					target_speed_r-=10;
 				break;
 			
 				
 			case RC5_CODE_1:	
-					speed_l=BOT_SPEED_SLOW;
-					speed_r=BOT_SPEED_SLOW;	
+					target_speed_l=BOT_SPEED_SLOW;
+					target_speed_r=BOT_SPEED_SLOW;	
 				break;					
 			case RC5_CODE_3:	
-					speed_l=BOT_SPEED_MAX;
-					speed_r=BOT_SPEED_MAX;	
+					target_speed_l=BOT_SPEED_MAX;
+					target_speed_r=BOT_SPEED_MAX;	
 				break;
 			
 			case RC5_CODE_5: bot_goto(0,0);	break;
@@ -117,69 +116,68 @@ void rc5_control(void){
 
 			#ifdef JOGDIAL
 				case RC5_CODE_JOG_MID:
-						speed_l=BOT_SPEED_MAX;
-						speed_r=BOT_SPEED_MAX;	
+						target_speed_l=BOT_SPEED_MAX;
+						target_speed_r=BOT_SPEED_MAX;	
 					break;
 				case RC5_CODE_JOG_L1:
-						speed_l=BOT_SPEED_FAST;
-						speed_r=BOT_SPEED_MAX;	
+						target_speed_l=BOT_SPEED_FAST;
+						target_speed_r=BOT_SPEED_MAX;	
 				case RC5_CODE_JOG_L2:
-						speed_l=BOT_SPEED_NORMAL;
-						speed_r=BOT_SPEED_MAX;	
+						target_speed_l=BOT_SPEED_NORMAL;
+						target_speed_r=BOT_SPEED_MAX;	
 					break;
 				case RC5_CODE_JOG_L3:
-						speed_l=BOT_SPEED_SLOW;
-						speed_r=BOT_SPEED_MAX;	
+						target_speed_l=BOT_SPEED_SLOW;
+						target_speed_r=BOT_SPEED_MAX;	
 					break;
 				case RC5_CODE_JOG_L4:
-						speed_l=BOT_SPEED_STOP;
-						speed_r=BOT_SPEED_MAX;	
+						target_speed_l=BOT_SPEED_STOP;
+						target_speed_r=BOT_SPEED_MAX;	
 					break;
 					
 				case RC5_CODE_JOG_L5:
-						speed_l=-BOT_SPEED_NORMAL;
-						speed_r=BOT_SPEED_MAX;	
+						target_speed_l=-BOT_SPEED_NORMAL;
+						target_speed_r=BOT_SPEED_MAX;	
 					break;
 				case RC5_CODE_JOG_L6:
-						speed_l=-BOT_SPEED_FAST;
-						speed_r=BOT_SPEED_MAX;	
+						target_speed_l=-BOT_SPEED_FAST;
+						target_speed_r=BOT_SPEED_MAX;	
 					break;
 				case RC5_CODE_JOG_L7:
-						speed_l=-BOT_SPEED_MAX;
-						speed_r=BOT_SPEED_MAX;	
+						target_speed_l=-BOT_SPEED_MAX;
+						target_speed_r=BOT_SPEED_MAX;	
 					break;
 					
 				case RC5_CODE_JOG_R1:
-						speed_r=BOT_SPEED_FAST;
-						speed_l=BOT_SPEED_MAX;	
+						target_speed_r=BOT_SPEED_FAST;
+						target_speed_l=BOT_SPEED_MAX;	
 				case RC5_CODE_JOG_R2:
-						speed_r=BOT_SPEED_NORMAL;
-						speed_l=BOT_SPEED_MAX;	
+						target_speed_r=BOT_SPEED_NORMAL;
+						target_speed_l=BOT_SPEED_MAX;	
 					break;
 				case RC5_CODE_JOG_R3:
-						speed_r=BOT_SPEED_SLOW;
-						speed_l=BOT_SPEED_MAX;	
+						target_speed_r=BOT_SPEED_SLOW;
+						target_speed_l=BOT_SPEED_MAX;	
 					break;
 				case RC5_CODE_JOG_R4:
-						speed_r=BOT_SPEED_STOP;
-						speed_l=BOT_SPEED_MAX;	
+						target_speed_r=BOT_SPEED_STOP;
+						target_speed_l=BOT_SPEED_MAX;	
 					break;
 					
 				case RC5_CODE_JOG_R5:
-						speed_r=-BOT_SPEED_NORMAL;
-						speed_l=BOT_SPEED_MAX;	
+						target_speed_r=-BOT_SPEED_NORMAL;
+						target_speed_l=BOT_SPEED_MAX;	
 					break;
 				case RC5_CODE_JOG_R6:
-						speed_r=-BOT_SPEED_FAST;
-						speed_l=BOT_SPEED_MAX;	
+						target_speed_r=-BOT_SPEED_FAST;
+						target_speed_l=BOT_SPEED_MAX;	
 					break;
 				case RC5_CODE_JOG_R7:
-						speed_r=-BOT_SPEED_MAX;
-						speed_l=BOT_SPEED_MAX;	
+						target_speed_r=-BOT_SPEED_MAX;
+						target_speed_l=BOT_SPEED_MAX;	
 					break;			
 			#endif
 		}
-
 	}
 }
 #endif

@@ -1,8 +1,11 @@
-/*! @file 	bot-sens.h  
- * @brief 	Low-Level Routinen für die Sensor Steuerung des c't-Bots
+/*! @file 	sensor.h
+ * @brief 	Architekturunabhängiger Teil der Sensorsteuerung
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	01.12.05
+ * @date 	15.01.05
 */
+
+#ifndef SENSOR_H_
+#define SENSOR_H_
 
 #include "global.h"
 
@@ -35,12 +38,6 @@ extern volatile char sensError;		///< Überwachung Motor oder Batteriefehler
 
 extern volatile char setSensMouseDX;	///< Maussensor Delta X
 extern volatile char setSensMouseDY;	///< Maussensor Delta X
-/*!
- * Initialisiere alle Sensoren
- */
-void bot_sens_init(void);
 
-/*!
- * Alle Sensoren aktualisieren
- */
-void bot_sens_isr(void);
+
+#endif /*SENSOR_H_*/

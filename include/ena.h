@@ -4,6 +4,9 @@
  * @date 	26.12.05
 */
 
+#ifndef ENA_H_
+#define ENA_H_
+
 #define ENA_ABSTAND		(1<<0)		///< Enable-Leitung Abstandssensoren
 #define ENA_RADLED		(1<<1)		///< Enable-Leitung Radencoder
 #define ENA_SCHRANKE	(1<<2)		///< Enable-Leitung Fachüberwachung
@@ -36,3 +39,4 @@ void ENA_off(char enable);
  * @param LED Wert der gezeigt werden soll
  */
 void ENA_set(char enable);
+#endif

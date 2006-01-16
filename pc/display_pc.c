@@ -13,7 +13,13 @@
 
 
 #ifdef DISPLAY_AVAILABLE
+
+#define DISPLAY_LENGTH	20
+
 volatile char display_update=0;	///< Muss das Display aktualisiert werden?
+
+char display_buf[DISPLAY_BUFFER];		///< Pufferstring für Displayausgaben
+
 
 #ifdef WIN32
 	#define ESC		0x1B
@@ -53,6 +59,16 @@ int display_string(char data[20]){
 	printf(data);
 	return -1;
 }
+
+/*! 
+ * Zeigt den String an, der in display_buffer steht. 
+ * @return 0 falls 0x00-Zeichen erreicht; -1, falls DISPLAY_LENGTH oder DISPLAY_BUFFER Zeichen ausgegeben wurden
+ */
+int display_buffer(){
+	printf(display_buf);
+	return 0;
+}
+
 
 #endif
 #endif

@@ -8,7 +8,7 @@
 
 #ifdef PC
 
-#include "ir.h"
+#include "ir-rc5.h"
 #include "command.h"
 #include "bot-2-sim.h"
 

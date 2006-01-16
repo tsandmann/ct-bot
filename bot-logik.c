@@ -4,16 +4,20 @@
  * @date 	01.12.05
 */
 
-#include "bot-mot.h"
-#include "bot-sens.h"
+#include "ct-Bot.h"
+#include "motor.h"
+#include "sensor.h"
+#include "bot-logik.h"
+
+#include "rc5.h"
 #include <stdlib.h>
 
 #define	BORDER_DANGEROUS	500		///< Wert, ab dem wir sicher sind, dass es eine Kante ist
 
 
 #define	COL_CLOSEST			50		///< Abstand in mm den wir als zu nah betrachten
-#define	COL_NEAR			100		///< Nahbereich
-#define	COL_FAR				200		///< Fernbereich
+#define	COL_NEAR			200		///< Nahbereich
+#define	COL_FAR				400		///< Fernbereich
 
 #define MOT_GOTO_MAX  3 		///< Richtungsänderungen, bis goto erreicht sein muss
 
@@ -25,6 +29,10 @@ volatile int16 mot_goto_r=0;	///< Muss der rechte motor noch drehen?
 
 volatile int16 speed_l_col=0;	///< Kollisionsschutz links
 volatile int16 speed_r_col=0;	///< Kollisionsschutz links
+
+volatile int16 target_speed_l=0;	///< Sollgeschwindigkeit linker Motor
+volatile int16 target_speed_r=0;	///< Sollgeschwindigkeit rechter Motor
+
 
 /*!
  * Drehe die Räder um die gegebene Zahl an Encoder-Schritten weiter
@@ -108,22 +116,29 @@ void bot_goto_system(void){
 /*!
  * Passt auf, dass keine Kollision mit Hindernissen an der Front geschieht.
  */ 
-void bot_avoid_col(void){
-	if (sensDistL < COL_CLOSEST)	// sehr nah
-		speed_l_col=-speed_l-BOT_SPEED_NORMAL;	// rückwärts fahren
-	else if (sensDistL < COL_NEAR)	//  nah
-		speed_l_col=-speed_l/2;
-	else if (sensDistL < COL_FAR)	//  fern
-		speed_l_col=-speed_r/3;
-    else speed_l_col=0;
-	
+void bot_avoid_col(void){	
 	if (sensDistR < COL_CLOSEST)	// sehr nah
-		speed_r_col=-speed_r-BOT_SPEED_NORMAL;	// rückwärts fahren
+		speed_l_col=-target_speed_l-BOT_SPEED_NORMAL;	// rückwärts fahren
 	else if (sensDistR < COL_NEAR)	//  nah
-		speed_r_col=-speed_r/2;
+		speed_l_col=-target_speed_l * 0.7;		// langsamer werden
 	else if (sensDistR < COL_FAR)	//  fern
-		speed_r_col=-speed_r/3;
+		speed_l_col=-target_speed_r * 0.5;		// langsamer werden
+    else speed_l_col=0;			// nichts tun
+	
+	if (sensDistL < COL_CLOSEST)	// sehr nah
+		speed_r_col=-target_speed_r-BOT_SPEED_NORMAL;	// rückwärts fahren
+	else if (sensDistL < COL_NEAR)	//  nah
+		speed_r_col=-target_speed_r  * 0.7;
+	else if (sensDistL < COL_FAR)	//  fern
+		speed_r_col=-target_speed_r  * 0.5;
 	     else speed_r_col=0;
+	     
+	if ((sensDistR < COL_CLOSEST)&&(sensDistL < COL_CLOSEST)){
+		speed_l_col=-target_speed_l + BOT_SPEED_MAX;
+		speed_r_col=-target_speed_r - BOT_SPEED_MAX;
+	}
+		
+	
 }
 
 
@@ -159,7 +174,8 @@ void bot_behave(void){
 
 //	bot_avoid_border();		// changes goto-system and speed_l_col, speed_r_col
 	
-	bot_goto_system();		//changes speed_r, speed_l
+//	bot_goto_system();		//changes speed_r, speed_l
 	
-	motor_set(speed_l+speed_l_col,speed_r+speed_r_col);	
+	motor_set(target_speed_l+speed_l_col,target_speed_r+speed_r_col);	
+
 }

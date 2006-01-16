@@ -3,10 +3,8 @@
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
 */
-
-#define ADC_BUFFER	64		///< Hrösse des Adc-Puffers
-
-extern volatile int adc_buffer[ADC_BUFFER];	///< Ringpuffer
+#ifndef ADC_H_
+#define ADC_H_
 
 /*!
  * Liest einen analogen Kanal aus
@@ -33,3 +31,4 @@ void adc_isr(void);
  * Bit0 = Kanal 0 usw.
  */
 void adc_init(char channel);
+#endif

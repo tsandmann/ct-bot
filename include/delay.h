@@ -3,6 +3,9 @@
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
 */
+#ifndef delay_H_
+#define delay_H_
+
 
 /*!
  * Warte 100 ms
@@ -16,3 +19,4 @@ void delay_100ms(void);
  * @param ms Anzahl der Millisekunden
  */
 void delay(int ms);
+#endif

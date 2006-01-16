@@ -4,8 +4,8 @@
  * @date 	20.12.05
 */
 
-#ifndef CDEF_H
-	#define CDEF_H		///< Bereits definiert
+#ifndef global_H
+	#define global_H		///< Bereits definiert
 	
 	#ifndef MCU
 		#ifndef PC

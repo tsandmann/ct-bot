@@ -9,7 +9,6 @@
 
 #include "ct-Bot.h"
 #include "timer.h"
-#include "rtc.h"
 #include "uart.h"
 #include "delay.h"
 

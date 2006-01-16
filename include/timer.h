@@ -4,6 +4,10 @@
  * @date 	26.12.05
 */
 
+#ifndef TIMER_H_
+#define TIMER_H_
+
+
 // Die Werte fuer TIMER_X_CLOCK sind Angaben in Hz
 
 /*!
@@ -15,3 +19,4 @@
  * initilaisiert Timer 2 und startet ihn 
  */
 void timer_2_init(void);
+#endif

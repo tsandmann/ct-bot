@@ -3,6 +3,10 @@
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
 */
+
+#ifndef display_H_
+#define display_H_
+
 #define DISPLAY_BUFFER	30			///< Grösse des Display Strings
 
 extern volatile char display_update;	///< Muss das Display aktualisiert werden?
@@ -36,3 +40,4 @@ void display_cursor (int row, int column) ;
  */
 int display_buffer();
 //void display_test();
+#endif

@@ -3,6 +3,9 @@
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
 */
+#ifndef ir_rc5_H_
+#define ir_rc5_H_
+
 
 #include "ct-Bot.h"
 #include "global.h"
@@ -26,3 +29,4 @@ uint16 	ir_read		(void);
  * wird ca alle 177.8us aufgerufen
  */
 void 	ir_isr		(void);
+#endif

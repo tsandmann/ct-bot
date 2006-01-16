@@ -12,9 +12,9 @@
 #include "tcp.h"
 #include "command.h"
 #include "display.h"
-#include "bot-sens.h"
+#include "sensor.h"
 #include "bot-logik.h"
-#include "bot-mot.h"
+#include "motor.h"
 #include "command.h"
 
 #include <stdio.h>      // for printf() and fprintf()
@@ -76,7 +76,7 @@ int wait_for_command(int timeout_s);
 /*!
  *  Dieser Thread sammelt Sensordaten 
  */
-void *bot_2_sim_isr(void * arg){ 
+/*void *bot_2_sim_isr(void * arg){ 
     display_cursor(10,1);
     printf("bot_2_sim_isr() comming up\n");
     for (;;){
@@ -87,7 +87,7 @@ void *bot_2_sim_isr(void * arg){
     }
     return 0;
 }
-
+*/
 /*! 
  * Dieser Thread nimmt die Daten vom PC entgegen
  */

@@ -4,6 +4,10 @@
  * @date 	20.12.05
 */
 
+#ifndef SHIFT_H_
+#define SHIFT_H_
+
+
 #define SHIFT_LATCH	(1<<1)			///< Clock to store Data into Shiftregister
 
 #define SHIFT_REGISTER_DISPLAY	0x04	///< Port-Pin for shiftregister latch (display)
@@ -37,3 +41,4 @@ void shift_data(char data, char latch_data);
  * Setzt die Shift-Register wieder zurück
  */ 
 void shift_clear();
+#endif

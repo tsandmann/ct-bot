@@ -7,19 +7,18 @@
 #include "ct-Bot.h"
 
 #include "led.h"
-#include "key.h"
+
 #include "uart.h"
 #include "adc.h"
 
-#include "event.h"
-#include "rtc.h"
 #include "command.h"
-#include "tools.h"
 #include "display.h"
 
-#include "bot-sens.h"
-#include "bot-mot.h"
-#include "ir.h"
+#include "sensor.h"
+#include "motor.h"
+#include "rc5.h"
+#include "ir-rc5.h"
+#include "bot-logik.h"
 
 #include <stdio.h>
 

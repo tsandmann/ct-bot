@@ -8,10 +8,11 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/signal.h>
-
 #include <stdlib.h>
-#include "bot-mot.h"
-#include "bot-sens.h"
+
+#include "global.h"
+
+#include "motor-low.h"
 
 //Drehrichtung der Motoren
 #define BOT_DIR_L_PIN 0x80	// PC7
@@ -25,14 +26,6 @@
 #define PWM_R 	OCR1A
 #define PWM_L 	OCR1B
 
-
-
-
-// Steuerung der Motor-Pins
-
-volatile int speed_l=0;		///< Geschwindigkeit linker Motor
-volatile int speed_r=0;		///< Geschwindigkeit linker Motor
-
 void pwm_0_init(void);
 void pwm_1_init(void);
 // void pwm_2_init(void);		// Kollidiert mit Timer2 für IR-Fernbedienung
@@ -40,7 +33,7 @@ void pwm_1_init(void);
 /*!
  *  Initialisiert alles für die Motosteuerung 
  */
-void bot_mot_init(){
+void motor_low_init(){
 	BOT_DIR_L_DDR|=BOT_DIR_L_PIN;
 	BOT_DIR_R_DDR|=BOT_DIR_R_PIN;
 	
@@ -56,7 +49,7 @@ void bot_mot_init(){
  * @param left Speed links
  * @param right Speed rechts
 */
-void bot_motor(int left, int right){
+void bot_motor(int16 left, int16 right){
 	PWM_L = 255-abs(left);
 	PWM_R = 255-abs(right);
 
@@ -69,45 +62,6 @@ void bot_motor(int left, int right){
 		BOT_DIR_R_PORT |= BOT_DIR_R_PIN;
 	else 
 		BOT_DIR_R_PORT &= ~BOT_DIR_R_PIN;
-}
-
-
-/*!
- * Direkter Zugriff auf den Motor
- * @param left	Geschwindigkeit für den linken Motor
- * @param right Geschwindigkeit für den linken Motor
- * zwischen -255 und +255
- * 0 bedeutet steht, 255 volle Kraft voraus -255 volle Kraft zur�ck
- * Sinnvoll ist die Verwendung der Konstanten: BOT_SPEED_XXX 
- * Also z.B. motor_set(BOT_SPEED_LOW,-BOT_SPEED_LOW);
- * für eine langsame Drehung
-*/
-void motor_set(int left, int right){
-	if (abs(left) > BOT_SPEED_MAX)	// Nicht schneller fahren als moeglich
-		speed_l = BOT_SPEED_MAX;
-	else if (left == 0)				// Stop wird nicht veraendert
-		speed_l = BOT_SPEED_STOP;
-	else if (abs(left) < BOT_SPEED_SLOW)	// Nicht langsamer als die 
-		speed_l = BOT_SPEED_SLOW;	// Motoren koennen
-	else				// Sonst den Wunsch uebernehmen
-		speed_l = (char) abs(left);
-	
-	if (abs(right) > BOT_SPEED_MAX)// Nicht schneller fahren als moeglich
-		speed_r = BOT_SPEED_MAX;
-	else if (abs(right) == 0)	// Stop wird nicht veraendert
-		speed_r = BOT_SPEED_STOP;
-	else if (abs(right) < BOT_SPEED_SLOW)	// Nicht langsamer als die 
-		speed_r = BOT_SPEED_SLOW;	// Motoren koennen
-	else				// Sonst den Wunsch uebernehmen
-		speed_r = (char) abs(right);
-	
-	if (left < 0 )
-		speed_l=-speed_l;
-	
-	if (right < 0 )	
-		speed_r=-speed_r;
-		
-	bot_motor(speed_l,speed_r);
 }
 
 /*!

@@ -4,6 +4,12 @@
  * @date 	01.12.05
 */
 
+#ifndef bot_logik_H_
+#define bot_logik_H_
+
+extern volatile int16 target_speed_l;	///< Sollgeschwindigkeit linker Motor
+extern volatile int16 target_speed_r;	///< Sollgeschwindigkeit rechter Motor
+
 /*!
  * Drehe die Räder um die gegebene Zahl an Encoder-Schritten weiter
  * @param left Schritte links
@@ -16,3 +22,5 @@ void bot_goto(int left, int right);
  * @see bot_goto()
  */
 void bot_behave(void);
+
+#endif

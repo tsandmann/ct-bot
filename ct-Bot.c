@@ -28,22 +28,20 @@
 #include "led.h"
 #include "ena.h"
 #include "shift.h"
-#include "key.h"
 #include "delay.h"
 #include "uart.h"
 #include "adc.h"
-#include "key.h"
-#include "tools.h"
 #include "timer.h"
+#include "sensor.h"
 
 
-#include "bot-mot.h"
-#include "bot-sens.h"
+#include "motor.h"
+#include "sensor-low.h"
 #include "bot-logik.h"
 #include "mouse.h"
 
 #include "command.h"
-#include "ir.h"
+#include "ir-rc5.h"
 #include "rc5.h"
 
 #ifdef TICKER_AVAILABLE
@@ -77,18 +75,17 @@ void init(void){
 		LED_init();
 	#endif
 
-
 	#ifdef PC
 		bot_2_sim_init();
 	#endif
 
-	bot_mot_init();
-
-	
+	motor_init();
 	bot_sens_init();
 	
 	#ifdef MCU
-		timer_2_init();	// Für IR-Krams
+		#ifdef RC5_AVAILABLE
+			ir_init();
+		#endif
 	#endif
 	
 	
@@ -96,22 +93,7 @@ void init(void){
 /*	#ifdef UART_AVAILABLE	
 		uart_init();
 	#endif
-	
-	#ifdef MCU
-		timer_0_init();
-		timer_1_init();
-		timer_2_init();
-	#endif
-	
-	// dreh_init();
-	#ifdef RC5_AVAILABLE
-		ir_init();
-	#endif
-	
-	#ifdef EVENT_AVAILABLE
-		event_init();
-	#endif
-	
+			
 	#ifdef MAUS_AVAILABLE
 		maus_sens_init();
 	#endif
@@ -168,20 +150,6 @@ void init(void){
     
     
 #endif
-/*	DDRC|=1;
-	for(;;){
-		PORTC =1;
-		PORTC = 0;
-		PORTC =1;
-		PORTC = 0;
-		PORTC =1;
-		PORTC = 0;
-		PORTC =1;
-		PORTC = 0;
-	}
-*/	
-	
-	
 	init();		
 	
 	#ifdef WELCOME_AVAILABLE
@@ -190,36 +158,22 @@ void init(void){
 		LED_set(0x00);
 	#endif
 		
-//	OCR0=127;
-	
+	/// Hauptschleife des Bots
 	for(;;){
 		#ifdef MCU
 			bot_sens_isr();
 		#endif
-		rc5_control();
-		display();	
-		delay(1000);
-		
-//		delay(10000); 
-//		servo_set(SERVO2,SERVO_LEFT);
-//		delay(10000);
-//		servo_set(SERVO2,SERVO_RIGHT);
-//		servo_set(SERVO1,SERVO_RIGHT);		
-	}
-	
-	/// Hauptschleife des Bots
-	for(;;){
-				
-		#ifdef PC
-//			wait_for_time(100000);
-			wait_for_time(100000);
-		#endif
-		
-//		bot_behave();
+						
+		bot_behave();
 		
 		#ifdef DISPLAY_AVAILABLE
 			display();
 		#endif
+		
+		#ifdef PC
+			wait_for_time(100000);
+		#endif
+		
 	}
 	
 	/// Falls wir das je erreichen sollten ;-)

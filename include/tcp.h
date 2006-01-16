@@ -4,6 +4,10 @@
  * @date 	26.12.05
 */
 
+#ifndef TCP_H_
+#define TCP_H_
+
+
 #include "bot-2-sim.h"
 
 
@@ -34,3 +38,4 @@ int tcp_read(char* data, int length);
  * Initialisiere TCP/IP Verbindung 
  */ 
 void tcp_init(void);
+#endif

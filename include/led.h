@@ -4,6 +4,10 @@
  * @date 	26.12.05
 */
 
+#ifndef led_H_
+#define led_H_
+
+
 #define LED_RECHTS	(1<<0)
 #define LED_LINKS	(1<<1)
 #define LED_ROT     (1<<2)		///< LED Rot
@@ -38,3 +42,4 @@ void LED_off(char LED);
  */
 void LED_on(char LED);
 
+#endif
