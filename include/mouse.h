@@ -7,18 +7,21 @@
 #ifndef mouse_H_
 #define mouse_H_
 
-
-extern int maus_x;	///< X-Koordinate
-extern int maus_y;	///< Y-Koordinate
+#define MAUS_Y  0x02		///< Kommando um DY auszulesen
+#define MAUS_X  0x03		///< Kommando um DX auszulesen
 
 /*! 
  * Initialisiere Maussensor
  */ 
 void maus_sens_init(void);
 
-/*! 
- * Aktualisiere die Position des Maussensors
+/*!
+ * Schickt ein Lesekommando an den Sensor
+ * und liest ein Byte zurück
+ * @param adr die Adresse
+ * @return das Datum
  */
-void maus_sens_pos(void);
+int8 maus_sens_read(char adr);
+
 
 #endif

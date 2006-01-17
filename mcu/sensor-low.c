@@ -12,6 +12,7 @@
 
 #include "ena.h"
 #include "sensor.h"
+#include "mouse.h"
 //#include "bot-mot.h"
 
 // ADC-PINS
@@ -65,7 +66,7 @@ volatile char enc_r_cnt=0;	///< Entprell-Counter f�r R-Encoder
 /*!
  * Initialisiere alle Sensoren
  */
-void bot_sens_init(void){
+void bot_sens_init(void){	
 	ENA_init();
 	adc_init(0xFF);		// Alle ADC-Ports aktivieren
 	
@@ -109,19 +110,18 @@ void bot_sens_isr(void){
 		
 	sensDoor = (SENS_DOOR_PINR >> SENS_DOOR) & 0x01;
 	
-	sensEncL = (SENS_ENCL_PINR >> SENS_ENCL) & 0x01;
-	sensEncR = (SENS_ENCR_PINR >> SENS_ENCR) & 0x01;
-
 	sensError = (SENS_ERROR_PINR >> SENS_ERROR) & 0x01;		
 	
 	sensTrans = (SENS_TRANS_PINR >> SENS_TRANS) & 0x01;		
+
+ 	// Aktualisiere die Position des Maussensors 
+	sensMouseDY += maus_sens_read(MAUS_Y);
+	sensMouseDX += maus_sens_read(MAUS_X);	
 	
+	sensEncL = (SENS_ENCL_PINR >> SENS_ENCL) & 0x01;
+	sensEncR = (SENS_ENCR_PINR >> SENS_ENCR) & 0x01;
 
 /*
-	//Aktualisiere Distanz-Sensoren
-	// TODO Umrechnen in mm
-	sensDistL=adc_read(BOT_IR_L);
-	sensDistR=adc_read(BOT_IR_R);
 	
 	// --------------------- links ----------------------------
 	//Rad-Encoder auswerten 

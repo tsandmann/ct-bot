@@ -33,7 +33,7 @@
 //#define FILTER_AVAILABLE	///< Filter for ADC, eliminates 100 Hz noise
 //#define PT100_AVAILABLE	///< Temperatur sensors
 
-//#define MAUS_AVAILABLE		///< Maus Sensor
+#define MAUS_AVAILABLE		///< Maus Sensor
 
 //#define DREH_AVAILABLE	///< Local control by "drehgeber"
 
@@ -61,6 +61,7 @@
 
 #ifdef PC
 	#undef UART_AVAILABLE
+	#undef MAUS_AVAILABLE
 	#define COMMAND_AVAILABLE
 #endif
 

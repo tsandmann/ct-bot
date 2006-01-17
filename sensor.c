@@ -29,8 +29,8 @@ volatile char sensError=0;		///< Überwachung Motor oder Batteriefehler
 
 //volatile int sensRc5;			///< Fernbedienungssensor
 
-volatile char setSensMouseDX;	///< Maussensor Delta X
-volatile char setSensMouseDY;	///< Maussensor Delta X
+volatile char sensMouseDX;	///< Maussensor Delta X
+volatile char sensMouseDY;	///< Maussensor Delta X
 
 
 volatile int sensEncL=0;	///< Encoder linker Motor

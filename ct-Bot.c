@@ -84,11 +84,11 @@ void init(void){
 /*	#ifdef UART_AVAILABLE	
 		uart_init();
 	#endif
-			
+*/			
 	#ifdef MAUS_AVAILABLE
 		maus_sens_init();
 	#endif
-*/
+
 }
 
 #ifdef DISPLAY_AVAILABLE
@@ -111,7 +111,7 @@ void init(void){
 			display_buffer();
 			
 			display_cursor(4,1);
-			sprintf(display_buf,"I=%04X M=%02X %02X",RC5_Code,setSensMouseDX,setSensMouseDY);
+			sprintf(display_buf,"I=%04X M=%02X %02X",RC5_Code,sensMouseDX,sensMouseDY);
 			display_buffer();				
 		}
 	}
