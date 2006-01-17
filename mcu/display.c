@@ -33,7 +33,7 @@ char display_buf[DISPLAY_BUFFER];		///< Pufferstring für Displayausgaben
 
 #define DISPLAY_PORT			PORTC		///< Port an dem das Display hängt
 #define DISPLAY_DDR			DDRC		///< Port an dem das Display hängt
-#define DPC (DISPLAY_PORT && ~DISPLAY_OUT)	///< Port des Displays
+#define DPC (DISPLAY_PORT & ~DISPLAY_OUT)	///< Port des Displays
 //#define DRC (DDRC & ~DISPLAY_PINS)
 
 #define DISPLAY_READY_PINC		PINC		///< Port an dem das Ready-Flag des Display hängt
@@ -111,14 +111,14 @@ char display_buf[DISPLAY_BUFFER];		///< Pufferstring für Displayausgaben
  * @param cmd Kommando
  */
 void display_cmd(char cmd){		//ein Kommando cmd an das Display senden
-//	uint8 i;
+	uint8 i;
 	shift_data_out(cmd,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
 	// Enable muss für mind. 450 ns High bleiben, bevor es fallen darf!
 	// ==> Also mind. 8 Zyklen warten
-/*	for (i=0; i<4; i++){
+	for (i=0; i<10; i++){
 	        asm("nop");
 	}
-*/	DISPLAY_PORT=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
+	DISPLAY_PORT=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
 //	wait_busy();
 }
 
@@ -128,15 +128,15 @@ void display_cmd(char cmd){		//ein Kommando cmd an das Display senden
  * @param data Das Zeichen
  */
 void display_data(char data){ //ein Zeichen aus data in den Displayspeicher schreiben
-//        int i;
+        int i;
 		shift_data_out(data,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY|DISPLAY_RS);
 		
 		// Enable muss für mind. 450 ns High bleiben, bevor es fallen darf!
 		// ==> Also mind. 8 Zyklen warten
-/*        for (i=0; i<4; i++){
+        for (i=0; i<10; i++){
                 asm("nop");
         }
-*/      DISPLAY_PORT=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
+      DISPLAY_PORT=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
 //        wait_busy();
 }
 
