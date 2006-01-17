@@ -39,7 +39,7 @@ void shift_data_out(char data, char latch_data, char latch_store){
 
 	SHIFT_PORT &= ~SHIFT_OUT;		// und wieder clear	
 	for (i=8; i>0; i--){
-		SHIFT_PORT |= (data >> 7)&& 0x01;      // Das oberste Bit von data auf PC0.0 (Datenleitung Schieberegister)
+		SHIFT_PORT |= ((data >> 7)& 0x01);      // Das oberste Bit von data auf PC0.0 (Datenleitung Schieberegister)
 		SHIFT_PORT |= latch_data ;	    		// und ins jeweilige Storageregister latchen
 		data= data << 1;		      	// data links schieben
 		SHIFT_PORT &= ~SHIFT_OUT;		// und wieder clear
