@@ -44,15 +44,6 @@
 #include "ir-rc5.h"
 #include "rc5.h"
 
-#ifdef TICKER_AVAILABLE
-	#define TICKER_LENGTH 27		///< Länge des Tickers in Zeichen
-
-	char ticks;           			//
-	char TICKER_TEXT[TICKER_LENGTH] =" c't-Projekt: c't-Roboter"; ///< Der eigentliche Ticker-Text
-	char * ticker = TICKER_TEXT;	///< ein Zeiger auf den Ticker
-	char ticker_dir=0;				///< die aktuelle Richtung des Tickers
-#endif
-
 /*!
  * Der Mikrocontroller und der PC-Simulator brauchen ein paar Einstellungen, 
  * bevor wir loslegen könen.
