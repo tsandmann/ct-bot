@@ -73,21 +73,6 @@ int wait_for_command(int timeout_s);
 	}
 #endif
 
-/*!
- *  Dieser Thread sammelt Sensordaten 
- */
-/*void *bot_2_sim_isr(void * arg){ 
-    display_cursor(10,1);
-    printf("bot_2_sim_isr() comming up\n");
-    for (;;){
-		wait_for_time(50000);
-//		bot_sens_isr();		// Sensoren aktualisieren
-//		motor_isr();		// Motoren aktualisieren
-//	    bot_sens_isr();
-    }
-    return 0;
-}
-*/
 /*! 
  * Dieser Thread nimmt die Daten vom PC entgegen
  */
@@ -120,54 +105,11 @@ void bot_2_sim_init(void){
 			printf("Thread Creation failed");
 			exit(1);
 	}
-	/*
-	if (pthread_create(&simThread,  // thread struct
-		NULL,		      // default thread attributes
-		bot_2_sim_isr,	      // start routine
-		NULL)) {              // arg to routine
-			printf("Thread Creation failed");
-			exit(1);
-	}
-	*/
 }
 
 
 int count=1;	///< Zähler für Packet-Sequenznummer
 int not_answered_error=1;
-
-/*!
- *  Ask simulator for data 
- */
- /*
-int bot_2_sim_ask(uint8 command, uint8 subcommand, int16* data_l,int16* data_r){
-	bot_2_sim_tell(command,subcommand, data_l,data_r);
-	
-	
-	// Analyse all packets incoming, if they contain desired data
-	// Cancel if no packet coming in for 1 Second
-	for (;;){
-//		printf("Waiting for answer ... ");
-		if (wait_for_command(1) != 0){
-			printf("Request not answered: %d\n",not_answered_error++);
-			return -1;
-		}
-//		printf("Done .. waiting for command_mutex");
-		
-		command_lock();
-//		printf("Done\n");
-		if ((received_command.request.direction ==DIR_ANSWER) &&
-		    (received_command.request.command ==command) &&
-		    (received_command.request.subcommand ==subcommand)){
-			*data_l=received_command.data_l;
-			*data_r=received_command.data_r;
-			command_unlock();
-			return 0;
-		    }
-		command_unlock();
-	}
-	return -1;
-}
-*/
 
 
 /*!
@@ -211,11 +153,7 @@ int wait_for_command(int timeout_s){
 	ts.tv_sec += timeout_s;
 
 	result= pthread_cond_timedwait(&command_cond, &command_cond_mutex, &ts);
-
-//	if (result != 0) {
-//		display_cursor(20,1);
-//		printf("timed out waiting for command! -- ");
-//	}	
+	
 	pthread_mutex_unlock(&command_cond_mutex);
 	
 	return result;

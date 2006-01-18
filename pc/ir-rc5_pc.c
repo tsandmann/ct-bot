@@ -17,17 +17,6 @@
 volatile uint16	ir_data	= 0;	///< letztes komplett gelesenes RC5-paket
 
 /*!
- * Interrupt Serviceroutine
- */
- /*
-void ir_isr(void) {
-	int16 tmp;
-	//Aktualisiere Helligkeits-Sensoren
-	bot_2_sim_ask(CMD_SENS_RC5, SUB_CMD_NORM,(int16*)&ir_data,&tmp);
-}
-*/
-
-/*!
  * IR-Daten lesen
  * @return wert von ir_data, löscht anschliessend ir_data
  */
