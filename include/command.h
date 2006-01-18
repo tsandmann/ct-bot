@@ -1,5 +1,24 @@
+/*
+ * c't-Sim - Robotersimulator fuer den c't-Bot
+ * 
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your
+ * option) any later version. 
+ * This program is distributed in the hope that it will be 
+ * useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public 
+ * License along with this program; if not, write to the Free 
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307, USA.
+ * 
+ */
+
 /*! @file 	command.h
- * @brief 	kommando Management
+ * @brief 	Kommando-Management
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
 */
@@ -15,8 +34,8 @@
 typedef struct {
 	unsigned char command:8;	///< command
 	unsigned char subcommand:7;	///< subcommand
-	unsigned char direction:1;	///< 0 ist anfrage, 1 ist antwort
-} __attribute__ ((packed)) request_t; ///< Keine Lücken in der Struktur lassen
+	unsigned char direction:1;	///< 0 ist Anfrage, 1 ist Antwort
+} __attribute__ ((packed)) request_t; ///< Keine Luecken in der Struktur lassen
 
 /*!
  * Kommando
@@ -27,7 +46,7 @@ typedef struct {
 	unsigned char  payload;		///< Bytes, die dem Kommando noch folgen
 	int16 data_l;				///< Daten zum Kommando links
 	int16 data_r;				///< Daten zum Kommando rechts
-	int16 seq;					///< Packet-Sequenznummer
+	int16 seq;					///< Paket-Sequenznummer
 	unsigned char CRC;			///< Markiert das Ende des Commands
 } __attribute__ ((packed)) command_t;
 
@@ -40,8 +59,8 @@ typedef struct {
 #define CMD_SENS_BORDER 'B'		///< Abgrundsensoren
 #define CMD_SENS_LINE 	'L'		///< Liniensensoren
 #define CMD_SENS_LDR 	'H'		///< Helligkeitssensoren
-#define CMD_SENS_TRANS	'T'		///< Überwachung Transportfach
-#define CMD_SENS_DOOR	'D'		///< Überwachung Klappe
+#define CMD_SENS_TRANS	'T'		///< Ueberwachung Transportfach
+#define CMD_SENS_DOOR	'D'		///< Ueberwachung Klappe
 #define CMD_SENS_MOUSE	'm'		///< Maussensor
 #define CMD_SENS_ERROR 	'e'		///< Motor- oder Batteriefehler
 #define CMD_SENS_RC5 	'R'		///< IR-Fernbedienung
@@ -53,13 +72,13 @@ typedef struct {
 #define CMD_AKT_LED		'l'		///< LEDs steuern
 
 #define SUB_CMD_NORM	'N' 	///< Standard-Kommando
-#define SUB_CMD_LEFT	'L' 	///< Kommmando für links
-#define SUB_CMD_RIGHT	'R' 	///< Kommando für rechts
+#define SUB_CMD_LEFT	'L' 	///< Kommmando fuer links
+#define SUB_CMD_RIGHT	'R' 	///< Kommando fuer rechts
 
-#define DIR_REQUEST	0			///< Richtung für Anfragen
-#define DIR_ANSWER	1			///< Richtung für Antworten
+#define DIR_REQUEST	0			///< Richtung fuer Anfragen
+#define DIR_ANSWER	1			///< Richtung fuer Antworten
 
-#ifdef PC	// On PC we have to make access to received_command threadsafe
+#ifdef PC	// Auf dem PC muss der Zugriff auf received_command Thread-sicher sein
 	#include <pthread.h>
 	extern pthread_mutex_t     command_mutex;	///< Zugriff auf das Kommando
 	#define	command_lock()		pthread_mutex_lock(&command_mutex) ///< Zugriff auf das Kommando
@@ -67,11 +86,11 @@ typedef struct {
 #endif
 
 
-extern command_t received_command;		///< Puffer fÜr Kommandos
+extern command_t received_command;		///< Puffer fuer Kommandos
 
 /*!
  * Liest ein Kommando ein, ist blockierend!
- * greift auf low_read() zurück
+ * greift auf low_read() zurueck
  * @see low_read()
  */
 int command_read(void);	

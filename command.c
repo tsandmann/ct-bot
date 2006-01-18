@@ -1,5 +1,24 @@
+/*
+ * c't-Sim - Robotersimulator fuer den c't-Bot
+ * 
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your
+ * option) any later version. 
+ * This program is distributed in the hope that it will be 
+ * useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public 
+ * License along with this program; if not, write to the Free 
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307, USA.
+ * 
+ */
+
 /*! @file 	command.c
- * @brief 	kommando Management
+ * @brief 	Kommando-Management
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
 */
@@ -35,9 +54,9 @@
 
 #ifdef COMMAND_AVAILABLE
 
-#define RCVBUFSIZE sizeof(command_t)   ///< Grösse des Empfangspuffers
+#define RCVBUFSIZE sizeof(command_t)   ///< Groesse des Empfangspuffers
 
-command_t received_command;		///< Puffer für Kommandos
+command_t received_command;		///< Puffer fuer Kommandos
 
 #ifdef PC
 	pthread_mutex_t     command_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -45,7 +64,7 @@ command_t received_command;		///< Puffer für Kommandos
 
 /*!
  * Liest ein Kommando ein, ist blockierend!
- * greift auf low_read() zurück
+ * Greift auf low_read() zurueck
  * @see low_read()
  */
 int command_read(void){
@@ -113,7 +132,7 @@ int command_evaluate(void){
 	
 	switch (received_command.request.command) {
 		#ifdef LED_AVAILABLE
-			case CMD_AKT_LED:	// LED Steuerung
+			case CMD_AKT_LED:	// LED-Steuerung
 				LED_set(received_command.data_l & 255);
 				break;
 		#endif

@@ -1,5 +1,24 @@
+/*
+ * c't-Sim - Robotersimulator fuer den c't-Bot
+ * 
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your
+ * option) any later version. 
+ * This program is distributed in the hope that it will be 
+ * useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public 
+ * License along with this program; if not, write to the Free 
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307, USA.
+ * 
+ */
+
 /*! @file 	adc.h
- * @brief 	Routinen zum Einlesen der AnalogeingÄnge
+ * @brief 	Routinen zum Einlesen der Analogeingaenge
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
 */
@@ -8,26 +27,26 @@
 
 /*!
  * Liest einen analogen Kanal aus
- * @param channel Kanal - hex-Wertigkeit des Pins (0x01 f�r PA0; 0x02 f�r PA1, ..)
+ * @param channel Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
  */
 int adc_read(char channel);
 
 /*!
- *  Wechselt einen ADU-kanal. Dafür muessen auch die Puffer zurückgesetzt werden 
- * @param channel Kanal - hex-Wertigkeit des Pins (0x01 f�r PA0; 0x02 f�r PA1, ..)
+ *  Wechselt einen ADU-kanal. Dafuer muessen auch die Puffer zurueckgesetzt werden 
+ * @param channel Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
  */
 void adc_select_channel(char channel);
 
 /*!
  * Diese Routine wird vom Timer-Interrupt aufgerufen und speichert einen 
- * Messwert. (vorher wendet sie evtl. noch eine Filterfkt an
+ * Messwert (vorher wendet sie evtl. noch eine Filterfunktion an).
  */
 void adc_isr(void);
 
 /*!
  * Initialisert den AD-Umsetzer. 
- * @param channel Für jeden Kanal, den man nutzen möchte, 
- * muss das entsprechende Bit in channel gesetzt sein
+ * @param channel fuer jeden Kanal, den man nutzen moechte, 
+ * muss das entsprechende Bit in channel gesetzt sein.
  * Bit0 = Kanal 0 usw.
  */
 void adc_init(char channel);

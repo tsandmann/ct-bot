@@ -1,5 +1,24 @@
+/*
+ * c't-Sim - Robotersimulator fuer den c't-Bot
+ * 
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your
+ * option) any later version. 
+ * This program is distributed in the hope that it will be 
+ * useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public 
+ * License along with this program; if not, write to the Free 
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307, USA.
+ * 
+ */
+
 /*! @file 	sensor.h
- * @brief 	Architekturunabhängiger Teil der Sensorsteuerung
+ * @brief 	Architekturunabhaengiger Teil der Sensorsteuerung
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	15.01.05
 */
@@ -28,11 +47,11 @@ extern volatile int16 sensLineR;	///<  Lininensensor rechts
 extern volatile int16 sensLdrL;		///< Helligkeitssensor links
 extern volatile int16 sensLdrR;		///< Helligkeitssensor links
 
-extern volatile char sensTrans;		///< Sensor Überwachung Transportfach
+extern volatile char sensTrans;		///< Sensor Ueberwachung Transportfach
 
-extern volatile char sensDoor;		///< Sensor Überwachung Klappe
+extern volatile char sensDoor;		///< Sensor Ueberwachung Klappe
 
-extern volatile char sensError;		///< Überwachung Motor oder Batteriefehler
+extern volatile char sensError;		///< Ueberwachung Motor oder Batteriefehler
 
 //extern volatile int sensRc5;			///< Fernbedienungssensor
 

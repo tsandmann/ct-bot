@@ -1,3 +1,22 @@
+/*
+ * c't-Sim - Robotersimulator fuer den c't-Bot
+ * 
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your
+ * option) any later version. 
+ * This program is distributed in the hope that it will be 
+ * useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public 
+ * License along with this program; if not, write to the Free 
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307, USA.
+ * 
+ */
+
 /*! @file 	shift.c
  * @brief 	Routinen zur Ansteuerung der Shift-Register
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -8,7 +27,7 @@
 #define SHIFT_H_
 
 
-#define SHIFT_LATCH	(1<<1)			///< Clock to store Data into Shiftregister
+#define SHIFT_LATCH	(1<<1)			///< Clock to store Data into shiftregister
 
 #define SHIFT_REGISTER_DISPLAY	0x04	///< Port-Pin for shiftregister latch (display)
 #define SHIFT_REGISTER_LED	0x10	///< Port-Pin for shiftregister latch (leds)
@@ -20,25 +39,25 @@
 void shift_init();
 
 /*!
- * Schiebt Daten durch eines der drei 74HC595 Schieberegister
- * Achtung den Port sollte man danach noch per shift_clear() zurücksetzen
+ * Schiebt Daten durch eines der drei 74HC595-Schieberegister
+ * Achtung: den Port sollte man danach noch per shift_clear() zuruecksetzen!
  * @param data	Das Datenbyte
- * @param latch_data der Pin an dem der Daten-latch-Pin des Registers (PIN 11) hängt
- * @param latchtore der Pin an dem der latch-Pin zum transfer des Registers (PIN 12) hängt
+ * @param latch_data der Pin, an dem der Daten-latch-Pin des Registers (PIN 11) haengt
+ * @param latchtore der Pin, an dem der latch-Pin zum Transfer des Registers (PIN 12) haengt
  */
 void shift_data_out(char data, char latch_data, char latch_store);
 
 /*!
- * Schiebt Daten durch eines der drei 74HC595 Schieberegister
- * vereinfachte Version, braucht kein shift_clear()
- * geht NICHT für das Shift-register, an dem das Display-hängt!!!
+ * Schiebt Daten durch eines der drei 74HC595-Schieberegister,
+ * vereinfachte Version, braucht kein shift_clear().
+ * Funktioniert NICHT fuer das Shift-Register, an dem das Display haengt!!!
  * @param data	Das Datenbyte
- * @param latch_data der Pin an dem der Daten-latch-Pin des Registers (PIN 11) hängt
+ * @param latch_data der Pin, an dem der Daten-latch-Pin des Registers (PIN 11) haengt
  */
 void shift_data(char data, char latch_data);
 
 /*!
- * Setzt die Shift-Register wieder zurück
+ * Setzt die Shift-Register wieder zurueck
  */ 
 void shift_clear();
 #endif

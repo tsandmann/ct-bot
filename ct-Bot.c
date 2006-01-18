@@ -1,3 +1,22 @@
+/*
+ * c't-Sim - Robotersimulator fuer den c't-Bot
+ * 
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your
+ * option) any later version. 
+ * This program is distributed in the hope that it will be 
+ * useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public 
+ * License along with this program; if not, write to the Free 
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307, USA.
+ * 
+ */
+
 /*! @file 	ct-Bot.c
  * @brief 	Demo-Hauptprogramm
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -46,7 +65,7 @@
 
 /*!
  * Der Mikrocontroller und der PC-Simulator brauchen ein paar Einstellungen, 
- * bevor wir loslegen könen.
+ * bevor wir loslegen koennen.
  */
 void init(void){
 	
@@ -94,7 +113,7 @@ void init(void){
 #ifdef DISPLAY_AVAILABLE
 
 /*!
- * Zeige ein paar Infos an
+ * Zeigt ein paar Informationen an
  */
 	void display(void){
 		if (display_update >0){
@@ -119,14 +138,14 @@ void init(void){
 
 #ifdef MCU
 /*! 
- * Hauptprogramm des Bots. Diese Schleife kümmert sich um seine Intelligenz
+ * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
  */
 	int main (void){
 #endif
 
 #ifdef PC
 /*! 
- * Hauptprogramm des Bots. Diese Schleife kümmert sich um seine Intelligenz
+ * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
  */
  	int main (int argc, char *argv[]){
 
@@ -149,7 +168,7 @@ void init(void){
 		LED_set(0x00);
 	#endif
 		
-	/// Hauptschleife des Bots
+	/// Hauptschleife des Bot
 	for(;;){
 		#ifdef MCU
 			bot_sens_isr();

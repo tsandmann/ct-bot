@@ -1,3 +1,22 @@
+/*
+ * c't-Sim - Robotersimulator fuer den c't-Bot
+ * 
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your
+ * option) any later version. 
+ * This program is distributed in the hope that it will be 
+ * useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public 
+ * License along with this program; if not, write to the Free 
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307, USA.
+ * 
+ */
+
 /*! @file 	rc5.c
  * @brief 	RC5-Fernbedienung
  * Eventuell muessen die Codes an die jeweilige 
@@ -14,12 +33,12 @@
 
 /*!
  * Fernbedienung mit Jog-Dial-Rad, 
- * Achtung dann muessen auch die Adress-Bits auf die FB angepasst werden
+ * Achtung: Die Adress-Bits muessen auf die Fernbedienung angepasst werden!
  */
 //#define JOG_DIAL
 
 #define RC5_TOGGLE		0x0800		///< Das RC5-Toggle-Bit
-#define RC5_ADDRESS		0x07C0		///< Der Adress-bereich
+#define RC5_ADDRESS		0x07C0		///< Der Adressbereich
 #define RC5_COMMAND		0x103F		///< Der Kommandobereich
 
 #define RC5_MASK (RC5_COMMAND)		///< Welcher Teil des Kommandos wird ausgewertet?
@@ -36,7 +55,7 @@
 #define RC5_CODE_8	(0x3948 & RC5_MASK)		///< Taste 8
 #define RC5_CODE_9	(0x3949 & RC5_MASK)		///< Taste 9
 
-#define RC5_CODE_UP		(0x2950 & RC5_MASK)		///< Taste Hoch
+#define RC5_CODE_UP		(0x2950 & RC5_MASK)	///< Taste Hoch
 #define RC5_CODE_DOWN	(0x2951 & RC5_MASK)	///< Taste Runter
 #define RC5_CODE_LEFT	(0x2955 & RC5_MASK)	///< Taste Links
 #define RC5_CODE_RIGHT	(0x2956 & RC5_MASK)	///< Taste Rechts
@@ -69,7 +88,7 @@
 uint16 RC5_Code;        ///< Letzter empfangener RC5-Code
 
 /*!
- * Liest einen RC5-Codeword und wertet ihn aus
+ * Liest ein RC5-Codeword und wertet es aus
  */
 void rc5_control(void){
 	uint16 rc5=ir_read();

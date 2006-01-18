@@ -1,5 +1,24 @@
+/*
+ * c't-Sim - Robotersimulator fuer den c't-Bot
+ * 
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your
+ * option) any later version. 
+ * This program is distributed in the hope that it will be 
+ * useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public 
+ * License along with this program; if not, write to the Free 
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307, USA.
+ * 
+ */
+
 /*! @file 	motor.c
- * @brief 	High-Level Routinen für die Motorsteuerung des c't-Bots
+ * @brief 	High-Level-Routinen fuer die Motorsteuerung des c't-Bot
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	15.01.05
 */
@@ -15,13 +34,13 @@ volatile int16 speed_r=0;	///< Geschwindigkeit rechter Motor
 
 /*!
  * Direkter Zugriff auf den Motor
- * @param left	Geschwindigkeit für den linken Motor
- * @param right Geschwindigkeit für den linken Motor
- * zwischen -255 und +255
- * 0 bedeutet steht, 255 volle Kraft voraus -255 volle Kraft zur�ck
- * Sinnvoll ist die Verwendung der Konstanten: BOT_SPEED_XXX 
- * Also z.B. motor_set(BOT_SPEED_LOW,-BOT_SPEED_LOW);
- * für eine langsame Drehung
+ * @param left	Geschwindigkeit fuer den linken Motor
+ * @param right Geschwindigkeit fuer den linken Motor
+ * Geschwindigkeit liegt zwischen -255 und +255.
+ * 0 bedeutet Stillstand, 255 volle Kraft voraus, -255 volle Kraft zurueck.
+ * Sinnvoll ist die Verwendung der Konstanten: BOT_SPEED_XXX, 
+ * also z.B. motor_set(BOT_SPEED_LOW,-BOT_SPEED_LOW);
+ * fuer eine langsame Drehung
 */
 void motor_set(int16 left, int16 right){
 	if (abs(left) > BOT_SPEED_MAX)	// Nicht schneller fahren als moeglich

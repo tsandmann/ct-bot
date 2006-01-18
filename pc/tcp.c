@@ -1,3 +1,22 @@
+/*
+ * c't-Sim - Robotersimulator fuer den c't-Bot
+ * 
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your
+ * option) any later version. 
+ * This program is distributed in the hope that it will be 
+ * useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public 
+ * License along with this program; if not, write to the Free 
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307, USA.
+ * 
+ */
+
 /*! @file 	tcp.c
  * @brief 	TCP/IP-Kommunikation
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -43,10 +62,10 @@
 #include "tcp.h"
 #include "display.h"
 
-int tcp_sock=0;			///< Unser TCP Socket
+int tcp_sock=0;			///< Unser TCP-Socket
 
 /*!
- * Öffnet eime TCP-Connection zum Server 
+ * Oeffnet eine TCP-Verbindung zum Server 
  * @return Der Socket
 */
 int tcp_openConnection(void){
@@ -87,10 +106,10 @@ void tcp_closeConnection(int sock){
 }
 
 /*!
- * Übertrage Daten per tcp/ip
+ * Uebertrage Daten per TCP/IP
  * @param data Zeiger auf die Daten
  * @param length Anzahl der Bytes
- * @return Anzahl der übertragenen Bytes
+ * @return Anzahl der uebertragenen Bytes
 */
 int tcp_write(char* data, int length){
 	if (send(tcp_sock,data,length,0) != length){
@@ -101,11 +120,11 @@ int tcp_write(char* data, int length){
 }
 
 /*!
- * Lese Daten von TCP/IP-Verbindung
- * achtung blockierend
+ * Lese Daten von TCP/IP-Verbindung.
+ * Achtung: blockierend!
  * @param data Zeiger auf die Daten
- * @param length Anzahl der gewünschten Bytes
- * @return Anzahl der übertragenen Bytes
+ * @param length Anzahl der gewuenschten Bytes
+ * @return Anzahl der uebertragenen Bytes
 */
 int tcp_read(char* data, int length){
 	int bytesReceived=0;

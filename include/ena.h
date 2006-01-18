@@ -1,3 +1,22 @@
+/*
+ * c't-Sim - Robotersimulator fuer den c't-Bot
+ * 
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your
+ * option) any later version. 
+ * This program is distributed in the hope that it will be 
+ * useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public 
+ * License along with this program; if not, write to the Free 
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307, USA.
+ * 
+ */
+
 /*! @file 	ena.h 
  * @brief 	Routinen zur Steuerung der Enable-Leitungen
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -9,9 +28,9 @@
 
 #define ENA_ABSTAND		(1<<0)		///< Enable-Leitung Abstandssensoren
 #define ENA_RADLED		(1<<1)		///< Enable-Leitung Radencoder
-#define ENA_SCHRANKE	(1<<2)		///< Enable-Leitung Fachüberwachung
+#define ENA_SCHRANKE	(1<<2)		///< Enable-Leitung Fachueberwachung
 #define ENA_KANTLED		(1<<3)		///< Enable-Leitung Angrundsensor
-#define ENA_KLAPPLED	(1<<4)		///< Enable-Leitung Schieberüberwachung
+#define ENA_KLAPPLED	(1<<4)		///< Enable-Leitung Schieberueberwachung
 #define ENA_MAUS		(1<<5)		///< Enable-Leitung Maussensor
 #define ENA_ERW1		(1<<6)		///< Enable-Leitung Reserve 1
 #define ENA_ERW2		(1<<7)		///< Enable-Leitung Reserve 2
@@ -21,14 +40,14 @@
 void ENA_init();
 
 /*! 
- * Schaltet einzelne Enable-Leitungen an
+ * Schaltet einzelne Enable-Leitungen an,
  * andere werden nicht beeinflusst
  * @param enable Bitmaske der anzuschaltenden LEDs
  */
 void ENA_on(char enable);
 
 /*! 
- * Schaltet einzelne Enable-Leitungen aus
+ * Schaltet einzelne Enable-Leitungen aus,
  * andere werden nicht beeinflusst
  * @param enable Bitmaske der anzuschaltenden LEDs
  */

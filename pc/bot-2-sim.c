@@ -1,3 +1,22 @@
+/*
+ * c't-Sim - Robotersimulator fuer den c't-Bot
+ * 
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your
+ * option) any later version. 
+ * This program is distributed in the hope that it will be 
+ * useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public 
+ * License along with this program; if not, write to the Free 
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307, USA.
+ * 
+ */
+
 /*! @file 	bot-2-sim.c 
  * @brief 	Verbindung c't-Bot zu c't-Sim
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -37,13 +56,13 @@
 #  define _P __P
 #endif
 
-#define low_init tcp_init	///< Low-Function zum initialisieren
+#define low_init tcp_init	///< Low-Funktion zum Initialisieren
 
 pthread_t simThread;			///< Simuliert den Bot
-pthread_t bot_2_sim_Thread;		///< Thread sammelt Sensor Daten, 체bertr채gt Motor-Daten
+pthread_t bot_2_sim_Thread;		///< Thread sammelt Sensordaten, uebertraegt Motor-Daten
 
-pthread_cond_t      command_cond  = PTHREAD_COND_INITIALIZER;	///< Sch체ztt das Commando
-pthread_mutex_t     command_cond_mutex = PTHREAD_MUTEX_INITIALIZER;	///< Sch체ztt das Commando
+pthread_cond_t      command_cond  = PTHREAD_COND_INITIALIZER;	///< Schuetzt das Kommando
+pthread_mutex_t     command_cond_mutex = PTHREAD_MUTEX_INITIALIZER;	///< Schuetzt das Kommando
 
 void signal_command_available(void);
 int wait_for_command(int timeout_s);
@@ -93,7 +112,7 @@ void *bot_2_sim_rcv_isr(void * arg){
 }
 
 /*!
- * Ein wenig Initilisierung kann nicht schaden 
+ * Ein wenig Initialisierung kann nicht schaden 
  */
 void bot_2_sim_init(void){
 	low_init();
@@ -108,12 +127,12 @@ void bot_2_sim_init(void){
 }
 
 
-int count=1;	///< Z채hler f체r Packet-Sequenznummer
+int count=1;	///< Zaehler fuer Paket-Sequenznummer
 int not_answered_error=1;
 
 
 /*!
- *  Tell simulator data -- dont wait for answer!
+ *  Gibt dem Simulator Daten und wartet nicht auf Antwort
  */
 void bot_2_sim_tell(uint8 command, uint8 subcommand, int16* data_l,int16* data_r){
 	command_t cmd;
@@ -133,11 +152,10 @@ void bot_2_sim_tell(uint8 command, uint8 subcommand, int16* data_l,int16* data_r
 }
 
 
-
 /*! 
- * Wartet auf die Antwort des PCS
+ * Wartet auf die Antwort des PC
  * @param timeout_s Wartezeit in Sekunden
- * @return 0 Wenn Ok
+ * @return 0, wenn Ok
  */
 int wait_for_command(int timeout_s){
 	struct timespec   ts;
@@ -160,7 +178,7 @@ int wait_for_command(int timeout_s){
 }
 
 /*!
- * Benachrichtigt wartende Threads 체ber eingetroffene Connands
+ * Benachrichtigt wartende Threads ueber eingetroffene Kommandos
  */
 void signal_command_available(void){
 	pthread_mutex_lock(&command_cond_mutex);
@@ -170,7 +188,7 @@ void signal_command_available(void){
 
 /*!
  * Schickt einen Thread in die Warteposition
- * @param timeout_us Wartezeit in 쨉s
+ * @param timeout_us Wartezeit in 탎
  */
 void wait_for_time(long timeout_us){
 	pthread_cond_t      cond  = PTHREAD_COND_INITIALIZER;

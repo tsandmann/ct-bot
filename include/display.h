@@ -1,3 +1,22 @@
+/*
+ * c't-Sim - Robotersimulator fuer den c't-Bot
+ * 
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your
+ * option) any later version. 
+ * This program is distributed in the hope that it will be 
+ * useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public 
+ * License along with this program; if not, write to the Free 
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307, USA.
+ * 
+ */
+
 /*! @file 	display.h 
  * @brief 	Routinen zur Displaysteuerung
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -7,10 +26,10 @@
 #ifndef display_H_
 #define display_H_
 
-#define DISPLAY_BUFFER	30			///< Grösse des Display Strings
+#define DISPLAY_BUFFER	30			///< Groesse des Display-Strings
 
 extern volatile char display_update;	///< Muss das Display aktualisiert werden?
-extern char display_buf[DISPLAY_BUFFER];		///< Pufferstring für Displayausgaben
+extern char display_buf[DISPLAY_BUFFER];		///< Pufferstring fuer Displayausgaben
 /*! 
  * Init Display
  */
@@ -18,12 +37,12 @@ void display_init(void);
 
 /*! 
  * Zeigt einen String an 
- * @return -1 falls string zuende 0 falls Zeile (20 zeichen) zuende
+ * @return -1 falls String zu Ende, 0 falls Zeile (20 zeichen) zu Ende
  */
 //int display_string(char data[20]);
 
 /*!
- * Löscht das ganze Display
+ * Loescht das ganze Display
  */
 void display_clear(void);
 
