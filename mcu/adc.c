@@ -33,7 +33,7 @@ int adc_read(char channel){
 	// interne Refernzspannung AVCC, rechts Ausrichtung
 	ADMUX=(1<<REFS1)|(1<<REFS0)|(0<<ADLAR);	
 
-	ADMUX |= channel;		// Und jetzt Kanal w�hlen
+	ADMUX |= (channel & 0x07);		// Und jetzt Kanal waehlen, nur single ended
 	
 	ADCSRA= (1<<ADPS2) | (1<<ADPS1)|	// prescale faktor= 128 ADC l�uft
 		(1<<ADPS0) |			// mit 14,7456MHz/ 128 = 115,2kHz 
