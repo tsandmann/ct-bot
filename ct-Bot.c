@@ -183,7 +183,9 @@ void init(void){
 		#ifdef PC
 			wait_for_time(100000);
 		#endif
-		
+		#ifdef MCU
+			delay(1500);
+		#endif
 	}
 	
 	/// Falls wir das je erreichen sollten ;-)
