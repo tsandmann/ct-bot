@@ -18,12 +18,13 @@
 
 #define MAUS_DDR 	DDRB	///< DDR für Maus-SCLK
 #define MAUS_PORT 	PORTB	///< PORT für Maus-SCLK
-#define MAUS_SCK_PIN	0x80
+#define MAUS_SCK_PIN	(1<<7)
 
-#define MAUS_SDA_PIN 	PINB
-#define MAUS_SDA_BIT 	0x40
+#define MAUS_SDA_NR		6		///< Pin an dem die SDA-Leitung haengt
+#define MAUS_SDA_PINR 	PINB	///< Leseregister
+#define MAUS_SDA_PIN 	(1<<MAUS_SDA_NR)	///< Bit-Wert der SDA-Leitung
 
-#define MAUS_SDA_NR	6
+
 
 /*!
  * Überträgt ein Byte an den Sensor
@@ -31,7 +32,7 @@
  */
 void maus_sens_writeByte(char data){
 	int i;
-	MAUS_DDR  |= MAUS_SCK_PIN | MAUS_SDA_BIT; 	// SCK auf Output
+	MAUS_DDR  |= MAUS_SCK_PIN | MAUS_SDA_PIN; 	// SCK auf Output
 												// SDA auf Output
 	
 	for (i=7; i>-1; i--){
@@ -39,7 +40,7 @@ void maus_sens_writeByte(char data){
 		// SCK =0 Daten auf der fallenden Flanke vorbereiten 
 		MAUS_PORT &= ~MAUS_SCK_PIN;	
 		//Daten rausschreiben
-		MAUS_PORT = (MAUS_PORT & (~MAUS_SDA_PIN)) | (((data >> i) & 0x01)<<MAUS_SDA_NR);
+		MAUS_PORT = (MAUS_PORT & (~MAUS_SDA_PINR)) | (((data >> i) & 0x01)<<MAUS_SDA_NR);
 		asm("nop"); asm("nop"); asm("nop"); asm("nop");
 		asm("nop"); asm("nop"); asm("nop"); asm("nop");
 		// SCK =1 Sensor �bernimmt auf steigender Flanke
@@ -57,7 +58,7 @@ char maus_sens_readByte(void){
 	int i;
 	char data=0;
 	MAUS_DDR  |= MAUS_SCK_PIN; 	// SCK auf Output
-	MAUS_DDR  &= ~MAUS_SDA_BIT; 	// SDA auf Input
+	MAUS_DDR  &= ~MAUS_SDA_PIN; 	// SDA auf Input
 	
 	for (i=7; i>-1; i--){
 		asm("nop");
@@ -70,10 +71,10 @@ char maus_sens_readByte(void){
 		
 		//Daten lesen
 		data=data<<1;
-		data |= (MAUS_SDA_PIN & MAUS_SDA_BIT) >> MAUS_SDA_NR;
+		data |= (MAUS_SDA_PINR & MAUS_SDA_PIN) >> MAUS_SDA_NR;
 	}
 	for (i=0; i<25; i++){asm("nop");}	// delay at least 10�s Can be removed
-	MAUS_DDR  |= MAUS_SDA_BIT; 	// SDA auf Output
+	MAUS_DDR  |= MAUS_SDA_PIN; 	// SDA auf Output
 	return data;
 }
 

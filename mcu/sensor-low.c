@@ -16,8 +16,8 @@
 //#include "bot-mot.h"
 
 // ADC-PINS
-#define SENS_ABST_L	0		///< ADC-PIN Abstandssensor Links	
-#define SENS_ABST_R	1		///< ADC-PIN Abstandssensor Rechts
+#define SENS_ABST_L		0		///< ADC-PIN Abstandssensor Links	
+#define SENS_ABST_R		1		///< ADC-PIN Abstandssensor Rechts
 #define SENS_M_L		2		///< ADC-PIN Liniensensor Links
 #define SENS_M_R		3		///< ADC-PIN Liniensensor Rechts
 #define SENS_LDR_R		4		///< ADC-PIN Lichtsensor Links
@@ -27,7 +27,7 @@
 
 
 // Sonstige Sensoren
-#define SENS_DOOR_PINR 	PIND	///< Port an dem der Klappensensor hängt
+#define SENS_DOOR_PINR 		PIND	///< Port an dem der Klappensensor hängt
 #define SENS_DOOR_DDR 		DDRD	///< DDR für den Klappensensor
 #define SENS_DOOR			6		///< Pin  an dem der Klappensensor hängt
 
@@ -39,12 +39,12 @@
 #define SENS_ENCR_DDR		DDRD	///< DDR für den rechten Encoder 
 #define SENS_ENCR			3		///< Pin an dem der rechte Encoder hängt
 
-#define SENS_ERROR_PINR	PINB	///< Port an dem die Fehlerüberwachung hängt
+#define SENS_ERROR_PINR		PINB	///< Port an dem die Fehlerüberwachung hängt
 #define SENS_ERROR_DDR		DDRB	///< DDR für die Fehlerüberwachung
 #define SENS_ERROR			2		///< Pin an dem die Fehlerüberwachung hängt
 
-#define SENS_TRANS_PINR	PINB	///< Port an dem die Transportfachueberwachung haengt
-#define SENS_TRANS_PORT	PORTB	///< Port an dem die Transportfachueberwachung haengt
+#define SENS_TRANS_PINR		PINB	///< Port an dem die Transportfachueberwachung haengt
+#define SENS_TRANS_PORT		PORTB	///< Port an dem die Transportfachueberwachung haengt
 #define SENS_TRANS_DDR		DDRB	///< DDR für die Transportfachueberwachung
 #define SENS_TRANS			0		///< Pin an dem die Transportfachueberwachung haengt
 

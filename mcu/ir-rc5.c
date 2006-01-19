@@ -33,9 +33,9 @@
 				    // Byte ist, beschr�nken wir uns hier auf ein
 				    // Minimum von 250 Samples
 
-#define IR_PORT	PORTB			///< Port B
+#define IR_PORT		PORTB			///< Port B
 #define IR_DDR		DDRB			///< DDR of Port B
-#define IR_PINR	PINB			///< Port B input
+#define IR_PINR		PINB			///< Port B input
 #define IR_PIN		1				///< Pin 1
 
 

@@ -32,11 +32,11 @@ char display_buf[DISPLAY_BUFFER];		///< Pufferstring für Displayausgaben
 #define DISPLAY_IN 			(1<<5)		///< Input-Pins Display
 
 #define DISPLAY_PORT			PORTC		///< Port an dem das Display hängt
-#define DISPLAY_DDR			DDRC		///< Port an dem das Display hängt
+#define DISPLAY_DDR				DDRC		///< Port an dem das Display hängt
 #define DPC (DISPLAY_PORT & ~DISPLAY_OUT)	///< Port des Displays
 //#define DRC (DDRC & ~DISPLAY_PINS)
 
-#define DISPLAY_READY_PINC		PINC		///< Port an dem das Ready-Flag des Display hängt
+//#define DISPLAY_READY_PINR		PINC		///< Port an dem das Ready-Flag des Display hängt
 #define DISPLAY_READY_DDR		DDRC		///< Port an dem das Ready-Flag des Display hängt
 #define DISPLAY_READY_PIN		(1<<5)		///< Pin  an dem das Ready-Flag des Display hängt
 

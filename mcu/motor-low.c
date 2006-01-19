@@ -15,13 +15,13 @@
 #include "motor-low.h"
 
 //Drehrichtung der Motoren
-#define BOT_DIR_L_PIN 0x80	// PC7
-#define BOT_DIR_L_PORT PORTC
-#define BOT_DIR_L_DDR DDRC
+#define BOT_DIR_L_PIN 		(1<<7)	// PC7
+#define BOT_DIR_L_PORT 		PORTC
+#define BOT_DIR_L_DDR 		DDRC
 
-#define BOT_DIR_R_PIN 0x40	// PC6 
-#define BOT_DIR_R_PORT PORTC
-#define BOT_DIR_R_DDR DDRC
+#define BOT_DIR_R_PIN 		(1<<6)	// PC6 
+#define BOT_DIR_R_PORT 		PORTC
+#define BOT_DIR_R_DDR 		DDRC
 
 #define PWM_R 	OCR1A
 #define PWM_L 	OCR1B
