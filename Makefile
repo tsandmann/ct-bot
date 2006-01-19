@@ -43,17 +43,17 @@ FORMAT = ihex
 TARGET = ct-Bot
 
 # Target Device, either pc or mcu, usually defined on commandline
-DEVICE = MCU
-#DEVICE = PC
+#DEVICE = MCU
+DEVICE = PC
 
 MSG_DEVICE = Target device is $(DEVICE)
 
 # List C source files here. (C dependencies are automatically generated.)
-SRCMCU = mcu/adc.c mcu/bot-mot.c mcu/bot-sens.c mcu/delay.c mcu/display.c mcu/event.c mcu/ir.c mcu/key.c mcu/led.c mcu/mouse.c mcu/timer.c mcu/uart.c mcu/ena.c mcu/shift.c
+SRCMCU = mcu/adc.c mcu/delay.c mcu/display.c mcu/ena.c mcu/ir-rc5.c mcu/led.c mcu/motor-low.c mcu/mouse.c mcu/sensor-low.c mcu/shift.c mcu/timer.c mcu/uart.c 
 
-SRCPC = pc/display_pc.c pc/bot-mot_pc.c pc/bot-sens_pc.c pc/led_pc.c pc/delay_pc.c pc/ir_pc.c pc/bot-2-sim.c pc/tcp.c pc/tcp-server.c
+SRCPC = pc/bot-2-sim.c pc/delay_pc.c pc/display_pc.c pc/ir-rc5_pc.c pc/led_pc.c pc/motor-low_pc.c pc/sensor-low_pc.c pc/tcp.c pc/tcp-server.c
 
-SRCCOM = bot-logik.c command.c rc5.c rtc.c tools.c
+SRCCOM = bot-logik.c command.c motor.c rc5.c sensor.c
 
 ifeq ($(DEVICE),MCU)
 	SRC = $(TARGET).c $(SRCCOM) $(SRCMCU)
