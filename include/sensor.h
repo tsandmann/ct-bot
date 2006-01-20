@@ -58,5 +58,7 @@ extern volatile char sensError;		///< Ueberwachung Motor oder Batteriefehler
 extern volatile char sensMouseDX;	///< Maussensor Delta X
 extern volatile char sensMouseDY;	///< Maussensor Delta X
 
+extern volatile int sensMouseX;
+extern volatile int sensMouseY;
 
 #endif /*SENSOR_H_*/

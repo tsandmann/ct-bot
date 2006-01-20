@@ -130,7 +130,7 @@ void init(void){
 			display_buffer();
 			
 			display_cursor(4,1);
-			sprintf(display_buf,"I=%04X M=%02X %02X",RC5_Code,sensMouseDX,sensMouseDY);
+			sprintf(display_buf,"I=%04X M=%05d %05d",RC5_Code,sensMouseX,sensMouseY);
 			display_buffer();				
 		}
 	}

@@ -115,8 +115,12 @@ void bot_sens_isr(void){
 	sensTrans = (SENS_TRANS_PINR >> SENS_TRANS) & 0x01;		
 
  	// Aktualisiere die Position des Maussensors 
-	sensMouseDY += maus_sens_read(MAUS_Y);
-	sensMouseDX += maus_sens_read(MAUS_X);	
+	sensMouseDY = maus_sens_read(MAUS_Y);
+	sensMouseY += sensMouseDY;
+
+	sensMouseDX = maus_sens_read(MAUS_X);	
+	sensMouseX += sensMouseDX;
+	
 	
 	sensEncL = (SENS_ENCL_PINR >> SENS_ENCL) & 0x01;
 	sensEncR = (SENS_ENCR_PINR >> SENS_ENCR) & 0x01;

@@ -26,8 +26,11 @@
 #ifndef mouse_H_
 #define mouse_H_
 
-#define MAUS_Y  0x02		///< Kommando, um DY auszulesen
-#define MAUS_X  0x03		///< Kommando, um DX auszulesen
+#define MAUS_Y  0x42		///< Kommando, um DY auszulesen
+#define MAUS_X  0x43		///< Kommando, um DX auszulesen
+
+#define MAUS_CONF		0x40	///< Kommando für Konfiguration
+#define MAUS_STATUS	0x41	///< Kommando für Status
 
 /*! 
  * Initialisiere Maussensor
