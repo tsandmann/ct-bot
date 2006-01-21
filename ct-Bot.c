@@ -184,7 +184,7 @@ void init(void){
 			wait_for_time(100000);
 		#endif
 		#ifdef MCU
-			delay(1500);
+//			delay(1500);
 		#endif
 	}
 	
