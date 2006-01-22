@@ -38,6 +38,22 @@
 
 #define LED_ALL    0xFF		///< LED Alle
 
+/*! Datenfeld fuer den Zugriff auf die LEDs */
+typedef struct {
+   unsigned char rechts:1;
+   unsigned char links:1; 
+ 
+   unsigned char rot:1;   
+   unsigned char orange:1;   
+ 
+   unsigned char gelb:1;   
+   unsigned char gruen:1;  
+    
+   unsigned char tuerkis:1;   
+   unsigned char weiss:1;   
+} __attribute__ ((packed)) led_t;
+
+
 /*!
  * Initialisiert die LEDs
  */

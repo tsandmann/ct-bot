@@ -13,7 +13,7 @@
 
 #ifdef LED_AVAILABLE
 
-volatile char led =0;
+volatile char led=0;
 /*!
  * Initialisiert die LEDs
  */

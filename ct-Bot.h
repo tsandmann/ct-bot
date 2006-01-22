@@ -46,6 +46,14 @@
 #define ENA_AVAILABLE		///< Enable-Leitungen
 #define SHIFT_AVAILABLE		///< Shift Register
 
+#define ANALOG 2
+#define DIGITAL 2
+#define MOTOR 3
+
+//#define TEST_AVAILABLE_ANALOG	///< Sollen die LEDs die Sensorwerte anzeigen
+#define TEST_AVAILABLE_DIGITAL	///< Sollen die LEDs die Sensorwerte anzeigen
+//#define TEST_AVAILABLE_MOTOR	///< Sollen die LEDs die Sensorwerte anzeigen
+
 /************************************************************
 * Some Dependencies!!!
 ************************************************************/
@@ -68,6 +76,21 @@
 	#ifndef UART_AVAILABLE
 		#undef COMMAND_AVAILABLE
 	#endif
+#endif
+
+
+#ifdef TEST_AVAILABLE_MOTOR
+	#define TEST_AVAILABLE
+	#define TEST_AVAILABLE_DIGITAL
+#endif
+
+#ifdef TEST_AVAILABLE_DIGITAL
+	#define TEST_AVAILABLE
+	#undef TEST_ANALOG
+#endif
+
+#ifdef TEST_AVAILABLE_ANALOG
+	#define TEST_AVAILABLE
 #endif
 
 

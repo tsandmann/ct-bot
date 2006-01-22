@@ -128,11 +128,41 @@ void init(void){
 			display_cursor(3,1);
 			sprintf(display_buf,"R=%d %d F=%d K=%d T=%d ",sensEncL,sensEncR,sensError,sensDoor,sensTrans);
 			display_buffer();
-			
+
 			display_cursor(4,1);
 			sprintf(display_buf,"I=%04X M=%05d %05d",RC5_Code,sensMouseX,sensMouseY);
 			display_buffer();				
 		}
+	}
+#endif
+
+#ifdef TEST_AVAILABLE
+	/*! Zeigt den internen Status der Sensoren mit den LEDs an */
+	void show_sensors(void){
+		char led=0x00;
+		led_t * status = (led_t *)&led;
+		#if TEST_AVAILABLE_ANALOG
+			(*status).rechts	= (sensDistR >> 9) & 0x01;
+			(*status).links		= (sensDistL >> 9) & 0x01;
+			(*status).rot		= (sensLineL >> 9) & 0x01;
+			(*status).orange	= (sensLineR >> 9) & 0x01;
+			(*status).gelb		= (sensLDRL >> 9) & 0x01;
+			(*status).gruen		= (sensLDRR >> 9) & 0x01;
+			(*status).tuerkis	= (sensBorderL >> 9) & 0x01;
+			(*status).weiss		= (sensBorderR >> 9) & 0x01;
+		#endif
+		#ifdef TEST_AVAILABLE_DIGITAL
+			(*status).rechts	= sensEncR  & 0x01;
+			(*status).links		= sensEncL  & 0x01;
+			(*status).rot		= sensTrans & 0x01;
+			(*status).orange	= sensError & 0x01;
+			(*status).gelb		= sensDoor  & 0x01;
+			(*status).gruen		= (sensMouseDX >>1)  & 0x01;
+			(*status).tuerkis	= (sensMouseDY >>1) & 0x01;
+			(*status).weiss		= RC5_Code & 0x01;
+		#endif
+				
+		LED_set(led);
 	}
 #endif
 
@@ -141,6 +171,10 @@ void init(void){
  * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
  */
 	int main (void){
+	#if  TEST_AVAILABLE_MOTOR
+		uint16 calls=0;
+	#endif
+
 #endif
 
 #ifdef PC
@@ -172,10 +206,26 @@ void init(void){
 	for(;;){
 		#ifdef MCU
 			bot_sens_isr();
+			#ifdef TEST_AVAILABLE
+				show_sensors();
+			#endif
 		#endif
-						
+
+		// Testprogramm, dass den Bot erst links, dann rechtsrum dreht
+		#if  TEST_AVAILABLE_MOTOR
+			calls++;
+			if (calls == 1)
+				motor_set(BOT_SPEED_MAX,-BOT_SPEED_MAX);
+			else if (calls == 501)
+				motor_set(-BOT_SPEED_MAX,BOT_SPEED_MAX);
+			else if (calls== 1001)
+				motor_set(BOT_SPEED_STOP,BOT_SPEED_STOP);
+			else
+		#endif
+		// hier drin steckt der Verhaltenscode
 		bot_behave();
 		
+		// Alles Anzeigen
 		#ifdef DISPLAY_AVAILABLE
 			display();
 		#endif
@@ -184,7 +234,7 @@ void init(void){
 			wait_for_time(100000);
 		#endif
 		#ifdef MCU
-//			delay(1500);
+			//delay(1);
 		#endif
 	}
 	
