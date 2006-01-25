@@ -1,4 +1,6 @@
 CHANGELOG fuer c't-Bot
 ======================
 
+2006-01-25	Benjamin Benz (bbe@heise.de) Status der LEDs wird nun an den Simulator übertragen
+
 2006-01-24	Benjamin Benz (bbe@heise.de) Schreibweise des Changelogs nochmal verändert

@@ -24,31 +24,39 @@
 */
 
 #include "ct-Bot.h"
+#include "bot-2-sim.h"
+#include "command.h"
 
 #ifdef PC
 
 #include "led.h"
 
 #ifdef LED_AVAILABLE
-
+volatile char led=0;
 /*!
  * Initialisiert die LEDs
  */
 void LED_init(){
 }
 
-/*! Schaltet eine LED an
- * 
- * @param LED HEX-Code der LED
+/*! 
+ * Schaltet einzelne LEDs an
+ * andere werden nicht beeinflusst
+ * @param LED Bitmaske der anzuschaltenden LEDs
  */
 void LED_on(char LED){
+	led |= LED;
+	LED_set(led);
 }
 
-/*! Schaltet eine LED aus
- * 
- * @param LED HEX-Code der LED
+/*! 
+ * Schaltet einzelne LEDs aus
+ * andere werden nicht beeinflusst
+ * @param LED Bitmaske der anzuschaltenden LEDs
  */
 void LED_off(char LED){
+	led &= ~LED;
+	LED_set(led);
 }
 
 /*!
@@ -56,6 +64,8 @@ void LED_off(char LED){
  * @param LED Wert, der gezeigt werden soll
  */
 void LED_set(char LED){
+	int16 led=LED;
+	bot_2_sim_tell(CMD_AKT_LED, SUB_CMD_NORM ,&led,&led);
 }
 
 #endif
