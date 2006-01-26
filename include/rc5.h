@@ -27,7 +27,7 @@
 #define rc5_H_
 
 
-extern uint16 RC5_Code;        ///< Letzter empfangener RC5-Code
+extern uint16 RC5_Code;        /*!< Letzter empfangener RC5-Code */
 
 /*!
  * Liest ein RC5-Codeword und wertet es aus

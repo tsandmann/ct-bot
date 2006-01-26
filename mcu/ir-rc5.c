@@ -22,31 +22,31 @@
 // -----------------------------------------------------------------------------
 // Timing
 // -----------------------------------------------------------------------------
-#define IR_SAMPLES_PER_BIT	10  ///< 10 Samples per Bit
-#define IR_SAMPLES_PER_BIT_EARLY 8 ///< Flanke fr�hestens nach 8 Samples
-#define IR_SAMPLES_PER_BIT_LATE 12 ///< Flanke sp�testens nach 12 Samples
-#define IR_SAMPLES_PER_BIT_MIN	 3  ///< Flanke vor 3 Samples -> paket verwerfen
-#define IR_PAUSE_SAMPLES      250  ///< Startbit ist erst nach 250 Samples ohne
+#define IR_SAMPLES_PER_BIT	10  /*!< 10 Samples per Bit */
+#define IR_SAMPLES_PER_BIT_EARLY 8 /*!< Flanke fr�hestens nach 8 Samples */
+#define IR_SAMPLES_PER_BIT_LATE 12 /*!< Flanke sp�testens nach 12 Samples */
+#define IR_SAMPLES_PER_BIT_MIN	 3  /*!< Flanke vor 3 Samples -> paket verwerfen */
+#define IR_PAUSE_SAMPLES      250  /*!< Startbit ist erst nach 250 Samples ohne */
 				    // Pegel�nderung g�ltig -- eigentlich m�sste
 				    // man rund 500 Samples abwarten (50 x
 				    // Bitzeit), doch weil der Samplez�hler ein
 				    // Byte ist, beschr�nken wir uns hier auf ein
 				    // Minimum von 250 Samples
 
-#define IR_PORT		PORTB			///< Port B
-#define IR_DDR		DDRB			///< DDR of Port B
-#define IR_PINR		PINB			///< Port B input
-#define IR_PIN		1				///< Pin 1
+#define IR_PORT		PORTB			/*!< Port B */
+#define IR_DDR		DDRB			/*!< DDR of Port B */
+#define IR_PINR		PINB			/*!< Port B input */
+#define IR_PIN		1				/*!< Pin 1 */
 
 
 
-volatile static byte ir_lastsample = 0;  ///< zuletzt gelesenes Sample
-volatile static byte ir_bittimer   = 0;  ///< zählt die Aufrufe von ir_isr()
+volatile static byte ir_lastsample = 0;  /*!< zuletzt gelesenes Sample */
+volatile static byte ir_bittimer   = 0;  /*!< zählt die Aufrufe von ir_isr() */
 
-volatile static uint16 	ir_data_tmp = 0;  ///< RC5-Bitstream
-volatile static byte	ir_bitcount = 0;  ///< anzahl gelesener bits
+volatile static uint16 	ir_data_tmp = 0;  /*!< RC5-Bitstream */
+volatile static byte	ir_bitcount = 0;  /*!< anzahl gelesener bits */
 
-volatile uint16	ir_data	= 0;	///< letztes komplett gelesenes RC5-paket
+volatile uint16	ir_data	= 0;	/*!< letztes komplett gelesenes RC5-paket */
 
 /*!
  * Interrupt Serviceroutine

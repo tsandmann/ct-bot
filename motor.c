@@ -28,8 +28,8 @@
 #include "motor.h"
 #include "motor-low.h"
 
-volatile int16 speed_l=0;	///< Geschwindigkeit linker Motor
-volatile int16 speed_r=0;	///< Geschwindigkeit rechter Motor
+volatile int16 speed_l=0;	/*!< Geschwindigkeit linker Motor */
+volatile int16 speed_r=0;	/*!< Geschwindigkeit rechter Motor */
 
 
 /*!

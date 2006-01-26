@@ -62,7 +62,7 @@
 #include "tcp.h"
 #include "display.h"
 
-int tcp_sock=0;			///< Unser TCP-Socket
+int tcp_sock=0;			/*!< Unser TCP-Socket */
 
 /*!
  * Oeffnet eine TCP-Verbindung zum Server 

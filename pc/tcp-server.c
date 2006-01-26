@@ -63,11 +63,11 @@
 
 #include "global.h"
 
-int server;                    ///< Server-Socket
+int server;                    /*!< Server-Socket */
 
-struct sockaddr_in serverAddr; ///< Lokale Adresse 
-struct sockaddr_in clientAddr; ///< Client-Adresse 
-unsigned int clntLen;          ///< Laenge der Datenstruktur der Client-Adresse
+struct sockaddr_in serverAddr; /*!< Lokale Adresse  */
+struct sockaddr_in clientAddr; /*!< Client-Adresse  */
+unsigned int clntLen;          /*!< Laenge der Datenstruktur der Client-Adresse */
 
 /*!
  * Init TCP-Server

@@ -27,16 +27,16 @@
 #define led_H_
 
 
-#define LED_RECHTS	(1<<0)
-#define LED_LINKS	(1<<1)
-#define LED_ROT     (1<<2)		///< LED Rot
-#define LED_ORANGE  (1<<3)		///< LED Orange
-#define LED_GELB    (1<<4)		///< LED Gelb
-#define LED_GRUEN   (1<<5)		///< LED Gruen
-#define LED_TUERKIS (1<<6)		///< LED Tuerkis
-#define LED_WEISS   (1<<7)		///< LED Weiss
+#define LED_RECHTS	(1<<0)		/*!< LED in Fahrichtung rechts*/
+#define LED_LINKS	(1<<1)		/*!< LED in Fahrichtung links*/
+#define LED_ROT     (1<<2)		/*!< LED Rot */
+#define LED_ORANGE  (1<<3)		/*!< LED Orange */
+#define LED_GELB    (1<<4)		/*!< LED Gelb */
+#define LED_GRUEN   (1<<5)		/*!< LED Gruen */
+#define LED_TUERKIS (1<<6)		/*!< LED Tuerkis */
+#define LED_WEISS   (1<<7)		/*!< LED Weiss */
 
-#define LED_ALL    0xFF		///< LED Alle
+#define LED_ALL    0xFF		/*!< LED Alle */
 
 /*! Datenfeld fuer den Zugriff auf die LEDs */
 typedef struct {

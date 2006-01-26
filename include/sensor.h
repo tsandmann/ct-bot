@@ -28,35 +28,35 @@
 
 #include "global.h"
 
-extern volatile int16 sensDistL;	///< Distanz linker IR-Sensor
-extern volatile int16 sensDistR;	///< Distanz rechter IR-Sensor
+extern volatile int16 sensDistL;	/*!< Distanz linker IR-Sensor */
+extern volatile int16 sensDistR;	/*!< Distanz rechter IR-Sensor */
 
-extern volatile int16 sensLDRL;		///< Lichtsensor links
-extern volatile int16 sensLDRR;		///< Lichtsensor rechts
+extern volatile int16 sensLDRL;		/*!< Lichtsensor links */
+extern volatile int16 sensLDRR;		/*!< Lichtsensor rechts */
 
 
-extern volatile int16 sensEncL;		///< Encoder linker Motor
-extern volatile int16 sensEncR;		///< Encoder rechter Motor
+extern volatile int16 sensEncL;		/*!< Encoder linker Motor */
+extern volatile int16 sensEncR;		/*!< Encoder rechter Motor */
 
-extern volatile int16 sensBorderL;	///< Abgrundsensor links
-extern volatile int16 sensBorderR;	///<  Abgrundsensor rechts
+extern volatile int16 sensBorderL;	/*!< Abgrundsensor links */
+extern volatile int16 sensBorderR;	/*!<  Abgrundsensor rechts */
 
-extern volatile int16 sensLineL;	///<  Lininensensor links
-extern volatile int16 sensLineR;	///<  Lininensensor rechts
+extern volatile int16 sensLineL;	/*!<  Lininensensor links */
+extern volatile int16 sensLineR;	/*!<  Lininensensor rechts */
 
-extern volatile int16 sensLdrL;		///< Helligkeitssensor links
-extern volatile int16 sensLdrR;		///< Helligkeitssensor links
+extern volatile int16 sensLdrL;		/*!< Helligkeitssensor links */
+extern volatile int16 sensLdrR;		/*!< Helligkeitssensor links */
 
-extern volatile char sensTrans;		///< Sensor Ueberwachung Transportfach
+extern volatile char sensTrans;		/*!< Sensor Ueberwachung Transportfach */
 
-extern volatile char sensDoor;		///< Sensor Ueberwachung Klappe
+extern volatile char sensDoor;		/*!< Sensor Ueberwachung Klappe */
 
-extern volatile char sensError;		///< Ueberwachung Motor oder Batteriefehler
+extern volatile char sensError;		/*!< Ueberwachung Motor oder Batteriefehler */
 
-//extern volatile int sensRc5;			///< Fernbedienungssensor
+//extern volatile int sensRc5;			/*!< Fernbedienungssensor */
 
-extern volatile char sensMouseDX;	///< Maussensor Delta X
-extern volatile char sensMouseDY;	///< Maussensor Delta X
+extern volatile char sensMouseDX;	/*!< Maussensor Delta X */
+extern volatile char sensMouseDY;	/*!< Maussensor Delta X */
 
 extern volatile int sensMouseX;
 extern volatile int sensMouseY;

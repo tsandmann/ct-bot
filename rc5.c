@@ -37,55 +37,55 @@
  */
 //#define JOG_DIAL
 
-#define RC5_TOGGLE		0x0800		///< Das RC5-Toggle-Bit
-#define RC5_ADDRESS		0x07C0		///< Der Adressbereich
-#define RC5_COMMAND		0x103F		///< Der Kommandobereich
+#define RC5_TOGGLE		0x0800		/*!< Das RC5-Toggle-Bit */
+#define RC5_ADDRESS		0x07C0		/*!< Der Adressbereich */
+#define RC5_COMMAND		0x103F		/*!< Der Kommandobereich */
 
-#define RC5_MASK (RC5_COMMAND)		///< Welcher Teil des Kommandos wird ausgewertet?
+#define RC5_MASK (RC5_COMMAND)		/*!< Welcher Teil des Kommandos wird ausgewertet? */
 
 
-#define RC5_CODE_0	(0x3940 & RC5_MASK)		///< Taste 0
-#define RC5_CODE_1	(0x3941 & RC5_MASK)		///< Taste 1
-#define RC5_CODE_2	(0x3942 & RC5_MASK)		///< Taste 2
-#define RC5_CODE_3	(0x3943 & RC5_MASK)		///< Taste 3
-#define RC5_CODE_4	(0x3944 & RC5_MASK)		///< Taste 4
-#define RC5_CODE_5	(0x3945 & RC5_MASK)		///< Taste 5
-#define RC5_CODE_6	(0x3946 & RC5_MASK)		///< Taste 6
-#define RC5_CODE_7	(0x3947 & RC5_MASK)		///< Taste 7
-#define RC5_CODE_8	(0x3948 & RC5_MASK)		///< Taste 8
-#define RC5_CODE_9	(0x3949 & RC5_MASK)		///< Taste 9
+#define RC5_CODE_0	(0x3940 & RC5_MASK)		/*!< Taste 0 */
+#define RC5_CODE_1	(0x3941 & RC5_MASK)		/*!< Taste 1 */
+#define RC5_CODE_2	(0x3942 & RC5_MASK)		/*!< Taste 2 */
+#define RC5_CODE_3	(0x3943 & RC5_MASK)		/*!< Taste 3 */
+#define RC5_CODE_4	(0x3944 & RC5_MASK)		/*!< Taste 4 */
+#define RC5_CODE_5	(0x3945 & RC5_MASK)		/*!< Taste 5 */
+#define RC5_CODE_6	(0x3946 & RC5_MASK)		/*!< Taste 6 */
+#define RC5_CODE_7	(0x3947 & RC5_MASK)		/*!< Taste 7 */
+#define RC5_CODE_8	(0x3948 & RC5_MASK)		/*!< Taste 8 */
+#define RC5_CODE_9	(0x3949 & RC5_MASK)		/*!< Taste 9 */
 
-#define RC5_CODE_UP		(0x2950 & RC5_MASK)	///< Taste Hoch
-#define RC5_CODE_DOWN	(0x2951 & RC5_MASK)	///< Taste Runter
-#define RC5_CODE_LEFT	(0x2955 & RC5_MASK)	///< Taste Links
-#define RC5_CODE_RIGHT	(0x2956 & RC5_MASK)	///< Taste Rechts
+#define RC5_CODE_UP		(0x2950 & RC5_MASK)	/*!< Taste Hoch */
+#define RC5_CODE_DOWN	(0x2951 & RC5_MASK)	/*!< Taste Runter */
+#define RC5_CODE_LEFT	(0x2955 & RC5_MASK)	/*!< Taste Links */
+#define RC5_CODE_RIGHT	(0x2956 & RC5_MASK)	/*!< Taste Rechts */
 
-#define RC5_CODE_PWR	(0x394C & RC5_MASK)	///< Taste An/Aus
+#define RC5_CODE_PWR	(0x394C & RC5_MASK)	/*!< Taste An/Aus */
 
 #ifdef JOG_DIAL		
 	// Jogdial geht nur inkl. Adresscode
 	#undef RC5_MASK
 	#define RC5_MASK (RC5_COMMAND |RC5_ADDRESS )
 
-	#define RC5_CODE_JOG_MID	(0x3969 & RC5_MASK)	///< Taste Jog-Dial Mitte
-	#define RC5_CODE_JOG_L1		(0x3962 & RC5_MASK)	///< Taste Jog-Dial Links 1
-	#define RC5_CODE_JOG_L2		(0x396F & RC5_MASK)	///< Taste Jog-Dial Links 2
-	#define RC5_CODE_JOG_L3		(0x395F & RC5_MASK)	///< Taste Jog-Dial Links 3
-	#define RC5_CODE_JOG_L4		(0x3A6C & RC5_MASK)	///< Taste Jog-Dial Links 4
-	#define RC5_CODE_JOG_L5		(0x3A6B & RC5_MASK)	///< Taste Jog-Dial Links 5
-	#define RC5_CODE_JOG_L6		(0x396C & RC5_MASK)	///< Taste Jog-Dial Links 6
-	#define RC5_CODE_JOG_L7		(0x3A6A & RC5_MASK)	///< Taste Jog-Dial Links 7
+	#define RC5_CODE_JOG_MID	(0x3969 & RC5_MASK)	/*!< Taste Jog-Dial Mitte */
+	#define RC5_CODE_JOG_L1		(0x3962 & RC5_MASK)	/*!< Taste Jog-Dial Links 1 */
+	#define RC5_CODE_JOG_L2		(0x396F & RC5_MASK)	/*!< Taste Jog-Dial Links 2 */
+	#define RC5_CODE_JOG_L3		(0x395F & RC5_MASK)	/*!< Taste Jog-Dial Links 3 */
+	#define RC5_CODE_JOG_L4		(0x3A6C & RC5_MASK)	/*!< Taste Jog-Dial Links 4 */
+	#define RC5_CODE_JOG_L5		(0x3A6B & RC5_MASK)	/*!< Taste Jog-Dial Links 5 */
+	#define RC5_CODE_JOG_L6		(0x396C & RC5_MASK)	/*!< Taste Jog-Dial Links 6 */
+	#define RC5_CODE_JOG_L7		(0x3A6A & RC5_MASK)	/*!< Taste Jog-Dial Links 7 */
 	
-	#define RC5_CODE_JOG_R1		(0x3968 & RC5_MASK)	///< Taste Jog-Dial Rechts 1
-	#define RC5_CODE_JOG_R2		(0x3975 & RC5_MASK)	///< Taste Jog-Dial Rechts 2
-	#define RC5_CODE_JOG_R3		(0x396A & RC5_MASK)	///< Taste Jog-Dial Rechts 3
-	#define RC5_CODE_JOG_R4		(0x3A6D & RC5_MASK)	///< Taste Jog-Dial Rechts 4
-	#define RC5_CODE_JOG_R5		(0x3A6E & RC5_MASK)	///< Taste Jog-Dial Rechts 5
-	#define RC5_CODE_JOG_R6		(0x396E & RC5_MASK)	///< Taste Jog-Dial Rechts 6
-	#define RC5_CODE_JOG_R7		(0x3A6F & RC5_MASK)	///< Taste Jog-Dial Rechts 7
+	#define RC5_CODE_JOG_R1		(0x3968 & RC5_MASK)	/*!< Taste Jog-Dial Rechts 1 */
+	#define RC5_CODE_JOG_R2		(0x3975 & RC5_MASK)	/*!< Taste Jog-Dial Rechts 2 */
+	#define RC5_CODE_JOG_R3		(0x396A & RC5_MASK)	/*!< Taste Jog-Dial Rechts 3 */
+	#define RC5_CODE_JOG_R4		(0x3A6D & RC5_MASK)	/*!< Taste Jog-Dial Rechts 4 */
+	#define RC5_CODE_JOG_R5		(0x3A6E & RC5_MASK)	/*!< Taste Jog-Dial Rechts 5 */
+	#define RC5_CODE_JOG_R6		(0x396E & RC5_MASK)	/*!< Taste Jog-Dial Rechts 6 */
+	#define RC5_CODE_JOG_R7		(0x3A6F & RC5_MASK)	/*!< Taste Jog-Dial Rechts 7 */
 #endif
 
-uint16 RC5_Code;        ///< Letzter empfangener RC5-Code
+uint16 RC5_Code;        /*!< Letzter empfangener RC5-Code */
 
 /*!
  * Liest ein RC5-Codeword und wertet es aus

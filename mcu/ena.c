@@ -14,7 +14,7 @@
 #ifdef ENA_AVAILABLE
 
 
-volatile char ena =0;	///< Sichert den Zustand der Enable-Leitungen
+volatile char ena =0;	/*!< Sichert den Zustand der Enable-Leitungen */
 
 /*!
  * Initialisiert die Enable-Leitungen

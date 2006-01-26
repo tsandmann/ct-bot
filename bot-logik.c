@@ -33,39 +33,39 @@
 #include "rc5.h"
 #include <stdlib.h>
 
-#define	BORDER_DANGEROUS	500		///< Wert, ab dem wir sicher sind, dass es eine Kante ist
+#define	BORDER_DANGEROUS	500		/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */
 
 
-#define	COL_CLOSEST			100		///< Abstand in mm, den wir als zu nah betrachten
-#define	COL_NEAR			200		///< Nahbereich
-#define	COL_FAR				400		///< Fernbereich
+#define	COL_CLOSEST			100		/*!< Abstand in mm, den wir als zu nah betrachten */
+#define	COL_NEAR			200		/*!< Nahbereich */
+#define	COL_FAR				400		/*!< Fernbereich */
 
-#define ZONE_CLOSEST	0			///< Zone fuer extremen Nahbereich
-#define ZONE_NEAR		1			///< Zone fuer Nahbereich
-#define ZONE_FAR		2			///< Zone fuer Fernbereich
-#define ZONE_CLEAR		3			///< Zone fuer Freien Bereich
+#define ZONE_CLOSEST	0			/*!< Zone fuer extremen Nahbereich */
+#define ZONE_NEAR		1			/*!< Zone fuer Nahbereich */
+#define ZONE_FAR		2			/*!< Zone fuer Fernbereich */
+#define ZONE_CLEAR		3			/*!< Zone fuer Freien Bereich */
 
-#define BRAKE_CLOSEST 	2			///< Bremsfaktor fuer extremen Nahbereich ( <1 ==> bremsen >1 ==> rueckwaerts)
-#define BRAKE_NEAR		0.6			///< Bremsfaktor fuer Nahbereich ( <1 ==> bremsen >1 ==> rueckwaerts)
-#define BRAKE_FAR		0.2			///< Bremsfaktor fuer Fernbereich ( <1 ==> bremsen >1 ==> rueckwaerts)
+#define BRAKE_CLOSEST 	2			/*!< Bremsfaktor fuer extremen Nahbereich ( <1 ==> bremsen >1 ==> rueckwaerts) */
+#define BRAKE_NEAR		0.6			/*!< Bremsfaktor fuer Nahbereich ( <1 ==> bremsen >1 ==> rueckwaerts) */
+#define BRAKE_FAR		0.2			/*!< Bremsfaktor fuer Fernbereich ( <1 ==> bremsen >1 ==> rueckwaerts) */
 
-char col_zone_l=ZONE_CLEAR;			///< Kollisionszone, in der sich der linke Sensor befindet
-char col_zone_r=ZONE_CLEAR;			///< Kollisionszone, in der sich der rechte Sensor befindet
+char col_zone_l=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der linke Sensor befindet */
+char col_zone_r=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der rechte Sensor befindet */
 
 
-#define MOT_GOTO_MAX  3 		///< Richtungsaenderungen, bis goto erreicht sein muss
+#define MOT_GOTO_MAX  3 		/*!< Richtungsaenderungen, bis goto erreicht sein muss */
 
-volatile int16 mot_l_goto=0;	///< Speichert, wie weit der linke Motor drehen soll
-volatile int16 mot_r_goto=0;	///< Speichert, wie weit der rechte Motor drehen soll
+volatile int16 mot_l_goto=0;	/*!< Speichert, wie weit der linke Motor drehen soll */
+volatile int16 mot_r_goto=0;	/*!< Speichert, wie weit der rechte Motor drehen soll */
 
-volatile int16 mot_goto_l=0;	///< Muss der linke Motor noch drehen? 
-volatile int16 mot_goto_r=0;	///< Muss der rechte Motor noch drehen? 
+volatile int16 mot_goto_l=0;	/*!< Muss der linke Motor noch drehen?  */
+volatile int16 mot_goto_r=0;	/*!< Muss der rechte Motor noch drehen?  */
 
-volatile int16 speed_l_col=0;	///< Kollisionsschutz links
-volatile int16 speed_r_col=0;	///< Kollisionsschutz links
+volatile int16 speed_l_col=0;	/*!< Kollisionsschutz links */
+volatile int16 speed_r_col=0;	/*!< Kollisionsschutz links */
 
-volatile int16 target_speed_l=0;	///< Sollgeschwindigkeit linker Motor
-volatile int16 target_speed_r=0;	///< Sollgeschwindigkeit rechter Motor
+volatile int16 target_speed_l=0;	/*!< Sollgeschwindigkeit linker Motor */
+volatile int16 target_speed_r=0;	/*!< Sollgeschwindigkeit rechter Motor */
 
 
 /*!

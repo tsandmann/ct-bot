@@ -27,7 +27,7 @@
 #define UART_H_
 
 
-extern char uart_timeout;	///< 0, wenn uart_read/uart_send erfolgreich; 1, wenn timeout erreicht
+extern char uart_timeout;	/*!< 0, wenn uart_read/uart_send erfolgreich; 1, wenn timeout erreicht */
 
 /*!
  * Uebertraegt ein Zeichen per UART.

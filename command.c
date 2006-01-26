@@ -44,19 +44,19 @@
 #ifdef PC
 	#include "tcp.h"
 	#include <pthread.h>	
-	#define low_read tcp_read 	///< Which function to use to read data
+	#define low_read tcp_read 	/*!< Which function to use to read data */
 #endif
 
 #ifdef MCU
-	#define low_read uart_read 	///< Which function to use to read data
+	#define low_read uart_read 	/*!< Which function to use to read data */
 #endif
 
 
 #ifdef COMMAND_AVAILABLE
 
-#define RCVBUFSIZE sizeof(command_t)   ///< Groesse des Empfangspuffers
+#define RCVBUFSIZE sizeof(command_t)   /*!< Groesse des Empfangspuffers */
 
-command_t received_command;		///< Puffer fuer Kommandos
+command_t received_command;		/*!< Puffer fuer Kommandos */
 
 #ifdef PC
 	pthread_mutex_t     command_mutex = PTHREAD_MUTEX_INITIALIZER;

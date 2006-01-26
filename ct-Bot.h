@@ -29,30 +29,30 @@
 * Module switches, to make code smaller if features are not needed
 ************************************************************/
 
-#define LED_AVAILABLE		///< LEDs for local control
+#define LED_AVAILABLE		/*!< LEDs for local control */
 
-#define IR_AVAILABLE		///< Infrared Remote Control
-#define RC5_AVAILABLE		///< Key-Mapping for IR-RC	
+#define IR_AVAILABLE		/*!< Infrared Remote Control */
+#define RC5_AVAILABLE		/*!< Key-Mapping for IR-RC	 */
 
-//#define UART_AVAILABLE	///< Serial Communication
-//#define COMMAND_AVAILABLE	///< High-Level Communication over Uart, needs UART 
+//#define UART_AVAILABLE	/*!< Serial Communication */
+//#define COMMAND_AVAILABLE	/*!< High-Level Communication over Uart, needs UART  */
 
-#define DISPLAY_AVAILABLE	///< Display for local control
+#define DISPLAY_AVAILABLE	/*!< Display for local control */
 
-#define ADC_AVAILABLE		///< A/D-Converter for sensing Power
+#define ADC_AVAILABLE		/*!< A/D-Converter for sensing Power */
 
-#define MAUS_AVAILABLE		///< Maus Sensor
+#define MAUS_AVAILABLE		/*!< Maus Sensor */
 
-#define ENA_AVAILABLE		///< Enable-Leitungen
-#define SHIFT_AVAILABLE		///< Shift Register
+#define ENA_AVAILABLE		/*!< Enable-Leitungen */
+#define SHIFT_AVAILABLE		/*!< Shift Register */
 
 #define ANALOG 2
 #define DIGITAL 2
 #define MOTOR 3
 
-//#define TEST_AVAILABLE_ANALOG	///< Sollen die LEDs die Sensorwerte anzeigen
-#define TEST_AVAILABLE_DIGITAL	///< Sollen die LEDs die Sensorwerte anzeigen
-//#define TEST_AVAILABLE_MOTOR	///< Sollen die LEDs die Sensorwerte anzeigen
+//#define TEST_AVAILABLE_ANALOG	/*!< Sollen die LEDs die Sensorwerte anzeigen */
+#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die Sensorwerte anzeigen */
+//#define TEST_AVAILABLE_MOTOR	/*!< Sollen die LEDs die Sensorwerte anzeigen */
 
 /************************************************************
 * Some Dependencies!!!
@@ -94,6 +94,6 @@
 #endif
 
 
-#define F_CPU	16000000L    ///< Crystal frequency in Hz
-#define XTAL F_CPU			 ///< Crystal frequency in Hz
+#define F_CPU	16000000L    /*!< Crystal frequency in Hz */
+#define XTAL F_CPU			 /*!< Crystal frequency in Hz */
 

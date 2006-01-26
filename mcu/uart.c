@@ -14,20 +14,20 @@
 
 #ifdef UART_AVAILABLE
 
-#define UART_RX_BUFFER_SIZE 16	///< Größe des UART-Puffers
+#define UART_RX_BUFFER_SIZE 16	/*!< Größe des UART-Puffers */
 
 #define UART_RX_BUFFER_MASK ( UART_RX_BUFFER_SIZE - 1 )
 #if ( UART_RX_BUFFER_SIZE & UART_RX_BUFFER_MASK )
 	#error RX buffer size is not a power of 2
 #endif
 
-#define UART_TIMEOUT	20000	///< Timeout. Wartet UART_TIMEOUT CPU-Takte
+#define UART_TIMEOUT	20000	/*!< Timeout. Wartet UART_TIMEOUT CPU-Takte */
 
-static unsigned char UART_RxBuf[UART_RX_BUFFER_SIZE];	///< UART-Puffer
-static volatile unsigned char UART_RxHead;				///< Zeoger für UART-Puffer
-static volatile unsigned char UART_RxTail;				///< Zeoger für UART-Puffer
+static unsigned char UART_RxBuf[UART_RX_BUFFER_SIZE];	/*!< UART-Puffer */
+static volatile unsigned char UART_RxHead;				/*!< Zeiger für UART-Puffer */
+static volatile unsigned char UART_RxTail;				/*!< Zeiger für UART-Puffer */
 
-char uart_timeout;	///< 0, wenn uart_read/uart_send erfolgreich 1, wenn timeout erreicht
+char uart_timeout;	/*!< 0, wenn uart_read/uart_send erfolgreich 1, wenn timeout erreicht */
 
 /*!
  * Initialisiere UART

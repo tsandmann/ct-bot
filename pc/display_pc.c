@@ -35,9 +35,9 @@
 
 #define DISPLAY_LENGTH	20
 
-volatile char display_update=0;	///< Muss das Display aktualisiert werden?
+volatile char display_update=0;	/*!< Muss das Display aktualisiert werden? */
 
-char display_buf[DISPLAY_BUFFER];		///< Pufferstring fuer Displayausgaben
+char display_buf[DISPLAY_BUFFER];		/*!< Pufferstring fuer Displayausgaben */
 
 
 #ifdef WIN32

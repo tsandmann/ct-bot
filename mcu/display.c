@@ -21,42 +21,42 @@
 
 #define DISPLAY_LENGTH	20
 
-volatile char display_update=0;	///< Muss das Display aktualisiert werden?
+volatile char display_update=0;	/*!< Muss das Display aktualisiert werden? */
 
-char display_buf[DISPLAY_BUFFER];		///< Pufferstring für Displayausgaben
+char display_buf[DISPLAY_BUFFER];		/*!< Pufferstring für Displayausgaben */
 
-#define DISPLAY_CLEAR 0x01		///< Kommando zum Löschen
-#define DISPLAY_CURSORHOME 0x02	///< Kommando für den Cursor
+#define DISPLAY_CLEAR 0x01		/*!< Kommando zum Löschen */
+#define DISPLAY_CURSORHOME 0x02	/*!< Kommando für den Cursor */
 
-#define DISPLAY_OUT 			0x07		///< Output-Pins Display
-#define DISPLAY_IN 			(1<<5)		///< Input-Pins Display
+#define DISPLAY_OUT 			0x07		/*!< Output-Pins Display */
+#define DISPLAY_IN 			(1<<5)		/*!< Input-Pins Display */
 
-#define DISPLAY_PORT			PORTC		///< Port an dem das Display hängt
-#define DISPLAY_DDR				DDRC		///< Port an dem das Display hängt
-#define DPC (DISPLAY_PORT & ~DISPLAY_OUT)	///< Port des Displays
+#define DISPLAY_PORT			PORTC		/*!< Port an dem das Display hängt */
+#define DISPLAY_DDR				DDRC		/*!< Port an dem das Display hängt */
+#define DPC (DISPLAY_PORT & ~DISPLAY_OUT)	/*!< Port des Displays */
 //#define DRC (DDRC & ~DISPLAY_PINS)
 
-//#define DISPLAY_READY_PINR		PINC		///< Port an dem das Ready-Flag des Display hängt
-#define DISPLAY_READY_DDR		DDRC		///< Port an dem das Ready-Flag des Display hängt
-#define DISPLAY_READY_PIN		(1<<5)		///< Pin  an dem das Ready-Flag des Display hängt
+//#define DISPLAY_READY_PINR		PINC		/*!< Port an dem das Ready-Flag des Display hängt */
+#define DISPLAY_READY_DDR		DDRC		/*!< Port an dem das Ready-Flag des Display hängt */
+#define DISPLAY_READY_PIN		(1<<5)		/*!< Pin  an dem das Ready-Flag des Display hängt */
 
 /*! RS-Leitung 
  * legt fest, ob die Daten an das Display in den Textpuffer (RS=1) kommen
  * oder als Steuercode interpretiert werden (RS=0)
  */
-#define DISPLAY_RS				(1<<0)		///< Pin an dem die RS-Leitung des Displays hängt
+#define DISPLAY_RS				(1<<0)		/*!< Pin an dem die RS-Leitung des Displays hängt */
 
 /*! RW-Leitung
  * legt fest, ob zum Display geschrieben wird (RW=0)
  * oder davon gelesen wird (RW=1)
  */
-#define DISPLAY_RW				(1<<1)		///< Pin an dem die RW-Leitung des Displays hängt
+#define DISPLAY_RW				(1<<1)		/*!< Pin an dem die RW-Leitung des Displays hängt */
 
 /*! Enable Leitung 
  * schaltet das Interface ein (E=1). 
  * Nur wenn Enable auf High-Pegel liegt, läßt sich das Display ansprechen
  */
-#define DISPLAY_EN				(1<<2)		///< Pin an dem die EN-Leitung des Displays hängt
+#define DISPLAY_EN				(1<<2)		/*!< Pin an dem die EN-Leitung des Displays hängt */
 
 /*
  * Im Moment der Low-High-Flanke von ENABLE liest das Dislplay 

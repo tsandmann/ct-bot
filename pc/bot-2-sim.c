@@ -56,19 +56,19 @@
 #  define _P __P
 #endif
 
-#define low_init tcp_init	///< Low-Funktion zum Initialisieren
+#define low_init tcp_init	/*!< Low-Funktion zum Initialisieren
 
-pthread_t simThread;			///< Simuliert den Bot
-pthread_t bot_2_sim_Thread;		///< Thread sammelt Sensordaten, uebertraegt Motor-Daten
+pthread_t simThread;			/*!< Simuliert den Bot */
+pthread_t bot_2_sim_Thread;		/*!< Thread sammelt Sensordaten, uebertraegt Motor-Daten */
 
-pthread_cond_t      command_cond  = PTHREAD_COND_INITIALIZER;	///< Schuetzt das Kommando
-pthread_mutex_t     command_cond_mutex = PTHREAD_MUTEX_INITIALIZER;	///< Schuetzt das Kommando
+pthread_cond_t      command_cond  = PTHREAD_COND_INITIALIZER;	/*!< Schuetzt das Kommando */
+pthread_mutex_t     command_cond_mutex = PTHREAD_MUTEX_INITIALIZER;	/*!< Schuetzt das Kommando */
 
 void signal_command_available(void);
 int wait_for_command(int timeout_s);
 
 #ifdef WIN32
-	 /* These are winbase.h definitions, but to avoid including
+	 /* These are winbase.h definitions, but to avoid including 
 	tons of Windows related stuff, it is reprinted here */
 	
 	typedef struct _FILETIME {
@@ -127,7 +127,7 @@ void bot_2_sim_init(void){
 }
 
 
-int count=1;	///< Zaehler fuer Paket-Sequenznummer
+int count=1;	/*!< Zaehler fuer Paket-Sequenznummer
 int not_answered_error=1;
 
 
@@ -188,7 +188,7 @@ void signal_command_available(void){
 
 /*!
  * Schickt einen Thread in die Warteposition
- * @param timeout_us Wartezeit in µs
+ * @param timeout_us Wartezeit in ï¿½s
  */
 void wait_for_time(long timeout_us){
 	pthread_cond_t      cond  = PTHREAD_COND_INITIALIZER;

@@ -30,11 +30,11 @@
 #include "bot-2-sim.h"
 
 
-#define IP "127.0.0.1"		///<  IP, mit der verbunden werden soll (normalerweise localhost)
+#define IP "127.0.0.1"		/*!<  IP, mit der verbunden werden soll (normalerweise localhost) */
 //#define IP "10.10.22.242"		
-#define PORT 10001			///<  Port, mit dem verbunden werden soll 
+#define PORT 10001			/*!<  Port, mit dem verbunden werden soll  */
 
-extern int tcp_sock;			///< Unser TCP-Socket
+extern int tcp_sock;			/*!< Unser TCP-Socket */
 
 /*!
  * Uebertrage Daten per TCP/IP

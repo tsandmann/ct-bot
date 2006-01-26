@@ -30,7 +30,7 @@
 #include "global.h"
 
 
-extern volatile uint16	ir_data;	///< letztes komplett gelesenes RC5-Paket
+extern volatile uint16	ir_data;	/*!< letztes komplett gelesenes RC5-Paket */
 
 /*!
  * Init IR-System
@@ -45,7 +45,7 @@ uint16 	ir_read		(void);
 
 /*!
  * Interrupt Serviceroutine,
- * wird ca. alle 177.8 µs aufgerufen
+ * wird ca. alle 177.8 ï¿½s aufgerufen
  */
 void 	ir_isr		(void);
 #endif

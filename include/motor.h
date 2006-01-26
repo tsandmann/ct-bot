@@ -28,14 +28,14 @@
 
 #include "global.h"
 
-#define BOT_SPEED_STOP		0		///< Motor aus
-#define BOT_SPEED_SLOW		10		///< langsame Fahrt
-#define BOT_SPEED_NORMAL	50		///< normale Fahrt
-#define BOT_SPEED_FAST		150		///< schnelle Fahrt
-#define BOT_SPEED_MAX		255		///< maximale Fahrt
+#define BOT_SPEED_STOP		0		/*!< Motor aus */
+#define BOT_SPEED_SLOW		10		/*!< langsame Fahrt */
+#define BOT_SPEED_NORMAL	50		/*!< normale Fahrt */
+#define BOT_SPEED_FAST		150		/*!< schnelle Fahrt */
+#define BOT_SPEED_MAX		255		/*!< maximale Fahrt */
 
-extern int16 volatile speed_l;			///< Geschwindigkeit des linken Motors
-extern int16 volatile speed_r;			///< Geschwindigkeit des rechten Motors
+extern int16 volatile speed_l;			/*!< Geschwindigkeit des linken Motors */
+extern int16 volatile speed_r;			/*!< Geschwindigkeit des rechten Motors */
 
 
 /*!

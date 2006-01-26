@@ -202,7 +202,7 @@ void init(void){
 		LED_set(0x00);
 	#endif
 		
-	/// Hauptschleife des Bot
+	/*! Hauptschleife des Bot */
 	for(;;){
 		#ifdef MCU
 			bot_sens_isr();
@@ -238,6 +238,6 @@ void init(void){
 		#endif
 	}
 	
-	/// Falls wir das je erreichen sollten ;-)
+	/*! Falls wir das je erreichen sollten ;-) */
 	return 1;	
 }

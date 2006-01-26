@@ -33,7 +33,7 @@
 
 #ifdef IR_AVAILABLE
 
-volatile uint16	ir_data	= 0;	///< letztes komplett gelesenes RC5-Paket
+volatile uint16	ir_data	= 0;	/*!< letztes komplett gelesenes RC5-Paket */
 
 /*!
  * IR-Daten lesen
