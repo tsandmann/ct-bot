@@ -28,8 +28,8 @@
 
 #include "global.h"
 
-extern int16 sensDistL;				///< Distanz linker IR-Sensor
-extern int16 sensDistR;				///< Distanz rechter IR-Sensor
+extern volatile int16 sensDistL;	///< Distanz linker IR-Sensor
+extern volatile int16 sensDistR;	///< Distanz rechter IR-Sensor
 
 extern volatile int16 sensLDRL;		///< Lichtsensor links
 extern volatile int16 sensLDRR;		///< Lichtsensor rechts

@@ -73,7 +73,7 @@ volatile int16 target_speed_r=0;	///< Sollgeschwindigkeit rechter Motor
  * @param left Schritte links
  * @param right Schritte rechts
  */
-void bot_goto(int left, int right){
+void bot_goto(int16 left, int16 right){
 	// Zielwerte speichern
 	mot_l_goto=left; 
 	mot_r_goto=right;
