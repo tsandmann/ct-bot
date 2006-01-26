@@ -1,5 +1,8 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-01-26	Benjamin Benz (bbe@heise.de) Gesamtes Verhalten umgestellt. es gibt jetzt ein eigenes 
+										 Verhaltens-Framework.
+
 2006-01-26	Benjamin Benz (bbe@heise.de) Kommentare geaendert
 
 2006-01-25	Benjamin Benz (bbe@heise.de) Status der LEDs wird nun an den Simulator übertragen

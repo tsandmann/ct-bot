@@ -42,4 +42,9 @@ extern void bot_goto(int16 left, int16 right);
  */
 extern void bot_behave(void);
 
+/*!
+ * Initilaisert das ganze Verhalten
+ */
+extern void bot_behave_init();
+
 #endif

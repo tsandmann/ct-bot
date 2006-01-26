@@ -91,6 +91,7 @@ void init(void){
 
 	motor_init();
 	bot_sens_init();
+	bot_behave_init();
 	
 	#ifdef MCU
 		#ifdef RC5_AVAILABLE
