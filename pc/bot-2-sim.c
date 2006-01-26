@@ -96,7 +96,9 @@ int wait_for_command(int timeout_s);
  * Dieser Thread nimmt die Daten vom PC entgegen
  */
 void *bot_2_sim_rcv_isr(void * arg){
-	display_cursor(11,1);
+	#ifdef DISPLAY_AVAILABLE
+		display_cursor(11,1);
+	#endif
 	printf("bot_2_sim_rcv_isr() comming up\n");
 	for (;;){
 		// only write if noone reads command

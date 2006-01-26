@@ -129,7 +129,9 @@ int tcp_server_run (void){
 		
 		for(;;){
 			command_read();
-			command_display(&received_command);
+			#ifdef DISPLAY_AVAILABLE
+				command_display(&received_command);
+			#endif		
 			
 			received_command.request.direction=DIR_ANSWER;
 			tcp_write((char *)&received_command,sizeof(command_t));
