@@ -373,7 +373,7 @@ Behaviour_t *new_behaviour(char priority, void (*work) (struct _Behaviour_t *dat
 
 /*!
  * Fuegt ein Verhalten der Verhaltenliste anhand der Prioritaet ein.
- * @param list Liste
+ * @param list Die Speicherstelle an der die globale Verhaltensliste anfaengt
  * @param behave Einzufuegendes Verhalten
  */
 static void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
