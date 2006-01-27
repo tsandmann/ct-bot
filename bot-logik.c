@@ -31,11 +31,13 @@
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	01.12.05
 */
+#include <stdio.h>
 
 #include "ct-Bot.h"
 #include "motor.h"
 #include "sensor.h"
 #include "bot-logik.h"
+#include "display.h"
 
 #include "rc5.h"
 #include <stdlib.h>
@@ -75,8 +77,8 @@ volatile int16 target_speed_r=0;	/*!< Sollgeschwindigkeit rechter Motor */
 
 
 /*! Verwaltungsstruktur für die Verhaltensroutinen */
-typedef struct _Beaviour_t {
-   void (*work) (struct _Beaviour_t *data); 	/*!< Zeiger auf die Funktion, die das Verhalten bearbeitet */
+typedef struct _Behaviour_t {
+   void (*work) (struct _Behaviour_t *data); 	/*!< Zeiger auf die Funktion, die das Verhalten bearbeitet */
    int16 speed_l;				/*!< Zielvariablen der Funktion links (wenn != 0, dann werden untere Prioritäten ignoriert)*/
    int16 speed_r;				/*!< Zielvariablen der Funktion rechts (wenn != 0, dann werden untere Prioritäten ignoriert) */
 
@@ -86,11 +88,11 @@ typedef struct _Beaviour_t {
    uint8 priority;				/*!< Priorität */
    char active:1;				/*!< Ist das Verhalten aktiv */
    char ignore:1;				/*!< Sollen alle Zielwerte ignoriert werden */
-   struct _Beaviour_t *next;					/*!< Naechster Eintrag in der Liste */
-}__attribute__ ((packed)) Beaviour_t;
+   struct _Behaviour_t *next;					/*!< Naechster Eintrag in der Liste */
+}__attribute__ ((packed)) Behaviour_t;
 
 /*! Liste mit allen Verhalten */
-Beaviour_t *behaviour = NULL;
+Behaviour_t *behaviour = NULL;
 
 
 /*! 
@@ -101,7 +103,7 @@ Beaviour_t *behaviour = NULL;
  * und findet dann in bot_behave_init() und bot_behave() weiter Hinweise ....
  * @param *data der Verhaltensdatensatz
  */
-void bot_simple(Beaviour_t *data){
+void bot_simple(Behaviour_t *data){
 /*  int16 speed_l_col, speed_r_col;
   data->speed_l=BOT_SPEED_MAX;
   data->speed_r=BOT_SPEED_MAX;
@@ -122,7 +124,7 @@ void bot_simple(Beaviour_t *data){
  * Das basisverhalten Grundverhalten 
  * @param *data der Verhaltensdatensatz
  */
-void bot_base(Beaviour_t *data){
+void bot_base(Behaviour_t *data){
 	data->speed_l=target_speed_l;
 	data->speed_r=target_speed_r;
 }
@@ -133,16 +135,16 @@ void bot_base(Beaviour_t *data){
  * @param *data der Verhaltensdatensatz
  * @see bot_goto()
  */
-void bot_goto_system(Beaviour_t *data){
+void bot_goto_system(Behaviour_t *data){
 
-  	int diff_l = sensEncL - mot_l_goto;	// Restdistanz links
-	int diff_r = sensEncR - mot_r_goto;	// Restdistanz rechts	
+  	int diff_l = sensEncL - mot_l_goto;	/* Restdistanz links */
+	int diff_r = sensEncR - mot_r_goto;	/* Restdistanz rechts */
 	
-	// Motor L hat noch keine MOT_GOTO_MAX Nulldurchgaenge gehabt
+	/* Motor L hat noch keine MOT_GOTO_MAX Nulldurchgaenge gehabt */
 	if (mot_goto_l >0){
-		if (abs(diff_l) <= 2){			// 2 Encoderstaende Genauigkeit reicht
-			data->speed_l = BOT_SPEED_STOP;	//Stop
-			mot_goto_l--;			// wie Nulldurchgang behandeln
+		if (abs(diff_l) <= 2){	/* 2 Encoderstaende Genauigkeit reicht */
+			data->speed_l = BOT_SPEED_STOP;	/* Stop */
+			mot_goto_l--;			/* wie Nulldurchgang behandeln */
 		}else if (abs(diff_l) < 4)
 			data->speed_l= BOT_SPEED_SLOW;
 		else if (abs(diff_l) < 10)
@@ -192,46 +194,46 @@ void bot_goto_system(Beaviour_t *data){
  * geschieht.
  * @param *data der Verhaltensdatensatz
  */ 
-void bot_avoid_col(Beaviour_t *data){	
-	if (sensDistR < COL_CLOSEST)	// sehr nah
-		col_zone_r=ZONE_CLOSEST;	// dann auf jeden Fall CLOSEST Zone
+void bot_avoid_col(Behaviour_t *data){	
+	if (sensDistR < COL_CLOSEST)	/* sehr nah */
+		col_zone_r=ZONE_CLOSEST;	/* dann auf jeden Fall CLOSEST Zone */
 	else 
-	// sind wir naeher als NEAR und nicht in der inneren Zone gewesen
+	/* sind wir naeher als NEAR und nicht in der inneren Zone gewesen */
 	if ((sensDistR < COL_NEAR) && (col_zone_r > ZONE_CLOSEST))
-		col_zone_r=ZONE_NEAR;	// dann auf in die NEAR-Zone
+		col_zone_r=ZONE_NEAR;	/* dann auf in die NEAR-Zone */
 	else
-	// sind wir naeher als FAR und nicht in der NEAR-Zone gewesen
+	/* sind wir naeher als FAR und nicht in der NEAR-Zone gewesen */
 	if ((sensDistR < COL_FAR) && (col_zone_r > ZONE_NEAR))
-		col_zone_r=ZONE_FAR;	// dann auf in die FAR-Zone
+		col_zone_r=ZONE_FAR;	/* dann auf in die FAR-Zone */
 	else
-	// wir waren in einer engeren Zone und verlassen sie in Richtung NEAR
+	/* wir waren in einer engeren Zone und verlassen sie in Richtung NEAR */
 	if (sensDistR < (COL_NEAR * 0.50))
-		col_zone_r=ZONE_NEAR;	// dann auf in die NEAR-Zone
+		col_zone_r=ZONE_NEAR;	/* dann auf in die NEAR-Zone */
 	else
 	if (sensDistR < (COL_FAR * 0.50))
-		col_zone_r=ZONE_FAR;	// dann auf in die NEAR-Zone
+		col_zone_r=ZONE_FAR;	/* dann auf in die NEAR-Zone */
 	else
-		col_zone_r=ZONE_CLEAR;	// dann auf in die NEAR-Zone
+		col_zone_r=ZONE_CLEAR;	/* dann auf in die CLEAR-Zone */
 	
-	if (sensDistL < COL_CLOSEST)	// sehr nah
-		col_zone_l=ZONE_CLOSEST;	// dann auf jeden Fall CLOSEST-Zone
+	if (sensDistL < COL_CLOSEST)	/* sehr nah */
+		col_zone_l=ZONE_CLOSEST;	/* dann auf jeden Fall CLOSEST-Zone */
 	else 
-	// sind wir naeher als NEAR und nicht in der inneren Zone gewesen
+	/* sind wir naeher als NEAR und nicht in der inneren Zone gewesen */
 	if ((sensDistL < COL_NEAR) && (col_zone_l > ZONE_CLOSEST))
-		col_zone_l=ZONE_NEAR;	// dann auf in die NEAR-Zone
+		col_zone_l=ZONE_NEAR;	/* dann auf in die NEAR-Zone */
 	else
-	// sind wir naeher als FAR und nicht in der NEAR-Zone gewesen
+	/* sind wir naeher als FAR und nicht in der NEAR-Zone gewesen */
 	if ((sensDistL < COL_FAR) && (col_zone_l > ZONE_NEAR))
-		col_zone_l=ZONE_FAR;	// dann auf in die FAR-Zone
+		col_zone_l=ZONE_FAR;	/* dann auf in die FAR-Zone */
 	else
-	// wir waren in einer engeren Zone und verlassen sie in Richtung NEAR
+	/* wir waren in einer engeren Zone und verlassen sie in Richtung NEAR */
 	if (sensDistL < (COL_NEAR * 0.50))
-		col_zone_l=ZONE_NEAR;	// dann auf in die NEAR-Zone
+		col_zone_l=ZONE_NEAR;	/* dann auf in die NEAR-Zone */
 	else
 	if (sensDistL < (COL_FAR * 0.50))
-		col_zone_l=ZONE_FAR;	// dann auf in die NEAR-Zone
+		col_zone_l=ZONE_FAR;	/* dann auf in die NEAR-Zone */
 	else
-		col_zone_l=ZONE_CLEAR;	// dann auf in die NEAR-Zone
+		col_zone_l=ZONE_CLEAR;	/* dann auf in die CLEAR-Zone */
 	
 	
 	switch (col_zone_l){
@@ -294,7 +296,7 @@ void bot_avoid_col(Beaviour_t *data){
  * Verhindert, dass der Bot in Graeben faellt
  * @param *data der Verhaltensdatensatz
  */
-void bot_avoid_border(Beaviour_t *data){
+void bot_avoid_border(Behaviour_t *data){
 	if (sensBorderL > BORDER_DANGEROUS)
 		data->speed_l=-BOT_SPEED_NORMAL;
 	else
@@ -316,7 +318,7 @@ void bot_avoid_border(Beaviour_t *data){
  * um den Bot zu steuern
  */
 void bot_behave(void){	
-	Beaviour_t *job = behaviour;
+	Behaviour_t *job = behaviour;
 	char skip=0;
 	float faktor_l= 1.0;
 	float faktor_r= 1.0;
@@ -354,8 +356,8 @@ void bot_behave(void){
  * @param priority Die Prioritaet
  * @param *work Den Namen der Funktion, die sich drum kuemmert
  */
-Beaviour_t *new_behaviour(char priority, void (*work) (struct _Beaviour_t *data)){
-	Beaviour_t *newbehaviour = (Beaviour_t *) malloc(sizeof(Beaviour_t)); 
+Behaviour_t *new_behaviour(char priority, void (*work) (struct _Behaviour_t *data)){
+	Behaviour_t *newbehaviour = (Behaviour_t *) malloc(sizeof(Behaviour_t)); 
 	newbehaviour->priority = priority;
 	newbehaviour->speed_l=0;
 	newbehaviour->speed_r=0;
@@ -370,26 +372,73 @@ Beaviour_t *new_behaviour(char priority, void (*work) (struct _Beaviour_t *data)
 }
 
 /*!
- * Initilaisert das ganze Verhalten
+ * Fuegt ein Verhalten der Verhaltenliste anhand der Prioritaet ein.
+ * @param list Liste
+ * @param behave Einzufuegendes Verhalten
+ */
+static void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
+	Behaviour_t	*ptr	= *list;
+	Behaviour_t *temp	= NULL;
+	
+	/* Erster Eintrag in der Liste? */
+	if (ptr == NULL){
+		ptr = behave;
+		*list = ptr;
+	} else {
+		/* Gleich mit erstem Eintrag tauschen? */
+		if (ptr->priority < behave->priority) {
+			behave->next = ptr;
+			ptr = behave;
+			*list = ptr;
+		} else {
+			/* Mit dem naechsten Eintrag vergleichen */
+			while(NULL != ptr->next) {
+				if (ptr->next->priority < behave->priority)	{
+					break;
+				}
+				
+				/* Naechster Eintrag */
+				ptr = ptr->next;
+			}
+			
+			temp = ptr->next;
+			ptr->next = behave;
+			behave->next = temp;
+		}
+	}
+}
+
+/*!
+ * Initialisert das ganze Verhalten
  */
 void bot_behave_init(){
-	Beaviour_t *ptr;
-	behaviour = new_behaviour(210,bot_simple);		// Einfache Verhaltensroutine, die alles andere Übersteuert
-	ptr=behaviour;
 
-	ptr->next = new_behaviour(200,bot_avoid_border);
-	ptr=ptr->next;
+	/* Einfache Verhaltensroutine, die alles andere uebersteuert */
+	insert_behaviour_to_list(&behaviour, new_behaviour(210,bot_simple));
+	insert_behaviour_to_list(&behaviour, new_behaviour(200,bot_avoid_border));
+
+	insert_behaviour_to_list(&behaviour, new_behaviour(100,bot_avoid_col));
+	insert_behaviour_to_list(&behaviour, new_behaviour(50,bot_goto_system));
+	insert_behaviour_to_list(&behaviour, new_behaviour(0,bot_base));
+
+
+	#ifdef PC
+		#ifdef DISPLAY_AVAILABLE
+			/* Annzeigen der geladenen Verhalten  */
+				Behaviour_t	*ptr	= behaviour;
 	
-	ptr->next = new_behaviour(100,bot_avoid_col);
-	ptr=ptr->next;
+				display_cursor(1,1);
+				sprintf(display_buf,"Verhaltensstack:\n");			
+				display_buffer();
+				while(ptr != NULL)	{
+					sprintf(display_buf,"Prioritaet: %d.\n", ptr->priority);
+					display_buffer();
+					ptr = ptr->next;
+				}
+		#endif
+	#endif
 
-	ptr->next = new_behaviour(50,bot_goto_system);
-	ptr=ptr->next;
-
-	ptr->next = new_behaviour(0,bot_base);
-	ptr=ptr->next;
-	
-	// TODO Sortieren der Liste nach Prioritaeten
+	return;
 }
 
 

@@ -1,5 +1,8 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-01-27	Benjamin Benz (bbe@heise.de) Patch von Andreas Merkle (mail@blue-andi.de) eingebaut. Man kann Verhalten 
+										 jetzt vereinfacht laden
+
 2006-01-26	Benjamin Benz (bbe@heise.de) Gesamtes Verhalten umgestellt. es gibt jetzt ein eigenes 
 										 Verhaltens-Framework.
 

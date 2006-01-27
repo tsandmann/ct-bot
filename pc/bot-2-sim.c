@@ -56,7 +56,7 @@
 #  define _P __P
 #endif
 
-#define low_init tcp_init	/*!< Low-Funktion zum Initialisieren
+#define low_init tcp_init	/*!< Low-Funktion zum Initialisieren*/
 
 pthread_t simThread;			/*!< Simuliert den Bot */
 pthread_t bot_2_sim_Thread;		/*!< Thread sammelt Sensordaten, uebertraegt Motor-Daten */
@@ -129,7 +129,7 @@ void bot_2_sim_init(void){
 }
 
 
-int count=1;	/*!< Zaehler fuer Paket-Sequenznummer
+int count=1;	/*!< Zaehler fuer Paket-Sequenznummer*/
 int not_answered_error=1;
 
 
