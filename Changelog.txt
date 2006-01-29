@@ -1,5 +1,12 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-01-28	Andreas Merkle (mail@blue-andi.de) Beim Ausfuehren von Verhalten werden Verhalten mit gleicher Prioritaet nun
+											   additiv behandelt und erst dann die Werte gesetzt.
+											   Im Verhalten bot_avoid_col wurde die Geschwindigkeitsaenderung nicht in die
+											   Verhaltenstruktur geschrieben. Dieses wurde korrigiert.
+											   Beim Anlegen einer Verhaltensstruktur wird nun ueberprueft, ob
+											   genuegend Heap-Speicher vorhanden ist.
+
 2006-01-27	Benjamin Benz (bbe@heise.de) Patch von Andreas Merkle (mail@blue-andi.de) eingebaut. Man kann Verhalten 
 										 jetzt vereinfacht laden
 

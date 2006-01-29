@@ -42,11 +42,11 @@
 #include "rc5.h"
 #include <stdlib.h>
 
-#define	BORDER_DANGEROUS	500		/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */
+#define BORDER_DANGEROUS	500		/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */
 
-#define	COL_CLOSEST			100		/*!< Abstand in mm, den wir als zu nah betrachten */
-#define	COL_NEAR			200		/*!< Nahbereich */
-#define	COL_FAR				400		/*!< Fernbereich */
+#define COL_CLOSEST		100		/*!< Abstand in mm, den wir als zu nah betrachten */
+#define COL_NEAR			200		/*!< Nahbereich */
+#define COL_FAR			400		/*!< Fernbereich */
 
 #define ZONE_CLOSEST	0			/*!< Zone fuer extremen Nahbereich */
 #define ZONE_NEAR		1			/*!< Zone fuer Nahbereich */
@@ -57,20 +57,17 @@
 #define BRAKE_NEAR		0.6			/*!< Bremsfaktor fuer Nahbereich ( <1 ==> bremsen >1 ==> rueckwaerts) */
 #define BRAKE_FAR		0.2			/*!< Bremsfaktor fuer Fernbereich ( <1 ==> bremsen >1 ==> rueckwaerts) */
 
+#define MOT_GOTO_MAX  3 		/*!< Richtungsaenderungen, bis goto erreicht sein muss */
+
+
 char col_zone_l=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der linke Sensor befindet */
 char col_zone_r=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der rechte Sensor befindet */
-
-
-#define MOT_GOTO_MAX  3 		/*!< Richtungsaenderungen, bis goto erreicht sein muss */
 
 volatile int16 mot_l_goto=0;	/*!< Speichert, wie weit der linke Motor drehen soll */
 volatile int16 mot_r_goto=0;	/*!< Speichert, wie weit der rechte Motor drehen soll */
 
 volatile int16 mot_goto_l=0;	/*!< Muss der linke Motor noch drehen?  */
 volatile int16 mot_goto_r=0;	/*!< Muss der rechte Motor noch drehen?  */
-
-volatile int16 speed_l_col=0;	/*!< Kollisionsschutz links */
-volatile int16 speed_r_col=0;	/*!< Kollisionsschutz links */
 
 volatile int16 target_speed_l=0;	/*!< Sollgeschwindigkeit linker Motor */
 volatile int16 target_speed_r=0;	/*!< Sollgeschwindigkeit rechter Motor */
@@ -234,8 +231,7 @@ void bot_avoid_col(Behaviour_t *data){
 		col_zone_l=ZONE_FAR;	/* dann auf in die NEAR-Zone */
 	else
 		col_zone_l=ZONE_CLEAR;	/* dann auf in die CLEAR-Zone */
-	
-	
+		
 	switch (col_zone_l){
 		case ZONE_CLOSEST:
 			data->faktor_r = BRAKE_CLOSEST;
@@ -249,7 +245,8 @@ void bot_avoid_col(Behaviour_t *data){
 		case ZONE_CLEAR:
 			data->faktor_r = 1;
 			break;
-		default: col_zone_l=ZONE_CLEAR;
+		default:
+			col_zone_l = ZONE_CLEAR;
 			break;
 	}
 		
@@ -266,7 +263,8 @@ void bot_avoid_col(Behaviour_t *data){
 		case ZONE_CLEAR:
 			data->faktor_l = 1;
 			break;
-		default: col_zone_r=ZONE_CLEAR;
+		default:
+			col_zone_r = ZONE_CLEAR;
 			break;
 	}	
 	
@@ -285,10 +283,14 @@ void bot_avoid_col(Behaviour_t *data){
 	else if (sensDistL < COL_FAR)	//  fern
 		speed_r_col=-target_speed_r  * 0.65;
 	     else speed_r_col=0;
-*/	     
+*/
 	if ((col_zone_r == ZONE_CLOSEST)&&(col_zone_l == ZONE_CLOSEST)){
-		speed_l_col=-target_speed_l + BOT_SPEED_MAX;
-		speed_r_col=-target_speed_r - BOT_SPEED_MAX;
+		data->speed_l = -target_speed_l + BOT_SPEED_MAX;
+		data->speed_r = -target_speed_r - BOT_SPEED_MAX;
+	}
+	else {
+		data->speed_l = 0;
+		data->speed_r = 0;
 	}
 }
 
@@ -318,38 +320,65 @@ void bot_avoid_border(Behaviour_t *data){
  * um den Bot zu steuern
  */
 void bot_behave(void){	
-	Behaviour_t *job = behaviour;
-	char skip=0;
-	float faktor_l= 1.0;
-	float faktor_r= 1.0;
+	Behaviour_t *job = behaviour;		// Zeiger auf ein Verhalten
+	char skip = 0;						// Abbruchvariable für die Schleife
+	char addNext = 0;					// Sollen Verhalten kummuliert werden?
+
+	float faktor_l = 1.0;				// Puffer für modifkatoren
+	float faktor_r = 1.0;				// Puffer für modifkatoren
+	int16 speedLeft = 0;				// Puffer für Geschwindigkeiten
+	int16 speedRight = 0;				// Puffer für Geschwindigkeiten
 	
 	#ifdef RC5_AVAILABLE
-		rc5_control();
+		rc5_control();					// Abfrage der IR-Fernbedienung
 	#endif
 
-	// Solange noch Verhalten in der Liste sind
-	// Achtung wir werwarten die Jobs sortiert nach Priorität. Wichtige zuerst!!!
+	/* Solange noch Verhalten in der Liste sind
+	   Achtung wir werten die Jobs sortiert nach Prioritaet. Wichtige zuerst!!! */
 	while ((job != NULL	) && (skip == 0)){
 		if (job->active != 0) {
-			(*(job->work))(job);		// Verhalten ausführen
-			//printf("Verhalten mit Prioritaet %d speed_l= %d speed_r= %d faktor_l=%5.4f faktor_r= %5.4f\n",job->priority,job->speed_l,job->speed_r,job->faktor_l,job->faktor_r);
-			
-			if ((job->speed_l != 0) || (job->speed_r != 0)){	// Wenn ein Verhalten Werte dirket setzen will, nicht weitermachen
-				motor_set(job->speed_l*faktor_l,job->speed_r*faktor_r);
-				// TODO es waere sinnvoll Behaviours gleicher Prioritaet additiv zu behandeln und nicht nur das erste
-				skip=1;				
-				//printf("Skip\n");
+			job->work(job);	/* Verhalten ausfuehren */
+			// printf("\nVerhalten mit Prioritaet %d speed_l= %d speed_r= %d faktor_l=%5.4f faktor_r= %5.4f\n",job->priority,job->speed_l,job->speed_r,job->faktor_l,job->faktor_r);
+
+			/* Geschwindigkeit aendern? */
+			if ((job->speed_l != 0) || (job->speed_r != 0)){
+				if (addNext == 0) {
+					speedLeft = job->speed_l * faktor_l;
+					speedRight = job->speed_r * faktor_r;
+				}
+				else {
+					speedLeft += job->speed_l * faktor_l;
+					speedRight += job->speed_r * faktor_r;
+				}
 			}
-			if ((job->faktor_l != 1.0) || (job->faktor_r != 1.0)){	// Wenn ein Verhalten Werte modifizieren will, dann sammeln
+			/* Wenn ein Verhalten Werte modifizieren will, dann sammeln */
+			if ((job->faktor_l != 1.0) || (job->faktor_r != 1.0)){
 				faktor_l *= job->faktor_l;
-					faktor_r *= job->faktor_r;
+				faktor_r *= job->faktor_r;
 			}
-			// TODO es waere sinnvoll Behaviours gleicher Prioritaet additiv zu behandeln und nicht nur das erste
 		}
-		job=job->next;		// Und weiter in der Liste
+		
+		/* Hat der naechste Job die gleiche Prioritaet wie der aktuelle, dann diesen additiv behandeln */
+		if (NULL != job->next) {
+			if (job->priority == job->next->priority)
+				addNext = 1;
+			else
+				addNext = 0;
+		} else 
+			addNext = 0;
+		
+		/* Wenn ein Verhalten Werte direkt setzen will, nicht weitermachen, ausser der
+		   naechste Job hat die gleiche Prioritaet */
+		if ((addNext == 0) && ((0 != speedLeft) || (0 != speedRight))) {
+			motor_set(speedLeft * faktor_l, speedRight * faktor_r);
+			skip = 1;
+		}
+		
+		/* printf("Add next = %d Skip = %d speedLeft=%d speedRight=%d\n", addNext, skip, speedLeft, speedRight); */
+		
+		job = job->next;	/* Und weiter in der Liste */
 	}
 }
-
 
 /*! 
  * Erzeugt ein neues Verhalten 
@@ -358,6 +387,10 @@ void bot_behave(void){
  */
 Behaviour_t *new_behaviour(char priority, void (*work) (struct _Behaviour_t *data)){
 	Behaviour_t *newbehaviour = (Behaviour_t *) malloc(sizeof(Behaviour_t)); 
+	
+	if (newbehaviour == NULL) 
+		return NULL;
+	
 	newbehaviour->priority = priority;
 	newbehaviour->speed_l=0;
 	newbehaviour->speed_r=0;
@@ -380,6 +413,10 @@ static void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 	Behaviour_t	*ptr	= *list;
 	Behaviour_t *temp	= NULL;
 	
+	/* Kein Eintrag dabei? */
+	if (behave == NULL)
+		return;
+	
 	/* Erster Eintrag in der Liste? */
 	if (ptr == NULL){
 		ptr = behave;
@@ -393,9 +430,8 @@ static void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 		} else {
 			/* Mit dem naechsten Eintrag vergleichen */
 			while(NULL != ptr->next) {
-				if (ptr->next->priority < behave->priority)	{
+				if (ptr->next->priority < behave->priority)	
 					break;
-				}
 				
 				/* Naechster Eintrag */
 				ptr = ptr->next;
@@ -414,13 +450,12 @@ static void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 void bot_behave_init(){
 
 	/* Einfache Verhaltensroutine, die alles andere uebersteuert */
-	insert_behaviour_to_list(&behaviour, new_behaviour(210,bot_simple));
-	insert_behaviour_to_list(&behaviour, new_behaviour(200,bot_avoid_border));
+	insert_behaviour_to_list(&behaviour, new_behaviour(210, bot_simple));
+	insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_avoid_border));
 
-	insert_behaviour_to_list(&behaviour, new_behaviour(100,bot_avoid_col));
-	insert_behaviour_to_list(&behaviour, new_behaviour(50,bot_goto_system));
-	insert_behaviour_to_list(&behaviour, new_behaviour(0,bot_base));
-
+	insert_behaviour_to_list(&behaviour, new_behaviour(100, bot_avoid_col));
+	insert_behaviour_to_list(&behaviour, new_behaviour(50, bot_goto_system));
+	insert_behaviour_to_list(&behaviour, new_behaviour(0, bot_base));
 
 	#ifdef PC
 		#ifdef DISPLAY_AVAILABLE
