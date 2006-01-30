@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-01-30	Benjamin Benz (bbe@heise.de) Sensoren ueberarbeitet, Encoder reaktiviert
+
 2006-01-30	Benjamin Benz (bbe@heise.de) sensDistL und sensDistR initialisieren bun mit 1023 ==> keine Rotation zu Beginn mehr
 
 2006-01-28	Andreas Merkle (mail@blue-andi.de) Beim Ausfuehren von Verhalten werden Verhalten mit gleicher Prioritaet nun

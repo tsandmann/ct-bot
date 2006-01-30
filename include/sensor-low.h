@@ -28,10 +28,17 @@
 /*!
  * Initialisiere alle Sensoren
  */
-void bot_sens_init(void);
+extern void bot_sens_init(void);
 
 /*!
  * Alle Sensoren aktualisieren
  */
-void bot_sens_isr(void);
+extern void bot_sens_isr(void);
+
+/*!
+ * Kuemmert sich um die Radencoder
+ * Das muss schneller gehen als die anderen Sensoren,
+ * daher Update per ISR
+ */
+extern void bot_encoder_isr(void);
 #endif

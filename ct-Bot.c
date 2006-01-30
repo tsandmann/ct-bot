@@ -127,7 +127,7 @@ void init(void){
 			display_buffer();
 
 			display_cursor(3,1);
-			sprintf(display_buf,"R=%d %d F=%d K=%d T=%d ",sensEncL,sensEncR,sensError,sensDoor,sensTrans);
+			sprintf(display_buf,"R=%d %d F=%d K=%d T=%d ",sensEncL % 10,sensEncR % 10,sensError,sensDoor,sensTrans);
 			display_buffer();
 
 			display_cursor(4,1);
