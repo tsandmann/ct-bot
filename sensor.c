@@ -28,8 +28,8 @@
 volatile int16 sensLDRL=0;		/*!< Lichtsensor links */
 volatile int16 sensLDRR=0;		/*!< Lichtsensor rechts */
 
-volatile int16 sensDistL=0;		/*!< Distanz linker IR-Sensor */
-volatile int16 sensDistR=0;		/*!< Distanz rechter IR-Sensor */
+volatile int16 sensDistL=1023;		/*!< Distanz linker IR-Sensor */
+volatile int16 sensDistR=1023;		/*!< Distanz rechter IR-Sensor */
 
 volatile int16 sensBorderL=0;	/*!< Abgrundsensor links */
 volatile int16 sensBorderR=0;	/*!< Abgrundsensor rechts */
