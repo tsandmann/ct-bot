@@ -41,7 +41,7 @@ extern int16 volatile speed_r;			/*!< Geschwindigkeit des rechten Motors */
 /*!
  * Initialisiere den Motorkrams
  */
-void motor_init();
+void motor_init(void);
 
 /*!
  * Direkter Zugriff auf den Motor

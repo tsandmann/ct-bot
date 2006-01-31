@@ -57,6 +57,6 @@ void display_cursor (int row, int column) ;
  * Zeigt den String an, der in display_buffer steht. 
  * @return 0 falls 0x00-Zeichen erreicht; -1, falls DISPLAY_LENGTH oder DISPLAY_BUFFER Zeichen ausgegeben wurden
  */
-int display_buffer();
+int display_buffer(void);
 //void display_test();
 #endif

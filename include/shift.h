@@ -36,7 +36,7 @@
 /*!
  * Initialisert die Shift-Register
  */
-void shift_init();
+void shift_init(void);
 
 /*!
  * Schiebt Daten durch eines der drei 74HC595-Schieberegister
@@ -59,5 +59,5 @@ void shift_data(char data, char latch_data);
 /*!
  * Setzt die Shift-Register wieder zurueck
  */ 
-void shift_clear();
+void shift_clear(void);
 #endif

@@ -193,7 +193,9 @@ else
 	#     Each directory must be seperated by a space.
 	EXTRAINCDIRS = include
 
-	CC = gcc -lpthread
+	CC = gcc 
+	PTHREAD_LIB = -lpthread
+	LDFLAGS += $(PTHREAD_LIB)
 endif
 
 # Define programs and commands.

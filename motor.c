@@ -73,7 +73,7 @@ void motor_set(int16 left, int16 right){
 /*!
  * Initialisiere den Motorkrams
  */
-void motor_init(){
+void motor_init(void){
 	speed_l=0;
 	speed_r=0;
 	motor_low_init();

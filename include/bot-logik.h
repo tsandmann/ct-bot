@@ -45,6 +45,6 @@ extern void bot_behave(void);
 /*!
  * Initilaisert das ganze Verhalten
  */
-extern void bot_behave_init();
+extern void bot_behave_init(void);
 
 #endif

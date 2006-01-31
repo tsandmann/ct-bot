@@ -37,7 +37,7 @@
 /*!
  * Initialisiert die Enable-Leitungen
  */
-void ENA_init();
+void ENA_init(void);
 
 /*! 
  * Schaltet einzelne Enable-Leitungen an,

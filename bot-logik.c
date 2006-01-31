@@ -447,7 +447,7 @@ static void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 /*!
  * Initialisert das ganze Verhalten
  */
-void bot_behave_init(){
+void bot_behave_init(void){
 
 	/* Einfache Verhaltensroutine, die alles andere uebersteuert */
 	insert_behaviour_to_list(&behaviour, new_behaviour(210, bot_simple));
