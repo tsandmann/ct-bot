@@ -17,7 +17,7 @@
  * 
  */
 
-/*! @file 	uart.c 
+/*! @file 	uart.h 
  * @brief 	Routinen zur seriellen Kommunikation
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05

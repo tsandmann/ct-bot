@@ -17,7 +17,7 @@
  * 
  */
 
-/*! @file 	tcp.c
+/*! @file 	tcp.h
  * @brief 	TCP/IP-Kommunikation
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05

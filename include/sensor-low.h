@@ -17,7 +17,7 @@
  * 
  */
 
-/*! @file 	bot-sens.h  
+/*! @file 	sensor-low.h  
  * @brief 	Low-Level Routinen fuer die Sensor-Steuerung des c't-Bots
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	01.12.05

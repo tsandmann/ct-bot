@@ -17,7 +17,7 @@
  * 
  */
 
-/*! @file 	motor.c
+/*! @file 	motor.h
  * @brief 	High-Level Routinen fuer die Motorsteuerung des c't-Bots
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	15.01.05

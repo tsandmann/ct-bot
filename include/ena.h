@@ -55,7 +55,7 @@ void ENA_off(char enable);
 
 /*!
  * Schaltet die Enable-Leitungen
- * @param LED Wert der gezeigt werden soll
+ * @param enable Wert der eingestellt werden soll
  */
 void ENA_set(char enable);
 #endif

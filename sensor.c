@@ -48,12 +48,12 @@ volatile char sensError=0;		/*!< Ueberwachung Motor oder Batteriefehler */
 
 //volatile int sensRc5;			/*!< Fernbedienungssensor */
 
-volatile char sensMouseDX;	/*!< Maussensor Delta X */
-volatile char sensMouseDY;	/*!< Maussensor Delta X */
+volatile char sensMouseDX;		/*!< Maussensor Delta X */
+volatile char sensMouseDY;		/*!< Maussensor Delta X */
 
 
-volatile int sensMouseX=0; /*! Mausposition X */
-volatile int sensMouseY=0; /*! Mausposition Y */
+volatile int sensMouseX=0; /*!< Mausposition X */
+volatile int sensMouseY=0; /*!< Mausposition Y */
 
 volatile int sensEncL=0;	/*!< Encoder linker Motor */
 volatile int sensEncR=0;	/*!< Encoder rechter Motor */

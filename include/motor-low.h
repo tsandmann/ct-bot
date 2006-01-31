@@ -17,7 +17,7 @@
  * 
  */
 
-/*! @file 	bot-mot.h 
+/*! @file 	motor-low.h 
  * @brief 	Low-Level Routinen fuer die Motorsteuerung des c't-Bots
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	01.12.05
@@ -28,12 +28,12 @@
 
 #include "global.h"
 
-#define SERVO_LEFT 	8
-#define SERVO_RIGHT	16
-#define SERVO_MIDDLE   ((SERVO_RIGHT- SERVO-LEFT)/2)
+#define SERVO_LEFT 	8			/*!< Linker Anschlag des Servos */
+#define SERVO_RIGHT	16			/*!< Linker Anschlag des Servos */
+#define SERVO_MIDDLE   ((SERVO_RIGHT- SERVO-LEFT)/2)	/*!< Mittelstellung des Servos */
 
-#define SERVO1 1
-#define SERVO2 2
+#define SERVO1 1			/*!< Servo1 */
+#define SERVO2 2			/*!< Servo1 */
 
 
 /*!

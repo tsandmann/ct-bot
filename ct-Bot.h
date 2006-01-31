@@ -46,10 +46,6 @@
 #define ENA_AVAILABLE		/*!< Enable-Leitungen */
 #define SHIFT_AVAILABLE		/*!< Shift Register */
 
-#define ANALOG 2
-#define DIGITAL 2
-#define MOTOR 3
-
 //#define TEST_AVAILABLE_ANALOG	/*!< Sollen die LEDs die analoge Sensorwerte anzeigen */
 //#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
 #define TEST_AVAILABLE_MOTOR	/*!< Sollen die Motoren ein wenig drehen */
@@ -70,11 +66,6 @@
 	#undef UART_AVAILABLE
 	#undef MAUS_AVAILABLE
 	#define COMMAND_AVAILABLE
-	
-//	#undef TEST_AVAILABLE
-//	#undef TEST_AVAILABLE_MOTOR
-//	#undef TEST_AVAILABLE_DIGITAL
-//	#undef TEST_AVAILABLE_ANALOG	
 #endif
 
 #ifdef MCU
@@ -85,17 +76,17 @@
 
 
 #ifdef TEST_AVAILABLE_MOTOR
-	#define TEST_AVAILABLE
-	#define TEST_AVAILABLE_DIGITAL
+	#define TEST_AVAILABLE			/*!< brauchen wir den Testkrams */
+	#define TEST_AVAILABLE_DIGITAL /*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
 #endif
 
 #ifdef TEST_AVAILABLE_DIGITAL
-	#define TEST_AVAILABLE
+	#define TEST_AVAILABLE			/*!< brauchen wir den Testkrams */
 	#undef TEST_AVAILABLE_ANALOG
 #endif
 
 #ifdef TEST_AVAILABLE_ANALOG
-	#define TEST_AVAILABLE
+	#define TEST_AVAILABLE			/*!< brauchen wir den Testkrams */
 #endif
 
 

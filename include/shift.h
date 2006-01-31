@@ -17,7 +17,7 @@
  * 
  */
 
-/*! @file 	shift.c
+/*! @file 	shift.h
  * @brief 	Routinen zur Ansteuerung der Shift-Register
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
@@ -43,7 +43,7 @@ void shift_init(void);
  * Achtung: den Port sollte man danach noch per shift_clear() zuruecksetzen!
  * @param data	Das Datenbyte
  * @param latch_data der Pin, an dem der Daten-latch-Pin des Registers (PIN 11) haengt
- * @param latchtore der Pin, an dem der latch-Pin zum Transfer des Registers (PIN 12) haengt
+ * @param latch_store der Pin, an dem der latch-Pin zum Transfer des Registers (PIN 12) haengt
  */
 void shift_data_out(char data, char latch_data, char latch_store);
 

@@ -17,7 +17,7 @@
  * 
  */
 
-/*! @file 	ir_pc.c
+/*! @file 	ir-rc5_pc.c
  * @brief 	Routinen fuer die Dekodierung von RC5-Fernbedienungs-Codes
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
@@ -27,7 +27,7 @@
 
 #ifdef PC
 
-#include "ir-rc5.h"
+#include "ir-rc5_pc.h"
 #include "command.h"
 #include "bot-2-sim.h"
 

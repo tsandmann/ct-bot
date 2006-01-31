@@ -17,7 +17,7 @@
  * 
  */
 
-/*! @file 	bot-mot_pc.c
+/*! @file 	motor-low_pc.c
  * @brief 	Low-Level Routinen fuer die Motorsteuerung des c't-Bots
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	01.12.05

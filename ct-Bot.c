@@ -193,7 +193,7 @@ void init(void){
     
 #endif
 	#ifdef  TEST_AVAILABLE_MOTOR
-		uint16 calls=0;
+		uint16 calls=0;	/*!< Im Testfall zaehle die Durchlaeufe */
 	#endif
 
 	init();		

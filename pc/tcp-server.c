@@ -17,7 +17,7 @@
  * 
  */
 
-/*! @file 	tcp-server.h
+/*! @file 	tcp-server.c
  * @brief 	Demo-TCP-Server
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05

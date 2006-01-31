@@ -40,17 +40,17 @@
 
 /*! Datenfeld fuer den Zugriff auf die LEDs */
 typedef struct {
-   unsigned char rechts:1;
-   unsigned char links:1; 
+   unsigned char rechts:1;		/*!< LED in Fahrichtung rechts*/
+   unsigned char links:1; 		/*!< LED in Fahrichtung links*/
  
-   unsigned char rot:1;   
-   unsigned char orange:1;   
+   unsigned char rot:1;   		/*!< LED Rot */
+   unsigned char orange:1;   	/*!< LED Orange */
  
-   unsigned char gelb:1;   
-   unsigned char gruen:1;  
+   unsigned char gelb:1;   	/*!< LED Gelb */
+   unsigned char gruen:1;  	/*!< LED Gruen */
     
-   unsigned char tuerkis:1;   
-   unsigned char weiss:1;   
+   unsigned char tuerkis:1;   	/*!< LED Tuerkis */
+   unsigned char weiss:1;   	/*!< LED Weiss */
 } __attribute__ ((packed)) led_t;
 
 

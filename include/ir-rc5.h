@@ -17,7 +17,7 @@
  * 
  */
 
-/*! @file 	ir.h
+/*! @file 	ir-rc5.h
  * @brief 	Routinen fuer die Dekodierung von RC5-Fernbedienungs-Codes
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05

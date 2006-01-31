@@ -48,7 +48,7 @@ typedef struct {
 	int16 data_r;				/*!< Daten zum Kommando rechts*/
 	int16 seq;					/*!< Paket-Sequenznummer*/
 	unsigned char CRC;			/*!< Markiert das Ende des Commands*/
-} __attribute__ ((packed)) command_t;
+} __attribute__ ((packed)) command_t;/*!< Keine Luecken in der Struktur lassen */
 
 #define CMD_STARTCODE	'>'		/*!< Anfang eines Kommandos*/
 #define CMD_STOPCODE	'<'		/*!< Ende eines Kommandos*/
