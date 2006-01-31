@@ -127,7 +127,7 @@ void init(void){
 			display_buffer();
 
 			display_cursor(3,1);
-			sprintf(display_buf,"R=%d %d F=%d K=%d T=%d ",sensEncL % 10,sensEncR % 10,sensError,sensDoor,sensTrans);
+			sprintf(display_buf,"R=%2d %2d F=%d K=%d T=%d ",sensEncL % 10,sensEncR % 10,sensError,sensDoor,sensTrans);
 			display_buffer();
 
 			display_cursor(4,1);
@@ -172,9 +172,6 @@ void init(void){
  * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
  */
 	int main (void){
-	#ifdef  TEST_AVAILABLE_MOTOR
-		uint16 calls=0;
-	#endif
 
 #endif
 
@@ -195,6 +192,10 @@ void init(void){
     
     
 #endif
+	#ifdef  TEST_AVAILABLE_MOTOR
+		uint16 calls=0;
+	#endif
+
 	init();		
 	
 	#ifdef WELCOME_AVAILABLE
@@ -235,7 +236,7 @@ void init(void){
 			wait_for_time(100000);
 		#endif
 		#ifdef MCU
-			//delay(1);
+			delay(1);
 		#endif
 	}
 	
