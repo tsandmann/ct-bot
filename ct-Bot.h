@@ -50,9 +50,9 @@
 #define DIGITAL 2
 #define MOTOR 3
 
-//#define TEST_AVAILABLE_ANALOG	/*!< Sollen die LEDs die Sensorwerte anzeigen */
-//#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die Sensorwerte anzeigen */
-#define TEST_AVAILABLE_MOTOR	/*!< Sollen die LEDs die Sensorwerte anzeigen */
+//#define TEST_AVAILABLE_ANALOG	/*!< Sollen die LEDs die analoge Sensorwerte anzeigen */
+//#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
+#define TEST_AVAILABLE_MOTOR	/*!< Sollen die Motoren ein wenig drehen */
 
 /************************************************************
 * Some Dependencies!!!
@@ -70,6 +70,11 @@
 	#undef UART_AVAILABLE
 	#undef MAUS_AVAILABLE
 	#define COMMAND_AVAILABLE
+	
+//	#undef TEST_AVAILABLE
+//	#undef TEST_AVAILABLE_MOTOR
+//	#undef TEST_AVAILABLE_DIGITAL
+//	#undef TEST_AVAILABLE_ANALOG	
 #endif
 
 #ifdef MCU
@@ -86,7 +91,7 @@
 
 #ifdef TEST_AVAILABLE_DIGITAL
 	#define TEST_AVAILABLE
-	#undef TEST_ANALOG
+	#undef TEST_AVAILABLE_ANALOG
 #endif
 
 #ifdef TEST_AVAILABLE_ANALOG
