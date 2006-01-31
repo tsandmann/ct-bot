@@ -86,7 +86,11 @@ typedef struct _Behaviour_t {
    char active:1;				/*!< Ist das Verhalten aktiv */
    char ignore:1;				/*!< Sollen alle Zielwerte ignoriert werden */
    struct _Behaviour_t *next;					/*!< Naechster Eintrag in der Liste */
-}__attribute__ ((packed)) Behaviour_t;
+#ifndef DOXYGEN
+	}__attribute__ ((packed)) Behaviour_t;
+#else
+	} Behaviour_t;
+#endif
 
 /*! Liste mit allen Verhalten */
 Behaviour_t *behaviour = NULL;

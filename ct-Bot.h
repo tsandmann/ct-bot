@@ -50,9 +50,18 @@
 //#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
 #define TEST_AVAILABLE_MOTOR	/*!< Sollen die Motoren ein wenig drehen */
 
+//#define DOXYGEN		/*!< Nur zum Erzeugen der Doku, wenn dieser schalter an ist, jammert der gcc!!! */
+
 /************************************************************
 * Some Dependencies!!!
 ************************************************************/
+
+#ifdef DOXYGEN
+	#define PC			/*!< Beim generieren der Doku alles anschalten */
+	#define MCU		/*!< Beim generieren der Doku alles anschalten */
+	#define TEST_AVAILABLE_MOTOR	/*!< Beim generieren der Doku alles anschalten */
+#endif
+
 
 #ifndef DISPLAY_AVAILABLE
 	#undef WELCOME_AVAILABLE
@@ -63,14 +72,18 @@
 #endif
 
 #ifdef PC
-	#undef UART_AVAILABLE
-	#undef MAUS_AVAILABLE
-	#define COMMAND_AVAILABLE
+	#ifndef DOXYGEN
+		#undef UART_AVAILABLE
+		#undef MAUS_AVAILABLE
+	#endif
+	#define COMMAND_AVAILABLE		/*!< High-Level Communication */
 #endif
 
 #ifdef MCU
-	#ifndef UART_AVAILABLE
-		#undef COMMAND_AVAILABLE
+	#ifndef DOXYGEN
+		#ifndef UART_AVAILABLE
+			#undef COMMAND_AVAILABLE
+		#endif
 	#endif
 #endif
 

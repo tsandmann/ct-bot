@@ -34,9 +34,9 @@
 #include <avr/delay.h>
 
 
-#define SHIFT_OUT				0x1F
-#define SHIFT_PORT				PORTC
-#define SHIFT_DDR				DDRC
+#define SHIFT_OUT				0x1F			/*!< Alle Pins die Ausgänge sind */
+#define SHIFT_PORT				PORTC			/*!< Port an dem die Register haengen */
+#define SHIFT_DDR				DDRC			/*!< DDR des Ports an dem die Register haengen */
 
 /*!
  * Initialisert die Shift-Register
@@ -51,7 +51,7 @@ void shift_init(){
  * Achtung den Port sollte man danach noch per shift_clear() zurücksetzen
  * @param data	Das Datenbyte
  * @param latch_data der Pin an dem der Daten-latch-Pin des Registers (PIN 11) hängt
- * @param latchtore der Pin an dem der latch-Pin zum transfer des Registers (PIN 12) hängt
+ * @param latch_store der Pin an dem der latch-Pin zum transfer des Registers (PIN 12) hängt
  */
 void shift_data_out(char data, char latch_data, char latch_store){
 	char i;

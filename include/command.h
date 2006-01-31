@@ -27,6 +27,7 @@
 #define __command_h_ 
 
 #include "global.h"
+#include "ct-Bot.h"
 
 /*!
  * Request Teil eines Kommandos
@@ -35,7 +36,11 @@ typedef struct {
 	unsigned char command:8;	/*!< command */
 	unsigned char subcommand:7;	/*!< subcommand */
 	unsigned char direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
-} __attribute__ ((packed)) request_t; /*!< Keine Luecken in der Struktur lassen */
+#ifndef DOXYGEN
+	} __attribute__ ((packed)) request_t; // Keine Luecken in der Struktur lassen
+#else
+	} request_t; // Keine Luecken in der Struktur lassen
+#endif
 
 /*!
  * Kommando
@@ -48,7 +53,11 @@ typedef struct {
 	int16 data_r;				/*!< Daten zum Kommando rechts*/
 	int16 seq;					/*!< Paket-Sequenznummer*/
 	unsigned char CRC;			/*!< Markiert das Ende des Commands*/
-} __attribute__ ((packed)) command_t;/*!< Keine Luecken in der Struktur lassen */
+#ifndef DOXYGEN
+	} __attribute__ ((packed)) command_t;// Keine Luecken in der Struktur lassen
+#else
+	} command_t;
+#endif
 
 #define CMD_STARTCODE	'>'		/*!< Anfang eines Kommandos*/
 #define CMD_STOPCODE	'<'		/*!< Ende eines Kommandos*/

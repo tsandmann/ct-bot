@@ -51,7 +51,11 @@ typedef struct {
     
    unsigned char tuerkis:1;   	/*!< LED Tuerkis */
    unsigned char weiss:1;   	/*!< LED Weiss */
-} __attribute__ ((packed)) led_t;
+#ifndef DOXYGEN
+	} __attribute__ ((packed)) led_t;
+#else
+	} led_t;
+#endif
 
 
 /*!

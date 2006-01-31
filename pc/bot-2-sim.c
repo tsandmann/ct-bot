@@ -130,7 +130,7 @@ void bot_2_sim_init(void){
 
 
 int count=1;	/*!< Zaehler fuer Paket-Sequenznummer*/
-int not_answered_error=1;
+int not_answered_error=1;	/*!< Wurde ein Packet beantwortet */
 
 
 /*!

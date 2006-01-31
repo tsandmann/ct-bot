@@ -33,7 +33,7 @@
 
 #ifdef DISPLAY_AVAILABLE
 
-#define DISPLAY_LENGTH	20
+#define DISPLAY_LENGTH	20			/*!< Wieviele Zeichen passen in eine Zeile */
 
 volatile char display_update=0;	/*!< Muss das Display aktualisiert werden? */
 
@@ -45,8 +45,8 @@ char display_buf[DISPLAY_BUFFER];		/*!< Pufferstring fuer Displayausgaben */
 	#define POSITION(Ze, Sp)   //printf("%c[%d;%dH",ESC,Ze,Sp)
 	#define CLEAR              //printf("%c[2J",ESC)
 #else 
-	#define POSITION(Ze, Sp)   printf("\033[%d;%dH",Ze,Sp)
-	#define CLEAR              printf("\033[2J")
+	#define POSITION(Ze, Sp)   printf("\033[%d;%dH",Ze,Sp)		/*!< Befehl um eine Posion anzuspringen */
+	#define CLEAR              printf("\033[2J")				/*!< Befehl um das display zu loeschen */
 #endif 
 
 /*!
