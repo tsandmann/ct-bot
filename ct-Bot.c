@@ -127,7 +127,7 @@ void init(void){
 			display_buffer();
 
 			display_cursor(3,1);
-			sprintf(display_buf,"R=%2d %2d F=%d K=%d T=%d ",sensEncL % 10,sensEncR % 10,sensError,sensDoor,sensTrans);
+			sprintf(display_buf,"R=%2d %2d F=%d K=%d T=%d ",sensEncL % 10,sensEncR %10,sensError,sensDoor,sensTrans);
 			display_buffer();
 
 			display_cursor(4,1);
@@ -217,9 +217,9 @@ void init(void){
 		#ifdef  TEST_AVAILABLE_MOTOR
 			calls++;
 			if (calls == 1)
-				motor_set(BOT_SPEED_MAX,-BOT_SPEED_MAX);
+				motor_set(BOT_SPEED_SLOW,-BOT_SPEED_SLOW);
 			else if (calls == 501)
-				motor_set(-BOT_SPEED_MAX,BOT_SPEED_MAX);
+				motor_set(-BOT_SPEED_SLOW,BOT_SPEED_SLOW);
 			else if (calls== 1001)
 				motor_set(BOT_SPEED_STOP,BOT_SPEED_STOP);
 			else
@@ -236,7 +236,7 @@ void init(void){
 			wait_for_time(100000);
 		#endif
 		#ifdef MCU
-			delay(1);
+//			delay(10);
 		#endif
 	}
 	
