@@ -49,7 +49,7 @@
 #define SENS_TRANS			0		/*!< Pin an dem die Transportfachueberwachung haengt */
 
 #define ENC_L ((SENS_ENCL_PINR >> SENS_ENCL) & 0x01)	/*!< Abkuerzung zum Zugriff auf Encoder */
-#define ENC_R ((SENS_ENCR_PINR >> SENS_ENCL) & 0x01)	/*!< Abkuerzung zum Zugriff auf Encoder */
+#define ENC_R ((SENS_ENCR_PINR >> SENS_ENCR) & 0x01)	/*!< Abkuerzung zum Zugriff auf Encoder */
 
 #define ENC_ENTPRELL	4		/*!< Nur wenn der Encoder ein paar mal den gleichen wert gibt uebernehmen */
 
@@ -77,8 +77,8 @@ void bot_sens_init(void){
 	SENS_TRANS_DDR &= ~(1<<SENS_TRANS);	// Input	
 	SENS_TRANS_PORT |= (1<<SENS_TRANS);  // Pullup an
 	
-	SENS_ENCL_DDR &= ~SENS_ENCL_PINR;	// Input	
-	SENS_ENCR_DDR &= ~SENS_ENCR_PINR;	// Input	
+	SENS_ENCL_DDR &= ~(1<<SENS_ENCL);	// Input	
+	SENS_ENCR_DDR &= ~(1<<SENS_ENCR);	// Input	
 	
 	timer_2_init();
 }
