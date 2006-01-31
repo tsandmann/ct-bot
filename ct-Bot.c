@@ -142,7 +142,7 @@ void init(void){
 	void show_sensors(void){
 		char led=0x00;
 		led_t * status = (led_t *)&led;
-		#if TEST_AVAILABLE_ANALOG
+		#ifdef TEST_AVAILABLE_ANALOG
 			(*status).rechts	= (sensDistR >> 9) & 0x01;
 			(*status).links		= (sensDistL >> 9) & 0x01;
 			(*status).rot		= (sensLineL >> 9) & 0x01;
@@ -172,7 +172,7 @@ void init(void){
  * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
  */
 	int main (void){
-	#if  TEST_AVAILABLE_MOTOR
+	#ifdef  TEST_AVAILABLE_MOTOR
 		uint16 calls=0;
 	#endif
 
@@ -213,7 +213,7 @@ void init(void){
 		#endif
 
 		// Testprogramm, dass den Bot erst links, dann rechtsrum dreht
-		#if  TEST_AVAILABLE_MOTOR
+		#ifdef  TEST_AVAILABLE_MOTOR
 			calls++;
 			if (calls == 1)
 				motor_set(BOT_SPEED_MAX,-BOT_SPEED_MAX);

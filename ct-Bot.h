@@ -51,8 +51,8 @@
 #define MOTOR 3
 
 //#define TEST_AVAILABLE_ANALOG	/*!< Sollen die LEDs die Sensorwerte anzeigen */
-#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die Sensorwerte anzeigen */
-//#define TEST_AVAILABLE_MOTOR	/*!< Sollen die LEDs die Sensorwerte anzeigen */
+//#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die Sensorwerte anzeigen */
+#define TEST_AVAILABLE_MOTOR	/*!< Sollen die LEDs die Sensorwerte anzeigen */
 
 /************************************************************
 * Some Dependencies!!!
