@@ -39,7 +39,7 @@ void motor_low_init(){
 	
 	pwm_0_init();
 	pwm_1_init();
-//	pwm_2_init();
+//	pwm_2_init();				// Kollidiert mit Timer2 für IR-Fernbedienung
 	bot_motor(0,0);
 }
 
