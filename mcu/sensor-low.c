@@ -152,7 +152,7 @@ void bot_encoder_isr(void){
 	}
 
 	if (enc_l_cnt == ENC_ENTPRELL){// wenn lange genug konst
-		if (speed_l>0)	// Drehrichtung beachten
+		if (speed_l>=0)	// Drehrichtung beachten
 			sensEncL++;	//vorwaerts
 		else 
 			sensEncL--;	//rueckwaerts
@@ -168,7 +168,7 @@ void bot_encoder_isr(void){
 	}
 
 	if (enc_r_cnt == ENC_ENTPRELL){// wenn lange genug konst
-		if (speed_r>0)	// Drehrichtung beachten
+		if (speed_r>=0)	// Drehrichtung beachten
 			sensEncR++;	//vorwaerts
 		else 
 			sensEncR--;	//rueckwaerts
