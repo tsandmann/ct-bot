@@ -1,5 +1,13 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-02-01	Benjamin Benz (bbe@heise.de) Verhalten bot_glance von Ralph Glass (ralph.glass@t-online.de) eingebaut
+
+2006-02-01	Benjamin Benz (bbe@heise.de) MCU-Code freigegeben
+
+2006-02-01	Benjamin Benz (bbe@heise.de) Verhaltensframework nochmals modifiziert. Additives Verhalten ist wieder raus.
+										 speed_l-Variablen und Co aus den Datenstrukturen raus ==> spart RAM
+										 goto-System deaktiviert sich nun selbsttätig
+
 2006-02-01	Benjamin Benz (bbe@heise.de) Bugfix im Verhaltenscode. BOT_SPEED_IGNORE eingefügt
 
 2006-02-01	Benjamin Benz (bbe@heise.de) Brake-Konstante angepasst

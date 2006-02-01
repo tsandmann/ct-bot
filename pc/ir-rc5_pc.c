@@ -27,7 +27,7 @@
 
 #ifdef PC
 
-#include "ir-rc5_pc.h"
+#include "ir-rc5.h"
 #include "command.h"
 #include "bot-2-sim.h"
 

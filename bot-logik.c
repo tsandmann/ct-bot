@@ -47,7 +47,7 @@
 #define BORDER_DANGEROUS	500		/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */
 
 #define COL_CLOSEST		100		/*!< Abstand in mm, den wir als zu nah betrachten */
-#define COL_NEAR			200		/*!< Nahbereich */
+#define COL_NEAR			300		/*!< Nahbereich */
 #define COL_FAR			400		/*!< Fernbereich */
 
 #define ZONE_CLOSEST	0			/*!< Zone fuer extremen Nahbereich */
@@ -59,40 +59,44 @@
 #define BRAKE_NEAR		0.6			/*!< Bremsfaktor fuer Nahbereich ( <1 ==> bremsen <0 ==> rueckwaerts) */
 #define BRAKE_FAR		0.8			/*!< Bremsfaktor fuer Fernbereich ( <1 ==> bremsen <0 ==> rueckwaerts) */
 
+#define GLANCE_FACTOR 	0.9		/*!< Schlangenlinienfaktor zur Erweiterung des Sensorfeldes */
+#define GLANCE_STRAIGHT		20			/*!< Anzahl der Zyklen, die nicht geschielt wird Gesamtzahl der Zyklen ist GLANCE_STRAIGHT + GLANCE_SIDE*4 */
+#define GLANCE_SIDE 			5			/*!< Anzahl der Zyklen, die geschielt wird (jeweils pro Seite) Gesamtzahl der Zyklen ist GLANCE_STRAIGHT + GLANCE_SIDE*4 */
+
 #define MOT_GOTO_MAX  3 		/*!< Richtungsaenderungen, bis goto erreicht sein muss */
-
-
-char col_zone_l=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der linke Sensor befindet */
-char col_zone_r=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der rechte Sensor befindet */
-
-volatile int16 mot_l_goto=0;	/*!< Speichert, wie weit der linke Motor drehen soll */
-volatile int16 mot_r_goto=0;	/*!< Speichert, wie weit der rechte Motor drehen soll */
-
-volatile int16 mot_goto_l=0;	/*!< Muss der linke Motor noch drehen?  */
-volatile int16 mot_goto_r=0;	/*!< Muss der rechte Motor noch drehen?  */
-
-volatile int16 target_speed_l=0;	/*!< Sollgeschwindigkeit linker Motor */
-volatile int16 target_speed_r=0;	/*!< Sollgeschwindigkeit rechter Motor */
 
 
 /*! Verwaltungsstruktur für die Verhaltensroutinen */
 typedef struct _Behaviour_t {
    void (*work) (struct _Behaviour_t *data); 	/*!< Zeiger auf die Funktion, die das Verhalten bearbeitet */
-   int16 speed_l;				/*!< Zielvariablen der Funktion links (wenn != 0, dann werden untere Prioritäten ignoriert)*/
-   int16 speed_r;				/*!< Zielvariablen der Funktion rechts (wenn != 0, dann werden untere Prioritäten ignoriert) */
-
-   float faktor_l;				/*!< Modifikationsfaktor für die Geschwindigkeit unterer Prioritäten links*/
-   float faktor_r;				/*!< Modifikationsfaktor für die Geschwindigkeit unterer Prioritäten rechts */
    
    uint8 priority;				/*!< Priorität */
    char active:1;				/*!< Ist das Verhalten aktiv */
-   char ignore:1;				/*!< Sollen alle Zielwerte ignoriert werden */
+//   char ignore:1;				/*!< Sollen alle Zielwerte ignoriert werden */
    struct _Behaviour_t *next;					/*!< Naechster Eintrag in der Liste */
 #ifndef DOXYGEN
 	}__attribute__ ((packed)) Behaviour_t;
 #else
 	} Behaviour_t;
 #endif
+
+
+char col_zone_l=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der linke Sensor befindet */
+char col_zone_r=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der rechte Sensor befindet */
+
+volatile int16 mot_l_goto=0;		/*!< Speichert, wie weit der linke Motor drehen soll */
+volatile int16 mot_r_goto=0;		/*!< Speichert, wie weit der rechte Motor drehen soll */
+
+Behaviour_t *bot_goto_rule = NULL;	/*!< Zeiger auf die Goto-Regel. Damit kann bot_goto() die Regel aktivieren */
+
+int16 speedWishLeft;				/*!< Puffervariablen für die Verhaltensfunktionen absolut Geschwindigkeit links*/
+int16 speedWishRight;				/*!< Puffervariablen für die Verhaltensfunktionen absolut Geschwindigkeit rechts*/
+
+float faktorWishLeft;				/*!< Puffervariablen für die Verhaltensfunktionen Modifikationsfaktor links*/
+float faktorWishRight;				/*!< Puffervariablen für die Verhaltensfunktionen Modifikationsfaktor rechts */
+
+volatile int16 target_speed_l=0;	/*!< Sollgeschwindigkeit linker Motor - darum kuemmert sich bot_base()*/
+volatile int16 target_speed_r=0;	/*!< Sollgeschwindigkeit rechter Motor - darum kuemmert sich bot_base() */
 
 /*! Liste mit allen Verhalten */
 Behaviour_t *behaviour = NULL;
@@ -107,9 +111,12 @@ Behaviour_t *behaviour = NULL;
  * @param *data der Verhaltensdatensatz
  */
 void bot_simple(Behaviour_t *data){
-/*  int16 speed_l_col, speed_r_col;
-  data->speed_l=BOT_SPEED_MAX;
-  data->speed_r=BOT_SPEED_MAX;
+/*
+  int16 speed_l_col, speed_r_col;
+
+  speedWishLeft=BOT_SPEED_MAX;
+  speedWishRight=BOT_SPEED_MAX;
+
   if (sensDistL < COL_NEAR)
     speed_r_col=-speed_r-BOT_SPEED_NORMAL;
   else speed_r_col=0;
@@ -118,9 +125,9 @@ void bot_simple(Behaviour_t *data){
     speed_l_col=-speed_l-BOT_SPEED_FAST;
   else speed_l_col=0;
 
-  data->speed_l+=speed_l_col;
-  data->speed_r+=speed_r_col;  
- */
+  speedWishLeft+=speed_l_col;
+  speedWishRight+=speed_r_col;  
+  */
 }
 
 /*! 
@@ -128,8 +135,35 @@ void bot_simple(Behaviour_t *data){
  * @param *data der Verhaltensdatensatz
  */
 void bot_base(Behaviour_t *data){
-	data->speed_l=target_speed_l;
-	data->speed_r=target_speed_r;
+	speedWishLeft=target_speed_l;
+	speedWishRight=target_speed_r;
+}
+
+/*!
+ * Verhindert, dass der Bot an der Wand hängenbleibt.
+ * Der Bot ändert periodisch seine Richtung nach links und rechts
+ * um den Erfassungsbereich der Sensoren zu vergrößern.
+ * (Er fährt also einen leichten Schlangenlinienkurs)
+ * @param *data der Verhaltensdatensatz
+ */
+void bot_glance(Behaviour_t *data){
+	static int16 glance_counter = 0;  // Zähler für die periodischen Bewegungsimpulse
+
+	glance_counter++;
+	glance_counter %= (GLANCE_STRAIGHT + 4*GLANCE_SIDE);
+
+	if (glance_counter >= GLANCE_STRAIGHT){						/* wir fangen erst an, wenn GLANCE_STRAIGHT erreicht ist */
+		if 	(glance_counter < GLANCE_STRAIGHT+GLANCE_SIDE){		//GLANCE_SIDE Zyklen nach links
+			faktorWishLeft = GLANCE_FACTOR; 
+			faktorWishRight = 1.0;			
+		} else if (glance_counter < GLANCE_STRAIGHT+ 3*GLANCE_SIDE){	//2*GLANCE_SIDE Zyklen nach rechts
+			faktorWishLeft = 1.0; // glance right
+			faktorWishRight = GLANCE_FACTOR;
+		} else{														//GLANCE_SIDE Zyklen nach links
+			faktorWishLeft = GLANCE_FACTOR; 
+			faktorWishRight = 1.0;			
+		}
+	}
 }
 
 
@@ -139,57 +173,81 @@ void bot_base(Behaviour_t *data){
  * @see bot_goto()
  */
 void bot_goto_system(Behaviour_t *data){
+	static int16 mot_goto_l=0;	/*!< Muss der linke Motor noch drehen?  */
+	static int16 mot_goto_r=0;	/*!< Muss der rechte Motor noch drehen?  */
 
-  	int diff_l = sensEncL - mot_l_goto;	/* Restdistanz links */
-	int diff_r = sensEncR - mot_r_goto;	/* Restdistanz rechts */
+  	int diff_l;	/* Restdistanz links */
+	int diff_r; /* Restdistanz rechts */
+
+	/* Sind beide Zähler Null und die Funktion active 
+	 * -- sonst wären wir nicht hier -- 
+	 * so ist es der erste Aufruf ==> initialisieren */	
+	if (( mot_goto_l ==0) && ( mot_goto_r ==0)){
+		/* Zähler einstellen */
+		if (mot_l_goto !=0) 
+			mot_goto_l= MOT_GOTO_MAX; 
+		if (mot_l_goto !=0) 
+			mot_goto_r=MOT_GOTO_MAX;
+
+		/* Encoder zuruecksetzen */
+		sensEncL=0;
+		sensEncR=0;			
+	}		
 	
 	/* Motor L hat noch keine MOT_GOTO_MAX Nulldurchgaenge gehabt */
 	if (mot_goto_l >0){
+		diff_l = sensEncL - mot_l_goto;	/* Restdistanz links */
+		
 		if (abs(diff_l) <= 2){	/* 2 Encoderstaende Genauigkeit reicht */
-			data->speed_l = BOT_SPEED_STOP;	/* Stop */
+			speedWishLeft = BOT_SPEED_STOP;	/* Stop */
 			mot_goto_l--;			/* wie Nulldurchgang behandeln */
 		}else if (abs(diff_l) < 4)
-			data->speed_l= BOT_SPEED_SLOW;
+			speedWishLeft= BOT_SPEED_SLOW;
 		else if (abs(diff_l) < 10)
-			data->speed_l= BOT_SPEED_NORMAL;
+			speedWishLeft= BOT_SPEED_NORMAL;
 		else if (abs(diff_l) < 40)
-			data->speed_l= BOT_SPEED_FAST;
-		else data->speed_l= BOT_SPEED_MAX;
+			speedWishLeft= BOT_SPEED_FAST;
+		else speedWishLeft= BOT_SPEED_MAX;
 
 		// Richtung	
 		if (diff_l>0) {		// Wenn uebersteuert,
-			data->speed_l= -data->speed_l;	//Richtung umkehren
+			speedWishLeft= -speedWishLeft;	//Richtung umkehren
 		}
 		
 		// Wenn neue Richtung ungleich alter Richtung
-		if (((data->speed_l<0)&& (speed_l>0))|| ( (data->speed_l>0) && (speed_l<0) ) ) 
+		if (((speedWishLeft<0)&& (speed_l>0))|| ( (speedWishLeft>0) && (speed_l<0) ) ) 
 			mot_goto_l--;		// Nulldurchgang merken
-	} else
-		data->speed_l = BOT_SPEED_IGNORE;
-
+	} 
+	
 	// Motor R hat noch keine MOT_GOTO_MAX Nulldurchgaenge gehabt
 	if (mot_goto_r >0){
+		diff_r = sensEncR - mot_r_goto;	/* Restdistanz rechts */
+
 		if (abs(diff_r) <= 2){			// 2 Encoderstaende Genauigkeit reicht
-			data->speed_r = BOT_SPEED_STOP;	//Stop
+			speedWishRight = BOT_SPEED_STOP;	//Stop
 			mot_goto_r--;			// wie Nulldurchgang behandeln
 		}else if (abs(diff_r) < 4)
-			data->speed_r= BOT_SPEED_SLOW;
+			speedWishRight= BOT_SPEED_SLOW;
 		else if (abs(diff_r) < 10)
-			data->speed_r= BOT_SPEED_NORMAL;
+			speedWishRight= BOT_SPEED_NORMAL;
 		else if (abs(diff_r) < 40)
-			data->speed_r= BOT_SPEED_FAST;
-		else data->speed_r= BOT_SPEED_MAX;
+			speedWishRight= BOT_SPEED_FAST;
+		else speedWishRight= BOT_SPEED_MAX;
 
 		// Richtung	
 		if (diff_r>0) {		// Wenn uebersteurt,
-			data->speed_r= -target_speed_r;	//Richtung umkehren
+			speedWishRight= -target_speed_r;	//Richtung umkehren
 		}
 
 		// Wenn neue Richtung ungleich alter Richtung
-		if (((data->speed_r<0)&& (speed_r>0))|| ( (data->speed_r>0) && (speed_r<0) ) ) 
+		if (((speedWishRight<0)&& (speed_r>0))|| ( (speedWishRight>0) && (speed_r<0) ) ) 
 			mot_goto_r--;		// Nulldurchgang merken
-	} else
-			data->speed_r = BOT_SPEED_IGNORE;
+	} 
+	
+	/* Sind wir fertig, dann Regel deaktivieren */
+	if ((mot_goto_l == 0) && (mot_goto_r == 0))
+		data->active=0;	
+			
 }
 
 /*!
@@ -242,16 +300,16 @@ void bot_avoid_col(Behaviour_t *data){
 		
 	switch (col_zone_l){
 		case ZONE_CLOSEST:
-			data->faktor_r = BRAKE_CLOSEST;
+			faktorWishRight = BRAKE_CLOSEST;
 			break;
 		case ZONE_NEAR:
-			data->faktor_r =  BRAKE_NEAR;
+			faktorWishRight =  BRAKE_NEAR;
 			break;
 		case ZONE_FAR:
-			data->faktor_r =  BRAKE_FAR;
+			faktorWishRight =  BRAKE_FAR;
 			break;
 		case ZONE_CLEAR:
-			data->faktor_r = 1;
+			faktorWishRight = 1;
 			break;
 		default:
 			col_zone_l = ZONE_CLEAR;
@@ -260,45 +318,25 @@ void bot_avoid_col(Behaviour_t *data){
 		
 	switch (col_zone_r){
 		case ZONE_CLOSEST:
-			data->faktor_l = BRAKE_CLOSEST;
+			faktorWishLeft = BRAKE_CLOSEST;
 			break;
 		case ZONE_NEAR:
-			data->faktor_l = BRAKE_NEAR;
+			faktorWishLeft = BRAKE_NEAR;
 			break;
 		case ZONE_FAR:
-			data->faktor_l = BRAKE_FAR;
+			faktorWishLeft = BRAKE_FAR;
 			break;
 		case ZONE_CLEAR:
-			data->faktor_l = 1;
+			faktorWishLeft = 1;
 			break;
 		default:
 			col_zone_r = ZONE_CLEAR;
 			break;
 	}	
 	
-/*	if (sensDistR < COL_CLOSEST)	// sehr nah
-		speed_l_col=-target_speed_l-BOT_SPEED_NORMAL;	// rueckwaerts fahren
-	else if (sensDistR < COL_NEAR)	//  nah
-		speed_l_col=-target_speed_l * 0.9;		// langsamer werden
-	else if (sensDistR < COL_FAR)	//  fern
-		speed_l_col=-target_speed_r * 0.65;		// langsamer werden
-    else speed_l_col=0;			// nichts tun
-
-	if (sensDistL < COL_CLOSEST)	// sehr nah
-		speed_r_col=-target_speed_r-BOT_SPEED_NORMAL;	// rueckwaerts fahren
-	else if (sensDistL < COL_NEAR)	//  nah
-		speed_r_col=-target_speed_r  * 0.9;
-	else if (sensDistL < COL_FAR)	//  fern
-		speed_r_col=-target_speed_r  * 0.65;
-	     else speed_r_col=0;
-*/
 	if ((col_zone_r == ZONE_CLOSEST)&&(col_zone_l == ZONE_CLOSEST)){
-		data->speed_l = -target_speed_l + BOT_SPEED_MAX;
-		data->speed_r = -target_speed_r - BOT_SPEED_MAX;
-	}
-	else {
-		data->speed_l = BOT_SPEED_IGNORE;
-		data->speed_r = BOT_SPEED_IGNORE;
+		speedWishLeft = -target_speed_l + BOT_SPEED_MAX;
+		speedWishRight = -target_speed_r - BOT_SPEED_MAX;
 	}
 }
 
@@ -308,14 +346,10 @@ void bot_avoid_col(Behaviour_t *data){
  */
 void bot_avoid_border(Behaviour_t *data){
 	if (sensBorderL > BORDER_DANGEROUS)
-		data->speed_l=-BOT_SPEED_NORMAL;
-	else
-		data->speed_l=BOT_SPEED_IGNORE;
+		speedWishLeft=-BOT_SPEED_NORMAL;
 	
 	if (sensBorderR > BORDER_DANGEROUS)
-		data->speed_r=-BOT_SPEED_NORMAL;
-	else 
-		data->speed_r=BOT_SPEED_IGNORE;
+		speedWishRight=-BOT_SPEED_NORMAL;
 }
 
 /*! 
@@ -325,63 +359,35 @@ void bot_avoid_border(Behaviour_t *data){
  * um den Bot zu steuern
  */
 void bot_behave(void){	
-	Behaviour_t *job = behaviour;		// Zeiger auf ein Verhalten
-	char skip = 0;						// Abbruchvariable für die Schleife
-	char addNext = 0;					// Sollen Verhalten kummuliert werden?
-
-	float faktor_l = 1.0;				// Puffer für modifkatoren
-	float faktor_r = 1.0;				// Puffer für modifkatoren
-	int16 speedLeft = BOT_SPEED_IGNORE;				// Puffer für Geschwindigkeiten
-	int16 speedRight = BOT_SPEED_IGNORE;				// Puffer für Geschwindigkeiten
+	Behaviour_t *job;						// Zeiger auf ein Verhalten
+	
+	float faktorLeft = 1.0;					// Puffer für Modifkatoren
+	float faktorRight = 1.0;				// Puffer für Modifkatoren
 	
 	#ifdef RC5_AVAILABLE
-		rc5_control();					// Abfrage der IR-Fernbedienung
+		rc5_control();						// Abfrage der IR-Fernbedienung
 	#endif
 
 	/* Solange noch Verhalten in der Liste sind
 	   Achtung wir werten die Jobs sortiert nach Prioritaet. Wichtige zuerst!!! */
-	while ((job != NULL	) && (skip == 0)){
-		if (job->active != 0) {
+	for (job = behaviour; job; job = job->next) {
+		if (job->active) {
+			/* WunschVariablen initialisieren */
+			speedWishLeft = BOT_SPEED_IGNORE;
+			speedWishRight = BOT_SPEED_IGNORE;
+			
 			job->work(job);	/* Verhalten ausfuehren */
-			// printf("\nVerhalten mit Prioritaet %d speed_l= %d speed_r= %d faktor_l=%5.4f faktor_r= %5.4f\n",job->priority,job->speed_l,job->speed_r,job->faktor_l,job->faktor_r);
 
 			/* Geschwindigkeit aendern? */
-			if ((job->speed_l != BOT_SPEED_IGNORE) || (job->speed_r != BOT_SPEED_IGNORE)){
-				if (addNext == 0) {
-					speedLeft = job->speed_l * faktor_l;
-					speedRight = job->speed_r * faktor_r;
-				}
-				else {
-					speedLeft += job->speed_l * faktor_l;
-					speedRight += job->speed_r * faktor_r;
-				}
+			if ((speedWishLeft != BOT_SPEED_IGNORE) || (speedWishRight != BOT_SPEED_IGNORE)){
+				motor_set(speedWishLeft * faktorLeft, speedWishRight * faktorRight);
+				break;						/* Wenn ein Verhalten Werte direkt setzen will, nicht weitermachen */
 			}
-			/* Wenn ein Verhalten Werte modifizieren will, dann sammeln */
-			if ((job->faktor_l != 1.0) || (job->faktor_r != 1.0)){
-				faktor_l *= job->faktor_l;
-				faktor_r *= job->faktor_r;
-			}
+			
+			/* Modifikatoren sammeln  */
+			faktorLeft  *= faktorWishLeft;
+			faktorRight *= faktorWishRight;
 		}
-		
-		/* Hat der naechste Job die gleiche Prioritaet wie der aktuelle, dann diesen additiv behandeln */
-		if (NULL != job->next) {
-			if (job->priority == job->next->priority)
-				addNext = 1;
-			else
-				addNext = 0;
-		} else 
-			addNext = 0;
-		
-		/* Wenn ein Verhalten Werte direkt setzen will, nicht weitermachen, ausser der
-		   naechste Job hat die gleiche Prioritaet */
-		if ((addNext == 0) && ((speedLeft != BOT_SPEED_IGNORE) || (speedRight!= BOT_SPEED_IGNORE))) {
-			motor_set(speedLeft * faktor_l, speedRight * faktor_r);
-			skip = 1;
-		}
-		
-		/* printf("Add next = %d Skip = %d speedLeft=%d speedRight=%d\n", addNext, skip, speedLeft, speedRight); */
-		
-		job = job->next;	/* Und weiter in der Liste */
 	}
 }
 
@@ -397,12 +403,8 @@ Behaviour_t *new_behaviour(char priority, void (*work) (struct _Behaviour_t *dat
 		return NULL;
 	
 	newbehaviour->priority = priority;
-	newbehaviour->speed_l=BOT_SPEED_IGNORE;
-	newbehaviour->speed_r=BOT_SPEED_IGNORE;
-	newbehaviour->faktor_l=1.0;
-	newbehaviour->faktor_r=1.0;
 	newbehaviour->active=1;
-	newbehaviour->ignore=0;
+//	newbehaviour->ignore=0;
 	newbehaviour->next= NULL;
 	newbehaviour->work=work;
 	
@@ -459,7 +461,12 @@ void bot_behave_init(void){
 	insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_avoid_border));
 
 	insert_behaviour_to_list(&behaviour, new_behaviour(100, bot_avoid_col));
-	insert_behaviour_to_list(&behaviour, new_behaviour(50, bot_goto_system));
+	insert_behaviour_to_list(&behaviour, new_behaviour(60, bot_glance));
+
+	bot_goto_rule = new_behaviour(50, bot_goto_system);
+	bot_goto_rule->active=0;
+	insert_behaviour_to_list(&behaviour, bot_goto_rule);
+	
 	insert_behaviour_to_list(&behaviour, new_behaviour(0, bot_base));
 
 	#ifdef PC
@@ -491,15 +498,8 @@ void bot_goto(int16 left, int16 right){
 	// Zielwerte speichern
 	mot_l_goto=left; 
 	mot_r_goto=right;
-
-	// Encoder zuruecksetzen
-	sensEncL=0;
-	sensEncR=0;
 	
-	//Goto-System aktivieren
-	if (left !=0) mot_goto_l= MOT_GOTO_MAX; 
-	else mot_goto_l=0;
-
-	if (right!=0) mot_goto_r=MOT_GOTO_MAX;
-	else mot_goto_r=0;
+	/* Goto-System aktivieren */
+	if (bot_goto_rule)
+		bot_goto_rule->active=1;
 }
