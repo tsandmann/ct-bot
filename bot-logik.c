@@ -313,8 +313,8 @@ void bot_avoid_border(Behaviour_t *data){
 	else 
 		data->speed_r=0;
 
-	data->speed_r=0;
-	data->speed_l=0;
+//	data->speed_r=0;
+//	data->speed_l=0;
 }
 
 /*! 
