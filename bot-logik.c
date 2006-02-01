@@ -54,8 +54,8 @@
 #define ZONE_CLEAR		3			/*!< Zone fuer Freien Bereich */
 
 #define BRAKE_CLOSEST 	-1.0		/*!< Bremsfaktor fuer extremen Nahbereich ( <1 ==> bremsen <0 ==> rueckwaerts) */
-#define BRAKE_NEAR		0.6			/*!< Bremsfaktor fuer Nahbereich ( <1 ==> bremsen >1 ==> rueckwaerts) */
-#define BRAKE_FAR		0.2			/*!< Bremsfaktor fuer Fernbereich ( <1 ==> bremsen >1 ==> rueckwaerts) */
+#define BRAKE_NEAR		0.6			/*!< Bremsfaktor fuer Nahbereich ( <1 ==> bremsen <0 ==> rueckwaerts) */
+#define BRAKE_FAR		0.8			/*!< Bremsfaktor fuer Fernbereich ( <1 ==> bremsen <0 ==> rueckwaerts) */
 
 #define MOT_GOTO_MAX  3 		/*!< Richtungsaenderungen, bis goto erreicht sein muss */
 
