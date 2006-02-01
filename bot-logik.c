@@ -111,6 +111,10 @@ Behaviour_t *behaviour = NULL;
  * @param *data der Verhaltensdatensatz
  */
 void bot_simple(Behaviour_t *data){
+/* Diese Routine unterscheidet sich minimal von der in c't 04/06
+ * Das Verhaltensframework hat in der Zwischenzeit eine 
+ * Weiterentwicklung durchlaufen */
+
 /*
   int16 speed_l_col, speed_r_col;
 
