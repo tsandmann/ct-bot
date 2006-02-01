@@ -42,6 +42,8 @@
 #include "rc5.h"
 #include <stdlib.h>
 
+#define BOT_SPEED_IGNORE	1000	/*!< Wert ausserhalb von -BOT_SPEED_MAX und BOT_SPEED_MAX wird verwendet um einen Eintrag zu ignorieren */
+
 #define BORDER_DANGEROUS	500		/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */
 
 #define COL_CLOSEST		100		/*!< Abstand in mm, den wir als zu nah betrachten */
@@ -162,7 +164,8 @@ void bot_goto_system(Behaviour_t *data){
 		// Wenn neue Richtung ungleich alter Richtung
 		if (((data->speed_l<0)&& (speed_l>0))|| ( (data->speed_l>0) && (speed_l<0) ) ) 
 			mot_goto_l--;		// Nulldurchgang merken
-	}
+	} else
+		data->speed_l = BOT_SPEED_IGNORE;
 
 	// Motor R hat noch keine MOT_GOTO_MAX Nulldurchgaenge gehabt
 	if (mot_goto_r >0){
@@ -185,7 +188,8 @@ void bot_goto_system(Behaviour_t *data){
 		// Wenn neue Richtung ungleich alter Richtung
 		if (((data->speed_r<0)&& (speed_r>0))|| ( (data->speed_r>0) && (speed_r<0) ) ) 
 			mot_goto_r--;		// Nulldurchgang merken
-	}
+	} else
+			data->speed_r = BOT_SPEED_IGNORE;
 }
 
 /*!
@@ -293,8 +297,8 @@ void bot_avoid_col(Behaviour_t *data){
 		data->speed_r = -target_speed_r - BOT_SPEED_MAX;
 	}
 	else {
-		data->speed_l = 0;
-		data->speed_r = 0;
+		data->speed_l = BOT_SPEED_IGNORE;
+		data->speed_r = BOT_SPEED_IGNORE;
 	}
 }
 
@@ -306,15 +310,12 @@ void bot_avoid_border(Behaviour_t *data){
 	if (sensBorderL > BORDER_DANGEROUS)
 		data->speed_l=-BOT_SPEED_NORMAL;
 	else
-		data->speed_l=0;
+		data->speed_l=BOT_SPEED_IGNORE;
 	
 	if (sensBorderR > BORDER_DANGEROUS)
 		data->speed_r=-BOT_SPEED_NORMAL;
 	else 
-		data->speed_r=0;
-
-//	data->speed_r=0;
-//	data->speed_l=0;
+		data->speed_r=BOT_SPEED_IGNORE;
 }
 
 /*! 
@@ -330,8 +331,8 @@ void bot_behave(void){
 
 	float faktor_l = 1.0;				// Puffer für modifkatoren
 	float faktor_r = 1.0;				// Puffer für modifkatoren
-	int16 speedLeft = 0;				// Puffer für Geschwindigkeiten
-	int16 speedRight = 0;				// Puffer für Geschwindigkeiten
+	int16 speedLeft = BOT_SPEED_IGNORE;				// Puffer für Geschwindigkeiten
+	int16 speedRight = BOT_SPEED_IGNORE;				// Puffer für Geschwindigkeiten
 	
 	#ifdef RC5_AVAILABLE
 		rc5_control();					// Abfrage der IR-Fernbedienung
@@ -345,7 +346,7 @@ void bot_behave(void){
 			// printf("\nVerhalten mit Prioritaet %d speed_l= %d speed_r= %d faktor_l=%5.4f faktor_r= %5.4f\n",job->priority,job->speed_l,job->speed_r,job->faktor_l,job->faktor_r);
 
 			/* Geschwindigkeit aendern? */
-			if ((job->speed_l != 0) || (job->speed_r != 0)){
+			if ((job->speed_l != BOT_SPEED_IGNORE) || (job->speed_r != BOT_SPEED_IGNORE)){
 				if (addNext == 0) {
 					speedLeft = job->speed_l * faktor_l;
 					speedRight = job->speed_r * faktor_r;
@@ -373,7 +374,7 @@ void bot_behave(void){
 		
 		/* Wenn ein Verhalten Werte direkt setzen will, nicht weitermachen, ausser der
 		   naechste Job hat die gleiche Prioritaet */
-		if ((addNext == 0) && ((0 != speedLeft) || (0 != speedRight))) {
+		if ((addNext == 0) && ((speedLeft != BOT_SPEED_IGNORE) || (speedRight!= BOT_SPEED_IGNORE))) {
 			motor_set(speedLeft * faktor_l, speedRight * faktor_r);
 			skip = 1;
 		}
@@ -396,8 +397,8 @@ Behaviour_t *new_behaviour(char priority, void (*work) (struct _Behaviour_t *dat
 		return NULL;
 	
 	newbehaviour->priority = priority;
-	newbehaviour->speed_l=0;
-	newbehaviour->speed_r=0;
+	newbehaviour->speed_l=BOT_SPEED_IGNORE;
+	newbehaviour->speed_r=BOT_SPEED_IGNORE;
 	newbehaviour->faktor_l=1.0;
 	newbehaviour->faktor_r=1.0;
 	newbehaviour->active=1;

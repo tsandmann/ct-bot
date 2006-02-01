@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-02-01	Benjamin Benz (bbe@heise.de) Bugfix im Verhaltenscode. BOT_SPEED_IGNORE eingefügt
+
 2006-02-01	Benjamin Benz (bbe@heise.de) Brake-Konstante angepasst
 
 2006-01-31	Benjamin Benz (bbe@heise.de) Kommentare aktualisiert, GPL-Infos eingebaut
