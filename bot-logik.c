@@ -56,14 +56,14 @@
 #define ZONE_CLEAR		3			/*!< Zone fuer Freien Bereich */
 
 #define BRAKE_CLOSEST 	-1.0		/*!< Bremsfaktor fuer extremen Nahbereich ( <1 ==> bremsen <0 ==> rueckwaerts) */
-#define BRAKE_NEAR		0.6			/*!< Bremsfaktor fuer Nahbereich ( <1 ==> bremsen <0 ==> rueckwaerts) */
+#define BRAKE_NEAR		0.6 		/*!< Bremsfaktor fuer Nahbereich ( <1 ==> bremsen <0 ==> rueckwaerts) */
 #define BRAKE_FAR		0.8			/*!< Bremsfaktor fuer Fernbereich ( <1 ==> bremsen <0 ==> rueckwaerts) */
 
-#define GLANCE_FACTOR 	0.9		/*!< Schlangenlinienfaktor zur Erweiterung des Sensorfeldes */
-#define GLANCE_STRAIGHT		20			/*!< Anzahl der Zyklen, die nicht geschielt wird Gesamtzahl der Zyklen ist GLANCE_STRAIGHT + GLANCE_SIDE*4 */
-#define GLANCE_SIDE 			5			/*!< Anzahl der Zyklen, die geschielt wird (jeweils pro Seite) Gesamtzahl der Zyklen ist GLANCE_STRAIGHT + GLANCE_SIDE*4 */
+#define GLANCE_FACTOR 		0.9		/*!< Schlangenlinienfaktor zur Erweiterung des Sensorfeldes */
+#define GLANCE_STRAIGHT	20		/*!< Anzahl der Zyklen, die nicht geschielt wird Gesamtzahl der Zyklen ist GLANCE_STRAIGHT + GLANCE_SIDE*4 */
+#define GLANCE_SIDE 		5		/*!< Anzahl der Zyklen, die geschielt wird (jeweils pro Seite) Gesamtzahl der Zyklen ist GLANCE_STRAIGHT + GLANCE_SIDE*4 */
 
-#define MOT_GOTO_MAX  3 		/*!< Richtungsaenderungen, bis goto erreicht sein muss */
+#define MOT_GOTO_MAX  3 			/*!< Richtungsaenderungen, bis goto erreicht sein muss */
 
 
 /*! Verwaltungsstruktur für die Verhaltensroutinen */
