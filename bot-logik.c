@@ -63,7 +63,12 @@
 #define GLANCE_STRAIGHT	20		/*!< Anzahl der Zyklen, die nicht geschielt wird Gesamtzahl der Zyklen ist GLANCE_STRAIGHT + GLANCE_SIDE*4 */
 #define GLANCE_SIDE 		5		/*!< Anzahl der Zyklen, die geschielt wird (jeweils pro Seite) Gesamtzahl der Zyklen ist GLANCE_STRAIGHT + GLANCE_SIDE*4 */
 
-#define MOT_GOTO_MAX  3 			/*!< Richtungsaenderungen, bis goto erreicht sein muss */
+#define MOT_GOTO_MAX  	 3 			/*!< Richtungsaenderungen, bis goto erreicht sein muss */
+#define GOTO_REACHED	 2			/*!< Wenn Encoder-Distanz <= GOTO_REACHED dann stop */
+#define GOTO_SLOW		 4			/*!< Wenn Encoder-Distanz < GOTO_SLOW dann langsame Fahrt */
+#define GOTO_NORMAL	10			/*!< Wenn Encoder-Distanz < GOTO_NORMAL dann normale Fahrt */
+#define GOTO_FAST		40			/*!< Wenn Encoder-Distanz < GOTO_FAST dann schnelle Fahrt, sonst maximale Fahrt */
+
 
 
 /*! Verwaltungsstruktur für die Verhaltensroutinen */
@@ -200,16 +205,16 @@ void bot_goto_system(Behaviour_t *data){
 	
 	/* Motor L hat noch keine MOT_GOTO_MAX Nulldurchgaenge gehabt */
 	if (mot_goto_l >0){
-		diff_l = sensEncL - mot_l_goto;	/* Restdistanz links */
-		
-		if (abs(diff_l) <= 2){	/* 2 Encoderstaende Genauigkeit reicht */
+		diff_l = sensEncL - mot_l_goto;		/* Restdistanz links */
+
+		if (abs(diff_l) <= GOTO_REACHED){				/* 2 Encoderstaende Genauigkeit reicht */
 			speedWishLeft = BOT_SPEED_STOP;	/* Stop */
-			mot_goto_l--;			/* wie Nulldurchgang behandeln */
-		}else if (abs(diff_l) < 4)
+			mot_goto_l--;					/* wie Nulldurchgang behandeln */
+		}else if (abs(diff_l) < GOTO_SLOW)
 			speedWishLeft= BOT_SPEED_SLOW;
-		else if (abs(diff_l) < 10)
+		else if (abs(diff_l) < GOTO_NORMAL)
 			speedWishLeft= BOT_SPEED_NORMAL;
-		else if (abs(diff_l) < 40)
+		else if (abs(diff_l) < GOTO_FAST)
 			speedWishLeft= BOT_SPEED_FAST;
 		else speedWishLeft= BOT_SPEED_MAX;
 
@@ -227,20 +232,20 @@ void bot_goto_system(Behaviour_t *data){
 	if (mot_goto_r >0){
 		diff_r = sensEncR - mot_r_goto;	/* Restdistanz rechts */
 
-		if (abs(diff_r) <= 2){			// 2 Encoderstaende Genauigkeit reicht
+		if (abs(diff_r) <= GOTO_REACHED){			// 2 Encoderstaende Genauigkeit reicht
 			speedWishRight = BOT_SPEED_STOP;	//Stop
 			mot_goto_r--;			// wie Nulldurchgang behandeln
-		}else if (abs(diff_r) < 4)
+		}else if (abs(diff_r) < GOTO_SLOW)
 			speedWishRight= BOT_SPEED_SLOW;
-		else if (abs(diff_r) < 10)
+		else if (abs(diff_r) < GOTO_NORMAL)
 			speedWishRight= BOT_SPEED_NORMAL;
-		else if (abs(diff_r) < 40)
+		else if (abs(diff_r) < GOTO_FAST)
 			speedWishRight= BOT_SPEED_FAST;
 		else speedWishRight= BOT_SPEED_MAX;
 
 		// Richtung	
 		if (diff_r>0) {		// Wenn uebersteurt,
-			speedWishRight= -target_speed_r;	//Richtung umkehren
+			speedWishRight= -speedWishRight;	//Richtung umkehren
 		}
 
 		// Wenn neue Richtung ungleich alter Richtung
