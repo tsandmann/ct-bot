@@ -26,11 +26,36 @@
 #ifndef mouse_H_
 #define mouse_H_
 
-#define MAUS_Y  0x42		/*!< Kommando, um DY auszulesen */
-#define MAUS_X  0x43		/*!< Kommando, um DX auszulesen */
-
-#define MAUS_CONF		0x40	/*!< Kommando für Konfiguration */
-#define MAUS_STATUS	0x41	/*!< Kommando für Status */
+#define ADNS2610					/*!< Welcher Sensortyp? ADNS2610 oder 2620 */
+#ifdef ADNS2610	
+	/* ADNS2610 */
+	#define MOUSE_CONFIG_REG				0x00 /*!< Reset, Power Down, Forced Awake, etc */
+	#define MOUSE_STATUS_REG				0x01 /*!< Product ID, Mouse state of Asleep or Awake */
+	#define MOUSE_DELTA_Y_REG		 		0x02 /*!< Y Movement */
+	#define MOUSE_DELTA_X_REG		 		0x03 /*!< X Movement */
+	#define MOUSE_SQUAL_REG		 		0x04 /*!< Measure of the number of features visible by the sensor */
+	#define MOUSE_MAX_PIXEL_REG			0x05 /*!< Maximum Pixel value in current frame.*/
+	#define MOUSE_MIN_PIXEL_REG			0x06 /*!< Minimum Pixel value in current frame.*/
+	#define MOUSE_PIXEL_SUM_REG			0x07 /*!< This register is used to find the average pixel value.*/
+	#define MOUSE_PIXEL_DATA_REG			0x08 /*!< Actual picture of surface */
+	#define MOUSE_SHUTTER_UPPER_REG		0x09 /*!< The sensor adjusts the shutter to keep the average and maximum pixel values within normal operating ranges.*/
+	#define MOUSE_SHUTTER_LOWER_REG		0x0A /*!< The sensor adjusts the shutter to keep the average and maximum pixel values within normal operating ranges.*/
+	#define MOUSE_INVERSE_PRODUCT_ID_REG	0x11 /*!< Inverse Product ID */
+#else			
+	/* ADNS2620 */
+	#define MOUSE_CONFIG_REG				0x40 /*!< Reset, Power Down, Forced Awake, etc */
+	#define MOUSE_STATUS_REG				0x41 /*!< Product ID, Mouse state of Asleep or Awake */
+	#define MOUSE_DELTA_Y_REG		 		0x42 /*!< Y Movement */
+	#define MOUSE_DELTA_X_REG		 		0x43 /*!< X Movement */
+	#define MOUSE_SQUAL_REG		 		0x44 /*!< Measure of the number of features visible by the sensor */
+	#define MOUSE_MAX_PIXEL_REG			0x45 /*!< Maximum Pixel value in current frame.*/
+	#define MOUSE_MIN_PIXEL_REG			0x46 /*!< Minimum Pixel value in current frame.*/
+	#define MOUSE_PIXEL_SUM_REG			0x47 /*!< This register is used to find the average pixel value.*/
+	#define MOUSE_PIXEL_DATA_REG			0x48 /*!< Actual picture of surface */
+	#define MOUSE_SHUTTER_UPPER_REG		0x49 /*!< The sensor adjusts the shutter to keep the average and maximum pixel values within normal operating ranges.*/
+	#define MOUSE_SHUTTER_LOWER_REG		0x4A /*!< The sensor adjusts the shutter to keep the average and maximum pixel values within normal operating ranges.*/
+	#define MOUSE_FRAME_PERIOD_REG			0x4B /*!< The frame period counter counts up until it overflows. */
+#endif
 
 /*! 
  * Initialisiere Maussensor

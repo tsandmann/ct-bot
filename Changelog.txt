@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-02-01	Benjamin Benz (bbe@heise.de) Maussensor angepasst
+
 2006-02-01	Benjamin Benz (bbe@heise.de) Verhalten bot_glance von Ralph Glass (ralph.glass@t-online.de) eingebaut
 
 2006-02-01	Benjamin Benz (bbe@heise.de) MCU-Code freigegeben

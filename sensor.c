@@ -28,8 +28,8 @@
 volatile int16 sensLDRL=0;		/*!< Lichtsensor links */
 volatile int16 sensLDRR=0;		/*!< Lichtsensor rechts */
 
-volatile int16 sensDistL=1023;		/*!< Distanz linker IR-Sensor */
-volatile int16 sensDistR=1023;		/*!< Distanz rechter IR-Sensor */
+volatile int16 sensDistL=1023;		/*!< Distanz linker IR-Sensor in [mm], wenn korrekt umgerechnet wird */
+volatile int16 sensDistR=1023;		/*!< Distanz rechter IR-Sensor in [mm], wenn korrekt umgerechnet wird */
 
 volatile int16 sensBorderL=0;	/*!< Abgrundsensor links */
 volatile int16 sensBorderR=0;	/*!< Abgrundsensor rechts */
@@ -46,14 +46,11 @@ volatile char sensDoor=0;		/*!< Sensor Ueberwachung Klappe */
 
 volatile char sensError=0;		/*!< Ueberwachung Motor oder Batteriefehler */
 
-//volatile int sensRc5;			/*!< Fernbedienungssensor */
+volatile char sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+volatile char sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
 
-volatile char sensMouseDX;		/*!< Maussensor Delta X */
-volatile char sensMouseDY;		/*!< Maussensor Delta X */
-
-
-volatile int sensMouseX=0; /*!< Mausposition X */
-volatile int sensMouseY=0; /*!< Mausposition Y */
+volatile int sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+volatile int sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
 
 volatile int sensEncL=0;	/*!< Encoder linker Motor */
 volatile int sensEncR=0;	/*!< Encoder rechter Motor */

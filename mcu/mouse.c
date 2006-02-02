@@ -33,18 +33,13 @@
 
 #ifdef MAUS_AVAILABLE
 
-//int setSensMouseDX=0;	/*!< X-Koordinate */
-//int setSensMouseDY=0;	/*!< Y-Koordinate */
-
-#define MAUS_DDR 	DDRB	/*!< DDR für Maus-SCLK */
-#define MAUS_PORT 	PORTB	/*!< PORT für Maus-SCLK */
-#define MAUS_SCK_PIN	(1<<7)
+#define MAUS_DDR 	DDRB			/*!< DDR für Maus-SCLK */
+#define MAUS_PORT 	PORTB			/*!< PORT für Maus-SCLK */
+#define MAUS_SCK_PIN	(1<<7)		/*!< PIN für Maus-SCLK */
 
 #define MAUS_SDA_NR		6		/*!< Pin an dem die SDA-Leitung haengt */
-#define MAUS_SDA_PINR 	PINB	/*!< Leseregister */
+#define MAUS_SDA_PINR 	PINB		/*!< Leseregister */
 #define MAUS_SDA_PIN 	(1<<MAUS_SDA_NR)	/*!< Bit-Wert der SDA-Leitung */
-
-
 
 /*!
  * Überträgt ein Byte an den Sensor
@@ -117,8 +112,8 @@ void maus_sens_init(void){
 	MAUS_DDR  |= MAUS_SCK_PIN; 	// SCK auf Output
 	MAUS_PORT &= ~MAUS_SCK_PIN;	// SCK auf 0
 	
-	maus_sens_write(MAUS_CONF,0x80);	//Reset sensor
-	maus_sens_write(MAUS_CONF,0x01);	//Always on
+	maus_sens_write(MOUSE_CONFIG_REG,0x80);	//Reset sensor
+	maus_sens_write(MOUSE_CONFIG_REG,0x01);	//Always on
 }
 
 

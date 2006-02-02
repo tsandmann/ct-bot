@@ -55,7 +55,7 @@
 #define RC5_CODE_8	(0x3948 & RC5_MASK)		/*!< Taste 8 */
 #define RC5_CODE_9	(0x3949 & RC5_MASK)		/*!< Taste 9 */
 
-#define RC5_CODE_UP		(0x2950 & RC5_MASK)	/*!< Taste Hoch */
+#define RC5_CODE_UP	(0x2950 & RC5_MASK)	/*!< Taste Hoch */
 #define RC5_CODE_DOWN	(0x2951 & RC5_MASK)	/*!< Taste Runter */
 #define RC5_CODE_LEFT	(0x2955 & RC5_MASK)	/*!< Taste Links */
 #define RC5_CODE_RIGHT	(0x2956 & RC5_MASK)	/*!< Taste Rechts */
@@ -67,7 +67,7 @@
 	#undef RC5_MASK
 	#define RC5_MASK (RC5_COMMAND |RC5_ADDRESS )
 
-	#define RC5_CODE_JOG_MID	(0x3969 & RC5_MASK)	/*!< Taste Jog-Dial Mitte */
+	#define RC5_CODE_JOG_MID		(0x3969 & RC5_MASK)	/*!< Taste Jog-Dial Mitte */
 	#define RC5_CODE_JOG_L1		(0x3962 & RC5_MASK)	/*!< Taste Jog-Dial Links 1 */
 	#define RC5_CODE_JOG_L2		(0x396F & RC5_MASK)	/*!< Taste Jog-Dial Links 2 */
 	#define RC5_CODE_JOG_L3		(0x395F & RC5_MASK)	/*!< Taste Jog-Dial Links 3 */

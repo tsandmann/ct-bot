@@ -55,10 +55,10 @@ extern volatile char sensError;		/*!< Ueberwachung Motor oder Batteriefehler */
 
 //extern volatile int sensRc5;			/*!< Fernbedienungssensor */
 
-extern volatile char sensMouseDX;		/*!< Maussensor Delta X */
-extern volatile char sensMouseDY;		/*!< Maussensor Delta X */
+extern volatile char sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+extern volatile char sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
 
-extern volatile int sensMouseX;		/*!< Mausposition X */
-extern volatile int sensMouseY;		/*!< Mausposition Y */
+extern volatile int sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+extern volatile int sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
 
 #endif /*SENSOR_H_*/
