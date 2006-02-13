@@ -195,7 +195,7 @@ void bot_goto_system(Behaviour_t *data){
 		/* Zähler einstellen */
 		if (mot_l_goto !=0) 
 			mot_goto_l= MOT_GOTO_MAX; 
-		if (mot_l_goto !=0) 
+		if (mot_r_goto !=0) 
 			mot_goto_r=MOT_GOTO_MAX;
 
 		/* Encoder zuruecksetzen */

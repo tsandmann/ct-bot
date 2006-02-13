@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-02-13 Benjamin Benz (bbe@heise.de) Bugfix im bot_goto_system()
+
 2006-02-10	Andreas Merkle (mail@blue-andi.de) Die Makros CLEAR und POSITION unter Windows mit Funktionalitaet hinterlegt.
 
 2006-02-03	Benjamin Benz (bbe@heise.de) Externes CVS mit internem überschrieben
