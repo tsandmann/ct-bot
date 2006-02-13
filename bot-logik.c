@@ -483,7 +483,7 @@ void bot_behave_init(void){
 			/* Annzeigen der geladenen Verhalten  */
 				Behaviour_t	*ptr	= behaviour;
 	
-				display_cursor(1,1);
+				display_cursor(5,1);
 				sprintf(display_buf,"Verhaltensstack:\n");			
 				display_buffer();
 				while(ptr != NULL)	{

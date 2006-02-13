@@ -132,7 +132,7 @@ static void clrscr(void) {
  */
 static void gotoxy(int x, int y) {
 	COORD point;
-	point.X = x; point.Y = y;
+	point.X = x-1; point.Y = y-1;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), point);
 	return;
 }
