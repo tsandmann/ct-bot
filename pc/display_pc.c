@@ -30,6 +30,9 @@
 #include "display.h"
 #include <stdio.h>      /* for printf() and fprintf() */
 
+#ifdef WIN32
+#include <windows.h>
+#endif	/* WIN32 */
 
 #ifdef DISPLAY_AVAILABLE
 
@@ -42,12 +45,17 @@ char display_buf[DISPLAY_BUFFER];		/*!< Pufferstring fuer Displayausgaben */
 
 #ifdef WIN32
 	#define ESC		0x1B
-	#define POSITION(Ze, Sp)   //printf("%c[%d;%dH",ESC,Ze,Sp)
-	#define CLEAR              //printf("%c[2J",ESC)
+	#define POSITION(Ze, Sp)   gotoxy(Sp, Ze)
+	#define CLEAR              clrscr()
 #else 
 	#define POSITION(Ze, Sp)   printf("\033[%d;%dH",Ze,Sp)		/*!< Befehl um eine Posion anzuspringen */
 	#define CLEAR              printf("\033[2J")				/*!< Befehl um das display zu loeschen */
 #endif 
+
+#ifdef WIN32
+static void clrscr(void);
+static void gotoxy(int x, int y);
+#endif	/* WIN32 */
 
 /*!
  * Loescht das ganze Display
@@ -56,7 +64,7 @@ void display_clear(void){
 	CLEAR;
 }
 
-/*
+/*!
 ** LCD_Cursor: Positioniert den LCD-Cursor bei "row", "column".
 */
 void display_cursor (int row, int column) {
@@ -88,6 +96,48 @@ int display_buffer(){
 	return 0;
 }
 
+#ifdef WIN32
+
+/*!
+ * Loescht die Konsole.
+ */
+static void clrscr(void) {
+	COORD coordScreen = { 0, 0 };
+	DWORD cCharsWritten;
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	DWORD dwConSize;
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	GetConsoleScreenBufferInfo(hConsole, &csbi);
+	dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
+	FillConsoleOutputCharacter(	hConsole, 
+								TEXT(' '),
+								dwConSize,
+								coordScreen,
+								&cCharsWritten);
+	GetConsoleScreenBufferInfo(hConsole, &csbi);
+	FillConsoleOutputAttribute(	hConsole,
+                             	csbi.wAttributes,
+                             	dwConSize,
+                             	coordScreen,
+                             	&cCharsWritten);
+	SetConsoleCursorPosition(hConsole, coordScreen);
+	return;
+}
+
+/*!
+ * Springt an die angegebenen Koordinaten in der Konsole.
+ * @param x Spalte
+ * @param y Zeile
+ */
+static void gotoxy(int x, int y) {
+	COORD point;
+	point.X = x; point.Y = y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), point);
+	return;
+}
+
+#endif	/* WIN32 */
 
 #endif
 #endif
