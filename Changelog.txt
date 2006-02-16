@@ -1,6 +1,10 @@
 CHANGELOG fuer c't-Bot
 ======================
-2006-02-13 Benjamin Benz (bbe@heise.de) Bugfix im bot_goto_system()
+2006-02-15	Andreas Merkle (mail@blue-andi.de) RC5-Fernbedienungscodes in eine Header-Datei ausgelagert.
+											   Fernbedienungsaktionen in einer Tabelle zusammengefasst. Dadurch sind
+											   Erweiterungen bzw. Aenderungen noch einfacher moeglich.
+
+2006-02-13	Benjamin Benz (bbe@heise.de) Bugfix im bot_goto_system()
 
 2006-02-10	Andreas Merkle (mail@blue-andi.de) Die Makros CLEAR und POSITION unter Windows mit Funktionalitaet hinterlegt.
 
