@@ -1,5 +1,10 @@
 CHANGELOG fuer c't-Bot
 ======================
+
+2006-02-17	Benjamin Benz (bbe@heise.de) Linearisierung der Distanzsensoren eingeführt
+
+2006-02-17	Benjamin Benz (bbe@heise.de) Stromsparen eingeführt
+
 2006-02-15	Andreas Merkle (mail@blue-andi.de) RC5-Fernbedienungscodes in eine Header-Datei ausgelagert.
 											   Fernbedienungsaktionen in einer Tabelle zusammengefasst. Dadurch sind
 											   Erweiterungen bzw. Aenderungen noch einfacher moeglich.
