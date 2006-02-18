@@ -1,5 +1,6 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-02-18	Benjamin Benz (bbe@heise.de) Fuse-Bit-Dateien für avrdude eingefügt
 
 2006-02-17	Benjamin Benz (bbe@heise.de) Linearisierung der Distanzsensoren eingeführt
 
