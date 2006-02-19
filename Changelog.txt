@@ -1,5 +1,9 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-02-18	Andreas Staudenmayer (andreas.staudenmayer@t-online.de) Batch-Files zum Flashen/fusen unter Windows
+
+2006-02-18	Rolf Ebert (Rolf.Ebert@gmx.net) LCD-Ausgabe kann nun auch im Simulator erscheinen
+
 2006-02-18	Benjamin Benz (bbe@heise.de) Fuse-Bit-Dateien für avrdude eingefügt
 
 2006-02-17	Benjamin Benz (bbe@heise.de) Linearisierung der Distanzsensoren eingeführt

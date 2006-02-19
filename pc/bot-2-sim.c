@@ -38,6 +38,7 @@
 
 #include <stdio.h>      // for printf() and fprintf()
 #include <stdlib.h>     // for atoi() and exit()
+#include <string.h>     // for strlen()
 #include <sys/time.h>
 #include <pthread.h>
 #include <time.h>
@@ -135,6 +136,10 @@ int not_answered_error=1;	/*!< Wurde ein Packet beantwortet */
 
 /*!
  *  Gibt dem Simulator Daten und wartet nicht auf Antwort
+ * @param command Kennung zum Command
+ * @param subcommand Kennung des Subcommand
+ * @param data_l Daten f�r den linken Kanal
+ * @param data_r Daten f�r den rechten Kanal
  */
 void bot_2_sim_tell(uint8 command, uint8 subcommand, int16* data_l,int16* data_r){
 	command_t cmd;
@@ -145,12 +150,50 @@ void bot_2_sim_tell(uint8 command, uint8 subcommand, int16* data_l,int16* data_r
 	cmd.request.subcommand= subcommand;
 	
 	cmd.payload=0x00;
-	cmd.data_l=*data_l;
-	cmd.data_r=*data_r;
+    cmd.data_l = (data_l ? *data_l : 0);
+    cmd.data_r = (data_r ? *data_r : 0);
 	cmd.seq=count++;
 	cmd.CRC=CMD_STOPCODE;
 	
 	tcp_write((char *)&cmd,sizeof(command_t));
+}
+
+/*!
+ *  Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort
+ * @param command Kennung zum Command
+ * @param subcommand Kennung des Subcommand
+ * @param data_l Daten f�r den linken Kanal
+ * @param data_r Daten f�r den rechten Kanal
+ * @param data Datenanhang an das eigentliche Command
+ */
+void bot_2_sim_tell_data(uint8 command, uint8 subcommand, const int16* data_l, const int16* data_r, const char* data){
+    command_t cmd;
+    size_t    len;
+    
+    cmd.startCode          = CMD_STARTCODE;
+    cmd.request.direction  = DIR_REQUEST;  // Anfrage
+    cmd.request.command    = command;
+    cmd.request.subcommand = subcommand;
+    
+    if (data != NULL) {
+        len = strlen(data);
+        if (len > BOT_2_SIM_MAX_PAYLOAD) {
+            cmd.payload = BOT_2_SIM_MAX_PAYLOAD;
+        } else {
+            cmd.payload = len;
+        }
+    } else {
+        cmd.payload = 0;
+    }
+    
+    cmd.data_l = (data_l ? *data_l : 0);
+    cmd.data_r = (data_r ? *data_r : 0);
+    
+    cmd.seq = count++;
+    cmd.CRC = CMD_STOPCODE;
+ 
+    tcp_write((char *)&cmd, sizeof(command_t));
+    tcp_write(data, cmd.payload);
 }
 
 

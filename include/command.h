@@ -79,10 +79,16 @@ typedef struct {
 #define	CMD_AKT_DOOR	'd'		/*!< Steuerung Klappe */
 #define	CMD_AKT_SERVO	'S'		/*!< Steuerung Servo  */
 #define CMD_AKT_LED		'l'		/*!< LEDs steuern */
+#define CMD_AKT_LCD     'c'     /*!< LCD Anzeige */
 
 #define SUB_CMD_NORM	'N' 	/*!< Standard-Kommando */
 #define SUB_CMD_LEFT	'L' 	/*!< Kommmando fuer links */
 #define SUB_CMD_RIGHT	'R' 	/*!< Kommando fuer rechts */
+
+// Subcommandos f�r LCD
+#define SUB_LCD_CLEAR   'c'     /*!< Subkommando Clear Screen */
+#define SUB_LCD_DATA    'D'     /*!< Subkommando Text ohne Cursor */
+#define SUB_LCD_CURSOR  'C'     /*!< Subkommando Cursorkoordinaten */    
 
 #define DIR_REQUEST	0			/*!< Richtung fuer Anfragen */
 #define DIR_ANSWER	1			/*!< Richtung fuer Antworten */

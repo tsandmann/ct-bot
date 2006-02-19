@@ -76,19 +76,19 @@ void init(void){
 		PORTD=0; DDRD=0;
 	#endif
 
-	#ifdef DISPLAY_AVAILABLE
-		display_init();
-		display_update=1;
-	#endif
-
+	#ifdef PC
+        bot_2_sim_init();
+    #endif
+    
+    #ifdef DISPLAY_AVAILABLE
+        display_init();
+        display_update=1;
+    #endif
+    
 	#ifdef LED_AVAILABLE
 		LED_init();
 	#endif
-
-	#ifdef PC
-		bot_2_sim_init();
-	#endif
-
+	
 	motor_init();
 	bot_sens_init();
 	bot_behave_init();
@@ -132,7 +132,7 @@ void init(void){
 
 			display_cursor(4,1);
 			sprintf(display_buf,"I=%04X M=%05d %05d",RC5_Code,sensMouseX,sensMouseY);
-			display_buffer();				
+			display_buffer();	
 		}
 	}
 #endif

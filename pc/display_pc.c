@@ -28,11 +28,21 @@
 #ifdef PC
 
 #include "display.h"
-#include <stdio.h>      /* for printf() and fprintf() */
 
-#ifdef WIN32
-#include <windows.h>
-#endif	/* WIN32 */
+/* definiere DISPLAY_REMOTE_AVAILABLE, wenn die Display-Daten per TCP an das 
+ * Simulationsprogramm gesendet werden sollen.  Wenn es nicht gesetzt ist, 
+ * dann erscheint die LCD Ausgabe auf der Startkonsole */
+
+
+#ifdef DISPLAY_REMOTE_AVAILABLE
+ #include "command.h"
+ #include "bot-2-sim.h"  
+#else
+ #include <stdio.h>
+ #ifdef WIN32
+  #include <windows.h>
+ #endif	/* WIN32 */
+#endif
 
 #ifdef DISPLAY_AVAILABLE
 
@@ -42,20 +52,22 @@ volatile char display_update=0;	/*!< Muss das Display aktualisiert werden? */
 
 char display_buf[DISPLAY_BUFFER];		/*!< Pufferstring fuer Displayausgaben */
 
-
-#ifdef WIN32
-	#define ESC		0x1B
+#ifdef DISPLAY_REMOTE_AVAILABLE
+    #define CLEAR              bot_2_sim_tell(CMD_AKT_LCD, SUB_LCD_CLEAR, NULL, NULL)
+    #define POSITION(Ze, Sp)   {Ze--; Sp--; bot_2_sim_tell(CMD_AKT_LCD, SUB_LCD_CURSOR, &(Sp), &(Ze));}
+    #define printf(data)       {bot_2_sim_tell_data(CMD_AKT_LCD, SUB_LCD_DATA, NULL, NULL, (data));}
+#else
+ #ifdef WIN32
+    static void clrscr(void);
+    static void gotoxy(int x, int y);
 	#define POSITION(Ze, Sp)   gotoxy(Sp, Ze)
 	#define CLEAR              clrscr()
-#else 
+ #else 
 	#define POSITION(Ze, Sp)   printf("\033[%d;%dH",Ze,Sp)		/*!< Befehl um eine Posion anzuspringen */
 	#define CLEAR              printf("\033[2J")				/*!< Befehl um das display zu loeschen */
-#endif 
+ #endif 
+#endif
 
-#ifdef WIN32
-static void clrscr(void);
-static void gotoxy(int x, int y);
-#endif	/* WIN32 */
 
 /*!
  * Loescht das ganze Display
@@ -82,7 +94,7 @@ void display_init(void){
  * Zeigt einen String an 
  * @return -1, falls String zu Ende; 0, falls Zeile (20 Zeichen) zu Ende
  */
-int display_string(char data[20]){
+int display_string(char data[DISPLAY_LENGTH]){
 	printf(data);
 	return -1;
 }
@@ -96,6 +108,7 @@ int display_buffer(){
 	return 0;
 }
 
+#ifndef DISPLAY_REMOTE_AVAILABLE
 #ifdef WIN32
 
 /*!
@@ -138,6 +151,7 @@ static void gotoxy(int x, int y) {
 }
 
 #endif	/* WIN32 */
+#endif  /* !DISPLAY_REMOTE_AVAILABLE */
 
 #endif
 #endif
