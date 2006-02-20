@@ -41,6 +41,11 @@
 	#define MOUSE_SHUTTER_UPPER_REG		0x09 /*!< The sensor adjusts the shutter to keep the average and maximum pixel values within normal operating ranges.*/
 	#define MOUSE_SHUTTER_LOWER_REG		0x0A /*!< The sensor adjusts the shutter to keep the average and maximum pixel values within normal operating ranges.*/
 	#define MOUSE_INVERSE_PRODUCT_ID_REG	0x11 /*!< Inverse Product ID */
+	
+	#define MOUSE_CFG_RESET				0x80 /*!< Reset Circuit */
+	#define MOUSE_CFG_POWERDOWN			0x40 /*!< Power Down analog Circuit */
+	#define MOUSE_CFG_FORCEAWAKE			0x01 /*!< Keep Sensor awake */
+	
 #else			
 	/* ADNS2620 */
 	#define MOUSE_CONFIG_REG				0x40 /*!< Reset, Power Down, Forced Awake, etc */

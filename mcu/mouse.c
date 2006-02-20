@@ -112,8 +112,8 @@ void maus_sens_init(void){
 	MAUS_DDR  |= MAUS_SCK_PIN; 	// SCK auf Output
 	MAUS_PORT &= ~MAUS_SCK_PIN;	// SCK auf 0
 	
-	maus_sens_write(MOUSE_CONFIG_REG,0x80);	//Reset sensor
-	maus_sens_write(MOUSE_CONFIG_REG,0x01);	//Always on
+	maus_sens_write(MOUSE_CONFIG_REG,MOUSE_CFG_RESET);	//Reset sensor
+	maus_sens_write(MOUSE_CONFIG_REG,MOUSE_CFG_FORCEAWAKE);	//Always on
 }
 
 

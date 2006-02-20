@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-02-18	Benjamin Benz (bbe@heise.de) Schönheitskorrektur in den Maus-Routinen
+
 2006-02-19	Benjamin Benz (bbe@heise.de) RC5-Variable in sensor.h umgezogen
 
 2006-02-18	Benjamin Benz (bbe@heise.de) Watchdog sicherheitshalber deaktiviert
