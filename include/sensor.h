@@ -53,7 +53,7 @@ extern volatile char sensDoor;		/*!< Sensor Ueberwachung Klappe */
 
 extern volatile char sensError;		/*!< Ueberwachung Motor oder Batteriefehler */
 
-//extern volatile int sensRc5;			/*!< Fernbedienungssensor */
+extern uint16 RC5_Code;        /*!< Letzter empfangener RC5-Code */
 
 extern volatile char sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
 extern volatile char sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */

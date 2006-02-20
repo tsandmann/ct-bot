@@ -29,6 +29,7 @@
 	#include <avr/io.h>
 	#include <avr/interrupt.h>
 	#include <avr/signal.h>
+	#include <avr/wdt.h>
 #endif
 	
 #ifdef PC
@@ -74,6 +75,9 @@ void init(void){
 		PORTB=0; DDRB=0;
 		PORTC=0; DDRC=0;
 		PORTD=0; DDRD=0;
+		
+		// Watchdog aus!	
+		wdt_disable();
 	#endif
 
 	#ifdef PC
@@ -132,6 +136,7 @@ void init(void){
 
 			display_cursor(4,1);
 			sprintf(display_buf,"I=%04X M=%05d %05d",RC5_Code,sensMouseX,sensMouseY);
+//			sprintf(display_buf,"count: %d   ",count++);
 			display_buffer();	
 		}
 	}
