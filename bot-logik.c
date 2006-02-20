@@ -385,6 +385,9 @@ void bot_behave(void){
 			speedWishLeft = BOT_SPEED_IGNORE;
 			speedWishRight = BOT_SPEED_IGNORE;
 			
+			faktorWishLeft = 1.0;
+			faktorWishRight = 1.0;
+			
 			job->work(job);	/* Verhalten ausfuehren */
 
 			/* Geschwindigkeit aendern? */

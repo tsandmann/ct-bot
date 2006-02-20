@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-02-20	Benjamin Benz (bbe@heise.de) Bugfix in bot_behave()
+
 2006-02-18	Benjamin Benz (bbe@heise.de) Schönheitskorrektur in den Maus-Routinen
 
 2006-02-19	Benjamin Benz (bbe@heise.de) RC5-Variable in sensor.h umgezogen
