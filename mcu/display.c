@@ -41,7 +41,9 @@
 #define DISPLAY_LENGTH	20			/*!< Wieviele Zeichen passen in eine Zeile */
 
 volatile char display_update=0;	/*!< Muss das Display aktualisiert werden? */
-
+#ifdef DISPLAY_SCREENS_AVAILABLE
+	volatile char display_screen=0;	/*!< Muss das Display aktualisiert werden? */
+#endif
 char display_buf[DISPLAY_BUFFER];		/*!< Pufferstring für Displayausgaben */
 
 #define DISPLAY_CLEAR 0x01		/*!< Kommando zum Löschen */

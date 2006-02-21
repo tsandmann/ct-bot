@@ -26,10 +26,13 @@
 #ifndef display_H_
 #define display_H_
 
-#define DISPLAY_BUFFER	30			/*!< Groesse des Display-Strings */
+#define DISPLAY_BUFFER	30					/*!< Groesse des Display-Strings */
 
-extern volatile char display_update;	/*!< Muss das Display aktualisiert werden? */
-extern char display_buf[DISPLAY_BUFFER];		/*!< Pufferstring fuer Displayausgaben */
+extern volatile char display_update;		/*!< Muss das Display aktualisiert werden? */
+#ifdef DISPLAY_SCREENS_AVAILABLE
+	extern volatile char display_screen;		/*!< Welcher Screen soll gezeigt werden? */
+#endif
+extern char display_buf[DISPLAY_BUFFER];	/*!< Pufferstring fuer Displayausgaben */
 /*! 
  * Init Display
  */

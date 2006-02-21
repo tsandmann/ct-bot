@@ -43,6 +43,9 @@ volatile int16 speed_r=0;	/*!< Geschwindigkeit rechter Motor */
  * fuer eine langsame Drehung
 */
 void motor_set(int16 left, int16 right){
+	if (left == BOT_SPEED_IGNORE)	
+		left=BOT_SPEED_STOP;
+		
 	if (abs(left) > BOT_SPEED_MAX)	// Nicht schneller fahren als moeglich
 		speed_l = BOT_SPEED_MAX;
 	else if (left == 0)				// Stop wird nicht veraendert
@@ -51,7 +54,11 @@ void motor_set(int16 left, int16 right){
 		speed_l = BOT_SPEED_SLOW;	// Motoren koennen
 	else				// Sonst den Wunsch uebernehmen
 		speed_l = abs(left);
-	
+
+
+	if (right == BOT_SPEED_IGNORE)	
+		right=BOT_SPEED_STOP;
+
 	if (abs(right) > BOT_SPEED_MAX)// Nicht schneller fahren als moeglich
 		speed_r = BOT_SPEED_MAX;
 	else if (abs(right) == 0)	// Stop wird nicht veraendert

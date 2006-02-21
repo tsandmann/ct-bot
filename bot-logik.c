@@ -42,8 +42,6 @@
 #include "rc5.h"
 #include <stdlib.h>
 
-#define BOT_SPEED_IGNORE	1000	/*!< Wert ausserhalb von -BOT_SPEED_MAX und BOT_SPEED_MAX wird verwendet um einen Eintrag zu ignorieren */
-
 #define BORDER_DANGEROUS	500		/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */
 
 #define COL_CLOSEST		100		/*!< Abstand in mm, den wir als zu nah betrachten */
@@ -399,6 +397,10 @@ void bot_behave(void){
 			/* Modifikatoren sammeln  */
 			faktorLeft  *= faktorWishLeft;
 			faktorRight *= faktorWishRight;
+		}
+		/* Dieser Punkt wird nur erreicht, wenn keine Regel im System die Motoren beeinflusen will */
+		if (job->next == NULL) {
+				motor_set(BOT_SPEED_IGNORE, BOT_SPEED_IGNORE);
 		}
 	}
 }

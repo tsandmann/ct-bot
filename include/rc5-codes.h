@@ -55,6 +55,12 @@
 
 #define RC5_CODE_PWR	(0x394C & RC5_MASK)	/*!< Taste An/Aus */
 
+#define RC5_CODE_RED		(0x100B & RC5_MASK)	/*!< Rote Taste */
+#define RC5_CODE_GREEN		(0x102E & RC5_MASK)	/*!< Grüne Taste */
+#define RC5_CODE_YELLOW	(0x1038 & RC5_MASK)	/*!< Gelbe Taste */
+#define RC5_CODE_BLUE		(0x1029 & RC5_MASK)	/*!< Blaue Taste */
+
+
 #ifdef JOG_DIAL		
 	/* Jogdial geht nur inkl. Adresscode */
 	#undef RC5_MASK

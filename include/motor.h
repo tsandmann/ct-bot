@@ -33,6 +33,7 @@
 #define BOT_SPEED_NORMAL	50		/*!< normale Fahrt */
 #define BOT_SPEED_FAST		150		/*!< schnelle Fahrt */
 #define BOT_SPEED_MAX		255		/*!< maximale Fahrt */
+#define BOT_SPEED_IGNORE	1000	/*!< Wert ausserhalb von -BOT_SPEED_MAX und BOT_SPEED_MAX wird verwendet um einen Eintrag zu ignorieren */
 
 extern int16 volatile speed_l;			/*!< Geschwindigkeit des linken Motors */
 extern int16 volatile speed_r;			/*!< Geschwindigkeit des rechten Motors */

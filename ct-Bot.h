@@ -39,6 +39,7 @@
 
 #define DISPLAY_AVAILABLE	/*!< Display for local control */
 //#define DISPLAY_REMOTE_AVAILABLE /*!< Sende LCD Anzeigedaten an den Simulator */
+#define DISPLAY_SCREENS_AVAILABLE	/*!< Ermoeglicht vier verschiedene Screen */
 
 #define ADC_AVAILABLE		/*!< A/D-Converter for sensing Power */
 
@@ -66,7 +67,8 @@
 
 #ifndef DISPLAY_AVAILABLE
 	#undef WELCOME_AVAILABLE
-    #undef DISPLAY_REMOTE_AVAILABLE
+   #undef DISPLAY_REMOTE_AVAILABLE
+   #undef DISPLAY_SCREENS_AVAILABLE
 #endif
 
 #ifndef IR_AVAILABLE

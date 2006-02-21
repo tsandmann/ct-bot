@@ -121,24 +121,63 @@ void init(void){
  * Zeigt ein paar Informationen an
  */
 	void display(void){
-		if (display_update >0){
-			display_cursor(1,1);
-			sprintf(display_buf,"P=%03X %03X D=%03X %03X ",sensLDRL,sensLDRR,sensDistL,sensDistR);
-			display_buffer();
+ 		if (display_update >0)
+ 			#ifdef DISPLAY_SCREENS_AVAILABLE
+			switch (display_screen) {
+				case 0:
+			#endif
+					display_cursor(1,1);
+					sprintf(display_buf,"P=%03X %03X D=%03X %03X ",sensLDRL,sensLDRR,sensDistL,sensDistR);
+					display_buffer();
+		
+					display_cursor(2,1);
+					sprintf(display_buf,"B=%03X %03X L=%3X %03X ",sensBorderL,sensBorderR,sensLineL,sensLineR);
+					display_buffer();
+		
+					display_cursor(3,1);
+					sprintf(display_buf,"R=%2d %2d F=%d K=%d T=%d ",sensEncL % 10,sensEncR %10,sensError,sensDoor,sensTrans);
+					display_buffer();
+		
+					display_cursor(4,1);
+					sprintf(display_buf,"I=%04X M=%05d %05d",RC5_Code,sensMouseX,sensMouseY);
+					display_buffer();				
+			#ifdef 	DISPLAY_SCREENS_AVAILABLE					
+					break;
+				case 1:
+					display_cursor(1,1);
+					sprintf(display_buf,"Screen 2");
+					display_buffer();
+		
+					display_cursor(2,1);
+					sprintf(display_buf,"TS=%+4d %+4d",target_speed_l,target_speed_r);
+					display_buffer();
+		
+					display_cursor(3,1);
+					sprintf(display_buf,"RC=%+4d %+4d",sensEncL,sensEncR);
+					display_buffer();
+		
+					display_cursor(4,1);
+					sprintf(display_buf,"I=%04X",RC5_Code);
+					display_buffer();				
 
-			display_cursor(2,1);
-			sprintf(display_buf,"B=%03X %03X L=%3X %03X ",sensBorderL,sensBorderR,sensLineL,sensLineR);
-			display_buffer();
+					break;
 
-			display_cursor(3,1);
-			sprintf(display_buf,"R=%2d %2d F=%d K=%d T=%d ",sensEncL % 10,sensEncR %10,sensError,sensDoor,sensTrans);
-			display_buffer();
+				case 2:
+					display_cursor(1,1);
+					sprintf(display_buf,"Screen 2");
+					display_buffer();
 
-			display_cursor(4,1);
-			sprintf(display_buf,"I=%04X M=%05d %05d",RC5_Code,sensMouseX,sensMouseY);
 //			sprintf(display_buf,"count: %d   ",count++);
-			display_buffer();	
-		}
+					break;
+
+				case 3:
+					display_cursor(1,1);
+					sprintf(display_buf,"Screen 2");
+					display_buffer();
+
+					break;
+			}
+			#endif	
 	}
 #endif
 

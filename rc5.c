@@ -29,6 +29,7 @@
 #include "ir-rc5.h"
 #include "motor.h"
 #include "bot-logik.h"
+#include "display.h"
 
 #include "rc5-codes.h"
 
@@ -57,6 +58,14 @@ typedef struct {
 	RemCtrlFunc func;	/*!< Auszufuehrende Funktion */
 	RemCtrlFuncPar par;	/*!< Parameter */
 } RemCtrlAction;
+
+/*!
+ * Diese Funktion setzt das Display auf eine andere Ausgabe.
+ * @param par Parameter mit dem zu setzenden Screen.
+ */	
+#ifdef DISPLAY_SCREENS_AVAILABLE
+	static void rc5_screen_set(RemCtrlFuncPar *par);
+#endif
 
 /*!
  * Diese Funktion setzt die Geschwindigkeit auf den angegebenen Wert.
@@ -95,6 +104,12 @@ static RemCtrlAction gRemCtrlAction[] = {
 	{ RC5_CODE_8,		rc5_bot_goto,			{ -100, -100 } },
 	{ RC5_CODE_7,		rc5_bot_goto,			{ -40, 40 } },
 	{ RC5_CODE_9,		rc5_bot_goto,			{ 40, -40 } },
+#ifdef DISPLAY_SCREENS_AVAILABLE
+	{ RC5_CODE_RED,		rc5_screen_set,			{ 0, 0 } },
+	{ RC5_CODE_GREEN,	rc5_screen_set,			{ 1, 0 } },
+	{ RC5_CODE_YELLOW,	rc5_screen_set,			{ 2, 0 } },
+	{ RC5_CODE_BLUE,	rc5_screen_set,			{ 3, 0 } },
+#endif
 #ifdef JOGDIAL
 	{ RC5_CODE_JOG_MID,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_MAX } },
 	{ RC5_CODE_JOG_L1,	rc5_bot_set_speed,		{ BOT_SPEED_FAST, BOT_SPEED_MAX } },
@@ -113,6 +128,19 @@ static RemCtrlAction gRemCtrlAction[] = {
 	{ RC5_CODE_JOG_R7,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, -BOT_SPEED_MAX } }
 #endif	/* JOGDIAL */
 };
+
+/*!
+ * Diese Funktion setzt das Display auf eine andere Ausgabe.
+ * @param par Parameter mit dem zu setzenden Screen.
+ */	
+#ifdef DISPLAY_SCREENS_AVAILABLE
+static void rc5_screen_set(RemCtrlFuncPar *par) {
+	if (par) {
+		display_screen = par->value1;
+		display_clear();
+	}
+}
+#endif
 
 /*!
  * Diese Funktion setzt die Geschwindigkeit auf den angegebenen Wert.
