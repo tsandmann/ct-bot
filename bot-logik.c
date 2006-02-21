@@ -390,7 +390,12 @@ void bot_behave(void){
 
 			/* Geschwindigkeit aendern? */
 			if ((speedWishLeft != BOT_SPEED_IGNORE) || (speedWishRight != BOT_SPEED_IGNORE)){
-				motor_set(speedWishLeft * faktorLeft, speedWishRight * faktorRight);
+				if (speedWishLeft != BOT_SPEED_IGNORE)
+					speedWishLeft *= faktorLeft;
+				if (speedWishRight != BOT_SPEED_IGNORE)
+					speedWishRight *= faktorRight;
+					
+				motor_set(speedWishLeft, speedWishRight);
 				break;						/* Wenn ein Verhalten Werte direkt setzen will, nicht weitermachen */
 			}
 			

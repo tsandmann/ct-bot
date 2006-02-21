@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-02-20	Benjamin Benz (bbe@heise.de) Und nochmal Bugfix in bot_logik.c
+
 2006-02-20 	Carsten Giesen (info@cnau.de) Erweiterung um 3 zusaetzliche Screens fuer das Display
 
 2006-02-20	Benjamin Benz (bbe@heise.de) Bugfix in bot_logik.c nach einer Idee von (Fabian Recktenwald, fa.re.wal@gmx.de)
