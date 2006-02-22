@@ -58,5 +58,6 @@
 	#define On                    1						/*!< An */
 	#define Off                   0						/*!< Aus */
 	
+	#define binary(var,bit) ((var >> bit)&1)
 	//#define NULL 0
 #endif

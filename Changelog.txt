@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-02-21 	Carsten Giesen (info@cnau.de) Das Register MCUCSR wird auf Screen 4 angezeigt
+
 2006-02-21  Torsten Evers (tevers@onlinehome.de) Linux-Skritpe zum Flashen und Fusen mit avrdude eingefügt
 
 2006-02-20	Benjamin Benz (bbe@heise.de) Und nochmal Bugfix in bot_logik.c

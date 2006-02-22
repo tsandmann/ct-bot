@@ -64,6 +64,11 @@
 #include "ir-rc5.h"
 #include "rc5.h"
 
+/* Nimmt den Status von MCUCSR bevor dieses Register auf 0x00 gesetzt wird */
+#ifdef DISPLAY_SCREEN_RESETINFO
+	unsigned char reset_flag; 
+#endif
+
 /*!
  * Der Mikrocontroller und der PC-Simulator brauchen ein paar Einstellungen, 
  * bevor wir loslegen koennen.
@@ -78,6 +83,10 @@ void init(void){
 		
 		// Watchdog aus!	
 		wdt_disable();
+		#ifdef DISPLAY_SCREEN_RESETINFO
+			reset_flag = MCUCSR & 0x1F;	//Lese Grund fuer Reset und sichere Wert
+			MCUCSR = 0;	//setze Register auf 0x00 (loeschen)
+		#endif		
 	#endif
 
 	#ifdef PC
@@ -164,17 +173,32 @@ void init(void){
 
 				case 2:
 					display_cursor(1,1);
-					sprintf(display_buf,"Screen 2");
+					sprintf(display_buf,"Screen 3");
 					display_buffer();
 
-//			sprintf(display_buf,"count: %d   ",count++);
 					break;
 
 				case 3:
 					display_cursor(1,1);
-					sprintf(display_buf,"Screen 2");
-					display_buffer();
+					#ifdef DISPLAY_SCREEN_RESETINFO
+						/* Zeige den Grund für Resets an */
+						sprintf(display_buf,"MCUCSR - Register");
+						display_buffer();			
+												
+						display_cursor(2,1);
+						sprintf(display_buf,"PORF :%d  WDRF :%d",binary(reset_flag,0),binary(reset_flag,3)); 
+						display_buffer();				
 
+						display_cursor(3,1);
+						sprintf(display_buf,"EXTRF:%d  JTRF :%d",binary(reset_flag,1),binary(reset_flag,4)); 
+						display_buffer();
+									
+						display_cursor(4,1);
+						sprintf(display_buf,"BORF :%d",binary(reset_flag,2)); 
+					#else
+						sprintf(display_buf,"Screen 4");
+					#endif
+					display_buffer();
 					break;
 			}
 			#endif	
