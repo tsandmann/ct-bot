@@ -161,9 +161,18 @@ static void rc5_bot_change_speed(RemCtrlFuncPar *par) {
 	if (par) {
 		target_speed_l += par->value1;
 		target_speed_l %= BOT_SPEED_MAX;
-
+		if (target_speed_l < -BOT_SPEED_MAX) {
+			target_speed_l = -BOT_SPEED_MAX;
+		} else	if (target_speed_l > BOT_SPEED_MAX) {
+			target_speed_l = BOT_SPEED_MAX;
+		}
+		
 		target_speed_r += par->value2;
-		target_speed_r %= BOT_SPEED_MAX;
+		if (target_speed_r <-BOT_SPEED_MAX) {
+			target_speed_r = -BOT_SPEED_MAX;
+		} else 	if (target_speed_r > BOT_SPEED_MAX) {
+			target_speed_r = BOT_SPEED_MAX;
+		}
 	}
 }
 
