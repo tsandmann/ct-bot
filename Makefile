@@ -196,6 +196,7 @@ else
 	CC = gcc 
 	PTHREAD_LIB = -lpthread
 	LDFLAGS += $(PTHREAD_LIB)
+	SIZE = size
 endif
 
 # Define programs and commands.
