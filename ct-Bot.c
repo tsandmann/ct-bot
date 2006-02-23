@@ -69,6 +69,12 @@
 	unsigned char reset_flag; 
 #endif
 
+#ifdef TEST_AVAILABLE_COUNTER
+	#include <avr/eeprom.h>
+	int resetsEEPROM  __attribute__ ((section (".eeprom")))=0;
+	char resetInfoEEPROM  __attribute__ ((section (".eeprom")));
+	char resets;
+#endif
 /*!
  * Der Mikrocontroller und der PC-Simulator brauchen ein paar Einstellungen, 
  * bevor wir loslegen koennen.
@@ -272,6 +278,16 @@ void init(void){
 		LED_set(0x00);
 	#endif
 		
+	
+	#ifdef TEST_AVAILABLE_COUNTER
+		display_screen=2;
+
+	 	resets=eeprom_read_byte(&resetsEEPROM)+1;
+	    eeprom_write_byte(&resetsEEPROM,resets);
+	    /* Lege den Grund für jeden Reset im EEPROM ab */	
+	    eeprom_write_byte(&resetInfoEEPROM+resets,reset_flag);
+	#endif	
+
 	/*! Hauptschleife des Bot */
 	for(;;){
 		#ifdef MCU

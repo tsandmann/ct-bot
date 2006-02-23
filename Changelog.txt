@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-02-23	Benjamin Benz (bbe@heise.de) Neues Testprogramm, um Resets zu analysieren
+
 2006-02-21 	Carsten Giesen (info@cnau.de) Die Variable Target_Speed wird limitiert
 
 2006-02-21 	Carsten Giesen (info@cnau.de) Das Register MCUCSR wird auf Screen 4 angezeigt

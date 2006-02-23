@@ -59,6 +59,7 @@
 #define RC5_CODE_GREEN		(0x102E & RC5_MASK)	/*!< Grüne Taste */
 #define RC5_CODE_YELLOW	(0x1038 & RC5_MASK)	/*!< Gelbe Taste */
 #define RC5_CODE_BLUE		(0x1029 & RC5_MASK)	/*!< Blaue Taste */
+#define RC5_CODE_VIEW		(0x000F & RC5_MASK)	/*!< Instant View Taste */
 
 
 #ifdef JOG_DIAL		

@@ -109,6 +109,7 @@ static RemCtrlAction gRemCtrlAction[] = {
 	{ RC5_CODE_GREEN,	rc5_screen_set,			{ 1, 0 } },
 	{ RC5_CODE_YELLOW,	rc5_screen_set,			{ 2, 0 } },
 	{ RC5_CODE_BLUE,	rc5_screen_set,			{ 3, 0 } },
+	{ RC5_CODE_VIEW,	rc5_screen_set,			{ DISPLAY_SCREEN_TOGGLE, 0 } },	
 #endif
 #ifdef JOGDIAL
 	{ RC5_CODE_JOG_MID,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_MAX } },
@@ -136,8 +137,14 @@ static RemCtrlAction gRemCtrlAction[] = {
 #ifdef DISPLAY_SCREENS_AVAILABLE
 static void rc5_screen_set(RemCtrlFuncPar *par) {
 	if (par) {
-		display_screen = par->value1;
+		if (par->value1 == DISPLAY_SCREEN_TOGGLE)
+			display_screen ++;
+		else 
+			display_screen = par->value1;
+		
+		display_screen %= DISPLAY_SCREENS;
 		display_clear();
+		
 	}
 }
 #endif

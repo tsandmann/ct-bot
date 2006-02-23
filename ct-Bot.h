@@ -52,6 +52,7 @@
 //#define TEST_AVAILABLE_ANALOG	/*!< Sollen die LEDs die analoge Sensorwerte anzeigen */
 #define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
 //#define TEST_AVAILABLE_MOTOR	/*!< Sollen die Motoren ein wenig drehen */
+//#define TEST_AVAILABLE_COUNTER /*!< Gibt einen Endlos-Counter auf Screen 3 aus und aktiviert Screen 3 */
 
 //#define DOXYGEN		/*!< Nur zum Erzeugen der Doku, wenn dieser schalter an ist, jammert der gcc!!! */
 
@@ -109,6 +110,11 @@
 	#define TEST_AVAILABLE			/*!< brauchen wir den Testkrams */
 #endif
 
+#ifdef TEST_AVAILABLE_COUNTER
+	#define TEST_AVAILABLE			/*!< brauchen wir den Testkrams */
+	#define DISPLAY_SCREENS_AVAILABLE
+	#define DISPLAY_SCREEN_RESETINFO
+#endif
 
 #define F_CPU	16000000L    /*!< Crystal frequency in Hz */
 #define XTAL F_CPU			 /*!< Crystal frequency in Hz */
