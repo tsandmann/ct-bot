@@ -71,7 +71,7 @@
 
 #ifdef TEST_AVAILABLE_COUNTER
 	#include <avr/eeprom.h>
-	int resetsEEPROM  __attribute__ ((section (".eeprom")))=0;
+	char resetsEEPROM  __attribute__ ((section (".eeprom")))=0;
 	char resetInfoEEPROM  __attribute__ ((section (".eeprom")));
 	char resets;
 #endif
@@ -309,8 +309,10 @@ void init(void){
 			else
 		#endif
 		// hier drin steckt der Verhaltenscode
-		bot_behave();
-		
+		#ifdef BEHAVIOUR_AVAILABLE
+			bot_behave();
+		#endif
+			
 		// Alles Anzeigen
 		#ifdef DISPLAY_AVAILABLE
 			display();

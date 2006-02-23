@@ -72,12 +72,12 @@ void bot_motor(int16 left, int16 right){
 	PWM_L = 255-abs(left);
 	PWM_R = 255-abs(right);
 
-	if (left > 0 )
+	if (left < 0 )
 		BOT_DIR_L_PORT |= BOT_DIR_L_PIN;
 	else 
 		BOT_DIR_L_PORT &= ~BOT_DIR_L_PIN;
 	
-	if (right < 0 )		// Einer der Motoren ist invertiert, da er ja in die andere Richtung schaut
+	if (right > 0 )		// Einer der Motoren ist invertiert, da er ja in die andere Richtung schaut
 		BOT_DIR_R_PORT |= BOT_DIR_R_PIN;
 	else 
 		BOT_DIR_R_PORT &= ~BOT_DIR_R_PIN;

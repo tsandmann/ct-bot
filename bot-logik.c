@@ -42,7 +42,7 @@
 #include "rc5.h"
 #include <stdlib.h>
 
-#define BORDER_DANGEROUS	500		/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */
+#define BORDER_DANGEROUS	0x340	/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */
 
 #define COL_CLOSEST		100		/*!< Abstand in mm, den wir als zu nah betrachten */
 #define COL_NEAR			300		/*!< Nahbereich */
