@@ -87,6 +87,7 @@
 	#endif
 	#define COMMAND_AVAILABLE		/*!< High-Level Communication */
    #undef DISPLAY_SCREEN_RESETINFO
+   #undef TEST_AVAILABLE_COUNTER
 #endif
 
 #ifdef MCU
