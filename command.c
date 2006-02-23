@@ -74,6 +74,9 @@ int command_read(void){
 	command_t * command;		// Pointer to Cast rceceived data
 	char * ptr;			// helper
 	char buffer[RCVBUFSIZE];       // Buffer  
+#if BYTE_ORDER == BIG_ENDIAN
+	uint16 store;			//store for endian conversion
+#endif
 
 	buffer[0]=0;			// Start with clean data 
 	
@@ -113,6 +116,25 @@ int command_read(void){
 			*ptr=buffer[i+start];
 			ptr++;
 		}
+		#if BYTE_ORDER == BIG_ENDIAN
+			/* Umwandeln der 16 bit Werte in Big Endian */
+			store = received_command.data_l;
+			received_command.data_l = store << 8;
+			received_command.data_l |= (store >> 8) & 0xff;
+
+			store = received_command.data_r;
+			received_command.data_r = store << 8;
+			received_command.data_r |= (store >> 8) & 0xff;
+    
+			store = received_command.seq;
+			received_command.seq = store << 8;
+			received_command.seq |= (store >> 8) & 0xff;
+
+			/* "Umdrehen" des Bitfields */
+			store = received_command.request.subcommand;
+			received_command.request.subcommand = store << 1;
+			received_command.request.direction = store >> 7;
+		#endif
 		#ifdef PC
 			command_unlock();	// on PC make storage threadsafe
 		#endif

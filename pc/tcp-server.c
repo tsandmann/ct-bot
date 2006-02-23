@@ -35,7 +35,7 @@
  *   _REENTRANT to grab thread-safe libraries
  *   _POSIX_SOURCE to get POSIX semantics
  */
-#ifdef __linux__
+#ifndef WIN32
 #  define _REENTRANT
 //#  define _POSIX_SOURCE
 #else
@@ -54,6 +54,7 @@
 #else
 	#include <arpa/inet.h>
 	#include <sys/socket.h>
+	#include <netinet/in.h>
 #endif
 
 #include <stdio.h>      // for printf() and fprintf()
@@ -134,7 +135,7 @@ int tcp_server_run (void){
 			#endif		
 			
 			received_command.request.direction=DIR_ANSWER;
-			tcp_write((char *)&received_command,sizeof(command_t));
+			tcp_send_cmd(&received_command);
 		}
 		
 		#ifdef WIN32

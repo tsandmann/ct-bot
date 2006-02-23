@@ -1,5 +1,9 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-02-23	Ansgar Esztermann (ansgar@thphy.uni-duesseldorf.de) Big Endian Unterstuetzung im Netzwerkcode
+
+2006-02-23	Markus Hennecke (markus-hennecke@markus-hennecke.de) Bessere Handhabung weiterer Zielplattformen
+
 2006-02-23	Benjamin Benz (bbe@heise.de) Motor-Drehrichtung angepasst, BORDER_DANGEROUS angepasst, BEHAVIOUR_AVAILABLE eingeführt
 
 2006-02-23	Benjamin Benz (bbe@heise.de) Neues Testprogramm, um Resets zu analysieren

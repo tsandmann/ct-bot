@@ -31,9 +31,9 @@
  *   _REENTRANT to grab thread-safe libraries
  *   _POSIX_SOURCE to get POSIX semantics
  */
-#ifdef __linux__
+#ifndef WIN32
 #  define _REENTRANT
-#  define _POSIX_SOURCE
+//#  define _POSIX_SOURCE
 #else
 //	#define WIN32
 #endif
@@ -51,6 +51,7 @@
 #else
 	#include <arpa/inet.h>
 	#include <sys/socket.h>
+	#include <netinet/in.h>
 #endif
 
 
@@ -106,12 +107,54 @@ void tcp_closeConnection(int sock){
 }
 
 /*!
+ * Sende Kommando per TCP/IP im Little Endian
+ * Diese Funktion setzt vorraus, dass die Symbole BYTE_ORDER und BIG_ENDIAN
+ * bzw. LITTLE_ENDIAN definiert wurden. Damit dies auf Linux/Unix 
+ * funktioniert darf _POSIX_SOURCE nicht definiert werden. Fuer Windows
+ * wird dies in der Headerdatei tcp.h erledigt.
+ * Getestet wurde dies bisher auf folgenden Systemen:
+ *  - MacOSX (PPC, big endian)
+ *  - Gentoo Linux (hppa, big endian)
+ *  - OpenBSD (i386, little endian)
+ *  - Windows 2000 (i386, little endian mit dem MinGW)
+ * Sollten in command_t weitere Werte mit mehr bzw. weniger als 8 bit
+ * aufgenommen werden muss hier eine entsprechende Anpassung erfolgen.
+ * @param cmd Zeiger auf das Kommando
+ * @return Anzahl der gesendete Bytes
+ */
+int tcp_send_cmd(command_t *cmd)
+{
+#if BYTE_ORDER == BIG_ENDIAN
+	command_t le_cmd;
+
+	/* Kopieren des Kommandos und auf Little Endian wandeln */
+	memcpy(&le_cmd, cmd, sizeof(command_t));
+
+	/* Alle 16bit Werte in Little Endian wandeln */
+	le_cmd.data_l = cmd->data_l << 8;
+	le_cmd.data_l |= (cmd->data_l >> 8) & 0xff;
+	le_cmd.data_r = cmd->data_r << 8;
+	le_cmd.data_r |= (cmd->data_r >> 8) & 0xff;
+	le_cmd.seq = cmd->seq <<8;
+	le_cmd.seq |= (cmd->seq >> 8) & 0xff;
+
+	/* "Umdrehen" des Bitfields */
+	le_cmd.request.subcommand = cmd->request.subcommand >> 1;
+	le_cmd.request.direction = (cmd->request.subcommand & 1) << 7;
+
+	return tcp_write(&le_cmd, sizeof(command_t));
+#else
+	return tcp_write(cmd, sizeof(command_t));
+#endif
+}
+
+/*!
  * Uebertrage Daten per TCP/IP
  * @param data Zeiger auf die Daten
  * @param length Anzahl der Bytes
  * @return Anzahl der uebertragenen Bytes
 */
-int tcp_write(char* data, int length){
+int tcp_write(void* data, int length){
 	if (send(tcp_sock,data,length,0) != length){
 		printf("send() sent a different number of bytes than expected");
 		return -1;
@@ -126,7 +169,7 @@ int tcp_write(char* data, int length){
  * @param length Anzahl der gewuenschten Bytes
  * @return Anzahl der uebertragenen Bytes
 */
-int tcp_read(char* data, int length){
+int tcp_read(void* data, int length){
 	int bytesReceived=0;
 
 	if ((bytesReceived = recv(tcp_sock, data, length, 0)) <= 0){

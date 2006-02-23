@@ -155,7 +155,7 @@ void bot_2_sim_tell(uint8 command, uint8 subcommand, int16* data_l,int16* data_r
 	cmd.seq=count++;
 	cmd.CRC=CMD_STOPCODE;
 	
-	tcp_write((char *)&cmd,sizeof(command_t));
+	tcp_send_cmd(&cmd);
 }
 
 /*!
@@ -193,7 +193,7 @@ void bot_2_sim_tell_data(uint8 command, uint8 subcommand, const int16* data_l, c
     cmd.CRC = CMD_STOPCODE;
  
     tcp_write((char *)&cmd, sizeof(command_t));
-    tcp_write(data, cmd.payload);
+    tcp_write((char *)data, cmd.payload);
 }
 
 

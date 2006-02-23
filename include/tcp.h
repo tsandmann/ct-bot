@@ -26,8 +26,18 @@
 #ifndef TCP_H_
 #define TCP_H_
 
+#ifdef WIN32
+	#define LITTLE_ENDIAN	1234
+	#define BIG_ENDIAN	4321
+	#define BYTE_ORDER	LITTLE_ENDIAN
+#endif
+
+#ifdef __linux__
+	#include <endian.h>
+#endif
 
 #include "bot-2-sim.h"
+#include "command.h"
 
 
 #define IP "127.0.0.1"		/*!<  IP, mit der verbunden werden soll (normalerweise localhost) */
@@ -37,12 +47,20 @@
 extern int tcp_sock;			/*!< Unser TCP-Socket */
 
 /*!
+ * Sende Kommando per TCP/IP im Little Endian
+ * @param cmd Zeiger auf das Kommando
+ * @return Anzahl der gesendete Bytes
+ */
+int tcp_send_cmd(command_t *cmd);
+
+
+/*!
  * Uebertrage Daten per TCP/IP
  * @param data Zeiger auf die Daten
  * @param length Anzahl der Bytes
  * @return Anzahl der uebertragenen Bytes
 */
-int tcp_write(char* data, int length);
+int tcp_write(void* data, int length);
 
 /*!
  * Lese Daten von TCP/IP-Verbindung.
@@ -51,7 +69,7 @@ int tcp_write(char* data, int length);
  * @param length Anzahl der gewuenschten Bytes
  * @return Anzahl der uebertragenen Bytes
 */
-int tcp_read(char* data, int length);
+int tcp_read(void* data, int length);
 
 /*! 
  * Initialisiere TCP/IP Verbindung 
