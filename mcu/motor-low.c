@@ -34,16 +34,16 @@
 #include "motor-low.h"
 
 //Drehrichtung der Motoren
-#define BOT_DIR_L_PIN 		(1<<7)	// PC7
-#define BOT_DIR_L_PORT 		PORTC
+#define BOT_DIR_L_PIN 		(1<<6)	// PC7
+#define BOT_DIR_L_PORT 	PORTC
 #define BOT_DIR_L_DDR 		DDRC
 
-#define BOT_DIR_R_PIN 		(1<<6)	// PC6 
-#define BOT_DIR_R_PORT 		PORTC
+#define BOT_DIR_R_PIN 		(1<<7)	// PC6 
+#define BOT_DIR_R_PORT 	PORTC
 #define BOT_DIR_R_DDR 		DDRC
 
-#define PWM_R 	OCR1A
-#define PWM_L 	OCR1B
+#define PWM_L 	OCR1A
+#define PWM_R 	OCR1B
 
 void pwm_0_init(void);
 void pwm_1_init(void);
@@ -72,12 +72,12 @@ void bot_motor(int16 left, int16 right){
 	PWM_L = 255-abs(left);
 	PWM_R = 255-abs(right);
 
-	if (left < 0 )
+	if (left > 0 )
 		BOT_DIR_L_PORT |= BOT_DIR_L_PIN;
 	else 
 		BOT_DIR_L_PORT &= ~BOT_DIR_L_PIN;
 	
-	if (right > 0 )		// Einer der Motoren ist invertiert, da er ja in die andere Richtung schaut
+	if (right < 0 )		// Einer der Motoren ist invertiert, da er ja in die andere Richtung schaut
 		BOT_DIR_R_PORT |= BOT_DIR_R_PIN;
 	else 
 		BOT_DIR_R_PORT &= ~BOT_DIR_R_PIN;

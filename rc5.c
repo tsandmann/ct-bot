@@ -93,8 +93,8 @@ static RemCtrlAction gRemCtrlAction[] = {
 	{ RC5_CODE_PWR,		rc5_bot_set_speed,		{ BOT_SPEED_STOP, BOT_SPEED_STOP } },
 	{ RC5_CODE_UP,		rc5_bot_change_speed,	{ 10, 10 } },
 	{ RC5_CODE_DOWN,	rc5_bot_change_speed,	{ -10, -10 } },
-	{ RC5_CODE_LEFT,	rc5_bot_change_speed,	{ 10, 0 } },
-	{ RC5_CODE_RIGHT,	rc5_bot_change_speed,	{ 0, 10 } },
+	{ RC5_CODE_LEFT,	rc5_bot_change_speed,	{ 0, 10 } },
+	{ RC5_CODE_RIGHT,	rc5_bot_change_speed,	{ 10, 0 } },
 	{ RC5_CODE_1,		rc5_bot_set_speed,		{ BOT_SPEED_SLOW, BOT_SPEED_SLOW } },
 	{ RC5_CODE_3,		rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_MAX } },
 	{ RC5_CODE_5,		rc5_bot_goto,			{ 0, 0 } },
@@ -165,17 +165,21 @@ static void rc5_bot_set_speed(RemCtrlFuncPar *par) {
  * @param par Parameter mit den relativen Geschwindigkeitsaenderungen.
  */	
 static void rc5_bot_change_speed(RemCtrlFuncPar *par) {
-	int old;
 	if (par) {
-		old=target_speed_l;
 		target_speed_l += par->value1;
-		if ((target_speed_l < -BOT_SPEED_MAX)|| (target_speed_l > BOT_SPEED_MAX))
-			target_speed_l = old;
+		target_speed_l %= BOT_SPEED_MAX;
+		if (target_speed_l < -BOT_SPEED_MAX) {
+			target_speed_l = -BOT_SPEED_MAX;
+		} else	if (target_speed_l > BOT_SPEED_MAX) {
+			target_speed_l = BOT_SPEED_MAX;
+		}
 		
-		old=target_speed_r;		
 		target_speed_r += par->value2;
-		if ((target_speed_r <-BOT_SPEED_MAX)||(target_speed_r > BOT_SPEED_MAX))
-			target_speed_r = old;
+		if (target_speed_r <-BOT_SPEED_MAX) {
+			target_speed_r = -BOT_SPEED_MAX;
+		} else 	if (target_speed_r > BOT_SPEED_MAX) {
+			target_speed_r = BOT_SPEED_MAX;
+		}
 	}
 }
 
