@@ -44,9 +44,6 @@ extern volatile int16 sensBorderR;	/*!<  Abgrundsensor rechts */
 extern volatile int16 sensLineL;	/*!<  Lininensensor links */
 extern volatile int16 sensLineR;	/*!<  Lininensensor rechts */
 
-extern volatile int16 sensLdrL;		/*!< Helligkeitssensor links */
-extern volatile int16 sensLdrR;		/*!< Helligkeitssensor links */
-
 extern volatile char sensTrans;		/*!< Sensor Ueberwachung Transportfach */
 
 extern volatile char sensDoor;		/*!< Sensor Ueberwachung Klappe */

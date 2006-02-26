@@ -37,9 +37,6 @@ volatile int16 sensBorderR=0;	/*!< Abgrundsensor rechts */
 volatile int16 sensLineL=0;	/*!< Lininensensor links */
 volatile int16 sensLineR=0;	/*!< Lininensensor rechts */
 
-volatile int16 sensLdrL=0;		/*!< Helligkeitssensor links */
-volatile int16 sensLdrR=0;		/*!< Helligkeitssensor links */
-
 volatile char sensTrans=0;		/*!< Sensor Ueberwachung Transportfach */
 
 volatile char sensDoor=0;		/*!< Sensor Ueberwachung Klappe */

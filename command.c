@@ -176,8 +176,8 @@ int command_evaluate(void){
 				sensLineR=received_command.data_r;
 				break;
 			case CMD_SENS_LDR:
-				sensLdrL=received_command.data_l;
-				sensLdrR=received_command.data_l;
+				sensLDRL=received_command.data_l;
+				sensLDRR=received_command.data_l;
 				break;
 			case CMD_SENS_TRANS:
 				sensTrans=(char)received_command.data_l;

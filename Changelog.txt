@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-02-23	Benjamin Benz (bbe@heise.de) doppelte LDR-Variablen entfernt
+
 2006-02-23	Benjamin Benz (bbe@heise.de) Direction-Variablen eingeführt, in denen die Drehrichtung auch noch steht, wenn die Speed wieder auf Null ist
 
 2006-02-23	Ansgar Esztermann (ansgar@thphy.uni-duesseldorf.de) Big Endian Unterstuetzung im Netzwerkcode
