@@ -35,9 +35,23 @@
 #define BOT_SPEED_MAX		255		/*!< maximale Fahrt */
 #define BOT_SPEED_IGNORE	1000	/*!< Wert ausserhalb von -BOT_SPEED_MAX und BOT_SPEED_MAX wird verwendet um einen Eintrag zu ignorieren */
 
+#define DIRECTION_FORWARD  0		/*!< Drehrichtung vorwaerts */
+#define DIRECTION_BACKWARD 1		/*!< Drehrichtung rueckwaerts */
+
 extern int16 volatile speed_l;			/*!< Geschwindigkeit des linken Motors */
 extern int16 volatile speed_r;			/*!< Geschwindigkeit des rechten Motors */
 
+/*! In diesem Typ steht die Drehrichtung, auch wenn die Speed-Variablen bereits wieder auf Null sind */
+typedef struct {
+	unsigned char left:1;
+	unsigned char right:1;
+#ifndef DOXYGEN
+	} __attribute__ ((packed)) direction_t;
+#else
+	} direction_t;
+#endif
+
+extern direction_t direction;		/*!< Drehrichtung der Motoren, auch wenn die Speed-Variablen bereits wieder auf Null sind */ 
 
 /*!
  * Initialisiere den Motorkrams

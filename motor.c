@@ -31,6 +31,7 @@
 volatile int16 speed_l=0;	/*!< Geschwindigkeit linker Motor */
 volatile int16 speed_r=0;	/*!< Geschwindigkeit rechter Motor */
 
+direction_t direction;		/*!< Drehrichtung der Motoren */
 
 /*!
  * Direkter Zugriff auf den Motor
@@ -68,12 +69,18 @@ void motor_set(int16 left, int16 right){
 	else				// Sonst den Wunsch uebernehmen
 		speed_r = abs(right);
 	
-	if (left < 0 )
+	if (left < 0 ){
 		speed_l=-speed_l;
+		direction.left= DIRECTION_BACKWARD;
+	} else
+		direction.left= DIRECTION_FORWARD;
 	
-	if (right < 0 )	
+	if (right < 0 )	{
 		speed_r=-speed_r;
-		
+		direction.left= DIRECTION_BACKWARD;
+	} else
+		direction.left= DIRECTION_FORWARD;
+			
 	bot_motor(speed_l,speed_r);
 }
 
