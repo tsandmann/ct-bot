@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-02-23	Torsten Evers (tevers@onlinehome.de) Flash-Skript um Prüfung der Fuses erweitert
+
 2006-02-23	Benjamin Benz (bbe@heise.de) doppelte LDR-Variablen entfernt
 
 2006-02-23	Benjamin Benz (bbe@heise.de) Direction-Variablen eingeführt, in denen die Drehrichtung auch noch steht, wenn die Speed wieder auf Null ist
