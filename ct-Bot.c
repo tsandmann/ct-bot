@@ -146,7 +146,7 @@ void init(void){
 					display_buffer();
 		
 					display_cursor(2,1);
-					sprintf(display_buf,"B=%03X %03X L=%3X %03X ",sensBorderL,sensBorderR,sensLineL,sensLineR);
+					sprintf(display_buf,"B=%03X %03X L=%03X %03X ",sensBorderL,sensBorderR,sensLineL,sensLineR);
 					display_buffer();
 		
 					display_cursor(3,1);
