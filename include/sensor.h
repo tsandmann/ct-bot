@@ -28,27 +28,29 @@
 
 #include "global.h"
 
-extern volatile int16 sensDistL;	/*!< Distanz linker IR-Sensor */
-extern volatile int16 sensDistR;	/*!< Distanz rechter IR-Sensor */
+/* Analoge Sensoren: Der Wertebereich aller analogen Sensoren umfasst 10 Bit. Also 0 bis 1023 */
 
-extern volatile int16 sensLDRL;		/*!< Lichtsensor links */
-extern volatile int16 sensLDRR;		/*!< Lichtsensor rechts */
+extern volatile int16 sensDistL;	/*!< Distanz linker IR-Sensor [mm] ca. 100 bis 800 */
+extern volatile int16 sensDistR;	/*!< Distanz rechter IR-Sensor [mm] ca. 100 bis 800  */
 
+extern volatile int16 sensLDRL;		/*!< Lichtsensor links [0-1023];  1023 = dunkel*/
+extern volatile int16 sensLDRR;		/*!< Lichtsensor rechts [0-1023];  1023 = dunkel*/
 
-extern volatile int16 sensEncL;		/*!< Encoder linker Motor */
-extern volatile int16 sensEncR;		/*!< Encoder rechter Motor */
+extern volatile int16 sensBorderL;	/*!< Abgrundsensor links [0-1023];  1023 = dunkel*/
+extern volatile int16 sensBorderR;	/*!<  Abgrundsensor rechts [0-1023];  1023 = dunkel*/
 
-extern volatile int16 sensBorderL;	/*!< Abgrundsensor links */
-extern volatile int16 sensBorderR;	/*!<  Abgrundsensor rechts */
+extern volatile int16 sensLineL;	/*!<  Lininensensor links [0-1023];  1023 = dunkel*/
+extern volatile int16 sensLineR;	/*!<  Lininensensor rechts [0-1023];  1023 = dunkel*/
 
-extern volatile int16 sensLineL;	/*!<  Lininensensor links */
-extern volatile int16 sensLineR;	/*!<  Lininensensor rechts */
+/* digitale Sensoren */
+extern volatile int16 sensEncL;		/*!< Encoder linker Motor [-32768 bis 32767] */
+extern volatile int16 sensEncR;		/*!< Encoder rechter Motor [-32768 bis 32767] */
 
-extern volatile char sensTrans;		/*!< Sensor Ueberwachung Transportfach */
+extern volatile char sensTrans;		/*!< Sensor Ueberwachung Transportfach [0/1]*/
 
-extern volatile char sensDoor;		/*!< Sensor Ueberwachung Klappe */
+extern volatile char sensDoor;		/*!< Sensor Ueberwachung Klappe [0/1] */
 
-extern volatile char sensError;		/*!< Ueberwachung Motor oder Batteriefehler */
+extern volatile char sensError;		/*!< Ueberwachung Motor oder Batteriefehler [0/1]  1= alles ok */
 
 extern uint16 RC5_Code;        /*!< Letzter empfangener RC5-Code */
 

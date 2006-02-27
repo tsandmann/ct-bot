@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-02-27	Benjamin Benz (bbe@heise.de) Wertebereiche der sensoren dokumentiert
+
 2006-02-27	Benjamin Benz (bbe@heise.de) Cleanup im goto-System
 
 2006-02-23	Torsten Evers (tevers@onlinehome.de) Flash-Skript um Prüfung der Fuses erweitert
