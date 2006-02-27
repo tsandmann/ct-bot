@@ -77,9 +77,9 @@ void motor_set(int16 left, int16 right){
 	
 	if (right < 0 )	{
 		speed_r=-speed_r;
-		direction.left= DIRECTION_BACKWARD;
+		direction.right= DIRECTION_BACKWARD;
 	} else if (right > 0 )
-		direction.left= DIRECTION_FORWARD;
+		direction.right= DIRECTION_FORWARD;
 			
 	bot_motor(speed_l,speed_r);
 }
