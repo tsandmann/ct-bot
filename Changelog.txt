@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-02-27	Markus Hennecke (markus-hennecke@markus-hennecke.de) Auswertung der Kommandozeile, Zielhost kann als Argument uebergeben werden.
+
 2006-02-27	Benjamin Benz (bbe@heise.de) Wertebereiche der sensoren dokumentiert
 
 2006-02-27	Benjamin Benz (bbe@heise.de) Cleanup im goto-System

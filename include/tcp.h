@@ -45,6 +45,7 @@
 #define PORT 10001			/*!<  Port, mit dem verbunden werden soll  */
 
 extern int tcp_sock;			/*!< Unser TCP-Socket */
+extern char *tcp_hostname;		/*!< Hostname, auf dem ct-Sim laeuft */
 
 /*!
  * Sende Kommando per TCP/IP im Little Endian

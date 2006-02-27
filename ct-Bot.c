@@ -37,6 +37,8 @@
 	#include "tcp.h"
 	#include "tcp-server.h"
 	#include <pthread.h>
+	#include <unistd.h>
+	#include <stdlib.h>
 #endif
 
 
@@ -241,6 +243,20 @@ void init(void){
 	}
 #endif
 
+#ifdef PC
+	/*!
+	 * Zeigt Informationen zu den moeglichen Kommandozeilenargumenten an.
+	 * Das Programm wird nach Anzeige des Hilfetextes per exit() beendet.
+	 */
+	void usage(void){
+		puts("USAGE: ct-Bot [-t host] [-h] [-s]");
+		puts("\t-t\tHostname oder IP Adresse zu der Verbunden werden soll");
+		puts("\t-s\tServermodus");
+		puts("\t-h\tZeigt diese Hilfe an");
+		exit(1);
+	}
+#endif
+
 #ifdef MCU
 /*! 
  * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
@@ -250,18 +266,62 @@ void init(void){
 #endif
 
 #ifdef PC
+
 /*! 
  * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
  */
  	int main (int argc, char *argv[]){
 
-    if (argc ==2 )    // Test for correct number of arguments
+		int ch;	
+		int start_server = 0;	/*!< Wird auf 1 gesetzt, falls -s angegeben wurde */
+		char *hostname = NULL;	/*!< Speichert den per -t uebergebenen Hostnamen zwischen */
+
+		// Die Kommandozeilenargumente komplett verarbeiten
+		while ((ch = getopt(argc, argv, "hst:")) != -1) {
+			switch (ch) {
+			case 's':
+				// Servermodus [-s] wird verlangt
+				start_server = 1;
+				break;
+			case 't':
+				// Hostname, auf dem ct-Sim laeuft wurde 
+				// uebergeben. Der String wird in hostname
+				// gesichert.
+				{
+					const int len = strlen(optarg);
+					hostname = malloc(len + 1);
+					if (NULL == hostname)
+						exit(1);
+					strcpy(hostname, optarg);
+				}
+				break;
+			case 'h':
+			default:
+				// -h oder falscher Parameter, Usage anzeigen
+				usage();
+			}
+		}
+		argc -= optind;
+		argv += optind;
+		
+	if (start_server != 0)    // Soll der TCP-Server gestartet werden?
     {
     	printf("ARGV[0]= %s\n",argv[1]);
        tcp_server_init();
        tcp_server_run();
     } else {
     	printf("c't-Bot\n");
+        if (hostname)
+            // Hostname wurde per Kommandozeile uebergeben
+            tcp_hostname = hostname;
+        else {
+            // Der Zielhost wird per default durch das Macro IP definiert und
+            // tcp_hostname mit einer Kopie des Strings initialisiert.
+            tcp_hostname = malloc(strlen(IP) + 1);
+            if (NULL == tcp_hostname)
+                exit(1);
+            strcpy(tcp_hostname, IP);
+        }
     }
     
     

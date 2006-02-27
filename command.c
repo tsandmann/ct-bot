@@ -59,7 +59,9 @@
 command_t received_command;		/*!< Puffer fuer Kommandos */
 
 #ifdef PC
-	pthread_mutex_t     command_mutex = PTHREAD_MUTEX_INITIALIZER;
+	// Auf dword alignment bestehen, wird fuer MacOS X benoetigt
+	pthread_mutex_t     command_mutex __attribute__ ((aligned (4)))
+		= PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 /*!

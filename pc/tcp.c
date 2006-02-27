@@ -52,6 +52,7 @@
 	#include <arpa/inet.h>
 	#include <sys/socket.h>
 	#include <netinet/in.h>
+	#include <netdb.h>		// for gethostbyname()
 #endif
 
 
@@ -64,15 +65,23 @@
 #include "display.h"
 
 int tcp_sock=0;			/*!< Unser TCP-Socket */
+char *tcp_hostname = NULL;		/*!< Hostname, auf dem ct-Sim laeuft */
 
 /*!
  * Oeffnet eine TCP-Verbindung zum Server 
+ * @param hostname Symbolischer Name des Host, auf dem ct-Sim laeuft
  * @return Der Socket
 */
-int tcp_openConnection(void){
+int tcp_openConnection(const char *hostname){
     struct sockaddr_in servAddr;   // server address
     int sock=0;                        // Socket descriptor
+    struct hostent *he = gethostbyname(hostname);
 
+	// Ueberpruefen, ob der Hostname aufgeloest werden konnte
+	if (NULL == he) {
+		printf("gethostbyname() failed\n");
+		exit(1);
+	}
 
     // Create a stream socket for TCP
     if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0){
@@ -84,11 +93,13 @@ int tcp_openConnection(void){
     memset(&servAddr, 0, sizeof(servAddr));     // Zero out structure
     servAddr.sin_family      = AF_INET;     // Internet address
     servAddr.sin_port        = htons(PORT);     // Port
-    servAddr.sin_addr.s_addr = inet_addr(IP);   // IP address 
+
+    // Die erste Adresse aus der Liste uebernehmen
+    memcpy(&servAddr.sin_addr, *(he->h_addr_list), sizeof(servAddr.sin_addr));
 
     // Open Connection to the server
     if (connect(sock, (struct sockaddr *) &servAddr, sizeof(servAddr)) < 0){
-        printf("tcp_openConnection() failed\n");
+        printf("tcp_openConnection() to %s failed\n", inet_ntoa(servAddr.sin_addr));
 	exit(1);
     }
 
@@ -199,10 +210,10 @@ void tcp_init(void){
 	#endif
 	
 	
-    if ((tcp_sock=tcp_openConnection()) != -1)
-        printf ("connection to %s established on Port: %d\n",IP,PORT);
+    if ((tcp_sock=tcp_openConnection(tcp_hostname)) != -1)
+        printf ("connection to %s established on Port: %d\n", tcp_hostname, PORT);
     else {
-	printf ("connection to %s failed on Port: %d\n",IP,PORT);
+		printf ("connection to %s failed on Port: %d\n", tcp_hostname, PORT);
     	exit(1);
     }
 
