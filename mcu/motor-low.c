@@ -93,7 +93,7 @@ void servo_set(char servo, char pos){
 	if (pos> SERVO_RIGHT)
 		pos=SERVO_RIGHT;
 		
-	// TODO Bereichsüberpüfung!!!
+	/*! TODO Bereichsüberpüfung!!! */
 
 	if (servo== SERVO1) {
 		OCR0=pos;

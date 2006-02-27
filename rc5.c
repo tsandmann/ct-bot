@@ -165,21 +165,17 @@ static void rc5_bot_set_speed(RemCtrlFuncPar *par) {
  * @param par Parameter mit den relativen Geschwindigkeitsaenderungen.
  */	
 static void rc5_bot_change_speed(RemCtrlFuncPar *par) {
+	int old;
 	if (par) {
+		old=target_speed_l;
 		target_speed_l += par->value1;
-		target_speed_l %= BOT_SPEED_MAX;
-		if (target_speed_l < -BOT_SPEED_MAX) {
-			target_speed_l = -BOT_SPEED_MAX;
-		} else	if (target_speed_l > BOT_SPEED_MAX) {
-			target_speed_l = BOT_SPEED_MAX;
-		}
+		if ((target_speed_l < -BOT_SPEED_MAX)|| (target_speed_l > BOT_SPEED_MAX))
+			target_speed_l = old;
 		
+		old=target_speed_r;		
 		target_speed_r += par->value2;
-		if (target_speed_r <-BOT_SPEED_MAX) {
-			target_speed_r = -BOT_SPEED_MAX;
-		} else 	if (target_speed_r > BOT_SPEED_MAX) {
-			target_speed_r = BOT_SPEED_MAX;
-		}
+		if ((target_speed_r <-BOT_SPEED_MAX)||(target_speed_r > BOT_SPEED_MAX))
+			target_speed_r = old;
 	}
 }
 

@@ -61,7 +61,7 @@
 #define GLANCE_STRAIGHT	20		/*!< Anzahl der Zyklen, die nicht geschielt wird Gesamtzahl der Zyklen ist GLANCE_STRAIGHT + GLANCE_SIDE*4 */
 #define GLANCE_SIDE 		5		/*!< Anzahl der Zyklen, die geschielt wird (jeweils pro Seite) Gesamtzahl der Zyklen ist GLANCE_STRAIGHT + GLANCE_SIDE*4 */
 
-#define MOT_GOTO_MAX  	 3 			/*!< Richtungsaenderungen, bis goto erreicht sein muss */
+#define MOT_GOTO_MAX  	 20 			/*!< Richtungsaenderungen, bis goto erreicht sein muss */
 #define GOTO_REACHED	 2			/*!< Wenn Encoder-Distanz <= GOTO_REACHED dann stop */
 #define GOTO_SLOW		 4			/*!< Wenn Encoder-Distanz < GOTO_SLOW dann langsame Fahrt */
 #define GOTO_NORMAL	10			/*!< Wenn Encoder-Distanz < GOTO_NORMAL dann normale Fahrt */
@@ -222,7 +222,7 @@ void bot_goto_system(Behaviour_t *data){
 		}
 		
 		// Wenn neue Richtung ungleich alter Richtung
-		if (((speedWishLeft<0)&& (speed_l>0))|| ( (speedWishLeft>0) && (speed_l<0) ) ) 
+		if (((speedWishLeft<0)&& (direction.left == DIRECTION_FORWARD))|| ( (speedWishLeft>0) && (direction.left == DIRECTION_BACKWARD) ) ) 
 			mot_goto_l--;		// Nulldurchgang merken
 	} 
 	
@@ -247,7 +247,7 @@ void bot_goto_system(Behaviour_t *data){
 		}
 
 		// Wenn neue Richtung ungleich alter Richtung
-		if (((speedWishRight<0)&& (speed_r>0))|| ( (speedWishRight>0) && (speed_r<0) ) ) 
+		if (((speedWishRight<0)&& (direction.right == DIRECTION_FORWARD))|| ( (speedWishRight>0) && (direction.right == DIRECTION_BACKWARD) ) ) 
 			mot_goto_r--;		// Nulldurchgang merken
 	} 
 	
