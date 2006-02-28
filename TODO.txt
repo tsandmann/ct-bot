@@ -11,3 +11,5 @@ Zeit	Timer.c		Auf dem PC existiert noch keine Routine, die die globalen Zeitvari
 Motor				Umrechnung der PWM-Werte in Geschwindigkeiten
 Sensoren			Linearisierung der Sensorwerte
 goto	bot-logik.c	Goto-System lässt den Motoren keine Zeit zum austrudeln.
+Info				Readme-Datei zu Variablen und Funktionen schreiben
+delay	delay.c		Delay von busy-wait auf timer-basiert umstellen
