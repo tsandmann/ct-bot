@@ -359,6 +359,78 @@ void bot_avoid_border(Behaviour_t *data){
 		speedWishRight=-BOT_SPEED_NORMAL;
 }
 
+int check_for_light(void){
+	if(sensLDRL >= 1023 && sensLDRR >= 1023) return False;
+	else return True;	
+}
+
+/*
+ * Das Verhalten verhindert, dass dem Bot boese Dinge wie Kollisionen oder Abstuerze widerfahren.
+ * @return Bestand Handlungsbedarf? True, wenn das Verhalten etwas ausweichen musste, sonst False.
+ * */
+int bot_avoid_harm(void){
+	if(sensDistL < COL_CLOSEST || sensDistR < COL_CLOSEST || sensBorderL > BORDER_DANGEROUS || sensBorderR > BORDER_DANGEROUS){
+		speedWishLeft = BOT_SPEED_STOP;
+		speedWishRight = BOT_SPEED_STOP;
+		return True;
+	} else return False;
+}
+
+/*
+ * Das Verhalten laesst den Bot eine Richtung fahren. Dabei stellt es sicher, dass der Bot nicht gegen ein Hinderniss prallt oder abstuerzt.
+ * @param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
+ * @param speed Gibt an, wie schnell der Bot fahren soll. */
+void bot_drive(int curve, int speed){
+	// Wenn etwas ausgewichen wurde, bricht das Verhalten hier ab, sonst wuerde es evtl. die Handlungsanweisungen von bot_avoid_harm() stoeren.
+	if(bot_avoid_harm()) return;
+	if(curve < 0 && curve >= -127) {
+		speedWishLeft = speed * (1.0 + 2.0*((float)curve/127));
+		speedWishRight = speed;
+	} else if (curve > 0 && curve <= 127) {
+		speedWishRight = speed * (1.0 - 2.0*((float)curve/127));
+		speedWishLeft = speed;
+	} else {
+		speedWishLeft = speed;
+		speedWishRight = speed;	
+	}
+}
+/*
+ * Das Verhalten laesst den Roboter den Raum durchsuchen. */
+void bot_explore(void){
+	
+}
+
+/*
+ * Das Verhalten dreht den Bot so, dass er direkt in die Lichtquelle 'sieht'.
+ * Solange kein Hinderniss in Sicht ist, faehrt er auf das Licht zu. */
+void bot_goto_light(void){
+	int speed;
+	int curve = (sensLDRL - sensLDRR)/2;
+	printf("\n***\nsensLDRL: %4u\tsensLDRR: %4u\n***\n", sensLDRL,sensLDRR);
+	if(abs(sensLDRL - sensLDRR) < 10){
+		speed = BOT_SPEED_MAX;
+	}else if(abs(sensLDRL - sensLDRR) < 100) {
+		speed = BOT_SPEED_FAST;
+	}else if(abs(sensLDRL - sensLDRR) < 200) {
+		speed = BOT_SPEED_NORMAL;
+	}else {
+		speed = BOT_SPEED_SLOW;
+	}
+		
+	if(curve < -127) curve = -127;
+	if(curve > 127) curve = 127;
+	
+	bot_drive(curve, speed);
+}
+
+/*
+ * Das Verhalten setzt sich aus 3 Teilverhalten zusammen: 
+ * Nach Licht suchen, auf das Licht zufahren, im Licht Slalom fahren. */
+void bot_complex_behaviour(Behaviour_t *data){
+	if(check_for_light()) bot_goto_light();
+	else bot_explore();
+}
+
 /*! 
  * Zentrale Verhaltens-Routine, 
  * wird regelmaessig aufgerufen. 
@@ -388,6 +460,10 @@ void bot_behave(void){
 			
 			job->work(job);	/* Verhalten ausfuehren */
 
+			/* Modifikatoren sammeln  */
+			faktorLeft  *= faktorWishLeft;
+			faktorRight *= faktorWishRight;
+
 			/* Geschwindigkeit aendern? */
 			if ((speedWishLeft != BOT_SPEED_IGNORE) || (speedWishRight != BOT_SPEED_IGNORE)){
 				if (speedWishLeft != BOT_SPEED_IGNORE)
@@ -399,9 +475,6 @@ void bot_behave(void){
 				break;						/* Wenn ein Verhalten Werte direkt setzen will, nicht weitermachen */
 			}
 			
-			/* Modifikatoren sammeln  */
-			faktorLeft  *= faktorWishLeft;
-			faktorRight *= faktorWishRight;
 		}
 		/* Dieser Punkt wird nur erreicht, wenn keine Regel im System die Motoren beeinflusen will */
 		if (job->next == NULL) {
@@ -476,11 +549,11 @@ static void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 void bot_behave_init(void){
 
 	/* Einfache Verhaltensroutine, die alles andere uebersteuert */
-	insert_behaviour_to_list(&behaviour, new_behaviour(210, bot_simple));
 	insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_avoid_border));
 
 	insert_behaviour_to_list(&behaviour, new_behaviour(100, bot_avoid_col));
 	insert_behaviour_to_list(&behaviour, new_behaviour(60, bot_glance));
+	insert_behaviour_to_list(&behaviour, new_behaviour(55, bot_complex_behaviour));
 
 	bot_goto_rule = new_behaviour(50, bot_goto_system);
 	bot_goto_rule->active=0;
