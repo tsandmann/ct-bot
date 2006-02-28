@@ -179,7 +179,7 @@ int command_evaluate(void){
 				break;
 			case CMD_SENS_LDR:
 				sensLDRL=received_command.data_l;
-				sensLDRR=received_command.data_l;
+				sensLDRR=received_command.data_r;
 				break;
 			case CMD_SENS_TRANS:
 				sensTrans=(char)received_command.data_l;
