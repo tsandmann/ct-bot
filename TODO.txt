@@ -6,10 +6,13 @@ uns Patches (siehe FAQ) zu schicken, die diese Liste sinnvoll ergänzen. Aber au
 für hier genannte Probleme freuen wir uns.
 
 Thema	Datei		Task
-
+==========================================================================
 Zeit	Timer.c		Auf dem PC existiert noch keine Routine, die die globalen Zeitvariablen aktualisiert
 Motor				Umrechnung der PWM-Werte in Geschwindigkeiten
 Sensoren			Linearisierung der Sensorwerte
+Sensoren			Berechnung von Translation und Rotation des Zentrums
+Sensoren			Umrechnung der Maussensordaten in Translation  und Rotation des Zentrums
+Sensoren			Abgleich von Maussensor- und Encoder-Daten
 goto	bot-logik.c	Goto-System lässt den Motoren keine Zeit zum austrudeln.
 Info				Readme-Datei zu Variablen und Funktionen schreiben
 delay	delay.c		Delay von busy-wait auf timer-basiert umstellen
