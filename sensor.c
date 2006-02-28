@@ -51,3 +51,6 @@ volatile int sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtric
 
 volatile int sensEncL=0;	/*!< Encoder linker Motor */
 volatile int sensEncR=0;	/*!< Encoder rechter Motor */
+
+volatile char v_left;			/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+volatile char v_right;			/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */

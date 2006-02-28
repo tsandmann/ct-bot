@@ -38,35 +38,17 @@
 #include "sensor.h"
 #include "bot-logik.h"
 #include "display.h"
+#include "bot-local.h"
 
 #include "rc5.h"
 #include <stdlib.h>
 
-#define BORDER_DANGEROUS	0x340	/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */
-
-#define COL_CLOSEST		100		/*!< Abstand in mm, den wir als zu nah betrachten */
-#define COL_NEAR			300		/*!< Nahbereich */
-#define COL_FAR			400		/*!< Fernbereich */
-
-#define ZONE_CLOSEST	0			/*!< Zone fuer extremen Nahbereich */
-#define ZONE_NEAR		1			/*!< Zone fuer Nahbereich */
-#define ZONE_FAR		2			/*!< Zone fuer Fernbereich */
-#define ZONE_CLEAR		3			/*!< Zone fuer Freien Bereich */
-
-#define BRAKE_CLOSEST 	-1.0		/*!< Bremsfaktor fuer extremen Nahbereich ( <1 ==> bremsen <0 ==> rueckwaerts) */
-#define BRAKE_NEAR		0.6 		/*!< Bremsfaktor fuer Nahbereich ( <1 ==> bremsen <0 ==> rueckwaerts) */
-#define BRAKE_FAR		0.8			/*!< Bremsfaktor fuer Fernbereich ( <1 ==> bremsen <0 ==> rueckwaerts) */
-
-#define GLANCE_FACTOR 		0.9		/*!< Schlangenlinienfaktor zur Erweiterung des Sensorfeldes */
-#define GLANCE_STRAIGHT	20		/*!< Anzahl der Zyklen, die nicht geschielt wird Gesamtzahl der Zyklen ist GLANCE_STRAIGHT + GLANCE_SIDE*4 */
-#define GLANCE_SIDE 		5		/*!< Anzahl der Zyklen, die geschielt wird (jeweils pro Seite) Gesamtzahl der Zyklen ist GLANCE_STRAIGHT + GLANCE_SIDE*4 */
-
-#define MOT_GOTO_MAX  	 20 			/*!< Richtungsaenderungen, bis goto erreicht sein muss */
-#define GOTO_REACHED	 2			/*!< Wenn Encoder-Distanz <= GOTO_REACHED dann stop */
-#define GOTO_SLOW		 4			/*!< Wenn Encoder-Distanz < GOTO_SLOW dann langsame Fahrt */
-#define GOTO_NORMAL	10			/*!< Wenn Encoder-Distanz < GOTO_NORMAL dann normale Fahrt */
-#define GOTO_FAST		40			/*!< Wenn Encoder-Distanz < GOTO_FAST dann schnelle Fahrt, sonst maximale Fahrt */
-
+/*
+ * Alle Konstanten, die die Verhalten befinden sind in bot-local.h ausgelagert. 
+ * Dort kann man sie per .cvsignore vor updates schützen 
+ * 
+ * Alle Variablen mit Sensor-Werten findet man in sensor.h
+ */
 
 
 /*! Verwaltungsstruktur für die Verhaltensroutinen */
