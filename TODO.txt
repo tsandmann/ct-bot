@@ -1,0 +1,13 @@
+Wunsch- und Aufgabenliste für die c't-Bot-Firmware bzw. ihr PC-Pendant:
+=======================================================================
+
+Alle hier aufgeführten Punkte stehen noch aus. Wer möchte, ist herzlich eingeladen,
+uns Patches (siehe FAQ) zu schicken, die diese Liste sinnvoll ergänzen. Aber auch über Lösungen
+für hier genannte Probleme freuen wir uns.
+
+Thema	Datei		Task
+
+Zeit	Timer.c		Auf dem PC existiert noch keine Routine, die die globalen Zeitvariablen aktualisiert
+Motor				Umrechnung der PWM-Werte in Geschwindigkeiten
+Sensoren			Linearisierung der Sensorwerte
+goto	bot-logik.c	Goto-System lässt den Motoren keine Zeit zum austrudeln.
