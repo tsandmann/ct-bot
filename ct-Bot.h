@@ -37,6 +37,8 @@
 //#define UART_AVAILABLE	/*!< Serial Communication */
 //#define COMMAND_AVAILABLE	/*!< High-Level Communication over Uart, needs UART  */
 
+#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit? */
+
 #define DISPLAY_AVAILABLE	/*!< Display for local control */
 //#define DISPLAY_REMOTE_AVAILABLE /*!< Sende LCD Anzeigedaten an den Simulator */
 #define DISPLAY_SCREENS_AVAILABLE	/*!< Ermoeglicht vier verschiedene Screen */
@@ -88,6 +90,7 @@
 	#define COMMAND_AVAILABLE		/*!< High-Level Communication */
    #undef DISPLAY_SCREEN_RESETINFO
    #undef TEST_AVAILABLE_COUNTER
+   #undef TIME_AVAILABLE
 #endif
 
 #ifdef MCU

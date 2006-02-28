@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,42 +17,32 @@
  * 
  */
 
-/*! @file 	timer.h
- * @brief 	Timer und Zaehler
+/*! @file 	timer.c
+ * @brief 	Zeitmanagement
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
 */
 
-#ifndef TIMER_H_
-#define TIMER_H_
-
 #include "ct-Bot.h"
+#include "timer.h"
 
 #ifdef TIME_AVAILABLE
-	extern uint16 time_micro_s; /*!< Mikrosekundenanteil an der Systemzeit */
-	extern uint16 time_ms; 	 /*!< Milliekundenanteil an der Systemzeit */
-	extern uint16 time_s; 		 /*!< Sekundenanteil an der Systemzeit */	
-	/*! Funktion, um die Systemzeit zu berechnen 
-	 */
-	void system_time_isr(void);
-#endif
 
-// Die Werte fuer TIMER_X_CLOCK sind Angaben in Hz
+uint16 time_micro_s=0; /*!< Mikrosekundenanteil an der Systemzeit */
+uint16 time_ms=0; 	 /*!< Milliekundenanteil an der Systemzeit */
+uint16 time_s=0; 		 /*!< Sekundenanteil an der Systemzeit */
 
-/*!
- * Frequenz von Timer 2 in Hz 
+/*! Funktion, um die Systemzeit zu berechnen 
  */
-#define TIMER_2_CLOCK	5619	// Derzeit genutzt fuer RC5-Dekodierung
-
-/*!
- * Mikrosekunden die zwischen zwei Timer-Aufrufen liegen 
- */
-#ifdef MCU
-	#define TIMER_STEPS	(1000000/TIMER_2_CLOCK)
-#else
-#endif
-/*!
- * Initialisiert Timer 2 und startet ihn 
- */
-void timer_2_init(void);
+void system_time_isr(void){
+	time_micro_s += TIMER_STEPS;	/* Mikrosekundentimer erhöhen */
+	if (time_micro_s >= 1000){		/* Eine Mikrosekunde verstrichen? */
+		time_micro_s -= 1000;		/* 1 Milli Sekunde vom Mikrosekundenzähler in den Millisekudnenzähler verschieben */
+		time_ms++;
+		if (time_ms == 1000){		/* Eine Millisekunde verstrichen? */
+			time_ms=0;
+			time_s++;
+		}
+	}
+}
 #endif

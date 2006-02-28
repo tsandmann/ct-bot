@@ -17,8 +17,8 @@
  * 
  */
 
-/*! @file 	timer.c
- * @brief 	Timer und counter
+/*! @file 	timer-low.c
+ * @brief 	Timer und counter für den Mikrocontroller
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
 */
@@ -44,6 +44,9 @@ SIGNAL (SIG_OUTPUT_COMPARE2){
 	#ifdef IR_AVAILABLE
 		ir_isr();
 	#endif	
+	#ifdef TIME_AVAILABLE
+		system_time_isr();
+	#endif
 	bot_encoder_isr();
 }
 

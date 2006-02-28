@@ -65,6 +65,7 @@
 #include "command.h"
 #include "ir-rc5.h"
 #include "rc5.h"
+#include "timer.h"
 
 /* Nimmt den Status von MCUCSR bevor dieses Register auf 0x00 gesetzt wird */
 #ifdef DISPLAY_SCREEN_RESETINFO
@@ -161,9 +162,11 @@ void init(void){
 			#ifdef 	DISPLAY_SCREENS_AVAILABLE					
 					break;
 				case 1:
-					display_cursor(1,1);
-					sprintf(display_buf,"Screen 2");
-					display_buffer();
+					#ifdef TIME_AVAILABLE
+						display_cursor(1,1);
+						sprintf(display_buf,"Zeit: %04d:%03d",time_s,time_ms);
+						display_buffer();
+					#endif
 		
 					display_cursor(2,1);
 					sprintf(display_buf,"TS=%+4d %+4d",target_speed_l,target_speed_r);
