@@ -24,6 +24,8 @@
 */
 
 #include "ct-Bot.h"
+#include "timer.h"
+#include "bot-local.h"
 
 volatile int16 sensLDRL=0;		/*!< Lichtsensor links */
 volatile int16 sensLDRR=0;		/*!< Lichtsensor rechts */
@@ -49,8 +51,26 @@ volatile char sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fa
 volatile int sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
 volatile int sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
 
-volatile int sensEncL=0;	/*!< Encoder linker Motor */
-volatile int sensEncR=0;	/*!< Encoder rechter Motor */
+volatile int16 sensEncL=0;	/*!< Encoder linker Motor */
+volatile int16 sensEncR=0;	/*!< Encoder rechter Motor */
 
-volatile char v_left;			/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
-volatile char v_right;			/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+volatile int16 v_left;			/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+volatile int16 v_right;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+
+/*! Sensor_update
+* Kümmert sich um die Weiterverarbeitung der rohen Sensordaten 
+*/
+void sensor_update(void){
+	static int16 lastTime =0;
+	static int16 lastEncL =0;
+	static int16 lastEncR =0;
+	
+	if (time_s != lastTime) {	// sollte genau 1x pro Sekunde zutreffen
+		v_left=  ((sensEncL - lastEncL) * WHEEL_PERIMETER) / ENCODER_MARKS;
+		v_right= ((sensEncR - lastEncR) * WHEEL_PERIMETER) / ENCODER_MARKS;
+		
+		lastEncL= sensEncL;
+		lastEncR= sensEncR;
+		lastTime = time_s;		
+	}
+}

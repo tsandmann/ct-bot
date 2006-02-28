@@ -29,6 +29,7 @@
 
 #include "uart.h"
 #include "adc.h"
+#include "timer.h"
 
 #include "command.h"
 #include "display.h"
@@ -164,6 +165,9 @@ int command_evaluate(void){
 			case CMD_SENS_IR:
 				sensDistL=received_command.data_l;
 				sensDistR=received_command.data_r;
+				#ifdef TIME_AVAILABLE
+					system_time_isr();		/* Einmal pro Update-Zyklus aktualisieren wir die Systemzeit */
+				#endif
 				break;
 			case CMD_SENS_ENC:
 				sensEncL+=received_command.data_l;
@@ -186,6 +190,7 @@ int command_evaluate(void){
 				break;
 			case CMD_SENS_ERROR:
 				sensError=(char)received_command.data_l;
+				sensor_update();	/* Error ist der letzte uebertragene Sensorwert, danach koennen wir uns um allgemeine updates kümmern*/
 				break;
 			case CMD_SENS_RC5:
 				ir_data=received_command.data_l;

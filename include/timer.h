@@ -29,9 +29,9 @@
 #include "ct-Bot.h"
 
 #ifdef TIME_AVAILABLE
-	extern uint16 time_micro_s; /*!< Mikrosekundenanteil an der Systemzeit */
-	extern uint16 time_ms; 	 /*!< Milliekundenanteil an der Systemzeit */
-	extern uint16 time_s; 		 /*!< Sekundenanteil an der Systemzeit */	
+	extern volatile uint16 time_micro_s; /*!< Mikrosekundenanteil an der Systemzeit */
+	extern volatile uint16 time_ms; 	 /*!< Milliekundenanteil an der Systemzeit */
+	extern volatile uint16 time_s; 		 /*!< Sekundenanteil an der Systemzeit */	
 	/*! Funktion, um die Systemzeit zu berechnen 
 	 */
 	void system_time_isr(void);
@@ -50,6 +50,8 @@
 #ifdef MCU
 	#define TIMER_STEPS	(1000000/TIMER_2_CLOCK)
 #else
+	/* Auf dem PC koppeln wir das an die Zeitbasis des Simulators, derzeit 10ms also 10000 Microsekunden */
+	#define TIMER_STEPS	10000
 #endif
 /*!
  * Initialisiert Timer 2 und startet ihn 

@@ -29,8 +29,8 @@
 #include "ct-Bot.h"
 
 #define ENCODER_MARKS		60		/*!< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weißen + Anzahl der schwarzen Felder */
-#define RAD_DURCHMESSER	57		/*!< Durchmesser eines Rades in mm */
-#define RAD_UMFANG			179 	/*!< Durchmesser eines Rades in mm */	
+#define WHEEL_DIAMETER		57		/*!< Durchmesser eines Rades in mm */
+#define WHEEL_PERIMETER	179 	/*!< Durchmesser eines Rades in mm */	
 
 /* Einstellunge für die Verhaltensregeln */
 #define BORDER_DANGEROUS	0x340	/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */

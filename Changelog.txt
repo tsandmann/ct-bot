@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-02-28	Benjamin Benz (bbe@heise.de) Geschwindigkeitsvariabeln v_left und v_right eingeführt
+
 2006-02-28	Benjamin Benz (bbe@heise.de) Alle Anpassungen des Roboters an lokale Gegebenheiten in bot-local.h ausgelagert
 
 2006-02-28	Benjamin Benz (bbe@heise.de) TODO-Datei eingeführt

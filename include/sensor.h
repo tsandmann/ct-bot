@@ -61,6 +61,12 @@ extern volatile int sensMouseX;		/*!< Mausposition X, positive Werte zeigen quer
 extern volatile int sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
 
 
-extern volatile char v_left;			/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
-extern volatile char v_right;			/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+extern volatile int16 v_left;			/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+extern volatile int16 v_right;			/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+
+/*! Sensor_update
+* Kümmert sich um die Weiterverarbeitung der rohen Sensordaten 
+*/
+void sensor_update(void);
+
 #endif /*SENSOR_H_*/

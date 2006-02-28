@@ -28,18 +28,18 @@
 
 #ifdef TIME_AVAILABLE
 
-uint16 time_micro_s=0; /*!< Mikrosekundenanteil an der Systemzeit */
-uint16 time_ms=0; 	 /*!< Milliekundenanteil an der Systemzeit */
-uint16 time_s=0; 		 /*!< Sekundenanteil an der Systemzeit */
+volatile uint16 time_micro_s=0; /*!< Mikrosekundenanteil an der Systemzeit */
+volatile uint16 time_ms=0; 	 /*!< Milliekundenanteil an der Systemzeit */
+volatile uint16 time_s=0; 		 /*!< Sekundenanteil an der Systemzeit */
 
 /*! Funktion, um die Systemzeit zu berechnen 
  */
 void system_time_isr(void){
 	time_micro_s += TIMER_STEPS;	/* Mikrosekundentimer erhöhen */
 	if (time_micro_s >= 1000){		/* Eine Mikrosekunde verstrichen? */
-		time_micro_s -= 1000;		/* 1 Milli Sekunde vom Mikrosekundenzähler in den Millisekudnenzähler verschieben */
-		time_ms++;
-		if (time_ms == 1000){		/* Eine Millisekunde verstrichen? */
+		time_ms += (time_micro_s/1000);
+		time_micro_s %= 1000;		/* alle vollen Millisekunden vom Mikrosekundenzähler in den Millisekudnenzähler verschieben */
+		if (time_ms == 1000){		/* Eine Sekunde verstrichen? */
 			time_ms=0;
 			time_s++;
 		}

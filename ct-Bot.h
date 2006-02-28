@@ -90,7 +90,6 @@
 	#define COMMAND_AVAILABLE		/*!< High-Level Communication */
    #undef DISPLAY_SCREEN_RESETINFO
    #undef TEST_AVAILABLE_COUNTER
-   #undef TIME_AVAILABLE
 #endif
 
 #ifdef MCU

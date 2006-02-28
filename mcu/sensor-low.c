@@ -166,6 +166,8 @@ void bot_sens_isr(void){
 
 	sensMouseDX = maus_sens_read(MOUSE_DELTA_X_REG);	
 	sensMouseX += sensMouseDX;
+	
+	sensor_update();
 }
 
 /*!

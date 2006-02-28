@@ -177,7 +177,7 @@ void init(void){
 					display_buffer();
 		
 					display_cursor(4,1);
-					sprintf(display_buf,"I=%04X",RC5_Code);
+					sprintf(display_buf,"Speed= %04d %04d",v_left,v_right);
 					display_buffer();				
 
 					break;
