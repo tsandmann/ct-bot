@@ -29,6 +29,9 @@
 #include "global.h"
 #include "ct-Bot.h"
 
+#define MAX_PAYLOAD 255  /*!< Max. Anzahl Bytes, die an ein Command angehaengt werden */
+
+
 /*!
  * Request Teil eines Kommandos
  */
@@ -109,6 +112,25 @@ extern command_t received_command;		/*!< Puffer fuer Kommandos */
  * @see low_read()
  */
 int command_read(void);	
+
+/*!
+ * Uebertraegt ein Kommando und wartet nicht auf eine Antwort
+ * @param command Kennung zum Command
+ * @param subcommand Kennung des Subcommand
+ * @param data_l Daten fuer den linken Kanal
+ * @param data_r Daten fuer den rechten Kanal
+ */
+void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r);
+
+/*!
+ *  Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort
+ * @param command Kennung zum Command
+ * @param subcommand Kennung des Subcommand
+ * @param data_l Daten fuer den linken Kanal
+ * @param data_r Daten fuer den rechten Kanal
+ * @param data Datenanhang an das eigentliche Command
+ */
+void command_write_data(uint8 command, uint8 subcommand, const int16* data_l, const int16* data_r, const char* data);
 
 /*!
  * Wertet das Kommando im Puffer aus

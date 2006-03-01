@@ -26,29 +26,48 @@
 #ifndef UART_H_
 #define UART_H_
 
+#include "command.h"
 
-extern char uart_timeout;	/*!< 0, wenn uart_read/uart_send erfolgreich; 1, wenn timeout erreicht */
-
-/*!
- * Uebertraegt ein Zeichen per UART.
- * Achtung: ist noch blockierend!
- * @param data Das Zeichen
- */
-void uart_send(char data); // Achtung, ist noch blockierend!!!!
-
-/*! 
- * Prueft, ob Daten verfuegbar 
- * @return 1, wenn Daten verfuegbar, sonst 0
- */
-char uart_data_available(void);
+//extern char uart_timeout;	/*!< 0, wenn uart_read/uart_send erfolgreich; 1, wenn timeout erreicht */
 
 /*!
  * Initialisiere UART
  */
 void uart_init(void);
 
-/*!
- * Liest Zeichen von der UART
+/*! 
+ * Prüft, ob daten verfügbar 
+ * @return Anzahl der verfuegbaren Bytes
  */
-char uart_read(char* data, int length);
+char uart_data_available(void);
+
+
+/*!
+ * Überträgt ein Zeichen per UART
+ * Achtung ist noch blockierend!!!!
+ * TODO: umstellen auf nicht blockierend und mehr als ein Zeichen
+ * @param data Das Zeichen
+ */
+void uart_send_byte(char data);
+
+/*!
+ * Sende Kommando per TCP/IP im Little Endian
+ * @param cmd Zeiger auf das Kommando
+ * @return Anzahl der gesendete Bytes
+ */
+int uart_send_cmd(command_t *cmd);
+
+/*!
+ * Sende Kommando per TCP/IP im Little Endian
+ * @param cmd Zeiger auf das Kommando
+ * @return Anzahl der gesendete Bytes
+ */
+int uart_write(char * data, int length);
+
+/* Liest Zeichen von der UART
+ * @param data Der Zeiger an die die gelesenen Zeichen kommen
+ * @param length Anzahl der zu lesenden Bytes
+ * @return Anzahl der tatsaechlich gelesenen Zeichen
+ */
+int uart_read(void* data, int length);
 #endif

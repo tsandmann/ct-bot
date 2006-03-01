@@ -34,8 +34,7 @@
 #define IR_AVAILABLE		/*!< Infrared Remote Control */
 #define RC5_AVAILABLE		/*!< Key-Mapping for IR-RC	 */
 
-//#define UART_AVAILABLE	/*!< Serial Communication */
-//#define COMMAND_AVAILABLE	/*!< High-Level Communication over Uart, needs UART  */
+//#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
 
 #define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit? */
 
@@ -43,6 +42,8 @@
 //#define DISPLAY_REMOTE_AVAILABLE /*!< Sende LCD Anzeigedaten an den Simulator */
 #define DISPLAY_SCREENS_AVAILABLE	/*!< Ermoeglicht vier verschiedene Screen */
 #define DISPLAY_SCREEN_RESETINFO	/*!< Zeigt auf Screen 4 Informationen über Resets an */
+
+//#define WELCOME_AVAILABLE	/*!< kleiner Willkommensgruss */
 
 #define ADC_AVAILABLE		/*!< A/D-Converter for sensing Power */
 
@@ -86,6 +87,7 @@
 	#ifndef DOXYGEN
 		#undef UART_AVAILABLE
 		#undef MAUS_AVAILABLE
+		#undef BOT_2_PC_AVAILABLE
 	#endif
 	#define COMMAND_AVAILABLE		/*!< High-Level Communication */
    #undef DISPLAY_SCREEN_RESETINFO
@@ -93,10 +95,9 @@
 #endif
 
 #ifdef MCU
-	#ifndef DOXYGEN
-		#ifndef UART_AVAILABLE
-			#undef COMMAND_AVAILABLE
-		#endif
+	#ifdef BOT_2_PC_AVAILABLE
+		#define UART_AVAILABLE	/*!< Serial Communication */
+		#define COMMAND_AVAILABLE	/*!< High-Level Communication */
 	#endif
 #endif
 

@@ -17,56 +17,25 @@
  * 
  */
 
-/*! @file 	led_pc.c 
- * @brief 	Routinen zur LED-Steuerung
+/*! @file 	bot-2-pc.h 
+ * @brief 	Verbindung c't-Bot zum PC
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+ * @date 	01.03.06
 */
+#ifndef __bot_2_pc
+#define __bot_2_pc
 
-#include "ct-Bot.h"
-#include "bot-2-sim.h"
-#include "command.h"
-
-#ifdef PC
-
-#include "led.h"
-
-#ifdef LED_AVAILABLE
-volatile char led=0;			/*!< Status der LEDs */
-/*!
- * Initialisiert die LEDs
- */
-void LED_init(){
-}
+#include "global.h"
 
 /*! 
- * Schaltet einzelne LEDs an
- * andere werden nicht beeinflusst
- * @param LED Bitmaske der anzuschaltenden LEDs
+ * Diese Funktion nimmt die Daten vom PC entgegen
+ * und wertet sie aus. dazu nutzt er die Funktion command_evaluate()
  */
-void LED_on(char LED){
-	led |= LED;
-	LED_set(led);
-}
+void bot_2_pc_listen(void);
 
 /*! 
- * Schaltet einzelne LEDs aus
- * andere werden nicht beeinflusst
- * @param LED Bitmaske der anzuschaltenden LEDs
+ * Diese Funktion informiert den PC ueber alle Sensor und Aktuator-Werte
  */
-void LED_off(char LED){
-	led &= ~LED;
-	LED_set(led);
-}
+void bot_2_pc_inform(void);
 
-/*!
- * Zeigt eine 8-Bit-Variable mit den LEDs an
- * @param LED Wert, der gezeigt werden soll
- */
-void LED_set(char LED){
-	int16 led=LED;
-	command_write(CMD_AKT_LED, SUB_CMD_NORM ,&led,&led);
-}
-
-#endif
 #endif

@@ -30,6 +30,7 @@
 #include <avr/signal.h>
 #include "ct-Bot.h"
 #include "uart.h"
+#include "command.h"
 
 #ifdef UART_AVAILABLE
 
@@ -40,82 +41,123 @@
 	#error RX buffer size is not a power of 2
 #endif
 
-#define UART_TIMEOUT	20000	/*!< Timeout. Wartet UART_TIMEOUT CPU-Takte */
+//#define UART_TIMEOUT	20000	/*!< Timeout. Wartet UART_TIMEOUT CPU-Takte */
 
 static unsigned char UART_RxBuf[UART_RX_BUFFER_SIZE];	/*!< UART-Puffer */
 static volatile unsigned char UART_RxHead;				/*!< Zeiger für UART-Puffer */
 static volatile unsigned char UART_RxTail;				/*!< Zeiger für UART-Puffer */
 
-char uart_timeout;	/*!< 0, wenn uart_read/uart_send erfolgreich 1, wenn timeout erreicht */
+//char uart_timeout;	/*!< 0, wenn uart_read/uart_send erfolgreich 1, wenn timeout erreicht */
 
 /*!
  * Initialisiere UART
  */
-void uart_init(void){
-	DDRB|= 0x07;  // Multiplexleitungen seriell PB0-2 als Ausgang	
-	PORTB|= 0x03; // UART verbinden mit COM
-	
-	
-	UBRRH= 0x0;  // UART auf 9600 baud
-	UBRRL= 0x5F; //  UBRR= (fquarz/ (16* BAUD) ) -1
-	
-	UCSRC=0x86; // 8 bit 1 Stop No Parity
+void uart_init(void){	 
+	/* Senden und Empfangen ermöglichen + RX Interrupt an */
+	UCSRB= (1<<RXEN) | (1<<TXEN)|(1<<RXCIE); 
 
-	//Transmit&Receive Enable + RX Int
-	UCSRB= ((1<<RXEN) | (1<<TXEN)|(1<<RXCIE)); 
-
-	/* Flush receive buffer */
-
+	/* 8 Bit, 1 Stop, Keine Parity */
+	UCSRC=0x86;
+	
+	/* UART auf 9600 baud */
+	UBRRH=0;
+	UBRRL= 103;  /* Werte stehen im Datenblatt tabelarisch */
+	
+	/* Puffer leeren */
 	UART_RxTail = 0;
 	UART_RxHead = 0;
 }
 
 /*!
- *  Interrupt Handler for UART RECV 
+ *  Interrupt Handler fuer den Datenempfang per UART
  */
 SIGNAL (SIG_UART_RECV){
-	unsigned char data;
-	unsigned char tmphead;
+	/* Pufferindex berechnen */
+	UART_RxHead++;						/* erhoehen */ 
+	UART_RxHead %= UART_RX_BUFFER_MASK; /* Und bei Bedarf umklappen, da Ringpuffer */
 	
-	data = UDR;                 /* Read the received data */
-
-	/* Calculate buffer index */
-	tmphead = ( UART_RxHead + 1 ) & UART_RX_BUFFER_MASK;
-	UART_RxHead = tmphead;      /* Store new index */
-
-	if ( tmphead == UART_RxTail ){
-		/* ERROR! Receive buffer overflow */
+	if (UART_RxHead == UART_RxTail){
+		/* TODO Fehler behandeln !!
+		 * ERROR! Receive buffer overflow */
 	}
 	
-	UART_RxBuf[tmphead] = data; /* Store received data in buffer */
+	UART_RxBuf[UART_RxHead] = UDR; /* Daten lesen und sichern*/
 }
 
 /*! 
  * Prüft, ob daten verfügbar 
- * @return 1, wenn daten verfügbar, sonst 0
+ * @return Anzahl der verfuegbaren Bytes
  */
 char uart_data_available(void){
-	if (UART_RxHead == UART_RxTail) 
-		return 0;
-	else return 1;
+	if (UART_RxHead == UART_RxTail) 	/* Puffer leer */
+		return 0;		
+	else if (UART_RxHead > UART_RxTail)		/* Schreibzeiger vor Lesezeiger */ 
+		return UART_RxHead - UART_RxTail; 
+	else			/* Schreibzeiger ist schon umgelaufen */
+		return UART_RxHead - UART_RxTail + UART_RX_BUFFER_SIZE;
 }
 
 
 /*!
  * Überträgt ein Zeichen per UART
  * Achtung ist noch blockierend!!!!
+ * TODO: umstellen auf nicht blockierend und mehr als ein Zeichen
  * @param data Das Zeichen
  */
-void uart_send(char data){ // Achtung ist noch blockierend!!!!
-	while (((UCSRA >> UDRE) & 1) ==0){}	// warten bis UART sendebereit
+void uart_send_byte(char data){ // Achtung ist noch blockierend!!!!
+	while ((UCSRA & _BV(UDRE)) ==0){}	// warten bis UART sendebereit
 	UDR= data;
 }
 
 /*!
- * Liest Zeichen von der UART
+ * Sende Kommando per TCP/IP im Little Endian
+ * @param cmd Zeiger auf das Kommando
+ * @return Anzahl der gesendete Bytes
  */
-char uart_read(char* data, int length){
-        return -1;
+int uart_send_cmd(command_t *cmd){
+	int i;
+	char * ptr = (char*) cmd;
+	for (i=0; i<sizeof(command_t); i++)
+		uart_send_byte(*ptr++);
+		
+	return sizeof(command_t);
+}
+
+/*!
+ * Sende Kommando per TCP/IP im Little Endian
+ * @param cmd Zeiger auf das Kommando
+ * @return Anzahl der gesendete Bytes
+ */
+int uart_write(char * data, int length){
+	int i;
+	char * ptr = (char*) data;
+	for (i=0; i<length; i++)
+		uart_send_byte(*ptr++);
+		
+	return length;	
+}
+
+/*!
+ * Liest Zeichen von der UART
+ * Achtung: blockierend!
+ * @param data Der Zeiger an die die gelesenen Zeichen kommen
+ * @param length Anzahl der zu lesenden Bytes
+ * @return Anzahl der tatsaechlich gelesenen Zeichen
+ */
+int uart_read(void* data, int length){
+	uint8 i;
+	char* ptr = data;
+	int count= uart_data_available();
+	
+	if (count > length)
+		count=length;
+		
+	for (i=0; i<count; i++){
+		*ptr++ = UART_RxBuf[UART_RxTail++];
+		UART_RxTail %= UART_RX_BUFFER_MASK;
+	}
+	
+	return count;
 }
 
 #endif

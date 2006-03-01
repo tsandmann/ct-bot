@@ -27,8 +27,6 @@
 
 #include "global.h"
 
-#define BOT_2_SIM_MAX_PAYLOAD 255  /*!< Max. Anzahl Bytes, die an ein Command angeh�ngt werden */
-
 /*!
  * Ein wenig Initilisierung kann nicht schaden 
  */
@@ -38,25 +36,6 @@ void bot_2_sim_init(void);
  *  Frage Simulator nach Daten
  */
 int bot_2_sim_ask(uint8 command, uint8 subcommand,int16* data_l,int16* data_r);
-
-/*!
- *  Gib dem Simulator Daten -- und warte nicht auf eine Antwort!
- * @param command Kennung zum Command
- * @param subcommand Kennung des Subcommand
- * @param data_l Daten f�r den linken Kanal
- * @param data_r Daten f�r den rechten Kanal
- */
-void bot_2_sim_tell(uint8 command, uint8 subcommand, int16* data_l,int16* data_r);
-
-/*!
- *  Gib dem Simulator Daten mit Anhang -- und warte nicht auf eine Antwort!
- * @param command Kennung zum Command
- * @param subcommand Kennung des Subcommand
- * @param data_l Daten f�r den linken Kanal
- * @param data_r Daten f�r den rechten Kanal
- * @param data Datenanhang an das eigentliche Command
- */
-void bot_2_sim_tell_data(uint8 command, uint8 subcommand, const int16* data_l, const int16* data_r, const char* data);
 
 /*!
  * Schickt einen Thread in die Warteposition

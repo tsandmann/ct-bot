@@ -133,8 +133,7 @@ void tcp_closeConnection(int sock){
  * @param cmd Zeiger auf das Kommando
  * @return Anzahl der gesendete Bytes
  */
-int tcp_send_cmd(command_t *cmd)
-{
+int tcp_send_cmd(command_t *cmd){
 #if BYTE_ORDER == BIG_ENDIAN
 	command_t le_cmd;
 

@@ -41,15 +41,21 @@
 #include "bot-logik.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #ifdef PC
 	#include "tcp.h"
 	#include <pthread.h>	
 	#define low_read tcp_read 	/*!< Which function to use to read data */
+	#define low_write tcp_send_cmd /*!< Which function to use to write data */
+	#define low_write_data tcp_write /*!< Which function to use to write data */
 #endif
 
 #ifdef MCU
 	#define low_read uart_read 	/*!< Which function to use to read data */
+	#define low_write uart_send_cmd /*!< Which function to use to write data */
+	#define low_write uart_send_cmd /*!< Which function to use to write data */
+	#define low_write_data uart_write /*!< Which function to use to write data */
 #endif
 
 
@@ -148,6 +154,70 @@ int command_read(void){
 	}
 }
 
+static int count=1;	/*!< Zaehler fuer Paket-Sequenznummer*/
+
+/*!
+ * Uebertraegt ein Kommando und wartet nicht auf eine Antwort
+ * @param command Kennung zum Command
+ * @param subcommand Kennung des Subcommand
+ * @param data_l Daten fuer den linken Kanal
+ * @param data_r Daten fuer den rechten Kanal
+ */
+void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r){
+	command_t cmd;
+	
+	cmd.startCode=CMD_STARTCODE;
+	cmd.request.direction=DIR_REQUEST;		// Anfrage
+	cmd.request.command= command;
+	cmd.request.subcommand= subcommand;
+	
+	cmd.payload=0x00;
+    cmd.data_l = (data_l ? *data_l : 0);
+    cmd.data_r = (data_r ? *data_r : 0);
+	cmd.seq=count++;
+	cmd.CRC=CMD_STOPCODE;
+	
+	low_write(&cmd);
+}
+
+/*!
+ *  Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort
+ * @param command Kennung zum Command
+ * @param subcommand Kennung des Subcommand
+ * @param data_l Daten fuer den linken Kanal
+ * @param data_r Daten fuer den rechten Kanal
+ * @param data Datenanhang an das eigentliche Command
+ */
+void command_write_data(uint8 command, uint8 subcommand, const int16* data_l, const int16* data_r, const char* data){
+    command_t cmd;
+    size_t    len;
+    
+    cmd.startCode          = CMD_STARTCODE;
+    cmd.request.direction  = DIR_REQUEST;  // Anfrage
+    cmd.request.command    = command;
+    cmd.request.subcommand = subcommand;
+    
+    if (data != NULL) {
+        len = strlen(data);
+        if (len > MAX_PAYLOAD) {
+            cmd.payload = MAX_PAYLOAD;
+        } else {
+            cmd.payload = len;
+        }
+    } else {
+        cmd.payload = 0;
+    }
+    
+    cmd.data_l = (data_l ? *data_l : 0);
+    cmd.data_r = (data_r ? *data_r : 0);
+    
+    cmd.seq = count++;
+    cmd.CRC = CMD_STOPCODE;
+ 
+    low_write_data((char *)&cmd, sizeof(command_t));
+    low_write_data((char *)data, cmd.payload);
+}
+
 /*!
  * Wertet das Kommando im Puffer aus
  * return 1, wenn Kommando schon bearbeitet wurde, 0 sonst
@@ -225,7 +295,7 @@ int command_evaluate(void){
 				(*command).data_l,
 				(*command).seq);
 		#else
-			char* raw= (char*)command;
+/*			char* raw= (char*)command;
 			unsigned char i=0;
 			char hex[6];
 			
@@ -248,7 +318,7 @@ int command_evaluate(void){
 			sprintf(hex,"%5d",(*command).seq);
 			display_string(" ");
 			display_string(hex);
-
+*/
 			#ifdef WIN32
 				printf("\n");
 			#endif

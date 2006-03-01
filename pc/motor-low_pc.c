@@ -45,7 +45,7 @@ void motor_low_init(){
  * @param right PWM rechts
 */
 void bot_motor(int16 left, int16 right){
-	bot_2_sim_tell(CMD_AKT_MOT, SUB_CMD_NORM ,&left,&right);
+	command_write(CMD_AKT_MOT, SUB_CMD_NORM ,&left,&right);
 }
 
 #endif

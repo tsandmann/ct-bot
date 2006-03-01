@@ -30,6 +30,7 @@
 	#include <avr/interrupt.h>
 	#include <avr/signal.h>
 	#include <avr/wdt.h>
+	#include "bot-2-pc.h"
 #endif
 	
 #ifdef PC
@@ -120,13 +121,11 @@ void init(void){
 			ir_init();
 		#endif
 	#endif
-	
-	
 
-/*	#ifdef UART_AVAILABLE	
+	#ifdef UART_AVAILABLE	
 		uart_init();
 	#endif
-*/			
+			
 	#ifdef MAUS_AVAILABLE
 		maus_sens_init();
 	#endif
@@ -337,8 +336,13 @@ void init(void){
 	
 	#ifdef WELCOME_AVAILABLE
 		display_cursor(1,1);
-		display_string("c't-Roboter");
+		sprintf(display_buf,"c't-Roboter");
+		display_buffer();			
 		LED_set(0x00);
+		
+		#ifdef BOT_2_PC_AVAILABLE		
+			uart_write(display_buf,11);
+		#endif
 	#endif
 		
 	
@@ -376,6 +380,17 @@ void init(void){
 			bot_behave();
 		#endif
 			
+		#ifdef MCU
+			#ifdef BOT_2_PC_AVAILABLE
+				static int16 lastTimeCom =0;
+	
+				if (time_s != lastTimeCom) {	// sollte genau 1x pro Sekunde zutreffen
+					lastTimeCom = time_s;		
+					bot_2_pc_listen();				// Kommandos vom PC empfangen
+					bot_2_pc_inform();				// Den PC ueber Sensorern und aktuatoren informieren
+				}
+			#endif
+		#endif
 		// Alles Anzeigen
 		#ifdef DISPLAY_AVAILABLE
 			display();
