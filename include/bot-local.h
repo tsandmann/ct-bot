@@ -20,6 +20,7 @@
 /*! @file 	bot-local.h
  * @brief 	Konstanten, die den Bot an reale Umgebungen anpassen
  * @author 	Benjamin Benz (bbe@heise.de)
+ * @author Christoph Grimmer (c.grimmer@futurio.de)
  * @date 	28.02.06
 */
 
@@ -28,11 +29,12 @@
 
 #include "ct-Bot.h"
 
-#define ENCODER_MARKS		60		/*!< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weißen + Anzahl der schwarzen Felder */
+#define ENCODER_MARKS		60		/*!< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weissen + Anzahl der schwarzen Felder */
 #define WHEEL_DIAMETER		57		/*!< Durchmesser eines Rades in mm */
-#define WHEEL_PERIMETER	179 	/*!< Durchmesser eines Rades in mm */	
+#define WHEEL_PERIMETER		179 	/*!< Durchmesser eines Rades in mm */	
+#define WHEEL_TO_WHEEL_DIAMETER 97 /*!< Abstand der beiden Raeder in mm */
 
-/* Einstellunge für die Verhaltensregeln */
+/* Einstellunge fuer die Verhaltensregeln */
 #define BORDER_DANGEROUS	0x340	/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */
 
 #define COL_CLOSEST		100		/*!< Abstand in mm, den wir als zu nah betrachten */
@@ -58,5 +60,17 @@
 #define GOTO_NORMAL	10			/*!< Wenn Encoder-Distanz < GOTO_NORMAL dann normale Fahrt */
 #define GOTO_FAST		40			/*!< Wenn Encoder-Distanz < GOTO_FAST dann schnelle Fahrt, sonst maximale Fahrt */
 
+#define EXPLORATION_STATE_GOTO_WALL 			1	/*!< Zustand: Bot sucht eine Wand o.ae. Hinderniss */
+#define EXPLORATION_STATE_TURN_PARALLEL_LEFT 	2	/*!< Zustand: Bot dreht sich nach links, bis er parallel zur Wand blickt. */
+#define EXPLORATION_STATE_TURN_PARALLEL_RIGHT 	3	/*!< Zustand: Bot dreht sich nach rechts, bis er parallel zur Wand blickt. */
+#define EXPLORATION_STATE_DRIVE_PARALLEL_LEFT	4	/*!< Zustand: Bot faehrt parallel zur Wand links von sich. */
+#define EXPLORATION_STATE_DRIVE_PARALLEL_RIGHT	5	/*!< Zustand: Bot faehrt parallel zur Wand rechts von sich. */
+#define EXPLORATION_STATE_TURN_ORTHOGONAL_LEFT	6	/*!< Zustand: Bot dreht sich nach linke, bis er senkrecht zur Wand steht. */
+#define EXPLORATION_STATE_TURN_ORTHOGONAL_RIGHT	7	/*!< Zustand: Bot dreht sich nach linke, bis er senkrecht zur Wand steht. */
+#define EXPLORATION_STATE_DRIVE_ARC				8	/*!< Zustand: Bot faehrt einen Bogen. Der Winkel des Bogens sollte in einer 													 
+													 *!< weiteren static Variablen (z.B. curve) gespeichert sein. */
+
+#define BOT_BEHAVIOUR_RUNNING	1
+#define BOT_BEHAVIOUR_DONE		0
 
 #endif /*BOTLOCAL_H_*/
