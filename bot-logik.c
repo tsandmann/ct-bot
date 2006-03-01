@@ -50,7 +50,6 @@
  * Alle Variablen mit Sensor-Werten findet man in sensor.h
  */
 
-
 /*! Verwaltungsstruktur f√ºr die Verhaltensroutinen */
 typedef struct _Behaviour_t {
    void (*work) (struct _Behaviour_t *data); 	/*!< Zeiger auf die Funktion, die das Verhalten bearbeitet */
@@ -349,17 +348,18 @@ int check_for_light(void){
 /*
  * Das Verhalten verhindert, dass dem Bot boese Dinge wie Kollisionen oder Abstuerze widerfahren.
  * @return Bestand Handlungsbedarf? True, wenn das Verhalten etwas ausweichen musste, sonst False.
+ * TODO: Parameter einfuegen, der dem Verhalten vorschlaegt, wie zu reagieren ist.
  * */
 int bot_avoid_harm(void){
 	if(sensDistL < COL_CLOSEST || sensDistR < COL_CLOSEST || sensBorderL > BORDER_DANGEROUS || sensBorderR > BORDER_DANGEROUS){
-		speedWishLeft = BOT_SPEED_STOP;
-		speedWishRight = BOT_SPEED_STOP;
+		speedWishLeft = -BOT_SPEED_NORMAL;
+		speedWishRight = -BOT_SPEED_NORMAL;
 		return True;
 	} else return False;
 }
 
 /*
- * Das Verhalten laesst den Bot eine Richtung fahren. Dabei stellt es sicher, dass der Bot nicht gegen ein Hinderniss prallt oder abstuerzt.
+ * Das Verhalten laesst den Bot in eine Richtung fahren. Dabei stellt es sicher, dass der Bot nicht gegen ein Hinderniss prallt oder abstuerzt.
  * @param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
  * @param speed Gibt an, wie schnell der Bot fahren soll. */
 void bot_drive(int curve, int speed){
@@ -376,9 +376,222 @@ void bot_drive(int curve, int speed){
 		speedWishRight = speed;	
 	}
 }
+
 /*
- * Das Verhalten laesst den Roboter den Raum durchsuchen. */
+ * @brief Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren.
+ * @param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
+ * @param speed Gibt an, wie schnell der Bot fahren soll.
+ * @param cm Gibt an, wie weit der Bot fahren soll. In cm :-)
+ * */
+int bot_drive_distance(int curve, int speed, int cm){
+	static int to_drive = 0;
+	static int running = False;
+	
+	// Initialisierung
+	if(running == False && cm > 0){
+		// Umrechnung von cm in Encoder-Markierungen.
+		to_drive = cm * 10 * ENCODER_MARKS / WHEEL_PERIMETER;
+		sensEncL = 0;
+		sensEncR = 0;
+		running = True;
+	}
+	/* Abzug der gefahrenen Markierungen. Es wird die jeweils groessere Encoder abgezogen.
+	 * Alternativ kann auch geprueft werden, in welche Richtung die Fahrt geht und welches Rad dementsprechend
+	 * die laengere Strecke faehrt.
+	 * TODO: Eine Funktion schreiben, die die gefahrene Strecke auch vom Maussensor abliest. 
+	 * */
+	if(speed > 0) to_drive -= (sensEncL > sensEncR) ? sensEncL : sensEncR;
+	else to_drive -= (sensEncL < sensEncR) ? abs(sensEncL) : abs(sensEncR);
+	sensEncL = 0;
+	sensEncR = 0;
+	
+	if(to_drive <= 0) {
+		running = False;
+		return BOT_BEHAVIOUR_DONE;
+	}	
+	/* Abschaetzen, wie schnell der Bot fahren darf, damit er nicht weit ueber das Ziel hinaus schiesst.
+	 * Bei einer maximalen Geschwindigkeit von 151 U/min dreht sich das Rad in 10ms um 0.025 Umdrehungen.
+	 * Das bedeutet, dass der Bot bis kurz vor sein Ziel mit voller Geschwindigkeit fahren kann.
+	 */
+	 
+	 if((speed > BOT_SPEED_SLOW || speed < -BOT_SPEED_SLOW) && to_drive < (0.1 * ENCODER_MARKS)) bot_drive(curve, speed / 2);
+	 else bot_drive(curve, speed);
+	 
+	 return BOT_BEHAVIOUR_RUNNING;
+}
+
+/* @brief Dreht den Bot im mathematisch positiven Sinn. 
+ * @param degrees Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
+ * @return BEHAVIOUR_RUNNING, wenn der Verhalten weiterlaufen soll, sonst BEHAVIOUR_DONE
+ * */
+int bot_turn(int degrees){
+	static int to_turn = 0;
+	static int running = False;
+	
+	// Initialisierung
+	if(running == False && degrees != 0){
+		/* Umrechnung von Grad in Encoder-Markierungen.
+		 * Hinweis: Eigentlich muessten der Umgang von Bot und Rad verwendet werden. Die Rechnung wird
+		 * allerdings viel einfacher, wenn man Pi auskuerzt. 
+		 */
+		to_turn = abs((WHEEL_TO_WHEEL_DIAMETER * degrees * ENCODER_MARKS) / (360 * WHEEL_DIAMETER));
+		sensEncL = 0;
+		sensEncR = 0;
+		running = True;
+	}
+	/* Abzug der gefahrenen Markierungen. Dreht sich der Bot mathematisch positiv, dreht das linke Rad rueckwaerts und das rechte vorwaerts.
+	 * Da to_turn absolute Werte enthaelt, muss immer abgezogen werden.
+	 * */
+	if(degrees > 0) to_turn -= sensEncR;
+	else to_turn -= sensEncL;
+	sensEncL = 0;
+	sensEncR = 0;
+	
+	if(to_turn <= 0){
+		running = False;
+		return BOT_BEHAVIOUR_DONE;
+	}
+	
+	/* Abschaetzen, wie schnell der Bot drehen darf, damit er nicht weit ueber das Ziel hinaus schiesst.
+	 * Bei einer maximalen Geschwindigkeit von 151 U/min dreht sich das Rad in 10ms um 0.025 Umdrehungen.
+	 * Das bedeutet, dass der Bot bis kurz vor sein Ziel mit voller Geschwindigkeit drehen kann.*/
+	
+	if(to_turn < (0.1 * ENCODER_MARKS)) {
+		speedWishLeft = (degrees > 0) ? -BOT_SPEED_NORMAL : BOT_SPEED_NORMAL;
+		speedWishRight = (degrees > 0) ? BOT_SPEED_NORMAL : -BOT_SPEED_NORMAL;
+	} else {
+		speedWishLeft = (degrees > 0) ? -BOT_SPEED_FAST : BOT_SPEED_FAST;
+		speedWishRight = (degrees > 0) ? BOT_SPEED_FAST : -BOT_SPEED_FAST;
+	}
+	return BOT_BEHAVIOUR_RUNNING;
+}
+
+
+/*
+ * @brief Das Verhalten laesst den Roboter den Raum durchsuchen. 
+ * Das Verhalten hat mehrere unterschiedlich Zustaende:
+ * 1. Zu einer Wand oder einem anderen Hinderniss fahren.
+ * 2. Zu einer Seite drehen, bis der Bot parallel zur Wand ist. 
+ * Es macht vielleicht Sinn, den Maussensor auszulesen, um eine Drehung um 
+ * einen bestimmten Winkel zu realisieren. Allerdings muesste dafuer auch der
+ * Winkel des Bots zur Wand bekannt sein.
+ * 3. Eine feste Strecke parallel zur Wand vorwaerts fahren.
+ * Da bot_glance abwechselnd zu beiden Seiten schaut, ist es fuer die Aufgabe, 
+ * einer Wand auf einer Seite des Bots zu folgen, nur bedingt gewachsen und muss
+ * evtl. erweitert werden.
+ * 4. Senkrecht zur Wand drehen.
+ * Siehe 2.
+ * 5. Einen Bogen fahren, bis der Bot wieder auf ein Hinderniss stˆﬂt. 
+ * Dann das Ganze von vorne beginnen nur in die andere Richtung und mit einem
+ * weiteren Bogen. So erforscht der Bot einigermaﬂen systematisch den Raum.
+ * 
+ * Da das Verhalten jeweils nach 10ms neu aufgerufen wird, muss der Bot sich
+ * 'merken', in welchem Zustand er sich gerade befindet.
+ * */
 void bot_explore(void){
+	static int8 curve = 0,state = EXPLORATION_STATE_GOTO_WALL, running_curve = False;
+	
+	switch(state){
+	// Volle Fahrt voraus, bis ein Hinderniss erreicht ist.
+	case EXPLORATION_STATE_GOTO_WALL:
+		// Der Bot steht jetzt vor einem Hinderniss und soll sich nach rechts drehen
+		if(bot_avoid_harm()) {
+			state = EXPLORATION_STATE_TURN_PARALLEL_RIGHT;
+		}
+		// Es ist kein Hinderniss direkt vor dem Bot.
+		else {
+			if(sensDistL < COL_NEAR || sensDistR < COL_NEAR){
+				bot_drive(0,BOT_SPEED_FAST);
+			} else {
+				bot_drive(0,BOT_SPEED_MAX);
+			}
+		}
+		break;
+	// Nach links drehen, bis der Bot parallel zum Hinderniss auf der rechten Seite steht.
+	/* Aufgabe: Entwickle ein Verhalten, dass auch bei Loechern funktioniert. 
+	 * Tipp dazu: Drehe den Roboter auf das Loch zu, bis beide Bodensensoren das Loch 'sehen'. Anschlieﬂend drehe den Bot um 90∞.
+	 * Es ist noetig, neue Zustaende zu definieren, die diese Zwischenschritte beschreiben. 
+	 * TODO: Drehung mit dem Maussensor ueberwachen. */
+	case EXPLORATION_STATE_TURN_PARALLEL_LEFT:
+		if(sensDistR < COL_FAR){
+			// Volle Drehung nach Links mit ca. 3∞/10ms
+			bot_drive(-127,BOT_SPEED_FAST);
+		} else {
+			//Nachdem das Hinderniss nicht mehr in Sicht ist, dreht der Bot noch ca. 3∞ weiter.
+			// Im Zweifelsfall dreht das den Bot zu weit, aber das ist besser, als ihn zu kurz zu drehen.
+			bot_drive(-127,BOT_SPEED_FAST);
+			state = EXPLORATION_STATE_DRIVE_PARALLEL_RIGHT;
+		}
+		break;
+	// Nach rechts drehen, bis der Bot parallel zum Hinderniss auf der linken Seite steht.
+	/* Aufgabe: siehe EXPLORATION_STATE_TURN_PARALLEL_LEFT */
+	case EXPLORATION_STATE_TURN_PARALLEL_RIGHT:
+		if(sensDistL < COL_FAR){
+			// Volle Drehung nach Rechts mit ca. 3∞/10ms
+			bot_drive(127,BOT_SPEED_FAST);
+		} else {
+			/* Nachdem das Hinderniss nicht mehr in Sicht ist, dreht der Bot noch ca. 3∞ weiter.
+			 * Im Zweifelsfall dreht das den Bot zu weit, aber das ist besser, als ihn zu kurz zu drehen. */
+			bot_drive(127,BOT_SPEED_FAST);
+			state = EXPLORATION_STATE_DRIVE_PARALLEL_LEFT;
+		}
+		break;
+	case EXPLORATION_STATE_DRIVE_PARALLEL_LEFT:
+		if(bot_drive_distance(0,BOT_SPEED_FAST,15) == BOT_BEHAVIOUR_DONE ){
+			 state = EXPLORATION_STATE_TURN_ORTHOGONAL_RIGHT;
+		}
+		break;
+	case EXPLORATION_STATE_DRIVE_PARALLEL_RIGHT:
+		if(bot_drive_distance(0,BOT_SPEED_FAST,15) == BOT_BEHAVIOUR_DONE){
+			 state = EXPLORATION_STATE_TURN_ORTHOGONAL_LEFT;
+		}
+		break;
+	case EXPLORATION_STATE_TURN_ORTHOGONAL_LEFT:
+		// drehe den Bot um 90∞ nach links
+		/* Da der Bot sich immer ein bisschen zu weit von der Wand weg dreht, soll er sich
+		 * hier nur um 85∞ drehen. Nicht schoen, aber klappt.*/
+		if(bot_turn(85) == BOT_BEHAVIOUR_DONE) {
+			state = EXPLORATION_STATE_DRIVE_ARC;
+		}
+		break;
+	case EXPLORATION_STATE_TURN_ORTHOGONAL_RIGHT:
+		// drehe den Bot um 90∞ nach links
+		/* Da der Bot sich immer ein bisschen zu weit von der Wand weg dreht, soll er sich
+		 * hier nur um 85∞ drehen. Nicht schoen, aber klappt.*/
+		if(bot_turn(-85) == BOT_BEHAVIOUR_DONE) {
+			state = EXPLORATION_STATE_DRIVE_ARC;
+		}
+		break;
+	case EXPLORATION_STATE_DRIVE_ARC:
+		/* Fahre einen Bogen
+		 * Der Bot soll im Wechsel Links und Rechtsboegen fahren. Daher muss das Vorzeichen von curve wechseln.
+		 * Ausserdem soll der Bogen zunehmend weiter werden, so dass der absolute Wert von curve abnehmen muss.
+		 * Ist der Wert 0 wird er auf den engsten Bogen initialisiert. Da der Bot am Anfang nach Rechts abbiegt,
+		 * muss der Wert positiv sein. 
+		 * Aufgabe: Manchmal kann es passieren, dass der Bot bei einer kleinen Kurve zu weit weg von der Wand
+		 * startet und dann nurnoch im Kreis faehrt. Unterbinde dieses Verhalten.
+		 * */
+		if(curve == 0){
+			curve = 25;
+			running_curve = True;
+		} else if (running_curve == False){
+			curve *= -0.9;
+			running_curve = True;
+		}
+		/* Sobald der Bot auf ein Hinderniss stoesst, wird der naechste Zyklus eingeleitet.
+		 * Auf einen Rechtsbogen (curve > 0) folgt eine Linksdrehung und auf einen Linksbogen eine Rechtsdrehung.
+		 * Wenn der Wert von curve (durch Rundungsfehler bei int) auf 0 faellt, beginnt das Suchverhalten erneut.*/
+		if(bot_avoid_harm()) {
+			state = (curve > 0) ? EXPLORATION_STATE_TURN_PARALLEL_LEFT : EXPLORATION_STATE_TURN_PARALLEL_RIGHT;
+			running_curve = False;
+		} else {
+			bot_drive(curve, BOT_SPEED_MAX);
+		}
+		break;
+	default:
+		state = EXPLORATION_STATE_GOTO_WALL;
+		curve = 0;
+	}
 	
 }
 
@@ -388,17 +601,14 @@ void bot_explore(void){
 void bot_goto_light(void){
 	int speed;
 	int curve = (sensLDRL - sensLDRR)/2;
-	printf("\n***\nsensLDRL: %4u\tsensLDRR: %4u\n***\n", sensLDRL,sensLDRR);
-	if(abs(sensLDRL - sensLDRR) < 10){
+	if(abs(sensLDRL - sensLDRR) < 20){
 		speed = BOT_SPEED_MAX;
-	}else if(abs(sensLDRL - sensLDRR) < 100) {
+	}else if(abs(sensLDRL - sensLDRR) < 150) {
 		speed = BOT_SPEED_FAST;
-	}else if(abs(sensLDRL - sensLDRR) < 200) {
-		speed = BOT_SPEED_NORMAL;
 	}else {
-		speed = BOT_SPEED_SLOW;
+		speed = BOT_SPEED_NORMAL;
 	}
-		
+			
 	if(curve < -127) curve = -127;
 	if(curve > 127) curve = 127;
 	
@@ -533,8 +743,8 @@ void bot_behave_init(void){
 	/* Einfache Verhaltensroutine, die alles andere uebersteuert */
 	insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_avoid_border));
 
-	insert_behaviour_to_list(&behaviour, new_behaviour(100, bot_avoid_col));
-	insert_behaviour_to_list(&behaviour, new_behaviour(60, bot_glance));
+	//insert_behaviour_to_list(&behaviour, new_behaviour(100, bot_avoid_col));
+	//insert_behaviour_to_list(&behaviour, new_behaviour(60, bot_glance));
 	insert_behaviour_to_list(&behaviour, new_behaviour(55, bot_complex_behaviour));
 
 	bot_goto_rule = new_behaviour(50, bot_goto_system);
