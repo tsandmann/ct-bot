@@ -60,17 +60,51 @@
 #define GOTO_NORMAL	10			/*!< Wenn Encoder-Distanz < GOTO_NORMAL dann normale Fahrt */
 #define GOTO_FAST		40			/*!< Wenn Encoder-Distanz < GOTO_FAST dann schnelle Fahrt, sonst maximale Fahrt */
 
+
+#define BOT_BEHAVIOUR_RUNNING	1		/*!< Rueckgabewert eines Verhaltens, das noch weiter laufen moechte. */
+#define BOT_BEHAVIOUR_DONE		0		/*!< Rueckgabewert eines Verhaltens, das fertig ist. */
+
+/* Zustaende des bot_explore-Verhaltens */
+
 #define EXPLORATION_STATE_GOTO_WALL 			1	/*!< Zustand: Bot sucht eine Wand o.ae. Hinderniss */
 #define EXPLORATION_STATE_TURN_PARALLEL_LEFT 	2	/*!< Zustand: Bot dreht sich nach links, bis er parallel zur Wand blickt. */
 #define EXPLORATION_STATE_TURN_PARALLEL_RIGHT 	3	/*!< Zustand: Bot dreht sich nach rechts, bis er parallel zur Wand blickt. */
 #define EXPLORATION_STATE_DRIVE_PARALLEL_LEFT	4	/*!< Zustand: Bot faehrt parallel zur Wand links von sich. */
 #define EXPLORATION_STATE_DRIVE_PARALLEL_RIGHT	5	/*!< Zustand: Bot faehrt parallel zur Wand rechts von sich. */
-#define EXPLORATION_STATE_TURN_ORTHOGONAL_LEFT	6	/*!< Zustand: Bot dreht sich nach linke, bis er senkrecht zur Wand steht. */
-#define EXPLORATION_STATE_TURN_ORTHOGONAL_RIGHT	7	/*!< Zustand: Bot dreht sich nach linke, bis er senkrecht zur Wand steht. */
+#define EXPLORATION_STATE_TURN_ORTHOGONAL_LEFT	6	/*!< Zustand: Bot dreht sich nach links, bis er senkrecht zur Wand steht. */
+#define EXPLORATION_STATE_TURN_ORTHOGONAL_RIGHT	7	/*!< Zustand: Bot dreht sich nach rechts, bis er senkrecht zur Wand steht. */
 #define EXPLORATION_STATE_DRIVE_ARC				8	/*!< Zustand: Bot faehrt einen Bogen. Der Winkel des Bogens sollte in einer 													 
 													 *!< weiteren static Variablen (z.B. curve) gespeichert sein. */
 
-#define BOT_BEHAVIOUR_RUNNING	1
-#define BOT_BEHAVIOUR_DONE		0
+/* Zustaende des bot_complex_behaviour-Verhaltens */ 
+
+#define CB_STATE_EXPLORATION		0	/*!< Zustand: Bot erforscht die Umgebung. */
+#define CB_STATE_DOING_SLALOM 		1	/*!< Zustand: Bot ist dabei Slalom zu fahren. */
+
+/* Zustaende des bot_do_slalom-Verhaltens */ 
+
+#define SLALOM_STATE_START			0	/*!< Zustand: Bot startet eine Slalomlauf und positioniert sich vor der Saeule. */
+#define SLALOM_STATE_TURN_1			1	/*!< Zustand: Bot dreht sich um 90°. */
+#define SLALOM_STATE_DRIVE_ARC		2	/*!< Zustand: Bot faehrt den Bogen um die Saeule. */
+#define SLALOM_STATE_TURN_2			3	/*!< Zustand: Bot dreht sich fuer den Sweep um 45°. */
+#define SLALOM_STATE_SWEEP_RUNNING	4	/*!< Zustand: Bot macht den Sweep. */
+#define SLALOM_STATE_SWEEP_DONE		5	/*!< Zustand: Bot ist fertig mit dem Sweep. */
+#define SLALOM_STATE_CHECK_PILLAR	6	/*!< Zustand: Bot ueberprueft, ob er den Slalom fortsetzen kann. */
+
+#define SLALOM_ORIENTATION_LEFT		0
+#define SLALOM_ORIENTATION_RIGHT	1
+
+#define SWEEP_STATE_TURN			0	/*!< Zustand: Drehung im Sweep. */
+#define SWEEP_STATE_CHECK			1	/*!< Zustamd: Ueberpruefe Objekt vor dem Bot. */
+
+
+
+
+
+
+
+
+
+
 
 #endif /*BOTLOCAL_H_*/

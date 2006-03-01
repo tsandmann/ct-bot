@@ -42,7 +42,7 @@
 
 #include "rc5.h"
 #include <stdlib.h>
-
+#include <math.h>
 /*
  * Alle Konstanten, die die Verhalten befinden sind in bot-local.h ausgelagert. 
  * Dort kann man sie per .cvsignore vor updates schÃ¼tzen 
@@ -340,9 +340,26 @@ void bot_avoid_border(Behaviour_t *data){
 		speedWishRight=-BOT_SPEED_NORMAL;
 }
 
-int check_for_light(void){
+int8 check_for_light(void){
 	if(sensLDRL >= 1023 && sensLDRR >= 1023) return False;
 	else return True;	
+}
+
+/* @brief Die Funktion gibt aus, ob sich innerhalb einer gewissen Entfernung ein Objekt-Hinderniss befindet.
+ * @param distance Entfernung in mm, bis zu welcher ein Objekt gesichtet wird. 
+ * @return Gibt False (0) zurueck, wenn kein Objekt innerhalb von distance gesichtet wird. Ansonsten die Differenz 
+ * zwischen dem linken und rechten Sensor. Negative Werte besagen, dass das Objekt naeher am linken, positive, dass 
+ * es naeher am rechten Sensor ist. Sollten beide Sensoren den gleichen Wert haben, gibt die Funktion 1 zurueck, um
+ * von False unterscheiden zu koennen. */
+int16 is_obstacle_ahead(int16 distance){
+	if(sensDistL > distance && sensDistR > distance) return False;
+	if(sensDistL - sensDistR == 0) return 1;
+	else return (sensDistL - sensDistR);
+}
+
+int8 is_good_pillar_ahead(void){
+	if(is_obstacle_ahead(COL_NEAR) != False && sensLDRL < 600 && sensLDRR < 600) return True;
+	else return False;	
 }
 
 /*
@@ -351,7 +368,7 @@ int check_for_light(void){
  * TODO: Parameter einfuegen, der dem Verhalten vorschlaegt, wie zu reagieren ist.
  * */
 int bot_avoid_harm(void){
-	if(sensDistL < COL_CLOSEST || sensDistR < COL_CLOSEST || sensBorderL > BORDER_DANGEROUS || sensBorderR > BORDER_DANGEROUS){
+	if(is_obstacle_ahead(COL_CLOSEST) != False || sensBorderL > BORDER_DANGEROUS || sensBorderR > BORDER_DANGEROUS){
 		speedWishLeft = -BOT_SPEED_NORMAL;
 		speedWishRight = -BOT_SPEED_NORMAL;
 		return True;
@@ -596,11 +613,13 @@ void bot_explore(void){
 }
 
 /*
- * Das Verhalten dreht den Bot so, dass er direkt in die Lichtquelle 'sieht'.
- * Solange kein Hinderniss in Sicht ist, faehrt er auf das Licht zu. */
+ * @brief Das Verhalten dreht den Bot so, dass er auf eine Lichtquelle zufaehrt. */
 void bot_goto_light(void){
-	int speed;
-	int curve = (sensLDRL - sensLDRR)/2;
+	int16 speed, curve = (sensLDRL - sensLDRR)/2;
+
+	if(curve < -127) curve = -127;
+	if(curve > 127) curve = 127;
+
 	if(abs(sensLDRL - sensLDRR) < 20){
 		speed = BOT_SPEED_MAX;
 	}else if(abs(sensLDRL - sensLDRR) < 150) {
@@ -608,19 +627,135 @@ void bot_goto_light(void){
 	}else {
 		speed = BOT_SPEED_NORMAL;
 	}
-			
-	if(curve < -127) curve = -127;
-	if(curve > 127) curve = 127;
 	
 	bot_drive(curve, speed);
+}
+
+/* @brief Das Verhalten laesst den Bot zwischen einer Reihe beleuchteter Saeulen Slalom fahren. 
+ * Das Verhalten ist wie bot_explore() in eine Anzahl von Teilschritten unterteilt.
+ * 1. Vor die aktuelle Saeule stellen, so dass sie zentral vor dem Bot und ungefaehr 
+ * COL_CLOSEST (100mm) entfernt ist.
+ * 2. 90° nach rechts drehen.
+ * 3. In einem relativ engen Bogen 20 cm weit fahren.
+ * 4. Auf der rechten Seite des Bot nach einem Objekt suchen, dass
+ * 	a) im rechten Sektor des Bot liegt, also zwischen -45° und -135° zur Fahrtrichtung liegt,
+ * 	b) beleuchtet und 
+ * 	c) nicht zu weit entfernt ist.
+ * Wenn es dieses Objekt gibt, wird es zur aktuellen Saeule und der Bot faehrt jetzt Slalom links.
+ * 5. Sonst zurueck drehen, 90° drehen und Slalom rechts fahren.
+ * In diesem Schritt kann der Bot das Verhalten auch abbrechen, falls er gar kein Objekt mehr findet.
+ * */
+void bot_do_slalom(int8 *cb_state){
+	static int8 state = SLALOM_STATE_CHECK_PILLAR;
+	static int8 orientation = SLALOM_ORIENTATION_RIGHT;
+	static int8 sweep_state;
+	static int8 sweep_steps = 0;
+	int16 turn;
+	int8 curve;
+	
+	switch(state){
+	case SLALOM_STATE_CHECK_PILLAR:
+		// Der Bot sollte jetzt Licht sehen koennen...
+		if(check_for_light()){
+			// Wenn der Bot direkt vor der Saeule steht, kann er anfangen, sonst zum Licht fahren
+			if(bot_avoid_harm()){
+				state = SLALOM_STATE_START;
+			} else bot_goto_light();
+		} // ... sonst muss er den Slalom-Kurs neu suchen. 
+		else *cb_state = CB_STATE_EXPLORATION;
+		break;
+	case SLALOM_STATE_START:
+		// Hier ist Platz fuer weitere Vorbereitungen, falls noetig.
+		state = SLALOM_STATE_TURN_1;
+		// break;
+	case SLALOM_STATE_TURN_1:
+		turn = (orientation == SLALOM_ORIENTATION_LEFT) ? 90 : -90;
+		if(bot_turn(turn) == BOT_BEHAVIOUR_DONE) {
+			state = SLALOM_STATE_DRIVE_ARC;
+		}
+		break;
+	case SLALOM_STATE_DRIVE_ARC:
+		// Nicht wundern: Bei einem Links-Slalom faehrt der Bot eine Rechtskurve.
+		curve = (orientation == SLALOM_ORIENTATION_LEFT) ? 25 : -25;
+		if(bot_drive_distance(curve,BOT_SPEED_FAST,20) == BOT_BEHAVIOUR_DONE){
+			state = SLALOM_STATE_TURN_2;
+		}
+		break;
+	case SLALOM_STATE_TURN_2:
+		turn = (orientation == SLALOM_ORIENTATION_LEFT) ? 45 : -45;
+		if(bot_turn(turn) == BOT_BEHAVIOUR_DONE) {
+			state = SLALOM_STATE_SWEEP_RUNNING;
+		}
+		break;
+	case SLALOM_STATE_SWEEP_RUNNING:
+		if(sweep_steps == 0){
+			sweep_state = SWEEP_STATE_CHECK;	
+		}
+		// Insgesamt 3 Schritte drehen
+		if(sweep_steps < 6) {
+			if(sweep_state == SWEEP_STATE_CHECK){
+			// Phase 1: Pruefen, ob vor dem Bot eine gute Saeule ist
+				if(is_good_pillar_ahead() == True){
+				// Wenn die Saeule gut ist, drauf zu und Slalom anders rum fahren.
+					state = SLALOM_STATE_CHECK_PILLAR;
+					orientation = (orientation == SLALOM_ORIENTATION_LEFT) ? SLALOM_ORIENTATION_RIGHT : SLALOM_ORIENTATION_LEFT;
+					sweep_steps = 0;
+				} else {
+					// Sonst drehen.
+					sweep_state = SWEEP_STATE_TURN;	
+				}
+			}
+			if(sweep_state == SWEEP_STATE_TURN) {
+			// Phase 2: Bot um 10° drehen
+				turn = (orientation == SLALOM_ORIENTATION_LEFT) ? 15 : -15;
+				if(bot_turn(turn) == BOT_BEHAVIOUR_DONE){
+					sweep_state = SWEEP_STATE_CHECK;
+					sweep_steps++;
+				}
+			}
+		} else {
+			turn = (orientation == SLALOM_ORIENTATION_LEFT) ? -90 : 90;
+			if(bot_turn(turn) == BOT_BEHAVIOUR_DONE) {
+				state = SLALOM_STATE_SWEEP_DONE;
+				sweep_steps = 0;
+			}
+		}
+		break;
+	case SLALOM_STATE_SWEEP_DONE:
+		turn = (orientation == SLALOM_ORIENTATION_LEFT) ? -135 : 135;
+		if(bot_turn(turn) == BOT_BEHAVIOUR_DONE) {
+			state = SLALOM_STATE_CHECK_PILLAR;
+		}
+		break;
+	default:
+		state = SLALOM_STATE_CHECK_PILLAR;
+	}
 }
 
 /*
  * Das Verhalten setzt sich aus 3 Teilverhalten zusammen: 
  * Nach Licht suchen, auf das Licht zufahren, im Licht Slalom fahren. */
 void bot_complex_behaviour(Behaviour_t *data){
-	if(check_for_light()) bot_goto_light();
-	else bot_explore();
+	static int8 state = CB_STATE_EXPLORATION;
+	switch(state){
+	case CB_STATE_EXPLORATION:
+		/* Sobald der Bot Licht sieht, faehrt er darauf zu. 
+		 * Sonst sucht er die Umgebung ab.*/
+		if(check_for_light()){
+			/* Sobald der Bot auf ein Objekt-Hinderniss stoesst, versucht er, Slalom zu fahren.
+			 * Aufgabe: Wenn der Bot vor einem Loch steht, hinter welchem sich die Lichtquelle 
+			 * befindet, wird er daran haengen bleiben. Schreibe ein Verhalten, dass das verhindert. */
+			if(bot_avoid_harm() && is_obstacle_ahead(COL_NEAR)){
+				state = CB_STATE_DOING_SLALOM;
+			} else bot_goto_light();
+		} else bot_explore();
+		break;
+	case CB_STATE_DOING_SLALOM:
+		bot_do_slalom(&state);
+		break;
+	default:
+		state = CB_STATE_EXPLORATION;	
+	}
 }
 
 /*! 
