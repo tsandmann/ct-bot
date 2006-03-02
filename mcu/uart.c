@@ -110,7 +110,7 @@ void uart_send_byte(char data){ // Achtung ist noch blockierend!!!!
 }
 
 /*!
- * Sende Kommando per TCP/IP im Little Endian
+ * Sende Kommando per UART im Little Endian
  * @param cmd Zeiger auf das Kommando
  * @return Anzahl der gesendete Bytes
  */
@@ -124,8 +124,9 @@ int uart_send_cmd(command_t *cmd){
 }
 
 /*!
- * Sende Kommando per TCP/IP im Little Endian
- * @param cmd Zeiger auf das Kommando
+ * Sende Daten per UART im Little Endian
+ * @param data Datenpuffer
+ * @param length Groesse des Datenpuffers in bytes
  * @return Anzahl der gesendete Bytes
  */
 int uart_write(char * data, int length){
