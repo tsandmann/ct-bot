@@ -110,7 +110,7 @@ void display_cmd(char cmd){		//ein Kommando cmd an das Display senden
  * @param data Das Zeichen
  */
 void display_data(char data){ //ein Zeichen aus data in den Displayspeicher schreiben
-        uint8 i;
+        int i;
 		shift_data_out(data,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY|DISPLAY_RS);
 		
 		// Enable muss für mind. 450 ns High bleiben, bevor es fallen darf!
