@@ -56,9 +56,9 @@ volatile char display_update=0;	/*!< Muss das Display aktualisiert werden? */
 char display_buf[DISPLAY_BUFFER];		/*!< Pufferstring fuer Displayausgaben */
 
 #ifdef DISPLAY_REMOTE_AVAILABLE
-    #define CLEAR              bot_2_sim_tell(CMD_AKT_LCD, SUB_LCD_CLEAR, NULL, NULL)
-    #define POSITION(Ze, Sp)   {Ze--; Sp--; bot_2_sim_tell(CMD_AKT_LCD, SUB_LCD_CURSOR, &(Sp), &(Ze));}
-    #define printf(data)       {bot_2_sim_tell_data(CMD_AKT_LCD, SUB_LCD_DATA, NULL, NULL, (data));}
+    #define CLEAR              command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, NULL, NULL)
+    #define POSITION(Ze, Sp)   {Ze--; Sp--; command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, (int16*)&(Sp),(int16*) &(Ze));}
+    #define printf(data)       {command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, NULL, NULL, (data));}
 #else
  #ifdef WIN32
     static void clrscr(void);
