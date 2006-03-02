@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-03-02	Benjamin Benz (bbe@heise.de) Display.c aufgeräumt, Makefile angepasst
+
 2006-03-01	Benjamin Benz (bbe@heise.de) Kommunikation Bot-PC eingeführt
 
 2006-03-01	Benjamin Benz (bbe@heise.de) Routinen aus bot-2-sim.c verschoben in command.c

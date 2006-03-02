@@ -89,44 +89,6 @@ char display_buf[DISPLAY_BUFFER];		/*!< Pufferstring für Displayausgaben */
  * das Interface wieder deaktiviert.
  */
 
-
-/*!
- * Warte bis Display fertig
- */
-/*void wait_busy(void){ //warten bis Busy-Flag vom Display aus
-	int i;
-	// normalerweise sollten 37µs ausreichen!
-	for (i=0; i<10; i++)
-			asm("nop"); 
-*/
-/*
-	char i;
-	char data=DISPLAY_READY_PIN;
-
-	DISPLAY_PORT |= DISPLAY_RW ; // Wir wollen das Busy-Flag lesen
-								 // Gleichzeitig hängen wir das Schieberegister ab
-
-	for (i=0; i<10; i++){
-		asm("nop"); 
-	}
-
-	while (data == DISPLAY_READY_PIN){
-		for (i=0; i<10; i++){
-			asm("nop"); 
-		}
-		DISPLAY_PORT |= DISPLAY_EN	;  // Enable setzen!
-		asm("nop"); asm("nop"); asm("nop"); asm("nop"); asm("nop"); 
-		DISPLAY_PORT &= ~DISPLAY_EN	;  // Enable löschen!
-		for (i=0; i<10; i++){
-			asm("nop"); 
-		}
-		data= (DISPLAY_READY_PINC & DISPLAY_READY_PIN);	// Flag lesen
-	}	
-
-    DISPLAY_PORT=DPC;	// Alles zurück setzen 
-    */
-//}
-
 /*! 
  * Übertrage Kommando an das Display
  * @param cmd Kommando
@@ -140,7 +102,6 @@ void display_cmd(char cmd){		//ein Kommando cmd an das Display senden
 	        asm("nop");
 	}
 	DISPLAY_PORT=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
-//	wait_busy();
 }
 
 
@@ -149,7 +110,7 @@ void display_cmd(char cmd){		//ein Kommando cmd an das Display senden
  * @param data Das Zeichen
  */
 void display_data(char data){ //ein Zeichen aus data in den Displayspeicher schreiben
-        int i;
+        uint8 i;
 		shift_data_out(data,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY|DISPLAY_RS);
 		
 		// Enable muss für mind. 450 ns High bleiben, bevor es fallen darf!
@@ -158,7 +119,6 @@ void display_data(char data){ //ein Zeichen aus data in den Displayspeicher schr
                 asm("nop");
         }
       DISPLAY_PORT=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
-//        wait_busy();
 }
 
 /*!
@@ -191,8 +151,6 @@ void display_cursor (int row, int column) {
     default: break;
    }
 }
-
-//void display_test();
 
 /*! 
  * Init Display
