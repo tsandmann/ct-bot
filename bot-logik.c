@@ -51,6 +51,8 @@
  */
 
 #define PRIORITY_GOTO_SYSTEM	50	/*!< Prioritaet des goto-systems */
+#define PRIORITY_DUMMY			49	/*!< Prioritaet des Dummys */
+
 
 /*! Verwaltungsstruktur für die Verhaltensroutinen */
 typedef struct _Behaviour_t {
@@ -196,21 +198,27 @@ void bot_simple(Behaviour_t *data){
  * @param *data der Verhaltensdatensatz
  */
 void bot_drive_square(Behaviour_t *data){
-	static uint8 state = 0;
+	#define STATE_TURN 1
+	#define STATE_FORWARD 0
+	static uint8 state = STATE_FORWARD;
 	switch (state) {
-		case 0: // Vorwaerts
+		case STATE_FORWARD: // Vorwaerts
 		   bot_goto(100,100,data->priority);
-		   state++;
+		   state = STATE_TURN;
 		   break;
-		case 1: // Drehen
+		case STATE_TURN: // Drehen
 		   bot_goto(22,-22,data->priority);
-		   state=0;
+		   state=STATE_FORWARD;
 		   break;		
 		default:		/* Sind wir fertig, dann Kontrolle zurueck an Aufrufer */
 			return_from_behaviour();
 			break;
 	}
 }
+
+
+/*! Uebergabevariable fuer den Dummy */
+static int16 dummy_light=0; 
 
 /*!
  * Beispiel fuer ein Hilfsverhalten, 
@@ -220,21 +228,37 @@ void bot_drive_square(Behaviour_t *data){
  * @see bot_drive()
  */
 void bot_dummy(Behaviour_t *data){
+	#define STATE_DUMMY_INIT 0
+	#define STATE_DUMMY_WORK 1
+	#define STATE_DUMMY_DONE 2
 	static uint8 state = 0;
 
 	switch	(state) {
-		case 0: 
+		case STATE_DUMMY_INIT: 
+			// Nichts zu tun
+			state=STATE_DUMMY_WORK;
+			break;
+		case STATE_DUMMY_WORK: 
 			speedWishLeft = BOT_SPEED_FAST;
 			speedWishRight = BOT_SPEED_FAST; 
-			if (sensLDRL< 500)	// Beispielbedingung
-				state++;		
+			if (sensLDRL< dummy_light)	// Beispielbedingung
+				state=STATE_DUMMY_DONE;		
 			break;
-		default:		/* Sind wir fertig, dann Kontrolle zurueck an Aufrufer */
+			
+		case STATE_DUMMY_DONE:		/* Sind wir fertig, dann Kontrolle zurueck an Aufrufer */
 			return_from_behaviour();
 	}
 }
 
-
+/*!
+ * Rufe das Dummy-Verhalten auf und uebergebe light
+ * @param light Uebergabeparameter
+ */
+void bot_call_dummy(int16 light, uint8 callerID){
+	// Zielwerte speichern
+	dummy_light=light; 
+	switch_to_behaviour(callerID,PRIORITY_DUMMY);	
+}
 
 
 
@@ -520,6 +544,9 @@ void bot_drive(int curve, int speed){
 		speedWishRight = speed;	
 	}
 }
+
+
+
 
 /*
  * @brief Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren.
