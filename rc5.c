@@ -185,7 +185,7 @@ static void rc5_bot_change_speed(RemCtrlFuncPar *par) {
  */	
 static void rc5_bot_goto(RemCtrlFuncPar *par) {
 	if (par) 	
-		bot_goto(par->value1, par->value2);
+		bot_goto(par->value1, par->value2,0);
 }
 
 /*!

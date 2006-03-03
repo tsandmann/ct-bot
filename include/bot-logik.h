@@ -34,7 +34,7 @@ extern volatile int16 target_speed_r;	/*!< Sollgeschwindigkeit rechter Motor */
  * @param left Schritte links
  * @param right Schritte rechts
  */
-extern void bot_goto(int16 left, int16 right);
+extern void bot_goto(int16 left, int16 right,uint8 callerID);
 
 /*!
  * Kuemmert sich intern um die Ausfuehrung der goto-Kommandos

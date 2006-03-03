@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-03-03	Benjamin Benz (bbe@heise.de) Zustandsorientierte Regeln in das Framework eingefuegt
+
 2006-03-02	Benjamin Benz (bbe@heise.de) Remote-Display repariert
 
 2006-03-02	Benjamin Benz (bbe@heise.de) Display.c aufgeräumt, Makefile angepasst

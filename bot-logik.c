@@ -50,11 +50,15 @@
  * Alle Variablen mit Sensor-Werten findet man in sensor.h
  */
 
+#define PRIORITY_GOTO_SYSTEM	50	/*!< Prioritaet des goto-systems */
+
 /*! Verwaltungsstruktur fÃ¼r die Verhaltensroutinen */
 typedef struct _Behaviour_t {
    void (*work) (struct _Behaviour_t *data); 	/*!< Zeiger auf die Funktion, die das Verhalten bearbeitet */
    
    uint8 priority;				/*!< PrioritÃ¤t */
+   uint8 callerPriority;		/*!< PrioritÃ¤t der Funktion, die diese aktiviert hat */
+   
    char active:1;				/*!< Ist das Verhalten aktiv */
 //   char ignore:1;				/*!< Sollen alle Zielwerte ignoriert werden */
    struct _Behaviour_t *next;					/*!< Naechster Eintrag in der Liste */
@@ -71,8 +75,6 @@ char col_zone_r=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der rechte Sensor
 volatile int16 mot_l_goto=0;		/*!< Speichert, wie weit der linke Motor drehen soll */
 volatile int16 mot_r_goto=0;		/*!< Speichert, wie weit der rechte Motor drehen soll */
 
-Behaviour_t *bot_goto_rule = NULL;	/*!< Zeiger auf die Goto-Regel. Damit kann bot_goto() die Regel aktivieren */
-
 int16 speedWishLeft;				/*!< Puffervariablen fÃ¼r die Verhaltensfunktionen absolut Geschwindigkeit links*/
 int16 speedWishRight;				/*!< Puffervariablen fÃ¼r die Verhaltensfunktionen absolut Geschwindigkeit rechts*/
 
@@ -84,6 +86,74 @@ volatile int16 target_speed_r=0;	/*!< Sollgeschwindigkeit rechter Motor - darum 
 
 /*! Liste mit allen Verhalten */
 Behaviour_t *behaviour = NULL;
+
+
+/* Makro, um eine Regel zu deaktivieren */
+#define deactivateMe() data->active=0;\
+			printf("Deactivated Behaviour %d\n",data->priority)
+
+/* Makro um die Funktion zu aktivieren, die eine Regel beauftragt hat */
+#define activateCaller() activateBehaviour(data->callerPriority)
+
+/*! Makro um zum aufrufenden Verhalten zurueck zukehren */ 
+#define return_from_behaviour() deactivateMe();	\
+								activateCaller()
+
+/*!
+ * Aktiviert eine Regel mit gegebener Prioritaet
+ * @param priority Die Prioritaet der zu aktivierenden Regel
+ */
+void activateBehaviour(uint8 priority){
+	Behaviour_t *job;						// Zeiger auf ein Verhalten
+
+	/* Einmal durch die Liste gehen, bis wir den gwuenschten Eintrag haben */
+	for (job = behaviour; job; job = job->next) {
+		if (job->priority == priority) {
+			job->active = 1;
+			printf("Activated Behaviour %d\n",priority);
+			break;
+		}
+	}
+}
+
+/*!
+ * Deaktiviert eine Regel mit gegebener Prioritaet
+ * @param priority Die Prioritaet der zu deaktivierenden Regel
+ */
+void deactivateBehaviour(uint8 priority){
+	Behaviour_t *job;						// Zeiger auf ein Verhalten
+		
+	/* Einmal durch die Liste gehen, bis wir den gwuenschten Eintrag haben */
+	for (job = behaviour; job; job = job->next) {
+		if (job->priority == priority) {
+			job->active = 0;
+			printf("Deactivated Behaviour %d\n",priority);
+			break;
+		}
+	}
+}
+
+/*! 
+ * Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung 
+ * return_from_behaviour() kehrt dann spaeter wieder zum aufrufenden Verhalten zurueck
+ * @param from aufrufendes Verhalten
+ * @param to aufgerufenes Verhalten
+ */ 
+void switch_to_behaviour(uint8 from, uint8 to){
+	deactivateBehaviour(from); 	/* aufrufendes Verhalten deaktivieren */
+
+	Behaviour_t *job;						// Zeiger auf ein Verhalten
+
+	/* Einmal durch die Liste gehen, bis wir den gwuenschten Eintrag haben */
+	for (job = behaviour; job; job = job->next) {
+		if (job->priority == to) {
+			job->callerPriority = from;
+			job->active = 1;
+			break;
+		}
+	}
+}
+
 
 
 /*! 
@@ -117,6 +187,60 @@ void bot_simple(Behaviour_t *data){
   speedWishRight+=speed_r_col;  
   */
 }
+
+/*!
+ * Beispiel fuer ein Verhalten, das einen Zustand besitzt
+ * es greift auf andere Verhalten zurueck und setzt daher 
+ * selbst keine speedWishes
+ * Laesst den Roboter ein Quadrat abfahren
+ * @param *data der Verhaltensdatensatz
+ */
+void bot_drive_square(Behaviour_t *data){
+	static uint8 state = 0;
+	switch (state) {
+		case 0: // Vorwaerts
+		   bot_goto(100,100,data->priority);
+		   state++;
+		   break;
+		case 1: // Drehen
+		   bot_goto(22,-22,data->priority);
+		   state=0;
+		   break;		
+		default:		/* Sind wir fertig, dann Kontrolle zurueck an Aufrufer */
+			return_from_behaviour();
+			break;
+	}
+}
+
+/*!
+ * Beispiel fuer ein Hilfsverhalten, 
+ * das selbst SpeedWishes aussert und 
+ * nach getaner Arbeit die Aufrufende Funktion wieder aktiviert
+ * @param *data der Verhaltensdatensatz
+ * @see bot_drive()
+ */
+void bot_dummy(Behaviour_t *data){
+	static uint8 state = 0;
+
+	switch	(state) {
+		case 0: 
+			speedWishLeft = BOT_SPEED_FAST;
+			speedWishRight = BOT_SPEED_FAST; 
+			if (sensLDRL< 500)	// Beispielbedingung
+				state++;		
+			break;
+		default:		/* Sind wir fertig, dann Kontrolle zurueck an Aufrufer */
+			return_from_behaviour();
+	}
+}
+
+
+
+
+
+
+
+
 
 /*! 
  * Das basisverhalten Grundverhalten 
@@ -233,9 +357,10 @@ void bot_goto_system(Behaviour_t *data){
 	} 
 	
 	/* Sind wir fertig, dann Regel deaktivieren */
-	if ((mot_goto_l == 0) && (mot_goto_r == 0))
-		data->active=0;	
-			
+	if ((mot_goto_l == 0) && (mot_goto_r == 0)){
+		deactivateMe();	
+		activateCaller();
+	}
 }
 
 /*!
@@ -339,6 +464,8 @@ void bot_avoid_border(Behaviour_t *data){
 	if (sensBorderR > BORDER_DANGEROUS)
 		speedWishRight=-BOT_SPEED_NORMAL;
 }
+
+
 
 int8 check_for_light(void){
 	if(sensLDRL >= 1023 && sensLDRR >= 1023) return False;
@@ -498,9 +625,9 @@ int bot_turn(int degrees){
  * evtl. erweitert werden.
  * 4. Senkrecht zur Wand drehen.
  * Siehe 2.
- * 5. Einen Bogen fahren, bis der Bot wieder auf ein Hinderniss stößt. 
+ * 5. Einen Bogen fahren, bis der Bot wieder auf ein Hinderniss stï¿½ï¿½t. 
  * Dann das Ganze von vorne beginnen nur in die andere Richtung und mit einem
- * weiteren Bogen. So erforscht der Bot einigermaßen systematisch den Raum.
+ * weiteren Bogen. So erforscht der Bot einigermaï¿½en systematisch den Raum.
  * 
  * Da das Verhalten jeweils nach 10ms neu aufgerufen wird, muss der Bot sich
  * 'merken', in welchem Zustand er sich gerade befindet.
@@ -526,15 +653,15 @@ void bot_explore(void){
 		break;
 	// Nach links drehen, bis der Bot parallel zum Hinderniss auf der rechten Seite steht.
 	/* Aufgabe: Entwickle ein Verhalten, dass auch bei Loechern funktioniert. 
-	 * Tipp dazu: Drehe den Roboter auf das Loch zu, bis beide Bodensensoren das Loch 'sehen'. Anschließend drehe den Bot um 90°.
+	 * Tipp dazu: Drehe den Roboter auf das Loch zu, bis beide Bodensensoren das Loch 'sehen'. Anschlieï¿½end drehe den Bot um 90ï¿½.
 	 * Es ist noetig, neue Zustaende zu definieren, die diese Zwischenschritte beschreiben. 
 	 * TODO: Drehung mit dem Maussensor ueberwachen. */
 	case EXPLORATION_STATE_TURN_PARALLEL_LEFT:
 		if(sensDistR < COL_FAR){
-			// Volle Drehung nach Links mit ca. 3°/10ms
+			// Volle Drehung nach Links mit ca. 3ï¿½/10ms
 			bot_drive(-127,BOT_SPEED_FAST);
 		} else {
-			//Nachdem das Hinderniss nicht mehr in Sicht ist, dreht der Bot noch ca. 3° weiter.
+			//Nachdem das Hinderniss nicht mehr in Sicht ist, dreht der Bot noch ca. 3ï¿½ weiter.
 			// Im Zweifelsfall dreht das den Bot zu weit, aber das ist besser, als ihn zu kurz zu drehen.
 			bot_drive(-127,BOT_SPEED_FAST);
 			state = EXPLORATION_STATE_DRIVE_PARALLEL_RIGHT;
@@ -544,10 +671,10 @@ void bot_explore(void){
 	/* Aufgabe: siehe EXPLORATION_STATE_TURN_PARALLEL_LEFT */
 	case EXPLORATION_STATE_TURN_PARALLEL_RIGHT:
 		if(sensDistL < COL_FAR){
-			// Volle Drehung nach Rechts mit ca. 3°/10ms
+			// Volle Drehung nach Rechts mit ca. 3ï¿½/10ms
 			bot_drive(127,BOT_SPEED_FAST);
 		} else {
-			/* Nachdem das Hinderniss nicht mehr in Sicht ist, dreht der Bot noch ca. 3° weiter.
+			/* Nachdem das Hinderniss nicht mehr in Sicht ist, dreht der Bot noch ca. 3ï¿½ weiter.
 			 * Im Zweifelsfall dreht das den Bot zu weit, aber das ist besser, als ihn zu kurz zu drehen. */
 			bot_drive(127,BOT_SPEED_FAST);
 			state = EXPLORATION_STATE_DRIVE_PARALLEL_LEFT;
@@ -564,17 +691,17 @@ void bot_explore(void){
 		}
 		break;
 	case EXPLORATION_STATE_TURN_ORTHOGONAL_LEFT:
-		// drehe den Bot um 90° nach links
+		// drehe den Bot um 90ï¿½ nach links
 		/* Da der Bot sich immer ein bisschen zu weit von der Wand weg dreht, soll er sich
-		 * hier nur um 85° drehen. Nicht schoen, aber klappt.*/
+		 * hier nur um 85ï¿½ drehen. Nicht schoen, aber klappt.*/
 		if(bot_turn(85) == BOT_BEHAVIOUR_DONE) {
 			state = EXPLORATION_STATE_DRIVE_ARC;
 		}
 		break;
 	case EXPLORATION_STATE_TURN_ORTHOGONAL_RIGHT:
-		// drehe den Bot um 90° nach links
+		// drehe den Bot um 90ï¿½ nach links
 		/* Da der Bot sich immer ein bisschen zu weit von der Wand weg dreht, soll er sich
-		 * hier nur um 85° drehen. Nicht schoen, aber klappt.*/
+		 * hier nur um 85ï¿½ drehen. Nicht schoen, aber klappt.*/
 		if(bot_turn(-85) == BOT_BEHAVIOUR_DONE) {
 			state = EXPLORATION_STATE_DRIVE_ARC;
 		}
@@ -635,14 +762,14 @@ void bot_goto_light(void){
  * Das Verhalten ist wie bot_explore() in eine Anzahl von Teilschritten unterteilt.
  * 1. Vor die aktuelle Saeule stellen, so dass sie zentral vor dem Bot und ungefaehr 
  * COL_CLOSEST (100mm) entfernt ist.
- * 2. 90° nach rechts drehen.
+ * 2. 90ï¿½ nach rechts drehen.
  * 3. In einem relativ engen Bogen 20 cm weit fahren.
  * 4. Auf der rechten Seite des Bot nach einem Objekt suchen, dass
- * 	a) im rechten Sektor des Bot liegt, also zwischen -45° und -135° zur Fahrtrichtung liegt,
+ * 	a) im rechten Sektor des Bot liegt, also zwischen -45ï¿½ und -135ï¿½ zur Fahrtrichtung liegt,
  * 	b) beleuchtet und 
  * 	c) nicht zu weit entfernt ist.
  * Wenn es dieses Objekt gibt, wird es zur aktuellen Saeule und der Bot faehrt jetzt Slalom links.
- * 5. Sonst zurueck drehen, 90° drehen und Slalom rechts fahren.
+ * 5. Sonst zurueck drehen, 90ï¿½ drehen und Slalom rechts fahren.
  * In diesem Schritt kann der Bot das Verhalten auch abbrechen, falls er gar kein Objekt mehr findet.
  * */
 void bot_do_slalom(int8 *cb_state){
@@ -706,7 +833,7 @@ void bot_do_slalom(int8 *cb_state){
 				}
 			}
 			if(sweep_state == SWEEP_STATE_TURN) {
-			// Phase 2: Bot um 10° drehen
+			// Phase 2: Bot um 10ï¿½ drehen
 				turn = (orientation == SLALOM_ORIENTATION_LEFT) ? 15 : -15;
 				if(bot_turn(turn) == BOT_BEHAVIOUR_DONE){
 					sweep_state = SWEEP_STATE_CHECK;
@@ -880,11 +1007,13 @@ void bot_behave_init(void){
 
 	//insert_behaviour_to_list(&behaviour, new_behaviour(100, bot_avoid_col));
 	//insert_behaviour_to_list(&behaviour, new_behaviour(60, bot_glance));
-	insert_behaviour_to_list(&behaviour, new_behaviour(55, bot_complex_behaviour));
+	//insert_behaviour_to_list(&behaviour, new_behaviour(55, bot_complex_behaviour));
 
-	bot_goto_rule = new_behaviour(50, bot_goto_system);
-	bot_goto_rule->active=0;
-	insert_behaviour_to_list(&behaviour, bot_goto_rule);
+	insert_behaviour_to_list(&behaviour, new_behaviour(55, bot_drive_square));
+
+
+	insert_behaviour_to_list(&behaviour, new_behaviour(PRIORITY_GOTO_SYSTEM, bot_goto_system));
+	deactivateBehaviour(PRIORITY_GOTO_SYSTEM);
 	
 	insert_behaviour_to_list(&behaviour, new_behaviour(0, bot_base));
 
@@ -913,12 +1042,10 @@ void bot_behave_init(void){
  * @param left Schritte links
  * @param right Schritte rechts
  */
-void bot_goto(int16 left, int16 right){
+void bot_goto(int16 left, int16 right, uint8 callerID){
 	// Zielwerte speichern
 	mot_l_goto=left; 
 	mot_r_goto=right;
-	
-	/* Goto-System aktivieren */
-	if (bot_goto_rule)
-		bot_goto_rule->active=1;
+
+	switch_to_behaviour(callerID,PRIORITY_GOTO_SYSTEM);	
 }
