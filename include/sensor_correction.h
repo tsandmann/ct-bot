@@ -25,8 +25,8 @@
 #ifndef SENSOR_CORRECTION_H_
 #define SENSOR_CORRECTION_H_
 
-#define SENSDISTSTEIGUNG	50000		/*!< Steigung der Sensorkennlinie */
-#define SENSDISTOFFSET		100			/*!< Offset der Sensorkennlinie */
+#define SENSDISTSLOPE	  65330		/*!< Steigung der Sensorkennlinie */
+#define SENSDISTOFFSET		-3		/*!< Offset der Sensorkennlinie */
 
 
 #endif /*SENSOR_CORRECTION_H_*/

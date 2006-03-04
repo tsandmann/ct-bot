@@ -41,8 +41,8 @@
 #define SENS_ABST_R	1		/*!< ADC-PIN Abstandssensor Rechts */
 #define SENS_M_L		2		/*!< ADC-PIN Liniensensor Links */
 #define SENS_M_R		3		/*!< ADC-PIN Liniensensor Rechts */
-#define SENS_LDR_R		4		/*!< ADC-PIN Lichtsensor Links */
-#define SENS_LDR_L		5		/*!< ADC-PIN Lichtsensor Rechts */
+#define SENS_LDR_L		4		/*!< ADC-PIN Lichtsensor Links */
+#define SENS_LDR_R		5		/*!< ADC-PIN Lichtsensor Rechts */
 #define SENS_KANTE_L	6		/*!< ADC-PIN Kantensensor Links */
 #define SENS_KANTE_R	7		/*!< ADC-PIN Kantensensor Rechts */
 
@@ -87,6 +87,7 @@ void bot_sens_init(void){
 	adc_init(0xFF);		// Alle ADC-Ports aktivieren
 	
 	ENA_set(ENA_RADLED);		// Alle Sensoren bis auf die Radencoder deaktivieren
+	ENA_on(ENA_ABSTAND);		// Die Abstandssensoren ebenfalls dauerhaft an, da sie fast 50 ms zum booten brauchen
 	
 	SENS_DOOR_DDR &= ~ (1<<SENS_DOOR);	// Input
 	
@@ -114,7 +115,7 @@ void bot_sens_init(void){
  */
 int16 sensor_abstand(int16 sensor_data){
 	// TODO reale Kennlinie beachten!!!!
-	return SENSDISTSTEIGUNG / (sensor_data - SENSDISTOFFSET);
+	return SENSDISTSLOPE / (sensor_data - SENSDISTOFFSET);
 	
 //	return 1023-sensor_data;
 }
@@ -131,34 +132,7 @@ int16 sensor_abstand(int16 sensor_data){
  * zu aktualiseren, der Bot braucht auch Zeit zum nachdenken ueber Verhalten
  */
 void bot_sens_isr(void){
-	
-	// ---------- analoge Sensoren -------------------
-	sensLDRL = adc_read(SENS_LDR_L);
-	sensLDRR = adc_read(SENS_LDR_R);
-
-	ENA_on(ENA_KANTLED);
-	sensBorderL = adc_read(SENS_KANTE_L);
-	sensBorderR = adc_read(SENS_KANTE_R);
-	ENA_off(ENA_KANTLED);
-		
-	ENA_on(ENA_MAUS);	
-	sensLineL = adc_read(SENS_M_L);
-	sensLineR = adc_read(SENS_M_R);
-	ENA_off(ENA_MAUS);	
-
-	//Aktualisiere Distanz-Sensoren
-	ENA_on(ENA_ABSTAND);	
-	sensDistL= sensor_abstand(adc_read(SENS_ABST_L));
-	sensDistR= sensor_abstand(adc_read(SENS_ABST_R));
-	ENA_off(ENA_ABSTAND);	
-		
-	// ------- digitale Sensoren ------------------
-	ENA_on(ENA_SCHRANKE|ENA_KLAPPLED);	
-	sensDoor = (SENS_DOOR_PINR >> SENS_DOOR) & 0x01;
-	sensTrans = (SENS_TRANS_PINR >> SENS_TRANS) & 0x01;		
-	ENA_off(ENA_SCHRANKE|ENA_KLAPPLED);	
-
-	sensError = (SENS_ERROR_PINR >> SENS_ERROR) & 0x01;		
+	ENA_on(ENA_KANTLED|ENA_MAUS|ENA_SCHRANKE|ENA_KLAPPLED);
 
  	// Aktualisiere die Position des Maussensors 
 	sensMouseDY = maus_sens_read(MOUSE_DELTA_Y_REG);
@@ -166,8 +140,34 @@ void bot_sens_isr(void){
 
 	sensMouseDX = maus_sens_read(MOUSE_DELTA_X_REG);	
 	sensMouseX += sensMouseDX;
+
+	// ---------- analoge Sensoren -------------------
+	sensLDRL = adc_read(SENS_LDR_L);
+	sensLDRR = adc_read(SENS_LDR_R);
+
+	sensBorderL = adc_read(SENS_KANTE_L);
+	sensBorderR = adc_read(SENS_KANTE_R);
+	ENA_off(ENA_KANTLED);
+			
+	sensLineL = adc_read(SENS_M_L);
+	sensLineR = adc_read(SENS_M_R);
+	ENA_off(ENA_MAUS);	
+
+	//Aktualisiere Distanz-Sensoren
+	// Die Distanzsensoren sind im Normalfall an, da sie 50 ms zum booten brauchen
+//	sensDistL= adc_read(SENS_ABST_L);
+//	sensDistR= adc_read(SENS_ABST_R);
+	sensDistL= sensor_abstand(adc_read(SENS_ABST_L));
+	sensDistR= sensor_abstand(adc_read(SENS_ABST_R));
+		
+	// ------- digitale Sensoren ------------------
+	sensDoor = (SENS_DOOR_PINR >> SENS_DOOR) & 0x01;
+	sensTrans = (SENS_TRANS_PINR >> SENS_TRANS) & 0x01;		
+	ENA_off(ENA_SCHRANKE|ENA_KLAPPLED);	
+
+	sensError = (SENS_ERROR_PINR >> SENS_ERROR) & 0x01;		
 	
-	sensor_update();
+	sensor_update();	// Weiterverarbeitung der rohen Sensordaten 
 }
 
 /*!

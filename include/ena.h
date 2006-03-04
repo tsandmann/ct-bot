@@ -26,12 +26,12 @@
 #ifndef ENA_H_
 #define ENA_H_
 
-#define ENA_ABSTAND		(1<<0)		/*!< Enable-Leitung Abstandssensoren */
+#define ENA_ABSTAND	(1<<0)		/*!< Enable-Leitung Abstandssensoren */
 #define ENA_RADLED		(1<<1)		/*!< Enable-Leitung Radencoder */
 #define ENA_SCHRANKE	(1<<2)		/*!< Enable-Leitung Fachueberwachung */
-#define ENA_KANTLED		(1<<3)		/*!< Enable-Leitung Angrundsensor */
+#define ENA_KANTLED	(1<<3)		/*!< Enable-Leitung Angrundsensor */
 #define ENA_KLAPPLED	(1<<4)		/*!< Enable-Leitung Schieberueberwachung */
-#define ENA_MAUS		(1<<5)		/*!< Enable-Leitung Maussensor */
+#define ENA_MAUS		(1<<5)		/*!< Enable-Leitung Liniensensor auf Mausplatine */
 #define ENA_ERW1		(1<<6)		/*!< Enable-Leitung Reserve 1 */
 #define ENA_ERW2		(1<<7)		/*!< Enable-Leitung Reserve 2 */
 /*!

@@ -62,8 +62,8 @@ int adc_read(char channel){
 	while ( (ADCSRA & (1<<ADSC)) != 0){} //Warten bis konvertierung beendet
 					      // Das sollte 25 ADC-Zyklen dauern!
 					      // also 1/4608 s
-	result= ADC; 
-//	result+=(ADCH <<8);	// Ergebnis zusammenbauen
+	result= ADCL; 
+	result+=(ADCH <<8);	// Ergebnis zusammenbauen
 	
 	return result;
 }

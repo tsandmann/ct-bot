@@ -100,18 +100,18 @@ void init(void){
 	#endif
 
 	#ifdef PC
-        bot_2_sim_init();
-    #endif
-    
-    #ifdef DISPLAY_AVAILABLE
-        display_init();
-        display_update=1;
-    #endif
-    
+		bot_2_sim_init();
+	#endif
+
+	#ifdef DISPLAY_AVAILABLE
+		display_init();
+		display_update=1;
+	#endif
+
 	#ifdef LED_AVAILABLE
 		LED_init();
 	#endif
-	
+
 	motor_init();
 	bot_sens_init();
 	bot_behave_init();
@@ -138,13 +138,16 @@ void init(void){
  * Zeigt ein paar Informationen an
  */
 	void display(void){
+		#ifdef TEST_AVAILABLE_COUNTER
+			static int counter=0;
+		#endif
  		if (display_update >0)
  			#ifdef DISPLAY_SCREENS_AVAILABLE
 			switch (display_screen) {
 				case 0:
 			#endif
 					display_cursor(1,1);
-					sprintf(display_buf,"P=%03X %03X D=%03X %03X ",sensLDRL,sensLDRR,sensDistL,sensDistR);
+					sprintf(display_buf,"P=%03X %03X D=%03d %03d ",sensLDRL,sensLDRR,sensDistL,sensDistR);
 					display_buffer();
 		
 					display_cursor(2,1);
@@ -186,6 +189,15 @@ void init(void){
 					sprintf(display_buf,"Screen 3");
 					display_buffer();
 
+					#ifdef TEST_AVAILABLE_COUNTER						
+						display_cursor(2,1);
+						sprintf(display_buf,"count %d",counter++);
+						display_buffer();
+
+						display_cursor(3,1);
+						sprintf(display_buf,"Reset-Counter %d",resets);
+						display_buffer();
+					#endif
 					break;
 
 				case 3:
@@ -344,7 +356,6 @@ void init(void){
 			uart_write(display_buf,11);
 		#endif
 	#endif
-		
 	
 	#ifdef TEST_AVAILABLE_COUNTER
 		display_screen=2;
@@ -354,7 +365,6 @@ void init(void){
 	    /* Lege den Grund für jeden Reset im EEPROM ab */	
 	    eeprom_write_byte(&resetInfoEEPROM+resets,reset_flag);
 	#endif	
-
 	/*! Hauptschleife des Bot */
 	for(;;){
 		#ifdef MCU

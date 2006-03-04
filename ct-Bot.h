@@ -38,7 +38,7 @@
 
 #define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit? */
 
-//#define DISPLAY_AVAILABLE	/*!< Display for local control */
+#define DISPLAY_AVAILABLE	/*!< Display for local control */
 //#define DISPLAY_REMOTE_AVAILABLE /*!< Sende LCD Anzeigedaten an den Simulator */
 #define DISPLAY_SCREENS_AVAILABLE	/*!< Ermoeglicht vier verschiedene Screen */
 #define DISPLAY_SCREEN_RESETINFO	/*!< Zeigt auf Screen 4 Informationen über Resets an */
@@ -56,7 +56,6 @@
 #define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
 //#define TEST_AVAILABLE_MOTOR	/*!< Sollen die Motoren ein wenig drehen */
 //#define TEST_AVAILABLE_COUNTER /*!< Gibt einen Endlos-Counter auf Screen 3 aus und aktiviert Screen 3 */
-
 //#define DOXYGEN		/*!< Nur zum Erzeugen der Doku, wenn dieser schalter an ist, jammert der gcc!!! */
 
 #define BEHAVIOUR_AVAILABLE /*!< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */

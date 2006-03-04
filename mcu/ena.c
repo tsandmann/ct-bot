@@ -52,8 +52,11 @@ void ENA_init(){
  * @param enable Bitmaske der anzuschaltenden LEDs
  */
 void ENA_on(char enable){
+//	int i;
 	ena |= enable;
 	ENA_set(ena);
+//	for (i=0; i<20; i++)		/* lass den Sensoren Zeit sich einzupendeln */
+//		asm("nop");
 }
 
 /*! 
