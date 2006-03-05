@@ -369,9 +369,9 @@ void init(void){
 	for(;;){
 		#ifdef MCU
 			bot_sens_isr();
-			#ifdef TEST_AVAILABLE
-				show_sensors();
-			#endif
+		#endif
+		#ifdef TEST_AVAILABLE
+			show_sensors();
 		#endif
 
 		// Testprogramm, dass den Bot erst links, dann rechtsrum dreht
