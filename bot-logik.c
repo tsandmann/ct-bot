@@ -1094,11 +1094,9 @@ void bot_behave_init(void){
 				Behaviour_t	*ptr	= behaviour;
 	
 				display_cursor(5,1);
-				sprintf(display_buf,"Verhaltensstack:\n");			
-				display_buffer();
+				display_printf("Verhaltensstack:\n");
 				while(ptr != NULL)	{
-					sprintf(display_buf,"Prioritaet: %d.\n", ptr->priority);
-					display_buffer();
+					display_printf("Prioritaet: %d.\n", ptr->priority);
 					ptr = ptr->next;
 				}
 		#endif

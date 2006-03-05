@@ -26,7 +26,7 @@
 #ifndef display_H_
 #define display_H_
 
-#define DISPLAY_BUFFER	30					/*!< Groesse des Display-Strings */
+#define DISPLAY_LENGTH	20	/*!< Wieviele Zeichen passen in eine Zeile */
 
 extern volatile char display_update;		/*!< Muss das Display aktualisiert werden? */
 #ifdef DISPLAY_SCREENS_AVAILABLE
@@ -34,7 +34,7 @@ extern volatile char display_update;		/*!< Muss das Display aktualisiert werden?
 	#define DISPLAY_SCREEN_TOGGLE	42		/*!< Screen-Nummer, die zum wechseln verwendet wird */
 	extern volatile char display_screen;		/*!< Welcher Screen soll gezeigt werden? */
 #endif
-extern char display_buf[DISPLAY_BUFFER];	/*!< Pufferstring fuer Displayausgaben */
+
 /*! 
  * Init Display
  */
@@ -58,10 +58,12 @@ void display_clear(void);
  */
 void display_cursor (int row, int column) ;
 
-/*! 
- * Zeigt den String an, der in display_buffer steht. 
- * @return 0 falls 0x00-Zeichen erreicht; -1, falls DISPLAY_LENGTH oder DISPLAY_BUFFER Zeichen ausgegeben wurden
+/*!
+ * Schreibt einen String auf das Display.
+ * @param format Format, wie beim printf
+ * @param ... Variable Argumentenliste, wie beim printf
  */
-int display_buffer(void);
+void display_printf(char *format, ...);
+
 //void display_test();
 #endif

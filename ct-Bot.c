@@ -147,56 +147,44 @@ void init(void){
 				case 0:
 			#endif
 					display_cursor(1,1);
-					sprintf(display_buf,"P=%03X %03X D=%03d %03d ",sensLDRL,sensLDRR,sensDistL,sensDistR);
-					display_buffer();
+					display_printf("P=%03X %03X D=%03d %03d ",sensLDRL,sensLDRR,sensDistL,sensDistR);
 		
 					display_cursor(2,1);
-					sprintf(display_buf,"B=%03X %03X L=%03X %03X ",sensBorderL,sensBorderR,sensLineL,sensLineR);
-					display_buffer();
+					display_printf("B=%03X %03X L=%03X %03X ",sensBorderL,sensBorderR,sensLineL,sensLineR);
 		
 					display_cursor(3,1);
-					sprintf(display_buf,"R=%2d %2d F=%d K=%d T=%d ",sensEncL % 10,sensEncR %10,sensError,sensDoor,sensTrans);
-					display_buffer();
+					display_printf("R=%2d %2d F=%d K=%d T=%d ",sensEncL % 10,sensEncR %10,sensError,sensDoor,sensTrans);
 		
 					display_cursor(4,1);
-					sprintf(display_buf,"I=%04X M=%05d %05d",RC5_Code,sensMouseX,sensMouseY);
-					display_buffer();				
+					display_printf("I=%04X M=%05d %05d",RC5_Code,sensMouseX,sensMouseY);
 			#ifdef 	DISPLAY_SCREENS_AVAILABLE					
 					break;
 				case 1:
 					#ifdef TIME_AVAILABLE
 						display_cursor(1,1);
-						sprintf(display_buf,"Zeit: %04d:%03d",time_s,time_ms);
-						display_buffer();
+						display_printf("Zeit: %04d:%03d",time_s,time_ms);
 					#endif
 		
 					display_cursor(2,1);
-					sprintf(display_buf,"TS=%+4d %+4d",target_speed_l,target_speed_r);
-					display_buffer();
+					display_printf("TS=%+4d %+4d",target_speed_l,target_speed_r);
 		
 					display_cursor(3,1);
-					sprintf(display_buf,"RC=%+4d %+4d",sensEncL,sensEncR);
-					display_buffer();
+					display_printf("RC=%+4d %+4d",sensEncL,sensEncR);
 		
 					display_cursor(4,1);
-					sprintf(display_buf,"Speed= %04d %04d",v_left,v_right);
-					display_buffer();				
-
+					display_printf("Speed= %04d %04d",v_left,v_right);
 					break;
 
 				case 2:
 					display_cursor(1,1);
-					sprintf(display_buf,"Screen 3");
-					display_buffer();
+					display_printf("Screen 3");
 
 					#ifdef TEST_AVAILABLE_COUNTER						
 						display_cursor(2,1);
-						sprintf(display_buf,"count %d",counter++);
-						display_buffer();
+						display_printf("count %d",counter++);
 
 						display_cursor(3,1);
-						sprintf(display_buf,"Reset-Counter %d",resets);
-						display_buffer();
+						display_printf("Reset-Counter %d",resets);
 					#endif
 					break;
 
@@ -204,23 +192,19 @@ void init(void){
 					display_cursor(1,1);
 					#ifdef DISPLAY_SCREEN_RESETINFO
 						/* Zeige den Grund für Resets an */
-						sprintf(display_buf,"MCUCSR - Register");
-						display_buffer();			
+						display_printf("MCUCSR - Register");
 												
 						display_cursor(2,1);
-						sprintf(display_buf,"PORF :%d  WDRF :%d",binary(reset_flag,0),binary(reset_flag,3)); 
-						display_buffer();				
+						display_printf("PORF :%d  WDRF :%d",binary(reset_flag,0),binary(reset_flag,3)); 
 
 						display_cursor(3,1);
-						sprintf(display_buf,"EXTRF:%d  JTRF :%d",binary(reset_flag,1),binary(reset_flag,4)); 
-						display_buffer();
+						display_printf("EXTRF:%d  JTRF :%d",binary(reset_flag,1),binary(reset_flag,4)); 
 									
 						display_cursor(4,1);
-						sprintf(display_buf,"BORF :%d",binary(reset_flag,2)); 
+						display_printf("BORF :%d",binary(reset_flag,2)); 
 					#else
-						sprintf(display_buf,"Screen 4");
+						display_printf("Screen 4");
 					#endif
-					display_buffer();
 					break;
 			}
 			#endif	
@@ -348,8 +332,7 @@ void init(void){
 	
 	#ifdef WELCOME_AVAILABLE
 		display_cursor(1,1);
-		sprintf(display_buf,"c't-Roboter");
-		display_buffer();			
+		display_printf("c't-Roboter");
 		LED_set(0x00);
 		
 		#ifdef BOT_2_PC_AVAILABLE		

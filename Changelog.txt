@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-03-04	Andreas Merkle (mail@blue-andi.de)	Ausgaben auf das LCD-Display vereinfacht.
+
 2006-03-03	Benjamin Benz (bbe@heise.de) Routinen wie bot_goto() kann man nun mehrmals aufrufen
 
 2006-03-03	Benjamin Benz (bbe@heise.de) internes und externes CVS abgeglichen

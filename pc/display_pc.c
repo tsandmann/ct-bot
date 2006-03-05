@@ -28,6 +28,8 @@
 #ifdef PC
 
 #include "display.h"
+#include <stdarg.h>
+#include <stdio.h>
 
 /* definiere DISPLAY_REMOTE_AVAILABLE, wenn die Display-Daten per TCP an das 
  * Simulationsprogramm gesendet werden sollen.  Wenn es nicht gesetzt ist, 
@@ -38,7 +40,6 @@
  #include "command.h"
  #include "bot-2-sim.h"  
 #else
- #include <stdio.h>
  #ifdef WIN32
   #include <windows.h>
  #endif	/* WIN32 */
@@ -46,14 +47,15 @@
 
 #ifdef DISPLAY_AVAILABLE
 
-#define DISPLAY_LENGTH	20			/*!< Wieviele Zeichen passen in eine Zeile */
+/*! Puffergroesse fuer eine Zeile in bytes */
+#define DISPLAY_BUFFER_SIZE	(DISPLAY_LENGTH + 1)
 
 volatile char display_update=0;	/*!< Muss das Display aktualisiert werden? */
 #ifdef DISPLAY_SCREENS_AVAILABLE
 	volatile char display_screen=0;	/*!< Muss das Display aktualisiert werden? */
 #endif
 
-char display_buf[DISPLAY_BUFFER];		/*!< Pufferstring fuer Displayausgaben */
+char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausgaben */
 
 #ifdef DISPLAY_REMOTE_AVAILABLE
     #define CLEAR              command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, NULL, NULL)
@@ -102,13 +104,25 @@ int display_string(char data[DISPLAY_LENGTH]){
 	return -1;
 }
 
-/*! 
- * Zeigt den String an, der in display_buffer steht. 
- * @return 0 falls 0x00-Zeichen erreicht; -1, falls DISPLAY_LENGTH oder DISPLAY_BUFFER Zeichen ausgegeben wurden
+/*!
+ * Schreibt einen String auf das Display.
+ * @param format Format, wie beim printf
+ * @param ... Variable Argumentenliste, wie beim printf
  */
-int display_buffer(){
-	printf(display_buf);
-	return 0;
+void display_printf(char *format, ...) {
+	
+	va_list	args;
+	
+	/* Sicher gehen, das der zur Verfuegung stehende Puffer nicht
+	 * ueberschrieben wird.
+	 */
+	va_start(args, format);
+	vsnprintf(display_buf, DISPLAY_BUFFER_SIZE, format, args);
+	va_end(args);
+
+	printf(display_buf);	
+	
+	return;
 }
 
 #ifndef DISPLAY_REMOTE_AVAILABLE

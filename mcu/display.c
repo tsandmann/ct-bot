@@ -30,7 +30,8 @@
 
 #include <avr/io.h>
 #include <avr/delay.h>
-
+#include <stdarg.h>
+#include <stdio.h>
 
 #include "display.h"
 #include "led.h"
@@ -38,13 +39,14 @@
 #include "shift.h"
 #include "display.h"
 
-#define DISPLAY_LENGTH	20			/*!< Wieviele Zeichen passen in eine Zeile */
+/*! Puffergroesse fuer eine Zeile in bytes */
+#define DISPLAY_BUFFER_SIZE	(DISPLAY_LENGTH + 1)
 
 volatile char display_update=0;	/*!< Muss das Display aktualisiert werden? */
 #ifdef DISPLAY_SCREENS_AVAILABLE
 	volatile char display_screen=0;	/*!< Muss das Display aktualisiert werden? */
 #endif
-char display_buf[DISPLAY_BUFFER];		/*!< Pufferstring für Displayausgaben */
+static char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausgaben */
 
 #define DISPLAY_CLEAR 0x01		/*!< Kommando zum Löschen */
 #define DISPLAY_CURSORHOME 0x02	/*!< Kommando für den Cursor */
@@ -128,7 +130,6 @@ void display_clear(void){
 	 display_cmd(DISPLAY_CLEAR); // Display l�schen, Cursor Home
 }
 
-
 /*!
  * Positioniert den Cursor
  * @param row Zeile
@@ -197,21 +198,31 @@ void display_init(void){
 	if (data[i]==0x00)	return -1;	else return 0;
 } 
 */
-/*! 
- * Zeigt den String an, der in display_buffer steht. 
- * @return 0 falls 0x00-Zeichen erreicht; -1, falls DISPLAY_LENGTH oder DISPLAY_BUFFER Zeichen ausgegeben wurden
- */
-int display_buffer(){
-	uint8 i=0;
 
-	// Ausgeben bis Puffer leer, Zeile voll oder Null-Zeichen erreicht	
-	while ((i<DISPLAY_LENGTH)&& (i<DISPLAY_BUFFER) && (display_buf[i] != 0x00)){ 	
-						// oder 20 Zeichen gesendet sind
-		display_data(display_buf[i++]);	// einzelnes Zeichen schicken
+/*!
+ * Schreibt einen String auf das Display.
+ * @param format Format, wie beim printf
+ * @param ... Variable Argumentenliste, wie beim printf
+ */
+void display_printf(char *format, ...) {
+	
+	unsigned int run = 0;
+	va_list	args;
+	
+	/* Sicher gehen, das der zur Verfuegung stehende Puffer nicht
+	 * ueberschrieben wird.
+	 */
+	va_start(args, format);
+	vsnprintf(display_buf, DISPLAY_BUFFER_SIZE, format, args);
+	va_end(args);
+	
+	/* Ausgeben bis Puffer leer ist */
+	while(display_buf[run] != '\0') {
+		display_data(display_buf[run]);
+		run++;
 	}
 	
-	if (display_buf[i]==0x00)	return 0;	
-	else return -1;
+	return;
 }
 
 /*
