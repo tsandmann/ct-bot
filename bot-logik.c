@@ -58,6 +58,7 @@ typedef struct _Behaviour_t {
    struct _Behaviour_t *caller ; /* aufrufendes verhalten */
    
    char active:1;				/*!< Ist das Verhalten aktiv */
+   char subResult:2;			/*!< War das aufgerufene unterverhalten erfolgreich (==1)?*/
    struct _Behaviour_t *next;					/*!< Naechster Eintrag in der Liste */
 #ifndef DOXYGEN
 	}__attribute__ ((packed)) Behaviour_t;
@@ -84,35 +85,29 @@ volatile int16 target_speed_r=0;	/*!< Sollgeschwindigkeit rechter Motor - darum 
 /*! Liste mit allen Verhalten */
 Behaviour_t *behaviour = NULL;
 
+#define OVERRIDE	1	/*!< Konstante, wenn Verhalten beim Aufruf alte Wuensche ueberschreiben sollen */
+#define NOOVERRIDE 0	/*!< Konstanten, wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen */
 
-/* Makro, um eine Regel zu deaktivieren */
-#define deactivateMe() data->active=0;\
-			printf("Deactivated Behaviour %d\n",data->priority)
-
-/* Makro um die Funktion zu aktivieren, die eine Regel beauftragt hat */
-#define activateCaller() data->caller->active=1;
-
-/*! Makro um zum aufrufenden Verhalten zurueck zukehren */ 
-#define return_from_behaviour() deactivateMe();	\
-								activateCaller()
+#define SUBSUCCESS	1	/*!< Konstante fuer Behaviour_t->subResult: Aufgabe erfolgreich abgeschlossen */
+#define SUBFAIL	0	/*!< Konstante fuer Behaviour_t->subResult: Aufgabe nicht abgeschlossen */
+#define SUBRUNNING 2	/*!< Konstante fuer Behaviour_t->subResult: Aufgabe wird noch beabeitet */
 
 /*!
  * Aktiviert eine Regel mit gegebener Prioritaet
  * @param priority Die Prioritaet der zu aktivierenden Regel
  */
-/*void activateBehaviour(uint8 priority){
+void activateBehaviour(void *function){
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
 
 	// Einmal durch die Liste gehen, bis wir den gwuenschten Eintrag haben 
 	for (job = behaviour; job; job = job->next) {
-		if (job->priority == priority) {
+		if (job->work == function) {
 			job->active = 1;
-			printf("Activated Behaviour %d\n",priority);
 			break;
 		}
 	}
 }
-*/
+
 
 /*!
  * Deaktiviert eine Regel mit gegebener Prioritaet
@@ -135,8 +130,12 @@ void deactivateBehaviour(void *function){
  * return_from_behaviour() kehrt dann spaeter wieder zum aufrufenden Verhalten zurueck
  * @param from aufrufendes Verhalten
  * @param to aufgerufenes Verhalten
+ * @param override Steht hier ein 1, so führt das aufgerufene Verhalten den Befehl aus, 
+ * auch wenn es gerade etwas tut. 
+ * Achtung das bedeutet jedoch, dass der ursprüngliche Caller
+ * wieder aktiviert wird. er muss selbst prüfen, ob er mit dem Zustand zufrieden ist!
  */ 
-void switch_to_behaviour(Behaviour_t * from, void *to ){
+void switch_to_behaviour(Behaviour_t * from, void *to, uint8 override ){
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
 	
 	// Einmal durch die Liste gehen, bis wir den gwuenschten Eintrag haben 
@@ -146,14 +145,42 @@ void switch_to_behaviour(Behaviour_t * from, void *to ){
 		}
 	}	
 
-	// altes verhalten abschalten
-	from->active=0;
-	
+	if (job->caller){		// Ist das auzurufende Verhalten noch beschaeftigt?
+		if (override==NOOVERRIDE){	// nicht ueberschreiben, sofortige rueckkehr
+			if (from)
+				from->subResult=SUBFAIL;
+			return;
+		}
+		// Wir wollen also ueberschreiben, aber aber nett zum alten Aufrufer sein und ihn darueber benachrichtigen
+		job->caller->active=1;	// alten aufrufer reaktivieren
+		job->caller->subResult=SUBFAIL;	// er bekam aber nicht das gewuenschte resultat
+	}
+
+	if (from) {
+		// laufendes verhalten abschalten
+		from->active=0;
+		from->subResult=SUBRUNNING;
+	}
+		
 	// neues Verhalten aktivieren
 	job->active=1;
 	// aufrufer sichern
 	job->caller =  from;
 }
+
+/*! 
+ * Kehrt zum aufrufenden Verhalten zurück
+ * @param running laufendes Verhalten
+ */ 
+void return_from_behaviour(Behaviour_t * data){
+	data->active=0; 				// Unterverhalten deaktivieren
+	if (data->caller){			
+		data->caller->active=1; 	// aufrufendes Verhalten aktivieren
+		data->caller->subResult=SUBSUCCESS;	// Unterverhalten war erfolgreich
+	}
+	data->caller=NULL;				// Job erledigt, verweis loeschen
+}
+
 
 /*!
  * Drehe die Raeder um die gegebene Zahl an Encoder-Schritten weiter
@@ -205,7 +232,13 @@ void bot_simple(Behaviour_t *data){
 void bot_drive_square(Behaviour_t *data){
 	#define STATE_TURN 1
 	#define STATE_FORWARD 0
+	#define STATE_INTERRUPTED 2
+	
 	static uint8 state = STATE_FORWARD;
+
+   if (data->subResult == SUBFAIL) // letzter Auftrag schlug fehl?
+   		state= STATE_INTERRUPTED;
+	
 	switch (state) {
 		case STATE_FORWARD: // Vorwaerts
 		   bot_goto(100,100,data);
@@ -215,8 +248,12 @@ void bot_drive_square(Behaviour_t *data){
 		   bot_goto(22,-22,data);
 		   state=STATE_FORWARD;
 		   break;		
+		case STATE_INTERRUPTED:
+			return_from_behaviour(data);	// Beleidigt sein und sich selbst deaktiviern			
+			break;   
+		   
 		default:		/* Sind wir fertig, dann Kontrolle zurueck an Aufrufer */
-			return_from_behaviour();
+			return_from_behaviour(data);
 			break;
 	}
 }
@@ -252,7 +289,7 @@ void bot_dummy(Behaviour_t *data){
 			break;
 			
 		case STATE_DUMMY_DONE:		/* Sind wir fertig, dann Kontrolle zurueck an Aufrufer */
-			return_from_behaviour();
+			return_from_behaviour(data);
 	}
 }
 
@@ -264,7 +301,7 @@ void bot_call_dummy(int16 light, Behaviour_t * caller){
 	dummy_light=light;
 
 	// Zielwerte speichern
-	switch_to_behaviour(caller,bot_dummy);	
+	switch_to_behaviour(caller,bot_dummy,OVERRIDE);	
 }
 
 
@@ -389,8 +426,7 @@ void bot_goto_system(Behaviour_t *data){
 	
 	/* Sind wir fertig, dann Regel deaktivieren */
 	if ((mot_goto_l == 0) && (mot_goto_r == 0)){
-		deactivateMe();	
-		activateCaller();
+		return_from_behaviour(data);
 	}
 }
 
@@ -987,7 +1023,8 @@ Behaviour_t *new_behaviour(char priority, void (*work) (struct _Behaviour_t *dat
 //	newbehaviour->ignore=0;
 	newbehaviour->next= NULL;
 	newbehaviour->work=work;
-	
+	newbehaviour->caller=NULL;
+	newbehaviour->subResult=SUBSUCCESS;
 	return newbehaviour;
 }
 
@@ -1081,5 +1118,5 @@ void bot_goto(int16 left, int16 right, Behaviour_t * caller){
 	mot_l_goto=left; 
 	mot_r_goto=right;
 
-	switch_to_behaviour(caller,bot_goto_system);	
+	switch_to_behaviour(caller,bot_goto_system,OVERRIDE);	
 }
