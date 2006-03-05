@@ -50,26 +50,21 @@
  * Alle Variablen mit Sensor-Werten findet man in sensor.h
  */
 
-#define PRIORITY_GOTO_SYSTEM	50	/*!< Prioritaet des goto-systems */
-#define PRIORITY_DUMMY			49	/*!< Prioritaet des Dummys */
-
-
 /*! Verwaltungsstruktur für die Verhaltensroutinen */
 typedef struct _Behaviour_t {
    void (*work) (struct _Behaviour_t *data); 	/*!< Zeiger auf die Funktion, die das Verhalten bearbeitet */
    
-   uint8 priority;				/*!< Priorität */
-   uint8 callerPriority;		/*!< Priorität der Funktion, die diese aktiviert hat */
+   uint8 priority;		/*!< Priorität */
+   struct _Behaviour_t *caller ; /* aufrufendes verhalten */
    
    char active:1;				/*!< Ist das Verhalten aktiv */
-//   char ignore:1;				/*!< Sollen alle Zielwerte ignoriert werden */
    struct _Behaviour_t *next;					/*!< Naechster Eintrag in der Liste */
 #ifndef DOXYGEN
 	}__attribute__ ((packed)) Behaviour_t;
 #else
 	} Behaviour_t;
 #endif
-
+	
 
 char col_zone_l=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der linke Sensor befindet */
 char col_zone_r=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der rechte Sensor befindet */
@@ -95,7 +90,7 @@ Behaviour_t *behaviour = NULL;
 			printf("Deactivated Behaviour %d\n",data->priority)
 
 /* Makro um die Funktion zu aktivieren, die eine Regel beauftragt hat */
-#define activateCaller() activateBehaviour(data->callerPriority)
+#define activateCaller() data->caller->active=1;
 
 /*! Makro um zum aufrufenden Verhalten zurueck zukehren */ 
 #define return_from_behaviour() deactivateMe();	\
@@ -105,10 +100,10 @@ Behaviour_t *behaviour = NULL;
  * Aktiviert eine Regel mit gegebener Prioritaet
  * @param priority Die Prioritaet der zu aktivierenden Regel
  */
-void activateBehaviour(uint8 priority){
+/*void activateBehaviour(uint8 priority){
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
 
-	/* Einmal durch die Liste gehen, bis wir den gwuenschten Eintrag haben */
+	// Einmal durch die Liste gehen, bis wir den gwuenschten Eintrag haben 
 	for (job = behaviour; job; job = job->next) {
 		if (job->priority == priority) {
 			job->active = 1;
@@ -117,19 +112,19 @@ void activateBehaviour(uint8 priority){
 		}
 	}
 }
+*/
 
 /*!
  * Deaktiviert eine Regel mit gegebener Prioritaet
  * @param priority Die Prioritaet der zu deaktivierenden Regel
  */
-void deactivateBehaviour(uint8 priority){
+void deactivateBehaviour(void *function){
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
 		
-	/* Einmal durch die Liste gehen, bis wir den gwuenschten Eintrag haben */
+	// Einmal durch die Liste gehen, bis wir den gwuenschten Eintrag haben 
 	for (job = behaviour; job; job = job->next) {
-		if (job->priority == priority) {
+		if (job->work == function) {
 			job->active = 0;
-			printf("Deactivated Behaviour %d\n",priority);
 			break;
 		}
 	}
@@ -141,21 +136,31 @@ void deactivateBehaviour(uint8 priority){
  * @param from aufrufendes Verhalten
  * @param to aufgerufenes Verhalten
  */ 
-void switch_to_behaviour(uint8 from, uint8 to){
-	deactivateBehaviour(from); 	/* aufrufendes Verhalten deaktivieren */
-
+void switch_to_behaviour(Behaviour_t * from, void *to ){
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
-
-	/* Einmal durch die Liste gehen, bis wir den gwuenschten Eintrag haben */
+	
+	// Einmal durch die Liste gehen, bis wir den gwuenschten Eintrag haben 
 	for (job = behaviour; job; job = job->next) {
-		if (job->priority == to) {
-			job->callerPriority = from;
-			job->active = 1;
+		if (job->work == to) {
 			break;
 		}
-	}
+	}	
+
+	// altes verhalten abschalten
+	from->active=0;
+	
+	// neues Verhalten aktivieren
+	job->active=1;
+	// aufrufer sichern
+	job->caller =  from;
 }
 
+/*!
+ * Drehe die Raeder um die gegebene Zahl an Encoder-Schritten weiter
+ * @param left Schritte links
+ * @param right Schritte rechts
+ */
+void bot_goto(int16 left, int16 right, Behaviour_t * caller);
 
 
 /*! 
@@ -203,11 +208,11 @@ void bot_drive_square(Behaviour_t *data){
 	static uint8 state = STATE_FORWARD;
 	switch (state) {
 		case STATE_FORWARD: // Vorwaerts
-		   bot_goto(100,100,data->priority);
+		   bot_goto(100,100,data);
 		   state = STATE_TURN;
 		   break;
 		case STATE_TURN: // Drehen
-		   bot_goto(22,-22,data->priority);
+		   bot_goto(22,-22,data);
 		   state=STATE_FORWARD;
 		   break;		
 		default:		/* Sind wir fertig, dann Kontrolle zurueck an Aufrufer */
@@ -219,6 +224,7 @@ void bot_drive_square(Behaviour_t *data){
 
 /*! Uebergabevariable fuer den Dummy */
 static int16 dummy_light=0; 
+
 
 /*!
  * Beispiel fuer ein Hilfsverhalten, 
@@ -254,10 +260,11 @@ void bot_dummy(Behaviour_t *data){
  * Rufe das Dummy-Verhalten auf und uebergebe light
  * @param light Uebergabeparameter
  */
-void bot_call_dummy(int16 light, uint8 callerID){
+void bot_call_dummy(int16 light, Behaviour_t * caller){
+	dummy_light=light;
+
 	// Zielwerte speichern
-	dummy_light=light; 
-	switch_to_behaviour(callerID,PRIORITY_DUMMY);	
+	switch_to_behaviour(caller,bot_dummy);	
 }
 
 
@@ -1039,8 +1046,8 @@ void bot_behave_init(void){
 	insert_behaviour_to_list(&behaviour, new_behaviour(55, bot_drive_square));
 
 
-	insert_behaviour_to_list(&behaviour, new_behaviour(PRIORITY_GOTO_SYSTEM, bot_goto_system));
-	deactivateBehaviour(PRIORITY_GOTO_SYSTEM);
+	insert_behaviour_to_list(&behaviour, new_behaviour(50, bot_goto_system));
+	deactivateBehaviour(bot_goto_system);
 	
 	insert_behaviour_to_list(&behaviour, new_behaviour(0, bot_base));
 
@@ -1069,10 +1076,10 @@ void bot_behave_init(void){
  * @param left Schritte links
  * @param right Schritte rechts
  */
-void bot_goto(int16 left, int16 right, uint8 callerID){
+void bot_goto(int16 left, int16 right, Behaviour_t * caller){
 	// Zielwerte speichern
 	mot_l_goto=left; 
 	mot_r_goto=right;
 
-	switch_to_behaviour(callerID,PRIORITY_GOTO_SYSTEM);	
+	switch_to_behaviour(caller,bot_goto_system);	
 }

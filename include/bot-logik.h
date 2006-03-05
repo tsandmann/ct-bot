@@ -30,13 +30,6 @@ extern volatile int16 target_speed_l;	/*!< Sollgeschwindigkeit linker Motor */
 extern volatile int16 target_speed_r;	/*!< Sollgeschwindigkeit rechter Motor */
 
 /*!
- * Drehe die Raeder um die gegebene Zahl an Encoder-Schritten weiter
- * @param left Schritte links
- * @param right Schritte rechts
- */
-extern void bot_goto(int16 left, int16 right,uint8 callerID);
-
-/*!
  * Kuemmert sich intern um die Ausfuehrung der goto-Kommandos
  * @see bot_goto()
  */
