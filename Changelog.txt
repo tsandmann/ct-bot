@@ -1,5 +1,8 @@
 CHANGELOG fuer c't-Bot
 ======================
+
+2006-03-07	Christoph Grimmer (c.grimmer@futurio.de) bot_complex_behaviour in bot_olympic_behaviour umbenannt.
+
 2006-03-05 Christoph Grimmer (c.grimmer@futurio.de) Das complex_behaviour und alle zugehoerigen Funktionen so umgeschrieben, dass sie in das behaviour-framework passen. Zu bot_drive_distance und bot_turn wurden entsprechende Botschaftsfunktionen und globale Variablen angelegt. ACHTUNG: Es kommt sicherlich zu Problemen, wenn die Radencoder waerend eines Laufs von bot_turn oder bot_drive_distance ueberlaufen!
 
 2006-03-04	Andreas Merkle (mail@blue-andi.de)	Ausgaben auf das LCD-Display vereinfacht.
