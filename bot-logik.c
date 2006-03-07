@@ -976,7 +976,7 @@ void bot_do_slalom(Behaviour_t *caller){
 /*!
  * Das Verhalten setzt sich aus 3 Teilverhalten zusammen: 
  * Nach Licht suchen, auf das Licht zufahren, im Licht Slalom fahren. */
-void bot_complex_behaviour(Behaviour_t *data){
+void bot_olympic_behaviour(Behaviour_t *data){
 	if(check_for_light()){
 		/* Sobald der Bot auf ein Objekt-Hinderniss stoesst, versucht er, Slalom zu fahren.
 		 * Aufgabe: Wenn der Bot vor einem Loch steht, hinter welchem sich die Lichtquelle 
@@ -1107,7 +1107,7 @@ void bot_behave_init(void){
 
 	insert_behaviour_to_list(&behaviour, new_behaviour(100, bot_avoid_col));
 	insert_behaviour_to_list(&behaviour, new_behaviour(60, bot_glance));
-	insert_behaviour_to_list(&behaviour, new_behaviour(55, bot_complex_behaviour));
+	insert_behaviour_to_list(&behaviour, new_behaviour(55, bot_olympic_behaviour));
 
 	
 	insert_behaviour_to_list(&behaviour, new_behaviour(51,bot_explore_behaviour));

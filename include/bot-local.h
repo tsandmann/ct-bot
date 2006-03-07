@@ -76,7 +76,7 @@
 #define EXPLORATION_STATE_DRIVE_ARC				8	/*!< Zustand: Bot faehrt einen Bogen. Der Winkel des Bogens sollte in einer 													 
 													 *!< weiteren static Variablen (z.B. curve) gespeichert sein. */
 
-/* Zustaende des bot_complex_behaviour-Verhaltens */ 
+/* Zustaende des bot_olympic_behaviour-Verhaltens */ 
 
 #define CB_STATE_EXPLORATION		0	/*!< Zustand: Bot erforscht die Umgebung. */
 #define CB_STATE_DOING_SLALOM 		1	/*!< Zustand: Bot ist dabei Slalom zu fahren. */
