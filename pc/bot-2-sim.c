@@ -127,6 +127,12 @@ void bot_2_sim_init(void){
 			printf("Thread Creation failed");
 			exit(1);
 	}
+	
+	int j;
+	int16 null=0;
+	for(j=0;j<5;j++) 
+		command_write(CMD_WELCOME, SUB_WELCOME_SIM ,&null,&null);
+
 }
 
 

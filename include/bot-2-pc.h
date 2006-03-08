@@ -38,4 +38,8 @@ void bot_2_pc_listen(void);
  */
 void bot_2_pc_inform(void);
 
+/*! 
+ * Meldet den Bot am c't-Sim an
+ */
+void bot_2_pc_init(void);
 #endif

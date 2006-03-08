@@ -88,10 +88,15 @@ typedef struct {
 #define SUB_CMD_LEFT	'L' 	/*!< Kommmando fuer links */
 #define SUB_CMD_RIGHT	'R' 	/*!< Kommando fuer rechts */
 
-// Subcommandos f�r LCD
+// Subcommandos fuer LCD
 #define SUB_LCD_CLEAR   'c'     /*!< Subkommando Clear Screen */
 #define SUB_LCD_DATA    'D'     /*!< Subkommando Text ohne Cursor */
 #define SUB_LCD_CURSOR  'C'     /*!< Subkommando Cursorkoordinaten */    
+
+//Kommandos fuer die Verbindung zum c't-Sim
+#define CMD_WELCOME	'W'		/*!< Kommado zum anmelden an c't-Sim */
+#define SUB_WELCOME_REAL	'R'		/*!< Subkommado zum anmelden eine realen Bots an c't-Sim */
+#define SUB_WELCOME_SIM	'S'		/*!< Subkommado zum anmelden eines simulierten Bots an c't-Sim */
 
 #define DIR_REQUEST	0			/*!< Richtung fuer Anfragen */
 #define DIR_ANSWER	1			/*!< Richtung fuer Antworten */

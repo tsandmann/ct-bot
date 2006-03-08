@@ -99,6 +99,11 @@ void init(void){
 		#endif		
 	#endif
 
+	#ifdef BOT_2_PC_AVAILABLE
+		bot_2_pc_init();
+	#endif
+
+
 	#ifdef PC
 		bot_2_sim_init();
 	#endif
@@ -120,10 +125,6 @@ void init(void){
 		#ifdef RC5_AVAILABLE
 			ir_init();
 		#endif
-	#endif
-
-	#ifdef UART_AVAILABLE	
-		uart_init();
 	#endif
 			
 	#ifdef MAUS_AVAILABLE
@@ -336,7 +337,7 @@ void init(void){
 		LED_set(0x00);
 		
 		#ifdef BOT_2_PC_AVAILABLE		
-			uart_write(display_buf,11);
+			//uart_write(display_buf,11);
 		#endif
 	#endif
 	
@@ -376,11 +377,12 @@ void init(void){
 		#ifdef MCU
 			#ifdef BOT_2_PC_AVAILABLE
 				static int16 lastTimeCom =0;
+
+				bot_2_pc_inform();				// Den PC ueber Sensorern und aktuatoren informieren
 	
 				if (time_s != lastTimeCom) {	// sollte genau 1x pro Sekunde zutreffen
 					lastTimeCom = time_s;		
 					bot_2_pc_listen();				// Kommandos vom PC empfangen
-					bot_2_pc_inform();				// Den PC ueber Sensorern und aktuatoren informieren
 				}
 			#endif
 		#endif

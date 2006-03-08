@@ -34,6 +34,8 @@
 
 #ifdef UART_AVAILABLE
 
+#define BAUDRATE	9600
+
 #define UART_RX_BUFFER_SIZE 16	/*!< Größe des UART-Puffers */
 
 #define UART_RX_BUFFER_MASK ( UART_RX_BUFFER_SIZE - 1 )
@@ -62,6 +64,10 @@ void uart_init(void){
 	/* UART auf 9600 baud */
 	UBRRH=0;
 	UBRRL= 103;  /* Werte stehen im Datenblatt tabelarisch */
+
+//	UBRRL = (uint8) ((F_CPU / 16) * BAUDRATE - 1);
+
+
 	
 	/* Puffer leeren */
 	UART_RxTail = 0;
