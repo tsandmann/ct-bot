@@ -30,9 +30,9 @@
 
 extern volatile char display_update;		/*!< Muss das Display aktualisiert werden? */
 #ifdef DISPLAY_SCREENS_AVAILABLE
-	#define DISPLAY_SCREENS	4			/*!< Anzahl der Screens */
+	#define DISPLAY_SCREENS	5				/*!< Anzahl der Screens */
 	#define DISPLAY_SCREEN_TOGGLE	42		/*!< Screen-Nummer, die zum wechseln verwendet wird */
-	extern volatile char display_screen;		/*!< Welcher Screen soll gezeigt werden? */
+	extern volatile char display_screen;	/*!< Welcher Screen soll gezeigt werden? */
 #endif
 
 /*! 

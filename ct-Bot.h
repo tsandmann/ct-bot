@@ -28,6 +28,9 @@
 /************************************************************
 * Module switches, to make code smaller if features are not needed
 ************************************************************/
+//#define LOG_UART_AVAILABLE		/*!< Logging ueber UART */
+//#define LOG_CTSIM_AVAILABLE		/*!< Logging ueber das ct-Sim */
+//#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display */
 
 #define LED_AVAILABLE		/*!< LEDs for local control */
 
@@ -121,6 +124,65 @@
 	#define DISPLAY_SCREEN_RESETINFO
 #endif
 
+#ifdef LOG_UART_AVAILABLE
+	#define LOG_AVAILABLE
+#endif 
+#ifdef LOG_CTSIM_AVAILABLE
+	#define LOG_AVAILABLE
+#endif 
+#ifdef LOG_DISPLAY_AVAILABLE
+	#define LOG_AVAILABLE
+#endif 
+
+#ifdef LOG_AVAILABLE
+	#ifdef PC
+		/* Auf dem PC gibts kein Logging ueber UART. */
+		#undef LOG_UART_AVAILABLE
+	#endif
+	
+	#ifdef MCU
+		/* Mit Bot zu PC Kommunikation auf dem MCU gibts kein Logging ueber UART.
+		 * Ohne gibts keine Kommunikation ueber ct-Sim.
+		 */
+		#ifdef BOT_2_PC_AVAILABLE
+			#undef LOG_UART_AVAILABLE
+		#else
+			#undef LOG_CTSIM_AVAILABLE
+		#endif
+	#endif
+	
+	/* Ohne Display gibts auch keine Ausgaben auf diesem. */
+	#ifndef DISPLAY_AVAILABLE
+		#undef LOG_DISPLAY_AVAILABLE
+	#endif
+	
+	/* Logging aufs Display ist nur moeglich, wenn mehrere Screens
+	 * unterstuetzt werden.
+	 */
+	#ifndef DISPLAY_SCREENS_AVAILABLE
+		#undef LOG_DISPLAY_AVAILABLE
+	#endif
+	
+	/* Es kann immer nur ueber eine Schnittstelle geloggt werden. */
+	
+	#ifdef LOG_UART_AVAILABLE
+		#define UART_AVAILABLE
+		#undef LOG_CTSIM_AVAILABLE
+		#undef LOG_DISPLAY_AVAILABLE
+	#endif
+	
+	#ifdef LOG_CTSIM_AVAILABLE
+		#undef LOG_UART_AVAILABLE
+		#undef LOG_DISPLAY_AVAILABLE
+	#endif
+	
+	#ifdef LOG_DISPLAY_AVAILABLE
+		#undef LOG_UART_AVAILABLE
+		#undef LOG_CTSIM_AVAILABLE
+	#endif
+#endif
+
 #define F_CPU	16000000L    /*!< Crystal frequency in Hz */
 #define XTAL F_CPU			 /*!< Crystal frequency in Hz */
 
+#define LINE_FEED "\n\r"	/*!< Windows und Linux unterscheiden beim Linefeed. Windows erwarten \n\r, Linux nur \n */

@@ -32,7 +32,7 @@
 #include "led.h"
 
 #ifdef MCU
-#ifdef UART_AVAILABLE
+#ifdef BOT_2_PC_AVAILABLE
 
 /*! 
  * Diese Funktion nimmt die Daten vom PC entgegen

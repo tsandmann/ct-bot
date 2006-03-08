@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-03-08	Andreas Merkle (mail@blue-andi.de)	Log-Funktionen eingefuehrt
+
 2006-03-05	Benjamin Benz (bbe@heise.de) Kommunikation Bot-PC überarbeitet,  Anmeldung am c't-Sim
 
 2006-03-07	Christoph Grimmer (c.grimmer@futurio.de) bot_complex_behaviour in bot_olympic_behaviour umbenannt.

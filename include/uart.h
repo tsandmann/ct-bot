@@ -55,7 +55,8 @@ void uart_send_byte(char data);
  * @param cmd Zeiger auf das Kommando
  * @return Anzahl der gesendete Bytes
  */
-int uart_send_cmd(command_t *cmd);
+//int uart_send_cmd(command_t *cmd);
+#define uart_send_cmd(cmd)  uart_write(cmd,sizeof(command_t));
 
 /*!
  * Sende Daten per UART im Little Endian

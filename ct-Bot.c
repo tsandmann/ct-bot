@@ -56,6 +56,7 @@
 #include "adc.h"
 #include "timer.h"
 #include "sensor.h"
+#include "log.h"
 
 
 #include "motor.h"
@@ -97,6 +98,10 @@ void init(void){
 			reset_flag = MCUCSR & 0x1F;	//Lese Grund fuer Reset und sichere Wert
 			MCUCSR = 0;	//setze Register auf 0x00 (loeschen)
 		#endif		
+	#endif
+
+	#ifdef UART_AVAILABLE
+		uart_init();
 	#endif
 
 	#ifdef BOT_2_PC_AVAILABLE
@@ -206,6 +211,10 @@ void init(void){
 					#else
 						display_printf("Screen 4");
 					#endif
+					break;
+					
+				case 4:
+					/* Wird zur Ausgabe von Loggings verwendet. */
 					break;
 			}
 			#endif	
@@ -335,10 +344,9 @@ void init(void){
 		display_cursor(1,1);
 		display_printf("c't-Roboter");
 		LED_set(0x00);
-		
-		#ifdef BOT_2_PC_AVAILABLE		
-			//uart_write(display_buf,11);
-		#endif
+		#ifdef LOG_AVAILABLE
+			LOG_DEBUG(("Hallo Welt!"));
+		#endif	
 	#endif
 	
 	#ifdef TEST_AVAILABLE_COUNTER
@@ -386,11 +394,15 @@ void init(void){
 				}
 			#endif
 		#endif
+		
+		#ifdef LOG_AVAILABLE
+			LOG_DEBUG(("LOG TIME %d s",time_s));
+		#endif	
+		
 		// Alles Anzeigen
 		#ifdef DISPLAY_AVAILABLE
 			display();
 		#endif
-		
 		#ifdef PC
 			wait_for_time(100000);
 		#endif

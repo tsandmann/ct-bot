@@ -93,13 +93,16 @@ typedef struct {
 #define SUB_LCD_DATA    'D'     /*!< Subkommando Text ohne Cursor */
 #define SUB_LCD_CURSOR  'C'     /*!< Subkommando Cursorkoordinaten */    
 
+// Log-Ausgaben
+#define CMD_LOG			'O'		/*!< Logausgaben */
+
 //Kommandos fuer die Verbindung zum c't-Sim
-#define CMD_WELCOME	'W'		/*!< Kommado zum anmelden an c't-Sim */
+#define CMD_WELCOME		'W'		/*!< Kommado zum anmelden an c't-Sim */
 #define SUB_WELCOME_REAL	'R'		/*!< Subkommado zum anmelden eine realen Bots an c't-Sim */
 #define SUB_WELCOME_SIM	'S'		/*!< Subkommado zum anmelden eines simulierten Bots an c't-Sim */
 
 #define DIR_REQUEST	0			/*!< Richtung fuer Anfragen */
-#define DIR_ANSWER	1			/*!< Richtung fuer Antworten */
+#define DIR_ANSWER		1			/*!< Richtung fuer Antworten */
 
 #ifdef PC	// Auf dem PC muss der Zugriff auf received_command Thread-sicher sein
 	#include <pthread.h>
