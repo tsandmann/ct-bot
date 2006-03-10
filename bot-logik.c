@@ -1115,6 +1115,9 @@ void bot_behave_init(void){
 	insert_behaviour_to_list(&behaviour, new_behaviour(41,bot_drive_distance_behaviour));
 	insert_behaviour_to_list(&behaviour, new_behaviour(40,bot_turn_behaviour));
 	insert_behaviour_to_list(&behaviour, new_behaviour(30, bot_goto_behaviour));
+	
+	// Fuer Testzwecke Ausweichverhalten vor Hindernissen deaktiviert
+	deactivateBehaviour(bot_avoid_col);
 	deactivateBehaviour(bot_explore_behaviour);
 	deactivateBehaviour(bot_do_slalom_behaviour);
 	deactivateBehaviour(bot_drive_distance_behaviour);
