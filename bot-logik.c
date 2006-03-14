@@ -50,25 +50,7 @@
  * 
  * Alle Variablen mit Sensor-Werten findet man in sensor.h, Variablen fuer den Motor in motor.h.
  * 
- */
-
-/*! Verwaltungsstruktur fuer die Verhaltensroutinen */
-
-typedef struct _Behaviour_t {
-   void (*work) (struct _Behaviour_t *data); 	/*!< Zeiger auf die Funktion, die das Verhalten bearbeitet */
-   
-   uint8 priority;				/*!< Prioritaet */
-   struct _Behaviour_t *caller ; /* aufrufendes verhalten */
-   
-   char active:1;				/*!< Ist das Verhalten aktiv */
-   char subResult:2;			/*!< War das aufgerufene unterverhalten erfolgreich (==1)?*/
-   struct _Behaviour_t *next;					/*!< Naechster Eintrag in der Liste */
-#ifndef DOXYGEN
-	}__attribute__ ((packed)) Behaviour_t;
-#else
-	} Behaviour_t;
-#endif
-	
+ */	
 
 char col_zone_l=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der linke Sensor befindet */
 char col_zone_r=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der rechte Sensor befindet */
@@ -566,7 +548,7 @@ int16 is_obstacle_ahead(int16 distance){
 }
 
 /*!
- * Gibt aus, ob der Bot eine für sein Slalomverhalten geeignete Saeule vor sich hat. 
+ * Gibt aus, ob der Bot eine fï¿½r sein Slalomverhalten geeignete Saeule vor sich hat. 
  * @return True, wenn er eine solche Saeule vor sich hat, sonst False.*/
 int8 is_good_pillar_ahead(void){
 	if(is_obstacle_ahead(COL_NEAR) != False && sensLDRL < 600 && sensLDRR < 600) return True;
@@ -930,7 +912,7 @@ void bot_do_slalom_behaviour(Behaviour_t *data){
 				}
 			}
 			if(sweep_state == SWEEP_STATE_TURN) {
-			// Phase 2: Bot um 15° drehen
+			// Phase 2: Bot um 15ï¿½ drehen
 				turn = (orientation == SLALOM_ORIENTATION_LEFT) ? 15 : -15;
 				bot_turn(data,turn);
 				sweep_state = SWEEP_STATE_CHECK;
@@ -1106,26 +1088,28 @@ void bot_behave_init(void){
 	insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_avoid_border));
 
 	insert_behaviour_to_list(&behaviour, new_behaviour(100, bot_avoid_col));
-	insert_behaviour_to_list(&behaviour, new_behaviour(60, bot_glance));
-	insert_behaviour_to_list(&behaviour, new_behaviour(55, bot_olympic_behaviour));
+//	insert_behaviour_to_list(&behaviour, new_behaviour(60, bot_glance));
+//	insert_behaviour_to_list(&behaviour, new_behaviour(55, bot_olympic_behaviour));
 
 	
-	insert_behaviour_to_list(&behaviour, new_behaviour(51,bot_explore_behaviour));
-	insert_behaviour_to_list(&behaviour, new_behaviour(50,bot_do_slalom_behaviour));
-	insert_behaviour_to_list(&behaviour, new_behaviour(41,bot_drive_distance_behaviour));
-	insert_behaviour_to_list(&behaviour, new_behaviour(40,bot_turn_behaviour));
+//	insert_behaviour_to_list(&behaviour, new_behaviour(51,bot_explore_behaviour));
+//	insert_behaviour_to_list(&behaviour, new_behaviour(50,bot_do_slalom_behaviour));
+//	insert_behaviour_to_list(&behaviour, new_behaviour(41,bot_drive_distance_behaviour));
+//	insert_behaviour_to_list(&behaviour, new_behaviour(40,bot_turn_behaviour));
 	insert_behaviour_to_list(&behaviour, new_behaviour(30, bot_goto_behaviour));
 	
 	// Fuer Testzwecke Ausweichverhalten vor Hindernissen deaktiviert
-	deactivateBehaviour(bot_avoid_col);
-	deactivateBehaviour(bot_explore_behaviour);
-	deactivateBehaviour(bot_do_slalom_behaviour);
-	deactivateBehaviour(bot_drive_distance_behaviour);
-	deactivateBehaviour(bot_turn_behaviour);
+//	deactivateBehaviour(bot_avoid_col);
+//	deactivateBehaviour(bot_explore_behaviour);
+//	deactivateBehaviour(bot_do_slalom_behaviour);
+//	deactivateBehaviour(bot_drive_distance_behaviour);
+//	deactivateBehaviour(bot_turn_behaviour);
 	deactivateBehaviour(bot_goto_behaviour);
 	
 	insert_behaviour_to_list(&behaviour, new_behaviour(2, bot_base));
-	insert_behaviour_to_list(&behaviour, new_behaviour(1, bot_drive_square));
+	insert_behaviour_to_list(&behaviour, new_behaviour(50, bot_drive_square));
+
+	deactivateBehaviour(bot_drive_square);
 
 	#ifdef PC
 		#ifdef DISPLAY_AVAILABLE

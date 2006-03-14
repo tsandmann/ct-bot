@@ -28,6 +28,7 @@
 #include "ct-Bot.h"
 #include "ir-rc5.h"
 #include "motor.h"
+#include "motor-low.h"
 #include "bot-logik.h"
 #include "display.h"
 
@@ -85,6 +86,15 @@ static void rc5_bot_change_speed(RemCtrlFuncPar *par);
  */	
 static void rc5_bot_goto(RemCtrlFuncPar *par);
 
+/*!
+ * Diese Funktion wechselt zwiaschen verschiednen Verhalten
+ * @param par Parameter mit den zu setzenden Geschwindigkeiten.
+ */	
+void rc5_bot_next_behaviour(RemCtrlFuncPar *par);
+
+
+void rc5_bot_servo(RemCtrlFuncPar *par);
+
 uint16 RC5_Code;	/*!< Letzter empfangener RC5-Code */
 
 /*! Fernbedienungsaktionen */
@@ -104,6 +114,12 @@ static RemCtrlAction gRemCtrlAction[] = {
 	{ RC5_CODE_8,		rc5_bot_goto,			{ -100, -100 } },
 	{ RC5_CODE_7,		rc5_bot_goto,			{ -40, 40 } },
 	{ RC5_CODE_9,		rc5_bot_goto,			{ 40, -40 } },
+	{ RC5_CODE_SELECT,	rc5_bot_next_behaviour,	{ 0, 0 } },
+	{ RC5_CODE_BWD,		rc5_bot_servo,			{ SERVO1, SERVO_LEFT } },
+	{ RC5_CODE_FWD,		rc5_bot_servo,			{ SERVO1, SERVO_RIGHT } },
+
+
+	
 #ifdef DISPLAY_SCREENS_AVAILABLE
 	{ RC5_CODE_RED,		rc5_screen_set,			{ 0, 0 } },
 	{ RC5_CODE_GREEN,	rc5_screen_set,			{ 1, 0 } },
@@ -148,6 +164,32 @@ static void rc5_screen_set(RemCtrlFuncPar *par) {
 	}
 }
 #endif
+
+
+void rc5_bot_servo(RemCtrlFuncPar *par){
+	servo_set(par->value1,par->value2);
+}
+/*!
+ * Diese Funktion wechselt zwiaschen verschiednen Verhalten
+ * @param par Parameter mit den zu setzenden Geschwindigkeiten.
+ */	
+void rc5_bot_next_behaviour(RemCtrlFuncPar *par) {
+
+	static char state =0;
+
+	state++;
+	if (state==2)
+		state=1;
+	
+	switch (state) {
+		case 0: deactivateBehaviour(bot_drive_square);
+				 deactivateBehaviour(bot_goto_behaviour);
+			break;
+		case 1: activateBehaviour(bot_drive_square);
+			break;
+			
+	}
+}
 
 /*!
  * Diese Funktion setzt die Geschwindigkeit auf den angegebenen Wert.

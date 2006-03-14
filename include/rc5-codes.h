@@ -61,6 +61,12 @@
 #define RC5_CODE_BLUE		(0x1029 & RC5_MASK)	/*!< Blaue Taste */
 #define RC5_CODE_VIEW		(0x000F & RC5_MASK)	/*!< Instant View Taste */
 
+#define RC5_CODE_SELECT	(0x100B & RC5_MASK)	/*!< Select Taste */
+
+#define RC5_CODE_BWD		(0x1025 & RC5_MASK)	/*!< Backward Taste */
+#define RC5_CODE_FWD		(0x1026 & RC5_MASK)	/*!< Forward Taste */
+
+
 #ifdef JOG_DIAL		
 	/* Jogdial geht nur inkl. Adresscode */
 	#undef RC5_MASK

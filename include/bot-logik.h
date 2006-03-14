@@ -26,6 +26,27 @@
 #ifndef bot_logik_H_
 #define bot_logik_H_
 
+#include "global.h"
+#include "ct-Bot.h"
+
+/*! Verwaltungsstruktur fuer die Verhaltensroutinen */
+
+typedef struct _Behaviour_t {
+   void (*work) (struct _Behaviour_t *data); 	/*!< Zeiger auf die Funktion, die das Verhalten bearbeitet */
+   
+   uint8 priority;				/*!< Prioritaet */
+   struct _Behaviour_t *caller ; /* aufrufendes verhalten */
+   
+   char active:1;				/*!< Ist das Verhalten aktiv */
+   char subResult:2;			/*!< War das aufgerufene unterverhalten erfolgreich (==1)?*/
+   struct _Behaviour_t *next;					/*!< Naechster Eintrag in der Liste */
+#ifndef DOXYGEN
+	}__attribute__ ((packed)) Behaviour_t;
+#else
+	} Behaviour_t;
+#endif
+
+
 extern volatile int16 target_speed_l;	/*!< Sollgeschwindigkeit linker Motor */
 extern volatile int16 target_speed_r;	/*!< Sollgeschwindigkeit rechter Motor */
 
@@ -39,5 +60,33 @@ extern void bot_behave(void);
  * Initilaisert das ganze Verhalten
  */
 extern void bot_behave_init(void);
+
+/*!
+ * Aktiviert eine Regel mit gegebener Funktion
+ * @param function Die Funktion, die das Verhalten realisiert.
+ */
+void activateBehaviour(void *function);
+
+/*!
+ * Aktiviert eine Regel mit gegebener Funktion
+ * @param function Die Funktion, die das Verhalten realisiert.
+ */
+void deactivateBehaviour(void *function);
+
+/*!
+ * Beispiel fuer ein Verhalten, das einen Zustand besitzt
+ * es greift auf andere Verhalten zurueck und setzt daher 
+ * selbst keine speedWishes
+ * Laesst den Roboter ein Quadrat abfahren
+ * @param *data der Verhaltensdatensatz
+ */
+void bot_drive_square(Behaviour_t *data);
+
+/*!
+ * Kuemmert sich intern um die Ausfuehrung der goto-Kommandos,
+ * @param *data der Verhaltensdatensatz
+ * @see bot_goto()
+ */
+void bot_goto_behaviour(Behaviour_t *data);
 
 #endif
