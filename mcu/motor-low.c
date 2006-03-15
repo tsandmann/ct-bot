@@ -87,7 +87,7 @@ void bot_motor(int16 left, int16 right){
  * Stellt die Servos
  * Sinnvolle Werte liegen zwischen 8 und 16
  */
-void bot_servo(char servo, char pos){
+void bot_servo(uint8 servo, uint8 pos){
 	if (servo== SERVO1) {
 		OCR0=pos;
 	}

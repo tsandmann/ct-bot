@@ -55,5 +55,5 @@ void bot_motor(int16 left, int16 right);
  * @param servo Nummer des Servos
  * @param servo Zielwert
  */
-void bot_servo(int16 servo, int16 pos);
+void bot_servo(uint8 servo, uint8 pos);
 #endif
