@@ -69,4 +69,13 @@ void motor_init(void);
  * fuer eine langsame Drehung
 */
 void motor_set(int16 left, int16 right);
+
+/*!
+ * Stellt die Servos
+ * Sinnvolle Werte liegen zwischen 8 und 16
+ * @param servo Nummer des Servos
+ * @param servo Zielwert
+ */
+void servo_set(char servo, char pos);
+
 #endif

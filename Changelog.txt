@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-03-15	Benjamin Benz (bbe@heise.de)  Servos fuer PC-Bot eingefuehrt
+
 2006-03-11	Benjamin Benz (bbe@heise.de)  Select-Tatse fuer Verhalten eingefuehrt, bot_olympic_behaviour deaktiviert
 
 2006-03-08	Andreas Merkle (mail@blue-andi.de)	Log-Funktionen eingefuehrt

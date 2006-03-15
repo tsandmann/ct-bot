@@ -48,4 +48,14 @@ void bot_motor(int16 left, int16 right){
 	command_write(CMD_AKT_MOT, SUB_CMD_NORM ,&left,&right);
 }
 
+/*!
+ * Stellt die Servos
+ * Sinnvolle Werte liegen zwischen 8 und 16
+ * @param servo Nummer des Servos
+ * @param servo Zielwert
+ */
+void bot_servo(int16 servo, int16 pos){
+	command_write(CMD_AKT_SERVO, SUB_CMD_NORM ,&servo,&pos);
+}
+
 #endif

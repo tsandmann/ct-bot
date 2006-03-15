@@ -52,6 +52,8 @@ void bot_motor(int16 left, int16 right);
 /*!
  * Stellt die Servos.
  * Sinnvolle Werte liegen zwischen 8 und 16
+ * @param servo Nummer des Servos
+ * @param servo Zielwert
  */
-void servo_set(char servo, char pos);
+void bot_servo(int16 servo, int16 pos);
 #endif

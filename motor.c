@@ -85,6 +85,21 @@ void motor_set(int16 left, int16 right){
 }
 
 /*!
+ * Stellt die Servos
+ * Sinnvolle Werte liegen zwischen 8 und 16
+ * @param servo Nummer des Servos
+ * @param servo Zielwert
+ */
+void servo_set(char servo, char pos){
+	if (pos< SERVO_LEFT)
+		pos=SERVO_LEFT;
+	if (pos> SERVO_RIGHT)
+		pos=SERVO_RIGHT;
+		
+	bot_servo(servo,pos);
+}
+
+/*!
  * Initialisiere den Motorkrams
  */
 void motor_init(void){

@@ -167,7 +167,7 @@ static void rc5_screen_set(RemCtrlFuncPar *par) {
 
 
 void rc5_bot_servo(RemCtrlFuncPar *par){
-	servo_set(par->value1,par->value2);
+		servo_set(par->value1,par->value2);
 }
 /*!
  * Diese Funktion wechselt zwiaschen verschiednen Verhalten
