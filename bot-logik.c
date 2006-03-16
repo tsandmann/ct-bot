@@ -23,8 +23,8 @@
  * den Roboter zu steuern.
  * 
  * bot_behave() arbeitet eine Liste von Verhalten ab. 
- * Jedes Verhalten kann entweder absolute Werte setzen, dann kommen niedrigerpriorisierte nicht mehr dran
- * Alternativ dazu kann es Modifikatoren aufstellen, die bei niedriger priosierten angewendet werden.
+ * Jedes Verhalten kann entweder absolute Werte setzen, dann kommen niedrigerpriorisierte nicht mehr dran.
+ * Alternativ dazu kann es Modifikatoren aufstellen, die bei niedriger priorisierten angewendet werden.
  * bot_behave_init() baut diese Liste auf.
  * Jede Verhaltensfunktion bekommt einen Verhaltensdatensatz uebergeben, in den Sie ihre Daten eintraegt
  * 
@@ -45,7 +45,7 @@
 #include <stdlib.h>
 #include <math.h>
 /*
- * Alle Konstanten, die die Verhalten befinden sind in bot-local.h ausgelagert. 
+ * Alle Konstanten, die Verhaltensweisen benutzen, sind in bot-local.h ausgelagert. 
  * Dort kann man sie per .cvsignore vor updates schuetzen.
  * 
  * Alle Variablen mit Sensor-Werten findet man in sensor.h, Variablen fuer den Motor in motor.h.
@@ -55,8 +55,8 @@
 char col_zone_l=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der linke Sensor befindet */
 char col_zone_r=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der rechte Sensor befindet */
 
-volatile int16 mot_l_goto=0;		/*!< Speichert, wie weit der linke Motor drehen soll */
-volatile int16 mot_r_goto=0;		/*!< Speichert, wie weit der rechte Motor drehen soll */
+volatile int16 mot_l_goto=0;		/*!< Speichert wie weit der linke Motor drehen soll */
+volatile int16 mot_r_goto=0;		/*!< Speichert wie weit der rechte Motor drehen soll */
 
 int16 speedWishLeft;				/*!< Puffervariablen fuer die Verhaltensfunktionen absolut Geschwindigkeit links*/
 int16 speedWishRight;				/*!< Puffervariablen fuer die Verhaltensfunktionen absolut Geschwindigkeit rechts*/
@@ -129,15 +129,15 @@ void deactivateBehaviour(void *function){
  * return_from_behaviour() kehrt dann spaeter wieder zum aufrufenden Verhalten zurueck
  * @param from aufrufendes Verhalten
  * @param to aufgerufenes Verhalten
- * @param override Steht hier ein 1, so fuehrt das aufgerufene Verhalten den Befehl aus, 
+ * @param override Steht hier eine 1, so fuehrt das aufgerufene Verhalten den Befehl aus, 
  * auch wenn es gerade etwas tut. 
- * Achtung das bedeutet jedoch, dass der urspruengliche Caller
- * wieder aktiviert wird. er muss selbst pruefen, ob er mit dem Zustand zufrieden ist!
+ * Achtung: das bedeutet jedoch, dass der urspruengliche Caller
+ * wieder aktiviert wird. Er muss selbst pruefen, ob er mit dem Zustand zufrieden ist!
  */ 
 void switch_to_behaviour(Behaviour_t * from, void *to, uint8 override ){
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
 	
-	// Einmal durch die Liste gehen, bis wir den gwuenschten Eintrag haben 
+	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben 
 	for (job = behaviour; job; job = job->next) {
 		if (job->work == to) {
 			break;
@@ -145,25 +145,25 @@ void switch_to_behaviour(Behaviour_t * from, void *to, uint8 override ){
 	}	
 
 	if (job->caller){		// Ist das auzurufende Verhalten noch beschaeftigt?
-		if (override==NOOVERRIDE){	// nicht ueberschreiben, sofortige rueckkehr
+		if (override==NOOVERRIDE){	// nicht ueberschreiben, sofortige Rueckkehr
 			if (from)
 				from->subResult=SUBFAIL;
 			return;
 		}
 		// Wir wollen also ueberschreiben, aber nett zum alten Aufrufer sein und ihn darueber benachrichtigen
-		job->caller->active=1;	// alten aufrufer reaktivieren
-		job->caller->subResult=SUBFAIL;	// er bekam aber nicht das gewuenschte resultat
+		job->caller->active=1;	// alten Aufrufer reaktivieren
+		job->caller->subResult=SUBFAIL;	// er bekam aber nicht das gewuenschte Resultat
 	}
 
 	if (from) {
-		// laufendes verhalten abschalten
+		// laufendes Verhalten abschalten
 		from->active=0;
 		from->subResult=SUBRUNNING;
 	}
 		
 	// neues Verhalten aktivieren
 	job->active=1;
-	// aufrufer sichern
+	// Aufrufer sichern
 	job->caller =  from;
 }
 
@@ -190,17 +190,16 @@ void bot_goto(int16 left, int16 right, Behaviour_t * caller);
 
 
 /*! 
- * Ein ganz einfaches Verhalten 
- * Es hat maximale Prioritaet
- * Hier kann man ganz einfach spielen. Eleganter ist es jedoch, dieses Nicht zu verwenden!!!
- * Wer Lust hat sich mit dem ganzen Verhaltensframework zu beschÃ¤figen, kann diese Funktion getrost auskommentieren
- * und findet dann in bot_behave_init() und bot_behave() weiter Hinweise ....
+ * Ein ganz einfaches Verhalten, es hat maximale Prioritaet
+ * Hier kann man auf ganz einfache Weise die ersten Schritte wagen. 
+ * Wer die Möglichkeiten des ganzen Verhaltensframeworks ausschöpfen will, kann diese Funktion getrost auskommentieren
+ * und findet dann in bot_behave_init() und bot_behave() weitere Hinweise für elegante Bot-Programmierung....
  * @param *data der Verhaltensdatensatz
  */
 void bot_simple(Behaviour_t *data){
-/* Diese Routine unterscheidet sich minimal von der in c't 04/06
+/* Diese Routine unterscheidet sich minimal von der in c't 4/06 beschriebenen.
  * Das Verhaltensframework hat in der Zwischenzeit eine 
- * Weiterentwicklung durchlaufen */
+ * Weiterentwicklung durchlaufen (siehe c't 7/06). */
 
 /*
   int16 speed_l_col, speed_r_col;
@@ -222,10 +221,10 @@ void bot_simple(Behaviour_t *data){
 }
 
 /*!
- * Beispiel fuer ein Verhalten, das einen Zustand besitzt
- * es greift auf andere Verhalten zurueck und setzt daher 
- * selbst keine speedWishes
- * Laesst den Roboter ein Quadrat abfahren
+ * Laesst den Roboter ein Quadrat abfahren.
+ * Einfaches Beispiel fuer ein Verhalten, das einen Zustand besitzt.
+ * Es greift auf andere Behaviours zurueck und setzt daher 
+ * selbst keine speedWishes.
  * @param *data der Verhaltensdatensatz
  */
 void bot_drive_square(Behaviour_t *data){
@@ -265,7 +264,7 @@ static int16 dummy_light=0;
 /*!
  * Beispiel fuer ein Hilfsverhalten, 
  * das selbst SpeedWishes aussert und 
- * nach getaner Arbeit die Aufrufende Funktion wieder aktiviert
+ * nach getaner Arbeit die aufrufende Funktion wieder aktiviert
  * @param *data der Verhaltensdatensatz
  * @see bot_drive()
  */
@@ -304,7 +303,7 @@ void bot_call_dummy(int16 light, Behaviour_t * caller){
 }
 
 /*! 
- * Das basisverhalten Grundverhalten 
+ * Das einfachste Grundverhalten 
  * @param *data der Verhaltensdatensatz
  */
 void bot_base(Behaviour_t *data){
@@ -316,7 +315,7 @@ void bot_base(Behaviour_t *data){
  * Verhindert, dass der Bot an der Wand haengenbleibt.
  * Der Bot aendert periodisch seine Richtung nach links und rechts,
  * um den Erfassungsbereich der Sensoren zu vergroessern
- * (Er faehrt also einen leichten Schlangenlinienkurs).
+ * (er faehrt also einen leichten Schlangenlinienkurs).
  * @param *data der Verhaltensdatensatz
  */
 void bot_glance(Behaviour_t *data){
@@ -352,11 +351,11 @@ void bot_goto_behaviour(Behaviour_t *data){
   	int diff_l;	/* Restdistanz links */
 	int diff_r; /* Restdistanz rechts */
 
-	/* Sind beide ZÃ¤hler Null und die Funktion active 
-	 * -- sonst wÃ¤ren wir nicht hier -- 
-	 * so ist es der erste Aufruf ==> initialisieren */	
+	/* Sind beide Zaehler Null und ist die Funktion active 
+	 * -- sonst waeren wir nicht hier -- 
+	 * so ist dies der erste Aufruf ==> initialisieren */	
 	if (( mot_goto_l ==0) && ( mot_goto_r ==0)){
-		/* ZÃ¤hler einstellen */
+		/* Zaehler einstellen */
 		if (mot_l_goto !=0) 
 			mot_goto_l= MOT_GOTO_MAX; 
 		if (mot_r_goto !=0) 
@@ -424,10 +423,10 @@ void bot_goto_behaviour(Behaviour_t *data){
 }
 
 /*!
- * TODO: Diese Funktion ist nur ein Dummy-Beispiel, wie eine Kollisionsvermeidung aussehen
- * koennte. Hier ist ein guter Einstiegspunkt fuer eigene Experimente und Algorithmen!
  * Passt auf, dass keine Kollision mit Hindernissen an der Front des Roboters  
  * geschieht.
+ * TODO: Diese Funktion ist nur ein Dummy-Beispiel, wie eine Kollisionsvermeidung aussehen
+ * koennte. Hier ist ein guter Einstiegspunkt fuer eigene Experimente und Algorithmen!
  * @param *data der Verhaltensdatensatz
  */ 
 void bot_avoid_col(Behaviour_t *data){	
@@ -528,14 +527,14 @@ void bot_avoid_border(Behaviour_t *data){
 
 /*!
  * Gibt aus, ob der Bot Licht sehen kann.
- * @return True, wenn der Bot Licht sieht, sonst False. */
+ * @return True, wenn der Bot auch nur das kleinste bisschen Licht sieht, sonst False. */
 int8 check_for_light(void){
 	if(sensLDRL >= 1023 && sensLDRR >= 1023) return False;
 	else return True;	
 }
 
 /*!
- * Die Funktion gibt aus, ob sich innerhalb einer gewissen Entfernung ein Objekt-Hinderniss befindet.
+ * Die Funktion gibt aus, ob sich innerhalb einer gewissen Entfernung ein Objekt-Hindernis befindet.
  * @param distance Entfernung in mm, bis zu welcher ein Objekt gesichtet wird. 
  * @return Gibt False (0) zurueck, wenn kein Objekt innerhalb von distance gesichtet wird. Ansonsten die Differenz 
  * zwischen dem linken und rechten Sensor. Negative Werte besagen, dass das Objekt naeher am linken, positive, dass 
@@ -548,7 +547,7 @@ int16 is_obstacle_ahead(int16 distance){
 }
 
 /*!
- * Gibt aus, ob der Bot eine fï¿½r sein Slalomverhalten geeignete Saeule vor sich hat. 
+ * Gibt aus, ob der Bot eine fuer sein Slalomverhalten geeignete Saeule vor sich hat. 
  * @return True, wenn er eine solche Saeule vor sich hat, sonst False.*/
 int8 is_good_pillar_ahead(void){
 	if(is_obstacle_ahead(COL_NEAR) != False && sensLDRL < 600 && sensLDRR < 600) return True;
@@ -557,7 +556,7 @@ int8 is_good_pillar_ahead(void){
 
 /*!
  * Das Verhalten verhindert, dass dem Bot boese Dinge wie Kollisionen oder Abstuerze widerfahren.
- * @return Bestand Handlungsbedarf? True, wenn das Verhalten etwas ausweichen musste, sonst False.
+ * @return Bestand Handlungsbedarf? True, wenn das Verhalten ausweichen musste, sonst False.
  * TODO: Parameter einfuegen, der dem Verhalten vorschlaegt, wie zu reagieren ist.
  * */
 int bot_avoid_harm(void){
@@ -570,7 +569,7 @@ int bot_avoid_harm(void){
 
 /*!
  * Das Verhalten laesst den Bot in eine Richtung fahren. Dabei stellt es sicher, dass der Bot nicht gegen ein Hinderniss prallt oder abstuerzt.
- * Es handelt sich hierbei nicht im eigentlichen Sinn um ein Verhalten sondern ist nur eine Abstraktion der Motorkontrollen.
+ * Es handelt sich hierbei nicht im eigentlichen Sinn um ein Verhalten, sondern ist nur eine Abstraktion der Motorkontrollen.
  * @param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
  * @param speed Gibt an, wie schnell der Bot fahren soll. */
 void bot_drive(int8 curve, int speed){
@@ -620,7 +619,7 @@ void bot_drive_distance_behaviour(Behaviour_t* data){
 /*! 
  * Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren. Dabei legt die Geschwindigkeit fest, ob der Bot vorwaerts oder rueckwaerts fahren soll.
  * @param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
- * @param speed Gibt an, wie schnell der Bot fahren soll. Negative Werte lassen den Bot ruekcwaerts fahren.
+ * @param speed Gibt an, wie schnell der Bot fahren soll. Negative Werte lassen den Bot rueckwaerts fahren.
  * @param cm Gibt an, wie weit der Bot fahren soll. In cm :-) Die Strecke muss positiv sein, die Fahrtrichtung wird ueber speed geregelt.
  * */
 
@@ -693,7 +692,7 @@ void bot_turn(Behaviour_t* caller,int degrees){
 /*!
  * Das Verhalten laesst den Roboter den Raum durchsuchen. 
  * Das Verhalten hat mehrere unterschiedlich Zustaende:
- * 1. Zu einer Wand oder einem anderen Hinderniss fahren.
+ * 1. Zu einer Wand oder einem anderen Hindernis fahren.
  * 2. Zu einer Seite drehen, bis der Bot parallel zur Wand ist. 
  * Es macht vielleicht Sinn, den Maussensor auszulesen, um eine Drehung um 
  * einen bestimmten Winkel zu realisieren. Allerdings muesste dafuer auch der
@@ -704,8 +703,8 @@ void bot_turn(Behaviour_t* caller,int degrees){
  * evtl. erweitert werden.
  * 4. Senkrecht zur Wand drehen.
  * Siehe 2.
- * 5. Einen Bogen fahren, bis der Bot wieder auf ein Hinderniss stoesst. 
- * Dann das Ganze von vorne beginnen nur in die andere Richtung und mit einem
+ * 5. Einen Bogen fahren, bis der Bot wieder auf ein Hindernis stoesst. 
+ * Dann das Ganze von vorne beginnen, nur in die andere Richtung und mit einem
  * weiteren Bogen. So erforscht der Bot einigermassen systematisch den Raum.
  * 
  * Da das Verhalten jeweils nach 10ms neu aufgerufen wird, muss der Bot sich
@@ -717,14 +716,14 @@ void bot_explore_behaviour(Behaviour_t *data){
 	if((*exploration_check_function)()) return_from_behaviour(data);
 	
 	switch(state){
-	// Volle Fahrt voraus, bis ein Hinderniss erreicht ist.
+	// Volle Fahrt voraus, bis ein Hindernis erreicht ist.
 	case EXPLORATION_STATE_GOTO_WALL:
-		// Der Bot steht jetzt vor einem Hinderniss und soll sich nach rechts drehen
+		// Der Bot steht jetzt vor einem Hindernis und soll sich nach rechts drehen
 		if(bot_avoid_harm()) {
 			state = EXPLORATION_STATE_TURN_PARALLEL_RIGHT;
 			deactivateBehaviour(bot_avoid_col);
 		}
-		// Es ist kein Hinderniss direkt vor dem Bot.
+		// Es befindet sich kein Hindernis direkt vor dem Bot.
 		else {
 			if(sensDistL < COL_NEAR || sensDistR < COL_NEAR){
 				bot_drive(0,BOT_SPEED_FAST);
@@ -733,30 +732,30 @@ void bot_explore_behaviour(Behaviour_t *data){
 			}
 		}
 		break;
-	// Nach links drehen, bis der Bot parallel zum Hinderniss auf der rechten Seite steht.
-	/* Aufgabe: Entwickle ein Verhalten, dass auch bei Loechern funktioniert. 
-	 * Tipp dazu: Drehe den Roboter auf das Loch zu, bis beide Bodensensoren das Loch 'sehen'. Anschliessend drehe den Bot um 90Grad.
+	// Nach links drehen, bis der Bot parallel zum Hindernis auf der rechten Seite steht.
+	/* TODO: Aufgabe: Entwickle ein Verhalten, dass auch bei Loechern funktioniert. 
+	 * Tipp dazu: Drehe den Roboter auf das Loch zu, bis beide Bodensensoren das Loch 'sehen'. Anschliessend drehe den Bot um 90 Grad.
 	 * Es ist noetig, neue Zustaende zu definieren, die diese Zwischenschritte beschreiben. 
 	 * TODO: Drehung mit dem Maussensor ueberwachen. */
 	case EXPLORATION_STATE_TURN_PARALLEL_LEFT:
 		if(sensDistR < COL_FAR){
-			// Volle Drehung nach Links mit ca. 3Grad/10ms
+			// Volle Drehung nach links mit ca. 3Grad/10ms
 			bot_drive(-127,BOT_SPEED_FAST);
 		} else {
-			//Nachdem das Hinderniss nicht mehr in Sicht ist, dreht der Bot noch ca. 3Grad weiter.
+			// Nachdem das Hindernis nicht mehr in Sicht ist, dreht der Bot noch ca. 3 Grad weiter.
 			// Im Zweifelsfall dreht das den Bot zu weit, aber das ist besser, als ihn zu kurz zu drehen.
 			bot_drive(-127,BOT_SPEED_FAST);
 			state = EXPLORATION_STATE_DRIVE_PARALLEL_RIGHT;
 		}
 		break;
-	// Nach rechts drehen, bis der Bot parallel zum Hinderniss auf der linken Seite steht.
+	// Nach rechts drehen, bis der Bot parallel zum Hindernis auf der linken Seite steht.
 	/* Aufgabe: siehe EXPLORATION_STATE_TURN_PARALLEL_LEFT */
 	case EXPLORATION_STATE_TURN_PARALLEL_RIGHT:
 		if(sensDistL < COL_FAR){
-			// Volle Drehung nach Rechts mit ca. 3Grad/10ms
+			// Volle Drehung nach rechts mit ca. 3Grad/10ms
 			bot_drive(127,BOT_SPEED_FAST);
 		} else {
-			/* Nachdem das Hinderniss nicht mehr in Sicht ist, dreht der Bot noch ca. 3Grad weiter.
+			/* Nachdem das Hindernis nicht mehr in Sicht ist, dreht der Bot noch ca. 3 Grad weiter.
 			 * Im Zweifelsfall dreht das den Bot zu weit, aber das ist besser, als ihn zu kurz zu drehen. */
 			bot_drive(127,BOT_SPEED_FAST);
 			state = EXPLORATION_STATE_DRIVE_PARALLEL_LEFT;
@@ -771,30 +770,30 @@ void bot_explore_behaviour(Behaviour_t *data){
 		state = EXPLORATION_STATE_TURN_ORTHOGONAL_LEFT;
 		break;
 	case EXPLORATION_STATE_TURN_ORTHOGONAL_LEFT:
-		// drehe den Bot um 90Grad nach links
+		// Drehe den Bot um 90 Grad nach links.
 		/* Da der Bot sich immer ein bisschen zu weit von der Wand weg dreht, soll er sich
-		 * hier nur um 85Grad drehen. Nicht schoen, aber klappt.*/
+		 * hier nur um 85 Grad drehen. Nicht schoen, aber klappt.*/
 		bot_turn(data,85);
 		state = EXPLORATION_STATE_DRIVE_ARC;
 		activateBehaviour(bot_avoid_col);
 		break;
 	case EXPLORATION_STATE_TURN_ORTHOGONAL_RIGHT:
-		// drehe den Bot um 90Grad nach links
+		// Drehe den Bot um 90 Grad nach rechts.
 		/* Da der Bot sich immer ein bisschen zu weit von der Wand weg dreht, soll er sich
-		 * hier nur um 85Grad drehen. Nicht schoen, aber klappt.*/
+		 * hier nur um 85 Grad drehen. Nicht schoen, aber klappt.*/
 		bot_turn(data,-85);
 		state = EXPLORATION_STATE_DRIVE_ARC;
 		activateBehaviour(bot_avoid_col);
 		break;
 	case EXPLORATION_STATE_DRIVE_ARC:
-		/* Fahre einen Bogen
-		 * Der Bot soll im Wechsel Links und Rechtsboegen fahren. Daher muss das Vorzeichen von curve wechseln.
+		/* Fahre einen Bogen.
+		 * Der Bot soll im Wechsel Links- und Rechtsboegen fahren. Daher muss das Vorzeichen von curve wechseln.
 		 * Ausserdem soll der Bogen zunehmend weiter werden, so dass der absolute Wert von curve abnehmen muss.
-		 * Ist der Wert 0 wird er auf den engsten Bogen initialisiert. Da der Bot am Anfang nach Rechts abbiegt,
+		 * Ist der Wert 0, wird er auf den engsten Bogen initialisiert. Da der Bot am Anfang nach rechts abbiegt,
 		 * muss der Wert positiv sein. 
 		 * Aufgabe: Manchmal kann es passieren, dass der Bot bei einer kleinen Kurve zu weit weg von der Wand
-		 * startet und dann nurnoch im Kreis faehrt. Unterbinde dieses Verhalten.
-		 * */
+		 * startet und dann nur noch im Kreis faehrt. Unterbinde dieses Verhalten.
+		 */
 		if(curve == 0){
 			curve = 25;
 			running_curve = True;
@@ -802,7 +801,7 @@ void bot_explore_behaviour(Behaviour_t *data){
 			curve *= -0.9;
 			running_curve = True;
 		}
-		/* Sobald der Bot auf ein Hinderniss stoesst, wird der naechste Zyklus eingeleitet.
+		/* Sobald der Bot auf ein Hindernis stoesst, wird der naechste Zyklus eingeleitet.
 		 * Auf einen Rechtsbogen (curve > 0) folgt eine Linksdrehung und auf einen Linksbogen eine Rechtsdrehung.
 		 * Wenn der Wert von curve (durch Rundungsfehler bei int) auf 0 faellt, beginnt das Suchverhalten erneut.*/
 		if(bot_avoid_harm()) {
@@ -863,7 +862,7 @@ void bot_do_slalom_behaviour(Behaviour_t *data){
 	case SLALOM_STATE_CHECK_PILLAR:
 		// Der Bot sollte jetzt Licht sehen koennen...
 		if(check_for_light()){
-			// Wenn der Bot direkt vor der Saeule steht, kann er anfangen, sonst zum Licht fahren
+			// Wenn der Bot direkt vor der Saeule steht, kann der Slalom anfangen, sonst zum Licht fahren
 			if(bot_avoid_harm()){
 				state = SLALOM_STATE_START;
 			} else bot_goto_light();
@@ -912,7 +911,7 @@ void bot_do_slalom_behaviour(Behaviour_t *data){
 				}
 			}
 			if(sweep_state == SWEEP_STATE_TURN) {
-			// Phase 2: Bot um 15ï¿½ drehen
+			// Phase 2: Bot um 15 Grad drehen
 				turn = (orientation == SLALOM_ORIENTATION_LEFT) ? 15 : -15;
 				bot_turn(data,turn);
 				sweep_state = SWEEP_STATE_CHECK;
@@ -940,17 +939,17 @@ void bot_do_slalom_behaviour(Behaviour_t *data){
  * Das Verhalten laesst den Bot zwischen einer Reihe beleuchteter Saeulen Slalom fahren. 
  * Das Verhalten ist wie bot_explore() in eine Anzahl von Teilschritten unterteilt.
  * 1. Vor die aktuelle Saeule stellen, so dass sie zentral vor dem Bot und ungefaehr 
- * COL_CLOSEST (100mm) entfernt ist.
- * 2. 90Grad nach rechts drehen.
+ * COL_CLOSEST (100 mm) entfernt ist.
+ * 2. 90 Grad nach rechts drehen.
  * 3. In einem relativ engen Bogen 20 cm weit fahren.
  * 4. Auf der rechten Seite des Bot nach einem Objekt suchen, dass
- * 	a) im rechten Sektor des Bot liegt, also zwischen -45Grad und -135Grad zur Fahrtrichtung liegt,
+ * 	a) im rechten Sektor des Bot liegt, also zwischen -45 Grad und -135 Grad zur Fahrtrichtung liegt,
  * 	b) beleuchtet und 
  * 	c) nicht zu weit entfernt ist.
  * Wenn es dieses Objekt gibt, wird es zur aktuellen Saeule und der Bot faehrt jetzt Slalom links.
- * 5. Sonst zurueck drehen, 90Grad drehen und Slalom rechts fahren.
+ * 5. Sonst zurueck drehen, 90 Grad drehen und Slalom rechts fahren.
  * In diesem Schritt kann der Bot das Verhalten auch abbrechen, falls er gar kein Objekt mehr findet.
- * */
+ */
 void bot_do_slalom(Behaviour_t *caller){
 	switch_to_behaviour(caller, bot_do_slalom_behaviour,NOOVERRIDE);
 }
@@ -971,7 +970,7 @@ void bot_olympic_behaviour(Behaviour_t *data){
 
 /*! 
  * Zentrale Verhaltens-Routine, wird regelmaessig aufgerufen. 
- * Dies ist der richtige Platz fuer eigene Routinen, um den Bot zu steuern
+ * Dies ist der richtige Platz fuer eigene Routinen, um den Bot zu steuern.
  */
 void bot_behave(void){	
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
@@ -983,8 +982,8 @@ void bot_behave(void){
 		rc5_control();						// Abfrage der IR-Fernbedienung
 	#endif
 
-	/* Solange noch Verhalten in der Liste sind
-	   Achtung wir werten die Jobs sortiert nach Prioritaet. Wichtige zuerst!!! */
+	/* Solange noch Verhalten in der Liste sind...
+	   (Achtung: Wir werten die Jobs sortiert nach Prioritaet aus. Wichtige zuerst einsortieren!!!) */
 	for (job = behaviour; job; job = job->next) {
 		if (job->active) {
 			/* WunschVariablen initialisieren */
@@ -1088,28 +1087,32 @@ void bot_behave_init(void){
 	insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_avoid_border));
 
 	insert_behaviour_to_list(&behaviour, new_behaviour(100, bot_avoid_col));
-//	insert_behaviour_to_list(&behaviour, new_behaviour(60, bot_glance));
-//	insert_behaviour_to_list(&behaviour, new_behaviour(55, bot_olympic_behaviour));
-
+	insert_behaviour_to_list(&behaviour, new_behaviour(60, bot_glance));
+	insert_behaviour_to_list(&behaviour, new_behaviour(55, bot_olympic_behaviour));
 	
-//	insert_behaviour_to_list(&behaviour, new_behaviour(51,bot_explore_behaviour));
-//	insert_behaviour_to_list(&behaviour, new_behaviour(50,bot_do_slalom_behaviour));
-//	insert_behaviour_to_list(&behaviour, new_behaviour(41,bot_drive_distance_behaviour));
-//	insert_behaviour_to_list(&behaviour, new_behaviour(40,bot_turn_behaviour));
+	insert_behaviour_to_list(&behaviour, new_behaviour(51,bot_explore_behaviour));
+	insert_behaviour_to_list(&behaviour, new_behaviour(50,bot_do_slalom_behaviour));
+	insert_behaviour_to_list(&behaviour, new_behaviour(41,bot_drive_distance_behaviour));
+	insert_behaviour_to_list(&behaviour, new_behaviour(40,bot_turn_behaviour));
 	insert_behaviour_to_list(&behaviour, new_behaviour(30, bot_goto_behaviour));
-	
-	// Fuer Testzwecke Ausweichverhalten vor Hindernissen deaktiviert
-//	deactivateBehaviour(bot_avoid_col);
-//	deactivateBehaviour(bot_explore_behaviour);
-//	deactivateBehaviour(bot_do_slalom_behaviour);
-//	deactivateBehaviour(bot_drive_distance_behaviour);
-//	deactivateBehaviour(bot_turn_behaviour);
-	deactivateBehaviour(bot_goto_behaviour);
-	
+
 	insert_behaviour_to_list(&behaviour, new_behaviour(2, bot_base));
 	insert_behaviour_to_list(&behaviour, new_behaviour(50, bot_drive_square));
 
+	// Bestimmte Verhaltensweisen deaktivieren, die später aus olympic_behaviour heraus
+	// aktiviert werden:
+	deactivateBehaviour(bot_explore_behaviour);
+	deactivateBehaviour(bot_do_slalom_behaviour);
+	deactivateBehaviour(bot_drive_distance_behaviour);
+	deactivateBehaviour(bot_turn_behaviour);
+	deactivateBehaviour(bot_goto_behaviour);
+
+	
+	// Wer die Kombination des Slalom-Verhaltens mit anderen Verhaltensweisen
+	// ausprobieren will, kann hier beliebig Zeilen auskommentieren:
+	deactivateBehaviour(bot_avoid_col);
 	deactivateBehaviour(bot_drive_square);
+	deactivateBehaviour(bot_base);
 
 	#ifdef PC
 		#ifdef DISPLAY_AVAILABLE

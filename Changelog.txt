@@ -1,16 +1,18 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-03-16	Peter Koenig (pek@heise.de)	Kommentare korrigiert, bot_olympic_behaviour fuer Release aktiviert
+
 2006-03-15	Benjamin Benz (bbe@heise.de)  Servos fuer PC-Bot eingefuehrt
 
-2006-03-11	Benjamin Benz (bbe@heise.de)  Select-Tatse fuer Verhalten eingefuehrt, bot_olympic_behaviour deaktiviert
+2006-03-11	Benjamin Benz (bbe@heise.de)  Select-Taste fuer Verhalten eingefuehrt, bot_olympic_behaviour deaktiviert
 
 2006-03-08	Andreas Merkle (mail@blue-andi.de)	Log-Funktionen eingefuehrt
 
-2006-03-05	Benjamin Benz (bbe@heise.de) Kommunikation Bot-PC überarbeitet,  Anmeldung am c't-Sim
+2006-03-05	Benjamin Benz (bbe@heise.de) Kommunikation Bot-PC ueberarbeitet,  Anmeldung am c't-Sim
 
 2006-03-07	Christoph Grimmer (c.grimmer@futurio.de) bot_complex_behaviour in bot_olympic_behaviour umbenannt.
 
-2006-03-05 Christoph Grimmer (c.grimmer@futurio.de) Das complex_behaviour und alle zugehoerigen Funktionen so umgeschrieben, dass sie in das behaviour-framework passen. Zu bot_drive_distance und bot_turn wurden entsprechende Botschaftsfunktionen und globale Variablen angelegt. ACHTUNG: Es kommt sicherlich zu Problemen, wenn die Radencoder waerend eines Laufs von bot_turn oder bot_drive_distance ueberlaufen!
+2006-03-05 Christoph Grimmer (c.grimmer@futurio.de) Das complex_behaviour und alle zugehoerigen Funktionen so umgeschrieben, dass sie in das behaviour-framework passen. Zu bot_drive_distance und bot_turn wurden entsprechende Botschaftsfunktionen und globale Variablen angelegt. ACHTUNG: Es kommt sicherlich zu Problemen, wenn die Radencoder waehrend eines Laufs von bot_turn oder bot_drive_distance ueberlaufen!
 
 2006-03-04	Andreas Merkle (mail@blue-andi.de)	Ausgaben auf das LCD-Display vereinfacht.
 
@@ -22,19 +24,19 @@ CHANGELOG fuer c't-Bot
 
 2006-03-02	Benjamin Benz (bbe@heise.de) Remote-Display repariert
 
-2006-03-02	Benjamin Benz (bbe@heise.de) Display.c aufgeräumt, Makefile angepasst
+2006-03-02	Benjamin Benz (bbe@heise.de) Display.c aufgeraeumt, Makefile angepasst
 
-2006-03-01	Benjamin Benz (bbe@heise.de) Kommunikation Bot-PC eingeführt
+2006-03-01	Benjamin Benz (bbe@heise.de) Kommunikation Bot-PC eingefuehrt
 
 2006-03-01	Benjamin Benz (bbe@heise.de) Routinen aus bot-2-sim.c verschoben in command.c
 
-2006-02-28	Benjamin Benz (bbe@heise.de) Uart-Kommunikation überarbeitet
+2006-02-28	Benjamin Benz (bbe@heise.de) Uart-Kommunikation ueberarbeitet
 
-2006-02-28	Benjamin Benz (bbe@heise.de) Geschwindigkeitsvariabeln v_left und v_right eingeführt
+2006-02-28	Benjamin Benz (bbe@heise.de) Geschwindigkeitsvariabeln v_left und v_right eingefuehrt
 
 2006-02-28	Benjamin Benz (bbe@heise.de) Alle Anpassungen des Roboters an lokale Gegebenheiten in bot-local.h ausgelagert
 
-2006-02-28	Benjamin Benz (bbe@heise.de) TODO-Datei eingeführt
+2006-02-28	Benjamin Benz (bbe@heise.de) TODO-Datei eingefuehrt
 
 2006-02-28	Benjamin Benz (bbe@heise.de) Es gibt jetzt (auf dem MCU) eine globale Zeit (siehe timer.h) 
 
@@ -46,17 +48,17 @@ CHANGELOG fuer c't-Bot
 
 2006-02-27	Benjamin Benz (bbe@heise.de) Cleanup im goto-System
 
-2006-02-23	Torsten Evers (tevers@onlinehome.de) Flash-Skript um Prüfung der Fuses erweitert
+2006-02-23	Torsten Evers (tevers@onlinehome.de) Flash-Skript um Pruefung der Fuses erweitert
 
 2006-02-23	Benjamin Benz (bbe@heise.de) doppelte LDR-Variablen entfernt
 
-2006-02-23	Benjamin Benz (bbe@heise.de) Direction-Variablen eingeführt, in denen die Drehrichtung auch noch steht, wenn die Speed wieder auf Null ist
+2006-02-23	Benjamin Benz (bbe@heise.de) Direction-Variablen eingefuehrt, in denen die Drehrichtung auch noch steht, wenn die Speed wieder auf Null ist
 
 2006-02-23	Ansgar Esztermann (ansgar@thphy.uni-duesseldorf.de) Big Endian Unterstuetzung im Netzwerkcode
 
 2006-02-23	Markus Hennecke (markus-hennecke@markus-hennecke.de) Bessere Handhabung weiterer Zielplattformen
 
-2006-02-23	Benjamin Benz (bbe@heise.de) Motor-Drehrichtung angepasst, BORDER_DANGEROUS angepasst, BEHAVIOUR_AVAILABLE eingeführt
+2006-02-23	Benjamin Benz (bbe@heise.de) Motor-Drehrichtung angepasst, BORDER_DANGEROUS angepasst, BEHAVIOUR_AVAILABLE eingefuehrt
 
 2006-02-23	Benjamin Benz (bbe@heise.de) Neues Testprogramm, um Resets zu analysieren
 
@@ -64,7 +66,7 @@ CHANGELOG fuer c't-Bot
 
 2006-02-21 	Carsten Giesen (info@cnau.de) Das Register MCUCSR wird auf Screen 4 angezeigt
 
-2006-02-21  Torsten Evers (tevers@onlinehome.de) Linux-Skritpe zum Flashen und Fusen mit avrdude eingefügt
+2006-02-21  Torsten Evers (tevers@onlinehome.de) Linux-Skritpe zum Flashen und Fusen mit avrdude eingefuegt
 
 2006-02-20	Benjamin Benz (bbe@heise.de) Und nochmal Bugfix in bot_logik.c
 
@@ -74,7 +76,7 @@ CHANGELOG fuer c't-Bot
 
 2006-02-20	Benjamin Benz (bbe@heise.de) Bugfix in bot_behave()
 
-2006-02-18	Benjamin Benz (bbe@heise.de) Schönheitskorrektur in den Maus-Routinen
+2006-02-18	Benjamin Benz (bbe@heise.de) Schoenheitskorrektur in den Maus-Routinen
 
 2006-02-19	Benjamin Benz (bbe@heise.de) RC5-Variable in sensor.h umgezogen
 
@@ -84,15 +86,13 @@ CHANGELOG fuer c't-Bot
 
 2006-02-18	Rolf Ebert (Rolf.Ebert@gmx.net) LCD-Ausgabe kann nun auch im Simulator erscheinen
 
-2006-02-18	Benjamin Benz (bbe@heise.de) Fuse-Bit-Dateien für avrdude eingefügt
+2006-02-18	Benjamin Benz (bbe@heise.de) Fuse-Bit-Dateien fuer avrdude eingefügt
 
 2006-02-17	Benjamin Benz (bbe@heise.de) Linearisierung der Distanzsensoren eingeführt
 
-2006-02-17	Benjamin Benz (bbe@heise.de) Stromsparen eingeführt
+2006-02-17	Benjamin Benz (bbe@heise.de) Stromsparen eingefuehrt
 
-2006-02-15	Andreas Merkle (mail@blue-andi.de) RC5-Fernbedienungscodes in eine Header-Datei ausgelagert.
-											   Fernbedienungsaktionen in einer Tabelle zusammengefasst. Dadurch sind
-											   Erweiterungen bzw. Aenderungen noch einfacher moeglich.
+2006-02-15	Andreas Merkle (mail@blue-andi.de) RC5-Fernbedienungscodes in eine Header-Datei ausgelagert. Fernbedienungsaktionen in einer Tabelle zusammengefasst. Dadurch sind Erweiterungen bzw. Aenderungen noch einfacher moeglich.
 
 2006-02-13	Benjamin Benz (bbe@heise.de) Bugfix im bot_goto_system()
 
@@ -110,9 +110,9 @@ CHANGELOG fuer c't-Bot
 
 2006-02-01	Benjamin Benz (bbe@heise.de) Verhaltensframework nochmals modifiziert. Additives Verhalten ist wieder raus.
 										 speed_l-Variablen und Co aus den Datenstrukturen raus ==> spart RAM
-										 goto-System deaktiviert sich nun selbsttätig
+										 goto-System deaktiviert sich nun selbsttaetig
 
-2006-02-01	Benjamin Benz (bbe@heise.de) Bugfix im Verhaltenscode. BOT_SPEED_IGNORE eingefügt
+2006-02-01	Benjamin Benz (bbe@heise.de) Bugfix im Verhaltenscode. BOT_SPEED_IGNORE eingefuegt
 
 2006-02-01	Benjamin Benz (bbe@heise.de) Brake-Konstante angepasst
 
@@ -124,21 +124,14 @@ CHANGELOG fuer c't-Bot
 
 2006-01-30	Benjamin Benz (bbe@heise.de) sensDistL und sensDistR initialisieren bun mit 1023 ==> keine Rotation zu Beginn mehr
 
-2006-01-28	Andreas Merkle (mail@blue-andi.de) Beim Ausfuehren von Verhalten werden Verhalten mit gleicher Prioritaet nun
-											   additiv behandelt und erst dann die Werte gesetzt.
-											   Im Verhalten bot_avoid_col wurde die Geschwindigkeitsaenderung nicht in die
-											   Verhaltenstruktur geschrieben. Dieses wurde korrigiert.
-											   Beim Anlegen einer Verhaltensstruktur wird nun ueberprueft, ob
-											   genuegend Heap-Speicher vorhanden ist.
+2006-01-28	Andreas Merkle (mail@blue-andi.de) Beim Ausfuehren von Verhalten werden Verhalten mit gleicher Prioritaet nun additiv behandelt und erst dann die Werte gesetzt. Im Verhalten bot_avoid_col wurde die Geschwindigkeitsaenderung nicht in die Verhaltenstruktur geschrieben. Dieses wurde korrigiert. Beim Anlegen einer Verhaltensstruktur wird nun ueberprueft, ob genuegend Heap-Speicher vorhanden ist.
 
-2006-01-27	Benjamin Benz (bbe@heise.de) Patch von Andreas Merkle (mail@blue-andi.de) eingebaut. Man kann Verhalten 
-										 jetzt vereinfacht laden
+2006-01-27	Benjamin Benz (bbe@heise.de) Patch von Andreas Merkle (mail@blue-andi.de) eingebaut. Man kann Verhalten jetzt vereinfacht laden
 
-2006-01-26	Benjamin Benz (bbe@heise.de) Gesamtes Verhalten umgestellt. es gibt jetzt ein eigenes 
-										 Verhaltens-Framework.
+2006-01-26	Benjamin Benz (bbe@heise.de) Gesamtes Verhalten umgestellt. es gibt jetzt ein eigenes Verhaltens-Framework.
 
 2006-01-26	Benjamin Benz (bbe@heise.de) Kommentare geaendert
 
-2006-01-25	Benjamin Benz (bbe@heise.de) Status der LEDs wird nun an den Simulator übertragen
+2006-01-25	Benjamin Benz (bbe@heise.de) Status der LEDs wird nun an den Simulator uebertragen
 
-2006-01-24	Benjamin Benz (bbe@heise.de) Schreibweise des Changelogs nochmal verändert
+2006-01-24	Benjamin Benz (bbe@heise.de) Schreibweise des Changelogs nochmal veraendert

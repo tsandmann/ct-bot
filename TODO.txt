@@ -1,9 +1,9 @@
-Wunsch- und Aufgabenliste für die c't-Bot-Firmware bzw. ihr PC-Pendant:
-=======================================================================
+Wunsch- und Aufgabenliste fuer die c't-Bot-Firmware bzw. ihr PC-Pendant:
+========================================================================
 
-Alle hier aufgeführten Punkte stehen noch aus. Wer möchte, ist herzlich eingeladen,
-uns Patches (siehe FAQ) zu schicken, die diese Liste sinnvoll ergänzen. Aber auch über Lösungen
-für hier genannte Probleme freuen wir uns.
+Alle hier aufgefuehrten Punkte stehen noch aus. Wer moechte, ist herzlich eingeladen,
+uns Patches (siehe FAQ) zu schicken, die diese Liste sinnvoll ergaenzen. Aber auch ueber Loesungen
+fuer hier genannte Probleme freuen wir uns.
 
 Thema	Datei		Task
 ==========================================================================
@@ -13,6 +13,6 @@ Sensoren			Linearisierung der Sensorwerte
 Sensoren			Berechnung von Translation und Rotation des Zentrums
 Sensoren			Umrechnung der Maussensordaten in Translation  und Rotation des Zentrums
 Sensoren			Abgleich von Maussensor- und Encoder-Daten
-goto	bot-logik.c	Goto-System lässt den Motoren keine Zeit zum austrudeln.
+goto	bot-logik.c	Goto-System laesst den Motoren keine Zeit zum Austrudeln.
 Info				Readme-Datei zu Variablen und Funktionen schreiben
 delay	delay.c		Delay von busy-wait auf timer-basiert umstellen
