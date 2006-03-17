@@ -1106,7 +1106,7 @@ void bot_behave_init(void){
 	insert_behaviour_to_list(&behaviour, new_behaviour(2, bot_base));
 	insert_behaviour_to_list(&behaviour, new_behaviour(50, bot_drive_square));
 
-	// Bestimmte Verhaltensweisen deaktivieren, die sp�ter aus olympic_behaviour heraus
+	// Bestimmte Verhaltensweisen deaktivieren, die spaeter aus olympic_behaviour heraus
 	// aktiviert werden:
 	deactivateBehaviour(bot_explore_behaviour);
 	deactivateBehaviour(bot_do_slalom_behaviour);
