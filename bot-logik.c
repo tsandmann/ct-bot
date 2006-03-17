@@ -527,9 +527,16 @@ void bot_avoid_border(Behaviour_t *data){
 
 /*!
  * Gibt aus, ob der Bot Licht sehen kann.
- * @return True, wenn der Bot auch nur das kleinste bisschen Licht sieht, sonst False. */
+ * @return True, wenn der Bot Licht sieht, sonst False. */
 int8 check_for_light(void){
+	// Im Simulator kann man den Bot gut auf den kleinsten Lichtschein
+	// reagieren lassen, in der Realitaet gibt es immer Streulicht, so dass
+	// hier ein hoeherer Schwellwert besser erscheint.
+	// Simulator:
 	if(sensLDRL >= 1023 && sensLDRR >= 1023) return False;
+	// Beim echten Bot eher:
+	// if(sensLDRL >= 100 && sensLDRR >= 100) return False;
+	
 	else return True;	
 }
 
@@ -832,8 +839,8 @@ void bot_explore(Behaviour_t *caller, int8 (*check)(void)){
 void bot_goto_light(void){
 	int16 speed, curve = (sensLDRL - sensLDRR)/1.5;
 
-	if(curve < -127) curve = -127;
-	if(curve > 127) curve = 127;
+		if(curve < -127) curve = -127;
+		if(curve > 127) curve = 127;
 
 	if(abs(sensLDRL - sensLDRR) < 20){
 		speed = BOT_SPEED_MAX;

@@ -1,5 +1,8 @@
 CHANGELOG fuer c't-Bot
 ======================
+
+2006-03-16	Peter Koenig (pek@heise.de) Abfrage check_for_light() bei bot_goto_light eingefuegt, da echter Bot viel zu sehr auf das Licht reagiert
+
 2006-03-16	Peter Koenig (pek@heise.de)	Kommentare korrigiert, bot_olympic_behaviour fuer Release aktiviert
 
 2006-03-15	Benjamin Benz (bbe@heise.de)  Servos fuer PC-Bot eingefuehrt

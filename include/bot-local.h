@@ -37,7 +37,7 @@
 /* Einstellunge fuer die Verhaltensregeln */
 #define BORDER_DANGEROUS	0x360	/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */
 
-#define COL_CLOSEST		100		/*!< Abstand in mm, den wir als zu nah betrachten */
+#define COL_CLOSEST		100		/*!< Abstand in mm, den wir als zu nah betrachten -- je nach echtem Sensor ist das schon zu nah! */
 #define COL_NEAR			300		/*!< Nahbereich */
 #define COL_FAR			400		/*!< Fernbereich */
 
