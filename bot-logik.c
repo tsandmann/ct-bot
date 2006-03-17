@@ -192,8 +192,8 @@ void bot_goto(int16 left, int16 right, Behaviour_t * caller);
 /*! 
  * Ein ganz einfaches Verhalten, es hat maximale Prioritaet
  * Hier kann man auf ganz einfache Weise die ersten Schritte wagen. 
- * Wer die Möglichkeiten des ganzen Verhaltensframeworks ausschöpfen will, kann diese Funktion getrost auskommentieren
- * und findet dann in bot_behave_init() und bot_behave() weitere Hinweise für elegante Bot-Programmierung....
+ * Wer die Mï¿½glichkeiten des ganzen Verhaltensframeworks ausschï¿½pfen will, kann diese Funktion getrost auskommentieren
+ * und findet dann in bot_behave_init() und bot_behave() weitere Hinweise fï¿½r elegante Bot-Programmierung....
  * @param *data der Verhaltensdatensatz
  */
 void bot_simple(Behaviour_t *data){
@@ -605,9 +605,9 @@ void bot_drive_distance_behaviour(Behaviour_t* data){
 
 	if (drive_distance_curve > 0){
 		// Es handelt sich um eine Rechtskurve, daher wird mit dem linken Encoder gerechnet
-		encoder = &sensEncL;
+		encoder = (int16*)&sensEncL;
 	} else {
-		encoder = &sensEncR;
+		encoder = (int16*)&sensEncR;
 	}
 	
 	to_drive = drive_distance_target - *encoder;
@@ -638,9 +638,9 @@ void bot_drive_distance(Behaviour_t* caller,int8 curve, int speed, int cm){
 
 	if (curve > 0){
 		// Es handelt sich um eine Rechtskurve, daher wird mit dem linken Encoder gerechnet
-		encoder = &sensEncL;
+		encoder = (int16*)&sensEncL;
 	} else {
-		encoder = &sensEncR;
+		encoder = (int16*)&sensEncR;
 	}
 	if(speed < 0){
 		// Es soll rueckwaerts gefahren werden. Der Zielwert ist also kleiner als der aktuelle Encoder-Stand.
@@ -1106,7 +1106,7 @@ void bot_behave_init(void){
 	insert_behaviour_to_list(&behaviour, new_behaviour(2, bot_base));
 	insert_behaviour_to_list(&behaviour, new_behaviour(50, bot_drive_square));
 
-	// Bestimmte Verhaltensweisen deaktivieren, die später aus olympic_behaviour heraus
+	// Bestimmte Verhaltensweisen deaktivieren, die spï¿½ter aus olympic_behaviour heraus
 	// aktiviert werden:
 	deactivateBehaviour(bot_explore_behaviour);
 	deactivateBehaviour(bot_do_slalom_behaviour);
