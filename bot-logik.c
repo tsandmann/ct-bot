@@ -181,14 +181,6 @@ void return_from_behaviour(Behaviour_t * data){
 }
 
 
-/*!
- * Drehe die Raeder um die gegebene Zahl an Encoder-Schritten weiter
- * @param left Schritte links
- * @param right Schritte rechts
- */
-void bot_goto(int16 left, int16 right, Behaviour_t * caller);
-
-
 /*! 
  * Ein ganz einfaches Verhalten, es hat maximale Prioritaet
  * Hier kann man auf ganz einfache Weise die ersten Schritte wagen. 
