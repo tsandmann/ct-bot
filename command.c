@@ -260,6 +260,10 @@ int command_evaluate(void){
 			case CMD_SENS_TRANS:
 				sensTrans=(char)received_command.data_l;
 				break;
+			case CMD_SENS_MOUSE:
+				sensMouseDX=received_command.data_l;
+				sensMouseDY=received_command.data_r;
+				break;
 			case CMD_SENS_ERROR:
 				sensError=(char)received_command.data_l;
 				sensor_update();	/* Error ist der letzte uebertragene Sensorwert, danach koennen wir uns um allgemeine updates kümmern*/

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-03-15	Benjamin Benz (bbe@heise.de)  Der simulierte Bot nutzt nun auch den Maussensor
+
 2006-03-15	Benjamin Benz (bbe@heise.de)  Der PC darf jetzt FB-Kommandos per UART an den realen Bot uebertragen
 
 2006-03-18  Michail Brzitwa (michail@brzitwa.de)    Definition und Selektierbarkeit verschiedener Fernbedienungen in rc5-codes.h

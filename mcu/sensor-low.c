@@ -136,10 +136,8 @@ void bot_sens_isr(void){
 
  	// Aktualisiere die Position des Maussensors 
 	sensMouseDY = maus_sens_read(MOUSE_DELTA_Y_REG);
-	sensMouseY += sensMouseDY;
 
 	sensMouseDX = maus_sens_read(MOUSE_DELTA_X_REG);	
-	sensMouseX += sensMouseDX;
 
 	// ---------- analoge Sensoren -------------------
 	sensLDRL = adc_read(SENS_LDR_L);

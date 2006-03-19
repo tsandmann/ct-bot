@@ -65,6 +65,10 @@ void sensor_update(void){
 	static int16 lastEncL =0;
 	static int16 lastEncR =0;
 	
+	sensMouseY += sensMouseDY;
+	sensMouseX += sensMouseDX;
+	
+	
 	if (time_s != lastTime) {	// sollte genau 1x pro Sekunde zutreffen
 		v_left=  ((sensEncL - lastEncL) * WHEEL_PERIMETER) / ENCODER_MARKS;
 		v_right= ((sensEncR - lastEncR) * WHEEL_PERIMETER) / ENCODER_MARKS;
