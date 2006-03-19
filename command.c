@@ -226,11 +226,13 @@ int command_evaluate(void){
 	int analyzed = 1;
 	
 	switch (received_command.request.command) {
-		#ifdef LED_AVAILABLE
-			case CMD_AKT_LED:	// LED-Steuerung
-				LED_set(received_command.data_l & 255);
-				break;
-		#endif
+		case CMD_SENS_RC5:
+			ir_data=received_command.data_l;
+			break;
+		case CMD_AKT_LED:	// LED-Steuerung
+			LED_set(received_command.data_l & 255);
+			break;
+		// Einige Kommandos ergeben nur fuer simulierte Bots Sinn
 		#ifdef PC
 			case CMD_SENS_IR:
 				sensDistL=received_command.data_l;
@@ -261,9 +263,6 @@ int command_evaluate(void){
 			case CMD_SENS_ERROR:
 				sensError=(char)received_command.data_l;
 				sensor_update();	/* Error ist der letzte uebertragene Sensorwert, danach koennen wir uns um allgemeine updates kümmern*/
-				break;
-			case CMD_SENS_RC5:
-				ir_data=received_command.data_l;
 				break;
 		#endif
 		default:

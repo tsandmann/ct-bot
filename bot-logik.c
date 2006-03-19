@@ -1112,6 +1112,8 @@ void bot_behave_init(void){
 	deactivateBehaviour(bot_avoid_col);
 	deactivateBehaviour(bot_drive_square);
 	deactivateBehaviour(bot_base);
+	deactivateBehaviour(bot_olympic_behaviour);
+
 
 	#ifdef PC
 		#ifdef DISPLAY_AVAILABLE
