@@ -146,6 +146,8 @@
  
 #undef JOG_DIAL
 #define RC5_MASK (RC5_COMMAND)	/*!< Welcher Teil des Kommandos wird ausgewertet? */
+//#define RC5_MASK (RC5_COMMAND|RC5_ADDRESS)	/*!< Welcher Teil des Kommandos wird ausgewertet? */
+
 
 #define RC5_CODE_0	(0x3940 & RC5_MASK)		/*!< Taste 0 */
 #define RC5_CODE_1	(0x3941 & RC5_MASK)		/*!< Taste 1 */
