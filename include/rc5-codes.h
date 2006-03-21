@@ -32,8 +32,13 @@
 #define RC5_ADDRESS	0x07C0		/*!< Der Adressbereich */
 #define RC5_COMMAND	0x103F		/*!< Der Kommandobereich */
 
+/* Im Normalbetrieb hilft die Beschränkung der RC5_MASK auf RC5_COMMAND dem Bot, 
+ * möglichst viele FBs zu erkennen. 
+ * Zum erfassen neuer  Codes sollte man unbedingt RC5_MASK auf (RC5_COMMAND|RC5_ADDRESS) setzen */
 
+// Normalbetrieb
 #define RC5_MASK (RC5_COMMAND)					/*!< Welcher Teil des Kommandos wird ausgewertet? */
+// Erfassen neuer FB-Codes
 //#define RC5_MASK (RC5_COMMAND|RC5_ADDRESS)	/*!< Welcher Teil des Kommandos wird ausgewertet? */
 
 
