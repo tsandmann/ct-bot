@@ -38,10 +38,6 @@
 
 #ifdef RC5_AVAILABLE
 
-#define RC5_TOGGLE		0x0800		/*!< Das RC5-Toggle-Bit */
-#define RC5_ADDRESS	0x07C0		/*!< Der Adressbereich */
-#define RC5_COMMAND	0x103F		/*!< Der Kommandobereich */
-
 /*! 
  * Dieser Typ definiert Parameter fuer RC5-Kommando-Code Funktionen.
  */

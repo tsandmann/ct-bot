@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-03-21	Benjamin Benz (bbe@heise.de)  RC5-Mask-Definition in rc5-codes.h umgezogen
+
 2006-03-19	Lukas Jelonek (ljelonek@techfak.uni-bielefeld.de) Motoren verhalten sich nun links und rechts identisch
 
 2006-03-19	Benjamin Benz (bbe@heise.de)  Der simulierte Bot nutzt nun auch den Maussensor
