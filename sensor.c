@@ -69,12 +69,12 @@ void sensor_update(void){
 	sensMouseX += sensMouseDX;
 	
 	
-	if (time_s != lastTime) {	// sollte genau 1x pro Sekunde zutreffen
+	if (timer_get_s() != lastTime) {	// sollte genau 1x pro Sekunde zutreffen
 		v_left=  ((sensEncL - lastEncL) * WHEEL_PERIMETER) / ENCODER_MARKS;
 		v_right= ((sensEncR - lastEncR) * WHEEL_PERIMETER) / ENCODER_MARKS;
 		
 		lastEncL= sensEncL;
 		lastEncR= sensEncR;
-		lastTime = time_s;		
+		lastTime = timer_get_s();		
 	}
 }

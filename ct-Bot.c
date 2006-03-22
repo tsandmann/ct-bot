@@ -168,7 +168,7 @@ void init(void){
 				case 1:
 					#ifdef TIME_AVAILABLE
 						display_cursor(1,1);
-						display_printf("Zeit: %04d:%03d",time_s,time_ms);
+						display_printf("Zeit: %04d:%03d", timer_get_s(), timer_get_ms());
 					#endif
 		
 					display_cursor(2,1);
@@ -388,15 +388,15 @@ void init(void){
 
 				bot_2_pc_inform();				// Den PC ueber Sensorern und aktuatoren informieren
 	
-				if (time_s != lastTimeCom) {	// sollte genau 1x pro Sekunde zutreffen
-					lastTimeCom = time_s;		
+				if (timer_get_s() != lastTimeCom) {	// sollte genau 1x pro Sekunde zutreffen
+					lastTimeCom = timer_get_s();		
 					bot_2_pc_listen();				// Kommandos vom PC empfangen
 				}
 			#endif
 		#endif
 		
 		#ifdef LOG_AVAILABLE
-			LOG_DEBUG(("LOG TIME %d s",time_s));
+			LOG_DEBUG(("LOG TIME %d s", timer_get_s()));
 		#endif	
 		
 		// Alles Anzeigen

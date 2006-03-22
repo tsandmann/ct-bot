@@ -26,23 +26,82 @@
 #include "ct-Bot.h"
 #include "timer.h"
 
+#ifdef PC
+	#include <pthread.h>
+#endif	/* PC */
+
 #ifdef TIME_AVAILABLE
 
-volatile uint16 time_micro_s=0; /*!< Mikrosekundenanteil an der Systemzeit */
-volatile uint16 time_ms=0; 	 /*!< Milliekundenanteil an der Systemzeit */
-volatile uint16 time_s=0; 		 /*!< Sekundenanteil an der Systemzeit */
+#ifdef PC
+	/*! Schuetzt die Zeitsynchronisation */
+	#define LOCK()		pthread_mutex_lock(&timer_mutex);
+	/*! Hebt den Schutz fuer die Zeitsynchronisation wieder auf */
+	#define UNLOCK()	pthread_mutex_unlock(&timer_mutex);
+#else
+	/*! Schuetzt die Zeitsynchronisation */
+	#define LOCK()		/* ISR */
+	/*! Hebt den Schutz fuer die Zeitsynchronisation wieder auf */
+	#define UNLOCK()	/* ISR */
+#endif	/* PC */
+
+#ifdef PC
+	/*! Schuetzt die Zeitvariablen */
+	static pthread_mutex_t timer_mutex = PTHREAD_MUTEX_INITIALIZER;
+#endif	/* PC */
+
+static volatile uint16 time_micro_s=0;	/*!< Mikrosekundenanteil an der Systemzeit */
+static volatile uint16 time_ms=0; 	 	/*!< Millisekundenanteil an der Systemzeit */
+static volatile uint16 time_s=0;		/*!< Sekundenanteil an der Systemzeit */
+
+/*!
+ * Diese Funktion liefert den Mikrosekundenanteil der Systemzeit zurueck.
+ * @return uint16
+ */
+inline uint16 timer_get_us(void) {
+	uint16 temp;
+	LOCK();
+	temp = time_micro_s;
+	UNLOCK();
+	return temp;
+}
+
+/*!
+ * Diese Funktion liefert den Millisekundenanteil der Systemzeit zurueck.
+ * @return uint16
+ */
+inline uint16 timer_get_ms(void) {
+	uint16 temp;
+	LOCK();
+	temp = time_ms;
+	UNLOCK();
+	return temp;
+}
+
+/*!
+ * Diese Funktion liefert den Sekundenanteil der Systemzeit zurueck.
+ * @return uint16
+ */
+inline uint16 timer_get_s(void) {
+	uint16 temp;
+	LOCK();
+	temp = time_s;
+	UNLOCK();
+	return temp;
+}
 
 /*! Funktion, um die Systemzeit zu berechnen 
  */
 void system_time_isr(void){
-	time_micro_s += TIMER_STEPS;	/* Mikrosekundentimer erhöhen */
+	LOCK();
+	time_micro_s += TIMER_STEPS;	/* Mikrosekundentimer erhoehen */
 	if (time_micro_s >= 1000){		/* Eine Mikrosekunde verstrichen? */
 		time_ms += (time_micro_s/1000);
-		time_micro_s %= 1000;		/* alle vollen Millisekunden vom Mikrosekundenzähler in den Millisekudnenzähler verschieben */
+		time_micro_s %= 1000;		/* alle vollen Millisekunden vom Mikrosekundenzaehler in den Millisekudnenzaehler verschieben */
 		if (time_ms == 1000){		/* Eine Sekunde verstrichen? */
 			time_ms=0;
 			time_s++;
 		}
 	}
+	UNLOCK();
 }
 #endif

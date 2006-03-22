@@ -29,9 +29,24 @@
 #include "ct-Bot.h"
 
 #ifdef TIME_AVAILABLE
-	extern volatile uint16 time_micro_s; /*!< Mikrosekundenanteil an der Systemzeit */
-	extern volatile uint16 time_ms; 	 /*!< Milliekundenanteil an der Systemzeit */
-	extern volatile uint16 time_s; 		 /*!< Sekundenanteil an der Systemzeit */	
+	/*!
+	 * Diese Funktion liefert den Mikrosekundenanteil der Systemzeit zurueck.
+	 * @return uint16
+	 */
+	inline uint16 timer_get_us(void);
+	
+	/*!
+	 * Diese Funktion liefert den Millisekundenanteil der Systemzeit zurueck.
+	 * @return uint16
+	 */
+	inline uint16 timer_get_ms(void);
+	
+	/*!
+	 * Diese Funktion liefert den Sekundenanteil der Systemzeit zurueck.
+	 * @return uint16
+	 */
+	inline uint16 timer_get_s(void);
+
 	/*! Funktion, um die Systemzeit zu berechnen 
 	 */
 	void system_time_isr(void);

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-03-19	Andreas Merkle (mail@blue-andi.de)	Timer Variablen ueber Funktionen auf dem PC geschuetzt (Thread-Safe).
+
 2006-03-21	Benjamin Benz (bbe@heise.de)  RC5-Mask-Definition in rc5-codes.h umgezogen
 
 2006-03-19	Lukas Jelonek (ljelonek@techfak.uni-bielefeld.de) Motoren verhalten sich nun links und rechts identisch
