@@ -63,9 +63,8 @@
 
 
 //#define RC_HAVE_HAUPPAUGE_WINTV
+//#define RC_HAVE_CONRAD_MediaMPV
 //#define RC_HAVE_CONRAD_PROMO8
-
-
 
 
 /*!
@@ -76,7 +75,7 @@
 	#define RC_HAVE_CODES							/*!< Definiert Codes */
 	#undef JOG_DIAL									/*!< Hat keinen Jog Dial */
 
-	#define RC5_NOT_AVAIL	(0xFFFF)				/*!< Code f�r Taste nicht vorhanden */
+	#define RC5_NOT_AVAIL	(0xFFFF)				/*!< Code fuer Taste nicht vorhanden */
 
 	#define	RC5_CODE_0		(0x1000 & RC5_MASK)		/*!< Taste 0 */
 	#define	RC5_CODE_1		(0x1001 & RC5_MASK)		/*!< Taste 1 */
@@ -107,6 +106,57 @@
 
 #endif /* RC_HAVE_HAUPPAUGE_WINTV */
 
+#ifdef RC_HAVE_HAUPPAUGE_MediaMPV
+	#define RC_HAVE_CODES							/*!< Definiert Codes */
+	#undef JOG_DIAL									/*!< Hat keinen Jog Dial */
+
+	#define RC5_NOT_AVAIL	(0xFFFF)				/*!< Code fuer Taste nicht vorhanden */
+
+	#define	RC5_CODE_0		(0x17C0 & RC5_MASK)		/*!< Taste 0 */
+	#define	RC5_CODE_1		(0x17C1 & RC5_MASK)		/*!< Taste 1 */
+	#define	RC5_CODE_2		(0x17C2 & RC5_MASK)		/*!< Taste 2 */
+	#define	RC5_CODE_3		(0x17C3 & RC5_MASK)		/*!< Taste 3 */
+	#define	RC5_CODE_4		(0x17C4 & RC5_MASK)		/*!< Taste 4 */
+	#define	RC5_CODE_5		(0x17C5 & RC5_MASK)		/*!< Taste 5 */
+	#define	RC5_CODE_6		(0x17C6 & RC5_MASK)		/*!< Taste 6 */
+	#define	RC5_CODE_7		(0x17C7 & RC5_MASK)		/*!< Taste 7 */
+	#define	RC5_CODE_8		(0x17C8 & RC5_MASK)		/*!< Taste 8 */
+	#define	RC5_CODE_9		(0x17C9 & RC5_MASK)		/*!< Taste 9 */
+
+	#define	RC5_CODE_SELECT	RC5_NOT_AVAIL			/*!< Taste Source */
+
+	#define	RC5_CODE_UP		(0x17E0 & RC5_MASK)		/*!< Taste CH + */
+	#define	RC5_CODE_DOWN	(0x17E1 & RC5_MASK)		/*!< Taste CH - */
+	#define	RC5_CODE_LEFT	(0x17D1 & RC5_MASK)		/*!< Taste VOL- */
+	#define	RC5_CODE_RIGHT	(0x17D0 & RC5_MASK)		/*!< Taste VOL+ */
+
+	#define RC5_CODE_OK		(0x17E5 & RC5_MASK)		/*!< Taste OK */
+	
+	#define RC5_CODE_PWR    (0x17FD & RC5_MASK)		/*!< Taste An/Aus */ 
+	
+	#define RC5_CODE_RED    (0x17CB & RC5_MASK)		/*!< Taste Rot */
+	#define RC5_CODE_GREEN	(0x17EE & RC5_MASK)		/*!< Taste Gruen */
+	#define RC5_CODE_YELLOW	(0x17F8 & RC5_MASK)		/*!< Taste Gelb */
+	#define RC5_CODE_BLUE	(0x17E9 & RC5_MASK)		/*!< Taste Blau */
+	
+	#define RC5_CODE_FWD	(0x17F4 & RC5_MASK)		/*!< Taste >> */
+	#define RC5_CODE_BWD	(0x17F2 & RC5_MASK)		/*!< Taste << */
+	#define RC5_CODE_PLAY	(0x17F5 & RC5_MASK)		/*!< Taste > */
+	#define RC5_CODE_RECORD	(0x17F7 & RC5_MASK)		/*!< Taste Aufnahme */
+	#define RC5_CODE_STOP	(0x17F6 & RC5_MASK)		/*!< Taste Stop */
+	#define RC5_CODE_WAIT	(0x17F0 & RC5_MASK)		/*!< Taste Pause */
+	#define RC5_CODE_REPLAY	(0x17E4 & RC5_MASK)		/*!< Taste Anfang |< */
+	#define RC5_CODE_SKIP	(0x17DE & RC5_MASK)		/*!< Taste Ende >| */
+	
+	#define RC5_CODE_MUTE	(0x17CF & RC5_MASK)		/*!< Taste Mute */
+	#define RC5_CODE_VIEW	(0x17CC & RC5_MASK)		/*!< Taste View zwischen Mute und Full */
+	#define RC5_CODE_FULL	(0x17FC & RC5_MASK)		/*!< Taste Full */
+	
+	#define RC5_CODE_BACK	(0x17DF & RC5_MASK)		/*!< Taste Back/Exit */
+	#define RC5_CODE_MENU	(0x17CD & RC5_MASK)		/*!< Taste Menue */
+	#define RC5_CODE_GO		(0x17FB & RC5_MASK)		/*!< Taste GO */
+
+#endif /* RC_HAVE_HAUPPAUGE_MediaMPV */
 
 /*!
  * Fernbedienung Conrad Promo 8
