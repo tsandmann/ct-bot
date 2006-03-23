@@ -26,14 +26,30 @@
 
 #ifdef PC
 
+#ifdef WIN32
 
-#include <stdio.h>      /* for printf() and fprintf() */
+	/* Windows */
+	#include <windows.h>
+	
+	/*! Sleep Funktion */
+	#define SLEEP(__value)	Sleep(__value)
+	
+#else
+
+	/* Linux */
+	#include <unistd.h>
+	
+	/*! Sleep Funktion */
+	#define SLEEP(__value)	usleep(__value)
+
+#endif
 
 /*!
  * Warte 100 ms
  */
 void delay_100ms(void){
-	printf("delay_100ms() NOT Implemented Yet");
+
+	SLEEP(100);
 }
 
 
@@ -44,6 +60,7 @@ void delay_100ms(void){
  * @param ms Anzahl der Millisekunden
  */
 void delay(int ms){
-	printf("delay() NOT Implemented Yet");
+
+	SLEEP(ms);
 }
 #endif
