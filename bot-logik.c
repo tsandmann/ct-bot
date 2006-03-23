@@ -84,6 +84,10 @@ int8 turn_direction;			/*!< Richtung der Drehung */
 /*! Liste mit allen Verhalten */
 Behaviour_t *behaviour = NULL;
 
+
+#define INACTIVE 0	/*!< Verhalten ist aus */
+#define ACTIVE 1	/*!< Verhalten ist an */
+
 #define OVERRIDE	1	/*!< Konstante, wenn Verhalten beim Aufruf alte Wuensche ueberschreiben sollen */
 #define NOOVERRIDE 0	/*!< Konstanten, wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen */
 
@@ -101,7 +105,7 @@ void activateBehaviour(void *function){
 	// Einmal durch die Liste gehen, bis wir den gwuenschten Eintrag haben 
 	for (job = behaviour; job; job = job->next) {
 		if (job->work == function) {
-			job->active = 1;
+			job->active = ACTIVE;
 			break;
 		}
 	}
@@ -118,7 +122,7 @@ void deactivateBehaviour(void *function){
 	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben 
 	for (job = behaviour; job; job = job->next) {
 		if (job->work == function) {
-			job->active = 0;
+			job->active = INACTIVE;
 			break;
 		}
 	}
@@ -151,18 +155,18 @@ void switch_to_behaviour(Behaviour_t * from, void *to, uint8 override ){
 			return;
 		}
 		// Wir wollen also ueberschreiben, aber nett zum alten Aufrufer sein und ihn darueber benachrichtigen
-		job->caller->active=1;	// alten Aufrufer reaktivieren
+		job->caller->active=ACTIVE;	// alten Aufrufer reaktivieren
 		job->caller->subResult=SUBFAIL;	// er bekam aber nicht das gewuenschte Resultat
 	}
 
 	if (from) {
 		// laufendes Verhalten abschalten
-		from->active=0;
+		from->active=INACTIVE;
 		from->subResult=SUBRUNNING;
 	}
 		
 	// neues Verhalten aktivieren
-	job->active=1;
+	job->active=ACTIVE;
 	// Aufrufer sichern
 	job->caller =  from;
 }
@@ -172,9 +176,9 @@ void switch_to_behaviour(Behaviour_t * from, void *to, uint8 override ){
  * @param running laufendes Verhalten
  */ 
 void return_from_behaviour(Behaviour_t * data){
-	data->active=0; 				// Unterverhalten deaktivieren
+	data->active=INACTIVE; 				// Unterverhalten deaktivieren
 	if (data->caller){			
-		data->caller->active=1; 	// aufrufendes Verhalten aktivieren
+		data->caller->active=ACTIVE; 	// aufrufendes Verhalten aktivieren
 		data->caller->subResult=SUBSUCCESS;	// Unterverhalten war erfolgreich
 	}
 	data->caller=NULL;				// Job erledigt, Verweis loeschen
@@ -184,32 +188,19 @@ void return_from_behaviour(Behaviour_t * data){
 /*! 
  * Ein ganz einfaches Verhalten, es hat maximale Prioritaet
  * Hier kann man auf ganz einfache Weise die ersten Schritte wagen. 
- * Wer die M�glichkeiten des ganzen Verhaltensframeworks aussch�pfen will, kann diese Funktion getrost auskommentieren
- * und findet dann in bot_behave_init() und bot_behave() weitere Hinweise f�r elegante Bot-Programmierung....
+ * Wer die Moeglichkeiten des ganzen Verhaltensframeworks ausschoepfen will, kann diese Funktion getrost auskommentieren
+ * und findet dann in bot_behave_init() und bot_behave() weitere Hinweise fuer elegante Bot-Programmierung....
  * @param *data der Verhaltensdatensatz
  */
-void bot_simple(Behaviour_t *data){
-/* Diese Routine unterscheidet sich minimal von der in c't 4/06 beschriebenen.
- * Das Verhaltensframework hat in der Zwischenzeit eine 
- * Weiterentwicklung durchlaufen (siehe c't 7/06). */
-
-/*
-  int16 speed_l_col, speed_r_col;
-
-  speedWishLeft=BOT_SPEED_MAX;
-  speedWishRight=BOT_SPEED_MAX;
-
-  if (sensDistL < COL_NEAR)
-    speed_r_col=-speed_r-BOT_SPEED_NORMAL;
-  else speed_r_col=0;
-  
-  if (sensDistR < COL_NEAR)
-    speed_l_col=-speed_l-BOT_SPEED_FAST;
-  else speed_l_col=0;
-
-  speedWishLeft+=speed_l_col;
-  speedWishRight+=speed_r_col;  
-  */
+void bot_simple_behaviour(Behaviour_t *data){
+	static int state=0;
+	
+	if (state==0){
+		printf("Drive 14 cm\n");
+		bot_drive_distance(data ,0 , BOT_SPEED_MAX, 14);
+		state++;
+	}else
+		return_from_behaviour(data);
 }
 
 /*!
@@ -1022,14 +1013,14 @@ void bot_behave(void){
  * @param priority Die Prioritaet
  * @param *work Den Namen der Funktion, die sich drum kuemmert
  */
-Behaviour_t *new_behaviour(char priority, void (*work) (struct _Behaviour_t *data)){
+Behaviour_t *new_behaviour(char priority, void (*work) (struct _Behaviour_t *data), int8 active){
 	Behaviour_t *newbehaviour = (Behaviour_t *) malloc(sizeof(Behaviour_t)); 
 	
 	if (newbehaviour == NULL) 
 		return NULL;
 	
 	newbehaviour->priority = priority;
-	newbehaviour->active=1;
+	newbehaviour->active=active;
 	newbehaviour->next= NULL;
 	newbehaviour->work=work;
 	newbehaviour->caller=NULL;
@@ -1082,37 +1073,35 @@ static void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
  */
 void bot_behave_init(void){
 
-	/* Einfache Verhaltensroutine, die alles andere uebersteuert */
-	insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_avoid_border));
-
-	insert_behaviour_to_list(&behaviour, new_behaviour(100, bot_avoid_col));
-	insert_behaviour_to_list(&behaviour, new_behaviour(60, bot_glance));
-	insert_behaviour_to_list(&behaviour, new_behaviour(55, bot_olympic_behaviour));
+	// Verhalten zum Schutz des Bots, hohe Prioritaet, Aktiv
+	insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_avoid_border,ACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(100, bot_avoid_col,ACTIVE));
 	
-	insert_behaviour_to_list(&behaviour, new_behaviour(51,bot_explore_behaviour));
-	insert_behaviour_to_list(&behaviour, new_behaviour(50,bot_do_slalom_behaviour));
-	insert_behaviour_to_list(&behaviour, new_behaviour(41,bot_drive_distance_behaviour));
-	insert_behaviour_to_list(&behaviour, new_behaviour(40,bot_turn_behaviour));
-	insert_behaviour_to_list(&behaviour, new_behaviour(30, bot_goto_behaviour));
+	// Verhalten, um Hidnernisse besser zu erkennen, relativ hoe Prioritaet, modifiziert nur
+	insert_behaviour_to_list(&behaviour, new_behaviour(60, bot_glance,ACTIVE));
 
-	insert_behaviour_to_list(&behaviour, new_behaviour(2, bot_base));
-	insert_behaviour_to_list(&behaviour, new_behaviour(50, bot_drive_square));
 
-	// Bestimmte Verhaltensweisen deaktivieren, die spaeter aus olympic_behaviour heraus
-	// aktiviert werden:
-	deactivateBehaviour(bot_explore_behaviour);
-	deactivateBehaviour(bot_do_slalom_behaviour);
-	deactivateBehaviour(bot_drive_distance_behaviour);
-	deactivateBehaviour(bot_turn_behaviour);
-	deactivateBehaviour(bot_goto_behaviour);
+	// Demo-Verhalten, ganz einfach, inaktiv
+	insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_simple_behaviour,INACTIVE));
 
-	
-	// Wer die Kombination des Slalom-Verhaltens mit anderen Verhaltensweisen
-	// ausprobieren will, kann hier beliebig Zeilen auskommentieren:
-	deactivateBehaviour(bot_avoid_col);
-	deactivateBehaviour(bot_drive_square);
-	deactivateBehaviour(bot_base);
-	deactivateBehaviour(bot_olympic_behaviour);
+	// Demo-Verhalten, etwas komplexer, inaktiv
+	insert_behaviour_to_list(&behaviour, new_behaviour(50, bot_drive_square,INACTIVE));
+
+	// Demo-Verhalten für aufwendiges System, inaktiv
+	insert_behaviour_to_list(&behaviour, new_behaviour(55, bot_olympic_behaviour,INACTIVE));
+
+	// Hilfsverhalten, die Befehle von Boten-Funktionen ausfuehren, erst inaktiv, werden von Boten aktiviert	
+	insert_behaviour_to_list(&behaviour, new_behaviour(41, bot_drive_distance_behaviour,INACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(40, bot_turn_behaviour,INACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(30, bot_goto_behaviour,INACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(51, bot_explore_behaviour,INACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(50, bot_do_slalom_behaviour,INACTIVE));
+
+	// Grundverhalten, setzt aeltere FB-Befehle um, aktiv
+	insert_behaviour_to_list(&behaviour, new_behaviour(2, bot_base, ACTIVE));
+
+
+//	activateBehaviour(bot_simple_behaviour);
 
 
 	#ifdef PC

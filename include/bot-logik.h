@@ -29,8 +29,8 @@
 #include "global.h"
 #include "ct-Bot.h"
 
-/*! Verwaltungsstruktur fuer die Verhaltensroutinen */
 
+/*! Verwaltungsstruktur fuer die Verhaltensroutinen */
 typedef struct _Behaviour_t {
    void (*work) (struct _Behaviour_t *data); 	/*!< Zeiger auf die Funktion, die das Verhalten bearbeitet */
    
@@ -95,5 +95,14 @@ void bot_goto_behaviour(Behaviour_t *data);
  * @param right Schritte rechts
  */
 void bot_goto(int16 left, int16 right, Behaviour_t * caller);
+
+/*! 
+ * Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren. Dabei legt die Geschwindigkeit fest, ob der Bot vorwaerts oder rueckwaerts fahren soll.
+ * @param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
+ * @param speed Gibt an, wie schnell der Bot fahren soll. Negative Werte lassen den Bot rueckwaerts fahren.
+ * @param cm Gibt an, wie weit der Bot fahren soll. In cm :-) Die Strecke muss positiv sein, die Fahrtrichtung wird ueber speed geregelt.
+ * */
+
+void bot_drive_distance(Behaviour_t* caller,int8 curve, int speed, int cm);
 
 #endif

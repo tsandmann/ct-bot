@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-03-23  Benjamin Benz (bbe@heise.de)  Display-Delay auf optimierten Code angepasst, Verhaltensinitialisierung uebersichtlicher gestaltet
+
 2006-03-20	Carsten Giesen (info@cnau.de) Codes fuer die FB des MediaMPV von Hauappauge eingepflegt
 
 2006-03-19	Andreas Merkle (mail@blue-andi.de)	Timer Variablen ueber Funktionen auf dem PC geschuetzt (Thread-Safe).

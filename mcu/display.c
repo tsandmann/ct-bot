@@ -100,7 +100,7 @@ void display_cmd(char cmd){		//ein Kommando cmd an das Display senden
 	shift_data_out(cmd,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
 	// Enable muss für mind. 450 ns High bleiben, bevor es fallen darf!
 	// ==> Also mind. 8 Zyklen warten
-	for (i=0; i<10; i++){
+	for (i=0; i<100; i++){
 	        asm("nop");
 	}
 	DISPLAY_PORT=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
@@ -117,7 +117,7 @@ void display_data(char data){ //ein Zeichen aus data in den Displayspeicher schr
 		
 		// Enable muss für mind. 450 ns High bleiben, bevor es fallen darf!
 		// ==> Also mind. 8 Zyklen warten
-        for (i=0; i<10; i++){
+        for (i=0; i<100; i++){
                 asm("nop");
         }
       DISPLAY_PORT=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
