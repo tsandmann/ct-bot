@@ -34,6 +34,9 @@
 #define WHEEL_PERIMETER		179 	/*!< Durchmesser eines Rades in mm */	
 #define WHEEL_TO_WHEEL_DIAMETER 97 /*!< Abstand der beiden Raeder in mm */
 
+/*! Hilfskonstante */
+#define ANGLE_CONSTANT		(WHEEL_TO_WHEEL_DIAMETER * ENCODER_MARKS / WHEEL_DIAMETER)
+
 /* Einstellunge fuer die Verhaltensregeln */
 #define BORDER_DANGEROUS	0x360	/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */
 

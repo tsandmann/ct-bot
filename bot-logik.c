@@ -675,7 +675,7 @@ void bot_turn(Behaviour_t* caller,int degrees){
 	
 	if(degrees < 0) turn_direction = -1;
 	else turn_direction = 1;
-	turn_target = (WHEEL_TO_WHEEL_DIAMETER * degrees * ENCODER_MARKS) / (360 * WHEEL_DIAMETER) + sensEncR;
+ 	turn_target=(degrees*ANGLE_CONSTANT)/360+sensEncR;
 	switch_to_behaviour(caller, bot_turn_behaviour,NOOVERRIDE);
 }
 
