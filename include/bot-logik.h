@@ -80,7 +80,7 @@ void deactivateBehaviour(void *function);
  * Laesst den Roboter ein Quadrat abfahren
  * @param *data der Verhaltensdatensatz
  */
-void bot_drive_square(Behaviour_t *data);
+void bot_drive_square_behaviour(Behaviour_t *data);
 
 /*!
  * Kuemmert sich intern um die Ausfuehrung der goto-Kommandos,
@@ -110,5 +110,52 @@ void bot_drive_distance(Behaviour_t* caller,int8 curve, int speed, int cm);
  * @param degrees Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
  * */
 void bot_turn(Behaviour_t* caller,int16 degrees);
+
+/*!
+ * Das Verhalten setzt sich aus 3 Teilverhalten zusammen: 
+ * Nach Licht suchen, auf das Licht zufahren, im Licht Slalom fahren. */
+void bot_olympic_behaviour(Behaviour_t *data);
+
+/*!
+ * Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren.
+ * @see bot_drive_distance() 
+ * */
+
+void bot_drive_distance_behaviour(Behaviour_t* data);
+
+/*!
+ * Das Verhalten laesst den Bot eine Punktdrehung durchfuehren. 
+ * @see bot_turn()
+ * */
+void bot_turn_behaviour(Behaviour_t* data);
+
+/*!
+ * Das Verhalten laesst den Roboter den Raum durchsuchen. 
+ * Das Verhalten hat mehrere unterschiedlich Zustaende:
+ * 1. Zu einer Wand oder einem anderen Hindernis fahren.
+ * 2. Zu einer Seite drehen, bis der Bot parallel zur Wand ist. 
+ * Es macht vielleicht Sinn, den Maussensor auszulesen, um eine Drehung um 
+ * einen bestimmten Winkel zu realisieren. Allerdings muesste dafuer auch der
+ * Winkel des Bots zur Wand bekannt sein.
+ * 3. Eine feste Strecke parallel zur Wand vorwaerts fahren.
+ * Da bot_glance abwechselnd zu beiden Seiten schaut, ist es fuer die Aufgabe, 
+ * einer Wand auf einer Seite des Bots zu folgen, nur bedingt gewachsen und muss
+ * evtl. erweitert werden.
+ * 4. Senkrecht zur Wand drehen.
+ * Siehe 2.
+ * 5. Einen Bogen fahren, bis der Bot wieder auf ein Hindernis stoesst. 
+ * Dann das Ganze von vorne beginnen, nur in die andere Richtung und mit einem
+ * weiteren Bogen. So erforscht der Bot einigermassen systematisch den Raum.
+ * 
+ * Da das Verhalten jeweils nach 10ms neu aufgerufen wird, muss der Bot sich
+ * 'merken', in welchem Zustand er sich gerade befindet.
+ * */
+void bot_explore_behaviour(Behaviour_t *data);
+
+/*!
+ * Das Verhalten laesst den Bot einen Slalom fahren.
+ * @see bot_do_slalom()
+ * */
+void bot_do_slalom_behaviour(Behaviour_t *data);
 
 #endif

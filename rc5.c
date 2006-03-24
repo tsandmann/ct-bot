@@ -171,19 +171,28 @@ void rc5_bot_servo(RemCtrlFuncPar *par){
  */	
 void rc5_bot_next_behaviour(RemCtrlFuncPar *par) {
 
-	static char state =0;
+	static uint8 state =0;
 
 	state++;
-	if (state==2)
-		state=0;
 	
 	switch (state) {
-		case 0: deactivateBehaviour(bot_drive_square);
-				 deactivateBehaviour(bot_goto_behaviour);
+		case 0: 
 			break;
-		case 1: activateBehaviour(bot_drive_square);
+		case 1: activateBehaviour(bot_drive_square_behaviour);
 			break;
-			
+		case 2: deactivateBehaviour(bot_drive_square_behaviour);
+				 deactivateBehaviour(bot_goto_behaviour); 
+				 
+				 activateBehaviour(bot_olympic_behaviour);
+			break;
+		default:
+			deactivateBehaviour(bot_olympic_behaviour);
+			deactivateBehaviour( bot_drive_distance_behaviour);
+			deactivateBehaviour( bot_turn_behaviour);
+			deactivateBehaviour( bot_explore_behaviour);
+			deactivateBehaviour( bot_do_slalom_behaviour);
+		
+			state=0;
 	}
 }
 

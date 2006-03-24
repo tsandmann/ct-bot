@@ -90,7 +90,7 @@
 <option id="gnu.c.compiler.option.misc.other.1122958060" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega32 -Wstrict-prototypes" valueType="string"/>
 <option id="gnu.c.compiler.option.debugging.gprof.1275190243" superClass="gnu.c.compiler.option.debugging.gprof" value="false" valueType="boolean"/>
 <option id="gnu.c.compiler.option.debugging.prof.1974870563" superClass="gnu.c.compiler.option.debugging.prof" value="false" valueType="boolean"/>
-<option id="gnu.c.compiler.option.optimization.flags.780063591" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
+<option id="gnu.c.compiler.option.optimization.flags.780063591" superClass="gnu.c.compiler.option.optimization.flags" value="" valueType="string"/>
 </tool>
 <tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.565798556" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug"/>
 <tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.802239009" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug">

@@ -52,8 +52,8 @@
  * 
  */	
 
-char col_zone_l=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der linke Sensor befindet */
-char col_zone_r=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der rechte Sensor befindet */
+uint8 col_zone_l=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der linke Sensor befindet */
+uint8 col_zone_r=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der rechte Sensor befindet */
 
 volatile int16 mot_l_goto=0;		/*!< Speichert wie weit der linke Motor drehen soll */
 volatile int16 mot_r_goto=0;		/*!< Speichert wie weit der rechte Motor drehen soll */
@@ -193,7 +193,7 @@ void return_from_behaviour(Behaviour_t * data){
  * @param *data der Verhaltensdatensatz
  */
 void bot_simple_behaviour(Behaviour_t *data){
-	static int state=0;
+	static uint8 state=0;
 	
 	switch (state){
 		case 0:
@@ -217,7 +217,7 @@ void bot_simple_behaviour(Behaviour_t *data){
  * selbst keine speedWishes.
  * @param *data der Verhaltensdatensatz
  */
-void bot_drive_square(Behaviour_t *data){
+void bot_drive_square_behaviour(Behaviour_t *data){
 	#define STATE_TURN 1
 	#define STATE_FORWARD 0
 	#define STATE_INTERRUPTED 2
@@ -844,7 +844,7 @@ void bot_goto_light(void){
 }
 
 /*!
- * Da Verhalten laesst den Bot einen Slalom fahren.
+ * Das Verhalten laesst den Bot einen Slalom fahren.
  * @see bot_do_slalom()
  * */
 void bot_do_slalom_behaviour(Behaviour_t *data){
@@ -1092,7 +1092,7 @@ void bot_behave_init(void){
 	insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_simple_behaviour,INACTIVE));
 
 	// Demo-Verhalten, etwas komplexer, inaktiv
-	insert_behaviour_to_list(&behaviour, new_behaviour(50, bot_drive_square,INACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(50, bot_drive_square_behaviour,INACTIVE));
 
 	// Demo-Verhalten für aufwendiges System, inaktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(55, bot_olympic_behaviour,INACTIVE));
