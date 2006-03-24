@@ -183,7 +183,9 @@
 	#define RC5_CODE_DOWN	(0x2011 & RC5_MASK)		/*!< Taste Runter */
 	#define RC5_CODE_LEFT	(0x2015 & RC5_MASK)		/*!< Taste Links */
 	#define RC5_CODE_RIGHT	(0x2016 & RC5_MASK)		/*!< Taste Rechts */
-	#define RC5_CODE_PWR	(0x300C & RC5_MASK)		/*!< Taste An/Aus */
+
+	#define RC5_CODE_ENTER (0x2017 & RC5_MASK)  	/*!< Enter-Taste*/
+	#define RC5_CODE_PWR   RC5_CODE_ENTER          /*!< Enter Taste als Ersatz fuer Taste An/Aus */
 
 	#define RC5_CODE_RED	(0x202B & RC5_MASK)		/*!< Rote Taste */
 	#define RC5_CODE_GREEN	(0x202C & RC5_MASK)		/*!< Gruene Taste */
