@@ -105,4 +105,10 @@ void bot_goto(int16 left, int16 right, Behaviour_t * caller);
 
 void bot_drive_distance(Behaviour_t* caller,int8 curve, int speed, int cm);
 
+/*! 
+ * Dreht den Bot im mathematisch positiven Sinn. 
+ * @param degrees Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
+ * */
+void bot_turn(Behaviour_t* caller,int16 degrees);
+
 #endif
