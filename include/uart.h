@@ -39,7 +39,7 @@ void uart_init(void);
  * Prüft, ob daten verfügbar 
  * @return Anzahl der verfuegbaren Bytes
  */
-char uart_data_available(void);
+uint8 uart_data_available(void);
 
 
 /*!
@@ -48,7 +48,7 @@ char uart_data_available(void);
  * TODO: umstellen auf nicht blockierend und mehr als ein Zeichen
  * @param data Das Zeichen
  */
-void uart_send_byte(char data);
+void uart_send_byte(uint8 data);
 
 /*!
  * Sende Kommando per UART im Little Endian
@@ -64,7 +64,7 @@ void uart_send_byte(char data);
  * @param length Groesse des Datenpuffers in bytes
  * @return Anzahl der gesendete Bytes
  */
-int uart_write(char * data, int length);
+int uart_write(uint8 * data, int length);
 
 /* Liest Zeichen von der UART
  * @param data Der Zeiger an die die gelesenen Zeichen kommen

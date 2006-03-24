@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-02-24	Fabian Recktenwald (fa.re.wal@gmx.de) Alle char-Datentypen in int8 oder uint8 umgewandelt
+
 2006-03-24  Benjamin Benz (bbe@heise.de)  Bugfix rc5_bot_next_behaviour
 
 2006-03-23  Benjamin Benz (bbe@heise.de)  Bugfix in bot_turn()

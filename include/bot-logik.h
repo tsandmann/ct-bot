@@ -37,8 +37,8 @@ typedef struct _Behaviour_t {
    uint8 priority;				/*!< Prioritaet */
    struct _Behaviour_t *caller ; /* aufrufendes verhalten */
    
-   char active:1;				/*!< Ist das Verhalten aktiv */
-   char subResult:2;			/*!< War das aufgerufene unterverhalten erfolgreich (==1)?*/
+   uint8 active:1;				/*!< Ist das Verhalten aktiv */
+   uint8 subResult:2;			/*!< War das aufgerufene unterverhalten erfolgreich (==1)?*/
    struct _Behaviour_t *next;					/*!< Naechster Eintrag in der Liste */
 #ifndef DOXYGEN
 	}__attribute__ ((packed)) Behaviour_t;

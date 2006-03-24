@@ -53,8 +53,8 @@ void shift_init(){
  * @param latch_data der Pin an dem der Daten-latch-Pin des Registers (PIN 11) hängt
  * @param latch_store der Pin an dem der latch-Pin zum transfer des Registers (PIN 12) hängt
  */
-void shift_data_out(char data, char latch_data, char latch_store){
-	char i;
+void shift_data_out(uint8 data, uint8 latch_data, uint8 latch_store){
+	int8 i;
 
 	SHIFT_PORT &= ~SHIFT_OUT;		// und wieder clear	
 	for (i=8; i>0; i--){
@@ -74,7 +74,7 @@ void shift_data_out(char data, char latch_data, char latch_store){
  * @param data	Das Datenbyte
  * @param latch_data der Pin an dem der Daten-latch-Pin des Registers (PIN 11) hängt
  */
-void shift_data(char data, char latch_data){
+void shift_data(uint8 data, uint8 latch_data){
 	shift_data_out(data, latch_data, SHIFT_LATCH);
 	shift_clear();
 }

@@ -37,7 +37,7 @@
  * muss das entsprechende Bit in channel gesetzt sein
  * Bit0 = Kanal 0 usw.
  */
-void adc_init(char channel){
+void adc_init(uint8 channel){
 	DDRA &= ~ channel;	// Pin als input
 	PORTA &= ~ channel;	// Alle Pullups aus.
 }
@@ -46,7 +46,7 @@ void adc_init(char channel){
  * Liest einen analogen Kanal aus
  * @param channel Kanal - hex-Wertigkeit des Pins (0x01 f�r PA0; 0x02 f�r PA1, ..)
  */
-int adc_read(char channel){
+int adc_read(uint8 channel){
 	int result = 0x00;
 
 	// interne Refernzspannung AVCC, rechts Ausrichtung

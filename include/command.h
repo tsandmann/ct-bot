@@ -36,9 +36,9 @@
  * Request Teil eines Kommandos
  */
 typedef struct {
-	unsigned char command:8;	/*!< command */
-	unsigned char subcommand:7;	/*!< subcommand */
-	unsigned char direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
+	uint8 command:8;	/*!< command */
+	uint8 subcommand:7;	/*!< subcommand */
+	uint8 direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
 #ifndef DOXYGEN
 	} __attribute__ ((packed)) request_t; // Keine Luecken in der Struktur lassen
 #else
@@ -49,13 +49,13 @@ typedef struct {
  * Kommando
  */
 typedef struct {
-	unsigned char startCode;	/*!< Markiert den Beginn eines Commands */
+	uint8 startCode;	/*!< Markiert den Beginn eines Commands */
 	request_t request; 			/*!< Command-ID */
-	unsigned char  payload;		/*!< Bytes, die dem Kommando noch folgen*/
+	uint8  payload;		/*!< Bytes, die dem Kommando noch folgen*/
 	int16 data_l;				/*!< Daten zum Kommando links*/
 	int16 data_r;				/*!< Daten zum Kommando rechts*/
 	int16 seq;					/*!< Paket-Sequenznummer*/
-	unsigned char CRC;			/*!< Markiert das Ende des Commands*/
+	uint8 CRC;			/*!< Markiert das Ende des Commands*/
 #ifndef DOXYGEN
 	} __attribute__ ((packed)) command_t;// Keine Luecken in der Struktur lassen
 #else

@@ -73,7 +73,7 @@ void maus_sens_init(void);
  * @param adr die Adresse
  * @return das Datum
  */
-int8 maus_sens_read(char adr);
+int8 maus_sens_read(uint8 adr);
 
 
 #endif

@@ -39,14 +39,14 @@ volatile int16 sensBorderR=0;	/*!< Abgrundsensor rechts */
 volatile int16 sensLineL=0;	/*!< Lininensensor links */
 volatile int16 sensLineR=0;	/*!< Lininensensor rechts */
 
-volatile char sensTrans=0;		/*!< Sensor Ueberwachung Transportfach */
+volatile uint8 sensTrans=0;		/*!< Sensor Ueberwachung Transportfach */
 
-volatile char sensDoor=0;		/*!< Sensor Ueberwachung Klappe */
+volatile uint8 sensDoor=0;		/*!< Sensor Ueberwachung Klappe */
 
-volatile char sensError=0;		/*!< Ueberwachung Motor oder Batteriefehler */
+volatile uint8 sensError=0;		/*!< Ueberwachung Motor oder Batteriefehler */
 
-volatile char sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-volatile char sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
+volatile int8 sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+volatile int8 sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
 
 volatile int sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
 volatile int sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */

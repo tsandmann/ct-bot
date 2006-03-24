@@ -1020,7 +1020,7 @@ void bot_behave(void){
  * @param priority Die Prioritaet
  * @param *work Den Namen der Funktion, die sich drum kuemmert
  */
-Behaviour_t *new_behaviour(char priority, void (*work) (struct _Behaviour_t *data), int8 active){
+Behaviour_t *new_behaviour(uint8 priority, void (*work) (struct _Behaviour_t *data), int8 active){
 	Behaviour_t *newbehaviour = (Behaviour_t *) malloc(sizeof(Behaviour_t)); 
 	
 	if (newbehaviour == NULL) 

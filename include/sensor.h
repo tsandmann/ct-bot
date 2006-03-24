@@ -46,16 +46,16 @@ extern volatile int16 sensLineR;	/*!<  Lininensensor rechts [0-1023];  1023 = du
 extern volatile int16 sensEncL;		/*!< Encoder linker Motor [-32768 bis 32767] */
 extern volatile int16 sensEncR;		/*!< Encoder rechter Motor [-32768 bis 32767] */
 
-extern volatile char sensTrans;		/*!< Sensor Ueberwachung Transportfach [0/1]*/
+extern volatile uint8 sensTrans;		/*!< Sensor Ueberwachung Transportfach [0/1]*/
 
-extern volatile char sensDoor;		/*!< Sensor Ueberwachung Klappe [0/1] */
+extern volatile uint8 sensDoor;		/*!< Sensor Ueberwachung Klappe [0/1] */
 
-extern volatile char sensError;		/*!< Ueberwachung Motor oder Batteriefehler [0/1]  1= alles ok */
+extern volatile uint8 sensError;		/*!< Ueberwachung Motor oder Batteriefehler [0/1]  1= alles ok */
 
 extern uint16 RC5_Code;        /*!< Letzter empfangener RC5-Code */
 
-extern volatile char sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-extern volatile char sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
+extern volatile int8 sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+extern volatile int8 sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
 
 extern volatile int sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
 extern volatile int sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */

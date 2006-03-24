@@ -45,8 +45,8 @@
  * Überträgt ein Byte an den Sensor
  * @param data das Byte
  */
-void maus_sens_writeByte(char data){
-	char i;
+void maus_sens_writeByte(int8 data){
+	int8 i;
 	MAUS_DDR  |= MAUS_SDA_PIN; 		// SDA auf Output
 	
 	for (i=7; i>=0; i--){
@@ -64,7 +64,7 @@ void maus_sens_writeByte(char data){
  * Liest ein Byte vom Sensor
  * @return das Byte
  */
-char maus_sens_readByte(void){
+int8 maus_sens_readByte(void){
 	int i;
 	char data=0;
 
@@ -85,7 +85,7 @@ char maus_sens_readByte(void){
  * @param adr Adresse
  * @param data Datum
  */
-void maus_sens_write(char adr, char data){
+void maus_sens_write(int8 adr, uint8 data){
 	int i;
 	maus_sens_writeByte(adr);
 	maus_sens_writeByte(data);
@@ -98,7 +98,7 @@ void maus_sens_write(char adr, char data){
  * @param adr die Adresse
  * @return das Datum
  */
-int8 maus_sens_read(char adr){
+int8 maus_sens_read(uint8 adr){
 	int i;
 	maus_sens_writeByte(adr);
 	for (i=0; i<75; i++){asm("nop");}	// mindestens 100 Mikrosekunden Pause!!!

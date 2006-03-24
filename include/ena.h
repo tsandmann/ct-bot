@@ -26,6 +26,8 @@
 #ifndef ENA_H_
 #define ENA_H_
 
+#include "global.h"
+
 #define ENA_ABSTAND	(1<<0)		/*!< Enable-Leitung Abstandssensoren */
 #define ENA_RADLED		(1<<1)		/*!< Enable-Leitung Radencoder */
 #define ENA_SCHRANKE	(1<<2)		/*!< Enable-Leitung Fachueberwachung */
@@ -44,18 +46,18 @@ void ENA_init(void);
  * andere werden nicht beeinflusst
  * @param enable Bitmaske der anzuschaltenden LEDs
  */
-void ENA_on(char enable);
+void ENA_on(uint8 enable);
 
 /*! 
  * Schaltet einzelne Enable-Leitungen aus,
  * andere werden nicht beeinflusst
  * @param enable Bitmaske der anzuschaltenden LEDs
  */
-void ENA_off(char enable);
+void ENA_off(uint8 enable);
 
 /*!
  * Schaltet die Enable-Leitungen
  * @param enable Wert der eingestellt werden soll
  */
-void ENA_set(char enable);
+void ENA_set(uint8 enable);
 #endif

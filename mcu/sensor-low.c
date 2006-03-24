@@ -73,11 +73,11 @@
 
 #define ENC_ENTPRELL	4		/*!< Nur wenn der Encoder ein paar mal den gleichen wert gibt uebernehmen */
 
-volatile char enc_l=0;		/*!< Puffer fuer die letzten Encoder-Staende */
-volatile char enc_r=0;		/*!< Puffer fuer die letzten Encoder-Staende */
+volatile uint8 enc_l=0;		/*!< Puffer fuer die letzten Encoder-Staende */
+volatile uint8 enc_r=0;		/*!< Puffer fuer die letzten Encoder-Staende */
 
-volatile char enc_l_cnt=0;	/*!< Entprell-Counter fuer L-Encoder	 */
-volatile char enc_r_cnt=0;	/*!< Entprell-Counter fuer R-Encoder	 */
+volatile uint8 enc_l_cnt=0;	/*!< Entprell-Counter fuer L-Encoder	 */
+volatile uint8 enc_r_cnt=0;	/*!< Entprell-Counter fuer R-Encoder	 */
 
 /*!
  * Initialisiere alle Sensoren

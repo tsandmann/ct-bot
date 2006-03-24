@@ -41,24 +41,24 @@
 
 /*! Datenfeld fuer den Zugriff auf die LEDs */
 typedef struct {
-   unsigned char rechts:1;		/*!< LED in Fahrichtung rechts*/
-   unsigned char links:1; 		/*!< LED in Fahrichtung links*/
+   uint8 rechts:1;		/*!< LED in Fahrichtung rechts*/
+   uint8 links:1; 		/*!< LED in Fahrichtung links*/
  
-   unsigned char rot:1;   		/*!< LED Rot */
-   unsigned char orange:1;   	/*!< LED Orange */
+   uint8 rot:1;   		/*!< LED Rot */
+   uint8 orange:1;   	/*!< LED Orange */
  
-   unsigned char gelb:1;   	/*!< LED Gelb */
-   unsigned char gruen:1;  	/*!< LED Gruen */
+   uint8 gelb:1;   	/*!< LED Gelb */
+   uint8 gruen:1;  	/*!< LED Gruen */
     
-   unsigned char tuerkis:1;   	/*!< LED Tuerkis */
-   unsigned char weiss:1;   	/*!< LED Weiss */
+   uint8 tuerkis:1;   	/*!< LED Tuerkis */
+   uint8 weiss:1;   	/*!< LED Weiss */
 #ifndef DOXYGEN
 	} __attribute__ ((packed)) led_t;
 #else
 	} led_t;
 #endif
 
-extern volatile char led;
+extern volatile uint8 led;
 
 /*!
  * Initialisiert die LEDs
@@ -69,18 +69,18 @@ void LED_init(void);
  * Zeigt eine 8-Bit Variable mit den LEDs an
  * @param LED Wert der gezeigt werden soll
  */
-void LED_set(char LED);
+void LED_set(uint8 LED);
 
 /*! Schaltet eine LED aus
  * 
  * @param LED HEX-Code der LED
  */
-void LED_off(char LED);
+void LED_off(uint8 LED);
 
 /*! Schaltet eine LED an
  * 
  * @param LED HEX-Code der LED
  */
-void LED_on(char LED);
+void LED_on(uint8 LED);
 
 #endif

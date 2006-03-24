@@ -71,14 +71,14 @@
 
 /* Nimmt den Status von MCUCSR bevor dieses Register auf 0x00 gesetzt wird */
 #ifdef DISPLAY_SCREEN_RESETINFO
-	unsigned char reset_flag; 
+	uint8 reset_flag; 
 #endif
 
 #ifdef TEST_AVAILABLE_COUNTER
 	#include <avr/eeprom.h>
-	char resetsEEPROM  __attribute__ ((section (".eeprom")))=0;
-	char resetInfoEEPROM  __attribute__ ((section (".eeprom")));
-	char resets;
+	uint8 resetsEEPROM  __attribute__ ((section (".eeprom")))=0;
+	uint8 resetInfoEEPROM  __attribute__ ((section (".eeprom")));
+	uint8 resets;
 #endif
 /*!
  * Der Mikrocontroller und der PC-Simulator brauchen ein paar Einstellungen, 
@@ -224,7 +224,7 @@ void init(void){
 #ifdef TEST_AVAILABLE
 	/*! Zeigt den internen Status der Sensoren mit den LEDs an */
 	void show_sensors(void){
-		char led=0x00;
+		uint8 led=0x00;
 		led_t * status = (led_t *)&led;
 		#ifdef TEST_AVAILABLE_ANALOG
 			(*status).rechts	= (sensDistR >> 9) & 0x01;

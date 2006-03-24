@@ -45,7 +45,7 @@ void shift_init(void);
  * @param latch_data der Pin, an dem der Daten-latch-Pin des Registers (PIN 11) haengt
  * @param latch_store der Pin, an dem der latch-Pin zum Transfer des Registers (PIN 12) haengt
  */
-void shift_data_out(char data, char latch_data, char latch_store);
+void shift_data_out(uint8 data, uint8 latch_data, uint8 latch_store);
 
 /*!
  * Schiebt Daten durch eines der drei 74HC595-Schieberegister,
@@ -54,7 +54,7 @@ void shift_data_out(char data, char latch_data, char latch_store);
  * @param data	Das Datenbyte
  * @param latch_data der Pin, an dem der Daten-latch-Pin des Registers (PIN 11) haengt
  */
-void shift_data(char data, char latch_data);
+void shift_data(uint8 data, uint8 latch_data);
 
 /*!
  * Setzt die Shift-Register wieder zurueck

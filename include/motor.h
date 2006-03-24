@@ -43,8 +43,8 @@ extern int16 volatile speed_r;			/*!< Geschwindigkeit des rechten Motors */
 
 /*! In diesem Typ steht die Drehrichtung, auch wenn die Speed-Variablen bereits wieder auf Null sind */
 typedef struct {
-	unsigned char left:1;
-	unsigned char right:1;
+	uint8 left:1;
+	uint8 right:1;
 #ifndef DOXYGEN
 	} __attribute__ ((packed)) direction_t;
 #else
@@ -76,6 +76,6 @@ void motor_set(int16 left, int16 right);
  * @param servo Nummer des Servos
  * @param servo Zielwert
  */
-void servo_set(char servo, char pos);
+void servo_set(uint8 servo, uint8 pos);
 
 #endif

@@ -45,9 +45,9 @@
 
 //#define UART_TIMEOUT	20000	/*!< Timeout. Wartet UART_TIMEOUT CPU-Takte */
 
-static unsigned char UART_RxBuf[UART_RX_BUFFER_SIZE];	/*!< UART-Puffer */
-static volatile unsigned char UART_RxHead;				/*!< Zeiger für UART-Puffer */
-static volatile unsigned char UART_RxTail;				/*!< Zeiger für UART-Puffer */
+static uint8 UART_RxBuf[UART_RX_BUFFER_SIZE];	/*!< UART-Puffer */
+static volatile uint8 UART_RxHead;				/*!< Zeiger für UART-Puffer */
+static volatile uint8 UART_RxTail;				/*!< Zeiger für UART-Puffer */
 
 //char uart_timeout;	/*!< 0, wenn uart_read/uart_send erfolgreich 1, wenn timeout erreicht */
 
@@ -94,7 +94,7 @@ SIGNAL (SIG_UART_RECV){
  * Prüft, ob daten verfügbar 
  * @return Anzahl der verfuegbaren Bytes
  */
-char uart_data_available(void){
+uint8 uart_data_available(void){
 	if (UART_RxHead == UART_RxTail) 	/* Puffer leer */
 		return 0;		
 	else if (UART_RxHead > UART_RxTail)		/* Schreibzeiger vor Lesezeiger */ 
@@ -110,7 +110,7 @@ char uart_data_available(void){
  * TODO: umstellen auf nicht blockierend und mehr als ein Zeichen
  * @param data Das Zeichen
  */
-void uart_send_byte(char data){ // Achtung ist noch blockierend!!!!
+void uart_send_byte(uint8 data){ // Achtung ist noch blockierend!!!!
 	while ((UCSRA & _BV(UDRE)) ==0){}	// warten bis UART sendebereit
 	UDR= data;
 }
@@ -139,7 +139,7 @@ int uart_send_cmd(command_t *cmd){
  * @param length Groesse des Datenpuffers in bytes
  * @return Anzahl der gesendete Bytes
  */
-int uart_write(char * data, int length){
+int uart_write(uint8 * data, int length){
 	int i;
 	char * ptr = (char*) data;
 	for (i=0; i<length; i++)

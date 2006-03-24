@@ -25,17 +25,19 @@
 #ifndef ADC_H_
 #define ADC_H_
 
+#include "global.h"
+
 /*!
  * Liest einen analogen Kanal aus
  * @param channel Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
  */
-int adc_read(char channel);
+int adc_read(uint8 channel);
 
 /*!
  *  Wechselt einen ADU-kanal. Dafuer muessen auch die Puffer zurueckgesetzt werden 
  * @param channel Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
  */
-void adc_select_channel(char channel);
+void adc_select_channel(uint8 channel);
 
 /*!
  * Diese Routine wird vom Timer-Interrupt aufgerufen und speichert einen 
@@ -49,5 +51,5 @@ void adc_isr(void);
  * muss das entsprechende Bit in channel gesetzt sein.
  * Bit0 = Kanal 0 usw.
  */
-void adc_init(char channel);
+void adc_init(uint8 channel);
 #endif

@@ -33,7 +33,7 @@
 #ifdef ENA_AVAILABLE
 
 
-volatile char ena =0;	/*!< Sichert den Zustand der Enable-Leitungen */
+volatile uint8 ena =0;	/*!< Sichert den Zustand der Enable-Leitungen */
 
 /*!
  * Initialisiert die Enable-Leitungen
@@ -51,7 +51,7 @@ void ENA_init(){
  * Daher zieht es die entsprechende ENA_XXX-Leitung auf Low und NICHT auf High
  * @param enable Bitmaske der anzuschaltenden LEDs
  */
-void ENA_on(char enable){
+void ENA_on(uint8 enable){
 //	int i;
 	ena |= enable;
 	ENA_set(ena);
@@ -67,7 +67,7 @@ void ENA_on(char enable){
  * Daher zieht es die entsprechende ENA_XXX-Leitung auf High und NICHT auf Low
  * @param enable Bitmaske der anzuschaltenden LEDs
  */
-void ENA_off(char enable){
+void ENA_off(uint8 enable){
 	ena &= ~enable;
 	ENA_set(ena);
 }
@@ -79,7 +79,7 @@ void ENA_off(char enable){
  * Daher zieht es die entsprechende ENA_XXX-Leitung auf ~enable
  * @param LED Wert der gezeigt werden soll
  */
-void ENA_set(char enable){
+void ENA_set(uint8 enable){
 	ena=enable;
 	shift_data(~enable,SHIFT_REGISTER_ENA); 
 }

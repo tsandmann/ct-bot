@@ -42,9 +42,9 @@
 /*! Puffergroesse fuer eine Zeile in bytes */
 #define DISPLAY_BUFFER_SIZE	(DISPLAY_LENGTH + 1)
 
-volatile char display_update=0;	/*!< Muss das Display aktualisiert werden? */
+volatile uint8 display_update=0;	/*!< Muss das Display aktualisiert werden? */
 #ifdef DISPLAY_SCREENS_AVAILABLE
-	volatile char display_screen=0;	/*!< Muss das Display aktualisiert werden? */
+	volatile uint8 display_screen=0;	/*!< Muss das Display aktualisiert werden? */
 #endif
 static char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausgaben */
 
@@ -95,7 +95,7 @@ static char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausg
  * Übertrage Kommando an das Display
  * @param cmd Kommando
  */
-void display_cmd(char cmd){		//ein Kommando cmd an das Display senden
+void display_cmd(uint8 cmd){		//ein Kommando cmd an das Display senden
 	uint8 i;
 	shift_data_out(cmd,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
 	// Enable muss für mind. 450 ns High bleiben, bevor es fallen darf!
@@ -112,7 +112,7 @@ void display_cmd(char cmd){		//ein Kommando cmd an das Display senden
  * @param data Das Zeichen
  */
 void display_data(char data){ //ein Zeichen aus data in den Displayspeicher schreiben
-        int i;
+        uint8 i;
 		shift_data_out(data,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY|DISPLAY_RS);
 		
 		// Enable muss für mind. 450 ns High bleiben, bevor es fallen darf!

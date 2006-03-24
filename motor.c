@@ -90,7 +90,7 @@ void motor_set(int16 left, int16 right){
  * @param servo Nummer des Servos
  * @param servo Zielwert
  */
-void servo_set(char servo, char pos){
+void servo_set(uint8 servo, uint8 pos){
 	if (pos< SERVO_LEFT)
 		pos=SERVO_LEFT;
 	if (pos> SERVO_RIGHT)
