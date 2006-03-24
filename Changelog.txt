@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-03-24  Benjamin Benz (bbe@heise.de)  Bugfix rc5_bot_next_behaviour
+
 2006-03-23  Benjamin Benz (bbe@heise.de)  Bugfix in bot_turn()
 
 2006-03-22	Andreas Merkle (mail@blue-andi.de)	Die Funktionen in delay_pc.c mit Funktionalitaet hinterlegt.

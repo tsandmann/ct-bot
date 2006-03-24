@@ -175,7 +175,7 @@ void rc5_bot_next_behaviour(RemCtrlFuncPar *par) {
 
 	state++;
 	if (state==2)
-		state=1;
+		state=0;
 	
 	switch (state) {
 		case 0: deactivateBehaviour(bot_drive_square);
