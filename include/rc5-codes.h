@@ -61,11 +61,10 @@
  */
 
 
-
 //#define RC_HAVE_HAUPPAUGE_WINTV
 //#define RC_HAVE_CONRAD_MediaMPV
 //#define RC_HAVE_CONRAD_PROMO8
-
+//#define RC_HAVE_VIVANCO_UR89
 
 /*!
  * Fernbedienung Hauppauge (simple WinTV-Karten Fernbedienung)
@@ -198,6 +197,44 @@
 	#define RC5_CODE_BWD	(0x3011 & RC5_MASK)		/*!< Backward Taste */
 	#define RC5_CODE_FWD	(0x3010 & RC5_MASK)		/*!< Forward Taste */
 #endif
+
+/*!
+ * Fernbedienung VIVANCO UR89, vor Verwendung auf VCR druecken
+ * @author Andreas Staudenmayer
+ */
+#ifdef RC_HAVE_VIVANCO_UR89
+	#define RC_HAVE_CODES							/*!< Definiert Codes */
+	#undef JOG_DIAL									/*!< Hat keinen Jog Dial */
+
+	#define RC5_NOT_AVAIL	(0xFFFF)				/*!< Code fuer Taste nicht vorhanden */
+
+	#define	RC5_CODE_0		(0x1140 & RC5_MASK)		/*!< Taste 0 			   */
+	#define	RC5_CODE_1		(0x1141 & RC5_MASK)		/*!< Taste 1 			   */
+	#define	RC5_CODE_2		(0x1142 & RC5_MASK)		/*!< Taste 2 			   */
+	#define	RC5_CODE_3		(0x1143 & RC5_MASK)		/*!< Taste 3 			   */
+	#define	RC5_CODE_4		(0x1144 & RC5_MASK)		/*!< Taste 4 			   */
+	#define	RC5_CODE_5		(0x1145 & RC5_MASK)		/*!< Taste 5 			   */
+	#define	RC5_CODE_6		(0x1146 & RC5_MASK)		/*!< Taste 6 			   */
+	#define	RC5_CODE_7		(0x1147 & RC5_MASK)		/*!< Taste 7 			   */
+	#define	RC5_CODE_8		(0x1148 & RC5_MASK)		/*!< Taste 8 			   */
+	#define	RC5_CODE_9		(0x1149 & RC5_MASK)		/*!< Taste 9 			   */
+
+	#define	RC5_CODE_PWR	(0x114C & RC5_MASK)		/*!< Taste An, Aus         */
+	#define	RC5_CODE_VIEW	RC5_NOT_AVAIL			/*!< Taste nicht vorhanden */
+	#define	RC5_CODE_SELECT	RC5_NOT_AVAIL			/*!< Taste nicht vorhanden */
+
+	#define	RC5_CODE_UP		(0x1140 & RC5_MASK)		/*!< Taste Hoch            */
+	#define	RC5_CODE_DOWN	(0x1161 & RC5_MASK)		/*!< Taste Runter          */
+	#define	RC5_CODE_LEFT	(0x0171 & RC5_MASK)		/*!< Taste Links           */
+	#define	RC5_CODE_RIGHT	(0x0170 & RC5_MASK)		/*!< Taste Rechts          */
+
+	#define RC5_CODE_FWD	RC5_NOT_AVAIL			/*!< Taste nicht vorhanden */
+	#define RC5_CODE_BWD	RC5_NOT_AVAIL			/*!< Taste nicht vorhanden */
+	#define RC5_CODE_RED	(0x1172 & RC5_MASK)		/*!< rote Taste            */
+	#define RC5_CODE_GREEN	(0x1176 & RC5_MASK)		/*!< gruene Taste          */
+	#define RC5_CODE_YELLOW	(0x1175 & RC5_MASK)		/*!< gelbe Taste           */
+	#define RC5_CODE_BLUE	(0x1174 & RC5_MASK)		/*!< blaue Taste           */
+#endif /* RC_HAVE_VIVANCO_UR89 */
 
 
 /*!
