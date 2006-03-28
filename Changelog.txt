@@ -1,6 +1,9 @@
 CHANGELOG fuer c't-Bot
 ======================
-2006-03-24  Andreas Staudenmayer (andreas.staudenmayer@t-online.de) Fernbedienung VIVANCO UR89 eingefügt
+
+2006-03-28 	Peter Koenig (pek@ctmagazin.de) Alle int in bot-logik.c/.h nach Absprache mit Christoph Grimmer in int16 bzw. int8 umgewandelt
+
+2006-03-24  Andreas Staudenmayer (andreas.staudenmayer@t-online.de) Fernbedienung VIVANCO UR89 eingefuegt
 
 2006-02-24	Fabian Recktenwald (fa.re.wal@gmx.de) Alle char-Datentypen in int8 oder uint8 umgewandelt
 

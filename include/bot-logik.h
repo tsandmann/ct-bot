@@ -103,7 +103,7 @@ void bot_goto(int16 left, int16 right, Behaviour_t * caller);
  * @param cm Gibt an, wie weit der Bot fahren soll. In cm :-) Die Strecke muss positiv sein, die Fahrtrichtung wird ueber speed geregelt.
  * */
 
-void bot_drive_distance(Behaviour_t* caller,int8 curve, int speed, int cm);
+void bot_drive_distance(Behaviour_t* caller,int8 curve, int16 speed, int16 cm);
 
 /*! 
  * Dreht den Bot im mathematisch positiven Sinn. 

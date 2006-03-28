@@ -102,7 +102,7 @@ Behaviour_t *behaviour = NULL;
 void activateBehaviour(void *function){
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
 
-	// Einmal durch die Liste gehen, bis wir den gwuenschten Eintrag haben 
+	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben 
 	for (job = behaviour; job; job = job->next) {
 		if (job->work == function) {
 			job->active = ACTIVE;
@@ -338,8 +338,8 @@ void bot_goto_behaviour(Behaviour_t *data){
 	static int16 mot_goto_l=0;	/*!< Muss der linke Motor noch drehen?  */
 	static int16 mot_goto_r=0;	/*!< Muss der rechte Motor noch drehen?  */
 
-  	int diff_l;	/* Restdistanz links */
-	int diff_r; /* Restdistanz rechts */
+  	int16 diff_l;	/* Restdistanz links */
+	int16 diff_r; /* Restdistanz rechts */
 
 	/* Sind beide Zaehler Null und ist die Funktion active 
 	 * -- sonst waeren wir nicht hier -- 
@@ -556,7 +556,7 @@ int8 is_good_pillar_ahead(void){
  * @return Bestand Handlungsbedarf? True, wenn das Verhalten ausweichen musste, sonst False.
  * TODO: Parameter einfuegen, der dem Verhalten vorschlaegt, wie zu reagieren ist.
  * */
-int bot_avoid_harm(void){
+int8 bot_avoid_harm(void){
 	if(is_obstacle_ahead(COL_CLOSEST) != False || sensBorderL > BORDER_DANGEROUS || sensBorderR > BORDER_DANGEROUS){
 		speedWishLeft = -BOT_SPEED_NORMAL;
 		speedWishRight = -BOT_SPEED_NORMAL;
@@ -569,7 +569,7 @@ int bot_avoid_harm(void){
  * Es handelt sich hierbei nicht im eigentlichen Sinn um ein Verhalten, sondern ist nur eine Abstraktion der Motorkontrollen.
  * @param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
  * @param speed Gibt an, wie schnell der Bot fahren soll. */
-void bot_drive(int8 curve, int speed){
+void bot_drive(int8 curve, int16 speed){
 	// Wenn etwas ausgewichen wurde, bricht das Verhalten hier ab, sonst wuerde es evtl. die Handlungsanweisungen von bot_avoid_harm() stoeren.
 	if(bot_avoid_harm()) return;
 	if(curve < 0) {
@@ -620,7 +620,7 @@ void bot_drive_distance_behaviour(Behaviour_t* data){
  * @param cm Gibt an, wie weit der Bot fahren soll. In cm :-) Die Strecke muss positiv sein, die Fahrtrichtung wird ueber speed geregelt.
  * */
 
-void bot_drive_distance(Behaviour_t* caller,int8 curve, int speed, int cm){
+void bot_drive_distance(Behaviour_t* caller,int8 curve, int16 speed, int16 cm){
 	int16 marks_to_drive = cm * 10 * ENCODER_MARKS / WHEEL_PERIMETER;
 	int16 *encoder;
 	drive_distance_curve = curve;
