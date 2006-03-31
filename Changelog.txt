@@ -1,5 +1,6 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-03-31	Frank Menzel (Menzelfr@gmx.de) RC5-Signale werden nur noch mit geaendertem Toggle-Bit akzeptiert
 
 2006-03-28 	Peter Koenig (pek@ctmagazin.de) Alle int in bot-logik.c/.h nach Absprache mit Christoph Grimmer in int16 bzw. int8 umgewandelt
 

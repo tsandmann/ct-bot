@@ -240,18 +240,28 @@ static void rc5_bot_goto(RemCtrlFuncPar *par) {
  */
 void rc5_control(void){
 	uint16 run;
+	static uint16 RC5_Last_Toggle = 0;   /*!< Toggle-Wert des zuletzt empfangenen RC5-Codes*/
+	 
 	uint16 rc5 = ir_read();
 	
 	if (rc5 != 0) {
 		RC5_Code= rc5 & RC5_MASK;	/* Alle uninteressanten Bits ausblenden */
+		/* Toggle kommt nicht im Simulator, immer gewechseltes Toggle Bit sicherstellen */ 
+		#ifdef PC
+		  RC5_Last_Toggle = !(rc5 & RC5_TOGGLE);
+		#endif
+		/* Bei Aenderung des Toggle Bits, entspricht neuem Tastendruck, gehts nur weiter */
+		if ((rc5 & RC5_TOGGLE)   != RC5_Last_Toggle) {	/* Nur Toggle Bit abfragen, bei Ungleichheit weiter */
+		  RC5_Last_Toggle = rc5 & RC5_TOGGLE;           /* Toggle Bit neu belegen */
 		
-		/* Suchen der auszufuehrenden Funktion */
-		for(run=0; run<sizeof(gRemCtrlAction)/sizeof(RemCtrlAction); run++) {
-			/* Funktion gefunden? */
-			if (gRemCtrlAction[run].command == RC5_Code) {
-				/* Funktion ausfuehren */
-				gRemCtrlAction[run].func(&gRemCtrlAction[run].par);
-			}
+		   /* Suchen der auszufuehrenden Funktion */
+		   for(run=0; run<sizeof(gRemCtrlAction)/sizeof(RemCtrlAction); run++) {
+			   /* Funktion gefunden? */
+			   if (gRemCtrlAction[run].command == RC5_Code) {
+				   /* Funktion ausfuehren */
+				   gRemCtrlAction[run].func(&gRemCtrlAction[run].par);
+			   }
+		   }
 		}
 	}
 }
