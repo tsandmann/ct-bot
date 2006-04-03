@@ -46,6 +46,8 @@ typedef struct _Behaviour_t {
 	} Behaviour_t;
 #endif
 
+/*! Dieser Typ definiert eine Funktion die das eigentliche Verhalten ausfuehrt. */
+typedef void (*BehaviourFunc)(Behaviour_t *data);
 
 extern volatile int16 target_speed_l;	/*!< Sollgeschwindigkeit linker Motor */
 extern volatile int16 target_speed_r;	/*!< Sollgeschwindigkeit rechter Motor */
@@ -65,13 +67,13 @@ extern void bot_behave_init(void);
  * Aktiviert eine Regel mit gegebener Funktion
  * @param function Die Funktion, die das Verhalten realisiert.
  */
-void activateBehaviour(void *function);
+void activateBehaviour(BehaviourFunc function);
 
 /*!
  * Aktiviert eine Regel mit gegebener Funktion
  * @param function Die Funktion, die das Verhalten realisiert.
  */
-void deactivateBehaviour(void *function);
+void deactivateBehaviour(BehaviourFunc function);
 
 /*!
  * Beispiel fuer ein Verhalten, das einen Zustand besitzt

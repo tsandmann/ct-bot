@@ -99,7 +99,7 @@ Behaviour_t *behaviour = NULL;
  * Aktiviert eine Regel mit gegebener Funktion
  * @param function Die Funktion, die das Verhalten realisiert.
  */
-void activateBehaviour(void *function){
+void activateBehaviour(BehaviourFunc function){
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
 
 	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben 
@@ -116,7 +116,7 @@ void activateBehaviour(void *function){
  * Deaktiviert eine Regel mit gegebener Funktion
  * @param function Die Funktion, die das Verhalten realisiert.
  */
-void deactivateBehaviour(void *function){
+void deactivateBehaviour(BehaviourFunc function){
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
 		
 	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben 
