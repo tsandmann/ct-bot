@@ -41,16 +41,16 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 #define MoMAX 255   // Maximale PWM
 #define MoMIN 0    // Minimal PWM
 
-volatile int16 err_r_old=0;
-volatile int16 err_r_old2=0;
-volatile int16 err_l_old=0;
-volatile int16 err_l_old2=0;
+volatile int8 err_r_old=0;
+volatile int8 err_r_old2=0;
+volatile int8 err_l_old=0;
+volatile int8 err_l_old2=0;
 volatile word reg_l_old=BOT_SPEED_NORMAL;
 volatile word reg_r_old=BOT_SPEED_NORMAL;
 volatile int16 last_left=BOT_SPEED_NORMAL;
 volatile int16 last_right=BOT_SPEED_NORMAL;
-volatile int16 tmpR=0;
-volatile int16 tmpL=0;
+volatile int8 tmpR=0;
+volatile int8 tmpL=0;
 
 
 
@@ -133,56 +133,59 @@ void motor_init(void){
 	motor_low_init();
 }
 
-/*
+/*!
  * @brief 	Drehzahlregelung für die Motoren des c't-Bots
  * @author 	Daniel Bachfeld (dab@heise.de)
  * @date 	03.04.06
- * !!!!!!!!!! parameter nachtragen
+ * @param left	Geschwindigkeit fuer den linken Motor
+ * @param right Geschwindigkeit fuer den linken Motor
+ * Getrennte Drehzahlregelung für linken und rechten Motor sorgt für konstante Drehzahl und somit annähernd
+ * für Geradeauslauf
+ * Feintuning von Kp, Ki, Kd verbessert die Genauigkeit und Schnelligkeit der Regelung
 */
+
 void speed_control (int16 left, int16 right){
-	uint8 Kp, Kd, Ki;                      // PID-Parameter
-	int16 rmp, lmp, err_l, err_r;
-	word reg_l,  reg_r;                    //Stellwerte 
+	uint8 Kp, Kd, Ki;                     // PID-Parameter
+	int8 err_l, err_r;                    // aktuelle Abweichung vom Soll-Wert 
+	int16 rmp, lmp;                       // aktueller Ist-Wert Encoderpulse
+	word reg_l, reg_r;                    //Stellwerte 
 	
-	//Regler links
-	 
-	// BOT_SPEED_STOP beachten
-	// RUECKWAERTS beachten
-	 
-	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! unschoen !!!!!!!!!!!!!!!!!
-	if (left != -BOT_SPEED_NORMAL && right !=  -BOT_SPEED_NORMAL) {  // Regelung bei Abgrund überspringen
+
+	  //Regler links  
+      
       if ((last_left != left) || (clock_motor_control_l >1860)) {
         lmp = abs(sensEncL-tmpL);  // aktuelle Ist-Wert berechnen
-		tmpL = sensEncL;          // letzte Anzahl der Encoderpulse merken
+		tmpL = sensEncL;           // Anzahl der Encoderpulse merken für nächsten Aufruf merken
         
-		if (last_left != left) {  // Bei abruptem Geschwindigkeitswechsel alte Fehler auf Null setzen
+		if (last_left != left) {   // Bei abruptem Geschwindigkeitswechsel alte Fehler auf Null setzen
         	reg_l_old = left;
         	err_l_old = 0;    
         	err_l_old2 = 0;
-        	lmp = 0;              //aktuellen Fehler auf Null setzen
+        	lmp = 0;
         }
 		
-		if (left==BOT_SPEED_NORMAL) {     // Zu SPEED_NORMAL gehoeren PID-Parameter
+		if (left==BOT_SPEED_NORMAL) {     // Zu SPEED_NORMAL gehoeren diese PID-Parameter
            Kp = 7;                        //
            Ki = 5;                        // PID-Werte für SPEED_NORMAL 
            Kd = 1;                        // Hier sollte man versch. Werten für Leerlauf und Last probieren
         }   
         
-        if (left==BOT_SPEED_SLOW) {
+        if (left==BOT_SPEED_SLOW) {       // Zu SPEED_SLOW gehoeren diese PID-Parameter
           Kp = 3;
           Ki = 2;
           Kd = 0;
         }
         
         if (clock_motor_control_l >1860) {
-          err_l =left  - lmp;  // Regelabweichung links
+          err_l =abs(left)  - lmp;  // Regelabweichung links
           reg_l = reg_l_old + Kp* (err_l - err_l_old);                // P-Beitrag
           reg_l = reg_l + Ki * (err_l + err_l_old)/2;                 // I-Beitrag
           reg_l = reg_l + Kd * (err_l - 2 * err_l_old + err_l_old2);  // D-Beitrag
           if (reg_l > MoMAX) reg_l = MoMAX;         //berechneten Stellwert auf zulässige Groesse begrenzen
           if (reg_l < MoMIN) reg_l = MoMIN;
-          err_l_old2 = err_l_old;       // alte Fehler merken
-          err_l_old = err_l;
+          if (left < 0) reg_l = reg_l * -1;    // Wenn Richtung rückwärts, denn Stellwert negieren
+          err_l_old2 = err_l_old;              // alten N-2 Fehler merken
+          err_l_old = err_l;                   // alten N-1 Fehler merken     
           reg_l_old = reg_l;            // Stellwerte merken
         }
         clock_motor_control_l =0 ;  
@@ -213,12 +216,13 @@ void speed_control (int16 left, int16 right){
         }  
         
         if (clock_motor_control_r >1860) {
-          err_r = right - rmp;
+          err_r = abs(right) - rmp;
           reg_r = reg_r_old + Kp * (err_r - err_r_old);  
           reg_r = reg_r + Ki * (err_r + err_r_old)/2; 
           reg_r = reg_r + Kd * (err_r - 2 *  err_r_old + err_r_old2);
           if (reg_r > MoMAX) reg_r = MoMAX;     
           if (reg_r < MoMIN) reg_r = MoMIN;
+          if (right < 0) reg_r = reg_r * -1;     // Wenn Richtung rückwärts, denn Stellwert negieren
           err_r_old2 = err_r_old;
           err_r_old = err_r;
           reg_r_old = reg_r;
@@ -226,9 +230,10 @@ void speed_control (int16 left, int16 right){
         clock_motor_control_r = 0;
       } 
         // Anzeige fuer Debugging
-       last_left = left;              // alte Geschwindigkeit merken
+       last_left = left;                     // alte Geschwindigkeiten merken
        last_right = right;
+       if (left==BOT_SPEED_STOP) reg_l_old = BOT_SPEED_STOP;  // BOT_SPEED_STOP überschreibt Reglerstellwerte
+       if (right==BOT_SPEED_STOP) reg_r_old = BOT_SPEED_STOP;
        bot_motor(reg_l_old, reg_r_old);       // Motorwerte setzen
-	} else 
-		bot_motor (left, right);  //alle Maschinen zurück, Abgrund voraus
+	
 }
