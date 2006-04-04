@@ -135,6 +135,10 @@ void init(void){
 	#ifdef MAUS_AVAILABLE
 		maus_sens_init();
 	#endif
+	
+	#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+	    behaviour_page = 1;
+	#endif
 
 }
 
@@ -144,6 +148,18 @@ void init(void){
  * Zeigt ein paar Informationen an
  */
 	void display(void){
+		
+		#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+		 /*!
+          * Definitionen fuer die Verhaltensanzeige
+          */
+		  #undef TEST_AVAILABLE_COUNTER
+		  Behaviour_t	*ptr	= behaviour;
+		  int8 colcounter       = 0;
+		  int8 linecounter      = 0;
+		  int8 firstcol         = 0; 
+		#endif 
+		
 		#ifdef TEST_AVAILABLE_COUNTER
 			static int counter=0;
 		#endif
@@ -183,9 +199,45 @@ void init(void){
 
 				case 2:
 					display_cursor(1,1);
-					display_printf("Screen 3");
+					  
+                   #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+                    /*!
+                     * zeilenweise Anzeige der Verhalten
+                     */ 
+					display_printf("Verhalten (Pri/Akt)%d",behaviour_page);
+					
+					colcounter = 0; linecounter = 2;
+					/* je nach Seitenwahl die ersten  Saetze ueberlesen bis richtige Seite */
+					firstcol = (behaviour_page -1)*6;
+					 
+					/*!
+					 * max. 3 Zeilen mit 6 Verhalten anzeigbar wegen Ueberschrift
+					 * Seitensteuerung bei mehr Verhalten 
+					 */ 
+					while((ptr != NULL)&& (linecounter<5))	{
+					 
+					  if  ((ptr->priority > 2) &&(ptr->priority <= 200)) {
+                        if   (colcounter >= firstcol) { 
+				          display_cursor(linecounter,((colcounter % 2)* 12)+1);
+					      display_printf(" %3d,%2d",ptr->priority,ptr->active_new);				      
+					      colcounter++;
+					    
+					      /* bei colcounter 0 neue Zeile */
+					      if (colcounter % 2 == 0)
+					  	    linecounter++;
+					      
+					    }
+					    else
+					    colcounter ++;
+					  }
+					  ptr = ptr->next;
+				    }  
+					
+				    #endif
+					 
 
-					#ifdef TEST_AVAILABLE_COUNTER						
+					#ifdef TEST_AVAILABLE_COUNTER	
+					    display_printf("Screen 3");					
 						display_cursor(2,1);
 						display_printf("count %d",counter++);
 
@@ -197,7 +249,7 @@ void init(void){
 				case 3:
 					display_cursor(1,1);
 					#ifdef DISPLAY_SCREEN_RESETINFO
-						/* Zeige den Grund für Resets an */
+						/* Zeige den Grund fuer Resets an */
 						display_printf("MCUCSR - Register");
 												
 						display_cursor(2,1);

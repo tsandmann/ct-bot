@@ -1203,3 +1203,95 @@ void bot_goto(int16 left, int16 right, Behaviour_t * caller){
 
 	switch_to_behaviour(caller,bot_goto_behaviour,OVERRIDE);	
 }
+
+#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+
+/*!
+ * ermittelt ob noch eine weitere Verhaltensseite existiert 	
+ */
+ int8  another_behaviour_page(void) {
+  int16 max_behaviours ;
+  Behaviour_t	*ptr	;
+  
+  /* dazu muss ich auch gueltige Screenseite sein */
+  #ifdef DISPLAY_SCREENS_AVAILABLE
+   if (display_screen != 2)
+     return 0;
+  #endif 
+  
+  ptr = behaviour;
+  max_behaviours = 0;
+  
+// zuerst alle Verhalten ermitteln ausser Grundverhalten
+  while(ptr != NULL)	{			 
+	if  ((ptr->priority > 2) &&(ptr->priority <= 200)) 
+    			max_behaviours++;		  
+						  
+	ptr = ptr->next;
+   }  
+
+   return (behaviour_page  * 6) < max_behaviours;
+}
+
+
+/*! 
+ * toggled ein Verhalten der Verhaltensliste an Position pos,
+ * die Aenderung erfolgt nur auf die Puffervariable  
+ * @param pos Listenposition, entspricht der Taste 1-6 der gewaehlten Verhaltensseite
+ */
+void toggleNewBehaviourPos(int8 pos){
+	Behaviour_t *job;						// Zeiger auf ein Verhalten
+    int8 i;
+    
+    // nur aendern, wenn ich richtige Screenseite bin 
+     if (display_screen != 2)
+       return ;
+     
+    // richtigen Index je nach Seite ermitteln 
+    pos = (behaviour_page - 1) * 6 + pos;
+    i   = 0;
+
+	// durch die Liste gehen, bis wir den gewuenschten Index erreicht haben 
+	for (job = behaviour; job; job = job->next) {
+	    if ((job->priority > 2) &&(job->priority <= 200)) {		
+		  i++;
+		  if (i == pos) {
+		  	  job->active_new = !job->active_new;
+			  			      
+			  break;
+		  }
+	    }
+	}
+}
+
+
+/*! 
+ * Startschuss, die gewaehlten neuen Verhaltensaktivitaeten werden in die
+ * Verhaltensliste geschrieben und die Verhalten damit scharf geschaltet 
+ */
+void set_behaviours_active_to_new(void) {
+ Behaviour_t *job;	
+   for (job = behaviour; job; job = job->next) 	{
+					 
+	if  ((job->priority > 2) &&(job->priority <= 200)) 
+            job->active = job->active_new;            				 
+	 
+   }
+}
+
+/*!
+ * Die Aktivitaeten der Verhalten werden in die Puffervariable geschrieben, 
+ * welche zur Anzeige und Auswahl verwendet wird
+ */
+void set_behaviours_equal(void) {
+ Behaviour_t *job;	
+   for (job = behaviour; job; job = job->next) 	{
+					 
+	if  ((job->priority > 2) &&(job->priority <= 200)) 
+            job->active_new = job->active;            				 
+	 
+   }
+}
+
+
+#endif

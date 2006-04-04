@@ -77,22 +77,31 @@ static void rc5_bot_set_speed(RemCtrlFuncPar *par);
 static void rc5_bot_change_speed(RemCtrlFuncPar *par);
 
 /*!
- * Diese Funktion setzt die zu laufenden Encoderschritte.
- * @param par Parameter mit den zu laufenden Encoderschritten.
- */	
-static void rc5_bot_goto(RemCtrlFuncPar *par);
-
-/*!
- * Diese Funktion wechselt zwiaschen verschiednen Verhalten
+ * Diese Funktion wechselt zwischen verschiednen Verhalten
  * @param par Parameter mit den zu setzenden Geschwindigkeiten.
  */	
 void rc5_bot_next_behaviour(RemCtrlFuncPar *par);
 
 /*!
- * Diese Funktion dreht den Bot.
- * @param par Parameter mit der Drehung, Geschwindigkeit
- */	
-static void rc5_bot_turn(RemCtrlFuncPar *par);
+* Verarbeitet die Zifferntasten in Abhaengigkeit vom eingestelltem Screen
+* @param par Parameter mit der betaetigten Zahlentaste.
+*/
+void rc5_number(RemCtrlFuncPar *par);
+
+#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+	/*!
+	 * Diese Funktion setzt die Aktivitaeten der Verhalten nach der Auswahl.
+	 * Hierdurch erfolgt der Startschuss fuer Umschaltung der Verhalten
+	 */	
+	static void rc5_set_all_behaviours(void) ;
+	  
+	/*! 
+	 * toggled ein Verhalten der Verhaltensliste an Position pos,
+	 * die Aenderung erfolgt nur auf die Puffervariable  
+	 * @param i Verhaltens-Listenposition, entspricht der Taste 1-6 der gewaehlten Verhaltensseite
+	 */	 
+	static void rc5_toggle_behaviour_new(int8 i);
+#endif
 
 /*! Steuert den Servo an
  * @param par Parameter mit Servo-Nummer und -Position
@@ -109,15 +118,15 @@ static RemCtrlAction gRemCtrlAction[] = {
 	{ RC5_CODE_DOWN,	rc5_bot_change_speed,	{ -10, -10 } },
 	{ RC5_CODE_LEFT,	rc5_bot_change_speed,	{ 0, 10 } },
 	{ RC5_CODE_RIGHT,	rc5_bot_change_speed,	{ 10, 0 } },
-	{ RC5_CODE_1,		rc5_bot_set_speed,		{ BOT_SPEED_SLOW, BOT_SPEED_SLOW } },
-	{ RC5_CODE_3,		rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_MAX } },
-	{ RC5_CODE_5,		rc5_bot_goto,			{ 0, 0 } },
-	{ RC5_CODE_6,		rc5_bot_turn,			{ 90, 0 } },
-	{ RC5_CODE_4,		rc5_bot_turn,			{ -90, 0 } },
-	{ RC5_CODE_2,		rc5_bot_goto,			{ 100, 100 } },
-	{ RC5_CODE_8,		rc5_bot_goto,			{ -100, -100 } },
-	{ RC5_CODE_7,		rc5_bot_turn,			{ -180, 0 } },
-	{ RC5_CODE_9,		rc5_bot_turn,			{ 180, 0 } },
+	{ RC5_CODE_1,		rc5_number,		        { 1, 1 } },
+	{ RC5_CODE_2,		rc5_number,		        { 2, 2 } },
+	{ RC5_CODE_3,		rc5_number,			    { 3, 3 } },
+	{ RC5_CODE_4,		rc5_number,			    { 4, 4 } },
+	{ RC5_CODE_5,		rc5_number,			    { 5, 5 } },
+	{ RC5_CODE_6,		rc5_number,			    { 6, 6 } },
+	{ RC5_CODE_7,		rc5_number,			    { 7, 7 } },
+	{ RC5_CODE_8,		rc5_number,			    { 8, 8 } },
+	{ RC5_CODE_9,		rc5_number,			    { 9, 9 } },
 	{ RC5_CODE_SELECT,	rc5_bot_next_behaviour,	{ 0, 0 } },
 	{ RC5_CODE_BWD,		rc5_bot_servo,			{ SERVO1, SERVO_LEFT } },
 	{ RC5_CODE_FWD,		rc5_bot_servo,			{ SERVO1, SERVO_RIGHT } },
@@ -152,15 +161,55 @@ static RemCtrlAction gRemCtrlAction[] = {
 
 /*!
  * Diese Funktion setzt das Display auf eine andere Ausgabe.
+ * Fuer die Verhaltensausgabe werden hier die Verhalten durchgeblaettert
  * @param par Parameter mit dem zu setzenden Screen.
  */	
 #ifdef DISPLAY_SCREENS_AVAILABLE
 static void rc5_screen_set(RemCtrlFuncPar *par) {
 	if (par) {
-		if (par->value1 == DISPLAY_SCREEN_TOGGLE)
-			display_screen ++;
+		if (par->value1 == DISPLAY_SCREEN_TOGGLE) {
+				
+		  #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+		     /* erst nachsehen, ob noch weitere Verhalten auf anderen Pages vorhanden sind */
+		     /* nur neuer Screen, wenn alle Verhalten angezeigt wurden */
+		     if ((display_screen == 2) && (another_behaviour_page())
+		     ) 
+		           behaviour_page++;
+		     else {
+		     	display_screen ++;
+		     	 
+			       if (display_screen == 1) {
+			         behaviour_page = 1;
+			          set_behaviours_equal();
+			       }
+			   
+		         }
+	    
+	    	#else
+		      display_screen ++;
+		    #endif     
+	      
+	    
+		}
 		else 
-			display_screen = par->value1;
+		{
+		  /* Screen direkt waehlen */	 
+		  #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+			
+			  /* Screen direkt waehlen und Verhaltens-Puffervariablen abgleichen*/
+			  display_screen = par->value1;
+		       if ((display_screen == 2)&& (behaviour_page == 1)) {
+			      
+			       set_behaviours_equal();
+			     }  
+			  behaviour_page = 1;
+			  
+		   #else
+		     /* Screen direkt waehlen */
+			  display_screen = par->value1;
+		   #endif
+		}
+
 		
 		display_screen %= DISPLAY_SCREENS;
 		display_clear();
@@ -237,24 +286,6 @@ static void rc5_bot_change_speed(RemCtrlFuncPar *par) {
 }
 
 /*!
- * Diese Funktion setzt die zu laufenden Encoderschritte.
- * @param par Parameter mit den zu laufenden Encoderschritten.
- */	
-static void rc5_bot_goto(RemCtrlFuncPar *par) {
-	if (par) 	
-		bot_goto(par->value1, par->value2,0);
-}
-
-/*!
- * Diese Funktion dreht den Bot.
- * @param par Parameter mit der Drehung
- */	
-static void rc5_bot_turn(RemCtrlFuncPar *par) {
-	if (par) 	
-		bot_turn(0,par->value1);
-}
-
-/*!
  * Liest ein RC5-Codeword und wertet es aus
  */
 void rc5_control(void){
@@ -284,4 +315,65 @@ void rc5_control(void){
 		}
 	}
 }
+
+#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+/*! 
+ * toggled ein Verhalten der Verhaltensliste an Position pos,
+ * die Aenderung erfolgt nur auf die Puffervariable  
+ * @param i Verhaltens-Listenposition, entspricht der Taste 1-6 der gewaehlten Verhaltensseite
+ */	
+  void rc5_toggle_behaviour_new(int8 i) {
+	
+		  toggleNewBehaviourPos(i);	
+  } 
+  
+/*!
+ * Diese Funktion setzt die Aktivitaeten der Verhalten nach der Auswahl.
+ * Hierdurch erfolgt der Startschuss fuer Umschaltung der Verhalten
+ */	  static void rc5_set_all_behaviours(void) {
+	
+		  set_behaviours_active_to_new();
+	
+  }
+#endif  
+
+/*!
+ * Verarbeitet die Zifferntasten in Abhaengigkeit vom eingestelltem Screen
+ * @param par Parameter mit der betaetigten Zahlentaste.
+ */
+void rc5_number(RemCtrlFuncPar *par) {
+	switch (display_screen) {
+		case 0:
+			switch (par->value1) {
+				case 0:	break;
+				case 1: target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
+				case 2: bot_goto(100, 100, 0); break;
+				case 3: target_speed_l = BOT_SPEED_MAX; target_speed_r = BOT_SPEED_MAX; break;
+				case 4: bot_turn(0, -90); break;
+				case 5: bot_goto(0, 0, 0); break;
+				case 6: bot_turn(0, 90); break;
+				case 7: bot_turn(0,-180); break;
+				case 8: bot_goto(-100, -100, 0); break;
+				case 9: bot_turn(0, 180); break;
+			}
+			break;
+		
+	#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+		case 2:
+			switch (par->value1) {
+				case 0:	break;
+				case 1: rc5_toggle_behaviour_new(1); break;
+				case 2: rc5_toggle_behaviour_new(2); break;
+				case 3: rc5_toggle_behaviour_new(3); break;
+				case 4: rc5_toggle_behaviour_new(4); break;
+				case 5: rc5_toggle_behaviour_new(5); break;
+				case 6: rc5_toggle_behaviour_new(6); break;
+				case 7: break;
+				case 8: break;
+				case 9: rc5_set_all_behaviours(); break;
+			}
+			break;
+	#endif
+ 	}
+ }	
 #endif

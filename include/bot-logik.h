@@ -38,6 +38,9 @@ typedef struct _Behaviour_t {
    struct _Behaviour_t *caller ; /* aufrufendes verhalten */
    
    uint8 active:1;				/*!< Ist das Verhalten aktiv */
+   #ifdef DISPLAY_BEHAVIOUR_AVAILABLE  
+   uint8 active_new:1;			/*!< Ist das via Display gewaehlte neue Sollverhalten */
+   #endif
    uint8 subResult:2;			/*!< War das aufgerufene unterverhalten erfolgreich (==1)?*/
    struct _Behaviour_t *next;					/*!< Naechster Eintrag in der Liste */
 #ifndef DOXYGEN
@@ -48,6 +51,10 @@ typedef struct _Behaviour_t {
 
 /*! Dieser Typ definiert eine Funktion die das eigentliche Verhalten ausfuehrt. */
 typedef void (*BehaviourFunc)(Behaviour_t *data);
+
+/*! Liste mit allen Verhalten */
+extern Behaviour_t *behaviour;
+
 
 extern volatile int16 target_speed_l;	/*!< Sollgeschwindigkeit linker Motor */
 extern volatile int16 target_speed_r;	/*!< Sollgeschwindigkeit rechter Motor */
@@ -159,5 +166,33 @@ void bot_explore_behaviour(Behaviour_t *data);
  * @see bot_do_slalom()
  * */
 void bot_do_slalom_behaviour(Behaviour_t *data);
+
+#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+  
+ /*!
+ * ermittelt ob noch eine weitere Verhaltensseite existiert 	
+ */ 
+  extern int8  another_behaviour_page(void) ;
+  
+/*! 
+ * toggled ein Verhalten der Verhaltensliste an Position pos 
+ * @param pos Listenposition, entspricht der Taste 1-6 der gewaehlten Verhaltensseite
+ */  
+  void toggleNewBehaviourPos(int8 pos);
+  
+/*! 
+ * Startschuss, die gewaehlten neuen Verhaltensaktivitaeten werden in die
+ * Verhaltensliste geschrieben und die Verhalten damit scharf geschaltet 
+ */  
+  void set_behaviours_active_to_new(void);
+  
+/*!
+ * Die Aktivitaeten der Verhalten werden in die Puffervariable geschrieben, 
+ * welche zur Anzeige und Auswahl verwendet wird
+ */  
+  void set_behaviours_equal(void);
+   
+  volatile int8 behaviour_page ; /*!< angezeigte Verhaltensseite */
+#endif
 
 #endif

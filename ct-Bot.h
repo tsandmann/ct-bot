@@ -46,6 +46,9 @@
 #define DISPLAY_SCREENS_AVAILABLE	/*!< Ermoeglicht vier verschiedene Screen */
 #define DISPLAY_SCREEN_RESETINFO	/*!< Zeigt auf Screen 4 Informationen über Resets an */
 
+#define DISPLAY_BEHAVIOUR_AVAILABLE  /*!< Anzeige der Verhalten im Display Screen 3, ersetzt Counteranzeige */
+
+
 #define WELCOME_AVAILABLE	/*!< kleiner Willkommensgruss */
 
 #define ADC_AVAILABLE		/*!< A/D-Converter for sensing Power */

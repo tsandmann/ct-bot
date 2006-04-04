@@ -4,6 +4,17 @@ CHANGELOG fuer c't-Bot
 
 2006-04-04  Daniel Bachfeld (dab@heise.de) Motorregelung eingefuehrt
 
+2006-04-03	Benjamin Benz (bbe@heise.de)  Für den simulierten Bot gilt immer die Standardfernbedienung
+
+2006-04-03  Benjamin Benz (bbe@heise.de)  Unterverzeichnis Documentation eingefuehrt
+
+2006-04-03  Frank Menzel(menzelfr@gmx.de) & Carsten Giesen (info@cnau.de) Die folgenden beiden Aenderungen eingereicht:
+										Verhaltensanzeige im Screen 3 an Stelle des 
+										   Counters via Define DISPLAY_BEHAVIOUR_AVAILABLE. Durch die Mehrfachnutzung der Zahlentasten (1-6) bekommen diese im Screen 3 die Bedeutung der
+                                           Umschaltmoeglichkeit eines Verhaltens (aktiv <-> inaktiv), wobei 1 und 0 fr aktiv und inaktiv stehen. 
+                                           Geblaettert werden kann mit der Taste RC5_CODE_VIEW und scharfgeschaltet wird via RC5_CODE_SELECT.
+                                           Fuer Eindeutigkeit sind Verhalten gleicher Prioritaet angepasst worden (bot_simple und slalom_behaviour).
+
 2006-03-27	Andreas Merkle (mail@blue-andi.de)	Zeiger, welche als Funktionszeiger verwendet wurden, ersetzt.
 
 2006-03-31	Frank Menzel (Menzelfr@gmx.de) RC5-Signale werden nur noch mit geaendertem Toggle-Bit akzeptiert
