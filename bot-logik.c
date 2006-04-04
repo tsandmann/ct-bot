@@ -649,8 +649,8 @@ void bot_drive_distance(Behaviour_t* caller,int8 curve, int16 speed, int16 cm){
  * */
 void bot_turn_behaviour(Behaviour_t* data){
 	/* Drehen findet in vier Schritten statt. Die Drehung wird dabei
-	 * bei Winkeln > 90� zunaechst mit maximaler Geschwindigkeit ausgefuehrt. Bei kleineren
-	 * Winkeln oder wenn nur noch 90� zu drehen sind, nur noch mit normaler Geschwindigkeit
+	 * bei Winkeln > 90 Grad zunaechst mit maximaler Geschwindigkeit ausgefuehrt. Bei kleineren
+	 * Winkeln oder wenn nur noch 90 Grad zu drehen sind, nur noch mit normaler Geschwindigkeit
 	 */
 	static int8 turnState=NORMAL_TURN;
 	/* zu drehende Schritte in die korrekte Drehrichtung korrigieren */
