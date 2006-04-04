@@ -101,8 +101,9 @@ void motor_set(int16 left, int16 right){
 		direction.right= DIRECTION_BACKWARD;
 	} else if (right > 0 )
 		direction.right= DIRECTION_FORWARD;
+		
 	#ifdef SPEED_CONTROL_AVAILABLE
-		speed_control(speed_l, speed_r);		
+		speed_control(speed_l, speed_r);
 	#else
 	    bot_motor(speed_l,speed_r);
 	#endif    
@@ -145,6 +146,10 @@ void speed_control (int16 left, int16 right){
 	
 	//Regler links
 	 
+	// BOT_SPEED_STOP beachten
+	// RUECKWAERTS beachten
+	 
+	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! unschoen !!!!!!!!!!!!!!!!!
 	if (left != -BOT_SPEED_NORMAL && right !=  -BOT_SPEED_NORMAL) {  // Regelung bei Abgrund überspringen
       if ((last_left != left) || (clock_motor_control_l >1860)) {
         lmp = abs(sensEncL-tmpL);  // aktuelle Ist-Wert berechnen
@@ -217,21 +222,13 @@ void speed_control (int16 left, int16 right){
           err_r_old2 = err_r_old;
           err_r_old = err_r;
           reg_r_old = reg_r;
-
         }
         clock_motor_control_r = 0;
       } 
         // Anzeige fuer Debugging
-        
-     #ifdef DISPLAY_AVAILABLE
-        display_cursor(3,1);
-	    display_printf("L:%d   R:%d       ", reg_l_old, reg_r_old);
-        display_cursor(4,1);
-        display_printf("SL:%d  SR:%d            ", left, right);	
-     #endif
        last_left = left;              // alte Geschwindigkeit merken
        last_right = right;
        bot_motor(reg_l_old, reg_r_old);       // Motorwerte setzen
-	}
-	else bot_motor (left, right);  //alle Maschinen zurück, Abgrund voraus
+	} else 
+		bot_motor (left, right);  //alle Maschinen zurück, Abgrund voraus
 }

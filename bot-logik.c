@@ -64,8 +64,8 @@ int16 speedWishRight;				/*!< Puffervariablen fuer die Verhaltensfunktionen abso
 float faktorWishLeft;				/*!< Puffervariablen fuer die Verhaltensfunktionen Modifikationsfaktor links*/
 float faktorWishRight;				/*!< Puffervariablen fuer die Verhaltensfunktionen Modifikationsfaktor rechts */
 
-volatile int16 target_speed_l=BOT_SPEED_NORMAL;	/*!< Sollgeschwindigkeit linker Motor - darum kuemmert sich bot_base()*/
-volatile int16 target_speed_r=BOT_SPEED_NORMAL;	/*!< Sollgeschwindigkeit rechter Motor - darum kuemmert sich bot_base() */
+volatile int16 target_speed_l=BOT_SPEED_STOP;	/*!< Sollgeschwindigkeit linker Motor - darum kuemmert sich bot_base()*/
+volatile int16 target_speed_r=BOT_SPEED_STOP;	/*!< Sollgeschwindigkeit rechter Motor - darum kuemmert sich bot_base() */
 
 /* Parameter fuer das bot_explore_behaviour() */
 int8 (*exploration_check_function)(void);	/*!< Die Funktion, mit der das bot_explore_behaviour() feststellt, ob es etwas gefunden hat.
@@ -78,7 +78,8 @@ int8 drive_distance_curve;		/*!< Kruemmung der zu fahrenden Strecke. */
 int16 drive_distance_speed;		/*!< Angepeilte Geschwindigkeit. */
 
 /* Parameter fuer das bot_turn_behaviour() */
-int16 turn_target;				/*!< Zu drehender Winkel bzw. angepeilter Stand des Radencoders sensEncR */
+int16 turn_targetR;				/*!< Zu drehender Winkel bzw. angepeilter Stand des Radencoders sensEncR */
+int16 turn_targetL;				/*!< Zu drehender Winkel bzw. angepeilter Stand des Radencoders sensEncL */
 int8 turn_direction;			/*!< Richtung der Drehung */
 
 /*! Liste mit allen Verhalten */
@@ -641,31 +642,89 @@ void bot_drive_distance(Behaviour_t* caller,int8 curve, int16 speed, int16 cm){
 	switch_to_behaviour(caller, bot_drive_distance_behaviour,NOOVERRIDE);
 }
 
+
 /*!
  * Das Verhalten laesst den Bot eine Punktdrehung durchfuehren. 
  * @see bot_turn()
  * */
 void bot_turn_behaviour(Behaviour_t* data){
-	int16 to_turn = turn_target - sensEncR;
-	if (turn_direction == -1){
-		to_turn = -to_turn;
-	}
+	/* Drehen findet in vier Schritten statt. Die Drehung wird dabei
+	 * bei Winkeln > 90� zunaechst mit maximaler Geschwindigkeit ausgefuehrt. Bei kleineren
+	 * Winkeln oder wenn nur noch 90� zu drehen sind, nur noch mit normaler Geschwindigkeit
+	 */
+	static int8 turnState=NORMAL_TURN;
+	/* zu drehende Schritte in die korrekte Drehrichtung korrigieren */
+	int16 to_turnR = turn_direction*(turn_targetR - sensEncR);
+	int16 to_turnL = turn_direction*(turn_targetL - sensEncL);
 
-	if(to_turn <= 0){
-		return_from_behaviour(data);
-	} else {
-	
-		/* Abschaetzen, wie schnell der Bot drehen darf, damit er nicht weit ueber das Ziel hinaus schiesst.
-		 * Bei einer maximalen Geschwindigkeit von 151 U/min dreht sich das Rad in 10ms um 0.025 Umdrehungen.
-	 	* Das bedeutet, dass der Bot bis kurz vor sein Ziel mit voller Geschwindigkeit drehen kann.*/
-	
-		if(to_turn < (0.1 * ENCODER_MARKS)) {
-			speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_NORMAL : BOT_SPEED_NORMAL;
-			speedWishRight = (turn_direction > 0) ? BOT_SPEED_NORMAL : -BOT_SPEED_NORMAL;
-		} else {
-			speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_FAST : BOT_SPEED_FAST;
-			speedWishRight = (turn_direction > 0) ? BOT_SPEED_FAST : -BOT_SPEED_FAST;
-		}
+	switch(turnState) {
+		case NORMAL_TURN:
+			/* Solange drehen, bis beide Encoder nur noch zwei oder weniger Schritte zu fahren haben */
+
+			if (to_turnL <= 2 && to_turnR<=2)
+			{
+				/* nur noch 2 Schritte oder weniger, abbremsen einleiten */
+				turnState=SHORT_REVERSE;
+				break;	
+			}
+			/* Bis 90� kann mit maximaler Geschwindigkeit gefahren werden, danach auf Normal reduzieren */
+			/* Geschwindigkeit fuer beide Raeder getrennt ermitteln */
+			if(abs(to_turnL) < ANGLE_CONSTANT*0.25) {
+				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_NORMAL : BOT_SPEED_NORMAL;
+			} else {
+				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_FAST : BOT_SPEED_FAST;
+			}
+			if(abs(to_turnR) < ANGLE_CONSTANT*0.25) {
+				speedWishRight = (turn_direction > 0) ? BOT_SPEED_NORMAL : -BOT_SPEED_NORMAL;
+			} else {	
+				speedWishRight = (turn_direction > 0) ? BOT_SPEED_FAST : -BOT_SPEED_FAST;
+			}	
+			break;
+			
+		case SHORT_REVERSE:
+			/* Ganz kurz durch umpolen anbremsen */ 
+			speedWishLeft = (turn_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
+			speedWishRight = (turn_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;
+			turnState=CORRECT_POSITION;
+			break;
+		
+		case CORRECT_POSITION:
+			/* Evtl. etwas zuruecksetzen, falls wir zu weit gefahren sind */
+			if (to_turnR<0) {
+				/* rechts zu weit gefahren..langsam zurueck */
+				speedWishRight = (turn_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;
+			} else if (to_turnR>0) {
+				/* rechts noch nicht weit genug...langsam vor */
+				speedWishRight = (turn_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
+			} else {
+				/* Endposition erreicht, rechtes Rad anhalten */
+				speedWishRight = BOT_SPEED_STOP;
+			}		
+			if (to_turnL<0) {
+				/* links zu weit gefahren..langsam zurueck */
+				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;				
+			} else if (to_turnL>0) {
+				/* links noch nicht weit genug...langsam vor */
+				speedWishLeft = (turn_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
+			} else {
+				/* Endposition erreicht, linkes Rad anhalten */
+				speedWishLeft = BOT_SPEED_STOP;
+			}
+			if (speedWishLeft == BOT_SPEED_STOP && speedWishRight == BOT_SPEED_STOP) {
+				/* beide Raeder haben nun wirklich die Endposition erreicht, daher anhalten */
+				turnState=FULL_STOP;
+			}
+			break;
+		
+			
+		default: 
+			/* ist gleichzeitig FULL_STOP, da gleiche Aktion 
+			 * Stoppen, State zuruecksetzen und Verhalten beenden */
+			speedWishLeft = BOT_SPEED_STOP;
+			speedWishRight = BOT_SPEED_STOP;
+			turnState=NORMAL_TURN;
+			return_from_behaviour(data);
+			break;			
 	}
 }
 
@@ -682,10 +741,16 @@ void bot_turn(Behaviour_t* caller,int16 degrees){
 	
 	if(degrees < 0) turn_direction = -1;
 	else turn_direction = 1;
- 	turn_target=(degrees*ANGLE_CONSTANT)/360+sensEncR;
+	/* Anzahl zu fahrender Encoderschritte berechnen */
+	turn_targetR=(degrees*ANGLE_CONSTANT)/360;
+	/* linkes Rad dreht entgegengesetzt, daher negativer Wert */
+ 	turn_targetL=-turn_targetR;
+
+ 	/* aktuellen Sensorwert zu zu drehenden Encoderschritten addieren */
+ 	turn_targetR+=sensEncR;
+ 	turn_targetL+=sensEncL;
 	switch_to_behaviour(caller, bot_turn_behaviour,NOOVERRIDE);
 }
-
 /*!
  * Das Verhalten laesst den Roboter den Raum durchsuchen. 
  * Das Verhalten hat mehrere unterschiedlich Zustaende:
@@ -1083,8 +1148,7 @@ void bot_behave_init(void){
 	insert_behaviour_to_list(&behaviour, new_behaviour(100, bot_avoid_col,ACTIVE));
 	
 	// Verhalten, um Hidnernisse besser zu erkennen, relativ hoe Prioritaet, modifiziert nur
-	insert_behaviour_to_list(&behaviour, new_behaviour(60, bot_glance,ACTIVE));
-
+	insert_behaviour_to_list(&behaviour, new_behaviour(60, bot_glance,INACTIVE));
 
 	// Demo-Verhalten, ganz einfach, inaktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_simple_behaviour,INACTIVE));

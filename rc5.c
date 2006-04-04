@@ -88,7 +88,15 @@ static void rc5_bot_goto(RemCtrlFuncPar *par);
  */	
 void rc5_bot_next_behaviour(RemCtrlFuncPar *par);
 
+/*!
+ * Diese Funktion dreht den Bot.
+ * @param par Parameter mit der Drehung, Geschwindigkeit
+ */	
+static void rc5_bot_turn(RemCtrlFuncPar *par);
 
+/*! Steuert den Servo an
+ * @param par Parameter mit Servo-Nummer und -Position
+ */
 void rc5_bot_servo(RemCtrlFuncPar *par);
 
 uint16 RC5_Code;	/*!< Letzter empfangener RC5-Code */
@@ -104,12 +112,12 @@ static RemCtrlAction gRemCtrlAction[] = {
 	{ RC5_CODE_1,		rc5_bot_set_speed,		{ BOT_SPEED_SLOW, BOT_SPEED_SLOW } },
 	{ RC5_CODE_3,		rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_MAX } },
 	{ RC5_CODE_5,		rc5_bot_goto,			{ 0, 0 } },
-	{ RC5_CODE_6,		rc5_bot_goto,			{ 20, -20 } },
-	{ RC5_CODE_4,		rc5_bot_goto,			{ -20, 20 } },
+	{ RC5_CODE_6,		rc5_bot_turn,			{ 90, 0 } },
+	{ RC5_CODE_4,		rc5_bot_turn,			{ -90, 0 } },
 	{ RC5_CODE_2,		rc5_bot_goto,			{ 100, 100 } },
 	{ RC5_CODE_8,		rc5_bot_goto,			{ -100, -100 } },
-	{ RC5_CODE_7,		rc5_bot_goto,			{ -40, 40 } },
-	{ RC5_CODE_9,		rc5_bot_goto,			{ 40, -40 } },
+	{ RC5_CODE_7,		rc5_bot_turn,			{ -180, 0 } },
+	{ RC5_CODE_9,		rc5_bot_turn,			{ 180, 0 } },
 	{ RC5_CODE_SELECT,	rc5_bot_next_behaviour,	{ 0, 0 } },
 	{ RC5_CODE_BWD,		rc5_bot_servo,			{ SERVO1, SERVO_LEFT } },
 	{ RC5_CODE_FWD,		rc5_bot_servo,			{ SERVO1, SERVO_RIGHT } },
@@ -161,7 +169,9 @@ static void rc5_screen_set(RemCtrlFuncPar *par) {
 }
 #endif
 
-
+/*! Steuert den Servo an
+ * @param par Parameter mit Servo-Nummer und -Position
+ */
 void rc5_bot_servo(RemCtrlFuncPar *par){
 		servo_set(par->value1,par->value2);
 }
@@ -233,6 +243,15 @@ static void rc5_bot_change_speed(RemCtrlFuncPar *par) {
 static void rc5_bot_goto(RemCtrlFuncPar *par) {
 	if (par) 	
 		bot_goto(par->value1, par->value2,0);
+}
+
+/*!
+ * Diese Funktion dreht den Bot.
+ * @param par Parameter mit der Drehung
+ */	
+static void rc5_bot_turn(RemCtrlFuncPar *par) {
+	if (par) 	
+		bot_turn(0,par->value1);
 }
 
 /*!

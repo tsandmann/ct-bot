@@ -28,6 +28,7 @@
 
 #include "global.h"
 
+// !!!!!!!!1 Einheiten anpassen ==> v_left
 #define BOT_SPEED_STOP		0		/*!< Motor aus */
 #define BOT_SPEED_SLOW		25		/*!< langsame Fahrt */
 #define BOT_SPEED_NORMAL	44		/*!< normale Fahrt */
