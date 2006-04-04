@@ -348,7 +348,7 @@ void rc5_number(RemCtrlFuncPar *par) {
 				case 0:	break;
 				case 1: target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
 				case 2: bot_goto(100, 100, 0); break;
-				case 3: target_speed_l = BOT_SPEED_MAX; target_speed_r = BOT_SPEED_MAX; break;
+				case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
 				case 4: bot_turn(0, -90); break;
 				case 5: bot_goto(0, 0, 0); break;
 				case 6: bot_turn(0, 90); break;
