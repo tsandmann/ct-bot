@@ -29,8 +29,8 @@
 #include "global.h"
 
 #define BOT_SPEED_STOP		0		/*!< Motor aus */
-#define BOT_SPEED_SLOW		10		/*!< langsame Fahrt */
-#define BOT_SPEED_NORMAL	50		/*!< normale Fahrt */
+#define BOT_SPEED_SLOW		25		/*!< langsame Fahrt */
+#define BOT_SPEED_NORMAL	44		/*!< normale Fahrt */
 #define BOT_SPEED_FAST		150		/*!< schnelle Fahrt */
 #define BOT_SPEED_MAX		255		/*!< maximale Fahrt */
 #define BOT_SPEED_IGNORE	1000	/*!< Wert ausserhalb von -BOT_SPEED_MAX und BOT_SPEED_MAX wird verwendet um einen Eintrag zu ignorieren */
@@ -77,5 +77,7 @@ void motor_set(int16 left, int16 right);
  * @param servo Zielwert
  */
 void servo_set(uint8 servo, uint8 pos);
+
+void speed_control(int16, int16);
 
 #endif

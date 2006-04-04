@@ -63,6 +63,9 @@
 
 #define BEHAVIOUR_AVAILABLE /*!< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 
+#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
+
+
 /************************************************************
 * Some Dependencies!!!
 ************************************************************/

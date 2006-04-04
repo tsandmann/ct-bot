@@ -36,11 +36,11 @@
 #include "sensor-low.h"
 
 // ---- Timer 2 ------
-
 /*!
- * Interrupt Handler for Timer/Counter 2 
+  Interrupt Handler for Timer/Counter 2 
  */
 SIGNAL (SIG_OUTPUT_COMPARE2){
+   
 	#ifdef IR_AVAILABLE
 		ir_isr();
 	#endif	
@@ -48,6 +48,8 @@ SIGNAL (SIG_OUTPUT_COMPARE2){
 		system_time_isr();
 	#endif
 	bot_encoder_isr();
+	clock_motor_control_l++;
+    clock_motor_control_r++;	
 }
 
 /*!

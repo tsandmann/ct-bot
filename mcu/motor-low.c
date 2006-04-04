@@ -30,7 +30,10 @@
 #include <stdlib.h>
 
 #include "global.h"
-
+#include "motor.h"
+#include "timer.h"
+#include "sensor.h"
+#include "display.h"
 #include "motor-low.h"
 
 //Drehrichtung der Motoren
@@ -77,7 +80,7 @@ void bot_motor(int16 left, int16 right){
 	else 
 		BOT_DIR_L_PORT &= ~BOT_DIR_L_PIN;
 	
-	if (right <= 0 )		// Einer der Motoren ist invertiert, da er ja in die andere Richtung schaut
+	if (right < 0 )		// Einer der Motoren ist invertiert, da er ja in die andere Richtung schaut
 		BOT_DIR_R_PORT |= BOT_DIR_R_PIN;
 	else 
 		BOT_DIR_R_PORT &= ~BOT_DIR_R_PIN;

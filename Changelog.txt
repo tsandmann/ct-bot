@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-04-04  Daniel Bachfeld (dab@heise.de) Motorregelung eingefuehrt
+
 2006-03-27	Andreas Merkle (mail@blue-andi.de)	Zeiger, welche als Funktionszeiger verwendet wurden, ersetzt.
 
 2006-03-31	Frank Menzel (Menzelfr@gmx.de) RC5-Signale werden nur noch mit geaendertem Toggle-Bit akzeptiert

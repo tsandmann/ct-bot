@@ -28,6 +28,8 @@
 
 #include "ct-Bot.h"
 
+volatile int16 clock_motor_control_l, clock_motor_control_r;  // Zaehler für Abtastzeit der Motorticks
+
 #ifdef TIME_AVAILABLE
 	/*!
 	 * Diese Funktion liefert den Mikrosekundenanteil der Systemzeit zurueck.

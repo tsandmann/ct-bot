@@ -64,8 +64,8 @@ int16 speedWishRight;				/*!< Puffervariablen fuer die Verhaltensfunktionen abso
 float faktorWishLeft;				/*!< Puffervariablen fuer die Verhaltensfunktionen Modifikationsfaktor links*/
 float faktorWishRight;				/*!< Puffervariablen fuer die Verhaltensfunktionen Modifikationsfaktor rechts */
 
-volatile int16 target_speed_l=0;	/*!< Sollgeschwindigkeit linker Motor - darum kuemmert sich bot_base()*/
-volatile int16 target_speed_r=0;	/*!< Sollgeschwindigkeit rechter Motor - darum kuemmert sich bot_base() */
+volatile int16 target_speed_l=BOT_SPEED_NORMAL;	/*!< Sollgeschwindigkeit linker Motor - darum kuemmert sich bot_base()*/
+volatile int16 target_speed_r=BOT_SPEED_NORMAL;	/*!< Sollgeschwindigkeit rechter Motor - darum kuemmert sich bot_base() */
 
 /* Parameter fuer das bot_explore_behaviour() */
 int8 (*exploration_check_function)(void);	/*!< Die Funktion, mit der das bot_explore_behaviour() feststellt, ob es etwas gefunden hat.
@@ -991,12 +991,10 @@ void bot_behave(void){
 			faktorWishRight = 1.0;
 			
 			job->work(job);	/* Verhalten ausfuehren */
-
 			/* Modifikatoren sammeln  */
 			faktorLeft  *= faktorWishLeft;
 			faktorRight *= faktorWishRight;
-
-			/* Geschwindigkeit aendern? */
+           /* Geschwindigkeit aendern? */
 			if ((speedWishLeft != BOT_SPEED_IGNORE) || (speedWishRight != BOT_SPEED_IGNORE)){
 				if (speedWishLeft != BOT_SPEED_IGNORE)
 					speedWishLeft *= faktorLeft;
