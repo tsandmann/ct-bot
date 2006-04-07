@@ -57,6 +57,8 @@ volatile int16 sensEncR=0;	/*!< Encoder rechter Motor */
 volatile int16 v_left;			/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
 volatile int16 v_right;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
 
+volatile int8 sensors_initialized = 0;	/*!< Wird 1 sobald die Sensorwerte zur Verfügung stehen */
+
 /*! Sensor_update
 * Kümmert sich um die Weiterverarbeitung der rohen Sensordaten 
 */
@@ -77,4 +79,6 @@ void sensor_update(void){
 		lastEncR= sensEncR;
 		lastTime = timer_get_s();		
 	}
+	
+	sensors_initialized=1;
 }

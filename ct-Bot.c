@@ -431,7 +431,10 @@ void init(void){
 		#endif
 		// hier drin steckt der Verhaltenscode
 		#ifdef BEHAVIOUR_AVAILABLE
-			bot_behave();
+			if (sensors_initialized ==1 )
+				bot_behave();
+			else
+				printf("sensors not initialized\n");
 		#endif
 			
 		#ifdef MCU

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-04-03	Benjamin Benz (bbe@heise.de)  bot_behave() nimmt die Arbeit erst auf, wenn alle Sensoren initialisiert sind
+
 2006-04-04  Torsten Evers (tevers@onlinehome.de) bot_turn ueberarbeitet
 
 2006-04-04  Daniel Bachfeld (dab@heise.de) Motorregelung eingefuehrt

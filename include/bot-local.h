@@ -38,9 +38,9 @@
 #define ANGLE_CONSTANT		(WHEEL_TO_WHEEL_DIAMETER * ENCODER_MARKS / WHEEL_DIAMETER)
 
 /* Einstellunge fuer die Verhaltensregeln */
-#define BORDER_DANGEROUS	0x360	/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */
+#define BORDER_DANGEROUS	0x3A0	/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */
 
-#define COL_CLOSEST		100		/*!< Abstand in mm, den wir als zu nah betrachten -- je nach echtem Sensor ist das schon zu nah! */
+#define COL_CLOSEST		200		/*!< Abstand in mm, den wir als zu nah betrachten -- je nach echtem Sensor ist das schon zu nah! */
 #define COL_NEAR			300		/*!< Nahbereich */
 #define COL_FAR			400		/*!< Fernbereich */
 
