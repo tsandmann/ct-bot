@@ -134,10 +134,14 @@ void deactivateBehaviour(BehaviourFunc function){
  * return_from_behaviour() kehrt dann spaeter wieder zum aufrufenden Verhalten zurueck
  * @param from aufrufendes Verhalten
  * @param to aufgerufenes Verhalten
- * @param override Steht hier eine 1, so fuehrt das aufgerufene Verhalten den Befehl aus, 
- * auch wenn es gerade etwas tut. 
- * Achtung: das bedeutet jedoch, dass der urspruengliche Caller
- * wieder aktiviert wird. Er muss selbst pruefen, ob er mit dem Zustand zufrieden ist!
+ * @param override Hier sind zwei Werte Moeglich:
+ * 		1. OVERRIDE : Das Zielverhalten to wird aktiviert, auch wenn es noch aktiv ist. 
+ * 					  Das Verhalten, das es zuletzt aufgerufen hat wird dadurch automatisch 
+ * 					  wieder aktiv und muss selbst sein eigenes Feld subResult auswerten, um zu pruefen, ob das
+ * 					  gewuenschte Ziel erreicht wurde, oder vorher ein Abbruch stattgefunden hat. 
+ * 		2. NOOVERRIDE : Das Zielverhalten wird nur aktiviert, wenn es gerade nichts zu tun hat.
+ * 						In diesem Fall kann der Aufrufer aus seinem eigenen subResult auslesen,
+ * 						ob seibem Wunsch Folge geleistet wurde.
  */ 
 void switch_to_behaviour(Behaviour_t * from, void *to, uint8 override ){
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
@@ -145,7 +149,7 @@ void switch_to_behaviour(Behaviour_t * from, void *to, uint8 override ){
 	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben 
 	for (job = behaviour; job; job = job->next) {
 		if (job->work == to) {
-			break;
+			break;		// Abbruch der Schleife, job zeigt nun auf die Datenstruktur des Zielverhaltens
 		}
 	}	
 
