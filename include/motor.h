@@ -28,12 +28,12 @@
 
 #include "global.h"
 
-// !!!!!!!!1 Einheiten anpassen ==> v_left
 #define BOT_SPEED_STOP		0		/*!< Motor aus */
-#define BOT_SPEED_SLOW		25		/*!< langsame Fahrt */
-#define BOT_SPEED_NORMAL	44		/*!< normale Fahrt */
-#define BOT_SPEED_FAST		150		/*!< schnelle Fahrt */
-#define BOT_SPEED_MAX		255		/*!< maximale Fahrt */
+#define BOT_SPEED_SLOW		225		/*!< langsame Fahrt in mm/s */
+#define BOT_SPEED_MEDIUM	324		/*!< mittlere Fahrt in mm/s */
+#define BOT_SPEED_NORMAL	396		/*!< normale Fahrt in mm/s  */
+#define BOT_SPEED_FAST		432		/*!< schnelle Fahrt in mm/s */
+#define BOT_SPEED_MAX		468		/*!< maximale Fahrt in mm/s */
 #define BOT_SPEED_IGNORE	1000	/*!< Wert ausserhalb von -BOT_SPEED_MAX und BOT_SPEED_MAX wird verwendet um einen Eintrag zu ignorieren */
 
 #define DIRECTION_FORWARD  0		/*!< Drehrichtung vorwaerts */

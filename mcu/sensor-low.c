@@ -71,7 +71,7 @@
 #define ENC_L ((SENS_ENCL_PINR >> SENS_ENCL) & 0x01)	/*!< Abkuerzung zum Zugriff auf Encoder */
 #define ENC_R ((SENS_ENCR_PINR >> SENS_ENCR) & 0x01)	/*!< Abkuerzung zum Zugriff auf Encoder */
 
-#define ENC_ENTPRELL	4		/*!< Nur wenn der Encoder ein paar mal den gleichen wert gibt uebernehmen */
+#define ENC_ENTPRELL	12		/*!< Nur wenn der Encoder ein paar mal den gleichen wert gibt uebernehmen */
 
 volatile uint8 enc_l=0;		/*!< Puffer fuer die letzten Encoder-Staende */
 volatile uint8 enc_r=0;		/*!< Puffer fuer die letzten Encoder-Staende */
