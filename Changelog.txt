@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-04-13	Staudenmayer (andreas.staudenmayer@t-online.de) Batchdatei fuer Programmieradapter STK200 und viele baugleiche Programmer am Parallelport eingefuehrt
+
 2006-04-13	Benjamin Benz (bbe@heise.de) bot_avoid_col_behaviour veraendert, alle verhalten auf namenskonvention angepasst
 
 2006-04-13  Daniel Bachfeld (dab@heise.de) Bot-Geschwindigkeit in mm/s geaendert. regelung geht jetzt auch fuer Rueckwaertsfahrt
