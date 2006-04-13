@@ -147,7 +147,7 @@ void bot_turn_behaviour(Behaviour_t* data);
  * einen bestimmten Winkel zu realisieren. Allerdings muesste dafuer auch der
  * Winkel des Bots zur Wand bekannt sein.
  * 3. Eine feste Strecke parallel zur Wand vorwaerts fahren.
- * Da bot_glance abwechselnd zu beiden Seiten schaut, ist es fuer die Aufgabe, 
+ * Da bot_glance_behaviour abwechselnd zu beiden Seiten schaut, ist es fuer die Aufgabe, 
  * einer Wand auf einer Seite des Bots zu folgen, nur bedingt gewachsen und muss
  * evtl. erweitert werden.
  * 4. Senkrecht zur Wand drehen.

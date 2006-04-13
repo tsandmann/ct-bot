@@ -263,7 +263,7 @@ static int16 dummy_light=0;
  * @param *data der Verhaltensdatensatz
  * @see bot_drive()
  */
-void bot_dummy(Behaviour_t *data){
+void bot_dummy_behaviour(Behaviour_t *data){
 	#define STATE_DUMMY_INIT 0
 	#define STATE_DUMMY_WORK 1
 	#define STATE_DUMMY_DONE 2
@@ -290,18 +290,18 @@ void bot_dummy(Behaviour_t *data){
  * Rufe das Dummy-Verhalten auf und uebergebe light
  * @param light Uebergabeparameter
  */
-void bot_call_dummy(int16 light, Behaviour_t * caller){
+void bot_dummy(int16 light, Behaviour_t * caller){
 	dummy_light=light;
 
 	// Zielwerte speichern
-	switch_to_behaviour(caller,bot_dummy,OVERRIDE);	
+	switch_to_behaviour(caller,bot_dummy_behaviour,OVERRIDE);	
 }
 
 /*! 
  * Das einfachste Grundverhalten 
  * @param *data der Verhaltensdatensatz
  */
-void bot_base(Behaviour_t *data){
+void bot_base_behaviour(Behaviour_t *data){
 	speedWishLeft=target_speed_l;
 	speedWishRight=target_speed_r;
 }
@@ -313,7 +313,7 @@ void bot_base(Behaviour_t *data){
  * (er faehrt also einen leichten Schlangenlinienkurs).
  * @param *data der Verhaltensdatensatz
  */
-void bot_glance(Behaviour_t *data){
+void bot_glance_behaviour(Behaviour_t *data){
 	static int16 glance_counter = 0;  // Zaehler fuer die periodischen Bewegungsimpulse
 
 	glance_counter++;
@@ -424,7 +424,7 @@ void bot_goto_behaviour(Behaviour_t *data){
  * koennte. Hier ist ein guter Einstiegspunkt fuer eigene Experimente und Algorithmen!
  * @param *data der Verhaltensdatensatz
  */ 
-void bot_avoid_col(Behaviour_t *data){	
+void bot_avoid_col_behaviour(Behaviour_t *data){		
 	if (sensDistR < COL_CLOSEST)	/* sehr nah */
 		col_zone_r=ZONE_CLOSEST;	/* dann auf jeden Fall CLOSEST Zone */
 	else 
@@ -464,46 +464,54 @@ void bot_avoid_col(Behaviour_t *data){
 		col_zone_l=ZONE_FAR;	/* dann auf in die NEAR-Zone */
 	else
 		col_zone_l=ZONE_CLEAR;	/* dann auf in die CLEAR-Zone */
-		
-	switch (col_zone_l){
-		case ZONE_CLOSEST:
-			faktorWishRight = BRAKE_CLOSEST;
-			break;
-		case ZONE_NEAR:
-			faktorWishRight =  BRAKE_NEAR;
-			break;
-		case ZONE_FAR:
-			faktorWishRight =  BRAKE_FAR;
-			break;
-		case ZONE_CLEAR:
-			faktorWishRight = 1;
-			break;
-		default:
-			col_zone_l = ZONE_CLEAR;
-			break;
-	}
-		
-	switch (col_zone_r){
-		case ZONE_CLOSEST:
-			faktorWishLeft = BRAKE_CLOSEST;
-			break;
-		case ZONE_NEAR:
-			faktorWishLeft = BRAKE_NEAR;
-			break;
-		case ZONE_FAR:
-			faktorWishLeft = BRAKE_FAR;
-			break;
-		case ZONE_CLEAR:
-			faktorWishLeft = 1;
-			break;
-		default:
-			col_zone_r = ZONE_CLEAR;
-			break;
-	}	
-	
-	if ((col_zone_r == ZONE_CLOSEST)&&(col_zone_l == ZONE_CLOSEST)){
-		speedWishLeft = -target_speed_l + BOT_SPEED_MAX;
-		speedWishRight = -target_speed_r - BOT_SPEED_MAX;
+
+	// Nur reagieren, wenn der Bot vorwaerts faehrt
+	if ((speed_l > 0) && (speed_r >0)) {
+		// wenn auf beiden Seiten in der Kollisionszone
+		if ((col_zone_r == ZONE_CLOSEST)&&(col_zone_l == ZONE_CLOSEST)){
+			// Drehe Dich zur Seite, wo mehr Platz ist
+			if (sensDistR < sensDistL)
+				bot_turn(data,20);	
+			else
+				bot_turn(data,-20);	
+			return;
+		}
+			
+		switch (col_zone_l){
+			case ZONE_CLOSEST:
+				faktorWishRight = BRAKE_CLOSEST;
+				break;
+			case ZONE_NEAR:
+				faktorWishRight =  BRAKE_NEAR;
+				break;
+			case ZONE_FAR:
+				faktorWishRight =  BRAKE_FAR;
+				break;
+			case ZONE_CLEAR:
+				faktorWishRight = 1;
+				break;
+			default:
+				col_zone_l = ZONE_CLEAR;
+				break;
+		}
+			
+		switch (col_zone_r){
+			case ZONE_CLOSEST:
+				faktorWishLeft = BRAKE_CLOSEST;
+				break;
+			case ZONE_NEAR:
+				faktorWishLeft = BRAKE_NEAR;
+				break;
+			case ZONE_FAR:
+				faktorWishLeft = BRAKE_FAR;
+				break;
+			case ZONE_CLEAR:
+				faktorWishLeft = 1;
+				break;
+			default:
+				col_zone_r = ZONE_CLEAR;
+				break;
+		}	
 	}
 }
 
@@ -511,7 +519,7 @@ void bot_avoid_col(Behaviour_t *data){
  * Verhindert, dass der Bot in Graeben faellt
  * @param *data der Verhaltensdatensatz
  */
-void bot_avoid_border(Behaviour_t *data){
+void bot_avoid_border_behaviour(Behaviour_t *data){
 	if (sensBorderL > BORDER_DANGEROUS)
 		speedWishLeft=-BOT_SPEED_NORMAL;
 	
@@ -764,7 +772,7 @@ void bot_turn(Behaviour_t* caller,int16 degrees){
  * einen bestimmten Winkel zu realisieren. Allerdings muesste dafuer auch der
  * Winkel des Bots zur Wand bekannt sein.
  * 3. Eine feste Strecke parallel zur Wand vorwaerts fahren.
- * Da bot_glance abwechselnd zu beiden Seiten schaut, ist es fuer die Aufgabe, 
+ * Da bot_glance_behaviour abwechselnd zu beiden Seiten schaut, ist es fuer die Aufgabe, 
  * einer Wand auf einer Seite des Bots zu folgen, nur bedingt gewachsen und muss
  * evtl. erweitert werden.
  * 4. Senkrecht zur Wand drehen.
@@ -787,7 +795,7 @@ void bot_explore_behaviour(Behaviour_t *data){
 		// Der Bot steht jetzt vor einem Hindernis und soll sich nach rechts drehen
 		if(bot_avoid_harm()) {
 			state = EXPLORATION_STATE_TURN_PARALLEL_RIGHT;
-			deactivateBehaviour(bot_avoid_col);
+			deactivateBehaviour(bot_avoid_col_behaviour);
 		}
 		// Es befindet sich kein Hindernis direkt vor dem Bot.
 		else {
@@ -841,7 +849,7 @@ void bot_explore_behaviour(Behaviour_t *data){
 		 * hier nur um 85 Grad drehen. Nicht schoen, aber klappt.*/
 		bot_turn(data,85);
 		state = EXPLORATION_STATE_DRIVE_ARC;
-		activateBehaviour(bot_avoid_col);
+		activateBehaviour(bot_avoid_col_behaviour);
 		break;
 	case EXPLORATION_STATE_TURN_ORTHOGONAL_RIGHT:
 		// Drehe den Bot um 90 Grad nach rechts.
@@ -849,7 +857,7 @@ void bot_explore_behaviour(Behaviour_t *data){
 		 * hier nur um 85 Grad drehen. Nicht schoen, aber klappt.*/
 		bot_turn(data,-85);
 		state = EXPLORATION_STATE_DRIVE_ARC;
-		activateBehaviour(bot_avoid_col);
+		activateBehaviour(bot_avoid_col_behaviour);
 		break;
 	case EXPLORATION_STATE_DRIVE_ARC:
 		/* Fahre einen Bogen.
@@ -873,7 +881,7 @@ void bot_explore_behaviour(Behaviour_t *data){
 		if(bot_avoid_harm()) {
 			state = (curve > 0) ? EXPLORATION_STATE_TURN_PARALLEL_LEFT : EXPLORATION_STATE_TURN_PARALLEL_RIGHT;
 			running_curve = False;
-			deactivateBehaviour(bot_avoid_col);
+			deactivateBehaviour(bot_avoid_col_behaviour);
 		} else {
 			bot_drive(curve, BOT_SPEED_MAX);
 		}
@@ -881,7 +889,7 @@ void bot_explore_behaviour(Behaviour_t *data){
 	default:
 		state = EXPLORATION_STATE_GOTO_WALL;
 		curve = 0;
-		activateBehaviour(bot_avoid_col);
+		activateBehaviour(bot_avoid_col_behaviour);
 	}
 	
 }
@@ -933,13 +941,13 @@ void bot_do_slalom_behaviour(Behaviour_t *data){
 				state = SLALOM_STATE_START;
 			} else bot_goto_light();
 		} else {// ... sonst muss er den Slalom-Kurs neu suchen. 
-			activateBehaviour(bot_avoid_col);
+			activateBehaviour(bot_avoid_col_behaviour);
 			return_from_behaviour(data);
 		}
 		break;
 	case SLALOM_STATE_START:
 		// Hier ist Platz fuer weitere Vorbereitungen, falls noetig.
-		deactivateBehaviour(bot_avoid_col);
+		deactivateBehaviour(bot_avoid_col_behaviour);
 		state = SLALOM_STATE_TURN_1;
 		// break;
 	case SLALOM_STATE_TURN_1:
@@ -1146,6 +1154,43 @@ static void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
  * Initialisert das ganze Verhalten
  */
 void bot_behave_init(void){
+	// Hoechste Prioritate haben die Notfall Verhalten
+
+	// Verhalten zum Schutz des Bots, hohe Prioritaet, Aktiv
+	insert_behaviour_to_list(&behaviour, new_behaviour(250, bot_avoid_border_behaviour,ACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(249, bot_avoid_col_behaviour,ACTIVE));
+
+
+	// Verhalten, um Hidnernisse besser zu erkennen, relativ hoe Prioritaet, modifiziert nur
+	insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_glance_behaviour,ACTIVE));
+
+
+	// Alle Hilfsroutinen sind relativ wichtig, da sie auch von den Notverhalten her genutzt werden
+	// Hilfsverhalten, die Befehle von Boten-Funktionen ausfuehren, erst inaktiv, werden von Boten aktiviert	
+	insert_behaviour_to_list(&behaviour, new_behaviour(150, bot_turn_behaviour,INACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(149, bot_drive_distance_behaviour,INACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(148, bot_goto_behaviour,INACTIVE));
+
+	// unwichtigere Hilfsverhalten
+	insert_behaviour_to_list(&behaviour, new_behaviour(100, bot_explore_behaviour,INACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour( 99, bot_do_slalom_behaviour,INACTIVE));
+
+	// Demo-Verhalten, ganz einfach, inaktiv
+	insert_behaviour_to_list(&behaviour, new_behaviour(50, bot_simple_behaviour,INACTIVE));
+	// Demo-Verhalten, etwas komplexer, inaktiv
+	insert_behaviour_to_list(&behaviour, new_behaviour(51, bot_drive_square_behaviour,INACTIVE));
+	// Demo-Verhalten für aufwendiges System, inaktiv
+	insert_behaviour_to_list(&behaviour, new_behaviour(52, bot_olympic_behaviour,INACTIVE));
+
+
+	// Grundverhalten, setzt aeltere FB-Befehle um, aktiv
+	insert_behaviour_to_list(&behaviour, new_behaviour(2, bot_base_behaviour, ACTIVE));
+
+
+//	activateBehaviour(bot_simple_behaviour);
+
+
+/*
 
 	// Verhalten zum Schutz des Bots, hohe Prioritaet, Aktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_avoid_border,ACTIVE));
@@ -1173,7 +1218,7 @@ void bot_behave_init(void){
 	// Grundverhalten, setzt aeltere FB-Befehle um, aktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(2, bot_base, ACTIVE));
 
-
+*/
 //	activateBehaviour(bot_simple_behaviour);
 
 
