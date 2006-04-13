@@ -62,7 +62,6 @@
 
 
 //#define RC_HAVE_HAUPPAUGE_WINTV
-//#define RC_HAVE_CONRAD_MediaMPV
 //#define RC_HAVE_HAUPPAUGE_MediaMPV
 //#define RC_HAVE_CONRAD_PROMO8
 //#define RC_HAVE_VIVANCO_UR89
