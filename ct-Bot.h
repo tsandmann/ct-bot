@@ -68,7 +68,7 @@
 
 #define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
 
-#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
+//#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
 
 /************************************************************
 * Some Dependencies!!!
