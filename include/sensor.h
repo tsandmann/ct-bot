@@ -66,6 +66,10 @@ extern volatile int16 v_right;		/*!< Abrollgeschwindigkeit des linken Rades in [
 
 extern volatile int8 sensors_initialized;	/*!< Wird 1 sobald die Sensorwerte zur Verfügung stehen */
 
+#ifdef SRF10_AVAILABLE
+	extern volatile uint16 sensSRF10;	/*!< Messergebniss Ultraschallsensor */
+#endif
+
 /*! Sensor_update
 * Kümmert sich um die Weiterverarbeitung der rohen Sensordaten 
 */

@@ -42,6 +42,9 @@
 	#include <stdlib.h>
 #endif
 
+#ifdef TWI_AVAILABLE
+	#include "TWI_driver.h"
+#endif
 
 #include <string.h>
 #include <stdio.h>
@@ -140,6 +143,11 @@ void init(void){
 	    behaviour_page = 1;
 	#endif
 
+	#ifdef TWI_AVAILABLE
+		Init_TWI();
+		Close_TWI();
+	#endif
+
 }
 
 #ifdef DISPLAY_AVAILABLE
@@ -186,9 +194,13 @@ void init(void){
 						display_cursor(1,1);
 						display_printf("Zeit: %04d:%03d", timer_get_s(), timer_get_ms());
 					#endif
-		
+
 					display_cursor(2,1);
 					display_printf("TS=%+4d %+4d",target_speed_l,target_speed_r);
+					#ifdef SRF10_AVAILABLE		
+						display_cursor(2,15);
+						display_printf("US%+4d",sensSRF10);
+					#endif
 		
 					display_cursor(3,1);
 					display_printf("RC=%+4d %+4d",sensEncL,sensEncR);

@@ -26,6 +26,9 @@
 #include "ct-Bot.h"
 #include "timer.h"
 #include "bot-local.h"
+#ifdef SRF10_AVAILABLE
+	#include "srf10.h"
+#endif
 
 volatile int16 sensLDRL=0;		/*!< Lichtsensor links */
 volatile int16 sensLDRR=0;		/*!< Lichtsensor rechts */
@@ -59,6 +62,9 @@ volatile int16 v_right;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [
 
 volatile int8 sensors_initialized = 0;	/*!< Wird 1 sobald die Sensorwerte zur Verfügung stehen */
 
+#ifdef SRF10_AVAILABLE
+	volatile uint16 sensSRF10;	/*!< Messergebniss Ultraschallsensor */
+#endif
 /*! Sensor_update
 * Kümmert sich um die Weiterverarbeitung der rohen Sensordaten 
 */
@@ -78,6 +84,10 @@ void sensor_update(void){
 		lastEncL= sensEncL;
 		lastEncR= sensEncR;
 		lastTime = timer_get_s();		
+		#ifdef SRF10_AVAILABLE
+			sensSRF10 = srf10_get_measure();	/*!< Messung Ultraschallsensor */
+		#endif
+		
 	}
 	
 	sensors_initialized=1;

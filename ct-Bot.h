@@ -68,6 +68,8 @@
 
 #define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
 
+#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
+
 /************************************************************
 * Some Dependencies!!!
 ************************************************************/
@@ -95,6 +97,9 @@
 		#undef UART_AVAILABLE
 		#undef MAUS_AVAILABLE
 		#undef BOT_2_PC_AVAILABLE
+		#undef SRF10_AVAILABLE
+		#undef TWI_AVAILABLE
+		
 	#endif
 	#define COMMAND_AVAILABLE		/*!< High-Level Communication */
    #undef DISPLAY_SCREEN_RESETINFO
@@ -186,6 +191,11 @@
 		#undef LOG_CTSIM_AVAILABLE
 	#endif
 #endif
+
+#ifdef SRF10_AVAILABLE
+	#define TWI_AVAILABLE				/*!< TWI-Schnittstelle (I2C) nutzen */
+#endif
+
 
 #define F_CPU	16000000L    /*!< Crystal frequency in Hz */
 #define XTAL F_CPU			 /*!< Crystal frequency in Hz */
