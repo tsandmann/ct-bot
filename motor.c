@@ -148,7 +148,9 @@ void motor_init(void){
 */
 
 void speed_control (int16 left, int16 right){
-	uint8 Kp, Kd, Ki;                 /*!< PID-Parameter */  
+	uint8 Kp=0;				/*!< PID-Parameter */  
+	uint8 Kd=0;				/*!< PID-Parameter */  
+	uint8 Ki=0;             /*!< PID-Parameter */  
 	int16 err_l, err_r;               /*!<  aktuelle Abweichung vom Soll-Wert  */  
 	int16 rmp, lmp;                   /*!<  aktuelle Ist-Werte Encoderpulse */ 
 	word reg_l, reg_r;                /*!< aktuell berechnete Stellwerte */      
@@ -160,12 +162,12 @@ void speed_control (int16 left, int16 right){
 		tmpL = sensEncL;           // Anzahl der Encoderpulse merken fuer naechsten Aufruf merken
         
 		if (last_left != left) {   // Bei abruptem Geschwindigkeitswechsel alte Fehler auf Null setzen
-        	reg_l_old = left/9;
-        	mot_l = left/9;
-        	err_l_old = 0;    
-        	err_l_old2 = 0;
-        	lmp = 0;
-         }
+	        	reg_l_old = left/9;
+	        	mot_l = left/9;
+	        	err_l_old = 0;    
+	        	err_l_old2 = 0;
+	        	lmp = 0;
+        }
 		
 		if (abs(left)==BOT_SPEED_NORMAL) {     // Zu SPEED_NORMAL gehoeren diese PID-Parameter
            Kp = 7;                        //
@@ -250,7 +252,7 @@ void speed_control (int16 left, int16 right){
        last_left = left;                     // alte Geschwindigkeiten merken
        last_right = right;
        if (left==BOT_SPEED_STOP)
-         mot_l = BOT_SPEED_STOP;  // BOT_SPEED_STOP überschreibt Reglerstellwerte
+         mot_l = BOT_SPEED_STOP;  // BOT_SPEED_STOP ï¿½berschreibt Reglerstellwerte
        if (right==BOT_SPEED_STOP) 
          mot_r = BOT_SPEED_STOP;
        
