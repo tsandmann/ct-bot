@@ -48,8 +48,8 @@ return;
 void srf10_set_gain(unsigned char gain){
     if(gain>16) { gain=16; }
 
-	char temp[2];
-	char state;
+	uint8 temp[2];
+	uint8 state;
 	tx_type tx_frame[2];
 	
 	state = SUCCESS;
@@ -71,8 +71,8 @@ void srf10_set_gain(unsigned char gain){
  */
  
 void srf10_set_range(unsigned int millimeters){
-	char temp[2];
-	char state;
+	uint8 temp[2];
+	uint8 state;
 	tx_type tx_frame[2];
 	
 	state = SUCCESS;
@@ -96,9 +96,9 @@ void srf10_set_range(unsigned int millimeters){
  * @return Resultat der Aktion
  */
 
-uint8 srf10_ping(unsigned char metric_unit){
-	char temp[2];
-	char state;
+uint8 srf10_ping(uint8 metric_unit){
+	uint8 temp[2];
+	uint8 state;
 	tx_type tx_frame[2];
 	
 	state = SUCCESS;
@@ -122,10 +122,10 @@ uint8 srf10_ping(unsigned char metric_unit){
  * @return Inhalt des Registers
  */
 
-uint8 srf10_read_register(unsigned char srf10_register){
-	char temp;
-	char value;
-	char state;
+uint8 srf10_read_register(uint8 srf10_register){
+	uint8 temp;
+	uint8 value;
+	uint8 state;
 	tx_type tx_frame[3];
 
 	state = SUCCESS;
