@@ -100,11 +100,6 @@
 #define SWEEP_STATE_TURN			0	/*!< Zustand: Drehung im Sweep. */
 #define SWEEP_STATE_CHECK			1	/*!< Zustamd: Ueberpruefe Objekt vor dem Bot. */
 
-/* Zustaende fuer das bot_turn_behaviour-Verhalten */
-#define NORMAL_TURN					0
-#define SHORT_REVERSE				1
-#define CORRECT_POSITION			2
-#define FULL_STOP					3
 
 
 

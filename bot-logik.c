@@ -664,10 +664,15 @@ void bot_turn_behaviour(Behaviour_t* data){
 	 * bei Winkeln > 90 Grad zunaechst mit maximaler Geschwindigkeit ausgefuehrt. Bei kleineren
 	 * Winkeln oder wenn nur noch 90 Grad zu drehen sind, nur noch mit normaler Geschwindigkeit
 	 */
+	 /* Zustaende fuer das bot_turn_behaviour-Verhalten */
+	#define NORMAL_TURN					0
+	#define SHORT_REVERSE				1
+	#define CORRECT_POSITION			2
+	#define FULL_STOP					3
 	static int8 turnState=NORMAL_TURN;
 	/* zu drehende Schritte in die korrekte Drehrichtung korrigieren */
 	int16 to_turnR = turn_direction*(turn_targetR - sensEncR);
-	int16 to_turnL = turn_direction*(turn_targetL - sensEncL);
+	int16 to_turnL = -turn_direction*(turn_targetL - sensEncL);
 
 	switch(turnState) {
 		case NORMAL_TURN:
@@ -679,7 +684,7 @@ void bot_turn_behaviour(Behaviour_t* data){
 				turnState=SHORT_REVERSE;
 				break;	
 			}
-			/* Bis 90� kann mit maximaler Geschwindigkeit gefahren werden, danach auf Normal reduzieren */
+			/* Bis 90 Grad kann mit maximaler Geschwindigkeit gefahren werden, danach auf Normal reduzieren */
 			/* Geschwindigkeit fuer beide Raeder getrennt ermitteln */
 			if(abs(to_turnL) < ANGLE_CONSTANT*0.25) {
 				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_NORMAL : BOT_SPEED_NORMAL;
@@ -714,10 +719,10 @@ void bot_turn_behaviour(Behaviour_t* data){
 			}		
 			if (to_turnL<0) {
 				/* links zu weit gefahren..langsam zurueck */
-				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;				
+				speedWishLeft = (turn_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;				
 			} else if (to_turnL>0) {
 				/* links noch nicht weit genug...langsam vor */
-				speedWishLeft = (turn_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
+				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;
 			} else {
 				/* Endposition erreicht, linkes Rad anhalten */
 				speedWishLeft = BOT_SPEED_STOP;
@@ -763,6 +768,7 @@ void bot_turn(Behaviour_t* caller,int16 degrees){
  	turn_targetL+=sensEncL;
 	switch_to_behaviour(caller, bot_turn_behaviour,NOOVERRIDE);
 }
+
 /*!
  * Das Verhalten laesst den Roboter den Raum durchsuchen. 
  * Das Verhalten hat mehrere unterschiedlich Zustaende:
