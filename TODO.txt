@@ -7,6 +7,8 @@ fuer hier genannte Probleme freuen wir uns.
 
 Thema	Datei		Task
 ==========================================================================
+gefahren		bot-logik.c	Low-Level-Verhalten müssen höherpriorisierte über gefahren warnen
+
 Zeit	Timer.c		Auf dem PC existiert noch keine Routine, die die globalen Zeitvariablen aktualisiert
 Motor				Umrechnung der PWM-Werte in Geschwindigkeiten
 Sensoren			Linearisierung der Sensorwerte
