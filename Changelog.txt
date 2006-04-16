@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-04-16  Ulrich Scheffler (ulrich.scheffler@web.de) Kleine anpassungen an den rc5-codes
+
 2006-04-14  Carsten Giesen (info@cnau.de) TWI (I2C) Treiber und SRF10 Ansteuerung
 
 2006-04-13	Staudenmayer (andreas.staudenmayer@t-online.de) Batchdatei fuer Programmieradapter STK200 und viele baugleiche Programmer am Parallelport eingefuehrt

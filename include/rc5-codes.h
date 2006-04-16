@@ -22,7 +22,7 @@
  * @author 	Andreas Merkle (mail@blue-andi.de)
  * @date 	15.02.06
  * Wer diese Datei angepasst hat, kann Sie durch einen .cvsignore Eintrag schützen. 
- * Dann überschreibt Eclipse Sie nicht mehr automatisch
+ * Dann Ueberschreibt Eclipse Sie nicht mehr automatisch
 */
 
 #ifndef RC5CODE_H_
@@ -223,7 +223,7 @@
 	#define	RC5_CODE_VIEW	RC5_NOT_AVAIL			/*!< Taste nicht vorhanden */
 	#define	RC5_CODE_SELECT	RC5_NOT_AVAIL			/*!< Taste nicht vorhanden */
 
-	#define	RC5_CODE_UP		(0x1140 & RC5_MASK)		/*!< Taste Hoch            */
+	#define	RC5_CODE_UP		(0x1160 & RC5_MASK)		/*!< Taste Hoch            */
 	#define	RC5_CODE_DOWN	(0x1161 & RC5_MASK)		/*!< Taste Runter          */
 	#define	RC5_CODE_LEFT	(0x0171 & RC5_MASK)		/*!< Taste Links           */
 	#define	RC5_CODE_RIGHT	(0x0170 & RC5_MASK)		/*!< Taste Rechts          */
@@ -259,7 +259,7 @@
 	#define RC5_CODE_8	(0x3948 & RC5_MASK)		/*!< Taste 8 */
 	#define RC5_CODE_9	(0x3949 & RC5_MASK)		/*!< Taste 9 */
 	
-	#define RC5_CODE_UP	(0x2950 & RC5_MASK)	/*!< Taste Hoch */
+	#define RC5_CODE_UP	(0x2950 & RC5_MASK)		/*!< Taste Hoch */
 	#define RC5_CODE_DOWN	(0x2951 & RC5_MASK)	/*!< Taste Runter */
 	#define RC5_CODE_LEFT	(0x2955 & RC5_MASK)	/*!< Taste Links */
 	#define RC5_CODE_RIGHT	(0x2956 & RC5_MASK)	/*!< Taste Rechts */
@@ -267,8 +267,8 @@
 	#define RC5_CODE_PWR	(0x394C & RC5_MASK)	/*!< Taste An/Aus */
 	
 	#define RC5_CODE_RED		(0x100B & RC5_MASK)	/*!< Rote Taste */
-	#define RC5_CODE_GREEN		(0x102E & RC5_MASK)	/*!< Grüne Taste */
-	#define RC5_CODE_YELLOW	(0x1038 & RC5_MASK)	/*!< Gelbe Taste */
+	#define RC5_CODE_GREEN		(0x102E & RC5_MASK)	/*!< Gruene Taste */
+	#define RC5_CODE_YELLOW		(0x1038 & RC5_MASK)	/*!< Gelbe Taste */
 	#define RC5_CODE_BLUE		(0x1029 & RC5_MASK)	/*!< Blaue Taste */
 	#define RC5_CODE_VIEW		(0x000F & RC5_MASK)	/*!< Instant View Taste */
 	
