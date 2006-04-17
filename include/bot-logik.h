@@ -167,6 +167,14 @@ void bot_explore_behaviour(Behaviour_t *data);
  * */
 void bot_do_slalom_behaviour(Behaviour_t *data);
 
+/*!
+ * Das Verhalten findet seinen Weg durch ein Labyrinth, das nach gewissen Grundregeln gebaut ist
+ * in nicht immer optimaler Weise aber in jedem Fall. Es arbeitet nach dem Hoehlenforscher-Algorithmus.
+ * Einschraenkung: Objekte im Labyrinth, die Endlossschleifen verursachen koennen, z.b. ein einzeln
+ * stehender Pfeiler im Labyrinth um den der Bot dann immer wieder herum fahren wuerde. 
+ */
+void bot_solve_maze(Behaviour_t *data);
+
 #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
   
  /*!

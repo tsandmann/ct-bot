@@ -100,6 +100,22 @@
 #define SWEEP_STATE_TURN			0	/*!< Zustand: Drehung im Sweep. */
 #define SWEEP_STATE_CHECK			1	/*!< Zustamd: Ueberpruefe Objekt vor dem Bot. */
 
+/* Zustaende und Konstanten fuer das bot_solve_maze_behaviour-Verhalten */
+#define BOT_DIAMETER				12
+#define OPTIMAL_DISTANCE			BOT_DIAMETER*10
+#define ADJUST_DISTANCE				10
+#define IGNORE_DISTANCE				240
+#define GROUND_GOAL					0x221
+
+
+/* Konstanten fuer check_wall_behaviour-Verhalten */
+#define CHECK_WALL_RIGHT			0
+#define CHECK_WALL_LEFT				1
+
+
+/* Konstanten fuer measure_angle_behaviour-Verhalten */
+#define MEASURE_LEFT				1
+#define MEASURE_RIGHT				-1
 
 
 

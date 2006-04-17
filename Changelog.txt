@@ -1,6 +1,8 @@
 CHANGELOG fuer c't-Bot
 ======================
-2006-04-16 Torsten Evers tevers@onlinehome.de) bot_turn ueberarbeitet
+2006-04-16	Torsten Evers (tevers@onlinehome.de) bot_solve_maze + Hilfsverhalten eingefuegt
+
+2006-04-16 	Torsten Evers (tevers@onlinehome.de) bot_turn ueberarbeitet
 
 2006-04-16  Ulrich Scheffler (ulrich.scheffler@web.de) Kleine anpassungen an den rc5-codes
 

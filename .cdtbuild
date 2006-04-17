@@ -65,6 +65,7 @@
 <tool command="gcc" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1315268416" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug">
 <option id="gnu.c.link.option.libs.369911061" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs">
 <listOptionValue builtIn="false" value="pthread"/>
+<listOptionValue builtIn="false" value="m"/>
 </option>
 <option id="gnu.c.link.option.paths.551816040" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="stringList">
 <listOptionValue builtIn="false" value="/usr/lib"/>
@@ -95,7 +96,9 @@
 </tool>
 <tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.565798556" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug"/>
 <tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.802239009" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug">
-<option id="gnu.c.link.option.libs.836351171" name="Libraries (-l)" superClass="gnu.c.link.option.libs"/>
+<option id="gnu.c.link.option.libs.836351171" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs">
+<listOptionValue builtIn="false" value="m"/>
+</option>
 <option id="gnu.c.link.option.paths.972012367" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="stringList">
 <listOptionValue builtIn="false" value="/usr/local/avr"/>
 </option>
