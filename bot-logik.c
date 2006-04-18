@@ -87,6 +87,10 @@ int8 wall_detected;				/*!< enthaelt True oder False, je nach Ergebnis des Verha
 int8 check_direction;			/*!< enthaelt CHECK_WALL_LEFT oder CHECK_WALL_RIGHT */
 int16 wall_distance;			/*!< enthaelt gemessene Entfernung */
 
+/* Konstanten fuer check_wall_behaviour-Verhalten */
+#define CHECK_WALL_RIGHT			0
+#define CHECK_WALL_LEFT				1
+
 /* Parameter fuer das measure_angle_behaviour() */
 int8 measure_direction;			/*!< enthaelt MEASURE_RIGHT oder MEASURE_LEFT */
 int16 measure_distance;			/*!< enthaelt maximale Messentfernung, enthaelt nach der Messung die Entfernung */
@@ -94,6 +98,9 @@ int16 measured_angle;			/*!< enthaelt gedrehten Winkel oder 0, falls nichts entd
 int16 startEncL;				/*!< enthaelt Encoderstand zu Beginn der Messung */
 int16 startEncR;				/*!< enthaelt Encoderstand zu Beginn der Messung */
 
+/* Konstanten fuer measure_angle_behaviour-Verhalten */
+#define MEASURE_LEFT				1
+#define MEASURE_RIGHT				-1
 
 /*! Liste mit allen Verhalten */
 Behaviour_t *behaviour = NULL;
@@ -1338,30 +1345,47 @@ void bot_measure_angle(Behaviour_t *caller, int8 direction, int16 distance) {
  */
 void bot_solve_maze_behaviour(Behaviour_t *data){
 	/* Zustaende fuer das bot_solve_maze_behaviour-Verhalten */
-	#define CHECK_FOR_WALL_RIGHT		0
-	#define CHECK_FOR_WALL_LEFT			1
-	#define CHECK_WALL_PRESENT			2
-	#define SOLVE_MAZE_LOOP				3
-	#define SOLVE_TURN_WALL				4
-	#define CHECK_CONDITION				5
-	#define TURN_TO_BRANCH				6
-	#define DETECTED_CROSS_BRANCH		7
-	#define APPROACH_CORNER				8
-	#define AVOID_ABYSS					9
-	#define REACHED_GOAL				10
-	static int8 mazeState=CHECK_FOR_WALL_RIGHT;
+	#define CHECK_FOR_STARTPAD			0
+	#define CHECK_FOR_WALL_RIGHT		1
+	#define CHECK_FOR_WALL_LEFT			2
+	#define CHECK_WALL_PRESENT			3
+	#define SOLVE_MAZE_LOOP				4
+	#define SOLVE_TURN_WALL				5
+	#define CHECK_CONDITION				6
+	#define TURN_TO_BRANCH				7
+	#define DETECTED_CROSS_BRANCH		8
+	#define APPROACH_CORNER				9
+	#define AVOID_ABYSS					10
+	#define REACHED_GOAL				11
+	static int8 mazeState=CHECK_FOR_STARTPAD;
 	static int8 followWall=-1;
+	static int8 checkedWalls=0;
+	
 	int16 distance;
 	double x;
-
+	printf("mazeState= %d\n",mazeState);
 	switch(mazeState) {
-		case CHECK_FOR_WALL_RIGHT:
-			/* Rechts beginnen nach einer Wand zu suchen 
-			 * dafuer Abgrund- und Kollisions-Verhalten ausschalten */
+		case CHECK_FOR_STARTPAD:
+			/* Wo beginnen wir, nach einer Wand zu suchen? 
+			 * Abgrund- und Kollisions-Verhalten ausschalten */
 			deactivateBehaviour(bot_avoid_col_behaviour);
 			deactivateBehaviour(bot_avoid_border_behaviour);
 			/* bot_glance() stoert bot_turn() */
 			deactivateBehaviour(bot_glance_behaviour);
+			/* sieht nach, ob der Bot auf einem definierten Startpad steht und
+			 * beginnt dann mit der Suche gleich an der richtigen Wand */
+			/* Zuserst bei nach Startpad1 gucken */
+			checkedWalls=0;
+			if ((sensLineL>=STARTPAD1-10 && sensLineL<=STARTPAD1+10) ||
+				(sensLineR>=STARTPAD1-10 && sensLineR<=STARTPAD1+10)) {
+				mazeState=CHECK_FOR_WALL_LEFT;
+				break;
+			}
+			mazeState=CHECK_FOR_WALL_RIGHT;
+			break;
+			
+		case CHECK_FOR_WALL_RIGHT:
+
 			mazeState=CHECK_WALL_PRESENT;
 			followWall=CHECK_WALL_RIGHT;
 			bot_check_wall(data,followWall);
@@ -1376,16 +1400,24 @@ void bot_solve_maze_behaviour(Behaviour_t *data){
 			
 		
 		case CHECK_WALL_PRESENT:
-			/* wenn keine Wand gefunden aber links noch nicht nachgeshen, andere 
+			/* wenn keine Wand gefunden aber links noch nicht nachgesehen, andere 
 			 * Richtung checken, sonst vorfahren */
+			checkedWalls++;
 			if (wall_detected==False){
-				if (followWall==CHECK_WALL_RIGHT) {
-					mazeState=CHECK_FOR_WALL_LEFT;
-					break;
+				/* Wand noch nicht entdeckt...haben wir schon beide gecheckt? */
+				if (checkedWalls<2) {
+					if (followWall==CHECK_WALL_RIGHT) {
+						mazeState=CHECK_FOR_WALL_LEFT;
+						break;
+					} else {
+						mazeState=CHECK_FOR_WALL_RIGHT;
+						break;
+					}
 				} else {
 					/* keine wand? dann vorfahren und selbes prozedere nochmal */
 					bot_drive_distance(data,0,BOT_SPEED_NORMAL,BOT_DIAMETER);
 					mazeState=CHECK_FOR_WALL_RIGHT;
+					checkedWalls=0;
 					break;
 				}
 			}
@@ -1430,7 +1462,7 @@ void bot_solve_maze_behaviour(Behaviour_t *data){
 			}
 			/* messen, wo genau die Ecke ist */
 			mazeState=APPROACH_CORNER;
-			if (followWall==CHECK_FOR_WALL_LEFT){
+			if (followWall==CHECK_WALL_LEFT){
 				bot_measure_angle(data,MEASURE_LEFT,300);
 			} else {
 				bot_measure_angle(data,MEASURE_RIGHT,300);

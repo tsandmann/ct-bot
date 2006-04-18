@@ -106,16 +106,10 @@
 #define ADJUST_DISTANCE				10
 #define IGNORE_DISTANCE				240
 #define GROUND_GOAL					0x221
+#define STARTPAD1					0x2B2
+#define STARTPAD2					0x332
 
 
-/* Konstanten fuer check_wall_behaviour-Verhalten */
-#define CHECK_WALL_RIGHT			0
-#define CHECK_WALL_LEFT				1
-
-
-/* Konstanten fuer measure_angle_behaviour-Verhalten */
-#define MEASURE_LEFT				1
-#define MEASURE_RIGHT				-1
 
 
 
