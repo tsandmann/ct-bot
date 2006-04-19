@@ -60,6 +60,8 @@
  * in der c't-bot-Entwicklerliste vorgestellt werden. (mb/18.03.2006)
  */
 
+/* Nur auf dem realen Bot gibt es verschiedene FBs */
+#ifdef MCU
 
 //#define RC_HAVE_HAUPPAUGE_WINTV
 //#define RC_HAVE_HAUPPAUGE_MediaMPV
@@ -67,6 +69,7 @@
 //#define RC_HAVE_VIVANCO_UR89
 //#define RC_HAVE_VIVANCO_UR89_TV_CODE_089
 
+#endif
 
 // Code um zu kennzeichnen, dass eine Taste nicht vorhanden ist
 #define RC5_NOT_AVAIL	(0xFFFF)				/*!< Code fuer Taste nicht vorhanden */
