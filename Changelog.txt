@@ -1,6 +1,8 @@
 CHANGELOG fuer c't-Bot
 ======================
-2006-04-18 Torsten Evers (tevers@onlinehome.de) bot_solve_maze erkennt Startfelder
+2006-04-18	Ulrich Scheffler (ulrich.scheffler@web.de) Codes fuer die Fernbedienung VIVANCO UR89, TV Modus (Code089) eingepflegt
+
+2006-04-18  Torsten Evers (tevers@onlinehome.de) bot_solve_maze erkennt Startfelder
 
 2006-04-16	Torsten Evers (tevers@onlinehome.de) bot_solve_maze + Hilfsverhalten eingefuegt
 
