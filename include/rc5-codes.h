@@ -68,6 +68,7 @@
 //#define RC_HAVE_CONRAD_PROMO8
 //#define RC_HAVE_VIVANCO_UR89
 //#define RC_HAVE_VIVANCO_UR89_TV_CODE_089
+//#define RC_HAVE_Technisat_TTS35AI
 
 #endif
 
@@ -297,6 +298,44 @@
 	#define RC5_CODE_FWD		RC5_CODE_GREEN_RIGHT	/*!< Taste rechts (gruen) wird genutzt fuer FWD-Funktion (forward)*/
 	
 #endif /* RC_HAVE_VIVANCO_UR89_TV_CODE_089 */ 
+
+/*!
+ * Fernbedienung Technisat_TTS35AI (Receiver Digit CIP)
+ * @author Joerg Bullmann
+ */
+#ifdef RC_HAVE_Technisat_TTS35AI
+	#define RC_HAVE_CODES							/*!< Definiert Codes */
+	#undef JOG_DIAL									/*!< Hat keinen Jog Dial */
+
+	#define RC5_NOT_AVAIL	(0xFFFF)				/*!< Code fuer Taste nicht vorhanden */
+
+	#define	RC5_CODE_0		(0x1289 & RC5_MASK)		/*!< Taste 0 			   */
+	#define	RC5_CODE_1		(0x1281 & RC5_MASK)		/*!< Taste 1 			   */
+	#define	RC5_CODE_2		(0x1282 & RC5_MASK)		/*!< Taste 2 			   */
+	#define	RC5_CODE_3		(0x1283 & RC5_MASK)		/*!< Taste 3 			   */
+	#define	RC5_CODE_4		(0x1284 & RC5_MASK)		/*!< Taste 4 			   */
+	#define	RC5_CODE_5		(0x1285 & RC5_MASK)		/*!< Taste 5 			   */
+	#define	RC5_CODE_6		(0x1286 & RC5_MASK)		/*!< Taste 6 			   */
+	#define	RC5_CODE_7		(0x1287 & RC5_MASK)		/*!< Taste 7 			   */
+	#define	RC5_CODE_8		(0x1288 & RC5_MASK)		/*!< Taste 8 			   */
+	#define	RC5_CODE_9		(0x1289 & RC5_MASK)		/*!< Taste 9 			   */
+
+	#define	RC5_CODE_PWR	(0x128C & RC5_MASK)		/*!< Taste An, Aus         */
+	#define	RC5_CODE_VIEW	(0x028F & RC5_MASK)		/*!< Taste i               */
+	#define	RC5_CODE_SELECT	(0x0297 & RC5_MASK)		/*!< Taste ok              */
+
+	#define	RC5_CODE_UP		(0x12A0 & RC5_MASK)		/*!< Taste Hoch            */
+	#define	RC5_CODE_DOWN	(0x12A1 & RC5_MASK)		/*!< Taste Runter          */
+	#define	RC5_CODE_LEFT	(0x1291 & RC5_MASK)		/*!< Taste Links           */
+	#define	RC5_CODE_RIGHT	(0x1290 & RC5_MASK)		/*!< Taste Rechts          */
+
+	#define RC5_CODE_FWD	(0x0293 & RC5_MASK)		/*!< Taste TV              */
+	#define RC5_CODE_BWD	(0x0292 & RC5_MASK)		/*!< Taste Menu            */
+	#define RC5_CODE_RED	(0x02AB & RC5_MASK)		/*!< rote Taste            */
+	#define RC5_CODE_GREEN	(0x02AC & RC5_MASK)		/*!< gruene Taste          */
+	#define RC5_CODE_YELLOW	(0x02AD & RC5_MASK)		/*!< gelbe Taste           */
+	#define RC5_CODE_BLUE	(0x02AE & RC5_MASK)		/*!< blaue Taste           */
+#endif /* RC_HAVE_Technisat_TTS35AI */
 
 
 /*!
