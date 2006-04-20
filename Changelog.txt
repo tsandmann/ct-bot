@@ -1,7 +1,5 @@
 CHANGELOG fuer c't-Bot
 ======================
-2006-04-19 Joerg Bullmann (jbc@mac10.de) RC5-Codes fuer Technisat CIP Fernbedienung
-
 2006-04-13	Benjamin Benz (bbe@heise.de) 2 Codes für Conrad-Fb wie ind er Mailingliste diskutiert geaendert
 
 2006-04-18	Ulrich Scheffler (ulrich.scheffler@web.de) Codes fuer die Fernbedienung VIVANCO UR89, TV Modus (Code089) eingepflegt
