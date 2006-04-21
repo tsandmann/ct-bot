@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-04-06  Frank Menzel(menzelfr@gmx.de) Not-Aus eingefuehrt nach PWR. Alle Verhalten werden deaktiviert und der vorheriger Zustand in der Verhaltens-Puffervariable gemerkt. Dann wird die Verhaltensanzeige Screen 2 aktiviert, wo nach Select die Verhalten wieder wie vorher eingeschaltet werden koennen. 
+
 2006-04-19 Joerg Bullmann (jbc@mac10.de) RC5-Codes fuer Technisat CIP Fernbedienung
 
 2006-04-13	Benjamin Benz (bbe@heise.de) 2 Codes für Conrad-Fb wie ind er Mailingliste diskutiert geaendert

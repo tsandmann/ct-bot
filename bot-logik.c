@@ -209,6 +209,26 @@ void return_from_behaviour(Behaviour_t * data){
 	data->caller=NULL;				// Job erledigt, Verweis loeschen
 }
 
+/*!
+ * Deaktiviert alle Verhalten bis auf Grundverhalten. Bei Verhaltensauswahl werden die Aktivitaeten vorher
+ * in die Verhaltens-Auswahlvariable gesichert.
+ */
+void deactivateAllBehaviours(void){
+	Behaviour_t *job;						// Zeiger auf ein Verhalten
+	
+	#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+	  // bei Verhaltensanzeige in Aktivitaets-Auswahl-Variable sichern
+	  set_behaviours_equal();
+	#endif
+		
+	// Einmal durch die Liste gehen und (fast) alle deaktivieren, Grundverhalten nicht 
+	for (job = behaviour; job; job = job->next) {
+		if ((job->priority > 2) &&(job->priority <= 200)) {
+            // Verhalten deaktivieren 
+			job->active = INACTIVE;	
+		}
+	}	
+}
 
 /*! 
  * Ein ganz einfaches Verhalten, es hat maximale Prioritaet

@@ -64,11 +64,13 @@ typedef struct {
 	static void rc5_screen_set(RemCtrlFuncPar *par);
 #endif
 
+#ifdef JOGDIAL
 /*!
  * Diese Funktion setzt die Geschwindigkeit auf den angegebenen Wert.
  * @param par Parameter mit den zu setzenden Geschwindigkeiten.
  */	
 static void rc5_bot_set_speed(RemCtrlFuncPar *par);
+#endif
 
 /*!
  * Diese Funktion aendert die Geschwindigkeit um den angegebenen Wert.
@@ -81,6 +83,14 @@ static void rc5_bot_change_speed(RemCtrlFuncPar *par);
  * @param par Parameter mit den zu setzenden Geschwindigkeiten.
  */	
 void rc5_bot_next_behaviour(RemCtrlFuncPar *par);
+
+
+/*!
+ * Diese Funktion stellt die Not-Aus-Funktion dar. Sie laesst den Bot anhalten
+ * und setzt alle Verhalten zurueck.
+ * @param par notwendiger Dummy-Parameter.
+ */	
+static void rc5_emergency_stop(RemCtrlFuncPar *par);
 
 /*!
 * Verarbeitet die Zifferntasten in Abhaengigkeit vom eingestelltem Screen
@@ -113,11 +123,12 @@ uint16 RC5_Code;	/*!< Letzter empfangener RC5-Code */
 /*! Fernbedienungsaktionen */
 static RemCtrlAction gRemCtrlAction[] = {
 	/* RC5-Code,		Funktion,				Parameter */
-	{ RC5_CODE_PWR,		rc5_bot_set_speed,		{ BOT_SPEED_STOP, BOT_SPEED_STOP } },
+	{ RC5_CODE_PWR,		rc5_emergency_stop,		{ 0, 0 } },
 	{ RC5_CODE_UP,		rc5_bot_change_speed,	{ 10, 10 } },
 	{ RC5_CODE_DOWN,	rc5_bot_change_speed,	{ -10, -10 } },
 	{ RC5_CODE_LEFT,	rc5_bot_change_speed,	{ 0, 10 } },
 	{ RC5_CODE_RIGHT,	rc5_bot_change_speed,	{ 10, 0 } },
+	{ RC5_CODE_0,		rc5_number,		        { 0, 0 } },
 	{ RC5_CODE_1,		rc5_number,		        { 1, 1 } },
 	{ RC5_CODE_2,		rc5_number,		        { 2, 2 } },
 	{ RC5_CODE_3,		rc5_number,			    { 3, 3 } },
@@ -255,6 +266,7 @@ void rc5_bot_next_behaviour(RemCtrlFuncPar *par) {
 	}
 }
 
+#ifdef JOGDIAL
 /*!
  * Diese Funktion setzt die Geschwindigkeit auf den angegebenen Wert.
  * @param par Parameter mit den zu setzenden Geschwindigkeiten.
@@ -265,7 +277,27 @@ static void rc5_bot_set_speed(RemCtrlFuncPar *par) {
 		target_speed_r = par->value2;
 	}
 }
+#endif
 
+/*!
+ * Diese Funktion stellt die Not-Aus-Funktion dar. Sie laesst den Bot anhalten
+ * und setzt alle Verhalten zurueck mit Sicherung der vorherigen Aktivitaeten.
+ * @param par notwendiger Dummy-Parameter.
+ */	
+ static void rc5_emergency_stop(RemCtrlFuncPar *par) {
+			
+            // Setzen der Geschwindigkeit auf 0	
+			target_speed_l = 0 ;
+		    target_speed_r = 0 ;
+		    
+		    // Alle Verhalten deaktivieren
+		    deactivateAllBehaviours();  // alle Verhalten deaktivieren mit vorheriger Sicherung
+		     #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+		       display_clear();         // Screen zuerst loeschen
+		       display_screen = 2;      // nach Notstop in den Verhaltensscreen mit Anzeige der alten Verhalten
+		     #endif
+}
+ 
 /*!
  * Diese Funktion aendert die Geschwindigkeit um den angegebenen Wert.
  * @param par Parameter mit den relativen Geschwindigkeitsaenderungen.
@@ -345,7 +377,7 @@ void rc5_number(RemCtrlFuncPar *par) {
 	switch (display_screen) {
 		case 0:
 			switch (par->value1) {
-				case 0:	break;
+				case 0:	target_speed_l=0;target_speed_r=0;break;
 				case 1: target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
 				case 2: bot_goto(100, 100, 0); break;
 				case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;

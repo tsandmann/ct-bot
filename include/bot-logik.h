@@ -83,6 +83,12 @@ void activateBehaviour(BehaviourFunc function);
 void deactivateBehaviour(BehaviourFunc function);
 
 /*!
+ * Deaktiviert alle Verhalten bis auf Grundverhalten. Bei Verhaltensauswahl werden die Aktivitaeten vorher
+ * in die Verhaltens-Auswahlvariable gesichert.
+ */
+void deactivateAllBehaviours(void);
+
+/*!
  * Beispiel fuer ein Verhalten, das einen Zustand besitzt
  * es greift auf andere Verhalten zurueck und setzt daher 
  * selbst keine speedWishes
