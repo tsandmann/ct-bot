@@ -374,10 +374,13 @@ void rc5_control(void){
  * @param par Parameter mit der betaetigten Zahlentaste.
  */
 void rc5_number(RemCtrlFuncPar *par) {
+	#ifdef DISPLAY_SCREENS_AVAILABLE 
 	switch (display_screen) {
 		case 0:
+	#endif
 			switch (par->value1) {
-				case 0:	target_speed_l=0;target_speed_r=0;break;
+				case 0:	
+				target_speed_l=0;target_speed_r=0;break;
 				case 1: target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
 				case 2: bot_goto(100, 100, 0); break;
 				case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
@@ -389,6 +392,8 @@ void rc5_number(RemCtrlFuncPar *par) {
 				case 8: bot_goto(-100, -100, 0); break;
 				case 9: bot_turn(0, 180); break;
 			}
+	#ifdef DISPLAY_SCREENS_AVAILABLE 
+	
 			break;
 		
 	#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
@@ -408,5 +413,6 @@ void rc5_number(RemCtrlFuncPar *par) {
 			break;
 	#endif
  	}
+ 	#endif
  }	
 #endif
