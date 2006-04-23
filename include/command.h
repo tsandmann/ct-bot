@@ -31,6 +31,19 @@
 
 #define MAX_PAYLOAD 255  /*!< Max. Anzahl Bytes, die an ein Command angehaengt werden */
 
+#ifdef PC
+	#define low_read tcp_read 	/*!< Which function to use to read data */
+	#define low_write tcp_send_cmd /*!< Which function to use to write data */
+	#define low_write_data tcp_write /*!< Which function to use to write data */
+#endif
+
+#ifdef MCU
+	#define low_read uart_read 	/*!< Which function to use to read data */
+	#define low_write uart_send_cmd /*!< Which function to use to write data */
+	#define low_write uart_send_cmd /*!< Which function to use to write data */
+	#define low_write_data uart_write /*!< Which function to use to write data */
+#endif
+
 
 /*!
  * Request Teil eines Kommandos
@@ -66,27 +79,30 @@ typedef struct {
 #define CMD_STOPCODE	'<'		/*!< Ende eines Kommandos*/
 
 //Sensoren
-#define CMD_SENS_IR	'I'			/*!< Abstandssensoren*/
+#define CMD_SENS_IR	'I'		/*!< Abstandssensoren*/
 #define CMD_SENS_ENC	'E'		/*!< Radencoder*/
-#define CMD_SENS_BORDER 'B'		/*!< Abgrundsensoren*/
+#define CMD_SENS_BORDER 'B'	/*!< Abgrundsensoren*/
 #define CMD_SENS_LINE 	'L'		/*!< Liniensensoren*/
 #define CMD_SENS_LDR 	'H'		/*!< Helligkeitssensoren */
 #define CMD_SENS_TRANS	'T'		/*!< Ueberwachung Transportfach */
 #define CMD_SENS_DOOR	'D'		/*!< Ueberwachung Klappe */
 #define CMD_SENS_MOUSE	'm'		/*!< Maussensor */
-#define CMD_SENS_ERROR 	'e'		/*!< Motor- oder Batteriefehler */
+#define CMD_SENS_ERROR 'e'		/*!< Motor- oder Batteriefehler */
 #define CMD_SENS_RC5 	'R'		/*!< IR-Fernbedienung */
 
-// Aktuatoren
-#define	CMD_AKT_MOT		'M'		/*!< Motorgeschwindigkeit */
-#define	CMD_AKT_DOOR	'd'		/*!< Steuerung Klappe */
-#define	CMD_AKT_SERVO	'S'		/*!< Steuerung Servo  */
-#define CMD_AKT_LED		'l'		/*!< LEDs steuern */
-#define CMD_AKT_LCD     'c'     /*!< LCD Anzeige */
+#define CMD_SENS_MOUSE_PICTURE	'P'		/*!< Bild vom Maussensor in data_l steht, welche Nummer da 1. Pixel hat*/
 
-#define SUB_CMD_NORM	'N' 	/*!< Standard-Kommando */
-#define SUB_CMD_LEFT	'L' 	/*!< Kommmando fuer links */
-#define SUB_CMD_RIGHT	'R' 	/*!< Kommando fuer rechts */
+
+// Aktuatoren
+#define CMD_AKT_MOT	'M'		/*!< Motorgeschwindigkeit */
+#define CMD_AKT_DOOR	'd'		/*!< Steuerung Klappe */
+#define CMD_AKT_SERVO	'S'		/*!< Steuerung Servo  */
+#define CMD_AKT_LED	'l'		/*!< LEDs steuern */
+#define CMD_AKT_LCD    'c'     /*!< LCD Anzeige */
+
+#define SUB_CMD_NORM	'N' 		/*!< Standard-Kommando */
+#define SUB_CMD_LEFT	'L' 		/*!< Kommmando fuer links */
+#define SUB_CMD_RIGHT	'R' 		/*!< Kommando fuer rechts */
 
 // Subcommandos fuer LCD
 #define SUB_LCD_CLEAR   'c'     /*!< Subkommando Clear Screen */
@@ -100,6 +116,8 @@ typedef struct {
 #define CMD_WELCOME		'W'		/*!< Kommado zum anmelden an c't-Sim */
 #define SUB_WELCOME_REAL	'R'		/*!< Subkommado zum anmelden eine realen Bots an c't-Sim */
 #define SUB_WELCOME_SIM	'S'		/*!< Subkommado zum anmelden eines simulierten Bots an c't-Sim */
+
+
 
 #define DIR_REQUEST	0			/*!< Richtung fuer Anfragen */
 #define DIR_ANSWER		1			/*!< Richtung fuer Antworten */
@@ -127,8 +145,9 @@ int command_read(void);
  * @param subcommand Kennung des Subcommand
  * @param data_l Daten fuer den linken Kanal
  * @param data_r Daten fuer den rechten Kanal
+ * @param payload Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
-void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r);
+void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,uint8 payload);
 
 /*!
  *  Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort
@@ -138,7 +157,7 @@ void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r)
  * @param data_r Daten fuer den rechten Kanal
  * @param data Datenanhang an das eigentliche Command
  */
-void command_write_data(uint8 command, uint8 subcommand, const int16* data_l, const int16* data_r, const char* data);
+void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* data_r, const char* data);
 
 /*!
  * Wertet das Kommando im Puffer aus

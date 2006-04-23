@@ -177,7 +177,7 @@ void signal_command_available(void){
 
 /*!
  * Schickt einen Thread in die Warteposition
- * @param timeout_us Wartezeit in �s
+ * @param timeout_us Wartezeit in Mikrosekunden
  */
 void wait_for_time(long timeout_us){
 	pthread_cond_t      cond  = PTHREAD_COND_INITIALIZER;

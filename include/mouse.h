@@ -75,5 +75,23 @@ void maus_sens_init(void);
  */
 int8 maus_sens_read(uint8 adr);
 
+/*!
+ * Liefert bei jedem Aufruf das naechste Pixel des Bildes
+ * Insgesamt gibt es 324 Pixel
+ * <pre>
+ * 18 36 ... 324
+ * .. .. ... ..
+ *  2 20 ... ..
+ *  1 19 ... 307
+ * </pre>
+ * Bevor diese Funktion aufgerufen wird, muss maus_image_prepare() aufgerufen werden!
+ * @return Die Pixeldaten (Bit 0 bis Bit5), Pruefbit, ob Daten gueltig (Bit6), Markierung fuer den Anfang eines Frames (Bit7)
+ */
+int8 maus_image_read(void);
+
+/*!
+ * Bereitet das auslesen eines ganzen Bildes vor
+ */
+void maus_image_prepare(void);
 
 #endif
