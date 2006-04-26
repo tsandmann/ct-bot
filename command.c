@@ -26,10 +26,12 @@
 #include "ct-Bot.h"
 
 #include "led.h"
+#include "log.h"
 
 #include "uart.h"
 #include "adc.h"
 #include "timer.h"
+#include "mouse.h"
 
 #include "command.h"
 #include "display.h"
@@ -210,13 +212,46 @@ void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* d
     low_write_data((uint8 *)data, payload);
 }
 
+#ifdef MAUS_AVAILABLE
+	/*!
+	 * Uebertraegt ein Bild vom Maussensor an den PC
+	 */
+	void transmit_mouse_picture(void){
+		int16 dummy,i;
+	
+		int16 pixel;
+		uint8 data;
+		maus_image_prepare();
+		
+		for (i=0; i<6; i++) {	
+			dummy= i*54 +1;
+			command_write(CMD_SENS_MOUSE_PICTURE, SUB_CMD_NORM,  &dummy , &dummy,54);
+			for (pixel=0; pixel <54; pixel++){
+				data= maus_image_read();
+				low_write_data((uint8 *)&data,1);
+			}
+		}
+/*		for (pixel=0; pixel <324; pixel++){
+			if (pixel ==0)// Kommando vorbereiten
+			if (pixel ==162){ // Kommando vorbereiten
+				dummy=163;
+				command_write(CMD_SENS_MOUSE_PICTURE, SUB_CMD_NORM,  &dummy , &dummy,0);
+			}
+
+			data= maus_image_read();
+//			low_write(&data);
+		}
+*/		
+	}
+#endif
+
+
 /*!
  * Wertet das Kommando im Puffer aus
  * return 1, wenn Kommando schon bearbeitet wurde, 0 sonst
  */
 int command_evaluate(void){
 	int analyzed = 1;
-	
 	switch (received_command.request.command) {
 		case CMD_SENS_RC5:
 			ir_data=received_command.data_l;
@@ -225,12 +260,12 @@ int command_evaluate(void){
 			LED_set(received_command.data_l & 255);
 			break;
 		
-		// Einige Kommandos ergeben nur fuer reale Bots mit Verbindung zum PC Sinn		
-		#ifdef BOT_2_PC_AVAILABLE
+		#ifdef MAUS_AVAILABLE		
 			case CMD_SENS_MOUSE_PICTURE: 	// PC fragt nach dem Bild
+				LOG_DEBUG(("Request for MouseImage received"));
 				transmit_mouse_picture();
 			break;
-		#endif	
+		#endif
 			
 		// Einige Kommandos ergeben nur fuer simulierte Bots Sinn
 		#ifdef PC
@@ -275,6 +310,8 @@ int command_evaluate(void){
 	}
 	return analyzed;
 }
+
+
 
 #ifdef DISPLAY_AVAILABLE
 /*! 

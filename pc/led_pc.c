@@ -65,7 +65,7 @@ void LED_off(uint8 LED){
  */
 void LED_set(uint8 LED){
 	int16 led=LED;
-	command_write(CMD_AKT_LED, SUB_CMD_NORM ,&led,&led);
+	command_write(CMD_AKT_LED, SUB_CMD_NORM ,&led,&led,0);
 }
 
 #endif

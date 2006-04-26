@@ -45,7 +45,7 @@ void motor_low_init(){
  * @param right PWM rechts
 */
 void bot_motor(int16 left, int16 right){
-	command_write(CMD_AKT_MOT, SUB_CMD_NORM ,&left,&right);
+	command_write(CMD_AKT_MOT, SUB_CMD_NORM ,&left,&right,0);
 }
 
 /*!
@@ -57,7 +57,7 @@ void bot_motor(int16 left, int16 right){
 void bot_servo(uint8 servo, uint8 pos){
 	int16 p = pos;
 	int16 s = servo;
-	command_write(CMD_AKT_SERVO, SUB_CMD_NORM ,&s,&p);
+	command_write(CMD_AKT_SERVO, SUB_CMD_NORM ,&s,&p,0);
 }
 
 #endif

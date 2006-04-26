@@ -134,10 +134,12 @@ int16 sensor_abstand(int16 sensor_data){
 void bot_sens_isr(void){
 	ENA_on(ENA_KANTLED|ENA_MAUS|ENA_SCHRANKE|ENA_KLAPPLED);
 
- 	// Aktualisiere die Position des Maussensors 
-	sensMouseDY = maus_sens_read(MOUSE_DELTA_Y_REG);
-
-	sensMouseDX = maus_sens_read(MOUSE_DELTA_X_REG);	
+	#ifdef MAUS_AVAILABLE
+	 	// Aktualisiere die Position des Maussensors 
+		sensMouseDY = maus_sens_read(MOUSE_DELTA_Y_REG);
+	
+		sensMouseDX = maus_sens_read(MOUSE_DELTA_X_REG);	
+	#endif
 
 	// ---------- analoge Sensoren -------------------
 	sensLDRL = adc_read(SENS_LDR_L);

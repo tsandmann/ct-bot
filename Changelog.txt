@@ -1,6 +1,8 @@
 CHANGELOG fuer c't-Bot
 ======================
-2006-04-13	Benjamin Benz (bbe@heise.de) Routinen zum Auslesen von Maussensorbildern vorbereitet
+2006-04-26	Benjamin Benz (bbe@heise.de) Routinen zum simulieren (PC) von Maussensorbildern eingefuehrt
+
+2006-04-25	Benjamin Benz (bbe@heise.de) Routinen zum Auslesen von Maussensorbildern vorbereitet
 
 2006-04-20	Torsten Evers <tevers@onlinehome.de> Drehrichtungen fuer die Tasten 4,6 und 7,9 geaendert, so dass die Drehrichtung der Anordnung der Tasten auf der Fernbedienung entspricht
 

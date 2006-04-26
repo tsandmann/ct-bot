@@ -38,10 +38,7 @@ void bot_2_pc_listen(void);
  */
 void bot_2_pc_inform(void);
 
-/*!
- * Uebertraegt ein Bild vom Maussensor an den PC
- */
-void transmit_mouse_picture(void);
+
 
 /*! 
  * Meldet den Bot am c't-Sim an

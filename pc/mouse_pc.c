@@ -25,6 +25,7 @@
 #include "global.h"
 
 #include "ct-Bot.h"
+#include "log.h"
 
 #ifdef PC
 
@@ -34,6 +35,23 @@ uint8 mousePicture[18*18];
  * Initialisiere Maussensor
  */ 
 void maus_sens_init(void){
+}
+
+uint16 pixIndex=0;
+
+/*!
+ * Bereitet das auslesen eines ganzen Bildes vor
+ */
+void maus_image_prepare(void){
+	pixIndex=0;
+	
+	int x,y;
+	for (x=0; x<18;x++)
+		for (y=0; y<18;y++)
+			mousePicture[y + x*18] =  0x40 | y*4;	
+			
+	mousePicture[0]|= 0x80;	// Start of Frame	
+	
 }
 
 /*!
@@ -49,7 +67,11 @@ void maus_sens_init(void){
  * @return Die Pixeldaten (Bit 0 bis Bit5), Pruefbit, ob Daten gueltig (Bit6), Markierung fuer den Anfang eines Frames (Bit7)
  */
 int8 maus_image_read(void){
-	return 0;
+	
+	if (pixIndex==324)
+		pixIndex =0;
+		
+	return mousePicture[pixIndex++];
 }
 
 #endif

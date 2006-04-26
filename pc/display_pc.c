@@ -58,8 +58,8 @@ volatile uint8 display_update=0;	/*!< Muss das Display aktualisiert werden? */
 char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausgaben */
 
 #ifdef DISPLAY_REMOTE_AVAILABLE
-    #define CLEAR              command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, NULL, NULL)
-    #define POSITION(Ze, Sp)   {Ze--; Sp--; command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, (int16*)&(Sp),(int16*) &(Ze));}
+    #define CLEAR              command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, NULL, NULL,0)
+    #define POSITION(Ze, Sp)   {Ze--; Sp--; command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, (int16*)&(Sp),(int16*) &(Ze),0);}
     #define printf(data)       {command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, NULL, NULL, (data));}
 #else
  #ifdef WIN32

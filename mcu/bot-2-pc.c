@@ -71,24 +71,6 @@ void bot_2_pc_inform(void){
 //	command_write(CMD_SENS_RC5, SUB_CMD_NORM ,(int16*)&RC5_Code,&null,0);
 }
 
-/*!
- * Uebertraegt ein Bild vom Maussensor an den PC
- */
-void transmit_mouse_picture(void){
-	int16 null =0;
-
-	int16 pixel;
-	uint8 data;
-	maus_image_prepare();
-		
-	for (pixel=1; pixel <325; pixel++){
-		if ((pixel ==1) || (pixel ==163)) // Kommando vorbereiten
-			command_write(CMD_SENS_MOUSE_PICTURE, SUB_CMD_NORM,  &pixel , &null,162);
-		data= maus_image_read();
-		low_write(&data);
-	}
-}
-			
 
 
 #include <stdio.h>
