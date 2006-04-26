@@ -1,0 +1,55 @@
+/*
+ * c't-Bot
+ * 
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your
+ * option) any later version. 
+ * This program is distributed in the hope that it will be 
+ * useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public 
+ * License along with this program; if not, write to the Free 
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307, USA.
+ * 
+ */
+
+/*! @file 	mouse.c 
+ * @brief 	Routinen fuer die Ansteuerung eines opt. Maussensors
+ * @author 	Benjamin Benz (bbe@heise.de)
+ * @date 	26.12.05
+*/
+#include "global.h"
+
+#include "ct-Bot.h"
+
+#ifdef PC
+
+uint8 mousePicture[18*18];
+
+/*! 
+ * Initialisiere Maussensor
+ */ 
+void maus_sens_init(void){
+}
+
+/*!
+ * Liefert bei jedem Aufruf das naechste Pixel des Bildes
+ * Insgesamt gibt es 324 Pixel
+ * <pre>
+ * 18 36 ... 324
+ * .. .. ... ..
+ *  2 20 ... ..
+ *  1 19 ... 307
+ * </pre>
+ * Bevor diese Funktion aufgerufen wird, muss maus_image_prepare() aufgerufen werden!
+ * @return Die Pixeldaten (Bit 0 bis Bit5), Pruefbit, ob Daten gueltig (Bit6), Markierung fuer den Anfang eines Frames (Bit7)
+ */
+int8 maus_image_read(void){
+	return 0;
+}
+
+#endif
