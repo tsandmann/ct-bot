@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-04-27	Benjamin Benz (bbe@heise.de) UART-Empfangsroutinen entkaefert
+
 2006-04-26	Benjamin Benz (bbe@heise.de) Routinen zum simulieren (PC) von Maussensorbildern eingefuehrt
 
 2006-04-25	Benjamin Benz (bbe@heise.de) Routinen zum Auslesen von Maussensorbildern vorbereitet

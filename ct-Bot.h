@@ -29,17 +29,17 @@
 * Module switches, to make code smaller if features are not needed
 ************************************************************/
 //#define LOG_UART_AVAILABLE		/*!< Logging ueber UART */
-#define LOG_CTSIM_AVAILABLE		/*!< Logging ueber das ct-Sim */
-//#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display */
+//#define LOG_CTSIM_AVAILABLE		/*!< Logging ueber das ct-Sim */
+#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display */
 
 #define LED_AVAILABLE		/*!< LEDs for local control */
 
 #define IR_AVAILABLE		/*!< Infrared Remote Control */
 #define RC5_AVAILABLE		/*!< Key-Mapping for IR-RC	 */
 
-//#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
+#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
 
-#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit? */
+//#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit? */
 
 #define DISPLAY_AVAILABLE	/*!< Display for local control */
 #define DISPLAY_REMOTE_AVAILABLE /*!< Sende LCD Anzeigedaten an den Simulator */
@@ -49,7 +49,7 @@
 #define DISPLAY_BEHAVIOUR_AVAILABLE  /*!< Anzeige der Verhalten im Display Screen 3, ersetzt Counteranzeige */
 
 
-#define WELCOME_AVAILABLE	/*!< kleiner Willkommensgruss */
+//#define WELCOME_AVAILABLE	/*!< kleiner Willkommensgruss */
 
 #define ADC_AVAILABLE		/*!< A/D-Converter for sensing Power */
 

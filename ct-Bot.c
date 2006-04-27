@@ -451,14 +451,15 @@ void init(void){
 			
 		#ifdef MCU
 			#ifdef BOT_2_PC_AVAILABLE
-				static int16 lastTimeCom =0;
+//				static int16 lastTimeCom =0;
 
 				bot_2_pc_inform();				// Den PC ueber Sensorern und aktuatoren informieren
-	
-				if (timer_get_s() != lastTimeCom) {	// sollte genau 1x pro Sekunde zutreffen
-					lastTimeCom = timer_get_s();		
-					bot_2_pc_listen();				// Kommandos vom PC empfangen
-				}
+				bot_2_pc_listen();				// Kommandos vom PC empfangen
+					
+//				if (timer_get_s() != lastTimeCom) {	// sollte genau 1x pro Sekunde zutreffen
+//					lastTimeCom = timer_get_s();		
+					
+//				}
 			#endif
 		#endif
 		

@@ -54,7 +54,7 @@
 
 #ifdef COMMAND_AVAILABLE
 
-#define RCVBUFSIZE sizeof(command_t)   /*!< Groesse des Empfangspuffers */
+#define RCVBUFSIZE (sizeof(command_t)*2)   /*!< Groesse des Empfangspuffers */
 
 command_t received_command;		/*!< Puffer fuer Kommandos */
 
@@ -82,33 +82,56 @@ int command_read(void){
 
 	buffer[0]=0;			// Start with clean data 
 	
-	// get first data
-	bytesRcvd=low_read(buffer,RCVBUFSIZE);	
+//	uint8 tmp=uart_data_available();
+	// Den ganzen Puffer abholen
+	bytesRcvd=low_read(buffer,sizeof(command_t));	
+//	LOG_DEBUG(("%d/%d read/av",bytesRcvd,tmp));
 	
+	
+//	LOG_DEBUG(("%x %x %x",buffer[0],buffer[1],buffer[2]));
 	// Search for frame start
 	while ((start<bytesRcvd)&&(buffer[start] != CMD_STARTCODE)) {	
-		printf(".");
+//		printf(".");
 		start++;
 	}
-	
+		
 	// if no STARCODE ==> discard
-	if (buffer[start] != CMD_STARTCODE)
-		return -1;
+	if (buffer[start] != CMD_STARTCODE){
+//		LOG_DEBUG(("start not found"));
+		return -1;	
+	}
+	
+//	LOG_DEBUG(("Start @%d",start));
 	
 	//is any chance, that the packet will still fit to buffer?
-	if ((RCVBUFSIZE-start) < sizeof(command_t))
+	if ((RCVBUFSIZE-start) < sizeof(command_t)){
+//		LOG_DEBUG(("not enough space"));
 		return -1;	// no ==> discard
+	}
 	
+	i=sizeof(command_t) - (bytesRcvd-start);
 	// get rest of package as long as buffer is full
-	while ((bytesRcvd-start)<sizeof(command_t)){
-		bytesRcvd+=low_read(buffer+bytesRcvd,sizeof(command_t)-(bytesRcvd-start));
+	while (i > 0){
+//		LOG_DEBUG(("%d bytes missing",i));
+		i= low_read(buffer+bytesRcvd,i);
+//		LOG_DEBUG(("%d read",i));
+		bytesRcvd+=i;
+		i=sizeof(command_t) - (bytesRcvd-start);
 	}
 
+//	LOG_DEBUG(("%d/%d read/start",bytesRcvd,start));
+
+//	LOG_DEBUG(("%x %x %x",buffer[start],buffer[start+1],buffer[start+2]));
 	// Cast to command_t
-	command= (command_t *)&buffer+start;
+	command= (command_t *) ( buffer +start);
+
+//	LOG_DEBUG(("start: %x ",command->startCode));
+
+//	command_display(command);
 	
 	// validate (startcode is already ok, or we won't be here)
-	if ((*command).CRC==CMD_STOPCODE){
+	if (command->CRC==CMD_STOPCODE){
+//		LOG_DEBUG(("Command is valid"));
 		// Transfer
 		#ifdef PC
 			command_lock();		// on PC make storage threadsafe
@@ -140,10 +163,12 @@ int command_read(void){
 		#ifdef PC
 			command_unlock();	// on PC make storage threadsafe
 		#endif
+
 		return 0;
 	} else {	// Command not valid
+//		LOG_DEBUG(("Invalid Command:"));
+//		LOG_DEBUG(("%x %x %x",command->startCode,command->request.command,command->CRC));
 		return -1;
-		printf("Invalid Command!\n");
 	}
 }
 
@@ -262,7 +287,7 @@ int command_evaluate(void){
 		
 		#ifdef MAUS_AVAILABLE		
 			case CMD_SENS_MOUSE_PICTURE: 	// PC fragt nach dem Bild
-				LOG_DEBUG(("Request for MouseImage received"));
+//				LOG_DEBUG(("Request for MouseImage received"));
 				transmit_mouse_picture();
 			break;
 		#endif
@@ -313,7 +338,7 @@ int command_evaluate(void){
 
 
 
-#ifdef DISPLAY_AVAILABLE
+#ifdef LOG_AVAILABLE
 /*! 
  * Gibt ein Kommando auf dem Bildschirm aus
  */
@@ -330,11 +355,16 @@ int command_evaluate(void){
 				(*command).seq,				
 				(*command).CRC);
 */			
-			printf("CMD: %c\tData L: %d\tSeq: %d\n",
+			LOG_DEBUG(("CMD: %c\tData L: %d\tSeq: %d\n",
 				(*command).request.command,
 				(*command).data_l,
-				(*command).seq);
+				(*command).seq));
 		#else
+			LOG_DEBUG(("%x %x %x",
+				(*command).request.command,
+				(*command).data_l,
+				(*command).seq));
+
 /*			char* raw= (char*)command;
 			unsigned char i=0;
 			char hex[6];

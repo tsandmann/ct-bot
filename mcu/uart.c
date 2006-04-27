@@ -31,6 +31,7 @@
 #include "ct-Bot.h"
 #include "uart.h"
 #include "command.h"
+#include "log.h"
 
 #ifdef UART_AVAILABLE
 
@@ -78,6 +79,7 @@ void uart_init(void){
  *  Interrupt Handler fuer den Datenempfang per UART
  */
 SIGNAL (SIG_UART_RECV){
+
 	/* Pufferindex berechnen */
 	UART_RxHead++;						/* erhoehen */ 
 	UART_RxHead %= UART_RX_BUFFER_MASK; /* Und bei Bedarf umklappen, da Ringpuffer */
@@ -86,8 +88,7 @@ SIGNAL (SIG_UART_RECV){
 		/* TODO Fehler behandeln !!
 		 * ERROR! Receive buffer overflow */
 	}
-	
-	UART_RxBuf[UART_RxHead] = UDR; /* Daten lesen und sichern*/
+	UART_RxBuf[UART_RxHead] = UDR; /* Daten lesen und sichern*/	
 }
 
 /*! 
@@ -158,14 +159,21 @@ int uart_write(uint8 * data, int length){
 int uart_read(void* data, int length){
 	uint8 i;
 	char* ptr = data;
-	int count= uart_data_available();
+	
+	uint8 count= uart_data_available();
+
+//	LOG_DEBUG(("%d/%d av/sel",count,length));
 	
 	if (count > length)
 		count=length;
 		
+
+		
 	for (i=0; i<count; i++){
-		*ptr++ = UART_RxBuf[UART_RxTail++];
+		UART_RxTail++;
 		UART_RxTail %= UART_RX_BUFFER_MASK;
+		*ptr++ = UART_RxBuf[UART_RxTail];
+		
 	}
 	
 	return count;

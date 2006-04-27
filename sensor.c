@@ -69,26 +69,32 @@ volatile int8 sensors_initialized = 0;	/*!< Wird 1 sobald die Sensorwerte zur Ve
 * Kümmert sich um die Weiterverarbeitung der rohen Sensordaten 
 */
 void sensor_update(void){
-	static int16 lastTime =0;
+	#ifdef TIME_AVAILABLE
+		static int16 lastTime =0;
+	#endif
 	static int16 lastEncL =0;
 	static int16 lastEncR =0;
 	
 	sensMouseY += sensMouseDY;
 	sensMouseX += sensMouseDX;
 	
-	
+	#ifdef TIME_AVAILABLE
 	if (timer_get_s() != lastTime) {	// sollte genau 1x pro Sekunde zutreffen
+	#endif
 		v_left=  ((sensEncL - lastEncL) * WHEEL_PERIMETER) / ENCODER_MARKS;
 		v_right= ((sensEncR - lastEncR) * WHEEL_PERIMETER) / ENCODER_MARKS;
 		
 		lastEncL= sensEncL;
 		lastEncR= sensEncR;
-		lastTime = timer_get_s();		
+		#ifdef TIME_AVAILABLE
+			lastTime = timer_get_s();		
+		#endif
 		#ifdef SRF10_AVAILABLE
 			sensSRF10 = srf10_get_measure();	/*!< Messung Ultraschallsensor */
 		#endif
-		
+	#ifdef TIME_AVAILABLE		
 	}
+	#endif
 	
 	sensors_initialized=1;
 }

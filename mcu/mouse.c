@@ -116,6 +116,8 @@ void maus_sens_init(void){
 	maus_sens_write(MOUSE_CONFIG_REG,MOUSE_CFG_FORCEAWAKE);	//Always on
 }
 
+/*! muessen wir nach dem ersten Pixel suchen?*/
+static uint8 firstRead;
 /*!
  * Bereitet das auslesen eines ganzen Bildes vor
  */
@@ -123,6 +125,7 @@ void maus_image_prepare(void){
 	maus_sens_write(MOUSE_CONFIG_REG,MOUSE_CFG_FORCEAWAKE);	//Always on
 
 	maus_sens_write(MOUSE_PIXEL_DATA_REG,0x00);	// Frame grabben anstossen
+	firstRead=1; //suche erstes Pixel 
 }
 
 /*!
@@ -138,7 +141,17 @@ void maus_image_prepare(void){
  * @return Die Pixeldaten (Bit 0 bis Bit5), Pruefbit, ob Daten gueltig (Bit6), Markierung fuer den Anfang eines Frames (Bit7)
  */
 int8 maus_image_read(void){
-	return maus_sens_read(MOUSE_PIXEL_DATA_REG);
+	int8 pixel=maus_sens_read(MOUSE_PIXEL_DATA_REG);
+	if ( firstRead ==1){
+		while ( (pixel & 0x80) != 0x80){
+			pixel=maus_sens_read(MOUSE_PIXEL_DATA_REG);
+//			if ((pixel & 0x70) != 0x70)
+//				return 0;
+		}
+		firstRead=0;
+	}
+	
+	return pixel;
 }
 
 
