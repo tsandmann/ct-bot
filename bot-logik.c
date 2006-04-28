@@ -1383,7 +1383,6 @@ void bot_solve_maze_behaviour(Behaviour_t *data){
 	
 	int16 distance;
 	double x;
-	printf("mazeState= %d\n",mazeState);
 	switch(mazeState) {
 		case CHECK_FOR_STARTPAD:
 			/* Wo beginnen wir, nach einer Wand zu suchen? 
