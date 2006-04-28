@@ -423,10 +423,6 @@ void init(void){
 	#endif	
 	/*! Hauptschleife des Bot */
 	
-/*	for(;;){
-		 maus_sens_read(MOUSE_DELTA_Y_REG);
-	}
-*/	
 	for(;;){
 		#ifdef MCU
 			bot_sens_isr();
