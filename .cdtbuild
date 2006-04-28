@@ -23,6 +23,7 @@
 <tool command="gcc" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1189819022" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug">
 <option id="gnu.c.link.option.libs.1949526381" superClass="gnu.c.link.option.libs" valueType="libs">
 <listOptionValue builtIn="false" value="wsock32"/>
+<listOptionValue builtIn="false" value="m"/>
 <listOptionValue builtIn="false" value="pthreadGC2"/>
 </option>
 <option id="gnu.c.link.option.paths.142594843" superClass="gnu.c.link.option.paths" valueType="stringList">
@@ -121,10 +122,13 @@
 <listOptionValue builtIn="false" value="MCU"/>
 </option>
 <option id="gnu.c.compiler.option.misc.other.462981231" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega32 -Wstrict-prototypes" valueType="string"/>
+<option id="gnu.c.compiler.option.optimization.flags.1587419901" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
 </tool>
 <tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1457522364" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug"/>
 <tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1422052481" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug">
-<option id="gnu.c.link.option.libs.1944124942" name="Libraries (-l)" superClass="gnu.c.link.option.libs"/>
+<option id="gnu.c.link.option.libs.1944124942" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs">
+<listOptionValue builtIn="false" value="m"/>
+</option>
 <option id="gnu.c.link.option.paths.1035619079" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="stringList">
 <listOptionValue builtIn="false" value="&quot;C:\Programme\WinAVR\lib&quot;"/>
 </option>

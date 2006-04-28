@@ -33,19 +33,19 @@
 
 #ifdef MAUS_AVAILABLE
 
-#define MAUS_DDR 	DDRB			/*!< DDR für Maus-SCLK */
-#define MAUS_PORT 	PORTB			/*!< PORT für Maus-SCLK */
-#define MAUS_SCK_PIN	(1<<7)		/*!< PIN für Maus-SCLK */
+#define MAUS_DDR 	DDRB			/*!< DDR fuer Maus-SCLK */
+#define MAUS_PORT 	PORTB			/*!< PORT fuer Maus-SCLK */
+#define MAUS_SCK_PIN	(1<<7)		/*!< PIN fuer Maus-SCLK */
 
 #define MAUS_SDA_NR		6		/*!< Pin an dem die SDA-Leitung haengt */
 #define MAUS_SDA_PINR 	PINB		/*!< Leseregister */
 #define MAUS_SDA_PIN 	(1<<MAUS_SDA_NR)	/*!< Bit-Wert der SDA-Leitung */
 
 /*!
- * Überträgt ein Byte an den Sensor
+ * Uebertraegt ein Byte an den Sensor
  * @param data das Byte
  */
-void maus_sens_writeByte(int8 data){
+void maus_sens_writeByte(uint8 data){
 	int8 i;
 	MAUS_DDR  |= MAUS_SDA_PIN; 		// SDA auf Output
 	
@@ -54,7 +54,8 @@ void maus_sens_writeByte(int8 data){
 		
 		//Daten rausschreiben
 		MAUS_PORT = (MAUS_PORT & (~MAUS_SDA_PINR)) |  ((data >> (7 - MAUS_SDA_NR)) & MAUS_SDA_PIN);	
-		data = data <<1;		// nächstes Bit vorbereiten
+		data = data <<1;		// naechstes Bit vorbereiten
+		asm("nop"); 			// Etwas warten 
 		
 		MAUS_PORT |= MAUS_SCK_PIN;		// SCK =1 Sensor uebernimmt auf steigender Flanke
 	}
@@ -64,7 +65,7 @@ void maus_sens_writeByte(int8 data){
  * Liest ein Byte vom Sensor
  * @return das Byte
  */
-int8 maus_sens_readByte(void){
+uint8 maus_sens_readByte(void){
 	int i;
 	char data=0;
 
@@ -73,35 +74,38 @@ int8 maus_sens_readByte(void){
 	for (i=7; i>-1; i--){
 		MAUS_PORT &= ~MAUS_SCK_PIN;		// SCK =0 Sensor bereitet Daten auf fallender Flanke vor !
 		data=data<<1;					// Platz schaffen
+
+		asm("nop"); 					// Etwas warten 
 		MAUS_PORT |= MAUS_SCK_PIN;		// SCK =1 Daten lesen  auf steigender Flanke
 		
 		data |= (MAUS_SDA_PINR >> MAUS_SDA_NR) & 0x01;			//Daten lesen
 	}
+
 	return data;
 }
 
 /*!
- * Überträgt ein write-Kommando an den Sensor
+ * Uebertraegt ein write-Kommando an den Sensor
  * @param adr Adresse
  * @param data Datum
  */
 void maus_sens_write(int8 adr, uint8 data){
-	int i;
+	int16 i;
 	maus_sens_writeByte(adr);
 	maus_sens_writeByte(data);
-	for (i=0; i<75; i++){asm("nop");}	// mindestens 100 Mikrosekunden Pause!!!
+	for (i=0; i<300; i++){ asm("nop"); 	}	// mindestens 100 Mikrosekunden Pause!!!
 }
 
 /*!
  * Schickt ein Lesekommando an den Sensor
- * und liest ein Byte zurück
+ * und liest ein Byte zurueck
  * @param adr die Adresse
  * @return das Datum
  */
-int8 maus_sens_read(uint8 adr){
-	int i;
+uint8 maus_sens_read(uint8 adr){
+	int16 i;
 	maus_sens_writeByte(adr);
-	for (i=0; i<75; i++){asm("nop");}	// mindestens 100 Mikrosekunden Pause!!!
+	for (i=0; i<300; i++){asm("nop");}	// mindestens 100 Mikrosekunden Pause!!!
 	return maus_sens_readByte();
 }
 
