@@ -197,7 +197,7 @@ void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,
 	cmd.seq=count++;
 	cmd.CRC=CMD_STOPCODE;
 	
-	low_write((uint8 *)&cmd);
+	low_write(&cmd);
 }
 
 /*!

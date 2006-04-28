@@ -40,7 +40,7 @@
 #ifdef MCU
 	#define low_read uart_read 	/*!< Which function to use to read data */
 	#define low_write uart_send_cmd /*!< Which function to use to write data */
-	#define low_write uart_send_cmd /*!< Which function to use to write data */
+//	#define low_write uart_send_cmd /*!< Which function to use to write data */
 	#define low_write_data uart_write /*!< Which function to use to write data */
 #endif
 
