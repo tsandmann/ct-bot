@@ -29,7 +29,7 @@
 * Module switches, to make code smaller if features are not needed
 ************************************************************/
 //#define LOG_UART_AVAILABLE		/*!< Logging ueber UART */
-//#define LOG_CTSIM_AVAILABLE		/*!< Logging ueber das ct-Sim */
+#define LOG_CTSIM_AVAILABLE		/*!< Logging ueber das ct-Sim */
 //#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display */
 
 #define LED_AVAILABLE		/*!< LEDs for local control */

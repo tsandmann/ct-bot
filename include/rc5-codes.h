@@ -75,7 +75,9 @@
 
  #else
 	// Dies ist die Standard-Fernbedienung unter anderem fuer den Sim
-	#define RC_HAVE_HQ_RC_UNIVERS29_334
+	//#define RC_HAVE_HQ_RC_UNIVERS29_334
+	#define RC_HAVE_DEFAULT
+	
 #endif
 
 
@@ -471,5 +473,71 @@
 	#define RC5_CODE_I_II	RC5_CODE_OK			/*!< Taste OK - umgewidmet als Select-Taste */
 
 #endif /* RC_HAVE_Technisat_TTS35AI */
+
+/*!
+ * Default-Philips-Fernbedienung mit Jog-Dial-Rad
+ */
+
+#ifdef RC_HAVE_DEFAULT	/*!< Default RC5-Codes falls keine FB definiert wurde */
+ 
+	#undef JOG_DIAL
+	
+	#define RC5_CODE_0			(0x3940 & RC5_MASK)		/*!< Taste 0 */
+	#define RC5_CODE_1			(0x3941 & RC5_MASK)		/*!< Taste 1 */
+	#define RC5_CODE_2			(0x3942 & RC5_MASK)		/*!< Taste 2 */
+	#define RC5_CODE_3			(0x3943 & RC5_MASK)		/*!< Taste 3 */
+	#define RC5_CODE_4			(0x3944 & RC5_MASK)		/*!< Taste 4 */
+	#define RC5_CODE_5			(0x3945 & RC5_MASK)		/*!< Taste 5 */
+	#define RC5_CODE_6			(0x3946 & RC5_MASK)		/*!< Taste 6 */
+	#define RC5_CODE_7			(0x3947 & RC5_MASK)		/*!< Taste 7 */
+	#define RC5_CODE_8			(0x3948 & RC5_MASK)		/*!< Taste 8 */
+	#define RC5_CODE_9			(0x3949 & RC5_MASK)		/*!< Taste 9 */
+	
+	#define RC5_CODE_UP		(0x2950 & RC5_MASK)		/*!< Taste Hoch */
+	#define RC5_CODE_DOWN		(0x2951 & RC5_MASK)		/*!< Taste Runter */
+	#define RC5_CODE_LEFT		(0x2955 & RC5_MASK)		/*!< Taste Links */
+	#define RC5_CODE_RIGHT		(0x2956 & RC5_MASK)		/*!< Taste Rechts */
+	
+	#define RC5_CODE_PWR		(0x394C & RC5_MASK)		/*!< Taste An/Aus */
+	
+	#define RC5_CODE_RED		(0x100B & RC5_MASK)		/*!< Rote Taste */
+	#define RC5_CODE_GREEN		(0x102E & RC5_MASK)		/*!< Gruene Taste */
+	#define RC5_CODE_YELLOW	(0x1038 & RC5_MASK)		/*!< Gelbe Taste */
+	#define RC5_CODE_BLUE		(0x1029 & RC5_MASK)		/*!< Blaue Taste */
+	#define RC5_CODE_VIEW		(0x000F & RC5_MASK)		/*!< Instant View Taste */
+	
+	#define RC5_CODE_SELECT	(0x100B & RC5_MASK)		/*!< Select Taste */
+	
+	#define RC5_CODE_BWD		(0x1025 & RC5_MASK)		/*!< Backward Taste */
+	#define RC5_CODE_FWD		(0x1026 & RC5_MASK)		/*!< Forward Taste */
+
+	#define RC5_CODE_I_II		RC5_CODE_SELECT
+	#define RC5_CODE_TV_VCR	RC5_CODE_VIEW
+
+
+	#ifdef JOG_DIAL		
+		/* Jogdial geht nur inkl. Adresscode */
+		#undef RC5_MASK
+		#define RC5_MASK (RC5_COMMAND | RC5_ADDRESS)
+	
+		#define RC5_CODE_JOG_MID	(0x3969 & RC5_MASK)	/*!< Taste Jog-Dial Mitte */
+		#define RC5_CODE_JOG_L1	(0x3962 & RC5_MASK)	/*!< Taste Jog-Dial Links 1 */
+		#define RC5_CODE_JOG_L2	(0x396F & RC5_MASK)	/*!< Taste Jog-Dial Links 2 */
+		#define RC5_CODE_JOG_L3	(0x395F & RC5_MASK)	/*!< Taste Jog-Dial Links 3 */
+		#define RC5_CODE_JOG_L4	(0x3A6C & RC5_MASK)	/*!< Taste Jog-Dial Links 4 */
+		#define RC5_CODE_JOG_L5	(0x3A6B & RC5_MASK)	/*!< Taste Jog-Dial Links 5 */
+		#define RC5_CODE_JOG_L6	(0x396C & RC5_MASK)	/*!< Taste Jog-Dial Links 6 */
+		#define RC5_CODE_JOG_L7	(0x3A6A & RC5_MASK)	/*!< Taste Jog-Dial Links 7 */
+		
+		#define RC5_CODE_JOG_R1	(0x3968 & RC5_MASK)	/*!< Taste Jog-Dial Rechts 1 */
+		#define RC5_CODE_JOG_R2	(0x3975 & RC5_MASK)	/*!< Taste Jog-Dial Rechts 2 */
+		#define RC5_CODE_JOG_R3	(0x396A & RC5_MASK)	/*!< Taste Jog-Dial Rechts 3 */
+		#define RC5_CODE_JOG_R4	(0x3A6D & RC5_MASK)	/*!< Taste Jog-Dial Rechts 4 */
+		#define RC5_CODE_JOG_R5	(0x3A6E & RC5_MASK)	/*!< Taste Jog-Dial Rechts 5 */
+		#define RC5_CODE_JOG_R6	(0x396E & RC5_MASK)	/*!< Taste Jog-Dial Rechts 6 */
+		#define RC5_CODE_JOG_R7	(0x3A6F & RC5_MASK)	/*!< Taste Jog-Dial Rechts 7 */
+	#endif	/* JOG_DIAL */
+
+#endif /* !RC_HAVE_CODES */
 
 #endif /* RC5CODE_H_ */
