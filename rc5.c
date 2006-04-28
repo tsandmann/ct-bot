@@ -138,7 +138,7 @@ static RemCtrlAction gRemCtrlAction[] = {
 	{ RC5_CODE_7,		rc5_number,			    { 7, 7 } },
 	{ RC5_CODE_8,		rc5_number,			    { 8, 8 } },
 	{ RC5_CODE_9,		rc5_number,			    { 9, 9 } },
-	{ RC5_CODE_SELECT,	rc5_bot_next_behaviour,	{ 0, 0 } },
+	{ RC5_CODE_I_II,		rc5_bot_next_behaviour,	{ 0, 0 } },
 	{ RC5_CODE_BWD,		rc5_bot_servo,			{ SERVO1, SERVO_LEFT } },
 	{ RC5_CODE_FWD,		rc5_bot_servo,			{ SERVO1, SERVO_RIGHT } },
 
@@ -148,8 +148,8 @@ static RemCtrlAction gRemCtrlAction[] = {
 	{ RC5_CODE_RED,		rc5_screen_set,			{ 0, 0 } },
 	{ RC5_CODE_GREEN,	rc5_screen_set,			{ 1, 0 } },
 	{ RC5_CODE_YELLOW,	rc5_screen_set,			{ 2, 0 } },
-	{ RC5_CODE_BLUE,	rc5_screen_set,			{ 3, 0 } },
-	{ RC5_CODE_VIEW,	rc5_screen_set,			{ DISPLAY_SCREEN_TOGGLE, 0 } },	
+	{ RC5_CODE_BLUE,		rc5_screen_set,			{ 3, 0 } },
+	{ RC5_CODE_TV_VCR,	rc5_screen_set,			{ DISPLAY_SCREEN_TOGGLE, 0 } },	
 #endif
 #ifdef JOGDIAL
 	{ RC5_CODE_JOG_MID,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_MAX } },
