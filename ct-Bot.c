@@ -402,7 +402,31 @@ void init(void){
 		uint16 calls=0;	/*!< Im Testfall zaehle die Durchlaeufe */
 	#endif
 
+	#ifdef LOG_AVAILABLE
+		printf("Logging is on (");
+		#ifdef LOG_UART_AVAILABLE
+				printf("UART");	
+		#endif
+	
+		#ifdef LOG_CTSIM_AVAILABLE
+				printf("CTSIM");	
+		#endif
+	
+		#ifdef LOG_DISPLAY_AVAILABLE
+				printf("DISPLAY");	
+		#endif
+		
+		#ifdef LOG_STDOUT_AVAILABLE
+				printf("STDOUT");	
+		#endif
+		printf(")\n");			
+	#else
+			printf("Logging is off!\n ");
+	#endif	
+
+
 	init();		
+
 	
 	#ifdef WELCOME_AVAILABLE
 		display_cursor(1,1);
@@ -465,7 +489,7 @@ void init(void){
 		#endif
 		
 		#ifdef LOG_AVAILABLE
-			//LOG_DEBUG(("LOG TIME %d s", timer_get_s()));
+			LOG_DEBUG(("LOG TIME %d s", timer_get_s()));
 		#endif	
 		
 		// Alles Anzeigen

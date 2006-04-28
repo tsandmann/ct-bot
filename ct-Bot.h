@@ -28,18 +28,20 @@
 /************************************************************
 * Module switches, to make code smaller if features are not needed
 ************************************************************/
-//#define LOG_UART_AVAILABLE		/*!< Logging ueber UART */
-#define LOG_CTSIM_AVAILABLE		/*!< Logging ueber das ct-Sim */
-//#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display */
+#define LOG_CTSIM_AVAILABLE		/*!< Logging ueber das ct-Sim (PC und MCU) */
+//#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display (PC und MCU) */
+//#define LOG_UART_AVAILABLE			/*!< Logging ueber UART (NUR für MCU) */
+//#define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (NUR für PC) */
+
 
 #define LED_AVAILABLE		/*!< LEDs for local control */
 
 #define IR_AVAILABLE		/*!< Infrared Remote Control */
 #define RC5_AVAILABLE		/*!< Key-Mapping for IR-RC	 */
 
-#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
+//#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
 
-//#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit? */
+#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit? */
 
 #define DISPLAY_AVAILABLE	/*!< Display for local control */
 #define DISPLAY_REMOTE_AVAILABLE /*!< Sende LCD Anzeigedaten an den Simulator */
@@ -49,7 +51,7 @@
 #define DISPLAY_BEHAVIOUR_AVAILABLE  /*!< Anzeige der Verhalten im Display Screen 3, ersetzt Counteranzeige */
 
 
-//#define WELCOME_AVAILABLE	/*!< kleiner Willkommensgruss */
+#define WELCOME_AVAILABLE	/*!< kleiner Willkommensgruss */
 
 #define ADC_AVAILABLE		/*!< A/D-Converter for sensing Power */
 
@@ -66,7 +68,7 @@
 
 #define BEHAVIOUR_AVAILABLE /*!< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 
-#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
+//#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
 
 //#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
 
@@ -142,6 +144,9 @@
 #ifdef LOG_DISPLAY_AVAILABLE
 	#define LOG_AVAILABLE
 #endif 
+#ifdef LOG_STDOUT_AVAILABLE
+	#define LOG_AVAILABLE
+#endif 
 
 #ifdef LOG_AVAILABLE
 	#ifdef PC
@@ -153,6 +158,7 @@
 		/* Mit Bot zu PC Kommunikation auf dem MCU gibts kein Logging ueber UART.
 		 * Ohne gibts keine Kommunikation ueber ct-Sim.
 		 */
+		#undef LOG_STDOUT_AVAILABLE		/*!< MCU hat kein STDOUT */
 		#ifdef BOT_2_PC_AVAILABLE
 			#undef LOG_UART_AVAILABLE
 		#else
@@ -178,18 +184,31 @@
 		#define UART_AVAILABLE
 		#undef LOG_CTSIM_AVAILABLE
 		#undef LOG_DISPLAY_AVAILABLE
+		#undef LOG_STDOUT_AVAILABLE
 	#endif
 	
 	#ifdef LOG_CTSIM_AVAILABLE
-		#undef LOG_UART_AVAILABLE
 		#undef LOG_DISPLAY_AVAILABLE
+		#undef LOG_STDOUT_AVAILABLE
 	#endif
 	
 	#ifdef LOG_DISPLAY_AVAILABLE
-		#undef LOG_UART_AVAILABLE
-		#undef LOG_CTSIM_AVAILABLE
+		#undef LOG_STDOUT_AVAILABLE
 	#endif
+
+	// Wenn keine sinnvolle Log-Option mehr uebrig, loggen wir auch nicht
+	#ifndef LOG_CTSIM_AVAILABLE
+		#ifndef LOG_DISPLAY_AVAILABLE
+			#ifndef LOG_UART_AVAILABLE
+				#ifndef LOG_STDOUT_AVAILABLE
+					#undef LOG_AVAILABLE
+				#endif
+			#endif
+		#endif
+	#endif
+
 #endif
+
 
 #ifdef SRF10_AVAILABLE
 	#define TWI_AVAILABLE				/*!< TWI-Schnittstelle (I2C) nutzen */

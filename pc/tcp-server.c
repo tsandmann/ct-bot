@@ -130,7 +130,7 @@ int tcp_server_run (void){
 		
 		for(;;){
 			command_read();
-			#ifdef DISPLAY_AVAILABLE
+			#ifdef LOG_AVAILABLE
 				command_display(&received_command);
 			#endif		
 			

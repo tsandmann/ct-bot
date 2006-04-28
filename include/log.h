@@ -39,8 +39,7 @@
  * 2. Logging ueber Display:	LOG_DISPLAY_AVAILABLE muss definiert sein, sowie
  * 								DISPLAY_AVAILABLE und DISPLAY_SCREENS_AVAILABLE.
  * 								Logging erfolgt auf Screen 5.
- * 3. Logging ueber Konsole:	Es darf weder LOG_UART_AVAILABLE, LOG_CTSIM_AVAILABLE 
- * 								noch LOG_DISPLAY_AVAILABLE definiert sein.
+ * 3. Logging ueber Konsole:  Es muss LOG_STDOUT_AVAILABLE definiert sein.
  * 
  * LOG_UART_AVAILABLE steht auf dem PC nicht zur Verfuegung.
  * 

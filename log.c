@@ -211,15 +211,10 @@ extern void log_end(void) {
 	/* Wenn das Logging aktiviert und keine Ausgabeschnittstelle
 	 * definiert ist, dann wird auf dem PC auf die Konsole geschrieben.
 	 */
-	#ifdef PC
-		#ifndef LOG_UART_AVAILABLE
-			#ifndef LOG_CTSIM_AVAILABLE
-				#ifndef LOG_DISPLAY_AVAILABLE
-					printf("%s\n", log_buffer);
-				#endif	/* LOG_DISPLAY_AVAILABLE */
-			#endif	/* LOG_CTSIM_AVAILABLE */
-		#endif	/* LOG_UART_AVAILABLE */
-	#endif	/* PC */
+	 
+	#ifdef LOG_STDOUT_AVAILABLE
+		printf("%s\n", log_buffer);
+	#endif	/* LOG_STDOUT_AVAILABLE */
 
 	UNLOCK();
 	
