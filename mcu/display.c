@@ -121,7 +121,7 @@ void display_data(char data){ //ein Zeichen aus data in den Displayspeicher schr
 		
 		// Enable muss für mind. 450 ns High bleiben, bevor es fallen darf!
 		// ==> Also mind. 8 Zyklen warten
-        for (i=0; i<100; i++){
+        for (i=0; i<120; i++){
                 asm("nop");
         }
       DISPLAY_PORT=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
@@ -166,7 +166,7 @@ void display_init(void){
 	DISPLAY_DDR |= DISPLAY_OUT;		// Ausgänge
 	DISPLAY_DDR &= ~DISPLAY_IN;		// Eingänge
 
-	delay(15);		// Display steht erst 10ms nach dem Booten bereit
+	delay(30);		// Display steht erst 10ms nach dem Booten bereit
 	
 	// Register in 8-Bit-Modus 3x Übertragen, dazwischen warten
 	shift_data_out(0x38,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
