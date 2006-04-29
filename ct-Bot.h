@@ -28,7 +28,7 @@
 /************************************************************
 * Module switches, to make code smaller if features are not needed
 ************************************************************/
-#define LOG_CTSIM_AVAILABLE		/*!< Logging ueber das ct-Sim (PC und MCU) */
+//#define LOG_CTSIM_AVAILABLE		/*!< Logging ueber das ct-Sim (PC und MCU) */
 //#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display (PC und MCU) */
 //#define LOG_UART_AVAILABLE			/*!< Logging ueber UART (NUR für MCU) */
 //#define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (NUR für PC) */
@@ -39,16 +39,16 @@
 #define IR_AVAILABLE		/*!< Infrared Remote Control */
 #define RC5_AVAILABLE		/*!< Key-Mapping for IR-RC	 */
 
-#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
+//#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
 
-#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit? */
+#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit? Achtun ohne kann die Displayinitialisierung schief gehen!*/
 
 #define DISPLAY_AVAILABLE	/*!< Display for local control */
-#define DISPLAY_REMOTE_AVAILABLE /*!< Sende LCD Anzeigedaten an den Simulator */
+//#define DISPLAY_REMOTE_AVAILABLE /*!< Sende LCD Anzeigedaten an den Simulator */
 #define DISPLAY_SCREENS_AVAILABLE	/*!< Ermoeglicht vier verschiedene Screen */
-#define DISPLAY_SCREEN_RESETINFO	/*!< Zeigt auf Screen 4 Informationen über Resets an */
+//#define DISPLAY_SCREEN_RESETINFO	/*!< Zeigt auf Screen 4 Informationen über Resets an */
 
-#define DISPLAY_BEHAVIOUR_AVAILABLE  /*!< Anzeige der Verhalten im Display Screen 3, ersetzt Counteranzeige */
+//#define DISPLAY_BEHAVIOUR_AVAILABLE  /*!< Anzeige der Verhalten im Display Screen 3, ersetzt Counteranzeige */
 
 
 //#define WELCOME_AVAILABLE	/*!< kleiner Willkommensgruss */
@@ -61,7 +61,7 @@
 #define SHIFT_AVAILABLE		/*!< Shift Register */
 
 //#define TEST_AVAILABLE_ANALOG	/*!< Sollen die LEDs die analoge Sensorwerte anzeigen */
-#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
+//#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
 //#define TEST_AVAILABLE_MOTOR	/*!< Sollen die Motoren ein wenig drehen */
 //#define TEST_AVAILABLE_COUNTER /*!< Gibt einen Endlos-Counter auf Screen 3 aus und aktiviert Screen 3 */
 //#define DOXYGEN		/*!< Nur zum Erzeugen der Doku, wenn dieser schalter an ist, jammert der gcc!!! */

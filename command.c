@@ -256,17 +256,7 @@ void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* d
 				low_write_data((uint8 *)&data,1);
 			}
 		}
-/*		for (pixel=0; pixel <324; pixel++){
-			if (pixel ==0)// Kommando vorbereiten
-			if (pixel ==162){ // Kommando vorbereiten
-				dummy=163;
-				command_write(CMD_SENS_MOUSE_PICTURE, SUB_CMD_NORM,  &dummy , &dummy,0);
-			}
-
-			data= maus_image_read();
-//			low_write(&data);
-		}
-*/		
+	
 	}
 #endif
 
@@ -276,7 +266,7 @@ void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* d
  * return 1, wenn Kommando schon bearbeitet wurde, 0 sonst
  */
 int command_evaluate(void){
-	int analyzed = 1;
+	uint8 analyzed = 1;
 	switch (received_command.request.command) {
 		case CMD_SENS_RC5:
 			ir_data=received_command.data_l;
@@ -284,10 +274,19 @@ int command_evaluate(void){
 		case CMD_AKT_LED:	// LED-Steuerung
 			LED_set(received_command.data_l & 255);
 			break;
+			
+		// Einige Kommandos ergeben nur fuer reale Bots Sinn
+			case CMD_WELCOME:
+				#ifdef MCU
+					command_write(CMD_WELCOME, SUB_WELCOME_REAL,0,0,0);
+				#else
+					command_write(CMD_WELCOME, SUB_WELCOME_SIM,0,0,0);
+				#endif					
+				break;
+
 		
 		#ifdef MAUS_AVAILABLE		
 			case CMD_SENS_MOUSE_PICTURE: 	// PC fragt nach dem Bild
-//				LOG_DEBUG(("Request for MouseImage received"));
 				transmit_mouse_picture();
 			break;
 		#endif

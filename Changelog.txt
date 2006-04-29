@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-04-29	Benjamin Benz (bbe@heise.de) Delay angepasst
+
 2006-04-29	Benjamin Benz (bbe@heise.de) Datentypen der Uebertragung der MouseDX/DY-Werte angepasst
 
 2006-04-29	Benjamin Benz (bbe@heise.de) Bot_simple_behaviour und Bot_simple2_behaviour vorbereitet und kommentiert

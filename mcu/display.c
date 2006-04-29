@@ -166,7 +166,7 @@ void display_init(void){
 	DISPLAY_DDR |= DISPLAY_OUT;		// Ausgänge
 	DISPLAY_DDR &= ~DISPLAY_IN;		// Eingänge
 
-	delay(30);		// Display steht erst 10ms nach dem Booten bereit
+	delay(12);		// Display steht erst 10ms nach dem Booten bereit
 	
 	// Register in 8-Bit-Modus 3x Übertragen, dazwischen warten
 	shift_data_out(0x38,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
@@ -181,7 +181,7 @@ void display_init(void){
 	
 	display_cmd(0x0f);  		//Display On, Cursor On, Cursor Blink
 	
-	display_cmd(DISPLAY_CLEAR); // Display l�schen, Cursor Home
+	display_cmd(DISPLAY_CLEAR); // Display loeschen, Cursor Home
 	
 	display_data('i');
 }

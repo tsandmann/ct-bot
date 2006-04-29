@@ -29,9 +29,7 @@
 
 #include <avr/delay.h>
 
-#ifdef RTC_AVAILABLE
-	#include "rtc.h"
-#endif
+#include "timer.h"
 
 /*!
  * Warte 100 ms
@@ -51,27 +49,29 @@ void delay_100ms(void){
 
 /*!
  * Delays for ms milliseconds
- * Wenn RTC_AVAILABLE dann �ber rtc, sonst �ber delay_100ms
- * ==> aufl�sung ohne rtc: 100ms-schritte mir rtc: 5ms-Schritte
+ * Wenn RTC_AVAILABLE dann ueber rtc, sonst ueber delay_100ms
+ * ==> aufloesung ohne rtc: 100ms-schritte mir rtc: 5ms-Schritte
  * @param ms Anzahl der Millisekunden
  */
-void delay(int ms){
-	int ms_counter=0;
+void delay(uint16 ms){
 	
-	#ifdef RTC_AVAILABLE
-		int ms_temp=rtc_msecond;
+	#ifdef TIME_AVAILABLE
+		uint16 ms_start = timer_get_ms();
+		uint16 s_start = timer_get_s();
+		
+		uint16 ms_stop = ms_start + ms;
+		
+		uint16 s_stop = s_start + ms_stop/1000;
+		ms_stop %= 1000;
+		
+		while ((s_stop != timer_get_s()) && (ms_stop != timer_get_ms())){}
+	#else 
+		uint16 ms_counter=0;
+	
+		while (ms_counter <ms){
+				delay_100ms();
+				ms_counter+=100;
+		}
 	#endif
-	
-	while (ms_counter <ms){
-		#ifdef RTC_AVAILABLE
-			if (ms_temp!=rtc_msecond){
-				ms_counter+=RTC_RESOLUTION;
-				ms_temp=rtc_msecond;
-			}
-		#else
-			delay_100ms();
-			ms_counter+=100;
-		#endif
-	}
 }
 #endif
