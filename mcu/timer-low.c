@@ -58,7 +58,7 @@ SIGNAL (SIG_OUTPUT_COMPARE2){
 void timer_2_init(void){
 	TCNT2  = 0x00;            // TIMER vorladen
 	
-	// �ndert man den Prescaler muss man die Formel f�r OCR2 anpassen !!!
+	// aendert man den Prescaler muss man die Formel fuer OCR2 anpassen !!!
 	// use CLK/64 prescale value, clear timer/counter on compare match   
 	TCCR2 = _BV(WGM21) | _BV(CS22);
 //	TCCR2 = _BV(WGM21) | _BV(CS22)| _BV(COM20);

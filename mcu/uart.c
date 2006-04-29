@@ -112,7 +112,7 @@ uint8 uart_data_available(void){
  * @param data Das Zeichen
  */
 void uart_send_byte(uint8 data){ // Achtung ist noch blockierend!!!!
-	while ((UCSRA & _BV(UDRE)) ==0){}	// warten bis UART sendebereit
+	while ((UCSRA & _BV(UDRE)) ==0){asm volatile("nop"); }	// warten bis UART sendebereit
 	UDR= data;
 }
 

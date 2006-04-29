@@ -54,12 +54,12 @@ int adc_read(uint8 channel){
 
 	ADMUX |= (channel & 0x07);		// Und jetzt Kanal waehlen, nur single ended
 	
-	ADCSRA= (1<<ADPS2) | (1<<ADPS1)|	// prescale faktor= 128 ADC l�uft
+	ADCSRA= (1<<ADPS2) | (1<<ADPS1)|	// prescale faktor= 128 ADC laeuft
 		(1 <<ADPS0) |			// mit 14,7456MHz/ 128 = 115,2kHz 
 		(1 << ADEN)|			// ADC an
 		(1 << ADSC);			// Beginne mit der Konvertierung
 			
-	while ( (ADCSRA & (1<<ADSC)) != 0){} //Warten bis konvertierung beendet
+	while ( (ADCSRA & (1<<ADSC)) != 0){asm volatile("nop");} //Warten bis konvertierung beendet
 					      // Das sollte 25 ADC-Zyklen dauern!
 					      // also 1/4608 s
 	result= ADCL; 

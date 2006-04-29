@@ -64,7 +64,7 @@ void delay(uint16 ms){
 		uint16 s_stop = s_start + ms_stop/1000;
 		ms_stop %= 1000;
 		
-		while ((s_stop != timer_get_s()) && (ms_stop != timer_get_ms())){}
+		while ((s_stop != timer_get_s()) && (ms_stop != timer_get_ms())){asm volatile("nop");}
 	#else 
 		uint16 ms_counter=0;
 	

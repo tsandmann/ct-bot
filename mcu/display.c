@@ -105,7 +105,7 @@ void display_cmd(uint8 cmd){		//ein Kommando cmd an das Display senden
 	// Enable muss für mind. 450 ns High bleiben, bevor es fallen darf!
 	// ==> Also mind. 8 Zyklen warten
 	for (i=0; i<100; i++){
-	        asm("nop");
+	        asm volatile("nop");
 	}
 	DISPLAY_PORT=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
 }
@@ -122,7 +122,7 @@ void display_data(char data){ //ein Zeichen aus data in den Displayspeicher schr
 		// Enable muss für mind. 450 ns High bleiben, bevor es fallen darf!
 		// ==> Also mind. 8 Zyklen warten
         for (i=0; i<120; i++){
-                asm("nop");
+                asm volatile("nop");
         }
       DISPLAY_PORT=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
 }

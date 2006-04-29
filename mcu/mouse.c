@@ -30,6 +30,7 @@
 #include <avr/io.h>
 #include "ct-Bot.h"
 #include "mouse.h"
+#include "delay.h"
 
 #ifdef MAUS_AVAILABLE
 
@@ -55,7 +56,7 @@ void maus_sens_writeByte(uint8 data){
 		//Daten rausschreiben
 		MAUS_PORT = (MAUS_PORT & (~MAUS_SDA_PINR)) |  ((data >> (7 - MAUS_SDA_NR)) & MAUS_SDA_PIN);	
 		data = data <<1;		// naechstes Bit vorbereiten
-		asm("nop"); 			// Etwas warten 
+		asm volatile("nop"); 			// Etwas warten 
 		
 		MAUS_PORT |= MAUS_SCK_PIN;		// SCK =1 Sensor uebernimmt auf steigender Flanke
 	}
@@ -75,7 +76,7 @@ uint8 maus_sens_readByte(void){
 		MAUS_PORT &= ~MAUS_SCK_PIN;		// SCK =0 Sensor bereitet Daten auf fallender Flanke vor !
 		data=data<<1;					// Platz schaffen
 
-		asm("nop"); 					// Etwas warten 
+		asm volatile("nop"); 					// Etwas warten 
 		MAUS_PORT |= MAUS_SCK_PIN;		// SCK =1 Daten lesen  auf steigender Flanke
 		
 		data |= (MAUS_SDA_PINR >> MAUS_SDA_NR) & 0x01;			//Daten lesen
@@ -93,7 +94,7 @@ void maus_sens_write(int8 adr, uint8 data){
 	int16 i;
 	maus_sens_writeByte(adr);
 	maus_sens_writeByte(data);
-	for (i=0; i<300; i++){ asm("nop"); 	}	// mindestens 100 Mikrosekunden Pause!!!
+	for (i=0; i<300; i++){ asm volatile("nop"); 	}	// mindestens 100 Mikrosekunden Pause!!!
 }
 
 /*!
@@ -105,7 +106,7 @@ void maus_sens_write(int8 adr, uint8 data){
 uint8 maus_sens_read(uint8 adr){
 	int16 i;
 	maus_sens_writeByte(adr);
-	for (i=0; i<300; i++){asm("nop");}	// mindestens 100 Mikrosekunden Pause!!!
+	for (i=0; i<300; i++){asm volatile("nop");}	// mindestens 100 Mikrosekunden Pause!!!
 	return maus_sens_readByte();
 }
 
@@ -113,8 +114,12 @@ uint8 maus_sens_read(uint8 adr){
  * Initialisiere Maussensor
  */ 
 void maus_sens_init(void){
+	delay(100);
+	
 	MAUS_DDR  |= MAUS_SCK_PIN; 	// SCK auf Output
 	MAUS_PORT &= ~MAUS_SCK_PIN;	// SCK auf 0
+	
+	delay(10);
 	
 	maus_sens_write(MOUSE_CONFIG_REG,MOUSE_CFG_RESET);	//Reset sensor
 	maus_sens_write(MOUSE_CONFIG_REG,MOUSE_CFG_FORCEAWAKE);	//Always on
