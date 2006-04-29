@@ -97,7 +97,15 @@ void init(void){
 		
 		// Watchdog aus!	
 		wdt_disable();
-		delay(100);
+		
+		// Ist das ein Power on Reset ?
+		if ((MCUCSR & 1)  ==1 ) {
+			MCUCSR &= ~1;	// Bit loeschen
+			delay(100);
+			asm volatile("jmp 0");
+		}
+
+		delay(100);		
 		#ifdef DISPLAY_SCREEN_RESETINFO
 			reset_flag = MCUCSR & 0x1F;	//Lese Grund fuer Reset und sichere Wert
 			MCUCSR = 0;	//setze Register auf 0x00 (loeschen)
