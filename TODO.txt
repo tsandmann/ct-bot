@@ -9,6 +9,7 @@ Thema	Datei		Task
 ==========================================================================
 gefahren		bot-logik.c	Low-Level-Verhalten müssen höherpriorisierte über gefahren warnen
 
+Anmeldung	command.c	Der Bot sollte auch auf Welcome-Nachrichten des Sims antworten
 Zeit	Timer.c		Auf dem PC existiert noch keine Routine, die die globalen Zeitvariablen aktualisiert
 Motor				Umrechnung der PWM-Werte in Geschwindigkeiten
 Sensoren			Linearisierung der Sensorwerte
