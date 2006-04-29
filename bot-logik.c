@@ -1677,7 +1677,7 @@ static void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 void bot_behave_init(void){
 	// Demo-Verhalten, ganz einfach, inaktiv
 	// Achtung, im Moment hat es eine hoehere Prioritaet als die Gefahrenerkenner!!!
-	insert_behaviour_to_list(&behaviour, new_behaviour(251, bot_simple_behaviour,INACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(252, bot_simple_behaviour,INACTIVE));
 	insert_behaviour_to_list(&behaviour, new_behaviour(251, bot_simple2_behaviour,INACTIVE));
 
 	// Hoechste Prioritate haben die Notfall Verhalten
