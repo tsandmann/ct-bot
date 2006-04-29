@@ -57,9 +57,11 @@ void bot_2_pc_listen(void){
  * Diese Funktion informiert den PC ueber alle Sensor und Aktuator-Werte
  */
 void bot_2_pc_inform(void){
-	int16 null =0;
+	int16 value1, value2;
+	
 	command_write(CMD_AKT_MOT, SUB_CMD_NORM ,(int16*)&speed_l,(int16*)&speed_r,0);	
-	command_write(CMD_AKT_LED, SUB_CMD_NORM ,(int16*)&led,(int16*)&led,0);
+	value1=led;
+	command_write(CMD_AKT_LED, SUB_CMD_NORM ,&value1,&value1,0);
 	
 	command_write(CMD_SENS_IR, SUB_CMD_NORM ,(int16*)&sensDistL,(int16*)&sensDistR,0);
 	command_write(CMD_SENS_ENC, SUB_CMD_NORM ,(int16*)&sensEncL,(int16*)&sensEncR,0);
@@ -68,11 +70,17 @@ void bot_2_pc_inform(void){
 
 	command_write(CMD_SENS_LDR, SUB_CMD_NORM ,(int16*)&sensLDRL,(int16*)&sensLDRR,0);
 	
-	command_write(CMD_SENS_TRANS, SUB_CMD_NORM ,(int16*)&sensTrans,&null,0);
-	command_write(CMD_SENS_DOOR, SUB_CMD_NORM ,(int16*)&sensDoor,&null,0);
-	command_write(CMD_SENS_MOUSE, SUB_CMD_NORM ,(int16*)&sensMouseDX,(int16*)&sensMouseDY,0);
-	command_write(CMD_SENS_ERROR, SUB_CMD_NORM ,(int16*)&sensError,&null,0);
-//	command_write(CMD_SENS_RC5, SUB_CMD_NORM ,(int16*)&RC5_Code,&null,0);
+	value1=sensTrans; value2=0;
+	command_write(CMD_SENS_TRANS, SUB_CMD_NORM ,&value1,&value2,0);
+	
+	value1=sensDoor;
+	command_write(CMD_SENS_DOOR, SUB_CMD_NORM ,&value1,&value2,0);
+	value1=sensMouseDX; value2=sensMouseDY;
+	command_write(CMD_SENS_MOUSE, SUB_CMD_NORM ,&value1,&value2,0);
+	
+	value1=sensError;  value2=0;
+	command_write(CMD_SENS_ERROR, SUB_CMD_NORM ,&value1,&value2,0);
+//	command_write(CMD_SENS_RC5, SUB_CMD_NORM ,(int16*)&RC5_Code,&value2,0);
 }
 
 

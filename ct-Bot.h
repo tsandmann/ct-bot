@@ -39,7 +39,7 @@
 #define IR_AVAILABLE		/*!< Infrared Remote Control */
 #define RC5_AVAILABLE		/*!< Key-Mapping for IR-RC	 */
 
-//#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
+#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
 
 #define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit? */
 
@@ -51,7 +51,7 @@
 #define DISPLAY_BEHAVIOUR_AVAILABLE  /*!< Anzeige der Verhalten im Display Screen 3, ersetzt Counteranzeige */
 
 
-#define WELCOME_AVAILABLE	/*!< kleiner Willkommensgruss */
+//#define WELCOME_AVAILABLE	/*!< kleiner Willkommensgruss */
 
 #define ADC_AVAILABLE		/*!< A/D-Converter for sensing Power */
 
@@ -108,6 +108,9 @@
 #endif
 
 #ifdef MCU
+	#ifdef LOG_CTSIM_AVAILABLE
+		#define BOT_2_PC_AVAILABLE
+	#endif
 	#ifdef BOT_2_PC_AVAILABLE
 		#define UART_AVAILABLE	/*!< Serial Communication */
 		#define COMMAND_AVAILABLE	/*!< High-Level Communication */
