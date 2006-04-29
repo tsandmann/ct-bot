@@ -235,6 +235,12 @@ void deactivateAllBehaviours(void){
  * Hier kann man auf ganz einfache Weise die ersten Schritte wagen. 
  * Wer die Moeglichkeiten des ganzen Verhaltensframeworks ausschoepfen will, kann diese Funktion getrost auskommentieren
  * und findet dann in bot_behave_init() und bot_behave() weitere Hinweise fuer elegante Bot-Programmierung....
+ * 
+ * Das Verhalten ist per default abgeschaltet. Daher muss man es erst in bot_behave_init() aktivieren. 
+ * Dort steht aber bereits eine auskommentierte Zeile dazu, von der man nur die zwei Kommentarzeichen wegnehmen muss.
+ * Achtung, da bot_simple_behaviour() maximale Prioritaet hat, kommt es vor den anderen Regeln, wie dem Schutz vor Abgruenden, etc. zum Zuge
+ * Das sollte am Anfang nicht stoeren, spaeter sollte man jedoch die Prioritaet herabsetzen.
+ * 
  * @param *data der Verhaltensdatensatz
  */
 void bot_simple_behaviour(Behaviour_t *data){
@@ -250,10 +256,72 @@ void bot_simple_behaviour(Behaviour_t *data){
 			state=0;
 			break;
 		default:
-				return_from_behaviour(data);
-				break;
+			return_from_behaviour(data);
+			break;
 	}
 }
+
+
+/*! Uebergabevariable fuer SIMPLE2 */
+static int16 simple2_light=0; 
+
+/*! 
+ * Ein ganz einfaches Beispiel fuer ein Hilfsverhalten, 
+ * das selbst SpeedWishes aussert und 
+ * nach getaner Arbeit die aufrufende Funktion wieder aktiviert
+ * Zudem prueft es, ob eine Uebergabebedingung erfuellt ist.
+ * 
+ * Zu diesem Verhalten gehoert die Botenfunktion bot_simple2()
+ * 
+ * Hier kann man auf ganz einfache Weise die ersten Schritte wagen. 
+ * Wer die Moeglichkeiten des ganzen Verhaltensframeworks ausschoepfen will, kann diese Funktion getrost auskommentieren
+ * und findet dann in bot_behave_init() und bot_behave() weitere Hinweise fuer elegante Bot-Programmierung....
+ * 
+ * Das Verhalten ist per default abgeschaltet. Daher muss man es erst in bot_behave_init() aktivieren. 
+ * Dort steht aber bereits eine auskommentierte Zeile dazu, von der man nur die zwei Kommentarzeichen wegnehmen muss.
+ * Achtung, da bot_simple2_behaviour() maximale Prioritaet hat, kommt es vor den anderen Regeln, wie dem Schutz vor Abgruenden, etc. zum Zuge
+ * Das sollte am Anfang nicht stoeren, spaeter sollte man jedoch die Prioritaet herabsetzen.
+ * 
+ * bot_simple2_behaviour faehrt den Bot solange geradeaus, bis es dunkler als im Uebergabeparameter spezifiziert ist wird
+ * 
+ * @param *data der Verhaltensdatensatz
+ */
+void bot_simple2_behaviour(Behaviour_t *data){
+	#define STATE_SIMPLE2_INIT 0
+	#define STATE_SIMPLE2_WORK 1
+	#define STATE_SIMPLE2_DONE 2
+	static uint8 state = 0;
+
+	switch	(state) {
+		case STATE_SIMPLE2_INIT: 
+			// Nichts zu tun
+			state=STATE_SIMPLE2_WORK;
+			break;
+		case STATE_SIMPLE2_WORK: 
+			// Fahre ganz schnell
+			speedWishLeft = BOT_SPEED_FAST;
+			speedWishRight = BOT_SPEED_FAST; 
+			if (sensLDRL< simple2_light)	// Beispielbedingung
+				// Wenn es dunkler als angegeben wird, dann haben wir unserd Ziel erreicht
+				state=STATE_SIMPLE2_DONE;		
+			break;
+			
+		case STATE_SIMPLE2_DONE:		/* Sind wir fertig, dann Kontrolle zurueck an Aufrufer */
+			return_from_behaviour(data);
+	}
+}
+
+/*!
+ * Rufe das Simple2-Verhalten auf und uebergebe light
+ * @param light Uebergabeparameter
+ */
+void bot_simple2(int16 light, Behaviour_t * caller){
+	simple2_light=light;
+
+	// Zielwerte speichern
+	switch_to_behaviour(caller,bot_simple2_behaviour,OVERRIDE);	
+}
+
 
 /*!
  * Laesst den Roboter ein Quadrat abfahren.
@@ -292,50 +360,7 @@ void bot_drive_square_behaviour(Behaviour_t *data){
 }
 
 
-/*! Uebergabevariable fuer den Dummy */
-static int16 dummy_light=0; 
 
-
-/*!
- * Beispiel fuer ein Hilfsverhalten, 
- * das selbst SpeedWishes aussert und 
- * nach getaner Arbeit die aufrufende Funktion wieder aktiviert
- * @param *data der Verhaltensdatensatz
- * @see bot_drive()
- */
-void bot_dummy_behaviour(Behaviour_t *data){
-	#define STATE_DUMMY_INIT 0
-	#define STATE_DUMMY_WORK 1
-	#define STATE_DUMMY_DONE 2
-	static uint8 state = 0;
-
-	switch	(state) {
-		case STATE_DUMMY_INIT: 
-			// Nichts zu tun
-			state=STATE_DUMMY_WORK;
-			break;
-		case STATE_DUMMY_WORK: 
-			speedWishLeft = BOT_SPEED_FAST;
-			speedWishRight = BOT_SPEED_FAST; 
-			if (sensLDRL< dummy_light)	// Beispielbedingung
-				state=STATE_DUMMY_DONE;		
-			break;
-			
-		case STATE_DUMMY_DONE:		/* Sind wir fertig, dann Kontrolle zurueck an Aufrufer */
-			return_from_behaviour(data);
-	}
-}
-
-/*!
- * Rufe das Dummy-Verhalten auf und uebergebe light
- * @param light Uebergabeparameter
- */
-void bot_dummy(int16 light, Behaviour_t * caller){
-	dummy_light=light;
-
-	// Zielwerte speichern
-	switch_to_behaviour(caller,bot_dummy_behaviour,OVERRIDE);	
-}
 
 /*! 
  * Das einfachste Grundverhalten 
@@ -1650,6 +1675,11 @@ static void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
  * Initialisert das ganze Verhalten
  */
 void bot_behave_init(void){
+	// Demo-Verhalten, ganz einfach, inaktiv
+	// Achtung, im Moment hat es eine hoehere Prioritaet als die Gefahrenerkenner!!!
+	insert_behaviour_to_list(&behaviour, new_behaviour(251, bot_simple_behaviour,INACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(251, bot_simple2_behaviour,INACTIVE));
+
 	// Hoechste Prioritate haben die Notfall Verhalten
 
 	// Verhalten zum Schutz des Bots, hohe Prioritaet, Aktiv
@@ -1676,8 +1706,6 @@ void bot_behave_init(void){
 	insert_behaviour_to_list(&behaviour, new_behaviour(100, bot_explore_behaviour,INACTIVE));
 	insert_behaviour_to_list(&behaviour, new_behaviour( 99, bot_do_slalom_behaviour,INACTIVE));
 
-	// Demo-Verhalten, ganz einfach, inaktiv
-	insert_behaviour_to_list(&behaviour, new_behaviour(50, bot_simple_behaviour,INACTIVE));
 	// Demo-Verhalten, etwas komplexer, inaktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(51, bot_drive_square_behaviour,INACTIVE));
 	// Demo-Verhalten für aufwendiges System, inaktiv
@@ -1687,40 +1715,9 @@ void bot_behave_init(void){
 	// Grundverhalten, setzt aeltere FB-Befehle um, aktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(2, bot_base_behaviour, ACTIVE));
 
-
-//	activateBehaviour(bot_simple_behaviour);
-
-
-/*
-
-	// Verhalten zum Schutz des Bots, hohe Prioritaet, Aktiv
-	insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_avoid_border,ACTIVE));
-	insert_behaviour_to_list(&behaviour, new_behaviour(100, bot_avoid_col,ACTIVE));
-	
-	// Verhalten, um Hidnernisse besser zu erkennen, relativ hoe Prioritaet, modifiziert nur
-	insert_behaviour_to_list(&behaviour, new_behaviour(60, bot_glance,INACTIVE));
-
-	// Demo-Verhalten, ganz einfach, inaktiv
-	insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_simple_behaviour,INACTIVE));
-
-	// Demo-Verhalten, etwas komplexer, inaktiv
-	insert_behaviour_to_list(&behaviour, new_behaviour(50, bot_drive_square_behaviour,INACTIVE));
-
-	// Demo-Verhalten für aufwendiges System, inaktiv
-	insert_behaviour_to_list(&behaviour, new_behaviour(55, bot_olympic_behaviour,INACTIVE));
-
-	// Hilfsverhalten, die Befehle von Boten-Funktionen ausfuehren, erst inaktiv, werden von Boten aktiviert	
-	insert_behaviour_to_list(&behaviour, new_behaviour(41, bot_drive_distance_behaviour,INACTIVE));
-	insert_behaviour_to_list(&behaviour, new_behaviour(40, bot_turn_behaviour,INACTIVE));
-	insert_behaviour_to_list(&behaviour, new_behaviour(30, bot_goto_behaviour,INACTIVE));
-	insert_behaviour_to_list(&behaviour, new_behaviour(51, bot_explore_behaviour,INACTIVE));
-	insert_behaviour_to_list(&behaviour, new_behaviour(50, bot_do_slalom_behaviour,INACTIVE));
-
-	// Grundverhalten, setzt aeltere FB-Befehle um, aktiv
-	insert_behaviour_to_list(&behaviour, new_behaviour(2, bot_base, ACTIVE));
-
-*/
-//	activateBehaviour(bot_simple_behaviour);
+	// Um das Simple-Behaviour zu nutzen, die Kommentarzeichen vor der folgenden Zeile entfernen!!!
+	// activateBehaviour(bot_simple_behaviour);
+	// activateBehaviour(bot_simple2_behaviour);
 
 
 	#ifdef PC

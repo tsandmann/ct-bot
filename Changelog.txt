@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-04-29	Benjamin Benz (bbe@heise.de) Bot_simple_behaviour und Bot_simple2_behaviour vorbereitet und kommentiert
+
 2006-04-28	Benjamin Benz (bbe@heise.de) Loggen auf Konsole reaktiviert
 
 2006-04-28	Benjamin Benz (bbe@heise.de) Default Fernbedienung HQ RC Univers 29 (Code 334) eingefuehrt
