@@ -30,7 +30,7 @@
 
 #define SERVO_LEFT 	8			/*!< Linker Anschlag des Servos */
 #define SERVO_RIGHT	16			/*!< Linker Anschlag des Servos */
-#define SERVO_MIDDLE   ((SERVO_RIGHT- SERVO-LEFT)/2)	/*!< Mittelstellung des Servos */
+#define SERVO_MIDDLE   ((SERVO_RIGHT- SERVO_LEFT)/2+SERVO_LEFT)	/*!< Mittelstellung des Servos */
 
 #define SERVO1 1			/*!< Servo1 */
 #define SERVO2 2			/*!< Servo1 */
