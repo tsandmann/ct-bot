@@ -813,7 +813,8 @@ void bot_turn_behaviour(Behaviour_t* data){
 /*! 
  * Dreht den Bot im mathematisch positiven Sinn. 
  * @param degrees Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
- * */
+ * Die Aufloesung betraegt rund 3 Grad
+ */
 void bot_turn(Behaviour_t* caller,int16 degrees){
 	/* Umrechnung von Grad in Encoder-Markierungen.
 	 * Hinweis: Eigentlich muessten der Umfang von Bot und Rad verwendet werden. Die Rechnung wird
