@@ -33,6 +33,7 @@
 #define BOT_SPEED_STOP		0		/*!< Motor aus */
 
 #define BOT_SPEED_SLOW		 49		/*!< langsame Fahrt in mm/s */
+#define BOT_SPEED_FOLLOW	 72		/*!< vorsichtige Fahrt, fuer Folgeverhalten in mm/s */
 #define BOT_SPEED_MEDIUM	 99		/*!< mittlere Fahrt in mm/s */
 #define BOT_SPEED_NORMAL	144		/*!< normale Fahrt in mm/s  */
 #define BOT_SPEED_FAST		297		/*!< schnelle Fahrt in mm/s */

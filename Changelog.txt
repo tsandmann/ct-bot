@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-05-01	Torsten Evers (tevers@onlinehome.de) Linienfolger ueberarbeitet und eingepflegt
+
 2006-05-01	Benjamin Benz (bbe@heise.de) Speed_control komplett neu geschrieben
 
 2006-04-30	Benjamin Benz (bbe@heise.de) Wertrbegrenzung fuer IR-Sendor eingefuehrt

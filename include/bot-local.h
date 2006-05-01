@@ -127,7 +127,8 @@
 #define STARTPAD2					0x332
 
 
-
+/* Konstanten fuer das bot_follow_line_behaviour-Verhalten */
+#define LINE_SENSE					0x300	// Ab wann ist es Linie? (Fuer den Sim auf 300 setzen, helle Tischflaeche 50)
 
 
 
