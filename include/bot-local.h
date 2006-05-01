@@ -53,7 +53,6 @@
 #define PID_HIGH_Ki	40	/*!< Regelung PID-Parameter [Zehntel Schritte] */ 
 #define PID_HIGH_Kd	0	/*!< Regelung PID-Parameter */ 
 
-
 /* Einstellunge fuer die Verhaltensregeln */
 #define BORDER_DANGEROUS	0x3A0	/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */
 
