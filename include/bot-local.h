@@ -31,11 +31,28 @@
 
 #define ENCODER_MARKS		60		/*!< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weissen + Anzahl der schwarzen Felder */
 #define WHEEL_DIAMETER		57		/*!< Durchmesser eines Rades in mm */
-#define WHEEL_PERIMETER		179 	/*!< Durchmesser eines Rades in mm */	
+#define WHEEL_PERIMETER		179 	/*!< Umfang eines Rades in mm */	
 #define WHEEL_TO_WHEEL_DIAMETER 97 /*!< Abstand der beiden Raeder in mm */
+
+#define SPEED_CONTROL_INTERVAL		333		/*!> Intervall fuer die Motorregelung [ms]*/
+
+//#define SPEED_TO_ENCODER_RATE		(WHEEL_PERIMETER /ENCODER_MARKS*(1000/SPEED_CONTROL_INTERVAL)) /*!< Faktor durch den man eine Speed [mm/s] teilt um Ticks/intervall zu erhalten */
+#define SPEED_TO_ENCODER_RATE		9 /*!< Faktor durch den man eine Speed [mm/s] teilt um Ticks/intervall zu erhalten */
 
 /*! Hilfskonstante */
 #define ANGLE_CONSTANT		(WHEEL_TO_WHEEL_DIAMETER * ENCODER_MARKS / WHEEL_DIAMETER)
+
+/* Motorregelung */
+#define PID_LOW_RATE	(BOT_SPEED_MEDIUM / SPEED_TO_ENCODER_RATE)	/*!< Encoder-rate/aufruf, fuer den dieser PID-Satz gilt */
+#define PID_LOW_Kp	8	/*!< Regelung PID-Parameter [Zehntel Schritte] */ 
+#define PID_LOW_Ki	6	/*!< Regelung PID-Parameter [Zehntel Schritte] */ 
+#define PID_LOW_Kd	0	/*!< Regelung PID-Parameter */ 
+
+#define PID_HIGH_RATE	(BOT_SPEED_NORMAL / SPEED_TO_ENCODER_RATE) /*!< Encoder-rate/aufruf, fuer den dieser PID-Satz gilt */
+#define PID_HIGH_Kp	70	/*!< Regelung PID-Parameter [Zehntel Schritte] */ 
+#define PID_HIGH_Ki	40	/*!< Regelung PID-Parameter [Zehntel Schritte] */ 
+#define PID_HIGH_Kd	0	/*!< Regelung PID-Parameter */ 
+
 
 /* Einstellunge fuer die Verhaltensregeln */
 #define BORDER_DANGEROUS	0x3A0	/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */

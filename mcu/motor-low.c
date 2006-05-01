@@ -48,6 +48,10 @@
 #define PWM_L 	OCR1A
 #define PWM_R 	OCR1B
 
+volatile int16 motor_left;	/*!< zuletzt gestellter Wert linker Motor */
+volatile int16 motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
+
+
 void pwm_0_init(void);
 void pwm_1_init(void);
 // void pwm_2_init(void);		// Kollidiert mit Timer2 für IR-Fernbedienung
@@ -72,18 +76,31 @@ void motor_low_init(){
  * @param right Speed rechts
 */
 void bot_motor(int16 left, int16 right){
+	// Vorzeichenbehaftete PWM-Werte sichern
+	motor_left=left;
+	motor_right=right;	
+	
 	PWM_L = 255-abs(left);
 	PWM_R = 255-abs(right);
 
-	if (left > 0 )
+	if (left > 0 ){
 		BOT_DIR_L_PORT |= BOT_DIR_L_PIN;
-	else 
+		direction.left= DIRECTION_FORWARD;
+	} else 
 		BOT_DIR_L_PORT &= ~BOT_DIR_L_PIN;
+
+	if (left < 0 )
+		direction.left= DIRECTION_BACKWARD;
+
 	
 	if (right <= 0 )		// Einer der Motoren ist invertiert, da er ja in die andere Richtung schaut
 		BOT_DIR_R_PORT |= BOT_DIR_R_PIN;
-	else 
+	else {
 		BOT_DIR_R_PORT &= ~BOT_DIR_R_PIN;
+		direction.right= DIRECTION_FORWARD;		
+	}
+	if (right < 0 )
+		direction.right= DIRECTION_BACKWARD;
 }
 
 /*!
@@ -154,6 +171,7 @@ void pwm_1_init(void){
 	
 	TCCR1B = _BV(WGM12) |
 	 		 _BV(CS12) | _BV(CS10); 		// Prescaler = 1024		
+//		 _BV(CS10); 		// Prescaler = 1		
 	
 	OCR1A = 255;	// PWM löscht bei erreichen. daher steht in OCR1A 255-Speed!!!
 	OCR1B = 255;	// PWM löscht bei erreichen. daher steht in OCR1B 255-Speed!!!

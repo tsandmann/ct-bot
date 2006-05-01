@@ -27,20 +27,27 @@
 
 
 #include "global.h"
+#include "ct-Bot.h"
 
-#define BOT_SPEED_STOP		0		/*!< Motor aus */
-#define BOT_SPEED_SLOW		225		/*!< langsame Fahrt in mm/s */
-#define BOT_SPEED_MEDIUM	324		/*!< mittlere Fahrt in mm/s */
-#define BOT_SPEED_NORMAL	396		/*!< normale Fahrt in mm/s  */
-#define BOT_SPEED_FAST		432		/*!< schnelle Fahrt in mm/s */
-#define BOT_SPEED_MAX		468		/*!< maximale Fahrt in mm/s */
 #define BOT_SPEED_IGNORE	1000	/*!< Wert ausserhalb von -BOT_SPEED_MAX und BOT_SPEED_MAX wird verwendet um einen Eintrag zu ignorieren */
+#define BOT_SPEED_STOP		0		/*!< Motor aus */
+
+#define BOT_SPEED_SLOW		 49		/*!< langsame Fahrt in mm/s */
+#define BOT_SPEED_MEDIUM	 99		/*!< mittlere Fahrt in mm/s */
+#define BOT_SPEED_NORMAL	144		/*!< normale Fahrt in mm/s  */
+#define BOT_SPEED_FAST		297		/*!< schnelle Fahrt in mm/s */
+#define BOT_SPEED_MAX		450		/*!< maximale Fahrt in mm/s */
+
 
 #define DIRECTION_FORWARD  0		/*!< Drehrichtung vorwaerts */
 #define DIRECTION_BACKWARD 1		/*!< Drehrichtung rueckwaerts */
 
 extern int16 volatile speed_l;			/*!< Geschwindigkeit des linken Motors */
 extern int16 volatile speed_r;			/*!< Geschwindigkeit des rechten Motors */
+
+extern volatile int16 motor_left;	/*!< zuletzt gestellter Wert linker Motor */
+extern volatile int16 motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
+
 
 /*! In diesem Typ steht die Drehrichtung, auch wenn die Speed-Variablen bereits wieder auf Null sind */
 typedef struct {
@@ -78,7 +85,5 @@ void motor_set(int16 left, int16 right);
  * @param servo Zielwert
  */
 void servo_set(uint8 servo, uint8 pos);
-
-void speed_control(int16, int16);
 
 #endif

@@ -53,7 +53,7 @@
 
 //#define WELCOME_AVAILABLE	/*!< kleiner Willkommensgruss */
 
-#define ADC_AVAILABLE		/*!< A/D-Converter for sensing Power */
+#define ADC_AVAILABLE		/*!< A/D-Converter */
 
 #define MAUS_AVAILABLE		/*!< Maus Sensor */
 
@@ -68,7 +68,7 @@
 
 #define BEHAVIOUR_AVAILABLE /*!< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 
-//#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
+#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
 
 //#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
 

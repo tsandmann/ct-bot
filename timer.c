@@ -104,4 +104,15 @@ void system_time_isr(void){
 	}
 	UNLOCK();
 }
+
+/*!
+ *  Liefert die Millisekunden zurueck, die seit old_s, old_ms verstrichen sind 
+ * @param old_s alter Sekundenstand
+ * @param old_ms alter Millisekundenstand
+ */
+
+int16 timer_get_ms_since(uint16 old_s, uint16 old_ms ){
+	return timer_get_s()*1000+timer_get_ms() - old_s*1000 - old_ms;
+}
+
 #endif

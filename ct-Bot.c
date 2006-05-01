@@ -268,8 +268,8 @@ void init(void){
 					break;
 
 				case 3:
-					display_cursor(1,1);
 					#ifdef DISPLAY_SCREEN_RESETINFO
+						display_cursor(1,1);
 						/* Zeige den Grund fuer Resets an */
 						display_printf("MCUCSR - Register");
 												
@@ -281,8 +281,6 @@ void init(void){
 									
 						display_cursor(4,1);
 						display_printf("BORF :%d",binary(reset_flag,2)); 
-					#else
-						display_printf("Screen 4");
 					#endif
 					break;
 					
@@ -411,29 +409,6 @@ void init(void){
 		uint16 calls=0;	/*!< Im Testfall zaehle die Durchlaeufe */
 	#endif
 
-	#ifdef LOG_AVAILABLE
-		printf("Logging is on (");
-		#ifdef LOG_UART_AVAILABLE
-				printf("UART");	
-		#endif
-	
-		#ifdef LOG_CTSIM_AVAILABLE
-				printf("CTSIM");	
-		#endif
-	
-		#ifdef LOG_DISPLAY_AVAILABLE
-				printf("DISPLAY");	
-		#endif
-		
-		#ifdef LOG_STDOUT_AVAILABLE
-				printf("STDOUT");	
-		#endif
-		printf(")\n");			
-	#else
-			printf("Logging is off!\n ");
-	#endif	
-
-
 	init();		
 
 	
@@ -479,8 +454,10 @@ void init(void){
 		#ifdef BEHAVIOUR_AVAILABLE
 			if (sensors_initialized ==1 )
 				bot_behave();
-			else
-				printf("sensors not initialized\n");
+			#ifdef LOG_AVAILABLE
+				else
+					LOG_DEBUG(("sens not init"));
+			#endif
 		#endif
 			
 		#ifdef MCU
@@ -498,7 +475,7 @@ void init(void){
 		#endif
 		
 		#ifdef LOG_AVAILABLE
-			LOG_DEBUG(("LOG TIME %d s", timer_get_s()));
+//			LOG_DEBUG(("LOG TIME %d s", timer_get_s()));
 		#endif	
 		
 		// Alles Anzeigen

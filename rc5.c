@@ -125,9 +125,10 @@ static RemCtrlAction gRemCtrlAction[] = {
 	/* RC5-Code,		Funktion,				Parameter */
 	{ RC5_CODE_PWR,		rc5_emergency_stop,		{ 0, 0 } },
 	{ RC5_CODE_UP,		rc5_bot_change_speed,	{ 10, 10 } },
-	{ RC5_CODE_DOWN,	rc5_bot_change_speed,	{ -10, -10 } },
-	{ RC5_CODE_LEFT,	rc5_bot_change_speed,	{ 0, 10 } },
+	{ RC5_CODE_DOWN,		rc5_bot_change_speed,	{ -10, -10 } },
+	{ RC5_CODE_LEFT,		rc5_bot_change_speed,	{ 0, 10 } },
 	{ RC5_CODE_RIGHT,	rc5_bot_change_speed,	{ 10, 0 } },
+	
 	{ RC5_CODE_0,		rc5_number,		        { 0, 0 } },
 	{ RC5_CODE_1,		rc5_number,		        { 1, 1 } },
 	{ RC5_CODE_2,		rc5_number,		        { 2, 2 } },
@@ -379,18 +380,27 @@ void rc5_number(RemCtrlFuncPar *par) {
 		case 0:
 	#endif
 			switch (par->value1) {
-				case 0:	
-				target_speed_l=0;target_speed_r=0;break;
-				case 1: target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
-				case 2: bot_goto(100, 100, 0); break;
-				case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
-				case 4: bot_turn(0, 90); break;
-				//case 5: bot_goto(0, 0, 0); break;
-				case 5: bot_solve_maze(0); break;
-				case 6: bot_turn(0, -90); break;
+//				case 0:	
+//				target_speed_l=0;target_speed_r=0;break;
+//				case 1: target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
+//				case 2: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
+//				case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
+//				case 4: bot_turn(0, 90); break;
+//				//case 5: bot_goto(0, 0, 0); break;
+//				case 5: bot_solve_maze(0); break;
+//				case 5: bot_scan(0); break;
+//				case 6: bot_turn(0, -90); break;
 				case 7: bot_turn(0,180); break;
-				case 8: bot_goto(-100, -100, 0); break;
-				case 9: bot_turn(0, -180); break;
+//				case 8: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
+//				case 9: bot_turn(0, -180); break;
+
+				case 0:	 target_speed_l=BOT_SPEED_STOP;target_speed_r=target_speed_l;break;
+				case 1:	 target_speed_l=BOT_SPEED_SLOW;target_speed_r=target_speed_l;break;
+				case 2:	 target_speed_l=BOT_SPEED_MEDIUM;target_speed_r=target_speed_l;break;
+				case 3:	 target_speed_l=BOT_SPEED_FAST;target_speed_r=target_speed_l;break;
+				case 4:	 target_speed_l=BOT_SPEED_MAX;target_speed_r=target_speed_l;break;
+
+//				case 9:	 target_speed_l=-BOT_SPEED_MEDIUM;target_speed_r=target_speed_l;break;
 			}
 	#ifdef DISPLAY_SCREENS_AVAILABLE 
 	

@@ -46,6 +46,16 @@ void motor_low_init(){
 */
 void bot_motor(int16 left, int16 right){
 	command_write(CMD_AKT_MOT, SUB_CMD_NORM ,&left,&right,0);
+	
+	if (right < 0 )
+		direction.right= DIRECTION_BACKWARD;
+	if (right > 0 )
+		direction.right= DIRECTION_FORWARD;
+	if (left < 0 )
+		direction.left= DIRECTION_BACKWARD;
+	if (left > 0 )
+		direction.left= DIRECTION_FORWARD;
+	
 }
 
 /*!
