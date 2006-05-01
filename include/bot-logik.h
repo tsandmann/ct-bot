@@ -181,6 +181,12 @@ void bot_do_slalom_behaviour(Behaviour_t *data);
  */
 void bot_solve_maze(Behaviour_t *data);
 
+/*! 
+ * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
+ * @param Der aufrufer
+ */
+void bot_scan(Behaviour_t* caller);
+
 #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
   
  /*!

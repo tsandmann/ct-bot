@@ -42,6 +42,7 @@
 #include "bot-local.h"
 
 #include "rc5.h"
+#include "log.h"
 #include <stdlib.h>
 #include <math.h>
 /*
@@ -256,6 +257,7 @@ void bot_simple_behaviour(Behaviour_t *data){
 			state=0;
 			break;
 		default:
+			state=0;
 			return_from_behaviour(data);
 			break;
 	}
@@ -307,7 +309,9 @@ void bot_simple2_behaviour(Behaviour_t *data){
 			break;
 			
 		case STATE_SIMPLE2_DONE:		/* Sind wir fertig, dann Kontrolle zurueck an Aufrufer */
+			state=STATE_SIMPLE2_INIT;
 			return_from_behaviour(data);
+			break;
 	}
 }
 
@@ -320,6 +324,69 @@ void bot_simple2(int16 light, Behaviour_t * caller){
 
 	// Zielwerte speichern
 	switch_to_behaviour(caller,bot_simple2_behaviour,OVERRIDE);	
+}
+
+/*!
+ * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
+ * @param *data der Verhaltensdatensatz
+ */
+void bot_scan_behaviour(Behaviour_t *data){
+	#define STATE_START	0
+	#define STATE_TURN		1
+	#define STATE_SCAN		2
+	#define STATE_DONE		3
+	
+	#define ANGLE_RESOLUTION 10
+	
+	static uint8 i;
+	static uint8 step=0;
+	static uint16 readingL =0;
+	static uint16 readingR =0;
+	
+	static uint8 state=STATE_START;
+	
+	switch (state){
+		case STATE_START:
+			i=0;
+			readingL=0;
+			readingR=0;
+			step=0;
+			state=STATE_SCAN;
+			break;
+		case STATE_SCAN:
+			if (i==16){	//Fertig ?
+				state=STATE_TURN; 
+				i=0;
+				readingL >>= 4;	// Durch 16 teilen
+				readingR >>= 4;	// Durch 16 teilen
+				LOG_INFO(("%03d: %04 %04",step*3, readingL, readingR));
+			} else {	// aufadieren ueber 16 Zyklen
+				readingL+=sensDistL;
+				readingR+=sensDistR;
+				i++;
+			}
+			break;			
+		case STATE_TURN:
+			bot_turn(data , ANGLE_RESOLUTION);
+			step++;
+			if (step==360/ANGLE_RESOLUTION)
+				state=STATE_DONE;
+			else 
+				state=STATE_SCAN;
+			break;
+		default:
+			state=STATE_START;
+			return_from_behaviour(data);
+			break;
+	}
+}
+
+/*! 
+ * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
+ * @param Der aufrufer
+ */
+void bot_scan(Behaviour_t* caller){
+	switch_to_behaviour(caller, bot_scan_behaviour,NOOVERRIDE);
 }
 
 
@@ -369,33 +436,6 @@ void bot_drive_square_behaviour(Behaviour_t *data){
 void bot_base_behaviour(Behaviour_t *data){
 	speedWishLeft=target_speed_l;
 	speedWishRight=target_speed_r;
-}
-
-/*!
- * Verhindert, dass der Bot an der Wand haengenbleibt.
- * Der Bot aendert periodisch seine Richtung nach links und rechts,
- * um den Erfassungsbereich der Sensoren zu vergroessern
- * (er faehrt also einen leichten Schlangenlinienkurs).
- * @param *data der Verhaltensdatensatz
- */
-void bot_glance_behaviour(Behaviour_t *data){
-	static int16 glance_counter = 0;  // Zaehler fuer die periodischen Bewegungsimpulse
-
-	glance_counter++;
-	glance_counter %= (GLANCE_STRAIGHT + 4*GLANCE_SIDE);
-
-	if (glance_counter >= GLANCE_STRAIGHT){						/* wir fangen erst an, wenn GLANCE_STRAIGHT erreicht ist */
-		if 	(glance_counter < GLANCE_STRAIGHT+GLANCE_SIDE){		//GLANCE_SIDE Zyklen nach links
-			faktorWishLeft = GLANCE_FACTOR; 
-			faktorWishRight = 1.0;			
-		} else if (glance_counter < GLANCE_STRAIGHT+ 3*GLANCE_SIDE){	//2*GLANCE_SIDE Zyklen nach rechts
-			faktorWishLeft = 1.0; // glance right
-			faktorWishRight = GLANCE_FACTOR;
-		} else{														//GLANCE_SIDE Zyklen nach links
-			faktorWishLeft = GLANCE_FACTOR; 
-			faktorWishRight = 1.0;			
-		}
-	}
 }
 
 
@@ -752,14 +792,14 @@ void bot_turn_behaviour(Behaviour_t* data){
 			/* Bis 90 Grad kann mit maximaler Geschwindigkeit gefahren werden, danach auf Normal reduzieren */
 			/* Geschwindigkeit fuer beide Raeder getrennt ermitteln */
 			if(abs(to_turnL) < ANGLE_CONSTANT*0.25) {
-				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_NORMAL : BOT_SPEED_NORMAL;
+				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_MEDIUM : BOT_SPEED_MEDIUM;
 			} else {
-				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_FAST : BOT_SPEED_FAST;
+				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_NORMAL : BOT_SPEED_NORMAL;
 			}
 			if(abs(to_turnR) < ANGLE_CONSTANT*0.25) {
-				speedWishRight = (turn_direction > 0) ? BOT_SPEED_NORMAL : -BOT_SPEED_NORMAL;
+				speedWishRight = (turn_direction > 0) ? BOT_SPEED_MEDIUM : -BOT_SPEED_MEDIUM;
 			} else {	
-				speedWishRight = (turn_direction > 0) ? BOT_SPEED_FAST : -BOT_SPEED_FAST;
+				speedWishRight = (turn_direction > 0) ? BOT_SPEED_NORMAL : -BOT_SPEED_NORMAL;
 			}	
 			break;
 			
@@ -1415,8 +1455,6 @@ void bot_solve_maze_behaviour(Behaviour_t *data){
 			 * Abgrund- und Kollisions-Verhalten ausschalten */
 			deactivateBehaviour(bot_avoid_col_behaviour);
 			deactivateBehaviour(bot_avoid_border_behaviour);
-			/* bot_glance() stoert bot_turn() */
-			deactivateBehaviour(bot_glance_behaviour);
 			/* sieht nach, ob der Bot auf einem definierten Startpad steht und
 			 * beginnt dann mit der Suche gleich an der richtigen Wand */
 			/* Zuserst bei nach Startpad1 gucken */
@@ -1684,12 +1722,9 @@ void bot_behave_init(void){
 	// Hoechste Prioritate haben die Notfall Verhalten
 
 	// Verhalten zum Schutz des Bots, hohe Prioritaet, Aktiv
-	insert_behaviour_to_list(&behaviour, new_behaviour(250, bot_avoid_border_behaviour,ACTIVE));
-	insert_behaviour_to_list(&behaviour, new_behaviour(249, bot_avoid_col_behaviour,ACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(250, bot_avoid_border_behaviour,INACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(249, bot_avoid_col_behaviour,INACTIVE));
 
-
-	// Verhalten, um Hidnernisse besser zu erkennen, relativ hoe Prioritaet, modifiziert nur
-	insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_glance_behaviour,ACTIVE));
 
 	// Verhalten, um ein Labyrinth nach der Hoehlenforscher-Methode loesen 
 	insert_behaviour_to_list(&behaviour, new_behaviour(150, bot_solve_maze_behaviour,INACTIVE));
@@ -1712,6 +1747,9 @@ void bot_behave_init(void){
 	// Demo-Verhalten für aufwendiges System, inaktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(52, bot_olympic_behaviour,INACTIVE));
 
+	// Verhalten, das einmal die Umgebung des Bots scannt
+	insert_behaviour_to_list(&behaviour, new_behaviour(50, bot_scan_behaviour,INACTIVE));
+
 
 	// Grundverhalten, setzt aeltere FB-Befehle um, aktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(2, bot_base_behaviour, ACTIVE));
@@ -1719,7 +1757,6 @@ void bot_behave_init(void){
 	// Um das Simple-Behaviour zu nutzen, die Kommentarzeichen vor der folgenden Zeile entfernen!!!
 	// activateBehaviour(bot_simple_behaviour);
 	// activateBehaviour(bot_simple2_behaviour);
-
 
 	#ifdef PC
 		#ifdef DISPLAY_AVAILABLE
