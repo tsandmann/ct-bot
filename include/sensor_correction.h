@@ -28,5 +28,9 @@
 #define SENSDISTSLOPE	  65330		/*!< Steigung der Sensorkennlinie */
 #define SENSDISTOFFSET		-3		/*!< Offset der Sensorkennlinie */
 
+/* Parameter fuer die IR-Sensoren*/
+#define SENS_IR_MAX_DIST	800		/*!< Obergrenze des Erfassungsbereichs */
+#define SENS_IR_INFINITE	999		/*!< Kennzeichnung fuer "kein Objekt im Erfassungsbereich" */
+
 
 #endif /*SENSOR_CORRECTION_H_*/

@@ -115,7 +115,12 @@ void bot_sens_init(void){
  */
 int16 sensor_abstand(int16 sensor_data){
 	// TODO reale Kennlinie beachten!!!!
-	return SENSDISTSLOPE / (sensor_data - SENSDISTOFFSET);
+	int16 dist=SENSDISTSLOPE / (sensor_data - SENSDISTOFFSET);
+	
+	if (dist > SENS_IR_MAX_DIST)
+		return SENS_IR_INFINITE;
+	else
+		return dist;
 	
 //	return 1023-sensor_data;
 }
