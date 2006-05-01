@@ -387,7 +387,7 @@ void rc5_number(RemCtrlFuncPar *par) {
 //				case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
 //				case 4: bot_turn(0, 90); break;
 //				//case 5: bot_goto(0, 0, 0); break;
-//				case 5: bot_solve_maze(0); break;
+				case 5: bot_solve_maze(0); break;
 //				case 5: bot_scan(0); break;
 //				case 6: bot_turn(0, -90); break;
 				case 7: bot_turn(0,180); break;
@@ -399,6 +399,11 @@ void rc5_number(RemCtrlFuncPar *par) {
 				case 2:	 target_speed_l=BOT_SPEED_MEDIUM;target_speed_r=target_speed_l;break;
 				case 3:	 target_speed_l=BOT_SPEED_FAST;target_speed_r=target_speed_l;break;
 				case 4:	 target_speed_l=BOT_SPEED_MAX;target_speed_r=target_speed_l;break;
+
+//				case 5:	 Kp++; break;
+//				case 8:	 Kp--; break;
+//				case 6:	 Ki++; break;
+//				case 9:	 Ki--; break;
 
 //				case 9:	 target_speed_l=-BOT_SPEED_MEDIUM;target_speed_r=target_speed_l;break;
 			}

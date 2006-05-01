@@ -31,6 +31,11 @@
 #include "command.h"
 #include "bot-2-sim.h"	
 #include "motor-low.h"
+#include "motor.h"
+
+
+volatile int16 motor_left;	/*!< zuletzt gestellter Wert linker Motor */
+volatile int16 motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
 
 /*!
  *  Initilisiert alles fuer die Motosteuerung 
@@ -55,7 +60,10 @@ void bot_motor(int16 left, int16 right){
 		direction.left= DIRECTION_BACKWARD;
 	if (left > 0 )
 		direction.left= DIRECTION_FORWARD;
-	
+
+	motor_left=left;
+	motor_right=left;
+		
 }
 
 /*!
