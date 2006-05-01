@@ -180,8 +180,10 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
  * fuer eine langsame Drehung
 */
 void motor_set(int16 left, int16 right){
-	volatile static int16 old_mot_time_s=0;
-	volatile static int16 old_mot_time_ms=0;
+	#ifdef SPEED_CONTROL_AVAILABLE
+		volatile static int16 old_mot_time_s=0;
+		volatile static int16 old_mot_time_ms=0;
+	#endif
 
 	if (left == BOT_SPEED_IGNORE)	
 		left=BOT_SPEED_STOP;

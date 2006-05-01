@@ -100,6 +100,7 @@
 		#undef BOT_2_PC_AVAILABLE
 		#undef SRF10_AVAILABLE
 		#undef TWI_AVAILABLE
+		#undef SPEED_CONTROL_AVAILABLE // Deaktiviere die Motorregelung 
 		
 	#endif
 	#define COMMAND_AVAILABLE		/*!< High-Level Communication */
