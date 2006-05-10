@@ -63,12 +63,11 @@ void uart_init(void){
 	UCSRC=0x86;
 	
 	/* UART auf 9600 baud */
-	UBRRH=0;
-	UBRRL= 103;  /* Werte stehen im Datenblatt tabelarisch */
+//	UBRRH=0;
+//	UBRRL= 103;  /* Werte stehen im Datenblatt tabelarisch */
 
-//	UBRRL = (uint8) ((F_CPU / 16) * BAUDRATE - 1);
-
-
+	UBRRL = (uint8) (( ((uint32)F_CPU) / 16 / ((uint32)BAUDRATE) - 1) & 0xFF);
+	UBRRH = (uint8) (( ((uint32)F_CPU) / 16 / ((uint32)BAUDRATE) - 1) >> 8);
 	
 	/* Puffer leeren */
 	UART_RxTail = 0;

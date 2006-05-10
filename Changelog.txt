@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-05-10	Benjamin Benz (bbe@heise.de) UART-Baudrate-Formeln ueberarbeitet
+
 2006-05-07	Torsten Evers (tevers@onlinehome.de) Fernbedienung LifeTec LT 3607 hinzugefuegt
 
 2006-05-01	Torsten Evers (tevers@onlinehome.de) Linienfolger ueberarbeitet und eingepflegt

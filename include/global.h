@@ -50,6 +50,9 @@
 	typedef signed char int8;                          /*!< vorzeichenbehaftete 8-Bit-Zahl */ 
 	typedef short int int16;                           /*!< vorzeichenbehaftete 16-Bit-Zahl  */
 
+	typedef unsigned long uint32;		/*!< vorzeichenlose 32-Bit-Zahl  */
+	typedef signed long int32;			/*!< vorzeichenbehaftete 32-Bit-Zahl  */
+
 	#define uint16                  word				/*!< Int mit 16 Bit */
 	
 	#define True                  1						/*!< Wahr */
