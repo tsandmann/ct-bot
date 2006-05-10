@@ -92,7 +92,7 @@ uint8 maus_sens_readByte(void){
  */
 void maus_sens_write(int8 adr, uint8 data){
 	int16 i;
-	maus_sens_writeByte(adr);
+	maus_sens_writeByte(adr|=0x80);  //rl MSB muss 1 sein Datenblatt S.12 Write Operation
 	maus_sens_writeByte(data);
 	for (i=0; i<300; i++){ asm volatile("nop"); 	}	// mindestens 100 Mikrosekunden Pause!!!
 }
