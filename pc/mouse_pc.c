@@ -74,4 +74,14 @@ int8 maus_image_read(void){
 	return mousePicture[pixIndex++];
 }
 
+/*!
+ * Gibt den SQUAL-Wert zurueck. Dieser gibt an, wieviele Merkmale der Sensor 
+ * im aktuell aufgenommenen Bild des Untergrunds wahrnimmt.
+ * Fuer simulierten Bot zur Zeit mit einem fixen Wert belegt, da fuer den
+ * Boden im Sim keine Texturen verwendet werden
+ */
+int8 maus_get_squal(void) {
+	return 70;
+}
+
 #endif
