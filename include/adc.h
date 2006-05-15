@@ -31,7 +31,7 @@
  * Liest einen analogen Kanal aus
  * @param channel Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
  */
-int adc_read(uint8 channel);
+uint16 adc_read(uint8 channel);
 
 /*!
  *  Wechselt einen ADU-kanal. Dafuer muessen auch die Puffer zurueckgesetzt werden 
