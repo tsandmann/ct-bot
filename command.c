@@ -51,6 +51,7 @@
 	#include <pthread.h>	
 #endif
 
+#define COMMAND_TIMEOUT 	10		/*!< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
 
 #ifdef COMMAND_AVAILABLE
 
@@ -71,67 +72,76 @@ command_t received_command;		/*!< Puffer fuer Kommandos */
  */
 int command_read(void){
 	int bytesRcvd;
-	int start=0;			// start of command sequence
+	int start=0;			// start des Kommandos
 	int i;			
-	command_t * command;		// Pointer to Cast rceceived data
-	char * ptr;			// helper
+	command_t * command;	// Pointer zum Casten der empfangegen Daten
+	char * ptr;				// Nur zu Hilfszwecken
 	char buffer[RCVBUFSIZE];       // Buffer  
-#if BYTE_ORDER == BIG_ENDIAN
-	uint16 store;			//store for endian conversion
-#endif
+	#if BYTE_ORDER == BIG_ENDIAN
+		uint16 store;			//Puffer für die Endian-Konvertierung
+	#endif
 
-	buffer[0]=0;			// Start with clean data 
+	uint16 old_s, old_ms;		// Alte Systemzeit
+
+	buffer[0]=0;				// Sicherheitshalber mit sauberem Puffer anfangen
 	
-//	uint8 tmp=uart_data_available();
-	// Den ganzen Puffer abholen
+	// Daten holen, maximal soviele, wie ein Kommando lang ist
 	bytesRcvd=low_read(buffer,sizeof(command_t));	
-//	LOG_DEBUG(("%d/%d read/av",bytesRcvd,tmp));
-	
-	
-//	LOG_DEBUG(("%x %x %x",buffer[0],buffer[1],buffer[2]));
-	// Search for frame start
+
+	//	LOG_DEBUG(("%d/%d read/av",bytesRcvd,tmp));
+	//	LOG_DEBUG(("%x %x %x",buffer[0],buffer[1],buffer[2]));
+
+	// Suche nach dem Beginn des Frames
 	while ((start<bytesRcvd)&&(buffer[start] != CMD_STARTCODE)) {	
-//		printf(".");
 		start++;
 	}
 		
-	// if no STARCODE ==> discard
+	// Wenn keine STARTCODE gefunden ==> Daten verwerfen
 	if (buffer[start] != CMD_STARTCODE){
-//		LOG_DEBUG(("start not found"));
+		//	LOG_DEBUG(("start not found"));
 		return -1;	
 	}
 	
-//	LOG_DEBUG(("Start @%d",start));
+	//	LOG_DEBUG(("Start @%d",start));
 	
-	//is any chance, that the packet will still fit to buffer?
+	// haben wir noch genug Platz im Puffer, um das Packet ferig zu lesen?
 	if ((RCVBUFSIZE-start) < sizeof(command_t)){
-//		LOG_DEBUG(("not enough space"));
-		return -1;	// no ==> discard
+		//	LOG_DEBUG(("not enough space"));
+		return -1;	// nein? ==> verwerfen
 	}
 	
 	i=sizeof(command_t) - (bytesRcvd-start);
-	// get rest of package as long as buffer is full
-	while (i > 0){
-//		LOG_DEBUG(("%d bytes missing",i));
-		i= low_read(buffer+bytesRcvd,i);
-//		LOG_DEBUG(("%d read",i));
-		bytesRcvd+=i;
-		i=sizeof(command_t) - (bytesRcvd-start);
+	
+	if (i> 0) {	// Fehlen noch Daten ?
+		// Systemzeit erfassen
+		old_s=timer_get_s();
+		old_ms=timer_get_ms();
+				
+		// So lange Daten lesen, bis das Packet vollstaendig ist, oder der Timeout zuschlaegt
+		while (i > 0){
+			// Wenn der Timeout ueberschritten ist
+			if (timer_get_ms_since(old_s,old_ms) > COMMAND_TIMEOUT)
+				return -1; //	==> Abbruch
+			//	LOG_DEBUG(("%d bytes missing",i));
+			i= low_read(buffer+bytesRcvd,i);
+			//	LOG_DEBUG(("%d read",i));
+			bytesRcvd+=i;
+			i=sizeof(command_t) - (bytesRcvd-start);
+		}
 	}
+	
+	//	LOG_DEBUG(("%d/%d read/start",bytesRcvd,start));
+	//	LOG_DEBUG(("%x %x %x",buffer[start],buffer[start+1],buffer[start+2]));
 
-//	LOG_DEBUG(("%d/%d read/start",bytesRcvd,start));
-
-//	LOG_DEBUG(("%x %x %x",buffer[start],buffer[start+1],buffer[start+2]));
-	// Cast to command_t
+	// Cast in command_t
 	command= (command_t *) ( buffer +start);
 
-//	LOG_DEBUG(("start: %x ",command->startCode));
-
-//	command_display(command);
+	//	LOG_DEBUG(("start: %x ",command->startCode));
+	//	command_display(command);
 	
-	// validate (startcode is already ok, or we won't be here)
+	// validate (startcode ist bereits ok, sonst waeren wir nicht hier )
 	if (command->CRC==CMD_STOPCODE){
-//		LOG_DEBUG(("Command is valid"));
+		//	LOG_DEBUG(("Command is valid"));
 		// Transfer
 		#ifdef PC
 			command_lock();		// on PC make storage threadsafe
@@ -166,14 +176,13 @@ int command_read(void){
 
 		return 0;
 	} else {	// Command not valid
-//		LOG_DEBUG(("Invalid Command:"));
-//		LOG_DEBUG(("%x %x %x",command->startCode,command->request.command,command->CRC));
+		//		LOG_DEBUG(("Invalid Command:"));
+		//		LOG_DEBUG(("%x %x %x",command->startCode,command->request.command,command->CRC));
 		return -1;
 	}
 }
 
 static int count=1;	/*!< Zaehler fuer Paket-Sequenznummer*/
-
 
 /*!
  * Uebertraegt ein Kommando und wartet nicht auf eine Antwort

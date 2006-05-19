@@ -56,7 +56,7 @@
 	 * @param old_s alter Sekundenstand
 	 * @param old_ms alter Millisekundenstand
 	 */
-	int16 timer_get_ms_since(uint16 old_s, uint16 old_ms );
+	uint16 timer_get_ms_since(uint16 old_s, uint16 old_ms );
 #endif
 
 // Die Werte fuer TIMER_X_CLOCK sind Angaben in Hz

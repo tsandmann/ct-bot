@@ -150,7 +150,6 @@ int uart_write(uint8 * data, int length){
 
 /*!
  * Liest Zeichen von der UART
- * Achtung: blockierend!
  * @param data Der Zeiger an die die gelesenen Zeichen kommen
  * @param length Anzahl der zu lesenden Bytes
  * @return Anzahl der tatsaechlich gelesenen Zeichen
@@ -165,8 +164,6 @@ int uart_read(void* data, int length){
 	
 	if (count > length)
 		count=length;
-		
-
 		
 	for (i=0; i<count; i++){
 		UART_RxTail++;

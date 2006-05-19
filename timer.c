@@ -110,9 +110,8 @@ void system_time_isr(void){
  * @param old_s alter Sekundenstand
  * @param old_ms alter Millisekundenstand
  */
-
-int16 timer_get_ms_since(uint16 old_s, uint16 old_ms ){
-	return timer_get_s()*1000+timer_get_ms() - old_s*1000 - old_ms;
+uint16 timer_get_ms_since(uint16 old_s, uint16 old_ms ){
+	return (timer_get_s()-old_s)*1000 + timer_get_ms() - old_ms;
 }
 
 #endif

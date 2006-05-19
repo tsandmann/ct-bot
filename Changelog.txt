@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-05-19	Benjamin Benz (bbe@heise.de) Deadlock aus command_read entfernt.
+
 2006-05-12	Torsten Evers (tevers@onlinehome.de) maus_get_squal() zur Ermittlung des SQUAL-Wertes des Maussensors hinzugefuegt
 
 2006-05-10  Ralf Loehmer  (rl@loehmer.de) maus_sens_write(); MSB
