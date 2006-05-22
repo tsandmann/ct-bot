@@ -484,25 +484,25 @@
 	#define RC5_MASK		(RC5_COMMAND)
 	#define RC5_NOT_AVAIL	(0xFFFF)				/*!< Code fuer Taste nicht vorhanden */
 
-	#define	RC5_CODE_0		(0x3000 & RC5_MASK)		/*!< Taste 0 */
-	#define	RC5_CODE_1		(0x3001 & RC5_MASK)		/*!< Taste 1 */
-	#define	RC5_CODE_2		(0x3002 & RC5_MASK)		/*!< Taste 2 */
-	#define	RC5_CODE_3		(0x3003 & RC5_MASK)		/*!< Taste 3 */
-	#define	RC5_CODE_4		(0x3004 & RC5_MASK)		/*!< Taste 4 */
-	#define	RC5_CODE_5		(0x3005 & RC5_MASK)		/*!< Taste 5 */
-	#define	RC5_CODE_6		(0x3006 & RC5_MASK)		/*!< Taste 6 */
-	#define	RC5_CODE_7		(0x3007 & RC5_MASK)		/*!< Taste 7 */
-	#define	RC5_CODE_8		(0x3008 & RC5_MASK)		/*!< Taste 8 */
-	#define	RC5_CODE_9		(0x3009 & RC5_MASK)		/*!< Taste 9 */
+	#define RC5_CODE_0		(0x3000 & RC5_MASK)		/*!< Taste 0 */
+	#define RC5_CODE_1		(0x3001 & RC5_MASK)		/*!< Taste 1 */
+	#define RC5_CODE_2		(0x3002 & RC5_MASK)		/*!< Taste 2 */
+	#define RC5_CODE_3		(0x3003 & RC5_MASK)		/*!< Taste 3 */
+	#define RC5_CODE_4		(0x3004 & RC5_MASK)		/*!< Taste 4 */
+	#define RC5_CODE_5		(0x3005 & RC5_MASK)		/*!< Taste 5 */
+	#define RC5_CODE_6		(0x3006 & RC5_MASK)		/*!< Taste 6 */
+	#define RC5_CODE_7		(0x3007 & RC5_MASK)		/*!< Taste 7 */
+	#define RC5_CODE_8		(0x3008 & RC5_MASK)		/*!< Taste 8 */
+	#define RC5_CODE_9		(0x3009 & RC5_MASK)		/*!< Taste 9 */
 
-	#define	RC5_CODE_PWR	(0x300C & RC5_MASK)		/*!< Taste Power */
-	#define	RC5_CODE_VIEW	(0x303F & RC5_MASK)		/*!< Taste OSD */
-	#define	RC5_CODE_SELECT	(0x303C & RC5_MASK)		/*!< Taste Videotext */
+	#define RC5_CODE_PWR	(0x300C & RC5_MASK)		/*!< Taste Power */
+	#define RC5_CODE_VIEW	(0x303F & RC5_MASK)		/*!< Taste OSD */
+	#define RC5_CODE_SELECT	(0x303C & RC5_MASK)		/*!< Taste Videotext */
 
-	#define	RC5_CODE_UP		(0x3020 & RC5_MASK)		/*!< Taste CH + */
-	#define	RC5_CODE_DOWN	(0x3021 & RC5_MASK)		/*!< Taste CH - */
-	#define	RC5_CODE_LEFT	(0x3011 & RC5_MASK)		/*!< Taste VOL- */
-	#define	RC5_CODE_RIGHT	(0x3010 & RC5_MASK)		/*!< Taste VOL+ */
+	#define RC5_CODE_UP	(0x3020 & RC5_MASK)		/*!< Taste CH + */
+	#define RC5_CODE_DOWN	(0x3021 & RC5_MASK)		/*!< Taste CH - */
+	#define RC5_CODE_LEFT	(0x3011 & RC5_MASK)		/*!< Taste VOL- */
+	#define RC5_CODE_RIGHT	(0x3010 & RC5_MASK)		/*!< Taste VOL+ */
 	#define RC5_CODE_I_II	(0x3038 & RC5_MASK)		/*!< A/B-Taste */
 	#define RC5_CODE_FWD	(0x302B & RC5_MASK)		/*!< Taste Mischbild */
 	#define RC5_CODE_BWD	(0x302E & RC5_MASK)		/*!< Taste Ueberblenden */
@@ -553,6 +553,8 @@
 	#define RC5_CODE_I_II		RC5_CODE_SELECT
 	#define RC5_CODE_TV_VCR	RC5_CODE_VIEW
 
+	#define RC5_CH_PLUS		RC5_NOT_AVAIL		/*!< Ch + Taste */
+	#define RC5_CH_MINUS		RC5_NOT_AVAIL		/*!< Ch - Taste */
 
 	#ifdef JOG_DIAL		
 		/* Jogdial geht nur inkl. Adresscode */
