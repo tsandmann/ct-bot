@@ -1,6 +1,6 @@
 # Hey Emacs, this is a -*- makefile -*-
 #
-# WinAVR Sample makefile written by Eric B. Weddington, J�rg Wunsch, et al.
+# WinAVR Sample makefile written by Eric B. Weddington, Joerg Wunsch, et al.
 # Released to the Public Domain
 # Please read the make user manual!
 #
@@ -51,9 +51,9 @@ MSG_DEVICE = Target device is $(DEVICE)
 # List C source files here. (C dependencies are automatically generated.)
 SRCMCU = mcu/adc.c mcu/bot-2-pc.c mcu/delay.c mcu/display.c mcu/ena.c mcu/ir-rc5.c mcu/led.c mcu/motor-low.c mcu/mouse.c mcu/sensor-low.c mcu/shift.c mcu/timer-low.c mcu/uart.c 
 
-SRCPC = pc/bot-2-sim.c pc/delay_pc.c pc/display_pc.c pc/ir-rc5_pc.c pc/led_pc.c pc/motor-low_pc.c pc/sensor-low_pc.c pc/tcp.c pc/tcp-server.c
+SRCPC = pc/bot-2-sim.c pc/delay_pc.c pc/display_pc.c pc/ir-rc5_pc.c pc/led_pc.c pc/motor-low_pc.c pc/sensor-low_pc.c pc/tcp.c pc/tcp-server.c pc/mouse_pc.c
 
-SRCCOM = bot-logik.c command.c motor.c rc5.c sensor.c timer.c
+SRCCOM = bot-logik.c command.c log.c motor.c rc5.c sensor.c timer.c
 
 ifeq ($(DEVICE),MCU)
 	SRC = $(TARGET).c $(SRCCOM) $(SRCMCU)
@@ -71,6 +71,7 @@ endif
 # care about how the name is spelled on its command-line.
 ASRC = 
 	
+MATH_LIB = -lm
 	
 ifeq ($(DEVICE),MCU)
 	# List any extra directories to look for include files here.
@@ -108,9 +109,7 @@ ifeq ($(DEVICE),MCU)
 	SCANF_LIB_FLOAT = -Wl,-u,vfscanf -lscanf_flt
 	
 	SCANF_LIB = 
-	
-	MATH_LIB = -lm
-	
+		
 	# External memory options
 	
 	# 64 KB of external RAM, starting after internal RAM (ATmega128!),
@@ -195,9 +194,11 @@ else
 
 	CC = gcc 
 	PTHREAD_LIB = -lpthread
-	LDFLAGS += $(PTHREAD_LIB)
+	LDFLAGS += $(PTHREAD_LIB)  $(MATH_LIB)
 	SIZE = size
 endif
+
+
 
 # Define programs and commands.
 SHELL = sh
