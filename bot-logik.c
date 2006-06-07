@@ -713,9 +713,9 @@ void bot_drive(int8 curve, int16 speed){
 
 /*!
  * Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren.
+ * @param *data der Verhaltensdatensatz
  * @see bot_drive_distance() 
- * */
-
+ */
 void bot_drive_distance_behaviour(Behaviour_t* data){
 	int16 *encoder;
 	int16 to_drive;
@@ -745,8 +745,7 @@ void bot_drive_distance_behaviour(Behaviour_t* data){
  * @param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
  * @param speed Gibt an, wie schnell der Bot fahren soll. Negative Werte lassen den Bot rueckwaerts fahren.
  * @param cm Gibt an, wie weit der Bot fahren soll. In cm :-) Die Strecke muss positiv sein, die Fahrtrichtung wird ueber speed geregelt.
- * */
-
+ */
 void bot_drive_distance(Behaviour_t* caller,int8 curve, int16 speed, int16 cm){
 	int16 marks_to_drive = cm * 10 * ENCODER_MARKS / WHEEL_PERIMETER;
 	int16 *encoder;
@@ -771,68 +770,66 @@ void bot_drive_distance(Behaviour_t* caller,int8 curve, int16 speed, int16 cm){
 #ifdef MEASURE_MOUSE_AVAILABLE
 /*!
  * Das Verhalten laesst den Bot eine Punktdrehung durchfuehren. 
+ * Drehen findet in vier Schritten statt. Die Drehung wird dabei
+ * bei Winkeln > 45 Grad zunaechst mit maximaler Geschwindigkeit ausgefuehrt. Bei kleineren
+ * Winkeln oder wenn nur noch 45 Grad zu drehen sind, nur noch mit normaler Geschwindigkeit
+ * @param *data der Verhaltensdatensatz
  * @see bot_turn()
- * */
+ */
 void bot_turn_behaviour(Behaviour_t* data){
-	/* Drehen findet in vier Schritten statt. Die Drehung wird dabei
-	 * bei Winkeln > 90 Grad zunaechst mit maximaler Geschwindigkeit ausgefuehrt. Bei kleineren
-	 * Winkeln oder wenn nur noch 90 Grad zu drehen sind, nur noch mit normaler Geschwindigkeit
-	 */
-	 /* Zustaende fuer das bot_turn_behaviour-Verhalten */
-	#define NORMAL_TURN					0
+	// Zustaende fuer das bot_turn_behaviour-Verhalten 
+	#define NORMAL_TURN				0
 	#define FULL_STOP					1
 	static int8 turnState=NORMAL_TURN;
-	/* zu drehende Schritte in die korrekte Drehrichtung korrigieren */
+	
+	// zu drehende Schritte in die korrekte Drehrichtung berechnen
 	int16 to_turn=0;
+	
 	if (turn_direction>0){
-		/* Winkelzaehler naehert sich von Unten */
+		// Winkelzaehler naehert sich von Unten 
 		if (heading_mou>target_angle) {
-			/* muss ueber einen uerberlauf */
+			// muss ueber einen uerberlauf
 			to_turn=(int16)target_angle+360-heading_mou;
 		} else {
 			to_turn=(int16)target_angle-heading_mou;	
 		}
 	} else {
 		if (heading_mou<target_angle) {
-			/* muss ueber einen ueberlauf */
+			// muss ueber einen ueberlauf
 			to_turn=(int16)360-target_angle+heading_mou;
 		} else {
 			to_turn=(int16)heading_mou-target_angle;
 		}
 	}
+	
 	switch(turnState) {
 		case NORMAL_TURN:
-			/* Solange drehen, bis beide Encoder nur noch zwei oder weniger Schritte zu fahren haben */
-
-			if (to_turn<=5)
-			{
-				/* nur noch 2 Schritte oder weniger, abbremsen einleiten */
+			// Solange drehen, bis beide Encoder nur noch zwei oder weniger Schritte zu fahren haben
+			if (to_turn<=5)	{
+				// nur noch 5 Grad oder weniger, abbremsen einleiten 
 				turnState=FULL_STOP;
 				break;	
 			}
-			/* Bis 90 Grad kann mit maximaler Geschwindigkeit gefahren werden, danach auf Normal reduzieren */
-			/* Geschwindigkeit fuer beide Raeder getrennt ermitteln */
+			
+			// Bis 45 Grad kann mit maximaler Geschwindigkeit gefahren werden, danach schrittweise reduzieren
+			// Geschwindigkeit fuer beide Raeder getrennt ermitteln
 			if(to_turn < 15) {
 				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_TURN : BOT_SPEED_TURN;
-				speedWishRight = (turn_direction > 0) ? BOT_SPEED_TURN : -BOT_SPEED_TURN;				
 			} else if(to_turn < 45) {
 				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;
-				speedWishRight = (turn_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
 			} else {
 				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_FOLLOW : BOT_SPEED_FOLLOW;
-				speedWishRight = (turn_direction > 0) ? BOT_SPEED_FOLLOW : -BOT_SPEED_FOLLOW;
 			}
 			break;
-		
 		default: 
-			/* ist gleichzeitig FULL_STOP, da gleiche Aktion 
-			 * Stoppen, State zuruecksetzen und Verhalten beenden */
+			// ist gleichzeitig FULL_STOP, da gleiche Aktion 
+			// Stoppen, State zuruecksetzen und Verhalten beenden
 			speedWishLeft = BOT_SPEED_STOP;
-			speedWishRight = BOT_SPEED_STOP;
 			turnState=NORMAL_TURN;
 			return_from_behaviour(data);
 			break;			
 	}
+	speedWishRight = -speedWishLeft; // Raeder drehen immer gegensinnig
 }
 
 /*! 
@@ -840,7 +837,7 @@ void bot_turn_behaviour(Behaviour_t* data){
  * @param degrees Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
  */
 void bot_turn(Behaviour_t* caller,int16 degrees){
-	/* Richtungsgerechte Umrechnung in den Zielwinkel */
+	// Richtungsgerechte Umrechnung in den Zielwinkel
 	if(degrees < 0) turn_direction = -1;
 	else turn_direction = 1;
 	target_angle=heading_mou+degrees;
@@ -859,7 +856,7 @@ void bot_turn_behaviour(Behaviour_t* data){
 	 * Winkeln oder wenn nur noch 90 Grad zu drehen sind, nur noch mit normaler Geschwindigkeit
 	 */
 	 /* Zustaende fuer das bot_turn_behaviour-Verhalten */
-	#define NORMAL_TURN					0
+	#define NORMAL_TURN				0
 	#define SHORT_REVERSE				1
 	#define CORRECT_POSITION			2
 	#define FULL_STOP					3
@@ -872,12 +869,12 @@ void bot_turn_behaviour(Behaviour_t* data){
 		case NORMAL_TURN:
 			/* Solange drehen, bis beide Encoder nur noch zwei oder weniger Schritte zu fahren haben */
 
-			if (to_turnL <= 2 && to_turnR<=2)
-			{
+			if (to_turnL <= 2 && to_turnR<=2){
 				/* nur noch 2 Schritte oder weniger, abbremsen einleiten */
 				turnState=SHORT_REVERSE;
 				break;	
 			}
+			
 			/* Bis 90 Grad kann mit maximaler Geschwindigkeit gefahren werden, danach auf Normal reduzieren */
 			/* Geschwindigkeit fuer beide Raeder getrennt ermitteln */
 			if(abs(to_turnL) < ANGLE_CONSTANT*0.25) {
@@ -885,11 +882,13 @@ void bot_turn_behaviour(Behaviour_t* data){
 			} else {
 				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_NORMAL : BOT_SPEED_NORMAL;
 			}
+			
 			if(abs(to_turnR) < ANGLE_CONSTANT*0.25) {
 				speedWishRight = (turn_direction > 0) ? BOT_SPEED_MEDIUM : -BOT_SPEED_MEDIUM;
 			} else {	
 				speedWishRight = (turn_direction > 0) ? BOT_SPEED_NORMAL : -BOT_SPEED_NORMAL;
 			}	
+			
 			break;
 			
 		case SHORT_REVERSE:
@@ -911,6 +910,7 @@ void bot_turn_behaviour(Behaviour_t* data){
 				/* Endposition erreicht, rechtes Rad anhalten */
 				speedWishRight = BOT_SPEED_STOP;
 			}		
+			
 			if (to_turnL<0) {
 				/* links zu weit gefahren..langsam zurueck */
 				speedWishLeft = (turn_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;				
@@ -921,6 +921,7 @@ void bot_turn_behaviour(Behaviour_t* data){
 				/* Endposition erreicht, linkes Rad anhalten */
 				speedWishLeft = BOT_SPEED_STOP;
 			}
+			
 			if (speedWishLeft == BOT_SPEED_STOP && speedWishRight == BOT_SPEED_STOP) {
 				/* beide Raeder haben nun wirklich die Endposition erreicht, daher anhalten */
 				turnState=FULL_STOP;
@@ -968,6 +969,7 @@ void bot_turn(Behaviour_t* caller,int16 degrees){
 #ifdef MEASURE_MOUSE_AVAILABLE
 /*!
  * Das Verhalten faehrt von der aktuellen Position zur angegebenen Position (x/y)
+ * @param *data der Verhaltensdatensatz
  */
 void bot_gotoxy_behaviour(Behaviour_t *data){
 	#define INITIAL_TURN 	0
