@@ -32,6 +32,7 @@
 #define BOT_SPEED_IGNORE	1000	/*!< Wert ausserhalb von -BOT_SPEED_MAX und BOT_SPEED_MAX wird verwendet um einen Eintrag zu ignorieren */
 #define BOT_SPEED_STOP		0		/*!< Motor aus */
 
+#define BOT_SPEED_TURN		 15		/*!< Fuer genaue Drehungen, in mm/s */
 #define BOT_SPEED_SLOW		 49		/*!< langsame Fahrt in mm/s */
 #define BOT_SPEED_FOLLOW	 72		/*!< vorsichtige Fahrt, fuer Folgeverhalten in mm/s */
 #define BOT_SPEED_MEDIUM	 99		/*!< mittlere Fahrt in mm/s */

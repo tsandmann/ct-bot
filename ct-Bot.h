@@ -44,11 +44,13 @@
 #define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit? Achtun ohne kann die Displayinitialisierung schief gehen!*/
 
 #define DISPLAY_AVAILABLE	/*!< Display for local control */
-//#define DISPLAY_REMOTE_AVAILABLE /*!< Sende LCD Anzeigedaten an den Simulator */
+#define DISPLAY_REMOTE_AVAILABLE /*!< Sende LCD Anzeigedaten an den Simulator */
 #define DISPLAY_SCREENS_AVAILABLE	/*!< Ermoeglicht vier verschiedene Screen */
-//#define DISPLAY_SCREEN_RESETINFO	/*!< Zeigt auf Screen 4 Informationen über Resets an */
-
+//#define DISPLAY_SCREEN_RESETINFO	/*!< Zeigt auf Screen 4 Informationen ueber Resets an */
+#define DISPLAY_ODOMETRIC_INFO 	/*!< Zeigt auf Screen 4 Positions- und Geschwindigkeitsdaten */
 //#define DISPLAY_BEHAVIOUR_AVAILABLE  /*!< Anzeige der Verhalten im Display Screen 3, ersetzt Counteranzeige */
+#define MEASURE_MOUSE_AVAILABLE			/*!< Geschwindigkeiten werden aus den Maussensordaten berechnet */
+//#define MEASURE_COUPLED_AVAILABLE		/*!< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
 
 
 //#define WELCOME_AVAILABLE	/*!< kleiner Willkommensgruss */
@@ -68,7 +70,7 @@
 
 #define BEHAVIOUR_AVAILABLE /*!< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 
-#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
+//#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
 
 //#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
 
@@ -137,6 +139,14 @@
 	#define TEST_AVAILABLE			/*!< brauchen wir den Testkrams */
 	#define DISPLAY_SCREENS_AVAILABLE
 	#define DISPLAY_SCREEN_RESETINFO
+#endif
+
+#ifdef DISPLAY_ODOMETRIC_INFO
+	#undef DISPLAY_SCREEN_RESETINFO		/*!< Wenn Odometrieinfos, dann keine Resetinfos */
+#endif
+
+#ifdef MEASURE_COUPLED_AVAILABLE
+	#define MEASURE_MOUSE_AVAILABLE
 #endif
 
 #ifdef LOG_UART_AVAILABLE

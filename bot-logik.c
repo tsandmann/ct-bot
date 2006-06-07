@@ -79,9 +79,18 @@ int8 drive_distance_curve;		/*!< Kruemmung der zu fahrenden Strecke. */
 int16 drive_distance_speed;		/*!< Angepeilte Geschwindigkeit. */
 
 /* Parameter fuer das bot_turn_behaviour() */
+#ifndef MEASURE_MOUSE_AVAILABLE
 int16 turn_targetR;				/*!< Zu drehender Winkel bzw. angepeilter Stand des Radencoders sensEncR */
 int16 turn_targetL;				/*!< Zu drehender Winkel bzw. angepeilter Stand des Radencoders sensEncL */
+#else
+int16 target_angle;					/*!< Zielwinkel (Blickrichtung) */
+#endif
 int8 turn_direction;			/*!< Richtung der Drehung */
+
+/* Parameter fuer bot_gotoxy_behaviour-Verhalten */
+float target_x;				/*!< Zielkoordinate X */
+float target_y;				/*!< Zielkoordinate Y */
+
 
 /* Parameter fuer das check_wall_behaviour() */
 int8 wall_detected;				/*!< enthaelt True oder False, je nach Ergebnis des Verhaltens */
@@ -759,7 +768,87 @@ void bot_drive_distance(Behaviour_t* caller,int8 curve, int16 speed, int16 cm){
 	switch_to_behaviour(caller, bot_drive_distance_behaviour,NOOVERRIDE);
 }
 
+#ifdef MEASURE_MOUSE_AVAILABLE
+/*!
+ * Das Verhalten laesst den Bot eine Punktdrehung durchfuehren. 
+ * @see bot_turn()
+ * */
+void bot_turn_behaviour(Behaviour_t* data){
+	/* Drehen findet in vier Schritten statt. Die Drehung wird dabei
+	 * bei Winkeln > 90 Grad zunaechst mit maximaler Geschwindigkeit ausgefuehrt. Bei kleineren
+	 * Winkeln oder wenn nur noch 90 Grad zu drehen sind, nur noch mit normaler Geschwindigkeit
+	 */
+	 /* Zustaende fuer das bot_turn_behaviour-Verhalten */
+	#define NORMAL_TURN					0
+	#define FULL_STOP					1
+	static int8 turnState=NORMAL_TURN;
+	/* zu drehende Schritte in die korrekte Drehrichtung korrigieren */
+	int16 to_turn=0;
+	if (turn_direction>0){
+		/* Winkelzaehler naehert sich von Unten */
+		if (heading_mou>target_angle) {
+			/* muss ueber einen uerberlauf */
+			to_turn=(int16)target_angle+360-heading_mou;
+		} else {
+			to_turn=(int16)target_angle-heading_mou;	
+		}
+	} else {
+		if (heading_mou<target_angle) {
+			/* muss ueber einen ueberlauf */
+			to_turn=(int16)360-target_angle+heading_mou;
+		} else {
+			to_turn=(int16)heading_mou-target_angle;
+		}
+	}
+	switch(turnState) {
+		case NORMAL_TURN:
+			/* Solange drehen, bis beide Encoder nur noch zwei oder weniger Schritte zu fahren haben */
 
+			if (to_turn<=5)
+			{
+				/* nur noch 2 Schritte oder weniger, abbremsen einleiten */
+				turnState=FULL_STOP;
+				break;	
+			}
+			/* Bis 90 Grad kann mit maximaler Geschwindigkeit gefahren werden, danach auf Normal reduzieren */
+			/* Geschwindigkeit fuer beide Raeder getrennt ermitteln */
+			if(to_turn < 15) {
+				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_TURN : BOT_SPEED_TURN;
+				speedWishRight = (turn_direction > 0) ? BOT_SPEED_TURN : -BOT_SPEED_TURN;				
+			} else if(to_turn < 45) {
+				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;
+				speedWishRight = (turn_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
+			} else {
+				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_FOLLOW : BOT_SPEED_FOLLOW;
+				speedWishRight = (turn_direction > 0) ? BOT_SPEED_FOLLOW : -BOT_SPEED_FOLLOW;
+			}
+			break;
+		
+		default: 
+			/* ist gleichzeitig FULL_STOP, da gleiche Aktion 
+			 * Stoppen, State zuruecksetzen und Verhalten beenden */
+			speedWishLeft = BOT_SPEED_STOP;
+			speedWishRight = BOT_SPEED_STOP;
+			turnState=NORMAL_TURN;
+			return_from_behaviour(data);
+			break;			
+	}
+}
+
+/*! 
+ * Dreht den Bot im mathematisch positiven Sinn. 
+ * @param degrees Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
+ */
+void bot_turn(Behaviour_t* caller,int16 degrees){
+	/* Richtungsgerechte Umrechnung in den Zielwinkel */
+	if(degrees < 0) turn_direction = -1;
+	else turn_direction = 1;
+	target_angle=heading_mou+degrees;
+	if (target_angle>359) target_angle-=360;
+	if (target_angle<0) target_angle+=360;
+	switch_to_behaviour(caller, bot_turn_behaviour,NOOVERRIDE);
+}
+#else
 /*!
  * Das Verhalten laesst den Bot eine Punktdrehung durchfuehren. 
  * @see bot_turn()
@@ -874,6 +963,72 @@ void bot_turn(Behaviour_t* caller,int16 degrees){
  	turn_targetL+=sensEncL;
 	switch_to_behaviour(caller, bot_turn_behaviour,NOOVERRIDE);
 }
+#endif
+
+#ifdef MEASURE_MOUSE_AVAILABLE
+/*!
+ * Das Verhalten faehrt von der aktuellen Position zur angegebenen Position (x/y)
+ */
+void bot_gotoxy_behaviour(Behaviour_t *data){
+	#define INITIAL_TURN 	0
+	#define GOTO_LOOP 		1
+	#define CORRECT_HEAD	2
+	#define REACHED_POS		3
+	static int16 speedLeft=BOT_SPEED_FOLLOW;
+	static int16 speedRight=BOT_SPEED_FOLLOW;
+	static int8 gotoState=INITIAL_TURN;
+	
+	/* aus aktueller Position und Ziel neuen Zielwinkel berechnen */
+	float xDiff=target_x-x_mou;
+	float yDiff=target_y-y_mou;
+
+	switch(gotoState) {
+		case INITIAL_TURN:
+			gotoState=GOTO_LOOP;
+			float newHeading=atan(yDiff/xDiff)*360/(2*3.1416);
+			bot_turn(data,(int16)(newHeading-heading_mou));
+			break;
+			
+		case GOTO_LOOP:
+			/* Position erreicht? */
+			if (xDiff<10 || yDiff<10) {
+				gotoState=CORRECT_HEAD;
+				float newHeading=atan(yDiff/xDiff)*360/(2*3.1416);
+				bot_turn(data,-1*(int16)(newHeading-heading_mou));
+				break;
+			}
+			speedWishLeft=speedLeft;
+			speedWishRight=speedRight;
+			break;
+			
+		case CORRECT_HEAD:
+			/* Position erreicht? */
+			if (xDiff<2 && yDiff<2) {
+				gotoState=REACHED_POS;
+				speedWishLeft=BOT_SPEED_STOP;
+				speedWishRight=BOT_SPEED_STOP;
+				break;
+			}
+			speedWishLeft=BOT_SPEED_SLOW;
+			speedWishRight=BOT_SPEED_SLOW;
+			break;
+			
+		case REACHED_POS:
+			return_from_behaviour(data);
+			break;
+	}
+	
+}
+
+/*!
+ * Das Verhalten faehrt von der aktuellen Position zur angegebenen Position (x/y)
+ */
+void bot_gotoxy(Behaviour_t *caller, float x, float y){
+	target_x=x;
+	target_y=y;
+	switch_to_behaviour(caller, bot_gotoxy_behaviour, NOOVERRIDE);
+}
+#endif
 
 /*!
  * Das Verhalten laesst den Roboter den Raum durchsuchen. 
@@ -1715,7 +1870,7 @@ void bot_follow_line_behaviour(Behaviour_t *data) {
 			break;				
 			
 		case CORNER_TURN:
-			/* 90° in Richtung des detektierten Abgrunds drehen */
+			/* 90ï¿½ in Richtung des detektierten Abgrunds drehen */
 			lineState=CORRECT_POS;
 			bot_turn(data,(cornerDetected==CORNER_LEFT)?90:-90);	
 			cornerDetected=False;
@@ -1876,6 +2031,10 @@ void bot_behave_init(void){
 	insert_behaviour_to_list(&behaviour, new_behaviour(43, bot_measure_angle_behaviour,INACTIVE));
 	insert_behaviour_to_list(&behaviour, new_behaviour(42, bot_check_wall_behaviour,INACTIVE));
 
+	// Hilfsverhalten zum Anfahren
+	#ifdef MEASURE_MOUSE_AVAILABLE
+		insert_behaviour_to_list(&behaviour, new_behaviour(151, bot_gotoxy_behaviour,INACTIVE));
+	#endif
 
 	// Alle Hilfsroutinen sind relativ wichtig, da sie auch von den Notverhalten her genutzt werden
 	// Hilfsverhalten, die Befehle von Boten-Funktionen ausfuehren, erst inaktiv, werden von Boten aktiviert	
@@ -1889,7 +2048,7 @@ void bot_behave_init(void){
 
 	// Demo-Verhalten, etwas komplexer, inaktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(51, bot_drive_square_behaviour,INACTIVE));
-	// Demo-Verhalten fÃ¼r aufwendiges System, inaktiv
+	// Demo-Verhalten fuer aufwendiges System, inaktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(52, bot_olympic_behaviour,INACTIVE));
 
 	// Verhalten, das einmal die Umgebung des Bots scannt

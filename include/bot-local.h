@@ -39,6 +39,16 @@
 //#define SPEED_TO_ENCODER_RATE		(WHEEL_PERIMETER /ENCODER_MARKS*(1000/SPEED_CONTROL_INTERVAL)) /*!< Faktor durch den man eine Speed [mm/s] teilt um Ticks/intervall zu erhalten */
 #define SPEED_TO_ENCODER_RATE		9 /*!< Faktor durch den man eine Speed [mm/s] teilt um Ticks/intervall zu erhalten */
 
+/* Odometrie-Konstanten */
+//#define MOUSE_CPI			426		/*!< CPI-Wert aus Kalibrierung */
+//#define MOUSE_FULL_TURN		1550	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis */
+#define MOUSE_CPI			400		/*!< CPI-Wert aus Kalibrierung */
+#define MOUSE_FULL_TURN		1484	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis */
+#define WHEEL_DISTANCE		49		/*!< Abstand eines Rades zur Mitte des Bots */
+#define STUCK_DIFF			100		/*!< ab welcher Differenz haben wir durchdrehende Raeder? */
+#define G_SPEED				0.5		/*!< Kopplung Encoder- und Maussensor fuer Geschwindigkeiten (0.0=nur Radencoder, 1.0=nur Maussensor) */
+#define G_POS				0.5		/*!< Kopplung Encoder- und Maussensor fuer Positionen und Winkel (0.0=nur Radencoder, 1.0=nur Maussensor) */
+
 /*! Hilfskonstante */
 #define ANGLE_CONSTANT		(WHEEL_TO_WHEEL_DIAMETER * ENCODER_MARKS / WHEEL_DIAMETER)
 

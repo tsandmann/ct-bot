@@ -120,6 +120,11 @@ void bot_goto(int16 left, int16 right, Behaviour_t * caller);
 
 void bot_drive_distance(Behaviour_t* caller,int8 curve, int16 speed, int16 cm);
 
+/*!
+ * Das Verhalten faehrt von der aktuellen Position zur angegebenen Position (x/y)
+ */
+void bot_gotoxy(Behaviour_t *caller, float x, float y);
+
 /*! 
  * Dreht den Bot im mathematisch positiven Sinn. 
  * @param degrees Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.

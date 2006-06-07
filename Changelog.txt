@@ -16,7 +16,7 @@ CHANGELOG fuer c't-Bot
 
 2006-05-01	Benjamin Benz (bbe@heise.de) Speed_control komplett neu geschrieben
 
-2006-04-30	Benjamin Benz (bbe@heise.de) Wertrbegrenzung fuer IR-Sendor eingefuehrt
+2006-04-30	Benjamin Benz (bbe@heise.de) Wertebegrenzung fuer IR-Sensor eingefuehrt
 
 2006-04-29	Benjamin Benz (bbe@heise.de) Delay angepasst
 

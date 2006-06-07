@@ -374,28 +374,48 @@ void rc5_control(void){
 void rc5_number(RemCtrlFuncPar *par) {
 	#ifdef DISPLAY_SCREENS_AVAILABLE 
 	switch (display_screen) {
-		case 0:
+		#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+			case 2:
+				switch (par->value1) {
+					case 0:	break;
+					case 1: rc5_toggle_behaviour_new(1); break;
+					case 2: rc5_toggle_behaviour_new(2); break;
+					case 3: rc5_toggle_behaviour_new(3); break;
+					case 4: rc5_toggle_behaviour_new(4); break;
+					case 5: rc5_toggle_behaviour_new(5); break;
+					case 6: rc5_toggle_behaviour_new(6); break;
+					case 7: break;
+					case 8: break;
+					case 9: rc5_set_all_behaviours(); break;
+				}
+				break;
+		#endif
+		default:
 	#endif
 			switch (par->value1) {
-//				case 0:	
-//				target_speed_l=0;target_speed_r=0;break;
-//				case 1: target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
-//				case 2: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
-//				case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
-//				case 4: bot_turn(0, 90); break;
+				case 0:	
+				target_speed_l=0;target_speed_r=0;break;
+				case 1: target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
+				case 2: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
+				case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
+				case 4: bot_turn(0, 90); break;
 //				//case 5: bot_goto(0, 0, 0); break;
-				case 5: bot_solve_maze(0); break;
+//				#ifdef MEASURE_MOUSE_AVAILABLE
+//					case 5: bot_gotoxy(0,20,20);
+//				#else
+					case 5: bot_solve_maze(0); break;
+//				#endif
 //				case 5: bot_scan(0); break;
-//				case 6: bot_turn(0, -90); break;
+				case 6: bot_turn(0, -90); break;
 				case 7: bot_turn(0,180); break;
-//				case 8: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
-//				case 9: bot_turn(0, -180); break;
-
-				case 0:	 target_speed_l=BOT_SPEED_STOP;target_speed_r=target_speed_l;break;
-				case 1:	 target_speed_l=BOT_SPEED_SLOW;target_speed_r=target_speed_l;break;
-				case 2:	 target_speed_l=BOT_SPEED_MEDIUM;target_speed_r=target_speed_l;break;
-				case 3:	 target_speed_l=BOT_SPEED_FAST;target_speed_r=target_speed_l;break;
-				case 4:	 target_speed_l=BOT_SPEED_MAX;target_speed_r=target_speed_l;break;
+				case 8: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
+				case 9: bot_turn(0, -180); break;
+	
+//				case 0:	 target_speed_l=BOT_SPEED_STOP;target_speed_r=target_speed_l;break;
+//				case 1:	 target_speed_l=BOT_SPEED_SLOW;target_speed_r=target_speed_l;break;
+//				case 2:	 target_speed_l=BOT_SPEED_MEDIUM;target_speed_r=target_speed_l;break;
+//				case 3:	 target_speed_l=BOT_SPEED_FAST;target_speed_r=target_speed_l;break;
+//				case 4:	 target_speed_l=BOT_SPEED_MAX;target_speed_r=target_speed_l;break;
 
 //				case 5:	 Kp++; break;
 //				case 8:	 Kp--; break;
@@ -408,22 +428,6 @@ void rc5_number(RemCtrlFuncPar *par) {
 	
 			break;
 		
-	#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-		case 2:
-			switch (par->value1) {
-				case 0:	break;
-				case 1: rc5_toggle_behaviour_new(1); break;
-				case 2: rc5_toggle_behaviour_new(2); break;
-				case 3: rc5_toggle_behaviour_new(3); break;
-				case 4: rc5_toggle_behaviour_new(4); break;
-				case 5: rc5_toggle_behaviour_new(5); break;
-				case 6: rc5_toggle_behaviour_new(6); break;
-				case 7: break;
-				case 8: break;
-				case 9: rc5_set_all_behaviours(); break;
-			}
-			break;
-	#endif
  	}
  	#endif
  }	

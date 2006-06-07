@@ -57,12 +57,36 @@ extern uint16 RC5_Code;        /*!< Letzter empfangener RC5-Code */
 extern volatile int8 sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
 extern volatile int8 sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
 
-extern volatile int sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-extern volatile int sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
+extern volatile int16 sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+extern volatile int16 sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
 
+extern volatile int16 sensEncL;		/*!< Encoder linkes Rad */
+extern volatile int16 sensEncR;		/*!< Encoder rechtes Rad */
+extern volatile float heading_enc;		/*!< Blickrichtung aus Encodern */
+extern volatile float x_enc;			/*!< X-Koordinate aus Encodern [mm] */
+extern volatile float y_enc;			/*!< Y-Koordinate aus Encodern [mm] */
+extern volatile float v_enc_left;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+extern volatile float v_enc_right;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+extern volatile float v_enc_center;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
 
-extern volatile int16 v_left;			/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
-extern volatile int16 v_right;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+#ifdef MEASURE_MOUSE_AVAILABLE
+	extern volatile float heading_mou;		/*!< Aktuelle Blickrichtung relativ zur Startposition aus Mausmessungen */
+	extern volatile float x_mou;			/*!< Aktuelle X-Koordinate in mm relativ zur Startposition aus Mausmessungen */
+	extern volatile float y_mou;			/*!< Aktuelle Y-Koordinate in mm relativ zur Startposition aus Mausmessungen */
+	extern volatile float v_mou_center;	/*!< Geschwindigkeit in mm/s ausschliesslich aus den Maussensorwerten berechnet */
+	extern volatile float v_mou_left;		/*!< ...aufgeteilt auf linkes Rad */
+	extern volatile float v_mou_right;		/*!< ...aufgeteilt auf rechtes Rad */
+#endif
+
+#ifdef MEASURE_COUPLED_AVAILABLE
+	extern volatile float heading;			/*!< Aktuelle Blickrichtung aus gekoppelten Werten */
+	extern volatile float x_pos;			/*!< Aktuelle X-Position aus gekoppelten Werten */
+	extern volatile float y_pos;			/*!< Aktuelle Y-Position aus gekoppelten Werten */
+	extern volatile float v_left;			/*!< Geschwindigkeit linkes Rad aus gekoppelten Werten */
+	extern volatile float v_right;			/*!< Geschwindigkeit rechtes Rad aus gekoppelten Werten */
+	extern volatile float v_center;		/*!< Geschwindigkeit im Zentrum des Bots aus gekoppelten Werten */
+#endif
+
 
 extern volatile int8 sensors_initialized;	/*!< Wird 1 sobald die Sensorwerte zur Verfügung stehen */
 

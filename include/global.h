@@ -60,7 +60,8 @@
 	
 	#define On                    1						/*!< An */
 	#define Off                   0						/*!< Aus */
-	
+
+//	#define PI					3.14159					/*!< Kreiszahl Pi fuer trigonometrische Berechnungen */
 	#define binary(var,bit) ((var >> bit)&1)
 	//#define NULL 0
 #endif

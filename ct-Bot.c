@@ -215,7 +215,7 @@ void init(void){
 					display_printf("RC=%+4d %+4d",sensEncL,sensEncR);
 		
 					display_cursor(4,1);
-					display_printf("Speed= %04d %04d",v_left,v_right);
+					display_printf("Speed= %04d %04d",v_enc_left,v_enc_right);
 					break;
 
 				case 2:
@@ -281,6 +281,38 @@ void init(void){
 									
 						display_cursor(4,1);
 						display_printf("BORF :%d",binary(reset_flag,2)); 
+					#endif
+					#ifdef DISPLAY_ODOMETRIC_INFO
+						/* Zeige Positions- und Geschwindigkeitsdaten */
+						#ifdef MEASURE_COUPLED_AVAILABLE
+							/* Wenn gekoppelte Daten verfuegbar, zeige diese */
+							display_cursor(1,1);
+							display_printf("heading: %3d  ",(int16)heading);
+							display_cursor(2,1);
+							display_printf("x: %3d  y: %3d  ",(int16)x_pos,(int16)y_pos);
+							display_cursor(3,1);
+							display_printf("v_l: %3d v_r: %3d  ",(int16)v_left,(int16)v_right);						
+						#else
+							#ifdef MEASURE_MOUSE_AVAILABLE
+								/* Sind keine gekoppelten aber Mausdaten verfuegbar */
+								display_cursor(1,1);
+								display_printf("heading: %3d  ",(int16)heading_mou);
+								display_cursor(2,1);
+								display_printf("x: %3d  y: %3d  ",(int16)x_mou,(int16)y_mou);
+								display_cursor(3,1);
+								display_printf("v_l: %3d v_r: %3d  ",(int16)v_mou_left,(int16)v_mou_right);
+								display_cursor(4,1);
+								display_printf("squal: %3d v_c: %3d",maus_get_squal(),(int16)v_mou_center);
+							#else
+								/* Sonst Werte aus Encodern zeigen */
+								display_cursor(1,1);
+								display_printf("heading: %3d  ",(int16)heading_enc);
+								display_cursor(2,1);
+								display_printf("x: %3d  y: %3d  ",(int16)x_enc,(int16)y_enc);
+								display_cursor(3,1);
+								display_printf("v_l: %3d v_r: %3d  ",(int16)v_enc_left,(int16)v_enc_right);
+							#endif
+						#endif
 					#endif
 					break;
 					
