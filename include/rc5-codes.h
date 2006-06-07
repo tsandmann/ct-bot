@@ -498,6 +498,8 @@
 	#define RC5_CODE_PWR	(0x300C & RC5_MASK)		/*!< Taste Power */
 	#define RC5_CODE_VIEW	(0x303F & RC5_MASK)		/*!< Taste OSD */
 	#define RC5_CODE_SELECT	(0x303C & RC5_MASK)		/*!< Taste Videotext */
+	#define RC5_CH_PLUS		(0x3020 & RC5_MASK)		/*!< Ch + Taste */
+	#define RC5_CH_MINUS	(0x3021 & RC5_MASK)		/*!< Ch - Taste */
 
 	#define RC5_CODE_UP	(0x3020 & RC5_MASK)		/*!< Taste CH + */
 	#define RC5_CODE_DOWN	(0x3021 & RC5_MASK)		/*!< Taste CH - */
