@@ -167,8 +167,7 @@ void sensor_update(void){
 		/* Winkel ist hier noch im Bogenmass */
 		/* Position berechnen */
 		/* dazu Betrag des Vektors berechnen */
-		if (dHead==0)
-		{
+		if (dHead==0) {
 			/* Geradeausfahrt, deltaY=diffEncL=diffEncR */
 			deltaY=sl;
 		} else {
@@ -177,10 +176,12 @@ void sensor_update(void){
 		}
 		/* Winkel in Grad umrechnen */
 		dHead=dHead/M_PI*180;
+		
 		/* neue Positionen berechnen */
 		heading_enc+=dHead;
-		if (heading_enc>359) heading_enc=heading_enc-360;
-		if (heading_enc<0) heading_enc=heading_enc+360;
+		while (heading_enc>359) heading_enc=heading_enc-360;
+		while (heading_enc<0) heading_enc=heading_enc+360;
+		
 		x_enc+=(float)deltaY*cos(heading_enc*2*M_PI/360);
 		y_enc+=(float)deltaY*sin(heading_enc*2*M_PI/360);	
 		#ifdef MEASURE_MOUSE_AVAILABLE
