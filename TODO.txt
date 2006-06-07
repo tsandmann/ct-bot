@@ -7,15 +7,50 @@ fuer hier genannte Probleme freuen wir uns.
 
 Thema	Datei		Task
 ==========================================================================
-gefahren		bot-logik.c	Low-Level-Verhalten müssen höherpriorisierte über gefahren warnen
-
+gefahren	bot-logik.c	Low-Level-Verhalten müssen andere über gefahren warnen
 Anmeldung	command.c	Der Bot sollte auch auf Welcome-Nachrichten des Sims antworten
-Zeit	Timer.c		Auf dem PC existiert noch keine Routine, die die globalen Zeitvariablen aktualisiert
-Motor				Umrechnung der PWM-Werte in Geschwindigkeiten
-Sensoren			Linearisierung der Sensorwerte
-Sensoren			Berechnung von Translation und Rotation des Zentrums
-Sensoren			Umrechnung der Maussensordaten in Translation  und Rotation des Zentrums
-Sensoren			Abgleich von Maussensor- und Encoder-Daten
-goto	bot-logik.c	Goto-System laesst den Motoren keine Zeit zum Austrudeln.
-Info				Readme-Datei zu Variablen und Funktionen schreiben
-delay	delay.c		Delay von busy-wait auf timer-basiert umstellen
+Zeit		Timer.c		Auf dem PC existiert noch keine Routine, die die globalen Zeitvariablen aktualisiert
+Sensoren				Linearisierung der Sensorwerte
+Info					Readme-Datei zu Variablen und Funktionen schreiben
+delay		delay.c		Delay von busy-wait auf timer-basiert umstellen
+
+Ideen/Ausbaustufen
+# Scanner:	
+  * Abtasten der Umgebung mit den IR-Sensoren
+  * Bot langsam drehen, dabei Sensorwerte auslesen
+  * Daten per UART an den c't-Sim versenden
+  * c't-Sim für Anzeige modifizieren
+  * Daten benutzen um Karte zu zeichnen
+
+# Servosteuerung:
+  * Position anfahren
+  * Position abfragen
+  * Strom prüfen
+  
+# Fehlerkontrolle
+  * Batterieschaltung testen
+  
+# Positionsstack
+  * Funktion push_pos() - Sichert eine Position auf dem Stack
+  * Funktion pop_pos() - Holt eine Position vom Stack
+  * geeignete Datenstruktur konzipieren
+  * drive_stack_behaviour fährt alle Punkte auf dem Stack an. Kann man benutzen, um zum Ursprung zurückzufahren, oder einen Weg zu planen
+  
+# Funk
+  * Kommunikationscode erweitern für Punkt zu Multipunkt / From-To
+  * testen
+
+# Kamera
+  * anschliessen
+  * testen
+  * Sample-Code entwickeln
+
+# CPU-Modul:
+  * EVM-Board besorgen
+  * Experimentieren mit EVM-Board
+
+# Sensorerweiterungen:
+  * experimentieren
+  * weitere Distanzsensoren
+  * Kompass
+  * Beschleunigungssensoren
