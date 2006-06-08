@@ -28,7 +28,7 @@
 #ifdef MCU
 	#include <avr/io.h>
 	#include <avr/interrupt.h>
-	#include <avr/signal.h>
+//	#include <avr/signal.h>
 	#include <avr/wdt.h>
 	#include "bot-2-pc.h"
 #endif
