@@ -31,7 +31,11 @@
 #ifdef SHIFT_AVAILABLE
 
 #include <avr/io.h>
-#include <avr/delay.h>
+#ifdef NEW_AVR_LIB
+	#include <util/delay.h>
+#else
+	#include <avr/delay.h>
+#endif
 
 
 #define SHIFT_OUT				0x1F			/*!< Alle Pins die Ausgänge sind */

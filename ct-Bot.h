@@ -233,3 +233,10 @@
 #define XTAL F_CPU			 /*!< Crystal frequency in Hz */
 
 #define LINE_FEED "\n\r"	/*!< Windows und Linux unterscheiden beim Linefeed. Windows erwarten \n\r, Linux nur \n */
+
+#ifdef MCU
+	#include <avr/interrupt.h>
+	#ifdef SIG_OUTPUT_COMPARE0
+		#define NEW_AVR_LIB
+	#endif
+#endif

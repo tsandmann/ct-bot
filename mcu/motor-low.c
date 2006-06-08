@@ -24,9 +24,11 @@
 */
 #ifdef MCU
 
+#include "ct-Bot.h"
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#ifdef SIG_OUTPUT_COMPARE0
+#ifndef NEW_AVR_LIB
 	#include <avr/signal.h>
 #endif
 #include <stdlib.h>
