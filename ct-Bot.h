@@ -238,7 +238,7 @@
 
 #ifdef MCU
 	#include <avr/interrupt.h>
-	#ifndef SIG_OUTPUT_COMPARE0
+	#ifdef SIGNAL
 		#define NEW_AVR_LIB
 	#endif
 #endif
