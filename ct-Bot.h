@@ -22,6 +22,8 @@
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
 */
+#ifndef CT_BOT_H_DEF
+#define CT_BOT_H_DEF
 
 #include "global.h"
 
@@ -236,7 +238,9 @@
 
 #ifdef MCU
 	#include <avr/interrupt.h>
-	#ifdef SIG_OUTPUT_COMPARE0
+	#ifndef SIG_OUTPUT_COMPARE0
 		#define NEW_AVR_LIB
 	#endif
+#endif
+
 #endif
