@@ -27,7 +27,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <avr/signal.h>
+//#include <avr/signal.h>
 
 #include "adc.h"
 

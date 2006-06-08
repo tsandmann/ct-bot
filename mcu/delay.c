@@ -27,7 +27,7 @@
 
 #include "ct-Bot.h"
 
-#include <avr/delay.h>
+#include <util/delay.h>
 
 #include "timer.h"
 

@@ -27,7 +27,6 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <avr/signal.h>
 #include "ct-Bot.h"
 #include "uart.h"
 #include "command.h"
