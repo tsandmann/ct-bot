@@ -32,7 +32,7 @@
  * @author 	Christoph Grimmer (c.grimmer@futurio.de)
  * @date 	01.12.05
 */
-#include <stdio.h>
+
 
 #include "ct-Bot.h"
 #include "motor.h"
@@ -781,7 +781,7 @@ void bot_turn_behaviour(Behaviour_t* data){
 	#define NORMAL_TURN				0
 	#define FULL_STOP					1
 	static int8 turnState=NORMAL_TURN;
-	
+	static int16 old_turn=-1;
 	// zu drehende Schritte in die korrekte Drehrichtung berechnen
 	int16 to_turn=0;
 	
@@ -801,35 +801,41 @@ void bot_turn_behaviour(Behaviour_t* data){
 			to_turn=(int16)heading_mou-target_angle;
 		}
 	}
-	
+	if (old_turn==-1) old_turn=to_turn;	// im ersten Durchlauf gleichsetzen 
+
 	switch(turnState) {
 		case NORMAL_TURN:
-			// Solange drehen, bis beide Encoder nur noch zwei oder weniger Schritte zu fahren haben
-			if (to_turn<=5)	{
+			// Solange drehen, bis 5 oder weniger Grad zu fahren sind
+			// oder der zu drehende Winkel wieder groesser wird
+			if (to_turn<=5 || to_turn>old_turn)	{
 				// nur noch 5 Grad oder weniger, abbremsen einleiten 
 				turnState=FULL_STOP;
 				break;	
 			}
-			
+			old_turn=to_turn;
 			// Bis 45 Grad kann mit maximaler Geschwindigkeit gefahren werden, danach schrittweise reduzieren
 			// Geschwindigkeit fuer beide Raeder getrennt ermitteln
 			if(to_turn < 15) {
 				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_TURN : BOT_SPEED_TURN;
+				speedWishRight = (turn_direction > 0) ? BOT_SPEED_TURN : -BOT_SPEED_TURN;
 			} else if(to_turn < 45) {
 				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;
+				speedWishRight = (turn_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
 			} else {
 				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_FOLLOW : BOT_SPEED_FOLLOW;
+				speedWishRight = (turn_direction > 0) ? BOT_SPEED_FOLLOW : -BOT_SPEED_FOLLOW;
 			}
 			break;
 		default: 
 			// ist gleichzeitig FULL_STOP, da gleiche Aktion 
 			// Stoppen, State zuruecksetzen und Verhalten beenden
 			speedWishLeft = BOT_SPEED_STOP;
+			speedWishRight= BOT_SPEED_STOP;
 			turnState=NORMAL_TURN;
 			return_from_behaviour(data);
+			old_turn=-1;
 			break;			
 	}
-	speedWishRight = -speedWishLeft; // Raeder drehen immer gegensinnig
 }
 
 /*! 
@@ -987,7 +993,7 @@ void bot_gotoxy_behaviour(Behaviour_t *data){
 	switch(gotoState) {
 		case INITIAL_TURN:
 			gotoState=GOTO_LOOP;
-			float newHeading=atan(yDiff/xDiff)*360/(2*3.1416);
+			float newHeading=atan(yDiff/xDiff)*360/(2*M_PI);
 			bot_turn(data,(int16)(newHeading-heading_mou));
 			break;
 			
@@ -1016,6 +1022,7 @@ void bot_gotoxy_behaviour(Behaviour_t *data){
 			break;
 			
 		case REACHED_POS:
+			gotoState=INITIAL_TURN;
 			return_from_behaviour(data);
 			break;
 	}
@@ -1732,7 +1739,7 @@ void bot_solve_maze_behaviour(Behaviour_t *data){
 			
 		case APPROACH_CORNER:
 			/* ok, nun strecke bis zur Kante berechnen */
-			x=measure_distance*cos(measured_angle*3.1416/180)/10+BOT_DIAMETER;
+			x=measure_distance*cos(measured_angle*M_PI/180)/10+BOT_DIAMETER;
 			mazeState=TURN_TO_BRANCH;
 			bot_drive_distance(data,0,BOT_SPEED_NORMAL,(int16)x);
 			break;

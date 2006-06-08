@@ -40,13 +40,14 @@
 #define SPEED_TO_ENCODER_RATE		9 /*!< Faktor durch den man eine Speed [mm/s] teilt um Ticks/intervall zu erhalten */
 
 /* Odometrie-Konstanten */
-//#define MOUSE_CPI			426		/*!< CPI-Wert aus Kalibrierung */
-//#define MOUSE_FULL_TURN		1550	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis */
+//#define MOUSE_CPI			401		/*!< CPI-Wert aus Kalibrierung */
+//#define MOUSE_FULL_TURN	1430	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis */
 #define MOUSE_CPI			400		/*!< CPI-Wert aus Kalibrierung */
-#define MOUSE_FULL_TURN		1484	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis */
+#define MOUSE_FULL_TURN	1484	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis */
+
 #define WHEEL_DISTANCE		49		/*!< Abstand eines Rades zur Mitte des Bots */
 #define STUCK_DIFF			100		/*!< ab welcher Differenz haben wir durchdrehende Raeder? */
-#define G_SPEED				0.5		/*!< Kopplung Encoder- und Maussensor fuer Geschwindigkeiten (0.0=nur Radencoder, 1.0=nur Maussensor) */
+#define G_SPEED			0.5		/*!< Kopplung Encoder- und Maussensor fuer Geschwindigkeiten (0.0=nur Radencoder, 1.0=nur Maussensor) */
 #define G_POS				0.5		/*!< Kopplung Encoder- und Maussensor fuer Positionen und Winkel (0.0=nur Radencoder, 1.0=nur Maussensor) */
 
 /*! Hilfskonstante */
@@ -113,14 +114,14 @@
 /* Zustaende des bot_do_slalom-Verhaltens */ 
 
 #define SLALOM_STATE_START			0	/*!< Zustand: Bot startet eine Slalomlauf und positioniert sich vor der Saeule. */
-#define SLALOM_STATE_TURN_1			1	/*!< Zustand: Bot dreht sich um 90�. */
+#define SLALOM_STATE_TURN_1		1	/*!< Zustand: Bot dreht sich um 90�. */
 #define SLALOM_STATE_DRIVE_ARC		2	/*!< Zustand: Bot faehrt den Bogen um die Saeule. */
-#define SLALOM_STATE_TURN_2			3	/*!< Zustand: Bot dreht sich fuer den Sweep um 45�. */
+#define SLALOM_STATE_TURN_2		3	/*!< Zustand: Bot dreht sich fuer den Sweep um 45�. */
 #define SLALOM_STATE_SWEEP_RUNNING	4	/*!< Zustand: Bot macht den Sweep. */
-#define SLALOM_STATE_SWEEP_DONE		5	/*!< Zustand: Bot ist fertig mit dem Sweep. */
+#define SLALOM_STATE_SWEEP_DONE	5	/*!< Zustand: Bot ist fertig mit dem Sweep. */
 #define SLALOM_STATE_CHECK_PILLAR	6	/*!< Zustand: Bot ueberprueft, ob er den Slalom fortsetzen kann. */
 
-#define SLALOM_ORIENTATION_LEFT		0
+#define SLALOM_ORIENTATION_LEFT	0
 #define SLALOM_ORIENTATION_RIGHT	1
 
 #define SWEEP_STATE_TURN			0	/*!< Zustand: Drehung im Sweep. */
@@ -129,9 +130,9 @@
 /* Zustaende und Konstanten fuer das bot_solve_maze_behaviour-Verhalten */
 #define BOT_DIAMETER				12
 #define OPTIMAL_DISTANCE			BOT_DIAMETER*10
-#define ADJUST_DISTANCE				10
-#define IGNORE_DISTANCE				240
-#define GROUND_GOAL					0x221
+#define ADJUST_DISTANCE			10
+#define IGNORE_DISTANCE			240
+#define GROUND_GOAL				0x221
 #define STARTPAD1					0x2B2
 #define STARTPAD2					0x332
 
