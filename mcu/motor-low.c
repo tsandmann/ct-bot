@@ -26,6 +26,9 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#ifdef SIG_OUTPUT_COMPARE0
+	#include <avr/signal.h>
+#endif
 #include <stdlib.h>
 
 #include "global.h"

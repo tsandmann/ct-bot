@@ -29,7 +29,7 @@
 #ifdef DISPLAY_AVAILABLE
 
 #include <avr/io.h>
-#include <util/delay.h>
+#include <avr/delay.h>
 #include <stdarg.h>
 #include <stdio.h>
 
