@@ -2031,14 +2031,6 @@ void bot_behave_init(void){
 	insert_behaviour_to_list(&behaviour, new_behaviour(250, bot_avoid_border_behaviour,ACTIVE));
 	insert_behaviour_to_list(&behaviour, new_behaviour(249, bot_avoid_col_behaviour,ACTIVE));
 
-	// Verhalten um einer Linie zu folgen
-	insert_behaviour_to_list(&behaviour, new_behaviour(210, bot_follow_line_behaviour, ACTIVE));
-
-
-	// Verhalten, um ein Labyrinth nach der Hoehlenforscher-Methode loesen 
-	insert_behaviour_to_list(&behaviour, new_behaviour(150, bot_solve_maze_behaviour,INACTIVE));
-	insert_behaviour_to_list(&behaviour, new_behaviour(43, bot_measure_angle_behaviour,INACTIVE));
-	insert_behaviour_to_list(&behaviour, new_behaviour(42, bot_check_wall_behaviour,INACTIVE));
 
 	// Hilfsverhalten zum Anfahren
 	#ifdef MEASURE_MOUSE_AVAILABLE
@@ -2054,6 +2046,16 @@ void bot_behave_init(void){
 	// unwichtigere Hilfsverhalten
 	insert_behaviour_to_list(&behaviour, new_behaviour(100, bot_explore_behaviour,INACTIVE));
 	insert_behaviour_to_list(&behaviour, new_behaviour( 99, bot_do_slalom_behaviour,INACTIVE));
+
+
+	// Verhalten um einer Linie zu folgen
+	insert_behaviour_to_list(&behaviour, new_behaviour(70, bot_follow_line_behaviour, ACTIVE));
+
+	// Verhalten, um ein Labyrinth nach der Hoehlenforscher-Methode loesen 
+	insert_behaviour_to_list(&behaviour, new_behaviour(71, bot_solve_maze_behaviour,INACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(43, bot_measure_angle_behaviour,INACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(42, bot_check_wall_behaviour,INACTIVE));
+
 
 	// Demo-Verhalten, etwas komplexer, inaktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(51, bot_drive_square_behaviour,INACTIVE));
