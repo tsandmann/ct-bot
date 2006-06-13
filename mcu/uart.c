@@ -25,6 +25,8 @@
 
 #ifdef MCU 
 
+#include "ct-Bot.h"
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #ifndef NEW_AVR_LIB
