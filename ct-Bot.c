@@ -77,6 +77,11 @@
 	uint8 reset_flag; 
 #endif
 
+/* Enthaelt den Start des Heaps und ermoeglicht z.B. die Berechnung des verwendeten RAMs */
+#ifdef MCU
+	extern unsigned char __heap_start;
+#endif
+
 #ifdef TEST_AVAILABLE_COUNTER
 	#include <avr/eeprom.h>
 	uint8 resetsEEPROM  __attribute__ ((section (".eeprom")))=0;
@@ -176,7 +181,9 @@ void init(void){
 		  int8 linecounter      = 0;
 		  int8 firstcol         = 0; 
 		#endif 
-		
+		#ifdef MCU
+			uint16 frei;					// enthaelt im Screen 5 den freien RAM-Speicher
+		#endif
 		#ifdef TEST_AVAILABLE_COUNTER
 			static int counter=0;
 		#endif
@@ -317,8 +324,14 @@ void init(void){
 					break;
 					
 				case 4:
-					/* Wird zur Ausgabe von Loggings verwendet. */
+					/* Ausgabe des freien RAMs */
+					#ifdef MCU
+	   					frei = SP - (uint16) &__heap_start;
+						display_cursor(1,1);
+						display_printf("free RAM: %4d ",frei);
+					#endif
 					break;
+
 			}
 			#endif	
 	}

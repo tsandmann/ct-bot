@@ -1,10 +1,12 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-06-13	Torsten Evers (tevers@onlinehome.de) Anzeige des aktuell freien RAMs auf Screen 5 hinzugefuegt (nur MCU!)
+
 2006-06-12	Benjamin Benz (bbe@heise.de) Promo8-FB-Codes erweitert
 
 2006-06-12	Benjamin Benz (bbe@heise.de) Prioritaeten angepasst
 
-2006-06-08  Torsten Evers (tevers@onlinehome.de) Odometrie-Funktionen in sensor_update() integriert, bot_turn() fuer Verwendung von Odometriewerten angepasst und bot_gotoxy() eingefuehrt
+2006-06-08	Torsten Evers (tevers@onlinehome.de) Odometrie-Funktionen in sensor_update() integriert, bot_turn() fuer Verwendung von Odometriewerten angepasst und bot_gotoxy() eingefuehrt
 
 2006-05-23	Benjamin Benz (bbe@heise.de) Makefile ueberarbeitet
 
