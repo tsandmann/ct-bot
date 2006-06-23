@@ -1,4 +1,4 @@
-/*
+ /*
  * c't-Sim - Robotersimulator fuer den c't-Bot
  * 
  * This program is free software; you can redistribute it
@@ -138,7 +138,7 @@
 
 
 /* Konstanten fuer das bot_follow_line_behaviour-Verhalten */
-#define LINE_SENSE					0x300	// Ab wann ist es Linie? (Fuer den Sim auf 300 setzen, helle Tischflaeche 50)
+#define LINE_SENSE					0x350	// Ab wann ist es Linie? (Fuer den Sim auf 350 setzen, helle Tischflaeche 50)
 
 
 
