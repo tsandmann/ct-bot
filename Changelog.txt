@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-07-03  Benjamin Benz (bbe@heise.de) Bugfix in ir_isr()
+
 2006-06-22  Peter Koenig (pek@heise.de) Nach Hinweis von Torsten Evers den Wert LINE_SENSE in bot-local.h auf 0x350 gesetzt, da Bot sonst die 0x323 vom rechten Startpad als Linie interpretiert
 
 2006-06-13	Torsten Evers (tevers@onlinehome.de) Anzeige des aktuell freien RAMs auf Screen 5 hinzugefuegt (nur MCU!)

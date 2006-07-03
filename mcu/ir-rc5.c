@@ -79,7 +79,7 @@ void ir_isr(void) {
 		sample = 0;
 	}
 	
-	// bittimer erh�hen (bleibt bei 255 stehen)
+	// bittimer erhoehen (bleibt bei 255 stehen)
 	if (ir_bittimer<255) {
 		ir_bittimer++;
 	}
@@ -87,8 +87,8 @@ void ir_isr(void) {
 	// flankenerkennung
 	if ( ir_lastsample != sample) {
 		if (ir_bittimer<=IR_SAMPLES_PER_BIT_MIN) {
-			// flanke kommt zu fr�h: paket verwerfen
-			ir_bitcount==0;
+			// flanke kommt zu frueh: paket verwerfen
+			ir_bitcount=0;
 		} else {
 			// Startbit
 			if (ir_bitcount==0) {
@@ -104,7 +104,7 @@ void ir_isr(void) {
 				// bittimer-reset
 				ir_bittimer = 0;
 				
-			// Bits 2..14: nur Flanken innerhalb des Bits ber�cksichtigen
+			// Bits 2..14: nur Flanken innerhalb des Bits beruecksichtigen
 			} else {
 				if (ir_bittimer >= IR_SAMPLES_PER_BIT_EARLY) {
 					if(ir_bittimer<=IR_SAMPLES_PER_BIT_LATE){
