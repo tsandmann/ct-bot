@@ -79,6 +79,13 @@ volatile uint8 enc_r=0;		/*!< Puffer fuer die letzten Encoder-Staende */
 volatile uint8 enc_l_cnt=0;	/*!< Entprell-Counter fuer L-Encoder	 */
 volatile uint8 enc_r_cnt=0;	/*!< Entprell-Counter fuer R-Encoder	 */
 
+/* Zeit der letzten Messung der Distanzsensoren */
+uint16 olds_dist;
+uint16 oldms_dist;
+uint8 measure_count;
+int16 distLeft[3];
+int16 distRight[3];
+
 /*!
  * Initialisiere alle Sensoren
  */
@@ -105,25 +112,6 @@ void bot_sens_init(void){
 	timer_2_init();
 }
 
-/*! 
- * Konvertiert einen Sensorwert vom analogen Abstandssensor in mm
- * Da die Sensoren eine nichtlineare Kennlinie haben, 
- * ist ein wenig Umrechnung noetig.
- * Diese Funktion ist genau der richtige Ort dafuer
- * @param sensor_data Die Daten vom analogen Sensor
- * @return Distanz in mm
- */
-int16 sensor_abstand(int16 sensor_data){
-	// TODO reale Kennlinie beachten!!!!
-	int16 dist=SENSDISTSLOPE / (sensor_data - SENSDISTOFFSET);
-	
-	if (dist > SENS_IR_MAX_DIST)
-		return SENS_IR_INFINITE;
-	else
-		return dist;
-	
-//	return 1023-sensor_data;
-}
 
 /*!
  * Alle Sensoren aktualisieren
@@ -137,6 +125,9 @@ int16 sensor_abstand(int16 sensor_data){
  * zu aktualiseren, der Bot braucht auch Zeit zum nachdenken ueber Verhalten
  */
 void bot_sens_isr(void){
+	int16 distL;
+	int16 distR;
+	
 	ENA_on(ENA_KANTLED|ENA_MAUS|ENA_SCHRANKE|ENA_KLAPPLED);
 
 	#ifdef MAUS_AVAILABLE
@@ -158,12 +149,43 @@ void bot_sens_isr(void){
 	sensLineR = adc_read(SENS_M_R);
 	ENA_off(ENA_MAUS);	
 
-	//Aktualisiere Distanz-Sensoren
+	// Aktualisiere Distanz-Sensoren
 	// Die Distanzsensoren sind im Normalfall an, da sie 50 ms zum booten brauchen
-//	sensDistL= adc_read(SENS_ABST_L);
-//	sensDistR= adc_read(SENS_ABST_R);
-	sensDistL= sensor_abstand(adc_read(SENS_ABST_L));
-	sensDistR= sensor_abstand(adc_read(SENS_ABST_R));
+	// Abfrage nur alle 100ms
+	if (timer_get_ms_since(olds_dist,oldms_dist)>=100){
+		// Zeit fuer naechste Messung merken
+		olds_dist=timer_get_s();
+		oldms_dist=timer_get_ms();
+		
+		// wenn Kalibrierung gewuenscht, den Part Messen und Korrigieren kommentieren
+		// und Kalibrieren auskommentieren
+		// Kalibirieren
+		//distL=adc_read(SENS_ABST_L);
+		//distR=adc_read(SENS_ABST_R);
+		
+		// Messen
+		distL=SENSDISTSLOPELEFT / (adc_read(SENS_ABST_L) - SENSDISTOFFSETLEFT);
+		distR=SENSDISTSLOPERIGHT / (adc_read(SENS_ABST_R) - SENSDISTOFFSETRIGHT);
+		
+		// Korrigieren, wenn ungueltiger Wert
+		if (distL > SENS_IR_MAX_DIST || distL<0)
+			distL=SENS_IR_INFINITE;
+
+		if (distR > SENS_IR_MAX_DIST || distR<0)
+			distR=SENS_IR_INFINITE;
+		
+		// Messwert merken
+		distLeft[measure_count]=distL;
+		distRight[measure_count]=distR;
+
+		measure_count++;
+		if (measure_count==3) measure_count=0;
+		
+		// Schnittwert bilden
+		sensDistL=(distLeft[0]+distLeft[1]+distLeft[2])/3;
+		sensDistR=(distRight[0]+distRight[1]+distRight[2])/3;
+	}
+
 		
 	// ------- digitale Sensoren ------------------
 	sensDoor = (SENS_DOOR_PINR >> SENS_DOOR) & 0x01;
