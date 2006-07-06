@@ -192,6 +192,8 @@ void bot_solve_maze(Behaviour_t *data);
  */
 void bot_scan(Behaviour_t* caller);
 
+void bot_follow_line(Behaviour_t *caller);
+
 #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
   
  /*!
