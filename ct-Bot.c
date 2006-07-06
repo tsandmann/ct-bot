@@ -326,10 +326,13 @@ void init(void){
 				case 4:
 					/* Ausgabe des freien RAMs */
 					#ifdef MCU
-	   					frei = SP - (uint16) &__heap_start;
-						display_cursor(1,1);
-						display_printf("free RAM: %4d ",frei);
+						#ifndef LOG_DISPLAY_AVAILABLE
+		   					frei = SP - (uint16) &__heap_start;
+							display_cursor(1,1);
+							display_printf("free RAM: %4d ",frei);
+						#endif
 					#endif
+					
 					break;
 
 			}
@@ -500,8 +503,8 @@ void init(void){
 			if (sensors_initialized ==1 )
 				bot_behave();
 			#ifdef LOG_AVAILABLE
-				else
-					LOG_DEBUG(("sens not init"));
+				//else
+					//LOG_DEBUG(("sens not init"));
 			#endif
 		#endif
 			
