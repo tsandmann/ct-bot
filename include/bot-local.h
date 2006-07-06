@@ -129,7 +129,7 @@
 
 /* Zustaende und Konstanten fuer das bot_solve_maze_behaviour-Verhalten */
 #define BOT_DIAMETER				12
-#define OPTIMAL_DISTANCE			BOT_DIAMETER*10
+#define OPTIMAL_DISTANCE			BOT_DIAMETER*12
 #define ADJUST_DISTANCE			10
 #define IGNORE_DISTANCE			240
 #define GROUND_GOAL				0x221

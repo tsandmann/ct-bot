@@ -105,12 +105,16 @@ int16 wall_distance;			/*!< enthaelt gemessene Entfernung */
 int8 measure_direction;			/*!< enthaelt MEASURE_RIGHT oder MEASURE_LEFT */
 int16 measure_distance;			/*!< enthaelt maximale Messentfernung, enthaelt nach der Messung die Entfernung */
 int16 measured_angle;			/*!< enthaelt gedrehten Winkel oder 0, falls nichts entdeckt */
-int16 startEncL;				/*!< enthaelt Encoderstand zu Beginn der Messung */
-int16 startEncR;				/*!< enthaelt Encoderstand zu Beginn der Messung */
-
+#ifdef MEASURE_MOUSE_AVAILABLE
+	int16 start_heading;		/*!< Blickwinkel des Bots zu Beginn der Messung */
+#else
+	int16 startEncL;				/*!< enthaelt Encoderstand zu Beginn der Messung */
+	int16 startEncR;				/*!< enthaelt Encoderstand zu Beginn der Messung */
+#endif
 /* Konstanten fuer measure_angle_behaviour-Verhalten */
 #define MEASURE_LEFT				1
 #define MEASURE_RIGHT				-1
+
 
 /*! Liste mit allen Verhalten */
 Behaviour_t *behaviour = NULL;
@@ -779,12 +783,16 @@ void bot_drive_distance(Behaviour_t* caller,int8 curve, int16 speed, int16 cm){
 void bot_turn_behaviour(Behaviour_t* data){
 	// Zustaende fuer das bot_turn_behaviour-Verhalten 
 	#define NORMAL_TURN				0
-	#define FULL_STOP					1
+	#define STOP_TURN				1
+	#define FULL_STOP				3
 	static int8 turnState=NORMAL_TURN;
 	static int16 old_turn=-1;
+	static int8 heading_count=0;
+	static int16 old_heading=-1;
+	static int8 correctMode=False;
 	// zu drehende Schritte in die korrekte Drehrichtung berechnen
 	int16 to_turn=0;
-	
+		
 	if (turn_direction>0){
 		// Winkelzaehler naehert sich von Unten 
 		if (heading_mou>target_angle) {
@@ -805,35 +813,56 @@ void bot_turn_behaviour(Behaviour_t* data){
 
 	switch(turnState) {
 		case NORMAL_TURN:
-			// Solange drehen, bis 5 oder weniger Grad zu fahren sind
+			// Solange drehen, bis 3 oder weniger Grad zu fahren sind
 			// oder der zu drehende Winkel wieder groesser wird
-			if (to_turn<=5 || to_turn>old_turn)	{
-				// nur noch 5 Grad oder weniger, abbremsen einleiten 
-				turnState=FULL_STOP;
-				break;	
+			if (to_turn>old_turn) {
+				/* Nachlauf abwarten */
+				turnState=STOP_TURN;
+				break;
 			}
 			old_turn=to_turn;
 			// Bis 45 Grad kann mit maximaler Geschwindigkeit gefahren werden, danach schrittweise reduzieren
 			// Geschwindigkeit fuer beide Raeder getrennt ermitteln
-			if(to_turn < 15) {
-				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_TURN : BOT_SPEED_TURN;
-				speedWishRight = (turn_direction > 0) ? BOT_SPEED_TURN : -BOT_SPEED_TURN;
-			} else if(to_turn < 45) {
-				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;
-				speedWishRight = (turn_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
-			} else {
+			if (to_turn>8) {
 				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_FOLLOW : BOT_SPEED_FOLLOW;
 				speedWishRight = (turn_direction > 0) ? BOT_SPEED_FOLLOW : -BOT_SPEED_FOLLOW;
+			} else {
+				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;
+				speedWishRight = (turn_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
 			}
 			break;
+			
+		case STOP_TURN:
+			if ((int16)heading_mou!=old_heading) {
+				old_heading=(int16)heading_mou;
+				heading_count=0;
+			} else {
+				if (heading_count<3) {
+					heading_count++;
+				} else {
+					heading_count=0;
+					old_heading=-1;
+					old_turn=-1;
+					turn_direction=-turn_direction;
+					turnState=FULL_STOP;
+					speedWishLeft =	BOT_SPEED_STOP;
+					speedWishRight= BOT_SPEED_STOP;
+					correctMode=True;
+				}						
+			}
+			break;
+			
 		default: 
 			// ist gleichzeitig FULL_STOP, da gleiche Aktion 
 			// Stoppen, State zuruecksetzen und Verhalten beenden
 			speedWishLeft = BOT_SPEED_STOP;
 			speedWishRight= BOT_SPEED_STOP;
 			turnState=NORMAL_TURN;
-			return_from_behaviour(data);
 			old_turn=-1;
+			heading_count=0;
+			old_heading=-1;
+			correctMode=False;
+			return_from_behaviour(data);
 			break;			
 	}
 }
@@ -851,6 +880,7 @@ void bot_turn(Behaviour_t* caller,int16 degrees){
 	if (target_angle<0) target_angle+=360;
 	switch_to_behaviour(caller, bot_turn_behaviour,NOOVERRIDE);
 }
+
 #else
 /*!
  * Das Verhalten laesst den Bot eine Punktdrehung durchfuehren. 
@@ -1340,6 +1370,10 @@ void bot_check_wall_behaviour(Behaviour_t *data) {
 	static int8 correctDistance=CORRECT_NONE;	
 	/* letzte, gueltige Distanz fuer Abweichungsberechnung */
 	static int16 lastDistance=0;
+	/* enthaelt anzahl der +/-5 identischen Messungen */
+	static int8 measureCount=0;
+	/* letzter Messwert */
+	static int16 lastSensor=0;
 	
 	int16 sensor;	/* fuer temporaer benutzte Senorwerte */
 
@@ -1362,6 +1396,24 @@ void bot_check_wall_behaviour(Behaviour_t *data) {
 			} else {
 				sensor=sensDistR;
 			}
+			/* dafuer sorgen, dass wir nur verlaessliche Werte haben
+			 * dazu muss der wert dreimal nacheinander max. um +/- 5
+			 * unterschiedlich sein */
+			 if (measureCount==0) {
+			 	lastSensor=sensor;
+			 	measureCount++;
+			 	break;
+			 }
+			 if (sensor>=lastSensor-5 && sensor<=lastSensor+5 && measureCount<4) {
+			 	/* Messwert ist ok */
+			 	measureCount++;
+			 	break;
+			 } else  if (measureCount<4) {
+			 	/* Messwert weicht zu doll ab -> von Neuem messen */
+			 	measureCount=0;
+			 	break;
+			 }
+			 /* ok, wir hatten drei Messungen mit nahezu identischen Werten */
 			
 			/* keine wand in eingestellter Maximalentfernung? */
 			if (sensor>IGNORE_DISTANCE) {
@@ -1459,7 +1511,121 @@ void bot_check_wall(Behaviour_t *caller,int8 direction) {
 	switch_to_behaviour(caller, bot_check_wall_behaviour,NOOVERRIDE);
 }
 
-
+#ifdef MEASURE_MOUSE_AVAILABLE
+	/*!
+	 * Das Verhalten dreht den Bot in die angegebene Richtung bis ein Hindernis
+	 * im Sichtbereich erscheint, das eine Entfernung bis max. zur angegebenen
+	 * Distanz zum Bot hat.
+	 */
+	 
+	void bot_measure_angle_behaviour(Behaviour_t *caller) {
+		/* Zustaende measure_angle_behaviour-Verhalten */
+		#define MEASURE_TURN				0
+		#define FOUND_OBSTACLE				1
+		#define MEASUREMENT_DONE			2
+		
+		static int8 measureState=MEASURE_TURN;
+	
+		/* enthaelt anzahl der +/-5 identischen Messungen */
+		static int8 measureCount=0;
+		/* letzter Messwert */
+		static int16 lastSensor=0;
+	
+		/* bereits gedrehten Winkel */
+		int16 turned_angle=0;
+		if (measure_direction>0) {
+			if ((int16)heading_mou<start_heading) {
+				/* war ein ueberlauf */
+				turned_angle=360-start_heading+(int16)heading_mou;
+			} else {
+				/* sonst normale differenz berechnen */
+				turned_angle=(int16)heading_mou-start_heading;
+			}
+		} else {
+			if ((int16)heading_mou>start_heading) {
+				/* war ein ueberlauf */
+				turned_angle=360-(int16)heading_mou+start_heading;
+			} else {
+				turned_angle=start_heading-(int16)heading_mou;
+			}
+			
+		}
+		
+		/* sensorwert abhaengig von der Drehrichtung abnehmen */
+		int16 sensor=(measure_direction==MEASURE_LEFT)?sensDistL:sensDistR;
+		/* solange drehen, bis Hindernis innerhalb Messstrecke oder 360 Grad komplett */
+		switch(measureState){
+			case MEASURE_TURN:
+				/* nicht mehr als eine komplette Drehung machen! */
+				if (turned_angle>=360) {
+					measure_direction=-measure_direction;
+					measureState=MEASUREMENT_DONE;
+					bot_turn(caller,measure_direction*turned_angle);
+					measured_angle=0;		/* kein Hindernis gefunden */
+					break;
+				}
+				/* Ist ein Objekt in Reichweite? */
+				if (sensor<=measure_distance) {
+					speedWishLeft=BOT_SPEED_STOP;
+					speedWishRight=BOT_SPEED_STOP;
+					measureState=FOUND_OBSTACLE;
+					break;
+				}
+				/* Beginnen, zurueckzudrehen */
+				speedWishLeft = (measure_direction > 0) ? -BOT_SPEED_FOLLOW : BOT_SPEED_FOLLOW;
+				speedWishRight = (measure_direction > 0) ? BOT_SPEED_FOLLOW : -BOT_SPEED_FOLLOW;
+				break;
+				
+			case FOUND_OBSTACLE:
+				 /* dafuer sorgen, dass wir nur verlaessliche Werte haben
+				 * dazu muss der wert dreimal nacheinander max. um +/- 5
+				 * unterschiedlich sein */
+				 if (measureCount==0) {
+				 	lastSensor=sensor;
+				 	measureCount++;
+				 	break;
+				 }
+				 if (sensor>=lastSensor-5 && sensor<=lastSensor+5 && measureCount<4) {
+				 	/* Messwert ist ok */
+				 	measureCount++;
+				 	break;
+				 } else  if (measureCount<4) {
+				 	/* Messwert weicht zu doll ab -> von Neuem messen */
+				 	measureCount=0;
+				 	break;
+				 }
+				 /* ok, wir hatten drei Messungen mit nahezu identischen Werten */
+				measure_distance=sensor;
+				/* Hindernis gefunden, nun Bot wieder in Ausgangsstellung drehen */
+				measure_direction=-measure_direction;
+				measured_angle=turned_angle;
+				measureState=MEASUREMENT_DONE;
+				bot_turn(caller,measure_direction*turned_angle);
+				break;
+				
+			case MEASUREMENT_DONE:
+				measureState=MEASURE_TURN;
+				measureCount=0;
+				return_from_behaviour(caller);
+				break;
+		}	
+	}
+	
+	/*!
+	 * Das Verhalten dreht den Bot in die angegebene Richtung bis ein Hindernis
+	 * im Sichtbereich erscheint, das eine Entfernung bis max. zur angegebenen
+	 * Distanz zum Bot hat.
+	 */
+	
+	void bot_measure_angle(Behaviour_t *caller, int8 direction, int16 distance) {
+		/* maximale Messentfernung und Richtung setzen */
+		measure_direction=direction;
+		measure_distance=distance;
+		/* Heading zu Anfang des Verhaltens merken */
+		start_heading=(int16)heading_mou;
+		switch_to_behaviour(caller, bot_measure_angle_behaviour,NOOVERRIDE);	
+	}
+#else
 /*!
  * Das Verhalten dreht den Bot in die angegebene Richtung bis ein Hindernis
  * im Sichtbereich erscheint, das eine Entfernung bis max. zur angegebenen
@@ -1504,8 +1670,8 @@ void bot_measure_angle_behaviour(Behaviour_t *caller) {
 				break;
 			}
 			/* Beginnen, zurueckzudrehen */
-			speedWishLeft = (measure_direction > 0) ? -BOT_SPEED_NORMAL : BOT_SPEED_NORMAL;
-			speedWishRight = (measure_direction > 0) ? BOT_SPEED_NORMAL : -BOT_SPEED_NORMAL;
+			speedWishLeft = (measure_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;
+			speedWishRight = (measure_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
 			break;
 			
 		case FOUND_OBSTACLE:
@@ -1513,8 +1679,8 @@ void bot_measure_angle_behaviour(Behaviour_t *caller) {
 			measure_direction=-measure_direction;
 			measured_angle=(int16)((long)(turnedSteps*360)/ANGLE_CONSTANT);
 			measureState=TURN_BACK;
-			speedWishLeft = (measure_direction > 0) ? -BOT_SPEED_NORMAL : BOT_SPEED_NORMAL;
-			speedWishRight = (measure_direction > 0) ? BOT_SPEED_NORMAL : -BOT_SPEED_NORMAL;
+			speedWishLeft = (measure_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;
+			speedWishRight = (measure_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
 			break;
 			
 		case TURN_COMPLETED:
@@ -1532,8 +1698,8 @@ void bot_measure_angle_behaviour(Behaviour_t *caller) {
 				measureState=TURN_COMPLETED;
 				break;
 			}
-			speedWishLeft = (measure_direction > 0) ? -BOT_SPEED_NORMAL : BOT_SPEED_NORMAL;
-			speedWishRight = (measure_direction > 0) ? BOT_SPEED_NORMAL : -BOT_SPEED_NORMAL;
+			speedWishLeft = (measure_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;
+			speedWishRight = (measure_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
 			break;
 			
 		case CORRECT_ANGLE:
@@ -1586,7 +1752,7 @@ void bot_measure_angle(Behaviour_t *caller, int8 direction, int16 distance) {
 	startEncR=sensEncR;
 	switch_to_behaviour(caller, bot_measure_angle_behaviour,NOOVERRIDE);	
 }
-
+#endif
 /*!
  * Das Verhalten findet seinen Weg durch ein Labyrinth, das nach gewissen Grundregeln gebaut ist
  * in nicht immer optimaler Weise aber in jedem Fall. Es arbeitet nach dem Hoehlenforscher-Algorithmus.
