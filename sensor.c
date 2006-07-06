@@ -27,6 +27,7 @@
 #include "timer.h"
 #include "bot-local.h"
 #include "math.h"
+#include "sensor_correction.h"
 #ifdef SRF10_AVAILABLE
 	#include "srf10.h"
 #endif
@@ -89,6 +90,25 @@ volatile int8 sensors_initialized = 0;	/*!< Wird 1 sobald die Sensorwerte zur Ve
 #ifdef SRF10_AVAILABLE
 	volatile uint16 sensSRF10;	/*!< Messergebniss Ultraschallsensor */
 #endif
+
+
+/*! Linearisiert die Sensorwerte
+ * @param left Linker Rohwert [0-1023]
+ * @param right Rechter Rohwert [0-1023]
+ */
+void sensor_abstand(uint16 left, uint16 right){
+	sensDistL = SENSDISTSLOPELEFT / (left - SENSDISTOFFSETLEFT);
+	sensDistR = SENSDISTSLOPERIGHT / (right - SENSDISTOFFSETRIGHT);
+	
+			// Korrigieren, wenn ungueltiger Wert
+	if (sensDistL > SENS_IR_MAX_DIST || sensDistL<0)
+		sensDistL=SENS_IR_INFINITE;
+
+	if (sensDistR > SENS_IR_MAX_DIST || sensDistR<0)
+		sensDistR=SENS_IR_INFINITE;
+	
+}
+
 /*! Sensor_update
 * Kuemmert sich um die Weiterverarbeitung der rohen Sensordaten 
 */

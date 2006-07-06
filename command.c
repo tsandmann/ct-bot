@@ -303,8 +303,8 @@ int command_evaluate(void){
 		// Einige Kommandos ergeben nur fuer simulierte Bots Sinn
 		#ifdef PC
 			case CMD_SENS_IR:
-				sensDistL=received_command.data_l;
-				sensDistR=received_command.data_r;
+				sensor_abstand(received_command.data_l,received_command.data_r);
+				
 				#ifdef TIME_AVAILABLE
 					system_time_isr();		/* Einmal pro Update-Zyklus aktualisieren wir die Systemzeit */
 				#endif

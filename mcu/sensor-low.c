@@ -125,8 +125,6 @@ void bot_sens_init(void){
  * zu aktualiseren, der Bot braucht auch Zeit zum nachdenken ueber Verhalten
  */
 void bot_sens_isr(void){
-	int16 distL;
-	int16 distR;
 	
 	ENA_on(ENA_KANTLED|ENA_MAUS|ENA_SCHRANKE|ENA_KLAPPLED);
 
@@ -162,28 +160,16 @@ void bot_sens_isr(void){
 		// Kalibirieren
 		//distL=adc_read(SENS_ABST_L);
 		//distR=adc_read(SENS_ABST_R);
-		
-		// Messen
-		distL=SENSDISTSLOPELEFT / (adc_read(SENS_ABST_L) - SENSDISTOFFSETLEFT);
-		distR=SENSDISTSLOPERIGHT / (adc_read(SENS_ABST_R) - SENSDISTOFFSETRIGHT);
-		
-		// Korrigieren, wenn ungueltiger Wert
-		if (distL > SENS_IR_MAX_DIST || distL<0)
-			distL=SENS_IR_INFINITE;
 
-		if (distR > SENS_IR_MAX_DIST || distR<0)
-			distR=SENS_IR_INFINITE;
-		
 		// Messwert merken
-		distLeft[measure_count]=distL;
-		distRight[measure_count]=distR;
+		distLeft[measure_count]=adc_read(SENS_ABST_L);
+		distRight[measure_count]=adc_read(SENS_ABST_R);
 
 		measure_count++;
 		if (measure_count==3) measure_count=0;
 		
 		// Schnittwert bilden
-		sensDistL=(distLeft[0]+distLeft[1]+distLeft[2])/3;
-		sensDistR=(distRight[0]+distRight[1]+distRight[2])/3;
+		sensor_abstand((distLeft[0]+distLeft[1]+distLeft[2])/3,(distRight[0]+distRight[1]+distRight[2])/3);
 	}
 
 		

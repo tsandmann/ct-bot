@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-07-06  Benjamin Benz (bbe@heise.de) Kennlinien nun fuer virtuelle und reale Bots!
+
 2006-07-04  Torsten Evers (tevers@onlinehome.de) Getrennte Stuetzwerte fuer Distanzermittlung DP2D12 und Bildung von Schnittwerten aus den letzten drei Messungen eingefuehrt
 
 2006-07-04  Benjamin Benz (bbe@heise.de) Timer_steps gerundet

@@ -99,4 +99,10 @@ extern volatile int8 sensors_initialized;	/*!< Wird 1 sobald die Sensorwerte zur
 */
 void sensor_update(void);
 
+/*! Linearisiert die Sensorwerte
+ * @param left Linker Rohwert [0-1023]
+ * @param right Rechter Rohwert [0-1023]
+ */
+void sensor_abstand(uint16 left, uint16 right);
+
 #endif /*SENSOR_H_*/
