@@ -250,8 +250,8 @@ void sensor_update(void){
 	if (timer_get_ms_since(olds_speed,oldms_speed)>250) {	// sollte genau 1x pro Sekunde zutreffen
 		olds_speed=timer_get_s();
 		oldms_speed=timer_get_ms();
-		v_enc_left=  (((sensEncL - lastEncL1) * WHEEL_PERIMETER) / ENCODER_MARKS)*0.25;
-		v_enc_right= (((sensEncR - lastEncR1) * WHEEL_PERIMETER) / ENCODER_MARKS)*0.25;
+		v_enc_left=  (((sensEncL - lastEncL1) * WHEEL_PERIMETER) / ENCODER_MARKS)*4;
+		v_enc_right= (((sensEncR - lastEncR1) * WHEEL_PERIMETER) / ENCODER_MARKS)*4;
 		v_enc_center=(v_enc_left+v_enc_right)/2;
 		lastEncL1= sensEncL;
 		lastEncR1= sensEncR;
@@ -309,8 +309,8 @@ void sensor_update(void){
 			/* Geschwindigkeiten berechnen */
 			right_radius=radius-WHEEL_DISTANCE;
 			left_radius=radius+WHEEL_DISTANCE;
-			v_mou_right=lastHead/360*2*M_PI*right_radius*0.25;
-			v_mou_left=lastHead/360*2*M_PI*left_radius*0.25;
+			v_mou_right=lastHead/360*2*M_PI*right_radius*4;
+			v_mou_left=lastHead/360*2*M_PI*left_radius*4;
 			lastDistance=0;
 			lastHead=0;
 			old_x=x_mou;
