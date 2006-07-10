@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-07-09  Benjamin Benz (bbe@heise.de) Mauskalibrierung an ct-Sim angepasst
+
 2006-07-09	Torsten Evers (tevers@onlinehome.de) Geschwindigkeitsberechnung in sensor.c nach Hinweis von Frank Menzel korrigiert
 
 2006-07-06  Torsten Evers (tevers@onlinehome.de) Diverse Verbesserungen an bot_maze()

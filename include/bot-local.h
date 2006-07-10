@@ -42,8 +42,8 @@
 /* Odometrie-Konstanten */
 //#define MOUSE_CPI			401		/*!< CPI-Wert aus Kalibrierung */
 //#define MOUSE_FULL_TURN	1430	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis */
-#define MOUSE_CPI			400		/*!< CPI-Wert aus Kalibrierung */
-#define MOUSE_FULL_TURN	1484	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis */
+#define MOUSE_CPI			395		/*!< CPI-Wert aus Kalibrierung */
+#define MOUSE_FULL_TURN	1379	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis */
 
 #define WHEEL_DISTANCE		49		/*!< Abstand eines Rades zur Mitte des Bots */
 #define STUCK_DIFF			100		/*!< ab welcher Differenz haben wir durchdrehende Raeder? */
