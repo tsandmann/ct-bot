@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-07-11  Benjamin Benz (bbe@heise.de) Toggle-Bit nach einem Hinweis von Frank Menzel korrigiert
+
 2006-07-09  Benjamin Benz (bbe@heise.de) Mauskalibrierung an ct-Sim angepasst
 
 2006-07-09	Torsten Evers (tevers@onlinehome.de) Geschwindigkeitsberechnung in sensor.c nach Hinweis von Frank Menzel korrigiert

@@ -320,7 +320,7 @@ static void rc5_bot_change_speed(RemCtrlFuncPar *par) {
  */
 void rc5_control(void){
 	uint16 run;
-	static uint16 RC5_Last_Toggle = 0;   /*!< Toggle-Wert des zuletzt empfangenen RC5-Codes*/
+	static uint16 RC5_Last_Toggle = 1;   /*!< Toggle-Wert des zuletzt empfangenen RC5-Codes*/
 	 
 	uint16 rc5 = ir_read();
 	
