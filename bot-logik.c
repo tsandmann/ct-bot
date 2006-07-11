@@ -372,7 +372,8 @@ void bot_scan_behaviour(Behaviour_t *data){
 				i=0;
 				readingL >>= 4;	// Durch 16 teilen
 				readingR >>= 4;	// Durch 16 teilen
-				LOG_INFO(("%03d: %04 %04",step*3, readingL, readingR));
+				//LOG_INFO(("%03d: %04 %04",step*3, readingL, readingR));
+				LOG_INFO(("%03d: %03d %03d",step*ANGLE_RESOLUTION, readingL, readingR));
 			} else {	// aufadieren ueber 16 Zyklen
 				readingL+=sensDistL;
 				readingR+=sensDistR;
