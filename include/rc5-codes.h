@@ -75,8 +75,8 @@
 	//#define RC_HAVE_LIFETEC_LT3607
  #else
 	// Dies ist die Standard-Fernbedienung unter anderem fuer den Sim
-	//#define RC_HAVE_HQ_RC_UNIVERS29_334
-	#define RC_HAVE_DEFAULT
+	#define RC_HAVE_HQ_RC_UNIVERS29_334
+	//#define RC_HAVE_DEFAULT
 	
 #endif
 
