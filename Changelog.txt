@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-07-20 Benjamin Benz [bbe@heise.de]: Thread-Modell grundlegend ueberarbeitet. Bot und sim nun synchron
+
 2006-07-11  Benjamin Benz (bbe@heise.de) Sensor-correction grob an ct-sim angepasst
 
 2006-07-11  Frank Menzel(menzelfr@gmx.de) Korrekturen bzgl. Logausgabe

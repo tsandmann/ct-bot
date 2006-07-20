@@ -70,7 +70,7 @@ command_t received_command;		/*!< Puffer fuer Kommandos */
  * Greift auf low_read() zurueck
  * @see low_read()
  */
-int command_read(void){
+int8 command_read(void){
 	int bytesRcvd;
 	int start=0;			// start des Kommandos
 	int i;			
@@ -93,6 +93,7 @@ int command_read(void){
 
 	// Suche nach dem Beginn des Frames
 	while ((start<bytesRcvd)&&(buffer[start] != CMD_STARTCODE)) {	
+		printf("!!!\n");
 		start++;
 	}
 		
@@ -336,6 +337,9 @@ int command_evaluate(void){
 				sensError=(char)received_command.data_l;
 				sensor_update();	/* Error ist der letzte uebertragene Sensorwert, danach koennen wir uns um allgemeine updates kümmern*/
 				break;
+			case CMD_DONE:
+				simultime=received_command.data_l;
+			//	printf("X-Frame for Simultime = %d received ",simultime);
 		#endif
 		default:
 			analyzed=0;		// Command was not analysed yet

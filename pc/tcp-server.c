@@ -31,6 +31,10 @@
 #include "display.h"
 #include "command.h"
 
+#include <time.h>
+#include <sys/time.h>
+
+
 /* Linux with glibc:
  *   _REENTRANT to grab thread-safe libraries
  *   _POSIX_SOURCE to get POSIX semantics
@@ -93,8 +97,10 @@ void tcp_server_init(void){
 	
 	
 	// Create socket for incoming connections
-	if ((server = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
-		printf("socket() failed");
+	if ((server = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0){
+		printf("socket() failed\n");
+		exit(1);
+	}
 	
 	memset(&serverAddr, 0, sizeof(serverAddr));   // Clean up
 	serverAddr.sin_family = AF_INET;              // Internet address family
@@ -102,40 +108,87 @@ void tcp_server_init(void){
 	serverAddr.sin_port = htons(PORT);      // Local port to listen on
 	
 	// Bind to the local address
-	if (bind(server, (struct sockaddr *) &serverAddr, sizeof(serverAddr))	< 0)
-		printf("bind() failed");
+	if (bind(server, (struct sockaddr *) &serverAddr, sizeof(serverAddr))	<0	){
+		printf("bind() failed\n");
+		exit(1);		
+	}
 	
 	// Mark the socket so it will listen for incoming connections 
-	if (listen(server, 5) < 0)
-		printf("listen() failed");
+	if (listen(server, 5) < 0){
+		printf("listen() failed\n");
+		exit(1);
+	}
 }
 
 /*!
  * Hauptschleife des TCP-Servers
  */
 int tcp_server_run (void){
-	printf("TCP-Server\n");
+	struct timeval    start, stop;
+	printf("TCP-Server alive\n");
 	
-	tcp_server_init();		
+	int seq=0;
+//	tcp_server_init();		
+
+//	printf("Initialized\n");
 	
 	for(;;){
 	        /* Set the size of the in-out parameter */
 		clntLen = sizeof(clientAddr);
 		
+		printf("Waiting for client\n");
 		// Wait for a client to connect 
 		if ((tcp_sock = accept(server, (struct sockaddr *) &clientAddr, &clntLen)) < 0)
 			printf("accept() failed");
 		
 		printf("Connected to %s on Port: %d\n", inet_ntoa(clientAddr.sin_addr),PORT);
-		
+
+		int16 simultime=0;		
 		for(;;){
+			simultime+=10;
+			
+			command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
+
+
+			gettimeofday(&stop, NULL);
+			int t2= (stop.tv_sec - start.tv_sec)*1000000 + stop.tv_usec - start.tv_usec;
+			printf("X-Token (%d) out after %d usec ",simultime,t2);
+
+
+			received_command.request.command =0;
+			while(received_command.request.command != CMD_DONE ){
+				if (command_read() != 0)
+					printf("Probleme beim lesen eines Kommandos");
+				else
+					if (received_command.seq != seq){
+						printf("Sequenzzaehler falsch! Erartet: %d Empfangen %d",seq,received_command.seq);
+					}
+				seq=received_command.seq+1;
+			}
+			gettimeofday(&start, NULL);
+
+
+			int t= (start.tv_sec - stop.tv_sec)*1000000 + start.tv_usec - stop.tv_usec;
+			printf("X-Token (%d) back after %d usec\n",received_command.data_l,t);
+
+
+			if (received_command.data_l != simultime){
+				printf("Falschen X-Frame erhalten ==> Exit\n");
+				exit(0);
+			}
+			
+/*			
+			printf("Rechenzeit: %d usec\n",(stop.tv_sec - start.tv_sec)*1000000 +stop.tv_usec - start.tv_usec);
+			
 			command_read();
+			if 
 			#ifdef LOG_AVAILABLE
 				command_display(&received_command);
 			#endif		
 			
 			received_command.request.direction=DIR_ANSWER;
 			tcp_send_cmd(&received_command);
+		*/
 		}
 		
 		#ifdef WIN32

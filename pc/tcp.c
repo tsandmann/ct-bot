@@ -53,6 +53,7 @@
 	#include <sys/socket.h>
 	#include <netinet/in.h>
 	#include <netdb.h>		// for gethostbyname()
+	#include <netinet/tcp.h> 
 #endif
 
 
@@ -88,6 +89,14 @@ int tcp_openConnection(const char *hostname){
         printf("socket() failed");
 	exit(1);
     }
+    
+    int flag = 1;
+  	setsockopt(sock,            /* socket affected */
+                          IPPROTO_TCP,     /* set option at TCP level */
+                          TCP_NODELAY,     /* name of option */
+                          (char *) &flag,  /* the cast is historical 
+                                                  cruft */
+                          sizeof(int));    /* length of option value */
 
     // Prepare server address structure
     memset(&servAddr, 0, sizeof(servAddr));     // Zero out structure

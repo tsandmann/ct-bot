@@ -114,19 +114,40 @@ void *bot_2_sim_rcv_isr(void * arg){
 	return 0;
 }
 
+/*! 
+ * Schleife, die Kommandis empfaengt und bearbeitet, bis ein Kommando vom Typ Frame kommt 
+ * @param frame Kommando zum abbruch
+ */
+int8 receive_until_Frame(int8 frame){
+	int8 result=0;
+	for(;;){
+		result=command_read();
+		if (result!=0){
+			printf("Error reading command\n");			// read a command
+			return result;
+		} else {		
+			command_evaluate();
+		}
+		
+		if (received_command.request.command == frame)
+			return 0;
+	}
+}
+
+
 /*!
  * Ein wenig Initialisierung kann nicht schaden 
  */
 void bot_2_sim_init(void){
 	low_init();
 		
-	if (pthread_create(&bot_2_sim_Thread,  // thread struct
-		NULL,		      // default thread attributes
-		bot_2_sim_rcv_isr,	      // start routine
-		NULL)) {              // arg to routine
-			printf("Thread Creation failed");
-			exit(1);
-	}
+//	if (pthread_create(&bot_2_sim_Thread,  // thread struct
+//		NULL,		      // default thread attributes
+//		bot_2_sim_rcv_isr,	      // start routine
+//		NULL)) {              // arg to routine
+//			printf("Thread Creation failed");
+//			exit(1);
+//	}
 	
 	int j;
 	int16 null=0;
@@ -164,6 +185,23 @@ int wait_for_command(int timeout_s){
 	pthread_mutex_unlock(&command_cond_mutex);
 	
 	return result;
+}
+
+/*! 
+ * Wartet auf die Antwort des PC
+ * Achtung blockierend ohne Timeout
+ * @param command Das kommando auf das gewartet wird.
+ * @return 0, wenn Ok
+ */
+int wait_for_special_command(uint8 command){
+	int result=0;
+	while (1){
+		result= wait_for_command(1000);
+
+		if ((result==0) && (received_command.request.command == command))
+			return result;
+	}
+
 }
 
 /*!

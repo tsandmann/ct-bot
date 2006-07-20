@@ -40,6 +40,8 @@
 	#include <pthread.h>
 	#include <unistd.h>
 	#include <stdlib.h>
+	#include <time.h>
+	#include <sys/time.h>
 #endif
 
 #ifdef TWI_AVAILABLE
@@ -382,6 +384,7 @@ void init(void){
 		puts("\t-h\tZeigt diese Hilfe an");
 		exit(1);
 	}
+	
 #endif
 
 #ifdef MCU
@@ -398,6 +401,9 @@ void init(void){
  * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
  */
  	int main (int argc, char *argv[]){
+		struct timeval    start, stop;
+		
+
 
 		int ch;	
 		int start_server = 0;	/*!< Wird auf 1 gesetzt, falls -s angegeben wurde */
@@ -433,7 +439,7 @@ void init(void){
 		
 	if (start_server != 0)    // Soll der TCP-Server gestartet werden?
     {
-    	printf("ARGV[0]= %s\n",argv[1]);
+       printf("ARGV[0]= %s\n",argv[0]);
        tcp_server_init();
        tcp_server_run();
     } else {
@@ -480,6 +486,18 @@ void init(void){
 	/*! Hauptschleife des Bot */
 	
 	for(;;){
+		#ifdef PC
+//			wait_for_special_command(CMD_DONE);
+			receive_until_Frame(CMD_DONE);
+			gettimeofday(&start, NULL);
+			int t1=(start.tv_sec - stop.tv_sec)*1000000 + start.tv_usec - stop.tv_usec;
+			printf("X-Token (%d) in nach %d usec ",received_command.data_l,t1);
+//			printf("Wartezeit: %d usec ",(start.tv_sec - stop.tv_sec)*1000000 + start.tv_usec - stop.tv_usec);
+			
+//			printf("wait released \n");
+		#endif
+
+
 		#ifdef MCU
 			bot_sens_isr();
 		#endif
@@ -530,12 +548,24 @@ void init(void){
 		#ifdef DISPLAY_AVAILABLE
 			display();
 		#endif
-		#ifdef PC
-			wait_for_time(100000);
-		#endif
 		#ifdef MCU
 //			delay(10);
 		#endif
+		
+		#ifdef PC
+
+//			command_write_data(CMD_AKT_LED, SUB_CMD_NORM ,(int16*)&simultime,0,"12345123456789012345612345678901234561234567890123456");
+			command_write(CMD_AKT_LED, SUB_CMD_NORM ,(int16*)&simultime,0,0);
+						
+			command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
+			
+			gettimeofday(&stop, NULL);
+			
+			int t2=(stop.tv_sec - start.tv_sec)*1000000 +stop.tv_usec - start.tv_usec;
+			printf("X-Token (%d) out after %d usec\n",simultime,t2);
+//			printf("Rechenzeit: %d usec\n",(stop.tv_sec - start.tv_sec)*1000000 +stop.tv_usec - start.tv_usec);
+		#endif
+		
 	}
 	
 	/*! Falls wir das je erreichen sollten ;-) */

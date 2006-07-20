@@ -100,9 +100,13 @@ typedef struct {
 #define CMD_AKT_LED	'l'		/*!< LEDs steuern */
 #define CMD_AKT_LCD    'c'     /*!< LCD Anzeige */
 
+#define CMD_DONE    'X'     	/*!< Markiert das Ende einer Uebertragung */
+
+
 #define SUB_CMD_NORM	'N' 		/*!< Standard-Kommando */
 #define SUB_CMD_LEFT	'L' 		/*!< Kommmando fuer links */
 #define SUB_CMD_RIGHT	'R' 		/*!< Kommando fuer rechts */
+
 
 // Subcommandos fuer LCD
 #define SUB_LCD_CLEAR   'c'     /*!< Subkommando Clear Screen */
@@ -137,7 +141,7 @@ extern command_t received_command;		/*!< Puffer fuer Kommandos */
  * greift auf low_read() zurueck
  * @see low_read()
  */
-int command_read(void);	
+int8 command_read(void);	
 
 /*!
  * Uebertraegt ein Kommando und wartet nicht auf eine Antwort

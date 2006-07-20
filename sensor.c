@@ -65,6 +65,10 @@ volatile float v_enc_left=0;	/*!< Abrollgeschwindigkeit des linken Rades in [mm/
 volatile float v_enc_right=0;	/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
 volatile float v_enc_center=0;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
 
+#ifdef PC
+	volatile int16 simultime=0;	/*! Simulierte Zeit */
+#endif
+
 #ifdef MEASURE_MOUSE_AVAILABLE
 	volatile float heading_mou=0;		/*!< Aktuelle Blickrichtung relativ zur Startposition aus Mausmessungen */
 	volatile float x_mou=0;			/*!< Aktuelle X-Koordinate in mm relativ zur Startposition aus Mausmessungen */
