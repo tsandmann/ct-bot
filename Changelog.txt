@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-07-24 Peter Koenig [pek@heise.de]: Text der GPL eingefuegt
+
 2006-07-20 Benjamin Benz [bbe@heise.de]: Default FB fuer Sim auf RC_HAVE_HQ_RC_UNIVERS29_334 gesetzt
 
 2006-07-20 Benjamin Benz [bbe@heise.de]: Thread-Modell grundlegend ueberarbeitet. Bot und sim nun synchron
