@@ -401,7 +401,8 @@ void init(void){
  * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
  */
  	int main (int argc, char *argv[]){
-		struct timeval    start, stop;
+		//Zum debuggen der Zeiten:	
+		// struct timeval    start, stop;
 		
 
 
@@ -489,12 +490,11 @@ void init(void){
 		#ifdef PC
 //			wait_for_special_command(CMD_DONE);
 			receive_until_Frame(CMD_DONE);
-			gettimeofday(&start, NULL);
+/*			//Zum debuggen der Zeiten:	
+ 			gettimeofday(&start, NULL);
 			int t1=(start.tv_sec - stop.tv_sec)*1000000 + start.tv_usec - stop.tv_usec;
 			printf("X-Token (%d) in nach %d usec ",received_command.data_l,t1);
-//			printf("Wartezeit: %d usec ",(start.tv_sec - stop.tv_sec)*1000000 + start.tv_usec - stop.tv_usec);
-			
-//			printf("wait released \n");
+*/
 		#endif
 
 
@@ -553,17 +553,12 @@ void init(void){
 		#endif
 		
 		#ifdef PC
-
-//			command_write_data(CMD_AKT_LED, SUB_CMD_NORM ,(int16*)&simultime,0,"12345123456789012345612345678901234561234567890123456");
-			command_write(CMD_AKT_LED, SUB_CMD_NORM ,(int16*)&simultime,0,0);
-						
 			command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
-			
+/*			//Zum debuggen der Zeiten:	
 			gettimeofday(&stop, NULL);
-			
-			int t2=(stop.tv_sec - start.tv_sec)*1000000 +stop.tv_usec - start.tv_usec;
+ 			int t2=(stop.tv_sec - start.tv_sec)*1000000 +stop.tv_usec - start.tv_usec;
 			printf("X-Token (%d) out after %d usec\n",simultime,t2);
-//			printf("Rechenzeit: %d usec\n",(stop.tv_sec - start.tv_sec)*1000000 +stop.tv_usec - start.tv_usec);
+*/
 		#endif
 		
 	}
