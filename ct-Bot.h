@@ -45,8 +45,8 @@
 
 #define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit? Achtun ohne kann die Displayinitialisierung schief gehen!*/
 
-//#define DISPLAY_AVAILABLE	/*!< Display for local control */
-//#define DISPLAY_REMOTE_AVAILABLE /*!< Sende LCD Anzeigedaten an den Simulator */
+#define DISPLAY_AVAILABLE	/*!< Display for local control */
+#define DISPLAY_REMOTE_AVAILABLE /*!< Sende LCD Anzeigedaten an den Simulator */
 #define DISPLAY_SCREENS_AVAILABLE	/*!< Ermoeglicht vier verschiedene Screen */
 //#define DISPLAY_SCREEN_RESETINFO	/*!< Zeigt auf Screen 4 Informationen ueber Resets an */
 #define DISPLAY_ODOMETRIC_INFO 	/*!< Zeigt auf Screen 4 Positions- und Geschwindigkeitsdaten */
