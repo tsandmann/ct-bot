@@ -217,7 +217,7 @@ int tcp_server_run (int runs){
 void tcp_test_client_init(void){
 	printf("Connecting Testclient to %s on Port: %d ", tcp_hostname, 10001);
 	
-    if ((tcp_sock=tcp_openConnection(tcp_hostname,36721)) != -1)
+    if ((tcp_sock=tcp_openConnection(tcp_hostname,10001)) != -1)
         printf ("established \n");
     else {
 		printf ("failed\n");
@@ -234,17 +234,24 @@ int tcp_test_client_run (int runs){
 	int len=0;
 	int i;
 	
-	printf("Answering %d frames\n",runs);
-	for (i=0; i< runs; i++) {
+	if (runs > 0)
+		printf("Answering %d frames\n",runs);
+	else
+		printf("Answering all frames\n");
+		
+	for(;;){
+		if ((runs > 0) && (i > runs))
+			break;
+		i++;
 		buffer[0]=0;
 		len=0;
 
 		len= tcp_read(&buffer,255);
 		tcp_write(&buffer,len);
 	}
-	printf("Finished \n",runs);
+	printf("Finished %d frames\n",runs);
 	
-	
+	exit(1);
 	return 1;
 }
 

@@ -465,7 +465,7 @@ void init(void){
     } else if (start_test_client !=0) {
        printf("ARGV[0]= %s\n",argv[0]);
        tcp_test_client_init();
-       tcp_test_client_run(100);    	
+       tcp_test_client_run(0);    	
 	} else  {
     	printf("c't-Bot\n");
     }
