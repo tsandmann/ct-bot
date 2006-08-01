@@ -77,7 +77,7 @@ int tcp_read(void* data, int length);
  * @param hostname Symbolischer Name des Host, auf dem ct-Sim laeuft
  * @return Der Socket
 */
-int tcp_openConnection(const char *hostname, int port);
+int tcp_openConnection(const char *hostname);
 
 /*! 
  * Initialisiere TCP/IP Verbindung 
