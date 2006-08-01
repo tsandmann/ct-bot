@@ -215,6 +215,7 @@ int tcp_server_run (int runs){
  * Init TCP-test-Client
  */
 void tcp_test_client_init(void){
+	tcp_init();
 	printf("Connecting Testclient to %s on Port: %d ", tcp_hostname, 10001);
 	
     if ((tcp_sock=tcp_openConnection(tcp_hostname)) != -1)

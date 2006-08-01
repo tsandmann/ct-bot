@@ -411,7 +411,7 @@ void init(void){
 
 		int ch;	
 		int start_server = 0;	/*!< Wird auf 1 gesetzt, falls -s angegeben wurde */
-		int start_test_client =1; /*!< Wird auf 1 gesetzt, falls -T angegeben wurde */
+		int start_test_client =0; /*!< Wird auf 1 gesetzt, falls -T angegeben wurde */
 		char *hostname = NULL;	/*!< Speichert den per -t uebergebenen Hostnamen zwischen */
 
 		// Die Kommandozeilenargumente komplett verarbeiten
@@ -444,30 +444,30 @@ void init(void){
 		}
 		argc -= optind;
 		argv += optind;
-
-    if (hostname)
-        // Hostname wurde per Kommandozeile uebergeben
-        tcp_hostname = hostname;
-    else {
-        // Der Zielhost wird per default durch das Macro IP definiert und
-        // tcp_hostname mit einer Kopie des Strings initialisiert.
-        tcp_hostname = malloc(strlen(IP) + 1);
-        if (NULL == tcp_hostname)
-            exit(1);
-        strcpy(tcp_hostname, IP);
-    }
-
 		
 	if (start_server != 0) {   // Soll der TCP-Server gestartet werden?
        printf("ARGV[0]= %s\n",argv[0]);
        tcp_server_init();
        tcp_server_run(100);
-    } else if (start_test_client !=0) {
-       printf("ARGV[0]= %s\n",argv[0]);
-       tcp_test_client_init();
-       tcp_test_client_run(0);    	
-	} else  {
+    } else {
     	printf("c't-Bot\n");
+        if (hostname)
+            // Hostname wurde per Kommandozeile uebergeben
+            tcp_hostname = hostname;
+        else {
+            // Der Zielhost wird per default durch das Macro IP definiert und
+            // tcp_hostname mit einer Kopie des Strings initialisiert.
+            tcp_hostname = malloc(strlen(IP) + 1);
+            if (NULL == tcp_hostname)
+                exit(1);
+            strcpy(tcp_hostname, IP);
+        }
+        
+        if (start_test_client !=0) {
+	       tcp_test_client_init();
+	       tcp_test_client_run(100);
+        }
+        
     }
     
     
