@@ -415,7 +415,7 @@ void init(void){
 		char *hostname = NULL;	/*!< Speichert den per -t uebergebenen Hostnamen zwischen */
 
 		// Die Kommandozeilenargumente komplett verarbeiten
-		while ((ch = getopt(argc, argv, "hsTx:")) != -1) {
+		while ((ch = getopt(argc, argv, "hsTt:")) != -1) {
 			switch (ch) {
 			case 's':
 				// Servermodus [-s] wird verlangt
