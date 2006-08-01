@@ -73,7 +73,7 @@ char *tcp_hostname = NULL;		/*!< Hostname, auf dem ct-Sim laeuft */
  * @param hostname Symbolischer Name des Host, auf dem ct-Sim laeuft
  * @return Der Socket
 */
-int tcp_openConnection(const char *hostname){
+int tcp_openConnection(const char *hostname, int port){
     struct sockaddr_in servAddr;   // server address
     int sock=0;                        // Socket descriptor
     struct hostent *he = gethostbyname(hostname);
@@ -101,7 +101,7 @@ int tcp_openConnection(const char *hostname){
     // Prepare server address structure
     memset(&servAddr, 0, sizeof(servAddr));     // Zero out structure
     servAddr.sin_family      = AF_INET;     // Internet address
-    servAddr.sin_port        = htons(PORT);     // Port
+    servAddr.sin_port        = htons(port);     // Port
 
     // Die erste Adresse aus der Liste uebernehmen
     memcpy(&servAddr.sin_addr, *(he->h_addr_list), sizeof(servAddr.sin_addr));
@@ -218,7 +218,7 @@ void tcp_init(void){
 	#endif
 	
 	
-    if ((tcp_sock=tcp_openConnection(tcp_hostname)) != -1)
+    if ((tcp_sock=tcp_openConnection(tcp_hostname,PORT)) != -1)
         printf ("connection to %s established on Port: %d\n", tcp_hostname, PORT);
     else {
 		printf ("connection to %s failed on Port: %d\n", tcp_hostname, PORT);

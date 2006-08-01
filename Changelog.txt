@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-07-26 Benjamin Benz [bbe@heise.de]: TestClient eingefuehrt
+
 2006-07-26 Benjamin Benz [bbe@heise.de]: Timing-estcode ueberarbeitet
 
 2006-07-26 Benjamin Benz [bbe@heise.de]: Debug-Output und debug-Befehle entfernt

@@ -378,8 +378,9 @@ void init(void){
 	 * Das Programm wird nach Anzeige des Hilfetextes per exit() beendet.
 	 */
 	void usage(void){
-		puts("USAGE: ct-Bot [-t host] [-h] [-s] [runs]");
+		puts("USAGE: ct-Bot [-t host] [-T] [-h] [-s] [runs]");
 		puts("\t-t\tHostname oder IP Adresse zu der Verbunden werden soll");
+		puts("\t-T\tTestClient");
 		puts("\t-s\tServermodus");
 		puts("\truns\tAnzahl der Zyklen fuer Servermodus");
 		puts("\t-h\tZeigt diese Hilfe an");
@@ -410,15 +411,19 @@ void init(void){
 
 		int ch;	
 		int start_server = 0;	/*!< Wird auf 1 gesetzt, falls -s angegeben wurde */
+		int start_test_client =1; /*!< Wird auf 1 gesetzt, falls -T angegeben wurde */
 		char *hostname = NULL;	/*!< Speichert den per -t uebergebenen Hostnamen zwischen */
 
 		// Die Kommandozeilenargumente komplett verarbeiten
-		while ((ch = getopt(argc, argv, "hst:")) != -1) {
+		while ((ch = getopt(argc, argv, "hsTx:")) != -1) {
 			switch (ch) {
 			case 's':
 				// Servermodus [-s] wird verlangt
 				start_server = 1;
 				break;
+			case 'T': 	
+				start_test_client=1;
+				break;		
 			case 't':
 				// Hostname, auf dem ct-Sim laeuft wurde 
 				// uebergeben. Der String wird in hostname
@@ -439,24 +444,30 @@ void init(void){
 		}
 		argc -= optind;
 		argv += optind;
+
+    if (hostname)
+        // Hostname wurde per Kommandozeile uebergeben
+        tcp_hostname = hostname;
+    else {
+        // Der Zielhost wird per default durch das Macro IP definiert und
+        // tcp_hostname mit einer Kopie des Strings initialisiert.
+        tcp_hostname = malloc(strlen(IP) + 1);
+        if (NULL == tcp_hostname)
+            exit(1);
+        strcpy(tcp_hostname, IP);
+    }
+
 		
 	if (start_server != 0) {   // Soll der TCP-Server gestartet werden?
        printf("ARGV[0]= %s\n",argv[0]);
        tcp_server_init();
        tcp_server_run(100);
-    } else {
+    } else if (start_test_client !=0) {
+       printf("ARGV[0]= %s\n",argv[0]);
+       tcp_test_client_init();
+       tcp_test_client_run(100);    	
+	} else  {
     	printf("c't-Bot\n");
-        if (hostname)
-            // Hostname wurde per Kommandozeile uebergeben
-            tcp_hostname = hostname;
-        else {
-            // Der Zielhost wird per default durch das Macro IP definiert und
-            // tcp_hostname mit einer Kopie des Strings initialisiert.
-            tcp_hostname = malloc(strlen(IP) + 1);
-            if (NULL == tcp_hostname)
-                exit(1);
-            strcpy(tcp_hostname, IP);
-        }
     }
     
     

@@ -209,4 +209,41 @@ int tcp_server_run (int runs){
 	
 	return 1;
 }
+
+
+/*!
+ * Init TCP-test-Client
+ */
+void tcp_test_client_init(void){
+	printf("Connecting Testclient to %s on Port: %d ", tcp_hostname, 36721);
+	
+    if ((tcp_sock=tcp_openConnection(tcp_hostname,36721)) != -1)
+        printf ("established \n");
+    else {
+		printf ("failed\n");
+    	exit(1);
+    }
+}
+
+/*!
+ * Hauptschleife des TCP-Test-Clients
+ */
+int tcp_test_client_run (int runs){
+	char buffer[255];
+	
+	int len=0;
+	int i;
+		
+	for (i=0; i< runs; i++) {
+		buffer[0]=0;
+		len=0;
+
+		len= tcp_read(&buffer,255);
+		tcp_write(&buffer,len);
+	}
+	
+	
+	return 1;
+}
+
 #endif

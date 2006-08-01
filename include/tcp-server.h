@@ -36,4 +36,14 @@ void tcp_server_init(void);
  * Hauptschleife des TCP-Servers
  */
 int tcp_server_run (int runs);
+
+/*!
+ * Init TCP-test-Client
+ */
+void tcp_test_client_init(void);
+
+/*!
+ * Hauptschleife des TCP-Test-Clienzs
+ */
+int tcp_test_client_run (int runs);
 #endif
