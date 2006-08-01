@@ -79,7 +79,7 @@ unsigned int clntLen;          /*!< Laenge der Datenstruktur der Client-Adresse 
  */
 void tcp_server_init(void){
 	#ifdef DISPLAY_AVAILABLE
-		display_init();
+//		display_init();
 	#endif
 	
 	#ifdef WIN32
@@ -123,7 +123,8 @@ void tcp_server_init(void){
 /*!
  * Hauptschleife des TCP-Servers
  */
-int tcp_server_run (void){
+int tcp_server_run (int runs){
+	char buffer[MAX_PAYLOAD];       // Buffer  
 	struct timeval    start, stop;
 	printf("TCP-Server alive\n");
 	
@@ -144,7 +145,8 @@ int tcp_server_run (void){
 		printf("Connected to %s on Port: %d\n", inet_ntoa(clientAddr.sin_addr),PORT);
 
 		int16 simultime=0;		
-		for(;;){
+		int i;
+		for(i=0;i<runs;i++){
 			simultime+=10;
 			
 			command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
@@ -157,12 +159,19 @@ int tcp_server_run (void){
 
 			received_command.request.command =0;
 			while(received_command.request.command != CMD_DONE ){
-				if (command_read() != 0)
-					printf("Probleme beim lesen eines Kommandos");
-				else
-					if (received_command.seq != seq){
-						printf("Sequenzzaehler falsch! Erartet: %d Empfangen %d",seq,received_command.seq);
+				if (command_read() != 0){
+					// Fehler
+					printf("Probleme beim Lesen eines Kommandos\n");
+				} else {
+					// Alles ok, evtl. muessen wir aber eine Payload abholen
+					if (received_command.payload != 0) {					
+				//		printf ("fetching payload (%d bytes)\n",received_command.payload);
+						low_read(buffer,received_command.payload);	
 					}
+					if (received_command.seq != seq){
+						printf("Sequenzzaehler falsch! Erwartet: %d Empfangen %d \n",seq,received_command.seq);
+					}
+				}
 				seq=received_command.seq+1;
 			}
 			gettimeofday(&start, NULL);
@@ -191,10 +200,11 @@ int tcp_server_run (void){
 		*/
 		}
 		
+		
 		#ifdef WIN32
 			WSACleanup();
 		#endif
-		
+		exit(0);
 	}
 	
 	return 1;

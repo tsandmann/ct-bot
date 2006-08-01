@@ -35,5 +35,5 @@ void tcp_server_init(void);
 /*!
  * Hauptschleife des TCP-Servers
  */
-int tcp_server_run (void);
+int tcp_server_run (int runs);
 #endif

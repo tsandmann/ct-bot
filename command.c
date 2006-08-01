@@ -68,6 +68,7 @@ command_t received_command;		/*!< Puffer fuer Kommandos */
 /*!
  * Liest ein Kommando ein, ist blockierend!
  * Greift auf low_read() zurueck
+ * Achtung, die Payload wird nicht mitgelesen!!!
  * @see low_read()
  */
 int8 command_read(void){
@@ -93,7 +94,8 @@ int8 command_read(void){
 
 	// Suche nach dem Beginn des Frames
 	while ((start<bytesRcvd)&&(buffer[start] != CMD_STARTCODE)) {	
-		printf("!!!\n");
+//		printf("\nStartzeichen nich am Anfang des Puffers! (%d)\n",start);
+//		printf(".");
 		start++;
 	}
 		
@@ -108,12 +110,15 @@ int8 command_read(void){
 	// haben wir noch genug Platz im Puffer, um das Packet ferig zu lesen?
 	if ((RCVBUFSIZE-start) < sizeof(command_t)){
 		//	LOG_DEBUG(("not enough space"));
+		printf("not enough space");
 		return -1;	// nein? ==> verwerfen
 	}
 	
 	i=sizeof(command_t) - (bytesRcvd-start);
+
 	
 	if (i> 0) {	// Fehlen noch Daten ?
+		LOG_DEBUG(("command.c: Start @ %d es fehlen %d bytes ",start,i));	
 		// Systemzeit erfassen
 		old_s=timer_get_s();
 		old_ms=timer_get_ms();

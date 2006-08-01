@@ -378,9 +378,10 @@ void init(void){
 	 * Das Programm wird nach Anzeige des Hilfetextes per exit() beendet.
 	 */
 	void usage(void){
-		puts("USAGE: ct-Bot [-t host] [-h] [-s]");
+		puts("USAGE: ct-Bot [-t host] [-h] [-s] [runs]");
 		puts("\t-t\tHostname oder IP Adresse zu der Verbunden werden soll");
 		puts("\t-s\tServermodus");
+		puts("\truns\tAnzahl der Zyklen fuer Servermodus");
 		puts("\t-h\tZeigt diese Hilfe an");
 		exit(1);
 	}
@@ -402,8 +403,9 @@ void init(void){
  */
  	int main (int argc, char *argv[]){
 		//Zum debuggen der Zeiten:	
-		// struct timeval    start, stop;
-		
+		#ifdef DEBUG_TIMES
+			struct timeval    start, stop;
+		#endif
 
 
 		int ch;	
@@ -438,11 +440,10 @@ void init(void){
 		argc -= optind;
 		argv += optind;
 		
-	if (start_server != 0)    // Soll der TCP-Server gestartet werden?
-    {
+	if (start_server != 0) {   // Soll der TCP-Server gestartet werden?
        printf("ARGV[0]= %s\n",argv[0]);
        tcp_server_init();
-       tcp_server_run();
+       tcp_server_run(100);
     } else {
     	printf("c't-Bot\n");
         if (hostname)
@@ -488,13 +489,13 @@ void init(void){
 	
 	for(;;){
 		#ifdef PC
-//			wait_for_special_command(CMD_DONE);
 			receive_until_Frame(CMD_DONE);
-/*			//Zum debuggen der Zeiten:	
- 			gettimeofday(&start, NULL);
-			int t1=(start.tv_sec - stop.tv_sec)*1000000 + start.tv_usec - stop.tv_usec;
-			printf("X-Token (%d) in nach %d usec ",received_command.data_l,t1);
-*/
+			#ifdef DEBUG_TIMES
+				//Zum debuggen der Zeiten:	
+	 			gettimeofday(&start, NULL);
+				int t1=(start.tv_sec - stop.tv_sec)*1000000 + start.tv_usec - stop.tv_usec;
+				printf("Done-Token (%d) in nach %d usec ",received_command.data_l,t1);
+			#endif
 		#endif
 
 
@@ -554,11 +555,13 @@ void init(void){
 		
 		#ifdef PC
 			command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
-/*			//Zum debuggen der Zeiten:	
-			gettimeofday(&stop, NULL);
- 			int t2=(stop.tv_sec - start.tv_sec)*1000000 +stop.tv_usec - start.tv_usec;
-			printf("X-Token (%d) out after %d usec\n",simultime,t2);
-*/
+
+			//Zum debuggen der Zeiten:	
+ 			#ifdef DEBUG_TIMES
+				gettimeofday(&stop, NULL);
+	 			int t2=(stop.tv_sec - start.tv_sec)*1000000 +stop.tv_usec - start.tv_usec;
+				printf("Done-Token (%d) out after %d usec\n",simultime,t2);
+			#endif
 		#endif
 		
 	}

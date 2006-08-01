@@ -27,6 +27,9 @@
 
 #include "global.h"
 
+//Reiner Debug-Schalter
+#define DEBUG_TIMES
+
 /************************************************************
 * Module switches, to make code smaller if features are not needed
 ************************************************************/
