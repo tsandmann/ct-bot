@@ -148,7 +148,18 @@ int tcp_server_run (int runs){
 		int i;
 		for(i=0;i<runs;i++){
 			simultime+=10;
-			
+
+			command_write(CMD_SENS_IR, SUB_CMD_NORM ,(int16*)&simultime,(int16*)&simultime,0);
+			command_write(CMD_SENS_ENC, SUB_CMD_NORM ,(int16*)&simultime,(int16*)&simultime,0);
+			command_write(CMD_SENS_BORDER, SUB_CMD_NORM ,(int16*)&simultime,(int16*)&simultime,0);
+			command_write(CMD_SENS_LINE, SUB_CMD_NORM ,(int16*)&simultime,(int16*)&simultime,0);
+			command_write(CMD_SENS_LDR, SUB_CMD_NORM ,(int16*)&simultime,(int16*)&simultime,0);
+			command_write(CMD_SENS_TRANS, SUB_CMD_NORM ,(int16*)&simultime,0,0);
+			command_write(CMD_SENS_DOOR, SUB_CMD_NORM ,(int16*)&simultime,(int16*)&simultime,0);
+			command_write(CMD_SENS_MOUSE, SUB_CMD_NORM ,(int16*)&simultime,(int16*)&simultime,0);
+			command_write(CMD_SENS_ERROR, SUB_CMD_NORM ,(int16*)&simultime,(int16*)&simultime,0);
+			command_write(CMD_SENS_RC5, SUB_CMD_NORM ,0,0,0);
+
 			command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
 
 
