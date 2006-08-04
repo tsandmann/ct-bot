@@ -269,7 +269,7 @@ int flushSendBuffer(void){
 	
 		int length=sendBufferPtr;
 		sendBufferPtr=0;	// Puffer auf jedenfall leeren
-		if (send(tcp_sock,&sendBuffer,length,0) != length){
+		if (send(tcp_sock,(char*)&sendBuffer,length,0) != length){
 			printf("send() sent a different number of bytes than expected");
 			return -1;
 		}
