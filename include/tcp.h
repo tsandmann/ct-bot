@@ -83,4 +83,10 @@ int tcp_openConnection(const char *hostname);
  * Initialisiere TCP/IP Verbindung 
  */ 
 void tcp_init(void);
+
+/*! 
+ * Schreibt den Sendepuffer auf einen Schlag raus 
+ * @return -1 bei Fehlern, sonst zahl der uebertragenen Bytes
+ */
+int flushSendBuffer(void);
 #endif

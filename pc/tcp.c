@@ -68,6 +68,11 @@
 int tcp_sock=0;			/*!< Unser TCP-Socket */
 char *tcp_hostname = NULL;		/*!< Hostname, auf dem ct-Sim laeuft */
 
+#ifdef PC
+	uint8 sendBuffer[1024];	/*!< Sendepuffer fuer ausgehende Packete */
+	int sendBufferPtr=0;	/*!< Index in den Sendepuffer */
+#endif
+
 /*!
  * Oeffnet eine TCP-Verbindung zum Server 
  * @param hostname Symbolischer Name des Host, auf dem ct-Sim laeuft
@@ -167,18 +172,35 @@ int tcp_send_cmd(command_t *cmd){
 #endif
 }
 
+/*! Puffert daten im Sendepuffer zwischen
+ * @param data zeiger auf die daten
+ * @param length Anzahl der Bytes
+ * @return -1 wenn kein Platz mehr im Puffer ist, 0 wenn alles ok ist
+ */
+int copy2Buffer(uint8* data, int length){
+	int i;
+	uint8 * ptr = data;
+	
+	if ((sendBufferPtr + length) > sizeof(sendBuffer))
+		return -1;
+		
+//	printf("Store %d bytes",length);
+	// Auf dem PC kopieren wir nur alles in den Ausgangspuffer
+	for (i=0; i< length ; i++){
+		sendBuffer[sendBufferPtr++]= *ptr++ ;
+	}
+//	printf(" %d Bytes now in buffer\n",sendBufferPtr);
+	return 0;
+}
+
 /*!
  * Uebertrage Daten per TCP/IP
  * @param data Zeiger auf die Daten
  * @param length Anzahl der Bytes
- * @return Anzahl der uebertragenen Bytes
+ * @return 0 wenn alles ok, -1 wenn puffer voll
 */
 int tcp_write(void* data, int length){
-	if (send(tcp_sock,data,length,0) != length){
-		printf("send() sent a different number of bytes than expected");
-		return -1;
-	}
-	return 0;
+	return copy2Buffer(data, length);
 }
 
 /*!
@@ -226,4 +248,21 @@ void tcp_init(void){
     }
 
 }
+
+/*! 
+ * Schreibt den Sendepuffer auf einen Schlag raus 
+ * @return -1 bei Fehlern, sonst zahl der uebertragenen Bytes
+ */
+int flushSendBuffer(void){
+//	printf("Flushing Buffer with %d bytes\n",sendBufferPtr);
+
+	int length=sendBufferPtr;
+	sendBufferPtr=0;	// Puffer auf jedenfall leeren
+	if (send(tcp_sock,&sendBuffer,length,0) != length){
+		printf("send() sent a different number of bytes than expected");
+		return -1;
+	}
+	return length;
+}
+
 #endif

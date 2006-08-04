@@ -567,6 +567,7 @@ void init(void){
 		#ifdef PC
 			command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
 
+			flushSendBuffer();
 			//Zum debuggen der Zeiten:	
  			#ifdef DEBUG_TIMES
 				gettimeofday(&stop, NULL);

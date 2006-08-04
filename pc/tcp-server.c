@@ -102,6 +102,9 @@ void tcp_server_init(void){
 		exit(1);
 	}
 	
+	int i=1;
+	setsockopt(server,SOL_SOCKET,SO_REUSEADDR,&i,sizeof(i));
+	
 	memset(&serverAddr, 0, sizeof(serverAddr));   // Clean up
 	serverAddr.sin_family = AF_INET;              // Internet address family
 	serverAddr.sin_addr.s_addr = htonl(INADDR_ANY); // Any incoming interface
@@ -161,7 +164,7 @@ int tcp_server_run (int runs){
 			command_write(CMD_SENS_RC5, SUB_CMD_NORM ,0,0,0);
 
 			command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
-
+			flushSendBuffer();
 
 			gettimeofday(&stop, NULL);
 			int t2= (stop.tv_sec - start.tv_sec)*1000000 + stop.tv_usec - start.tv_usec;
@@ -211,6 +214,7 @@ int tcp_server_run (int runs){
 		*/
 		}
 		
+		printf("TCP-Server hat seine %d runs durch und beendet sich. So long and thanks for all the fish\n",runs);
 		
 		#ifdef WIN32
 			WSACleanup();

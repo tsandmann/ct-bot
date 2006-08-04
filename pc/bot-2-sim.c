@@ -154,6 +154,7 @@ void bot_2_sim_init(void){
 	for(j=0;j<5;j++) 
 		command_write(CMD_WELCOME, SUB_WELCOME_SIM ,&null,&null,0);
 
+	flushSendBuffer();
 }
 
 

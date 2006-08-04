@@ -201,6 +201,7 @@ static int count=1;	/*!< Zaehler fuer Paket-Sequenznummer*/
 void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,uint8 payload){
 	command_t cmd;
 	
+	
 	cmd.startCode=CMD_STARTCODE;
 	cmd.request.direction=DIR_REQUEST;		// Anfrage
 	cmd.request.command= command;
@@ -214,6 +215,7 @@ void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,
 	
 	low_write(&cmd);
 }
+
 
 /*!
  * Uebertraegt ein Kommando und wartet nicht auf eine Antwort
