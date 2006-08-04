@@ -94,7 +94,7 @@ int8 command_read(void){
 
 	// Suche nach dem Beginn des Frames
 	while ((start<bytesRcvd)&&(buffer[start] != CMD_STARTCODE)) {	
-//		printf("\nStartzeichen nich am Anfang des Puffers! (%d)\n",start);
+		printf("\nStartzeichen nich am Anfang des Puffers! (%d)\n",start);
 //		printf(".");
 		start++;
 	}
@@ -114,7 +114,7 @@ int8 command_read(void){
 		return -1;	// nein? ==> verwerfen
 	}
 	
-	i=sizeof(command_t) - (bytesRcvd-start);
+	i=sizeof(command_t) - (bytesRcvd-start)-1;
 
 	
 	if (i> 0) {	// Fehlen noch Daten ?

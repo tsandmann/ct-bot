@@ -25,6 +25,8 @@
 
 #include "ct-Bot.h"
 
+#define USE_SEND_BUFFER
+
 #ifdef PC
 
 /* Linux with glibc:
@@ -200,7 +202,15 @@ int copy2Buffer(uint8* data, int length){
  * @return 0 wenn alles ok, -1 wenn puffer voll
 */
 int tcp_write(void* data, int length){
-	return copy2Buffer(data, length);
+	#ifdef USE_SEND_BUFFER
+		return copy2Buffer(data, length);
+	#else
+		if (send(tcp_sock,data,length,0) != length){
+			printf("send() sent a different number of bytes than expected");
+			return -1;
+		}
+		return length;
+	#endif
 }
 
 /*!
@@ -254,15 +264,19 @@ void tcp_init(void){
  * @return -1 bei Fehlern, sonst zahl der uebertragenen Bytes
  */
 int flushSendBuffer(void){
-//	printf("Flushing Buffer with %d bytes\n",sendBufferPtr);
-
-	int length=sendBufferPtr;
-	sendBufferPtr=0;	// Puffer auf jedenfall leeren
-	if (send(tcp_sock,&sendBuffer,length,0) != length){
-		printf("send() sent a different number of bytes than expected");
-		return -1;
-	}
-	return length;
+	#ifdef USE_SEND_BUFFER
+	//	printf("Flushing Buffer with %d bytes\n",sendBufferPtr);
+	
+		int length=sendBufferPtr;
+		sendBufferPtr=0;	// Puffer auf jedenfall leeren
+		if (send(tcp_sock,&sendBuffer,length,0) != length){
+			printf("send() sent a different number of bytes than expected");
+			return -1;
+		}
+		return length;
+	#else
+		return 0;
+	#endif
 }
 
 #endif
