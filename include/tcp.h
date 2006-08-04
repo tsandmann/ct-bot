@@ -26,15 +26,15 @@
 #ifndef TCP_H_
 #define TCP_H_
 
-#ifdef WIN32
-	#define LITTLE_ENDIAN	1234
-	#define BIG_ENDIAN	4321
-	#define BYTE_ORDER	LITTLE_ENDIAN
-#endif
-
-#ifdef __linux__
-	#include <endian.h>
-#endif
+#if defined WIN32
+ 	#define LITTLE_ENDIAN	1234
+ 	#define BIG_ENDIAN	4321
+ 	#define BYTE_ORDER	LITTLE_ENDIAN
+#elif defined __linux__
+ 	#include <endian.h>
+#else
+	#include <machine/endian.h>
+ #endif
 
 #include "bot-2-sim.h"
 #include "command.h"
