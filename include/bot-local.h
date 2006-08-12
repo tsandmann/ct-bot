@@ -42,8 +42,8 @@
 /* Odometrie-Konstanten */
 //#define MOUSE_CPI			401		/*!< CPI-Wert aus Kalibrierung */
 //#define MOUSE_FULL_TURN	1430	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis */
-#define MOUSE_CPI			395		/*!< CPI-Wert aus Kalibrierung */
-#define MOUSE_FULL_TURN	1379	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis */
+#define MOUSE_CPI			400		/*!< CPI-Wert aus Kalibrierung (Wert fuer den Sim) */
+#define MOUSE_FULL_TURN		1484	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis (Wert fuer den Sim) */
 
 #define WHEEL_DISTANCE		49		/*!< Abstand eines Rades zur Mitte des Bots */
 #define STUCK_DIFF			100		/*!< ab welcher Differenz haben wir durchdrehende Raeder? */
@@ -129,10 +129,10 @@
 
 /* Zustaende und Konstanten fuer das bot_solve_maze_behaviour-Verhalten */
 #define BOT_DIAMETER				12
-#define OPTIMAL_DISTANCE			BOT_DIAMETER*12
-#define ADJUST_DISTANCE			10
-#define IGNORE_DISTANCE			240
-#define GROUND_GOAL				0x221
+#define OPTIMAL_DISTANCE			BOT_DIAMETER*12	/* etwas mehr als Bot-Durchmesser ist ideal (vergroessert aufgrund der kennlinien der sharps) */
+#define ADJUST_DISTANCE				10
+#define IGNORE_DISTANCE				240
+#define GROUND_GOAL					0x221
 #define STARTPAD1					0x2B2
 #define STARTPAD2					0x332
 

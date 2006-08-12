@@ -32,6 +32,10 @@
 	#include "srf10.h"
 #endif
 
+// Defines einiger, haeufiger benoetigter Konstanten
+#define DEG2RAD 2*M_PI/360
+
+
 volatile int16 sensLDRL=0;		/*!< Lichtsensor links */
 volatile int16 sensLDRR=0;		/*!< Lichtsensor rechts */
 
@@ -199,15 +203,15 @@ void sensor_update(void){
 			deltaY=(sl+sr)*sin(dHead/2)/dHead;
 		}
 		/* Winkel in Grad umrechnen */
-		dHead=dHead/M_PI*180;
+		dHead=dHead/DEG2RAD;
 		
 		/* neue Positionen berechnen */
 		heading_enc+=dHead;
 		while (heading_enc>359) heading_enc=heading_enc-360;
 		while (heading_enc<0) heading_enc=heading_enc+360;
 		
-		x_enc+=(float)deltaY*cos(heading_enc*2*M_PI/360);
-		y_enc+=(float)deltaY*sin(heading_enc*2*M_PI/360);	
+		x_enc+=(float)deltaY*cos(heading_enc*DEG2RAD);
+		y_enc+=(float)deltaY*sin(heading_enc*DEG2RAD);	
 		#ifdef MEASURE_MOUSE_AVAILABLE
 			if (mouseOverflowX) {
 				/* es gab einen Overflow, Ergebnis korrigieren */
@@ -238,9 +242,9 @@ void sensor_update(void){
 			} else {
 				dY=sensMouseY-lastMouseY;
 			}
-			x_mou+=(float)dY*cos(heading_mou*2*M_PI/360)*25.4/MOUSE_CPI;
+			x_mou+=(float)dY*cos(heading_mou*DEG2RAD)*25.4/MOUSE_CPI;
 			lastDistance+=dY*25.4/MOUSE_CPI;
-			y_mou+=(float)dY*sin(heading_mou*2*M_PI/360)*25.4/MOUSE_CPI;
+			y_mou+=(float)dY*sin(heading_mou*DEG2RAD)*25.4/MOUSE_CPI;
 			lastMouseX=sensMouseX;
 			lastMouseY=sensMouseY;
 		#endif
@@ -280,41 +284,48 @@ void sensor_update(void){
 			} 
 			
 			/* Steigungen berechnen */
-			s1=tan(oldHead*2*M_PI/360);
-			s2=tan(heading_mou*2*M_PI/360);
-			/* y-Achsenabschnitte berechnen */
-			a1=old_y-s1*old_x;
-			a2=y_mou-s2*x_mou;
-			/* Schnittpunkt berechnen */
-			xd=(a2-a1)/(s1-s2);
-			yd=(s1*a2-s2*a1)/(s1-s2);
-			/* Radius ermitteln */
-			radius=sqrt((x_mou-xd)*(x_mou-xd)+(y_mou-yd)*(y_mou-yd));
-			/* Vorzeichen des Radius feststelen */
-			if (dHead>0) {
-				/* Drehung links, Drehpunkt liegt auf oder links vom Mittelpunkt
-				 * daher negativer Radius */
-				 radius=-radius;
+			s1=tan(oldHead*DEG2RAD);
+			s2=tan(heading_mou*DEG2RAD);
+			
+			/* Geradeausfahrt? (s1==s2) */
+			if (s1==s2) {
+				/* Bei Geradeausfahrt ist v_left==v_right==v_center */
+				v_mou_left=v_mou_right=v_mou_center;
+			} else {
+				/* y-Achsenabschnitte berechnen */
+				a1=old_y-s1*old_x;
+				a2=y_mou-s2*x_mou;
+				/* Schnittpunkt berechnen */
+				xd=(a2-a1)/(s1-s2);
+				yd=(s1*a2-s2*a1)/(s1-s2);
+				/* Radius ermitteln */
+				radius=sqrt((x_mou-xd)*(x_mou-xd)+(y_mou-yd)*(y_mou-yd));
+				/* Vorzeichen des Radius feststelen */
+				if (lastHead>0) {
+					/* Drehung links, Drehpunkt liegt auf oder links vom Mittelpunkt
+					 * daher negativer Radius */
+					 radius=-radius;
+				}
+				/* Falls Koordinaten/Winkel angepasst wurden, nun wieder korrigieren */
+				if (modifiedAngles){
+					float temp;
+					/* Winkel wieder um 90 Grad reduzieren */
+					oldHead-=90;
+					heading_mou-=90;
+					/* Koordinaten wieder korrigieren */
+					temp=old_x;
+					old_x=-old_y;
+					old_y=temp;
+					temp=x_mou;
+					x_mou=-y_mou;
+					y_mou=temp;	
+				}
+				/* Geschwindigkeiten berechnen */
+				right_radius=radius-WHEEL_DISTANCE;
+				left_radius=radius+WHEEL_DISTANCE;
+				v_mou_right=lastHead/360*2*M_PI*right_radius*4;
+				v_mou_left=lastHead/360*2*M_PI*left_radius*4;
 			}
-			/* Falls Koordinaten/Winkel angepasst wurden, nun wieder korrigieren */
-			if (modifiedAngles){
-				float temp;
-				/* Winkel wieder um 90 Grad reduzieren */
-				oldHead-=90;
-				heading_mou-=90;
-				/* Koordinaten wieder korrigieren */
-				temp=old_x;
-				old_x=-old_y;
-				old_y=temp;
-				temp=x_mou;
-				x_mou=-y_mou;
-				y_mou=temp;	
-			}
-			/* Geschwindigkeiten berechnen */
-			right_radius=radius-WHEEL_DISTANCE;
-			left_radius=radius+WHEEL_DISTANCE;
-			v_mou_right=lastHead/360*2*M_PI*right_radius*4;
-			v_mou_left=lastHead/360*2*M_PI*left_radius*4;
 			lastDistance=0;
 			lastHead=0;
 			old_x=x_mou;

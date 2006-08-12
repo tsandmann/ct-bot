@@ -83,7 +83,17 @@ int16 drive_distance_speed;		/*!< Angepeilte Geschwindigkeit. */
 int16 turn_targetR;				/*!< Zu drehender Winkel bzw. angepeilter Stand des Radencoders sensEncR */
 int16 turn_targetL;				/*!< Zu drehender Winkel bzw. angepeilter Stand des Radencoders sensEncL */
 #else
-int16 target_angle;					/*!< Zielwinkel (Blickrichtung) */
+int8 angle_correct=0;			/*!< Drehabschnitt 0=0-15Grad, 1=16-45 Grad, 2= >45 Grad */
+int16 to_turn;					/*!< Wieviel Grad sind noch zu drehen? */
+	#ifdef MCU
+		uint8 __attribute__ ((section (".eeprom"))) err15=1;					/*!< Fehler bei Drehungen unter 15 Grad */
+		uint8 __attribute__ ((section (".eeprom"))) err45=2;					/*!< Fehler bei Drehungen zwischen 15 und 45 Grad */
+		uint8 __attribute__ ((section (".eeprom"))) err_big=4;				/*!< Fehler bei groesseren Drehungen */
+	#else
+		uint8 err15=0;
+		uint8 err45=0;
+		uint8 err_big=0;
+	#endif
 #endif
 int8 turn_direction;			/*!< Richtung der Drehung */
 
@@ -276,6 +286,29 @@ void bot_simple_behaviour(Behaviour_t *data){
 	}
 }
 
+/* Hilfsfunktion zur Berechnung einer Winkeldifferenz */
+inline int16 calc_turned_angle(int8 direction, int16 angle1, int16 angle2) {
+	int16 diff_angle=0;
+	
+	if (direction>0){
+		// Drehung in mathematisch positivem Sinn 
+		if (angle1>angle2) {
+			// Es gab einen Ueberlauf
+			diff_angle=360-angle1+angle2;
+		} else {
+			diff_angle=angle2-angle1;	
+		}
+	} else {
+		// Drehung in mathematisch negativem Sinn
+		if (angle1<angle2) {
+			// Es gab einen Ueberlauf
+			diff_angle=angle1+360-angle2;
+		} else {
+			diff_angle=angle1-angle2;
+		}
+	}
+	return diff_angle;
+}
 
 /*! Uebergabevariable fuer SIMPLE2 */
 static int16 simple2_light=0; 
@@ -773,115 +806,165 @@ void bot_drive_distance(Behaviour_t* caller,int8 curve, int16 speed, int16 cm){
 }
 
 #ifdef MEASURE_MOUSE_AVAILABLE
-/*!
- * Das Verhalten laesst den Bot eine Punktdrehung durchfuehren. 
- * Drehen findet in vier Schritten statt. Die Drehung wird dabei
- * bei Winkeln > 45 Grad zunaechst mit maximaler Geschwindigkeit ausgefuehrt. Bei kleineren
- * Winkeln oder wenn nur noch 45 Grad zu drehen sind, nur noch mit normaler Geschwindigkeit
- * @param *data der Verhaltensdatensatz
- * @see bot_turn()
- */
-void bot_turn_behaviour(Behaviour_t* data){
-	// Zustaende fuer das bot_turn_behaviour-Verhalten 
-	#define NORMAL_TURN				0
-	#define STOP_TURN				1
-	#define FULL_STOP				3
-	static int8 turnState=NORMAL_TURN;
-	static int16 old_turn=-1;
-	static int8 heading_count=0;
-	static int16 old_heading=-1;
-	static int8 correctMode=False;
-	// zu drehende Schritte in die korrekte Drehrichtung berechnen
-	int16 to_turn=0;
-		
-	if (turn_direction>0){
-		// Winkelzaehler naehert sich von Unten 
-		if (heading_mou>target_angle) {
-			// muss ueber einen uerberlauf
-			to_turn=(int16)target_angle+360-heading_mou;
-		} else {
-			to_turn=(int16)target_angle-heading_mou;	
-		}
-	} else {
-		if (heading_mou<target_angle) {
-			// muss ueber einen ueberlauf
-			to_turn=(int16)360-target_angle+heading_mou;
-		} else {
-			to_turn=(int16)heading_mou-target_angle;
-		}
-	}
-	if (old_turn==-1) old_turn=to_turn;	// im ersten Durchlauf gleichsetzen 
+ /*!
+  * Das Verhalten laesst den Bot eine Punktdrehung durchfuehren. 
++ * Drehen findet in drei Schritten statt. Die Drehung wird dabei
++ * bei Winkeln > 15 Grad zunaechst mit hoeherer Geschwindigkeit ausgefuehrt. Bei kleineren
++ * Winkeln oder wenn nur noch 15 Grad zu drehen sind, nur noch mit geringer Geschwindigkeit
+  * @param *data der Verhaltensdatensatz
+  * @see bot_turn()
+  */
+void bot_turn_behaviour(Behaviour_t *data)
+{
+ 	// Zustaende fuer das bot_turn_behaviour-Verhalten 
+ 	#define NORMAL_TURN				0
+ 	#define STOP_TURN				1
+	#define FULL_STOP				2
+ 	static int8 turnState=NORMAL_TURN;
+ 	static int16 old_heading=-1;
+	static int16 head_count=0;
+	uint8 e15;
+	uint8 e45;
+	uint8 ebig;
+	
+	// seit dem letzten mal gedrehte Grad
+	int16 turned=0;
+	// aktueller Winkel als int16
+	int16 akt_heading=(int16)heading_mou;
+	
+	// erster Aufruf? -> alter Winkel==neuer Winkel
+	if (old_heading==-1) old_heading=akt_heading;
+	
+	// berechnen, wieviel Grad seit dem letzten Aufruf gedreht wurden
+	turned=calc_turned_angle(turn_direction,old_heading,akt_heading);
+	if (turned > 300) turned -= 360; // hier ging etwas schief
+	
+	// aktueller Winkel wird alter Winkel
+	old_heading=akt_heading;
+	// aktuelle Drehung von zu drehendem Winkel abziehen
+	to_turn-=turned;
 
-	switch(turnState) {
-		case NORMAL_TURN:
-			// Solange drehen, bis 3 oder weniger Grad zu fahren sind
-			// oder der zu drehende Winkel wieder groesser wird
-			if (to_turn>old_turn) {
-				/* Nachlauf abwarten */
-				turnState=STOP_TURN;
+ 	switch(turnState) {
+ 		case NORMAL_TURN:
+			// Solange drehen, bis Drehwinkel erreicht ist
+			// oder gar zu weit gedreht wurde
+			if (to_turn<1) {
+ 				/* Nachlauf abwarten */
+				speedWishLeft=BOT_SPEED_STOP;
+				speedWishRight=BOT_SPEED_STOP;
+ 				turnState=STOP_TURN;
+ 				break;
+ 			}
+         	speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_NORMAL : BOT_SPEED_NORMAL;	                         speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;
+         	speedWishRight = (turn_direction > 0) ? BOT_SPEED_NORMAL : -BOT_SPEED_NORMAL;	                         speedWishRight = (turn_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
+	        break;
+ 			
+ 		case STOP_TURN:
+			// Abwarten, bis Nachlauf beendet
+			if (akt_heading!=old_heading){
+				head_count=0;
+				speedWishLeft=BOT_SPEED_STOP;
+				speedWishRight=BOT_SPEED_STOP;
 				break;
-			}
-			old_turn=to_turn;
-			// Bis 45 Grad kann mit maximaler Geschwindigkeit gefahren werden, danach schrittweise reduzieren
-			// Geschwindigkeit fuer beide Raeder getrennt ermitteln
-			if (to_turn>8) {
-				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_FOLLOW : BOT_SPEED_FOLLOW;
-				speedWishRight = (turn_direction > 0) ? BOT_SPEED_FOLLOW : -BOT_SPEED_FOLLOW;
-			} else {
-				speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;
-				speedWishRight = (turn_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
-			}
-			break;
+			}		
+			if (head_count<10) {
+				head_count++;
+				speedWishLeft=BOT_SPEED_STOP;
+				speedWishRight=BOT_SPEED_STOP;
+				break;					
+ 			}
+			#ifdef MCU
+				e15=eeprom_read_byte(&err15);
+				e45=eeprom_read_byte(&err45);
+				ebig=eeprom_read_byte(&err_big);
+			#else
+				e15=err15;
+				e45=err45;
+				ebig=err_big;
+			#endif
+
+			// Neue Abweichung mit alter vergleichen und ggfs neu bestimmen
 			
-		case STOP_TURN:
-			if ((int16)heading_mou!=old_heading) {
-				old_heading=(int16)heading_mou;
-				heading_count=0;
-			} else {
-				if (heading_count<3) {
-					heading_count++;
-				} else {
-					heading_count=0;
-					old_heading=-1;
-					old_turn=-1;
-					turn_direction=-turn_direction;
-					turnState=FULL_STOP;
-					speedWishLeft =	BOT_SPEED_STOP;
-					speedWishRight= BOT_SPEED_STOP;
-					correctMode=True;
-				}						
-			}
-			break;
-			
-		default: 
-			// ist gleichzeitig FULL_STOP, da gleiche Aktion 
-			// Stoppen, State zuruecksetzen und Verhalten beenden
-			speedWishLeft = BOT_SPEED_STOP;
-			speedWishRight= BOT_SPEED_STOP;
-			turnState=NORMAL_TURN;
-			old_turn=-1;
-			heading_count=0;
-			old_heading=-1;
-			correctMode=False;
-			return_from_behaviour(data);
-			break;			
-	}
+			switch(angle_correct) {
+				case 0:
+					if (abs(to_turn)-e15>1) {
+						e15=(int8)(abs(to_turn)+e15)/2;
+						#ifdef MCU
+							eeprom_write_byte(&err15,e15);
+						#else
+							err15=e15;
+						#endif
+					}
+					break;
+					
+				case 1:
+					if (abs(to_turn)-e45>1) {
+						e45=(int8)(abs(to_turn)+e45)/2;
+						#ifdef MCU
+							eeprom_write_byte(&err45,e45);
+						#else
+							err45=e45;
+						#endif
+					}
+					break;	
+					
+				case 2:
+				if (abs(to_turn)-ebig>1) {
+						ebig=(int8)(abs(to_turn)+ebig)/2;
+						#ifdef MCU
+							eeprom_write_byte(&err_big,ebig);
+						#else
+							err_big=ebig;
+						#endif
+					}
+					break;
+			}			
+			// ok, verhalten beenden
+			speedWishLeft=BOT_SPEED_STOP;
+			speedWishRight=BOT_SPEED_STOP;
+ 			turnState=NORMAL_TURN;
+ 			old_heading=-1;
+ 			return_from_behaviour(data);
+ 			break;			
+ 	}
 }
 
-/*! 
- * Dreht den Bot im mathematisch positiven Sinn. 
- * @param degrees Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
- */
-void bot_turn(Behaviour_t* caller,int16 degrees){
-	// Richtungsgerechte Umrechnung in den Zielwinkel
-	if(degrees < 0) turn_direction = -1;
-	else turn_direction = 1;
-	target_angle=heading_mou+degrees;
-	if (target_angle>359) target_angle-=360;
-	if (target_angle<0) target_angle+=360;
-	switch_to_behaviour(caller, bot_turn_behaviour,NOOVERRIDE);
-}
-
+void bot_turn(Behaviour_t *caller, int16 degrees)
+{
+ 	// Richtungsgerechte Umrechnung in den Zielwinkel
+ 	if(degrees < 0) turn_direction = -1;
+ 	else turn_direction = 1;
+	to_turn=abs(degrees);
+	#ifdef MCU
+		if (eeprom_read_byte(&err15)==255 && eeprom_read_byte(&err45)==255 && eeprom_read_byte(&err_big)==255) {
+			eeprom_write_byte(&err15,1);
+			eeprom_write_byte(&err45,2);
+			eeprom_write_byte(&err_big,4);
+		}
+		if (to_turn>45) {
+			to_turn-=eeprom_read_byte(&err_big);
+			angle_correct=2;
+		} else if (to_turn<=45 && to_turn>15) {
+		to_turn-=eeprom_read_byte(&err45);
+			angle_correct=1;
+		} else {
+			to_turn-=eeprom_read_byte(&err15);
+			angle_correct=0;
+		}
+	#else
+			if (to_turn>45) {
+			to_turn-=err_big;
+			angle_correct=2;
+		} else if (to_turn<=45 && to_turn>15) {
+			to_turn-=err45;
+			angle_correct=1;
+		} else {
+			to_turn-=err15;
+			angle_correct=0;
+		}
+	#endif
+ 	switch_to_behaviour(caller, bot_turn_behaviour,NOOVERRIDE);
+ }
 #else
 /*!
  * Das Verhalten laesst den Bot eine Punktdrehung durchfuehren. 
