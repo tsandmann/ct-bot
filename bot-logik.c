@@ -1538,7 +1538,7 @@ void bot_check_wall_behaviour(Behaviour_t *data) {
 			 * Korrekturwinkel berechnen, falls vorheriger Abstand da.
 			 * wird durch Abstand>IGNORE_DISTANCE zurueckgesetzt */
 			if (lastDistance!=0) {
-				turnAngle=turnAngle+(lastDistance-wall_distance)/5;
+				turnAngle=turnAngle+(lastDistance-wall_distance)/10;
 			}
 			if (sensor<IGNORE_DISTANCE) lastDistance=sensor;
 			if (check_direction==CHECK_WALL_LEFT) {
@@ -1989,7 +1989,7 @@ void bot_solve_maze_behaviour(Behaviour_t *data){
 			
 		case APPROACH_CORNER:
 			/* ok, nun strecke bis zur Kante berechnen */
-			x=measure_distance*cos(measured_angle*M_PI/180)/10+BOT_DIAMETER;
+			x=measure_distance*cos(measured_angle*M_PI/180)/10+BOT_DIAMETER*1.5;
 			mazeState=TURN_TO_BRANCH;
 			bot_drive_distance(data,0,BOT_SPEED_NORMAL,(int16)x);
 			break;
