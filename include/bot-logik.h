@@ -28,8 +28,10 @@
 
 #include "global.h"
 #include "ct-Bot.h"
-#ifdef MCU
-    #include <avr/eeprom.h>
+#ifdef MCU 
+	#ifdef MEASURE_MOUSE_AVAILABLE
+	    #include <avr/eeprom.h>
+	#endif
 #endif
 
 
