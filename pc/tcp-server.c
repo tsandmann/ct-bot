@@ -103,7 +103,7 @@ void tcp_server_init(void){
 	}
 	
 	int i=1;
-	setsockopt(server,SOL_SOCKET,SO_REUSEADDR,&i,sizeof(i));
+	setsockopt(server,SOL_SOCKET,SO_REUSEADDR,(char*)&i,sizeof(i));
 	
 	memset(&serverAddr, 0, sizeof(serverAddr));   // Clean up
 	serverAddr.sin_family = AF_INET;              // Internet address family

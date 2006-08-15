@@ -28,6 +28,9 @@
 
 #include "global.h"
 #include "ct-Bot.h"
+#ifdef MCU
+    #include <avr/eeprom.h>
+#endif
 
 
 /*! Verwaltungsstruktur fuer die Verhaltensroutinen */
