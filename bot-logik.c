@@ -45,6 +45,10 @@
 #include "log.h"
 #include <stdlib.h>
 #include <math.h>
+#ifdef MCU
+	#include <avr/eeprom.h>
+#endif
+
 /*
  * Alle Konstanten, die Verhaltensweisen benutzen, sind in bot-local.h ausgelagert. 
  * Dort kann man sie per .cvsignore vor updates schuetzen.
