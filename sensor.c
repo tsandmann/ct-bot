@@ -203,7 +203,7 @@ void sensor_update(void){
 			deltaY=(sl+sr)*sin(dHead/2)/dHead;
 		}
 		/* Winkel in Grad umrechnen */
-		dHead=dHead/DEG2RAD;
+		dHead=dHead/(DEG2RAD);
 		
 		/* neue Positionen berechnen */
 		heading_enc+=dHead;
