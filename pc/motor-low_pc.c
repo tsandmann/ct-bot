@@ -62,7 +62,7 @@ void bot_motor(int16 left, int16 right){
 		direction.left= DIRECTION_FORWARD;
 
 	motor_left=left;
-	motor_right=left;
+	motor_right=right;
 		
 }
 

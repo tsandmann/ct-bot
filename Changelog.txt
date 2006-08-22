@@ -1,7 +1,8 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-08-04 Benjamin Benz [bbe@heise.de]: motor_low_pc.c Bugfix
 
-2006-08-16 Felix Beckwermert [felix@beckwermert.de]: sensor.c -- buf-fix (aus forum): Klammern bei dHead ergänzt
+2006-08-16 Felix Beckwermert [felix@beckwermert.de]: sensor.c -- buf-fix (aus forum): Klammern bei dHead ergaenzt
 
 2006-08-04 Timo Sandmann [mail@timosandmann.de]: tcp.h um include fuer Macs ergaenzt
 
