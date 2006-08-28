@@ -71,37 +71,37 @@
  * Allgemeines Debugging (Methode DiesUndDas wurde mit Parameter SoUndSo 
  * aufgerufen ...)
  */
-#define LOG_DEBUG(__dbg)	log_begin(__FILE__, __LINE__, LOG_TYPE_DEBUG); \
-							log_printf __dbg; \
+#define LOG_DEBUG(__dbg)	log_begin(__FILE__, __LINE__, LOG_TYPE_DEBUG), \
+							log_printf __dbg, \
 							log_end()
 
 /*!
  * Allgemeine Informationen (Programm gestartet, Programm beendet, Verbindung 
  * zu Host Foo aufgebaut, Verarbeitung dauerte SoUndSoviel Sekunden ...)
  */
-#define LOG_INFO(__dbg)		log_begin(__FILE__, __LINE__, LOG_TYPE_INFO); \
-							log_printf __dbg; \
+#define LOG_INFO(__dbg)		log_begin(__FILE__, __LINE__, LOG_TYPE_INFO), \
+							log_printf __dbg, \
 							log_end()
 
 /*!
  * Auftreten einer unerwarteten Situation.
  */
-#define LOG_WARN(__dbg)		log_begin(__FILE__, __LINE__, LOG_TYPE_WARN); \
-							log_printf __dbg; \
+#define LOG_WARN(__dbg)		log_begin(__FILE__, __LINE__, LOG_TYPE_WARN), \
+							log_printf __dbg, \
 							log_end()
 
 /*!
  * Fehler aufgetreten, Bearbeitung wurde alternativ fortgesetzt.
  */
-#define LOG_ERROR(__dbg)	log_begin(__FILE__, __LINE__, LOG_TYPE_ERROR); \
-							log_printf __dbg; \
+#define LOG_ERROR(__dbg)	log_begin(__FILE__, __LINE__, LOG_TYPE_ERROR), \
+							log_printf __dbg, \
 							log_end()
 
 /*!
  * Kritischer Fehler, Programmabbruch.
  */
-#define LOG_FATAL(__dbg)	log_begin(__FILE__, __LINE__, LOG_TYPE_FATAL); \
-							log_printf __dbg; \
+#define LOG_FATAL(__dbg)	log_begin(__FILE__, __LINE__, LOG_TYPE_FATAL), \
+							log_printf __dbg, \
 							log_end()
 
 #else
