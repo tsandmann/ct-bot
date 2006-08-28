@@ -82,14 +82,12 @@ extern volatile float v_enc_center;	/*!< Schnittgeschwindigkeit ueber beide Raed
 	extern volatile float v_mou_right;		/*!< ...aufgeteilt auf rechtes Rad */
 #endif
 
-#ifdef MEASURE_COUPLED_AVAILABLE
-	extern volatile float heading;			/*!< Aktuelle Blickrichtung aus gekoppelten Werten */
-	extern volatile float x_pos;			/*!< Aktuelle X-Position aus gekoppelten Werten */
-	extern volatile float y_pos;			/*!< Aktuelle Y-Position aus gekoppelten Werten */
-	extern volatile float v_left;			/*!< Geschwindigkeit linkes Rad aus gekoppelten Werten */
-	extern volatile float v_right;			/*!< Geschwindigkeit rechtes Rad aus gekoppelten Werten */
-	extern volatile float v_center;		/*!< Geschwindigkeit im Zentrum des Bots aus gekoppelten Werten */
-#endif
+extern volatile float heading;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
+extern volatile float x_pos;			/*!< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
+extern volatile float y_pos;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
+extern volatile float v_left;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
+extern volatile float v_right;			/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
+extern volatile float v_center;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
 
 
 extern volatile int8 sensors_initialized;	/*!< Wird 1 sobald die Sensorwerte zur Verfügung stehen */

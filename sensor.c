@@ -82,16 +82,12 @@ volatile float v_enc_center=0;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
 	volatile float v_mou_right=0;		/*!< ...aufgeteilt auf rechtes Rad */
 #endif
 
-
-#ifdef MEASURE_COUPLED_AVAILABLE
-	volatile float heading=0;			/*!< Aktuelle Blickrichtung aus gekoppelten Werten */
-	volatile float x_pos=0;			/*!< Aktuelle X-Position aus gekoppelten Werten */
-	volatile float y_pos=0;			/*!< Aktuelle Y-Position aus gekoppelten Werten */
-	volatile float v_left=0;			/*!< Geschwindigkeit linkes Rad aus gekoppelten Werten */
-	volatile float v_right=0;			/*!< Geschwindigkeit rechtes Rad aus gekoppelten Werten */
-	volatile float v_center=0;			/*!< Geschwindigkeit im Zentrum des Bots aus gekoppelten Werten */
-#endif
-
+volatile float heading=0;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
+volatile float x_pos=0;			/*!< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
+volatile float y_pos=0;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
+volatile float v_left=0;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
+volatile float v_right=0;			/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
+volatile float v_center=0;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
 
 volatile int8 sensors_initialized = 0;	/*!< Wird 1 sobald die Sensorwerte zur Verfügung stehen */
 
@@ -253,7 +249,19 @@ void sensor_update(void){
 			x_pos=G_POS*x_mou+(1-G_POS)*x_enc;
 			y_pos=G_POS*y_mou+(1-G_POS)*y_enc;
 			heading=G_POS*heading_mou+(1-G_POS)*heading_enc;
-		#endif
+		#else
+			#ifdef MEASURE_MOUSE_AVAILABLE
+				/* Mauswerte als Standardwerte benutzen */
+				heading=heading_mou;
+				x_pos=x_mou;
+				y_pos=y_mou;
+			#else
+				/* Encoderwerte als Standardwerte benutzen */
+				heading=heading_enc;
+				x_pos=x_enc;
+				y_pos=y_enc;
+			#endif
+		#endif	
 	}
 	if (timer_get_ms_since(olds_speed,oldms_speed)>250) {	// sollte genau 1x pro Sekunde zutreffen
 		olds_speed=timer_get_s();
@@ -265,7 +273,7 @@ void sensor_update(void){
 		lastEncR1= sensEncR;
 		#ifdef MEASURE_MOUSE_AVAILABLE
 			/* Speed aufgrund Maussensormessungen */
-			v_mou_center=lastDistance;
+			v_mou_center=lastDistance*4;
 			/* Aufteilung auf die Raeder zum Vergleich mit den Radencodern */
 			/* Sonderfaelle pruefen */
 			if (oldHead==90 || oldHead==270 || heading_mou==90 || heading_mou==270) {
@@ -306,25 +314,25 @@ void sensor_update(void){
 					 * daher negativer Radius */
 					 radius=-radius;
 				}
-				/* Falls Koordinaten/Winkel angepasst wurden, nun wieder korrigieren */
-				if (modifiedAngles){
-					float temp;
-					/* Winkel wieder um 90 Grad reduzieren */
-					oldHead-=90;
-					heading_mou-=90;
-					/* Koordinaten wieder korrigieren */
-					temp=old_x;
-					old_x=-old_y;
-					old_y=temp;
-					temp=x_mou;
-					x_mou=-y_mou;
-					y_mou=temp;	
-				}
 				/* Geschwindigkeiten berechnen */
 				right_radius=radius-WHEEL_DISTANCE;
 				left_radius=radius+WHEEL_DISTANCE;
 				v_mou_right=lastHead/360*2*M_PI*right_radius*4;
 				v_mou_left=lastHead/360*2*M_PI*left_radius*4;
+			}
+			/* Falls Koordinaten/Winkel angepasst wurden, nun wieder korrigieren */
+			if (modifiedAngles){
+				float temp;
+				/* Winkel wieder um 90 Grad reduzieren */
+				oldHead-=90;
+				heading_mou-=90;
+				/* Koordinaten wieder korrigieren */
+				temp=old_x;
+				old_x=-old_y;
+				old_y=temp;
+				temp=x_mou;
+				x_mou=-y_mou;
+				y_mou=temp;	
 			}
 			lastDistance=0;
 			lastHead=0;
@@ -336,6 +344,18 @@ void sensor_update(void){
 			v_left=G_SPEED*v_mou_left+(1-G_SPEED)*v_enc_left;
 			v_right=G_SPEED*v_mou_right+(1-G_SPEED)*v_enc_left;
 			v_center=G_SPEED*v_mou_center+(1-G_SPEED)*v_enc_center;
+		#else
+			#ifdef MEASURE_MOUSE_AVAILABLE
+				/* Mauswerte als Standardwerte benutzen */
+				v_left=v_mou_left;
+				v_right=v_mou_right;
+				v_center=v_mou_center;
+			#else
+				/* Encoderwerte als Standardwerte benutzen */
+				v_left=v_enc_left;
+				v_right=v_enc_right;
+				v_center=v_enc_center;
+			#endif			
 		#endif
 		#ifdef SRF10_AVAILABLE
 			sensSRF10 = srf10_get_measure();	/*!< Messung Ultraschallsensor */
