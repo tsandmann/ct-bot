@@ -101,16 +101,19 @@ volatile int8 sensors_initialized = 0;	/*!< Wird 1 sobald die Sensorwerte zur Ve
  * @param right Rechter Rohwert [0-1023]
  */
 void sensor_abstand(uint16 left, uint16 right){
+	if (left  == SENSDISTOFFSETLEFT)  // Vermeidet Div/0
+		left++;	
 	sensDistL = SENSDISTSLOPELEFT / (left - SENSDISTOFFSETLEFT);
-	sensDistR = SENSDISTSLOPERIGHT / (right - SENSDISTOFFSETRIGHT);
-	
-			// Korrigieren, wenn ungueltiger Wert
-	if (sensDistL > SENS_IR_MAX_DIST || sensDistL<0)
+	// Korrigieren, wenn ungueltiger Wert
+	if (sensDistL > SENS_IR_MAX_DIST || sensDistL<=0)
 		sensDistL=SENS_IR_INFINITE;
 
-	if (sensDistR > SENS_IR_MAX_DIST || sensDistR<0)
+	if (right == SENSDISTOFFSETRIGHT) // Vermeidet Div/0
+		right++;
+	sensDistR = SENSDISTSLOPERIGHT / (right - SENSDISTOFFSETRIGHT);
+	// Korrigieren, wenn ungueltiger Wert
+	if (sensDistR > SENS_IR_MAX_DIST || sensDistR<=0)
 		sensDistR=SENS_IR_INFINITE;
-	
 }
 
 /*! Sensor_update
