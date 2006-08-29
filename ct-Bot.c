@@ -104,6 +104,7 @@ void init(void){
 		
 		// Watchdog aus!	
 		wdt_disable();
+		timer_2_init();
 		
 		// Ist das ein Power on Reset ?
 		if ((MCUCSR & 1)  ==1 ) {
@@ -111,8 +112,6 @@ void init(void){
 			delay(100);
 			asm volatile("jmp 0");
 		}
-
-		timer_2_init();
 		
 		delay(100);		
 		#ifdef DISPLAY_SCREEN_RESETINFO
