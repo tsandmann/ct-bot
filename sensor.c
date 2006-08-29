@@ -149,8 +149,6 @@ void sensor_update(void){
 	static int16 lastEncR =0;		/*!< letzter Encoderwert rechts fuer Positionsberechnung */
 	static int16 lastEncL1=0;		/*!< letzter Encoderwert links fuer Geschwindigkeitsberechnung */
 	static int16 lastEncR1=0;		/*!< letzter Encoderwert rechts fuer Geschwindigkeitsberechnung */
-	static int8 mouseOverflowX=False;		/*!< Es gab einen Ueberlauf von sensMouseX */
-	static int8 mouseOverflowY=False;		/*!< Es gab einen Ueberlauf von sensMouseY */
 	float dHead=0;					/*!< Winkeldifferenz aus Encodern */
 	float deltaY=0;				/*!< errechneter Betrag Richtungsvektor aus Encodern */
 	int16 diffEncL;					/*!< Differenzbildung linker Encoder */
@@ -161,20 +159,6 @@ void sensor_update(void){
 	float dY;						/*!< Differenz der Y-Mauswerte */
 	int8 modifiedAngles=False;		/*!< Wird True, wenn aufgrund 90� oder 270� die Winkel veraendert werden mussten */
 	
-	if (sensMouseY>0 && sensMouseDY>0 && (int16)(sensMouseY+sensMouseDY)<0) {
-		/* Beide Positiv. Bei negativem Ergebnis gab es einen Ueberlauf */
-		mouseOverflowY=True;
-	} else if (sensMouseY<0 && sensMouseDY<0 && (int16)(sensMouseY+sensMouseDY)>0) {
-		/* Beide Negativ. Bei einem positiven Ergebnis gab es einen Ueberlauf */
-		mouseOverflowY=True;
-	}
-	if (sensMouseX>0 && sensMouseDX>0 && (int16)(sensMouseX+sensMouseDX)<0) {
-		/* Beide Positiv. Bei negativem Ergebnis gab es einen Ueberlauf */
-		mouseOverflowX=True;
-	} else if (sensMouseX<0 && sensMouseDX<0 && (int16)(sensMouseX+sensMouseDX)>0) {
-		/* Beide Negativ. Bei einem positiven Ergebnis gab es einen Ueberlauf */
-		mouseOverflowX=True;
-	}
 	sensMouseY += sensMouseDY;		/*!< Mausdelta Y aufaddieren */
 	sensMouseX += sensMouseDX;		/*!< Mausdelta X aufaddieren */
 	
@@ -206,23 +190,13 @@ void sensor_update(void){
 		
 		/* neue Positionen berechnen */
 		heading_enc+=dHead;
-		while (heading_enc>359) heading_enc=heading_enc-360;
+		while (heading_enc>=360) heading_enc=heading_enc-360;
 		while (heading_enc<0) heading_enc=heading_enc+360;
 		
 		x_enc+=(float)deltaY*cos(heading_enc*DEG2RAD);
 		y_enc+=(float)deltaY*sin(heading_enc*DEG2RAD);	
 		#ifdef MEASURE_MOUSE_AVAILABLE
-			if (mouseOverflowX) {
-				/* es gab einen Overflow, Ergebnis korrigieren */
-				if (sensMouseX>0) {
-					dX=-32768-lastMouseX-sensMouseX;
-				} else {
-					dX=32767-lastMouseX-(-32768-sensMouseX);	
-				}
-				mouseOverflowX=False; /* Flag zuruecksetzen */
-			} else {
-				dX=sensMouseX-lastMouseX;
-			}
+			dX=sensMouseX-lastMouseX;
 			/* heading berechnen */
 			dHead=(float)dX*360/MOUSE_FULL_TURN;
 			heading_mou+=dHead;
@@ -230,20 +204,14 @@ void sensor_update(void){
 			if (heading_mou>359) heading_mou=heading_mou-360;
 			if (heading_mou<0) heading_mou=heading_mou+360;
 			/* x/y pos berechnen */
-			if (mouseOverflowY) {
-				/* es gab einen Overflow, Ergebnis korrigieren */
-				if (sensMouseY>0) {
-					dY=-32768-lastMouseY-sensMouseY;
-				} else {
-					dY=32767-lastMouseY-(-32768-sensMouseY);	
-				}
-				mouseOverflowY=False; /* Flag zuruecksetzen */
-			} else {
-				dY=sensMouseY-lastMouseY;
-			}
+			dY=sensMouseY-lastMouseY;
 			x_mou+=(float)dY*cos(heading_mou*DEG2RAD)*25.4/MOUSE_CPI;
 			lastDistance+=dY*25.4/MOUSE_CPI;
 			y_mou+=(float)dY*sin(heading_mou*DEG2RAD)*25.4/MOUSE_CPI;
+
+			/* Ueberlauf verhindern */
+			if (fabs(sensMouseX) > 32500) sensMouseX = 0;
+			if (fabs(sensMouseY) > 32500) sensMouseY = 0;
 			lastMouseX=sensMouseX;
 			lastMouseY=sensMouseY;
 		#endif

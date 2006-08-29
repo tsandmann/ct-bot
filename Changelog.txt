@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-08-28 Timo Sandmann [mail@timosandmann.de]: Maussensor-Ueberlauf korrigiert
+
 2006-08-28 Achim Pankalla [achim.pankalla@gmx.de]: Optimierung der LOG-Makros
 
 2006-08-25 Achim Pankalla [achim.pankalla@gmx.de]: Verhindert in sensor_abstand den Wert Null und eine Division durch Null.
