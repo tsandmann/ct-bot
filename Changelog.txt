@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-08-29 Timo Sandmann [mail@timosandmann.de]: Berechnung von v_mou_left / right korrigiert
+
 2006-08-29 Benjamin Benz [bbe@heise.de]: Bugfix in mcu/delay.c
 
 2006-08-29 Benjamin Benz [bbe@heise.de]: bot_gotoxy nach einem Patch von Thomas Noll (nollsen@web.de) verbessert

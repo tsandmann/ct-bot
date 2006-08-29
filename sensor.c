@@ -140,7 +140,6 @@ void sensor_update(void){
 				float a2=0;					/*!< Y-Achsenabschnitt der aktuellen Achsengerade */
 				float xd=0;					/*!< X-Koordinate Drehpunkt */
 				float yd=0;					/*!< Y-Koordinate Drehpunkt */
-//				float dPos=0;					/*!< aktuelle Positionsaenderung  */
 				float right_radius=0;			/*!< Radius des Drehkreises des rechten Rads */
 				float left_radius=0;			/*!< Radius des Drehkreises des linken Rads */
 		#endif
@@ -157,7 +156,7 @@ void sensor_update(void){
 	float sr;						/*!< gefahrene Strecke rechtes Rad */
 	float dX;						/*!< Differenz der X-Mauswerte */
 	float dY;						/*!< Differenz der Y-Mauswerte */
-	int8 modifiedAngles=False;		/*!< Wird True, wenn aufgrund 90� oder 270� die Winkel veraendert werden mussten */
+	int8 modifiedAngles=False;		/*!< Wird True, wenn aufgrund 90 Grad oder 270 Grad die Winkel veraendert werden mussten */
 	
 	sensMouseY += sensMouseDY;		/*!< Mausdelta Y aufaddieren */
 	sensMouseX += sensMouseDX;		/*!< Mausdelta X aufaddieren */
@@ -234,7 +233,7 @@ void sensor_update(void){
 			#endif
 		#endif	
 	}
-	if (timer_get_ms_since(olds_speed,oldms_speed)>250) {	// sollte genau 1x pro Sekunde zutreffen
+	if (timer_get_ms_since(olds_speed,oldms_speed)>250) {	// sollte genau 4x pro Sekunde zutreffen
 		olds_speed=timer_get_s();
 		oldms_speed=timer_get_ms();
 		v_enc_left=  (((sensEncL - lastEncL1) * WHEEL_PERIMETER) / ENCODER_MARKS)*4;
@@ -249,7 +248,7 @@ void sensor_update(void){
 			/* Sonderfaelle pruefen */
 			if (oldHead==90 || oldHead==270 || heading_mou==90 || heading_mou==270) {
 				float temp;
-				/* winkel um 90� vergroessern */
+				/* winkel um 90 Grad vergroessern */
 				oldHead+=90;
 				heading_mou+=90;
 				// Koordinaten anpassen
@@ -263,8 +262,8 @@ void sensor_update(void){
 			} 
 			
 			/* Steigungen berechnen */
-			s1=tan(oldHead*DEG2RAD);
-			s2=tan(heading_mou*DEG2RAD);
+			s1=-tan(oldHead*DEG2RAD);
+			s2=-tan(heading_mou*DEG2RAD);
 			
 			/* Geradeausfahrt? (s1==s2) */
 			if (s1==s2) {
@@ -272,22 +271,26 @@ void sensor_update(void){
 				v_mou_left=v_mou_right=v_mou_center;
 			} else {
 				/* y-Achsenabschnitte berechnen */
-				a1=old_y-s1*old_x;
-				a2=y_mou-s2*x_mou;
+				a1=old_x-s1*old_y;
+				a2=x_mou-s2*y_mou;
 				/* Schnittpunkt berechnen */
-				xd=(a2-a1)/(s1-s2);
-				yd=(s1*a2-s2*a1)/(s1-s2);
+				yd=(a2-a1)/(s1-s2);	
+				xd=s2*yd+a2;
 				/* Radius ermitteln */
 				radius=sqrt((x_mou-xd)*(x_mou-xd)+(y_mou-yd)*(y_mou-yd));
-				/* Vorzeichen des Radius feststelen */
-				if (lastHead>0) {
-					/* Drehung links, Drehpunkt liegt auf oder links vom Mittelpunkt
+				/* Vorzeichen des Radius feststellen */
+				if (lastHead<0) {
+					/* Drehung rechts, Drehpunkt liegt rechts vom Mittelpunkt
 					 * daher negativer Radius */
 					 radius=-radius;
 				}
+				if (v_mou_center<0) {
+					/* rueckwaerts => links und rechts vertauscht, daher VZ vom Radius umdrehen */
+					radius=-radius;
+				}
 				/* Geschwindigkeiten berechnen */
-				right_radius=radius-WHEEL_DISTANCE;
-				left_radius=radius+WHEEL_DISTANCE;
+				right_radius=radius+WHEEL_DISTANCE;
+				left_radius=radius-WHEEL_DISTANCE;
 				v_mou_right=lastHead/360*2*M_PI*right_radius*4;
 				v_mou_left=lastHead/360*2*M_PI*left_radius*4;
 			}
