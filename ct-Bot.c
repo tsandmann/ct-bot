@@ -112,6 +112,8 @@ void init(void){
 			asm volatile("jmp 0");
 		}
 
+		timer_2_init();
+		
 		delay(100);		
 		#ifdef DISPLAY_SCREEN_RESETINFO
 			reset_flag = MCUCSR & 0x1F;	//Lese Grund fuer Reset und sichere Wert
