@@ -104,6 +104,9 @@ int8 turn_direction;			/*!< Richtung der Drehung */
 /* Parameter fuer bot_gotoxy_behaviour-Verhalten */
 float target_x;				/*!< Zielkoordinate X */
 float target_y;				/*!< Zielkoordinate Y */
+float initialDiffX;			/*!< Anfangsdifferenz in X-Richtung */
+float initialDiffY;			/*!< Anfangsdifferenz in Y-Richtung */
+
 
 
 /* Parameter fuer das check_wall_behaviour() */
@@ -143,6 +146,9 @@ Behaviour_t *behaviour = NULL;
 #define SUBSUCCESS	1	/*!< Konstante fuer Behaviour_t->subResult: Aufgabe erfolgreich abgeschlossen */
 #define SUBFAIL	0	/*!< Konstante fuer Behaviour_t->subResult: Aufgabe nicht abgeschlossen */
 #define SUBRUNNING 2	/*!< Konstante fuer Behaviour_t->subResult: Aufgabe wird noch beabeitet */
+
+
+
 
 /*!
  * Aktiviert eine Regel mit gegebener Funktion
@@ -1090,46 +1096,75 @@ void bot_turn(Behaviour_t* caller,int16 degrees){
 }
 #endif
 
-#ifdef MEASURE_MOUSE_AVAILABLE
+/*!
+ * Auslagerung der Berechnung der benoetigten Drehung aus dem gotoxy_behaviour
+ * @param xDiff
+ * @param yDiff
+ */
+int bot_gotoxy_calc_turn(float xDiff, float yDiff){
+	float newHeading;
+	if(fabs(yDiff)>0.001 && fabs(xDiff)>0.001){
+		newHeading=atan(yDiff/xDiff)*180/(M_PI);
+		if (xDiff<0) 
+			newHeading+=180;
+	} else{
+		if(fabs(xDiff)<=0.001) 
+			newHeading=(yDiff>0)?90:(-90);
+		else 
+			newHeading=(xDiff>0)?0:(180);
+	}
+
+	int16 toTurn=(int16)newHeading-heading;		
+	if (toTurn > 180) toTurn-=360;
+	if (toTurn < -180) toTurn+=360;
+
+	return toTurn;
+}
+
 /*!
  * Das Verhalten faehrt von der aktuellen Position zur angegebenen Position (x/y)
  * @param *data der Verhaltensdatensatz
+ * Verbessert von Thomas Noll, Jens Schoemann, Ben Horst (Philipps-Universitaet Marburg)
  */
 void bot_gotoxy_behaviour(Behaviour_t *data){
 	#define INITIAL_TURN 	0
-	#define GOTO_LOOP 		1
+	#define GOTO_LOOP 	1
 	#define CORRECT_HEAD	2
-	#define REACHED_POS		3
+	#define REACHED_POS	3
 	static int16 speedLeft=BOT_SPEED_FOLLOW;
 	static int16 speedRight=BOT_SPEED_FOLLOW;
 	static int8 gotoState=INITIAL_TURN;
-	
 	/* aus aktueller Position und Ziel neuen Zielwinkel berechnen */
 	float xDiff=target_x-x_mou;
 	float yDiff=target_y-y_mou;
+	
+	if(xDiff*initialDiffX <0 || yDiff*initialDiffY <0){	// Hier kann noch verbessert werden
+		gotoState=REACHED_POS;			// z.B. Abfragen statt *-Operation
+		speedWishLeft=BOT_SPEED_STOP;		// bzw. neue Drehung statt Stehenbleiben
+		speedWishRight=BOT_SPEED_STOP;
+	}
 
+	
 	switch(gotoState) {
 		case INITIAL_TURN:
 			gotoState=GOTO_LOOP;
-			float newHeading=atan(yDiff/xDiff)*360/(2*M_PI);
-			bot_turn(data,(int16)(newHeading-heading_mou));
+			bot_turn(data,bot_gotoxy_calc_turn(xDiff,yDiff));
 			break;
-			
+
 		case GOTO_LOOP:
 			/* Position erreicht? */
-			if (xDiff<10 || yDiff<10) {
+			if ((xDiff)<10 || (yDiff)<10) {
 				gotoState=CORRECT_HEAD;
-				float newHeading=atan(yDiff/xDiff)*360/(2*3.1416);
-				bot_turn(data,-1*(int16)(newHeading-heading_mou));
+				bot_turn(data,bot_gotoxy_calc_turn(xDiff,yDiff));
 				break;
 			}
 			speedWishLeft=speedLeft;
 			speedWishRight=speedRight;
 			break;
-			
+
 		case CORRECT_HEAD:
 			/* Position erreicht? */
-			if (xDiff<2 && yDiff<2) {
+			if ((xDiff)<3 && (yDiff)<3) {
 				gotoState=REACHED_POS;
 				speedWishLeft=BOT_SPEED_STOP;
 				speedWishRight=BOT_SPEED_STOP;
@@ -1138,24 +1173,28 @@ void bot_gotoxy_behaviour(Behaviour_t *data){
 			speedWishLeft=BOT_SPEED_SLOW;
 			speedWishRight=BOT_SPEED_SLOW;
 			break;
-			
+
 		case REACHED_POS:
 			gotoState=INITIAL_TURN;
 			return_from_behaviour(data);
 			break;
 	}
-	
+
 }
 
 /*!
- * Das Verhalten faehrt von der aktuellen Position zur angegebenen Position (x/y)
+ * Botenfunktion: Das Verhalten faehrt von der aktuellen Position zur angegebenen Position (x/y)
+ * @param caller Aufrufendes Verhalten
+ * @param x X-Ordinate an die der Bot fahren soll
+ * @param y Y-Ordinate an die der Bot fahren soll
  */
 void bot_gotoxy(Behaviour_t *caller, float x, float y){
 	target_x=x;
 	target_y=y;
+	initialDiffX=x-x_pos;
+	initialDiffY=y-y_pos;
 	switch_to_behaviour(caller, bot_gotoxy_behaviour, NOOVERRIDE);
 }
-#endif
 
 /*!
  * Das Verhalten laesst den Roboter den Raum durchsuchen. 
