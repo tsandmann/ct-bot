@@ -1,8 +1,10 @@
 CHANGELOG fuer c't-Bot
 ======================
-2006-08-28 Benjamin Benz [bbe@heise.de]: bot_gotoxy nach einem Patch von Thomas Noll (nollsen@web.de) verbessert
+2006-08-29 Benjamin Benz [bbe@heise.de]: Bugfix in mcu/delay.c
 
-2006-08-28 Timo Sandmann [mail@timosandmann.de]: Maussensor-Ueberlauf korrigiert
+2006-08-29 Benjamin Benz [bbe@heise.de]: bot_gotoxy nach einem Patch von Thomas Noll (nollsen@web.de) verbessert
+
+2006-08-29 Timo Sandmann [mail@timosandmann.de]: Maussensor-Ueberlauf korrigiert
 
 2006-08-28 Achim Pankalla [achim.pankalla@gmx.de]: Optimierung der LOG-Makros
 
