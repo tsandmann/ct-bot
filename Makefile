@@ -43,8 +43,8 @@ FORMAT = ihex
 TARGET = ct-Bot
 
 # Target Device, either pc or mcu, usually defined on commandline
-DEVICE = MCU
-#DEVICE = PC
+#DEVICE = MCU
+DEVICE = PC
 
 MSG_DEVICE = Target device is $(DEVICE)
 
