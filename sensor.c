@@ -154,8 +154,8 @@ void sensor_update(void){
 	int16 diffEncR;					/*!< Differenzbildung rechter Encoder */
 	float sl;						/*!< gefahrene Strecke linkes Rad */
 	float sr;						/*!< gefahrene Strecke rechtes Rad */
-	float dX;						/*!< Differenz der X-Mauswerte */
-	float dY;						/*!< Differenz der Y-Mauswerte */
+	int16 dX;						/*!< Differenz der X-Mauswerte */
+	int16 dY;						/*!< Differenz der Y-Mauswerte */
 	int8 modifiedAngles=False;		/*!< Wird True, wenn aufgrund 90 Grad oder 270 Grad die Winkel veraendert werden mussten */
 	
 	sensMouseY += sensMouseDY;		/*!< Mausdelta Y aufaddieren */
@@ -200,7 +200,7 @@ void sensor_update(void){
 			dHead=(float)dX*360/MOUSE_FULL_TURN;
 			heading_mou+=dHead;
 			lastHead+=dHead;
-			if (heading_mou>359) heading_mou=heading_mou-360;
+			if (heading_mou>=360) heading_mou=heading_mou-360;
 			if (heading_mou<0) heading_mou=heading_mou+360;
 			/* x/y pos berechnen */
 			dY=sensMouseY-lastMouseY;
@@ -208,9 +208,6 @@ void sensor_update(void){
 			lastDistance+=dY*25.4/MOUSE_CPI;
 			y_mou+=(float)dY*sin(heading_mou*DEG2RAD)*25.4/MOUSE_CPI;
 
-			/* Ueberlauf verhindern */
-			if (fabs(sensMouseX) > 32500) sensMouseX = 0;
-			if (fabs(sensMouseY) > 32500) sensMouseY = 0;
 			lastMouseX=sensMouseX;
 			lastMouseY=sensMouseY;
 		#endif

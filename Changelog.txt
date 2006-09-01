@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-09-01 Timo Sandmann [mail@timosandmann.de]: Mausueberlaufbehandlung nochmal praezisiert
+
 2006-09-01 Benjamin Benz [bbe@heise.de]: Datentyp von simultime angepasst
 
 2006-08-30 Achim Pankalla [achim.pankalla@gmx.de]: Korrektur behebt Compiler warning in ct-bot.c beim setzen von LOG_DISPLAY_AVAILABLE
