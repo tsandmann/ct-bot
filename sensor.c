@@ -70,7 +70,7 @@ volatile float v_enc_right=0;	/*!< Abrollgeschwindigkeit des linken Rades in [mm
 volatile float v_enc_center=0;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
 
 #ifdef PC
-	volatile int16 simultime=0;	/*! Simulierte Zeit */
+	volatile uint16 simultime=0;	/*! Simulierte Zeit */
 #endif
 
 #ifdef MEASURE_MOUSE_AVAILABLE
