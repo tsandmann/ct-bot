@@ -215,7 +215,16 @@ void sensor_update(void){
 			/* Werte der Encoder und der Maus mit dem Faktor G_POS verrechnen */
 			x_pos=G_POS*x_mou+(1-G_POS)*x_enc;
 			y_pos=G_POS*y_mou+(1-G_POS)*y_enc;
-			heading=G_POS*heading_mou+(1-G_POS)*heading_enc;
+			/* Korrektur, falls mou und enc zu unterschiedlichen Seiten zeigen */
+			if (fabs(heading_mou-heading_enc) > 180) {
+				/* wir nutzen zum Rechnen zwei Drehrichtungen */
+				heading = heading_mou<=180 ? heading_mou*G_POS : (heading_mou-360)*G_POS;
+				heading += heading_enc<=180 ? heading_enc*(1-G_POS) : (heading_enc-360)*(1-G_POS);
+				/* wieder auf eine Drehrichtung zurueck */
+				if (heading < 0) heading += 360;					
+			} else 
+				heading = G_POS*heading_mou + (1-G_POS)*heading_enc;
+			if (heading >= 360) heading -= 360;
 		#else
 			#ifdef MEASURE_MOUSE_AVAILABLE
 				/* Mauswerte als Standardwerte benutzen */

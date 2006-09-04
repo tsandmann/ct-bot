@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-09-04 Timo Sandmann [mail@timosandmann.de]: Heading-Berechnung bei Maus-Encoder-Kopplung korrigiert
+
 2006-09-01 Timo Sandmann [mail@timosandmann.de]: Mausueberlaufbehandlung nochmal praezisiert
 
 2006-09-01 Benjamin Benz [bbe@heise.de]: Datentyp von simultime angepasst
