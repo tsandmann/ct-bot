@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-09-10 Timo Sandmann [mail@timosandmann.de]: Fehler in bot_gotoxy_behaviour() korrigiert (Code kompilierte nicht ohne MEASURE_MOUSE_AVAILABLE)
+
 2006-09-04 Timo Sandmann [mail@timosandmann.de]: Heading-Berechnung bei Maus-Encoder-Kopplung korrigiert
 
 2006-09-01 Timo Sandmann [mail@timosandmann.de]: Mausueberlaufbehandlung nochmal praezisiert

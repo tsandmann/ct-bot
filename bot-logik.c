@@ -1135,8 +1135,8 @@ void bot_gotoxy_behaviour(Behaviour_t *data){
 	static int16 speedRight=BOT_SPEED_FOLLOW;
 	static int8 gotoState=INITIAL_TURN;
 	/* aus aktueller Position und Ziel neuen Zielwinkel berechnen */
-	float xDiff=target_x-x_mou;
-	float yDiff=target_y-y_mou;
+	float xDiff=target_x-x_pos;
+	float yDiff=target_y-y_pos;
 	
 	if(xDiff*initialDiffX <0 || yDiff*initialDiffY <0){	// Hier kann noch verbessert werden
 		gotoState=REACHED_POS;			// z.B. Abfragen statt *-Operation
