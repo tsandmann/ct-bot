@@ -78,7 +78,6 @@ int wait_for_command(int timeout_s);
 	} FILETIME;
 	
 	void __stdcall GetSystemTimeAsFileTime(FILETIME*);	
-	void gettimeofday(struct timeval* p, void* tz /* IGNORED */);
 	
 	void gettimeofday(struct timeval* p, void* tz /* IGNORED */){
 		union {

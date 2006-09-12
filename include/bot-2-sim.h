@@ -25,6 +25,7 @@
 #ifndef __bot_2_sim
 #define __bot_2_sim
 
+#include "ct-Bot.h"
 #include "global.h"
 
 /*!
@@ -55,4 +56,12 @@ int wait_for_special_command(uint8 command);
  * @param frame Kommando zum abbruch
  */
 int8 receive_until_Frame(int8 frame);
+
+#ifdef WIN32
+	/*!
+	 * Hilfsfunktion, die es nur auf dem PC gibt
+	 */
+	void gettimeofday(struct timeval* p, void* tz /* IGNORED */);
+#endif
+
 #endif

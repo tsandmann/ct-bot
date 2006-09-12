@@ -35,8 +35,6 @@
 	#ifndef WIN32
 		typedef unsigned char byte;                       /*!< vorzeichenlose 8-Bit-Zahl */
 		typedef byte bool;                                /*!< True/False-Aussage */
-	#else
-		extern void gettimeofday(struct timeval* p, void* tz /* IGNORED */);
 	#endif
 
 	//#define DOXYGEN		/*!< Nur zum Generieren von Doku!!!! */
