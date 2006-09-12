@@ -27,6 +27,13 @@
 
 #ifdef PC
 
+#include <stdio.h>      // for printf() and fprintf()
+#include <stdlib.h>     // for atoi() and exit()
+#include <string.h>     // for strlen()
+#include <sys/time.h>
+#include <pthread.h>
+#include <time.h>
+
 #include "bot-2-sim.h"
 #include "tcp.h"
 #include "command.h"
@@ -36,12 +43,7 @@
 #include "motor.h"
 #include "command.h"
 
-#include <stdio.h>      // for printf() and fprintf()
-#include <stdlib.h>     // for atoi() and exit()
-#include <string.h>     // for strlen()
-#include <sys/time.h>
-#include <pthread.h>
-#include <time.h>
+
 
 /* Linux with glibc:
  *   _REENTRANT to grab thread-safe libraries
