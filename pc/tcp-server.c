@@ -248,7 +248,7 @@ int tcp_test_client_run (int runs){
 	char buffer[255];
 	
 	int len=0;
-	int i;
+	int i=0;
 	
 	if (runs > 0)
 		printf("Answering %d frames\n",runs);
