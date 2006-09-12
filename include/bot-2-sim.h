@@ -58,7 +58,7 @@ int wait_for_special_command(uint8 command);
 int8 receive_until_Frame(int8 frame);
 
 #ifdef WIN32
-	#include <time.h>
+	#include <sys/time.h>
 	/*!
 	 * Hilfsfunktion, die es nur auf dem PC gibt
 	 */
