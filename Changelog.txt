@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-09-12 Benjamin Benz [bbe@heise.de]: Timersteps auf 176 angepasst
+
 2006-09-12 Benjamin Benz [bbe@heise.de]: Nach einem Hinweis von Achim Pankalla 2 Warnings entfernt und eine Variable sauber initialisiert
 
 2006-09-10 Timo Sandmann [mail@timosandmann.de]: Fehler in bot_gotoxy_behaviour() korrigiert (Code kompilierte nicht ohne MEASURE_MOUSE_AVAILABLE)

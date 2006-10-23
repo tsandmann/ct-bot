@@ -73,7 +73,7 @@
  */
 #ifdef MCU
 //	#define TIMER_STEPS	(1 000 000/TIMER_2_CLOCK)
-	#define TIMER_STEPS 178
+	#define TIMER_STEPS 176
 #else
 	/* Auf dem PC koppeln wir das an die Zeitbasis des Simulators, derzeit 10ms also 10000 Microsekunden */
 	#define TIMER_STEPS	10000
