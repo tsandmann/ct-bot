@@ -55,7 +55,7 @@
 #define DISPLAY_ODOMETRIC_INFO 	/*!< Zeigt auf Screen 4 Positions- und Geschwindigkeitsdaten */
 //#define DISPLAY_BEHAVIOUR_AVAILABLE  /*!< Anzeige der Verhalten im Display Screen 3, ersetzt Counteranzeige */
 #define MEASURE_MOUSE_AVAILABLE			/*!< Geschwindigkeiten werden aus den Maussensordaten berechnet */
-//#define MEASURE_COUPLED_AVAILABLE		/*!< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
+#define MEASURE_COUPLED_AVAILABLE		/*!< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
 
 
 //#define WELCOME_AVAILABLE	/*!< kleiner Willkommensgruss */
@@ -74,6 +74,8 @@
 //#define DOXYGEN		/*!< Nur zum Erzeugen der Doku, wenn dieser schalter an ist, jammert der gcc!!! */
 
 #define BEHAVIOUR_AVAILABLE /*!< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
+
+#define MAP_AVAILABLE /*!< Aktiviere die Kartographie */
 
 //#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
 
