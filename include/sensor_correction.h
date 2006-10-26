@@ -25,14 +25,14 @@
 #ifndef SENSOR_CORRECTION_H_
 #define SENSOR_CORRECTION_H_
 
-#define SENSDISTSLOPELEFT	48333	/*!< Stuetzwert a fuer Linearisierung des linken Distanzsensors */
-#define SENSDISTOFFSETLEFT	53		/*!< Stuetzwert b fuer Linearisierung des linken Distanzsensors */
-#define SENSDISTSLOPERIGHT	48333	/*!< Stuetzwert a fuer Linearisierung des rechten Distanzsensors */
-#define SENSDISTOFFSETRIGHT	48	/*!< Stuetzwert b fuer Linearisierung des rechten Distanzsensors */
+#define SENSDISTSLOPELEFT	47478	/*!< Stuetzwert a fuer Linearisierung des linken Distanzsensors */
+#define SENSDISTOFFSETLEFT	50		/*!< Stuetzwert b fuer Linearisierung des linken Distanzsensors */
+#define SENSDISTSLOPERIGHT	54333	/*!< Stuetzwert a fuer Linearisierung des rechten Distanzsensors */
+#define SENSDISTOFFSETRIGHT	9	/*!< Stuetzwert b fuer Linearisierung des rechten Distanzsensors */
 
 
 /* Parameter fuer die IR-Sensoren*/
-#define SENS_IR_MAX_DIST	800		/*!< Obergrenze des Erfassungsbereichs */
+#define SENS_IR_MAX_DIST	750		/*!< Obergrenze des Erfassungsbereichs */
 #define SENS_IR_INFINITE	999		/*!< Kennzeichnung fuer "kein Objekt im Erfassungsbereich" */
 
 
