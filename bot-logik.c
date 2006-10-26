@@ -43,6 +43,8 @@
 
 #include "rc5.h"
 #include "log.h"
+#include "map.h"
+
 #include <stdlib.h>
 #include <math.h>
 #ifdef MCU
@@ -382,57 +384,84 @@ void bot_simple2(int16 light, Behaviour_t * caller){
 	switch_to_behaviour(caller,bot_simple2_behaviour,OVERRIDE);	
 }
 
+
+
 /*!
  * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
  * @param *data der Verhaltensdatensatz
  */
-void bot_scan_behaviour(Behaviour_t *data){
-	#define STATE_START	0
-	#define STATE_TURN		1
-	#define STATE_SCAN		2
-	#define STATE_DONE		3
+void bot_scan_onthefly_behaviour(Behaviour_t *data){	
+	#define ONTHEFLY_DIST_RESOLUTION 100
+	#define ONTHEFLY_ANGLE_RESOLUTION 45
 	
-	#define ANGLE_RESOLUTION 10
+//	static float last_x, last_y, last_head;
 	
-	static uint8 i;
-	static uint8 step=0;
-	static uint16 readingL =0;
-	static uint16 readingR =0;
+//	float diff_x = x_pos-last_x;
+//	float diff_y = y_pos-last_y;
 	
-	static uint8 state=STATE_START;
-	
-	switch (state){
-		case STATE_START:
-			i=0;
-			readingL=0;
-			readingR=0;
-			step=0;
-			state=STATE_SCAN;
-			break;
-		case STATE_SCAN:
-			if (i==16){	//Fertig ?
-				state=STATE_TURN; 
-				i=0;
-				readingL >>= 4;	// Durch 16 teilen
-				readingR >>= 4;	// Durch 16 teilen
-				//LOG_INFO(("%03d: %04 %04",step*3, readingL, readingR));
-				LOG_INFO(("%03d: %03d %03d",step*ANGLE_RESOLUTION, readingL, readingR));
-			} else {	// aufadieren ueber 16 Zyklen
-				readingL+=sensDistL;
-				readingR+=sensDistR;
-				i++;
+	#ifdef MAP_AVAILABLE
+		update_map(x_pos,y_pos,heading,sensDistL,sensDistR);
+		/*	if ((diff_x*diff_x + diff_y*diff_y > ONTHEFLY_DIST_RESOLUTION)||fabs(last_head-heading) > ONTHEFLY_ANGLE_RESOLUTION ){
+				last_x=x_pos;
+				last_y=y_pos;
+				last_head=heading;
+				print_map();
 			}
-			break;			
-		case STATE_TURN:
-			bot_turn(data , ANGLE_RESOLUTION);
-			step++;
-			if (step==360/ANGLE_RESOLUTION)
-				state=STATE_DONE;
-			else 
-				state=STATE_SCAN;
+		*/	
+	#endif
+}
+
+
+#define BOT_SCAN_STATE_START 0
+uint8 bot_scan_state = BOT_SCAN_STATE_START;	/*!< Zustandsvariable fuer bot_scan_behaviour */
+
+/*!
+ * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
+ * @param *data der Verhaltensdatensatz
+ */
+void bot_scan_behaviour(Behaviour_t *data){	
+	#define BOT_SCAN_STATE_SCAN 1	
+
+	#define ANGLE_RESOLUTION 5	/*!< Aufloesung fuer den Scan in Grad */
+
+//	static uint16 bot_scan_start_angle; /*!< Winkel, bei dem mit dem Scan begonnen wurde */
+	static float turned;		/*!< Winkel um den bereits gedreht wurde */
+	
+	static float last_scan_angle;		/*!< Winkel bei dem zuletzt gescannt wurde */
+	
+	float diff;
+	
+	switch (bot_scan_state){
+		case BOT_SCAN_STATE_START:
+		
+			turned=0;
+			last_scan_angle=heading-ANGLE_RESOLUTION;
+			bot_scan_state=BOT_SCAN_STATE_SCAN;
 			break;
+		case BOT_SCAN_STATE_SCAN:
+			diff = heading - last_scan_angle;
+			if (diff < -180)
+				diff+=360;
+			if (diff*1.15 >= ANGLE_RESOLUTION){
+				turned+= diff;
+				last_scan_angle=heading;
+				
+				#ifdef MAP_AVAILBALE
+					// Eigentlicher Scan hier
+					update_map(x_pos,y_pos,heading,sensDistL,sensDistR);
+					////////////
+				#endif
+				
+			}
+		
+			if (turned >= 360-ANGLE_RESOLUTION)	// Ende erreicht
+				bot_scan_state++;
+			break;			
 		default:
-			state=STATE_START;
+			bot_scan_state = BOT_SCAN_STATE_START;
+			#ifdef MAP_AVAILBALE
+				print_map();
+			#endif
 			return_from_behaviour(data);
 			break;
 	}
@@ -442,8 +471,14 @@ void bot_scan_behaviour(Behaviour_t *data){
  * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
  * @param Der aufrufer
  */
-void bot_scan(Behaviour_t* caller){
-	switch_to_behaviour(caller, bot_scan_behaviour,NOOVERRIDE);
+void bot_scan(Behaviour_t* caller){	
+
+	bot_scan_state = BOT_SCAN_STATE_START;
+	bot_turn(caller,360);
+	switch_to_behaviour(0, bot_scan_behaviour,OVERRIDE);
+
+//	update_map(x_pos,y_pos,heading,sensDistL,sensDistR);
+//	print_map();	
 }
 
 
@@ -1092,7 +1127,7 @@ void bot_turn(Behaviour_t* caller,int16 degrees){
  	/* aktuellen Sensorwert zu zu drehenden Encoderschritten addieren */
  	turn_targetR+=sensEncR;
  	turn_targetL+=sensEncL;
-	switch_to_behaviour(caller, bot_turn_behaviour,NOOVERRIDE);
+	switch_to_behaviour(caller, bot_turn_behaviour,OVERRIDE);
 }
 #endif
 
@@ -2324,6 +2359,11 @@ void bot_behave_init(void){
 	insert_behaviour_to_list(&behaviour, new_behaviour(250, bot_avoid_border_behaviour,ACTIVE));
 	insert_behaviour_to_list(&behaviour, new_behaviour(249, bot_avoid_col_behaviour,ACTIVE));
 
+	// Verhalten, das die Umgebung des Bots on-the fly beim fahren scannt
+	insert_behaviour_to_list(&behaviour, new_behaviour(155, bot_scan_onthefly_behaviour,ACTIVE));
+
+	// Verhalten, das einmal die Umgebung des Bots scannt
+	insert_behaviour_to_list(&behaviour, new_behaviour(152, bot_scan_behaviour,INACTIVE));
 
 	// Hilfsverhalten zum Anfahren
 	#ifdef MEASURE_MOUSE_AVAILABLE
@@ -2355,8 +2395,6 @@ void bot_behave_init(void){
 	// Demo-Verhalten fuer aufwendiges System, inaktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(52, bot_olympic_behaviour,INACTIVE));
 
-	// Verhalten, das einmal die Umgebung des Bots scannt
-	insert_behaviour_to_list(&behaviour, new_behaviour(50, bot_scan_behaviour,INACTIVE));
 
 
 	// Grundverhalten, setzt aeltere FB-Befehle um, aktiv

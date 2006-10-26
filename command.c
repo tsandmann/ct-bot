@@ -94,7 +94,7 @@ int8 command_read(void){
 
 	// Suche nach dem Beginn des Frames
 	while ((start<bytesRcvd)&&(buffer[start] != CMD_STARTCODE)) {	
-		printf("\nStartzeichen nich am Anfang des Puffers! (%d)\n",start);
+//		printf("\nStartzeichen nicht am Anfang des Puffers! (%d)\n",start);
 //		printf(".");
 		start++;
 	}
@@ -110,7 +110,7 @@ int8 command_read(void){
 	// haben wir noch genug Platz im Puffer, um das Packet ferig zu lesen?
 	if ((RCVBUFSIZE-start) < sizeof(command_t)){
 		//	LOG_DEBUG(("not enough space"));
-		printf("not enough space");
+//		printf("not enough space");
 		return -1;	// nein? ==> verwerfen
 	}
 	
@@ -188,7 +188,7 @@ int8 command_read(void){
 	}
 }
 
-static int count=1;	/*!< Zaehler fuer Paket-Sequenznummer*/
+static uint16 count=1;	/*!< Zaehler fuer Paket-Sequenznummer*/
 
 /*!
  * Uebertraegt ein Kommando und wartet nicht auf eine Antwort
@@ -208,8 +208,16 @@ void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,
 	cmd.request.subcommand= subcommand;
 	
 	cmd.payload=payload;
-    cmd.data_l = (data_l ? *data_l : 0);
-    cmd.data_r = (data_r ? *data_r : 0);
+	if (data_l != NULL)
+		cmd.data_l = *data_l;
+	else
+		cmd.data_l = 0;
+	 
+	if (data_r != NULL)
+    	cmd.data_r = *data_r;
+    else
+		cmd.data_r = 0;
+    
 	cmd.seq=count++;
 	cmd.CRC=CMD_STOPCODE;
 	
@@ -284,6 +292,9 @@ void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* d
  */
 int command_evaluate(void){
 	uint8 analyzed = 1;
+	
+	command_display(&received_command);
+	
 	switch (received_command.request.command) {
 		case CMD_SENS_RC5:
 			ir_data=received_command.data_l;

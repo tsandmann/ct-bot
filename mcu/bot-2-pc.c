@@ -32,6 +32,7 @@
 #include "led.h"
 #include "mouse.h"
 #include "log.h"
+#include <stdlib.h>
 
 #ifdef MCU
 #ifdef BOT_2_PC_AVAILABLE
@@ -60,7 +61,7 @@ void bot_2_pc_inform(void){
 	int16 value1, value2;
 	
 	command_write(CMD_AKT_MOT, SUB_CMD_NORM ,(int16*)&speed_l,(int16*)&speed_r,0);	
-	value1=led;
+	value1=(int16)led;
 	command_write(CMD_AKT_LED, SUB_CMD_NORM ,&value1,&value1,0);
 	
 	command_write(CMD_SENS_IR, SUB_CMD_NORM ,(int16*)&sensDistL,(int16*)&sensDistR,0);
@@ -70,15 +71,17 @@ void bot_2_pc_inform(void){
 
 	command_write(CMD_SENS_LDR, SUB_CMD_NORM ,(int16*)&sensLDRL,(int16*)&sensLDRR,0);
 	
-	value1=sensTrans; value2=0;
+	value1= (int16) sensTrans; value2=0;
 	command_write(CMD_SENS_TRANS, SUB_CMD_NORM ,&value1,&value2,0);
 	
-	value1=sensDoor;
+	value1= (int16) sensDoor;
 	command_write(CMD_SENS_DOOR, SUB_CMD_NORM ,&value1,&value2,0);
-	value1=sensMouseDX; value2=sensMouseDY;
+	
+	value1=(int16)sensMouseDX;
+	value2=(int16)sensMouseDY;
 	command_write(CMD_SENS_MOUSE, SUB_CMD_NORM ,&value1,&value2,0);
 	
-	value1=sensError;  value2=0;
+	value1=(int16)sensError;  value2=0;
 	command_write(CMD_SENS_ERROR, SUB_CMD_NORM ,&value1,&value2,0);
 //	command_write(CMD_SENS_RC5, SUB_CMD_NORM ,(int16*)&RC5_Code,&value2,0);
 }

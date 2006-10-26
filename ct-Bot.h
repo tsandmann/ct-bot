@@ -33,7 +33,7 @@
 /************************************************************
 * Module switches, to make code smaller if features are not needed
 ************************************************************/
-//#define LOG_CTSIM_AVAILABLE		/*!< Logging ueber das ct-Sim (PC und MCU) */
+#define LOG_CTSIM_AVAILABLE		/*!< Logging ueber das ct-Sim (PC und MCU) */
 //#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display (PC und MCU) */
 //#define LOG_UART_AVAILABLE			/*!< Logging ueber UART (NUR für MCU) */
 //#define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (NUR für PC) */
@@ -44,7 +44,7 @@
 #define IR_AVAILABLE		/*!< Infrared Remote Control */
 #define RC5_AVAILABLE		/*!< Key-Mapping for IR-RC	 */
 
-//#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
+#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
 
 #define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit? Achtun ohne kann die Displayinitialisierung schief gehen!*/
 
@@ -125,6 +125,7 @@
 		#define UART_AVAILABLE	/*!< Serial Communication */
 		#define COMMAND_AVAILABLE	/*!< High-Level Communication */
 	#endif
+	#undef MAP_AVAILABLE
 #endif
 
 

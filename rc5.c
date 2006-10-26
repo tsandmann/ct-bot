@@ -397,13 +397,18 @@ void rc5_number(RemCtrlFuncPar *par) {
 				target_speed_l=0;target_speed_r=0;break;
 				case 1: target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
 				case 2: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
-				case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
-				case 4: bot_turn(0, 90); break;
+			//	case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
+				#ifdef MAP_AVAILABLE
+					case 3: print_map(); break;
+				#endif
+//				case 4: bot_turn(0, 90); break;
+				case 4: bot_scan(0); break;
 //				//case 5: bot_goto(0, 0, 0); break;
 //				#ifdef MEASURE_MOUSE_AVAILABLE
 //					case 5: bot_gotoxy(0,20,20);
 //				#else
 					case 5: bot_solve_maze(0); break;
+//				case 5: target_speed_l = BOT_SPEED_MAX; target_speed_r = BOT_SPEED_MAX; break;
 //				#endif
 //				case 5: bot_scan(0); break;
 				case 6: bot_turn(0, -90); break;

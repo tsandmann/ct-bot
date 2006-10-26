@@ -73,6 +73,7 @@
 #include "ir-rc5.h"
 #include "rc5.h"
 #include "timer.h"
+#include "map.h"
 
 /* Nimmt den Status von MCUCSR bevor dieses Register auf 0x00 gesetzt wird */
 #ifdef DISPLAY_SCREEN_RESETINFO
@@ -165,6 +166,9 @@ void init(void){
 		Close_TWI();
 	#endif
 
+	#ifdef MAP_AVAILABLE
+		init_map();
+	#endif
 }
 
 #ifdef DISPLAY_AVAILABLE
