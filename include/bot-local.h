@@ -34,6 +34,9 @@
 #define WHEEL_PERIMETER		179 	/*!< Umfang eines Rades in mm */	
 #define WHEEL_TO_WHEEL_DIAMETER 97 /*!< Abstand der beiden Raeder in mm */
 
+#define DISTSENSOR_POS_FW	35	/*!< Abstand der Distanzsensoren von der Radachse (in fahrtrichtung)*/
+#define DISTSENSOR_POS_SW	32	/*!< Abstand der Distanzsensoren von der Mittelachse (in querrichtung)*/
+
 #define SPEED_CONTROL_INTERVAL		333		/*!> Intervall fuer die Motorregelung [ms]*/
 
 //#define SPEED_TO_ENCODER_RATE		(WHEEL_PERIMETER /ENCODER_MARKS*(1000/SPEED_CONTROL_INTERVAL)) /*!< Faktor durch den man eine Speed [mm/s] teilt um Ticks/intervall zu erhalten */
