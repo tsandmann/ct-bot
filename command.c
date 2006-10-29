@@ -293,7 +293,9 @@ void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* d
 int command_evaluate(void){
 	uint8 analyzed = 1;
 	
-	command_display(&received_command);
+	#ifdef LOG_AVAILABLE	
+		command_display(&received_command);
+	#endif	// LOG_AVAILABLE
 	
 	switch (received_command.request.command) {
 		case CMD_SENS_RC5:

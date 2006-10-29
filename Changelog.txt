@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-10-29 Timo Sandmann [mail@timosandmann.de]: Bug in command.c behoben (Code compilierte nicht ohne LOG_AVAILABLE)
+
 2006-10-26 Benjamin Benz (bbe@heise.de) Karten (nur PC) eingefuehrt, Kommunikation angepasst
 
 2006-09-12 Benjamin Benz [bbe@heise.de]: Timersteps auf 176 angepasst
