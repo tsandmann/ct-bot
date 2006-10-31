@@ -27,6 +27,7 @@
 #define SENSOR_H_
 
 #include "global.h"
+#include "ct-Bot.h"
 
 /* Analoge Sensoren: Der Wertebereich aller analogen Sensoren umfasst 10 Bit. Also 0 bis 1023 */
 
@@ -54,11 +55,13 @@ extern volatile uint8 sensError;		/*!< Ueberwachung Motor oder Batteriefehler [0
 
 extern uint16 RC5_Code;        /*!< Letzter empfangener RC5-Code */
 
-extern volatile int8 sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-extern volatile int8 sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
-
-extern volatile int16 sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-extern volatile int16 sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
+#ifdef MAUS_AVAILABLE
+	extern volatile int8 sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+	extern volatile int8 sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
+	
+	extern volatile int16 sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+	extern volatile int16 sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
+#endif
 
 extern volatile int16 sensEncL;		/*!< Encoder linkes Rad */
 extern volatile int16 sensEncR;		/*!< Encoder rechtes Rad */

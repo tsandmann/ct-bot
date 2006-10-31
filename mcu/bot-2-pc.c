@@ -77,9 +77,11 @@ void bot_2_pc_inform(void){
 	value1= (int16) sensDoor;
 	command_write(CMD_SENS_DOOR, SUB_CMD_NORM ,&value1,&value2,0);
 	
-	value1=(int16)sensMouseDX;
-	value2=(int16)sensMouseDY;
-	command_write(CMD_SENS_MOUSE, SUB_CMD_NORM ,&value1,&value2,0);
+	#ifdef MAUS_AVAILABLE
+		value1=(int16)sensMouseDX;
+		value2=(int16)sensMouseDY;
+		command_write(CMD_SENS_MOUSE, SUB_CMD_NORM ,&value1,&value2,0);
+	#endif	
 	
 	value1=(int16)sensError;  value2=0;
 	command_write(CMD_SENS_ERROR, SUB_CMD_NORM ,&value1,&value2,0);
