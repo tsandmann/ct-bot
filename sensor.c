@@ -54,11 +54,14 @@ volatile uint8 sensDoor=0;		/*!< Sensor Ueberwachung Klappe */
 
 volatile uint8 sensError=0;		/*!< Ueberwachung Motor oder Batteriefehler */
 
-volatile int8 sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-volatile int8 sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
+#ifdef MAUS_AVAILABLE
 
-volatile int16 sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-volatile int16 sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
+	volatile int8 sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+	volatile int8 sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
+	
+	volatile int16 sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+	volatile int16 sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
+#endif
 
 volatile int16 sensEncL=0;		/*!< Encoder linkes Rad */
 volatile int16 sensEncR=0;		/*!< Encoder rechtes Rad */
@@ -154,12 +157,14 @@ void sensor_update(void){
 	int16 diffEncR;					/*!< Differenzbildung rechter Encoder */
 	float sl;						/*!< gefahrene Strecke linkes Rad */
 	float sr;						/*!< gefahrene Strecke rechtes Rad */
-	int16 dX;						/*!< Differenz der X-Mauswerte */
-	int16 dY;						/*!< Differenz der Y-Mauswerte */
-	int8 modifiedAngles=False;		/*!< Wird True, wenn aufgrund 90 Grad oder 270 Grad die Winkel veraendert werden mussten */
+	#ifdef MAUS_AVAILABLE
+		int16 dX;						/*!< Differenz der X-Mauswerte */
+		int16 dY;						/*!< Differenz der Y-Mauswerte */
+		int8 modifiedAngles=False;		/*!< Wird True, wenn aufgrund 90 Grad oder 270 Grad die Winkel veraendert werden mussten */
 	
-	sensMouseY += sensMouseDY;		/*!< Mausdelta Y aufaddieren */
-	sensMouseX += sensMouseDX;		/*!< Mausdelta X aufaddieren */
+		sensMouseY += sensMouseDY;		/*!< Mausdelta Y aufaddieren */
+		sensMouseX += sensMouseDX;		/*!< Mausdelta X aufaddieren */
+	#endif	
 	
 	#ifdef TIME_AVAILABLE
 	if (timer_get_ms_since(olds_pos,oldms_pos)>50) {

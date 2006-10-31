@@ -1,5 +1,9 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-10-31 Benjamin Benz [bbe@heise.de]: Bugfixes bei den define-Schaltern
+
+2006-10-31 Achim Pankalla [achim.pankalla@gmx.de]: Ergaenzung / Fehlerkorrektur bei DISPLAY_... defines in ct-bot.h
+
 2006-10-29 Timo Sandmann [mail@timosandmann.de]: Bug in command.c behoben (Code compilierte nicht ohne LOG_AVAILABLE)
 
 2006-10-26 Benjamin Benz (bbe@heise.de) Karten (nur PC) eingefuehrt, Kommunikation angepasst

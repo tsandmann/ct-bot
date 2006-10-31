@@ -53,6 +53,7 @@
 #define DISPLAY_SCREENS_AVAILABLE	/*!< Ermoeglicht vier verschiedene Screen */
 //#define DISPLAY_SCREEN_RESETINFO	/*!< Zeigt auf Screen 4 Informationen ueber Resets an */
 #define DISPLAY_ODOMETRIC_INFO 	/*!< Zeigt auf Screen 4 Positions- und Geschwindigkeitsdaten */
+//#define DISPLAY_REGELUNG_AVAILABLE 3 /*!< Zeigt Reglerdaten auf Screen 4, wenn SPEED_CONTROL_AVAILABLE gesetzt ist*/
 //#define DISPLAY_BEHAVIOUR_AVAILABLE  /*!< Anzeige der Verhalten im Display Screen 3, ersetzt Counteranzeige */
 #define MEASURE_MOUSE_AVAILABLE			/*!< Geschwindigkeiten werden aus den Maussensordaten berechnet */
 #define MEASURE_COUPLED_AVAILABLE		/*!< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
@@ -101,6 +102,11 @@
 
 #ifndef IR_AVAILABLE
 	#undef RC5_AVAILABLE
+#endif
+
+#ifndef MAUS_AVAILABLE
+	#undef MEASURE_MOUSE_AVAILABLE
+	#undef MEASURE_COUPLED_AVAILABLE
 #endif
 
 #ifdef PC
@@ -153,8 +159,8 @@
 	#undef DISPLAY_SCREEN_RESETINFO		/*!< Wenn Odometrieinfos, dann keine Resetinfos */
 #endif
 
-#ifdef MEASURE_COUPLED_AVAILABLE
-	#define MEASURE_MOUSE_AVAILABLE
+#ifndef SPEED_CONTROL_AVAILABLE
+	#undef DISPLAY_REGELUNG_AVAILABLE
 #endif
 
 #ifdef LOG_UART_AVAILABLE

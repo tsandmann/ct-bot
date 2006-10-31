@@ -298,9 +298,11 @@ int command_evaluate(void){
 	#endif	// LOG_AVAILABLE
 	
 	switch (received_command.request.command) {
-		case CMD_SENS_RC5:
-			ir_data=received_command.data_l;
-			break;
+		#ifdef IR_AVAILABLE
+			case CMD_SENS_RC5:
+				ir_data=received_command.data_l;
+				break;
+		#endif
 		case CMD_AKT_LED:	// LED-Steuerung
 			LED_set(received_command.data_l & 255);
 			break;

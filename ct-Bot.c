@@ -211,7 +211,17 @@ void init(void){
 					display_printf("R=%2d %2d F=%d K=%d T=%d ",sensEncL % 10,sensEncR %10,sensError,sensDoor,sensTrans);
 		
 					display_cursor(4,1);
+			#ifdef RC5_AVAILABLE
+				#ifdef MAUS_AVAILABLE
 					display_printf("I=%04X M=%05d %05d",RC5_Code,sensMouseX,sensMouseY);
+				#else
+					display_printf("I=%04X",RC5_Code);
+				#endif				
+			#else
+				#ifdef MAUS_AVAILABLE
+					display_printf("M=%05d %05d",sensMouseX,sensMouseY);
+				#endif
+			#endif
 			#ifdef 	DISPLAY_SCREENS_AVAILABLE					
 					break;
 				case 1:
@@ -351,9 +361,13 @@ void init(void){
 			(*status).rot		= sensTrans & 0x01;
 			(*status).orange	= sensError & 0x01;
 			(*status).gelb		= sensDoor  & 0x01;
-			(*status).gruen		= (sensMouseDX >>1)  & 0x01;
-			(*status).tuerkis	= (sensMouseDY >>1) & 0x01;
-			(*status).weiss		= RC5_Code & 0x01;
+			#ifdef MAUS_AVAILABLE
+				(*status).gruen		= (sensMouseDX >>1)  & 0x01;
+				(*status).tuerkis	= (sensMouseDY >>1) & 0x01;
+			#endif
+			#ifdef RC5_AVAILABLE
+				(*status).weiss		= RC5_Code & 0x01;
+			#endif
 		#endif
 				
 		LED_set(led);
