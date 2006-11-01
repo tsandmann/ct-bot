@@ -100,14 +100,13 @@ int8 map_get_field (int16 x, int16 y) {
 	return map[section_x][section_y]->section[index_x][index_y];	
 }
 
-
 /*!
- * aendert den Wert eines Feldes um den angegebenen Betrag 
+ * Setzt den Wert eines Feldes auf den angegebenen Wert
  * @param x x-Ordinate der Karte (nicht der Welt!!!)
  * @param y y-Ordinate der Karte (nicht der Welt!!!)
- * @param value Betrag um den das Feld veraendert wird (>= heisst freier, <0 heisst belegter
+ * @param value neuer wert des Feldes (> 0 heisst frei, <0 heisst belegt
  */
-void update_field (int16 x, int16 y, int16 value) {
+void map_set_field(int16 x, int16 y, int8 value) {
 	int16 section_x, section_y, index_x, index_y;
 		
 	// Berechne in welcher Sektion sich der Punkt befindet
@@ -133,13 +132,9 @@ void update_field (int16 x, int16 y, int16 value) {
 	// Berechne den Index innerhalb der Section
 	index_x = x % MAP_SECTION_POINTS;
 	index_y =  y % MAP_SECTION_POINTS;
-
-	int16 tmp= map[section_x][section_y]->section[index_x][index_y];
-	tmp+=value;
 	
-	if ((tmp < 128) && (tmp > -128))
-		map[section_x][section_y]->section[index_x][index_y]+=value;
-		
+	map[section_x][section_y]->section[index_x][index_y]=value;
+	
 	#ifdef SHRINK_MAP_ONLINE
 		// Belegte Kartengroesse anpassen
 		if (x < map_min_x)
@@ -155,12 +150,31 @@ void update_field (int16 x, int16 y, int16 value) {
 }
 
 /*!
+ * aendert den Wert eines Feldes um den angegebenen Betrag 
+ * @param x x-Ordinate der Karte (nicht der Welt!!!)
+ * @param y y-Ordinate der Karte (nicht der Welt!!!)
+ * @param value Betrag um den das Feld veraendert wird (>= heisst freier, <0 heisst belegter
+ */
+void map_update_field (int16 x, int16 y, int16 value) {
+
+	int16 tmp= map_get_field(x,y);
+	if (tmp == -128)	// Nicht aktualiseren, wenn es sich um ein Loch handelt
+		return;
+			
+	tmp+=value;
+	
+	// pruefen, ob kein ueberlauf stattgefunden hat und das Feld nicht schon als Loch (-128) markiert ist
+	if ((tmp < 128) && (tmp > -128))
+		map_set_field(x,y,(int8)tmp);
+}
+
+/*!
  * markiert ein Feld als frei -- drueckt den Feldwert etwas mehr in Richtung "frei"
  * @param x x-Ordinate der Karte (nicht der Welt!!!)
  * @param y y-Ordinate der Karte (nicht der Welt!!!)
  */
-void update_free (int16 x, int16 y) {
-  update_field(x,y,MAP_STEP_FREE);
+void map_update_free (int16 x, int16 y) {
+  map_update_field(x,y,MAP_STEP_FREE);
 }
 
 /*!
@@ -169,13 +183,13 @@ void update_free (int16 x, int16 y) {
  * @param y y-Ordinate der Karte (nicht der Welt!!!)
  * @param value Betrag um den das Feld veraendert wird (>= heisst freier, <0 heisst belegter
  */
-void update_field_circle(int16 x, int16 y, int16 radius, int16 value) {
+void map_update_field_circle(int16 x, int16 y, int16 radius, int16 value) {
 	int16 dX,dY;
     int16 h=radius*radius;
 	for(dX = -radius; dX <= radius; dX++){
       for(dY = -radius; dY <= radius; dY++) {
            if(dX*dX + dY*dY <= h)	 
-           	 update_field (x + dX, y + dY,value);
+           	 map_update_field (x + dX, y + dY,value);
       }
 	}
 }
@@ -185,12 +199,12 @@ void update_field_circle(int16 x, int16 y, int16 radius, int16 value) {
  * @param x x-Ordinate der Karte (nicht der Welt!!!)
  * @param y y-Ordinate der Karte (nicht der Welt!!!)
  */
-void update_occupied (int16 x, int16 y) {
+void map_update_occupied (int16 x, int16 y) {
 // update_field(x,y,-MAP_STEP_OCCUPIED);
   
   uint8 r;
   for (r=1; r<=MAP_RADIUS; r++){
-  	update_field_circle(x,y,r,-MAP_STEP_OCCUPIED/MAP_RADIUS);
+  	map_update_field_circle(x,y,r,-MAP_STEP_OCCUPIED/MAP_RADIUS);
   }
 }
 
@@ -237,7 +251,7 @@ void update_map_sensor(float x, float y, float h, int16 dist){
 	int16 PH_Y = world_to_map(PH_y);
 	
 	if ((dist > 80 ) && (dist <SENS_IR_INFINITE))
-			update_occupied(PH_X,PH_Y);
+			map_update_occupied(PH_X,PH_Y);
 	
 
 
@@ -257,7 +271,7 @@ void update_map_sensor(float x, float y, float h, int16 dist){
 	  dY--;	// stoppe ein Feld vor dem Hinderniss
 	  int16 lh = dX / 2;
 	  for (i=0; i<dX; ++i) {
-	    update_free (lX+i*sX, lY);
+	    map_update_free (lX+i*sX, lY);
 	    lh += dY;
 	    if (lh >= dX) {
 	      lh -= dX;
@@ -268,15 +282,14 @@ void update_map_sensor(float x, float y, float h, int16 dist){
 	  dX--; // stoppe ein Feld vor dem Hinderniss
 	  int16 lh = dY / 2;
 	  for (i=0; i<dY; ++i) {
-	    update_free (lX, lY+i*sY);
+	    map_update_free (lX, lY+i*sY);
 	    lh += dX;
 	    if (lh >= dY) {
 	      lh -= dY;
 	      lX += sX;
 	    }
 	  }
-	}
-	
+	}	
 }
 
 /*!
@@ -300,7 +313,7 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 	for(dX = -dim; dX <= dim; dX++)
       for(dY = -dim; dY <= dim; dY++) {
            if(dX*dX + dY*dY <= dim*dim)	 
-           	 update_free (x_map + dX, y_map + dY);
+           	 map_update_free (x_map + dX, y_map + dY);
      }
         
     //Ort des rechten Sensors in Weltkoordinaten
