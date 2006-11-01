@@ -43,7 +43,7 @@
 #define MAP_RESOLUTION 	512	/*!< Aufloesung der Karte in Punkte pro Meter */
 #define MAP_SECTION_POINTS 128	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 
-#define MAP_SIZE	4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
+#define MAP_SIZE	20	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
 
 #define MAP_SECTIONS ((( MAP_SIZE*MAP_RESOLUTION)/MAP_SECTION_POINTS))
 
