@@ -58,13 +58,15 @@ map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*! Array mit den Zeigern auf d
 
 #define MAP_RADIUS			5	/*!< Umkreis um einen Punkt, der aktualisiert wird (Streukreis) [Felder]*/
 
-#define SHRINK_MAP		/*!< Wenn gesetzt, werden nur belegt Bereiche der Karte ausgegeben */
+//#define SHRINK_MAP_ONLINE		/*!< Wenn gesetzt, wird bei jedem update der belegte Bereich der Karte protokolliert. Pro: schnelle ausgabe Contra permanenter aufwand  */
+#define SHRINK_MAP_OFFLINE		/*!< Wenn gesetzt, wird erst beid er Ausgabe der belegte Bereich der Karte berechnet. Pro: kein permanenter aufwand Contra: ausgabe dauert lange */
 
-int16 map_min_x=MAP_SIZE*MAP_RESOLUTION/2; /*!< belegten Bereich der Karte sichern */
-int16 map_max_x=MAP_SIZE*MAP_RESOLUTION/2;/*!< belegten Bereich der Karte sichern */
-int16 map_min_y=MAP_SIZE*MAP_RESOLUTION/2;/*!< belegten Bereich der Karte sichern */
-int16 map_max_y=MAP_SIZE*MAP_RESOLUTION/2;/*!< belegten Bereich der Karte sichern */
-
+#ifdef SHRINK_MAP_ONLINE
+	int16 map_min_x=MAP_SIZE*MAP_RESOLUTION/2; /*!< belegten Bereich der Karte sichern */
+	int16 map_max_x=MAP_SIZE*MAP_RESOLUTION/2;/*!< belegten Bereich der Karte sichern */
+	int16 map_min_y=MAP_SIZE*MAP_RESOLUTION/2;/*!< belegten Bereich der Karte sichern */
+	int16 map_max_y=MAP_SIZE*MAP_RESOLUTION/2;/*!< belegten Bereich der Karte sichern */
+#endif
 
 
 /*!
@@ -138,7 +140,7 @@ void update_field (int16 x, int16 y, int16 value) {
 	if ((tmp < 128) && (tmp > -128))
 		map[section_x][section_y]->section[index_x][index_y]+=value;
 		
-	#ifdef SHRINK_MAP
+	#ifdef SHRINK_MAP_ONLINE
 		// Belegte Kartengroesse anpassen
 		if (x < map_min_x)
 			map_min_x=x;
@@ -324,66 +326,69 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 		
 		int16 x,y;
 
-		#ifndef SHRINK_MAP
-			map_min_x=0;
-			map_max_x=MAP_SIZE*MAP_RESOLUTION;
-			map_min_y=0;
-			map_max_y=MAP_SIZE*MAP_RESOLUTION;
+		#ifndef SHRINK_MAP_ONLINE
+			int16 map_min_x=0;
+			int16 map_max_x=MAP_SIZE*MAP_RESOLUTION;
+			int16 map_min_y=0;
+			int16 map_max_y=MAP_SIZE*MAP_RESOLUTION;
 		#endif		
-		/*
-		int16 min_x=0;
-		int16 max_x=MAP_SIZE*MAP_RESOLUTION;
-		int16 min_y=0;
-		int16 max_y=MAP_SIZE*MAP_RESOLUTION;
-		// Kartengroesse reduzieren
-		int8 free=1;
-		while ((min_y < max_y) && (free ==1)){
-			for (x=min_x; x<max_x; x++){
-				if (map_get_field(x,min_y) != 0){
-					free=0;
-					break;
-				}					
-			}
-			min_y++;
-		}
-		free=1;
-		while ((min_y < max_y) && (free ==1)){
-			for (x=min_x; x<max_x; x++){
-				if (map_get_field(x,max_y-1) != 0){
-					free=0;
-					break;
-				}					
-			}
-			max_y--;
-		}
 		
-		free=1;
-		while ((min_x < max_x) && (free ==1)){
-			for (y=min_y; y<max_y; y++){
-				if (map_get_field(min_x,y) != 0){
-					free=0;
-					break;
-				}					
+		#ifdef 	SHRINK_MAP_OFFLINE
+		
+			int16 min_x=0;
+			int16 max_x=MAP_SIZE*MAP_RESOLUTION;
+			int16 min_y=0;
+			int16 max_y=MAP_SIZE*MAP_RESOLUTION;
+			// Kartengroesse reduzieren
+			int8 free=1;
+			while ((min_y < max_y) && (free ==1)){
+				for (x=min_x; x<max_x; x++){
+					if (map_get_field(x,min_y) != 0){
+						free=0;
+						break;
+					}					
+				}
+				min_y++;
 			}
-			min_x++;
-		}
-		free=1;
-		while ((min_x < max_x) && (free ==1)){
-			for (y=min_y; y<max_y; y++){
-				if (map_get_field(max_x-1,y) != 0){
-					free=0;
-					break;
-				}					
+			free=1;
+			while ((min_y < max_y) && (free ==1)){
+				for (x=min_x; x<max_x; x++){
+					if (map_get_field(x,max_y-1) != 0){
+						free=0;
+						break;
+					}					
+				}
+				max_y--;
 			}
-			max_x--;
-		}
-
-			map_min_x=min_x;
-			map_max_x=max_x;
-			map_min_y=min_y;
-			map_max_y=max_y;
-
-		*/
+			
+			free=1;
+			while ((min_x < max_x) && (free ==1)){
+				for (y=min_y; y<max_y; y++){
+					if (map_get_field(min_x,y) != 0){
+						free=0;
+						break;
+					}					
+				}
+				min_x++;
+			}
+			free=1;
+			while ((min_x < max_x) && (free ==1)){
+				for (y=min_y; y<max_y; y++){
+					if (map_get_field(max_x-1,y) != 0){
+						free=0;
+						break;
+					}					
+				}
+				max_x--;
+			}
+	
+				map_min_x=min_x;
+				map_max_x=max_x;
+				map_min_y=min_y;
+				map_max_y=max_y;
+	
+		#endif
+			
 		int16 map_size_x=map_max_x-map_min_x;
 		int16 map_size_y=map_max_y-map_min_y;
 		fprintf(fp,"P5\n%d %d\n255\n",map_size_x,map_size_y);
