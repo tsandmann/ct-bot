@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-11-01 Benjamin Benz [bbe@heise.de]: Karten funktionieren jetzt schon mal auf dem PC
+
 2006-10-31 Benjamin Benz [bbe@heise.de]: Bugfixes bei den define-Schaltern
 
 2006-10-31 Achim Pankalla [achim.pankalla@gmx.de]: Ergaenzung / Fehlerkorrektur bei DISPLAY_... defines in ct-bot.h

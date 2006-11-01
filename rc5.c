@@ -26,6 +26,7 @@
  * @date 	20.12.05
 */
 #include "ct-Bot.h"
+#include "map.h"
 #include "ir-rc5.h"
 #include "motor.h"
 #include "motor-low.h"

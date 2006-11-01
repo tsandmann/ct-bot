@@ -165,10 +165,6 @@ void init(void){
 		Init_TWI();
 		Close_TWI();
 	#endif
-
-	#ifdef MAP_AVAILABLE
-		init_map();
-	#endif
 }
 
 #ifdef DISPLAY_AVAILABLE

@@ -41,10 +41,13 @@
  */
 void update_map(float x, float y, float head, int16 distL, int16 distR);
 
-/*! 
- * initialisiere die interne Karte 
+/*!
+ * liefert den Wert eines Feldes 
+ * @param x x-Ordinate der Karte (nicht der Welt!!!)
+ * @param y y-Ordinate der Karte (nicht der Welt!!!)
+ * @return Wert des Feldes (>0 heisst frei, <0 heisst belegt
  */
-void init_map(void);
+int8 map_get_field (int16 x, int16 y);
 
 /*!
  * Zeigt die Karte an
