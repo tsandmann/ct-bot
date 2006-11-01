@@ -39,7 +39,6 @@
 #include "timer.h"
 #include "ir-rc5.h"
 #include "sensor-low.h"
-#include "motor.h"
 #include "bot-local.h"
 
 // ---- Timer 2 ------
@@ -52,11 +51,8 @@ SIGNAL (SIG_OUTPUT_COMPARE2){
 	#ifdef IR_AVAILABLE
 		ir_isr();
 	#endif	
-	#ifdef TIME_AVAILABLE
-		system_time_isr();
-	#endif
-	bot_encoder_isr();
-	
+	system_time_isr();
+	bot_encoder_isr();	
 }
 
 /*!

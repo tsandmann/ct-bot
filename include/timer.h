@@ -28,37 +28,51 @@
 
 #include "ct-Bot.h"
 
-#ifdef TIME_AVAILABLE
-	/*!
-	 * Diese Funktion liefert den Mikrosekundenanteil der Systemzeit zurueck.
-	 * @return uint16
-	 */
-	inline uint16 timer_get_us(void);
-	
+/*!
+ * Makros zur Umrechnung von Ticks in ms und zurueck
+ * (ms / ticks evtl. nach uint32 casten, fuer grosse Werte)
+ */
+#define TICKS_TO_MS(ticks)	((ticks)*(TIMER_STEPS/8)/(1000/8))
+#define MS_TO_TICKS(ms)		((ms)*(1000/8)/(TIMER_STEPS/8))
+
+#ifdef TIME_AVAILABLE		
 	/*!
 	 * Diese Funktion liefert den Millisekundenanteil der Systemzeit zurueck.
 	 * @return uint16
 	 */
-	inline uint16 timer_get_ms(void);
+	uint16 timer_get_ms(void);
 	
 	/*!
 	 * Diese Funktion liefert den Sekundenanteil der Systemzeit zurueck.
 	 * @return uint16
 	 */
-	inline uint16 timer_get_s(void);
+	uint16 timer_get_s(void);
 
-	/*! Funktion, um die Systemzeit zu berechnen 
-	 */
-	void system_time_isr(void);
-	
 	/*!
 	 *  Liefert die Millisekunden zurueck, die seit old_s, old_ms verstrichen sind 
 	 * @param old_s alter Sekundenstand
 	 * @param old_ms alter Millisekundenstand
 	 */
-	uint16 timer_get_ms_since(uint16 old_s, uint16 old_ms );
+	uint16 timer_get_ms_since(uint16 old_s, uint16 old_ms);
+#endif // TIME_AVAILABLE
+
+/*! 
+ * ISR, um Tickcounter zu aktualisieren 
+ */
+void system_time_isr(void);
 	
+#ifdef PC
+	/*!< liefert Ticks seit Systemstart [176 us] */
+	inline uint16 timer_get_tickCount16(void);
+	inline uint32 timer_get_tickCount32(void);	
 	
+	#define TIMER_GET_TICKCOUNT_16 timer_get_tickCount16()
+	#define TIMER_GET_TICKCOUNT_32 timer_get_tickCount32()	
+#else
+	extern volatile uint16 tickCount[2];
+	
+	#define TIMER_GET_TICKCOUNT_16 tickCount[0]
+	#define TIMER_GET_TICKCOUNT_32 *(volatile uint32*)tickCount	
 #endif
 
 // Die Werte fuer TIMER_X_CLOCK sind Angaben in Hz
@@ -69,15 +83,11 @@
 #define TIMER_2_CLOCK	5619	// Derzeit genutzt fuer RC5-Dekodierung
 
 /*!
- * Mikrosekunden die zwischen zwei Timer-Aufrufen liegen 
+ * Mikrosekunden, die zwischen zwei Timer-Aufrufen liegen 
  */
-#ifdef MCU
 //	#define TIMER_STEPS	(1 000 000/TIMER_2_CLOCK)
 	#define TIMER_STEPS 176
-#else
-	/* Auf dem PC koppeln wir das an die Zeitbasis des Simulators, derzeit 10ms also 10000 Microsekunden */
-	#define TIMER_STEPS	10000
-#endif
+
 /*!
  * Initialisiert Timer 2 und startet ihn 
  */

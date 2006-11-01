@@ -28,9 +28,8 @@
 
 #ifdef PC
 	#include <pthread.h>
+	#include "sensor.h"
 #endif	/* PC */
-
-#ifdef TIME_AVAILABLE
 
 #ifdef PC
 	/*! Schuetzt die Zeitsynchronisation */
@@ -49,69 +48,69 @@
 	static pthread_mutex_t timer_mutex = PTHREAD_MUTEX_INITIALIZER;
 #endif	/* PC */
 
-static volatile uint16 time_micro_s=0;	/*!< Mikrosekundenanteil an der Systemzeit */
-static volatile uint16 time_ms=0; 	 	/*!< Millisekundenanteil an der Systemzeit */
-static volatile uint16 time_s=0;		/*!< Sekundenanteil an der Systemzeit */
+#ifdef MCU
+	volatile uint16 tickCount[2]={0,0};		/*!< ein Tick alle 176 us */
+#else
+	float tickCount=0;
+#endif 
 
-/*!
- * Diese Funktion liefert den Mikrosekundenanteil der Systemzeit zurueck.
- * @return uint16
- */
-inline uint16 timer_get_us(void) {
-	uint16 temp;
-	LOCK();
-	temp = time_micro_s;
-	UNLOCK();
-	return temp;
-}
+#ifdef PC
+	inline uint16 timer_get_tickCount16(void){
+		uint16 temp;
+		LOCK();
+		temp = tickCount;
+		UNLOCK();
+		return temp;
+	}
+	
+	inline uint32 timer_get_tickCount32(void){
+		uint32 temp;
+		LOCK();
+		temp = tickCount;	
+		UNLOCK();
+		return temp;
+	}
+#endif
 
-/*!
- * Diese Funktion liefert den Millisekundenanteil der Systemzeit zurueck.
- * @return uint16
- */
-inline uint16 timer_get_ms(void) {
-	uint16 temp;
-	LOCK();
-	temp = time_ms;
-	UNLOCK();
-	return temp;
-}
-
-/*!
- * Diese Funktion liefert den Sekundenanteil der Systemzeit zurueck.
- * @return uint16
- */
-inline uint16 timer_get_s(void) {
-	uint16 temp;
-	LOCK();
-	temp = time_s;
-	UNLOCK();
-	return temp;
-}
+#ifdef TIME_AVAILABLE
+	/*!
+	 * Diese Funktion liefert den Millisekundenanteil der Systemzeit zurueck.
+	 * @return uint16
+	 */
+	uint16 timer_get_ms(void){
+		return ((TIMER_GET_TICKCOUNT_32*(TIMER_STEPS/8))/(1000/8))%1000;
+	}
+	
+	/*!
+	 * Diese Funktion liefert den Sekundenanteil der Systemzeit zurueck.
+	 * @return uint16
+	 */
+	uint16 timer_get_s(void){
+		return TIMER_GET_TICKCOUNT_32*(TIMER_STEPS/16)/(1000000/16);
+	}
+	
+	/*!
+	 *  Liefert die Millisekunden zurueck, die seit old_s, old_ms verstrichen sind 
+	 * @param old_s alter Sekundenstand
+	 * @param old_ms alter Millisekundenstand
+	 */
+	uint16 timer_get_ms_since(uint16 old_s, uint16 old_ms){
+		return (timer_get_s()-old_s)*1000 + timer_get_ms()-old_ms;
+	}
+#endif // TIME_AVAILABLE
 
 /*! Funktion, um die Systemzeit zu berechnen 
  */
 void system_time_isr(void){
 	LOCK();
-	time_micro_s += TIMER_STEPS;	/* Mikrosekundentimer erhoehen */
-	if (time_micro_s >= 1000){		/* Eine Mikrosekunde verstrichen? */
-		time_ms += (time_micro_s/1000);
-		time_micro_s %= 1000;		/* alle vollen Millisekunden vom Mikrosekundenzaehler in den Millisekudnenzaehler verschieben */
-		if (time_ms == 1000){		/* Eine Sekunde verstrichen? */
-			time_ms=0;
-			time_s++;
-		}
-	}
+	/* TickCounter [176 us] erhoehen */
+	#ifdef MCU
+		(*(uint32*)tickCount)++;
+	#else
+		static uint16 last_simultime=0;
+		if (simultime < last_simultime) last_simultime -= 10000;	// der Sim setzt simultime alle 10s zurueck auf 0
+		tickCount += MS_TO_TICKS((float)(simultime - last_simultime));
+		last_simultime = simultime;
+	#endif
 	UNLOCK();
 }
-
-/*!
- *  Liefert die Millisekunden zurueck, die seit old_s, old_ms verstrichen sind 
- * @param old_s alter Sekundenstand
- * @param old_ms alter Millisekundenstand
- */
-uint16 timer_get_ms_since(uint16 old_s, uint16 old_ms ){
-	return (timer_get_s()-old_s)*1000 + timer_get_ms() - old_ms;
-}
-
-#endif

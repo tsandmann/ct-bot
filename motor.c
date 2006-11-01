@@ -181,8 +181,7 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 */
 void motor_set(int16 left, int16 right){
 	#ifdef SPEED_CONTROL_AVAILABLE
-		volatile static int16 old_mot_time_s=0;
-		volatile static int16 old_mot_time_ms=0;
+		static int16 old_mot_ticks=0;
 	#endif
 
 	if (left == BOT_SPEED_IGNORE)	
@@ -196,10 +195,10 @@ void motor_set(int16 left, int16 right){
 	if ((speed_l == left) && (speed_r == right)){
 		// Hier sitzt die eigentliche Regelung
 		#ifdef SPEED_CONTROL_AVAILABLE
-			if (timer_get_ms_since(old_mot_time_s,old_mot_time_ms) > SPEED_CONTROL_INTERVAL) {
+			register uint16 ticks = TIMER_GET_TICKCOUNT_16;
+			if (ticks-old_mot_ticks > MS_TO_TICKS((uint16)SPEED_CONTROL_INTERVAL)) {
 				speed_control();
-				old_mot_time_s= timer_get_s();
-				old_mot_time_ms= timer_get_ms();
+				old_mot_ticks = TIMER_GET_TICKCOUNT_16;
 			}
 		#endif
 		return;		// Keine Aenderung? Dann zuerueck

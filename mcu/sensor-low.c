@@ -79,12 +79,6 @@ volatile uint8 enc_r=0;		/*!< Puffer fuer die letzten Encoder-Staende */
 volatile uint8 enc_l_cnt=0;	/*!< Entprell-Counter fuer L-Encoder	 */
 volatile uint8 enc_r_cnt=0;	/*!< Entprell-Counter fuer R-Encoder	 */
 
-/* Zeit der letzten Messung der Distanzsensoren */
-uint16 olds_dist;
-uint16 oldms_dist;
-uint8 measure_count;
-int16 distLeft[3];
-int16 distRight[3];
 
 /*!
  * Initialisiere alle Sensoren
@@ -150,10 +144,15 @@ void bot_sens_isr(void){
 	// Aktualisiere Distanz-Sensoren
 	// Die Distanzsensoren sind im Normalfall an, da sie 50 ms zum booten brauchen
 	// Abfrage nur alle 100ms
-	if (timer_get_ms_since(olds_dist,oldms_dist)>=100){
+	static uint16 old_dist;		// Zeit der letzten Messung der Distanzsensoren
+	static uint8 measure_count;
+	static int16 distLeft[3];
+	static int16 distRight[3];
+
+	register uint16 dist_ticks = TIMER_GET_TICKCOUNT_16;
+	if (dist_ticks-old_dist > MS_TO_TICKS(100)){
 		// Zeit fuer naechste Messung merken
-		olds_dist=timer_get_s();
-		oldms_dist=timer_get_ms();
+		old_dist=dist_ticks;
 		
 		// wenn Kalibrierung gewuenscht, den Part Messen und Korrigieren kommentieren
 		// und Kalibrieren auskommentieren

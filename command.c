@@ -82,7 +82,7 @@ int8 command_read(void){
 		uint16 store;			//Puffer für die Endian-Konvertierung
 	#endif
 
-	uint16 old_s, old_ms;		// Alte Systemzeit
+	uint16 old_ticks;			// alte Systemzeit
 
 	buffer[0]=0;				// Sicherheitshalber mit sauberem Puffer anfangen
 	
@@ -120,13 +120,12 @@ int8 command_read(void){
 	if (i> 0) {	// Fehlen noch Daten ?
 		LOG_DEBUG(("command.c: Start @ %d es fehlen %d bytes ",start,i));	
 		// Systemzeit erfassen
-		old_s=timer_get_s();
-		old_ms=timer_get_ms();
+		old_ticks = TIMER_GET_TICKCOUNT_16;
 				
 		// So lange Daten lesen, bis das Packet vollstaendig ist, oder der Timeout zuschlaegt
 		while (i > 0){
 			// Wenn der Timeout ueberschritten ist
-			if (timer_get_ms_since(old_s,old_ms) > COMMAND_TIMEOUT)
+			if (TIMER_GET_TICKCOUNT_16-old_ticks > MS_TO_TICKS(COMMAND_TIMEOUT))
 				return -1; //	==> Abbruch
 			//	LOG_DEBUG(("%d bytes missing",i));
 			i= low_read(buffer+bytesRcvd,i);
@@ -327,10 +326,6 @@ int command_evaluate(void){
 		#ifdef PC
 			case CMD_SENS_IR:
 				sensor_abstand(received_command.data_l,received_command.data_r);
-				
-				#ifdef TIME_AVAILABLE
-					system_time_isr();		/* Einmal pro Update-Zyklus aktualisieren wir die Systemzeit */
-				#endif
 				break;
 			case CMD_SENS_ENC:
 				sensEncL+=received_command.data_l;
@@ -363,6 +358,7 @@ int command_evaluate(void){
 				break;
 			case CMD_DONE:
 				simultime=received_command.data_l;
+				system_time_isr();		/* Einmal pro Update-Zyklus aktualisieren wir die Systemzeit */
 			//	printf("X-Frame for Simultime = %d received ",simultime);
 		#endif
 		default:

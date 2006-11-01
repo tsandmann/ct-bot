@@ -123,29 +123,25 @@ void sensor_abstand(uint16 left, uint16 right){
 * Kuemmert sich um die Weiterverarbeitung der rohen Sensordaten 
 */
 void sensor_update(void){
-	#ifdef TIME_AVAILABLE
-		static uint16 oldms_pos=0;	/*!< ms-Wert fuer Positionsberechnungsschleife */
-		static uint16 olds_pos=0;	/*!< s-Wert fuer Positionsberechnungsschleife */
-		static uint16 oldms_speed=0;/*!< ms-Wert fuer Geschwindigkeitsberechnungsschleife */
-		static uint16 olds_speed=0; /*!< s-Wert fuer Geschwindigkeitsberechnungsschleife */	
-		#ifdef MEASURE_MOUSE_AVAILABLE
-				static int16 lastMouseX=0;		/*!< letzter Mauswert X fuer Positionsberechnung */
-				static int16 lastMouseY=0;		/*!< letzter Mauswert Y fuer Positionsberechnung */
-				static float lastDistance=0;	/*!< letzte gefahrene Strecke */
-				static float lastHead=0;		/*!< letzter gedrehter Winkel */
-				static float oldHead=0;		/*!< Winkel aus dem letzten Durchgang */
-				static float old_x=0;			/*!< Position X aus dem letzten Durchgang */
-				static float old_y=0;			/*!< Position Y aus dem letzten Durchgang */
-				float radius=0;				/*!< errechneter Radius des Drehkreises */
-				float s1=0;					/*!< Steigung der Achsengerade aus dem letzten Durchgang */
-				float s2=0;					/*!< Steigung der aktuellen Achsengerade */
-				float a1=0;					/*!< Y-Achsenabschnitt der Achsengerade aus dem letzten Durchgang */
-				float a2=0;					/*!< Y-Achsenabschnitt der aktuellen Achsengerade */
-				float xd=0;					/*!< X-Koordinate Drehpunkt */
-				float yd=0;					/*!< Y-Koordinate Drehpunkt */
-				float right_radius=0;			/*!< Radius des Drehkreises des rechten Rads */
-				float left_radius=0;			/*!< Radius des Drehkreises des linken Rads */
-		#endif
+	static uint16 old_pos=0;			/*!< Ticks fuer Positionsberechnungsschleife */
+	static uint16 old_speed=0;			/*!< Ticks fuer Geschwindigkeitsberechnungsschleife */
+	#ifdef MEASURE_MOUSE_AVAILABLE
+			static int16 lastMouseX=0;		/*!< letzter Mauswert X fuer Positionsberechnung */
+			static int16 lastMouseY=0;		/*!< letzter Mauswert Y fuer Positionsberechnung */
+			static float lastDistance=0;	/*!< letzte gefahrene Strecke */
+			static float lastHead=0;		/*!< letzter gedrehter Winkel */
+			static float oldHead=0;		/*!< Winkel aus dem letzten Durchgang */
+			static float old_x=0;			/*!< Position X aus dem letzten Durchgang */
+			static float old_y=0;			/*!< Position Y aus dem letzten Durchgang */
+			float radius=0;				/*!< errechneter Radius des Drehkreises */
+			float s1=0;					/*!< Steigung der Achsengerade aus dem letzten Durchgang */
+			float s2=0;					/*!< Steigung der aktuellen Achsengerade */
+			float a1=0;					/*!< Y-Achsenabschnitt der Achsengerade aus dem letzten Durchgang */
+			float a2=0;					/*!< Y-Achsenabschnitt der aktuellen Achsengerade */
+			float xd=0;					/*!< X-Koordinate Drehpunkt */
+			float yd=0;					/*!< Y-Koordinate Drehpunkt */
+			float right_radius=0;			/*!< Radius des Drehkreises des rechten Rads */
+			float left_radius=0;			/*!< Radius des Drehkreises des linken Rads */
 	#endif
 	static int16 lastEncL =0;		/*!< letzter Encoderwert links fuer Positionsberechnung */
 	static int16 lastEncR =0;		/*!< letzter Encoderwert rechts fuer Positionsberechnung */
@@ -166,10 +162,9 @@ void sensor_update(void){
 		sensMouseX += sensMouseDX;		/*!< Mausdelta X aufaddieren */
 	#endif	
 	
-	#ifdef TIME_AVAILABLE
-	if (timer_get_ms_since(olds_pos,oldms_pos)>50) {
-		olds_pos=timer_get_s();
-		oldms_pos=timer_get_ms();
+	register uint16 ticks = TIMER_GET_TICKCOUNT_16;
+	if (ticks-old_pos > MS_TO_TICKS(50)){
+		old_pos = ticks;
 		/* Gefahrene Boegen aus Encodern berechnen */
 		diffEncL=sensEncL-lastEncL;
 		diffEncR=sensEncR-lastEncR;
@@ -244,9 +239,9 @@ void sensor_update(void){
 			#endif
 		#endif	
 	}
-	if (timer_get_ms_since(olds_speed,oldms_speed)>250) {	// sollte genau 4x pro Sekunde zutreffen
-		olds_speed=timer_get_s();
-		oldms_speed=timer_get_ms();
+	ticks = TIMER_GET_TICKCOUNT_16;
+	if (ticks-old_speed > MS_TO_TICKS(250)){	
+		old_speed=ticks;
 		v_enc_left=  (((sensEncL - lastEncL1) * WHEEL_PERIMETER) / ENCODER_MARKS)*4;
 		v_enc_right= (((sensEncR - lastEncR1) * WHEEL_PERIMETER) / ENCODER_MARKS)*4;
 		v_enc_center=(v_enc_left+v_enc_right)/2;
@@ -346,7 +341,6 @@ void sensor_update(void){
 			sensSRF10 = srf10_get_measure();	/*!< Messung Ultraschallsensor */
 		#endif	
 	}
-	#endif
 	
 	sensors_initialized=1;
 }

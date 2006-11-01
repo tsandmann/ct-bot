@@ -46,7 +46,7 @@
 
 #define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
 
-#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit? Achtun ohne kann die Displayinitialisierung schief gehen!*/
+//#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit im s und ms? */
 
 #define DISPLAY_AVAILABLE	/*!< Display for local control */
 #define DISPLAY_REMOTE_AVAILABLE /*!< Sende LCD Anzeigedaten an den Simulator */
