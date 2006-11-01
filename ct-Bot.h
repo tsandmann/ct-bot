@@ -131,7 +131,7 @@
 		#define UART_AVAILABLE	/*!< Serial Communication */
 		#define COMMAND_AVAILABLE	/*!< High-Level Communication */
 	#endif
-	#undef MAP_AVAILABLE
+//	#undef MAP_AVAILABLE
 #endif
 
 

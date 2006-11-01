@@ -93,7 +93,9 @@ int8 map_get_field (int16 x, int16 y) {
 		
 	if ((section_x>= MAP_SECTIONS) || (section_y >= MAP_SECTIONS) ||
 		(section_x < 0) || (section_y <0)){
-		printf("Versuch ein Feld ausserhalb der Karte zu lesen!! x=%d y=%d\n",x,y);	
+		#ifdef PC
+			printf("Versuch ein Feld ausserhalb der Karte zu lesen!! x=%d y=%d\n",x,y);
+		#endif
 		return 0;
 	}
 
@@ -124,7 +126,9 @@ void map_set_field(int16 x, int16 y, int8 value) {
 		
 	if ((section_x>= MAP_SECTIONS) || (section_y >= MAP_SECTIONS) ||
 		(x < 0) || (y <0)){
-		printf("Versuch ein Feld ausserhalb der Karte zu schreiben!! x=%d y=%d\n",x,y);	
+		#ifdef PC
+			printf("Versuch ein Feld ausserhalb der Karte zu schreiben!! x=%d y=%d\n",x,y);	
+		#endif
 		return;
 	}
 
@@ -223,10 +227,12 @@ void map_update_occupied (int16 x, int16 y) {
  */
 int16 world_to_map(float koord){
 	int16 tmp = koord * MAP_RESOLUTION / 1000  + (MAP_SIZE*MAP_RESOLUTION/2);
-	if ((tmp < 0) || (tmp >= MAP_SIZE*MAP_RESOLUTION)){
-		printf("Weltkoordinate %f passt nicht in die Karte!\n",koord);
-	}
-	
+	#ifdef PC
+		if ((tmp < 0) || (tmp >= MAP_SIZE*MAP_RESOLUTION)){
+			printf("Weltkoordinate %f passt nicht in die Karte!\n",koord);
+		}
+	#endif
+		
 	return tmp;
 }
 
