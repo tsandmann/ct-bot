@@ -43,7 +43,7 @@
 #define MAP_RESOLUTION 	512	/*!< Aufloesung der Karte in Punkte pro Meter */
 #define MAP_SECTION_POINTS 128	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 
-#define MAP_SIZE	20	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
+#define MAP_SIZE	4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
 
 #define MAP_SECTIONS ((( MAP_SIZE*MAP_RESOLUTION)/MAP_SECTION_POINTS))
 
@@ -53,17 +53,12 @@ typedef struct {
 
 map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*! Array mit den Zeigern auf die Elemente */
 
-//#define MAP_WIDTH	3			/*!< Breite (X-Dim) der Karte in Meter */
-//#define MAP_HEIGHT	3			/*!< Hoehe (Y-Dim) der Karte in Meter */
-
-//uint8 map[MAP_WIDTH*MAP_RESOLUTION][MAP_HEIGHT*MAP_RESOLUTION];
-
 #define MAP_STEP_FREE		2	/*!< Stufenbreite, wenn ein Feld als frei erkannt wird */
 #define MAP_STEP_OCCUPIED	10	/*!< Stufenbreite, wenn ein Feld als belegt erkannt wird */
 
 #define MAP_RADIUS			5	/*!< Umkreis um einen Punkt, der aktualisiert wird (Streukreis) [Felder]*/
 
-
+#define SHRINK_MAP		/*!< Wenn gesetzt, werden nur belegt Bereiche der Karte ausgegeben */
 
 int16 map_min_x=MAP_SIZE*MAP_RESOLUTION/2; /*!< belegten Bereich der Karte sichern */
 int16 map_max_x=MAP_SIZE*MAP_RESOLUTION/2;/*!< belegten Bereich der Karte sichern */
@@ -143,15 +138,17 @@ void update_field (int16 x, int16 y, int16 value) {
 	if ((tmp < 128) && (tmp > -128))
 		map[section_x][section_y]->section[index_x][index_y]+=value;
 		
-	// Belegte Kartengroesse anpassen
-	if (x < map_min_x)
-		map_min_x=x;
-	if (x > map_max_x)
-		map_max_x= x;
-	if (y < map_min_y)
-		map_min_y=y;
-	if (y > map_max_y)
-		map_max_y= y;
+	#ifdef SHRINK_MAP
+		// Belegte Kartengroesse anpassen
+		if (x < map_min_x)
+			map_min_x=x;
+		if (x > map_max_x)
+			map_max_x= x;
+		if (y < map_min_y)
+			map_min_y=y;
+		if (y > map_max_y)
+			map_max_y= y;
+	#endif
 	
 }
 
@@ -326,12 +323,18 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 		FILE *fp = fopen(filename, "w");
 		
 		int16 x,y;
-		
-/*		int16 min_x=0;
+
+		#ifndef SHRINK_MAP
+			map_min_x=0;
+			map_max_x=MAP_SIZE*MAP_RESOLUTION;
+			map_min_y=0;
+			map_max_y=MAP_SIZE*MAP_RESOLUTION;
+		#endif		
+		/*
+		int16 min_x=0;
 		int16 max_x=MAP_SIZE*MAP_RESOLUTION;
 		int16 min_y=0;
 		int16 max_y=MAP_SIZE*MAP_RESOLUTION;
-		
 		// Kartengroesse reduzieren
 		int8 free=1;
 		while ((min_y < max_y) && (free ==1)){
@@ -374,11 +377,15 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 			}
 			max_x--;
 		}
-*/
 
-		
+			map_min_x=min_x;
+			map_max_x=max_x;
+			map_min_y=min_y;
+			map_max_y=max_y;
+
+		*/
 		int16 map_size_x=map_max_x-map_min_x;
-		int16 map_size_y=map_max_x-map_min_y;
+		int16 map_size_y=map_max_y-map_min_y;
 		fprintf(fp,"P5\n%d %d\n255\n",map_size_x,map_size_y);
 
 		printf("Karte beginnt bei X=%d,Y=%d und geht bis X=%d,Y=%d (%d * %d Punkte)\n",map_min_x,map_min_y,map_max_x,map_max_y,map_size_x,map_size_y);
