@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-11-03 Benjamin Benz [bbe@heise.de]: Verhalten aus bot-logik.c auf einzelfunktionen aufgeteilt und in available_behaviours Schalter zur Auswahl eingefuehrt
+
 2006-11-01 Timo Sandmann [mail@timosandmann.de]: Timer auf tickCounts [176 us] umgestellt (bevorzugt TIMER_GET_TICKCOUNT_16 oder 32 verwenden; MS_TO_TICKS() rechnet dazu ms in Ticks um)
 
 2006-11-01 Benjamin Benz [bbe@heise.de]: Karten funktionieren jetzt schon mal auf dem PC

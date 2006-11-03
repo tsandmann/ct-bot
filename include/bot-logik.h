@@ -28,6 +28,30 @@
 
 #include "global.h"
 #include "ct-Bot.h"
+#include "motor.h"
+#include "sensor.h"
+#include "bot-local.h"
+
+
+#define BEHAVIOUR_DRIVE_AVAILABLE
+
+
+
+// Includes aller verfuegbaren Verhalten
+
+
+#define INACTIVE 0	/*!< Verhalten ist aus */
+#define ACTIVE 1	/*!< Verhalten ist an */
+
+#define OVERRIDE	1	/*!< Konstante, wenn Verhalten beim Aufruf alte Wuensche ueberschreiben sollen */
+#define NOOVERRIDE 0	/*!< Konstanten, wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen */
+
+#define SUBSUCCESS	1	/*!< Konstante fuer Behaviour_t->subResult: Aufgabe erfolgreich abgeschlossen */
+#define SUBFAIL	0	/*!< Konstante fuer Behaviour_t->subResult: Aufgabe nicht abgeschlossen */
+#define SUBRUNNING 2	/*!< Konstante fuer Behaviour_t->subResult: Aufgabe wird noch beabeitet */
+
+#define BOT_BEHAVIOUR_RUNNING	1		/*!< Rueckgabewert eines Verhaltens, das noch weiter laufen moechte. */
+#define BOT_BEHAVIOUR_DONE		0		/*!< Rueckgabewert eines Verhaltens, das fertig ist. */
 
 
 /*! Verwaltungsstruktur fuer die Verhaltensroutinen */
@@ -54,6 +78,13 @@ typedef void (*BehaviourFunc)(Behaviour_t *data);
 
 /*! Liste mit allen Verhalten */
 extern Behaviour_t *behaviour;
+
+extern int16 speedWishLeft;				/*!< Puffervariablen fuer die Verhaltensfunktionen absolut Geschwindigkeit links*/
+extern int16 speedWishRight;				/*!< Puffervariablen fuer die Verhaltensfunktionen absolut Geschwindigkeit rechts*/
+
+extern float faktorWishLeft;				/*!< Puffervariablen fuer die Verhaltensfunktionen Modifikationsfaktor links*/
+extern float faktorWishRight;				/*!< Puffervariablen fuer die Verhaltensfunktionen Modifikationsfaktor rechts */
+
 
 
 extern volatile int16 target_speed_l;	/*!< Sollgeschwindigkeit linker Motor */
@@ -88,111 +119,48 @@ void deactivateBehaviour(BehaviourFunc function);
  */
 void deactivateAllBehaviours(void);
 
-/*!
- * Beispiel fuer ein Verhalten, das einen Zustand besitzt
- * es greift auf andere Verhalten zurueck und setzt daher 
- * selbst keine speedWishes
- * Laesst den Roboter ein Quadrat abfahren
- * @param *data der Verhaltensdatensatz
- */
-void bot_drive_square_behaviour(Behaviour_t *data);
-
-/*!
- * Kuemmert sich intern um die Ausfuehrung der goto-Kommandos,
- * @param *data der Verhaltensdatensatz
- * @see bot_goto()
- */
-void bot_goto_behaviour(Behaviour_t *data);
-
-/*!
- * Drehe die Raeder um die gegebene Zahl an Encoder-Schritten weiter
- * @param left Schritte links
- * @param right Schritte rechts
- */
-void bot_goto(int16 left, int16 right, Behaviour_t * caller);
+/*! 
+ * Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung 
+ * return_from_behaviour() kehrt dann spaeter wieder zum aufrufenden Verhalten zurueck
+ * @param from aufrufendes Verhalten
+ * @param to aufgerufenes Verhalten
+ * @param override Hier sind zwei Werte Moeglich:
+ * 		1. OVERRIDE : Das Zielverhalten to wird aktiviert, auch wenn es noch aktiv ist. 
+ * 					  Das Verhalten, das es zuletzt aufgerufen hat wird dadurch automatisch 
+ * 					  wieder aktiv und muss selbst sein eigenes Feld subResult auswerten, um zu pruefen, ob das
+ * 					  gewuenschte Ziel erreicht wurde, oder vorher ein Abbruch stattgefunden hat. 
+ * 		2. NOOVERRIDE : Das Zielverhalten wird nur aktiviert, wenn es gerade nichts zu tun hat.
+ * 						In diesem Fall kann der Aufrufer aus seinem eigenen subResult auslesen,
+ * 						ob seibem Wunsch Folge geleistet wurde.
+ */ 
+void switch_to_behaviour(Behaviour_t * from, void *to, uint8 override );
 
 /*! 
- * Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren. Dabei legt die Geschwindigkeit fest, ob der Bot vorwaerts oder rueckwaerts fahren soll.
- * @param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
- * @param speed Gibt an, wie schnell der Bot fahren soll. Negative Werte lassen den Bot rueckwaerts fahren.
- * @param cm Gibt an, wie weit der Bot fahren soll. In cm :-) Die Strecke muss positiv sein, die Fahrtrichtung wird ueber speed geregelt.
- * */
+ * Kehrt zum aufrufenden Verhalten zurueck
+ * @param running laufendes Verhalten
+ */ 
+void return_from_behaviour(Behaviour_t * data);
 
-void bot_drive_distance(Behaviour_t* caller,int8 curve, int16 speed, int16 cm);
 
 /*!
- * Das Verhalten faehrt von der aktuellen Position zur angegebenen Position (x/y)
+ * Fuegt ein Verhalten der Verhaltenliste anhand der Prioritaet ein.
+ * @param list Die Speicherstelle an der die globale Verhaltensliste anfaengt
+ * @param behave Einzufuegendes Verhalten
  */
-void bot_gotoxy(Behaviour_t *caller, float x, float y);
+void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave);
 
 /*! 
- * Dreht den Bot im mathematisch positiven Sinn. 
- * @param degrees Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
- * */
-void bot_turn(Behaviour_t* caller,int16 degrees);
-
-/*!
- * Das Verhalten setzt sich aus 3 Teilverhalten zusammen: 
- * Nach Licht suchen, auf das Licht zufahren, im Licht Slalom fahren. */
-void bot_olympic_behaviour(Behaviour_t *data);
-
-/*!
- * Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren.
- * @see bot_drive_distance() 
- * */
-
-void bot_drive_distance_behaviour(Behaviour_t* data);
-
-/*!
- * Das Verhalten laesst den Bot eine Punktdrehung durchfuehren. 
- * @see bot_turn()
- * */
-void bot_turn_behaviour(Behaviour_t* data);
-
-/*!
- * Das Verhalten laesst den Roboter den Raum durchsuchen. 
- * Das Verhalten hat mehrere unterschiedlich Zustaende:
- * 1. Zu einer Wand oder einem anderen Hindernis fahren.
- * 2. Zu einer Seite drehen, bis der Bot parallel zur Wand ist. 
- * Es macht vielleicht Sinn, den Maussensor auszulesen, um eine Drehung um 
- * einen bestimmten Winkel zu realisieren. Allerdings muesste dafuer auch der
- * Winkel des Bots zur Wand bekannt sein.
- * 3. Eine feste Strecke parallel zur Wand vorwaerts fahren.
- * Da bot_glance_behaviour abwechselnd zu beiden Seiten schaut, ist es fuer die Aufgabe, 
- * einer Wand auf einer Seite des Bots zu folgen, nur bedingt gewachsen und muss
- * evtl. erweitert werden.
- * 4. Senkrecht zur Wand drehen.
- * Siehe 2.
- * 5. Einen Bogen fahren, bis der Bot wieder auf ein Hindernis stoesst. 
- * Dann das Ganze von vorne beginnen, nur in die andere Richtung und mit einem
- * weiteren Bogen. So erforscht der Bot einigermassen systematisch den Raum.
- * 
- * Da das Verhalten jeweils nach 10ms neu aufgerufen wird, muss der Bot sich
- * 'merken', in welchem Zustand er sich gerade befindet.
- * */
-void bot_explore_behaviour(Behaviour_t *data);
-
-/*!
- * Das Verhalten laesst den Bot einen Slalom fahren.
- * @see bot_do_slalom()
- * */
-void bot_do_slalom_behaviour(Behaviour_t *data);
-
-/*!
- * Das Verhalten findet seinen Weg durch ein Labyrinth, das nach gewissen Grundregeln gebaut ist
- * in nicht immer optimaler Weise aber in jedem Fall. Es arbeitet nach dem Hoehlenforscher-Algorithmus.
- * Einschraenkung: Objekte im Labyrinth, die Endlossschleifen verursachen koennen, z.b. ein einzeln
- * stehender Pfeiler im Labyrinth um den der Bot dann immer wieder herum fahren wuerde. 
+ * Erzeugt ein neues Verhalten 
+ * @param priority Die Prioritaet
+ * @param *work Den Namen der Funktion, die sich drum kuemmert
  */
-void bot_solve_maze(Behaviour_t *data);
+Behaviour_t *new_behaviour(uint8 priority, void (*work) (struct _Behaviour_t *data), int8 active);
 
-/*! 
- * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
- * @param Der aufrufer
- */
-void bot_scan(Behaviour_t* caller);
 
-void bot_follow_line(Behaviour_t *caller);
+#include "bot-logic/available_behaviours.h"
+
+
+
 
 #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
   
@@ -220,6 +188,7 @@ void bot_follow_line(Behaviour_t *caller);
   void set_behaviours_equal(void);
    
   volatile int8 behaviour_page ; /*!< angezeigte Verhaltensseite */
+  
 #endif
 
 #endif

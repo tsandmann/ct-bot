@@ -35,6 +35,14 @@
 
 #include "rc5-codes.h"
 
+#include "bot-logic/behaviour_drive_square.h"
+#include "bot-logic/behaviour_drive_distance.h"
+#include "bot-logic/behaviour_goto.h"
+#include "bot-logic/behaviour_scan.h"
+#include "bot-logic/behaviour_solve_maze.h"
+#include "bot-logic/behaviour_turn.h"
+#include "bot-logic/behaviour_olympic.h"
+
 #include <stdlib.h>
 
 #ifdef RC5_AVAILABLE
@@ -247,19 +255,33 @@ void rc5_bot_next_behaviour(RemCtrlFuncPar *par) {
 	switch (state) {
 		case 0: 
 			break;
-		case 1: activateBehaviour(bot_drive_square_behaviour);
-			break;
-		case 2: deactivateBehaviour(bot_drive_square_behaviour);
-				 deactivateBehaviour(bot_goto_behaviour); 
-				 
-				 activateBehaviour(bot_olympic_behaviour);
+		#ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
+			case 1: activateBehaviour(bot_drive_square_behaviour);
+				break;
+		#endif
+		case 2: 
+				 #ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
+						deactivateBehaviour(bot_drive_square_behaviour);
+				 #endif
+				 #ifdef BEHAVIOUR_GOTO_AVAILABLE
+					 deactivateBehaviour(bot_goto_behaviour); 
+				 #endif
+				 #ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
+					 activateBehaviour(bot_olympic_behaviour);
+				 #endif
 			break;
 		default:
-			deactivateBehaviour(bot_olympic_behaviour);
-			deactivateBehaviour( bot_drive_distance_behaviour);
-			deactivateBehaviour( bot_turn_behaviour);
-			deactivateBehaviour( bot_explore_behaviour);
-			deactivateBehaviour( bot_do_slalom_behaviour);
+			#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+				deactivateBehaviour( bot_drive_distance_behaviour);
+			#endif
+			#ifdef BEHAVIOUR_TURN_AVAILABLE
+				deactivateBehaviour( bot_turn_behaviour);
+			#endif
+			#ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
+				deactivateBehaviour(bot_olympic_behaviour);
+				deactivateBehaviour( bot_explore_behaviour);
+				deactivateBehaviour( bot_do_slalom_behaviour);
+			#endif
 		
 			state=0;
 	}
@@ -397,25 +419,35 @@ void rc5_number(RemCtrlFuncPar *par) {
 				case 0:	
 				target_speed_l=0;target_speed_r=0;break;
 				case 1: target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
-				case 2: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
+				#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+					case 2: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
+				#endif
 			//	case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
 				#ifdef MAP_AVAILABLE
 					case 3: print_map(); break;
 				#endif
 //				case 4: bot_turn(0, 90); break;
-				case 4: bot_scan(0); break;
+				#ifdef BEHAVIOUR_SCAN_AVAILABLE
+					case 4: bot_scan(0); break;
+				#endif
 //				//case 5: bot_goto(0, 0, 0); break;
 //				#ifdef MEASURE_MOUSE_AVAILABLE
 //					case 5: bot_gotoxy(0,20,20);
 //				#else
+				#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 					case 5: bot_solve_maze(0); break;
+				#endif
 //				case 5: target_speed_l = BOT_SPEED_MAX; target_speed_r = BOT_SPEED_MAX; break;
 //				#endif
 //				case 5: bot_scan(0); break;
-				case 6: bot_turn(0, -90); break;
-				case 7: bot_turn(0,180); break;
-				case 8: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
-				case 9: bot_turn(0, -180); break;
+				#ifdef BEHAVIOUR_TURN_AVAILABLE
+					case 6: bot_turn(0, -90); break;
+					case 7: bot_turn(0,180); break;
+					case 9: bot_turn(0, -180); break;
+				#endif
+				#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+					case 8: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
+				#endif
 	
 //				case 0:	 target_speed_l=BOT_SPEED_STOP;target_speed_r=target_speed_l;break;
 //				case 1:	 target_speed_l=BOT_SPEED_SLOW;target_speed_r=target_speed_l;break;
