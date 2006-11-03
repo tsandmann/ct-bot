@@ -1,6 +1,7 @@
 #ifndef AVAILABLE_BEHAVIOURS_H_
 #define AVAILABLE_BEHAVIOURS_H_
 
+#ifdef BEHAVIOUR_AVAILABLE
 
 //#define BEHAVIOUR_SIMPLE_AVAILABLE	/*! sind die Beispielverhalten vorhanden ?*/
 //#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE	/*! Demoverhalten im quadrat fahren vorhanden ?*/
@@ -79,5 +80,5 @@
 #include "bot-logic/behaviour_olympic.h"
 
 
-
+#endif
 #endif /*AVAILABLE_BEHAVIOURS_H_*/

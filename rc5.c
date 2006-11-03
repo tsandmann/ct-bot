@@ -25,23 +25,15 @@
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
 */
-#include "ct-Bot.h"
+#include "bot-logik.h"
 #include "map.h"
 #include "ir-rc5.h"
-#include "motor.h"
-#include "motor-low.h"
-#include "bot-logik.h"
 #include "display.h"
+#include "motor-low.h"
 
 #include "rc5-codes.h"
 
-#include "bot-logic/behaviour_drive_square.h"
-#include "bot-logic/behaviour_drive_distance.h"
-#include "bot-logic/behaviour_goto.h"
-#include "bot-logic/behaviour_scan.h"
-#include "bot-logic/behaviour_solve_maze.h"
-#include "bot-logic/behaviour_turn.h"
-#include "bot-logic/behaviour_olympic.h"
+
 
 #include <stdlib.h>
 
@@ -85,8 +77,10 @@ static void rc5_bot_set_speed(RemCtrlFuncPar *par);
  * Diese Funktion aendert die Geschwindigkeit um den angegebenen Wert.
  * @param par Parameter mit den relativen Geschwindigkeitsaenderungen.
  */	
-static void rc5_bot_change_speed(RemCtrlFuncPar *par);
-
+#ifdef BEHAVIOUR_AVAILABLE
+	static void rc5_bot_change_speed(RemCtrlFuncPar *par);
+#endif
+ 
 /*!
  * Diese Funktion wechselt zwischen verschiednen Verhalten
  * @param par Parameter mit den zu setzenden Geschwindigkeiten.
@@ -133,10 +127,12 @@ uint16 RC5_Code;	/*!< Letzter empfangener RC5-Code */
 static RemCtrlAction gRemCtrlAction[] = {
 	/* RC5-Code,		Funktion,				Parameter */
 	{ RC5_CODE_PWR,		rc5_emergency_stop,		{ 0, 0 } },
-	{ RC5_CODE_UP,		rc5_bot_change_speed,	{ 10, 10 } },
-	{ RC5_CODE_DOWN,		rc5_bot_change_speed,	{ -10, -10 } },
-	{ RC5_CODE_LEFT,		rc5_bot_change_speed,	{ 0, 10 } },
-	{ RC5_CODE_RIGHT,	rc5_bot_change_speed,	{ 10, 0 } },
+	#ifdef BEHAVIOUR_AVAILABLE
+		{ RC5_CODE_UP,		rc5_bot_change_speed,	{ 10, 10 } },
+		{ RC5_CODE_DOWN,		rc5_bot_change_speed,	{ -10, -10 } },
+		{ RC5_CODE_LEFT,		rc5_bot_change_speed,	{ 0, 10 } },
+		{ RC5_CODE_RIGHT,	rc5_bot_change_speed,	{ 10, 0 } },
+	#endif
 	
 	{ RC5_CODE_0,		rc5_number,		        { 0, 0 } },
 	{ RC5_CODE_1,		rc5_number,		        { 1, 1 } },
@@ -306,7 +302,7 @@ static void rc5_bot_set_speed(RemCtrlFuncPar *par) {
  * @param par notwendiger Dummy-Parameter.
  */	
  static void rc5_emergency_stop(RemCtrlFuncPar *par) {
-			
+		#ifdef BEHAVIOUR_AVAILABLE
             // Setzen der Geschwindigkeit auf 0	
 			target_speed_l = 0 ;
 		    target_speed_r = 0 ;
@@ -317,26 +313,29 @@ static void rc5_bot_set_speed(RemCtrlFuncPar *par) {
 		       display_clear();         // Screen zuerst loeschen
 		       display_screen = 2;      // nach Notstop in den Verhaltensscreen mit Anzeige der alten Verhalten
 		     #endif
+		#endif
 }
  
 /*!
  * Diese Funktion aendert die Geschwindigkeit um den angegebenen Wert.
  * @param par Parameter mit den relativen Geschwindigkeitsaenderungen.
  */	
-static void rc5_bot_change_speed(RemCtrlFuncPar *par) {
-	int old;
-	if (par) {
-		old=target_speed_l;
-		target_speed_l += par->value1;
-		if ((target_speed_l < -BOT_SPEED_MAX)|| (target_speed_l > BOT_SPEED_MAX))
-			target_speed_l = old;
-		
-		old=target_speed_r;		
-		target_speed_r += par->value2;
-		if ((target_speed_r <-BOT_SPEED_MAX)||(target_speed_r > BOT_SPEED_MAX))
-			target_speed_r = old;
+#ifdef BEHAVIOUR_AVAILABLE
+	static void rc5_bot_change_speed(RemCtrlFuncPar *par) {
+		int old;
+		if (par) {
+			old=target_speed_l;
+			target_speed_l += par->value1;
+			if ((target_speed_l < -BOT_SPEED_MAX)|| (target_speed_l > BOT_SPEED_MAX))
+				target_speed_l = old;
+			
+			old=target_speed_r;		
+			target_speed_r += par->value2;
+			if ((target_speed_r <-BOT_SPEED_MAX)||(target_speed_r > BOT_SPEED_MAX))
+				target_speed_r = old;
+		}
 	}
-}
+#endif
 
 /*!
  * Liest ein RC5-Codeword und wertet es aus
@@ -416,9 +415,11 @@ void rc5_number(RemCtrlFuncPar *par) {
 		default:
 	#endif
 			switch (par->value1) {
-				case 0:	
-				target_speed_l=0;target_speed_r=0;break;
-				case 1: target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
+				#ifdef BEHAVIOUR_AVAILABLE
+					case 0:	
+					target_speed_l=0;target_speed_r=0;break;
+					case 1: target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
+				#endif
 				#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 					case 2: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
 				#endif

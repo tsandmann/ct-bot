@@ -145,7 +145,9 @@ void init(void){
 
 	motor_init();
 	bot_sens_init();
-	bot_behave_init();
+	#ifdef BEHAVIOUR_AVAILABLE
+		bot_behave_init();
+	#endif
 	
 	#ifdef MCU
 		#ifdef RC5_AVAILABLE
@@ -226,8 +228,10 @@ void init(void){
 						display_printf("Zeit: %04d:%03d", timer_get_s(), timer_get_ms());
 					#endif
 
-					display_cursor(2,1);
-					display_printf("TS=%+4d %+4d",target_speed_l,target_speed_r);
+					#ifdef BEHAVIOUR_AVAILABLE
+						display_cursor(2,1);
+						display_printf("TS=%+4d %+4d",target_speed_l,target_speed_r);
+					#endif
 					#ifdef SRF10_AVAILABLE		
 						display_cursor(2,15);
 						display_printf("US%+4d",sensSRF10);

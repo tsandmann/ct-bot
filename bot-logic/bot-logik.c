@@ -35,6 +35,9 @@
 
 
 #include "bot-logik.h"
+
+#ifdef BEHAVIOUR_AVAILABLE
+
 #include "display.h"
 #include "rc5.h"
 
@@ -465,5 +468,5 @@ void set_behaviours_equal(void) {
    }
 }
 
-
+#endif
 #endif
