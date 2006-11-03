@@ -51,8 +51,8 @@ int16 speedWishRight;				/*!< Puffervariablen fuer die Verhaltensfunktionen abso
 float faktorWishLeft;				/*!< Puffervariablen fuer die Verhaltensfunktionen Modifikationsfaktor links*/
 float faktorWishRight;				/*!< Puffervariablen fuer die Verhaltensfunktionen Modifikationsfaktor rechts */
 
-volatile int16 target_speed_l=BOT_SPEED_STOP;	/*!< Sollgeschwindigkeit linker Motor - darum kuemmert sich bot_base()*/
-volatile int16 target_speed_r=BOT_SPEED_STOP;	/*!< Sollgeschwindigkeit rechter Motor - darum kuemmert sich bot_base() */
+int16 target_speed_l=BOT_SPEED_STOP;	/*!< Sollgeschwindigkeit linker Motor - darum kuemmert sich bot_base()*/
+int16 target_speed_r=BOT_SPEED_STOP;	/*!< Sollgeschwindigkeit rechter Motor - darum kuemmert sich bot_base() */
 
 
 /*! Liste mit allen Verhalten */

@@ -188,7 +188,9 @@ void init(void){
 		#endif 
 		#ifdef MCU
 			#ifndef LOG_DISPLAY_AVAILABLE
-				uint16 frei;					// enthaelt im Screen 5 den freien RAM-Speicher
+				#ifdef DISPLAY_SCREENS_AVAILABLE
+					uint16 frei;					// enthaelt im Screen 5 den freien RAM-Speicher
+				#endif // DISPLAY_SCREENS_AVAILABLE
 			#endif
 		#endif
 		#ifdef TEST_AVAILABLE_COUNTER

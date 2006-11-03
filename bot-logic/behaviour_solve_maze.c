@@ -26,6 +26,7 @@
 
 #include "bot-logik.h"
 #include <math.h>
+#include <stdlib.h>
 
 #ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 

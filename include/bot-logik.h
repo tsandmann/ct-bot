@@ -87,8 +87,8 @@ extern float faktorWishRight;				/*!< Puffervariablen fuer die Verhaltensfunktio
 
 
 
-extern volatile int16 target_speed_l;	/*!< Sollgeschwindigkeit linker Motor */
-extern volatile int16 target_speed_r;	/*!< Sollgeschwindigkeit rechter Motor */
+extern int16 target_speed_l;	/*!< Sollgeschwindigkeit linker Motor */
+extern int16 target_speed_r;	/*!< Sollgeschwindigkeit rechter Motor */
 
 /*!
  * Kuemmert sich intern um die Ausfuehrung der goto-Kommandos
