@@ -99,18 +99,17 @@
 	}
 #endif // TIME_AVAILABLE
 
-/*! Funktion, um die Systemzeit zu berechnen 
- */
-void system_time_isr(void){
-	LOCK();
-	/* TickCounter [176 us] erhoehen */
-	#ifdef MCU
-		(*(uint32*)tickCount)++;
-	#else
+#ifdef PC
+	/*! 
+	 * Funktion, die die TickCounts um die vergangene Simulzeit erhoeht
+	 */
+	void system_time_isr(void){
+		LOCK();
+		/* TickCounter [176 us] erhoehen */
 		static uint16 last_simultime=0;
 		if (simultime < last_simultime) last_simultime -= 10000;	// der Sim setzt simultime alle 10s zurueck auf 0
 		tickCount += MS_TO_TICKS((float)(simultime - last_simultime));
 		last_simultime = simultime;
-	#endif
-	UNLOCK();
-}
+		UNLOCK();
+	}
+#endif

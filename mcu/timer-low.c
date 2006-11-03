@@ -48,11 +48,14 @@
  */
 SIGNAL (SIG_OUTPUT_COMPARE2){
    
+	/* - FERNBEDIENUNG - */
 	#ifdef IR_AVAILABLE
 		ir_isr();
 	#endif	
-	system_time_isr();
-	bot_encoder_isr();	
+	/* ----- TIMER ----- */
+	(*(uint32*)tickCount)++;	// TickCounter [176 us] erhoehen
+	/* --- RADENCODER --- */
+	bot_encoder_isr();
 }
 
 /*!

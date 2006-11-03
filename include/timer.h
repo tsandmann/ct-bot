@@ -55,13 +55,13 @@
 	 */
 	uint16 timer_get_ms_since(uint16 old_s, uint16 old_ms);
 #endif // TIME_AVAILABLE
-
-/*! 
- * ISR, um Tickcounter zu aktualisieren 
- */
-void system_time_isr(void);
 	
 #ifdef PC
+	/*! 
+	 *  Funktion, die die TickCounts um die vergangene Simulzeit erhoeht
+	 */
+	void system_time_isr(void);
+
 	/*!< liefert Ticks seit Systemstart [176 us] */
 	inline uint16 timer_get_tickCount16(void);
 	inline uint32 timer_get_tickCount32(void);	
