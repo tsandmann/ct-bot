@@ -38,6 +38,20 @@
  * Ein uebergeordnetes Array haelt die einzelnen Sections 
  * So laesst sich leicht eine Karte aufbauen, 
  * ohne dass viel Platz fuer unbenutzte Felder draufgeht
+ * 
+ * Felder sind vom Typ int8 und haben einen Wertebereich von -128 bis 127
+ * 0 bedeutet: wir wissen nichts über das Feld
+ * negative Werte bedeuten: Hinderniss
+ * postivie Werte bedeuten: freier Weg
+ * je größer der Betrag ist, desto sicherer die Aussage über das Feld
+ * Der Wert -128 ist Löchern vorbehalten und wird dann auch nicht durch die Abstandssensoren verändert
+ * (Achtung, die Locherkennung ist derzeit noch nicht fertig impelementiert)
+ *
+ * Felder werden wie folgt aktualisiert:
+ * Wird ein Punkt als frei betrachtet, erhoehen wir den Wert des Feldes um MAP_STEP_FREE
+ * Wird ein Punkt als belegt erkannt, ziehen wir um ihn einen Streukreis mit dem Radius MAP_RADIUS. 
+ * Das Zentrum des Kreises wird um MAP_STEP_OCCUPIED dekrementiert, nach aussen hin immer weniger
+ * Wird ein Feld als Loch erkannt, setzen wir den Wert fest auf -128 (Achtung, derzeit noch nicht fertig impelementiert)
  */
 
 #ifdef MCU
@@ -52,14 +66,8 @@
 
 #define MAP_SECTIONS ((( MAP_SIZE*MAP_RESOLUTION)/MAP_SECTION_POINTS))
 
-/* Felder werden wie folgt aktualisiert:
- * Wird ein Punkt al frei betrachtet, erhoehen wir den Wert des Feldes um MAP_STEP_FREE
- * Wird ein Punkt als belegt erkannt, ziehen wir um ihn einen Streukreis mit dem Radius MAP_RADIUS. 
- * Das Zentrum des Kreises wird um MAP_STEP_OCCUPIED dekrementiert, nach aussen hin immer weniger
- */ 
-
-#define MAP_STEP_FREE		2	/*!< Stufenbreite, wenn ein Feld als frei erkannt wird */
-#define MAP_STEP_OCCUPIED	10	/*!< Stufenbreite, wenn ein Feld als belegt erkannt wird */
+#define MAP_STEP_FREE		2	/*!< Um diesen Wert wird ein Feld inkrementiert, wenn es als frei erkannt wird */
+#define MAP_STEP_OCCUPIED	10	/*!< Um diesen Wert wird ein Feld dekrementiert, wenn es als belegt erkannt wird */
 
 #define MAP_RADIUS			10	/*!< Umkreis einen Messpunkt, der als Besetzt aktualisiert wird (Streukreis) [mm]*/
 #define MAP_RADIUS_FIELDS	(MAP_RESOLUTION*MAP_RADIUS/1000)	/*!< Umkreis einen Messpunkt, der als Besetzt aktualisiert wird (Streukreis) [Felder]*/
