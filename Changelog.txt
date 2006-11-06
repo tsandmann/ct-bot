@@ -1,6 +1,8 @@
 CHANGELOG fuer c't-Bot
 ======================
-2006-11-03 Timo Sandmann [mail@timosandmann.de]: Zwei warnings beseitigt und zwei unnštige volatiles in bot-logik.c entfernt
+2006-11-06 Benjamin Benz [bbe@heise.de]: map.c kommentiert und etwas geschliffen
+
+2006-11-03 Timo Sandmann [mail@timosandmann.de]: Zwei warnings beseitigt und zwei unnoetige volatiles in bot-logik.c entfernt
 
 2006-11-03 Benjamin Benz [bbe@heise.de]: Verhalten aus bot-logik.c auf einzelfunktionen aufgeteilt und in available_behaviours Schalter zur Auswahl eingefuehrt
 

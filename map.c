@@ -40,8 +40,6 @@
  * ohne dass viel Platz fuer unbenutzte Felder draufgeht
  */
 
-
-
 #ifdef MCU
 	#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
 	#define MAP_SECTION_POINTS 32	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
@@ -52,20 +50,21 @@
 	#define MAP_SECTION_POINTS 128	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 #endif
 
-
 #define MAP_SECTIONS ((( MAP_SIZE*MAP_RESOLUTION)/MAP_SECTION_POINTS))
 
-typedef struct {
-	int8 section[MAP_SECTION_POINTS][MAP_SECTION_POINTS]; /*!< Einzelne Punkte */
-} map_section_t;   /*!< Datentyp fuer die elementarfelder einer Gruppe */
-
-map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*! Array mit den Zeigern auf die Elemente */
+/* Felder werden wie folgt aktualisiert:
+ * Wird ein Punkt al frei betrachtet, erhoehen wir den Wert des Feldes um MAP_STEP_FREE
+ * Wird ein Punkt als belegt erkannt, ziehen wir um ihn einen Streukreis mit dem Radius MAP_RADIUS. 
+ * Das Zentrum des Kreises wird um MAP_STEP_OCCUPIED dekrementiert, nach aussen hin immer weniger
+ */ 
 
 #define MAP_STEP_FREE		2	/*!< Stufenbreite, wenn ein Feld als frei erkannt wird */
 #define MAP_STEP_OCCUPIED	10	/*!< Stufenbreite, wenn ein Feld als belegt erkannt wird */
 
-#define MAP_RADIUS			5	/*!< Umkreis um einen Punkt, der aktualisiert wird (Streukreis) [Felder]*/
+#define MAP_RADIUS			10	/*!< Umkreis einen Messpunkt, der als Besetzt aktualisiert wird (Streukreis) [mm]*/
+#define MAP_RADIUS_FIELDS	(MAP_RESOLUTION*MAP_RADIUS/1000)	/*!< Umkreis einen Messpunkt, der als Besetzt aktualisiert wird (Streukreis) [Felder]*/
 
+/* Es lohnt nicht gigantische Karten auszugeben, wenn sie nichts enthalten, daher hier zwei Varianten, um die Karte auf die realen groesse zu reduzieren */
 //#define SHRINK_MAP_ONLINE		/*!< Wenn gesetzt, wird bei jedem update der belegte Bereich der Karte protokolliert. Pro: schnelle ausgabe Contra permanenter aufwand  */
 #define SHRINK_MAP_OFFLINE		/*!< Wenn gesetzt, wird erst beid er Ausgabe der belegte Bereich der Karte berechnet. Pro: kein permanenter aufwand Contra: ausgabe dauert lange */
 
@@ -76,6 +75,11 @@ map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*! Array mit den Zeigern auf d
 	int16 map_max_y=MAP_SIZE*MAP_RESOLUTION/2;/*!< belegten Bereich der Karte sichern */
 #endif
 
+typedef struct {
+	int8 section[MAP_SECTION_POINTS][MAP_SECTION_POINTS]; /*!< Einzelne Punkte */
+} map_section_t;   /*!< Datentyp fuer die elementarfelder einer Gruppe */
+
+map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*! Array mit den Zeigern auf die Elemente */
 
 /*!
  * liefert den Wert eines Feldes 
@@ -195,16 +199,18 @@ void map_update_free (int16 x, int16 y) {
  * @param y y-Ordinate der Karte (nicht der Welt!!!)
  * @param value Betrag um den das Feld veraendert wird (>= heisst freier, <0 heisst belegter
  */
-void map_update_field_circle(int16 x, int16 y, int16 radius, int16 value) {
-	int16 dX,dY;
-    int16 h=radius*radius;
-	for(dX = -radius; dX <= radius; dX++){
-      for(dY = -radius; dY <= radius; dY++) {
-           if(dX*dX + dY*dY <= h)	 
-           	 map_update_field (x + dX, y + dY,value);
-      }
+#if MAP_RADIUS_FIELDS > 0
+	void map_update_field_circle(int16 x, int16 y, int16 radius, int16 value) {
+		int16 dX,dY;
+	    int16 h=radius*radius;
+		for(dX = -radius; dX <= radius; dX++){
+	      for(dY = -radius; dY <= radius; dY++) {
+	           if(dX*dX + dY*dY <= h)	 
+	           	 map_update_field (x + dX, y + dY,value);
+	      }
+		}
 	}
-}
+#endif
 
 /*!
  * markiert ein Feld als belegt -- drueckt den Feldwert etwas mehr in Richtung "belegt"
@@ -212,12 +218,15 @@ void map_update_field_circle(int16 x, int16 y, int16 radius, int16 value) {
  * @param y y-Ordinate der Karte (nicht der Welt!!!)
  */
 void map_update_occupied (int16 x, int16 y) {
-// update_field(x,y,-MAP_STEP_OCCUPIED);
-  
-  uint8 r;
-  for (r=1; r<=MAP_RADIUS; r++){
-  	map_update_field_circle(x,y,r,-MAP_STEP_OCCUPIED/MAP_RADIUS);
-  }
+  // Nur wenn ein Umkreis gewuenscht ist, auch einen malen
+  #if MAP_RADIUS_FIELDS > 0
+	  uint8 r;
+	  for (r=1; r<=MAP_RADIUS_FIELDS; r++){
+	  	map_update_field_circle(x,y,r,-MAP_STEP_OCCUPIED/MAP_RADIUS_FIELDS);
+	  }
+  #else 
+  	map_update_field(x,y,-MAP_STEP_OCCUPIED);
+  #endif
 }
 
 /*!
@@ -409,10 +418,10 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 				max_x--;
 			}
 	
-				map_min_x=min_x;
-				map_max_x=max_x;
-				map_min_y=min_y;
-				map_max_y=max_y;
+			map_min_x=min_x;
+			map_max_x=max_x;
+			map_min_y=min_y;
+			map_max_y=max_y;
 	
 		#endif
 			
@@ -437,22 +446,10 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
  * Zeigt die Karte an
  */
 void print_map(void){
-/*	int x,y;
-	for (y=MAP_HEIGHT*MAP_RESOLUTION-1; y>=0; y--){
-	  for (x=0; x<MAP_WIDTH*MAP_RESOLUTION; x++)
-	    if (map[x][y] == 127)
-	    	printf(" ");
-	    else if (map[x][y] > 150)
-	    	printf(".");
-	    else if (map[x][y] < 100)
-	    	printf("X");
-	    else
-	    	printf("%x",map[x][y]/16);
-	  printf("\n");
-	}
-*/
 	#ifdef PC
 		map_to_pbm("map.pgm");
+	#else
+		// Todo: Wie soll der Bot eine Karte ausgeben ....
 	#endif
 }
 
