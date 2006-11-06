@@ -25,7 +25,7 @@
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
 */
-#include "bot-logik.h"
+#include "bot-logic/bot-logik.h"
 #include "map.h"
 #include "ir-rc5.h"
 #include "display.h"

@@ -40,7 +40,7 @@
 #include "motor.h"
 #include "rc5.h"
 #include "ir-rc5.h"
-#include "bot-logik.h"
+#include "bot-logic/bot-logik.h"
 #include "bot-2-pc.h"
 
 #include <stdio.h>

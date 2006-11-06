@@ -25,7 +25,7 @@
 */
 
 
-#include "bot-logik.h"
+#include "bot-logic/bot-logik.h"
 
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
 

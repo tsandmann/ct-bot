@@ -25,7 +25,7 @@
 */
 
 
-#include "bot-logik.h"
+#include "bot-logic/bot-logik.h"
 
 #ifdef BEHAVIOUR_TURN_AVAILABLE
 #ifdef MCU

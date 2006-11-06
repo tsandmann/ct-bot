@@ -27,7 +27,7 @@
 #ifndef BEHAVIOUR_GOTO_H_
 #define BEHAVIOUR_GOTO_H_
 
-#include "bot-logik.h"
+#include "bot-logic/bot-logik.h"
 #ifdef BEHAVIOUR_GOTO_AVAILABLE
 /*!
  * Kuemmert sich intern um die Ausfuehrung der goto-Kommandos,

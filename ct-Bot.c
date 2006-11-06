@@ -66,7 +66,7 @@
 
 #include "motor.h"
 #include "sensor-low.h"
-#include "bot-logik.h"
+#include "bot-logic/bot-logik.h"
 #include "mouse.h"
 
 #include "command.h"

@@ -27,7 +27,7 @@
 #ifndef BEHAVIOUR_DRIVE_DISTANCE_H_
 #define BEHAVIOUR_DRIVE_DISTANCE_H_
 
-#include "bot-logik.h"
+#include "bot-logic/bot-logik.h"
 
 #ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 /*!

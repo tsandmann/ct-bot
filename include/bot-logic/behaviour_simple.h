@@ -31,7 +31,7 @@
 #define BEHAVIOUR_SIMPLE_H_
 
 #include "ct-Bot.h"
-#include "bot-logik.h"
+#include "bot-logic/bot-logik.h"
 
 #ifdef BEHAVIOUR_SIMPLE_AVAILABLE
 /*! 

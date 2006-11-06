@@ -28,7 +28,7 @@
 #ifndef BEHAVIOUR_GOTOXY_H_
 #define BEHAVIOUR_GOTOXY_H_
 
-#include "bot-logik.h"
+#include "bot-logic/bot-logik.h"
 
 #ifdef BEHAVIOUR_GOTOXY_AVAILABLE
 /*!

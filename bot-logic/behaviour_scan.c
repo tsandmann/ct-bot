@@ -24,7 +24,7 @@
  * @date 	03.11.06
 */
 
-#include "bot-logik.h"
+#include "bot-logic/bot-logik.h"
 #include "map.h"
 
 #ifdef BEHAVIOUR_SCAN_AVAILABLE

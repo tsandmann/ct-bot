@@ -24,7 +24,7 @@
  * @date 	03.11.06
 */
 
-#include "bot-logik.h"
+#include "bot-logic/bot-logik.h"
 
 #ifndef BEHAVIOUR_FOLLOW_LINE_H_
 #define BEHAVIOUR_FOLLOW_LINE_H_

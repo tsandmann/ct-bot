@@ -39,7 +39,7 @@
 #include "command.h"
 #include "display.h"
 #include "sensor.h"
-#include "bot-logik.h"
+#include "bot-logic/bot-logik.h"
 #include "motor.h"
 #include "command.h"
 

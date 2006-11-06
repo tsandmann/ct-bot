@@ -28,7 +28,7 @@
 #define BEHAVIOUR_TURN_H_
 
 #ifdef BEHAVIOUR_TURN_AVAILABLE
-#include "bot-logik.h"
+#include "bot-logic/bot-logik.h"
 
  /*!
   * Das Verhalten laesst den Bot eine Punktdrehung durchfuehren. 

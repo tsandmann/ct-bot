@@ -24,7 +24,7 @@
  * @date 	03.11.06
 */
 
-#include "bot-logik.h"
+#include "bot-logic/bot-logik.h"
 
 #ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
 #include <stdlib.h>

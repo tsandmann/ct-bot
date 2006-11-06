@@ -29,7 +29,7 @@
 #ifndef BEHAVIOUR_SOLVE_MAZE_H_
 #define BEHAVIOUR_SOLVE_MAZE_H_
 
-#include "bot-logik.h"
+#include "bot-logic/bot-logik.h"
 
 #ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 

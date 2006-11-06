@@ -26,7 +26,7 @@
 
 
 
-#include "bot-logik.h"
+#include "bot-logic/bot-logik.h"
 
 #ifdef BEHAVIOUR_GOTO_AVAILABLE
 #include <stdlib.h>

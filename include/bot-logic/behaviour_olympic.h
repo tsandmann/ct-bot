@@ -27,7 +27,7 @@
 #ifndef BEHAVIOUR_OLYMPIC_H_
 #define BEHAVIOUR_OLYMPIC_H_
 
-#include "bot-logik.h"
+#include "bot-logic/bot-logik.h"
 #ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
 
 /*!
