@@ -77,10 +77,10 @@
 #define SHRINK_MAP_OFFLINE		/*!< Wenn gesetzt, wird erst beid er Ausgabe der belegte Bereich der Karte berechnet. Pro: kein permanenter aufwand Contra: ausgabe dauert lange */
 
 #ifdef SHRINK_MAP_ONLINE
-	int16 map_min_x=MAP_SIZE*MAP_RESOLUTION/2; /*!< belegten Bereich der Karte sichern */
-	int16 map_max_x=MAP_SIZE*MAP_RESOLUTION/2;/*!< belegten Bereich der Karte sichern */
-	int16 map_min_y=MAP_SIZE*MAP_RESOLUTION/2;/*!< belegten Bereich der Karte sichern */
-	int16 map_max_y=MAP_SIZE*MAP_RESOLUTION/2;/*!< belegten Bereich der Karte sichern */
+	uint16 map_min_x=MAP_SIZE*MAP_RESOLUTION/2; /*!< belegten Bereich der Karte sichern */
+	uint16 map_max_x=MAP_SIZE*MAP_RESOLUTION/2;/*!< belegten Bereich der Karte sichern */
+	uint16 map_min_y=MAP_SIZE*MAP_RESOLUTION/2;/*!< belegten Bereich der Karte sichern */
+	uint16 map_max_y=MAP_SIZE*MAP_RESOLUTION/2;/*!< belegten Bereich der Karte sichern */
 #endif
 
 typedef struct {
@@ -95,8 +95,8 @@ map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*! Array mit den Zeigern auf d
  * @param y y-Ordinate der Karte (nicht der Welt!!!)
  * @return Wert des Feldes (>0 heisst frei, <0 heisst belegt
  */
-int8 map_get_field (int16 x, int16 y) {
-	int16 section_x, section_y, index_x, index_y;
+int8 map_get_field (uint16 x, uint16 y) {
+	uint16 section_x, section_y, index_x, index_y;
 		
 	// Berechne in welcher Sektion sich der Punkt befindet
 	section_x=x/ MAP_SECTION_POINTS;
@@ -123,13 +123,27 @@ int8 map_get_field (int16 x, int16 y) {
 }
 
 /*!
+ * liefert den Wert eines Feldes 
+ * @param x x-Ordinate der Welt 
+ * @param y y-Ordinate der Welt
+ * @return Wert des Feldes (>0 heisst frei, <0 heisst belegt
+ */
+int8 map_get_point (float x, float y){
+	//Ort in Kartenkoordinaten
+	uint16 X = world_to_map(x);
+	uint16 Y = world_to_map(y);
+	
+	return map_get_field(X,Y);
+}
+
+/*!
  * Setzt den Wert eines Feldes auf den angegebenen Wert
  * @param x x-Ordinate der Karte (nicht der Welt!!!)
  * @param y y-Ordinate der Karte (nicht der Welt!!!)
  * @param value neuer wert des Feldes (> 0 heisst frei, <0 heisst belegt
  */
-void map_set_field(int16 x, int16 y, int8 value) {
-	int16 section_x, section_y, index_x, index_y;
+void map_set_field(uint16 x, uint16 y, int8 value) {
+	uint16 section_x, section_y, index_x, index_y;
 		
 	// Berechne in welcher Sektion sich der Punkt befindet
 	section_x=x/ MAP_SECTION_POINTS;
@@ -179,7 +193,7 @@ void map_set_field(int16 x, int16 y, int8 value) {
  * @param y y-Ordinate der Karte (nicht der Welt!!!)
  * @param value Betrag um den das Feld veraendert wird (>= heisst freier, <0 heisst belegter
  */
-void map_update_field (int16 x, int16 y, int16 value) {
+void map_update_field (uint16 x, uint16 y, int8 value) {
 
 	int16 tmp= map_get_field(x,y);
 	if (tmp == -128)	// Nicht aktualiseren, wenn es sich um ein Loch handelt
@@ -197,7 +211,7 @@ void map_update_field (int16 x, int16 y, int16 value) {
  * @param x x-Ordinate der Karte (nicht der Welt!!!)
  * @param y y-Ordinate der Karte (nicht der Welt!!!)
  */
-void map_update_free (int16 x, int16 y) {
+void map_update_free (uint16 x, uint16 y) {
   map_update_field(x,y,MAP_STEP_FREE);
 }
 
@@ -208,9 +222,9 @@ void map_update_free (int16 x, int16 y) {
  * @param value Betrag um den das Feld veraendert wird (>= heisst freier, <0 heisst belegter
  */
 #if MAP_RADIUS_FIELDS > 0
-	void map_update_field_circle(int16 x, int16 y, int16 radius, int16 value) {
+	void map_update_field_circle(uint16 x, uint16 y, int8 radius, int8 value) {
 		int16 dX,dY;
-	    int16 h=radius*radius;
+	    uint16 h=radius*radius;
 		for(dX = -radius; dX <= radius; dX++){
 	      for(dY = -radius; dY <= radius; dY++) {
 	           if(dX*dX + dY*dY <= h)	 
@@ -225,7 +239,7 @@ void map_update_free (int16 x, int16 y) {
  * @param x x-Ordinate der Karte (nicht der Welt!!!)
  * @param y y-Ordinate der Karte (nicht der Welt!!!)
  */
-void map_update_occupied (int16 x, int16 y) {
+void map_update_occupied (uint16 x, uint16 y) {
   // Nur wenn ein Umkreis gewuenscht ist, auch einen malen
   #if MAP_RADIUS_FIELDS > 0
 	  uint8 r;
@@ -242,13 +256,8 @@ void map_update_occupied (int16 x, int16 y) {
  * @param koord Weltkordiante
  * @return kartenkoordinate
  */
-int16 world_to_map(float koord){
-	int16 tmp = koord * MAP_RESOLUTION / 1000  + (MAP_SIZE*MAP_RESOLUTION/2);
-	#ifdef PC
-		if ((tmp < 0) || (tmp >= MAP_SIZE*MAP_RESOLUTION)){
-			printf("Weltkoordinate %f passt nicht in die Karte!\n",koord);
-		}
-	#endif
+uint16 world_to_map(float koord){
+	uint16 tmp = koord * MAP_RESOLUTION / 1000  + (MAP_SIZE*MAP_RESOLUTION/2);
 		
 	return tmp;
 }
@@ -263,10 +272,10 @@ int16 world_to_map(float koord){
  */ 
 void update_map_sensor(float x, float y, float h, int16 dist){
 	//Ort des Sensors in Kartenkoordinaten
-	int16 X = world_to_map(x);
-	int16 Y = world_to_map(y);
+	uint16 X = world_to_map(x);
+	uint16 Y = world_to_map(y);
 	
-	int16 d;
+	uint16 d;
 	if (dist==SENS_IR_INFINITE)
 		d=SENS_IR_MAX_DIST;
 	else 
@@ -278,8 +287,8 @@ void update_map_sensor(float x, float y, float h, int16 dist){
 	float PH_x = x + (DISTSENSOR_POS_FW + d) * cos(h);
 	float PH_y = y + (DISTSENSOR_POS_FW + d) * sin(h);
 	// Hinderniss, dass der linke Sensor sieht in Kartenkoordinaten
-	int16 PH_X = world_to_map(PH_x);
-	int16 PH_Y = world_to_map(PH_y);
+	uint16 PH_X = world_to_map(PH_x);
+	uint16 PH_Y = world_to_map(PH_y);
 	
 	if ((dist > 80 ) && (dist <SENS_IR_INFINITE))
 			map_update_occupied(PH_X,PH_Y);
@@ -287,20 +296,20 @@ void update_map_sensor(float x, float y, float h, int16 dist){
 
 
 	// Nun markiere alle Felder vor dem Hinderniss als frei
-	int16 i;
+	uint16 i;
 
-	int16 lX = X; 	//	Beginne mit dem Feld, in dem der Sensor steht
-	int16 lY = Y; 
+	uint16 lX = X; 	//	Beginne mit dem Feld, in dem der Sensor steht
+	uint16 lY = Y; 
 	
 	int8 sX = (PH_X < X ? -1 : 1);  
-	int16 dX=abs(PH_X - X);		// Laenge der Linie in X-Richtung
+	uint16 dX=abs(PH_X - X);		// Laenge der Linie in X-Richtung
 	
 	int8 sY = (PH_Y < Y ? -1 : 1); 
-	int16 dY =abs(PH_Y - Y);	// Laenge der Linie in Y-Richtung
+	uint16 dY =abs(PH_Y - Y);	// Laenge der Linie in Y-Richtung
 
 	if (dX >= dY) {			// Hangle Dich an der laengeren Achse entlang
 	  dY--;	// stoppe ein Feld vor dem Hinderniss
-	  int16 lh = dX / 2;
+	  uint16 lh = dX / 2;
 	  for (i=0; i<dX; ++i) {
 	    map_update_free (lX+i*sX, lY);
 	    lh += dY;
@@ -311,7 +320,7 @@ void update_map_sensor(float x, float y, float h, int16 dist){
 	  }
 	} else {
 	  dX--; // stoppe ein Feld vor dem Hinderniss
-	  int16 lh = dY / 2;
+	  uint16 lh = dY / 2;
 	  for (i=0; i<dY; ++i) {
 	    map_update_free (lX, lY+i*sY);
 	    lh += dX;
@@ -364,25 +373,25 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 	/*!
 	 *
 	 */
-	void map_to_pbm(char * filename){
+	void map_to_pgm(char * filename){
 		printf("Speichere Karte \n");
 		FILE *fp = fopen(filename, "w");
 		
-		int16 x,y;
+		uint16 x,y;
 
 		#ifndef SHRINK_MAP_ONLINE
-			int16 map_min_x=0;
-			int16 map_max_x=MAP_SIZE*MAP_RESOLUTION;
-			int16 map_min_y=0;
-			int16 map_max_y=MAP_SIZE*MAP_RESOLUTION;
+			uint16 map_min_x=0;
+			uint16 map_max_x=MAP_SIZE*MAP_RESOLUTION;
+			uint16 map_min_y=0;
+			uint16 map_max_y=MAP_SIZE*MAP_RESOLUTION;
 		#endif		
 		
 		#ifdef 	SHRINK_MAP_OFFLINE
 		
-			int16 min_x=0;
-			int16 max_x=MAP_SIZE*MAP_RESOLUTION;
-			int16 min_y=0;
-			int16 max_y=MAP_SIZE*MAP_RESOLUTION;
+			uint16 min_x=0;
+			uint16 max_x=MAP_SIZE*MAP_RESOLUTION;
+			uint16 min_y=0;
+			uint16 max_y=MAP_SIZE*MAP_RESOLUTION;
 			// Kartengroesse reduzieren
 			int8 free=1;
 			while ((min_y < max_y) && (free ==1)){
@@ -433,8 +442,8 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 	
 		#endif
 			
-		int16 map_size_x=map_max_x-map_min_x;
-		int16 map_size_y=map_max_y-map_min_y;
+		uint16 map_size_x=map_max_x-map_min_x;
+		uint16 map_size_y=map_max_y-map_min_y;
 		fprintf(fp,"P5\n%d %d\n255\n",map_size_x,map_size_y);
 
 		printf("Karte beginnt bei X=%d,Y=%d und geht bis X=%d,Y=%d (%d * %d Punkte)\n",map_min_x,map_min_y,map_max_x,map_max_y,map_size_x,map_size_y);
@@ -455,7 +464,7 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
  */
 void print_map(void){
 	#ifdef PC
-		map_to_pbm("map.pgm");
+		map_to_pgm("map.pgm");
 	#else
 		// Todo: Wie soll der Bot eine Karte ausgeben ....
 	#endif

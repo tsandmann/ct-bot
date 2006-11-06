@@ -47,7 +47,22 @@ void update_map(float x, float y, float head, int16 distL, int16 distR);
  * @param y y-Ordinate der Karte (nicht der Welt!!!)
  * @return Wert des Feldes (>0 heisst frei, <0 heisst belegt
  */
-int8 map_get_field (int16 x, int16 y);
+int8 map_get_field (uint16 x, uint16 y);
+
+/*!
+ * liefert den Wert eines Feldes 
+ * @param x x-Ordinate der Welt 
+ * @param y y-Ordinate der Welt
+ * @return Wert des Feldes (>0 heisst frei, <0 heisst belegt
+ */
+int8 map_get_point (float x, float y);
+
+/*!
+ * Konvertiert eine Weltkoordinate in eine Kartenkoordinate
+ * @param koord Weltkordiante
+ * @return kartenkoordinate
+ */
+uint16 world_to_map(float koord);
 
 /*!
  * Zeigt die Karte an
