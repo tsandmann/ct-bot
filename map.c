@@ -34,10 +34,14 @@
 
 /*
  * Eine Karte ist wie folgt organisiert:
- * Es gibt Sektionen zu je MAP_SECTION_WIDTH cm * MAP_SECTION_HEIGHT cm. Diese Sektionen enthalten direkt die Pixel-Daten
- * Ein uebergeordnetes Array haelt die einzelnen Sections 
+ * Es gibt Sektionen zu je MAP_SECTION_POINTS * MAP_SECTION_POINTS. 
+ * Diese Sektionen enthalten direkt die Pixel-Daten
+ * Auf dem PC haelt (noch) ein uebergeordnetes Array haelt die einzelnen Sections 
  * So laesst sich leicht eine Karte aufbauen, 
  * ohne dass viel Platz fuer unbenutzte Felder draufgeht
+ * 
+ * Auf dem MCU passt eine Sektion in einen Flashblock, bzw immer 2 Sektionen in einen Block
+ * Es stehen immer 2 Sections also 1 Flash-Block im SRAM und werden bei Bedarf gewechselt
  * 
  * Felder sind vom Typ int8 und haben einen Wertebereich von -128 bis 127
  * 0 bedeutet: wir wissen nichts über das Feld
@@ -55,9 +59,15 @@
  */
 
 #ifdef MCU
-	#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
-	#define MAP_SECTION_POINTS 32	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
-	#define MAP_RESOLUTION 	(MAP_SECTION_POINTS/MAP_SIZE)	/*!< Aufloesung der Karte in Punkte pro Meter */
+	#ifdef MMC_AVAILABLE
+		#define MAP_SIZE			10	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
+		#define MAP_RESOLUTION 	512	/*!< Aufloesung der Karte in Punkte pro Meter */
+		#define MAP_SECTION_POINTS 16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
+	#else
+		#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
+		#define MAP_SECTION_POINTS 32	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
+		#define MAP_RESOLUTION 	(MAP_SECTION_POINTS/MAP_SIZE)	/*!< Aufloesung der Karte in Punkte pro Meter */
+	#endif
 #else
 	#define MAP_SIZE			20	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
 	#define MAP_RESOLUTION 	512	/*!< Aufloesung der Karte in Punkte pro Meter */
@@ -87,7 +97,66 @@ typedef struct {
 	int8 section[MAP_SECTION_POINTS][MAP_SECTION_POINTS]; /*!< Einzelne Punkte */
 } map_section_t;   /*!< Datentyp fuer die elementarfelder einer Gruppe */
 
-map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*! Array mit den Zeigern auf die Elemente */
+#ifdef MCU
+	#ifdef MMC_AVAILABLE
+		// Wenn wir die MMC-Karte haben, passen immer 2 Sektionen in den SRAM
+		map_section_t * map[2][1];	/*! Array mit den Zeigern auf die Elemente */
+	#else
+		// Ohne MMC-Karte nehmen wir nur 1 Sektionen in den SRAM und das wars dann
+		map_section_t * map[1][1];	/*! Array mit den Zeigern auf die Elemente */
+	#endif
+#else
+	map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*! Array mit den Zeigern auf die Elemente */
+#endif
+
+/*!
+ * liefert einen Zeiger auf die Section zurueck, in der der Punkt liegt.
+ * Auf dem MCU kuemmert sie sich darum, die entsprechende Karte aus der MMC-Karte zu laden
+ * @param x x-Ordinate der Karte (nicht der Welt!!!)
+ * @param y y-Ordinate der Karte (nicht der Welt!!!)
+ * @param create Soll das Segment erzeugt werden, falls es noch nicht existiert?
+ * @return einen zeiger auf die Karte
+ */
+map_section_t * map_get_section(uint16 x, uint16 y, uint8 create){
+	uint16 section_x, section_y;
+		
+	// Berechne in welcher Sektion sich der Punkt befindet
+	section_x=x/ MAP_SECTION_POINTS;
+	section_y=y/ MAP_SECTION_POINTS;
+		
+	if ((section_x>= MAP_SECTIONS) || (section_y >= MAP_SECTIONS) ||
+		(section_x < 0) || (section_y <0)){
+		#ifdef PC
+			printf("Versuch auf in Feld ausserhalb der Karte zu zugreifen!! x=%d y=%d\n",x,y);
+		#endif
+		return NULL;
+	}
+
+	
+	#ifdef MMC_AVAILABLE // Mit MMC-Karte geht hier einiges anders
+		/* TODO: 
+		 * Pruefen, ob der richtige Block bereits im RAM
+		 *   ==> Wenn ja, dann die richtige der beiden sections zurueckgeben
+		 * Pruefen, ob der Block der im moment im SRAM steht modifiziert wurde
+		 *   ==> Wenn ja rausschreiben
+		 * Neuen Block aus der SF-Karte lesen
+		 * die richtige der beiden sections zurueckgeben
+		 */	
+		return map[1][0];
+	
+	#else // ohne MMC-Karte einfach direkt mit dem SRAM arbeiten
+		if ((map[section_x][section_y] == NULL) && (create==True)){
+			uint16 index_x, index_y;
+			map[section_x][section_y]= malloc(sizeof(map_section_t));
+			for (index_x=0; index_x<MAP_SECTION_POINTS; index_x++)
+				for (index_y=0; index_y<MAP_SECTION_POINTS; index_y++)
+					map[section_x][section_y]->section[index_x][index_y]=0;
+			
+		}
+		
+		return map[section_x][section_y];
+	#endif
+}
 
 /*!
  * liefert den Wert eines Feldes 
@@ -96,30 +165,56 @@ map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*! Array mit den Zeigern auf d
  * @return Wert des Feldes (>0 heisst frei, <0 heisst belegt
  */
 int8 map_get_field (uint16 x, uint16 y) {
-	uint16 section_x, section_y, index_x, index_y;
-		
-	// Berechne in welcher Sektion sich der Punkt befindet
-	section_x=x/ MAP_SECTION_POINTS;
-	section_y=y/ MAP_SECTION_POINTS;
+	uint16 index_x, index_y;
 	
-		
-	if ((section_x>= MAP_SECTIONS) || (section_y >= MAP_SECTIONS) ||
-		(section_x < 0) || (section_y <0)){
-		#ifdef PC
-			printf("Versuch ein Feld ausserhalb der Karte zu lesen!! x=%d y=%d\n",x,y);
-		#endif
-		return 0;
-	}
+	// Suche die Section heraus
+	map_section_t * section = map_get_section(x,y,False);
 
 	// Eventuell existiert die Section noch nicht
-	if (map[section_x][section_y] == NULL)
+	if (section == NULL)
 		return 0;
 
 	// Berechne den Index innerhalb der Section
 	index_x = x % MAP_SECTION_POINTS;
 	index_y = y % MAP_SECTION_POINTS;
 
-	return map[section_x][section_y]->section[index_x][index_y];	
+	return section->section[index_x][index_y];	
+}
+
+/*!
+ * Setzt den Wert eines Feldes auf den angegebenen Wert
+ * @param x x-Ordinate der Karte (nicht der Welt!!!)
+ * @param y y-Ordinate der Karte (nicht der Welt!!!)
+ * @param value neuer wert des Feldes (> 0 heisst frei, <0 heisst belegt
+ */
+void map_set_field(uint16 x, uint16 y, int8 value) {
+	uint16 index_x, index_y;
+			
+	// Suche die Section heraus
+	map_section_t * section = map_get_section(x,y,True);		
+
+	// Wenn wir keine section zurueck kriegen, stimmt was nicht
+	if (section == NULL)
+		return;
+
+	// Berechne den Index innerhalb der Section
+	index_x = x % MAP_SECTION_POINTS;
+	index_y =  y % MAP_SECTION_POINTS;
+	
+	section->section[index_x][index_y]=value;
+	
+	#ifdef SHRINK_MAP_ONLINE
+		// Belegte Kartengroesse anpassen
+		if (x < map_min_x)
+			map_min_x=x;
+		if (x > map_max_x)
+			map_max_x= x;
+		if (y < map_min_y)
+			map_min_y=y;
+		if (y > map_max_y)
+			map_max_y= y;
+	#endif
+	
 }
 
 /*!
@@ -134,57 +229,6 @@ int8 map_get_point (float x, float y){
 	uint16 Y = world_to_map(y);
 	
 	return map_get_field(X,Y);
-}
-
-/*!
- * Setzt den Wert eines Feldes auf den angegebenen Wert
- * @param x x-Ordinate der Karte (nicht der Welt!!!)
- * @param y y-Ordinate der Karte (nicht der Welt!!!)
- * @param value neuer wert des Feldes (> 0 heisst frei, <0 heisst belegt
- */
-void map_set_field(uint16 x, uint16 y, int8 value) {
-	uint16 section_x, section_y, index_x, index_y;
-		
-	// Berechne in welcher Sektion sich der Punkt befindet
-	section_x=x/ MAP_SECTION_POINTS;
-	section_y=y/ MAP_SECTION_POINTS;
-	
-		
-	if ((section_x>= MAP_SECTIONS) || (section_y >= MAP_SECTIONS) ||
-		(x < 0) || (y <0)){
-		#ifdef PC
-			printf("Versuch ein Feld ausserhalb der Karte zu schreiben!! x=%d y=%d\n",x,y);	
-		#endif
-		return;
-	}
-
-	// Eventuell existiert die Section noch nicht
-	if (map[section_x][section_y] == NULL){
-		// Dann anlegen
-		map[section_x][section_y]= malloc(sizeof(map_section_t));
-		for (index_x=0; index_x<MAP_SECTION_POINTS; index_x++)
-			for (index_y=0; index_y<MAP_SECTION_POINTS; index_y++)
-				map[section_x][section_y]->section[index_x][index_y]=0;
-	}
-
-	// Berechne den Index innerhalb der Section
-	index_x = x % MAP_SECTION_POINTS;
-	index_y =  y % MAP_SECTION_POINTS;
-	
-	map[section_x][section_y]->section[index_x][index_y]=value;
-	
-	#ifdef SHRINK_MAP_ONLINE
-		// Belegte Kartengroesse anpassen
-		if (x < map_min_x)
-			map_min_x=x;
-		if (x > map_max_x)
-			map_max_x= x;
-		if (y < map_min_y)
-			map_min_y=y;
-		if (y > map_max_y)
-			map_max_y= y;
-	#endif
-	
 }
 
 /*!
