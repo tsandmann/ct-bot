@@ -41,7 +41,7 @@
 #define IR_AVAILABLE		/*!< Infrared Remote Control */
 #define RC5_AVAILABLE		/*!< Key-Mapping for IR-RC	 */
 
-#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
+//#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
 
 //#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit im s und ms? */
 
@@ -51,6 +51,7 @@
 //#define DISPLAY_SCREEN_RESETINFO	/*!< Zeigt auf Screen 4 Informationen ueber Resets an */
 //#define DISPLAY_ODOMETRIC_INFO 	/*!< Zeigt auf Screen 4 Positions- und Geschwindigkeitsdaten */
 //#define DISPLAY_REGELUNG_AVAILABLE 3 /*!< Zeigt Reglerdaten auf Screen 4, wenn SPEED_CONTROL_AVAILABLE gesetzt ist*/
+#define DISPLAY_MMC_INFO	/*!< Zeigt auf Screen 4 die Daten der MMC-Karte an */
 //#define DISPLAY_BEHAVIOUR_AVAILABLE  /*!< Anzeige der Verhalten im Display Screen 3, ersetzt Counteranzeige */
 #define MEASURE_MOUSE_AVAILABLE			/*!< Geschwindigkeiten werden aus den Maussensordaten berechnet */
 #define MEASURE_COUPLED_AVAILABLE		/*!< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
@@ -73,11 +74,13 @@
 
 #define BEHAVIOUR_AVAILABLE /*!< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 
-#define MAP_AVAILABLE /*!< Aktiviere die Kartographie */
+//#define MAP_AVAILABLE /*!< Aktiviere die Kartographie */
 
 //#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
 
 //#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
+
+//#define MMC_AVAILABLE		/*!< haben wir eine MMC/SD-KArte zur Verfuegung */
 
 /************************************************************
 * Some Dependencies!!!

@@ -1,5 +1,9 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-11-08 Benjamin Benz [bbe@heise.de]: Code fuer MMC-/SD-Karten funktioniert nun im Bit-Bang-Betrieb
+
+2006-11-07 Benjamin Benz [bbe@heise.de]: Code fuer MMC-/SD-Karten eingefuehrt
+
 2006-11-06 Benjamin Benz [bbe@heise.de]: Kartenkoordinaten auf uin16 umgestellt
 
 2006-11-06 Benjamin Benz [bbe@heise.de]: map.c kommentiert und etwas geschliffen

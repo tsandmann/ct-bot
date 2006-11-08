@@ -73,7 +73,8 @@
 #include "ir-rc5.h"
 #include "rc5.h"
 #include "timer.h"
-#include "map.h"
+#include "mmc.h"
+
 
 /* Nimmt den Status von MCUCSR bevor dieses Register auf 0x00 gesetzt wird */
 #ifdef DISPLAY_SCREEN_RESETINFO
@@ -152,6 +153,9 @@ void init(void){
 	#ifdef MCU
 		#ifdef RC5_AVAILABLE
 			ir_init();
+		#endif
+		#ifdef MMC_AVAILABLE
+//			mmc_init();
 		#endif
 	#endif
 			
@@ -323,6 +327,35 @@ void init(void){
 								display_printf("squal: %3d v_c: %3d",maus_get_squal(),(int16)v_mou_center);
 							#endif
 					#endif
+					#ifdef DISPLAY_MMC_INFO
+						#ifdef MMC_INFO_AVAILABLE
+						{
+							uint32 size = 0;
+							uint8 csd[16];
+							uint8 mmc_state=mmc_init();
+
+							size=mmc_get_size();
+							mmc_read_csd(csd);
+
+							display_cursor(1,1);
+							if (mmc_state !=0)
+								display_printf("MMC not init (%d)",mmc_state);
+							else {
+								display_printf("MMC= %4d MByte",size >> 20);
+								
+								display_printf("CSD-Register [Hex]");
+								display_cursor(3,1);
+								uint8 i;
+								for (i=0;i<16;i++){
+									if (i ==8)
+										display_cursor(4,1);
+									display_printf("%2x",csd[i]);
+								}								
+							}
+						}
+						#endif
+					#endif
+					
 					break;
 					
 				case 4:
