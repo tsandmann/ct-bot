@@ -80,7 +80,7 @@
 
 //#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
 
-//#define MMC_AVAILABLE		/*!< haben wir eine MMC/SD-KArte zur Verfuegung */
+#define MMC_AVAILABLE		/*!< haben wir eine MMC/SD-KArte zur Verfuegung */
 
 /************************************************************
 * Some Dependencies!!!
