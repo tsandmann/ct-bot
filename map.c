@@ -27,6 +27,7 @@
 #include "bot-local.h"
 #include "sensor_correction.h"
 #include "map.h"
+#include "mmc.h"
 
 #ifdef MAP_AVAILABLE
 #include <math.h>
@@ -60,7 +61,7 @@
 
 #ifdef MCU
 	#ifdef MMC_AVAILABLE
-		#define MAP_SIZE			10	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
+		#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
 		#define MAP_RESOLUTION 	512	/*!< Aufloesung der Karte in Punkte pro Meter */
 		#define MAP_SECTION_POINTS 16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 	#else
@@ -101,6 +102,10 @@ typedef struct {
 	#ifdef MMC_AVAILABLE
 		// Wenn wir die MMC-Karte haben, passen immer 2 Sektionen in den SRAM
 		map_section_t * map[2][1];	/*! Array mit den Zeigern auf die Elemente */
+		uint32 map_start_block; /*! Block, bei dem die Karte auf der MMC-Karte beginnt. Derzeit nur bis 32MByte adressierbar*/
+		uint32 map_current_block; /*! Block, der aktuell im Puffer steht. Derzeit nur bis 32MByte adressierbar*/
+		int8 map_buffer[sizeof(map_section_t)*2]; /*! statischer Puffer */
+		uint8 map_current_block_updated; /*! markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde */
 	#else
 		// Ohne MMC-Karte nehmen wir nur 1 Sektionen in den SRAM und das wars dann
 		map_section_t * map[1][1];	/*! Array mit den Zeigern auf die Elemente */
@@ -108,6 +113,43 @@ typedef struct {
 #else
 	map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*! Array mit den Zeigern auf die Elemente */
 #endif
+
+
+/*!
+ *  initialisiere die Karte
+ * @return 0 wenn alles ok ist
+ */
+int8 map_init(void){
+	#ifdef MMC_AVAILABLE 
+		map_current_block=0xFFFFFFFF;	// erstmal kein Block geladen
+		map_current_block_updated = False;	// und daher auch nicht veraendert
+		
+		// Die Karte auf den Puffer biegen
+		map[0][0]=(map_section_t*)map_buffer;
+		map[1][0]=(map_section_t*)(map_buffer+sizeof(map_section_t));
+		
+		// Suche nach der Datei fuer die Katrte
+		int8 found = False;
+		
+		uint32 card_size= mmc_get_size() >> 9; // groesse der Karte in Bloecken
+		card_size -= MAP_SECTIONS*MAP_SECTIONS/2; // wir brauchen nur so lange zu suchen, bis die Karte nicht mehr auf die Karte passen wuerde
+		
+		map_start_block=0;
+		while(found == False && map_start_block < card_size){
+			mmc_read_sector(map_start_block++,map_buffer);
+			if (map_buffer[0]=='M' && map_buffer[1]=='A' && map_buffer[2]=='P')
+				found = True;
+		}
+		
+		if (found == False){
+			map_start_block=0xFFFFFFFF;
+			return 1;
+		}
+		
+	#endif
+	
+	return 0;
+}
 
 /*!
  * liefert einen Zeiger auf die Section zurueck, in der der Punkt liegt.
@@ -134,15 +176,26 @@ map_section_t * map_get_section(uint16 x, uint16 y, uint8 create){
 
 	
 	#ifdef MMC_AVAILABLE // Mit MMC-Karte geht hier einiges anders
-		/* TODO: 
-		 * Pruefen, ob der richtige Block bereits im RAM
-		 *   ==> Wenn ja, dann die richtige der beiden sections zurueckgeben
-		 * Pruefen, ob der Block der im moment im SRAM steht modifiziert wurde
-		 *   ==> Wenn ja rausschreiben
-		 * Neuen Block aus der SF-Karte lesen
-		 * die richtige der beiden sections zurueckgeben
-		 */	
-		return map[1][0];
+		// Berechne den gesuchten Block
+		uint32 block = section_x + section_y*MAP_SECTIONS;
+		block = block >>1;	// es passen immer 2 Sections in einen Block
+		block += map_start_block;	// Offset drauf
+		
+		// Ist der Block noch nicht geladen
+		if (map_current_block != block){
+			// Wurde der Block im RAM veraendert?
+			if (map_current_block_updated == True)
+				mmc_write_sector(map_current_block,map_buffer);
+			
+			//Lade den neuen Block
+			map_current_block=block;
+			mmc_read_sector(map_start_block,map_buffer);
+			map_current_block_updated = False;
+		}
+		
+		// richtige der beiden sections raussuchen
+		uint8 index= section_x & 0x01;
+		return map[index][0];
 	
 	#else // ohne MMC-Karte einfach direkt mit dem SRAM arbeiten
 		if ((map[section_x][section_y] == NULL) && (create==True)){
@@ -213,6 +266,10 @@ void map_set_field(uint16 x, uint16 y, int8 value) {
 			map_min_y=y;
 		if (y > map_max_y)
 			map_max_y= y;
+	#endif
+
+	#ifdef MMC_AVAILABLE
+		map_current_block_updated = True;
 	#endif
 	
 }

@@ -69,6 +69,12 @@ uint16 world_to_map(float koord);
  */
 void print_map(void);
 
+/*!
+ *  initialisiere die Karte
+ * @return 0 wenn alles ok ist
+ */
+int8 map_init(void);
+
 #endif
 
 

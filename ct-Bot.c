@@ -74,6 +74,7 @@
 #include "rc5.h"
 #include "timer.h"
 #include "mmc.h"
+#include "map.h"
 
 
 /* Nimmt den Status von MCUCSR bevor dieses Register auf 0x00 gesetzt wird */
@@ -333,7 +334,8 @@ void init(void){
 							uint32 size = 0;
 							uint8 csd[16];
 							uint8 mmc_state=mmc_init();
-
+							int8 map_state =-1;
+							
 							uint8 i;
 							for (i=0;i<16;i++)
 								csd[i]=0;		
@@ -341,18 +343,21 @@ void init(void){
 							
 							display_cursor(1,1);
 							if (mmc_state !=0){
-
 								display_printf("MMC not init (%d)  ",mmc_state);
 							}else {
-
 								size=mmc_get_size();
 								mmc_read_csd(csd);
+								// Achtung, das hier kann sehr lange dauern:
+								//map_state= map_init();
 
-								display_printf("MMC= %4d MByte",size >> 20);
+								display_printf("MMC= %4d MByte ",size >> 20);
 							}
 							
 							display_cursor(2,1);
-							display_printf("CSD-Register [Hex]");
+							if (map_state ==0) 
+								display_printf("Map-Found, CSD");
+							else
+								display_printf("CSD-Register [Hex]");
 							display_cursor(3,1);
 
 							for (i=0;i<16;i++){
