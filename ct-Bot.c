@@ -334,24 +334,33 @@ void init(void){
 							uint8 csd[16];
 							uint8 mmc_state=mmc_init();
 
-							size=mmc_get_size();
-							mmc_read_csd(csd);
+							uint8 i;
+							for (i=0;i<16;i++)
+								csd[i]=0;		
 
+							
 							display_cursor(1,1);
-							if (mmc_state !=0)
-								display_printf("MMC not init (%d)",mmc_state);
-							else {
+							if (mmc_state !=0){
+
+								display_printf("MMC not init (%d)  ",mmc_state);
+							}else {
+
+								size=mmc_get_size();
+								mmc_read_csd(csd);
+
 								display_printf("MMC= %4d MByte",size >> 20);
-								
-								display_printf("CSD-Register [Hex]");
-								display_cursor(3,1);
-								uint8 i;
-								for (i=0;i<16;i++){
-									if (i ==8)
-										display_cursor(4,1);
-									display_printf("%2x",csd[i]);
-								}								
 							}
+							
+							display_cursor(2,1);
+							display_printf("CSD-Register [Hex]");
+							display_cursor(3,1);
+
+							for (i=0;i<16;i++){
+								if (i ==8)
+									display_cursor(4,1);
+								display_printf("%02x",csd[i]);
+							}								
+							
 						}
 						#endif
 					#endif
