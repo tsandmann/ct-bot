@@ -115,13 +115,15 @@ typedef struct {
 	map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*! Array mit den Zeigern auf die Elemente */
 #endif
 
-
 /*!
  *  initialisiere die Karte
  * @return 0 wenn alles ok ist
  */
 int8 map_init(void){
 	#ifdef MMC_AVAILABLE 
+		map_start_block=0xFFFFFFFF;
+		map_current_block_updated = 0xFF;	// Die MMC-Karte ist erstmal nicht verfuegbar
+		
 		// Die Karte auf den Puffer biegen
 		map[0][0]=(map_section_t*)map_buffer;
 		map[1][0]=(map_section_t*)(map_buffer+sizeof(map_section_t));
@@ -130,10 +132,15 @@ int8 map_init(void){
 			return 1;
 			
 		map_start_block= mini_fat_find_block("MAP",map_buffer);
-		if (map_start_block!=0xFFFFFFFF)
+				
+		if (map_start_block != 0xFFFFFFFF) {
 			map_current_block_updated = False;	// kein Block geladen und daher auch nicht veraendert
-		else	
-			map_current_block_updated = 0xFF;	// nix ok
+			return 1;
+		}
+		
+		// auf der Karte markieren, dass wir sie in der Hand hatten
+		map_buffer[3]++;
+		mmc_write_sector(map_start_block-1,map_buffer);
 		
 	#endif
 	
@@ -262,7 +269,8 @@ void map_set_field(uint16 x, uint16 y, int8 value) {
 	#endif
 
 	#ifdef MMC_AVAILABLE
-		map_current_block_updated = True;
+		if (map_current_block_updated != 0xFF)
+			map_current_block_updated = True;
 	#endif
 	
 }
@@ -466,10 +474,11 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 
 #ifdef PC
 	/*!
-	 *
+	 * Schreibt einbe Karte in eine PGM-Datei
+	 * @param filename Zieldatei
 	 */
 	void map_to_pgm(char * filename){
-		printf("Speichere Karte \n");
+		printf("Speichere Karte nach %s\n",filename);
 		FILE *fp = fopen(filename, "w");
 		
 		uint16 x,y;
@@ -554,9 +563,11 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 	}
 
 
-	/*! Liest eine Map wieder ein */
+	/*! Liest eine Map wieder ein 
+	 * @param filename Quelldatei
+	 */
 	void read_map(char * filename){
-		printf("Lese Karte von MMC/SD (Bot-Format)\n");
+		printf("Lese Karte (%s) von MMC/SD (Bot-Format)\n",filename);
 		FILE *fp = fopen(filename, "r");
 		
 		uint8 buffer[512];
@@ -572,7 +583,7 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 
 		for (y=0; y< MAP_SECTIONS; y++)
 			for (x=0; x< MAP_SECTIONS; x++){
-				ptr= map_get_section(x*MAP_SECTION_POINTS, y*MAP_SECTION_POINTS, True);
+				ptr= (uint8*)map_get_section(x*MAP_SECTION_POINTS, y*MAP_SECTION_POINTS, True);
 				fread(ptr,MAP_SECTION_POINTS*MAP_SECTION_POINTS,1,fp);
 			}
 			

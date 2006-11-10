@@ -440,11 +440,11 @@ void init(void){
 	 * Das Programm wird nach Anzeige des Hilfetextes per exit() beendet.
 	 */
 	void usage(void){
-		puts("USAGE: ct-Bot [-t host] [-T] [-h] [-s] [runs]");
+		puts("USAGE: ct-Bot [-t host] [-T] [-h] [-s] [-M from]");
 		puts("\t-t\tHostname oder IP Adresse zu der Verbunden werden soll");
 		puts("\t-T\tTestClient");
 		puts("\t-s\tServermodus");
-		puts("\truns\tAnzahl der Zyklen fuer Servermodus");
+		puts("\t-M from\tKonvertiert eine Bot-map in eine PGM-Datei");
 		puts("\t-h\tZeigt diese Hilfe an");
 		exit(1);
 	}
@@ -476,8 +476,12 @@ void init(void){
 		int start_test_client =0; /*!< Wird auf 1 gesetzt, falls -T angegeben wurde */
 		char *hostname = NULL;	/*!< Speichert den per -t uebergebenen Hostnamen zwischen */
 
+		int convert =0; /*!< Wird auf 1 gesetzt, wenn die Karte konvertiert werden soll */
+		char *from = NULL;	/*!< Speichert den per -M uebergebenen Quellnamen zwischen */
+
+
 		// Die Kommandozeilenargumente komplett verarbeiten
-		while ((ch = getopt(argc, argv, "hsTt:")) != -1) {
+		while ((ch = getopt(argc, argv, "hsTtM:")) != -1) {
 			switch (ch) {
 			case 's':
 				// Servermodus [-s] wird verlangt
@@ -498,6 +502,21 @@ void init(void){
 					strcpy(hostname, optarg);
 				}
 				break;
+			case 'M':
+				// Hostname, auf dem ct-Sim laeuft wurde 
+				// uebergeben. Der String wird in hostname
+				// gesichert.
+				{
+					int len = strlen(optarg);
+					from = malloc(len + 1);
+					if (NULL == from)
+						exit(1);
+					strcpy(from, optarg);
+					
+					convert=1;					
+				}
+				break;
+				
 			case 'h':
 			default:
 				// -h oder falscher Parameter, Usage anzeigen
@@ -512,6 +531,14 @@ void init(void){
        tcp_server_init();
        tcp_server_run(100);
     } else {
+    	if (convert !=0) {
+   		 	printf("Konvertiere Karte %s in PGM %s\n",from,"map.pgm");
+   		 	read_map(from);
+   		 	map_to_pgm("map.pgm");
+   		 	exit(0);
+       	}
+    	
+    	
     	printf("c't-Bot\n");
         if (hostname)
             // Hostname wurde per Kommandozeile uebergeben

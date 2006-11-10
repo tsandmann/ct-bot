@@ -75,6 +75,17 @@ void print_map(void);
  */
 int8 map_init(void);
 
+/*! Liest eine Map wieder ein 
+ * @param filename Quelldatei
+ */
+void read_map(char * filename);
+
+/*!
+ * Schreibt einbe Karte in eine PGM-Datei
+ * @param filename Zieldatei
+ */
+void map_to_pgm(char * filename);
+
 #endif
 
 
