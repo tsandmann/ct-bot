@@ -164,6 +164,15 @@ void init(void){
 		maus_sens_init();
 	#endif
 	
+	#ifdef MMC_AVAILABLE
+	//	mmc_init();
+	#endif
+	
+	#ifdef MAP_AVAILABLE
+		map_init();
+	#endif
+	
+	
 	#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
 	    behaviour_page = 1;
 	#endif
@@ -203,6 +212,7 @@ void init(void){
 		#endif
  		if (display_update >0)
  			#ifdef DISPLAY_SCREENS_AVAILABLE
+ 			//display_screen=3;
 			switch (display_screen) {
 				case 0:
 			#endif
@@ -333,39 +343,40 @@ void init(void){
 						{
 							uint32 size = 0;
 							uint8 csd[16];
-							uint8 mmc_state=mmc_init();
-							int8 map_state =-1;
+							static uint8 mmc_state= 0xFF;
 							
-							uint8 i;
-							for (i=0;i<16;i++)
-								csd[i]=0;		
-
 							
-							display_cursor(1,1);
-							if (mmc_state !=0){
-								display_printf("MMC not init (%d)  ",mmc_state);
-							}else {
-								size=mmc_get_size();
-								mmc_read_csd(csd);
-								// Achtung, das hier kann sehr lange dauern:
-								//map_state= map_init();
-
-								display_printf("MMC= %4d MByte ",size >> 20);
-							}
-							
-							display_cursor(2,1);
-							if (map_state ==0) 
-								display_printf("Map-Found, CSD");
-							else
-								display_printf("CSD-Register [Hex]");
-							display_cursor(3,1);
-
-							for (i=0;i<16;i++){
-								if (i ==8)
-									display_cursor(4,1);
-								display_printf("%02x",csd[i]);
-							}								
-							
+							uint8 dummy= mmc_init();
+							// hat sich was geaendert?
+							if (dummy!=mmc_state) {
+								mmc_state=dummy;
+								
+								uint8 i;
+								for (i=0;i<16;i++)
+									csd[i]=0;		
+	
+								display_cursor(1,1);
+								if (mmc_state !=0){
+									display_printf("MMC not init (%d)  ",mmc_state);
+								}else {
+									size=mmc_get_size();
+									mmc_read_csd(csd);
+									display_printf("MMC= %4d MByte ",size >> 20);
+	
+									#ifdef MAP_AVAILABLE
+										// Achtung, das hier kann sehr lange dauern:
+										map_init();
+									#endif
+								}
+								
+								display_cursor(3,1);
+	
+								for (i=0;i<16;i++){
+									if (i ==8)
+										display_cursor(4,1);
+									display_printf("%02x",csd[i]);
+								}								
+							}							
 						}
 						#endif
 					#endif

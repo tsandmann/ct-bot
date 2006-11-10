@@ -61,7 +61,7 @@
 
 #define ADC_AVAILABLE		/*!< A/D-Converter */
 
-#define MAUS_AVAILABLE		/*!< Maus Sensor */
+//#define MAUS_AVAILABLE		/*!< Maus Sensor */
 
 #define ENA_AVAILABLE		/*!< Enable-Leitungen */
 #define SHIFT_AVAILABLE		/*!< Shift Register */
@@ -81,7 +81,7 @@
 //#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
 
 #define MMC_AVAILABLE		/*!< haben wir eine MMC/SD-KArte zur Verfuegung */
-
+#define MINI_FAT_AVAILABLE		/*!< koennen wir sektoren in FAT-systemen finden */
 /************************************************************
 * Some Dependencies!!!
 ************************************************************/
@@ -116,8 +116,9 @@
 		#undef SRF10_AVAILABLE
 		#undef TWI_AVAILABLE
 		#undef SPEED_CONTROL_AVAILABLE // Deaktiviere die Motorregelung 
-		
+		#undef MMC_AVAILABLE
 	#endif
+
 	#define COMMAND_AVAILABLE		/*!< High-Level Communication */
    #undef DISPLAY_SCREEN_RESETINFO
    #undef TEST_AVAILABLE_COUNTER

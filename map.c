@@ -28,6 +28,7 @@
 #include "sensor_correction.h"
 #include "map.h"
 #include "mmc.h"
+#include "mini-fat.h"
 
 #ifdef MAP_AVAILABLE
 #include <math.h>
@@ -62,7 +63,7 @@
 #ifdef MCU
 	#ifdef MMC_AVAILABLE
 		#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
-		#define MAP_RESOLUTION 	512	/*!< Aufloesung der Karte in Punkte pro Meter */
+		#define MAP_RESOLUTION 	128	/*!< Aufloesung der Karte in Punkte pro Meter */
 		#define MAP_SECTION_POINTS 16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 	#else
 		#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
@@ -70,9 +71,9 @@
 		#define MAP_RESOLUTION 	(MAP_SECTION_POINTS/MAP_SIZE)	/*!< Aufloesung der Karte in Punkte pro Meter */
 	#endif
 #else
-	#define MAP_SIZE			20	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
-	#define MAP_RESOLUTION 	512	/*!< Aufloesung der Karte in Punkte pro Meter */
-	#define MAP_SECTION_POINTS 128	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
+	#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
+	#define MAP_RESOLUTION 	128	/*!< Aufloesung der Karte in Punkte pro Meter */
+	#define MAP_SECTION_POINTS 16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 #endif
 
 #define MAP_SECTIONS ((( MAP_SIZE*MAP_RESOLUTION)/MAP_SECTION_POINTS))
@@ -121,30 +122,18 @@ typedef struct {
  */
 int8 map_init(void){
 	#ifdef MMC_AVAILABLE 
-		map_current_block=0xFFFFFFFF;	// erstmal kein Block geladen
-		map_current_block_updated = False;	// und daher auch nicht veraendert
-		
 		// Die Karte auf den Puffer biegen
 		map[0][0]=(map_section_t*)map_buffer;
 		map[1][0]=(map_section_t*)(map_buffer+sizeof(map_section_t));
-		
-		// Suche nach der Datei fuer die Katrte
-		int8 found = False;
-		
-		uint32 card_size= mmc_get_size() >> 9; // groesse der Karte in Bloecken
-		card_size -= MAP_SECTIONS*MAP_SECTIONS/2; // wir brauchen nur so lange zu suchen, bis die Karte nicht mehr auf die Karte passen wuerde
-		
-		map_start_block=0;
-		while(found == False && map_start_block < card_size){
-			mmc_read_sector(map_start_block++,map_buffer);
-			if (map_buffer[0]=='M' && map_buffer[1]=='A' && map_buffer[2]=='P')
-				found = True;
-		}
-		
-		if (found == False){
-			map_start_block=0xFFFFFFFF;
+
+		if (mmc_init() !=0)
 			return 1;
-		}
+			
+		map_start_block= mini_fat_find_block("MAP",map_buffer);
+		if (map_start_block!=0xFFFFFFFF)
+			map_current_block_updated = False;	// kein Block geladen und daher auch nicht veraendert
+		else	
+			map_current_block_updated = 0xFF;	// nix ok
 		
 	#endif
 	
@@ -176,6 +165,10 @@ map_section_t * map_get_section(uint16 x, uint16 y, uint8 create){
 
 	
 	#ifdef MMC_AVAILABLE // Mit MMC-Karte geht hier einiges anders
+		// wenn die Karte nicht sauber initialisiert ist, mache nix!
+		if (map_current_block_updated == 0xFF)
+			return map[0][0];
+			
 		// Berechne den gesuchten Block
 		uint32 block = section_x + section_y*MAP_SECTIONS;
 		block = block >>1;	// es passen immer 2 Sections in einen Block
@@ -188,8 +181,8 @@ map_section_t * map_get_section(uint16 x, uint16 y, uint8 create){
 				mmc_write_sector(map_current_block,map_buffer);
 			
 			//Lade den neuen Block
+			mmc_read_sector(block,map_buffer);
 			map_current_block=block;
-			mmc_read_sector(map_start_block,map_buffer);
 			map_current_block_updated = False;
 		}
 		
@@ -470,6 +463,7 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 }
 
 
+
 #ifdef PC
 	/*!
 	 *
@@ -558,7 +552,36 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 		fclose(fp);
 		
 	}
+
+
+	/*! Liest eine Map wieder ein */
+	void read_map(char * filename){
+		printf("Lese Karte von MMC/SD (Bot-Format)\n");
+		FILE *fp = fopen(filename, "r");
+		
+		uint8 buffer[512];
+		fread(buffer,512,1,fp);
+		
+		if (buffer[0] != 'M' || buffer[1] != 'A' || buffer[2] != 'P'){
+			printf("Datei %s enthaelt keine Karte\n",filename);
+			return;
+		}
+		
+		uint16 x,y;	
+		uint8 * ptr;
+
+		for (y=0; y< MAP_SECTIONS; y++)
+			for (x=0; x< MAP_SECTIONS; x++){
+				ptr= map_get_section(x*MAP_SECTION_POINTS, y*MAP_SECTION_POINTS, True);
+				fread(ptr,MAP_SECTION_POINTS*MAP_SECTION_POINTS,1,fp);
+			}
+			
+		fclose(fp);
+		
+	}
 #endif
+
+
 
 /*!
  * Zeigt die Karte an

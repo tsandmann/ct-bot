@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-11-10 Benjamin Benz [bbe@heise.de]: Mini-fat eingefuehrt
+
 2006-11-09 Benjamin Benz [bbe@heise.de]: map.c fuer Flash-Karte vorbereitet, die 2.
 
 2006-11-08 Benjamin Benz [bbe@heise.de]: map.c fuer Flash-Karte vorbereitet
