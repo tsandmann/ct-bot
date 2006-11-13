@@ -79,7 +79,9 @@ uint32 mini_fat_find_block(uint8 key[3], uint8 * buffer){
 		  display_printf("Found %c%c%c: 0x%02x%04x",key[0],key[1],key[2],j,i);
 		#endif
 
-
+		// auf der Karte markieren, dass wir sie in der Hand hatten
+		buffer[3]++;
+		mmc_write_sector(block-1,buffer);
 
 		return block;
 }

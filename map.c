@@ -138,9 +138,7 @@ int8 map_init(void){
 			return 1;
 		}
 		
-		// auf der Karte markieren, dass wir sie in der Hand hatten
-		map_buffer[3]++;
-		mmc_write_sector(map_start_block-1,map_buffer);
+
 		
 	#endif
 	
