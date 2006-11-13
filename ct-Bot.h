@@ -74,7 +74,7 @@
 
 #define BEHAVIOUR_AVAILABLE /*!< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 
-#define MAP_AVAILABLE /*!< Aktiviere die Kartographie */
+//#define MAP_AVAILABLE /*!< Aktiviere die Kartographie */
 
 //#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
 
