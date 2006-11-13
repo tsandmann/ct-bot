@@ -42,6 +42,13 @@
 void update_map(float x, float y, float head, int16 distL, int16 distR);
 
 /*!
+ * Aktualisiert den Standkreis der internen Karte
+ * @param x X-Achse der Position
+ * @param y Y-Achse der Position
+ */
+void update_map_location(float x, float y);
+
+/*!
  * liefert den Wert eines Feldes 
  * @param x x-Ordinate der Karte (nicht der Welt!!!)
  * @param y y-Ordinate der Karte (nicht der Welt!!!)

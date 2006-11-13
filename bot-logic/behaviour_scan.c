@@ -26,6 +26,7 @@
 
 #include "bot-logic/bot-logik.h"
 #include "map.h"
+#include <math.h>
 
 #ifdef BEHAVIOUR_SCAN_AVAILABLE
 /*!
@@ -33,16 +34,31 @@
  * @param *data der Verhaltensdatensatz
  */
 void bot_scan_onthefly_behaviour(Behaviour_t *data){	
-	#define ONTHEFLY_DIST_RESOLUTION 100
-	#define ONTHEFLY_ANGLE_RESOLUTION 45
+	#define ONTHEFLY_DIST_RESOLUTION 0.04		/*!< Alle wieviel gefahrene Strecke [m] soll die Karte aktualisiert werden */
+	#define ONTHEFLY_ANGLE_RESOLUTION 10		/*!< Alle wieviel Gerad Drehung [m] soll die Karte aktualisiert werden */
 	
-//	static float last_x, last_y, last_head;
+	static float last_x, last_y, last_head;
 	
-//	float diff_x = x_pos-last_x;
-//	float diff_y = y_pos-last_y;
+	float diff_x = x_pos-last_x;
+	float diff_y = y_pos-last_y;
 	
 	#ifdef MAP_AVAILABLE
-		update_map(x_pos,y_pos,heading,sensDistL,sensDistR);
+		// Wenn der Bot faehrt, aktualisieren wir alles
+		if ((diff_x*diff_x + diff_y*diff_y > ONTHEFLY_DIST_RESOLUTION)){
+			update_map_location(x_pos,y_pos);
+			update_map(x_pos,y_pos,heading,sensDistL,sensDistR);
+
+			last_x=x_pos;
+			last_y=y_pos;
+			last_head=heading;
+			return;
+		} 
+		
+		// Wenn der bot nur dreht, aktualisieren wir nur die Blickstrahlen
+		if ( fabs(last_head-heading) > ONTHEFLY_ANGLE_RESOLUTION ){
+			update_map(x_pos,y_pos,heading,sensDistL,sensDistR);
+			last_head=heading;
+		}
 		/*	if ((diff_x*diff_x + diff_y*diff_y > ONTHEFLY_DIST_RESOLUTION)||fabs(last_head-heading) > ONTHEFLY_ANGLE_RESOLUTION ){
 				last_x=x_pos;
 				last_y=y_pos;

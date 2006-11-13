@@ -14,7 +14,7 @@
 
 #define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE	/*! strecke fahren vorhanden ?*/
 
-//#define BEHAVIOUR_SCAN_AVAILABLE	/*! gegend scannen vorhanden ?*/
+#define BEHAVIOUR_SCAN_AVAILABLE	/*! gegend scannen vorhanden ?*/
 #define BEHAVIOUR_SOLVE_MAZE_AVAILABLE	/*! Wandfolger vorhanden ?*/
 #define BEHAVIOUR_FOLLOW_LINE_AVAILABLE	/*! Linienfolger vorhanden ?*/
 

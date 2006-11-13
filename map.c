@@ -86,7 +86,7 @@
 
 /* Es lohnt nicht gigantische Karten auszugeben, wenn sie nichts enthalten, daher hier zwei Varianten, um die Karte auf die realen groesse zu reduzieren */
 //#define SHRINK_MAP_ONLINE		/*!< Wenn gesetzt, wird bei jedem update der belegte Bereich der Karte protokolliert. Pro: schnelle ausgabe Contra permanenter aufwand  */
-//#define SHRINK_MAP_OFFLINE		/*!< Wenn gesetzt, wird erst beid er Ausgabe der belegte Bereich der Karte berechnet. Pro: kein permanenter aufwand Contra: ausgabe dauert lange */
+#define SHRINK_MAP_OFFLINE		/*!< Wenn gesetzt, wird erst beid er Ausgabe der belegte Bereich der Karte berechnet. Pro: kein permanenter aufwand Contra: ausgabe dauert lange */
 
 #define MAP_PRINT_SCALE				/*!< Soll das PGM eine Skala erhalten */
 #define MAP_SCALE	(MAP_RESOLUTION/2)	/*!< Alle wieviel Punkte kommt wein Skalen-Strich */
@@ -437,19 +437,13 @@ void update_map_sensor(float x, float y, float h, int16 dist){
 }
 
 /*!
- * Aktualisiert die interne Karte
+ * Aktualisiert den Standkreis der internen Karte
  * @param x X-Achse der Position
  * @param y Y-Achse der Position
- * @param head Blickrichtung in Grad
- * @param distL Sensorwert links
- * @param distR Sensorwert rechts
  */
-void update_map(float x, float y, float head, int16 distL, int16 distR){
-//	printf("update_map: x=%f, y=%f, head=%f, distL=%d, distR=%d\n",x,y,head,distL,distR);
-	
+void update_map_location(float x, float y){
 	int16 x_map = world_to_map(x);
 	int16 y_map = world_to_map(y);
-    float h= head * M_PI /180;
 	
 	// Aktualisiere zuerst die vom Bot selbst belegte Flaeche
 	#define dim BOT_DIAMETER/2*MAP_RESOLUTION/100
@@ -459,7 +453,21 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
            if(dX*dX + dY*dY <= dim*dim)	 
            	 map_update_free (x_map + dX, y_map + dY);
      }
-        
+}
+
+/*!
+ * Aktualisiert die interne Karte anhand der Sensordaten
+ * @param x X-Achse der Position
+ * @param y Y-Achse der Position
+ * @param head Blickrichtung in Grad
+ * @param distL Sensorwert links
+ * @param distR Sensorwert rechts
+ */
+void update_map(float x, float y, float head, int16 distL, int16 distR){
+//	printf("update_map: x=%f, y=%f, head=%f, distL=%d, distR=%d\n",x,y,head,distL,distR);
+	
+    float h= head * M_PI /180;
+	        
     //Ort des rechten Sensors in Weltkoordinaten
     float Pr_x = x + (DISTSENSOR_POS_SW * sin(h));
 	float Pr_y = y - (DISTSENSOR_POS_SW * cos(h));
