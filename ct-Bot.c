@@ -213,7 +213,7 @@ void init(void){
  		if (display_update >0)
  			#ifdef DISPLAY_SCREENS_AVAILABLE
 // TODO Nur zum Debuggen der SD/MMC-Karte sinnvoll!!!!!!!!!!!!!!!!!!
- 			display_screen=3;
+// 			display_screen=3;
 			switch (display_screen) {
 				case 0:
 			#endif
