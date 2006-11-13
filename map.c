@@ -86,7 +86,7 @@
 
 /* Es lohnt nicht gigantische Karten auszugeben, wenn sie nichts enthalten, daher hier zwei Varianten, um die Karte auf die realen groesse zu reduzieren */
 //#define SHRINK_MAP_ONLINE		/*!< Wenn gesetzt, wird bei jedem update der belegte Bereich der Karte protokolliert. Pro: schnelle ausgabe Contra permanenter aufwand  */
-#define SHRINK_MAP_OFFLINE		/*!< Wenn gesetzt, wird erst beid er Ausgabe der belegte Bereich der Karte berechnet. Pro: kein permanenter aufwand Contra: ausgabe dauert lange */
+//#define SHRINK_MAP_OFFLINE		/*!< Wenn gesetzt, wird erst beid er Ausgabe der belegte Bereich der Karte berechnet. Pro: kein permanenter aufwand Contra: ausgabe dauert lange */
 
 #ifdef SHRINK_MAP_ONLINE
 	uint16 map_min_x=MAP_SIZE*MAP_RESOLUTION/2; /*!< belegten Bereich der Karte sichern */
@@ -551,11 +551,13 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 		printf("Karte beginnt bei X=%d,Y=%d und geht bis X=%d,Y=%d (%d * %d Punkte)\n",map_min_x,map_min_y,map_max_x,map_max_y,map_size_x,map_size_y);
 		
 		uint8 tmp;
-		for (y=map_max_y-1; y>= map_min_y; y--)
+		for (y=map_max_y; y> map_min_y; y--){
 			for (x=map_min_x; x<map_max_x; x++){
-				tmp=map_get_field(x,y)+128;
+				
+				tmp=map_get_field(x,y-1)+128;
 				fwrite(&tmp,1,1,fp);
 			}
+		}
 		fclose(fp);
 		
 	}
