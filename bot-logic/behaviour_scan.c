@@ -37,12 +37,14 @@ void bot_scan_onthefly_behaviour(Behaviour_t *data){
 	#define ONTHEFLY_DIST_RESOLUTION 0.02		/*!< Alle wieviel gefahrene Strecke [m] soll die Karte aktualisiert werden. Achtung er prueft x und y getrennt, daher ist die tatsaechlich zurueckgelegte Strecke im worst case sqrt(2)*ONTHEFLY_DIST_RESOLUTION  */
 	#define ONTHEFLY_ANGLE_RESOLUTION 10		/*!< Alle wieviel Gerad Drehung [m] soll die Karte aktualisiert werden */
 	
-	static float last_x, last_y, last_head;
-	
-	float diff_x = x_pos-last_x;
-	float diff_y = y_pos-last_y;
+
 	
 	#ifdef MAP_AVAILABLE
+		static float last_x, last_y, last_head;
+		
+		float diff_x = fabs(x_pos-last_x);
+		float diff_y = fabs(y_pos-last_y);
+
 		// Wenn der Bot faehrt, aktualisieren wir alles
 		if ((diff_x > ONTHEFLY_DIST_RESOLUTION) ||( diff_y > ONTHEFLY_DIST_RESOLUTION)){
 			update_map_location(x_pos,y_pos);
@@ -53,9 +55,10 @@ void bot_scan_onthefly_behaviour(Behaviour_t *data){
 			last_head=heading;
 			return;
 		} 
-		
+	
+		float diff_head = fabs(last_head-heading);		
 		// Wenn der bot nur dreht, aktualisieren wir nur die Blickstrahlen
-		if ( fabs(last_head-heading) > ONTHEFLY_ANGLE_RESOLUTION ){
+		if ( diff_head > ONTHEFLY_ANGLE_RESOLUTION ){
 			update_map(x_pos,y_pos,heading,sensDistL,sensDistR);
 			last_head=heading;
 		}
