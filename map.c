@@ -88,6 +88,10 @@
 //#define SHRINK_MAP_ONLINE		/*!< Wenn gesetzt, wird bei jedem update der belegte Bereich der Karte protokolliert. Pro: schnelle ausgabe Contra permanenter aufwand  */
 //#define SHRINK_MAP_OFFLINE		/*!< Wenn gesetzt, wird erst beid er Ausgabe der belegte Bereich der Karte berechnet. Pro: kein permanenter aufwand Contra: ausgabe dauert lange */
 
+#define MAP_PRINT_SCALE				/*!< Soll das PGM eine Skala erhalten */
+#define MAP_SCALE	(MAP_RESOLUTION/2)	/*!< Alle wieviel Punkte kommt wein Skalen-Strich */
+
+
 #ifdef SHRINK_MAP_ONLINE
 	uint16 map_min_x=MAP_SIZE*MAP_RESOLUTION/2; /*!< belegten Bereich der Karte sichern */
 	uint16 map_max_x=MAP_SIZE*MAP_RESOLUTION/2;/*!< belegten Bereich der Karte sichern */
@@ -546,8 +550,11 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 			
 		uint16 map_size_x=map_max_x-map_min_x;
 		uint16 map_size_y=map_max_y-map_min_y;
-		fprintf(fp,"P5\n%d %d\n255\n",map_size_x,map_size_y);
-
+		#ifdef MAP_PRINT_SCALE
+			fprintf(fp,"P5\n%d %d\n255\n",map_size_x+10,map_size_y+10);
+		#else
+			fprintf(fp,"P5\n%d %d\n255\n",map_size_x,map_size_y);
+		#endif
 		printf("Karte beginnt bei X=%d,Y=%d und geht bis X=%d,Y=%d (%d * %d Punkte)\n",map_min_x,map_min_y,map_max_x,map_max_y,map_size_x,map_size_y);
 		
 		uint8 tmp;
@@ -557,7 +564,31 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 				tmp=map_get_field(x,y-1)+128;
 				fwrite(&tmp,1,1,fp);
 			}
+
+			#ifdef MAP_PRINT_SCALE
+				// und noch schnell ne Skala basteln
+				for (x=0; x<10; x++){
+					if (y % MAP_SCALE == 0)
+						tmp=0;
+					else tmp=255;
+					
+					fwrite(&tmp,1,1,fp);
+				}
+			#endif
+
 		}
+
+		#ifdef MAP_PRINT_SCALE
+			for (y=0; y< 10; y++){
+				for (x=map_min_x; x<map_max_x+10; x++){
+					if (x % MAP_SCALE == 0)
+						tmp=0;
+					else tmp=255;
+					
+					fwrite(&tmp,1,1,fp);
+				}
+			}
+		#endif
 		fclose(fp);
 		
 	}
