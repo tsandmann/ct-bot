@@ -113,13 +113,14 @@ inline uint8 mmc_read_byte (void){
 		uint8 a;
 		for (a=8; a>0; a--){ //das Byte wird Bitweise nacheinander Empangen MSB First
 			MMC_CLK_LOW(); //erzeugt ein Clock Impuls (Low) 
-			
+			nop();nop();
 			if ( (MMC_PORT_IN & _BV(SPI_DI)) > 0) //Lesen des Pegels von MMC_DI
 				data |= (1<<(a-1));
 			else
 				data &=~(1<<(a-1));
 				
 			MMC_CLK_HIGH(); //setzt Clock Impuls wieder auf (High)		
+			nop();nop();
 		}
 	#endif
 	return data;
