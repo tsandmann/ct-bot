@@ -81,7 +81,7 @@ int wait_for_command(int timeout_s);
 	
 	void __stdcall GetSystemTimeAsFileTime(FILETIME*);	
 	
-	void gettimeofday(struct timeval* p, void* tz /* IGNORED */){
+	void gettimeofday_win(struct timeval* p, void* tz /* IGNORED */){
 		union {
 			long long ns100; // time since 1 Jan 1601 in 100ns units 
 			FILETIME ft;
@@ -176,7 +176,7 @@ int wait_for_command(int timeout_s){
 	
 	pthread_mutex_lock(&command_cond_mutex);
 	
-	gettimeofday(&tp, NULL);
+	GETTIMEOFDAY(&tp, NULL);
 	// Convert from timeval to timespec
 	ts.tv_sec  = tp.tv_sec;
 	ts.tv_nsec = tp.tv_usec * 1000;
@@ -226,7 +226,7 @@ void wait_for_time(long timeout_us){
 	struct timeval    tp;
 	
 	pthread_mutex_lock(&mutex);
-	gettimeofday(&tp, NULL);
+	GETTIMEOFDAY(&tp, NULL);
 	// Convert from timeval to timespec
 	
 	tp.tv_usec += (timeout_us % 1000000);

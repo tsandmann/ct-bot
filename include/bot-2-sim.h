@@ -62,7 +62,10 @@ int8 receive_until_Frame(int8 frame);
 	/*!
 	 * Hilfsfunktion, die es nur auf dem PC gibt
 	 */
-	void gettimeofday(struct timeval* p, void* tz /* IGNORED */);
-#endif
+	void gettimeofday_win(struct timeval* p, void* tz /* IGNORED */);
+	#define GETTIMEOFDAY gettimeofday_win
+#else
+	#define GETTIMEOFDAY gettimeofday
+#endif	// WIN32
 
 #endif

@@ -166,7 +166,7 @@ int tcp_server_run (int runs){
 			command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
 			flushSendBuffer();
 
-			gettimeofday(&stop, NULL);
+			GETTIMEOFDAY(&stop, NULL);
 			int t2= (stop.tv_sec - start.tv_sec)*1000000 + stop.tv_usec - start.tv_usec;
 			printf("X-Token (%d) out after %d usec ",simultime,t2);
 
@@ -188,7 +188,7 @@ int tcp_server_run (int runs){
 				}
 				seq=received_command.seq+1;
 			}
-			gettimeofday(&start, NULL);
+			GETTIMEOFDAY(&start, NULL);
 
 
 			int t= (start.tv_sec - stop.tv_sec)*1000000 + start.tv_usec - stop.tv_usec;

@@ -532,13 +532,15 @@ void init(void){
        tcp_server_init();
        tcp_server_run(100);
     } else {
-    	if (convert !=0) {
-   		 	printf("Konvertiere Karte %s in PGM %s\n",from,"map.pgm");
-   		 	read_map(from);
-   		 	map_to_pgm("map.pgm");
-   		 	exit(0);
-       	}
-    	
+ 		#ifdef MAP_AVAILABLE
+	 		/* Karte in pgm konvertieren */
+	    	if (convert !=0) {
+	   		 	printf("Konvertiere Karte %s in PGM %s\n",from,"map.pgm");
+	   		 	read_map(from);
+	   		 	map_to_pgm("map.pgm");
+	   		 	exit(0);
+	       	}
+		#endif	// MAP_AVAILABLE    	
     	
     	printf("c't-Bot\n");
         if (hostname)
@@ -593,7 +595,7 @@ void init(void){
 			receive_until_Frame(CMD_DONE);
 			#ifdef DEBUG_TIMES
 				//Zum debuggen der Zeiten:	
-	 			gettimeofday(&start, NULL);
+	 			GETTIMEOFDAY(&start, NULL);
 				int t1=(start.tv_sec - stop.tv_sec)*1000000 + start.tv_usec - stop.tv_usec;
 				printf("Done-Token (%d) in nach %d usec ",received_command.data_l,t1);
 			#endif
@@ -660,7 +662,7 @@ void init(void){
 			flushSendBuffer();
 			//Zum debuggen der Zeiten:	
  			#ifdef DEBUG_TIMES
-				gettimeofday(&stop, NULL);
+				GETTIMEOFDAY(&stop, NULL);
 	 			int t2=(stop.tv_sec - start.tv_sec)*1000000 +stop.tv_usec - start.tv_usec;
 				printf("Done-Token (%d) out after %d usec\n",simultime,t2);
 			#endif
