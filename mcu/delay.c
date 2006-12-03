@@ -57,8 +57,13 @@ void delay_100ms(void){
  */
 void delay(uint16 ms){	
 	uint32 start = TIMER_GET_TICKCOUNT_32;
+	if ((uint8)start != TIMER_GET_TICKCOUNT_8) start = TIMER_GET_TICKCOUNT_32;
 	uint32 ticksToWait = MS_TO_TICKS((uint32)ms);
-	while (TIMER_GET_TICKCOUNT_32-start < ticksToWait)
-		asm volatile("nop");
+	uint32 now;
+	do {
+		now = TIMER_GET_TICKCOUNT_32;
+		if ((uint8)now != TIMER_GET_TICKCOUNT_8) now = TIMER_GET_TICKCOUNT_32;
+	} while (now-start < ticksToWait);
+		
 }
 #endif

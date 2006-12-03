@@ -66,11 +66,13 @@
 	inline uint16 timer_get_tickCount16(void);
 	inline uint32 timer_get_tickCount32(void);	
 	
+	#define TIMER_GET_TICKCOUNT_8  (uint8)timer_get_tickCount16()
 	#define TIMER_GET_TICKCOUNT_16 timer_get_tickCount16()
 	#define TIMER_GET_TICKCOUNT_32 timer_get_tickCount32()	
 #else
 	extern volatile uint16 tickCount[2];
 	
+	#define TIMER_GET_TICKCOUNT_8  *(volatile uint8*)tickCount
 	#define TIMER_GET_TICKCOUNT_16 tickCount[0]
 	#define TIMER_GET_TICKCOUNT_32 *(volatile uint32*)tickCount	
 #endif
