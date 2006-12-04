@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-12-04 Timo Sandmann [mail@timosandmann.de]: Low-Level-Funktionen fuer MMC / SD-Card anders implementiert, 1. Version eines virtuellen Speicher-Managements fuer MMC / SD-Card eingefuehrt, MMC- / SD-Card-Code aufgeraeumt
+
 2006-12-03 Timo Sandmann [mail@timosandmann.de]: Die delay-Funktion arbeitet jetzt auch im (sehr) theoretischen Worstcase (Interrupt unterbricht Timer-Abfrage und gleichzeitiger Uebertrag an 8-Bit Grenze) korrekt
 
 2006-11-23 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer gettimeofday-Problem unter Win und Map-Konvertierung nur, wenn MAP auch an ist

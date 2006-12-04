@@ -369,15 +369,23 @@ void init(void){
 										map_init();
 									#endif
 								}
-								
-								display_cursor(3,1);
-	
-								for (i=0;i<16;i++){
-									if (i ==8)
-										display_cursor(4,1);
-									display_printf("%02x",csd[i]);
-								}								
-							}							
+								#ifndef MMC_WRITE_TEST_AVAILABLE
+									display_cursor(3,1);
+		
+									for (i=0;i<16;i++){
+										if (i ==8)
+											display_cursor(4,1);
+										display_printf("%02x",csd[i]);
+									}	
+								#endif	// MMC_WRITE_TEST_AVAILABLE							
+							}
+							#ifdef MMC_WRITE_TEST_AVAILABLE
+								uint8 result = mmc_test();
+								if (result != 0){
+									display_cursor(3,1);
+									display_printf("mmc_test()=%u :( ", result);
+								}
+							#endif	// MMC_WRITE_TEST_AVAILABLE			
 						}
 						#endif
 					#endif

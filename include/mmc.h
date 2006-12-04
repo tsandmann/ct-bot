@@ -32,31 +32,43 @@
 #ifdef MMC_AVAILABLE
 
 #define MMC_INFO_AVAILABLE /*!< Die Karte kann uns einiges ueber sich verrraten, wenn wir sie danach fragen. Aber es kostet halt Platz im Flash */
-//#define MMC_WRITE_TEST_AVAILABLE /*!< Achtung dieser Test zerstoert die Daten auf der Karte!!! */
+#define MMC_WRITE_TEST_AVAILABLE /*!< Achtung dieser Test zerstoert die Daten auf der Karte!!! */
+
+/*!
+ * Checkt Initialisierung der Karte
+ * @return	0, wenn initialisiert
+ */
+inline uint8 mmc_get_init_state(void);
 
 /*!
  * Liest einen Block von der Karte
- * @param addr Adresse in Bytes ab der gelesen wird
- * @param Buffer Puffer von mindestens 512 Byte
- */
-void mmc_read_sector (uint32 addr,uint8 *Buffer);
+ * @param addr 		Nummer des 512-Byte Blocks
+ * @param Buffer 	Puffer von mindestens 512 Byte
+ * @return 			0 wenn alles ok ist 
+ * @author 			Timo Sandmann (mail@timosandmann.de)
+ * @date 			17.11.2006
+ * @see				mmc-low.s
+ */	
+uint8 mmc_read_sector(uint32 addr,uint8 *Buffer);
 
-/*! Schreibt einen 512-Byte Sektor auf die Karte
- * @param addr Adresse des Blocks in Byte
- * @param Buffer zeiger auf den Puffer
- * @return 0 wenn alles ok
+/*! 
+ * Schreibt einen 512-Byte Sektor auf die Karte
+ * @param addr 		Nummer des 512-Byte Blocks
+ * @param Buffer 	Zeiger auf den Puffer
+ * @return 			0 wenn alles ok ist
+ * @author 			Timo Sandmann (mail@timosandmann.de)
+ * @date 			16.11.2006
+ * @see				mmc-low.s
  */
-uint8 mmc_write_sector (uint32 addr,uint8 *Buffer);
+uint8 mmc_write_sector(uint32 addr,uint8 *Buffer);
 
 /*! 
  * Initialisiere die SD/MMC-Karte
- * @return 0 wenn allles ok, sonst nummer des Kommandos beid em abgebrochen wurde
+ * @return 0 wenn allles ok, sonst Nummer des Kommandos bei dem abgebrochen wurde
  */
 uint8 mmc_init (void);
 
 #ifdef MMC_INFO_AVAILABLE
-	
-
 	/*!
 	 * Liest das CSD-Register (16 Byte) von der Karte
 	 * @param Buffer Puffer von mindestens 16 Byte

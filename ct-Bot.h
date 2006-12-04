@@ -25,7 +25,9 @@
 #ifndef CT_BOT_H_DEF
 #define CT_BOT_H_DEF
 
-#include "global.h"
+#ifndef MMC_LOW_H_
+	#include "global.h"	// denn in mmc-low.S sind typedefs unerwuenscht
+#endif
 
 /************************************************************
 * Module switches, to make code smaller if features are not needed
@@ -74,14 +76,15 @@
 
 #define BEHAVIOUR_AVAILABLE /*!< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 
-#define MAP_AVAILABLE /*!< Aktiviere die Kartographie */
+//#define MAP_AVAILABLE /*!< Aktiviere die Kartographie */
 
 //#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
 
 //#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
 
-#define MMC_AVAILABLE		/*!< haben wir eine MMC/SD-KArte zur Verfuegung */
+#define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung */
 #define MINI_FAT_AVAILABLE		/*!< koennen wir sektoren in FAT-systemen finden */
+#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card */
 /************************************************************
 * Some Dependencies!!!
 ************************************************************/
@@ -176,6 +179,11 @@
 #ifdef LOG_STDOUT_AVAILABLE
 	#define LOG_AVAILABLE
 #endif 
+
+#ifndef MMC_AVAILABLE
+	#undef MINI_FAT_AVAILABLE
+	#undef MMC_VM_AVAILABLE
+#endif
 
 #ifdef LOG_AVAILABLE
 	#ifdef PC
