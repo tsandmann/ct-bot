@@ -31,6 +31,7 @@
 #include "ct-Bot.h"
 #include "mouse.h"
 #include "delay.h"
+#include "ena.h"
 
 #ifdef MAUS_AVAILABLE
 
@@ -41,6 +42,8 @@
 #define MAUS_SDA_NR		6		/*!< Pin an dem die SDA-Leitung haengt */
 #define MAUS_SDA_PINR 	PINB		/*!< Leseregister */
 #define MAUS_SDA_PIN 	(1<<MAUS_SDA_NR)	/*!< Bit-Wert der SDA-Leitung */
+
+#define MOUSE_Enable() ENA_on(ENA_MOUSE_SENSOR)
 
 /*!
  * Uebertraegt ein Byte an den Sensor
@@ -92,6 +95,9 @@ uint8 maus_sens_readByte(void){
  */
 void maus_sens_write(int8 adr, uint8 data){
 	int16 i;
+	
+	MOUSE_Enable();
+	
 	maus_sens_writeByte(adr|=0x80);  //rl MSB muss 1 sein Datenblatt S.12 Write Operation
 	maus_sens_writeByte(data);
 	for (i=0; i<300; i++){ asm volatile("nop"); 	}	// mindestens 100 Mikrosekunden Pause!!!
@@ -104,9 +110,12 @@ void maus_sens_write(int8 adr, uint8 data){
  * @return das Datum
  */
 uint8 maus_sens_read(uint8 adr){
+	MOUSE_Enable();
 	int16 i;
+	uint8 data;
 	maus_sens_writeByte(adr);
 	for (i=0; i<300; i++){asm volatile("nop");}	// mindestens 100 Mikrosekunden Pause!!!
+	
 	return maus_sens_readByte();
 }
 
