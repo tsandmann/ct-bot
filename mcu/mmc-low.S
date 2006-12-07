@@ -36,6 +36,7 @@
 #ifdef MCU
 #include "mmc-low.h"
 #include "ct-Bot.h"
+#include "ena.h"
 #ifdef MMC_AVAILABLE
 #include <avr/io.h> 
 
@@ -174,11 +175,11 @@ mmc_write_sector:
 	breq 1f
 	rjmp 4f
 	1:
-	ldi r24, lo8(MMC_ENA)		; Karte inaktiv schalten
+	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
 	call ENA_off
 	cbi DDR, SPI_DI				; DI auf input
 	sbi DDR, SPI_DO				; DO auf output
-	ldi r24, lo8(MMC_ENA)		; Karten aktiv schalten		
+	ldi r24, lo8(ENA_MMC)		; Karten aktiv schalten		
 	call ENA_on	
 	lsl r14						; Block in Bytes umrechnen
 	rol r15
@@ -272,7 +273,7 @@ mmc_write_sector:
 	brne 2b						; == 0xff?
 	mov r16, r24				; Karte ready oder Timeout, Antwort retten
 	3:								
-	ldi r24, lo8(MMC_ENA)		; Karte inaktiv schalten
+	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
 	call ENA_off
 	cpi r16, lo8(-1)			; War Antwort == 0xff?
 	brne 4f
@@ -318,11 +319,11 @@ mmc_read_sector:
 	breq 1f
 	rjmp 4f
 	1:
-	ldi r24, lo8(MMC_ENA)		; Karte inaktiv schalten 
+	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten 
 	call ENA_off 
 	cbi DDR, SPI_DI				; DI auf input
 	sbi DDR, SPI_DO				; DO auf output
-	ldi r24, lo8(MMC_ENA)		; Karte aktiv schalten		
+	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten		
 	call ENA_on
 	lsl r14						; Block in Bytes umrechnen
 	rol r15
@@ -409,7 +410,7 @@ mmc_read_sector:
 	call mmc_read_byte			; crc-Dummy lesen
 	call mmc_read_byte
 	4:
-	ldi r24, lo8(MMC_ENA)		; Karte inaktiv schalten
+	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
 	call ENA_off
 	tst r16						; Abbruch durch Timeout?
 	breq 1f						; r27 == 0?

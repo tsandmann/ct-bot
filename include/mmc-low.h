@@ -38,5 +38,4 @@
 #define MMC_CLK_PORT	PORTB
 #define SPI_CLK			7		//Port Pin an dem die Clock der MMC/SD-Karte angeschlossen ist (clk)
 
-#define MMC_ENA			128
 #endif	// MMC_LOW_H

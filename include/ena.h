@@ -26,7 +26,9 @@
 #ifndef ENA_H_
 #define ENA_H_
 
-#include "global.h"
+#ifndef MMC_LOW_H_
+	#include "global.h"
+#endif
 
 #define ENA_ABSTAND	(1<<0)		/*!< Enable-Leitung Abstandssensoren */
 #define ENA_RADLED		(1<<1)		/*!< Enable-Leitung Radencoder */
@@ -36,6 +38,8 @@
 #define ENA_MAUS		(1<<5)		/*!< Enable-Leitung Liniensensor auf Mausplatine */
 #define ENA_MMC		(1<<6)		/*!< Enable-Leitung Reserve 1 */
 #define ENA_MOUSE_SENSOR		(1<<7)		/*!< Enable-Leitung Reserve 2 */
+
+#ifndef MMC_LOW_H_
 /*!
  * Initialisiert die Enable-Leitungen
  */
@@ -60,4 +64,5 @@ void ENA_off(uint8 enable);
  * @param enable Wert der eingestellt werden soll
  */
 void ENA_set(uint8 enable);
+#endif
 #endif
