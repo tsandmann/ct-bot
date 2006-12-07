@@ -59,19 +59,13 @@
 
 //#define SPI_Mode				//1 = Hardware SPI | 0 = Software SPI
 
-//set MMC_Chip_Select to high (MMC/SD-Karte inaktiv)
-#define MMC_Disable() ENA_off(ENA_ERW2)
+#define MMC_Disable()	ENA_off(ENA_MMC);
+#define MMC_Enable()	ENA_on(ENA_MMC);
 
-//set MMC_Chip_Select to low (MMC/SD-Karte aktiv)
-#define MMC_Enable() ENA_on(ENA_ERW2);
 
 //#define nop()  __asm__ __volatile__ ("nop" ::)
 
-#ifndef SPI_Mode
-	#define MMC_prepare()	{ MMC_DDR &=~(1<<SPI_DI);	 MMC_DDR |= (1<<SPI_DO); } 
-#else
-	#define MMC_prepare() 	SPCR |= _BV(MSTR)
-#endif
+#define MMC_prepare()	{ MMC_DDR &=~(1<<SPI_DI);	 MMC_DDR |= (1<<SPI_DO); } 
 
 volatile uint8 mmc_init_state=1;	/*!< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
 
@@ -112,7 +106,8 @@ uint8 mmc_write_command(uint8 *cmd){
 	uint8 result = 0xff;
 	uint16 Timeout = 0;
 
-	// set MMC_Chip_Select to high (MMC/SD-Karte Inaktiv) 
+	//set MMC_Chip_Select to high (MMC/SD-Karte Inaktiv) 
+	MMC_Enable();
 	MMC_Disable();
 
 	// Da ein paar Leitungen noch von anderer Hardware mitbenutzt werden: reinit
@@ -149,22 +144,12 @@ uint8 mmc_init(void){
 	uint8 i;
 	mmc_init_state = 1;	// Nicht initialisiert, bis wir diese Funktion komplett durchlaufen haben
 	
-	#ifdef SPI_Mode
-		// Aktiviren des SPI - Bus, Clock = Idel LOW
-		// SPI Clock teilen durch 128
-		SPCR = (1<< SPE)  |	// Enable SPI
-	 		   (1<< MSTR) |	// Master-Mode
-	 		   //(1<< SPIE) |  // Interrupt an
-	 		   
-	 		   (1<< CPOL) |
-  		 	   (1<< SPR0) |  (1<<SPR1); // Langsamer Speed zum Initialisieren fosc/128
-		SPSR &= ~(1<<SPI2X);		// Doppeltspeed-Mode aus
-	#else
-		// Konfiguration des Ports an der die MMC/SD-Karte angeschlossen wurde
-		MMC_CLK_DDR |= _BV(SPI_CLK);				// Setzen von Pin MMC_Clock auf Output
-	#endif
-	MMC_prepare();
+	// Konfiguration des Ports an der die MMC/SD-Karte angeschlossen wurde
+	MMC_CLK_DDR |= _BV(SPI_CLK);				// Setzen von Pin MMC_Clock auf Output
 
+	MMC_prepare();
+	
+	MMC_Enable();
 	MMC_Disable();
 	
 	// Initialisiere MMC/SD-Karte in den SPI-Mode
@@ -190,11 +175,6 @@ uint8 mmc_init(void){
 			return 2; // Abbruch bei Kommando 2 (Return Code 2)
 		}
 	}
-	#ifdef SPI_Mode
-		// SPI Bus auf max Geschwindigkeit (fosc/2)
-		SPCR &= ~((1<<SPR0) | (1<<SPR1));
-		SPSR |= (1<<SPI2X);
-	#endif	
 	
 	// set MMC_Chip_Select to high (MMC/SD-Karte Inaktiv)
 	MMC_Disable();
@@ -243,17 +223,6 @@ uint8 mmc_read_block(uint8 *cmd,uint8 *Buffer,uint16 count){
 	}
 	return 0;	// alles ok
 }
-
-#ifdef SPI_Mode
-	/*!
-	 *  Interrupt Handler fuer den Datenempfang per UART
-	 */
-	SIGNAL (SIG_SPI){
-		// Wenn der SS-Pin auf Low geht, schaltet die SPI sich in den Slave-Mode, das wollen wir nicht
-		if ((SPCR & _BV(MSTR))==0)
-			MMC_prepare();	// also Master wieder an
-	}
-#endif
 
 #ifdef MMC_INFO_AVAILABLE
 /*!
@@ -364,6 +333,9 @@ uint32 mmc_get_size(void){
 		#else	// alte Version
 			uint8 buffer[512];
 			uint16 i;
+			
+			uint8 result=0;
+			
 			/* Zeitmessung starten */
 			uint16 start_ticks=TIMER_GET_TICKCOUNT_16;
 			uint8 start_reg=TCNT2;	
@@ -371,26 +343,35 @@ uint32 mmc_get_size(void){
 			// Puffer vorbereiten
 			for (i=0; i< 512; i++)	buffer[i]= (i & 0xFF);
 			// und schreiben
-			mmc_write_sector(0,buffer);
+			result= mmc_write_sector(0,buffer);
+			if (result != 0)
+				return 1;
 			
 			// Puffer vorbereiten
 			for (i=0; i< 512; i++)	buffer[i]= 255 - (i & 0xFF);	
 			// und schreiben
-			mmc_write_sector(1,buffer);	
+			result= mmc_write_sector(1,buffer);	
+			if (result != 0)
+				return 2;
 		
 			// Puffer lesen	
-			mmc_read_sector(0,buffer);	
+			result= mmc_read_sector(0,buffer);	
+			if (result != 0)
+				return 3;
+			
 			// und vergleichen
 			for (i=0; i< 512; i++)
 				if (buffer[i] != (i & 0xFF))
-					return 1;
+					return 4;
 		
 			// Puffer lesen	
-			mmc_read_sector(1,buffer);
+			result= mmc_read_sector(1,buffer);
+			if (result != 0)
+				return 5;
 			// und vergleichen
 			for (i=0; i< 512; i++)
 				if (buffer[i] != (255- (i & 0xFF)))
-					return 1;	
+					return 6;	
 
 			/* Zeitmessung beenden */
 			int8 timer_reg=TCNT2;

@@ -43,7 +43,7 @@
 #define IR_AVAILABLE		/*!< Infrared Remote Control */
 #define RC5_AVAILABLE		/*!< Key-Mapping for IR-RC	 */
 
-//#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
+#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
 
 //#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit im s und ms? */
 
@@ -84,7 +84,7 @@
 
 #define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung */
 #define MINI_FAT_AVAILABLE		/*!< koennen wir sektoren in FAT-systemen finden */
-#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card */
+//#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card */
 /************************************************************
 * Some Dependencies!!!
 ************************************************************/
@@ -258,7 +258,9 @@
 #define LINE_FEED "\n\r"	/*!< Windows und Linux unterscheiden beim Linefeed. Windows erwarten \n\r, Linux nur \n */
 
 #ifdef MCU
-	#include <avr/interrupt.h>
+	#ifndef MMC_LOW_H_
+		#include <avr/interrupt.h>
+	#endif
 	#ifdef SIGNAL
 		#define NEW_AVR_LIB
 	#endif

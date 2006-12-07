@@ -35,7 +35,7 @@
 
 #ifdef MCU
 #include "mmc-low.h"
-#include "ct-bot.h"
+#include "ct-Bot.h"
 #ifdef MMC_AVAILABLE
 #include <avr/io.h> 
 
