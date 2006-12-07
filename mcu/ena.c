@@ -39,6 +39,7 @@ volatile uint8 ena =0;	/*!< Sichert den Zustand der Enable-Leitungen */
  * Initialisiert die Enable-Leitungen
  */
 void ENA_init(){
+	DDRD |= 4;
 	shift_init();
 	ENA_set(0x00);
 }
@@ -48,12 +49,27 @@ void ENA_init(){
  * andere werden nicht beeinflusst
  * Achtung, die Treiber-Transistoren sind Low-Aktiv!!! 
  * ENA_on schaltet einen Transistor durch
- * Daher zieht es die entsprechende ENA_XXX-Leitung auf Low und NICHT auf High
+ * Daher zieht es die entsprechende ENA_XXX-Leitung (mit Transistor) auf Low und NICHT auf High
  * @param enable Bitmaske der anzuschaltenden LEDs
  */
 void ENA_on(uint8 enable){
-	ena |= enable;
+	// Maussensor und MMC-Karte haengen zusammen
+	if (enable == ENA_MOUSE_SENSOR){
+		ena |= ENA_MMC;			// MMC aus
+		ena &= ~enable;
+	} else	if (enable == ENA_MMC) {
+		ena |= ENA_MOUSE_SENSOR;	// Maus aus
+		ena &= ~enable;
+	} else {
+		ena |= enable;
+	}
+	
 	ENA_set(ena);
+	
+	if ( (enable & (ENA_MOUSE_SENSOR | ENA_MMC)) != 0 ){
+        PORTD |= 4;	// Fliplops takten
+        PORTD &= ~4;
+	}
 }
 
 /*! 
@@ -61,12 +77,17 @@ void ENA_on(uint8 enable){
  * andere werden nicht beeinflusst
  * Achtung, die Treiber-Transistoren sind Low-Aktiv!!! 
  * ENA_off schaltet einen Transistor ab
- * Daher zieht es die entsprechende ENA_XXX-Leitung auf High und NICHT auf Low
+ * Daher zieht es die entsprechende ENA_XXX-Leitung (mit Transistor) auf High und NICHT auf Low
  * @param enable Bitmaske der anzuschaltenden LEDs
  */
 void ENA_off(uint8 enable){
 	ena &= ~enable;
 	ENA_set(ena);
+	
+	if ( (enable & (ENA_MOUSE_SENSOR | ENA_MMC)) != 0 ){
+        PORTD |= 4;	// Fliplops takten
+        PORTD &= ~4;
+	}
 }
 
 /*!

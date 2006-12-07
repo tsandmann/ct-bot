@@ -34,8 +34,8 @@
 #define ENA_KANTLED	(1<<3)		/*!< Enable-Leitung Angrundsensor */
 #define ENA_KLAPPLED	(1<<4)		/*!< Enable-Leitung Schieberueberwachung */
 #define ENA_MAUS		(1<<5)		/*!< Enable-Leitung Liniensensor auf Mausplatine */
-#define ENA_ERW1		(1<<6)		/*!< Enable-Leitung Reserve 1 */
-#define ENA_ERW2		(1<<7)		/*!< Enable-Leitung Reserve 2 */
+#define ENA_MMC		(1<<6)		/*!< Enable-Leitung Reserve 1 */
+#define ENA_MOUSE_SENSOR		(1<<7)		/*!< Enable-Leitung Reserve 2 */
 /*!
  * Initialisiert die Enable-Leitungen
  */
