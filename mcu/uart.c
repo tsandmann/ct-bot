@@ -39,7 +39,7 @@
 
 #ifdef UART_AVAILABLE
 
-#define BAUDRATE	9600
+#define BAUDRATE	57600
 
 #define UART_RX_BUFFER_SIZE 16	/*!< Größe des UART-Puffers */
 
