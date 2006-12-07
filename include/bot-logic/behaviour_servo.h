@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,37 +17,36 @@
  * 
  */
 
-/*! @file 	motor-low.h 
- * @brief 	Low-Level Routinen fuer die Motorsteuerung des c't-Bots
+
+
+/*! @file 	behaviour_servo.h
+ * @brief 	kontrolliert die Servos
+ * 
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	01.12.05
+ * @date 	07.12.06
 */
 
-#ifndef motor_low_H_
-#define motor_low_H_
+#ifndef BEHAVIOUR_SERVO_H_
+#define BEHAVIOUR_SERVO_H_
 
-#include "global.h"
+#include "ct-Bot.h"
+#include "bot-logic/bot-logik.h"
 
-
-
-
-/*!
- *  Initialisiert alles fuer die Motosteuerung 
+#ifdef BEHAVIOUR_SERVO_AVAILABLE
+/*! 
+ * Dieses Verhalten fuehrt ein Servo-Kommando aus und schaltet danach den Servo wieder ab
+ * 
+ * @param *data der Verhaltensdatensatz
  */
-void motor_low_init(void);
+void bot_servo_behaviour(Behaviour_t *data);
 
 /*!
- * Unmittelbarer Zugriff auf die beiden Motoren
- * normalerweise NICHT verwenden!!!!!
- * @param left speed links
- * @param right speed rechts
-*/
-void bot_motor(int16 left, int16 right);
-
-/*!
- * Stellt die Servos
- * Sinnvolle Werte liegen zwischen 8 und 16
+ * Fahre den Servo an eine Position
+ * @param servo Nummer des Servos
+ * @param pos Zielposition des Servos
  */
-void servo_low(uint8 servo, uint8 pos);
+void bot_servo(Behaviour_t * caller, uint8 servo, uint8 pos);
 
 #endif
+
+#endif /*BEHAVIOUR_SIMPLE_H_*/

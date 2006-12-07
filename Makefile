@@ -52,7 +52,7 @@ SRCMCU = mcu/adc.c mcu/bot-2-pc.c mcu/delay.c mcu/display.c mcu/ena.c mcu/ir-rc5
 
 SRCPC = pc/bot-2-sim.c pc/delay_pc.c pc/display_pc.c pc/ir-rc5_pc.c pc/led_pc.c pc/motor-low_pc.c pc/sensor-low_pc.c pc/tcp.c pc/tcp-server.c pc/mouse_pc.c
 
-SRCCOM = bot-logic/bot-logik.c map.c command.c log.c motor.c rc5.c sensor.c timer.c bot-logic/behaviour_avoid_border.c bot-logic/behaviour_drive_square.c  bot-logic/behaviour_gotoxy.c   bot-logic/behaviour_simple.c      bot-logic/behaviour_avoid_col.c       bot-logic/behaviour_follow_line.c   bot-logic/behaviour_olympic.c  bot-logic/behaviour_solve_maze.c bot-logic/behaviour_drive_distance.c bot-logic/behaviour_goto.c bot-logic/behaviour_scan.c bot-logic/behaviour_turn.c
+SRCCOM = bot-logic/bot-logik.c map.c command.c log.c motor.c rc5.c sensor.c timer.c bot-logic/behaviour_avoid_border.c bot-logic/behaviour_drive_square.c  bot-logic/behaviour_gotoxy.c   bot-logic/behaviour_simple.c      bot-logic/behaviour_avoid_col.c       bot-logic/behaviour_follow_line.c   bot-logic/behaviour_olympic.c  bot-logic/behaviour_solve_maze.c bot-logic/behaviour_drive_distance.c bot-logic/behaviour_goto.c bot-logic/behaviour_scan.c bot-logic/behaviour_turn.c bot-logic/behaviour_servo.c
 
 
 ifeq ($(DEVICE),MCU)

@@ -145,8 +145,8 @@ static RemCtrlAction gRemCtrlAction[] = {
 	{ RC5_CODE_8,		rc5_number,			    { 8, 8 } },
 	{ RC5_CODE_9,		rc5_number,			    { 9, 9 } },
 	{ RC5_CODE_I_II,	rc5_bot_next_behaviour,	{ 0, 0 } },
-	{ RC5_CH_PLUS,		rc5_bot_servo,			{ SERVO1, SERVO_LEFT } },
-	{ RC5_CH_MINUS,		rc5_bot_servo,			{ SERVO1, SERVO_RIGHT } },
+	{ RC5_CH_PLUS,		rc5_bot_servo,			{ SERVO1, DOOR_CLOSE } },
+	{ RC5_CH_MINUS,		rc5_bot_servo,			{ SERVO1, DOOR_OPEN } },
 #ifdef DISPLAY_SCREENS_AVAILABLE
 	{ RC5_CODE_RED,		rc5_screen_set,			{ 0, 0 } },
 	{ RC5_CODE_GREEN,	rc5_screen_set,			{ 1, 0 } },
@@ -236,7 +236,7 @@ static void rc5_screen_set(RemCtrlFuncPar *par) {
  * @param par Parameter mit Servo-Nummer und -Position
  */
 void rc5_bot_servo(RemCtrlFuncPar *par){
-		servo_set(par->value1,par->value2);
+		bot_servo(0,par->value1,par->value2);
 }
 /*!
  * Diese Funktion wechselt zwiaschen verschiednen Verhalten

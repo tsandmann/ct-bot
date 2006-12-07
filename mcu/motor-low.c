@@ -52,6 +52,9 @@
 #define PWM_L 	OCR1A
 #define PWM_R 	OCR1B
 
+#define PWM_CLK_0	 (_BV(CS02)  |  _BV(CS00))		/*!< Prescaler fuer PWM 0 = 1024*/
+//#define PWM_CLK_2	 (_BV(CS22) | _BV(CS21) |_BV(CS20)) /*!< Prescaler fuer PWM 2 =1024		*/
+
 volatile int16 motor_left;	/*!< zuletzt gestellter Wert linker Motor */
 volatile int16 motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
 
@@ -68,7 +71,7 @@ void motor_low_init(){
 	BOT_DIR_R_DDR|=BOT_DIR_R_PIN;
 	
 	pwm_0_init();
-	pwm_1_init();
+//	pwm_1_init();
 //	pwm_2_init();				// Kollidiert mit Timer2 für IR-Fernbedienung
 	bot_motor(0,0);
 }
@@ -111,13 +114,25 @@ void bot_motor(int16 left, int16 right){
  * Stellt die Servos
  * Sinnvolle Werte liegen zwischen 8 und 16
  */
-void bot_servo(uint8 servo, uint8 pos){
+void servo_low(uint8 servo, uint8 pos){
 	if (servo== SERVO1) {
-		OCR0=pos;
+		if (pos == SERVO_OFF) {
+			TCCR0 &= ~PWM_CLK_0 ; // PWM aus		
+		} else {
+			TCCR0 |= PWM_CLK_0; // PWM an
+			OCR0=pos;
+		}
+
 	}
-	if (servo== SERVO2) {
-		OCR2=pos;
-	}
+	
+//	if (servo== SERVO2) {
+//		if (pos == 0) {
+//			TCCR2 &= ~ (_BV(CS22)  |  _BV(CS21) | _BV(CS20)); // PWM an		
+//		} else {
+//			TCCR2 |= PWM_CLK_2; // PWM an
+//			OCR2=pos;
+//		}
+//	}
 	
 }
 
@@ -138,8 +153,9 @@ void pwm_0_init(void){
 	TCNT0  = 0x00;            // TIMER0 vorladen
 
 	TCCR0 = _BV(WGM00) | 	// Normal PWM
-			_BV(COM01) |    // Clear on Compare , Set on Top
-			_BV(CS02)  |  _BV(CS00); 		// Prescaler = 1024		
+			_BV(COM01);    // Clear on Compare , Set on Top
+			//PWM_CLK_0;
+
 	
 	OCR0 = 8;	// PWM löscht bei erreichen. daher steht in OCR0 255-Speed!!!
 	// TIMSK  |= _BV(OCIE0);	 // enable Output Compare 0 overflow interrupt
@@ -195,8 +211,8 @@ void pwm_2_init(void){
 	TCNT2  = 0x00;            // TIMER0 vorladen
 
 	TCCR2 = _BV(WGM20) | 	// Normal PWM
-			_BV(COM21) |    // Clear on Top, Set on Compare
-			_BV(CS22) | _BV(CS21) |_BV(CS20); 		// Prescaler = 1024		
+			_BV(COM21);    // Clear on Top, Set on Compare
+//			_BV(CS22) | _BV(CS21) |_BV(CS20); 		// Prescaler = 1024		
 	
 	OCR2 = 8;	// PWM löscht bei erreichen. daher steht in OCR0 255-Speed!!!
 	// TIMSK  |= _BV(OCIE0);	 // enable Output Compare 0 overflow interrupt

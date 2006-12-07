@@ -71,6 +71,8 @@ void bot_base_behaviour(Behaviour_t *data){
  * Initialisert das ganze Verhalten
  */
 void bot_behave_init(void){
+	insert_behaviour_to_list(&behaviour, new_behaviour(253, bot_servo_behaviour,INACTIVE));
+
 	// Demo-Verhalten, ganz einfach, inaktiv
 	// Achtung, im Moment hat es eine hoehere Prioritaet als die Gefahrenerkenner!!!
 	#ifdef BEHAVIOUR_SIMPLE_AVAILABLE

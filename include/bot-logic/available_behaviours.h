@@ -18,6 +18,8 @@
 #define BEHAVIOUR_SOLVE_MAZE_AVAILABLE	/*! Wandfolger vorhanden ?*/
 #define BEHAVIOUR_FOLLOW_LINE_AVAILABLE	/*! Linienfolger vorhanden ?*/
 
+#define BEHAVIOUR_SERVO_AVAILABLE 	/*! Kontrollverhalten fuer die Servos */
+
 //#define BEHAVIOUR_OLYMPIC_AVAILABLE	/*! Olympiadenverhalten vorhanden ?*/
 
 /* Aufgrund einer ganzen reihe von Abhaengigkeiten sollte man beim Versuch Speicher 
@@ -79,6 +81,7 @@
 
 #include "bot-logic/behaviour_olympic.h"
 
+#include "bot-logic/behaviour_servo.h"
 
 #endif
 #endif /*AVAILABLE_BEHAVIOURS_H_*/

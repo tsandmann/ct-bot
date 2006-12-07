@@ -247,12 +247,13 @@ void motor_set(int16 left, int16 right){
  * @param servo Zielwert
  */
 void servo_set(uint8 servo, uint8 pos){
-	if (pos< SERVO_LEFT)
-		pos=SERVO_LEFT;
-	if (pos> SERVO_RIGHT)
-		pos=SERVO_RIGHT;
-		
-	bot_servo(servo,pos);
+	if ((servo== SERVO1) && (pos != SERVO_OFF)) {
+		if (pos< DOOR_CLOSE)
+			pos=DOOR_CLOSE;
+		if (pos> DOOR_OPEN)
+			pos=DOOR_OPEN;
+	}
+	servo_low(servo,pos);
 }
 
 /*!
