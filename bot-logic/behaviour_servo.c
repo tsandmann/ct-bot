@@ -53,7 +53,7 @@ void bot_servo_behaviour(Behaviour_t *data){
  */
 void bot_servo(Behaviour_t * caller, uint8 servo, uint8 pos){
 	servo_set(SERVO1,pos);	// Servo-PWM einstellen
-	servo1_countdown=15;	// Der Count down verschafft dem Servo etwas zeit
+	servo1_countdown=40;	// Der Count down verschafft dem Servo etwas zeit
 
 	switch_to_behaviour(caller,bot_servo_behaviour,OVERRIDE);	// Warte-Verahlten an
 }
