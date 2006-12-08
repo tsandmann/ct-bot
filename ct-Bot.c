@@ -77,7 +77,7 @@
 #include "map.h"
 
 
-/* Nimmt den Status von MCUCSR bevor dieses Register auf 0x00 gesetzt wird */
+/* Nimmt den Status von MCU(C)SR bevor dieses Register auf 0x00 gesetzt wird */
 #ifdef DISPLAY_SCREEN_RESETINFO
 	uint8 reset_flag; 
 #endif
