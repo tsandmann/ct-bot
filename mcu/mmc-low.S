@@ -175,6 +175,8 @@ mmc_write_sector:
 	breq 1f
 	rjmp 4f
 	1:
+	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten		
+	call ENA_on	
 	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
 	call ENA_off
 	cbi DDR, SPI_DI				; DI auf input
@@ -185,7 +187,7 @@ mmc_write_sector:
 	sbi PORT_OUT, SPI_CLK
 	dec r24						; r24--
 	brne 1b						; r24 == 0?		
-	ldi r24, lo8(ENA_MMC)		; Karten aktiv schalten		
+	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten		
 	call ENA_on	
 	lsl r14						; Block in Bytes umrechnen
 	rol r15
@@ -331,6 +333,8 @@ mmc_read_sector:
 	breq 1f
 	rjmp 4f
 	1:
+	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten		
+	call ENA_on	
 	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten 
 	call ENA_off 
 	cbi DDR, SPI_DI				; DI auf input
