@@ -71,7 +71,7 @@ void motor_low_init(){
 	BOT_DIR_R_DDR|=BOT_DIR_R_PIN;
 	
 	pwm_0_init();
-//	pwm_1_init();
+	pwm_1_init();
 //	pwm_2_init();				// Kollidiert mit Timer2 für IR-Fernbedienung
 	bot_motor(0,0);
 }
@@ -173,8 +173,7 @@ void pwm_0_init(void){
 		OCR0A = 8;
 	#else
 		TCCR0 = _BV(WGM00) | 	// Normal PWM
-				_BV(COM01);		// Clear on Compare , Set on Top
-				//PWM_CLK_0;
+				_BV(COM01) ;	// Clear on Compare , Set on Top
 	
 		OCR0 = 8;	// PWM loescht bei erreichen. daher steht in OCR0 255-Speed!!!
 	#endif		
