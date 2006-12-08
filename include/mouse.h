@@ -75,6 +75,16 @@ void maus_sens_init(void);
  */
 uint8 maus_sens_read(uint8 adr);
 
+/*! Stellt sicher, dass der Maussensor nicht mehr die serielle Datenleitung treibt */
+#define maus_sens_highZ() 		maus_sens_write(0x77,0x00)
+
+/*!
+ * Uebertraegt ein write-Kommando an den Sensor
+ * @param adr Adresse
+ * @param data Datum
+ */
+void maus_sens_write(int8 adr, uint8 data);
+
 /*!
  * Liefert bei jedem Aufruf das naechste Pixel des Bildes
  * Insgesamt gibt es 324 Pixel
