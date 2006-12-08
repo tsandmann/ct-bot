@@ -107,7 +107,7 @@ void bot_scan_behaviour(Behaviour_t *data){
 				turned+= diff;
 				last_scan_angle=heading;
 				
-				#ifdef MAP_AVAILBALE
+				#ifdef MAP_AVAILABLE
 					// Eigentlicher Scan hier
 					update_map(x_pos,y_pos,heading,sensDistL,sensDistR);
 					////////////
@@ -120,7 +120,7 @@ void bot_scan_behaviour(Behaviour_t *data){
 			break;			
 		default:
 			bot_scan_state = BOT_SCAN_STATE_START;
-			#ifdef MAP_AVAILBALE
+			#ifdef MAP_AVAILABLE
 				print_map();
 			#endif
 			return_from_behaviour(data);

@@ -110,16 +110,26 @@ void init(void){
 		timer_2_init();
 		
 		// Ist das ein Power on Reset ?
-		if ((MCUCSR & 1)  ==1 ) {
-			MCUCSR &= ~1;	// Bit loeschen
+		#ifdef __AVR_ATmega644__
+			if ((MCUSR & 1)  ==1 ) {
+				MCUSR &= ~1;	// Bit loeschen
+		#else
+			if ((MCUCSR & 1)  ==1 ) {
+				MCUCSR &= ~1;	// Bit loeschen
+		#endif
 			delay(100);
 			asm volatile("jmp 0");
 		}
 		
-		delay(100);		
+		delay(100);	
 		#ifdef DISPLAY_SCREEN_RESETINFO
-			reset_flag = MCUCSR & 0x1F;	//Lese Grund fuer Reset und sichere Wert
-			MCUCSR = 0;	//setze Register auf 0x00 (loeschen)
+			#ifdef __AVR_ATmega644__
+				reset_flag = MCUSR & 0x1F;	//Lese Grund fuer Reset und sichere Wert
+				MCUSR = 0;	//setze Register auf 0x00 (loeschen)
+			#else
+				reset_flag = MCUCSR & 0x1F;	//Lese Grund fuer Reset und sichere Wert
+				MCUCSR = 0;	//setze Register auf 0x00 (loeschen)
+			#endif
 		#endif		
 	#endif
 
@@ -315,7 +325,7 @@ void init(void){
 					#ifdef DISPLAY_SCREEN_RESETINFO
 						display_cursor(1,1);
 						/* Zeige den Grund fuer Resets an */
-						display_printf("MCUCSR - Register");
+						display_printf("MCU(C)SR - Register");
 												
 						display_cursor(2,1);
 						display_printf("PORF :%d  WDRF :%d",binary(reset_flag,0),binary(reset_flag,3)); 
@@ -383,7 +393,7 @@ void init(void){
 								uint8 result = mmc_test();
 								if (result != 0){
 									display_cursor(3,1);
-									display_printf("mmc_test()=%u :( ", result);
+									display_printf("mmc_test()=%u :(     ", result);
 								}
 							#endif	// MMC_WRITE_TEST_AVAILABLE			
 						}

@@ -117,14 +117,23 @@ void bot_motor(int16 left, int16 right){
 void servo_low(uint8 servo, uint8 pos){
 	if (servo== SERVO1) {
 		if (pos == SERVO_OFF) {
-			TCCR0 &= ~PWM_CLK_0 ; // PWM aus		
+			#ifdef __AVR_ATmega644__			
+				TCCR0B &= ~PWM_CLK_0 ; // PWM aus
+			#else
+				TCCR0 &= ~PWM_CLK_0 ; // PWM aus
+			#endif	
 		} else {
-			TCCR0 |= PWM_CLK_0; // PWM an
-			OCR0=pos;
+			#ifdef __AVR_ATmega644__
+				TCCR0B |= PWM_CLK_0; // PWM an
+				OCR0A=pos;
+			#else
+				TCCR0 |= PWM_CLK_0; // PWM an
+				OCR0=pos;			
+			#endif
 		}
 
 	}
-	
+
 //	if (servo== SERVO2) {
 //		if (pos == 0) {
 //			TCCR2 &= ~ (_BV(CS22)  |  _BV(CS21) | _BV(CS20)); // PWM an		
@@ -139,7 +148,11 @@ void servo_low(uint8 servo, uint8 pos){
 /*!
  * Interrupt Handler for Timer/Counter 0 
  */
-SIGNAL (SIG_OUTPUT_COMPARE0){
+#ifdef __AVR_ATmega644__
+	SIGNAL (TIMER0_COMPA_vect){
+#else
+	SIGNAL (SIG_OUTPUT_COMPARE0){
+#endif
 }
 
 /*!
@@ -152,12 +165,19 @@ void pwm_0_init(void){
 	DDRB |= (1<<3);			   // PWM-Pin als Output
 	TCNT0  = 0x00;            // TIMER0 vorladen
 
-	TCCR0 = _BV(WGM00) | 	// Normal PWM
-			_BV(COM01);    // Clear on Compare , Set on Top
-			//PWM_CLK_0;
-
+	#ifdef __AVR_ATmega644__
+		TCCR0A = _BV(WGM00)  | 	// Normal PWM
+			 	 _BV(COM0A1);	// Clear on Compare , Set on Top
+				//PWM_CLK_0;
 	
-	OCR0 = 8;	// PWM löscht bei erreichen. daher steht in OCR0 255-Speed!!!
+		OCR0A = 8;
+	#else
+		TCCR0 = _BV(WGM00) | 	// Normal PWM
+				_BV(COM01) |    // Clear on Compare , Set on Top
+				//PWM_CLK_0;
+	
+		OCR0 = 8;	// PWM loescht bei erreichen. daher steht in OCR0 255-Speed!!!
+	#endif		
 	// TIMSK  |= _BV(OCIE0);	 // enable Output Compare 0 overflow interrupt
 	//sei();                       // enable interrupts
 }

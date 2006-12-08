@@ -152,7 +152,7 @@ mmc_read_byte:
  * Schreibt einen 512-Byte Sektor auf die Karte
  * @param addr 		Nummer des 512-Byte Blocks
  * @param Buffer 	Zeiger auf den Puffer
- * @return 			0 wenn alles ok ist
+ * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout nach Kommando 24, 2 wenn Timeout bei busy 
  * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			16.11.2006
  */
@@ -201,12 +201,15 @@ mmc_write_sector:
 	call mmc_read_byte
 	cpi r24, lo8(-1)			; !0xff = Antwort	
 	brne 2f
+	call mmc_read_byte			; noch ein Versuch (8-Bit Timeout)
+	cpi r24, lo8(-1)			; !0xff = Antwort	
+	brne 2f	
 	dec r26
 	brne 1b
 	2:
 	tst r24	 					; Fehler oder Abbruch durch Timeout?
 	breq 1f 
-	rjmp 4f 
+	rjmp 4f 					; Return-Code 1
 	1:
 	ldi r24, lo8(-2)			; Start-Byte an Karte senden
 	call mmc_write_byte 
@@ -276,15 +279,18 @@ mmc_write_sector:
 	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
 	call ENA_off
 	cpi r16, lo8(-1)			; War Antwort == 0xff?
-	brne 4f
+	brne 5f
 	ldi r24, lo8(0)				; Alles ok, also Return-Code 0 laden :)
-	ldi r25, hi8(0)
-	rjmp 5f
+	rjmp 6f
 	4:
-	ldi r24, lo8(1)				; Fehler, also Return-Code 1 laden
-	ldi r25, hi8(1)
+	ldi r24, lo8(1)				; Fehler, Return-Code 1 laden
 	sts mmc_init_state, r24		; Initstatus auf Fehler setzen	
+	rjmp 6f
 	5:
+	ldi r24, lo8(2)				; Fehler, Return-Code 2 laden
+	sts mmc_init_state, r24		; Initstatus auf Fehler setzen		
+	6:
+	ldi r25, 0
 	pop r29						; allgemeine Register wiederherstellen
 	pop r28
 	pop r16
@@ -296,7 +302,7 @@ mmc_write_sector:
  * Liest einen Block von der Karte
  * @param addr 		Nummer des 512-Byte Blocks
  * @param Buffer 	Puffer von mindestens 512 Byte
- * @return 			0 wenn alles ok ist 
+ * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout nach Kommando 17
  * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			17.11.2006
  */	
@@ -340,11 +346,14 @@ mmc_read_sector:
 	call mmc_write_byte
 	ldi r24,lo8(-1)				; Byte 5 (CRC)	
 	call mmc_write_byte
-	ldi r16, lo8(-1)			; Timeout bei 255 
+	ldi r16, lo8(-1)			; Timeout bei 256 
 	1:
 	call mmc_read_byte
 	cpi r24, lo8(-2)			; 0xfe = Startbyte	
 	breq 2f
+	call mmc_read_byte			; Noch ein Versuch
+	cpi r24, lo8(-2)	
+	breq 2f	
 	dec r16 
 	brne 1b
 	rjmp 4f						; Timeout, also abbrechen :(

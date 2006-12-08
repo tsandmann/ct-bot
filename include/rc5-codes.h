@@ -64,10 +64,10 @@
 #ifdef MCU
 
 	// Dies ist die Standard-Fernbedienung unter anderem fuer den Sim
-	#define RC_HAVE_HQ_RC_UNIVERS29_334
+//	#define RC_HAVE_HQ_RC_UNIVERS29_334
 	
 	//#define RC_HAVE_HAUPPAUGE_WINTV
-	//#define RC_HAVE_HAUPPAUGE_MediaMPV
+	#define RC_HAVE_HAUPPAUGE_MediaMPV
 	//#define RC_HAVE_CONRAD_PROMO8
 	//#define RC_HAVE_VIVANCO_UR89
 	//#define RC_HAVE_VIVANCO_UR89_TV_CODE_089

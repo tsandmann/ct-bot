@@ -112,7 +112,6 @@ void maus_sens_write(int8 adr, uint8 data){
 uint8 maus_sens_read(uint8 adr){
 	MOUSE_Enable();
 	int16 i;
-	uint8 data;
 	maus_sens_writeByte(adr);
 	for (i=0; i<300; i++){asm volatile("nop");}	// mindestens 100 Mikrosekunden Pause!!!
 	

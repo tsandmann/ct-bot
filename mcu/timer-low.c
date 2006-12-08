@@ -44,9 +44,13 @@
 // ---- Timer 2 ------
 
 /*!
-  Interrupt Handler for Timer/Counter 2 
+  Interrupt Handler fuer Timer/Counter 2(A)
  */
-SIGNAL (SIG_OUTPUT_COMPARE2){
+#ifdef __AVR_ATmega644__
+	SIGNAL (TIMER2_COMPA_vect){
+#else
+	SIGNAL (SIG_OUTPUT_COMPARE2){
+#endif
    
 	/* - FERNBEDIENUNG - */
 	#ifdef IR_AVAILABLE
@@ -65,15 +69,19 @@ void timer_2_init(void){
 	TCNT2  = 0x00;            // TIMER vorladen
 	
 	// aendert man den Prescaler muss man die Formel fuer OCR2 anpassen !!!
-	// use CLK/64 prescale value, clear timer/counter on compare match   
-	TCCR2 = _BV(WGM21) | _BV(CS22);
-//	TCCR2 = _BV(WGM21) | _BV(CS22)| _BV(COM20);
+	// Compare Register nur 8-Bit breit --> evtl. teiler anpassen
+	#ifdef __AVR_ATmega644__
+		TCCR2A = _BV(WGM21);	// CTC Mode
+		TCCR2B = _BV(CS22);		// Prescaler = CLK/64
+		OCR2A = ((XTAL/64/TIMER_2_CLOCK) - 1);	// Timer2A
+		TIMSK2  |= _BV(OCIE2A);	// TIMER2 Output Compare Match A Interrupt an
+	#else
+		// use CLK/64 prescale value, clear timer/counter on compare match   
+		TCCR2 = _BV(WGM21) | _BV(CS22);
+		OCR2 = ((XTAL/64/TIMER_2_CLOCK) - 1);
+		TIMSK  |= _BV(OCIE2);	// enable Output Compare 0 overflow interrupt
+	#endif
 	
-	//Compare Register !!!Achtung nur 8-Bit breit --> evtl. teiler anpassen
-	OCR2 = ((XTAL/64/TIMER_2_CLOCK) - 1 );
-	
-	// enable Output Compare 0 overflow interrupt
-	TIMSK  |= _BV(OCIE2);
 	sei();                       // enable interrupts
 }
 #endif

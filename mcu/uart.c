@@ -60,18 +60,28 @@ static volatile uint8 UART_RxTail;				/*!< Zeiger für UART-Puffer */
  * Initialisiere UART
  */
 void uart_init(void){	 
-	/* Senden und Empfangen ermöglichen + RX Interrupt an */
-	UCSRB= (1<<RXEN) | (1<<TXEN)|(1<<RXCIE); 
-
-	/* 8 Bit, 1 Stop, Keine Parity */
-	UCSRC=0x86;
+	#ifdef __AVR_ATmega644__
+		/* Senden und Empfangen ermöglichen + RX Interrupt an */
+		UCSR0B= (1<<RXEN0) | (1<<TXEN0)|(1<<RXCIE0); 			
+		/* 8 Bit, 1 Stop, Keine Parity */
+		UCSR0C=0x86;
+	#else
+		/* Senden und Empfangen ermöglichen + RX Interrupt an */
+		UCSRB= (1<<RXEN) | (1<<TXEN)|(1<<RXCIE); 	
+		/* 8 Bit, 1 Stop, Keine Parity */
+		UCSRC=0x86;
+	#endif
 	
 	/* UART auf 9600 baud */
 //	UBRRH=0;
 //	UBRRL= 103;  /* Werte stehen im Datenblatt tabelarisch */
-
-	UBRRL = (uint8) (( ((uint32)F_CPU) / 16 / ((uint32)BAUDRATE) - 1) & 0xFF);
-	UBRRH = (uint8) (( ((uint32)F_CPU) / 16 / ((uint32)BAUDRATE) - 1) >> 8);
+	#ifdef __AVR_ATmega644__
+		UBRR0L = (uint8) (( ((uint32)F_CPU) / 16 / ((uint32)BAUDRATE) - 1) & 0xFF);
+		UBRR0H = (uint8) (( ((uint32)F_CPU) / 16 / ((uint32)BAUDRATE) - 1) >> 8);
+	#else
+		UBRRL = (uint8) (( ((uint32)F_CPU) / 16 / ((uint32)BAUDRATE) - 1) & 0xFF);
+		UBRRH = (uint8) (( ((uint32)F_CPU) / 16 / ((uint32)BAUDRATE) - 1) >> 8);
+	#endif
 	
 	/* Puffer leeren */
 	UART_RxTail = 0;
@@ -81,7 +91,11 @@ void uart_init(void){
 /*!
  *  Interrupt Handler fuer den Datenempfang per UART
  */
-SIGNAL (SIG_UART_RECV){
+#ifdef __AVR_ATmega644__
+	SIGNAL (USART0_RX_vect){
+#else
+	SIGNAL (SIG_UART_RECV){
+#endif
 
 	/* Pufferindex berechnen */
 	UART_RxHead++;						/* erhoehen */ 
@@ -91,7 +105,11 @@ SIGNAL (SIG_UART_RECV){
 		/* TODO Fehler behandeln !!
 		 * ERROR! Receive buffer overflow */
 	}
-	UART_RxBuf[UART_RxHead] = UDR; /* Daten lesen und sichern*/	
+	#ifdef __AVR_ATmega644__
+		UART_RxBuf[UART_RxHead] = UDR0; /* Daten lesen und sichern*/
+	#else
+		UART_RxBuf[UART_RxHead] = UDR; /* Daten lesen und sichern*/	
+	#endif	
 }
 
 /*! 
@@ -115,8 +133,13 @@ uint8 uart_data_available(void){
  * @param data Das Zeichen
  */
 void uart_send_byte(uint8 data){ // Achtung ist noch blockierend!!!!
-	while ((UCSRA & _BV(UDRE)) ==0){asm volatile("nop"); }	// warten bis UART sendebereit
-	UDR= data;
+	#ifdef __AVR_ATmega644__
+		while ((UCSR0A & _BV(UDRE0)) ==0){asm volatile("nop"); }	// warten bis UART sendebereit
+		UDR0= data;
+	#else
+		while ((UCSRA & _BV(UDRE)) ==0){asm volatile("nop"); }	// warten bis UART sendebereit
+		UDR= data;	
+	#endif
 }
 
 /*!
