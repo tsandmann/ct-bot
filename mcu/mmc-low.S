@@ -335,6 +335,12 @@ mmc_read_sector:
 	call ENA_off 
 	cbi DDR, SPI_DI				; DI auf input
 	sbi DDR, SPI_DO				; DO auf output
+	ldi r24, 7					; 8 CLK-Flanken senden
+	1:		
+	cbi PORT_OUT, SPI_CLK
+	sbi PORT_OUT, SPI_CLK
+	dec r24						; r24--
+	brne 1b						; r24 == 0?			
 	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten		
 	call ENA_on
 	lsl r14						; Block in Bytes umrechnen
