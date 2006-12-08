@@ -345,33 +345,33 @@ uint32 mmc_get_size(void){
 			// und schreiben
 			result= mmc_write_sector(0,buffer);
 			if (result != 0)
-				return 1;
+				return result*10 + 2;
 			
 			// Puffer vorbereiten
 			for (i=0; i< 512; i++)	buffer[i]= 255 - (i & 0xFF);	
 			// und schreiben
 			result= mmc_write_sector(1,buffer);	
 			if (result != 0)
-				return 2;
+				return result*10 + 3;
 		
 			// Puffer lesen	
 			result= mmc_read_sector(0,buffer);	
 			if (result != 0)
-				return 3;
+				return result*10 + 4;
 			
 			// und vergleichen
 			for (i=0; i< 512; i++)
 				if (buffer[i] != (i & 0xFF))
-					return 4;
+					return result*10 + 5;
 		
 			// Puffer lesen	
 			result= mmc_read_sector(1,buffer);
 			if (result != 0)
-				return 5;
+				return result*10 + 6;
 			// und vergleichen
 			for (i=0; i< 512; i++)
 				if (buffer[i] != (255- (i & 0xFF)))
-					return 6;	
+					return 7;	
 
 			/* Zeitmessung beenden */
 			int8 timer_reg=TCNT2;
