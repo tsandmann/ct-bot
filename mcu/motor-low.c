@@ -173,7 +173,7 @@ void pwm_0_init(void){
 		OCR0A = 8;
 	#else
 		TCCR0 = _BV(WGM00) | 	// Normal PWM
-				_BV(COM01) |    // Clear on Compare , Set on Top
+				_BV(COM01);		// Clear on Compare , Set on Top
 				//PWM_CLK_0;
 	
 		OCR0 = 8;	// PWM loescht bei erreichen. daher steht in OCR0 255-Speed!!!
