@@ -57,13 +57,8 @@
 #include "mmc-vm.h"
 #include <stdlib.h>
 
-//#define SPI_Mode				//1 = Hardware SPI | 0 = Software SPI
-
 #define MMC_Disable()	ENA_off(ENA_MMC);
 #define MMC_Enable()	ENA_on(ENA_MMC);
-
-
-//#define nop()  __asm__ __volatile__ ("nop" ::)
 
 #define MMC_prepare()	{ MMC_DDR &=~(1<<SPI_DI);	 MMC_DDR |= (1<<SPI_DO); } 
 
