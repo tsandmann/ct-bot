@@ -165,17 +165,14 @@ void init(void){
 		#ifdef RC5_AVAILABLE
 			ir_init();
 		#endif
-		#ifdef MMC_AVAILABLE
-//			mmc_init();
-		#endif
+	#endif
+
+	#ifdef MMC_AVAILABLE
+		mmc_init();
 	#endif
 			
 	#ifdef MAUS_AVAILABLE
 		maus_sens_init();
-	#endif
-	
-	#ifdef MMC_AVAILABLE
-	//	mmc_init();
 	#endif
 	
 	#ifdef MAP_AVAILABLE
@@ -309,6 +306,19 @@ void init(void){
 				    }  
 					
 				    #endif
+					#ifdef DISPLAY_ODOMETRIC_INFO
+						/* Zeige Positions- und Geschwindigkeitsdaten */
+							display_cursor(1,1);
+							display_printf("heading: %3d  ",(int16)heading);
+							display_cursor(2,1);
+							display_printf("x: %3d  y: %3d  ",(int16)x_pos,(int16)y_pos);
+							display_cursor(3,1);
+							display_printf("v_l: %3d v_r: %3d  ",(int16)v_left,(int16)v_right);						
+							#ifdef MEASURE_MOUSE_AVAILABLE
+								display_cursor(4,1);
+								display_printf("squal: %3d v_c: %3d",maus_get_squal(),(int16)v_mou_center);
+							#endif
+					#endif
 					 
 
 					#ifdef TEST_AVAILABLE_COUNTER	
@@ -335,19 +345,6 @@ void init(void){
 									
 						display_cursor(4,1);
 						display_printf("BORF :%d",binary(reset_flag,2)); 
-					#endif
-					#ifdef DISPLAY_ODOMETRIC_INFO
-						/* Zeige Positions- und Geschwindigkeitsdaten */
-							display_cursor(1,1);
-							display_printf("heading: %3d  ",(int16)heading);
-							display_cursor(2,1);
-							display_printf("x: %3d  y: %3d  ",(int16)x_pos,(int16)y_pos);
-							display_cursor(3,1);
-							display_printf("v_l: %3d v_r: %3d  ",(int16)v_left,(int16)v_right);						
-							#ifdef MEASURE_MOUSE_AVAILABLE
-								display_cursor(4,1);
-								display_printf("squal: %3d v_c: %3d",maus_get_squal(),(int16)v_mou_center);
-							#endif
 					#endif
 					#ifdef DISPLAY_MMC_INFO
 						#ifdef MMC_INFO_AVAILABLE
