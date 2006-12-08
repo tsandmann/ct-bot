@@ -114,6 +114,11 @@ void bot_behave_init(void){
 	#ifdef BEHAVIOUR_GOTO_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(148, bot_goto_behaviour,INACTIVE));
 	#endif
+
+	#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
+		insert_behaviour_to_list(&behaviour, new_behaviour(44, bot_catch_pillar_behaviour,INACTIVE));
+	#endif
+
 	
 	#ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
 		bot_olympic_init(52,100,INACTIVE);

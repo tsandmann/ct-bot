@@ -436,8 +436,10 @@ void rc5_number(RemCtrlFuncPar *par) {
 //					case 5: bot_gotoxy(0,20,20);
 //				#else
 				#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
-					case 5: bot_solve_maze(0); break;
+//					case 5: bot_solve_maze(0); break;
 				#endif
+					case 5: bot_catch_pillar(0); break;
+				
 //				case 5: target_speed_l = BOT_SPEED_MAX; target_speed_r = BOT_SPEED_MAX; break;
 //				#endif
 //				case 5: bot_scan(0); break;
