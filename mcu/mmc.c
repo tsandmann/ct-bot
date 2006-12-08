@@ -357,7 +357,7 @@ uint32 mmc_get_size(void){
 			// und vergleichen
 			for (i=0; i< 512; i++)
 				if (buffer[i] != (i & 0xFF))
-					return result*10 + 5;
+					return 5;
 		
 			// Puffer lesen	
 			result= mmc_read_sector(1,buffer);

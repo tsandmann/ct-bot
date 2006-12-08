@@ -34,7 +34,7 @@
 #ifdef ENA_AVAILABLE
 
 
-volatile uint8 ena =0;	/*!< Sichert den Zustand der Enable-Leitungen */
+uint8 ena =0;	/*!< Sichert den Zustand der Enable-Leitungen */
 
 /*!
  * Initialisiert die Enable-Leitungen
