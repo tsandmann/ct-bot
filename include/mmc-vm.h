@@ -29,17 +29,43 @@
 
 #include "ct-Bot.h"  
 
-#ifdef MMC_AVAILABLE
 #ifdef MMC_VM_AVAILABLE
 
+/*! 
+ * Gibt die Anzahl der Pagefaults seit Systemstart bzw. Ueberlauf zurueck
+ * @return		#Pagefaults
+ * @author 		Timo Sandmann (mail@timosandmann.de)
+ * @date 		30.11.2006
+ */
 uint16 mmc_get_pagefaults(void);
 
+/*! 
+ * Fordert virtuellen Speicher an
+ * @param size		Groesse des gewuenschten Speicherblocks
+ * @param aligned	0: egal, 1: 512 Byte ausgerichtet
+ * @return			Virtuelle Anfangsadresse des angeforderten Speicherblocks, 0 falls Fehler 
+ * @author 			Timo Sandmann (mail@timosandmann.de)
+ * @date 			30.11.2006
+ */
 uint32 mmcalloc(uint32 size, uint8 aligned);
 
+/*! 
+ * Gibt einen Zeiger auf einen Speicherblock im RAM zurueck
+ * @param addr	Eine virtuelle Adresse
+ * @return		Zeiger auf uint8, NULL falls Fehler
+ * @author 		Timo Sandmann (mail@timosandmann.de)
+ * @date 		30.11.2006
+ */
 uint8* mmc_get_data(uint32 addr);
 
-uint32 mmc_get_end_of_block(uint32 addr);
+/*! 
+ * Gibt die letzte Adresse einer Seite zurueck
+ * @param addr	Eine virtuelle Adresse
+ * @return		Adresse 
+ * @author 		Timo Sandmann (mail@timosandmann.de)
+ * @date 		30.11.2006
+ */
+inline uint32 mmc_get_end_of_page(uint32 addr);
 
 #endif	// MMC_VM_AVAILABLE
-#endif	// MMC_AVAILABLE
-#endif	//MMC_VM_H_
+#endif	// MMC_VM_H_

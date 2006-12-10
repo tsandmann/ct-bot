@@ -17,6 +17,7 @@
  * 
  */
 
+#ifdef MCU
 ; Hinweis:
 ; Sollte der Build-Prozess an dieser Datei scheitern, bitte auch die 
 ; Datei ".settings/org.eclipse.core.runtime.prefs" aus dem CVS laden, oder
@@ -32,8 +33,6 @@
 
 ; TODO:	* Init-Check nicht in write_ und read_sector, sondern in mmc-vm.c? - wer ruft w/r_sector auf?
 
-
-#ifdef MCU
 #include "mmc-low.h"
 #include "ct-Bot.h"
 #include "ena.h"
@@ -149,6 +148,46 @@ mmc_read_byte:
 	ret
 
 /*!
+ * Schaltet die Karte aktiv und checkt dabei die Initialisierung
+ * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich
+ * @author 			Timo Sandmann (mail@timosandmann.de)
+ * @date 			09.12.2006
+ */
+.global mmc_enable
+	.type mmc_enable, @function
+mmc_enable:
+	lds r24, mmc_init_state		; Initialisierung der Karte checken
+	tst r24
+	breq 1f
+	call mmc_init				; neu initialisieren
+	tst r24
+	breq 1f
+	ret							; kein Init moeglich => Fehler
+	1:
+	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten
+	call ENA_on	
+	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
+	call ENA_off
+	cbi DDR, SPI_DI				; DI auf input
+	sbi DDR, SPI_DO				; DO auf output
+	ldi r24, 7					; 8 CLK-Flanken senden
+	1:		
+	cbi PORT_OUT, SPI_CLK
+	sbi PORT_OUT, SPI_CLK
+	dec r24						; r24--
+	brne 1b						; r24 == 0?		
+	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten		
+	call ENA_on
+	ldi r24, 7					; 8 CLK-Flanken senden
+	1:		
+	cbi PORT_OUT, SPI_CLK
+	sbi PORT_OUT, SPI_CLK
+	dec r24						; r24--
+	brne 1b						; r24 == 0?		
+	ldi r24, 0	
+	ret							; alles ok
+
+/*!
  * Schreibt einen 512-Byte Sektor auf die Karte
  * @param addr 		Nummer des 512-Byte Blocks
  * @param Buffer 	Zeiger auf den Puffer
@@ -167,28 +206,11 @@ mmc_write_sector:
 	movw r14, r22				; Byte 1 und 2 von Parameter addr sichern
 	mov r16, r24				; Byte 3 von Parameter addr sichern  
 	movw r28, r20				; Paramter Buffer sichern
-	lds r24, mmc_init_state		; Initialisierung der Karte checken
+	call mmc_enable				; Karte aktiv schalten
 	tst r24
 	breq 1f
-	call mmc_init				; neu initialisieren
-	tst r24
-	breq 1f
-	rjmp 4f
-	1:
-	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten		
-	call ENA_on	
-	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
-	call ENA_off
-	cbi DDR, SPI_DI				; DI auf input
-	sbi DDR, SPI_DO				; DO auf output
-	ldi r24, 7					; 8 CLK-Flanken senden
-	1:		
-	cbi PORT_OUT, SPI_CLK
-	sbi PORT_OUT, SPI_CLK
-	dec r24						; r24--
-	brne 1b						; r24 == 0?		
-	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten		
-	call ENA_on	
+	rjmp 4f						; Karte kann nicht initialisiert werden => Fehler
+	1:	
 	lsl r14						; Block in Bytes umrechnen
 	rol r15
 	rol r16
@@ -204,23 +226,29 @@ mmc_write_sector:
 	call mmc_write_byte
 	ldi r24, lo8(-1)			; Byte 5 (CRC)	
 	call mmc_write_byte
-	ldi r26, lo8(-1)			; Timeout bei 256
+	ldi r26, lo8(-1)			; Timeout nach 256 Versuchen
 	1:
 	call mmc_read_byte
 	cpi r24, lo8(-1)			; !0xff = Antwort	
-	brne 2f
-	call mmc_read_byte			; noch ein Versuch (8-Bit Timeout)
-	cpi r24, lo8(-1)			; !0xff = Antwort	
-	brne 2f	
-	dec r26
+	brne 3f
+	call mmc_read_byte
+	cpi r24, lo8(-1)			; noch ein Versuch
+	brne 3f
+	dec r26						; r26--
 	brne 1b
-	2:
+	3:
 	tst r24	 					; Fehler oder Abbruch durch Timeout?
 	breq 1f 
 	rjmp 4f 					; Return-Code 1
 	1:
+	ldi r24, 7					; 8 CLK-Flanken senden
+	2:		
+	cbi PORT_OUT, SPI_CLK
+	sbi PORT_OUT, SPI_CLK
+	dec r24						; r24--
+	brne 2b						; r24 == 0?		
 	ldi r24, lo8(-2)			; Start-Byte an Karte senden
-	call mmc_write_byte 
+	call mmc_write_byte
 	in r26, PORT_OUT			; MMC_PORT_OUT einlesen
 	cbr r26, SPI_CLK_MASK		; CLK auf low
 	ldi r18, 2					; r18 = 2
@@ -325,28 +353,11 @@ mmc_read_sector:
 	movw r14, r22				; Byte 1 und 2 von Parameter addr sichern
 	mov r16, r24				; Byte 3 von Parameter addr sichern
 	movw r28, r20				; Parameter Buffer sichern
-	lds r24, mmc_init_state		; Initialisierung der Karte checken
+	call mmc_enable				; Karte aktiv schalten
 	tst r24
 	breq 1f
-	call mmc_init				; neu initialisieren
-	tst r24
-	breq 1f
-	rjmp 4f
+	rjmp 5f						; Karte kann nicht initialisiert werden => Fehler
 	1:
-	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten		
-	call ENA_on	
-	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten 
-	call ENA_off 
-	cbi DDR, SPI_DI				; DI auf input
-	sbi DDR, SPI_DO				; DO auf output
-	ldi r24, 7					; 8 CLK-Flanken senden
-	1:		
-	cbi PORT_OUT, SPI_CLK
-	sbi PORT_OUT, SPI_CLK
-	dec r24						; r24--
-	brne 1b						; r24 == 0?			
-	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten		
-	call ENA_on
 	lsl r14						; Block in Bytes umrechnen
 	rol r15
 	rol r16
@@ -438,15 +449,15 @@ mmc_read_sector:
 	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
 	call ENA_off
 	tst r16						; Abbruch durch Timeout?
-	breq 1f						; r27 == 0?
+	breq 5f						; r27 == 0?
 	ldi r24, lo8(0)				; Alles ok, also Return-Code 0 laden :) 
 	ldi r25, hi8(0)
-	rjmp 2f
-	1:
+	rjmp 6f
+	5:
 	ldi r24, lo8(1)				; Fehler, also Return-Code 1 laden
 	ldi r25, hi8(1)
 	sts mmc_init_state, r24		; Initstatus auf Fehler setzen	
-	2:
+	6:
 	pop r29						; allgemeine Register wiederherstellen
 	pop r28
 	pop r16

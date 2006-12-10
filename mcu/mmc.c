@@ -278,12 +278,12 @@ uint32 mmc_get_size(void){
 			static uint16 pagefaults = 0;
 			static uint16 old_pf;
 			/* virtuelle Adressen holen */
-			static uint32 v_addr1 = -1;
-			static uint32 v_addr2 = -1;
-			static uint32 v_addr3 = -1;
-			if (v_addr1 == -1) v_addr1 = mmcalloc(512, 1);	// Testdaten 1
-			if (v_addr2 == -1) v_addr2 = mmcalloc(512, 1);	// Testdaten 2
-			if (v_addr3 == -1) v_addr3 = mmcalloc(1, 1);	// Dummy
+			static uint32 v_addr1 = 0;
+			static uint32 v_addr2 = 0;
+			static uint32 v_addr3 = 0;
+			if (v_addr1 == 0) v_addr1 = mmcalloc(512, 1);	// Testdaten 1
+			if (v_addr2 == 0) v_addr2 = mmcalloc(512, 1);	// Testdaten 2
+			if (v_addr3 == 0) v_addr3 = mmcalloc(1, 1);		// Dummy
 			/* Zeitmessung starten */
 			uint16 start_ticks=TIMER_GET_TICKCOUNT_16;
 			uint8 start_reg=TCNT2;	
