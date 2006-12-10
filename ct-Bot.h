@@ -56,7 +56,7 @@
 #define DISPLAY_MMC_INFO	/*!< Zeigt auf Screen 4 die Daten der MMC-Karte an */
 //#define DISPLAY_BEHAVIOUR_AVAILABLE  /*!< Anzeige der Verhalten im Display Screen 3, ersetzt Counteranzeige */
 #define MEASURE_MOUSE_AVAILABLE			/*!< Geschwindigkeiten werden aus den Maussensordaten berechnet */
-#define MEASURE_COUPLED_AVAILABLE		/*!< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
+//#define MEASURE_COUPLED_AVAILABLE		/*!< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
 
 
 //#define WELCOME_AVAILABLE	/*!< kleiner Willkommensgruss */
@@ -84,7 +84,7 @@
 
 #define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung */
 #define MINI_FAT_AVAILABLE		/*!< koennen wir sektoren in FAT-systemen finden */
-//#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card */
+//#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
 /************************************************************
 * Some Dependencies!!!
 ************************************************************/
@@ -182,7 +182,9 @@
 
 #ifndef MMC_AVAILABLE
 	#undef MINI_FAT_AVAILABLE
-	#undef MMC_VM_AVAILABLE
+	#ifdef MCU
+		#undef MMC_VM_AVAILABLE
+	#endif
 #endif
 
 #ifdef LOG_AVAILABLE

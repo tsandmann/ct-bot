@@ -72,7 +72,7 @@ void bot_motor(int16 left, int16 right){
  * @param servo Nummer des Servos
  * @param servo Zielwert
  */
-void bot_servo(uint8 servo, uint8 pos){
+void servo_low(uint8 servo, uint8 pos){
 	int16 p = pos;
 	int16 s = servo;
 	command_write(CMD_AKT_SERVO, SUB_CMD_NORM ,&s,&p,0);
