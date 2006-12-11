@@ -98,7 +98,7 @@
 typedef struct{			/*!< Struktur eines Cacheeintrags */
 	uint32	addr;		/*!< Tag = virtuelle Adresse der ins RAM geladenen Seite */ 
 	uint8*	p_data;		/*!< Daten = Zeiger auf 512 Byte grosse Seite im RAM */ 
-} t_vm_cache;
+} vm_cache_t;
 
 static uint32 mmc_start_address = MMC_START_ADDRESS;	/*!< physische Adresse der MMC / SD-Card, wo unser VM beginnt */
 static uint32 used_mmc_blocks = 0;						/*!< Anzahl der vom VM belegten Bloecke auf der MMC / SD-Card */
@@ -108,7 +108,7 @@ static int8 last_used_cacheblock = -1;					/*!< Index auf Tail */
 static int8 allocated_pages = 0;						/*!< Anzahl bereits belegter Cachebloecke */
 uint16 pagefaults = 0;									/*!< Anzahl der Pagefaults seit Systemstart bzw. Ueberlauf */
 
-t_vm_cache page_cache[MAX_PAGES_IN_SRAM];				/*!< der eigentliche Cache, vollassoziativ */
+vm_cache_t page_cache[MAX_PAGES_IN_SRAM];				/*!< der eigentliche Cache, vollassoziativ */
 
 // Vorsicht, "loescht" alle Daten!		TODO: Unsinn? Funktion weglassen? -> mini-fat.c 
 void set_mmc_start_address(uint32 address){	// TODO: Reinit oder so noetig => was tun?! oder nix tun?
