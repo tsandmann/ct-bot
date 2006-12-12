@@ -35,6 +35,7 @@
 //		* kleine Doku machen
 //		* Timeouts in mmc_init() ueberdenken
 //		* Unterstuetzung fuer Hardware-SPI wieder einbauen - geht aber eh net :/ 
+//		* Wo nur CLK-Flanken gebraucht werden, auch nur CLK-Flanken erzeugen
 
 
 #include "ct-Bot.h"
@@ -101,18 +102,15 @@ uint8 mmc_write_command(uint8 *cmd){
 	uint8 result = 0xff;
 	uint16 Timeout = 0;
 
-	//set MMC_Chip_Select to high (MMC/SD-Karte Inaktiv) 
-	MMC_Enable();
-	MMC_Disable();
-
-	// Da ein paar Leitungen noch von anderer Hardware mitbenutzt werden: reinit
-	MMC_prepare();
-
-	// sendet 8 Clock Impulse
-	mmc_write_byte(0xFF);
-
-	// set MMC_Chip_Select to low (MMC/SD-Karte Aktiv)
-	MMC_Enable();
+//	//set MMC_Chip_Select to high (MMC/SD-Karte Inaktiv) 
+//	MMC_Enable();
+//	MMC_Disable();
+//	// Da ein paar Leitungen noch von anderer Hardware mitbenutzt werden: reinit
+//	MMC_prepare();
+//	// sendet 8 Clock Impulse
+//	mmc_write_byte(0xFF);
+//	// set MMC_Chip_Select to low (MMC/SD-Karte Aktiv)
+//	MMC_Enable();
 
 	// sendet 6 Byte Kommando
 	uint8 i;
@@ -150,6 +148,9 @@ uint8 mmc_init(void){
 	// Initialisiere MMC/SD-Karte in den SPI-Mode
 	for (i=0; i<0x0f; i++) // Sendet min 74+ Clocks an die MMC/SD-Karte
 		mmc_write_byte(0xff);
+	
+	// MMC_Chip_Select auf low (MMC/SD-Karte aktiv)
+	MMC_Enable();
 	
 	// Sendet Kommando CMD0 an MMC/SD-Karte
 	uint8 CMD[] = {0x40,0x00,0x00,0x00,0x00,0x95};
@@ -189,6 +190,17 @@ uint8 mmc_read_block(uint8 *cmd,uint8 *Buffer,uint16 count){
 	/* Initialisierung checken */
 	if (mmc_init_state != 0) 
 		if (mmc_init() != 0) return 1;	
+		
+	// MMC_Chip_Select auf high (MMC/SD-Karte inaktiv) 
+	MMC_Enable();
+	MMC_Disable();
+	// Da ein paar Leitungen noch von anderer Hardware mitbenutzt werden: reinit
+	MMC_prepare();
+	// sendet 8 Clock Impulse
+	mmc_write_byte(0xFF);
+	// MMC_Chip_Select auf low (MMC/SD-Karte aktiv)
+	MMC_Enable();		
+		
 	// Sendet Kommando cmd an MMC/SD-Karte
 	if (mmc_write_command(cmd) != 0) {
 		mmc_init_state = 1;

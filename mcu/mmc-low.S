@@ -170,12 +170,12 @@ mmc_enable:
 	call ENA_off
 	cbi DDR, SPI_DI				; DI auf input
 	sbi DDR, SPI_DO				; DO auf output
-	ldi r24, 7					; 8 CLK-Flanken senden
-	1:		
-	cbi PORT_OUT, SPI_CLK
-	sbi PORT_OUT, SPI_CLK
-	dec r24						; r24--
-	brne 1b						; r24 == 0?		
+;	ldi r24, 7					; 8 CLK-Flanken senden
+;	1:		
+;	cbi PORT_OUT, SPI_CLK
+;	sbi PORT_OUT, SPI_CLK
+;	dec r24						; r24--
+;	brne 1b						; r24 == 0?		
 	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten		
 	call ENA_on
 	ldi r24, 7					; 8 CLK-Flanken senden
@@ -311,21 +311,26 @@ mmc_write_sector:
 	sbrc r27, 7					; Timeout nach 128 Versuchen
 	brne 2b						; == 0xff?
 	mov r16, r24				; Karte ready oder Timeout, Antwort retten
-	3:								
-	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
-	call ENA_off
+;	3:								
+;	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
+;	call ENA_off
 	cpi r16, lo8(-1)			; War Antwort == 0xff?
 	brne 5f
-	ldi r24, lo8(0)				; Alles ok, also Return-Code 0 laden :)
+	ldi r16, 0					; Alles ok, also Return-Code 0 laden :)
 	rjmp 6f
 	4:
-	ldi r24, lo8(1)				; Fehler, Return-Code 1 laden
-	sts mmc_init_state, r24		; Initstatus auf Fehler setzen	
+	ldi r16, 1					; Fehler, Return-Code 1 laden
+	sts mmc_init_state, r16		; Initstatus auf Fehler setzen	
 	rjmp 6f
 	5:
-	ldi r24, lo8(2)				; Fehler, Return-Code 2 laden
-	sts mmc_init_state, r24		; Initstatus auf Fehler setzen		
+	ldi r16, 2					; Fehler, Return-Code 2 laden
+	sts mmc_init_state, r16		; Initstatus auf Fehler setzen		
 	6:
+	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
+	call ENA_off
+	cbi PORT_OUT, SPI_CLK		; CLK-Flanke
+	sbi PORT_OUT, SPI_CLK
+	mov	r24, r16				; Return-Code	
 	ldi r25, 0
 	pop r29						; allgemeine Register wiederherstellen
 	pop r28
@@ -446,18 +451,22 @@ mmc_read_sector:
 	call mmc_read_byte			; crc-Dummy lesen
 	call mmc_read_byte
 	4:
-	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
-	call ENA_off
+;	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
+;	call ENA_off
 	tst r16						; Abbruch durch Timeout?
 	breq 5f						; r27 == 0?
-	ldi r24, lo8(0)				; Alles ok, also Return-Code 0 laden :) 
-	ldi r25, hi8(0)
+	ldi r16, 0					; Alles ok, also Return-Code 0 laden :) 
 	rjmp 6f
 	5:
-	ldi r24, lo8(1)				; Fehler, also Return-Code 1 laden
-	ldi r25, hi8(1)
-	sts mmc_init_state, r24		; Initstatus auf Fehler setzen	
+	ldi r16, 1					; Fehler, also Return-Code 1 laden
+	sts mmc_init_state, r16		; Initstatus auf Fehler setzen	
 	6:
+	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
+	call ENA_off
+	cbi PORT_OUT, SPI_CLK		; CLK-Flanke
+	sbi PORT_OUT, SPI_CLK
+	mov r24, r16				; Return-Code
+	ldi r25, 0
 	pop r29						; allgemeine Register wiederherstellen
 	pop r28
 	pop r16
