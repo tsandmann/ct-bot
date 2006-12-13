@@ -86,12 +86,6 @@ uint8 mmc_init (void);
 	 * @return Groesse der Karte in Byte. Bei einer 4 GByte-Karte kommt 0xFFFFFFFF zurueck
 	 */
 	uint32 mmc_get_size(void);
-	
-	/*! Testet die MMC-Karte. Schreibt nacheinander 2 Sektoren a 512 Byte mit testdaten voll und liest sie wieder aus
-	 * !!! Achtung loescht die Karte
-	 * @return 0, wenn alles ok
-	 */
-	uint8 mmc_test(void);
 #endif
 
 #ifdef MMC_WRITE_TEST_AVAILABLE
