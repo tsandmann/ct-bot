@@ -108,6 +108,6 @@ void maus_image_prepare(void);
  * Gibt den SQUAL-Wert zurueck. Dieser gibt an, wieviele Merkmale der Sensor 
  * im aktuell aufgenommenen Bild des Untergrunds wahrnimmt
  */
-int8 maus_get_squal(void);
+uint8 maus_get_squal(void);
 
 #endif

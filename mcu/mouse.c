@@ -175,7 +175,7 @@ int8 maus_image_read(void){
  * Gibt den SQUAL-Wert zurueck. Dieser gibt an, wieviele Merkmale der Sensor 
  * im aktuell aufgenommenen Bild des Untergrunds wahrnimmt
  */
-int8 maus_get_squal(void) {
+uint8 maus_get_squal(void) {
 	return maus_sens_read(MOUSE_SQUAL_REG);
 }
 
