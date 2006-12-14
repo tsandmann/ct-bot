@@ -75,7 +75,7 @@ void ENA_on(uint8 enable){
 		// Und dann den Maussensor an
 		ena &= ~ENA_MOUSE_SENSOR;		
 	} else	if (enable == ENA_MMC) {		// Maus sensor aus, MMC aan
-		#ifdef MOUSE_AVAILABLE
+		#ifdef MAUS_AVAILABLE
 			if ((ena & ENA_MOUSE_SENSOR) ==0){ // War der Maussensor an?
 				maus_sens_highZ();	// Der Maussensor muss die Datenleitung freigeben
 				ena |= ENA_MOUSE_SENSOR;	// Maus aus
