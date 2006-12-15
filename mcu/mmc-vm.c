@@ -68,9 +68,10 @@
 // 		  Adressraum fuer dynamisch angeforderten MMC-Speicher dann dahinter => mmc_start_address umbiegen?
 //		* Permanente Daten zu Beginn einlesen / nicht ueberschreiben -> mini-fat
 //		* Funktion zum Rueckschreiben der Pages auf MMC (und wann? - Rueckschreibestrategie ueberlegen!)
-//		* LRU implementieren
 //		* Code optimieren, Groesse und Speed
 //		* PC Version implementieren
+//		* page_write_back() implementieren
+//		* Bug in mmcalloc() fixen (aligned = 1 klappt nicht)
 
 #include "ct-Bot.h"  
 
@@ -83,7 +84,7 @@
 
 #ifdef MCU
 	#define MMC_START_ADDRESS 512	// [512;2^32-1]
-	#define MAX_PAGES_IN_SRAM 2		// [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald die Page verwendet wird
+	#define MAX_PAGES_IN_SRAM 3		// [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald die Page verwendet wird
 	#define swap_out	mmc_write_sector
 	#define swap_in		mmc_read_sector
 	#define swap_space	mmc_get_size()
@@ -98,23 +99,28 @@
 typedef struct{			/*!< Struktur eines Cacheeintrags */
 	uint32	addr;		/*!< Tag = virtuelle Adresse der ins RAM geladenen Seite */ 
 	uint8*	p_data;		/*!< Daten = Zeiger auf 512 Byte grosse Seite im RAM */ 
+	#if MAX_PAGES_IN_SRAM > 2
+		uint8	succ;		/*!< Zeiger auf Nachfolger (LRU) */
+		uint8	prec;		/*!< Zeiger auf Vorgaenger (LRU) */
+	#endif
 } vm_cache_t;
 
 static uint32 mmc_start_address = MMC_START_ADDRESS;	/*!< physische Adresse der MMC / SD-Card, wo unser VM beginnt */
 static uint32 used_mmc_blocks = 0;						/*!< Anzahl der vom VM belegten Bloecke auf der MMC / SD-Card */
 static uint32 next_mmc_address = MMC_START_ADDRESS;		/*!< naechste freie virtuelle Adresse */
 static uint8 pages_in_sram = MAX_PAGES_IN_SRAM;			/*!< Groesse des Caches im RAM */
-static int8 last_used_cacheblock = -1;					/*!< Index auf Tail */
 static int8 allocated_pages = 0;						/*!< Anzahl bereits belegter Cachebloecke */
+static uint8 oldest_cacheblock = 0;						/*!< Zeiger auf den am laengsten nicht genutzten Eintrag (LRU) */
+static uint8 recent_cacheblock = 0;						/*!< Zeiger auf den letzten genutzten Eintrag (LRU) */
 uint16 pagefaults = 0;									/*!< Anzahl der Pagefaults seit Systemstart bzw. Ueberlauf */
 
-vm_cache_t page_cache[MAX_PAGES_IN_SRAM];				/*!< der eigentliche Cache, vollassoziativ */
+vm_cache_t page_cache[MAX_PAGES_IN_SRAM];				/*!< der eigentliche Cache, vollassoziativ, LRU-Policy */
 
 // Vorsicht, "loescht" alle Daten!		TODO: Unsinn? Funktion weglassen? -> mini-fat.c 
-void set_mmc_start_address(uint32 address){	// TODO: Reinit oder so noetig => was tun?! oder nix tun?
-	mmc_start_address = address;	
-	next_mmc_address = mmc_start_address;
-}
+//void set_mmc_start_address(uint32 address){	// TODO: Reinit oder so noetig => was tun?! oder nix tun?
+//	mmc_start_address = address;	
+//	next_mmc_address = mmc_start_address;
+//}
 
 /*! 
  * Gibt die Anfangsadresse einer Seite zurueck
@@ -190,13 +196,31 @@ int8 mmc_get_cacheblock_of_page(uint32 addr){
  */
 uint8 mmc_load_page(uint32 addr){
 	if (addr < mmc_start_address || addr >= next_mmc_address) return 1;	// ungueltige virtuelle Adresse :(
-	if (mmc_get_cacheblock_of_page(addr) >= 0) return 0;	// Seite ist bereits geladen :)
-	/* Neue Seite einlagern, derzeit FIFO Policy */
-	int8 next_cacheblock;
-	if (last_used_cacheblock+1 < pages_in_sram) next_cacheblock = last_used_cacheblock + 1;	// Z/pages_in_sramZ
-	else next_cacheblock = 0;
-	if (allocated_pages <= next_cacheblock){
+	int8 cacheblock = mmc_get_cacheblock_of_page(addr); 
+	if (cacheblock >= 0){	// Cache-Hit, Seite ist bereits geladen :)
+		/* LRU */	
+		#if MAX_PAGES_IN_SRAM > 2
+			if (recent_cacheblock == cacheblock) page_cache[cacheblock].succ = cacheblock;	// Nachfolger des neuesten Eintrags ist die Identitaet
+			if (oldest_cacheblock == cacheblock){
+				oldest_cacheblock = page_cache[cacheblock].succ;	// Nachfolger ist neuer aeltester Eintrag
+				page_cache[page_cache[cacheblock].succ].prec = oldest_cacheblock;	// Vorgaenger der Nachfolgers ist seine Identitaet				
+			}  
+			else{
+				page_cache[page_cache[cacheblock].prec].succ = page_cache[cacheblock].succ;	// Nachfolger des Vorgaengers ist eigener Nachfolger
+				page_cache[page_cache[cacheblock].succ].prec = page_cache[cacheblock].prec;	// Vorganeger des Nachfolgers ist eigener Vorgaenger
+			}
+			page_cache[cacheblock].prec = recent_cacheblock;	// alter neuester Eintrag ist neuer Vorgaenger
+		#else
+			oldest_cacheblock = (pages_in_sram - 1) - cacheblock;	// aeltester Eintrag ist nun der andere Cacheblock (wenn verfuegbar)
+		#endif
+		recent_cacheblock = cacheblock;						// neuester Eintrag ist nun die Identitaet
+		return 0;
+	}
+	/* Cache-Miss => neue Seite einlagern, LRU Policy */
+	int8 next_cacheblock = oldest_cacheblock;
+	if (allocated_pages < pages_in_sram){
 		/* Es ist noch Platz im Cache */
+		next_cacheblock = allocated_pages;
 		page_cache[next_cacheblock].p_data = malloc(512);	// Speicher anfordern
 		if (page_cache[next_cacheblock].p_data == NULL){	// Da will uns jemand keinen Speicher mehr geben :(
 			if (pages_in_sram == 1) return 1;	// Hier ging was schief, das wir so nicht loesen koennen
@@ -204,15 +228,25 @@ uint8 mmc_load_page(uint32 addr){
 			pages_in_sram--;
 			return mmc_load_page(addr);
 		}
-		allocated_pages++;	// Cache-Fuellstand aktualisieren
+		allocated_pages++;	// Cache-Fuellstand aktualisieren		
 	} else{
 		/* Cache bereits voll => Pager muss aktiv werden */
 		pagefaults++;	// kleine Statistik
 		if (swap_out(page_cache[next_cacheblock].addr, page_cache[next_cacheblock].p_data) != 0) return 2;
 		if (swap_in(mmc_get_start_of_page(addr), page_cache[next_cacheblock].p_data) != 0) return 3;
+		#if MAX_PAGES_IN_SRAM > 2
+			oldest_cacheblock = page_cache[oldest_cacheblock].succ;	// Nachfolger des aeltesten Eintrags ist neuer aeltester Eintrag
+		#else
+			oldest_cacheblock = (pages_in_sram - 1) - next_cacheblock;	// neuer aeltester Eintrag ist nun der andere Cacheblock (wenn verfuegbar)
+		#endif
 	}
 	page_cache[next_cacheblock].addr = mmc_get_start_of_page(addr);	// Cache-Tag aktualisieren
-	last_used_cacheblock = next_cacheblock;		// FIFO-Zeiger aktualisieren
+	/* LRU */
+	#if MAX_PAGES_IN_SRAM > 2
+		page_cache[next_cacheblock].prec = recent_cacheblock;	// Vorgaenger dieses Cacheblocks ist der bisher neueste Eintrag
+		page_cache[recent_cacheblock].succ = next_cacheblock;	// Nachfolger des bisher neuesten Eintrags ist dieser Cacheblock  
+	#endif
+	recent_cacheblock = next_cacheblock;					// Dieser Cacheblock ist der neueste Eintrag
 	return 0;
 }
 

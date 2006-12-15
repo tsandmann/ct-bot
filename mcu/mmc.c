@@ -293,34 +293,41 @@ uint32 mmc_get_size(void){
 			static uint32 v_addr1 = 0;
 			static uint32 v_addr2 = 0;
 			static uint32 v_addr3 = 0;
+			static uint32 v_addr4 = 0;
 			if (v_addr1 == 0) v_addr1 = mmcalloc(512, 1);	// Testdaten 1
 			if (v_addr2 == 0) v_addr2 = mmcalloc(512, 1);	// Testdaten 2
-			if (v_addr3 == 0) v_addr3 = mmcalloc(1, 1);		// Dummy
+			if (v_addr3 == 0) v_addr3 = mmcalloc(512, 1);	// Dummy 1
+			if (v_addr4 == 0) v_addr4 = mmcalloc(512, 1);	// Dummy 2
 			/* Zeitmessung starten */
 			uint16 start_ticks=TIMER_GET_TICKCOUNT_16;
 			uint8 start_reg=TCNT2;	
 			/* Pointer auf Puffer holen */
-			uint8* p_addr = mmc_get_data(v_addr1);
+			uint8* p_addr = mmc_get_data(v_addr1);	// Cache-Hit, CB 0
 			if (p_addr == NULL) return 2;
 			/* Testdaten schreiben */
 			for (i=0; i<512; i++)
 				p_addr[i] = (i & 0xff);
-	
-			p_addr = mmc_get_data(v_addr3);		// Sinnlos Speicher anfordern, um Pagefaults zu provozieren
 			/* Pointer auf zweiten Speicherbereich holen */
-			p_addr = mmc_get_data(v_addr2);
+			p_addr = mmc_get_data(v_addr2);		// Cache-Hit, CB 1
 			if (p_addr == NULL)	return 3;
 			/* Testdaten Teil 2 schreiben */
 			for (i=0; i<512; i++)
-				p_addr[i] = 255 - (i & 0xff);
+				p_addr[i] = 255 - (i & 0xff);			
+			/* kleiner LRU-Test */
+			p_addr = mmc_get_data(v_addr1);	// Cache-Hit, CB 0
+			p_addr = mmc_get_data(v_addr4);	// Cache-Miss, => CB 1
+			p_addr = mmc_get_data(v_addr1);	// Cache-Hit, CB 0						
+			p_addr = mmc_get_data(v_addr3);	// Cache-Miss, => CB 1
+			p_addr = mmc_get_data(v_addr1);	// Cache-Hit, CB 0
+			p_addr = mmc_get_data(v_addr4);	// Cache-Miss, => CB 1						
 			/* Pointer auf Testdaten Teil 1 holen */	
-			p_addr = mmc_get_data(v_addr1);
+			p_addr = mmc_get_data(v_addr1);		// Cache-Hit, CB 0
 			if (p_addr == NULL) return 4;		
 			/* Testdaten 1 vergleichen */
 			for (i=0; i<512; i++)
 				if (p_addr[i] != (i & 0xff)) return 5;
 			/* Pointer auf Testdaten Teil 2 holen */
-			p_addr = mmc_get_data(v_addr2);
+			p_addr = mmc_get_data(v_addr2);		// Cache-Miss, => CB 1
 			if (p_addr == NULL) return 6;		
 			/* Testdaten 2 vergleichen */
 			for (i=0; i<512; i++)
