@@ -67,5 +67,14 @@ uint8* mmc_get_data(uint32 addr);
  */
 inline uint32 mmc_get_end_of_page(uint32 addr);
 
+/*! 
+ * Erzwingt das Zurueckschreiben einer eingelagerten Seite auf die MMC / SD-Card   
+ * @param addr	Eine virtuelle Adresse
+ * @return		0: ok, 1: Seite zurzeit nicht eingelagert, 2: Fehler beim Zurueckschreiben
+ * @author 		Timo Sandmann (mail@timosandmann.de)
+ * @date 		15.12.2006
+ */
+uint8 mmc_page_write_back(uint32 addr);
+
 #endif	// MMC_VM_AVAILABLE
 #endif	// MMC_VM_H_

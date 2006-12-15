@@ -70,8 +70,6 @@
 //		* Funktion zum Rueckschreiben der Pages auf MMC (und wann? - Rueckschreibestrategie ueberlegen!)
 //		* Code optimieren, Groesse und Speed
 //		* PC Version implementieren
-//		* page_write_back() implementieren
-//		* Bug in mmcalloc() fixen (aligned = 1 klappt nicht)
 
 #include "ct-Bot.h"  
 
@@ -84,7 +82,7 @@
 
 #ifdef MCU
 	#define MMC_START_ADDRESS 512	// [512;2^32-1]
-	#define MAX_PAGES_IN_SRAM 3		// [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald die Page verwendet wird
+	#define MAX_PAGES_IN_SRAM 2		// [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald die Page verwendet wird
 	#define swap_out	mmc_write_sector
 	#define swap_in		mmc_read_sector
 	#define swap_space	mmc_get_size()
@@ -100,9 +98,10 @@ typedef struct{			/*!< Struktur eines Cacheeintrags */
 	uint32	addr;		/*!< Tag = virtuelle Adresse der ins RAM geladenen Seite */ 
 	uint8*	p_data;		/*!< Daten = Zeiger auf 512 Byte grosse Seite im RAM */ 
 	#if MAX_PAGES_IN_SRAM > 2
-		uint8	succ;		/*!< Zeiger auf Nachfolger (LRU) */
-		uint8	prec;		/*!< Zeiger auf Vorgaenger (LRU) */
+		uint8	succ;	/*!< Zeiger auf Nachfolger (LRU) */
+		uint8	prec;	/*!< Zeiger auf Vorgaenger (LRU) */
 	#endif
+	uint8	dirty;		/*!< Dirty-Bit (0: Daten wurden bereits auf die MMC / SD-Card zurueckgeschrieben) */
 } vm_cache_t;
 
 static uint32 mmc_start_address = MMC_START_ADDRESS;	/*!< physische Adresse der MMC / SD-Card, wo unser VM beginnt */
@@ -232,7 +231,8 @@ uint8 mmc_load_page(uint32 addr){
 	} else{
 		/* Cache bereits voll => Pager muss aktiv werden */
 		pagefaults++;	// kleine Statistik
-		if (swap_out(page_cache[next_cacheblock].addr, page_cache[next_cacheblock].p_data) != 0) return 2;
+		if (page_cache[next_cacheblock].dirty == 1)	// Seite zurueckschreiben, falls Daten veraendert wurden
+			if (swap_out(page_cache[next_cacheblock].addr, page_cache[next_cacheblock].p_data) != 0) return 2;
 		if (swap_in(mmc_get_start_of_page(addr), page_cache[next_cacheblock].p_data) != 0) return 3;
 		#if MAX_PAGES_IN_SRAM > 2
 			oldest_cacheblock = page_cache[oldest_cacheblock].succ;	// Nachfolger des aeltesten Eintrags ist neuer aeltester Eintrag
@@ -287,8 +287,25 @@ uint32 mmcalloc(uint32 size, uint8 aligned){
 uint8* mmc_get_data(uint32 addr){
 	/* Seite der gewuenschten Adresse laden */
 	if (mmc_load_page(addr) != 0) return NULL;
+	int8 cacheblock = mmc_get_cacheblock_of_page(addr);
+	page_cache[cacheblock].dirty = 1;	// Daten sind veraendert
 	/* Zeiger auf Adresse in gecacheter Seite laden / berechnen und zurueckgeben */
-	return page_cache[mmc_get_cacheblock_of_page(addr)].p_data + (addr - (mmc_get_start_of_page(addr)<<9));	// TODO: 2. Summanden schlauer berechnen
+	return page_cache[cacheblock].p_data + (addr - (mmc_get_start_of_page(addr)<<9));	// TODO: 2. Summanden schlauer berechnen
+}
+
+/*! 
+ * Erzwingt das Zurueckschreiben einer eingelagerten Seite auf die MMC / SD-Card   
+ * @param addr	Eine virtuelle Adresse
+ * @return		0: ok, 1: Seite zurzeit nicht eingelagert, 2: Fehler beim Zurueckschreiben
+ * @author 		Timo Sandmann (mail@timosandmann.de)
+ * @date 		15.12.2006
+ */
+uint8 mmc_page_write_back(uint32 addr){
+	int8 cacheblock = mmc_get_cacheblock_of_page(addr);
+	if (cacheblock < 0) return 1;	// Seite nicht eingelagert
+	if (swap_out(page_cache[cacheblock].addr, page_cache[cacheblock].p_data) != 0) return 2;	// Seite zurueckschreiben
+	page_cache[cacheblock].dirty = 0;	// Dirty-Bit zuruecksetzen
+	return 0;
 }
 
 #endif	// MMC_VM_AVAILABLE
