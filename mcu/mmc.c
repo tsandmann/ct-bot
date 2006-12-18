@@ -33,10 +33,7 @@
 
 //TODO:	* hier aufraeumen :P
 //		* kleine Doku machen
-//		* Timeouts in mmc_init() ueberdenken
 //		* Unterstuetzung fuer Hardware-SPI wieder einbauen - geht aber eh net :/ 
-//		* Wo nur CLK-Flanken gebraucht werden, auch nur CLK-Flanken erzeugen
-
 
 #include "ct-Bot.h"
 
@@ -112,7 +109,7 @@ uint8 mmc_write_command(uint8 *cmd){
 	// Wartet auf eine gueltige Antwort von der MMC/SD-Karte
 	while (result == 0xff){
 		result = mmc_read_byte();
-		if (timeout++ > 500)
+		if (timeout++ > MMC_TIMEOUT)
 			break; // Abbruch da die MMC/SD-Karte nicht antwortet
 	}
 	
@@ -144,7 +141,7 @@ uint8 mmc_init(void){
 	// Sendet Kommando CMD0 an MMC/SD-Karte
 	uint8 cmd[] = {0x40,0x00,0x00,0x00,0x00,0x95};
 	while (mmc_write_command(cmd) != 1){
-		if (timeout++ > 500){
+		if (timeout++ > MMC_TIMEOUT){
 			MMC_Disable();
 			mmc_init_state = 1;
 			return 1; // Abbruch bei Kommando 1 (Return Code 1)
@@ -156,7 +153,7 @@ uint8 mmc_init(void){
 	cmd[0] = 0x41; // Kommando 1
 	cmd[5] = 0xFF;
 	while (mmc_write_command (cmd) !=0){
-		if (timeout++ > 1500){
+		if (timeout++ > 3*MMC_TIMEOUT){
 			MMC_Disable();
 			mmc_init_state = 1;
 			return 2; // Abbruch bei Kommando 2 (Return Code 2)

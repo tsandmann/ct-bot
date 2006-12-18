@@ -38,6 +38,6 @@
 #define MMC_CLK_PORT	PORTB
 #define SPI_CLK			7		// Port Pin an dem die Clock der MMC/SD-Karte angeschlossen ist (clk)
 
-#define MMC_TIMEOUT		40		// Anzahl der CLK-Flanken beim Abwarten von MMC / SD-Card busy - Achtung, nur 8 Bit!
+#define MMC_TIMEOUT		500		// Wartezyklen auf Cardresponse
 
 #endif	// MMC_LOW_H

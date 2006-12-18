@@ -173,13 +173,7 @@ mmc_enable:
 	ldi r24, lo8(-1)
 	call mmc_write_byte			; sendet 8 CLK-Flanken
 	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten		
-	call ENA_on
-;	ldi r24, 7					; 8 CLK-Flanken senden
-;	1:		
-;	cbi PORT_OUT, SPI_CLK
-;	dec r24						; r24--
-;	sbi PORT_OUT, SPI_CLK
-;	brne 1b						; r24 == 0?		
+	call ENA_on	
 	ldi r24, 0	
 	ret							; alles ok
 
@@ -233,15 +227,7 @@ mmc_write_sector:
 	tst r24	 					; Fehler oder Abbruch durch Timeout?
 	breq 1f 
 	rjmp 4f 					; Return-Code 1
-	1:
-;	ldi r24, 7					; 8 CLK-Flanken senden
-;	2:		
-;	cbi PORT_OUT, SPI_CLK
-;	nop
-;	nop
-;	sbi PORT_OUT, SPI_CLK
-;	dec r24						; r24--
-;	brne 2b						; r24 == 0?		
+	1:	
 	ldi r24, lo8(-2)			; Start-Byte an Karte senden
 	call mmc_write_byte
 	in r26, PORT_OUT			; MMC_PORT_OUT einlesen
@@ -317,9 +303,7 @@ mmc_write_sector:
 	6:
 	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
 	call ENA_off
-;	cbi PORT_OUT, SPI_CLK		; CLK-Flanke
 	mov	r24, r16				; Return-Code laden	
-;	sbi PORT_OUT, SPI_CLK
 	ldi r25, 0
 	pop r29						; allgemeine Register wiederherstellen
 	pop r28
@@ -450,9 +434,7 @@ mmc_read_sector:
 	6:
 	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
 	call ENA_off
-;	cbi PORT_OUT, SPI_CLK		; CLK-Flanke
 	mov r24, r16				; Return-Code laden
-;	sbi PORT_OUT, SPI_CLK
 	ldi r25, 0
 	pop r29						; allgemeine Register wiederherstellen
 	pop r28
