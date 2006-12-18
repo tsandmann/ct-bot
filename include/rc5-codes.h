@@ -33,7 +33,7 @@
 #define RC5_COMMAND	0x103F		/*!< Der Kommandobereich */
 
 /* Im Normalbetrieb hilft die Beschränkung der RC5_MASK auf RC5_COMMAND dem Bot, 
- * möglichst viele FBs zu erkennen. 
+ * moeglichst viele FBs zu erkennen. 
  * Zum erfassen neuer  Codes sollte man unbedingt RC5_MASK auf (RC5_COMMAND|RC5_ADDRESS) setzen */
 
 // Normalbetrieb
@@ -282,8 +282,8 @@
 
 	#define RC5_CODE_I_II		RC5_CODE_SELECT
 	#define RC5_CODE_TV_VCR	RC5_CODE_VIEW
-	#define RC5_CH_PLUS			RC5_NOT_AVAIL
-	#define RC5_CH_MINUS 		RC5_NOT_AVAIL
+	#define RC5_CH_PLUS			RC5_CODE_BWD		/*!< Taste fuer Transprtfach schliessen */
+	#define RC5_CH_MINUS 		RC5_CODE_FWD		/*!< Taste fuer Transportfach oeffnen */
 
 #endif /* RC_HAVE_HAUPPAUGE_MediaMPV */
 
