@@ -28,14 +28,16 @@
 #define MMC_LOW_H_
 
 /* Portkonfiguration */
-#define MMC_PORT_OUT	PORTB	//Port an der die MMC/SD-Karte angeschlossen ist also des SPI 
+#define MMC_PORT_OUT	PORTB	// Port an der die MMC/SD-Karte angeschlossen ist also des SPI 
 #define MMC_PORT_IN		PINB
 #define MMC_DDR			DDRB	
-#define SPI_DI			6		//Port Pin an dem Data Output der MMC/SD-Karte angeschlossen ist 
-#define SPI_DO			5		//Port Pin an dem Data Input der MMC/SD-Karte angeschlossen ist
+#define SPI_DI			6		// Port Pin an dem Data Output der MMC/SD-Karte angeschlossen ist 
+#define SPI_DO			5		// Port Pin an dem Data Input der MMC/SD-Karte angeschlossen ist
 
 #define MMC_CLK_DDR		DDRB
 #define MMC_CLK_PORT	PORTB
-#define SPI_CLK			7		//Port Pin an dem die Clock der MMC/SD-Karte angeschlossen ist (clk)
+#define SPI_CLK			7		// Port Pin an dem die Clock der MMC/SD-Karte angeschlossen ist (clk)
+
+#define MMC_TIMEOUT		40		// Anzahl der CLK-Flanken beim Abwarten von MMC / SD-Card busy - Achtung, nur 8 Bit!
 
 #endif	// MMC_LOW_H

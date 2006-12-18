@@ -378,19 +378,24 @@ void init(void){
 								}
 								#ifndef MMC_WRITE_TEST_AVAILABLE
 									display_cursor(3,1);
-		
 									for (i=0;i<16;i++){
-										if (i ==8)
-											display_cursor(4,1);
+										if (i == 8) display_cursor(4,1);
+										if (i%2 == 0) display_printf(" ");
 										display_printf("%02x",csd[i]);
 									}	
 								#endif	// MMC_WRITE_TEST_AVAILABLE							
 							}
 							#ifdef MMC_WRITE_TEST_AVAILABLE
-								uint8 result = mmc_test();
-								if (result != 0){
-									display_cursor(3,1);
-									display_printf("mmc_test()=%u :(     ", result);
+								if (mmc_state == 0){
+									static uint16 time = 0;
+									if (TIMER_GET_TICKCOUNT_16-time > MS_TO_TICKS(200)){
+										time = TIMER_GET_TICKCOUNT_16;
+										uint8 result = mmc_test();
+										if (result != 0){
+											display_cursor(3,1);
+											display_printf("mmc_test()=%u :(     ", result);
+										}
+									}
 								}
 							#endif	// MMC_WRITE_TEST_AVAILABLE			
 						}

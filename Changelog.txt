@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-12-16 Timo Sandmann [mail@timosandmann.de]: Kompatibilitaet mit einigen MMC / SD-Cards verbessert
+
 2006-12-10 Timo Sandmann [mail@timosandmann.de]: Robustheit beim MMC-Timing verbessert, kleine Bugfixes, VM erweitert
 
 2006-12-08 Benjamin Benz [bbe@heise.de]:  ENA-Bugfixes, catch_pillar eingefuehrt

@@ -100,17 +100,9 @@ void mmc_write_byte(uint8 data);
  */
 uint8 mmc_write_command(uint8 *cmd){
 	uint8 result = 0xff;
-	uint16 Timeout = 0;
+	uint16 timeout = 0;
 
-//	//set MMC_Chip_Select to high (MMC/SD-Karte Inaktiv) 
-//	MMC_Enable();
-//	MMC_Disable();
-//	// Da ein paar Leitungen noch von anderer Hardware mitbenutzt werden: reinit
-//	MMC_prepare();
-//	// sendet 8 Clock Impulse
-//	mmc_write_byte(0xFF);
-//	// set MMC_Chip_Select to low (MMC/SD-Karte Aktiv)
-//	MMC_Enable();
+	mmc_enable();	// MMC / SD-Card aktiv schalten
 
 	// sendet 6 Byte Kommando
 	uint8 i;
@@ -120,7 +112,7 @@ uint8 mmc_write_command(uint8 *cmd){
 	// Wartet auf eine gueltige Antwort von der MMC/SD-Karte
 	while (result == 0xff){
 		result = mmc_read_byte();
-		if (Timeout++ > 500)
+		if (timeout++ > 500)
 			break; // Abbruch da die MMC/SD-Karte nicht antwortet
 	}
 	
@@ -135,7 +127,7 @@ uint8 mmc_write_command(uint8 *cmd){
 uint8 mmc_init(void){
 	uint16 timeout = 0;
 	uint8 i;
-	mmc_init_state = 1;	// Nicht initialisiert, bis wir diese Funktion komplett durchlaufen haben
+	mmc_init_state = 0;
 	
 	// Konfiguration des Ports an der die MMC/SD-Karte angeschlossen wurde
 	MMC_CLK_DDR |= _BV(SPI_CLK);				// Setzen von Pin MMC_Clock auf Output
@@ -149,33 +141,30 @@ uint8 mmc_init(void){
 	for (i=0; i<0x0f; i++) // Sendet min 74+ Clocks an die MMC/SD-Karte
 		mmc_write_byte(0xff);
 	
-	// MMC_Chip_Select auf low (MMC/SD-Karte aktiv)
-	MMC_Enable();
-	
 	// Sendet Kommando CMD0 an MMC/SD-Karte
-	uint8 CMD[] = {0x40,0x00,0x00,0x00,0x00,0x95};
-	while(mmc_write_command (CMD) != 1){
-		if (timeout++ > 1000){
+	uint8 cmd[] = {0x40,0x00,0x00,0x00,0x00,0x95};
+	while (mmc_write_command(cmd) != 1){
+		if (timeout++ > 500){
 			MMC_Disable();
+			mmc_init_state = 1;
 			return 1; // Abbruch bei Kommando 1 (Return Code 1)
 		}
 	}
 	
 	// Sendet Kommando CMD1 an MMC/SD-Karte
 	timeout = 0;
-	CMD[0] = 0x41; // Kommando 1
-	CMD[5] = 0xFF;
-	while( mmc_write_command (CMD) !=0 ){
-		if (timeout++ > 1000){
+	cmd[0] = 0x41; // Kommando 1
+	cmd[5] = 0xFF;
+	while (mmc_write_command (cmd) !=0){
+		if (timeout++ > 1500){
 			MMC_Disable();
+			mmc_init_state = 1;
 			return 2; // Abbruch bei Kommando 2 (Return Code 2)
 		}
 	}
 	
 	// set MMC_Chip_Select to high (MMC/SD-Karte Inaktiv)
 	MMC_Disable();
-	// Init-Status speichern
-	mmc_init_state = 0;
 	return 0;
 }
 
@@ -186,20 +175,10 @@ uint8 mmc_init(void){
  * @param Buffer 	Ein Puffer mit mindestens count Bytes
  * @param count 	Anzahl der zu lesenden Bytes
  */
-uint8 mmc_read_block(uint8 *cmd,uint8 *Buffer,uint16 count){
+uint8 mmc_read_block(uint8 *cmd, uint8 *buffer, uint16 count){
 	/* Initialisierung checken */
 	if (mmc_init_state != 0) 
 		if (mmc_init() != 0) return 1;	
-		
-	// MMC_Chip_Select auf high (MMC/SD-Karte inaktiv) 
-	MMC_Enable();
-	MMC_Disable();
-	// Da ein paar Leitungen noch von anderer Hardware mitbenutzt werden: reinit
-	MMC_prepare();
-	// sendet 8 Clock Impulse
-	mmc_write_byte(0xFF);
-	// MMC_Chip_Select auf low (MMC/SD-Karte aktiv)
-	MMC_Enable();		
 		
 	// Sendet Kommando cmd an MMC/SD-Karte
 	if (mmc_write_command(cmd) != 0) {
@@ -216,7 +195,7 @@ uint8 mmc_read_block(uint8 *cmd,uint8 *Buffer,uint16 count){
 	uint16 i;
 	// Lesen des Blocks (max 512 Bytes) von MMC/SD-Karte
 	for (i=0; i<count; i++)
-		*Buffer++ = mmc_read_byte();
+		*buffer++ = mmc_read_byte();
 
 	// CRC-Byte auslesen
 	mmc_read_byte();	//CRC - Byte wird nicht ausgewertet
@@ -236,20 +215,20 @@ uint8 mmc_read_block(uint8 *cmd,uint8 *Buffer,uint16 count){
  * Liest das CID-Register (16 Byte) von der Karte
  * @param Buffer 	Puffer von mindestens 16 Byte
  */
-void mmc_read_cid (uint8 *Buffer){
+void mmc_read_cid (uint8 *buffer){
 	// Kommando zum Lesen des CID Registers
 	uint8 cmd[] = {0x4A,0x00,0x00,0x00,0x00,0xFF}; 
-	mmc_read_block(cmd,Buffer,16);
+	mmc_read_block(cmd, buffer, 16);
 }
 
 /*!
  * Liest das CSD-Register (16 Byte) von der Karte
  * @param Buffer 	Puffer von mindestens 16 Byte
  */
-void mmc_read_csd (uint8 *Buffer){	
+void mmc_read_csd (uint8 *buffer){	
 	// Kommando zum lesen des CSD Registers
 	uint8 cmd[] = {0x49,0x00,0x00,0x00,0x00,0xFF};
-	mmc_read_block(cmd,Buffer,16);
+	mmc_read_block(cmd, buffer, 16);
 }
 
 /*!
@@ -282,9 +261,13 @@ uint32 mmc_get_size(void){
 	 * @return 0, wenn alles ok
 	 */
 	uint8 mmc_test(void){
+		static uint32 sector = 0;
 		/* Initialisierung checken */
 		if (mmc_init_state != 0) 
-			if (mmc_init() != 0) return 1;
+			if (mmc_init() != 0){
+				sector = 0;
+				return 1;
+			}
 		#ifdef MMC_VM_AVAILABLE	// Version mit virtuellen Aressen
 			uint16 i;
 			static uint16 pagefaults = 0;
@@ -347,7 +330,6 @@ uint32 mmc_get_size(void){
 		#else	// alte Version
 			uint8 buffer[512];
 			uint16 i;
-			
 			uint8 result=0;
 			
 			/* Zeitmessung starten */
@@ -357,35 +339,44 @@ uint32 mmc_get_size(void){
 			// Puffer vorbereiten
 			for (i=0; i< 512; i++)	buffer[i]= (i & 0xFF);
 			// und schreiben
-			result= mmc_write_sector(0,buffer);
-			if (result != 0)
+			result= mmc_write_sector(sector, buffer);
+			if (result != 0){
 				return result*10 + 2;
+			}
 			
 			// Puffer vorbereiten
 			for (i=0; i< 512; i++)	buffer[i]= 255 - (i & 0xFF);	
-			// und schreiben
-			result= mmc_write_sector(1,buffer);	
-			if (result != 0)
+			// und schreiben				
+			result= mmc_write_sector(sector+1, buffer);	
+			if (result != 0){
 				return result*10 + 3;
+			}
 		
 			// Puffer lesen	
-			result= mmc_read_sector(0,buffer);	
-			if (result != 0)
+			result= mmc_read_sector(sector++, buffer);	
+			if (result != 0){
+				sector--;
 				return result*10 + 4;
-			
+			}
+							
 			// und vergleichen
-			for (i=0; i< 512; i++)
-				if (buffer[i] != (i & 0xFF))
+			for (i=0; i<512; i++)
+				if (buffer[i] != (i & 0xFF)){
 					return 5;
+				}
 		
+//			sector++;
 			// Puffer lesen	
-			result= mmc_read_sector(1,buffer);
-			if (result != 0)
+			result= mmc_read_sector(sector++, buffer);
+			if (result != 0){
+				sector--;
 				return result*10 + 6;
+			}
 			// und vergleichen
-			for (i=0; i< 512; i++)
-				if (buffer[i] != (255- (i & 0xFF)))
+			for (i=0; i<512; i++)
+				if (buffer[i] != (255- (i & 0xFF))){
 					return 7;	
+				}
 
 			/* Zeitmessung beenden */
 			int8 timer_reg=TCNT2;
@@ -393,7 +384,10 @@ uint32 mmc_get_size(void){
 			timer_reg -= start_reg;
 			/* kleine Statistik ausgeben */
 			display_cursor(3,1);
-			display_printf("Dauer: %5u us     ", (end_ticks-start_ticks)*176 + timer_reg*4);							
+			display_printf("Dauer: %5u us     ", (end_ticks-start_ticks)*176 + timer_reg*4);	
+			display_cursor(4,1);
+			display_printf("Sektor: %5u/", sector-2);						
+			display_printf("%5u ", sector-1);						
 		#endif	// MMC_VM_AVAILABLE			
 		// hierher kommen wir nur, wenn alles ok ist
 		return 0;

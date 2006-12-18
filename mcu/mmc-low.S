@@ -170,20 +170,16 @@ mmc_enable:
 	call ENA_off
 	cbi DDR, SPI_DI				; DI auf input
 	sbi DDR, SPI_DO				; DO auf output
+	ldi r24, lo8(-1)
+	call mmc_write_byte			; sendet 8 CLK-Flanken
+	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten		
+	call ENA_on
 ;	ldi r24, 7					; 8 CLK-Flanken senden
 ;	1:		
 ;	cbi PORT_OUT, SPI_CLK
-;	sbi PORT_OUT, SPI_CLK
 ;	dec r24						; r24--
+;	sbi PORT_OUT, SPI_CLK
 ;	brne 1b						; r24 == 0?		
-	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten		
-	call ENA_on
-	ldi r24, 7					; 8 CLK-Flanken senden
-	1:		
-	cbi PORT_OUT, SPI_CLK
-	sbi PORT_OUT, SPI_CLK
-	dec r24						; r24--
-	brne 1b						; r24 == 0?		
 	ldi r24, 0	
 	ret							; alles ok
 
@@ -222,31 +218,30 @@ mmc_write_sector:
 	call mmc_write_byte
 	mov r24, r14				; Byte 3
 	call mmc_write_byte
-	ldi r24, 0					; Byte 4	
+	ldi r24, 0					; Byte 4
 	call mmc_write_byte
-	ldi r24, lo8(-1)			; Byte 5 (CRC)	
+	ldi r24, lo8(-1)			; Byte 5 (CRC)
 	call mmc_write_byte
 	ldi r26, lo8(-1)			; Timeout nach 256 Versuchen
 	1:
 	call mmc_read_byte
 	cpi r24, lo8(-1)			; !0xff = Antwort	
 	brne 3f
-	call mmc_read_byte
-	cpi r24, lo8(-1)			; noch ein Versuch
-	brne 3f
-	dec r26						; r26--
+	dec r26						; r26--	
 	brne 1b
 	3:
 	tst r24	 					; Fehler oder Abbruch durch Timeout?
 	breq 1f 
 	rjmp 4f 					; Return-Code 1
 	1:
-	ldi r24, 7					; 8 CLK-Flanken senden
-	2:		
-	cbi PORT_OUT, SPI_CLK
-	sbi PORT_OUT, SPI_CLK
-	dec r24						; r24--
-	brne 2b						; r24 == 0?		
+;	ldi r24, 7					; 8 CLK-Flanken senden
+;	2:		
+;	cbi PORT_OUT, SPI_CLK
+;	nop
+;	nop
+;	sbi PORT_OUT, SPI_CLK
+;	dec r24						; r24--
+;	brne 2b						; r24 == 0?		
 	ldi r24, lo8(-2)			; Start-Byte an Karte senden
 	call mmc_write_byte
 	in r26, PORT_OUT			; MMC_PORT_OUT einlesen
@@ -298,24 +293,18 @@ mmc_write_sector:
 	sbi PORT_OUT, SPI_DO		; DO auf high
 	call mmc_write_byte			; crc-Dummy schreiben	
 	call mmc_write_byte
+	1:
+	clr r28						; r28 = 0
 	2:
-	ldi r25, 32					; 32 CLK-Flanken senden
-	1:		
-	cbi PORT_OUT, SPI_CLK
-	sbi PORT_OUT, SPI_CLK
-	dec r25						; r25--
-	brne 1b						; r25 == 0?
+	call mmc_read_byte			; warten, ob Karte noch busy
+	cpi r24, lo8(-1)
+	breq 3f						; == 0xff?
+	dec r28						; r28--
+	brne 2b						; r28 == 0?
 	dec r27						; r27--
-	call mmc_read_byte
-	cpi r24, lo8(-1)			; auf MMC/SD-Karte Busy warten
-	sbrc r27, 7					; Timeout nach 128 Versuchen
-	brne 2b						; == 0xff?
-	mov r16, r24				; Karte ready oder Timeout, Antwort retten
-;	3:								
-;	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
-;	call ENA_off
-	cpi r16, lo8(-1)			; War Antwort == 0xff?
-	brne 5f
+	brne 1b						; r27 == 0?
+	rjmp 5f						; Timeout :(
+	3:
 	ldi r16, 0					; Alles ok, also Return-Code 0 laden :)
 	rjmp 6f
 	4:
@@ -328,9 +317,9 @@ mmc_write_sector:
 	6:
 	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
 	call ENA_off
-	cbi PORT_OUT, SPI_CLK		; CLK-Flanke
-	sbi PORT_OUT, SPI_CLK
-	mov	r24, r16				; Return-Code	
+;	cbi PORT_OUT, SPI_CLK		; CLK-Flanke
+	mov	r24, r16				; Return-Code laden	
+;	sbi PORT_OUT, SPI_CLK
 	ldi r25, 0
 	pop r29						; allgemeine Register wiederherstellen
 	pop r28
@@ -451,8 +440,6 @@ mmc_read_sector:
 	call mmc_read_byte			; crc-Dummy lesen
 	call mmc_read_byte
 	4:
-;	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
-;	call ENA_off
 	tst r16						; Abbruch durch Timeout?
 	breq 5f						; r27 == 0?
 	ldi r16, 0					; Alles ok, also Return-Code 0 laden :) 
@@ -463,9 +450,9 @@ mmc_read_sector:
 	6:
 	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
 	call ENA_off
-	cbi PORT_OUT, SPI_CLK		; CLK-Flanke
-	sbi PORT_OUT, SPI_CLK
-	mov r24, r16				; Return-Code
+;	cbi PORT_OUT, SPI_CLK		; CLK-Flanke
+	mov r24, r16				; Return-Code laden
+;	sbi PORT_OUT, SPI_CLK
 	ldi r25, 0
 	pop r29						; allgemeine Register wiederherstellen
 	pop r28

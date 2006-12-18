@@ -40,6 +40,8 @@
  */
 inline uint8 mmc_get_init_state(void);
 
+uint8 mmc_enable(void);
+
 /*!
  * Liest einen Block von der Karte
  * @param addr 		Nummer des 512-Byte Blocks
@@ -49,7 +51,7 @@ inline uint8 mmc_get_init_state(void);
  * @date 			17.11.2006
  * @see				mmc-low.s
  */	
-uint8 mmc_read_sector(uint32 addr,uint8 *Buffer);
+uint8 mmc_read_sector(uint32 addr,uint8 *buffer);
 
 /*! 
  * Schreibt einen 512-Byte Sektor auf die Karte
@@ -60,7 +62,7 @@ uint8 mmc_read_sector(uint32 addr,uint8 *Buffer);
  * @date 			16.11.2006
  * @see				mmc-low.s
  */
-uint8 mmc_write_sector(uint32 addr,uint8 *Buffer);
+uint8 mmc_write_sector(uint32 addr,uint8 *buffer);
 
 /*! 
  * Initialisiere die SD/MMC-Karte
@@ -73,13 +75,13 @@ uint8 mmc_init (void);
 	 * Liest das CSD-Register (16 Byte) von der Karte
 	 * @param Buffer Puffer von mindestens 16 Byte
 	 */
-	void mmc_read_csd (uint8 *Buffer);
+	void mmc_read_csd (uint8 *buffer);
 	
 	/*!
 	 * Liest das CID-Register (16 Byte) von der Karte
 	 * @param Buffer Puffer von mindestens 16 Byte
 	 */
-	void mmc_read_cid (uint8 *Buffer);
+	void mmc_read_cid (uint8 *buffer);
 	
 	/*!
 	 * Liefert die Groesse der Karte zurueck
