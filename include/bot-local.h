@@ -100,7 +100,9 @@
 #define LINE_SENSE					0x350	// Ab wann ist es Linie? (Fuer den Sim auf 350 setzen, helle Tischflaeche 50)
 
 
-
+/* Konstanten fuer Verhaltensanzeige, Verhalten mit prio von bis sichtbar */
+#define PRIO_VISIBLE_MIN 3		
+#define PRIO_VISIBLE_MAX 200
 
 
 

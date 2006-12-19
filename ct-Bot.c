@@ -288,10 +288,14 @@ void init(void){
 					 */ 
 					while((ptr != NULL)&& (linecounter<5))	{
 					 
-					  if  ((ptr->priority > 2) &&(ptr->priority <= 200)) {
+					  if  ((ptr->priority >= PRIO_VISIBLE_MIN) &&(ptr->priority <= PRIO_VISIBLE_MAX)) {
                         if   (colcounter >= firstcol) { 
 				          display_cursor(linecounter,((colcounter % 2)* 12)+1);
-					      display_printf(" %3d,%2d",ptr->priority,ptr->active_new);				      
+				          #ifdef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+					        display_printf(" %3d,%2d",ptr->priority,ptr->active);
+					      #else
+					        display_printf(" %3d,%2d",ptr->priority,ptr->active_new);				      
+					      #endif
 					      colcounter++;
 					    
 					      /* bei colcounter 0 neue Zeile */

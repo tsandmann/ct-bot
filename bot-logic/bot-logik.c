@@ -264,12 +264,16 @@ void deactivateAllBehaviours(void){
 	
 	#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
 	  // bei Verhaltensanzeige in Aktivitaets-Auswahl-Variable sichern
-	  set_behaviours_equal();
+	  #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+	     // bei Verhaltensanzeige in Aktivitaets-Auswahl-Variable sichern
+	     // nicht bei dynamischer Anzeige und Selektion
+        set_behaviours_equal();
+      #endif
 	#endif
 		
 	// Einmal durch die Liste gehen und (fast) alle deaktivieren, Grundverhalten nicht 
 	for (job = behaviour; job; job = job->next) {
-		if ((job->priority > 2) &&(job->priority <= 200)) {
+		if ((job->priority >= PRIO_VISIBLE_MIN) &&(job->priority <= PRIO_VISIBLE_MAX)) {
             // Verhalten deaktivieren 
 			job->active = INACTIVE;	
 		}
@@ -406,7 +410,7 @@ void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
   
 // zuerst alle Verhalten ermitteln ausser Grundverhalten
   while(ptr != NULL)	{			 
-	if  ((ptr->priority > 2) &&(ptr->priority <= 200)) 
+	if  ((ptr->priority >= PRIO_VISIBLE_MIN) &&(ptr->priority <= PRIO_VISIBLE_MAX)) 
     			max_behaviours++;		  
 						  
 	ptr = ptr->next;
@@ -435,10 +439,15 @@ void toggleNewBehaviourPos(int8 pos){
 
 	// durch die Liste gehen, bis wir den gewuenschten Index erreicht haben 
 	for (job = behaviour; job; job = job->next) {
-	    if ((job->priority > 2) &&(job->priority <= 200)) {		
+	    if ((job->priority >= PRIO_VISIBLE_MIN) &&(job->priority <= PRIO_VISIBLE_MAX)) {		
 		  i++;
 		  if (i == pos) {
-		  	  job->active_new = !job->active_new;
+		  	  // bei dynamischer Wahl wird direkt die Zustandsvariable geaendert
+		  	  #ifdef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+		  	    job->active = !job->active;
+		  	  #else
+		  	     job->active_new = !job->active_new;
+		  	  #endif
 			  			      
 			  break;
 		  }
@@ -446,19 +455,21 @@ void toggleNewBehaviourPos(int8 pos){
 	}
 }
 
-
+#ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
 /*! 
  * Startschuss, die gewaehlten neuen Verhaltensaktivitaeten werden in die
  * Verhaltensliste geschrieben und die Verhalten damit scharf geschaltet 
  */
 void set_behaviours_active_to_new(void) {
+
  Behaviour_t *job;	
    for (job = behaviour; job; job = job->next) 	{
 					 
-	if  ((job->priority > 2) &&(job->priority <= 200)) 
+	if  ((job->priority >= PRIO_VISIBLE_MIN) &&(job->priority <= PRIO_VISIBLE_MAX)) 
             job->active = job->active_new;            				 
 	 
    }
+
 }
 
 /*!
@@ -469,11 +480,11 @@ void set_behaviours_equal(void) {
  Behaviour_t *job;	
    for (job = behaviour; job; job = job->next) 	{
 					 
-	if  ((job->priority > 2) &&(job->priority <= 200)) 
+	if  ((job->priority >= PRIO_VISIBLE_MIN) &&(job->priority <= PRIO_VISIBLE_MAX)) 
             job->active_new = job->active;            				 
 	 
    }
 }
-
+#endif
 #endif
 #endif

@@ -63,7 +63,9 @@ typedef struct _Behaviour_t {
    
    uint8 active:1;				/*!< Ist das Verhalten aktiv */
    #ifdef DISPLAY_BEHAVIOUR_AVAILABLE  
-   uint8 active_new:1;			/*!< Ist das via Display gewaehlte neue Sollverhalten */
+     #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE /*!< bei dynamischer Anzeige und Wahl keine Puffervar notwendig */
+       uint8 active_new:1;			/*!< Ist das via Display gewaehlte neue Sollverhalten */
+     #endif
    #endif
    uint8 subResult:2;			/*!< War das aufgerufene unterverhalten erfolgreich (==1)?*/
    struct _Behaviour_t *next;					/*!< Naechster Eintrag in der Liste */

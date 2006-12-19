@@ -55,6 +55,7 @@
 //#define DISPLAY_REGELUNG_AVAILABLE 3 /*!< Zeigt Reglerdaten auf Screen 4, wenn SPEED_CONTROL_AVAILABLE gesetzt ist*/
 #define DISPLAY_MMC_INFO	/*!< Zeigt auf Screen 4 die Daten der MMC-Karte an */
 //#define DISPLAY_BEHAVIOUR_AVAILABLE  /*!< Anzeige der Verhalten im Display Screen 3, ersetzt Counteranzeige */
+#define DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE /*!< Zustandsaenderungen der Verhalten sind direkt unter Umgehung der Puffervar sichtbar */
 #define MEASURE_MOUSE_AVAILABLE			/*!< Geschwindigkeiten werden aus den Maussensordaten berechnet */
 //#define MEASURE_COUPLED_AVAILABLE		/*!< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
 

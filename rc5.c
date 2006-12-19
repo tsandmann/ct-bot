@@ -106,8 +106,9 @@ void rc5_number(RemCtrlFuncPar *par);
 	 * Diese Funktion setzt die Aktivitaeten der Verhalten nach der Auswahl.
 	 * Hierdurch erfolgt der Startschuss fuer Umschaltung der Verhalten
 	 */	
+  #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
 	static void rc5_set_all_behaviours(void) ;
-	  
+  #endif  
 	/*! 
 	 * toggled ein Verhalten der Verhaltensliste an Position pos,
 	 * die Aenderung erfolgt nur auf die Puffervariable  
@@ -194,7 +195,9 @@ static void rc5_screen_set(RemCtrlFuncPar *par) {
 		     	 
 			       if (display_screen == 1) {
 			         behaviour_page = 1;
-			          set_behaviours_equal();
+			          #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+			            set_behaviours_equal();
+			          #endif
 			       }
 			   
 		         }
@@ -212,10 +215,13 @@ static void rc5_screen_set(RemCtrlFuncPar *par) {
 			
 			  /* Screen direkt waehlen und Verhaltens-Puffervariablen abgleichen*/
 			  display_screen = par->value1;
-		       if ((display_screen == 2)&& (behaviour_page == 1)) {
-			      
+			  
+			  // bei dyn. Anzeige und Auswahl keine Ubernahme in Puffervariable benoetigt
+			  #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+		        if ((display_screen == 2)&& (behaviour_page == 1)) {	      
 			       set_behaviours_equal();
 			     }  
+			  #endif
 			  behaviour_page = 1;
 			  
 		   #else
@@ -310,8 +316,11 @@ static void rc5_bot_set_speed(RemCtrlFuncPar *par) {
 		    // Alle Verhalten deaktivieren
 		    deactivateAllBehaviours();  // alle Verhalten deaktivieren mit vorheriger Sicherung
 		     #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-		       display_clear();         // Screen zuerst loeschen
-		       display_screen = 2;      // nach Notstop in den Verhaltensscreen mit Anzeige der alten Verhalten
+		        // bei dynamischer Verhaltensanzeige kein Sprung in Anzeigescreen 
+		        #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+		         display_clear();         // Screen zuerst loeschen
+		         display_screen = 2;      // nach Notstop in den Verhaltensscreen mit Anzeige der alten Verhalten
+		        #endif
 		     #endif
 		#endif
 }
@@ -382,11 +391,15 @@ void rc5_control(void){
 /*!
  * Diese Funktion setzt die Aktivitaeten der Verhalten nach der Auswahl.
  * Hierdurch erfolgt der Startschuss fuer Umschaltung der Verhalten
- */	  static void rc5_set_all_behaviours(void) {
-	
+ * nicht verwendet bei sofortiger Anzeige und Auswahl der Aktivitaet
+ */	  
+  #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+   static void rc5_set_all_behaviours(void) {
+	   
 		  set_behaviours_active_to_new();
-	
-  }
+	    
+   }
+  #endif
 #endif  
 
 /*!
@@ -408,7 +421,11 @@ void rc5_number(RemCtrlFuncPar *par) {
 					case 6: rc5_toggle_behaviour_new(6); break;
 					case 7: break;
 					case 8: break;
-					case 9: rc5_set_all_behaviours(); break;
+					case 9: 
+					       #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+					         rc5_set_all_behaviours(); 
+					       #endif
+					       break;
 				}
 				break;
 		#endif
