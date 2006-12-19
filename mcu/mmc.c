@@ -258,7 +258,7 @@ uint32 mmc_get_size(void){
 	 * @return 0, wenn alles ok
 	 */
 	uint8 mmc_test(void){
-		static uint32 sector = 0;
+		static uint32 sector = 0x0;
 		/* Initialisierung checken */
 		if (mmc_init_state != 0) 
 			if (mmc_init() != 0){
@@ -333,10 +333,24 @@ uint32 mmc_get_size(void){
 			uint16 start_ticks=TIMER_GET_TICKCOUNT_16;
 			uint8 start_reg=TCNT2;	
 			
+			#if MMC_ASYNC_WRITE == 1
+				/* async-Test (wurde im letzten Durchlauf korrekt geschrieben?) */
+				if (sector > 0xf){
+					result= mmc_read_sector(sector-1, buffer);	
+					if (result != 0){
+						return result*10 + 9;
+					}
+					for (i=0; i<512; i++)
+						if (buffer[i] != (i & 0xFF)){
+							return 10;
+						}				
+				}
+			#endif	// MMC_ASYNC_WRITE
+			
 			// Puffer vorbereiten
 			for (i=0; i< 512; i++)	buffer[i]= (i & 0xFF);
 			// und schreiben
-			result= mmc_write_sector(sector, buffer);
+			result= mmc_write_sector(sector, buffer, 0);
 			if (result != 0){
 				return result*10 + 2;
 			}
@@ -344,7 +358,7 @@ uint32 mmc_get_size(void){
 			// Puffer vorbereiten
 			for (i=0; i< 512; i++)	buffer[i]= 255 - (i & 0xFF);	
 			// und schreiben				
-			result= mmc_write_sector(sector+1, buffer);	
+			result= mmc_write_sector(sector+1, buffer, 0);	
 			if (result != 0){
 				return result*10 + 3;
 			}
@@ -374,6 +388,15 @@ uint32 mmc_get_size(void){
 				if (buffer[i] != (255- (i & 0xFF))){
 					return 7;	
 				}
+			
+			#if MMC_ASYNC_WRITE == 1
+				for (i=0; i< 512; i++)
+					buffer[i]= (i & 0xFF);
+				result= mmc_write_sector(sector-1, buffer, MMC_ASYNC_WRITE);	
+				if (result != 0){
+					return result*10 + 8;
+				}
+			#endif	// MMC_ASYNC_WRITE
 
 			/* Zeitmessung beenden */
 			int8 timer_reg=TCNT2;
@@ -383,8 +406,8 @@ uint32 mmc_get_size(void){
 			display_cursor(3,1);
 			display_printf("Dauer: %5u us     ", (end_ticks-start_ticks)*176 + timer_reg*4);	
 			display_cursor(4,1);
-			display_printf("Sektor: %5u/", sector-2);						
-			display_printf("%5u ", sector-1);						
+			display_printf("Sektor:%6u/", sector-2);						
+			display_printf("%6u", sector-1);						
 		#endif	// MMC_VM_AVAILABLE			
 		// hierher kommen wir nur, wenn alles ok ist
 		return 0;

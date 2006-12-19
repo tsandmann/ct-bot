@@ -77,6 +77,7 @@
 
 #include "mmc-vm.h"
 #include "mmc.h"
+#include "mmc-low.h"
 #include "mmc-emu.h"
 #include <stdlib.h>
 
@@ -232,7 +233,7 @@ uint8 mmc_load_page(uint32 addr){
 		/* Cache bereits voll => Pager muss aktiv werden */
 		pagefaults++;	// kleine Statistik
 		if (page_cache[next_cacheblock].dirty == 1)	// Seite zurueckschreiben, falls Daten veraendert wurden
-			if (swap_out(page_cache[next_cacheblock].addr, page_cache[next_cacheblock].p_data) != 0) return 2;
+			if (swap_out(page_cache[next_cacheblock].addr, page_cache[next_cacheblock].p_data, 0) != 0) return 2;
 		if (swap_in(mmc_get_start_of_page(addr), page_cache[next_cacheblock].p_data) != 0) return 3;
 		#if MAX_PAGES_IN_SRAM > 2
 			oldest_cacheblock = page_cache[oldest_cacheblock].succ;	// Nachfolger des aeltesten Eintrags ist neuer aeltester Eintrag
@@ -303,7 +304,7 @@ uint8* mmc_get_data(uint32 addr){
 uint8 mmc_page_write_back(uint32 addr){
 	int8 cacheblock = mmc_get_cacheblock_of_page(addr);
 	if (cacheblock < 0) return 1;	// Seite nicht eingelagert
-	if (swap_out(page_cache[cacheblock].addr, page_cache[cacheblock].p_data) != 0) return 2;	// Seite zurueckschreiben
+	if (swap_out(page_cache[cacheblock].addr, page_cache[cacheblock].p_data, MMC_ASYNC_WRITE) != 0) return 2;	// Seite (evtl. asynchron) zurueckschreiben
 	page_cache[cacheblock].dirty = 0;	// Dirty-Bit zuruecksetzen
 	return 0;
 }

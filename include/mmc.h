@@ -31,8 +31,8 @@
 
 #ifdef MMC_AVAILABLE
 
-#define MMC_INFO_AVAILABLE /*!< Die Karte kann uns einiges ueber sich verrraten, wenn wir sie danach fragen. Aber es kostet halt Platz im Flash */
-#define MMC_WRITE_TEST_AVAILABLE /*!< Achtung dieser Test zerstoert die Daten auf der Karte!!! */
+#define MMC_INFO_AVAILABLE			/*!< Die Karte kann uns einiges ueber sich verrraten, wenn wir sie danach fragen. Aber es kostet halt Platz im Flash */
+#define MMC_WRITE_TEST_AVAILABLE	/*!< Achtung dieser Test zerstoert die Daten auf der Karte!!! */
 
 /*!
  * Checkt Initialisierung der Karte
@@ -46,23 +46,24 @@ uint8 mmc_enable(void);
  * Liest einen Block von der Karte
  * @param addr 		Nummer des 512-Byte Blocks
  * @param Buffer 	Puffer von mindestens 512 Byte
- * @return 			0 wenn alles ok ist 
+ * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 17
  * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			17.11.2006
  * @see				mmc-low.s
  */	
-uint8 mmc_read_sector(uint32 addr,uint8 *buffer);
+uint8 mmc_read_sector(uint32 addr, uint8 *buffer);
 
 /*! 
  * Schreibt einen 512-Byte Sektor auf die Karte
  * @param addr 		Nummer des 512-Byte Blocks
  * @param Buffer 	Zeiger auf den Puffer
- * @return 			0 wenn alles ok ist
+ * @param async		0: synchroner, 1: asynchroner Aufruf, siehe MMC_ASYNC_WRITE in mmc-low.h
+ * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 24, 2 wenn Timeout bei busy
  * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			16.11.2006
  * @see				mmc-low.s
  */
-uint8 mmc_write_sector(uint32 addr,uint8 *buffer);
+uint8 mmc_write_sector(uint32 addr, uint8 *buffer, uint8 async);
 
 /*! 
  * Initialisiere die SD/MMC-Karte

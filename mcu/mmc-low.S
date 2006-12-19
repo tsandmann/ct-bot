@@ -181,21 +181,24 @@ mmc_enable:
  * Schreibt einen 512-Byte Sektor auf die Karte
  * @param addr 		Nummer des 512-Byte Blocks
  * @param Buffer 	Zeiger auf den Puffer
- * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout nach Kommando 24, 2 wenn Timeout bei busy 
+ * @param async		0: synchroner, 1: asynchroner Aufruf, siehe MMC_ASYNC_WRITE in mmc-low.h  
+ * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 24, 2 wenn Timeout bei busy 
  * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			16.11.2006
  */
 .global	mmc_write_sector
 	.type mmc_write_sector, @function
 mmc_write_sector:
-	push r14					; allgemeine Register retten
+	push r13					; allgemeine Register retten
+	push r14
 	push r15
 	push r16
 	push r28
 	push r29
 	movw r14, r22				; Byte 1 und 2 von Parameter addr sichern
 	mov r16, r24				; Byte 3 von Parameter addr sichern  
-	movw r28, r20				; Paramter Buffer sichern
+	movw r28, r20				; Parameter Buffer sichern
+	mov r13, r18				; Parameter async sichern
 	call mmc_enable				; Karte aktiv schalten
 	tst r24
 	breq 1f
@@ -204,6 +207,21 @@ mmc_write_sector:
 	lsl r14						; Block in Bytes umrechnen
 	rol r15
 	rol r16
+#if MMC_ASYNC_WRITE == 1	
+	clr r27						; r27 = 0
+	1:
+	clr r26						; r26 = 0
+	2:
+	call mmc_read_byte			; warten, ob Karte noch busy
+	cpi r24, lo8(-1)
+	breq 3f						; == 0xff?
+	dec r26						; r26--
+	brne 2b						; r26 == 0?
+	dec r27						; r27--
+	brne 1b						; r27 == 0?
+	rjmp 4f						; Timeout :(
+	3:
+#endif		
 	ldi r24, 88					; Kommando 24 zum Schreiben eines Blocks senden, Byte 0
 	call mmc_write_byte
 	mov r24, r16				; Byte 1
@@ -217,7 +235,7 @@ mmc_write_sector:
 	ldi r24, lo8(-1)			; Byte 5 (CRC)
 	call mmc_write_byte
 	ldi r26, lo8(-1)			; Timeout nach 256 Versuchen
-	1:
+	1:	
 	call mmc_read_byte
 	cpi r24, lo8(-1)			; !0xff = Antwort	
 	brne 3f
@@ -279,6 +297,10 @@ mmc_write_sector:
 	sbi PORT_OUT, SPI_DO		; DO auf high
 	call mmc_write_byte			; crc-Dummy schreiben	
 	call mmc_write_byte
+#if MMC_ASYNC_WRITE == 1
+	tst r13						; wollten wir asynchron schreiben?
+	brne 3f						; wenn ja, nicht auf busy warten
+#endif	
 	1:
 	clr r28						; r28 = 0
 	2:
@@ -310,13 +332,14 @@ mmc_write_sector:
 	pop r16
 	pop r15
 	pop r14
+	pop r13
 	ret 
 
 /*!
  * Liest einen Block von der Karte
  * @param addr 		Nummer des 512-Byte Blocks
  * @param Buffer 	Puffer von mindestens 512 Byte
- * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout nach Kommando 17
+ * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 17
  * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			17.11.2006
  */	
@@ -339,6 +362,21 @@ mmc_read_sector:
 	lsl r14						; Block in Bytes umrechnen
 	rol r15
 	rol r16
+#if MMC_ASYNC_WRITE == 1	
+	clr r27						; r27 = 0
+	1:
+	clr r26						; r26 = 0
+	2:
+	call mmc_read_byte			; warten, ob Karte noch busy
+	cpi r24, lo8(-1)
+	breq 3f						; == 0xff?
+	dec r26						; r26--
+	brne 2b						; r26 == 0?
+	dec r27						; r27--
+	brne 1b						; r27 == 0?
+	rjmp 5f						; Timeout :(	
+	3:
+#endif
 	ldi r24, 81					; Kommando 17 zum Lesen eines Blocks senden, Byte 0	
 	call mmc_write_byte
 	mov r24, r16				; Byte 1

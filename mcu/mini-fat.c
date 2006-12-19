@@ -81,7 +81,7 @@ uint32 mini_fat_find_block(uint8 key[3], uint8 * buffer){
 
 		// auf der Karte markieren, dass wir sie in der Hand hatten
 		buffer[3]++;
-		mmc_write_sector(block-1,buffer);
+		mmc_write_sector(block-1,buffer,0);
 
 		return block;
 }
