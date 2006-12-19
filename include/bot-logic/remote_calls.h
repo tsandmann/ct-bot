@@ -34,7 +34,7 @@
 
 // Die Kommandostruktur
 typedef struct {
-   void* (*func)(void *);      /*!< Zeiger auf die auszuführende Funktion*/
+   void* (*func)(void *);      /*!< Zeiger auf die auszufuehrende Funktion*/
    uint8 len;					/*!< Anzahl der Bytes, die als Parameter kommen Und zwar ohne den obligatorischen caller-parameter*/
    char name[TEXT_LEN+1]; 	   /*!< Text, maximal TEXT_LEN Zeichen lang +  1 Zeichen terminierung*/
 } call_t;
