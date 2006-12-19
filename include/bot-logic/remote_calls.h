@@ -28,6 +28,7 @@
 #define REMOTE_CALLS_H_
 
 #include "bot-logik.h"
+#include <avr/pgmspace.h>
 
 #define TEXT_LEN 15
 
@@ -55,7 +56,7 @@ typedef struct {
  * wieviele Parameter nach dem caller kommen ist voellig unerheblich. 
  * Allerdings muss man ihre gesamtlaeng in Byte kennen
  */
-const call_t calls[] = {
+const call_t calls[] PROGMEM = {
    PREPARE_REMOTE_CALL(bot_turn,2),
    PREPARE_REMOTE_CALL(bot_gotoxy,8),
    PREPARE_REMOTE_CALL(bot_solve_maze,0) 
