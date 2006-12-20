@@ -33,6 +33,9 @@
 #include "bot-logic/bot-logik.h"
 
 #ifdef BEHAVIOUR_SERVO_AVAILABLE
+
+uint8 servo_active;	/*!< 0, wenn kein Servo aktiv, sonst Bit der gerade aktiven Servos gesetzt */
+
 /*! 
  * Dieses Verhalten fuehrt ein Servo-Kommando aus und schaltet danach den Servo wieder ab
  * 

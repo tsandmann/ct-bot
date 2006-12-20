@@ -58,7 +58,7 @@ typedef struct {
 	} led_t;
 #endif
 
-extern volatile uint8 led;
+extern uint8 led;
 
 /*!
  * Initialisiert die LEDs

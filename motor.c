@@ -33,8 +33,8 @@
 #include "sensor.h"
 #include "display.h"
 
-volatile int16 speed_l=0;	/*!< Geschwindigkeit linker Motor */
-volatile int16 speed_r=0;	/*!< Geschwindigkeit rechter Motor */
+int16 speed_l=0;	/*!< Geschwindigkeit linker Motor */
+int16 speed_r=0;	/*!< Geschwindigkeit rechter Motor */
 
 direction_t direction;		/*!< Drehrichtung der Motoren */
 
@@ -42,8 +42,8 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 #define PWMMIN 0     /*!< Minimaler PWM-Wert */
 
 #ifdef SPEED_CONTROL_AVAILABLE
-	volatile int8 encoderTargetRateL=0;
-	volatile int8 encoderTargetRateR=0;
+	int8 encoderTargetRateL=0;
+	int8 encoderTargetRateR=0;
 
 	/*!
 	 * @brief 	Drehzahlregelung fuer die Motoren des c't-Bots
@@ -62,13 +62,13 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 		int16 StellwertL=motor_left;  /*!< Stellwert links*/
 		int16 StellwertR=motor_right;  /*!< Stellwert rechts*/
 		
-		volatile static int16 lastEncoderL=0;      /*!< vorhergehender Wert von sensEncL */	
-		volatile static int8 lastErrL=0;   /*!< letzter Drehzahlfehler links */
-		volatile static int8 last2ErrL=0;  /*!< vorletzter Drehzahlfehler links */
+		static int16 lastEncoderL=0;      /*!< vorhergehender Wert von sensEncL */	
+		static int8 lastErrL=0;   /*!< letzter Drehzahlfehler links */
+		static int8 last2ErrL=0;  /*!< vorletzter Drehzahlfehler links */
 	
-		volatile static int16 lastEncoderR=0;      /*!< vorhergehender Wert von sensEncR */	
-		volatile static int8 lastErrR=0;   /*!< letzter Drehzahlfehler rechts */
-		volatile static int8 last2ErrR=0;  /*!< vorletzter Drehzahlfehler rechts */
+		static int16 lastEncoderR=0;      /*!< vorhergehender Wert von sensEncR */	
+		static int8 lastErrR=0;   /*!< letzter Drehzahlfehler rechts */
+		static int8 last2ErrR=0;  /*!< vorletzter Drehzahlfehler rechts */
 	
 		int16 err=0;    	        // aktuelle Abweichung vom Soll-Wert
 		int16 encoderRate=0;		// IST-Wert [Encoder-ticks/Aufruf]

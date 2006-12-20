@@ -51,11 +51,11 @@
 #define SERVO1 1			/*!< Servo1 */
 #define SERVO2 2			/*!< Servo1 */
 
-extern int16 volatile speed_l;			/*!< Geschwindigkeit des linken Motors */
-extern int16 volatile speed_r;			/*!< Geschwindigkeit des rechten Motors */
+extern int16 speed_l;			/*!< Geschwindigkeit des linken Motors */
+extern int16 speed_r;			/*!< Geschwindigkeit des rechten Motors */
 
-extern volatile int16 motor_left;	/*!< zuletzt gestellter Wert linker Motor */
-extern volatile int16 motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
+extern int16 motor_left;	/*!< zuletzt gestellter Wert linker Motor */
+extern int16 motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
 
 
 /*! In diesem Typ steht die Drehrichtung, auch wenn die Speed-Variablen bereits wieder auf Null sind */

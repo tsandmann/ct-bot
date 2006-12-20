@@ -36,66 +36,66 @@
 #define DEG2RAD (2*M_PI/360)
 
 
-volatile int16 sensLDRL=0;		/*!< Lichtsensor links */
-volatile int16 sensLDRR=0;		/*!< Lichtsensor rechts */
+int16 sensLDRL=0;		/*!< Lichtsensor links */
+int16 sensLDRR=0;		/*!< Lichtsensor rechts */
 
-volatile int16 sensDistL=1023;		/*!< Distanz linker IR-Sensor in [mm], wenn korrekt umgerechnet wird */
-volatile int16 sensDistR=1023;		/*!< Distanz rechter IR-Sensor in [mm], wenn korrekt umgerechnet wird */
+int16 sensDistL=1023;		/*!< Distanz linker IR-Sensor in [mm], wenn korrekt umgerechnet wird */
+int16 sensDistR=1023;		/*!< Distanz rechter IR-Sensor in [mm], wenn korrekt umgerechnet wird */
 
-volatile int16 sensBorderL=0;	/*!< Abgrundsensor links */
-volatile int16 sensBorderR=0;	/*!< Abgrundsensor rechts */
+int16 sensBorderL=0;	/*!< Abgrundsensor links */
+int16 sensBorderR=0;	/*!< Abgrundsensor rechts */
 
-volatile int16 sensLineL=0;	/*!< Lininensensor links */
-volatile int16 sensLineR=0;	/*!< Lininensensor rechts */
+int16 sensLineL=0;	/*!< Lininensensor links */
+int16 sensLineR=0;	/*!< Lininensensor rechts */
 
-volatile uint8 sensTrans=0;		/*!< Sensor Ueberwachung Transportfach */
+uint8 sensTrans=0;		/*!< Sensor Ueberwachung Transportfach */
 
-volatile uint8 sensDoor=0;		/*!< Sensor Ueberwachung Klappe */
+uint8 sensDoor=0;		/*!< Sensor Ueberwachung Klappe */
 
-volatile uint8 sensError=0;		/*!< Ueberwachung Motor oder Batteriefehler */
+uint8 sensError=0;		/*!< Ueberwachung Motor oder Batteriefehler */
 
 #ifdef MAUS_AVAILABLE
 
-	volatile int8 sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-	volatile int8 sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
+	int8 sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+	int8 sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
 	
-	volatile int16 sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-	volatile int16 sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
+	int16 sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+	int16 sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
 #endif
 
 volatile int16 sensEncL=0;		/*!< Encoder linkes Rad */
 volatile int16 sensEncR=0;		/*!< Encoder rechtes Rad */
-volatile float heading_enc=0;	/*!< Blickrichtung aus Encodern */
-volatile float x_enc=0;		/*!< X-Koordinate aus Encodern [mm] */
-volatile float y_enc=0;		/*!< Y-Koordinate aus Encodern [mm] */
-volatile float v_enc_left=0;	/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
-volatile float v_enc_right=0;	/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
-volatile float v_enc_center=0;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
+float heading_enc=0;	/*!< Blickrichtung aus Encodern */
+float x_enc=0;		/*!< X-Koordinate aus Encodern [mm] */
+float y_enc=0;		/*!< Y-Koordinate aus Encodern [mm] */
+float v_enc_left=0;	/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+float v_enc_right=0;	/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+float v_enc_center=0;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
 
 #ifdef PC
-	volatile uint16 simultime=0;	/*! Simulierte Zeit */
+	uint16 simultime=0;	/*! Simulierte Zeit */
 #endif
 
 #ifdef MEASURE_MOUSE_AVAILABLE
-	volatile float heading_mou=0;		/*!< Aktuelle Blickrichtung relativ zur Startposition aus Mausmessungen */
-	volatile float x_mou=0;			/*!< Aktuelle X-Koordinate in mm relativ zur Startposition aus Mausmessungen */
-	volatile float y_mou=0;			/*!< Aktuelle Y-Koordinate in mm relativ zur Startposition aus Mausmessungen */
-	volatile float v_mou_center=0;		/*!< Geschwindigkeit in mm/s ausschliesslich aus den Maussensorwerten berechnet */
-	volatile float v_mou_left=0;		/*!< ...aufgeteilt auf linkes Rad */
-	volatile float v_mou_right=0;		/*!< ...aufgeteilt auf rechtes Rad */
+	float heading_mou=0;		/*!< Aktuelle Blickrichtung relativ zur Startposition aus Mausmessungen */
+	float x_mou=0;			/*!< Aktuelle X-Koordinate in mm relativ zur Startposition aus Mausmessungen */
+	float y_mou=0;			/*!< Aktuelle Y-Koordinate in mm relativ zur Startposition aus Mausmessungen */
+	float v_mou_center=0;		/*!< Geschwindigkeit in mm/s ausschliesslich aus den Maussensorwerten berechnet */
+	float v_mou_left=0;		/*!< ...aufgeteilt auf linkes Rad */
+	float v_mou_right=0;		/*!< ...aufgeteilt auf rechtes Rad */
 #endif
 
-volatile float heading=0;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
-volatile float x_pos=0;			/*!< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
-volatile float y_pos=0;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
-volatile float v_left=0;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
-volatile float v_right=0;			/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
-volatile float v_center=0;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
+float heading=0;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
+float x_pos=0;			/*!< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
+float y_pos=0;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
+float v_left=0;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
+float v_right=0;			/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
+float v_center=0;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
 
-volatile int8 sensors_initialized = 0;	/*!< Wird 1 sobald die Sensorwerte zur Verfügung stehen */
+int8 sensors_initialized = 0;	/*!< Wird 1 sobald die Sensorwerte zur Verfügung stehen */
 
 #ifdef SRF10_AVAILABLE
-	volatile uint16 sensSRF10;	/*!< Messergebniss Ultraschallsensor */
+	uint16 sensSRF10;	/*!< Messergebniss Ultraschallsensor */
 #endif
 
 
@@ -153,7 +153,7 @@ void sensor_update(void){
 	int16 diffEncR;					/*!< Differenzbildung rechter Encoder */
 	float sl;						/*!< gefahrene Strecke linkes Rad */
 	float sr;						/*!< gefahrene Strecke rechtes Rad */
-	#ifdef MAUS_AVAILABLE
+	#ifdef MEASURE_MOUSE_AVAILABLE
 		int16 dX;						/*!< Differenz der X-Mauswerte */
 		int16 dY;						/*!< Differenz der Y-Mauswerte */
 		int8 modifiedAngles=False;		/*!< Wird True, wenn aufgrund 90 Grad oder 270 Grad die Winkel veraendert werden mussten */

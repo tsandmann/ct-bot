@@ -18,7 +18,7 @@
  */
 
 /*! @file 	motor-low.c 
- * @brief 	Low-Level Routinen für die Motorsteuerung des c't-Bots
+ * @brief 	Low-Level Routinen fuer die Motorsteuerung des c't-Bots
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	01.12.05
 */
@@ -55,16 +55,16 @@
 #define PWM_CLK_0	 (_BV(CS02)  |  _BV(CS00))		/*!< Prescaler fuer PWM 0 = 1024*/
 //#define PWM_CLK_2	 (_BV(CS22) | _BV(CS21) |_BV(CS20)) /*!< Prescaler fuer PWM 2 =1024		*/
 
-volatile int16 motor_left;	/*!< zuletzt gestellter Wert linker Motor */
-volatile int16 motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
+int16 motor_left;	/*!< zuletzt gestellter Wert linker Motor */
+int16 motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
 
 
 void pwm_0_init(void);
 void pwm_1_init(void);
-// void pwm_2_init(void);		// Kollidiert mit Timer2 für IR-Fernbedienung
+// void pwm_2_init(void);		// Kollidiert mit Timer2 fuer IR-Fernbedienung
 
 /*!
- *  Initialisiert alles für die Motosteuerung 
+ *  Initialisiert alles fuer die Motosteuerung 
  */
 void motor_low_init(){
 	BOT_DIR_L_DDR|=BOT_DIR_L_PIN;
@@ -72,7 +72,7 @@ void motor_low_init(){
 	
 	pwm_0_init();
 	pwm_1_init();
-//	pwm_2_init();				// Kollidiert mit Timer2 für IR-Fernbedienung
+//	pwm_2_init();				// Kollidiert mit Timer2 fuer IR-Fernbedienung
 	bot_motor(0,0);
 }
 
@@ -157,7 +157,7 @@ void servo_low(uint8 servo, uint8 pos){
 
 /*!
  * Timer 0: Kontrolliert den Servo per PWM
- * PWM löscht bei erreichen. daher steht in OCR0 255-Speed!!!
+ * PWM loescht bei erreichen. daher steht in OCR0 255-Speed!!!
  * initilaisiert Timer 0 und startet ihn 
  */
 void pwm_0_init(void){
@@ -197,7 +197,7 @@ SIGNAL (SIG_OUTPUT_COMPARE1B){
 
 /*!
  * Timer 1: Kontrolliert die Motoren per PWM
- * PWM löscht bei erreichen. daher steht in OCR1A/OCR1B 255-Speed!!!
+ * PWM loescht bei erreichen. daher steht in OCR1A/OCR1B 255-Speed!!!
  * initilaisiert Timer 0 und startet ihn 
  */
 void pwm_1_init(void){
@@ -212,8 +212,8 @@ void pwm_1_init(void){
 	 		 _BV(CS12) | _BV(CS10); 		// Prescaler = 1024		
 //		 _BV(CS10); 		// Prescaler = 1		
 	
-	OCR1A = 255;	// PWM löscht bei erreichen. daher steht in OCR1A 255-Speed!!!
-	OCR1B = 255;	// PWM löscht bei erreichen. daher steht in OCR1B 255-Speed!!!
+	OCR1A = 255;	// PWM loescht bei erreichen. daher steht in OCR1A 255-Speed!!!
+	OCR1B = 255;	// PWM loescht bei erreichen. daher steht in OCR1B 255-Speed!!!
 	
 	// TIMSK|= _BV(OCIE1A) | _BV(OCIE1B); // enable Output Compare 1 overflow interrupt
 	// sei();                       // enable interrupts
@@ -221,10 +221,10 @@ void pwm_1_init(void){
 
 /*!
  * Timer 0: Kontrolliert den Servo per PWM
- * PWM löscht bei erreichen. daher steht in OCR0 255-Speed!!!
+ * PWM loescht bei erreichen. daher steht in OCR0 255-Speed!!!
  * initilaisiert Timer 0 und startet ihn 
  */
-/* Kollidiert derzeit mit Timer2 für IR
+/* Kollidiert derzeit mit Timer2 fuer IR
 void pwm_2_init(void){
 	DDRD |= 0x80;			   // PWM-Pin als Output
 	TCNT2  = 0x00;            // TIMER0 vorladen

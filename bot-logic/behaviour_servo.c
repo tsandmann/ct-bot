@@ -35,6 +35,7 @@
 static uint16 servo_time; 
 static uint8 servo_nr;
 static uint8 servo_pos;
+uint8 servo_active = 0;	/*!< 0, wenn kein Servo aktiv, sonst Bit der gerade aktiven Servos gesetzt */
 
 /*! 
  * Dieses Verhalten fuehrt ein Servo-Kommando aus und schaltet danach den Servo wieder ab
@@ -45,6 +46,7 @@ void bot_servo_behaviour(Behaviour_t *data){
 	/* Servo ausschalten, falls Klappe zu oder Countdown abgelaufen */
 	if ( (servo_pos == DOOR_CLOSE && sensDoor == 0) || (TIMER_GET_TICKCOUNT_16 - servo_time > MS_TO_TICKS(1000L)) ){
 		servo_set(servo_nr, SERVO_OFF);	// Servo aus
+		servo_active &= ~servo_nr;
 		return_from_behaviour(data); 	// und Verhalten auch aus
 	} 
 }
@@ -55,6 +57,7 @@ void bot_servo_behaviour(Behaviour_t *data){
  * @param pos Zielposition des Servos
  */
 void bot_servo(Behaviour_t * caller, uint8 servo, uint8 pos){
+	servo_active |= servo;
 	servo_set(servo, pos);	// Servo-PWM einstellen
 	servo_pos = pos;		// Zielposition merken
 	servo_nr = servo;		// Servo-Nr speichern

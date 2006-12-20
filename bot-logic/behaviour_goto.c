@@ -39,8 +39,8 @@
 #define GOTO_FAST		40			/*!< Wenn Encoder-Distanz < GOTO_FAST dann schnelle Fahrt, sonst maximale Fahrt */
 
 
-volatile int16 mot_l_goto=0;		/*!< Speichert wie weit der linke Motor drehen soll */
-volatile int16 mot_r_goto=0;		/*!< Speichert wie weit der rechte Motor drehen soll */
+int16 mot_l_goto=0;		/*!< Speichert wie weit der linke Motor drehen soll */
+int16 mot_r_goto=0;		/*!< Speichert wie weit der rechte Motor drehen soll */
 
 
 /*!

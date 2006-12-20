@@ -59,11 +59,11 @@
 
 
 
-volatile static byte ir_lastsample = 0;  /*!< zuletzt gelesenes Sample */
-volatile static byte ir_bittimer   = 0;  /*!< zählt die Aufrufe von ir_isr() */
+static byte ir_lastsample = 0;  /*!< zuletzt gelesenes Sample */
+static byte ir_bittimer   = 0;  /*!< zählt die Aufrufe von ir_isr() */
 
-volatile static uint16 	ir_data_tmp = 0;  /*!< RC5-Bitstream */
-volatile static byte	ir_bitcount = 0;  /*!< anzahl gelesener bits */
+static uint16 	ir_data_tmp = 0;  /*!< RC5-Bitstream */
+static byte	ir_bitcount = 0;  /*!< anzahl gelesener bits */
 
 volatile uint16	ir_data	= 0;	/*!< letztes komplett gelesenes RC5-paket */
 

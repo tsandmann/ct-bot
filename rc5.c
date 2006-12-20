@@ -146,8 +146,10 @@ static RemCtrlAction gRemCtrlAction[] = {
 	{ RC5_CODE_8,		rc5_number,			    { 8, 8 } },
 	{ RC5_CODE_9,		rc5_number,			    { 9, 9 } },
 	{ RC5_CODE_I_II,	rc5_bot_next_behaviour,	{ 0, 0 } },
+#ifdef BEHAVIOUR_SERVO_AVAILABLE	
 	{ RC5_CH_PLUS,		rc5_bot_servo,			{ SERVO1, DOOR_CLOSE } },
 	{ RC5_CH_MINUS,		rc5_bot_servo,			{ SERVO1, DOOR_OPEN } },
+#endif
 #ifdef DISPLAY_SCREENS_AVAILABLE
 	{ RC5_CODE_RED,		rc5_screen_set,			{ 0, 0 } },
 	{ RC5_CODE_GREEN,	rc5_screen_set,			{ 1, 0 } },
@@ -238,12 +240,14 @@ static void rc5_screen_set(RemCtrlFuncPar *par) {
 }
 #endif
 
-/*! Steuert den Servo an
- * @param par Parameter mit Servo-Nummer und -Position
- */
-void rc5_bot_servo(RemCtrlFuncPar *par){
-		bot_servo(0,par->value1,par->value2);
-}
+#ifdef BEHAVIOUR_SERVO_AVAILABLE 
+	/*! Steuert den Servo an
+	 * @param par Parameter mit Servo-Nummer und -Position
+	 */
+	void rc5_bot_servo(RemCtrlFuncPar *par){
+			bot_servo(0,par->value1,par->value2);
+	}
+#endif
 /*!
  * Diese Funktion wechselt zwiaschen verschiednen Verhalten
  * @param par Parameter mit den zu setzenden Geschwindigkeiten.
@@ -455,7 +459,9 @@ void rc5_number(RemCtrlFuncPar *par) {
 				#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 //					case 5: bot_solve_maze(0); break;
 				#endif
+				#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 					case 5: bot_catch_pillar(0); break;
+				#endif
 				
 //				case 5: target_speed_l = BOT_SPEED_MAX; target_speed_r = BOT_SPEED_MAX; break;
 //				#endif

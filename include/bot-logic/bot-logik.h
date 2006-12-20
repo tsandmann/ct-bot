@@ -189,7 +189,7 @@ Behaviour_t *new_behaviour(uint8 priority, void (*work) (struct _Behaviour_t *da
  */  
   void set_behaviours_equal(void);
    
-  volatile int8 behaviour_page ; /*!< angezeigte Verhaltensseite */
+  int8 behaviour_page ; /*!< angezeigte Verhaltensseite */
   
 #endif
 

@@ -35,6 +35,10 @@
 #include "motor.h"
 #include "timer.h"
 #include "sensor_correction.h"
+#include "bot-logic/available_behaviours.h"
+#ifdef BEHAVIOUR_SERVO_AVAILABLE
+	#include "bot-logic/behaviour_servo.h"
+#endif
 
 // ADC-PINS
 #define SENS_ABST_L	0		/*!< ADC-PIN Abstandssensor Links */
@@ -72,12 +76,6 @@
 #define ENC_R ((SENS_ENCR_PINR >> SENS_ENCR) & 0x01)	/*!< Abkuerzung zum Zugriff auf Encoder */
 
 #define ENC_ENTPRELL	12		/*!< Nur wenn der Encoder ein paar mal den gleichen wert gibt uebernehmen */
-
-volatile uint8 enc_l=0;		/*!< Puffer fuer die letzten Encoder-Staende */
-volatile uint8 enc_r=0;		/*!< Puffer fuer die letzten Encoder-Staende */
-
-volatile uint8 enc_l_cnt=0;	/*!< Entprell-Counter fuer L-Encoder	 */
-volatile uint8 enc_r_cnt=0;	/*!< Entprell-Counter fuer R-Encoder	 */
 
 
 /*!
@@ -162,7 +160,10 @@ void bot_sens_isr(void){
 
 		// Messwert merken
 		distLeft[measure_count]=adc_read(SENS_ABST_L);
-		distRight[measure_count]=adc_read(SENS_ABST_R);
+		#ifdef BEHAVIOUR_SERVO_AVAILABLE
+			if ((servo_active & SERVO1) == 0)	// Wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensor nicht
+		#endif
+				distRight[measure_count]=adc_read(SENS_ABST_R);
 
 		measure_count++;
 		if (measure_count==3) measure_count=0;
@@ -188,6 +189,10 @@ void bot_sens_isr(void){
  * daher Update per Timer-Interrupt und nicht per Polling
  */
 void bot_encoder_isr(void){
+	static uint8 enc_l=0;		/*!< Puffer fuer die letzten Encoder-Staende */
+	static uint8 enc_r=0;		/*!< Puffer fuer die letzten Encoder-Staende */
+	static uint8 enc_l_cnt=0;	/*!< Entprell-Counter fuer L-Encoder */
+	static uint8 enc_r_cnt=0;	/*!< Entprell-Counter fuer R-Encoder */
 	// --------------------- links ----------------------------
 	//Rad-Encoder auswerten 
 	if ( ENC_L != enc_l){	// uns interesieren nur Veraenderungen

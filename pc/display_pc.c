@@ -50,9 +50,9 @@
 /*! Puffergroesse fuer eine Zeile in bytes */
 #define DISPLAY_BUFFER_SIZE	(DISPLAY_LENGTH + 1)
 
-volatile uint8 display_update=0;	/*!< Muss das Display aktualisiert werden? */
+uint8 display_update=0;	/*!< Muss das Display aktualisiert werden? */
 #ifdef DISPLAY_SCREENS_AVAILABLE
-	volatile uint8 display_screen=0;	/*!< Muss das Display aktualisiert werden? */
+	uint8 display_screen=0;	/*!< Muss das Display aktualisiert werden? */
 #endif
 
 char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausgaben */

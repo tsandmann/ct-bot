@@ -32,7 +32,7 @@
 #include "led.h"
 
 #ifdef LED_AVAILABLE
-volatile uint8 led=0;			/*!< Status der LEDs */
+uint8 led=0;			/*!< Status der LEDs */
 /*!
  * Initialisiert die LEDs
  */

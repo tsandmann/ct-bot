@@ -32,7 +32,7 @@
 
 #ifdef LED_AVAILABLE
 
-volatile uint8 led=0;
+uint8 led=0;
 /*!
  * Initialisiert die LEDs
  */

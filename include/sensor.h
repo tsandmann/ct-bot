@@ -31,72 +31,70 @@
 
 /* Analoge Sensoren: Der Wertebereich aller analogen Sensoren umfasst 10 Bit. Also 0 bis 1023 */
 
-extern volatile int16 sensDistL;	/*!< Distanz linker IR-Sensor [mm] ca. 100 bis 800 */
-extern volatile int16 sensDistR;	/*!< Distanz rechter IR-Sensor [mm] ca. 100 bis 800  */
+extern int16 sensDistL;	/*!< Distanz linker IR-Sensor [mm] ca. 100 bis 800 */
+extern int16 sensDistR;	/*!< Distanz rechter IR-Sensor [mm] ca. 100 bis 800  */
 
-extern volatile int16 sensLDRL;		/*!< Lichtsensor links [0-1023];  1023 = dunkel*/
-extern volatile int16 sensLDRR;		/*!< Lichtsensor rechts [0-1023];  1023 = dunkel*/
+extern int16 sensLDRL;		/*!< Lichtsensor links [0-1023];  1023 = dunkel*/
+extern int16 sensLDRR;		/*!< Lichtsensor rechts [0-1023];  1023 = dunkel*/
 
-extern volatile int16 sensBorderL;	/*!< Abgrundsensor links [0-1023];  1023 = dunkel*/
-extern volatile int16 sensBorderR;	/*!<  Abgrundsensor rechts [0-1023];  1023 = dunkel*/
+extern int16 sensBorderL;	/*!< Abgrundsensor links [0-1023];  1023 = dunkel*/
+extern int16 sensBorderR;	/*!<  Abgrundsensor rechts [0-1023];  1023 = dunkel*/
 
-extern volatile int16 sensLineL;	/*!<  Lininensensor links [0-1023];  1023 = dunkel*/
-extern volatile int16 sensLineR;	/*!<  Lininensensor rechts [0-1023];  1023 = dunkel*/
+extern int16 sensLineL;	/*!<  Lininensensor links [0-1023];  1023 = dunkel*/
+extern int16 sensLineR;	/*!<  Lininensensor rechts [0-1023];  1023 = dunkel*/
 
 /* digitale Sensoren */
 extern volatile int16 sensEncL;		/*!< Encoder linker Motor [-32768 bis 32767] */
 extern volatile int16 sensEncR;		/*!< Encoder rechter Motor [-32768 bis 32767] */
 
-extern volatile uint8 sensTrans;		/*!< Sensor Ueberwachung Transportfach [0/1]*/
+extern uint8 sensTrans;		/*!< Sensor Ueberwachung Transportfach [0/1]*/
 
-extern volatile uint8 sensDoor;		/*!< Sensor Ueberwachung Klappe [0/1] */
+extern uint8 sensDoor;		/*!< Sensor Ueberwachung Klappe [0/1] */
 
-extern volatile uint8 sensError;		/*!< Ueberwachung Motor oder Batteriefehler [0/1]  1= alles ok */
+extern uint8 sensError;		/*!< Ueberwachung Motor oder Batteriefehler [0/1]  1= alles ok */
 
 extern uint16 RC5_Code;        /*!< Letzter empfangener RC5-Code */
 
 #ifdef MAUS_AVAILABLE
-	extern volatile int8 sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-	extern volatile int8 sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
+	extern int8 sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+	extern int8 sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
 	
-	extern volatile int16 sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-	extern volatile int16 sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
+	extern int16 sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+	extern  int16 sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
 #endif
 
-extern volatile int16 sensEncL;		/*!< Encoder linkes Rad */
-extern volatile int16 sensEncR;		/*!< Encoder rechtes Rad */
-extern volatile float heading_enc;		/*!< Blickrichtung aus Encodern */
-extern volatile float x_enc;			/*!< X-Koordinate aus Encodern [mm] */
-extern volatile float y_enc;			/*!< Y-Koordinate aus Encodern [mm] */
-extern volatile float v_enc_left;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
-extern volatile float v_enc_right;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
-extern volatile float v_enc_center;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
+extern float heading_enc;		/*!< Blickrichtung aus Encodern */
+extern float x_enc;			/*!< X-Koordinate aus Encodern [mm] */
+extern float y_enc;			/*!< Y-Koordinate aus Encodern [mm] */
+extern float v_enc_left;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+extern float v_enc_right;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+extern float v_enc_center;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
 
 #ifdef PC
-	extern volatile uint16 simultime;	/*! Simulierte Zeit */
+	extern uint16 simultime;	/*! Simulierte Zeit */
 #endif
 
 #ifdef MEASURE_MOUSE_AVAILABLE
-	extern volatile float heading_mou;		/*!< Aktuelle Blickrichtung relativ zur Startposition aus Mausmessungen */
-	extern volatile float x_mou;			/*!< Aktuelle X-Koordinate in mm relativ zur Startposition aus Mausmessungen */
-	extern volatile float y_mou;			/*!< Aktuelle Y-Koordinate in mm relativ zur Startposition aus Mausmessungen */
-	extern volatile float v_mou_center;	/*!< Geschwindigkeit in mm/s ausschliesslich aus den Maussensorwerten berechnet */
-	extern volatile float v_mou_left;		/*!< ...aufgeteilt auf linkes Rad */
-	extern volatile float v_mou_right;		/*!< ...aufgeteilt auf rechtes Rad */
+	extern float heading_mou;		/*!< Aktuelle Blickrichtung relativ zur Startposition aus Mausmessungen */
+	extern float x_mou;			/*!< Aktuelle X-Koordinate in mm relativ zur Startposition aus Mausmessungen */
+	extern float y_mou;			/*!< Aktuelle Y-Koordinate in mm relativ zur Startposition aus Mausmessungen */
+	extern float v_mou_center;	/*!< Geschwindigkeit in mm/s ausschliesslich aus den Maussensorwerten berechnet */
+	extern float v_mou_left;		/*!< ...aufgeteilt auf linkes Rad */
+	extern float v_mou_right;		/*!< ...aufgeteilt auf rechtes Rad */
 #endif
 
-extern volatile float heading;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
-extern volatile float x_pos;			/*!< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
-extern volatile float y_pos;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
-extern volatile float v_left;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
-extern volatile float v_right;			/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
-extern volatile float v_center;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
+extern float heading;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
+extern float x_pos;			/*!< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
+extern float y_pos;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
+extern float v_left;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
+extern float v_right;			/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
+extern float v_center;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
 
 
-extern volatile int8 sensors_initialized;	/*!< Wird 1 sobald die Sensorwerte zur Verfügung stehen */
+extern int8 sensors_initialized;	/*!< Wird 1 sobald die Sensorwerte zur Verfügung stehen */
 
 #ifdef SRF10_AVAILABLE
-	extern volatile uint16 sensSRF10;	/*!< Messergebniss Ultraschallsensor */
+	extern uint16 sensSRF10;	/*!< Messergebniss Ultraschallsensor */
 #endif
 
 /*! Sensor_update

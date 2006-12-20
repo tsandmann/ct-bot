@@ -62,6 +62,10 @@
 	#define BEHAVIOUR_GOTO_AVAILABLE
 #endif	
 
+#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
+	#define BEHAVIOUR_SERVO_AVAILABLE
+#endif
+
 
 #include "bot-logic/behaviour_simple.h"
 #include "bot-logic/behaviour_drive_square.h"
