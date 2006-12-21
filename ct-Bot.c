@@ -375,10 +375,11 @@ void init(void){
 									mmc_read_csd(csd);
 									display_printf("MMC= %4d MByte ",size >> 20);
 	
-									#ifdef MAP_AVAILABLE
-										// Achtung, das hier kann sehr lange dauern:
-										map_init();
-									#endif
+									// auskommentiert, denn das passiert ja schon in init()!
+//									#ifdef MAP_AVAILABLE
+//										// Achtung, das hier kann sehr lange dauern:
+//										map_init();
+//									#endif	
 								}
 								#ifndef MMC_WRITE_TEST_AVAILABLE
 									display_cursor(3,1);
