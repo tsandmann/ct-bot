@@ -31,8 +31,6 @@
  * @date 	14.11.2006
  */
 
-; TODO:	* Init-Check nicht in write_ und read_sector, sondern in mmc-vm.c? - wer ruft w/r_sector auf?
-
 #include "mmc-low.h"
 #include "ct-Bot.h"
 #include "ena.h"

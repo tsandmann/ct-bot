@@ -29,6 +29,7 @@
 #include "map.h"
 #include "mmc.h"
 #include "mini-fat.h"
+#include "mmc-vm.h"
 
 #ifdef MAP_AVAILABLE
 #include <math.h>
@@ -109,8 +110,12 @@ typedef struct {
 		map_section_t * map[2][1];	/*! Array mit den Zeigern auf die Elemente */
 		uint32 map_start_block; /*! Block, bei dem die Karte auf der MMC-Karte beginnt. Derzeit nur bis 32MByte adressierbar*/
 		uint32 map_current_block; /*! Block, der aktuell im Puffer steht. Derzeit nur bis 32MByte adressierbar*/
-		int8 map_buffer[sizeof(map_section_t)*2]; /*! statischer Puffer */
-		uint8 map_current_block_updated; /*! markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde */
+		#ifndef MMC_VM_AVAILABLE
+			uint8 map_buffer[sizeof(map_section_t)*2]; /*! statischer Puffer */
+			uint8 map_current_block_updated; /*! markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde */
+		#else
+			uint8* map_buffer;	/*! dynamischer Puffer */
+		#endif 
 	#else
 		// Ohne MMC-Karte nehmen wir nur 1 Sektionen in den SRAM und das wars dann
 		map_section_t * map[1][1];	/*! Array mit den Zeigern auf die Elemente */
@@ -126,24 +131,31 @@ typedef struct {
 int8 map_init(void){
 	#ifdef MMC_AVAILABLE 
 		map_start_block=0xFFFFFFFF;
-		map_current_block_updated = 0xFF;	// Die MMC-Karte ist erstmal nicht verfuegbar
+		#ifndef MMC_VM_AVAILABLE
+			map_current_block_updated = 0xFF;	// Die MMC-Karte ist erstmal nicht verfuegbar
+		#endif
+
+		if (mmc_get_init_state() != 0) return 1;
+		
+		#ifndef MMC_VM_AVAILABLE	
+			map_start_block= mini_fat_find_block("MAP",map_buffer);
+		#else
+			map_start_block = mmc_fopen("MAP")>>9;
+			if (map_start_block == 0) return 1;
+			map_buffer = mmc_get_data(map_start_block<<9);
+			if (map_buffer == NULL) return 1;
+		#endif	// MMC_VM_AVAILABLE	
 		
 		// Die Karte auf den Puffer biegen
 		map[0][0]=(map_section_t*)map_buffer;
-		map[1][0]=(map_section_t*)(map_buffer+sizeof(map_section_t));
-
-		if (mmc_init() !=0)
-			return 1;
-			
-		map_start_block= mini_fat_find_block("MAP",map_buffer);
-				
-		if (map_start_block != 0xFFFFFFFF) {
-			map_current_block_updated = False;	// kein Block geladen und daher auch nicht veraendert
+		map[1][0]=(map_section_t*)(map_buffer+sizeof(map_section_t));		
+		
+		if (map_start_block != 0xFFFFFFFF){
+			#ifndef MMC_VM_AVAILABLE
+				map_current_block_updated = False;	// kein Block geladen und daher auch nicht veraendert
+			#endif
 			return 1;
 		}
-		
-
-		
 	#endif
 	
 	return 0;
@@ -174,30 +186,45 @@ map_section_t * map_get_section(uint16 x, uint16 y, uint8 create){
 
 	
 	#ifdef MMC_AVAILABLE // Mit MMC-Karte geht hier einiges anders
-		// wenn die Karte nicht sauber initialisiert ist, mache nix!
-		if (map_current_block_updated == 0xFF)
-			return map[0][0];
+		#ifndef MMC_VM_AVAILABLE	
+			// wenn die Karte nicht sauber initialisiert ist, mache nix!
+			if (map_current_block_updated == 0xFF)
+				return map[0][0];
+				
+			// Berechne den gesuchten Block
+			uint32 block = section_x + section_y*MAP_SECTIONS;
+			block = block >>1;	// es passen immer 2 Sections in einen Block
+			block += map_start_block;	// Offset drauf
 			
-		// Berechne den gesuchten Block
-		uint32 block = section_x + section_y*MAP_SECTIONS;
-		block = block >>1;	// es passen immer 2 Sections in einen Block
-		block += map_start_block;	// Offset drauf
-		
-		// Ist der Block noch nicht geladen
-		if (map_current_block != block){
-			// Wurde der Block im RAM veraendert?
-			if (map_current_block_updated == True)
-				mmc_write_sector(map_current_block,map_buffer);
+			// Ist der Block noch nicht geladen
+			if (map_current_block != block){
+				// Wurde der Block im RAM veraendert?
+				if (map_current_block_updated == True)
+					mmc_write_sector(map_current_block,map_buffer,0);
+				
+				//Lade den neuen Block
+				mmc_read_sector(block,map_buffer);
+				map_current_block=block;
+				map_current_block_updated = False;
+			}
 			
-			//Lade den neuen Block
-			mmc_read_sector(block,map_buffer);
-			map_current_block=block;
-			map_current_block_updated = False;
-		}
-		
-		// richtige der beiden sections raussuchen
-		uint8 index= section_x & 0x01;
-		return map[index][0];
+			// richtige der beiden sections raussuchen
+			uint8 index= section_x & 0x01;
+			return map[index][0];
+		#else
+			// Berechne den gesuchten Block
+			uint32 block = section_x + section_y*MAP_SECTIONS;
+			block = block >>1;	// es passen immer 2 Sections in einen Block
+			block += map_start_block;	// Offset drauf
+			map_buffer = mmc_get_data(block<<9);
+			if (map_buffer != NULL){
+				map[0][0]=(map_section_t*)map_buffer;
+				map[1][0]=(map_section_t*)(map_buffer+sizeof(map_section_t));
+				// richtige der beiden sections raussuchen
+				uint8 index= section_x & 0x01;
+				return map[index][0];
+			} else return map[0][0];
+		#endif	// MMC_VM_AVAILABLE	
 	
 	#else // ohne MMC-Karte einfach direkt mit dem SRAM arbeiten
 		if ((map[section_x][section_y] == NULL) && (create==True)){
@@ -271,8 +298,10 @@ void map_set_field(uint16 x, uint16 y, int8 value) {
 	#endif
 
 	#ifdef MMC_AVAILABLE
-		if (map_current_block_updated != 0xFF)
-			map_current_block_updated = True;
+		#ifndef MMC_VM_AVAILABLE
+			if (map_current_block_updated != 0xFF)
+				map_current_block_updated = True;
+		#endif
 	#endif
 	
 }

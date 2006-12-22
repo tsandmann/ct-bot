@@ -39,7 +39,7 @@
  * @param key 3 Byte zur Identifikation
  * @param buffer Zeiger auf 512 Byte Puffer im SRAM
  */
-uint32 mini_fat_find_block(uint8 key[3], uint8 * buffer);
+uint32 mini_fat_find_block(const char key[3], uint8* buffer);
 
 #endif
 

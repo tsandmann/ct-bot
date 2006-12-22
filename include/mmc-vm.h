@@ -76,5 +76,25 @@ inline uint32 mmc_get_end_of_page(uint32 addr);
  */
 uint8 mmc_page_write_back(uint32 addr);
 
+/*! 
+ * Erzwingt das Zurueckschreiben aller eingelagerten Seiten auf die MMC / SD-Card   
+ * @return		0: alles ok, sonst: Fehler beim Zurueckschreiben
+ * @author 		Timo Sandmann (mail@timosandmann.de)
+ * @date 		21.12.2006
+ */
+uint8 mmc_flush_cache(void);
+
+/*! 
+ * Oeffnet eine Datei im FAT16-Dateisystem auf der MMC / SD-Card und gibt eine virtuelle Adresse zurueck,
+ * mit der man per mmc_get_data() einen Pointer auf die gewuenschten Daten bekommt. Das Ein- / Auslagern
+ * macht das VM-System automatisch. Der Dateiname muss derzeit am Amfang in der Datei stehen.
+ * Achtung: Irgendwann muss man die Daten per mmc_flush_cache() oder mmc_page_write_back() zurueckschreiben! 
+ * @param filename	Dateiname als 0-terminierter String   
+ * @return			Virtuelle Anfangsadresse der angeforderten Datei, 0 falls Fehler 
+ * @author 			Timo Sandmann (mail@timosandmann.de)
+ * @date 			21.12.2006
+ */
+uint32 mmc_fopen(const char *filename);
+
 #endif	// MMC_VM_AVAILABLE
 #endif	// MMC_VM_H_

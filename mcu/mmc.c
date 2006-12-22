@@ -31,9 +31,7 @@
  * Die Portkonfiguration findet sich in mmc-low.h.
  */
 
-//TODO:	* hier aufraeumen :P
-//		* kleine Doku machen
-//		* Unterstuetzung fuer Hardware-SPI wieder einbauen - geht aber eh net :/ 
+//TODO:	* kleine Doku machen
 
 #include "ct-Bot.h"
 
@@ -258,7 +256,7 @@ uint32 mmc_get_size(void){
 	 * @return 0, wenn alles ok
 	 */
 	uint8 mmc_test(void){
-		static uint32 sector = 0x0;
+		static uint32 sector = 0xf000;
 		/* Initialisierung checken */
 		if (mmc_init_state != 0) 
 			if (mmc_init() != 0){
@@ -294,12 +292,12 @@ uint32 mmc_get_size(void){
 			for (i=0; i<512; i++)
 				p_addr[i] = 255 - (i & 0xff);			
 			/* kleiner LRU-Test */
-			p_addr = mmc_get_data(v_addr1);	// Cache-Hit, CB 0
-			p_addr = mmc_get_data(v_addr4);	// Cache-Miss, => CB 1
-			p_addr = mmc_get_data(v_addr1);	// Cache-Hit, CB 0						
-			p_addr = mmc_get_data(v_addr3);	// Cache-Miss, => CB 1
-			p_addr = mmc_get_data(v_addr1);	// Cache-Hit, CB 0
-			p_addr = mmc_get_data(v_addr4);	// Cache-Miss, => CB 1						
+//			p_addr = mmc_get_data(v_addr1);	// Cache-Hit, CB 0
+//			p_addr = mmc_get_data(v_addr4);	// Cache-Miss, => CB 1
+//			p_addr = mmc_get_data(v_addr1);	// Cache-Hit, CB 0						
+//			p_addr = mmc_get_data(v_addr3);	// Cache-Miss, => CB 1
+//			p_addr = mmc_get_data(v_addr1);	// Cache-Hit, CB 0
+//			p_addr = mmc_get_data(v_addr4);	// Cache-Miss, => CB 1						
 			/* Pointer auf Testdaten Teil 1 holen */	
 			p_addr = mmc_get_data(v_addr1);		// Cache-Hit, CB 0
 			if (p_addr == NULL) return 4;		
@@ -312,6 +310,8 @@ uint32 mmc_get_size(void){
 			/* Testdaten 2 vergleichen */
 			for (i=0; i<512; i++)
 				if (p_addr[i] != (255 - (i & 0xff))) return 7;
+			
+		p_addr = mmc_get_data(v_addr4);	
 			/* Zeitmessung beenden */
 			int8 timer_reg=TCNT2;
 			uint16 end_ticks=TIMER_GET_TICKCOUNT_16;

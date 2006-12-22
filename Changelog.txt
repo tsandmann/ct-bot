@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-12-21 Timo Sandmann [mail@timosandmann.de]: MMC-VM um eine Funktion zum Oeffnen von FAT16-Dateien ergaenzt (mmc_fopen())
+
 2006-12-19 Timo Sandmann [mail@timosandmann.de]: Distsensor-Update deaktiviert waehrend Servoaktivitaet fuer Transportfachklappe. Unnoetige volatile-Deklarationen entfernt. Ein paar #define-Abhaengigkeiten korrigiert
 
 2006-12-19 Timo Sandmann [mail@timosandmann.de]: MMC-Code um asynchrones Schreiben ergaenzt, aktivierbar in mmc-low.h

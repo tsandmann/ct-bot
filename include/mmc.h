@@ -32,7 +32,7 @@
 #ifdef MMC_AVAILABLE
 
 #define MMC_INFO_AVAILABLE			/*!< Die Karte kann uns einiges ueber sich verrraten, wenn wir sie danach fragen. Aber es kostet halt Platz im Flash */
-#define MMC_WRITE_TEST_AVAILABLE	/*!< Achtung dieser Test zerstoert die Daten auf der Karte!!! */
+//#define MMC_WRITE_TEST_AVAILABLE	/*!< Achtung dieser Test zerstoert die Daten auf der Karte!!! */
 
 /*!
  * Checkt Initialisierung der Karte
