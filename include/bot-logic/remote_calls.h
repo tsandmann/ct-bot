@@ -62,5 +62,4 @@ const call_t calls[] PROGMEM = {
    PREPARE_REMOTE_CALL(bot_solve_maze,0) 
 };
 
-
 #endif /*REMOTE_CALLS_H_*/

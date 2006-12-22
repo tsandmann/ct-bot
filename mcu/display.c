@@ -36,6 +36,7 @@
 #endif
 #include <stdarg.h>
 #include <stdio.h>
+#include "command.h"
 
 #include "display.h"
 #include "led.h"
@@ -135,7 +136,10 @@ void display_data(char data){ //ein Zeichen aus data in den Displayspeicher schr
  * Löscht das ganze Display
  */
 void display_clear(void){
-	 display_cmd(DISPLAY_CLEAR); // Display l�schen, Cursor Home
+	display_cmd(DISPLAY_CLEAR); // Display loeschen, Cursor Home
+   #ifdef DISPLAY_REMOTE_AVAILABLE
+		command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, NULL, NULL,0);
+	#endif
 }
 
 /*!
@@ -143,7 +147,7 @@ void display_clear(void){
  * @param row Zeile
  * @param column Spalte
  */
-void display_cursor (int row, int column) {
+void display_cursor (uint8 row, uint8 column) {
    switch (row) {
     case 1:
 		display_cmd (0x80 + column - 1);
@@ -159,6 +163,13 @@ void display_cursor (int row, int column) {
 		break;
     default: break;
    }
+  
+   #ifdef DISPLAY_REMOTE_AVAILABLE
+	  int16 r=row-1;
+  	  int16 c=column-1;
+	  command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, &c,&r,0);
+	#endif   
+   
 }
 
 /*! 
@@ -229,6 +240,10 @@ void display_printf(char *format, ...) {
 		display_data(display_buf[run]);
 		run++;
 	}
+	
+	#ifdef DISPLAY_REMOTE_AVAILABLE
+	   command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, NULL, NULL, display_buf);
+	#endif
 	
 	return;
 }

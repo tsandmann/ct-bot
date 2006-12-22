@@ -670,7 +670,7 @@ void init(void){
 		#endif
 		
 		#ifdef LOG_AVAILABLE
-//			LOG_DEBUG(("LOG TIME %d s", timer_get_s()));
+			LOG_DEBUG(("BOT TIME %d s", timer_get_s()));
 		#endif	
 		
 		// Alles Anzeigen

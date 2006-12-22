@@ -56,7 +56,7 @@ void display_clear(void);
  * @param row Zeile
  * @param column Spalte
  */
-void display_cursor (int row, int column) ;
+void display_cursor (uint8 row, uint8 column) ;
 
 /*!
  * Schreibt einen String auf das Display.

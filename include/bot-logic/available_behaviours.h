@@ -24,6 +24,8 @@
 
 #define BEHAVIOUR_CATCH_PILLAR_AVAILABLE /*!< Suche eine Dose und fange sie ein */
 
+//#define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-kommandos entgegen?*/
+
 /* Aufgrund einer ganzen reihe von Abhaengigkeiten sollte man beim Versuch Speicher 
  * zu sparen, zuerst mal bei den Hauptverhalten ausmisten, sonst kommen die 
  * Unterverhalten durch die Hintertuer wieder rein
