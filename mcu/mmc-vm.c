@@ -86,14 +86,14 @@
 #include <stdlib.h>
 
 #ifdef MCU
-	#define MMC_START_ADDRESS 1500000L	// [512;2^32-1] in Byte - Sinnvoll ist z.B. Haelfte der MMC / SD-Card Groesse, der Speicherplatz davor kann dann fuer ein Dateisystem verwendet werden
+	#define MMC_START_ADDRESS 0x2000000	// [512;2^32-1] in Byte - Sinnvoll ist z.B. Haelfte der MMC / SD-Card Groesse, der Speicherplatz davor kann dann fuer ein Dateisystem verwendet werden
 	#define MAX_SPACE_IN_SRAM 3			// [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald die Page verwendet wird
 	#define swap_out	mmc_write_sector
 	#define swap_in		mmc_read_sector
 	#define swap_space	mmc_get_size()
 #else
-	#define MMC_START_ADDRESS 512	// [512;2^32-1]
-	#define MAX_SPACE_IN_SRAM 127	// [1;127] - Pro Page werden 512 Byte im RAM belegt, sobald die Page verwendet wird
+	#define MMC_START_ADDRESS 0x200		// [512;2^32-1]
+	#define MAX_SPACE_IN_SRAM 127		// [1;127] - Pro Page werden 512 Byte im RAM belegt, sobald die Page verwendet wird
 	#define swap_out	mmc_emu_write_sector
 	#define swap_in		mmc_emu_read_sector
 	#define swap_space	mmc_emu_get_size()
@@ -282,6 +282,10 @@ uint8 mmc_load_page(uint32 addr){
 uint32 mmcalloc(uint32 size, uint8 aligned){
 	if (next_mmc_address == mmc_start_address){
 		// TODO: Init-stuff here (z.B. FAT einlesen)	
+		if (mmc_start_address > mmc_get_size()){
+			mmc_start_address = mmc_get_size()-512;
+			next_mmc_address = mmc_start_address;
+		}
 		#if MMC_ASYNC_WRITE == 1
 			swap_buffer = malloc(512);
 		#endif 
@@ -342,7 +346,8 @@ uint8 mmc_flush_cache(void){
 	uint8 i;
 	uint8 result=0;
 	for (i=0; i<allocated_pages; i++){
-		result += swap_out(page_cache[i].addr, page_cache[i].p_data, 0);	// synchrones Zurueckschreiben
+		if (page_cache[i].addr < mmc_get_mmcblock_of_page(mmc_get_size()))
+			result += swap_out(page_cache[i].addr, page_cache[i].p_data, 0);	// synchrones Zurueckschreiben
 		page_cache[i].dirty = 0;
 	}
 	return result;	
@@ -361,7 +366,7 @@ uint8 mmc_flush_cache(void){
 uint32 mmc_fopen(const char *filename){
 	uint32 block;
 	/* Pufferspeicher organisieren */
-	uint32 v_addr = mmcalloc(512, 1);
+	uint32 v_addr = mmcalloc(512, 0);
 	uint8* p_data = mmc_get_data(v_addr);	// hier speichern wir im Folgenden den ersten Block der gesuchten Datei, der ist dann gleich im Cache ;)
 	/* Die Dateiadressen liegen ausserhalb des Bereichs fuer den VM, also interne Datenanpassungen hier rueckgaengig machen */
 	next_mmc_address -= 512;
@@ -372,8 +377,8 @@ uint32 mmc_fopen(const char *filename){
 		display_printf("Find %c%c%c: 0x",filename[0],filename[1],filename[2]);
 		uint16 k=0, j=0;
 	#endif
-	/* MMC-Block suchen */
-	for (block=0; block<mmc_get_mmcblock_of_page(mmc_get_size()); block++){
+	/* MMC-Block suchen zwischen Kartenanfang und VM-Startadresse (<= Kartengroesse) */
+	for (block=0; block<mmc_get_mmcblock_of_page(mmc_start_address); block++){
 		#ifdef DISPLAY_AVAILABLE	// Debug-Info ausgben
 			display_cursor(2,13);
 			display_printf("%02x%04x", j, k);
