@@ -282,8 +282,8 @@ uint8 mmc_load_page(uint32 addr){
 uint32 mmcalloc(uint32 size, uint8 aligned){
 	if (next_mmc_address == mmc_start_address){
 		// TODO: Init-stuff here (z.B. FAT einlesen)	
-		if (mmc_start_address > mmc_get_size()){
-			mmc_start_address = mmc_get_size()-512;
+		if (mmc_start_address > swap_space){
+			mmc_start_address = swap_space-512;
 			next_mmc_address = mmc_start_address;
 		}
 		#if MMC_ASYNC_WRITE == 1
@@ -346,7 +346,7 @@ uint8 mmc_flush_cache(void){
 	uint8 i;
 	uint8 result=0;
 	for (i=0; i<allocated_pages; i++){
-		if (page_cache[i].addr < mmc_get_mmcblock_of_page(mmc_get_size()))
+		if (page_cache[i].addr < mmc_get_mmcblock_of_page(swap_space))
 			result += swap_out(page_cache[i].addr, page_cache[i].p_data, 0);	// synchrones Zurueckschreiben
 		page_cache[i].dirty = 0;
 	}

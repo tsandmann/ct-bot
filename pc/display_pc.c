@@ -84,7 +84,7 @@ void display_clear(void){
 /*!
 ** LCD_Cursor: Positioniert den LCD-Cursor bei "row", "column".
 */
-void display_cursor (int row, int column) {
+void display_cursor (uint8 row, uint8 column) {
 	POSITION(row, column	);
 }
 
