@@ -57,7 +57,7 @@
 		ir_isr();
 	#endif	
 	/* ----- TIMER ----- */
-	(*(uint32*)tickCount)++;	// TickCounter [176 us] erhoehen
+	tickCount.u32++;	// TickCounter [176 us] erhoehen 
 	/* --- RADENCODER --- */
 	bot_encoder_isr();
 }

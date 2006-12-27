@@ -49,7 +49,7 @@
 #endif	/* PC */
 
 #ifdef MCU
-	volatile uint16 tickCount[2]={0,0};		/*!< ein Tick alle 176 us */
+	volatile tickCount_t tickCount;		/*!< ein Tick alle 176 us */
 #else
 	float tickCount=0;
 #endif 

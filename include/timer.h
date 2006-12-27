@@ -70,11 +70,16 @@
 	#define TIMER_GET_TICKCOUNT_16 timer_get_tickCount16()
 	#define TIMER_GET_TICKCOUNT_32 timer_get_tickCount32()	
 #else
-	extern volatile uint16 tickCount[2];
+	typedef union{
+		uint32 u32;
+		uint16 u16;
+		uint8 u8;
+	} tickCount_t;
+	extern volatile tickCount_t tickCount;
 	
-	#define TIMER_GET_TICKCOUNT_8  *(volatile uint8*)tickCount
-	#define TIMER_GET_TICKCOUNT_16 tickCount[0]
-	#define TIMER_GET_TICKCOUNT_32 *(volatile uint32*)tickCount	
+	#define TIMER_GET_TICKCOUNT_8  tickCount.u8
+	#define TIMER_GET_TICKCOUNT_16 tickCount.u16
+	#define TIMER_GET_TICKCOUNT_32 tickCount.u32	
 #endif
 
 // Die Werte fuer TIMER_X_CLOCK sind Angaben in Hz
