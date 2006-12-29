@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-12-29 Timo Sandmann [mail@timosandmann.de]: PC-Emulation einer MMC / SD-Card implementiert (pc/mmc-emu_pc.c)
+
 2006-12-26 Timo Sandmann [mail@timosandmann.de]: Compiler-Warnings beim Timer (MCU) beseitigt (Vielen Dank an Torsten Evers fuer die Hinweise zu strict-aliasing) 
 
 2006-12-22 Benjamin Benz [bbe@heise.de]: auch der reale Bot kann nun das Remote-Display nutzen

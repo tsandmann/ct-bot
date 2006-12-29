@@ -72,7 +72,6 @@
 //TODO:	* Bug im Zusammenhang mit mmc_fopen() beheben
 //		* Funktion zum Anlegen von Dateien bauen
 //		* Code optimieren, Groesse und Speed
-//		* PC Version implementieren
 
 #include "ct-Bot.h"  
 
@@ -87,13 +86,13 @@
 
 #ifdef MCU
 	#define MMC_START_ADDRESS 0x2000000	// [512;2^32-1] in Byte - Sinnvoll ist z.B. Haelfte der MMC / SD-Card Groesse, der Speicherplatz davor kann dann fuer ein Dateisystem verwendet werden
-	#define MAX_SPACE_IN_SRAM 3			// [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald die Page verwendet wird
+	#define MAX_SPACE_IN_SRAM 3			// [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald diese verwendet wird
 	#define swap_out	mmc_write_sector
 	#define swap_in		mmc_read_sector
 	#define swap_space	mmc_get_size()
 #else
 	#define MMC_START_ADDRESS 0x200		// [512;2^32-1]
-	#define MAX_SPACE_IN_SRAM 127		// [1;127] - Pro Page werden 512 Byte im RAM belegt, sobald die Page verwendet wird
+	#define MAX_SPACE_IN_SRAM 127		// [1;127] - Pro Page werden 512 Byte im RAM belegt, sobald diese verwendet wird
 	#define swap_out	mmc_emu_write_sector
 	#define swap_in		mmc_emu_read_sector
 	#define swap_space	mmc_emu_get_size()
@@ -127,12 +126,6 @@ static uint8 recent_cacheblock = 0;						/*!< Zeiger auf den letzten genutzten E
 uint16 pagefaults = 0;									/*!< Anzahl der Pagefaults seit Systemstart bzw. Ueberlauf */
 
 vm_cache_t page_cache[MAX_PAGES_IN_SRAM];				/*!< der eigentliche Cache, vollassoziativ, LRU-Policy */
-
-// Vorsicht, "loescht" alle Daten!		TODO: Unsinn? Funktion weglassen? -> mini-fat.c 
-//void set_mmc_start_address(uint32 address){	// TODO: Reinit oder so noetig => was tun?! oder nix tun?
-//	mmc_start_address = address;	
-//	next_mmc_address = mmc_start_address;
-//}
 
 /*! 
  * Gibt die Blockadresse einer Seite zurueck

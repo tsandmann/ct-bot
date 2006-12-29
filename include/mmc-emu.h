@@ -32,11 +32,26 @@
 #ifdef PC
 
 /*!
+ * Checkt Initialisierung der emulierten Karte
+ * @return	0, wenn initialisiert
+ * @see		mcu/mmc.c
+ * @date 	29.12.2006
+ */
+inline uint8 mmc_emu_get_init_state(void);
+
+/*! 
+ * Initialisiere die emulierte SD/MMC-Karte
+ * @return	0 wenn allles ok, sonst 1
+ * @see		mcu/mmc.c
+ * @date 	29.12.2006 
+ */
+uint8 mmc_emu_init (void);
+
+/*!
  * Liest einen Block von der emulierten Karte
  * @param addr 		Nummer des 512-Byte Blocks
  * @param buffer 	Puffer von mindestens 512 Byte
  * @return 			0 wenn alles ok ist 
- * @author 			Timo Sandmann (mail@timosandmann.de)
  * @see				mcu/mmc.c
  * @date 			10.12.2006
  */	
@@ -48,17 +63,19 @@ uint8 mmc_emu_read_sector(uint32 addr, uint8* buffer);
  * @param buffer 	Zeiger auf den Puffer
  * @param async		Wird bei der PC-Version nicht ausgewertet
  * @return 			0 wenn alles ok ist
- * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			10.12.2006
  * @see				mcu/mmc.c
  */
 uint8 mmc_emu_write_sector(uint32 addr, uint8* buffer, uint8 async);
 
 /*!
- * Liefert die Groesse der Karte zurueck
- * @return Groesse der emulierten Karte in Byte.
+ * Liefert die Groesse der emulierten Karte zurueck
+ * @return	Groesse der emulierten Karte in Byte.
+ * @date	29.12.2006
  */
 uint32 mmc_emu_get_size(void);
+
+uint8 mmc_emu_test(void);
 
 #endif	// PC
 #endif /*MMC_H_*/

@@ -75,6 +75,7 @@
 #include "timer.h"
 #include "mmc.h"
 #include "map.h"
+#include "mmc-emu.h"
 
 
 /* Nimmt den Status von MCU(C)SR bevor dieses Register auf 0x00 gesetzt wird */
@@ -219,8 +220,6 @@ void init(void){
 		#endif
  		if (display_update >0)
  			#ifdef DISPLAY_SCREENS_AVAILABLE
-// TODO Nur zum Debuggen der SD/MMC-Karte sinnvoll!!!!!!!!!!!!!!!!!!
-// 			display_screen=3;
 			switch (display_screen) {
 				case 0:
 			#endif
@@ -374,12 +373,6 @@ void init(void){
 									size=mmc_get_size();
 									mmc_read_csd(csd);
 									display_printf("MMC= %4d MByte ",size >> 20);
-	
-									// auskommentiert, denn das passiert ja schon in init()!
-//									#ifdef MAP_AVAILABLE
-//										// Achtung, das hier kann sehr lange dauern:
-//										map_init();
-//									#endif	
 								}
 								#ifndef MMC_WRITE_TEST_AVAILABLE
 									display_cursor(3,1);
@@ -404,7 +397,14 @@ void init(void){
 								}
 							#endif	// MMC_WRITE_TEST_AVAILABLE			
 						}
-						#endif
+						#else
+						#ifdef MMC_VM_AVAILABLE
+							#ifdef PC
+								display_cursor(3,1);
+								display_printf("mmc_emu_test() = %u ", mmc_emu_test());
+							#endif	// PC
+						#endif	// MMC_VM_AVAILABLE 
+						#endif	// MMC_INFO_AVAILABLE
 					#endif
 					
 					break;
