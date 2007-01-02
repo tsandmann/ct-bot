@@ -31,13 +31,45 @@
 
 #ifdef MMC_VM_AVAILABLE
 
-/*! 
- * Gibt die Anzahl der Pagefaults seit Systemstart bzw. Ueberlauf zurueck
- * @return		#Pagefaults
- * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		30.11.2006
- */
-uint16 mmc_get_pagefaults(void);
+#define VM_STATS_AVAILABLE
+
+#ifdef VM_STATS_AVAILABLE
+	typedef struct{
+		uint32 page_access;		/*!< Anzahl der Seitenzugriffe seit Systemstart */
+		uint32 swap_ins;		/*!< Anzahl der Seiteneinlagerungen seit Systemstart */
+		uint32 swap_outs;		/*!< Anzahl der Seitenauslagerungen seit Systemstart */
+		uint32 vm_used_bytes;	/*!< Anzahl der vom VM belegten Bytes auf der MMC / SD-Card */
+		uint32 device_size;		/*!< Groesse des Speichervolumes */
+		uint32 vm_size;			/*!< Groesse des Virtuellen Speichers */
+		uint8 cache_size;		/*!< Groesse des Caches */
+		int8 cache_load;		/*!< Belegter Speicher des Caches */
+		uint16 page_access_s;	/*!< Seitenzugriffe pro Sekunde */
+		uint16 swap_ins_s;		/*!< Pagefaults pro Sekunde */	
+		uint16 swap_outs_s;		/*!< Seitenauslagerungen pro Sekunde */		
+		uint16 delta_t;			/*!< Sekunden seit Beginn der Messung */
+	} vm_extern_stats_t;	
+
+	/*! 
+	 * Gibt die Anzahl der Pagefaults seit Systemstart bzw. Ueberlauf zurueck
+	 * @return		#Pagefaults
+	 * @author 		Timo Sandmann (mail@timosandmann.de)
+	 * @date 		30.11.2006
+	 */
+	uint32 mmc_get_pagefaults(void);
+	
+	/*! 
+	 * Erstellt eine kleine Statistik ueber den VM
+	 * @return		Zeiger auf Statistikdaten
+	 * @date 		01.01.2007
+	 */	
+	vm_extern_stats_t* mmc_get_vm_stats(void);
+	
+	/*! 
+	 * Gibt eine kleine Statistik ueber den VM aus (derzeit nur am PC)
+	 * @date 		01.01.2007
+	 */		
+	void mmc_print_statistic(void);
+#endif
 
 /*! 
  * Fordert virtuellen Speicher an

@@ -23,15 +23,35 @@
  * @author 	Timo Sandmann (mail@timosandmann.de)
  * @date 	10.12.2006
  */
+
+/* Die PC-Emulation einer MMC / SD-Card ermoeglicht es, am PC dieselben Funktionen zu benutzen, wie bei einer echten
+ * MMC / SD-Card. Als Speichermedium dient hier eine Datei (MMC_EMU_FILE), deren Groesse sich mit MMC_EMU_SIZE in Byte 
+ * einstellen laesst. Ist die Datei nicht vorhanden oder derzeit kleiner als MMC_EMU_SIZE, wird sie angelegt bzw. 
+ * vergroessert. Achtung, startet man den C-Bot vom Sim aus, liegt die Datei, falls kein absoluter Pfad angegeben wurde, im
+ * Verzeichnis dem ct-Sims, von der Konsole aus gestartet erwartet / erzeugt der Code die Datei im Unterverzeichnis 
+ * "Debug-Linux" bzw. "Debug-W32".
+ * Eine sinnvolle (und die derzeit einzig moegliche) Verwendung der Emulation ergibt sich im Zusammenspiel mit dem
+ * Virtual Memory Management fuer MMC. Ein Verhalten kann in diesem Fall immer auf dieselbe Art und Weise Speicher anfordern,
+ * je nach System liegt dieser physisch dann entweder auf einer MMC / SD-Card (MCU) oder in einer Datei (PC). Fuer das
+ * Verhalten ergibt sich kein Unterschied und es kann einfach derselbe Code verwendet werden.
+ * Moechte man die Funktion mmc_fopen() benutzen, also auf FAT16-Dateien zugreifen, so ist zu beachten, dass deren "Dateiname"
+ * in der Datei fuer die Emulation am Anfang eines 512 Byte grossen Blocks steht (denn auf einer echten MMC / SD-Card ezeugt
+ * ein Betriebssystem eine neue Datei immer am Anfang eines Clusters und mmc_fopen() sucht nur dort nach dem "Dateinamen").
+ * Im Moment gibt es noch keine Funktion zum Anlegen einer neuen Datei auf einer echten oder emulierten MMC / SD-Card. 
+ * Die Code der Emulation ist voellig symmetrisch zum Code fuer eine echte MMC / SD-Card aufgebaut.  
+ */
  
 #include "ct-Bot.h"
 #include <stdio.h>
 #include "mmc-emu.h"
+#include "mmc-vm.h"
+#include "display.h"
 
 #ifdef PC
 #ifdef MMC_VM_AVAILABLE
 
 #define MMC_EMU_SIZE	0x2000000		/*!< Groesse der emulierten Karte in Byte */
+#define MMC_EMU_FILE	"mmc_emu.dat"	/*!< Name / Pfad der Datei fuer die Emulation */
 
 volatile uint8 mmc_emu_init_state=1;	/*!< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
 static FILE* mmc_emu_file;				/*!< Der Inhalt der emulierten Karte wird einfach in eine Datei geschrieben */
@@ -54,10 +74,10 @@ inline uint8 mmc_emu_get_init_state(void){
  */
 uint8 mmc_emu_init(void){
 	mmc_emu_init_state = 0;
-	mmc_emu_file = fopen("mmc_emu.dat", "r+");		// Datei versuchen zu oeffnen
+	mmc_emu_file = fopen(MMC_EMU_FILE, "r+");		// Datei versuchen zu oeffnen
 	if (mmc_emu_file == NULL){
 		/* Datei existiert noch nicht oder kann nicht erzeugt werden */
-		mmc_emu_file = fopen("mmc_emu.dat", "w+");	// Datei neu anlegen
+		mmc_emu_file = fopen(MMC_EMU_FILE, "w+");	// Datei neu anlegen
 		if (mmc_emu_file == NULL) {
 			/* Datei kann nicht erzeugt werden */
 			mmc_emu_init_state = 1;
@@ -118,49 +138,60 @@ uint32 mmc_emu_get_size(void){
 	return ftell(mmc_emu_file)+1;
 }
 
+/*!
+ * Testet VM und MMC / SD-Card Emulation am PC
+ * @date	30.12.2006 
+ */
 uint8 mmc_emu_test(void){
-	static uint32 sector = 0x0;
 	/* Initialisierung checken */
 	if (mmc_emu_init_state != 0 && mmc_emu_init() != 0) return 1;
-	uint8 buffer[512];
 	uint16 i;
-	uint8 result=0;	
-	/* Puffer vorbereiten */
-	for (i=0; i< 512; i++)	buffer[i]= (i & 0xFF);
-	/* Puffer schreiben */
-	result = mmc_emu_write_sector(sector, buffer, 0);
-	if (result != 0){
-		return result*10 + 2;
-	}
-	/* Puffer vorbereiten */
-	for (i=0; i< 512; i++)	buffer[i]= 255 - (i & 0xFF);	
-	/* Puffer schreiben */
-	result = mmc_emu_write_sector(sector+1, buffer, 0);	
-	if (result != 0){
-		return result*10 + 3;
-	}
-	/* Puffer lesen */	
-	result = mmc_emu_read_sector(sector, buffer);	
-	if (result != 0){
-		sector--;
-		return result*10 + 4;
-	}
-	/* Puffer vergleichen */
+	static uint16 pagefaults = 0;
+	/* virtuelle Adressen holen */
+	static uint32 v_addr1 = 0;
+	static uint32 v_addr2 = 0;
+	static uint32 v_addr3 = 0;
+	static uint32 v_addr4 = 0;
+	if (v_addr1 == 0) v_addr1 = mmcalloc(512, 1);	// Testdaten 1
+	if (v_addr2 == 0) v_addr2 = mmcalloc(512, 1);	// Testdaten 2
+	if (v_addr3 == 0) v_addr3 = mmcalloc(512, 1);	// Dummy 1
+	if (v_addr4 == 0) v_addr4 = mmcalloc(512, 1);	// Dummy 2
+	/* Pointer auf Puffer holen */
+	uint8* p_addr = mmc_get_data(v_addr1);
+	if (p_addr == NULL) return 2;
+	/* Testdaten schreiben */
 	for (i=0; i<512; i++)
-		if (buffer[i] != (i & 0xFF)){
-			return 5;
-		}
-	/* Puffer lesen */	
-	result = mmc_emu_read_sector(sector+1, buffer);
-	if (result != 0){
-		sector--;
-		return result*10 + 6;
-	}
-	/* Puffer vergleichen */
+		p_addr[i] = (i & 0xff);
+	/* Pointer auf zweiten Speicherbereich holen */
+	p_addr = mmc_get_data(v_addr3);
+	if (p_addr == NULL)	return 3;
+	/* Testdaten Teil 2 schreiben */
 	for (i=0; i<512; i++)
-		if (buffer[i] != (255- (i & 0xFF))){
-			return 7;	
-		}
+		p_addr[i] = 255 - (i & 0xff);			
+	/* kleiner LRU-Test */
+		p_addr = mmc_get_data(v_addr1);
+		p_addr = mmc_get_data(v_addr4);
+		p_addr = mmc_get_data(v_addr1);						
+		p_addr = mmc_get_data(v_addr3);
+		p_addr = mmc_get_data(v_addr1);
+		p_addr = mmc_get_data(v_addr4);						
+	/* Pointer auf Testdaten Teil 1 holen */	
+	p_addr = mmc_get_data(v_addr1);
+	if (p_addr == NULL) return 4;		
+	/* Testdaten 1 vergleichen */
+	for (i=0; i<512; i++)
+		if (p_addr[i] != (i & 0xff)) return 5;
+	/* Pointer auf Testdaten Teil 2 holen */
+	p_addr = mmc_get_data(v_addr3);
+	if (p_addr == NULL) return 6;		
+	/* Testdaten 2 vergleichen */
+	for (i=0; i<512; i++)
+		if (p_addr[i] != (255 - (i & 0xff))) return 7;
+	/* Pagefaults merken */		
+	pagefaults = mmc_get_pagefaults();
+	/* kleine Statistik ausgeben */
+	display_cursor(3,1);
+	display_printf("Pagefaults: %5u  ", pagefaults);
 	// hierher kommen wir nur, wenn alles ok ist		
 	return 0;
 }

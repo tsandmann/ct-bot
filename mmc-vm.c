@@ -69,8 +69,7 @@
  */
  
  
-//TODO:	* Bug im Zusammenhang mit mmc_fopen() beheben
-//		* Funktion zum Anlegen von Dateien bauen
+//TODO:	* Funktion zum Anlegen von Dateien bauen
 //		* Code optimieren, Groesse und Speed
 
 #include "ct-Bot.h"  
@@ -82,7 +81,10 @@
 #include "mmc-low.h"
 #include "mmc-emu.h"
 #include "display.h"
+#include "timer.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #ifdef MCU
 	#define MMC_START_ADDRESS 0x2000000	// [512;2^32-1] in Byte - Sinnvoll ist z.B. Haelfte der MMC / SD-Card Groesse, der Speicherplatz davor kann dann fuer ein Dateisystem verwendet werden
@@ -91,13 +93,13 @@
 	#define swap_in		mmc_read_sector
 	#define swap_space	mmc_get_size()
 #else
-	#define MMC_START_ADDRESS 0x200		// [512;2^32-1]
-	#define MAX_SPACE_IN_SRAM 127		// [1;127] - Pro Page werden 512 Byte im RAM belegt, sobald diese verwendet wird
+	#define MMC_START_ADDRESS 0x1000000	// [512;2^32-1]
+	#define MAX_SPACE_IN_SRAM 2			// [1;127] - Pro Page werden 512 Byte im RAM belegt, sobald diese verwendet wird
 	#define swap_out	mmc_emu_write_sector
 	#define swap_in		mmc_emu_read_sector
 	#define swap_space	mmc_emu_get_size()
 #endif	
-#define FILENAME_MAX	255		/*!< Maximale Dateienamenlaenge in Zeichen [1;255] */
+#define VM_FILENAME_MAX	255		/*!< Maximale Dateienamenlaenge in Zeichen [1;255] */
 
 #if MMC_ASYNC_WRITE == 1
 	#define MAX_PAGES_IN_SRAM MAX_SPACE_IN_SRAM-1
@@ -116,14 +118,24 @@ typedef struct{			/*!< Struktur eines Cacheeintrags */
 	uint8	dirty;		/*!< Dirty-Bit (0: Daten wurden bereits auf die MMC / SD-Card zurueckgeschrieben) */
 } vm_cache_t;
 
+#ifdef VM_STATS_AVAILABLE
+	typedef struct{
+		uint32 page_access;		/*!< Anzahl der Seitenzugriffe seit Systemstart */
+		uint32 swap_ins;		/*!< Anzahl der Seiteneinlagerungen seit Systemstart */
+		uint32 swap_outs;		/*!< Anzahl der Seitenauslagerungen seit Systemstart */
+		uint32 vm_used_bytes;	/*!< Anzahl der vom VM belegten Bytes auf der MMC / SD-Card */
+		uint32 time;			/*!< Timestamp bei erster Speicheranforderung */
+	} vm_stats_t;
+	
+	vm_stats_t stats_data = {0};	
+#endif
+
 static uint32 mmc_start_address = MMC_START_ADDRESS;	/*!< physische Adresse der MMC / SD-Card, wo unser VM beginnt */
-static uint32 used_mmc_blocks = 0;						/*!< Anzahl der vom VM belegten Bloecke auf der MMC / SD-Card */
 static uint32 next_mmc_address = MMC_START_ADDRESS;		/*!< naechste freie virtuelle Adresse */
 static uint8 pages_in_sram = MAX_PAGES_IN_SRAM;			/*!< Groesse des Caches im RAM */
 static int8 allocated_pages = 0;						/*!< Anzahl bereits belegter Cachebloecke */
 static uint8 oldest_cacheblock = 0;						/*!< Zeiger auf den am laengsten nicht genutzten Eintrag (LRU) */
 static uint8 recent_cacheblock = 0;						/*!< Zeiger auf den letzten genutzten Eintrag (LRU) */
-uint16 pagefaults = 0;									/*!< Anzahl der Pagefaults seit Systemstart bzw. Ueberlauf */
 
 vm_cache_t page_cache[MAX_PAGES_IN_SRAM];				/*!< der eigentliche Cache, vollassoziativ, LRU-Policy */
 
@@ -154,15 +166,64 @@ inline uint32 mmc_get_mmcblock_of_page(uint32 addr){
 	#endif	// MCU		
 }
 
-/*! 
- * Gibt die Anzahl der Pagefaults seit Systemstart bzw. Ueberlauf zurueck
- * @return		#Pagefaults
- * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		30.11.2006
- */
-inline uint16 mmc_get_pagefaults(void){
-	return pagefaults;	// read-only
-}
+#ifdef VM_STATS_AVAILABLE
+	/*! 
+	 * Gibt die Anzahl der Pagefaults seit Systemstart bzw. Ueberlauf zurueck
+	 * @return		#Pagefaults
+	 * @author 		Timo Sandmann (mail@timosandmann.de)
+	 * @date 		30.11.2006
+	 */
+	inline uint32 mmc_get_pagefaults(void){
+		return stats_data.swap_ins;
+	}
+
+	/*! 
+	 * Erstellt eine kleine Statistik ueber den VM
+	 * @return		Zeiger auf Statistikdaten
+	 * @date 		01.01.2007
+	 */	
+	vm_extern_stats_t* mmc_get_vm_stats(void){
+		static vm_extern_stats_t extern_stats = {0};
+		memcpy(&extern_stats, &stats_data, sizeof(vm_stats_t));	// .time wird spaeter ueberschrieben
+		uint16 delta_t = TICKS_TO_MS(TIMER_GET_TICKCOUNT_32 - stats_data.time)/1000;
+		if (delta_t == 0) delta_t = 1;
+		extern_stats.page_access_s = extern_stats.page_access / delta_t;
+		extern_stats.swap_ins_s = extern_stats.swap_ins / delta_t;
+		extern_stats.swap_outs_s = extern_stats.swap_outs / delta_t;		
+		extern_stats.device_size = swap_space;
+		extern_stats.vm_size = swap_space - mmc_start_address;
+		extern_stats.cache_size = pages_in_sram;
+		extern_stats.cache_load = allocated_pages;
+		extern_stats.delta_t = delta_t;
+		return &extern_stats;	
+	}
+
+	/*! 
+	 * Gibt eine kleine Statistik ueber den VM aus (derzeit nur am PC)
+	 * @date 		01.01.2007
+	 */		
+	void mmc_print_statistic(void){
+		#ifdef PC
+			vm_extern_stats_t* vm_stats = mmc_get_vm_stats();
+			printf("\n\r*** VM-Statistik *** \n\r");
+			printf("Groesse des Volumes: \t\t%lu MByte \n\r", vm_stats->device_size>>20);
+			printf("Groesse des VM: \t\t%lu MByte \n\r", vm_stats->vm_size>>20);
+			printf("Belegter virt. Speicher: \t%lu KByte \n\r", vm_stats->vm_used_bytes>>10);									
+			printf("Groesse des Caches: \t\t%u Byte \n\r", (uint16)vm_stats->cache_size<<9);
+			printf("Auslastung des Caches: \t\t%u %% \n\r", ((uint16)vm_stats->cache_load<<9)/((uint16)vm_stats->cache_size<<9)*100);
+			printf("Seitenzugriffe: \t\t%lu \n\r", vm_stats->page_access);
+			printf("Seiteneinlagerungen: \t\t%lu \n\r", vm_stats->swap_ins);
+			printf("Seitenauslagerungen: \t\t%lu \n\r", vm_stats->swap_outs);
+			printf("Seitenzugriffe / s: \t\t%u \n\r", vm_stats->page_access_s);
+			printf("Seiteneinlagerungen / s: \t%u \n\r", vm_stats->swap_ins_s);
+			printf("Seitenauslagerungen / s: \t%u \n\r", vm_stats->swap_outs_s);
+			printf("Cache-Hit-Rate: \t\t%f %% \n\r", (100.0-((float)vm_stats->swap_ins/(float)vm_stats->page_access)*100.0));
+			printf("Messdauer: \t\t\t%u s \n\r", vm_stats->delta_t);
+		#else
+			// TODO
+		#endif	
+	}
+#endif
 
 /*! 
  * Gibt die letzte Adresse einer Seite zurueck
@@ -184,7 +245,7 @@ inline uint32 mmc_get_end_of_page(uint32 addr){
  */
 int8 mmc_get_cacheblock_of_page(uint32 addr){
 	uint32 page_addr = mmc_get_mmcblock_of_page(addr);
-	int i;
+	int8 i;
 	for (i=0; i<allocated_pages; i++){	// O(n)
 		if (page_cache[i].addr == page_addr) return i;	// Seite gefunden :)
 	}
@@ -199,7 +260,10 @@ int8 mmc_get_cacheblock_of_page(uint32 addr){
  * @date 		30.11.2006
  */
 uint8 mmc_load_page(uint32 addr){
-	if (/*addr < mmc_start_address || */addr >= next_mmc_address) return 1;	// ungueltige virtuelle Adresse :(
+	if (addr >= next_mmc_address) return 1;	// ungueltige virtuelle Adresse :(
+	#ifdef VM_STATS_AVAILABLE
+		stats_data.page_access++;
+	#endif
 	int8 cacheblock = mmc_get_cacheblock_of_page(addr); 
 	if (cacheblock >= 0){	// Cache-Hit, Seite ist bereits geladen :)
 		/* LRU */	
@@ -233,15 +297,24 @@ uint8 mmc_load_page(uint32 addr){
 			return mmc_load_page(addr);
 		}
 		allocated_pages++;	// Cache-Fuellstand aktualisieren		
+		#ifdef VM_STATS_AVAILABLE
+			stats_data.swap_ins++;
+		#endif
 	} else{
 		/* Cache bereits voll => Pager muss aktiv werden */
-		pagefaults++;	// kleine Statistik
+		#ifdef VM_STATS_AVAILABLE
+			stats_data.swap_ins++;
+		#endif
 		#if MMC_ASYNC_WRITE == 1	// im asnychronen Fall holen wir erst die neue Seite, dann kann sich das Zurueckschreiben ruhig Zeit lassen
 			uint8* p_tmp = page_cache[next_cacheblock].p_data;
 			if (swap_in(mmc_get_mmcblock_of_page(addr), swap_buffer) != 0) return 3;
 		#endif
-		if (page_cache[next_cacheblock].dirty == 1)	// Seite zurueckschreiben, falls Daten veraendert wurden
+		if (page_cache[next_cacheblock].dirty == 1){	// Seite zurueckschreiben, falls Daten veraendert wurden
+			#ifdef VM_STATS_AVAILABLE
+				stats_data.swap_outs++;
+			#endif
 			if (swap_out(page_cache[next_cacheblock].addr, page_cache[next_cacheblock].p_data, MMC_ASYNC_WRITE) != 0) return 2;
+		}
 		#if MMC_ASYNC_WRITE == 1
 			page_cache[next_cacheblock].p_data = swap_buffer;
 			swap_buffer = p_tmp;	
@@ -275,6 +348,7 @@ uint8 mmc_load_page(uint32 addr){
 uint32 mmcalloc(uint32 size, uint8 aligned){
 	if (next_mmc_address == mmc_start_address){
 		// TODO: Init-stuff here (z.B. FAT einlesen)	
+		/* Inits */
 		if (mmc_start_address > swap_space){
 			mmc_start_address = swap_space-512;
 			next_mmc_address = mmc_start_address;
@@ -282,6 +356,9 @@ uint32 mmcalloc(uint32 size, uint8 aligned){
 		#if MMC_ASYNC_WRITE == 1
 			swap_buffer = malloc(512);
 		#endif 
+		#ifdef VM_STATS_AVAILABLE
+			stats_data.time = TIMER_GET_TICKCOUNT_32;
+		#endif
 	}
 	uint32 start_addr;
 	if (aligned == 0 || mmc_get_end_of_page(next_mmc_address) == mmc_get_end_of_page(next_mmc_address+size-1)){
@@ -294,7 +371,9 @@ uint32 mmcalloc(uint32 size, uint8 aligned){
 	if (start_addr+size > swap_space) return 0;	// wir haben nicht mehr virtuellen Speicher als Platz auf dem Swap-Device
 	/* interne Daten aktualisieren */
 	next_mmc_address = start_addr + size;
-	used_mmc_blocks = mmc_get_mmcblock_of_page(next_mmc_address-1) + 1;
+	#ifdef VM_STATS_AVAILABLE
+		stats_data.vm_used_bytes = next_mmc_address-mmc_start_address;
+	#endif
 	return start_addr;
 }
 
@@ -363,32 +442,49 @@ uint32 mmc_fopen(const char *filename){
 	uint8* p_data = mmc_get_data(v_addr);	// hier speichern wir im Folgenden den ersten Block der gesuchten Datei, der ist dann gleich im Cache ;)
 	/* Die Dateiadressen liegen ausserhalb des Bereichs fuer den VM, also interne Datenanpassungen hier rueckgaengig machen */
 	next_mmc_address -= 512;
-	used_mmc_blocks--;
+	#ifdef VM_STATS_AVAILABLE
+		stats_data.vm_used_bytes -= 512;
+	#endif
 	uint8 i;
-	#ifdef DISPLAY_AVAILABLE		// Debug-Info ausgben
-		display_cursor(2,1);
-		display_printf("Find %c%c%c: 0x",filename[0],filename[1],filename[2]);
-		uint16 k=0, j=0;
+	#ifdef MCU	// Debug-Info ausgeben
+		#ifdef DISPLAY_AVAILABLE
+			display_cursor(2,1);
+			display_printf("Find %c%c%c: 0x",filename[0],filename[1],filename[2]);
+			uint16 k=0, j=0;
+		#endif
+	#else
+		printf("Find %c%c%c... \n\r",filename[0],filename[1],filename[2]);
+		uint16 k=0, j=0;	
 	#endif
 	/* MMC-Block suchen zwischen Kartenanfang und VM-Startadresse (<= Kartengroesse) */
 	for (block=0; block<mmc_get_mmcblock_of_page(mmc_start_address); block++){
-		#ifdef DISPLAY_AVAILABLE	// Debug-Info ausgben
-			display_cursor(2,13);
-			display_printf("%02x%04x", j, k);
-			if (k==65535)
-				j++;
-			k++;
+		#ifdef MCU	// Debug-Info ausgeben
+			#ifdef DISPLAY_AVAILABLE
+				display_cursor(2,13);
+				display_printf("%02x%04x", j, k);
+				if (k==65535) j++;
+				k++;
+			#endif		
+		#else
+//			printf(".");	
+//			fflush(stdout);
 		#endif
 		if (swap_in(block, p_data) != 0) break;	// Abbrechen, falls Fehler
 		/* Blockanfang mit Dateinamen vergleichen */
-		for (i=0; i<FILENAME_MAX; i++){
+		for (i=0; i<VM_FILENAME_MAX; i++){
 			if (filename[i] == '\0'){
 				page_cache[mmc_get_cacheblock_of_page(v_addr)].addr = block;	// Cache-Tag auf gefundene Datei umbiegen
-				#ifdef DISPLAY_AVAILABLE
+				#ifdef MCU
+					#ifdef DISPLAY_AVAILABLE
+			  			k = block & 0xFFFF;
+			  			j = (block >> 16) & 0xFFFF;
+			  			display_cursor(2,1);
+			  			display_printf("Found %c%c%c: 0x%02x%04x",filename[0],filename[1],filename[2],j,k);
+					#endif
+				#else
 		  			k = block & 0xFFFF;
 		  			j = (block >> 16) & 0xFFFF;
-		  			display_cursor(2,1);
-		  			display_printf("Found %c%c%c: 0x%02x%04x",filename[0],filename[1],filename[2],j,k);
+		  			printf("\n\rFound %c%c%c: 0x%02x%04x \n\r",filename[0],filename[1],filename[2],j,k);			
 				#endif				
 				return block<<9;	// gesuchte Datei beginnt hier :)
 			}
@@ -398,7 +494,15 @@ uint32 mmc_fopen(const char *filename){
 	/* Suche erfolglos, aber der Cache soll konsistent bleiben */
 	// TODO: ordentlich aufraeumen im Fehlerfall!
 	page_cache[mmc_get_cacheblock_of_page(v_addr)].addr = 0x800000;	// Diesen Sektor gibt es auf keiner Karte <= 4 GB 
-	page_cache[mmc_get_cacheblock_of_page(v_addr)].dirty = 0;	// HackHack, aber so wird der ungueltige Inhalt beim Pagefault niemals versucht auf die Karte zu schreiben		
+	page_cache[mmc_get_cacheblock_of_page(v_addr)].dirty = 0;	// HackHack, aber so wird der ungueltige Inhalt beim Pagefault niemals versucht auf die Karte zu schreiben
+	#ifdef MCU
+		#ifdef DISPLAY_AVAILABLE
+			display_cursor(2,1);
+			display_printf("%c%c%c not found ",filename[0],filename[1],filename[2]);
+		#endif	
+	#else	
+		printf("\n\r%c%c%c not found \n\r",filename[0],filename[1],filename[2]);
+	#endif		
 	return 0;	// Datei nicht gefunden :(	
 }
 

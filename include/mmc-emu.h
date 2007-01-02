@@ -75,6 +75,10 @@ uint8 mmc_emu_write_sector(uint32 addr, uint8* buffer, uint8 async);
  */
 uint32 mmc_emu_get_size(void);
 
+/*!
+ * Testet VM und MMC / SD-Card Emulation am PC
+ * @date	30.12.2006 
+ */
 uint8 mmc_emu_test(void);
 
 #endif	// PC
