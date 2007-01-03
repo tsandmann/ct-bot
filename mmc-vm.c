@@ -65,11 +65,16 @@
  * 
  * mmc_fopen() oeffnet eine Datei im FAT16-Dateisystem der Karte und gibt die virtuelle Startadresse zurueck, so dass man mit 
  * mmc_get_data() an die Daten kommt. Der Dateiname muss ganz am Anfang in der Datei stehen.
+ * Achtung: Offnet man eine Datei, die bereits mit mmc_fopen() geoeffnet wurde, ist das Verhalten bzgl. dieser Datei derzeit
+ * undefiniert!
+ * mmc_clear_file() leert eine Datei im FAT16-Dateisystem, die zuvor mit mmc_fopen() geoeffnet wurde. Die Datei wird komplett
+ * mit nullen beschrieben, nur der "Dateiname" am Anfang des ersten Blocks bleibt erhalten. Als zweiten Parameter muss man die 
+ * Groesse der Datei in Byte angeben. Stimmt diese nicht, wird zu wenig oder zu viel geloescht!
  * 
  */
  
  
-//TODO:	* Funktion zum Anlegen von Dateien bauen
+//TODO:	* Funktion zum Leeren von Dateien bauen (mmc_clear_file())
 //		* Code optimieren, Groesse und Speed
 
 #include "ct-Bot.h"  
@@ -409,7 +414,7 @@ uint8 mmc_page_write_back(uint32 addr){
 }
 
 /*! 
- * Erzwingt das Zurueckschreiben aller eingelagerten Seiten auf die MMC / SD-Card   
+ * Schreibt alle eingelagerten Seiten auf die MMC / SD-Card zurueck  
  * @return		0: alles ok, sonst: Summe der Fehler beim Zurueckschreiben
  * @author 		Timo Sandmann (mail@timosandmann.de)
  * @date 		21.12.2006
@@ -418,9 +423,11 @@ uint8 mmc_flush_cache(void){
 	uint8 i;
 	uint8 result=0;
 	for (i=0; i<allocated_pages; i++){
-		if (page_cache[i].addr < mmc_get_mmcblock_of_page(swap_space))
-			result += swap_out(page_cache[i].addr, page_cache[i].p_data, 0);	// synchrones Zurueckschreiben
-		page_cache[i].dirty = 0;
+		if (page_cache[i].dirty == 1){
+			if (page_cache[i].addr < mmc_get_mmcblock_of_page(swap_space))
+				result += swap_out(page_cache[i].addr, page_cache[i].p_data, 0);	// synchrones Zurueckschreiben
+			page_cache[i].dirty = 0;
+		}
 	}
 	return result;	
 }
@@ -453,7 +460,7 @@ uint32 mmc_fopen(const char *filename){
 			uint16 k=0, j=0;
 		#endif
 	#else
-		printf("Find %c%c%c... \n\r",filename[0],filename[1],filename[2]);
+		printf("Find %c%c%c...",filename[0],filename[1],filename[2]);
 		uint16 k=0, j=0;	
 	#endif
 	/* MMC-Block suchen zwischen Kartenanfang und VM-Startadresse (<= Kartengroesse) */
@@ -504,6 +511,51 @@ uint32 mmc_fopen(const char *filename){
 		printf("\n\r%c%c%c not found \n\r",filename[0],filename[1],filename[2]);
 	#endif		
 	return 0;	// Datei nicht gefunden :(	
+}
+
+/*! 
+ * Leert eine Datei im FAT16-Dateisystem auf der MMC / SD-Card, die zuvor mit mmc_fopen() geoeffnet wurde.
+ * @param start		(virtuelle) Anfangsadresse der Datei
+ * @param length	Laenge der Datei in Byte   
+ * @return			0: ok, 1: ungueltige Datei oder Laenge, 2: Fehler beim Schreiben
+ * @date 			02.01.2007
+ */
+uint8 mmc_clear_file(uint32 start, uint32 length){
+	#ifdef PC
+		printf("Start of file: %lu \n\r", start);
+	#endif
+	if (start == 0 || start + length >= mmc_start_address) return 1;	// Datei existiert nicht oder Laenge ist ungueltig
+	/* Ersten Block der Datei laden (dessen Speicherbereich benutzen wir einfach als 0-Puffer) */
+	uint8* p_addr = mmc_get_data(start);
+	/* Dateinamen extrahieren, denn der muss erhalten bleiben */
+	uint16 i;
+	for (i=0; i<VM_FILENAME_MAX && p_addr[i] != '\0'; i++);
+	i++;
+	memset(p_addr+i, 0, 512-i);	// Alles bis auf den Dateinamen loeschen
+	mmc_page_write_back(start);	// Ersten Block schreiben 
+	memset(p_addr, 0, i);	// Dateinamen im Puffer loeschen
+	/* Alle Bloecke der Datei mit dem 0-Puffer ueberschreiben */
+	int8 cache_block;
+	uint32 addr;
+	for (addr=start+512; addr<start+length; addr+=512){
+		if (swap_out(mmc_get_mmcblock_of_page(addr), p_addr, 0) != 0) return 2;
+		/* Falls ein Block der Datei im Cache ist, auch diesen leeren */
+		cache_block = mmc_get_cacheblock_of_page(addr);
+		if (cache_block >= 0){
+			memset(page_cache[cache_block].p_data, 0, 512);
+			page_cache[cache_block].dirty = 0;
+		}
+	}
+	/* Ersten Block der Datei aus dem Cache werfen */
+	cache_block = mmc_get_cacheblock_of_page(start);
+	if (cache_block >= 0){
+		page_cache[cache_block].addr = 0x800000;
+		page_cache[cache_block].dirty = 0;
+	}
+	#ifdef PC
+		printf("End of file: %lu \n\r", addr);
+	#endif	
+	return 0;
 }
 
 #endif	// MMC_VM_AVAILABLE

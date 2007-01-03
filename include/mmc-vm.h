@@ -109,7 +109,7 @@ inline uint32 mmc_get_end_of_page(uint32 addr);
 uint8 mmc_page_write_back(uint32 addr);
 
 /*! 
- * Erzwingt das Zurueckschreiben aller eingelagerten Seiten auf die MMC / SD-Card   
+ * Schreibt alle eingelagerten Seiten auf die MMC / SD-Card zurueck  
  * @return		0: alles ok, sonst: Fehler beim Zurueckschreiben
  * @author 		Timo Sandmann (mail@timosandmann.de)
  * @date 		21.12.2006
@@ -127,6 +127,15 @@ uint8 mmc_flush_cache(void);
  * @date 			21.12.2006
  */
 uint32 mmc_fopen(const char *filename);
+
+/*! 
+ * Leert eine Datei im FAT16-Dateisystem auf der MMC / SD-Card, die zuvor mit mmc_fopen() geoeffnet wurde.
+ * @param start		(virtuelle) Anfangsadresse der Datei
+ * @param length	Laenge der Datei in Byte   
+ * @return			0: ok, 1: ungueltige Datei oder Laenge, 2: Fehler beim Schreiben
+ * @date 			02.01.2007
+ */
+uint8 mmc_clear_file(uint32 start, uint32 length);
 
 #endif	// MMC_VM_AVAILABLE
 #endif	// MMC_VM_H_

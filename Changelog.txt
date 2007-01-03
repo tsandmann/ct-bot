@@ -1,6 +1,8 @@
 CHANGELOG fuer c't-Bot
 ======================
-2207-01-01 Timo Sandmann [mail@timosandmann.de]: VM um Statistik-Auswertung erweitert
+2007-01-02 Timo Sandmann [mail@timosandmann.de]: Funktion zum Leeren einer FAT16-Datei auf MMC hinzugefuegt
+
+2007-01-01 Timo Sandmann [mail@timosandmann.de]: VM um Statistik-Auswertung erweitert
 
 2006-12-29 Timo Sandmann [mail@timosandmann.de]: PC-Emulation einer MMC / SD-Card implementiert (pc/mmc-emu_pc.c)
 
