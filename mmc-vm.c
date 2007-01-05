@@ -25,7 +25,9 @@
  */
 
 
-/* Der virtuelle (MMC- / SD-Card-) Speicher ist wie folgt organisiert:
+/* *** Uebersicht VM ***
+ * 
+ * Der virtuelle (MMC- / SD-Card-) Speicher ist wie folgt organisiert:
  * Man fordert per mmcalloc() eine beliebige Menge an Speicher an und bekommt eine virtuelle Adresse
  * in 32 Bit zurueck. Diese Adresse entspricht der Adresse auf der MMC / SD-Card, was den Benutzer aber
  * nicht weiter interessieren muss. 
@@ -34,6 +36,8 @@
  * mmc_get_end_of_page(uint32 virtuelle_Adresse) gibt an, bis wohin man diesen Pointer verwenden darf. Benoetigt man mehr
  * Speicher, fordert man mit mmc_get_data(uint32 virtuelle_Adresse) einen neuen Pointer an. 
  * Das Ein- und Auslagern der Seiten auf die MMC / SD-Card macht die Speicherverwaltung automatisch. 
+ * 
+ * Ausserdem kann derselbe Adressraum und Cache auch fuer den Zugriff auf FAT16-Dateien benutzt werden, naeheres s.u.
  *
  * Ein kleines Beispiel:
  * uint32 v_addr = mmcalloc(2048, 1);		// wir wollen 2 KB Speicher
@@ -63,6 +67,10 @@
  * Ein Auruf der Funktion mmc_flush_cache() schreibt den kompletten Cache auf die Karte zurueck. Ein Verhalten sollte vor 
  * seiner Beendigung dafuer sorgen, dass das passiert, wenn die Daten erhalten bleiben sollen.
  * 
+ * 
+ * *** Uebersicht FAT16-Support ***
+ * 
+ * Die Unterstuetzung fuer FAT16-Dateien auf einer MMC / SD-Card ist wie folgt aufgebaut:
  * mmc_fopen() oeffnet eine Datei im FAT16-Dateisystem der Karte und gibt die virtuelle Startadresse zurueck, so dass man mit 
  * mmc_get_data() an die Daten kommt. Der Dateiname muss ganz am Anfang in der Datei stehen.
  * Achtung: Offnet man eine Datei, die bereits mit mmc_fopen() geoeffnet wurde, ist das Verhalten bzgl. dieser Datei derzeit
@@ -71,10 +79,16 @@
  * mit nullen beschrieben, nur der "Dateiname" am Anfang des ersten Blocks bleibt erhalten. Als zweiten Parameter muss man die 
  * Groesse der Datei in Byte angeben. Stimmt diese nicht, wird zu wenig oder zu viel geloescht!
  * 
+ * 
+ * *** Uebersicht Statistik ***
+ * 
+ * Wenn VM_STATS_AVAILABLE definiert ist, laesst sich mit der Funktion mmc_get_vm_stats() eine Statistik ueber die Leistung
+ * des VM erstellen. mmc_print_statistic() gibt solch eine Statistik in der Konsole aus, wenn der Code auf einem PC laeuft. 
+ * Fuer die MCU gibt es derzeit noch keine entsprechende Ausgabemoeglichkeit.
  */
  
  
-//TODO:	* Funktion zum Leeren von Dateien bauen (mmc_clear_file())
+//TODO:	* Statistikausgabe fuer MCU ergaenzen
 //		* Code optimieren, Groesse und Speed
 
 #include "ct-Bot.h"  
