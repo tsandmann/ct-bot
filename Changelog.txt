@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-01-05 Benjamin Benz [bbe@heise.de]: Die PC-Version des Codes kann nun mit dem Schalter "-c" leere Dateien erstellen, die spaeter der mini-fat-Treiber auf dem MCU findet
+
 2007-01-02 Timo Sandmann [mail@timosandmann.de]: Funktion zum Leeren einer FAT16-Datei auf MMC hinzugefuegt
 
 2007-01-01 Timo Sandmann [mail@timosandmann.de]: VM um Statistik-Auswertung erweitert

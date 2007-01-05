@@ -76,7 +76,7 @@
 #include "mmc.h"
 #include "map.h"
 #include "mmc-emu.h"
-
+#include "mini-fat.h"
 
 /* Nimmt den Status von MCU(C)SR bevor dieses Register auf 0x00 gesetzt wird */
 #ifdef DISPLAY_SCREEN_RESETINFO
@@ -466,11 +466,15 @@ void init(void){
 	 * Das Programm wird nach Anzeige des Hilfetextes per exit() beendet.
 	 */
 	void usage(void){
-		puts("USAGE: ct-Bot [-t host] [-T] [-h] [-s] [-M from]");
+		puts("USAGE: ct-Bot [-t host] [-T] [-h] [-s] [-M from] [-c FILE ID SIZE]");
 		puts("\t-t\tHostname oder IP Adresse zu der Verbunden werden soll");
 		puts("\t-T\tTestClient");
 		puts("\t-s\tServermodus");
 		puts("\t-M from\tKonvertiert eine Bot-map in eine PGM-Datei");
+		puts("\t-c \tErzeugt eine Mini-Fat-Datei fuer den Bot.");		
+		puts("\t   FILE\tDateiname");
+		puts("\t   ID  \tDie ID mit 3 ASCII-Zeichen");
+		puts("\t   SIZE\tDie Nutzgroesse der Datei in KByte");
 		puts("\t-h\tZeigt diese Hilfe an");
 		exit(1);
 	}
@@ -503,11 +507,12 @@ void init(void){
 		char *hostname = NULL;	/*!< Speichert den per -t uebergebenen Hostnamen zwischen */
 
 		int convert =0; /*!< Wird auf 1 gesetzt, wenn die Karte konvertiert werden soll */
+		int create  =0;  /*!< Wird auf 1 gesetzt, wenn eine neue Datei fuer Bot-mini-fat erzeugt werden soll */
 		char *from = NULL;	/*!< Speichert den per -M uebergebenen Quellnamen zwischen */
 
 
 		// Die Kommandozeilenargumente komplett verarbeiten
-		while ((ch = getopt(argc, argv, "hsTtM:")) != -1) {
+		while ((ch = getopt(argc, argv, "hsTt:M:c:")) != -1) {
 			switch (ch) {
 			case 's':
 				// Servermodus [-s] wird verlangt
@@ -529,8 +534,8 @@ void init(void){
 				}
 				break;
 			case 'M':
-				// Hostname, auf dem ct-Sim laeuft wurde 
-				// uebergeben. Der String wird in hostname
+				// Dateiname, fuer die Map wurde
+				// uebergeben. Der String wird in from
 				// gesichert.
 				{
 					int len = strlen(optarg);
@@ -542,7 +547,19 @@ void init(void){
 					convert=1;					
 				}
 				break;
-				
+			case 'c':
+				// Datei fuer den Bot (mini-fat soll erzeugt werden 
+				// Der Name wird in hostname gesichert.
+				{
+					int len = strlen(optarg);
+					from = malloc(len + 1);
+					if (NULL == from)
+						exit(1);
+					strcpy(from, optarg);
+					
+					create=1;					
+				}
+				break;				
 			case 'h':
 			default:
 				// -h oder falscher Parameter, Usage anzeigen
@@ -560,12 +577,42 @@ void init(void){
  		#ifdef MAP_AVAILABLE
 	 		/* Karte in pgm konvertieren */
 	    	if (convert !=0) {
+	    			    		
+	    		
 	   		 	printf("Konvertiere Karte %s in PGM %s\n",from,"map.pgm");
 	   		 	read_map(from);
 	   		 	map_to_pgm("map.pgm");
 	   		 	exit(0);
 	       	}
+	       	
 		#endif	// MAP_AVAILABLE    	
+
+	    	if (create !=0) {
+	    			printf("optind= %d argc=%d\n",optind, argc);
+	    		
+				if (argc != 2){
+					usage();
+					exit(1);
+			    	}
+
+	    			char * id;
+	    			id = malloc(strlen(argv[0]));	
+	    			strcpy(id,argv[0]);
+
+	    			char * s;
+	    			s = malloc(strlen(argv[1]));	
+	    			strcpy(s,argv[1]);
+			
+				int size = atoi(s);
+
+				create_mini_fat_file(from,id,size);
+
+	   		 	printf("Erstelle eine Mini-Fat-Datei (%s) mit %d kByte fuer den Bot. ID=%s \n",from,size,id);
+//	   		 	read_map(from);
+//	   		 	map_to_pgm("map.pgm");
+	   		 	exit(0);
+	       	}
+
     	
     	printf("c't-Bot\n");
         if (hostname)
