@@ -22,6 +22,7 @@
  * @brief 	Virtual Memory Management mit MMC / SD-Card
  * @author 	Timo Sandmann (mail@timosandmann.de)
  * @date 	30.11.2006
+ * @see		Documentation/mmc-vm.html 
  */
 
 #ifndef MMC_VM_H_

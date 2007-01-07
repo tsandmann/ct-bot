@@ -22,71 +22,9 @@
  * @brief 	Virtual Memory Management mit MMC / SD-Card
  * @author 	Timo Sandmann (mail@timosandmann.de)
  * @date 	30.11.2006
+ * @see		Documentation/mmc-vm.html
  */
 
-
-/* *** Uebersicht VM ***
- * 
- * Der virtuelle (MMC- / SD-Card-) Speicher ist wie folgt organisiert:
- * Man fordert per mmcalloc() eine beliebige Menge an Speicher an und bekommt eine virtuelle Adresse
- * in 32 Bit zurueck. Diese Adresse entspricht der Adresse auf der MMC / SD-Card, was den Benutzer aber
- * nicht weiter interessieren muss. 
- * Mit mmc_get_data(uint32 virtuelle_Adresse) bekommt man eine "echte" SRAM-Adresse auf einen 512 Byte gro§en Puffer zurueck,
- * dessen Inhalt auf die MMC / SC-Card geschrieben wird, sobald er nicht mehr im SRAM gehalten werden kann. 
- * mmc_get_end_of_page(uint32 virtuelle_Adresse) gibt an, bis wohin man diesen Pointer verwenden darf. Benoetigt man mehr
- * Speicher, fordert man mit mmc_get_data(uint32 virtuelle_Adresse) einen neuen Pointer an. 
- * Das Ein- und Auslagern der Seiten auf die MMC / SD-Card macht die Speicherverwaltung automatisch. 
- * 
- * Ausserdem kann derselbe Adressraum und Cache auch fuer den Zugriff auf FAT16-Dateien benutzt werden, naeheres s.u.
- *
- * Ein kleines Beispiel:
- * uint32 v_addr = mmcalloc(2048, 1);		// wir wollen 2 KB Speicher
- * uint8* p_addr = mmc_get_data(v_addr);	// Pointer auf Puffer holen
- * ... // irgendwas sinnvolles tun
- * if (i < 512){	// Ziel liegt noch im gleichen Block
- * 	p_addr[i] = my_data;	// Daten speichern
- * 	i++;
- * } else {			// Blockende erreicht => zunaechst neuen Pointer holen
- *  v_addr += i;
- * 	i = 0;
- * 	p_addr = mmc_get_data(v_addr);
- * 	p_addr[i] = my_data;	// Daten koennen nun gespeichert werden
- * }
- * 
- * Das zweite Argument von mmcalloc() gibt an, ob man den angeforderten Speicher gern in einem neuen Block haette,
- * (also 512 Byte-aligned), oder ob er einfach am naechsten freien Byte auf der Karte beginnen soll. 1: aligned, 0: beliebig
- * MMC_START_ADDRESS definiert, an welcher MMC- / SD-Card-Adresse der virtuelle Speicherraum beginnt, alles davor bleibt
- * unberuehrt, z.B. fuer ein FAT-Dateisystem.
- * MAX_PAGES_IN_SRAM definiert die maximale Anzahl der Seiten, die gleichzeitig im SRAM vorgehalten werden. Dabei wird der
- * Speicher im SRAM erst belegt, sobald er gebraucht wird. Passt keine weitere Seite mehr ins SRAM, wird die Anzahl der 
- * vorzuhaltenen Seiten reduziert und eine andere Seite ausgelagert, um Platz zu schaffen.
- * 
- * Die Bezeichnung "page" (oder "Seite") stellt durchgaengig etwas logisches (virtuelles) dar, mit "block" hingegen ist ein
- * physischer Block auf dem verwendeten Datentraeger gemeint.
- * 
- * Ein Auruf der Funktion mmc_flush_cache() schreibt den kompletten Cache auf die Karte zurueck. Ein Verhalten sollte vor 
- * seiner Beendigung dafuer sorgen, dass das passiert, wenn die Daten erhalten bleiben sollen.
- * 
- * 
- * *** Uebersicht FAT16-Support ***
- * 
- * Die Unterstuetzung fuer FAT16-Dateien auf einer MMC / SD-Card ist wie folgt aufgebaut:
- * mmc_fopen() oeffnet eine Datei im FAT16-Dateisystem der Karte und gibt die virtuelle Startadresse zurueck, so dass man mit 
- * mmc_get_data() an die Daten kommt. Der Dateiname muss ganz am Anfang in der Datei stehen.
- * Achtung: Offnet man eine Datei, die bereits mit mmc_fopen() geoeffnet wurde, ist das Verhalten bzgl. dieser Datei derzeit
- * undefiniert!
- * mmc_clear_file() leert eine Datei im FAT16-Dateisystem, die zuvor mit mmc_fopen() geoeffnet wurde. Die Datei wird komplett
- * mit nullen beschrieben, nur der "Dateiname" am Anfang des ersten Blocks bleibt erhalten. Als zweiten Parameter muss man die 
- * Groesse der Datei in Byte angeben. Stimmt diese nicht, wird zu wenig oder zu viel geloescht!
- * 
- * 
- * *** Uebersicht Statistik ***
- * 
- * Wenn VM_STATS_AVAILABLE definiert ist, laesst sich mit der Funktion mmc_get_vm_stats() eine Statistik ueber die Leistung
- * des VM erstellen. mmc_print_statistic() gibt solch eine Statistik in der Konsole aus, wenn der Code auf einem PC laeuft. 
- * Fuer die MCU gibt es derzeit noch keine entsprechende Ausgabemoeglichkeit.
- */
- 
  
 //TODO:	* Statistikausgabe fuer MCU ergaenzen
 //		* Code optimieren, Groesse und Speed
