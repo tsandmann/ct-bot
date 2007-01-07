@@ -67,7 +67,7 @@ p {
 /* Konsolenausgaben hervorheben */
 .console {
 	color: #0f0;
-	background-color: #191919;
+	background-color: #000;
 	display: table;
 	margin-left: 10px;
 	padding: 5px;
