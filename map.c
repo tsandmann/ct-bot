@@ -61,22 +61,6 @@
  * Wird ein Feld als Loch erkannt, setzen wir den Wert fest auf -128 (Achtung, derzeit noch nicht fertig impelementiert)
  */
 
-#ifdef MCU
-	#ifdef MMC_AVAILABLE
-		#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
-		#define MAP_RESOLUTION 	128	/*!< Aufloesung der Karte in Punkte pro Meter */
-		#define MAP_SECTION_POINTS 16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
-	#else
-		#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
-		#define MAP_SECTION_POINTS 32	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
-		#define MAP_RESOLUTION 	(MAP_SECTION_POINTS/MAP_SIZE)	/*!< Aufloesung der Karte in Punkte pro Meter */
-	#endif
-#else
-	#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
-	#define MAP_RESOLUTION 	128	/*!< Aufloesung der Karte in Punkte pro Meter */
-	#define MAP_SECTION_POINTS 16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
-#endif
-
 #define MAP_SECTIONS ((( MAP_SIZE*MAP_RESOLUTION)/MAP_SECTION_POINTS))
 
 #define MAP_STEP_FREE		2	/*!< Um diesen Wert wird ein Feld inkrementiert, wenn es als frei erkannt wird */
@@ -85,19 +69,14 @@
 #define MAP_RADIUS			10	/*!< Umkreis einen Messpunkt, der als Besetzt aktualisiert wird (Streukreis) [mm]*/
 #define MAP_RADIUS_FIELDS	(MAP_RESOLUTION*MAP_RADIUS/1000)	/*!< Umkreis einen Messpunkt, der als Besetzt aktualisiert wird (Streukreis) [Felder]*/
 
-/* Es lohnt nicht gigantische Karten auszugeben, wenn sie nichts enthalten, daher hier zwei Varianten, um die Karte auf die realen groesse zu reduzieren */
-//#define SHRINK_MAP_ONLINE		/*!< Wenn gesetzt, wird bei jedem update der belegte Bereich der Karte protokolliert. Pro: schnelle ausgabe Contra permanenter aufwand  */
-#define SHRINK_MAP_OFFLINE		/*!< Wenn gesetzt, wird erst beid er Ausgabe der belegte Bereich der Karte berechnet. Pro: kein permanenter aufwand Contra: ausgabe dauert lange */
-
 #define MAP_PRINT_SCALE				/*!< Soll das PGM eine Skala erhalten */
 #define MAP_SCALE	(MAP_RESOLUTION/2)	/*!< Alle wieviel Punkte kommt wein Skalen-Strich */
 
-
 #ifdef SHRINK_MAP_ONLINE
-	uint16 map_min_x=MAP_SIZE*MAP_RESOLUTION/2; /*!< belegten Bereich der Karte sichern */
-	uint16 map_max_x=MAP_SIZE*MAP_RESOLUTION/2;/*!< belegten Bereich der Karte sichern */
-	uint16 map_min_y=MAP_SIZE*MAP_RESOLUTION/2;/*!< belegten Bereich der Karte sichern */
-	uint16 map_max_y=MAP_SIZE*MAP_RESOLUTION/2;/*!< belegten Bereich der Karte sichern */
+	uint16 map_min_x=MAP_SIZE*MAP_RESOLUTION/2; /*!< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
+	uint16 map_max_x=MAP_SIZE*MAP_RESOLUTION/2; /*!< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
+	uint16 map_min_y=MAP_SIZE*MAP_RESOLUTION/2; /*!< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
+	uint16 map_max_y=MAP_SIZE*MAP_RESOLUTION/2; /*!< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate  */
 #endif
 
 typedef struct {
@@ -395,6 +374,16 @@ uint16 world_to_map(float koord){
 	return tmp;
 }
 
+/*!
+ * Konvertiert eine Kartenkoordinate in eine Weltkoordinate
+ * @param map_koord kartenkoordinate
+ * @return Weltkordiante
+ */
+float map_to_world(uint16 map_koord){
+	float tmp = (map_koord - (MAP_SIZE*MAP_RESOLUTION/2)) / MAP_RESOLUTION * 1000;
+			
+	return tmp;
+}
 
 /*! 
  * Aktualisiert die Karte mit den Daten eines Sensors

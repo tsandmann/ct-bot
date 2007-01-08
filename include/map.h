@@ -31,6 +31,42 @@
 
 #ifdef MAP_AVAILABLE
 
+/* Es lohnt nicht gigantische Karten auszugeben, wenn sie nichts enthalten, daher hier zwei Varianten, um die Karte auf die realen groesse zu reduzieren */
+//#define SHRINK_MAP_ONLINE		/*!< Wenn gesetzt, wird bei jedem update der belegte Bereich der Karte protokolliert. Pro: schnelle ausgabe Contra permanenter aufwand  */
+#define SHRINK_MAP_OFFLINE		/*!< Wenn gesetzt, wird erst beid er Ausgabe der belegte Bereich der Karte berechnet. Pro: kein permanenter aufwand Contra: ausgabe dauert lange */
+
+#ifdef MCU
+	#ifdef MMC_AVAILABLE
+		#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
+		#define MAP_RESOLUTION 	128	/*!< Aufloesung der Karte in Punkte pro Meter */
+		#define MAP_SECTION_POINTS 16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
+	#else
+		#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
+		#define MAP_SECTION_POINTS 32	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
+		#define MAP_RESOLUTION 	(MAP_SECTION_POINTS/MAP_SIZE)	/*!< Aufloesung der Karte in Punkte pro Meter */
+	#endif
+#else
+	#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
+	#define MAP_RESOLUTION 	128	/*!< Aufloesung der Karte in Punkte pro Meter */
+	#define MAP_SECTION_POINTS 16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
+#endif
+
+// Die folgenden Variablen/konstanten NICHT direkt benutzen, sondern die zugehoerigen Makros: get_map_min_x() und Co!
+// Denn sonst erhaelt man Karten und nicht Weltkoordinaten!
+#ifdef SHRINK_MAP_ONLINE
+	extern uint16 map_min_x; /*!< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
+	extern uint16 map_max_x; /*!< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
+	extern uint16 map_min_y; /*!< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
+	extern uint16 map_max_y; /*!< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate  */
+#else
+	#define map_min_x 0
+	#define map_min_y 0
+	#define map_max_x (MAP_SIZE*MAP_RESOLUTION)
+	#define map_max_x (MAP_SIZE*MAP_RESOLUTION)
+#endif
+
+
+
 /*!
  * Aktualisiert die interne Karte
  * @param x X-Achse der Position
@@ -72,6 +108,13 @@ int8 map_get_point (float x, float y);
 uint16 world_to_map(float koord);
 
 /*!
+ * Konvertiert eine Kartenkoordinate in eine Weltkoordinate
+ * @param map_koord kartenkoordinate
+ * @return Weltkordiante
+ */
+float map_to_world(uint16 map_koord);
+
+/*!
  * Zeigt die Karte an
  */
 void print_map(void);
@@ -92,6 +135,12 @@ void read_map(char * filename);
  * @param filename Zieldatei
  */
 void map_to_pgm(char * filename);
+
+#define map_get_min_x() map_to_world(map_min_x)
+#define map_get_min_y() map_to_world(map_min_y)
+#define map_get_max_x() map_to_world(map_max_x)
+#define map_get_max_y() map_to_world(map_max_y)
+
 
 #endif
 
