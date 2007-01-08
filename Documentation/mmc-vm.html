@@ -53,7 +53,7 @@ Zu beachten ist, dass nur soviel virtueller Speicher zur Verf&uuml;gung steht, w
 </p>
 
 <a name="example"></a><h3>Ein kleines Beispiel</h3>
-<p>Das folgende Beispiel demonstriert, wie sich der virtueller Speicher benutzen l&auml;sst:<br />
+<p>Das folgende Beispiel demonstriert, wie sich der virtuelle Speicher benutzen l&auml;sst:<br />
 <ins><div class="code">
 <span class="keyword">uint32</span> v_addr = mmcalloc(2048, 1);		<span class="comment">// wir wollen 2 KB Speicher</span><br />
 <span class="keyword">uint8</span>* p_addr = mmc_get_data(v_addr);	<span class="comment">// Pointer auf Puffer holen</span><br />
@@ -101,7 +101,7 @@ Ein Verhalten sollte also vor seiner Beendigung daf&uuml;r sorgen, dass der Cach
 
 <a name="fat"></a><h2>Der Zugriff auf ein FAT16-Dateisystems</h2>
 <p>
-Die Unterstuetzung f&uuml;r FAT16-Dateien auf einer MMC / SD-Card ist wie folgt aufgebaut:<br />
+Die Unterst&uuml;tzung f&uuml;r FAT16-Dateien auf einer MMC / SD-Card ist wie folgt aufgebaut:<br />
 <span class="function"> mmc_fopen(const char *filename)</span> &ouml;ffnet eine Datei im FAT16-Dateisystem der Karte und gibt die virtuelle Startadresse 
 zur&uuml;ck, so dass man mit<span class="function"> mmc_get_data()</span> Zugriff auf die Daten bekommt. Der Dateiname muss dabei ganz am Anfang in der Datei 
 stehen.<br />
@@ -144,7 +144,7 @@ F&uuml;r die MCU gibt es derzeit noch keine entsprechende Ausgabem&ouml;glichkei
     <li><span class="function"> VM_STATS_AVAILABLE</span> erm&ouml;glicht die Berechnung und Ausgabe einer <a href="#stat">Statistik</a> &uuml;ber das Speichersystem, wenn definiert.</li>
     <li><span class="function"> MMC_START_ADDRESS</span> gibt die physische Adresse (in Byte) an, wo der virtuelle Speicher beginnt. Sinnvoll ist z.B. die H&auml;lfte der MMC- / SD-Card-Gr&ouml;&szlig;e, der Speicherplatz davor kann dann f&uuml;r ein Dateisystem verwendet werden.</li>
     <li><span class="function"> MAX_SPACE_IN_SRAM</span> definiert die Anzahl der 512 Byte gro&szlig;en Bl&ouml;cke, die maximal gleichzeitig im SRAM gehalten werden.</li>
-    <li><span class="function"> VM_FILENAME_MAX</span> ist die maximale L&auml;nge eines Dateinames in Zeichen.</li>    
+    <li><span class="function"> VM_FILENAME_MAX</span> ist die maximale L&auml;nge eines Dateinamens in Zeichen.</li>    
 </ul>
 
 <br /><br />
