@@ -136,6 +136,7 @@ void read_map(char * filename);
  */
 void map_to_pgm(char * filename);
 
+// Makros, um die belegte kartenbereiche (in weltkoordinaten) zu ermitteln
 #define map_get_min_x() map_to_world(map_min_x)
 #define map_get_min_y() map_to_world(map_min_y)
 #define map_get_max_x() map_to_world(map_max_x)
