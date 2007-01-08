@@ -100,11 +100,6 @@ void bot_behave_init(void){
 		insert_behaviour_to_list(&behaviour, new_behaviour(152, bot_scan_behaviour,INACTIVE));
 	#endif
 	
-	// Hilfsverhalten zum Anfahren
-	#ifdef BEHAVIOUR_GOTOXY_AVAILABLE
-		insert_behaviour_to_list(&behaviour, new_behaviour(151, bot_gotoxy_behaviour,INACTIVE));
-	#endif
-
 	// Alle Hilfsroutinen sind relativ wichtig, da sie auch von den Notverhalten her genutzt werden
 	// Hilfsverhalten, die Befehle von Boten-Funktionen ausfuehren, erst inaktiv, werden von Boten aktiviert	
 	#ifdef BEHAVIOUR_TURN_AVAILABLE
@@ -116,6 +111,12 @@ void bot_behave_init(void){
 	#ifdef BEHAVIOUR_GOTO_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(148, bot_goto_behaviour,INACTIVE));
 	#endif
+
+	// Hilfsverhalten zum Anfahren von Positionen
+	#ifdef BEHAVIOUR_GOTOXY_AVAILABLE
+		insert_behaviour_to_list(&behaviour, new_behaviour(147, bot_gotoxy_behaviour,INACTIVE));
+	#endif
+
 
 	#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(44, bot_catch_pillar_behaviour,INACTIVE));
