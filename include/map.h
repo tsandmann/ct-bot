@@ -21,7 +21,7 @@
  * 
  */
 
-/*! @file 	map.c  
+/*! @file 	map.h  
  * @brief 	Karte 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	19.09.06
