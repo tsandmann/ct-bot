@@ -511,19 +511,13 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 		
 		uint16 x,y;
 
-		#ifndef SHRINK_MAP_ONLINE
-			uint16 map_min_x=0;
-			uint16 map_max_x=MAP_SIZE*MAP_RESOLUTION;
-			uint16 map_min_y=0;
-			uint16 map_max_y=MAP_SIZE*MAP_RESOLUTION;
-		#endif		
+		// lokale Variablen mit den defaults befuellen
+		uint16 min_x=map_min_x;
+		uint16 max_x=map_max_x;
+		uint16 min_y=map_min_y;
+		uint16 max_y=map_max_y;
 		
-		#ifdef 	SHRINK_MAP_OFFLINE
-		
-			uint16 min_x=0;
-			uint16 max_x=MAP_SIZE*MAP_RESOLUTION;
-			uint16 min_y=0;
-			uint16 max_y=MAP_SIZE*MAP_RESOLUTION;
+		#ifdef 	SHRINK_MAP_OFFLINE	// nun muessen wir die Grenezn ermitteln
 			// Kartengroesse reduzieren
 			int8 free=1;
 			while ((min_y < max_y) && (free ==1)){
@@ -566,26 +560,21 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 				}
 				max_x--;
 			}
-	
-			map_min_x=min_x;
-			map_max_x=max_x;
-			map_min_y=min_y;
-			map_max_y=max_y;
-	
+		
 		#endif
 			
-		uint16 map_size_x=map_max_x-map_min_x;
-		uint16 map_size_y=map_max_y-map_min_y;
+		uint16 map_size_x=max_x-min_x;
+		uint16 map_size_y=max_y-min_y;
 		#ifdef MAP_PRINT_SCALE
 			fprintf(fp,"P5\n%d %d\n255\n",map_size_x+10,map_size_y+10);
 		#else
 			fprintf(fp,"P5\n%d %d\n255\n",map_size_x,map_size_y);
 		#endif
-		printf("Karte beginnt bei X=%d,Y=%d und geht bis X=%d,Y=%d (%d * %d Punkte)\n",map_min_x,map_min_y,map_max_x,map_max_y,map_size_x,map_size_y);
+		printf("Karte beginnt bei X=%d,Y=%d und geht bis X=%d,Y=%d (%d * %d Punkte)\n",min_x,min_y,max_x,max_y,map_size_x,map_size_y);
 		
 		uint8 tmp;
-		for (y=map_max_y; y> map_min_y; y--){
-			for (x=map_min_x; x<map_max_x; x++){
+		for (y=max_y; y> min_y; y--){
+			for (x=min_x; x<max_x; x++){
 				
 				tmp=map_get_field(x,y-1)+128;
 				fwrite(&tmp,1,1,fp);
@@ -606,7 +595,7 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 
 		#ifdef MAP_PRINT_SCALE
 			for (y=0; y< 10; y++){
-				for (x=map_min_x; x<map_max_x+10; x++){
+				for (x=min_x; x<max_x+10; x++){
 					if (x % MAP_SCALE == 0)
 						tmp=0;
 					else tmp=255;

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2006-01-09 Benjamin Benz [bbe@heise.de]: Bugfix in map.c
+
 2006-01-08 Benjamin Benz [bbe@heise.de]: Nach einem Vorschlag von Achiem: Die groesse der benutzten Karte ist nun fuer andere Funktionen sichtbar, sofern in map.h SHRINK_MAP_ONLINE gesetzt ist. Wenn nicht steht in den "Variablen" die maximale Kartengroesse
 
 2006-01-08 Benjamin Benz [bbe@heise.de]: Nach einem Vorschlag von Frank Menzel die Prioritaeten von Bot_turn und bot_gotoxy geaendert

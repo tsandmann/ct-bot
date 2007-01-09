@@ -32,8 +32,8 @@
 #ifdef MAP_AVAILABLE
 
 /* Es lohnt nicht gigantische Karten auszugeben, wenn sie nichts enthalten, daher hier zwei Varianten, um die Karte auf die realen groesse zu reduzieren */
-//#define SHRINK_MAP_ONLINE		/*!< Wenn gesetzt, wird bei jedem update der belegte Bereich der Karte protokolliert. Pro: schnelle ausgabe Contra permanenter aufwand  */
-#define SHRINK_MAP_OFFLINE		/*!< Wenn gesetzt, wird erst beid er Ausgabe der belegte Bereich der Karte berechnet. Pro: kein permanenter aufwand Contra: ausgabe dauert lange */
+#define SHRINK_MAP_ONLINE		/*!< Wenn gesetzt, wird bei jedem update der belegte Bereich der Karte protokolliert. Pro: schnelle ausgabe Contra permanenter aufwand  */
+//#define SHRINK_MAP_OFFLINE		/*!< Wenn gesetzt, wird erst beid er Ausgabe der belegte Bereich der Karte berechnet. Pro: kein permanenter aufwand Contra: ausgabe dauert lange */
 
 #ifdef MCU
 	#ifdef MMC_AVAILABLE
@@ -62,7 +62,7 @@
 	#define map_min_x 0
 	#define map_min_y 0
 	#define map_max_x (MAP_SIZE*MAP_RESOLUTION)
-	#define map_max_x (MAP_SIZE*MAP_RESOLUTION)
+	#define map_max_y (MAP_SIZE*MAP_RESOLUTION)
 #endif
 
 
