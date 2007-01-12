@@ -97,6 +97,7 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 	
 	LOG_DEBUG(("Enter bot_remotecall_behaviour"));
 	void (* func) (struct _Behaviour_t *data);
+	uint8 len =0;	// Laenge der Parameter
 	
 	switch (running_behaviour) {
 		case REMOTE_CALL_SCEDULED: 		// Es laueft kein Auftrag, aber es steht ein neuer an
@@ -115,19 +116,24 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 				return;
 			}
 
-			if (parameter_len != calls[call_id].len){
+			#ifdef PC
+				// Auf dem PC liegt die calls-Struktur im RAM
+				func = (void*) calls[call_id].func;
+				len = calls[call_id].len;
+			#else
+				// Auf dem MCU liegt die calls-Struktur im Flash und muss erst geholt werden
+				func = (void*) pgm_read_word (& calls[call_id].func);
+				len = (uint8) pgm_read_byte (& calls[call_id].len);
+				
+			#endif
+
+
+			if (parameter_len != len){
 				LOG_DEBUG(("Die laenge der Parameter passt nicht. Gefordert=%d, geliefert=%d. Exit!",calls[call_id].len,parameter_len));
 				running_behaviour=REMOTE_CALL_IDLE;							
 				return;
 			} 
 			
-			#ifdef PC
-				// Auf dem PC liegt die calls-Struktur im RAM
-				func = (void*) calls[call_id].func;
-			#else
-				// Auf dem MCU liegt die calls-Struktur im Flash und muss erst geholt werden
-				func = (void*) pgm_read_word (& calls[call_id].func);
-			#endif
 			
 			if (parameter_len ==0 ){		// Kommen wir ohne Parameter aus?
 				LOG_DEBUG(("call=%s",function_name));
