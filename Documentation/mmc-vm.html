@@ -107,9 +107,10 @@ zur&uuml;ck, so dass man mit<span class="function"> mmc_get_data()</span> Zugrif
 stehen.<br />
 Achtung: &Ouml;ffnet man eine Datei, die bereits mit<span class="function"> mmc_fopen()</span> ge&ouml;ffnet wurde, ist das Verhalten bzgl. dieser Datei derzeit
 undefiniert!<br />
-<span class="function"> mmc_clear_file(uint32 start, uint32 length)</span> leert eine Datei im FAT16-Dateisystem, die zuvor mit<span class="function"> 
-mmc_fopen()</span> ge&ouml;ffnet wurde. Die Datei wird komplett mit Nullen &uuml;berschrieben, nur der &quot;Dateiname&quot; am Anfang des ersten Blocks bleibt erhalten. 
-Als zweiten Parameter muss man die Gr&ouml;&szlig;e der Datei in Byte angeben. Stimmt jene nicht, wird zu wenig oder zu viel gel&ouml;scht!
+<span class="function"> mmc_clear_file(uint32 file_start)</span> leert eine Datei im FAT16-Dateisystem, die zuvor mit<span class="function"> 
+mmc_fopen()</span> ge&ouml;ffnet wurde. Die Datei wird komplett mit Nullen &uuml;berschrieben, nur der erste Sektor mit dem &quot;Dateinamen&quot; und der 
+Gr&ouml;&szlig;e bleibt erhalten.<br />
+<span class="function"> mmc_get_filesize(uint32 file_start)</span> gibt die Gr&ouml;&szlig;e einer ge&ouml;ffneten Datei in Byte zur&uuml;ck.
 </p>
 
 <a name="stat"></a><h2>Etwas Statistik zur Leistungsbewertung</h2>

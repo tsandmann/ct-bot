@@ -473,7 +473,7 @@ void init(void){
 		puts("\t-M from\tKonvertiert eine Bot-map in eine PGM-Datei");
 		puts("\t-c \tErzeugt eine Mini-Fat-Datei fuer den Bot.");		
 		puts("\t   FILE\tDateiname");
-		puts("\t   ID  \tDie ID mit 3 ASCII-Zeichen");
+		puts("\t   ID  \tDie ID aus ASCII-Zeichen");
 		puts("\t   SIZE\tDie Nutzgroesse der Datei in KByte");
 		puts("\t-h\tZeigt diese Hilfe an");
 		exit(1);

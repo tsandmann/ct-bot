@@ -24,6 +24,7 @@
 */
 
 #include "ct-Bot.h"
+#include "mini-fat.h"
 
 #ifdef PC
 
@@ -31,38 +32,34 @@
 #include <stdio.h>
 #include <string.h>
 
-/*! Erzeugt eine Datei, die an den ersten 3 Byte die ID- enthaelt. dann folgen 512 - sizeof(id) nullen
+/*! 
+ * Erzeugt eine Datei, die an den ersten Bytes die ID enthaelt. Dann folgen 512 - sizeof(id) nullen
  * Danach kommen so viele size kByte Nullen
  * @param filename Der Dateiname der zu erzeugenden Datei
  * @param id_string Die ID des Files, wie sie zu beginn steht
  * @param size kByte Nutzdaten, die der MCU spaeter beschreiben darf
  */
-void create_mini_fat_file(char * filename, char * id_string, uint32 size){
-	// Einen 1-kByte-Block mit Nullen vorbereiten
-	uint8 dummy[1024];
-	uint32 i;
-	for (i=0; i< sizeof(dummy); i++)
-		dummy[i]=0;
-
-
+void create_mini_fat_file(const char* filename, const char* id_string, uint32 size){
 	printf("Erstelle eine Mini-Fat-Datei mit dem Namen %s\n",filename);
 	FILE *fp = fopen(filename, "w");
 	
-	char id [4] = "   ";
+	/* Dateiparameter vorbereiten */
+	uint8 id_len = strlen(id_string) >= MMC_FILENAME_MAX ? 254 : strlen(id_string);
+	file_len_t length = {size*1024 - 512};	// im ersten Block stehen interne Daten
 	
-	for (i=0; (i< strlen(id_string) && i<3); i++)
-		id[i]=id_string[i];
-		
-	printf("Schreibe ID: \"%s\"\n",id);
-	fwrite(&id,3,1,fp);
-	fwrite(&dummy, 512-3,1, fp);
+	printf("Schreibe ID: \"%s\"\n",id_string);
+	fwrite(id_string,id_len,1,fp);
+	
+	/* Dateilaenge in die Datei schreiben */
+	fseek(fp, 256, SEEK_SET);
+	int8 i;
+	for (i=3; i>=0; i--)
+		putc(length.u8[i], fp);
 
 	printf("Erzeuge Speicherplatz fuer %lu kByte Nutzdaten\n",size);	
-	for (i=0; i< size; i++)
-		fwrite(&dummy,1024,1,fp);
-	
-	fclose(fp);
-	
+	fseek(fp, size*1024-1, SEEK_SET);	// Ans Dateiende springen
+	putc(0, fp);	// eine Null schreiben
+	fclose(fp);	
 }
 
 #endif

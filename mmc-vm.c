@@ -39,6 +39,7 @@
 #include "mmc-emu.h"
 #include "display.h"
 #include "timer.h"
+#include "mini-fat.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -56,7 +57,6 @@
 	#define swap_in		mmc_emu_read_sector
 	#define swap_space	mmc_emu_get_size()
 #endif	
-#define VM_FILENAME_MAX	255		/*!< Maximale Dateienamenlaenge in Zeichen [1;255] */
 
 #if MMC_ASYNC_WRITE == 1
 	#define MAX_PAGES_IN_SRAM MAX_SPACE_IN_SRAM-1
@@ -408,11 +408,11 @@ uint32 mmc_fopen(const char *filename){
 	#ifdef MCU	// Debug-Info ausgeben
 		#ifdef DISPLAY_AVAILABLE
 			display_cursor(2,1);
-			display_printf("Find %c%c%c: 0x",filename[0],filename[1],filename[2]);
+			display_printf("Find %s: 0x",filename);
 			uint16 k=0, j=0;
 		#endif
 	#else
-		printf("Find %c%c%c...",filename[0],filename[1],filename[2]);
+		printf("Find %s...",filename);
 		uint16 k=0, j=0;	
 	#endif
 	/* MMC-Block suchen zwischen Kartenanfang und VM-Startadresse (<= Kartengroesse) */
@@ -430,20 +430,21 @@ uint32 mmc_fopen(const char *filename){
 		#endif
 		if (swap_in(block, p_data) != 0) break;	// Abbrechen, falls Fehler
 		/* Blockanfang mit Dateinamen vergleichen */
-		for (i=0; i<VM_FILENAME_MAX; i++){
+		for (i=0; i<MMC_FILENAME_MAX; i++){
 			if (filename[i] == '\0'){
+				if (swap_in(++block, p_data) != 0) break;	// Ersten Sektor der Datei ueberspringen, dort stehen interne Daten
 				page_cache[mmc_get_cacheblock_of_page(v_addr)].addr = block;	// Cache-Tag auf gefundene Datei umbiegen
 				#ifdef MCU
 					#ifdef DISPLAY_AVAILABLE
 			  			k = block & 0xFFFF;
 			  			j = (block >> 16) & 0xFFFF;
 			  			display_cursor(2,1);
-			  			display_printf("Found %c%c%c: 0x%02x%04x",filename[0],filename[1],filename[2],j,k);
+			  			display_printf("Found %s: 0x%02x%04x",filename,j,k);
 					#endif
 				#else
 		  			k = block & 0xFFFF;
 		  			j = (block >> 16) & 0xFFFF;
-		  			printf("\n\rFound %c%c%c: 0x%02x%04x \n\r",filename[0],filename[1],filename[2],j,k);			
+		  			printf("\n\rFound %s: 0x%02x%04x \n\r",filename,j,k);			
 				#endif				
 				return block<<9;	// gesuchte Datei beginnt hier :)
 			}
@@ -457,39 +458,50 @@ uint32 mmc_fopen(const char *filename){
 	#ifdef MCU
 		#ifdef DISPLAY_AVAILABLE
 			display_cursor(2,1);
-			display_printf("%c%c%c not found ",filename[0],filename[1],filename[2]);
+			display_printf("%s not found ",filename);
 		#endif	
 	#else	
-		printf("\n\r%c%c%c not found \n\r",filename[0],filename[1],filename[2]);
+		printf("\n\r%s not found \n\r",filename);
 	#endif		
 	return 0;	// Datei nicht gefunden :(	
 }
 
+/*!
+ * Liest die Groesse einer Datei im FAT16-Dateisystem auf der MMC / SD-Card aus, die zu zuvor mit 
+ * mmc_fopen() geoeffnet wurde.
+ * @param file_start	(virtuelle Anfangsadresse der Datei)
+ * @return				Groesse der Datei in Byte
+ * @date				12.01.2007
+ */
+uint32 mmc_get_filesize(uint32 file_start){
+	file_len_t length;
+	uint8* p_addr = mmc_get_data(file_start-512);
+	/* Dateilaenge aus Block 0, Byte 256 bis 259 der Datei lesen */
+	uint8 i;
+	for (i=0; i<4; i++)
+		length.u8[i] = p_addr[259-i];
+	return length.u32;
+}
+
 /*! 
  * Leert eine Datei im FAT16-Dateisystem auf der MMC / SD-Card, die zuvor mit mmc_fopen() geoeffnet wurde.
- * @param start		(virtuelle) Anfangsadresse der Datei
- * @param length	Laenge der Datei in Byte   
- * @return			0: ok, 1: ungueltige Datei oder Laenge, 2: Fehler beim Schreiben
- * @date 			02.01.2007
+ * @param file_start	(virtuelle) Anfangsadresse der Datei 
+ * @return				0: ok, 1: ungueltige Datei oder Laenge, 2: Fehler beim Schreiben
+ * @date 				02.01.2007
  */
-uint8 mmc_clear_file(uint32 start, uint32 length){
+uint8 mmc_clear_file(uint32 file_start){
 	#ifdef PC
-		printf("Start of file: %lu \n\r", start);
+		printf("Start of file: %lu \n\r", file_start);
 	#endif
-	if (start == 0 || start + length >= mmc_start_address) return 1;	// Datei existiert nicht oder Laenge ist ungueltig
+	uint32 length = mmc_get_filesize(file_start);
+	if (file_start == 0 || file_start + length >= mmc_start_address) return 1;	// Datei existiert nicht oder Laenge ist ungueltig
 	/* Ersten Block der Datei laden (dessen Speicherbereich benutzen wir einfach als 0-Puffer) */
-	uint8* p_addr = mmc_get_data(start);
-	/* Dateinamen extrahieren, denn der muss erhalten bleiben */
-	uint16 i;
-	for (i=0; i<VM_FILENAME_MAX && p_addr[i] != '\0'; i++);
-	i++;
-	memset(p_addr+i, 0, 512-i);	// Alles bis auf den Dateinamen loeschen
-	mmc_page_write_back(start);	// Ersten Block schreiben 
-	memset(p_addr, 0, i);	// Dateinamen im Puffer loeschen
+	uint8* p_addr = mmc_get_data(file_start);
+	memset(p_addr, 0, 512);	// leeren Puffer erzeugen
 	/* Alle Bloecke der Datei mit dem 0-Puffer ueberschreiben */
 	int8 cache_block;
 	uint32 addr;
-	for (addr=start+512; addr<start+length; addr+=512){
+	for (addr=file_start; addr<file_start+length; addr+=512){
 		if (swap_out(mmc_get_mmcblock_of_page(addr), p_addr, 0) != 0) return 2;
 		/* Falls ein Block der Datei im Cache ist, auch diesen leeren */
 		cache_block = mmc_get_cacheblock_of_page(addr);
@@ -497,12 +509,6 @@ uint8 mmc_clear_file(uint32 start, uint32 length){
 			memset(page_cache[cache_block].p_data, 0, 512);
 			page_cache[cache_block].dirty = 0;
 		}
-	}
-	/* Ersten Block der Datei aus dem Cache werfen */
-	cache_block = mmc_get_cacheblock_of_page(start);
-	if (cache_block >= 0){
-		page_cache[cache_block].addr = 0x800000;
-		page_cache[cache_block].dirty = 0;
 	}
 	#ifdef PC
 		printf("End of file: %lu \n\r", addr);

@@ -1,16 +1,18 @@
 CHANGELOG fuer c't-Bot
 ======================
-2006-01-09 Benjamin Benz [bbe@heise.de]: Remotecall-Behaviours erweitert
+2007-01-12 Timo Sandmann [mail@timosandmann.de]: FAT16-Dateien auf MMC koennen nun laengere Dateinamen haben und wir speichern ihre Groesse im ersten Sektor. Die Dateigroesse ist per mmc_get_filesize() auslesbar.
 
-2006-01-09 Benjamin Benz [bbe@heise.de]: Bugfix in map.c
+2007-01-09 Benjamin Benz [bbe@heise.de]: Remotecall-Behaviours erweitert
 
-2006-01-08 Benjamin Benz [bbe@heise.de]: Nach einem Vorschlag von Achiem: Die groesse der benutzten Karte ist nun fuer andere Funktionen sichtbar, sofern in map.h SHRINK_MAP_ONLINE gesetzt ist. Wenn nicht steht in den "Variablen" die maximale Kartengroesse
+2007-01-09 Benjamin Benz [bbe@heise.de]: Bugfix in map.c
 
-2006-01-08 Benjamin Benz [bbe@heise.de]: Nach einem Vorschlag von Frank Menzel die Prioritaeten von Bot_turn und bot_gotoxy geaendert
+2007-01-08 Benjamin Benz [bbe@heise.de]: Nach einem Vorschlag von Achiem: Die groesse der benutzten Karte ist nun fuer andere Funktionen sichtbar, sofern in map.h SHRINK_MAP_ONLINE gesetzt ist. Wenn nicht steht in den "Variablen" die maximale Kartengroesse
 
-2006-01-07 Timo Sandmann [mail@timosandmann.de]: MMC-Doku erweitert
+2007-01-08 Benjamin Benz [bbe@heise.de]: Nach einem Vorschlag von Frank Menzel die Prioritaeten von Bot_turn und bot_gotoxy geaendert
 
-2006-01-05 Benjamin Benz [bbe@heise.de]: Die PC-Version des Codes kann nun mit dem Schalter "-c" leere Dateien erstellen, die spaeter der mini-fat-Treiber auf dem MCU findet
+2007-01-07 Timo Sandmann [mail@timosandmann.de]: MMC-Doku erweitert
+
+2007-01-05 Benjamin Benz [bbe@heise.de]: Die PC-Version des Codes kann nun mit dem Schalter "-c" leere Dateien erstellen, die spaeter der mini-fat-Treiber auf dem MCU findet
 
 2007-01-02 Timo Sandmann [mail@timosandmann.de]: Funktion zum Leeren einer FAT16-Datei auf MMC hinzugefuegt
 

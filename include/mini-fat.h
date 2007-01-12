@@ -30,6 +30,13 @@
 
 #include "ct-Bot.h"
 
+#define MMC_FILENAME_MAX	255		/*!< Maximale Dateienamenlaenge in Zeichen [1;255] */
+
+typedef union{
+	uint32 u32;		// Laenge in 32 Bit
+	uint8 u8[4];	// laenge in 4 "einzelnen" Bytes
+} file_len_t;
+
 #ifdef MINI_FAT_AVAILABLE
 
 /*!
@@ -50,7 +57,7 @@ uint32 mini_fat_find_block(const char key[3], uint8* buffer);
  * @param id_string Die ID des Files, wie sie zu beginn steht
  * @param size kByte Nutzdaten, die der MCU spaeter beschreiben darf
  */
-void create_mini_fat_file(char * filename, char * id_string, uint32 size);
+void create_mini_fat_file(const char* filename, const char* id_string, uint32 size);
 #endif
 
 #endif /*MINIFAT_H_*/

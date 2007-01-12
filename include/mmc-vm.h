@@ -131,12 +131,20 @@ uint32 mmc_fopen(const char *filename);
 
 /*! 
  * Leert eine Datei im FAT16-Dateisystem auf der MMC / SD-Card, die zuvor mit mmc_fopen() geoeffnet wurde.
- * @param start		(virtuelle) Anfangsadresse der Datei
- * @param length	Laenge der Datei in Byte   
- * @return			0: ok, 1: ungueltige Datei oder Laenge, 2: Fehler beim Schreiben
- * @date 			02.01.2007
+ * @param file_start	(virtuelle) Anfangsadresse der Datei
+ * @return				0: ok, 1: ungueltige Datei oder Laenge, 2: Fehler beim Schreiben
+ * @date 				02.01.2007
  */
-uint8 mmc_clear_file(uint32 start, uint32 length);
+uint8 mmc_clear_file(uint32 file_start);
+
+/*!
+ * Liest die Groesse einer Datei im FAT16-Dateisystem auf der MMC / SD-Card aus, die zu zuvor mit 
+ * mmc_fopen() geoeffnet wurde.
+ * @param file_start	(virtuelle Anfangsadresse der Datei)
+ * @return				Groesse der Datei in Byte
+ * @date				12.01.2007
+ */
+uint32 mmc_get_filesize(uint32 file_start);
 
 #endif	// MMC_VM_AVAILABLE
 #endif	// MMC_VM_H_
