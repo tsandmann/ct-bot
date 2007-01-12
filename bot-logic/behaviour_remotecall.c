@@ -19,7 +19,7 @@
 
 
 /*! @file 	behaviour_remotecall_behaviour.c
- * @brief 	ruft auf ein Kommando hin andere Verhalten auf und bestätigt dann ihre ausfuehrung
+ * @brief 	ruft auf ein Kommando hin andere Verhalten auf und bestaetigt dann ihre Ausfuehrung
  * 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	07.12.06
@@ -38,12 +38,12 @@
 #define REMOTE_CALL_SCEDULED 1
 #define REMOTE_CALL_RUNNING 2
 
-/*! Uebergabevariable fuer Servo-Verhalten */
+/*! Uebergabevariable fuer Remotecall-Verhalten */
 static uint8 running_behaviour =REMOTE_CALL_IDLE;
 
 static char * function_name = NULL;
-static uint8 parameter_len = 0;
-static uint8 * parameter_data = NULL;
+static uint8 parameter_length[9] = {0};
+static uint8 parameter_data[8] = {0};
 
 #ifdef MCU
 	#include <avr/pgmspace.h>
@@ -62,8 +62,9 @@ static uint8 * parameter_data = NULL;
  * Allerdings muss man ihre gesamtlaeng in Byte kennen
  */
 const call_t calls[] PROGMEM = {
-   PREPARE_REMOTE_CALL(bot_turn,2,"int16 degrees"),
-   PREPARE_REMOTE_CALL(bot_gotoxy,8,"float x, float y"),
+   PREPARE_REMOTE_CALL(bot_turn,1,"int16 degrees"), 
+   PREPARE_REMOTE_CALL(bot_gotoxy,2,"float x, float y"),
+   PREPARE_REMOTE_CALL(bot_drive_distance,3,"int8 curve, int16 speed, int16 cm"),
    PREPARE_REMOTE_CALL(bot_solve_maze,0,"") 
 };
 
@@ -87,9 +88,33 @@ uint8 getRemoteCall(char * call){
 	return 255;
 }
 
+#ifdef MCU
+	/*!
+	 * Hilfsfunktion fuer bot_remotecall()
+	 * Baut einen AVR-kompatiblen Parameterstream aus einem uint32-Parameterarray und einem Infoarray ueber die Parameter
+	 * @param dest	Zeiger auf das Ausgabearray (len[0]*2 Byte gross!)
+	 * @param len	Zeiger auf ein Array, das zuerst die Anzahl der Parameter und danach die Anzahl der Bytes fuer die jeweiligen Parameter enthaelt
+   	 * @param data	Zeiger auf die Daten
+	 * @author 		Timo Sandmann (mail@timosandmann.de) 
+   	 * @date		12.01.2007
+	 */
+	void remotecall_convert_params(uint8* dest, uint8* len, uint8* data){
+//		uint8 k;
+//		for (k=0; k<32; k+=4)
+//			LOG_DEBUG(("parameter_data: %lu", *(uint32*)(data+k)));		
+		uint8 i;
+		for (i=1; i<=len[0]; i++){
+			int8 j;
+			if (len[i] == 1) *dest++ = 0;
+			for (j=len[i]-1; j>=0; j--)
+				*dest++ = data[j];
+			data += 4;
+		}	
+	}
+#endif	// MCU
 
 /*! 
- * Dieses Verhalten kuemmert sich darum die Verhalten, die von außen angefragt wurden zu starten und liefert ein feedback zurueck, wenn sie beendet sind.
+ * Dieses Verhalten kuemmert sich darum die Verhalten, die von aussen angefragt wurden zu starten und liefert ein feedback zurueck, wenn sie beendet sind.
  * @param *data der Verhaltensdatensatz
  */
 void bot_remotecall_behaviour(Behaviour_t *data){
@@ -128,14 +153,13 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 			#endif
 
 
-			if (parameter_len != len){
-				LOG_DEBUG(("Die laenge der Parameter passt nicht. Gefordert=%d, geliefert=%d. Exit!",calls[call_id].len,parameter_len));
+			if (parameter_length[0] != len){
+				LOG_DEBUG(("Die laenge der Parameter passt nicht. Gefordert=%d, geliefert=%d. Exit!",calls[call_id].len,parameter_length[0]));
 				running_behaviour=REMOTE_CALL_IDLE;							
 				return;
 			} 
 			
-			
-			if (parameter_len ==0 ){		// Kommen wir ohne Parameter aus?
+			if (parameter_length[0] ==0 ){		// Kommen wir ohne Parameter aus?
 				LOG_DEBUG(("call=%s",function_name));
 				func(data);	// Die aufgerufene Botenfunktion starten
 				running_behaviour=REMOTE_CALL_RUNNING;
@@ -147,13 +171,52 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 				} 
 
 				// TODO: Ja hier wird es spannend, denn jetzt muessen die Parameter auf den Stack
+				LOG_DEBUG(("call=%s",function_name));
+				uint8 k;
+				for (k=0; k<8; k+=2)
+					LOG_DEBUG(("parameter_data(low:high) = %u:%u", *(uint8*)(parameter_data+k+1), *(uint8*)(parameter_data+k)));
+				LOG_DEBUG(("len: %u", parameter_length[0]));				
+				// asm-hacks here ;)
+				#ifdef PC
+					uint32 tmp;
+					uint32 i;
+					for (i=0; i<parameter_length[0]; i++){
+						tmp = *(parameter_data+(parameter_length[0]-i-1)*4);
+						asm volatile(
+							"movl %%esp, %%eax	# sp holen			\n\t"
+							"addl %1, %%eax		# neuer sp+index	\n\t"
+							"movl %0, (%%eax)	# param auf stack		"
+							::	"c" (tmp), "g" ((parameter_length[0]-i)*4)
+							:	"eax"
+						);
+					}					
+				#else
+					LOG_DEBUG(("r23: %u", parameter_data[0]));
+					LOG_DEBUG(("r22: %u", parameter_data[1]));
+					LOG_DEBUG(("r21: %u", parameter_data[2]));
+					LOG_DEBUG(("r20: %u", parameter_data[3]));
+					LOG_DEBUG(("r19: %u", parameter_data[4]));
+					LOG_DEBUG(("r18: %u", parameter_data[5]));
+					LOG_DEBUG(("r17: %u", parameter_data[6]));
+					LOG_DEBUG(("r16: %u", parameter_data[7]));										
+					asm volatile(
+						"ld r23, Z+		\n\t"
+						"ld r22, Z+		\n\t"
+						"ld r21, Z+		\n\t"
+						"ld r20, Z+		\n\t"
+						"ld r19, Z+		\n\t"
+						"ld r18, Z+		\n\t"
+						"ld r17, Z+		\n\t"
+						"ld r16, Z			"
+						::	"z" (parameter_data)
+						:	"r23", "r22", "r21", "r20", "r19", "r18", "r17", "r16"
+					);
+				#endif
+				func(data);	// Die aufgerufene Botenfunktion starten
 				
-				// Push param_len bytes aus parameter_data auf den Stack
-				// func(data);	// Die aufgerufene Botenfunktion starten
-				
-				LOG_DEBUG(("TODO: Funktionen mit Parametern noch nicht implementiert"));
-				running_behaviour=REMOTE_CALL_IDLE; // So lange nicht fertig implementiert abbruch
-//				running_behaviour=REMOTE_CALL_RUNNING; // Wenn es denn dann mal geht
+//				LOG_DEBUG(("TODO: Funktionen mit Parametern noch nicht implementiert"));
+//				running_behaviour=REMOTE_CALL_IDLE; // So lange nicht fertig implementiert abbruch
+				running_behaviour=REMOTE_CALL_RUNNING; // Wenn es denn dann mal geht
 				return;
 			}
 			break;
@@ -164,8 +227,8 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 
 			// Aufrauemen
 			function_name=NULL;
-			parameter_len=0;
-			parameter_data=NULL;
+			//parameter_length=NULL;
+			//parameter_data=NULL;
 			running_behaviour=REMOTE_CALL_IDLE;
 			
 			return_from_behaviour(data); 	// und Verhalten auch aus
@@ -182,14 +245,18 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 /*!
  * Fuehre einen remote_call aus. Es gibt KEIN aufrufendes Verhalten!!
  * @param func Zeiger auf den Namen der Fkt
- * @param len Anzahl der zu uebergebenden Bytes
+ * @param len Zeiger auf ein Array, das zuerst die Anzahl der Parameter und danach die Anzahl der Bytes fuer die jeweiligen Parameter enthaelt
  * @param data Zeiger auf die Daten
  */
-void bot_remotecall(char * func, uint8 len, uint8* data){
-	printf("bot_remotecall(%s,%d,...)\n",func,len);
-	function_name= func;
-	parameter_len=len;
-	parameter_data=data;
+void bot_remotecall(char* func, uint8* len, uint32* data){
+	LOG_DEBUG(("bot_remotecall(%s,%u,...)\n",func,len[0]));
+	function_name=func;
+	memcpy(parameter_length, len, len[0]+1);
+	#ifdef MCU
+		remotecall_convert_params(parameter_data, parameter_length, (uint8*)data);
+	#else
+		memcpy(parameter_data, data, len[0]*4);
+	#endif
 	
 	running_behaviour=REMOTE_CALL_SCEDULED;
 	activateBehaviour(bot_remotecall_behaviour);

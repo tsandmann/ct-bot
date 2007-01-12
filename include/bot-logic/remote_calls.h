@@ -32,9 +32,8 @@
 
 
 
-
-#define TEXT_LEN 15
-#define PARAM_TEXT_LEN 15
+#define TEXT_LEN 20
+#define PARAM_TEXT_LEN 40
 
 // Die Kommandostruktur
 typedef struct {
@@ -63,8 +62,8 @@ void bot_remotecall_behaviour(Behaviour_t *data);
 /*!
  * Fuehre einen remote_call aus. Es gibt KEIN aufrufendes Verhalten!!
  * @param func Zeiger auf den Namen der Fkt
- * @param len Anzahl der zu uebergebenden Bytes
+ * @param len Zeiger auf ein Array, das zuerst die Anzahl der Parameter und danach die Anzahl der Bytes fuer die jeweiligen Parameter enthaelt 
  * @param data Zeiger auf die Daten
  */
-void bot_remotecall(char * func, uint8 len, uint8* data);
+void bot_remotecall(char* func, uint8* len, uint32* data);
 #endif /*REMOTE_CALLS_H_*/
