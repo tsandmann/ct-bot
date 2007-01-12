@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-01-12 Benjamin Benz [bbe@heise.de]: Ueberlauf in drive_distance beseitigt
+
 2007-01-12 Timo Sandmann [mail@timosandmann.de]: FAT16-Dateien auf MMC koennen nun laengere Dateinamen haben und wir speichern ihre Groesse im ersten Sektor. Die Dateigroesse ist per mmc_get_filesize() auslesbar.
 
 2007-01-09 Benjamin Benz [bbe@heise.de]: Remotecall-Behaviours erweitert

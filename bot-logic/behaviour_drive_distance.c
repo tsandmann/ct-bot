@@ -91,7 +91,11 @@ void bot_drive_distance_behaviour(Behaviour_t* data){
  * @param cm Gibt an, wie weit der Bot fahren soll. In cm :-) Die Strecke muss positiv sein, die Fahrtrichtung wird ueber speed geregelt.
  */
 void bot_drive_distance(Behaviour_t* caller,int8 curve, int16 speed, int16 cm){
-	int16 marks_to_drive = cm * 10 * ENCODER_MARKS / WHEEL_PERIMETER;
+	int32 tmp = cm;
+	tmp*= 10 * ENCODER_MARKS;
+	tmp /= WHEEL_PERIMETER;
+	int16 marks_to_drive = (int16) tmp;
+	
 	int16 *encoder;
 	drive_distance_curve = curve;
 	drive_distance_speed = speed;
