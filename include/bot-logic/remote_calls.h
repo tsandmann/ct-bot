@@ -38,12 +38,15 @@
 
 
 #define TEXT_LEN 15
+#define PARAM_TEXT_LEN 15
 
 // Die Kommandostruktur
 typedef struct {
    void* (*func)(void *);      /*!< Zeiger auf die auszufuehrende Funktion*/
    uint8 len;					/*!< Anzahl der Bytes, die als Parameter kommen Und zwar ohne den obligatorischen caller-parameter*/
    char name[TEXT_LEN+1]; 	   /*!< Text, maximal TEXT_LEN Zeichen lang +  1 Zeichen terminierung*/
+   char param_info[PARAM_TEXT_LEN+1];			/*!< String, der Angibt, welche und was fuer Parameter die Fkt erwartet */
+   									 
 } call_t;
 
 /*! Dieses Makro bereitet eine Botenfunktion als Remote-Call-Funktion vor. 
@@ -52,7 +55,7 @@ typedef struct {
  * Und zwar unabhaengig vom Datentyp. will man also einen uin16 uebergeben steht da 2
  * Will man einen Float uebergeben eine 4. Fuer zwei Floats eine 8, usw.
  */
-#define PREPARE_REMOTE_CALL(func,number_of_bytes)  {(void*)func, number_of_bytes, #func }
+#define PREPARE_REMOTE_CALL(func,number_of_bytes,param)  {(void*)func, number_of_bytes, #func,param }
 
 
 /*! 

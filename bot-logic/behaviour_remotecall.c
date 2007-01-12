@@ -55,9 +55,9 @@ static uint8 * parameter_data = NULL;
  * Allerdings muss man ihre gesamtlaeng in Byte kennen
  */
 const call_t calls[] PROGMEM = {
-   PREPARE_REMOTE_CALL(bot_turn,2),
-   PREPARE_REMOTE_CALL(bot_gotoxy,8),
-   PREPARE_REMOTE_CALL(bot_solve_maze,0) 
+   PREPARE_REMOTE_CALL(bot_turn,2,"int16 degrees"),
+   PREPARE_REMOTE_CALL(bot_gotoxy,8,"float x, float y"),
+   PREPARE_REMOTE_CALL(bot_solve_maze,0,"") 
 };
 
 #define STORED_CALLS (sizeof(calls)/sizeof(call_t))
@@ -125,7 +125,6 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 				// TODO: Ja hier wird es spannend, denn jetzt muessen die Parameter auf den Stack
 				
 				// Push param_len bytes aus parameter_data auf den Stack
-				// Push "data" auf den Stack
 				// func(data);	// Die aufgerufene Botenfunktion starten
 				
 				LOG_DEBUG(("TODO: Funktionen mit Parametern noch nicht implementiert"));
