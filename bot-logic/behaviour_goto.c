@@ -131,7 +131,7 @@ void bot_goto_behaviour(Behaviour_t *data){
  * @param left Schritte links
  * @param right Schritte rechts
  */
-void bot_goto(int16 left, int16 right, Behaviour_t * caller){
+void bot_goto(Behaviour_t * caller, int16 left, int16 right){
 	// Zielwerte speichern
 	mot_l_goto=left; 
 	mot_r_goto=right;

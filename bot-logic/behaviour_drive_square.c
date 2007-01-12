@@ -47,11 +47,11 @@ void bot_drive_square_behaviour(Behaviour_t *data){
 	
 	switch (state) {
 		case STATE_FORWARD: // Vorwaerts
-		   bot_goto(100,100,data);
+		   bot_goto(data,100,100);
 		   state = STATE_TURN;
 		   break;
 		case STATE_TURN: // Drehen
-		   bot_goto(22,-22,data);
+		   bot_goto(data,22,-22);
 		   state=STATE_FORWARD;
 		   break;		
 		case STATE_INTERRUPTED:
