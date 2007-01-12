@@ -80,7 +80,7 @@ uint8 getRemoteCall(char * call){
 	uint8 i;
 	for (i=0; i< (STORED_CALLS); i++){
 		if (!strcmp_P (call, calls[i].name)){
-			LOG_DEBUG(("calls[%d].name=%s passt",i,calls[i].name));		
+			LOG_DEBUG(("calls[%d].name=%s passt",i,call));		
 			return i;
 		}
 	}
