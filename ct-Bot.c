@@ -661,9 +661,19 @@ void init(void){
 	    eeprom_write_byte(&resetInfoEEPROM+resets,reset_flag);
 	#endif	
 	/*! Hauptschleife des Bot */
+
+
 	
-	// Tesroutine
-//	bot_remotecall("bot_turn",2,NULL);
+	// Tesroutinen fuer die Remote-calls
+//	bot_remotecall("bot_turn",2,NULL);		// Sollte eine Fehlermeldung produzieren
+
+//	uint16 angle = 180;
+//	bot_remotecall("bot_turn",2,&angle);		// Bsp fuer Fkt mit Parameter
+
+	bot_remotecall("bot_solve_maze",0,NULL); // Bsp fuer Fkt ohne Paameter
+
+
+
 	
 	for(;;){
 		#ifdef PC
