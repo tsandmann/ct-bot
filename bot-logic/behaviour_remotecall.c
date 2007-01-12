@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "log.h"
+#include "command.h"
 
 #include "bot-logic/remote_calls.h"
 
@@ -273,6 +274,39 @@ void bot_remotecall(char* func, uint8* len, remote_call_data_t* data){
 	
 	running_behaviour=REMOTE_CALL_SCEDULED;
 	activateBehaviour(bot_remotecall_behaviour);
+}
+
+/*! Listet alle verfuegbaren Remote-Calls auf und verschickt sie als einzelne Kommanods
+ */
+void remote_call_list(void){
+	#ifdef MCU
+		call_t call_storage;
+		uint8* to;
+		uint8* from;
+	#endif
+	call_t* call;
+	
+	int16 i;
+	for (i=0; i< (STORED_CALLS); i++){
+		#ifdef MCU
+			// Auf dem MCU muessen die dtaen erstmal aus dem Flash ins RAM
+			from= (uint8*)&calls[i];
+			to= (uint8*)&call_storage;
+			uint8 j;
+			for (j=0; j< sizeof(call_t); j++){
+				*to = (uint8) pgm_read_byte ( from++ );	
+				to++;
+			}
+			call = &call_storage;
+		#else
+			call = (call_t*)&calls[i];
+		#endif
+		
+		// und uebertragen
+		command_write_rawdata(CMD_REMOTE_CALL,SUB_REMOTE_CALL_ENTRY,&i,&i, sizeof(call_t),(uint8*)call);
+
+		LOG_DEBUG(("%s(%s)",call->name,call->param_info));
+	}
 }
 
 #endif

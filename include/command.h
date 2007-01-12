@@ -121,6 +121,12 @@ typedef struct {
 #define SUB_WELCOME_REAL	'R'		/*!< Subkommado zum anmelden eine realen Bots an c't-Sim */
 #define SUB_WELCOME_SIM	'S'		/*!< Subkommado zum anmelden eines simulierten Bots an c't-Sim */
 
+//Kommandos fuer die Remote-Calls
+#define CMD_REMOTE_CALL		'r'		/*!< Kommado fuer Remote-Calls */
+#define SUB_REMOTE_CALL_LIST	'L'		/*!< Anforderung an den Bot alle verfuegbaren Kommandos zu listen */
+#define SUB_REMOTE_CALL_ENTRY	'E'		/*!< Hiermit leifert der Bot ein erfuegbares Kommandos an den PC */
+#define SUB_REMOTE_CALL_ORDER	'O'		/*!< Hiermit gibt der PC einen Remote-call in Auftrag */
+
 
 
 #define DIR_REQUEST	0			/*!< Richtung fuer Anfragen */
@@ -162,6 +168,17 @@ void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,
  * @param data Datenanhang an das eigentliche Command
  */
 void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* data_r, const char* data);
+
+/*!
+ * Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort
+ * @param command Kennung zum Command
+ * @param subcommand Kennung des Subcommand
+ * @param data_l Daten fuer den linken Kanal
+ * @param data_r Daten fuer den rechten Kanal
+ * @param payload Anzahl der Bytes im Anhang
+ * @param data Datenanhang an das eigentliche Command
+ */
+void command_write_rawdata(uint8 command, uint8 subcommand, int16* data_l, int16* data_r, uint8 payload, uint8* data);
 
 /*!
  * Wertet das Kommando im Puffer aus

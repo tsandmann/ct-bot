@@ -240,6 +240,21 @@ void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,
  * @param subcommand Kennung des Subcommand
  * @param data_l Daten fuer den linken Kanal
  * @param data_r Daten fuer den rechten Kanal
+ * @param payload Anzahl der Bytes im Anhang
+ * @param data Datenanhang an das eigentliche Command
+ */
+void command_write_rawdata(uint8 command, uint8 subcommand, int16* data_l, int16* data_r, uint8 payload, uint8* data){
+	command_write(command, subcommand, data_l, data_r,payload);   
+    low_write_data(data, payload);
+}
+
+
+/*!
+ * Gibt dem Simulator Daten mit String-Anhang und wartet nicht auf Antwort
+ * @param command Kennung zum Command
+ * @param subcommand Kennung des Subcommand
+ * @param data_l Daten fuer den linken Kanal
+ * @param data_r Daten fuer den rechten Kanal
  * @param data Datenanhang an das eigentliche Command
  */
 void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* data_r, const char* data){
@@ -321,6 +336,23 @@ int command_evaluate(void){
 				transmit_mouse_picture();
 			break;
 		#endif
+
+		#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
+			case CMD_REMOTE_CALL:
+					switch (received_command.request.subcommand) {
+						case SUB_REMOTE_CALL_LIST:
+							remote_call_list();
+							break;
+						case SUB_REMOTE_CALL_ORDER:
+							// TODO remote-call-kommando auswerten
+							break;
+						default:
+							LOG_DEBUG(("unbekanntes Subkommando: %c",received_command.request.subcommand));
+							break;
+					}
+				break;
+		#endif
+
 			
 		// Einige Kommandos ergeben nur fuer simulierte Bots Sinn
 		#ifdef PC
@@ -360,6 +392,7 @@ int command_evaluate(void){
 				simultime=received_command.data_l;
 				system_time_isr();		/* Einmal pro Update-Zyklus aktualisieren wir die Systemzeit */
 			//	printf("X-Frame for Simultime = %d received ",simultime);
+				break;
 		#endif
 		default:
 			analyzed=0;		// Command was not analysed yet

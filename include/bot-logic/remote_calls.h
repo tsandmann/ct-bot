@@ -71,4 +71,8 @@ void bot_remotecall_behaviour(Behaviour_t *data);
  * @param data Zeiger auf die Daten
  */
 void bot_remotecall(char* func, uint8* len, remote_call_data_t* data);
+
+/*! Listet alle verfuegbaren Remote-Calls auf und verschickt sie als einzelne Kommanods
+ */
+void remote_call_list(void);
 #endif /*REMOTE_CALLS_H_*/
