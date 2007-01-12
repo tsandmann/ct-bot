@@ -29,11 +29,7 @@
 
 #include "bot-logik.h"
 
-#ifdef MCU
-	#include <avr/pgmspace.h>
-#else
-	#define PROGMEM	// Alibideklaration hat keine Funktion, verhindert aber eine Warning
-#endif
+
 
 
 

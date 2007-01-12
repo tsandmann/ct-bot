@@ -45,6 +45,13 @@ static char * function_name = NULL;
 static uint8 parameter_len = 0;
 static uint8 * parameter_data = NULL;
 
+#ifdef MCU
+	#include <avr/pgmspace.h>
+#else
+	#define PROGMEM	// Alibideklaration hat keine Funktion, verhindert aber eine Warning
+	#define strcmp_P strcmp
+#endif
+
 /*! Hier muessen alle Funktionen rein, die Remote aufgerufen werden sollen
  * Ein eintrag erfolgt so:
  * PREPARE_REMOTE_CALL(BOTENFUNKTION,NUMBER_OF_BYTES)
@@ -62,12 +69,13 @@ const call_t calls[] PROGMEM = {
 
 #define STORED_CALLS (sizeof(calls)/sizeof(call_t))
 
+
 uint8 getRemoteCall(char * call){
 	LOG_DEBUG(("Suche nach Funktion: %s",call));
 	
 	uint8 i;
 	for (i=0; i< (STORED_CALLS); i++){
-		if (strcmp(call,calls[i].name) ==0){
+		if (!strcmp_P (call, calls[i].name)){
 			LOG_DEBUG(("calls[%d].name=%s passt",i,calls[i].name));		
 			return i;
 		}
