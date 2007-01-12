@@ -122,14 +122,16 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 					return;
 				} 
 
-				LOG_DEBUG(("TODO: Funktionen mit Parametern noch nicht implementiert"));
 				// TODO: Ja hier wird es spannend, denn jetzt muessen die Parameter auf den Stack
 				
+				// Push param_len bytes aus parameter_data auf den Stack
 				// Push "data" auf den Stack
-				// Push param_len bytes auf den Stack
-				// call func
+				// func(data);	// Die aufgerufene Botenfunktion starten
 				
-				running_behaviour=REMOTE_CALL_IDLE;
+				LOG_DEBUG(("TODO: Funktionen mit Parametern noch nicht implementiert"));
+				running_behaviour=REMOTE_CALL_IDLE; // So lange nicht fertig implementiert abbruch
+//				running_behaviour=REMOTE_CALL_RUNNING; // Wenn es denn dann mal geht
+				return;
 			}
 			break;
 			
