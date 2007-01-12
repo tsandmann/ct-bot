@@ -24,7 +24,7 @@
 
 #define BEHAVIOUR_CATCH_PILLAR_AVAILABLE /*!< Suche eine Dose und fange sie ein */
 
-//#define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-kommandos entgegen?*/
+#define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-kommandos entgegen?*/
 
 /* Aufgrund einer ganzen reihe von Abhaengigkeiten sollte man beim Versuch Speicher 
  * zu sparen, zuerst mal bei den Hauptverhalten ausmisten, sonst kommen die 
@@ -91,6 +91,8 @@
 
 #include "bot-logic/behaviour_servo.h"
 #include "bot-logic/behaviour_catch_pillar.h"
+
+#include "bot-logic/remote_calls.h"
 
 #endif
 #endif /*AVAILABLE_BEHAVIOURS_H_*/

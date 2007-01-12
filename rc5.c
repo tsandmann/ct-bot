@@ -460,7 +460,7 @@ void rc5_number(RemCtrlFuncPar *par) {
 //					case 5: bot_solve_maze(0); break;
 				#endif
 				#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
-					case 5: bot_catch_pillar(0); break;
+//					case 5: bot_catch_pillar(0); break;
 				#endif
 				
 //				case 5: target_speed_l = BOT_SPEED_MAX; target_speed_r = BOT_SPEED_MAX; break;

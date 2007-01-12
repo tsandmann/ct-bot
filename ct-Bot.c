@@ -662,6 +662,9 @@ void init(void){
 	#endif	
 	/*! Hauptschleife des Bot */
 	
+	// Tesroutine
+//	bot_remotecall("bot_turn",2,NULL);
+	
 	for(;;){
 		#ifdef PC
 			receive_until_Frame(CMD_DONE);
@@ -717,7 +720,7 @@ void init(void){
 		#endif
 		
 		#ifdef LOG_AVAILABLE
-			LOG_DEBUG(("BOT TIME %d s", timer_get_s()));
+			//LOG_DEBUG(("BOT TIME %d s", timer_get_s()));
 		#endif	
 		
 		// Alles Anzeigen

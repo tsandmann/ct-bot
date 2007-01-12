@@ -293,7 +293,7 @@ int command_evaluate(void){
 	uint8 analyzed = 1;
 	
 	#ifdef LOG_AVAILABLE	
-		command_display(&received_command);
+	//	command_display(&received_command);
 	#endif	// LOG_AVAILABLE
 	
 	switch (received_command.request.command) {

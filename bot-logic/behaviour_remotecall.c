@@ -28,6 +28,9 @@
 #include "bot-logic/bot-logik.h"
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "log.h"
 
 #include "bot-logic/remote_calls.h"
 
@@ -42,47 +45,102 @@ static char * function_name = NULL;
 static uint8 parameter_len = 0;
 static uint8 * parameter_data = NULL;
 
+/*! Hier muessen alle Funktionen rein, die Remote aufgerufen werden sollen
+ * Ein eintrag erfolgt so:
+ * PREPARE_REMOTE_CALL(BOTENFUNKTION,NUMBER_OF_BYTES)
+ * Der letzte Eintrag brauch natuerlich Kein komma mehr
+ * Alle Botenfunktionen muessen folgendem Schema entsprechen
+ * void bot_xxx(Behaviour_t * caller, ...);
+ * wieviele Parameter nach dem caller kommen ist voellig unerheblich. 
+ * Allerdings muss man ihre gesamtlaeng in Byte kennen
+ */
+const call_t calls[] PROGMEM = {
+   PREPARE_REMOTE_CALL(bot_turn,2),
+   PREPARE_REMOTE_CALL(bot_gotoxy,8),
+   PREPARE_REMOTE_CALL(bot_solve_maze,0) 
+};
 
+#define STORED_CALLS (sizeof(calls)/sizeof(call_t))
 
-void * getRemoteCall(char * call){
-	return NULL;
+uint8 getRemoteCall(char * call){
+	LOG_DEBUG(("Suche nach Funktion: %s",call));
+	
+	uint8 i;
+	for (i=0; i< (STORED_CALLS); i++){
+		if (strcmp(call,calls[i].name) ==0){
+			LOG_DEBUG(("calls[%d].name=%s passt",i,calls[i].name));		
+			return i;
+		}
+	}
+	return 255;
 }
 
 
 /*! 
- * Dieses Verhalten fuehrt ein Servo-Kommando aus und schaltet danach den Servo wieder ab
- * 
+ * Dieses Verhalten kuemmert sich darum die Verhalten, die von außen angefragt wurden zu starten und liefert ein feedback zurueck, wenn sie beendet sind.
  * @param *data der Verhaltensdatensatz
  */
 void bot_remotecall_behaviour(Behaviour_t *data){
+	uint8 call_id =255;
+	
+	LOG_DEBUG(("Enter bot_remotecall_behaviour"));
 	void (* func) (struct _Behaviour_t *data);
 	
 	switch (running_behaviour) {
-		case REMOTE_CALL_SCEDULED: 
-			if (function_name != NULL){
-				
-				
-				
-				
-				if (parameter_len ==0){
-					func =  getRemoteCal(function_name);
-					func(data);
-				} else {
-					// Ja hier wird es spannend, denn jetzt muessen die Parameter auf den Stack
-				}
+		case REMOTE_CALL_SCEDULED: 		// Es laueft kein Auftrag, aber es steht ein neuer an
+			LOG_DEBUG(("REMOTE_CALL_SCEDULED"));
+			
+			if (function_name == NULL){		// pruefe, ob uebergabeparameter ok
+				LOG_DEBUG(("kein Funktionsname uebergeben. Exit"));
+				running_behaviour=REMOTE_CALL_IDLE;
+				return;
+			}
+
+			call_id=getRemoteCall(function_name);
+			if (call_id >= STORED_CALLS){
+				LOG_DEBUG(("kein Funktion gefunden. Exit"));
+				running_behaviour=REMOTE_CALL_IDLE;
+				return;
+			}
+
+			if (parameter_len != calls[call_id].len){
+				LOG_DEBUG(("Die laenge der Parameter passt nicht. Gefordert=%d, geliefert=%d. Exit!",calls[call_id].len,parameter_len));
+				running_behaviour=REMOTE_CALL_IDLE;							
+				return;
+			} 
+
+			func = (void*) calls[call_id].func;
+			
+			if (parameter_len ==0 ){		// Kommen wir ohne Parameter aus?
+				LOG_DEBUG(("call=%s",function_name));
+				func(data);	// Die aufgerufene Botenfunktion starten
 				running_behaviour=REMOTE_CALL_RUNNING;
+			} else { // Es gibt Parameter
+				if (parameter_data == NULL){
+					LOG_DEBUG(("Null-Pointer fuer Parameter. Exit!"));
+					running_behaviour=REMOTE_CALL_IDLE;							
+					return;
+				} 
+
+				LOG_DEBUG(("TODO: Funktionen mit Parametern noch nicht implementiert"));
+				// TODO: Ja hier wird es spannend, denn jetzt muessen die Parameter auf den Stack
+				running_behaviour=REMOTE_CALL_IDLE;
 			}
 			break;
 			
-		case REMOTE_CALL_RUNNING: 
+		case REMOTE_CALL_RUNNING: // Es lief ein Verhalten und ist nun zuende (sonst waeren wir nicht hier)
+			LOG_DEBUG(("REMOTE_CALL_RUNNING"));
 			// TODO Antwort schicken			
-			function_name=NULL
+
+			// Aufrauemen
+			function_name=NULL;
 			parameter_len=0;
 			parameter_data=NULL;
 			running_behaviour=REMOTE_CALL_IDLE;
+			
 			return_from_behaviour(data); 	// und Verhalten auch aus
 			break;
-		}
+		
 		
 		default:
 			return_from_behaviour(data); 	// und Verhalten auch aus
@@ -97,7 +155,8 @@ void bot_remotecall_behaviour(Behaviour_t *data){
  * @param len Anzahl der zu uebergebenden Bytes
  * @param data Zeiger auf die Daten
  */
-void bot_remotecall(void * func, uint8 len, uint8* data){
+void bot_remotecall(char * func, uint8 len, uint8* data){
+	printf("bot_remotecall(%s,%d,...)\n",func,len);
 	function_name= func;
 	parameter_len=len;
 	parameter_data=data;
@@ -105,4 +164,5 @@ void bot_remotecall(void * func, uint8 len, uint8* data){
 	running_behaviour=REMOTE_CALL_SCEDULED;
 	activateBehaviour(bot_remotecall_behaviour);
 }
+
 #endif

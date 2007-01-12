@@ -71,6 +71,11 @@ void bot_base_behaviour(Behaviour_t *data){
  * Initialisert das ganze Verhalten
  */
 void bot_behave_init(void){
+	#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
+		// Dieses Verhalten kann andere Starten
+		insert_behaviour_to_list(&behaviour, new_behaviour(254, bot_remotecall_behaviour,INACTIVE));
+	#endif
+
 	#ifdef BEHAVIOUR_SERVO_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(253, bot_servo_behaviour,INACTIVE));
 	#endif
@@ -81,6 +86,7 @@ void bot_behave_init(void){
 		insert_behaviour_to_list(&behaviour, new_behaviour(252, bot_simple_behaviour,INACTIVE));
 		insert_behaviour_to_list(&behaviour, new_behaviour(251, bot_simple2_behaviour,INACTIVE));
 	#endif
+
 
 	// Hoechste Prioritate haben die Notfall Verhalten
 
@@ -140,6 +146,7 @@ void bot_behave_init(void){
 		// Demo-Verhalten, etwas komplexer, inaktiv
 		insert_behaviour_to_list(&behaviour, new_behaviour(51, bot_drive_square_behaviour,INACTIVE));
 	#endif
+
 
 
 	// Grundverhalten, setzt aeltere FB-Befehle um, aktiv

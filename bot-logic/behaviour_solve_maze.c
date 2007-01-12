@@ -27,6 +27,7 @@
 #include "bot-logic/bot-logik.h"
 #include <math.h>
 #include <stdlib.h>
+#include "log.h"
 
 #ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 
@@ -638,6 +639,7 @@ void bot_solve_maze_behaviour(Behaviour_t *data){
  */
  
 void bot_solve_maze(Behaviour_t *caller){
+	LOG_DEBUG(("bot_solve_maze()"));
 	switch_to_behaviour(caller, bot_solve_maze_behaviour,NOOVERRIDE);
 }
 

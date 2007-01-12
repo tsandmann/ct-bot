@@ -28,7 +28,14 @@
 #define REMOTE_CALLS_H_
 
 #include "bot-logik.h"
-#include <avr/pgmspace.h>
+
+#ifdef MCU
+	#include <avr/pgmspace.h>
+#else
+	#define PROGMEM	// Alibideklaration hat keine Funktion, verhindert aber eine Warning
+#endif
+
+
 
 #define TEXT_LEN 15
 
@@ -47,19 +54,18 @@ typedef struct {
  */
 #define PREPARE_REMOTE_CALL(func,number_of_bytes)  {(void*)func, number_of_bytes, #func }
 
-/*! Hier muessen alle Funktionen rein, die Remote aufgerufen werden sollen
- * Ein eintrag erfolgt so:
- * PREPARE_REMOTE_CALL(BOTENFUNKTION,NUMBER_OF_BYTES)
- * Der letzte Eintrag brauch natuerlich Kein komma mehr
- * Alle Botenfunktionen muessen folgendem Schema entsprechen
- * void bot_xxx(Behaviour_t * caller, ...);
- * wieviele Parameter nach dem caller kommen ist voellig unerheblich. 
- * Allerdings muss man ihre gesamtlaeng in Byte kennen
- */
-const call_t calls[] PROGMEM = {
-   PREPARE_REMOTE_CALL(bot_turn,2),
-   PREPARE_REMOTE_CALL(bot_gotoxy,8),
-   PREPARE_REMOTE_CALL(bot_solve_maze,0) 
-};
 
+/*! 
+ * Dieses Verhalten kuemmert sich darum die Verhalten, die von außen angefragt wurden zu starten und liefert ein feedback zurueck, wenn sie beendet sind.
+ * @param *data der Verhaltensdatensatz
+ */
+void bot_remotecall_behaviour(Behaviour_t *data);
+
+/*!
+ * Fuehre einen remote_call aus. Es gibt KEIN aufrufendes Verhalten!!
+ * @param func Zeiger auf den Namen der Fkt
+ * @param len Anzahl der zu uebergebenden Bytes
+ * @param data Zeiger auf die Daten
+ */
+void bot_remotecall(char * func, uint8 len, uint8* data);
 #endif /*REMOTE_CALLS_H_*/
