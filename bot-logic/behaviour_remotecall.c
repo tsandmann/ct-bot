@@ -116,8 +116,14 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 				running_behaviour=REMOTE_CALL_IDLE;							
 				return;
 			} 
-
-			func = (void*) calls[call_id].func;
+			
+			#ifdef PC
+				// Auf dem PC liegt die calls-Struktur im RAM
+				func = (void*) calls[call_id].func;
+			#else
+				// Auf dem MCU liegt die calls-Struktur im Flash und muss erst geholt werden
+				func = (void*) pgm_read_word (& calls[call_id].func);
+			#endif
 			
 			if (parameter_len ==0 ){		// Kommen wir ohne Parameter aus?
 				LOG_DEBUG(("call=%s",function_name));
