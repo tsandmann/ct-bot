@@ -42,8 +42,8 @@
 static uint8 running_behaviour =REMOTE_CALL_IDLE;
 
 static char * function_name = NULL;
-static uint8 parameter_length[9] = {0};
-static uint8 parameter_data[8] = {0};
+static uint8 parameter_length[9] = {0};	/*!< Hier speichern wir die Anzahl der Parameter gefolgt von der Laenge der jeweiligen Parameter */
+static uint8 parameter_data[8] = {0};	/*!< Hier liegen die eigentlichen Parameter, derzeit brauchen wir maximal 8 Byte (2 floats, 4 (u)int16 oder 4 (u)int8 */
 
 #ifdef MCU
 	#include <avr/pgmspace.h>
@@ -94,21 +94,23 @@ uint8 getRemoteCall(char * call){
 	 * Baut einen AVR-kompatiblen Parameterstream aus einem uint32-Parameterarray und einem Infoarray ueber die Parameter
 	 * @param dest	Zeiger auf das Ausgabearray (len[0]*2 Byte gross!)
 	 * @param len	Zeiger auf ein Array, das zuerst die Anzahl der Parameter und danach die Anzahl der Bytes fuer die jeweiligen Parameter enthaelt
-   	 * @param data	Zeiger auf die Daten
+   	 * @param data	Zeiger auf die Daten (32 Bit, Laenge 8)
 	 * @author 		Timo Sandmann (mail@timosandmann.de) 
    	 * @date		12.01.2007
 	 */
 	void remotecall_convert_params(uint8* dest, uint8* len, uint8* data){
-//		uint8 k;
+//		uint8 k;	// Debug-Info ausgeben
 //		for (k=0; k<32; k+=4)
 //			LOG_DEBUG(("parameter_data: %lu", *(uint32*)(data+k)));		
 		uint8 i;
+		/* jeden Parameter behandeln */
 		for (i=1; i<=len[0]; i++){
 			int8 j;
-			if (len[i] == 1) *dest++ = 0;
+			if (len[i] == 1) *dest++ = 0;	// auch (u)int8 beginnen immer in geraden Registern 
+			/* pro Parameter LSB zuerst nach dest kopieren */
 			for (j=len[i]-1; j>=0; j--)
 				*dest++ = data[j];
-			data += 4;
+			data += 4;	// data-Array ist immer in 32 Bit
 		}	
 	}
 #endif	// MCU
@@ -173,24 +175,35 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 				// TODO: Ja hier wird es spannend, denn jetzt muessen die Parameter auf den Stack
 				LOG_DEBUG(("call=%s",function_name));
 				uint8 k;
-				for (k=0; k<8; k+=2)
+				for (k=0; k<8; k+=2)	// Debug-Info ausgeben
 					LOG_DEBUG(("parameter_data(low:high) = %u:%u", *(uint8*)(parameter_data+k+1), *(uint8*)(parameter_data+k)));
 				LOG_DEBUG(("len: %u", parameter_length[0]));				
 				// asm-hacks here ;)
 				#ifdef PC
+					/* Prinzip auf dem PC: Wir legen die Parameter einzeln auf den Stack und lassen den Compiler glauben, es gaebe nur einen (naemlich Zeiger auf den Aufrufer) */
 					uint32 tmp;
 					uint32 i;
+					/* Erster Wert in parameter_length ist die Anzahl der Parameter (ohne Zeiger des Aufrufers) */
 					for (i=0; i<parameter_length[0]; i++){
+						/* cdecl-Aufrufkonvention => Parameter von rechts nach links auf den Stack */
 						tmp = *(parameter_data+(parameter_length[0]-i-1)*4);
-						asm volatile(
+						asm volatile(	// IA32-Support only
 							"movl %%esp, %%eax	# sp holen			\n\t"
 							"addl %1, %%eax		# neuer sp+index	\n\t"
 							"movl %0, (%%eax)	# param auf stack		"
-							::	"c" (tmp), "g" ((parameter_length[0]-i)*4)
+							::	"c" (tmp), "g" ((parameter_length[0]-i)*4)	// Pro Parameter 4 Byte
 							:	"eax"
 						);
 					}					
 				#else
+					/* Prinzip auf der MCU: Keine komplizierten Rechnungen, sondern einfach alle Register ueberschreiben.
+					 * Achtung: Derzeit braucht kein Verhalten mehr als 8 Register (2*float oder 4*int16 oder 4*int8), aendert sich das,
+					 * muss man den Code hier erweitern! 
+					 * Die AVR-Konvention beim Funktionsaufruf: 
+					 * Die Groesse in Byte wird zur naechsten geraden Zahl aufgerundet, falls sie ungerade ist.
+					 * Der Registerort faengt mit 26 an.
+					 * Vom Registerort wird die berechete Groesse abgezogen und das Argument in diesen Registern uebergeben (LSB first). 
+					 * In r24/r25 legt der Compiler spaeter den Zeiger des Aufrufers, koennen wir hier also weglassen. */
 					LOG_DEBUG(("r23: %u", parameter_data[0]));
 					LOG_DEBUG(("r22: %u", parameter_data[1]));
 					LOG_DEBUG(("r21: %u", parameter_data[2]));
@@ -199,7 +212,7 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 					LOG_DEBUG(("r18: %u", parameter_data[5]));
 					LOG_DEBUG(("r17: %u", parameter_data[6]));
 					LOG_DEBUG(("r16: %u", parameter_data[7]));										
-					asm volatile(
+					asm volatile(	// remotecall_convert_params() hat den Speicher bereits richtig sortiert, nur noch Werte laden
 						"ld r23, Z+		\n\t"
 						"ld r22, Z+		\n\t"
 						"ld r21, Z+		\n\t"
@@ -248,13 +261,13 @@ void bot_remotecall_behaviour(Behaviour_t *data){
  * @param len Zeiger auf ein Array, das zuerst die Anzahl der Parameter und danach die Anzahl der Bytes fuer die jeweiligen Parameter enthaelt
  * @param data Zeiger auf die Daten
  */
-void bot_remotecall(char* func, uint8* len, uint32* data){
+void bot_remotecall(char* func, uint8* len, remote_call_data_t* data){
 	LOG_DEBUG(("bot_remotecall(%s,%u,...)\n",func,len[0]));
 	function_name=func;
 	memcpy(parameter_length, len, len[0]+1);
-	#ifdef MCU
+	#ifdef MCU	// Die MCU legt die Parameter nach einem anderen Verfahren ab, diese Funktion konvertiert sie deshalb
 		remotecall_convert_params(parameter_data, parameter_length, (uint8*)data);
-	#else
+	#else	// Auf dem PC kopieren wir die Daten einfach
 		memcpy(parameter_data, data, len[0]*4);
 	#endif
 	

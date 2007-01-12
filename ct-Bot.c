@@ -667,15 +667,17 @@ void init(void){
 	// Tesroutinen fuer die Remote-calls
 //	bot_remotecall("bot_turn",2,NULL);		// Sollte eine Fehlermeldung produzieren
 
-//	uint32 brc_data = 180;
+//	remote_call_data_t brc_data = {180};
 //	uint8 brc_len[2] = {1, 2};
 //	bot_remotecall("bot_turn", brc_len, &brc_data);		// Bsp fuer Fkt mit Parameter	
 	
-//	float brc_data[2] = {200.0, 100.0};
+//	remote_call_data_t brc_data[2];
+//	brc_data[0].fl32 = 200.0;
+//	brc_data[1].fl32 = 100.0;
 //	uint8 brc_len[3] = {2, 4, 4};
-//	bot_remotecall("bot_gotoxy", brc_len, (uint32*)&brc_data);
+//	bot_remotecall("bot_gotoxy", brc_len, brc_data);
 
-	uint32 brc_data[3] = {-10, BOT_SPEED_MAX, 50};
+	remote_call_data_t brc_data[3] = {{-10}, {BOT_SPEED_NORMAL}, {50}};
 	uint8 brc_len[4] = {3, 1, 2, 2};
 	bot_remotecall("bot_drive_distance", brc_len, brc_data);
 	

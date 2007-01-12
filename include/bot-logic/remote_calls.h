@@ -44,6 +44,11 @@ typedef struct {
    									 
 } call_t;
 
+typedef union{
+	uint32 u32;
+	float fl32;
+} remote_call_data_t;	/*!< uint32 und float werden beide gleich ausgelesen, daher stecken wir sie in einen Speicherbereich */
+
 /*! Dieses Makro bereitet eine Botenfunktion als Remote-Call-Funktion vor. 
  * Der erste parameter ist der Funktionsname selbst
  * Der zweite Parameter ist die Anzahl an Bytes, die die Fkt erwartet.
@@ -65,5 +70,5 @@ void bot_remotecall_behaviour(Behaviour_t *data);
  * @param len Zeiger auf ein Array, das zuerst die Anzahl der Parameter und danach die Anzahl der Bytes fuer die jeweiligen Parameter enthaelt 
  * @param data Zeiger auf die Daten
  */
-void bot_remotecall(char* func, uint8* len, uint32* data);
+void bot_remotecall(char* func, uint8* len, remote_call_data_t* data);
 #endif /*REMOTE_CALLS_H_*/
