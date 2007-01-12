@@ -48,8 +48,8 @@ static uint8 * parameter_data = NULL;
 #ifdef MCU
 	#include <avr/pgmspace.h>
 #else
-	#define PROGMEM	// Alibideklaration hat keine Funktion, verhindert aber eine Warning
-	#define strcmp_P strcmp
+	#define PROGMEM			// Alibideklaration hat keine Funktion, verhindert aber eine Warning
+	#define strcmp_P strcmp	// Auf dem PC gibt es keinen Flash, also auch kein eigenes Compare
 #endif
 
 /*! Hier muessen alle Funktionen rein, die Remote aufgerufen werden sollen
@@ -67,9 +67,13 @@ const call_t calls[] PROGMEM = {
    PREPARE_REMOTE_CALL(bot_solve_maze,0,"") 
 };
 
-#define STORED_CALLS (sizeof(calls)/sizeof(call_t))
+#define STORED_CALLS (sizeof(calls)/sizeof(call_t)) /*!< Anzahl der Remote calls im Array */
 
-
+/*!
+ * Sucht den Index des Remote-Calls heraus
+ * @param call String mit dem namen der gesuchten fkt
+ * @return Index in das calls-Array. Wenn nicht gefunden, dann 255
+ */
 uint8 getRemoteCall(char * call){
 	LOG_DEBUG(("Suche nach Funktion: %s",call));
 	
