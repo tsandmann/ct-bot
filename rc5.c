@@ -456,6 +456,10 @@ void rc5_number(RemCtrlFuncPar *par) {
 //				#ifdef MEASURE_MOUSE_AVAILABLE
 //					case 5: bot_gotoxy(0,20,20);
 //				#else
+
+				case 5: remote_call_list(); break;
+
+
 				#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 //					case 5: bot_solve_maze(0); break;
 				#endif

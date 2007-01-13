@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-01-13 Benjamin Benz [bbe@heise.de]: Parameterlaengen in die remeote_call-Datenstruktur uebernommen und dafuer aus bot_remote_call den parameter entfernt
+
 2007-01-12 Benjamin Benz [bbe@heise.de]: Bot kann nun eine Liste der verfuegbaren Remote-Calls an den PC uebertragen
 
 2007-01-12 Timo Sandmann [mail@timosandmann.de]: Remotecalls: Kommentare ergaenzt und neuen Datentyp einfefuert, der strict-aliasing beachtet.

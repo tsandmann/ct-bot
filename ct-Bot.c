@@ -677,9 +677,9 @@ void init(void){
 //	uint8 brc_len[3] = {2, 4, 4};
 //	bot_remotecall("bot_gotoxy", brc_len, brc_data);
 
-	remote_call_data_t brc_data[3] = {{-10}, {BOT_SPEED_NORMAL}, {50}};
-	uint8 brc_len[4] = {3, 1, 2, 2};
-//	bot_remotecall("bot_drive_distance", brc_len, brc_data);
+	remote_call_data_t brc_data[3] = {{10}, {BOT_SPEED_NORMAL}, {50}};
+//	uint8 brc_len[4] = {3, 1, 2, 2};
+	bot_remotecall("bot_drive_distance", brc_data);
 	
 
 //	uint8 brc_len = 0;

@@ -42,7 +42,8 @@
 /*! Uebergabevariable fuer Remotecall-Verhalten */
 static uint8 running_behaviour =REMOTE_CALL_IDLE;
 
-static char * function_name = NULL;
+//static char * function_name = NULL;
+static uint8 function_id = 255;
 static uint8 parameter_length[9] = {0};	/*!< Hier speichern wir die Anzahl der Parameter gefolgt von der Laenge der jeweiligen Parameter */
 static uint8 parameter_data[8] = {0};	/*!< Hier liegen die eigentlichen Parameter, derzeit brauchen wir maximal 8 Byte (2 floats, 4 (u)int16 oder 4 (u)int8 */
 
@@ -53,19 +54,31 @@ static uint8 parameter_data[8] = {0};	/*!< Hier liegen die eigentlichen Paramete
 	#define strcmp_P strcmp	// Auf dem PC gibt es keinen Flash, also auch kein eigenes Compare
 #endif
 
-/*! Hier muessen alle Funktionen rein, die Remote aufgerufen werden sollen
- * Ein eintrag erfolgt so:
- * PREPARE_REMOTE_CALL(BOTENFUNKTION,NUMBER_OF_BYTES)
- * Der letzte Eintrag brauch natuerlich Kein komma mehr
+/*! 
+ * Hier muessen alle Funktionen rein, die Remote aufgerufen werden sollen
+ * Ein Eintrag erfolgt so:
+ * PREPARE_REMOTE_CALL(BOTENFUNKTION,NUMBER_OF_PARAMS, STRING DER DIE PARAMETER BESCHREIBT,laenge der jeweiligen Parameter in Byte)
+ *
  * Alle Botenfunktionen muessen folgendem Schema entsprechen
  * void bot_xxx(Behaviour_t * caller, ...);
- * wieviele Parameter nach dem caller kommen ist voellig unerheblich. 
- * Allerdings muss man ihre gesamtlaeng in Byte kennen
+ *
+ * Erklaerung am Bsp:   
+ * PREPARE_REMOTE_CALL(bot_gotoxy, 2, "float x, float y", 4, 4),
+ *   Name der Botenfunktion --^    ^    ^                 ^  ^
+ *   Anzahl der Parameter ---------     |                 |  |
+ *   Beschreibung der Parameter --------                  |  |
+ *   Anzahl der Bytes Parameter 1 ------------------------   |
+ *   Anzahl der Bytes Parameter 2 ---------------------------
+ * 
+ * Zur Info:
+ * 1 Byte brauchen: uint8,  int8,char
+ * 2 Byte brauchen: uint16, int16
+ * 4 Byte brauchen: uint32, int32, float
  */
 const call_t calls[] PROGMEM = {
-   PREPARE_REMOTE_CALL(bot_turn,1,"int16 degrees"), 
-   PREPARE_REMOTE_CALL(bot_gotoxy,2,"float x, float y"),
-   PREPARE_REMOTE_CALL(bot_drive_distance,3,"int8 curve, int16 speed, int16 cm"),
+   PREPARE_REMOTE_CALL(bot_gotoxy, 2, "float x, float y", 4, 4),
+   PREPARE_REMOTE_CALL(bot_turn,1,"int16 degrees",2), 
+   PREPARE_REMOTE_CALL(bot_drive_distance,3, "int8 curve, int16 speed, int16 cm", 1,2,2),
    PREPARE_REMOTE_CALL(bot_solve_maze,0,"") 
 };
 
@@ -131,13 +144,13 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 		case REMOTE_CALL_SCEDULED: 		// Es laueft kein Auftrag, aber es steht ein neuer an
 			LOG_DEBUG(("REMOTE_CALL_SCEDULED"));
 			
-			if (function_name == NULL){		// pruefe, ob uebergabeparameter ok
-				LOG_DEBUG(("kein Funktionsname uebergeben. Exit"));
-				running_behaviour=REMOTE_CALL_IDLE;
-				return;
-			}
+//			if (function_id == 255){		// pruefe, ob uebergabeparameter ok
+//				LOG_DEBUG(("keine Funktion uebergeben. Exit"));
+//				running_behaviour=REMOTE_CALL_IDLE;
+//				return;
+//			}
 
-			call_id=getRemoteCall(function_name);
+			call_id=function_id;
 			if (call_id >= STORED_CALLS){
 				LOG_DEBUG(("kein Funktion gefunden. Exit"));
 				running_behaviour=REMOTE_CALL_IDLE;
@@ -147,23 +160,21 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 			#ifdef PC
 				// Auf dem PC liegt die calls-Struktur im RAM
 				func = (void*) calls[call_id].func;
-				len = calls[call_id].len;
+				len = calls[call_id].param_count;
 			#else
 				// Auf dem MCU liegt die calls-Struktur im Flash und muss erst geholt werden
 				func = (void*) pgm_read_word (& calls[call_id].func);
-				len = (uint8) pgm_read_byte (& calls[call_id].len);
-				
+				len = (uint8) pgm_read_byte (& calls[call_id].param_count);
 			#endif
 
-
 			if (parameter_length[0] != len){
-				LOG_DEBUG(("Die laenge der Parameter passt nicht. Gefordert=%d, geliefert=%d. Exit!",calls[call_id].len,parameter_length[0]));
+				LOG_DEBUG(("Die laenge der Parameter passt nicht. Gefordert=%d, geliefert=%d. Exit!",calls[call_id].param_count ,parameter_length[0]));
 				running_behaviour=REMOTE_CALL_IDLE;							
 				return;
 			} 
 			
 			if (parameter_length[0] ==0 ){		// Kommen wir ohne Parameter aus?
-				LOG_DEBUG(("call=%s",function_name));
+				LOG_DEBUG(("call=%d",call_id));
 				func(data);	// Die aufgerufene Botenfunktion starten
 				running_behaviour=REMOTE_CALL_RUNNING;
 			} else { // Es gibt Parameter
@@ -174,10 +185,10 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 				} 
 
 				// TODO: Ja hier wird es spannend, denn jetzt muessen die Parameter auf den Stack
-				LOG_DEBUG(("call=%s",function_name));
+				LOG_DEBUG(("call=%d",call_id));
 				uint8 k;
 				for (k=0; k<8; k+=2)	// Debug-Info ausgeben
-					LOG_DEBUG(("parameter_data(low:high) = %u:%u", *(uint8*)(parameter_data+k+1), *(uint8*)(parameter_data+k)));
+					LOG_DEBUG(("parameter_data[%d] (low:high) = %u:%u",k/2, *(uint8*)(parameter_data+k+1), *(uint8*)(parameter_data+k)));
 				LOG_DEBUG(("len: %u", parameter_length[0]));				
 				// asm-hacks here ;)
 				#ifdef PC
@@ -240,14 +251,13 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 			// TODO Antwort schicken			
 
 			// Aufrauemen
-			function_name=NULL;
+			function_id=255;
 			//parameter_length=NULL;
 			//parameter_data=NULL;
 			running_behaviour=REMOTE_CALL_IDLE;
 			
 			return_from_behaviour(data); 	// und Verhalten auch aus
 			break;
-		
 		
 		default:
 			return_from_behaviour(data); 	// und Verhalten auch aus
@@ -259,12 +269,21 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 /*!
  * Fuehre einen remote_call aus. Es gibt KEIN aufrufendes Verhalten!!
  * @param func Zeiger auf den Namen der Fkt
- * @param len Zeiger auf ein Array, das zuerst die Anzahl der Parameter und danach die Anzahl der Bytes fuer die jeweiligen Parameter enthaelt
  * @param data Zeiger auf die Daten
  */
-void bot_remotecall(char* func, uint8* len, remote_call_data_t* data){
-	LOG_DEBUG(("bot_remotecall(%s,%u,...)\n",func,len[0]));
-	function_name=func;
+void bot_remotecall(char* func, remote_call_data_t* data){
+
+	function_id= getRemoteCall(func);
+	if (function_id >= STORED_CALLS){
+		LOG_DEBUG(("Funktion %d nicht gefunden. Exit!",func));
+		return;
+	}
+
+	// len Zeiger auf ein Array, das zuerst die Anzahl der Parameter und danach die Anzahl der Bytes fuer die jeweiligen Parameter enthaelt
+	uint8* len = (uint8*)& calls[function_id].param_count;	
+	LOG_DEBUG(("func=%s param_count=%d Len= %d %d %d %d",func,len[0],len[1],len[2],len[3],len[4]));
+	LOG_DEBUG(("data= %d %d %d %d",data[0],data[1],data[2],data[3]));
+	
 	memcpy(parameter_length, len, len[0]+1);
 	#ifdef MCU	// Die MCU legt die Parameter nach einem anderen Verfahren ab, diese Funktion konvertiert sie deshalb
 		remotecall_convert_params(parameter_data, parameter_length, (uint8*)data);
@@ -276,7 +295,8 @@ void bot_remotecall(char* func, uint8* len, remote_call_data_t* data){
 	activateBehaviour(bot_remotecall_behaviour);
 }
 
-/*! Listet alle verfuegbaren Remote-Calls auf und verschickt sie als einzelne Kommanods
+/*! 
+ * Listet alle verfuegbaren Remote-Calls auf und verschickt sie als einzelne Kommanods
  */
 void remote_call_list(void){
 	#ifdef MCU
