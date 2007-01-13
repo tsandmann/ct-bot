@@ -679,8 +679,15 @@ void init(void){
 
 	remote_call_data_t brc_data[3] = {{10}, {BOT_SPEED_NORMAL}, {50}};
 //	uint8 brc_len[4] = {3, 1, 2, 2};
-	bot_remotecall("bot_drive_distance", brc_data);
 	
+	uint8 * data = malloc(100);
+	char name[]="bot_drive_distance";
+	
+	memcpy(data,name,strlen(name)+1);
+	memcpy(data+strlen(name)+1,&brc_data,sizeof(brc_data));
+
+//	bot_remotecall("bot_drive_distance", brc_data);
+	bot_remotecall_from_command(data);
 
 //	uint8 brc_len = 0;
 //	bot_remotecall("bot_solve_maze", &brc_len, NULL); // Bsp fuer Fkt ohne Paameter

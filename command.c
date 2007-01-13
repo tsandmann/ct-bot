@@ -344,8 +344,13 @@ int command_evaluate(void){
 							remote_call_list();
 							break;
 						case SUB_REMOTE_CALL_ORDER:
-							// TODO remote-call-kommando auswerten
+						{						
+							uint8 buffer[REMOTE_CALL_BUFFER_SIZE];
+							low_read(buffer,received_command.payload);	
+							bot_remotecall_from_command((uint8 *)&buffer);
+						
 							break;
+						}
 						default:
 							LOG_DEBUG(("unbekanntes Subkommando: %c",received_command.request.subcommand));
 							break;

@@ -32,16 +32,18 @@
 
 
 
-#define TEXT_LEN 20
+#define REMOTE_CALL_FUNCTION_NAME_LEN 20
 #define PARAM_TEXT_LEN 40
-#define MAX_PARAM 5
+#define REMOTE_CALL_MAX_PARAM 5
+
+#define REMOTE_CALL_BUFFER_SIZE (REMOTE_CALL_FUNCTION_NAME_LEN+1+REMOTE_CALL_MAX_PARAM*4)
 
 // Die Kommandostruktur
 typedef struct {
    void* (*func)(void *);      /*!< Zeiger auf die auszufuehrende Funktion*/
    uint8 param_count;			/*!< Anzahl der Parameter kommen Und zwar ohne den obligatorischen caller-parameter*/
-   uint8 param_len[MAX_PARAM];	/*!< Angaben ueber die Anzahl an Bytes, die jeder einzelne Parameter belegt */
-   char name[TEXT_LEN+1]; 	    /*!< Text, maximal TEXT_LEN Zeichen lang +  1 Zeichen terminierung*/
+   uint8 param_len[REMOTE_CALL_MAX_PARAM];	/*!< Angaben ueber die Anzahl an Bytes, die jeder einzelne Parameter belegt */
+   char name[REMOTE_CALL_FUNCTION_NAME_LEN+1]; 	    /*!< Text, maximal TEXT_LEN Zeichen lang +  1 Zeichen terminierung*/
    char param_info[PARAM_TEXT_LEN+1];			/*!< String, der Angibt, welche und was fuer Parameter die Fkt erwartet */
    									 
 } call_t;
@@ -73,7 +75,15 @@ void bot_remotecall_behaviour(Behaviour_t *data);
  */
 void bot_remotecall(char* func, remote_call_data_t* data);
 
+/*!
+ * Fuehre einen remote_call aus. Es gibt KEIN aufrufendes Verhalten!!
+ * @param data Zeiger die Payload eines Kommandos. Dort muss zuerst ein String mit dem Fkt-Namen stehen. ihm folgen die Nutzdaten
+ */
+void bot_remotecall_from_command(uint8 * data);
+
 /*! Listet alle verfuegbaren Remote-Calls auf und verschickt sie als einzelne Kommanods
  */
 void remote_call_list(void);
+
+
 #endif /*REMOTE_CALLS_H_*/
