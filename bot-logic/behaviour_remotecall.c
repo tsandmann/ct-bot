@@ -44,8 +44,13 @@ static uint8 running_behaviour =REMOTE_CALL_IDLE;
 
 //static char * function_name = NULL;
 static uint8 function_id = 255;
-static uint8 parameter_length[9] = {0};	/*!< Hier speichern wir die Anzahl der Parameter gefolgt von der Laenge der jeweiligen Parameter */
+static uint8 parameter_count = 0;		/*!< Anzahl der Paramter (ohne Zeiger auf Aufrufer) */
 static uint8 parameter_data[8] = {0};	/*!< Hier liegen die eigentlichen Parameter, derzeit brauchen wir maximal 8 Byte (2 floats, 4 (u)int16 oder 4 (u)int8 */
+#ifdef MCU
+	static uint8 parameter_length[REMOTE_CALL_MAX_PARAM+1] = {0};	/*!< Hier speichern wir die Laenge der jeweiligen Parameter */
+#else
+	static uint8* parameter_length = NULL;	/*!< Hier speichern wir die Laenge der jeweiligen Parameter */
+#endif
 
 #ifdef MCU
 	#include <avr/pgmspace.h>
@@ -112,13 +117,10 @@ uint8 getRemoteCall(char * call){
 	 * @author 		Timo Sandmann (mail@timosandmann.de) 
    	 * @date		12.01.2007
 	 */
-	void remotecall_convert_params(uint8* dest, uint8* len, uint8* data){
-//		uint8 k;	// Debug-Info ausgeben
-//		for (k=0; k<32; k+=4)
-//			LOG_DEBUG(("parameter_data: %lu", *(uint32*)(data+k)));		
+	void remotecall_convert_params(uint8* dest, uint8 count, uint8* len, uint8* data){
 		uint8 i;
 		/* jeden Parameter behandeln */
-		for (i=1; i<=len[0]; i++){
+		for (i=0; i<count; i++){
 			int8 j;
 			if (len[i] == 1) *dest++ = 0;	// auch (u)int8 beginnen immer in geraden Registern 
 			/* pro Parameter LSB zuerst nach dest kopieren */
@@ -166,27 +168,15 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 				func = (void*) pgm_read_word (& calls[call_id].func);
 				len = (uint8) pgm_read_byte (& calls[call_id].param_count);
 			#endif
-
-//			if (parameter_length[0] != len){
-//				LOG_DEBUG(("Die laenge der Parameter passt nicht. Gefordert=%d, geliefert=%d. Exit!",calls[call_id].param_count ,parameter_length[0]));
-//				running_behaviour=REMOTE_CALL_IDLE;							
-//				return;
-//			} 
-			
-			if (parameter_length[0] ==0 ){		// Kommen wir ohne Parameter aus?
+		
+			if (parameter_count ==0 ){		// Kommen wir ohne Parameter aus?
 				LOG_DEBUG(("call=%d",call_id));
 				func(data);	// Die aufgerufene Botenfunktion starten
 				running_behaviour=REMOTE_CALL_RUNNING;
-			} else if (parameter_length[0] <= 4){ // Es gibt gueltige Parameter
-				if (parameter_data == NULL){
-					LOG_DEBUG(("Null-Pointer fuer Parameter. Exit!"));
-					running_behaviour=REMOTE_CALL_IDLE;							
-					return;
-				} 
-
+			} else if (parameter_count <= 4){ // Es gibt gueltige Parameter
 				// TODO: Ja hier wird es spannend, denn jetzt muessen die Parameter auf den Stack
 				LOG_DEBUG(("call=%d",call_id));
-				LOG_DEBUG(("len: %u", parameter_length[0]));				
+				LOG_DEBUG(("len: %u", parameter_count));				
 				// asm-hacks here ;)
 				#ifdef PC
 					/* Prinzip auf dem PC: Wir legen alle Parameter einzeln auf den Stack, springen in die Botenfunktion und raeumen anschliessend den Stack wieder auf */
@@ -196,9 +186,9 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 					for (i=0; i<16; i+=4)	// Debug-Info ausgeben
 						LOG_DEBUG(("parameter_data[%u-%u] = %lu",i, i+3, *(uint32*)(parameter_data+i)));					
 					/* Erster Wert in parameter_length ist die Anzahl der Parameter (ohne Zeiger des Aufrufers) */
-					for (i=0; i<parameter_length[0]; i++){
+					for (i=0; i<parameter_count; i++){
 						/* cdecl-Aufrufkonvention => Parameter von rechts nach links auf den Stack */
-						tmp = *(uint32*)(parameter_data+(parameter_length[0]-i-1)*4);
+						tmp = *(uint32*)(parameter_data+(parameter_count-i-1)*4);
 						td = i;	// eigentlich sinnlos, aber wir brauchen eine echte Datenabhaengigkeit auf dieses Codestueck
 						/* Parameter 2 bis n pushen */
 						asm volatile(	// IA32-Support only
@@ -215,7 +205,7 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 						: "eax"
 					);
 					/* caller rauemt den Stack wieder auf */
-					for (i=0; i<=parameter_length[0]&&td>0; i++){
+					for (i=0; i<=parameter_count&&td>0; i++){
 						asm volatile(
 							"pop %%eax		# stack aufraeumen	"
 							:::	"eax"
@@ -293,27 +283,25 @@ void bot_remotecall(char* func, remote_call_data_t* data){
 
 	// len Zeiger auf ein Array, das zuerst die Anzahl der Parameter und danach die Anzahl der Bytes fuer die jeweiligen Parameter enthaelt
 	#ifdef PC
-		uint8* len = (uint8*)& calls[function_id].param_count;	
+		parameter_count = calls[function_id].param_count;
+		parameter_length = (uint8*)calls[function_id].param_len;	
 	#else
 		// Auf dem MCU muessen wir die Daten erstmal aus dem Flash holen
-		uint8 len_data[REMOTE_CALL_MAX_PARAM+1];
-		uint8* from= (uint8*)& calls[function_id].param_count;
-		uint8* len = (uint8*)& len_data;	
-		uint8 i;	
+		uint8* from= (uint8*)& calls[function_id].param_len;
+		uint8 i;
+		parameter_count = pgm_read_byte(&calls[function_id].param_count);	
 		for (i=0; i<REMOTE_CALL_MAX_PARAM+1; i++)
-			*len++ = (uint8) pgm_read_byte ( from++ );	
-		len = (uint8*)& len_data;
+			parameter_length[i] = (uint8) pgm_read_byte ( from++ );	
 	#endif
-	LOG_DEBUG(("func=%s param_count=%d Len= %d %d %d %d",func,len[0],len[1],len[2],len[3],len[4]));
+	LOG_DEBUG(("func=%s param_count=%d Len= %d %d %d %d",func,parameter_count,parameter_length[0],parameter_length[1],parameter_length[2],parameter_length[3]));
 	if (data != NULL){
 		LOG_DEBUG(("data= %d %d %d %d",data[0],data[1],data[2],data[3]));
 	}
 	
-	memcpy(parameter_length, len, len[0]+1);
 	#ifdef MCU	// Die MCU legt die Parameter nach einem anderen Verfahren ab, diese Funktion konvertiert sie deshalb
-		remotecall_convert_params(parameter_data, parameter_length, (uint8*)data);
+		remotecall_convert_params(parameter_data, parameter_count, parameter_length, (uint8*)data);
 	#else	// Auf dem PC kopieren wir die Daten einfach
-		memcpy(parameter_data, data, len[0]*4);
+		memcpy(parameter_data, data, parameter_count*4);
 	#endif
 	
 	running_behaviour=REMOTE_CALL_SCEDULED;
