@@ -167,11 +167,11 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 				len = (uint8) pgm_read_byte (& calls[call_id].param_count);
 			#endif
 
-			if (parameter_length[0] != len){
-				LOG_DEBUG(("Die laenge der Parameter passt nicht. Gefordert=%d, geliefert=%d. Exit!",calls[call_id].param_count ,parameter_length[0]));
-				running_behaviour=REMOTE_CALL_IDLE;							
-				return;
-			} 
+//			if (parameter_length[0] != len){
+//				LOG_DEBUG(("Die laenge der Parameter passt nicht. Gefordert=%d, geliefert=%d. Exit!",calls[call_id].param_count ,parameter_length[0]));
+//				running_behaviour=REMOTE_CALL_IDLE;							
+//				return;
+//			} 
 			
 			if (parameter_length[0] ==0 ){		// Kommen wir ohne Parameter aus?
 				LOG_DEBUG(("call=%d",call_id));
