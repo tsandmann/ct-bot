@@ -186,15 +186,15 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 
 				// TODO: Ja hier wird es spannend, denn jetzt muessen die Parameter auf den Stack
 				LOG_DEBUG(("call=%d",call_id));
-				uint8 k;
-				for (k=0; k<8; k+=2)	// Debug-Info ausgeben
-					LOG_DEBUG(("parameter_data[%d] (low:high) = %u:%u",k/2, *(uint8*)(parameter_data+k+1), *(uint8*)(parameter_data+k)));
 				LOG_DEBUG(("len: %u", parameter_length[0]));				
 				// asm-hacks here ;)
 				#ifdef PC
 					/* Prinzip auf dem PC: Wir legen die Parameter einzeln auf den Stack und lassen den Compiler glauben, es gaebe nur einen (naemlich Zeiger auf den Aufrufer) */
 					uint32 tmp;
 					uint32 i;
+					uint8 k;
+					for (k=0; k<16; k+=4)	// Debug-Info ausgeben
+						LOG_DEBUG(("parameter_data[%u-%u] = %lu",k, k+3, *(uint32*)(parameter_data+k)));					
 					/* Erster Wert in parameter_length ist die Anzahl der Parameter (ohne Zeiger des Aufrufers) */
 					for (i=0; i<parameter_length[0]; i++){
 						/* cdecl-Aufrufkonvention => Parameter von rechts nach links auf den Stack */
