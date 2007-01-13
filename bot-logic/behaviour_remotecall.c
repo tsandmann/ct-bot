@@ -216,10 +216,10 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 					 * Der Registerort faengt mit 26 an.
 					 * Vom Registerort wird die berechete Groesse abgezogen und das Argument in diesen Registern uebergeben (LSB first). 
 					 * In r24/r25 legt der Compiler spaeter den Zeiger des Aufrufers, koennen wir hier also weglassen. */
-					LOG_DEBUG(("r23:r22 = %u:%u", parameter_data[0], parameter_data[1]));
-					LOG_DEBUG(("r21:r21 = %u:%u", parameter_data[2], parameter_data[3]));
-					LOG_DEBUG(("r19:r18 = %u:%u", parameter_data[4], parameter_data[5]));
-					LOG_DEBUG(("r17:r16 = %u:%u", parameter_data[6], parameter_data[7]));
+					LOG_DEBUG(("r22:r23 = %u:%u", parameter_data[1], parameter_data[0]));
+					LOG_DEBUG(("r21:r20 = %u:%u", parameter_data[3], parameter_data[2]));
+					LOG_DEBUG(("r18:r19 = %u:%u", parameter_data[5], parameter_data[4]));
+					LOG_DEBUG(("r16:r17 = %u:%u", parameter_data[7], parameter_data[6]));
 					asm volatile(	// remotecall_convert_params() hat den Speicher bereits richtig sortiert, nur noch Werte laden
 						"ld r23, Z+		\n\t"
 						"ld r22, Z+		\n\t"
