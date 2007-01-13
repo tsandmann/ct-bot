@@ -177,7 +177,7 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 				LOG_DEBUG(("call=%d",call_id));
 				func(data);	// Die aufgerufene Botenfunktion starten
 				running_behaviour=REMOTE_CALL_RUNNING;
-			} else { // Es gibt Parameter
+			} else if (parameter_length[0] <= 4){ // Es gibt gueltige Parameter
 				if (parameter_data == NULL){
 					LOG_DEBUG(("Null-Pointer fuer Parameter. Exit!"));
 					running_behaviour=REMOTE_CALL_IDLE;							
@@ -189,24 +189,38 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 				LOG_DEBUG(("len: %u", parameter_length[0]));				
 				// asm-hacks here ;)
 				#ifdef PC
-					/* Prinzip auf dem PC: Wir legen die Parameter einzeln auf den Stack und lassen den Compiler glauben, es gaebe nur einen (naemlich Zeiger auf den Aufrufer) */
+					/* Prinzip auf dem PC: Wir legen alle Parameter einzeln auf den Stack, springen in die Botenfunktion und raeumen anschliessend den Stack wieder auf */
 					uint32 tmp;
-					uint32 i;
-					uint8 k;
-					for (k=0; k<16; k+=4)	// Debug-Info ausgeben
-						LOG_DEBUG(("parameter_data[%u-%u] = %lu",k, k+3, *(uint32*)(parameter_data+k)));					
+					uint8 i;
+					uint8 td=0;
+					for (i=0; i<16; i+=4)	// Debug-Info ausgeben
+						LOG_DEBUG(("parameter_data[%u-%u] = %lu",i, i+3, *(uint32*)(parameter_data+i)));					
 					/* Erster Wert in parameter_length ist die Anzahl der Parameter (ohne Zeiger des Aufrufers) */
 					for (i=0; i<parameter_length[0]; i++){
 						/* cdecl-Aufrufkonvention => Parameter von rechts nach links auf den Stack */
-						tmp = *(parameter_data+(parameter_length[0]-i-1)*4);
+						tmp = *(uint32*)(parameter_data+(parameter_length[0]-i-1)*4);
+						td = i;	// eigentlich sinnlos, aber wir brauchen eine echte Datenabhaengigkeit auf dieses Codestueck
+						/* Parameter 2 bis n pushen */
 						asm volatile(	// IA32-Support only
-							"movl %%esp, %%eax	# sp holen			\n\t"
-							"addl %1, %%eax		# neuer sp+index	\n\t"
-							"movl %0, (%%eax)	# param auf stack		"
-							::	"c" (tmp), "g" ((parameter_length[0]-i)*4)	// Pro Parameter 4 Byte
-							:	"eax"
+							"pushl %0		# parameter i auf stack	"
+							::	"g" (tmp)
 						);
-					}					
+					}	
+					/* Parameter 1 (data) und Funktionsaufruf */
+					asm volatile(
+						"pushl %0			# push data			\n\t"
+						"movl %1, %%eax		# adresse laden		\n\t"
+						"call *%%eax		# jump to callee	\n\t"
+						:: "m" (data), "m" (func)
+						: "eax"
+					);
+					/* caller rauemt den Stack wieder auf */
+					for (i=0; i<=parameter_length[0]&&td>0; i++){
+						asm volatile(
+							"pop %%eax		# stack aufraeumen	"
+							:::	"eax"
+						);	
+					}			
 				#else
 					/* Prinzip auf der MCU: Keine komplizierten Rechnungen, sondern einfach alle Register ueberschreiben.
 					 * Achtung: Derzeit braucht kein Verhalten mehr als 8 Register (2*float oder 4*int16 oder 4*int8), aendert sich das,
@@ -232,13 +246,15 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 						::	"z" (parameter_data)
 						:	"r23", "r22", "r21", "r20", "r19", "r18", "r17", "r16"
 					);
-				#endif
 				func(data);	// Die aufgerufene Botenfunktion starten
-				
+				#endif
+					
 //				LOG_DEBUG(("TODO: Funktionen mit Parametern noch nicht implementiert"));
 //				running_behaviour=REMOTE_CALL_IDLE; // So lange nicht fertig implementiert abbruch
 				running_behaviour=REMOTE_CALL_RUNNING; // Wenn es denn dann mal geht
 				return;
+			} else {
+				LOG_DEBUG(("Parameteranzahl unzulaessig!"));	
 			}
 			break;
 			
@@ -289,7 +305,9 @@ void bot_remotecall(char* func, remote_call_data_t* data){
 		len = (uint8*)& len_data;
 	#endif
 	LOG_DEBUG(("func=%s param_count=%d Len= %d %d %d %d",func,len[0],len[1],len[2],len[3],len[4]));
-	LOG_DEBUG(("data= %d %d %d %d",data[0],data[1],data[2],data[3]));
+	if (data != NULL){
+		LOG_DEBUG(("data= %d %d %d %d",data[0],data[1],data[2],data[3]));
+	}
 	
 	memcpy(parameter_length, len, len[0]+1);
 	#ifdef MCU	// Die MCU legt die Parameter nach einem anderen Verfahren ab, diese Funktion konvertiert sie deshalb
