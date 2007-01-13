@@ -282,7 +282,8 @@ void bot_remotecall(char* func, remote_call_data_t* data){
 		// Auf dem MCU muessen wir die Daten erstmal aus dem Flash holen
 		uint8 len_data[REMOTE_CALL_MAX_PARAM+1];
 		uint8* from= (uint8*)& calls[function_id].param_count;
-		uint8* len = (uint8*)& len_data;		
+		uint8* len = (uint8*)& len_data;	
+		uint8 i;	
 		for (i=0; i<REMOTE_CALL_MAX_PARAM+1; i++)
 			*len++ = (uint8) pgm_read_byte ( from++ );	
 		len = (uint8*)& len_data;
