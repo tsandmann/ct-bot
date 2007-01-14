@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-01-14 Timo Sandmann [mail@timosandmann.de]: Noch ein paar kleinere Verbesserungen & Bugfixes bei den Remotecalls vorgenommen, kein Umordnen kritischer Codebloecke durch den Compiler mehr
+
 2007-01-14 Benjamin Benz [bbe@heise.de]: Doku fuer Remote-calls & Remote-call-Eintraege vervollstaendigt
 
 2007-01-14 Benjamin Benz [bbe@heise.de]: Remote-calls benachrichtigen jetzt den Caller wenn sie fertig sind
