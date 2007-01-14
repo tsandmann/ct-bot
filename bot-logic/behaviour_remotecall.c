@@ -246,8 +246,31 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 			break;
 			
 		case REMOTE_CALL_RUNNING: // Es lief ein Verhalten und ist nun zuende (sonst waeren wir nicht hier)
-			LOG_DEBUG(("REMOTE_CALL_RUNNING"));
-			// TODO Antwort schicken			
+		{
+				// Antwort schicken			
+
+			int16 result = data->subResult;
+			char * function_name;
+			
+			#ifdef PC
+				function_name=(char*) &calls[function_id].name;
+			#else
+			// Auf dem MCU muessen wir die Daten erstmal aus dem Flash holen
+
+				char tmp[REMOTE_CALL_FUNCTION_NAME_LEN+1];
+				function_name=&tmp;
+				
+				uint8* from= (uint8*)& calls[function_id].name;
+
+				uint8 i;	
+				for (i=0; i<REMOTE_CALL_FUNCTION_NAME_LEN+1; i++)
+					*function_name++ = (uint8) pgm_read_byte ( from++ );	
+				function_name=&tmp;
+			#endif
+			
+			command_write_data(CMD_REMOTE_CALL,SUB_REMOTE_CALL_DONE,&result,&result,function_name);
+
+			LOG_DEBUG(("Remote-call %s beendet",function_name));
 
 			// Aufrauemen
 			function_id=255;
@@ -257,7 +280,7 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 			
 			return_from_behaviour(data); 	// und Verhalten auch aus
 			break;
-		
+		}
 		default:
 			return_from_behaviour(data); 	// und Verhalten auch aus
 			break;

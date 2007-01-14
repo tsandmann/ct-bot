@@ -126,6 +126,7 @@ typedef struct {
 #define SUB_REMOTE_CALL_LIST	'L'		/*!< Anforderung an den Bot alle verfuegbaren Kommandos zu listen */
 #define SUB_REMOTE_CALL_ENTRY	'E'		/*!< Hiermit leifert der Bot ein erfuegbares Kommandos an den PC */
 #define SUB_REMOTE_CALL_ORDER	'O'		/*!< Hiermit gibt der PC einen Remote-call in Auftrag */
+#define SUB_REMOTE_CALL_DONE	'D'		/*!< Hiermit signalisiert der MCU dem PC die beendigung des Auftrags. Ergebins steht in DataL 0=FAIL 1=SUCCESS */
 
 
 
