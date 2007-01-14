@@ -63,4 +63,14 @@ void bot_drive_square_behaviour(Behaviour_t *data){
 			break;
 	}
 }
+
+/*! 
+ * Laesst den Roboter ein Quadrat abfahren.
+ * @param caller Der obligatorische Verhaltensdatensatz des aufrufers
+ */
+void bot_drive_square(Behaviour_t* caller){
+	switch_to_behaviour(caller, bot_drive_square_behaviour,OVERRIDE);
+}
+
+
 #endif

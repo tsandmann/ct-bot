@@ -57,6 +57,13 @@
  */
 void bot_simple2_behaviour(Behaviour_t *data);
 
+/*!
+ * Rufe das Simple2-Verhalten auf und uebergebe light
+ * @param caller Der obligatorische Verhaltensdatensatz des Aufrufers
+ * @param light Uebergabeparameter
+ */
+void bot_simple2(Behaviour_t * caller, int16 light);
+
 /*! 
  * Ein ganz einfaches Verhalten, es hat maximale Prioritaet
  * Hier kann man auf ganz einfache Weise die ersten Schritte wagen. 
@@ -71,6 +78,13 @@ void bot_simple2_behaviour(Behaviour_t *data);
  * @param *data der Verhaltensdatensatz
  */
 void bot_simple_behaviour(Behaviour_t *data);
+
+/*!
+ * Rufe das Simple-Verhalten auf 
+ * @param caller Der obligatorische Verhaltensdatensatz des Aufrufers
+ */
+void bot_simple(Behaviour_t * caller, int16 light);
+
 #endif
 
 #endif /*BEHAVIOUR_SIMPLE_H_*/

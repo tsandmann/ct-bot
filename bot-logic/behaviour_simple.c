@@ -64,6 +64,16 @@ void bot_simple_behaviour(Behaviour_t *data){
 	}
 }
 
+
+/*!
+ * Rufe das Simple-Verhalten auf 
+ * @param caller Der obligatorische Verhaltensdatensatz des Aufrufers
+ */
+void bot_simple(Behaviour_t * caller, int16 light){
+	switch_to_behaviour(caller,bot_simple_behaviour,OVERRIDE);	
+}
+
+
 /*! Uebergabevariable fuer SIMPLE2 */
 static int16 simple2_light=0; 
 
@@ -117,9 +127,10 @@ void bot_simple2_behaviour(Behaviour_t *data){
 
 /*!
  * Rufe das Simple2-Verhalten auf und uebergebe light
+ * @param caller Der obligatorische Verhaltensdatensatz des Aufrufers
  * @param light Uebergabeparameter
  */
-void bot_simple2(int16 light, Behaviour_t * caller){
+void bot_simple2(Behaviour_t * caller, int16 light){
 	simple2_light=light;
 
 	// Zielwerte speichern

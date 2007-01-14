@@ -60,7 +60,8 @@ static uint8 parameter_data[8] = {0};	/*!< Hier liegen die eigentlichen Paramete
 #endif
 
 /*! 
- * Hier muessen alle Funktionen rein, die Remote aufgerufen werden sollen
+ * Hier muessen alle Boten-Funktionen rein, die Remote aufgerufen werden sollen
+ * Diese stoßen dann das zugehoerige Verhalten an
  * Ein Eintrag erfolgt so:
  * PREPARE_REMOTE_CALL(BOTENFUNKTION,NUMBER_OF_PARAMS, STRING DER DIE PARAMETER BESCHREIBT,laenge der jeweiligen Parameter in Byte)
  *
@@ -81,10 +82,43 @@ static uint8 parameter_data[8] = {0};	/*!< Hier liegen die eigentlichen Paramete
  * 4 Byte brauchen: uint32, int32, float
  */
 const call_t calls[] PROGMEM = {
-   PREPARE_REMOTE_CALL(bot_gotoxy, 2, "float x, float y", 4, 4),
-   PREPARE_REMOTE_CALL(bot_turn,1,"int16 degrees",2), 
-   PREPARE_REMOTE_CALL(bot_drive_distance,3, "int8 curve, int16 speed, int16 cm", 1,2,2),
-   PREPARE_REMOTE_CALL(bot_solve_maze,0,"") 
+	#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_drive_distance,3, "int8 curve, int16 speed, int16 cm", 1,2,2),
+	#endif
+	#ifdef BEHAVIOUR_GOTOXY_AVAILABLE	
+		PREPARE_REMOTE_CALL(bot_gotoxy, 2, "float x, float y", 4, 4),
+	#endif
+	#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_solve_maze,0,""),
+	#endif
+	#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_catch_pillar,0,""),
+	#endif
+	#ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_drive_square,0,""),
+	#endif
+	#ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_follow_line,0,""),
+	#endif
+	#ifdef BEHAVIOUR_GOTO_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_goto,2," int16 left, int16 right",2,2),
+	#endif
+	#ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_do_slalom,0,""),
+	#endif
+	#ifdef BEHAVIOUR_SCAN_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_scan,0,""),
+	#endif
+	#ifdef BEHAVIOUR_SERVO_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_servo,2,"uint8 servo, uint8 pos",1,1),
+	#endif
+	#ifdef BEHAVIOUR_SIMPLE_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_simple,0,""),
+		PREPARE_REMOTE_CALL(bot_simple2,1,"int16 light",2),
+	#endif
+	#ifdef BEHAVIOUR_TURN_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_turn,1,"int16 degrees",2)   
+	#endif
 };
 
 #define STORED_CALLS (sizeof(calls)/sizeof(call_t)) /*!< Anzahl der Remote calls im Array */

@@ -1,0 +1,21 @@
+Funktionsweise der Remote-Calls für den c't-Bot:
+
+Auf das Kommando CMD_REMOTE_CALL:SUB_REMOTE_CALL_LIST schickt der Bot 
+eine Liste mit den Verfuegbaren remote-calls an den PC.
+Jeder Listeneintrag kommt al eigenes Kommando (CMD_REMOTE_CALL:SUB_REMOTE_CALL_ENTRY). 
+In der Payload steht neben dem Namen der Funktion auch, wie sie aufzurufen 
+ist und welche Parameter sie braucht. Das geschieht, indem die ganze interne 
+Datenstruktur (siehe call_t in remote-calls.h) übertragen wird.
+
+Der PC kann jederzeit einen Remote call starten. Dazu schickt es das Kommando 
+CMD_REMOTE_CALL:SUB_REMOTE_CALL_ORDER.  ind er Payload steht zuerst der Name 
+der Funktion (null terminierter String). Danach kommen die Parameter. Jeder 
+Parameter muss dabei (unabhängig von seiner tatsächlichen Länge) 32 Bit belegen.
+
+Ist der Bot fertig, antwortet er mit CMD_REMOTE_CALL:SUB_REMOTE_CALL_DONE
+im DataL Feld steht eine 0, wenn das Verhalten nicht erfolgreich ausgeführt wurde. 
+steht dort eine 1 ist alles ok.
+
+Um eigen Verhalten Remote-Aufrufbar zu machen, muss man ihre Botenfunktion nur in 
+die calls-Struktur in behaviour_remotecall.c eintragen. Wie das geht ist dort 
+ausführlich beschrieben. Alles andere übernimmt das Framework.

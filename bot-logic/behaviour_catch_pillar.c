@@ -95,8 +95,8 @@ void bot_catch_pillar_behaviour(Behaviour_t *data){
 }
 
 /*!
- * Rufe das Simple2-Verhalten auf und uebergebe light
- * @param light Uebergabeparameter
+ * Fange ein Objekt ein
+ * @param caller Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_catch_pillar(Behaviour_t * caller){
 	pillar_state=0;

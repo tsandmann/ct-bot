@@ -64,6 +64,24 @@ void bot_explore_behaviour(Behaviour_t *data);
  * */
 void bot_do_slalom_behaviour(Behaviour_t *data);
 
+
+/*!
+ * Das Verhalten laesst den Bot zwischen einer Reihe beleuchteter Saeulen Slalom fahren. 
+ * Das Verhalten ist wie bot_explore() in eine Anzahl von Teilschritten unterteilt.
+ * 1. Vor die aktuelle Saeule stellen, so dass sie zentral vor dem Bot und ungefaehr 
+ * COL_CLOSEST (100 mm) entfernt ist.
+ * 2. 90 Grad nach rechts drehen.
+ * 3. In einem relativ engen Bogen 20 cm weit fahren.
+ * 4. Auf der rechten Seite des Bot nach einem Objekt suchen, dass
+ * 	a) im rechten Sektor des Bot liegt, also zwischen -45 Grad und -135 Grad zur Fahrtrichtung liegt,
+ * 	b) beleuchtet und 
+ * 	c) nicht zu weit entfernt ist.
+ * Wenn es dieses Objekt gibt, wird es zur aktuellen Saeule und der Bot faehrt jetzt Slalom links.
+ * 5. Sonst zurueck drehen, 90 Grad drehen und Slalom rechts fahren.
+ * In diesem Schritt kann der Bot das Verhalten auch abbrechen, falls er gar kein Objekt mehr findet.
+ */
+void bot_do_slalom(Behaviour_t *caller);
+
 /*!
  * Initialisiert das Olympische Verhalten
  * @param prio_main Prioritaet des Olympischen Verhalten (typ. 100)

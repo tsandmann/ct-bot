@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-01-14 Benjamin Benz [bbe@heise.de]: Doku fuer Remote-calls & Remote-call-Eintraege vervollstaendigt
+
 2007-01-14 Benjamin Benz [bbe@heise.de]: Remote-calls benachrichtigen jetzt den Caller wenn sie fertig sind
 
 2007-01-13 Benjamin Benz [bbe@heise.de]: Remote-calls lassen sich nun auch aus der ferne aufrufen
