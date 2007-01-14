@@ -249,7 +249,6 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 		{
 				// Antwort schicken			
 
-			int16 result = data->subResult;
 			char * function_name;
 			
 			#ifdef PC
@@ -258,17 +257,20 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 			// Auf dem MCU muessen wir die Daten erstmal aus dem Flash holen
 
 				char tmp[REMOTE_CALL_FUNCTION_NAME_LEN+1];
-				function_name=&tmp;
+				function_name=(char*)&tmp;
 				
 				uint8* from= (uint8*)& calls[function_id].name;
 
 				uint8 i;	
 				for (i=0; i<REMOTE_CALL_FUNCTION_NAME_LEN+1; i++)
 					*function_name++ = (uint8) pgm_read_byte ( from++ );	
-				function_name=&tmp;
+				function_name=(char*)&tmp;
 			#endif
 			
-			command_write_data(CMD_REMOTE_CALL,SUB_REMOTE_CALL_DONE,&result,&result,function_name);
+			#ifdef COMMAND_AVAILABLE
+				int16 result = data->subResult;
+				command_write_data(CMD_REMOTE_CALL,SUB_REMOTE_CALL_DONE,&result,&result,function_name);
+			#endif
 
 			LOG_DEBUG(("Remote-call %s beendet",function_name));
 
@@ -366,7 +368,7 @@ void remote_call_list(void){
 			call = (call_t*)&calls[i];
 		#endif
 		
-		#ifdef BOT_2_PC_AVAILABLE 
+		#ifdef COMMAND_AVAILABLE 
 			// und uebertragen
 			command_write_rawdata(CMD_REMOTE_CALL,SUB_REMOTE_CALL_ENTRY,&i,&i, sizeof(call_t),(uint8*)call);
 		#endif
