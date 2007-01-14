@@ -303,7 +303,7 @@ void bot_remotecall(char* func, remote_call_data_t* data){
 		return;
 	}
 
-	// len Zeiger auf ein Array, das zuerst die Anzahl der Parameter und danach die Anzahl der Bytes fuer die jeweiligen Parameter enthaelt
+	// parameter_length: Zeiger auf ein Array, das zuerst die Anzahl der Parameter und danach die Anzahl der Bytes fuer die jeweiligen Parameter enthaelt
 	#ifdef PC
 		parameter_count = calls[function_id].param_count;
 		parameter_length = (uint8*)calls[function_id].param_len;	
