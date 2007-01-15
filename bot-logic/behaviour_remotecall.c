@@ -382,7 +382,7 @@ void remote_call_list(void){
 	int16 i;
 	for (i=0; i< (STORED_CALLS); i++){
 		#ifdef MCU
-			// Auf dem MCU muessen die dtaen erstmal aus dem Flash ins RAM
+			// Auf dem MCU muessen die Daten erstmal aus dem Flash ins RAM
 			from= (uint8*)&calls[i];
 			to= (uint8*)&call_storage;
 			uint8 j;

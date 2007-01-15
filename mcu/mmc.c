@@ -316,9 +316,11 @@ uint32 mmc_get_size(void){
 			int8 timer_reg=TCNT2;
 			uint16 end_ticks=TIMER_GET_TICKCOUNT_16;
 			timer_reg -= start_reg;
-			/* Pagefaults merken */		
-			old_pf = pagefaults;
-			pagefaults = mmc_get_pagefaults();
+			#ifdef VM_STATS_AVAILABLE
+				/* Pagefaults merken */		
+				old_pf = pagefaults;
+				pagefaults = mmc_get_pagefaults();
+			#endif
 			/* kleine Statistik ausgeben */
 			display_cursor(3,1);
 			display_printf("Pagefaults: %5u   ", pagefaults);

@@ -1,5 +1,9 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-01-15 Timo Sandmann [mail@timosandmann.de]: Map verwendet nun entweder VM (MMC oder PC) oder MMC/MCU oder PC. 2 warnings in log.c entfernt.
+
+2007-01-15 Timo Sandmann [mail@timosandmann.de]: Init-Fehler in mmc-vm.c im Zusammenhang mit fopen() behoben. Mini-VM-Statistik fuer MCU hinzugefuegt.
+
 2007-01-14 Timo Sandmann [mail@timosandmann.de]: Noch ein paar kleinere Verbesserungen & Bugfixes bei den Remotecalls vorgenommen, kein Umordnen kritischer Codebloecke durch den Compiler mehr
 
 2007-01-14 Benjamin Benz [bbe@heise.de]: Doku fuer Remote-calls & Remote-call-Eintraege vervollstaendigt

@@ -32,7 +32,7 @@
 
 #ifdef MMC_VM_AVAILABLE
 
-#define VM_STATS_AVAILABLE
+//#define VM_STATS_AVAILABLE		/*!< Schaltet die Leistungsdatensammlung ein und ermoeglicht die Ausgabe einer Statistik */
 
 #ifdef VM_STATS_AVAILABLE
 	typedef struct{

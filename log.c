@@ -190,9 +190,9 @@ extern void log_end(void) {
 
 	#ifdef LOG_UART_AVAILABLE
 		/* String ueber UART senden, ohne '\0'-Terminierung */
-		uart_write(log_buffer, strlen(log_buffer));
+		uart_write((uint8*)log_buffer, strlen(log_buffer));
 		/* Line feed senden */
-		uart_write(LINE_FEED,strlen(LINE_FEED));
+		uart_write((uint8*)LINE_FEED,strlen(LINE_FEED));
 	#endif	/* LOG_UART_AVAILABLE */
 	
 	#ifdef LOG_CTSIM_AVAILABLE

@@ -83,60 +83,64 @@ typedef struct {
 	int8 section[MAP_SECTION_POINTS][MAP_SECTION_POINTS]; /*!< Einzelne Punkte */
 } map_section_t;   /*!< Datentyp fuer die elementarfelder einer Gruppe */
 
-#ifdef MCU
-	#ifdef MMC_AVAILABLE
-		// Wenn wir die MMC-Karte haben, passen immer 2 Sektionen in den SRAM
-		map_section_t * map[2][1];	/*! Array mit den Zeigern auf die Elemente */
-		uint32 map_start_block; /*! Block, bei dem die Karte auf der MMC-Karte beginnt. Derzeit nur bis 32MByte adressierbar*/
-		uint32 map_current_block; /*! Block, der aktuell im Puffer steht. Derzeit nur bis 32MByte adressierbar*/
-		#ifndef MMC_VM_AVAILABLE
+
+#ifdef MMC_VM_AVAILABLE
+	map_section_t * map[2][1];	/*! Array mit den Zeigern auf die Elemente */
+	uint32 map_start_block; 	/*! Block, bei dem die Karte auf der MMC-Karte beginnt. Derzeit nur bis 32MByte adressierbar*/
+	uint32 map_current_block; 	/*! Block, der aktuell im Puffer steht. Derzeit nur bis 32MByte adressierbar*/
+	uint8* map_buffer;			/*! dynamischer Puffer */
+#else
+	#ifdef MCU
+		#ifdef MMC_AVAILABLE
+			// Wenn wir die MMC-Karte haben, passen immer 2 Sektionen in den SRAM
+			map_section_t * map[2][1];	/*! Array mit den Zeigern auf die Elemente */
+			uint32 map_start_block; /*! Block, bei dem die Karte auf der MMC-Karte beginnt. Derzeit nur bis 32MByte adressierbar*/
+			uint32 map_current_block; /*! Block, der aktuell im Puffer steht. Derzeit nur bis 32MByte adressierbar*/
 			uint8 map_buffer[sizeof(map_section_t)*2]; /*! statischer Puffer */
 			uint8 map_current_block_updated; /*! markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde */
 		#else
-			uint8* map_buffer;	/*! dynamischer Puffer */
-		#endif 
+			// Ohne MMC-Karte nehmen wir nur 1 Sektionen in den SRAM und das wars dann
+			map_section_t * map[1][1];	/*! Array mit den Zeigern auf die Elemente */
+		#endif
 	#else
-		// Ohne MMC-Karte nehmen wir nur 1 Sektionen in den SRAM und das wars dann
-		map_section_t * map[1][1];	/*! Array mit den Zeigern auf die Elemente */
+		map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*! Array mit den Zeigern auf die Elemente */
 	#endif
-#else
-	map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*! Array mit den Zeigern auf die Elemente */
-#endif
+#endif	// MMC_VM_AVAILABLE
 
 /*!
  *  initialisiere die Karte
  * @return 0 wenn alles ok ist
  */
 int8 map_init(void){
-	#ifdef MMC_AVAILABLE 
-		map_start_block=0xFFFFFFFF;
-		#ifndef MMC_VM_AVAILABLE
+	#ifndef MMC_VM_AVAILABLE
+		#ifdef MMC_AVAILABLE 
+			map_start_block=0xFFFFFFFF;
 			map_current_block_updated = 0xFF;	// Die MMC-Karte ist erstmal nicht verfuegbar
-		#endif
 
-		if (mmc_get_init_state() != 0) return 1;
-		
-		#ifndef MMC_VM_AVAILABLE	
+			if (mmc_get_init_state() != 0) return 1;
 			map_start_block= mini_fat_find_block("MAP",map_buffer);
-		#else
-			map_start_block = mmc_fopen("MAP")>>9;
-			if (map_start_block == 0) return 1;
-			map_buffer = mmc_get_data(map_start_block<<9);
-			if (map_buffer == NULL) return 1;
-		#endif	// MMC_VM_AVAILABLE	
+		
+			// Die Karte auf den Puffer biegen
+			map[0][0]=(map_section_t*)map_buffer;
+			map[1][0]=(map_section_t*)(map_buffer+sizeof(map_section_t));		
+		
+			if (map_start_block != 0xFFFFFFFF){
+				map_current_block_updated = False;	// kein Block geladen und daher auch nicht veraendert
+				return 1;
+			}	
+		#endif
+	#else
+		map_start_block = mmc_fopen("MAP")>>9;	// TODO: Mit Bytes arbeiten und Shiften sparen
+		printf("Startaddress of map: 0x%lx \n\r", map_start_block<<9);
+		if (map_start_block == 0) return 1;
+		map_buffer = mmc_get_data(map_start_block<<9);
+		if (map_buffer == NULL) return 1;
 		
 		// Die Karte auf den Puffer biegen
 		map[0][0]=(map_section_t*)map_buffer;
 		map[1][0]=(map_section_t*)(map_buffer+sizeof(map_section_t));		
+	#endif	// MMC_VM_AVAILABLE	
 		
-		if (map_start_block != 0xFFFFFFFF){
-			#ifndef MMC_VM_AVAILABLE
-				map_current_block_updated = False;	// kein Block geladen und daher auch nicht veraendert
-			#endif
-			return 1;
-		}
-	#endif
-	
 	return 0;
 }
 
@@ -163,9 +167,10 @@ map_section_t * map_get_section(uint16 x, uint16 y, uint8 create){
 		return NULL;
 	}
 
+// cut	
 	
-	#ifdef MMC_AVAILABLE // Mit MMC-Karte geht hier einiges anders
-		#ifndef MMC_VM_AVAILABLE	
+	#ifndef MMC_VM_AVAILABLE	
+		#ifdef MMC_AVAILABLE // Mit MMC-Karte geht hier einiges anders
 			// wenn die Karte nicht sauber initialisiert ist, mache nix!
 			if (map_current_block_updated == 0xFF)
 				return map[0][0];
@@ -189,34 +194,32 @@ map_section_t * map_get_section(uint16 x, uint16 y, uint8 create){
 			
 			// richtige der beiden sections raussuchen
 			uint8 index= section_x & 0x01;
+			return map[index][0];	
+		#else // ohne MMC-Karte einfach direkt mit dem SRAM arbeiten
+			if ((map[section_x][section_y] == NULL) && (create==True)){
+				uint16 index_x, index_y;
+				map[section_x][section_y]= malloc(sizeof(map_section_t));
+				for (index_x=0; index_x<MAP_SECTION_POINTS; index_x++)
+					for (index_y=0; index_y<MAP_SECTION_POINTS; index_y++)
+						map[section_x][section_y]->section[index_x][index_y]=0;
+				
+			}
+			return map[section_x][section_y];
+		#endif	// MMC_AVAILABLE
+	#else
+		// Berechne den gesuchten Block
+		uint32 block = section_x + section_y*MAP_SECTIONS;
+		block = block >>1;	// es passen immer 2 Sections in einen Block
+		block += map_start_block;	// Offset drauf
+		map_buffer = mmc_get_data(block<<9);
+		if (map_buffer != NULL){
+			map[0][0]=(map_section_t*)map_buffer;
+			map[1][0]=(map_section_t*)(map_buffer+sizeof(map_section_t));
+			// richtige der beiden sections raussuchen
+			uint8 index= section_x & 0x01;
 			return map[index][0];
-		#else
-			// Berechne den gesuchten Block
-			uint32 block = section_x + section_y*MAP_SECTIONS;
-			block = block >>1;	// es passen immer 2 Sections in einen Block
-			block += map_start_block;	// Offset drauf
-			map_buffer = mmc_get_data(block<<9);
-			if (map_buffer != NULL){
-				map[0][0]=(map_section_t*)map_buffer;
-				map[1][0]=(map_section_t*)(map_buffer+sizeof(map_section_t));
-				// richtige der beiden sections raussuchen
-				uint8 index= section_x & 0x01;
-				return map[index][0];
-			} else return map[0][0];
-		#endif	// MMC_VM_AVAILABLE	
-	
-	#else // ohne MMC-Karte einfach direkt mit dem SRAM arbeiten
-		if ((map[section_x][section_y] == NULL) && (create==True)){
-			uint16 index_x, index_y;
-			map[section_x][section_y]= malloc(sizeof(map_section_t));
-			for (index_x=0; index_x<MAP_SECTION_POINTS; index_x++)
-				for (index_y=0; index_y<MAP_SECTION_POINTS; index_y++)
-					map[section_x][section_y]->section[index_x][index_y]=0;
-			
-		}
-		
-		return map[section_x][section_y];
-	#endif
+		} else return map[0][0];	
+	#endif	// MMC_VM_AVAILABLE
 }
 
 /*!

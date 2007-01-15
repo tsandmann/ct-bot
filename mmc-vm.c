@@ -25,7 +25,7 @@
  * @see		Documentation/mmc-vm.html
  */
 
- 
+
 //TODO:	* Statistikausgabe fuer MCU ergaenzen
 //		* Code optimieren, Groesse und Speed
 
@@ -40,13 +40,14 @@
 #include "display.h"
 #include "timer.h"
 #include "mini-fat.h"
+#include "log.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 #ifdef MCU
 	#define MMC_START_ADDRESS 0x2000000	// [512;2^32-1] in Byte - Sinnvoll ist z.B. Haelfte der MMC / SD-Card Groesse, der Speicherplatz davor kann dann fuer ein Dateisystem verwendet werden
-	#define MAX_SPACE_IN_SRAM 3			// [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald diese verwendet wird
+	#define MAX_SPACE_IN_SRAM 6			// [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald diese verwendet wird
 	#define swap_out	mmc_write_sector
 	#define swap_in		mmc_read_sector
 	#define swap_space	mmc_get_size()
@@ -177,7 +178,25 @@ inline uint32 mmc_get_mmcblock_of_page(uint32 addr){
 			printf("Cache-Hit-Rate: \t\t%f %% \n\r", (100.0-((float)vm_stats->swap_ins/(float)vm_stats->page_access)*100.0));
 			printf("Messdauer: \t\t\t%u s \n\r", vm_stats->delta_t);
 		#else
-			// TODO
+			/* Ausgabe fuer MCU derzeit nur ueber Logging */
+			#ifdef LOG_AVAILABLE 
+				vm_extern_stats_t* vm_stats = mmc_get_vm_stats();
+				/* Texte wie oben */
+				LOG_INFO(("%lu", vm_stats->device_size>>20));
+				LOG_INFO(("%lu", vm_stats->vm_size>>20));
+				LOG_INFO(("%lu", vm_stats->vm_used_bytes>>10));									
+				LOG_INFO(("%u", (uint16)vm_stats->cache_size<<9));
+				LOG_INFO(("%u", ((uint16)vm_stats->cache_load<<9)/((uint16)vm_stats->cache_size<<9)*100));
+				LOG_INFO(("%lu", vm_stats->page_access));
+				LOG_INFO(("%lu", vm_stats->swap_ins));
+				LOG_INFO(("%lu", vm_stats->swap_outs));
+				LOG_INFO(("%u", vm_stats->page_access_s));
+				LOG_INFO(("%u", vm_stats->swap_ins_s));
+				LOG_INFO(("%u", vm_stats->swap_outs_s));
+				LOG_INFO(("%u", (uint8)(100.0-((float)vm_stats->swap_ins/(float)vm_stats->page_access)*100.0)));
+				LOG_INFO(("%u", vm_stats->delta_t));				
+			#endif
+			// TODO: Display-Ausgabe?
 		#endif	
 	}
 #endif
@@ -254,36 +273,32 @@ uint8 mmc_load_page(uint32 addr){
 			return mmc_load_page(addr);
 		}
 		allocated_pages++;	// Cache-Fuellstand aktualisieren		
-		#ifdef VM_STATS_AVAILABLE
-			stats_data.swap_ins++;
-		#endif
-	} else{
-		/* Cache bereits voll => Pager muss aktiv werden */
-		#ifdef VM_STATS_AVAILABLE
-			stats_data.swap_ins++;
-		#endif
-		#if MMC_ASYNC_WRITE == 1	// im asnychronen Fall holen wir erst die neue Seite, dann kann sich das Zurueckschreiben ruhig Zeit lassen
-			uint8* p_tmp = page_cache[next_cacheblock].p_data;
-			if (swap_in(mmc_get_mmcblock_of_page(addr), swap_buffer) != 0) return 3;
-		#endif
-		if (page_cache[next_cacheblock].dirty == 1){	// Seite zurueckschreiben, falls Daten veraendert wurden
-			#ifdef VM_STATS_AVAILABLE
-				stats_data.swap_outs++;
-			#endif
-			if (swap_out(page_cache[next_cacheblock].addr, page_cache[next_cacheblock].p_data, MMC_ASYNC_WRITE) != 0) return 2;
-		}
-		#if MMC_ASYNC_WRITE == 1
-			page_cache[next_cacheblock].p_data = swap_buffer;
-			swap_buffer = p_tmp;	
-		#else
-			if (swap_in(mmc_get_mmcblock_of_page(addr), page_cache[next_cacheblock].p_data) != 0) return 3;
-		#endif
-		#if MAX_PAGES_IN_SRAM > 2
-			oldest_cacheblock = page_cache[oldest_cacheblock].succ;	// Nachfolger des aeltesten Eintrags ist neuer aeltester Eintrag
-		#else
-			oldest_cacheblock = (pages_in_sram - 1) - next_cacheblock;	// neuer aeltester Eintrag ist nun der andere Cacheblock (wenn verfuegbar)
-		#endif
 	}
+	/* Pager muss nun aktiv werden */
+	#ifdef VM_STATS_AVAILABLE
+		stats_data.swap_ins++;
+	#endif
+	#if MMC_ASYNC_WRITE == 1	// im asnychronen Fall holen wir erst die neue Seite, dann kann sich das Zurueckschreiben ruhig Zeit lassen
+		uint8* p_tmp = page_cache[next_cacheblock].p_data;
+		if (swap_in(mmc_get_mmcblock_of_page(addr), swap_buffer) != 0) return 3;
+	#endif
+	if (page_cache[next_cacheblock].dirty == 1){	// Seite zurueckschreiben, falls Daten veraendert wurden
+		#ifdef VM_STATS_AVAILABLE
+			stats_data.swap_outs++;
+		#endif
+		if (swap_out(page_cache[next_cacheblock].addr, page_cache[next_cacheblock].p_data, MMC_ASYNC_WRITE) != 0) return 2;
+	}
+	#if MMC_ASYNC_WRITE == 1
+		page_cache[next_cacheblock].p_data = swap_buffer;
+		swap_buffer = p_tmp;	
+	#else
+		if (swap_in(mmc_get_mmcblock_of_page(addr), page_cache[next_cacheblock].p_data) != 0) return 3;
+	#endif
+	#if MAX_PAGES_IN_SRAM > 2
+		oldest_cacheblock = page_cache[oldest_cacheblock].succ;	// Nachfolger des aeltesten Eintrags ist neuer aeltester Eintrag
+	#else
+		oldest_cacheblock = (pages_in_sram - 1) - next_cacheblock;	// neuer aeltester Eintrag ist nun der andere Cacheblock (wenn verfuegbar)
+	#endif
 	page_cache[next_cacheblock].addr = mmc_get_mmcblock_of_page(addr);	// Cache-Tag aktualisieren
 	/* LRU */
 	#if MAX_PAGES_IN_SRAM > 2
