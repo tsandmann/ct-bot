@@ -1,8 +1,10 @@
 CHANGELOG fuer c't-Bot
 ======================
-2007-01-16 Benjamin Benz [bbe@heise.de]: Code ins Public-CVS eingespielt. Das betrifft alle Log-Einträge ab dem (2006-11-07)
+2007-01-15 Timo Sandmann [mail@timosandmann.de]: Mini-Bugfix: In behaviour_remotecall.c war versehentlich eine Schleife verschwunden
 
-2007-01-16 Benjamin Benz [bbe@heise.de]: Testrukturen und Log-ausgaben entfernt
+2007-01-15 Benjamin Benz [bbe@heise.de]: Code ins Public-CVS eingespielt. Das betrifft alle Log-Eintraege ab dem (2006-11-07)
+
+2007-01-15 Benjamin Benz [bbe@heise.de]: Testrukturen und Log-ausgaben entfernt
 
 2007-01-15 Timo Sandmann [mail@timosandmann.de]: Map verwendet nun entweder VM (MMC oder PC) oder MMC/MCU oder PC. 2 warnings in log.c entfernt.
 

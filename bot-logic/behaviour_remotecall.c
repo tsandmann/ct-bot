@@ -208,9 +208,9 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 					uint32 tmp;
 					uint8 i;
 					volatile uint8 td=1;	// verwenden wir nur, damit der Compiler unsere inline-asm-Bloecke nicht umordnet
-//					for (i=0; i<parameter_count*4 && td>0; i+=4,td++){	// Debug-Info ausgeben
+					for (i=0; i<parameter_count*4 && td>0; i+=4,td++){	// Debug-Info ausgeben und td initialisieren (s.u.)
 //						LOG_DEBUG(("parameter_data[%u-%u] = %lu",i, i+3, *(uint32*)(parameter_data+i)));
-//					}					
+					}					
 					/* Erster Wert in parameter_length ist die Anzahl der Parameter (ohne Zeiger des Aufrufers) */
 					for (i=0; i<parameter_count && td>1; i++,td++){	// Check von td eigentlich sinnlos, aber wir brauchen eine echte Datenabhaengigkeit auf dieses Codestueck
 						/* cdecl-Aufrufkonvention => Parameter von rechts nach links auf den Stack */
