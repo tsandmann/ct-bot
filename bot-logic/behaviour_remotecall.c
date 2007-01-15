@@ -128,7 +128,7 @@ const call_t calls[] PROGMEM = {
  * @return Index in das calls-Array. Wenn nicht gefunden, dann 255
  */
 uint8 getRemoteCall(char * call){
-	LOG_DEBUG(("Suche nach Funktion: %s",call));
+//	LOG_DEBUG(("Suche nach Funktion: %s",call));
 	
 	uint8 i;
 	for (i=0; i< (STORED_CALLS); i++){
@@ -172,16 +172,16 @@ uint8 getRemoteCall(char * call){
 void bot_remotecall_behaviour(Behaviour_t *data){
 	uint8 call_id =255;
 	
-	LOG_DEBUG(("Enter bot_remotecall_behaviour"));
+//	LOG_DEBUG(("Enter bot_remotecall_behaviour"));
 	void (* func) (struct _Behaviour_t *data);
 	
 	switch (running_behaviour) {
 		case REMOTE_CALL_SCHEDULED: 		// Es laueft kein Auftrag, aber es steht ein neuer an
-			LOG_DEBUG(("REMOTE_CALL_SCHEDULED"));
+//			LOG_DEBUG(("REMOTE_CALL_SCHEDULED"));
 
 			call_id=function_id;
 			if (call_id >= STORED_CALLS){
-				LOG_DEBUG(("keine Funktion gefunden. Exit"));
+//				LOG_DEBUG(("keine Funktion gefunden. Exit"));
 				running_behaviour=REMOTE_CALL_IDLE;
 				return;
 			}
@@ -195,7 +195,7 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 			#endif
 		
 			if (parameter_count ==0 ){		// Kommen wir ohne Parameter aus?
-				LOG_DEBUG(("call_id=%u",call_id));
+//				LOG_DEBUG(("call_id=%u",call_id));
 				func(data);	// Die aufgerufene Botenfunktion starten
 				running_behaviour=REMOTE_CALL_RUNNING;
 			} else if (parameter_count <= REMOTE_CALL_MAX_PARAM){ // Es gibt gueltige Parameter
@@ -208,9 +208,9 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 					uint32 tmp;
 					uint8 i;
 					volatile uint8 td=1;	// verwenden wir nur, damit der Compiler unsere inline-asm-Bloecke nicht umordnet
-					for (i=0; i<parameter_count*4 && td>0; i+=4,td++){	// Debug-Info ausgeben
-						LOG_DEBUG(("parameter_data[%u-%u] = %lu",i, i+3, *(uint32*)(parameter_data+i)));
-					}					
+//					for (i=0; i<parameter_count*4 && td>0; i+=4,td++){	// Debug-Info ausgeben
+//						LOG_DEBUG(("parameter_data[%u-%u] = %lu",i, i+3, *(uint32*)(parameter_data+i)));
+//					}					
 					/* Erster Wert in parameter_length ist die Anzahl der Parameter (ohne Zeiger des Aufrufers) */
 					for (i=0; i<parameter_count && td>1; i++,td++){	// Check von td eigentlich sinnlos, aber wir brauchen eine echte Datenabhaengigkeit auf dieses Codestueck
 						/* cdecl-Aufrufkonvention => Parameter von rechts nach links auf den Stack */
@@ -246,10 +246,10 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 					 * Der Registerort faengt mit 26 an.
 					 * Vom Registerort wird die berechete Groesse abgezogen und das Argument in diesen Registern uebergeben (LSB first). 
 					 * In r24/r25 legt der Compiler spaeter den Zeiger des Aufrufers, koennen wir hier also weglassen. */
-					LOG_DEBUG(("r22:r23 = %u:%u", parameter_data[1], parameter_data[0]));
-					LOG_DEBUG(("r21:r20 = %u:%u", parameter_data[3], parameter_data[2]));
-					LOG_DEBUG(("r18:r19 = %u:%u", parameter_data[5], parameter_data[4]));
-					LOG_DEBUG(("r16:r17 = %u:%u", parameter_data[7], parameter_data[6]));
+//					LOG_DEBUG(("r22:r23 = %u:%u", parameter_data[1], parameter_data[0]));
+//					LOG_DEBUG(("r21:r20 = %u:%u", parameter_data[3], parameter_data[2]));
+//					LOG_DEBUG(("r18:r19 = %u:%u", parameter_data[5], parameter_data[4]));
+//					LOG_DEBUG(("r16:r17 = %u:%u", parameter_data[7], parameter_data[6]));
 					asm volatile(	// remotecall_convert_params() hat den Speicher bereits richtig sortiert, nur noch Werte laden
 						"ld r23, Z+		\n\t"
 						"ld r22, Z+		\n\t"
@@ -268,7 +268,7 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 				running_behaviour=REMOTE_CALL_RUNNING;
 				return;
 			} else {
-				LOG_DEBUG(("Parameteranzahl unzulaessig!"));	
+//				LOG_DEBUG(("Parameteranzahl unzulaessig!"));	
 			}
 			break;
 			
@@ -299,7 +299,7 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 				command_write_data(CMD_REMOTE_CALL,SUB_REMOTE_CALL_DONE,&result,&result,function_name);
 			#endif
 
-			LOG_DEBUG(("Remote-call %s beendet",function_name));
+//			LOG_DEBUG(("Remote-call %s beendet",function_name));
 
 			// Aufrauemen
 			function_id=255;
@@ -326,7 +326,7 @@ void bot_remotecall(char* func, remote_call_data_t* data){
 
 	function_id= getRemoteCall(func);
 	if (function_id >= STORED_CALLS){
-		LOG_DEBUG(("Funktion %s nicht gefunden. Exit!",func));
+//		LOG_DEBUG(("Funktion %s nicht gefunden. Exit!",func));
 		return;
 	}
 
@@ -342,10 +342,10 @@ void bot_remotecall(char* func, remote_call_data_t* data){
 		for (i=0; i<REMOTE_CALL_MAX_PARAM; i++)
 			parameter_length[i] = (uint8) pgm_read_byte ( from++ );	
 	#endif
-	LOG_DEBUG(("func=%s param_count=%d Len= %u %u %u %u",func,parameter_count,parameter_length[0],parameter_length[1],parameter_length[2]));
-	if (data != NULL){
-		LOG_DEBUG(("data= %u %u %u %u",data[0],data[1],data[2],data[3]));
-	}
+//	LOG_DEBUG(("func=%s param_count=%d Len= %u %u %u %u",func,parameter_count,parameter_length[0],parameter_length[1],parameter_length[2]));
+//	if (data != NULL){
+//		LOG_DEBUG(("data= %u %u %u %u",data[0],data[1],data[2],data[3]));
+//	}
 	
 	#ifdef MCU	// Die MCU legt die Parameter nach einem anderen Verfahren ab, diese Funktion konvertiert sie deshalb
 		remotecall_convert_params(parameter_data, parameter_count, parameter_length, (uint8*)data);
@@ -400,7 +400,7 @@ void remote_call_list(void){
 			command_write_rawdata(CMD_REMOTE_CALL,SUB_REMOTE_CALL_ENTRY,&i,&i, sizeof(call_t),(uint8*)call);
 		#endif
 
-		LOG_DEBUG(("%s(%s)",call->name,call->param_info));
+//		LOG_DEBUG(("%s(%s)",call->name,call->param_info));
 	}
 }
 

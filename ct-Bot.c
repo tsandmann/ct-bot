@@ -661,39 +661,6 @@ void init(void){
 	    eeprom_write_byte(&resetInfoEEPROM+resets,reset_flag);
 	#endif	
 	/*! Hauptschleife des Bot */
-
-
-	
-	// Tesroutinen fuer die Remote-calls
-//	bot_remotecall("bot_turn",2,NULL);		// Sollte eine Fehlermeldung produzieren
-
-//	remote_call_data_t brc_data = {180};
-//	uint8 brc_len[2] = {1, 2};
-//	bot_remotecall("bot_turn", brc_len, &brc_data);		// Bsp fuer Fkt mit Parameter	
-	
-//	remote_call_data_t brc_data[2];
-//	brc_data[0].fl32 = 200.0;
-//	brc_data[1].fl32 = 100.0;
-//	uint8 brc_len[3] = {2, 4, 4};
-//	bot_remotecall("bot_gotoxy", brc_len, brc_data);
-
-	remote_call_data_t brc_data[3] = {{10}, {BOT_SPEED_NORMAL}, {50}};
-//	uint8 brc_len[4] = {3, 1, 2, 2};
-	
-	uint8 * data = malloc(100);
-	char name[]="bot_drive_distance";
-	
-	memcpy(data,name,strlen(name)+1);
-	memcpy(data+strlen(name)+1,&brc_data,sizeof(brc_data));
-
-//	bot_remotecall("bot_drive_distance", brc_data);
-	bot_remotecall_from_command(data);
-
-//	uint8 brc_len = 0;
-//	bot_remotecall("bot_solve_maze", &brc_len, NULL); // Bsp fuer Fkt ohne Paameter
-
-
-
 	
 	for(;;){
 		#ifdef PC
