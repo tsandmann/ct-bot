@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="description" content="Uebersicht der Remote-Calls am c't-Bot" />
+<meta name="keywords" content="c't-Bot,c't-Sim,Remote-Calls" />
+<meta name="date" content="2007-01-15" />
+<title>c't-Bot -Remote-Calls</title>
+<link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+<body>
+<h1>Dokumentation zum Remote-Call-System</h1>
+<br />
+<h2>Funktionsweise der Remote-Calls f&uuml;r den c't-Bot:</h2>
+<p>Auf das Kommando<span class="function"> CMD_REMOTE_CALL:SUB_REMOTE_CALL_LIST</span> schickt der Bot 
+eine Liste mit den verf&uuml;gbaren Remote-Calls an den PC.<br />
+Jeder Listeneintrag kommt als eigenes Kommando<span class="function"> (CMD_REMOTE_CALL:SUB_REMOTE_CALL_ENTRY)</span>. <br />
+In der Payload steht neben dem Namen der Funktion auch, wie sie aufzurufen 
+ist und welche Parameter sie braucht. Das geschieht, indem die ganze interne 
+Datenstruktur (siehe<span class="function"> call_t</span> in <a href="../include/bot-logic/remote_calls.h">remote_calls.h</a>) &uuml;bertragen wird.</p>
+<p>Der PC kann jederzeit einen Remote-Call starten. Dazu schickt es das Kommando 
+<span class="function"> CMD_REMOTE_CALL:SUB_REMOTE_CALL_ORDER.</span> In der Payload steht zuerst der Name 
+der Funktion (null terminierter String). Danach kommen die Parameter. Jeder 
+Parameter muss dabei (unabh&auml;ngig von seiner tats&auml;chlichen L&auml;nge) 32 Bit belegen.</p>
+<p>Ist der Bot fertig, antwortet er mit<span class="function"> CMD_REMOTE_CALL:SUB_REMOTE_CALL_DONE</span>
+im DataL Feld steht eine 0, wenn das Verhalten nicht erfolgreich ausgef&uuml;hrt wurde. Steht dort eine 1, ist alles ok.</span></p>
+<p>Um eigen Verhalten remote-aufrufbar zu machen, muss man ihre Botenfunktion nur in 
+die calls-Struktur in <a href="../bot-logic/behaviour_remotecall.c">behaviour_remotecall.c</a> eintragen. Wie das geht ist dort 
+ausf&uuml;hrlich beschrieben. Alles andere &uuml;bernimmt das Framework.</p>
+
+</body>
+</html>
