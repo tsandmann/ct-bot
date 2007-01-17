@@ -17,6 +17,7 @@
 	<ul>
 		<li><b>Netzwerk per WiPort:</b> ./avrdude -p m32 -c avr109 -P net:10.10.22.58:10002 -U flash:w:ct-Bot.hex:i -D -v -u -F</li>
 		<li><b>USB-2-Bot auf COM3:</b> ./avrdude -p m32 -c avr109 -P com3 -U flash:w:ct-Bot.hex:i -D -v -u -F -b 57600</li>
+		<li><b>USB-2-Bot unter Linux:</b> ./avrdude -p m32 -c avr109 -P /dev/ttyUSB0 -U flash:w:ct-Bot.hex:i -D -v -u -F -b 57600</li>
 	</ul>
 		
 	<p><b>Tipps:</b> </p>
