@@ -86,6 +86,8 @@
 #define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung */
 #define MINI_FAT_AVAILABLE		/*!< koennen wir sektoren in FAT-systemen finden */
 //#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
+
+//#define COMPILE_WITH_BOOTLOADER	/*!< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders. Achtung, Linkereinstellungen anpassen (siehe mcu/bootloader.c)! */
 /************************************************************
 * Some Dependencies!!!
 ************************************************************/

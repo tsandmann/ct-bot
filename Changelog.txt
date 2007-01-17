@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-01-18 Timo Sandmann [mail@timosandmann.de]: Bootloader-Sources ins Projekt integriert. Mit dem Schalter COMPILE_WITH_BOOTLOADER in ct-Bot.h steuert man, ob das hex-File den Bootloadercode (zur "Installation") enthalten soll oder nicht. Achtung, Linkereinstellungen anpassen (siehe mcu/bootloader.c)!
+
 2007-01-17 Timo Sandmann [mail@timosandmann.de]: Bugfix in pc/mmc-emu_pc.c
 
 2007-01-17 Benjamin Benz [bbe@heise.de]: Bootloader ins Projekt eingefuegt
