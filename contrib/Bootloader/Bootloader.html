@@ -1,23 +1,34 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="description" content="Bootloader f&uuml;r den c't-Bot" />
+<meta name="keywords" content="c't-Bot,Bootloader" />
+<meta name="date" content="2007-01-17" />
+<title>Bootloader f&uuml;r den c't-Bot</title>
+</head>
 <html>
+<body>
 	<h1>Bootloader f&uuml;r den c't-Bot</h1>
 	
-	<p>Wir haben den Bootloader von Martin Thomas (<a href="http://www.siwawi.arubi.uni-kl.de/avr_projects">http://www.siwawi.arubi.uni-kl.de/avr_projects</a> mit in das c't-Bot-Projekt aufgenommen. Damit dauert das Uebertragen der Hex-Files gerade noch 14 Sekunden.</p>
-	F&uumlr den ATmega32 findet sich in diesem Verzeichnis bereits ein vorcompiliertes Hex-File. Diese muss man mit dem Programmierer der Wahl in den Bot &uuml;bertragen &ndash; genauso wie ein normales Hex-File f&uuml;r den c't-Bot. 
-	Außerdem muss man die Fuse-Bits nun anders setzen: In Ponyprog muss nun ein bei BOOTRST und bei BOOTSZ0 ein Haeckchen sein. Bei BOOTSZ1 darf hingegen keines mehr sein.</p>
+	<p>Wir haben den Bootloader von Martin Thomas (<a href="http://www.siwawi.arubi.uni-kl.de/avr_projects">http://www.siwawi.arubi.uni-kl.de/avr_projects</a>) mit in das c't-Bot-Projekt aufgenommen. Damit dauert das &Uuml;bertragen der Hex-Files gerade noch 14 Sekunden.</p>
+	F&uuml;r den ATmega32 findet sich in diesem Verzeichnis bereits ein vorcompiliertes Hex-File. Diese muss man mit dem Programmierer der Wahl in den Bot &uuml;bertragen &ndash; genauso wie ein normales Hex-File f&uuml;r den c't-Bot. 
+	Au&szlig;erdem muss man die Fuse-Bits nun anders setzen: In Ponyprog muss nun ein bei BOOTRST und bei BOOTSZ0 ein H&auml;ckchen sein. Bei BOOTSZ1 darf hingegen keines mehr sein.</p>
 	<img src="ponyprog_atm32.jpg">
 	
 	<p>Wer statt PonyProg2000 lieber ein Kommandozeilen-Tool verwendet, um die Fuse-Bits zu setzen, findet in diesem Verzeichnis drei Hex-Dateien 
-		(<a href="bootloader_hfuse.hex">bootloader_hfuse.hex</a>, <a href="bootloader_lfuse.hex">bootloader_lfuse.hex</a>, <a href="bootloader_lock.hex">bootloader_lock.hex</a>) die sich mit den Skripten im <a href="../flash_n_fuse">flash_n_fuse</a>-Verzeichnis uebertragen lassen.</p>
+		(<a href="bootloader_hfuse.hex">bootloader_hfuse.hex</a>, <a href="bootloader_lfuse.hex">bootloader_lfuse.hex</a>, <a href="bootloader_lock.hex">bootloader_lock.hex</a>) die sich mit den Skripten im <a href="../flash_n_fuse">flash_n_fuse</a>-Verzeichnis &uuml;bertragen lassen.</p>
 		
 
 	<p>Ab jetzt wartet der Bot nach einem Reset 5 Sekunden auf eine eingehende Programmierverbindung.</p>
 	
-	<p>Nun kann man ueber eine RS-232- oder eine USB-2-Bot- oder eine LAN-/WLAN- (WiPort)-Verbindung den ATmega32 mit fast ejdem beliebigen Programmierprogramm mit Daten bef&uml;llen. Hier ein paat Beispiele:</p>
+	<p>Nun kann man &uuml;ber eine RS-232- oder eine USB-2-Bot- oder eine LAN-/WLAN- (WiPort)-Verbindung den ATmega32 mit fast jedem beliebigen Programmierprogramm mit Daten bef&uuml;llen. Hier ein paar Beispiele:</p>
 	
 	<ul>
-		<li><b>Netzwerk per WiPort:</b> ./avrdude -p m32 -c avr109 -P net:10.10.22.58:10002 -U flash:w:ct-Bot.hex:i -D -v -u -F</li>
-		<li><b>USB-2-Bot auf COM3:</b> ./avrdude -p m32 -c avr109 -P com3 -U flash:w:ct-Bot.hex:i -D -v -u -F -b 57600</li>
-		<li><b>USB-2-Bot unter Linux:</b> ./avrdude -p m32 -c avr109 -P /dev/ttyUSB0 -U flash:w:ct-Bot.hex:i -D -v -u -F -b 57600</li>
+		<li><b>Netzwerk per WiPort:</b> ./avrdude -p m32 -c avr109 -P net:10.10.22.58:10002 -U flash:w:ct-Bot.hex:i -D -u</li>
+		<li><b>USB-2-Bot auf COM3:</b> ./avrdude -p m32 -c avr109 -P com3 -U flash:w:ct-Bot.hex:i -D -u -b 57600</li>
+		<li><b>USB-2-Bot unter Linux:</b> ./avrdude -p m32 -c avr109 -P /dev/ttyUSB0 -U flash:w:ct-Bot.hex:i -D -u -b 57600</li>
 	</ul>
 		
 	<p><b>Tipps:</b> </p>
@@ -30,4 +41,5 @@
 		<li>Wenn man RS-232- oder USB-2-Bot-Verbindungen nutzt, sollte man unter Windows den COM-Port auf 57600 Baud (8N1) einstellen</li>
 	</ul>
 	<img src="wiport_serialsettings.jpg">
+</body>
 </html>
