@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-01-17 Benjamin Benz [bbe@heise.de]: Bootloader ins Projekt eingefuegt
+
 2007-01-15 Timo Sandmann [mail@timosandmann.de]: Mini-Bugfix: In behaviour_remotecall.c war versehentlich eine Schleife verschwunden
 
 2007-01-15 Benjamin Benz [bbe@heise.de]: Code ins Public-CVS eingespielt. Das betrifft alle Log-Eintraege ab dem (2006-11-07)
