@@ -187,8 +187,10 @@ uint8 mmc_emu_test(void){
 	/* Testdaten 2 vergleichen */
 	for (i=0; i<512; i++)
 		if (p_addr[i] != (255 - (i & 0xff))) return 7;
-	/* Pagefaults merken */		
-	pagefaults = mmc_get_pagefaults();
+	#ifdef VM_STATS_AVAILABLE 
+		/* Pagefaults merken */		
+		pagefaults = mmc_get_pagefaults();
+	#endif
 	/* kleine Statistik ausgeben */
 	display_cursor(3,1);
 	display_printf("Pagefaults: %5u  ", pagefaults);
