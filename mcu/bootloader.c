@@ -104,7 +104,11 @@
 #include <avr/io.h>
 #include <avr/boot.h>
 #include <avr/pgmspace.h>
-#include <util/delay.h>
+#ifdef NEW_AVR_LIB
+	#include <util/delay.h>
+#else
+	#include <avr/delay.h>
+#endif
 
 
 /* Chipdefs */
