@@ -55,7 +55,9 @@
 #ifdef COMPILE_WITH_BOOTLOADER
 
 /* UART Baudrate */
-#define BAUDRATE 57600
+//#define BAUDRATE 57600
+#include "uart.h"	// Die Baudrate wird zentral fuer den Bot in uart.h festgelegt!!
+
 
 /* Device-Type:
    For AVRProg the BOOT-option is prefered 
@@ -67,9 +69,11 @@
 /* Boot Size in Words */
 #if defined(__AVR_ATmega32__)	// => Fuse Bits: low: 0xFF, high: 0xDC
 	#define BOOTSIZE 512		// => Linker-Settings: -Wl,--section-start=.bootloader=0x7C00
+	#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0x7C00 startet "
 	
 #elif defined(__AVR_ATmega644__)// => Fuse Bits: low: 0xFF, high: 0xDC, Ext'd: 0xFF
 	#define BOOTSIZE 1024		// => Linker-Settings: -Wl,--section-start=.bootloader=0xF800
+	#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0xF800 startet "
 #endif
 
 #define START_WAIT

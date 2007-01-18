@@ -28,6 +28,8 @@
 
 #include "command.h"
 
+#define BAUDRATE	57600
+
 //extern char uart_timeout;	/*!< 0, wenn uart_read/uart_send erfolgreich; 1, wenn timeout erreicht */
 
 /*!

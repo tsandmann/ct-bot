@@ -13,8 +13,21 @@
 	<h1>Bootloader f&uuml;r den c't-Bot</h1>
 	
 	<p>Wir haben den Bootloader von Martin Thomas (<a href="http://www.siwawi.arubi.uni-kl.de/avr_projects">http://www.siwawi.arubi.uni-kl.de/avr_projects</a>) mit in das c't-Bot-Projekt aufgenommen. Damit dauert das &Uuml;bertragen der Hex-Files gerade noch 14 Sekunden.</p>
-	F&uuml;r den ATmega32 findet sich in diesem Verzeichnis bereits ein vorcompiliertes Hex-File. Diese muss man mit dem Programmierer der Wahl in den Bot &uuml;bertragen &ndash; genauso wie ein normales Hex-File f&uuml;r den c't-Bot. 
-	Au&szlig;erdem muss man die Fuse-Bits nun anders setzen: In Ponyprog muss nun ein bei BOOTRST und bei BOOTSZ0 ein H&auml;ckchen sein. Bei BOOTSZ1 darf hingegen keines mehr sein.</p>
+	Sowohl f&uuml;r den ATmega32 als auch den ATmega644 ist der Bootloader bereits in den Code integriert. Man muss nur sicherstellen, dass 
+	in der Datei ct-Bot.h der Schalter <code>COMPILE_WITH_BOOTLOADER</code> aktiviert ist und die Linkereinstellungen passen. 
+	Es schadet &uuml;brigens nicht, den Bootloader immer mit zu &uuml;bersetzen.</p>
+
+	<p>F&uuml;r den ATmega32 muss man dem Linker 
+	<code>-Wl,--section-start=.bootloader=0x7C00</code> und f&uuml;r den ATmega644 
+	<code>-Wl,--section-start=.bootloader=0xF800</code> mit auf den Weg geben. Unter eclipse tr&auml;gt man das
+	unter Project->Properties->C/C++-Build->Tool Settings->GCC Linker->Miscelaneous ein:</p>
+	<img src="eclipse-linker.jpg">
+
+	<p>Das entstandene Hex-File ct-Bot.hex muss man einmalig mit dem Programmierer der 
+	Wahl in den Bot &uuml;bertragen &ndash; genauso wie vorher ohne Bootloader.
+	Au&szlig;erdem muss man die Fuse-Bits nun anders setzen: 
+	In Ponyprog muss nun ein bei BOOTRST und bei BOOTSZ0 ein H&auml;ckchen sein. 
+	Bei BOOTSZ1 darf hingegen keines mehr sein.</p>
 	<img src="ponyprog_atm32.jpg">
 	
 	<p>Wer statt PonyProg2000 lieber ein Kommandozeilen-Tool verwendet, um die Fuse-Bits zu setzen, findet in diesem Verzeichnis drei Hex-Dateien 

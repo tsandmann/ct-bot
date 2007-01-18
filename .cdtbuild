@@ -103,7 +103,7 @@
 <listOptionValue builtIn="false" value="/usr/local/avr"/>
 </option>
 <option id="gnu.c.link.option.noshared.1381459017" name="No shared libraries (-static)" superClass="gnu.c.link.option.noshared" value="false" valueType="boolean"/>
-<option id="gnu.c.link.option.ldflags.174201475" superClass="gnu.c.link.option.ldflags" value="-mmcu=atmega32" valueType="string"/>
+<option id="gnu.c.link.option.ldflags.174201475" superClass="gnu.c.link.option.ldflags" value="-mmcu=atmega32 -Wl,--section-start=.bootloader=0x7C00" valueType="string"/>
 </tool>
 <tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1899644885" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
 <tool command="as" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1825020912" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug"/>
