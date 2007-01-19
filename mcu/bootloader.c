@@ -52,7 +52,7 @@
 
 #include "ct-Bot.h"
 #ifdef MCU
-#ifdef COMPILE_WITH_BOOTLOADER
+#ifdef BOOTLOADER_AVAILABLE
 
 /* UART Baudrate */
 //#define BAUDRATE 57600
@@ -503,5 +503,5 @@ void __attribute__ ((section (".bootloader"), naked)) bootloader_main(void){
 		}
 	}
 }
-#endif	// COMPILE_WITH_BOOTLOADER
+#endif	// BOOTLOADER_AVAILABLE
 #endif	// MCU

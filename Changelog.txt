@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-01-19 Benjamin Benz [bbe@heise.de]: Bootloader-Doku verschoben; COMPILE_WITH_BOOTLOADER umbenannt in BOOTLOADER_AVAILABLE
+
 2007-01-18 Timo Sandmann [mail@timosandmann.de]: Bugfix in mcu/bootloader.c (#include fuer alte libc-Version angepasst)
 
 2007-01-18 Timo Sandmann [mail@timosandmann.de]: Bootloader-Sources ins Projekt integriert. Mit dem Schalter COMPILE_WITH_BOOTLOADER in ct-Bot.h steuert man, ob das hex-File den Bootloadercode (zur "Installation") enthalten soll oder nicht. Achtung, Linkereinstellungen anpassen (siehe mcu/bootloader.c)!
