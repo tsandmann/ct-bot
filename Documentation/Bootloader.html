@@ -7,30 +7,30 @@
 <meta name="keywords" content="c't-Bot,Bootloader" />
 <meta name="date" content="2007-01-17" />
 <title>Bootloader f&uuml;r den c't-Bot</title>
+<link rel="stylesheet" type="text/css" href="style.css" />
 </head>
-<html>
 <body>
 	<h1>Bootloader f&uuml;r den c't-Bot</h1>
 	
-	<p>Wir haben den Bootloader von Martin Thomas (<a href="http://www.siwawi.arubi.uni-kl.de/avr_projects">http://www.siwawi.arubi.uni-kl.de/avr_projects</a>) mit in das c't-Bot-Projekt aufgenommen. Damit dauert das &Uuml;bertragen der Hex-Files gerade noch 14 Sekunden.</p>
-	Sowohl f&uuml;r den ATmega32 als auch den ATmega644 ist der Bootloader bereits in den Code integriert. Man muss nur sicherstellen, dass 
-	in der Datei ct-Bot.h der Schalter <code>BOOTLOADER_AVAILABLE</code> aktiviert ist und die Linkereinstellungen passen. 
+	<p>Wir haben den Bootloader von Martin Thomas (<a href="http://www.siwawi.arubi.uni-kl.de/avr_projects" target="_blank">http://www.siwawi.arubi.uni-kl.de/avr_projects</a>) mit in das c't-Bot-Projekt aufgenommen. Damit dauert das &Uuml;bertragen der Hex-Files gerade noch 14 Sekunden.</p>
+	<p>Sowohl f&uuml;r den ATmega32 als auch den ATmega644 ist der Bootloader bereits in den Code integriert. Man muss nur sicherstellen, dass 
+	in der Datei ct-Bot.h der Schalter<span class="function"> BOOTLOADER_AVAILABLE</span> aktiviert ist und die Linkereinstellungen passen. 
 	Es schadet &uuml;brigens nicht, den Bootloader immer mit zu &uuml;bersetzen.</p>
 
 	<p>F&uuml;r den ATmega32 muss man dem Linker 
-	<code>-Wl,--section-start=.bootloader=0x7C00</code> und f&uuml;r den ATmega644 
-	<code>-Wl,--section-start=.bootloader=0xF800</code> mit auf den Weg geben. Am besten schneidet man sich die Parameter hier per cut'n'paste aus und fügt sie in eclipse unter
-	Project->Properties->C/C++-Build->Tool Settings->GCC Linker->Miscelaneous ein:</p>
-	<img src="eclipse-linker.jpg">
+	<span class="function">-Wl,--section-start=.bootloader=0x7C00</span> und f&uuml;r den ATmega644 
+	<span class="function">-Wl,--section-start=.bootloader=0xF800</span> mit auf den Weg geben. Am besten schneidet man sich die Parameter hier per cut'n'paste aus und f&uuml;gt sie in Eclipse unter
+	Project->Properties->C/C++-Build->Tool Settings->GCC Linker->Miscellaneous ein:</p>
+	<img src="eclipse-linker.jpg" alt="" />
 
-	<p>Das entstandene Hex-File ct-Bot.hex muss man einmalig mit dem Programmierer der 
+	<p style="clear:both">Das entstandene Hex-File ct-Bot.hex muss man einmalig mit dem Programmierer der 
 	Wahl in den Bot &uuml;bertragen &ndash; genauso wie vorher ohne Bootloader.
 	Au&szlig;erdem muss man die Fuse-Bits nun anders setzen: 
 	In Ponyprog muss nun ein bei BOOTRST und bei BOOTSZ0 ein H&auml;ckchen sein. 
 	Bei BOOTSZ1 darf hingegen keines mehr sein.</p>
-	<img src="ponyprog_atm32.jpg">
+	<img src="ponyprog_atm32.jpg" alt="" />
 	
-	<p>Wer statt PonyProg2000 lieber ein Kommandozeilen-Tool verwendet, um die Fuse-Bits zu setzen, findet in diesem Verzeichnis drei Hex-Dateien 
+	<p style="clear:both">Wer statt PonyProg2000 lieber ein Kommandozeilen-Tool verwendet, um die Fuse-Bits zu setzen, findet in diesem Verzeichnis drei Hex-Dateien 
 		(<a href="bootloader_hfuse.hex">bootloader_hfuse.hex</a>, <a href="bootloader_lfuse.hex">bootloader_lfuse.hex</a>, <a href="bootloader_lock.hex">bootloader_lock.hex</a>) die sich mit den Skripten im <a href="../flash_n_fuse">flash_n_fuse</a>-Verzeichnis &uuml;bertragen lassen.</p>
 		
 
@@ -53,6 +53,6 @@
 		<li>Achtung auch der WiPort braucht ein wenig Zeit zum Booten, es kannn also sein, dass er nicht gleich nach dem Power-on reagiert.</li>
 		<li>Wenn man RS-232- oder USB-2-Bot-Verbindungen nutzt, sollte man unter Windows den COM-Port auf 57600 Baud (8N1) einstellen</li>
 	</ul>
-	<img src="wiport_serialsettings.jpg">
+	<img src="wiport_serialsettings.jpg" alt="" />
 </body>
 </html>
