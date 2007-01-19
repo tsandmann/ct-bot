@@ -14,7 +14,7 @@
 	
 	<p>Wir haben den Bootloader von Martin Thomas (<a href="http://www.siwawi.arubi.uni-kl.de/avr_projects">http://www.siwawi.arubi.uni-kl.de/avr_projects</a>) mit in das c't-Bot-Projekt aufgenommen. Damit dauert das &Uuml;bertragen der Hex-Files gerade noch 14 Sekunden.</p>
 	Sowohl f&uuml;r den ATmega32 als auch den ATmega644 ist der Bootloader bereits in den Code integriert. Man muss nur sicherstellen, dass 
-	in der Datei ct-Bot.h der Schalter <code>COMPILE_WITH_BOOTLOADER</code> aktiviert ist und die Linkereinstellungen passen. 
+	in der Datei ct-Bot.h der Schalter <code>BOOTLOADER_AVAILABLE</code> aktiviert ist und die Linkereinstellungen passen. 
 	Es schadet &uuml;brigens nicht, den Bootloader immer mit zu &uuml;bersetzen.</p>
 
 	<p>F&uuml;r den ATmega32 muss man dem Linker 
