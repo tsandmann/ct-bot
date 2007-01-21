@@ -94,12 +94,6 @@
 #define VERSION_HIGH '0'
 #define VERSION_LOW  '8'
 
-#define GET_LOCK_BITS           0x0001
-#define GET_LOW_FUSE_BITS       0x0000
-#define GET_HIGH_FUSE_BITS      0x0003
-#define GET_EXTENDED_FUSE_BITS  0x0002
-
-
 #include <stdint.h>
 #include <avr/io.h>
 #include <avr/boot.h>
@@ -110,6 +104,19 @@
 	#include <avr/delay.h>
 #endif
 
+/* Fusebit-Defs, since avr-libc 1.2.5 in boot.h */
+#ifndef GET_LOCK_BITS
+	#define GET_LOCK_BITS			0x0001
+#endif
+#ifndef GET_LOW_FUSE_BITS
+	#define GET_LOW_FUSE_BITS		0x0000
+#endif
+#ifndef GET_HIGH_FUSE_BITS
+	#define GET_HIGH_FUSE_BITS      0x0003
+#endif
+#ifndef GET_EXTENDED_FUSE_BITS
+	#define GET_EXTENDED_FUSE_BITS  0x0002
+#endif
 
 /* Chipdefs */
 #if defined (SPMCSR)
