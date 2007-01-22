@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-01-22 Benjamin Benz [bbe@heise.de]: Bootloader ist per default aus
+
 2007-01-21 Timo Sandmann [mail@timosandmann.de]: Bootloader: Fusebit-Defines an verschiedene avr-libc-Versionen angepasst
 
 2007-01-19 Timo Sandmann [mail@timosandmann.de]: Bootloader-Doku-Design angepasst
