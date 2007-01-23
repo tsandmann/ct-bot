@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-01-23 Timo Sandmann [mail@timosandmann.de]: Hinweis zum Fehler in avrdude 5.3.1 in Bootloader.html ergaenzt
+
 2007-01-22 Timo Sandmann [mail@timosandmann.de]: Bootloader: Fusebit-Hex-File in contrib/Bootloader fuer Atmega644 ergaenzt
 
 2007-01-22 Benjamin Benz [bbe@heise.de]: rc5.c von Debug-Code befreit

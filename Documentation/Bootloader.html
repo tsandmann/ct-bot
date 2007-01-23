@@ -32,6 +32,7 @@
 	
 	<p style="clear:both">Wer statt PonyProg2000 lieber ein Kommandozeilen-Tool verwendet, um die Fuse-Bits zu setzen, findet in diesem Verzeichnis die Hex-Dateien 
 		(<a href="bootloader_hfuse.hex">bootloader_hfuse.hex</a>, <a href="bootloader_lfuse.hex">bootloader_lfuse.hex</a>, <a href="bootloader_lock.hex">bootloader_lock.hex</a> und zus&auml;tzlich f&uuml;r den Atmega644 <a href="bootloader_m644_efuse.hex">bootloader_m644_efuse.hex</a>) daf&uuml;r, die sich mit den Skripten im <a href="../flash_n_fuse">flash_n_fuse</a>-Verzeichnis &uuml;bertragen lassen.</p>
+	<p style="color:red">Achtung: Die derzeit aktuelle avrdude-Version 5.3.1 hat ein Problem bei den Fuse Bits im Zusammenhang mit einem Programmer vom Typ avr910 (siehe <a href="http://savannah.nongnu.org/bugs/?18803" target="_blank">http://savannah.nongnu.org/bugs/?18803</a>)!</p>
 		
 
 	<p>Ab jetzt wartet der Bot nach einem Reset 5 Sekunden auf eine eingehende Programmierverbindung.</p>
@@ -39,7 +40,7 @@
 	<p>Nun kann man &uuml;ber eine RS-232- oder eine USB-2-Bot- oder eine LAN-/WLAN- (WiPort)-Verbindung den ATmega32 mit fast jedem beliebigen Programmierprogramm mit Daten bef&uuml;llen. Hier ein paar Beispiele:</p>
 	
 	<ul>
-		<li><b>Netzwerk per WiPort:</b> ./avrdude -p m32 -c avr109 -P net:10.10.22.58:10002 -U flash:w:ct-Bot.hex:i -D -u</li>
+		<li><b>Netzwerk per WiPort:</b> ./avrdude -p m32 -c avr109 -P net:10.10.22.58:10002 -U flash:w:ct-Bot.hex:i -u</li>
 		<li><b>USB-2-Bot auf COM3:</b> ./avrdude -p m32 -c avr109 -P com3 -U flash:w:ct-Bot.hex:i -D -u -b 57600</li>
 		<li><b>USB-2-Bot unter Linux:</b> ./avrdude -p m32 -c avr109 -P /dev/ttyUSB0 -U flash:w:ct-Bot.hex:i -D -u -b 57600</li>
 	</ul>
