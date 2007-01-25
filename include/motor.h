@@ -43,9 +43,6 @@
 #define DIRECTION_FORWARD  0		/*!< Drehrichtung vorwaerts */
 #define DIRECTION_BACKWARD 1		/*!< Drehrichtung rueckwaerts */
 
-
-#define DOOR_CLOSE 	7		/*!< Rechter Anschlag des Servos */
-#define DOOR_OPEN	14		/*!< Linker Anschlag des Servos */
 #define SERVO_OFF	0		/*!< Servo wird zum stromsparen deaktiviert */
 
 #define SERVO1 1			/*!< Servo1 */

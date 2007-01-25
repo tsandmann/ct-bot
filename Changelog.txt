@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-01-25 Timo Sandmann [mail@timosandmann.de]: Servo-Parameter nach bot-local.h verschoben, weil sie abhaengig von der Ausrichtung des Klappenarms sind (evtl. anpassen)
+
 2007-01-23 Timo Sandmann [mail@timosandmann.de]: Hinweis zum Fehler in avrdude 5.3.1 in Bootloader.html ergaenzt
 
 2007-01-22 Timo Sandmann [mail@timosandmann.de]: Bootloader: Fusebit-Hex-File in contrib/Bootloader fuer Atmega644 ergaenzt

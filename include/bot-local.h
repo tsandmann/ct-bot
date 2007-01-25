@@ -42,6 +42,10 @@
 //#define SPEED_TO_ENCODER_RATE		(WHEEL_PERIMETER /ENCODER_MARKS*(1000/SPEED_CONTROL_INTERVAL)) /*!< Faktor durch den man eine Speed [mm/s] teilt um Ticks/intervall zu erhalten */
 #define SPEED_TO_ENCODER_RATE		9 /*!< Faktor durch den man eine Speed [mm/s] teilt um Ticks/intervall zu erhalten */
 
+/* Servo-Parameter */
+#define DOOR_CLOSE 	7			/*!< Rechter Anschlag des Servos */
+#define DOOR_OPEN	14			/*!< Linker Anschlag des Servos */
+
 /* Odometrie-Konstanten */
 //#define MOUSE_CPI			401		/*!< CPI-Wert aus Kalibrierung */
 //#define MOUSE_FULL_TURN	1430	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis */
