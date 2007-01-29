@@ -63,7 +63,7 @@ uint32 mini_fat_find_block(const char* filename, uint8* buffer){
 					j++;
 				i++;
 			#endif
-			mmc_read_sector(block++,buffer);
+			if (mmc_read_sector(block++,buffer) != 0) return 0xFFFFFFFF;
 			uint8 i;
 			for (i=0; i<MMC_FILENAME_MAX; i++)
 				if (filename[i] == '\0'){

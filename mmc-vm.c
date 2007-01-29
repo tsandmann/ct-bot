@@ -47,7 +47,7 @@
 
 #ifdef MCU
 	#define MMC_START_ADDRESS 0x2000000	// [512;2^32-1] in Byte - Sinnvoll ist z.B. Haelfte der MMC / SD-Card Groesse, der Speicherplatz davor kann dann fuer ein Dateisystem verwendet werden
-	#define MAX_SPACE_IN_SRAM 6			// [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald diese verwendet wird
+	#define MAX_SPACE_IN_SRAM 5			// [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald diese verwendet wird
 	#define swap_out	mmc_write_sector
 	#define swap_in		mmc_read_sector
 	#define swap_space	mmc_get_size()
@@ -414,6 +414,7 @@ uint32 mmc_fopen(const char *filename){
 	/* Pufferspeicher organisieren */
 	uint32 v_addr = mmcalloc(512, 0);
 	uint8* p_data = mmc_get_data(v_addr);	// hier speichern wir im Folgenden den ersten Block der gesuchten Datei, der ist dann gleich im Cache ;)
+	if (p_data == NULL) return 0;
 	/* Die Dateiadressen liegen ausserhalb des Bereichs fuer den VM, also interne Datenanpassungen hier rueckgaengig machen */
 	next_mmc_address -= 512;
 	#ifdef VM_STATS_AVAILABLE
@@ -430,8 +431,10 @@ uint32 mmc_fopen(const char *filename){
 		printf("Find %s...",filename);
 		uint16 k=0, j=0;	
 	#endif
+//	uint32 end, start = TIMER_GET_TICKCOUNT_32;
 	/* MMC-Block suchen zwischen Kartenanfang und VM-Startadresse (<= Kartengroesse) */
 	for (block=0; block<mmc_get_mmcblock_of_page(mmc_start_address); block++){
+		if (swap_in(block, p_data) != 0) break;	// Abbrechen, falls Fehler
 		#ifdef MCU	// Debug-Info ausgeben
 			#ifdef DISPLAY_AVAILABLE
 				display_cursor(2,13);
@@ -442,19 +445,21 @@ uint32 mmc_fopen(const char *filename){
 		#else
 //			printf(".");	
 //			fflush(stdout);
-		#endif
-		if (swap_in(block, p_data) != 0) break;	// Abbrechen, falls Fehler
+		#endif		
 		/* Blockanfang mit Dateinamen vergleichen */
 		for (i=0; i<MMC_FILENAME_MAX; i++){
 			if (filename[i] == '\0'){
 				if (swap_in(++block, p_data) != 0) break;	// Ersten Sektor der Datei ueberspringen, dort stehen interne Daten
 				page_cache[mmc_get_cacheblock_of_page(v_addr)].addr = block;	// Cache-Tag auf gefundene Datei umbiegen
+//				end = TIMER_GET_TICKCOUNT_32;
 				#ifdef MCU
 					#ifdef DISPLAY_AVAILABLE
 			  			k = block & 0xFFFF;
 			  			j = (block >> 16) & 0xFFFF;
 			  			display_cursor(2,1);
 			  			display_printf("Found %s: 0x%02x%04x",filename,j,k);
+//			  			display_cursor(3,1);
+//			  			display_printf("Ticks: %u ", end-start);
 					#endif
 				#else
 		  			k = block & 0xFFFF;
@@ -507,6 +512,9 @@ uint32 mmc_get_filesize(uint32 file_start){
 uint8 mmc_clear_file(uint32 file_start){
 	#ifdef PC
 		printf("Start of file: %lu \n\r", file_start);
+	#else
+//		display_cursor(3,1);
+//		display_printf("Start:0x%04x", file_start>>9);
 	#endif
 	uint32 length = mmc_get_filesize(file_start);
 	if (file_start == 0 || file_start + length >= mmc_start_address) return 1;	// Datei existiert nicht oder Laenge ist ungueltig
@@ -518,6 +526,8 @@ uint8 mmc_clear_file(uint32 file_start){
 	uint32 addr;
 	for (addr=file_start; addr<file_start+length; addr+=512){
 		if (swap_out(mmc_get_mmcblock_of_page(addr), p_addr, 0) != 0) return 2;
+		display_cursor(3,1);
+		display_printf("0x%04x", addr>>9);
 		/* Falls ein Block der Datei im Cache ist, auch diesen leeren */
 		cache_block = mmc_get_cacheblock_of_page(addr);
 		if (cache_block >= 0){
@@ -527,6 +537,9 @@ uint8 mmc_clear_file(uint32 file_start){
 	}
 	#ifdef PC
 		printf("End of file: %lu \n\r", addr);
+	#else
+		display_cursor(3,1);
+		display_printf("End:0x%04x", addr>>9);
 	#endif	
 	return 0;
 }
