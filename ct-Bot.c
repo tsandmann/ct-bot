@@ -374,6 +374,10 @@ void init(void){
 									mmc_read_csd(csd);
 									display_printf("MMC= %4d MByte ",size >> 20);
 								}
+								#ifdef MAP_AVAILABLE
+									map_init();
+								#endif
+								
 								#ifndef MMC_WRITE_TEST_AVAILABLE
 									display_cursor(3,1);
 									for (i=0;i<16;i++){
