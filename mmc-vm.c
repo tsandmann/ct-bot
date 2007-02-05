@@ -53,7 +53,7 @@
 	#define swap_space	mmc_get_size()
 #else
 	#define MMC_START_ADDRESS 0x1000000	// [512;2^32-1]
-	#define MAX_SPACE_IN_SRAM 2			// [1;127] - Pro Page werden 512 Byte im RAM belegt, sobald diese verwendet wird
+	#define MAX_SPACE_IN_SRAM 5			// [1;127] - Pro Page werden 512 Byte im RAM belegt, sobald diese verwendet wird
 	#define swap_out	mmc_emu_write_sector
 	#define swap_in		mmc_emu_read_sector
 	#define swap_space	mmc_emu_get_size()
@@ -243,21 +243,34 @@ uint8 mmc_load_page(uint32 addr){
 	int8 cacheblock = mmc_get_cacheblock_of_page(addr); 
 	if (cacheblock >= 0){	// Cache-Hit, Seite ist bereits geladen :)
 		/* LRU */	
+//		printf("hit: cacheblock: %d\t", cacheblock);
 		#if MAX_PAGES_IN_SRAM > 2
-			if (recent_cacheblock == cacheblock) page_cache[cacheblock].succ = cacheblock;	// Nachfolger des neuesten Eintrags ist die Identitaet
+			if (recent_cacheblock == cacheblock){
+				page_cache[cacheblock].succ = cacheblock;	// Nachfolger des neuesten Eintrags ist die Identitaet
+//				printf("3) %d.succ: %d\t", recent_cacheblock, cacheblock);
+			}
 			if (oldest_cacheblock == cacheblock){
 				oldest_cacheblock = page_cache[cacheblock].succ;	// Nachfolger ist neuer aeltester Eintrag
 				page_cache[page_cache[cacheblock].succ].prec = oldest_cacheblock;	// Vorgaenger der Nachfolgers ist seine Identitaet				
 			}  
 			else{
 				page_cache[page_cache[cacheblock].prec].succ = page_cache[cacheblock].succ;	// Nachfolger des Vorgaengers ist eigener Nachfolger
+//				printf("1) %d.succ: %d\t", page_cache[cacheblock].prec, page_cache[cacheblock].succ);
 				page_cache[page_cache[cacheblock].succ].prec = page_cache[cacheblock].prec;	// Vorganeger des Nachfolgers ist eigener Vorgaenger
+//				printf("2) %d.prec: %d\t", page_cache[cacheblock].succ, page_cache[cacheblock].prec); 
 			}
-			page_cache[cacheblock].prec = recent_cacheblock;	// alter neuester Eintrag ist neuer Vorgaenger
+			if (recent_cacheblock != cacheblock){
+				page_cache[recent_cacheblock].succ = cacheblock;
+//				printf("3) %d.succ: %d\t", recent_cacheblock, cacheblock);
+				page_cache[cacheblock].prec = recent_cacheblock;	// alter neuester Eintrag ist neuer Vorgaenger
+//				printf("4) %d.prec: %d\t", cacheblock, page_cache[cacheblock].prec);
+			}
 		#else
 			oldest_cacheblock = (pages_in_sram - 1) - cacheblock;	// aeltester Eintrag ist nun der andere Cacheblock (wenn verfuegbar)
 		#endif
 		recent_cacheblock = cacheblock;						// neuester Eintrag ist nun die Identitaet
+//		printf("recent: %d\t", recent_cacheblock);
+//		printf("oldest: %d\n", oldest_cacheblock);
 		return 0;
 	}
 	/* Cache-Miss => neue Seite einlagern, LRU Policy */
@@ -294,8 +307,12 @@ uint8 mmc_load_page(uint32 addr){
 	#else
 		if (swap_in(mmc_get_mmcblock_of_page(addr), page_cache[next_cacheblock].p_data) != 0) return 3;
 	#endif
+//	printf("miss: cacheblock: %d\t", next_cacheblock);
 	#if MAX_PAGES_IN_SRAM > 2
-		oldest_cacheblock = page_cache[oldest_cacheblock].succ;	// Nachfolger des aeltesten Eintrags ist neuer aeltester Eintrag
+		if (oldest_cacheblock == next_cacheblock){
+			oldest_cacheblock = page_cache[next_cacheblock].succ;	// Nachfolger ist neuer aeltester Eintrag
+//			printf("1) %d.succ: %d\t", next_cacheblock, page_cache[next_cacheblock].succ);
+		}
 	#else
 		oldest_cacheblock = (pages_in_sram - 1) - next_cacheblock;	// neuer aeltester Eintrag ist nun der andere Cacheblock (wenn verfuegbar)
 	#endif
@@ -303,9 +320,13 @@ uint8 mmc_load_page(uint32 addr){
 	/* LRU */
 	#if MAX_PAGES_IN_SRAM > 2
 		page_cache[next_cacheblock].prec = recent_cacheblock;	// Vorgaenger dieses Cacheblocks ist der bisher neueste Eintrag
-		page_cache[recent_cacheblock].succ = next_cacheblock;	// Nachfolger des bisher neuesten Eintrags ist dieser Cacheblock  
+//		printf("2) %d.prec: %d\t", next_cacheblock, page_cache[next_cacheblock].prec);
+		page_cache[recent_cacheblock].succ = next_cacheblock;	// Nachfolger des bisher neuesten Eintrags ist dieser Cacheblock
+//		printf("3) %d.succ: %d\t", recent_cacheblock, page_cache[recent_cacheblock].succ);
 	#endif
 	recent_cacheblock = next_cacheblock;					// Dieser Cacheblock ist der neueste Eintrag
+//	printf("recent: %d\t", recent_cacheblock);
+//	printf("oldest: %d\n", oldest_cacheblock);	
 	return 0;
 }
 

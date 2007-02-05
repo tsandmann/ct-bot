@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-02-05 Timo Sandmann [mail@timosandmann.de]: Bugfix in mmc-vm.c, Sonderfaelle bei LRU waren nur unvollstaendig behandelt.
+
 2007-01-29 Benjamin Benz [bbe@heise.de]: Map wird jedesmal neu gesucht, wenn die MMC-Seite offen ist UND sich der Init-Status der Karte aendert
 
 2007-01-29 Timo Sandmann [mail@timosandmann.de]: Bugfix in mini-fat.c - sofortiger Abbruch bei Fehler
