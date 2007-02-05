@@ -167,6 +167,10 @@ extern void log_printf(char *format, ...);
  */
 extern void log_end(void);
 
+#ifdef LOG_MMC_AVAILABLE
+	uint8 log_mmc_init(void);
+#endif
+
 #endif	/* LOG_AVAILABLE */
 
 #endif /*LOG_H_*/

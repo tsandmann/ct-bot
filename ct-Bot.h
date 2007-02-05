@@ -36,6 +36,7 @@
 //#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display (PC und MCU) */
 //#define LOG_UART_AVAILABLE		/*!< Logging ueber UART (NUR für MCU) */
 #define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (NUR für PC) */
+//#define LOG_MMC_AVAILABLE			/*!< Logging in eine txt-Datei auf MMC */
 
 
 #define LED_AVAILABLE		/*!< LEDs for local control */
@@ -183,6 +184,9 @@
 #ifdef LOG_STDOUT_AVAILABLE
 	#define LOG_AVAILABLE
 #endif 
+#ifdef LOG_MMC_AVAILABLE
+	#define LOG_AVAILABLE
+#endif
 
 #ifndef MMC_AVAILABLE
 	#undef MINI_FAT_AVAILABLE
@@ -239,12 +243,18 @@
 		#undef LOG_STDOUT_AVAILABLE
 	#endif
 
+	#ifndef MMC_VM_AVAILABLE
+		#undef LOG_MMC_AVAILABLE
+	#endif 
+	
 	// Wenn keine sinnvolle Log-Option mehr uebrig, loggen wir auch nicht
 	#ifndef LOG_CTSIM_AVAILABLE
 		#ifndef LOG_DISPLAY_AVAILABLE
 			#ifndef LOG_UART_AVAILABLE
 				#ifndef LOG_STDOUT_AVAILABLE
-					#undef LOG_AVAILABLE
+					#ifndef LOG_MMC_AVAILABLE
+						#undef LOG_AVAILABLE
+					#endif
 				#endif
 			#endif
 		#endif

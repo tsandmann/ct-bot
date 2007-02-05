@@ -41,6 +41,7 @@
 #include "display.h"
 #include "command.h"
 #include "uart.h"
+#include "mmc-vm.h"
 
 #ifdef LOG_AVAILABLE
 
@@ -71,6 +72,12 @@
 	/*! Hebt den Schutz fuer den Ausgabepuffer wieder auf */
 	#define UNLOCK()	/* TODO */
 #endif	/* PC */
+
+#ifdef LOG_MMC_AVAILABLE
+	static uint32 log_file;
+	static uint32 log_file_end=0;
+	#define LOG_FILENAME "log.txt"
+#endif	/* LOG_MMC_AVAILABLE */
 
 /*!
  * Liefert den Log-Typ als String.
@@ -215,11 +222,46 @@ extern void log_end(void) {
 	#ifdef LOG_STDOUT_AVAILABLE
 		printf("%s\n", log_buffer);
 	#endif	/* LOG_STDOUT_AVAILABLE */
+	
+	#ifdef LOG_MMC_AVAILABLE
+		static uint16 f_offset = 512;	// Init erzwingt Ueberlauf im ersten Aufruf, damit p_file geholt wird
+		static uint8* p_file;
+		uint8 len = strlen(log_buffer);	// |log_buffer| < 256
+		if (f_offset + len > 512){
+			/* der Log-Puffer passt nicht mehr komplett in den aktuellen Block */
+			f_offset = 0;
+			log_file += 512;	// naechster Block
+			if (log_file > log_file_end){
+				/* Dateiende wurde erreicht */
+				p_file = NULL;
+				mmc_flush_cache();	// Logging ist "am Ende" => es ist an der Zeit alle Daten auf die Karte zurueckzuschreiben
+				return;
+			}
+			p_file = mmc_get_data(log_file);
+		}
+		if (p_file == NULL) return;
+		*p_file++ = '\n';	// neue Zeile fuer jeden Log-Aufruf
+		/* Log-Puffer uebertragen und Dateizeiger fortschreiben */
+		memcpy(p_file, log_buffer, len);
+		p_file += len;
+		f_offset += len + 1;
+	#endif	/* LOG_MMC_AVAILABLE */
 
 	UNLOCK();
 	
 	return;
 }
+
+#ifdef LOG_MMC_AVAILABLE
+	uint8 log_mmc_init(void){
+		/* Log-Datei oeffnen und Dateiende merken */
+		log_file = mmc_fopen(LOG_FILENAME);
+		if (log_file == 0) return 1;	// Fehler :(
+		log_file_end = log_file + mmc_get_filesize(log_file);
+		log_file -= 512;	// denn beim ersten Logging springen wir in den Block-Ueberlauf-Fall
+		return 0;	
+	}
+#endif	/* LOG_MMC_AVAILABLE */
 
 #ifdef LOG_DISPLAY_AVAILABLE
 

@@ -179,7 +179,10 @@ void init(void){
 	#ifdef MAP_AVAILABLE
 		map_init();
 	#endif
-	
+		
+	#ifdef LOG_MMC_AVAILABLE
+		log_mmc_init();
+	#endif
 	
 	#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
 	    behaviour_page = 1;
