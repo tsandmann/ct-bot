@@ -156,19 +156,19 @@ void bot_behave_init(void){
 	// activateBehaviour(bot_simple_behaviour);
 	// activateBehaviour(bot_simple2_behaviour);
 
-	#ifdef PC
-		#ifdef DISPLAY_AVAILABLE
-			/* Anzeigen der geladenen Verhalten  */
-				Behaviour_t	*ptr	= behaviour;
-	
-				display_cursor(5,1);
-				display_printf("Verhaltensstack:\n");
-				while(ptr != NULL)	{
-					display_printf("Prioritaet: %d.\n", ptr->priority);
-					ptr = ptr->next;
-				}
-		#endif
-	#endif
+//	#ifdef PC
+//		#ifdef DISPLAY_AVAILABLE
+//			/* Anzeigen der geladenen Verhalten  */
+//				Behaviour_t	*ptr	= behaviour;
+//	
+//				display_cursor(5,1);
+//				display_printf("Verhaltensstack:\n");
+//				while(ptr != NULL)	{
+//					display_printf("Prioritaet: %d.\n", ptr->priority);
+//					ptr = ptr->next;
+//				}
+//		#endif
+//	#endif
 }
 
 
