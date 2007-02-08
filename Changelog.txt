@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-02-08 Benjamin Benz [bbe@heise.de]: Bugfix in maus_sens_write_byte()
+
 2007-02-05 Timo Sandmann [mail@timosandmann.de]: Logging um LOG_MMC_AVAILABLE ergaenzt. Logausgaben werden dabei in die Datei "log.txt" auf die MMC / SD-Karte geschrieben und lassen sich somit komfortabel am PC anzeigen.
 
 2007-02-05 Timo Sandmann [mail@timosandmann.de]: Bugfix in mmc-vm.c, Sonderfaelle bei LRU waren nur unvollstaendig behandelt.

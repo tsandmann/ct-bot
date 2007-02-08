@@ -57,7 +57,7 @@ void maus_sens_writeByte(uint8 data){
 		MAUS_PORT &= ~MAUS_SCK_PIN;		// SCK auf Low, vorbereiten
 		
 		//Daten rausschreiben
-		MAUS_PORT = (MAUS_PORT & (~MAUS_SDA_PINR)) |  ((data >> (7 - MAUS_SDA_NR)) & MAUS_SDA_PIN);	
+		MAUS_PORT = (MAUS_PORT & (~MAUS_SDA_PIN)) |  ((data >> (7 - MAUS_SDA_NR)) & MAUS_SDA_PIN);	
 		data = data <<1;		// naechstes Bit vorbereiten
 		asm volatile("nop"); 			// Etwas warten 
 		
