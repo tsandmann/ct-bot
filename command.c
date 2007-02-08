@@ -42,6 +42,7 @@
 #include "ir-rc5.h"
 #include "bot-logic/bot-logik.h"
 #include "bot-2-pc.h"
+#include "uart.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -49,6 +50,12 @@
 #ifdef PC
 	#include "tcp.h"
 	#include <pthread.h>	
+#endif
+
+#ifdef NEW_AVR_LIB
+	#include <util/delay.h>
+#else
+	#include <avr/delay.h>
 #endif
 
 #define COMMAND_TIMEOUT 	10		/*!< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
@@ -293,12 +300,11 @@ void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* d
 			for (pixel=0; pixel <54; pixel++){
 				data= maus_image_read();
 				low_write_data((uint8 *)&data,1);
-				// TODO Haesslicher Hack. Das Delay sollte so kurz wie moeglich sein. Es wurde noetig, weil mit 57600 die uebertraghung so schnell geht, dass der Maussensor ueberfahren wird. mit 9600 Baud ist alles noch ok
-				delay(2);	// delay(2) geht, es muesste aber auch deutlich weniger reichen!!!!
-				
+				#if BAUDRATE > 17777	// Grenzwert: 8 Bit / 450 us = 17778 Baud
+					_delay_loop_2(1800);	// warten, weil Sendezeit < Maussensordelay (450 us)
+				#endif
 			}
 		}
-	
 	}
 #endif
 
