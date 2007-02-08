@@ -293,6 +293,9 @@ void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* d
 			for (pixel=0; pixel <54; pixel++){
 				data= maus_image_read();
 				low_write_data((uint8 *)&data,1);
+				// TODO Haesslicher Hack. Das Delay sollte so kurz wie moeglich sein. Es wurde noetig, weil mit 57600 die uebertraghung so schnell geht, dass der Maussensor ueberfahren wird. mit 9600 Baud ist alles noch ok
+				delay(2);	// delay(2) geht, es muesste aber auch deutlich weniger reichen!!!!
+				
 			}
 		}
 	

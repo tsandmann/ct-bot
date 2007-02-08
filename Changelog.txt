@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-02-08 Benjamin Benz [bbe@heise.de]: Temporaerer Bugfix fuer das Muassensorbild
+
 2007-02-08 Benjamin Benz [bbe@heise.de]: Ueberfluessige Logausgaben aus bot_behave_init rausgenommen
 
 2007-02-08 Benjamin Benz [bbe@heise.de]: Bugfix in maus_sens_write_byte()
