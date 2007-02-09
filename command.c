@@ -52,10 +52,12 @@
 	#include <pthread.h>	
 #endif
 
-#ifdef NEW_AVR_LIB
-	#include <util/delay.h>
-#else
-	#include <avr/delay.h>
+#ifdef MCU
+	#ifdef NEW_AVR_LIB
+		#include <util/delay.h>
+	#else
+		#include <avr/delay.h>
+	#endif
 #endif
 
 #define COMMAND_TIMEOUT 	10		/*!< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
@@ -300,8 +302,10 @@ void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* d
 			for (pixel=0; pixel <54; pixel++){
 				data= maus_image_read();
 				low_write_data((uint8 *)&data,1);
-				#if BAUDRATE > 17777	// Grenzwert: 8 Bit / 450 us = 17778 Baud
-					_delay_loop_2(1800);	// warten, weil Sendezeit < Maussensordelay (450 us)
+				#ifdef MCU
+					#if BAUDRATE > 17777	// Grenzwert: 8 Bit / 450 us = 17778 Baud
+						_delay_loop_2(1800);	// warten, weil Sendezeit < Maussensordelay (450 us)
+					#endif
 				#endif
 			}
 		}
