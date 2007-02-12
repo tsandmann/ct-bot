@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-02-12 Timo Sandmann [mail@timosandmann.de]: Mit der neuen GUI angefangen
+
 2007-02-09 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Mausbild-Bugfix auf PC
 
 2007-02-08 Timo Sandmann [mail@timosandmann.de]: (Final-)Bugfix fuer Maussensorbild bei 57600 Baud

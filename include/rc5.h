@@ -30,4 +30,6 @@
  * Liest ein RC5-Codeword und wertet es aus
  */
 void rc5_control(void);
+
+void default_key_handler(void);
 #endif

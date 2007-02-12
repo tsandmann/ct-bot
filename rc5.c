@@ -30,11 +30,7 @@
 #include "ir-rc5.h"
 #include "display.h"
 #include "motor-low.h"
-
 #include "rc5-codes.h"
-
-
-
 #include <stdlib.h>
 
 #ifdef RC5_AVAILABLE
@@ -129,10 +125,10 @@ static RemCtrlAction gRemCtrlAction[] = {
 	/* RC5-Code,		Funktion,				Parameter */
 	{ RC5_CODE_PWR,		rc5_emergency_stop,		{ 0, 0 } },
 	#ifdef BEHAVIOUR_AVAILABLE
-		{ RC5_CODE_UP,		rc5_bot_change_speed,	{ 10, 10 } },
-		{ RC5_CODE_DOWN,		rc5_bot_change_speed,	{ -10, -10 } },
-		{ RC5_CODE_LEFT,		rc5_bot_change_speed,	{ 0, 10 } },
-		{ RC5_CODE_RIGHT,	rc5_bot_change_speed,	{ 10, 0 } },
+		{ RC5_CODE_UP,		rc5_bot_change_speed,	{ 10,	10	} },
+		{ RC5_CODE_DOWN,	rc5_bot_change_speed,	{ -10,	-10 } },
+		{ RC5_CODE_LEFT,	rc5_bot_change_speed,	{ -10,	10 	} },
+		{ RC5_CODE_RIGHT,	rc5_bot_change_speed,	{ 10,	-10	} },
 	#endif
 	
 	{ RC5_CODE_0,		rc5_number,		        { 0, 0 } },
@@ -145,7 +141,7 @@ static RemCtrlAction gRemCtrlAction[] = {
 	{ RC5_CODE_7,		rc5_number,			    { 7, 7 } },
 	{ RC5_CODE_8,		rc5_number,			    { 8, 8 } },
 	{ RC5_CODE_9,		rc5_number,			    { 9, 9 } },
-	{ RC5_CODE_I_II,	rc5_bot_next_behaviour,	{ 0, 0 } },
+//	{ RC5_CODE_I_II,	rc5_bot_next_behaviour,	{ 0, 0 } },
 #ifdef BEHAVIOUR_SERVO_AVAILABLE	
 	{ RC5_CH_PLUS,		rc5_bot_servo,			{ SERVO1, DOOR_CLOSE } },
 	{ RC5_CH_MINUS,		rc5_bot_servo,			{ SERVO1, DOOR_OPEN } },
@@ -181,64 +177,64 @@ static RemCtrlAction gRemCtrlAction[] = {
  * Fuer die Verhaltensausgabe werden hier die Verhalten durchgeblaettert
  * @param par Parameter mit dem zu setzenden Screen.
  */	
-#ifdef DISPLAY_SCREENS_AVAILABLE
+//#ifdef DISPLAY_SCREENS_AVAILABLE
 static void rc5_screen_set(RemCtrlFuncPar *par) {
 	if (par) {
 		if (par->value1 == DISPLAY_SCREEN_TOGGLE) {
 				
-		  #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-		     /* erst nachsehen, ob noch weitere Verhalten auf anderen Pages vorhanden sind */
-		     /* nur neuer Screen, wenn alle Verhalten angezeigt wurden */
-		     if ((display_screen == 2) && (another_behaviour_page())
-		     ) 
-		           behaviour_page++;
-		     else {
-		     	display_screen ++;
-		     	 
-			       if (display_screen == 1) {
-			         behaviour_page = 1;
-			          #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
-			            set_behaviours_equal();
-			          #endif
-			       }
-			   
-		         }
-	    
-	    	#else
-		      display_screen ++;
-		    #endif     
-	      
-	    
+//		  #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+//		     /* erst nachsehen, ob noch weitere Verhalten auf anderen Pages vorhanden sind */
+//		     /* nur neuer Screen, wenn alle Verhalten angezeigt wurden */
+//		     if ((display_screen == 2) && (another_behaviour_page())
+//		     ) 
+//		           behaviour_page++;
+//		     else {
+//		     	display_screen ++;
+//		     	 
+//			       if (display_screen == 1) {
+//			         behaviour_page = 1;
+//			          #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+//			            set_behaviours_equal();
+//			          #endif
+//			       }
+//			   
+//		         }
+//	    
+//	    	#else
+		      display_screen++;
+//		    #endif     
+//	      
+//	    
 		}
 		else 
 		{
-		  /* Screen direkt waehlen */	 
-		  #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-			
-			  /* Screen direkt waehlen und Verhaltens-Puffervariablen abgleichen*/
-			  display_screen = par->value1;
-			  
-			  // bei dyn. Anzeige und Auswahl keine Ubernahme in Puffervariable benoetigt
-			  #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
-		        if ((display_screen == 2)&& (behaviour_page == 1)) {	      
-			       set_behaviours_equal();
-			     }  
-			  #endif
-			  behaviour_page = 1;
-			  
-		   #else
+//		  /* Screen direkt waehlen */	 
+//		  #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+//			
+//			  /* Screen direkt waehlen und Verhaltens-Puffervariablen abgleichen*/
+//			  display_screen = par->value1;
+//			  
+//			  // bei dyn. Anzeige und Auswahl keine Ubernahme in Puffervariable benoetigt
+//			  #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+//		        if ((display_screen == 2)&& (behaviour_page == 1)) {	      
+//			       set_behaviours_equal();
+//			     }  
+//			  #endif
+//			  behaviour_page = 1;
+//			  
+//		   #else
 		     /* Screen direkt waehlen */
 			  display_screen = par->value1;
-		   #endif
+//		   #endif
 		}
 
 		
-		display_screen %= DISPLAY_SCREENS;
-		display_clear();
-		
+//		display_screen %= DISPLAY_SCREENS;
+		if (display_screen >= DISPLAY_SCREENS) display_screen = 0;
+//		display_clear();
 	}
 }
-#endif
+//#endif
 
 #ifdef BEHAVIOUR_SERVO_AVAILABLE 
 	/*! Steuert den Servo an
@@ -248,50 +244,51 @@ static void rc5_screen_set(RemCtrlFuncPar *par) {
 			bot_servo(0,par->value1,par->value2);
 	}
 #endif
-/*!
- * Diese Funktion wechselt zwiaschen verschiednen Verhalten
- * @param par Parameter mit den zu setzenden Geschwindigkeiten.
- */	
-void rc5_bot_next_behaviour(RemCtrlFuncPar *par) {
 
-	static uint8 state =0;
-
-	state++;
-	
-	switch (state) {
-		case 0: 
-			break;
-		#ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
-			case 1: activateBehaviour(bot_drive_square_behaviour);
-				break;
-		#endif
-		case 2: 
-				 #ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
-						deactivateBehaviour(bot_drive_square_behaviour);
-				 #endif
-				 #ifdef BEHAVIOUR_GOTO_AVAILABLE
-					 deactivateBehaviour(bot_goto_behaviour); 
-				 #endif
-				 #ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
-					 activateBehaviour(bot_olympic_behaviour);
-				 #endif
-			break;
-		default:
-			#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
-				deactivateBehaviour( bot_drive_distance_behaviour);
-			#endif
-			#ifdef BEHAVIOUR_TURN_AVAILABLE
-				deactivateBehaviour( bot_turn_behaviour);
-			#endif
-			#ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
-				deactivateBehaviour(bot_olympic_behaviour);
-				deactivateBehaviour( bot_explore_behaviour);
-				deactivateBehaviour( bot_do_slalom_behaviour);
-			#endif
-		
-			state=0;
-	}
-}
+///*!
+// * Diese Funktion wechselt zwiaschen verschiednen Verhalten
+// * @param par Parameter mit den zu setzenden Geschwindigkeiten.
+// */	
+//void rc5_bot_next_behaviour(RemCtrlFuncPar *par) {
+//
+//	static uint8 state =0;
+//
+//	state++;
+//	
+//	switch (state) {
+//		case 0: 
+//			break;
+//		#ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
+//			case 1: activateBehaviour(bot_drive_square_behaviour);
+//				break;
+//		#endif
+//		case 2: 
+//				 #ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
+//						deactivateBehaviour(bot_drive_square_behaviour);
+//				 #endif
+//				 #ifdef BEHAVIOUR_GOTO_AVAILABLE
+//					 deactivateBehaviour(bot_goto_behaviour); 
+//				 #endif
+//				 #ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
+//					 activateBehaviour(bot_olympic_behaviour);
+//				 #endif
+//			break;
+//		default:
+//			#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+//				deactivateBehaviour( bot_drive_distance_behaviour);
+//			#endif
+//			#ifdef BEHAVIOUR_TURN_AVAILABLE
+//				deactivateBehaviour( bot_turn_behaviour);
+//			#endif
+//			#ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
+//				deactivateBehaviour(bot_olympic_behaviour);
+//				deactivateBehaviour( bot_explore_behaviour);
+//				deactivateBehaviour( bot_do_slalom_behaviour);
+//			#endif
+//		
+//			state=0;
+//	}
+//}
 
 #ifdef JOGDIAL
 /*!
@@ -319,13 +316,13 @@ static void rc5_bot_set_speed(RemCtrlFuncPar *par) {
 		    
 		    // Alle Verhalten deaktivieren
 		    deactivateAllBehaviours();  // alle Verhalten deaktivieren mit vorheriger Sicherung
-		     #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-		        // bei dynamischer Verhaltensanzeige kein Sprung in Anzeigescreen 
-		        #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
-		         display_clear();         // Screen zuerst loeschen
-		         display_screen = 2;      // nach Notstop in den Verhaltensscreen mit Anzeige der alten Verhalten
-		        #endif
-		     #endif
+//		     #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+//		        // bei dynamischer Verhaltensanzeige kein Sprung in Anzeigescreen 
+//		        #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+//		         display_clear();         // Screen zuerst loeschen
+//		         display_screen = 2;      // nach Notstop in den Verhaltensscreen mit Anzeige der alten Verhalten
+//		        #endif
+//		     #endif
 		#endif
 }
  
@@ -341,11 +338,19 @@ static void rc5_bot_set_speed(RemCtrlFuncPar *par) {
 			target_speed_l += par->value1;
 			if ((target_speed_l < -BOT_SPEED_MAX)|| (target_speed_l > BOT_SPEED_MAX))
 				target_speed_l = old;
+			if (target_speed_l < BOT_SPEED_SLOW && target_speed_l > 0)
+				target_speed_l = BOT_SPEED_SLOW;
+			else if (target_speed_l > -BOT_SPEED_SLOW && target_speed_l < 0)
+				target_speed_l = -BOT_SPEED_SLOW;
 			
 			old=target_speed_r;		
 			target_speed_r += par->value2;
 			if ((target_speed_r <-BOT_SPEED_MAX)||(target_speed_r > BOT_SPEED_MAX))
 				target_speed_r = old;
+			if (target_speed_r < BOT_SPEED_SLOW && target_speed_r > 0)
+				target_speed_r = BOT_SPEED_SLOW;
+			else if (target_speed_r > -BOT_SPEED_SLOW && target_speed_r < 0)
+				target_speed_r = -BOT_SPEED_SLOW;
 		}
 	}
 #endif
@@ -354,63 +359,79 @@ static void rc5_bot_set_speed(RemCtrlFuncPar *par) {
  * Liest ein RC5-Codeword und wertet es aus
  */
 void rc5_control(void){
-	uint16 run;
 	static uint16 RC5_Last_Toggle = 1;   /*!< Toggle-Wert des zuletzt empfangenen RC5-Codes*/
 	 
 	uint16 rc5 = ir_read();
 	
-	if (rc5 != 0) {
+	if (rc5 != 0){
 		RC5_Code= rc5 & RC5_MASK;	/* Alle uninteressanten Bits ausblenden */
 		/* Toggle kommt nicht im Simulator, immer gewechseltes Toggle Bit sicherstellen */ 
 		#ifdef PC
 		  RC5_Last_Toggle = !(rc5 & RC5_TOGGLE);
 		#endif
 		/* Bei Aenderung des Toggle Bits, entspricht neuem Tastendruck, gehts nur weiter */
-		if ((rc5 & RC5_TOGGLE)   != RC5_Last_Toggle) {	/* Nur Toggle Bit abfragen, bei Ungleichheit weiter */
+		if ((rc5 & RC5_TOGGLE)   != RC5_Last_Toggle){	/* Nur Toggle Bit abfragen, bei Ungleichheit weiter */
 		  RC5_Last_Toggle = rc5 & RC5_TOGGLE;           /* Toggle Bit neu belegen */
 		
-		   /* Suchen der auszufuehrenden Funktion */
-		   for(run=0; run<sizeof(gRemCtrlAction)/sizeof(RemCtrlAction); run++) {
-			   /* Funktion gefunden? */
-			   if (gRemCtrlAction[run].command == RC5_Code) {
-				   /* Funktion ausfuehren */
-				   gRemCtrlAction[run].func(&gRemCtrlAction[run].par);
-			   }
-		   }
+//		   /* Suchen der auszufuehrenden Funktion */
+//		   for(run=0; run<sizeof(gRemCtrlAction)/sizeof(RemCtrlAction); run++) {
+//			   /* Funktion gefunden? */
+//			   if (gRemCtrlAction[run].command == RC5_Code) {
+//				   /* Funktion ausfuehren */
+//				   gRemCtrlAction[run].func(&gRemCtrlAction[run].par);
+//			   }
+//		   }
 		}
 	}
 }
 
-#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-/*! 
- * toggled ein Verhalten der Verhaltensliste an Position pos,
- * die Aenderung erfolgt nur auf die Puffervariable  
- * @param i Verhaltens-Listenposition, entspricht der Taste 1-6 der gewaehlten Verhaltensseite
- */	
-  void rc5_toggle_behaviour_new(int8 i) {
-	
-		  toggleNewBehaviourPos(i);	
-  } 
-  
-/*!
- * Diese Funktion setzt die Aktivitaeten der Verhalten nach der Auswahl.
- * Hierdurch erfolgt der Startschuss fuer Umschaltung der Verhalten
- * nicht verwendet bei sofortiger Anzeige und Auswahl der Aktivitaet
- */	  
-  #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
-   static void rc5_set_all_behaviours(void) {
-	   
-		  set_behaviours_active_to_new();
-	    
-   }
-  #endif
-#endif  
+void default_key_handler(void){
+	uint16 run;
+   /* Suchen der auszufuehrenden Funktion */
+   for(run=0; run<sizeof(gRemCtrlAction)/sizeof(RemCtrlAction); run++) {
+	   /* Funktion gefunden? */
+	   if (gRemCtrlAction[run].command == RC5_Code) {
+		   /* Funktion ausfuehren */
+		   gRemCtrlAction[run].func(&gRemCtrlAction[run].par);
+	   }
+   }	
+}
+
+//#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+///*! 
+// * toggled ein Verhalten der Verhaltensliste an Position pos,
+// * die Aenderung erfolgt nur auf die Puffervariable  
+// * @param i Verhaltens-Listenposition, entspricht der Taste 1-6 der gewaehlten Verhaltensseite
+// */	
+//  void rc5_toggle_behaviour_new(int8 i) {
+//	
+//		  toggleNewBehaviourPos(i);	
+//  } 
+//  
+///*!
+// * Diese Funktion setzt die Aktivitaeten der Verhalten nach der Auswahl.
+// * Hierdurch erfolgt der Startschuss fuer Umschaltung der Verhalten
+// * nicht verwendet bei sofortiger Anzeige und Auswahl der Aktivitaet
+// */	  
+//  #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+//   static void rc5_set_all_behaviours(void) {
+//	   
+//		  set_behaviours_active_to_new();
+//	    
+//   }
+//  #endif
+//#endif  
 
 /*!
  * Verarbeitet die Zifferntasten in Abhaengigkeit vom eingestelltem Screen
  * @param par Parameter mit der betaetigten Zahlentaste.
  */
 void rc5_number(RemCtrlFuncPar *par) {
+//	#ifdef SPEED_LOG_AVAILABLE
+//		uint8 i;
+//		uint8 index=0;
+//		char buffer[24];
+//	#endif // SPEED_LOG_AVAILABLE	
 	#ifdef DISPLAY_SCREENS_AVAILABLE 
 	switch (display_screen) {
 		#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
@@ -441,37 +462,34 @@ void rc5_number(RemCtrlFuncPar *par) {
 					target_speed_l=0;target_speed_r=0;break;
 					case 1: target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
 				#endif
-				#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
-					case 2: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
-				#endif
-			//	case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
-				#ifdef MAP_AVAILABLE
-					case 3: print_map(); break;
-				#endif
+				case 2:
+					#ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
+							bot_drive_square(0, 15);
+					#endif							
+					break;				
+				case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
 //				case 4: bot_turn(0, 90); break;
 				#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 					case 4: bot_catch_pillar(0); break;
+				#else
+					#ifdef VM_STATS_AVAILABLE
+						case 4: mmc_print_statistic(); break;
+					#endif
 				#endif
-				#ifdef BEHAVIOUR_SCAN_AVAILABLE
-//					case 4: bot_scan(0); break;
-				#endif
-//				//case 5: bot_goto(0, 0, 0); break;
-//				#ifdef MEASURE_MOUSE_AVAILABLE
-//					case 5: bot_gotoxy(0,20,20);
-//				#else
-
-//				case 5: remote_call_list/); break;
-
-
+//					//case 5: bot_goto(0, 0, 0); break;
+//					#ifdef MEASURE_MOUSE_AVAILABLE
+//						case 5: bot_gotoxy(0,20,20);
+//					#else
 				#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 					case 5: bot_solve_maze(0); break;
 				#endif
-				
-//				case 5: target_speed_l = BOT_SPEED_MAX; target_speed_r = BOT_SPEED_MAX; break;
-//				#endif
-//				case 5: bot_scan(0); break;
+//					case 5: target_speed_l = BOT_SPEED_MAX; target_speed_r = BOT_SPEED_MAX; break;
+//					#endif
+//					case 5: bot_scan(0); break;
 				#ifdef BEHAVIOUR_TURN_AVAILABLE
 					case 6: bot_turn(0, -90); break;
+				#endif
+				#ifdef BEHAVIOUR_TURN_AVAILABLE
 					case 7: bot_turn(0,180); break;
 					case 9: bot_turn(0, -180); break;
 				#endif
@@ -498,5 +516,5 @@ void rc5_number(RemCtrlFuncPar *par) {
 		
  	}
  	#endif
- }	
+ }
 #endif
