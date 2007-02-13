@@ -34,9 +34,9 @@
 ************************************************************/
 //#define LOG_CTSIM_AVAILABLE		/*!< Logging ueber das ct-Sim (PC und MCU) */
 //#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display (PC und MCU) */
-//#define LOG_UART_AVAILABLE		/*!< Logging ueber UART (NUR für MCU) */
-#define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (NUR für PC) */
-//#define LOG_MMC_AVAILABLE			/*!< Logging in eine txt-Datei auf MMC */
+//#define LOG_UART_AVAILABLE			/*!< Logging ueber UART (NUR für MCU) */
+//#define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (NUR für PC) */
+//#define LOG_MMC_AVAILABLE			/*!< Logging in eine txt-Datei auf MMC */			
 
 
 #define LED_AVAILABLE		/*!< LEDs for local control */
@@ -50,13 +50,8 @@
 
 #define DISPLAY_AVAILABLE	/*!< Display for local control */
 #define DISPLAY_REMOTE_AVAILABLE /*!< Sende LCD Anzeigedaten an den Simulator */
-#define DISPLAY_SCREENS_AVAILABLE	/*!< Ermoeglicht vier verschiedene Screen */
-//#define DISPLAY_SCREEN_RESETINFO	/*!< Zeigt auf Screen 4 Informationen ueber Resets an */
-//#define DISPLAY_ODOMETRIC_INFO 	/*!< Zeigt auf Screen 4 Positions- und Geschwindigkeitsdaten */
-//#define DISPLAY_REGELUNG_AVAILABLE 3 /*!< Zeigt Reglerdaten auf Screen 4, wenn SPEED_CONTROL_AVAILABLE gesetzt ist*/
-#define DISPLAY_MMC_INFO	/*!< Zeigt auf Screen 4 die Daten der MMC-Karte an */
 //#define DISPLAY_BEHAVIOUR_AVAILABLE  /*!< Anzeige der Verhalten im Display Screen 3, ersetzt Counteranzeige */
-#define DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE /*!< Zustandsaenderungen der Verhalten sind direkt unter Umgehung der Puffervar sichtbar */
+//#define DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE /*!< Zustandsaenderungen der Verhalten sind direkt unter Umgehung der Puffervar sichtbar */
 #define MEASURE_MOUSE_AVAILABLE			/*!< Geschwindigkeiten werden aus den Maussensordaten berechnet */
 //#define MEASURE_COUPLED_AVAILABLE		/*!< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
 
@@ -78,9 +73,13 @@
 
 #define BEHAVIOUR_AVAILABLE /*!< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 
-#define MAP_AVAILABLE /*!< Aktiviere die Kartographie */
+//#define MAP_AVAILABLE /*!< Aktiviere die Kartographie */
 
 //#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
+//#define UPDATE_PWM_TABLE		/*!< aktualisiert die PWM-Lookup-Table regelmaessig */
+//#define SPEED_LOG_AVAILABLE 
+//#define VARIABLE_PWM_F
+//#define ADJUST_PID_PARAMS		/*!< macht PID-Paramter zur Laufzeit per FB einstellbar */
 
 //#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
 
@@ -89,7 +88,7 @@
 //#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
 
 // Achtung, Linkereinstellungen anpassen !!!!! (siehe Documentation/Bootloader.html)!
-//#define BOOTLOADER_AVAILABLE	/*!< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders.*/ 
+//#define BOOTLOADER_AVAILABLE	/*!< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders. Achtung, Linkereinstellungen anpassen (siehe mcu/bootloader.c)! */
 /************************************************************
 * Some Dependencies!!!
 ************************************************************/
@@ -104,8 +103,8 @@
 #ifndef DISPLAY_AVAILABLE
 	#undef WELCOME_AVAILABLE
    #undef DISPLAY_REMOTE_AVAILABLE
-   #undef DISPLAY_SCREENS_AVAILABLE
-   #undef DISPLAY_SCREEN_RESETINFO
+//   #undef DISPLAY_SCREENS_AVAILABLE
+//   #undef DISPLAY_SCREEN_RESETINFO
 #endif
 
 #ifndef IR_AVAILABLE
@@ -160,16 +159,18 @@
 
 #ifdef TEST_AVAILABLE_COUNTER
 	#define TEST_AVAILABLE			/*!< brauchen wir den Testkrams */
-	#define DISPLAY_SCREENS_AVAILABLE
+//	#define DISPLAY_SCREENS_AVAILABLE
 	#define DISPLAY_SCREEN_RESETINFO
 #endif
 
-#ifdef DISPLAY_ODOMETRIC_INFO
-	#undef DISPLAY_SCREEN_RESETINFO		/*!< Wenn Odometrieinfos, dann keine Resetinfos */
-#endif
+//#ifdef DISPLAY_ODOMETRIC_INFO
+//	#undef DISPLAY_SCREEN_RESETINFO		/*!< Wenn Odometrieinfos, dann keine Resetinfos */
+//#endif
 
 #ifndef SPEED_CONTROL_AVAILABLE
 	#undef DISPLAY_REGELUNG_AVAILABLE
+	#undef ADJUST_PID_PARAMS
+	#undef SPEED_LOG_AVAILABLE	
 #endif
 
 #ifdef LOG_UART_AVAILABLE
@@ -218,12 +219,12 @@
 		#undef LOG_DISPLAY_AVAILABLE
 	#endif
 	
-	/* Logging aufs Display ist nur moeglich, wenn mehrere Screens
-	 * unterstuetzt werden.
-	 */
-	#ifndef DISPLAY_SCREENS_AVAILABLE
-		#undef LOG_DISPLAY_AVAILABLE
-	#endif
+//	/* Logging aufs Display ist nur moeglich, wenn mehrere Screens
+//	 * unterstuetzt werden.
+//	 */
+//	#ifndef DISPLAY_SCREENS_AVAILABLE
+//		#undef LOG_DISPLAY_AVAILABLE
+//	#endif
 	
 	/* Es kann immer nur ueber eine Schnittstelle geloggt werden. */
 	
@@ -242,11 +243,11 @@
 	#ifdef LOG_DISPLAY_AVAILABLE
 		#undef LOG_STDOUT_AVAILABLE
 	#endif
-
+	
 	#ifndef MMC_VM_AVAILABLE
 		#undef LOG_MMC_AVAILABLE
 	#endif 
-	
+
 	// Wenn keine sinnvolle Log-Option mehr uebrig, loggen wir auch nicht
 	#ifndef LOG_CTSIM_AVAILABLE
 		#ifndef LOG_DISPLAY_AVAILABLE

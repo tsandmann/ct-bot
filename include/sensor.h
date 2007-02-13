@@ -98,7 +98,7 @@ extern int8 sensors_initialized;	/*!< Wird 1 sobald die Sensorwerte zur Verfügu
 #endif
 
 /*! Sensor_update
-* Kümmert sich um die Weiterverarbeitung der rohen Sensordaten 
+* Kuemmert sich um die Weiterverarbeitung der rohen Sensordaten 
 */
 void sensor_update(void);
 
@@ -108,4 +108,8 @@ void sensor_update(void);
  */
 void sensor_abstand(uint16 left, uint16 right);
 
+#ifdef DISPLAY_AVAILABLE
+	void sensor_display(void);
+	void odometric_display(void);
+#endif
 #endif /*SENSOR_H_*/

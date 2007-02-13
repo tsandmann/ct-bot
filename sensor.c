@@ -28,6 +28,10 @@
 #include "bot-local.h"
 #include "math.h"
 #include "sensor_correction.h"
+#include "ui/available_screens.h"
+#include "display.h"
+#include "sensor.h"
+#include "mouse.h"
 #ifdef SRF10_AVAILABLE
 	#include "srf10.h"
 #endif

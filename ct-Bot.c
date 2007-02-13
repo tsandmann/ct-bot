@@ -50,6 +50,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "global.h"
 #include "display.h"
@@ -77,23 +78,15 @@
 #include "map.h"
 #include "mmc-emu.h"
 #include "mini-fat.h"
+#include "mmc-vm.h"
+#include "math.h"
+#include "gui.h"
+#include "ui/available_screens.h"
 
-/* Nimmt den Status von MCU(C)SR bevor dieses Register auf 0x00 gesetzt wird */
-#ifdef DISPLAY_SCREEN_RESETINFO
-	uint8 reset_flag; 
-#endif
+#ifdef VARIABLE_PWM_F
+	#include "motor-low.h"
+#endif	// VARIABLE_PWM_F
 
-/* Enthaelt den Start des Heaps und ermoeglicht z.B. die Berechnung des verwendeten RAMs */
-#ifdef MCU
-	extern unsigned char __heap_start;
-#endif
-
-#ifdef TEST_AVAILABLE_COUNTER
-	#include <avr/eeprom.h>
-	uint8 resetsEEPROM  __attribute__ ((section (".eeprom")))=0;
-	uint8 resetInfoEEPROM  __attribute__ ((section (".eeprom")));
-	uint8 resets;
-#endif
 /*!
  * Der Mikrocontroller und der PC-Simulator brauchen ein paar Einstellungen, 
  * bevor wir loslegen koennen.
@@ -123,7 +116,7 @@ void init(void){
 		}
 		
 		delay(100);	
-		#ifdef DISPLAY_SCREEN_RESETINFO
+		#ifdef RESET_INFO_DISPLAY_AVAILABLE
 			#ifdef __AVR_ATmega644__
 				reset_flag = MCUSR & 0x1F;	//Lese Grund fuer Reset und sichere Wert
 				MCUSR = 0;	//setze Register auf 0x00 (loeschen)
@@ -141,7 +134,6 @@ void init(void){
 	#ifdef BOT_2_PC_AVAILABLE
 		bot_2_pc_init();
 	#endif
-
 
 	#ifdef PC
 		bot_2_sim_init();
@@ -179,7 +171,7 @@ void init(void){
 	#ifdef MAP_AVAILABLE
 		map_init();
 	#endif
-		
+	
 	#ifdef LOG_MMC_AVAILABLE
 		log_mmc_init();
 	#endif
@@ -192,9 +184,14 @@ void init(void){
 		Init_TWI();
 		Close_TWI();
 	#endif
+	
+	#ifdef DISPLAY_AVAILABLE
+		gui_init();
+	#endif	
 }
 
-#ifdef DISPLAY_AVAILABLE
+// TODO
+#ifdef DISPLAY_AVAILABLE_TODO_HERE
 
 /*!
  * Zeigt ein paar Informationen an
@@ -205,233 +202,53 @@ void init(void){
 		 /*!
           * Definitionen fuer die Verhaltensanzeige
           */
-		  #undef TEST_AVAILABLE_COUNTER
+//		  #undef TEST_AVAILABLE_COUNTER
 		  Behaviour_t	*ptr	= behaviour;
 		  int8 colcounter       = 0;
 		  int8 linecounter      = 0;
 		  int8 firstcol         = 0; 
 		#endif 
-		#ifdef MCU
-			#ifndef LOG_DISPLAY_AVAILABLE
-				#ifdef DISPLAY_SCREENS_AVAILABLE
-					uint16 frei;					// enthaelt im Screen 5 den freien RAM-Speicher
-				#endif // DISPLAY_SCREENS_AVAILABLE
-			#endif
-		#endif
-		#ifdef TEST_AVAILABLE_COUNTER
-			static int counter=0;
-		#endif
- 		if (display_update >0)
- 			#ifdef DISPLAY_SCREENS_AVAILABLE
-			switch (display_screen) {
-				case 0:
-			#endif
-					display_cursor(1,1);
-					display_printf("P=%03X %03X D=%03d %03d ",sensLDRL,sensLDRR,sensDistL,sensDistR);
+		display_cursor(1,1);
+		  
+       #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+        /*!
+         * zeilenweise Anzeige der Verhalten
+         */ 
+		display_printf("Verhalten (Pri/Akt)%d",behaviour_page);
 		
-					display_cursor(2,1);
-					display_printf("B=%03X %03X L=%03X %03X ",sensBorderL,sensBorderR,sensLineL,sensLineR);
+		colcounter = 0; linecounter = 2;
+		/* je nach Seitenwahl die ersten  Saetze ueberlesen bis richtige Seite */
+		firstcol = (behaviour_page -1)*6;
+		 
+		/*!
+		 * max. 3 Zeilen mit 6 Verhalten anzeigbar wegen Ueberschrift
+		 * Seitensteuerung bei mehr Verhalten 
+		 */ 
+		while((ptr != NULL)&& (linecounter<5))	{
+		 
+		  if  ((ptr->priority >= PRIO_VISIBLE_MIN) &&(ptr->priority <= PRIO_VISIBLE_MAX)) {
+            if   (colcounter >= firstcol) { 
+	          display_cursor(linecounter,((colcounter % 2)* 12)+1);
+	          #ifdef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+		        display_printf(" %3d,%2d",ptr->priority,ptr->active);
+		      #else
+		        display_printf(" %3d,%2d",ptr->priority,ptr->active_new);				      
+		      #endif
+		      colcounter++;
+		    
+		      /* bei colcounter 0 neue Zeile */
+		      if (colcounter % 2 == 0)
+		  	    linecounter++;
+		      
+		    }
+		    else
+		    colcounter ++;
+		  }
+		  ptr = ptr->next;
+	    }  
 		
-					display_cursor(3,1);
-					display_printf("R=%2d %2d F=%d K=%d T=%d ",sensEncL % 10,sensEncR %10,sensError,sensDoor,sensTrans);
-		
-					display_cursor(4,1);
-			#ifdef RC5_AVAILABLE
-				#ifdef MAUS_AVAILABLE
-					display_printf("I=%04X M=%05d %05d",RC5_Code,sensMouseX,sensMouseY);
-				#else
-					display_printf("I=%04X",RC5_Code);
-				#endif				
-			#else
-				#ifdef MAUS_AVAILABLE
-					display_printf("M=%05d %05d",sensMouseX,sensMouseY);
-				#endif
-			#endif
-			#ifdef 	DISPLAY_SCREENS_AVAILABLE					
-					break;
-				case 1:
-					#ifdef TIME_AVAILABLE
-						display_cursor(1,1);
-						display_printf("Zeit: %04d:%03d", timer_get_s(), timer_get_ms());
-					#endif
-
-					#ifdef BEHAVIOUR_AVAILABLE
-						display_cursor(2,1);
-						display_printf("TS=%+4d %+4d",target_speed_l,target_speed_r);
-					#endif
-					#ifdef SRF10_AVAILABLE		
-						display_cursor(2,15);
-						display_printf("US%+4d",sensSRF10);
-					#endif
-		
-					display_cursor(3,1);
-					display_printf("RC=%+4d %+4d",sensEncL,sensEncR);
-		
-					display_cursor(4,1);
-					display_printf("Speed= %04d",(int16)v_center);
-					break;
-
-				case 2:
-					display_cursor(1,1);
-					  
-                   #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-                    /*!
-                     * zeilenweise Anzeige der Verhalten
-                     */ 
-					display_printf("Verhalten (Pri/Akt)%d",behaviour_page);
-					
-					colcounter = 0; linecounter = 2;
-					/* je nach Seitenwahl die ersten  Saetze ueberlesen bis richtige Seite */
-					firstcol = (behaviour_page -1)*6;
-					 
-					/*!
-					 * max. 3 Zeilen mit 6 Verhalten anzeigbar wegen Ueberschrift
-					 * Seitensteuerung bei mehr Verhalten 
-					 */ 
-					while((ptr != NULL)&& (linecounter<5))	{
-					 
-					  if  ((ptr->priority >= PRIO_VISIBLE_MIN) &&(ptr->priority <= PRIO_VISIBLE_MAX)) {
-                        if   (colcounter >= firstcol) { 
-				          display_cursor(linecounter,((colcounter % 2)* 12)+1);
-				          #ifdef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
-					        display_printf(" %3d,%2d",ptr->priority,ptr->active);
-					      #else
-					        display_printf(" %3d,%2d",ptr->priority,ptr->active_new);				      
-					      #endif
-					      colcounter++;
-					    
-					      /* bei colcounter 0 neue Zeile */
-					      if (colcounter % 2 == 0)
-					  	    linecounter++;
-					      
-					    }
-					    else
-					    colcounter ++;
-					  }
-					  ptr = ptr->next;
-				    }  
-					
-				    #endif
-					#ifdef DISPLAY_ODOMETRIC_INFO
-						/* Zeige Positions- und Geschwindigkeitsdaten */
-							display_cursor(1,1);
-							display_printf("heading: %3d  ",(int16)heading);
-							display_cursor(2,1);
-							display_printf("x: %3d  y: %3d  ",(int16)x_pos,(int16)y_pos);
-							display_cursor(3,1);
-							display_printf("v_l: %3d v_r: %3d  ",(int16)v_left,(int16)v_right);						
-							#ifdef MEASURE_MOUSE_AVAILABLE
-								display_cursor(4,1);
-								display_printf("squal: %3d v_c: %3d",maus_get_squal(),(int16)v_mou_center);
-							#endif
-					#endif
-					 
-
-					#ifdef TEST_AVAILABLE_COUNTER	
-					    display_printf("Screen 3");					
-						display_cursor(2,1);
-						display_printf("count %d",counter++);
-
-						display_cursor(3,1);
-						display_printf("Reset-Counter %d",resets);
-					#endif
-					break;
-
-				case 3:
-					#ifdef DISPLAY_SCREEN_RESETINFO
-						display_cursor(1,1);
-						/* Zeige den Grund fuer Resets an */
-						display_printf("MCU(C)SR - Register");
-												
-						display_cursor(2,1);
-						display_printf("PORF :%d  WDRF :%d",binary(reset_flag,0),binary(reset_flag,3)); 
-
-						display_cursor(3,1);
-						display_printf("EXTRF:%d  JTRF :%d",binary(reset_flag,1),binary(reset_flag,4)); 
-									
-						display_cursor(4,1);
-						display_printf("BORF :%d",binary(reset_flag,2)); 
-					#endif
-					#ifdef DISPLAY_MMC_INFO
-						#ifdef MMC_INFO_AVAILABLE
-						{
-							uint32 size = 0;
-							uint8 csd[16];
-							static uint8 mmc_state= 0xFF;
-							
-							
-							uint8 dummy= mmc_init();
-							// hat sich was geaendert?
-							if (dummy!=mmc_state) {
-								mmc_state=dummy;
-								
-								uint8 i;
-								for (i=0;i<16;i++)
-									csd[i]=0;		
-	
-								display_cursor(1,1);
-								if (mmc_state !=0){
-									display_printf("MMC not init (%d)  ",mmc_state);
-								}else {
-									size=mmc_get_size();
-									mmc_read_csd(csd);
-									display_printf("MMC= %4d MByte ",size >> 20);
-								}
-								#ifdef MAP_AVAILABLE
-									map_init();
-								#endif
-								
-								#ifndef MMC_WRITE_TEST_AVAILABLE
-									display_cursor(3,1);
-									for (i=0;i<16;i++){
-										if (i == 8) display_cursor(4,1);
-										if (i%2 == 0) display_printf(" ");
-										display_printf("%02x",csd[i]);
-									}	
-								#endif	// MMC_WRITE_TEST_AVAILABLE							
-							}
-							#ifdef MMC_WRITE_TEST_AVAILABLE
-								if (mmc_state == 0){
-									static uint16 time = 0;
-									if (TIMER_GET_TICKCOUNT_16-time > MS_TO_TICKS(200)){
-										time = TIMER_GET_TICKCOUNT_16;
-										uint8 result = mmc_test();
-										if (result != 0){
-											display_cursor(3,1);
-											display_printf("mmc_test()=%u :(     ", result);
-										}
-									}
-								}
-							#endif	// MMC_WRITE_TEST_AVAILABLE			
-						}
-						#else
-						#ifdef MMC_VM_AVAILABLE
-							#ifdef PC
-								display_cursor(3,1);
-								display_printf("mmc_emu_test() = %u ", mmc_emu_test());
-							#endif	// PC
-						#endif	// MMC_VM_AVAILABLE 
-						#endif	// MMC_INFO_AVAILABLE
-					#endif
-					
-					break;
-					
-				case 4:
-					/* Ausgabe des freien RAMs */
-					#ifdef MCU
-						#ifndef LOG_DISPLAY_AVAILABLE
-		   					frei = SP - (uint16) &__heap_start;
-							display_cursor(1,1);
-							display_printf("free RAM: %4d ",frei);
-						#endif
-					#endif
-					
-					break;
-
-			}
-			#endif	
-	}
-#endif
+	    #endif	// DISPLAY_BEHAVIOUR_AVAILABLE
+#endif	// DISPLAY_AVAILABLE_TODO_HERE
 
 #ifdef TEST_AVAILABLE
 	/*! Zeigt den internen Status der Sensoren mit den LEDs an */
@@ -482,6 +299,7 @@ void init(void){
 		puts("\t   FILE\tDateiname");
 		puts("\t   ID  \tDie ID aus ASCII-Zeichen");
 		puts("\t   SIZE\tDie Nutzgroesse der Datei in KByte");
+		puts("\t-l \tKonvertiert eine SpeedLog-Datei in eine txt-Datei");
 		puts("\t-h\tZeigt diese Hilfe an");
 		exit(1);
 	}
@@ -515,11 +333,12 @@ void init(void){
 
 		int convert =0; /*!< Wird auf 1 gesetzt, wenn die Karte konvertiert werden soll */
 		int create  =0;  /*!< Wird auf 1 gesetzt, wenn eine neue Datei fuer Bot-mini-fat erzeugt werden soll */
+		int slog	=0;
 		char *from = NULL;	/*!< Speichert den per -M uebergebenen Quellnamen zwischen */
 
 
 		// Die Kommandozeilenargumente komplett verarbeiten
-		while ((ch = getopt(argc, argv, "hsTt:M:c:")) != -1) {
+		while ((ch = getopt(argc, argv, "hsTt:M:c:l:")) != -1) {
 			switch (ch) {
 			case 's':
 				// Servermodus [-s] wird verlangt
@@ -566,7 +385,18 @@ void init(void){
 					
 					create=1;					
 				}
-				break;				
+				break;	
+			case 'l':
+				{
+					int len = strlen(optarg);
+					from = malloc(len + 1);
+					if (NULL == from)
+						exit(1);
+					strcpy(from, optarg);
+					
+					slog=1;					
+				}				
+				break;			
 			case 'h':
 			default:
 				// -h oder falscher Parameter, Usage anzeigen
@@ -594,6 +424,10 @@ void init(void){
 	       	
 		#endif	// MAP_AVAILABLE    	
 
+			if (slog != 0){
+				convert_slog_file(from);
+				exit(0);	
+			}
 	    	if (create !=0) {
 	    			printf("optind= %d argc=%d\n",optind, argc);
 	    		
@@ -679,8 +513,8 @@ void init(void){
 				printf("Done-Token (%d) in nach %d usec ",received_command.data_l,t1);
 			#endif
 		#endif
-
-
+		
+		
 		#ifdef MCU
 			bot_sens_isr();
 		#endif
@@ -729,7 +563,7 @@ void init(void){
 		
 		// Alles Anzeigen
 		#ifdef DISPLAY_AVAILABLE
-			display();
+			gui_display(display_screen);
 		#endif
 		#ifdef MCU
 //			delay(10);

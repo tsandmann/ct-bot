@@ -35,6 +35,7 @@
 #include "display.h"
 #include "motor-low.h"
 #include "rc5-codes.h"
+#include "ui/available_screens.h"
 
 #include "mmc.h"
 #include "mmc-vm.h"
@@ -347,19 +348,19 @@ static void rc5_bot_set_speed(RemCtrlFuncPar *par) {
 			target_speed_l += par->value1;
 			if ((target_speed_l < -BOT_SPEED_MAX)|| (target_speed_l > BOT_SPEED_MAX))
 				target_speed_l = old;
-			if (target_speed_l < BOT_SPEED_MIN && target_speed_l > 0)
-				target_speed_l = BOT_SPEED_MIN;
-			else if (target_speed_l > -BOT_SPEED_MIN && target_speed_l < 0)
-				target_speed_l = -BOT_SPEED_MIN;
+			if (target_speed_l < BOT_SPEED_SLOW && target_speed_l > 0)
+				target_speed_l = BOT_SPEED_SLOW;
+			else if (target_speed_l > -BOT_SPEED_SLOW && target_speed_l < 0)
+				target_speed_l = -BOT_SPEED_SLOW;
 			
 			old=target_speed_r;		
 			target_speed_r += par->value2;
 			if ((target_speed_r <-BOT_SPEED_MAX)||(target_speed_r > BOT_SPEED_MAX))
 				target_speed_r = old;
-			if (target_speed_r < BOT_SPEED_MIN && target_speed_r > 0)
-				target_speed_r = BOT_SPEED_MIN;
-			else if (target_speed_r > -BOT_SPEED_MIN && target_speed_r < 0)
-				target_speed_r = -BOT_SPEED_MIN;
+			if (target_speed_r < BOT_SPEED_SLOW && target_speed_r > 0)
+				target_speed_r = BOT_SPEED_SLOW;
+			else if (target_speed_r > -BOT_SPEED_SLOW && target_speed_r < 0)
+				target_speed_r = -BOT_SPEED_SLOW;
 		}
 	}
 #endif
