@@ -18,7 +18,7 @@
  */
 
 
-/*! @file 	behaviour_remotecall_behaviour.c
+/*! @file 	behaviour_remotecall.c
  * @brief 	ruft auf ein Kommando hin andere Verhalten auf und bestaetigt dann ihre Ausfuehrung
  * 
  * @author 	Benjamin Benz (bbe@heise.de)
