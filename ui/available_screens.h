@@ -35,17 +35,17 @@
 
 #define SENSOR_DISPLAY_AVAILABLE		/*!< zeigt die Sensordaten an */
 //#define DISPLAY_REGELUNG_AVAILABLE		/*!< Gibt Debug-Infos der Motorregelung aus */
-#define MISC_DISPLAY_AVAILABLE			/*!< aehm ja, der Rest irgendwie... */
+//#define MISC_DISPLAY_AVAILABLE			/*!< aehm ja, der Rest irgendwie... */
 #define DISPLAY_ODOMETRIC_INFO			/*!< zeigt Positions- und Geschwindigkeitsdaten an */
 #define DISPLAY_MMC_INFO				/*!< Zeigt die Daten der MMC-Karte an */
-#define RESET_IFNO_DISPLAY_AVAILABLE	/*!< Zeigt Informationen ueber Resets an */
+//#define RESET_INFO_DISPLAY_AVAILABLE	/*!< Zeigt Informationen ueber Resets an */
 #define RAM_DISPLAY_AVAILABLE			/*!< Ausgabe des freien RAMs */
 
 #ifndef SPEED_CONTROL_AVAILABLE
 	#undef DISPLAY_REGELUNG_AVAILABLE
 #endif
 #ifndef MCU
-	#undef RESET_IFNO_DISPLAY_AVAILABLE
+	#undef RESET_INFO_DISPLAY_AVAILABLE
 	#undef RAM_DISPLAY_AVAILABLE
 #endif
 #ifndef MMC_AVAILABLE

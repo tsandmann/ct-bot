@@ -383,7 +383,7 @@ uint16 world_to_map(float koord){
  * @return Weltkordiante
  */
 float map_to_world(uint16 map_koord){
-	float tmp = (map_koord - (MAP_SIZE*MAP_RESOLUTION/2)) / MAP_RESOLUTION * 1000;
+	float tmp = (map_koord - (MAP_SIZE*MAP_RESOLUTION/2.0)) / MAP_RESOLUTION * 1000;
 			
 	return tmp;
 }

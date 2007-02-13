@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -19,15 +19,16 @@
 
 /*! 
  * @file 	rc5.c
- * @brief 	RC5-Fernbedienung
+ * @brief 	RC5-Fernbedienung / Basic-Tasten-Handler
  * Um RC5-Codes fuer eine eigene Fernbedienung anzupassen, reicht es diese
  * in eine Header-Datei auszulagern und anstatt der rc5code.h einzubinden.
  * Die Maskierung fuer die Auswertung der Codes nicht vergessen!
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	20.12.05
+ * @author 	Timo Sandmann (mail@timosandmann.de)
+ * @date 	12.02.2007
  */
  
-//TODO: aufraeumen und verhaltensanzeige wieder einbauen!
+//TODO: Verhaltensanzeige wieder einbauen, aber NICHT HIER
  
 #include "bot-logic/bot-logik.h"
 #include "map.h"
@@ -39,222 +40,237 @@
 
 #include "mmc.h"
 #include "mmc-vm.h"
-
-
 #include <stdlib.h>
 
 #ifdef RC5_AVAILABLE
 
-/*! 
- * Dieser Typ definiert Parameter fuer RC5-Kommando-Code Funktionen.
- */
-typedef struct {
-	uint16 value1;	/*!< Wert 1 */
-	uint16 value2;	/*!< Wert 2 */
-} RemCtrlFuncPar;
+uint16 RC5_Code = 0;	/*!< Letzter empfangener RC5-Code */
 
-/*! Dieser Typ definiert die RC5-Kommando-Code Funktion. */
-typedef void (*RemCtrlFunc)(RemCtrlFuncPar *par);
 
-/*! Dieser Typ definiert den RC5-Kommando-Code und die auszufuehrende Funktion. */
-typedef struct {
-	uint16 command;		/*!< Kommando Code */
-	RemCtrlFunc func;	/*!< Auszufuehrende Funktion */
-	RemCtrlFuncPar par;	/*!< Parameter */
-} RemCtrlAction;
+/* typedefs zunaechst noch mal aufbewahren, sind evtl. fuer spezielle key-handler sinnvoll */ 
 
-/*!
- * Diese Funktion setzt das Display auf eine andere Ausgabe.
- * @param par Parameter mit dem zu setzenden Screen.
- */	
+///*! 
+// * Dieser Typ definiert Parameter fuer RC5-Kommando-Code Funktionen.
+// */
+//typedef struct {
+//	uint16 value1;	/*!< Wert 1 */
+//	uint16 value2;	/*!< Wert 2 */
+//} RemCtrlFuncPar;
+//
+///*! Dieser Typ definiert die RC5-Kommando-Code Funktion. */
+//typedef void (*RemCtrlFunc)(RemCtrlFuncPar *par);
+//
+///*! Dieser Typ definiert den RC5-Kommando-Code und die auszufuehrende Funktion. */
+//typedef struct {
+//	uint16 command;		/*!< Kommando Code */
+//	RemCtrlFunc func;	/*!< Auszufuehrende Funktion */
+//	RemCtrlFuncPar par;	/*!< Parameter */
+//} RemCtrlAction;
+
+
 #ifdef DISPLAY_AVAILABLE
-	static void rc5_screen_set(RemCtrlFuncPar *par);
-#endif
+	/*!
+	 * @brief			Setzt das Display auf eine andere Ausgabe.
+	 * @param screen	Parameter mit dem zu setzenden Screen.
+	 */	
+	static void rc5_screen_set(uint8 screen){
+		if (screen == DISPLAY_SCREEN_TOGGLE)
+			display_screen++;			// zappen
+		else
+			display_screen = screen;	// Direktwahl
 
-//#ifdef JOGDIAL
-///*!
-// * Diese Funktion setzt die Geschwindigkeit auf den angegebenen Wert.
-// * @param par Parameter mit den zu setzenden Geschwindigkeiten.
-// */	
-//static void rc5_bot_set_speed(RemCtrlFuncPar *par);
-//#endif
+		if (display_screen >= DISPLAY_SCREENS)
+			display_screen = 0;			// endliche Screenanzahl
+		display_clear();				// alten Screen loeschen, das Zeichnen uerbernimmt GUI-Handler
+	}
+#endif	// DISPLAY_AVAILABLE
 
 /*!
- * Diese Funktion aendert die Geschwindigkeit um den angegebenen Wert.
- * @param par Parameter mit den relativen Geschwindigkeitsaenderungen.
+ * @brief	Stellt die Not-Aus-Funktion dar. 
+ * Sie laesst den Bot anhalten und setzt alle Verhalten zurueck mit Sicherung der vorherigen Aktivitaeten.
  */	
-#ifdef BEHAVIOUR_AVAILABLE
-	static void rc5_bot_change_speed(RemCtrlFuncPar *par);
-#endif
+ static void rc5_emergency_stop(void) {
+	#ifdef BEHAVIOUR_AVAILABLE
+		target_speed_l = 0;	// Geschwindigkeit nullsetzen
+		target_speed_r = 0;
+		deactivateAllBehaviours();  // alle Verhalten deaktivieren mit vorheriger Sicherung
+	#endif
+}
  
 /*!
- * Diese Funktion wechselt zwischen verschiednen Verhalten
- * @param par Parameter mit den zu setzenden Geschwindigkeiten.
+ * @brief		Aendert die Geschwindigkeit um den angegebenen Wert.
+ * @param left	linke, relative Geschwindigkeitsaenderung
+ * @param right	rechte, relative Geschwindigkeitsaenderung 
  */	
-void rc5_bot_next_behaviour(RemCtrlFuncPar *par);
-
-
-/*!
- * Diese Funktion stellt die Not-Aus-Funktion dar. Sie laesst den Bot anhalten
- * und setzt alle Verhalten zurueck.
- * @param par notwendiger Dummy-Parameter.
- */	
-static void rc5_emergency_stop(RemCtrlFuncPar *par);
-
-/*!
-* Verarbeitet die Zifferntasten in Abhaengigkeit vom eingestelltem Screen
-* @param par Parameter mit der betaetigten Zahlentaste.
-*/
-void rc5_number(RemCtrlFuncPar *par);
-
-#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-	/*!
-	 * Diese Funktion setzt die Aktivitaeten der Verhalten nach der Auswahl.
-	 * Hierdurch erfolgt der Startschuss fuer Umschaltung der Verhalten
-	 */	
-  #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
-	static void rc5_set_all_behaviours(void) ;
-  #endif  
-	/*! 
-	 * toggled ein Verhalten der Verhaltensliste an Position pos,
-	 * die Aenderung erfolgt nur auf die Puffervariable  
-	 * @param i Verhaltens-Listenposition, entspricht der Taste 1-6 der gewaehlten Verhaltensseite
-	 */	 
-	static void rc5_toggle_behaviour_new(int8 i);
+#ifdef BEHAVIOUR_AVAILABLE
+	static void rc5_bot_change_speed(int16 left, int16 right) {
+		int16 old;
+		old = target_speed_l;
+		target_speed_l += left;
+		if ((target_speed_l < -BOT_SPEED_MAX) || (target_speed_l > BOT_SPEED_MAX))
+			target_speed_l = old;
+		if (target_speed_l < BOT_SPEED_SLOW && target_speed_l > 0)
+			target_speed_l = BOT_SPEED_SLOW;
+		else if (target_speed_l > -BOT_SPEED_SLOW && target_speed_l < 0)
+			target_speed_l = -BOT_SPEED_SLOW;
+			
+		old = target_speed_r;		
+		target_speed_r += right;
+		if ((target_speed_r <-BOT_SPEED_MAX) ||(target_speed_r > BOT_SPEED_MAX))
+			target_speed_r = old;
+		if (target_speed_r < BOT_SPEED_SLOW && target_speed_r > 0)
+			target_speed_r = BOT_SPEED_SLOW;
+		else if (target_speed_r > -BOT_SPEED_SLOW && target_speed_r < 0)
+			target_speed_r = -BOT_SPEED_SLOW;
+	}
 #endif
 
-/*! Steuert den Servo an
- * @param par Parameter mit Servo-Nummer und -Position
+/*!
+ * @brief		Verarbeitet die Zifferntasten.
+ * @param key	Parameter mit der betaetigten Zifferntaste
  */
-void rc5_bot_servo(RemCtrlFuncPar *par);
-
-uint16 RC5_Code;	/*!< Letzter empfangener RC5-Code */
-
-/*! Fernbedienungsaktionen */
-static RemCtrlAction gRemCtrlAction[] = {
-	/* RC5-Code,		Funktion,				Parameter */
-	{ RC5_CODE_PWR,		rc5_emergency_stop,		{ 0, 0 } },
-	#ifdef BEHAVIOUR_AVAILABLE
-		{ RC5_CODE_UP,		rc5_bot_change_speed,	{ 10,	10	} },
-		{ RC5_CODE_DOWN,	rc5_bot_change_speed,	{ -10,	-10 } },
-		{ RC5_CODE_LEFT,	rc5_bot_change_speed,	{ -10,	10 	} },
-		{ RC5_CODE_RIGHT,	rc5_bot_change_speed,	{ 10,	-10	} },
-	#endif
-	
-	{ RC5_CODE_0,		rc5_number,		        { 0, 0 } },
-	{ RC5_CODE_1,		rc5_number,		        { 1, 1 } },
-	{ RC5_CODE_2,		rc5_number,		        { 2, 2 } },
-	{ RC5_CODE_3,		rc5_number,			    { 3, 3 } },
-	{ RC5_CODE_4,		rc5_number,			    { 4, 4 } },
-	{ RC5_CODE_5,		rc5_number,			    { 5, 5 } },
-	{ RC5_CODE_6,		rc5_number,			    { 6, 6 } },
-	{ RC5_CODE_7,		rc5_number,			    { 7, 7 } },
-	{ RC5_CODE_8,		rc5_number,			    { 8, 8 } },
-	{ RC5_CODE_9,		rc5_number,			    { 9, 9 } },
-//	{ RC5_CODE_I_II,	rc5_bot_next_behaviour,	{ 0, 0 } },
-#ifdef BEHAVIOUR_SERVO_AVAILABLE	
-	{ RC5_CH_PLUS,		rc5_bot_servo,			{ SERVO1, DOOR_CLOSE } },
-	{ RC5_CH_MINUS,		rc5_bot_servo,			{ SERVO1, DOOR_OPEN } },
-#endif
-#ifdef DISPLAY_AVAILABLE
-	{ RC5_CODE_RED,		rc5_screen_set,			{ 0, 0 } },
-	{ RC5_CODE_GREEN,	rc5_screen_set,			{ 1, 0 } },
-	{ RC5_CODE_YELLOW,	rc5_screen_set,			{ 2, 0 } },
-	{ RC5_CODE_BLUE,	rc5_screen_set,			{ 3, 0 } },
-	{ RC5_CODE_TV_VCR,	rc5_screen_set,			{ DISPLAY_SCREEN_TOGGLE, 0 } },	
-#endif
-//#ifdef JOGDIAL
-//	{ RC5_CODE_JOG_MID,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_MAX } },
-//	{ RC5_CODE_JOG_L1,	rc5_bot_set_speed,		{ BOT_SPEED_FAST, BOT_SPEED_MAX } },
-//	{ RC5_CODE_JOG_L2,	rc5_bot_set_speed,		{ BOT_SPEED_NORMAL, BOT_SPEED_MAX } },
-//	{ RC5_CODE_JOG_L3,	rc5_bot_set_speed,		{ BOT_SPEED_SLOW, BOT_SPEED_MAX } },
-//	{ RC5_CODE_JOG_L4,	rc5_bot_set_speed,		{ BOT_SPEED_STOP, BOT_SPEED_MAX } },
-//	{ RC5_CODE_JOG_L5,	rc5_bot_set_speed,		{ -BOT_SPEED_NORMAL, BOT_SPEED_MAX } },
-//	{ RC5_CODE_JOG_L6,	rc5_bot_set_speed,		{ -BOT_SPEED_FAST, BOT_SPEED_MAX } },
-//	{ RC5_CODE_JOG_L7,	rc5_bot_set_speed,		{ -BOT_SPEED_MAX, BOT_SPEED_MAX } },
-//	{ RC5_CODE_JOG_R1,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_FAST } },
-//	{ RC5_CODE_JOG_R2,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_NORMAL } },
-//	{ RC5_CODE_JOG_R3,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_SLOW } },
-//	{ RC5_CODE_JOG_R4,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_STOP } },
-//	{ RC5_CODE_JOG_R5,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, -BOT_SPEED_NORMAL } },
-//	{ RC5_CODE_JOG_R6,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, -BOT_SPEED_FAST } },
-//	{ RC5_CODE_JOG_R7,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, -BOT_SPEED_MAX } }
-//#endif	/* JOGDIAL */
-};
-
-/*!
- * Diese Funktion setzt das Display auf eine andere Ausgabe.
- * Fuer die Verhaltensausgabe werden hier die Verhalten durchgeblaettert
- * @param par Parameter mit dem zu setzenden Screen.
- */	
-//#ifdef DISPLAY_SCREENS_AVAILABLE
-static void rc5_screen_set(RemCtrlFuncPar *par) {
-	if (par) {
-		if (par->value1 == DISPLAY_SCREEN_TOGGLE) {
-				
-//		  #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-//		     /* erst nachsehen, ob noch weitere Verhalten auf anderen Pages vorhanden sind */
-//		     /* nur neuer Screen, wenn alle Verhalten angezeigt wurden */
-//		     if ((display_screen == 2) && (another_behaviour_page())
-//		     ) 
-//		           behaviour_page++;
-//		     else {
-//		     	display_screen ++;
-//		     	 
-//			       if (display_screen == 1) {
-//			         behaviour_page = 1;
-//			          #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
-//			            set_behaviours_equal();
-//			          #endif
-//			       }
-//			   
-//		         }
-//	    
-//	    	#else
-		      display_screen++;
-//		    #endif     
-//	      
-//	    
-		}
-		else 
-		{
-//		  /* Screen direkt waehlen */	 
-//		  #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-//			
-//			  /* Screen direkt waehlen und Verhaltens-Puffervariablen abgleichen*/
-//			  display_screen = par->value1;
-//			  
-//			  // bei dyn. Anzeige und Auswahl keine Ubernahme in Puffervariable benoetigt
-//			  #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
-//		        if ((display_screen == 2)&& (behaviour_page == 1)) {	      
-//			       set_behaviours_equal();
-//			     }  
-//			  #endif
-//			  behaviour_page = 1;
-//			  
-//		   #else
-		     /* Screen direkt waehlen */
-			  display_screen = par->value1;
-//		   #endif
-		}
-
+static void rc5_number(uint8 key) {
+	switch (key){	// richtige Aktion heraussuchen
+		#ifdef BEHAVIOUR_AVAILABLE
+			case 0:	target_speed_l=0;target_speed_r=0; break;
+			case 1:	target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
+			case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
+		#endif	// BEHAVIOUR_AVAILABLE
 		
-//		display_screen %= DISPLAY_SCREENS;
-		if (display_screen >= DISPLAY_SCREENS) display_screen = 0;
-		display_clear();
+		#ifdef BEHAVIOUR_TURN_AVAILABLE
+			case 2: bot_turn(0, 90); break;
+			case 7: bot_turn(0, 180); break;
+			case 9: bot_turn(0, -180); break;
+		#endif	// BEHAVIOUR_TURN_AVAILABLE							
+
+		#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
+			case 4: bot_catch_pillar(0); break;
+		#endif
+		
+		#ifdef BEHAVIOUR_GOTOXY_AVAILABLE
+			case 5: bot_gotoxy(0, 20, 20);
+		#endif
+		#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
+			case 5: bot_solve_maze(0); break;
+		#endif
+
+		#ifdef BEHAVIOUR_CALIBRATE_PWM_AVAILABLE
+			case 6: bot_calibrate_pwm(0); break;
+		#else 
+			#ifdef BEHAVIOUR_TURN_AVAILABLE
+				case 6: bot_turn(0, -90); break;
+			#endif	// BEHAVIOUR_TURN_AVAILABLE
+		#endif	// BEHAVIOUR_CALIBRATE_PWM_AVAILABLE
+		
+		#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+			case 8: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
+		#endif
 	}
 }
-//#endif
 
-#ifdef BEHAVIOUR_SERVO_AVAILABLE 
-	/*! Steuert den Servo an
-	 * @param par Parameter mit Servo-Nummer und -Position
-	 */
-	void rc5_bot_servo(RemCtrlFuncPar *par){
-			bot_servo(0,par->value1,par->value2);
+/*!
+ * @brief	Ordnet den Tasten eine Aktion zu und fuehrt diese aus.
+ * @author 	Timo Sandmann (mail@timosandmann.de)
+ * @date 	12.02.2007	  
+ */
+void default_key_handler(void){
+	switch (RC5_Code){	
+		/* Not-Aus */
+		case RC5_CODE_PWR:		rc5_emergency_stop(); break;
+		
+		/* Screenwechsel */
+		#ifdef DISPLAY_AVAILABLE
+		case RC5_CODE_GREEN:	rc5_screen_set(0); break;
+		case RC5_CODE_RED:		rc5_screen_set(1); break;
+		case RC5_CODE_YELLOW:	rc5_screen_set(2); break;
+		case RC5_CODE_BLUE:		rc5_screen_set(3); break;
+		case RC5_CODE_TV_VCR:	rc5_screen_set(DISPLAY_SCREEN_TOGGLE); break;
+		#endif	// DISPLAY_AVAILABLE
+		
+		/* Geschwindigkeitsaenderung */
+		#ifdef BEHAVIOUR_AVAILABLE
+		case RC5_CODE_UP:		rc5_bot_change_speed( 10,  10); break;
+		case RC5_CODE_DOWN:		rc5_bot_change_speed(-10, -10); break;
+		case RC5_CODE_LEFT:		rc5_bot_change_speed(-10,  10); break;
+		case RC5_CODE_RIGHT:	rc5_bot_change_speed( 10, -10); break;
+		#endif	// BEHAVIOUR_AVAILABLE
+		
+		/* Servoaktivitaet */
+		#ifdef BEHAVIOUR_SERVO_AVAILABLE
+		case RC5_CH_PLUS:		bot_servo(0, SERVO1, DOOR_CLOSE); break;
+		case RC5_CH_MINUS:		bot_servo(0, SERVO1, DOOR_OPEN); break;
+		#endif	// BEHAVIOUR_SERVO_AVAILABLE
+		
+		/* numerische Tasten */
+		case RC5_CODE_0:		rc5_number(0); break;
+		case RC5_CODE_1:		rc5_number(1); break;
+		case RC5_CODE_2:		rc5_number(2); break;
+		case RC5_CODE_3:		rc5_number(3); break;
+		case RC5_CODE_4:		rc5_number(4); break;
+		case RC5_CODE_5:		rc5_number(5); break;
+		case RC5_CODE_6:		rc5_number(6); break;
+		case RC5_CODE_7:		rc5_number(7); break;
+		case RC5_CODE_8:		rc5_number(8); break;
+		case RC5_CODE_9:		rc5_number(9); break;
 	}
-#endif
+}
 
+/*!
+ * @brief	Liest ein RC5-Codeword und wertet es aus
+ */
+void rc5_control(void){
+	static uint16 RC5_Last_Toggle = 1;	/*!< Toggle-Wert des zuletzt empfangenen RC5-Codes*/
+	uint16 rc5 = ir_read();				// empfangenes RC5-Kommando
+	
+	if (rc5 != 0){
+		RC5_Code = rc5 & RC5_MASK;	// alle uninteressanten Bits ausblenden
+		/* Toggle kommt nicht im Simulator, immer gewechseltes Toggle-Bit sicherstellen */ 
+		#ifdef PC
+		  RC5_Last_Toggle = !(rc5 & RC5_TOGGLE);
+		#endif
+		/* Bei Aenderung des Toggle-Bits, entspricht neuem Tastendruck, gehts nur weiter */
+		if ((rc5 & RC5_TOGGLE) != RC5_Last_Toggle){	// Nur Toggle-Bit abfragen, bei Ungleichheit weiter
+		  RC5_Last_Toggle = rc5 & RC5_TOGGLE;           // Toggle-Bit neu belegen
+		}
+	}
+	#ifndef DISPLAY_AVAILABLE
+		default_key_handler();	// Falls Display aus ist, ist auch GUI aus => Tastenbehandlung hier abarbeiten
+	#endif
+}
+
+
+
+/* ------------------------------------------ Monsters here  ------------------------------------------ */
+
+//TODO:	very strange diese Verhaltensanzeige... :/
+//		das muss alles irgendwie in den Verhaltensanzeige-GUI-Handler und hier komplett verschwinden! 
+
+//#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+///*! 
+// * toggled ein Verhalten der Verhaltensliste an Position pos,
+// * die Aenderung erfolgt nur auf die Puffervariable  
+// * @param i Verhaltens-Listenposition, entspricht der Taste 1-6 der gewaehlten Verhaltensseite
+// */	
+//  void rc5_toggle_behaviour_new(int8 i) {
+//	
+//		  toggleNewBehaviourPos(i);	
+//  } 
+//  
+///*!
+// * Diese Funktion setzt die Aktivitaeten der Verhalten nach der Auswahl.
+// * Hierdurch erfolgt der Startschuss fuer Umschaltung der Verhalten
+// * nicht verwendet bei sofortiger Anzeige und Auswahl der Aktivitaet
+// */	  
+//  #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+//   static void rc5_set_all_behaviours(void) {
+//	   
+//		  set_behaviours_active_to_new();
+//	    
+//   }
+//  #endif
+//#endif  
+
+// TODO: Verhaltensanzeige
 ///*!
 // * Diese Funktion wechselt zwiaschen verschiednen Verhalten
 // * @param par Parameter mit den zu setzenden Geschwindigkeiten.
@@ -300,143 +316,65 @@ static void rc5_screen_set(RemCtrlFuncPar *par) {
 //	}
 //}
 
-#ifdef JOGDIAL
-/*!
- * Diese Funktion setzt die Geschwindigkeit auf den angegebenen Wert.
- * @param par Parameter mit den zu setzenden Geschwindigkeiten.
- */	
-static void rc5_bot_set_speed(RemCtrlFuncPar *par) {
-	if (par) {
-		target_speed_l = par->value1;
-		target_speed_r = par->value2;
-	}
-}
-#endif
+/* Funktionen, die es oben schon gibt, wo aber Verhaltensanzeige-Legacy-Murks drin war. -- Backup hier */
 
-/*!
- * Diese Funktion stellt die Not-Aus-Funktion dar. Sie laesst den Bot anhalten
- * und setzt alle Verhalten zurueck mit Sicherung der vorherigen Aktivitaeten.
- * @param par notwendiger Dummy-Parameter.
- */	
- static void rc5_emergency_stop(RemCtrlFuncPar *par) {
-		#ifdef BEHAVIOUR_AVAILABLE
-            // Setzen der Geschwindigkeit auf 0	
-			target_speed_l = 0 ;
-		    target_speed_r = 0 ;
-		    
-		    // Alle Verhalten deaktivieren
-		    deactivateAllBehaviours();  // alle Verhalten deaktivieren mit vorheriger Sicherung
-//		     #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-//		        // bei dynamischer Verhaltensanzeige kein Sprung in Anzeigescreen 
-//		        #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
-//		         display_clear();         // Screen zuerst loeschen
-//		         display_screen = 2;      // nach Notstop in den Verhaltensscreen mit Anzeige der alten Verhalten
-//		        #endif
-//		     #endif
-		#endif
-}
- 
-/*!
- * Diese Funktion aendert die Geschwindigkeit um den angegebenen Wert.
- * @param par Parameter mit den relativen Geschwindigkeitsaenderungen.
- */	
-#ifdef BEHAVIOUR_AVAILABLE
-	static void rc5_bot_change_speed(RemCtrlFuncPar *par) {
-		int old;
-		if (par) {
-			old=target_speed_l;
-			target_speed_l += par->value1;
-			if ((target_speed_l < -BOT_SPEED_MAX)|| (target_speed_l > BOT_SPEED_MAX))
-				target_speed_l = old;
-			if (target_speed_l < BOT_SPEED_SLOW && target_speed_l > 0)
-				target_speed_l = BOT_SPEED_SLOW;
-			else if (target_speed_l > -BOT_SPEED_SLOW && target_speed_l < 0)
-				target_speed_l = -BOT_SPEED_SLOW;
-			
-			old=target_speed_r;		
-			target_speed_r += par->value2;
-			if ((target_speed_r <-BOT_SPEED_MAX)||(target_speed_r > BOT_SPEED_MAX))
-				target_speed_r = old;
-			if (target_speed_r < BOT_SPEED_SLOW && target_speed_r > 0)
-				target_speed_r = BOT_SPEED_SLOW;
-			else if (target_speed_r > -BOT_SPEED_SLOW && target_speed_r < 0)
-				target_speed_r = -BOT_SPEED_SLOW;
-		}
-	}
-#endif
-
-/*!
- * Liest ein RC5-Codeword und wertet es aus
- */
-void rc5_control(void){
-	static uint16 RC5_Last_Toggle = 1;   /*!< Toggle-Wert des zuletzt empfangenen RC5-Codes*/
-	 
-	uint16 rc5 = ir_read();
-	
-	if (rc5 != 0){
-		RC5_Code= rc5 & RC5_MASK;	/* Alle uninteressanten Bits ausblenden */
-		/* Toggle kommt nicht im Simulator, immer gewechseltes Toggle Bit sicherstellen */ 
-		#ifdef PC
-		  RC5_Last_Toggle = !(rc5 & RC5_TOGGLE);
-		#endif
-		/* Bei Aenderung des Toggle Bits, entspricht neuem Tastendruck, gehts nur weiter */
-		if ((rc5 & RC5_TOGGLE)   != RC5_Last_Toggle){	/* Nur Toggle Bit abfragen, bei Ungleichheit weiter */
-		  RC5_Last_Toggle = rc5 & RC5_TOGGLE;           /* Toggle Bit neu belegen */
-		
-//		   /* Suchen der auszufuehrenden Funktion */
-//		   for(run=0; run<sizeof(gRemCtrlAction)/sizeof(RemCtrlAction); run++) {
-//			   /* Funktion gefunden? */
-//			   if (gRemCtrlAction[run].command == RC5_Code) {
-//				   /* Funktion ausfuehren */
-//				   gRemCtrlAction[run].func(&gRemCtrlAction[run].par);
-//			   }
-//		   }
-		}
-	}
-}
-
-void default_key_handler(void){
-	uint16 run;
-   /* Suchen der auszufuehrenden Funktion */
-   for(run=0; run<sizeof(gRemCtrlAction)/sizeof(RemCtrlAction); run++) {
-	   /* Funktion gefunden? */
-	   if (gRemCtrlAction[run].command == RC5_Code) {
-		   /* Funktion ausfuehren */
-		   gRemCtrlAction[run].func(&gRemCtrlAction[run].par);
-	   }
-   }	
-}
-
-//#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-///*! 
-// * toggled ein Verhalten der Verhaltensliste an Position pos,
-// * die Aenderung erfolgt nur auf die Puffervariable  
-// * @param i Verhaltens-Listenposition, entspricht der Taste 1-6 der gewaehlten Verhaltensseite
-// */	
-//  void rc5_toggle_behaviour_new(int8 i) {
-//	
-//		  toggleNewBehaviourPos(i);	
-//  } 
-//  
-///*!
-// * Diese Funktion setzt die Aktivitaeten der Verhalten nach der Auswahl.
-// * Hierdurch erfolgt der Startschuss fuer Umschaltung der Verhalten
-// * nicht verwendet bei sofortiger Anzeige und Auswahl der Aktivitaet
-// */	  
-//  #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
-//   static void rc5_set_all_behaviours(void) {
-//	   
-//		  set_behaviours_active_to_new();
+// static void rc5_screen_set(uint8 screen){
+//	if (screen == DISPLAY_SCREEN_TOGGLE){
+// TODO: what's that?!?	=> Sinnvollitaet pruefen...
+//				
+//		  #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+//		     /* erst nachsehen, ob noch weitere Verhalten auf anderen Pages vorhanden sind */
+//		     /* nur neuer Screen, wenn alle Verhalten angezeigt wurden */
+//		     if ((display_screen == 2) && (another_behaviour_page())
+//		     ) 
+//		           behaviour_page++;
+//		     else {
+//		     	display_screen ++;
+//		     	 
+//			       if (display_screen == 1) {
+//			         behaviour_page = 1;
+//			          #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+//			            set_behaviours_equal();
+//			          #endif
+//			       }
+//			   
+//		         }
 //	    
-//   }
-//  #endif
-//#endif  
+//	    	#else
+//		display_screen++;
+//		    #endif     
+//	      
+//	    
+//	} else{
+// TODO: Verhaltensanzeige
+//
+//		  /* Screen direkt waehlen */	 
+//		  #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+//			
+//			  /* Screen direkt waehlen und Verhaltens-Puffervariablen abgleichen*/
+//			  display_screen = par->value1;
+//			  
+//			  // bei dyn. Anzeige und Auswahl keine Ubernahme in Puffervariable benoetigt
+//			  #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+//		        if ((display_screen == 2)&& (behaviour_page == 1)) {	      
+//			       set_behaviours_equal();
+//			     }  
+//			  #endif
+//			  behaviour_page = 1;
+//			  
+//		   #else
+//		     /* Screen direkt waehlen */
+//		display_screen = screen;
+//		   #endif
+//	}		
+//	display_screen %= DISPLAY_SCREENS;
+//	if (display_screen >= DISPLAY_SCREENS) display_screen = 0;
+//	display_clear();
+//}
 
-/*!
- * Verarbeitet die Zifferntasten in Abhaengigkeit vom eingestelltem Screen
- * @param par Parameter mit der betaetigten Zahlentaste.
- */
-void rc5_number(RemCtrlFuncPar *par) {
+
+//static void rc5_number(uint8 key) {
+// TODO: wofuer ist das da?!? => in Behavior-Anzeige-Keyhandler verschieben
 //	#ifdef DISPLAY_SCREENS_AVAILABLE 
 //	switch (display_screen) {
 //		#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
@@ -461,144 +399,6 @@ void rc5_number(RemCtrlFuncPar *par) {
 //		#endif
 //		default:
 //	#endif
-			switch (par->value1) {
-				#ifdef BEHAVIOUR_AVAILABLE
-					case 0:	
-					target_speed_l=0;target_speed_r=0;break;
-					case 1: target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
-				#endif
-				case 2:
-					#ifdef SPEED_CONTROL_AVAILABLE
-						#ifdef SPEED_LOG_AVAILABLE
-							acc_test[0] = 1;
-							acc_test[1] = 1;
-						#else
-							#ifdef MAP_AVAILABLE
-								print_map();
-							#else 
-								#ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
-									bot_drive_square(0, 15);
-								#else
-									#ifdef MMC_WRITE_TEST_AVAILABLE
-									{
-										uint8 result = mmc_test();
-										if (result != 0){
-											display_cursor(3,1);
-											display_printf("mmc_test()=%u :( ", result);
-										}
-									}
-									#endif	// MMC_WRITE_TEST_AVAILABLE
-								#endif
-							#endif							
-						#endif // SPEED_LOG_AVAILABLE
-					#endif // SPEED_CONTROL_AVAILABLE
-					break;				
-			//	case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
-				case 3:
-					#ifdef SPEED_CONTROL_AVAILABLE
-						#ifdef SPEED_LOG_AVAILABLE	
-							display_cursor(4,1);
-							display_printf("dt=%5u %5u", acc_test_dt[0], acc_test_dt[1]);
-						#else
-							#ifdef MAP_AVAILABLE
-								#ifdef MMC_VM_AVAILABLE
-									mmc_clear_file(0x43200UL);
-								#endif
-							#else						
-								target_speed_l = BOT_SPEED_NORMAL; 
-								target_speed_r = BOT_SPEED_NORMAL;
-							#endif
-						#endif	// SPEED_LOG_AVAILABLE
-					#else
-						#ifdef MAP_AVAILABLE
-							print_map();
-							#ifdef MMC_VM_AVAILABLE
-								mmc_clear_file(0x43200UL);
-							//	printf("Dateigroesse: %lu\n\r", mmc_get_filesize(0x400));
-							#endif
-						#else
-							target_speed_l = BOT_SPEED_NORMAL; 
-							target_speed_r = BOT_SPEED_NORMAL;
-						#endif						
-					#endif
-					break;				
-				#ifdef ADJUST_PID_PARAMS
-					case 4:	 Kp++; break;
-					case 7:	 Kp--; break;
-					case 5:	 Ki++; break;
-					case 8:	 Ki--; break;
-					case 6:  Kd++; break;
-					case 9:  Kd--; break;
-				#else
-//					case 4: bot_turn(0, 90); break;
-					#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
-						case 4: bot_catch_pillar(0); break;
-					#else
-						#ifdef VM_STATS_AVAILABLE
-							case 4: mmc_print_statistic(); break;
-						#endif
-					#endif
-//					//case 5: bot_goto(0, 0, 0); break;
-//					#ifdef MEASURE_MOUSE_AVAILABLE
-//						case 5: bot_gotoxy(0,20,20);
-//					#else
-					#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
-						case 5: bot_solve_maze(0); break;
-					#endif
-//					case 5: target_speed_l = BOT_SPEED_MAX; target_speed_r = BOT_SPEED_MAX; break;
-//					#endif
-//					case 5: bot_scan(0); break;
-					#ifdef SPEED_CONTROL_AVAILABLE
-						#ifdef BEHAVIOUR_CALIBRATE_PWM_AVAILABLE
-							case 6: bot_calibrate_pwm(0); break;
-						#else 
-							#ifdef BEHAVIOUR_TURN_AVAILABLE
-								case 6: bot_turn(0, -90); break;
-							#endif
-						#endif
-					#endif	// SPEED_CONTROL_AVAILABLE
-					#ifdef VARIABLE_PWM_F
-						case 7: 
-							pwm_frequency = 1;
-							target_speed_l = 0;
-							target_speed_r = 0; 
-							motor_low_init(pwm_frequency); 
-							break;
-						case 8: 
-							pwm_frequency = 2; 
-							target_speed_l = 0;
-							target_speed_r = 0; 
-							motor_low_init(pwm_frequency); 
-							break;
-						case 9: 
-							pwm_frequency = 3; 
-							target_speed_l = 0;
-							target_speed_r = 0; 
-							motor_low_init(pwm_frequency); 
-							break;
-					#else
-						#ifdef BEHAVIOUR_TURN_AVAILABLE
-							case 7: bot_turn(0,180); break;
-							case 9: bot_turn(0, -180); break;
-						#endif
-						#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
-							case 8: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
-						#endif
-					#endif	// VARIABLE_PWM_F
-				#endif	// ADJUST_PID_PARAMS
-	
-//				case 0:	 target_speed_l=BOT_SPEED_STOP;target_speed_r=target_speed_l;break;
-//				case 1:	 target_speed_l=BOT_SPEED_SLOW;target_speed_r=target_speed_l;break;
-//				case 2:	 target_speed_l=BOT_SPEED_MEDIUM;target_speed_r=target_speed_l;break;
-//				case 3:	 target_speed_l=BOT_SPEED_FAST;target_speed_r=target_speed_l;break;
-//				case 4:	 target_speed_l=BOT_SPEED_MAX;target_speed_r=target_speed_l;break;
-//				case 9:	 target_speed_l=-BOT_SPEED_MEDIUM;target_speed_r=target_speed_l;break;
-			}
-//	#ifdef DISPLAY_SCREENS_AVAILABLE 
-//	
-//			break;
-		
-// 	}
-// 	#endif
- }
-#endif
+//}
+
+#endif	// RC5_AVAILABLE

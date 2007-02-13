@@ -110,7 +110,7 @@ void gui_init(void){
 	#ifdef DISPLAY_MMC_INFO
 		register_screen(&mmc_display);
 	#endif
-	#ifdef RESET_IFNO_DISPLAY_AVAILABLE
+	#ifdef RESET_INFO_DISPLAY_AVAILABLE
 		register_screen(&reset_info_display);
 	#endif 
 	#ifdef RAM_DISPLAY_AVAILABLE

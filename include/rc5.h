@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,7 +17,8 @@
  * 
  */
 
-/*! @file 	rc5.h
+/*!
+ * @file 	rc5.h
  * @brief 	RC5-Fernbedienung
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
@@ -27,9 +28,14 @@
 #define rc5_H_
 
 /*!
- * Liest ein RC5-Codeword und wertet es aus
+ * @brief	Liest ein RC5-Codeword und wertet es aus
  */
 void rc5_control(void);
 
+/*!
+ * @brief	Ordnet den Tasten eine Aktion zu und fuehrt diese aus.
+ * @author 	Timo Sandmann (mail@timosandmann.de)
+ * @date 	12.02.2007	  
+ */
 void default_key_handler(void);
-#endif
+#endif	// rc5_H_

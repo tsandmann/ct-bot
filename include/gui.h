@@ -53,7 +53,7 @@ void gui_init(void);
 	void misc_display(void);
 #endif
 
-#ifdef RESET_IFNO_DISPLAY_AVAILABLE
+#ifdef RESET_INFO_DISPLAY_AVAILABLE
 	extern uint8 reset_flag;	 /*<! Nimmt den Status von MCU(C)SR bevor dieses Register auf 0x00 gesetzt wird */
 	void reset_info_display(void);
 #endif

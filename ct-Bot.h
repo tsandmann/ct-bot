@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,8 +17,9 @@
  * 
  */
 
-/*! @file 	ct-Bot.h
- * @brief 	Demo-Hauptprogramm
+/*! 
+ * @file 	ct-Bot.h
+ * @brief 	globale Schalter fuer die einzelnen Bot-Funktionalitaeten
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
 */
@@ -34,8 +35,8 @@
 ************************************************************/
 //#define LOG_CTSIM_AVAILABLE		/*!< Logging ueber das ct-Sim (PC und MCU) */
 //#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display (PC und MCU) */
-//#define LOG_UART_AVAILABLE			/*!< Logging ueber UART (NUR für MCU) */
-//#define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (NUR für PC) */
+//#define LOG_UART_AVAILABLE		/*!< Logging ueber UART (NUR fuer MCU) */
+//#define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (NUR fuer PC) */
 //#define LOG_MMC_AVAILABLE			/*!< Logging in eine txt-Datei auf MMC */			
 
 
@@ -65,10 +66,10 @@
 #define ENA_AVAILABLE		/*!< Enable-Leitungen */
 #define SHIFT_AVAILABLE		/*!< Shift Register */
 
-//#define TEST_AVAILABLE_ANALOG	/*!< Sollen die LEDs die analoge Sensorwerte anzeigen */
-#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
-//#define TEST_AVAILABLE_MOTOR	/*!< Sollen die Motoren ein wenig drehen */
-//#define TEST_AVAILABLE_COUNTER /*!< Gibt einen Endlos-Counter auf Screen 3 aus und aktiviert Screen 3 */
+//#define TEST_AVAILABLE_ANALOG		/*!< Sollen die LEDs die analoge Sensorwerte anzeigen */
+#define TEST_AVAILABLE_DIGITAL		/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
+//#define TEST_AVAILABLE_MOTOR		/*!< Sollen die Motoren ein wenig drehen */
+//#define TEST_AVAILABLE_COUNTER 	/*!< Gibt einen Endlos-Counter auf Screen 3 aus und aktiviert Screen 3 */
 //#define DOXYGEN		/*!< Nur zum Erzeugen der Doku, wenn dieser schalter an ist, jammert der gcc!!! */
 
 #define BEHAVIOUR_AVAILABLE /*!< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
@@ -76,10 +77,10 @@
 //#define MAP_AVAILABLE /*!< Aktiviere die Kartographie */
 
 //#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
-//#define UPDATE_PWM_TABLE		/*!< aktualisiert die PWM-Lookup-Table regelmaessig */
-//#define SPEED_LOG_AVAILABLE 
-//#define VARIABLE_PWM_F
+//#define UPDATE_PWM_TABLE		/*!< Aktualisiert die PWM-Lookup-Table regelmaessig */
 //#define ADJUST_PID_PARAMS		/*!< macht PID-Paramter zur Laufzeit per FB einstellbar */
+//#define SPEED_LOG_AVAILABLE 	/*!< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
+//#define VARIABLE_PWM_F		/*!< Ermoeglicht das Wechseln der PWM-Frequenz zur Laufzeit */
 
 //#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
 
@@ -94,7 +95,7 @@
 ************************************************************/
 
 #ifdef DOXYGEN
-	#define PC			/*!< Beim generieren der Doku alles anschalten */
+	#define PC		/*!< Beim generieren der Doku alles anschalten */
 	#define MCU		/*!< Beim generieren der Doku alles anschalten */
 	#define TEST_AVAILABLE_MOTOR	/*!< Beim generieren der Doku alles anschalten */
 #endif
@@ -102,9 +103,7 @@
 
 #ifndef DISPLAY_AVAILABLE
 	#undef WELCOME_AVAILABLE
-   #undef DISPLAY_REMOTE_AVAILABLE
-//   #undef DISPLAY_SCREENS_AVAILABLE
-//   #undef DISPLAY_SCREEN_RESETINFO
+	#undef DISPLAY_REMOTE_AVAILABLE
 #endif
 
 #ifndef IR_AVAILABLE
@@ -127,8 +126,6 @@
 	#endif
 
 	#define COMMAND_AVAILABLE		/*!< High-Level Communication */
-   #undef DISPLAY_SCREEN_RESETINFO
-   #undef TEST_AVAILABLE_COUNTER
 #endif
 
 #ifdef MCU
@@ -136,10 +133,9 @@
 		#define BOT_2_PC_AVAILABLE
 	#endif
 	#ifdef BOT_2_PC_AVAILABLE
-		#define UART_AVAILABLE	/*!< Serial Communication */
+		#define UART_AVAILABLE		/*!< Serial Communication */
 		#define COMMAND_AVAILABLE	/*!< High-Level Communication */
 	#endif
-//	#undef MAP_AVAILABLE
 #endif
 
 
@@ -159,16 +155,10 @@
 
 #ifdef TEST_AVAILABLE_COUNTER
 	#define TEST_AVAILABLE			/*!< brauchen wir den Testkrams */
-//	#define DISPLAY_SCREENS_AVAILABLE
-	#define DISPLAY_SCREEN_RESETINFO
+	#define RESET_INFO_DISPLAY_AVAILABLE
 #endif
 
-//#ifdef DISPLAY_ODOMETRIC_INFO
-//	#undef DISPLAY_SCREEN_RESETINFO		/*!< Wenn Odometrieinfos, dann keine Resetinfos */
-//#endif
-
 #ifndef SPEED_CONTROL_AVAILABLE
-	#undef DISPLAY_REGELUNG_AVAILABLE
 	#undef ADJUST_PID_PARAMS
 	#undef SPEED_LOG_AVAILABLE	
 #endif
@@ -219,13 +209,6 @@
 		#undef LOG_DISPLAY_AVAILABLE
 	#endif
 	
-//	/* Logging aufs Display ist nur moeglich, wenn mehrere Screens
-//	 * unterstuetzt werden.
-//	 */
-//	#ifndef DISPLAY_SCREENS_AVAILABLE
-//		#undef LOG_DISPLAY_AVAILABLE
-//	#endif
-	
 	/* Es kann immer nur ueber eine Schnittstelle geloggt werden. */
 	
 	#ifdef LOG_UART_AVAILABLE
@@ -233,15 +216,22 @@
 		#undef LOG_CTSIM_AVAILABLE
 		#undef LOG_DISPLAY_AVAILABLE
 		#undef LOG_STDOUT_AVAILABLE
+		#undef LOG_MMC_AVAILABLE
 	#endif
 	
 	#ifdef LOG_CTSIM_AVAILABLE
 		#undef LOG_DISPLAY_AVAILABLE
 		#undef LOG_STDOUT_AVAILABLE
+		#undef LOG_MMC_AVAILABLE
 	#endif
 	
 	#ifdef LOG_DISPLAY_AVAILABLE
 		#undef LOG_STDOUT_AVAILABLE
+		#undef LOG_MMC_AVAILABLE
+	#endif
+	
+	#ifdef LOG_STDOUT_AVAILABLE
+		#undef LOG_MMC_AVAILABLE
 	#endif
 	
 	#ifndef MMC_VM_AVAILABLE

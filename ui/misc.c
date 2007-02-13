@@ -63,7 +63,7 @@
 		}
 	#endif	// MISC_DISPLAY_AVAILABLE
 	
-	#ifdef RESET_IFNO_DISPLAY_AVAILABLE
+	#ifdef RESET_INFO_DISPLAY_AVAILABLE
 		uint8 reset_flag;
 		/*!
 		 * @brief Zeigt Informationen ueber Resets an
@@ -81,7 +81,7 @@
 			display_cursor(4,1);
 			display_printf("BORF :%d",binary(reset_flag,2));
 		}	
-	#endif	// RESET_IFNO_DISPLAY_AVAILABLE
+	#endif	// RESET_INFO_DISPLAY_AVAILABLE
 	
 	#ifdef RAM_DISPLAY_AVAILABLE
 		void ram_display(void){
