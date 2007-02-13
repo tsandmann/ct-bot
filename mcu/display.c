@@ -48,47 +48,41 @@
 #define DISPLAY_BUFFER_SIZE	(DISPLAY_LENGTH + 1)
 
 uint8 display_update=0;	/*!< Muss das Display aktualisiert werden? */
-#ifdef DISPLAY_SCREENS_AVAILABLE
-	#ifdef LOG_DISPLAY_AVAILABLE
-		uint8 display_screen=4;	/*!< Muss das Display aktualisiert werden? */
-	#else
-		uint8 display_screen=0;	/*!< Muss das Display aktualisiert werden? */
-	#endif
-#endif
+uint8 display_screen=0;	/*!< zurzeit aktiver Displayscreen */
 static char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausgaben */
 
-#define DISPLAY_CLEAR 0x01		/*!< Kommando zum Löschen */
-#define DISPLAY_CURSORHOME 0x02	/*!< Kommando für den Cursor */
+#define DISPLAY_CLEAR 0x01		/*!< Kommando zum Loeschen */
+#define DISPLAY_CURSORHOME 0x02	/*!< Kommando fuer den Cursor */
 
 #define DISPLAY_OUT 			0x07		/*!< Output-Pins Display */
 #define DISPLAY_IN 			(1<<5)		/*!< Input-Pins Display */
 
-#define DISPLAY_PORT			PORTC		/*!< Port an dem das Display hängt */
-#define DISPLAY_DDR				DDRC		/*!< Port an dem das Display hängt */
+#define DISPLAY_PORT			PORTC		/*!< Port an dem das Display haengt */
+#define DISPLAY_DDR				DDRC		/*!< Port an dem das Display haengt */
 #define DPC (DISPLAY_PORT & ~DISPLAY_OUT)	/*!< Port des Displays */
 //#define DRC (DDRC & ~DISPLAY_PINS)
 
-//#define DISPLAY_READY_PINR		PINC		/*!< Port an dem das Ready-Flag des Display hängt */
-#define DISPLAY_READY_DDR		DDRC		/*!< Port an dem das Ready-Flag des Display hängt */
-#define DISPLAY_READY_PIN		(1<<5)		/*!< Pin  an dem das Ready-Flag des Display hängt */
+//#define DISPLAY_READY_PINR		PINC		/*!< Port an dem das Ready-Flag des Display haengt */
+#define DISPLAY_READY_DDR		DDRC		/*!< Port an dem das Ready-Flag des Display haengt */
+#define DISPLAY_READY_PIN		(1<<5)		/*!< Pin  an dem das Ready-Flag des Display haengt */
 
 /*! RS-Leitung 
  * legt fest, ob die Daten an das Display in den Textpuffer (RS=1) kommen
  * oder als Steuercode interpretiert werden (RS=0)
  */
-#define DISPLAY_RS				(1<<0)		/*!< Pin an dem die RS-Leitung des Displays hängt */
+#define DISPLAY_RS				(1<<0)		/*!< Pin an dem die RS-Leitung des Displays haengt */
 
 /*! RW-Leitung
  * legt fest, ob zum Display geschrieben wird (RW=0)
  * oder davon gelesen wird (RW=1)
  */
-#define DISPLAY_RW				(1<<1)		/*!< Pin an dem die RW-Leitung des Displays hängt */
+#define DISPLAY_RW				(1<<1)		/*!< Pin an dem die RW-Leitung des Displays haengt */
 
 /*! Enable Leitung 
  * schaltet das Interface ein (E=1). 
- * Nur wenn Enable auf High-Pegel liegt, läßt sich das Display ansprechen
+ * Nur wenn Enable auf High-Pegel liegt, laesst sich das Display ansprechen
  */
-#define DISPLAY_EN				(1<<2)		/*!< Pin an dem die EN-Leitung des Displays hängt */
+#define DISPLAY_EN				(1<<2)		/*!< Pin an dem die EN-Leitung des Displays haengt */
 
 /*
  * Im Moment der Low-High-Flanke von ENABLE liest das Dislplay 
@@ -129,11 +123,11 @@ void display_data(char data){ //ein Zeichen aus data in den Displayspeicher schr
         for (i=0; i<150; i++){
                 asm volatile("nop");
         }
-      DISPLAY_PORT=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
+      DISPLAY_PORT=DPC;	// Alles zurueck setzen ==> Fallende Flanke von Enable
 }
 
 /*!
- * Löscht das ganze Display
+ * Loescht das ganze Display
  */
 void display_clear(void){
 	display_cmd(DISPLAY_CLEAR); // Display loeschen, Cursor Home
@@ -178,12 +172,12 @@ void display_cursor (uint8 row, uint8 column) {
 void display_init(void){
 	shift_init();
 
-	DISPLAY_DDR |= DISPLAY_OUT;		// Ausgänge
-	DISPLAY_DDR &= ~DISPLAY_IN;		// Eingänge
+	DISPLAY_DDR |= DISPLAY_OUT;		// Ausgaenge
+	DISPLAY_DDR &= ~DISPLAY_IN;		// Eingaenge
 
 	delay(12);		// Display steht erst 10ms nach dem Booten bereit
 	
-	// Register in 8-Bit-Modus 3x Übertragen, dazwischen warten
+	// Register in 8-Bit-Modus 3x uebertragen, dazwischen warten
 	shift_data_out(0x38,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
 	DISPLAY_PORT= DPC;
 	delay(5);		

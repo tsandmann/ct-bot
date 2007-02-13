@@ -24,11 +24,18 @@
  * @date 	12.02.2007
  */
  
+#include "ct-bot.h"
 #include "global.h"
+#include "ui/available_screens.h"
 #include "rc5.h"
 #include "sensor.h"
+#include "motor.h"
 #include "display.h"
+#include "mmc.h"
+#include "gui.h"
 #include <stdlib.h>
+
+#ifdef DISPLAY_AVAILABLE
 
 static int8 max_screens = 0;	/*!< Anzahl der zurzeit registrierten Screens */
 static void (* screen_functions[DISPLAY_SCREENS])(void) = {NULL};	/*!< hier liegen die Zeiger auf die Display-Funktionen */
@@ -57,9 +64,62 @@ int8 register_screen(void* fkt){
  */
 void gui_display(int8 screen){
 //	rc5_control();	// Vielleicht waere der Aufruf hier uebersichtlicher?
-	display_clear();	// zuerst aufraeumen!
 	/* Gueltigkeit der Screen-Nr. pruefen und Anzeigefunktion aufrufen, falls Screen belegt ist */
 	if (screen < max_screens && screen_functions[screen] != NULL) screen_functions[screen]();
 	if (RC5_Code != 0) default_key_handler();	// falls rc5-Code noch nicht abgearbeitet, Standardbehandlung ausfuehren
 	RC5_Code = 0;	// fertig, RC5-Puffer loeschen
 }
+
+// some testcases
+void screen1(void){
+	display_cursor(1,1);
+	display_printf("Screen 1");	
+}
+void screen2(void){
+	display_cursor(1,1);
+	display_printf("Screen 2");	
+}
+void screen3(void){
+	display_cursor(1,1);
+	display_printf("Screen 3");	
+}
+void screen4(void){
+	display_cursor(1,1);
+	display_printf("Screen 4");	
+}
+
+/*! 
+ * @brief 			Display-Screen Initialisierung
+ * @author 			Timo Sandmann (mail@timosandmann.de)
+ * @date 			12.02.2007	
+ * Traegt die Anzeige-Funktionen in die Liste ein.
+ */
+void gui_init(void){
+	#ifdef SENSOR_DISPLAY_AVAILABLE 	
+		register_screen(&sensor_display);
+	#endif
+	#ifdef DISPLAY_REGELUNG_AVAILABLE
+		register_screen(&speedcontrol_display);
+	#endif
+	#ifdef MISC_DISPLAY_AVAILABLE
+		register_screen(&misc_display);
+	#endif
+	#ifdef DISPLAY_ODOMETRIC_INFO
+		register_screen(&odometric_display);
+	#endif
+	#ifdef DISPLAY_MMC_INFO
+		register_screen(&mmc_display);
+	#endif
+	#ifdef RESET_IFNO_DISPLAY_AVAILABLE
+		register_screen(&reset_info_display);
+	#endif 
+	#ifdef RAM_DISPLAY_AVAILABLE
+		register_screen(&ram_display);
+	#endif
+	register_screen(&screen1);	// dummy
+	register_screen(&screen2);
+	register_screen(&screen3);
+	register_screen(&screen4);	
+}
+
+#endif	// DISPLAY_AVAILABLE

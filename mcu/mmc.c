@@ -43,6 +43,7 @@
 #include "ena.h"
 #include "timer.h"
 #include "display.h"
+#include "ui/available_screens.h"
 
 #include <avr/interrupt.h>
 #ifndef NEW_AVR_LIB
@@ -247,7 +248,6 @@ uint32 mmc_get_size(void){
 	return size;
 }
 
-
 #endif //MMC_INFO_AVAILABLE
 
 #ifdef MMC_WRITE_TEST_AVAILABLE
@@ -415,6 +415,69 @@ uint32 mmc_get_size(void){
 		return 0;
 	}
 #endif //MMC_WRITE_TEST_AVAILABLE
+
+#ifdef DISPLAY_MMC_INFO
+	/*!
+	 * Zeigt die Daten der MMC-Karte an
+	 */
+	void mmc_display(void){
+		#ifdef MMC_INFO_AVAILABLE
+			uint32 size = 0;
+			uint8 csd[16];
+			static uint8 mmc_state = 0xFF;
+				
+			uint8 dummy = mmc_init();
+			// hat sich was geaendert?
+			if (dummy != mmc_state) {
+				mmc_state = dummy;
+				
+				uint8 i;
+				for (i=0;i<16;i++) csd[i]=0;		
+	
+				display_cursor(1,1);
+				if (mmc_state != 0){
+					display_printf("MMC not init (%d)  ", mmc_state);
+				}else {
+					size=mmc_get_size();
+					mmc_read_csd(csd);
+					display_printf("MMC= %4d MByte ", size >> 20);
+				}
+				#ifdef MAP_AVAILABLE
+					map_init();
+				#endif
+				
+				#ifndef MMC_WRITE_TEST_AVAILABLE
+					display_cursor(3,1);
+					for (i=0;i<16;i++){
+						if (i == 8) display_cursor(4,1);
+						if (i%2 == 0) display_printf(" ");
+						display_printf("%02x",csd[i]);
+					}	
+				#endif	// MMC_WRITE_TEST_AVAILABLE							
+			}
+			#ifdef MMC_WRITE_TEST_AVAILABLE
+				if (mmc_state == 0){
+					static uint16 time = 0;
+					if (TIMER_GET_TICKCOUNT_16-time > MS_TO_TICKS(200)){
+						time = TIMER_GET_TICKCOUNT_16;
+						uint8 result = mmc_test();
+						if (result != 0){
+							display_cursor(3,1);
+							display_printf("mmc_test()=%u :(", result);
+						}
+					}
+				}
+			#endif	// MMC_WRITE_TEST_AVAILABLE			
+		#else
+			#ifdef MMC_VM_AVAILABLE
+				#ifdef PC
+					display_cursor(3,1);
+					display_printf("mmc_emu_test() = %u ", mmc_emu_test());
+				#endif	// PC
+			#endif	// MMC_VM_AVAILABLE 
+		#endif	// MMC_INFO_AVAILABLE		
+	}
+#endif	// DISPLAY_MMC_INFO
 
 #endif
 #endif

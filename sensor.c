@@ -345,3 +345,44 @@ void sensor_update(void){
 	sensors_initialized=1;
 }
 
+#ifdef SENSOR_DISPLAY_AVAILABLE
+	void sensor_display(void){
+		display_cursor(1,1);
+		display_printf("P=%03X %03X D=%03d %03d ",sensLDRL,sensLDRR,sensDistL,sensDistR);
+		
+		display_cursor(2,1);
+		display_printf("B=%03X %03X L=%03X %03X ",sensBorderL,sensBorderR,sensLineL,sensLineR);
+		
+		display_cursor(3,1);
+		display_printf("R=%2d %2d F=%d K=%d T=%d ",sensEncL % 10,sensEncR %10,sensError,sensDoor,sensTrans);
+		
+		display_cursor(4,1);
+		#ifdef RC5_AVAILABLE
+			#ifdef MAUS_AVAILABLE
+				display_printf("I=%04X M=%05d %05d",RC5_Code,sensMouseX,sensMouseY);
+			#else
+				display_printf("I=%04X",RC5_Code);
+			#endif				
+		#else
+			#ifdef MAUS_AVAILABLE
+				display_printf("M=%05d %05d",sensMouseX,sensMouseY);
+			#endif
+		#endif	
+	}
+#endif	// SENSOR_DISPLAY_AVAILABLE
+
+#ifdef DISPLAY_ODOMETRIC_INFO
+	void odometric_display(void){
+		/* Zeige Positions- und Geschwindigkeitsdaten */
+		display_cursor(1,1);
+		display_printf("heading: %3d  ",(int16)heading);
+		display_cursor(2,1);
+		display_printf("x: %3d  y: %3d  ",(int16)x_pos,(int16)y_pos);
+		display_cursor(3,1);
+		display_printf("v_l: %3d v_r: %3d  ",(int16)v_left,(int16)v_right);						
+		#ifdef MEASURE_MOUSE_AVAILABLE
+			display_cursor(4,1);
+			display_printf("squal: %3d v_c: %3d",maus_get_squal(),(int16)v_mou_center);
+		#endif
+	}
+#endif	// DISPLAY_ODOMETRIC_INFO

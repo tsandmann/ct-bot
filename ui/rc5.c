@@ -17,20 +17,29 @@
  * 
  */
 
-/*! @file 	rc5.c
+/*! 
+ * @file 	rc5.c
  * @brief 	RC5-Fernbedienung
  * Um RC5-Codes fuer eine eigene Fernbedienung anzupassen, reicht es diese
  * in eine Header-Datei auszulagern und anstatt der rc5code.h einzubinden.
  * Die Maskierung fuer die Auswertung der Codes nicht vergessen!
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
-*/
+ */
+ 
+//TODO: aufraeumen und verhaltensanzeige wieder einbauen!
+ 
 #include "bot-logic/bot-logik.h"
 #include "map.h"
 #include "ir-rc5.h"
 #include "display.h"
 #include "motor-low.h"
 #include "rc5-codes.h"
+
+#include "mmc.h"
+#include "mmc-vm.h"
+
+
 #include <stdlib.h>
 
 #ifdef RC5_AVAILABLE
@@ -57,17 +66,17 @@ typedef struct {
  * Diese Funktion setzt das Display auf eine andere Ausgabe.
  * @param par Parameter mit dem zu setzenden Screen.
  */	
-#ifdef DISPLAY_SCREENS_AVAILABLE
+#ifdef DISPLAY_AVAILABLE
 	static void rc5_screen_set(RemCtrlFuncPar *par);
 #endif
 
-#ifdef JOGDIAL
-/*!
- * Diese Funktion setzt die Geschwindigkeit auf den angegebenen Wert.
- * @param par Parameter mit den zu setzenden Geschwindigkeiten.
- */	
-static void rc5_bot_set_speed(RemCtrlFuncPar *par);
-#endif
+//#ifdef JOGDIAL
+///*!
+// * Diese Funktion setzt die Geschwindigkeit auf den angegebenen Wert.
+// * @param par Parameter mit den zu setzenden Geschwindigkeiten.
+// */	
+//static void rc5_bot_set_speed(RemCtrlFuncPar *par);
+//#endif
 
 /*!
  * Diese Funktion aendert die Geschwindigkeit um den angegebenen Wert.
@@ -146,30 +155,30 @@ static RemCtrlAction gRemCtrlAction[] = {
 	{ RC5_CH_PLUS,		rc5_bot_servo,			{ SERVO1, DOOR_CLOSE } },
 	{ RC5_CH_MINUS,		rc5_bot_servo,			{ SERVO1, DOOR_OPEN } },
 #endif
-#ifdef DISPLAY_SCREENS_AVAILABLE
+#ifdef DISPLAY_AVAILABLE
 	{ RC5_CODE_RED,		rc5_screen_set,			{ 0, 0 } },
 	{ RC5_CODE_GREEN,	rc5_screen_set,			{ 1, 0 } },
 	{ RC5_CODE_YELLOW,	rc5_screen_set,			{ 2, 0 } },
 	{ RC5_CODE_BLUE,	rc5_screen_set,			{ 3, 0 } },
 	{ RC5_CODE_TV_VCR,	rc5_screen_set,			{ DISPLAY_SCREEN_TOGGLE, 0 } },	
 #endif
-#ifdef JOGDIAL
-	{ RC5_CODE_JOG_MID,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_MAX } },
-	{ RC5_CODE_JOG_L1,	rc5_bot_set_speed,		{ BOT_SPEED_FAST, BOT_SPEED_MAX } },
-	{ RC5_CODE_JOG_L2,	rc5_bot_set_speed,		{ BOT_SPEED_NORMAL, BOT_SPEED_MAX } },
-	{ RC5_CODE_JOG_L3,	rc5_bot_set_speed,		{ BOT_SPEED_SLOW, BOT_SPEED_MAX } },
-	{ RC5_CODE_JOG_L4,	rc5_bot_set_speed,		{ BOT_SPEED_STOP, BOT_SPEED_MAX } },
-	{ RC5_CODE_JOG_L5,	rc5_bot_set_speed,		{ -BOT_SPEED_NORMAL, BOT_SPEED_MAX } },
-	{ RC5_CODE_JOG_L6,	rc5_bot_set_speed,		{ -BOT_SPEED_FAST, BOT_SPEED_MAX } },
-	{ RC5_CODE_JOG_L7,	rc5_bot_set_speed,		{ -BOT_SPEED_MAX, BOT_SPEED_MAX } },
-	{ RC5_CODE_JOG_R1,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_FAST } },
-	{ RC5_CODE_JOG_R2,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_NORMAL } },
-	{ RC5_CODE_JOG_R3,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_SLOW } },
-	{ RC5_CODE_JOG_R4,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_STOP } },
-	{ RC5_CODE_JOG_R5,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, -BOT_SPEED_NORMAL } },
-	{ RC5_CODE_JOG_R6,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, -BOT_SPEED_FAST } },
-	{ RC5_CODE_JOG_R7,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, -BOT_SPEED_MAX } }
-#endif	/* JOGDIAL */
+//#ifdef JOGDIAL
+//	{ RC5_CODE_JOG_MID,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_MAX } },
+//	{ RC5_CODE_JOG_L1,	rc5_bot_set_speed,		{ BOT_SPEED_FAST, BOT_SPEED_MAX } },
+//	{ RC5_CODE_JOG_L2,	rc5_bot_set_speed,		{ BOT_SPEED_NORMAL, BOT_SPEED_MAX } },
+//	{ RC5_CODE_JOG_L3,	rc5_bot_set_speed,		{ BOT_SPEED_SLOW, BOT_SPEED_MAX } },
+//	{ RC5_CODE_JOG_L4,	rc5_bot_set_speed,		{ BOT_SPEED_STOP, BOT_SPEED_MAX } },
+//	{ RC5_CODE_JOG_L5,	rc5_bot_set_speed,		{ -BOT_SPEED_NORMAL, BOT_SPEED_MAX } },
+//	{ RC5_CODE_JOG_L6,	rc5_bot_set_speed,		{ -BOT_SPEED_FAST, BOT_SPEED_MAX } },
+//	{ RC5_CODE_JOG_L7,	rc5_bot_set_speed,		{ -BOT_SPEED_MAX, BOT_SPEED_MAX } },
+//	{ RC5_CODE_JOG_R1,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_FAST } },
+//	{ RC5_CODE_JOG_R2,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_NORMAL } },
+//	{ RC5_CODE_JOG_R3,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_SLOW } },
+//	{ RC5_CODE_JOG_R4,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, BOT_SPEED_STOP } },
+//	{ RC5_CODE_JOG_R5,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, -BOT_SPEED_NORMAL } },
+//	{ RC5_CODE_JOG_R6,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, -BOT_SPEED_FAST } },
+//	{ RC5_CODE_JOG_R7,	rc5_bot_set_speed,		{ BOT_SPEED_MAX, -BOT_SPEED_MAX } }
+//#endif	/* JOGDIAL */
 };
 
 /*!
@@ -231,7 +240,7 @@ static void rc5_screen_set(RemCtrlFuncPar *par) {
 		
 //		display_screen %= DISPLAY_SCREENS;
 		if (display_screen >= DISPLAY_SCREENS) display_screen = 0;
-//		display_clear();
+		display_clear();
 	}
 }
 //#endif
@@ -338,19 +347,19 @@ static void rc5_bot_set_speed(RemCtrlFuncPar *par) {
 			target_speed_l += par->value1;
 			if ((target_speed_l < -BOT_SPEED_MAX)|| (target_speed_l > BOT_SPEED_MAX))
 				target_speed_l = old;
-			if (target_speed_l < BOT_SPEED_SLOW && target_speed_l > 0)
-				target_speed_l = BOT_SPEED_SLOW;
-			else if (target_speed_l > -BOT_SPEED_SLOW && target_speed_l < 0)
-				target_speed_l = -BOT_SPEED_SLOW;
+			if (target_speed_l < BOT_SPEED_MIN && target_speed_l > 0)
+				target_speed_l = BOT_SPEED_MIN;
+			else if (target_speed_l > -BOT_SPEED_MIN && target_speed_l < 0)
+				target_speed_l = -BOT_SPEED_MIN;
 			
 			old=target_speed_r;		
 			target_speed_r += par->value2;
 			if ((target_speed_r <-BOT_SPEED_MAX)||(target_speed_r > BOT_SPEED_MAX))
 				target_speed_r = old;
-			if (target_speed_r < BOT_SPEED_SLOW && target_speed_r > 0)
-				target_speed_r = BOT_SPEED_SLOW;
-			else if (target_speed_r > -BOT_SPEED_SLOW && target_speed_r < 0)
-				target_speed_r = -BOT_SPEED_SLOW;
+			if (target_speed_r < BOT_SPEED_MIN && target_speed_r > 0)
+				target_speed_r = BOT_SPEED_MIN;
+			else if (target_speed_r > -BOT_SPEED_MIN && target_speed_r < 0)
+				target_speed_r = -BOT_SPEED_MIN;
 		}
 	}
 #endif
@@ -427,35 +436,30 @@ void default_key_handler(void){
  * @param par Parameter mit der betaetigten Zahlentaste.
  */
 void rc5_number(RemCtrlFuncPar *par) {
-//	#ifdef SPEED_LOG_AVAILABLE
-//		uint8 i;
-//		uint8 index=0;
-//		char buffer[24];
-//	#endif // SPEED_LOG_AVAILABLE	
-	#ifdef DISPLAY_SCREENS_AVAILABLE 
-	switch (display_screen) {
-		#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-			case 2:
-				switch (par->value1) {
-					case 0:	break;
-					case 1: rc5_toggle_behaviour_new(1); break;
-					case 2: rc5_toggle_behaviour_new(2); break;
-					case 3: rc5_toggle_behaviour_new(3); break;
-					case 4: rc5_toggle_behaviour_new(4); break;
-					case 5: rc5_toggle_behaviour_new(5); break;
-					case 6: rc5_toggle_behaviour_new(6); break;
-					case 7: break;
-					case 8: break;
-					case 9: 
-					       #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
-					         rc5_set_all_behaviours(); 
-					       #endif
-					       break;
-				}
-				break;
-		#endif
-		default:
-	#endif
+//	#ifdef DISPLAY_SCREENS_AVAILABLE 
+//	switch (display_screen) {
+//		#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+//			case 2:
+//				switch (par->value1) {
+//					case 0:	break;
+//					case 1: rc5_toggle_behaviour_new(1); break;
+//					case 2: rc5_toggle_behaviour_new(2); break;
+//					case 3: rc5_toggle_behaviour_new(3); break;
+//					case 4: rc5_toggle_behaviour_new(4); break;
+//					case 5: rc5_toggle_behaviour_new(5); break;
+//					case 6: rc5_toggle_behaviour_new(6); break;
+//					case 7: break;
+//					case 8: break;
+//					case 9: 
+//					       #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+//					         rc5_set_all_behaviours(); 
+//					       #endif
+//					       break;
+//				}
+//				break;
+//		#endif
+//		default:
+//	#endif
 			switch (par->value1) {
 				#ifdef BEHAVIOUR_AVAILABLE
 					case 0:	
@@ -463,58 +467,137 @@ void rc5_number(RemCtrlFuncPar *par) {
 					case 1: target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
 				#endif
 				case 2:
-					#ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
-							bot_drive_square(0, 15);
-					#endif							
+					#ifdef SPEED_CONTROL_AVAILABLE
+						#ifdef SPEED_LOG_AVAILABLE
+							acc_test[0] = 1;
+							acc_test[1] = 1;
+						#else
+							#ifdef MAP_AVAILABLE
+								print_map();
+							#else 
+								#ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
+									bot_drive_square(0, 15);
+								#else
+									#ifdef MMC_WRITE_TEST_AVAILABLE
+									{
+										uint8 result = mmc_test();
+										if (result != 0){
+											display_cursor(3,1);
+											display_printf("mmc_test()=%u :( ", result);
+										}
+									}
+									#endif	// MMC_WRITE_TEST_AVAILABLE
+								#endif
+							#endif							
+						#endif // SPEED_LOG_AVAILABLE
+					#endif // SPEED_CONTROL_AVAILABLE
 					break;				
-				case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
-//				case 4: bot_turn(0, 90); break;
-				#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
-					case 4: bot_catch_pillar(0); break;
-				#else
-					#ifdef VM_STATS_AVAILABLE
-						case 4: mmc_print_statistic(); break;
+			//	case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
+				case 3:
+					#ifdef SPEED_CONTROL_AVAILABLE
+						#ifdef SPEED_LOG_AVAILABLE	
+							display_cursor(4,1);
+							display_printf("dt=%5u %5u", acc_test_dt[0], acc_test_dt[1]);
+						#else
+							#ifdef MAP_AVAILABLE
+								#ifdef MMC_VM_AVAILABLE
+									mmc_clear_file(0x43200UL);
+								#endif
+							#else						
+								target_speed_l = BOT_SPEED_NORMAL; 
+								target_speed_r = BOT_SPEED_NORMAL;
+							#endif
+						#endif	// SPEED_LOG_AVAILABLE
+					#else
+						#ifdef MAP_AVAILABLE
+							print_map();
+							#ifdef MMC_VM_AVAILABLE
+								mmc_clear_file(0x43200UL);
+							//	printf("Dateigroesse: %lu\n\r", mmc_get_filesize(0x400));
+							#endif
+						#else
+							target_speed_l = BOT_SPEED_NORMAL; 
+							target_speed_r = BOT_SPEED_NORMAL;
+						#endif						
 					#endif
-				#endif
+					break;				
+				#ifdef ADJUST_PID_PARAMS
+					case 4:	 Kp++; break;
+					case 7:	 Kp--; break;
+					case 5:	 Ki++; break;
+					case 8:	 Ki--; break;
+					case 6:  Kd++; break;
+					case 9:  Kd--; break;
+				#else
+//					case 4: bot_turn(0, 90); break;
+					#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
+						case 4: bot_catch_pillar(0); break;
+					#else
+						#ifdef VM_STATS_AVAILABLE
+							case 4: mmc_print_statistic(); break;
+						#endif
+					#endif
 //					//case 5: bot_goto(0, 0, 0); break;
 //					#ifdef MEASURE_MOUSE_AVAILABLE
 //						case 5: bot_gotoxy(0,20,20);
 //					#else
-				#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
-					case 5: bot_solve_maze(0); break;
-				#endif
+					#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
+						case 5: bot_solve_maze(0); break;
+					#endif
 //					case 5: target_speed_l = BOT_SPEED_MAX; target_speed_r = BOT_SPEED_MAX; break;
 //					#endif
 //					case 5: bot_scan(0); break;
-				#ifdef BEHAVIOUR_TURN_AVAILABLE
-					case 6: bot_turn(0, -90); break;
-				#endif
-				#ifdef BEHAVIOUR_TURN_AVAILABLE
-					case 7: bot_turn(0,180); break;
-					case 9: bot_turn(0, -180); break;
-				#endif
-				#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
-					case 8: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
-				#endif
+					#ifdef SPEED_CONTROL_AVAILABLE
+						#ifdef BEHAVIOUR_CALIBRATE_PWM_AVAILABLE
+							case 6: bot_calibrate_pwm(0); break;
+						#else 
+							#ifdef BEHAVIOUR_TURN_AVAILABLE
+								case 6: bot_turn(0, -90); break;
+							#endif
+						#endif
+					#endif	// SPEED_CONTROL_AVAILABLE
+					#ifdef VARIABLE_PWM_F
+						case 7: 
+							pwm_frequency = 1;
+							target_speed_l = 0;
+							target_speed_r = 0; 
+							motor_low_init(pwm_frequency); 
+							break;
+						case 8: 
+							pwm_frequency = 2; 
+							target_speed_l = 0;
+							target_speed_r = 0; 
+							motor_low_init(pwm_frequency); 
+							break;
+						case 9: 
+							pwm_frequency = 3; 
+							target_speed_l = 0;
+							target_speed_r = 0; 
+							motor_low_init(pwm_frequency); 
+							break;
+					#else
+						#ifdef BEHAVIOUR_TURN_AVAILABLE
+							case 7: bot_turn(0,180); break;
+							case 9: bot_turn(0, -180); break;
+						#endif
+						#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+							case 8: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
+						#endif
+					#endif	// VARIABLE_PWM_F
+				#endif	// ADJUST_PID_PARAMS
 	
 //				case 0:	 target_speed_l=BOT_SPEED_STOP;target_speed_r=target_speed_l;break;
 //				case 1:	 target_speed_l=BOT_SPEED_SLOW;target_speed_r=target_speed_l;break;
 //				case 2:	 target_speed_l=BOT_SPEED_MEDIUM;target_speed_r=target_speed_l;break;
 //				case 3:	 target_speed_l=BOT_SPEED_FAST;target_speed_r=target_speed_l;break;
 //				case 4:	 target_speed_l=BOT_SPEED_MAX;target_speed_r=target_speed_l;break;
-
-//				case 5:	 Kp++; break;
-//				case 8:	 Kp--; break;
-//				case 6:	 Ki++; break;
-//				case 9:	 Ki--; break;
-
 //				case 9:	 target_speed_l=-BOT_SPEED_MEDIUM;target_speed_r=target_speed_l;break;
 			}
-	#ifdef DISPLAY_SCREENS_AVAILABLE 
-	
-			break;
+//	#ifdef DISPLAY_SCREENS_AVAILABLE 
+//	
+//			break;
 		
- 	}
- 	#endif
+// 	}
+// 	#endif
  }
 #endif

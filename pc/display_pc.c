@@ -51,9 +51,7 @@
 #define DISPLAY_BUFFER_SIZE	(DISPLAY_LENGTH + 1)
 
 uint8 display_update=0;	/*!< Muss das Display aktualisiert werden? */
-#ifdef DISPLAY_SCREENS_AVAILABLE
-	uint8 display_screen=0;	/*!< Muss das Display aktualisiert werden? */
-#endif
+uint8 display_screen=0;	/*!< zurzeit aktiver Displayscreen */
 
 char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausgaben */
 

@@ -409,6 +409,7 @@ void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
   int16 max_behaviours ;
   Behaviour_t	*ptr	;
   
+  // TODO!
   /* dazu muss ich auch gueltige Screenseite sein */
   #ifdef DISPLAY_SCREENS_AVAILABLE
    if (display_screen != 2)

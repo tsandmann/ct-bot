@@ -27,15 +27,7 @@
 #ifndef gui_H_
 #define gui_H_
 
-/*! 
- * @brief 		Display-Screen Registrierung
- * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		12.02.2007	
- * @param fkt 	Zeiger auf eine Funktion, die den Display-Screen anzeigt 
- * Legt einen neuen Display-Screen an und haengt eine Anzeigefunktion ein.
- * Diese Funktion kann auch RC5-Kommandos behandeln. Wurde eine Taste ausgewertet, setzt man RC5_Code auf 0.
- */
-int8 register_screen(void* fkt);
+#include "ui/available_screens.h"
 
 /*! 
  * @brief 			Display-Screen Anzeige
@@ -45,4 +37,28 @@ int8 register_screen(void* fkt);
  * Zeigt einen Screen an und fuehrt die RC5-Kommandoauswertung aus, falls noch nicht geschehen.
  */
 void gui_display(int8 screen);
+
+/*! 
+ * @brief 			Display-Screen Initialisierung
+ * @author 			Timo Sandmann (mail@timosandmann.de)
+ * @date 			12.02.2007	
+ * Traegt die Anzeige-Funktionen in die Liste ein.
+ */
+void gui_init(void);
+
+#ifdef MISC_DISPLAY_AVAILABLE
+	/*! 
+	 * @brief	Zeigt ein paar Infos an, die man nicht naeher zuordnen kann
+	 */
+	void misc_display(void);
+#endif
+
+#ifdef RESET_IFNO_DISPLAY_AVAILABLE
+	extern uint8 reset_flag;	 /*<! Nimmt den Status von MCU(C)SR bevor dieses Register auf 0x00 gesetzt wird */
+	void reset_info_display(void);
+#endif
+
+#ifdef RAM_DISPLAY_AVAILABLE
+	void ram_display(void);
+#endif
 #endif	// gui_H_

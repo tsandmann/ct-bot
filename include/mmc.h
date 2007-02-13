@@ -91,6 +91,13 @@ uint8 mmc_init (void);
 	uint32 mmc_get_size(void);
 #endif
 
+#ifdef DISPLAY_MMC_INFO
+	/*!
+	 * Zeigt die Daten der MMC-Karte an
+	 */
+	void mmc_display(void);
+#endif
+
 #ifdef MMC_WRITE_TEST_AVAILABLE
 	/*! Testet die MMC-Karte. Schreibt nacheinander 2 Sektoren a 512 Byte mit testdaten voll und liest sie wieder aus
 	 * !!! Achtung loescht die Karte
