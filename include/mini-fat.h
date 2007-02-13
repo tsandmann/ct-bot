@@ -58,6 +58,8 @@ uint32 mini_fat_find_block(const char key[3], uint8* buffer);
  * @param size kByte Nutzdaten, die der MCU spaeter beschreiben darf
  */
 void create_mini_fat_file(const char* filename, const char* id_string, uint32 size);
+
+void convert_slog_file(const char* input_file);
 #endif
 
 #endif /*MINIFAT_H_*/
