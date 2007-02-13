@@ -62,4 +62,60 @@ void create_mini_fat_file(const char* filename, const char* id_string, uint32 si
 	fclose(fp);	
 }
 
+/*! 
+ * Konvertiert eine (binaere) mini-fat-Datei ("AVR-Endian") mit Speed-Log-Daten in eine Textdatei.
+ * @author 	Timo Sandmann (mail@timosandmann.de)
+ * @date 	10.02.2007  
+ * @param filename Der Dateiname mini-fat-Datei
+ */
+void convert_slog_file(const char* input_file){
+	typedef struct{
+		uint8 encRate;
+		uint8 targetRate;
+		int16 err;
+		int16 pwm;
+		uint32 time;
+	} slog_t;				/*!< Datentyp der Logbloecke auf der MMC */
+		
+	printf("Konvertiere die SpeedLog-Datei %s ins txt-Format\n", input_file);
+	FILE *fp_input = fopen(input_file, "r");
+	FILE *fp_output = fopen("slog.txt", "w");
+	if (fseek(fp_input, 0L, SEEK_END) != 0) return;
+	uint32 filesize = ftell(fp_input)+1;
+	uint32 j;
+	uint8 k;
+	uint8 data[512];
+	for (k=0; k<2; k++){	// einmal fuer links und einmal fuer rechts
+		fseek(fp_input, 512L, SEEK_SET);	// erster Sektor enthaelt nur Dateiname und Groesse
+		fwrite("Ist-Geschw.\tSoll-Geschw.\tFehler\tPWM\tTimestemp\n", 46, 1, fp_output); 
+		/* blockweise Daten einlesen */
+		for (j=0; j<=filesize/512; j++){
+			fread(data, 512, 1, fp_input);
+			uint8 i;
+			for (i=0; i<25; i++){	// 25 Daten pro Block
+				char buffer[255];
+				slog_t tmp;
+				/* AVR-Speicherformat einlesen, Prinzip hackhack, ist so aber unabhaengig von der Zielplattform */
+				tmp.encRate = data[k*250+i*10];
+				if (tmp.encRate == 0) break;	// 0-Zeile
+				tmp.targetRate = data[k*250+i*10+1];
+				tmp.err = data[k*250+i*10+2] | data[k*250+i*10+3]<<8;
+				tmp.pwm = data[k*250+i*10+4] | data[k*250+i*10+5]<<8;
+				tmp.time = data[k*250+i*10+6] | data[k*250+i*10+7]<<8 | data[k*250+i*10+8]<<16 | data[k*250+i*10+9]<<24;
+				/* Ausgabezeile bauen und schreiben */
+				sprintf(buffer, "%u\t%u", tmp.encRate*2, tmp.targetRate*2);
+				fwrite(buffer, strlen(buffer), 1, fp_output);
+				sprintf(buffer, "\t%d\t%u", tmp.err*2, tmp.pwm);
+				fwrite(buffer, strlen(buffer), 1, fp_output);
+				sprintf(buffer, "\t%lu\n", tmp.time);
+				fwrite(buffer, strlen(buffer), 1, fp_output);									
+			}
+		}
+		fwrite("\n", 1, 1, fp_output);	// Leerzeile trennt links und rechts
+	}
+	fclose(fp_input);
+	fclose(fp_output);
+	printf("done.\n");	// fertig :)
+}
+
 #endif
