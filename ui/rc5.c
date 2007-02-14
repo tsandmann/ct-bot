@@ -46,34 +46,12 @@
 
 uint16 RC5_Code = 0;	/*!< Letzter empfangener RC5-Code */
 
-
-/* typedefs zunaechst noch mal aufbewahren, sind evtl. fuer spezielle key-handler sinnvoll */ 
-
-///*! 
-// * Dieser Typ definiert Parameter fuer RC5-Kommando-Code Funktionen.
-// */
-//typedef struct {
-//	uint16 value1;	/*!< Wert 1 */
-//	uint16 value2;	/*!< Wert 2 */
-//} RemCtrlFuncPar;
-//
-///*! Dieser Typ definiert die RC5-Kommando-Code Funktion. */
-//typedef void (*RemCtrlFunc)(RemCtrlFuncPar *par);
-//
-///*! Dieser Typ definiert den RC5-Kommando-Code und die auszufuehrende Funktion. */
-//typedef struct {
-//	uint16 command;		/*!< Kommando Code */
-//	RemCtrlFunc func;	/*!< Auszufuehrende Funktion */
-//	RemCtrlFuncPar par;	/*!< Parameter */
-//} RemCtrlAction;
-
-
-#ifdef DISPLAY_AVAILABLE
-	/*!
-	 * @brief			Setzt das Display auf eine andere Ausgabe.
-	 * @param screen	Parameter mit dem zu setzenden Screen.
-	 */	
-	static void rc5_screen_set(uint8 screen){
+/*!
+ * @brief			Setzt das Display auf eine andere Ausgabe.
+ * @param screen	Parameter mit dem zu setzenden Screen.
+ */	
+static void rc5_screen_set(uint8 screen){
+	#ifdef DISPLAY_AVAILABLE
 		if (screen == DISPLAY_SCREEN_TOGGLE)
 			display_screen++;			// zappen
 		else
@@ -82,8 +60,8 @@ uint16 RC5_Code = 0;	/*!< Letzter empfangener RC5-Code */
 		if (display_screen >= DISPLAY_SCREENS)
 			display_screen = 0;			// endliche Screenanzahl
 		display_clear();				// alten Screen loeschen, das Zeichnen uerbernimmt GUI-Handler
-	}
-#endif	// DISPLAY_AVAILABLE
+	#endif	// DISPLAY_AVAILABLE
+}
 
 /*!
  * @brief	Stellt die Not-Aus-Funktion dar. 
@@ -102,8 +80,8 @@ uint16 RC5_Code = 0;	/*!< Letzter empfangener RC5-Code */
  * @param left	linke, relative Geschwindigkeitsaenderung
  * @param right	rechte, relative Geschwindigkeitsaenderung 
  */	
-#ifdef BEHAVIOUR_AVAILABLE
-	static void rc5_bot_change_speed(int16 left, int16 right) {
+static void rc5_bot_change_speed(int16 left, int16 right) {
+	#ifdef BEHAVIOUR_AVAILABLE
 		int16 old;
 		old = target_speed_l;
 		target_speed_l += left;
@@ -122,8 +100,8 @@ uint16 RC5_Code = 0;	/*!< Letzter empfangener RC5-Code */
 			target_speed_r = BOT_SPEED_SLOW;
 		else if (target_speed_r > -BOT_SPEED_SLOW && target_speed_r < 0)
 			target_speed_r = -BOT_SPEED_SLOW;
-	}
-#endif
+	#endif	// BEHAVIOUR_AVAILABLE
+}
 
 /*!
  * @brief		Verarbeitet die Zifferntasten.
@@ -172,7 +150,11 @@ static void rc5_number(uint8 key) {
 /*!
  * @brief	Ordnet den Tasten eine Aktion zu und fuehrt diese aus.
  * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	12.02.2007	  
+ * @date 	12.02.2007
+ * Hier gehoeren nur die absoluten Basics an Tastenzuordnungen rein, nicht Spezielles! Sonderwuensche
+ * evtl. nach rc5_number(), ab besten aber eigenen Screenhandler anlegen und mit GUI/register_screen()
+ * einhaengen.	  
+ * Prinzip hier: Uebersichtlichkeit! :)
  */
 void default_key_handler(void){
 	switch (RC5_Code){	
@@ -180,26 +162,22 @@ void default_key_handler(void){
 		case RC5_CODE_PWR:		rc5_emergency_stop(); break;
 		
 		/* Screenwechsel */
-		#ifdef DISPLAY_AVAILABLE
 		case RC5_CODE_GREEN:	rc5_screen_set(0); break;
 		case RC5_CODE_RED:		rc5_screen_set(1); break;
 		case RC5_CODE_YELLOW:	rc5_screen_set(2); break;
 		case RC5_CODE_BLUE:		rc5_screen_set(3); break;
 		case RC5_CODE_TV_VCR:	rc5_screen_set(DISPLAY_SCREEN_TOGGLE); break;
-		#endif	// DISPLAY_AVAILABLE
 		
 		/* Geschwindigkeitsaenderung */
-		#ifdef BEHAVIOUR_AVAILABLE
 		case RC5_CODE_UP:		rc5_bot_change_speed( 10,  10); break;
 		case RC5_CODE_DOWN:		rc5_bot_change_speed(-10, -10); break;
 		case RC5_CODE_LEFT:		rc5_bot_change_speed(-10,  10); break;
 		case RC5_CODE_RIGHT:	rc5_bot_change_speed( 10, -10); break;
-		#endif	// BEHAVIOUR_AVAILABLE
 		
 		/* Servoaktivitaet */
 		#ifdef BEHAVIOUR_SERVO_AVAILABLE
 		case RC5_CH_PLUS:		bot_servo(0, SERVO1, DOOR_CLOSE); break;
-		case RC5_CH_MINUS:		bot_servo(0, SERVO1, DOOR_OPEN); break;
+		case RC5_CH_MINUS:		bot_servo(0, SERVO1, DOOR_OPEN);  break;
 		#endif	// BEHAVIOUR_SERVO_AVAILABLE
 		
 		/* numerische Tasten */
@@ -401,5 +379,27 @@ void rc5_control(void){
 //		default:
 //	#endif
 //}
+
+
+
+/* typedefs zunaechst noch mal aufbewahren, sind evtl. fuer spezielle key-handler sinnvoll */ 
+
+///*! 
+// * Dieser Typ definiert Parameter fuer RC5-Kommando-Code Funktionen.
+// */
+//typedef struct {
+//	uint16 value1;	/*!< Wert 1 */
+//	uint16 value2;	/*!< Wert 2 */
+//} RemCtrlFuncPar;
+//
+///*! Dieser Typ definiert die RC5-Kommando-Code Funktion. */
+//typedef void (*RemCtrlFunc)(RemCtrlFuncPar *par);
+//
+///*! Dieser Typ definiert den RC5-Kommando-Code und die auszufuehrende Funktion. */
+//typedef struct {
+//	uint16 command;		/*!< Kommando Code */
+//	RemCtrlFunc func;	/*!< Auszufuehrende Funktion */
+//	RemCtrlFuncPar par;	/*!< Parameter */
+//} RemCtrlAction;
 
 #endif	// RC5_AVAILABLE

@@ -22,7 +22,7 @@
  * @brief 	RC5-Fernbedienung
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 
 #ifndef rc5_H_
 #define rc5_H_
