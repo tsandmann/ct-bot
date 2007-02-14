@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	ct-Bot.c
- * @brief 	Demo-Hauptprogramm
+/*! 
+ * @file 	ct-Bot.c
+ * @brief 	Bot-Hauptprogramm
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 
 #include "ct-Bot.h"
 
@@ -64,7 +65,6 @@
 #include "sensor.h"
 #include "log.h"
 
-
 #include "motor.h"
 #include "sensor-low.h"
 #include "bot-logic/bot-logik.h"
@@ -79,36 +79,29 @@
 #include "mmc-emu.h"
 #include "mini-fat.h"
 #include "mmc-vm.h"
-#include "math.h"
 #include "gui.h"
 #include "ui/available_screens.h"
-
-#ifdef VARIABLE_PWM_F
-	#include "motor-low.h"
-#endif	// VARIABLE_PWM_F
 
 /*!
  * Der Mikrocontroller und der PC-Simulator brauchen ein paar Einstellungen, 
  * bevor wir loslegen koennen.
  */
 void init(void){
-	
 	#ifdef MCU
 		PORTA=0; DDRA=0;		//Alles Eingang alles Null
 		PORTB=0; DDRB=0;
 		PORTC=0; DDRC=0;
 		PORTD=0; DDRD=0;
-		
-		// Watchdog aus!	
-		wdt_disable();
+			
+		wdt_disable();	// Watchdog aus!
 		timer_2_init();
 		
-		// Ist das ein Power on Reset ?
+		/* Ist das ein Power on Reset? */
 		#ifdef __AVR_ATmega644__
-			if ((MCUSR & 1)  ==1 ) {
+			if ((MCUSR & 1) == 1) {
 				MCUSR &= ~1;	// Bit loeschen
 		#else
-			if ((MCUCSR & 1)  ==1 ) {
+			if ((MCUCSR & 1) == 1) {
 				MCUCSR &= ~1;	// Bit loeschen
 		#endif
 			delay(100);
@@ -141,7 +134,7 @@ void init(void){
 
 	#ifdef DISPLAY_AVAILABLE
 		display_init();
-		display_update=1;
+//		display_update=1;	// wird nie ausgewertet?!?
 	#endif
 
 	#ifdef LED_AVAILABLE
@@ -190,66 +183,6 @@ void init(void){
 	#endif	
 }
 
-// TODO
-#ifdef DISPLAY_AVAILABLE_TODO_HERE
-
-/*!
- * Zeigt ein paar Informationen an
- */
-	void display(void){
-		
-		#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-		 /*!
-          * Definitionen fuer die Verhaltensanzeige
-          */
-//		  #undef TEST_AVAILABLE_COUNTER
-		  Behaviour_t	*ptr	= behaviour;
-		  int8 colcounter       = 0;
-		  int8 linecounter      = 0;
-		  int8 firstcol         = 0; 
-		#endif 
-		display_cursor(1,1);
-		  
-       #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-        /*!
-         * zeilenweise Anzeige der Verhalten
-         */ 
-		display_printf("Verhalten (Pri/Akt)%d",behaviour_page);
-		
-		colcounter = 0; linecounter = 2;
-		/* je nach Seitenwahl die ersten  Saetze ueberlesen bis richtige Seite */
-		firstcol = (behaviour_page -1)*6;
-		 
-		/*!
-		 * max. 3 Zeilen mit 6 Verhalten anzeigbar wegen Ueberschrift
-		 * Seitensteuerung bei mehr Verhalten 
-		 */ 
-		while((ptr != NULL)&& (linecounter<5))	{
-		 
-		  if  ((ptr->priority >= PRIO_VISIBLE_MIN) &&(ptr->priority <= PRIO_VISIBLE_MAX)) {
-            if   (colcounter >= firstcol) { 
-	          display_cursor(linecounter,((colcounter % 2)* 12)+1);
-	          #ifdef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
-		        display_printf(" %3d,%2d",ptr->priority,ptr->active);
-		      #else
-		        display_printf(" %3d,%2d",ptr->priority,ptr->active_new);				      
-		      #endif
-		      colcounter++;
-		    
-		      /* bei colcounter 0 neue Zeile */
-		      if (colcounter % 2 == 0)
-		  	    linecounter++;
-		      
-		    }
-		    else
-		    colcounter ++;
-		  }
-		  ptr = ptr->next;
-	    }  
-		
-	    #endif	// DISPLAY_BEHAVIOUR_AVAILABLE
-#endif	// DISPLAY_AVAILABLE_TODO_HERE
-
 #ifdef TEST_AVAILABLE
 	/*! Zeigt den internen Status der Sensoren mit den LEDs an */
 	void show_sensors(void){
@@ -282,7 +215,7 @@ void init(void){
 				
 		LED_set(led);
 	}
-#endif
+#endif	// TEST_AVAILABLE
 
 #ifdef PC
 	/*!
@@ -303,28 +236,24 @@ void init(void){
 		puts("\t-h\tZeigt diese Hilfe an");
 		exit(1);
 	}
-	
-#endif
+#endif	// PC
 
 #ifdef MCU
-/*! 
- * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
- */
+	/*! 
+ 	 * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
+ 	 */
 	int main (void){
-
-#endif
+#endif	// MCU
 
 #ifdef PC
-
-/*! 
- * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
- */
+	/*! 
+ 	 * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
+ 	 */
  	int main (int argc, char *argv[]){
-		//Zum debuggen der Zeiten:	
+		/* zum Debuggen der Zeiten: */	
 		#ifdef DEBUG_TIMES
 			struct timeval    start, stop;
 		#endif
-
 
 		int ch;	
 		int start_server = 0;	/*!< Wird auf 1 gesetzt, falls -s angegeben wurde */
@@ -337,20 +266,18 @@ void init(void){
 		char *from = NULL;	/*!< Speichert den per -M uebergebenen Quellnamen zwischen */
 
 
-		// Die Kommandozeilenargumente komplett verarbeiten
+		/* Die Kommandozeilenargumente komplett verarbeiten */
 		while ((ch = getopt(argc, argv, "hsTt:M:c:l:")) != -1) {
 			switch (ch) {
 			case 's':
-				// Servermodus [-s] wird verlangt
+				/* Servermodus [-s] wird verlangt */
 				start_server = 1;
 				break;
 			case 'T': 	
 				start_test_client=1;
 				break;		
 			case 't':
-				// Hostname, auf dem ct-Sim laeuft wurde 
-				// uebergeben. Der String wird in hostname
-				// gesichert.
+				/* Hostname, auf dem ct-Sim laeuft wurde uebergeben. Der String wird in hostname gesichert. */
 				{
 					const int len = strlen(optarg);
 					hostname = malloc(len + 1);
@@ -360,9 +287,7 @@ void init(void){
 				}
 				break;
 			case 'M':
-				// Dateiname, fuer die Map wurde
-				// uebergeben. Der String wird in from
-				// gesichert.
+				/* Dateiname fuer die Map wurde uebergeben. Der String wird in from gesichert. */
 				{
 					int len = strlen(optarg);
 					from = malloc(len + 1);
@@ -374,32 +299,30 @@ void init(void){
 				}
 				break;
 			case 'c':
-				// Datei fuer den Bot (mini-fat soll erzeugt werden 
-				// Der Name wird in hostname gesichert.
+				/* Datei fuer den Bot (mini-fat soll erzeugt werden. */
 				{
 					int len = strlen(optarg);
 					from = malloc(len + 1);
 					if (NULL == from)
 						exit(1);
 					strcpy(from, optarg);
-					
 					create=1;					
 				}
 				break;	
 			case 'l':
+				/* Speedlog-Datei soll in txt konvertiert werden */
 				{
 					int len = strlen(optarg);
 					from = malloc(len + 1);
 					if (NULL == from)
 						exit(1);
 					strcpy(from, optarg);
-					
 					slog=1;					
 				}				
 				break;			
 			case 'h':
 			default:
-				// -h oder falscher Parameter, Usage anzeigen
+				/* -h oder falscher Parameter, Usage anzeigen */
 				usage();
 			}
 		}
@@ -407,54 +330,47 @@ void init(void){
 		argv += optind;
 		
 	if (start_server != 0) {   // Soll der TCP-Server gestartet werden?
-       printf("ARGV[0]= %s\n",argv[0]);
-       tcp_server_init();
-       tcp_server_run(100);
+		printf("ARGV[0]= %s\n",argv[0]);
+		tcp_server_init();
+		tcp_server_run(100);
     } else {
  		#ifdef MAP_AVAILABLE
 	 		/* Karte in pgm konvertieren */
 	    	if (convert !=0) {
-	    			    		
-	    		
-	   		 	printf("Konvertiere Karte %s in PGM %s\n",from,"map.pgm");
+				printf("Konvertiere Karte %s in PGM %s\n",from,"map.pgm");
 	   		 	read_map(from);
 	   		 	map_to_pgm("map.pgm");
 	   		 	exit(0);
-	       	}
-	       	
+	       	}     	
 		#endif	// MAP_AVAILABLE    	
+		if (slog != 0){
+			convert_slog_file(from);
+			exit(0);	
+		}
+    	if (create !=0) {
+    			printf("optind= %d argc=%d\n",optind, argc);
+			if (argc != 2){
+				usage();
+				exit(1);
+		    	}
 
-			if (slog != 0){
-				convert_slog_file(from);
-				exit(0);	
-			}
-	    	if (create !=0) {
-	    			printf("optind= %d argc=%d\n",optind, argc);
-	    		
-				if (argc != 2){
-					usage();
-					exit(1);
-			    	}
+    			char * id;
+    			id = malloc(strlen(argv[0]));	
+    			strcpy(id,argv[0]);
 
-	    			char * id;
-	    			id = malloc(strlen(argv[0]));	
-	    			strcpy(id,argv[0]);
+    			char * s;
+    			s = malloc(strlen(argv[1]));	
+    			strcpy(s,argv[1]);
+		
+			int size = atoi(s);
 
-	    			char * s;
-	    			s = malloc(strlen(argv[1]));	
-	    			strcpy(s,argv[1]);
-			
-				int size = atoi(s);
+			create_mini_fat_file(from,id,size);
+   		 	printf("Erstelle eine Mini-Fat-Datei (%s) mit %d kByte fuer den Bot. ID=%s \n",from,size,id);
+//	   		read_map(from);
+//	   		map_to_pgm("map.pgm");
+	   		exit(0);
+		}
 
-				create_mini_fat_file(from,id,size);
-
-	   		 	printf("Erstelle eine Mini-Fat-Datei (%s) mit %d kByte fuer den Bot. ID=%s \n",from,size,id);
-//	   		 	read_map(from);
-//	   		 	map_to_pgm("map.pgm");
-	   		 	exit(0);
-	       	}
-
-    	
     	printf("c't-Bot\n");
         if (hostname)
             // Hostname wurde per Kommandozeile uebergeben
@@ -472,115 +388,104 @@ void init(void){
 	       tcp_test_client_init();
 	       tcp_test_client_run(100);
         }
-        
     }
-    
-    
+#endif	// PC
+#ifdef  TEST_AVAILABLE_MOTOR
+	uint16 calls=0;	/*!< Im Testfall zaehle die Durchlaeufe */
 #endif
-	#ifdef  TEST_AVAILABLE_MOTOR
-		uint16 calls=0;	/*!< Im Testfall zaehle die Durchlaeufe */
-	#endif
 
-	init();		
+init();	// alles initialisieren
 
-	
-	#ifdef WELCOME_AVAILABLE
-		display_cursor(1,1);
-		display_printf("c't-Roboter");
-		LED_set(0x00);
-		#ifdef LOG_AVAILABLE
-			LOG_DEBUG(("Hallo Welt!"));
-		#endif	
-	#endif
-	
-	#ifdef TEST_AVAILABLE_COUNTER
-		display_screen=2;
-
-	 	resets=eeprom_read_byte(&resetsEEPROM)+1;
-	    eeprom_write_byte(&resetsEEPROM,resets);
-	    /* Lege den Grund für jeden Reset im EEPROM ab */	
-	    eeprom_write_byte(&resetInfoEEPROM+resets,reset_flag);
+#ifdef WELCOME_AVAILABLE
+	display_cursor(1,1);
+	display_printf("c't-Roboter");
+	LED_set(0x00);
+	#ifdef LOG_AVAILABLE
+		LOG_DEBUG(("Hallo Welt!"));
 	#endif	
-	/*! Hauptschleife des Bot */
+#endif
+
+//TODO: what's that?!?
+#ifdef TEST_AVAILABLE_COUNTER
+//	display_screen=2;
+ 	resets=eeprom_read_byte(&resetsEEPROM)+1;
+    eeprom_write_byte(&resetsEEPROM,resets);
+    /* Lege den Grund fuer jeden Reset im EEPROM ab */	
+    eeprom_write_byte(&resetInfoEEPROM+resets,reset_flag);
+#endif	
 	
-	for(;;){
-		#ifdef PC
-			receive_until_Frame(CMD_DONE);
-			#ifdef DEBUG_TIMES
-				//Zum debuggen der Zeiten:	
-	 			GETTIMEOFDAY(&start, NULL);
-				int t1=(start.tv_sec - stop.tv_sec)*1000000 + start.tv_usec - stop.tv_usec;
-				printf("Done-Token (%d) in nach %d usec ",received_command.data_l,t1);
-			#endif
-		#endif
-		
-		
-		#ifdef MCU
-			bot_sens_isr();
-		#endif
-		#ifdef TEST_AVAILABLE
-			show_sensors();
-		#endif
-
-		// Testprogramm, dass den Bot erst links, dann rechtsrum dreht
-		#ifdef  TEST_AVAILABLE_MOTOR
-			calls++;
-			if (calls == 1)
-				motor_set(BOT_SPEED_SLOW,-BOT_SPEED_SLOW);
-			else if (calls == 501)
-				motor_set(-BOT_SPEED_SLOW,BOT_SPEED_SLOW);
-			else if (calls== 1001)
-				motor_set(BOT_SPEED_STOP,BOT_SPEED_STOP);
-			else
-		#endif
-		// hier drin steckt der Verhaltenscode
-		#ifdef BEHAVIOUR_AVAILABLE
-			if (sensors_initialized ==1 )
-				bot_behave();
-			#ifdef LOG_AVAILABLE
-				//else
-					//LOG_DEBUG(("sens not init"));
-			#endif
-		#endif
-			
-		#ifdef MCU
-			#ifdef BOT_2_PC_AVAILABLE
-//				static int16 lastTimeCom =0;
-
-				bot_2_pc_inform();				// Den PC ueber Sensorern und aktuatoren informieren
-				bot_2_pc_listen();				// Kommandos vom PC empfangen
-					
-//				if (timer_get_s() != lastTimeCom) {	// sollte genau 1x pro Sekunde zutreffen
-//					lastTimeCom = timer_get_s();		
-					
-//				}
-			#endif
-		#endif
-		
-		#ifdef LOG_AVAILABLE
-			//LOG_DEBUG(("BOT TIME %d s", timer_get_s()));
-		#endif	
-		
-		// Alles Anzeigen
-		#ifdef DISPLAY_AVAILABLE
-			gui_display(display_screen);
-		#endif
-		#ifdef MCU
-//			delay(10);
-		#endif
-		
-		#ifdef PC
-			command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
-
-			flushSendBuffer();
+/* Hauptschleife des Bots */
+for(;;){
+	#ifdef PC
+		receive_until_Frame(CMD_DONE);
+		#ifdef DEBUG_TIMES
 			//Zum debuggen der Zeiten:	
- 			#ifdef DEBUG_TIMES
-				GETTIMEOFDAY(&stop, NULL);
-	 			int t2=(stop.tv_sec - start.tv_sec)*1000000 +stop.tv_usec - start.tv_usec;
-				printf("Done-Token (%d) out after %d usec\n",simultime,t2);
-			#endif
-		#endif
+	 		GETTIMEOFDAY(&start, NULL);
+			int t1=(start.tv_sec - stop.tv_sec)*1000000 + start.tv_usec - stop.tv_usec;
+			printf("Done-Token (%d) in nach %d usec ",received_command.data_l,t1);
+		#endif	// DEBUG_TIMES
+	#endif	// PC
 		
+	#ifdef MCU
+		bot_sens_isr();
+	#endif
+	#ifdef TEST_AVAILABLE
+		show_sensors();
+	#endif
+
+	/* Testprogramm, das den Bot erst links, dann rechtsrum dreht */
+	#ifdef TEST_AVAILABLE_MOTOR
+		calls++;
+		if (calls == 1)
+			motor_set(BOT_SPEED_SLOW,-BOT_SPEED_SLOW);
+		else if (calls == 501)
+			motor_set(-BOT_SPEED_SLOW,BOT_SPEED_SLOW);
+		else if (calls== 1001)
+			motor_set(BOT_SPEED_STOP,BOT_SPEED_STOP);
+		else
+	#endif	// TEST_AVAILABLE_MOTOR
+	
+	/* hier drin steckt der Verhaltenscode */
+	#ifdef BEHAVIOUR_AVAILABLE
+		if (sensors_initialized == 1)
+			bot_behave();
+//		#ifdef LOG_AVAILABLE
+//		else
+//			LOG_DEBUG(("sens not init"));
+//		#endif
+	#endif	// BEHAVIOUR_AVAILABLE
+			
+	#ifdef MCU
+		#ifdef BOT_2_PC_AVAILABLE
+//			static int16 lastTimeCom =0;
+			bot_2_pc_inform();				// Den PC ueber Sensorern und aktuatoren informieren
+			bot_2_pc_listen();				// Kommandos vom PC empfangen
+				
+//			if (timer_get_s() != lastTimeCom) {	// sollte genau 1x pro Sekunde zutreffen
+//				lastTimeCom = timer_get_s();		
+//			}
+		#endif	// BOT_2_PC_AVAILABLE
+	#endif	// MCU
+		
+//	#ifdef LOG_AVAILABLE
+//		LOG_DEBUG(("BOT TIME %d s", timer_get_s()));
+//	#endif	
+		
+	/* GUI-Behandlung starten */
+	#ifdef DISPLAY_AVAILABLE
+		gui_display(display_screen);
+	#endif
+	
+	#ifdef PC
+		command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
+		flushSendBuffer();
+		/* Zum debuggen der Zeiten: */	
+		#ifdef DEBUG_TIMES
+			GETTIMEOFDAY(&stop, NULL);
+ 			int t2=(stop.tv_sec - start.tv_sec)*1000000 +stop.tv_usec - start.tv_usec;
+			printf("Done-Token (%d) out after %d usec\n",simultime,t2);
+		#endif	// DEBUG_TIMES
+	#endif	// PC	
 	}
 	
 	/*! Falls wir das je erreichen sollten ;-) */

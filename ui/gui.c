@@ -32,6 +32,7 @@
 #include "motor.h"
 #include "display.h"
 #include "mmc.h"
+#include "bot-logic/bot-logik.h"
 #include "gui.h"
 #include <stdlib.h>
 
@@ -89,10 +90,10 @@ void screen4(void){
 }
 
 /*! 
- * @brief 			Display-Screen Initialisierung
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			12.02.2007	
- * Traegt die Anzeige-Funktionen in die Liste ein.
+ * @brief 	Display-Screen Initialisierung
+ * @author 	Timo Sandmann (mail@timosandmann.de)
+ * @date 	12.02.2007	
+ * Traegt die Anzeige-Funktionen in das Array ein.
  */
 void gui_init(void){
 	#ifdef SENSOR_DISPLAY_AVAILABLE 	
@@ -100,6 +101,9 @@ void gui_init(void){
 	#endif
 	#ifdef DISPLAY_REGELUNG_AVAILABLE
 		register_screen(&speedcontrol_display);
+	#endif
+	#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+		register_screen(&behaviour_display);
 	#endif
 	#ifdef MISC_DISPLAY_AVAILABLE
 		register_screen(&misc_display);

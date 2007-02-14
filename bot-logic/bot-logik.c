@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -399,103 +399,124 @@ void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 }
 
 
-
+//TODO:	Code optimieren und pruefen! => Horror...	
 #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-
-/*!
- * ermittelt ob noch eine weitere Verhaltensseite existiert 	
- */
- int8  another_behaviour_page(void) {
-  int16 max_behaviours ;
-  Behaviour_t	*ptr	;
-  
-  // TODO!
-  /* dazu muss ich auch gueltige Screenseite sein */
-  #ifdef DISPLAY_SCREENS_AVAILABLE
-   if (display_screen != 2)
-     return 0;
-  #endif 
-  
-  ptr = behaviour;
-  max_behaviours = 0;
-  
-// zuerst alle Verhalten ermitteln ausser Grundverhalten
-  while(ptr != NULL)	{			 
-	if  ((ptr->priority >= PRIO_VISIBLE_MIN) &&(ptr->priority <= PRIO_VISIBLE_MAX)) 
-    			max_behaviours++;		  
-						  
-	ptr = ptr->next;
-   }  
-
-   return (behaviour_page  * 6) < max_behaviours;
-}
-
-
-/*! 
- * toggled ein Verhalten der Verhaltensliste an Position pos,
- * die Aenderung erfolgt nur auf die Puffervariable  
- * @param pos Listenposition, entspricht der Taste 1-6 der gewaehlten Verhaltensseite
- */
-void toggleNewBehaviourPos(int8 pos){
-	Behaviour_t *job;						// Zeiger auf ein Verhalten
-    int8 i;
-    
-    // nur aendern, wenn ich richtige Screenseite bin 
-     if (display_screen != 2)
-       return ;
-     
-    // richtigen Index je nach Seite ermitteln 
-    pos = (behaviour_page - 1) * 6 + pos;
-    i   = 0;
-
-	// durch die Liste gehen, bis wir den gewuenschten Index erreicht haben 
-	for (job = behaviour; job; job = job->next) {
-	    if ((job->priority >= PRIO_VISIBLE_MIN) &&(job->priority <= PRIO_VISIBLE_MAX)) {		
-		  i++;
-		  if (i == pos) {
-		  	  // bei dynamischer Wahl wird direkt die Zustandsvariable geaendert
-		  	  #ifdef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
-		  	    job->active = !job->active;
-		  	  #else
-		  	     job->active_new = !job->active_new;
-		  	  #endif
-			  			      
-			  break;
-		  }
-	    }
+	/* ermittelt ob noch eine weitere Verhaltensseite existiert */ 	
+	int8  another_behaviour_page(void) {
+		int16 max_behaviours ;
+		Behaviour_t	*ptr	;
+	  
+	  	// TODO!
+	  	/* dazu muss ich auch gueltige Screenseite sein */
+	  	#ifdef DISPLAY_SCREENS_AVAILABLE
+	   		if (display_screen != 2) return 0;
+	  	#endif 
+	  	ptr = behaviour;
+	  	max_behaviours = 0;
+	  
+		// zuerst alle Verhalten ermitteln ausser Grundverhalten
+	  	while(ptr != NULL)	{			 
+			if ((ptr->priority >= PRIO_VISIBLE_MIN) &&(ptr->priority <= PRIO_VISIBLE_MAX)) max_behaviours++;		  							  
+			ptr = ptr->next;
+	   }  
+	   return (behaviour_page  * 6) < max_behaviours;
 	}
-}
+	
+	/*! 
+	 * toggled ein Verhalten der Verhaltensliste an Position pos,
+	 * die Aenderung erfolgt nur auf die Puffervariable  
+	 * @param pos Listenposition, entspricht der Taste 1-6 der gewaehlten Verhaltensseite
+	 */
+	void toggleNewBehaviourPos(int8 pos){
+		Behaviour_t *job;						// Zeiger auf ein Verhalten
+	    int8 i;
+	    
+	    // nur aendern, wenn ich richtige Screenseite bin 
+	     if (display_screen != 2) return;
+	     
+	    // richtigen Index je nach Seite ermitteln 
+	    pos = (behaviour_page - 1) * 6 + pos;
+	    i   = 0;
+	
+		// durch die Liste gehen, bis wir den gewuenschten Index erreicht haben 
+		for (job = behaviour; job; job = job->next) {
+			if ((job->priority >= PRIO_VISIBLE_MIN) &&(job->priority <= PRIO_VISIBLE_MAX)) {		
+				i++;
+			  	if (i == pos) {
+			  		// bei dynamischer Wahl wird direkt die Zustandsvariable geaendert
+			  	  	#ifdef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+			  	    	job->active = !job->active;
+			  	  	#else
+			  	    	job->active_new = !job->active_new;
+			  	  	#endif		      
+				  	break;
+			  	}
+		    }
+		}
+	}
+	
+	#ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+		/*! 
+		 * Startschuss, die gewaehlten neuen Verhaltensaktivitaeten werden in die
+		 * Verhaltensliste geschrieben und die Verhalten damit scharf geschaltet 
+		 */
+		void set_behaviours_active_to_new(void) {
+			Behaviour_t *job;	
+			for (job = behaviour; job; job = job->next){
+				if ((job->priority >= PRIO_VISIBLE_MIN) &&(job->priority <= PRIO_VISIBLE_MAX)) job->active = job->active_new;            				 
+			}
+		}
+		
+		/*!
+		 * Die Aktivitaeten der Verhalten werden in die Puffervariable geschrieben, 
+		 * welche zur Anzeige und Auswahl verwendet wird
+		 */
+		void set_behaviours_equal(void) {
+			Behaviour_t *job;	
+			for (job = behaviour; job; job = job->next){
+				if ((job->priority >= PRIO_VISIBLE_MIN) &&(job->priority <= PRIO_VISIBLE_MAX)) job->active_new = job->active;            				 
+		   	}
+		}
+	#endif	// DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+	
+	/*!
+	 * @brief	Zeigt Informationen ueber Verhalten an 
+	 * (aus ct-bot.c)
+	 */
+	void behaviour_display(void){		
+        /* Definitionen fuer die Verhaltensanzeige */
+		Behaviour_t	*ptr	= behaviour;
+		int8 colcounter       = 0;
+		int8 linecounter      = 0;
+		int8 firstcol         = 0; 
 
-#ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
-/*! 
- * Startschuss, die gewaehlten neuen Verhaltensaktivitaeten werden in die
- * Verhaltensliste geschrieben und die Verhalten damit scharf geschaltet 
- */
-void set_behaviours_active_to_new(void) {
-
- Behaviour_t *job;	
-   for (job = behaviour; job; job = job->next) 	{
-					 
-	if  ((job->priority >= PRIO_VISIBLE_MIN) &&(job->priority <= PRIO_VISIBLE_MAX)) 
-            job->active = job->active_new;            				 
-	 
-   }
-
-}
-
-/*!
- * Die Aktivitaeten der Verhalten werden in die Puffervariable geschrieben, 
- * welche zur Anzeige und Auswahl verwendet wird
- */
-void set_behaviours_equal(void) {
- Behaviour_t *job;	
-   for (job = behaviour; job; job = job->next) 	{
-					 
-	if  ((job->priority >= PRIO_VISIBLE_MIN) &&(job->priority <= PRIO_VISIBLE_MAX)) 
-            job->active_new = job->active;            				 
-	 
-   }
-}
-#endif
-#endif
-#endif
+		display_cursor(1,1);  
+         /* zeilenweise Anzeige der Verhalten */
+		display_printf("Verhalten (Pri/Akt)%d",behaviour_page);
+		
+		colcounter = 0; 
+		linecounter = 2;
+		/* je nach Seitenwahl die ersten  Saetze ueberlesen bis richtige Seite */
+		firstcol = (behaviour_page -1)*6;
+		 
+		 /* max. 3 Zeilen mit 6 Verhalten anzeigbar wegen Ueberschrift Seitensteuerung bei mehr Verhalten */ 
+		while((ptr != NULL)&& (linecounter<5))	{
+			if  ((ptr->priority >= PRIO_VISIBLE_MIN) &&(ptr->priority <= PRIO_VISIBLE_MAX)) {
+            	if   (colcounter >= firstcol) { 
+	          		display_cursor(linecounter,((colcounter % 2)* 12)+1);
+					#ifdef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE
+		        		display_printf(" %3d,%2d",ptr->priority,ptr->active);
+		      		#else
+		        		display_printf(" %3d,%2d",ptr->priority,ptr->active_new);				      
+		      		#endif
+		      		colcounter++;
+		    
+		      		/* bei colcounter 0 neue Zeile */
+		      		if (colcounter % 2 == 0) linecounter++;		      
+		    	} else colcounter++;
+		  	}
+			ptr = ptr->next;
+		}
+	}  
+#endif	// DISPLAY_BEHAVIOUR_AVAILABLE
+#endif	// BEHAVIOUR_AVAILABLE

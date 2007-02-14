@@ -39,10 +39,10 @@
 void gui_display(int8 screen);
 
 /*! 
- * @brief 			Display-Screen Initialisierung
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			12.02.2007	
- * Traegt die Anzeige-Funktionen in die Liste ein.
+ * @brief 	Display-Screen Initialisierung
+ * @author 	Timo Sandmann (mail@timosandmann.de)
+ * @date 	12.02.2007	
+ * Traegt die Anzeige-Funktionen in das Array ein.
  */
 void gui_init(void);
 
@@ -55,10 +55,16 @@ void gui_init(void);
 
 #ifdef RESET_INFO_DISPLAY_AVAILABLE
 	extern uint8 reset_flag;	 /*<! Nimmt den Status von MCU(C)SR bevor dieses Register auf 0x00 gesetzt wird */
+	/*! 
+	 * @brief	Zeigt Informationen ueber den Reset an
+	 */	
 	void reset_info_display(void);
 #endif
 
 #ifdef RAM_DISPLAY_AVAILABLE
+	/*! 
+	 * @brief	Zeigt den freien Speicher an
+	 */
 	void ram_display(void);
 #endif
 #endif	// gui_H_

@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -162,35 +162,36 @@ Behaviour_t *new_behaviour(uint8 priority, void (*work) (struct _Behaviour_t *da
 #include "bot-logic/available_behaviours.h"
 
 
-
-
 #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+	/*!
+	 * ermittelt ob noch eine weitere Verhaltensseite existiert 	
+	 */ 
+	extern int8  another_behaviour_page(void) ;
   
- /*!
- * ermittelt ob noch eine weitere Verhaltensseite existiert 	
- */ 
-  extern int8  another_behaviour_page(void) ;
+	/*! 
+  	 * toggled ein Verhalten der Verhaltensliste an Position pos 
+ 	 * @param pos Listenposition, entspricht der Taste 1-6 der gewaehlten Verhaltensseite
+ 	 */  
+	void toggleNewBehaviourPos(int8 pos);
   
-/*! 
- * toggled ein Verhalten der Verhaltensliste an Position pos 
- * @param pos Listenposition, entspricht der Taste 1-6 der gewaehlten Verhaltensseite
- */  
-  void toggleNewBehaviourPos(int8 pos);
+	/*! 
+	 * Startschuss, die gewaehlten neuen Verhaltensaktivitaeten werden in die
+	 * Verhaltensliste geschrieben und die Verhalten damit scharf geschaltet 
+ 	 */  
+	void set_behaviours_active_to_new(void);
   
-/*! 
- * Startschuss, die gewaehlten neuen Verhaltensaktivitaeten werden in die
- * Verhaltensliste geschrieben und die Verhalten damit scharf geschaltet 
- */  
-  void set_behaviours_active_to_new(void);
-  
-/*!
- * Die Aktivitaeten der Verhalten werden in die Puffervariable geschrieben, 
- * welche zur Anzeige und Auswahl verwendet wird
- */  
-  void set_behaviours_equal(void);
+	/*!
+	 * Die Aktivitaeten der Verhalten werden in die Puffervariable geschrieben, 
+	 * welche zur Anzeige und Auswahl verwendet wird
+	 */  
+	void set_behaviours_equal(void);
    
-  int8 behaviour_page ; /*!< angezeigte Verhaltensseite */
-  
-#endif
+	int8 behaviour_page ; /*!< angezeigte Verhaltensseite */
+	
+	/*!
+	 * @brief	Zeigt Informationen ueber Verhalten an 
+	 */
+	void behaviour_display(void);
+#endif	// DISPLAY_BEHAVIOUR_AVAILABLE
 
-#endif
+#endif	// bot_logik_H_
