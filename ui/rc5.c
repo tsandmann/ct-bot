@@ -28,8 +28,6 @@
  * @date 	12.02.2007
  */
  
-//TODO: Verhaltensanzeige wieder einbauen, aber NICHT HIER
- 
 #include "bot-logic/bot-logik.h"
 #include "map.h"
 #include "ir-rc5.h"

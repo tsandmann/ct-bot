@@ -168,10 +168,6 @@ void init(void){
 	#ifdef LOG_MMC_AVAILABLE
 		log_mmc_init();
 	#endif
-	
-	#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-	    behaviour_page = 1;
-	#endif
 
 	#ifdef TWI_AVAILABLE
 		Init_TWI();

@@ -32,10 +32,7 @@
 #include "sensor.h"
 #include "bot-local.h"
 
-
 #define BEHAVIOUR_DRIVE_AVAILABLE
-
-
 
 // Includes aller verfuegbaren Verhalten
 
@@ -164,32 +161,14 @@ Behaviour_t *new_behaviour(uint8 priority, void (*work) (struct _Behaviour_t *da
 
 #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
 	/*!
-	 * ermittelt ob noch eine weitere Verhaltensseite existiert 	
-	 */ 
-	extern int8  another_behaviour_page(void) ;
-  
-	/*! 
-  	 * toggled ein Verhalten der Verhaltensliste an Position pos 
- 	 * @param pos Listenposition, entspricht der Taste 1-6 der gewaehlten Verhaltensseite
- 	 */  
-	void toggleNewBehaviourPos(int8 pos);
-  
-	/*! 
-	 * Startschuss, die gewaehlten neuen Verhaltensaktivitaeten werden in die
-	 * Verhaltensliste geschrieben und die Verhalten damit scharf geschaltet 
- 	 */  
-	void set_behaviours_active_to_new(void);
-  
-	/*!
-	 * Die Aktivitaeten der Verhalten werden in die Puffervariable geschrieben, 
-	 * welche zur Anzeige und Auswahl verwendet wird
-	 */  
-	void set_behaviours_equal(void);
-   
-	int8 behaviour_page ; /*!< angezeigte Verhaltensseite */
-	
-	/*!
-	 * @brief	Zeigt Informationen ueber Verhalten an 
+	 * @brief	Zeigt Informationen ueber Verhalten an, 'A' fuer Verhalten aktiv, 'I' fuer Verhalten inaktiv.
+	 * @author 	Timo Sandmann (mail@timosandmann.de)
+ 	 * @date 	12.02.2007	 
+ 	 * Es werden zwei Spalten mit jeweils 4 Verhalten angezeigt. Gibt es mehr Verhalten in der Liste, kommt man 
+ 	 * mit der Taste DOWN auf eine weitere Seite (die aber kein extra Screen ist). Mit der Taste UP geht's bei Bedarf
+ 	 * wieder zurueck. Vor den Prioritaeten steht eine Nummer von 1 bis 8, drueckt man die entsprechende Zifferntaste
+ 	 * auf der Fernbedienung, so wird das Verhalten aktiv oder inaktiv geschaltet, komplementaer zum aktuellen Status.
+ 	 * Den Keyhandler dazu stellt beh_disp_key_handler() dar. 
 	 */
 	void behaviour_display(void);
 #endif	// DISPLAY_BEHAVIOUR_AVAILABLE
