@@ -42,6 +42,7 @@
 #include "display.h"
 #include "rc5.h"
 #include "rc5-codes.h"
+#include "ui/available_screens.h"
 
 #include <stdlib.h>
 #include <stdio.h>
