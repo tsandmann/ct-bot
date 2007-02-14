@@ -42,6 +42,10 @@
 void create_mini_fat_file(const char* filename, const char* id_string, uint32 size){
 	printf("Erstelle eine Mini-Fat-Datei mit dem Namen %s\n",filename);
 	FILE *fp = fopen(filename, "w");
+	if (fp == NULL){
+		printf("Datei konnte nicht zum Schreiben geoeffnet werden! Abbruch!\n");
+		return;
+	}
 	
 	/* Dateiparameter vorbereiten */
 	uint8 id_len = strlen(id_string) >= MMC_FILENAME_MAX ? 254 : strlen(id_string);

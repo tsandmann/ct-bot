@@ -360,8 +360,8 @@ void init(void){
 		
 			int size = atoi(s);
 
-			create_mini_fat_file(from,id,size);
    		 	printf("Erstelle eine Mini-Fat-Datei (%s) mit %d kByte fuer den Bot. ID=%s \n",from,size,id);
+   		 	create_mini_fat_file(from,id,size);
 //	   		read_map(from);
 //	   		map_to_pgm("map.pgm");
 	   		exit(0);
