@@ -71,24 +71,6 @@ void gui_display(int8 screen){
 	RC5_Code = 0;	// fertig, RC5-Puffer loeschen
 }
 
-// some testcases
-void screen1(void){
-	display_cursor(1,1);
-	display_printf("Screen 1");	
-}
-void screen2(void){
-	display_cursor(1,1);
-	display_printf("Screen 2");	
-}
-void screen3(void){
-	display_cursor(1,1);
-	display_printf("Screen 3");	
-}
-void screen4(void){
-	display_cursor(1,1);
-	display_printf("Screen 4");	
-}
-
 /*! 
  * @brief 	Display-Screen Initialisierung
  * @author 	Timo Sandmann (mail@timosandmann.de)
@@ -120,10 +102,6 @@ void gui_init(void){
 	#ifdef RAM_DISPLAY_AVAILABLE
 		register_screen(&ram_display);
 	#endif
-	register_screen(&screen1);	// dummy
-	register_screen(&screen2);
-	register_screen(&screen3);
-	register_screen(&screen4);	
 }
 
 #endif	// DISPLAY_AVAILABLE

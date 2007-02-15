@@ -387,17 +387,18 @@ void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 		Behaviour_t* callee = NULL;
 		/* Keyhandling um Verhalten ein- / auszuschalten */
 		switch (RC5_Code){
-			case RC5_CODE_1: callee = data[0]; RC5_Code = 0; break;
-			case RC5_CODE_2: callee = data[1]; RC5_Code = 0; break;
-			case RC5_CODE_3: callee = data[2]; RC5_Code = 0; break;			
-			case RC5_CODE_4: callee = data[3]; RC5_Code = 0; break;			
-			case RC5_CODE_5: callee = data[4]; RC5_Code = 0; break;			
-			case RC5_CODE_6: callee = data[5]; RC5_Code = 0; break;			
-			case RC5_CODE_7: callee = data[6]; RC5_Code = 0; break;			
-			case RC5_CODE_8: callee = data[7]; RC5_Code = 0; break;			
+			case RC5_CODE_1: callee = data[0]; break;
+			case RC5_CODE_2: callee = data[1]; break;
+			case RC5_CODE_3: callee = data[2]; break;			
+			case RC5_CODE_4: callee = data[3]; break;			
+			case RC5_CODE_5: callee = data[4]; break;			
+			case RC5_CODE_6: callee = data[5]; break;			
+			case RC5_CODE_7: callee = data[6]; break;			
+			case RC5_CODE_8: callee = data[7]; break;			
 		}
 		/* Verhaltensstatus toggeln */
 		if (callee != NULL){
+			RC5_Code = 0;
 			if (callee->active == ACTIVE) callee->active = INACTIVE;
 			else callee->active = ACTIVE;	
 		}
