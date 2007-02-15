@@ -405,19 +405,6 @@ void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 	}
 	
 	/*!
-	 * @brief		Hilfsfunktion fuer behaviour_display(), ueberspringt auszublendende Verhalten.
-	 * @author 		Timo Sandmann (mail@timosandmann.de)
- 	 * @date 		14.02.2007	
- 	 * @param ptr	Zeiger auf die Verhaltensliste
- 	 * @return		Zeiger auf das naechste Verhalten, das sichtbar sein soll
-	 */
-	Behaviour_t* beh_disp_skip(Behaviour_t* ptr){
-		while (ptr != NULL && (ptr->priority < PRIO_VISIBLE_MIN || ptr->priority > PRIO_VISIBLE_MAX))
-			ptr = ptr->next;	// Uninteressantes ueberspringen
-		return ptr;
-	}
-	
-	/*!
 	 * @brief	Zeigt Informationen ueber Verhalten an, 'A' fuer Verhalten aktiv, 'I' fuer Verhalten inaktiv.
 	 * @author 	Timo Sandmann (mail@timosandmann.de)
  	 * @date 	12.02.2007	 
@@ -442,12 +429,15 @@ void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 		}
 		Behaviour_t* behaviours[8] = {NULL};	/*!< speichert Zeiger auf die Verhalten fuer den Keyhandler zwischen */
 		uint8 i,j,k=0;
-		Behaviour_t* ptr = beh_disp_skip(behaviour);	// alles ausserhalb der Sichtbarkeit ueberspringen
+		Behaviour_t* ptr = behaviour;
+		while (ptr != NULL && ptr->priority > PRIO_VISIBLE_MAX)
+			ptr = ptr->next;	// alles ausserhalb der Sichtbarkeit ueberspringen
 		/* Verhalten auf vorherigen Seiten ueberspringen */
 		if (behaviour_page > 0){
 			for (i=1; i<=(behaviour_page<<3); i++){	// 8 Verhalten pro Seite
 				ptr = ptr->next;
-				ptr = beh_disp_skip(ptr);		// alles ausserhalb der Sichtbarkeit ueberspringen
+				while (ptr != NULL && ptr->priority > PRIO_VISIBLE_MAX)
+					ptr = ptr->next;	// alles ausserhalb der Sichtbarkeit ueberspringen
 				if (ptr == NULL){
 					behaviour_page--;	// kein Verhalten mehr da => beim naechsten Aufruf stimmt's so aber wieder
 					return;
@@ -458,10 +448,12 @@ void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 		/* max. 4 Zeilen mit jeweils 2 Verhalten (= 8 Verhalten) anzeigbar */ 
 		for (i=1; i<=20; i+=11){	// Spalten
 			for (j=1; j<=4; j++){	// Zeilen
-				ptr = beh_disp_skip(ptr);		// alles ausserhalb der Sichtbarkeit ueberspringen
-				if (ptr == NULL){
+				while (ptr != NULL && ptr->priority > PRIO_VISIBLE_MAX)
+					ptr = ptr->next;	// alles ausserhalb der Sichtbarkeit ueberspringen
+				if (ptr == NULL || ptr->priority < PRIO_VISIBLE_MIN){
+					if (i==1 && j==1 && behaviour_page > 0) behaviour_page--;	// keine unnoetige leere Seite anzeigen
 					beh_disp_key_handler(behaviours);	// Tasten auswerten
-					return; // fertig, da ptr == NULL						
+					return; // fertig, da ptr == NULL oder Prioritaet bereits zu klein					
 				}
 				/* Ausgabe */
 				display_cursor(j, i);

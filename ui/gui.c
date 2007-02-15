@@ -38,7 +38,7 @@
 
 #ifdef DISPLAY_AVAILABLE
 
-static int8 max_screens = 0;	/*!< Anzahl der zurzeit registrierten Screens */
+int8 max_screens = 0;	/*!< Anzahl der zurzeit registrierten Screens */
 static void (* screen_functions[DISPLAY_SCREENS])(void) = {NULL};	/*!< hier liegen die Zeiger auf die Display-Funktionen */
 
 /*! 

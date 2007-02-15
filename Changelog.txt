@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-02-15 Timo Sandmann [mail@timosandmann.de]: Kleine Verbesserungen an der GUI (leere Screens vermeiden, Code fuer Verhaltensanzeige ist schneller und braucht 42 Byte weniger).
+
 2007-02-15 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer create_mini_fat_file(), Abbruch und Hinweis, falls Datei nicht geoeffnet werden konnte.
 
 2007-02-14 Timo Sandmann [mail@timosandmann.de]: Verhaltensanzeige fuer GUI fertiggestellt, Tastenbehandlung gebaut, mit der sich die angezeigte Verhalten ein- und ausschalten lassen.

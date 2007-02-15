@@ -29,6 +29,8 @@
 
 #include "ui/available_screens.h"
 
+extern int8 max_screens;	/*!< Anzahl der zurzeit registrierten Screens */
+
 /*! 
  * @brief 			Display-Screen Anzeige
  * @author 			Timo Sandmann (mail@timosandmann.de)

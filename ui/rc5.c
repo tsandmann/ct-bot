@@ -34,6 +34,7 @@
 #include "display.h"
 #include "motor-low.h"
 #include "rc5-codes.h"
+#include "gui.h"
 #include "ui/available_screens.h"
 
 #include "mmc.h"
@@ -55,7 +56,7 @@ static void rc5_screen_set(uint8 screen){
 		else
 			display_screen = screen;	// Direktwahl
 
-		if (display_screen >= DISPLAY_SCREENS)
+		if (display_screen >= max_screens)
 			display_screen = 0;			// endliche Screenanzahl
 		display_clear();				// alten Screen loeschen, das Zeichnen uerbernimmt GUI-Handler
 	#endif	// DISPLAY_AVAILABLE
@@ -108,7 +109,7 @@ static void rc5_bot_change_speed(int16 left, int16 right) {
 static void rc5_number(uint8 key) {
 	switch (key){	// richtige Aktion heraussuchen
 		#ifdef BEHAVIOUR_AVAILABLE
-			case 0:	target_speed_l=0;target_speed_r=0; break;
+			case 0:	target_speed_l = BOT_SPEED_STOP; target_speed_r = BOT_SPEED_STOP; break;
 			case 1:	target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
 			case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
 		#endif	// BEHAVIOUR_AVAILABLE
