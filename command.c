@@ -307,8 +307,8 @@ void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* d
 				low_write_data((uint8 *)&data,1);
 				#ifdef MCU
 					#if BAUDRATE > 17777	// Grenzwert: 8 Bit / 450 us = 17778 Baud
-//						_delay_loop_2(1800);	// warten, weil Sendezeit < Maussensordelay (450 us)
-						_delay_loop_2(3600);	// warten, weil Sendezeit < Maussensordelay (450 us)
+						_delay_loop_2(1800);	// warten, weil Sendezeit < Maussensordelay (450 us)
+//						_delay_loop_2(3600);	// warten, weil Sendezeit < Maussensordelay (450 us)
 					#endif
 				#endif
 			}
