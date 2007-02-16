@@ -307,8 +307,8 @@ void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* d
 				low_write_data((uint8 *)&data,1);
 				#ifdef MCU
 					#if BAUDRATE > 17777	// Grenzwert: 8 Bit / 450 us = 17778 Baud
-						_delay_loop_2(1800);	// warten, weil Sendezeit < Maussensordelay (450 us)
-//						_delay_loop_2(3600);	// warten, weil Sendezeit < Maussensordelay (450 us)
+//						_delay_loop_2(1800);	// warten, weil Sendezeit < Maussensordelay (450 us)
+						_delay_loop_2(3600);	// warten, weil Sendezeit < Maussensordelay (450 us)
 					#endif
 				#endif
 			}
@@ -356,12 +356,15 @@ int command_evaluate(void){
 
 		#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 			case CMD_REMOTE_CALL:
+					LOG_DEBUG(("remote-call-cmd ..."));					
 					switch (received_command.request.subcommand) {
 						case SUB_REMOTE_CALL_LIST:
+							LOG_DEBUG(("... auflisten "));					
 							remote_call_list();
 							break;
 						case SUB_REMOTE_CALL_ORDER:
-						{						
+						{	
+							LOG_DEBUG(("remote-call-Wunsch empfangen. Data= %d bytes",received_command.payload));					
 							uint8 buffer[REMOTE_CALL_BUFFER_SIZE];
 							low_read(buffer,received_command.payload);	
 							bot_remotecall_from_command((uint8 *)&buffer);

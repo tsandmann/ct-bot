@@ -342,10 +342,11 @@ void bot_remotecall(char* func, remote_call_data_t* data){
 		for (i=0; i<REMOTE_CALL_MAX_PARAM; i++)
 			parameter_length[i] = (uint8) pgm_read_byte ( from++ );	
 	#endif
-//	LOG_DEBUG(("func=%s param_count=%d Len= %u %u %u %u",func,parameter_count,parameter_length[0],parameter_length[1],parameter_length[2]));
-//	if (data != NULL){
-//		LOG_DEBUG(("data= %u %u %u %u",data[0],data[1],data[2],data[3]));
-//	}
+	
+	LOG_DEBUG(("func=%s param_count=%d Len= %u %u %u %u",func,parameter_count,parameter_length[0],parameter_length[1],parameter_length[2]));
+	if (data != NULL){
+		LOG_DEBUG(("data= %u %u %u %u",data[0],data[1],data[2],data[3]));
+	}
 	
 	#ifdef MCU	// Die MCU legt die Parameter nach einem anderen Verfahren ab, diese Funktion konvertiert sie deshalb
 		remotecall_convert_params(parameter_data, parameter_count, parameter_length, (uint8*)data);
@@ -378,6 +379,8 @@ void remote_call_list(void){
 		uint8* from;
 	#endif
 	call_t* call;
+	
+	LOG_DEBUG(("Liste %d remote calls",STORED_CALLS));
 	
 	int16 i;
 	for (i=0; i< (STORED_CALLS); i++){
