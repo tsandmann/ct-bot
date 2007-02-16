@@ -87,10 +87,12 @@ int8 command_read(void){
 	command_t * command;	// Pointer zum Casten der empfangegen Daten
 	char * ptr;				// Nur zu Hilfszwecken
 	char buffer[RCVBUFSIZE];       // Buffer  
-	#if BYTE_ORDER == BIG_ENDIAN
-		uint16 store;			//Puffer für die Endian-Konvertierung
+	#ifdef PC
+		#if BYTE_ORDER == BIG_ENDIAN
+			uint16 store;			//Puffer für die Endian-Konvertierung
+		#endif
 	#endif
-
+	
 	uint16 old_ticks;			// alte Systemzeit
 
 	buffer[0]=0;				// Sicherheitshalber mit sauberem Puffer anfangen
@@ -165,26 +167,27 @@ int8 command_read(void){
 			*ptr=buffer[i+start];
 			ptr++;
 		}
-		#if BYTE_ORDER == BIG_ENDIAN
-			/* Umwandeln der 16 bit Werte in Big Endian */
-			store = received_command.data_l;
-			received_command.data_l = store << 8;
-			received_command.data_l |= (store >> 8) & 0xff;
-
-			store = received_command.data_r;
-			received_command.data_r = store << 8;
-			received_command.data_r |= (store >> 8) & 0xff;
-    
-			store = received_command.seq;
-			received_command.seq = store << 8;
-			received_command.seq |= (store >> 8) & 0xff;
-
-			/* "Umdrehen" des Bitfields */
-			store = received_command.request.subcommand;
-			received_command.request.subcommand = store << 1;
-			received_command.request.direction = store >> 7;
-		#endif
 		#ifdef PC
+			#if BYTE_ORDER == BIG_ENDIAN
+				/* Umwandeln der 16 bit Werte in Big Endian */
+				store = received_command.data_l;
+				received_command.data_l = store << 8;
+				received_command.data_l |= (store >> 8) & 0xff;
+	
+				store = received_command.data_r;
+				received_command.data_r = store << 8;
+				received_command.data_r |= (store >> 8) & 0xff;
+	    
+				store = received_command.seq;
+				received_command.seq = store << 8;
+				received_command.seq |= (store >> 8) & 0xff;
+	
+				/* "Umdrehen" des Bitfields */
+				store = received_command.request.subcommand;
+				received_command.request.subcommand = store << 1;
+				received_command.request.direction = store >> 7;
+			#endif
+		
 			command_unlock();	// on PC make storage threadsafe
 		#endif
 
@@ -304,7 +307,8 @@ void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* d
 				low_write_data((uint8 *)&data,1);
 				#ifdef MCU
 					#if BAUDRATE > 17777	// Grenzwert: 8 Bit / 450 us = 17778 Baud
-						_delay_loop_2(1800);	// warten, weil Sendezeit < Maussensordelay (450 us)
+//						_delay_loop_2(1800);	// warten, weil Sendezeit < Maussensordelay (450 us)
+						_delay_loop_2(3600);	// warten, weil Sendezeit < Maussensordelay (450 us)
 					#endif
 				#endif
 			}
@@ -321,7 +325,7 @@ int command_evaluate(void){
 	uint8 analyzed = 1;
 	
 	#ifdef LOG_AVAILABLE	
-	//	command_display(&received_command);
+//		command_display(&received_command);
 	#endif	// LOG_AVAILABLE
 	
 	switch (received_command.request.command) {
@@ -443,9 +447,10 @@ int command_evaluate(void){
 				(*command).data_l,
 				(*command).seq));
 		#else
-			LOG_DEBUG(("%x %x %x",
+			LOG_DEBUG(("%x %x %x %x",
 				(*command).request.command,
 				(*command).data_l,
+				(*command).data_r,
 				(*command).seq));
 
 /*			char* raw= (char*)command;
