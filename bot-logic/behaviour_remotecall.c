@@ -345,7 +345,7 @@ void bot_remotecall(char* func, remote_call_data_t* data){
 	
 	LOG_DEBUG(("func=%s param_count=%d Len= %u %u %u %u",func,parameter_count,parameter_length[0],parameter_length[1],parameter_length[2]));
 	if (data != NULL){
-		LOG_DEBUG(("data= %u %u %u %u",data[0],data[1],data[2],data[3]));
+		LOG_DEBUG(("data= %x %x %x %x",data[0],data[1],data[2],data[3]));
 	}
 	
 	#ifdef MCU	// Die MCU legt die Parameter nach einem anderen Verfahren ab, diese Funktion konvertiert sie deshalb
