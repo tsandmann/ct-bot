@@ -343,7 +343,7 @@ void bot_remotecall(char* func, remote_call_data_t* data){
 			parameter_length[i] = (uint8) pgm_read_byte ( from++ );	
 	#endif
 	
-	LOG_DEBUG(("func=%s param_count=%d Len= %u %u %u %u",func,parameter_count,parameter_length[0],parameter_length[1],parameter_length[2]));
+	LOG_DEBUG(("func=%s param_count=%d Len= %u %u %u",func,parameter_count,parameter_length[0],parameter_length[1],parameter_length[2]));
 	if (data != NULL){
 		LOG_DEBUG(("data= %x %x %x %x",data[0],data[1],data[2],data[3]));
 	}
