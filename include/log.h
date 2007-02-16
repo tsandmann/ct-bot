@@ -36,9 +36,7 @@
  * --------------------
  * Hier stehen drei Arten der Ausgabeschnittstellen zur Verfuegung.
  * 1. Logging ueber ct-Sim:		LOG_CTSIM_AVAILABLE muss definiert sein.
- * 2. Logging ueber Display:	LOG_DISPLAY_AVAILABLE muss definiert sein, sowie
- * 								DISPLAY_AVAILABLE und DISPLAY_SCREENS_AVAILABLE.
- * 								Logging erfolgt auf Screen 5.
+ * 2. Logging ueber Display:	LOG_DISPLAY_AVAILABLE muss definiert sein, sowie DISPLAY_AVAILABLE.
  * 3. Logging ueber Konsole:  Es muss LOG_STDOUT_AVAILABLE definiert sein.
  * 
  * LOG_UART_AVAILABLE steht auf dem PC nicht zur Verfuegung.
@@ -51,9 +49,7 @@
  * 								diese Kommunikation ueber den UART laeuft.
  * 2. Logging ueber ct-Sim:		LOG_CTSIM_AVAILABLE muss definiert sein.
  * 								BOT_2_PC_AVAILABLE muss zusaetzlich definiert sein.
- * 3. Logging ueber Display:	LOG_DISPLAY_AVAILABLE muss definiert sein, sowie
- * 								DISPLAY_AVAILABLE und DISPLAY_SCREENS_AVAILABLE.
- * 								Logging erfolgt auf Screen 5.
+ * 3. Logging ueber Display:	LOG_DISPLAY_AVAILABLE muss definiert sein, sowie DISPLAY_AVAILABLE.
  * </pre>
  * 
  * @author 	Andreas Merkle (mail@blue-andi.de)
@@ -169,6 +165,13 @@ extern void log_end(void);
 
 #ifdef LOG_MMC_AVAILABLE
 	uint8 log_mmc_init(void);
+#endif
+
+#ifdef LOG_DISPLAY_AVAILABLE	
+	/*!
+	 * @brief	Display-Handler fuer das Logging
+	 */
+	void log_display(void);
 #endif
 
 #endif	/* LOG_AVAILABLE */

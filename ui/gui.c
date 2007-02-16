@@ -32,6 +32,7 @@
 #include "motor.h"
 #include "display.h"
 #include "mmc.h"
+#include "log.h"
 #include "bot-logic/bot-logik.h"
 #include "gui.h"
 #include <stdlib.h>
@@ -86,6 +87,9 @@ void gui_init(void){
 	#endif
 	#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
 		register_screen(&behaviour_display);
+	#endif
+	#ifdef LOG_DISPLAY_AVAILABLE
+		register_screen(&log_display);
 	#endif
 	#ifdef MISC_DISPLAY_AVAILABLE
 		register_screen(&misc_display);

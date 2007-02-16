@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-01-16 Timo Sandmann [mail@timosandmann.de]: Displayhandler fuer Logging auf Display ergaenzt. Bugfix fuer RC5-Code-Anzeige.
+
 2007-02-16 Benjamin Benz [bbe@heise.de]: Bugfix fuer Byteorder
 
 2007-02-15 Timo Sandmann [mail@timosandmann.de]: Kleine Verbesserungen an der GUI (leere Screens vermeiden, Code fuer Verhaltensanzeige ist schneller und braucht 42 Byte weniger).

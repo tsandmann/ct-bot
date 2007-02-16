@@ -32,6 +32,8 @@
  * @date 	27.02.06
 */
 
+//TODO: Umblaetterfunktion fuer mehr als 4 Logausgaben bei LOG_DISPLAY_AVAILABLE => Keyhandler aehnlich wie bei der Verhaltensanzeige
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -50,9 +52,6 @@
 #endif	/* PC */
 
 #ifdef LOG_DISPLAY_AVAILABLE
-	/*! Nummer des Screens auf den Loggings ausgegeben werden sollen. */
-	#define LOG_TO_SCREEN		4
-	
 	/*! Groesse des Puffers fuer die Logausgaben bei Verwendung des LCD-Displays. */
 	#define LOG_BUFFER_SIZE		(DISPLAY_LENGTH + 1)
 #else
@@ -96,7 +95,8 @@ static char log_buffer[LOG_BUFFER_SIZE];
 
 #ifdef LOG_DISPLAY_AVAILABLE
 	/*! Zeile in der die naechste Logausgabe erfolgt. */
-	static uint16 log_line = 0;
+	static uint16 log_line = 1;
+	static char screen_output[4][LOG_BUFFER_SIZE];	// Puffer, damit mehr als eine Zeile pro Hauptschleifendurchlauf geloggt werden kann
 #endif	/* LOG_DISPLAY_AVAILABLE */
 
 /*!
@@ -115,37 +115,16 @@ extern void log_begin(char *filename, unsigned int line, LOG_TYPE log_type) {
  * Nur bei Ausgaben ueber UART und an ct-Sim werden Dateiname, Zeilennummer
  * und der Log-Typ vollstaendig ausgegeben.
  */
-	#ifdef LOG_DISPLAY_AVAILABLE
-	
+	#ifdef LOG_DISPLAY_AVAILABLE	
 		LOCK();
-	
-		/* Nur auf einem bestimmten Screen werden Loggings ausgegeben. */
-		if (display_screen != LOG_TO_SCREEN) {
-			log_buffer[0] = '\0';
-			return;
+		/* Alte Markierung loeschen */
+		if (log_line == 1){
+			screen_output[3][0] = ' ';
 		}
-	
-		/* Zum ersten Mal aufgerufen? */
-		if (log_line == 0) {
-			log_line++;
-		} else {
-			/* Alte Markierung loeschen */
-			if (log_line - 1 == 0) {
-				display_cursor(4, 1);
-			}
-			else {
-				display_cursor(log_line - 1, 1);
-			}
-			display_printf(" ");
+		else{
+			screen_output[log_line-2][0] = ' ';
 		}
-		display_cursor(log_line, 1);
-		log_line++;
-		if (log_line >= DISPLAY_SCREENS) {
-			log_line = 1;
-		}
-		
-		snprintf(log_buffer, LOG_BUFFER_SIZE, ">%s:", log_get_type_str(log_type));
-	
+		snprintf(log_buffer, LOG_BUFFER_SIZE, ">%s:", log_get_type_str(log_type));	
 	#else
 	
 		char *ptr = NULL;
@@ -177,12 +156,6 @@ extern void log_printf(char *format, ...) {
 	va_list	args;
 	unsigned int len = strlen(log_buffer);
 	
-	#ifdef LOG_DISPLAY_AVAILABLE
-		/* Nur auf einem bestimmten Screen werden Loggings ausgegeben. */
-		if (display_screen != LOG_TO_SCREEN)
-			return;
-	#endif
-	
 	va_start(args, format);
 	vsnprintf(&log_buffer[len], LOG_BUFFER_SIZE - len, format, args);
 	va_end(args);
@@ -208,17 +181,16 @@ extern void log_end(void) {
 	#endif	/* LOG_CTSIM_AVAILABLE */
 	
 	#ifdef LOG_DISPLAY_AVAILABLE
-		/* Nur auf einem bestimmten Screen werden Loggings ausgegeben. */
-		if (display_screen == LOG_TO_SCREEN) {
-			/* String aufs LCD-Display schreiben */
-			display_printf("%s", log_buffer);
-		}
+		/* aktuelle Log-Zeile in Ausgabepuffer kopieren */
+		memcpy(screen_output[log_line-1], log_buffer, strlen(log_buffer));
+		/* Zeile weiterschalten */  
+		log_line++;
+		if (log_line > 4) log_line = 1;
 	#endif	/* LOG_DISPLAY_AVAILABLE */
 
 	/* Wenn das Logging aktiviert und keine Ausgabeschnittstelle
 	 * definiert ist, dann wird auf dem PC auf die Konsole geschrieben.
 	 */
-	 
 	#ifdef LOG_STDOUT_AVAILABLE
 		printf("%s\n", log_buffer);
 	#endif	/* LOG_STDOUT_AVAILABLE */
@@ -264,69 +236,78 @@ extern void log_end(void) {
 #endif	/* LOG_MMC_AVAILABLE */
 
 #ifdef LOG_DISPLAY_AVAILABLE
-
-/*!
- * Liefert den Log-Typ als String.
- * @param log_type Log-Typ
- * @return char*
- */
-static char* log_get_type_str(LOG_TYPE log_type) {
+	/*!
+	 * Liefert den Log-Typ als String.
+	 * @param log_type Log-Typ
+	 * @return char*
+	 */
+	static char* log_get_type_str(LOG_TYPE log_type) {
+		
+		switch(log_type) {
+			case LOG_TYPE_DEBUG:
+				return "D";
+				
+			case LOG_TYPE_INFO:
+				return "I";
+				
+			case LOG_TYPE_WARN:
+				return "W";
+				
+			case LOG_TYPE_ERROR:
+				return "E";
+				
+			case LOG_TYPE_FATAL:
+				return "F";
+				
+			default:
+				break;
+		}
 	
-	switch(log_type) {
-		case LOG_TYPE_DEBUG:
-			return "D";
-			
-		case LOG_TYPE_INFO:
-			return "I";
-			
-		case LOG_TYPE_WARN:
-			return "W";
-			
-		case LOG_TYPE_ERROR:
-			return "E";
-			
-		case LOG_TYPE_FATAL:
-			return "F";
-			
-		default:
-			break;
+		return "";
 	}
-
-	return "";
-}
-
+	
+	/*!
+	 * @brief	Display-Handler fuer das Logging
+	 */
+	void log_display(void){	
+		/* Strings aufs LCD-Display schreiben */
+		uint8 i;
+		for (i=0; i<4; i++){	// Das Display hat 4 Zeilen
+			display_cursor(i+1,1);
+			display_printf("%s", screen_output[i]);
+		}
+	}
 #else
 
-/*!
- * Liefert den Log-Typ als String.
- * @param log_type Log-Typ
- * @return char*
- */
-static char* log_get_type_str(LOG_TYPE log_type) {
+	/*!
+	 * Liefert den Log-Typ als String.
+	 * @param log_type Log-Typ
+	 * @return char*
+	 */
+	static char* log_get_type_str(LOG_TYPE log_type) {
+		
+		switch(log_type) {
+			case LOG_TYPE_DEBUG:
+				return "- DEBUG -";
+				
+			case LOG_TYPE_INFO:
+				return "- INFO -";
+				
+			case LOG_TYPE_WARN:
+				return "- WARNING -";
+				
+			case LOG_TYPE_ERROR:
+				return "- ERROR -";
+				
+			case LOG_TYPE_FATAL:
+				return "- FATAL -";
+				
+			default:
+				break;
+		}
 	
-	switch(log_type) {
-		case LOG_TYPE_DEBUG:
-			return "- DEBUG -";
-			
-		case LOG_TYPE_INFO:
-			return "- INFO -";
-			
-		case LOG_TYPE_WARN:
-			return "- WARNING -";
-			
-		case LOG_TYPE_ERROR:
-			return "- ERROR -";
-			
-		case LOG_TYPE_FATAL:
-			return "- FATAL -";
-			
-		default:
-			break;
+		return "";
 	}
-
-	return "";
-}
-
 #endif	/* LOG_DISPLAY_AVAILABLE */
 
 #endif	/* LOG_AVAILABLE */

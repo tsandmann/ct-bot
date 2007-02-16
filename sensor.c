@@ -362,10 +362,12 @@ void sensor_update(void){
 		
 		display_cursor(4,1);
 		#ifdef RC5_AVAILABLE
+			static uint16 RC5_old;
+			if (RC5_Code != 0) RC5_old = RC5_Code;
 			#ifdef MAUS_AVAILABLE
-				display_printf("I=%04X M=%05d %05d",RC5_Code,sensMouseX,sensMouseY);
+				display_printf("I=%04X M=%05d %05d",RC5_old,sensMouseX,sensMouseY);
 			#else
-				display_printf("I=%04X",RC5_Code);
+				display_printf("I=%04X",RC5_old);
 			#endif				
 		#else
 			#ifdef MAUS_AVAILABLE
