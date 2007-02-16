@@ -40,12 +40,12 @@
 
 // Die Kommandostruktur
 typedef struct {
-   void* (*func)(void *);      /*!< Zeiger auf die auszufuehrende Funktion*/
    uint8 param_count;			/*!< Anzahl der Parameter kommen Und zwar ohne den obligatorischen caller-parameter*/
    uint8 param_len[REMOTE_CALL_MAX_PARAM];	/*!< Angaben ueber die Anzahl an Bytes, die jeder einzelne Parameter belegt */
    char name[REMOTE_CALL_FUNCTION_NAME_LEN+1]; 	    /*!< Text, maximal TEXT_LEN Zeichen lang +  1 Zeichen terminierung*/
    char param_info[PARAM_TEXT_LEN+1];			/*!< String, der Angibt, welche und was fuer Parameter die Fkt erwartet */
-   									 
+   
+   void* (*func)(void *);      /*!< Zeiger auf die auszufuehrende Funktion*/   									 
 } call_t;
 
 typedef union{
@@ -59,7 +59,7 @@ typedef union{
  * Und zwar unabhaengig vom Datentyp. will man also einen uin16 uebergeben steht da 2
  * Will man einen Float uebergeben eine 4. Fuer zwei Floats eine 8, usw.
  */
-#define PREPARE_REMOTE_CALL(func,count,param,param_len...)  {(void*)func, count, {param_len}, #func,param }
+#define PREPARE_REMOTE_CALL(func,count,param,param_len...)  {count, {param_len}, #func,param,(void*)func }
 
 
 /*! 
