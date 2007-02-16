@@ -27,7 +27,7 @@
 #ifndef available_screens_H_
 #define available_screens_H_
 
-#include "ct-bot.h"
+#include "ct-Bot.h"
 
 #ifdef DISPLAY_AVAILABLE
 

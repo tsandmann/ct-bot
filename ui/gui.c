@@ -24,7 +24,7 @@
  * @date 	12.02.2007
  */
  
-#include "ct-bot.h"
+#include "ct-Bot.h"
 #include "global.h"
 #include "ui/available_screens.h"
 #include "rc5.h"
