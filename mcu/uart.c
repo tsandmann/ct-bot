@@ -39,7 +39,7 @@
 
 #ifdef UART_AVAILABLE
 
-#define UART_RX_BUFFER_SIZE 16	/*!< Größe des UART-Puffers */
+#define UART_RX_BUFFER_SIZE 64	/*!< Größe des UART-Puffers */
 
 #define UART_RX_BUFFER_MASK ( UART_RX_BUFFER_SIZE - 1 )
 #if ( UART_RX_BUFFER_SIZE & UART_RX_BUFFER_MASK )

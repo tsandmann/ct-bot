@@ -74,6 +74,13 @@ command_t received_command;		/*!< Puffer fuer Kommandos */
 		= PTHREAD_MUTEX_INITIALIZER;
 #endif
 
+
+//#define DEBUG_COMMAND		//Schalter, um auf einmal alle Debugs an oder aus zu machen
+
+#ifndef DEBUG_COMMAND
+	#undef LOG_DEBUG
+	#define LOG_DEBUG(a) {}
+#endif
 /*!
  * Liest ein Kommando ein, ist blockierend!
  * Greift auf low_read() zurueck
@@ -105,6 +112,7 @@ int8 command_read(void){
 
 	// Suche nach dem Beginn des Frames
 	while ((start<bytesRcvd)&&(buffer[start] != CMD_STARTCODE)) {	
+		LOG_DEBUG(("falscher Startcode"));
 //		printf("\nStartzeichen nicht am Anfang des Puffers! (%d)\n",start);
 //		printf(".");
 		start++;
@@ -112,7 +120,7 @@ int8 command_read(void){
 		
 	// Wenn keine STARTCODE gefunden ==> Daten verwerfen
 	if (buffer[start] != CMD_STARTCODE){
-		//	LOG_DEBUG(("start not found"));
+		LOG_DEBUG(("kein Startcode"));
 		return -1;	
 	}
 	
@@ -136,8 +144,10 @@ int8 command_read(void){
 		// So lange Daten lesen, bis das Packet vollstaendig ist, oder der Timeout zuschlaegt
 		while (i > 0){
 			// Wenn der Timeout ueberschritten ist
-			if (TIMER_GET_TICKCOUNT_16-old_ticks > MS_TO_TICKS(COMMAND_TIMEOUT))
+			if (TIMER_GET_TICKCOUNT_16-old_ticks > MS_TO_TICKS(COMMAND_TIMEOUT)){
+				LOG_DEBUG(("Timeout beim nachlesen"));
 				return -1; //	==> Abbruch
+			}
 			//	LOG_DEBUG(("%d bytes missing",i));
 			i= low_read(buffer+bytesRcvd,i);
 			//	LOG_DEBUG(("%d read",i));
@@ -193,7 +203,7 @@ int8 command_read(void){
 
 		return 0;
 	} else {	// Command not valid
-		//		LOG_DEBUG(("Invalid Command:"));
+		LOG_DEBUG(("Invalid Command:"));
 		//		LOG_DEBUG(("%x %x %x",command->startCode,command->request.command,command->CRC));
 		return -1;
 	}
@@ -325,7 +335,7 @@ int command_evaluate(void){
 	uint8 analyzed = 1;
 	
 	#ifdef LOG_AVAILABLE	
-//		command_display(&received_command);
+		command_display(&received_command);
 	#endif	// LOG_AVAILABLE
 	
 	switch (received_command.request.command) {
@@ -450,10 +460,16 @@ int command_evaluate(void){
 				(*command).data_l,
 				(*command).seq));
 		#else
-			LOG_DEBUG(("%x %x %x %x",
+//			LOG_DEBUG(("CMD%x %x %x %x",
+//				(*command).request.command,
+//				(*command).data_l,
+//				(*command).data_r,
+//				(*command).seq));
+			LOG_DEBUG(("CMD: %c\tSub: %c\tData L: %d\tPay: %d\tSeq: %d\n",
 				(*command).request.command,
+				(*command).request.subcommand,
 				(*command).data_l,
-				(*command).data_r,
+				(*command).payload,
 				(*command).seq));
 
 /*			char* raw= (char*)command;

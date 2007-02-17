@@ -33,6 +33,7 @@
 #endif
 #include <stdlib.h>
 #include <math.h>
+#include "log.h"
 
 /* Parameter fuer das bot_turn_behaviour() */
 #ifndef MEASURE_MOUSE_AVAILABLE
@@ -203,6 +204,7 @@ void bot_turn_behaviour(Behaviour_t *data){
 
 void bot_turn(Behaviour_t *caller, int16 degrees)
 {
+	//LOG_DEBUG(("bot_turn(%d)",degrees));
  	// Richtungsgerechte Umrechnung in den Zielwinkel
  	if(degrees < 0) turn_direction = -1;
  	else turn_direction = 1;

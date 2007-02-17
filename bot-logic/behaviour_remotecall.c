@@ -58,6 +58,14 @@ static uint8 parameter_data[8] = {0};	/*!< Hier liegen die eigentlichen Paramete
 	#define strcmp_P strcmp	// Auf dem PC gibt es keinen Flash, also auch kein eigenes Compare
 #endif
 
+
+//#define DEBUG_REMOTE_CALLS		// Schalter um recht viel Debug-Code anzumachen
+
+#ifndef DEBUG_REMOTE_CALLS
+	#undef LOG_DEBUG
+	#define LOG_DEBUG(a) {}
+#endif
+
 /*! 
  * Hier muessen alle Boten-Funktionen rein, die Remote aufgerufen werden sollen
  * Diese stoßen dann das zugehoerige Verhalten an
@@ -133,7 +141,7 @@ uint8 getRemoteCall(char * call){
 	uint8 i;
 	for (i=0; i< (STORED_CALLS); i++){
 		if (!strcmp_P (call, calls[i].name)){
-			LOG_DEBUG(("calls[%d].name=%s passt",i,call));		
+			LOG_DEBUG(("calls[%d].name=%s passt",i,call));
 			return i;
 		}
 	}
@@ -199,9 +207,8 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 				func(data);	// Die aufgerufene Botenfunktion starten
 				running_behaviour=REMOTE_CALL_RUNNING;
 			} else if (parameter_count <= REMOTE_CALL_MAX_PARAM){ // Es gibt gueltige Parameter
-				// TODO: Ja hier wird es spannend, denn jetzt muessen die Parameter auf den Stack
 				LOG_DEBUG(("call_id=%u",call_id));
-				LOG_DEBUG(("parameter_count=%u", parameter_count));				
+				LOG_DEBUG(("parameter_count=%u", parameter_count));
 				// asm-hacks here ;)
 				#ifdef PC
 					/* Prinzip auf dem PC: Wir legen alle Parameter einzeln auf den Stack, springen in die Botenfunktion und raeumen anschliessend den Stack wieder auf */
@@ -298,9 +305,10 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 				int16 result = data->subResult;
 				command_write_data(CMD_REMOTE_CALL,SUB_REMOTE_CALL_DONE,&result,&result,function_name);
 			#endif
+	
 
-//			LOG_DEBUG(("Remote-call %s beendet",function_name));
-
+			LOG_DEBUG(("Remote-call %s beendet (%d)",function_name,data->subResult));
+	
 			// Aufrauemen
 			function_id=255;
 			//parameter_length=NULL;
@@ -326,7 +334,7 @@ void bot_remotecall(char* func, remote_call_data_t* data){
 
 	function_id= getRemoteCall(func);
 	if (function_id >= STORED_CALLS){
-//		LOG_DEBUG(("Funktion %s nicht gefunden. Exit!",func));
+		LOG_DEBUG(("Funktion %s nicht gefunden. Exit!",func));
 		return;
 	}
 
@@ -345,11 +353,7 @@ void bot_remotecall(char* func, remote_call_data_t* data){
 	
 	LOG_DEBUG(("func=%s param_count=%d Len= %u %u %u",func,parameter_count,parameter_length[0],parameter_length[1],parameter_length[2]));
 	if (data != NULL){
-		remote_call_data_t* test = &data[0];
-		LOG_DEBUG(("data= %x %x %x %x",data[0],data[1],data[2],data[3]));
-		test->u16=90;
-		LOG_DEBUG(("test= %x %x %x %x",data[0],data[1],data[2],data[3]));
-		
+		LOG_DEBUG(("data= %x %x %x",data[0],data[1],data[2]));		
 	}
 	
 	#ifdef MCU	// Die MCU legt die Parameter nach einem anderen Verfahren ab, diese Funktion konvertiert sie deshalb
