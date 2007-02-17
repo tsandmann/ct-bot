@@ -51,8 +51,6 @@
 
 #define DISPLAY_AVAILABLE	/*!< Display for local control */
 #define DISPLAY_REMOTE_AVAILABLE /*!< Sende LCD Anzeigedaten an den Simulator */
-//#define DISPLAY_BEHAVIOUR_AVAILABLE  /*!< Anzeige der Verhalten im Display Screen 3, ersetzt Counteranzeige */
-//#define DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE /*!< Zustandsaenderungen der Verhalten sind direkt unter Umgehung der Puffervar sichtbar */
 #define MEASURE_MOUSE_AVAILABLE			/*!< Geschwindigkeiten werden aus den Maussensordaten berechnet */
 //#define MEASURE_COUPLED_AVAILABLE		/*!< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
 
