@@ -381,6 +381,13 @@ int command_evaluate(void){
 						
 							break;
 						}
+						case SUB_REMOTE_CALL_ABORT: {
+							LOG_DEBUG(("remote calls werden abgebrochen"));
+							deactivateCalledBehaviours(bot_remotecall_behaviour);
+							break;
+						}
+						
+						
 						default:
 							LOG_DEBUG(("unbekanntes Subkommando: %c",received_command.request.subcommand));
 							break;

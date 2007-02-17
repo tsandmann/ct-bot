@@ -491,10 +491,10 @@ void bot_solve_maze_behaviour(Behaviour_t *data){
 			/* Wo beginnen wir, nach einer Wand zu suchen? 
 			 * Abgrund- und Kollisions-Verhalten ausschalten */
 			#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
-				deactivateBehaviour(bot_avoid_col_behaviour);
+				deactivateBehaviour(bot_avoid_col_behaviour,NORECURSIVE);
 			#endif
 			#ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE
-				deactivateBehaviour(bot_avoid_border_behaviour);
+				deactivateBehaviour(bot_avoid_border_behaviour,NORECURSIVE);
 			#endif
 			/* sieht nach, ob der Bot auf einem definierten Startpad steht und
 			 * beginnt dann mit der Suche gleich an der richtigen Wand */

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-02-17 Benjamin Benz [bbe@heise.de]: Es gibt jetzt die moeglichkeit alle von einem verhalten aktivierten verhalten wieder abzuschalten. ==> man kann nun remote-calls wieder abbrechen
+
 2007-02-17 Benjamin Benz [bbe@heise.de]: uart-rx-puffer vergroessert. Feinschliff bei den remote-calls. Debug-Code in remote-calls und command per schickem Trick an und ausschaltbar gemacht
 
 2007-01-16 Timo Sandmann [mail@timosandmann.de]: Displayhandler fuer Logging auf Display ergaenzt. Bugfix fuer RC5-Code-Anzeige.

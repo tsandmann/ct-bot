@@ -44,6 +44,8 @@
 #include "rc5-codes.h"
 #include "ui/available_screens.h"
 
+#include "log.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -59,6 +61,14 @@ int16 target_speed_r=BOT_SPEED_STOP;	/*!< Sollgeschwindigkeit rechter Motor - da
 
 /*! Liste mit allen Verhalten */
 Behaviour_t *behaviour = NULL;
+
+//#define DEBUG_BOT_LOGIC		// Schalter um recht viel Debug-Code anzumachen
+
+#ifndef DEBUG_BOT_LOGIC
+	#undef LOG_DEBUG
+	#define LOG_DEBUG(a) {}
+#endif
+
 
 /*! 
  * Das einfachste Grundverhalten 
@@ -180,17 +190,89 @@ void activateBehaviour(BehaviourFunc function){
 /*!
  * Deaktiviert eine Regel mit gegebener Funktion
  * @param function Die Funktion, die das Verhalten realisiert.
+ * @param recursive Wenn recursive==NORECURSIVE, dann bleibt eine eventuelle Aufruferfunktion aktiv
+ * Wenn recursive==RECURSIVE werden alle aufrufenden Verhalten recursiv abgeschaltet.
+ * Wenn 0 < recursive < RECURSIVE, dann werden nur recursive viele Aufrufer deaktiviert
  */
-void deactivateBehaviour(BehaviourFunc function){
+void deactivateBehaviour(BehaviourFunc function, uint8 recursive){
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
 		
 	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben 
 	for (job = behaviour; job; job = job->next) {
-		if (job->work == function) {
-			job->active = INACTIVE;
+		if (job->work == function) {	// haben wir den richtigen Eintrag gefunden?
+			if (job->active == ACTIVE){	// und war er überhaupt active?
+				LOG_DEBUG(("Verhalten %d wird mit recursive = %d abgeschaltet",job->priority,recursive));
+				
+				job->active = INACTIVE;	// dann aus
+				if (job->caller){	// gab es einen Aufrufer?
+					job->caller->subResult=SUBCANCEL;	// Teile dem aufrufer mit, das externer Abbruch
+
+					job->caller->active = ACTIVE;	// ==> caller wieder an
+
+					if (recursive != NORECURSIVE){	// recursives abschalten?
+						// TODO das folgende ist ineffizient, man muss nicht jedesmal die Liste neu durchsuchen! 
+						deactivateBehaviour(job->caller->work,recursive -1);	// caller auch abschalten
+					}
+				}
+				job->caller = NULL;		// Caller loeschen				
+			}				
 			break;
 		}
 	}
+}
+
+/*!
+ * liefert 1 zurueck, wenn function ueber eine beliebige Kette (job->caller->caller ....) von anderen Verhalten job aufgerufen hat
+ * @param job Zeiger auf den Datensatz des aufgerufenen Verhaltens
+ * @param function Das Verhalten, das urspruenglich aufgerufen hat
+ * @return 0 wenn keine Call-Abhaengigkeit besteht, ansonsten die Anzahl der Stufen
+ */
+uint8 isInCallHierarchy(	Behaviour_t *job, BehaviourFunc function){
+	uint8 level;
+	
+	if (job == NULL)	// Ende der Liste erreicht?
+		return 0;
+	
+	if (job->caller == NULL)	// Es gibt keinen weitern Caller
+		return 0;
+	
+	if (job->caller->work == function){
+		LOG_DEBUG(("Verhalten %d wurde direkt von %d aufgerufen",job->priority,job->caller->priority));
+		return 1;	// Direkter Aufrufender gefunden
+	}
+
+	level= isInCallHierarchy(job->caller,function);
+	if (level > 0){
+		level ++;	// eine Ebene dazu
+		LOG_DEBUG(("Verhalten %d wurde ueber %d stufen aufgerufen",job->priority,level));
+	}
+	return level;
+	
+}
+
+/*!
+ * Deaktiviert alle von diesem Verhalten aufgerufenen Verhalten. 
+ * Das Verhalten selbst bleibt Aktiv und bekommt ein SUBCANCEL in seine datanestruktur eingetragen.
+ * @param function Die Funktion, die das Verhalten realisiert.
+ */
+void deactivateCalledBehaviours(BehaviourFunc function){
+	Behaviour_t *job;						// Zeiger auf ein Verhalten
+	uint8 level;
+	
+	LOG_DEBUG(("beginne mit dem durchsuchen der Liste"));
+	// Einmal durch die Liste gehen, und alle aktiven Funktionen prüfen, ob sie von dem uebergebenen Verhalten aktiviert wurden
+	for (job = behaviour; job; job = job->next) {
+		if (job->active == ACTIVE){ 
+			LOG_DEBUG(("Verhalten mit Prio =%d ist ACTIVE", job->priority));
+			level=isInCallHierarchy(job, function);
+			if (level >0){
+				LOG_DEBUG(("    und hat level %d Call Abhaengigkeit",level));
+				deactivateBehaviour(job->work,level-1);
+			} else 
+				LOG_DEBUG(("    und steht in keiner Call-Abahengigkeit"));
+			
+		}
+	}	
 }
 
 /*! 
@@ -238,6 +320,13 @@ void switch_to_behaviour(Behaviour_t * from, void *to, uint8 override ){
 	job->active=ACTIVE;
 	// Aufrufer sichern
 	job->caller =  from;
+	
+	#ifdef DEBUG_BOT_LOGIC
+		if (from)
+			LOG_DEBUG(("Verhaltenscall: %d wurde von %d aufgerufen",job->priority,from->priority));
+		else 
+			LOG_DEBUG(("Verhaltenscall: %d wurde direkt aufgerufen",job->priority));
+	#endif
 }
 
 /*! 

@@ -46,6 +46,11 @@
 #define SUBSUCCESS	1	/*!< Konstante fuer Behaviour_t->subResult: Aufgabe erfolgreich abgeschlossen */
 #define SUBFAIL	0	/*!< Konstante fuer Behaviour_t->subResult: Aufgabe nicht abgeschlossen */
 #define SUBRUNNING 2	/*!< Konstante fuer Behaviour_t->subResult: Aufgabe wird noch beabeitet */
+#define SUBCANCEL	3	/*!< Konstante fuer Behaviour_t->subResult: Aufgabe wurde unterbrochen */
+
+#define RECURSIVE 	 255	/*!< Konstante, die anzeigt, dass auch die Aufrufer eines Verhaltens mit deaktiviert werden */
+#define NORECURSIVE 0	/*!< Konstante, die anzeigt, dass die Aufrufer eines Verhaltens nicht mit deaktiviert werden */
+
 
 #define BOT_BEHAVIOUR_RUNNING	1		/*!< Rueckgabewert eines Verhaltens, das noch weiter laufen moechte. */
 #define BOT_BEHAVIOUR_DONE		0		/*!< Rueckgabewert eines Verhaltens, das fertig ist. */
@@ -107,16 +112,24 @@ extern void bot_behave_init(void);
 void activateBehaviour(BehaviourFunc function);
 
 /*!
- * Aktiviert eine Regel mit gegebener Funktion
+ * Deaktiviert eine Regel mit gegebener Funktion
  * @param function Die Funktion, die das Verhalten realisiert.
+ * @param recursive Wenn recursive==1, dann werden auch die aufrufenden Verhalten deaktiviert
  */
-void deactivateBehaviour(BehaviourFunc function);
+void deactivateBehaviour(BehaviourFunc function, uint8 recursive);
 
 /*!
  * Deaktiviert alle Verhalten bis auf Grundverhalten. Bei Verhaltensauswahl werden die Aktivitaeten vorher
  * in die Verhaltens-Auswahlvariable gesichert.
  */
 void deactivateAllBehaviours(void);
+
+/*!
+ * Deaktiviert alle von diesem Verhalten aufgerufenen Verhalten. 
+ * Das Verhalten selbst bleibt Aktiv und bekommt ein SUBCANCEL in seine datanestruktur eingetragen.
+ * @param function Die Funktion, die das Verhalten realisiert.
+ */
+void deactivateCalledBehaviours(BehaviourFunc function);
 
 /*! 
  * Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung 

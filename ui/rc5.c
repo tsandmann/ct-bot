@@ -123,14 +123,15 @@ static void rc5_number(uint8 key) {
 		#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 			case 4: bot_catch_pillar(0); break;
 		#endif
-		
-		#ifdef BEHAVIOUR_GOTOXY_AVAILABLE
-			case 5: bot_gotoxy(0, 20, 20); break;
+
+		#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
+			case 5: bot_solve_maze(0); break;
 		#else
-			#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
-				case 5: bot_solve_maze(0); break;
-			#endif	// BEHAVIOUR_SOLVE_MAZE_AVAILABLE
-		#endif	// BEHAVIOUR_GOTOXY_AVAILABLE
+			#ifdef BEHAVIOUR_GOTOXY_AVAILABLE
+				case 5: bot_gotoxy(0, 20, 20); break;
+			#endif	// BEHAVIOUR_GOTOXY_AVAILABLE
+		#endif	// BEHAVIOUR_SOLVE_MAZE_AVAILABLE
+		
 
 		#ifdef BEHAVIOUR_CALIBRATE_PWM_AVAILABLE
 			case 6: bot_calibrate_pwm(0); break;
