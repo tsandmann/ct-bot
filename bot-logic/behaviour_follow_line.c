@@ -54,10 +54,10 @@ void bot_follow_line_behaviour(Behaviour_t *data) {
 				/* zunaechst alle Hilfsverhalten ausschalten, die den Algorithmus stoeren */
 				/* Abgrund- und Kollisions-Verhalten ausschalten */
 				#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
-					deactivateBehaviour(bot_avoid_col_behaviour,NORECURSIVE);
+					deactivateBehaviour(bot_avoid_col_behaviour);
 				#endif
 				#ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE
-					deactivateBehaviour(bot_avoid_border_behaviour,NORECURSIVE);
+					deactivateBehaviour(bot_avoid_border_behaviour);
 				#endif
 				/* bot_glance() stoert bot_turn() */
 				//deactivateBehaviour(bot_glance_behaviour);
