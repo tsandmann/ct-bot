@@ -114,9 +114,8 @@ void activateBehaviour(BehaviourFunc function);
 /*!
  * Deaktiviert eine Regel mit gegebener Funktion
  * @param function Die Funktion, die das Verhalten realisiert.
- * @param recursive Wenn recursive==1, dann werden auch die aufrufenden Verhalten deaktiviert
  */
-void deactivateBehaviour(BehaviourFunc function, uint8 recursive);
+void deactivateBehaviour(BehaviourFunc function);
 
 /*!
  * Deaktiviert alle Verhalten bis auf Grundverhalten. Bei Verhaltensauswahl werden die Aktivitaeten vorher
