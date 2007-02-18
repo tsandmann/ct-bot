@@ -198,6 +198,7 @@ void deactivateBehaviour(BehaviourFunc function){
 	for (job = behaviour; job; job = job->next) {
 		if (job->work == function) {
 			job->active = INACTIVE;
+			job->caller = NULL;	// Caller loeschen, damit Verhalten auch ohne OVERRIDE neu gestartet werden koennen
 			break;
 		}
 	}
@@ -247,7 +248,9 @@ void deactivateCalledBehaviours(BehaviourFunc function){
 			for (; level>0; level--){	// n mal
 				LOG_DEBUG(("Verhalten %u wird in Tiefe %u abgeschaltet", job->priority, level));
 				job->active = INACTIVE;	// callee abschalten
+				Behaviour_t* tmp = job;
 				job = job->caller;	// zur naechsten Ebene
+				tmp->caller = NULL;	// Caller loeschen, damit Verhalten auch ohne OVERRIDE neu gestartet werden koennen
 			}			
 		} else if (job->work == function){
 			/* Verhalten von function fuer spaeter merken, wenn wir hier eh schon die ganze Liste absuchen */
@@ -336,9 +339,10 @@ void deactivateAllBehaviours(void){
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
 	// Einmal durch die Liste gehen und (fast) alle deaktivieren, Grundverhalten nicht 
 	for (job = behaviour; job; job = job->next) {
-		if ((job->priority >= PRIO_VISIBLE_MIN) &&(job->priority <= PRIO_VISIBLE_MAX)) {
+		if ((job->priority >= PRIO_VISIBLE_MIN) && (job->priority <= PRIO_VISIBLE_MAX)) {
             // Verhalten deaktivieren 
 			job->active = INACTIVE;	
+			job->caller = NULL;	// Caller loeschen, damit Verhalten auch ohne OVERRIDE neu gestartet werden koennen
 		}
 	}	
 }
