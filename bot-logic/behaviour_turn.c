@@ -54,7 +54,7 @@ int16 to_turn;					/*!< Wieviel Grad sind noch zu drehen? */
 #endif
 int8 turn_direction;			/*!< Richtung der Drehung */
 
-
+#ifdef MEASURE_MOUSE_AVAILABLE
 /* Hilfsfunktion zur Berechnung einer Winkeldifferenz */
 inline int16 calc_turned_angle(int8 direction, int16 angle1, int16 angle2) {
 	int16 diff_angle=0;
@@ -79,9 +79,8 @@ inline int16 calc_turned_angle(int8 direction, int16 angle1, int16 angle2) {
 	return diff_angle;
 }
 
-#ifdef MEASURE_MOUSE_AVAILABLE
  /*!
-  * Das Verhalten laesst den Bot eine Punktdrehung durchfuehren.
+  * Das Verhalten laesst den Bot eine Punktdrehung durchfuehren. 
 + * Drehen findet in drei Schritten statt. Die Drehung wird dabei
 + * bei Winkeln > 15 Grad zunaechst mit hoeherer Geschwindigkeit ausgefuehrt. Bei kleineren
 + * Winkeln oder wenn nur noch 15 Grad zu drehen sind, nur noch mit geringer Geschwindigkeit
@@ -128,8 +127,13 @@ void bot_turn_behaviour(Behaviour_t *data){
  				turnState=STOP_TURN;
  				break;
  			}
-         	speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_NORMAL : BOT_SPEED_NORMAL;	                         speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;
-         	speedWishRight = (turn_direction > 0) ? BOT_SPEED_NORMAL : -BOT_SPEED_NORMAL;	                         speedWishRight = (turn_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
+ 			if (to_turn > 90){
+         		speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_MEDIUM : BOT_SPEED_MEDIUM;
+         		speedWishRight = (turn_direction > 0) ? BOT_SPEED_MEDIUM : -BOT_SPEED_MEDIUM;
+ 			} else{	                         
+         		speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;	                         
+         		speedWishRight = (turn_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
+ 			}
 	        break;
 
  		case STOP_TURN:
@@ -157,11 +161,10 @@ void bot_turn_behaviour(Behaviour_t *data){
 			#endif
 
 			// Neue Abweichung mit alter vergleichen und ggfs neu bestimmen
-
 			switch(angle_correct) {
 				case 0:
-					if (abs(to_turn)-e15>1) {
-						e15=(int8)(abs(to_turn)+e15)/2;
+					if (abs(to_turn+e15) > 1){
+						e15 = (uint8)(-to_turn + e15) / 2;
 						#ifdef MCU
 							eeprom_write_byte(&err15,e15);
 						#else
@@ -171,8 +174,8 @@ void bot_turn_behaviour(Behaviour_t *data){
 					break;
 
 				case 1:
-					if (abs(to_turn)-e45>1) {
-						e45=(int8)(abs(to_turn)+e45)/2;
+					if (abs(to_turn+e45) > 1){
+						e45 = (uint8)(-to_turn + e45) / 2;
 						#ifdef MCU
 							eeprom_write_byte(&err45,e45);
 						#else
@@ -182,8 +185,8 @@ void bot_turn_behaviour(Behaviour_t *data){
 					break;
 
 				case 2:
-				if (abs(to_turn)-ebig>1) {
-						ebig=(int8)(abs(to_turn)+ebig)/2;
+					if (abs(to_turn+ebig) > 1){
+						ebig = (uint8)(-to_turn + ebig) / 2;
 						#ifdef MCU
 							eeprom_write_byte(&err_big,ebig);
 						#else
@@ -203,30 +206,30 @@ void bot_turn_behaviour(Behaviour_t *data){
 }
 
 void bot_turn(Behaviour_t *caller, int16 degrees)
-{
+{	
 	//LOG_DEBUG(("bot_turn(%d)",degrees));
  	// Richtungsgerechte Umrechnung in den Zielwinkel
  	if(degrees < 0) turn_direction = -1;
  	else turn_direction = 1;
 	to_turn=abs(degrees);
 	#ifdef MCU
-		if (eeprom_read_byte(&err15)==255 && eeprom_read_byte(&err45)==255 && eeprom_read_byte(&err_big)==255) {
-			eeprom_write_byte(&err15,1);
-			eeprom_write_byte(&err45,2);
-			eeprom_write_byte(&err_big,4);
-		}
+		/* Fehlerwerte initialisieren, falls noch nicht geschehen */
+		if (eeprom_read_byte(&err15) == 255) eeprom_write_byte(&err15,1);
+		if (eeprom_read_byte(&err45) == 255) eeprom_write_byte(&err45,2);
+		if (eeprom_read_byte(&err_big) == 255) eeprom_write_byte(&err_big,4);
+		
 		if (to_turn>45) {
 			to_turn-=eeprom_read_byte(&err_big);
 			angle_correct=2;
 		} else if (to_turn<=45 && to_turn>15) {
-		to_turn-=eeprom_read_byte(&err45);
+			to_turn-=eeprom_read_byte(&err45);
 			angle_correct=1;
 		} else {
 			to_turn-=eeprom_read_byte(&err15);
 			angle_correct=0;
 		}
 	#else
-			if (to_turn>45) {
+		if (to_turn>45) {
 			to_turn-=err_big;
 			angle_correct=2;
 		} else if (to_turn<=45 && to_turn>15) {
@@ -237,7 +240,7 @@ void bot_turn(Behaviour_t *caller, int16 degrees)
 			angle_correct=0;
 		}
 	#endif
- 	switch_to_behaviour(caller, bot_turn_behaviour,OVERRIDE);
+ 	switch_to_behaviour(caller, bot_turn_behaviour,OVERRIDE); 
  }
 #else
 /*!
@@ -358,6 +361,6 @@ void bot_turn(Behaviour_t* caller,int16 degrees){
  	turn_targetL+=sensEncL;
 	switch_to_behaviour(caller, bot_turn_behaviour,OVERRIDE);
 }
-#endif
+#endif	// MEASURE_MOUSE_AVAILABLE
 #endif
 

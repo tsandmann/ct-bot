@@ -1,6 +1,8 @@
 CHANGELOG fuer c't-Bot
 ======================
-2007-02-18 Timo Sandmann [mail@timosandmann.de: Bugfix fuer das Deaktivieren von Verhalten (allgemein und remote): Caller wurde vergessen NULL zu setzen, dadurch konnte man Verhalten nur per OVERRIDE neu starten
+2007-02-21 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer bot_turn() auf realem Bot.
+
+2007-02-18 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer das Deaktivieren von Verhalten (allgemein und remote): Caller wurde vergessen NULL zu setzen, dadurch konnte man Verhalten nur per OVERRIDE neu starten
 
 2007-02-18 Benjamin Benz [bbe@heise.de]: avr-size als Post-Build-Step eingefuegt
 
