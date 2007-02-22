@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-02-22 Benjamin Benz [bbe@heise.de]: internes CVS in externes gespiegelt fuer ct-sim-mit-applet-release
+
 2007-02-22 Timo Sandmann [mail@timosandmann.de]: Dateiencoding auf UTF-8 umgestellt.
 
 2007-02-21 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer bot_turn() auf realem Bot.
