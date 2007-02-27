@@ -26,6 +26,7 @@
 #include "ct-Bot.h"
 
 #define USE_SEND_BUFFER
+#define TCP_SEND_BUFFER_SIZE 2048
 
 #ifdef PC
 
@@ -70,8 +71,10 @@
 int tcp_sock=0;			/*!< Unser TCP-Socket */
 char *tcp_hostname = NULL;		/*!< Hostname, auf dem ct-Sim laeuft */
 
+
+
 #ifdef PC
-	uint8 sendBuffer[1024];	/*!< Sendepuffer fuer ausgehende Packete */
+	uint8 sendBuffer[TCP_SEND_BUFFER_SIZE];	/*!< Sendepuffer fuer ausgehende Packete */
 	int sendBufferPtr=0;	/*!< Index in den Sendepuffer */
 #endif
 
@@ -183,9 +186,17 @@ int copy2Buffer(uint8* data, int length){
 	int i;
 	uint8 * ptr = data;
 	
-	if ((sendBufferPtr + length) > sizeof(sendBuffer))
-		return -1;
+	if ((sendBufferPtr + length) > sizeof(sendBuffer)){
+		printf("%s() %s:%d: sendBuffer filled with %d/%d Bytes, another %d bytes pending. Full! Aborting copy!\n",__FUNCTION__,__FILE__, __LINE__,sendBufferPtr,sizeof(sendBuffer),length);
 		
+		printf("  ==> Trying to recover by calling flushSendBuffer()\n");
+		flushSendBuffer(); 
+		if ((sendBufferPtr + length) > sizeof(sendBuffer)) {
+			printf("  ==> Still not enough Space\n");
+				
+			return -1;
+		}
+	}
 //	printf("Store %d bytes",length);
 	// Auf dem PC kopieren wir nur alles in den Ausgangspuffer
 	for (i=0; i< length ; i++){
