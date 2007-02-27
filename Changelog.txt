@@ -1,6 +1,8 @@
 CHANGELOG fuer c't-Bot
 ======================
-2007-02-22 Benjamin Benz [bbe@heise.de]: Bugfix TCP-SendBuffer lief ueber
+2007-02-27 Benjamin Benz [bbe@heise.de]: Bugfix LOG-Absturz Ticket #40 (https://www.heise.de/trac/ctbot/ticket/40)
+
+2007-02-27 Benjamin Benz [bbe@heise.de]: Bugfix TCP-SendBuffer lief ueber (Ticket #65 https://www.heise.de/trac/ctbot/ticket/65)
 
 2007-02-22 Benjamin Benz [bbe@heise.de]: internes CVS in externes gespiegelt fuer ct-sim-mit-applet-release
 

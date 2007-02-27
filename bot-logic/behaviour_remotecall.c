@@ -30,7 +30,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "log.h"
 #include "command.h"
 
 #include "bot-logic/remote_calls.h"
@@ -62,8 +61,10 @@ static uint8 parameter_data[8] = {0};	/*!< Hier liegen die eigentlichen Paramete
 //#define DEBUG_REMOTE_CALLS		// Schalter um recht viel Debug-Code anzumachen
 
 #ifndef DEBUG_REMOTE_CALLS
-	#undef LOG_DEBUG
+//	#undef LOG_DEBUG
 	#define LOG_DEBUG(a) {}
+#else
+	#include "log.h"
 #endif
 
 /*! 
@@ -207,8 +208,10 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 				func(data);	// Die aufgerufene Botenfunktion starten
 				running_behaviour=REMOTE_CALL_RUNNING;
 			} else if (parameter_count <= REMOTE_CALL_MAX_PARAM){ // Es gibt gueltige Parameter
-				LOG_DEBUG(("call_id=%u",call_id));
-				LOG_DEBUG(("parameter_count=%u", parameter_count));
+				#ifdef DEBUG_REMOTE_CALLS 
+					LOG_DEBUG(("call_id=%u",call_id));
+					LOG_DEBUG(("parameter_count=%u", parameter_count));
+				#endif
 				// asm-hacks here ;)
 				#ifdef PC
 					/* Prinzip auf dem PC: Wir legen alle Parameter einzeln auf den Stack, springen in die Botenfunktion und raeumen anschliessend den Stack wieder auf */
