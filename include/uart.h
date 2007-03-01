@@ -43,6 +43,11 @@ void uart_init(void);
  */
 uint8 uart_data_available(void);
 
+/*! 
+ * Prüft, wieviel Platz im TX-Puffer ist
+ * @return Anzahl der verfuegbaren Bytes
+ */
+uint8 uart_tx_space(void);
 
 /*!
  * Überträgt ein Zeichen per UART

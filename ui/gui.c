@@ -42,6 +42,8 @@
 int8 max_screens = 0;	/*!< Anzahl der zurzeit registrierten Screens */
 static void (* screen_functions[DISPLAY_SCREENS])(void) = {NULL};	/*!< hier liegen die Zeiger auf die Display-Funktionen */
 
+
+#define GUI_REFRESH_RATE	10 /*!< Konstante für die Refreshrate. Gibt an, alle wieviel Hauptscheliefen durchläufe die GUI aktualisiert wird. 0 bedeutet: jedesmal */
 /*! 
  * @brief 		Display-Screen Registrierung
  * @author 		Timo Sandmann (mail@timosandmann.de)
@@ -65,10 +67,23 @@ int8 register_screen(void* fkt){
  * Zeigt einen Screen an und fuehrt die RC5-Kommandoauswertung aus, falls noch nicht geschehen.
  */
 void gui_display(int8 screen){
+	static int8 last_screen;
+	static uint8 gui_timer = 0;		/*!< Variable, die zum kontrollieren der GUI-Refreshrate benutzt wird. Das Sisplay wird angezeigt, 
+							wenn entweder gui_timer ==0, oder ein RC5-Kommando anliegt, 
+							oder sich die anzuzeigende Seitennummer geändert hat */
+
 //	rc5_control();	// Vielleicht waere der Aufruf hier uebersichtlicher?
 	/* Gueltigkeit der Screen-Nr. pruefen und Anzeigefunktion aufrufen, falls Screen belegt ist */
-	if (screen < max_screens && screen_functions[screen] != NULL) screen_functions[screen]();
-	if (RC5_Code != 0) default_key_handler();	// falls rc5-Code noch nicht abgearbeitet, Standardbehandlung ausfuehren
+	if (screen < max_screens && screen_functions[screen] != NULL) {
+		if ((RC5_Code != 0) || (screen != last_screen) || (gui_timer ==0)){
+			screen_functions[screen]();
+			gui_timer = GUI_REFRESH_RATE;	// Zaehler zuruecksetzen
+			last_screen=screen;
+		} else 
+			gui_timer--;		// Zaehler dekrementieren
+	}
+	if (RC5_Code != 0) 
+		default_key_handler();	// falls rc5-Code noch nicht abgearbeitet, Standardbehandlung ausfuehren
 	RC5_Code = 0;	// fertig, RC5-Puffer loeschen
 }
 

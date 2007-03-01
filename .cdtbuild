@@ -62,7 +62,7 @@
 <option id="gnu.c.compiler.option.misc.other.185426673" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -Wstrict-prototypes" valueType="string"/>
 </tool>
 <tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.949610982" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug"/>
-<tool command="gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX} ${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1315268416" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug">
+<tool command="gcc" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1315268416" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug">
 <option id="gnu.c.link.option.libs.369911061" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs">
 <listOptionValue builtIn="false" value="pthread"/>
 <listOptionValue builtIn="false" value="m"/>
@@ -89,7 +89,7 @@
 <option id="gnu.c.compiler.option.preprocessor.def.symbols.258987088" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 <listOptionValue builtIn="false" value="MCU"/>
 </option>
-<option id="gnu.c.compiler.option.misc.other.1122958060" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega32 -Wstrict-prototypes -save-temps -fverbose-asm" valueType="string"/>
+<option id="gnu.c.compiler.option.misc.other.1122958060" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega32 -Wstrict-prototypes" valueType="string"/>
 <option id="gnu.c.compiler.option.debugging.gprof.1275190243" superClass="gnu.c.compiler.option.debugging.gprof" value="false" valueType="boolean"/>
 <option id="gnu.c.compiler.option.debugging.prof.1974870563" superClass="gnu.c.compiler.option.debugging.prof" value="false" valueType="boolean"/>
 <option id="gnu.c.compiler.option.optimization.flags.780063591" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
