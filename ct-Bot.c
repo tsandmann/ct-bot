@@ -403,14 +403,6 @@ init();	// alles initialisieren
 	#endif	
 #endif
 
-//TODO: what's that?!?
-//#ifdef TEST_AVAILABLE_COUNTER
-// 	resets=eeprom_read_byte(&resetsEEPROM)+1;
-//    eeprom_write_byte(&resetsEEPROM,resets);
-//    /* Lege den Grund fuer jeden Reset im EEPROM ab */	
-//    eeprom_write_byte(&resetInfoEEPROM+resets,reset_flag);
-//#endif	
-	
 /* Hauptschleife des Bots */
 for(;;){
 	#ifdef PC
