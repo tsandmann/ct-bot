@@ -1,0 +1,29 @@
+Frank Menzel(menzelfr@gmx.de) & Carsten Giesen (info@cnau.de):
+
+Auswahl von Verhalten ueber Fernbedienungstasten
+
+Anstelle des Counters koennen im Screen 3 nun alle Verhalten dargestellt werden, 
+jeweils 6 Stueck (2 neben-, 3 untereinander). Erst die Prioritaet und dann die Aktivitaet, 
+wobei 0 fuer ein inaktives und 1 fuer aktives Verhalten steht. Passen nicht 
+alle rauf, wird weitergeblaettert zu den naechsten Verhalten. Die aktuelle Verhaltens-Seite wird 
+durch die letzte Zahl in der ueberschrift dargestellt.
+Folgende Vorgehensweise: 
+Mit der Screen-Toggle Taste (RC5_CODE_VIEW-bei meiner Hauppauge Fullscreen) werden die Screens 
+durchgeblaettert und im Screen 3 nun die Verhalten angezeigt. Die Tasten 1-6 sind den 
+Verhalten zugeordnet, wodurch diese damit getoggelt werden. Der angezeigte Aktivitaetswert 
+aendert sich von 0 nach 1 und umgedreht. Man kann nun alle Verhaltensseiten weiter 
+durchblaettern, beliebige ein- und ausschalten oder kombinieren und zum Schluss wird 
+die Taste RC5_CODE_SELECT betaetigt (bei meiner Hauppauge ist dies die Taste Source), 
+wodurch alle Verhalten entsprechend der Auswahl in ihrer Aktivitaet geaendert werden.
+
+Im Simulator gibt es leider die Tasten RC5_CODE_VIEW und RC5_CODE_SELECT (noch) nicht. Waehrend 
+hier aber die gelbe Taste den Verhaltens-Screen direkt anwaehlen kann, existiert fuer die Select-Taste 
+kein Aequivalent. So erhaelt die Taste 9 im Screen 3 diese Funktion. 
+
+Moegliche Erweiterungen:
+-Verhalten sind bis jetzt nur vorwaerts blaetterbar, ein Rueckwaertsblaettern koennte bei Bedarf noch 
+realisiert werden
+-Wenn ein Verhalten ein oder mehrere andere Verhalten in ihrer Aktivitaet beeinflusst, ist dies im Moment
+ nicht online sichtbar. Die Anzeige und Wunschaenderungen gehen immer nur auf die Puffervariable des Verhaltens 
+ und ist somit statisch. Ist die dynamische Variante gewuenscht, also dass man direkt online die Aktivitaeten
+ der Verhalten verfolgen kann, so ist dies relativ leicht realisierbar.

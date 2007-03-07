@@ -1,0 +1,13 @@
+Debug-Linux
+Debug-W32
+doc
+*.eep
+*.hex
+*.lst
+*.map
+*.lss
+*.elf
+*.sym
+*.exe
+*.o
+.dep
