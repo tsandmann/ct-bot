@@ -1,0 +1,128 @@
+/* das grosse Ganze */
+body {
+	margin: 20px 10px;
+	padding: 5px;
+	color: #000;
+	text-align: justify;
+	font-family: Verdana, "Lucida Grande", Lucida;
+	background-color: #e4e4e4;
+}
+
+/* Seitenueberschrift */
+h1 {
+	color: #940000;
+	text-align: center;
+	text-decoration: underline;
+	font: 22pt Geneva, sans-serif, Helvetica, Arial;
+}
+
+/* Themenueberschrift */
+h2 {
+	font-size: 18pt;
+	color: #000;
+	font-variant: small-caps;
+	margin-top: 40px;
+}
+
+/* Unterueberschrift */
+h3 {
+	font-size: 16pt;
+	color: #000;
+	font-variant: small-caps;
+	margin: 0;
+	padding-top: 10px;
+}
+
+/* Text */
+p {
+	font-size: 11pt;
+}
+
+/* Quellcode hervorheben */
+.code {
+	color: #000;
+	font-family: Courier, mono;
+	background-color: #fff;
+	display: table;
+	margin-left: 10px;
+	padding: 5px;
+	margin-top: 10px;
+}
+
+.keyword {
+	color: #9f0b55;
+}
+
+.comment {
+	color: #008600;
+}
+
+/* inline-Quellcode */
+.function {
+	color: #006900;
+	font-family: "Courier New", Courier, mono;
+	font-weight: bold;
+}
+
+/* Konsolenausgaben hervorheben */
+.console {
+	color: #0f0;
+	background-color: #000;
+	display: table;
+	margin-left: 10px;
+	padding: 5px;
+	margin-top: 10px;
+	font: 10pt "Lucida Grande", Lucida, Verdana;
+}
+
+/* alle Links sind gleich */
+a:link {
+	text-decoration: none;
+	color: #110086;
+}
+
+a:visited {
+	text-decoration: none;
+	color: #110086;	
+}
+
+a:active {
+	text-decoration: underline;
+	color: #110086;
+}
+
+a:hover {
+	color: #ff2021;
+	/*color: #5796ff;*/
+	text-decoration: underline;
+}
+
+/* oberes Menue */
+.menu {
+	line-height: 22px;
+}
+
+/* Liste */
+ul {
+	margin: 0;
+	list-style-type: circle;
+	padding: 0 20px;
+	list-style-position: outside;
+}
+
+/* Unterpunkte im Menue */
+ul.menu {
+	color: #110086;
+}
+
+/* Grafiken */
+img {
+	margin: 10px 20px 5px 5px;
+	float: left;
+	border: 1px solid #000;
+}
+
+/* IE-Workaround */
+ins {
+	text-decoration: none;
+}

@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD><TITLE></TITLE>
+<META http-equiv=Content-Type content="text/html; charset=iso-8859-1">
+<META content="MSHTML 6.00.2900.2873" name=GENERATOR></HEAD>
+<BODY><!-- Converted from text/plain format --><FONT face=Arial 
+size=2></FONT><FONT size=2>
+<P>Carsten Giesen (info@cnau.de)</P>
+<P>TWI-Treiber (I2C)</P>
+<P>Die gesammte Kommunikation mit der TWI Schnittstelle steckt in TWI_driver.c 
+und TWI_driver.h.<BR>Angesprochen wird der Treiber �ber "Send_to_TWI(tx_frame)" 
+daf�r sind aber ein paar Vorarbeiten n�tig.</P>
+<P>Zur Vereinfachung hier ein Beispiel am Beispiel vom SRF10:</P>
+<P><BR>char 
+temp[2];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+//Array um Platz f�r die Befehle zu schaffen<BR>char 
+state;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+//Platz f�r das Ergebniss der Aktion<BR>tx_type 
+tx_frame[2];&nbsp;&nbsp;&nbsp;&nbsp; //Hier wird der Container geschaffen</P>
+<P></P>
+<P>state = SUCCESS;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+//Vorbelegen, da manche Aktionen nur Sinn machen, wenn state=SUCCESS</P>
+<P>//Jetzt gehts los:<BR>tx_frame[0].slave_adr = address+W; //Die Adresse des 
+Ziel-Bausteins <BR>tx_frame[0].size = 2; //Wie viele Befehle (Daten) sollen 
+�bertragen werden<BR>tx_frame[0].data_ptr = temp; //der Pointer f�r die 
+Befehle<BR>tx_frame[0].data_ptr[0] = SRF10_COMMAND;&nbsp;&nbsp;&nbsp;&nbsp; 
+//Der erste Befehl ist normaler Weise das 
+Register,&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+//welches Angesprochen werden soll<BR>tx_frame[0].data_ptr[1] = 
+metric_unit;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+//Was soll gemacht werden (hier eine Messung in cm)<BR>tx_frame[1].slave_adr = 
+OWN_ADR;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+//Damit wird dem Treiber klar gemachtm das er fertig ist.<BR>state = 
+Send_to_TWI(tx_frame);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+//Und jetzt wird alles �bergeben<BR><BR>In State steht jetzt ob der Befehl 
+erfolgreich war, oder nicht.<BR><BR>Wie man Daten empf�ngt, am Beispiel Register 
+auslesen:</P>
+<P>uint8 srf10_read_register(unsigned char srf10_register)<BR>{<BR>char 
+temp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+//Variable um Platz f�r die Befehle zu schaffen<BR>char 
+value;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+//Variable um Platz f�r die Resultate zu schaffen<BR>char 
+state;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+//Platz f�r das Ergebniss der Aktion<BR>tx_type 
+tx_frame[3];&nbsp;&nbsp;&nbsp;&nbsp; //Hier wird der Container 
+geschaffen<BR>state = SUCCESS;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+//Vorbelegen, da manche Aktionen nur Sinn machen, wenn state=SUCCESS<BR>value = 
+0;<BR>tx_frame[0].slave_adr = 
+address+W;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //Die Adresse 
+des Ziel-Bausteins<BR>tx_frame[0].size = 
+1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+//Wie viele Befehle (Daten) sollen �bertragen werden<BR>tx_frame[0].data_ptr = 
+&amp;temp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+//der Pointer f�r die Befehle<BR>tx_frame[0].data_ptr[0] = 
+srf10_register;&nbsp;&nbsp;&nbsp;&nbsp; //Der erste Befehl ist normaler Weise 
+das 
+Register,<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+//welches Angesprochen werden soll<BR>tx_frame[1].slave_adr = 
+address+R;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+//Die Adresse des Ziel-Bausteins +R f�r lesen<BR>tx_frame[1].size = 
+1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+//Wie viele Daten sollen gelesen werden<BR>tx_frame[1].data_ptr = 
+&amp;value;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+//der Pointer f�r die Daten<BR>tx_frame[2].slave_adr = 
+OWN_ADR;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //Damit wird dem 
+Treiber klar gemachtm das er fertig ist.<BR>state = 
+Send_to_TWI(tx_frame);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+//Und jetzt wird alles �bergeben<BR>srf10_state = state;<BR>return 
+value;<BR>}</P>
+<P>Man kann also gut sehen, das beide Aktionen, schreiben und lesen kombiniert 
+werden k�nnen.</P></FONT></BODY></HTML>
