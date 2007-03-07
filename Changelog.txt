@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-03-01 Benjamin Benz [bbe@heise.de]: Test eines Releases per SVN
+
 2007-03-05 Timo Sandmann [mail@timosandmann.de]: Mini-Fat-Dateiadressen werden jetzt im EEPROM abgelegt (Speedup beim Dateioeffnen), alle "EEPROM-Variablen" sind jetzt immer deklariert (kostet eh keinen Speicher in Flash und RAM), damit die Adressen konstant sind
 
 2007-03-05 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Remote-Display (falsche Cursorposition, falls nicht vor jedem display_printf() ein display_cursor() efolgte)
