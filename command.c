@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -40,6 +40,7 @@
 #include "motor.h"
 #include "rc5.h"
 #include "ir-rc5.h"
+#include "rc5-codes.h"
 #include "bot-logic/bot-logik.h"
 #include "bot-2-pc.h"
 #include "uart.h"
@@ -93,7 +94,7 @@ int8 command_read(void){
 	int i;			
 	command_t * command;	// Pointer zum Casten der empfangegen Daten
 	char * ptr;				// Nur zu Hilfszwecken
-	char buffer[RCVBUFSIZE];       // Buffer  
+	uint8 buffer[RCVBUFSIZE];       // Buffer  
 	#ifdef PC
 		#if BYTE_ORDER == BIG_ENDIAN
 			uint16 store;			//Puffer für die Endian-Konvertierung
@@ -332,6 +333,7 @@ void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* d
  * return 1, wenn Kommando schon bearbeitet wurde, 0 sonst
  */
 int command_evaluate(void){
+	static uint16 RC5_Last_Toggle = 0xffff;
 	uint8 analyzed = 1;
 	
 	#ifdef LOG_AVAILABLE	
@@ -341,7 +343,9 @@ int command_evaluate(void){
 	switch (received_command.request.command) {
 		#ifdef IR_AVAILABLE
 			case CMD_SENS_RC5:
-				ir_data=received_command.data_l;
+				ir_data=received_command.data_l | (RC5_Last_Toggle & RC5_TOGGLE);
+				if (received_command.data_l != 0)
+					RC5_Last_Toggle = 0xffff ^ (RC5_Last_Toggle & RC5_TOGGLE);
 				break;
 		#endif
 		case CMD_AKT_LED:	// LED-Steuerung
@@ -376,9 +380,17 @@ int command_evaluate(void){
 						{	
 							LOG_DEBUG(("remote-call-Wunsch empfangen. Data= %d bytes",received_command.payload));					
 							uint8 buffer[REMOTE_CALL_BUFFER_SIZE];
-							low_read(buffer,received_command.payload);	
-							bot_remotecall_from_command((uint8 *)&buffer);
-						
+							uint16 ticks = TIMER_GET_TICKCOUNT_16;
+							#ifdef MCU
+								while (uart_data_available() < received_command.payload && (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
+							#endif
+							low_read(buffer,received_command.payload);
+							if ((TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)){ 	
+								bot_remotecall_from_command((uint8 *)&buffer);
+							} else{
+								int16 result = SUBFAIL;
+								command_write_data(CMD_REMOTE_CALL,SUB_REMOTE_CALL_DONE,&result,&result,NULL);
+							}
 							break;
 						}
 						case SUB_REMOTE_CALL_ABORT: {

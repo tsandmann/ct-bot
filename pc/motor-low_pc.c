@@ -34,8 +34,8 @@
 #include "motor.h"
 
 
-int16 motor_left;	/*!< zuletzt gestellter Wert linker Motor */
-int16 motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
+volatile int16 motor_left;	/*!< zuletzt gestellter Wert linker Motor */
+volatile int16 motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
 
 /*!
  *  Initilisiert alles fuer die Motosteuerung 

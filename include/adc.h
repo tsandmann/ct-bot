@@ -27,23 +27,25 @@
 
 #include "global.h"
 
-/*!
- * Liest einen analogen Kanal aus
- * @param channel Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
- */
-uint16 adc_read(uint8 channel);
+///*!
+// * Liest einen analogen Kanal aus
+// * @param channel Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
+// */
+//uint16 adc_read(uint8 channel);
 
 /*!
- *  Wechselt einen ADU-kanal. Dafuer muessen auch die Puffer zurueckgesetzt werden 
- * @param channel Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
+ * @brief			Fuegt einen analogen Kanal in die ADC-Konvertierungsliste ein und wertet ihn per Interrupt aus
+ * @param channel 	Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
+ * @param p_sens	Zeiger auf den Sensorwert, der das Ergebnis enthalten soll
  */
-void adc_select_channel(uint8 channel);
+void adc_read_int(uint8 channel, int16* p_sens);
 
 /*!
- * Diese Routine wird vom Timer-Interrupt aufgerufen und speichert einen 
- * Messwert (vorher wendet sie evtl. noch eine Filterfunktion an).
+ * Gibt die laufende Nr. des Channels zurueck, der aktuell ausgewertet wird.
+ * 0: erste registrierter Channel, 1: zweiter registrierter Channel usw.
+ * 255: derzeit wird kein Channel ausgewertet (= Konvertierung fertig)
  */
-void adc_isr(void);
+uint8 adc_get_active_channel(void);
 
 /*!
  * Initialisert den AD-Umsetzer. 

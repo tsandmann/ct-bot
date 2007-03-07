@@ -27,6 +27,13 @@
 
 #include "bot-logic/bot-logik.h"
 
+#ifdef MCU
+	/* EEPROM-Variablen immer deklarieren, damit die Adressen sich nicht veraendern je nach #define */
+	uint8 __attribute__ ((section (".eeprom"))) err15=1;	/*!< Fehler bei Drehungen unter 15 Grad */
+	uint8 __attribute__ ((section (".eeprom"))) err45=2;	/*!< Fehler bei Drehungen zwischen 15 und 45 Grad */
+	uint8 __attribute__ ((section (".eeprom"))) err_big=4;	/*!< Fehler bei groesseren Drehungen */
+#endif
+
 #ifdef BEHAVIOUR_TURN_AVAILABLE
 #ifdef MCU
 	#include <avr/eeprom.h>
@@ -37,16 +44,12 @@
 
 /* Parameter fuer das bot_turn_behaviour() */
 #ifndef MEASURE_MOUSE_AVAILABLE
-int16 turn_targetR;				/*!< Zu drehender Winkel bzw. angepeilter Stand des Radencoders sensEncR */
-int16 turn_targetL;				/*!< Zu drehender Winkel bzw. angepeilter Stand des Radencoders sensEncL */
+	int16 turn_targetR;				/*!< Zu drehender Winkel bzw. angepeilter Stand des Radencoders sensEncR */
+	int16 turn_targetL;				/*!< Zu drehender Winkel bzw. angepeilter Stand des Radencoders sensEncL */
 #else
-int8 angle_correct=0;			/*!< Drehabschnitt 0=0-15Grad, 1=16-45 Grad, 2= >45 Grad */
-int16 to_turn;					/*!< Wieviel Grad sind noch zu drehen? */
-	#ifdef MCU
-		uint8 __attribute__ ((section (".eeprom"))) err15=1;					/*!< Fehler bei Drehungen unter 15 Grad */
-		uint8 __attribute__ ((section (".eeprom"))) err45=2;					/*!< Fehler bei Drehungen zwischen 15 und 45 Grad */
-		uint8 __attribute__ ((section (".eeprom"))) err_big=4;				/*!< Fehler bei groesseren Drehungen */
-	#else
+	int8 angle_correct=0;			/*!< Drehabschnitt 0=0-15Grad, 1=16-45 Grad, 2= >45 Grad */
+	int16 to_turn;					/*!< Wieviel Grad sind noch zu drehen? */
+	#ifdef PC
 		uint8 err15=0;
 		uint8 err45=0;
 		uint8 err_big=0;
@@ -126,13 +129,34 @@ void bot_turn_behaviour(Behaviour_t *data){
 				speedWishRight=BOT_SPEED_STOP;
  				turnState=STOP_TURN;
  				break;
- 			}
- 			if (to_turn > 90){
-         		speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_MEDIUM : BOT_SPEED_MEDIUM;
-         		speedWishRight = (turn_direction > 0) ? BOT_SPEED_MEDIUM : -BOT_SPEED_MEDIUM;
- 			} else{	                         
-         		speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;	                         
-         		speedWishRight = (turn_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
+ 			} else if (to_turn > 225){
+ 				/* bis 226 */
+         		speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_FAST : BOT_SPEED_FAST;		// 300
+         		speedWishRight = (turn_direction > 0) ? BOT_SPEED_FAST : -BOT_SPEED_FAST; 				
+ 			} else if (to_turn > 180){
+ 				/* 225 bis 181 */
+         		speedWishLeft = (turn_direction > 0) ? -225 : 225;								// 225
+         		speedWishRight = (turn_direction > 0) ? 225 : -225; 				
+ 			} else if (to_turn > 135){
+ 				/* 180 bis 135 */
+         		speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_NORMAL : BOT_SPEED_NORMAL;	// 150
+         		speedWishRight = (turn_direction > 0) ? BOT_SPEED_NORMAL : -BOT_SPEED_NORMAL; 				
+ 			} else if (to_turn > 90){
+ 				/* 135 bis 91 */
+         		speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_MEDIUM : BOT_SPEED_MEDIUM;	// 100
+         		speedWishRight = (turn_direction > 0) ? BOT_SPEED_MEDIUM : -BOT_SPEED_MEDIUM;				
+ 			} else if (to_turn > 45){
+ 				/* 90 bis 46 */
+         		speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_FOLLOW : BOT_SPEED_FOLLOW;	// 70
+         		speedWishRight = (turn_direction > 0) ? BOT_SPEED_FOLLOW : -BOT_SPEED_FOLLOW;
+ 			} else /*if (to_turn > 20)*/{
+ 				/* 45 bis 21 */
+         		speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;		// 50
+         		speedWishRight = (turn_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW; 				
+// 			} else{	           
+// 				/* ab 20 */              
+//         		speedWishLeft = (turn_direction > 0) ? -BOT_SPEED_MIN : BOT_SPEED_MIN;			// 30            
+//         		speedWishRight = (turn_direction > 0) ? BOT_SPEED_MIN : -BOT_SPEED_MIN;
  			}
 	        break;
 

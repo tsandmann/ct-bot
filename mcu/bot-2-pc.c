@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -37,17 +37,15 @@
 #ifdef MCU
 #ifdef BOT_2_PC_AVAILABLE
 
-#define INFORM_RATE	10 /*!< Konstante für die Info-rate. Gibt an, alle wieviel Hauptscheliefen Durchläufe der MCU seine Daten an den PC schickt. 0 bedeutet: jedesmal */
-
 /*! 
  * Diese Funktion nimmt die Daten vom PC entgegen
  * und wertet sie aus. dazu nutzt er die Funktion command_evaluate()
  */
 void bot_2_pc_listen(void){
 //		LOG_DEBUG(("%d bytes recvd",uart_data_available()));
-		if (uart_data_available() >= sizeof(command_t)){
+		if (uart_data_available() >= sizeof(command_t)){	
 //			LOG_DEBUG(("%d bytes recvd",uart_data_available()));
-			if (command_read() ==0){
+			if (command_read() == 0){
 				LOG_DEBUG(("command received"));
 				command_evaluate();
 			}else {		
@@ -61,43 +59,33 @@ void bot_2_pc_listen(void){
  */
 void bot_2_pc_inform(void){
 	int16 value1, value2;
-	static uint8 inform_timer =0; 		/*!< Variable, die zum kontrollieren der Inform-ratebenutzt wird. 
-											 Der PC erhält die Sensorwerte jedesmal, 
-										     wenn entweder inform_timer ==0 */
 	
-	if (inform_timer ==0) {
-		command_write(CMD_AKT_MOT, SUB_CMD_NORM ,(int16*)&speed_l,(int16*)&speed_r,0);	
-		value1=(int16)led;
-		command_write(CMD_AKT_LED, SUB_CMD_NORM ,&value1,&value1,0);
-		
-		command_write(CMD_SENS_IR, SUB_CMD_NORM ,(int16*)&sensDistL,(int16*)&sensDistR,0);
-		command_write(CMD_SENS_ENC, SUB_CMD_NORM ,(int16*)&sensEncL,(int16*)&sensEncR,0);
-		command_write(CMD_SENS_BORDER, SUB_CMD_NORM ,(int16*)&sensBorderL,(int16*)&sensBorderR,0);
-		command_write(CMD_SENS_LINE, SUB_CMD_NORM ,(int16*)&sensLineL,(int16*)&sensLineR,0);
+	command_write(CMD_AKT_MOT, SUB_CMD_NORM ,(int16*)&speed_l,(int16*)&speed_r,0);	
+	value1=(int16)led;
+	command_write(CMD_AKT_LED, SUB_CMD_NORM ,&value1,&value1,0);
 	
-		command_write(CMD_SENS_LDR, SUB_CMD_NORM ,(int16*)&sensLDRL,(int16*)&sensLDRR,0);
-		
-		value1= (int16) sensTrans; value2=0;
-		command_write(CMD_SENS_TRANS, SUB_CMD_NORM ,&value1,&value2,0);
-		
-		value1= (int16) sensDoor;
-		command_write(CMD_SENS_DOOR, SUB_CMD_NORM ,&value1,&value2,0);
-		
-		#ifdef MAUS_AVAILABLE
-			value1=(int16)sensMouseDX;
-			value2=(int16)sensMouseDY;
-			command_write(CMD_SENS_MOUSE, SUB_CMD_NORM ,&value1,&value2,0);
-		#endif	
-		
-		value1=(int16)sensError;  value2=0;
-		command_write(CMD_SENS_ERROR, SUB_CMD_NORM ,&value1,&value2,0);
-	//	command_write(CMD_SENS_RC5, SUB_CMD_NORM ,(int16*)&RC5_Code,&value2,0);
+	command_write(CMD_SENS_IR, SUB_CMD_NORM ,(int16*)&sensDistL,(int16*)&sensDistR,0);
+	command_write(CMD_SENS_ENC, SUB_CMD_NORM ,(int16*)&sensEncL,(int16*)&sensEncR,0);
+	command_write(CMD_SENS_BORDER, SUB_CMD_NORM ,(int16*)&sensBorderL,(int16*)&sensBorderR,0);
+	command_write(CMD_SENS_LINE, SUB_CMD_NORM ,(int16*)&sensLineL,(int16*)&sensLineR,0);
+
+	command_write(CMD_SENS_LDR, SUB_CMD_NORM ,(int16*)&sensLDRL,(int16*)&sensLDRR,0);
 	
-		inform_timer = INFORM_RATE;
-	} else {
-		inform_timer--;
-	}
+	value1= (int16) sensTrans; value2=0;
+	command_write(CMD_SENS_TRANS, SUB_CMD_NORM ,&value1,&value2,0);
 	
+	value1= (int16) sensDoor;
+	command_write(CMD_SENS_DOOR, SUB_CMD_NORM ,&value1,&value2,0);
+	
+	#ifdef MAUS_AVAILABLE
+		value1=(int16)sensMouseDX;
+		value2=(int16)sensMouseDY;
+		command_write(CMD_SENS_MOUSE, SUB_CMD_NORM ,&value1,&value2,0);
+	#endif	
+	
+	value1=(int16)sensError;  value2=0;
+	command_write(CMD_SENS_ERROR, SUB_CMD_NORM ,&value1,&value2,0);
+//	command_write(CMD_SENS_RC5, SUB_CMD_NORM ,(int16*)&RC5_Code,&value2,0);
 }
 
 

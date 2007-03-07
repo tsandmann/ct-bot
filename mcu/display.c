@@ -94,6 +94,11 @@ static char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausg
  * das Interface wieder deaktiviert.
  */
 
+#ifdef DISPLAY_REMOTE_AVAILABLE
+	static uint8 remote_column = 0;
+	static uint8 remote_row = 0;
+#endif
+
 /*! 
  * Übertrage Kommando an das Display
  * @param cmd Kommando
@@ -161,7 +166,9 @@ void display_cursor (uint8 row, uint8 column) {
    #ifdef DISPLAY_REMOTE_AVAILABLE
 	  int16 r=row-1;
   	  int16 c=column-1;
-	  command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, &c,&r,0);
+  	  remote_column = c;
+  	  remote_row = r;
+//	  command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, &c,&r,0);
 	#endif   
    
 }
@@ -218,8 +225,7 @@ void display_init(void){
  * @param ... Variable Argumentenliste, wie beim printf
  */
 void display_printf(char *format, ...) {
-	
-	unsigned int run = 0;
+	uint8 run = 0;
 	va_list	args;
 	
 	/* Sicher gehen, das der zur Verfuegung stehende Puffer nicht
@@ -236,7 +242,11 @@ void display_printf(char *format, ...) {
 	}
 	
 	#ifdef DISPLAY_REMOTE_AVAILABLE
-	   command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, NULL, NULL, display_buf);
+		int16 c = remote_column;
+		int16 r = remote_row;
+		command_write(CMD_AKT_LCD, SUB_LCD_CURSOR,&c,&r,0);
+		command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, NULL, NULL, display_buf);
+		remote_column += run;
 	#endif
 	
 	return;

@@ -202,7 +202,6 @@ void rc5_control(void){
 	uint16 rc5 = ir_read();				// empfangenes RC5-Kommando
 	
 	if (rc5 != 0){
-		RC5_Code = rc5 & RC5_MASK;	// alle uninteressanten Bits ausblenden
 		/* Toggle kommt nicht im Simulator, immer gewechseltes Toggle-Bit sicherstellen */ 
 		#ifdef PC
 		  RC5_Last_Toggle = !(rc5 & RC5_TOGGLE);
@@ -210,6 +209,7 @@ void rc5_control(void){
 		/* Bei Aenderung des Toggle-Bits, entspricht neuem Tastendruck, gehts nur weiter */
 		if ((rc5 & RC5_TOGGLE) != RC5_Last_Toggle){	// Nur Toggle-Bit abfragen, bei Ungleichheit weiter
 		  RC5_Last_Toggle = rc5 & RC5_TOGGLE;           // Toggle-Bit neu belegen
+		  RC5_Code = rc5 & RC5_MASK;	// alle uninteressanten Bits ausblenden
 		}
 	}
 	#ifndef DISPLAY_AVAILABLE

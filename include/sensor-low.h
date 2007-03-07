@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	sensor-low.h  
+/*! 
+ * @file 	sensor-low.h  
  * @brief 	Low-Level Routinen fuer die Sensor-Steuerung des c't-Bots
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	01.12.05
-*/
+ */
 #ifndef sens_low_H_
 #define sens_low_H_
 
@@ -41,4 +42,26 @@ extern void bot_sens_isr(void);
  * daher Update per ISR
  */
 extern void bot_encoder_isr(void);
+
+typedef struct{
+	uint8 encRate;
+	uint8 targetRate;
+	int16 err;
+	int16 pwm;
+	uint32 time;
+} slog_t;
+
+#ifdef SPEED_CONTROL_AVAILABLE
+	extern uint16 encTimeL[8];	/*!< Timestamps linker Encoder */
+	extern uint16 encTimeR[8];	/*!< Timestamps rechter Encoder */
+	extern uint8 i_encTimeL;		/*!< Array-Index auf letzten Timestampeintrag links */
+	extern uint8 i_encTimeR;		/*!< Array-Index auf letzten Timestampeintrag rechts */
+#endif // SPEED_CONTROL_AVAILABLE
+
+#ifdef SPEED_LOG_AVAILABLE
+	extern volatile slog_t slog_data[2][25];	/*!< Speed-Log Daten */
+	extern volatile uint8 slog_i[2];			/*!< Array-Index */
+	extern uint32 slog_sector;					/*!< Sektor auf der MMC fuer die Daten */
+	extern volatile uint8 slog_count[2];		/*!< Anzahl Loggings seit letztem Rueckschreiben */
+#endif // SPEED_LOG_AVAILABLE
 #endif

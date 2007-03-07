@@ -1,5 +1,17 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-03-05 Timo Sandmann [mail@timosandmann.de]: Mini-Fat-Dateiadressen werden jetzt im EEPROM abgelegt (Speedup beim Dateioeffnen), alle "EEPROM-Variablen" sind jetzt immer deklariert (kostet eh keinen Speicher in Flash und RAM), damit die Adressen konstant sind
+
+2007-03-05 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Remote-Display (falsche Cursorposition, falls nicht vor jedem display_printf() ein display_cursor() efolgte)
+
+2007-03-05 Timo Sandmann [mail@timosandmann.de]: Bugfix im RC5-Code (Toggle-Bit wurde versehentlich komplett ignoriert bei der neuen GUI)
+
+2007-03-04 Timo Sandmann [mail@timosandmann.de]: Neue Version der Motorregelung, UART-Umbau (benutzt Sendbuffer und fifo.c), ADC arbeitet nun asynchron, bot_turn-Update. Muss alles noch getestet werden!
+
+2007-03-04 Timo Sandmann [mail@timosandmann.de]: GUI-Bugfix fuer Target PC, Remote-Call-Bugfix fuer Target PC
+
+2007-03-02 Timo Sandmann [mail@timosandmann.de]: GUI- und bot2pc-Update auf Timer umgestellt, Bugfix fuer RemoteCalls (warten auf Parameterdaten vom PC)
+
 2007-03-01 Benjamin Benz [bbe@heise.de]: Der MCU muss nun nicht mehr jeden Zyklus seine Daten an den PC schicken (==> INFORM_RATE)
 
 2007-03-01 Benjamin Benz [bbe@heise.de]: GUI kann jetzt auch seltener aktualisiert werden (==> GUI_REFRESH_RATE)

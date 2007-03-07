@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	motor-low.c 
+/*! 
+ * @file 	motor-low.c 
  * @brief 	Low-Level Routinen fuer die Motorsteuerung des c't-Bots
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	01.12.05
-*/
+ */
 #ifdef MCU
 
 #include "ct-Bot.h"
@@ -55,60 +56,144 @@
 #define PWM_CLK_0	 (_BV(CS02)  |  _BV(CS00))		/*!< Prescaler fuer PWM 0 = 1024*/
 //#define PWM_CLK_2	 (_BV(CS22) | _BV(CS21) |_BV(CS20)) /*!< Prescaler fuer PWM 2 =1024		*/
 
-int16 motor_left;	/*!< zuletzt gestellter Wert linker Motor */
-int16 motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
+volatile int16 motor_left;	/*!< zuletzt gestellter Wert linker Motor */
+volatile int16 motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
 
+#ifdef VARIABLE_PWM_F
+	uint8 pwm_frequency = 3;
+#endif	// VARIABLE_PWM_F
 
 void pwm_0_init(void);
-void pwm_1_init(void);
-// void pwm_2_init(void);		// Kollidiert mit Timer2 fuer IR-Fernbedienung
 
-/*!
- *  Initialisiert alles fuer die Motosteuerung 
- */
-void motor_low_init(){
-	BOT_DIR_L_DDR|=BOT_DIR_L_PIN;
-	BOT_DIR_R_DDR|=BOT_DIR_R_PIN;
-	
-	pwm_0_init();
-	pwm_1_init();
-//	pwm_2_init();				// Kollidiert mit Timer2 fuer IR-Fernbedienung
-	bot_motor(0,0);
-}
+#ifdef VARIABLE_PWM_F
+	void pwm_1_init(uint8 pwm_f);
+#else
+	void pwm_1_init(void);
+#endif	// VARIABLE_PWM_F
+//void pwm_2_init(void);		// Kollidiert mit Timer2 fuer IR-Fernbedienung
 
-/*!
- * unmittelbarere Zugriff auf die beiden Motoren
- * normalerweise NICHT verwenden!!!!!
- * @param left Speed links
- * @param right Speed rechts
-*/
-void bot_motor(int16 left, int16 right){
-	// Vorzeichenbehaftete PWM-Werte sichern
-	motor_left=left;
-	motor_right=right;	
-	
-	PWM_L = 255-abs(left);
-	PWM_R = 255-abs(right);
-
-	if (left > 0 ){
-		BOT_DIR_L_PORT |= BOT_DIR_L_PIN;
-		direction.left= DIRECTION_FORWARD;
-	} else 
-		BOT_DIR_L_PORT &= ~BOT_DIR_L_PIN;
-
-	if (left < 0 )
-		direction.left= DIRECTION_BACKWARD;
-
-	
-	if (right <= 0 )		// Einer der Motoren ist invertiert, da er ja in die andere Richtung schaut
-		BOT_DIR_R_PORT |= BOT_DIR_R_PIN;
-	else {
-		BOT_DIR_R_PORT &= ~BOT_DIR_R_PIN;
-		direction.right= DIRECTION_FORWARD;		
+#ifdef VARIABLE_PWM_F
+	/*!
+	 *  Initialisiert alles fuer die Motosteuerung 
+	 */
+	void motor_low_init(uint8 pwm_f){
+		BOT_DIR_L_DDR|=BOT_DIR_L_PIN;
+		BOT_DIR_R_DDR|=BOT_DIR_R_PIN;
+		
+		pwm_0_init();
+		pwm_1_init(pwm_f);
+	//	pwm_2_init();				// Kollidiert mit Timer2 fuer IR-Fernbedienung
+		motor_left = 0;
+		motor_right = 0;
+		if (pwm_f == 2) {
+			PWM_L = 1023;
+			PWM_R = 1023;			
+		} else {
+			PWM_L = 511;
+			PWM_R = 511;
+		}
+		direction.left = DIRECTION_FORWARD;
+		direction.right = DIRECTION_FORWARD;
 	}
-	if (right < 0 )
-		direction.right= DIRECTION_BACKWARD;
-}
+	
+	/*!
+	 * Stellt einen PWM-Wert fuer einen Motor ein
+	 * low-level
+	 * @param dev Motor (0: links; 1: rechts)
+	 */
+	void motor_update(uint8 dev) {
+		if (dev == 0) {
+			/* linker Motor */
+			if (pwm_frequency == 2) {
+				if (motor_left == 511) PWM_L = 0;
+				else  PWM_L = 1023 - (motor_left<<1);
+			} else
+				PWM_L = 511 - motor_left;
+			if (direction.left == DIRECTION_FORWARD) BOT_DIR_L_PORT |= BOT_DIR_L_PIN;	//vorwaerts
+			else BOT_DIR_L_PORT &= ~BOT_DIR_L_PIN;	// rueckwaerts
+		} else {
+			/* rechter Motor */
+			if (pwm_frequency == 2) {
+				if (motor_right == 511) PWM_R = 0;
+				else PWM_R = 1023 - (motor_right<<1);
+			} else
+				PWM_R = 511 - motor_right;
+			/* Einer der Motoren ist invertiert, da er ja in die andere Richtung schaut */
+			if (direction.right == DIRECTION_BACKWARD) BOT_DIR_R_PORT |= BOT_DIR_R_PIN;	// vorwaerts
+			else BOT_DIR_R_PORT &= ~BOT_DIR_R_PIN;	// rueckwaerts
+		}	
+	}
+	#else
+	
+	/*!
+	 *  Initialisiert alles fuer die Motosteuerung 
+	 */
+	void motor_low_init(){
+		BOT_DIR_L_DDR|=BOT_DIR_L_PIN;
+		BOT_DIR_R_DDR|=BOT_DIR_R_PIN;
+		
+		pwm_0_init();
+		pwm_1_init();
+	//	pwm_2_init();				// Kollidiert mit Timer2 fuer IR-Fernbedienung
+		motor_left = 0;
+		motor_right = 0;
+		PWM_L = 511;
+		PWM_R = 511;
+		direction.left = DIRECTION_FORWARD;
+		direction.right = DIRECTION_FORWARD;
+	}
+	
+	/*!
+	 * Stellt einen PWM-Wert fuer einen Motor ein
+	 * low-level
+	 * @param dev Motor (0: links; 1: rechts)
+	 */
+	void motor_update(uint8 dev){
+		if (dev == 0) {
+			/* linker Motor */
+			if (direction.left == DIRECTION_FORWARD) BOT_DIR_L_PORT |= BOT_DIR_L_PIN;	//vorwaerts
+			else BOT_DIR_L_PORT &= ~BOT_DIR_L_PIN;	// rueckwaerts
+			PWM_L = 511 - motor_left;
+		} else {
+			/* rechter Motor */
+			/* Einer der Motoren ist invertiert, da er ja in die andere Richtung schaut */
+			if (direction.right == DIRECTION_BACKWARD) BOT_DIR_R_PORT |= BOT_DIR_R_PIN;	// rueckwaerts
+			else BOT_DIR_R_PORT &= ~BOT_DIR_R_PIN;	// vorwaerts
+			PWM_R = 511 - motor_right;
+		}				
+	}
+#endif	// VARIABLE_PWM_F
+
+// deprecated
+///*!
+// * unmittelbarer Zugriff auf die Motoren
+// * @param dev 	Motor (0: links; 1: rechts)
+// * @param speed	Soll-Geschwindigkeit
+// */
+//void bot_motor(uint8 dev, int16 speed) {
+//	if (dev == 0) {
+//		/* linker Motor */
+//		if (speed >= 0){
+//			direction.left = DIRECTION_FORWARD;
+////			motor_left = speed;
+//		} else {
+//			direction.left = DIRECTION_BACKWARD;
+////			motor_left = -speed;
+//		}
+//		motor_left = abs(speed);	
+//	} else {
+//		/* rechter Motor */
+//		if (speed >= 0){
+//			direction.right = DIRECTION_FORWARD;
+////			motor_right = speed;
+//		} else {
+//			direction.right = DIRECTION_BACKWARD;
+////			motor_right = -speed;
+//		}			
+//		motor_right = abs(speed);
+//	}
+//	motor_update(dev);			
+//}
 
 /*!
  * Stellt die Servos
@@ -146,7 +231,7 @@ void servo_low(uint8 servo, uint8 pos){
 }
 
 /*!
- * Interrupt Handler for Timer/Counter 0 
+ * Interrupt Handler fuer Timer/Counter 0 
  */
 #ifdef __AVR_ATmega644__
 	SIGNAL (TIMER0_COMPA_vect){
@@ -168,12 +253,11 @@ void pwm_0_init(void){
 	#ifdef __AVR_ATmega644__
 		TCCR0A = _BV(WGM00)  | 	// Normal PWM
 			 	 _BV(COM0A1);	// Clear on Compare , Set on Top
-				//PWM_CLK_0;
-	
+
 		OCR0A = 8;
 	#else
 		TCCR0 = _BV(WGM00) | 	// Normal PWM
-				_BV(COM01) ;	// Clear on Compare , Set on Top
+				_BV(COM01);		// Clear on Compare , Set on Top
 	
 		OCR0 = 8;	// PWM loescht bei erreichen. daher steht in OCR0 255-Speed!!!
 	#endif		
@@ -184,59 +268,108 @@ void pwm_0_init(void){
 // ---- Timer 1 ------
 
 /*!
- * Interrupt Handler for Timer/Counter 1A 
+ * Interrupt Handler fuer Timer/Counter 1A 
  */
 SIGNAL (SIG_OUTPUT_COMPARE1A){
 }
 
 /*!
- * Interrupt Handler for Timer/Counter 1B 
+ * Interrupt Handler fuer Timer/Counter 1B 
  */
 SIGNAL (SIG_OUTPUT_COMPARE1B){
 }
 
-/*!
- * Timer 1: Kontrolliert die Motoren per PWM
- * PWM loescht bei erreichen. daher steht in OCR1A/OCR1B 255-Speed!!!
- * initilaisiert Timer 0 und startet ihn 
- */
-void pwm_1_init(void){
-	DDRD |= 0x30 ;			  // PWM-Pins als Output
-	TCNT1 = 0x0000;           // TIMER1 vorladen
-
-	TCCR1A = _BV(WGM10) | 				  // Fast PWM 8 Bit
-			_BV(COM1A1) |_BV(COM1A0) |    // Clear on Top, Set on Compare
-			_BV(COM1B1) |_BV(COM1B0);     // Clear on Top, Set on Compare
+#ifdef VARIABLE_PWM_F
+	/*!
+	 * Timer 1: Kontrolliert die Motoren per PWM
+	 * PWM loescht bei erreichen. daher steht in OCR1A/OCR1B 255-Speed!!!
+	 * initilaisiert Timer 0 und startet ihn 
+	 */
+	void pwm_1_init(uint8 pwm_f){
+		DDRD |= 0x30 ;			  // PWM-Pins als Output
+		TCNT1 = 0x0000;           // TIMER1 vorladen
 	
-	TCCR1B = _BV(WGM12) |
-	 		 _BV(CS12) | _BV(CS10); 		// Prescaler = 1024		
-//		 _BV(CS10); 		// Prescaler = 1		
-	
-	OCR1A = 255;	// PWM loescht bei erreichen. daher steht in OCR1A 255-Speed!!!
-	OCR1B = 255;	// PWM loescht bei erreichen. daher steht in OCR1B 255-Speed!!!
-	
-	// TIMSK|= _BV(OCIE1A) | _BV(OCIE1B); // enable Output Compare 1 overflow interrupt
-	// sei();                       // enable interrupts
-}
+		switch(pwm_f) {	
 
-/*!
- * Timer 0: Kontrolliert den Servo per PWM
- * PWM loescht bei erreichen. daher steht in OCR0 255-Speed!!!
- * initilaisiert Timer 0 und startet ihn 
- */
-/* Kollidiert derzeit mit Timer2 fuer IR
-void pwm_2_init(void){
-	DDRD |= 0x80;			   // PWM-Pin als Output
-	TCNT2  = 0x00;            // TIMER0 vorladen
+			/* 3.9 kHz */
+			case 1:
+			TCCR1A = _BV(WGM11)  |					// Fast PWM 9 Bit
+					 _BV(COM1A1) | _BV(COM1A0) |	// Clear on Top, Set on Compare
+					 _BV(COM1B1) | _BV(COM1B0);		// Clear on Top, Set on Compare
+			
+			TCCR1B = _BV(WGM12) |
+		 			 _BV(CS11);						// Prescaler = 8
+			break;
+					
+			/* 15.6 kHz */
+			case 2:
+			TCCR1A = _BV(WGM10)  | _BV(WGM11)  |	// Fast PWM 10 Bit
+					 _BV(COM1A1) | _BV(COM1A0) |	// Clear on Top, Set on Compare
+					 _BV(COM1B1) | _BV(COM1B0);		// Clear on Top, Set on Compare
+			
+			TCCR1B = _BV(WGM12) |
+				 _BV(CS10);							// Prescaler = 1 
+			break;	
+			
+			/* 31.2 kHz */
+			case 3:
+			TCCR1A = _BV(WGM11)  |				// Fast PWM 9 Bit
+					 _BV(COM1A1) |_BV(COM1A0) |	// Clear on Top, Set on Compare
+					 _BV(COM1B1) |_BV(COM1B0);	// Clear on Top, Set on Compare
+		
+			TCCR1B = _BV(WGM12) |
+					 _BV(CS10);					// Prescaler = 1
+			break;	
+		}
+		
+		OCR1A = 255;	// PWM loescht bei erreichen. daher steht in OCR1A 255-Speed!!!
+		OCR1B = 255;	// PWM loescht bei erreichen. daher steht in OCR1B 255-Speed!!!
+		
+		// TIMSK|= _BV(OCIE1A) | _BV(OCIE1B); // enable Output Compare 1 overflow interrupt
+		// sei();                       // enable interrupts
+	}
+#else
+	/*!
+	 * Timer 1: Kontrolliert die Motoren per PWM
+	 * PWM loescht bei erreichen. daher steht in OCR1A/OCR1B 255-Speed!!!
+	 * initilaisiert Timer 0 und startet ihn 
+	 */
+	void pwm_1_init(void){
+		DDRD |= 0x30 ;			  // PWM-Pins als Output
+		TCNT1 = 0x0000;           // TIMER1 vorladen
+	
+		TCCR1A = _BV(WGM11)  |				// Fast PWM 9 Bit
+				 _BV(COM1A1) |_BV(COM1A0) |	// Clear on Top, Set on Compare
+				 _BV(COM1B1) |_BV(COM1B0);	// Clear on Top, Set on Compare
+		
+		TCCR1B = _BV(WGM12) |
+				 _BV(CS10);					// Prescaler = 1	=>	31.2 kHz	
+		
+		OCR1A = 255;	// PWM loescht bei erreichen. daher steht in OCR1A 255-Speed!!!
+		OCR1B = 255;	// PWM loescht bei erreichen. daher steht in OCR1B 255-Speed!!!
+		
+		// TIMSK|= _BV(OCIE1A) | _BV(OCIE1B); // enable Output Compare 1 overflow interrupt
+		// sei();                       // enable interrupts
+	}
+#endif	// VARIABLE_PWM_F
 
-	TCCR2 = _BV(WGM20) | 	// Normal PWM
-			_BV(COM21);    // Clear on Top, Set on Compare
+// Kollidiert derzeit mit Timer2 fuer IR
+///*!
+// * Timer 0: Kontrolliert den Servo per PWM
+// * PWM loescht bei erreichen. daher steht in OCR0 255-Speed!!!
+// * initilaisiert Timer 0 und startet ihn 
+// */
+//void pwm_2_init(void){
+//	DDRD |= 0x80;			   // PWM-Pin als Output
+//	TCNT2  = 0x00;            // TIMER0 vorladen
+//
+//	TCCR2 = _BV(WGM20) | 	// Normal PWM
+//			_BV(COM21) |    // Clear on Top, Set on Compare
 //			_BV(CS22) | _BV(CS21) |_BV(CS20); 		// Prescaler = 1024		
-	
-	OCR2 = 8;	// PWM löscht bei erreichen. daher steht in OCR0 255-Speed!!!
-	// TIMSK  |= _BV(OCIE0);	 // enable Output Compare 0 overflow interrupt
-	//sei();                       // enable interrupts
-}
-*/
+//	
+//	OCR2 = 8;	// PWM loescht bei erreichen. daher steht in OCR0 255-Speed!!!
+//	// TIMSK  |= _BV(OCIE0);	 // enable Output Compare 0 overflow interrupt
+//	//sei();                       // enable interrupts
+//}
 
 #endif

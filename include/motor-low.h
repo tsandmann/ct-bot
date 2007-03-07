@@ -29,20 +29,32 @@
 #include "global.h"
 
 
-
+#ifdef VARIABLE_PWM_F
+	extern uint8 pwm_frequency; 
+	/*!
+ 	*  Initialisiert alles fuer die Motosteuerung 
+ 	*/
+	void motor_low_init(uint8 pwm_f);
+#else
+	/*!
+ 	*  Initialisiert alles fuer die Motosteuerung 
+ 	*/
+	void motor_low_init(void);
+#endif	//VARIABLE_PWM_F
 
 /*!
- *  Initialisiert alles fuer die Motosteuerung 
+ * unmittelbarer Zugriff auf die Motoren
+ * @param dev 	Motor (0: links; 1: rechts)
+ * @param speed	Soll-Geschwindigkeit
  */
-void motor_low_init(void);
+void bot_motor(int16 left, int16 right);
 
 /*!
- * Unmittelbarer Zugriff auf die beiden Motoren
- * normalerweise NICHT verwenden!!!!!
- * @param left speed links
- * @param right speed rechts
-*/
-void bot_motor(int16 left, int16 right);
+ * Stellt einen PWM-Wert fuer einen Motor ein
+ * low-level
+ * @param dev Motor (0: links; 1: rechts)
+ */
+void motor_update(uint8 dev);
 
 /*!
  * Stellt die Servos
