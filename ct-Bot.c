@@ -32,6 +32,7 @@
 //	#include <avr/signal.h>
 	#include <avr/wdt.h>
 	#include "bot-2-pc.h"
+	#include <avr/eeprom.h>
 #endif
 	
 #ifdef PC
@@ -117,6 +118,8 @@ void init(void){
 				reset_flag = MCUCSR & 0x1F;	//Lese Grund fuer Reset und sichere Wert
 				MCUCSR = 0;	//setze Register auf 0x00 (loeschen)
 			#endif
+			uint8 resets = eeprom_read_byte(&resetsEEPROM) + 1;
+			eeprom_write_byte(&resetsEEPROM, resets);
 		#endif		
 	#endif
 

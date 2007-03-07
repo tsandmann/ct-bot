@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-03-07 Timo Sandmann [mail@timosandmann.de]: Reset-Counter nach dem Hinweis von Achim Pankalla wieder eingebaut (jetzt auf Reset-Info-Screen)
+
 2007-03-07 Benjamin Benz [bbe@heise.de]: Test eines Releases per SVN
 
 2007-03-05 Timo Sandmann [mail@timosandmann.de]: Mini-Fat-Dateiadressen werden jetzt im EEPROM abgelegt (Speedup beim Dateioeffnen), alle "EEPROM-Variablen" sind jetzt immer deklariert (kostet eh keinen Speicher in Flash und RAM), damit die Adressen konstant sind
