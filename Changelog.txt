@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-03-08 Benjamin Benz [bbe@heise.de]: Test der Schreibrechte im SVN
+
 2007-03-08 Timo Sandmann [mail@timosandmann.de]: Bugfix Motorregelung (der Bot kann jetzt wieder seine Fahrtrichtung wechseln), Parameter in bot-local.h verschoben, ct-Bot.c Cleanup
 
 2007-03-07 Timo Sandmann [mail@timosandmann.de]: Reset-Counter nach dem Hinweis von Achim Pankalla wieder eingebaut (jetzt auf Reset-Info-Screen)
