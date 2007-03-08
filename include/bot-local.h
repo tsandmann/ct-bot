@@ -40,7 +40,7 @@
 
 /* Parameter der Motorregelung */
 #define PID_Kp				70				/*!< PID-Parameter proportional */
-#define PID_Ki				10//20				/*!< PID-Parameter intergral */ 
+#define PID_Ki				10//20			/*!< PID-Parameter intergral */ 
 #define PID_Kd				20				/*!< PID-Parameter differential */
 #define PID_Ta				1				/*!< Abtastzeit */
 #define PID_SHIFT			4				/*!< Rechtsshift der Stellgroessenkorrektur */
@@ -50,6 +50,7 @@
 #define PWMMIN				0				/*!< Minimaler PWM-Wert */
 #define PWMSTART_L			200				/*!< Basis-PWM-Wert linker Motor (falls keine dauerhaft gespeicherte PWM-LT vorhanden ist) */
 #define PWMSTART_R			200				/*!< Basis-PWM-Wert rechter Motor (falls keine dauerhaft gespeicherte PWM-LT vorhanden ist) */
+#define PID_START_DELAY		20				/*!< Dauer der Anfahrverzoegerung */
 
 /* Servo-Parameter */
 #define DOOR_CLOSE 	7			/*!< Rechter Anschlag des Servos */
