@@ -29,6 +29,7 @@
 //		* oder Kalibrierungsdaten per Konfig-Manager ablegen?
 //		* Geschwindkeits-Ist-Daten filtern? (z.B. max. Beschleunigung beruecksichtigen?)
 //		* sofortiger Richtungswechsel (nicht über STOP) holprig, wenn |speed2| > |speed1|
+//		* Vorzeichenrechnung in motor_set() optimieren
 
 #include <stdlib.h>
 #include <string.h>
@@ -71,7 +72,6 @@ int16 speed_r = 0;	/*!< Sollgeschwindigkeit rechter Motor */
 	#define TICKS_TO_SPEED_0	(TICKS_TO_SPEED / 2)		// fuer shift == 0
 	#define TICKS_TO_SPEED_1	(TICKS_TO_SPEED / 2 * 2)	// fuer shift == 1
 	#define TICKS_TO_SPEED_2	(TICKS_TO_SPEED / 2 * 4) 	// fuer shift == 2
-	#define START_DELAY			20
 	
 	/*! Typ fuer PWM-Lookup-Werte */
 	typedef struct{
@@ -128,7 +128,7 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 			uint16 dt = *(uint16*)(p_time + i_time);	// aktueller Timestamp
 			
 			/* Beim ersten Aufruf mit neuem Speed beruecksichtigen wir die Beschleunigung */
-			if (start_signal[dev] == START_DELAY){
+			if (start_signal[dev] == PID_START_DELAY){
 				orignalTargetRate[dev] = encoderTargetRate[dev];	// Zielgeschwindigkeit merken
 				encoderTargetRate[dev] = BOT_SPEED_SLOW/2;	// laaaangsam anfahren
 			} else{	// 1. Aufruf => es gibt noch keinen korrekten Timestamp in der Vergangenheit => bis zum 2. Aufruf nix tun
@@ -221,9 +221,9 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 				start_signal[dev]--;
 				// TODO: Faktoren bei START_DELAY optimieren (=> Sinus)
 				/* langsam beschleunigen - eigentlich muesste man das sinusartig tun, aber das ist zu aufwendig */
-				if (start_signal[dev] == (uint8)(START_DELAY*0.75)) encoderTargetRate[dev] += (orignalTargetRate[dev]-BOT_SPEED_SLOW/2) >> 2;	// +1/4
-				else if (start_signal[dev] == (uint8)(START_DELAY*0.5)) encoderTargetRate[dev] += (orignalTargetRate[dev]-BOT_SPEED_SLOW/2) >> 2;	// +2/4
-				else if (start_signal[dev] == (uint8)(START_DELAY*0.25)) encoderTargetRate[dev] += (orignalTargetRate[dev]-BOT_SPEED_SLOW/2) >> 2;	// +3/4
+				if (start_signal[dev] == (uint8)(PID_START_DELAY*0.75)) encoderTargetRate[dev] += (orignalTargetRate[dev]-BOT_SPEED_SLOW/2) >> 2;	// +1/4
+				else if (start_signal[dev] == (uint8)(PID_START_DELAY*0.5)) encoderTargetRate[dev] += (orignalTargetRate[dev]-BOT_SPEED_SLOW/2) >> 2;	// +2/4
+				else if (start_signal[dev] == (uint8)(PID_START_DELAY*0.25)) encoderTargetRate[dev] += (orignalTargetRate[dev]-BOT_SPEED_SLOW/2) >> 2;	// +3/4
 				else if (start_signal[dev] == 0) encoderTargetRate[dev] = orignalTargetRate[dev];	
 			}
 		}	
@@ -380,9 +380,9 @@ void motor_set(int16 left, int16 right){
 	/* Stellwerte und Zielgeschwindigkeit setzen */
 	#ifdef SPEED_CONTROL_AVAILABLE
 		/* Bei aktivierter Motorregelung neue Fuehrungsgroesse links setzen */
-		if (encoderTargetRate[0] != left>>1 && (start_signal[0] == 0 || left == 0)){
+		if (speed_l != left*speedSignLeft && (start_signal[0] == 0 || left == 0)){
 			if (encoderTargetRate[0] == 0){
-				start_signal[0] = START_DELAY;
+				start_signal[0] = PID_START_DELAY;
 				if (speedSignLeft == speedSignRight) motor_left = (pwm_values[0].pwm << 1) + 150;	// [0; 511]
 				else motor_left = (pwm_values[2].pwm << 1) + 100;
 			}
@@ -404,9 +404,9 @@ void motor_set(int16 left, int16 right){
 			motor_update(0);
 		}
 		/* Neue Fuehrungsgroesse rechts setzen */
-		if (encoderTargetRate[1] != right>>1 && (start_signal[1] == 0 || right == 0)){
+		if (speed_r != right*speedSignRight && (start_signal[1] == 0 || right == 0)){
 			if (encoderTargetRate[1] == 0){
-				start_signal[1] = START_DELAY;
+				start_signal[1] = PID_START_DELAY;
 				if (speedSignLeft == speedSignRight) motor_right = (pwm_values[1].pwm << 1) + 150;	// [0; 511]
 				else motor_right = (pwm_values[3].pwm << 1) + 100;
 			}
