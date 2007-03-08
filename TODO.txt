@@ -13,7 +13,6 @@ Zeit		Timer.c		Auf dem PC existiert noch keine Routine, die die globalen Zeitvar
 Sensoren				Linearisierung der Sensorwerte
 Info					Readme-Datei zu Variablen und Funktionen schreiben
 delay		delay.c		Delay von busy-wait auf timer-basiert umstellen
-Framework	bot-logik.c	bot-logik-c aufspalten in mehrere Dateien
 
 
 Ideen/Ausbaustufen
