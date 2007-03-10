@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-03-10 Torsten Evers [tevers@onlinehome.de]: FB-Codes für LifeTec LT3607 korrigiert und eindeutig gemacht
+
 2007-03-09 Timo Sandmann [mail@timosandmann.de]: display_printf() belaesst die Strings nun im Flash => RAM gespart :)
 
 2007-03-08 Benjamin Benz [bbe@heise.de]: Test der Schreibrechte im SVN

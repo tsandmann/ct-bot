@@ -501,23 +501,23 @@
 	#define RC5_CODE_9		(0x3009 & RC5_MASK)		/*!< Taste 9 */
 
 	#define RC5_CODE_PWR	(0x300C & RC5_MASK)		/*!< Taste Power */
-	#define RC5_CODE_VIEW	(0x303F & RC5_MASK)		/*!< Taste OSD */
-	#define RC5_CODE_SELECT	(0x303C & RC5_MASK)		/*!< Taste Videotext */
+	#define RC5_CODE_VIEW	(0x302B & RC5_MASK)		/*!< Taste OSD */
+	#define RC5_CODE_SELECT	(0x300A & RC5_MASK)		/*!< Taste -/-- */
 	#define RC5_CH_PLUS		(0x3020 & RC5_MASK)		/*!< Ch + Taste */
 	#define RC5_CH_MINUS	(0x3021 & RC5_MASK)		/*!< Ch - Taste */
 
-	#define RC5_CODE_UP	(0x3020 & RC5_MASK)		/*!< Taste CH + */
-	#define RC5_CODE_DOWN	(0x3021 & RC5_MASK)		/*!< Taste CH - */
-	#define RC5_CODE_LEFT	(0x3011 & RC5_MASK)		/*!< Taste VOL- */
-	#define RC5_CODE_RIGHT	(0x3010 & RC5_MASK)		/*!< Taste VOL+ */
+	#define RC5_CODE_UP		(0x302E & RC5_MASK)		/*!< Taste mit Punkt, zwischen VCR-Tasten */
+	#define RC5_CODE_DOWN	(0x3012 & RC5_MASK)		/*!< Taste Bildschirm mit Kreuz oben rechts */
+	#define RC5_CODE_LEFT	(0x303F & RC5_MASK)		/*!< Taste Bildschirm, leer */
+	#define RC5_CODE_RIGHT	(0x303C & RC5_MASK)		/*!< Taste Videotext */
 	#define RC5_CODE_I_II	(0x3038 & RC5_MASK)		/*!< A/B-Taste */
-	#define RC5_CODE_FWD	(0x302B & RC5_MASK)		/*!< Taste Mischbild */
-	#define RC5_CODE_BWD	(0x302E & RC5_MASK)		/*!< Taste Ueberblenden */
+	#define RC5_CODE_FWD	(0x3010 & RC5_MASK)		/*!< Taste Vol+ */
+	#define RC5_CODE_BWD	(0x3011 & RC5_MASK)		/*!< Taste Vol- */
 	#define RC5_CODE_RED	(0x3037 & RC5_MASK)		/*!< Taste FRWD / Rot */
 	#define RC5_CODE_GREEN	(0x3036 & RC5_MASK)		/*!< Taste STOP / Gruen */
 	#define RC5_CODE_YELLOW	(0x3032 & RC5_MASK)		/*!< Taste PLAY / Gelb */
 	#define RC5_CODE_BLUE	(0x3034 & RC5_MASK)		/*!< Taste FFWD / Blau */
-	#define RC5_CODE_TV_VCR	RC5_NOT_AVAIL
+	#define RC5_CODE_TV_VCR	(0x300D	& RC5_MASK)		/*!< Taste Mute */
 #endif /* RC_HAVE_LIFETEC_LT3607 */
 
 /*!
