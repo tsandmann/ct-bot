@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -28,19 +28,10 @@
 
 #include "global.h"
 
-
-#ifdef VARIABLE_PWM_F
-	extern uint8 pwm_frequency; 
-	/*!
- 	*  Initialisiert alles fuer die Motosteuerung 
- 	*/
-	void motor_low_init(uint8 pwm_f);
-#else
-	/*!
- 	*  Initialisiert alles fuer die Motosteuerung 
- 	*/
-	void motor_low_init(void);
-#endif	//VARIABLE_PWM_F
+/*!
+*  Initialisiert alles fuer die Motosteuerung 
+*/
+void motor_low_init(void);
 
 /*!
  * unmittelbarer Zugriff auf die Motoren

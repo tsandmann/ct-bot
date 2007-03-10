@@ -76,7 +76,6 @@
 //#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
 //#define ADJUST_PID_PARAMS		/*!< macht PID-Paramter zur Laufzeit per FB einstellbar */
 //#define SPEED_LOG_AVAILABLE 	/*!< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
-//#define VARIABLE_PWM_F		/*!< Ermoeglicht das Wechseln der PWM-Frequenz zur Laufzeit */
 
 //#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
 

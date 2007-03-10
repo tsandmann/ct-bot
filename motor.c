@@ -25,11 +25,8 @@
  * @date 	17.10.2006
  */
 
-//TODO:	* EEPROM-Support?
-//		* oder Kalibrierungsdaten per Konfig-Manager ablegen?
-//		* Geschwindkeits-Ist-Daten filtern? (z.B. max. Beschleunigung beruecksichtigen?)
+//TODO:	* Geschwindkeits-Ist-Daten filtern? (z.B. max. Beschleunigung beruecksichtigen?)
 //		* sofortiger Richtungswechsel (nicht über STOP) holprig, wenn |speed2| > |speed1|
-//		* Vorzeichenrechnung in motor_set() optimieren
 
 #include <stdlib.h>
 #include <string.h>
@@ -91,7 +88,7 @@ int16 speed_r = 0;	/*!< Sollgeschwindigkeit rechter Motor */
 #endif	// SPEED_CONTROL_AVAILABLE
 #ifdef MCU
 	/* EEPROM-Variable immer deklarieren, damit die Adresse sich nicht veraendert je nach #define */
-	uint8 __attribute__ ((section (".eeprom"))) pwmSlow[4] = {255, 255, 255, 255};	/*!< EEPROM-Kopie von pwm_values */
+	uint8_t __attribute__ ((section (".eeprom"),aligned (1))) pwmSlow[4] = {255, 255, 255, 255};	/*!< EEPROM-Kopie von pwm_values */
 #endif
 	
 direction_t direction;		/*!< Drehrichtung der Motoren */
@@ -279,7 +276,7 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 		void speedcontrol_display(void){
 			if (speed_l != 0){
 				display_cursor(1,2);
-				display_printf("%3d/%3d",encoderRateInfo[0]<<1,abs(speed_l));
+				display_printf("%3u/%3u",encoderRateInfo[0]<<1,abs(speed_l));
 				display_cursor(2,1);
 				display_printf("e = %4d",abs(speed_l)-(encoderRateInfo[0]<<1));					
 				display_cursor(3,1);
@@ -297,22 +294,11 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 			#ifdef ADJUST_PID_PARAMS
 				display_printf("Kp=%3d Ki=%3d Kd=%3d",Kp,Ki,Kd);
 			#else
-				#ifndef VARIABLE_PWM_F
-					display_printf("Kp=%3d Ki=%3d Kd=%3d",PID_Kp,PID_Ki,PID_Kd);
-				#else
-					char tmp[3][9] = {" 3.9 kHz", "15.6 kHz", "31.2 kHz"};
-					display_printf("%s", tmp[pwm_frequency-1]);
-				#endif	// VARIABLE_PWM_F
+				display_printf("Kp=%3d Ki=%3d Kd=%3d",PID_Kp,PID_Ki,PID_Kd);
 			#endif	// ADJUST_PID_PARAMS	
 			
 			/* Keyhandler */
-			switch (RC5_Code){
-// no longer needed, just drive with BOT_SPEED_SLOW
-//				/* Kalibrierungsverhalten fuer Regelung */
-//				#ifdef BEHAVIOUR_CALIBRATE_PWM_AVAILABLE
-//					case RC5_CODE_11: bot_calibrate_pwm(0); RC5_Code = 0; break;
-//				#endif
-				
+			switch (RC5_Code){			
 				/* PWM-Parameter einstellbar */
 				#ifdef ADJUST_PID_PARAMS
 					case RC5_CODE_1: Kp++; RC5_Code = 0; break;
@@ -322,26 +308,13 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 					case RC5_CODE_3: Kd++; RC5_Code = 0; break;
 					case RC5_CODE_6: Kd--; RC5_Code = 0; break;
 				#endif	// ADJUST_PID_PARAMS
-				
-				/* PWM-Frequenz aenderbar */
-				#ifdef VARIABLE_PWM_F
-				    case RC5_CODE_7: 
-				        pwm_frequency = 1; target_speed_l = 0; target_speed_r = 0; 
-				        motor_low_init(pwm_frequency); RC5_Code = 0; break;
-				    case RC5_CODE_8: 
-				        pwm_frequency = 2; target_speed_l = 0; target_speed_r = 0;
-				        motor_low_init(pwm_frequency); RC5_Code = 0; break;
-				    case RC5_CODE_9: 
-				        pwm_frequency = 3; target_speed_l = 0; target_speed_r = 0; 
-				        motor_low_init(pwm_frequency); RC5_Code = 0; break;
-				#else
-					case RC5_CODE_7:
-						target_speed_l = BOT_SPEED_FOLLOW; target_speed_r = BOT_SPEED_FOLLOW; RC5_Code = 0; break;
-					case RC5_CODE_8:
-						target_speed_l = BOT_SPEED_MEDIUM; target_speed_r = BOT_SPEED_MEDIUM; RC5_Code = 0; break;
-					case RC5_CODE_9:
-						target_speed_l = BOT_SPEED_FAST; target_speed_r = BOT_SPEED_FAST; RC5_Code = 0; break;
-        		#endif	// VARIABLE_PWM_F
+
+				case RC5_CODE_7:
+					target_speed_l = BOT_SPEED_FOLLOW; target_speed_r = BOT_SPEED_FOLLOW; RC5_Code = 0; break;
+				case RC5_CODE_8:
+					target_speed_l = BOT_SPEED_MEDIUM; target_speed_r = BOT_SPEED_MEDIUM; RC5_Code = 0; break;
+				case RC5_CODE_9:
+					target_speed_l = BOT_SPEED_FAST; target_speed_r = BOT_SPEED_FAST; RC5_Code = 0; break;
 			}				
 		}
 	#endif
@@ -449,8 +422,7 @@ void motor_set(int16 left, int16 right){
 				direction.left = DIRECTION_BACKWARD;
 				speed_l = -left;
 			}
-			uint16 pwm = left + PWMSTART_L;
-			if (pwm > PWMMAX) pwm = PWMMAX;
+			uint16 pwm = (float)(PWMMAX/BOT_SPEED_MAX) * left + 10;	// lineare Motorkennline annehmen
 			motor_left = left == 0 ? 0 : pwm;
 			if (speedSignRight > 0){
 				direction.right = DIRECTION_FORWARD;
@@ -459,8 +431,7 @@ void motor_set(int16 left, int16 right){
 				direction.right = DIRECTION_BACKWARD;
 				speed_r = -right;
 			}
-			pwm = right + PWMSTART_R;
-			if (pwm > PWMMAX) pwm = PWMMAX;
+			pwm = (float)(PWMMAX/BOT_SPEED_MAX) * right + 10;	// lineare Motorkennline annehmen
 			motor_right = right == 0 ? 0 : pwm;
 			motor_update(0);
 			motor_update(1);
@@ -494,11 +465,7 @@ void motor_init(void){
 		else pwm_values[3].pwm = PWMSTART_R/2;
 	#endif	// SPEED_CONTROL_AVAILABLE
 
-	#ifdef VARIABLE_PWM_F
-		motor_low_init(pwm_frequency);
-	#else
-		motor_low_init();
-	#endif	// VARIABLE_PWM_F
+	motor_low_init();
 }
 
 /*!
