@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-03-09 Timo Sandmann [mail@timosandmann.de]: display_printf() belaesst die Strings nun im Flash => RAM gespart :)
+
 2007-03-08 Benjamin Benz [bbe@heise.de]: Test der Schreibrechte im SVN
 
 2007-03-08 Timo Sandmann [mail@timosandmann.de]: Bugfix Motorregelung (der Bot kann jetzt wieder seine Fahrtrichtung wechseln), Parameter in bot-local.h verschoben, ct-Bot.c Cleanup

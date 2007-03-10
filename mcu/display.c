@@ -42,7 +42,6 @@
 #include "led.h"
 #include "delay.h"
 #include "shift.h"
-#include "display.h"
 
 /*! Puffergroesse fuer eine Zeile in bytes */
 #define DISPLAY_BUFFER_SIZE	(DISPLAY_LENGTH + 1)
@@ -220,19 +219,31 @@ void display_init(void){
 */
 
 /*!
- * Schreibt einen String auf das Display.
- * @param format Format, wie beim printf
- * @param ... Variable Argumentenliste, wie beim printf
+ * @brief			Schreibt einen String auf das Display, der im Flash gespeichert ist
+ * @param format 	Format, wie beim printf
+ * @param ... 		Variable Argumentenliste, wie beim printf
+ * Ganz genauso wie das "alte" display_printf(...) zu benutzen, das Makro 
+ * #define display_printf(format, args...) erledigt alles automatisch, damit der String
+ * im Flash verbleibt und erst zur Laufzeit temporaer (jeweils nur eine Zeile) geladen wird.
  */
-void display_printf(char *format, ...) {
+void display_flash_printf(const char* format, ...){
+	uint8 i;
+	char flash_str[DISPLAY_BUFFER_SIZE+4];	// bissl groesser, damit wir words lesen koennen
+	/* Zeichen des Strings wortweise aus dem Flash holen */
+	uint16* p_ram  = (uint16*)flash_str;
+	uint16* p_flash = (uint16*)format;
+	for (i=0; i<DISPLAY_BUFFER_SIZE/2+2; i++){
+		uint16 tmp = pgm_read_word(p_flash++);
+		*(p_ram++) = tmp;
+		if ((uint8)tmp == 0 || (tmp & 0xFF00) == 0) break;	// Stringende erreicht
+	}
+	*((char*)p_ram) = 0;	// evtl. haben wir ein Byte zu viel gelesen, das korrigieren wir hier
 	uint8 run = 0;
 	va_list	args;
 	
-	/* Sicher gehen, das der zur Verfuegung stehende Puffer nicht
-	 * ueberschrieben wird.
-	 */
+	/* Sicher gehen, dass der zur Verfuegung stehende Puffer nicht ueberlaeuft */
 	va_start(args, format);
-	vsnprintf(display_buf, DISPLAY_BUFFER_SIZE, format, args);
+	vsnprintf(display_buf, DISPLAY_BUFFER_SIZE, flash_str, args);	
 	va_end(args);
 	
 	/* Ausgeben bis Puffer leer ist */
@@ -247,9 +258,7 @@ void display_printf(char *format, ...) {
 		command_write(CMD_AKT_LCD, SUB_LCD_CURSOR,&c,&r,0);
 		command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, NULL, NULL, display_buf);
 		remote_column += run;
-	#endif
-	
-	return;
+	#endif	
 }
 
 /*
@@ -271,6 +280,6 @@ void display_test(){
 }
 */
 
-#endif
+#endif	// DISPLAY_AVAILABLE
 
-#endif
+#endif	// MCU
