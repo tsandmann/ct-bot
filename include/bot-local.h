@@ -48,8 +48,8 @@
 #define PID_SPEED_THRESHOLD	BOT_SPEED_FOLLOW/*!< Grenzgeschwindigkeit, ab der die Regelgroesse interpoliert wird */
 #define PWMMAX				511				/*!< Maximaler PWM-Wert */
 #define PWMMIN				0				/*!< Minimaler PWM-Wert */
-#define PWMSTART_L			200				/*!< Basis-PWM-Wert linker Motor (falls keine dauerhaft gespeicherte PWM-LT vorhanden ist) */
-#define PWMSTART_R			200				/*!< Basis-PWM-Wert rechter Motor (falls keine dauerhaft gespeicherte PWM-LT vorhanden ist) */
+#define PWMSTART_L			100				/*!< Basis-PWM-Wert linker Motor (falls keine dauerhaft gespeicherte PWM-LT vorhanden ist) */
+#define PWMSTART_R			100				/*!< Basis-PWM-Wert rechter Motor (falls keine dauerhaft gespeicherte PWM-LT vorhanden ist) */
 #define PID_START_DELAY		20				/*!< Dauer der Anfahrverzoegerung */
 
 /* Servo-Parameter */

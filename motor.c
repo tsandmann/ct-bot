@@ -41,9 +41,7 @@
 #include "display.h"
 #include "bot-logic/bot-logik.h"
 #include "rc5-codes.h"
-#include "mini-fat.h"
-#include "mmc-vm.h"
-#include "log.h"
+
 #ifdef MCU
 	#include <avr/eeprom.h>
 #endif
@@ -481,3 +479,46 @@ void servo_set(uint8 servo, uint8 pos){
 	}
 	servo_low(servo,pos);
 }
+
+#ifdef SPEED_CONTROL_AVAILABLE
+	/* Parameter-Wertebereiche pruefen */
+	#if PID_Kp > 127 || PID_Kp < 0
+		#error PID_Kp out of range [0; 127]!
+	#endif
+	#if PID_Ki > 127 || PID_Ki < 0
+		#error PID_Ki out of range [0; 127]!
+	#endif
+	#if PID_Kd > 127 || PID_Kd < 0
+		#error PID_Kd out of range [0; 127]!
+	#endif
+	#if PID_Ta > 127 || PID_Ta < 0
+		#error PID_Ta out of range [0; 127]!
+	#endif
+	#if PID_SHIFT > 127 || PID_SHIFT < 0
+		#error PID_SHIFT out of range [0; 127]!
+	#endif	
+	#if PID_TIME > 655 || PID_TIME < 0
+		#error PID_TIME out of range [0; 655]!
+	#endif
+	#if PID_SPEED_THRESHOLD > (BOT_SPEED_MAX/2) || PID_SPEED_THRESHOLD < BOT_SPEED_SLOW
+		#error PID_SPEED_THRESHOLD out of range [BOT_SPEED_SLOW; BOT_SPEED_MAX/2]!
+	#endif	
+	#if PID_START_DELAY > 255 || PID_START_DELAY < 0
+		#error PID_START_DELAY out of range [0; 255]!
+	#endif	
+	#if PWMMAX > 511
+		#error PWMMAX out of range [PWMMIN; 511]!
+	#endif	
+	#if PWMMIN >= PWMMAX || PWMMIN < 0
+		#error PWMMIN out of range [0; PWMMAX)!
+	#endif
+	#if PWMMAX <= PWMMIN
+		#error PWMMAX out of range (PWMMIN; 511]!
+	#endif		
+	#if PWMSTART_L > PWMMAX || PWMSTART_L < PWMMIN
+		#error PWMSTART_L out of range [PWMMIN; PWMMAX]!
+	#endif	
+	#if PWMSTART_R > PWMMAX || PWMSTART_R < PWMMIN
+		#error PWMSTART_R out of range [PWMMIN; PWMMAX]!
+	#endif
+#endif	// SPEED_CONTROL_AVAILABLE
