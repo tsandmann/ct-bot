@@ -28,7 +28,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "log.h"
-
+#include "timer.h"
 #ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 
 /* Parameter fuer das check_wall_behaviour() */
@@ -81,6 +81,7 @@ void bot_check_wall_behaviour(Behaviour_t *data) {
 	static int8 measureCount=0;
 	/* letzter Messwert */
 	static int16 lastSensor=0;
+	static uint16 old_ms=0;
 	
 	int16 sensor;	/* fuer temporaer benutzte Senorwerte */
 
@@ -107,10 +108,13 @@ void bot_check_wall_behaviour(Behaviour_t *data) {
 			 * dazu muss der wert dreimal nacheinander max. um +/- 5
 			 * unterschiedlich sein */
 			 if (measureCount==0) {
+			 	old_ms=TIMER_GET_TICKCOUNT_16;
 			 	lastSensor=sensor;
 			 	measureCount++;
 			 	break;
 			 }
+			 if (TIMER_GET_TICKCOUNT_16-old_ms > MS_TO_TICKS(50)) break;
+			 
 			 if (sensor>=lastSensor-5 && sensor<=lastSensor+5 && measureCount<4) {
 			 	/* Messwert ist ok */
 			 	measureCount++;
@@ -120,8 +124,9 @@ void bot_check_wall_behaviour(Behaviour_t *data) {
 			 	measureCount=0;
 			 	break;
 			 }
+			 old_ms=TIMER_GET_TICKCOUNT_16;
+			 measureCount=0;
 			 /* ok, wir hatten drei Messungen mit nahezu identischen Werten */
-			
 			/* keine wand in eingestellter Maximalentfernung? */
 			if (sensor>IGNORE_DISTANCE) {
 				correctDistance=CORRECT_NONE; /* dann auch keine Korrektur */
