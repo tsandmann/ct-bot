@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-03-12 Torsten Evers [tevers@onlinehome.de]: bot_solve_maze_behaviour() funktioniert nun wieder auch auf dem realen Bot
+
 2007-03-11 Timo Sandmann [mail@timosandmann.de]: Uberpruefung der PID-Paramter auf zulaessigen Wertebereich ergaenzt
 
 2007-03-10 Timo Sandmann [mail@timosandmann.de]: PWM-Frequnez fuer Regelung aus geaendert, Motor-Code aufgeraeumt
