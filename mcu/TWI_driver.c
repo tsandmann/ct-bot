@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,23 +17,25 @@
  * 
  */
 
-/*! @file 	TWI_driver.c  
+/*! 
+ * @file 	TWI_driver.c  
  * @brief 	TWI-Treiber (I2C)
  * @author 	Chris efstathiou hendrix@otenet.gr & Carsten Giesen (info@cnau.de)
  * @date 	08.04.06
-*/
+ */
 
 #ifdef MCU 
+#include "ct-Bot.h"
+#ifdef TWI_AVAILABLE 
 #include <avr/io.h>
 #include "TWI_driver.h"
 #include "global.h"
-
 
 /*!
  * TWI Bus initialsieren
  * @return Resultat der Aktion
  */
-
+ 
 int8 Init_TWI(void){
 	TWAR = OWN_ADR;							/*!< Eigenen Slave Adresse setzen */
 	TWBR = 12;                    			/*!< Setze Baudrate auf 100 KHz  */
@@ -191,4 +193,5 @@ uint8 Get_byte(uint8 *rx_ptr,uint8 last_byte){
 	return TWSR;
 }
 
-#endif
+#endif	// TWI_AVAILABLE 
+#endif	// MCU

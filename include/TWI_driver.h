@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -23,26 +23,28 @@
  * @date 	11.04.2006
 */
 
+#ifndef TWI_driver_H
+#define TWI_driver_H
+
+#include "ct-Bot.h"
+#ifdef TWI_AVAILABLE 
 #include <avr/io.h>
 #include "global.h"
 
-#ifndef TWI_driver_H
-	#define TWI_driver_H     1
-	
-	/*!
-		Struktur Definition 
-		tx_type ist eine Datenstruktur um den TWI Treiber anzusprechen 
-		und behinhaltet folgende Informationen:
-		Slave Adresse + Datenrichtung
-		Anzahl der zu uebertragendenden Bytes (Senden oder Empfangen)
-		Pointer auf den Sende- oder Empfangspuffer
-	*/
-	typedef struct
-	{
-		uint8 slave_adr;				/*!< Slave Adresse and W/R byte */
-		uint8 size;						/*!< Anzahl der Bytes, die gesendet oder empfagen werden sollen */
-		uint8 *data_ptr;				/*!< Pointer zum Sende und Empfangs Puffer */
-	}tx_type;							
+/*!
+	Struktur Definition 
+	tx_type ist eine Datenstruktur um den TWI Treiber anzusprechen 
+	und behinhaltet folgende Informationen:
+	Slave Adresse + Datenrichtung
+	Anzahl der zu uebertragendenden Bytes (Senden oder Empfangen)
+	Pointer auf den Sende- oder Empfangspuffer
+*/
+typedef struct
+{
+	uint8 slave_adr;				/*!< Slave Adresse and W/R byte */
+	uint8 size;						/*!< Anzahl der Bytes, die gesendet oder empfagen werden sollen */
+	uint8 *data_ptr;				/*!< Pointer zum Sende und Empfangs Puffer */
+}tx_type;							
 	
 /*!
  * Hier wird der eigentliche TWI-Treiber angesprochen
@@ -117,4 +119,6 @@
 	#define	MRX_ADR_NACK	0x48				/*!< SLA+R wurde uebertragen und NACK empfangen */	
 	#define	MRX_DATA_ACK	0x50				/*!< Datenbyte wurde empfangen und ACK gesendet */
 	#define	MRX_DATA_NACK	0x58				/*!< Datenbyte wurde empfangen und NACK gesendet */
-#endif
+
+#endif	// TWI_AVAILABLE
+#endif	// TWI_driver_H

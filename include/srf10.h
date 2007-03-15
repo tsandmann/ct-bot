@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -23,11 +23,13 @@
  * @date 	08.04.06
 */
 
+#include "ct-Bot.h"
+#ifdef SRF10_AVAILABLE
 
 #include "global.h"
 
 #ifndef srf10_H
-#define srf10_H     1
+#define srf10_H
 
 /*!
  * Es sind alle moeglichen Adressen eingetragen. In de Regel reicht aber die erste              
@@ -102,4 +104,5 @@ extern uint8	srf10_read_register(uint8 SRF10_register);
  */
 extern uint16	srf10_get_measure(void);
 
+#endif	// SRF10_AVAILABLE
 #endif  /* #ifndef SRF10_H */
