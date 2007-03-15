@@ -227,17 +227,8 @@ void display_init(void){
  * im Flash verbleibt und erst zur Laufzeit temporaer (jeweils nur eine Zeile) geladen wird.
  */
 void display_flash_printf(const char* format, ...){
-	uint8 i;
-	char flash_str[DISPLAY_BUFFER_SIZE+4];	// bissl groesser, damit wir words lesen koennen
-	/* Zeichen des Strings wortweise aus dem Flash holen */
-	uint16* p_ram  = (uint16*)flash_str;
-	uint16* p_flash = (uint16*)format;
-	for (i=0; i<DISPLAY_BUFFER_SIZE/2+2; i++){
-		uint16 tmp = pgm_read_word(p_flash++);
-		*(p_ram++) = tmp;
-		if ((uint8)tmp == 0 || (tmp & 0xFF00) == 0) break;	// Stringende erreicht
-	}
-	*((char*)p_ram) = 0;	// evtl. haben wir ein Byte zu viel gelesen, das korrigieren wir hier
+	char flash_str[DISPLAY_BUFFER_SIZE+4];	// bissel groesser, weil die % ja noch mit drin sind
+	get_str_from_flash(format, flash_str, DISPLAY_BUFFER_SIZE/2+2);	// String aus dem Flash holen
 	uint8 run = 0;
 	va_list	args;
 	
@@ -281,5 +272,26 @@ void display_test(){
 */
 
 #endif	// DISPLAY_AVAILABLE
+
+/*!
+ * @brief	Kopiert einen String wortweise vom Flash ins Ram
+ * @param flash	Zeiger auf einen String im FLASH
+ * @param ram	Zeiger auf den Zielpuffer im RAM
+ * @param n		Anzahl der zu kopierenden WORTE
+ * Es werden maximal n Worte kopiert, ist der String schon zuvor nullterminiert, 
+ * wird bei Auftreten von \0 abgebrochen. 
+ */
+void get_str_from_flash(const char* flash, char* ram, uint8 n) {
+	uint8 i;
+	/* Zeichen des Strings wortweise aus dem Flash holen */
+	uint16* p_ram  = (uint16*)ram;
+	uint16* p_flash = (uint16*)flash;
+	for (i=0; i<n; i++){
+		uint16 tmp = pgm_read_word(p_flash++);
+		*(p_ram++) = tmp;
+		if ((uint8)tmp == 0 || (tmp & 0xFF00) == 0) break;	// Stringende erreicht
+	}
+	*((char*)p_ram) = 0;	// evtl. haben wir ein Byte zu viel gelesen, das korrigieren wir hier	
+}
 
 #endif	// MCU

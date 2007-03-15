@@ -79,6 +79,7 @@ int16 speed_r = 0;	/*!< Sollgeschwindigkeit rechter Motor */
 	static volatile pwmMap_t pwm_values[4] = {{0,255},{0,255},{0,255},{0,255}};		/*!< Lookup fuer Zuordnung GeschwindigkeitSLOW <-> PWM */
 	#ifdef DISPLAY_REGELUNG_AVAILABLE
 		static uint8 encoderRateInfo[2];		/*!< Puffer fuer Displayausgabe der Ist-Geschwindigkeit */
+//		static uint8 timer_reg1, timer_reg2;
 	#endif
 	
 //	static volatile uint8 acc_test[2];			/*!< nur Testcase */
@@ -106,6 +107,7 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 	 * Mit PWMMIN, PWMSTART_L und PWMSTART_R laesst sich der Minimal- bzw. Startwert fuer die Motoren anpassen.
 	 */
 	void speed_control(uint8 dev, int16* actVar, uint16* encTime, uint8 i_time){
+//		timer_reg1 = TCNT2;
 		/* Speicher fuer alte Regeldifferenzen */
 		static int16 lastErr[2] = {0,0};
 		static int16 last2Err[2] = {0,0};
@@ -224,6 +226,7 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 		}	
 		/* PWM-Wert aktualisieren */
 		motor_update(dev);
+//		timer_reg2 = TCNT2;
 	}
 	
 // deprecated
@@ -291,8 +294,10 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 			display_cursor(4,1);
 			#ifdef ADJUST_PID_PARAMS
 				display_printf("Kp=%3d Ki=%3d Kd=%3d",Kp,Ki,Kd);
+//				display_printf("%3u us", (timer_reg2-timer_reg1)<<2);
 			#else
 				display_printf("Kp=%3d Ki=%3d Kd=%3d",PID_Kp,PID_Ki,PID_Kd);
+//				display_printf("%3u us", (timer_reg2-timer_reg1)<<2);
 			#endif	// ADJUST_PID_PARAMS	
 			
 			/* Keyhandler */
@@ -324,7 +329,7 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
  * @date 		17.10.2006 
  * @param left	Geschwindigkeit fuer den linken Motor
  * @param right	Geschwindigkeit fuer den linken Motor
- * Geschwindigkeit liegt zwischen -255 und +255. 0 bedeutet Stillstand, 255 volle Kraft voraus, -255 volle Kraft zurueck.
+ * Geschwindigkeit liegt zwischen -450 und +450. 0 bedeutet Stillstand, 450 volle Kraft voraus, -450 volle Kraft zurueck.
  * Sinnvoll ist die Verwendung der Konstanten: BOT_SPEED_XXX, also z.B. motor_set(BOT_SPEED_SLOW,-BOT_SPEED_SLOW) fuer eine langsame Drehung
  */
 void motor_set(int16 left, int16 right){

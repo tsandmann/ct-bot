@@ -80,7 +80,7 @@ void motor_init(void);
  * @date 		17.10.2006 
  * @param left	Geschwindigkeit fuer den linken Motor
  * @param right	Geschwindigkeit fuer den linken Motor
- * Geschwindigkeit liegt zwischen -255 und +255. 0 bedeutet Stillstand, 255 volle Kraft voraus, -255 volle Kraft zurueck.
+ * Geschwindigkeit liegt zwischen -450 und +450. 0 bedeutet Stillstand, 450 volle Kraft voraus, -450 volle Kraft zurueck.
  * Sinnvoll ist die Verwendung der Konstanten: BOT_SPEED_XXX, also z.B. motor_set(BOT_SPEED_SLOW,-BOT_SPEED_SLOW) fuer eine langsame Drehung
  */
 void motor_set(int16 left, int16 right);

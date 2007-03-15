@@ -644,7 +644,7 @@ void bot_solve_maze_behaviour(Behaviour_t *data){
  */
  
 void bot_solve_maze(Behaviour_t *caller){
-	LOG_DEBUG(("bot_solve_maze()"));
+	LOG_INFO("bot_solve_maze()");
 	switch_to_behaviour(caller, bot_solve_maze_behaviour,NOOVERRIDE);
 }
 
