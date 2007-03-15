@@ -308,7 +308,7 @@ void bot_encoder_isr(void){
 				/* Regleraufruf links */
 				if (timeCorrectL == 0) speed_control(0, (int16*)&motor_left, (uint16*)encTimeL, i_encTimeL);
 				else timeCorrectL = 0;		
-				/* pro TIMER_STEP wird maximal ein Encoder ausgewertet, da max alle 2 ms (Fullspeed) eine Flanke kommen kann */
+				/* pro TIMER_STEP wird maximal ein Encoder ausgewertet, da max alle 6 ms (Fullspeed) eine Flanke kommen kann */
 				return;	// hackhack	
 			#endif // SPEED_CONTROL_AVAILABLE		
 		}
