@@ -102,6 +102,7 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 	 * @param actVar	Zeiger auf Stellgroesse (nicht volatile, da Aufruf aus ISR heraus)
 	 * @param encTime	Zeiger auf Encodertimestamps, mit denen gerechnet werden soll
 	 * @param i_time	Index des aktuellen Timestamps in encTime
+	 * @param enc		Encoder-Pegel (binaer) von dev
 	 * Drehzahlregelung sorgt fuer konstante Drehzahl und somit annaehernd Geradeauslauf.
 	 * Feintuning von PID_Kp bis PID_SPEED_THRESHOLD (bot-local.h) verbessert die Genauigkeit und Schnelligkeit der Regelung.
 	 * Mit PWMMIN, PWMSTART_L und PWMSTART_R laesst sich der Minimal- bzw. Startwert fuer die Motoren anpassen.
