@@ -204,7 +204,7 @@ void bot_sens_isr(void){
 			*(uint16*)(p_time + i_time) = pid_ticks;
 			i_encTimeL = i_time;
 			/* Regleraufruf */
-			speed_control(0,  (int16*)&motor_left, (uint16*)encTimeL, i_encTimeL);
+			speed_control(0,  (int16*)&motor_left, (uint16*)encTimeL, i_encTimeL, 0);
 			timeCorrectL = 1;
 		}
 		/* Bei Stillstand Regleraufruf rechts nach TIMER_STEPS ms */
@@ -216,7 +216,7 @@ void bot_sens_isr(void){
 			*(uint16*)(p_time + i_time) = pid_ticks;
 			i_encTimeR = i_time;
 			/* Regleraufruf rechts */
-			speed_control(1, (int16*)&motor_right, (uint16*)encTimeR, i_encTimeR);
+			speed_control(1, (int16*)&motor_right, (uint16*)encTimeR, i_encTimeR, 0);
 			timeCorrectR = 1;
 		}
 		
@@ -306,7 +306,7 @@ void bot_encoder_isr(void){
 				*(uint16*)((uint8*)encTimeL + i_time) = ticks;
 				i_encTimeL = i_time;
 				/* Regleraufruf links */
-				if (timeCorrectL == 0) speed_control(0, (int16*)&motor_left, (uint16*)encTimeL, i_encTimeL);
+				if (timeCorrectL == 0) speed_control(0, (int16*)&motor_left, (uint16*)encTimeL, i_encTimeL, enc_tmp);
 				else timeCorrectL = 0;		
 				/* pro TIMER_STEP wird maximal ein Encoder ausgewertet, da max alle 6 ms (Fullspeed) eine Flanke kommen kann */
 				return;	// hackhack	
@@ -334,7 +334,7 @@ void bot_encoder_isr(void){
 				*(uint16*)((uint8*)encTimeR + i_time) = ticks;
 				i_encTimeR = i_time;
 				/* Regleraufruf rechts */
-				if (timeCorrectR == 0) speed_control(1, (int16*)&motor_right, (uint16*)encTimeR, i_encTimeR);
+				if (timeCorrectR == 0) speed_control(1, (int16*)&motor_right, (uint16*)encTimeR, i_encTimeR, enc_tmp);
 				else timeCorrectR = 0;
 			#endif // SPEED_CONTROL_AVAILABLE
 		}

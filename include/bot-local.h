@@ -51,6 +51,8 @@
 #define PWMSTART_L			100				/*!< Basis-PWM-Wert linker Motor (falls keine dauerhaft gespeicherte PWM-LT vorhanden ist) */
 #define PWMSTART_R			100				/*!< Basis-PWM-Wert rechter Motor (falls keine dauerhaft gespeicherte PWM-LT vorhanden ist) */
 #define PID_START_DELAY		20				/*!< Dauer der Anfahrverzoegerung */
+#define ENC_CORRECT_L		5				/*!< Korrekturoffset fuer linken Radencoder */
+#define ENC_CORRECT_R		5				/*!< Korrekturoffset fuer linken Radencoder */
 
 /* Servo-Parameter */
 #define DOOR_CLOSE 	7			/*!< Rechter Anschlag des Servos */

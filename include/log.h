@@ -126,28 +126,28 @@
  * Allgemeines Debugging (Methode DiesUndDas wurde mit Parameter SoUndSo 
  * aufgerufen ...)
  */
-#define LOG_DEBUG(__dbg)
+#define LOG_DEBUG(format, args...)
 
 /*!
  * Allgemeine Informationen (Programm gestartet, Programm beendet, Verbindung 
  * zu Host Foo aufgebaut, Verarbeitung dauerte SoUndSoviel Sekunden ...)
  */
-#define LOG_INFO(__dbg)
+#define LOG_INFO(format, args...)
 
 /*!
  * Auftreten einer unerwarteten Situation.
  */
-#define LOG_WARN(__dbg)
+#define LOG_WARN(format, args...)
 
 /*!
  * Fehler aufgetreten, Bearbeitung wurde alternativ fortgesetzt.
  */
-#define LOG_ERROR(__dbg)
+#define LOG_ERROR(format, args...)
 
 /*!
  * Kritischer Fehler, Programmabbruch.
  */
-#define LOG_FATAL(__dbg)
+#define LOG_FATAL(format, args...)
 
 #endif	/* LOG_AVAILABLE */
 

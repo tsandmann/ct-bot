@@ -105,7 +105,9 @@ void uart_init(void){
 		 * => Pufferinhalt erst verarbeiten - das funktioniert besser als es aussieht. ;-)
 		 * Ist allerdings nur dann clever, wenn das ausgewertete Command nicht mehr Daten per
 		 * uart_read() lesen will, als bereits im Puffer sind, denn der Interrupt ist ja aus... */
-		bot_2_pc_listen();		// Daten des Puffers auswerten
+		#ifdef BOT_2_PC_AVAILABLE
+			bot_2_pc_listen();		// Daten des Puffers auswerten
+		#endif
 	}
 	_inline_fifo_put(&infifo, UDR);
 	UCSRB |= (1 << RXCIE);	// diesen Interrupt wieder an 	

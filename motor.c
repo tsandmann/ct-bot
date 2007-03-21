@@ -106,7 +106,7 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 	 * Feintuning von PID_Kp bis PID_SPEED_THRESHOLD (bot-local.h) verbessert die Genauigkeit und Schnelligkeit der Regelung.
 	 * Mit PWMMIN, PWMSTART_L und PWMSTART_R laesst sich der Minimal- bzw. Startwert fuer die Motoren anpassen.
 	 */
-	void speed_control(uint8 dev, int16* actVar, uint16* encTime, uint8 i_time){
+	void speed_control(uint8 dev, int16* actVar, uint16* encTime, uint8 i_time, uint8 enc){
 //		timer_reg1 = TCNT2;
 		/* Speicher fuer alte Regeldifferenzen */
 		static int16 lastErr[2] = {0,0};
@@ -123,6 +123,7 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 			register uint8* p_time = (uint8*)encTime;
 			uint16 ticks_to_speed;
 			uint16 dt = *(uint16*)(p_time + i_time);	// aktueller Timestamp
+			int8 enc_correct = 0;
 			
 			/* Beim ersten Aufruf mit neuem Speed beruecksichtigen wir die Beschleunigung */
 			if (start_signal[dev] == PID_START_DELAY){
@@ -135,6 +136,9 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 				} else if (encoderTargetRate[dev] < PID_SPEED_THRESHOLD/2){ 
 					i_time -= 1 * sizeof(encTime[0]);	// Index letzter Timestamp 
 					ticks_to_speed = TICKS_TO_SPEED_0;
+					/* Regelgroesse korrigieren, wenn mit jeder Encoderflanke gerechnet wurde */
+					enc_correct = dev == 0 ? ENC_CORRECT_L : ENC_CORRECT_R;
+					if (enc == 1) enc_correct = -enc_correct;
 				} else /*if (encoderTargetRate[dev] < PID_SPEED_THRESHOLD)*/{
 					i_time -= 2 * sizeof(encTime[0]);	// Index vorletzter Timestamp
 					ticks_to_speed = TICKS_TO_SPEED_1;
@@ -161,7 +165,7 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 				/* </testcase> */
 				
 				/* Bei Fahrt Regelgroesse berechnen */	
-				uint8 encoderRate = ticks_to_speed / dt; // <dt> = [37; 800] -> <encoderRate> = [229; 10]
+				uint8 encoderRate = ticks_to_speed / dt + enc_correct; // <dt> = [37; 800] -> <encoderRate> = [229; 10]
 				/* Regeldifferenz berechnen */	
 				int16 err = (encoderTargetRate[dev] - encoderRate); 
 	

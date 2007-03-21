@@ -106,7 +106,7 @@ void servo_set(uint8 servo, uint8 pos);
 	 * Feintuning von PID_Kp bis PID_SPEED_THRESHOLD (bot-local.h) verbessert die Genauigkeit und Schnelligkeit der Regelung.
 	 * Mit PWMMIN, PWMSTART_L und PWMSTART_R laesst sich der Minimal- bzw. Startwert fuer die Motoren anpassen.
 	 */
-	void speed_control(uint8 dev, int16* actVar, uint16* encTime, uint8 i_time);
+	void speed_control(uint8 dev, int16* actVar, uint16* encTime, uint8 i_time, uint8 enc);
 	
 	#ifdef DISPLAY_REGELUNG_AVAILABLE
 		/*!

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-03-21 Timo Sandmann [mail@timosandmann.de]: Geschwindigkeitsberechnung fuer Motorregelung stabilisiert, LOG-Bug gefixt, UART-Bug gefixt
+
 2007-03-15 Timo Sandmann [mail@timosandmann.de]: TWI- und SFR10-Code ausgeschlossen, wenn kein SFR10 vorhanden => 1 KB Flash gespart
 
 2007-03-15 Timo Sandmann [mail@timosandmann.de]: LOG arbeitet jetzt auch mit Strings im Flash. Ausserdem reichen einfache Klammern, wenn man das moechte

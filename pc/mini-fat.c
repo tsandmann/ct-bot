@@ -91,7 +91,7 @@ void convert_slog_file(const char* input_file){
 	uint8 data[512];
 	for (k=0; k<2; k++){	// einmal fuer links und einmal fuer rechts
 		fseek(fp_input, 512L, SEEK_SET);	// erster Sektor enthaelt nur Dateiname und Groesse
-		fwrite("Ist-Geschw.\tSoll-Geschw.\tFehler\tPWM\tTimestemp\n", 46, 1, fp_output); 
+		fwrite("Ist-Geschw.\tSoll-Geschw.\tFehler\tPWM\tTimestamp\n", 46, 1, fp_output); 
 		/* blockweise Daten einlesen */
 		for (j=0; j<=filesize/512; j++){
 			fread(data, 512, 1, fp_input);
