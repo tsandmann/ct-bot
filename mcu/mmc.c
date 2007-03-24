@@ -43,6 +43,8 @@
 #include "ena.h"
 #include "timer.h"
 #include "display.h"
+#include "led.h"
+#include "map.h"
 #include "ui/available_screens.h"
 
 #include <avr/interrupt.h>
@@ -98,7 +100,7 @@ uint8 mmc_write_command(uint8 *cmd){
 	uint8 result = 0xff;
 	uint16 timeout = 0;
 
-	mmc_enable();	// MMC / SD-Card aktiv schalten
+	if (mmc_enable() != 0) return 0xff;	// MMC / SD-Card aktiv schalten
 
 	// sendet 6 Byte Kommando
 	uint8 i;
@@ -143,6 +145,11 @@ uint8 mmc_init(void){
 		if (timeout++ > MMC_TIMEOUT){
 			MMC_Disable();
 			mmc_init_state = 1;
+			#ifdef LED_AVAILABLE
+			#ifndef TEST_AVAILABLE
+				LED_on(LED_TUERKIS);
+			#endif	// TEST_AVAILABLE
+			#endif	// LED_AVAILABLE				
 			return 1; // Abbruch bei Kommando 1 (Return Code 1)
 		}
 	}
@@ -155,10 +162,20 @@ uint8 mmc_init(void){
 		if (timeout++ > 3*MMC_TIMEOUT){
 			MMC_Disable();
 			mmc_init_state = 1;
+			#ifdef LED_AVAILABLE
+			#ifndef TEST_AVAILABLE
+				LED_on(LED_TUERKIS);
+			#endif	// TEST_AVAILABLE
+			#endif	// LED_AVAILABLE
 			return 2; // Abbruch bei Kommando 2 (Return Code 2)
 		}
 	}
 	
+	#ifdef LED_AVAILABLE
+	#ifndef TEST_AVAILABLE	
+		LED_off(LED_TUERKIS);
+	#endif	// TEST_AVAILABLE
+	#endif	// LED_AVAILABLE		
 	// set MMC_Chip_Select to high (MMC/SD-Karte Inaktiv)
 	MMC_Disable();
 	return 0;
@@ -172,16 +189,17 @@ uint8 mmc_init(void){
  * @param count 	Anzahl der zu lesenden Bytes
  */
 uint8 mmc_read_block(uint8 *cmd, uint8 *buffer, uint16 count){
-	/* Initialisierung checken */
-	if (mmc_init_state != 0) 
-		if (mmc_init() != 0) return 1;	
-		
 	// Sendet Kommando cmd an MMC/SD-Karte
 	if (mmc_write_command(cmd) != 0) {
 		mmc_init_state = 1;
 		return 1;
 	}
-
+	
+	#ifdef LED_AVAILABLE
+	#ifndef TEST_AVAILABLE
+		LED_on(LED_GRUEN);
+	#endif	// TEST_AVAILABLE
+	#endif	// LED_AVAILABLE
 	// Wartet auf Start Byte von der MMC/SD-Karte (FEh/Start Byte)
 	uint8 timeout=1;
 	while (mmc_read_byte() != 0xfe){
@@ -199,6 +217,11 @@ uint8 mmc_read_block(uint8 *cmd, uint8 *buffer, uint16 count){
 	
 	// set MMC_Chip_Select to high (MMC/SD-Karte inaktiv)
 	MMC_Disable();
+	#ifdef LED_AVAILABLE
+	#ifndef TEST_AVAILABLE
+		LED_off(LED_GRUEN);
+	#endif	// TEST_AVAILABLE
+	#endif	// LED_AVAILABLE		
 	if (timeout == 0) {
 		mmc_init_state = 1;
 		return 1;	// Abbruch durch Timeout

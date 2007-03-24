@@ -161,14 +161,6 @@ mmc_enable:
 	call mmc_init				; neu initialisieren
 	tst r24
 	breq 1f
-#ifdef LED_AVAILABLE
-#ifndef TEST_AVAILABLE
-	lds r24, led
-	ori r24, LED_TUERKIS
-	sts led, r24
-	call LED_set				; tuerkise LED an
-#endif	// TEST_AVAILABLE
-#endif	// LED_AVAILABLE 	
 	ret							; kein Init moeglich => Fehler
 	1:
 	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten
@@ -180,15 +172,7 @@ mmc_enable:
 	ldi r24, lo8(-1)
 	call mmc_write_byte			; sendet 8 CLK-Flanken
 	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten		
-	call ENA_on
-#ifdef LED_AVAILABLE
-#ifndef TEST_AVAILABLE
-	lds r24, led
-	andi r24, ~LED_TUERKIS
-	sts led, r24
-	call LED_set				; tuerkise LED aus
-#endif	// TEST_AVAILABLE
-#endif	// LED_AVAILABLE		
+	call ENA_on	
 	ldi r24, 0	
 	ret							; alles ok
 
