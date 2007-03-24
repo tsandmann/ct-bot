@@ -349,7 +349,9 @@ int command_evaluate(void){
 				break;
 		#endif
 		case CMD_AKT_LED:	// LED-Steuerung
-			LED_set(received_command.data_l & 255);
+			#ifdef LED_AVAILABLE
+				LED_set(received_command.data_l & 255);
+			#endif
 			break;
 			
 		// Einige Kommandos ergeben nur fuer reale Bots Sinn

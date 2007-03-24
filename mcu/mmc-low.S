@@ -34,6 +34,7 @@
 #include "mmc-low.h"
 #include "ct-Bot.h"
 #include "ena.h"
+#include "led.h"
 #ifdef MMC_AVAILABLE
 #include <avr/io.h> 
 
@@ -160,6 +161,14 @@ mmc_enable:
 	call mmc_init				; neu initialisieren
 	tst r24
 	breq 1f
+#ifdef LED_AVAILABLE
+#ifndef TEST_AVAILABLE
+	lds r24, led
+	ori r24, LED_TUERKIS
+	sts led, r24
+	call LED_set				; tuerkise LED an
+#endif	// TEST_AVAILABLE
+#endif	// LED_AVAILABLE 	
 	ret							; kein Init moeglich => Fehler
 	1:
 	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten
@@ -171,7 +180,15 @@ mmc_enable:
 	ldi r24, lo8(-1)
 	call mmc_write_byte			; sendet 8 CLK-Flanken
 	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten		
-	call ENA_on	
+	call ENA_on
+#ifdef LED_AVAILABLE
+#ifndef TEST_AVAILABLE
+	lds r24, led
+	andi r24, ~LED_TUERKIS
+	sts led, r24
+	call LED_set				; tuerkise LED aus
+#endif	// TEST_AVAILABLE
+#endif	// LED_AVAILABLE		
 	ldi r24, 0	
 	ret							; alles ok
 
@@ -197,6 +214,14 @@ mmc_write_sector:
 	mov r16, r24				; Byte 3 von Parameter addr sichern  
 	movw r28, r20				; Parameter Buffer sichern
 	mov r13, r18				; Parameter async sichern
+#ifdef LED_AVAILABLE
+#ifndef TEST_AVAILABLE
+	lds r24, led
+	ori r24, LED_ROT
+	sts led, r24
+	call LED_set				; rote LED an
+#endif	// TEST_AVAILABLE
+#endif	// LED_AVAILABLE 	
 	call mmc_enable				; Karte aktiv schalten
 	tst r24
 	breq 1f
@@ -323,6 +348,14 @@ mmc_write_sector:
 	6:
 	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
 	call ENA_off
+#ifdef LED_AVAILABLE
+#ifndef TEST_AVAILABLE
+	lds r24, led
+	andi r24, ~LED_ROT
+	sts led, r24
+	call LED_set				; rote LED aus
+#endif	// TEST_AVAILABLE
+#endif	// LED_AVAILABLE		
 	mov	r24, r16				; Return-Code laden	
 	ldi r25, 0
 	pop r29						; allgemeine Register wiederherstellen
@@ -352,6 +385,14 @@ mmc_read_sector:
 	movw r14, r22				; Byte 1 und 2 von Parameter addr sichern
 	mov r16, r24				; Byte 3 von Parameter addr sichern
 	movw r28, r20				; Parameter Buffer sichern
+#ifdef LED_AVAILABLE
+#ifndef TEST_AVAILABLE
+	lds r24, led
+	ori r24, LED_GRUEN
+	sts led, r24
+	call LED_set				; gruene LED an
+#endif	// TEST_AVAILABLE
+#endif	// LED_AVAILABLE
 	call mmc_enable				; Karte aktiv schalten
 	tst r24
 	breq 1f
@@ -470,6 +511,14 @@ mmc_read_sector:
 	6:
 	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
 	call ENA_off
+#ifdef LED_AVAILABLE
+#ifndef TEST_AVAILABLE
+	lds r24, led
+	andi r24, ~LED_GRUEN
+	sts led, r24
+	call LED_set				; gruene LED aus
+#endif	// TEST_AVAILABLE
+#endif	// LED_AVAILABLE
 	mov r24, r16				; Return-Code laden
 	ldi r25, 0
 	pop r29						; allgemeine Register wiederherstellen

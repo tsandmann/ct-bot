@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -39,6 +39,7 @@
 
 #define LED_ALL    0xFF		/*!< LED Alle */
 
+#ifndef __ASSEMBLER__
 /*! Datenfeld fuer den Zugriff auf die LEDs */
 typedef struct {
    uint8 rechts:1;		/*!< LED in Fahrichtung rechts*/
@@ -82,5 +83,6 @@ void LED_off(uint8 LED);
  * @param LED HEX-Code der LED
  */
 void LED_on(uint8 LED);
+#endif	// __ASSEMBLER__
 
-#endif
+#endif	// led_H_
