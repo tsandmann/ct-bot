@@ -48,7 +48,7 @@ DEVICE = PC
 MSG_DEVICE = Target device is $(DEVICE)
 
 # List C source files here. (C dependencies are automatically generated.)
-SRCMCU = mcu/adc.c mcu/bot-2-pc.c mcu/delay.c mcu/display.c mcu/ena.c mcu/ir-rc5.c mcu/led.c mcu/motor-low.c mcu/mouse.c mcu/sensor-low.c mcu/shift.c mcu/timer-low.c mcu/uart.c mcu/mmc.c
+SRCMCU = mcu/adc.c mcu/bot-2-pc.c mcu/delay.c mcu/display.c mcu/ena.c mcu/ir-rc5.c mcu/led.c mcu/motor-low.c mcu/mouse.c mcu/sensor-low.c mcu/shift.c mcu/timer-low.c mcu/uart.c mcu/mmc.c mcu/fifo.c
 
 SRCPC = pc/bot-2-sim.c pc/delay_pc.c pc/display_pc.c pc/ir-rc5_pc.c pc/led_pc.c pc/motor-low_pc.c pc/sensor-low_pc.c pc/tcp.c pc/tcp-server.c pc/mouse_pc.c pc/mini-fat.c
 
@@ -245,6 +245,7 @@ CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD) 
 
+ASFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 
 
 # Define Messages
@@ -283,7 +284,7 @@ GENDEPFLAGS = -Wp,-M,-MP,-MT,$(*F).o,-MF,.dep/$(@F).d
 # Add target processor to flags.
 ifeq ($(DEVICE),MCU)
 	ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS) $(GENDEPFLAGS) -D $(DEVICE)
-	ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
+	ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS) -D $(DEVICE)
 else
 	ALL_CFLAGS = -I. $(CFLAGS) $(GENDEPFLAGS)  -D $(DEVICE)
 endif
