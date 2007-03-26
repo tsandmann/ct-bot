@@ -50,9 +50,9 @@ MSG_DEVICE = Target device is $(DEVICE)
 # List C source files here. (C dependencies are automatically generated.)
 SRCMCU = mcu/adc.c mcu/bot-2-pc.c mcu/delay.c mcu/display.c mcu/ena.c mcu/ir-rc5.c mcu/led.c mcu/motor-low.c mcu/mouse.c mcu/sensor-low.c mcu/shift.c mcu/timer-low.c mcu/uart.c mcu/mmc.c
 
-SRCPC = pc/bot-2-sim.c pc/delay_pc.c pc/display_pc.c pc/ir-rc5_pc.c pc/led_pc.c pc/motor-low_pc.c pc/sensor-low_pc.c pc/tcp.c pc/tcp-server.c pc/mouse_pc.c
+SRCPC = pc/bot-2-sim.c pc/delay_pc.c pc/display_pc.c pc/ir-rc5_pc.c pc/led_pc.c pc/motor-low_pc.c pc/sensor-low_pc.c pc/tcp.c pc/tcp-server.c pc/mouse_pc.c pc/mini-fat.c
 
-SRCCOM = bot-logic/bot-logik.c map.c command.c log.c motor.c rc5.c sensor.c timer.c bot-logic/behaviour_avoid_border.c bot-logic/behaviour_drive_square.c  bot-logic/behaviour_gotoxy.c   bot-logic/behaviour_simple.c      bot-logic/behaviour_avoid_col.c       bot-logic/behaviour_follow_line.c   bot-logic/behaviour_olympic.c  bot-logic/behaviour_solve_maze.c bot-logic/behaviour_drive_distance.c bot-logic/behaviour_goto.c bot-logic/behaviour_scan.c bot-logic/behaviour_turn.c bot-logic/behaviour_servo.c
+SRCCOM = bot-logic/bot-logik.c map.c command.c log.c motor.c ui/rc5.c ui/gui.c ui/misc.c sensor.c timer.c bot-logic/behaviour_avoid_border.c bot-logic/behaviour_drive_square.c  bot-logic/behaviour_gotoxy.c   bot-logic/behaviour_simple.c      bot-logic/behaviour_avoid_col.c       bot-logic/behaviour_follow_line.c   bot-logic/behaviour_olympic.c  bot-logic/behaviour_solve_maze.c bot-logic/behaviour_drive_distance.c bot-logic/behaviour_goto.c bot-logic/behaviour_scan.c bot-logic/behaviour_turn.c bot-logic/behaviour_servo.c bot-logic/behaviour_catch_pillar.c bot-logic/behaviour_remotecall.c
 
 
 ifeq ($(DEVICE),MCU)
@@ -69,8 +69,12 @@ endif
 # Even though the DOS/Win* filesystem matches both .s and .S the same,
 # it will preserve the spelling of the filenames, and gcc itself does
 # care about how the name is spelled on its command-line.
-ASRC = 
-	
+ifeq ($(DEVICE),MCU)
+    ASRC = mcu/mmc-low.S
+else
+    ASRC = 
+endif	
+
 MATH_LIB = -lm
 	
 ifeq ($(DEVICE),MCU)
