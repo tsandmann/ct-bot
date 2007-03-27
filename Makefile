@@ -48,18 +48,24 @@ DEVICE = MCU
 MSG_DEVICE = Target device is $(DEVICE)
 
 # List C source files here. (C dependencies are automatically generated.)
-SRCMCU = mcu/adc.c mcu/bootloader.c mcu/bot-2-pc.c mcu/delay.c mcu/display.c mcu/ena.c mcu/fifo.c mcu/ir-rc5.c mcu/led.c mcu/mini-fat.c mcu/mmc.c mcu/motor-low.c mcu/mouse.c mcu/sensor-low.c mcu/shift.c mcu/srf10.c mcu/timer-low.c mcu/TWI_driver.c mcu/uart.c 
+SRCMCU = mcu/TWI_driver.c mcu/adc.c mcu/bootloader.c mcu/bot-2-pc.c mcu/delay.c mcu/display.c mcu/ena.c mcu/fifo.c mcu/ir-rc5.c mcu/led.c mcu/mini-fat.c mcu/mmc.c mcu/motor-low.c mcu/mouse.c mcu/sensor-low.c mcu/shift.c mcu/srf10.c mcu/timer-low.c mcu/uart.c 
 
-SRCPC = pc/bot-2-sim.c pc/delay_pc.c pc/display_pc.c pc/ir-rc5_pc.c pc/led_pc.c pc/mini-fat.c pc/mmc-emu_pc.c pc/motor-low_pc.c pc/sensor-low_pc.c pc/mouse_pc.c pc/tcp.c pc/tcp-server.c
+SRCPC = pc/bot-2-sim.c pc/delay_pc.c pc/display_pc.c pc/ir-rc5_pc.c pc/led_pc.c pc/mini-fat.c pc/mmc-emu_pc.c pc/motor-low_pc.c pc/mouse_pc.c pc/sensor-low_pc.c pc/tcp-server.c pc/tcp.c 
 
-SRCCOM = bot-logic/behaviour_avoid_border.c bot-logic/behaviour_avoid_col.c bot-logic/behaviour_catch_pillar.c bot-logic/behaviour_drive_distance.c bot-logic/behaviour_drive_square.c bot-logic/behaviour_follow_line.c bot-logic/behaviour_goto.c bot-logic/behaviour_gotoxy.c bot-logic/behaviour_olympic.c bot-logic/behaviour_remotecall.c bot-logic/behaviour_scan.c bot-logic/behaviour_servo.c bot-logic/behaviour_simple.c bot-logic/behaviour_solve_maze.c bot-logic/behaviour_turn.c bot-logic/bot-logik.c ui/gui.c ui/misc.c ui/rc5.c command.c log.c map.c mmc-vm.c motor.c sensor.c timer.c   
+SRCCOM = command.c $(TARGET).c log.c map.c mmc-vm.c motor.c sensor.c timer.c 
+SRCUI = ui/gui.c ui/misc.c ui/rc5.c
+
+SRCLOGIC = bot-logic/behaviour_avoid_border.c bot-logic/behaviour_avoid_col.c bot-logic/behaviour_catch_pillar.c bot-logic/behaviour_drive_distance.c bot-logic/behaviour_drive_square.c bot-logic/behaviour_follow_line.c bot-logic/behaviour_goto.c bot-logic/behaviour_gotoxy.c bot-logic/behaviour_olympic.c bot-logic/behaviour_remotecall.c bot-logic/behaviour_scan.c bot-logic/behaviour_servo.c bot-logic/behaviour_simple.c bot-logic/behaviour_solve_maze.c bot-logic/behaviour_turn.c bot-logic/bot-logik.c  
+
+   
 
 
-ifeq ($(DEVICE),MCU)
-	SRC = $(TARGET).c $(SRCCOM) $(SRCMCU)
-else
-	SRC = $(TARGET).c $(SRCCOM) $(SRCPC)
-endif
+#ifeq ($(DEVICE),MCU)
+#	SRC = $(TARGET).c $(SRCCOM) $(SRCMCU)
+#else
+#	SRC = $(TARGET).c $(SRCCOM) $(SRCPC)
+#endif
+SRC =$(SRCCOM) $(SRCUI) $(SRCPC) $(SRCMCU) $(SRCLOGIC)
 
 
 # List Assembler source files here.
@@ -130,10 +136,12 @@ ifeq ($(DEVICE),MCU)
 	#  -Wl,...:     tell GCC to pass this to linker.
 	#    -Map:      create map file
 	#    --cref:    add cross reference to  map file
-	LDFLAGS = -Wl,-Map=$(TARGET).map,--cref
+#	LDFLAGS = -Wl,-Map=$(TARGET).map,--cref
+	LDFLAGS = -mmcu=$(MCU)
+	LDFLAGS += -Wl,--section-start=.bootloader=0x7C00
 	LDFLAGS += $(EXTMEMOPTS)
-	LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
-	
+	LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB)
+	LDFLAGS += -L $(DIRAVR)
 	
 	
 	
@@ -405,7 +413,7 @@ extcoff: $(TARGET).elf
 %.elf: $(OBJ)
 	@echo
 	@echo $(MSG_LINKING) $@
-	$(CC) $(ALL_CFLAGS) $(OBJ) --output $@ $(LDFLAGS)
+	$(CC) --output $@ $(LDFLAGS) $(OBJ) $(MATH_LIB)
 
 
 # Compile: create object files from C source files.
