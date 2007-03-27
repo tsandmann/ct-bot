@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-03-27 Benjamin Benz [bbe@heise.de]: Makefile überarbeitet
+
 2007-03-24 Timo Sandmann [mail@timosandmann.de]: LEDs zeigen Status der MMC an (gruen == lesen, rot == schreiben, tuerkis == Fehler), wenn TEST_AVAILABLE aus ist.
 
 2007-03-21 Timo Sandmann [mail@timosandmann.de]: Geschwindigkeitsberechnung fuer Motorregelung stabilisiert, LOG-Bug gefixt, UART-Bug gefixt
