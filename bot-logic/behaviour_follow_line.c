@@ -78,7 +78,7 @@ void bot_follow_line_behaviour(Behaviour_t *data) {
 					speedWishLeft=BOT_SPEED_STOP;
 				 	speedWishRight=BOT_SPEED_STOP;
 				 	lineState=CHECK_LINE;		/* Verhaltensstatus zuruecksetzen */
-				 	//LOG_INFO(("Stopp in FOLLOW_LINE"));
+				 	//LOG_INFO("Stopp in FOLLOW_LINE");
 				 	return_from_behaviour(data);
 				 	break;
 				}
@@ -96,17 +96,17 @@ void bot_follow_line_behaviour(Behaviour_t *data) {
 			}
 			if (sensLineL<LINE_SENSE && sensLineR>LINE_SENSE) {
 				/* links von der Linie abgekommen, daher nach rechts drehen */
-				//LOG_DEBUG(("Drehe rechts"));
+				//LOG_DEBUG("Drehe rechts");
 				speedWishLeft=BOT_SPEED_FOLLOW;
 			 	speedWishRight=-BOT_SPEED_FOLLOW;
 			} else if (sensLineL>LINE_SENSE && sensLineR<LINE_SENSE) {
 			 	/* andersrum, also links drehen */
-			 	//LOG_DEBUG(("Drehe links"));
+			 	//LOG_DEBUG("Drehe links");
 			 	speedWishLeft=-BOT_SPEED_FOLLOW;
 			 	speedWishRight=BOT_SPEED_FOLLOW;
 			} else if (sensLineL>LINE_SENSE && sensLineR>LINE_SENSE) {
 			 	/* noch ueber der Linie, also einfach geradeaus weiter */
-			 	//LOG_DEBUG(("Fahre geradeaus"));
+			 	//LOG_DEBUG("Fahre geradeaus");
 			 	speedWishLeft=BOT_SPEED_FOLLOW;
 			 	speedWishRight=BOT_SPEED_FOLLOW;
 			} 

@@ -42,11 +42,11 @@
  * und wertet sie aus. dazu nutzt er die Funktion command_evaluate()
  */
 void bot_2_pc_listen(void){
-//		LOG_DEBUG(("%d bytes recvd",uart_data_available()));
+//		LOG_DEBUG("%d bytes recvd",uart_data_available());
 		if (uart_data_available() >= sizeof(command_t)){	
-//			LOG_DEBUG(("%d bytes recvd",uart_data_available()));
+//			LOG_DEBUG("%d bytes recvd",uart_data_available());
 			if (command_read() == 0){
-				LOG_DEBUG(("command received"));
+//				LOG_DEBUG("command received");
 				command_evaluate();
 			}else {		
 				// TODO Fehlerbehandlung

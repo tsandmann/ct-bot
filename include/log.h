@@ -27,6 +27,10 @@
  * LOG_INFO("Wert x=%d", x);
  * Bei den Ausgaben kann auf ein Line Feed '\n' am Ende des Strings verzichtet werden, 
  * da dies automatisch angehaengt hinzugefuegt wird.
+ * Die frueher noetigen Doppelklammern sind nicht mehr noetig, einfach normale Klammern
+ * verwenden, siehe Bsp. oben. 
+ * (Die Doppelklammern funktionieren nicht mit Var-Arg-Makros, die wir aber brauchen, da 
+ * nun fuer MCU alle Strings im Flash belassen werden sollen, das spart viel RAM :-) )
  * 
  * <pre>
  * Die Logausgaben werden generell mit der Definition von LOG_AVAILABLE eingeschaltet
@@ -50,6 +54,7 @@
  * 2. Logging ueber ct-Sim:		LOG_CTSIM_AVAILABLE muss definiert sein.
  * 								BOT_2_PC_AVAILABLE muss zusaetzlich definiert sein.
  * 3. Logging ueber Display:	LOG_DISPLAY_AVAILABLE muss definiert sein, sowie DISPLAY_AVAILABLE.
+ * 4. Logging in txt auf MMC:	MMC_AVAILABLE und MMC_VM_AVAILABLE muessen an sein.
  * </pre>
  * 
  * @author 	Andreas Merkle (mail@blue-andi.de)

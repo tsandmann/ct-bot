@@ -399,7 +399,7 @@ init();	// alles initialisieren
 	display_printf("c't-Roboter");
 	LED_set(0x00);
 	#ifdef LOG_AVAILABLE
-		LOG_DEBUG(("Hallo Welt!"));
+		LOG_DEBUG("Hallo Welt!");
 	#endif	
 #endif
 
@@ -440,7 +440,7 @@ for(;;){
 			bot_behave();
 //		#ifdef LOG_AVAILABLE
 //		else
-//			LOG_DEBUG(("sens not init"));
+//			LOG_DEBUG("sens not init");
 //		#endif
 	#endif	// BEHAVIOUR_AVAILABLE
 			
@@ -486,9 +486,7 @@ for(;;){
 		#endif
 	#endif	// MCU
 		
-//	#ifdef LOG_AVAILABLE
-//		LOG_DEBUG(("BOT TIME %d s", timer_get_s()));
-//	#endif	
+//	LOG_DEBUG("BOT TIME %lu ms", TICKS_TO_MS(TIMER_GET_TICKCOUNT_32));
 	
 	#ifdef PC
 		#ifdef DISPLAY_AVAILABLE

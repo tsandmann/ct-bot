@@ -80,7 +80,7 @@ command_t received_command;		/*!< Puffer fuer Kommandos */
 
 #ifndef DEBUG_COMMAND
 	#undef LOG_DEBUG
-	#define LOG_DEBUG(a) {}
+	#define LOG_DEBUG(a, ...) {}
 #endif
 /*!
  * Liest ein Kommando ein, ist blockierend!
@@ -108,12 +108,12 @@ int8 command_read(void){
 	// Daten holen, maximal soviele, wie ein Kommando lang ist
 	bytesRcvd=low_read(buffer,sizeof(command_t));	
 
-	//	LOG_DEBUG(("%d/%d read/av",bytesRcvd,tmp));
-	//	LOG_DEBUG(("%x %x %x",buffer[0],buffer[1],buffer[2]));
+	LOG_DEBUG("%d read",bytesRcvd);
+	LOG_DEBUG("%x %x %x",buffer[0],buffer[1],buffer[2]);
 
 	// Suche nach dem Beginn des Frames
 	while ((start<bytesRcvd)&&(buffer[start] != CMD_STARTCODE)) {	
-		LOG_DEBUG(("falscher Startcode"));
+		LOG_DEBUG("falscher Startcode");
 //		printf("\nStartzeichen nicht am Anfang des Puffers! (%d)\n",start);
 //		printf(".");
 		start++;
@@ -121,15 +121,15 @@ int8 command_read(void){
 		
 	// Wenn keine STARTCODE gefunden ==> Daten verwerfen
 	if (buffer[start] != CMD_STARTCODE){
-		LOG_DEBUG(("kein Startcode"));
+		LOG_DEBUG("kein Startcode");
 		return -1;	
 	}
 	
-	//	LOG_DEBUG(("Start @%d",start));
+	LOG_DEBUG("Start @%d",start);
 	
 	// haben wir noch genug Platz im Puffer, um das Packet ferig zu lesen?
 	if ((RCVBUFSIZE-start) < sizeof(command_t)){
-		//	LOG_DEBUG(("not enough space"));
+		LOG_DEBUG("not enough space");
 //		printf("not enough space");
 		return -1;	// nein? ==> verwerfen
 	}
@@ -138,7 +138,7 @@ int8 command_read(void){
 
 	
 	if (i> 0) {	// Fehlen noch Daten ?
-		LOG_DEBUG(("command.c: Start @ %d es fehlen %d bytes ",start,i));	
+		LOG_DEBUG("command.c: Start @ %d es fehlen %d bytes ",start,i);	
 		// Systemzeit erfassen
 		old_ticks = TIMER_GET_TICKCOUNT_16;
 				
@@ -146,29 +146,29 @@ int8 command_read(void){
 		while (i > 0){
 			// Wenn der Timeout ueberschritten ist
 			if (TIMER_GET_TICKCOUNT_16-old_ticks > MS_TO_TICKS(COMMAND_TIMEOUT)){
-				LOG_DEBUG(("Timeout beim nachlesen"));
+				LOG_DEBUG("Timeout beim nachlesen");
 				return -1; //	==> Abbruch
 			}
-			//	LOG_DEBUG(("%d bytes missing",i));
+			LOG_DEBUG("%d bytes missing",i);
 			i= low_read(buffer+bytesRcvd,i);
-			//	LOG_DEBUG(("%d read",i));
+			LOG_DEBUG("%d read",i);
 			bytesRcvd+=i;
 			i=sizeof(command_t) - (bytesRcvd-start);
 		}
 	}
 	
-	//	LOG_DEBUG(("%d/%d read/start",bytesRcvd,start));
-	//	LOG_DEBUG(("%x %x %x",buffer[start],buffer[start+1],buffer[start+2]));
+	LOG_DEBUG("%d/%d read/start",bytesRcvd,start);
+	LOG_DEBUG("%x %x %x",buffer[start],buffer[start+1],buffer[start+2]);
 
 	// Cast in command_t
 	command= (command_t *) ( buffer +start);
 
-	//	LOG_DEBUG(("start: %x ",command->startCode));
+	LOG_DEBUG("start: %x ",command->startCode);
 	//	command_display(command);
 	
 	// validate (startcode ist bereits ok, sonst waeren wir nicht hier )
 	if (command->CRC==CMD_STOPCODE){
-		//	LOG_DEBUG(("Command is valid"));
+		LOG_DEBUG("Command is valid");
 		// Transfer
 		#ifdef PC
 			command_lock();		// on PC make storage threadsafe
@@ -204,8 +204,8 @@ int8 command_read(void){
 
 		return 0;
 	} else {	// Command not valid
-		LOG_DEBUG(("Invalid Command:"));
-		//		LOG_DEBUG(("%x %x %x",command->startCode,command->request.command,command->CRC));
+		LOG_DEBUG("Invalid Command:");
+		LOG_DEBUG("%x %x %x",command->startCode,command->request.command,command->CRC);
 		return -1;
 	}
 }
@@ -372,15 +372,15 @@ int command_evaluate(void){
 
 		#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 			case CMD_REMOTE_CALL:
-					LOG_DEBUG(("remote-call-cmd ..."));					
+					LOG_DEBUG("remote-call-cmd ...");					
 					switch (received_command.request.subcommand) {
 						case SUB_REMOTE_CALL_LIST:
-							LOG_DEBUG(("... auflisten "));					
+							LOG_DEBUG("... auflisten ");					
 							remote_call_list();
 							break;
 						case SUB_REMOTE_CALL_ORDER:
 						{	
-							LOG_DEBUG(("remote-call-Wunsch empfangen. Data= %d bytes",received_command.payload));					
+							LOG_DEBUG("remote-call-Wunsch empfangen. Data= %d bytes",received_command.payload);					
 							uint8 buffer[REMOTE_CALL_BUFFER_SIZE];
 							uint16 ticks = TIMER_GET_TICKCOUNT_16;
 							#ifdef MCU
@@ -396,14 +396,14 @@ int command_evaluate(void){
 							break;
 						}
 						case SUB_REMOTE_CALL_ABORT: {
-							LOG_DEBUG(("remote calls werden abgebrochen"));
+							LOG_DEBUG("remote calls werden abgebrochen");
 							deactivateCalledBehaviours(bot_remotecall_behaviour);
 							break;
 						}
 						
 						
 						default:
-							LOG_DEBUG(("unbekanntes Subkommando: %c",received_command.request.subcommand));
+							LOG_DEBUG("unbekanntes Subkommando: %c",received_command.request.subcommand);
 							break;
 					}
 				break;
@@ -476,22 +476,17 @@ int command_evaluate(void){
 				(*command).seq,				
 				(*command).CRC);
 */			
-			LOG_DEBUG(("CMD: %c\tData L: %d\tSeq: %d\n",
+			LOG_DEBUG("CMD: %c\tData L: %d\tSeq: %d\n",
 				(*command).request.command,
 				(*command).data_l,
-				(*command).seq));
+				(*command).seq);
 		#else
-//			LOG_DEBUG(("CMD%x %x %x %x",
-//				(*command).request.command,
-//				(*command).data_l,
-//				(*command).data_r,
-//				(*command).seq));
-			LOG_DEBUG(("CMD: %c\tSub: %c\tData L: %d\tPay: %d\tSeq: %d\n",
+			LOG_DEBUG("CMD: %c\tSub: %c\tData L: %d\tPay: %d\tSeq: %d\n",
 				(*command).request.command,
 				(*command).request.subcommand,
 				(*command).data_l,
 				(*command).payload,
-				(*command).seq));
+				(*command).seq);
 
 /*			char* raw= (char*)command;
 			unsigned char i=0;

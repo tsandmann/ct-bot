@@ -43,6 +43,7 @@
 #include "rc5.h"
 #include "rc5-codes.h"
 #include "ui/available_screens.h"
+#include "timer.h"
 
 #include "log.h"
 
@@ -66,7 +67,7 @@ Behaviour_t *behaviour = NULL;
 
 #ifndef DEBUG_BOT_LOGIC
 	#undef LOG_DEBUG
-	#define LOG_DEBUG(a) {}
+	#define LOG_DEBUG(a, ...) {}
 #endif
 
 
@@ -77,6 +78,9 @@ Behaviour_t *behaviour = NULL;
 void bot_base_behaviour(Behaviour_t *data){
 	speedWishLeft=target_speed_l;
 	speedWishRight=target_speed_r;
+//	LOG_DEBUG("\tMaus:\t%d\tSpeed:\t%d", (int16)x_pos, target_speed_r);
+//	LOG_DEBUG("\tDistL:\t%u\tDistR:\t%u", sensDistL, sensDistR);
+//	LOG_DEBUG("\tTime:\t%lu", TIMER_GET_TICKCOUNT_32);
 }
 
 /*!
@@ -218,7 +222,7 @@ uint8 isInCallHierarchy(Behaviour_t *job, BehaviourFunc function){
 	for (; job->caller; job=job->caller){
 		level++;
 		if (job->caller->work == function){
-			LOG_DEBUG(("Verhalten %u wurde direkt von %u aufgerufen",job->priority,job->caller->priority));
+			LOG_DEBUG("Verhalten %u wurde direkt von %u aufgerufen",job->priority,job->caller->priority);
 			return level;	// Direkter Aufrufender in Tiefe level gefunden
 		}
 	}
@@ -234,7 +238,7 @@ void deactivateCalledBehaviours(BehaviourFunc function){
 	Behaviour_t *job;	// Zeiger auf ein Verhalten
 	uint8 level;
 	
-	LOG_DEBUG(("beginne mit dem Durchsuchen der Liste"));
+	LOG_DEBUG("Beginne mit dem Durchsuchen der Liste");
 	// Einmal durch die Liste gehen, und alle aktiven Funktionen pruefen, ob sie von dem uebergebenen Verhalten aktiviert wurden
 	uint16 i=0;
 	Behaviour_t* beh_of_function = NULL;
@@ -242,11 +246,11 @@ void deactivateCalledBehaviours(BehaviourFunc function){
 		if (job->active == ACTIVE){ 
 			i++;
 			level = isInCallHierarchy(job, function);	// O(n)
-			LOG_DEBUG(("Verhalten mit Prio = %u ist ACTIVE, Durchlauf %u", job->priority, i));
-			LOG_DEBUG(("    und hat level %u Call-Abhaengigkeit", level));
+			LOG_DEBUG("Verhalten mit Prio = %u ist ACTIVE, Durchlauf %u", job->priority, i);
+			LOG_DEBUG("    und hat level %u Call-Abhaengigkeit", level);
 			/* die komplette Caller-Liste (aber auch nur die) abschalten */
 			for (; level>0; level--){	// n mal
-				LOG_DEBUG(("Verhalten %u wird in Tiefe %u abgeschaltet", job->priority, level));
+				LOG_DEBUG("Verhalten %u wird in Tiefe %u abgeschaltet", job->priority, level);
 				job->active = INACTIVE;	// callee abschalten
 				Behaviour_t* tmp = job;
 				job = job->caller;	// zur naechsten Ebene
@@ -311,10 +315,11 @@ void switch_to_behaviour(Behaviour_t * from, void *to, uint8 override ){
 	job->caller =  from;
 	
 	#ifdef DEBUG_BOT_LOGIC
-		if (from)
-			LOG_DEBUG(("Verhaltenscall: %d wurde von %d aufgerufen",job->priority,from->priority));
-		else 
-			LOG_DEBUG(("Verhaltenscall: %d wurde direkt aufgerufen",job->priority));
+		if (from) {
+			LOG_DEBUG("Verhaltenscall: %d wurde von %d aufgerufen",job->priority,from->priority);
+		} else { 
+			LOG_DEBUG("Verhaltenscall: %d wurde direkt aufgerufen",job->priority);
+		}
 	#endif
 }
 

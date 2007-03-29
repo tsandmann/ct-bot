@@ -186,19 +186,19 @@ static inline uint32 mmc_get_mmcblock_of_page(uint32 addr){
 			#ifdef LOG_AVAILABLE 
 				vm_extern_stats_t* vm_stats = mmc_get_vm_stats();
 				/* Texte wie oben */
-				LOG_INFO(("%lu", vm_stats->device_size>>20));
-				LOG_INFO(("%lu", vm_stats->vm_size>>20));
-				LOG_INFO(("%lu", vm_stats->vm_used_bytes>>10));									
-				LOG_INFO(("%u", (uint16)vm_stats->cache_size<<9));
-				LOG_INFO(("%u", ((uint16)vm_stats->cache_load<<9)/((uint16)vm_stats->cache_size<<9)*100));
-				LOG_INFO(("%lu", vm_stats->page_access));
-				LOG_INFO(("%lu", vm_stats->swap_ins));
-				LOG_INFO(("%lu", vm_stats->swap_outs));
-				LOG_INFO(("%u", vm_stats->page_access_s));
-				LOG_INFO(("%u", vm_stats->swap_ins_s));
-				LOG_INFO(("%u", vm_stats->swap_outs_s));
-				LOG_INFO(("%u", (uint8)(100.0-((float)vm_stats->swap_ins/(float)vm_stats->page_access)*100.0)));
-				LOG_INFO(("%u", vm_stats->delta_t));				
+				LOG_INFO("%lu", vm_stats->device_size>>20);
+				LOG_INFO("%lu", vm_stats->vm_size>>20);
+				LOG_INFO("%lu", vm_stats->vm_used_bytes>>10);									
+				LOG_INFO("%u", (uint16)vm_stats->cache_size<<9);
+				LOG_INFO("%u", ((uint16)vm_stats->cache_load<<9)/((uint16)vm_stats->cache_size<<9)*100);
+				LOG_INFO("%lu", vm_stats->page_access);
+				LOG_INFO("%lu", vm_stats->swap_ins);
+				LOG_INFO("%lu", vm_stats->swap_outs);
+				LOG_INFO("%u", vm_stats->page_access_s);
+				LOG_INFO("%u", vm_stats->swap_ins_s);
+				LOG_INFO("%u", vm_stats->swap_outs_s);
+				LOG_INFO("%u", (uint8)(100.0-((float)vm_stats->swap_ins/(float)vm_stats->page_access)*100.0));
+				LOG_INFO("%u", vm_stats->delta_t);				
 			#endif
 			// TODO: Display-Ausgabe?
 		#endif	
