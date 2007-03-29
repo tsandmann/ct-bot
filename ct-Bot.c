@@ -32,7 +32,6 @@
 //	#include <avr/signal.h>
 	#include <avr/wdt.h>
 	#include "bot-2-pc.h"
-	#include <avr/eeprom.h>
 #endif
 	
 #ifdef PC
@@ -118,8 +117,6 @@ void init(void){
 				reset_flag = MCUCSR & 0x1F;	//Lese Grund fuer Reset und sichere Wert
 				MCUCSR = 0;	//setze Register auf 0x00 (loeschen)
 			#endif
-			uint8 resets = eeprom_read_byte(&resetsEEPROM) + 1;
-			eeprom_write_byte(&resetsEEPROM, resets);
 		#endif		
 	#endif
 
@@ -137,6 +134,7 @@ void init(void){
 
 	#ifdef DISPLAY_AVAILABLE
 		display_init();
+//		display_update=1;	// wird nie ausgewertet?!?
 	#endif
 
 	#ifdef LED_AVAILABLE
@@ -403,6 +401,15 @@ init();	// alles initialisieren
 	#endif	
 #endif
 
+//TODO: what's that?!?
+#ifdef TEST_AVAILABLE_COUNTER
+//	display_screen=2;
+ 	resets=eeprom_read_byte(&resetsEEPROM)+1;
+    eeprom_write_byte(&resetsEEPROM,resets);
+    /* Lege den Grund fuer jeden Reset im EEPROM ab */	
+    eeprom_write_byte(&resetInfoEEPROM+resets,reset_flag);
+#endif	
+	
 /* Hauptschleife des Bots */
 for(;;){
 	#ifdef PC
@@ -445,55 +452,27 @@ for(;;){
 	#endif	// BEHAVIOUR_AVAILABLE
 			
 	#ifdef MCU
-		/* jeweils alle 100 ms kommunizieren Bot, User und Sim */
-		static uint16 comm_ticks = 0;
-		static uint8 uart_gui = 0;
-		register uint16 ticks = TIMER_GET_TICKCOUNT_16;
-		if (ticks - comm_ticks > MS_TO_TICKS(50) || RC5_Code != 0){
-			if (uart_gui == 0){
-				/* GUI-Behandlung starten */
-//				register uint16 time_ticks = TIMER_GET_TICKCOUNT_16;
-				#ifdef DISPLAY_AVAILABLE
-					gui_display(display_screen);
-				#endif	
-//				register uint16 time_end = TIMER_GET_TICKCOUNT_16;
-//				display_cursor(1,1);
-//				display_printf("%6u", (uint16)(time_end - time_ticks));					
-				uart_gui = 1;	// bot2pc ist erst beim naechsten Mal dran			
-			} else{
-				/* Den PC ueber Sensorern und Aktuatoren informieren */
-//				register uint16 time_ticks = TIMER_GET_TICKCOUNT_16;
-				#ifdef BOT_2_PC_AVAILABLE
-					bot_2_pc_inform();
-				#endif
-//				register uint16 time_end = TIMER_GET_TICKCOUNT_16;
-//				display_cursor(1,1);
-//				display_printf("%6u", (uint16)(time_end - time_ticks));			
-				uart_gui = 0;	// naechstes Mal wieder mit GUI anfangen
-			}
-			comm_ticks = ticks;
-		}	
-//		static uint16 old_time = 0;
-//		register uint16 time_ticks = TIMER_GET_TICKCOUNT_16;
-//		uint8 time_diff = 0;
-//		time_diff = time_ticks - old_time;		
-//		display_cursor(1,1);
-//		display_printf("%6u", time_diff);
-//		old_time = TIMER_GET_TICKCOUNT_16;				
 		#ifdef BOT_2_PC_AVAILABLE
-			/* Kommandos vom PC empfangen */
-			bot_2_pc_listen();
-		#endif
+//			static int16 lastTimeCom =0;
+			bot_2_pc_inform();				// Den PC ueber Sensorern und aktuatoren informieren
+			bot_2_pc_listen();				// Kommandos vom PC empfangen
+				
+//			if (timer_get_s() != lastTimeCom) {	// sollte genau 1x pro Sekunde zutreffen
+//				lastTimeCom = timer_get_s();		
+//			}
+		#endif	// BOT_2_PC_AVAILABLE
 	#endif	// MCU
 		
 //	#ifdef LOG_AVAILABLE
 //		LOG_DEBUG(("BOT TIME %d s", timer_get_s()));
 //	#endif	
+		
+	/* GUI-Behandlung starten */
+	#ifdef DISPLAY_AVAILABLE
+		gui_display(display_screen);
+	#endif
 	
 	#ifdef PC
-		#ifdef DISPLAY_AVAILABLE
-			gui_display(display_screen);
-		#endif		
 		command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
 		flushSendBuffer();
 		/* Zum debuggen der Zeiten: */	

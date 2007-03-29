@@ -42,24 +42,30 @@ FORMAT = ihex
 TARGET = ct-Bot
 
 # Target Device, either pc or mcu, usually defined on commandline
-#DEVICE = MCU
-DEVICE = PC
+DEVICE = MCU
+#DEVICE = PC
 
 MSG_DEVICE = Target device is $(DEVICE)
 
 # List C source files here. (C dependencies are automatically generated.)
-SRCMCU = mcu/adc.c mcu/bot-2-pc.c mcu/delay.c mcu/display.c mcu/ena.c mcu/ir-rc5.c mcu/led.c mcu/motor-low.c mcu/mouse.c mcu/sensor-low.c mcu/shift.c mcu/timer-low.c mcu/uart.c mcu/mmc.c
+SRCMCU = mcu/TWI_driver.c mcu/adc.c mcu/bootloader.c mcu/bot-2-pc.c mcu/delay.c mcu/display.c mcu/ena.c mcu/ir-rc5.c mcu/led.c mcu/mini-fat.c mcu/mmc.c mcu/motor-low.c mcu/mouse.c mcu/sensor-low.c mcu/shift.c mcu/srf10.c mcu/timer-low.c mcu/uart.c 
 
-SRCPC = pc/bot-2-sim.c pc/delay_pc.c pc/display_pc.c pc/ir-rc5_pc.c pc/led_pc.c pc/motor-low_pc.c pc/sensor-low_pc.c pc/tcp.c pc/tcp-server.c pc/mouse_pc.c
+SRCPC = pc/bot-2-sim.c pc/delay_pc.c pc/display_pc.c pc/ir-rc5_pc.c pc/led_pc.c pc/mini-fat.c pc/mmc-emu_pc.c pc/motor-low_pc.c pc/mouse_pc.c pc/sensor-low_pc.c pc/tcp-server.c pc/tcp.c 
 
-SRCCOM = bot-logic/bot-logik.c map.c command.c log.c motor.c rc5.c sensor.c timer.c bot-logic/behaviour_avoid_border.c bot-logic/behaviour_drive_square.c  bot-logic/behaviour_gotoxy.c   bot-logic/behaviour_simple.c      bot-logic/behaviour_avoid_col.c       bot-logic/behaviour_follow_line.c   bot-logic/behaviour_olympic.c  bot-logic/behaviour_solve_maze.c bot-logic/behaviour_drive_distance.c bot-logic/behaviour_goto.c bot-logic/behaviour_scan.c bot-logic/behaviour_turn.c bot-logic/behaviour_servo.c
+SRCCOM = command.c $(TARGET).c log.c map.c mmc-vm.c motor.c sensor.c timer.c 
+SRCUI = ui/gui.c ui/misc.c ui/rc5.c
+
+SRCLOGIC = bot-logic/behaviour_avoid_border.c bot-logic/behaviour_avoid_col.c bot-logic/behaviour_catch_pillar.c bot-logic/behaviour_drive_distance.c bot-logic/behaviour_drive_square.c bot-logic/behaviour_follow_line.c bot-logic/behaviour_goto.c bot-logic/behaviour_gotoxy.c bot-logic/behaviour_olympic.c bot-logic/behaviour_remotecall.c bot-logic/behaviour_scan.c bot-logic/behaviour_servo.c bot-logic/behaviour_simple.c bot-logic/behaviour_solve_maze.c bot-logic/behaviour_turn.c bot-logic/bot-logik.c  
+
+   
 
 
-ifeq ($(DEVICE),MCU)
-	SRC = $(TARGET).c $(SRCCOM) $(SRCMCU)
-else
-	SRC = $(TARGET).c $(SRCCOM) $(SRCPC)
-endif
+#ifeq ($(DEVICE),MCU)
+#	SRC = $(TARGET).c $(SRCCOM) $(SRCMCU)
+#else
+#	SRC = $(TARGET).c $(SRCCOM) $(SRCPC)
+#endif
+SRC =$(SRCCOM) $(SRCUI) $(SRCPC) $(SRCMCU) $(SRCLOGIC)
 
 
 # List Assembler source files here.
@@ -69,8 +75,12 @@ endif
 # Even though the DOS/Win* filesystem matches both .s and .S the same,
 # it will preserve the spelling of the filenames, and gcc itself does
 # care about how the name is spelled on its command-line.
-ASRC = 
-	
+ifeq ($(DEVICE),MCU)
+    ASRC = mcu/mmc-low.S
+else
+    ASRC = 
+endif	
+
 MATH_LIB = -lm
 	
 ifeq ($(DEVICE),MCU)
@@ -88,8 +98,8 @@ ifeq ($(DEVICE),MCU)
 	#             for use in COFF files, additional information about filenames
 	#             and function names needs to be present in the assembler source
 	#             files -- see avr-libc docs [FIXME: not yet described there]
-	ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs 
-	
+	# ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs 
+	ASFLAGS =
 	
 	
 	#Additional libraries.
@@ -126,10 +136,12 @@ ifeq ($(DEVICE),MCU)
 	#  -Wl,...:     tell GCC to pass this to linker.
 	#    -Map:      create map file
 	#    --cref:    add cross reference to  map file
-	LDFLAGS = -Wl,-Map=$(TARGET).map,--cref
+#	LDFLAGS = -Wl,-Map=$(TARGET).map,--cref
+	LDFLAGS = -mmcu=$(MCU)
+	LDFLAGS += -Wl,--section-start=.bootloader=0x7C00
 	LDFLAGS += $(EXTMEMOPTS)
-	LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
-	
+	LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB)
+	LDFLAGS += -L $(DIRAVR)
 	
 	
 	
@@ -216,7 +228,8 @@ OPT = s
 # gnu89 - c89 plus GCC extensions
 # c99   - ISO C99 standard (not yet fully implemented)
 # gnu99 - c99 plus GCC extensions
-CSTANDARD = -std=gnu99
+CSTANDARD = 
+#CSTANDARD = -std=gnu99
 
 # Place -D or -U options here
 CDEFS =
@@ -234,13 +247,17 @@ CINCS =
 #    -adhlns...: create assembler listing
 CFLAGS = -g
 CFLAGS += $(CDEFS) $(CINCS)
-CFLAGS += -O$(OPT)
-CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
+CFLAGS += -O0 -O$(OPT)
+#CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
+CFLAGS += -fmessage-length=0
 CFLAGS += -Wall -Wstrict-prototypes
-CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
+CFLAGS += -MMD
+#CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD) 
 
+
+ASFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 
 
 # Define Messages
@@ -278,10 +295,10 @@ GENDEPFLAGS = -Wp,-M,-MP,-MT,$(*F).o,-MF,.dep/$(@F).d
 # Combine all necessary flags and optional flags.
 # Add target processor to flags.
 ifeq ($(DEVICE),MCU)
-	ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS) $(GENDEPFLAGS) -D $(DEVICE)
-	ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
+	ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS) $(GENDEPFLAGS) -D$(DEVICE)
+	ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS) -D$(DEVICE)
 else
-	ALL_CFLAGS = -I. $(CFLAGS) $(GENDEPFLAGS)  -D $(DEVICE)
+	ALL_CFLAGS = -I. $(CFLAGS) $(GENDEPFLAGS)  -D$(DEVICE)
 endif
 
 
@@ -396,7 +413,7 @@ extcoff: $(TARGET).elf
 %.elf: $(OBJ)
 	@echo
 	@echo $(MSG_LINKING) $@
-	$(CC) $(ALL_CFLAGS) $(OBJ) --output $@ $(LDFLAGS)
+	$(CC) --output $@ $(LDFLAGS) $(OBJ) $(MATH_LIB)
 
 
 # Compile: create object files from C source files.

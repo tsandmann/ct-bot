@@ -94,7 +94,7 @@ int8 command_read(void){
 	int i;			
 	command_t * command;	// Pointer zum Casten der empfangegen Daten
 	char * ptr;				// Nur zu Hilfszwecken
-	uint8 buffer[RCVBUFSIZE];       // Buffer  
+	char buffer[RCVBUFSIZE];       // Buffer  
 	#ifdef PC
 		#if BYTE_ORDER == BIG_ENDIAN
 			uint16 store;			//Puffer für die Endian-Konvertierung
@@ -380,17 +380,9 @@ int command_evaluate(void){
 						{	
 							LOG_DEBUG(("remote-call-Wunsch empfangen. Data= %d bytes",received_command.payload));					
 							uint8 buffer[REMOTE_CALL_BUFFER_SIZE];
-							uint16 ticks = TIMER_GET_TICKCOUNT_16;
-							#ifdef MCU
-								while (uart_data_available() < received_command.payload && (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
-							#endif
-							low_read(buffer,received_command.payload);
-							if ((TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)){ 	
-								bot_remotecall_from_command((uint8 *)&buffer);
-							} else{
-								int16 result = SUBFAIL;
-								command_write_data(CMD_REMOTE_CALL,SUB_REMOTE_CALL_DONE,&result,&result,NULL);
-							}
+							low_read(buffer,received_command.payload);	
+							bot_remotecall_from_command((uint8 *)&buffer);
+						
 							break;
 						}
 						case SUB_REMOTE_CALL_ABORT: {

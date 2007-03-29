@@ -51,13 +51,13 @@
 #else
 	SIGNAL (SIG_OUTPUT_COMPARE2){
 #endif
-	/* ----- TIMER ----- */
-	tickCount.u32++;	// TickCounter [176 us] erhoehen
-	sei(); 	// Interrupts wieder an, z.B. UART-Kommunikation kann parallel zu RC5 und Encoderauswertung laufen   
+   
 	/* - FERNBEDIENUNG - */
 	#ifdef IR_AVAILABLE
 		ir_isr();
 	#endif	
+	/* ----- TIMER ----- */
+	tickCount.u32++;	// TickCounter [176 us] erhoehen 
 	/* --- RADENCODER --- */
 	bot_encoder_isr();
 }

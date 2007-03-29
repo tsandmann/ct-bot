@@ -34,10 +34,6 @@
 	#include <avr/eeprom.h>
 #endif
 
-#ifdef MCU
-	uint8 __attribute__ ((section (".eeprom"))) resetsEEPROM = 0;	/*!< Reset-Counter-Wert im EEPROM */
-#endif
-
 #ifdef DISPLAY_AVAILABLE
 	#ifdef MISC_DISPLAY_AVAILABLE
 		/*! 
@@ -74,7 +70,7 @@
 		 */
 		void reset_info_display(void){
 			display_cursor(1,1);
-			display_printf("#Resets:%3u | (C)SR:", (uint8)eeprom_read_byte(&resetsEEPROM));
+			display_printf("MCU(C)SR - Register");
 									
 			display_cursor(2,1);
 			display_printf("PORF :%d  WDRF :%d",binary(reset_flag,0),binary(reset_flag,3)); 

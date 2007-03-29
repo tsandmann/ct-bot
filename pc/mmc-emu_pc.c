@@ -139,29 +139,6 @@ uint32 mmc_emu_get_size(void){
 }
 
 /*!
- * @brief			Sucht die Adresse einer Mini-FAT-Datei im EERROM
- * @param filename	Datei-ID
- * @param buffer	Zeiger auf 512 Byte großen Speicherbereich (wird ueberschrieben)
- * @return			(Byte-)Adresse des ersten Nutzdatenblock der gesuchten Datei oder 0, falls nicht im EEPROM
- * @date 			05.03.2007
- * Nur DUMMY fuer MMC-Emulation am PC. Wenn es mal eine EEPROM-Emulation fuer PC gibt, kann man diese Funktion implementieren.
- */
-uint32 mmc_emu_fat_lookup_adr(const char* filename, uint8* buffer){
-	// absichtlich leer
-	return 0;
-}
-
-/*!
- * @brief			Speichert die Adresse einer Mini-FAT-Datei in einem EERROM-Slab
- * @param block		(Block-)Adresse der Datei, die gespeichert werden soll
- * @date 			05.03.2007
- * Nur DUMMY fuer MMC-Emulation am PC. Wenn es mal eine EEPROM-Emulation fuer PC gibt, kann man diese Funktion implementieren.
- */
-void mmc_emu_fat_store_adr(uint32 block){
-	// absichtlich leer
-}
-
-/*!
  * Testet VM und MMC / SD-Card Emulation am PC
  * @date	30.12.2006 
  */

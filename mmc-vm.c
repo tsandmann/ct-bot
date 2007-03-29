@@ -51,16 +51,12 @@
 	#define swap_out	mmc_write_sector
 	#define swap_in		mmc_read_sector
 	#define swap_space	mmc_get_size()
-	#define fat_lookup	mini_fat_lookup_adr
-	#define fat_store	mini_fat_store_adr
 #else
 	#define MMC_START_ADDRESS 0x1000000	// [512;2^32-1]
 	#define MAX_SPACE_IN_SRAM 5			// [1;127] - Pro Page werden 512 Byte im RAM belegt, sobald diese verwendet wird
 	#define swap_out	mmc_emu_write_sector
 	#define swap_in		mmc_emu_read_sector
 	#define swap_space	mmc_emu_get_size()
-	#define fat_lookup	mmc_emu_fat_lookup_adr
-	#define fat_store	mmc_emu_fat_store_adr	
 #endif	
 
 #if MMC_ASYNC_WRITE == 1
@@ -108,7 +104,7 @@ vm_cache_t page_cache[MAX_PAGES_IN_SRAM];				/*!< der eigentliche Cache, vollass
  * @author 		Timo Sandmann (mail@timosandmann.de)
  * @date 		30.11.2006
  */
-static inline uint32 mmc_get_mmcblock_of_page(uint32 addr){
+inline uint32 mmc_get_mmcblock_of_page(uint32 addr){
 	#ifdef MCU
 		/* Eine effizientere Variante von addr >> 9 */
 		asm volatile(
@@ -445,18 +441,11 @@ uint32 mmc_fopen(const char *filename){
 	#ifdef VM_STATS_AVAILABLE
 		stats_data.vm_used_bytes -= 512;
 	#endif
-	/* zunaechst im EEPROM-FAT-Cache nachschauen */
-	block = fat_lookup(filename, p_data);
-	if (block != 0){
-		swap_in(block, p_data);
-		page_cache[mmc_get_cacheblock_of_page(v_addr)].addr = block;	// Cache-Tag auf gefundene Datei umbiegen
-		return block << 9;
-	} 
 	uint8 i;
 	#ifdef MCU	// Debug-Info ausgeben
 		#ifdef DISPLAY_AVAILABLE
 			display_cursor(2,1);
-			display_printf("%s:",filename);
+			display_printf("Find %s: 0x",filename);
 			uint16 k=0, j=0;
 		#endif
 	#else
@@ -481,8 +470,7 @@ uint32 mmc_fopen(const char *filename){
 		/* Blockanfang mit Dateinamen vergleichen */
 		for (i=0; i<MMC_FILENAME_MAX; i++){
 			if (filename[i] == '\0'){
-				fat_store(++block);	// gefundene Adresse im EEPROM ablegen
-				if (swap_in(block, p_data) != 0) break;	// Ersten Sektor der Datei ueberspringen, dort stehen interne Daten
+				if (swap_in(++block, p_data) != 0) break;	// Ersten Sektor der Datei ueberspringen, dort stehen interne Daten
 				page_cache[mmc_get_cacheblock_of_page(v_addr)].addr = block;	// Cache-Tag auf gefundene Datei umbiegen
 //				end = TIMER_GET_TICKCOUNT_32;
 				#ifdef MCU
@@ -490,7 +478,7 @@ uint32 mmc_fopen(const char *filename){
 			  			k = block & 0xFFFF;
 			  			j = (block >> 16) & 0xFFFF;
 			  			display_cursor(2,1);
-			  			display_printf("Found: 0x%02x%04x",j,k);
+			  			display_printf("Found %s: 0x%02x%04x",filename,j,k);
 //			  			display_cursor(3,1);
 //			  			display_printf("Ticks: %u ", end-start);
 					#endif

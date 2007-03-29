@@ -1,5 +1,5 @@
 /*
- * c't-Bot
+ * c't-Sim - Robotersimulator fuer den c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -43,9 +43,9 @@
  */
 void bot_2_pc_listen(void){
 //		LOG_DEBUG(("%d bytes recvd",uart_data_available()));
-		if (uart_data_available() >= sizeof(command_t)){	
+		if (uart_data_available() >= sizeof(command_t)){
 //			LOG_DEBUG(("%d bytes recvd",uart_data_available()));
-			if (command_read() == 0){
+			if (command_read() ==0){
 				LOG_DEBUG(("command received"));
 				command_evaluate();
 			}else {		

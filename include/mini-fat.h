@@ -17,14 +17,13 @@
  * 
  */
 
-/*! 
- * @file 	mini-fat.h
+/*! @file 	mini-fat.h
  * @brief 	Routinen zum Auffinden von markierten Files auf einer MMC-Karte. 
  *          Dies ist keine vollstaendige FAT-Unterstuetzung, sondern sucht nur eien Datei, die mit einer 3-Zeichen Sequenz beginnt. 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @author  Ulrich Radig (mail@ulrichradig.de) www.ulrichradig.de
- * @date 	07.11.2006
- */
+ * @date 	07.11.06
+*/
 
 #ifndef MINIFAT_H_
 #define MINIFAT_H_
@@ -37,30 +36,6 @@ typedef union{
 	uint32 u32;		// Laenge in 32 Bit
 	uint8 u8[4];	// laenge in 4 "einzelnen" Bytes
 } file_len_t;
-
-/*!
- * @brief			Sucht die Adresse einer Mini-FAT-Datei im EERROM
- * @param filename	Datei-ID
- * @param buffer	Zeiger auf 512 Byte großen Speicherbereich (wird ueberschrieben)
- * @return			(Byte-)Adresse des ersten Nutzdatenblock der gesuchten Datei oder 0, falls nicht im EEPROM
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			05.03.2007
- * Das Nachschlagen im EEPROM und durchprobieren der Adressen geht relativ schnell, somit verkuerzt sich die Wartezeit
- * beim Dateioeffnen von einer MMC erheblich durch diese Methode. Die Adressen (32 Bit) liegen in insgesamt 10 Slabs
- * im EEPROM.
- */
-uint32 mini_fat_lookup_adr(const char* filename, uint8* buffer);
-
-/*!
- * @brief			Speichert die Adresse einer Mini-FAT-Datei in einem EERROM-Slab
- * @param block		(Block-)Adresse der Datei, die gespeichert werden soll
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			05.03.2007
- * Gespeichert wird die Adresse des 0. Blocks der Datei (man gibt aber die Adresse des ersten Nutzdatenblocks an, wie sie
- * z.B. mini_fat_find_block() liefert) in einem EEPROM-Slab. Derzeit gibt es 10 Slabs, sind alle belegt (d.h. != 0), speichert
- * diese Funktion die uebergebene Adresse nicht.
- */
-void mini_fat_store_adr(uint32 adr);
 
 #ifdef MINI_FAT_AVAILABLE
 

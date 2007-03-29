@@ -30,9 +30,6 @@
 #include "ui/available_screens.h"
 
 extern int8 max_screens;	/*!< Anzahl der zurzeit registrierten Screens */
-#ifdef MCU
-	extern uint8 __attribute__ ((section (".eeprom"))) resetsEEPROM;	/*!< Reset-Counter-Wert im EEPROM */
-#endif
 
 /*! 
  * @brief 			Display-Screen Anzeige

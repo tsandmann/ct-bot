@@ -33,7 +33,7 @@
 /************************************************************
 * Module switches, to make code smaller if features are not needed
 ************************************************************/
-//#define LOG_CTSIM_AVAILABLE		/*!< Logging zum ct-Sim (PC und MCU) */
+#define LOG_CTSIM_AVAILABLE		/*!< Logging ueber das ct-Sim (PC und MCU) */
 //#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display (PC und MCU) */
 //#define LOG_UART_AVAILABLE		/*!< Logging ueber UART (NUR fuer MCU) */
 //#define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (NUR fuer PC) */
@@ -67,6 +67,7 @@
 //#define TEST_AVAILABLE_ANALOG		/*!< Sollen die LEDs die analoge Sensorwerte anzeigen */
 #define TEST_AVAILABLE_DIGITAL		/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
 //#define TEST_AVAILABLE_MOTOR		/*!< Sollen die Motoren ein wenig drehen */
+//#define TEST_AVAILABLE_COUNTER 	/*!< Gibt einen Endlos-Counter auf Screen 3 aus und aktiviert Screen 3 */
 //#define DOXYGEN		/*!< Nur zum Erzeugen der Doku, wenn dieser schalter an ist, jammert der gcc!!! */
 
 #define BEHAVIOUR_AVAILABLE /*!< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
@@ -74,14 +75,15 @@
 //#define MAP_AVAILABLE /*!< Aktiviere die Kartographie */
 
 //#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
+//#define UPDATE_PWM_TABLE		/*!< Aktualisiert die PWM-Lookup-Table regelmaessig */
 //#define ADJUST_PID_PARAMS		/*!< macht PID-Paramter zur Laufzeit per FB einstellbar */
 //#define SPEED_LOG_AVAILABLE 	/*!< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
 //#define VARIABLE_PWM_F		/*!< Ermoeglicht das Wechseln der PWM-Frequenz zur Laufzeit */
 
 //#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
 
-//#define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung */
-//#define MINI_FAT_AVAILABLE		/*!< koennen wir sektoren in FAT-systemen finden */
+#define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung */
+#define MINI_FAT_AVAILABLE		/*!< koennen wir sektoren in FAT-systemen finden */
 //#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
 
 // Achtung, Linkereinstellungen anpassen !!!!! (siehe Documentation/Bootloader.html)!
@@ -149,13 +151,14 @@
 	#define TEST_AVAILABLE			/*!< brauchen wir den Testkrams */
 #endif
 
+#ifdef TEST_AVAILABLE_COUNTER
+	#define TEST_AVAILABLE			/*!< brauchen wir den Testkrams */
+	#define RESET_INFO_DISPLAY_AVAILABLE
+#endif
+
 #ifndef SPEED_CONTROL_AVAILABLE
 	#undef ADJUST_PID_PARAMS
 	#undef SPEED_LOG_AVAILABLE	
-#endif
-
-#ifndef MINI_FAT_AVAILABLE
-	#undef SPEED_LOG_AVAILABLE
 #endif
 
 #ifdef LOG_UART_AVAILABLE
