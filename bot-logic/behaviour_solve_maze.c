@@ -20,7 +20,7 @@
 /*! @file 	behaviour_solve_maze.c
  * @brief 	Wandfolger durchs Labyrinth
  * 
- * @author 	Benjamin Benz (bbe@heise.de)
+ * @author 	Torsten Evers (tevers@onlinehome.de)
  * @date 	03.11.06
 */
 
@@ -113,7 +113,7 @@ void bot_check_wall_behaviour(Behaviour_t *data) {
 			 	measureCount++;
 			 	break;
 			 }
-			 if (TIMER_GET_TICKCOUNT_16-old_ms > MS_TO_TICKS(50)) break;
+			 if (!timer_ms_passed(&old_ms, 50)) break;	// 50 ms nix tun
 			 
 			 if (sensor>=lastSensor-5 && sensor<=lastSensor+5 && measureCount<4) {
 			 	/* Messwert ist ok */

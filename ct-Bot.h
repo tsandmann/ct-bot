@@ -26,9 +26,7 @@
 #ifndef CT_BOT_H_DEF
 #define CT_BOT_H_DEF
 
-#ifndef MMC_LOW_H_
-	#include "global.h"	// denn in mmc-low.S sind typedefs unerwuenscht
-#endif
+#include "global.h"
 
 /************************************************************
 * Module switches, to make code smaller if features are not needed

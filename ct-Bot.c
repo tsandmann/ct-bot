@@ -448,8 +448,7 @@ for(;;){
 		/* jeweils alle 100 ms kommunizieren Bot, User und Sim */
 		static uint16 comm_ticks = 0;
 		static uint8 uart_gui = 0;
-		register uint16 ticks = TIMER_GET_TICKCOUNT_16;
-		if (ticks - comm_ticks > MS_TO_TICKS(50) || RC5_Code != 0){
+		if (timer_ms_passed(&comm_ticks, 50) || RC5_Code != 0) {
 			if (uart_gui == 0){
 				/* GUI-Behandlung starten */
 //				register uint16 time_ticks = TIMER_GET_TICKCOUNT_16;
@@ -471,7 +470,6 @@ for(;;){
 //				display_printf("%6u", (uint16)(time_end - time_ticks));			
 				uart_gui = 0;	// naechstes Mal wieder mit GUI anfangen
 			}
-			comm_ticks = ticks;
 		}	
 //		static uint16 old_time = 0;
 //		register uint16 time_ticks = TIMER_GET_TICKCOUNT_16;

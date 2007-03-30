@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,16 +17,18 @@
  * 
  */
 
-/*! @file 	timer.h
+/*! 
+ * @file 	timer.h
  * @brief 	Timer und Zaehler
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 
 #ifndef TIMER_H_
 #define TIMER_H_
 
 #include "ct-Bot.h"
+#include <stdint.h>
 
 /*!
  * Makros zur Umrechnung von Ticks in ms und zurueck
@@ -94,6 +96,52 @@
  */
 //	#define TIMER_STEPS	(1 000 000/TIMER_2_CLOCK)
 	#define TIMER_STEPS 176
+
+/*!
+ * @brief				Prueft, ob seit dem letzten Aufruf mindestens ms Millisekunden vergangen sind
+ * @param old_ticks		Zeiger auf eine Variable, die einen Timestamp speichern kann
+ * @param ms			Zeit in ms, die vergangen sein muss, damit True geliefert wird
+ * @return				True oder False
+ * 
+ * Die Funktion aktualisiert den Timestamp, der die alte Zeit zum Vergleich speichert, automatisch, 
+ * falls ms Millisekunden vergangen sind.
+ * Man verwendet sie z.B. wie folgt:
+ * static uint32 old_time;
+ * ...
+ * if (timer_ms_passed(&old_time, 50)) {
+ * 		// wird alle 50 ms ausgefuehrt //
+ * }
+ */
+static inline uint8_t __attribute__((always_inline)) timer_ms_passed(void* old_ticks, uint32_t ms) {
+	
+	/* 8 Bit Version */
+	if (MS_TO_TICKS(ms) < UINT8_MAX) {
+		register uint8_t ticks = TIMER_GET_TICKCOUNT_8;
+		if ((uint8_t)(ticks - *(uint8*)old_ticks) > MS_TO_TICKS(ms)) {
+			*(uint8_t*)old_ticks = ticks;
+			return True;
+		}
+		return False;
+		
+	/* 16 Bit Version */		
+	} else if (MS_TO_TICKS(ms) < UINT16_MAX) { 
+		register uint16_t ticks = TIMER_GET_TICKCOUNT_16;
+		if ((uint16_t)(ticks - *(uint16_t*)old_ticks) > MS_TO_TICKS(ms)) {
+			*(uint16_t*)old_ticks = ticks;
+			return True;
+		}
+		return False;
+	
+	/* 32 Bit Version */
+	} else {
+		register uint32_t ticks = TIMER_GET_TICKCOUNT_32;
+		if ((uint32_t)(ticks - *(uint32_t*)old_ticks) > MS_TO_TICKS(ms)) {
+			*(uint32_t*)old_ticks = ticks;
+			return True;
+		}
+		return False;			
+	}	
+}
 
 /*!
  * Initialisiert Timer 2 und startet ihn 

@@ -151,7 +151,7 @@ void bot_sens_isr(void){
 
 	/* Auswertung der Distanzsensoren alle 50 ms */
 	uint16 dist_ticks = TIMER_GET_TICKCOUNT_16;
-	if (dist_ticks-old_dist > MS_TO_TICKS(50)){	
+	if ((uint16)(dist_ticks-old_dist) > MS_TO_TICKS(50)){	
 		adc_read_int(SENS_ABST_L, &distLeft[measure_count]);
 		#ifdef BEHAVIOUR_SERVO_AVAILABLE
 			if ((servo_active & SERVO1) == 0)	// Wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensor nicht
@@ -245,7 +245,7 @@ void bot_sens_isr(void){
 		#endif // SPEED_LOG_AVAILABLE
 	#endif // SPEED_CONTROL_AVAILABLE
 	
-	if (dist_ticks-old_dist > MS_TO_TICKS(50)){
+	if ((uint16)(dist_ticks-old_dist) > MS_TO_TICKS(50)){
 		old_dist = dist_ticks;	// Zeit fuer naechste Messung merken
 		// dieser Block braucht insgesamt ca. 100 us (MCU & bbtree_lookup)
 		/* Dist-Sensor links */

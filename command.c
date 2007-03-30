@@ -145,7 +145,7 @@ int8 command_read(void){
 		// So lange Daten lesen, bis das Packet vollstaendig ist, oder der Timeout zuschlaegt
 		while (i > 0){
 			// Wenn der Timeout ueberschritten ist
-			if (TIMER_GET_TICKCOUNT_16-old_ticks > MS_TO_TICKS(COMMAND_TIMEOUT)){
+			if (timer_ms_passed(&old_ticks, COMMAND_TIMEOUT)) {
 				LOG_DEBUG("Timeout beim nachlesen");
 				return -1; //	==> Abbruch
 			}
@@ -384,7 +384,7 @@ int command_evaluate(void){
 							uint8 buffer[REMOTE_CALL_BUFFER_SIZE];
 							uint16 ticks = TIMER_GET_TICKCOUNT_16;
 							#ifdef MCU
-								while (uart_data_available() < received_command.payload && (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
+								while (uart_data_available() < received_command.payload && (uint16)(TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
 							#endif
 							low_read(buffer,received_command.payload);
 							if ((TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)){ 	

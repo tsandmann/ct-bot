@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	sensor.c  
+/*! 
+ * @file 	sensor.c  
  * @brief 	Architekturunabhaengiger Teil der Sensorsteuerung
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	15.01.05
-*/
+ */
 #include <stdio.h>
 #include "ct-Bot.h"
 #include "timer.h"
@@ -166,9 +167,7 @@ void sensor_update(void){
 		sensMouseX += sensMouseDX;		/*!< Mausdelta X aufaddieren */
 	#endif	
 	
-	register uint16 ticks = TIMER_GET_TICKCOUNT_16;
-	if (ticks-old_pos > MS_TO_TICKS(50)){
-		old_pos = ticks;
+	if (timer_ms_passed(&old_pos, 50)) {
 		/* Gefahrene Boegen aus Encodern berechnen */
 		diffEncL=sensEncL-lastEncL;
 		diffEncR=sensEncR-lastEncR;
@@ -243,9 +242,7 @@ void sensor_update(void){
 			#endif
 		#endif	
 	}
-	ticks = TIMER_GET_TICKCOUNT_16;
-	if (ticks-old_speed > MS_TO_TICKS(250)){	
-		old_speed=ticks;
+	if (timer_ms_passed(&old_speed, 250)) {
 		v_enc_left=  (((sensEncL - lastEncL1) * WHEEL_PERIMETER) / ENCODER_MARKS)*4;
 		v_enc_right= (((sensEncR - lastEncR1) * WHEEL_PERIMETER) / ENCODER_MARKS)*4;
 		v_enc_center=(v_enc_left+v_enc_right)/2;
@@ -358,7 +355,7 @@ void sensor_update(void){
 		display_printf("B=%03X %03X L=%03X %03X ",sensBorderL,sensBorderR,sensLineL,sensLineR);
 		
 		display_cursor(3,1);
-		display_printf("R=%2d %2d F=%d K=%d T=%d ",sensEncL % 10,sensEncR %10,sensError,sensDoor,sensTrans);
+		display_printf("R=%2d %2d F=%d K=%d T=%d ",sensEncL%10,sensEncR%10,sensError,sensDoor,sensTrans);
 		
 		display_cursor(4,1);
 		#ifdef RC5_AVAILABLE

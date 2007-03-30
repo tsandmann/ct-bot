@@ -44,7 +44,7 @@ uint8 servo_active = 0;	/*!< 0, wenn kein Servo aktiv, sonst Bit der gerade akti
  */
 void bot_servo_behaviour(Behaviour_t *data){
 	/* Servo ausschalten, falls Countdown abgelaufen */
-	if (TIMER_GET_TICKCOUNT_16 - servo_time > MS_TO_TICKS(1000UL)){
+	if (timer_ms_passed(&servo_time, 1000)) {
 		servo_set(servo_nr, SERVO_OFF);	// Servo aus
 		servo_active &= ~servo_nr;
 		return_from_behaviour(data); 	// und Verhalten auch aus

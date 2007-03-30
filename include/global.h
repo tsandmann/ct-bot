@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,14 +17,17 @@
  * 
  */
 
-/*! @file 	global.h
+/*! 
+ * @file 	global.h
  * @brief 	Allgemeine Definitionen
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
-*/
+ */
 
 #ifndef global_H
-	#define global_H		/*!< Bereits definiert */
+	#define global_H
+	#ifndef __ASSEMBLER__
+	#include <stdint.h>
 	
 	#ifndef MCU
 		#ifndef PC
@@ -33,8 +36,9 @@
 	#endif
 	
 	#ifndef WIN32
-		typedef unsigned char byte;                       /*!< vorzeichenlose 8-Bit-Zahl */
-		typedef byte bool;                                /*!< True/False-Aussage */
+//		typedef unsigned char byte;		/*!< vorzeichenlose 8-Bit-Zahl */
+//		typedef byte bool;				/*!< True/False-Aussage */
+		#define bool byte;				/*!< True/False-Aussage */
 	#endif
 
 	//#define DOXYGEN		/*!< Nur zum Generieren von Doku!!!! */
@@ -45,23 +49,33 @@
 		#define __linux__	/*!< System Linux */
 	#endif
 	
-	typedef unsigned char uint8;                       /*!< vorzeichenlose 8-Bit-Zahl  */
-	typedef unsigned int word;                         /*!< vorzeichenlose 16-Bit-Zahl  */
-	typedef signed char int8;                          /*!< vorzeichenbehaftete 8-Bit-Zahl */ 
-	typedef short int int16;                           /*!< vorzeichenbehaftete 16-Bit-Zahl  */
-
-	typedef unsigned long uint32;		/*!< vorzeichenlose 32-Bit-Zahl  */
-	typedef signed long int32;			/*!< vorzeichenbehaftete 32-Bit-Zahl  */
-
-	#define uint16                  word				/*!< Int mit 16 Bit */
+//	deprecated!	
+//	typedef unsigned char uint8;                       /*!< vorzeichenlose 8-Bit-Zahl  */
+//	typedef unsigned int word;                         /*!< vorzeichenlose 16-Bit-Zahl  */
+//	typedef signed char int8;                          /*!< vorzeichenbehaftete 8-Bit-Zahl */ 
+//	typedef short int int16;                           /*!< vorzeichenbehaftete 16-Bit-Zahl  */
+//
+//	typedef unsigned long uint32;		/*!< vorzeichenlose 32-Bit-Zahl  */
+//	typedef signed long int32;			/*!< vorzeichenbehaftete 32-Bit-Zahl  */
+//
+//	#define uint16                  word				/*!< Int mit 16 Bit */
 	
-	#define True                  1						/*!< Wahr */
-	#define False                 0						/*!< Falsch */
+	#define byte	uint8_t				/*!< vorzeichenlose 8-Bit-Zahl */
+	#define uint8	uint8_t				/*!< vorzeichenlose 8-Bit-Zahl */
+	#define int8	int8_t				/*!< vorzeichenbehaftete 8-Bit-Zahl */
+	#define uint16	uint16_t			/*!< vorzeichenlose 16-Bit-Zahl */
+	#define int16	int16_t				/*!< vorzeichenbehaftete 16-Bit-Zahl */
+	#define uint32	uint32_t			/*!< vorzeichenlose 32-Bit-Zahl */
+	#define	int32	int32_t				/*!< vorzeichenbehaftete 32-Bit-Zahl */
 	
-	#define On                    1						/*!< An */
-	#define Off                   0						/*!< Aus */
+	#define True                  1		/*!< Wahr */
+	#define False                 0		/*!< Falsch */
+	
+	#define On                    1		/*!< An */
+	#define Off                   0		/*!< Aus */
 
-//	#define PI					3.14159					/*!< Kreiszahl Pi fuer trigonometrische Berechnungen */
+//	#define PI					3.14159	/*!< Kreiszahl Pi fuer trigonometrische Berechnungen */
 	#define binary(var,bit) ((var >> bit)&1)
 	//#define NULL 0
-#endif
+#endif	// __ASSEMBLER__
+#endif	// global_H
