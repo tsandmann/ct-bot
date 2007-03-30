@@ -70,10 +70,6 @@
 			}
 			n = length - n;
 		}
-//		for (i=0; i<n; i++){
-//			*(pwrite++) = *(data++);
-//		}
-//		write2end -= n;
 				
 		f->write2end = write2end;
 		f->pwrite = pwrite;
@@ -125,10 +121,7 @@
 			}
 			n = length - n;
 		}
-//		for (i=0; i<n; i++){
-//			*(data++) = *(pread++);	
-//		}
-//		read2end -= n;
+
 		f->pread = pread;
 		f->read2end = read2end;
 		
