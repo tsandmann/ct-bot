@@ -387,7 +387,7 @@ int command_evaluate(void){
 								while (uart_data_available() < received_command.payload && (uint16)(TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
 							#endif
 							low_read(buffer,received_command.payload);
-							if ((TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)){ 	
+							if ((uint16)(TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)){ 	
 								bot_remotecall_from_command((uint8 *)&buffer);
 							} else{
 								int16 result = SUBFAIL;
