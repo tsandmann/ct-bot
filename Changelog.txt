@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-04-02 Timo Sandmann [mail@timosandmann.de]: LEDs zeigen Hindernis links/rechts voraus, Transportfach belegt, RC5-Code erkannt und Fehler an, wenn TEST_AVAILABLE aus ist.
+
 2007-03-30 Timo Sandmann [mail@timosandmann.de]: int-Datentypen aus stdint.h eingefuehrt und Bug im Timer (PC) gefixt. Ausserdem "Warten per Timer" vereinfacht, siehe timer_ms_passed() in timer.h
 
 2007-03-29 Timo Sandmann [mail@timosandmann.de]: LOG auf Einfachklammerung (Strings bleiben im Flash) umgestellt und Projekteinstellungen fuer Eclipse aufgeraeumt

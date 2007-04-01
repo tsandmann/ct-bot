@@ -35,6 +35,7 @@
 #include "log.h"
 #include "bot-logic/bot-logik.h"
 #include "gui.h"
+#include "led.h"
 #include <stdlib.h>
 
 #ifdef DISPLAY_AVAILABLE
@@ -67,9 +68,19 @@ int8 register_screen(void* fkt){
 void gui_display(int8 screen){
 //	rc5_control();	// Vielleicht waere der Aufruf hier uebersichtlicher?
 	/* Gueltigkeit der Screen-Nr. pruefen und Anzeigefunktion aufrufen, falls Screen belegt ist */
+	#ifdef LED_AVAILABLE
+	#ifndef TEST_AVAILABLE
+		if (RC5_Code != 0) LED_on(LED_WEISS);
+	#endif	// TEST_AVAILABLE
+	#endif	// LED_AVAILABLE 
 	if (screen < max_screens && screen_functions[screen] != NULL) screen_functions[screen]();
 	if (RC5_Code != 0) default_key_handler();	// falls rc5-Code noch nicht abgearbeitet, Standardbehandlung ausfuehren
 	RC5_Code = 0;	// fertig, RC5-Puffer loeschen
+	#ifdef LED_AVAILABLE
+	#ifndef TEST_AVAILABLE
+		LED_off(LED_WEISS);
+	#endif	// TEST_AVAILABLE
+	#endif	// LED_AVAILABLE 	
 }
 
 /*! 
