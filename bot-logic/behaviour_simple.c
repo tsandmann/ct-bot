@@ -90,7 +90,12 @@ static int16 simple2_light=0;
  * und findet dann in bot_behave_init() und bot_behave() weitere Hinweise fuer elegante Bot-Programmierung....
  * 
  * Das Verhalten ist per default abgeschaltet. 
- * Damit es läuft, muss man in include/bot-logik/available_behaviours die Kommentarzeichen vor BEHAVIOUR_SIMPLE_AVAILABLE entfernen. 
+ * Damit es läuft, muss man in include/bot-logik/available_behaviours die Kommentarzeichen vor BEHAVIOUR_SIMPLE_AVAILABLE entfernen.
+ * UND in bot-logic/bot-logic.c in der Funktion bot_behave_init(void) die Kommentare vor:
+ *  	activateBehaviour(bot_simple_behaviour);
+ * 	und
+ * //	activateBehaviour(bot_simple2_behaviour);
+ * bearbeiten, so dass simple2 drankommt und simple aus ist. 
  * Achtung, da bot_simple2_behaviour() maximale Prioritaet hat, kommt es vor den anderen Regeln, wie dem Schutz vor Abgruenden, etc. zum Zuge
  * Das sollte am Anfang nicht stoeren, spaeter sollte man jedoch die Prioritaet herabsetzen.
  * 
