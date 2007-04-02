@@ -168,9 +168,11 @@ void bot_behave_init(void){
 	// Grundverhalten, setzt aeltere FB-Befehle um, aktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(2, bot_base_behaviour, ACTIVE));
 
-	// Um das Simple-Behaviour zu nutzen, die Kommentarzeichen vor der folgenden Zeile entfernen!!!
-	// activateBehaviour(bot_simple_behaviour);
-	// activateBehaviour(bot_simple2_behaviour);
+	#ifdef BEHAVIOUR_SIMPLE_AVAILABLE
+	// Um das Simple2-Behaviour zu nutzen, die Kommentarzeichen der folgenden beiden Zeilen tauschen
+		activateBehaviour(bot_simple_behaviour);
+	//	activateBehaviour(bot_simple2_behaviour);
+	#endif
 }
 
 
