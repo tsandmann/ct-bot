@@ -38,8 +38,8 @@
  * Wer die Moeglichkeiten des ganzen Verhaltensframeworks ausschoepfen will, kann diese Funktion getrost auskommentieren
  * und findet dann in bot_behave_init() und bot_behave() weitere Hinweise fuer elegante Bot-Programmierung....
  * 
- * Das Verhalten ist per default abgeschaltet. Daher muss man es erst in bot_behave_init() aktivieren. 
- * Dort steht aber bereits eine auskommentierte Zeile dazu, von der man nur die zwei Kommentarzeichen wegnehmen muss.
+ * Das Verhalten ist per default abgeschaltet. 
+ * Damit es läuft, muss man in include/bot-logik/available_behaviours die Kommentarzeichen vor BEHAVIOUR_SIMPLE_AVAILABLE entfernen. 
  * Achtung, da bot_simple_behaviour() maximale Prioritaet hat, kommt es vor den anderen Regeln, wie dem Schutz vor Abgruenden, etc. zum Zuge
  * Das sollte am Anfang nicht stoeren, spaeter sollte man jedoch die Prioritaet herabsetzen.
  * 
@@ -89,8 +89,8 @@ static int16 simple2_light=0;
  * Wer die Moeglichkeiten des ganzen Verhaltensframeworks ausschoepfen will, kann diese Funktion getrost auskommentieren
  * und findet dann in bot_behave_init() und bot_behave() weitere Hinweise fuer elegante Bot-Programmierung....
  * 
- * Das Verhalten ist per default abgeschaltet. Daher muss man es erst in bot_behave_init() aktivieren. 
- * Dort steht aber bereits eine auskommentierte Zeile dazu, von der man nur die zwei Kommentarzeichen wegnehmen muss.
+ * Das Verhalten ist per default abgeschaltet. 
+ * Damit es läuft, muss man in include/bot-logik/available_behaviours die Kommentarzeichen vor BEHAVIOUR_SIMPLE_AVAILABLE entfernen. 
  * Achtung, da bot_simple2_behaviour() maximale Prioritaet hat, kommt es vor den anderen Regeln, wie dem Schutz vor Abgruenden, etc. zum Zuge
  * Das sollte am Anfang nicht stoeren, spaeter sollte man jedoch die Prioritaet herabsetzen.
  * 
