@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-04-02 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer MMC/Maus-ENA-Code
+
 2007-04-02 Benjamin Benz [bbe@heise.de]: Aktivierung der Simple-Verhalten vereinfacht
 
 2007-03-27 Benjamin Benz [bbe@heise.de]: Makefile überarbeitet

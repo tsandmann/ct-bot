@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -26,10 +26,6 @@
 #ifndef ENA_H_
 #define ENA_H_
 
-#ifndef MMC_LOW_H_
-	#include "global.h"
-#endif
-
 #define ENA_ABSTAND	(1<<0)		/*!< Enable-Leitung Abstandssensoren */
 #define ENA_RADLED		(1<<1)		/*!< Enable-Leitung Radencoder */
 #define ENA_SCHRANKE	(1<<2)		/*!< Enable-Leitung Fachueberwachung */
@@ -39,30 +35,42 @@
 #define ENA_MMC		(1<<6)		/*!< Enable-Leitung Reserve 1 */
 #define ENA_MOUSE_SENSOR		(1<<7)		/*!< Enable-Leitung Reserve 2 */
 
-#ifndef MMC_LOW_H_
+#ifndef __ASSEMBLER__
+#include "global.h"
+
 /*!
  * Initialisiert die Enable-Leitungen
  */
 void ENA_init(void);
 
 /*! 
- * Schaltet einzelne Enable-Leitungen an,
+ * Schaltet einzelne Enable-Transistoren an
  * andere werden nicht beeinflusst
- * @param enable Bitmaske der anzuschaltenden LEDs
+ * Achtung, die Treiber-Transistoren sind Low-Aktiv!!! 
+ * ENA_on schaltet einen Transistor durch
+ * Daher zieht es die entsprechende ENA_XXX-Leitung (mit Transistor) auf Low und NICHT auf High
+ * @param enable Bitmaske der anzuschaltenden ENA-Leitungen
  */
 void ENA_on(uint8 enable);
 
 /*! 
- * Schaltet einzelne Enable-Leitungen aus,
+ * Schaltet einzelne Enable-Transistoren aus
  * andere werden nicht beeinflusst
- * @param enable Bitmaske der anzuschaltenden LEDs
+ * Achtung, die Treiber-Transistoren sind Low-Aktiv!!! 
+ * ENA_off schaltet einen Transistor ab
+ * Daher zieht es die entsprechende ENA_XXX-Leitung (mit Transistor) auf High und NICHT auf Low
+ * @param enable Bitmaske der abzuschaltenden ENA-Leitungen
  */
 void ENA_off(uint8 enable);
 
 /*!
- * Schaltet die Enable-Leitungen
- * @param enable Wert der eingestellt werden soll
+ * Schaltet die Enable-Transistoren
+ * Achtung, die Treiber-Transistoren sind Low-Aktiv!!! 
+ * ENA_set bezieht sich auf die Transistor
+ * Daher zieht es die entsprechende ENA_XXX-Leitung auf ~enable
+ * @param ENA-Wert, der gesetzt werden soll
  */
 void ENA_set(uint8 enable);
-#endif
-#endif
+
+#endif	// __ASSEMBLER__
+#endif	// ENA_H_
