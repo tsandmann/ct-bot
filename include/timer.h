@@ -64,7 +64,7 @@
 	 */
 	void system_time_isr(void);
 
-	/*!< liefert Ticks seit Systemstart [176 us] */
+	/*! liefert Ticks seit Systemstart [176 us] */
 	inline uint16 timer_get_tickCount16(void);
 	inline uint32 timer_get_tickCount32(void);	
 	

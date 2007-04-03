@@ -62,7 +62,7 @@ int16 speed_r = 0;	/*!< Sollgeschwindigkeit rechter Motor */
 		#define Q2 ( PID_Kd/PID_Ta)								/*!< PID-Koeffizient vorletzter Fehler */
 	#endif	// ADJUST_PID_PARAMS
 	
-	/*!< Dividend fuer Umrechnung von Ticks [176 us] in Geschwindigkeit [mm/s] */
+	/*! Dividend fuer Umrechnung von Ticks [176 us] in Geschwindigkeit [mm/s] */
 	#define TICKS_TO_SPEED		(uint16)((float)WHEEL_PERIMETER/ENCODER_MARKS*1000000/TIMER_STEPS)	// = 8475*2
 	#define TICKS_TO_SPEED_0	(TICKS_TO_SPEED / 2)		// fuer shift == 0
 	#define TICKS_TO_SPEED_1	(TICKS_TO_SPEED / 2 * 2)	// fuer shift == 1

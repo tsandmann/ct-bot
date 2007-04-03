@@ -104,16 +104,16 @@ typedef struct
 	TWI Stautus Register Definitionen
 	*/
 
-	/*!< Genereller Master Statuscode */
+	/*! Genereller Master Statuscode */
 	#define START		0x08					/*!< START wurde uebertragen */	
 	#define	REP_START	0x10					/*!< Wiederholter START wurde uebertragen */
-	/*!< Master Sender Statuscode	 */										
+	/*! Master Sender Statuscode	 */										
 	#define	MTX_ADR_ACK		0x18				/*!< SLA+W wurde uebertragen und ACK empfangen */
 	#define	MTX_ADR_NACK	0x20				/*!< SLA+W wurde uebertragen und NACK empfangen */
 	#define	MTX_DATA_ACK	0x28				/*!< Datenbyte wurde uebertragen und ACK empfangen */			
 	#define	MTX_DATA_NACK	0x30				/*!< Datenbyte wurde uebertragen und NACK empfangen */		
 	#define	MTX_ARB_LOST	0x38				/*!< Schlichtung verloren in SLA+W oder Datenbytes */
-	/*!< Master Empfaenger Statuscode  */
+	/*! Master Empfaenger Statuscode  */
 	#define	MRX_ARB_LOST	0x38				/*!< Schlichtung verloren in SLA+R oder NACK bit */
 	#define	MRX_ADR_ACK		0x40				/*!< SLA+R wurde uebertragen und ACK empfangen */
 	#define	MRX_ADR_NACK	0x48				/*!< SLA+R wurde uebertragen und NACK empfangen */	
