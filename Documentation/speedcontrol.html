@@ -130,20 +130,25 @@ ENC_CORRECT_R</span> auf Null setzen, da die Rohdaten der Encoder bereits eine g
 
 <a name="adjust"></a><h3>Finden und Einstellen der richtigen Parameter</h3>
 <p>Das Wichtigste f&uuml;r eine gut funktionierende Regelung sind die passenden Parameter Kp, Ki und Kd. Allerdings ist das Berechnen dieser nicht
-ganz einfach. Das folgende Einstellverfahren liefert bei vertretbarem Aufwand die besten Ergebnisse: Zuerst stellt man<span class="function"> PID_Kp</span>,<span class="function"> PID_Ki</span>
+ganz einfach. Das folgende Einstellverfahren liefert bei vertretbarem Aufwand die besten Ergebnisse: <br />
+1.) Zuerst stellt man<span class="function"> PID_Kp</span>,<span class="function"> PID_Ki</span>
  und<span class="function"> PID_Kd</span> in <a href="../include/bot-local.h">include/bot-local.h</a> auf <b>0</b> und aktiviert das #define<span class="function"> 
 ADJUST_PID_PARAMS</span> in <a href="../ct-Bot.h">ct-Bot.h</a> sowie<span class="function"> DISPLAY_REGELUNG_AVAILABLE</span> in <a href="../ui/available_screens.h">ui/available_screens.h</a>. 
 Flasht man nun das erzeugte hex-File auf den Bot, so gibt es einen Display-Screen f&uuml;r die Regelung, der au&szlig;erdem eine spezielle Tastenbelegung
 aktiviert. Die erste Displayzeile stellt Istgeschwindigkeit / Sollgeschwindigkeit dar, die Zweite den Betrag des aktuellen Regelfehlers und die Dritte den zurzeit gestellten
-PWM-Wert, jeweils f&uuml;r links und rechts. Die letzte Zeile gibt die derzeit einstellten PID-Parameter aus. Nun sollte der Bot mit<span class="function"> BOT_SPEED_SLOW</span>, 
-also 50 mm/s, auf der Stelle drehen. Das erreicht man am Einfachsten mit der Pfeiltaste links oder rechts auf der Fernbedienung. Anschlie&szlig;end erh&ouml;ht man schrittweise
+PWM-Wert, jeweils f&uuml;r links und rechts. Die letzte Zeile gibt die derzeit einstellten PID-Parameter aus. <br />
+2.) Nun sollte der Bot mit<span class="function"> BOT_SPEED_SLOW</span>, 
+also 50 mm/s, auf der Stelle drehen. Das erreicht man am Einfachsten mit der Pfeiltaste links oder rechts auf der Fernbedienung. <br />
+3.) Anschlie&szlig;end erh&ouml;ht man schrittweise
 Kp mit der Taste 1, bis sich der Bot noch mit ann&auml;hernd konstanter Geschwindigkeit auf der Stelle dreht. Wird Kp zu gro&szlig;, beginnt der Regler zu schwingen und man stellt Kp
-mit der Taste 4 wieder etwas zur&uuml;ck, bis das Schwingen aufh&ouml;rt. Jetzt kann man Ki mit der Taste 2 vergr&ouml;&szlig;ern, der Wert sollte aber deutlich kleiner als Kp bleiben.
-Mit der Taste 5 kann man Ki wieder verringern. Mit erh&ouml;htem Ki kann man auch Kp noch ein wenig vergr&ouml;&szlig;ern, da der Regler nun stabiler geworden sein sollte. Es empfiehlt sich,
+mit der Taste 4 wieder etwas zur&uuml;ck, bis das Schwingen aufh&ouml;rt. <br />
+4.) Jetzt kann man Ki mit der Taste 2 vergr&ouml;&szlig;ern, der Wert sollte aber deutlich kleiner als Kp bleiben.
+Mit der Taste 5 kann man Ki wieder verringern. Mit erh&ouml;htem Ki kann man auch Kp noch ein wenig vergr&ouml;&szlig;ern, da der Regler nun stabiler geworden sein sollte. <br />
+5.) Es empfiehlt sich,
 w&auml;hrend des Einstellens den Bot ab und zu anzuhalten und das Drehen oder Fahren aus dem Stand von Neuem beginnen zu lassen, um &uuml;berpr&uuml;fen zu k&ouml;nnen, ob der Regler 
 auch schnell genug die gew&uuml;nschte Sollgeschwindigkeit einregelt. Hier hilft eventuell der D-Anteil des PID-Reglers, den man mit dem Parameter<span class="function"> PID_Kd</span> aktiviert. 
 Taste 3 erh&ouml;ht diesen, Taste 6 verringert ihn. Vorsicht, ist Kd zu gro&szlig;, leidet die Stabilit&auml;t der Regelung darunter.<br />
-Hat man die Parameter gefunden, die zum besten Ergebnis f&uuml;hren, so tr&auml;gt man diese in <a href="../include/bot-local.h">include/bot-local.h</a> ein und schaltet das #define
+6.) Hat man die Parameter gefunden, die zum besten Ergebnis f&uuml;hren, so tr&auml;gt man diese in <a href="../include/bot-local.h">include/bot-local.h</a> ein und schaltet das #define
 <span class="function"> ADJUST_PID_PARAMS</span> in <a href="../ct-Bot.h">ct-Bot.h</a> wieder aus, damit ein Teil der PID-Regler-Gleichung bereits zur Compilezeit berechnet und der
 Mikrocontroller somit entlastet werden kann. </p>
 <p>Allgemein gilt f&uuml;r die Parameter: Je gr&ouml;&szlig;er sie sind, desto <i>schneller</i> ist die Regelung, je kleiner sie sind, desto <i>stabiler</i> ist die Regelung. Sollte der 
