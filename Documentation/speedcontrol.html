@@ -161,7 +161,20 @@ liefern, werden dies die Default-Werte im SVN.
 </p>
 
 <a name="log"></a><h3>Die Logging-Funktion</h3>
-<p>TODO!
+<p>M&ouml;chte man genauer analysieren, wann der Bot wie schnell fuhr und wie exakt die gew&uuml;nschte Geschwindigkeit eingeregelt wurde, kann man daf&uuml;r w&auml;hrend des Fahrens einige
+Daten mitloggen lassen, die auf einer MMC oder SD-Karte gespeichtert werden. Dazu aktiviert man das #define<span class="function"> SPEED_LOG_AVAILABLE</span> in <a href="../ct-Bot.h">ct-Bot.h</a>
+und stellt au&szlig;erdem sicher, dass <span class="function"> MMC_AVAILABLE</span> und<span class="function"> MINI_FAT_AVAILABLE</span> an sind.<br />
+Nun werde einige Daten im Bot-Betrieb gesammelt und automatisch aufgezeichnet. Damit man diese am PC auswerten kann, muss es auf der verwendeten MMC eine Mini-Fat-Datei mit der ID <i>slog</i>
+geben, die man mit dem PC-Code des Bots wie folgt erzeugt:<span class="function"> ct-Bot.elf -c /mnt/my_mmc/slog.txt slog 1024</span> bzw.<span class="function"> ct-Bot.exe -c X:\slog.txt slog 1024</span>.<br />
+Hat der Bot seine Fahraufgaben beendet, nimmt man die MMC heraus, steckt sie in einen PC und ruft<span class="function"> ct-Bot.elf -l /mnt/my_mmc/slog.txt</span> auf, was die Log-Datei auf der 
+MMC aus dem Bot-Format in eine txt-Datei mit dem Namen <i>slog.txt</i> im Arbeitsverzeichnis von ct-Bot.elf konvertiert. Diese kann man entweder mit einem Texteditor seiner Wahl oder - und das
+erm&ouml;glicht eine schnelle und anschauliche Auswertung - mit einer Tabellenkalkulation &ouml;ffnen. Die Spalten sind durch Tabs getrennt, der Inhalt der jeweiligen Spalte geht aus der 
+&Uuml;berschrift hervor. Der erste / obere Teil der txt-Datei enth&auml;lt die Daten des linken Rades, der Untere die des Rechten. <br />
+Man sollte die Tabelle als erstes nach der Spalte <i>Timestamp</i> sortieren, damit die Reihenfolge der Daten korrekt ist. Multipliziert man die Eintr&auml;ge der Spalte <i>Timestamp</i> 
+mit 176, so erh&auml;lt man als Einheit Mikrosekunden. Jede g&auml;ngige Tabellenkalkulation stellt die Daten nun mit wenigen Mausklicks als Diagramm dar oder rechnet beliebige Dinge aus.</p>
+<p>Es sei noch angemerkt, dass die Priorit&auml;t dieses Log-Verfahrens zum Entstehungszeitpunkt auf Performance lag, um die Laufzeit der Funktionen auf dem Bot m&ouml;glichst unver&auml;ndert 
+zu lassen. Au&szlig;erdem ist das Ganze als Debug-Ausgabe w&auml;hrend der Entwicklung entstanden und gl&auml;nzt nicht mit &uuml;ppiger Funktionalit&auml;t oder gar Sch&ouml;nheit. Es ist aber 
+auch zum Einstellen und / oder bewerten von Ergebnissen hilfreich und daher im Code geblieben.
 </p>
 
 <br /><br />
