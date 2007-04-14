@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	tcp.c
+/*! 
+ * @file 	tcp.c
  * @brief 	TCP/IP-Kommunikation
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 
 #include "ct-Bot.h"
 
@@ -187,8 +188,8 @@ int copy2Buffer(uint8* data, int length){
 	uint8 * ptr = data;
 	
 	if ((sendBufferPtr + length) > sizeof(sendBuffer)){
-		printf("%s() %s:%d: sendBuffer filled with %d/%d Bytes, another %d bytes pending. Full! Aborting copy!\n",__FUNCTION__,__FILE__, __LINE__,sendBufferPtr,sizeof(sendBuffer),length);
-		
+		printf("%s() %s:%u: sendBuffer filled with %u/%lu Bytes, another %u bytes pending. Full! Aborting copy!\n",__FUNCTION__,__FILE__, __LINE__,sendBufferPtr,sizeof(sendBuffer),length);
+
 		printf("  ==> Trying to recover by calling flushSendBuffer()\n");
 		flushSendBuffer(); 
 		if ((sendBufferPtr + length) > sizeof(sendBuffer)) {

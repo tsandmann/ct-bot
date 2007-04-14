@@ -60,7 +60,7 @@ void create_mini_fat_file(const char* filename, const char* id_string, uint32 si
 	for (i=3; i>=0; i--)
 		putc(length.u8[i], fp);
 
-	printf("Erzeuge Speicherplatz fuer %lu kByte Nutzdaten\n",size);	
+	printf("Erzeuge Speicherplatz fuer %u kByte Nutzdaten\n",size);	
 	fseek(fp, size*1024-1, SEEK_SET);	// Ans Dateiende springen
 	putc(0, fp);	// eine Null schreiben
 	fclose(fp);	
@@ -111,7 +111,7 @@ void convert_slog_file(const char* input_file){
 				fwrite(buffer, strlen(buffer), 1, fp_output);
 				sprintf(buffer, "\t%d\t%u", tmp.err*2, tmp.pwm);
 				fwrite(buffer, strlen(buffer), 1, fp_output);
-				sprintf(buffer, "\t%lu\n", tmp.time);
+				sprintf(buffer, "\t%u\n", tmp.time);
 				fwrite(buffer, strlen(buffer), 1, fp_output);									
 			}
 		}

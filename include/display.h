@@ -35,30 +35,23 @@
 
 #define DISPLAY_LENGTH	20	/*!< Wieviele Zeichen passen in eine Zeile */
 
-extern uint8 display_update;			/*!< Muss das Display aktualisiert werden? */
 #define DISPLAY_SCREEN_TOGGLE	42		/*!< Screen-Nummer, die zum wechseln verwendet wird */
 extern uint8 display_screen;			/*!< Welcher Screen soll gezeigt werden? */
 
 /*! 
- * Init Display
+ * @brief	Initialisiert das Display
  */
 void display_init(void);
 
-/*! 
- * Zeigt einen String an 
- * @return -1 falls String zu Ende, 0 falls Zeile (20 zeichen) zu Ende
- */
-//int display_string(char data[20]);
-
 /*!
- * Loescht das ganze Display
+ * @brief	Loescht das ganze Display
  */
 void display_clear(void);
 
 /*!
- * Positioniert den Cursor
- * @param row Zeile
- * @param column Spalte
+ * @brief			Positioniert den Cursor
+ * @param row		Zeile
+ * @param column	Spalte
  */
 void display_cursor (uint8 row, uint8 column) ;
 
@@ -101,5 +94,4 @@ void display_cursor (uint8 row, uint8 column) ;
 	void get_str_from_flash(const char* flash, char* ram, uint8 n);
 #endif	// PC
 
-//void display_test();
 #endif	// display_H_

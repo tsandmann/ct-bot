@@ -208,7 +208,7 @@ void bot_sens_isr(void){
 		/* Index auf Encodertimestamps zwischenspeichern */
 		i_time = i_encTimeL;
 		p_time = (uint8*)encTimeL;	
-		/* Bei Stillstand Regleraufruf links nach TIMER_STEPS ms */
+		/* Bei Stillstand Regleraufruf links nach PID_TIME ms */
 		if (pid_ticks-*(uint16*)(p_time+i_time) > PID_TIME*50/TIMER_STEPS*20){
 			/* Timestamp links verschieben / speichern */
 			i_time = (i_time + sizeof(encTimeL[0])) & 0xf;	// encTime ist Z/8Z und jeder Eintrag hat 2 Byte => 0xf
@@ -218,7 +218,7 @@ void bot_sens_isr(void){
 			speed_control(0,  (int16*)&motor_left, (uint16*)encTimeL, i_encTimeL, 0);
 			timeCorrectL = 1;
 		}
-		/* Bei Stillstand Regleraufruf rechts nach TIMER_STEPS ms */
+		/* Bei Stillstand Regleraufruf rechts nach PID_TIME ms */
 		i_time = i_encTimeR;
 		p_time = (uint8*)encTimeR;
 		if (pid_ticks-*(uint16*)(p_time+i_time) > PID_TIME*50/TIMER_STEPS*20) {

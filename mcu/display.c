@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	display.c
+/*! 
+ * @file 	display.c
  * @brief 	Routinen zur Displaysteuerung
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
-*/
+ */
 #include "global.h"
 #include "ct-Bot.h"
 
@@ -29,24 +30,16 @@
 #ifdef DISPLAY_AVAILABLE
 
 #include <avr/io.h>
-#ifdef NEW_AVR_LIB
-	#include <util/delay.h>
-#else
-	#include <avr/delay.h>
-#endif
-#include <stdarg.h>
 #include <stdio.h>
 #include "command.h"
 
 #include "display.h"
-#include "led.h"
 #include "delay.h"
 #include "shift.h"
 
 /*! Puffergroesse fuer eine Zeile in bytes */
 #define DISPLAY_BUFFER_SIZE	(DISPLAY_LENGTH + 1)
 
-//uint8 display_update=0;	/*!< Muss das Display aktualisiert werden? */
 uint8 display_screen=0;	/*!< zurzeit aktiver Displayscreen */
 static char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausgaben */
 
@@ -99,51 +92,60 @@ static char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausg
 #endif
 
 /*! 
- * Übertrage Kommando an das Display
- * @param cmd Kommando
+ * @brief		Uebertraegt ein Kommando an das Display
+ * @param cmd	Das Kommando
  */
-void display_cmd(uint8 cmd){		//ein Kommando cmd an das Display senden
-	uint8 i;
+void display_cmd(uint8 cmd) {
+	/* Kommando cmd an das Display senden */
 	shift_data_out(cmd,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
-	// Enable muss für mind. 450 ns High bleiben, bevor es fallen darf!
-	// ==> Also mind. 8 Zyklen warten
-	for (i=0; i<150; i++){
-	        asm volatile("nop");
+	
+	/* 47 us warten */
+	uint8 i;
+	for (i=0; i<150; i++) {		// 47 us * 16 C / us = 752 C => 150 Schleifendurchlaeufe
+		asm volatile("nop");
 	}
 	DISPLAY_PORT=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
+	
+	if (cmd == DISPLAY_CLEAR) {
+		/* 1.52 ms warten */
+		uint16 i;
+		for (i=0; i<3040; i++) {		// 1520 us * 16 C / us = 24300 C => 3040 Schleifendurchlaeufe
+			asm volatile("nop");
+		}
+	}	
 }
 
 
 /*! 
- * Ein Zeichen auf das Display schreiben
- * @param data Das Zeichen
+ * @brief 		Schreibt ein Zeichen auf das Display
+ * @param data 	Das Zeichen
  */
-void display_data(char data){ //ein Zeichen aus data in den Displayspeicher schreiben
-        uint8 i;
-		shift_data_out(data,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY|DISPLAY_RS);
-		
-		// Enable muss für mind. 450 ns High bleiben, bevor es fallen darf!
-		// ==> Also mind. 8 Zyklen warten
-        for (i=0; i<150; i++){
-                asm volatile("nop");
-        }
-      DISPLAY_PORT=DPC;	// Alles zurueck setzen ==> Fallende Flanke von Enable
+void display_data(char data) {
+	/* Zeichen aus data in den Displayspeicher schreiben */
+	shift_data_out(data,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY|DISPLAY_RS);
+
+	/* 47 us warten */
+	uint8 i;
+	for (i=0; i<150; i++){
+		asm volatile("nop");
+	}
+	DISPLAY_PORT=DPC;	// Alles zurueck setzen ==> Fallende Flanke von Enable
 }
 
 /*!
- * Loescht das ganze Display
+ * @brief	Loescht das ganze Display
  */
 void display_clear(void){
 	display_cmd(DISPLAY_CLEAR); // Display loeschen, Cursor Home
-   #ifdef DISPLAY_REMOTE_AVAILABLE
+	#ifdef DISPLAY_REMOTE_AVAILABLE
 		command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, NULL, NULL,0);
 	#endif
 }
 
 /*!
- * Positioniert den Cursor
- * @param row Zeile
- * @param column Spalte
+ * @brief			Positioniert den Cursor
+ * @param row		Zeile
+ * @param column	Spalte
  */
 void display_cursor (uint8 row, uint8 column) {
    switch (row) {
@@ -173,7 +175,7 @@ void display_cursor (uint8 row, uint8 column) {
 }
 
 /*! 
- * Init Display
+ * @brief	Initialisiert das Display
  */
 void display_init(void){
 	shift_init();
@@ -198,25 +200,8 @@ void display_init(void){
 	
 	display_cmd(DISPLAY_CLEAR); // Display loeschen, Cursor Home
 	
-	display_data('i');
+//	display_data('i');
 }
-
-/*! 
- * Zeigt einen String an 
- * @return -1 falls string zuende 0 falls Zeile (20 zeichen) zuende
- */
-/*int display_string(char data[20]){
-	int i=0;
-	
-	while ((i<20) && (data[i] != 0x00)){ 	// Abbruch, sobald ein Nullstring erreicht wird
-						// oder 20 Zeichen gesendet sind
-		display_data(data[i++]);	// einzelnes Zeichen schicken
-	}
-	
-	// return -1 falls string zuende, 0 falls zeile (20 zeichen) zuende
-	if (data[i]==0x00)	return -1;	else return 0;
-} 
-*/
 
 /*!
  * @brief			Schreibt einen String auf das Display, der im Flash gespeichert ist
@@ -251,25 +236,6 @@ void display_flash_printf(const char* format, ...){
 		remote_column += run;
 	#endif	
 }
-
-/*
-void display_test(){
-	shift_init();	
-
-//	shift_data_out(0xAA,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
-	
-	display_cmd(0x38);  		//Display auf 8 Bit Betrieb
-	for(;;){}
-	display_cmd(0x0f);  		//Display On, Cursor On, Cursor Blink
-	
-	display_cmd(DISPLAY_CLEAR); // Display l�schen, Cursor Home
-	display_cursor(2,2);
-	
-	display_string("Hallo");
-	for(;;){
-	}
-}
-*/
 
 #endif	// DISPLAY_AVAILABLE
 
