@@ -26,6 +26,8 @@
 
 #define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-kommandos entgegen?*/
 
+//#define BEHAVIOUR_CALIBRATE_PID_AVAILABLE	/*!< Kalibrierungsverhalten fuer Motorregelung vorhanden? */
+
 /* Aufgrund einer ganzen reihe von Abhaengigkeiten sollte man beim Versuch Speicher 
  * zu sparen, zuerst mal bei den Hauptverhalten ausmisten, sonst kommen die 
  * Unterverhalten durch die Hintertuer wieder rein
@@ -68,6 +70,15 @@
 	#define BEHAVIOUR_SERVO_AVAILABLE
 #endif
 
+#ifndef MCU
+	#undef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+#endif
+
+#ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+	#define DISPLAY_REGELUNG_AVAILABLE		// speichert Ist-Speed global
+	#define ADJUST_PID_PARAMS				// ja also die Parameter muessen schon einstellbar sein...
+#endif
+
 
 #include "bot-logic/behaviour_simple.h"
 #include "bot-logic/behaviour_drive_square.h"
@@ -93,6 +104,8 @@
 #include "bot-logic/behaviour_catch_pillar.h"
 
 #include "bot-logic/remote_calls.h"
+
+#include "bot-logic/behaviour_calibrate_pid.h"
 
 #endif
 #endif /*AVAILABLE_BEHAVIOURS_H_*/

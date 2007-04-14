@@ -52,9 +52,9 @@ int16 speed_r = 0;	/*!< Sollgeschwindigkeit rechter Motor */
 #ifdef SPEED_CONTROL_AVAILABLE
 	#ifdef ADJUST_PID_PARAMS
 		/* PID-Parameter variabel */
-		static int8 Kp = PID_Kp;	/*!< PID-Parameter proportional */
-		static int8 Ki = PID_Ki;	/*!< PID-Parameter intergral */
-		static int8 Kd = PID_Kd;	/*!< PID-Parameter differential */
+		int8 Kp = PID_Kp;	/*!< PID-Parameter proportional */
+		int8 Ki = PID_Ki;	/*!< PID-Parameter intergral */
+		int8 Kd = PID_Kd;	/*!< PID-Parameter differential */
 	#else
 		/* PID-Koeffizienten aus Parametern berechnen */
 		#define Q0 ( PID_Kp + PID_Kd/PID_Ta)					/*!< PID-Koeffizient Fehler */
@@ -78,7 +78,7 @@ int16 speed_r = 0;	/*!< Sollgeschwindigkeit rechter Motor */
 	static uint8 start_signal[2] = {0,0};
 	static volatile pwmMap_t pwm_values[4] = {{0,255},{0,255},{0,255},{0,255}};		/*!< Lookup fuer Zuordnung GeschwindigkeitSLOW <-> PWM */
 	#ifdef DISPLAY_REGELUNG_AVAILABLE
-		static uint8 encoderRateInfo[2];		/*!< Puffer fuer Displayausgabe der Ist-Geschwindigkeit */
+		uint8 encoderRateInfo[2];		/*!< Puffer fuer Displayausgabe der Ist-Geschwindigkeit */
 //		static uint8 timer_reg1, timer_reg2;
 	#endif
 	
@@ -166,7 +166,8 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 				/* </testcase> */
 				
 				/* Bei Fahrt Regelgroesse berechnen */	
-				uint8 encoderRate = ticks_to_speed / dt + enc_correct; // <dt> = [37; 800] -> <encoderRate> = [229; 10]
+				uint8 encoderRate = ticks_to_speed / dt; // <dt> = [37; 800] -> <encoderRate> = [229; 10]
+				if (encoderRate > 6) encoderRate += enc_correct;
 				/* Regeldifferenz berechnen */	
 				int16 err = (encoderTargetRate[dev] - encoderRate); 
 	

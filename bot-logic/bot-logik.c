@@ -163,6 +163,9 @@ void bot_behave_init(void){
 		insert_behaviour_to_list(&behaviour, new_behaviour(51, bot_drive_square_behaviour,INACTIVE));
 	#endif
 
+	#ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+		insert_behaviour_to_list(&behaviour, new_behaviour(30, bot_calibrate_pid_behaviour, INACTIVE));		
+	#endif
 
 
 	// Grundverhalten, setzt aeltere FB-Befehle um, aktiv
