@@ -191,7 +191,7 @@ static char log_buffer[LOG_BUFFER_SIZE];
 			log_buffer[3] = '\0';
 		#else
 			/* Zeichen des Strings fuer Dateiname wortweise aus dem Flash holen */
-			char flash_filen[40];
+			char flash_filen[80];
 			get_str_from_flash(filename, flash_filen, 40/2);
 
 			/* Zeichen des Strings fuer Typ wortweise aus dem Flash holen */

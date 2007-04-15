@@ -31,8 +31,13 @@
 #ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
 #include "bot-logic/bot-logik.h"
 
+uint16 cal_pid_ete;		/*!< verbleibende Zeit bis zum Ende der Kalibrierung in Sekunden */
+
 /*!
- * @brief	Das Verhalten
+ * @brief	Das eigentliche Verhalten
+ * @see		bot_calibrate_pid()
+ * Die Funktionalitaet des Verhaltens ist aufgeteilt in: 
+ * @see find_Kp_region(), @see find_best_Kp_Ki(), @see find_best_Kp() und @see find_best_Kd()
  */
 void bot_calibrate_pid_behaviour(Behaviour_t *data);
 

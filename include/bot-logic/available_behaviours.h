@@ -75,6 +75,7 @@
 #endif
 
 #ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+	#define SPEED_CONTROL_AVAILABLE			// Wenn die Regelung kalibriert werden soll, muss sie auch an sein!
 	#define DISPLAY_REGELUNG_AVAILABLE		// speichert Ist-Speed global
 	#define ADJUST_PID_PARAMS				// ja also die Parameter muessen schon einstellbar sein...
 #endif

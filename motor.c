@@ -41,6 +41,7 @@
 #include "display.h"
 #include "bot-logic/bot-logik.h"
 #include "rc5-codes.h"
+#include "bot-logic/behaviour_calibrate_pid.h"
 
 #ifdef MCU
 	#include <avr/eeprom.h>
@@ -284,19 +285,27 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 			if (speed_l != 0){
 				display_cursor(1,2);
 				display_printf("%3u/%3u",encoderRateInfo[0]<<1,abs(speed_l));
-				display_cursor(2,1);
-				display_printf("e = %4d",abs(speed_l)-(encoderRateInfo[0]<<1));					
+				#ifndef BEHAVIOUR_CALIBRATE_PID_AVAILABLE 
+					display_cursor(2,1);
+					display_printf("e = %4d",abs(speed_l)-(encoderRateInfo[0]<<1));
+				#endif					
 				display_cursor(3,1);
 				display_printf("L = %4d",motor_left);				
 			}
 			if (speed_r != 0){
 				display_cursor(1,12);
 				display_printf("%3d/%3d",encoderRateInfo[1]<<1,abs(speed_r));
-				display_cursor(2,11);
-				display_printf("e = %4d",abs(speed_r)-(encoderRateInfo[1]<<1));
+				#ifndef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+					display_cursor(2,11);
+					display_printf("e = %4d",abs(speed_r)-(encoderRateInfo[1]<<1));
+				#endif
 				display_cursor(3,11);
 				display_printf("L = %4d",motor_right);
 			}
+			#ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+				display_cursor(2,1);
+				display_printf("ETE = %3u Minuten", cal_pid_ete / 60);
+			#endif
 			display_cursor(4,1);
 			#ifdef ADJUST_PID_PARAMS
 				display_printf("Kp=%3d Ki=%3d Kd=%3d",Kp,Ki,Kd);

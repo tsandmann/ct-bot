@@ -31,14 +31,17 @@
 #include <math.h>
 #include <stdio.h>
 #include <float.h>
+
 #include "motor.h"
 #include "timer.h"
 #include "log.h"
 
 extern uint8 encoderRateInfo[2];		/*!< aktuelle Ist-Geschwindigkeit */
 extern int8 Kp, Ki, Kd;					/*!< PID-Parameter */
+uint16 cal_pid_ete = 0;					/*!< verbleibende Zeit bis zum Ende der Kalibrierung in Sekunden */
 static int16 cal_speed;					/*!< Bot-Speed fuer waehrend der Kalibrierung */
 static uint32 ticks = 0;				/*!< Timestamp-Speicher */
+static uint32 ticks_start = 0;			/*!< Timestamp zu Beginn der Bewertungsbrechnung */
 static float xm_left;					/*!< gleitender Mittelwert links */
 static float xm_right;					/*!< gleitender Mittelwert rechts */
 static float vm_left;					/*!< gleitende Varianz links */
@@ -46,152 +49,178 @@ static float vm_right;					/*!< gleitende Varianz rechts */
 static float best_weight;				/*!< beste Bewertung bisher */
 static int8 best_Kp = 0;				/*!< bester Kp-Wert bisher */
 static int8 best_Ki = 0;				/*!< bester Ki-Wert bisher */
+static int8 best_Kd = 0;				/*!< bester Kd-Wert bisher */
 static int8 Kp_region_end = 0;			/*!< obere Schranke des grob ermittelten Kp-Bereichs */
 
-static void (* next_job)(void) = NULL;	/*!< naechste Teilaufgabe */
-static void (* last_job)(void) = NULL;	/*!< letzte Teilaufgabe (vor Stopp) */
+static void (* pNextJob)(void) = NULL;	/*!< naechste Teilaufgabe */
+static void (* pLastJob)(void) = NULL;	/*!< letzte Teilaufgabe (vor Stopp) */
 
-static const float a = 0.02;			/*!< Gewichtungsfaktor */
+static void find_best_Kp_Ki(void);		/*!< Ermittelt die beste Kp/Ki-Kombination (bei gegebener Kp-Region) */
+static void find_best_Kp(void);			/*!< Ermittelt den besten Kp-Wert bei gegebenem Ki */
+static void find_best_Kd(void);			/*!< Ermittelt den besten Kd-Wert bei gegebenen Kp und Ki */ 
 
-static void find_best_Kp_Ki(void);
-static void find_best_Kp(void);
+/*	<einstellbare Parameter>	*/
+static const float a = 0.01;			/*!< Gewichtungsfaktor */
+static const uint8 max_Kp = 126;		/*!< groesstes Kp, das behandelt wird (0; 127) */
+static const uint8 max_Ki = 32;			/*!< groesstes Ki, das behandelt wird (0; 127) */
+static const uint8 max_Kd = 64;			/*!< groesstes Kd, das behandelt wird [0; 127) */
+/*	</einstellbare Parameter>	*/
+
+
+/*!
+ * @brief	Hilfsfunktion fuer wait_for_stop()
+ * @see		wait_for_stop()
+ */
+static void wait_for_stop_helper(void) {
+	speedWishLeft = BOT_SPEED_STOP;
+	speedWishRight = BOT_SPEED_STOP;
+	
+	/* Nachlauf abwarten */
+	if (fabs(v_enc_left) < 10.0f && fabs(v_enc_right) < 10.0f) {
+		/* zurueck zum Aufrufer */
+		pNextJob = pLastJob;	// wurde zuvor von wait_for_stop() gerettet
+	}
+}
+
+/*!
+ * @brief	Haelt den Bot an und wartet den Nachlauf ab
+ * anschliessend geht's mit dem Aufrufer weiter
+ */
+static inline void wait_for_stop(void) {
+	pLastJob = pNextJob;
+	pNextJob = wait_for_stop_helper;
+} 
 
 /*!
  * @brief	Bewertungsfunktion
- * @return	Bewertung
+ * @return	Die Bewertung
  * Je kleiner return, desto besser!
  */
-static float calc_weighting(void) {
-	if (encoderRateInfo[0] <= 6 && encoderRateInfo[1] <= 6) {
-		vm_left = FLT_MAX;
-		vm_right = FLT_MAX;
-		return FLT_MAX;	
+static inline float calc_weighting(void) {
+	if (encoderRateInfo[0] <= 6 || encoderRateInfo[1] <= 6) {
+		/* mindestens ein Rad steht still => ganz schlecht */
+		vm_left = FLT_MAX/2;
+		vm_right = FLT_MAX/2;
+		return FLT_MAX/2;	
 	}
-	xm_left = xm_left * (1.0f-a) + (float)encoderRateInfo[0] * 20.0f * a;
-	xm_right = xm_right * (1.0f-a) + (float)encoderRateInfo[1] * 20.0f * a;
-	vm_left = vm_left * (1.0f-a) + pow((float)encoderRateInfo[0] * 20.0f - xm_left, 2) * a;
-	vm_right = vm_right * (1.0f-a) + pow((float)encoderRateInfo[1] * 20.0f - xm_right, 2) * a;
+	
+	/* Mittelwert und Varianz links und rechts aktualisieren */
+	xm_left = xm_left * (1.0f - a) + (float)encoderRateInfo[0] * a;
+	xm_right = xm_right * (1.0f - a) + (float)encoderRateInfo[1] * a;
+	vm_left = vm_left * (1.0f - a) + pow((float)encoderRateInfo[0] - xm_left, 2) * a;
+	vm_right = vm_right * (1.0f - a) + pow((float)encoderRateInfo[1] - xm_right, 2) * a;
+	
+	/* Durchschnitt von Varianz links und rechts ergibt neue Bewertung */
 	return vm_left * 0.5 + vm_right * 0.5;	
 }
 
 /*!
- * @brief	Initialisiert die Bewertungsfunktion neu
+ * @brief	Initialisiert die Daten der Bewertungsfunktion neu
  * Mittelwerte werden mit Sollspeed initialisiert
  */
 static void clear_weighting(void) {
-	xm_left = cal_speed * 10.0f;
-	xm_right = cal_speed * 10.0f;
+	xm_left = cal_speed;
+	xm_right = cal_speed;
 	vm_left = 0.0f;
 	vm_right = 0.0f;
+	ticks_start = TIMER_GET_TICKCOUNT_32;
 }
 
-//static void adjust_params(uint8 direction, float weight) {
-//	static uint8 Kp_tmp = 0;
-//	int8 old_Kp = Kp;
-//	if (direction) {
-//		if (Kp < 122) {
-//			if (Kp_tmp) Kp += 5;
-//			else Kp_tmp = 1;
-//		}
-//	} else {
-//		if (Kp > 5) {
-//			if (!Kp_tmp) Kp -= 5;
-//			else Kp_tmp = 0;
-//		}
-//	}
-//	if (old_Kp == Kp && best_weight >= fabs(weight - last_weight))
-//		Ki++;
-//		
-//}
-
 /*!
- * @brief	Haelt den Bot an und wartet ein wenig den Nachlauf ab
- * anschliessend geht's mit dem Aufrufer weiter
+ * @brief			Berechnet aktuelle Mittelwerte und Varianzen und prueft nach dt ms auf bessere Bewertung
+ * @param dt		Zeit in ms bevor eine neue Bewertung erstellt wird
+ * @param pid_param	Zeiger auf den veraenderlichen PID-Parameter
+ * @param step		Wert, um den *pid_param inkrementiert wird 
+ * Neue beste Parameter werden gespeichert und vor jeder Parameteraenderung wird der Bot kurz angehalten.
+ * Bei neuem besten Wert werden die bisher besten Parameter per LOG ausgegeben
  */
-static void wait_for_stop(void) {
-	static uint8 count = 1;
-	if (count != 0) {
-		count++;
-		speedWishLeft = BOT_SPEED_STOP;
-		speedWishRight = BOT_SPEED_STOP;
-	} else {
-		count = 1;
-		next_job = last_job;
+static void compare_weightings(const uint16 dt, int8* pid_param, const int8 step) {
+	/* Mittelwerte und Varianzen aktualisieren */
+	float weight = calc_weighting();
+	
+	/* nach dt ms aktuelle Bewertung mit bisher bester vergleichen */
+	if (timer_ms_passed(&ticks, dt)) {
+		uint32 dt_real = TIMER_GET_TICKCOUNT_32 - ticks_start;
+		weight = weight / (float)dt_real * (dt*1000.0f/176.0f);		// Bewertung normieren
+		if (best_weight >= weight) {
+			/* Verbesserung => die aktuellen Parameter merken */
+			best_weight = weight;
+			best_Kp = Kp;
+			best_Ki = Ki;
+			best_Kd = Kd;
+			
+			/* User per LOG informieren */
+			LOG_INFO("Kp=%d\tKi=%d\tKd=%d\tnach %u s", best_Kp, best_Ki, best_Kd, TICKS_TO_MS(TIMER_GET_TICKCOUNT_32)/1000);
+			uint32_t weight_int = weight * 1000000.0f;
+			LOG_DEBUG("weight=%lu", weight_int);				
+		}
+		
+		/* neuen Parameter einstellen und Nachlauf abwarten */	
+		*pid_param += step;
+		
+//		uint32_t weight_int = weight * 1000000.0f;
+//		LOG_DEBUG("weight=%lu", weight_int);
+		
+		wait_for_stop();
+		
+		/* alten Daten verwerfen */
+		clear_weighting();
+		
+		/* verbleibende Zeit aktualisieren */
+		cal_pid_ete -= dt / 1000;
 	}
 }
 
 /*!
- * @brief	Sucht die beste "Kp-Region" (grob) 
+ * @brief	Sucht die beste "Kp-Region" (sehr grob) 
  * Ergebnis steht in Kp + 10
- * Laufzeit: 3 Minuten
+ * Nachfolgende Teilfunktion ist @see find_best_Kp_Ki()
+ * Laufzeit: 3 Minuten (bei max_Kp == 126)
  */
 static void find_Kp_region(void) {
-	/* go! */
+	/* Go! */
 	speedWishLeft = -cal_speed;
 	speedWishRight = cal_speed;
 	
-	float weight = calc_weighting();
-	if (timer_ms_passed(&ticks, 15000)) {
-		if (best_weight >= weight) {
-			best_weight = weight;
-			best_Kp = Kp;
-			clear_weighting();	
-			LOG_INFO("best_Kp=%d\tnach %u s", best_Kp, TICKS_TO_MS(TIMER_GET_TICKCOUNT_32)/1000);				
-		}
-		LOG_DEBUG("weight=%lu", (uint32)weight);
-		Kp += 10;
-		/* stopp! */
-		last_job = find_Kp_region;
-		next_job = wait_for_stop;
+	/* Kp alle 15 s um 10 erhoehen und besten Parameter speichern */ 
+	compare_weightings(15000, &Kp, 10);
+	
+	if (Kp < 0 || Kp >= max_Kp) {
+		/* alle Kp ueberprueft => nun Ki suchen */
+		pNextJob = find_best_Kp_Ki;
 		
-		if (Kp < 0) {
-			next_job = find_best_Kp_Ki;
-			Kp = best_Kp > 10 ? best_Kp - 10 : 0;
-			Kp_region_end = best_Kp < 116 ? best_Kp + 10 : 120;
-			Ki = 1;
-			best_weight = FLT_MAX;
-		}
+		/* wir suchen Ki in der Umgebung (+/- 10) von best_Kp */
+		Kp = best_Kp > 10 ? best_Kp - 10 : 0;
+		Kp_region_end = best_Kp < 116 ? best_Kp + 10 : 120;
+		Ki = 1;
+		best_weight = FLT_MAX;
 	}
 }
 
 /*!
  * @brief	Ermittelt die beste Kp/Ki-Kombination (bei gegebener Kp-Region)
  * Ergebnis steht in Kp und Ki
- * Laufzeit: 27 Minuten
+ * Nachfolgende Teilfunktion ist @see find_best_Kp()
+ * Laufzeit: 27 Minuten (bei max_Ki == 32)
  */
 static void find_best_Kp_Ki(void) {
 	/* Brute-Force (das dauert => Kaffeepause) */
-	if (Ki <= 20) {	// 32
-		if (Kp <= Kp_region_end) {
-			/* go! */
-			speedWishLeft = -cal_speed;
-			speedWishRight = cal_speed;
-			
-			float weight = calc_weighting();
-			if (timer_ms_passed(&ticks, 5000)) {
-				if (best_weight >= weight) {
-					best_weight = weight;
-					best_Kp = Kp;
-					best_Ki = Ki;
-					clear_weighting();
-					LOG_INFO("best_Kp=%d\tbest_Ki=%d\tnach %u s", best_Kp, best_Ki, TICKS_TO_MS(TIMER_GET_TICKCOUNT_32)/1000);
-				}
-				LOG_DEBUG("weight=%lu", (uint32)weight);
-				Kp += 2;
-				/* stopp! */
-				last_job = find_best_Kp_Ki;
-				next_job = wait_for_stop;
-			}			
-		} else {
-			Kp -= 20;
-			Ki++;
-			/* stopp! */
-			last_job = find_best_Kp_Ki;
-			next_job = wait_for_stop;		
-		}
-	} else {
-		next_job = find_best_Kp;
-		//Kp = best_Kp;
+
+	/* Go! */
+	speedWishLeft = -cal_speed;
+	speedWishRight = cal_speed;
+	
+	/* Kp alle 5 s um 2 erhoehen und besten Parameter speichern */
+	compare_weightings(5000, &Kp, 2);
+
+	if (Kp > Kp_region_end) {
+		/* alle Kp fuer aktuelles Ki ueberprueft => mit naechstem Ki weiter */
+		Kp -= 22;
+		Ki++;
+	}
+	if (Ki < 0 || Ki > max_Ki) {
+		/* Ki-Suche beendet, jetzt bestes Kp zu diesem Ki suchen */
+		pNextJob = find_best_Kp;
 		Kp = 10;
 		Ki = best_Ki;
 		clear_weighting();
@@ -202,44 +231,62 @@ static void find_best_Kp_Ki(void) {
 /*!
  * @brief	Ermittelt den besten Kp-Wert bei gegebenem Ki
  * Ergebnis steht in Kp
- * Laufzeit: 5 Minuten 
+ * Nachfolgende Teilfunktion ist @see find_best_Kd()
+ * Laufzeit: 6 Minuten (bei max_Kp == 126)
  */
 static void find_best_Kp(void) {
-	if (Kp < 121) {
-		/* go! */
-		speedWishLeft = -cal_speed;
-		speedWishRight = cal_speed;
+	/* Go! */
+	speedWishLeft = -cal_speed;
+	speedWishRight = cal_speed;
+	
+	/* Kp alle 5 s um 2 erhoehen und besten Parameter speichern */
+	compare_weightings(5000, &Kp, 2);
 		
-		float weight = calc_weighting();
-		if (timer_ms_passed(&ticks, 5000)) {
-			if (best_weight >= weight) {
-				best_weight = weight;
-				best_Kp = Kp;
-				clear_weighting();
-				LOG_INFO("best_Kp=%d\tnach %u s", best_Kp, TICKS_TO_MS(TIMER_GET_TICKCOUNT_32)/1000);			
-			}
-			LOG_DEBUG("weight=%lu", (uint32)weight);
-			Kp += 2;
-			/* stopp! */
-			last_job = find_best_Kp;
-			next_job = wait_for_stop;
-		}			
-	} else {
-		next_job = NULL;
-		Kp = best_Kp;	
+	if (Kp < 0 || Kp > max_Kp) {
+		/* Kp-Suche beendet, jetzt bestes Kd zu dieser Kp/Ki-Kombination suchen */
+		pNextJob = find_best_Kd;
+		Kp = best_Kp;
+		Kd = 0;
+		clear_weighting();
+		best_weight = FLT_MAX;
 	}	
 }
 
 /*!
- * @brief	Das Verhalten
+ * @brief	Ermittelt den besten Kd-Wert bei gegebenem Kp und Ki
+ * Ergebnis steht in Kd
+ * Letzte Teilfunktion des Verhaltens
+ * Laufzeit: 6 Minuten (bei max_Kd == 64)
+ */
+static void find_best_Kd(void) {
+	/* Go! */
+	speedWishLeft = -cal_speed;
+	speedWishRight = cal_speed;
+	
+	/* Kd alle 5 s um 1 erhoehen und besten Parameter speichern */
+	compare_weightings(5000, &Kd, 1);
+				
+	if (Kd < 0 || Kd > max_Kd) {
+		/* Kd-Suche beendet, also auch Ende der Kalibrierung erreicht :-) */
+		pNextJob = NULL;
+		Kd = best_Kd;
+		LOG_INFO("Job done! Kp=%d\tKi=%d\tKd=%d", Kp, Ki, Kd);
+	}		
+}
+
+/*!
+ * @brief	Das eigentliche Verhalten
+ * @see		bot_calibrate_pid()
+ * Die Funktionalitaet des Verhaltens ist aufgeteilt in: 
+ * @see find_Kp_region(), @see find_best_Kp_Ki(), @see find_best_Kp() und @see find_best_Kd()
  */
 void bot_calibrate_pid_behaviour(Behaviour_t *data) {
-	if (next_job != NULL) next_job();
+	if (pNextJob) pNextJob();
 	else return_from_behaviour(data);
 }
 
 /*!
- * @brief	Kalibriert die Motorregelung des Bots
+ * @brief	Kalibriert die Motorregelung des ct-Bots
  * Die ermittelten Parameter werden eingestellt, aber nicht dauerhaft gespeichert!
  */
 void bot_calibrate_pid(Behaviour_t *caller, int16 speed) {
@@ -249,12 +296,16 @@ void bot_calibrate_pid(Behaviour_t *caller, int16 speed) {
 	clear_weighting();
 	best_Kp = 0;
 	best_Ki = 0;
+	best_Kd = 0;
 	Kp = 10;
 	Ki = 5;
 	Kd = 0;	
 	best_weight = FLT_MAX;
+	/* Zeit fuer 	finde Kp-Region 	+	finde Kp/Ki-Kombi	+	finde Kp	+	finde Kd */
+	cal_pid_ete = (max_Kp - 9) * 15 / 10 + max_Ki * 10 * 5 + (max_Kp - 9) * 5 / 2 + (max_Kd + 1) * 5;
 	
-	next_job = find_Kp_region;
+	/* Als erstes beste "Kp-Region" suchen */
+	pNextJob = find_Kp_region;
 	
 	/* Verhalten an */
 	switch_to_behaviour(caller, bot_calibrate_pid_behaviour, OVERRIDE);
