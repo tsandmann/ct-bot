@@ -301,8 +301,8 @@ void bot_calibrate_pid(Behaviour_t *caller, int16 speed) {
 	Ki = 5;
 	Kd = 0;	
 	best_weight = FLT_MAX;
-	/* Zeit fuer 	finde Kp-Region 	+	finde Kp/Ki-Kombi	+	finde Kp	+	finde Kd */
-	cal_pid_ete = (max_Kp - 9) * 15 / 10 + max_Ki * 10 * 5 + (max_Kp - 9) * 5 / 2 + (max_Kd + 1) * 5;
+	/* Zeit fuer 		finde Kp-Region 	+	finde Kp/Ki-Kombi	+	finde Kp	+		finde Kd */
+	cal_pid_ete = ((max_Kp - 9) / 10 + 1) * 15 + max_Ki * 11 * 5 + (max_Kp - 9) * 5 / 2 + (max_Kd + 1) * 5;
 	
 	/* Als erstes beste "Kp-Region" suchen */
 	pNextJob = find_Kp_region;
