@@ -131,6 +131,21 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 			if (start_signal[dev] == PID_START_DELAY){
 				orignalTargetRate[dev] = encoderTargetRate[dev];	// Zielgeschwindigkeit merken
 				encoderTargetRate[dev] = BOT_SPEED_SLOW/2;	// laaaangsam anfahren
+				
+				#ifdef SPEED_LOG_AVAILABLE
+					/* Daten loggen */
+					register uint8 index = slog_i[dev];	
+					if (index < 24) {
+						slog_data[dev][index].encRate = 1;							// Regelgroesse
+						slog_data[dev][index].err = encoderTargetRate[dev];			// Regeldifferenz
+						slog_data[dev][index].pwm = *actVar;						// Stellgroesse
+						slog_data[dev][index].targetRate = encoderTargetRate[dev];	// Fuehrungsgroesse
+						slog_data[dev][index++].time = TIMER_GET_TICKCOUNT_32;		// Timestamp
+						slog_i[dev] = index > 24 ? 0 : index;	// Z/25Z
+						slog_count[dev]++;
+					}
+				#endif	// SPEED_LOG_AVAILABLE
+								
 			} else{	// 1. Aufruf => es gibt noch keinen korrekten Timestamp in der Vergangenheit => bis zum 2. Aufruf nix tun
 				if (encoderTargetRate[dev] >= PID_SPEED_THRESHOLD){
 					i_time -= 4 * sizeof(encTime[0]);	// Index 4.letzter Timestamp
@@ -211,13 +226,15 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 				#ifdef SPEED_LOG_AVAILABLE
 					/* Daten loggen */
 					register uint8 index = slog_i[dev];	
-					slog_data[dev][index].encRate = encoderRate;				// Regelgroesse
-					slog_data[dev][index].err = err;							// Regeldifferenz
-					slog_data[dev][index].pwm = *actVar;						// Stellgroesse
-					slog_data[dev][index].targetRate = encoderTargetRate[dev];	// Fuehrungsgroesse
-					slog_data[dev][index++].time = TIMER_GET_TICKCOUNT_32;		// Timestamp
-					slog_i[dev] = index > 24 ? 0 : index;	// Z/25Z
-					slog_count[dev]++;
+					if (index < 24) {
+						slog_data[dev][index].encRate = encoderRate;				// Regelgroesse
+						slog_data[dev][index].err = err;							// Regeldifferenz
+						slog_data[dev][index].pwm = *actVar;						// Stellgroesse
+						slog_data[dev][index].targetRate = encoderTargetRate[dev];	// Fuehrungsgroesse
+						slog_data[dev][index++].time = TIMER_GET_TICKCOUNT_32;		// Timestamp
+						slog_i[dev] = index > 24 ? 0 : index;	// Z/25Z
+						slog_count[dev]++;
+					}
 				#endif	// SPEED_LOG_AVAILABLE		
 			}
 
@@ -393,6 +410,20 @@ void motor_set(int16 left, int16 right){
 			}
 			/* PWM-Wert setzen */
 			motor_update(0);
+			
+			#ifdef SPEED_LOG_AVAILABLE
+				/* Daten loggen */
+				register uint8 index = slog_i[0];	
+				if (index < 24) {
+					slog_data[0][index].encRate = 1;				// Regelgroesse
+					slog_data[0][index].err = 0;							// Regeldifferenz
+					slog_data[0][index].pwm = 0;						// Stellgroesse
+					slog_data[0][index].targetRate = encoderTargetRate[0];	// Fuehrungsgroesse
+					slog_data[0][index++].time = TIMER_GET_TICKCOUNT_32;		// Timestamp
+					slog_i[0] = index > 24 ? 0 : index;	// Z/25Z
+					slog_count[0]++;
+				}
+			#endif	// SPEED_LOG_AVAILABLE	
 		}
 		/* Neue Fuehrungsgroesse rechts setzen */
 		if (speed_r != right*speedSignRight && (start_signal[1] == 0 || right == 0)){
@@ -416,6 +447,20 @@ void motor_set(int16 left, int16 right){
 				speed_r = -right;
 			}
 			motor_update(1);
+			
+			#ifdef SPEED_LOG_AVAILABLE
+				/* Daten loggen */
+				register uint8 index = slog_i[1];	
+				if (index < 24) {
+					slog_data[1][index].encRate = 1;				// Regelgroesse
+					slog_data[1][index].err = 0;							// Regeldifferenz
+					slog_data[1][index].pwm = 0;						// Stellgroesse
+					slog_data[1][index].targetRate = encoderTargetRate[1];	// Fuehrungsgroesse
+					slog_data[1][index++].time = TIMER_GET_TICKCOUNT_32;		// Timestamp
+					slog_i[1] = index > 24 ? 0 : index;	// Z/25Z
+					slog_count[1]++;
+				}
+			#endif	// SPEED_LOG_AVAILABLE			
 		}
 		
 		/* PWM-Lookup im EEPROM updaten */

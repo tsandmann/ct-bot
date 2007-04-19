@@ -63,7 +63,7 @@
 #define SHIFT_AVAILABLE		/*!< Shift Register */
 
 //#define TEST_AVAILABLE_ANALOG		/*!< Sollen die LEDs die analoge Sensorwerte anzeigen */
-//#define TEST_AVAILABLE_DIGITAL		/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
+//#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
 //#define TEST_AVAILABLE_MOTOR		/*!< Sollen die Motoren ein wenig drehen */
 //#define DOXYGEN		/*!< Nur zum Erzeugen der Doku, wenn dieser schalter an ist, jammert der gcc!!! */
 
@@ -151,10 +151,6 @@
 	#undef SPEED_LOG_AVAILABLE	
 #endif
 
-#ifndef MINI_FAT_AVAILABLE
-	#undef SPEED_LOG_AVAILABLE
-#endif
-
 #ifdef LOG_UART_AVAILABLE
 	#define LOG_AVAILABLE
 #endif 
@@ -176,6 +172,10 @@
 	#ifdef MCU
 		#undef MMC_VM_AVAILABLE
 	#endif
+#endif
+
+#ifndef MINI_FAT_AVAILABLE
+	#undef SPEED_LOG_AVAILABLE
 #endif
 
 #ifdef LOG_AVAILABLE

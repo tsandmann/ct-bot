@@ -98,7 +98,7 @@ void mini_fat_store_adr(uint32 block){
 			return;	// fertig	
 		} 
 	}
-	//TODO: Alte Slabs ueberschreiben? Random?
+	eeprom_write_block(&block, &eefat[TCNT2%10], sizeof(block));	// Adresse an zufaelliger Position speichern
 }
 #endif	// MMC_AVAILABLE
 
