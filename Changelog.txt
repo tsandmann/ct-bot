@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-04-21 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer bot_drive_distance(), Anzahl der Encoderflanken wird nun korrekt berechnet
+
 2007-04-15 Timo Sandmann [mail@timosandmann.de]: Kalibrierungsverhalten fuer die Motorregelung implementiert
 
 2007-04-14 Timo Sandmann [mail@timosandmann.de]: Display-Timing korrigiert, Warnings entfernt
