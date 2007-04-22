@@ -95,8 +95,8 @@ void bot_drive_distance(Behaviour_t* caller,int8 curve, int16 speed, int16 cm){
 	//LOG_DEBUG("curve= %d, speed= %d, cm =%d",curve, speed, cm);
 
 	int32 tmp = cm;
-	tmp *= 10 * ENCODER_MARKS;
-	tmp /= 157;	// Felgendurchmesser*PI
+	tmp*= 10 * ENCODER_MARKS;
+	tmp /= WHEEL_PERIMETER;
 	int16 marks_to_drive = (int16) tmp;
 	
 	int16 *encoder;
