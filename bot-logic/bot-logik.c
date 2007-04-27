@@ -374,7 +374,11 @@ void bot_behave(void){
 			faktorWishLeft = 1.0;
 			faktorWishRight = 1.0;
 			
-			job->work(job);	/* Verhalten ausfuehren */
+			if (job->work)	// hat das Verhalten eine Work-Routine
+				job->work(job);	/* Verhalten ausfuehren */
+			else // wenn nicht: Verhalten deaktivieren, da es nicht sinnvoll arbeiten kann
+				job->active=INACTIVE;	
+				
 			/* Modifikatoren sammeln  */
 			faktorLeft  *= faktorWishLeft;
 			faktorRight *= faktorWishRight;
