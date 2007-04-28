@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-04-28 Timo Sandmann [mail@timosandmann.de]: Pruefung auf Nullpointer in switch_to_behaviour()
+
 2007-04-27 Benjamin Benz [bbe@heise.de]: Pruefung auf Nullpointer in bot_behave()
 
 2007-04-15 Timo Sandmann [mail@timosandmann.de]: Kalibrierungsverhalten fuer die Motorregelung implementiert

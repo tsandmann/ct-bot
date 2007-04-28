@@ -296,7 +296,12 @@ void switch_to_behaviour(Behaviour_t * from, void *to, uint8 override ){
 			break;		// Abbruch der Schleife, job zeigt nun auf die Datenstruktur des Zielverhaltens
 		}
 	}	
-
+	
+	if (!job) {
+		/* Zielverhalten existiert gar nicht */
+		if (from) from->subResult=SUBFAIL;
+		return;
+	}
 	if (job->caller){		// Ist das auzurufende Verhalten noch beschaeftigt?
 		if (override==NOOVERRIDE){	// nicht ueberschreiben, sofortige Rueckkehr
 			if (from)
