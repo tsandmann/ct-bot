@@ -159,8 +159,7 @@ map_section_t * map_get_section(uint16 x, uint16 y, uint8 create){
 	section_x=x/ MAP_SECTION_POINTS;
 	section_y=y/ MAP_SECTION_POINTS;
 		
-	if ((section_x>= MAP_SECTIONS) || (section_y >= MAP_SECTIONS) ||
-		(section_x < 0) || (section_y <0)){
+	if ((section_x>= MAP_SECTIONS) || (section_y >= MAP_SECTIONS)){
 		#ifdef PC
 			printf("Versuch auf in Feld ausserhalb der Karte zu zugreifen!! x=%d y=%d\n",x,y);
 		#endif
@@ -289,10 +288,10 @@ void map_set_field(uint16 x, uint16 y, int8 value) {
 }
 
 /*!
- * liefert den Wert eines Feldes 
+ * liefert den Wert eines Ortes 
  * @param x x-Ordinate der Welt 
  * @param y y-Ordinate der Welt
- * @return Wert des Feldes (>0 heisst frei, <0 heisst belegt
+ * @return Wert des dem Ort zugeordneten Feldes (>0 heisst frei, <0 heisst belegt
  */
 int8 map_get_point (float x, float y){
 	//Ort in Kartenkoordinaten
@@ -300,6 +299,46 @@ int8 map_get_point (float x, float y){
 	uint16 Y = world_to_map(y);
 	
 	return map_get_field(X,Y);
+}
+
+/*!
+ * liefert den Durschnittswert um einen Punkt der Karte herum 
+ * @param x x-Ordinate der Karte 
+ * @param y y-Ordinate der Karte
+ * @return Wert des Durchschnitts um das Feld (>0 heisst frei, <0 heisst belegt
+ */
+
+int8 map_get_average_fields (uint16 x, uint16 y, uint16 radius){
+	int16 avg=0;
+	int16 avg_line=0;
+	
+	int16 dX,dY;
+    uint16 h=radius*radius;
+	for(dX = -radius; dX <= radius; dX++){
+      for(dY = -radius; dY <= radius; dY++) {
+           if(dX*dX + dY*dY <= h)	 
+           	 avg_line+=map_get_field (x + dX, y + dY);
+      }
+      avg+=avg_line/(radius*2);
+	}
+
+	return (int8) (avg/(radius*2));
+}
+
+/*!
+ * liefert den Durschnittswert um eine Ort herum 
+ * @param x x-Ordinate der Welt 
+ * @param y y-Ordinate der Welt
+ * @param radius Radius der Umgebung, die Beruecksichtigt wird
+ * @return Durchschnitsswert im Umkreis um den Ort (>0 heisst frei, <0 heisst belegt
+ */
+int8 map_get_average(float x, float y, float radius){
+	//Ort in Kartenkoordinaten
+	uint16 X = world_to_map(x);
+	uint16 Y = world_to_map(y);
+	uint16 R = radius * MAP_RESOLUTION / 1000;
+	
+	return map_get_average_fields(X,Y,R);
 }
 
 /*!
@@ -501,7 +540,74 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 	update_map_sensor(Pr_x,Pr_y,h,distR);
 }
 
+/*!
+ * Prüft ob eine direkte Passage frei von Hindernissen ist
+ * @param  from_x Startort x Kartenkoordinaten
+ * @param  from_y Startort y Kartenkoordinaten
+ * @param  to_x Zielort x Kartenkoordinaten
+ * @param  to_y Zielort y Kartenkoordinaten
+ * @return 1 wenn alles frei ist
+ */
+uint8 map_way_free_fields(uint16 from_x, uint16 from_y, uint16 to_x, uint16 to_y){
+	// gehe alle Felder der reihe nach durch
+	uint16 i;
 
+	uint16 lX = from_x; 	//	Beginne mit dem Feld, in dem der Bot steht
+	uint16 lY = from_y; 
+	
+	int8 sX = (to_x < from_x ? -1 : 1);  
+	uint16 dX=abs(to_x - from_x);		// Laenge der Linie in X-Richtung
+	
+	int8 sY = (to_y < from_y ? -1 : 1); 
+	uint16 dY =abs(to_y - from_y);	// Laenge der Linie in Y-Richtung
+
+	uint16 width= (BOT_DIAMETER*MAP_RESOLUTION)/100;
+	int16 w=0;
+	
+	if (dX >= dY) {			// Hangle Dich an der laengeren Achse entlang
+	  uint16 lh = dX / 2;
+	  for (i=0; i<dX; ++i) {
+		 for (w=-width; w< width; w++) // wir müssen die ganze Breite des absuchen
+//			 map_set_field(lX+i*sX, lY+w,-126);
+		     if (map_get_field(lX+i*sX, lY+w) <0) // ein hinderniss reicht für den Abbruch
+		       return 0;
+		  
+	    lh += dY;
+	    if (lh >= dX) {
+	      lh -= dX;
+	      lY += sY;
+	    }
+	  }
+	} else {
+	  uint16 lh = dY / 2;
+	  for (i=0; i<dY; ++i) {
+		 for (w=-width; w< width; w++) // wir müssen die ganze Breite des absuchen
+//			 map_set_field(lX+w, lY+i*sY,126);
+			 if (map_get_field (lX+w, lY+i*sY) <0 ) //ein hinderniss reicht für den Abbruch
+		       return 0;
+	    lh += dX;
+	    if (lh >= dY) {
+	      lh -= dY;
+	      lX += sX;
+	    }
+	  }
+	}
+	
+	return 1;
+}
+
+
+/*!
+ * Prüft ob eine direkte Passage frei von Hindernissen ist
+ * @param  from_x Startort x Weltkoordinaten
+ * @param  from_y Startort y Weltkoordinaten
+ * @param  to_x Zielort x Weltkoordinaten
+ * @param  to_y Zielort y Weltkoordinaten
+ * @return 1 wenn alles frei ist
+ */
+int8 map_way_free(float from_x, float from_y, float to_x, float to_y){
+	return map_way_free_fields(world_to_map(from_x),world_to_map(from_y),world_to_map(to_x),world_to_map(to_y));
+}	
 
 #ifdef PC
 	/*!
