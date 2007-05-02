@@ -93,6 +93,15 @@ void update_map_location(float x, float y);
 int8 map_get_field (uint16 x, uint16 y);
 
 /*!
+ * liefert den Durschnittswert um eine Ort herum 
+ * @param x x-Ordinate der Welt 
+ * @param y y-Ordinate der Welt
+ * @param radius Radius der Umgebung, die Beruecksichtigt wird
+ * @return Durchschnitsswert im Umkreis um den Ort (>0 heisst frei, <0 heisst belegt
+ */
+int8 map_get_average(float x, float y, float radius);
+
+/*!
  * liefert den Wert eines Feldes 
  * @param x x-Ordinate der Welt 
  * @param y y-Ordinate der Welt
@@ -113,6 +122,16 @@ uint16 world_to_map(float koord);
  * @return Weltkordiante
  */
 float map_to_world(uint16 map_koord);
+
+/*!
+ * Prüft ob eine direkte Passage frei von Hindernissen ist
+ * @param  from_x Startort x Weltkoordinaten
+ * @param  from_y Startort y Weltkoordinaten
+ * @param  to_x Zielort x Weltkoordinaten
+ * @param  to_y Zielort y Weltkoordinaten
+ * @return 1 wenn alles frei ist
+ */
+int8 map_way_free(float from_x, float from_y, float to_x, float to_y);
 
 /*!
  * Zeigt die Karte an
