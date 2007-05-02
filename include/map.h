@@ -3,7 +3,7 @@
 
 
 /*
- * c't-Bot - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -37,7 +37,7 @@
 
 #ifdef MCU
 	#ifdef MMC_AVAILABLE
-		#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
+		#define MAP_SIZE			12	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
 		#define MAP_RESOLUTION 	128	/*!< Aufloesung der Karte in Punkte pro Meter */
 		#define MAP_SECTION_POINTS 16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 	#else
@@ -46,7 +46,7 @@
 		#define MAP_RESOLUTION 	(MAP_SECTION_POINTS/MAP_SIZE)	/*!< Aufloesung der Karte in Punkte pro Meter */
 	#endif
 #else
-	#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
+	#define MAP_SIZE			12	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
 	#define MAP_RESOLUTION 	128	/*!< Aufloesung der Karte in Punkte pro Meter */
 	#define MAP_SECTION_POINTS 16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 #endif
