@@ -129,8 +129,22 @@ ENC_CORRECT_R</span> auf Null setzen, da die Rohdaten der Encoder bereits eine g
 </p>
 
 <a name="adjust"></a><h3>Finden und Einstellen der richtigen Parameter</h3>
-<p>Das Wichtigste f&uuml;r eine gut funktionierende Regelung sind die passenden Parameter Kp, Ki und Kd. Allerdings ist das Berechnen dieser nicht
-ganz einfach. Das folgende Einstellverfahren liefert bei vertretbarem Aufwand die besten Ergebnisse: <br />
+<p>Das Wichtigste f&uuml;r eine gut funktionierende Regelung sind die passenden Parameter Kp, Ki und Kd. Allerdings ist das Berechnen nicht
+ganz einfach. Deshalb gibt es ein kleines Verhalten, das automatisch versucht die besten Parameter zu finden. Um es zu benutzen, sind folgende
+Schritte n&ouml;tig:<br />
+1.) Einschalten des Verhaltens<span class="function"> BEHAVIOUR_CALIBRATE_PID_AVAILABLE</span> in <a href="../include/bot-logic/available_behaviours.h">include/bot-logic/available_behaviours.h</a>.<br />
+2.) Die Funktion<span class="function"> bot_calibrate_pid(Behaviour_t *caller, int16 speed)</span> aufrufen, sehr elegant geht das per Bot-Remote-Call. Alternativ kann man auch einfach eine Taste der 
+Fernbedienung f&uuml;r den Aufruf verwenden, wie es bei einigen anderen Verhalten ja auch gemacht ist. Als Parameter<span class="function"> speed</span>
+&uuml;bergibt man eine Geschwindigkeit, mit der Kalibriert werden soll,<span class="function"> BOT_SPEED_SLOW</span> eignet sich hier am besten.<br />
+Nun f&uuml;hrt der Bot einige Drehungen aus, auf dem Regelungs-Screen im Display sieht man den aktuellen Status und die verbleibende Zeit bis zum Ende 
+der Kalibrierung. Dabei werden per LOG Zwischenergebnisse ausgegeben, falls LOG aktiviert ist im Code.<br />
+Ist die Kalibrierung beendet, stellt das Verhalten die gefundenen Parameter ein und zeigt sie im Display an. Allerdings werden sie <b>nicht</b> dauerhaft gespeichert,
+hierzu &uuml;bertr&auml;gt man sie in <a href="../include/bot-local.h">include/bot-local.h</a> und deaktiviert das Verhalten wieder (ist das Verhalten aktiv, arbeitet die 
+Regelung nicht ganz so effizient, weil die Parameter variabel sind).<br />
+Hinweis: Der im &uuml;bern&auml;chsten Absatz beschriebene Parameter<span class="function"> PID_SHIFT</span> wird durch das Verhalten nicht ver&auml;ndert, wenn man ihn (leicht!) variiert,
+arbeitet das Verhalten also in unterschiedlichen "Regionen", genaueres dazu s.u.<br />
+<br />
+Alternativ lassen sich die Parameter auch manuell bestimmen, das folgende Einstellverfahren liefert dazu bei vertretbarem Aufwand die besten Ergebnisse: <br />
 1.) Zuerst stellt man<span class="function"> PID_Kp</span>,<span class="function"> PID_Ki</span>
  und<span class="function"> PID_Kd</span> in <a href="../include/bot-local.h">include/bot-local.h</a> auf <b>0</b> und aktiviert das #define<span class="function"> 
 ADJUST_PID_PARAMS</span> in <a href="../ct-Bot.h">ct-Bot.h</a> sowie<span class="function"> DISPLAY_REGELUNG_AVAILABLE</span> in <a href="../ui/available_screens.h">ui/available_screens.h</a>. 
@@ -156,7 +170,7 @@ Wertebereich von 0 bis 127 nicht ausreichen, so kommt der Parameter<span class="
 Halbierung von Kp, Ki und Kd. Verringert man ihn um eins, so entspricht das der Verdoppelung von Kp, Ki und Kd. F&uuml;r die beste Einstellgenauigkeit w&auml;hlt man also<span 
 class="function"> PID_SHIFT</span> so, dass<span class="function"> PID_Kp</span> (sollte den gr&ouml;&szlig;ten Wert unter den Parametern haben) zwischen 64 und 127 liegt.</p>
 <p>Da das Einstellen der Parameter etwas knifflig ist, w&auml;re es sch&ouml;n und hilfreich, die eingestellten Parameter ebenso wie weitere Erfahrungen mit der Regelung zu sammeln.
-Dazu gibt es im <a href="http://www.heise.de/ct/foren/go.shtml?list=1&amp;forum_id=89813">Forum</a> einen Thread. Wenn dann z.B. auf 90% aller Bots die Parameter x, y, z die besten Ergebnisse
+Dazu dazu bietet sich ein Thread im <a href="http://www.heise.de/ct/foren/go.shtml?list=1&amp;forum_id=89813" target="_blank">Forum</a> an. Wenn dann z.B. auf 90% aller Bots die Parameter x, y, z die besten Ergebnisse
 liefern, werden dies die Default-Werte im SVN.
 </p>
 

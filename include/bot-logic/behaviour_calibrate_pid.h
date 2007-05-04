@@ -34,15 +34,18 @@
 uint16 cal_pid_ete;		/*!< verbleibende Zeit bis zum Ende der Kalibrierung in Sekunden */
 
 /*!
- * @brief	Das eigentliche Verhalten
- * @see		bot_calibrate_pid()
+ * @brief		Das eigentliche Verhalten
+ * @param data	Zeiger auf den Verhaltensdatensatz des Aufrufers
+ * @see			bot_calibrate_pid()
  * Die Funktionalitaet des Verhaltens ist aufgeteilt in: 
  * @see find_Kp_region(), @see find_best_Kp_Ki(), @see find_best_Kp() und @see find_best_Kd()
  */
 void bot_calibrate_pid_behaviour(Behaviour_t *data);
 
 /*!
- * @brief	Kalibriert die Motorregelung des Bots
+ * @brief			Kalibriert die Motorregelung des ct-Bots
+ * @param caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
+ * @param speed		Geschwindigkeit, mit der Kalibriert werden soll (normalerweise BOT_SPEED_SLOW)
  * Die ermittelten Parameter werden eingestellt, aber nicht dauerhaft gespeichert!
  */
 void bot_calibrate_pid(Behaviour_t *caller, int16 speed);

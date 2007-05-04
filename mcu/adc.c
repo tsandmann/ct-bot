@@ -110,7 +110,7 @@ void adc_read_int(uint8 channel, int16* p_sens){
  * schaltet in der Liste der auszuwertenden Sensoren eins weiter.
  */
 SIGNAL (SIG_ADC){
-	/* Daten speichern und Pointer um Puffer loeschen */
+	/* Daten speichern und Pointer im Puffer loeschen */
 	*channels[act_channel].value = ADCL | (ADCH << 8);
 	channels[act_channel].value = NULL;
 	/* zum naechsten Sensor weiterschalten */
