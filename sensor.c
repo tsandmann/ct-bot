@@ -63,6 +63,7 @@ void (* sensor_update_distance)(int16* const p_sens, uint8* const p_toggle, cons
 
 distSens_t EE_SECTION sensDistDataL[] = SENSDIST_DATA_LEFT;		/*!< kalibrierte Referenzdaten fuer linken IR-Sensor */
 distSens_t EE_SECTION sensDistDataR[] = SENSDIST_DATA_RIGHT;	/*!< kalibrierte Referenzdaten fuer rechten IR-Sensor */
+uint8_t EE_SECTION sensDistOffset = SENSDIST_OFFSET;			/*!< Spannungs-Offset IR-Sensoren */
 
 int16 sensBorderL=0;	/*!< Abgrundsensor links */
 int16 sensBorderR=0;	/*!< Abgrundsensor rechts */
@@ -149,13 +150,19 @@ static inline uint8_t lin_interpolate(uint8_t x1, uint8_t y1, uint8_t x2, uint8_
  * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			21.04.2007
  */
-//TODO:	Offset einbauen
 void sensor_dist_lookup(int16_t *const p_sens, uint8_t *const p_toggle, const distSens_t *ptr, int16_t volt_16) {
+	if (sizeof(sensDistDataL) != sizeof(sensDistDataR)) {
+		/* sensDistDataL und sensDistDataR muessen gleich gross sein! */
+		LOG_ERROR("sensDistData unzulaessig");
+		return;
+	}
 	uint8_t i;
-	uint8_t n = sizeof(sensDistDataL)/sizeof(distSens_t)/2;	// sensDistDataL und sensDistDataR muessen gleich gross sein!
+	uint8_t n = sizeof(sensDistDataL)/sizeof(distSens_t)/2;
 	uint8_t volt;
-	if (volt_16 > 255*8) volt = 0; 
-	else  volt = volt_16 >> 3;
+	/* Offset einlesen und Messwerte pruefen */
+	uint8_t offset = eeprom_read_byte(&sensDistOffset);
+	if (volt_16 > 255*8 + offset) volt = 255; 
+	else  volt = (volt_16 >> 3) - offset;
 	
 	/* Spannung in LT-Table suchen */
 	uint8 pivot = eeprom_read_byte(&ptr[n-1].voltage);	// in welcher Region muessen wir suchen?
@@ -176,8 +183,8 @@ void sensor_dist_lookup(int16_t *const p_sens, uint8_t *const p_toggle, const di
 		ptr++; 
 	}
 	if (i == 0) {
-		/* ungueltige Entfernung speichern, falls reale Entfernung < kleinste bekannte Entfernung */
-		*p_sens = SENS_IR_INFINITE;
+		/* kleinste Entfernung annehmen, falls reale Entfernung < kleinste bekannte Entfernung */
+		*p_sens = SENS_IR_MIN_DIST;	// SENS_IR_INFINITE waere eigentlich besser, das mag aber maze nicht
 		return;
 	} 
 	

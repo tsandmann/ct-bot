@@ -44,6 +44,7 @@ extern uint8_t sensDistRToggle;	/*!< Toggle-Bit des rechten IR-Sensors */
 extern void (* sensor_update_distance)(int16_t *const p_sens, uint8_t *const p_toggle, const distSens_t *ptr, int16_t volt);
 extern distSens_t sensDistDataL[];	/*!< kalibrierte Referenzdaten fuer linken IR-Sensor */
 extern distSens_t sensDistDataR[];	/*!< kalibrierte Referenzdaten fuer rechten IR-Sensor */
+extern uint8_t sensDistOffset;		/*!< Spannungs-Offset IR-Sensoren */
 
 
 extern int16 sensLDRL;		/*!< Lichtsensor links [0-1023];  1023 = dunkel*/

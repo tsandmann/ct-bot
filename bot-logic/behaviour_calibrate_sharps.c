@@ -42,8 +42,6 @@
 #include "rc5-codes.h"
 #include "log.h"
 
-//TODO:	Offset einbauen
-
 #ifdef MCU
 	#include <avr/eeprom.h>
 #else
@@ -65,6 +63,7 @@ static int8_t measure_count = 0;		/*!< Counter fuer Sharp-Messungen */
 static uint8_t userinput_done = 0;		/*!< 1: User war schon fleissig, 0: warten */
 
 static distSens_t buffer[2][14];		/*!< Puffer des Kalibrierungsergebnisses im RAM */
+static uint8_t volt_offset = 0;			/*!< Offset des Spannungswertes */
 
 static void (* pNextJob)(void) = NULL;	/*!< naechste Teilaufgabe */
 static void (* pLastJob)(void) = NULL;	/*!< letzte Teilaufgabe (vor Stopp) */
@@ -165,19 +164,26 @@ static void measure_distance(void) {
 		last_toggle = sensDistLToggle;
 		measure_count++;
 	}
-	/* 4 Messungen abwarten */
+	/* zweimal vier Messungen abwarten */
 	if (measure_count == 4) {
-		distL = (float)sensDistL / 8.0f;
-		distR = (float)sensDistR / 8.0f;
+		distL = (float)sensDistL / 8.0f - volt_offset;
+		distR = (float)sensDistR / 8.0f - volt_offset;
 	} else if (measure_count == 8) {
-		distL += (float)sensDistL / 8.0f;
-		distR += (float)sensDistR / 8.0f;
+		distL += (float)sensDistL / 8.0f - volt_offset;
+		distR += (float)sensDistR / 8.0f - volt_offset;
 		distL >>= 1;
 		distR >>= 1;	
-		last_toggle = 1;
-		pNextJob = update_data;
+		if (distL > 255 || distR > 255) {
+			/* Offset zu kleine => erhoehen und neu messen */
+			volt_offset += 5;
+//			LOG_INFO("Offset-Update auf %u", volt_offset);
+		} else {
+			/* Messwerte ok */
+			last_toggle = 1;
+			pNextJob = update_data;
+		}
 		measure_count = 0;
-	}	
+	}
 }
 
 /*!
@@ -216,17 +222,15 @@ void bot_calibrate_sharps_behaviour(Behaviour_t *data) {
 		/* fertig! */
 		display_clear();
 		sensor_update_distance = sensor_dist_lookup;	// Sensorauswertung wieder aktivieren
-		uint8_t i;
-		for (i=0; i<max_steps; i++) {
-			LOG_DEBUG("%u:\tlinks:(%u;%u)\trechts:(%u;%u)", i, buffer[0][i].dist*5, buffer[0][i].voltage*2, buffer[1][i].dist*5, buffer[1][i].voltage*2);			
-		}
 		/* Puffer ins EEPROM schreiben */
+		eeprom_write_byte((uint8_t*)&sensDistOffset, volt_offset);
 		eeprom_write_block(buffer[0], (uint8_t*)sensDistDataL, max_steps*sizeof(distSens_t));
 		eeprom_write_block(buffer[1], (uint8_t*)sensDistDataR, max_steps*sizeof(distSens_t));
 		return_from_behaviour(data);
 		/* Fuer sensor_correction.h formatierte Logausgabe, erleichtert das Speichern der Init-EEPROM- / Sim-Werte */
+		LOG_INFO("SENSDIST_OFFSET %u", volt_offset);
 		char tmp_s[14*7+1];	// 14 Zeichen pro Durchlauf + '\0'
-		uint8_t j, k;
+		uint8_t i, j, k;
 		LOG_INFO("SENSDIST_DATA_LEFT:");
 		for (k=0; k<2; k++) {
 			for (j=0; j<2; j++) {
@@ -255,6 +259,7 @@ void bot_calibrate_sharps(Behaviour_t *caller) {
 	measure_count = -4;
 	step = 5;
 	distance = 10;
+	volt_offset = 0;
 	count = 0;
 	userinput_done = 0;
 	

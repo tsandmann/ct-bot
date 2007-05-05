@@ -34,25 +34,27 @@
  */
 #ifdef MCU
 
+#define SENSDIST_OFFSET	0	/*!< Offset (BOT), das vom Sensorrohwert abgezogen wird vor der Entfernungsberechnung */
 /*! 
  * Wertepaare (BOT) fuer IR-Sensoren LINKS. Es ist jeweils (Spannung/2 | Distanz/5) gespeichert. 
  * Aufsteigende Sortierung! 
  */
 #define SENSDIST_DATA_LEFT { \
-	{492/2,100/5},{344/2,150/5},{266/2,200/5},{216/2,250/5},{180/2,300/5},{156/2,350/5},{142/2,400/5}, \
-	{110/2,450/5},{100/2,500/5},{84/2,550/5},{74/2,600/5},{64/2,650/5},{48/2,700/5},{44/2,750/5} \
+	{502/2,100/5},{354/2,150/5},{274/2,200/5},{220/2,250/5},{184/2,300/5},{158/2,350/5},{142/2,400/5}, \
+	{114/2,450/5},{102/2,500/5},{90/2,550/5},{72/2,600/5},{64/2,650/5},{58/2,700/5},{48/2,750/5} \
 };
 /*! 
  * Wertepaare (BOT) fuer IR-Sensoren RECHTS. Es ist jeweils (Spannung/2 | Distanz/5) gespeichert. 
  * Aufsetigende Sortierung! 
  */
 #define SENSDIST_DATA_RIGHT { \
-	{488/2,100/5},{348/2,150/5},{272/2,200/5},{220/2,250/5},{180/2,300/5},{158/2,350/5},{136/2,400/5}, \
-	{112/2,450/5},{100/2,500/5},{88/2,550/5},{82/2,600/5},{72/2,650/5},{66/2,700/5},{62/2,750/5} \
+	{496/2,100/5},{356/2,150/5},{276/2,200/5},{224/2,250/5},{184/2,300/5},{156/2,350/5},{138/2,400/5}, \
+	{116/2,450/5},{104/2,500/5},{92/2,550/5},{78/2,600/5},{76/2,650/5},{70/2,700/5},{58/2,750/5} \
 };	
 								
 #else
 
+#define SENSDIST_OFFSET	0	/*!< Offset (SIM), das vom Sensorrohwert abgezogen wird vor der Entfernungsberechnung */
 /*!
  * Wertepaare (SIM) fuer IR-Sensoren LINKS. Es ist jeweils (Spannung/2 | Distanz/5) gespeichert. 
  * Aufsteigende Sortierung! 
