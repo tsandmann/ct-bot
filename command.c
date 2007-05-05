@@ -412,9 +412,11 @@ int command_evaluate(void){
 			
 		// Einige Kommandos ergeben nur fuer simulierte Bots Sinn
 		#ifdef PC
-			case CMD_SENS_IR:
-				sensor_abstand(received_command.data_l,received_command.data_r);
+			case CMD_SENS_IR: {
+				(*sensor_update_distance)(&sensDistL, &sensDistLToggle, sensDistDataL, received_command.data_l*4);
+				(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, received_command.data_r*4);
 				break;
+			}
 			case CMD_SENS_ENC:
 				sensEncL+=received_command.data_l;
 				sensEncR+=received_command.data_r;

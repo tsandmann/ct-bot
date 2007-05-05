@@ -130,6 +130,9 @@ const call_t calls[] PROGMEM = {
 	#ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_calibrate_pid,1,"int16 speed",2)
 	#endif
+	#ifdef BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_calibrate_sharps,0,"")
+	#endif	
 };
 
 #define STORED_CALLS (sizeof(calls)/sizeof(call_t)) /*!< Anzahl der Remote calls im Array */

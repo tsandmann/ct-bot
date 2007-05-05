@@ -33,9 +33,19 @@
 #include "display.h"
 #include "sensor.h"
 #include "mouse.h"
+#include "log.h"
 #ifdef SRF10_AVAILABLE
 	#include "srf10.h"
 #endif
+
+#ifdef MCU
+	#include <avr/eeprom.h>
+	#define EE_SECTION	__attribute__ ((section (".eeprom"),aligned (1)))	// spart Tipparbeit
+#else
+	/* derzeit kein EEPROM fuer PC vorhanden, Daten liegen einfach im RAM */
+	#define EE_SECTION	
+	#define eeprom_read_byte(x)	*x	
+#endif	// MCU
 
 // Defines einiger, haeufiger benoetigter Konstanten
 #define DEG2RAD (2*M_PI/360)
@@ -46,6 +56,13 @@ int16 sensLDRR=0;		/*!< Lichtsensor rechts */
 
 int16 sensDistL=1023;		/*!< Distanz linker IR-Sensor in [mm], wenn korrekt umgerechnet wird */
 int16 sensDistR=1023;		/*!< Distanz rechter IR-Sensor in [mm], wenn korrekt umgerechnet wird */
+uint8_t sensDistLToggle=0;	/*!< Toggle-Bit des linken IR-Sensors */
+uint8_t sensDistRToggle=0;	/*!< Toggle-Bit des rechten IR-Sensors */
+/*! Zeiger auf die Auswertungsfunktion fuer die Distanzsensordaten, const. solange sie nicht kalibriert werden */
+void (* sensor_update_distance)(int16* const p_sens, uint8* const p_toggle, const distSens_t* ptr, int16 volt) = sensor_dist_lookup;
+
+distSens_t EE_SECTION sensDistDataL[] = SENSDIST_DATA_LEFT;		/*!< kalibrierte Referenzdaten fuer linken IR-Sensor */
+distSens_t EE_SECTION sensDistDataR[] = SENSDIST_DATA_RIGHT;	/*!< kalibrierte Referenzdaten fuer rechten IR-Sensor */
 
 int16 sensBorderL=0;	/*!< Abgrundsensor links */
 int16 sensBorderR=0;	/*!< Abgrundsensor rechts */
@@ -60,7 +77,6 @@ uint8 sensDoor=0;		/*!< Sensor Ueberwachung Klappe */
 uint8 sensError=0;		/*!< Ueberwachung Motor oder Batteriefehler */
 
 #ifdef MAUS_AVAILABLE
-
 	int8 sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
 	int8 sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
 	
@@ -103,25 +119,74 @@ int8 sensors_initialized = 0;	/*!< Wird 1 sobald die Sensorwerte zur Verfügung 
 	uint16 sensSRF10;	/*!< Messergebniss Ultraschallsensor */
 #endif
 
-
-/*! Linearisiert die Sensorwerte
- * @param left Linker Rohwert [0-1023]
- * @param right Rechter Rohwert [0-1023]
+/*! 
+ * @brief		Interpoliert linear zwischen zwei gegebenen Wertepaaren
+ * @param x1	groesere Abszisse
+ * @param y1	Ordinate zu x1, f(x1)
+ * @param x2	kleinere Abszisse
+ * @param y2	Ordinate zu x2, f(x2)
+ * @param xs	Abzisse des zu interpolierenden Punktes
+ * @return		f(xs)
+ * @author 		Timo Sandmann (mail@timosandmann.de)
+ * @date 		27.01.2007
+ * Gibt den Funktionswert einer Stelle auf der errechneten Geraden durch die zwei Punkte zurueck.
+ * Achtung, die Funktion rechnet so weit wie moeglich in 8 Bit, das Ergebnis ist nur korrekt, 
+ * wenn x1 >= xs >= x2, y2 >= y1, x1 != x2 erfuellt ist!
  */
-void sensor_abstand(uint16 left, uint16 right){
-	if (left  == SENSDISTOFFSETLEFT)  // Vermeidet Div/0
-		left++;	
-	sensDistL = SENSDISTSLOPELEFT / (left - SENSDISTOFFSETLEFT);
-	// Korrigieren, wenn ungueltiger Wert
-	if (sensDistL > SENS_IR_MAX_DIST || sensDistL<=0)
-		sensDistL=SENS_IR_INFINITE;
+static inline uint8_t lin_interpolate(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t xs) {
+	if (x1 == x2) return -1;
+	uint16_t m = ((uint16_t)(y2-y1)<<8) / (uint8_t)(x1-x2);	// m >= 0
+	uint8_t x_diff = x1 - xs;
+	return (uint8_t)((x_diff*m)>>8) + y1;	// m war kuenstlich um 8 Bit hochskaliert
+}
 
-	if (right == SENSDISTOFFSETRIGHT) // Vermeidet Div/0
-		right++;
-	sensDistR = SENSDISTSLOPERIGHT / (right - SENSDISTOFFSETRIGHT);
-	// Korrigieren, wenn ungueltiger Wert
-	if (sensDistR > SENS_IR_MAX_DIST || sensDistR<=0)
-		sensDistR=SENS_IR_INFINITE;
+/*! 
+ * @brief			Errechnet aus den rohren Distanzsensordaten die zugehoerige Entfernung
+ * @param p_sens	Zeiger auf den (Ziel-)Sensorwert
+ * @param p_toggle	Zeiger auf die Toggle-Variable des Zielsensors
+ * @param ptr		Zeiger auf auf Sensorrohdaten im EEPROM fuer p_sens
+ * @param volt		Spannungs-Ist-Wert, zu dem die Distanz gesucht wird 
+ * @author 			Timo Sandmann (mail@timosandmann.de)
+ * @date 			21.04.2007
+ */
+//TODO:	Offset einbauen
+void sensor_dist_lookup(int16_t *const p_sens, uint8_t *const p_toggle, const distSens_t *ptr, int16_t volt_16) {
+	uint8_t i;
+	uint8_t n = sizeof(sensDistDataL)/sizeof(distSens_t)/2;	// sensDistDataL und sensDistDataR muessen gleich gross sein!
+	uint8_t volt;
+	if (volt_16 > 255*8) volt = 0; 
+	else  volt = volt_16 >> 3;
+	
+	/* Spannung in LT-Table suchen */
+	uint8 pivot = eeprom_read_byte(&ptr[n-1].voltage);	// in welcher Region muessen wir suchen?
+	if (volt > pivot) {
+		/* in unterer Haelfte suchen */
+		i = 0;
+	} else {
+		/* in oberer Haelfte suchen */
+		i = n;
+		ptr += n;
+		n = sizeof(sensDistDataL)/sizeof(distSens_t);  
+	}
+	uint8_t tmp=0;
+	for (; i<n; i++) {
+		tmp = eeprom_read_byte(&ptr->voltage);
+		if (volt > tmp)	// aufsteigend suchen, damit der kritische Fall (kleine Entfernung) schneller gefunden wird
+			break;	// ptr zeigt jetzt auf die naechst kleinere Spannung
+		ptr++; 
+	}
+	if (i == 0) {
+		/* ungueltige Entfernung speichern, falls reale Entfernung < kleinste bekannte Entfernung */
+		*p_sens = SENS_IR_INFINITE;
+		return;
+	} 
+	
+	/* Entfernung berechnen und speichern */
+	uint8 distance = lin_interpolate(eeprom_read_byte(&(ptr-1)->voltage), eeprom_read_byte(&(ptr-1)->dist), tmp, eeprom_read_byte(&ptr->dist), volt);
+	*p_sens = distance >= SENS_IR_MAX_DIST/5 ? SENS_IR_INFINITE : distance * 5;	// Distanz ist gefuenftelt in den Ref.-Daten;
+	
+	/* Sensorupdate-Info toggeln */
+	*p_toggle = ~*p_toggle;
 }
 
 /*! Sensor_update
@@ -131,22 +196,22 @@ void sensor_update(void){
 	static uint16 old_pos=0;			/*!< Ticks fuer Positionsberechnungsschleife */
 	static uint16 old_speed=0;			/*!< Ticks fuer Geschwindigkeitsberechnungsschleife */
 	#ifdef MEASURE_MOUSE_AVAILABLE
-			static int16 lastMouseX=0;		/*!< letzter Mauswert X fuer Positionsberechnung */
-			static int16 lastMouseY=0;		/*!< letzter Mauswert Y fuer Positionsberechnung */
-			static float lastDistance=0;	/*!< letzte gefahrene Strecke */
-			static float lastHead=0;		/*!< letzter gedrehter Winkel */
-			static float oldHead=0;		/*!< Winkel aus dem letzten Durchgang */
-			static float old_x=0;			/*!< Position X aus dem letzten Durchgang */
-			static float old_y=0;			/*!< Position Y aus dem letzten Durchgang */
-			float radius=0;				/*!< errechneter Radius des Drehkreises */
-			float s1=0;					/*!< Steigung der Achsengerade aus dem letzten Durchgang */
-			float s2=0;					/*!< Steigung der aktuellen Achsengerade */
-			float a1=0;					/*!< Y-Achsenabschnitt der Achsengerade aus dem letzten Durchgang */
-			float a2=0;					/*!< Y-Achsenabschnitt der aktuellen Achsengerade */
-			float xd=0;					/*!< X-Koordinate Drehpunkt */
-			float yd=0;					/*!< Y-Koordinate Drehpunkt */
-			float right_radius=0;			/*!< Radius des Drehkreises des rechten Rads */
-			float left_radius=0;			/*!< Radius des Drehkreises des linken Rads */
+		static int16 lastMouseX=0;		/*!< letzter Mauswert X fuer Positionsberechnung */
+		static int16 lastMouseY=0;		/*!< letzter Mauswert Y fuer Positionsberechnung */
+		static float lastDistance=0;	/*!< letzte gefahrene Strecke */
+		static float lastHead=0;		/*!< letzter gedrehter Winkel */
+		static float oldHead=0;		/*!< Winkel aus dem letzten Durchgang */
+		static float old_x=0;			/*!< Position X aus dem letzten Durchgang */
+		static float old_y=0;			/*!< Position Y aus dem letzten Durchgang */
+		float radius=0;				/*!< errechneter Radius des Drehkreises */
+		float s1=0;					/*!< Steigung der Achsengerade aus dem letzten Durchgang */
+		float s2=0;					/*!< Steigung der aktuellen Achsengerade */
+		float a1=0;					/*!< Y-Achsenabschnitt der Achsengerade aus dem letzten Durchgang */
+		float a2=0;					/*!< Y-Achsenabschnitt der aktuellen Achsengerade */
+		float xd=0;					/*!< X-Koordinate Drehpunkt */
+		float yd=0;					/*!< Y-Koordinate Drehpunkt */
+		float right_radius=0;			/*!< Radius des Drehkreises des rechten Rads */
+		float left_radius=0;			/*!< Radius des Drehkreises des linken Rads */
 	#endif
 	static int16 lastEncL =0;		/*!< letzter Encoderwert links fuer Positionsberechnung */
 	static int16 lastEncR =0;		/*!< letzter Encoderwert rechts fuer Positionsberechnung */
@@ -169,12 +234,23 @@ void sensor_update(void){
 	
 	if (timer_ms_passed(&old_pos, 50)) {
 		/* Gefahrene Boegen aus Encodern berechnen */
-		diffEncL=sensEncL-lastEncL;
-		diffEncR=sensEncR-lastEncR;
-		lastEncL=sensEncL;
-		lastEncR=sensEncR;
-		sl=(float)diffEncL*WHEEL_PERIMETER/ENCODER_MARKS;
-		sr=(float)diffEncR*WHEEL_PERIMETER/ENCODER_MARKS;
+		#ifdef MCU
+			uint8 sreg = SREG;
+			cli();
+		#endif
+		/* <CS> */
+		register int16 sensEncL_tmp = sensEncL;
+		register int16 sensEncR_tmp = sensEncR;
+		/* </CS> */
+		#ifdef MCU
+			SREG = sreg;
+		#endif
+		diffEncL=sensEncL_tmp-lastEncL;
+		diffEncR=sensEncR_tmp-lastEncR;
+		lastEncL=sensEncL_tmp;
+		lastEncR=sensEncR_tmp;
+		sl=(float)diffEncL*((float)WHEEL_PERIMETER/ENCODER_MARKS);
+		sr=(float)diffEncR*((float)WHEEL_PERIMETER/ENCODER_MARKS);
 		/* Winkel berechnen */
 		dHead=(float)(sr-sl)/(2*WHEEL_DISTANCE);
 		/* Winkel ist hier noch im Bogenmass */
@@ -243,11 +319,22 @@ void sensor_update(void){
 		#endif	
 	}
 	if (timer_ms_passed(&old_speed, 250)) {
-		v_enc_left=  (((sensEncL - lastEncL1) * WHEEL_PERIMETER) / ENCODER_MARKS)*4;
-		v_enc_right= (((sensEncR - lastEncR1) * WHEEL_PERIMETER) / ENCODER_MARKS)*4;
+		#ifdef MCU
+			uint8 sreg = SREG;
+			cli();
+		#endif
+		/* <CS> */
+		register int16 sensEncL_tmp = sensEncL;
+		register int16 sensEncR_tmp = sensEncR;
+		/* </CS> */
+		#ifdef MCU
+			SREG = sreg;
+		#endif
+		v_enc_left=  (((sensEncL_tmp - lastEncL1) * WHEEL_PERIMETER) / ENCODER_MARKS)*4;
+		v_enc_right= (((sensEncR_tmp - lastEncR1) * WHEEL_PERIMETER) / ENCODER_MARKS)*4;
 		v_enc_center=(v_enc_left+v_enc_right)/2;
-		lastEncL1= sensEncL;
-		lastEncR1= sensEncR;
+		lastEncL1= sensEncL_tmp;
+		lastEncR1= sensEncR_tmp;
 		#ifdef MEASURE_MOUSE_AVAILABLE
 			/* Speed aufgrund Maussensormessungen */
 			v_mou_center=lastDistance*4;

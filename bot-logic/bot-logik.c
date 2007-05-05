@@ -139,6 +139,9 @@ void bot_behave_init(void){
 		insert_behaviour_to_list(&behaviour, new_behaviour(147, bot_gotoxy_behaviour,INACTIVE));
 	#endif
 
+	#ifdef BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
+		insert_behaviour_to_list(&behaviour, new_behaviour(145, bot_measure_distance_behaviour, INACTIVE));		
+	#endif
 
 	#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(44, bot_catch_pillar_behaviour,INACTIVE));
@@ -167,6 +170,9 @@ void bot_behave_init(void){
 		insert_behaviour_to_list(&behaviour, new_behaviour(30, bot_calibrate_pid_behaviour, INACTIVE));		
 	#endif
 
+	#ifdef BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
+		insert_behaviour_to_list(&behaviour, new_behaviour(29, bot_calibrate_sharps_behaviour, INACTIVE));		
+	#endif
 
 	// Grundverhalten, setzt aeltere FB-Befehle um, aktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(2, bot_base_behaviour, ACTIVE));

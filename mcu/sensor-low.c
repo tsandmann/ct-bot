@@ -258,29 +258,27 @@ void bot_sens_isr(void){
 	
 	if ((uint16)(dist_ticks-old_dist) > MS_TO_TICKS(50)){
 		old_dist = dist_ticks;	// Zeit fuer naechste Messung merken
-		// dieser Block braucht insgesamt ca. 100 us (MCU & bbtree_lookup)
+		// dieser Block braucht insgesamt ca. 80 us (MCU)
 		/* Dist-Sensor links */
 		while (adc_get_active_channel() < 1) {}
 		uint16 voltL = distLeft[0]+distLeft[1]+distLeft[2]+distLeft[3];
-		voltL = voltL >> 2;
-//		sensor_bbtree_lookup(0, voltL>>1);
+		(*sensor_update_distance)(&sensDistL, &sensDistLToggle, sensDistDataL, voltL);
 		/* Dist-Sensor rechts */
 		while (adc_get_active_channel() < 2) {}
 		uint16 voltR = distRight[0]+distRight[1]+distRight[2]+distRight[3];
-		voltR = voltR >> 2;
-//		sensor_bbtree_lookup(1, voltR>>1);
-		sensor_abstand(voltL, voltR);
-		
-		/* Zum Kalibrieren Werte direkt speichern */
-		//sensDistL = voltL;
-		//sensDistR = voltR;
+//		uint8 start = TCNT2;
+		(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, voltR);
+//		uint8 end = TCNT2;
+//		display_cursor(1,1);
+//		int16 diff = end - start; 
+//		if (diff > 0) display_printf("zeit=%3d", diff);
 		
 		/* LEDs updaten */
 		#ifdef LED_AVAILABLE
 		#ifndef TEST_AVAILABLE
-			if (sensDistL < 600) LED_on(LED_LINKS);
+			if (sensDistL < 500) LED_on(LED_LINKS);
 			else LED_off(LED_LINKS);
-			if (sensDistR < 600) LED_on(LED_RECHTS);
+			if (sensDistR < 500) LED_on(LED_RECHTS);
 			else LED_off(LED_RECHTS);
 
 			/* Sollen die LEDs mit den Rohdaten der Sensoren arbeiten, 

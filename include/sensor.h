@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	sensor.h
+/*! 
+ * @file 	sensor.h
  * @brief 	Architekturunabhaengiger Teil der Sensorsteuerung
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	15.01.05
-*/
+ */
 
 #ifndef SENSOR_H_
 #define SENSOR_H_
@@ -29,10 +30,21 @@
 #include "global.h"
 #include "ct-Bot.h"
 
-/* Analoge Sensoren: Der Wertebereich aller analogen Sensoren umfasst 10 Bit. Also 0 bis 1023 */
+typedef struct {
+	uint8_t voltage;
+	uint8_t dist;
+} distSens_t;			/*!< Datenstruktur zur Ablage eines IR-Sensor-Wertepaares (Spannung | Distanz) */
 
-extern int16 sensDistL;	/*!< Distanz linker IR-Sensor [mm] ca. 100 bis 800 */
-extern int16 sensDistR;	/*!< Distanz rechter IR-Sensor [mm] ca. 100 bis 800  */
+/* Analoge Sensoren: Der Wertebereich aller analogen Sensoren umfasst 10 Bit. Also 0 bis 1023 */
+extern int16 sensDistL;			/*!< Distanz linker IR-Sensor [mm] ca. 100 bis 800 */
+extern int16 sensDistR;			/*!< Distanz rechter IR-Sensor [mm] ca. 100 bis 800  */
+extern uint8_t sensDistLToggle;	/*!< Toggle-Bit des linken IR-Sensors */
+extern uint8_t sensDistRToggle;	/*!< Toggle-Bit des rechten IR-Sensors */
+/*! Zeiger auf die Auswertungsfunktion fuer die Distanzsensordaten, const. solange sie nicht kalibriert werden */
+extern void (* sensor_update_distance)(int16_t *const p_sens, uint8_t *const p_toggle, const distSens_t *ptr, int16_t volt);
+extern distSens_t sensDistDataL[];	/*!< kalibrierte Referenzdaten fuer linken IR-Sensor */
+extern distSens_t sensDistDataR[];	/*!< kalibrierte Referenzdaten fuer rechten IR-Sensor */
+
 
 extern int16 sensLDRL;		/*!< Lichtsensor links [0-1023];  1023 = dunkel*/
 extern int16 sensLDRR;		/*!< Lichtsensor rechts [0-1023];  1023 = dunkel*/
@@ -91,7 +103,7 @@ extern float v_right;			/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- ode
 extern float v_center;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
 
 
-extern int8 sensors_initialized;	/*!< Wird 1 sobald die Sensorwerte zur Verfügung stehen */
+extern int8 sensors_initialized;	/*!< Wird 1 sobald die Sensorwerte zur Verfuegung stehen */
 
 #ifdef SRF10_AVAILABLE
 	extern uint16 sensSRF10;	/*!< Messergebniss Ultraschallsensor */
@@ -102,11 +114,16 @@ extern int8 sensors_initialized;	/*!< Wird 1 sobald die Sensorwerte zur Verfügu
 */
 void sensor_update(void);
 
-/*! Linearisiert die Sensorwerte
- * @param left Linker Rohwert [0-1023]
- * @param right Rechter Rohwert [0-1023]
+/*! 
+ * @brief			Errechnet aus den rohren Distanzsensordaten die zugehoerige Entfernung
+ * @param p_sens	Zeiger auf den (Ziel-)Sensorwert
+ * @param p_toggle	Zeiger auf die Toggle-Variable des Zielsensors
+ * @param ptr		Zeiger auf auf Sensorrohdaten im EEPROM fuer p_sens
+ * @param volt		Spannungs-Ist-Wert, zu dem die Distanz gesucht wird 
+ * @author 			Timo Sandmann (mail@timosandmann.de)
+ * @date 			21.04.2007
  */
-void sensor_abstand(uint16 left, uint16 right);
+void sensor_dist_lookup(int16_t *const p_sens, uint8_t *const p_toggle, const distSens_t *ptr, int16_t volt);
 
 #ifdef DISPLAY_AVAILABLE
 	void sensor_display(void);

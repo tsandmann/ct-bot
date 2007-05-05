@@ -9,24 +9,27 @@
 #define BEHAVIOUR_AVOID_BORDER_AVAILABLE	/*!< Abgruenden ausweichen vorhanden ?*/
 #define BEHAVIOUR_AVOID_COL_AVAILABLE	/*!< Hindernis ausweichen vorhanden ?*/
 //#define BEHAVIOUR_GOTO_AVAILABLE	/*!< goto vorhanden ?*/
-#define BEHAVIOUR_GOTOXY_AVAILABLE	/*!< gotoxy vorhanden ?*/
+//#define BEHAVIOUR_GOTOXY_AVAILABLE	/*!< gotoxy vorhanden ?*/
 #define BEHAVIOUR_TURN_AVAILABLE	/*!< turn vorhanden ?*/
 
 #define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE	/*!< strecke fahren vorhanden ?*/
 
+#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE	/*!< Distanzesensorasuwertung vorhanden? */
+
 #define BEHAVIOUR_SCAN_AVAILABLE	/*!< gegend scannen vorhanden ?*/
 #define BEHAVIOUR_SOLVE_MAZE_AVAILABLE	/*!< Wandfolger vorhanden ?*/
-#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE	/*!< Linienfolger vorhanden ?*/
+//#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE	/*!< Linienfolger vorhanden ?*/
 
 #define BEHAVIOUR_SERVO_AVAILABLE 	/*!< Kontrollverhalten fuer die Servos */
 
 //#define BEHAVIOUR_OLYMPIC_AVAILABLE	/*!< Olympiadenverhalten vorhanden ?*/
 
-#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE /*!< Suche eine Dose und fange sie ein */
+//#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE /*!< Suche eine Dose und fange sie ein */
 
 #define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-kommandos entgegen?*/
 
 //#define BEHAVIOUR_CALIBRATE_PID_AVAILABLE	/*!< Kalibrierungsverhalten fuer Motorregelung vorhanden? */
+//#define BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE	/*!< Kalibrierungsverhalten fuer Distanzsensoren vorhanden? */
 
 /* Aufgrund einer ganzen reihe von Abhaengigkeiten sollte man beim Versuch Speicher 
  * zu sparen, zuerst mal bei den Hauptverhalten ausmisten, sonst kommen die 
@@ -93,6 +96,8 @@
 #include "bot-logic/behaviour_turn.h"
 #include "bot-logic/behaviour_drive_distance.h"
 
+#include "bot-logic/behaviour_measure_distance.h"
+
 #include "bot-logic/behaviour_scan.h"
 
 
@@ -107,6 +112,7 @@
 #include "bot-logic/remote_calls.h"
 
 #include "bot-logic/behaviour_calibrate_pid.h"
+#include "bot-logic/behaviour_calibrate_sharps.h"
 
 #endif
 #endif /*AVAILABLE_BEHAVIOURS_H_*/

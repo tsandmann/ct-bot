@@ -41,7 +41,7 @@
 #ifdef DISPLAY_AVAILABLE
 
 int8 max_screens = 0;	/*!< Anzahl der zurzeit registrierten Screens */
-static void (* screen_functions[DISPLAY_SCREENS])(void) = {NULL};	/*!< hier liegen die Zeiger auf die Display-Funktionen */
+void (* screen_functions[DISPLAY_SCREENS])(void) = {NULL};	/*!< hier liegen die Zeiger auf die Display-Funktionen */
 
 /*! 
  * @brief 		Display-Screen Registrierung
@@ -90,8 +90,12 @@ void gui_display(int8 screen){
  * Traegt die Anzeige-Funktionen in das Array ein.
  */
 void gui_init(void){
+//	register_screen(NULL);
 	#ifdef SENSOR_DISPLAY_AVAILABLE 	
 		register_screen(&sensor_display);
+	#endif
+	#ifdef BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
+		register_screen(&bot_calibrate_sharps_display);
 	#endif
 	#ifdef DISPLAY_REGELUNG_AVAILABLE
 		register_screen(&speedcontrol_display);

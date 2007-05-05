@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-05-05 Timo Sandmann [mail@timosandmann.de]: Distanzsensorauswertung auf Lookup-Table im EEPROM umgestellt (Offset fehlt noch), Kalibrierungsverhalten fuer die Distanzsensoren eingefuehrt, Verhalten zum Pruefen auf konstanten Messwert der Distanzsensoren gebaut. Dokumentation folgt in Kuerze, sorry (solange einfach mal BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE anmachen und bot_calibrate_sharps() starten, eigentlich ist das Verhalten selbsterklaerend).
+
 2007-05-02 Benjamin Benz [bbe@heise.de]: Einige Utilities in map.c eingefügt
 
 2007-04-28 Timo Sandmann [mail@timosandmann.de]: Pruefung auf Nullpointer in switch_to_behaviour()
