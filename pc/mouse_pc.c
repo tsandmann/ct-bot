@@ -17,7 +17,7 @@
  * 
  */
 
-/*! @file 	mouse.c 
+/*! @file 	mouse_pc.c 
  * @brief 	Routinen fuer die Ansteuerung eines opt. Maussensors
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05

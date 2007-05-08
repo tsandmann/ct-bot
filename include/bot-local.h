@@ -33,18 +33,18 @@
 #define ENCODER_MARKS			60		/*!< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weissen + Anzahl der schwarzen Felder */
 #define WHEEL_DIAMETER			57		/*!< Durchmesser eines Rades in mm */
 #define WHEEL_PERIMETER			179 	/*!< Umfang eines Rades in mm */	
-#define WHEEL_TO_WHEEL_DIAMETER 96 //97 /*!< Abstand der beiden Raeder in mm */
+#define WHEEL_TO_WHEEL_DIAMETER 96 		/*!< Abstand der beiden Raeder in mm */
 
 #define DISTSENSOR_POS_FW	35	/*!< Abstand der Distanzsensoren von der Radachse (in fahrtrichtung)*/
 #define DISTSENSOR_POS_SW	32	/*!< Abstand der Distanzsensoren von der Mittelachse (in querrichtung)*/
 
 /* Parameter der Motorregelung */
 #define PID_Kp				70				/*!< PID-Parameter proportional */
-#define PID_Ki				10//20			/*!< PID-Parameter intergral */ 
+#define PID_Ki				10				/*!< PID-Parameter intergral */ 
 #define PID_Kd				20				/*!< PID-Parameter differential */
 #define PID_Ta				1				/*!< Abtastzeit */
 #define PID_SHIFT			4				/*!< Rechtsshift der Stellgroessenkorrektur */
-#define PID_TIME			215//300		/*!< max. Aufrufinterval [ms] */
+#define PID_TIME			215				/*!< max. Aufrufinterval [ms] */
 #define PID_SPEED_THRESHOLD	BOT_SPEED_FOLLOW/*!< Grenzgeschwindigkeit, ab der die Regelgroesse interpoliert wird */
 #define PWMMAX				511				/*!< Maximaler PWM-Wert */
 #define PWMMIN				0				/*!< Minimaler PWM-Wert */
@@ -67,7 +67,7 @@
 	#define MOUSE_FULL_TURN	1600	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis */
 #endif
 
-#define WHEEL_DISTANCE		48 //49		/*!< Abstand eines Rades zur Mitte des Bots */
+#define WHEEL_DISTANCE		48 		/*!< Abstand eines Rades zur Mitte des Bots */
 #define STUCK_DIFF			100		/*!< ab welcher Differenz haben wir durchdrehende Raeder? */
 #define G_SPEED				0.5		/*!< Kopplung Encoder- und Maussensor fuer Geschwindigkeiten (0.0=nur Radencoder, 1.0=nur Maussensor) */
 #define G_POS				0.5		/*!< Kopplung Encoder- und Maussensor fuer Positionen und Winkel (0.0=nur Radencoder, 1.0=nur Maussensor) */
@@ -95,22 +95,22 @@
 #define SWEEP_STATE_CHECK			1	/*!< Zustamd: Ueberpruefe Objekt vor dem Bot. */
 
 /* Zustaende und Konstanten fuer das bot_solve_maze_behaviour-Verhalten */
-#define BOT_DIAMETER				12
-#define OPTIMAL_DISTANCE			BOT_DIAMETER*12	/* etwas mehr als Bot-Durchmesser ist ideal (vergroessert aufgrund der kennlinien der sharps) */
-#define ADJUST_DISTANCE				10
-#define IGNORE_DISTANCE				240
-#define GROUND_GOAL					0x221
-#define STARTPAD1					0x2B2
-#define STARTPAD2					0x332
+#define BOT_DIAMETER				12				/*!< Bot-Durchmesser [cm] */
+#define OPTIMAL_DISTANCE			BOT_DIAMETER*12	/*!< Optimale Distanz zur Wand [mm]. Etwas mehr als Bot-Durchmesser ist ideal (vergroessert aufgrund der kennlinien der sharps) */
+#define ADJUST_DISTANCE				10				/*!< Toleranzbereich [mm] */
+#define IGNORE_DISTANCE				240				/*!< Entfernung, ab der eine Wand ignoriert wird [mm] */
+#define GROUND_GOAL					0x221			/*!< Farbe des Ziels */
+#define STARTPAD1					0x2B2			/*!< Farbe des Startpads1 */
+#define STARTPAD2					0x332			/*!< Fareb des Starpads2 */
 
 
-/* Konstanten fuer das bot_follow_line_behaviour-Verhalten */
+/*! Konstante fuer das bot_follow_line_behaviour-Verhalten */
 #define LINE_SENSE					0x350	// Ab wann ist es Linie? (Fuer den Sim auf 350 setzen, helle Tischflaeche 50)
 
 
 /* Konstanten fuer Verhaltensanzeige, Verhalten mit prio von bis sichtbar */
-#define PRIO_VISIBLE_MIN 3		
-#define PRIO_VISIBLE_MAX 154
+#define PRIO_VISIBLE_MIN 3			/*!< Prioritaet, die ein Verhalten mindestens haben muss, um angezeigt zu werden */
+#define PRIO_VISIBLE_MAX 154		/*!< Prioritaet, die ein Verhalten hoechstens haben darf, um angezeigt zu werden */
 
 
 

@@ -155,7 +155,7 @@
 	#define LOG_AVAILABLE
 #endif 
 #ifdef LOG_CTSIM_AVAILABLE
-	#define LOG_AVAILABLE
+	#define LOG_AVAILABLE	/*!< LOG aktiv? */
 #endif 
 #ifdef LOG_DISPLAY_AVAILABLE
 	#define LOG_AVAILABLE

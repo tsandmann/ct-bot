@@ -30,7 +30,7 @@
 #ifdef MCU
 	#include <avr/pgmspace.h>
 #else
-	#define PROGMEM			// Alibideklaration hat keine Funktion, verhindert aber eine Warning
+	#define PROGMEM			/*!< Alibideklaration hat keine Funktion, verhindert aber eine Warning */
 #endif
 
 #define DISPLAY_LENGTH	20	/*!< Wieviele Zeichen passen in eine Zeile */
@@ -57,9 +57,9 @@ void display_cursor (uint8 row, uint8 column) ;
 
 #ifdef PC
 	/*!
-	 * Schreibt einen String auf das Display.
-	 * @param format Format, wie beim printf
-	 * @param ... Variable Argumentenliste, wie beim printf
+	 * @brief			Schreibt einen String auf das Display.
+	 * @param format 	Format, wie beim printf
+	 * @param ... 		Variable Argumentenliste, wie beim printf
 	 */
 	void display_printf(char *format, ...);
 #else
@@ -76,7 +76,7 @@ void display_cursor (uint8 row, uint8 column) ;
 	/*!
 	 * @brief			Schreibt einen String auf das Display, der String verbleibt im Flash
 	 * @param format	Format, wie beim printf
-	 * @param ... 		Variable Argumentenliste, wie beim printf
+	 * @param args 		Variable Argumentenliste, wie beim printf
 	 */
 	#define display_printf(format, args...) {		\
 		static const char data[] PROGMEM = format;	\

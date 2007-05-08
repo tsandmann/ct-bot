@@ -59,7 +59,7 @@ typedef struct {
 	} led_t;
 #endif
 
-extern uint8 led;
+extern uint8 led;	/*!< Zustand der LEDs */
 
 /*!
  * Initialisiert die LEDs

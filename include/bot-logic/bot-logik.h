@@ -32,8 +32,6 @@
 #include "sensor.h"
 #include "bot-local.h"
 
-#define BEHAVIOUR_DRIVE_AVAILABLE
-
 // Includes aller verfuegbaren Verhalten
 
 
@@ -147,9 +145,9 @@ void deactivateCalledBehaviours(BehaviourFunc function);
 void switch_to_behaviour(Behaviour_t * from, void *to, uint8 override );
 
 /*! 
- * Kehrt zum aufrufenden Verhalten zurueck
- * @param running laufendes Verhalten
- */ 
+ * @brief		Kehrt zum aufrufenden Verhalten zurueck
+ * @param data 	laufendes Verhalten
+ */
 void return_from_behaviour(Behaviour_t * data);
 
 
@@ -161,9 +159,10 @@ void return_from_behaviour(Behaviour_t * data);
 void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave);
 
 /*! 
- * Erzeugt ein neues Verhalten 
- * @param priority Die Prioritaet
- * @param *work Den Namen der Funktion, die sich drum kuemmert
+ * @brief			Erzeugt ein neues Verhalten 
+ * @param priority 	Die Prioritaet
+ * @param *work 	Den Namen der Funktion, die sich drum kuemmert
+ * @param active	Booleand, ob das Verhalten aktiv oder inaktiv erstellt wird
  */
 Behaviour_t *new_behaviour(uint8 priority, void (*work) (struct _Behaviour_t *data), int8 active);
 

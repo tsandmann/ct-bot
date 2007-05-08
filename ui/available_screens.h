@@ -34,8 +34,8 @@
 #define DISPLAY_SCREENS 8				/*!< Anzahl der Screens */
 
 #define SENSOR_DISPLAY_AVAILABLE		/*!< zeigt die Sensordaten an */
-//#define DISPLAY_REGELUNG_AVAILABLE		/*!< Gibt Debug-Infos der Motorregelung aus */
-//#define DISPLAY_BEHAVIOUR_AVAILABLE		/*!< zeigt Verhalten an */
+#define DISPLAY_REGELUNG_AVAILABLE		/*!< Gibt Debug-Infos der Motorregelung aus */
+#define DISPLAY_BEHAVIOUR_AVAILABLE		/*!< zeigt Verhalten an */
 //#define MISC_DISPLAY_AVAILABLE			/*!< aehm ja, der Rest irgendwie... */
 #define DISPLAY_ODOMETRIC_INFO			/*!< zeigt Positions- und Geschwindigkeitsdaten an */
 #define DISPLAY_MMC_INFO				/*!< Zeigt die Daten der MMC-Karte an */

@@ -31,10 +31,15 @@
 #include <stdint.h>
 
 /*!
- * Makros zur Umrechnung von Ticks in ms und zurueck
+ * Makro zur Umrechnung von Ticks in ms
  * (ms / ticks evtl. nach uint32 casten, fuer grosse Werte)
  */
 #define TICKS_TO_MS(ticks)	((ticks)*(TIMER_STEPS/8)/(1000/8))
+
+/*!
+ * Makro zur Umrechnung von ms in Ticks
+ * (ms / ticks evtl. nach uint32 casten, fuer grosse Werte)
+ */
 #define MS_TO_TICKS(ms)		((ms)*(1000/8)/(TIMER_STEPS/8))
 
 #ifdef TIME_AVAILABLE		
@@ -64,24 +69,26 @@
 	 */
 	void system_time_isr(void);
 
-	/*! liefert Ticks seit Systemstart [176 us] */
+	/*! liefert Ticks in 16 Bit seit Systemstart [176 us] */
 	inline uint16 timer_get_tickCount16(void);
+	/*! liefert Ticks in 32 Bit seit Systemstart [176 us] */
 	inline uint32 timer_get_tickCount32(void);	
 	
-	#define TIMER_GET_TICKCOUNT_8  (uint8)timer_get_tickCount16()
-	#define TIMER_GET_TICKCOUNT_16 timer_get_tickCount16()
-	#define TIMER_GET_TICKCOUNT_32 timer_get_tickCount32()	
+	#define TIMER_GET_TICKCOUNT_8  (uint8)timer_get_tickCount16()	/*!< Zeit in 8 Bit */
+	#define TIMER_GET_TICKCOUNT_16 timer_get_tickCount16()			/*!< Zeit in 16 Bit */
+	#define TIMER_GET_TICKCOUNT_32 timer_get_tickCount32()			/*!< Zeit in 32 Bit */
 #else
+	/*! Union fuer TickCount in 8, 16 und 32 Bit */
 	typedef union{
 		uint32 u32;
 		uint16 u16;
 		uint8 u8;
 	} tickCount_t;
-	extern volatile tickCount_t tickCount;
+	extern volatile tickCount_t tickCount;			/*!< ein Tick alle 176 us */
 	
-	#define TIMER_GET_TICKCOUNT_8  tickCount.u8
-	#define TIMER_GET_TICKCOUNT_16 tickCount.u16
-	#define TIMER_GET_TICKCOUNT_32 tickCount.u32	
+	#define TIMER_GET_TICKCOUNT_8  tickCount.u8		/*!< Zeit in 8 Bit */
+	#define TIMER_GET_TICKCOUNT_16 tickCount.u16	/*!< Zeit in 16 Bit */
+	#define TIMER_GET_TICKCOUNT_32 tickCount.u32	/*!< Zeit in 32 Bit */
 #endif
 
 // Die Werte fuer TIMER_X_CLOCK sind Angaben in Hz

@@ -36,8 +36,6 @@
 	#endif
 	
 	#ifndef WIN32
-//		typedef unsigned char byte;		/*!< vorzeichenlose 8-Bit-Zahl */
-//		typedef byte bool;				/*!< True/False-Aussage */
 		#define bool byte;				/*!< True/False-Aussage */
 	#endif
 
@@ -48,17 +46,6 @@
 		#define WIN32	/*!< System Windows */
 		#define __linux__	/*!< System Linux */
 	#endif
-	
-//	deprecated!	
-//	typedef unsigned char uint8;                       /*!< vorzeichenlose 8-Bit-Zahl  */
-//	typedef unsigned int word;                         /*!< vorzeichenlose 16-Bit-Zahl  */
-//	typedef signed char int8;                          /*!< vorzeichenbehaftete 8-Bit-Zahl */ 
-//	typedef short int int16;                           /*!< vorzeichenbehaftete 16-Bit-Zahl  */
-//
-//	typedef unsigned long uint32;		/*!< vorzeichenlose 32-Bit-Zahl  */
-//	typedef signed long int32;			/*!< vorzeichenbehaftete 32-Bit-Zahl  */
-//
-//	#define uint16                  word				/*!< Int mit 16 Bit */
 	
 	#define byte	uint8_t				/*!< vorzeichenlose 8-Bit-Zahl */
 	#define uint8	uint8_t				/*!< vorzeichenlose 8-Bit-Zahl */
@@ -74,8 +61,7 @@
 	#define On                    1		/*!< An */
 	#define Off                   0		/*!< Aus */
 
-//	#define PI					3.14159	/*!< Kreiszahl Pi fuer trigonometrische Berechnungen */
-	#define binary(var,bit) ((var >> bit)&1)
-	//#define NULL 0
+	#define binary(var,bit) ((var >> bit)&1)	/*!< Binaerwert eines Bits */
+
 #endif	// __ASSEMBLER__
 #endif	// global_H

@@ -340,8 +340,8 @@ void switch_to_behaviour(Behaviour_t * from, void *to, uint8 override ){
 }
 
 /*! 
- * Kehrt zum aufrufenden Verhalten zurueck
- * @param running laufendes Verhalten
+ * @brief		Kehrt zum aufrufenden Verhalten zurueck
+ * @param data 	laufendes Verhalten
  */ 
 void return_from_behaviour(Behaviour_t * data){
 	data->active=INACTIVE; 				// Unterverhalten deaktivieren
@@ -421,9 +421,10 @@ void bot_behave(void){
 }
 
 /*! 
- * Erzeugt ein neues Verhalten 
- * @param priority Die Prioritaet
- * @param *work Den Namen der Funktion, die sich drum kuemmert
+ * @brief			Erzeugt ein neues Verhalten 
+ * @param priority 	Die Prioritaet
+ * @param *work 	Den Namen der Funktion, die sich drum kuemmert
+ * @param active	Booleand, ob das Verhalten aktiv oder inaktiv erstellt wird
  */
 Behaviour_t *new_behaviour(uint8 priority, void (*work) (struct _Behaviour_t *data), int8 active){
 	Behaviour_t *newbehaviour = (Behaviour_t *) malloc(sizeof(Behaviour_t)); 

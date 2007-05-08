@@ -51,7 +51,7 @@
 #ifdef MCU
 	volatile tickCount_t tickCount;		/*!< ein Tick alle 176 us */
 #else
-	float tickCount=0;
+	float tickCount=0;					/*!< ein Tick alle 176 us */
 #endif 
 
 #ifdef PC

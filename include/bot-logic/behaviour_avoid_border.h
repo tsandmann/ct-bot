@@ -17,7 +17,7 @@
  * 
  */
 
-/*! @file 	behaviour_avoid_border.c
+/*! @file 	behaviour_avoid_border.h
  * @brief 	Vermeide Abgruende
  * 
  * @author 	Benjamin Benz (bbe@heise.de)

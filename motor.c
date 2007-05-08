@@ -65,9 +65,9 @@ int16 speed_r = 0;	/*!< Sollgeschwindigkeit rechter Motor */
 	
 	/*! Dividend fuer Umrechnung von Ticks [176 us] in Geschwindigkeit [mm/s] */
 	#define TICKS_TO_SPEED		(uint16)((float)WHEEL_PERIMETER/ENCODER_MARKS*1000000/TIMER_STEPS)	// = 8475*2
-	#define TICKS_TO_SPEED_0	(TICKS_TO_SPEED / 2)		// fuer shift == 0
-	#define TICKS_TO_SPEED_1	(TICKS_TO_SPEED / 2 * 2)	// fuer shift == 1
-	#define TICKS_TO_SPEED_2	(TICKS_TO_SPEED / 2 * 4) 	// fuer shift == 2
+	#define TICKS_TO_SPEED_0	(TICKS_TO_SPEED / 2)		/*!< Dividend fuer shift == 0 */
+	#define TICKS_TO_SPEED_1	(TICKS_TO_SPEED / 2 * 2)	/*!< Dividend fuer shift == 1 */
+	#define TICKS_TO_SPEED_2	(TICKS_TO_SPEED / 2 * 4) 	/*!< Dividend fuer shift == 2 */
 	
 	/*! Typ fuer PWM-Lookup-Werte */
 	typedef struct{
@@ -532,7 +532,7 @@ void motor_init(void){
 /*!
  * @brief		Stellt die Servos
  * @param servo	Nummer des Servos
- * @param servo	Zielwert
+ * @param pos	Zielwert
  * Sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus 
  */
 void servo_set(uint8 servo, uint8 pos){

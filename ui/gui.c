@@ -18,7 +18,7 @@
  */
 
 /*! 
- * @file 	gui.h
+ * @file 	gui.c
  * @brief 	Display-GUI des Bots
  * @author 	Timo Sandmann (mail@timosandmann.de)
  * @date 	12.02.2007

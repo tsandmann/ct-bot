@@ -65,7 +65,7 @@ int8 receive_until_Frame(int8 frame);
 	void gettimeofday_win(struct timeval* p, void* tz /* IGNORED */);
 	#define GETTIMEOFDAY gettimeofday_win
 #else
-	#define GETTIMEOFDAY gettimeofday
+	#define GETTIMEOFDAY gettimeofday	/*!< unter nicht-Win benutzen wir die Systemfunktion fuer gettimeofday */
 #endif	// WIN32
 
 #endif

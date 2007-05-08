@@ -32,13 +32,14 @@
 
 
 
-#define REMOTE_CALL_FUNCTION_NAME_LEN 20
-#define PARAM_TEXT_LEN 40
-#define REMOTE_CALL_MAX_PARAM 3
+#define REMOTE_CALL_FUNCTION_NAME_LEN 20	/*!< Laenge der Funktionsnamen */
+#define PARAM_TEXT_LEN 40					/*!< Laenge des Parameterstrings */
+#define REMOTE_CALL_MAX_PARAM 3				/*!< Maximale Anzahl an Parametern */
 
+/*! Groesse des Remotecall-Buffers */
 #define REMOTE_CALL_BUFFER_SIZE (REMOTE_CALL_FUNCTION_NAME_LEN+1+REMOTE_CALL_MAX_PARAM*4)
 
-// Die Kommandostruktur
+/*! Kommandostruktur fuer Remotecalls */
 typedef struct {
    uint8 param_count;			/*!< Anzahl der Parameter kommen Und zwar ohne den obligatorischen caller-parameter*/
    uint8 param_len[REMOTE_CALL_MAX_PARAM];	/*!< Angaben ueber die Anzahl an Bytes, die jeder einzelne Parameter belegt */
@@ -48,11 +49,12 @@ typedef struct {
    void* (*func)(void *);      /*!< Zeiger auf die auszufuehrende Funktion*/
 } call_t;
 
+/*! Union fuer Remotecall-Daten */
 typedef union{
 	uint32 u32;
 	float fl32;
 	uint16 u16;
-} remote_call_data_t;	/*!< uint32 und float werden beide gleich ausgelesen, daher stecken wir sie in einen Speicherbereich */
+} remote_call_data_t;	// uint32 und float werden beide gleich ausgelesen, daher stecken wir sie in einen Speicherbereich
 
 /*! Dieses Makro bereitet eine Botenfunktion als Remote-Call-Funktion vor.
  * Der erste parameter ist der Funktionsname selbst

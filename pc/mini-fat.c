@@ -17,7 +17,7 @@
  * 
  */
 
-/*! @file 	mini-fat.c
+/*! @file 	pc/mini-fat.c
  * @brief 	Routinen zum erstellen von markierten Files fuer eine MMC-Karte. 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	04.01.07

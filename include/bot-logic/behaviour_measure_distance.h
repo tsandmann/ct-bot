@@ -18,7 +18,7 @@
  */
 
 /*! 
- * @file 	behaviour_calibrate_sharps.h
+ * @file 	behaviour_measure_distance.h
  * @brief 	Ermittelt die aktuelle Entfernung eines Hindernisses mit den Distanzsensoren
  * 
  * @author 	Timo Sandmann (mail@timosandmann.de)

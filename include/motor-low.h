@@ -33,12 +33,10 @@
 */
 void motor_low_init(void);
 
-/*!
- * unmittelbarer Zugriff auf die Motoren
- * @param dev 	Motor (0: links; 1: rechts)
- * @param speed	Soll-Geschwindigkeit
- */
-void bot_motor(int16 left, int16 right);
+///*!
+// * unmittelbarer Zugriff auf die Motoren
+// */
+//void bot_motor(int16 left, int16 right);
 
 /*!
  * Stellt einen PWM-Wert fuer einen Motor ein

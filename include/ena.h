@@ -68,7 +68,7 @@ void ENA_off(uint8 enable);
  * Achtung, die Treiber-Transistoren sind Low-Aktiv!!! 
  * ENA_set bezieht sich auf die Transistor
  * Daher zieht es die entsprechende ENA_XXX-Leitung auf ~enable
- * @param ENA-Wert, der gesetzt werden soll
+ * @param enable	ENA-Wert, der gesetzt werden soll
  */
 void ENA_set(uint8 enable);
 

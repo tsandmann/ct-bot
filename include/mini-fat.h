@@ -33,6 +33,7 @@
 
 #define MMC_FILENAME_MAX	255		/*!< Maximale Dateienamenlaenge in Zeichen [1;255] */
 
+/*! Datentyp fuer Mini-Fat-Dateilaenge */
 typedef union{
 	uint32 u32;		// Laenge in 32 Bit
 	uint8 u8[4];	// laenge in 4 "einzelnen" Bytes
@@ -53,7 +54,7 @@ uint32 mini_fat_lookup_adr(const char* filename, uint8* buffer);
 
 /*!
  * @brief			Speichert die Adresse einer Mini-FAT-Datei in einem EERROM-Slab
- * @param block		(Block-)Adresse der Datei, die gespeichert werden soll
+ * @param adr		(Block-)Adresse der Datei, die gespeichert werden soll
  * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			05.03.2007
  * Gespeichert wird die Adresse des 0. Blocks der Datei (man gibt aber die Adresse des ersten Nutzdatenblocks an, wie sie

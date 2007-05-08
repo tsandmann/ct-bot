@@ -17,7 +17,7 @@
  * 
  */
 
-/*! @file 	behaviour_drive_distance.c
+/*! @file 	behaviour_drive_distance.h
  * @brief 	Bot faehrt ein Stueck
  * 
  * @author 	Benjamin Benz (bbe@heise.de)

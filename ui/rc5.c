@@ -123,6 +123,12 @@ static void rc5_number(uint8 key) {
 		#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 			case 4: bot_catch_pillar(0); break;
 		#endif
+		case 4: {
+			static int16_t testL=0;
+			static int16_t testR=0;
+			bot_measure_distance(0, &testL, &testR); 
+			break;
+		}
 
 		#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 			case 5: bot_solve_maze(0); break;

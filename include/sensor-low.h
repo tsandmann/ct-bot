@@ -43,7 +43,8 @@ extern void bot_sens_isr(void);
  */
 extern void bot_encoder_isr(void);
 
-typedef struct{
+/*! Datenstruktur fuer Speedlog-Eintraege */
+typedef struct {
 	uint8 encRate;
 	uint8 targetRate;
 	int16 err;

@@ -18,7 +18,7 @@
  */
 
 /*! 
- * @file 	mini-fat.c
+ * @file 	mcu/mini-fat.c
  * @brief 	Routinen zum Auffinden von markierten Files auf einer MMC-Karte. 
  *          Dies ist keine vollstaendige FAT-Unterstuetzung, sondern sucht nur eien Datei, die mit einer Zeichen Sequenz beginnt. 
  * @author 	Benjamin Benz (bbe@heise.de)

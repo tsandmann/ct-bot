@@ -26,8 +26,8 @@
 
 #include "ct-Bot.h"
 
-#define USE_SEND_BUFFER
-#define TCP_SEND_BUFFER_SIZE 2048
+#define USE_SEND_BUFFER				/*!< Schalter fuer Sendepuffer an/aus */
+#define TCP_SEND_BUFFER_SIZE 2048	/*!< Groesse des Sendepuffers */
 
 #ifdef PC
 

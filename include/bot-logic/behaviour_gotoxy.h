@@ -17,7 +17,7 @@
  * 
  */
 
-/*! @file 	behaviour_gotoxy.c
+/*! @file 	behaviour_gotoxy.h
  * @brief 	Bot faehrt eine Position an
  * 
  * @author 	Benjamin Benz (bbe@heise.de)

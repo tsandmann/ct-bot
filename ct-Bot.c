@@ -403,7 +403,7 @@ init();	// alles initialisieren
 	#endif	
 #endif
 
-/* Hauptschleife des Bots */
+/*! Hauptschleife des Bots */
 for(;;){
 	#ifdef PC
 		receive_until_Frame(CMD_DONE);

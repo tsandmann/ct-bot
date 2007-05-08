@@ -40,15 +40,15 @@
 
 #ifdef MCU
 	#include <avr/eeprom.h>
-	#define EE_SECTION	__attribute__ ((section (".eeprom"),aligned (1)))	// spart Tipparbeit
+	#define EE_SECTION	__attribute__ ((section (".eeprom"),aligned (1)))	/*!< Shortcut fuer EEPROM-Section */
 #else
 	/* derzeit kein EEPROM fuer PC vorhanden, Daten liegen einfach im RAM */
-	#define EE_SECTION	
-	#define eeprom_read_byte(x)	*x	
+	#define EE_SECTION														/*!< Shortcut fuer EEPROM-Section */
+	#define eeprom_read_byte(x)	*x											/*!< Pseudo-EEPROM-Funktion fuer PC */
 #endif	// MCU
 
 // Defines einiger, haeufiger benoetigter Konstanten
-#define DEG2RAD (2*M_PI/360)
+#define DEG2RAD (2*M_PI/360)	/*!< Umrechnung von Grad nach Bogenmass */ 
 
 
 int16 sensLDRL=0;		/*!< Lichtsensor links */
@@ -146,7 +146,7 @@ static inline uint8_t lin_interpolate(uint8_t x1, uint8_t y1, uint8_t x2, uint8_
  * @param p_sens	Zeiger auf den (Ziel-)Sensorwert
  * @param p_toggle	Zeiger auf die Toggle-Variable des Zielsensors
  * @param ptr		Zeiger auf auf Sensorrohdaten im EEPROM fuer p_sens
- * @param volt		Spannungs-Ist-Wert, zu dem die Distanz gesucht wird 
+ * @param volt_16	Spannungs-Ist-Wert, zu dem die Distanz gesucht wird (in 16 Bit) 
  * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			21.04.2007
  */
@@ -441,6 +441,9 @@ void sensor_update(void){
 }
 
 #ifdef SENSOR_DISPLAY_AVAILABLE
+	/*!
+	 * @brief	Displayhandler fuer Sensoranzeige
+	 */
 	void sensor_display(void){
 		display_cursor(1,1);
 		display_printf("P=%03X %03X D=%03d %03d ",sensLDRL,sensLDRR,sensDistL,sensDistR);
@@ -469,6 +472,9 @@ void sensor_update(void){
 #endif	// SENSOR_DISPLAY_AVAILABLE
 
 #ifdef DISPLAY_ODOMETRIC_INFO
+	/*!
+	 * @brief	Displayhandler fuer Odometrieanzeige
+	 */
 	void odometric_display(void){
 		/* Zeige Positions- und Geschwindigkeitsdaten */
 		display_cursor(1,1);

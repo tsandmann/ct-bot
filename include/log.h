@@ -18,7 +18,7 @@
  */
 
 /*! 
- * @file 	log.c
+ * @file 	log.h
  * @brief 	Routinen zum Loggen von Informationen. Es sollten ausschliesslich nur
  * die Log-Makros: LOG_DEBUG(), LOG_INFO(), LOG_WARN(), LOG_ERROR() und LOG_FATAL()
  * verwendet werden.
@@ -68,7 +68,7 @@
 #ifdef MCU
 	#include <avr/pgmspace.h>
 #else
-	#define PROGMEM			// Alibideklaration hat keine Funktion, verhindert aber eine Warning
+	#define PROGMEM			/*!< Alibideklaration hat keine Funktion, verhindert aber eine Warning */
 #endif
 
 #ifdef LOG_AVAILABLE

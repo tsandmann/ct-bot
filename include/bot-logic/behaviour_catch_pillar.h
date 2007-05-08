@@ -19,7 +19,7 @@
 
 
 
-/*! @file 	behaviour_catch_pillar.c
+/*! @file 	behaviour_catch_pillar.h
  * @brief 	sucht nach einer Dose und fängt sie ein
  * 
  * @author 	Benjamin Benz (bbe@heise.de)

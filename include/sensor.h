@@ -30,10 +30,11 @@
 #include "global.h"
 #include "ct-Bot.h"
 
+/*! Datenstruktur zur Ablage eines IR-Sensor-Wertepaares (Spannung | Distanz) */
 typedef struct {
 	uint8_t voltage;
 	uint8_t dist;
-} distSens_t;			/*!< Datenstruktur zur Ablage eines IR-Sensor-Wertepaares (Spannung | Distanz) */
+} distSens_t;
 
 /* Analoge Sensoren: Der Wertebereich aller analogen Sensoren umfasst 10 Bit. Also 0 bis 1023 */
 extern int16 sensDistL;			/*!< Distanz linker IR-Sensor [mm] ca. 100 bis 800 */
@@ -84,7 +85,7 @@ extern float v_enc_right;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s]
 extern float v_enc_center;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
 
 #ifdef PC
-	extern uint16 simultime;	/*! Simulierte Zeit */
+	extern uint16 simultime;	/*!< Simulierte Zeit */
 #endif
 
 #ifdef MEASURE_MOUSE_AVAILABLE
@@ -120,14 +121,21 @@ void sensor_update(void);
  * @param p_sens	Zeiger auf den (Ziel-)Sensorwert
  * @param p_toggle	Zeiger auf die Toggle-Variable des Zielsensors
  * @param ptr		Zeiger auf auf Sensorrohdaten im EEPROM fuer p_sens
- * @param volt		Spannungs-Ist-Wert, zu dem die Distanz gesucht wird 
+ * @param volt_16	Spannungs-Ist-Wert, zu dem die Distanz gesucht wird (in 16 Bit) 
  * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			21.04.2007
  */
-void sensor_dist_lookup(int16_t *const p_sens, uint8_t *const p_toggle, const distSens_t *ptr, int16_t volt);
+void sensor_dist_lookup(int16_t *const p_sens, uint8_t *const p_toggle, const distSens_t *ptr, int16_t volt_16);
 
 #ifdef DISPLAY_AVAILABLE
+	/*!
+	 * @brief	Displayhandler fuer Sensoranzeige
+	 */
 	void sensor_display(void);
+	
+	/*!
+	 * @brief	Displayhandler fuer Odometrieanzeige
+	 */	
 	void odometric_display(void);
 #endif
 #endif /*SENSOR_H_*/
