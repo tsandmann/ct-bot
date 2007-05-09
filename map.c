@@ -561,13 +561,13 @@ uint8 map_way_free_fields(uint16 from_x, uint16 from_y, uint16 to_x, uint16 to_y
 	int8 sY = (to_y < from_y ? -1 : 1); 
 	uint16 dY =abs(to_y - from_y);	// Laenge der Linie in Y-Richtung
 
-	uint16 width= (BOT_DIAMETER*MAP_RESOLUTION)/100;
+	int16 width= (BOT_DIAMETER*MAP_RESOLUTION)/100;
 	int16 w=0;
 	
 	if (dX >= dY) {			// Hangle Dich an der laengeren Achse entlang
 	  uint16 lh = dX / 2;
 	  for (i=0; i<dX; ++i) {
-		 for (w=-width; w< width; w++) // wir müssen die ganze Breite des absuchen
+		 for (w=-width; w<= width; w++) // wir müssen die ganze Breite des absuchen
 //			 map_set_field(lX+i*sX, lY+w,-126);
 		     if (map_get_field(lX+i*sX, lY+w) <0) // ein hinderniss reicht für den Abbruch
 		       return 0;
@@ -581,7 +581,7 @@ uint8 map_way_free_fields(uint16 from_x, uint16 from_y, uint16 to_x, uint16 to_y
 	} else {
 	  uint16 lh = dY / 2;
 	  for (i=0; i<dY; ++i) {
-		 for (w=-width; w< width; w++) // wir müssen die ganze Breite des absuchen
+		 for (w=-width; w<= width; w++) // wir müssen die ganze Breite des absuchen
 //			 map_set_field(lX+w, lY+i*sY,126);
 			 if (map_get_field (lX+w, lY+i*sY) <0 ) //ein hinderniss reicht für den Abbruch
 		       return 0;

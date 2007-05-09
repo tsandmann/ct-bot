@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-05-09 Benjamin Benz [bbe@heise.de]: Bugfix in map.c
+
 2007-05-08 Timo Sandmann [mail@timosandmann.de]: Doxygen-Kommentare korrigiert und erweitert
 
 2007-05-05 Timo Sandmann [mail@timosandmann.de]: Distanzsensorauswertung auf Lookup-Table im EEPROM umgestellt, Kalibrierungsverhalten fuer die Distanzsensoren eingefuehrt, Verhalten zum Pruefen auf konstanten Messwert der Distanzsensoren gebaut. Dokumentation folgt in Kuerze, sorry (solange einfach mal BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE anmachen und bot_calibrate_sharps() starten, eigentlich ist das Verhalten selbsterklaerend).
