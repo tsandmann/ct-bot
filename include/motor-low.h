@@ -33,10 +33,15 @@
 */
 void motor_low_init(void);
 
-///*!
-// * unmittelbarer Zugriff auf die Motoren
-// */
-//void bot_motor(int16 left, int16 right);
+#ifdef PC
+	/*!
+	 * Unmittelbarer Zugriff auf die beiden Motoren,
+	 * normalerweise NICHT verwenden!
+	 * @param left PWM links
+	 * @param right PWM rechts
+	*/
+	void bot_motor(int16 left, int16 right);
+#endif	// PC
 
 /*!
  * Stellt einen PWM-Wert fuer einen Motor ein

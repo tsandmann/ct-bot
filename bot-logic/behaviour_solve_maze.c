@@ -189,10 +189,10 @@ void bot_check_wall_behaviour(Behaviour_t *data) {
 			} else {
 				sensor=sensDistR;
 			}
-			if (sensor-OPTIMAL_DISTANCE<0) {
+			if (sensor-OPTIMAL_DISTANCE+ADJUST_DISTANCE < 0) {
 				speedWishLeft=-BOT_SPEED_SLOW;
 				speedWishRight=-BOT_SPEED_SLOW;
-			} else if (sensor-OPTIMAL_DISTANCE>0) {
+			} else if (sensor-OPTIMAL_DISTANCE-ADJUST_DISTANCE > 0) {
 				speedWishLeft=BOT_SPEED_SLOW;
 				speedWishRight=BOT_SPEED_SLOW;
 			}

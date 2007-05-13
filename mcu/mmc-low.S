@@ -20,12 +20,12 @@
 #ifdef MCU
 ; Hinweis:
 ; Sollte der Build-Prozess an dieser Datei scheitern, bitte auch die 
-; Datei ".settings/org.eclipse.core.runtime.prefs" aus dem CVS laden, oder
+; Datei ".settings/org.eclipse.core.runtime.prefs" aus dem SVN laden, oder
 ; selbst veranlassen, dass .S-Dateien ebenfalls vom gcc verarbeitet werden
 ; (und nicht direkt vom Assembler).
 
 /*! 
- * @file 	mmc-low.s
+ * @file 	mmc-low.S
  * @brief 	Low-Level-Routinen zum Lesen/Schreiben einer MMC / SD-Card
  * @author	Timo Sandmann (mail@timosandmann.de)
  * @date 	14.11.2006
