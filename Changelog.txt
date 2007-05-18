@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-05-18 Timo Sandmann [mail@timosandmann.de]: Ein paar #define-Abhaengigkeiten korrigiert
+
 2007-05-13 Timo Sandmann [mail@timosandmann.de]: Bugfix in motor-low.h, vorlaeufiger Workaround fuer solve_maze() und Kommentar in mmc-low.S korrigiert
 
 2007-05-09 Benjamin Benz [bbe@heise.de]: Bugfix in map.c

@@ -114,5 +114,5 @@
 #include "bot-logic/behaviour_calibrate_pid.h"
 #include "bot-logic/behaviour_calibrate_sharps.h"
 
-#endif
+#endif	// BEHAVIOUR_AVAILABLE
 #endif /*AVAILABLE_BEHAVIOURS_H_*/
