@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-05-29 Timo Sandmann [mail@timosandmann.de]: Funktionen zum Erstellen und Loeschen von Mini-Fat-Dateien auf einer emulierten MMC hinzugefuegt
+
 2007-05-24 Timo Sandmann [mail@timosandmann.de]: Bootloader-Dokumentation ueberarbeitet
 
 2007-05-19 Timo Sandmann [mail@timosandmann.de]: Dokumentation zur Sensorauswertung ergaenzt

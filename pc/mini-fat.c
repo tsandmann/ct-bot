@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	pc/mini-fat.c
+/*! 
+ * @file 	pc/mini-fat.c
  * @brief 	Routinen zum erstellen von markierten Files fuer eine MMC-Karte. 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	04.01.07
-*/
+ */
 
 #include "ct-Bot.h"
 #include "mini-fat.h"
@@ -31,6 +32,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "mmc-vm.h"
+#include "mmc-emu.h"
 
 /*! 
  * Erzeugt eine Datei, die an den ersten Bytes die ID enthaelt. Dann folgen 512 - sizeof(id) nullen
@@ -67,10 +71,112 @@ void create_mini_fat_file(const char* filename, const char* id_string, uint32 si
 }
 
 /*! 
+ * @brief				Erzeugt eine Mini-Fat-Datei in einer emulierten MMC
+ * @param addr			Die Adresse auf der emulierten Karte, an der die Datei beginnen soll
+ * @param id_string 	Die ID der Datei, wie sie zu Beginn in der Datei steht
+ * @param size 			KByte Nutzdaten, die die Datei umfasst
+ * Erzeugt eine Datei, die an den ersten Bytes die ID enthaelt. Dann folgen 512 - sizeof(id) Nullen
+ * Danach kommen size * 1024 Nullen
+ */
+void create_emu_mini_fat_file(uint32_t addr, const char* id_string, uint32_t size) {
+	#ifndef MMC_VM_AVAILABLE
+		printf("Bitte mit MMC_VM_AVAILABLE compilieren, Abbruch!\n");
+		return; 
+	#else
+		/* some checks */
+		if (mmc_emu_get_init_state() != 0) mmc_emu_init();
+		if (mmc_emu_get_init_state() != 0) {
+			printf("Fehler beim Initialisieren der emulierten MMC, Abbruch\n");
+			return;	
+		}
+		
+		if (mmc_emu_get_size() < addr+size) {
+			printf("Emulierte MMC zu klein fuer Adresse 0x%x und Groesse %d, Abbruch\n", addr, size);
+			return;	
+		}
+		
+		uint32_t old_addr = mmc_fopen(id_string); 
+		if (old_addr != 0) {
+			printf("Mini-Fat-Datei existiert bereits an Adresse 0x%x, Abbruch!\n", old_addr-512);
+			return;	
+		}
+		
+		if (addr % 512 != 0) {
+			printf("Adresse ist nicht 512 Byte aligned, Abbruch!\n");
+			return;	
+		}
+		
+		printf("Erstelle eine Mini-Fat-Datei in %s an Adresse 0x%x mit dem Namen %s\n", MMC_EMU_FILE, addr, id_string);
+	
+		uint8_t* p_buffer = calloc(512, 1);
+		if (p_buffer == NULL) return;
+	
+		/* Dateiparameter vorbereiten */
+		uint8_t id_len = strlen(id_string) >= MMC_FILENAME_MAX ? 254 : strlen(id_string);
+		file_len_t length = {size*1024 - 512};	// im ersten Block stehen interne Daten
+		strncpy((char*)p_buffer, id_string, id_len);
+		
+		p_buffer[256] = length.u8[3];
+		p_buffer[257] = length.u8[2];
+		p_buffer[258] = length.u8[1];
+		p_buffer[259] = length.u8[0];
+		
+		/* Datei-Header schreiben */
+		if (mmc_emu_write_sector(addr/512, p_buffer, 0) != 0) {
+			printf("Datei konnte nicht korrekt geschrieben werden!\n");
+			return;
+		}
+		
+		printf("done.\n");
+		
+	#endif	// MMC_VM_AVAILABLE
+}
+
+/*! 
+ * @brief				Loescht eine Mini-Fat-Datei in einer emulierten MMC
+ * @param id_string 	Die ID der Datei, wie sie zu Beginn in der Datei steht
+ */
+void delete_emu_mini_fat_file(const char* id_string) {
+	#ifndef MMC_VM_AVAILABLE
+		printf("Bitte mit MMC_VM_AVAILABLE compilieren, Abbruch!\n");
+		return; 
+	#else
+		/* some checks */
+		if (mmc_emu_get_init_state() != 0) mmc_emu_init();
+		if (mmc_emu_get_init_state() != 0) {
+			printf("Fehler beim Initialisieren der emulierten MMC, Abbruch\n");
+			return;	
+		}
+		
+		uint32_t addr = mmc_fopen(id_string); 
+		if (addr == 0) {
+			printf("Mini-Fat-Datei %s existiert nicht, Abbruch!\n", id_string);
+			return;	
+		}
+		
+		uint8_t* p_buffer = calloc(512, 1);
+		
+		/* Datei leeren und Header loeschen */
+		if (mmc_clear_file(addr) != 0) { 
+			printf("Datei konnte nicht korrekt geloescht werden!\n");
+			return;
+		}
+			
+		if (mmc_emu_write_sector((addr-512)/512, p_buffer, 0) != 0) {
+			printf("Datei konnte nicht korrekt geloescht werden!\n");
+			return;
+		}
+		
+		printf("done.\n");
+		
+	#endif	// MMC_VM_AVAILABLE
+}
+
+/*! 
  * Konvertiert eine (binaere) mini-fat-Datei ("AVR-Endian") mit Speed-Log-Daten in eine Textdatei.
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	10.02.2007  
- * @param filename Der Dateiname mini-fat-Datei
+ * @author 			Timo Sandmann (mail@timosandmann.de)
+ * @date 			10.02.2007  
+ * @param filename 	Der Dateiname der mini-fat-Datei
  */
 void convert_slog_file(const char* input_file){
 	typedef struct{

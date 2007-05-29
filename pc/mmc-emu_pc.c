@@ -50,9 +50,6 @@
 #ifdef PC
 #ifdef MMC_VM_AVAILABLE
 
-#define MMC_EMU_SIZE	0x2000000		/*!< Groesse der emulierten Karte in Byte */
-#define MMC_EMU_FILE	"mmc_emu.dat"	/*!< Name / Pfad der Datei fuer die Emulation */
-
 volatile uint8 mmc_emu_init_state=1;	/*!< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
 static FILE* mmc_emu_file;				/*!< Der Inhalt der emulierten Karte wird einfach in eine Datei geschrieben */
 

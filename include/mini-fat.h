@@ -77,7 +77,8 @@ uint32 mini_fat_find_block(const char key[3], uint8* buffer);
 #endif
 
 #ifdef PC
-/*! Erzeugt eine Datei, die an den ersten 3 Byte die ID- enthaelt. dann folgen 512 - sizeof(id) nullen
+/*! 
+ * Erzeugt eine Datei, die an den ersten 3 Byte die ID- enthaelt. dann folgen 512 - sizeof(id) nullen
  * Danach kommen so viele size kByte Nullen
  * @param filename Der Dateiname der zu erzeugenden Datei
  * @param id_string Die ID des Files, wie sie zu beginn steht
@@ -85,6 +86,28 @@ uint32 mini_fat_find_block(const char key[3], uint8* buffer);
  */
 void create_mini_fat_file(const char* filename, const char* id_string, uint32 size);
 
+/*! 
+ * @brief				Erzeugt eine Mini-Fat-Datei in einer emulierten MMC
+ * @param addr			Die Adresse auf der emulierten Karte, an der die Datei beginnen soll
+ * @param id_string 	Die ID der Datei, wie sie zu Beginn in der Datei steht
+ * @param size 			KByte Nutzdaten, die die Datei umfasst
+ * Erzeugt eine Datei, die an den ersten Bytes die ID enthaelt. Dann folgen 512 - sizeof(id) Nullen
+ * Danach kommen size * 1024 Nullen
+ */
+void create_emu_mini_fat_file(uint32_t addr, const char* id_string, uint32_t size);
+
+/*! 
+ * @brief				Loescht eine Mini-Fat-Datei in einer emulierten MMC
+ * @param id_string 	Die ID der Datei, wie sie zu Beginn in der Datei steht
+ */
+void delete_emu_mini_fat_file(const char* id_string);
+
+/*! 
+ * Konvertiert eine (binaere) mini-fat-Datei ("AVR-Endian") mit Speed-Log-Daten in eine Textdatei.
+ * @author 			Timo Sandmann (mail@timosandmann.de)
+ * @date 			10.02.2007  
+ * @param filename 	Der Dateiname der mini-fat-Datei
+ */
 void convert_slog_file(const char* input_file);
 #endif
 

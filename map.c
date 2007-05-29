@@ -1,5 +1,5 @@
 /*
- * c't-Bot - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -131,7 +131,7 @@ int8 map_init(void){
 		#endif
 	#else
 		map_start_block = mmc_fopen("MAP")>>9;	// TODO: Mit Bytes arbeiten und Shiften sparen
-		printf("Startaddress of map: 0x%lx \n\r", map_start_block<<9);
+//		printf("Startaddress of map: 0x%lx \n\r", map_start_block<<9);
 		if (map_start_block == 0) return 1;
 		map_buffer = mmc_get_data(map_start_block<<9);
 		if (map_buffer == NULL) return 1;

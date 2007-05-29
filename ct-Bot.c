@@ -221,7 +221,7 @@ void init(void){
 	 * Das Programm wird nach Anzeige des Hilfetextes per exit() beendet.
 	 */
 	void usage(void){
-		puts("USAGE: ct-Bot [-t host] [-T] [-h] [-s] [-M from] [-c FILE ID SIZE]");
+		puts("USAGE: ct-Bot [-t host] [-T] [-h] [-s] [-M from] [-c FILE ID SIZE] [-e ADDR ID SIZE] [-d ID]");
 		puts("\t-t\tHostname oder IP Adresse zu der Verbunden werden soll");
 		puts("\t-T\tTestClient");
 		puts("\t-s\tServermodus");
@@ -230,6 +230,12 @@ void init(void){
 		puts("\t   FILE\tDateiname");
 		puts("\t   ID  \tDie ID aus ASCII-Zeichen");
 		puts("\t   SIZE\tDie Nutzgroesse der Datei in KByte");
+		puts("\t-e \tErzeugt eine Mini-Fat-Datei fuer den Sim (emulierte MMC).");		
+		puts("\t   ADDR\tStartadresse der Mini-Fat-Datei");
+		puts("\t   ID  \tDie ID aus ASCII-Zeichen");
+		puts("\t   SIZE\tDie Nutzgroesse der Datei in KByte");
+		puts("\t-d \tLoescht eine Mini-Fat-Datei fuer den Sim (emulierte MMC).");		
+		puts("\t   ID  \tDie ID aus ASCII-Zeichen");		
 		puts("\t-l \tKonvertiert eine SpeedLog-Datei in eine txt-Datei");
 		puts("\t-h\tZeigt diese Hilfe an");
 		exit(1);
@@ -260,12 +266,14 @@ void init(void){
 
 		int convert =0; /*!< Wird auf 1 gesetzt, wenn die Karte konvertiert werden soll */
 		int create  =0;  /*!< Wird auf 1 gesetzt, wenn eine neue Datei fuer Bot-mini-fat erzeugt werden soll */
+		int emu_create = 0;  /*!< Wird auf 1 gesetzt, wenn eine neue Datei fuer Sim-Mini-Fat erzeugt werden soll */
+		int emu_delete = 0;  /*!< Wird auf 1 gesetzt, wenn eine neue Datei fuer Sim-Mini-Fat geloescht werden soll */
 		int slog	=0;
 		char *from = NULL;	/*!< Speichert den per -M uebergebenen Quellnamen zwischen */
 
 
 		/* Die Kommandozeilenargumente komplett verarbeiten */
-		while ((ch = getopt(argc, argv, "hsTt:M:c:l:")) != -1) {
+		while ((ch = getopt(argc, argv, "hsTt:M:c:l:e:d:")) != -1) {
 			switch (ch) {
 			case 's':
 				/* Servermodus [-s] wird verlangt */
@@ -297,7 +305,7 @@ void init(void){
 				}
 				break;
 			case 'c':
-				/* Datei fuer den Bot (mini-fat soll erzeugt werden. */
+				/* Datei fuer den Bot (mini-fat) soll erzeugt werden. */
 				{
 					int len = strlen(optarg);
 					from = malloc(len + 1);
@@ -307,6 +315,28 @@ void init(void){
 					create=1;					
 				}
 				break;	
+			case 'e':
+				/* Datei fuer den Sim (mini-fat) soll erzeugt werden. */
+				{
+					int len = strlen(optarg);
+					from = malloc(len + 1);
+					if (NULL == from)
+						exit(1);
+					strcpy(from, optarg);
+					emu_create=1;
+				}
+				break;	
+			case 'd':
+				/* Datei fuer den Sim (mini-fat) soll geloescht werden. */
+				{
+					int len = strlen(optarg);
+					from = malloc(len + 1);
+					if (NULL == from)
+						exit(1);
+					strcpy(from, optarg);
+					emu_delete=1;
+				}
+				break;					
 			case 'l':
 				/* Speedlog-Datei soll in txt konvertiert werden */
 				{
@@ -362,10 +392,41 @@ void init(void){
 		
 			int size = atoi(s);
 
-   		 	printf("Erstelle eine Mini-Fat-Datei (%s) mit %d kByte fuer den Bot. ID=%s \n",from,size,id);
+   		 	printf("Mini-Fat-Datei (%s) mit %d kByte und ID=%s fuer den Bot soll erstellt werden.\n", from, size, id);
    		 	create_mini_fat_file(from,id,size);
-//	   		read_map(from);
-//	   		map_to_pgm("map.pgm");
+	   		exit(0);
+		}
+    	if (emu_create !=0) {
+    			printf("optind= %d argc=%d\n", optind, argc);
+			if (argc != 2) {
+				usage();
+				exit(1);
+		    }
+
+    		char * id;
+    		id = malloc(strlen(argv[0]));	
+    		strcpy(id, argv[0]);
+
+    		char * s;
+    		s = malloc(strlen(argv[1]));	
+    		strcpy(s, argv[1]);
+			int size = atoi(s);
+			
+    		uint32_t addr = atoi(from); 
+
+   		 	printf("Mini-Fat-Datei mit ID=%s an Adresse 0x%x mit %d kByte auf der emulierten MMC soll erstellt werden.\n", id, addr, size);
+   		 	create_emu_mini_fat_file(addr, id, size);
+	   		exit(0);
+		}		
+    	if (emu_delete !=0) {
+    			printf("optind= %d argc=%d\n", optind, argc);
+			if (argc != 0) {
+				usage();
+				exit(1);
+		    }
+
+   		 	printf("Mini-Fat-Datei mit ID %s auf der emulierten MMC soll geloescht werden.\n", from);
+   		 	delete_emu_mini_fat_file(from);
 	   		exit(0);
 		}
 

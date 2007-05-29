@@ -544,7 +544,7 @@ uint32 mmc_get_filesize(uint32 file_start){
  */
 uint8 mmc_clear_file(uint32 file_start){
 	#ifdef PC
-		printf("Start of file: %lu \n\r", file_start);
+		printf("Start of file: 0x%x \n", file_start);
 	#else
 //		display_cursor(3,1);
 //		display_printf("Start:0x%04x", file_start>>9);
@@ -559,8 +559,13 @@ uint8 mmc_clear_file(uint32 file_start){
 	uint32 addr;
 	for (addr=file_start; addr<file_start+length; addr+=512){
 		if (swap_out(mmc_get_mmcblock_of_page(addr), p_addr, 0) != 0) return 2;
-		display_cursor(3,1);
-		display_printf("0x%04x", addr>>9);
+		#ifdef PC
+//			printf(".");
+//			fflush(stdout);
+		#else
+//			display_cursor(3,1);
+//			display_printf("0x%04x", addr>>9);
+		#endif	// PC
 		/* Falls ein Block der Datei im Cache ist, auch diesen leeren */
 		cache_block = mmc_get_cacheblock_of_page(addr);
 		if (cache_block >= 0){
@@ -569,10 +574,10 @@ uint8 mmc_clear_file(uint32 file_start){
 		}
 	}
 	#ifdef PC
-		printf("End of file: %lu \n\r", addr);
+		printf("End of file: 0x%x \n", addr);
 	#else
-		display_cursor(3,1);
-		display_printf("End:0x%04x", addr>>9);
+//		display_cursor(3,1);
+//		display_printf("End:0x%04x", addr>>9);
 	#endif	
 	return 0;
 }
