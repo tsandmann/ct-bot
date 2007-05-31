@@ -56,10 +56,10 @@
 #include "mmc-vm.h"
 #include <stdlib.h>
 
-#define MMC_Disable()	ENA_off(ENA_MMC);
-#define MMC_Enable()	ENA_on(ENA_MMC);
+#define MMC_Disable()	ENA_off(ENA_MMC);	/*!< MMC deaktivieren */
+#define MMC_Enable()	ENA_on(ENA_MMC);	/*!< MMC aktivieren */
 
-#define MMC_prepare()	{ MMC_DDR &=~(1<<SPI_DI);	 MMC_DDR |= (1<<SPI_DO); } 
+#define MMC_prepare()	{ MMC_DDR &=~(1<<SPI_DI);	 MMC_DDR |= (1<<SPI_DO); }	/*!< MMC-Init */ 
 
 volatile uint8 mmc_init_state=1;	/*!< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
 
@@ -185,7 +185,7 @@ uint8 mmc_init(void){
 /*!
  * Liest einen Block von der Karte
  * @param cmd 		Zeiger auf das Kommando, das erstmal an die Karte geht
- * @param Buffer 	Ein Puffer mit mindestens count Bytes
+ * @param buffer 	Ein Puffer mit mindestens count Bytes
  * @param count 	Anzahl der zu lesenden Bytes
  */
 uint8 mmc_read_block(uint8 *cmd, uint8 *buffer, uint16 count){

@@ -17,11 +17,13 @@
  * 
  */
 
-/*! @file 	map.c  
+/*! 
+ * @file 	map.c  
  * @brief 	Karte 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	19.09.06
-*/
+ */
+ 
 #include <stdio.h>
 #include "ct-Bot.h"
 #include "bot-local.h"
@@ -61,7 +63,7 @@
  * Wird ein Feld als Loch erkannt, setzen wir den Wert fest auf -128 (Achtung, derzeit noch nicht fertig impelementiert)
  */
 
-#define MAP_SECTIONS ((( MAP_SIZE*MAP_RESOLUTION)/MAP_SECTION_POINTS))
+#define MAP_SECTIONS ((( MAP_SIZE*MAP_RESOLUTION)/MAP_SECTION_POINTS))	/*!< Anzahl der Sections in der Map */
 
 #define MAP_STEP_FREE		2	/*!< Um diesen Wert wird ein Feld inkrementiert, wenn es als frei erkannt wird */
 #define MAP_STEP_OCCUPIED	10	/*!< Um diesen Wert wird ein Feld dekrementiert, wenn es als belegt erkannt wird */
@@ -79,31 +81,32 @@
 	uint16 map_max_y=MAP_SIZE*MAP_RESOLUTION/2; /*!< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate  */
 #endif
 
+/*! Datentyp fuer die elementarfelder einer Gruppe */
 typedef struct {
 	int8 section[MAP_SECTION_POINTS][MAP_SECTION_POINTS]; /*!< Einzelne Punkte */
-} map_section_t;   /*!< Datentyp fuer die elementarfelder einer Gruppe */
+} map_section_t;
 
 
 #ifdef MMC_VM_AVAILABLE
-	map_section_t * map[2][1];	/*! Array mit den Zeigern auf die Elemente */
-	uint32 map_start_block; 	/*! Block, bei dem die Karte auf der MMC-Karte beginnt. Derzeit nur bis 32MByte adressierbar*/
-	uint32 map_current_block; 	/*! Block, der aktuell im Puffer steht. Derzeit nur bis 32MByte adressierbar*/
-	uint8* map_buffer;			/*! dynamischer Puffer */
+	map_section_t * map[2][1];	/*!< Array mit den Zeigern auf die Elemente */
+	uint32 map_start_block; 	/*!< Block, bei dem die Karte auf der MMC-Karte beginnt. Derzeit nur bis 32MByte adressierbar */
+	uint32 map_current_block; 	/*!< Block, der aktuell im Puffer steht. Derzeit nur bis 32MByte adressierbar */
+	uint8* map_buffer;			/*!< dynamischer Puffer */
 #else
 	#ifdef MCU
 		#ifdef MMC_AVAILABLE
 			// Wenn wir die MMC-Karte haben, passen immer 2 Sektionen in den SRAM
-			map_section_t * map[2][1];	/*! Array mit den Zeigern auf die Elemente */
-			uint32 map_start_block; /*! Block, bei dem die Karte auf der MMC-Karte beginnt. Derzeit nur bis 32MByte adressierbar*/
-			uint32 map_current_block; /*! Block, der aktuell im Puffer steht. Derzeit nur bis 32MByte adressierbar*/
-			uint8 map_buffer[sizeof(map_section_t)*2]; /*! statischer Puffer */
-			uint8 map_current_block_updated; /*! markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde */
+			map_section_t * map[2][1];	/*!< Array mit den Zeigern auf die Elemente */
+			uint32 map_start_block; /*!< Block, bei dem die Karte auf der MMC-Karte beginnt. Derzeit nur bis 32MByte adressierbar*/
+			uint32 map_current_block; /*!< Block, der aktuell im Puffer steht. Derzeit nur bis 32MByte adressierbar*/
+			uint8 map_buffer[sizeof(map_section_t)*2]; /*!< statischer Puffer */
+			uint8 map_current_block_updated; /*!< markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde */
 		#else
 			// Ohne MMC-Karte nehmen wir nur 1 Sektionen in den SRAM und das wars dann
-			map_section_t * map[1][1];	/*! Array mit den Zeigern auf die Elemente */
+			map_section_t * map[1][1];	/*!< Array mit den Zeigern auf die Elemente */
 		#endif
 	#else
-		map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*! Array mit den Zeigern auf die Elemente */
+		map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*!< Array mit den Zeigern auf die Elemente */
 	#endif
 #endif	// MMC_VM_AVAILABLE
 
@@ -165,8 +168,6 @@ map_section_t * map_get_section(uint16 x, uint16 y, uint8 create){
 		#endif
 		return NULL;
 	}
-
-// cut	
 	
 	#ifndef MMC_VM_AVAILABLE	
 		#ifdef MMC_AVAILABLE // Mit MMC-Karte geht hier einiges anders
@@ -303,9 +304,10 @@ int8 map_get_point (float x, float y){
 
 /*!
  * liefert den Durschnittswert um einen Punkt der Karte herum 
- * @param x x-Ordinate der Karte 
- * @param y y-Ordinate der Karte
- * @return Wert des Durchschnitts um das Feld (>0 heisst frei, <0 heisst belegt
+ * @param x 		x-Ordinate der Karte 
+ * @param y 		y-Ordinate der Karte
+ * @param radius	gewuenschter Radius
+ * @return 			Wert des Durchschnitts um das Feld (>0 heisst frei, <0 heisst belegt
  */
 
 int8 map_get_average_fields (uint16 x, uint16 y, uint16 radius){
@@ -429,10 +431,10 @@ float map_to_world(uint16 map_koord){
 
 /*! 
  * Aktualisiert die Karte mit den Daten eines Sensors
- * @param x X-Achse der Position des Sensors
- * @param y Y-Achse der Position des Sensors
- * @param head Blickrichtung im Bogenmaß
- * @param dist Sensorwert 
+ * @param x		X-Achse der Position des Sensors
+ * @param y 	Y-Achse der Position des Sensors
+ * @param h 	Blickrichtung im Bogenmaß
+ * @param dist 	Sensorwert 
  */ 
 void update_map_sensor(float x, float y, float h, int16 dist){
 	//Ort des Sensors in Kartenkoordinaten
@@ -506,7 +508,7 @@ void update_map_location(float x, float y){
 	int16 y_map = world_to_map(y);
 	
 	// Aktualisiere zuerst die vom Bot selbst belegte Flaeche
-	#define dim BOT_DIAMETER/2*MAP_RESOLUTION/100
+	const int16 dim = BOT_DIAMETER/2*MAP_RESOLUTION/100;	/*!< Botradius in Map-Aufloesung */
 	int16 dX,dY;
 	for(dX = -dim; dX <= dim; dX++)
       for(dY = -dim; dY <= dim; dY++) {

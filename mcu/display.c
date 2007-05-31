@@ -208,7 +208,7 @@ void display_init(void){
  * @param format 	Format, wie beim printf
  * @param ... 		Variable Argumentenliste, wie beim printf
  * Ganz genauso wie das "alte" display_printf(...) zu benutzen, das Makro 
- * #define display_printf(format, args...) erledigt alles automatisch, damit der String
+ * define display_printf(format, args...) erledigt alles automatisch, damit der String
  * im Flash verbleibt und erst zur Laufzeit temporaer (jeweils nur eine Zeile) geladen wird.
  */
 void display_flash_printf(const char* format, ...){
@@ -245,7 +245,7 @@ void display_flash_printf(const char* format, ...){
  * @param ram	Zeiger auf den Zielpuffer im RAM
  * @param n		Anzahl der zu kopierenden WORTE
  * Es werden maximal n Worte kopiert, ist der String schon zuvor nullterminiert, 
- * wird bei Auftreten von \0 abgebrochen. 
+ * wird bei Auftreten von 0 abgebrochen. 
  */
 void get_str_from_flash(const char* flash, char* ram, uint8 n) {
 	uint8 i;

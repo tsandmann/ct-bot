@@ -32,8 +32,8 @@
 
 /*! Datenstruktur zur Ablage eines IR-Sensor-Wertepaares (Spannung | Distanz) */
 typedef struct {
-	uint8_t voltage;
-	uint8_t dist;
+	uint8_t voltage;	/*!< Spannung des jeweiligen Eintrags (halbiert) */
+	uint8_t dist;		/*!< Entfernung des jeweiligen Eintrags (gefuenftelt) */
 } distSens_t;
 
 /* Analoge Sensoren: Der Wertebereich aller analogen Sensoren umfasst 10 Bit. Also 0 bis 1023 */

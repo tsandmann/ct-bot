@@ -167,29 +167,41 @@ typedef enum {
 
 #ifdef LOG_AVAILABLE
 
-/*!
- * Schreibt Angaben ueber Datei, Zeilennummer und den Log-Typ in den Puffer.
- * Achtung, Mutex wird gelockt und muss explizit durch log_end() wieder
- * freigegeben werden!
- * @param filename Dateiname
- * @param line Zeilennummer
- * @param log_type Log-Typ
- */
 #ifdef MCU
-	#define log_begin log_flash_begin
+	#define log_begin log_flash_begin	/*!< Makro verweist auf flash-Funktion */
+	/*!
+	 * Schreibt Angaben ueber Datei, Zeilennummer und den Log-Typ in den Puffer.
+	 * Achtung, Mutex wird gelockt und muss explizit durch log_end() wieder
+	 * freigegeben werden!
+	 * @param filename Dateiname
+	 * @param line Zeilennummer
+	 * @param log_type Log-Typ
+	 */
 	extern void log_flash_begin(const char *filename, unsigned int line, LOG_TYPE log_type);
 #else
+	/*!
+	 * Schreibt Angaben ueber Datei, Zeilennummer und den Log-Typ in den Puffer.
+	 * Achtung, Mutex wird gelockt und muss explizit durch log_end() wieder
+	 * freigegeben werden!
+	 * @param filename Dateiname
+	 * @param line Zeilennummer
+	 * @param log_type Log-Typ
+	 */
 	extern void log_begin(const char *filename, unsigned int line, LOG_TYPE log_type);
 #endif
 
-/*!
- * Schreibt die eigentliche Ausgabeinformation in den Puffer.
- * @param format Format
- */
 #ifdef MCU
-	#define log_printf log_flash_printf
+	#define log_printf log_flash_printf	/*!< Makro verweist auf flash-Funktion */
+	/*!
+	 * Schreibt die eigentliche Ausgabeinformation in den Puffer.
+	 * @param format Format
+	 */
 	extern void log_flash_printf(const char *format, ...);
 #else
+	/*!
+	 * Schreibt die eigentliche Ausgabeinformation in den Puffer.
+	 * @param format Format
+	 */
 	extern void log_printf(const char *format, ...);	
 #endif
 
@@ -199,6 +211,9 @@ typedef enum {
 extern void log_end(void);
 
 #ifdef LOG_MMC_AVAILABLE
+	/*!
+	 * @brief	Initialisierung fuer MMC-Logging
+	 */
 	uint8 log_mmc_init(void);
 #endif
 

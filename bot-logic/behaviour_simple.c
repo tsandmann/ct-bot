@@ -67,7 +67,8 @@ void bot_simple_behaviour(Behaviour_t *data){
 
 /*!
  * Rufe das Simple-Verhalten auf 
- * @param caller Der obligatorische Verhaltensdatensatz des Aufrufers
+ * @param caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * @param light		sinnloser(?) Dummy
  */
 void bot_simple(Behaviour_t * caller, int16 light){
 	switch_to_behaviour(caller,bot_simple_behaviour,OVERRIDE);	

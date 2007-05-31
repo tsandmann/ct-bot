@@ -3,6 +3,11 @@
 
 #ifdef BEHAVIOUR_AVAILABLE
 
+/*! 
+ * @file 	available_behaviours.h
+ * @brief 	globale Schalter fuer die einzelnen Verhalten
+ */
+
 //#define BEHAVIOUR_SIMPLE_AVAILABLE	/*!< sind die Beispielverhalten vorhanden ?*/
 //#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE	/*!< Demoverhalten im quadrat fahren vorhanden ?*/
 

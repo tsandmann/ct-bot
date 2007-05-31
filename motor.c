@@ -88,7 +88,8 @@ int16 speed_r = 0;	/*!< Sollgeschwindigkeit rechter Motor */
 #endif	// SPEED_CONTROL_AVAILABLE
 #ifdef MCU
 	/* EEPROM-Variable immer deklarieren, damit die Adresse sich nicht veraendert je nach #define */
-	uint8_t __attribute__ ((section (".eeprom"),aligned (1))) pwmSlow[4] = {255, 255, 255, 255};	/*!< EEPROM-Kopie von pwm_values */
+	/*! EEPROM-Kopie von pwm_values */
+	uint8_t __attribute__ ((section (".eeprom"),aligned (1))) pwmSlow[4] = {255, 255, 255, 255};
 #endif
 	
 direction_t direction;		/*!< Drehrichtung der Motoren */

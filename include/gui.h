@@ -60,7 +60,7 @@ void gui_init(void);
 #endif
 
 #ifdef RESET_INFO_DISPLAY_AVAILABLE
-	extern uint8 reset_flag;	 /*<! Nimmt den Status von MCU(C)SR bevor dieses Register auf 0x00 gesetzt wird */
+	extern uint8 reset_flag;	 /*!< Nimmt den Status von MCU(C)SR bevor dieses Register auf 0x00 gesetzt wird */
 	/*! 
 	 * @brief	Zeigt Informationen ueber den Reset an
 	 */	

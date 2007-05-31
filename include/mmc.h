@@ -40,12 +40,18 @@
  */
 inline uint8 mmc_get_init_state(void);
 
+/*!
+ * Schaltet die Karte aktiv und checkt dabei die Initialisierung
+ * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich
+ * @author 			Timo Sandmann (mail@timosandmann.de)
+ * @date 			09.12.2006
+ */
 uint8 mmc_enable(void);
 
 /*!
  * Liest einen Block von der Karte
  * @param addr 		Nummer des 512-Byte Blocks
- * @param Buffer 	Puffer von mindestens 512 Byte
+ * @param buffer 	Puffer von mindestens 512 Byte
  * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 17
  * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			17.11.2006
@@ -56,7 +62,7 @@ uint8 mmc_read_sector(uint32 addr, uint8 *buffer);
 /*! 
  * Schreibt einen 512-Byte Sektor auf die Karte
  * @param addr 		Nummer des 512-Byte Blocks
- * @param Buffer 	Zeiger auf den Puffer
+ * @param buffer 	Zeiger auf den Puffer
  * @param async		0: synchroner, 1: asynchroner Aufruf, siehe MMC_ASYNC_WRITE in mmc-low.h
  * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 24, 2 wenn Timeout bei busy
  * @author 			Timo Sandmann (mail@timosandmann.de)
@@ -74,13 +80,13 @@ uint8 mmc_init (void);
 #ifdef MMC_INFO_AVAILABLE
 	/*!
 	 * Liest das CSD-Register (16 Byte) von der Karte
-	 * @param Buffer Puffer von mindestens 16 Byte
+	 * @param buffer Puffer von mindestens 16 Byte
 	 */
 	void mmc_read_csd (uint8 *buffer);
 	
 	/*!
 	 * Liest das CID-Register (16 Byte) von der Karte
-	 * @param Buffer Puffer von mindestens 16 Byte
+	 * @param buffer Puffer von mindestens 16 Byte
 	 */
 	void mmc_read_cid (uint8 *buffer);
 	

@@ -53,7 +53,7 @@ void display_clear(void);
  * @param row		Zeile
  * @param column	Spalte
  */
-void display_cursor (uint8 row, uint8 column) ;
+void display_cursor (uint8 row, uint8 column);
 
 #ifdef PC
 	/*!
@@ -68,7 +68,7 @@ void display_cursor (uint8 row, uint8 column) ;
 	 * @param format 	Format, wie beim printf
 	 * @param ... 		Variable Argumentenliste, wie beim printf
 	 * Ganz genauso wie das "alte" display_printf(...) zu benutzen, das Makro 
-	 * #define display_printf(format, args...) erledigt alles automatisch, damit der String
+	 * display_printf(format, args...) erledigt alles automatisch, damit der String
 	 * im Flash verbleibt und erst zur Laufzeit temporaer (jeweils nur eine Zeile) geladen wird.
 	 */
 	void display_flash_printf(const char* format, ...);
@@ -89,7 +89,7 @@ void display_cursor (uint8 row, uint8 column) ;
 	 * @param ram	Zeiger auf den Zielpuffer im RAM
 	 * @param n		Anzahl der zu kopierenden WORTE
 	 * Es werden maximal n Worte kopiert, ist der String schon zuvor nullterminiert, 
-	 * wird bei Auftreten von \0 abgebrochen. 
+	 * wird bei Auftreten von 0 abgebrochen. 
 	 */
 	void get_str_from_flash(const char* flash, char* ram, uint8 n);
 #endif	// PC

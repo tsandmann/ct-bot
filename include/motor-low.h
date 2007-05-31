@@ -21,7 +21,7 @@
  * @brief 	Low-Level Routinen fuer die Motorsteuerung des c't-Bots
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	01.12.05
-*/
+ */
 
 #ifndef motor_low_H_
 #define motor_low_H_
@@ -40,7 +40,7 @@ void motor_low_init(void);
 	 * @param left PWM links
 	 * @param right PWM rechts
 	*/
-	void bot_motor(int16 left, int16 right);
+	void bot_motor(int16_t left, int16_t right);
 #endif	// PC
 
 /*!
@@ -48,7 +48,7 @@ void motor_low_init(void);
  * low-level
  * @param dev Motor (0: links; 1: rechts)
  */
-void motor_update(uint8 dev);
+void motor_update(uint8_t dev);
 
 /*!
  * Stellt die Servos

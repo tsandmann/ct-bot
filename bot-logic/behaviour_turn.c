@@ -363,7 +363,8 @@ void bot_turn_behaviour(Behaviour_t* data){
 
 /*!
  * Dreht den Bot im mathematisch positiven Sinn.
- * @param degrees Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
+ * @param caller	Der Aufrufer
+ * @param degrees 	Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
  * Die Aufloesung betraegt rund 3 Grad
  */
 void bot_turn(Behaviour_t* caller,int16 degrees){

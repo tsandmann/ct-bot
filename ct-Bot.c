@@ -456,11 +456,11 @@ void init(void){
 init();	// alles initialisieren
 
 #ifdef WELCOME_AVAILABLE
-	display_cursor(1,1);
-	display_printf("c't-Roboter");
-	LED_set(0x00);
+	display_cursor(1,1);			/*!< Home */
+	display_printf("c't-Roboter");	/*!< Ausgabe */
+	LED_set(0x00);					/*!< LEDs setzen */
 	#ifdef LOG_AVAILABLE
-		LOG_DEBUG("Hallo Welt!");
+		LOG_DEBUG("Hallo Welt!");	/*!< Doxygen moechte hier jede Zeilen kommentiert haben :/ */
 	#endif	
 #endif
 

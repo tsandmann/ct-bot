@@ -39,7 +39,6 @@
 		#define bool byte;				/*!< True/False-Aussage */
 	#endif
 
-	//#define DOXYGEN		/*!< Nur zum Generieren von Doku!!!! */
 	#ifdef DOXYGEN		/*!< Nur zum Generieren von Doku!!!! */
 		#define PC		/*!< Zielplattform PC */
 		#define MCU		/*!< Zielplattform MCU */

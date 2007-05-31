@@ -21,11 +21,12 @@
  * 
  */
 
-/*! @file 	map.h  
+/*! 
+ * @file 	map.h  
  * @brief 	Karte 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	19.09.06
-*/
+ */
 #include <stdio.h>
 #include "ct-Bot.h"
 
@@ -37,18 +38,18 @@
 
 #ifdef MCU
 	#ifdef MMC_AVAILABLE
-		#define MAP_SIZE			12	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
-		#define MAP_RESOLUTION 	128	/*!< Aufloesung der Karte in Punkte pro Meter */
-		#define MAP_SECTION_POINTS 16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
+		#define MAP_SIZE			12	/*!< Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
+		#define MAP_RESOLUTION 		128	/*!< Aufloesung der Karte in Punkte pro Meter */
+		#define MAP_SECTION_POINTS 	16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 	#else
 		#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
 		#define MAP_SECTION_POINTS 32	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 		#define MAP_RESOLUTION 	(MAP_SECTION_POINTS/MAP_SIZE)	/*!< Aufloesung der Karte in Punkte pro Meter */
 	#endif
 #else
-	#define MAP_SIZE			12	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
-	#define MAP_RESOLUTION 	128	/*!< Aufloesung der Karte in Punkte pro Meter */
-	#define MAP_SECTION_POINTS 16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
+	#define MAP_SIZE			12	/*!< Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
+	#define MAP_RESOLUTION 		128	/*!< Aufloesung der Karte in Punkte pro Meter */
+	#define MAP_SECTION_POINTS 	16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 #endif
 
 // Die folgenden Variablen/konstanten NICHT direkt benutzen, sondern die zugehoerigen Makros: get_map_min_x() und Co!
@@ -156,10 +157,10 @@ void read_map(char * filename);
 void map_to_pgm(char * filename);
 
 // Makros, um die belegte kartenbereiche (in weltkoordinaten) zu ermitteln
-#define map_get_min_x() map_to_world(map_min_x)
-#define map_get_min_y() map_to_world(map_min_y)
-#define map_get_max_x() map_to_world(map_max_x)
-#define map_get_max_y() map_to_world(map_max_y)
+#define map_get_min_x() map_to_world(map_min_x)		/*!< Minimum in X-Richtung */
+#define map_get_min_y() map_to_world(map_min_y)		/*!< Minimum in Y-Richtung */
+#define map_get_max_x() map_to_world(map_max_x)		/*!< Maximum in X-Richtung */
+#define map_get_max_y() map_to_world(map_max_y)		/*!< Maximum in Y-Richtung */
 
 
 #endif

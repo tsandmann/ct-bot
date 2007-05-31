@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	mouse_pc.c 
+/*! 
+ * @file 	mouse_pc.c 
  * @brief 	Routinen fuer die Ansteuerung eines opt. Maussensors
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 #include "global.h"
 
 #include "ct-Bot.h"
@@ -29,7 +30,7 @@
 
 #ifdef PC
 
-uint8 mousePicture[18*18];
+uint8 mousePicture[18*18];	/*!< Mausbild fuer PC */
 
 /*! 
  * Initialisiere Maussensor
@@ -37,10 +38,10 @@ uint8 mousePicture[18*18];
 void maus_sens_init(void){
 }
 
-uint16 pixIndex=0;
+uint16 pixIndex=0;			/*!< aktueller Pixel */
 
 /*!
- * Bereitet das auslesen eines ganzen Bildes vor
+ * Bereitet das Auslesen eines ganzen Bildes vor
  */
 void maus_image_prepare(void){
 	pixIndex=0;

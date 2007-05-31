@@ -17,12 +17,12 @@
  *
  */
 
-/*! @file 	remote_calls.h
+/*! 
+ * @file 	remote_calls.h
  * @brief 	Liste mit Botenfkts, die man aus der Ferne aufrufen kann
- *
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	19.12.06
-*/
+ */
 
 #ifndef REMOTE_CALLS_H_
 #define REMOTE_CALLS_H_
@@ -50,10 +50,10 @@ typedef struct {
 } call_t;
 
 /*! Union fuer Remotecall-Daten */
-typedef union{
-	uint32 u32;
-	float fl32;
-	uint16 u16;
+typedef union {
+	uint32 u32;		/*!< 32 Bit Integer */
+	float fl32;		/*!< Fliesskommazahl */
+	uint16 u16;		/*!< 16 Bit Integer */
 } remote_call_data_t;	// uint32 und float werden beide gleich ausgelesen, daher stecken wir sie in einen Speicherbereich
 
 /*! Dieses Makro bereitet eine Botenfunktion als Remote-Call-Funktion vor.

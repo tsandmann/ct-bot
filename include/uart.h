@@ -32,8 +32,8 @@
 #ifdef MCU
 	#include <avr/io.h>
 	#include "fifo.h"
-	
-	#define BAUDRATE	57600
+
+	#define BAUDRATE	57600	/*!< Baudrate fuer UART-Kommunikation */
 	
 	#ifdef __AVR_ATmega644__
 		/* Auf dem ATMega644 benutzen wir UART 0 */
@@ -67,7 +67,7 @@
 	 * @param data		Datenpuffer
 	 * @param length	Groesse des Datenpuffers in Bytes
 	 */
-	void uart_write(uint8* data, uint8 length);
+	void uart_write(uint8_t* data, uint8_t length);
 	
 	/*!
 	 * @brief			Liest Zeichen von der UART
@@ -91,12 +91,13 @@
 		while (UCSRB & (1 << UDRIE));
 	}
 	
+	extern fifo_t infifo;	/*!< FIFO fuer Empfangspuffer */
+	
 	/*! 
  	 * @brief	Prueft, ob Daten verfuegbar 
  	 * @return	Anzahl der verfuegbaren Bytes
  	 */
 	//uint8 uart_data_available(void);
-	extern fifo_t infifo;
 	#define uart_data_available()	infifo.count
 
 #endif	// MCU

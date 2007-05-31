@@ -60,8 +60,8 @@ extern volatile int16 motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
 
 /*! In diesem Typ steht die Drehrichtung, auch wenn die Speed-Variablen bereits wieder auf Null sind */
 typedef struct {
-	uint8 left:1;
-	uint8 right:1;
+	uint8 left:1;	/*!< linksrum */
+	uint8 right:1;	/*!< rechtsrum */
 #ifndef DOXYGEN
 	} __attribute__ ((packed)) direction_t;
 #else
@@ -84,15 +84,15 @@ void motor_init(void);
  * Geschwindigkeit liegt zwischen -450 und +450. 0 bedeutet Stillstand, 450 volle Kraft voraus, -450 volle Kraft zurueck.
  * Sinnvoll ist die Verwendung der Konstanten: BOT_SPEED_XXX, also z.B. motor_set(BOT_SPEED_SLOW,-BOT_SPEED_SLOW) fuer eine langsame Drehung
  */
-void motor_set(int16 left, int16 right);
+void motor_set(int16_t left, int16_t right);
 
 /*!
  * @brief		Stellt die Servos
  * @param servo	Nummer des Servos
- * @param servo	Zielwert
+ * @param pos	Zielwert
  * Sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus 
  */
-void servo_set(uint8 servo, uint8 pos);
+void servo_set(uint8_t servo, uint8_t pos);
 
 #ifdef SPEED_CONTROL_AVAILABLE
 	/*!
@@ -108,7 +108,7 @@ void servo_set(uint8 servo, uint8 pos);
 	 * Feintuning von PID_Kp bis PID_SPEED_THRESHOLD (bot-local.h) verbessert die Genauigkeit und Schnelligkeit der Regelung.
 	 * Mit PWMMIN, PWMSTART_L und PWMSTART_R laesst sich der Minimal- bzw. Startwert fuer die Motoren anpassen.
 	 */
-	void speed_control(uint8 dev, int16* actVar, uint16* encTime, uint8 i_time, uint8 enc);
+	void speed_control(uint8_t dev, int16_t* actVar, uint16_t* encTime, uint8_t i_time, uint8_t enc);
 	
 	#ifdef DISPLAY_REGELUNG_AVAILABLE
 		/*!

@@ -34,21 +34,23 @@
 	#include <avr/interrupt.h>
 	#include "global.h"
 	
-	typedef struct{
+	/*! FIFO-Datentyp */
+	typedef struct {
 		uint8 volatile count;       /*!< # Zeichen im Puffer */
 		uint8 size;                 /*!< Puffer-Grosse */
 		uint8 *pread;               /*!< Lesezeiger */
 		uint8 *pwrite;              /*!< Schreibzeiger */
-		uint8 read2end, write2end;  /*!< # Zeichen bis zum Ueberlauf Lese-/Schreibzeiger */
-	} fifo_t;						/*!< FIFO-Datentyp */
+		uint8 read2end;				/*!< # Zeichen bis zum Ueberlauf Lesezeiger */
+		uint8 write2end; 			/*!< # Zeichen bis zum Ueberlauf Schreibzeiger */
+	} fifo_t;
 	
 	/*!
 	 * @brief			Initialisiert die FIFO, setzt Lese- und Schreibzeiger, etc. 
 	 * @param f			Zeiger auf FIFO-Datenstruktur
-	 * @param buffer	Zeiger auf den Puffer der Groesse size fuer die FIFO
+	 * @param buf		Zeiger auf den Puffer der Groesse size fuer die FIFO
 	 * @param size		Anzahl der Bytes, die die FIFO speichern soll	.
 	 */
-	extern void fifo_init(fifo_t*, uint8* buf, const uint8 size);
+	extern void fifo_init(fifo_t *f, uint8_t* buf, const uint8_t size);
 	
 //	/*!
 //	 * Schreibt das Byte data in die FIFO. Liefert 1 bei Erfolg und 0, falls die FIFO voll ist.
@@ -61,7 +63,7 @@
 	 * @param data		Zeiger auf Quelldaten
 	 * @param length	Anzahl der zu kopierenden Bytes
 	 */	
-	extern void fifo_put_data(fifo_t *f, uint8* data, uint8 length);
+	extern void fifo_put_data(fifo_t *f, uint8_t* data, uint8_t length);
 	
 //	/*!
 //	 * Liefert das naechste Byte aus der FIFO, bei leerer FIFO wird gewartet, bis das naechste Zeichen eintrifft.
@@ -80,7 +82,7 @@
 	 * @param length	Anzahl der zu kopierenden Bytes
 	 * @return			Anzahl der tatsaechlich gelieferten Bytes
 	 */	
-	extern uint8 fifo_get_data(fifo_t *f, uint8* data, uint8 length);
+	extern uint8 fifo_get_data(fifo_t *f, uint8_t* data, uint8_t length);
 	
 	/*!
 	 * @brief		Schreibt ein Byte in die FIFO.
@@ -88,7 +90,7 @@
 	 * @param data	Das zu schreibende Byte
 	 * @return		1 bei Erfolg und 0, falls die FIFO voll ist.
 	 */
-	static inline uint8 _inline_fifo_put(fifo_t *f, const uint8 data){
+	static inline uint8 _inline_fifo_put(fifo_t *f, const uint8_t data){
 		if (f->count >= f->size) return 0;
 			
 		uint8* pwrite = f->pwrite;

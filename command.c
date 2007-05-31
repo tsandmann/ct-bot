@@ -72,7 +72,7 @@ command_t received_command;		/*!< Puffer fuer Kommandos */
 #ifdef PC
 	// Auf dword alignment bestehen, wird fuer MacOS X benoetigt
 	pthread_mutex_t     command_mutex __attribute__ ((aligned (4)))
-		= PTHREAD_MUTEX_INITIALIZER;
+		= PTHREAD_MUTEX_INITIALIZER;	/*!< Mutex fuer Commands */
 #endif
 
 
@@ -80,7 +80,7 @@ command_t received_command;		/*!< Puffer fuer Kommandos */
 
 #ifndef DEBUG_COMMAND
 	#undef LOG_DEBUG
-	#define LOG_DEBUG(a, ...) {}
+	#define LOG_DEBUG(a, ...) {}	/*!< Log-Dummy */
 #endif
 /*!
  * Liest ein Kommando ein, ist blockierend!

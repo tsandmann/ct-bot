@@ -22,7 +22,7 @@
  * @brief 	globale Schalter fuer die einzelnen Bot-Funktionalitaeten
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 #ifndef CT_BOT_H_DEF
 #define CT_BOT_H_DEF
 
@@ -65,7 +65,6 @@
 //#define TEST_AVAILABLE_ANALOG		/*!< Sollen die LEDs die analoge Sensorwerte anzeigen */
 //#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
 //#define TEST_AVAILABLE_MOTOR		/*!< Sollen die Motoren ein wenig drehen */
-//#define DOXYGEN		/*!< Nur zum Erzeugen der Doku, wenn dieser schalter an ist, jammert der gcc!!! */
 
 #define BEHAVIOUR_AVAILABLE /*!< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 
@@ -123,7 +122,7 @@
 
 #ifdef MCU
 	#ifdef LOG_CTSIM_AVAILABLE
-		#define BOT_2_PC_AVAILABLE
+		#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
 	#endif
 	#ifdef BOT_2_PC_AVAILABLE
 		#define UART_AVAILABLE		/*!< Serial Communication */
@@ -134,7 +133,7 @@
 
 #ifdef TEST_AVAILABLE_MOTOR
 	#define TEST_AVAILABLE			/*!< brauchen wir den Testkrams */
-	#define TEST_AVAILABLE_DIGITAL /*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
+	#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
 #endif
 
 #ifdef TEST_AVAILABLE_DIGITAL
@@ -152,19 +151,19 @@
 #endif
 
 #ifdef LOG_UART_AVAILABLE
-	#define LOG_AVAILABLE
+	#define LOG_AVAILABLE	/*!< LOG aktiv? */
 #endif 
 #ifdef LOG_CTSIM_AVAILABLE
 	#define LOG_AVAILABLE	/*!< LOG aktiv? */
 #endif 
 #ifdef LOG_DISPLAY_AVAILABLE
-	#define LOG_AVAILABLE
+	#define LOG_AVAILABLE	/*!< LOG aktiv? */
 #endif 
 #ifdef LOG_STDOUT_AVAILABLE
-	#define LOG_AVAILABLE
+	#define LOG_AVAILABLE	/*!< LOG aktiv? */
 #endif 
 #ifdef LOG_MMC_AVAILABLE
-	#define LOG_AVAILABLE
+	#define LOG_AVAILABLE	/*!< LOG aktiv? */
 #endif
 
 #ifndef MMC_AVAILABLE
@@ -204,7 +203,7 @@
 	/* Es kann immer nur ueber eine Schnittstelle geloggt werden. */
 	
 	#ifdef LOG_UART_AVAILABLE
-		#define UART_AVAILABLE
+		#define UART_AVAILABLE			/*!< UART vorhanden? */
 		#undef LOG_CTSIM_AVAILABLE
 		#undef LOG_DISPLAY_AVAILABLE
 		#undef LOG_STDOUT_AVAILABLE
@@ -254,14 +253,18 @@
 #define F_CPU	16000000L    /*!< Crystal frequency in Hz */
 #define XTAL F_CPU			 /*!< Crystal frequency in Hz */
 
-#define LINE_FEED "\n\r"	/*!< Windows und Linux unterscheiden beim Linefeed. Windows erwarten \n\r, Linux nur \n */
+#ifdef WIN32
+	#define LINE_FEED "\n\r"	/*!< Linefeed fuer Windows */
+#else
+	#define LINE_FEED "\n"		/*!< Linefeed fuer nicht Windows */
+#endif
 
 #ifdef MCU
 	#ifndef MMC_LOW_H_
 		#include <avr/interrupt.h>
 	#endif
 	#ifdef SIGNAL
-		#define NEW_AVR_LIB
+		#define NEW_AVR_LIB	/*!< AVR_LIB-Version */
 	#endif
 #endif
 

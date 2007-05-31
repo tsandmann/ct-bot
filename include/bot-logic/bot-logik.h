@@ -59,7 +59,7 @@ typedef struct _Behaviour_t {
    void (*work) (struct _Behaviour_t *data); 	/*!< Zeiger auf die Funktion, die das Verhalten bearbeitet */
    
    uint8 priority;				/*!< Prioritaet */
-   struct _Behaviour_t *caller ; /* aufrufendes verhalten */
+   struct _Behaviour_t *caller ; /*!< aufrufendes verhalten */
    
    uint8 active:1;				/*!< Ist das Verhalten aktiv */
    #ifdef DISPLAY_BEHAVIOUR_AVAILABLE  

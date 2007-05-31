@@ -174,18 +174,19 @@ void delete_emu_mini_fat_file(const char* id_string) {
 
 /*! 
  * Konvertiert eine (binaere) mini-fat-Datei ("AVR-Endian") mit Speed-Log-Daten in eine Textdatei.
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			10.02.2007  
- * @param filename 	Der Dateiname der mini-fat-Datei
+ * @author 				Timo Sandmann (mail@timosandmann.de)
+ * @date 				10.02.2007  
+ * @param input_file	Der Dateiname der mini-fat-Datei
  */
-void convert_slog_file(const char* input_file){
+void convert_slog_file(const char* input_file) {
+	/*! Datentyp der Logbloecke auf der MMC */
 	typedef struct{
 		uint8 encRate;
 		uint8 targetRate;
 		int16 err;
 		int16 pwm;
 		uint32 time;
-	} slog_t;				/*!< Datentyp der Logbloecke auf der MMC */
+	} slog_t;
 		
 	printf("Konvertiere die SpeedLog-Datei %s ins txt-Format\n", input_file);
 	FILE *fp_input = fopen(input_file, "r");

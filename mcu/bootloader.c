@@ -64,7 +64,7 @@
    which is the "correct" value for a bootloader.
    avrdude may only detect the part-code for ISP */
 //#define DEVTYPE     DEVTYPE_BOOT
-#define DEVTYPE     DEVTYPE_ISP
+#define DEVTYPE     DEVTYPE_ISP		/*!< Device-Typ des emulierten Programmers */
 
 /* Boot Size in Words */
 #if defined(__AVR_ATmega32__)	// => Fuse Bits: low: 0xFF, high: 0xDC
@@ -76,12 +76,13 @@
 	#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0xF800 startet "
 #endif
 
-#define START_WAIT
+/*! Startup-Timeout */
+#define START_WAIT	
 
-/* character to start the bootloader in mode START_WAIT */
+/*! character to start the bootloader in mode START_WAIT */
 #define START_WAIT_UARTCHAR 'S'
 
-/* wait 5s in START_WAIT mode (10ms steps) */
+/*! wait 5s in START_WAIT mode (10ms steps) */
 #define WAIT_VALUE 500
 
 /*
@@ -91,8 +92,8 @@
  */
 //#define ENABLEREADFUSELOCK
 
-#define VERSION_HIGH '0'
-#define VERSION_LOW  '8'
+#define VERSION_HIGH '0'	/*!< Versionsnummer */
+#define VERSION_LOW  '8'	/*!< Versionsnummer */
 
 #include <stdint.h>
 #include <avr/io.h>
@@ -106,16 +107,16 @@
 
 /* Fusebit-Defs, since avr-libc 1.2.5 in boot.h */
 #ifndef GET_LOCK_BITS
-	#define GET_LOCK_BITS			0x0001
+	#define GET_LOCK_BITS			0x0001	/*!< Lock-Bits */
 #endif
 #ifndef GET_LOW_FUSE_BITS
-	#define GET_LOW_FUSE_BITS		0x0000
+	#define GET_LOW_FUSE_BITS		0x0000	/*!< Low-Fuse-Bits */
 #endif
 #ifndef GET_HIGH_FUSE_BITS
-	#define GET_HIGH_FUSE_BITS      0x0003
+	#define GET_HIGH_FUSE_BITS      0x0003	/*!< High-Fuse-Bits */
 #endif
 #ifndef GET_EXTENDED_FUSE_BITS
-	#define GET_EXTENDED_FUSE_BITS  0x0002
+	#define GET_EXTENDED_FUSE_BITS  0x0002	/*!< Extended-Fuse-Bits */
 #endif
 
 /* Chipdefs */
@@ -127,12 +128,12 @@
 	#error "AVR processor does not provide bootloader support!"
 #endif
 
-#define APP_END (FLASHEND - (BOOTSIZE * 2))
+#define APP_END (FLASHEND - (BOOTSIZE * 2))	/*!< Ende des Flash-Bereichs fuer Programm */
 
 #if (SPM_PAGESIZE > UINT8_MAX)
-	typedef uint16_t pagebuf_t;
+	typedef uint16_t pagebuf_t;	/*!< Seitengroesse */
 #else
-	typedef uint8_t pagebuf_t;
+	typedef uint8_t pagebuf_t;	/*!< Seitengroesse */
 #endif
 
 #if defined(__AVR_ATmega32__)
@@ -197,7 +198,7 @@
 #endif
 // end Chipdefs
 
-uint8_t gBuffer[SPM_PAGESIZE];
+uint8_t gBuffer[SPM_PAGESIZE];	/*!< Puffer */
 
 /* all inline! Sonst stimmt die Startadresse der bl_main nicht */
 static void __attribute__ ((always_inline)) sendchar(uint8_t data){
@@ -346,7 +347,8 @@ static void (*jump_to_app)(void) = 0x0000;
  * wohin die MCU beim Booten springt (=> Fuse Bits). Deshalb die Linkereinstellungen
  * anpassen, wie oben beschrieben!
  */
-void __attribute__ ((section (".bootloader"), naked)) bootloader_main(void){
+//void __attribute__ ((section (".bootloader"), naked)) bootloader_main(void){
+void __attribute__ ((section (".bootloader"))) bootloader_main(void) {
 	uint16_t address = 0;
 	uint8_t device = 0, val;
 

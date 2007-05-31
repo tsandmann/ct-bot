@@ -53,8 +53,9 @@ void bot_servo_behaviour(Behaviour_t *data){
 
 /*!
  * Fahre den Servo an eine Position
- * @param servo Nummer des Servos
- * @param pos Zielposition des Servos
+ * @param caller	Der Aufrufer
+ * @param servo		Nummer des Servos
+ * @param pos		Zielposition des Servos
  */
 void bot_servo(Behaviour_t * caller, uint8 servo, uint8 pos){
 	if (pos == DOOR_CLOSE && sensDoor == 0) return;	// Klappe ist bereits geschlossen

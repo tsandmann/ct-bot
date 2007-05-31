@@ -34,9 +34,9 @@
 #define MMC_FILENAME_MAX	255		/*!< Maximale Dateienamenlaenge in Zeichen [1;255] */
 
 /*! Datentyp fuer Mini-Fat-Dateilaenge */
-typedef union{
-	uint32 u32;		// Laenge in 32 Bit
-	uint8 u8[4];	// laenge in 4 "einzelnen" Bytes
+typedef union {
+	uint32 u32;		/*!< Laenge in 32 Bit */
+	uint8 u8[4];	/*!< Laenge in 4 "einzelnen" Bytes */
 } file_len_t;
 
 /*!

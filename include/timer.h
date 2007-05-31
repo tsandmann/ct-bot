@@ -79,10 +79,10 @@
 	#define TIMER_GET_TICKCOUNT_32 timer_get_tickCount32()			/*!< Zeit in 32 Bit */
 #else
 	/*! Union fuer TickCount in 8, 16 und 32 Bit */
-	typedef union{
-		uint32 u32;
-		uint16 u16;
-		uint8 u8;
+	typedef union {
+		uint32 u32;		/*!< 32 Bit Integer */
+		uint16 u16;		/*!< 16 Bit Integer */
+		uint8 u8;		/*!< 8 Bit Integer */
 	} tickCount_t;
 	extern volatile tickCount_t tickCount;			/*!< ein Tick alle 176 us */
 	
@@ -119,7 +119,11 @@
  * 		// wird alle 50 ms ausgefuehrt //
  * }
  */
-static inline uint8_t __attribute__((always_inline)) timer_ms_passed(void* old_ticks, uint32_t ms) {
+#ifndef DOXYGEN
+	static inline uint8_t __attribute__((always_inline)) timer_ms_passed(void* old_ticks, uint32_t ms) {
+#else
+	static inline uint8_t timer_ms_passed(void* old_ticks, uint32_t ms) {
+#endif
 	
 	/* 8 Bit Version */
 	if (MS_TO_TICKS(ms) < UINT8_MAX) {

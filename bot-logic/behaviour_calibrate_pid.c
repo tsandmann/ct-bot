@@ -55,9 +55,29 @@ static int8 Kp_region_end = 0;			/*!< obere Schranke des grob ermittelten Kp-Ber
 static void (* pNextJob)(void) = NULL;	/*!< naechste Teilaufgabe */
 static void (* pLastJob)(void) = NULL;	/*!< letzte Teilaufgabe (vor Stopp) */
 
-static void find_best_Kp_Ki(void);		/*!< Ermittelt die beste Kp/Ki-Kombination (bei gegebener Kp-Region) */
-static void find_best_Kp(void);			/*!< Ermittelt den besten Kp-Wert bei gegebenem Ki */
-static void find_best_Kd(void);			/*!< Ermittelt den besten Kd-Wert bei gegebenen Kp und Ki */ 
+/*!
+ * @brief	Ermittelt die beste Kp/Ki-Kombination (bei gegebener Kp-Region)
+ * Ergebnis steht in Kp und Ki
+ * Nachfolgende Teilfunktion ist @see find_best_Kp()
+ * Laufzeit: 27 Minuten (bei max_Ki == 32)
+ */
+static void find_best_Kp_Ki(void);
+
+/*!
+ * @brief	Ermittelt den besten Kp-Wert bei gegebenem Ki
+ * Ergebnis steht in Kp
+ * Nachfolgende Teilfunktion ist @see find_best_Kd()
+ * Laufzeit: 6 Minuten (bei max_Kp == 126)
+ */
+static void find_best_Kp(void);
+
+/*!
+ * @brief	Ermittelt den besten Kd-Wert bei gegebenem Kp und Ki
+ * Ergebnis steht in Kd
+ * Letzte Teilfunktion des Verhaltens
+ * Laufzeit: 6 Minuten (bei max_Kd == 64)
+ */
+static void find_best_Kd(void); 
 
 /*	<einstellbare Parameter>	*/
 static const float a = 0.01;			/*!< Gewichtungsfaktor */
@@ -197,8 +217,8 @@ static void find_Kp_region(void) {
 	}
 }
 
-/*!
- * @brief	Ermittelt die beste Kp/Ki-Kombination (bei gegebener Kp-Region)
+/*
+ * Ermittelt die beste Kp/Ki-Kombination (bei gegebener Kp-Region)
  * Ergebnis steht in Kp und Ki
  * Nachfolgende Teilfunktion ist @see find_best_Kp()
  * Laufzeit: 27 Minuten (bei max_Ki == 32)
@@ -228,8 +248,8 @@ static void find_best_Kp_Ki(void) {
 	}
 }
 
-/*!
- * @brief	Ermittelt den besten Kp-Wert bei gegebenem Ki
+/*
+ * Ermittelt den besten Kp-Wert bei gegebenem Ki
  * Ergebnis steht in Kp
  * Nachfolgende Teilfunktion ist @see find_best_Kd()
  * Laufzeit: 6 Minuten (bei max_Kp == 126)
@@ -252,8 +272,8 @@ static void find_best_Kp(void) {
 	}	
 }
 
-/*!
- * @brief	Ermittelt den besten Kd-Wert bei gegebenem Kp und Ki
+/*
+ * Ermittelt den besten Kd-Wert bei gegebenem Kp und Ki
  * Ergebnis steht in Kd
  * Letzte Teilfunktion des Verhaltens
  * Laufzeit: 6 Minuten (bei max_Kd == 64)

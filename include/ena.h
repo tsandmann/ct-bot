@@ -51,7 +51,7 @@ void ENA_init(void);
  * Daher zieht es die entsprechende ENA_XXX-Leitung (mit Transistor) auf Low und NICHT auf High
  * @param enable Bitmaske der anzuschaltenden ENA-Leitungen
  */
-void ENA_on(uint8 enable);
+void ENA_on(uint8_t enable);
 
 /*! 
  * Schaltet einzelne Enable-Transistoren aus
@@ -61,7 +61,7 @@ void ENA_on(uint8 enable);
  * Daher zieht es die entsprechende ENA_XXX-Leitung (mit Transistor) auf High und NICHT auf Low
  * @param enable Bitmaske der abzuschaltenden ENA-Leitungen
  */
-void ENA_off(uint8 enable);
+void ENA_off(uint8_t enable);
 
 /*!
  * Schaltet die Enable-Transistoren
@@ -70,7 +70,7 @@ void ENA_off(uint8 enable);
  * Daher zieht es die entsprechende ENA_XXX-Leitung auf ~enable
  * @param enable	ENA-Wert, der gesetzt werden soll
  */
-void ENA_set(uint8 enable);
+void ENA_set(uint8_t enable);
 
 #endif	// __ASSEMBLER__
 #endif	// ENA_H_

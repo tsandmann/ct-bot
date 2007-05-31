@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	bot-2-sim.h 
+/*! 
+ * @file 	bot-2-sim.h 
  * @brief 	Verbindung c't-Bot zu c't-Sim
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 #ifndef __bot_2_sim
 #define __bot_2_sim
 
@@ -49,7 +50,7 @@ void wait_for_time(long timeout_us);
  * @param command Das kommando auf das gewartet wird.
  * @return 0, wenn Ok
  */
-int wait_for_special_command(uint8 command);
+int wait_for_special_command(uint8_t command);
 
 /*! 
  * Schleife, die Kommandis empfaengt und bearbeitet, bis ein Kommando vom Typ Frame kommt 
@@ -63,7 +64,7 @@ int8 receive_until_Frame(int8 frame);
 	 * Hilfsfunktion, die es nur auf dem PC gibt
 	 */
 	void gettimeofday_win(struct timeval* p, void* tz /* IGNORED */);
-	#define GETTIMEOFDAY gettimeofday_win
+	#define GETTIMEOFDAY gettimeofday_win	/*!< nur fuer Windows implementierte Funktion */
 #else
 	#define GETTIMEOFDAY gettimeofday	/*!< unter nicht-Win benutzen wir die Systemfunktion fuer gettimeofday */
 #endif	// WIN32

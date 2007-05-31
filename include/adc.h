@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	adc.h
+/*! 
+ * @file 	adc.h
  * @brief 	Routinen zum Einlesen der Analogeingaenge
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 #ifndef ADC_H_
 #define ADC_H_
 
@@ -38,7 +39,7 @@
  * @param channel 	Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
  * @param p_sens	Zeiger auf den Sensorwert, der das Ergebnis enthalten soll
  */
-void adc_read_int(uint8 channel, int16* p_sens);
+void adc_read_int(uint8_t channel, int16_t* p_sens);
 
 /*!
  * Gibt die laufende Nr. des Channels zurueck, der aktuell ausgewertet wird.
@@ -53,5 +54,5 @@ uint8 adc_get_active_channel(void);
  * muss das entsprechende Bit in channel gesetzt sein.
  * Bit0 = Kanal 0 usw.
  */
-void adc_init(uint8 channel);
+void adc_init(uint8_t channel);
 #endif

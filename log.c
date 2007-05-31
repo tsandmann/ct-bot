@@ -316,7 +316,10 @@ void log_end(void) {
 }
 
 #ifdef LOG_MMC_AVAILABLE
-	uint8 log_mmc_init(void){
+	/*!
+	 * @brief	Initialisierung fuer MMC-Logging
+	 */
+	uint8 log_mmc_init(void) {
 		/* Log-Datei oeffnen und Dateiende merken */
 		log_file = mmc_fopen(LOG_FILENAME);
 		if (log_file == 0) return 1;	// Fehler :(

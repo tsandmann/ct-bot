@@ -128,8 +128,9 @@ void bot_goto_behaviour(Behaviour_t *data){
 
 /*!
  * Drehe die Raeder um die gegebene Zahl an Encoder-Schritten weiter
- * @param left Schritte links
- * @param right Schritte rechts
+ * @param caller	Der Aufrufer
+ * @param left		Schritte links
+ * @param right		Schritte rechts
  */
 void bot_goto(Behaviour_t * caller, int16 left, int16 right){
 	// Zielwerte speichern

@@ -105,11 +105,11 @@ void mini_fat_store_adr(uint32 block){
 #ifdef MINI_FAT_AVAILABLE
 
 /*!
- * Sucht einen Block auf der MMC-Karte, dessen erste drei Bytes dem key entsprechen
- * liefert dann den folgenden Block zurueck.
- * Achtung das prinzip geht nur, wenn die Dateien nicht fragmentiert sind
- * @param key 3 Byte zur Identifikation
- * @param buffer Zeiger auf 512 Byte Puffer im SRAM
+ * @brief			Sucht einen Block auf der MMC-Karte, dessen erste Bytes dem Dateinamen entsprechen
+ * @param filename 	String zur Identifikation
+ * @param buffer 	Zeiger auf 512 Byte Puffer im SRAM
+ * @return			Anfangsblock der Nutzdaten der Datei
+ * Achtung das prinzip geht nur, wenn die Dateien nicht fragmentiert sind 
  */
 uint32 mini_fat_find_block(const char* filename, uint8* buffer){
 		

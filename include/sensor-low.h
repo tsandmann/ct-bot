@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -45,11 +45,11 @@ extern void bot_encoder_isr(void);
 
 /*! Datenstruktur fuer Speedlog-Eintraege */
 typedef struct {
-	uint8 encRate;
-	uint8 targetRate;
-	int16 err;
-	int16 pwm;
-	uint32 time;
+	uint8 encRate;		/*!< Ist-Geschwindigkeit (halbiert) */
+	uint8 targetRate;	/*!< Soll-Geschwindigkeit (halbiert) */
+	int16 err;			/*!< Regelfehler */
+	int16 pwm;			/*!< aktueller PWM-Wert */
+	uint32 time;		/*!< Timestamp */
 } slog_t;
 
 #ifdef SPEED_CONTROL_AVAILABLE

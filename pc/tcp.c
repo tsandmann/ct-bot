@@ -31,20 +31,16 @@
 
 #ifdef PC
 
-/* Linux with glibc:
- *   _REENTRANT to grab thread-safe libraries
- *   _POSIX_SOURCE to get POSIX semantics
- */
 #ifndef WIN32
-#  define _REENTRANT
-//#  define _POSIX_SOURCE
+	#define _REENTRANT		/*!< to grab thread-safe libraries */
+//	#define _POSIX_SOURCE	/*!< to get POSIX semantics */
 #else
 //	#define WIN32
 #endif
 
 /* Hack for LinuxThreads */
 #ifdef __linux__
-#  define _P __P
+	#define _P __P
 #endif
 
 #include <pthread.h>
