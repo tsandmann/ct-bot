@@ -347,7 +347,6 @@ static void (*jump_to_app)(void) = 0x0000;
  * wohin die MCU beim Booten springt (=> Fuse Bits). Deshalb die Linkereinstellungen
  * anpassen, wie oben beschrieben!
  */
-//void __attribute__ ((section (".bootloader"), naked)) bootloader_main(void){
 void __attribute__ ((section (".bootloader"))) bootloader_main(void) {
 	uint16_t address = 0;
 	uint8_t device = 0, val;
