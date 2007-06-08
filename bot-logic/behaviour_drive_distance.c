@@ -17,12 +17,13 @@
  * 
  */
 
-/*! @file 	behaviour_drive_distance.c
+/*! 
+ * @file 	behaviour_drive_distance.c
  * @brief 	Bot faehrt ein Stueck
  * 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
-*/
+ */
 
 #include "bot-logic/bot-logik.h"
 #include "log.h"
@@ -31,9 +32,9 @@
 
 
 /* Parameter fuer das bot_drive_distance_behaviour() */
-int16 drive_distance_target;	/*!< Zu fahrende Distanz bzw. angepeilter Stand der Radencoder sensEncL bzw. sensEncR */
-int8 drive_distance_curve;		/*!< Kruemmung der zu fahrenden Strecke. */
-int16 drive_distance_speed;		/*!< Angepeilte Geschwindigkeit. */
+static int16 drive_distance_target;	/*!< Zu fahrende Distanz bzw. angepeilter Stand der Radencoder sensEncL bzw. sensEncR */
+static int8 drive_distance_curve;		/*!< Kruemmung der zu fahrenden Strecke. */
+static int16 drive_distance_speed;		/*!< Angepeilte Geschwindigkeit. */
 
 
 /*!

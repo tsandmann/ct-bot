@@ -557,7 +557,7 @@ void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 					ptr = ptr->next;	// alles ausserhalb der Sichtbarkeit ueberspringen
 				if (ptr == NULL || ptr->priority < PRIO_VISIBLE_MIN){
 					if (i==1 && j==1 && behaviour_page > 0) behaviour_page--;	// keine unnoetige leere Seite anzeigen
-					beh_disp_key_handler(behaviours);	// Tasten auswerten
+					if (RC5_Code !=0) beh_disp_key_handler(behaviours);	// Tasten auswerten
 					return; // fertig, da ptr == NULL oder Prioritaet bereits zu klein					
 				}
 				/* Ausgabe */
@@ -567,7 +567,7 @@ void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 				ptr = ptr->next;
 			} 	
 		} 
-		beh_disp_key_handler(behaviours);	// Tasten auswerten
+		if (RC5_Code !=0) beh_disp_key_handler(behaviours);	// Tasten auswerten
 	}  
 #endif	// DISPLAY_BEHAVIOUR_AVAILABLE
 #endif	// BEHAVIOUR_AVAILABLE

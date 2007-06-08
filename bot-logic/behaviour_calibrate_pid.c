@@ -171,8 +171,8 @@ static void compare_weightings(const uint16 dt, int8* pid_param, const int8 step
 			
 			/* User per LOG informieren */
 			LOG_INFO("Kp=%d\tKi=%d\tKd=%d\tnach %u s", best_Kp, best_Ki, best_Kd, TICKS_TO_MS(TIMER_GET_TICKCOUNT_32)/1000);
-			uint32_t weight_int = weight * 1000000.0f;
-			LOG_DEBUG("weight=%lu", weight_int);				
+//			uint32_t weight_int = weight * 1000000.0f;
+			LOG_DEBUG("weight=%lu", (uint32_t)(weight * 1000000.0f));				
 		}
 		
 		/* neuen Parameter einstellen und Nachlauf abwarten */	

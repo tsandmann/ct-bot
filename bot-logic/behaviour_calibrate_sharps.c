@@ -304,8 +304,10 @@ void bot_calibrate_sharps_display(void) {
 	} else if (pNextJob != NULL) {
 		display_cursor(2,1);
 		display_printf("thinking...         ");
-	} else {
+	} else if (count == max_steps) {
 		display_printf("fertig :-)");
+	} else {
+		display_printf("run calibrate_sharps");	
 	}
 }
 
