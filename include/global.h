@@ -60,7 +60,43 @@
 	#define On                    1		/*!< An */
 	#define Off                   0		/*!< Aus */
 
-	#define binary(var,bit) ((var >> bit)&1)	/*!< Binaerwert eines Bits */
+	#ifdef MCU
+		#define EE_SECTION	__attribute__ ((section (".eeprom"),aligned (1)))	/*!< Shortcut fuer EEPROM-Section */
+	#else
+		#define EE_SECTION														/*!< Shortcut fuer EEPROM-Section */
+	#endif	// MCU
+
+	#define binary(var,bit) ((var >> bit)&1)	/*!< gibt das Bit "bit" von "var" zurueck */
+	
+	
+	/* old avr-libc support */
+	#ifndef __CONCAT
+		#define __CONCATenate(left, right) left ## right
+		#define __CONCAT(left, right) __CONCATenate(left, right)
+	#endif
+	
+	#ifndef INT8_MAX
+		#define INT8_MAX 0x7f
+		#define INT8_MIN (-INT8_MAX - 1)
+		#define UINT8_MAX (__CONCAT(INT8_MAX, U) * 2U + 1U)
+		
+		#if __USING_MINT8	
+			#define INT16_MAX 0x7fffL
+			#define INT16_MIN (-INT16_MAX - 1L)
+			#define UINT16_MAX (__CONCAT(INT16_MAX, U) * 2UL + 1UL)
+			
+			#define INT32_MAX 0x7fffffffLL
+			#define INT32_MIN (-INT32_MAX - 1LL)
+			#define UINT32_MAX (__CONCAT(INT32_MAX, U) * 2ULL + 1ULL)
+		#else	// !__USING_MINT8
+			#define INT16_MAX 0x7fff
+			#define INT16_MIN (-INT16_MAX - 1)
+			#define UINT16_MAX (__CONCAT(INT16_MAX, U) * 2U + 1U)
+			#define INT32_MAX 0x7fffffffL
+			#define INT32_MIN (-INT32_MAX - 1L)
+			#define UINT32_MAX (__CONCAT(INT32_MAX, U) * 2UL + 1UL)
+		#endif	// __USING_MINT8
+	#endif	// INT8_MAX	
 
 #endif	// __ASSEMBLER__
 #endif	// global_H

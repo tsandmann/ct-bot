@@ -33,7 +33,7 @@
 #define ENCODER_MARKS			60		/*!< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weissen + Anzahl der schwarzen Felder */
 #define WHEEL_DIAMETER			57		/*!< Durchmesser eines Rades in mm */
 #define WHEEL_PERIMETER			179 	/*!< Umfang eines Rades in mm */	
-#define WHEEL_TO_WHEEL_DIAMETER 96 		/*!< Abstand der beiden Raeder in mm */
+#define WHEEL_TO_WHEEL_DIAMETER 97 		/*!< Abstand der beiden Raeder in mm */
 
 #define DISTSENSOR_POS_FW	35	/*!< Abstand der Distanzsensoren von der Radachse (in fahrtrichtung)*/
 #define DISTSENSOR_POS_SW	32	/*!< Abstand der Distanzsensoren von der Mittelachse (in querrichtung)*/

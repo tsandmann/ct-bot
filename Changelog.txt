@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-06-08 Timo Sandmann [mail@timosandmann.de]: bot_turn: Nach Hinweis von Frank Menzel Bug behoben, das Verhalten ausserdem genauer gemacht und vereinfacht. Ein paar weitere Detailverbesserungen.
+
 2007-06-01 Timo Sandmann [mail@timosandmann.de]: Doxygen-Warnungen entfernt und Bootloader-Problem geloest
 
 2007-05-29 Timo Sandmann [mail@timosandmann.de]: Funktionen zum Erstellen und Loeschen von Mini-Fat-Dateien auf einer emulierten MMC hinzugefuegt

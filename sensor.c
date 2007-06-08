@@ -40,10 +40,8 @@
 
 #ifdef MCU
 	#include <avr/eeprom.h>
-	#define EE_SECTION	__attribute__ ((section (".eeprom"),aligned (1)))	/*!< Shortcut fuer EEPROM-Section */
 #else
 	/* derzeit kein EEPROM fuer PC vorhanden, Daten liegen einfach im RAM */
-	#define EE_SECTION														/*!< Shortcut fuer EEPROM-Section */
 	#define eeprom_read_byte(x)	*x											/*!< Pseudo-EEPROM-Funktion fuer PC */
 #endif	// MCU
 
@@ -259,7 +257,7 @@ void sensor_update(void){
 		sl=(float)diffEncL*((float)WHEEL_PERIMETER/ENCODER_MARKS);
 		sr=(float)diffEncR*((float)WHEEL_PERIMETER/ENCODER_MARKS);
 		/* Winkel berechnen */
-		dHead=(float)(sr-sl)/(2*WHEEL_DISTANCE);
+		dHead=(float)(sr-sl)/(WHEEL_TO_WHEEL_DIAMETER);
 		/* Winkel ist hier noch im Bogenmass */
 		/* Position berechnen */
 		/* dazu Betrag des Vektors berechnen */
