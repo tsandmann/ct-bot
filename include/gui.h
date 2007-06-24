@@ -68,8 +68,10 @@ void gui_init(void);
 #endif
 
 #ifdef RAM_DISPLAY_AVAILABLE
-	/*! 
-	 * @brief	Zeigt den freien Speicher an
+	/*!
+	 * @brief	Zeigt die aktuelle Speicherbelegung an.
+	 * 			Achtung, die Stackgroesse bezieht sich auf den Stack *dieser* Funktion!
+	 * 			Die Heapgroesse stimmt nur, wenn es dort keine Luecken gibt (z.b. durch free())
 	 */
 	void ram_display(void);
 #endif

@@ -52,6 +52,20 @@
 	#define MAP_SECTION_POINTS 	16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 #endif
 
+/*!  Suchkreis (Botdurchmesser) in Mapfelder je nach Aufloesung umgerechnet*/
+#define MAP_RADIUS_FIELDS_GODEST	  (BOT_DIAMETER * MAP_RESOLUTION / 100)	/*!< Umkreisfelder fuer Pfadsuche */
+/*! hier gleich Defines definieren, um kostspielige Berechnungen zu sparen */
+#if MAP_RADIUS_FIELDS_GODEST / 2 < 1 
+	#define MAP_RADIUS_FIELDS_GODEST_HALF 1  // sicherstellen dass nicht 0 auftritt
+#else
+	#define MAP_RADIUS_FIELDS_GODEST_HALF (MAP_RADIUS_FIELDS_GODEST / 2)
+#endif
+#define MAP_RADIUS_FIELDS_GODEST_HALF_QUAD (MAP_RADIUS_FIELDS_GODEST_HALF * MAP_RADIUS_FIELDS_GODEST_HALF) // halber Quadratradius
+
+#define MAPFIELD_IGNORE          20  /*!< negativer Schwellwert, bei dem Laut Map Hindernis gemeldet wird */
+#define HAZPOT                   5   /*! hohe Hinderniswahrscheinlichkeit und trotzdem weiter beruecksichtigt */
+#define MAP_ART_HAZARD           30  /*!< kuenstliches Hindernis in MAP fuer Pathplaning in lokalem Minimum */
+
 // Die folgenden Variablen/konstanten NICHT direkt benutzen, sondern die zugehoerigen Makros: get_map_min_x() und Co!
 // Denn sonst erhaelt man Karten und nicht Weltkoordinaten!
 #ifdef SHRINK_MAP_ONLINE
@@ -125,7 +139,16 @@ uint16 world_to_map(float koord);
 float map_to_world(uint16 map_koord);
 
 /*!
- * Prüft ob eine direkte Passage frei von Hindernissen ist
+ * Prueft ob eine direkte Passage frei von Hindernissen ist
+ * @param  from_x Startort x Kartenkoordinaten
+ * @param  from_y Startort y Kartenkoordinaten
+ * @param  to_x Zielort x Kartenkoordinaten
+ * @param  to_y Zielort y Kartenkoordinaten
+ * @return 1 wenn alles frei ist
+ */
+uint8 map_way_free_fields(uint16 from_x, uint16 from_y, uint16 to_x, uint16 to_y);
+/*!
+ * Prueft ob eine direkte Passage frei von Hindernissen ist
  * @param  from_x Startort x Weltkoordinaten
  * @param  from_y Startort y Weltkoordinaten
  * @param  to_x Zielort x Weltkoordinaten
@@ -135,17 +158,130 @@ float map_to_world(uint16 map_koord);
 int8 map_way_free(float from_x, float from_y, float to_x, float to_y);
 
 /*!
+ * Setzt den Wert eines Feldes auf den angegebenen Wert
+ * @param x x-Ordinate der Karte (nicht der Welt!!!)
+ * @param y y-Ordinate der Karte (nicht der Welt!!!)
+ * @param value neuer wert des Feldes (> 0 heisst frei, <0 heisst belegt
+ */
+void map_set_field(uint16 x, uint16 y, int8 value);
+
+/*!
+ * markiert ein Feld als belegt -- drueckt den Feldwert etwas mehr in Richtung "belegt"
+ * @param x x-Ordinate der Karte (nicht der Welt!!!)
+ * @param y y-Ordinate der Karte (nicht der Welt!!!)
+ */
+void map_update_occupied (uint16 x, uint16 y);
+
+/*!
+ * setzt ein Map-Feld auf einen Wert mit Umfeldaktualisierung; Hindernis wird mit halben Botradius
+ * eingetragen, da die Pfadpunkte im ganzen Umkreis liegen und nicht ueberschrieben werden duerfen;
+ * Abgrund/ Loch wird aber auch im ganzen Botradius eingetragen; bei geringer MCU-Aufloesung ohne Umfeld mit
+ * direktem Eintragen des Wertes auf xy; Umfeld wird dann in Richtung Hindernis gedrueckt 
+ * @param x Map-Koordinate
+ * @param y Map-Koordinate
+ * @param val im Umkreis einzutragender Wert
+ */
+void map_set_value_occupied (uint16 x, uint16 y, int8 val);
+
+
+/*! 
+ * markiert die Mapkoordinaten als Loch zum entsprechenden Abgrundsensor
+ * @param x	bereits berechnete Koordinaten nach links vom Mittelpunkt in Hoehe des Sensors
+ * @param y	bereits berechnete Koordinaten nach rechts vom Mittelpunkt in Hoehe des Sensors
+ * @param h	Blickrichtung bereits umgerechnet in Bogenmass
+ */
+void update_map_sensor_hole(float x, float y, float h);
+
+/*!
+ * gibt True zurueck wenn Map-Wert value innerhalb des Umkreises radius von xy liegt sonst False;
+ * wird verwendet zum Check, ob sich ein Punkt (naechster Pfadpunkt, Loch) innerhalb eines bestimmten
+ * Umkreises befindet; findet nur Verwendung bei hoeherer Aufloesung
+ * @param x Map-Koordinate
+ * @param y Map-Koordinate
+ * @param radius Radius des Umfeldes
+ * @param value Mapwert des Vergleiches
+ * @return True wenn Wert value gefunden
+ */
+uint8 map_get_value_field_circle(uint16 x, uint16 y, uint8 radius, int8 value);
+
+/*!
+ * ermittelt ob der Wert val innerhalb des Umkreises mit Radius r von xy liegt; bei geringer MCU-Aufloesung direkter
+ * Vergleich mit xy
+ * @param x Map-Koordinate
+ * @param y Map-Koordinate
+ * @param radius Vergleichsradius (halber Suchkreis)
+ * @param val Vergleichswert
+ * @return True wenn Wert val gefunden sonst False
+ */
+uint8 value_in_circle (uint16 x, uint16 y, uint8 radius, int8 val);
+ 
+/*! 
+ * Routine ermittelt ab dem vom Mittelpunkt links/ rechts versetzten Punkt xp yp, in Blickrichtung
+ * dist mm von den Abgrundsensoren voraus, die X-Mapkoordinate 
+ * verwendet zur Map-Lochmarkierung; kann aber allgemeingueltig verwendet werden um
+ * Mapkoordinaten zu erhalten in einem bestimmten Abstand voraus
+ * @param xp 	Koord vom Mittelpunkt des Bots verschoben
+ * @param yp 	Koord vom Mittelpunkt des Bots verschoben
+ * @param h 	Blickrichtung
+ * @param dist	Abstand voraus in mm
+ * @return 		berechnete X-Mapkoordinate 
+ */
+uint16 get_mapposx_dist(float xp, float yp, float h, uint16 dist); 
+
+/*! 
+ * Routine ermittelt ab dem vom Mittelpunkt links/ rechts versetzten Punkt xp yp, in Blickrichtung
+ * dist mm von den Abgrundsensoren voraus, die Y-Mapkoordinate 
+ * verwendet zur Map-Lochmarkierung; kann aber allgemeingueltig verwendet werden um
+ * Mapkoordinaten zu erhalten in einem bestimmten Abstand voraus
+ * @param xp	Koord vom Mittelpunkt des Bots verschoben
+ * @param yp	Koord vom Mittelpunkt des Bots verschoben
+ * @param h		Blickrichtung
+ * @param dist	Abstand voraus in mm
+ * @return 		berechnete X-Mapkoordinate 
+ */ 
+uint16 get_mapposy_dist(float xp, float yp, float h, uint16 dist) ;
+
+/*!
+ * liefert den Durschnittswert um einen Punkt der Karte herum
+ * @param x x-Ordinate der Karte
+ * @param y y-Ordinate der Karte
+ * @return Wert des Durchschnitts um das Feld (>0 heisst frei, <0 heisst belegt
+ */
+int8 map_get_average_fields (uint16 x, uint16 y, uint16 radius);
+ 
+/*!
+ * Check, ob die MAP-Koordinate xy mit destxy identisch ist (bei kleinen Aufloesungen) oder sich
+ * innerhalb des halben Radius-Umkreises befindet (hoehere Aufloesungen); z.B. verwendet um das
+ * Zielfahren mit gewisser Toleranz zu versehen
+ * @param x x-Ordinate der Karte (nicht der Welt!!!)
+ * @param y y-Ordinate der Karte (nicht der Welt!!!)
+ * @param destx Ziel-x-Ordinate der Karte (nicht der Welt!!!)
+ * @param desty Ziel-y-Ordinate der Karte (nicht der Welt!!!)
+ * @return True wenn xy im Umkreis vorhanden oder identisch ist
+ */
+uint8 map_in_dest (uint16 x, uint16 y, uint16 destx, uint16 desty); 
+ 
+/*!
+ * Loescht die Mapfelder, die in einem bestimtmen Wertebereich min_val max_val liegen, d.h. diese
+ * werden auf 0 gesetzt 
+ * @param min_val minimaler Wert
+ * @param max_val maximaler Wert
+ */ 
+void clear_map(int8 min_val, int8 max_val);
+
+/*!
  * Zeigt die Karte an
  */
 void print_map(void);
 
 /*!
- *  initialisiere die Karte
+ * initialisiere die Karte
  * @return 0 wenn alles ok ist
  */
 int8 map_init(void);
 
-/*! Liest eine Map wieder ein 
+/*! 
+ * Liest eine Map wieder ein 
  * @param filename Quelldatei
  */
 void read_map(char * filename);

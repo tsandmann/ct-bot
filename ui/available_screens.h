@@ -41,6 +41,7 @@
 #define DISPLAY_MMC_INFO				/*!< Zeigt die Daten der MMC-Karte an */
 //#define RESET_INFO_DISPLAY_AVAILABLE	/*!< Zeigt Informationen ueber Resets an */
 #define RAM_DISPLAY_AVAILABLE			/*!< Ausgabe des freien RAMs */
+#define DISPLAY_MAP_GO_DESTINATION      /*!< Steuerung Map-Verhalten auf diesem Screen */
 
 #ifndef SPEED_CONTROL_AVAILABLE
 	#undef DISPLAY_REGELUNG_AVAILABLE

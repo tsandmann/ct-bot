@@ -17,12 +17,12 @@
  * 
  */
 
-/*! @file 	behaviour_scan.c
+/*! 
+ * @file 	behaviour_scan.c
  * @brief 	Scannt die Umgebung und traegt sie in die Karte ein
- * 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
-*/
+ */
 
 #include "bot-logic/bot-logik.h"
 #include "map.h"
@@ -69,12 +69,12 @@ void bot_scan_onthefly_behaviour(Behaviour_t *data){
 				print_map();
 			}
 		*/	
-	#endif
+	#endif  //MAP_AVAILABLE
 }
 
 
 #define BOT_SCAN_STATE_START 0
-uint8 bot_scan_state = BOT_SCAN_STATE_START;	/*!< Zustandsvariable fuer bot_scan_behaviour */
+static uint8 bot_scan_state = BOT_SCAN_STATE_START;	/*!< Zustandsvariable fuer bot_scan_behaviour */
 
 /*!
  * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
@@ -141,4 +141,47 @@ void bot_scan(Behaviour_t* caller){
 //	update_map(x_pos,y_pos,heading,sensDistL,sensDistR);
 //	print_map();	
 }
-#endif
+
+#ifdef MAP_AVAILABLE
+	/*! 
+	 * eigentliche Aufrufroutine zum Eintragen des Abgrundes in den Mapkoordinaten, wenn
+	 * die Abgrundsensoren zugeschlagen haben  
+	 * @param x aktuelle Bot-Koordinate als Welt- (nicht Map-) Koordinaten
+	 * @param y aktuelle Bot-Koordinate als Welt- (nicht Map-) Koordinaten
+	 * @param head Blickrichtung 
+	 */ 
+	void update_map_hole(float x, float y, float head) {
+		float h= head * M_PI /180;  // Umrechnung in Bogenmass 
+		// uint8 border_behaviour_fired=False;
+
+		if (sensBorderL > BORDER_DANGEROUS) {
+			//Ort des linken Sensors in Weltkoordinaten (Mittelpunktentfernung)
+			float Pl_x = x - (DISTSENSOR_POS_B_SW * sin(h));
+			float Pl_y = y + (DISTSENSOR_POS_B_SW * cos(h));
+			update_map_sensor_hole(Pl_x,Pl_y,h); // Eintragen des Loches in die Map	   
+		}
+		
+		if (sensBorderR > BORDER_DANGEROUS) {        
+			//Ort des rechten Sensors in Weltkoordinaten (Mittelpunktentfernung)
+			float Pr_x = x + (DISTSENSOR_POS_B_SW * sin(h));
+			float Pr_y = y - (DISTSENSOR_POS_B_SW * cos(h));
+			update_map_sensor_hole(Pr_x,Pr_y,h); // Eintragen des Loches in die Map
+		}
+	}
+
+	/*!
+	 * Notfallhandler, ausgefuehrt bei Abgrunderkennung; muss registriert werden um
+	 * den erkannten Abgrund in die Map einzutragen
+	 */
+	void border_in_map_handler(void) {
+		// Routine muss zuerst checken, ob on_the_fly auch gerade aktiv ist, da nur in diesem
+		// Fall etwas gemacht werden muss
+		if (!behaviour_is_activated(bot_scan_onthefly_behaviour)) 
+			return;
+
+		/* bei Abgrunderkennung Position des Abgrundes in Map mit -128 eintragen */
+		update_map_hole(x_pos,y_pos,heading);
+	}
+#endif	// MAP_AVAILABLE
+
+#endif	// BEHAVIOUR_SCAN_AVAILABLE

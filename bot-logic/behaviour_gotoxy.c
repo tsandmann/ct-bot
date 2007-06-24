@@ -17,32 +17,21 @@
  * 
  */
 
-/*! @file 	behaviour_gotoxy.c
+/*! 
+ * @file 	behaviour_gotoxy.c
  * @brief 	Bot faehrt eine Position an
- * 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
-*/
+ */
 
 #include "bot-logic/bot-logik.h"
-
-#ifdef BEHAVIOUR_GOTOXY_AVAILABLE
 #include <math.h>
-
-
-
-
-/* Parameter fuer bot_gotoxy_behaviour-Verhalten */
-float target_x;				/*!< Zielkoordinate X */
-float target_y;				/*!< Zielkoordinate Y */
-float initialDiffX;			/*!< Anfangsdifferenz in X-Richtung */
-float initialDiffY;			/*!< Anfangsdifferenz in Y-Richtung */
-
 
 /*!
  * Auslagerung der Berechnung der benoetigten Drehung aus dem gotoxy_behaviour
- * @param xDiff
- * @param yDiff
+ * @param xDiff	x-Differenz
+ * @param yDiff	y-Differenz
+ * @return 		zu drehender Winkel
  */
 int16 bot_gotoxy_calc_turn(float xDiff, float yDiff){
 	float newHeading;
@@ -63,6 +52,18 @@ int16 bot_gotoxy_calc_turn(float xDiff, float yDiff){
 
 	return toTurn;
 }
+
+#ifdef BEHAVIOUR_GOTOXY_AVAILABLE
+
+
+/* Parameter fuer bot_gotoxy_behaviour-Verhalten */
+float target_x;				/*!< Zielkoordinate X */
+float target_y;				/*!< Zielkoordinate Y */
+float initialDiffX;			/*!< Anfangsdifferenz in X-Richtung */
+float initialDiffY;			/*!< Anfangsdifferenz in Y-Richtung */
+
+
+
 
 /*!
  * Das Verhalten faehrt von der aktuellen Position zur angegebenen Position (x/y)

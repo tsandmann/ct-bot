@@ -30,6 +30,9 @@
 #include "display.h"
 #include "bot-logic/bot-logik.h"
 #include "timer.h"
+#include "log.h"
+#include "rc5-codes.h"
+
 #ifdef MCU
 	#include <avr/eeprom.h>
 #endif
@@ -89,11 +92,65 @@
 	#endif	// RESET_INFO_DISPLAY_AVAILABLE
 	
 	#ifdef RAM_DISPLAY_AVAILABLE
-		void ram_display(void){
+		/*
+		 * 	*** AVR Data Memory Map ***
+		 * 
+		 *	-----------------------------------------------------------------
+		 * 	| regs | i/o | [ext. i/o] | data | bss | heap > | (!) | < stack |
+		 * 	-----------------------------------------------------------------
+		 * 	^      ^     ^            ^      ^     ^        ^     ^         ^
+		 *  |      |     |            |      |     |        |     |         |
+		 * 	0x0    0x20  0x60         __data_start |        __brkval        RAMEND
+		 *                                   |     |              |
+		 *                                   __bss_start          SP
+		 *                                         |
+		 *                                         __heap_start         
+		 */
+		 
+		/*!
+		 * @brief	Zeigt die aktuelle Speicherbelegung an.
+		 * 			Achtung, die Stackgroesse bezieht sich auf den Stack *dieser* Funktion!
+		 * 			Die Heapgroesse stimmt nur, wenn es dort keine Luecken gibt (z.b. durch free())
+		 */
+		void ram_display(void) {
+			unsigned char * sp = (unsigned char *)SP;
+			extern unsigned char __data_start;
+			extern unsigned char __bss_start;
 			extern unsigned char __heap_start;
-			uint16 frei = SP - (uint16) &__heap_start;
+			extern unsigned char * __brkval;
+			#ifdef LOG_AVAILABLE
+				extern unsigned char __data_end;
+				extern unsigned char __bss_end;
+				if (RC5_Code == RC5_CODE_1) {
+					LOG_DEBUG("__data_start = 0x%x", &__data_start);
+					LOG_DEBUG("__data_end = 0x%x", &__data_end);
+					LOG_DEBUG("__bss_start = 0x%x", &__bss_start);
+					LOG_DEBUG("__bss_end = 0x%x", &__bss_end);
+					LOG_DEBUG("__heap_start = 0x%x", &__heap_start);
+					LOG_DEBUG("__heap_end = 0x%x", __brkval);
+					LOG_DEBUG("SP = 0x%x", sp);
+					LOG_DEBUG("RAMEND = 0x%x", RAMEND);
+					RC5_Code = 0;	
+				}
+			#endif	// LOG_AVAILABLE
+			size_t data_size = &__bss_start - &__data_start;
+			size_t bss_size = &__heap_start - &__bss_start;
 			display_cursor(1,1);
-			display_printf("free RAM: %4d ",frei);			
+			display_printf("bss/data:%4u/%4u B", bss_size, data_size);
+			display_cursor(2,1);
+			display_printf("heap:");
+			display_cursor(2,15);
+			size_t heap_size = __brkval - &__heap_start;
+			display_printf("%4u B", heap_size);
+			display_cursor(3,1);
+			display_printf("stack:");
+			display_cursor(3,15);
+			size_t stack_size = (unsigned char *)RAMEND - sp;
+			display_printf("%4u B", stack_size);
+			display_cursor(4,1);
+			size_t ram_size = (unsigned char *)(RAMEND+1) - &__data_start;
+			size_t frei = ram_size - (data_size + bss_size + heap_size + stack_size);
+			display_printf("free/all:%4u/%4u B", frei, ram_size);
 		}
 	#endif	// RAM_DISPLAY_AVAILABLE
 #endif	// DISPLAY_AVAILABLE

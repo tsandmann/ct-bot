@@ -71,6 +71,36 @@ Behaviour_t *behaviour = NULL;
 #endif
 
 
+#define MAX_PROCS 3					/*!< Maximale Anzahl der registrierbaren Funktionen */
+static int8_t count_arr_emerg = 0;	/*!< Anzahl der zurzeit registrierten Notfallfunktionen */
+/*! hier liegen die Zeiger auf die auszufuehrenden Abgrund Notfall-Funktionen */
+static void (* emerg_functions[MAX_PROCS])(void) = {NULL};
+
+/*! 
+ * Routine zum Registrieren einer Notfallfunktion, die beim Ausloesen eines Abgrundsensors
+ * aufgerufen wird; hierdurch kann ein Verhalten vom Abgrund benachrichtigt werden und
+ * entsprechend dem Verhalten reagieren
+ * @param fkt die zu registrierende Routine, welche aufzurufen ist
+ * @return Index, den die Routine im Array einnimmt, bei -1 ist alles voll
+ */
+int8_t register_emergency_proc(void* fkt) {
+	if (count_arr_emerg == MAX_PROCS) return -1;	// sorry, aber fuer dich ist kein Platz mehr da :(
+	int8_t proc_nr = count_arr_emerg++;		// neue Routine hinten anfuegen
+	emerg_functions[proc_nr] = fkt;	// Pointer im Array speichern
+	return proc_nr;
+}
+
+/*! 
+ * Beim Ausloesen eines Abgrundes wird diese Routine am Ende des Notfall-Abgrundverhaltens angesprungen 
+ * und ruft alle registrierten Prozeduren der Reihe nach auf 
+ */
+void start_registered_emergency_procs(void) {
+	uint8_t i=0;
+	for (i=0; i<MAX_PROCS; i++) {
+		if (emerg_functions[i] != NULL) emerg_functions[i]();
+	}
+}
+
 /*! 
  * Das einfachste Grundverhalten 
  * @param *data der Verhaltensdatensatz
@@ -116,8 +146,12 @@ void bot_behave_init(void){
 
 	#ifdef BEHAVIOUR_SCAN_AVAILABLE
 		// Verhalten, das die Umgebung des Bots on-the fly beim fahren scannt
-		insert_behaviour_to_list(&behaviour, new_behaviour(155, bot_scan_onthefly_behaviour,ACTIVE));
-	
+		insert_behaviour_to_list(&behaviour, new_behaviour(202, bot_scan_onthefly_behaviour,ACTIVE));
+        // vom Notfallverhalten wird Position des Abgrundes in Map eingetragen durch
+		// Aufruf dieser registrierten Proc
+		#ifdef MAP_AVAILABLE 	    
+			register_emergency_proc(&border_in_map_handler);
+		#endif	
 		// Verhalten, das einmal die Umgebung des Bots scannt
 		insert_behaviour_to_list(&behaviour, new_behaviour(152, bot_scan_behaviour,INACTIVE));
 	#endif
@@ -142,6 +176,18 @@ void bot_behave_init(void){
 	#ifdef BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(145, bot_measure_distance_behaviour, INACTIVE));		
 	#endif
+	
+	// Verhalten, um laut Map zu einem bestimmten Ziel zu fahren
+    #ifdef BEHAVIOUR_MAP_GO_DESTINATION_AVAILABLE
+        insert_behaviour_to_list(&behaviour, new_behaviour(139, bot_path_bestfirst_behaviour,INACTIVE));
+	    #ifdef MEASURE_MOUSE_AVAILABLE
+	      insert_behaviour_to_list(&behaviour, new_behaviour(137, bot_check_hang_on_behaviour,INACTIVE));
+ 	    #endif
+ 	    insert_behaviour_to_list(&behaviour, new_behaviour(135, bot_gotoxy_behaviour_map,INACTIVE));
+ 	    bot_set_destination(0,0);  // auf aktuelle Botposition setzen (bei 0,0 sonst Mappos selbst)
+ 	    // Registrierung zur Behandlung des Notfallverhaltens zum Rueckwaertsfahren
+ 	    register_emergency_proc(&border_mapgo_handler);
+    #endif
 
 	#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(44, bot_catch_pillar_behaviour,INACTIVE));
@@ -189,16 +235,18 @@ void bot_behave_init(void){
  * Aktiviert eine Regel mit gegebener Funktion
  * @param function Die Funktion, die das Verhalten realisiert.
  */
-void activateBehaviour(BehaviourFunc function){
-	Behaviour_t *job;						// Zeiger auf ein Verhalten
-
-	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben 
-	for (job = behaviour; job; job = job->next) {
-		if (job->work == function) {
-			job->active = ACTIVE;
-			break;
-		}
-	}
+void activateBehaviour(BehaviourFunc function) {
+	switch_to_behaviour(NULL, function, NOOVERRIDE);
+	
+//	Behaviour_t *job;						// Zeiger auf ein Verhalten
+//
+//	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben 
+//	for (job = behaviour; job; job = job->next) {
+//		if (job->work == function) {
+//			job->active = ACTIVE;
+//			break;
+//		}
+//	}
 }
 
 
@@ -220,12 +268,29 @@ void deactivateBehaviour(BehaviourFunc function){
 }
 
 /*!
+ * Rueckgabe von True, wenn das Verhalten gerade laeuft (aktiv ist) sonst False
+ * @param function Die Funktion, die das Verhalten realisiert.
+ * @return True wenn Verhalten aktiv sonst False
+ */
+uint8_t behaviour_is_activated(BehaviourFunc function) {
+	Behaviour_t *job;	// Zeiger auf ein Verhalten
+
+	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben 
+	for (job = behaviour; job; job = job->next) {
+		if (job->work == function)
+			return job->active;
+	}
+	return False;
+}
+
+
+/*!
  * liefert 1 zurueck, wenn function ueber eine beliebige Kette (job->caller->caller ....) von anderen Verhalten job aufgerufen hat
  * @param job Zeiger auf den Datensatz des aufgerufenen Verhaltens
  * @param function Das Verhalten, das urspruenglich aufgerufen hat
  * @return 0 wenn keine Call-Abhaengigkeit besteht, ansonsten die Anzahl der Stufen
  */
-uint8 isInCallHierarchy(Behaviour_t *job, BehaviourFunc function){
+static uint8 isInCallHierarchy(Behaviour_t *job, BehaviourFunc function) {
 	uint8 level = 0;
 		
 	if (job == NULL) return 0;	// Liste ist leer
@@ -353,8 +418,7 @@ void return_from_behaviour(Behaviour_t * data){
 }
 
 /*!
- * Deaktiviert alle Verhalten bis auf Grundverhalten. Bei Verhaltensauswahl werden die Aktivitaeten vorher
- * in die Verhaltens-Auswahlvariable gesichert.
+ * @brief	Deaktiviert alle Verhalten bis auf Grundverhalten.
  */
 void deactivateAllBehaviours(void){
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
@@ -369,8 +433,7 @@ void deactivateAllBehaviours(void){
 }
 
 /*! 
- * Zentrale Verhaltens-Routine, wird regelmaessig aufgerufen. 
- * Dies ist der richtige Platz fuer eigene Routinen, um den Bot zu steuern.
+ * @brief	Zentrale Verhaltens-Routine, wird regelmaessig aufgerufen. 
  */
 void bot_behave(void){	
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
@@ -424,7 +487,7 @@ void bot_behave(void){
  * @brief			Erzeugt ein neues Verhalten 
  * @param priority 	Die Prioritaet
  * @param *work 	Den Namen der Funktion, die sich drum kuemmert
- * @param active	Booleand, ob das Verhalten aktiv oder inaktiv erstellt wird
+ * @param active	Boolean, ob das Verhalten aktiv oder inaktiv erstellt wird
  */
 Behaviour_t *new_behaviour(uint8 priority, void (*work) (struct _Behaviour_t *data), int8 active){
 	Behaviour_t *newbehaviour = (Behaviour_t *) malloc(sizeof(Behaviour_t)); 
@@ -504,8 +567,7 @@ void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 		/* Verhaltensstatus toggeln */
 		if (callee != NULL){
 			RC5_Code = 0;
-			if (callee->active == ACTIVE) callee->active = INACTIVE;
-			else callee->active = ACTIVE;	
+			callee->active ^= 1;
 		}
 	}
 	

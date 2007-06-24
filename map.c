@@ -68,11 +68,13 @@
 #define MAP_STEP_FREE		2	/*!< Um diesen Wert wird ein Feld inkrementiert, wenn es als frei erkannt wird */
 #define MAP_STEP_OCCUPIED	10	/*!< Um diesen Wert wird ein Feld dekrementiert, wenn es als belegt erkannt wird */
 
-#define MAP_RADIUS			10	/*!< Umkreis einen Messpunkt, der als Besetzt aktualisiert wird (Streukreis) [mm]*/
+#define MAP_RADIUS			50	/*!< Umkreis eines Messpunktes, der als Besetzt aktualisiert wird (Streukreis) [mm]*/
 #define MAP_RADIUS_FIELDS	(MAP_RESOLUTION*MAP_RADIUS/1000)	/*!< Umkreis einen Messpunkt, der als Besetzt aktualisiert wird (Streukreis) [Felder]*/
 
 #define MAP_PRINT_SCALE				/*!< Soll das PGM eine Skala erhalten */
 #define MAP_SCALE	(MAP_RESOLUTION/2)	/*!< Alle wieviel Punkte kommt wein Skalen-Strich */
+
+#define FREE_BOUNDERY (125-MAP_STEP_FREE)   /*!< Frei Aktualisierung nur bis zu diesem Wert wegen Pfadplanung */
 
 #ifdef SHRINK_MAP_ONLINE
 	uint16 map_min_x=MAP_SIZE*MAP_RESOLUTION/2; /*!< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
@@ -104,14 +106,14 @@ typedef struct {
 		#else
 			// Ohne MMC-Karte nehmen wir nur 1 Sektionen in den SRAM und das wars dann
 			map_section_t * map[1][1];	/*!< Array mit den Zeigern auf die Elemente */
-		#endif
+		#endif	// MMC_AVAILABLE
 	#else
 		map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*!< Array mit den Zeigern auf die Elemente */
-	#endif
+	#endif	// MCU
 #endif	// MMC_VM_AVAILABLE
 
 /*!
- *  initialisiere die Karte
+ * initialisiere die Karte
  * @return 0 wenn alles ok ist
  */
 int8 map_init(void){
@@ -155,7 +157,7 @@ int8 map_init(void){
  * @param create Soll das Segment erzeugt werden, falls es noch nicht existiert?
  * @return einen zeiger auf die Karte
  */
-map_section_t * map_get_section(uint16 x, uint16 y, uint8 create){
+static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
 	uint16 section_x, section_y;
 		
 	// Berechne in welcher Sektion sich der Punkt befindet
@@ -349,7 +351,7 @@ int8 map_get_average(float x, float y, float radius){
  * @param y y-Ordinate der Karte (nicht der Welt!!!)
  * @param value Betrag um den das Feld veraendert wird (>= heisst freier, <0 heisst belegter
  */
-void map_update_field (uint16 x, uint16 y, int8 value) {
+static void map_update_field (uint16 x, uint16 y, int8 value) {
 
 	int16 tmp= map_get_field(x,y);
 	if (tmp == -128)	// Nicht aktualiseren, wenn es sich um ein Loch handelt
@@ -367,8 +369,9 @@ void map_update_field (uint16 x, uint16 y, int8 value) {
  * @param x x-Ordinate der Karte (nicht der Welt!!!)
  * @param y y-Ordinate der Karte (nicht der Welt!!!)
  */
-void map_update_free (uint16 x, uint16 y) {
-  map_update_field(x,y,MAP_STEP_FREE);
+static void map_update_free (uint16 x, uint16 y) {
+	if (map_get_field(x,y) < FREE_BOUNDERY)  // nicht groesser als Grenzwert
+		map_update_field(x,y,MAP_STEP_FREE);
 }
 
 /*!
@@ -436,7 +439,7 @@ float map_to_world(uint16 map_koord){
  * @param h 	Blickrichtung im Bogenmaß
  * @param dist 	Sensorwert 
  */ 
-void update_map_sensor(float x, float y, float h, int16 dist){
+static void update_map_sensor(float x, float y, float h, int16 dist){
 	//Ort des Sensors in Kartenkoordinaten
 	uint16 X = world_to_map(x);
 	uint16 Y = world_to_map(y);
@@ -448,14 +451,10 @@ void update_map_sensor(float x, float y, float h, int16 dist){
 		d=dist;
 		
 		
-	
-	// Hinderniss, dass der Sensor sieht in Weltkoordinaten
-	float PH_x = x + (DISTSENSOR_POS_FW + d) * cos(h);
-	float PH_y = y + (DISTSENSOR_POS_FW + d) * sin(h);
-	// Hinderniss, dass der linke Sensor sieht in Kartenkoordinaten
-	uint16 PH_X = world_to_map(PH_x);
-	uint16 PH_Y = world_to_map(PH_y);
-	
+	// liefert die Mapkoordinaten im Abstand dist vom Punkt xy
+	uint16 PH_X=get_mapposx_dist(x,y,h,dist);
+	uint16 PH_Y=get_mapposy_dist(x,y,h,dist);
+
 	if ((dist > 80 ) && (dist <SENS_IR_INFINITE))
 			map_update_occupied(PH_X,PH_Y);
 	
@@ -543,7 +542,7 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
 }
 
 /*!
- * Prüft ob eine direkte Passage frei von Hindernissen ist
+ * Prueft ob eine direkte Passage frei von Hindernissen ist
  * @param  from_x Startort x Kartenkoordinaten
  * @param  from_y Startort y Kartenkoordinaten
  * @param  to_x Zielort x Kartenkoordinaten
@@ -570,8 +569,8 @@ uint8 map_way_free_fields(uint16 from_x, uint16 from_y, uint16 to_x, uint16 to_y
 	  uint16 lh = dX / 2;
 	  for (i=0; i<dX; ++i) {
 		 for (w=-width; w<= width; w++) // wir müssen die ganze Breite des absuchen
-//			 map_set_field(lX+i*sX, lY+w,-126);
-		     if (map_get_field(lX+i*sX, lY+w) <0) // ein hinderniss reicht für den Abbruch
+//			map_set_field(lX+i*sX, lY+w,-126);
+			if (map_get_field(lX+i*sX, lY+w) < -MAPFIELD_IGNORE) // ein hinderniss reicht für den Abbruch
 		       return 0;
 		  
 	    lh += dY;
@@ -584,8 +583,8 @@ uint8 map_way_free_fields(uint16 from_x, uint16 from_y, uint16 to_x, uint16 to_y
 	  uint16 lh = dY / 2;
 	  for (i=0; i<dY; ++i) {
 		 for (w=-width; w<= width; w++) // wir müssen die ganze Breite des absuchen
-//			 map_set_field(lX+w, lY+i*sY,126);
-			 if (map_get_field (lX+w, lY+i*sY) <0 ) //ein hinderniss reicht für den Abbruch
+//			map_set_field(lX+w, lY+i*sY,126);
+			if (map_get_field (lX+w, lY+i*sY) <-MAPFIELD_IGNORE ) //ein hinderniss reicht für den Abbruch
 		       return 0;
 	    lh += dX;
 	    if (lh >= dY) {
@@ -600,7 +599,7 @@ uint8 map_way_free_fields(uint16 from_x, uint16 from_y, uint16 to_x, uint16 to_y
 
 
 /*!
- * Prüft ob eine direkte Passage frei von Hindernissen ist
+ * Prueft ob eine direkte Passage frei von Hindernissen ist
  * @param  from_x Startort x Weltkoordinaten
  * @param  from_y Startort y Weltkoordinaten
  * @param  to_x Zielort x Weltkoordinaten
@@ -610,6 +609,198 @@ uint8 map_way_free_fields(uint16 from_x, uint16 from_y, uint16 to_x, uint16 to_y
 int8 map_way_free(float from_x, float from_y, float to_x, float to_y){
 	return map_way_free_fields(world_to_map(from_x),world_to_map(from_y),world_to_map(to_x),world_to_map(to_y));
 }	
+
+/*! 
+ * gibt True zurueck wenn Map-Wert value innerhalb des Umkreises radius von xy liegt sonst False;
+ * wird verwendet zum Check, ob sich ein Punkt (naechster Pfadpunkt, Loch) innerhalb eines bestimmten
+ * Umkreises befindet; findet nur Verwendung bei hoeherer Aufloesung
+ * @param x Map-Koordinate
+ * @param y Map-Koordinate
+ * @param radius Radius des Umfeldes
+ * @param value Mapwert des Vergleiches
+ * @return True wenn Wert value gefunden
+ */
+uint8 map_get_value_field_circle(uint16 x, uint16 y, uint8 radius, int8 value) {
+	int16 dX,dY;
+	uint16 h=radius*radius;
+	for(dX = -radius; dX <= radius; dX++) {
+		for(dY = -radius; dY <= radius; dY++) {
+			if(dX*dX + dY*dY <= h)	                    // Vergleich nur innerhalb des Umkreises
+				if (map_get_field(x + dX, y + dY)==value)  // Mapwert hat Vergleichswert ?
+					return True; 	           	            // dann Schluss mit True
+		}
+	}
+	return False;                                       // kein Feldwert ist identisch im Umkreis
+}
+	
+/*!
+ * ermittelt ob der Wert val innerhalb des Umkreises mit Radius r von xy liegt; bei geringer MCU-Aufloesung direkter
+ * Vergleich mit xy
+ * @param x	Map-Koordinate
+ * @param y Map-Koordinate
+ * @param radius Vergleichsradius (halber Suchkreis)
+ * @param val Vergleichswert
+ * @return True wenn Wert val gefunden
+ */
+uint8 value_in_circle (uint16 x, uint16 y, uint8 radius, int8 val) {
+
+	#if MAP_RADIUS_FIELDS_GODEST > 0
+		uint8 r;
+		for (r=1; r<=radius; r++){          // Botradius
+			if (map_get_value_field_circle(x,y,r,val))      // Schluss sobald Wert erkannt wird
+				return True;
+		}
+		return False;                                         // Wert nicht vorhanden
+	#else
+		return map_get_field(x,y)==val;  	                    // niedrige Aufloesung, direkter Feldvergleich
+	#endif	// MAP_RADIUS_FIELDS_GODEST > 0
+}
+
+/*!
+ * Check, ob die MAP-Koordinate xy mit destxy identisch ist (bei kleinen Aufloesungen) oder sich
+ * innerhalb des halben Radius-Umkreises befindet (hoehere Aufloesungen); z.B. verwendet um das
+ * Zielfahren mit gewisser Toleranz zu versehen
+ * @param x x-Ordinate der Karte (nicht der Welt!!!)
+ * @param y y-Ordinate der Karte (nicht der Welt!!!)
+ * @param destx Ziel-x-Ordinate der Karte (nicht der Welt!!!)
+ * @param desty Ziel-y-Ordinate der Karte (nicht der Welt!!!)
+ * @return True wenn xy im Umkreis vorhanden oder identisch ist
+ */
+uint8 map_in_dest (uint16 x, uint16 y, uint16 destx, uint16 desty) {
+	// MAP_RADIUS_FIELDS_GODEST sind die Mapfelder im Botdurchmesser fuer Suchkreis
+	#if MAP_RADIUS_FIELDS_GODEST > 1 // gilt nur fuer hoehere Aufloesungen, sonst direkter Vergleich
+		//Distanzen in Mapfelder
+		int16 distx=destx-x;
+		int16 disty=desty-y;
+		// Radius, also Abstand ermitteln; Wurzel ziehen spare ich mir
+		return distx*distx + disty*disty <= MAP_RADIUS_FIELDS_GODEST_HALF_QUAD;
+	#else
+		//bei geringer Aufloesung (MCU) direkt mit Zielkoords vergleichen
+		return  (x==destx && y==desty);
+	#endif	// MAP_RADIUS_FIELDS_GODEST > 1
+}
+
+#if MAP_RADIUS_FIELDS_GODEST > 0
+	/*!
+	 * Map-Umfeldaktualisierung mit einem bestimmten Wert ab einer Position xy mit Radius r bei
+	 * hoeherer Aufloesung; z.B. verwendet zur Lochmarkierung in einem Umkreis, Hinderniswahrscheinlichkeit
+	 * @param x Map-Koordinate
+	 * @param y Map-Koordinate
+	 * @param radius Radius des Umfeldes
+	 * @param value Mapwert; nur eingetragen wenn aktueller Mapwert groesser value ist
+	 */
+	static void map_set_value_field_circle(uint16 x, uint16 y, int8 radius, int8 value) {
+		int16 dX,dY;
+	    uint16 h=radius*radius;
+		for(dX = -radius; dX <= radius; dX++){
+			for(dY = -radius; dY <= radius; dY++) {
+				if(dX*dX + dY*dY <= h)	                    // nur innerhalb des Umkreises
+					if (map_get_field(x + dX, y + dY)>value)   // Mapwert hoeher Richtung frei ?
+						map_set_field (x + dX, y + dY,value); // dann Wert eintragen
+			}
+		}
+	}
+#endif  // hoehere Aufloesung
+
+/*!
+ * setzt ein Map-Feld auf einen Wert mit Umfeldaktualisierung; Hindernis wird mit halben Botradius
+ * eingetragen, da die Pfadpunkte im ganzen Umkreis liegen und nicht ueberschrieben werden duerfen;
+ * Abgrund/ Loch wird aber auch im ganzen Botradius eingetragen; bei geringer MCU-Aufloesung ohne Umfeld mit
+ * direktem Eintragen des Wertes auf xy; Umfeld wird dann in Richtung Hindernis gedrueckt
+ * @param x Map-Koordinate
+ * @param y Map-Koordinate
+ * @param val im Umkreis einzutragender Wert
+ */
+void map_set_value_occupied (uint16 x, uint16 y, int8 val) {
+	#if MAP_RADIUS_FIELDS_GODEST > 0              // bei hoeherer Aufloesung
+		uint8 r;
+		uint8 maxr;
+
+		if (val==-128)
+			maxr=MAP_RADIUS_FIELDS_GODEST;        // Loch wird mit ganzem Botradius eingetragen
+		else
+			maxr=MAP_RADIUS_FIELDS           ;   // im Normalfall halber Botradius
+
+		for (r=1; r<=maxr; r++)                   // in Map mit dem Radius um xy eintragen
+			map_set_value_field_circle(x,y,r,val);
+
+	#else                                         // bei geringer MCU-Aufloesung direkt auf xy
+		if (map_get_field(x,y)>val)                 // nur Eintragen wenn aktueller Wert freier ist
+		map_set_field(x,y,val);               // damit auch -128 Lochwert eingetragen wird
+	#endif	// MAP_RADIUS_FIELDS_GODEST > 0
+
+	// Punkt xy nun in Richtung Hindernis druecken mit Umfeld; falls Wert fuer kuenstl. Hindernis erreicht
+	// muss Wert aber so bleiben, damit diese Mapfelder bei Neuberechnung der Map-Potenziale erkannt und wieder
+	// freigegeben werden koennen zur Neuberuecksichtigung
+	if (val != -MAP_ART_HAZARD) 
+		map_update_occupied(x,y);
+}
+
+/*! 
+ * Loescht die Mapfelder, die in einem bestimtmen Wertebereich min_val max_val liegen, d.h. diese
+ * werden auf 0 gesetzt 
+ * @param min_val minimaler Wert
+ * @param max_val maximaler Wert
+ */ 
+void clear_map(int8 min_val, int8 max_val) {
+	uint16 x,y;
+	int8 tmp;
+	// Mapfelder durchlaufen
+	for (y=map_min_y; y<= map_max_y; y++) {
+		for (x=map_max_x; x>= map_min_x; x--) {
+			tmp=map_get_field(x,y);				
+			if (tmp>=min_val && tmp<= max_val) // alles zwischen Intervall auf 0 setzen
+				map_set_field(x,y,0); 
+		}		   
+	}
+} 
+
+/*! 
+ * Routine ermittelt ab dem vom Mittelpunkt links/ rechts versetzten Punkt xp yp, in Blickrichtung
+ * dist mm von den Abgrundsensoren voraus, die Mapkoordinaten XY
+ * verwendet zur Map-Lochmarkierung; kann aber allgemeingueltig verwendet werden um
+ * Mapkoordinaten zu erhalten in einem bestimmten Abstand voraus
+ * @param xp Koord vom Mittelpunkt des Bots verschoben
+ * @param yp Koord vom Mittelpunkt des Bots verschoben
+ * @param h Blickrichtung
+ * @param dist Abstand voraus in mm
+ */
+uint16 get_mapposx_dist(float xp, float yp, float h, uint16 dist) {
+
+	// Hinderniss auf X-Koord, dass der Sensor sieht in Weltkoordinaten
+	float PH_x = xp + (DISTSENSOR_POS_FW + dist) * cos(h);
+
+	// Hinderniss, welches der Sensor sieht in, umgerechnet in Karten-Map-Koordinaten
+	return world_to_map(PH_x);
+}
+
+uint16 get_mapposy_dist(float xp, float yp, float h, uint16 dist) {
+
+	// Hinderniss auf Y-Koord, dass der Sensor sieht in Weltkoordinaten
+	float PH_y = yp + (DISTSENSOR_POS_FW + dist) * sin(h);
+
+	// Hinderniss, welches der Sensor sieht in, umgerechnet in Karten-Map-Koordinaten
+	return  world_to_map(PH_y);
+}
+
+/*!
+ * markiert die Mapkoordinaten als Loch zum entsprechenden Abgrundsensor
+ * @param x bereits berechnete Koordinate nach links rechts vom Mittelpunkt in Hoehe des Sensors
+ * @param y bereits berechnete Koordinate nach links rechts vom Mittelpunkt in Hoehe des Sensors
+ * @param h Blickrichtung bereits umgerechnet in Bogenmass
+ */
+void update_map_sensor_hole(float x, float y, float h){
+	uint16 PH_X=0;
+	uint16 PH_Y=0;
+
+	// 0 mm voraus Loch ab Abgrundsensoren
+	PH_X=get_mapposx_dist(x,y,h,0);
+	PH_Y=get_mapposy_dist(x,y,h,0);
+
+	// nur wenn noch nicht als Loch gekennzeichnet auf Umgebungskreis Loch vermerken
+	if (map_get_field(PH_X,PH_Y) > -128)
+		map_set_value_occupied(PH_X,PH_Y,-128);
+}
 
 #ifdef PC
 	/*!
@@ -628,7 +819,7 @@ int8 map_way_free(float from_x, float from_y, float to_x, float to_y){
 		uint16 min_y=map_min_y;
 		uint16 max_y=map_max_y;
 		
-		#ifdef 	SHRINK_MAP_OFFLINE	// nun muessen wir die Grenezn ermitteln
+		#ifdef SHRINK_MAP_OFFLINE	// nun muessen wir die Grenezn ermitteln
 			// Kartengroesse reduzieren
 			int8 free=1;
 			while ((min_y < max_y) && (free ==1)){
@@ -672,7 +863,7 @@ int8 map_way_free(float from_x, float from_y, float to_x, float to_y){
 				max_x--;
 			}
 		
-		#endif
+		#endif	// SHRINK_MAP_OFFLINE
 			
 		uint16 map_size_x=max_x-min_x;
 		uint16 map_size_y=max_y-min_y;
@@ -680,7 +871,7 @@ int8 map_way_free(float from_x, float from_y, float to_x, float to_y){
 			fprintf(fp,"P5\n%d %d\n255\n",map_size_x+10,map_size_y+10);
 		#else
 			fprintf(fp,"P5\n%d %d\n255\n",map_size_x,map_size_y);
-		#endif
+		#endif	// MAP_PRINT_SCALE
 		printf("Karte beginnt bei X=%d,Y=%d und geht bis X=%d,Y=%d (%d * %d Punkte)\n",min_x,min_y,max_x,max_y,map_size_x,map_size_y);
 		
 		uint8 tmp;
@@ -700,7 +891,7 @@ int8 map_way_free(float from_x, float from_y, float to_x, float to_y){
 					
 					fwrite(&tmp,1,1,fp);
 				}
-			#endif
+			#endif	// MAP_PRINT_SCALE
 
 		}
 
@@ -714,13 +905,14 @@ int8 map_way_free(float from_x, float from_y, float to_x, float to_y){
 					fwrite(&tmp,1,1,fp);
 				}
 			}
-		#endif
+		#endif	// MAP_PRINT_SCALE
 		fclose(fp);
 		
 	}
 
 
-	/*! Liest eine Map wieder ein 
+	/*! 
+	 * Liest eine Map wieder ein 
 	 * @param filename Quelldatei
 	 */
 	void read_map(char * filename){
@@ -747,7 +939,7 @@ int8 map_way_free(float from_x, float from_y, float to_x, float to_y){
 		fclose(fp);
 		
 	}
-#endif
+#endif	// PC
 
 
 
@@ -759,9 +951,7 @@ void print_map(void){
 		map_to_pgm("map.pgm");
 	#else
 		// Todo: Wie soll der Bot eine Karte ausgeben ....
-	#endif
+	#endif	// PC
 }
 
-
-
-#endif
+#endif	// MAP_AVAILABLE

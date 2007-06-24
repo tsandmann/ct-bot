@@ -126,8 +126,7 @@
 #endif
 	
 	/* 8 Bit Version */
-//	if (MS_TO_TICKS(ms) < UINT8_MAX) {
-	if (MS_TO_TICKS(ms) < 255) {
+	if (MS_TO_TICKS(ms) < UINT8_MAX) {
 		register uint8_t ticks = TIMER_GET_TICKCOUNT_8;
 		if ((uint8_t)(ticks - *(uint8*)old_ticks) > MS_TO_TICKS(ms)) {
 			*(uint8_t*)old_ticks = ticks;
@@ -136,8 +135,7 @@
 		return False;
 		
 	/* 16 Bit Version */		
-//	} else if (MS_TO_TICKS(ms) < UINT16_MAX) {
-	} else if (MS_TO_TICKS(ms) < 65535) { 
+	} else if (MS_TO_TICKS(ms) < UINT16_MAX) {
 		register uint16_t ticks = TIMER_GET_TICKCOUNT_16;
 		if ((uint16_t)(ticks - *(uint16_t*)old_ticks) > MS_TO_TICKS(ms)) {
 			*(uint16_t*)old_ticks = ticks;

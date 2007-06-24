@@ -24,6 +24,7 @@
 #define BEHAVIOUR_SCAN_AVAILABLE	/*!< gegend scannen vorhanden ?*/
 #define BEHAVIOUR_SOLVE_MAZE_AVAILABLE	/*!< Wandfolger vorhanden ?*/
 //#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE	/*!< Linienfolger vorhanden ?*/
+//#define BEHAVIOUR_MAP_GO_DESTINATION_AVAILABLE /*!< Fahren zu einem Ziel nach Pfadplanung*/
 
 #define BEHAVIOUR_SERVO_AVAILABLE 	/*!< Kontrollverhalten fuer die Servos */
 
@@ -42,6 +43,7 @@
  */
 #ifndef MAP_AVAILABLE
 	#undef BEHAVIOUR_SCAN_AVAILABLE
+	#undef BEHAVIOUR_MAP_GO_DESTINATION_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_GOTOXY_AVAILABLE
@@ -88,6 +90,10 @@
 	#define ADJUST_PID_PARAMS				// ja also die Parameter muessen schon einstellbar sein...
 #endif
 
+#ifndef BEHAVIOUR_MAP_GO_DESTINATION_AVAILABLE
+	#undef DISPLAY_MAP_GO_DESTINATION
+#endif
+
 
 #include "bot-logic/behaviour_simple.h"
 #include "bot-logic/behaviour_drive_square.h"
@@ -105,6 +111,7 @@
 
 #include "bot-logic/behaviour_scan.h"
 
+#include "bot-logic/behaviour_map_go_destination.h"
 
 #include "bot-logic/behaviour_solve_maze.h"
 #include "bot-logic/behaviour_follow_line.h"

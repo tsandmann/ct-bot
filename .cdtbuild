@@ -110,7 +110,7 @@
 <macros/>
 </toolChain>
 </configuration>
-<configuration artifactExtension="elf" artifactName="ct-Bot" cleanCommand="rm -rf" description="Mikrocontroller mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.1150677647" name="Debug-MCU-W32" parent="cdt.managedbuild.config.gnu.exe.debug" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep">
+<configuration artifactExtension="elf" artifactName="ct-Bot" cleanCommand="rm -rf" description="Mikrocontroller mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.1150677647" name="Debug-MCU-W32" parent="cdt.managedbuild.config.gnu.exe.debug" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size ct-Bot.elf">
 <toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.84194754" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 <builder command="make" id="cdt.managedbuild.target.gnu.builder.exe.debug.239679071" name="Gnu Make" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
 <tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.113274235" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">

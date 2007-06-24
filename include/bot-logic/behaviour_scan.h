@@ -17,12 +17,12 @@
  * 
  */
 
-/*! @file 	behaviour_scan.h
+/*! 
+ * @file 	behaviour_scan.h
  * @brief 	Scannt die Umgebung und traegt sie in die Karte ein
- * 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
-*/
+ */
 
 #ifndef BEHAVIOUR_SCAN_H_
 #define BEHAVIOUR_SCAN_H_
@@ -41,6 +41,13 @@ void bot_scan_onthefly_behaviour(Behaviour_t *data);
  * @param *data der Verhaltensdatensatz
  */
 void bot_scan_behaviour(Behaviour_t *data);
+
+
+/*!
+ * Notfallhandler, ausgefuehrt bei Abgrunderkennung; muss registriert werden um
+ * den erkannten Abgrund in die Map einzutragen
+ */
+void border_in_map_handler(void); 
 
 /*! 
  * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung

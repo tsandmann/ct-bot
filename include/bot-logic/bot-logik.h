@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	bot-logik.h
+/*! 
+ * @file 	bot-logik.h
  * @brief 	High-Level-Routinen fuer die Steuerung des c't-Bots
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	01.12.05
-*/
+ */
 
 #ifndef bot_logik_H_
 #define bot_logik_H_
@@ -31,8 +32,6 @@
 #include "motor.h"
 #include "sensor.h"
 #include "bot-local.h"
-
-// Includes aller verfuegbaren Verhalten
 
 
 #define INACTIVE 0	/*!< Verhalten ist aus */
@@ -50,24 +49,15 @@
 #define NORECURSIVE 0	/*!< Konstante, die anzeigt, dass die Aufrufer eines Verhaltens nicht mit deaktiviert werden */
 
 
-#define BOT_BEHAVIOUR_RUNNING	1		/*!< Rueckgabewert eines Verhaltens, das noch weiter laufen moechte. */
-#define BOT_BEHAVIOUR_DONE		0		/*!< Rueckgabewert eines Verhaltens, das fertig ist. */
-
-
 /*! Verwaltungsstruktur fuer die Verhaltensroutinen */
 typedef struct _Behaviour_t {
    void (*work) (struct _Behaviour_t *data); 	/*!< Zeiger auf die Funktion, die das Verhalten bearbeitet */
    
-   uint8 priority;				/*!< Prioritaet */
-   struct _Behaviour_t *caller ; /*!< aufrufendes verhalten */
-   
-   uint8 active:1;				/*!< Ist das Verhalten aktiv */
-   #ifdef DISPLAY_BEHAVIOUR_AVAILABLE  
-     #ifndef DISPLAY_DYNAMIC_BEHAVIOUR_AVAILABLE /*!< bei dynamischer Anzeige und Wahl keine Puffervar notwendig */
-       uint8 active_new:1;			/*!< Ist das via Display gewaehlte neue Sollverhalten */
-     #endif
-   #endif
-   uint8 subResult:2;			/*!< War das aufgerufene unterverhalten erfolgreich (==1)?*/
+   uint8 priority;								/*!< Prioritaet */
+   struct _Behaviour_t *caller;					/*!< aufrufendes verhalten */
+    
+   uint8 active:1;								/*!< Ist das Verhalten aktiv */
+   uint8 subResult:2;							/*!< War das aufgerufene unterverhalten erfolgreich (==1)? */
    struct _Behaviour_t *next;					/*!< Naechster Eintrag in der Liste */
 #ifndef DOXYGEN
 	}__attribute__ ((packed)) Behaviour_t;
@@ -116,6 +106,13 @@ void activateBehaviour(BehaviourFunc function);
 void deactivateBehaviour(BehaviourFunc function);
 
 /*!
+ * Rueckgabe von True, wenn das Verhalten gerade laeuft (aktiv ist) sonst False
+ * @param function Die Funktion, die das Verhalten realisiert.
+ * @return True wenn Verhalten aktiv sonst False
+ */
+uint8_t behaviour_is_activated(BehaviourFunc function);
+
+/*!
  * Deaktiviert alle Verhalten bis auf Grundverhalten. Bei Verhaltensauswahl werden die Aktivitaeten vorher
  * in die Verhaltens-Auswahlvariable gesichert.
  */
@@ -159,6 +156,21 @@ void return_from_behaviour(Behaviour_t * data);
 void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave);
 
 /*! 
+ * Routine zum Registrieren einer Notfallfunktion, die beim Ausloesen eines Abgrundsensors
+ * aufgerufen wird; hierdurch kann ein Verhalten vom Abgrund benachrichtigt werden und
+ * entsprechend dem Verhalten reagieren
+ * @param fkt die zu registrierende Routine, welche aufzurufen ist
+ * @return Index, den die Routine im Array einnimmt, bei -1 ist alles voll
+ */
+int8_t register_emergency_proc(void* fkt);
+
+/*! 
+ * Beim Ausloesen eines Abgrundes wird diese Routine am Ende des Notfall-Abgrundverhaltens angesprungen 
+ * und ruft alle registrierten Prozeduren der Reihe nach auf 
+ */
+void start_registered_emergency_procs(void); 
+
+/*! 
  * @brief			Erzeugt ein neues Verhalten 
  * @param priority 	Die Prioritaet
  * @param *work 	Den Namen der Funktion, die sich drum kuemmert
@@ -167,6 +179,7 @@ void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave);
 Behaviour_t *new_behaviour(uint8 priority, void (*work) (struct _Behaviour_t *data), int8 active);
 
 
+/* Includes aller verfuegbaren Verhalten */
 #include "bot-logic/available_behaviours.h"
 
 
