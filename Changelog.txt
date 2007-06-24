@@ -1,6 +1,6 @@
 CHANGELOG fuer c't-Bot
 ======================
-2007-06-08 Timo Sandmann [mail@timosandmann.de]: Ein paar Optimierungen in bot-logik.c und Erweiterung des RAM-Displays
+2007-06-24 Timo Sandmann [mail@timosandmann.de]: Ein paar Optimierungen in bot-logik.c und Erweiterung des RAM-Displays
 
 2007-06-23 Frank Menzel  [Menzelfr@gmx.net]: Pfadplanungsverhalten map_go_destination und informieren ueber Abgrund via Registrierung
 
