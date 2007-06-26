@@ -22,14 +22,14 @@
 	<span class="function">-Wl,--section-start=.bootloader=0x7C00</span> und f&uuml;r den ATmega644 
 	<span class="function">-Wl,--section-start=.bootloader=0xF800</span> mit auf den Weg geben. Am besten schneidet man sich die Parameter hier per cut'n'paste aus und f&uuml;gt sie in Eclipse unter
 	Project->Properties->C/C++-Build->Tool Settings->GCC Linker->Miscellaneous ein:</p>
-	<a href="mmc.jpg" onclick="popup=window.open('eclipse-linker.jpg','','dependent=yes,location=no,menubar=no,status=no,toolbar=no,scrollbars=yes'); popup.focus(); return false"><img height="200" src="eclipse-linker.jpg" alt="" title="klick mich!" /></a>
+	<a href="images/eclipse-linker.jpg" onclick="popup=window.open('images/eclipse-linker.jpg','','dependent=yes,location=no,menubar=no,status=no,toolbar=no,scrollbars=yes'); popup.focus(); return false"><img height="200" src="images/eclipse-linker.jpg" alt="" title="klick mich!" /></a>
 
 	<p style="clear:both">Das entstandene Hex-File ct-Bot.hex muss man einmalig mit dem Programmierer der 
 	Wahl in den Bot &uuml;bertragen &ndash; genauso wie vorher ohne Bootloader.
 	Au&szlig;erdem muss man die Fuse-Bits nun anders setzen: 
 	In Ponyprog muss nun ein bei BOOTRST und bei BOOTSZ0 ein H&auml;ckchen sein. 
 	Bei BOOTSZ1 darf hingegen keines mehr sein.</p>
-	<a href="mmc.jpg" onclick="popup=window.open('ponyprog_atm32.jpg','','dependent=yes,location=no,menubar=no,status=no,toolbar=no,scrollbars=yes'); popup.focus(); return false"><img height="200" src="ponyprog_atm32.jpg" alt="" title="klick mich!" /></a>
+	<a href="images/ponyprog_atm32.jpg" onclick="popup=window.open('images/ponyprog_atm32.jpg','','dependent=yes,location=no,menubar=no,status=no,toolbar=no,scrollbars=yes'); popup.focus(); return false"><img height="200" src="images/ponyprog_atm32.jpg" alt="" title="klick mich!" /></a>
 	
 	<p style="clear:both">Wer statt PonyProg2000 lieber ein Kommandozeilen-Tool verwendet, um die Fuse-Bits zu setzen, findet in diesem Verzeichnis die Hex-Dateien 
 		(<a href="../contrib/Bootloader/bootloader_hfuse.hex">bootloader_hfuse.hex</a>, <a href="../contrib/Bootloader/bootloader_lfuse.hex">bootloader_lfuse.hex</a>, 
@@ -60,6 +60,6 @@
 		<li>Achtung auch der WiPort braucht ein wenig Zeit zum Booten, es kannn also sein, dass er nicht gleich nach dem Power-on reagiert.</li>
 		<li>Wenn man RS-232- oder USB-2-Bot-Verbindungen nutzt, sollte man unter Windows den COM-Port auf 57600 Baud (8N1) einstellen</li>
 	</ul>
-	<a href="mmc.jpg" onclick="popup=window.open('wiport_serialsettings.jpg','','dependent=yes,location=no,menubar=no,status=no,toolbar=no,scrollbars=yes'); popup.focus(); return false"><img height="200" src="wiport_serialsettings.jpg" alt="" title="klick mich!" /></a>
+	<a href="images/wiport_serialsettings.jpg" onclick="popup=window.open('images/wiport_serialsettings.jpg','','dependent=yes,location=no,menubar=no,status=no,toolbar=no,scrollbars=yes'); popup.focus(); return false"><img height="200" src="images/wiport_serialsettings.jpg" alt="" title="klick mich!" /></a>
 </body>
 </html>

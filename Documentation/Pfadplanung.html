@@ -1,0 +1,541 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 11">
+<meta name=Originator content="Microsoft Word 11">
+<link rel=File-List href="Pfadplanung-Dateien/filelist.xml">
+<link rel=Edit-Time-Data href="Pfadplanung-Dateien/editdata.mso">
+<!--[if !mso]>
+<style>
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style>
+<![endif]-->
+<title>Dokumentation zum Pfadplanungs-Verhalten map_go_destination </title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>MENZELFR</o:Author>
+  <o:LastAuthor>MENZELFR</o:LastAuthor>
+  <o:Revision>2</o:Revision>
+  <o:TotalTime>0</o:TotalTime>
+  <o:Created>2007-06-26T09:33:00Z</o:Created>
+  <o:LastSaved>2007-06-26T09:33:00Z</o:LastSaved>
+  <o:Pages>1</o:Pages>
+  <o:Words>1235</o:Words>
+  <o:Characters>7787</o:Characters>
+  <o:Company>HEIDELBERG AG</o:Company>
+  <o:Lines>64</o:Lines>
+  <o:Paragraphs>18</o:Paragraphs>
+  <o:CharactersWithSpaces>9004</o:CharactersWithSpaces>
+  <o:Version>11.8107</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:SpellingState>Clean</w:SpellingState>
+  <w:GrammarState>Clean</w:GrammarState>
+  <w:HyphenationZone>21</w:HyphenationZone>
+  <w:PunctuationKerning/>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:Compatibility>
+   <w:BreakWrappedTables/>
+   <w:SnapToGridInCell/>
+   <w:WrapTextWithPunct/>
+   <w:UseAsianBreakRules/>
+   <w:DontGrowAutofit/>
+   <w:UseFELayout/>
+  </w:Compatibility>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+ </w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState="false" LatentStyleCount="156">
+ </w:LatentStyles>
+</xml><![endif]-->
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"MS Mincho";
+	panose-1:2 2 6 9 4 2 5 8 3 4;
+	mso-font-alt:"\FF2D\FF33 \660E\671D";
+	mso-font-charset:128;
+	mso-generic-font-family:modern;
+	mso-font-pitch:fixed;
+	mso-font-signature:-1610612033 1757936891 16 0 131231 0;}
+@font-face
+	{font-family:"\@MS Mincho";
+	panose-1:2 2 6 9 4 2 5 8 3 4;
+	mso-font-charset:128;
+	mso-generic-font-family:modern;
+	mso-font-pitch:fixed;
+	mso-font-signature:-1610612033 1757936891 16 0 131231 0;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"MS Mincho";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;
+	text-underline:single;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:#606420;
+	text-decoration:underline;
+	text-underline:single;}
+span.code-string1
+	{mso-style-name:code-string1;
+	color:#BB8844;
+	font-weight:normal;}
+span.SpellE
+	{mso-style-name:"";
+	mso-spl-e:yes;}
+span.GramE
+	{mso-style-name:"";
+	mso-gram-e:yes;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:70.85pt 70.85pt 2.0cm 70.85pt;
+	mso-header-margin:35.4pt;
+	mso-footer-margin:35.4pt;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Normale Tabelle";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0cm 5.4pt 0cm 5.4pt;
+	mso-para-margin:0cm;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";
+	mso-ansi-language:#0400;
+	mso-fareast-language:#0400;
+	mso-bidi-language:#0400;}
+table.MsoTableGrid
+	{mso-style-name:Tabellengitternetz;
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	border:solid windowtext 1.0pt;
+	mso-border-alt:solid windowtext .5pt;
+	mso-padding-alt:0cm 5.4pt 0cm 5.4pt;
+	mso-border-insideh:.5pt solid windowtext;
+	mso-border-insidev:.5pt solid windowtext;
+	mso-para-margin:0cm;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-ansi-language:#0400;
+	mso-fareast-language:#0400;
+	mso-bidi-language:#0400;}
+</style>
+<![endif]--><!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="4098"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body lang=DE link=blue vlink="#606420" style='tab-interval:35.4pt'>
+
+<div class=Section1>
+
+<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><u><span
+style='font-size:14.0pt'>Dokumentation zum Pfadplanungs-Verhalten <span
+class=SpellE>map_go_destination</span> <o:p></o:p></span></u></b></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><a href="#allgemeines">Allgemeines</a></p>
+
+<p class=MsoNormal><a href="#verhaltenssystem">Verhaltenssystem</a></p>
+
+<p class=MsoNormal><a href="#fahrverhalten">Fahrverhalten</a></p>
+
+<p class=MsoNormal><a href="#pfadplanung">Pfadplanung</a></p>
+
+<p class=MsoNormal><a href="#abgrund">Abgrund</a></p>
+
+<p class=MsoNormal><a href="#haengenbleiben">Hängenbleiben</a></p>
+
+<p class=MsoNormal><a href="#zieldefinition">Zieldefinition</a></p>
+
+<p class=MsoNormal><span style='font-size:10.0pt;font-family:"Courier New"'><a
+href="#mapscreen"><span class=SpellE>Map-Screen</span> und Tastenbelegung</a></span></p>
+
+<p class=MsoNormal><a href="#anmerkungen">Anmerkungen</a></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><a name=allgemeines><b style='mso-bidi-font-weight:normal'><u><span
+style='font-size:14.0pt'>Allgemeines</span></u></b></a><b style='mso-bidi-font-weight:
+normal'><u><span style='font-size:14.0pt'> <o:p></o:p></span></u></b></p>
+
+<p class=MsoNormal style='mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt;font-family:"Courier New"'>Das Verhalten operiert auf
+der erstellten Karte und lässt den bot zu einer bestimmten Zielposition
+innerhalb der <span class=SpellE>Map</span> fahren unter Umgehung der
+vorhandenen Hindernisse. Zum Startzeitpunkt des Verhaltens wird der Weg bis zum
+Ziel laut der <span class=SpellE>map</span> und den bisher bekannten
+Hindernissen geplant und die so gefundenen <span class=SpellE>Map-Punktkoordinaten</span>
+wieder in der <span class=SpellE>map</span> abgelegt und bis zum Erreichen des
+Ziels punktweise angefahren. <o:p></o:p></span></p>
+
+<p class=MsoNormal style='mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt;font-family:"Courier New"'>Doch wie kann nun ein
+Zielpunkt definiert <span class=GramE>werden ?</span> Dazu wurde ein weiteres
+kurzes Verhalten implementiert, welches bei einem Tastendruck (</span><span
+class=code-string1><span style='font-size:8.5pt;font-family:"Courier New"'>Pos
+Save F3</span></span><span style='font-size:10.0pt;font-family:"Courier New"'>)
+die aktuelle <span class=SpellE>Map-Botposition</span> als nunmehr globales
+Ziel festlegt. Solange keine andere Koordinate mittels <span class=GramE>diesem
+Tastendruck</span> als Ziel festgelegt wird, solange gilt die Startposition als
+zu erreichendes Ziel. Zum Startzeitpunkt passiert also rein gar nichts, da der
+bot ja seine Zielposition schon erreicht hat. Den bot kann man nun die Gegend
+erforschen lassen oder zu einer anderen Stelle verfahren. Nach Start des
+Pfadfolge-Verhaltens (</span><span class=SpellE><span class=code-string1><span
+style='font-size:8.5pt;font-family:"Courier New"'>Goto</span></span></span><span
+class=code-string1><span style='font-size:8.5pt;font-family:"Courier New"'> F4</span></span><span
+style='font-size:10.0pt;font-family:"Courier New"'>) fährt der Bot nunmehr zu
+seinem vorher festgelegten Ziel (oder Startpunkt) unter Umgehung der
+Hindernisse. <o:p></o:p></span></p>
+
+<p class=MsoNormal style='mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt;font-family:"Courier New"'>Bei völlig unerforschtem
+Gebiet wird die Karte online erstellt und der Weg zum Ziel an den Hindernissen
+vorbei berechnet. Wird der ermittelte Zwischenzielpunkt nicht erreichbar oder
+ermittelbar (wg. Hindernisaktualisierung; zu nah am Hindernis) so erfolgt eine
+neue Pfadplanung.<o:p></o:p></span></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><a name=verhaltenssystem><b style='mso-bidi-font-weight:
+normal'><u><span style='font-size:14.0pt'>Verhaltenssystem<o:p></o:p></span></u></b></a></p>
+
+<span style='mso-bookmark:verhaltenssystem'></span>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><a name=fahrverhalten><b style='mso-bidi-font-weight:normal'>Fahrverhalten</b></a>
+(<span class=SpellE><span style='font-size:8.0pt;color:olive'>bot_gotoxy_behaviour_map</span></span>)</p>
+
+<p class=MsoNormal>Die Denkweise des vorliegenden Verhaltenssystems basiert
+darauf, ein Rahmenverhalten zu schaffen, welches den bot von seinem Standort zu
+einem Zielpunkt <span class=SpellE>xy</span> fahren lässt. Die Routinen basieren
+alle auf den vorliegenden <span class=SpellE>Integer-Mapkoordinaten</span>,
+womit sich speicher- und <span class=SpellE>rechenzeitsparend</span> operieren
+lässt. Eingeleitet wird die Fahrroutine durch den Versuch, ohne Pfadplanung
+direkt in Richtung Ziel zu fahren. Erst wenn dies nicht möglich ist wird versucht,
+einen möglichen Weg zum Ziel zu finden. Durch Umschaltung zum
+Pfadplanungsverhalten wird der Weg zum Ziel versucht zu ermitteln und der
+nächste anzufahrende Zwischenzielpunkt zurückgegeben. Dieser Punkt wird
+angefahren und nach dem Erreichen der Folgepunkt auf dem ermittelten Pfad
+bestimmt. </p>
+
+<p class=MsoNormal>Auf seinem Weg zum Ziel können verschiedene Notfälle
+(Notfall-Registrierung) auftreten. Dazu gibt es die Parallelverhalten zur
+Abgrunderkennung (bereits vorhanden mit <span class=SpellE><span
+style='font-size:8.0pt;color:olive'>bot_avoid_border_behaviour</span></span>)
+und Rückwärtsfahren mit Kennzeichnung des Loches in der <span class=SpellE>Map</span>
+(<span class=SpellE><span style='font-size:8.0pt;color:olive'>update_map_hole</span></span>)
+sowie das Verhalten zum Erkennen eines möglichen Hängenbleibens (<span
+class=SpellE><span style='font-size:8.0pt;color:olive'>bot_check_hang_on_behaviour</span></span>).
+Die beiden Parallelverhalten setzen bei Auftreten eines der Ereignisse eine
+Variable, welches vom Fahrverhalten eine Loch-/Hinderniskennzeichnung in der <span
+class=SpellE>Map</span> mit Pfad-Neuplanung zur Folge hat.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><a name=pfadplanung><b style='mso-bidi-font-weight:normal'>Pfadplanung
+mittels Potenzialfeldmethode</b> </a>(<span class=SpellE><span
+style='font-size:8.0pt;font-family:"Courier New";color:olive'>bot_path_bestfirst_behaviour</span></span>)</p>
+
+<p class=MsoNormal>Die Pfadplanung dient zur Ermittlung des Wegpfades vom <span
+class=SpellE>Bot-Standort</span> zu einem vorher definierten Ziel. Dazu gibt es
+diverse Algorithmen, welche mehr oder weniger speicher- und rechenintensiv
+aufwendig sind. Hinzu kommen weiter stark einschränkende Bedingungen (möglichst
+wenig Speicherverbrauch, keine dynamischen Listen,...), weshalb hier nicht unbedingt
+die bestmögliche Lösung realisiert werden konnte. Die Pfadplanung dient
+eigentlich „nur“ dazu, dem Fahrverhalten einen anzufahrenden Zielpunkt zu
+liefern. Das Verhalten selbst kann relativ einfach durch <span class=GramE>ein auf
+anderem Algorithmus basierender</span> Logik ersetzt werden.</p>
+
+<p class=MsoNormal style='mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt;font-family:"Courier New"'>Implementiert wurde das hier
+vorliegende Pfadplanungsverhalten nach der Potenzialfeldmethode, d.h. grundsätzlich
+wird zum Ziel hin das Potenzial kleiner und umso näher ein Hindernis ist, umso
+größer ist dort das Potenzial. Aus der Summe der anziehenden und <span
+class=SpellE>abstossenden</span> Potenziale wird der nächste anzufahrende Punkt
+ermittelt und derjenige genommen, dessen Pot. am geringsten ist. Die in der
+Literatur beschriebenen dynamischen Listen mit Verwerfen eines Teilwegbaumes in
+<span class=SpellE>lok</span>. Min. konnten hier auf Grund der Einschränkungen
+(bisher) nicht realisiert werden. Stattdessen wurde versucht, mit dem schon
+vorhandenen <span class=SpellE>Map-Speicher</span> den Wegpfad festzuhalten.
+Das folgende Bild verdeutlicht die anzufahrenden und in der <span class=SpellE>Map</span>
+gekennzeichneten Pfadpunkte:<o:p></o:p></span></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
+ style='border-collapse:collapse;mso-yfti-tbllook:480;mso-padding-alt:0cm 5.4pt 0cm 5.4pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;mso-yfti-lastrow:yes;
+  height:228.2pt'>
+  <td width=286 valign=top style='width:214.65pt;padding:0cm 5.4pt 0cm 5.4pt;
+  height:228.2pt'>
+  <p class=MsoNormal><!--[if gte vml 1]><v:shapetype id="_x0000_t75"
+   coordsize="21600,21600" o:spt="75" o:preferrelative="t" path="m@4@5l@4@11@9@11@9@5xe"
+   filled="f" stroked="f">
+   <v:stroke joinstyle="miter"/>
+   <v:formulas>
+    <v:f eqn="if lineDrawn pixelLineWidth 0"/>
+    <v:f eqn="sum @0 1 0"/>
+    <v:f eqn="sum 0 0 @1"/>
+    <v:f eqn="prod @2 1 2"/>
+    <v:f eqn="prod @3 21600 pixelWidth"/>
+    <v:f eqn="prod @3 21600 pixelHeight"/>
+    <v:f eqn="sum @0 0 1"/>
+    <v:f eqn="prod @6 1 2"/>
+    <v:f eqn="prod @7 21600 pixelWidth"/>
+    <v:f eqn="sum @8 21600 0"/>
+    <v:f eqn="prod @7 21600 pixelHeight"/>
+    <v:f eqn="sum @10 21600 0"/>
+   </v:formulas>
+   <v:path o:extrusionok="f" gradientshapeok="t" o:connecttype="rect"/>
+   <o:lock v:ext="edit" aspectratio="t"/>
+  </v:shapetype><v:shape id="_x0000_i1025" type="#_x0000_t75" style='width:210.75pt;
+   height:222.75pt'>
+   <v:imagedata src="images/pfad001.png" o:title=""/>
+  </v:shape><![endif]--><![if !vml]><img border=0 width=281 height=297
+  src="images/pfad002.jpg" v:shapes="_x0000_i1025"><![endif]></p>
+  </td>
+  <td width=286 valign=top style='width:214.65pt;padding:0cm 5.4pt 0cm 5.4pt;
+  height:228.2pt'>
+  <p class=MsoNormal><!--[if gte vml 1]><v:shape id="_x0000_i1026" type="#_x0000_t75"
+   style='width:177.75pt;height:222.75pt'>
+   <v:imagedata src="images/pfad003.gif" o:title=""/>
+  </v:shape><![endif]--><![if !vml]><img border=0 width=237 height=297
+  src="images/pfad003.gif" v:shapes="_x0000_i1026"><![endif]></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal>Der relativ geringe Aufwand ist gleichzeitig der Nachteil.
+Auf Grund der anziehenden (Abstand zum Ziel) und abstoßenden Potenziale (<span
+class=SpellE>Mapwerte</span> der Hinderniswahrscheinlichkeit durch <span
+class=SpellE><span style='font-size:8.0pt;color:olive'>bot_scan_onthefly_behaviour</span></span><span
+style='font-size:8.0pt;color:olive'>/ <span class=SpellE>bot_scan_behaviour</span></span>)
+kann es zu einem lokalen Minimum führen. So ist es in dem Bild oben kaum
+möglich, aus der oberen linken Ecke rauszukommen. Hier ist noch viel Spielraum
+für Verbesserungen/ Erweiterungen vorhanden.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><a name=abgrund><b style='mso-bidi-font-weight:normal'><u><span
+style='font-size:14.0pt'>Abgrund<o:p></o:p></span></u></b></a></p>
+
+<span style='mso-bookmark:abgrund'></span>
+
+<p class=MsoNormal>Parallel zum Fahrverhalten wird vom Abgrundverhalten (<span
+class=SpellE><span style='font-size:8.0pt;color:olive'>bot_avoid_border_behaviour</span></span>)
+ständig geprüft, ob sich <span class=GramE>der</span> Bot über einen Abgrund
+befindet. Wenn ein solcher Notfall auftritt, kann mit der hier verwendeten
+Logik ein beliebiges anderes Verhalten darüber benachrichtigt werden. Von dem
+Verhalten selbst <span class=SpellE>muß</span> hierzu nur eine Routine
+bereitgestellt werden, die diesen Notfall dann entsprechend behandeln kann.
+Diese Routine <span class=SpellE>muß</span> dann via <span class=SpellE>register_emergency_proc</span>
+registriert werden. Diese Routinen werden in einem <span class=SpellE>array</span>
+abgelegt und beim Auftreten des Notfalls der Reihe nach aufgerufen.</p>
+
+<p class=MsoNormal>In unserem Fall werden 2 Routinen (<span class=SpellE><span
+style='font-size:8.0pt;color:olive'>border_in_map_handler</span></span><span
+style='font-size:8.0pt;color:olive'>/ <span class=SpellE>border_mapgo_handler</span></span>)
+registriert, welche im Falle des Abgrundes ein rückwärts fahren (Umschaltung
+zum Verhalten <span class=SpellE><span style='font-size:8.0pt;color:olive'>bot_drive_distance</span></span>)
+und die Kennzeichnung der <span class=SpellE>Loch-Mapkoordinaten</span> (<span
+class=SpellE><span style='font-size:8.0pt;color:olive'>update_map_hole</span></span>)
+mit neuer Pfadplanung zur Folge haben.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><a name=haengenbleiben><b style='mso-bidi-font-weight:normal'><u><span
+style='font-size:14.0pt'>Hängenbleiben</span></u></b></a> (<span class=SpellE><span
+style='font-size:8.0pt;color:olive'>bot_check_hang_on_behaviour</span></span>)</p>
+
+<p class=MsoNormal>Das Verhalten vergleicht die Maus- und <span class=SpellE>Encoderwerte</span>
+miteinander um ein Hängenbleiben des <span class=SpellE>bots</span>, wie <a
+href="http://www.heise.de/ct/06/13/226/">hier</a> beschrieben, zu erkennen
+(funktioniert also nur bei aktivierter Maus). Mittels einer <span class=SpellE>Syncvar</span>
+wird das Fahrverhalten über das Ereignis informiert (hätte auch wie oben mit
+Registrierung realisiert werden können), was ein Rückwärtsfahren und <span
+class=SpellE>Hindernis-Voraus</span> Kennzeichnung mit neuer Pfadplanung zur
+Folge hat.</p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><a name=zieldefinition><b style='mso-bidi-font-weight:normal'><u><span
+style='font-size:14.0pt'>Zieldefinition<o:p></o:p></span></u></b></a></p>
+
+<span style='mso-bookmark:zieldefinition'></span>
+
+<p class=MsoNormal>Es ist solange der Ausgangspunkt des <span class=SpellE>bots</span>
+als Ziel festgelegt, bis die Taste F3 betätigt wird. Dann gilt die aktuelle <span
+class=SpellE>Bot-Position</span> als zu erreichendes Ziel, welches nach F4
+angefahren wird. <span class=GramE>Im</span> Screen ändert sich entsprechend
+die oberste Zeile. Die hierzu aufgerufene Routine <span class=SpellE><span
+style='font-size:8.0pt;color:olive'>bot_set_destination</span></span> setzt bei
+Parameter 0,0 die aktuelle <span class=SpellE>Botposition</span> als Ziel oder
+setzt bei <span class=SpellE>Map-Werteübergabe</span> diese als Ziel. </p>
+
+<p class=MsoNormal><span style='font-size:10.0pt;font-family:"Courier New"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:10.0pt;font-family:"Courier New"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:10.0pt;font-family:"Courier New"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><a name=mapscreen></a><span class=SpellE><span
+style='mso-bookmark:mapscreen'><b style='mso-bidi-font-weight:normal'><u><span
+style='font-size:14.0pt;font-family:"Courier New"'>Map-Screen</span></u></b></span></span><span
+style='mso-bookmark:mapscreen'><b style='mso-bidi-font-weight:normal'><u><span
+style='font-size:14.0pt;font-family:"Courier New"'> und Tastenbelegung<o:p></o:p></span></u></b></span></p>
+
+<span style='mso-bookmark:mapscreen'></span>
+
+<p class=MsoNormal><span style='font-size:10.0pt;font-family:"Courier New"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:10.0pt;font-family:"Courier New"'>Auf
+dem Screen werden im oberen Teil die <span class=SpellE>Mapkoordinaten</span>
+des zuletzt gespeicherten Ziels (oberste Zeile) ausgegeben sowie darunter die
+beim Umherfahren sich ständig ändernde <span class=SpellE>Bot-Map-Koordinate</span>.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:10.0pt;font-family:"Courier New"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:10.0pt;font-family:"Courier New"'><!--[if gte vml 1]><v:shape
+ id="_x0000_i1027" type="#_x0000_t75" style='width:97.5pt;height:49.5pt'>
+ <v:imagedata src="images/pfad004.png" o:title=""/>
+</v:shape><![endif]--><![if !vml]><img border=0 width=130 height=66
+src="images/pfad005.jpg" v:shapes="_x0000_i1027"><![endif]><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-GB style='font-size:10.0pt;font-family:"Courier New";
+mso-ansi-language:EN-GB'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:10.0pt;font-family:"Courier New"'>Im
+unteren Teil werden kurz die Funktionen aufgeführt bei Aufruf einer bestimmten
+Funktionstaste:<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:10.0pt;font-family:"Courier New"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:10.0pt;font-family:"Courier New"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:10.0pt;font-family:"Courier New"'>Print<span
+style='mso-spacerun:yes'>      </span>F1<span style='mso-spacerun:yes'>   
+</span>-&gt; im Simulator wird Karte ausgegeben als <span class=SpellE>Greymap</span><o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:10.0pt;font-family:"Courier New"'>Pos
+Save<span style='mso-spacerun:yes'>   </span>F3<span
+style='mso-spacerun:yes'>    </span>-&gt; aktuelle <span class=SpellE>Botposition</span>
+gilt als nunmehr global zu erreichende Zielposition<o:p></o:p></span></p>
+
+<p class=MsoNormal><span class=SpellE><span style='font-size:10.0pt;font-family:
+"Courier New"'>Goto</span></span><span style='font-size:10.0pt;font-family:
+"Courier New"'><span style='mso-spacerun:yes'>     </span><span
+style='mso-spacerun:yes'>  </span>F4<span style='mso-spacerun:yes'>   
+</span>-&gt; globale Zielposition wird angefahren<o:p></o:p></span></p>
+
+<p class=MsoNormal><span class=SpellE><span style='font-size:10.0pt;font-family:
+"Courier New"'>Scan</span></span><span style='font-size:10.0pt;font-family:
+"Courier New"'><span style='mso-spacerun:yes'>       </span>F7<span
+style='mso-spacerun:yes'>    </span>-&gt; bot dreht sich im Kreis mit <span
+class=SpellE>Scan</span> der Umgebung<o:p></o:p></span></p>
+
+<p class=MsoNormal><span style='font-size:10.0pt;font-family:"Courier New"'><o:p>&nbsp;</o:p></span></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><a name=anmerkungen><b style='mso-bidi-font-weight:normal'><u><span
+style='font-size:14.0pt'>Anmerkungen<o:p></o:p></span></u></b></a></p>
+
+<span style='mso-bookmark:anmerkungen'></span>
+
+<p class=MsoNormal><span style='font-size:10.0pt;font-family:"Courier New"'>Um
+auf der vorhandenen <span class=SpellE>Map</span> operieren zu können, wurde
+der Wertebereich der <span class=SpellE>online-Aktualisierung</span>
+eingeschränkt, so dass der höchste Wert +127 für die Markierung der Pfadpunkte
+benutzt werden kann ohne durch die ständige Freiaktualisierung überschrieben zu
+werden. Und die &quot;nur&quot; 2cm für das Hindernisumfeld (MAP_RADIUS)habe
+ich auch erhöhen müssen, damit Abstand gehalten wird. <o:p></o:p></span></p>
+
+<p class=MsoNormal style='mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt;font-family:"Courier New"'>Durch die oftmalige
+Benutzung des Not-Aus Verhaltens, werden ja alle Verhalten bis <span
+class=SpellE>Prio</span> 200 <span class=SpellE>deaktiviert</span>, so auch das
+<span class=SpellE>on_the_fly-Verhalten</span>, welches grundlegend für diese <span
+class=SpellE>Map-Routinen</span> ist. Die <span class=SpellE>Prio</span> wurde
+deswegen auf einen Wert &gt; 200 angehoben, um die Aktivierung zu erhalten. <o:p></o:p></span></p>
+
+<p class=MsoNormal style='mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt;font-family:"Courier New"'>Entscheidend ist hier auch
+die Wahl der Auflösung. Die besten Ergebnisse habe ich bei <span class=SpellE>MCU-Auflösung</span>
+gemacht, da damit die Zwischenzielpunkte in nicht zu geringem Abstand generiert
+werden. Bei dieser Auflösung wird direkt mit den jeweiligen <span class=SpellE>Nachbar-Mapkoordinaten</span>
+operiert. Bei hoher Auflösung wird mittels Umkreis um den zu untersuchenden
+Punkt die nächste anzufahrende <span class=SpellE>Map-Koordinate</span>
+ermittelt. Hierbei ist ebenfalls wichtig, dass das zu aktualisierende Umfeld
+eines Hindernisses nicht zu klein gewählt wird (<span class=SpellE>Define</span>
+MAP_RADIUS), damit Abstand zum Hindernis gehalten wird. Auf die Ergebnisliste
+wird keine weitere Routine angewandt, so dass bei höheren Auflösungen relativ
+viele Zwischenzielpunkte erzeugt werden. Hier könnte sicher noch eine
+Datenreduktion erfolgen.<o:p></o:p></span></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+</div>
+
+</body>
+
+</html>
