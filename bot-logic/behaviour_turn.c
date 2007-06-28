@@ -33,16 +33,14 @@
 	#include <avr/eeprom.h>
 	#define ANGLE_CORRECT	1						/*!< Drehfehler-Init */
 #else
-	/* derzeit kein EEPROM fuer PC vorhanden, Daten liegen einfach im RAM */
-	#define eeprom_read_byte(x)			*x			/*!< Pseudo-EEPROM-Funktion fuer PC */
-	#define eeprom_write_byte(ptr, x)	*ptr = x	/*!< Pseudo-EEPROM-Funktion fuer PC */
+	#include "eeprom-emu.h"
 	#define ANGLE_CORRECT	0						/*!< Drehfehler-Init */
 #endif	// MCU
 
 /* EEPROM-Variablen immer deklarieren, damit die Adressen sich nicht veraendern je nach #define */
-uint8 EE_SECTION err15=ANGLE_CORRECT	*1;			/*!< Fehler bei Drehungen unter 15 Grad */
-uint8 EE_SECTION err45=ANGLE_CORRECT	*2;			/*!< Fehler bei Drehungen zwischen 15 und 45 Grad */
-uint8 EE_SECTION err_big=ANGLE_CORRECT	*4;			/*!< Fehler bei groesseren Drehungen */
+uint8 EEPROM err15=ANGLE_CORRECT	*1;			/*!< Fehler bei Drehungen unter 15 Grad */
+uint8 EEPROM err45=ANGLE_CORRECT	*2;			/*!< Fehler bei Drehungen zwischen 15 und 45 Grad */
+uint8 EEPROM err_big=ANGLE_CORRECT	*4;			/*!< Fehler bei groesseren Drehungen */
 
 
 #ifdef BEHAVIOUR_TURN_AVAILABLE

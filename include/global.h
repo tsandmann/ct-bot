@@ -60,11 +60,13 @@
 	#define On                    1		/*!< An */
 	#define Off                   0		/*!< Aus */
 
-	#ifdef MCU
-		#define EE_SECTION	__attribute__ ((section (".eeprom"),aligned (1)))	/*!< Shortcut fuer EEPROM-Section */
+	#ifdef __APPLE__
+		/* OS X */
+		#define EEPROM __attribute__ ((section (".eeprom,#alloc"),aligned(1)))	/*!< EEPROM-Section */
 	#else
-		#define EE_SECTION														/*!< Shortcut fuer EEPROM-Section */
-	#endif	// MCU
+		/* Linux und Windows */
+		#define EEPROM __attribute__ ((section (".eeprom"),aligned(1)))			/*!< EEPROM-Section */
+	#endif
 
 	#define binary(var,bit) ((var >> bit)&1)	/*!< gibt das Bit "bit" von "var" zurueck */
 #endif	// __ASSEMBLER__

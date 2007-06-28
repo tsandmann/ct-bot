@@ -28,10 +28,11 @@
 
 #include "ct-Bot.h"
 
-#ifdef MCU
-#include "avr/eeprom.h"
 /* EEPROM-Variable immer deklarieren, damit die Adresse sich nicht veraendert je nach #define */
-uint32 __attribute__ ((section (".eeprom"))) eefat[10] = {0};	/*!< EEPROM-Cache fuer FAT-Eintraege */
+uint32_t EEPROM eefat[10] = {0};	/*!< EEPROM-Cache fuer FAT-Eintraege */
+
+#ifdef MCU
+#include <avr/eeprom.h>
 
 #ifdef MMC_AVAILABLE	
 

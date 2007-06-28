@@ -45,9 +45,7 @@
 #ifdef MCU
 	#include <avr/eeprom.h>
 #else
-	/* derzeit kein EEPROM fuer PC vorhanden, Daten liegen einfach im RAM */
-	#define eeprom_write_byte(ptr, x)	*ptr = x
-	#define eeprom_write_block(pRam, pEeprom, n)	memcpy(pEeprom, pRam, n)	// eeprom_write_block ist andersrum!
+	#include "eeprom-emu.h"
 #endif
 
 //static Behaviour_t* data = NULL;

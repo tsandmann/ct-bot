@@ -45,6 +45,8 @@
 
 #ifdef MCU
 	#include <avr/eeprom.h>
+#else
+	#include "eeprom-emu.h"
 #endif
 
 int16 speed_l = 0;	/*!< Sollgeschwindigkeit linker Motor */
@@ -86,11 +88,9 @@ int16 speed_r = 0;	/*!< Sollgeschwindigkeit rechter Motor */
 //	static volatile uint8 acc_test[2];			/*!< nur Testcase */
 //	static volatile uint16 acc_test_dt[2];		/*!< nur Testcase */
 #endif	// SPEED_CONTROL_AVAILABLE
-#ifdef MCU
-	/* EEPROM-Variable immer deklarieren, damit die Adresse sich nicht veraendert je nach #define */
-	/*! EEPROM-Kopie von pwm_values */
-	uint8_t __attribute__ ((section (".eeprom"),aligned (1))) pwmSlow[4] = {255, 255, 255, 255};
-#endif
+
+/* EEPROM-Variable immer deklarieren, damit die Adresse sich nicht veraendert je nach #define */
+uint8_t EEPROM pwmSlow[4] = {255, 255, 255, 255};	/*!< EEPROM-Kopie von pwm_values */
 	
 direction_t direction;		/*!< Drehrichtung der Motoren */
 

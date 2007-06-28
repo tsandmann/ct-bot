@@ -41,9 +41,8 @@
 #ifdef MCU
 	#include <avr/eeprom.h>
 #else
-	/* derzeit kein EEPROM fuer PC vorhanden, Daten liegen einfach im RAM */
-	#define eeprom_read_byte(x)	*x											/*!< Pseudo-EEPROM-Funktion fuer PC */
-#endif	// MCU
+	#include "eeprom-emu.h"
+#endif
 
 // Defines einiger, haeufiger benoetigter Konstanten
 #define DEG2RAD (2*M_PI/360)	/*!< Umrechnung von Grad nach Bogenmass */ 
@@ -59,9 +58,9 @@ uint8_t sensDistRToggle=0;	/*!< Toggle-Bit des rechten IR-Sensors */
 /*! Zeiger auf die Auswertungsfunktion fuer die Distanzsensordaten, const. solange sie nicht kalibriert werden */
 void (* sensor_update_distance)(int16* const p_sens, uint8* const p_toggle, const distSens_t* ptr, int16 volt) = sensor_dist_lookup;
 
-distSens_t EE_SECTION sensDistDataL[] = SENSDIST_DATA_LEFT;		/*!< kalibrierte Referenzdaten fuer linken IR-Sensor */
-distSens_t EE_SECTION sensDistDataR[] = SENSDIST_DATA_RIGHT;	/*!< kalibrierte Referenzdaten fuer rechten IR-Sensor */
-uint8_t EE_SECTION sensDistOffset = SENSDIST_OFFSET;			/*!< Spannungs-Offset IR-Sensoren */
+distSens_t EEPROM sensDistDataL[] = SENSDIST_DATA_LEFT;		/*!< kalibrierte Referenzdaten fuer linken IR-Sensor */
+distSens_t EEPROM sensDistDataR[] = SENSDIST_DATA_RIGHT;	/*!< kalibrierte Referenzdaten fuer rechten IR-Sensor */
+uint8_t EEPROM sensDistOffset = SENSDIST_OFFSET;			/*!< Spannungs-Offset IR-Sensoren */
 
 int16 sensBorderL=0;	/*!< Abgrundsensor links */
 int16 sensBorderR=0;	/*!< Abgrundsensor rechts */

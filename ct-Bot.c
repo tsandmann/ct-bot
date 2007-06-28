@@ -39,6 +39,7 @@
 	#include "bot-2-sim.h"
 	#include "tcp.h"
 	#include "tcp-server.h"
+	#include "eeprom-emu.h"
 	#include <pthread.h>
 	#include <unistd.h>
 	#include <stdlib.h>
@@ -133,6 +134,7 @@ void init(void){
 
 	#ifdef PC
 		bot_2_sim_init();
+		init_eeprom_man(0);
 	#endif
 
 	#ifdef DISPLAY_AVAILABLE
@@ -221,7 +223,7 @@ void init(void){
 	 * Das Programm wird nach Anzeige des Hilfetextes per exit() beendet.
 	 */
 	void usage(void){
-		puts("USAGE: ct-Bot [-t host] [-T] [-h] [-s] [-M from] [-c FILE ID SIZE] [-e ADDR ID SIZE] [-d ID]");
+		puts("USAGE: ct-Bot [-t host] [-T] [-h] [-s] [-M from] [-c FILE ID SIZE] [-e ADDR ID SIZE] [-d ID] [-i]");
 		puts("\t-t\tHostname oder IP Adresse zu der Verbunden werden soll");
 		puts("\t-T\tTestClient");
 		puts("\t-s\tServermodus");
@@ -237,6 +239,7 @@ void init(void){
 		puts("\t-d \tLoescht eine Mini-Fat-Datei fuer den Sim (emulierte MMC).");		
 		puts("\t   ID  \tDie ID aus ASCII-Zeichen");		
 		puts("\t-l \tKonvertiert eine SpeedLog-Datei in eine txt-Datei");
+		puts("\t-i \tInitialisiert das EEPROM mit den Daten der EEP-Datei"); 
 		puts("\t-h\tZeigt diese Hilfe an");
 		exit(1);
 	}
@@ -264,16 +267,17 @@ void init(void){
 		int start_test_client =0; /*!< Wird auf 1 gesetzt, falls -T angegeben wurde */
 		char *hostname = NULL;	/*!< Speichert den per -t uebergebenen Hostnamen zwischen */
 
-		int convert =0; /*!< Wird auf 1 gesetzt, wenn die Karte konvertiert werden soll */
-		int create  =0;  /*!< Wird auf 1 gesetzt, wenn eine neue Datei fuer Bot-mini-fat erzeugt werden soll */
-		int emu_create = 0;  /*!< Wird auf 1 gesetzt, wenn eine neue Datei fuer Sim-Mini-Fat erzeugt werden soll */
-		int emu_delete = 0;  /*!< Wird auf 1 gesetzt, wenn eine neue Datei fuer Sim-Mini-Fat geloescht werden soll */
-		int slog	=0;
+		int convert = 0;	/*!< Wird auf 1 gesetzt, wenn die Karte konvertiert werden soll */
+		int create  = 0;	/*!< Wird auf 1 gesetzt, wenn eine neue Datei fuer Bot-mini-fat erzeugt werden soll */
+		int emu_create = 0;	/*!< Wird auf 1 gesetzt, wenn eine neue Datei fuer Sim-Mini-Fat erzeugt werden soll */
+		int emu_delete = 0;	/*!< Wird auf 1 gesetzt, wenn eine neue Datei fuer Sim-Mini-Fat geloescht werden soll */
+		int ee_init = 0;	/*!< Wird auf 1 gesetzt, wenn das EEPROM mit EEP-Datei initialisiert werden soll */
+		int slog	= 0;
 		char *from = NULL;	/*!< Speichert den per -M uebergebenen Quellnamen zwischen */
 
 
 		/* Die Kommandozeilenargumente komplett verarbeiten */
-		while ((ch = getopt(argc, argv, "hsTt:M:c:l:e:d:")) != -1) {
+		while ((ch = getopt(argc, argv, "hsTit:M:c:l:e:d:")) != -1) {
 			switch (ch) {
 			case 's':
 				/* Servermodus [-s] wird verlangt */
@@ -348,6 +352,10 @@ void init(void){
 					slog=1;					
 				}				
 				break;			
+			case 'i':
+				/* EEPROM-Init */
+				ee_init = 1;
+				break;
 			case 'h':
 			default:
 				/* -h oder falscher Parameter, Usage anzeigen */
@@ -428,6 +436,15 @@ void init(void){
    		 	printf("Mini-Fat-Datei mit ID %s auf der emulierten MMC soll geloescht werden.\n", from);
    		 	delete_emu_mini_fat_file(from);
 	   		exit(0);
+		}
+		if (ee_init != 0) {
+			printf("EEPROM soll mit den Daten einer eep-Datei initialisiert werden.\n");
+			if (init_eeprom_man(1) != 0) {
+				printf("Fehler bei EEPROM-Initialisierung!\n");	
+			} else {
+				printf("done.\n");
+			}
+			exit(0);
 		}
 
     	printf("c't-Bot\n");

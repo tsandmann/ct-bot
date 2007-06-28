@@ -35,11 +35,11 @@
 
 #ifdef MCU
 	#include <avr/eeprom.h>
+#else
+	#include "eeprom-emu.h"
 #endif
 
-#ifdef MCU
-	uint8 __attribute__ ((section (".eeprom"))) resetsEEPROM = 0;	/*!< Reset-Counter-Wert im EEPROM */
-#endif
+uint8_t EEPROM resetsEEPROM = 0;	/*!< Reset-Counter-Wert im EEPROM */
 
 #ifdef DISPLAY_AVAILABLE
 	#ifdef MISC_DISPLAY_AVAILABLE

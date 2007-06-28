@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-06-28 Achim Pankalla [achim.pankalla@gmx.de]: EEPROM-Manager fuer PC-Bot eingefuehrt, siehe Documentation/eeprom-simulation.html
+
 2007-06-26 Timo Sandmann [mail@timosandmann.de]: rc5-codes.h Update
 
 2007-06-26 Frank Menzel  [Menzelfr@gmx.net]: Dokumentation zum Pfadplanungsverhalten map_go_destination ergaenzt
