@@ -38,7 +38,7 @@
 #include "tcp.h"
 #include "timer.h"
 
-#define DEBUG_EEPROM		// Schalter um LOG-Ausgaben anzumachen
+//#define DEBUG_EEPROM		// Schalter um LOG-Ausgaben anzumachen
 
 #ifndef DEBUG_EEPROM
 	#undef LOG_INFO
