@@ -31,8 +31,8 @@
 	/* Moeglichst frueh section erzwingen, damit sie VOR .eeprom liegt!!! */
 	#ifdef __APPLE__
 		/* OS X */
-		uint8_t __attribute__ ((section (".s1eeprom,#alloc"))) _eeprom_start1__ = 0;
-		uint8_t __attribute__ ((section (".s2eeprom,#alloc"))) _eeprom_start2__ = 0;
+		uint8_t __attribute__ ((section ("__DATA,.s1eeprom"))) _eeprom_start1__ = 0;
+		uint8_t __attribute__ ((section ("__DATA,.s2eeprom"))) _eeprom_start2__ = 0;
 	#else
 		/* Linux und Windows */
 		uint8_t __attribute__ ((section (".s1eeprom"))) _eeprom_start1__ = 0;

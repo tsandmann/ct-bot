@@ -127,6 +127,8 @@
 	#ifdef BOT_2_PC_AVAILABLE
 		#define UART_AVAILABLE		/*!< Serial Communication */
 		#define COMMAND_AVAILABLE	/*!< High-Level Communication */
+	#else
+		#undef DISPLAY_REMOTE_AVAILABLE
 	#endif
 #endif
 

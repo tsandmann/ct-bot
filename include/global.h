@@ -62,7 +62,7 @@
 
 	#ifdef __APPLE__
 		/* OS X */
-		#define EEPROM __attribute__ ((section (".eeprom,#alloc"),aligned(1)))	/*!< EEPROM-Section */
+		#define EEPROM __attribute__ ((section ("__DATA,.eeprom"),aligned(1)))	/*!< EEPROM-Section */
 	#else
 		/* Linux und Windows */
 		#define EEPROM __attribute__ ((section (".eeprom"),aligned(1)))			/*!< EEPROM-Section */
