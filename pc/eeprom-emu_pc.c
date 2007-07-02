@@ -35,8 +35,6 @@
 
 #include "log.h"
 #include "gui.h"
-#include "tcp.h"
-#include "timer.h"
 
 //#define DEBUG_EEPROM		// Schalter um LOG-Ausgaben anzumachen
 
@@ -136,14 +134,16 @@ static uint16 check_eeprom_file(char *initfile, uint8_t eeprom_init){
 			LOG_INFO("->Kann EEPROM-Datei nicht erstellen");
 			return(1);
 		}
-		
-		/* EEPROM mit .eeprom-Section des .elf-Files initialisieren */
-		uint8_t * ram_dump = (uint8_t *)(&_eeprom_start2__ + (&_eeprom_start2__ - &_eeprom_start1__));
-		fwrite(ram_dump, EE_SIZE, 1, fpw);
-
-//		/* alternativ: leeres EEPROM erstellen */	
-//		for(i = 0; i < EE_SIZE; i++)
-//			fwrite("\377", 1, 1, fpw);
+		if(!addrconv) {
+			/* EEPROM mit .eeprom-Section des .elf-Files initialisieren, wenn PC Modus */
+			uint8_t * ram_dump = (uint8_t *)(&_eeprom_start2__ + (&_eeprom_start2__ - &_eeprom_start1__));
+			fwrite(ram_dump, EE_SIZE, 1, fpw);
+		} else {
+			/* alternativ: leeres EEPROM erstellen und init setzen bei MCU Modus*/	
+			for(i = 0; i < EE_SIZE; i++)
+				fwrite("\377", 1, 1, fpw);
+			eeprom_init = 1;
+		}
 
 		fclose(fpw);
 		LOG_INFO("->Leere EEPROM-Datei erstellt");
