@@ -121,7 +121,8 @@ static uint32 conv_eeaddr(uint32 addr){
  *  0 = EEPROM Datei OK
  *  1 = Fehler aufgetreten
  * -----
- * @param initfile EEP-Datei des PC Codes
+ * @param initfile		EEP-Datei des PC Codes
+ * @param eeprom_init	Flag fuer Initialisierung (1 ja, 0 nein)
  * @return Status der Funktion
  */
 static uint16 check_eeprom_file(char *initfile, uint8_t eeprom_init){
