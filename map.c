@@ -803,6 +803,67 @@ void update_map_sensor_hole(float x, float y, float h){
 }
 
 #ifdef PC
+
+	/*!
+	 * verkleinert die Karte auf den benutzten Bereich
+	 * @param min_x Zeiger auf einen uint16, der den miniamlen X-Wert puffert
+	 * @param max_x Zeiger auf einen uint16, der den maxinmalen X-Wert puffert
+	 * @param min_y Zeiger auf einen uint16, der den miniamlen Y-Wert puffert
+	 * @param max_y Zeiger auf einen uint16, der den maxinmalen Y-Wert puffert
+	 */
+	void shrink_map(uint16 * min_x, uint16 * max_x, uint16 * min_y, uint16 * max_y){
+		uint16 x,y;
+	
+		// lokale Variablen mit den defaults befuellen
+		*min_x=map_min_x;
+		*max_x=map_max_x;
+		*min_y=map_min_y;
+		*max_y=map_max_y;
+		
+		// Kartengroesse reduzieren
+		int8 free=1;
+		while ((*min_y < *max_y) && (free ==1)){
+			for (x=*min_x; x<*max_x; x++){
+				if (map_get_field(x,*min_y) != 0){
+					free=0;
+					break;
+				}					
+			}
+			*min_y++;
+		}
+		free=1;
+		while ((*min_y < *max_y) && (free ==1)){
+			for (x=*min_x; x<*max_x; x++){
+				if (map_get_field(x,*max_y-1) != 0){
+					free=0;
+					break;
+				}					
+			}
+			*max_y--;
+		}
+		
+		free=1;
+		while ((*min_x < *max_x) && (free ==1)){
+			for (y=*min_y; y<*max_y; y++){
+				if (map_get_field(*min_x,y) != 0){
+					free=0;
+					break;
+				}					
+			}
+			*min_x++;
+		}
+		free=1;
+		while ((*min_x < *max_x) && (free ==1)){
+			for (y=*min_y; y<*max_y; y++){
+				if (map_get_field(*max_x-1,y) != 0){
+					free=0;
+					break;
+				}					
+			}
+			*max_x--;
+		}
+	}
+
 	/*!
 	 * Schreibt einbe Karte in eine PGM-Datei
 	 * @param filename Zieldatei
@@ -820,49 +881,7 @@ void update_map_sensor_hole(float x, float y, float h){
 		uint16 max_y=map_max_y;
 		
 		#ifdef SHRINK_MAP_OFFLINE	// nun muessen wir die Grenezn ermitteln
-			// Kartengroesse reduzieren
-			int8 free=1;
-			while ((min_y < max_y) && (free ==1)){
-				for (x=min_x; x<max_x; x++){
-					if (map_get_field(x,min_y) != 0){
-						free=0;
-						break;
-					}					
-				}
-				min_y++;
-			}
-			free=1;
-			while ((min_y < max_y) && (free ==1)){
-				for (x=min_x; x<max_x; x++){
-					if (map_get_field(x,max_y-1) != 0){
-						free=0;
-						break;
-					}					
-				}
-				max_y--;
-			}
-			
-			free=1;
-			while ((min_x < max_x) && (free ==1)){
-				for (y=min_y; y<max_y; y++){
-					if (map_get_field(min_x,y) != 0){
-						free=0;
-						break;
-					}					
-				}
-				min_x++;
-			}
-			free=1;
-			while ((min_x < max_x) && (free ==1)){
-				for (y=min_y; y<max_y; y++){
-					if (map_get_field(max_x-1,y) != 0){
-						free=0;
-						break;
-					}					
-				}
-				max_x--;
-			}
-		
+			shrink_map(&min_x, &max_x, &min_y, &max_y);
 		#endif	// SHRINK_MAP_OFFLINE
 			
 		uint16 map_size_x=max_x-min_x;
@@ -937,6 +956,10 @@ void update_map_sensor_hole(float x, float y, float h){
 			}
 			
 		fclose(fp);
+		
+		#ifdef SHRINK_MAP_ONLINE
+			shrink_map(&map_min_x, &map_max_x, &map_min_y, &map_max_y);
+		#endif
 		
 	}
 #endif	// PC

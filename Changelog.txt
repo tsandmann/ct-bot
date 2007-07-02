@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-07-02 Benjamin Benz [bbe@heise.de]: Bugfix in map.c (Treppeneffekt unter Windows #126 + Map-shrink beim einlesen)
+
 2007-07-02 Timo Sandmann [mail@timosandmann.de]: Binaerdateien auch als Binaerdateien oeffnen (print_map()-Bug, #126)
 
 2007-07-01 Timo Sandmann [mail@timosandmann.de]: #define-Abhaengigkeiten fuer Remote-Display korrigiert und EEPROM-Section unter OS X ins DATA-Segment verschoben
