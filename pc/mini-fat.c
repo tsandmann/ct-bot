@@ -45,7 +45,7 @@
  */
 void create_mini_fat_file(const char* filename, const char* id_string, uint32 size){
 	printf("Erstelle eine Mini-Fat-Datei mit dem Namen %s\n",filename);
-	FILE *fp = fopen(filename, "w");
+	FILE *fp = fopen(filename, "wb");
 	if (fp == NULL){
 		printf("Datei konnte nicht zum Schreiben geoeffnet werden! Abbruch!\n");
 		return;
@@ -189,7 +189,7 @@ void convert_slog_file(const char* input_file) {
 	} slog_t;
 		
 	printf("Konvertiere die SpeedLog-Datei %s ins txt-Format\n", input_file);
-	FILE *fp_input = fopen(input_file, "r");
+	FILE *fp_input = fopen(input_file, "rb");
 	FILE *fp_output = fopen("slog.txt", "w");
 	if (fseek(fp_input, 0L, SEEK_END) != 0) return;
 	uint32 filesize = ftell(fp_input)+1;

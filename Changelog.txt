@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-07-02 Timo Sandmann [mail@timosandmann.de]: Binaerdateien auch als Binaerdateien oeffnen (print_map()-Bug, #126)
+
 2007-07-01 Timo Sandmann [mail@timosandmann.de]: #define-Abhaengigkeiten fuer Remote-Display korrigiert und EEPROM-Section unter OS X ins DATA-Segment verschoben
 
 2007-06-28 Achim Pankalla [achim.pankalla@gmx.de]: EEPROM-Manager fuer PC-Bot eingefuehrt, siehe Documentation/eeprom-simulation.html

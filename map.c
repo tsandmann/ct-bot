@@ -809,7 +809,7 @@ void update_map_sensor_hole(float x, float y, float h){
 	 */
 	void map_to_pgm(char * filename){
 		printf("Speichere Karte nach %s\n",filename);
-		FILE *fp = fopen(filename, "w");
+		FILE *fp = fopen(filename, "wb");
 		
 		uint16 x,y;
 
@@ -868,9 +868,9 @@ void update_map_sensor_hole(float x, float y, float h){
 		uint16 map_size_x=max_x-min_x;
 		uint16 map_size_y=max_y-min_y;
 		#ifdef MAP_PRINT_SCALE
-			fprintf(fp,"P5\n%d %d\n255\n",map_size_x+10,map_size_y+10);
+			fprintf(fp,"P5 %d %d 255 ",map_size_x+10,map_size_y+10);
 		#else
-			fprintf(fp,"P5\n%d %d\n255\n",map_size_x,map_size_y);
+			fprintf(fp,"P5 %d %d 255 ",map_size_x,map_size_y);
 		#endif	// MAP_PRINT_SCALE
 		printf("Karte beginnt bei X=%d,Y=%d und geht bis X=%d,Y=%d (%d * %d Punkte)\n",min_x,min_y,max_x,max_y,map_size_x,map_size_y);
 		
@@ -917,7 +917,7 @@ void update_map_sensor_hole(float x, float y, float h){
 	 */
 	void read_map(char * filename){
 		printf("Lese Karte (%s) von MMC/SD (Bot-Format)\n",filename);
-		FILE *fp = fopen(filename, "r");
+		FILE *fp = fopen(filename, "rb");
 		
 		uint8 buffer[512];
 		fread(buffer,512,1,fp);

@@ -71,10 +71,10 @@ inline uint8 mmc_emu_get_init_state(void){
  */
 uint8 mmc_emu_init(void){
 	mmc_emu_init_state = 0;
-	mmc_emu_file = fopen(MMC_EMU_FILE, "r+");		// Datei versuchen zu oeffnen
+	mmc_emu_file = fopen(MMC_EMU_FILE, "r+b");		// Datei versuchen zu oeffnen
 	if (mmc_emu_file == NULL){
 		/* Datei existiert noch nicht oder kann nicht erzeugt werden */
-		mmc_emu_file = fopen(MMC_EMU_FILE, "w+");	// Datei neu anlegen
+		mmc_emu_file = fopen(MMC_EMU_FILE, "w+b");	// Datei neu anlegen
 		if (mmc_emu_file == NULL) {
 			/* Datei kann nicht erzeugt werden */
 			mmc_emu_init_state = 1;
