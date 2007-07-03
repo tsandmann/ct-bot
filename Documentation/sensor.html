@@ -45,9 +45,16 @@ Die Umrechnung in die Entfernung erfolgt mit Hilfe von 15 St&uuml;tzwerten aus d
 ermittelt aus zwei St&uuml;tzwerten und dem aktuellen Sensorrohwert die exakte Entfernung durch linearer Interpolation.<br />
 Kalibrieren lassen sich die Sensoren halbautomatisch (Bot auf angezeigte Entfernung stellen, Taste dr&uuml;cken, Bot auf die n&auml;chste Entfernung
 stellen, Taste dr&uuml;cken usw.) mit dem Verhalten<span class="function"> behaviour_calibrate_sharps</span>, das die erforderlichen St&uuml;tzwerte 
-dann auch ins EEPROM schreibt. Die St&uuml;tzwerte und die minimale sowie maximale Entfernung lassen sich in <a href="../include/sensor_correction.h">
-include/sensor_correction.h</a> einstellen.
-
+dann anschlie&szlig;end auch ins EEPROM schreibt. Die St&uuml;tzwerte und die minimale sowie maximale Entfernung lassen sich in <a href="../include/sensor_correction.h">
+include/sensor_correction.h</a> einstellen. <br />
+Am besten l&auml;sst man sich das Ergebnis der automatischen Kalibrierung per LOG ausgeben
+und tr&auml;gt es in sensor_correction.h ein. Dann erzeugt der Build-Vorgang neben der ct-Bot.hex auch eine ct-Bot.eep Datei, die die Sensorkalibrierung
+bereits enth&auml;lt. Diese l&auml;sst sich per Programmer ins EEPROM schreiben. Flasht man den Programm-Code per Bootloader, bleibt das EEPROM 
+unangetastet erhalten und die Distanzsensoren funktionieren wie gewohnt. Falls man den Programm-Code per ISP-Programmer flasht, kann man entweder 
+einstellen, dass das EEPROM erhalten bleiben soll, oder die o.g. eep-Datei ebenfalls &uuml;bertragen, um die Kalibrierungswerte f&uuml;r die Distanzseneoren
+(wieder) im EEPROM zu haben. <br /> 
+Die Datenablage im EEPROM wird nicht nur f&uuml;r die Distanzsensoren, sondern auch f&uuml;r das Verhalten bot_turn(), die 
+Motorregelung und den Mini-FAT-Treiber der MMC genutzt, die genannten Punkte zum Flashen gelten dort nat&uuml;rlich analog.
 </p>
 
 <a name="line"></a><h3>Liniensensoren</h3>
