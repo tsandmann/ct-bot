@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-07-04 Timo Sandmann [mail@timosandmann.de]: 1st_init-Zeug umgebaut (fuer PC-EEPROM-Emulation, #88)
+
 2007-07-02 Benjamin Benz [bbe@heise.de]: Bugfix in map.c (Treppeneffekt unter Windows #126 + Map-shrink beim einlesen)
 
 2007-07-02 Timo Sandmann [mail@timosandmann.de]: Binaerdateien auch als Binaerdateien oeffnen (print_map()-Bug, #126)
