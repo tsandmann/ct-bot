@@ -16,6 +16,7 @@
 //#define BEHAVIOUR_GOTO_AVAILABLE	/*!< goto vorhanden ?*/
 //#define BEHAVIOUR_GOTOXY_AVAILABLE	/*!< gotoxy vorhanden ?*/
 #define BEHAVIOUR_TURN_AVAILABLE	/*!< turn vorhanden ?*/
+//#define BEHAVIOUR_TURN_TEST_AVAILABLE	/*!< turn_test vorhanden? */
 
 #define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE	/*!< strecke fahren vorhanden ?*/
 
@@ -53,6 +54,10 @@
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
 	#define BEHAVIOUR_TURN_AVAILABLE
 #endif	
+
+#ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
+	#define BEHAVIOUR_TURN_AVAILABLE
+#endif
 
 #ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 	#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
@@ -105,6 +110,7 @@
 #include "bot-logic/behaviour_gotoxy.h"
 
 #include "bot-logic/behaviour_turn.h"
+#include "bot-logic/behaviour_turn_test.h"
 #include "bot-logic/behaviour_drive_distance.h"
 
 #include "bot-logic/behaviour_measure_distance.h"

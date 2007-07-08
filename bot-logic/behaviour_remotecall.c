@@ -18,12 +18,12 @@
  */
 
 
-/*! @file 	behaviour_remotecall.c
+/*! 
+ * @file 	behaviour_remotecall.c
  * @brief 	ruft auf ein Kommando hin andere Verhalten auf und bestaetigt dann ihre Ausfuehrung
- * 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	07.12.06
-*/
+ */
 
 #include "bot-logic/bot-logik.h"
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "command.h"
+#include "log.h"
 
 #include "bot-logic/remote_calls.h"
 
@@ -61,11 +62,10 @@ static uint8 parameter_data[8] = {0};	/*!< Hier liegen die eigentlichen Paramete
 //#define DEBUG_REMOTE_CALLS		// Schalter um recht viel Debug-Code anzumachen
 
 #ifndef DEBUG_REMOTE_CALLS
-//	#undef LOG_DEBUG
+	#undef LOG_DEBUG
 	#define LOG_DEBUG(a, ...) {}
-#else
-	#include "log.h"
 #endif
+
 
 /*! 
  * Hier muessen alle Boten-Funktionen rein, die Remote aufgerufen werden sollen
@@ -133,6 +133,9 @@ const call_t calls[] PROGMEM = {
 	#ifdef BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_calibrate_sharps,0,"")
 	#endif	
+	#ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_turn_test,0,""),
+	#endif
 };
 
 #define STORED_CALLS (sizeof(calls)/sizeof(call_t)) /*!< Anzahl der Remote calls im Array */
@@ -166,7 +169,7 @@ uint8 getRemoteCall(char * call){
 	 * @author 		Timo Sandmann (mail@timosandmann.de) 
    	 * @date		12.01.2007
 	 */
-	void remotecall_convert_params(uint8* dest, uint8 count, uint8* len, uint8* data){
+	static void remotecall_convert_params(uint8* dest, uint8 count, uint8* len, uint8* data){
 		uint8 i;
 		/* jeden Parameter behandeln */
 		for (i=0; i<count; i++){
@@ -333,15 +336,17 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 }
 
 /*!
- * Fuehre einen remote_call aus. Es gibt KEIN aufrufendes Verhalten!!
- * @param func Zeiger auf den Namen der Fkt
- * @param data Zeiger auf die Daten
+ * @brief			Fuehre einen remote_call aus. Aufrufendes Verhalten bei RemoteCalls == NULL
+ * @param caller	Zeiger auf das aufrufende Verhalten
+ * @param func 		Zeiger auf den Namen der Fkt
+ * @param data		Zeiger auf die Daten
  */
-void bot_remotecall(char* func, remote_call_data_t* data){
+void bot_remotecall(Behaviour_t *caller, char* func, remote_call_data_t* data) {
+	switch_to_behaviour(caller, bot_remotecall_behaviour, NOOVERRIDE);
 
 	function_id= getRemoteCall(func);
 	if (function_id >= STORED_CALLS){
-		LOG_DEBUG("Funktion %s nicht gefunden. Exit!",func);
+		LOG_ERROR("Funktion %s nicht gefunden. Exit!", func);
 		return;
 	}
 
@@ -370,7 +375,6 @@ void bot_remotecall(char* func, remote_call_data_t* data){
 	#endif
 	
 	running_behaviour=REMOTE_CALL_SCHEDULED;
-	activateBehaviour(bot_remotecall_behaviour);
 }
 
 /*!
@@ -380,9 +384,8 @@ void bot_remotecall(char* func, remote_call_data_t* data){
 void bot_remotecall_from_command(uint8 * data){
 	char * function_name = (char*)data;
 	remote_call_data_t * params = (remote_call_data_t *)(data+ strlen(function_name)+1);
-	bot_remotecall(function_name,params);
+	bot_remotecall(NULL, function_name, params);
 }
-
 
 /*! 
  * Listet alle verfuegbaren Remote-Calls auf und verschickt sie als einzelne Kommanods

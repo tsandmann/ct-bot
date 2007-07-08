@@ -17,18 +17,22 @@
  * 
  */
 
-/*! @file 	behaviour_turn.h
+/*!
+ * @file 	behaviour_turn.h
  * @brief 	Drehe den Bot
- * 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
-*/
+ */
 
 #ifndef BEHAVIOUR_TURN_H_
 #define BEHAVIOUR_TURN_H_
 
 #ifdef BEHAVIOUR_TURN_AVAILABLE
 #include "bot-logic/bot-logik.h"
+
+#ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
+ 	float turn_last_err;	/*!< letzter Drehfehler in Grad */
+#endif
 
  /*!
   * Das Verhalten laesst den Bot eine Punktdrehung durchfuehren. 

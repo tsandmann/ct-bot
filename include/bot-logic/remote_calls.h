@@ -51,9 +51,13 @@ typedef struct {
 
 /*! Union fuer Remotecall-Daten */
 typedef union {
-	uint32 u32;		/*!< 32 Bit Integer */
-	float fl32;		/*!< Fliesskommazahl */
-	uint16 u16;		/*!< 16 Bit Integer */
+	uint32_t u32;	/*!< 32 Bit unsigned integer */
+	int32_t s32;	/*!< 32 Bit signed integer */
+	float fl32;		/*!< 32 Bit float */
+	uint16_t u16;	/*!< 16 Bit unsigned integer */
+	int16_t s16;	/*!< 16 Bit signed integer */
+	uint8_t u8;		/*!<  8 Bit unsigned integer */ 
+	int8_t s8;		/*!<  8 Bit signed integer */
 } remote_call_data_t;	// uint32 und float werden beide gleich ausgelesen, daher stecken wir sie in einen Speicherbereich
 
 /*! Dieses Makro bereitet eine Botenfunktion als Remote-Call-Funktion vor.
@@ -72,11 +76,12 @@ typedef union {
 void bot_remotecall_behaviour(Behaviour_t *data);
 
 /*!
- * Fuehre einen remote_call aus. Es gibt KEIN aufrufendes Verhalten!!
- * @param func Zeiger auf den Namen der Fkt
- * @param data Zeiger auf die Daten
+ * @brief			Fuehre einen remote_call aus. Aufrufendes Verhalten bei RemoteCalls == NULL
+ * @param caller	Zeiger auf das aufrufende Verhalten
+ * @param func 		Zeiger auf den Namen der Fkt
+ * @param data		Zeiger auf die Daten
  */
-void bot_remotecall(char* func, remote_call_data_t* data);
+void bot_remotecall(Behaviour_t *caller, char* func, remote_call_data_t* data);
 
 /*!
  * Fuehre einen remote_call aus. Es gibt KEIN aufrufendes Verhalten!!

@@ -197,7 +197,7 @@ void sensor_dist_lookup(int16_t *const p_sens, uint8_t *const p_toggle, const di
 * Kuemmert sich um die Weiterverarbeitung der rohen Sensordaten 
 */
 void sensor_update(void){
-	static uint16 old_pos=0;			/*!< Ticks fuer Positionsberechnungsschleife */
+	static uint8_t old_pos=0;			/*!< Ticks fuer Positionsberechnungsschleife */
 	static uint16 old_speed=0;			/*!< Ticks fuer Geschwindigkeitsberechnungsschleife */
 	#ifdef MEASURE_MOUSE_AVAILABLE
 		static int16 lastMouseX=0;		/*!< letzter Mauswert X fuer Positionsberechnung */
@@ -236,7 +236,7 @@ void sensor_update(void){
 		sensMouseX += sensMouseDX;		/*!< Mausdelta X aufaddieren */
 	#endif	
 	
-	if (timer_ms_passed(&old_pos, 50)) {
+	if (timer_ms_passed(&old_pos, 10)) {
 		/* Gefahrene Boegen aus Encodern berechnen */
 		#ifdef MCU
 			uint8 sreg = SREG;
@@ -280,16 +280,16 @@ void sensor_update(void){
 		#ifdef MEASURE_MOUSE_AVAILABLE
 			dX=sensMouseX-lastMouseX;
 			/* heading berechnen */
-			dHead=(float)dX*360/MOUSE_FULL_TURN;
+			dHead=(float)dX*(360.0/(float)MOUSE_FULL_TURN);
 			heading_mou+=dHead;
 			lastHead+=dHead;
 			if (heading_mou>=360) heading_mou=heading_mou-360;
 			if (heading_mou<0) heading_mou=heading_mou+360;
 			/* x/y pos berechnen */
 			dY=sensMouseY-lastMouseY;
-			x_mou+=(float)dY*cos(heading_mou*DEG2RAD)*25.4/MOUSE_CPI;
-			lastDistance+=dY*25.4/MOUSE_CPI;
-			y_mou+=(float)dY*sin(heading_mou*DEG2RAD)*25.4/MOUSE_CPI;
+			lastDistance+=dY*(25.4/MOUSE_CPI);
+			x_mou+=(float)dY*cos(heading_mou*DEG2RAD)*(25.4/MOUSE_CPI);
+			y_mou+=(float)dY*sin(heading_mou*DEG2RAD)*(25.4/MOUSE_CPI);
 
 			lastMouseX=sensMouseX;
 			lastMouseY=sensMouseY;
@@ -389,8 +389,8 @@ void sensor_update(void){
 				/* Geschwindigkeiten berechnen */
 				right_radius=radius+WHEEL_DISTANCE;
 				left_radius=radius-WHEEL_DISTANCE;
-				v_mou_right=lastHead/360*2*M_PI*right_radius*4;
-				v_mou_left=lastHead/360*2*M_PI*left_radius*4;
+				v_mou_right=lastHead*right_radius*(4*2*M_PI/360);
+				v_mou_left=lastHead*left_radius*(4*2*M_PI/360);
 			}
 			/* Falls Koordinaten/Winkel angepasst wurden, nun wieder korrigieren */
 			if (modifiedAngles){
@@ -475,7 +475,7 @@ void sensor_update(void){
 	void odometric_display(void){
 		/* Zeige Positions- und Geschwindigkeitsdaten */
 		display_cursor(1,1);
-		display_printf("heading: %3d  ",(int16)heading);
+		display_printf("heading: %3d.%u  ",(int16)heading, (int16)((heading-(int16)heading)*10));
 		display_cursor(2,1);
 		display_printf("x: %3d  y: %3d  ",(int16)x_pos,(int16)y_pos);
 		display_cursor(3,1);

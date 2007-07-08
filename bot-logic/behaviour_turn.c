@@ -31,17 +31,24 @@
 
 #ifdef MCU
 	#include <avr/eeprom.h>
-	#define ANGLE_CORRECT	1						/*!< Drehfehler-Init */
+#ifdef SPEED_CONTROL_AVAILABLE
+	#define TURN_ERR		{45, 35, 20}	/*!< Fehler bei Drehungen im EEPROM */
+	#define TUNR_ERR_BIG	90				/*!< Schwellwert in Grad, ab dem turn_err[1] benutzt wird */
+	#define TUNR_ERR_SMALL	20				/*!< Schwellwert in Grad, ab dem turn_err[0] benutzt wird */
+#else
+	#define TURN_ERR		{0, 25, 45}		/*!< Fehler bei Drehungen im EEPROM */
+	#define TUNR_ERR_BIG	90				/*!< Schwellwert in Grad, ab dem turn_err[1] benutzt wird */
+	#define TUNR_ERR_SMALL	35				/*!< Schwellwert in Grad, ab dem turn_err[0] benutzt wird */
+#endif	// SPEED_CONTROAL_AVAILABLE
 #else
 	#include "eeprom-emu.h"
-	#define ANGLE_CORRECT	0						/*!< Drehfehler-Init */
+	#define TURN_ERR		{0, 0, 0} 		/*!< Fehler bei Drehungen im EEPROM */
+	#define TUNR_ERR_BIG	90				/*!< Schwellwert in Grad, ab dem turn_err[1] benutzt wird */
+	#define TUNR_ERR_SMALL	35				/*!< Schwellwert in Grad, ab dem turn_err[0] benutzt wird */
 #endif	// MCU
 
-/* EEPROM-Variablen immer deklarieren, damit die Adressen sich nicht veraendern je nach #define */
-uint8 EEPROM err15=ANGLE_CORRECT	*1;			/*!< Fehler bei Drehungen unter 15 Grad */
-uint8 EEPROM err45=ANGLE_CORRECT	*2;			/*!< Fehler bei Drehungen zwischen 15 und 45 Grad */
-uint8 EEPROM err_big=ANGLE_CORRECT	*4;			/*!< Fehler bei groesseren Drehungen */
 
+uint8_t EEPROM turn_err[3] = TURN_ERR;		/*!< Fehler bei Drehungen im EEPROM */
 
 #ifdef BEHAVIOUR_TURN_AVAILABLE
 #include <stdlib.h>
@@ -50,41 +57,16 @@ uint8 EEPROM err_big=ANGLE_CORRECT	*4;			/*!< Fehler bei groesseren Drehungen */
 #include "log.h"
 
 /* Parameter fuer das bot_turn_behaviour() */
-static float to_turn=0;			/*!< Wieviel Grad sind noch zu drehen? */
-static float old_heading=0;		/*!< letztes heading */
-static int8 turn_direction=0;	/*!< Richtung der Drehung */
-static uint8_t *ee_err;			/*!< Zeiger auf Wert fuer Drehfehler im EEPROM */
+static int16_t target = 0;						/*!< Zielwinkel der Drehung*10 + 360 Grad */
+static int16_t old_heading = 0;					/*!< letztes heading*10 */
+static int8_t turn_direction = 0;				/*!< Richtung der Drehung, 0: pos. math. Drehsinn, -1: Uhrzeigersinn */
+static int8_t *ee_err;							/*!< Zeiger auf Wert fuer Drehfehler */
+static int8_t err_cache[3] = {-128,-128,-128};	/*!< Fehler bei Drehungen */
+#ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
+ 	static float target_fl = 0.0;				/*!< Zielwinkel*10 als float */
+ 	float turn_last_err = 0.0;					/*!< letzter Drehfehler in Grad */
+#endif
 
-
-/*! 
- * @brief			Hilfsfunktion zur Berechnung einer Winkeldifferenz 
- * @param direction	Drehrichtung
- * @param angle1	Winkel 1
- * @param angle2	Winkel 2
- * @return			Winkeldifferenz
- */
-static inline float calc_turned_angle(int8 direction, float angle1, float angle2) {
-	float diff_angle=0;
-
-	if (direction>0){
-		/* Drehung in mathematisch positivem Sinn */
-		if (angle1>angle2) {
-			/* Es gab einen Ueberlauf */
-			diff_angle=360-angle1+angle2;
-		} else {
-			diff_angle=angle2-angle1;
-		}
-	} else {
-		/* Drehung in mathematisch negativem Sinn */
-		if (angle1<angle2) {
-			/* Es gab einen Ueberlauf */
-			diff_angle=angle1+360-angle2;
-		} else {
-			diff_angle=angle1-angle2;
-		}
-	}
-	return diff_angle;
-}
 
 /*!
  * @brief			Das Verhalten laesst den Bot eine Punktdrehung durchfuehren. 
@@ -95,48 +77,73 @@ static inline float calc_turned_angle(int8 direction, float angle1, float angle2
  * Winkeln dann nur noch mit geringer Geschwindigkeit.
  */
 void bot_turn_behaviour(Behaviour_t *data) {
-	static uint16 lag_wait=0;				/*!< Timestamp fuer Abwarten des Nachlaufs */
-	float turned=0;							/*!< seit dem letzten Mal gedrehte Grad */
-
-	/* berechnen, wieviel Grad seit dem letzten Aufruf gedreht wurden */
-	turned=calc_turned_angle(turn_direction,old_heading,heading);
-
-	to_turn-=turned;			// aktuelle Drehung von zu drehendem Winkel abziehen
-
-	if (to_turn > 1) {
-		old_heading = heading;	// aktueller Winkel wird alter Winkel
-		/* Solange drehen, bis Drehwinkel erreicht ist oder gar zu weit gedreht wurde */
-		uint8_t abs_speed;	// schneller als 255 mm/s drehen ist zu ungenau, also reichen hier 8 Bit
-		float x = to_turn < 180 ? to_turn/(360.0/M_PI) : M_PI / 2;	// (0; pi/2]
-		abs_speed = sin(x) * 150.0;		// [0; 150]
-		abs_speed++;					// [1; 151]
- 		
- 		speedWishRight = turn_direction > 0 ? abs_speed : -abs_speed;
- 		speedWishLeft = -speedWishRight;
- 		
- 		lag_wait=TIMER_GET_TICKCOUNT_16;
-
+	/* Differenz zum Zielwinkel berechnen (in Drehrichtung gesehen) */
+	int16_t heading_16 = (int16_t)(heading*10);
+	int16_t diff;
+	if (turn_direction < 0) {	// Uhrzeigersinn
+		if (heading_16 > old_heading && old_heading < 50) {
+			target += 3600;	// es gab einen Ueberlauf von heading
+#ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
+			target_fl += 3600.0;
+#endif
+//			LOG_DEBUG("Ueberlauf");
+//			LOG_DEBUG("head16=%d, old=%d", heading_16, old_heading);
+		}
+		diff = heading_16 - target + 3600;
 	} else {
-		/* Drehwinkel erreicht, nun Abwarten, bis Nachlauf beendet */
-		speedWishLeft=BOT_SPEED_STOP;
-		speedWishRight=BOT_SPEED_STOP;
-		
-		if (fabs(heading-old_heading) > 0.1) {
-			old_heading=heading;
-			lag_wait=TIMER_GET_TICKCOUNT_16;
-			return;
+		if (heading_16 < old_heading && old_heading > 3550) {
+			target -= 3600;	// es gab einen Ueberlauf von heading
+#ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
+			target_fl -= 3600.0;
+#endif
+//			LOG_DEBUG("Ueberlauf");
+//			LOG_DEBUG("head16=%d, old=%d", heading_16, old_heading);
 		}
-		/* 50 ms auf neue Messwerte (heading) warten */
-		if (!timer_ms_passed(&lag_wait, 50)) {
-			return;
-		}
+		diff = target - (heading_16 + 3600);
+	}
+	old_heading = heading_16;
 
-		/* Nachlauf beendet, jetzt Neue mit alter Abweichung vergleichen und ggfs neu bestimmen */
-		uint8_t err = eeprom_read_byte(ee_err);
-		uint8_t new_err = (uint8_t)(-(int16_t)to_turn + err) / 2;
-		if (new_err != err) {
-			eeprom_write_byte(ee_err, new_err);
+	if (diff > 0) {
+		/* Bot drehen, solange Zielwinkel noch nicht erreicht ist */
+		uint8_t new_speed;	// schneller als mit 255 mm/s drehen ist zu ungenau, also reichen hier 8 Bit
+		float x = diff < 1800 ? diff / (360.0/M_PI*10) : M_PI/2;	// (0; pi/2]
+		new_speed = sin(x) * 125.0;		// [ 0; 125]
+		new_speed += 25;				// [25; 150]
+ 		
+ 		speedWishRight = turn_direction < 0 ? -new_speed : new_speed;
+ 		speedWishLeft  = -speedWishRight;
+	} else {
+		/* Drehwinkel erreicht, Stopp und Abwarten, bis Nachlauf beendet */
+		speedWishLeft  = BOT_SPEED_STOP;
+		speedWishRight = BOT_SPEED_STOP;
+		
+		
+		static uint8_t wait_cnt = 30;	/*!< 30 * 40 ms auf Nachlauf warten */
+		static uint8_t lag_wait = 0;	/*!< Timestamp zum Abwarten des Nachlaufs */
+		if (wait_cnt > 0) {
+			if (!timer_ms_passed(&lag_wait, 40)) return;
+			wait_cnt--;
+			return;
+		} else wait_cnt = 30;
+
+//		LOG_DEBUG("done, heading=%d %u", heading_16/10, TICKS_TO_MS(TIMER_GET_TICKCOUNT_32));
+//		LOG_DEBUG("target=%d", target/10-360); 
+
+		/* Nachlauf beendet, jetzt Drehfehler aktualisieren */
+		uint8_t diff_8 = -diff;
+		uint8_t err = *ee_err;
+//		LOG_DEBUG("Fehler: %d.%u Grad", (diff_8-err)/10, abs((err-diff_8)-(err-diff_8)/10*10));
+#ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
+		turn_last_err = fabs(target_fl/10.0-360.0-heading);
+#endif
+//		LOG_DEBUG("old err=%u\tdiff_8=%u", err, diff_8);
+		*ee_err = (uint8_t)(diff_8 + err) / 2;
+		if (abs(*ee_err - err) >= 10) {
+			/* EEPROM-Update bei Aenderung um mehr als 1 Grad */
+			eeprom_write_byte(&turn_err[ee_err-err_cache], *ee_err);
+// 			LOG_DEBUG("err1=%d\terr2=%d\terr3=%d", err_cache[0], err_cache[1], err_cache[2]);
 		}
+//		LOG_DEBUG("new err=%u", *ee_err);
 		
 		/* fertig, Verhalten beenden */
 		return_from_behaviour(data);
@@ -148,29 +155,49 @@ void bot_turn_behaviour(Behaviour_t *data) {
  * @brief			Dreht den Bot im mathematischen Drehsinn.
  * @param caller	Der Aufrufer
  * @param degrees 	Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
+ * 					zwischen -360 und +360
  */
 void bot_turn(Behaviour_t *caller, int16 degrees) {
-//	 LOG_DEBUG("bot_turn(%d)", degrees);
- 	/* Richtungsgerechte Umrechnung in den Zielwinkel */
- 	if(degrees < 0) turn_direction = -1;
- 	else turn_direction = 1;
-	to_turn=(float)abs(degrees);
-	old_heading=heading;
+//	LOG_DEBUG("bot_turn(%d)", degrees);
+	/* Verhalten aktiv schalten */
+	switch_to_behaviour(caller, bot_turn_behaviour, OVERRIDE);
+
+	/* Parameter begrenzen */
+ 	while (degrees >  360) degrees -= 360;
+ 	while (degrees < -360) degrees += 360;
+
+	/* Zielwinkel berechnen */
+#ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
+ 	target_fl = heading*10.0 + degrees*10.0 + 3600.0;
+#endif
+	target = (int16_t)(heading*10) + degrees*10 + 3600;
+ 	old_heading = (int16_t)(heading*10);
+ 	
+	/* Drehfehler beruecksichtigen */
+ 	if (abs(degrees) <= TUNR_ERR_SMALL) {
+		ee_err = &err_cache[0];
+	} else if (abs(degrees) <= TUNR_ERR_BIG) {
+		ee_err = &err_cache[1];
+	} else 
+		ee_err = &err_cache[2];
 	
-	/* Drehfehler aus EEPROM lesen und beruecksichtigen */
-	ee_err = &err_big;
-	if (to_turn <= 15) {
-		ee_err = &err15;
-	} else if (to_turn <= 45) {
-		ee_err = &err45;
+	/* (re-)Inits */
+	if (*ee_err == -128) {
+		*ee_err = eeprom_read_byte(&turn_err[ee_err-err_cache]);
+	}	
+	if ((uint8_t)*ee_err > 200) {
+		*ee_err = 0;
 	}
-	uint8_t correct = eeprom_read_byte(ee_err);
-	if (correct > 20) {
-		correct = 0;
-		eeprom_write_byte(ee_err, 0);	
-	}
-	to_turn -= correct;
-	
- 	switch_to_behaviour(caller, bot_turn_behaviour,OVERRIDE); 
+	int8_t err = *ee_err;
+
+	/* Drehrichtung ermitteln */
+ 	if (degrees < 0) {
+ 		turn_direction = -1;
+ 	} else {
+ 		turn_direction = 0;
+ 		err = -err;
+ 	}
+ 	target += err;
 }
+
 #endif	// BEHAVIOUR_TURN_AVAILABLE
