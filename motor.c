@@ -486,9 +486,9 @@ void motor_set(int16 left, int16 right){
 			}
 			uint16_t pwm;
 			if (left <= BOT_SPEED_NORMAL) {
-				pwm = ((float)PWMMAX/(BOT_SPEED_MAX*4.0)) * left + 50;
+				pwm = (uint16_t)(((float)PWMMAX/(BOT_SPEED_MAX*4.0)) * left) + 50;
 			} else {
-				pwm = ((float)PWMMAX/(BOT_SPEED_MAX*1.1)) * left - 30;
+				pwm = (uint16_t)(((float)PWMMAX/(BOT_SPEED_MAX*1.1)) * left) - 30;
 			}
 			motor_left = left == 0 ? 0 : pwm;
 			if (speedSignRight > 0){
@@ -499,9 +499,9 @@ void motor_set(int16 left, int16 right){
 				speed_r = -right;
 			}
 			if (right <= BOT_SPEED_NORMAL) {
-				pwm = ((float)PWMMAX/(BOT_SPEED_MAX*4.0)) * right + 50;
+				pwm = (uint16_t)(((float)PWMMAX/(BOT_SPEED_MAX*4.0)) * right) + 50;
 			} else {
-				pwm = ((float)PWMMAX/(BOT_SPEED_MAX*1.1)) * right - 30;
+				pwm = (uint16_t)(((float)PWMMAX/(BOT_SPEED_MAX*1.1)) * right) - 30;
 			}
 			motor_right = right == 0 ? 0 : pwm;
 			motor_update(0);
