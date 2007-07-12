@@ -38,6 +38,8 @@
 //#define BEHAVIOUR_CALIBRATE_PID_AVAILABLE	/*!< Kalibrierungsverhalten fuer Motorregelung vorhanden? */
 //#define BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE	/*!< Kalibrierungsverhalten fuer Distanzsensoren vorhanden? */
 
+//#define BEHAVIOUR_DELAY_AVAILABLE /*!< Delay-Routinen als Verhalten */
+
 /* Aufgrund einer ganzen reihe von Abhaengigkeiten sollte man beim Versuch Speicher 
  * zu sparen, zuerst mal bei den Hauptverhalten ausmisten, sonst kommen die 
  * Unterverhalten durch die Hintertuer wieder rein
@@ -131,6 +133,8 @@
 
 #include "bot-logic/behaviour_calibrate_pid.h"
 #include "bot-logic/behaviour_calibrate_sharps.h"
+
+#include "bot-logic/behaviour_delay.h"
 
 #endif	// BEHAVIOUR_AVAILABLE
 #endif /*AVAILABLE_BEHAVIOURS_H_*/

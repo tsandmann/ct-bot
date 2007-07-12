@@ -133,6 +133,11 @@ void bot_behave_init(void){
 		insert_behaviour_to_list(&behaviour, new_behaviour(251, bot_simple2_behaviour,INACTIVE));
 	#endif
 
+	#ifdef BEHAVIOUR_DELAY_AVAILABLE
+		// Delay-Routinen als Verhalten
+		insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_delay_behaviour,INACTIVE));
+	#endif
+
 
 	// Hoechste Prioritate haben die Notfall Verhalten
 
