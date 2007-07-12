@@ -117,15 +117,8 @@ void bot_turn_behaviour(Behaviour_t *data) {
 		speedWishLeft  = BOT_SPEED_STOP;
 		speedWishRight = BOT_SPEED_STOP;
 		
+		BLOCK_BEHAVIOUR(data, 1200);
 		
-		static uint8_t wait_cnt = 30;	/*!< 30 * 40 ms auf Nachlauf warten */
-		static uint8_t lag_wait = 0;	/*!< Timestamp zum Abwarten des Nachlaufs */
-		if (wait_cnt > 0) {
-			if (!timer_ms_passed(&lag_wait, 40)) return;
-			wait_cnt--;
-			return;
-		} else wait_cnt = 30;
-
 //		LOG_DEBUG("done, heading=%d %u", heading_16/10, TICKS_TO_MS(TIMER_GET_TICKCOUNT_32));
 //		LOG_DEBUG("target=%d", target/10-360); 
 

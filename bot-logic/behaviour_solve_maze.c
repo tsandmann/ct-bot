@@ -81,7 +81,7 @@ void bot_check_wall_behaviour(Behaviour_t *data) {
 	static int8 measureCount=0;
 	/* letzter Messwert */
 	static int16 lastSensor=0;
-	static uint16 old_ms=0;
+//	static uint16 old_ms=0;
 	
 	int16 sensor;	/* fuer temporaer benutzte Senorwerte */
 
@@ -108,23 +108,26 @@ void bot_check_wall_behaviour(Behaviour_t *data) {
 			 * dazu muss der wert dreimal nacheinander max. um +/- 5
 			 * unterschiedlich sein */
 			 if (measureCount==0) {
-			 	old_ms=TIMER_GET_TICKCOUNT_16;
+			// 	old_ms=TIMER_GET_TICKCOUNT_16;
 			 	lastSensor=sensor;
 			 	measureCount++;
+			 	bot_delay(data, 50);	// 50 ms nix tun
 			 	break;
 			 }
-			 if (!timer_ms_passed(&old_ms, 50)) break;	// 50 ms nix tun
+			 //if (!timer_ms_passed(&old_ms, 50)) break;	// 50 ms nix tun
 			 
 			 if (sensor>=lastSensor-5 && sensor<=lastSensor+5 && measureCount<4) {
 			 	/* Messwert ist ok */
 			 	measureCount++;
+			 	bot_delay(data, 50);	// 50 ms nix tun
 			 	break;
 			 } else  if (measureCount<4) {
 			 	/* Messwert weicht zu doll ab -> von Neuem messen */
 			 	measureCount=0;
+			 	bot_delay(data, 50);	// 50 ms nix tun
 			 	break;
 			 }
-			 old_ms=TIMER_GET_TICKCOUNT_16;
+			 //old_ms=TIMER_GET_TICKCOUNT_16;
 			 measureCount=0;
 			 /* ok, wir hatten drei Messungen mit nahezu identischen Werten */
 			/* keine wand in eingestellter Maximalentfernung? */

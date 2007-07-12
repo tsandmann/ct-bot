@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-07-08 Timo Sandmann [mail@timosandmann.de]: Delay-Verhalten etwas vereinfacht und in andere Verhalten eingebaut
+
 2007-07-12 Benjamin Benz [bbe@heise.de]: Delay-Verhalten eingefügt
 
 2007-07-08 Timo Sandmann [mail@timosandmann.de]: Genauigkeit von bot_turn() deutlich verbessert, Test-Verhalten fuer bot_turn() hinzugefuegt und leicht verbesserte Annaeherung an die reale Motorkennline, wenn Regelung aus ist 

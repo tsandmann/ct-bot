@@ -38,7 +38,7 @@
 //#define BEHAVIOUR_CALIBRATE_PID_AVAILABLE	/*!< Kalibrierungsverhalten fuer Motorregelung vorhanden? */
 //#define BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE	/*!< Kalibrierungsverhalten fuer Distanzsensoren vorhanden? */
 
-//#define BEHAVIOUR_DELAY_AVAILABLE /*!< Delay-Routinen als Verhalten */
+#define BEHAVIOUR_DELAY_AVAILABLE /*!< Delay-Routinen als Verhalten */
 
 /* Aufgrund einer ganzen reihe von Abhaengigkeiten sollte man beim Versuch Speicher 
  * zu sparen, zuerst mal bei den Hauptverhalten ausmisten, sonst kommen die 
@@ -77,6 +77,7 @@
 
 #ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 	#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+	#define BEHAVIOUR_DELAY_AVAILABLE
 #endif	
 
 #ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
@@ -101,6 +102,13 @@
 	#undef DISPLAY_MAP_GO_DESTINATION
 #endif
 
+#ifdef BEHAVIOUR_SERVO_AVAILABLE
+	#define BEHAVIOUR_DELAY_AVAILABLE
+#endif
+
+#ifdef BEHAVIOUR_TURN_AVAILABLE
+	#define BEHAVIOUR_DELAY_AVAILABLE
+#endif
 
 #include "bot-logic/behaviour_simple.h"
 #include "bot-logic/behaviour_drive_square.h"

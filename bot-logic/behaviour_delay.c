@@ -26,36 +26,34 @@
 */
 
 #include "bot-logic/bot-logik.h"
+#include "timer.h"
 
 #ifdef BEHAVIOUR_DELAY_AVAILABLE	
-	#include "timer.h"
-	static uint16 delay_time_ms=0;
+static uint32_t delay_ticks = 0;	/*!< Timestamp fuer Wartezeit Ende  */ 
 
-	static uint32 delay_old_time;
-	
-	/*!
-	 * Verhalten fuer Delays
-	 */
-	void bot_delay_behaviour(Behaviour_t *data){
-	 	if (timer_ms_passed(&delay_old_time, delay_time_ms)) {
-	 		return_from_behaviour(data);
-	  	}
-	}	
-	
-	/*!
-	 * Rufe das Delay-Verhalten auf 
-	 * @param caller		Der obligatorische Verhaltensdatensatz des Aufrufers
-	 * @param delay_time	Die Verzögerungszeit in ms
-	 * @return	-1 wenn was schief gelaufen ist, sonst 0
-	 */
-	int8 bot_delay(Behaviour_t * caller, uint16 delay_time){
-		switch_to_behaviour(caller,bot_delay_behaviour,NOOVERRIDE);	
-		if (caller->subResult == SUBRUNNING) {
-			timer_ms_passed(&delay_old_time, 0);	// old_time aktualisieren
-			delay_time_ms= delay_time;	// eventuell laesst sich diese VAriable noch wegoptimieren in dem man old_time geschickt modifiziert
-			return 0;
-		} else
-			return -1;
+/*!
+ * Verhalten fuer Delays
+ * @param data	Der Verhaltensdatensatz
+ */
+void bot_delay_behaviour(Behaviour_t *data) {
+	uint32_t ticks = TIMER_GET_TICKCOUNT_32;
+	if (ticks >= delay_ticks) {
+		return_from_behaviour(data);
 	}
-	
-#endif
+}	
+
+/*!
+ * Rufe das Delay-Verhalten auf 
+ * @param caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * @param ticks		Die Verzoegerungszeit in ticks
+ * @return			-1 wenn was schief gelaufen ist, sonst 0
+ */
+int8_t bot_delay_ticks(Behaviour_t * caller, uint16_t ticks) {
+	switch_to_behaviour(caller,bot_delay_behaviour,NOOVERRIDE);	
+	if (caller->subResult != SUBFAIL) {
+		delay_ticks = TIMER_GET_TICKCOUNT_32 + ticks;
+		return 0;
+	} else
+		return -1;
+}
+#endif	// BEHAVIOUR_DELAY_AVAILABLE
