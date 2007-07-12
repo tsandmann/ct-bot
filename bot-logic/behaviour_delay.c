@@ -27,43 +27,20 @@
 
 #include "bot-logic/bot-logik.h"
 
-#ifdef BEHAVIOUR_DELAY_AVAILABLE
-	#ifndef TIME_AVAILABLE
-		#error BEHAVIOUR_DELAY benötigt TIME_AVAILABLE. Das ist derzeit nicht der Fall. Bitte in ct-Bot.h aktivieren
-	#endif
-	
+#ifdef BEHAVIOUR_DELAY_AVAILABLE	
 	#include "timer.h"
 	static uint16 delay_time_ms=0;
+
+	static uint32 delay_old_time;
 	
 	/*!
 	 * Verhalten fuer Delays
 	 */
 	void bot_delay_behaviour(Behaviour_t *data){
-		static uint16 old_s;
-		static uint16 old_ms;
-	
-		static uint8 state=0;
-		
-		switch (state){
-			case 0:
-				old_s=timer_get_s();
-				old_ms=timer_get_ms();
-				
-				state++;			
-				break;
-	
-			case 1:
-				if (delay_time_ms <= timer_get_ms_since(old_s, old_ms)){
-					state++;
-				}
-				break;
-	
-			default:
-				state=0;
-				return_from_behaviour(data);
-				break;
-		}	
-	}
+	 	if (timer_ms_passed(&delay_old_time, delay_time_ms)) {
+	 		return_from_behaviour(data);
+	  	}
+	}	
 	
 	/*!
 	 * Rufe das Delay-Verhalten auf 
@@ -71,8 +48,11 @@
 	 * @param delay_time	Die Verzögerungszeit in ms
 	 */
 	void bot_delay(Behaviour_t * caller, uint16 delay_time){
-		delay_time_ms= delay_time;
-		switch_to_behaviour(caller,bot_delay_behaviour,OVERRIDE);	
+		switch_to_behaviour(caller,bot_delay_behaviour,NOOVERRIDE);	
+		if (caller->subResult == SUBRUNNING) {
+			timer_ms_passed(&delay_old_time, 0);	// old_time aktualisieren
+			delay_time_ms= delay_time;	// eventuell laesst sich diese VAriable noch wegoptimieren in dem man old_time geschickt modifiziert
+		}
 	}
 	
 #endif
