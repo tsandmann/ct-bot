@@ -46,13 +46,16 @@
 	 * Rufe das Delay-Verhalten auf 
 	 * @param caller		Der obligatorische Verhaltensdatensatz des Aufrufers
 	 * @param delay_time	Die Verzögerungszeit in ms
+	 * @return	-1 wenn was schief gelaufen ist, sonst 0
 	 */
-	void bot_delay(Behaviour_t * caller, uint16 delay_time){
+	int8 bot_delay(Behaviour_t * caller, uint16 delay_time){
 		switch_to_behaviour(caller,bot_delay_behaviour,NOOVERRIDE);	
 		if (caller->subResult == SUBRUNNING) {
 			timer_ms_passed(&delay_old_time, 0);	// old_time aktualisieren
 			delay_time_ms= delay_time;	// eventuell laesst sich diese VAriable noch wegoptimieren in dem man old_time geschickt modifiziert
-		}
+			return 0;
+		} else
+			return -1;
 	}
 	
 #endif

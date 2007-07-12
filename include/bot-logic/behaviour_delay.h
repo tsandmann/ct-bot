@@ -37,8 +37,9 @@
  * Rufe das Delay-Verhalten auf 
  * @param caller		Der obligatorische Verhaltensdatensatz des Aufrufers
  * @param delay_time	Die Verzögerungszeit in ms
+ * @return	-1 wenn was schief gelaufen ist, sonst 0
  */
-void bot_delay(Behaviour_t * caller, uint16 delay_time);
+int8 bot_delay(Behaviour_t * caller, uint16 delay_time);
 
 /*!
  * Verhalten fuer Delays
