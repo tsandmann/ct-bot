@@ -32,7 +32,7 @@
 //	objcopy -j .eeprom --change-section-lma .eeprom=0 -O binary ct-Bot.elf ct-Bot.eep; objdump -t -j .eeprom -C ct-Bot.elf | grep "g" > eeprom_pc.map
 
 //	Post-Build Mac OS X: 
-//	objcopy -j LC_SEGMENT.__DATA..eeprom --change-section-lma LC_SEGMENT.__DATA..eeprom=0 -O binary ct-Bot.elf ct-Bot.eep; objdump -t -j LC_SEGMENT.__DATA..s2eeprom -C ct-Bot.elf | grep "g" > eeprom_pc.map
+//	objcopy -j LC_SEGMENT.__DATA..eeprom --change-section-lma LC_SEGMENT.__DATA..eeprom=0 -O binary ct-Bot ct-Bot.eep; objdump -t -j LC_SEGMENT.__DATA..s2eeprom -C ct-Bot | grep "g" > eeprom_pc.map
 
 //	Post-Build Windows:
 //	TODO:	testen
@@ -50,7 +50,7 @@
 #include "log.h"
 #include "gui.h"
 
-#define DEBUG_EEPROM		// Schalter um LOG-Ausgaben anzumachen
+//#define DEBUG_EEPROM		// Schalter um LOG-Ausgaben anzumachen
 
 #ifndef DEBUG_EEPROM
 	#undef LOG_INFO

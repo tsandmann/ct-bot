@@ -62,7 +62,7 @@ Simulation gemeint, mag das OS nun Win, Linux oder Mac OS X hei&szlig;en)
 eines Tricks. Die Emulation muss wissen welche Speicheradresse die
 erste Variable hat.<BR>Daf&uuml;r gibt es die beiden Variablen
 <I>_eeprom_start1__</I> und <I>_eeprom_start2_</I><SPAN STYLE="font-style: normal">_
-in </SPAN><I>1st_init.c</I><SPAN STYLE="font-style: normal">. Diese
+in </SPAN><I>1st_init.S</I><SPAN STYLE="font-style: normal">. Diese
 stehen dort, damit sie auf jeden Fall vor der ersten EEPROM Variable
 definiert werden und damit ihre Sections (.</SPAN><I>s1eeprom</I> <SPAN STYLE="font-style: normal">+
 .</SPAN><I>s2eeprom</I><SPAN STYLE="font-style: normal">) auf jeden
@@ -135,8 +135,9 @@ zwei Modi:</P>
 	eeprom_mcu.map</B></P>
 	<P STYLE="margin-bottom: 0cm"><B>(Achtung! Zwischen sec und 5 zwei
 	Spaces)</B></P>
-	<P STYLE="margin-bottom: 0cm">Diese Befehlssequenzen des PC gelten
-	nat&uuml;rlich auch f&uuml;r MacOS oder Linux.
+	<P STYLE="margin-bottom: 0cm">F&uuml;r Linux oder Mac OS X gelten &auml;hnliche Befehle, in den 
+	Projekteinstellungen im SVN sind die n&ouml;tigen Post-Build-Einstellungen f&uuml;r alle
+	Betriebssysteme bereits gemacht.
 	</P>
 	<P STYLE="margin-bottom: 0cm">Anhand dieser MAP-Datei k&ouml;nnen
 	die Routinen des EEPROM-Managers &uuml;ber eine

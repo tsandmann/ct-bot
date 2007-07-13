@@ -3,7 +3,7 @@
 
 <ManagedProjectBuildInfo>
 <project id="ct-Bot.cdt.managedbuild.target.gnu.exe.449611534" name="Executable (Gnu)" projectType="cdt.managedbuild.target.gnu.exe">
-<configuration artifactExtension="exe" artifactName="ct-Bot" cleanCommand="rm -rf" description="Windows mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.1077176217" name="Debug-W32" parent="cdt.managedbuild.config.gnu.exe.debug">
+<configuration artifactExtension="exe" artifactName="ct-Bot" cleanCommand="rm -rf" description="Windows mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.1077176217" name="Debug-W32" parent="cdt.managedbuild.config.gnu.exe.debug" postbuildStep="objcopy -j .eeprom --change-section-lma .eeprom=0 -O binary ct-Bot.exe ct-Bot.eep; objdump -t ct-bot.exe | grep &quot;(sec  5)&quot; | grep &quot;(nx 0)&quot; &gt; eeprom_pc.map">
 <toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1011694867" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 <builder command="mingw32-make" id="cdt.managedbuild.target.gnu.builder.exe.debug.1690147207" name="Gnu Make.Debug" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
 <tool command="gcc" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.629250704" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
@@ -37,17 +37,7 @@
 <macros/>
 </toolChain>
 </configuration>
-<configuration artifactName="ct-Bot" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.release.1181183675" name="Release" parent="cdt.managedbuild.config.gnu.exe.release">
-<toolChain id="cdt.managedbuild.toolchain.gnu.exe.release.510588697" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.release">
-<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.release.1146417472" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.release"/>
-<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release.75280107" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.release"/>
-<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.release.1065963860" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.release"/>
-<tool id="cdt.managedbuild.tool.gnu.cpp.linker.exe.release.1913499732" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.release"/>
-<tool id="cdt.managedbuild.tool.gnu.assembler.exe.release.56645534" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.release"/>
-<macros/>
-</toolChain>
-</configuration>
-<configuration artifactExtension="elf" artifactName="ct-Bot" cleanCommand="rm -rf" description="Linux mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.2039935845" name="Debug-Linux" parent="cdt.managedbuild.config.gnu.exe.debug">
+<configuration artifactExtension="elf" artifactName="ct-Bot" cleanCommand="rm -rf" description="Linux mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.2039935845" name="Debug-Linux" parent="cdt.managedbuild.config.gnu.exe.debug" postbuildStep="objcopy -j .eeprom --change-section-lma .eeprom=0 -O binary ct-Bot.elf ct-Bot.eep; objdump -t -j .eeprom -C ct-Bot.elf | grep &quot;g&quot; &gt; eeprom_pc.map">
 <toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.699734591" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 <builder command="make" id="cdt.managedbuild.target.gnu.builder.exe.debug.1049987635" name="Gnu Make" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
 <tool command="gcc" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1730575762" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
@@ -77,7 +67,7 @@
 <macros/>
 </toolChain>
 </configuration>
-<configuration artifactExtension="elf" artifactName="ct-Bot" cleanCommand="rm -rf" description="Mikrocontroller mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.1197043799" name="Debug-MCU-Linux" parent="cdt.managedbuild.config.gnu.exe.debug" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size ct-Bot.elf">
+<configuration artifactExtension="elf" artifactName="ct-Bot" cleanCommand="rm -rf" description="Mikrocontroller mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.1197043799" name="Debug-MCU-Linux" parent="cdt.managedbuild.config.gnu.exe.debug" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size ct-Bot.elf; avr-objdump -t ct-bot.elf | grep &quot;O \.eeprom&quot; &gt;  eeprom_mcu.map">
 <toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1344160083" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 <builder command="make" id="cdt.managedbuild.target.gnu.builder.exe.debug.865699592" name="Gnu Make" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
 <tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1998007787" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
@@ -110,7 +100,7 @@
 <macros/>
 </toolChain>
 </configuration>
-<configuration artifactExtension="elf" artifactName="ct-Bot" cleanCommand="rm -rf" description="Mikrocontroller mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.1150677647" name="Debug-MCU-W32" parent="cdt.managedbuild.config.gnu.exe.debug" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size ct-Bot.elf">
+<configuration artifactExtension="elf" artifactName="ct-Bot" cleanCommand="rm -rf" description="Mikrocontroller mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.1150677647" name="Debug-MCU-W32" parent="cdt.managedbuild.config.gnu.exe.debug" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size ct-Bot.elf; avr-objdump -t ct-bot.elf | grep &quot;O \.eeprom&quot; &gt;  eeprom_mcu.map">
 <toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.84194754" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 <builder command="make" id="cdt.managedbuild.target.gnu.builder.exe.debug.239679071" name="Gnu Make" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
 <tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.113274235" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
@@ -137,6 +127,36 @@
 </tool>
 <tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1073017226" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
 <tool command="as" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.212943627" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug"/>
+<macros/>
+</toolChain>
+</configuration>
+<configuration artifactExtension="" artifactName="ct-Bot" cleanCommand="rm -rf" description="Mac OS X mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.1152668458" name="Debug-Mac" parent="cdt.managedbuild.config.gnu.exe.debug" postbuildStep="objcopy -j LC_SEGMENT.__DATA..eeprom --change-section-lma LC_SEGMENT.__DATA..eeprom=0 -O binary ct-Bot ct-Bot.eep; objdump -t -j LC_SEGMENT.__DATA..s2eeprom -C ct-Bot | grep &quot;g&quot; &gt; eeprom_pc.map">
+<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.450163375" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
+<builder command="make" id="cdt.managedbuild.target.gnu.builder.exe.debug.709732202" name="Gnu Make" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
+<tool command="gcc" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1482408562" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
+<option id="gnu.c.compiler.option.include.paths.868884851" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="${ProjDirPath}"/>
+<listOptionValue builtIn="false" value="${ProjDirPath}/include"/>
+<listOptionValue builtIn="false" value="/usr/include"/>
+</option>
+<option id="gnu.c.compiler.option.preprocessor.def.symbols.2045381193" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="PC"/>
+</option>
+<option id="gnu.c.compiler.option.misc.other.1127391550" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -Wstrict-prototypes" valueType="string"/>
+</tool>
+<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1290802480" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug"/>
+<tool command="gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX} ${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1945356520" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug">
+<option id="gnu.c.link.option.libs.1270670112" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs">
+<listOptionValue builtIn="false" value="pthread"/>
+<listOptionValue builtIn="false" value="m"/>
+</option>
+<option id="gnu.c.link.option.paths.2078050341" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="stringList">
+<listOptionValue builtIn="false" value="/usr/lib"/>
+</option>
+<option id="gnu.c.link.option.noshared.1379246706" name="No shared libraries (-static)" superClass="gnu.c.link.option.noshared" value="false" valueType="boolean"/>
+</tool>
+<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1991293861" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
+<tool command="as" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1833220446" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug"/>
 <macros/>
 </toolChain>
 </configuration>

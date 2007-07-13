@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-07-13 Timo Sandmann [mail@timosandmann.de]: Post-Build-Steps fuer EEPROM-Emulation ergaenzt, bitte auch .cdtbuild mit updaten!
+
 2007-07-13 Timo Sandmann [mail@timosandmann.de]: PC-EEPROM-Emulation optimiert / korrigiert 
 
 2007-07-12 Timo Sandmann [mail@timosandmann.de]: Delay-Verhalten etwas vereinfacht und in andere Verhalten eingebaut
