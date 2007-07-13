@@ -134,7 +134,9 @@ void init(void){
 
 	#ifdef PC
 		bot_2_sim_init();
-		init_eeprom_man(0);
+		if (init_eeprom_man(0) != 0) {
+			LOG_ERROR("EEPROM-Manager nicht korrekt initialisiert!");
+		}
 	#endif
 
 	#ifdef DISPLAY_AVAILABLE

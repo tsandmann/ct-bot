@@ -24,19 +24,33 @@
  * @date 	07.06.2007
  */
 
+//	Post-Build AVR:
+//	avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size ct-Bot.elf; avr-objdump -t ct-bot.elf | grep "O \.eeprom" >  eeprom_mcu.map
+
+//	Post-Build Linux:
+//	TODO:	testen
+//	objcopy -j .eeprom --change-section-lma .eeprom=0 -O binary ct-Bot.elf ct-Bot.eep; objdump -t -j .eeprom -C ct-Bot.elf | grep "g" > eeprom_pc.map
+
+//	Post-Build Mac OS X: 
+//	objcopy -j LC_SEGMENT.__DATA..eeprom --change-section-lma LC_SEGMENT.__DATA..eeprom=0 -O binary ct-Bot.elf ct-Bot.eep; objdump -t -j LC_SEGMENT.__DATA..s2eeprom -C ct-Bot.elf | grep "g" > eeprom_pc.map
+
+//	Post-Build Windows:
+//	TODO:	testen
+//	objcopy -j .eeprom --change-section-lma .eeprom=0 -O binary ct-Bot.exe ct-Bot.eep;objdump -t ct-bot.exe | grep "(sec  5)" | grep "(nx 0)" > eeprom_pc.map
+
+
 #include "ct-Bot.h"
 
 #ifdef PC
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
-#include <sys/time.h>
 
 #include "log.h"
 #include "gui.h"
 
-//#define DEBUG_EEPROM		// Schalter um LOG-Ausgaben anzumachen
+#define DEBUG_EEPROM		// Schalter um LOG-Ausgaben anzumachen
 
 #ifndef DEBUG_EEPROM
 	#undef LOG_INFO
@@ -48,49 +62,75 @@ extern uint8 __attribute__ ((section (".s2eeprom"),aligned(1))) _eeprom_start2__
 
 /*! Normiert PC EEPROM Adressen*/
 #define EEPROM_ADDR(x) ((uint32)x - (uint32)&_eeprom_start2__ - ((uint32)&_eeprom_start2__ - (uint32)&_eeprom_start1__))
-/*! Defines zum Mitloggen von EEPROM Zugriffen*/
-#define LOG_LOAD 	if(addrconv) {LOG_DEBUG("LOAD: %s : %d", ctab[lastctabi].varname, (uint16)dataline[0] + (uint16)dataline[1]*256);}\
-					else {LOG_DEBUG("load-addr=0x%x/%d", address,(uint16)dataline[0] + (uint16)dataline[1]*256);}
-#define LOG_STORE 	if(addrconv) {LOG_DEBUG("STORE: %s : %d", ctab[lastctabi].varname, data);}\
-					else {LOG_DEBUG("load-addr=0x%x/%d", address, data);}
-									
+/*! Makros zum Mitloggen von EEPROM Zugriffen*/
+#define LOG_LOAD 	if(addrconv) {LOG_DEBUG("LOAD:%s : %u", ctab[lastctabi].varname, eeprom[address]);}\
+					else {LOG_DEBUG("load-addr=0x%x/%u", address, eeprom[address]);}
+#define LOG_STORE 	if(addrconv) {LOG_DEBUG("STORE:%s : %d", ctab[lastctabi].varname, value);}\
+					else {LOG_DEBUG("load-addr=0x%x/%d", address, value);}
+
+/*! Positionen der Daten in den Map-Dateien */
+#ifdef WIN32
+	#define SADDR_POS 54	/*!< Pos. der Adresse in PC Map Datei */
+	#define SNAME_POS 60	/*!< Pos. des Variablennamen ohne _ */
+	#define BADDR_POS  0	/*!< Pos. der Adresse in MCU Map Datei */
+	#define BNAME_POS 34	/*!< Pos. des Variablennamen in MCU Map */
+	#define BSIZE_POS 28	/*!< Pos. der Variablengroesse in MCU Map */
+#endif					
+#ifdef __linux__
+	#define SADDR_POS  0	/*!< Pos. der Adresse in PC Map Datei */
+	#define SNAME_POS 46	/*!< Pos. des Variablennamen ohne _ */
+	#define BADDR_POS  0	/*!< Pos. der Adresse in MCU Map Datei */
+	#define BNAME_POS 34	/*!< Pos. des Variablennamen in MCU Map */
+	#define BSIZE_POS 28	/*!< Pos. der Variablengroesse in MCU Map */
+#endif					
+#ifdef __APPLE__
+	#define SADDR_POS  0	/*!< Pos. der Adresse in PC Map Datei */
+	#define SNAME_POS 45	/*!< Pos. des Variablennamen ohne _ */
+	#define BADDR_POS  0	/*!< Pos. der Adresse in MCU Map Datei */
+	#define BNAME_POS 34	/*!< Pos. des Variablennamen in MCU Map */
+	#define BSIZE_POS 28	/*!< Pos. der Variablengroesse in MCU Map */
+#endif					
+				
 #ifdef __AVR_ATmega644__  // Dieser Prozessor hat 2048 Bytes EEPROM
 	#define EE_SIZE 2048
 #else
 	#define EE_SIZE 1024
 #endif
 
-#define EEPROM_FILENAME	"./eeprom.bin" 		/*<! Name und Pfad der EEPROM Datei. Verzeichnis muss existieren. Backslash doppeln!*/
-#define MAX_VAR 200  						/*<! Maximale Anszahl von Variablen*/
-#define EEMAP_PC  "./eeprom_pc.map"					/*<! Pfad fuer PC-MAP Datei */
-#define EEP_PC    "./ct-Bot.eep"					/*<! Pfad fuer PC-EEP Datei */
+#define EEPROM_FILENAME	"./eeprom.bin" 		/*!< Name und Pfad der EEPROM Datei. Verzeichnis muss existieren. Backslash doppeln!*/
+#define MAX_VAR 200  						/*!< Maximale Anzahl von Variablen*/
+#define EEMAP_PC  "./eeprom_pc.map"			/*!< Pfad fuer PC-MAP Datei */
+#define EEP_PC    "./ct-Bot.eep"			/*!< Pfad fuer PC-EEP Datei */
 #ifdef WIN32
 	/* Windows */
-	#define EEMAP_MCU "../debug-mcu-w32/eeprom_mcu.map"		/*<! Pfade fuer MAP / EEP Dateien */
+	#define EEMAP_MCU "../debug-mcu-w32/eeprom_mcu.map"		/*!< Pfad fuer MCU MAP Datei */
 #else
 	/* Linux und OS X */
-	#define EEMAP_MCU "../Debug-MCU-Linux/eeprom_mcu.map"	/*<! Pfade fuer MAP / EEP Dateien */
+	#define EEMAP_MCU "../Debug-MCU-Linux/eeprom_mcu.map"	/*!< Pfad fuer MCU MAP Datei */
 #endif
 
 typedef struct addrtab {
-	char varname[20];
-	uint32 simaddr;
-	uint32 botaddr;
-	uint32 size;
-	uint32 access;
-} AddrCTab_t;								/*<! Spezieller Datentyp fuer Adresskonvertierung */
+	char varname[30];
+	size_t simaddr;
+	size_t botaddr;
+	uint16_t size;
+//	uint32 access;	// ??? wird nie ausgewertet
+} AddrCTab_t;								/*!< Spezieller Datentyp fuer Adresskonvertierung */
 
-static AddrCTab_t ctab[MAX_VAR]; 			/*<! Adresskonvertierungstabelle */
-static uint16 tsize=0; 						/*<! Anzahl Eintraege in der Tabelle */
-static uint8 addrconv = 0;                  /*<! Adresskonvertierung ein-/ausschalten */
-static uint16 lastctabi = 0;                /*<! Letzter Zugriffsindex auf ctab */
+static AddrCTab_t ctab[MAX_VAR]; 			/*!< Adresskonvertierungstabelle */
+static uint16 tsize=0; 						/*!< Anzahl Eintraege in der Tabelle */
+static uint16 esize=0;						/*!< Summe der EEPROM Variablen */
+static uint8 addrconv = 0;                  /*!< Adresskonvertierung ein-/ausschalten */
+static uint16 lastctabi = 0;                /*!< Letzter Zugriffsindex auf ctab */
+static uint8 eeprom[EE_SIZE];               /*!< EEPROM Speicher im RAM */
+static FILE * ee_file;						/*!< Zeiger auf EEPROM-Datei */
 
 /*! 
  * Diese Funktion konvertiert die Adressen der EEPROM Variablen des PC so,
  * dass sie den Adressen im realen ct-Bot entsprechen. Dafuer wird mit der Funktion
  * create_ctab ein Adresstabelle angelegt, diese nutzt diese Funktion.
- * @param addr Adresse im EEPROM zwischen 0 und EE_SIZE-1
- * @return Die neue Adresse fuer den realen Bot
+ * @param addr	Adresse im EEPROM zwischen 0 und EE_SIZE-1
+ * @return 		Die neue Adresse fuer den realen Bot
  */
 static uint32 conv_eeaddr(uint32 addr){
 	int8 i;
@@ -101,7 +141,7 @@ static uint32 conv_eeaddr(uint32 addr){
 	for(i=0; i<tsize; i++){
 		adiff = addr - ctab[i].simaddr;
 		if(adiff < 0)
-			return(0xffffffff);
+			return(0xfffffffe);
 		if(adiff < ctab[i].size){
 			lastctabi = i; //Letzer guelten Index merken
 			return(ctab[i].botaddr + adiff);
@@ -121,7 +161,7 @@ static uint32 conv_eeaddr(uint32 addr){
  * -----
  * @param initfile		EEP-Datei des PC Codes
  * @param eeprom_init	Flag fuer Initialisierung (1 ja, 0 nein)
- * @return Status der Funktion
+ * @return 				Status der Funktion
  */
 static uint16 check_eeprom_file(char *initfile, uint8_t eeprom_init){
 	FILE *fpr, *fpw; //Filepointer fuer Dateizugriffe
@@ -169,7 +209,7 @@ static uint16 check_eeprom_file(char *initfile, uint8_t eeprom_init){
 				uint32 naddr;//Konvertierte Adresse
 				
 				naddr = conv_eeaddr((uint32)i);
-				if(naddr != 0xffffffff){
+				if(naddr < 0xfffffffe){
 					fseek(fpw, (int32)naddr, SEEK_SET);
 				}
 				else{
@@ -200,18 +240,16 @@ static uint16 check_eeprom_file(char *initfile, uint8_t eeprom_init){
  * 5 = EEPROM voll
  * 6 = Unterschiedliche Variablenanzahl
  * 
- * @param simfile MAP mit den Adressen der EEPROM-Variablen in der PC exe/elf
- * @param botfile MAP mit den Adressen der EEPROM-Variablen im MCU elf
- * @return Statuscode
+ * @param simfile	MAP mit den Adressen der EEPROM-Variablen in der PC exe/elf
+ * @param botfile	MAP mit den Adressen der EEPROM-Variablen im MCU elf
+ * @return 			Statuscode
  */
 static uint16 create_ctab(char *simfile, char *botfile){
 	FILE *fps, *fpb;
 	char sline[250], bline[250]; //Textzeilen aus Dateien
-	char d[30], d1[30], d2[30], vname_s[30], vname_b[20]; //Dummy und Variablennamen
-	int32 addr_s, addr_b; //Adressen der Variablen
-	char saddr[30], ssize[30]; //Stringvarianten fuer die Bot Daten
-	uint32 size; //Variablengroesse
-	int16 i, ii; //Laufvariablen
+	char vname_s[30], vname_b[30]; //Dummy und Variablennamen
+	size_t addr_s, addr_b; //Adressen der Variablen
+	uint16_t size; //Variablengroesse
 	uint16 vc = 0; //Variablenzaehler
 
 	/*Dateien oeffnen*/
@@ -239,28 +277,33 @@ static uint16 create_ctab(char *simfile, char *botfile){
 	/*Tabelle erstellen*/
 	while(fgets(sline, 249, fps)){
 		rewind(fpb);
-		sscanf(&sline[47], "%x %s", &addr_s, vname_s);
+		sscanf(&sline[SNAME_POS], "%s", vname_s);
+//		printf("vname_s=%s\n", vname_s);
+		addr_s = strtol(&sline[SADDR_POS], NULL, 16);
+//		printf("addr_s=0x%lx\n", addr_s);
 		while(fgets(bline, 249, fpb)){
 			/*Variablennamen suchen*/
-			sscanf(&bline[4], "%s %s %s %s %s %s", d1, d, d, d, d2, vname_b);
-			sprintf(saddr, "0x%s", d1);
-			sscanf(saddr, "%x", &addr_b);
-			sprintf(ssize, "0x%s", &d2[4]);
-			sscanf(ssize, "%x", &size);
-			if(!strcmp(&vname_s[1], vname_b)){
+			sscanf(&bline[BNAME_POS], "%s", vname_b);
+//			printf("vname_b=%s\n", vname_b);
+			addr_b = strtol(&bline[BADDR_POS], NULL, 16) & 0xffff;	//TODO:	sehr unschoen so, besser kleinste Adresse von allen subtrahieren
+//			printf("addr_b=0x%lx\n", addr_b);
+			size = strtol(&bline[BSIZE_POS], NULL, 16);
+//			printf("size=0x%x\n", size);
+			
+			if(!strcmp(vname_s, vname_b)){
 				/*Daten kopieren*/
 				strcpy(ctab[tsize].varname, vname_b);
 				ctab[tsize].simaddr = addr_s;
 				ctab[tsize].botaddr = addr_b;
-				ctab[tsize].size    = size;
-				ctab[tsize++].access  = 0;
-
+				ctab[tsize++].size    = size;
+				//ctab[tsize++].access  = 0;	// ??? wird nie ausgewertet
+				esize += size;
 				/*Fehlerabbrueche*/
 				if(tsize == MAX_VAR){
 					LOG_INFO("->Mehr als %n Variablen",MAX_VAR);
 					return(4);
 				}
-				if(addr_s > EE_SIZE){
+				if(esize > EE_SIZE){
 					LOG_INFO("->EEPROM voll");
 					return(5);
 				}
@@ -281,10 +324,11 @@ static uint16 create_ctab(char *simfile, char *botfile){
 	fclose(fpb);
 	
 	/*Tabelle nach Sim-Adressen sortieren*/
-	for(ii=tsize-1; ii > 0; ii--){
-		for(i=0; i < ii; i++){
+	uint16_t i, j;
+	for(j=tsize-1; j > 0; j--){
+		for(i=0; i < j; i++){
 			if(ctab[i].simaddr > ctab[i+1].simaddr){
-				long simaddr, botaddr, size;
+				size_t simaddr, botaddr, size;
 				char vname[30];
 			
 				/*Daten umkopieren*/
@@ -305,6 +349,22 @@ static uint16 create_ctab(char *simfile, char *botfile){
 			}
 		}
 	}
+	
+	/*Tabelle auf Startadresse 0 normieren, wenn noetig*/
+	size_t first_simaddr = ctab[0].simaddr; 
+	if(first_simaddr != 0) {
+		LOG_INFO("->Adressen werden normiert");
+		for(i=0; i<tsize; i++)
+			ctab[i].simaddr -= first_simaddr;
+	}
+
+//	for (i=0; i<tsize; i++) {
+//		printf("i=%u\n", i);
+//		printf("varname=%s\n", ctab[i].varname);
+//		printf("simaddr=0x%lx\n", ctab[i].simaddr);
+//		printf("botaddr=0x%lx\n", ctab[i].botaddr);
+//		printf("size=0x%x\n\n", ctab[i].size);		
+//	}	
 	return(0);
 }
 
@@ -314,10 +374,11 @@ static uint16 create_ctab(char *simfile, char *botfile){
  * konvertierungstabelle fuer die EEPROM-Adressen, wenn die benoetigten Daten vorliegen.
  * Statusinformationen werden ueber DEBUG_INFO angezeigt.
  * @param init	gibt an, ob das EEPROM mit Hilfer einer eep-Datei initialisiert werden soll (0 nein, 1 ja)
+ * @return		0: alles ok, 1: Fehler
  */
 uint8_t init_eeprom_man(uint8_t init) {
-	uint16 status; //Status von create_ctab
-	uint16 sflag; //Sectionstatus
+	uint16 status;	//Status von create_ctab
+	uint16 sflag;	//Sectionstatus
 	
 	LOG_INFO("EEPROM-Manager");
 
@@ -341,72 +402,30 @@ uint8_t init_eeprom_man(uint8_t init) {
 		sflag = 1;
 	}
 	
-	/*eeprom.bin checken*/ 
+	/*eeprom.bin checken*/
 	if(sflag || check_eeprom_file(EEP_PC, init)){
 		LOG_INFO("EEPROM-Emulation fehlerhaft");
 		return 1;
 	}
 	else{
-		LOG_INFO("->EEPROM Groesse %d Bytes", EE_SIZE);
+		LOG_INFO("->EEPROM Groesse: %d Bytes", EE_SIZE);
+		if(addrconv)
+			LOG_INFO("->Belegter EEPROM Speicher: %d Bytes", esize);
 		LOG_INFO("EEPROM-Emulation einsatzbereit");
 	}
+	
+	if((ee_file = fopen(EEPROM_FILENAME, "r+b")) == NULL) return 1;
+	if (fread(eeprom, 1, EE_SIZE, ee_file) != EE_SIZE) return 1;
 	return 0;
 }
 
-/*! 
- * Traegt die uebergebenen Daten in das simulierte EEPROM ein. Dieses simulierte EEPROM 
- * besteht aus einer Datei. 
- * Es koennen Bytes (uint8 size = 1) und Words (uint16 size = 2) uebergeben werden.
- * @param address Adresse im EEPROM zwischen 0 und EE_SIZE-1
- * @param data Daten die abgelegt werden sollen
- * @param size Groesse der Daten in Byte
- */  
-static void store_parameter(uint16 address, uint16 data, uint8 size) {
-	FILE  *fpw; 	//Dateizeiger
-	uint8 dataline[2];	//Speicher fuer Datenausgabe
-
-//	LOG_STORE
-	if(address > (size == 1 ? EE_SIZE-1 : EE_SIZE-2)) //Adresse checken
-		return;
-
-	if(!(fpw = fopen(EEPROM_FILENAME, "r+b"))){ //Testen, ob Datei vorhanden ist.
-			return;
-	}
-
-	//Daten eintragen
-	fseek(fpw, address, SEEK_SET); //Schreibzeiger setzen
-	dataline[0] = data%256;
-	dataline[1] = data/256;
-	fwrite(dataline, 1, size, fpw);	//Daten schreiben
-
-	fclose(fpw);
-	return;	
-}
-
-/*! 
- * Liest die gewuenschten Daten aus eine simulierten EEPROM. Dieses simulierte EEPROM 
- * besteht aus der Datei eeprom.bin. 
- * @param address Adresse im EEPROM zwischen 0 und EE_SIZE-1
- * @param size Groesse der Daten in Byte
- * @return Aus dem EEPROM gelesener Wert
- */  
-static uint16 load_parameter(uint16 address, uint8 size) {
-	FILE *fpr; 	//Dateizeiger
-	uint8 dataline[2] = {0,0};	//String fuer Datenausgabe
-
-	if(address > (size == 1 ? EE_SIZE-1 : EE_SIZE-2)) //Adresse checken
-		return((size == 1 ? 0xff : 0xffff));
-
-	if(!(fpr = fopen(EEPROM_FILENAME, "rb"))){ //Datei oeffnen
-		return((size == 1 ? 0xff : 0xffff));
-	}
-
-	//Daten holen
-	fseek(fpr, address, SEEK_SET); //Lesezeiger setzen
-	fread(dataline, 1, size, fpr);	//Daten lesen
-	fclose(fpr);
-//	LOG_LOAD
-	return((uint16)dataline[0] + (uint16)dataline[1]*256);	
+/*!
+ * Schreibt den kompletten Inhalt des EEPROM-Caches in die Datei zurueck
+ */
+static inline void flush_eeprom_cache(void) {
+	fseek(ee_file, 0, SEEK_SET);
+	fwrite(eeprom, 1, EE_SIZE, ee_file);
+	fflush(ee_file);
 }
 
 /*! 
@@ -415,7 +434,9 @@ static uint16 load_parameter(uint16 address, uint8 size) {
  * @return 		Wert der Speicheraddresse im EEPROM
  */ 
 uint8_t eeprom_read_byte(const uint8_t * addr) {
-	return((uint8)load_parameter((uint16)conv_eeaddr(EEPROM_ADDR(addr)), 1));
+	uint16_t address = conv_eeaddr(EEPROM_ADDR(addr));
+	if (address >= EE_SIZE) return 0xff;
+	return eeprom[address];
 }
 
 /*! 
@@ -424,25 +445,10 @@ uint8_t eeprom_read_byte(const uint8_t * addr) {
  * @return 		Wert der Speicheraddresse im EEPROM
  */
 uint16_t eeprom_read_word(const uint16_t * addr) {
-	return(load_parameter((uint16)conv_eeaddr(EEPROM_ADDR(addr)), 2));
-}
-
-/*!
- * Speichert ein Byte im EEPROM.
- * @param addr	Adresse im EEPROM zwischen 0 und 1023
- * @param value	Das abzulegende Byte
- */   
-void eeprom_write_byte(uint8_t * addr, uint8_t value) {
-	store_parameter((uint16)conv_eeaddr(EEPROM_ADDR(addr)), (uint16)value, 1);
-}
-
-/*!
- * Speichert ein Word im EEPROM.
- * @param addr	Adresse im EEPROM zwischen 0 und 1023
- * @param value	Das abzulegende Word
- */
-void eeprom_write_word(uint16_t * addr, uint16_t value) {
-	store_parameter((uint16)conv_eeaddr(EEPROM_ADDR(addr)), value, 2);
+	uint16_t address = conv_eeaddr(EEPROM_ADDR(addr));
+	if (address >= EE_SIZE-1) return 0xffff;
+	uint8_t * ptr = eeprom + address;
+	return *(uint16_t *)ptr;
 }
 
 /*! 
@@ -452,13 +458,35 @@ void eeprom_write_word(uint16_t * addr, uint16_t value) {
  * @param size				Groesse des Blocks in Byte
  */ 
 void eeprom_read_block(void *pointer_ram, const void *pointer_eeprom, size_t size) {
-	uint32 i;
-	uint8 *ram;
-	
-	ram = (uint8 *)pointer_ram;
-	for(i=0; i< size; i++){
-		ram[i]=(uint16)load_parameter((uint16)conv_eeaddr(EEPROM_ADDR(pointer_eeprom)) + i, 1);
-	}
+	uint16_t address = conv_eeaddr(EEPROM_ADDR(pointer_eeprom));
+	if (address+size >= EE_SIZE) return;
+	uint8_t * ptr = eeprom + address;
+	memcpy(pointer_ram, ptr, size);
+}
+
+/*!
+ * Speichert ein Byte im EEPROM.
+ * @param addr	Adresse im EEPROM zwischen 0 und 1023
+ * @param value	Das abzulegende Byte
+ */   
+void eeprom_write_byte(uint8_t * addr, uint8_t value) {
+	uint16_t address = conv_eeaddr(EEPROM_ADDR(addr));
+	if (address >= EE_SIZE) return;
+	eeprom[address] = value;
+	flush_eeprom_cache();
+}
+
+/*!
+ * Speichert ein Word im EEPROM.
+ * @param addr	Adresse im EEPROM zwischen 0 und 1023
+ * @param value	Das abzulegende Word
+ */
+void eeprom_write_word(uint16_t * addr, uint16_t value) {
+	uint16_t address = conv_eeaddr(EEPROM_ADDR(addr));
+	if (address >= EE_SIZE-1) return;
+	uint8_t * ptr = eeprom + address;
+	*(uint16_t *)ptr = value;	
+	flush_eeprom_cache();
 }
 
 /*! 
@@ -468,13 +496,13 @@ void eeprom_read_block(void *pointer_ram, const void *pointer_eeprom, size_t siz
  * @param size				Groesse des Blocks in Byte
  */ 
 void eeprom_write_block(const void *pointer_ram, void *pointer_eeprom, size_t size) {
-	uint32 i;
-	uint8 *ram;
-	
-	ram = (uint8 *)pointer_ram;
-	for(i=0; i< size; i++){
-		store_parameter((uint16)conv_eeaddr(EEPROM_ADDR(pointer_eeprom)) + i, (uint16)ram[i] ,1);
-	}
+	uint16_t address = conv_eeaddr(EEPROM_ADDR(pointer_eeprom));
+	if (address+size >= EE_SIZE) return;
+	printf("address=0x%x\n", address);
+	uint8_t * ptr = eeprom + address;
+	memcpy(ptr, pointer_ram, size);
+	printf("[0]=%u\t[1]=%u\n", eeprom_read_byte(pointer_eeprom), eeprom_read_byte(pointer_eeprom+1));
+	flush_eeprom_cache();
 }
 
 #endif	// PC

@@ -30,11 +30,14 @@
 #ifdef PC
 #include <stddef.h>
 
-/*!
- * Initialisiert den EEPROM-Manager fuer den Simulierten Bot. Danach steht dem PC-Bot
- * auch ein EEPROM zur Verfuegung.
+/*! 
+ * Diese Funktion initialisiert die eeprom-emulation. Sie sorgt fuer die Erstellung der
+ * eeprom.bin, falls nicht vorhanden und erstellt ueber eine Hilfsfunktion eine Adress-
+ * konvertierungstabelle fuer die EEPROM-Adressen, wenn die benoetigten Daten vorliegen.
+ * Statusinformationen werden ueber DEBUG_INFO angezeigt.
  * @param init	gibt an, ob das EEPROM mit Hilfer einer eep-Datei initialisiert werden soll (0 nein, 1 ja)
- */ 
+ * @return		0: alles ok, 1: Fehler
+ */
 extern uint8_t init_eeprom_man(uint8_t init);
 
 /*!
