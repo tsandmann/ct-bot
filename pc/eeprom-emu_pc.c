@@ -498,10 +498,8 @@ void eeprom_write_word(uint16_t * addr, uint16_t value) {
 void eeprom_write_block(const void *pointer_ram, void *pointer_eeprom, size_t size) {
 	uint16_t address = conv_eeaddr(EEPROM_ADDR(pointer_eeprom));
 	if (address+size >= EE_SIZE) return;
-	printf("address=0x%x\n", address);
 	uint8_t * ptr = eeprom + address;
 	memcpy(ptr, pointer_ram, size);
-	printf("[0]=%u\t[1]=%u\n", eeprom_read_byte(pointer_eeprom), eeprom_read_byte(pointer_eeprom+1));
 	flush_eeprom_cache();
 }
 
