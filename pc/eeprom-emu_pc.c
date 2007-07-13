@@ -35,7 +35,6 @@
 //	objcopy -j LC_SEGMENT.__DATA..eeprom --change-section-lma LC_SEGMENT.__DATA..eeprom=0 -O binary ct-Bot ct-Bot.eep; objdump -t -j LC_SEGMENT.__DATA..s2eeprom -C ct-Bot | grep "g" > eeprom_pc.map
 
 //	Post-Build Windows:
-//	TODO:	testen
 //	objcopy -j .eeprom --change-section-lma .eeprom=0 -O binary ct-Bot.exe ct-Bot.eep;objdump -t ct-bot.exe | grep "(sec  5)" | grep "(nx 0)" > eeprom_pc.map
 
 
@@ -247,10 +246,11 @@ static uint16 check_eeprom_file(char *initfile, uint8_t eeprom_init){
 static uint16 create_ctab(char *simfile, char *botfile){
 	FILE *fps, *fpb;
 	char sline[250], bline[250]; //Textzeilen aus Dateien
-	char vname_s[30], vname_b[30]; //Dummy und Variablennamen
+	char vname_s[30], vname_b[30]; //Variablennamen
 	size_t addr_s, addr_b; //Adressen der Variablen
 	uint16_t size; //Variablengroesse
 	uint16 vc = 0; //Variablenzaehler
+	size_t first_botaddr = 0xffffffff; //Erste ct-bot EEPROM Adressse
 
 	/*Dateien oeffnen*/
 	if(!(fps=fopen(simfile,"r"))){
@@ -285,8 +285,10 @@ static uint16 create_ctab(char *simfile, char *botfile){
 			/*Variablennamen suchen*/
 			sscanf(&bline[BNAME_POS], "%s", vname_b);
 //			printf("vname_b=%s\n", vname_b);
-			addr_b = strtol(&bline[BADDR_POS], NULL, 16) & 0xffff;	//TODO:	sehr unschoen so, besser kleinste Adresse von allen subtrahieren
+			addr_b = strtol(&bline[BADDR_POS], NULL, 16);
 //			printf("addr_b=0x%lx\n", addr_b);
+			if(addr_b < first_botaddr)//Kleinste ct-bot Adresse bestimmen
+				first_botaddr = addr_b; 
 			size = strtol(&bline[BSIZE_POS], NULL, 16);
 //			printf("size=0x%x\n", size);
 			
@@ -350,12 +352,15 @@ static uint16 create_ctab(char *simfile, char *botfile){
 		}
 	}
 	
-	/*Tabelle auf Startadresse 0 normieren, wenn noetig*/
+	/*Die EEPROM-Startadressen vom ct-bot und/oder Ct-Sim auf Null normieren*/
 	size_t first_simaddr = ctab[0].simaddr; 
-	if(first_simaddr != 0) {
+	if(first_simaddr || first_botaddr) {
 		LOG_INFO("->Adressen werden normiert");
-		for(i=0; i<tsize; i++)
-			ctab[i].simaddr -= first_simaddr;
+		for(i=0; i<tsize; i++){
+			if(first_simaddr) ctab[i].simaddr -= first_simaddr;
+			if(first_botaddr) ctab[i].botaddr -= first_botaddr;
+//			printf("addr_b=0x%x addr_b=0x%x\n", ctab[i].botaddr, ctab[i].simaddr);
+		}
 	}
 
 //	for (i=0; i<tsize; i++) {
