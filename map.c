@@ -743,7 +743,7 @@ void map_set_value_occupied (uint16 x, uint16 y, int8 val) {
  * @param max_val maximaler Wert
  */ 
 void clear_map(int8 min_val, int8 max_val) {
-	uint16 x,y;
+	int16 x,y;
 	int8 tmp;
 	// Mapfelder durchlaufen
 	for (y=map_min_y; y<= map_max_y; y++) {
@@ -805,7 +805,8 @@ void update_map_sensor_hole(float x, float y, float h){
 #ifdef PC
 
 	/*!
-	 * verkleinert die Karte auf den benutzten Bereich
+	 * verkleinert die Karte vom übergebenen auf den benutzten Bereich. Achtung, 
+	 * unter Umständen muss man vorher die Puffervariablen sinnvoll initialisieren!!!
 	 * @param min_x Zeiger auf einen uint16, der den miniamlen X-Wert puffert
 	 * @param max_x Zeiger auf einen uint16, der den maxinmalen X-Wert puffert
 	 * @param min_y Zeiger auf einen uint16, der den miniamlen Y-Wert puffert
@@ -820,6 +821,7 @@ void update_map_sensor_hole(float x, float y, float h){
 		*min_y=map_min_y;
 		*max_y=map_max_y;
 		
+		
 		// Kartengroesse reduzieren
 		int8 free=1;
 		while ((*min_y < *max_y) && (free ==1)){
@@ -827,10 +829,11 @@ void update_map_sensor_hole(float x, float y, float h){
 				if (map_get_field(x,*min_y) != 0){
 					free=0;
 					break;
-				}					
+				}			
 			}
-			*min_y++;
-		}
+			*min_y+=1;
+		}		
+		
 		free=1;
 		while ((*min_y < *max_y) && (free ==1)){
 			for (x=*min_x; x<*max_x; x++){
@@ -839,7 +842,7 @@ void update_map_sensor_hole(float x, float y, float h){
 					break;
 				}					
 			}
-			*max_y--;
+			*max_y-=1;
 		}
 		
 		free=1;
@@ -850,7 +853,7 @@ void update_map_sensor_hole(float x, float y, float h){
 					break;
 				}					
 			}
-			*min_x++;
+			*min_x+=1;
 		}
 		free=1;
 		while ((*min_x < *max_x) && (free ==1)){
@@ -860,7 +863,7 @@ void update_map_sensor_hole(float x, float y, float h){
 					break;
 				}					
 			}
-			*max_x--;
+			*max_x-=1;
 		}
 	}
 
@@ -958,6 +961,13 @@ void update_map_sensor_hole(float x, float y, float h){
 		fclose(fp);
 		
 		#ifdef SHRINK_MAP_ONLINE
+			// Groesse neu initialisieren
+			map_min_x=0;
+			map_max_x=MAP_SIZE*MAP_RESOLUTION; 
+			map_min_y=0;
+			map_max_y=MAP_SIZE*MAP_RESOLUTION;
+		
+			// und Karte verkleinern
 			shrink_map(&map_min_x, &map_max_x, &map_min_y, &map_max_y);
 		#endif
 		
