@@ -1,6 +1,8 @@
 CHANGELOG fuer c't-Bot
 ======================
-2007-07-31 Benjamin Benz [bbe@heise.de]: Bug in der Shrink-Funktion für die Karten korrigiert
+2007-08-01 Timo Sandmann [mail@timosandmann.de]: UART laesst sich nun auch mit 115200 Baud benutzen (umschaltbar in include/uart.h)
+
+2007-07-31 Benjamin Benz [bbe@heise.de]: Bug in der Shrink-Funktion fuer die Karten korrigiert
 
 2007-07-19 Timo Sandmann [mail@timosandmann.de]: PC-EEPROM: Bugfix und Doku-Update
 
@@ -12,7 +14,7 @@ CHANGELOG fuer c't-Bot
 
 2007-07-12 Timo Sandmann [mail@timosandmann.de]: Delay-Verhalten etwas vereinfacht und in andere Verhalten eingebaut
 
-2007-07-12 Benjamin Benz [bbe@heise.de]: Delay-Verhalten eingefügt
+2007-07-12 Benjamin Benz [bbe@heise.de]: Delay-Verhalten eingefuegt
 
 2007-07-08 Timo Sandmann [mail@timosandmann.de]: Genauigkeit von bot_turn() deutlich verbessert, Test-Verhalten fuer bot_turn() hinzugefuegt und leicht verbesserte Annaeherung an die reale Motorkennline, wenn Regelung aus ist 
 

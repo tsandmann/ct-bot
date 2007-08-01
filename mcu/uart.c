@@ -56,11 +56,9 @@ fifo_t outfifo;				/*!< Ausgangs-FIFO */
  */
 void uart_init(void){	 
     uint8 sreg = SREG;
-    uint16 ubrr = (uint16) ((uint32) F_CPU/(16*BAUDRATE) - 1);
-
-	UBRRH = (uint8_t) (ubrr>>8);
-	UBRRL = (uint8_t) (ubrr);
-
+    UBRRH = (UART_CALC_BAUDRATE(BAUDRATE)>>8) & 0xFF;
+    UBRRL = (UART_CALC_BAUDRATE(BAUDRATE) & 0xFF);
+    
 	/* Interrupts kurz deaktivieren */ 
 	cli();
 
@@ -79,7 +77,11 @@ void uart_init(void){
     } while (UCSRA & (1 << RXC));
 
     /* Ruecksetzen von Receive und Transmit Complete-Flags */ 
-    UCSRA = (1 << RXC) | (1 << TXC);
+    UCSRA = (1 << RXC) | (1 << TXC)
+#ifdef UART_DOUBLESPEED
+    		| (1<<U2X)
+#endif
+    		;
 	
     /* Global Interrupt-Flag wiederherstellen */
     SREG = sreg;
