@@ -36,6 +36,7 @@
 #include "ena.h"
 #include "led.h"
 #ifdef MMC_AVAILABLE
+#ifndef SPI_AVAILABLE
 #include <avr/io.h> 
 
 ; Portkonfiguration umrechnen
@@ -511,5 +512,6 @@ mmc_read_sector:
 	pop r15
 	pop r14
 	ret
+#endif	// SPI_AVAILABLE
 #endif	// MMC_AVAILABLE
 #endif	// MCU

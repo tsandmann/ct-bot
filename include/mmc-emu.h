@@ -96,6 +96,8 @@ uint32 mmc_emu_fat_lookup_adr(const char* filename, uint8* buffer);
  */
 void mmc_emu_fat_store_adr(uint32 block);
 
+uint32_t mmc_emu_find_block(const char * filename, uint8_t * buffer, uint32_t end_addr);
+
 /*!
  * Testet VM und MMC / SD-Card Emulation am PC
  * @date	30.12.2006 

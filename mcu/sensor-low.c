@@ -63,9 +63,15 @@
 #define SENS_DOOR_DDR 		DDRD	/*!< DDR für den Klappensensor */
 #define SENS_DOOR			6		/*!< Pin  an dem der Klappensensor hängt */
 
+#ifdef SPI_AVAILABLE
+#define SENS_ENCL_PINR		PINC	/*!< Port an dem der linke Encoder hängt */
+#define SENS_ENCL_DDR		DDRC	/*!< DDR für den linken Encoder  */
+#define SENS_ENCL			5		/*!< Pin an dem der linke Encoder hängt */
+#else
 #define SENS_ENCL_PINR		PINB	/*!< Port an dem der linke Encoder hängt */
 #define SENS_ENCL_DDR		DDRB	/*!< DDR für den linken Encoder  */
 #define SENS_ENCL			4		/*!< Pin an dem der linke Encoder hängt */
+#endif
 
 #define SENS_ENCR_PINR		PIND	/*!< Port an dem der rechte Encoder hängt */
 #define SENS_ENCR_DDR		DDRD	/*!< DDR für den rechten Encoder  */
@@ -109,22 +115,18 @@ void bot_sens_init(void){
 	ENA_init();
 	adc_init(0xFF);		// Alle ADC-Ports aktivieren
 	
-	ENA_set(ENA_RADLED);		// Alle Sensoren bis auf die Radencoder deaktivieren
-	ENA_on(ENA_ABSTAND);		// Die Abstandssensoren ebenfalls dauerhaft an, da sie fast 50 ms zum booten brauchen
+	ENA_set(ENA_RADLED | ENA_ABSTAND);		// Alle Sensoren bis auf Radencoder & Abstandssensoren deaktivieren
 	
-	SENS_DOOR_DDR &= ~ (1<<SENS_DOOR);	// Input
+	SENS_DOOR_DDR	&= ~(1<<SENS_DOOR);		// Input
 	
-	SENS_ENCL_DDR &= ~ (1<<SENS_ENCL);	// Input
-	SENS_ENCR_DDR &= ~(1<<SENS_ENCR);	// Input
+	SENS_ERROR_DDR	&= ~(1<<SENS_ERROR);	// Input
 
-	SENS_ERROR_DDR &= ~(1<<SENS_ERROR);	// Input
+	SENS_TRANS_DDR	&= ~(1<<SENS_TRANS);	// Input	
+	SENS_TRANS_PORT	|=  (1<<SENS_TRANS);	// Pullup an
+	
+	SENS_ENCL_DDR	&= ~(1<<SENS_ENCL);		// Input	
+	SENS_ENCR_DDR	&= ~(1<<SENS_ENCR);		// Input	
 
-	SENS_TRANS_DDR &= ~(1<<SENS_TRANS);	// Input	
-	SENS_TRANS_PORT |= (1<<SENS_TRANS);  // Pullup an
-	
-	SENS_ENCL_DDR &= ~(1<<SENS_ENCL);	// Input	
-	SENS_ENCR_DDR &= ~(1<<SENS_ENCR);	// Input	
-	
 	timer_2_init();
 }
 

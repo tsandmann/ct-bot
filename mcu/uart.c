@@ -46,7 +46,11 @@
 uint8_t inbuf[BUFSIZE_IN];	/*!< Eingangspuffer */
 fifo_t infifo;				/*!< Eingangs-FIFO */
 
+#if BAUDRATE == 115200
+#define BUFSIZE_OUT	0x70	// wer schneller sendet, braucht auch weniger Pufferspeicher ;)
+#else
 #define BUFSIZE_OUT 0x80
+#endif	// BAUDRATE
 uint8 outbuf[BUFSIZE_OUT];	/*!< Ausgangspuffer */
 fifo_t outfifo;				/*!< Ausgangs-FIFO */
 

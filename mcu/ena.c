@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	ena.c 
+/*! 
+ * @file 	ena.c 
  * @brief 	Routinen zur Steuerung der Enable-Leitungen
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 
 #ifdef MCU 
 
@@ -56,10 +57,13 @@ void ENA_init(){
 void ENA_on(uint8 enable){
 	/* Maussensor und MMC-Karte haengen zusammen */
 	if (enable == ENA_MOUSE_SENSOR) {
+#ifdef SPI_AVAILABLE
+		SPCR = 0;	// SPI aus
+#endif
 		/* MMC aus, Maussensor an */
 		ena |= ENA_MMC;
 		ena &= ~ENA_MOUSE_SENSOR;
-	} else	if (enable == ENA_MMC) {		
+	} else if (enable == ENA_MMC) {		
 		/* Maus sensor aus, MMC an */
 		#ifdef MAUS_AVAILABLE
 			if ((ena & ENA_MOUSE_SENSOR) ==0){ // War der Maussensor an?
@@ -74,10 +78,15 @@ void ENA_on(uint8 enable){
 	
 	ENA_set(ena);
 	
-	if ( (enable & (ENA_MOUSE_SENSOR | ENA_MMC)) != 0 ){
+	if ((enable & (ENA_MOUSE_SENSOR | ENA_MMC)) != 0) {
         /* Flipflops takten */
         PORTD |= 4;
         PORTD &= ~4;
+#ifdef SPI_AVAILABLE
+        if (enable == ENA_MMC) {
+        	SPCR = (1<<SPE) | (1<<MSTR);	// SPI an
+        }
+#endif
 	}
 }
 

@@ -43,6 +43,7 @@
  
 #include "ct-Bot.h"
 #include <stdio.h>
+#include <string.h>
 #include "mmc-emu.h"
 #include "mmc-vm.h"
 #include "display.h"
@@ -156,6 +157,22 @@ uint32 mmc_emu_fat_lookup_adr(const char* filename, uint8* buffer){
  */
 void mmc_emu_fat_store_adr(uint32 block){
 	// absichtlich leer
+}
+
+uint32_t mmc_emu_find_block(const char * filename, uint8_t * buffer, uint32_t end_addr) {
+	end_addr >>= 9;	// letzte Blockadresse ermitteln
+	
+	/* sequenziell die Karte durchsuchen */
+	uint32_t block;
+	for (block=0; block<end_addr; block++) {
+		if (mmc_emu_read_sector(block, buffer) != 0) return 0xffffffff;
+		if (strcmp((char *)buffer, filename) == 0) {
+			/* gefunden, Nutzdaten laden */
+			if (mmc_emu_read_sector(++block, buffer) != 0) return 0xffffffff;
+			return block;
+		}
+	}
+	return 0xffffffff;
 }
 
 /*!

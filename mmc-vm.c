@@ -47,7 +47,7 @@
 
 #ifdef MCU
 	#define MMC_START_ADDRESS 0x2000000		/*!< Startadresse des virtuellen Speichers [512;2^32-1] in Byte - Sinnvoll ist z.B. Haelfte der MMC / SD-Card Groesse, der Speicherplatz davor kann dann fuer ein Dateisystem verwendet werden. */
-	#define MAX_SPACE_IN_SRAM 5				/*!< Anzahl der Seiten, die maximal im SRAM gehalten werden [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald diese verwendet wird. */
+	#define MAX_SPACE_IN_SRAM 2				/*!< Anzahl der Seiten, die maximal im SRAM gehalten werden [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald diese verwendet wird. */
 	#define swap_out	mmc_write_sector	/*!< Funktion zum Schreiben auf die MMC */
 	#define swap_in		mmc_read_sector		/*!< Funktion zum Lesen von der MMC */
 	#define swap_space	mmc_get_size()		/*!< Funktion zur Groessenermittlung der MMC */
@@ -61,6 +61,7 @@
 	#define swap_space	mmc_emu_get_size()		/*!< Funktion zur Groessenermittlung der emulierten MMC */
 	#define fat_lookup	mmc_emu_fat_lookup_adr	/*!< Funktion zum FS-Cache auslesen */
 	#define fat_store	mmc_emu_fat_store_adr	/*!< Funktion zum FS-Cache aktualisieren */
+	#define mini_fat_find_block_P	mmc_emu_find_block	/*!< Funktion um Mini-FAT-Datei zu oeffnen */
 #endif	
 
 #if MMC_ASYNC_WRITE == 1
@@ -345,7 +346,6 @@ uint8 mmc_load_page(uint32 addr){
  */
 uint32 mmcalloc(uint32 size, uint8 aligned){
 	if (next_mmc_address == mmc_start_address){
-		// TODO: Init-stuff here (z.B. FAT einlesen)	
 		/* Inits */
 		if (mmc_start_address > swap_space){
 			mmc_start_address = swap_space-512;
@@ -353,6 +353,7 @@ uint32 mmcalloc(uint32 size, uint8 aligned){
 		}
 		#if MMC_ASYNC_WRITE == 1
 			swap_buffer = malloc(512);
+			if (swap_buffer == NULL) return 0;
 		#endif 
 		#ifdef VM_STATS_AVAILABLE
 			stats_data.time = TIMER_GET_TICKCOUNT_32;
@@ -430,94 +431,32 @@ uint8 mmc_flush_cache(void){
  * mit der man per mmc_get_data() einen Pointer auf die gewuenschten Daten bekommt. Das Ein- / Auslagern
  * macht das VM-System automatisch. Der Dateiname muss derzeit am Amfang in der Datei stehen.
  * Achtung: Irgendwann muss man die Daten per mmc_flush_cache() oder mmc_page_write_back() zurueckschreiben! 
- * @param filename	Dateiname als 0-terminierter String   
+ * @param filename	Dateiname als 0-terminierter String im Flash 
  * @return			Virtuelle Anfangsadresse der angeforderten Datei, 0 falls Fehler 
  * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			21.12.2006
  */
-uint32 mmc_fopen(const char *filename){
-	uint32 block;
+uint32_t mmc_fopen_P(const char * filename) {
 	/* Pufferspeicher organisieren */
-	uint32 v_addr = mmcalloc(512, 0);
-	uint8* p_data = mmc_get_data(v_addr);	// hier speichern wir im Folgenden den ersten Block der gesuchten Datei, der ist dann gleich im Cache ;)
-	if (p_data == NULL) return 0;
+	uint32_t v_addr = mmcalloc(512, 0);
+	uint8_t * p_data = mmc_get_data(v_addr);	// hier speichern wir im Folgenden den ersten Block der gesuchten Datei, der ist dann gleich im Cache ;)
+	if (p_data == NULL)	return 0;
 	/* Die Dateiadressen liegen ausserhalb des Bereichs fuer den VM, also interne Datenanpassungen hier rueckgaengig machen */
 	next_mmc_address -= 512;
 	#ifdef VM_STATS_AVAILABLE
 		stats_data.vm_used_bytes -= 512;
 	#endif
-	/* zunaechst im EEPROM-FAT-Cache nachschauen */
-	block = fat_lookup(filename, p_data);
-	if (block != 0){
-		swap_in(block, p_data);
-		page_cache[mmc_get_cacheblock_of_page(v_addr)].addr = block;	// Cache-Tag auf gefundene Datei umbiegen
-		return block << 9;
-	} 
-	uint8 i;
-	#ifdef MCU	// Debug-Info ausgeben
-		#ifdef DISPLAY_AVAILABLE
-			display_cursor(2,1);
-			display_printf("%s:",filename);
-			uint16 k=0, j=0;
-		#endif
-	#else
-		printf("Find %s...",filename);
-		uint16 k=0, j=0;	
-	#endif
-//	uint32 end, start = TIMER_GET_TICKCOUNT_32;
-	/* MMC-Block suchen zwischen Kartenanfang und VM-Startadresse (<= Kartengroesse) */
-	for (block=0; block<mmc_get_mmcblock_of_page(mmc_start_address); block++){
-		if (swap_in(block, p_data) != 0) break;	// Abbrechen, falls Fehler
-		#ifdef MCU	// Debug-Info ausgeben
-			#ifdef DISPLAY_AVAILABLE
-				display_cursor(2,13);
-				display_printf("%02x%04x", j, k);
-				if (k==65535) j++;
-				k++;
-			#endif		
-		#else
-//			printf(".");	
-//			fflush(stdout);
-		#endif		
-		/* Blockanfang mit Dateinamen vergleichen */
-		for (i=0; i<MMC_FILENAME_MAX; i++){
-			if (filename[i] == '\0'){
-				fat_store(++block);	// gefundene Adresse im EEPROM ablegen
-				if (swap_in(block, p_data) != 0) break;	// Ersten Sektor der Datei ueberspringen, dort stehen interne Daten
-				page_cache[mmc_get_cacheblock_of_page(v_addr)].addr = block;	// Cache-Tag auf gefundene Datei umbiegen
-//				end = TIMER_GET_TICKCOUNT_32;
-				#ifdef MCU
-					#ifdef DISPLAY_AVAILABLE
-			  			k = block & 0xFFFF;
-			  			j = (block >> 16) & 0xFFFF;
-			  			display_cursor(2,1);
-			  			display_printf("Found: 0x%02x%04x",j,k);
-//			  			display_cursor(3,1);
-//			  			display_printf("Ticks: %u ", end-start);
-					#endif
-				#else
-		  			k = block & 0xFFFF;
-		  			j = (block >> 16) & 0xFFFF;
-		  			printf("\n\rFound %s: 0x%02x%04x \n\r",filename,j,k);			
-				#endif				
-				return block<<9;	// gesuchte Datei beginnt hier :)
-			}
-			if (filename[i] != p_data[i]) break;	// gesuchte Datei beginnt nicht in diesem Block
-		}
+		
+	uint32_t block = mini_fat_find_block_P(filename, p_data, mmc_start_address);
+	uint8_t idx = mmc_get_cacheblock_of_page(v_addr);
+	if (block != 0xffffffff) {
+		page_cache[idx].addr = block;	// Cache-Tag auf gefundene Datei umbiegen
+		return block;
 	}
 	/* Suche erfolglos, aber der Cache soll konsistent bleiben */
-	// TODO: ordentlich aufraeumen im Fehlerfall!
-	page_cache[mmc_get_cacheblock_of_page(v_addr)].addr = 0x800000;	// Diesen Sektor gibt es auf keiner Karte <= 4 GB 
-	page_cache[mmc_get_cacheblock_of_page(v_addr)].dirty = 0;	// HackHack, aber so wird der ungueltige Inhalt beim Pagefault niemals versucht auf die Karte zu schreiben
-	#ifdef MCU
-		#ifdef DISPLAY_AVAILABLE
-			display_cursor(2,1);
-			display_printf("%s not found ",filename);
-		#endif	
-	#else	
-		printf("\n\r%s not found \n\r",filename);
-	#endif		
-	return 0;	// Datei nicht gefunden :(	
+	page_cache[idx].addr = 0x800000;	// Diesen Sektor gibt es auf keiner Karte <= 4 GB 
+	page_cache[idx].dirty = 0;	// HackHack, aber so wird der ungueltige Inhalt beim Pagefault niemals versucht auf die Karte zu schreiben
+	return 0;
 }
 
 /*!

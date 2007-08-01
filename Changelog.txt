@@ -1,5 +1,9 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-08-02 Timo Sandmann [mail@timosandmann.de]: Mini-FAT-Treiber (MMC) optimiert
+
+2007-08-01 Timo Sandmann [mail@timosandmann.de]: MMC/SD-Karten lassen sich alternativ auch im Hardware-SPI-Modus ansprechen (ist schneller und spart Platz im Flash, linker Radencoder muss dazu aber an anderem Pin angeschlossen werden)
+
 2007-08-01 Benjamin Benz [bbe@heise.de]: Warnung eingefügt, wenn MAP_AVAILABLE aus ist und ct-Bot mit -M aufgerufen wird
 
 2007-08-01 Timo Sandmann [mail@timosandmann.de]: UART laesst sich nun auch mit 115200 Baud benutzen (umschaltbar in include/uart.h)

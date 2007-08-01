@@ -31,6 +31,11 @@
 #include "ct-Bot.h"  
 
 #ifdef MMC_VM_AVAILABLE
+#ifdef MCU
+#include <avr/pgmspace.h>
+#else
+#define PSTR(x)	x
+#endif	// MCU
 
 //#define VM_STATS_AVAILABLE		/*!< Schaltet die Leistungsdatensammlung ein und ermoeglicht die Ausgabe einer Statistik */
 
@@ -122,12 +127,24 @@ uint8 mmc_flush_cache(void);
  * mit der man per mmc_get_data() einen Pointer auf die gewuenschten Daten bekommt. Das Ein- / Auslagern
  * macht das VM-System automatisch. Der Dateiname muss derzeit am Amfang in der Datei stehen.
  * Achtung: Irgendwann muss man die Daten per mmc_flush_cache() oder mmc_page_write_back() zurueckschreiben! 
+ * @param filename	Dateiname als 0-terminierter String im Flash   
+ * @return			Virtuelle Anfangsadresse der angeforderten Datei, 0 falls Fehler 
+ * @author 			Timo Sandmann (mail@timosandmann.de)
+ * @date 			21.12.2006
+ */
+uint32_t mmc_fopen_P(const char * filename);
+
+/*! 
+ * Oeffnet eine Datei im FAT16-Dateisystem auf der MMC / SD-Card und gibt eine virtuelle Adresse zurueck,
+ * mit der man per mmc_get_data() einen Pointer auf die gewuenschten Daten bekommt. Das Ein- / Auslagern
+ * macht das VM-System automatisch. Der Dateiname muss derzeit am Amfang in der Datei stehen.
+ * Achtung: Irgendwann muss man die Daten per mmc_flush_cache() oder mmc_page_write_back() zurueckschreiben! 
  * @param filename	Dateiname als 0-terminierter String   
  * @return			Virtuelle Anfangsadresse der angeforderten Datei, 0 falls Fehler 
  * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			21.12.2006
  */
-uint32 mmc_fopen(const char *filename);
+#define mmc_fopen(filename)	mmc_fopen_P(PSTR(filename))
 
 /*! 
  * Leert eine Datei im FAT16-Dateisystem auf der MMC / SD-Card, die zuvor mit mmc_fopen() geoeffnet wurde.

@@ -131,6 +131,7 @@ int8 map_init(void){
 		
 			if (map_start_block != 0xFFFFFFFF){
 				map_current_block_updated = False;	// kein Block geladen und daher auch nicht veraendert
+				map_current_block = map_start_block;
 				return 1;
 			}	
 		#endif

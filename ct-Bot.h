@@ -77,7 +77,7 @@
 //#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
 
 //#define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung */
-//#define MINI_FAT_AVAILABLE		/*!< koennen wir sektoren in FAT-systemen finden */
+//#define SPI_AVAILABLE			/*!< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren - Hinweise in mcu/mmc.c beachten! */
 //#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
 
 // Achtung, Linkereinstellungen anpassen !!!!! (siehe Documentation/Bootloader.html)!
@@ -169,13 +169,13 @@
 #endif
 
 #ifndef MMC_AVAILABLE
-	#undef MINI_FAT_AVAILABLE
+	#undef SPI_AVAILABLE
 	#ifdef MCU
 		#undef MMC_VM_AVAILABLE
 	#endif
 #endif
 
-#ifndef MINI_FAT_AVAILABLE
+#ifndef MMC_AVAILABLE
 	#undef SPEED_LOG_AVAILABLE
 #endif
 

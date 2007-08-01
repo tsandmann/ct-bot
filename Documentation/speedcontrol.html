@@ -177,7 +177,7 @@ liefern, werden dies die Default-Werte im SVN.
 <a name="log"></a><h3>Die Logging-Funktion</h3>
 <p>M&ouml;chte man genauer analysieren, wann der Bot wie schnell fuhr und wie exakt die gew&uuml;nschte Geschwindigkeit eingeregelt wurde, kann man daf&uuml;r w&auml;hrend des Fahrens einige
 Daten mitloggen lassen, die auf einer MMC oder SD-Karte gespeichtert werden. Dazu aktiviert man das #define<span class="function"> SPEED_LOG_AVAILABLE</span> in <a href="../ct-Bot.h">ct-Bot.h</a>
-und stellt au&szlig;erdem sicher, dass <span class="function"> MMC_AVAILABLE</span> und<span class="function"> MINI_FAT_AVAILABLE</span> an sind.<br />
+und stellt au&szlig;erdem sicher, dass <span class="function"> MMC_AVAILABLE</span> an ist.<br />
 Nun werde einige Daten im Bot-Betrieb gesammelt und automatisch aufgezeichnet. Damit man diese am PC auswerten kann, muss es auf der verwendeten MMC eine Mini-Fat-Datei mit der ID <i>slog</i>
 geben, die man mit dem PC-Code des Bots wie folgt erzeugt:<span class="function"> ct-Bot.elf -c /mnt/my_mmc/slog.txt slog 1024</span> bzw.<span class="function"> ct-Bot.exe -c X:\slog.txt slog 1024</span>.<br />
 Hat der Bot seine Fahraufgaben beendet, nimmt man die MMC heraus, steckt sie in einen PC und ruft<span class="function"> ct-Bot.elf -l /mnt/my_mmc/slog.txt</span> auf, was die Log-Datei auf der 
