@@ -230,6 +230,9 @@ void init(void){
 		puts("\t-T\tTestClient");
 		puts("\t-s\tServermodus");
 		puts("\t-M from\tKonvertiert eine Bot-map in eine PGM-Datei");
+		#ifndef MAP_AVAILABLE
+			puts("\t\tACHTUNG, das Programm wurde ohne MAP_AVAILABLE übersetzt, die Option -M steht derzeit also NICHT zur Verfügung");
+		#endif
 		puts("\t-c \tErzeugt eine Mini-Fat-Datei fuer den Bot.");		
 		puts("\t   FILE\tDateiname");
 		puts("\t   ID  \tDie ID aus ASCII-Zeichen");
@@ -301,6 +304,14 @@ void init(void){
 			case 'M':
 				/* Dateiname fuer die Map wurde uebergeben. Der String wird in from gesichert. */
 				{
+					#ifndef MAP_AVAILABLE
+						puts("ACHTUNG, das Programm wurde ohne MAP_AVAILABLE übersetzt, die Option -M steht derzeit also NICHT zur Verfügung.");
+						puts("um dennoch Karten zu konvertieren, bitte im Quelltext in der Datei ct-Bot.h die Kommentarzeichen vor MAP_AVAILABLE entfernen");
+						puts("und neu compilieren.");
+						exit(1);
+					#endif
+					
+					
 					int len = strlen(optarg);
 					from = malloc(len + 1);
 					if (NULL == from)
