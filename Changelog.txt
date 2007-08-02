@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-08-02 Timo Sandmann [mail@timosandmann.de]: delay fuer PC korrigiert, um Verhalten eine bestimmte Zeit anzuhalten, aber bitte das delay-VERHALTEN benutzen!
+
 2007-08-02 Timo Sandmann [mail@timosandmann.de]: Mini-FAT-Treiber (MMC) optimiert
 
 2007-08-01 Timo Sandmann [mail@timosandmann.de]: MMC/SD-Karten lassen sich alternativ auch im Hardware-SPI-Modus ansprechen (ist schneller und spart Platz im Flash, linker Radencoder muss dazu aber an anderem Pin angeschlossen werden)

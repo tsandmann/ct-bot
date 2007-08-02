@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	delay.h
+/*! 
+ * @file 	delay.h
  * @brief 	Hilfsroutinen
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
-*/
+ */
 #ifndef delay_H_
 #define delay_H_
 
@@ -37,5 +38,5 @@ void delay_100ms(void);
  * ==> Aufloesung ohne rtc: 100-ms-schritte; mit rtc: 5-ms-Schritte
  * @param ms Anzahl der Millisekunden
  */
-void delay(int ms);
-#endif
+void delay(uint16_t ms);
+#endif	// delay_H_
