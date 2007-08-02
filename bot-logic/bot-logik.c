@@ -148,6 +148,11 @@ void bot_behave_init(void){
 	#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE	
 		insert_behaviour_to_list(&behaviour, new_behaviour(249, bot_avoid_col_behaviour,ACTIVE));
 	#endif
+    #ifdef BEHAVIOUR_HANG_ON_AVAILABLE	
+		insert_behaviour_to_list(&behaviour, new_behaviour(245, bot_hang_on_behaviour,ACTIVE));
+		// Registrierung des Handlers zur Behandlung des Haengenbleibens zum Rueckwaertsfahren
+ 	    register_emergency_proc(&hang_on_handler);
+	#endif
 
 	#ifdef BEHAVIOUR_SCAN_AVAILABLE
 		// Verhalten, das die Umgebung des Bots on-the fly beim fahren scannt
@@ -185,9 +190,6 @@ void bot_behave_init(void){
 	// Verhalten, um laut Map zu einem bestimmten Ziel zu fahren
     #ifdef BEHAVIOUR_MAP_GO_DESTINATION_AVAILABLE
         insert_behaviour_to_list(&behaviour, new_behaviour(139, bot_path_bestfirst_behaviour,INACTIVE));
-	    #ifdef MEASURE_MOUSE_AVAILABLE
-	      insert_behaviour_to_list(&behaviour, new_behaviour(137, bot_check_hang_on_behaviour,INACTIVE));
- 	    #endif
  	    insert_behaviour_to_list(&behaviour, new_behaviour(135, bot_gotoxy_behaviour_map,INACTIVE));
  	    bot_set_destination(0,0);  // auf aktuelle Botposition setzen (bei 0,0 sonst Mappos selbst)
  	    // Registrierung zur Behandlung des Notfallverhaltens zum Rueckwaertsfahren

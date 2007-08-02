@@ -111,8 +111,6 @@ float v_left=0;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekop
 float v_right=0;			/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
 float v_center=0;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
 
-int8 sensors_initialized = 0;	/*!< Wird 1 sobald die Sensorwerte zur Verfügung stehen */
-
 #ifdef SRF10_AVAILABLE
 	uint16 sensSRF10;	/*!< Messergebniss Ultraschallsensor */
 #endif
@@ -433,8 +431,6 @@ void sensor_update(void){
 			sensSRF10 = srf10_get_measure();	/*!< Messung Ultraschallsensor */
 		#endif	
 	}
-	
-	sensors_initialized=1;
 }
 
 #ifdef SENSOR_DISPLAY_AVAILABLE

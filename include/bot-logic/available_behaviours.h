@@ -13,6 +13,7 @@
 
 #define BEHAVIOUR_AVOID_BORDER_AVAILABLE	/*!< Abgruenden ausweichen vorhanden ?*/
 #define BEHAVIOUR_AVOID_COL_AVAILABLE	/*!< Hindernis ausweichen vorhanden ?*/
+//#define BEHAVIOUR_HANG_ON_AVAILABLE	/*!< Erkennen des Haengenbleibens als Notfallverhalten ?*/
 //#define BEHAVIOUR_GOTO_AVAILABLE	/*!< goto vorhanden ?*/
 //#define BEHAVIOUR_GOTOXY_AVAILABLE	/*!< gotoxy vorhanden ?*/
 #define BEHAVIOUR_TURN_AVAILABLE	/*!< turn vorhanden ?*/
@@ -110,11 +111,16 @@
 	#define BEHAVIOUR_DELAY_AVAILABLE
 #endif
 
+#ifndef MEASURE_MOUSE_AVAILABLE
+	#undef BEHAVIOUR_HANG_ON_AVAILABLE
+#endif
+
 #include "bot-logic/behaviour_simple.h"
 #include "bot-logic/behaviour_drive_square.h"
 
 #include "bot-logic/behaviour_avoid_border.h"
 #include "bot-logic/behaviour_avoid_col.h"
+#include "bot-logic/behaviour_hang_on.h"
 
 #include "bot-logic/behaviour_goto.h"
 #include "bot-logic/behaviour_gotoxy.h"

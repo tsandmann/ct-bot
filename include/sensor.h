@@ -104,9 +104,6 @@ extern float v_left;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder 
 extern float v_right;			/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
 extern float v_center;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
 
-
-extern int8 sensors_initialized;	/*!< Wird 1 sobald die Sensorwerte zur Verfuegung stehen */
-
 #ifdef SRF10_AVAILABLE
 	extern uint16 sensSRF10;	/*!< Messergebniss Ultraschallsensor */
 #endif

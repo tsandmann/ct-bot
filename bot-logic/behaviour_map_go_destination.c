@@ -80,7 +80,7 @@ static uint16 dest_y_map=0;
 static uint8 gotoStatexy=0;  // Statusvar des xy-Fahr-Verhaltens
 
 #ifdef MEASURE_MOUSE_AVAILABLE
-	static uint8 statehangon=0;  // Statusvar des Haengon-Verhaltens
+
 #endif
 
 /*! 
@@ -91,13 +91,6 @@ static uint8 gotoStatexy=0;  // Statusvar des xy-Fahr-Verhaltens
 static uint8 border_fired=False;
 
 
-/*! 
- * True, wenn vom Haengenbleiben-Verhalten das Haengenbleiben des bots erkannt wurde
- * muss von Anwendung nach Auswertung wieder auf False gesetzt werden
- */
-static uint8 hangon_behaviour_fired=False;
-
-
  /*! Elternposition, d.h. Botposition vor neuer Position */
 static uint16 x_parent=0;
 static uint16 y_parent=0;
@@ -105,6 +98,8 @@ static uint16 y_parent=0;
 
 /*!
  * Notfallhandler, ausgefuehrt bei Abgrunderkennung; muss registriert werden
+ * Notfallroutine wird jetzt auch aufgerufen vom globalen Hang_On-Verhalten mit
+ * derselben Behandlung wie im Falle des Notfalls Abgrund
  */
 void border_mapgo_handler(void) {
 	// Routine muss zuerst checken, ob map_go_destination auch gerade aktiv ist, da nur in diesem
@@ -118,53 +113,12 @@ void border_mapgo_handler(void) {
 }
 
 
+
 // ============= eigenstaendiges Parallelverhalten zum eigentlichen Fahrverhalten =======
 
 
 #ifdef MEASURE_MOUSE_AVAILABLE 
-	/*!
-	 * Verhalten zum Erkennen des Haengenbleibens des Bots; wenn MEASURE_MOUSE_AVAILABLE gesetzt werden Maus- und
-	 * Encoderdaten miteinander verglichen; wird der Bot-Stillstand erkannt, wird etwas rueckwaerts 
-	 * gefahren und die Syncvar hangon_behaviour_fired gesetzt, damit das Haengenbleiben vom Fahrverhalten erkannt 
-	 * wird und reagiert werden kann; koennte eigentlich im bot auch generell als uebergeordnetes Verhalten 
-	 * eingesetzt werden, hier jedoch aktiviert zum Start des Fahrverhaltens selbst und bei Ankunft deaktiviert
-	 * @param *data der Verhaltensdatensatz
-	 */
-	void bot_check_hang_on_behaviour(Behaviour_t *data) {	 
-		switch (statehangon) {
-			case 0:
-				statehangon++;
-				break;
-			case 1:
-				/* Check auf Haengenbleiben mit Rad-Durchdreh-Erkennung mit Mausvergleich
-				 * wenn Maus verfuegbar, so kann ein Haengenbleiben durch Vergleich der Encoder und
-	             * Mauswerte festgestellt werden, wie auf bot-Webseite schon mal beschrieben
-	             */
-				if  ( !((abs(v_enc_left-v_mou_left) < STUCK_DIFF) && (abs(v_enc_right-v_mou_right) < STUCK_DIFF)) ) {            
-					// Syncvar setzen, dass Verhalten zugeschlagen hat
-					hangon_behaviour_fired = True;
 
-					// etwas rueckwaerts fahren; 
-					#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE 
-						bot_drive_distance(data,0,-BOT_SPEED_FOLLOW,10);
-					#endif
-				}
-				break;
-//			default:
-//				// wird eigentlich nicht erreicht, da Endlosverhalten
-//				return_from_behaviour(data);
-//				break;
-		}
-	}
-	
-	/*! 
-	 * Botenverhalten zum Starten des Haengenbleiben-Verhaltens
-	 * @param *caller der Verhaltensdatensatz
-	 */
-	static void bot_check_hang_on(Behaviour_t *caller) {	
-		statehangon=0;
-		switch_to_behaviour(caller, bot_check_hang_on_behaviour,NOOVERRIDE);
-	}
 #endif	// MEASURE_MOUSE_AVAILABLE
 
 
@@ -510,9 +464,7 @@ void bot_gotoxy_behaviour_map(Behaviour_t *data) {
 			break;
 
 		case INITIAL_GETPATH:
-			#ifdef MEASURE_MOUSE_AVAILABLE
-				deactivateBehaviour(bot_check_hang_on_behaviour);  
-			#endif
+			
 		    // naechsten Punkt nach Potenzialfeldmethode ermitteln, Wert steht dann in next_x, next_y
 		    next_x=0;
 		    next_y=0;
@@ -550,12 +502,7 @@ void bot_gotoxy_behaviour_map(Behaviour_t *data) {
             // Umschaltung zum Drehverhalten; Drehung zum Zwischenziel wenn noetig
 			bot_turn(data,bot_gotoxy_calc_turn(xDiff,yDiff));  
 			
-			// Aktivierung des Verhaltens der Haengenbleiben-Erkennung; laeuft parallel zu diesem 
-			// Fahr-Verhalten (falls es noch nicht laeuft); beim Haengenbleiben wird eine Sync-Variable
-			// gesetzt (_fired), die hier ausgewertet und rueckgesetzt werden muss
-			#ifdef MEASURE_MOUSE_AVAILABLE
-				bot_check_hang_on(0);
-			#endif 
+			
 			break;
   
 		case DRIVE_TO_NEXT:
@@ -604,7 +551,8 @@ void bot_gotoxy_behaviour_map(Behaviour_t *data) {
 			
 			// wenn Map-Abgrundverhalten Loch erkennt, da ja bot gerade ueber Abgrund gehangen hatte, ist
 			// neue Wegsuche mit Hindernis voraus aufzuruefen
-			// vom Notfallverhalten wurde durch die registrierte Proc Abgrundkennung gesetzt
+			// vom Notfallverhalten wurde durch die registrierte Proc Abgrundkennung gesetzt; Notfallverhalten
+			// jetzt auch durch das jetzt globale hang_on Verhalten aufgerufen und kommt hierher
 			if (border_fired) {   
 				border_fired=False;  // wieder ruecksetzen, erst durch Abgrundverhalten neu gesetzt
 				gotoStatexy=NEXT_IS_HAZARD;	  // Hindernis voraus
@@ -619,14 +567,6 @@ void bot_gotoxy_behaviour_map(Behaviour_t *data) {
 				break;
 			}
    
-			// hier Check ob Haengenbleiben-Verhalten zugeschlagen hat; koennte genauso behandelt werden
-			// wie beim Abgrundverhalten mit Registrierung; wird aber hier immer ab- und zugeschaltet
-			if (hangon_behaviour_fired) {    // Syncvar wurde vom H.-Verhalten gesetzt
-				gotoStatexy=NEXT_IS_HAZARD;    // Hindernis voraus
-				hangon_behaviour_fired=False;  // Syncvar wieder ruecksetzen
-				break;	
-			}	
-
 		    // hier ist der eigentliche Antrieb fuer das Fahren
 			#ifdef PC
 				speedWishLeft=BOT_SPEED_FAST;
@@ -730,10 +670,6 @@ void bot_gotoxy_behaviour_map(Behaviour_t *data) {
 		case POS_REACHED:
 			// hier ist das gewuenschte Endziel erreicht
 			gotoStatexy=DIRECTION_GOAL;
-			// Parallelverhalten ausschalten da nicht mehr benoetigt
-			#ifdef MEASURE_MOUSE_AVAILABLE
-				deactivateBehaviour(bot_check_hang_on_behaviour);  
-			#endif
 			return_from_behaviour(data);
 			break;
 	}

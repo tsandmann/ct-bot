@@ -525,14 +525,9 @@ for(;;){
 		else
 	#endif	// TEST_AVAILABLE_MOTOR
 	
-	/* hier drin steckt der Verhaltenscode */
 	#ifdef BEHAVIOUR_AVAILABLE
-		if (sensors_initialized == 1)
-			bot_behave();
-//		#ifdef LOG_AVAILABLE
-//		else
-//			LOG_DEBUG("sens not init");
-//		#endif
+		/* hier drin steckt der Verhaltenscode */
+		bot_behave();
 	#endif	// BEHAVIOUR_AVAILABLE
 			
 	#ifdef MCU

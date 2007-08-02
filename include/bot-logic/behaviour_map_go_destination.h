@@ -55,8 +55,6 @@ void bot_set_destination(uint16 x, uint16 y);
 /*! Verhalten zur Abgrunderkennung und eintragen in die Map */ 
 void bot_set_border_in_map_behaviour(Behaviour_t *data);
 
-/*! Verhalten zum Erkennen, falls Bot haengenbleibt */
-void bot_check_hang_on_behaviour(Behaviour_t *data);
 
 /*! Verhalten zum echten Abfahren des bots nach der Punkte-Wegeliste laut Pfadplanung zum global gesetzten Ziel*/
 void bot_gotoxy_behaviour_map(Behaviour_t *data);
