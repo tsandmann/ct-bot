@@ -30,12 +30,10 @@
 /*!
  * Warte 100 ms
  */
-void delay_100ms(void);
+#define delay_100ms()	delay(100)
 
 /*!
  * Verzoegert um ms Millisekunden
- * Wenn RTC_AVAILABLE, dann ueber rtc, sonst ueber delay_100ms
- * ==> Aufloesung ohne rtc: 100-ms-schritte; mit rtc: 5-ms-Schritte
  * @param ms Anzahl der Millisekunden
  */
 void delay(uint16_t ms);

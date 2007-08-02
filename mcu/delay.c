@@ -36,23 +36,7 @@
 #include "timer.h"
 
 /*!
- * Warte 100 ms
- */
-void delay_100ms(void){ 
-	char counter;
-	//wait (10 * 120000) cycles = wait 1200000 cycles
-	counter = 0;
-	while (counter != 5)
-	{
-	//wait (30000 x 4) cycles = wait 120000 cycles
-	_delay_loop_2(30000);
-	counter++;
-	}
-}
-
-
-/*!
- * Delays for ms milliseconds
+ * Verzoegert um ms Millisekunden
  * @param ms Anzahl der Millisekunden
  */
 void delay(uint16 ms){	
@@ -66,4 +50,4 @@ void delay(uint16 ms){
 	} while (now-start < ticksToWait);
 		
 }
-#endif
+#endif	// MCU

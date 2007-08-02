@@ -47,8 +47,6 @@
 
 /*!
  * Verzoegert um ms Millisekunden
- * Wenn RTC_AVAILABLE, dann ueber rtc, sonst ueber delay_100ms.
- * ==> Aufloesung ohne rtc: 100-ms-Schritte, mit rtc: 5-ms-Schritte
  * @param ms Anzahl der Millisekunden
  */
 void delay(uint16_t ms) {
@@ -61,12 +59,5 @@ void delay(uint16_t ms) {
 	}
 	/* Rest warten */
 	SLEEP(wait - i*999);
-}
-
-/*!
- * Warte 100 ms
- */
-void delay_100ms(void) {
-	delay(100);
 }
 #endif	// PC
