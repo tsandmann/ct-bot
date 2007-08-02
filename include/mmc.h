@@ -18,7 +18,7 @@
  */
 
 /*! 
- * @file 	mcu/mmc.h
+ * @file 	include/mmc.h
  * @brief 	Routinen zum Auslesen/Schreiben einer MMC-Karte
  * @author 	Benjamin Benz (bbe@heise.de)
  * @author  Ulrich Radig (mail@ulrichradig.de) www.ulrichradig.de

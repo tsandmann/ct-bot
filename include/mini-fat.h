@@ -82,7 +82,6 @@ uint32_t mini_fat_find_block_P(const char * filename, uint8_t * buffer, uint32_t
  * @brief			Sucht einen Block auf der MMC-Karte, dessen erste Bytes dem Dateinamen entsprechen
  * @param filename	String zur Identifikation
  * @param buffer 	Zeiger auf 512 Byte Puffer im SRAM
- * @param end_addr	Byte-Adresse, bis zu der gesucht werden soll
  * @return			Anfangsblock der Nutzdaten der Datei
  * Achtung das Prinzip geht nur, wenn die Dateien nicht fragmentiert sind
  */
