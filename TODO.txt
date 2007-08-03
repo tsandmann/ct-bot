@@ -9,10 +9,6 @@ Thema	Datei		Task
 ==========================================================================
 gefahren	bot-logik.c	Low-Level-Verhalten müssen andere über gefahren warnen
 Anmeldung	command.c	Der Bot sollte auch auf Welcome-Nachrichten des Sims antworten
-Zeit		Timer.c		Auf dem PC existiert noch keine Routine, die die globalen Zeitvariablen aktualisiert
-Sensoren				Linearisierung der Sensorwerte
-Info					Readme-Datei zu Variablen und Funktionen schreiben
-delay		delay.c		Delay von busy-wait auf timer-basiert umstellen
 
 
 Ideen/Ausbaustufen
@@ -23,11 +19,6 @@ Ideen/Ausbaustufen
   * c't-Sim für Anzeige modifizieren
   * Daten benutzen um Karte zu zeichnen
 
-# Servosteuerung:
-  * Position anfahren
-  * Position abfragen
-  * Strom prüfen
-  
 # Fehlerkontrolle
   * Batterieschaltung testen
   
@@ -44,8 +35,8 @@ Ideen/Ausbaustufen
 # Kamera
   * anschliessen
   * testen
-  * Sample-Code entwickeln
 
+  * Sample-Code entwickeln
 # CPU-Modul:
   * EVM-Board besorgen
   * Experimentieren mit EVM-Board
