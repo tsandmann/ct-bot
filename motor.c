@@ -564,8 +564,8 @@ void servo_set(uint8 servo, uint8 pos){
 	#if PID_Kd > 127 || PID_Kd < 0
 		#error PID_Kd out of range [0; 127]!
 	#endif
-	#if PID_Ta > 127 || PID_Ta < 0
-		#error PID_Ta out of range [0; 127]!
+	#if PID_Ta > 127 || PID_Ta < 1
+		#error PID_Ta out of range [1; 127]!
 	#endif
 	#if PID_SHIFT > 127 || PID_SHIFT < 0
 		#error PID_SHIFT out of range [0; 127]!
