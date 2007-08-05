@@ -237,7 +237,16 @@ void bot_calibrate_sharps_behaviour(Behaviour_t *data) {
 					sprintf(tmp_s, "%s{%u/2,%u/5},", tmp_s, buffer[k][i+j*max_steps/2].voltage*2, buffer[k][i+j*max_steps/2].dist*5);		
 				}
 				if (j==1) tmp_s[strlen(tmp_s)-1] = '\0';	// kein Komma ausgeben, falls letzter Wert
+				/* Log-Ausgabe auf 40 Zeichen begrenzen */
+				char tmp = tmp_s[32];
+				tmp_s[32] = 0;
 				LOG_INFO("%s \\", tmp_s);
+				tmp_s[32] = tmp;
+				tmp = tmp_s[66];
+				tmp_s[66] = 0;
+				LOG_INFO("%s \\", &tmp_s[32]);
+				tmp_s[66] = tmp;
+				LOG_INFO("%s \\", &tmp_s[66]);
 			}
 			if (k==0) LOG_INFO("SENSDIST_DATA_RIGHT:");
 		}

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-08-03 Timo Sandmann [mail@timosandmann.de]: Einfaches Objektverfolgungsverhalten hinzugefuegt (bot_follow_object_behaviour), NOPs im Maus-Code auf delay umgestellt
+
 2007-08-02 Timo Sandmann [mail@timosandmann.de]: hang-on als unabhaengiges Verhalten und unnoetige Synchronisation in ct-Bot.c entfernt
 
 2007-08-02 Timo Sandmann [mail@timosandmann.de]: delay fuer PC korrigiert, um Verhalten eine bestimmte Zeit anzuhalten, aber bitte das delay-VERHALTEN benutzen!

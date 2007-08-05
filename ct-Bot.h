@@ -169,7 +169,6 @@
 #endif
 
 #ifndef MMC_AVAILABLE
-	#undef SPI_AVAILABLE
 	#ifdef MCU
 		#undef MMC_VM_AVAILABLE
 	#endif

@@ -34,6 +34,8 @@
 
 //#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE /*!< Suche eine Dose und fange sie ein */
 
+//#define BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE	/*!< verfolge ein (bewegliches) Objekt */
+
 #define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-kommandos entgegen?*/
 
 //#define BEHAVIOUR_CALIBRATE_PID_AVAILABLE	/*!< Kalibrierungsverhalten fuer Motorregelung vorhanden? */
@@ -142,6 +144,8 @@
 
 #include "bot-logic/behaviour_servo.h"
 #include "bot-logic/behaviour_catch_pillar.h"
+
+#include "bot-logic/behaviour_follow_object.h"
 
 #include "bot-logic/remote_calls.h"
 

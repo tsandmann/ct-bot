@@ -122,6 +122,10 @@ static void rc5_number(uint8 key) {
 
 		#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 			case 4: bot_catch_pillar(0); break;
+		#else
+			#ifdef BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
+				case 4: bot_follow_object(0); break;
+			#endif
 		#endif
 
 		#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE

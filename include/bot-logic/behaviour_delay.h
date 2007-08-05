@@ -33,6 +33,7 @@
 #include "bot-logic/bot-logik.h"
 
 #ifdef BEHAVIOUR_DELAY_AVAILABLE
+#include "timer.h"
 
 /*!
  * Unterbreche das aktuelle Verhalten fuer mindestens X ms

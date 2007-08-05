@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	mouse.c 
+/*! 
+ * @file 	mouse.c 
  * @brief 	Routinen fuer die Ansteuerung eines opt. Maussensors
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 #include "global.h"
 
 
@@ -32,6 +33,7 @@
 #include "mouse.h"
 #include "delay.h"
 #include "ena.h"
+#include <util/delay_basic.h>
 
 #ifdef MAUS_AVAILABLE
 
@@ -49,17 +51,17 @@
  * Uebertraegt ein Byte an den Sensor
  * @param data das Byte
  */
-void maus_sens_writeByte(uint8 data){
+static void maus_sens_writeByte(uint8 data){
 	int8 i;
 	MAUS_DDR  |= MAUS_SDA_PIN; 		// SDA auf Output
 	
-	for (i=7; i>=0; i--){
+	for (i=7; i>=0;) {
 		MAUS_PORT &= ~MAUS_SCK_PIN;		// SCK auf Low, vorbereiten
 		
 		//Daten rausschreiben
 		MAUS_PORT = (MAUS_PORT & (~MAUS_SDA_PIN)) |  ((data >> (7 - MAUS_SDA_NR)) & MAUS_SDA_PIN);	
 		data = data <<1;		// naechstes Bit vorbereiten
-		asm volatile("nop"); 			// Etwas warten 
+		i--;	// etwas warten
 		
 		MAUS_PORT |= MAUS_SCK_PIN;		// SCK =1 Sensor uebernimmt auf steigender Flanke
 	}
@@ -69,17 +71,17 @@ void maus_sens_writeByte(uint8 data){
  * Liest ein Byte vom Sensor
  * @return das Byte
  */
-uint8 maus_sens_readByte(void){
-	int i;
-	char data=0;
+static int8_t maus_sens_readByte(void){
+	int8_t i;
+	int8_t data=0;
 
 	MAUS_DDR  &= ~MAUS_SDA_PIN; 	// SDA auf Input
 
-	for (i=7; i>-1; i--){
+	for (i=7; i>-1;) {
 		MAUS_PORT &= ~MAUS_SCK_PIN;		// SCK =0 Sensor bereitet Daten auf fallender Flanke vor !
 		data=data<<1;					// Platz schaffen
 
-		asm volatile("nop"); 					// Etwas warten 
+		i--;	// etwas warten
 		MAUS_PORT |= MAUS_SCK_PIN;		// SCK =1 Daten lesen  auf steigender Flanke
 		
 		data |= (MAUS_SDA_PINR >> MAUS_SDA_NR) & 0x01;			//Daten lesen
@@ -89,18 +91,23 @@ uint8 maus_sens_readByte(void){
 }
 
 /*!
+ * wartet 100 us
+ */
+static void maus_sens_wait(void) {
+	_delay_loop_2(F_CPU / 4000000L * 100);
+}
+
+/*!
  * Uebertraegt ein write-Kommando an den Sensor
  * @param adr Adresse
  * @param data Datum
  */
 void maus_sens_write(int8 adr, uint8 data){
-	int16 i;
-	
 	MOUSE_Enable();
 	
 	maus_sens_writeByte(adr|=0x80);  //rl MSB muss 1 sein Datenblatt S.12 Write Operation
 	maus_sens_writeByte(data);
-	for (i=0; i<300; i++){ asm volatile("nop"); 	}	// mindestens 100 Mikrosekunden Pause!!!
+	maus_sens_wait();		// 100 us Pause
 }
 
 /*!
@@ -111,10 +118,8 @@ void maus_sens_write(int8 adr, uint8 data){
  */
 uint8 maus_sens_read(uint8 adr){
 	MOUSE_Enable();
-	int16 i;
 	maus_sens_writeByte(adr);
-	for (i=0; i<300; i++){asm volatile("nop");}	// mindestens 100 Mikrosekunden Pause!!!
-	
+	maus_sens_wait();	// 100 us Pause
 	return maus_sens_readByte();
 }
 
@@ -122,6 +127,7 @@ uint8 maus_sens_read(uint8 adr){
  * Initialisiere Maussensor
  */ 
 void maus_sens_init(void){
+	MOUSE_Enable();	
 	delay(100);
 	
 	MAUS_DDR  |= MAUS_SCK_PIN; 	// SCK auf Output
