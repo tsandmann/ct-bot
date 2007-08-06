@@ -34,7 +34,7 @@
 	#error MAP_AVAILABLE muss an sein, damit behaviour_scan.c etwas sinnvolles tun kann
 #endif
 
-uint8 scan_on_the_fly_source = SENSOR_LOCATION || SENSOR_DISTANCE; 
+uint8 scan_on_the_fly_source = SENSOR_LOCATION | SENSOR_DISTANCE; 
 
 /*!
  * Der Roboter aktualisiert kontinuierlich seine Karte
