@@ -30,6 +30,17 @@
 #include "bot-logic/bot-logik.h"
 
 #ifdef BEHAVIOUR_SCAN_AVAILABLE
+
+#define SENSOR_LOCATION		1		/*!< Quelle die das Verhalten bot_scan_onthefly nutzt, um die Karte zu aktualisieren: Ort des Bots */
+#define SENSOR_DISTANCE		2		/*!< Quelle die das Verhalten bot_scan_onthefly nutzt, um die Karte zu aktualisieren: Distanzsensoren des Bots */
+
+#define SCAN_ONTHEFLY_DIST_RESOLUTION 0.02		/*!< Alle wieviel gefahrene Strecke [m] soll die Karte aktualisiert werden. Achtung er prueft x und y getrennt, daher ist die tatsaechlich zurueckgelegte Strecke im worst case sqrt(2)*ONTHEFLY_DIST_RESOLUTION  */
+#define SCAN_ONTHEFLY_ANGLE_RESOLUTION 10		/*!< Alle wieviel Gerad Drehung [m] soll die Karte aktualisiert werden */
+
+extern uint8 scan_on_the_fly_source; 
+
+#define bot_scan_onthefly( sensor) {scan_on_the_fly_source = sensor;}
+
 /*!
  * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
  * @param *data der Verhaltensdatensatz
