@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-08-01 Benjamin Benz [bbe@heise.de]: man kann nun wählen, welche Sensoren bot_scan_onthefly_behaviour auswertet
+
 2007-08-03 Timo Sandmann [mail@timosandmann.de]: Einfaches Objektverfolgungsverhalten hinzugefuegt (bot_follow_object_behaviour), NOPs im Maus-Code auf delay umgestellt
 
 2007-08-02 Timo Sandmann [mail@timosandmann.de]: hang-on als unabhaengiges Verhalten und unnoetige Synchronisation in ct-Bot.c entfernt
