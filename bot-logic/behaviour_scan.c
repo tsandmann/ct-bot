@@ -59,12 +59,14 @@ void bot_scan_onthefly_behaviour(Behaviour_t *data){
 			last_head=heading;
 			return;
 		} 
-	
-		float diff_head = fabs(last_head-heading);		
+
+		int16 diff_head = last_head-heading;
+		if (diff_head < 0) 
+			diff_head *= -1;		
 		// Wenn der bot nur dreht, aktualisieren wir nur die Blickstrahlen
-		if (( diff_head > SCAN_ONTHEFLY_ANGLE_RESOLUTION) && ((scan_on_the_fly_source & SENSOR_DISTANCE) != 0)  ){
-			update_map(x_pos,y_pos,heading,sensDistL,sensDistR);
-			last_head=heading;
+		if ( (diff_head > SCAN_ONTHEFLY_ANGLE_RESOLUTION)&& ((scan_on_the_fly_source & SENSOR_DISTANCE) != 0)) {			
+				update_map(x_pos,y_pos,heading,sensDistL,sensDistR);
+				last_head=heading;
 		}
 		/*	if ((diff_x*diff_x + diff_y*diff_y > ONTHEFLY_DIST_RESOLUTION)||fabs(last_head-heading) > ONTHEFLY_ANGLE_RESOLUTION ){
 				last_x=x_pos;

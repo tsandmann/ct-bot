@@ -518,7 +518,7 @@ void update_map_location(float x, float y){
 		for(dX = -dim; dX <= dim; dX++)
 	      for(dY = -dim; dY <= dim; dY++) {
 	           if(dX*dX + dY*dY <= dim*dim)	 
-	           	 map_update_free (x_map + dX, y_map + dY);
+	           	 map_update_free (x_map + dX, y_map + dY,MAP_STEP_FREE_LOCATION);
 	     }
 	#else	// #ifdef OLD_VERSION
 		
