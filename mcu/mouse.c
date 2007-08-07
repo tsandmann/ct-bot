@@ -33,7 +33,6 @@
 #include "mouse.h"
 #include "delay.h"
 #include "ena.h"
-#include <util/delay_basic.h>
 
 #ifdef MAUS_AVAILABLE
 
