@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-08-01 Benjamin Benz [bbe@heise.de]: Map aktualisiert die Grundfläche des Bots nun Sectionweise (==> #129), weitere Performanceprobleme behoben 
+
 2007-08-07 Timo Sandmann [mail@timosandmann.de]: schwerwiegenden Bug in Speedcontrol behoben
 
 2007-08-07 Timo Sandmann [mail@timosandmann.de]: Kleinere Bugfixes fuer delay in mouse.c, bot_scan_onthefly_behaviour und motor.c

@@ -48,8 +48,9 @@ void bot_scan_onthefly_behaviour(Behaviour_t *data){
 
 		// Wenn der Bot faehrt, aktualisieren wir alles
 		if ((diff_x > SCAN_ONTHEFLY_DIST_RESOLUTION) ||( diff_y > SCAN_ONTHEFLY_DIST_RESOLUTION)){
-			if ((scan_on_the_fly_source & SENSOR_LOCATION) != 0)
+			if ((scan_on_the_fly_source & SENSOR_LOCATION) != 0){
 				update_map_location(x_pos,y_pos);
+			}
 			if ((scan_on_the_fly_source & SENSOR_DISTANCE) != 0)
 				update_map(x_pos,y_pos,heading,sensDistL,sensDistR);
 

@@ -65,7 +65,9 @@
 
 #define MAP_SECTIONS ((( MAP_SIZE*MAP_RESOLUTION)/MAP_SECTION_POINTS))	/*!< Anzahl der Sections in der Map */
 
-#define MAP_STEP_FREE		2	/*!< Um diesen Wert wird ein Feld inkrementiert, wenn es als frei erkannt wird */
+#define MAP_STEP_FREE_SENSOR		2	/*!< Um diesen Wert wird ein Feld inkrementiert, wenn es vom Sensor als frei erkannt wird */
+#define MAP_STEP_FREE_LOCATION		20	/*!< Um diesen Wert wird ein Feld inkrementiert, wenn der Bot drüber fährt */
+
 #define MAP_STEP_OCCUPIED	10	/*!< Um diesen Wert wird ein Feld dekrementiert, wenn es als belegt erkannt wird */
 
 #define MAP_RADIUS			50	/*!< Umkreis eines Messpunktes, der als Besetzt aktualisiert wird (Streukreis) [mm]*/
@@ -74,7 +76,7 @@
 #define MAP_PRINT_SCALE				/*!< Soll das PGM eine Skala erhalten */
 #define MAP_SCALE	(MAP_RESOLUTION/2)	/*!< Alle wieviel Punkte kommt wein Skalen-Strich */
 
-#define FREE_BOUNDERY (125-MAP_STEP_FREE)   /*!< Frei Aktualisierung nur bis zu diesem Wert wegen Pfadplanung */
+#define FREE_BOUNDERY (125-MAP_STEP_FREE_SENSOR)   /*!< Frei Aktualisierung nur bis zu diesem Wert wegen Pfadplanung */
 
 #ifdef SHRINK_MAP_ONLINE
 	uint16 map_min_x=MAP_SIZE*MAP_RESOLUTION/2; /*!< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
@@ -370,9 +372,9 @@ static void map_update_field (uint16 x, uint16 y, int8 value) {
  * @param x x-Ordinate der Karte (nicht der Welt!!!)
  * @param y y-Ordinate der Karte (nicht der Welt!!!)
  */
-static void map_update_free (uint16 x, uint16 y) {
+static void map_update_free (uint16 x, uint16 y,uint8 value) {
 	if (map_get_field(x,y) < FREE_BOUNDERY)  // nicht groesser als Grenzwert
-		map_update_field(x,y,MAP_STEP_FREE);
+		map_update_field(x,y,value);
 }
 
 /*!
@@ -477,7 +479,7 @@ static void update_map_sensor(float x, float y, float h, int16 dist){
 	  dY--;	// stoppe ein Feld vor dem Hinderniss
 	  uint16 lh = dX / 2;
 	  for (i=0; i<dX; ++i) {
-	    map_update_free (lX+i*sX, lY);
+	    map_update_free (lX+i*sX, lY,MAP_STEP_FREE_SENSOR);
 	    lh += dY;
 	    if (lh >= dX) {
 	      lh -= dX;
@@ -488,7 +490,7 @@ static void update_map_sensor(float x, float y, float h, int16 dist){
 	  dX--; // stoppe ein Feld vor dem Hinderniss
 	  uint16 lh = dY / 2;
 	  for (i=0; i<dY; ++i) {
-	    map_update_free (lX, lY+i*sY);
+	    map_update_free (lX, lY+i*sY,MAP_STEP_FREE_SENSOR);
 	    lh += dX;
 	    if (lh >= dY) {
 	      lh -= dY;
@@ -506,15 +508,74 @@ static void update_map_sensor(float x, float y, float h, int16 dist){
 void update_map_location(float x, float y){
 	int16 x_map = world_to_map(x);
 	int16 y_map = world_to_map(y);
+
+	//#define OLD_VERSION
+	#ifdef OLD_VERSION	
+		// Aktualisiere zuerst die vom Bot selbst belegte Flaeche
+		const int16 dim = BOT_DIAMETER/2*MAP_RESOLUTION/100;	/*!< Botradius in Map-Aufloesung */
+		int16 dX,dY;
 	
+		for(dX = -dim; dX <= dim; dX++)
+	      for(dY = -dim; dY <= dim; dY++) {
+	           if(dX*dX + dY*dY <= dim*dim)	 
+	           	 map_update_free (x_map + dX, y_map + dY);
+	     }
+	#else	// #ifdef OLD_VERSION
+		
 	// Aktualisiere zuerst die vom Bot selbst belegte Flaeche
 	const int16 dim = BOT_DIAMETER/2*MAP_RESOLUTION/100;	/*!< Botradius in Map-Aufloesung */
-	int16 dX,dY;
-	for(dX = -dim; dX <= dim; dX++)
-      for(dY = -dim; dY <= dim; dY++) {
-           if(dX*dX + dY*dY <= dim*dim)	 
-           	 map_update_free (x_map + dX, y_map + dY);
-     }
+	const int16 square = dim*dim;
+	
+//	printf("Fange an. Zentrum= %d/%d\n",x_map,y_map);
+//	map_set_field(x_map,y_map,-120);
+	
+	int16 sec_x_max = ((x_map + dim) / MAP_SECTION_POINTS);
+	int16 sec_x_min = ((x_map - dim) / MAP_SECTION_POINTS);
+	int16 sec_y_max = ((y_map + dim) / MAP_SECTION_POINTS);
+	int16 sec_y_min = ((y_map - dim) / MAP_SECTION_POINTS);
+//	printf("Betroffene Sektionen X: %d-%d, Y:%d-%d\n",sec_x_min,sec_x_max,sec_y_min,sec_y_max);
+	
+	
+	int16 sec_x, sec_y, X, Y,dX,dY;
+	int16 starty,startx, stopx, stopy;
+	// Gehe über alle betroffenen Sektionen 
+	for (sec_y= sec_y_min; sec_y <= sec_y_max; sec_y++) {
+		// Bereich weiter eingrenzen
+		if (sec_y*MAP_SECTION_POINTS > (y_map-dim))	
+			starty=sec_y*MAP_SECTION_POINTS;
+		else
+			starty=y_map-dim;
+		if ((sec_y+1)*MAP_SECTION_POINTS < (y_map+dim))	
+			stopy=(sec_y+1)*MAP_SECTION_POINTS;
+		else
+			stopy=y_map+dim;
+
+
+		for (sec_x= sec_x_min; sec_x <= sec_x_max; sec_x++){
+			if (sec_x*MAP_SECTION_POINTS > (x_map-dim))	
+				startx=sec_x*MAP_SECTION_POINTS;
+			else
+				startx=x_map-dim;
+			if ((sec_x+1)*MAP_SECTION_POINTS < (x_map+dim))	
+				stopx=(sec_x+1)*MAP_SECTION_POINTS;
+			else
+				stopx=x_map+dim;
+
+			for (Y = starty; Y < stopy; Y++) {
+				dY= y_map-Y;	// Distanz berechnen
+				dY*=dY;			// Quadrat vorberechnen
+				for (X = startx; X < stopx; X++){
+					dX= x_map-X;	// Distanz berechnen
+					dX*=dX;			// Quadrat vorberechnen
+					if(dX + dY <= square)	// wenn Punkt unter Bot	 
+						map_update_free (X,Y,MAP_STEP_FREE_LOCATION);	// dann aktualisieren
+		  		}
+			
+			}
+		}
+	}
+	
+	#endif //#ifdef OLD_VERSION
 }
 
 /*!
