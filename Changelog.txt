@@ -1,6 +1,8 @@
 CHANGELOG fuer c't-Bot
 ======================
-2007-08-01 Benjamin Benz [bbe@heise.de]: Map aktualisiert die Grundfläche des Bots nun Sectionweise (==> #129), weitere Performanceprobleme behoben 
+2007-08-07 Timo Sandmann [mail@timosandmann.de]: Warning in tcp.c unter Win32 nach einem Hinweis von Achim Pankalla beseitigt
+
+2007-08-07 Benjamin Benz [bbe@heise.de]: Map aktualisiert die Grundfläche des Bots nun Sectionweise (==> #129), weitere Performanceprobleme behoben 
 
 2007-08-07 Timo Sandmann [mail@timosandmann.de]: schwerwiegenden Bug in Speedcontrol behoben
 

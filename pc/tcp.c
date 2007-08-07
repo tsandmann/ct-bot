@@ -184,7 +184,7 @@ int copy2Buffer(uint8* data, int length){
 	uint8 * ptr = data;
 	
 	if ((sendBufferPtr + length) > sizeof(sendBuffer)){
-		printf("%s() %s:%u: sendBuffer filled with %u/%lu Bytes, another %u bytes pending. Full! Aborting copy!\n",__FUNCTION__,__FILE__, __LINE__,sendBufferPtr,sizeof(sendBuffer),length);
+		printf("%s() %s:%u: sendBuffer filled with %u/%u Bytes, another %u bytes pending. Full! Aborting copy!\n",__FUNCTION__,__FILE__, __LINE__,sendBufferPtr,(unsigned int)sizeof(sendBuffer),length);
 
 		printf("  ==> Trying to recover by calling flushSendBuffer()\n");
 		flushSendBuffer(); 
