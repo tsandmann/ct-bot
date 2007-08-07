@@ -115,38 +115,31 @@ static void rc5_number(uint8 key) {
 		#endif	// BEHAVIOUR_AVAILABLE
 		
 		#ifdef BEHAVIOUR_TURN_AVAILABLE
-			case 2: bot_turn(0, 90); break;
-			case 7: bot_turn(0, 180); break;
-			case 9: bot_turn(0, -180); break;
+			case 2: bot_turn(NULL, 90); break;
+			case 7: bot_turn(NULL, 180); break;
+			case 9: bot_turn(NULL, -180); break;
 		#endif	// BEHAVIOUR_TURN_AVAILABLE							
 
-		#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
-			case 4: bot_catch_pillar(0); break;
-		#else
-			#ifdef BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
-				case 4: bot_follow_object(0); break;
-			#endif
-		#endif
+		#if defined BEHAVIOUR_CATCH_PILLAR_AVAILABLE
+			case 4: bot_catch_pillar(NULL); break;
+		#elif defined BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
+			case 4: bot_follow_object(NULL); break;
+		#endif	// BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 
 		#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
-			case 5: bot_solve_maze(0); break;
-		#else
-			#ifdef BEHAVIOUR_GOTOXY_AVAILABLE
-				case 5: bot_gotoxy(0, 20, 20); break;
-			#endif	// BEHAVIOUR_GOTOXY_AVAILABLE
+			case 5: bot_solve_maze(NULL); break;
 		#endif	// BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 		
-
-		#ifdef BEHAVIOUR_CALIBRATE_PWM_AVAILABLE
-			case 6: bot_calibrate_pwm(0); break;
-		#else 
-			#ifdef BEHAVIOUR_TURN_AVAILABLE
-				case 6: bot_turn(0, -90); break;
-			#endif	// BEHAVIOUR_TURN_AVAILABLE
-		#endif	// BEHAVIOUR_CALIBRATE_PWM_AVAILABLE
+		#if defined BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+			case 6: bot_calibrate_pid(NULL, BOT_SPEED_SLOW); break;
+		#elif defined BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
+			case 6: bot_calibrate_sharps(NULL); break;
+		#elif defined BEHAVIOUR_TURN_AVAILABLE
+			case 6: bot_turn(NULL, -90); break;
+		#endif	// BEHAVIOUR_CALIBRATE_PID_AVAILABLE
 		
 		#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
-			case 8: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
+			case 8: bot_drive_distance(NULL, 0, BOT_SPEED_NORMAL, 10); break;
 		#endif
 	}
 }
