@@ -82,11 +82,8 @@ int16 speed_r = 0;	/*!< Sollgeschwindigkeit rechter Motor */
 	static volatile pwmMap_t pwm_values[4] = {{0,255},{0,255},{0,255},{0,255}};		/*!< Lookup fuer Zuordnung GeschwindigkeitSLOW <-> PWM */
 	#ifdef DISPLAY_REGELUNG_AVAILABLE
 		uint8 encoderRateInfo[2];		/*!< Puffer fuer Displayausgabe der Ist-Geschwindigkeit */
-//		static uint8 timer_reg1, timer_reg2;
 	#endif
-	
-//	static volatile uint8 acc_test[2];			/*!< nur Testcase */
-//	static volatile uint16 acc_test_dt[2];		/*!< nur Testcase */
+
 #endif	// SPEED_CONTROL_AVAILABLE
 
 /* EEPROM-Variable immer deklarieren, damit die Adresse sich nicht veraendert je nach #define */
@@ -110,7 +107,6 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 	 * Mit PWMMIN, PWMSTART_L und PWMSTART_R laesst sich der Minimal- bzw. Startwert fuer die Motoren anpassen.
 	 */
 	void speed_control(uint8 dev, int16* actVar, uint16* encTime, uint8 i_time, uint8 enc){
-//		timer_reg1 = TCNT2;
 		/* Speicher fuer alte Regeldifferenzen */
 		static int16 lastErr[2] = {0,0};
 		static int16 last2Err[2] = {0,0};
@@ -160,34 +156,16 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 				} else /*if (encoderTargetRate[dev] < PID_SPEED_THRESHOLD)*/{
 					i_time -= 2 * sizeof(encTime[0]);	// Index vorletzter Timestamp
 					ticks_to_speed = TICKS_TO_SPEED_1;
-				} /*else {
-					i_time -= 4 * sizeof(encTime[0]);	// Index 4.letzter Timestamp
-					ticks_to_speed = TICKS_TO_SPEED_2;
-				}*/
+				}
 				i_time &= 0xf;						// Index auf 4 Bit begrenzen
 				dt -=  *(uint16*)(p_time + i_time);	// gewaehlten Timestamp subtrahieren
-				
-				/* <testcase> */
-//				if (acc_test[dev] == 1){
-//					acc_test[dev] = 2;
-//					*actVar = PWMMAX;
-//					motor_update(dev);
-//					return;
-//				} else if (acc_test[dev] == 2){
-//					acc_test[dev] = 0;
-//					acc_test_dt[dev] = dt;
-//					*actVar = 0;
-//					motor_update(dev);	
-//					return;
-//				}
-				/* </testcase> */
 				
 				/* Bei Fahrt Regelgroesse berechnen */	
 				uint8 encoderRate = ticks_to_speed / dt; // <dt> = [37; 800] -> <encoderRate> = [229; 10]
 				if (encoderRate > 6) encoderRate += enc_correct;
 				/* Regeldifferenz berechnen */	
 				int16 err = (encoderTargetRate[dev] - encoderRate); 
-	
+				int16_t diff;
 				#ifdef ADJUST_PID_PARAMS
 					/* PID-Koeffizienten berechnen, falls PID-Parameter variabel */ 
 					int16 q0 = Kp + Kd/PID_Ta;
@@ -195,17 +173,18 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 					int16 q2 = Kd/PID_Ta;
 					
 				/* Stellgroesse mit PID-Reglergleichung berechnen */
-					*actVar += (q0*err + q1*lastErr[dev] + q2*last2Err[dev]) >> PID_SHIFT;
+					diff = (q0*err + q1*lastErr[dev] + q2*last2Err[dev]) >> PID_SHIFT;
 				#else
-					*actVar += (Q0*err + Q1*lastErr[dev] + Q2*last2Err[dev]) >> PID_SHIFT;
+					diff = (Q0*err + Q1*lastErr[dev] + Q2*last2Err[dev]) >> PID_SHIFT;
 				#endif
+				*actVar += diff;
 				
 				/* berechnete Stellgroesse auf zulaessige Werte begrenzen */
 				if (*actVar > PWMMAX) *actVar = PWMMAX;
 				else if (*actVar < PWMMIN) *actVar = PWMMIN; 
 			
 				/* PWM-Lookup updaten */
-				if (encoderTargetRate[dev] == BOT_SPEED_SLOW/2 && start_signal[dev] == 0){
+				if (diff != 0 && encoderTargetRate[dev] == BOT_SPEED_SLOW/2 && start_signal[dev] == 0) {
 					uint8 lastErrors = (abs(last2Err[dev]) + abs(lastErr[dev]) + abs(err));
 					uint8 turn = 0;
 					if (direction.left != direction.right) turn = 2;
@@ -251,44 +230,7 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 		}	
 		/* PWM-Wert aktualisieren */
 		motor_update(dev);
-//		timer_reg2 = TCNT2;
 	}
-	
-// deprecated
-//	/*! 
-//	 * @brief 			PWM-Wert-Berechnung
-//	 * @author 			Timo Sandmann (mail@timosandmann.de)
-//	 * @date 			20.10.2006	
-//	 * @param map_data 	Zeiger auf einen Lookup-Table-Eintrag
-//	 * @param speed 	Soll-Geschwindigkeit (halbiert)
-//	 * @return			PWM-Stellwert
-//	 * Berechnet einen PWM-Stellwert aus PWM-Lookup-Table und gewuenschter Geschwindigkeit durch lineare Interpolation
-//	 */
-//	int16 calc_pwm(volatile pwmMap_t* map_data, uint8 speed){
-//		if (speed == 0) return 0;
-//		int8 index = speed>>4;	// speed ist halbiert
-//		volatile pwmMap_t* tmp = map_data + index;
-//		int8 tmp_index = index - 1;
-//		uint8 tmp_rating;
-//		/* Rating vom linken und rechten Nachbarn vergleichen */
-//		if (tmp_index >= 0)
-//			tmp_rating = (tmp-1)->rating;
-//		else
-//			tmp_rating = 8;	// gibt links keinen
-//		if (tmp_index+2 < 15 && (tmp+1)->rating < tmp_rating){
-//			tmp++;	// der rechte Nachbar hat ein besseres Rating
-//			tmp_index += 2;
-//		} else tmp--;	// der linke Nachbar ist besser
-//		/* linear interpolieren */
-//		uint16 speed1 = tmp->speed + (tmp_index<<5);
-//		uint16 speed2 = map_data[index].speed + (index<<5);
-//		//float m = ((float)tmp->pwm - (float)map_data[index].pwm) / ((float)speed1 - (float)speed2);
-//		int16 m = ((int16)(tmp->pwm - map_data[index].pwm)<<7) / ((int8)(speed1 - speed2));	// um 7 Bit hochskaliert
-//		//float b = tmp->pwm - m*speed1;
-//		int8 speed_diff = (speed<<1) - speed1;	// speed ist halbiert
-//		//return (int16)(m * (speed<<1) + b) << 1;
-//		return ((int16)((speed_diff*m)>>7) + tmp->pwm) << 1;	// pwm in LT ist halbiert
-//	}
 	
 	#ifdef DISPLAY_REGELUNG_AVAILABLE
 		/*!
@@ -327,10 +269,8 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 			display_cursor(4,1);
 			#ifdef ADJUST_PID_PARAMS
 				display_printf("Kp=%3d Ki=%3d Kd=%3d",Kp,Ki,Kd);
-//				display_printf("%3u us", (timer_reg2-timer_reg1)<<2);
 			#else
 				display_printf("Kp=%3d Ki=%3d Kd=%3d",PID_Kp,PID_Ki,PID_Kd);
-//				display_printf("%3u us", (timer_reg2-timer_reg1)<<2);
 			#endif	// ADJUST_PID_PARAMS	
 			
 			/* Keyhandler */
@@ -392,8 +332,8 @@ void motor_set(int16 left, int16 right){
 		if (speed_l != left*speedSignLeft && (start_signal[0] == 0 || left == 0)){
 			if (encoderTargetRate[0] == 0){
 				start_signal[0] = PID_START_DELAY;
-				if (speedSignLeft == speedSignRight) motor_left = (pwm_values[0].pwm << 1) + 150;	// [0; 511]
-				else motor_left = (pwm_values[2].pwm << 1) + 100;
+				if (speedSignLeft == speedSignRight) motor_left = (pwm_values[0].pwm << 1) + (uint16_t)(PWMSTART_L*1.5);	// [0; 511]
+				else motor_left = (pwm_values[2].pwm << 1) + PWMSTART_L;
 			}
 			encoderTargetRate[0] = left >> 1;	// [0; 225]
 			if ((left>>1) == 0){
@@ -430,8 +370,8 @@ void motor_set(int16 left, int16 right){
 		if (speed_r != right*speedSignRight && (start_signal[1] == 0 || right == 0)){
 			if (encoderTargetRate[1] == 0){
 				start_signal[1] = PID_START_DELAY;
-				if (speedSignLeft == speedSignRight) motor_right = (pwm_values[1].pwm << 1) + 150;	// [0; 511]
-				else motor_right = (pwm_values[3].pwm << 1) + 100;
+				if (speedSignLeft == speedSignRight) motor_right = (pwm_values[1].pwm << 1) + (uint16_t)(PWMSTART_R*1.5);	// [0; 511]
+				else motor_right = (pwm_values[3].pwm << 1) + PWMSTART_R;
 			}
 			encoderTargetRate[1] = right >> 1;	// [0; 225]
 			if ((right>>1) == 0){
@@ -522,18 +462,18 @@ void motor_init(void){
 	#ifdef SPEED_CONTROL_AVAILABLE
 		/* links */
 		uint8 tmp = eeprom_read_byte(&pwmSlow[0]);
-		if (tmp >= PWMSTART_L/2 && tmp < 255) pwm_values[0].pwm = tmp;
-		else pwm_values[0].pwm = PWMSTART_L/2;
+		if (tmp < (511-(uint16_t)(PWMSTART_L*1.5))/2) pwm_values[0].pwm = tmp;
+		else pwm_values[0].pwm = 0;
 		tmp = eeprom_read_byte(&pwmSlow[2]);
-		if (tmp >= PWMSTART_L/2 && tmp < 255) pwm_values[2].pwm = tmp;
-		else pwm_values[2].pwm = PWMSTART_L/2;
+		if (tmp < (511-PWMSTART_L)/2) pwm_values[2].pwm = tmp;
+		else pwm_values[2].pwm = 0;
 		/* rechts */
 		tmp = eeprom_read_byte(&pwmSlow[1]);
-		if (tmp >= PWMSTART_R/2 && tmp < 255) pwm_values[1].pwm = tmp;
-		else pwm_values[1].pwm = PWMSTART_R/2; 
+		if (tmp < (511-(uint16_t)(PWMSTART_R*1.5))/2) pwm_values[1].pwm = tmp;
+		else pwm_values[1].pwm = 0; 
 		tmp = eeprom_read_byte(&pwmSlow[3]);
-		if (tmp >= PWMSTART_R/2 && tmp < 255) pwm_values[3].pwm = tmp;
-		else pwm_values[3].pwm = PWMSTART_R/2;
+		if (tmp < (511-PWMSTART_R)/2) pwm_values[3].pwm = tmp;
+		else pwm_values[3].pwm = 0;
 	#endif	// SPEED_CONTROL_AVAILABLE
 
 	motor_low_init();
@@ -588,10 +528,10 @@ void servo_set(uint8 servo, uint8 pos){
 	#if PWMMAX <= PWMMIN
 		#error PWMMAX out of range (PWMMIN; 511]!
 	#endif		
-	#if PWMSTART_L > PWMMAX || PWMSTART_L < PWMMIN
-		#error PWMSTART_L out of range [PWMMIN; PWMMAX]!
+	#if PWMSTART_L*3/2 > PWMMAX || PWMSTART_L < PWMMIN
+		#error PWMSTART_L out of range [PWMMIN; PWMMAX/1.5]!
 	#endif	
-	#if PWMSTART_R > PWMMAX || PWMSTART_R < PWMMIN
-		#error PWMSTART_R out of range [PWMMIN; PWMMAX]!
+	#if PWMSTART_R*3/2 > PWMMAX || PWMSTART_R < PWMMIN
+		#error PWMSTART_R out of range [PWMMIN; PWMMAX/1.5]!
 	#endif
 #endif	// SPEED_CONTROL_AVAILABLE
