@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-08-09 Benjamin Benz [bbe@heise.de]: neue Kartenorganisation für MMC eingeführt
+
 2007-08-07 Achim Pankalla [achim.pankalla@gmx.de]: Kalibrieroutine fuer pid in rc5.c eingebunden
 
 2007-08-07 Timo Sandmann [mail@timosandmann.de]: Warning in tcp.c unter Win32 nach einem Hinweis von Achim Pankalla beseitigt
