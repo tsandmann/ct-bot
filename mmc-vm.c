@@ -469,6 +469,7 @@ uint32_t mmc_fopen_P(const char * filename) {
 uint32 mmc_get_filesize(uint32 file_start){
 	file_len_t length;
 	uint8* p_addr = mmc_get_data(file_start-512);
+	if (p_addr == NULL) return 0;
 	/* Dateilaenge aus Block 0, Byte 256 bis 259 der Datei lesen */
 	uint8 i;
 	for (i=0; i<4; i++)
@@ -497,7 +498,7 @@ uint8 mmc_clear_file(uint32 file_start){
 	/* Alle Bloecke der Datei mit dem 0-Puffer ueberschreiben */
 	int8 cache_block;
 	uint32 addr;
-	for (addr=file_start; addr<file_start+length; addr+=512){
+	for (addr=file_start; addr<=file_start+length; addr+=512){
 		if (swap_out(mmc_get_mmcblock_of_page(addr), p_addr, 0) != 0) return 2;
 		#ifdef PC
 //			printf(".");
