@@ -37,6 +37,9 @@
 #include <math.h>
 #include <stdlib.h>
 
+
+//#define DEBUG_MAP		// Schalter um recht viel Debug-Code anzumachen
+
 /*
  * Eine Karte ist wie folgt organisiert:
  * Es gibt Sektionen zu je MAP_SECTION_POINTS * MAP_SECTION_POINTS. 
@@ -63,6 +66,8 @@
  * Wird ein Feld als Loch erkannt, setzen wir den Wert fest auf -128 (Achtung, derzeit noch nicht fertig impelementiert)
  */
 
+
+
 #define MAP_SECTIONS ((( MAP_SIZE*MAP_RESOLUTION)/MAP_SECTION_POINTS))	/*!< Anzahl der Sections in der Map */
 
 #define MAP_STEP_FREE_SENSOR		2	/*!< Um diesen Wert wird ein Feld inkrementiert, wenn es vom Sensor als frei erkannt wird */
@@ -78,6 +83,14 @@
 
 #define FREE_BOUNDERY (125-MAP_STEP_FREE_SENSOR)   /*!< Frei Aktualisierung nur bis zu diesem Wert wegen Pfadplanung */
 
+#define USE_MACROBLOCKS	// Soll die Karte linear oder nach Macroblocks sortiert sein?
+
+#define MACRO_BLOCK_LENGTH	512 // kantenlaenge eines Macroblocks in Punkten/Byte
+#define MACRO_BLOCK_SIZE (MACRO_BLOCK_LENGTH * MACRO_BLOCK_LENGTH)
+#define MAP_LENGTH_IN_MACRO_BLOCKS ((MAP_SIZE*MAP_RESOLUTION)/MACRO_BLOCK_LENGTH)
+
+
+
 #ifdef SHRINK_MAP_ONLINE
 	uint16 map_min_x=MAP_SIZE*MAP_RESOLUTION/2; /*!< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
 	uint16 map_max_x=MAP_SIZE*MAP_RESOLUTION/2; /*!< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
@@ -90,6 +103,9 @@ typedef struct {
 	int8 section[MAP_SECTION_POINTS][MAP_SECTION_POINTS]; /*!< Einzelne Punkte */
 } map_section_t;
 
+typedef struct {
+	map_section_t part[2];		/*!< Ein MMC-Block fasst genau 2 map_section_t*/
+}mmc_block;
 
 #ifdef MMC_VM_AVAILABLE
 	map_section_t * map[2][1];	/*!< Array mit den Zeigern auf die Elemente */
@@ -100,17 +116,18 @@ typedef struct {
 	#ifdef MCU
 		#ifdef MMC_AVAILABLE
 			// Wenn wir die MMC-Karte haben, passen immer 2 Sektionen in den SRAM
-			map_section_t * map[2][1];	/*!< Array mit den Zeigern auf die Elemente */
+			map_section_t * map[2];	/*!< Array mit den Zeigern auf die Elemente */
 			uint32 map_start_block; /*!< Block, bei dem die Karte auf der MMC-Karte beginnt. Derzeit nur bis 32MByte adressierbar*/
 			uint32 map_current_block; /*!< Block, der aktuell im Puffer steht. Derzeit nur bis 32MByte adressierbar*/
 			uint8 map_buffer[sizeof(map_section_t)*2]; /*!< statischer Puffer */
 			uint8 map_current_block_updated; /*!< markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde */
 		#else
 			// Ohne MMC-Karte nehmen wir nur 1 Sektionen in den SRAM und das wars dann
-			map_section_t * map[1][1];	/*!< Array mit den Zeigern auf die Elemente */
+			map_section_t * map[1];	/*!< Array mit den Zeigern auf die Elemente */
 		#endif	// MMC_AVAILABLE
 	#else
-		map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*!< Array mit den Zeigern auf die Elemente */
+//		map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*!< Array mit den Zeigern auf die Elemente */
+		map_section_t * map[MAP_SECTIONS * MAP_SECTIONS];	/*!< Array mit den Zeigern auf die Elemente */
 	#endif	// MCU
 #endif	// MMC_VM_AVAILABLE
 
@@ -149,6 +166,15 @@ int8 map_init(void){
 		map[1][0]=(map_section_t*)(map_buffer+sizeof(map_section_t));		
 	#endif	// MMC_VM_AVAILABLE	
 		
+		
+	#ifdef DEBUG_MAP
+		#ifdef PC		
+			map_info();				// Verrate uns was über die Karte
+			map_draw_test_scheme();	// zeichne Das Testmuster in die Karte
+			print_map();			// Und karte gleich ausgeben	
+		#endif
+	#endif
+			
 	return 0;
 }
 
@@ -161,11 +187,16 @@ int8 map_init(void){
  * @return einen zeiger auf die Karte
  */
 static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
+
 	uint16 section_x, section_y;
 		
 	// Berechne in welcher Sektion sich der Punkt befindet
 	section_x=x/ MAP_SECTION_POINTS;
 	section_y=y/ MAP_SECTION_POINTS;
+
+	// Da imemr 2 Sections in einem Block stehen: richtige der beiden sections raussuchen
+	uint8 index= section_x & 0x01;
+
 		
 	if ((section_x>= MAP_SECTIONS) || (section_y >= MAP_SECTIONS)){
 		#ifdef PC
@@ -174,40 +205,43 @@ static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
 		return NULL;
 	}
 	
+	#ifndef USE_MACROBLOCKS
+		// Berechne den gesuchten Block
+		uint32 block = section_x + section_y*MAP_SECTIONS;
+		block = block >>1;	// es passen immer 2 Sections in einen Block
+	#else		
+		uint16 macroblock = x / MACRO_BLOCK_LENGTH + (y / MACRO_BLOCK_LENGTH)* MAP_LENGTH_IN_MACRO_BLOCKS; 
+		
+//		printf("Macroblock= %d ",macroblock);
+		
+		// Berechne den gesuchten Block
+		uint32 block; 
+
+		uint16 local_x = x % MACRO_BLOCK_LENGTH;	// wenn MACRO_BLOCK_LENGTH eine 2er Potenz ist kann man hier optimieren
+		uint16 local_y = y % MACRO_BLOCK_LENGTH;
+
+//		printf("\tlocal_x= %d, local_y= %d ",local_x,local_y);
+
+		block= local_x / MAP_SECTION_POINTS + (local_y/MAP_SECTION_POINTS)* (MACRO_BLOCK_LENGTH/MAP_SECTION_POINTS);
+		
+		block = block >>1;	// es passen immer 2 Sections in einen Block
+
+		block += macroblock * MACRO_BLOCK_SIZE / 512;	// noch in den richtigen Macroblock springen
+
+//		printf("block= %d ",block);
+
+	#endif	
+	
+	
+	
 	#ifdef MMC_AVAILABLE		// MMC ist vorhanden
-		
-		#define OLD_ORGANISATION
-		#ifdef OLD_ORGANISATION
-			// Berechne den gesuchten Block
-			uint32 block = section_x + section_y*MAP_SECTIONS;
-			block = block >>1;	// es passen immer 2 Sections in einen Block
-			block += map_start_block;	// Offset drauf
-		#else
-			#define MACRO_BLOCK_LENGTH	512 // kantenlaenge eines Macroblocks in Punkten/Byte
-			#define MACRO_BLOCK_SIZE MACRO_BLOCK_LENGTH * MACRO_BLOCK_LENGTH
-			#define MAP_LENGTH_IN_MACRO_BLOCKS (MAP_SIZE*MAP_RESOLUTION/MACRO_BLOCK_LENGTH)
-			
-			uint16 macroblock = x / MACRO_BLOCK_LENGTH + (y / MACRO_BLOCK_LENGTH)* MAP_LENGTH_IN_MACRO_BLOCKS; 
-			
-			// Berechne den gesuchten Block
-			uint32 block; 
-
-			uint16 local_x = x % MACRO_BLOCK_LENGTH;	// wenn MACRO_BLOCK_LENGTH eine 2er Potenz ist kann man hier optimieren
-			uint16 local_y = y % MACRO_BLOCK_LENGTH;
-
-			block= local_x / MAP_SECTION_POINTS + local_y* MACRO_BLOCK_LENGTH/MAP_SECTION_POINTS;
-			block = block >>1;	// es passen immer 2 Sections in einen Block
-
-			block += macroblock * MACRO_BLOCK_SIZE / 512;	// noch in den richtigen Macroblock springen
-			block += map_start_block;						// Offset für die Lage der Karte drauf
-
-		#endif
-		
+		// Auf der MMC beginnt die Karte nicht bei 0, sondern irgendwo		
+		block += map_start_block;						// Offset für die Lage der Karte drauf		
 		
 		#ifndef MMC_VM_AVAILABLE	// Keine Speicherverwaltung	
 			// wenn die Karte nicht sauber initialisiert ist, mache nix!
 			if (map_current_block_updated == 0xFF)
-				return map[0][0];
+				return map[0];	// oder eher NULL?
 			
 			// Ist der Block noch nicht geladen
 			if (map_current_block != block){
@@ -221,31 +255,29 @@ static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
 				map_current_block_updated = False;
 			}
 			
-			// richtige der beiden sections raussuchen
-			uint8 index= section_x & 0x01;
-			return map[index][0];	
+			return map[index];	
 		#else
 			map_buffer = mmc_get_data(block<<9);
 			if (map_buffer != NULL){
-				map[0][0]=(map_section_t*)map_buffer;
-				map[1][0]=(map_section_t*)(map_buffer+sizeof(map_section_t));
+				map[0]=(map_section_t*)map_buffer;
+				map[1]=(map_section_t*)(map_buffer+sizeof(map_section_t));
 				// richtige der beiden sections raussuchen
-				uint8 index= section_x & 0x01;
-				return map[index][0];
-			} else return map[0][0];	
+				return map[index];
+			} else 
+				return map[0];	
 		#endif	// MMC_VM_AVAILABLE
 		
 	#else 
 		// ohne MMC-Karte einfach direkt mit dem SRAM arbeiten	
-		if ((map[section_x][section_y] == NULL) && (create==True)){
+		if ((map[block*2+index] == NULL) && (create==True)){
 			uint16 index_x, index_y;
-			map[section_x][section_y]= malloc(sizeof(map_section_t));
+			map[block*2+index]= malloc(sizeof(map_section_t));
 			for (index_x=0; index_x<MAP_SECTION_POINTS; index_x++)
 				for (index_y=0; index_y<MAP_SECTION_POINTS; index_y++)
-					map[section_x][section_y]->section[index_x][index_y]=0;
+					map[block*2+index]->section[index_x][index_y]=0;
 			
 		}
-		return map[section_x][section_y];
+		return map[block*2+index];
 	#endif // MMC_AVAILABLE
 	
 }
@@ -1070,6 +1102,65 @@ void print_map(void){
 	#else
 		// Todo: Wie soll der Bot eine Karte ausgeben ....
 	#endif	// PC
+}
+
+/*!
+ * Zeigt ein Paar Infos über dioe Karte an
+ */
+void map_info(void){
+	printf("MAP: \n");
+	printf("\t%d\t Punkte pro Section (MAP_SECTIONS)\n",MAP_SECTIONS);
+	printf("\t%d\t Sections (MAP_SECTION_POINTS)\n",MAP_SECTION_POINTS);
+	printf("\t%d\t Punkte Kantenlänge (MAP_SECTION_POINTS*MAP_SECTIONS)\n",MAP_SECTION_POINTS*MAP_SECTIONS);
+	printf("\t%d\t Punkte gesamt\n",	MAP_SECTION_POINTS*MAP_SECTIONS*MAP_SECTION_POINTS*MAP_SECTIONS);
+	printf("\t%d\t KByte\n",(MAP_SECTION_POINTS*MAP_SECTIONS*MAP_SECTION_POINTS*MAP_SECTIONS)/1024);
+	printf("\t%d\t Punkte pro Meter (MAP_RESOLUTION)\n",MAP_RESOLUTION);
+	printf("\t%d\t Meter Kantenlänge (MAP_SIZE)\n",MAP_SIZE);
+	
+	printf("\n");
+	#ifdef USE_MACROBLOCKS
+		printf("Die Karte verwendet Macroblocks\n");
+		printf("\t%d\t Länge eine Macroblocks in Punkten (MACRO_BLOCK_LENGTH)\n",MACRO_BLOCK_LENGTH);
+		printf("\t%d\t Anzahl der Macroblocks in einer Zeile(MAP_LENGTH_IN_MACRO_BLOCKS)\n",MAP_LENGTH_IN_MACRO_BLOCKS);
+	#else
+		printf("Die Karte verwendet keine Macroblocks\n");
+	#endif
+	
+}
+
+/*!
+ * zeichnet ein Testmuster in die Karte
+ */
+void map_draw_test_scheme(void){
+	int16 x,y;
+
+	// Erstmal eine ganz simple Linie
+	for (x=0; x< MAP_SECTION_POINTS*MAP_SECTIONS; x++){
+		map_set_field(x,x,-120);
+		map_set_field(MAP_SECTION_POINTS*MAP_SECTIONS-x-1,x,-120);
+	}	
+	
+	// Grenzen der Sections Zeichnen
+	for (x=0; x< MAP_SECTION_POINTS*MAP_SECTIONS; x++){
+		for (y=0; y< MAP_SECTIONS; y++)	{
+			map_set_field(x,y*MAP_SECTION_POINTS,-10);
+			map_set_field(y*MAP_SECTION_POINTS,x,-10);
+		}		
+	}
+
+	#ifdef USE_MACROBLOCKS
+		// Grenzen der Macroblocks einzeichnen
+		for (x=0; x< MAP_SECTION_POINTS*MAP_SECTIONS; x++){
+			for (y=0; y< MAP_LENGTH_IN_MACRO_BLOCKS; y++)	{
+					map_set_field(x,y*MACRO_BLOCK_LENGTH,-60);
+					map_set_field(y*MACRO_BLOCK_LENGTH,x,-60);
+			}		
+		}
+	#endif
+
+
+	
+		
 }
 
 #endif	// MAP_AVAILABLE

@@ -38,16 +38,16 @@
 
 #ifdef MCU
 	#ifdef MMC_AVAILABLE
-		#define MAP_SIZE			12	/*!< Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
+		#define MAP_SIZE			12	/*!< Kantenlaenge der Karte in Metern. Zentrum ist der Startplatz des Bots. Achtung! in kombination mit Macroblocks sind nur ganzzahlige Vielfache der Macroblock kantenlänge erlaubt */
 		#define MAP_RESOLUTION 		128	/*!< Aufloesung der Karte in Punkte pro Meter */
 		#define MAP_SECTION_POINTS 	16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 	#else
-		#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
+		#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Zentrum ist der Startplatz des Bots */
 		#define MAP_SECTION_POINTS 32	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 		#define MAP_RESOLUTION 	(MAP_SECTION_POINTS/MAP_SIZE)	/*!< Aufloesung der Karte in Punkte pro Meter */
 	#endif
 #else
-	#define MAP_SIZE			12	/*!< Kantenlaenge der Karte in Metern. Ursprung ist der Startplatz des Bots */
+	#define MAP_SIZE			12	/*!< Kantenlaenge der Karte in Metern. Zentrum ist der Startplatz des Bots. Achtung! in kombination mit Macroblocks sind nur ganzzahlige Vielfache der Macroblock kantenlänge erlaubt */
 	#define MAP_RESOLUTION 		128	/*!< Aufloesung der Karte in Punkte pro Meter */
 	#define MAP_SECTION_POINTS 	16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 #endif
@@ -298,6 +298,15 @@ void map_to_pgm(char * filename);
 #define map_get_max_x() map_to_world(map_max_x)		/*!< Maximum in X-Richtung */
 #define map_get_max_y() map_to_world(map_max_y)		/*!< Maximum in Y-Richtung */
 
+/*!
+ * zeichnet ein Testmuster in die Karte
+ */
+void map_draw_test_scheme(void);
+
+/*!
+ * Zeigt ein Paar Infos über dioe Karte an
+ */
+void map_info(void);
 
 #endif
 
