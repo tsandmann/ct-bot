@@ -139,14 +139,13 @@ void deactivateCalledBehaviours(BehaviourFunc function);
  * 						In diesem Fall kann der Aufrufer aus seinem eigenen subResult auslesen,
  * 						ob seibem Wunsch Folge geleistet wurde.
  */ 
-void switch_to_behaviour(Behaviour_t * from, void *to, uint8 override );
+void switch_to_behaviour(Behaviour_t * from, void (*to)(Behaviour_t *), uint8 override );
 
 /*! 
  * @brief		Kehrt zum aufrufenden Verhalten zurueck
  * @param data 	laufendes Verhalten
  */
 void return_from_behaviour(Behaviour_t * data);
-
 
 /*!
  * Fuegt ein Verhalten der Verhaltenliste anhand der Prioritaet ein.

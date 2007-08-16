@@ -373,7 +373,7 @@ void deactivateCalledBehaviours(BehaviourFunc function){
  * 						In diesem Fall kann der Aufrufer aus seinem eigenen subResult auslesen,
  * 						ob seibem Wunsch Folge geleistet wurde.
  */ 
-void switch_to_behaviour(Behaviour_t * from, void *to, uint8 override ){
+void switch_to_behaviour(Behaviour_t * from, void (*to)(Behaviour_t *), uint8 override ){
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
 	
 	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben 

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-08-16 Benjamin Benz [bbe@heise.de]: Cast fuer einen Pointer in switch_behaviour macht das ganze mehr ANSI-C konform
+
 2007-08-16 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer -d Option (Loeschen von MiniFAT-Dateien @PC) 
 
 2007-08-09 Benjamin Benz [bbe@heise.de]: neue Kartenorganisation für MMC eingeführt
