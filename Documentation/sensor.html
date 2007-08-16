@@ -60,14 +60,33 @@ Motorregelung und den Mini-FAT-Treiber der MMC genutzt, die genannten Punkte zum
 <a name="line"></a><h3>Liniensensoren</h3>
 <p>Die Liniensensoren werden bei jedem Aufruf von<span class="function"> bot_sens_isr()</span> ausgewertet und ihre Werte direkt in<span class="function"> sensLineL</span>
 und <span class="function"> sensLineR</span> gespeichert (Wertebereich von 0 bis 1023).</p>
-
-<a name="ldr"></a><h3>Helligkeitssensoren</h3>
-<p>Die Helligkeitssensoren werden bei jedem Aufruf von<span class="function"> bot_sens_isr()</span> ausgewertet und ihre Werte direkt in<span class="function"> sensLDRL</span>
-und <span class="function"> sensLDRR</span> gespeichert (Wertebereich von 0 bis 1023).</p>
+<p>Zur Kalibrierung der Liniensensoren stellt man den Bot zun&auml;chst auf die Fl&auml;che, 
+auf der er normalerweise fahren soll (also keine Linie) und notiert sich die Werte der 
+Liniensensoren aus dem Sensor-Display (L=...). Nun stellt man den Bot auf eine Linie und notiert sich
+ebenfalls die angezeigten Werte der Liniensensoren. Je dunkler die Linie ist, desto
+gr&ouml;&szlig;er ist der gelieferte Sensorwert. Aus den beiden Messungen f&uuml;r Linie und
+keine Linie ermittelt man nun einen Wert, der gr&ouml;&szlig;er als der f&uuml;r normale Fl&auml;chen
+und kleiner als der f&uuml;r eine Linie ist, und benutzt diesen als Schwellwert zur 
+Linienerkennung. Dazu tr&auml;gt man ihn in  <a href="../include/bot-local.h">include/bot-local.h</a> als <span class="function"> LINE_SENSE</span>
+ein.</p>
 
 <a name="border"></a><h3>Abgrundsensoren</h3>
 <p>Die Abgrundsensoren werden bei jedem Aufruf von<span class="function"> bot_sens_isr()</span> ausgewertet und ihre Werte direkt in<span class="function"> sensBorderL</span>
 und <span class="function"> sensBorderR</span> gespeichert (Wertebereich von 0 bis 1023).</p>
+<p>Zur Kalibrierung der Abgrundsensoren stellt man den Bot zun&auml;chst auf die Fl&auml;che, 
+auf der er normalerweise fahren soll (also kein Abgrund) und notiert sich die Werte der 
+Abgrundsensoren aus dem Sensor-Display (B=...). Nun h&auml;lt man den Bot &uuml;ber einen Abgrund
+oder stellt ihn auf eine Fl&auml;che, die als Abgrund erkannt werden soll und notiert sich
+ebenfalls die angezeigten Werte der Abgrundsensoren. Je dunkler die Fl&auml;che ist, desto
+gr&ouml;&szlig;er ist der gelieferte Sensorwert. Aus den beiden Messungen f&uuml;r Abgrund und
+kein Abgrund ermittelt man nun einen Wert, der gr&ouml;&szlig;er als der f&uuml;r normale Fl&auml;chen
+und kleiner als der f&uuml;r einen Abrgund ist, und benutzt diesen als Schwellwert zur 
+Abgrunderkennung. Dazu tr&auml;gt man ihn in  <a href="../include/bot-local.h">include/bot-local.h</a> als <span class="function"> BORDER_DANGEROUS</span>
+ein.</p>
+
+<a name="ldr"></a><h3>Helligkeitssensoren</h3>
+<p>Die Helligkeitssensoren werden bei jedem Aufruf von<span class="function"> bot_sens_isr()</span> ausgewertet und ihre Werte direkt in<span class="function"> sensLDRL</span>
+und <span class="function"> sensLDRR</span> gespeichert (Wertebereich von 0 bis 1023).</p>
 
 <a name="mouse"></a><h3>Maussensor</h3>
 <p>Der Maussensor wird bei jedem Aufruf von<span class="function"> bot_sens_isr()</span> ausgewertet und dX und dY in<span class="function"> sensMouseDX</span>
