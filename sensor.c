@@ -38,6 +38,8 @@
 	#include "srf10.h"
 #endif
 
+#define HEADING_START		0			// Blickrichtung, mit der der Bot sich initialisiert
+
 #ifdef MCU
 	#include <avr/eeprom.h>
 #else
@@ -84,7 +86,7 @@ uint8 sensError=0;		/*!< Ueberwachung Motor oder Batteriefehler */
 
 volatile int16 sensEncL=0;		/*!< Encoder linkes Rad */
 volatile int16 sensEncR=0;		/*!< Encoder rechtes Rad */
-float heading_enc=0;	/*!< Blickrichtung aus Encodern */
+float heading_enc=HEADING_START;	/*!< Blickrichtung aus Encodern */
 float x_enc=0;		/*!< X-Koordinate aus Encodern [mm] */
 float y_enc=0;		/*!< Y-Koordinate aus Encodern [mm] */
 float v_enc_left=0;	/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
@@ -96,7 +98,7 @@ float v_enc_center=0;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
 #endif
 
 #ifdef MEASURE_MOUSE_AVAILABLE
-	float heading_mou=0;		/*!< Aktuelle Blickrichtung relativ zur Startposition aus Mausmessungen */
+	float heading_mou=HEADING_START;		/*!< Aktuelle Blickrichtung relativ zur Startposition aus Mausmessungen */
 	float x_mou=0;			/*!< Aktuelle X-Koordinate in mm relativ zur Startposition aus Mausmessungen */
 	float y_mou=0;			/*!< Aktuelle Y-Koordinate in mm relativ zur Startposition aus Mausmessungen */
 	float v_mou_center=0;		/*!< Geschwindigkeit in mm/s ausschliesslich aus den Maussensorwerten berechnet */
@@ -104,7 +106,7 @@ float v_enc_center=0;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
 	float v_mou_right=0;		/*!< ...aufgeteilt auf rechtes Rad */
 #endif
 
-float heading=0;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
+float heading=HEADING_START;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
 float x_pos=0;			/*!< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
 float y_pos=0;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
 float v_left=0;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
@@ -201,8 +203,8 @@ void sensor_update(void){
 		static int16 lastMouseX=0;		/*!< letzter Mauswert X fuer Positionsberechnung */
 		static int16 lastMouseY=0;		/*!< letzter Mauswert Y fuer Positionsberechnung */
 		static float lastDistance=0;	/*!< letzte gefahrene Strecke */
-		static float lastHead=0;		/*!< letzter gedrehter Winkel */
-		static float oldHead=0;		/*!< Winkel aus dem letzten Durchgang */
+		static float lastHead=HEADING_START;		/*!< letzter gedrehter Winkel */
+		static float oldHead=HEADING_START;		/*!< Winkel aus dem letzten Durchgang */
 		static float old_x=0;			/*!< Position X aus dem letzten Durchgang */
 		static float old_y=0;			/*!< Position Y aus dem letzten Durchgang */
 		float radius=0;				/*!< errechneter Radius des Drehkreises */
