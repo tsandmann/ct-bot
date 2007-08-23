@@ -198,6 +198,7 @@ void bot_behave_init(void){
 
 	#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(44, bot_catch_pillar_behaviour,INACTIVE));
+                insert_behaviour_to_list(&behaviour, new_behaviour(43, bot_unload_pillar_behaviour,INACTIVE));
 	#endif
 
 	
