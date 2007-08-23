@@ -46,6 +46,19 @@ void bot_catch_pillar_behaviour(Behaviour_t *data);
  */
 void bot_catch_pillar(Behaviour_t * caller);
 
+/*!
+ * Gibt die Dose wieder aus, Entladevorgang
+ * @param *data der Verhaltensdatensatz
+ */
+void bot_unload_pillar_behaviour(Behaviour_t *data);
+
+/*!
+ * Botenfkt
+ * Entlaedt das Objekt wieder
+ * @param caller Der obligatorische Verhaltensdatensatz des Aufrufers
+ */
+void bot_unload_pillar(Behaviour_t * caller);
+
 #endif
 
 #endif /*BEHAVIOUR_CATCH_PILLAR_H_*/

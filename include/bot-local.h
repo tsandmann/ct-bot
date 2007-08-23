@@ -114,7 +114,12 @@
 #define PRIO_VISIBLE_MAX 154		/*!< Prioritaet, die ein Verhalten hoechstens haben darf, um angezeigt zu werden */
 
 
-
+/* Konstanten fuer die Entfernung. innerhalb derer nur ein Objekt eingefangen wird */
+#ifdef PC
+  #define MAX_PILLAR_DISTANCE	350
+#else
+  #define MAX_PILLAR_DISTANCE	200
+#endif
 
 
 #endif /*BOTLOCAL_H_*/

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-08-21 Frank Menzel  [Menzelfr@gmx.net]: Entladeverhalten bot_unload_pillar_behaviour und Aenderungen catch_pillar
+
 2007-08-16 Benjamin Benz [bbe@heise.de]: neue Kartenorganisation fertiggestellt ==> kann noch per Schalter deaktiviert werden. Testmuster für Karte eingeführt
 
 2007-08-16 Timo Sandmann [mail@timosandmann.de]: Hinweise zur Abgrund- und Liniensensorkalibrierung in Documentation/sensor.html ergaenzt 
