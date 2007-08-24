@@ -131,7 +131,7 @@ const call_t calls[] PROGMEM = {
 		PREPARE_REMOTE_CALL(bot_calibrate_pid,1,"int16 speed",2),
 	#endif
 	#ifdef BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
-		PREPARE_REMOTE_CALL(bot_calibrate_sharps,0,"")
+		PREPARE_REMOTE_CALL(bot_calibrate_sharps,0,""),
 	#endif	
 	#ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_turn_test,0,""),
