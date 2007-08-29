@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-08-29 Benjamin Benz [bbe@heise.de]: Bugfix #140 in map.c für MCU
+
 2007-08-25 Timo Sandmann [mail@timosandmann.de]: Syntaxfehler in behaviour_remotecall.c korrigiert.
 
 2007-08-21 Frank Menzel  [Menzelfr@gmx.net]: Entladeverhalten bot_unload_pillar_behaviour und Aenderungen catch_pillar

@@ -86,7 +86,7 @@
 #define USE_MACROBLOCKS	// Soll die Karte linear oder nach Macroblocks sortiert sein?
 
 #define MACRO_BLOCK_LENGTH	512 // kantenlaenge eines Macroblocks in Punkten/Byte
-#define MACRO_BLOCK_SIZE (MACRO_BLOCK_LENGTH * MACRO_BLOCK_LENGTH)
+//#define MACRO_BLOCK_SIZE (MACRO_BLOCK_LENGTH * MACRO_BLOCK_LENGTH)
 #define MAP_LENGTH_IN_MACRO_BLOCKS ((MAP_SIZE*MAP_RESOLUTION)/MACRO_BLOCK_LENGTH)
 
 
@@ -145,8 +145,8 @@ int8 map_init(void){
 			map_start_block= mini_fat_find_block("MAP",map_buffer);
 		
 			// Die Karte auf den Puffer biegen
-			map[0][0]=(map_section_t*)map_buffer;
-			map[1][0]=(map_section_t*)(map_buffer+sizeof(map_section_t));		
+			map[0]=(map_section_t*)map_buffer;
+			map[1]=(map_section_t*)(map_buffer+sizeof(map_section_t));		
 		
 			if (map_start_block != 0xFFFFFFFF){
 				map_current_block_updated = False;	// kein Block geladen und daher auch nicht veraendert
@@ -226,7 +226,7 @@ static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
 		
 		block = block >>1;	// es passen immer 2 Sections in einen Block
 
-		block += macroblock * MACRO_BLOCK_SIZE / 512;	// noch in den richtigen Macroblock springen
+		block += macroblock * MACRO_BLOCK_LENGTH * (MACRO_BLOCK_LENGTH / 512);	// noch in den richtigen Macroblock springen
 
 //		printf("block= %d ",block);
 
@@ -1089,9 +1089,36 @@ void update_map_sensor_hole(float x, float y, float h){
 		#endif
 		
 	}
+
+
+	/*!
+	 * Zeigt ein Paar Infos über dioe Karte an
+	 */
+	void map_info(void){
+		uint32 points_in_map = MAP_SECTION_POINTS*MAP_SECTIONS;	// Leider kann der precompiler des MCUs keine großen Zahlen 
+		points_in_map*=MAP_SECTION_POINTS*MAP_SECTIONS;
+		
+		printf("MAP: \n");
+		printf("\t%d\t Punkte pro Section (MAP_SECTIONS)\n",MAP_SECTIONS);
+		printf("\t%d\t Sections (MAP_SECTION_POINTS)\n",MAP_SECTION_POINTS);
+		printf("\t%d\t Punkte Kantenlänge (MAP_SECTION_POINTS*MAP_SECTIONS)\n",MAP_SECTION_POINTS*MAP_SECTIONS);
+		printf("\t%d%d\t Punkte gesamt\n", (uint16)(points_in_map/10000), (uint16) (points_in_map % 10000)	);
+		points_in_map /= 1024;		// Umrechnen in KByte
+		printf("\t%d%d\t KByte\n",(uint16)(points_in_map/10000), (uint16) (points_in_map % 10000));
+		printf("\t%d\t Punkte pro Meter (MAP_RESOLUTION)\n",MAP_RESOLUTION);
+		printf("\t%d\t Meter Kantenlänge (MAP_SIZE)\n",MAP_SIZE);
+		
+		printf("\n");
+		#ifdef USE_MACROBLOCKS
+			printf("Die Karte verwendet Macroblocks\n");
+			printf("\t%d\t Länge eine Macroblocks in Punkten (MACRO_BLOCK_LENGTH)\n",MACRO_BLOCK_LENGTH);
+			printf("\t%d\t Anzahl der Macroblocks in einer Zeile(MAP_LENGTH_IN_MACRO_BLOCKS)\n",MAP_LENGTH_IN_MACRO_BLOCKS);
+		#else
+			printf("Die Karte verwendet keine Macroblocks\n");
+		#endif
+		
+	}
 #endif	// PC
-
-
 
 /*!
  * Zeigt die Karte an
@@ -1102,30 +1129,6 @@ void print_map(void){
 	#else
 		// Todo: Wie soll der Bot eine Karte ausgeben ....
 	#endif	// PC
-}
-
-/*!
- * Zeigt ein Paar Infos über dioe Karte an
- */
-void map_info(void){
-	printf("MAP: \n");
-	printf("\t%d\t Punkte pro Section (MAP_SECTIONS)\n",MAP_SECTIONS);
-	printf("\t%d\t Sections (MAP_SECTION_POINTS)\n",MAP_SECTION_POINTS);
-	printf("\t%d\t Punkte Kantenlänge (MAP_SECTION_POINTS*MAP_SECTIONS)\n",MAP_SECTION_POINTS*MAP_SECTIONS);
-	printf("\t%d\t Punkte gesamt\n",	MAP_SECTION_POINTS*MAP_SECTIONS*MAP_SECTION_POINTS*MAP_SECTIONS);
-	printf("\t%d\t KByte\n",(MAP_SECTION_POINTS*MAP_SECTIONS*MAP_SECTION_POINTS*MAP_SECTIONS)/1024);
-	printf("\t%d\t Punkte pro Meter (MAP_RESOLUTION)\n",MAP_RESOLUTION);
-	printf("\t%d\t Meter Kantenlänge (MAP_SIZE)\n",MAP_SIZE);
-	
-	printf("\n");
-	#ifdef USE_MACROBLOCKS
-		printf("Die Karte verwendet Macroblocks\n");
-		printf("\t%d\t Länge eine Macroblocks in Punkten (MACRO_BLOCK_LENGTH)\n",MACRO_BLOCK_LENGTH);
-		printf("\t%d\t Anzahl der Macroblocks in einer Zeile(MAP_LENGTH_IN_MACRO_BLOCKS)\n",MAP_LENGTH_IN_MACRO_BLOCKS);
-	#else
-		printf("Die Karte verwendet keine Macroblocks\n");
-	#endif
-	
 }
 
 /*!
