@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-08-29 Benjamin Benz [bbe@heise.de]: Map-Code weiter getunt, nun profitieren auch ocupied-Updtaes (circle) von den sections
+
 2007-08-29 Benjamin Benz [bbe@heise.de]: Bugfix #140 in map.c für MCU
 
 2007-08-25 Timo Sandmann [mail@timosandmann.de]: Syntaxfehler in behaviour_remotecall.c korrigiert.
