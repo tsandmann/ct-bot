@@ -33,24 +33,12 @@
 #ifdef MAP_AVAILABLE
 
 /* Es lohnt nicht gigantische Karten auszugeben, wenn sie nichts enthalten, daher hier zwei Varianten, um die Karte auf die realen groesse zu reduzieren */
-#define SHRINK_MAP_ONLINE		/*!< Wenn gesetzt, wird bei jedem update der belegte Bereich der Karte protokolliert. Pro: schnelle ausgabe Contra permanenter aufwand  */
+#define SHRINK_MAP_ONLINE			/*!< Wenn gesetzt, wird bei jedem update der belegte Bereich der Karte protokolliert. Pro: schnelle ausgabe Contra permanenter aufwand  */
 //#define SHRINK_MAP_OFFLINE		/*!< Wenn gesetzt, wird erst beid er Ausgabe der belegte Bereich der Karte berechnet. Pro: kein permanenter aufwand Contra: ausgabe dauert lange */
 
-#ifdef MCU
-	#ifdef MMC_AVAILABLE
-		#define MAP_SIZE			12	/*!< Kantenlaenge der Karte in Metern. Zentrum ist der Startplatz des Bots. Achtung! in kombination mit Macroblocks sind nur ganzzahlige Vielfache der Macroblock kantenlänge erlaubt */
-		#define MAP_RESOLUTION 		128	/*!< Aufloesung der Karte in Punkte pro Meter */
-		#define MAP_SECTION_POINTS 	16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
-	#else
-		#define MAP_SIZE			4	/*! Kantenlaenge der Karte in Metern. Zentrum ist der Startplatz des Bots */
-		#define MAP_SECTION_POINTS 32	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
-		#define MAP_RESOLUTION 	(MAP_SECTION_POINTS/MAP_SIZE)	/*!< Aufloesung der Karte in Punkte pro Meter */
-	#endif
-#else
-	#define MAP_SIZE			12	/*!< Kantenlaenge der Karte in Metern. Zentrum ist der Startplatz des Bots. Achtung! in kombination mit Macroblocks sind nur ganzzahlige Vielfache der Macroblock kantenlänge erlaubt */
-	#define MAP_RESOLUTION 		128	/*!< Aufloesung der Karte in Punkte pro Meter */
-	#define MAP_SECTION_POINTS 	16	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
-#endif
+#define MAP_SIZE			12		/*!< Kantenlaenge der Karte in Metern. Zentrum ist der Startplatz des Bots. Achtung! in kombination mit Macroblocks sind nur ganzzahlige Vielfache der Macroblock kantenlänge erlaubt */
+#define MAP_RESOLUTION 		128		/*!< Aufloesung der Karte in Punkte pro Meter */
+#define MAP_SECTION_POINTS 	16		/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 
 /*!  Suchkreis (Botdurchmesser) in Mapfelder je nach Aufloesung umgerechnet*/
 #define MAP_RADIUS_FIELDS_GODEST	  (BOT_DIAMETER * MAP_RESOLUTION / 100)	/*!< Umkreisfelder fuer Pfadsuche */
@@ -308,7 +296,5 @@ void map_draw_test_scheme(void);
  */
 void map_info(void);
 
-#endif
-
-
+#endif	// MAP_AVAILABLE
 #endif /*MAP_H_*/

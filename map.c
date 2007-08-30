@@ -50,6 +50,7 @@
 #include <stdlib.h>
 
 #include "log.h"
+#include "timer.h"
 
 //#define DEBUG_MAP		// Schalter um recht viel Debug-Code anzumachen
 
@@ -101,8 +102,7 @@
 
 #define USE_MACROBLOCKS	// Soll die Karte linear oder nach Macroblocks sortiert sein?
 
-#define MACRO_BLOCK_LENGTH	512 // kantenlaenge eines Macroblocks in Punkten/Byte
-//#define MACRO_BLOCK_SIZE (MACRO_BLOCK_LENGTH * MACRO_BLOCK_LENGTH)
+#define MACRO_BLOCK_LENGTH	512L // kantenlaenge eines Macroblocks in Punkten/Byte
 #define MAP_LENGTH_IN_MACRO_BLOCKS ((MAP_SIZE*MAP_RESOLUTION)/MACRO_BLOCK_LENGTH)
 
 
@@ -127,7 +127,7 @@ typedef struct {
 uint32 map_start_block = 0; /*!< Block, bei dem die Karte auf der MMC-Karte beginnt. Derzeit nur bis 32MByte adressierbar*/
 
 #ifdef MMC_VM_AVAILABLE
-	map_section_t * map[2][1];	/*!< Array mit den Zeigern auf die Elemente */
+	map_section_t * map[2];		/*!< Array mit den Zeigern auf die Elemente */
 	uint32 map_current_block; 	/*!< Block, der aktuell im Puffer steht. Derzeit nur bis 32MByte adressierbar */
 	uint8* map_buffer;			/*!< dynamischer Puffer */
 #else
@@ -158,8 +158,6 @@ uint32 map_start_block = 0; /*!< Block, bei dem die Karte auf der MMC-Karte begi
  * @return 0 wenn alles ok ist
  */
 int8 map_init(void){
-
-
 	#ifndef MMC_VM_AVAILABLE
 		// Die Karte auf den Puffer biegen
 		map[0]=(map_section_t*)map_buffer;
@@ -170,13 +168,18 @@ int8 map_init(void){
 			map_start_block=0xFFFFFFFF;
 			if (mmc_get_init_state() != 0) return 1;
 			map_start_block= mini_fat_find_block("MAP",map_buffer);
+			#ifdef USE_MACROBLOCKS
+				// Makroblock-alignment auf ihre Groesse
+				map_start_block += 2*MACRO_BLOCK_LENGTH*MACRO_BLOCK_LENGTH/512 - 1;
+				map_start_block &= 0xFFFFFC00;
+			#endif	// USE_MACROBLOCKS
 				
 			if (map_start_block != 0xFFFFFFFF){
 				map_current_block_updated = False;	// kein Block geladen und daher auch nicht veraendert
 				map_current_block = map_start_block;
 				return 1;
 			}
-		#endif	
+		#endif	// MCU
 	#else
 		map_start_block = mmc_fopen("MAP")>>9;	// TODO: Mit Bytes arbeiten und Shiften sparen
 //		LOG_DEBUG("Startaddress of map: 0x%lx \n\r", map_start_block<<9);
@@ -239,22 +242,20 @@ static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
 	#else		
 		uint16 macroblock = x / MACRO_BLOCK_LENGTH + (y / MACRO_BLOCK_LENGTH)* MAP_LENGTH_IN_MACRO_BLOCKS; 
 
-		LOG_DEBUG("Macroblock= %d ",macroblock);
+		LOG_DEBUG("Macroblock= %u ",macroblock);
 		// Berechne den gesuchten Block
 		uint32 block; 
 
 		uint16 local_x = x % MACRO_BLOCK_LENGTH;	// wenn MACRO_BLOCK_LENGTH eine 2er Potenz ist kann man hier optimieren
 		uint16 local_y = y % MACRO_BLOCK_LENGTH;
 
-		LOG_DEBUG("\tlocal_x= %d, local_y= %d ",local_x,local_y);
+		LOG_DEBUG("\tlocal_x= %u, local_y= %u ",local_x,local_y);
 
 		block= local_x / MAP_SECTION_POINTS + (local_y/MAP_SECTION_POINTS)* (MACRO_BLOCK_LENGTH/MAP_SECTION_POINTS);
 		
 		block = block >>1;	// es passen immer 2 Sections in einen Block
 
 		block += macroblock * MACRO_BLOCK_LENGTH * (MACRO_BLOCK_LENGTH / 512);	// noch in den richtigen Macroblock springen
-
-		LOG_DEBUG("Zugriff auf Block= %d ",block);
 	#endif	
 	
 	// Auf der MMC beginnt die Karte nicht bei 0, sondern irgendwo, auf dem PC schadet es nix		
@@ -262,7 +263,7 @@ static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
 	
 	
 	#ifdef MMC_VM_AVAILABLE  // Speicherverwaltung	
-		// UNTESTEST
+		// UNTESTED
 		map_buffer = mmc_get_data(block<<9);
 		if (map_buffer != NULL){
 			map[0]=(map_section_t*)map_buffer;
@@ -285,14 +286,27 @@ static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
 		// Wurde der Block im RAM veraendert?
 		if (map_current_block_updated == True) {
 			// Dann erstmal sichern
-			LOG_DEBUG("sichere block %d ",map_current_block);
+			#ifdef DEBUG_MAP
+				LOG_DEBUG("writing block 0x%04x%04x", (uint16_t)(map_current_block>>16), (uint16_t)map_current_block);
+				uint16_t start_ticks = TIMER_GET_TICKCOUNT_16;
+			#endif
 			mmc_write_sector(map_current_block,map_buffer,0);
+			#ifdef DEBUG_MAP
+				uint16_t end_ticks = TIMER_GET_TICKCOUNT_16;
+				LOG_DEBUG("swapout took %u ms", (end_ticks-start_ticks)*176/1000);
+			#endif
 		}
-	
-		LOG_DEBUG("lade block %d\n",block);
-
+		
 		//Lade den neuen Block
-		mmc_read_sector(block,map_buffer);			
+		#ifdef DEBUG_MAP
+			LOG_DEBUG("reading block 0x%04x%04x", (uint16_t)(block>>16), (uint16_t)block);
+			uint16_t start_ticks = TIMER_GET_TICKCOUNT_16;
+		#endif
+		mmc_read_sector(block,map_buffer);
+		#ifdef DEBUG_MAP
+			uint16_t end_ticks = TIMER_GET_TICKCOUNT_16;
+			LOG_DEBUG("swapin took %u ms", (end_ticks-start_ticks)*176/1000);
+		#endif
 		// Statusvariablen anpassen
 		map_current_block=block;
 		map_current_block_updated = False;
@@ -640,7 +654,33 @@ void update_map_location(float x, float y){
 		
 		// Aktualisiere zuerst die vom Bot selbst belegte Flaeche
 		map_update_field_circle(x_map, y_map, BOT_DIAMETER/2*MAP_RESOLUTION/100, MAP_STEP_FREE_LOCATION);
-	
+
+		//#define WRITE_FIRST_SECTOR
+		#ifdef WRITE_FIRST_SECTOR 
+			if (map_current_block_updated == True) {
+				#ifdef DEBUG_MAP
+					LOG_DEBUG("writing block 0x%04x%04x", (uint16_t)(map_current_block>>16), (uint16_t)map_current_block);
+					uint16_t start_ticks = TIMER_GET_TICKCOUNT_16;
+				#endif
+				mmc_write_sector(map_current_block, map_buffer,0);
+				#ifdef DEBUG_MAP
+					uint16_t end_ticks = TIMER_GET_TICKCOUNT_16;
+					LOG_DEBUG("flush took %u ms", (end_ticks-start_ticks)*176/1000);
+				#endif
+				map_current_block_updated = False;
+			}
+			uint32_t dummy = map_current_block & 0xFFFFFC00;
+			#ifdef DEBUG_MAP
+				LOG_DEBUG("writing block 0x%04x%04x", (uint16_t)(dummy>>16), (uint16_t)dummy);
+				uint16_t start_ticks = TIMER_GET_TICKCOUNT_16;
+			#endif
+			mmc_read_sector(dummy, map_buffer);
+			mmc_write_sector(dummy, map_buffer, 1);
+			#ifdef DEBUG_MAP
+				uint16_t end_ticks = TIMER_GET_TICKCOUNT_16;
+				LOG_DEBUG("dummy took %u ms", (end_ticks - start_ticks)*176/1000);
+			#endif
+		#endif	// WRITE_FIRST_SECTOR
 	#endif //#ifdef OLD_VERSION
 }
 
@@ -1179,10 +1219,6 @@ void map_draw_test_scheme(void){
 			}		
 		}
 	#endif
-
-
-	
-		
 }
 
 #endif	// MAP_AVAILABLE
