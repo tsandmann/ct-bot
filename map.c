@@ -165,11 +165,9 @@ int8 map_init(void){
 		map[0]=(map_section_t*)map_buffer;
 		map[1]=(map_section_t*)(map_buffer+sizeof(map_section_t));		
 
-		map_current_block_updated = 0xFF;	// Die MMC-Karte ist erstmal nicht verfuegbar
-		map_start_block=0xFFFFFFFF;
-
-
 		#ifdef MCU
+			map_current_block_updated = 0xFF;	// Die MMC-Karte ist erstmal nicht verfuegbar
+			map_start_block=0xFFFFFFFF;
 			if (mmc_get_init_state() != 0) return 1;
 			map_start_block= mini_fat_find_block("MAP",map_buffer);
 				
