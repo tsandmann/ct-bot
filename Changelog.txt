@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-08-30 Benjamin Benz [bbe@heise.de]: Map-Code für sim und MCU vereinheitlicht. ==> wird auf pc langsamer, aber ähnlicher
+
 2007-08-29 Benjamin Benz [bbe@heise.de]: Map-Code weiter getunt, nun profitieren auch ocupied-Updtaes (circle) von den sections
 
 2007-08-29 Benjamin Benz [bbe@heise.de]: Bugfix #140 in map.c für MCU
