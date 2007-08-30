@@ -1170,8 +1170,8 @@ void update_map_sensor_hole(float x, float y, float h){
 		printf("\n");
 		#ifdef USE_MACROBLOCKS
 			printf("Die Karte verwendet Macroblocks\n");
-			printf("\t%d\t Länge eine Macroblocks in Punkten (MACRO_BLOCK_LENGTH)\n",MACRO_BLOCK_LENGTH);
-			printf("\t%d\t Anzahl der Macroblocks in einer Zeile(MAP_LENGTH_IN_MACRO_BLOCKS)\n",MAP_LENGTH_IN_MACRO_BLOCKS);
+			printf("\t%lu\t Länge eine Macroblocks in Punkten (MACRO_BLOCK_LENGTH)\n",MACRO_BLOCK_LENGTH);
+			printf("\t%lu\t Anzahl der Macroblocks in einer Zeile(MAP_LENGTH_IN_MACRO_BLOCKS)\n",MAP_LENGTH_IN_MACRO_BLOCKS);
 		#else
 			printf("Die Karte verwendet keine Macroblocks\n");
 		#endif
