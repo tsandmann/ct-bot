@@ -1066,6 +1066,8 @@ void update_map_sensor_hole(float x, float y, float h){
 	 * @param filename Quelldatei
 	 */
 	void read_map(char * filename){
+		map_init();
+		
 		printf("Lese Karte (%s) von MMC/SD (Bot-Format)\n",filename);
 		FILE *fp = fopen(filename, "rb");
 		
@@ -1084,6 +1086,7 @@ void update_map_sensor_hole(float x, float y, float h){
 			for (x=0; x< MAP_SECTIONS; x++){
 				ptr= (uint8*)map_get_section(x*MAP_SECTION_POINTS, y*MAP_SECTION_POINTS, True);
 				fread(ptr,MAP_SECTION_POINTS*MAP_SECTION_POINTS,1,fp);
+				map_current_block_updated=True;
 			}
 			
 		fclose(fp);
