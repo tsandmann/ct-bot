@@ -37,7 +37,15 @@
 	#include <string.h>
 #endif
 
+
 #ifdef MAP_AVAILABLE
+
+#ifndef MMC_AVAILABLE
+  #ifdef MCU
+  	#error Map geht auf dem MCU nicht ohne MMC
+  #endif
+#endif 
+ 
 #include <math.h>
 #include <stdlib.h>
 
@@ -123,35 +131,24 @@ uint32 map_start_block = 0; /*!< Block, bei dem die Karte auf der MMC-Karte begi
 	uint32 map_current_block; 	/*!< Block, der aktuell im Puffer steht. Derzeit nur bis 32MByte adressierbar */
 	uint8* map_buffer;			/*!< dynamischer Puffer */
 #else
-	#ifdef MCU
-		#ifdef MMC_AVAILABLE
-			// Wenn wir die MMC-Karte haben, passen immer 2 Sektionen in den SRAM
-			map_section_t * map[2];	/*!< Array mit den Zeigern auf die Elemente */
-			uint8 map_buffer[sizeof(map_section_t)*2]; /*!< statischer Puffer */
-			uint32 map_current_block; /*!< Block, der aktuell im Puffer steht. Derzeit nur bis 32MByte adressierbar*/
-			uint8 map_current_block_updated; /*!< markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde */
-		#else
-			// Ohne MMC-Karte nehmen wir nur 1 Sektionen in den SRAM und das wars dann
-			map_section_t * map[1];	/*!< Array mit den Zeigern auf die Elemente */
-		#endif	// MMC_AVAILABLE
-	#else
-		uint8 map_buffer[sizeof(map_section_t)*2]; /*!< statischer Puffer */
-		map_section_t * map[2];	/*!< Array mit den Zeigern auf die Elemente */
-		uint8 map_buffer[sizeof(map_section_t)*2]; /*!< statischer Puffer */
-		uint32 map_current_block=0; /*!< Block, der aktuell im Puffer steht. Derzeit nur bis 32MByte adressierbar*/
-		uint8 map_current_block_updated = False; /*!< markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde */
-		
-//		map_section_t * map[MAP_SECTIONS][MAP_SECTIONS];	/*!< Array mit den Zeigern auf die Elemente */
+	// Wenn wir die MMC-Karte haben, passen immer 2 Sektionen in den SRAM
+	uint8 map_buffer[sizeof(map_section_t)*2]; /*!< statischer Puffer */
+	map_section_t * map[2];	/*!< Array mit den Zeigern auf die Elemente */
+	uint8 map_buffer[sizeof(map_section_t)*2]; /*!< statischer Puffer */
+	uint32 map_current_block=0; /*!< Block, der aktuell im Puffer steht. Derzeit nur bis 32MByte adressierbar*/
+	uint8 map_current_block_updated = False; /*!< markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde */
 
+	#ifdef PC
 		typedef struct {
 			map_section_t	sections[2];
 		} mmc_container_t;
 
 		mmc_container_t map_storage[MAP_SECTIONS * MAP_SECTIONS/2];	/*!< Statischer Speicherplatz für die Karte */
-	#endif	// MCU
+	#endif	// PC
 #endif	// MMC_VM_AVAILABLE
 
 #ifdef PC
+  // MMC-Zugriffe emuliert der PC
   #define mmc_read_sector(block, buffer) memcpy(&buffer,&(map_storage[block]),sizeof(mmc_container_t) );
   #define mmc_write_sector(block, buffer,dummy) memcpy(&(map_storage[block]),&buffer,sizeof(mmc_container_t) );
 #endif
@@ -168,10 +165,11 @@ int8 map_init(void){
 		map[0]=(map_section_t*)map_buffer;
 		map[1]=(map_section_t*)(map_buffer+sizeof(map_section_t));		
 
-		#ifdef MMC_AVAILABLE 
-			map_current_block_updated = 0xFF;	// Die MMC-Karte ist erstmal nicht verfuegbar
-			map_start_block=0xFFFFFFFF;
+		map_current_block_updated = 0xFF;	// Die MMC-Karte ist erstmal nicht verfuegbar
+		map_start_block=0xFFFFFFFF;
 
+
+		#ifdef MCU
 			if (mmc_get_init_state() != 0) return 1;
 			map_start_block= mini_fat_find_block("MAP",map_buffer);
 				
@@ -179,8 +177,8 @@ int8 map_init(void){
 				map_current_block_updated = False;	// kein Block geladen und daher auch nicht veraendert
 				map_current_block = map_start_block;
 				return 1;
-			}	
-		#endif
+			}
+		#endif	
 	#else
 		map_start_block = mmc_fopen("MAP")>>9;	// TODO: Mit Bytes arbeiten und Shiften sparen
 //		LOG_DEBUG("Startaddress of map: 0x%lx \n\r", map_start_block<<9);
