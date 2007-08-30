@@ -1079,17 +1079,20 @@ void update_map_sensor_hole(float x, float y, float h){
 			return;
 		}
 		
-//		uint16 x,y;	
-//		uint8 * ptr;
+		#ifdef USE_MACROBLOCKS
+			// Karte liegt auf der MMC genau wie im PC-RAM
+			fread(&map_storage,	MAP_SECTION_POINTS*MAP_SECTION_POINTS,MAP_SECTIONS*MAP_SECTIONS,fp);
+		#else
+			uint16 x,y;	
+			uint8 * ptr;
 
-		
-		fread(&map_storage,	MAP_SECTION_POINTS*MAP_SECTION_POINTS,MAP_SECTIONS*MAP_SECTIONS,fp);
-//		for (y=0; y< MAP_SECTIONS; y++)
-//			for (x=0; x< MAP_SECTIONS; x++){
-//				ptr= (uint8*)map_get_section(x*MAP_SECTION_POINTS, y*MAP_SECTION_POINTS, True);
-//				fread(ptr,MAP_SECTION_POINTS*MAP_SECTION_POINTS,1,fp);
-//				map_current_block_updated=True;
-//			}
+			for (y=0; y< MAP_SECTIONS; y++)
+				for (x=0; x< MAP_SECTIONS; x++){
+					ptr= (uint8*)map_get_section(x*MAP_SECTION_POINTS, y*MAP_SECTION_POINTS, True);
+					fread(ptr,MAP_SECTION_POINTS*MAP_SECTION_POINTS,1,fp);
+					map_current_block_updated=True;
+				}
+		#endif
 			
 		fclose(fp);
 		
