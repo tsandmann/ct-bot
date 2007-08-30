@@ -41,8 +41,14 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "log.h"
 
 //#define DEBUG_MAP		// Schalter um recht viel Debug-Code anzumachen
+
+#ifndef DEBUG_MAP
+	#undef LOG_DEBUG
+	#define LOG_DEBUG(a, ...) {}
+#endif
 
 /*
  * Eine Karte ist wie folgt organisiert:
@@ -177,7 +183,7 @@ int8 map_init(void){
 		#endif
 	#else
 		map_start_block = mmc_fopen("MAP")>>9;	// TODO: Mit Bytes arbeiten und Shiften sparen
-//		printf("Startaddress of map: 0x%lx \n\r", map_start_block<<9);
+//		LOG_DEBUG("Startaddress of map: 0x%lx \n\r", map_start_block<<9);
 		if (map_start_block == 0) return 1;
 		map_buffer = mmc_get_data(map_start_block<<9);
 		if (map_buffer == NULL) return 1;
@@ -237,16 +243,14 @@ static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
 	#else		
 		uint16 macroblock = x / MACRO_BLOCK_LENGTH + (y / MACRO_BLOCK_LENGTH)* MAP_LENGTH_IN_MACRO_BLOCKS; 
 
-		#ifdef DEBUG_MAP		
-			printf("Macroblock= %d ",macroblock);
-		#endif	
+		LOG_DEBUG("Macroblock= %d ",macroblock);
 		// Berechne den gesuchten Block
 		uint32 block; 
 
 		uint16 local_x = x % MACRO_BLOCK_LENGTH;	// wenn MACRO_BLOCK_LENGTH eine 2er Potenz ist kann man hier optimieren
 		uint16 local_y = y % MACRO_BLOCK_LENGTH;
 
-		printf("\tlocal_x= %d, local_y= %d ",local_x,local_y);
+		LOG_DEBUG("\tlocal_x= %d, local_y= %d ",local_x,local_y);
 
 		block= local_x / MAP_SECTION_POINTS + (local_y/MAP_SECTION_POINTS)* (MACRO_BLOCK_LENGTH/MAP_SECTION_POINTS);
 		
@@ -254,9 +258,7 @@ static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
 
 		block += macroblock * MACRO_BLOCK_LENGTH * (MACRO_BLOCK_LENGTH / 512);	// noch in den richtigen Macroblock springen
 
-		#ifdef DEBUG_MAP		
-			printf("Zugriff auf Block= %d ",block);
-		#endif
+		LOG_DEBUG("Zugriff auf Block= %d ",block);
 	#endif	
 	
 	// Auf der MMC beginnt die Karte nicht bei 0, sondern irgendwo, auf dem PC schadet es nix		
@@ -277,29 +279,22 @@ static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
 
 		// Ist der Block schon geladen 
 		if (map_current_block == block){
-			#ifdef DEBUG_MAP		
-				printf("ist noch im Puffer\n");
-			#endif
+			LOG_DEBUG("ist noch im Puffer\n");
 			return map[index];	
 		}
 			
-		#ifdef DEBUG_MAP		
-			printf("ist nicht im Puffer ");
-		#endif
+		LOG_DEBUG("ist nicht im Puffer ");
 		// Block ist also nicht im Puffer
 		
 		// Wurde der Block im RAM veraendert?
 		if (map_current_block_updated == True) {
 			// Dann erstmal sichern
-			#ifdef DEBUG_MAP		
-				printf("sichere block %d ",map_current_block);
-			#endif
+			LOG_DEBUG("sichere block %d ",map_current_block);
 			mmc_write_sector(map_current_block,map_buffer,0);
 		}
 	
-		#ifdef DEBUG_MAP		
-			printf("lade block %d\n",block);
-		#endif
+		LOG_DEBUG("lade block %d\n",block);
+
 		//Lade den neuen Block
 		mmc_read_sector(block,map_buffer);			
 		// Statusvariablen anpassen
@@ -471,14 +466,14 @@ void map_update_field_circle(uint16 x, uint16 y, uint16 radius, int8 value) {
 	#else
 		const int16 square = radius*radius;
 		
-	//	printf("Fange an. Zentrum= %d/%d\n",x_map,y_map);
+	//	LOG_DEBUG("Fange an. Zentrum= %d/%d\n",x_map,y_map);
 	//	map_set_field(x_map,y_map,-120);
 		
 		int16 sec_x_max = ((x + radius) / MAP_SECTION_POINTS);
 		int16 sec_x_min = ((x - radius) / MAP_SECTION_POINTS);
 		int16 sec_y_max = ((y + radius) / MAP_SECTION_POINTS);
 		int16 sec_y_min = ((y - radius) / MAP_SECTION_POINTS);
-	//	printf("Betroffene Sektionen X: %d-%d, Y:%d-%d\n",sec_x_min,sec_x_max,sec_y_min,sec_y_max);
+	//	LOG_DEBUG("Betroffene Sektionen X: %d-%d, Y:%d-%d\n",sec_x_min,sec_x_max,sec_y_min,sec_y_max);
 				
 		int16 sec_x, sec_y, X, Y,dX,dY;
 		int16 starty,startx, stopx, stopy;
@@ -662,7 +657,7 @@ void update_map_location(float x, float y){
  * @param distR Sensorwert rechts
  */
 void update_map(float x, float y, float head, int16 distL, int16 distR){
-//	printf("update_map: x=%f, y=%f, head=%f, distL=%d, distR=%d\n",x,y,head,distL,distR);
+//	LOG_DEBUG("update_map: x=%f, y=%f, head=%f, distL=%d, distR=%d\n",x,y,head,distL,distR);
 	
     float h= head * M_PI /180;
 	        
