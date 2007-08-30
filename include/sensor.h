@@ -124,6 +124,16 @@ void sensor_update(void);
  */
 void sensor_dist_lookup(int16_t *const p_sens, uint8_t *const p_toggle, const distSens_t *ptr, int16_t volt_16);
 
+/*!
+ * Die Funktion gibt aus, ob sich innerhalb einer gewissen Entfernung ein Objekt-Hindernis befindet.
+ * @param distance	Entfernung in mm, bis zu welcher ein Objekt gesichtet wird. 
+ * @return 			Gibt False (0) zurueck, wenn kein Objekt innerhalb von distance gesichtet wird. Ansonsten die Differenz 
+ * zwischen dem linken und rechten Sensor. Negative Werte besagen, dass das Objekt naeher am linken, positive, dass 
+ * es naeher am rechten Sensor ist. Sollten beide Sensoren den gleichen Wert haben, gibt die Funktion 1 zurueck, um
+ * von False unterscheiden zu koennen. 
+ */
+int16 is_obstacle_ahead(int16 distance);
+
 #ifdef DISPLAY_AVAILABLE
 	/*!
 	 * @brief	Displayhandler fuer Sensoranzeige
@@ -134,5 +144,5 @@ void sensor_dist_lookup(int16_t *const p_sens, uint8_t *const p_toggle, const di
 	 * @brief	Displayhandler fuer Odometrieanzeige
 	 */	
 	void odometric_display(void);
-#endif
-#endif /*SENSOR_H_*/
+#endif	// DISPLAY_AVAILABLE
+#endif	/*SENSOR_H_*/

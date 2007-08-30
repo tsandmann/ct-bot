@@ -17,12 +17,12 @@
  * 
  */
 
-/*! @file 	behaviour_olympic.c
- * @brief 	Bot sucht saeulen und faehrt dann slalom
- * 
+/*! 
+ * @file 	behaviour_olympic.c
+ * @brief 	Bot sucht Saeulen und faehrt dann Slalom
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
-*/
+ */
 
 #include "bot-logic/bot-logik.h"
 
@@ -60,7 +60,7 @@
 #define SLALOM_ORIENTATION_RIGHT	1
 
 /* Parameter fuer das bot_explore_behaviour() */
-int8 (*exploration_check_function)(void);	/*!< Die Funktion, mit der das bot_explore_behaviour() feststellt, ob es etwas gefunden hat.
+static int8 (*exploration_check_function)(void);	/*!< Die Funktion, mit der das bot_explore_behaviour() feststellt, ob es etwas gefunden hat.
 											 * Die Funktion muss True (1) zurueck geben, wenn dem so ist, sonst False (0).
 											 * Beispiele fuer eine solche Funktion sind check_for_light, is_good_pillar_ahead etc.*/
 
@@ -68,8 +68,9 @@ int8 (*exploration_check_function)(void);	/*!< Die Funktion, mit der das bot_exp
 
 
 /*!
- * Das Verhalten dreht den Bot so, dass er auf eine Lichtquelle zufaehrt. */
-void bot_goto_light(void){
+ * Das Verhalten dreht den Bot so, dass er auf eine Lichtquelle zufaehrt. 
+ */
+static void bot_goto_light(void){
 	int16 speed, curve = (sensLDRL - sensLDRR)/1.5;
 
 		if(curve < -127) curve = -127;
@@ -90,7 +91,8 @@ void bot_goto_light(void){
 
 /*!
  * Gibt aus, ob der Bot Licht sehen kann.
- * @return True, wenn der Bot Licht sieht, sonst False. */
+ * @return True, wenn der Bot Licht sieht, sonst False. 
+ */
 int8 check_for_light(void){
 	// Im Simulator kann man den Bot gut auf den kleinsten Lichtschein
 	// reagieren lassen, in der Realitaet gibt es immer Streulicht, so dass
@@ -103,22 +105,11 @@ int8 check_for_light(void){
 	else return True;	
 }
 
-/*!
- * Die Funktion gibt aus, ob sich innerhalb einer gewissen Entfernung ein Objekt-Hindernis befindet.
- * @param distance Entfernung in mm, bis zu welcher ein Objekt gesichtet wird. 
- * @return Gibt False (0) zurueck, wenn kein Objekt innerhalb von distance gesichtet wird. Ansonsten die Differenz 
- * zwischen dem linken und rechten Sensor. Negative Werte besagen, dass das Objekt naeher am linken, positive, dass 
- * es naeher am rechten Sensor ist. Sollten beide Sensoren den gleichen Wert haben, gibt die Funktion 1 zurueck, um
- * von False unterscheiden zu koennen. */
-int16 is_obstacle_ahead(int16 distance){
-	if(sensDistL > distance && sensDistR > distance) return False;
-	if(sensDistL - sensDistR == 0) return 1;
-	else return (sensDistL - sensDistR);
-}
 
 /*!
  * Gibt aus, ob der Bot eine fuer sein Slalomverhalten geeignete Saeule vor sich hat. 
- * @return True, wenn er eine solche Saeule vor sich hat, sonst False.*/
+ * @return True, wenn er eine solche Saeule vor sich hat, sonst False.
+ */
 int8 is_good_pillar_ahead(void){
 	if(is_obstacle_ahead(COL_NEAR) != False && sensLDRL < 600 && sensLDRR < 600) return True;
 	else return False;	
@@ -157,7 +148,7 @@ int8 bot_avoid_harm(void){
  * 
  * Da das Verhalten jeweils nach 10ms neu aufgerufen wird, muss der Bot sich
  * 'merken', in welchem Zustand er sich gerade befindet.
- * */
+ */
 void bot_explore_behaviour(Behaviour_t *data){
 	static int8 curve = 0,state = EXPLORATION_STATE_GOTO_WALL, running_curve = False;
 	
@@ -279,16 +270,17 @@ void bot_explore_behaviour(Behaviour_t *data){
 }
 
 /*!
- * Aktiviert bot_explore_behaviour. */
-void bot_explore(Behaviour_t *caller, int8 (*check)(void)){
-	exploration_check_function = check;
+ * Aktiviert bot_explore_behaviour. 
+ */
+static void bot_explore(Behaviour_t *caller, int8 (*check)(void)){
 	switch_to_behaviour(caller,bot_explore_behaviour,NOOVERRIDE);
+	exploration_check_function = check;
 }
 
 /*!
  * Das Verhalten laesst den Bot einen Slalom fahren.
  * @see bot_do_slalom()
- * */
+ */
 void bot_do_slalom_behaviour(Behaviour_t *data){
 	static int8 state = SLALOM_STATE_CHECK_PILLAR;
 	static int8 orientation = SLALOM_ORIENTATION_RIGHT;
@@ -399,7 +391,8 @@ void bot_do_slalom(Behaviour_t *caller){
 
 /*!
  * Das Verhalten setzt sich aus 3 Teilverhalten zusammen: 
- * Nach Licht suchen, auf das Licht zufahren, im Licht Slalom fahren. */
+ * Nach Licht suchen, auf das Licht zufahren, im Licht Slalom fahren. 
+ */
 void bot_olympic_behaviour(Behaviour_t *data){
 	if(check_for_light()){
 		/* Sobald der Bot auf ein Objekt-Hinderniss stoesst, versucht er, Slalom zu fahren.
@@ -425,4 +418,4 @@ void bot_olympic_init(int8 prio_main,int8 prio_helper, int8 active){
 	insert_behaviour_to_list(&behaviour, new_behaviour(prio_main, bot_olympic_behaviour, active));
 }
 
-#endif
+#endif	// BEHAVIOUR_OLYMPIC_AVAILABLE

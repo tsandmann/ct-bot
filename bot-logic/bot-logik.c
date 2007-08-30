@@ -71,7 +71,7 @@ Behaviour_t *behaviour = NULL;
 #endif
 
 
-#define MAX_PROCS 3					/*!< Maximale Anzahl der registrierbaren Funktionen */
+#define MAX_PROCS 6					/*!< Maximale Anzahl der registrierbaren Funktionen */
 static int8_t count_arr_emerg = 0;	/*!< Anzahl der zurzeit registrierten Notfallfunktionen */
 /*! hier liegen die Zeiger auf die auszufuehrenden Abgrund Notfall-Funktionen */
 static void (* emerg_functions[MAX_PROCS])(void) = {NULL};
@@ -195,10 +195,17 @@ void bot_behave_init(void){
  	    // Registrierung zur Behandlung des Notfallverhaltens zum Rueckwaertsfahren
  	    register_emergency_proc(&border_mapgo_handler);
     #endif
-
+    
+    #ifdef BEHAVIOUR_FOLLOW_WALL_AVAILABLE
+ 	    // Explorer-Verhalten um einer Wand zu folgen
+ 	    insert_behaviour_to_list(&behaviour, new_behaviour(48, bot_follow_wall_behaviour, INACTIVE));
+ 	    // Registrierung zur Behandlung des Notfallverhaltens zum R ueckwaertsfahren
+ 	    register_emergency_proc(&border_follow_wall_handler);
+	#endif
+	
 	#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
-		insert_behaviour_to_list(&behaviour, new_behaviour(44, bot_catch_pillar_behaviour,INACTIVE));
-                insert_behaviour_to_list(&behaviour, new_behaviour(43, bot_unload_pillar_behaviour,INACTIVE));
+ 	    insert_behaviour_to_list(&behaviour, new_behaviour(44, bot_catch_pillar_behaviour,INACTIVE));
+		insert_behaviour_to_list(&behaviour, new_behaviour(43, bot_unload_pillar_behaviour,INACTIVE));
 	#endif
 
 	

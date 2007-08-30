@@ -55,7 +55,7 @@ SRCPC = pc/bot-2-sim.c pc/delay_pc.c pc/display_pc.c pc/eeprom-emu_pc.c pc/ir-rc
 SRCCOM = command.c $(TARGET).c log.c map.c mmc-vm.c motor.c sensor.c timer.c 
 SRCUI = ui/gui.c ui/misc.c ui/rc5.c
 
-SRCLOGIC = bot-logic/behaviour_avoid_border.c bot-logic/behaviour_avoid_col.c bot-logic/behaviour_calibrate_pid.c bot-logic/behaviour_calibrate_sharps.c bot-logic/behaviour_catch_pillar.c bot-logic/behaviour_delay.c bot-logic/behaviour_drive_distance.c bot-logic/behaviour_drive_square.c bot-logic/behaviour_follow_line.c bot-logic/behaviour_follow_object.c bot-logic/behaviour_goto.c bot-logic/behaviour_gotoxy.c bot-logic/behaviour_hang_on.c bot-logic/behaviour_map_go_destination.c bot-logic/behaviour_measure_distance.c bot-logic/behaviour_olympic.c bot-logic/behaviour_remotecall.c bot-logic/behaviour_scan.c bot-logic/behaviour_servo.c bot-logic/behaviour_simple.c bot-logic/behaviour_solve_maze.c bot-logic/behaviour_turn.c bot-logic/bot-logik.c  
+SRCLOGIC = bot-logic/behaviour_avoid_border.c bot-logic/behaviour_avoid_col.c bot-logic/behaviour_calibrate_pid.c bot-logic/behaviour_calibrate_sharps.c bot-logic/behaviour_catch_pillar.c bot-logic/behaviour_delay.c bot-logic/behaviour_drive_distance.c bot-logic/behaviour_drive_square.c bot-logic/behaviour_follow_line.c bot-logic/behaviour_follow_object.c bot-logic/behaviour_follow_wall.c bot-logic/behaviour_goto.c bot-logic/behaviour_gotoxy.c bot-logic/behaviour_hang_on.c bot-logic/behaviour_map_go_destination.c bot-logic/behaviour_measure_distance.c bot-logic/behaviour_olympic.c bot-logic/behaviour_remotecall.c bot-logic/behaviour_scan.c bot-logic/behaviour_servo.c bot-logic/behaviour_simple.c bot-logic/behaviour_solve_maze.c bot-logic/behaviour_turn.c bot-logic/bot-logik.c  
 
    
 

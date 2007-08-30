@@ -36,6 +36,8 @@
 
 //#define BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE	/*!< verfolge ein (bewegliches) Objekt */
 
+//#define BEHAVIOUR_FOLLOW_WALL_AVAILABLE /*!< Follow Wall Explorer Verhalten */
+
 #define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-kommandos entgegen?*/
 
 //#define BEHAVIOUR_CALIBRATE_PID_AVAILABLE	/*!< Kalibrierungsverhalten fuer Motorregelung vorhanden? */
@@ -148,6 +150,8 @@
 #include "bot-logic/behaviour_follow_object.h"
 
 #include "bot-logic/remote_calls.h"
+
+#include "bot-logic/behaviour_follow_wall.h"
 
 #include "bot-logic/behaviour_calibrate_pid.h"
 #include "bot-logic/behaviour_calibrate_sharps.h"

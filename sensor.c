@@ -435,6 +435,22 @@ void sensor_update(void){
 	}
 }
 
+/*!
+ * Die Funktion gibt aus, ob sich innerhalb einer gewissen Entfernung ein Objekt-Hindernis befindet.
+ * @param distance	Entfernung in mm, bis zu welcher ein Objekt gesichtet wird. 
+ * @return 			Gibt False (0) zurueck, wenn kein Objekt innerhalb von distance gesichtet wird. Ansonsten die Differenz 
+ * zwischen dem linken und rechten Sensor. Negative Werte besagen, dass das Objekt naeher am linken, positive, dass 
+ * es naeher am rechten Sensor ist. Sollten beide Sensoren den gleichen Wert haben, gibt die Funktion 1 zurueck, um
+ * von False unterscheiden zu koennen. 
+ */
+int16 is_obstacle_ahead(int16 distance) {
+	if (sensDistL > distance && sensDistR > distance) 
+		return False;
+	if (sensDistL - sensDistR == 0) 
+		return 1;
+	return sensDistL - sensDistR;
+}
+
 #ifdef SENSOR_DISPLAY_AVAILABLE
 	/*!
 	 * @brief	Displayhandler fuer Sensoranzeige
