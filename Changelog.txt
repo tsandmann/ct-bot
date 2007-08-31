@@ -1,10 +1,12 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-08-31 Timo Sandmann [mail@timosandmann.de]: Mini-Fat Bugfix, Display-Screen fuer Map und Funktion zum Loeschen einer Map hinzugefuegt
+
 2007-08-31 Timo Sandmann [mail@timosandmann.de]: Mini-Fat verbessert (u.a. Display-Ausgaben), Map aufgeraeumt
 
 2007-08-30 Frank Menzel  [Menzelfr@gmx.net]: Explorer-Verhalten bot_follow_wall_behaviour hinzugefuegt
 
-2007-08-30 Benjamin Benz [bbe@heise.de]: Map-Code für sim und MCU vereinheitlicht. ==> wird auf pc langsamer, aber ähnlicher
+2007-08-30 Benjamin Benz [bbe@heise.de]: Map-Code für sim und MCU vereinheitlicht. ==> wird auf pc langsamer, aber aehnlicher
 
 2007-08-29 Benjamin Benz [bbe@heise.de]: Map-Code weiter getunt, nun profitieren auch ocupied-Updtaes (circle) von den sections
 
@@ -14,7 +16,7 @@ CHANGELOG fuer c't-Bot
 
 2007-08-21 Frank Menzel  [Menzelfr@gmx.net]: Entladeverhalten bot_unload_pillar_behaviour und Aenderungen catch_pillar
 
-2007-08-16 Benjamin Benz [bbe@heise.de]: neue Kartenorganisation fertiggestellt ==> kann noch per Schalter deaktiviert werden. Testmuster für Karte eingeführt
+2007-08-16 Benjamin Benz [bbe@heise.de]: neue Kartenorganisation fertiggestellt ==> kann noch per Schalter deaktiviert werden. Testmuster für Karte eingefuehrt
 
 2007-08-16 Timo Sandmann [mail@timosandmann.de]: Hinweise zur Abgrund- und Liniensensorkalibrierung in Documentation/sensor.html ergaenzt 
 
@@ -22,19 +24,19 @@ CHANGELOG fuer c't-Bot
 
 2007-08-16 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer -d Option (Loeschen von MiniFAT-Dateien @PC) 
 
-2007-08-09 Benjamin Benz [bbe@heise.de]: neue Kartenorganisation für MMC eingeführt
+2007-08-09 Benjamin Benz [bbe@heise.de]: neue Kartenorganisation für MMC eingefuehrt
 
 2007-08-07 Achim Pankalla [achim.pankalla@gmx.de]: Kalibrieroutine fuer pid in rc5.c eingebunden
 
 2007-08-07 Timo Sandmann [mail@timosandmann.de]: Warning in tcp.c unter Win32 nach einem Hinweis von Achim Pankalla beseitigt
 
-2007-08-07 Benjamin Benz [bbe@heise.de]: Map aktualisiert die Grundfläche des Bots nun Sectionweise (==> #129), weitere Performanceprobleme behoben 
+2007-08-07 Benjamin Benz [bbe@heise.de]: Map aktualisiert die Grundflaeche des Bots nun Sectionweise (==> #129), weitere Performanceprobleme behoben 
 
 2007-08-07 Timo Sandmann [mail@timosandmann.de]: schwerwiegenden Bug in Speedcontrol behoben
 
 2007-08-07 Timo Sandmann [mail@timosandmann.de]: Kleinere Bugfixes fuer delay in mouse.c, bot_scan_onthefly_behaviour und motor.c
 
-2007-08-01 Benjamin Benz [bbe@heise.de]: man kann nun wählen, welche Sensoren bot_scan_onthefly_behaviour auswertet
+2007-08-01 Benjamin Benz [bbe@heise.de]: man kann nun waehlen, welche Sensoren bot_scan_onthefly_behaviour auswertet
 
 2007-08-03 Timo Sandmann [mail@timosandmann.de]: Einfaches Objektverfolgungsverhalten hinzugefuegt (bot_follow_object_behaviour), NOPs im Maus-Code auf delay umgestellt
 
@@ -46,7 +48,7 @@ CHANGELOG fuer c't-Bot
 
 2007-08-01 Timo Sandmann [mail@timosandmann.de]: MMC/SD-Karten lassen sich alternativ auch im Hardware-SPI-Modus ansprechen (ist schneller und spart Platz im Flash, linker Radencoder muss dazu aber an anderem Pin angeschlossen werden)
 
-2007-08-01 Benjamin Benz [bbe@heise.de]: Warnung eingefügt, wenn MAP_AVAILABLE aus ist und ct-Bot mit -M aufgerufen wird
+2007-08-01 Benjamin Benz [bbe@heise.de]: Warnung eingefuegt, wenn MAP_AVAILABLE aus ist und ct-Bot mit -M aufgerufen wird
 
 2007-08-01 Timo Sandmann [mail@timosandmann.de]: UART laesst sich nun auch mit 115200 Baud benutzen (umschaltbar in include/uart.h)
 

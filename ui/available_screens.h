@@ -43,6 +43,7 @@
 //#define RESET_INFO_DISPLAY_AVAILABLE	/*!< Zeigt Informationen ueber Resets an */
 #define RAM_DISPLAY_AVAILABLE			/*!< Ausgabe des freien RAMs */
 #define DISPLAY_MAP_GO_DESTINATION      /*!< Steuerung Map-Verhalten auf diesem Screen */
+#define DISPLAY_MAP_AVAILABLE			/*!< Zeigt Map-Display an */
 
 #ifndef SPEED_CONTROL_AVAILABLE
 	#undef DISPLAY_REGELUNG_AVAILABLE
@@ -60,6 +61,9 @@
 		#endif
 	#endif	// PC
 #endif	// MMC_AVAILABLE
+#ifndef MAP_AVAILABLE
+	#undef DISPLAY_MAP_AVAILABLE
+#endif
 
 
 #endif	// DISPLAY_AVAILABLE

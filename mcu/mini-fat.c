@@ -38,6 +38,7 @@ uint32_t EEPROM eefat[10] = {0};	/*!< EEPROM-Cache fuer FAT-Eintraege */
 #include "mmc.h"
 #include "display.h"
 #include "ui/available_screens.h"
+#include "gui.h"
 #include "mini-fat.h"
 
 #ifdef DISPLAY_MINIFAT_INFO
@@ -194,19 +195,33 @@ uint32_t mini_fat_get_filesize(uint32_t file_start, uint8_t * buffer) {
  */
 void mini_fat_clear_file(uint32_t file_start, uint8_t * buffer) {
 #ifdef DISPLAY_MINIFAT_INFO
+	/* Zum Mini-FAT-Screen springen */
+	uint8_t i;
+	for (i=0; i<sizeof(screen_functions)/sizeof(screen_functions[0]); i++) {
+		if (screen_functions[i] == mini_fat_display) break;
+	}
+	display_screen = i;
+	display_clear();
+	mini_fat_display();
 	display_cursor(2,1);
 	display_printf("Start:");
 	display_cursor(2,7);
 	display_block(file_start);
 #endif	// DISPLAY_MINIFAT_INFO
 	uint32_t length = mini_fat_get_filesize(file_start, buffer) >> 9;
+#ifdef DISPLAY_MINIFAT_INFO
+	display_cursor(3,1);
+	display_printf("End:");
+	display_cursor(3,5);
+	display_block(file_start+length-1);
+#endif	// DISPLAY_MINIFAT_INFO
 	memset(buffer, 0, 512);	// Puffer leeren
 	/* Alle Bloecke der Datei mit dem 0-Puffer ueberschreiben */
 	uint32_t addr;
-	for (addr=file_start; addr<file_start+length; addr+=512) {
+	for (addr=file_start; addr<file_start+length; addr++) {
 		if (mmc_write_sector(addr, buffer, 0) != 0) return;
 #ifdef DISPLAY_MINIFAT_INFO
-		display_cursor(3,1);
+		display_cursor(4,1);
 		display_block(addr);
 #endif	// DISPLAY_MINIFAT_INFO
 	}

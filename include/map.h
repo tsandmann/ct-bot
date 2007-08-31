@@ -288,15 +288,13 @@ void map_to_pgm(char * filename);
 #define map_get_max_x() map_to_world(map_max_x)		/*!< Maximum in X-Richtung */
 #define map_get_max_y() map_to_world(map_max_y)		/*!< Maximum in Y-Richtung */
 
-/*!
- * zeichnet ein Testmuster in die Karte
- */
-void map_draw_test_scheme(void);
 
+#ifdef DISPLAY_MAP_AVAILABLE
 /*!
- * Zeigt ein Paar Infos über dioe Karte an
+ * Handler fuer Map-Display
  */
-void map_info(void);
+void map_display(void);
+#endif	// DISPLAY_MAP_AVAILABLE
 
 #endif	// MAP_AVAILABLE
 #endif /*MAP_H_*/

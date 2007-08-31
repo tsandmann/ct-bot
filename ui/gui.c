@@ -37,6 +37,7 @@
 #include "gui.h"
 #include "led.h"
 #include "mini-fat.h"
+#include "map.h"
 #include <stdlib.h>
 
 #ifdef DISPLAY_AVAILABLE
@@ -125,6 +126,9 @@ void gui_init(void){
 	#endif 
 	#ifdef RAM_DISPLAY_AVAILABLE
 		register_screen(&ram_display);
+	#endif
+	#ifdef DISPLAY_MAP_AVAILABLE
+		register_screen(&map_display);
 	#endif
 	#ifdef DISPLAY_MAP_GO_DESTINATION
 		register_screen(&mapgo_display);

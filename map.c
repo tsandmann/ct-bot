@@ -32,6 +32,10 @@
 #include "mmc.h"
 #include "mini-fat.h"
 #include "mmc-vm.h"
+#include "ui/available_screens.h"
+#include "rc5-codes.h"
+#include "sensor.h"
+#include "display.h"
 
 #ifdef PC
 	#include <string.h>
@@ -54,6 +58,15 @@
 
 //#define DEBUG_MAP		// Schalter um recht viel Debug-Code anzumachen
 
+#define MAP_INFO_AVAILABLE
+#ifdef MCU
+	// Soll auch der echte Bot Infos ausgeben, kommentiert man die folgende Zeile aus
+	#undef MAP_INFO_AVAILABLE	// spart Flash
+#endif
+
+#ifndef LOG_AVAILABLE
+	#undef DEBUG_MAP
+#endif
 #ifndef DEBUG_MAP
 	#undef LOG_DEBUG
 	#define LOG_DEBUG(a, ...) {}
@@ -134,7 +147,6 @@ uint32 map_start_block = 0; /*!< Block, bei dem die Karte auf der MMC-Karte begi
 	// Wenn wir die MMC-Karte haben, passen immer 2 Sektionen in den SRAM
 	uint8 map_buffer[sizeof(map_section_t)*2]; /*!< statischer Puffer */
 	map_section_t * map[2];	/*!< Array mit den Zeigern auf die Elemente */
-	uint8 map_buffer[sizeof(map_section_t)*2]; /*!< statischer Puffer */
 	uint32 map_current_block=0; /*!< Block, der aktuell im Puffer steht. Derzeit nur bis 32MByte adressierbar*/
 	uint8 map_current_block_updated = False; /*!< markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde */
 
@@ -188,13 +200,13 @@ int8 map_init(void){
 	#endif	// MMC_VM_AVAILABLE	
 		
 		
-	#ifdef DEBUG_MAP
-		#ifdef PC		
-			map_info();				// Verrate uns was über die Karte
-			map_draw_test_scheme();	// zeichne Das Testmuster in die Karte
-			map_print();			// Und karte gleich ausgeben	
-		#endif
-	#endif
+//	#ifdef DEBUG_MAP
+//		#ifdef PC		
+//			map_info();				// Verrate uns was über die Karte
+//			map_draw_test_scheme();	// zeichne Das Testmuster in die Karte
+//			map_print();			// Und karte gleich ausgeben	
+//		#endif
+//	#endif
 			
 	return 0;
 }
@@ -966,7 +978,6 @@ void map_update_sensor_hole(float x, float y, float h){
 }
 
 #ifdef PC
-
 	/*!
 	 * verkleinert die Karte vom übergebenen auf den benutzten Bereich. Achtung, 
 	 * unter Umständen muss man vorher die Puffervariablen sinnvoll initialisieren!!!
@@ -1143,36 +1154,39 @@ void map_update_sensor_hole(float x, float y, float h){
 		#endif
 		
 	}
-
-
-	/*!
-	 * Zeigt ein Paar Infos über dioe Karte an
-	 */
-	void map_info(void){
-		uint32 points_in_map = MAP_SECTION_POINTS*MAP_SECTIONS;	// Leider kann der precompiler des MCUs keine großen Zahlen 
-		points_in_map*=MAP_SECTION_POINTS*MAP_SECTIONS;
-		
-		printf("MAP: \n");
-		printf("\t%d\t Punkte pro Section (MAP_SECTIONS)\n",MAP_SECTIONS);
-		printf("\t%d\t Sections (MAP_SECTION_POINTS)\n",MAP_SECTION_POINTS);
-		printf("\t%d\t Punkte Kantenlänge (MAP_SECTION_POINTS*MAP_SECTIONS)\n",MAP_SECTION_POINTS*MAP_SECTIONS);
-		printf("\t%d%d\t Punkte gesamt\n", (uint16)(points_in_map/10000), (uint16) (points_in_map % 10000)	);
-		points_in_map /= 1024;		// Umrechnen in KByte
-		printf("\t%d%d\t KByte\n",(uint16)(points_in_map/10000), (uint16) (points_in_map % 10000));
-		printf("\t%d\t Punkte pro Meter (MAP_RESOLUTION)\n",MAP_RESOLUTION);
-		printf("\t%d\t Meter Kantenlänge (MAP_SIZE)\n",MAP_SIZE);
-		
-		printf("\n");
-		#ifdef USE_MACROBLOCKS
-			printf("Die Karte verwendet Macroblocks\n");
-			printf("\t%lu\t Länge eine Macroblocks in Punkten (MACRO_BLOCK_LENGTH)\n",MACRO_BLOCK_LENGTH);
-			printf("\t%lu\t Anzahl der Macroblocks in einer Zeile(MAP_LENGTH_IN_MACRO_BLOCKS)\n",MAP_LENGTH_IN_MACRO_BLOCKS);
-		#else
-			printf("Die Karte verwendet keine Macroblocks\n");
-		#endif
-		
-	}
 #endif	// PC
+
+#ifdef MAP_INFO_AVAILABLE	
+/*!
+ * Zeigt ein paar Infos ueber die Karte an
+ */
+static void map_info(void) {
+	LOG_INFO("MAP:");
+	LOG_INFO("%u\t Punkte pro Section (MAP_SECTIONS)", MAP_SECTIONS);
+	LOG_INFO("%u\t Sections (MAP_SECTION_POINTS)", MAP_SECTION_POINTS);
+	LOG_INFO("%u\t Punkte Kantenlaenge (MAP_SECTION_POINTS*MAP_SECTIONS)",
+			MAP_SECTION_POINTS*MAP_SECTIONS);
+	uint32 points_in_map = (uint32)MAP_SECTION_POINTS*(uint32)MAP_SECTION_POINTS*(uint32)MAP_SECTIONS*(uint32)MAP_SECTIONS;
+	LOG_INFO("%u%u\t Punkte gesamt", (uint16)(points_in_map/10000),
+			(uint16) (points_in_map % 10000) );
+	points_in_map /= 1024; // Umrechnen in KByte
+	LOG_INFO("%u%u\t KByte", (uint16)(points_in_map/10000),
+			(uint16) (points_in_map % 10000));
+	LOG_INFO("%u\t Punkte pro Meter (MAP_RESOLUTION)", MAP_RESOLUTION);
+	LOG_INFO("%u\t Meter Kantenlaenge (MAP_SIZE)", MAP_SIZE);
+
+	#ifdef USE_MACROBLOCKS
+		LOG_INFO("Die Karte verwendet Macroblocks");
+		LOG_INFO("%u\t Laenge eine Macroblocks in Punkten (MACRO_BLOCK_LENGTH)",
+				MACRO_BLOCK_LENGTH);
+		LOG_INFO(
+				"%u\t Anzahl der Macroblocks in einer Zeile(MAP_LENGTH_IN_MACRO_BLOCKS)",
+				MAP_LENGTH_IN_MACRO_BLOCKS);
+	#else
+		LOG_INFO("Die Karte verwendet keine Macroblocks");
+	#endif
+}
+#endif	// MAP_INFO_AVAILABLE
 
 /*!
  * Zeigt die Karte an
@@ -1188,7 +1202,7 @@ void map_print(void){
 /*!
  * zeichnet ein Testmuster in die Karte
  */
-void map_draw_test_scheme(void){
+static void map_draw_test_scheme(void){
 	int16 x,y;
 
 	// Erstmal eine ganz simple Linie
@@ -1213,7 +1227,57 @@ void map_draw_test_scheme(void){
 					map_set_field(y*MACRO_BLOCK_LENGTH,x,-60);
 			}		
 		}
-	#endif
+	#endif	// USE_MACROBLOCKS
 }
+
+static void map_delete(void) {
+#ifdef MCU
+	uint32_t map_filestart = mini_fat_find_block("MAP", map_buffer);
+	mini_fat_clear_file(map_filestart, map_buffer);
+	map_current_block_updated = False;
+	map_current_block = 0;	
+#else
+	memset(map_storage, 0, sizeof(map_storage));
+#endif	// MCU
+#ifdef SHRINK_MAP_ONLINE
+	// Groesse neu initialisieren
+	map_min_x = MAP_SIZE*MAP_RESOLUTION/2;
+	map_max_x = MAP_SIZE*MAP_RESOLUTION/2; 
+	map_min_y = MAP_SIZE*MAP_RESOLUTION/2;
+	map_max_y = MAP_SIZE*MAP_RESOLUTION/2;
+#endif
+}
+
+#ifdef DISPLAY_MAP_AVAILABLE
+	/*!
+	 * Handler fuer Map-Display
+	 */
+	void map_display(void) {
+		display_cursor(1,1);
+		display_printf("1: map_print");
+		display_cursor(2,1);
+		display_printf("2: map_delete");
+		display_cursor(3,1);
+		display_printf("3: draw_scheme");
+		#ifdef MAP_INFO_AVAILABLE
+			display_cursor(4,1);
+			display_printf("4: map_info");
+		#endif
+		
+		/* Keyhandler */
+		switch (RC5_Code) {
+			case RC5_CODE_1:
+				map_print(); RC5_Code = 0; break;
+			case RC5_CODE_2:
+				map_delete(); RC5_Code = 0; break;
+			case RC5_CODE_3:
+				map_draw_test_scheme(); RC5_Code = 0; break;
+			#ifdef MAP_INFO_AVAILABLE
+				case RC5_CODE_4:
+					map_info(); RC5_Code = 0; break;
+			#endif	
+		}			
+	}
+#endif	// DISPLAY_MAP_AVAILABLE
 
 #endif	// MAP_AVAILABLE
