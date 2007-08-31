@@ -87,6 +87,20 @@ uint32_t mini_fat_find_block_P(const char * filename, uint8_t * buffer, uint32_t
  */
 #define mini_fat_find_block(filename, buffer) mini_fat_find_block_P(PSTR(filename), buffer, mmc_get_size());
 
+/*!
+ * Liest die Groesse einer Datei im MiniFAT-Dateisystem auf der MMC/SD-Karte aus 
+ * @param file_start	Anfangsblock der Datei (Nutzdaten, nicht Header)
+ * @param *buffer		Zeiger auf 512 Byte Puffer im SRAM, wird veraendert!
+ * @return				Groesse der Datei in Byte, 0 falls Fehler
+ */
+uint32_t mini_fat_get_filesize(uint32_t file_start, uint8_t * buffer);
+
+/*! 
+ * Leert eine Datei im MiniFAT-Dateisystem auf der MMC/SD-Karte
+ * @param file_start	Anfangsblock der Datei
+ * @param *buffer		Zeiger auf 512 Byte Puffer im SRAM, wird geloescht!
+ */
+void mini_fat_clear_file(uint32_t file_start, uint8_t * buffer);
 #endif	// MMC_AVAILABLE
 
 #else	// MCU
@@ -125,4 +139,14 @@ void delete_emu_mini_fat_file(const char* id_string);
 void convert_slog_file(const char* input_file);
 
 #endif	// MCU
-#endif /*MINIFAT_H_*/
+
+#ifdef DISPLAY_MINIFAT_INFO
+/*!
+ * Display-Screen fuer Ausgaben des MiniFAT-Treibers, falls dieser welche erzeugt.
+ * Da die MiniFat-Funktionen im Wesentlichen den aktuellen Suchstatus der MMC
+ * ausgeben, erfolgt die eigentliche Ausgabe in der jeweiligen Schleife der 
+ * MiniFAT-Funktion, dieser Screen ist dafuer nur ein Platzhalter
+ */
+void mini_fat_display(void);
+#endif	// DISPLAY_MINIFAT_INFO
+#endif	// MINIFAT_H_

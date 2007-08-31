@@ -153,7 +153,7 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 					/* Regelgroesse korrigieren, wenn mit jeder Encoderflanke gerechnet wurde */
 					enc_correct = dev == 0 ? ENC_CORRECT_L : ENC_CORRECT_R;
 					if (enc == 1) enc_correct = -enc_correct;
-				} else /*if (encoderTargetRate[dev] < PID_SPEED_THRESHOLD)*/{
+				} else {
 					i_time -= 2 * sizeof(encTime[0]);	// Index vorletzter Timestamp
 					ticks_to_speed = TICKS_TO_SPEED_1;
 				}

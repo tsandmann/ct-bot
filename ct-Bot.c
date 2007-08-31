@@ -133,7 +133,7 @@ void init(void){
 	#endif
 
 	#ifdef PC
-		bot_2_sim_init();
+//		bot_2_sim_init();
 		if (init_eeprom_man(0) != 0) {
 			LOG_ERROR("EEPROM-Manager nicht korrekt initialisiert!");
 		}
@@ -387,7 +387,7 @@ void init(void){
 	 		/* Karte in pgm konvertieren */
 	    	if (convert !=0) {
 				printf("Konvertiere Karte %s in PGM %s\n",from,"map.pgm");
-	   		 	read_map(from);
+	   		 	map_read(from);
 	   		 	map_to_pgm("map.pgm");
 	   		 	exit(0);
 	       	}     	
@@ -483,6 +483,13 @@ void init(void){
 	uint16 calls=0;	/*!< Im Testfall zaehle die Durchlaeufe */
 #endif
 
+#ifdef PC
+	bot_2_sim_init();
+	receive_until_Frame(CMD_DONE);
+	command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
+	flushSendBuffer();
+#endif
+	
 init();	// alles initialisieren
 
 #ifdef WELCOME_AVAILABLE

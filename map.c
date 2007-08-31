@@ -158,11 +158,11 @@ uint32 map_start_block = 0; /*!< Block, bei dem die Karte auf der MMC-Karte begi
  * @return 0 wenn alles ok ist
  */
 int8 map_init(void){
-	#ifndef MMC_VM_AVAILABLE
-		// Die Karte auf den Puffer biegen
-		map[0]=(map_section_t*)map_buffer;
-		map[1]=(map_section_t*)(map_buffer+sizeof(map_section_t));		
+	// Die Karte auf den Puffer biegen
+	map[0]=(map_section_t*)map_buffer;
+	map[1]=(map_section_t*)(map_buffer+sizeof(map_section_t));		
 
+	#ifndef MMC_VM_AVAILABLE
 		#ifdef MCU
 			map_current_block_updated = 0xFF;	// Die MMC-Karte ist erstmal nicht verfuegbar
 			map_start_block=0xFFFFFFFF;
@@ -181,15 +181,10 @@ int8 map_init(void){
 			}
 		#endif	// MCU
 	#else
-		map_start_block = mmc_fopen("MAP")>>9;	// TODO: Mit Bytes arbeiten und Shiften sparen
-//		LOG_DEBUG("Startaddress of map: 0x%lx \n\r", map_start_block<<9);
+		map_start_block = mmc_fopen("MAP")>>9;
 		if (map_start_block == 0) return 1;
 		map_buffer = mmc_get_data(map_start_block<<9);
-		if (map_buffer == NULL) return 1;
-		
-		// Die Karte auf den Puffer biegen
-		map[0][0]=(map_section_t*)map_buffer;
-		map[1][0]=(map_section_t*)(map_buffer+sizeof(map_section_t));		
+		if (map_buffer == NULL) return 1;	
 	#endif	// MMC_VM_AVAILABLE	
 		
 		
@@ -197,7 +192,7 @@ int8 map_init(void){
 		#ifdef PC		
 			map_info();				// Verrate uns was über die Karte
 			map_draw_test_scheme();	// zeichne Das Testmuster in die Karte
-			print_map();			// Und karte gleich ausgeben	
+			map_print();			// Und karte gleich ausgeben	
 		#endif
 	#endif
 			
@@ -389,8 +384,8 @@ void map_set_field(uint16 x, uint16 y, int8 value) {
  */
 int8 map_get_point (float x, float y){
 	//Ort in Kartenkoordinaten
-	uint16 X = world_to_map(x);
-	uint16 Y = world_to_map(y);
+	uint16 X = map_world_to_map(x);
+	uint16 Y = map_world_to_map(y);
 	
 	return map_get_field(X,Y);
 }
@@ -429,8 +424,8 @@ int8 map_get_average_fields (uint16 x, uint16 y, uint16 radius){
  */
 int8 map_get_average(float x, float y, float radius){
 	//Ort in Kartenkoordinaten
-	uint16 X = world_to_map(x);
-	uint16 Y = world_to_map(y);
+	uint16 X = map_world_to_map(x);
+	uint16 Y = map_world_to_map(y);
 	uint16 R = radius * MAP_RESOLUTION / 1000;
 	
 	return map_get_average_fields(X,Y,R);
@@ -548,7 +543,7 @@ void map_update_occupied (uint16 x, uint16 y) {
  * @param koord Weltkordiante
  * @return kartenkoordinate
  */
-uint16 world_to_map(float koord){
+uint16 map_world_to_map(float koord){
 	uint16 tmp = koord * MAP_RESOLUTION / 1000  + (MAP_SIZE*MAP_RESOLUTION/2);
 		
 	return tmp;
@@ -572,10 +567,10 @@ float map_to_world(uint16 map_koord){
  * @param h 	Blickrichtung im Bogenmaß
  * @param dist 	Sensorwert 
  */ 
-static void update_map_sensor(float x, float y, float h, int16 dist){
+static void map_update_sensor(float x, float y, float h, int16 dist){
 	//Ort des Sensors in Kartenkoordinaten
-	uint16 X = world_to_map(x);
-	uint16 Y = world_to_map(y);
+	uint16 X = map_world_to_map(x);
+	uint16 Y = map_world_to_map(y);
 	
 	uint16 d;
 	if (dist==SENS_IR_INFINITE)
@@ -585,8 +580,8 @@ static void update_map_sensor(float x, float y, float h, int16 dist){
 		
 		
 	// liefert die Mapkoordinaten im Abstand dist vom Punkt xy
-	uint16 PH_X=get_mapposx_dist(x,y,h,dist);
-	uint16 PH_Y=get_mapposy_dist(x,y,h,dist);
+	uint16 PH_X=map_get_posx_dist(x,y,h,dist);
+	uint16 PH_Y=map_get_posy_dist(x,y,h,dist);
 
 	if ((dist > 80 ) && (dist <SENS_IR_INFINITE))
 			map_update_occupied(PH_X,PH_Y);
@@ -635,9 +630,9 @@ static void update_map_sensor(float x, float y, float h, int16 dist){
  * @param x X-Achse der Position
  * @param y Y-Achse der Position
  */
-void update_map_location(float x, float y){
-	int16 x_map = world_to_map(x);
-	int16 y_map = world_to_map(y);
+void map_update_location(float x, float y) {
+	int16 x_map = map_world_to_map(x);
+	int16 y_map = map_world_to_map(y);
 
 	//#define OLD_VERSION
 	#ifdef OLD_VERSION	
@@ -692,7 +687,7 @@ void update_map_location(float x, float y){
  * @param distL Sensorwert links
  * @param distR Sensorwert rechts
  */
-void update_map(float x, float y, float head, int16 distL, int16 distR){
+void map_update(float x, float y, float head, int16 distL, int16 distR){
 //	LOG_DEBUG("update_map: x=%f, y=%f, head=%f, distL=%d, distR=%d\n",x,y,head,distL,distR);
 	
     float h= head * M_PI /180;
@@ -705,8 +700,8 @@ void update_map(float x, float y, float head, int16 distL, int16 distR){
     float Pl_x = x - (DISTSENSOR_POS_SW * sin(h));
 	float Pl_y = y + (DISTSENSOR_POS_SW * cos(h));
 
-	update_map_sensor(Pl_x,Pl_y,h,distL);
-	update_map_sensor(Pr_x,Pr_y,h,distR);
+	map_update_sensor(Pl_x,Pl_y,h,distL);
+	map_update_sensor(Pr_x,Pr_y,h,distR);
 }
 
 /*!
@@ -775,7 +770,7 @@ uint8 map_way_free_fields(uint16 from_x, uint16 from_y, uint16 to_x, uint16 to_y
  * @return 1 wenn alles frei ist
  */
 int8 map_way_free(float from_x, float from_y, float to_x, float to_y){
-	return map_way_free_fields(world_to_map(from_x),world_to_map(from_y),world_to_map(to_x),world_to_map(to_y));
+	return map_way_free_fields(map_world_to_map(from_x),map_world_to_map(from_y),map_world_to_map(to_x),map_world_to_map(to_y));
 }	
 
 /*! 
@@ -810,7 +805,7 @@ uint8 map_get_value_field_circle(uint16 x, uint16 y, uint8 radius, int8 value) {
  * @param val Vergleichswert
  * @return True wenn Wert val gefunden
  */
-uint8 value_in_circle (uint16 x, uint16 y, uint8 radius, int8 val) {
+uint8 map_value_in_circle (uint16 x, uint16 y, uint8 radius, int8 val) {
 
 	#if MAP_RADIUS_FIELDS_GODEST > 0
 		uint8 r;
@@ -910,7 +905,7 @@ void map_set_value_occupied (uint16 x, uint16 y, int8 val) {
  * @param min_val minimaler Wert
  * @param max_val maximaler Wert
  */ 
-void clear_map(int8 min_val, int8 max_val) {
+void map_clear(int8 min_val, int8 max_val) {
 	int16 x,y;
 	int8 tmp;
 	// Mapfelder durchlaufen
@@ -933,22 +928,22 @@ void clear_map(int8 min_val, int8 max_val) {
  * @param h Blickrichtung
  * @param dist Abstand voraus in mm
  */
-uint16 get_mapposx_dist(float xp, float yp, float h, uint16 dist) {
+uint16 map_get_posx_dist(float xp, float yp, float h, uint16 dist) {
 
 	// Hinderniss auf X-Koord, dass der Sensor sieht in Weltkoordinaten
 	float PH_x = xp + (DISTSENSOR_POS_FW + dist) * cos(h);
 
 	// Hinderniss, welches der Sensor sieht in, umgerechnet in Karten-Map-Koordinaten
-	return world_to_map(PH_x);
+	return map_world_to_map(PH_x);
 }
 
-uint16 get_mapposy_dist(float xp, float yp, float h, uint16 dist) {
+uint16 map_get_posy_dist(float xp, float yp, float h, uint16 dist) {
 
 	// Hinderniss auf Y-Koord, dass der Sensor sieht in Weltkoordinaten
 	float PH_y = yp + (DISTSENSOR_POS_FW + dist) * sin(h);
 
 	// Hinderniss, welches der Sensor sieht in, umgerechnet in Karten-Map-Koordinaten
-	return  world_to_map(PH_y);
+	return  map_world_to_map(PH_y);
 }
 
 /*!
@@ -957,13 +952,13 @@ uint16 get_mapposy_dist(float xp, float yp, float h, uint16 dist) {
  * @param y bereits berechnete Koordinate nach links rechts vom Mittelpunkt in Hoehe des Sensors
  * @param h Blickrichtung bereits umgerechnet in Bogenmass
  */
-void update_map_sensor_hole(float x, float y, float h){
+void map_update_sensor_hole(float x, float y, float h){
 	uint16 PH_X=0;
 	uint16 PH_Y=0;
 
 	// 0 mm voraus Loch ab Abgrundsensoren
-	PH_X=get_mapposx_dist(x,y,h,0);
-	PH_Y=get_mapposy_dist(x,y,h,0);
+	PH_X=map_get_posx_dist(x,y,h,0);
+	PH_Y=map_get_posy_dist(x,y,h,0);
 
 	// nur wenn noch nicht als Loch gekennzeichnet auf Umgebungskreis Loch vermerken
 	if (map_get_field(PH_X,PH_Y) > -128)
@@ -980,7 +975,7 @@ void update_map_sensor_hole(float x, float y, float h){
 	 * @param min_y Zeiger auf einen uint16, der den miniamlen Y-Wert puffert
 	 * @param max_y Zeiger auf einen uint16, der den maxinmalen Y-Wert puffert
 	 */
-	void shrink_map(uint16 * min_x, uint16 * max_x, uint16 * min_y, uint16 * max_y){
+	static void map_shrink(uint16 * min_x, uint16 * max_x, uint16 * min_y, uint16 * max_y){
 		uint16 x,y;
 	
 		// lokale Variablen mit den defaults befuellen
@@ -1052,7 +1047,7 @@ void update_map_sensor_hole(float x, float y, float h){
 		uint16 max_y=map_max_y;
 		
 		#ifdef SHRINK_MAP_OFFLINE	// nun muessen wir die Grenezn ermitteln
-			shrink_map(&min_x, &max_x, &min_y, &max_y);
+			map_shrink(&min_x, &max_x, &min_y, &max_y);
 		#endif	// SHRINK_MAP_OFFLINE
 			
 		uint16 map_size_x=max_x-min_x;
@@ -1105,7 +1100,7 @@ void update_map_sensor_hole(float x, float y, float h){
 	 * Liest eine Map wieder ein 
 	 * @param filename Quelldatei
 	 */
-	void read_map(char * filename){
+	void map_read(char * filename){
 		map_init();
 		
 		printf("Lese Karte (%s) von MMC/SD (Bot-Format)\n",filename);
@@ -1144,7 +1139,7 @@ void update_map_sensor_hole(float x, float y, float h){
 			map_max_y=MAP_SIZE*MAP_RESOLUTION;
 		
 			// und Karte verkleinern
-			shrink_map(&map_min_x, &map_max_x, &map_min_y, &map_max_y);
+			map_shrink(&map_min_x, &map_max_x, &map_min_y, &map_max_y);
 		#endif
 		
 	}
@@ -1182,7 +1177,7 @@ void update_map_sensor_hole(float x, float y, float h){
 /*!
  * Zeigt die Karte an
  */
-void print_map(void){
+void map_print(void){
 	#ifdef PC
 		map_to_pgm("map.pgm");
 	#else

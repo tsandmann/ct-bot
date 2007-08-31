@@ -129,8 +129,8 @@ void border_mapgo_handler(void) {
  */
 void bot_set_destination(uint16 x, uint16 y) {	
 	if (x==0 && y==0) {
-		dest_x_map=world_to_map(x_pos);
-		dest_y_map=world_to_map(y_pos);
+		dest_x_map=map_world_to_map(x_pos);
+		dest_y_map=map_world_to_map(y_pos);
 	}
 	else {
 		dest_x_map = x;
@@ -419,8 +419,8 @@ void bot_gotoxy_behaviour_map(Behaviour_t *data) {
     uint16 y_nexthaz=0;
 
 	//Map-Mauspopsition selbst
-	X_pos=world_to_map(x_pos);
-	Y_pos=world_to_map(y_pos);
+	X_pos=map_world_to_map(x_pos);
+	Y_pos=map_world_to_map(y_pos);
 	
 	//Jederzeit Schluss wenn Positionen Maus und Endziel uebereinstimmen
 	if (map_in_dest (X_pos, Y_pos,dest_x_map, dest_y_map)) {
@@ -444,7 +444,7 @@ void bot_gotoxy_behaviour_map(Behaviour_t *data) {
 			gotoStatexy=INITIAL_TURN;
 
 			// wenn Weg zum Ziel nicht frei ist oder Abgrund um Bot, dann gleich mit Pfadplaung weiter
-			if (value_in_circle(X_pos,Y_pos,MAP_RADIUS_FIELDS_GODEST_HALF,-128)) {
+			if (map_value_in_circle(X_pos,Y_pos,MAP_RADIUS_FIELDS_GODEST_HALF,-128)) {
 	      		laststate = CLEAR_MAP;  // nicht mehr direction_goal
 				gotoStatexy = CLEAR_MAP;
 			}
@@ -453,13 +453,13 @@ void bot_gotoxy_behaviour_map(Behaviour_t *data) {
 
 		case CLEAR_MAP:
 			// MAP von altem Pfad und kuenstlichen Hindernissen befreien
-			clear_map(-MAP_ART_HAZARD, -MAPFIELD_IGNORE); 
+			map_clear(-MAP_ART_HAZARD, -MAPFIELD_IGNORE); 
 			gotoStatexy=CLEAR_MAP_FREEFIELDS;	
 			break;
 
 		case CLEAR_MAP_FREEFIELDS:
 			// MAP nun von Freifeldern befreien-Originalmap wieder da ohne Freiwahrscheinlichkeiten voraus
-			clear_map(-HAZPOT,127); 
+			map_clear(-HAZPOT,127); 
 			gotoStatexy=INITIAL_GETPATH;	
 			break;
 
@@ -597,14 +597,14 @@ void bot_gotoxy_behaviour_map(Behaviour_t *data) {
 			// 10 cm voraus Hindernisposition laut Map bestimmen
 			//get_mappos_dist(x_pos,y_pos,(heading * M_PI /180),100,&x_nexthaz,&y_nexthaz);
 			float alpha = (heading * M_PI /180);
-			x_nexthaz=get_mapposx_dist(x_pos,y_pos,alpha,100);
-			y_nexthaz=get_mapposy_dist(x_pos,y_pos,alpha,100);
+			x_nexthaz=map_get_posx_dist(x_pos,y_pos,alpha,100);
+			y_nexthaz=map_get_posy_dist(x_pos,y_pos,alpha,100);
 
 			//Abstand erhoehen auf 15cm falls Botpos ermittelt wurde
 			if (x_nexthaz==X_pos && y_nexthaz==Y_pos) {
 				//get_mappos_dist(x_pos,y_pos,(heading * M_PI /180),150,&x_nexthaz,&y_nexthaz);
-				x_nexthaz=get_mapposx_dist(x_pos,y_pos,alpha,150);
-				y_nexthaz=get_mapposy_dist(x_pos,y_pos,alpha,150);
+				x_nexthaz=map_get_posx_dist(x_pos,y_pos,alpha,150);
+				y_nexthaz=map_get_posy_dist(x_pos,y_pos,alpha,150);
 			}
 
 			// neue Pfadplanung wird erforderlich
@@ -625,7 +625,7 @@ void bot_gotoxy_behaviour_map(Behaviour_t *data) {
 			 * wichtig bei hoeherer Aufloesung: Der eigentliche Zielpunkt wird konkret kaum genau erreicht, daher
 			 * diesen vom Pfad nehmen und im Umkreis suchen; Abstossungspot setzen damit Benachteiligung bei Neurechnung
 			 */
-			if (value_in_circle(X_pos,Y_pos,MAP_RADIUS_FIELDS_GODEST_HALF,PATHNODES))	    	
+			if (map_value_in_circle(X_pos,Y_pos,MAP_RADIUS_FIELDS_GODEST_HALF,PATHNODES))	    	
 				map_set_value_occupied (target_x,target_y,-HAZPOT);
 				                                            
 			// Suche des naechsten Pfadpunktes in der Map zur Pfadverfolgung
@@ -687,8 +687,8 @@ void bot_gotoxy_behaviour_map(Behaviour_t *data) {
  */
 static void bot_gotoxy_map(Behaviour_t *caller, uint16 x, uint16 y) {
 	//Mauskoords in  Mapkoordinaten 
-	uint16 X_pos = world_to_map(x_pos);
-	uint16 Y_pos = world_to_map(y_pos);
+	uint16 X_pos = map_world_to_map(x_pos);
+	uint16 Y_pos = map_world_to_map(y_pos);
 	
 	//globale Zielkoordinaten setzen, die fuer Pfadplaner Verwendung finden
 	if (x!=0 || y!=0) {       // fuer Fahrt relativ zu der Botposition
@@ -757,11 +757,11 @@ void bot_path_bestfirst_behaviour(Behaviour_t *data) {
 		case GET_PATH_INITIAL:
 		
 			// alle als frei markierten Mappositionen > 0 wieder auf 0 setzen
-			clear_map(0,127);  // Loeschen der Freifelder, nicht der kuenstlichen Hindernisse
+			map_clear(0,127);  // Loeschen der Freifelder, nicht der kuenstlichen Hindernisse
 
 			// Bot-Map-Position ermitteln
-			X=world_to_map(x_pos);
-			Y=world_to_map(y_pos);
+			X=map_world_to_map(x_pos);
+			Y=map_world_to_map(y_pos);
 
 			// Eltern init auf Botpos.
 			x_parent=X;
@@ -797,7 +797,7 @@ void bot_path_bestfirst_behaviour(Behaviour_t *data) {
 			}
                        
 			// lokales Minimum -Sackgasse- wird erkannt; versucht hier rauszukommen durch Auffuellen 
-			if ((next_x==X && next_y==Y) || value_in_circle(next_x,next_y,MAP_RADIUS_FIELDS_GODEST_HALF,PATHNODES)) {
+			if ((next_x==X && next_y==Y) || map_value_in_circle(next_x,next_y,MAP_RADIUS_FIELDS_GODEST_HALF,PATHNODES)) {
 				// hier wird der bereits beschrittene Weg erreicht, kein anderer Zielpunkt hat kleineres Pot
             	// Pot dieses Punktes nun kuenstlich vergrossern Richtung Hindernis und neu suchen
             	
@@ -826,7 +826,7 @@ void bot_path_bestfirst_behaviour(Behaviour_t *data) {
 			}
                    
 			// Abfrage ob Bot-Zielposition erreicht wurde und damit Pfad erfolgreich bestimmt
-			if (state!=REACHED_POS && map_in_dest (world_to_map(x_pos),world_to_map(y_pos), dest_x_map,dest_y_map)) 
+			if (state!=REACHED_POS && map_in_dest (map_world_to_map(x_pos),map_world_to_map(y_pos), dest_x_map,dest_y_map)) 
 				state = REACHED_POS;
  
 			// naechsten Zielpunkt in die Map eintragen
@@ -849,13 +849,13 @@ void bot_path_bestfirst_behaviour(Behaviour_t *data) {
 				if (counter_noway==1) {
 					state=GET_PATH_INITIAL;
 					pathcounter=0;
-					clear_map(-MAP_ART_HAZARD, -MAP_ART_HAZARD+10);  // Loeschen der kuenstlichen Hindernisse
+					map_clear(-MAP_ART_HAZARD, -MAP_ART_HAZARD+10);  // Loeschen der kuenstlichen Hindernisse
 					break;
 				}
 				if (counter_noway==2) {
 					state=GET_PATH_INITIAL;
 					pathcounter=0;
-					clear_map(-MAP_ART_HAZARD, 127);  // Loeschen der kuenstlichen Hindernisse
+					map_clear(-MAP_ART_HAZARD, 127);  // Loeschen der kuenstlichen Hindernisse
 					break;
 				}
 				if (counter_noway==3) {
@@ -878,8 +878,8 @@ void bot_path_bestfirst_behaviour(Behaviour_t *data) {
  */
 void bot_path_bestfirst(Behaviour_t *caller) {
 	// Botposition in Map-Koordinaten berechnen
-	uint16 X = world_to_map(x_pos);
-	uint16 Y = world_to_map(y_pos);
+	uint16 X = map_world_to_map(x_pos);
+	uint16 Y = map_world_to_map(y_pos);
 	
 	if (!map_in_dest (X,Y, dest_x_map,dest_y_map)) {
 		// Ziel bekommt freieste Feldwahrscheinlichkeit	
@@ -904,16 +904,16 @@ void bot_path_bestfirst(Behaviour_t *caller) {
 			#ifdef PC
 				case RC5_CODE_1:
 					RC5_Code = 0;
-					print_map();	
+					map_print();	
 					break;
 				#endif
 			case RC5_CODE_3: 
 				RC5_Code = 0;	
-				bot_set_destination(world_to_map(x_pos),world_to_map(y_pos));
+				bot_set_destination(map_world_to_map(x_pos),map_world_to_map(y_pos));
 				break;
 			case RC5_CODE_4: 
 				RC5_Code = 0;	
-				clear_map(-MAP_ART_HAZARD, -MAPFIELD_IGNORE);  // Loeschen der kuenstlichen Hindernisse und des alten Pfades fuer Neubeginn
+				map_clear(-MAP_ART_HAZARD, -MAPFIELD_IGNORE);  // Loeschen der kuenstlichen Hindernisse und des alten Pfades fuer Neubeginn
 				next_x=0;
 				next_y=0;
 				bot_gotodest_map(0);
@@ -934,7 +934,7 @@ void bot_path_bestfirst(Behaviour_t *caller) {
 		display_cursor(1,1);
 		display_printf("MAP last %1d %1d",dest_x_map,dest_y_map);
 		display_cursor(2,6);
-		display_printf("Bot %1d %1d",world_to_map(x_pos),world_to_map(y_pos));
+		display_printf("Bot %1d %1d",map_world_to_map(x_pos),map_world_to_map(y_pos));
 		display_cursor(3,1);
 		display_printf("Pos Save/Goto: 3/4");
 // 		display_cursor(3,1);

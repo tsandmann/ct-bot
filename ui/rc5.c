@@ -138,8 +138,12 @@ static void rc5_number(uint8 key) {
 			case 6: bot_turn(NULL, -90); break;
 		#endif	// BEHAVIOUR_CALIBRATE_PID_AVAILABLE
 		
-		#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
-			case 8: bot_drive_distance(NULL, 0, BOT_SPEED_NORMAL, 10); break;
+		#if defined PC && defined MAP_AVAILABLE
+			case 8: map_print(); break;
+		#else
+			#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+				case 8: bot_drive_distance(NULL, 0, BOT_SPEED_NORMAL, 10); break;
+			#endif
 		#endif
 	}
 }

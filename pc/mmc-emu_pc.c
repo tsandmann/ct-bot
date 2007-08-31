@@ -47,12 +47,37 @@
 #include "mmc-emu.h"
 #include "mmc-vm.h"
 #include "display.h"
+#include "ui/available_screens.h"
+#include "delay.h"
 
 #ifdef PC
 #ifdef MMC_VM_AVAILABLE
 
 volatile uint8 mmc_emu_init_state=1;	/*!< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
 static FILE* mmc_emu_file;				/*!< Der Inhalt der emulierten Karte wird einfach in eine Datei geschrieben */
+
+#ifdef DISPLAY_MINIFAT_INFO
+/*!
+ * Hilfsfunktion, die eine 23-Bit Blockadresse auf dem Display als hex anzeigt.
+ * Da display_printf() @MCU maximal mit 16 Bit Zahlen umgehen kann, zerlegt diese Funktion die Adresse ein zwei Teile.
+ */
+static void display_block(uint32_t addr) {
+	uint16_t low  = (uint16_t)addr;
+	uint16_t high = (uint16_t)(addr>>16);
+	display_printf("0x%02x%04x", high, low);
+}
+
+/*!
+ * Display-Screen fuer Ausgaben des MiniFAT-Treibers, falls dieser welche erzeugt.
+ * Da die MiniFat-Funktionen im Wesentlichen den aktuellen Suchstatus der MMC
+ * ausgeben, erfolgt die eigentliche Ausgabe in der jeweiligen Schleife der 
+ * MiniFAT-Funktion, dieser Screen ist dafuer nur ein Platzhalter
+ */
+void mini_fat_display(void) {
+	display_cursor(1,1);
+	display_printf("MiniFAT:");
+}
+#endif	// DISPLAY_MINIFAT_INFO
 
 /*!
  * Checkt Initialisierung der emulierten Karte
@@ -144,8 +169,13 @@ uint32 mmc_emu_get_size(void){
  * @date 			05.03.2007
  * Nur DUMMY fuer MMC-Emulation am PC. Wenn es mal eine EEPROM-Emulation fuer PC gibt, kann man diese Funktion implementieren.
  */
-uint32 mmc_emu_fat_lookup_adr(const char* filename, uint8* buffer){
+uint32_t mmc_emu_fat_lookup_adr(const char * filename, uint8_t * buffer) {
 	// absichtlich leer
+#ifdef DISPLAY_MINIFAT_INFO
+	display_cursor(2,1);
+	display_printf("no EEPROM:");
+	display_block(0);
+#endif	// DISPLAY_MINIFAT_INFO
 	return 0;
 }
 
@@ -155,24 +185,51 @@ uint32 mmc_emu_fat_lookup_adr(const char* filename, uint8* buffer){
  * @date 			05.03.2007
  * Nur DUMMY fuer MMC-Emulation am PC. Wenn es mal eine EEPROM-Emulation fuer PC gibt, kann man diese Funktion implementieren.
  */
-void mmc_emu_fat_store_adr(uint32 block){
+void mmc_emu_fat_store_adr(uint32_t block) {
 	// absichtlich leer
+#ifdef DISPLAY_MINIFAT_INFO
+	display_cursor(3,1);
+	display_printf("no EEPROM:");
+	display_cursor(3,13);
+	display_block(0);
+#endif	// DISPLAY_MINIFAT_INFO	
 }
 
 uint32_t mmc_emu_find_block(const char * filename, uint8_t * buffer, uint32_t end_addr) {
 	end_addr >>= 9;	// letzte Blockadresse ermitteln
 	
+	/* zunaechst im EEPROM-FAT-Cache nachschauen */
+	uint32_t block = mmc_emu_fat_lookup_adr(filename, buffer);
+	if (block != 0)	return block;
+	
+#ifdef DISPLAY_MINIFAT_INFO
+	display_cursor(2,1);
+	display_printf("Find %s: ", filename);
+#endif	// DISPLAY_MINIFAT_INFO
+	
 	/* sequenziell die Karte durchsuchen */
-	uint32_t block;
 	for (block=0; block<end_addr; block++) {
+#ifdef DISPLAY_MINIFAT_INFO
+		display_cursor(2,13);
+		display_block(block);
+#endif	// DISPLAY_MINIFAT_INFO
 		if (mmc_emu_read_sector(block, buffer) != 0) return 0xffffffff;
 		if (strcmp((char *)buffer, filename) == 0) {
-			/* gefunden, Nutzdaten laden */
+			/* gefunden, Nutzdaten laden und Adresse ins EEPROM schreiben */
 			if (mmc_emu_read_sector(++block, buffer) != 0) return 0xffffffff;
+			mmc_emu_fat_store_adr(block);
+#ifdef DISPLAY_MINIFAT_INFO
+			display_cursor(4,1);
+			display_printf("Found:");
+			display_cursor(4,7);
+			display_block(block);
+#endif	// DISPLAY_MINIFAT_INFO
 			return block;
 		}
 	}
-	return 0xffffffff;
+	display_cursor(4,1);
+	display_printf("Not found :(");
+	return 0xffffffff;	
 }
 
 /*!

@@ -78,14 +78,14 @@
  * @param distL Sensorwert links
  * @param distR Sensorwert rechts
  */
-void update_map(float x, float y, float head, int16 distL, int16 distR);
+void map_update(float x, float y, float head, int16 distL, int16 distR);
 
 /*!
  * Aktualisiert den Standkreis der internen Karte
  * @param x X-Achse der Position
  * @param y Y-Achse der Position
  */
-void update_map_location(float x, float y);
+void map_update_location(float x, float y);
 
 /*!
  * liefert den Wert eines Feldes 
@@ -117,7 +117,7 @@ int8 map_get_point (float x, float y);
  * @param koord Weltkordiante
  * @return kartenkoordinate
  */
-uint16 world_to_map(float koord);
+uint16 map_world_to_map(float koord);
 
 /*!
  * Konvertiert eine Kartenkoordinate in eine Weltkoordinate
@@ -178,7 +178,7 @@ void map_set_value_occupied (uint16 x, uint16 y, int8 val);
  * @param y	bereits berechnete Koordinaten nach rechts vom Mittelpunkt in Hoehe des Sensors
  * @param h	Blickrichtung bereits umgerechnet in Bogenmass
  */
-void update_map_sensor_hole(float x, float y, float h);
+void map_update_sensor_hole(float x, float y, float h);
 
 /*!
  * gibt True zurueck wenn Map-Wert value innerhalb des Umkreises radius von xy liegt sonst False;
@@ -201,7 +201,7 @@ uint8 map_get_value_field_circle(uint16 x, uint16 y, uint8 radius, int8 value);
  * @param val Vergleichswert
  * @return True wenn Wert val gefunden sonst False
  */
-uint8 value_in_circle (uint16 x, uint16 y, uint8 radius, int8 val);
+uint8 map_value_in_circle (uint16 x, uint16 y, uint8 radius, int8 val);
  
 /*! 
  * Routine ermittelt ab dem vom Mittelpunkt links/ rechts versetzten Punkt xp yp, in Blickrichtung
@@ -214,7 +214,7 @@ uint8 value_in_circle (uint16 x, uint16 y, uint8 radius, int8 val);
  * @param dist	Abstand voraus in mm
  * @return 		berechnete X-Mapkoordinate 
  */
-uint16 get_mapposx_dist(float xp, float yp, float h, uint16 dist); 
+uint16 map_get_posx_dist(float xp, float yp, float h, uint16 dist); 
 
 /*! 
  * Routine ermittelt ab dem vom Mittelpunkt links/ rechts versetzten Punkt xp yp, in Blickrichtung
@@ -227,7 +227,7 @@ uint16 get_mapposx_dist(float xp, float yp, float h, uint16 dist);
  * @param dist	Abstand voraus in mm
  * @return 		berechnete X-Mapkoordinate 
  */ 
-uint16 get_mapposy_dist(float xp, float yp, float h, uint16 dist) ;
+uint16 map_get_posy_dist(float xp, float yp, float h, uint16 dist) ;
 
 /*!
  * liefert den Durschnittswert um einen Punkt der Karte herum
@@ -255,12 +255,12 @@ uint8 map_in_dest (uint16 x, uint16 y, uint16 destx, uint16 desty);
  * @param min_val minimaler Wert
  * @param max_val maximaler Wert
  */ 
-void clear_map(int8 min_val, int8 max_val);
+void map_clear(int8 min_val, int8 max_val);
 
 /*!
  * Zeigt die Karte an
  */
-void print_map(void);
+void map_print(void);
 
 /*!
  * initialisiere die Karte
@@ -268,17 +268,19 @@ void print_map(void);
  */
 int8 map_init(void);
 
+#ifdef PC
 /*! 
  * Liest eine Map wieder ein 
  * @param filename Quelldatei
  */
-void read_map(char * filename);
+void map_read(char * filename);
 
 /*!
  * Schreibt einbe Karte in eine PGM-Datei
  * @param filename Zieldatei
  */
 void map_to_pgm(char * filename);
+#endif	// PC
 
 // Makros, um die belegte kartenbereiche (in weltkoordinaten) zu ermitteln
 #define map_get_min_x() map_to_world(map_min_x)		/*!< Minimum in X-Richtung */

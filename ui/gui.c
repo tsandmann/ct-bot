@@ -36,6 +36,7 @@
 #include "bot-logic/bot-logik.h"
 #include "gui.h"
 #include "led.h"
+#include "mini-fat.h"
 #include <stdlib.h>
 
 #ifdef DISPLAY_AVAILABLE
@@ -91,6 +92,10 @@ void gui_display(int8 screen){
  */
 void gui_init(void){
 //	register_screen(NULL);
+	#ifdef DISPLAY_MINIFAT_INFO
+		/* MiniFAT wird vor GUI initialisiert und schreibt deshalb einfach auf's leere Display, der Dummy hier verhindert nur das Ueberschreiben in den anschliessenden Bot-Zyklen, damit man die Daten noch lesen kann */
+		register_screen(&mini_fat_display);
+	#endif
 	#ifdef SENSOR_DISPLAY_AVAILABLE 	
 		register_screen(&sensor_display);
 	#endif
