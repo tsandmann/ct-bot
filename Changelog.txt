@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-09-01 Timo Sandmann [mail@timosandmann.de]: Mini-LOG eingefuehrt (in ct-Bot.h aktivierbar, spart Flash und RAM @ MCU), Display-Ausgabe optimiert
+
 2007-08-31 Timo Sandmann [mail@timosandmann.de]: Mini-Fat Bugfix, Display-Screen fuer Map und Funktion zum Loeschen einer Map hinzugefuegt
 
 2007-08-31 Timo Sandmann [mail@timosandmann.de]: Mini-Fat verbessert (u.a. Display-Ausgaben), Map aufgeraeumt

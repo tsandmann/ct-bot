@@ -35,8 +35,8 @@
 
 #define DISPLAY_LENGTH	20	/*!< Wieviele Zeichen passen in eine Zeile */
 
-#define DISPLAY_SCREEN_TOGGLE	42		/*!< Screen-Nummer, die zum wechseln verwendet wird */
-extern uint8 display_screen;			/*!< Welcher Screen soll gezeigt werden? */
+#define DISPLAY_SCREEN_TOGGLE	42	/*!< Screen-Nummer, die zum wechseln verwendet wird */
+uint8 display_screen;				/*!< Welcher Screen soll gezeigt werden? */
 
 /*! 
  * @brief	Initialisiert das Display
@@ -82,16 +82,6 @@ void display_cursor (uint8 row, uint8 column);
 		static const char data[] PROGMEM = format;	\
 		display_flash_printf(data, ## args);		\
 	}
-	
-	/*!
-	 * @brief	Kopiert einen String wortweise vom Flash ins Ram
-	 * @param flash	Zeiger auf einen String im FLASH
-	 * @param ram	Zeiger auf den Zielpuffer im RAM
-	 * @param n		Anzahl der zu kopierenden WORTE
-	 * Es werden maximal n Worte kopiert, ist der String schon zuvor nullterminiert, 
-	 * wird bei Auftreten von 0 abgebrochen. 
-	 */
-	void get_str_from_flash(const char* flash, char* ram, uint8 n);
 #endif	// PC
 
 #endif	// display_H_

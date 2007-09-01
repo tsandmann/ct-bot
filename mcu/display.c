@@ -37,11 +37,10 @@
 #include "delay.h"
 #include "shift.h"
 
-/*! Puffergroesse fuer eine Zeile in bytes */
+/*! Puffergroesse fuer eine Zeile in Bytes */
 #define DISPLAY_BUFFER_SIZE	(DISPLAY_LENGTH + 1)
 
 uint8 display_screen=0;	/*!< zurzeit aktiver Displayscreen */
-static char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausgaben */
 
 #define DISPLAY_CLEAR 0x01		/*!< Kommando zum Loeschen */
 #define DISPLAY_CURSORHOME 0x02	/*!< Kommando fuer den Cursor */
@@ -58,19 +57,22 @@ static char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausg
 #define DISPLAY_READY_DDR		DDRC		/*!< Port an dem das Ready-Flag des Display haengt */
 #define DISPLAY_READY_PIN		(1<<5)		/*!< Pin  an dem das Ready-Flag des Display haengt */
 
-/*! RS-Leitung 
+/*! 
+ * RS-Leitung 
  * legt fest, ob die Daten an das Display in den Textpuffer (RS=1) kommen
  * oder als Steuercode interpretiert werden (RS=0)
  */
 #define DISPLAY_RS				(1<<0)		/*!< Pin an dem die RS-Leitung des Displays haengt */
 
-/*! RW-Leitung
+/*! 
+ * RW-Leitung
  * legt fest, ob zum Display geschrieben wird (RW=0)
  * oder davon gelesen wird (RW=1)
  */
 #define DISPLAY_RW				(1<<1)		/*!< Pin an dem die RW-Leitung des Displays haengt */
 
-/*! Enable Leitung 
+/*! 
+ * Enable Leitung 
  * schaltet das Interface ein (E=1). 
  * Nur wenn Enable auf High-Pegel liegt, laesst sich das Display ansprechen
  */
@@ -87,31 +89,25 @@ static char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausg
  */
 
 #ifdef DISPLAY_REMOTE_AVAILABLE
-	static uint8 remote_column = 0;
-	static uint8 remote_row = 0;
+	static uint8 remote_column = 0;		/*!< Spalte der aktuellen Cursorposition fuer Remote-LCD */
+	static uint8 remote_row = 0;		/*!< Zeile der aktuellen Cursorposition fuer Remote-LCD */
 #endif
-
+	
 /*! 
  * @brief		Uebertraegt ein Kommando an das Display
  * @param cmd	Das Kommando
  */
-void display_cmd(uint8 cmd) {
+static void display_cmd(uint8 cmd) {
 	/* Kommando cmd an das Display senden */
 	shift_data_out(cmd,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
 	
 	/* 47 us warten */
-	uint8 i;
-	for (i=0; i<150; i++) {		// 47 us * 16 C / us = 752 C => 150 Schleifendurchlaeufe
-		asm volatile("nop");
-	}
+	_delay_loop_2(F_CPU / 4000000L * 47);
 	DISPLAY_PORT=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
 	
 	if (cmd == DISPLAY_CLEAR) {
 		/* 1.52 ms warten */
-		uint16 i;
-		for (i=0; i<3040; i++) {		// 1520 us * 16 C / us = 24300 C => 3040 Schleifendurchlaeufe
-			asm volatile("nop");
-		}
+		_delay_loop_2(F_CPU / 4000000L * 1520);
 	}	
 }
 
@@ -120,22 +116,19 @@ void display_cmd(uint8 cmd) {
  * @brief 		Schreibt ein Zeichen auf das Display
  * @param data 	Das Zeichen
  */
-void display_data(char data) {
+static void display_data(char data) {
 	/* Zeichen aus data in den Displayspeicher schreiben */
 	shift_data_out(data,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY|DISPLAY_RS);
 
 	/* 47 us warten */
-	uint8 i;
-	for (i=0; i<150; i++){
-		asm volatile("nop");
-	}
+	_delay_loop_2(F_CPU / 4000000L * 47);
 	DISPLAY_PORT=DPC;	// Alles zurueck setzen ==> Fallende Flanke von Enable
 }
 
 /*!
  * @brief	Loescht das ganze Display
  */
-void display_clear(void){
+void display_clear(void) {
 	display_cmd(DISPLAY_CLEAR); // Display loeschen, Cursor Home
 	#ifdef DISPLAY_REMOTE_AVAILABLE
 		command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, NULL, NULL,0);
@@ -169,7 +162,6 @@ void display_cursor (uint8 row, uint8 column) {
   	  int16 c=column-1;
   	  remote_column = c;
   	  remote_row = r;
-//	  command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, &c,&r,0);
 	#endif   
    
 }
@@ -177,7 +169,7 @@ void display_cursor (uint8 row, uint8 column) {
 /*! 
  * @brief	Initialisiert das Display
  */
-void display_init(void){
+void display_init(void) {
 	shift_init();
 
 	DISPLAY_DDR |= DISPLAY_OUT;		// Ausgaenge
@@ -199,8 +191,6 @@ void display_init(void){
 	display_cmd(0x0f);  		//Display On, Cursor On, Cursor Blink
 	
 	display_cmd(DISPLAY_CLEAR); // Display loeschen, Cursor Home
-	
-//	display_data('i');
 }
 
 /*!
@@ -212,14 +202,13 @@ void display_init(void){
  * im Flash verbleibt und erst zur Laufzeit temporaer (jeweils nur eine Zeile) geladen wird.
  */
 void display_flash_printf(const char* format, ...){
-	char flash_str[DISPLAY_BUFFER_SIZE+4];	// bissel groesser, weil die % ja noch mit drin sind
-	get_str_from_flash(format, flash_str, DISPLAY_BUFFER_SIZE/2+2);	// String aus dem Flash holen
+	char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausgaben */
 	uint8 run = 0;
 	va_list	args;
 	
 	/* Sicher gehen, dass der zur Verfuegung stehende Puffer nicht ueberlaeuft */
 	va_start(args, format);
-	vsnprintf(display_buf, DISPLAY_BUFFER_SIZE, flash_str, args);	
+	vsnprintf_P(display_buf, DISPLAY_BUFFER_SIZE, format, args);	
 	va_end(args);
 	
 	/* Ausgeben bis Puffer leer ist */
@@ -238,26 +227,4 @@ void display_flash_printf(const char* format, ...){
 }
 
 #endif	// DISPLAY_AVAILABLE
-
-/*!
- * @brief	Kopiert einen String wortweise vom Flash ins Ram
- * @param flash	Zeiger auf einen String im FLASH
- * @param ram	Zeiger auf den Zielpuffer im RAM
- * @param n		Anzahl der zu kopierenden WORTE
- * Es werden maximal n Worte kopiert, ist der String schon zuvor nullterminiert, 
- * wird bei Auftreten von 0 abgebrochen. 
- */
-void get_str_from_flash(const char* flash, char* ram, uint8 n) {
-	uint8 i;
-	/* Zeichen des Strings wortweise aus dem Flash holen */
-	uint16* p_ram  = (uint16*)ram;
-	uint16* p_flash = (uint16*)flash;
-	for (i=0; i<n; i++){
-		uint16 tmp = pgm_read_word(p_flash++);
-		*(p_ram++) = tmp;
-		if ((uint8)tmp == 0 || (tmp & 0xFF00) == 0) break;	// Stringende erreicht
-	}
-	*((char*)p_ram) = 0;	// evtl. haben wir ein Byte zu viel gelesen, das korrigieren wir hier	
-}
-
 #endif	// MCU

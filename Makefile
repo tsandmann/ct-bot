@@ -48,7 +48,7 @@ DEVICE = MCU
 MSG_DEVICE = Target device is $(DEVICE)
 
 # List C source files here. (C dependencies are automatically generated.)
-SRCMCU = mcu/adc.c mcu/bootloader.c mcu/bot-2-pc.c mcu/delay.c mcu/display.c mcu/ena.c mcu/fifo.c mcu/ir-rc5.c mcu/led.c mcu/mini-fat.c mcu/mmc.c mcu/motor-low.c mcu/mouse.c mcu/sensor-low.c mcu/shift.c mcu/spi.c mcu/srf10.c mcu/timer-low.c mcu/TWI_driver.c mcu/uart.c 
+SRCMCU = mcu/adc.c mcu/bootloader.c mcu/bot-2-pc.c mcu/delay.c mcu/display.c mcu/ena.c mcu/fifo.c mcu/ir-rc5.c mcu/led.c mcu/mini-fat.c mcu/minilog.c mcu/mmc.c mcu/motor-low.c mcu/mouse.c mcu/sensor-low.c mcu/shift.c mcu/spi.c mcu/srf10.c mcu/timer-low.c mcu/TWI_driver.c mcu/uart.c 
 
 SRCPC = pc/bot-2-sim.c pc/delay_pc.c pc/display_pc.c pc/eeprom-emu_pc.c pc/ir-rc5_pc.c pc/led_pc.c pc/mini-fat.c pc/mmc-emu_pc.c pc/motor-low_pc.c pc/mouse_pc.c pc/sensor-low_pc.c pc/tcp-server.c pc/tcp.c 
 

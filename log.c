@@ -50,6 +50,7 @@
 #include "mmc-vm.h"
 
 #ifdef LOG_AVAILABLE
+#ifndef USE_MINILOG
 
 #ifdef PC
 	#include <pthread.h>
@@ -160,6 +161,27 @@ static char log_buffer[LOG_BUFFER_SIZE];
 		return;	
 	}
 #else
+	/*!
+	 * @brief	Kopiert einen String wortweise vom Flash ins Ram
+	 * @param flash	Zeiger auf einen String im FLASH
+	 * @param ram	Zeiger auf den Zielpuffer im RAM
+	 * @param n		Anzahl der zu kopierenden WORTE
+	 * Es werden maximal n Worte kopiert, ist der String schon zuvor nullterminiert, 
+	 * wird bei Auftreten von 0 abgebrochen. 
+	 */
+	static void get_str_from_flash(const char* flash, char* ram, uint8 n) {
+		uint8 i;
+		/* Zeichen des Strings wortweise aus dem Flash holen */
+		uint16* p_ram  = (uint16*)ram;
+		uint16* p_flash = (uint16*)flash;
+		for (i=0; i<n; i++){
+			uint16 tmp = pgm_read_word(p_flash++);
+			*(p_ram++) = tmp;
+			if ((uint8)tmp == 0 || (tmp & 0xFF00) == 0) break;	// Stringende erreicht
+		}
+		*((char*)p_ram) = 0;	// evtl. haben wir ein Byte zu viel gelesen, das korrigieren wir hier	
+	}
+	
 	/*!
 	 * Schreibt Angaben ueber Datei, Zeilennummer und den Log-Typ in den Puffer.
 	 * Achtung, Mutex wird gelockt und muss explizit durch log_end() wieder
@@ -368,5 +390,5 @@ static const char* log_get_type_str(LOG_TYPE log_type) {
 	}
 	return debug_str;
 }
-
+#endif	// USE_MINILOG
 #endif	/* LOG_AVAILABLE */

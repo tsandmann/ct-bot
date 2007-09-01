@@ -35,7 +35,8 @@
 //#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display (PC und MCU) */
 //#define LOG_UART_AVAILABLE		/*!< Logging ueber UART (NUR fuer MCU) */
 //#define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (NUR fuer PC) */
-//#define LOG_MMC_AVAILABLE			/*!< Logging in eine txt-Datei auf MMC */			
+//#define LOG_MMC_AVAILABLE			/*!< Logging in eine txt-Datei auf MMC */
+#define USE_MINILOG					/*!< schaltet fuer MCU auf schlankes Logging um (nur in Verbindung mit Log2Sim) */
 
 
 #define LED_AVAILABLE		/*!< LEDs for local control */
@@ -118,6 +119,7 @@
 	#endif
 
 	#define COMMAND_AVAILABLE		/*!< High-Level Communication */
+	#undef USE_MINILOG
 #endif
 
 #ifdef MCU
@@ -183,6 +185,9 @@
 #endif
 
 #ifdef LOG_AVAILABLE
+	#ifndef LOG_CTSIM_AVAILABLE
+		#undef USE_MINILOG
+	#endif
 	#ifdef PC
 		/* Auf dem PC gibts kein Logging ueber UART. */
 		#undef LOG_UART_AVAILABLE
