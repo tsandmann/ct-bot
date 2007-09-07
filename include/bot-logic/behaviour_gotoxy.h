@@ -36,7 +36,7 @@
  * @param xDiff
  * @param yDiff
  */
-int16_t bot_gotoxy_calc_turn(float xDiff, float yDiff);
+float bot_gotoxy_calc_turn(float xDiff, float yDiff);
 
 #ifdef BEHAVIOUR_GOTOXY_AVAILABLE
 /*!
@@ -53,6 +53,5 @@ void bot_gotoxy_behaviour(Behaviour_t *data);
  * @param y Y-Ordinate an die der Bot fahren soll
  */
 void bot_gotoxy(Behaviour_t *caller, float x, float y);
-#endif
-
-#endif /*BEHAVIOUR_GOTOXY_H_*/
+#endif	// BEHAVIOUR_GOTOXY_AVAILABLE
+#endif	/*BEHAVIOUR_GOTOXY_H_*/

@@ -17,12 +17,12 @@
  * 
  */
 
-/*! @file 	behaviour_follow_line.h
+/*! 
+ * @file 	behaviour_follow_line.h
  * @brief 	Linienverfolger
- * 
- * @author 	Benjamin Benz (bbe@heise.de)
+ * @author 	Torsten Evers (tevers@onlinehome.de)
  * @date 	03.11.06
-*/
+ */
 
 #include "bot-logic/bot-logik.h"
 
@@ -31,14 +31,18 @@
 
 #ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 
-/*! Folgt einer Linie, sobald beide Liniensensoren ausloesen
+/*! 
+ * Folgt einer Linie, sobald beide Liniensensoren ausloesen
  * Die Linie sollte in etwa die Breite beider CNY70 haben
+ * @param *data	Verhaltensdatensatz
  */
 void bot_follow_line_behaviour(Behaviour_t *data);
 
-/*! Folgt einer Linie, sobald beide Liniensensoren ausloesen
+/*! 
+ * Folgt einer Linie, sobald beide Liniensensoren ausloesen
  * Die Linie sollte in etwa die Breite beider CNY70 haben
+ * @param	*data Verhaltensdatensatz des Aufrufers
  */
 void bot_follow_line(Behaviour_t *caller);
-#endif
-#endif /*BEHAVIOUR_FOLLOW_LINE_H_*/
+#endif	// BEHAVIOUR_FOLLOW_LINE_AVAILABLE
+#endif	/*BEHAVIOUR_FOLLOW_LINE_H_*/

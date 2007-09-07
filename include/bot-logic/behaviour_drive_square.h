@@ -17,12 +17,12 @@
  * 
  */
 
-/*! @file 	behaviour_drive_square.h
+/*! 
+ * @file 	behaviour_drive_square.h
  * @brief 	Bot faehrt im Quadrat
- * 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
-*/
+ */
 
 
 #ifndef BEHAVIOUR_DRIVE_SQUARE_H_
@@ -45,6 +45,5 @@ void bot_drive_square_behaviour(Behaviour_t *data);
  */
 void bot_drive_square(Behaviour_t* caller);
 
-#endif
-
+#endif	// BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
 #endif /*BEHAVIOUR_DRIVE_SQUARE_H_*/
