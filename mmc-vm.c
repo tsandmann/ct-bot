@@ -26,9 +26,6 @@
  */
 
 
-//TODO:	* Statistikausgabe fuer MCU ergaenzen
-//		* Code optimieren, Groesse und Speed
-
 #include "ct-Bot.h"  
 
 #ifdef MMC_VM_AVAILABLE
@@ -62,6 +59,8 @@
 	#define fat_lookup	mmc_emu_fat_lookup_adr	/*!< Funktion zum FS-Cache auslesen */
 	#define fat_store	mmc_emu_fat_store_adr	/*!< Funktion zum FS-Cache aktualisieren */
 	#define mini_fat_find_block_P	mmc_emu_find_block	/*!< Funktion um Mini-FAT-Datei zu oeffnen */
+	#define mini_fat_get_filesize(addr, buffer) mmc_emu_get_filesize(addr)	/*!< Funktion um Groesse einer Mini-FAT-Datei auszulesen */
+	#define mini_fat_clear_file(addr, buffer) mmc_emu_clear_file(addr)	/*!< Funktion um eine Mini-FAT-Datei zu loeschen */
 #endif	
 
 #if MMC_ASYNC_WRITE == 1
@@ -101,52 +100,22 @@ static int8 allocated_pages = 0;						/*!< Anzahl bereits belegter Cachebloecke 
 static uint8 oldest_cacheblock = 0;						/*!< Zeiger auf den am laengsten nicht genutzten Eintrag (LRU) */
 static uint8 recent_cacheblock = 0;						/*!< Zeiger auf den letzten genutzten Eintrag (LRU) */
 
-vm_cache_t page_cache[MAX_PAGES_IN_SRAM];				/*!< der eigentliche Cache, vollassoziativ, LRU-Policy */
-
-/*! 
- * Gibt die Blockadresse einer Seite zurueck
- * @param addr	Eine virtuelle Adresse
- * @return		Adresse
- * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		30.11.2006
- */
-static inline uint32 mmc_get_mmcblock_of_page(uint32 addr){
-	#ifdef MCU
-		/* Eine effizientere Variante von addr >> 9 */
-		asm volatile(
-			"mov %A0, %B0	\n\t"
-			"mov %B0, %C0	\n\t"
-			"mov %C0, %D0	\n\t"
-			"lsr %C0		\n\t"
-			"ror %B0		\n\t"
-			"ror %A0		\n\t"		
-			"clr %D0			"		
-			:	"=r"	(addr)
-			:	"0"		(addr)
-		);	
-		return addr;
-	#else
-		return addr >> 9;
-	#endif	// MCU		
-}
+static vm_cache_t page_cache[MAX_PAGES_IN_SRAM];				/*!< der eigentliche Cache, vollassoziativ, LRU-Policy */
 
 #ifdef VM_STATS_AVAILABLE
 	/*! 
 	 * Gibt die Anzahl der Pagefaults seit Systemstart bzw. Ueberlauf zurueck
 	 * @return		#Pagefaults
-	 * @author 		Timo Sandmann (mail@timosandmann.de)
-	 * @date 		30.11.2006
 	 */
-	inline uint32 mmc_get_pagefaults(void){
+	uint32_t mmc_get_pagefaults(void) {
 		return stats_data.swap_ins;
 	}
 
 	/*! 
 	 * Erstellt eine kleine Statistik ueber den VM
 	 * @return		Zeiger auf Statistikdaten
-	 * @date 		01.01.2007
 	 */	
-	vm_extern_stats_t* mmc_get_vm_stats(void){
+	vm_extern_stats_t* mmc_get_vm_stats(void) {
 		static vm_extern_stats_t extern_stats = {0};
 		memcpy(&extern_stats, &stats_data, sizeof(vm_stats_t));	// .time wird spaeter ueberschrieben
 		uint16 delta_t = TICKS_TO_MS(TIMER_GET_TICKCOUNT_32 - stats_data.time)/1000;
@@ -163,10 +132,9 @@ static inline uint32 mmc_get_mmcblock_of_page(uint32 addr){
 	}
 
 	/*! 
-	 * Gibt eine kleine Statistik ueber den VM aus (derzeit nur am PC)
-	 * @date 		01.01.2007
+	 * Gibt eine kleine Statistik ueber den VM aus
 	 */		
-	void mmc_print_statistic(void){
+	void mmc_print_statistic(void) {
 		#ifdef PC
 			vm_extern_stats_t* vm_stats = mmc_get_vm_stats();
 			printf("\n\r*** VM-Statistik *** \n\r");
@@ -202,33 +170,53 @@ static inline uint32 mmc_get_mmcblock_of_page(uint32 addr){
 				LOG_INFO("%u", (uint8)(100.0-((float)vm_stats->swap_ins/(float)vm_stats->page_access)*100.0));
 				LOG_INFO("%u", vm_stats->delta_t);				
 			#endif
-			// TODO: Display-Ausgabe?
 		#endif	
 	}
 #endif
 
 /*! 
- * Gibt die letzte Adresse einer Seite zurueck
- * @param addr	Eine virtuelle Adresse
- * @return		Adresse 
- * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		30.11.2006
+ * Gibt die Blockadresse einer Seite zurueck
+ * @param addr	Eine virtuelle Adresse in Byte
+ * @return		Blockadresse
  */
-inline uint32 mmc_get_end_of_page(uint32 addr){
+static inline uint32_t mmc_get_mmcblock_of_page(uint32 addr) {
+	#ifdef MCU
+		/* Eine effizientere Variante von addr >> 9 */
+		asm volatile(
+			"mov %A0, %B0	\n\t"
+			"mov %B0, %C0	\n\t"
+			"mov %C0, %D0	\n\t"
+			"lsr %C0		\n\t"
+			"ror %B0		\n\t"
+			"ror %A0		\n\t"		
+			"clr %D0			"		
+			:	"=r"	(addr)
+			:	"0"		(addr)
+		);	
+		return addr;
+	#else
+		return addr >> 9;
+	#endif	// MCU		
+}	
+	
+/*! 
+ * Gibt die letzte Adresse einer Seite zurueck
+ * @param addr	Eine virtuelle Adresse in Byte
+ * @return		Adresse in Byte
+ */
+static inline uint32_t mmc_get_end_of_page(uint32_t addr) {
 	return addr | 0x1ff;	// die unteren 9 Bit sind gesetzt, da Blockgroesse = 512 Byte
 }
 
 /*! 
  * Gibt den Index einer Seite im Cache zurueck
- * @param addr	Eine virtuelle Adresse
+ * @param addr	Eine virtuelle Adresse in Byte
  * @return		Index des Cacheblocks, -1 falls Cache-Miss
- * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		30.11.2006
  */
-int8 mmc_get_cacheblock_of_page(uint32 addr){
-	uint32 page_addr = mmc_get_mmcblock_of_page(addr);
-	int8 i;
-	for (i=0; i<allocated_pages; i++){	// O(n)
+static int8_t mmc_get_cacheblock_of_page(uint32_t addr) {
+	uint32_t page_addr = mmc_get_mmcblock_of_page(addr);
+	int8_t i;
+	for (i=0; i<allocated_pages; i++) {	// O(n)
 		if (page_cache[i].addr == page_addr) return i;	// Seite gefunden :)
 	}
 	return -1;	// Seite nicht im Cache
@@ -236,36 +224,34 @@ int8 mmc_get_cacheblock_of_page(uint32 addr){
 
 /*! 
  * Laedt eine Seite in den Cache, falls sie noch nicht geladen ist
- * @param addr	Eine virtuelle Adresse
+ * @param addr	Eine virtuelle Adresse in Byte
  * @return		0: ok, 1: ungueltige Adresse, 2: Fehler bei swap_out, 3: Fehler bei swap_in
- * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		30.11.2006
  */
-uint8 mmc_load_page(uint32 addr){
+static uint8_t mmc_load_page(uint32_t addr) {
 	if (addr >= next_mmc_address) return 1;	// ungueltige virtuelle Adresse :(
 	#ifdef VM_STATS_AVAILABLE
 		stats_data.page_access++;
 	#endif
-	int8 cacheblock = mmc_get_cacheblock_of_page(addr); 
+	int8_t cacheblock = mmc_get_cacheblock_of_page(addr); 
 	if (cacheblock >= 0){	// Cache-Hit, Seite ist bereits geladen :)
 		/* LRU */	
 //		printf("hit: cacheblock: %d\t", cacheblock);
 		#if MAX_PAGES_IN_SRAM > 2
-			if (recent_cacheblock == cacheblock){
+			if (recent_cacheblock == cacheblock) {
 				page_cache[cacheblock].succ = cacheblock;	// Nachfolger des neuesten Eintrags ist die Identitaet
 //				printf("3) %d.succ: %d\t", recent_cacheblock, cacheblock);
 			}
-			if (oldest_cacheblock == cacheblock){
+			if (oldest_cacheblock == cacheblock) {
 				oldest_cacheblock = page_cache[cacheblock].succ;	// Nachfolger ist neuer aeltester Eintrag
 				page_cache[page_cache[cacheblock].succ].prec = oldest_cacheblock;	// Vorgaenger der Nachfolgers ist seine Identitaet				
 			}  
-			else{
+			else {
 				page_cache[page_cache[cacheblock].prec].succ = page_cache[cacheblock].succ;	// Nachfolger des Vorgaengers ist eigener Nachfolger
 //				printf("1) %d.succ: %d\t", page_cache[cacheblock].prec, page_cache[cacheblock].succ);
 				page_cache[page_cache[cacheblock].succ].prec = page_cache[cacheblock].prec;	// Vorganeger des Nachfolgers ist eigener Vorgaenger
 //				printf("2) %d.prec: %d\t", page_cache[cacheblock].succ, page_cache[cacheblock].prec); 
 			}
-			if (recent_cacheblock != cacheblock){
+			if (recent_cacheblock != cacheblock) {
 				page_cache[recent_cacheblock].succ = cacheblock;
 //				printf("3) %d.succ: %d\t", recent_cacheblock, cacheblock);
 				page_cache[cacheblock].prec = recent_cacheblock;	// alter neuester Eintrag ist neuer Vorgaenger
@@ -280,12 +266,12 @@ uint8 mmc_load_page(uint32 addr){
 		return 0;
 	}
 	/* Cache-Miss => neue Seite einlagern, LRU Policy */
-	int8 next_cacheblock = oldest_cacheblock;
-	if (allocated_pages < pages_in_sram){
+	int8_t next_cacheblock = oldest_cacheblock;
+	if (allocated_pages < pages_in_sram) {
 		/* Es ist noch Platz im Cache */
 		next_cacheblock = allocated_pages;
 		page_cache[next_cacheblock].p_data = malloc(512);	// Speicher anfordern
-		if (page_cache[next_cacheblock].p_data == NULL){	// Da will uns jemand keinen Speicher mehr geben :(
+		if (page_cache[next_cacheblock].p_data == NULL) {	// Da will uns jemand keinen Speicher mehr geben :(
 			if (pages_in_sram == 1) return 1;	// Hier ging was schief, das wir so nicht loesen koennen
 			/* Nicht mehr genug Speicher im RAM frei => neuer Versuch mit verkleinertem Cache */
 			pages_in_sram--;
@@ -298,10 +284,10 @@ uint8 mmc_load_page(uint32 addr){
 		stats_data.swap_ins++;
 	#endif
 	#if MMC_ASYNC_WRITE == 1	// im asnychronen Fall holen wir erst die neue Seite, dann kann sich das Zurueckschreiben ruhig Zeit lassen
-		uint8* p_tmp = page_cache[next_cacheblock].p_data;
+		uint8_t * p_tmp = page_cache[next_cacheblock].p_data;
 		if (swap_in(mmc_get_mmcblock_of_page(addr), swap_buffer) != 0) return 3;
 	#endif
-	if (page_cache[next_cacheblock].dirty == 1){	// Seite zurueckschreiben, falls Daten veraendert wurden
+	if (page_cache[next_cacheblock].dirty == 1) {	// Seite zurueckschreiben, falls Daten veraendert wurden
 		#ifdef VM_STATS_AVAILABLE
 			stats_data.swap_outs++;
 		#endif
@@ -315,7 +301,7 @@ uint8 mmc_load_page(uint32 addr){
 	#endif
 //	printf("miss: cacheblock: %d\t", next_cacheblock);
 	#if MAX_PAGES_IN_SRAM > 2
-		if (oldest_cacheblock == next_cacheblock){
+		if (oldest_cacheblock == next_cacheblock) {
 			oldest_cacheblock = page_cache[next_cacheblock].succ;	// Nachfolger ist neuer aeltester Eintrag
 //			printf("1) %d.succ: %d\t", next_cacheblock, page_cache[next_cacheblock].succ);
 		}
@@ -340,14 +326,12 @@ uint8 mmc_load_page(uint32 addr){
  * Fordert virtuellen Speicher an
  * @param size		Groesse des gewuenschten Speicherblocks
  * @param aligned	0: egal, 1: 512 Byte ausgerichtet
- * @return			Virtuelle Anfangsadresse des angeforderten Speicherblocks, 0 falls Fehler 
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			30.11.2006
+ * @return			Virtuelle Anfangsadresse des angeforderten Speicherblocks in Byte, 0 falls Fehler 
  */
-uint32 mmcalloc(uint32 size, uint8 aligned){
-	if (next_mmc_address == mmc_start_address){
+uint32_t mmcalloc(uint32_t size, uint8_t aligned) {
+	if (next_mmc_address == mmc_start_address) {
 		/* Inits */
-		if (mmc_start_address > swap_space){
+		if (mmc_start_address > swap_space) {
 			mmc_start_address = swap_space-512;
 			next_mmc_address = mmc_start_address;
 		}
@@ -360,7 +344,7 @@ uint32 mmcalloc(uint32 size, uint8 aligned){
 		#endif
 	}
 	uint32 start_addr;
-	if (aligned == 0 || mmc_get_end_of_page(next_mmc_address) == mmc_get_end_of_page(next_mmc_address+size-1)){
+	if (aligned == 0 || mmc_get_end_of_page(next_mmc_address) == mmc_get_end_of_page(next_mmc_address+size-1)) {
 		/* Daten einfach an der naechsten freien virtuellen Adresse speichern */
 		start_addr = next_mmc_address;
 	} else {
@@ -378,29 +362,27 @@ uint32 mmcalloc(uint32 size, uint8 aligned){
 
 /*! 
  * Gibt einen Zeiger auf einen Speicherblock im RAM zurueck
- * @param addr	Eine virtuelle Adresse
- * @return		Zeiger auf uint8, NULL falls Fehler
- * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		30.11.2006
+ * @param addr	Eine virtuelle Adresse in Byte
+ * @return		Zeiger auf uint8_t, NULL falls Fehler
  */
-uint8* mmc_get_data(uint32 addr){
+uint8_t * mmc_get_data(uint32_t addr) {
 	/* Seite der gewuenschten Adresse laden */
 	if (mmc_load_page(addr) != 0) return NULL;
-	int8 cacheblock = mmc_get_cacheblock_of_page(addr);
+	int8_t cacheblock = mmc_get_cacheblock_of_page(addr);
 	page_cache[cacheblock].dirty = 1;	// Daten sind veraendert
 	/* Zeiger auf Adresse in gecacheter Seite laden / berechnen und zurueckgeben */
-	return page_cache[cacheblock].p_data + (addr - (mmc_get_mmcblock_of_page(addr)<<9));	// TODO: 2. Summanden schlauer berechnen
+	uint16_t offset = addr & 0x1ff;
+	//return page_cache[cacheblock].p_data + (addr - (mmc_get_mmcblock_of_page(addr)<<9));
+	return page_cache[cacheblock].p_data + offset;
 }
 
 /*! 
  * Erzwingt das Zurueckschreiben einer eingelagerten Seite auf die MMC / SD-Card   
- * @param addr	Eine virtuelle Adresse
+ * @param addr	Eine virtuelle Adresse in Byte
  * @return		0: ok, 1: Seite zurzeit nicht eingelagert, 2: Fehler beim Zurueckschreiben
- * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		15.12.2006
  */
-uint8 mmc_page_write_back(uint32 addr){
-	int8 cacheblock = mmc_get_cacheblock_of_page(addr);
+uint8_t mmc_page_write_back(uint32_t addr) {
+	int8_t cacheblock = mmc_get_cacheblock_of_page(addr);
 	if (cacheblock < 0) return 1;	// Seite nicht eingelagert
 	if (swap_out(page_cache[cacheblock].addr, page_cache[cacheblock].p_data, MMC_ASYNC_WRITE) != 0) return 2;	// Seite (evtl. asynchron) zurueckschreiben
 	page_cache[cacheblock].dirty = 0;	// Dirty-Bit zuruecksetzen
@@ -410,14 +392,12 @@ uint8 mmc_page_write_back(uint32 addr){
 /*! 
  * Schreibt alle eingelagerten Seiten auf die MMC / SD-Card zurueck  
  * @return		0: alles ok, sonst: Summe der Fehler beim Zurueckschreiben
- * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		21.12.2006
  */
-uint8 mmc_flush_cache(void){
-	uint8 i;
-	uint8 result=0;
-	for (i=0; i<allocated_pages; i++){
-		if (page_cache[i].dirty == 1){
+uint8_t mmc_flush_cache(void) {
+	uint8_t i;
+	uint8_t result=0;
+	for (i=0; i<allocated_pages; i++) {
+		if (page_cache[i].dirty == 1) {
 			if (page_cache[i].addr < mmc_get_mmcblock_of_page(swap_space))
 				result += swap_out(page_cache[i].addr, page_cache[i].p_data, 0);	// synchrones Zurueckschreiben
 			page_cache[i].dirty = 0;
@@ -432,14 +412,12 @@ uint8 mmc_flush_cache(void){
  * macht das VM-System automatisch. Der Dateiname muss derzeit am Amfang in der Datei stehen.
  * Achtung: Irgendwann muss man die Daten per mmc_flush_cache() oder mmc_page_write_back() zurueckschreiben! 
  * @param filename	Dateiname als 0-terminierter String im Flash 
- * @return			Virtuelle Anfangsadresse der angeforderten Datei, 0 falls Fehler 
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			21.12.2006
+ * @return			Virtuelle Anfangsadresse der angeforderten Datei in Byte, 0 falls Fehler 
  */
 uint32_t mmc_fopen_P(const char * filename) {
 	/* Pufferspeicher organisieren */
 	uint32_t v_addr = mmcalloc(512, 0);
-	uint8_t * p_data = mmc_get_data(v_addr);	// hier speichern wir im Folgenden den ersten Block der gesuchten Datei, der ist dann gleich im Cache ;)
+	uint8_t * p_data = mmc_get_data(v_addr);	// hier speichern wir im Folgenden den ersten Block der gesuchten Datei
 	if (p_data == NULL)	return 0;
 	/* Die Dateiadressen liegen ausserhalb des Bereichs fuer den VM, also interne Datenanpassungen hier rueckgaengig machen */
 	next_mmc_address -= 512;
@@ -451,7 +429,7 @@ uint32_t mmc_fopen_P(const char * filename) {
 	uint8_t idx = mmc_get_cacheblock_of_page(v_addr);
 	if (block != 0xffffffff) {
 		page_cache[idx].addr = block;	// Cache-Tag auf gefundene Datei umbiegen
-		return block;
+		return block<<9;
 	}
 	/* Suche erfolglos, aber der Cache soll konsistent bleiben */
 	page_cache[idx].addr = 0x800000;	// Diesen Sektor gibt es auf keiner Karte <= 4 GB 
@@ -462,65 +440,37 @@ uint32_t mmc_fopen_P(const char * filename) {
 /*!
  * Liest die Groesse einer Datei im FAT16-Dateisystem auf der MMC / SD-Card aus, die zu zuvor mit 
  * mmc_fopen() geoeffnet wurde.
- * @param file_start	(virtuelle Anfangsadresse der Datei)
+ * @param file_start	(virtuelle) Anfangsadresse der Datei in Byte
  * @return				Groesse der Datei in Byte
- * @date				12.01.2007
  */
-uint32 mmc_get_filesize(uint32 file_start){
-	file_len_t length;
-	uint8* p_addr = mmc_get_data(file_start-512);
-	if (p_addr == NULL) return 0;
-	/* Dateilaenge aus Block 0, Byte 256 bis 259 der Datei lesen */
-	uint8 i;
-	for (i=0; i<4; i++)
-		length.u8[i] = p_addr[259-i];
-	return length.u32;
+uint32_t mmc_get_filesize(uint32_t file_start) {
+	/* Puffer erzeugen */
+	uint8_t * buffer = mmc_get_data(file_start-512);
+	if (buffer != NULL) {
+		/* Groesse mit Mini-FAT-Treiber auslesen lassen */
+		return mini_fat_get_filesize(mmc_get_mmcblock_of_page(file_start), buffer);
+	}
+	return 0;
 }
 
 /*! 
  * Leert eine Datei im FAT16-Dateisystem auf der MMC / SD-Card, die zuvor mit mmc_fopen() geoeffnet wurde.
- * @param file_start	(virtuelle) Anfangsadresse der Datei 
- * @return				0: ok, 1: ungueltige Datei oder Laenge, 2: Fehler beim Schreiben
- * @date 				02.01.2007
+ * @param file_start	(virtuelle) Anfangsadresse der Datei in Byte
  */
-uint8 mmc_clear_file(uint32 file_start){
-	#ifdef PC
-		printf("Start of file: 0x%x \n", file_start);
-	#else
-//		display_cursor(3,1);
-//		display_printf("Start:0x%04x", file_start>>9);
-	#endif
-	uint32 length = mmc_get_filesize(file_start);
-	if (file_start == 0 || file_start + length >= mmc_start_address) return 1;	// Datei existiert nicht oder Laenge ist ungueltig
-	/* Ersten Block der Datei laden (dessen Speicherbereich benutzen wir einfach als 0-Puffer) */
-	uint8* p_addr = mmc_get_data(file_start);
-	memset(p_addr, 0, 512);	// leeren Puffer erzeugen
-	/* Alle Bloecke der Datei mit dem 0-Puffer ueberschreiben */
-	int8 cache_block;
-	uint32 addr;
-	for (addr=file_start; addr<=file_start+length; addr+=512){
-		if (swap_out(mmc_get_mmcblock_of_page(addr), p_addr, 0) != 0) return 2;
-		#ifdef PC
-//			printf(".");
-//			fflush(stdout);
-		#else
-//			display_cursor(3,1);
-//			display_printf("0x%04x", addr>>9);
-		#endif	// PC
-		/* Falls ein Block der Datei im Cache ist, auch diesen leeren */
-		cache_block = mmc_get_cacheblock_of_page(addr);
-		if (cache_block >= 0){
-			memset(page_cache[cache_block].p_data, 0, 512);
-			page_cache[cache_block].dirty = 0;
-		}
+void mmc_clear_file(uint32_t file_start) {
+	/* Cache sichern */
+	mmc_flush_cache();
+	/* Puffer erzeugen */
+	uint8_t * buffer = mmc_get_data(file_start);
+	if (buffer != NULL) {
+		mini_fat_clear_file(mmc_get_mmcblock_of_page(file_start), buffer);
 	}
-	#ifdef PC
-		printf("End of file: 0x%x \n", addr);
-	#else
-//		display_cursor(3,1);
-//		display_printf("End:0x%04x", addr>>9);
-	#endif	
-	return 0;
+	/* Cache loeschen */
+	uint8_t i;
+	for (i=0; i<allocated_pages; i++) {
+		page_cache[i].addr = 0x800000;	// Diesen Sektor gibt es auf keiner Karte <= 4 GB 
+		page_cache[i].dirty = 0;	// so wird der ungueltige Inhalt beim Pagefault niemals versucht auf die Karte zu schreiben		
+	}
 }
 
 #endif	// MMC_VM_AVAILABLE

@@ -38,17 +38,15 @@
  * Checkt Initialisierung der emulierten Karte
  * @return	0, wenn initialisiert
  * @see		mcu/mmc.c
- * @date 	29.12.2006
  */
-inline uint8 mmc_emu_get_init_state(void);
+uint8_t mmc_emu_get_init_state(void);
 
 /*! 
  * Initialisiere die emulierte SD/MMC-Karte
  * @return	0 wenn allles ok, sonst 1
  * @see		mcu/mmc.c
- * @date 	29.12.2006 
  */
-uint8 mmc_emu_init (void);
+uint8_t mmc_emu_init(void);
 
 /*!
  * Liest einen Block von der emulierten Karte
@@ -56,9 +54,8 @@ uint8 mmc_emu_init (void);
  * @param buffer 	Puffer von mindestens 512 Byte
  * @return 			0 wenn alles ok ist 
  * @see				mcu/mmc.c
- * @date 			10.12.2006
  */	
-uint8 mmc_emu_read_sector(uint32 addr, uint8* buffer);
+uint8_t mmc_emu_read_sector(uint32_t addr, uint8_t * buffer);
 
 /*! 
  * Schreibt einen 512-Byte Sektor auf die emulierte Karte
@@ -66,43 +63,59 @@ uint8 mmc_emu_read_sector(uint32 addr, uint8* buffer);
  * @param buffer 	Zeiger auf den Puffer
  * @param async		Wird bei der PC-Version nicht ausgewertet
  * @return 			0 wenn alles ok ist
- * @date 			10.12.2006
  * @see				mcu/mmc.c
  */
-uint8 mmc_emu_write_sector(uint32 addr, uint8* buffer, uint8 async);
+uint8_t mmc_emu_write_sector(uint32_t addr, uint8_t * buffer, uint8_t async);
 
 /*!
  * Liefert die Groesse der emulierten Karte zurueck
  * @return	Groesse der emulierten Karte in Byte.
- * @date	29.12.2006
  */
-uint32 mmc_emu_get_size(void);
+uint32_t mmc_emu_get_size(void);
+
+/*!
+ * Liest die Groesse einer Datei im MiniFAT-Dateisystem aus 
+ * @param file_start	Anfangsblock der Datei (Nutzdaten, nicht Header)
+ * @return				Groesse der Datei in Byte, 0 falls Fehler
+ */
+uint32_t mmc_emu_get_filesize(uint32_t file_start);
+
+/*! 
+ * Leert eine Datei im MiniFAT-Dateisystem
+ * @param file_start	Anfangsblock der Datei
+ */
+void mmc_emu_clear_file(uint32_t file_start);
 
 /*!
  * @brief			Sucht die Adresse einer Mini-FAT-Datei im EERROM
  * @param filename	Datei-ID
  * @param buffer	Zeiger auf 512 Byte großen Speicherbereich (wird ueberschrieben)
  * @return			(Byte-)Adresse des ersten Nutzdatenblock der gesuchten Datei oder 0, falls nicht im EEPROM
- * @date 			05.03.2007
  * Nur DUMMY fuer MMC-Emulation am PC. Wenn es mal eine EEPROM-Emulation fuer PC gibt, kann man diese Funktion implementieren.
  */
-uint32 mmc_emu_fat_lookup_adr(const char* filename, uint8* buffer);
+uint32_t mmc_emu_fat_lookup_adr(const char* filename, uint8_t * buffer);
 
 /*!
  * @brief			Speichert die Adresse einer Mini-FAT-Datei in einem EERROM-Slab
  * @param block		(Block-)Adresse der Datei, die gespeichert werden soll
- * @date 			05.03.2007
  * Nur DUMMY fuer MMC-Emulation am PC. Wenn es mal eine EEPROM-Emulation fuer PC gibt, kann man diese Funktion implementieren.
  */
-void mmc_emu_fat_store_adr(uint32 block);
+void mmc_emu_fat_store_adr(uint32_t block);
 
+/*!
+ * @brief			Sucht einen Block auf der MMC-Karte, dessen erste Bytes dem Dateinamen entsprechen
+ * @param filename 	String im Flash zur Identifikation
+ * @param buffer 	Zeiger auf 512 Byte Puffer im SRAM
+ * @param end_addr	Byte-Adresse, bis zu der gesucht werden soll
+ * @return			Anfangsblock der Nutzdaten der Datei
+ * Achtung das Prinzip geht nur, wenn die Dateien nicht fragmentiert sind 
+ */
 uint32_t mmc_emu_find_block(const char * filename, uint8_t * buffer, uint32_t end_addr);
 
 /*!
  * Testet VM und MMC / SD-Card Emulation am PC
- * @date	30.12.2006 
  */
-uint8 mmc_emu_test(void);
+uint8_t mmc_emu_test(void);
 
 #endif	// PC
 #endif /*MMC_H_*/

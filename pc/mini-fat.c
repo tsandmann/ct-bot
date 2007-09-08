@@ -157,10 +157,7 @@ void delete_emu_mini_fat_file(const char* id_string) {
 		uint8_t* p_buffer = calloc(512, 1);
 		
 		/* Datei leeren und Header loeschen */
-		if (mmc_clear_file(addr<<9) != 0) { 
-			printf("Datei konnte nicht korrekt geleert werden!\n");
-			return;
-		}
+		mmc_clear_file(addr);
 			
 		if (mmc_emu_write_sector(addr-1, p_buffer, 0) != 0) {
 			printf("Datei konnte nicht korrekt geloescht werden!\n");

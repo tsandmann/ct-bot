@@ -40,7 +40,7 @@
 //#define VM_STATS_AVAILABLE		/*!< Schaltet die Leistungsdatensammlung ein und ermoeglicht die Ausgabe einer Statistik */
 
 #ifdef VM_STATS_AVAILABLE
-	typedef struct{
+	typedef struct {
 		uint32 page_access;		/*!< Anzahl der Seitenzugriffe seit Systemstart */
 		uint32 swap_ins;		/*!< Anzahl der Seiteneinlagerungen seit Systemstart */
 		uint32 swap_outs;		/*!< Anzahl der Seitenauslagerungen seit Systemstart */
@@ -58,21 +58,17 @@
 	/*! 
 	 * Gibt die Anzahl der Pagefaults seit Systemstart bzw. Ueberlauf zurueck
 	 * @return		#Pagefaults
-	 * @author 		Timo Sandmann (mail@timosandmann.de)
-	 * @date 		30.11.2006
 	 */
-	uint32 mmc_get_pagefaults(void);
+	uint32_t mmc_get_pagefaults(void);
 	
 	/*! 
 	 * Erstellt eine kleine Statistik ueber den VM
 	 * @return		Zeiger auf Statistikdaten
-	 * @date 		01.01.2007
 	 */	
 	vm_extern_stats_t* mmc_get_vm_stats(void);
 	
 	/*! 
 	 * Gibt eine kleine Statistik ueber den VM aus (derzeit nur am PC)
-	 * @date 		01.01.2007
 	 */		
 	void mmc_print_statistic(void);
 #endif
@@ -81,46 +77,29 @@
  * Fordert virtuellen Speicher an
  * @param size		Groesse des gewuenschten Speicherblocks
  * @param aligned	0: egal, 1: 512 Byte ausgerichtet
- * @return			Virtuelle Anfangsadresse des angeforderten Speicherblocks, 0 falls Fehler 
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			30.11.2006
+ * @return			Virtuelle Anfangsadresse des angeforderten Speicherblocks in Byte, 0 falls Fehler 
  */
-uint32 mmcalloc(uint32 size, uint8 aligned);
+uint32_t mmcalloc(uint32_t size, uint8_t aligned);
 
 /*! 
  * Gibt einen Zeiger auf einen Speicherblock im RAM zurueck
- * @param addr	Eine virtuelle Adresse
- * @return		Zeiger auf uint8, NULL falls Fehler
- * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		30.11.2006
+ * @param addr	Eine virtuelle Adresse in Byte
+ * @return		Zeiger auf uint8_t, NULL falls Fehler
  */
-uint8* mmc_get_data(uint32 addr);
-
-/*! 
- * Gibt die letzte Adresse einer Seite zurueck
- * @param addr	Eine virtuelle Adresse
- * @return		Adresse 
- * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		30.11.2006
- */
-inline uint32 mmc_get_end_of_page(uint32 addr);
+uint8_t * mmc_get_data(uint32_t addr);
 
 /*! 
  * Erzwingt das Zurueckschreiben einer eingelagerten Seite auf die MMC / SD-Card   
- * @param addr	Eine virtuelle Adresse
+ * @param addr	Eine virtuelle Adresse in Byte
  * @return		0: ok, 1: Seite zurzeit nicht eingelagert, 2: Fehler beim Zurueckschreiben
- * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		15.12.2006
  */
-uint8 mmc_page_write_back(uint32 addr);
+uint8_t mmc_page_write_back(uint32_t addr);
 
 /*! 
  * Schreibt alle eingelagerten Seiten auf die MMC / SD-Card zurueck  
  * @return		0: alles ok, sonst: Fehler beim Zurueckschreiben
- * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		21.12.2006
  */
-uint8 mmc_flush_cache(void);
+uint8_t mmc_flush_cache(void);
 
 /*! 
  * Oeffnet eine Datei im FAT16-Dateisystem auf der MMC / SD-Card und gibt eine virtuelle Adresse zurueck,
@@ -128,9 +107,7 @@ uint8 mmc_flush_cache(void);
  * macht das VM-System automatisch. Der Dateiname muss derzeit am Amfang in der Datei stehen.
  * Achtung: Irgendwann muss man die Daten per mmc_flush_cache() oder mmc_page_write_back() zurueckschreiben! 
  * @param filename	Dateiname als 0-terminierter String im Flash   
- * @return			Virtuelle Anfangsadresse der angeforderten Datei, 0 falls Fehler 
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			21.12.2006
+ * @return			Virtuelle Anfangsadresse der angeforderten Datei in Byte, 0 falls Fehler 
  */
 uint32_t mmc_fopen_P(const char * filename);
 
@@ -140,28 +117,23 @@ uint32_t mmc_fopen_P(const char * filename);
  * macht das VM-System automatisch. Der Dateiname muss derzeit am Amfang in der Datei stehen.
  * Achtung: Irgendwann muss man die Daten per mmc_flush_cache() oder mmc_page_write_back() zurueckschreiben! 
  * @param filename	Dateiname als 0-terminierter String   
- * @return			Virtuelle Anfangsadresse der angeforderten Datei, 0 falls Fehler 
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			21.12.2006
+ * @return			Virtuelle Anfangsadresse der angeforderten Datei in Byte, 0 falls Fehler 
  */
 #define mmc_fopen(filename)	mmc_fopen_P(PSTR(filename))
 
 /*! 
  * Leert eine Datei im FAT16-Dateisystem auf der MMC / SD-Card, die zuvor mit mmc_fopen() geoeffnet wurde.
- * @param file_start	(virtuelle) Anfangsadresse der Datei
- * @return				0: ok, 1: ungueltige Datei oder Laenge, 2: Fehler beim Schreiben
- * @date 				02.01.2007
+ * @param file_start	(virtuelle) Anfangsadresse der Datei in Byte
  */
-uint8 mmc_clear_file(uint32 file_start);
+void mmc_clear_file(uint32_t file_start);
 
 /*!
  * Liest die Groesse einer Datei im FAT16-Dateisystem auf der MMC / SD-Card aus, die zu zuvor mit 
  * mmc_fopen() geoeffnet wurde.
- * @param file_start	(virtuelle Anfangsadresse der Datei)
+ * @param file_start	(virtuelle) Anfangsadresse der Datei in Byte
  * @return				Groesse der Datei in Byte
- * @date				12.01.2007
  */
-uint32 mmc_get_filesize(uint32 file_start);
+uint32_t mmc_get_filesize(uint32_t file_start);
 
 #endif	// MMC_VM_AVAILABLE
 #endif	// MMC_VM_H_

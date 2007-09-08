@@ -31,6 +31,7 @@
 #include "map.h"
 #include "mmc.h"
 #include "mini-fat.h"
+#include "mmc-emu.h"
 #include "mmc-vm.h"
 #include "ui/available_screens.h"
 #include "rc5-codes.h"
@@ -132,17 +133,18 @@ typedef struct {
 	int8 section[MAP_SECTION_POINTS][MAP_SECTION_POINTS]; /*!< Einzelne Punkte */
 } map_section_t;
 
-typedef struct {
-	map_section_t part[2];		/*!< Ein MMC-Block fasst genau 2 map_section_t*/
-}mmc_block;
-
-
-uint32 map_start_block = 0; /*!< Block, bei dem die Karte auf der MMC-Karte beginnt. Derzeit nur bis 32MByte adressierbar*/
+static uint32 map_start_block = 0; /*!< Block, bei dem die Karte auf der MMC-Karte beginnt. Derzeit nur bis 32MByte adressierbar*/
+static void map_delete(void);
 
 #ifdef MMC_VM_AVAILABLE
 	map_section_t * map[2];		/*!< Array mit den Zeigern auf die Elemente */
-	uint32 map_current_block; 	/*!< Block, der aktuell im Puffer steht. Derzeit nur bis 32MByte adressierbar */
-	uint8* map_buffer;			/*!< dynamischer Puffer */
+	uint8_t * map_buffer;		/*!< dynamischer Puffer */
+	#ifdef PC
+		typedef struct {
+			map_section_t	sections[2];
+		} mmc_container_t;
+		mmc_container_t map_storage[MAP_SECTIONS * MAP_SECTIONS/2];	/*!< Statischer Speicherplatz für die Karte */
+	#endif	// PC	
 #else
 	// Wenn wir die MMC-Karte haben, passen immer 2 Sektionen in den SRAM
 	uint8 map_buffer[sizeof(map_section_t)*2]; /*!< statischer Puffer */
@@ -160,9 +162,10 @@ uint32 map_start_block = 0; /*!< Block, bei dem die Karte auf der MMC-Karte begi
 #endif	// MMC_VM_AVAILABLE
 
 #ifdef PC
-  // MMC-Zugriffe emuliert der PC
-  #define mmc_read_sector(block, buffer) memcpy(&buffer,&(map_storage[block]),sizeof(mmc_container_t) );
-  #define mmc_write_sector(block, buffer,dummy) memcpy(&(map_storage[block]),&buffer,sizeof(mmc_container_t) );
+	// MMC-Zugriffe emuliert der PC
+	#define mmc_read_sector(block, buffer) memcpy(&buffer,&(map_storage[block]),sizeof(mmc_container_t) );
+	#define mmc_write_sector(block, buffer,dummy) memcpy(&(map_storage[block]),&buffer,sizeof(mmc_container_t) );
+	#define mini_fat_find_block(name, buffer)	mmc_emu_find_block(name, buffer, mmc_emu_get_size())
 #endif
 
 /*!
@@ -180,25 +183,30 @@ int8 map_init(void){
 			map_start_block=0xFFFFFFFF;
 			if (mmc_get_init_state() != 0) return 1;
 			map_start_block= mini_fat_find_block("MAP",map_buffer);
+			if (map_start_block == 0xFFFFFFFF) {
+				map_current_block_updated = False;	// kein Block geladen und daher auch nicht veraendert
+				map_current_block = map_start_block;
+				return 1;
+			}			
 			#ifdef USE_MACROBLOCKS
 				// Makroblock-alignment auf ihre Groesse
 				map_start_block += 2*MACRO_BLOCK_LENGTH*MACRO_BLOCK_LENGTH/512 - 1;
 				map_start_block &= 0xFFFFFC00;
 			#endif	// USE_MACROBLOCKS
-				
-			if (map_start_block != 0xFFFFFFFF){
-				map_current_block_updated = False;	// kein Block geladen und daher auch nicht veraendert
-				map_current_block = map_start_block;
-				return 1;
-			}
+			map_current_block_updated = False;
+			map_current_block = map_start_block;
 		#endif	// MCU
 	#else
 		map_start_block = mmc_fopen("MAP")>>9;
 		if (map_start_block == 0) return 1;
+		#ifdef USE_MACROBLOCKS
+			// Makroblock-alignment auf ihre Groesse
+			map_start_block += 2*MACRO_BLOCK_LENGTH*MACRO_BLOCK_LENGTH/512 - 1;
+			map_start_block &= 0xFFFFFC00;
+		#endif	// USE_MACROBLOCKS		
 		map_buffer = mmc_get_data(map_start_block<<9);
 		if (map_buffer == NULL) return 1;	
 	#endif	// MMC_VM_AVAILABLE	
-		
 		
 //	#ifdef DEBUG_MAP
 //		#ifdef PC		
@@ -231,15 +239,21 @@ static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
 	// Sicherheitscheck 1
 	if ((section_x>= MAP_SECTIONS) || (section_y >= MAP_SECTIONS)){
 		#ifdef PC
-			printf("Versuch auf in Feld ausserhalb der Karte zu zugreifen!! x=%d y=%d\n",x,y);
+			printf("Versuch auf ein Feld ausserhalb der Karte zu zugreifen!! x=%u y=%u\n",x,y);
 		#endif
 		return NULL;
 	}
 
 	// Sicherheitscheck 2
 	// wenn die Karte nicht sauber initialisiert ist, mache nix!
+#ifndef MMC_VM_AVAILABLE
 	if (map_current_block_updated == 0xFF)
 		return map[0];	// oder eher NULL?
+#else
+	if (map_start_block == 0) {
+		return map[0];
+	}
+#endif	// MMC_VM_AVAILABLE
 	
 	
 	#ifndef USE_MACROBLOCKS
@@ -270,15 +284,15 @@ static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
 	
 	
 	#ifdef MMC_VM_AVAILABLE  // Speicherverwaltung	
-		// UNTESTED
 		map_buffer = mmc_get_data(block<<9);
 		if (map_buffer != NULL){
 			map[0]=(map_section_t*)map_buffer;
 			map[1]=(map_section_t*)(map_buffer+sizeof(map_section_t));
 			// richtige der beiden sections raussuchen
 			return map[index];
-		} else 
+		} else {
 			return map[0];
+		}
 	#else 	// Keine Speicherverwaltung
 
 		// Ist der Block schon geladen 
@@ -321,7 +335,6 @@ static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
 		return map[index];	
 
 	#endif	// Keine Speicherverwaltung
-	
 }
 
 /*!
@@ -1194,8 +1207,6 @@ static void map_info(void) {
 void map_print(void){
 	#ifdef PC
 		map_to_pgm("map.pgm");
-	#else
-		// Todo: Wie soll der Bot eine Karte ausgeben ....
 	#endif	// PC
 }
 
@@ -1230,7 +1241,11 @@ static void map_draw_test_scheme(void){
 	#endif	// USE_MACROBLOCKS
 }
 
+/*!
+ * Loescht die komplette Karte
+ */
 static void map_delete(void) {
+#ifndef MMC_VM_AVAILABLE	
 #ifdef MCU
 	uint32_t map_filestart = mini_fat_find_block("MAP", map_buffer);
 	mini_fat_clear_file(map_filestart, map_buffer);
@@ -1239,13 +1254,17 @@ static void map_delete(void) {
 #else
 	memset(map_storage, 0, sizeof(map_storage));
 #endif	// MCU
+#else
+	uint32_t map_filestart = mini_fat_find_block("MAP", map_buffer);
+	mmc_clear_file(map_filestart << 9);
+#endif	// MMC_VM_AVAILABLE
 #ifdef SHRINK_MAP_ONLINE
 	// Groesse neu initialisieren
 	map_min_x = MAP_SIZE*MAP_RESOLUTION/2;
 	map_max_x = MAP_SIZE*MAP_RESOLUTION/2; 
 	map_min_y = MAP_SIZE*MAP_RESOLUTION/2;
 	map_max_y = MAP_SIZE*MAP_RESOLUTION/2;
-#endif
+#endif	// SHRINK_MAP_ONLINE
 }
 
 #ifdef DISPLAY_MAP_AVAILABLE

@@ -310,6 +310,11 @@ void init(void){
 						puts("und neu compilieren.");
 						exit(1);
 					#endif
+					#ifdef MMC_VM_AVAILABLE
+						printf("Executable wurde mit MMC_VM_AVAILABLE compiliert.\n");
+						printf("Um Karten des echten Bots einlesen zu koennen, bitte den Code bitte ohne MMC_VM_AVAILABLE neu uebersetzen.\n");
+						exit(1);
+					#endif
 					
 					
 					int len = strlen(optarg);
