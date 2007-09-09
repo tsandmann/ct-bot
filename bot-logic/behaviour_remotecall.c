@@ -101,6 +101,7 @@ const call_t calls[] PROGMEM = {
 	#endif
 	#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_catch_pillar,0,""),
+		PREPARE_REMOTE_CALL(bot_unload_pillar,0,""),
 	#endif
 	#ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_drive_square,0,""),
