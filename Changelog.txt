@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-09-13 Timo Sandmann [mail@timosandmann.de]: Bugfix in log.h (#144)
+
 2007-09-08 Timo Sandmann [mail@timosandmann.de]: Bugfix im Map-Code und VM-Code aufgeraeumt (#142)
 
 2007-09-07 Timo Sandmann [mail@timosandmann.de]: Ticket #120: Initialisierungen der Verhaltenszustaende von bot_drive_square, bot_follow_line, bot_goto, bot_gotoxy, bot_olympic, bot_simple und bot_solve_maze korrigiert.

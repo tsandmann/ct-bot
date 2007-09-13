@@ -222,21 +222,22 @@ void log_flash_printf(const char *format, ...);
  * Gibt den Puffer entsprechend aus.
  */
 void log_end(void);
+#endif	// PC
 
 #ifdef LOG_MMC_AVAILABLE
 /*!
  * @brief	Initialisierung fuer MMC-Logging
  */
 uint8 log_mmc_init(void);
-#endif
+#endif	// LOG_MMC_AVAILABLE
 
 #ifdef LOG_DISPLAY_AVAILABLE	
 /*!
  * @brief	Display-Handler fuer das Logging
  */
 void log_display(void);
-#endif
-#endif	// PC
+#endif	// LOG_DISPLAY_AVAILABLE
+
 #else	// USE_MINILOG
 /*! Dieser Typ definiert die Typen der Log-Ausgaben. */
 typedef enum {
