@@ -180,7 +180,6 @@ void bot_sens_isr(void){
 		sensMouseDX = maus_sens_read(MOUSE_DELTA_X_REG);	
 		sensMouseDY = maus_sens_read(MOUSE_DELTA_Y_REG);
 	#endif
-	ENA_off(ENA_MAUS);	
 		
 	/* alle digitalen Sensoren */
 	sensDoor = (SENS_DOOR_PINR >> SENS_DOOR) & 0x01;
@@ -268,12 +267,7 @@ void bot_sens_isr(void){
 		/* Dist-Sensor rechts */
 		while (adc_get_active_channel() < 2) {}
 		uint16 voltR = distRight[0]+distRight[1]+distRight[2]+distRight[3];
-//		uint8 start = TCNT2;
 		(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, voltR);
-//		uint8 end = TCNT2;
-//		display_cursor(1,1);
-//		int16 diff = end - start; 
-//		if (diff > 0) display_printf("zeit=%3d", diff);
 		
 		/* LEDs updaten */
 		#ifdef LED_AVAILABLE
@@ -296,7 +290,7 @@ void bot_sens_isr(void){
 	
 	/* alle anderen analogen Sensoren */	
 	while (adc_get_active_channel() != 255) {}	// restliche Zeit mit busy-waiting verbrauchen
-	ENA_off(ENA_KANTLED);
+	ENA_off(ENA_KANTLED|ENA_MAUS);	// Kanten (ENA_KANTLED) und Liniensensoren (ENA_MAUS) aus
 }
 
 /*!

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-09-16 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Liniensensoren
+
 2007-09-13 Timo Sandmann [mail@timosandmann.de]: Bugfix in log.h (#144)
 
 2007-09-08 Timo Sandmann [mail@timosandmann.de]: Bugfix im Map-Code und VM-Code aufgeraeumt (#142)
