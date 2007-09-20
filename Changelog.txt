@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-09-20 Benjamin Benz [bbe@heise.de]: Das Drucken der Karte liegt nun per default auf der Taste RC5_CODE_DOT
+
 2007-09-16 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Liniensensoren
 
 2007-09-13 Timo Sandmann [mail@timosandmann.de]: Bugfix in log.h (#144)

@@ -158,6 +158,11 @@ void default_key_handler(void){
 		/* Not-Aus */
 		case RC5_CODE_PWR:		rc5_emergency_stop(); break;
 		
+		/* Karte Drucken */
+		#ifdef MAP_AVAILABLE
+		case RC5_CODE_DOT:		map_print(); break;
+		#endif
+		
 		/* Screenwechsel */
 		case RC5_CODE_GREEN:	rc5_screen_set(0); break;
 		case RC5_CODE_RED:		rc5_screen_set(1); break;
