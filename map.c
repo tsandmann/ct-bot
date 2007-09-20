@@ -1204,7 +1204,7 @@ static void map_info(void) {
 /*!
  * Zeigt die Karte an
  */
-void map_print(void){
+inline void map_print(void){
 	#ifdef PC
 		map_to_pgm("map.pgm");
 	#endif	// PC
