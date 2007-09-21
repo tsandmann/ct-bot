@@ -168,7 +168,7 @@ void bot_follow_line_behaviour(Behaviour_t *data) {
 /*! 
  * Folgt einer Linie, sobald beide Liniensensoren ausloesen
  * Die Linie sollte in etwa die Breite beider CNY70 haben
- * @param	*data Verhaltensdatensatz des Aufrufers
+ * @param	*caller Verhaltensdatensatz des Aufrufers
  */
 void bot_follow_line(Behaviour_t *caller) {
 	switch_to_behaviour(caller, bot_follow_line_behaviour, NOOVERRIDE);

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-09-21 Achim Pankalla [achim.pankalla@gmx.de]: EEPROM Datei wird nun nach Moduswechsel geloescht. Modus am Dateinamen erkennbar. (#143)
+
 2007-09-20 Benjamin Benz [bbe@heise.de]: In den drei TEST_XXX_AVAILBLE Modi bleiben die Sensoren nun permanent an. Das erleichtert das Messen. ==> #145
 
 2007-09-20 Benjamin Benz [bbe@heise.de]: Das Drucken der Karte liegt nun per default auf der Taste RC5_CODE_DOT

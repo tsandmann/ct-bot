@@ -48,7 +48,7 @@
 #include "log.h"
 #include "gui.h"
 
-//#define DEBUG_EEPROM		// Schalter um LOG-Ausgaben anzumachen
+#define DEBUG_EEPROM		// Schalter um LOG-Ausgaben anzumachen
 
 #ifndef DEBUG_EEPROM
 	#undef LOG_INFO
@@ -95,7 +95,8 @@ extern uint8 __attribute__ ((section (".s2eeprom"),aligned(1))) _eeprom_start2__
 	#define EE_SIZE 1024
 #endif
 
-#define EEPROM_FILENAME	"./eeprom.bin" 		/*!< Name und Pfad der EEPROM Datei. Verzeichnis muss existieren. Backslash doppeln!*/
+#define MCU_EEPROM_FN	"./mcu_eeprom.bin" 		/*!< Name und Pfad der EEPROM Datei fuer MCU-Modus*/
+#define PC_EEPROM_FN	"./pc_eeprom.bin" 		/*!< Name und Pfad der EEPROM Datei fuer PC-Modus*/
 #define MAX_VAR 200  						/*!< Maximale Anzahl von Variablen*/
 #define EEMAP_PC  "./eeprom_pc.map"			/*!< Pfad fuer PC-MAP Datei */
 #define EEP_PC    "./ct-Bot.eep"			/*!< Pfad fuer PC-EEP Datei */
@@ -112,7 +113,6 @@ typedef struct addrtab {
 	size_t simaddr;
 	size_t botaddr;
 	uint16_t size;
-//	uint32 access;	// ??? wird nie ausgewertet
 } AddrCTab_t;								/*!< Spezieller Datentyp fuer Adresskonvertierung */
 
 static AddrCTab_t ctab[MAX_VAR]; 			/*!< Adresskonvertierungstabelle */
@@ -159,16 +159,17 @@ static uint32 conv_eeaddr(uint32 addr){
  * -----
  * @param initfile		EEP-Datei des PC Codes
  * @param eeprom_init	Flag fuer Initialisierung (1 ja, 0 nein)
+ * @param fn			Dateiname der EEPROM-Datei
  * @return 				Status der Funktion
  */
-static uint16 check_eeprom_file(char *initfile, uint8_t eeprom_init){
+static uint16 check_eeprom_file(char *initfile, uint8_t eeprom_init, char *fn){
 	FILE *fpr, *fpw; //Filepointer fuer Dateizugriffe
 	uint16 i; //Laufvariable
 	char data[2]; //Datenspeicher
 	
 	/*eeprom file vorhanden*/
-	if(!(fpw = fopen(EEPROM_FILENAME, "r+b"))){ //Testen, ob Datei vorhanden ist.
-		if(!(fpw = fopen(EEPROM_FILENAME, "w+b"))){ //wenn nicht, dann erstellen
+	if(!(fpw = fopen(fn, "r+b"))){ //Testen, ob Datei vorhanden ist.
+		if(!(fpw = fopen(fn, "w+b"))){ //wenn nicht, dann erstellen
 			LOG_INFO("->Kann EEPROM-Datei nicht erstellen");
 			return(1);
 		}
@@ -176,15 +177,16 @@ static uint16 check_eeprom_file(char *initfile, uint8_t eeprom_init){
 			/* EEPROM mit .eeprom-Section des .elf-Files initialisieren, wenn PC Modus */
 			uint8_t * ram_dump = (uint8_t *)(&_eeprom_start2__ + (&_eeprom_start2__ - &_eeprom_start1__));
 			fwrite(ram_dump, EE_SIZE, 1, fpw);
+			LOG_INFO("->Initialsierte EEPROM-Datei erstellt");
 		} else {
 			/* alternativ: leeres EEPROM erstellen und init setzen bei MCU Modus*/	
 			for(i = 0; i < EE_SIZE; i++)
 				fwrite("\377", 1, 1, fpw);
 			eeprom_init = 1;
+			LOG_INFO("->Leere EEPROM-Datei erstellt");
 		}
 
 		fclose(fpw);
-		LOG_INFO("->Leere EEPROM-Datei erstellt");
  	}
 	
 	/*Initialsieren der eeprom.bin, wenn gewuenscht*/
@@ -193,7 +195,7 @@ static uint16 check_eeprom_file(char *initfile, uint8_t eeprom_init){
 			LOG_INFO("->EEP nicht gefunden");
 			return(1);
 		}
-		if(!(fpw = fopen(EEPROM_FILENAME, "rb+"))){ //Datei oeffnen
+		if(!(fpw = fopen(fn, "rb+"))){ //Datei oeffnen
 			LOG_INFO("->EEPROM-Datei kann nicht beschrieben werden");
 			return(1);
 		}
@@ -383,15 +385,20 @@ static uint16 create_ctab(char *simfile, char *botfile){
 uint8_t init_eeprom_man(uint8_t init) {
 	uint16 status;	//Status von create_ctab
 	uint16 sflag;	//Sectionstatus
+	char fn[30] = "";
 	
 	LOG_INFO("EEPROM-Manager");
 
 	/*Adresskonvertierungstabelle anlegen*/
 	if((status=create_ctab(EEMAP_PC, EEMAP_MCU))){
 			LOG_INFO("->EEPROM im PC-Modus");
+			strcat(fn, PC_EEPROM_FN);
+			remove(MCU_EEPROM_FN);
 	}
 	else {
 			LOG_INFO("->EEPROM im MCU-Modus");
+			strcat(fn, MCU_EEPROM_FN);
+			remove(PC_EEPROM_FN);
 			addrconv = 1;
 	}
 	
@@ -407,7 +414,7 @@ uint8_t init_eeprom_man(uint8_t init) {
 	}
 	
 	/*eeprom.bin checken*/
-	if(sflag || check_eeprom_file(EEP_PC, init)){
+	if(sflag || check_eeprom_file(EEP_PC, init, fn)){
 		LOG_INFO("EEPROM-Emulation fehlerhaft");
 		return 1;
 	}
@@ -418,7 +425,7 @@ uint8_t init_eeprom_man(uint8_t init) {
 		LOG_INFO("EEPROM-Emulation einsatzbereit");
 	}
 	
-	if((ee_file = fopen(EEPROM_FILENAME, "r+b")) == NULL) return 1;
+	if((ee_file = fopen(fn, "r+b")) == NULL) return 1;
 	if (fread(eeprom, 1, EE_SIZE, ee_file) != EE_SIZE) return 1;
 	return 0;
 }
