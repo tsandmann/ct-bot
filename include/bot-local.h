@@ -1,4 +1,4 @@
- /*
+/*
  * c't-Bot
  * 
  * This program is free software; you can redistribute it
@@ -105,9 +105,13 @@
 #define STARTPAD2					0x332			/*!< Fareb des Starpads2 */
 
 
-/*! Konstante fuer das bot_follow_line_behaviour-Verhalten */
-#define LINE_SENSE					0x350	// Ab wann ist es Linie? (Fuer den Sim auf 350 setzen, helle Tischflaeche 50)
-
+#ifdef PC
+/*! Konstante fuer das bot_follow_line_behaviour-Verhalten im Sim */
+#define LINE_SENSE					0x350	// Linie im Sim = 0x350
+#else
+/*! Konstante fuer das bot_follow_line_behaviour-Verhalten auf dem echten Bot*/
+#define LINE_SENSE					0x300	// Ab wann ist es eine Linie? (schwarz ca. 0x300, helle Tischflaeche 0x50)
+#endif	// PC
 
 /* Konstanten fuer Verhaltensanzeige, Verhalten mit prio von bis sichtbar */
 #define PRIO_VISIBLE_MIN 3			/*!< Prioritaet, die ein Verhalten mindestens haben muss, um angezeigt zu werden */
