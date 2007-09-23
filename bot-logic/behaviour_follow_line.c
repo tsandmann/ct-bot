@@ -21,12 +21,85 @@
  * @file 	behaviour_follow_line.c
  * @brief 	Linienverfolger
  * @author 	Torsten Evers (tevers@onlinehome.de)
- * @date 	03.11.06
+ * @author 	Timo Sandmann (mail@timosandmann.de)
+ * @date 	21.09.2007
  */
 
 #include "bot-logic/bot-logik.h"
 
 #ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
+
+//#define OLD_VERSION	/*!< aktiviert die alte Version den Linienverfolgers mit Eckendetektion (hat Probleme mit SPEED_CONTROL) */
+
+#ifndef OLD_VERSION
+#include "timer.h"
+
+/*! 
+ * Zeit zwischen zwei Korrekturen [ms]. Groessere Werte bewirken "ruhigeres" Fahren, 
+ * erhoehen damit aber auch die Reaktionszeit (z.B. bei scharfen Kurven problematisch) 
+ */
+#define	CORRECTION_DELAY	150
+
+/*! 
+ * Folgt einer Linie. Der linke Liniensensor ist dabei auf der Linie, der Rechte daneben.
+ * Der Bot faehrt also auf der rechten Kante der Linie. Sie sollte in etwa die Breite 
+ * beider CNY70 haben.
+ * @param *data	Verhaltensdatensatz
+ */
+void bot_follow_line_behaviour(Behaviour_t * data) {
+	static int16_t lastLeft = 0;
+	static int16_t lastRight= 0;
+	static uint8_t lastCorrection = 0;
+	static uint32_t lastCorrectionTime = 0;
+	uint8_t correction = 0;
+	
+	if (sensLineL >= LINE_SENSE && sensLineR < LINE_SENSE) {
+		/* Bot faehrt auf rechter Linienkante */
+		speedWishLeft  = BOT_SPEED_SLOW;
+		speedWishRight = BOT_SPEED_SLOW;
+	} else if (sensLineL < LINE_SENSE) {
+		/* Bot fahert rechts neben der Linie */
+		speedWishLeft  = -BOT_SPEED_FOLLOW;
+		speedWishRight = BOT_SPEED_FOLLOW;
+		correction = 1;
+	} else {
+		/* Bot faehrt auf der Linie */	
+		speedWishLeft  = BOT_SPEED_FOLLOW;
+		speedWishRight = -BOT_SPEED_FOLLOW;
+		correction = 2;
+	}
+
+	if (lastCorrection != correction && !timer_ms_passed(&lastCorrectionTime, CORRECTION_DELAY)) {
+		/* Falls die letzte Korrektur gerade erst war, reagieren wir (noch) nicht */
+		speedWishLeft  = lastLeft;
+		speedWishRight = lastRight;
+		return;
+	}
+
+	/* neue Werte merken */
+	lastCorrection = correction;
+	lastLeft  = speedWishLeft;
+	lastRight = speedWishRight;
+}
+
+/*! 
+ * Folgt einer Linie. Der linke Liniensensor ist dabei auf der Linie, der Rechte daneben.
+ * Der Bot faehrt also auf der rechten Kante der Linie. Sie sollte in etwa die Breite 
+ * beider CNY70 haben.
+ * @param	*caller Verhaltensdatensatz des Aufrufers
+ */
+void bot_follow_line(Behaviour_t * caller) {
+	switch_to_behaviour(caller, bot_follow_line_behaviour, NOOVERRIDE);
+	/* stoerende Notfallverhalten aus */
+#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
+	deactivateBehaviour(bot_avoid_col_behaviour);
+#endif
+#ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE
+	deactivateBehaviour(bot_avoid_border_behaviour);
+#endif	
+}
+
+#else	// OLD_VERSION
 /* Konstanten fuer das Verhalten */
 #define CORNER_LEFT					1
 #define CORNER_RIGHT				2
@@ -175,4 +248,5 @@ void bot_follow_line(Behaviour_t *caller) {
 	lineState=CHECK_LINE;
 	cornerDetected=False;
 }
+#endif	// OLD_VERSION
 #endif	// BEHAVIOUR_FOLLOW_LINE_AVAILABLE

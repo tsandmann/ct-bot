@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-09-23 Timo Sandmann [mail@timosandmann.de]: Linienverfolger ueberarbeitet und an Motorregelung angepasst. Auf die vorherige Version laesst sich mit #define OLD_VERSION zurueckgreifen. 
+
 2007-09-21 Timo Sandmann [mail@timosandmann.de]: Bei LINE_SENSE wird jetzt zwischen MCU und PC unterschieden.
 
 2007-09-21 Achim Pankalla [achim.pankalla@gmx.de]: EEPROM Datei wird nun nach Moduswechsel geloescht. Modus am Dateinamen erkennbar. (#143)
