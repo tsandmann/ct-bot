@@ -35,7 +35,7 @@
 #define WHEEL_PERIMETER			179 	/*!< Umfang eines Rades in mm */	
 #define WHEEL_TO_WHEEL_DIAMETER 97 		/*!< Abstand der beiden Raeder in mm */
 
-#define DISTSENSOR_POS_FW	35			/*!< Abstand der Distanzsensoren von der Radachse (in fahrtrichtung)*/
+#define DISTSENSOR_POS_FW	47			/*!< Abstand der Distanzsensoren von der Radachse (in fahrtrichtung)*/
 #define DISTSENSOR_POS_SW	32			/*!< Abstand der Distanzsensoren von der Mittelachse (in querrichtung)*/
 #define DISTSENSOR_POS_B_SW   (DISTSENSOR_POS_SW + 5) /*!< Abgrundsensoren 5 mm weiter aussen als Distsensoren*/
 

@@ -5,10 +5,9 @@ Alle hier aufgefuehrten Punkte stehen noch aus. Wer moechte, ist herzlich eingel
 uns Patches (siehe FAQ) zu schicken, die diese Liste sinnvoll ergaenzen. Aber auch ueber Loesungen
 fuer hier genannte Probleme freuen wir uns.
 
-Thema	Datei		Task
-==========================================================================
-gefahren	bot-logik.c	Low-Level-Verhalten müssen andere über gefahren warnen
-Anmeldung	command.c	Der Bot sollte auch auf Welcome-Nachrichten des Sims antworten
+Thema		Datei			Task
+=====================================================================================
+Gefahren	bot-logik.c		Low-Level-Verhalten muessen andere ueber Gefahren warnen
 
 
 Ideen/Ausbaustufen
@@ -35,8 +34,8 @@ Ideen/Ausbaustufen
 # Kamera
   * anschliessen
   * testen
-
   * Sample-Code entwickeln
+
 # CPU-Modul:
   * EVM-Board besorgen
   * Experimentieren mit EVM-Board
