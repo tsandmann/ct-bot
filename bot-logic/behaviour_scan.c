@@ -30,6 +30,7 @@
 #include "timer.h"
 #include "display.h"
 #include "log.h"
+#include "os_thread.h"
 
 #ifdef BEHAVIOUR_SCAN_AVAILABLE
 
@@ -38,7 +39,25 @@
 #endif
 
 //#define DEBUG_MAP
-uint8 scan_on_the_fly_source = SENSOR_LOCATION | SENSOR_DISTANCE; 
+uint8 scan_on_the_fly_source = SENSOR_LOCATION /*| SENSOR_DISTANCE*/; 
+
+#ifdef OS_AVAILABLE
+
+// *** nur ein Entwurf!!! *** //
+
+//TODO:	Stacksize nachrechnen
+#define MAP_UPDATE_STACK_SIZE	64	
+uint8_t map_update_stack[MAP_UPDATE_STACK_SIZE];
+static Tcb_t * map_update_thread;
+
+void bot_scan_onthefly_do_map_update(void) {
+	//TODO:	Daten aus Cache in Map eintragen
+}
+
+void bot_scan_onthefly_init(void) {
+	map_update_thread = os_create_thread(map_update_stack, bot_scan_onthefly_do_map_update);
+}
+#endif	// OS_AVAILABLE
 
 /*!
  * Der Roboter aktualisiert kontinuierlich seine Karte
@@ -96,6 +115,11 @@ void bot_scan_onthefly_behaviour(Behaviour_t *data) {
 //		last_head=heading;
 //		map_print();
 //	}
+
+#ifdef OS_AVAILABLE
+	//TODO:	Cache fuellen anstatt der Map-Update-Aufrufe oben!
+	os_thread_sleep(5, map_update_thread);
+#endif	// OS_AVAILABLE
 }
 
 

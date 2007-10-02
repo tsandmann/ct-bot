@@ -35,7 +35,7 @@
 #define SENSOR_DISTANCE		2		/*!< Quelle die das Verhalten bot_scan_onthefly nutzt, um die Karte zu aktualisieren: Distanzsensoren des Bots */
 
 #define SCAN_ONTHEFLY_DIST_RESOLUTION 20		/*!< Alle wieviel gefahrene Strecke [mm] soll die Karte aktualisiert werden. Achtung er prueft x und y getrennt, daher ist die tatsaechlich zurueckgelegte Strecke im worst case sqrt(2)*ONTHEFLY_DIST_RESOLUTION  */
-#define SCAN_ONTHEFLY_ANGLE_RESOLUTION 10		/*!< Alle wieviel Gerad Drehung [m] soll die Karte aktualisiert werden */
+#define SCAN_ONTHEFLY_ANGLE_RESOLUTION 10		/*!< Alle wieviel Gerad Drehung [Grad] soll die Karte aktualisiert werden */
 
 extern uint8 scan_on_the_fly_source; 
 

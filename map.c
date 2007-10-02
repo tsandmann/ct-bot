@@ -57,7 +57,8 @@
 #include "log.h"
 #include "timer.h"
 
-//#define DEBUG_MAP		// Schalter um recht viel Debug-Code anzumachen
+//#define DEBUG_MAP			// Schalter um recht viel Debug-Code anzumachen
+//#define DEBUG_MAP_TIMES	// Schalter um Performance-Messungen fuer MMC anzumachen
 
 #define MAP_INFO_AVAILABLE
 #ifdef MCU
@@ -307,26 +308,26 @@ static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
 		// Wurde der Block im RAM veraendert?
 		if (map_current_block_updated == True) {
 			// Dann erstmal sichern
-			#ifdef DEBUG_MAP
-				LOG_DEBUG("writing block 0x%04x%04x", (uint16_t)(map_current_block>>16), (uint16_t)map_current_block);
+			#ifdef DEBUG_MAP_TIMES
+				LOG_INFO("writing block 0x%04x%04x", (uint16_t)(map_current_block>>16), (uint16_t)map_current_block);
 				uint16_t start_ticks = TIMER_GET_TICKCOUNT_16;
 			#endif
 			mmc_write_sector(map_current_block,map_buffer,0);
-			#ifdef DEBUG_MAP
+			#ifdef DEBUG_MAP_TIMES
 				uint16_t end_ticks = TIMER_GET_TICKCOUNT_16;
-				LOG_DEBUG("swapout took %u ms", (end_ticks-start_ticks)*176/1000);
+				LOG_INFO("swapout took %u ms", (end_ticks-start_ticks)*176/1000);
 			#endif
 		}
 		
 		//Lade den neuen Block
-		#ifdef DEBUG_MAP
-			LOG_DEBUG("reading block 0x%04x%04x", (uint16_t)(block>>16), (uint16_t)block);
+		#ifdef DEBUG_MAP_TIMES
+			LOG_INFO("reading block 0x%04x%04x", (uint16_t)(block>>16), (uint16_t)block);
 			uint16_t start_ticks = TIMER_GET_TICKCOUNT_16;
 		#endif
 		mmc_read_sector(block,map_buffer);
-		#ifdef DEBUG_MAP
+		#ifdef DEBUG_MAP_TIMES
 			uint16_t end_ticks = TIMER_GET_TICKCOUNT_16;
-			LOG_DEBUG("swapin took %u ms", (end_ticks-start_ticks)*176/1000);
+			LOG_INFO("swapin took %u ms", (end_ticks-start_ticks)*176/1000);
 		#endif
 		// Statusvariablen anpassen
 		map_current_block=block;
@@ -378,7 +379,7 @@ void map_set_field(uint16 x, uint16 y, int8 value) {
 
 	// Berechne den Index innerhalb der Section
 	index_x = x % MAP_SECTION_POINTS;
-	index_y =  y % MAP_SECTION_POINTS;
+	index_y = y % MAP_SECTION_POINTS;
 	
 	section->section[index_x][index_y]=value;
 	
@@ -483,14 +484,13 @@ static void map_update_field (uint16 x, uint16 y, int8 value) {
  * @param value Betrag um den das Feld veraendert wird (>= heisst freier, <0 heisst belegter)
  */
 void map_update_field_circle(uint16 x, uint16 y, uint16 radius, int8 value) {
-
 	#ifdef OLD_VERSION
 		int16 dX,dY;
 	    uint16 h=radius*radius;
 		for(dX = -radius; dX <= radius; dX++){
 	      for(dY = -radius; dY <= radius; dY++) {
 	           if(dX*dX + dY*dY <= h)	 
-	           	 map_update_field (x + dX, y + dY,value);
+	           	 map_update_field(x + dX, y + dY,value);
 	      }
 		}
 	#else
@@ -674,33 +674,6 @@ void map_update_location(float x, float y) {
 		
 		// Aktualisiere zuerst die vom Bot selbst belegte Flaeche
 		map_update_field_circle(x_map, y_map, BOT_DIAMETER/2*MAP_RESOLUTION/100, MAP_STEP_FREE_LOCATION);
-
-		//#define WRITE_FIRST_SECTOR
-		#ifdef WRITE_FIRST_SECTOR 
-			if (map_current_block_updated == True) {
-				#ifdef DEBUG_MAP
-					LOG_DEBUG("writing block 0x%04x%04x", (uint16_t)(map_current_block>>16), (uint16_t)map_current_block);
-					uint16_t start_ticks = TIMER_GET_TICKCOUNT_16;
-				#endif
-				mmc_write_sector(map_current_block, map_buffer,0);
-				#ifdef DEBUG_MAP
-					uint16_t end_ticks = TIMER_GET_TICKCOUNT_16;
-					LOG_DEBUG("flush took %u ms", (end_ticks-start_ticks)*176/1000);
-				#endif
-				map_current_block_updated = False;
-			}
-			uint32_t dummy = map_current_block & 0xFFFFFC00;
-			#ifdef DEBUG_MAP
-				LOG_DEBUG("writing block 0x%04x%04x", (uint16_t)(dummy>>16), (uint16_t)dummy);
-				uint16_t start_ticks = TIMER_GET_TICKCOUNT_16;
-			#endif
-			mmc_read_sector(dummy, map_buffer);
-			mmc_write_sector(dummy, map_buffer, 1);
-			#ifdef DEBUG_MAP
-				uint16_t end_ticks = TIMER_GET_TICKCOUNT_16;
-				LOG_DEBUG("dummy took %u ms", (end_ticks - start_ticks)*176/1000);
-			#endif
-		#endif	// WRITE_FIRST_SECTOR
 	#endif //#ifdef OLD_VERSION
 }
 
@@ -715,7 +688,7 @@ void map_update_location(float x, float y) {
 void map_update(float x, float y, float head, int16 distL, int16 distR){
 //	LOG_DEBUG("update_map: x=%f, y=%f, head=%f, distL=%d, distR=%d\n",x,y,head,distL,distR);
 	
-    float h= head * M_PI /180;
+    float h= head * (M_PI/180.0);
 	        
     //Ort des rechten Sensors in Weltkoordinaten
     float Pr_x = x + (DISTSENSOR_POS_SW * sin(h));
@@ -989,6 +962,30 @@ void map_update_sensor_hole(float x, float y, float h){
 	if (map_get_field(PH_X,PH_Y) > -128)
 		map_set_value_occupied(PH_X,PH_Y,-128);
 }
+
+#if 0
+/*
+ * Schreibt den gepufferten MMC-Block auf die Karte zurueck
+ */
+void map_flush_cache(void) {
+	return;
+	// Wurde der Block im RAM veraendert?
+	if (map_current_block_updated == True) {
+		#ifdef DEBUG_MAP_TIMES
+			LOG_INFO("writing block 0x%04x%04x", (uint16_t)(map_current_block>>16), (uint16_t)map_current_block);
+			uint16_t start_ticks = TIMER_GET_TICKCOUNT_16;
+		#endif
+		mmc_write_sector(map_current_block, map_buffer, 0);
+		#ifdef DEBUG_MAP_TIMES
+			uint16_t end_ticks = TIMER_GET_TICKCOUNT_16;
+			LOG_INFO("swapout took %u ms", (end_ticks-start_ticks)*176/1000);
+		#endif
+		
+		// Statusvariablen anpassen
+		map_current_block_updated = False;	
+	}
+}
+#endif
 
 #ifdef PC
 	/*!
