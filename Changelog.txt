@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-10-03 Timo Sandmann [mail@timosandmann.de]: Bug in Transportfach-Erkennung behoben (LED wurde zu schnell wieder ausgeschaltet, falls Maus deaktiviert)
+
 2007-10-01 Timo Sandmann [mail@timosandmann.de]: Position der Sharps in bot-local.h korrigiert und TODO.txt aktualisiert 
 
 2007-09-23 Timo Sandmann [mail@timosandmann.de]: Linienverfolger ueberarbeitet und an Motorregelung angepasst. Auf die vorherige Version laesst sich mit #define OLD_VERSION zurueckgreifen. 

@@ -183,18 +183,7 @@ void bot_sens_isr(void){
 		
 	/* alle digitalen Sensoren */
 	sensDoor = (SENS_DOOR_PINR >> SENS_DOOR) & 0x01;
-	sensTrans = (SENS_TRANS_PINR >> SENS_TRANS) & 0x01;		
-	
-	// in den Testmodi bleibt imemr alles an.
-	#ifndef TEST_AVAILABLE_ANALOG 
-	  #ifndef TEST_AVAILABLE_DIGITAL 
-	     #ifndef TEST_AVAILABLE_MOTOR
-			/* Klappensensor und lichtschranke können schon wieder aus */
-			ENA_off(ENA_SCHRANKE|ENA_KLAPPLED);
-	  	  #endif
-	  #endif
-	#endif
-
+	sensTrans = (SENS_TRANS_PINR >> SENS_TRANS) & 0x01;
 	sensError = (SENS_ERROR_PINR >> SENS_ERROR) & 0x01;		
 	
 	/* LEDs updaten */
@@ -303,7 +292,7 @@ void bot_sens_isr(void){
 	#ifndef TEST_AVAILABLE_ANALOG 
 	  #ifndef TEST_AVAILABLE_DIGITAL 
 	     #ifndef TEST_AVAILABLE_MOTOR
-	  		ENA_off(ENA_KANTLED|ENA_MAUS);	// Kanten (ENA_KANTLED) und Liniensensoren (ENA_MAUS) aus
+	  		ENA_off(ENA_KANTLED|ENA_MAUS|ENA_SCHRANKE|ENA_KLAPPLED);	// Kanten (ENA_KANTLED), Liniensensoren (ENA_MAUS), Transportfach-LED und Klappensensor aus
 	  	  #endif
 	  #endif
 	#endif
