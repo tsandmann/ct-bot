@@ -156,18 +156,12 @@ mmc_read_byte:
 .global mmc_enable
 	.type mmc_enable, @function
 mmc_enable:
-#ifdef OS_AVAILABLE
-	sts os_scheduling_allowed, r1	; os_enterCS()
-#endif
 	lds r24, mmc_init_state		; Initialisierung der Karte checken
 	tst r24
 	breq 1f
 	call mmc_init				; neu initialisieren
 	tst r24
-	breq 1f
-#ifdef OS_AVAILABLE
-	call os_exitCS				; os_exitCS()
-#endif	
+	breq 1f	
 	ret							; kein Init moeglich => Fehler
 	1:
 	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten
@@ -179,10 +173,7 @@ mmc_enable:
 	ldi r24, lo8(-1)
 	call mmc_write_byte			; sendet 8 CLK-Flanken
 	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten		
-	call ENA_on	
-#ifdef OS_AVAILABLE
-	call os_exitCS				; os_exitCS()
-#endif	
+	call ENA_on
 	ldi r24, 0	
 	ret							; alles ok
 
@@ -254,9 +245,6 @@ mmc_write_sector:
 	brne 1f 
 	rjmp 4f 					; Return-Code 1
 	1:
-#ifdef OS_AVAILABLE
-	sts os_scheduling_allowed, r1	; os_enterCS()
-#endif
 	ldi r24, lo8(-2)			; Start-Byte an Karte senden
 	call mmc_write_byte
 	in r26, PORT_OUT			; MMC_PORT_OUT einlesen
@@ -312,14 +300,12 @@ mmc_write_sector:
 	1:
 	clr r28						; r28 = 0
 	2:
-#ifdef OS_AVAILABLE
-	sts os_scheduling_allowed, r1	; os_enterCS()
-#endif
 	call mmc_read_byte			; warten, ob Karte noch busy
 	cpi r24, lo8(-1)
 	breq 3f						; == 0xff?
 #ifdef OS_AVAILABLE
 	call os_exitCS 				; os_exitCS()
+	sts os_scheduling_allowed, r1	; os_enterCS()
 #endif
 	dec r28						; r28--
 	brne 2b						; r28 == 0?

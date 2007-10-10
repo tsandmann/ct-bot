@@ -105,7 +105,10 @@ Tcb_t * os_create_thread(uint8_t * pStack, void * pIp) {
 				/* Return-Adresse liegt in Big-Endian auf dem Stack! */
 				*pStack = tmp.lo8;
 				*(pStack-1) = tmp.hi8;
-				ptr->stack = pStack-2;	// 2x push => Stack-Pointer - 2
+				tmp.ip = &os_exitCS;
+				*(pStack-2) = tmp.lo8;
+				*(pStack-3) = tmp.hi8;
+				ptr->stack = pStack-4;	// 4x push => Stack-Pointer - 4
 			}
 			/* TCB zurueckgeben */
 			return ptr;

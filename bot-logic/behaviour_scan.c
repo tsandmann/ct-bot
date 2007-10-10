@@ -34,6 +34,7 @@
 #include "delay.h"
 #include "led.h"
 #include "mmc.h"
+#include <stdlib.h>
 
 #ifdef BEHAVIOUR_SCAN_AVAILABLE
 
@@ -51,26 +52,30 @@ uint8 scan_on_the_fly_source = SENSOR_LOCATION /*| SENSOR_DISTANCE*/;
 uint8_t map_update_stack[MAP_UPDATE_STACK_SIZE];
 static Tcb_t * map_update_thread;
 
-extern uint8_t * map_buffer;	// nur zu Testzwecken
-
+/*!
+ * Main-Funktion des Map-Update-Threads
+ */
 void bot_scan_onthefly_do_map_update(void) {
 	LOG_INFO("MAP-thread started");
-//	static uint32_t cnt = 0;
-	while(1) {
-//		LOG_INFO("%u: MAP is running", cnt++);
-//		
-//		/* Mit der roten LED blinken, f = 2 Hz */
-//		os_enterCS();
-//		LED_on(LED_ROT);	// LED an
-//		os_exitCS();
-//		delay(250);			// 250 ms warten
-//		
-//		os_enterCS();
-//		LED_off(LED_ROT);	// LED aus
-//		os_exitCS();
-//		delay(250);			// 250 ms warten
 #ifdef MMC_WRITE_TEST_AVAILABLE
-		mmc_test(map_buffer);
+	uint8_t * buffer = malloc(512);	// nur zum Testen
+#endif
+	while(1) {
+//		LOG_INFO(MAP is running");
+#ifndef MMC_WRITE_TEST_AVAILABLE
+		/* Mit der roten LED blinken, f = 2 Hz */
+		os_enterCS();
+		LED_on(LED_ROT);	// LED an
+		os_exitCS();
+		delay(250);			// 250 ms warten
+		
+		os_enterCS();
+		LED_off(LED_ROT);	// LED aus
+		os_exitCS();
+		delay(250);			// 250 ms warten
+#else
+		/* MMC-Write-Test parallel ausfuehren */
+		mmc_test(buffer);
 #endif
 
 		//TODO:	Daten aus Cache in Map eintragen, Testfcode raus

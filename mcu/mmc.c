@@ -165,7 +165,6 @@ static uint8 mmc_read_block(uint8_t * cmd, uint8_t * buffer, uint16_t count) {
  * @return	0: alles ok, Fehler von mmc_init() sonst
  */
 uint8_t mmc_enable(void) {
-	os_enterCS();
 	uint8_t result;
 	if (mmc_init_state != 0 && (result=mmc_init()) != 0) return result;  
 	ENA_on(ENA_MMC);
@@ -174,7 +173,6 @@ uint8_t mmc_enable(void) {
 	MMC_DDR &= ~_BV(SPI_DI);
 	SPI_MasterTransmit(-1);
 	ENA_on(ENA_MMC);
-	os_exitCS();
 	return 0;
 }
 
