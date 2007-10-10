@@ -165,7 +165,7 @@ static void map_delete(void);
 #ifdef PC
 	// MMC-Zugriffe emuliert der PC
 	#define mmc_read_sector(block, buffer) memcpy(&buffer,&(map_storage[block]),sizeof(mmc_container_t) );
-	#define mmc_write_sector(block, buffer,dummy) memcpy(&(map_storage[block]),&buffer,sizeof(mmc_container_t) );
+	#define mmc_write_sector(block, buffer) memcpy(&(map_storage[block]),&buffer,sizeof(mmc_container_t) );
 	#define mini_fat_find_block(name, buffer)	mmc_emu_find_block(name, buffer, mmc_emu_get_size())
 #endif
 
@@ -312,7 +312,7 @@ static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
 				LOG_INFO("writing block 0x%04x%04x", (uint16_t)(map_current_block>>16), (uint16_t)map_current_block);
 				uint16_t start_ticks = TIMER_GET_TICKCOUNT_16;
 			#endif
-			mmc_write_sector(map_current_block,map_buffer,0);
+			mmc_write_sector(map_current_block,map_buffer);
 			#ifdef DEBUG_MAP_TIMES
 				uint16_t end_ticks = TIMER_GET_TICKCOUNT_16;
 				LOG_INFO("swapout took %u ms", (end_ticks-start_ticks)*176/1000);
@@ -484,66 +484,54 @@ static void map_update_field (uint16 x, uint16 y, int8 value) {
  * @param value Betrag um den das Feld veraendert wird (>= heisst freier, <0 heisst belegter)
  */
 void map_update_field_circle(uint16 x, uint16 y, uint16 radius, int8 value) {
-	#ifdef OLD_VERSION
-		int16 dX,dY;
-	    uint16 h=radius*radius;
-		for(dX = -radius; dX <= radius; dX++){
-	      for(dY = -radius; dY <= radius; dY++) {
-	           if(dX*dX + dY*dY <= h)	 
-	           	 map_update_field(x + dX, y + dY,value);
-	      }
-		}
-	#else
-		const int16 square = radius*radius;
-		
+	const int16 square = radius*radius;
+
 	//	LOG_DEBUG("Fange an. Zentrum= %d/%d\n",x_map,y_map);
 	//	map_set_field(x_map,y_map,-120);
-		
-		int16 sec_x_max = ((x + radius) / MAP_SECTION_POINTS);
-		int16 sec_x_min = ((x - radius) / MAP_SECTION_POINTS);
-		int16 sec_y_max = ((y + radius) / MAP_SECTION_POINTS);
-		int16 sec_y_min = ((y - radius) / MAP_SECTION_POINTS);
+
+	int16 sec_x_max = ((x + radius) / MAP_SECTION_POINTS);
+	int16 sec_x_min = ((x - radius) / MAP_SECTION_POINTS);
+	int16 sec_y_max = ((y + radius) / MAP_SECTION_POINTS);
+	int16 sec_y_min = ((y - radius) / MAP_SECTION_POINTS);
 	//	LOG_DEBUG("Betroffene Sektionen X: %d-%d, Y:%d-%d\n",sec_x_min,sec_x_max,sec_y_min,sec_y_max);
-				
-		int16 sec_x, sec_y, X, Y,dX,dY;
-		int16 starty,startx, stopx, stopy;
-		// Gehe über alle betroffenen Sektionen 
-		for (sec_y= sec_y_min; sec_y <= sec_y_max; sec_y++) {
-			// Bereich weiter eingrenzen
-			if (sec_y*MAP_SECTION_POINTS > (y-radius))	
-				starty=sec_y*MAP_SECTION_POINTS;
+
+	int16 sec_x, sec_y, X, Y,dX,dY;
+	int16 starty,startx, stopx, stopy;
+	// Gehe über alle betroffenen Sektionen 
+	for (sec_y= sec_y_min; sec_y <= sec_y_max; sec_y++) {
+		// Bereich weiter eingrenzen
+		if (sec_y*MAP_SECTION_POINTS > (y-radius))
+			starty=sec_y*MAP_SECTION_POINTS;
+		else
+			starty=y-radius;
+		if ((sec_y+1)*MAP_SECTION_POINTS < (y+radius))
+			stopy=(sec_y+1)*MAP_SECTION_POINTS;
+		else
+			stopy=y+radius;
+
+		for (sec_x= sec_x_min; sec_x <= sec_x_max; sec_x++) {
+			if (sec_x*MAP_SECTION_POINTS > (x-radius))
+				startx=sec_x*MAP_SECTION_POINTS;
 			else
-				starty=y-radius;
-			if ((sec_y+1)*MAP_SECTION_POINTS < (y+radius))	
-				stopy=(sec_y+1)*MAP_SECTION_POINTS;
+				startx=x-radius;
+			if ((sec_x+1)*MAP_SECTION_POINTS < (x+radius))
+				stopx=(sec_x+1)*MAP_SECTION_POINTS;
 			else
-				stopy=y+radius;
-	
-	
-			for (sec_x= sec_x_min; sec_x <= sec_x_max; sec_x++){
-				if (sec_x*MAP_SECTION_POINTS > (x-radius))	
-					startx=sec_x*MAP_SECTION_POINTS;
-				else
-					startx=x-radius;
-				if ((sec_x+1)*MAP_SECTION_POINTS < (x+radius))	
-					stopx=(sec_x+1)*MAP_SECTION_POINTS;
-				else
-					stopx=x+radius;
-	
-				for (Y = starty; Y < stopy; Y++) {
-					dY= y-Y;	// Distanz berechnen
-					dY*=dY;			// Quadrat vorberechnen
-					for (X = startx; X < stopx; X++){
-						dX= x-X;	// Distanz berechnen
-						dX*=dX;			// Quadrat vorberechnen
-						if(dX + dY <= square)	// wenn Punkt unter Bot	 
-							map_update_field(X,Y,value);	// dann aktualisieren
-			  		}
-				
+				stopx=x+radius;
+
+			for (Y = starty; Y < stopy; Y++) {
+				dY= y-Y; // Distanz berechnen
+				dY*=dY; // Quadrat vorberechnen
+				for (X = startx; X < stopx; X++) {
+					dX= x-X; // Distanz berechnen
+					dX*=dX; // Quadrat vorberechnen
+					if (dX + dY <= square) // wenn Punkt unter Bot	 
+						map_update_field(X, Y, value); // dann aktualisieren
 				}
+
 			}
 		}
-	#endif
+	}
 }
 
 /*!
@@ -659,22 +647,8 @@ void map_update_location(float x, float y) {
 	int16 x_map = map_world_to_map(x);
 	int16 y_map = map_world_to_map(y);
 
-	//#define OLD_VERSION
-	#ifdef OLD_VERSION	
-		// Aktualisiere zuerst die vom Bot selbst belegte Flaeche
-		const int16 dim = BOT_DIAMETER/2*MAP_RESOLUTION/100;	/*!< Botradius in Map-Aufloesung */
-		int16 dX,dY;
-	
-		for(dX = -dim; dX <= dim; dX++)
-	      for(dY = -dim; dY <= dim; dY++) {
-	           if(dX*dX + dY*dY <= dim*dim)	 
-	           	 map_update_free (x_map + dX, y_map + dY,MAP_STEP_FREE_LOCATION);
-	     }
-	#else	// #ifdef OLD_VERSION
-		
-		// Aktualisiere zuerst die vom Bot selbst belegte Flaeche
-		map_update_field_circle(x_map, y_map, BOT_DIAMETER/2*MAP_RESOLUTION/100, MAP_STEP_FREE_LOCATION);
-	#endif //#ifdef OLD_VERSION
+	// Aktualisiere zuerst die vom Bot selbst belegte Flaeche
+	map_update_field_circle(x_map, y_map, BOT_DIAMETER/2*MAP_RESOLUTION/100, MAP_STEP_FREE_LOCATION);
 }
 
 /*!
@@ -975,7 +949,7 @@ void map_flush_cache(void) {
 			LOG_INFO("writing block 0x%04x%04x", (uint16_t)(map_current_block>>16), (uint16_t)map_current_block);
 			uint16_t start_ticks = TIMER_GET_TICKCOUNT_16;
 		#endif
-		mmc_write_sector(map_current_block, map_buffer, 0);
+		mmc_write_sector(map_current_block, map_buffer);
 		#ifdef DEBUG_MAP_TIMES
 			uint16_t end_ticks = TIMER_GET_TICKCOUNT_16;
 			LOG_INFO("swapout took %u ms", (end_ticks-start_ticks)*176/1000);
@@ -1201,7 +1175,7 @@ static void map_info(void) {
 /*!
  * Zeigt die Karte an
  */
-inline void map_print(void){
+void map_print(void){
 	#ifdef PC
 		map_to_pgm("map.pgm");
 	#endif	// PC

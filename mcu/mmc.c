@@ -65,6 +65,7 @@
 
 #include "mmc-low.h"
 #include "mmc-vm.h"
+#include "os_thread.h"
 #include <stdlib.h>
 
 uint8_t mmc_init_state = 1;	/*!< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
@@ -105,9 +106,11 @@ static uint8_t mmc_write_command(uint8_t * cmd);
  * @param count 	Anzahl der zu lesenden Bytes
  */
 static uint8 mmc_read_block(uint8_t * cmd, uint8_t * buffer, uint16_t count) {
+	os_enterCS();
 	/* Kommando cmd an MMC/SD-Karte senden */
 	if (mmc_write_command(cmd) != 0) {
 		mmc_init_state = 1;
+		os_exitCS();
 		return 1;
 	}
 	
@@ -116,12 +119,18 @@ static uint8 mmc_read_block(uint8_t * cmd, uint8_t * buffer, uint16_t count) {
 		LED_on(LED_GRUEN);
 	#endif	// TEST_AVAILABLE
 	#endif	// LED_AVAILABLE
+	os_exitCS();
 	/* Warten auf Start Byte von der MMC/SD-Karte (FEh/Start Byte) */
 	uint8_t timeout = 0;
-	while (mmc_read_byte() != 0xfe) {
+	uint8_t result = 0;
+	while (result != 0xfe) {
+		os_enterCS();
+		result = mmc_read_byte();
+		os_exitCS();
 		if (--timeout == 0) break;
 	}
 
+	os_enterCS();
 	uint16_t i;
 	/* Lesen des Blocks (max 512 Bytes) von MMC/SD-Karte */
 	for (i=0; i<count; i++)
@@ -137,7 +146,8 @@ static uint8 mmc_read_block(uint8_t * cmd, uint8_t * buffer, uint16_t count) {
 	#ifndef TEST_AVAILABLE
 		LED_off(LED_GRUEN);
 	#endif	// TEST_AVAILABLE
-	#endif	// LED_AVAILABLE		
+	#endif	// LED_AVAILABLE
+	os_exitCS();
 	if (timeout == 0) {
 		mmc_init_state = 1;
 		return 1;	// Abbruch durch Timeout
@@ -155,6 +165,7 @@ static uint8 mmc_read_block(uint8_t * cmd, uint8_t * buffer, uint16_t count) {
  * @return	0: alles ok, Fehler von mmc_init() sonst
  */
 uint8_t mmc_enable(void) {
+	os_enterCS();
 	uint8_t result;
 	if (mmc_init_state != 0 && (result=mmc_init()) != 0) return result;  
 	ENA_on(ENA_MMC);
@@ -163,6 +174,7 @@ uint8_t mmc_enable(void) {
 	MMC_DDR &= ~_BV(SPI_DI);
 	SPI_MasterTransmit(-1);
 	ENA_on(ENA_MMC);
+	os_exitCS();
 	return 0;
 }
 
@@ -206,16 +218,6 @@ static uint8_t prepare_transfer_spi(uint8_t cmd, uint32_t addr) {
 		:	"0"		(addr)
 	);
 
-#if MMC_ASYNC_WRITE == 1
-	/* warten bis Karte bereit (evtl. stehen noch cache-write-backs aus) */
-	if (wait_for_byte(0xff) == 0) {
-		/* Timeout */
-		ENA_off(ENA_MMC);		// MMC/SD-Karte inaktiv schalten
-		mmc_init_state = 1;
-		return 2;		
-	}
-#endif	// MMC_ASYNC_WRITE == 1
-
 	/* Kommando senden */
 	SPI_MasterTransmit(cmd);		// 0x51: lesen, 0x schreiben
 	typedef union {
@@ -241,19 +243,25 @@ static uint8_t prepare_transfer_spi(uint8_t cmd, uint32_t addr) {
  * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout
  */	
 uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, uint8_t * buffer) {
+	os_enterCS();
 	/* cmd[] = {0x51,addr,addr,addr,0x00,0xFF} */
 	uint8_t result = prepare_transfer_spi(cmd, addr);
-	if (result != 0) return result;
+	if (result != 0) {
+		os_exitCS();
+		return result;
+	}
 
 #ifdef LED_AVAILABLE
 #ifndef TEST_AVAILABLE
 	LED_on(LED_GRUEN);
 #endif	// TEST_AVAILABLE
 #endif	// LED_AVAILABLE	
+	os_exitCS();	
 	
 	/* Warten auf Start-Byte von der MMC/SD-Karte (0xfe == Start-Byte) */
 	uint16_t timeout = wait_for_byte(0xfe);
 
+	os_enterCS();
 	/* Lesen des Blocks (512 Bytes) von MMC/SD-Karte */
 	uint8_t i,j,k;
 	if (cmd != 0x51) {
@@ -284,7 +292,9 @@ uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, uint8_t * buffer) {
 #ifndef TEST_AVAILABLE
 	LED_off(LED_GRUEN);
 #endif	// TEST_AVAILABLE
-#endif	// LED_AVAILABLE		
+#endif	// LED_AVAILABLE
+	os_exitCS();
+	
 	if (timeout == 0) {
 		mmc_init_state = 1;
 		return 3;	// Abbruch durch Timeout
@@ -296,19 +306,22 @@ uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, uint8_t * buffer) {
  * Schreibt einen 512-Byte Sektor auf die Karte
  * @param addr 		Adresse des 512-Byte Blocks
  * @param buffer 	Zeiger auf den Puffer
- * @param async		0: synchroner, 1: asynchroner Aufruf, siehe MMC_ASYNC_WRITE in mmc-low.h
  * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 24, 2 wenn Timeout bei busy
  */
-uint8_t mmc_write_sector_spi(uint32_t addr, uint8_t * buffer, uint8_t async) {
+uint8_t mmc_write_sector_spi(uint32_t addr, uint8_t * buffer) {
+	os_enterCS();
 	/* cmd[] = {0x58,addr,addr,addr,0x00,0xFF} */
 	uint8_t result = prepare_transfer_spi(0x58, addr);
-	if (result != 0) return result;
+	if (result != 0) {
+		os_exitCS();
+		return result;
+	}
 
 #ifdef LED_AVAILABLE
 #ifndef TEST_AVAILABLE
 	LED_on(LED_ROT);
 #endif	// TEST_AVAILABLE
-#endif	// LED_AVAILABLE	
+#endif	// LED_AVAILABLE
 
 	/* Startbyte an MMC/SD-Karte senden */
 	SPI_MasterTransmit(-2);
@@ -332,18 +345,21 @@ uint8_t mmc_write_sector_spi(uint32_t addr, uint8_t * buffer, uint8_t async) {
 	SPI_MasterTransmit(0xff);
 	SPI_MasterTransmit(0xff);
 	
-	uint16_t timeout = 0xffff;
-	if (async == 0) {
-		/* warten, bis Karte nicht mehr busy */
-		timeout = wait_for_byte(0xff);
-	}
+	os_exitCS();
 	
+	uint16_t timeout = 0xffff;
+	/* warten, bis Karte nicht mehr busy */
+	timeout = wait_for_byte(0xff);
+	
+	os_enterCS();
 	ENA_off(ENA_MMC);		// MMC/SD-Karte inaktiv schalten
 #ifdef LED_AVAILABLE
 #ifndef TEST_AVAILABLE
 	LED_off(LED_ROT);
 #endif	// TEST_AVAILABLE
 #endif	// LED_AVAILABLE
+	os_exitCS();
+	
 	if (timeout == 0) {
 		mmc_init_state = 1;
 		return 3;
@@ -383,6 +399,7 @@ static uint8_t mmc_write_command(uint8_t * cmd) {
  * @return 0 wenn allles ok, sonst Nummer des Kommandos bei dem abgebrochen wurde
  */
 uint8_t mmc_init(void) {
+	os_enterCS();
 	mmc_init_state = 0;
 	
 #ifdef SPI_AVAILABLE
@@ -411,7 +428,8 @@ uint8_t mmc_init(void) {
 			#ifndef TEST_AVAILABLE
 				LED_on(LED_TUERKIS);
 			#endif	// TEST_AVAILABLE
-			#endif	// LED_AVAILABLE				
+			#endif	// LED_AVAILABLE
+			os_exitCS();
 			return 1; // Abbruch bei Kommando 1 (Return Code 1)
 		}
 	}
@@ -429,6 +447,7 @@ uint8_t mmc_init(void) {
 				LED_on(LED_TUERKIS);
 			#endif	// TEST_AVAILABLE
 			#endif	// LED_AVAILABLE
+			os_exitCS();
 			return 2; // Abbruch bei Kommando 2 (Return Code 2)
 		}
 	}
@@ -441,6 +460,7 @@ uint8_t mmc_init(void) {
 	
 	/* MMC/SD-Karte inaktiv schalten */
 	ENA_off(ENA_MMC);
+	os_exitCS();
 	return 0;
 }
 
@@ -484,14 +504,15 @@ uint32_t mmc_get_size(void) {
 	return size;
 }
 
-#endif //MMC_INFO_AVAILABLE
+#endif // MMC_INFO_AVAILABLE
 
 #ifdef MMC_WRITE_TEST_AVAILABLE
 	/*! Testet die MMC-Karte. Schreibt nacheinander 2 Sektoren a 512 Byte mit Testdaten voll und liest sie wieder aus
 	 * !!! Achtung loescht die Karte
+	 * @param *buffer	Zeiger auf einen 512 Byte grossen Puffer
 	 * @return 0, wenn alles ok
 	 */
-	uint8 mmc_test(void){
+	uint8 mmc_test(uint8_t * buffer) {
 		static uint32 sector = 0xf000;
 		/* Initialisierung checken */
 		if (mmc_init_state != 0) 
@@ -563,7 +584,6 @@ uint32_t mmc_get_size(void) {
 			display_cursor(4,1);
 			display_printf("Bei %3u PF: %5u us", pagefaults - old_pf, (end_ticks-start_ticks)*176 + timer_reg*4);
 		#else	// alte Version
-			uint8 buffer[512];
 			uint16 i;
 			uint8 result=0;
 			
@@ -571,24 +591,10 @@ uint32_t mmc_get_size(void) {
 			uint16 start_ticks=TIMER_GET_TICKCOUNT_16;
 			uint8 start_reg=TCNT2;	
 			
-			#if MMC_ASYNC_WRITE == 1
-				/* async-Test (wurde im letzten Durchlauf korrekt geschrieben?) */
-				if (sector > 0xf){
-					result= mmc_read_sector(sector-1, buffer);	
-					if (result != 0){
-						return result*10 + 9;
-					}
-					for (i=0; i<512; i++)
-						if (buffer[i] != (i & 0xFF)){
-							return 10;
-						}				
-				}
-			#endif	// MMC_ASYNC_WRITE
-			
 			// Puffer vorbereiten
 			for (i=0; i< 512; i++)	buffer[i]= (i & 0xFF);
 			// und schreiben
-			result= mmc_write_sector(sector, buffer, 0);
+			result= mmc_write_sector(sector, buffer);
 			if (result != 0){
 				return result*10 + 2;
 			}
@@ -596,7 +602,7 @@ uint32_t mmc_get_size(void) {
 			// Puffer vorbereiten
 			for (i=0; i< 512; i++)	buffer[i]= 255 - (i & 0xFF);	
 			// und schreiben				
-			result= mmc_write_sector(sector+1, buffer, 0);	
+			result= mmc_write_sector(sector+1, buffer);	
 			if (result != 0){
 				return result*10 + 3;
 			}
@@ -626,26 +632,19 @@ uint32_t mmc_get_size(void) {
 				if (buffer[i] != (255- (i & 0xFF))){
 					return 7;	
 				}
-			
-			#if MMC_ASYNC_WRITE == 1
-				for (i=0; i< 512; i++)
-					buffer[i]= (i & 0xFF);
-				result= mmc_write_sector(sector-1, buffer, MMC_ASYNC_WRITE);	
-				if (result != 0){
-					return result*10 + 8;
-				}
-			#endif	// MMC_ASYNC_WRITE
 
 			/* Zeitmessung beenden */
 			int8 timer_reg=TCNT2;
 			uint16 end_ticks=TIMER_GET_TICKCOUNT_16;
 			timer_reg -= start_reg;
 			/* kleine Statistik ausgeben */
+			os_enterCS();
 			display_cursor(3,1);
 			display_printf("Dauer: %5u us     ", (end_ticks-start_ticks)*176 + timer_reg*4);	
 			display_cursor(4,1);
 			display_printf("Sektor:%6u/", sector-2);						
-			display_printf("%6u", sector-1);						
+			display_printf("%6u", sector-1);
+			os_exitCS();
 		#endif	// MMC_VM_AVAILABLE			
 		// hierher kommen wir nur, wenn alles ok ist
 		return 0;
@@ -694,9 +693,10 @@ uint32_t mmc_get_size(void) {
 			#ifdef MMC_WRITE_TEST_AVAILABLE
 				if (mmc_state == 0) {
 					static uint16 time = 0;
+					static uint8_t buffer[512];
 					if (TIMER_GET_TICKCOUNT_16-time > MS_TO_TICKS(200)) {
 						time = TIMER_GET_TICKCOUNT_16;
-						uint8 result = mmc_test();
+						uint8 result = mmc_test(buffer);
 						if (result != 0) {
 							display_cursor(3,1);
 							display_printf("mmc_test()=%u :(", result);

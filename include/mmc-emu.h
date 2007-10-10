@@ -61,11 +61,10 @@ uint8_t mmc_emu_read_sector(uint32_t addr, uint8_t * buffer);
  * Schreibt einen 512-Byte Sektor auf die emulierte Karte
  * @param addr 		Nummer des 512-Byte Blocks
  * @param buffer 	Zeiger auf den Puffer
- * @param async		Wird bei der PC-Version nicht ausgewertet
  * @return 			0 wenn alles ok ist
  * @see				mcu/mmc.c
  */
-uint8_t mmc_emu_write_sector(uint32_t addr, uint8_t * buffer, uint8_t async);
+uint8_t mmc_emu_write_sector(uint32_t addr, uint8_t * buffer);
 
 /*!
  * Liefert die Groesse der emulierten Karte zurueck

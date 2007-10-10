@@ -55,14 +55,12 @@
 
 
 /* TODO:
- *  - Fehler abfangen
  *  - Kontextsicherung pruefen
- *  - Mutex in MMC-Code einbauen
  *  - Code optimieren, unnoetiges Zeug rauswerfen
  *  - Stackgroessen nachrechnen
- *  - #define-Abhaengigkeiten einbauen (nur fuer MCU, MAP und MMC an)
  *  - Doku
  */
+
 #include "ct-Bot.h"
 #ifdef MCU
 #ifdef OS_AVAILABLE
@@ -83,7 +81,7 @@ Tcb_t os_threads[OS_MAX_THREADS];	/*!< Array aller TCBs */
 Tcb_t * os_thread_running = NULL;	/*!< Zeiger auf den TCB des Threads, der gerade laeuft */
 
 /*!
- * Legt einen neuen Thread an und setzt ihn auf runnable.
+ * Legt einen neuen Thread an.
  * Der zuerst angelegt Thread bekommt die hoechste Prioritaet,
  * je spaeter ein Thread erzeugt wird, desto niedriger ist seine
  * Prioritaet, das laesst sich auch nicht mehr aendern!
@@ -159,10 +157,10 @@ void os_thread_yield(void) {
  */
 void os_switch_thread(Tcb_t * from, Tcb_t * to) {
 	os_thread_running = to;
-	// r18 bis r27 und Z wurden bereits beim Eintritt in die Funktion auf dem (korrekten) Stack gesichert!
+	// r18 bis r27 und Z wurden bereits vor dem Eintritt in die Funktion auf dem (korrekten) Stack gesichert!
 	asm volatile(
 //		"push r0									\n\t"
-		"push r1									\n\t"
+		"push r1				; save registers	\n\t"
 		"push r2									\n\t"
 		"push r3									\n\t"
 		"push r4									\n\t"
@@ -179,12 +177,12 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to) {
 		"push r15									\n\t"
 		"push r16									\n\t"
 		"push r17									\n\t"
-		"in r0, __SREG__	; save SREG				\n\t"
+		"in r0, __SREG__		; save SREG			\n\t"
 		"push r0 									\n\t"
-		"call os_switch_helper						\n\t"
+		"call os_switch_helper	; switch stacks		\n\t"
 		"pop r0										\n\t"
-		"out __SREG__, r0	; restore SREG			\n\t"
-		"pop r17									\n\t"
+		"out __SREG__, r0		; restore SREG		\n\t"
+		"pop r17				; restore registers	\n\t"
 		"pop r16									\n\t"			
 		"pop r15									\n\t"
 		"pop r14									\n\t"
@@ -202,7 +200,7 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to) {
 		"pop r2										\n\t"			
 		"pop r1										\n\t"			
 //		"pop r0											"
-		::	"y"(&to->stack), "z"(&from->stack)
+		::	"y"(&to->stack), "z"(&from->stack)	// Stackpointer
 		:	"memory"
 	);
 }

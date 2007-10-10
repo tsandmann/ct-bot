@@ -39,7 +39,7 @@
 #ifdef SPI_AVAILABLE
 #define mmc_read_sector(addr, buffer) mmc_read_sector_spi(0x51, addr, buffer)
 #define mmc_read_block(cmd, buffer, length) mmc_read_sector_spi(cmd[0], 0, buffer)
-#define mmc_write_sector(addr, buffer, async) mmc_write_sector_spi(addr, buffer, async)
+#define mmc_write_sector(addr, buffer) mmc_write_sector_spi(addr, buffer)
 #endif	// SPI_AVAILABLE
 
 /*!
@@ -72,13 +72,12 @@ uint8_t mmc_read_sector(uint32_t addr, uint8_t * buffer);
  * Schreibt einen 512-Byte Sektor auf die Karte
  * @param addr 		Nummer des 512-Byte Blocks
  * @param buffer 	Zeiger auf den Puffer
- * @param async		0: synchroner, 1: asynchroner Aufruf, siehe MMC_ASYNC_WRITE in mmc-low.h
  * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 24, 2 wenn Timeout bei busy
  * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			16.11.2006
  * @see				mmc-low.s
  */
-uint8_t mmc_write_sector(uint32_t addr, uint8_t * buffer, uint8_t async);
+uint8_t mmc_write_sector(uint32_t addr, uint8_t * buffer);
 
 #else
 /*!
@@ -94,10 +93,9 @@ uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, uint8_t * buffer);
  * Schreibt einen 512-Byte Sektor auf die Karte
  * @param addr 		Adresse des 512-Byte Blocks
  * @param buffer 	Zeiger auf den Puffer
- * @param async		0: synchroner, 1: asynchroner Aufruf, siehe MMC_ASYNC_WRITE in mmc-low.h
  * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 24, 2 wenn Timeout bei busy
  */
-uint8_t mmc_write_sector_spi(uint32_t addr, uint8_t * buffer, uint8_t async);
+uint8_t mmc_write_sector_spi(uint32_t addr, uint8_t * buffer);
 #endif	// SPI_AVAILABLE
 
 /*! 
@@ -136,9 +134,10 @@ uint8_t mmc_init (void);
 #ifdef MMC_WRITE_TEST_AVAILABLE
 	/*! Testet die MMC-Karte. Schreibt nacheinander 2 Sektoren a 512 Byte mit testdaten voll und liest sie wieder aus
 	 * !!! Achtung loescht die Karte
+	 * @param *buffer	Zeiger auf einen 512 Byte grossen Puffer	
 	 * @return 0, wenn alles ok
 	 */
-	uint8_t mmc_test(void);
+	uint8_t mmc_test(uint8_t * buffer);
 #endif	// MMC_WRITE_TEST_AVAILABLE
 
 #endif	// MMC_AVAILABLE

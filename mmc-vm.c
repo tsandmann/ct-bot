@@ -63,12 +63,7 @@
 	#define mini_fat_clear_file(addr, buffer) mmc_emu_clear_file(addr)	/*!< Funktion um eine Mini-FAT-Datei zu loeschen */
 #endif	
 
-#if MMC_ASYNC_WRITE == 1
-	#define MAX_PAGES_IN_SRAM MAX_SPACE_IN_SRAM-1	/*!< Anzahl der Cache-Seiten, die maximal im SRAM gehalten werden */
-	static uint8* swap_buffer;						/*!< Puffer fuer asynchrones write-back */
-#else
-	#define MAX_PAGES_IN_SRAM MAX_SPACE_IN_SRAM		/*!< Anzahl der Cache-Seiten, die maximal im SRAM gehalten werden */
-#endif
+#define MAX_PAGES_IN_SRAM MAX_SPACE_IN_SRAM		/*!< Anzahl der Cache-Seiten, die maximal im SRAM gehalten werden */
 
 /*! Struktur eines Cacheeintrags */
 typedef struct {
@@ -283,22 +278,13 @@ static uint8_t mmc_load_page(uint32_t addr) {
 	#ifdef VM_STATS_AVAILABLE
 		stats_data.swap_ins++;
 	#endif
-	#if MMC_ASYNC_WRITE == 1	// im asnychronen Fall holen wir erst die neue Seite, dann kann sich das Zurueckschreiben ruhig Zeit lassen
-		uint8_t * p_tmp = page_cache[next_cacheblock].p_data;
-		if (swap_in(mmc_get_mmcblock_of_page(addr), swap_buffer) != 0) return 3;
-	#endif
 	if (page_cache[next_cacheblock].dirty == 1) {	// Seite zurueckschreiben, falls Daten veraendert wurden
 		#ifdef VM_STATS_AVAILABLE
 			stats_data.swap_outs++;
 		#endif
-		if (swap_out(page_cache[next_cacheblock].addr, page_cache[next_cacheblock].p_data, MMC_ASYNC_WRITE) != 0) return 2;
+		if (swap_out(page_cache[next_cacheblock].addr, page_cache[next_cacheblock].p_data) != 0) return 2;
 	}
-	#if MMC_ASYNC_WRITE == 1
-		page_cache[next_cacheblock].p_data = swap_buffer;
-		swap_buffer = p_tmp;	
-	#else
-		if (swap_in(mmc_get_mmcblock_of_page(addr), page_cache[next_cacheblock].p_data) != 0) return 3;
-	#endif
+	if (swap_in(mmc_get_mmcblock_of_page(addr), page_cache[next_cacheblock].p_data) != 0) return 3;
 //	printf("miss: cacheblock: %d\t", next_cacheblock);
 	#if MAX_PAGES_IN_SRAM > 2
 		if (oldest_cacheblock == next_cacheblock) {
@@ -335,13 +321,6 @@ uint32_t mmcalloc(uint32_t size, uint8_t aligned) {
 			mmc_start_address = swap_space-512;
 			next_mmc_address = mmc_start_address;
 		}
-		#if MMC_ASYNC_WRITE == 1
-			swap_buffer = malloc(512);
-			if (swap_buffer == NULL) return 0;
-		#endif 
-		#ifdef VM_STATS_AVAILABLE
-			stats_data.time = TIMER_GET_TICKCOUNT_32;
-		#endif
 	}
 	uint32 start_addr;
 	if (aligned == 0 || mmc_get_end_of_page(next_mmc_address) == mmc_get_end_of_page(next_mmc_address+size-1)) {
@@ -384,7 +363,7 @@ uint8_t * mmc_get_data(uint32_t addr) {
 uint8_t mmc_page_write_back(uint32_t addr) {
 	int8_t cacheblock = mmc_get_cacheblock_of_page(addr);
 	if (cacheblock < 0) return 1;	// Seite nicht eingelagert
-	if (swap_out(page_cache[cacheblock].addr, page_cache[cacheblock].p_data, MMC_ASYNC_WRITE) != 0) return 2;	// Seite (evtl. asynchron) zurueckschreiben
+	if (swap_out(page_cache[cacheblock].addr, page_cache[cacheblock].p_data) != 0) return 2;	// Seite (evtl. asynchron) zurueckschreiben
 	page_cache[cacheblock].dirty = 0;	// Dirty-Bit zuruecksetzen
 	return 0;
 }
@@ -399,7 +378,7 @@ uint8_t mmc_flush_cache(void) {
 	for (i=0; i<allocated_pages; i++) {
 		if (page_cache[i].dirty == 1) {
 			if (page_cache[i].addr < mmc_get_mmcblock_of_page(swap_space))
-				result += swap_out(page_cache[i].addr, page_cache[i].p_data, 0);	// synchrones Zurueckschreiben
+				result += swap_out(page_cache[i].addr, page_cache[i].p_data);	// synchrones Zurueckschreiben
 			page_cache[i].dirty = 0;
 		}
 	}

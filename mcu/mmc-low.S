@@ -156,12 +156,18 @@ mmc_read_byte:
 .global mmc_enable
 	.type mmc_enable, @function
 mmc_enable:
+#ifdef OS_AVAILABLE
+	sts os_scheduling_allowed, r1	; os_enterCS()
+#endif
 	lds r24, mmc_init_state		; Initialisierung der Karte checken
 	tst r24
 	breq 1f
 	call mmc_init				; neu initialisieren
 	tst r24
 	breq 1f
+#ifdef OS_AVAILABLE
+	call os_exitCS				; os_exitCS()
+#endif	
 	ret							; kein Init moeglich => Fehler
 	1:
 	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten
@@ -174,6 +180,9 @@ mmc_enable:
 	call mmc_write_byte			; sendet 8 CLK-Flanken
 	ldi r24, lo8(ENA_MMC)		; Karte aktiv schalten		
 	call ENA_on	
+#ifdef OS_AVAILABLE
+	call os_exitCS				; os_exitCS()
+#endif	
 	ldi r24, 0	
 	ret							; alles ok
 
@@ -198,7 +207,9 @@ mmc_write_sector:
 	movw r14, r22				; Byte 1 und 2 von Parameter addr sichern
 	mov r16, r24				; Byte 3 von Parameter addr sichern  
 	movw r28, r20				; Parameter Buffer sichern
-	mov r13, r18				; Parameter async sichern
+#ifdef OS_AVAILABLE
+	sts os_scheduling_allowed, r1	; os_enterCS()
+#endif
 #ifdef LED_AVAILABLE
 #ifndef TEST_AVAILABLE
 	lds r24, led
@@ -215,21 +226,6 @@ mmc_write_sector:
 	lsl r14						; Block in Bytes umrechnen
 	rol r15
 	rol r16
-#if MMC_ASYNC_WRITE == 1	
-	clr r27						; r27 = 0
-	1:
-	clr r26						; r26 = 0
-	2:
-	call mmc_read_byte			; warten, ob Karte noch busy
-	cpi r24, lo8(-1)
-	breq 3f						; == 0xff?
-	dec r26						; r26--
-	brne 2b						; r26 == 0?
-	dec r27						; r27--
-	brne 1b						; r27 == 0?
-	rjmp 4f						; Timeout :(
-	3:
-#endif		
 	ldi r24, 88					; Kommando 24 zum Schreiben eines Blocks senden, Byte 0
 	call mmc_write_byte
 	mov r24, r16				; Byte 1
@@ -242,18 +238,25 @@ mmc_write_sector:
 	call mmc_write_byte
 	ldi r24, lo8(-1)			; Byte 5 (CRC)
 	call mmc_write_byte
-	ldi r26, lo8(-1)			; Timeout nach 256 Versuchen
+	clr r13						; Timeout nach 256 Versuchen
 	1:	
 	call mmc_read_byte
 	cpi r24, lo8(-1)			; !0xff = Antwort	
 	brne 3f
-	dec r26						; r26--	
+#ifdef OS_AVAILABLE
+	call os_exitCS 				; os_exitCS()
+	sts os_scheduling_allowed, r1	; os_enterCS()
+#endif
+	dec r13						; r13--	
 	brne 1b
 	3:
-	tst r24	 					; Fehler oder Abbruch durch Timeout?
-	breq 1f 
+	tst r13	 					; Fehler oder Abbruch durch Timeout?
+	brne 1f 
 	rjmp 4f 					; Return-Code 1
-	1:	
+	1:
+#ifdef OS_AVAILABLE
+	sts os_scheduling_allowed, r1	; os_enterCS()
+#endif
 	ldi r24, lo8(-2)			; Start-Byte an Karte senden
 	call mmc_write_byte
 	in r26, PORT_OUT			; MMC_PORT_OUT einlesen
@@ -305,20 +308,23 @@ mmc_write_sector:
 	sbi PORT_OUT, SPI_DO		; DO auf high
 	call mmc_write_byte			; crc-Dummy schreiben	
 	call mmc_write_byte
-#if MMC_ASYNC_WRITE == 1
-	tst r13						; wollten wir asynchron schreiben?
-	brne 3f						; wenn ja, nicht auf busy warten
-#endif	
+	clr r13						; r13 = 0
 	1:
 	clr r28						; r28 = 0
 	2:
+#ifdef OS_AVAILABLE
+	sts os_scheduling_allowed, r1	; os_enterCS()
+#endif
 	call mmc_read_byte			; warten, ob Karte noch busy
 	cpi r24, lo8(-1)
 	breq 3f						; == 0xff?
+#ifdef OS_AVAILABLE
+	call os_exitCS 				; os_exitCS()
+#endif
 	dec r28						; r28--
 	brne 2b						; r28 == 0?
-	dec r27						; r27--
-	brne 1b						; r27 == 0?
+	dec r13						; r13--
+	brne 1b						; r13 == 0?
 	rjmp 5f						; Timeout :(
 	3:
 	ldi r16, 0					; Alles ok, also Return-Code 0 laden :)
@@ -340,7 +346,10 @@ mmc_write_sector:
 	sts led, r24
 	call LED_set				; rote LED aus
 #endif	// TEST_AVAILABLE
-#endif	// LED_AVAILABLE		
+#endif	// LED_AVAILABLE
+#ifdef OS_AVAILABLE
+	call os_exitCS 				; os_exitCS()
+#endif
 	mov	r24, r16				; Return-Code laden	
 	ldi r25, 0
 	pop r29						; allgemeine Register wiederherstellen
@@ -370,6 +379,9 @@ mmc_read_sector:
 	movw r14, r22				; Byte 1 und 2 von Parameter addr sichern
 	mov r16, r24				; Byte 3 von Parameter addr sichern
 	movw r28, r20				; Parameter Buffer sichern
+#ifdef OS_AVAILABLE
+	sts os_scheduling_allowed, r1	; os_enterCS()
+#endif
 #ifdef LED_AVAILABLE
 #ifndef TEST_AVAILABLE
 	lds r24, led
@@ -386,21 +398,6 @@ mmc_read_sector:
 	lsl r14						; Block in Bytes umrechnen
 	rol r15
 	rol r16
-#if MMC_ASYNC_WRITE == 1	
-	clr r27						; r27 = 0
-	1:
-	clr r26						; r26 = 0
-	2:
-	call mmc_read_byte			; warten, ob Karte noch busy
-	cpi r24, lo8(-1)
-	breq 3f						; == 0xff?
-	dec r26						; r26--
-	brne 2b						; r26 == 0?
-	dec r27						; r27--
-	brne 1b						; r27 == 0?
-	rjmp 5f						; Timeout :(	
-	3:
-#endif
 	ldi r24, 81					; Kommando 17 zum Lesen eines Blocks senden, Byte 0	
 	call mmc_write_byte
 	mov r24, r16				; Byte 1
@@ -415,12 +412,18 @@ mmc_read_sector:
 	call mmc_write_byte
 	ldi r16, lo8(-1)			; Timeout bei 256 
 	1:
+#ifdef OS_AVAILABLE
+	sts os_scheduling_allowed, r1	; os_enterCS()
+#endif
 	call mmc_read_byte
 	cpi r24, lo8(-2)			; 0xfe = Startbyte	
 	breq 2f
 	call mmc_read_byte			; Noch ein Versuch
 	cpi r24, lo8(-2)	
 	breq 2f	
+#ifdef OS_AVAILABLE
+	call os_exitCS				; os_ExitCS()
+#endif
 	dec r16 
 	brne 1b
 	rjmp 4f						; Timeout, also abbrechen :(
@@ -504,6 +507,9 @@ mmc_read_sector:
 	call LED_set				; gruene LED aus
 #endif	// TEST_AVAILABLE
 #endif	// LED_AVAILABLE
+#ifdef OS_AVAILABLE
+	call os_exitCS				; os_exitCS();
+#endif
 	mov r24, r16				; Return-Code laden
 	ldi r25, 0
 	pop r29						; allgemeine Register wiederherstellen

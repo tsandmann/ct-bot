@@ -65,12 +65,6 @@ void os_schedule(uint32_t tickcount) {
 					break;
 				}
 			}
-		} else {
-			/* Kein Thread lauffaehig => schlafen */
-			// Derzeit ist der Bot schlaflos, wir verlassen den Scheduler hier einfach als waere nix gewesen 8-)
-			// *irgendein* Thread muss ja schliesslich vorher gelaufen sein, allerdings ist unsere ReadyQueue nun irgendwie inkonsistent
-			break;
-			//TODO:	Noch mal ueberlegen, ob das ueberhaupt sein kann
 		}
 	}
 

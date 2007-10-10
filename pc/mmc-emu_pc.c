@@ -136,11 +136,10 @@ uint8_t mmc_emu_read_sector(uint32_t addr, uint8_t * buffer) {
  * Schreibt einen 512-Byte Sektor auf die emulierte Karte
  * @param addr 		Nummer des 512-Byte Blocks
  * @param buffer 	Zeiger auf den Puffer
- * @param async		Wird bei der PC-Version nicht ausgewertet
  * @return 			0 wenn alles ok ist
  * @see				mcu/mmc.c
  */
-uint8_t mmc_emu_write_sector(uint32_t addr, uint8_t * buffer, uint8_t async) {
+uint8_t mmc_emu_write_sector(uint32_t addr, uint8_t * buffer) {
 	if (mmc_emu_get_init_state() != 0 && mmc_emu_init() !=0) return 1;
 	if (fseek(mmc_emu_file, addr<<9, SEEK_SET) != 0) return 2;	// Adresse in Byte umrechnen und an Dateiposition springen
 	if (fwrite(buffer, 512, 1, mmc_emu_file) != 1) return 3;	// Block schreiben
@@ -186,7 +185,7 @@ void mmc_emu_clear_file(uint32_t file_start) {
 	/* Alle Bloecke der Datei mit dem 0-Puffer ueberschreiben */
 	uint32_t addr;
 	for (addr=file_start; addr<file_start+length; addr++) {
-		if (mmc_emu_write_sector(addr, buffer, 0) != 0) return;
+		if (mmc_emu_write_sector(addr, buffer) != 0) return;
 	}
 }
 

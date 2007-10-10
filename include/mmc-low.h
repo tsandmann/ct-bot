@@ -39,7 +39,5 @@
 #define SPI_CLK			7		/*!< Port Pin an dem die Clock der MMC/SD-Karte angeschlossen ist (clk) */
 
 #define MMC_TIMEOUT		500		/*!< Wartezyklen auf Cardresponse */
-#define MMC_ASYNC_WRITE	0		/*!< 1 Aktiviert asynchrones Schreiben auf die Karte, wo es sinnvoll ist, 0 schaltet es aus. Funktioniert allerdings nicht mit allen Karten */ 
-
 
 #endif	// MMC_LOW_H

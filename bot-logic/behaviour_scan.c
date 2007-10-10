@@ -33,6 +33,7 @@
 #include "os_thread.h"
 #include "delay.h"
 #include "led.h"
+#include "mmc.h"
 
 #ifdef BEHAVIOUR_SCAN_AVAILABLE
 
@@ -50,22 +51,27 @@ uint8 scan_on_the_fly_source = SENSOR_LOCATION /*| SENSOR_DISTANCE*/;
 uint8_t map_update_stack[MAP_UPDATE_STACK_SIZE];
 static Tcb_t * map_update_thread;
 
+extern uint8_t * map_buffer;	// nur zu Testzwecken
+
 void bot_scan_onthefly_do_map_update(void) {
 	LOG_INFO("MAP-thread started");
-	static uint32_t cnt = 0;
+//	static uint32_t cnt = 0;
 	while(1) {
-		LOG_INFO("%u: MAP is running", cnt++);
-		
-		/* Mit der roten LED blinken, f = 2 Hz */
-		os_enterCS();
-		LED_on(LED_ROT);
-		os_exitCS();
-		delay(250);
-		
-		os_enterCS();
-		LED_off(LED_ROT);
-		os_exitCS();
-		delay(250);
+//		LOG_INFO("%u: MAP is running", cnt++);
+//		
+//		/* Mit der roten LED blinken, f = 2 Hz */
+//		os_enterCS();
+//		LED_on(LED_ROT);	// LED an
+//		os_exitCS();
+//		delay(250);			// 250 ms warten
+//		
+//		os_enterCS();
+//		LED_off(LED_ROT);	// LED aus
+//		os_exitCS();
+//		delay(250);			// 250 ms warten
+#ifdef MMC_WRITE_TEST_AVAILABLE
+		mmc_test(map_buffer);
+#endif
 
 		//TODO:	Daten aus Cache in Map eintragen, Testfcode raus
 	}
@@ -78,7 +84,9 @@ void bot_scan_onthefly_do_map_update(void) {
 void bot_scan_onthefly_init(void) {
 #ifdef OS_AVAILABLE
 	map_update_thread = os_create_thread(&map_update_stack[MAP_UPDATE_STACK_SIZE-1], bot_scan_onthefly_do_map_update);
-	LOG_INFO("MAP-thread created");
+	if (map_update_thread != NULL) {
+		LOG_INFO("MAP-thread created");
+	}
 #endif	// OS_AVAILABLE
 }
 

@@ -122,7 +122,7 @@ void create_emu_mini_fat_file(uint32_t addr, const char* id_string, uint32_t siz
 		p_buffer[259] = length.u8[0];
 		
 		/* Datei-Header schreiben */
-		if (mmc_emu_write_sector(addr/512, p_buffer, 0) != 0) {
+		if (mmc_emu_write_sector(addr/512, p_buffer) != 0) {
 			printf("Datei konnte nicht korrekt geschrieben werden!\n");
 			return;
 		}
@@ -159,7 +159,7 @@ void delete_emu_mini_fat_file(const char* id_string) {
 		/* Datei leeren und Header loeschen */
 		mmc_clear_file(addr);
 			
-		if (mmc_emu_write_sector(addr-1, p_buffer, 0) != 0) {
+		if (mmc_emu_write_sector(addr-1, p_buffer) != 0) {
 			printf("Datei konnte nicht korrekt geloescht werden!\n");
 			return;
 		}

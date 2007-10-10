@@ -100,6 +100,10 @@ static inline void os_thread_sleep(uint32_t sleep) {
  */
 void os_thread_yield(void);
 
+#else 	// OS_AVAILABLE
+
+#define os_enterCS()	// NOP
+#define os_exitCS()		// NOP
 
 #endif	// OS_AVAILABLE
 #endif	// MCU
