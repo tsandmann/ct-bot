@@ -34,55 +34,48 @@
 #include "timer.h"
 #include "os_scheduler.h"
 
-#define OS_MAX_THREADS	5
+#define OS_MAX_THREADS	5	/*!< maximale Anzahl an Threads im System */
 
-#define	OS_TS_RUNNABLE	0
-#define OS_TS_RUNNING	1 
-#define	OS_TS_BLOCKED	2 
-
+/*! TCB eines Threads */
 typedef struct {
-	uint8_t * stack;
-	uint8_t state;
-	uint32_t nextSchedule;
+	uint8_t * stack;		/*!< Stack-Pointer */
+	uint32_t nextSchedule;	/*!< Zeitpunkt der naechsten Ausfuehrung. Ergibt im Zusammenhang mit der aktuellen Zeit den Status eines Threads. */
+	uint32_t lastSchedule;	/*!< Zeitpunkt der letzten Ausfuehrung */
 } Tcb_t;
 
-extern Tcb_t os_threads[OS_MAX_THREADS];
-extern Tcb_t * os_thread_running; 
+extern Tcb_t os_threads[OS_MAX_THREADS];	/*!< Thread-Pool (ist gleichzeitig running- und waiting-queue) */
+extern Tcb_t * os_thread_running;			/*!< Zeiger auf den Thread, der zurzeit laeuft */ 
 
 /*!
  * Legt einen neuen Thread an und setzt ihn auf runnable.
  * Der zuerst angelegt Thread bekommt die hoechste Prioritaet,
  * je spaeter ein Thread erzeugt wird, desto niedriger ist seine
  * Prioritaet, das laesst sich auch nicht mehr aendern!
- * @param *pStack	Zeiger auf den Stack des neuen Threads
- * @param *pIp		Zeiger auf die Main-Funktion des Threads
+ * @param *pStack	Zeiger auf den Stack (Ende!) des neuen Threads
+ * @param *pIp		Zeiger auf die Main-Funktion des Threads (Instruction-Pointer)
  * @return			Zeiger auf den TCB des angelegten Threads
  */
-Tcb_t * os_create_thread(void * pStack, void * pIp);
+Tcb_t * os_create_thread(uint8_t * pStack, void * pIp);
 
 /*!
- * Schuetzt den folgenden Block (bis exitCS()) vor Threadswitches
+ * Schuetzt den folgenden Block (bis exitCS()) vor Threadswitches.
+ * Ermoeglicht einfaches Locking zum exklusiven Ressourcen-Zugriff.
  */
 #define os_enterCS() {								\
 	os_scheduling_allowed = 0;						\
 }
 
 /*!
- * Beendet den kritischen Abschnitt wieder, der mit enterCS began
+ * Beendet den kritischen Abschnitt wieder, der mit enterCS began.
+ * Falls ein Scheduler-Aufruf ansteht, wird er nun ausgefuehrt.
  */
-#define os_exitCS() {								\
-	uint8_t sreg = SREG;							\
-	cli();											\
-	os_scheduling_allowed = 1;						\
-	if (os_reschedule == 1) {						\
-		SREG = sreg;								\
-		os_schedule(TIMER_GET_TICKCOUNT_32);		\
-	} else SREG = sreg;								\
-}
+void os_exitCS(void);
 
 /*!
  * Schaltet "von aussen" auf einen neuen Thread um. 
  * => kernel threadswitch
+ * Achtung, es wird erwartet, dass Interrupts an sind. 
+ * Sollte eigentlich nur vom Scheduler aus aufgerufen werden!
  * @param *from	Zeiger auf TCB des aktuell laufenden Threads
  * @param *to	Zeiger auf TCB des Threads, der nun laufen soll
  */
@@ -92,45 +85,21 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to);
  * Blockiert den aktuellten Thread fuer die angegebene Zeit und schaltet
  * auf einen anderen Thread um 
  * => coorporative threadswitch
- * @param ms		Zeit in ms, die der aktuellte Thread blockiert wird
- * @param *thread	Zeiger auf den TCB des Threads, auf dne umgeschaltet wird	
+ * @param sleep		Zeit in ms, die der aktuelle Thread blockiert wird
  */
-static inline void os_thread_sleep(uint32_t ms, Tcb_t * thread) { 
-	//TODO:	Irgendwie dumm, wenn man einen Zielthread angeben muss, NULL-Fall ist aber 
-	//		komplizierter zu behandeln
-	os_enterCS();
-	os_thread_running->nextSchedule = TIMER_GET_TICKCOUNT_32 + ms;
-	os_thread_running->state = OS_TS_BLOCKED;
-	thread->state = OS_TS_RUNNING;
-	thread->nextSchedule = 0;
-	asm volatile(
-		"in r0, __SREG__	; save SREG				\n\t"
-		"cli				; Interrupts off		\n\t"
-		"ldi r16, lo8(1f)	; save IP				\n\t"
-		"push r16									\n\t"
-		"ldi r16, hi8(1f)							\n\t"
-		"push r16									\n\t"
-		"in r16, __SP_L__	; switch Stack			\n\t"
-		"st Z+, r16									\n\t"	
-		"in r16, __SP_H__							\n\t"
-		"st Z, r16									\n\t"	
-		"ld r16, X+ 								\n\t"
-		"out __SP_L__, r16							\n\t"
-		"ld r16, X 									\n\t"
-		"out __SP_H__, r16							\n\t"
-		"out __SREG__, r0	; restore SREG			\n\t" 
-		"ret 				; continue as 'thread'	\n\t"
-		"1:				 								"
-		::	"x"(&thread->stack), "z"(&os_thread_running->stack)
-			/* clobber */
-		:	"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8",
-			"r9",  "r10", "r11", "r12", "r13", "r14", "r15","r16",
-			"r17", "r18", "r19", "r20", "r21", "r22","r23", "r24",
-			"r25", "memory"
-			//TODO:	Nachdenken, ob das alle Regs abdeckt
-	);
-	os_exitCS();
+static inline void os_thread_sleep(uint32_t sleep) {
+	uint32_t sleep_ticks = MS_TO_TICKS(sleep);
+	uint32_t now = TIMER_GET_TICKCOUNT_32;
+	os_thread_running->nextSchedule = now + sleep_ticks;
+	os_schedule(now);
 }
+
+/*!
+ * Schaltet auf den Thread mit der naechst niedrigeren Prioritaet um, der lauffaehig ist,
+ * indem ihm der Rest der Zeitscheibe geschenkt wird.
+ */
+void os_thread_yield(void);
+
 
 #endif	// OS_AVAILABLE
 #endif	// MCU

@@ -31,6 +31,8 @@
 #include "display.h"
 #include "log.h"
 #include "os_thread.h"
+#include "delay.h"
+#include "led.h"
 
 #ifdef BEHAVIOUR_SCAN_AVAILABLE
 
@@ -43,21 +45,42 @@ uint8 scan_on_the_fly_source = SENSOR_LOCATION /*| SENSOR_DISTANCE*/;
 
 #ifdef OS_AVAILABLE
 
-// *** nur ein Entwurf!!! *** //
-
 //TODO:	Stacksize nachrechnen
-#define MAP_UPDATE_STACK_SIZE	64	
+#define MAP_UPDATE_STACK_SIZE	128	// nur wegen logging zu Testzwecken so gross	
 uint8_t map_update_stack[MAP_UPDATE_STACK_SIZE];
 static Tcb_t * map_update_thread;
 
 void bot_scan_onthefly_do_map_update(void) {
-	//TODO:	Daten aus Cache in Map eintragen
-}
+	LOG_INFO("MAP-thread started");
+	static uint32_t cnt = 0;
+	while(1) {
+		LOG_INFO("%u: MAP is running", cnt++);
+		
+		/* Mit der roten LED blinken, f = 2 Hz */
+		os_enterCS();
+		LED_on(LED_ROT);
+		os_exitCS();
+		delay(250);
+		
+		os_enterCS();
+		LED_off(LED_ROT);
+		os_exitCS();
+		delay(250);
 
-void bot_scan_onthefly_init(void) {
-	map_update_thread = os_create_thread(map_update_stack, bot_scan_onthefly_do_map_update);
+		//TODO:	Daten aus Cache in Map eintragen, Testfcode raus
+	}
 }
 #endif	// OS_AVAILABLE
+
+/*!
+ * Initialisiert das Scan-Verhalten
+ */
+void bot_scan_onthefly_init(void) {
+#ifdef OS_AVAILABLE
+	map_update_thread = os_create_thread(&map_update_stack[MAP_UPDATE_STACK_SIZE-1], bot_scan_onthefly_do_map_update);
+	LOG_INFO("MAP-thread created");
+#endif	// OS_AVAILABLE
+}
 
 /*!
  * Der Roboter aktualisiert kontinuierlich seine Karte
@@ -118,7 +141,13 @@ void bot_scan_onthefly_behaviour(Behaviour_t *data) {
 
 #ifdef OS_AVAILABLE
 	//TODO:	Cache fuellen anstatt der Map-Update-Aufrufe oben!
-	os_thread_sleep(5, map_update_thread);
+//	LOG_INFO("MAIN is going to sleep for 100 ms");
+//	os_thread_sleep(100L);
+	
+	/* Rest der Zeitscheibe (5 ms) schlafen legen */
+	os_thread_yield();
+	
+//	LOG_INFO("MAIN is back! :-)");
 #endif	// OS_AVAILABLE
 }
 

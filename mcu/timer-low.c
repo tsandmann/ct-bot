@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	timer-low.c
- * @brief 	Timer und counter für den Mikrocontroller
+/*! 
+ * @file 	timer-low.c
+ * @brief 	Timer und Counter fuer den Mikrocontroller
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 
 #ifdef MCU
 
@@ -40,6 +41,11 @@
 #include "ir-rc5.h"
 #include "sensor-low.h"
 #include "bot-local.h"
+#include "os_scheduler.h"
+
+#ifdef OS_AVAILABLE
+	static uint8_t scheduler_ticks = 0;
+#endif
 
 // ---- Timer 2 ------
 
@@ -47,12 +53,14 @@
   Interrupt Handler fuer Timer/Counter 2(A)
  */
 #ifdef __AVR_ATmega644__
-	SIGNAL (TIMER2_COMPA_vect){
+	ISR(TIMER2_COMPA_vect) {
 #else
-	SIGNAL (SIG_OUTPUT_COMPARE2){
+	ISR(SIG_OUTPUT_COMPARE2) {
 #endif
 	/* ----- TIMER ----- */
-	tickCount.u32++;	// TickCounter [176 us] erhoehen
+	uint32_t ticks = tickCount.u32;	// TickCounter [176 us] erhoehen
+	ticks++;
+	tickCount.u32 = ticks;	// optimiert volatile weg, weil Ints eh aus sind
 	sei(); 	// Interrupts wieder an, z.B. UART-Kommunikation kann parallel zu RC5 und Encoderauswertung laufen   
 	/* - FERNBEDIENUNG - */
 	#ifdef IR_AVAILABLE
@@ -60,16 +68,25 @@
 	#endif	
 	/* --- RADENCODER --- */
 	bot_encoder_isr();
+	
+	/* --- SCHEDULER --- */
+	#ifdef OS_AVAILABLE
+		/* Scheduling-Frequenz betraegt ca. 1 kHz */
+		if ((uint8_t)((uint8_t)ticks-scheduler_ticks) > MS_TO_TICKS(OS_TIME_SLICE)) {
+			scheduler_ticks = (uint8_t)ticks;
+			os_schedule(ticks);
+		}
+	#endif	// OS_AVAILABLE
 }
 
 /*!
  * initilaisiert Timer 0 und startet ihn 
  */
-void timer_2_init(void){
+void timer_2_init(void) {
 	TCNT2  = 0x00;            // TIMER vorladen
 	
 	// aendert man den Prescaler muss man die Formel fuer OCR2 anpassen !!!
-	// Compare Register nur 8-Bit breit --> evtl. teiler anpassen
+	// Compare Register nur 8-Bit breit --> evtl. Teiler anpassen
 	#ifdef __AVR_ATmega644__
 		TCCR2A = _BV(WGM21);	// CTC Mode
 		TCCR2B = _BV(CS22);		// Prescaler = CLK/64
@@ -81,7 +98,7 @@ void timer_2_init(void){
 		OCR2 = ((XTAL/64/TIMER_2_CLOCK) - 1);
 		TIMSK  |= _BV(OCIE2);	// enable Output Compare 0 overflow interrupt
 	#endif
-	
+
 	sei();                       // enable interrupts
 }
-#endif
+#endif	// MCU

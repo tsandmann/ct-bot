@@ -30,6 +30,7 @@
 #include "os_utils.h"
 #include "os_thread.h"
 #include <stdlib.h>
+#include "log.h"
 
 volatile uint8_t os_scheduling_allowed = 1;
 uint8_t os_reschedule = 0;
@@ -44,6 +45,8 @@ void os_schedule(uint32_t tickcount) {
 		os_reschedule = 1;
 		return;
 	}
+
+	os_reschedule = 0;
 	
 	/* Naechsten lauffaehigen Thread mit hoechster Prioritaet suchen. 
 	 * Das ist zwar in O(n), aber wir haben nur eine sehr beschraenkte Anzahl an Threads! */
@@ -51,21 +54,22 @@ void os_schedule(uint32_t tickcount) {
 	Tcb_t * ptr = os_threads;
 	for (i=0; i<OS_MAX_THREADS; i++, ptr++) {
 		if (ptr->stack != NULL) {
-			if (ptr->nextSchedule <= tickcount) {
+			if (ptr->nextSchedule < tickcount) {
 				if (ptr != os_thread_running) {
 					/* switch Thread */
+					ptr->lastSchedule = tickcount;
 					os_switch_thread(os_thread_running, ptr);
-					return;
+					break;
 				} else {
 					/* aktiver Thread darf weiterlaufen */
-					return;
+					break;
 				}
 			}
 		} else {
 			/* Kein Thread lauffaehig => schlafen */
 			// Derzeit ist der Bot schlaflos, wir verlassen den Scheduler hier einfach als waere nix gewesen 8-)
 			// *irgendein* Thread muss ja schliesslich vorher gelaufen sein, allerdings ist unsere ReadyQueue nun irgendwie inkonsistent
-			return;
+			break;
 			//TODO:	Noch mal ueberlegen, ob das ueberhaupt sein kann
 		}
 	}

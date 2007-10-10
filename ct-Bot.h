@@ -80,6 +80,7 @@
 //#define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung */
 //#define SPI_AVAILABLE			/*!< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren - Hinweise in mcu/mmc.c beachten! */
 //#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
+//#define OS_AVAILABLE			/*!< Aktiviert BotOS fuer Threads und Scheduling */
 
 // Achtung, Linkereinstellungen anpassen !!!!! (siehe Documentation/Bootloader.html)!
 //#define BOOTLOADER_AVAILABLE	/*!< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders. Achtung, Linkereinstellungen anpassen (siehe mcu/bootloader.c)! */
@@ -120,6 +121,7 @@
 
 	#define COMMAND_AVAILABLE		/*!< High-Level Communication */
 	#undef USE_MINILOG
+	#undef OS_AVAILABLE
 #endif
 
 #ifdef MCU
@@ -180,8 +182,12 @@
 	#undef SPEED_LOG_AVAILABLE
 	
 	#ifdef MCU
-		#undef MAP_AVAILABLE	// NMap geht auf dem MCU nur mit MMC
+		#undef MAP_AVAILABLE	// Map geht auf dem MCU nur mit MMC
 	#endif
+#endif
+
+#ifndef MAP_AVAILABLE
+	#undef OS_AVAILABLE		// das BotOS brauchen wir derzeit nur fuer Map mit MMC
 #endif
 
 #ifdef LOG_AVAILABLE

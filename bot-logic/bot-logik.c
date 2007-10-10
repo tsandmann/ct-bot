@@ -157,6 +157,7 @@ void bot_behave_init(void){
 	#ifdef BEHAVIOUR_SCAN_AVAILABLE
 		// Verhalten, das die Umgebung des Bots on-the fly beim fahren scannt
 		insert_behaviour_to_list(&behaviour, new_behaviour(202, bot_scan_onthefly_behaviour,ACTIVE));
+		bot_scan_onthefly_init();
         // vom Notfallverhalten wird Position des Abgrundes in Map eingetragen durch
 		// Aufruf dieser registrierten Proc
 		#ifdef MAP_AVAILABLE 	    

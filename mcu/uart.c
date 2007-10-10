@@ -104,19 +104,19 @@ void uart_init(void){
 #else
 	SIGNAL (SIG_UART_RECV){
 #endif
-	UCSRB &= ~(1 << RXCIE);	// diesen Interrupt aus (denn ISR ist nicht reentrant)
-	sei();					// andere Interrupts wieder an
-	if (infifo.count == BUFSIZE_IN){   
-		/* ERROR! Receive buffer full!
-		 * => Pufferinhalt erst verarbeiten - das funktioniert besser als es aussieht. ;-)
-		 * Ist allerdings nur dann clever, wenn das ausgewertete Command nicht mehr Daten per
-		 * uart_read() lesen will, als bereits im Puffer sind, denn der Interrupt ist ja aus... */
-		#ifdef BOT_2_PC_AVAILABLE
-			bot_2_pc_listen();		// Daten des Puffers auswerten
-		#endif
-	}
+//	UCSRB &= ~(1 << RXCIE);	// diesen Interrupt aus (denn ISR ist nicht reentrant)
+//	sei();					// andere Interrupts wieder an
+//	if (infifo.count == BUFSIZE_IN){   
+//		/* ERROR! Receive buffer full!
+//		 * => Pufferinhalt erst verarbeiten - das funktioniert besser als es aussieht. ;-)
+//		 * Ist allerdings nur dann clever, wenn das ausgewertete Command nicht mehr Daten per
+//		 * uart_read() lesen will, als bereits im Puffer sind, denn der Interrupt ist ja aus... */
+//		#ifdef BOT_2_PC_AVAILABLE
+//			bot_2_pc_listen();		// Daten des Puffers auswerten
+//		#endif
+//	}
 	_inline_fifo_put(&infifo, UDR);
-	UCSRB |= (1 << RXCIE);	// diesen Interrupt wieder an 	
+//	UCSRB |= (1 << RXCIE);	// diesen Interrupt wieder an 	
 }
 
 /*!

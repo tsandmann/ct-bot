@@ -83,6 +83,7 @@
 #include "mmc-vm.h"
 #include "gui.h"
 #include "ui/available_screens.h"
+#include "os_thread.h"
 
 /*!
  * Der Mikrocontroller und der PC-Simulator brauchen ein paar Einstellungen, 
@@ -96,6 +97,9 @@ void init(void){
 		PORTD=0; DDRD=0;
 			
 		wdt_disable();	// Watchdog aus!
+		#ifdef OS_AVAILABLE
+			os_create_thread((uint8_t *)SP, NULL);	// Hauptthread anlegen
+		#endif
 		timer_2_init();
 		
 		/* Ist das ein Power on Reset? */

@@ -31,6 +31,8 @@
 #ifdef MCU
 #ifdef OS_AVAILABLE
 
+#define OS_TIME_SLICE	5	/*!< Dauer einer Zeitscheibe in ms */
+
 extern volatile uint8_t os_scheduling_allowed;
 extern uint8_t os_reschedule;
 

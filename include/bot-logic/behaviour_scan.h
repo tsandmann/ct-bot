@@ -42,6 +42,11 @@ extern uint8 scan_on_the_fly_source;
 #define bot_scan_onthefly( sensor) {scan_on_the_fly_source = sensor;}
 
 /*!
+ * Initialisiert das Scan-Verhalten
+ */
+void bot_scan_onthefly_init(void);
+
+/*!
  * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
  * @param *data der Verhaltensdatensatz
  */
