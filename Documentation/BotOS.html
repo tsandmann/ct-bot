@@ -1,0 +1,122 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="description" content="Uebersicht des Mini-OS des c't-Bots" />
+<meta name="author" content="Timo Sandmann" />
+<meta name="keywords" content="c't-Bot,speedcontrol,Motorregelung,pid" />
+<meta name="date" content="2007-10-14" />
+<title>c't-Bot - BotOS</title>
+<link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+<body>
+<h1>Dokumentation zum c't-Bot-Minibetriebssystem</h1>
+<br />
+
+<a class="menu" href="#allgemeines">Allgemeines</a><br />
+<a class="menu" href="#interna">Interne Details</a><br />
+<a class="menu" href="#hinweise">Weitere Hinewise</a><br />
+
+<a name="allgemeines"></a><h2>Allgemeines</h2>
+<p>Unser kleines BotOS kann mehrere Aufgaben "parallel" abarbeiten.<br />
+ Die ausfuehrenden Einheiten heissen<span class="function"> Thread</span> (denn sie leben ja alle im selben
+ Adressraum).<br />
+ Es gibt nur einen Scheduler, daher wird nicht weiter zwischen Kernel-Level-Threads 
+ und User-Level-Threads unterschieden.<br />
+ Ein Thread besteht aus einem<span class="function"> Stack</span>, einem Timestamp<span class="function"> fruehester Zeitpunkt 
+ der naechsten Ausfuehrung</span> und der<span class="function"> letzten Laufzeit</span>, die zusammen den<span class="function"> Thread 
+ Control Block (TCB)</span> bilden, und indirekt einer<span class="function"> Prioritaet</span>.<br /> 
+ Der zuerst angelegte Thread hat die hoechste Prioritaet, der naechste die 
+ Zweithoechste usw. <br />
+ Es kann somit keine Prioritaet doppelt vergeben werden.<br />
+ Threads koennen zwar zur Laufzeit erzeugt, aber nicht wieder beendet werden.</p> 
+ 
+ <p>Ein Thread kann eine beliebige Anzahl an ms schlafen und somit die Kontrolle
+ an einen anderen Thread abgeben, indem er<span class="function"> os_thread_sleep(ms)</span> aufruft.<br /> 
+ Ruft ein Thread<span class="function"> os_thread_yield()</span> auf, schlaeft er (mindestens) fuer die Dauer 
+ einer Zeitscheibe minus seiner bisherigen Laufzeit. Man muss<span class="function"> yield()</span> also periodisch 
+ aufrufen, damit das Ganze Sinn macht. Die Berechnung ist nur dann korrekt, wenn
+ der Thread, der yield() benutzt, nicht laenger als 44 ms blockiert wird, weil hier
+ zum Teil in 8 Bit gerechnet wird (Effizienzvorteil). Der Gedanke dahinter ist, dass
+ ein Thread, der nur selten laueft, keine so exakte Zeitangabe der naechsten Ausfuehrung
+ benoetigt und deshalb einfach<span class="function"> sleep()</span> benutzen kann (s.o.).</p>
+ 
+ <p>Eine Zeitscheibe dauert derzeit 10 ms, einstellen laesst sich das in os_scheduler.h
+ mit dem<span class="function"> #define OS_TIME_SLICE</span> in ms-Schritten.<br />
+ Die Scheduling-Aufloesung betraegt ca. 1 ms.</p>
+ 
+ <p>Wacht ein hoeher prioraer Thread wieder auf (= Schlafzeit zuende), wird dem 
+ Aktuellen die Ausfuehrung entzogen.</p>
+ 
+ <p>Identifiziert werden Threads durch die (eindeutige) Adresse ihres<span class="function"> TCBs</span>.</p> 
+ 
+ <p>Die Anzahl der moeglichen Threads ist durch<span class="function"> OS_MAX_THREADS</span> in os_thread.h festgelegt.
+ Hier sollte man nicht mehr als noetig einstellen, um RAM zu sparen (es gibt ein statisches
+ Array fuer alle TCBs der Groesse OS_MAX_THREADS).<br />
+</p>
+
+
+<a name="interna"></a><h2>Interne Details</h2>
+<p>Dieser Abschnitt ist nur dann wichtig, wenn man etwas am Scheduler und / oder an der
+Timer-ISR veraendern oder erweitern moechte.</p>
+
+<p><span class="function">os_switch_thread()</span> darf ausschliesslich vom Scheduler aus aufgerufen werden!<br />
+<span class="function">os_switch_helper()</span> kann nur von<span class="function"> os_switch_thread()</span> verwendet werden!</p>
+ 
+<p>Man kann den Teil der Timer-ISR, der den Scheduler aufruft und den Scheduler selbst
+als eine Art<span class="function"> Kernel</span> ansehen. Es gibt jedoch (aus Effizienzgruenden) <b>keinen</b> Kernel-Stack, 
+weder pro Thread, noch einen Allgemeinen. Das hat zur Folge, dass ein vom Scheduler 
+angestossener Threadwechsel <b>sofort</b> ausgefuehrt wird. <br />
+Falls also ein Threadwechsel von <i>A</i> nach <i>B</i> ansteht, wird die Scheduler-Funktion (und die 
+Timer-ISR ebenfalls) von <i>Thread A</i> aufgerufen und von <i>Thread B</i>(!) wieder verlassen. Erfolgt 
+spaeter umgekehrt ein Wechsel von <i>B</i> zurueck nach <i>A</i>, wird der beim ersten Wechsel 
+"aufgeschobene" Ruecksprung vom Scheduler zurueck nach <i>Thread A</i> zu diesem Zeitpunkt 
+ausgefuehrt / "nachgeholt". <br />
+Es muss also gewaehrleistet sein, dass der Code (im Scheduler) <b>nach</b> dem Threadwechsel fuer 
+<b>alle</b> Threads identisch ist.<br />
+Da es zwei unterschiedliche Gruende fuer einen Threadwechsel geben kann ("hart" per 
+Timer-ISR, weil der aktuelle Thread nicht mehr weiterlaufen darf, und "kooperativ" vom 
+Thread selbst gewuenscht, weil dieser<span class="function"> sleep()</span> oder<span class="function"> yield()</span> aufgerufen hat), erfolgt der 
+Ruecksprung aus dem Scheduler nicht zwangsweise an die Codestelle, die (direkt) vor dem
+Scheduler-Aufruf ausgefuehrt wurde. Daher darf <b>nach</b> dem Scheduler-Aufruf in der Timer-ISR
+kein Code mehr folgen, der bei jedem Timer-Tick ausgefuehrt werden soll. Solcher Code
+muss unbedingt <b>vor</b> dem Scheduler-Aufruf stehen.</p>
+
+<a name="hinweise"></a><h2>Weitere Hinweise</h2>
+<p>Aufpassen muss man bei moeglichen Ressourcen-Konflikten: Z.B. Darf nicht waehrend eines
+Display- oder ENA-Zugriffs auf einen anderen Thread umgeschaltet werden, der dann evtl.
+auch auf das Display oder eine ENA-Leitung zugreifen moechte, denn die Schieberegister-
+Operationen sind nicht atomar. Aehnlich verhaelt es sich mit LOG- oder UART-Zugriffen. 
+Fuer MMC und Maussensor ist ein entsprechender Schutz (mit<span class="function"> os_enterCS()</span> und<span class="function"> os_exitCS()</span>) 
+bereits im MMC- und ENA-Code vorhanden, andere Ressourcen sind derzeit nicht geschuetzt, 
+da es neben dem Main-Thread bisher nur einen weiteren zum Map-Update gibt (und das Map-Update
+ nicht auf Display oder andere ENA-Leitungen zugreift). <br />
+Moechte man weitere Threads fuer andere Zwecke hinzufuegen, muss man waehrend des
+Zugriffs auf gemeinsam genutzte Ressourcen entweder das Scheduling temporaer deaktivieren
+(mit<span class="function"> os_enterCS()</span> und<span class="function"> os_exitCS()</span> entweder im Thread-Code oder im Display- / ENA-Code), 
+oder die jeweiligen Ressourcen z.B. per Mutex sperren.<br />
+Bei letzterem muesste man aber aufpassen, keine sich ueberkreuzenden Zugriffe zu erzeugen,
+um Dead- oder Livelocks zu vermeiden. <br />
+Um diesen Problemen aus dem Weg zu gehen, ist derzeit nur der MMC-Zugriff in einen extra 
+Thread ausgelagert. </p>
+
+<p>Ebenfalls will die Stack-Groesse eines Threads sorgfaeltig ueberlegt sein, da auf dem Stack
+beim Threadwechsel der komplette Kontext (die 32 GP-Register, das Statusregister und der 
+Instruction-Pointer) gesichert wird. Nicht-statische, lokale Variablen legt der Compiler
+ebenfalls auf dem Stack ab, sobald sie nicht mehr in Registern untergebracht werden 
+koennen oder eine Adresseberechnung gebraucht wird (z.B. bei Arrays). Man sollte daher
+(groessere) lokale Arrays als statisch deklarieren. <br />
+Ausserdem sollten viele verschachtelte Funktionsaufrufe moeglichst vermieden werden, da
+fuer jeden Funktionsaufruf die Ruecksprungadresse sowie evtl. gesicherte Register ebenfalls
+auf dem Stack Platz finden muessen.</p>
+
+<p>Fuer den PC-Code gibt es bisher keine Thread-Implementierung, d.h. man muss mindestens die
+while-Schleife im Thread-Code per #ifdef auf den MCU-Fall beschraenken und den 
+Threadwechsel im PC-Fall durch den Funktionsaufruf der Thread-Main-Funktion ersetzen.</p>
+
+
+<br /><br />
+<p><a href="http://validator.w3.org/check?uri=referer"><img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a></p>  
+</body>
+</html>

@@ -25,9 +25,6 @@
  * @date 	17.10.2006
  */
 
-//TODO:	* Geschwindkeits-Ist-Daten filtern? (z.B. max. Beschleunigung beruecksichtigen?)
-//		* sofortiger Richtungswechsel (nicht über STOP) holprig, wenn |speed2| > |speed1|
-
 #include <stdlib.h>
 #include <string.h>
 #include "global.h"

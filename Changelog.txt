@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-10-14 Timo Sandmann [mail@timosandmann.de]: Mini-OS fuer Map-Update optimiert und fertiggestellt, Maus- / MMC-Zugriffskonflikte ausgeschlossen und Dokumentation ergaenzt
+
 2007-10-10 Timo Sandmann [mail@timosandmann.de]: Mini-OS mit Threads und Prioritaetenscheduling eingebaut (noch unfertig) fuer Map-Update (#129)
 
 2007-10-03 Timo Sandmann [mail@timosandmann.de]: Bug in Transportfach-Erkennung behoben (LED wurde zu schnell wieder ausgeschaltet, falls Maus deaktiviert)

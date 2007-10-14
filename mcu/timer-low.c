@@ -53,9 +53,9 @@
   Interrupt Handler fuer Timer/Counter 2(A)
  */
 #ifdef __AVR_ATmega644__
-	ISR(TIMER2_COMPA_vect) {
+ISR(TIMER2_COMPA_vect) {
 #else
-	ISR(SIG_OUTPUT_COMPARE2) {
+ISR(SIG_OUTPUT_COMPARE2) {
 #endif
 	/* ----- TIMER ----- */
 	uint32_t ticks = tickCount.u32;	// TickCounter [176 us] erhoehen
@@ -63,9 +63,11 @@
 	tickCount.u32 = ticks;	// optimiert volatile weg, weil Ints eh aus sind
 	sei(); 	// Interrupts wieder an, z.B. UART-Kommunikation kann parallel zu RC5 und Encoderauswertung laufen   
 	/* - FERNBEDIENUNG - */
+	
 	#ifdef IR_AVAILABLE
 		ir_isr();
 	#endif	
+	
 	/* --- RADENCODER --- */
 	bot_encoder_isr();
 	
@@ -77,6 +79,12 @@
 			os_schedule(ticks);
 		}
 	#endif	// OS_AVAILABLE
+	
+	/* Achtung, hier darf (falls OS_AVAILABLE) kein Code mehr folgen, der bei jedem Aufruf 
+	 * dieser ISR ausgefuehrt werden muss! Nach dem Scheduler-Aufruf kommen wir u.U. nicht 
+	 * (sofort) wieder hieher zurueck, sondern es koennte auch ein Thread weiterlaufen, der
+	 * vor seiner Unterbrechung nicht in hier war. Darum muessen VOR dem Scheduler-Aufruf
+	 * bereits Interrupts wieder aktiviert sein. */
 }
 
 /*!

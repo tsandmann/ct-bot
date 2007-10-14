@@ -47,7 +47,7 @@ uint8 scan_on_the_fly_source = SENSOR_LOCATION /*| SENSOR_DISTANCE*/;
 
 #ifdef OS_AVAILABLE
 
-//TODO:	Stacksize nachrechnen
+//TODO:	Stacksize nachrechnen (geht erst, wenn der Map-Update-Thread fertig ist)
 #define MAP_UPDATE_STACK_SIZE	128	// nur wegen logging zu Testzwecken so gross	
 uint8_t map_update_stack[MAP_UPDATE_STACK_SIZE];
 static Tcb_t * map_update_thread;
@@ -157,7 +157,7 @@ void bot_scan_onthefly_behaviour(Behaviour_t *data) {
 //	LOG_INFO("MAIN is going to sleep for 100 ms");
 //	os_thread_sleep(100L);
 	
-	/* Rest der Zeitscheibe (5 ms) schlafen legen */
+	/* Rest der Zeitscheibe (10 ms) schlafen legen */
 	os_thread_yield();
 	
 //	LOG_INFO("MAIN is back! :-)");

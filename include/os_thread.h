@@ -34,13 +34,13 @@
 #include "timer.h"
 #include "os_scheduler.h"
 
-#define OS_MAX_THREADS	5	/*!< maximale Anzahl an Threads im System */
+#define OS_MAX_THREADS	2	/*!< maximale Anzahl an Threads im System */
 
 /*! TCB eines Threads */
 typedef struct {
 	uint8_t * stack;		/*!< Stack-Pointer */
 	uint32_t nextSchedule;	/*!< Zeitpunkt der naechsten Ausfuehrung. Ergibt im Zusammenhang mit der aktuellen Zeit den Status eines Threads. */
-	uint32_t lastSchedule;	/*!< Zeitpunkt der letzten Ausfuehrung */
+	uint8_t lastSchedule;	/*!< Zeitpunkt der letzten Ausfuehrung, untere 8 Bit */
 } Tcb_t;
 
 extern Tcb_t os_threads[OS_MAX_THREADS];	/*!< Thread-Pool (ist gleichzeitig running- und waiting-queue) */
@@ -96,7 +96,7 @@ static inline void os_thread_sleep(uint32_t sleep) {
 
 /*!
  * Schaltet auf den Thread mit der naechst niedrigeren Prioritaet um, der lauffaehig ist,
- * indem ihm der Rest der Zeitscheibe geschenkt wird.
+ * indem diesem der Rest der Zeitscheibe geschenkt wird.
  */
 void os_thread_yield(void);
 
