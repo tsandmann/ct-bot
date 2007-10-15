@@ -31,6 +31,16 @@ Der zuerst angelegte Thread hat die h&ouml;chste Priorit&auml;t, der n&auml;chst
 Zweith&ouml;chste usw. <br />
 Es kann somit keine Priorit&auml;t doppelt vergeben werden.<br />
 Threads k&ouml;nnen zwar zur Laufzeit erzeugt, aber nicht wieder beendet werden.<br />
+Um einen neuen Thread zu erzeugen (&uuml;blicherweise in einer Init-Funktion), ruft man die
+Funktion<span class="function"> os_create_thread(uint8_t * pStack, void * pIp)</span> auf und
+&uuml;bergibt ihr einen Zeiger auf den Stack des neuen Threads (Vorsicht, der Zeiger muss
+auf das letzte Byte des Stacks zeigen, weil der Stack auf der AVR-Architektur von hohen zu niedrigen
+Adressen w&auml;chst) sowie einen Zeiger auf die Main-Funktion des Threads. Im Erfolgsfall
+bekommt man einen Zeiger auf den TCB des neuen Threads zur&uuml;ck (den man braucht, um den Thread
+identifizieren zu k&ouml;nnen), im Fehlerfall ist das Resultat NULL. <br />
+Um den ersten Thread im System anzulegen (der ja bereits l&auml;uft und hier Main-Thread genannt wird, weil er die 
+h&ouml;chste Priorit&auml;t hat), &uuml;bergibt mal als Stackpointer <i>(uint8_t *)SP</i> und als Instruction-Pointer <i>NULL</i>
+ (der erste Threadswitch sichert den korrekten IP dann auf dem Stack).<br />
 Die Anzahl der m&ouml;glichen Threads ist durch<span class="function"> OS_MAX_THREADS</span> in os_thread.h festgelegt.
 Hier sollte man nicht mehr als n&ouml;tig einstellen, um RAM zu sparen (es gibt ein statisches
 Array f&uuml;r alle TCBs der Gr&ouml;&szlig;e OS_MAX_THREADS). </p> 

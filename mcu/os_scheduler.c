@@ -47,10 +47,10 @@ void os_schedule(uint32_t tickcount) {
 	
 	/* Naechsten lauffaehigen Thread mit hoechster Prioritaet suchen. 
 	 * Das ist zwar in O(n), aber wir haben nur eine sehr beschraenkte Anzahl an Threads! */
-	static volatile uint8_t j = 0;	// haesslich, aber sonst rollt der gcc die Schleife aus :-/
 	uint8_t i;
 	Tcb_t * ptr = os_threads;
-	for (i=j; i<OS_MAX_THREADS; i++, ptr++) {
+	// os_scheduling_allowed == 0, sonst waeren wir nicht hier
+	for (i=os_scheduling_allowed; i<OS_MAX_THREADS; i++, ptr++) { 
 		if (ptr->stack != NULL) {
 			/* Es existiert noch ein Thread in der Liste */
 			if (ptr->nextSchedule < tickcount) {
