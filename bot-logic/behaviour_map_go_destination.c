@@ -41,6 +41,7 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "math_utils.h"
 
 #ifdef BEHAVIOUR_MAP_GO_DESTINATION_AVAILABLE
 
@@ -500,7 +501,7 @@ void bot_gotoxy_behaviour_map(Behaviour_t *data) {
 			gotoStatexy=DRIVE_TO_NEXT;      // gedreht sind wir hiernach zum Zwischenziel, also fahren
 
             // Umschaltung zum Drehverhalten; Drehung zum Zwischenziel wenn noetig
-			bot_turn(data,bot_gotoxy_calc_turn(xDiff,yDiff));  
+			bot_turn(data,calc_angle_diff(xDiff,yDiff));  
 			
 			
 			break;

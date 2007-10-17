@@ -20,7 +20,6 @@
 /*! 
  * @file 	behaviour_gotoxy.h
  * @brief 	Bot faehrt eine Position an
- * 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
  */
@@ -30,13 +29,6 @@
 #define BEHAVIOUR_GOTOXY_H_
 
 #include "bot-logic/bot-logik.h"
-
-/*!
- * Auslagerung der Berechnung der benoetigten Drehung aus dem gotoxy_behaviour
- * @param xDiff
- * @param yDiff
- */
-float bot_gotoxy_calc_turn(float xDiff, float yDiff);
 
 #ifdef BEHAVIOUR_GOTOXY_AVAILABLE
 /*!

@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	command.c
+/*! 
+ * @file 	command.c
  * @brief 	Kommando-Management
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
-*/
+ */
 
 #include "ct-Bot.h"
 
@@ -204,7 +205,7 @@ int8 command_read(void){
 
 		return 0;
 	} else {	// Command not valid
-		LOG_DEBUG("Invalid Command:");
+		LOG_ERROR("Invalid Command:");
 		LOG_DEBUG("%x %x %x",command->startCode,command->request.command,command->CRC);
 		return -1;
 	}

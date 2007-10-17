@@ -26,30 +26,7 @@
 
 #include "bot-logic/bot-logik.h"
 #include <math.h>
-
-/*!
- * Auslagerung der Berechnung der benoetigten Drehung aus dem gotoxy_behaviour
- * @param xDiff	x-Differenz
- * @param yDiff	y-Differenz
- * @return 		zu drehender Winkel
- */
-float bot_gotoxy_calc_turn(float xDiff, float yDiff) {
-	float newHeading;
-	if(fabs(yDiff)>0.001 && fabs(xDiff)>0.001) {
-		newHeading = atan(yDiff/xDiff)*(180.0f/M_PI);
-		if (xDiff<0) newHeading += 180;
-	} else {
-		if(fabs(xDiff) <= 0.001) newHeading = (yDiff>0) ? 90 : -90;
-		else newHeading = (xDiff>0) ? 0 : 180;
-	}
-
-	//int16 toTurn = (int16)(newHeading-heading);
-	float toTurn = newHeading-heading;
-	if (toTurn > 180) toTurn -= 360;
-	if (toTurn < -180) toTurn += 360;
-
-	return toTurn;
-}
+#include "math_utils.h"
 
 #ifdef BEHAVIOUR_GOTOXY_AVAILABLE
 
@@ -83,14 +60,14 @@ void bot_gotoxy_behaviour(Behaviour_t *data){
 	switch(gotoState) {
 		case INITIAL_TURN:
 			gotoState=GOTO_LOOP;
-			bot_turn(data,bot_gotoxy_calc_turn(xDiff,yDiff));
+			bot_turn(data,calc_angle_diff(xDiff,yDiff));
 			break;
 
 		case GOTO_LOOP:
 			/* Position erreicht? */
 			if ((xDiff)<10 || (yDiff)<10) {
 				gotoState=CORRECT_HEAD;
-				bot_turn(data,bot_gotoxy_calc_turn(xDiff,yDiff));
+				bot_turn(data,calc_angle_diff(xDiff,yDiff));
 				break;
 			}
 			speedWishLeft=BOT_SPEED_FOLLOW;

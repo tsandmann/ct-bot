@@ -10,29 +10,30 @@
  * @brief 	globale Schalter fuer die einzelnen Verhalten
  */
 
-//#define BEHAVIOUR_SIMPLE_AVAILABLE	/*!< sind die Beispielverhalten vorhanden ?*/
-//#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE	/*!< Demoverhalten im quadrat fahren vorhanden ?*/
+//#define BEHAVIOUR_SIMPLE_AVAILABLE	/*!< sind die Beispielverhalten vorhanden? */
+//#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE	/*!< Demoverhalten im Quadrat fahren vorhanden? */
 
-#define BEHAVIOUR_AVOID_BORDER_AVAILABLE	/*!< Abgruenden ausweichen vorhanden ?*/
-#define BEHAVIOUR_AVOID_COL_AVAILABLE	/*!< Hindernis ausweichen vorhanden ?*/
-//#define BEHAVIOUR_HANG_ON_AVAILABLE	/*!< Erkennen des Haengenbleibens als Notfallverhalten ?*/
-//#define BEHAVIOUR_GOTO_AVAILABLE	/*!< goto vorhanden ?*/
-//#define BEHAVIOUR_GOTOXY_AVAILABLE	/*!< gotoxy vorhanden ?*/
-#define BEHAVIOUR_TURN_AVAILABLE	/*!< turn vorhanden ?*/
+#define BEHAVIOUR_AVOID_BORDER_AVAILABLE	/*!< Abgruenden ausweichen vorhanden? */
+#define BEHAVIOUR_AVOID_COL_AVAILABLE	/*!< Hindernis ausweichen vorhanden? */
+//#define BEHAVIOUR_HANG_ON_AVAILABLE	/*!< Erkennen des Haengenbleibens als Notfallverhalten? */
+//#define BEHAVIOUR_GOTO_AVAILABLE	/*!< goto vorhanden? */
+//#define BEHAVIOUR_GOTOXY_AVAILABLE	/*!< gotoxy vorhanden? */
+//#define BEHAVIOUR_GOTO_POS_AVAILABLE	/*!< goto_pos vorhanden? */
+#define BEHAVIOUR_TURN_AVAILABLE	/*!< turn vorhanden? */
 //#define BEHAVIOUR_TURN_TEST_AVAILABLE	/*!< turn_test vorhanden? */
 
-#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE	/*!< strecke fahren vorhanden ?*/
+#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE	/*!< Strecke fahren vorhanden ?*/
 
 #define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE	/*!< Distanzesensorasuwertung vorhanden? */
 
-#define BEHAVIOUR_SCAN_AVAILABLE	/*!< gegend scannen vorhanden ?*/
-#define BEHAVIOUR_SOLVE_MAZE_AVAILABLE	/*!< Wandfolger vorhanden ?*/
-//#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE	/*!< Linienfolger vorhanden ?*/
-//#define BEHAVIOUR_MAP_GO_DESTINATION_AVAILABLE /*!< Fahren zu einem Ziel nach Pfadplanung*/
+#define BEHAVIOUR_SCAN_AVAILABLE	/*!< Gegend scannen vorhanden? */
+#define BEHAVIOUR_SOLVE_MAZE_AVAILABLE	/*!< Wandfolger vorhanden? */
+//#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE	/*!< Linienfolger vorhanden? */
+//#define BEHAVIOUR_MAP_GO_DESTINATION_AVAILABLE /*!< Fahren zu einem Ziel nach Pfadplanung */
 
 #define BEHAVIOUR_SERVO_AVAILABLE 	/*!< Kontrollverhalten fuer die Servos */
 
-//#define BEHAVIOUR_OLYMPIC_AVAILABLE	/*!< Olympiadenverhalten vorhanden ?*/
+//#define BEHAVIOUR_OLYMPIC_AVAILABLE	/*!< Olympiadenverhalten vorhanden? */
 
 //#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE /*!< Suche eine Dose und fange sie ein */
 
@@ -40,7 +41,7 @@
 
 //#define BEHAVIOUR_FOLLOW_WALL_AVAILABLE /*!< Follow Wall Explorer Verhalten */
 
-#define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-kommandos entgegen?*/
+#define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-kommandos entgegen? */
 
 //#define BEHAVIOUR_CALIBRATE_PID_AVAILABLE	/*!< Kalibrierungsverhalten fuer Motorregelung vorhanden? */
 //#define BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE	/*!< Kalibrierungsverhalten fuer Distanzsensoren vorhanden? */
@@ -122,6 +123,13 @@
 	#undef BEHAVIOUR_HANG_ON_AVAILABLE
 #endif
 
+#ifdef MCU
+#ifndef SPEED_CONTROL_AVAILABLE
+	// goto_pos geht nur, wenn wir uns auf die eingestellte Geschwindigkeit verlassen koennen
+	#undef BEHAVIOUR_GOTO_POS_AVAILABLE
+#endif
+#endif
+
 #include "bot-logic/behaviour_simple.h"
 #include "bot-logic/behaviour_drive_square.h"
 
@@ -131,6 +139,7 @@
 
 #include "bot-logic/behaviour_goto.h"
 #include "bot-logic/behaviour_gotoxy.h"
+#include "bot-logic/behaviour_goto_pos.h"
 
 #include "bot-logic/behaviour_turn.h"
 #include "bot-logic/behaviour_turn_test.h"
@@ -162,4 +171,4 @@
 #include "bot-logic/behaviour_delay.h"
 
 #endif	// BEHAVIOUR_AVAILABLE
-#endif /*AVAILABLE_BEHAVIOURS_H_*/
+#endif	/*AVAILABLE_BEHAVIOURS_H_*/
