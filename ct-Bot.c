@@ -29,10 +29,10 @@
 #ifdef MCU
 	#include <avr/io.h>
 	#include <avr/interrupt.h>
-//	#include <avr/signal.h>
 	#include <avr/wdt.h>
 	#include "bot-2-pc.h"
 	#include <avr/eeprom.h>
+	#include "i2c.h"
 #endif
 	
 #ifdef PC
@@ -183,7 +183,11 @@ void init(void){
 		Init_TWI();
 		Close_TWI();
 	#endif
-	
+
+	#ifdef I2C_AVAILABLE
+		i2c_init(42);	// 160 kHz
+	#endif		
+		
 	#ifdef DISPLAY_AVAILABLE
 		gui_init();
 	#endif	

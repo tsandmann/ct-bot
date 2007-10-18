@@ -34,9 +34,7 @@
 #include "sensor.h"
 #include "mouse.h"
 #include "log.h"
-#ifdef SRF10_AVAILABLE
-	#include "srf10.h"
-#endif
+#include "srf10.h"
 
 #define HEADING_START		0			// Blickrichtung, mit der der Bot sich initialisiert
 
@@ -117,6 +115,10 @@ float v_center=0;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus-
 	uint16 sensSRF10;	/*!< Messergebniss Ultraschallsensor */
 #endif
 
+#ifdef CMPS03_AVAILABLE
+	cmps03_t sensCmps03 = {{0}};	/*!< Lage laut CMPS03-Kompass */
+#endif
+	
 /*! 
  * @brief		Interpoliert linear zwischen zwei gegebenen Wertepaaren
  * @param x1	groesere Abszisse
@@ -193,9 +195,9 @@ void sensor_dist_lookup(int16_t *const p_sens, uint8_t *const p_toggle, const di
 	*p_toggle = ~*p_toggle;
 }
 
-/*! Sensor_update
-* Kuemmert sich um die Weiterverarbeitung der rohen Sensordaten 
-*/
+/*! 
+ * Kuemmert sich um die Weiterverarbeitung der rohen Sensordaten 
+ */
 void sensor_update(void){
 	static uint8_t old_pos=0;			/*!< Ticks fuer Positionsberechnungsschleife */
 	static uint16 old_speed=0;			/*!< Ticks fuer Geschwindigkeitsberechnungsschleife */
@@ -216,7 +218,7 @@ void sensor_update(void){
 		float yd=0;					/*!< Y-Koordinate Drehpunkt */
 		float right_radius=0;			/*!< Radius des Drehkreises des rechten Rads */
 		float left_radius=0;			/*!< Radius des Drehkreises des linken Rads */
-	#endif
+	#endif	// MEASURE_MOUSE_AVAILABLE
 	static int16 lastEncL =0;		/*!< letzter Encoderwert links fuer Positionsberechnung */
 	static int16 lastEncR =0;		/*!< letzter Encoderwert rechts fuer Positionsberechnung */
 	static int16 lastEncL1=0;		/*!< letzter Encoderwert links fuer Geschwindigkeitsberechnung */
@@ -234,7 +236,7 @@ void sensor_update(void){
 	
 		sensMouseY += sensMouseDY;		/*!< Mausdelta Y aufaddieren */
 		sensMouseX += sensMouseDX;		/*!< Mausdelta X aufaddieren */
-	#endif	
+	#endif	// MEASURE_MOUSE_AVAILABLE
 	
 	if (timer_ms_passed(&old_pos, 10)) {
 		/* Gefahrene Boegen aus Encodern berechnen */
@@ -293,7 +295,7 @@ void sensor_update(void){
 
 			lastMouseX=sensMouseX;
 			lastMouseY=sensMouseY;
-		#endif
+		#endif	// MEASURE_MOUSE_AVAILABLE
 		#ifdef MEASURE_COUPLED_AVAILABLE
 			/* Werte der Encoder und der Maus mit dem Faktor G_POS verrechnen */
 			x_pos=G_POS*x_mou+(1-G_POS)*x_enc;
@@ -316,11 +318,13 @@ void sensor_update(void){
 				y_pos=y_mou;
 			#else
 				/* Encoderwerte als Standardwerte benutzen */
-				heading=heading_enc;
+				#ifndef CMPS03_AVAILABLE
+					heading=heading_enc;
+				#endif
 				x_pos=x_enc;
 				y_pos=y_enc;
-			#endif
-		#endif	
+			#endif	// MEASURE_MOUSE_AVAILABLE
+		#endif	// MEASURE_COUPLED_AVAILABLE
 	}
 	if (timer_ms_passed(&old_speed, 250)) {
 		#ifdef MCU
@@ -411,7 +415,7 @@ void sensor_update(void){
 			old_x=x_mou;
 			old_y=y_mou;
 			oldHead=heading_mou;
-		#endif
+		#endif	// MEASURE_MOUSE_AVAILABLE
 		#ifdef MEASURE_COUPLED_AVAILABLE
 			v_left=G_SPEED*v_mou_left+(1-G_SPEED)*v_enc_left;
 			v_right=G_SPEED*v_mou_right+(1-G_SPEED)*v_enc_left;
@@ -427,11 +431,11 @@ void sensor_update(void){
 				v_left=v_enc_left;
 				v_right=v_enc_right;
 				v_center=v_enc_center;
-			#endif			
-		#endif
+			#endif	// MEASURE_MOUSE_AVAILABLE
+		#endif	// MEASURE_COUPLED_AVAILABLE
 		#ifdef SRF10_AVAILABLE
 			sensSRF10 = srf10_get_measure();	/*!< Messung Ultraschallsensor */
-		#endif	
+		#endif	// SRF10_AVAILABLE
 	}
 }
 

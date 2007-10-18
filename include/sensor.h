@@ -29,6 +29,7 @@
 
 #include "global.h"
 #include "ct-Bot.h"
+#include "cmps03.h"
 
 /*! Datenstruktur zur Ablage eines IR-Sensor-Wertepaares (Spannung | Distanz) */
 typedef struct {
@@ -107,6 +108,10 @@ extern float v_center;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, 
 #ifdef SRF10_AVAILABLE
 	extern uint16 sensSRF10;	/*!< Messergebniss Ultraschallsensor */
 #endif
+	
+#ifdef CMPS03_AVAILABLE
+	cmps03_t sensCmps03;		/*!< Lage laut CMPS03-Kompass */
+#endif	
 
 /*! Sensor_update
 * Kuemmert sich um die Weiterverarbeitung der rohen Sensordaten 

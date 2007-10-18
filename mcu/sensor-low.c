@@ -38,14 +38,13 @@
 #include "sensor_correction.h"
 #include "bot-local.h"
 #include "bot-logic/available_behaviours.h"
-#ifdef BEHAVIOUR_SERVO_AVAILABLE
-	#include "bot-logic/behaviour_servo.h"
-#endif
+#include "bot-logic/behaviour_servo.h"
 #include "display.h"
 #include "mmc.h"
 #include "mini-fat.h"
 #include "led.h"
 #include "sensor-low.h"
+#include "i2c.h"
 #include <string.h>
 
 // ADC-PINS
@@ -142,10 +141,13 @@ void bot_sens_init(void){
  * Aber Achtung es lohnt auch nicht, immer alles so schnell als moeglich
  * zu aktualiseren, der Bot braucht auch Zeit zum nachdenken ueber Verhalten
  */
-void bot_sens_isr(void){
-	
+void bot_sens_isr(void) {
 	ENA_on(ENA_KANTLED|ENA_MAUS|ENA_SCHRANKE|ENA_KLAPPLED);	// Die Distanzsensoren sind im Normalfall an, da sie 50 ms zum booten brauchen	
 
+#ifdef CMPS03_AVAILABLE
+	cmps03_get_bearing(&sensCmps03);
+#endif
+	
 	/* aktualisiere Distanz-Sensoren, interrupt-driven I/O */
 	static uint8 measure_count = 0;
 	static int16 distLeft[4];
@@ -185,18 +187,6 @@ void bot_sens_isr(void){
 	sensDoor = (SENS_DOOR_PINR >> SENS_DOOR) & 0x01;
 	sensTrans = (SENS_TRANS_PINR >> SENS_TRANS) & 0x01;
 	sensError = (SENS_ERROR_PINR >> SENS_ERROR) & 0x01;		
-	
-	/* LEDs updaten */
-	#ifdef LED_AVAILABLE
-	#ifndef TEST_AVAILABLE
-		if (sensTrans != 0) LED_on(LED_GELB);
-		else LED_off(LED_GELB);
-		if (sensError != 0) LED_on(LED_ORANGE);
-		else LED_off(LED_ORANGE);
-	#endif	// TEST_AVAILABLE
-	#endif	// LED_AVAILABLE 	
-		
-	sensor_update();	// Weiterverarbeitung der rohen Sensordaten
 	
 	/* Aufruf der Motorregler, falls Stillstand */
 	#ifdef SPEED_CONTROL_AVAILABLE 
@@ -254,6 +244,8 @@ void bot_sens_isr(void){
 			}
 		#endif // SPEED_LOG_AVAILABLE
 	#endif // SPEED_CONTROL_AVAILABLE
+
+	sensor_update();	// Weiterverarbeitung der rohen Sensordaten			
 	
 	if ((uint16)(dist_ticks-old_dist) > MS_TO_TICKS(50)){
 		old_dist = dist_ticks;	// Zeit fuer naechste Messung merken
@@ -266,25 +258,12 @@ void bot_sens_isr(void){
 		while (adc_get_active_channel() < 2) {}
 		uint16 voltR = distRight[0]+distRight[1]+distRight[2]+distRight[3];
 		(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, voltR);
-		
-		/* LEDs updaten */
-		#ifdef LED_AVAILABLE
-		#ifndef TEST_AVAILABLE
-			if (sensDistL < 500) LED_on(LED_LINKS);
-			else LED_off(LED_LINKS);
-			if (sensDistR < 500) LED_on(LED_RECHTS);
-			else LED_off(LED_RECHTS);
-
-			/* Sollen die LEDs mit den Rohdaten der Sensoren arbeiten, 
-			 * kommentiert man die folgenden Zeilen ein (und die Obigen aus) */
-			 
-			//if (voltL > 80) LED_on(LED_LINKS);
-			//else LED_off(LED_LINKS);
-			//if (voltR > 80) LED_on(LED_RECHTS);
-			//else LED_off(LED_RECHTS);
-		#endif	// TEST_AVAILABLE
-		#endif	// LED_AVAILABLE
 	}
+	
+#ifdef CMPS03_AVAILABLE
+	cmps03_finish(&sensCmps03);
+	heading = (float)sensCmps03.bearing / 10.0;
+#endif
 	
 	/* alle anderen analogen Sensoren */	
 	while (adc_get_active_channel() != 255) {}	// restliche Zeit mit busy-waiting verbrauchen
@@ -296,7 +275,29 @@ void bot_sens_isr(void){
 	  	  #endif
 	  #endif
 	#endif
+		
+	/* LEDs updaten */
+	#ifdef LED_AVAILABLE
+	#ifndef TEST_AVAILABLE
+		if (sensTrans != 0) LED_on(LED_GELB);
+		else LED_off(LED_GELB);
+		if (sensError != 0) LED_on(LED_ORANGE);
+		else LED_off(LED_ORANGE);
 
+		if (sensDistL < 500) LED_on(LED_LINKS);
+		else LED_off(LED_LINKS);
+		if (sensDistR < 500) LED_on(LED_RECHTS);
+		else LED_off(LED_RECHTS);
+
+		/* Sollen die LEDs mit den Rohdaten der Sensoren arbeiten, 
+		 * kommentiert man die folgenden Zeilen ein (und die Obigen aus) */
+		 
+		//if (voltL > 80) LED_on(LED_LINKS);
+		//else LED_off(LED_LINKS);
+		//if (voltR > 80) LED_on(LED_RECHTS);
+		//else LED_off(LED_RECHTS);
+	#endif	// TEST_AVAILABLE
+	#endif	// LED_AVAILABLE	
 }
 
 /*!

@@ -17,28 +17,24 @@
  * 
  */
 
-/*! @file 	shift.c
+/*! 
+ * @file 	shift.c
  * @brief 	Routinen zur Ansteuerung der Shift-Register
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
-*/
+ */
 #include "global.h"
 #include "ct-Bot.h"
 
 #include "shift.h"
+#include "i2c.h"
 
 #ifdef MCU
 #ifdef SHIFT_AVAILABLE
 
 #include <avr/io.h>
-#ifdef NEW_AVR_LIB
-	#include <util/delay.h>
-#else
-	#include <avr/delay.h>
-#endif
 
-
-#define SHIFT_OUT				0x1F			/*!< Alle Pins die Ausgänge sind */
+#define SHIFT_OUT				0x1F			/*!< Alle Pins die Ausgaenge sind */
 #define SHIFT_PORT				PORTC			/*!< Port an dem die Register haengen */
 #define SHIFT_DDR				DDRC			/*!< DDR des Ports an dem die Register haengen */
 
@@ -46,21 +42,24 @@
  * Initialisert die Shift-Register
  */
 void shift_init(){
-	SHIFT_DDR |= SHIFT_OUT;		// Ausgänge Schalten
+	SHIFT_DDR |= SHIFT_OUT;		// Ausgaenge Schalten
 	SHIFT_PORT &= ~SHIFT_OUT; 	// Und auf Null
 }
 
 /*!
  * Schiebt Daten durch eines der drei 74HC595 Schieberegister
- * Achtung den Port sollte man danach noch per shift_clear() zurücksetzen
- * @param data	Das Datenbyte
- * @param latch_data der Pin an dem der Daten-latch-Pin des Registers (PIN 11) hängt
- * @param latch_store der Pin an dem der latch-Pin zum transfer des Registers (PIN 12) hängt
+ * Achtung den Port sollte man danach noch per shift_clear() zuruecksetzen
+ * @param data			Das Datenbyte
+ * @param latch_data 	Der Pin an dem der Daten-latch-Pin des Registers (PIN 11) haengt
+ * @param latch_store 	Der Pin an dem der latch-Pin zum transfer des Registers (PIN 12) haengt
  */
 void shift_data_out(uint8 data, uint8 latch_data, uint8 latch_store){
-	int8 i;
-
+#ifdef I2C_AVAILABLE
+	i2c_wait();		// I2C-Transfer muss beendet sein (benutzt PC0 und PC1)
+#endif
+	
 	SHIFT_PORT &= ~SHIFT_OUT;		// und wieder clear	
+	int8 i;
 	for (i=8; i>0; i--){
 		SHIFT_PORT |= ((data >> 7)& 0x01);      // Das oberste Bit von data auf PC0.0 (Datenleitung Schieberegister)
 		SHIFT_PORT |= latch_data ;	    		// und ins jeweilige Storageregister latchen
@@ -74,9 +73,9 @@ void shift_data_out(uint8 data, uint8 latch_data, uint8 latch_store){
 /*!
  * Schiebt Daten durch eines der drei 74HC595 Schieberegister
  * vereinfachte Version, braucht kein shift_clear()
- * geht NICHT für das Shift-register, an dem das Display-hängt!!!
- * @param data	Das Datenbyte
- * @param latch_data der Pin an dem der Daten-latch-Pin des Registers (PIN 11) hängt
+ * geht NICHT fuer das Shift-register, an dem das Display-haengt!!!
+ * @param data			Das Datenbyte
+ * @param latch_data 	Der Pin an dem der Daten-latch-Pin des Registers (PIN 11) haengt
  */
 void shift_data(uint8 data, uint8 latch_data){
 	shift_data_out(data, latch_data, SHIFT_LATCH);
@@ -84,10 +83,10 @@ void shift_data(uint8 data, uint8 latch_data){
 }
 
 /*!
- * Setzt die Shift-Register wieder zurück
+ * Setzt die Shift-Register wieder zurueck
  */ 
 void shift_clear(){
 	SHIFT_PORT &= ~SHIFT_OUT;		// und wieder clear	
 }
-#endif
-#endif
+#endif	// SHIFT_AVAILABLE
+#endif	// MCU

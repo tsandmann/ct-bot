@@ -44,7 +44,7 @@
 #define IR_AVAILABLE		/*!< Infrared Remote Control */
 #define RC5_AVAILABLE		/*!< Key-Mapping for IR-RC	 */
 
-#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
+#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunizieren? */
 
 //#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit im s und ms? */
 
@@ -76,6 +76,7 @@
 //#define SPEED_LOG_AVAILABLE 	/*!< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
 
 //#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
+//#define CMPS03_AVAILABLE		/*!< Kompass CMPS03 vorhanden */
 
 //#define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung */
 //#define SPI_AVAILABLE			/*!< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren - Hinweise in mcu/mmc.c beachten! */
@@ -117,6 +118,8 @@
 		#undef TWI_AVAILABLE
 		#undef SPEED_CONTROL_AVAILABLE // Deaktiviere die Motorregelung 
 		#undef MMC_AVAILABLE
+		#undef I2C_AVAILABLE
+		#undef CMPS03_AVAILABLE
 	#endif
 
 	#define COMMAND_AVAILABLE		/*!< High-Level Communication */
@@ -265,6 +268,9 @@
 	#define TWI_AVAILABLE				/*!< TWI-Schnittstelle (I2C) nutzen */
 #endif
 
+#ifdef CMPS03_AVAILABLE
+	#define I2C_AVAILABLE	/*!< I2C-Treiber verfuegbar */
+#endif
 
 #define F_CPU	16000000L    /*!< Crystal frequency in Hz */
 #define XTAL F_CPU			 /*!< Crystal frequency in Hz */
