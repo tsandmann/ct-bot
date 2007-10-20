@@ -66,7 +66,7 @@ static void rc5_screen_set(uint8 screen){
  * @brief	Stellt die Not-Aus-Funktion dar. 
  * Sie laesst den Bot anhalten und setzt alle Verhalten zurueck mit Sicherung der vorherigen Aktivitaeten.
  */	
- static void rc5_emergency_stop(void) {
+static void rc5_emergency_stop(void) {
 	#ifdef BEHAVIOUR_AVAILABLE
 		target_speed_l = 0;	// Geschwindigkeit nullsetzen
 		target_speed_r = 0;

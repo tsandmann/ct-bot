@@ -118,7 +118,7 @@ void bot_base_behaviour(Behaviour_t *data){
  */
 void bot_behave_init(void){
 	#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
-		// Dieses Verhalten kann andere Starten
+		// Dieses Verhalten kann andere starten
 		insert_behaviour_to_list(&behaviour, new_behaviour(254, bot_remotecall_behaviour,INACTIVE));
 	#endif
 
@@ -126,18 +126,12 @@ void bot_behave_init(void){
 		insert_behaviour_to_list(&behaviour, new_behaviour(253, bot_servo_behaviour,INACTIVE));
 	#endif
 
-	// Demo-Verhalten, ganz einfach, inaktiv
-	// Achtung, im Moment hat es eine hoehere Prioritaet als die Gefahrenerkenner!!!
 	#ifdef BEHAVIOUR_SIMPLE_AVAILABLE
+		// Demo-Verhalten, ganz einfach, inaktiv
+		// Achtung, im Moment hat es eine hoehere Prioritaet als die Gefahrenerkenner!!!
 		insert_behaviour_to_list(&behaviour, new_behaviour(252, bot_simple_behaviour,INACTIVE));
 		insert_behaviour_to_list(&behaviour, new_behaviour(251, bot_simple2_behaviour,INACTIVE));
 	#endif
-
-	#ifdef BEHAVIOUR_DELAY_AVAILABLE
-		// Delay-Routinen als Verhalten
-		insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_delay_behaviour,INACTIVE));
-	#endif
-
 
 	// Hoechste Prioritate haben die Notfall Verhalten
 
@@ -160,9 +154,20 @@ void bot_behave_init(void){
 		bot_scan_onthefly_init();
         // vom Notfallverhalten wird Position des Abgrundes in Map eingetragen durch
 		// Aufruf dieser registrierten Proc
-		#ifdef MAP_AVAILABLE 	    
-			register_emergency_proc(&border_in_map_handler);
-		#endif	
+		register_emergency_proc(&border_in_map_handler);
+	#endif
+
+	#ifdef BEHAVIOUR_DELAY_AVAILABLE
+		// Delay-Routinen als Verhalten
+		insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_delay_behaviour,INACTIVE));
+	#endif
+
+	#ifdef BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
+		// Verhalten, das andere Verhalten abbricht, sobald eine Bedingung erfuellt ist
+		insert_behaviour_to_list(&behaviour, new_behaviour(154, bot_cancel_behaviour_behaviour,INACTIVE));
+	#endif
+
+	#ifdef BEHAVIOUR_SCAN_AVAILABLE
 		// Verhalten, das einmal die Umgebung des Bots scannt
 		insert_behaviour_to_list(&behaviour, new_behaviour(152, bot_scan_behaviour,INACTIVE));
 	#endif
@@ -179,8 +184,8 @@ void bot_behave_init(void){
 		insert_behaviour_to_list(&behaviour, new_behaviour(148, bot_goto_behaviour,INACTIVE));
 	#endif
 
-	// Hilfsverhalten zum Anfahren von Positionen
 	#ifdef BEHAVIOUR_GOTOXY_AVAILABLE
+		// Hilfsverhalten zum Anfahren von Positionen
 		insert_behaviour_to_list(&behaviour, new_behaviour(147, bot_gotoxy_behaviour,INACTIVE));
 	#endif
 	#ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
@@ -191,15 +196,33 @@ void bot_behave_init(void){
 		insert_behaviour_to_list(&behaviour, new_behaviour(145, bot_measure_distance_behaviour, INACTIVE));		
 	#endif
 	
-	// Verhalten, um laut Map zu einem bestimmten Ziel zu fahren
     #ifdef BEHAVIOUR_MAP_GO_DESTINATION_AVAILABLE
+		// Verhalten, um laut Map zu einem bestimmten Ziel zu fahren
         insert_behaviour_to_list(&behaviour, new_behaviour(139, bot_path_bestfirst_behaviour,INACTIVE));
  	    insert_behaviour_to_list(&behaviour, new_behaviour(135, bot_gotoxy_behaviour_map,INACTIVE));
  	    bot_set_destination(0,0);  // auf aktuelle Botposition setzen (bei 0,0 sonst Mappos selbst)
  	    // Registrierung zur Behandlung des Notfallverhaltens zum Rueckwaertsfahren
  	    register_emergency_proc(&border_mapgo_handler);
     #endif
-    
+
+	#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
+		bot_solve_maze_init(100,43,INACTIVE);
+	#endif
+
+	#ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
+		// Verhalten um einer Linie zu folgen
+		insert_behaviour_to_list(&behaviour, new_behaviour(70, bot_follow_line_behaviour, INACTIVE));
+	#endif
+
+	#ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
+		bot_olympic_init(52,80,INACTIVE);
+	#endif
+		
+	#ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
+		// Demo-Verhalten, etwas komplexer, inaktiv
+		insert_behaviour_to_list(&behaviour, new_behaviour(51, bot_drive_square_behaviour,INACTIVE));
+	#endif
+				
     #ifdef BEHAVIOUR_FOLLOW_WALL_AVAILABLE
  	    // Explorer-Verhalten um einer Wand zu folgen
  	    insert_behaviour_to_list(&behaviour, new_behaviour(48, bot_follow_wall_behaviour, INACTIVE));
@@ -210,25 +233,6 @@ void bot_behave_init(void){
 	#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
  	    insert_behaviour_to_list(&behaviour, new_behaviour(44, bot_catch_pillar_behaviour,INACTIVE));
 		insert_behaviour_to_list(&behaviour, new_behaviour(43, bot_unload_pillar_behaviour,INACTIVE));
-	#endif
-
-	
-	#ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
-		bot_olympic_init(52,80,INACTIVE);
-	#endif
-
-	#ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
-		// Verhalten um einer Linie zu folgen
-		insert_behaviour_to_list(&behaviour, new_behaviour(70, bot_follow_line_behaviour, INACTIVE));
-	#endif
-
-	#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
-		bot_solve_maze_init(100,43,INACTIVE);
-	#endif
-
-	#ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
-		// Demo-Verhalten, etwas komplexer, inaktiv
-		insert_behaviour_to_list(&behaviour, new_behaviour(51, bot_drive_square_behaviour,INACTIVE));
 	#endif
 
 	#ifdef BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
@@ -251,9 +255,9 @@ void bot_behave_init(void){
 	insert_behaviour_to_list(&behaviour, new_behaviour(2, bot_base_behaviour, ACTIVE));
 
 	#ifdef BEHAVIOUR_SIMPLE_AVAILABLE
-	// Um das Simple2-Behaviour zu nutzen, die Kommentarzeichen der folgenden beiden Zeilen tauschen
+		// Um das Simple2-Behaviour zu nutzen, die Kommentarzeichen der folgenden beiden Zeilen tauschen
 		activateBehaviour(bot_simple_behaviour);
-	//	activateBehaviour(bot_simple2_behaviour);
+		//activateBehaviour(bot_simple2_behaviour);
 	#endif
 }
 
@@ -264,16 +268,6 @@ void bot_behave_init(void){
  */
 void activateBehaviour(BehaviourFunc function) {
 	switch_to_behaviour(NULL, function, NOOVERRIDE);
-	
-//	Behaviour_t *job;						// Zeiger auf ein Verhalten
-//
-//	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben 
-//	for (job = behaviour; job; job = job->next) {
-//		if (job->work == function) {
-//			job->active = ACTIVE;
-//			break;
-//		}
-//	}
 }
 
 
@@ -281,8 +275,8 @@ void activateBehaviour(BehaviourFunc function) {
  * Deaktiviert eine Regel mit gegebener Funktion
  * @param function Die Funktion, die das Verhalten realisiert.
  */
-void deactivateBehaviour(BehaviourFunc function){
-	Behaviour_t *job;						// Zeiger auf ein Verhalten
+void deactivateBehaviour(BehaviourFunc function) {
+	Behaviour_t *job;	// Zeiger auf ein Verhalten
 		
 	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben 
 	for (job = behaviour; job; job = job->next) {
