@@ -93,6 +93,7 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		int16_t alpha = calc_angle_diff(dest_x-x_pos, dest_y-y_pos);
 		LOG_DEBUG("alpha=%d", alpha);
 		if (diff_to_target < straight_go) {
+			LOG_DEBUG("bot_turn(%d)", alpha);
 			bot_turn(data, alpha);
 			state = CALC_WAY;
 			return;
@@ -130,7 +131,7 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		float h7 = h6 / sin(beta);
 		float radius = h5 + h7;
 		LOG_DEBUG("radius=%f", radius);
-		if ((int16_t)fabs(radius) < 50) {
+		if (fabs(radius) < 50.0) {
 			/* zu starke Kruemmung der Kreisbahn. 
 			 * Wenn der Radius zu klein wird, bekommen wir fuer die Raeder Geschwindigkeiten,
 			 * die kleiner bzw. groesser als moeglich sind, auesserdem faehrt der Bot dann
@@ -207,6 +208,8 @@ void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
 	dest_x = x;
 	dest_y = y;
 	dest_head = head;
+	
+	LOG_DEBUG("(%d mm|%d mm|%d Grad)", x, y, head);
 }
 
 /*!
