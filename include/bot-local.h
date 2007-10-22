@@ -115,14 +115,14 @@
 
 /* Konstanten fuer Verhaltensanzeige, Verhalten mit prio von bis sichtbar */
 #define PRIO_VISIBLE_MIN 3			/*!< Prioritaet, die ein Verhalten mindestens haben muss, um angezeigt zu werden */
-#define PRIO_VISIBLE_MAX 154		/*!< Prioritaet, die ein Verhalten hoechstens haben darf, um angezeigt zu werden */
+#define PRIO_VISIBLE_MAX 200		/*!< Prioritaet, die ein Verhalten hoechstens haben darf, um angezeigt zu werden */
 
 
 /* Konstanten fuer die Entfernung. innerhalb derer nur ein Objekt eingefangen wird */
 #ifdef PC
-  #define MAX_PILLAR_DISTANCE	350
+	#define MAX_PILLAR_DISTANCE	350
 #else
-  #define MAX_PILLAR_DISTANCE	200
+	#define MAX_PILLAR_DISTANCE	300
 #endif
 
 
