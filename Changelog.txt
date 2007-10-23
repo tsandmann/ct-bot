@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-10-23 Timo Sandmann [mail@timosandmann.de]: bot-logik.c: Bugfix fuer deactivateCalledBehaviours() und isInCallHierarchy()
+
 2007-10-19 Frank Menzel  [Menzelfr@gmx.net]: Neues Verhalten behaviour_cancel_behaviour deaktiviert ein anderes Verhalten in Abhaengigkeit einer Check-Funktiondeaktiviert ein anderes Verhalten in Abhaengigkeit einer Check-Funktion
 
 2007-10-18 Timo Sandmann [mail@timosandmann.de]: interruptbasierten I2C-Treiber und Unterstuetzung fuer Kompass CMPS03 hinzugefuegt

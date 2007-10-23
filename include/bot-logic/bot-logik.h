@@ -120,8 +120,8 @@ void deactivateAllBehaviours(void);
 
 /*!
  * Deaktiviert alle von diesem Verhalten aufgerufenen Verhalten. 
- * Das Verhalten selbst bleibt Aktiv und bekommt ein SUBCANCEL in seine datanestruktur eingetragen.
- * @param function Die Funktion, die das Verhalten realisiert.
+ * Das Verhalten selbst bleibt aktiv und bekommt ein SUBCANCEL in seine Datanestruktur eingetragen.
+ * @param function	Die Funktion, die das Verhalten realisiert.
  */
 void deactivateCalledBehaviours(BehaviourFunc function);
 

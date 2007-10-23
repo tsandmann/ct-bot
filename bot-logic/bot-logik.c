@@ -281,6 +281,7 @@ void deactivateBehaviour(BehaviourFunc function) {
 	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben 
 	for (job = behaviour; job; job = job->next) {
 		if (job->work == function) {
+			LOG_DEBUG("Verhalten %u wird deaktiviert", job->priority);
 			job->active = INACTIVE;
 			job->caller = NULL;	// Caller loeschen, damit Verhalten auch ohne OVERRIDE neu gestartet werden koennen
 			break;
@@ -306,60 +307,61 @@ uint8_t behaviour_is_activated(BehaviourFunc function) {
 
 
 /*!
- * liefert 1 zurueck, wenn function ueber eine beliebige Kette (job->caller->caller ....) von anderen Verhalten job aufgerufen hat
+ * liefert !=0 zurueck, wenn function ueber eine beliebige Kette (job->caller->caller ....) von anderen Verhalten job aufgerufen hat
  * @param job Zeiger auf den Datensatz des aufgerufenen Verhaltens
  * @param function Das Verhalten, das urspruenglich aufgerufen hat
  * @return 0 wenn keine Call-Abhaengigkeit besteht, ansonsten die Anzahl der Stufen
  */
-static uint8 isInCallHierarchy(Behaviour_t *job, BehaviourFunc function) {
-	uint8 level = 0;
+static uint8_t isInCallHierarchy(Behaviour_t *job, BehaviourFunc function) {
+	uint8_t level = 0;
 		
 	if (job == NULL) return 0;	// Liste ist leer
 	
-	for (; job->caller; job=job->caller){
+	for (; job->caller; job=job->caller) {
 		level++;
-		if (job->caller->work == function){
+		if (job->caller->work == function) {
 			LOG_DEBUG("Verhalten %u wurde direkt von %u aufgerufen",job->priority,job->caller->priority);
-			return level;	// Direkter Aufrufender in Tiefe level gefunden
+			return level;	// Direkter Aufrufer in Tiefe level gefunden
 		}
 	}
-	return level;	
+	return 0;	// function kommt in Caller-Liste von job nicht vor	
 }	// O(n), n:=|Caller-Liste|
 
 /*!
  * Deaktiviert alle von diesem Verhalten aufgerufenen Verhalten. 
- * Das Verhalten selbst bleibt Aktiv und bekommt ein SUBCANCEL in seine datanestruktur eingetragen.
- * @param function Die Funktion, die das Verhalten realisiert.
+ * Das Verhalten selbst bleibt aktiv und bekommt ein SUBCANCEL in seine Datanestruktur eingetragen.
+ * @param function	Die Funktion, die das Verhalten realisiert.
  */
-void deactivateCalledBehaviours(BehaviourFunc function){
+void deactivateCalledBehaviours(BehaviourFunc function) {
 	Behaviour_t *job;	// Zeiger auf ein Verhalten
-	uint8 level;
 	
 	LOG_DEBUG("Beginne mit dem Durchsuchen der Liste");
 	// Einmal durch die Liste gehen, und alle aktiven Funktionen pruefen, ob sie von dem uebergebenen Verhalten aktiviert wurden
-	uint16 i=0;
+	uint8_t i=0;
 	Behaviour_t* beh_of_function = NULL;
 	for (job=behaviour; job; job=job->next) {	// n mal
-		if (job->active == ACTIVE){ 
+		if (job->active == ACTIVE) { 
 			i++;
-			level = isInCallHierarchy(job, function);	// O(n)
+			uint8_t level = isInCallHierarchy(job, function);	// O(n)
 			LOG_DEBUG("Verhalten mit Prio = %u ist ACTIVE, Durchlauf %u", job->priority, i);
 			LOG_DEBUG("    und hat level %u Call-Abhaengigkeit", level);
 			/* die komplette Caller-Liste (aber auch nur die) abschalten */
-			for (; level>0; level--){	// n mal
+			for (; level>0; level--) {	// n mal
 				LOG_DEBUG("Verhalten %u wird in Tiefe %u abgeschaltet", job->priority, level);
 				job->active = INACTIVE;	// callee abschalten
 				Behaviour_t* tmp = job;
 				job = job->caller;	// zur naechsten Ebene
 				tmp->caller = NULL;	// Caller loeschen, damit Verhalten auch ohne OVERRIDE neu gestartet werden koennen
 			}			
-		} else if (job->work == function){
+		} 
+		if (job->work == function) {
 			/* Verhalten von function fuer spaeter merken, wenn wir hier eh schon die ganze Liste absuchen */
 			beh_of_function = job;
 		}
 	}	// O(2n^2)
-	/* Verhaltenseintrag zu function benachrichten und wieder aktiv schalten */
+	/* Verhaltenseintrag zu function benachrichtigen und wieder aktiv schalten */
 	if (beh_of_function != NULL) {
+		LOG_DEBUG("Verhalten %u wird aktiviert", beh_of_function->priority);
 		beh_of_function->subResult = SUBCANCEL;	// externer Abbruch
 		beh_of_function->active = ACTIVE;
 	}
