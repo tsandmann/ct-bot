@@ -132,7 +132,7 @@ ISR(TWI_vect) {
  * @param bitrate	Init-Wert fuer Bit Rate Register (TWBR)
  */
 void i2c_init(uint8_t bitrate) {
-	TWBR = bitrate;			// 100 kHz	
+	TWBR = bitrate;
 	TWSR = I2C_PRESCALER;	// Prescaler s.o.
 	TWCR = 0;				// I2C aus
 }
