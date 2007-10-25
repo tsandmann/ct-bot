@@ -17,17 +17,18 @@
  * 
  */
 
-/*! @file 	ir-rc5.c
+/*! 
+ * @file 	ir-rc5.c
  * @brief 	Routinen für die Dekodierung von RC5-Fernbedienungs-Codes
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
-*/
+ */
 
 // Infos ueber RC6: http://www.xs4all.nl/~sbp/knowledge/ir/rc6.htm
 // http://www.xs4all.nl/~sbp/knowledge/ir/ir.htm
 
 // ========================================================================
-// RC5 Infrarot-Empf�nger
+// RC5 Infrarot-Empfaenger
 // ========================================================================
 #include "ct-Bot.h"
 #ifdef MCU
@@ -41,15 +42,15 @@
 // -----------------------------------------------------------------------------
 // Timing
 // -----------------------------------------------------------------------------
-#define IR_SAMPLES_PER_BIT	10  /*!< 10 Samples per Bit */
-#define IR_SAMPLES_PER_BIT_EARLY 8 /*!< Flanke fr�hestens nach 8 Samples */
-#define IR_SAMPLES_PER_BIT_LATE 12 /*!< Flanke sp�testens nach 12 Samples */
-#define IR_SAMPLES_PER_BIT_MIN	 3  /*!< Flanke vor 3 Samples -> paket verwerfen */
-#define IR_PAUSE_SAMPLES      250  /*!< Startbit ist erst nach 250 Samples ohne */
-				    // Pegel�nderung g�ltig -- eigentlich m�sste
+#define IR_SAMPLES_PER_BIT	10  	/*!< 10 Samples per Bit */
+#define IR_SAMPLES_PER_BIT_EARLY 8	/*!< Flanke fruehestens nach 8 Samples */
+#define IR_SAMPLES_PER_BIT_LATE 12	/*!< Flanke spaetestens nach 12 Samples */
+#define IR_SAMPLES_PER_BIT_MIN	 3 	/*!< Flanke vor 3 Samples -> paket verwerfen */
+#define IR_PAUSE_SAMPLES      250	/*!< Startbit ist erst nach 250 Samples ohne */
+				    // Pegelaenderung gueltig -- eigentlich muesste
 				    // man rund 500 Samples abwarten (50 x
-				    // Bitzeit), doch weil der Samplez�hler ein
-				    // Byte ist, beschr�nken wir uns hier auf ein
+				    // Bitzeit), doch weil der Samplezaehler ein
+				    // Byte ist, beschraenken wir uns hier auf ein
 				    // Minimum von 250 Samples
 
 #define IR_PORT		PORTB			/*!< Port B */
@@ -59,17 +60,17 @@
 
 
 
-static byte ir_lastsample = 0;  /*!< zuletzt gelesenes Sample */
-static byte ir_bittimer   = 0;  /*!< zählt die Aufrufe von ir_isr() */
+static byte ir_lastsample = 0;	/*!< zuletzt gelesenes Sample */
+static byte ir_bittimer   = 0;	/*!< zaehlt die Aufrufe von ir_isr() */
 
-static uint16 	ir_data_tmp = 0;  /*!< RC5-Bitstream */
-static byte	ir_bitcount = 0;  /*!< anzahl gelesener bits */
+static uint16 ir_data_tmp = 0;	/*!< RC5-Bitstream */
+static byte	ir_bitcount = 0;	/*!< anzahl gelesener bits */
 
-volatile uint16	ir_data	= 0;	/*!< letztes komplett gelesenes RC5-paket */
+volatile uint16 ir_data	= 0;	/*!< letztes komplett gelesenes RC5-paket */
 
 /*!
  * Interrupt Serviceroutine
- * wird ca alle 177.8us aufgerufen
+ * wird alle 176 us aufgerufen
  */
 void ir_isr(void) {
 	// sample lesen
@@ -112,7 +113,7 @@ void ir_isr(void) {
 						ir_data_tmp = (ir_data_tmp<<1) | sample;
 						ir_bitcount++;
 					} else {
-						// zu sp�t: paket verwerfen
+						// zu spaet: paket verwerfen
 						ir_bitcount = 0;
 					}
 					
@@ -136,14 +137,12 @@ void ir_isr(void) {
 	
 	// sample im samplepuffer ablegen
 	ir_lastsample = sample;
-	
-
 }
 
 
 /*!
  * IR-Daten lesen
- * @return wert von ir_data, löscht anschliessend ir_data
+ * @return Wert von ir_data, loescht anschliessend ir_data
  */
 uint16 ir_read(void) {
 	uint16 retvalue = ir_data;
@@ -157,7 +156,6 @@ uint16 ir_read(void) {
 void ir_init(void) {
 	IR_DDR  &= ~IR_PIN; 	// Pin auf Input
 	IR_PORT |= IR_PIN;		// Pullup an
-	timer_2_init();	// Für IR-Krams
 }
-#endif
-#endif
+#endif	// IR_AVAILABLE
+#endif	// MCU
