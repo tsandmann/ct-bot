@@ -47,7 +47,7 @@ void bot_follow_wall_behaviour(Behaviour_t *data);
  * 			        einfach NULL uebergeben, wenn keine definiert ist 
  * @param caller 	Verhaltensdatensatz
  */
-void bot_follow_wall(Behaviour_t *caller,int8 (*check)(void));
+void bot_follow_wall(Behaviour_t *caller,uint8 (*check)(void));
 
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 /*! 

@@ -41,6 +41,15 @@
 #include "bot-local.h"
 #include "log.h"
 
+
+//#define DEBUG_BOT_LOGIC		// Schalter um recht viel Debug-Code anzumachen
+
+#ifndef DEBUG_BOT_LOGIC
+	#undef LOG_DEBUG
+	#define LOG_DEBUG(a, ...) {}
+#endif
+
+
 #ifdef MCU
 #ifndef SPEED_CONTROL_AVAILABLE
 #error "Das goto_pos-Verhalten geht nur mit Motorregelung!"
@@ -175,6 +184,7 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		speedWishLeft = BOT_SPEED_STOP;
 		speedWishRight = BOT_SPEED_STOP;
 		BLOCK_BEHAVIOUR(data, 1200);
+		LOG_INFO("Fehler=%d mm", diff_to_target);
 		return_from_behaviour(data);
 		if (dest_head == 999) {
 			/* kein Drehen gewuenscht => fertig */
@@ -209,7 +219,7 @@ void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
 	dest_y = y;
 	dest_head = head;
 	
-	LOG_DEBUG("(%d mm|%d mm|%d Grad)", x, y, head);
+	LOG_INFO("(%d mm|%d mm|%d Grad)", x, y, head);
 }
 
 /*!
