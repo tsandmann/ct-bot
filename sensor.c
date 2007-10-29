@@ -338,8 +338,8 @@ void sensor_update(void){
 		#ifdef MCU
 			SREG = sreg;
 		#endif
-		v_enc_left=  (((sensEncL_tmp - lastEncL1) * WHEEL_PERIMETER) / ENCODER_MARKS)*4;
-		v_enc_right= (((sensEncR_tmp - lastEncR1) * WHEEL_PERIMETER) / ENCODER_MARKS)*4;
+		v_enc_left=  (((sensEncL_tmp - lastEncL1) * (float)WHEEL_PERIMETER) / ENCODER_MARKS)*4;
+		v_enc_right= (((sensEncR_tmp - lastEncR1) * (float)WHEEL_PERIMETER) / ENCODER_MARKS)*4;
 		v_enc_center=(v_enc_left+v_enc_right)/2;
 		lastEncL1= sensEncL_tmp;
 		lastEncR1= sensEncR_tmp;

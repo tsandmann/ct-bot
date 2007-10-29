@@ -30,10 +30,10 @@
 
 #include "ct-Bot.h"
 
-#define ENCODER_MARKS			60		/*!< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weissen + Anzahl der schwarzen Felder */
-#define WHEEL_DIAMETER			57		/*!< Durchmesser eines Rades in mm */
-#define WHEEL_PERIMETER			179 	/*!< Umfang eines Rades in mm */	
-#define WHEEL_TO_WHEEL_DIAMETER 97 		/*!< Abstand der beiden Raeder in mm */
+#define ENCODER_MARKS			60			/*!< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weissen + Anzahl der schwarzen Felder */
+#define WHEEL_DIAMETER			56.7		/*!< Durchmesser eines Rades in mm */
+#define WHEEL_PERIMETER			178.1283 	/*!< Umfang eines Rades in mm */	
+#define WHEEL_TO_WHEEL_DIAMETER 97.2 		/*!< Abstand der beiden Raeder in mm */
 
 #define DISTSENSOR_POS_FW	47			/*!< Abstand der Distanzsensoren von der Radachse (in fahrtrichtung)*/
 #define DISTSENSOR_POS_SW	32			/*!< Abstand der Distanzsensoren von der Mittelachse (in querrichtung)*/
