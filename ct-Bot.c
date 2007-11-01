@@ -195,19 +195,19 @@ void init(void){
 
 #ifdef TEST_AVAILABLE
 	/*! Zeigt den internen Status der Sensoren mit den LEDs an */
-	void show_sensors(void){
-		uint8 led=0x00;
-		led_t * status = (led_t *)&led;
+	void show_sensors(void) {
+		static volatile uint8_t led_status = 0x00;
+		led_t * status = (led_t *)&led_status;
 		#ifdef TEST_AVAILABLE_ANALOG
-			(*status).rechts	= (sensDistR >> 9) & 0x01;
-			(*status).links		= (sensDistL >> 9) & 0x01;
+			(*status).rechts	= (sensDistR >> 8) & 0x01;
+			(*status).links		= (sensDistL >> 8) & 0x01;
 			(*status).rot		= (sensLineL >> 9) & 0x01;
 			(*status).orange	= (sensLineR >> 9) & 0x01;
-			(*status).gelb		= (sensLDRL >> 9) & 0x01;
-			(*status).gruen		= (sensLDRR >> 9) & 0x01;
+			(*status).gelb		= (sensLDRL >> 8)  & 0x01;
+			(*status).gruen		= (sensLDRR >> 8)  & 0x01;
 			(*status).tuerkis	= (sensBorderL >> 9) & 0x01;
 			(*status).weiss		= (sensBorderR >> 9) & 0x01;
-		#endif
+		#endif	// TEST_AVAILABLE_ANALOG
 		#ifdef TEST_AVAILABLE_DIGITAL
 			(*status).rechts	= sensEncR  & 0x01;
 			(*status).links		= sensEncL  & 0x01;
@@ -215,15 +215,15 @@ void init(void){
 			(*status).orange	= sensError & 0x01;
 			(*status).gelb		= sensDoor  & 0x01;
 			#ifdef MAUS_AVAILABLE
-				(*status).gruen		= (sensMouseDX >>1)  & 0x01;
-				(*status).tuerkis	= (sensMouseDY >>1) & 0x01;
+				(*status).gruen		= (sensMouseDX >> 1) & 0x01;
+				(*status).tuerkis	= (sensMouseDY >> 1) & 0x01;
 			#endif
 			#ifdef RC5_AVAILABLE
 				(*status).weiss		= RC5_Code & 0x01;
 			#endif
-		#endif
+		#endif	// TEST_AVAILABLE_DIGITAL
 				
-		LED_set(led);
+		LED_set(led_status);
 	}
 #endif	// TEST_AVAILABLE
 
@@ -533,22 +533,26 @@ for(;;){
 		show_sensors();
 	#endif
 
-	/* Testprogramm, das den Bot erst links, dann rechtsrum dreht */
+	/* Testprogramm, das den Bot erst links-, dann rechtsrum dreht */
 	#ifdef TEST_AVAILABLE_MOTOR
 		calls++;
-		if (calls == 1)
+		if (calls == 1) {
 			motor_set(BOT_SPEED_SLOW,-BOT_SPEED_SLOW);
-		else if (calls == 501)
+		} else if (calls == 501) {
 			motor_set(-BOT_SPEED_SLOW,BOT_SPEED_SLOW);
-		else if (calls== 1001)
+		} else if (calls == 1001) {
 			motor_set(BOT_SPEED_STOP,BOT_SPEED_STOP);
-		else
+		} else if (calls > 1001) {
+			#ifdef BEHAVIOUR_AVAILABLE
+				bot_behave();
+			#endif			
+		}
+	#else
+		#ifdef BEHAVIOUR_AVAILABLE
+			/* hier drin steckt der Verhaltenscode */
+			bot_behave();
+		#endif	// BEHAVIOUR_AVAILABLE
 	#endif	// TEST_AVAILABLE_MOTOR
-	
-	#ifdef BEHAVIOUR_AVAILABLE
-		/* hier drin steckt der Verhaltenscode */
-		bot_behave();
-	#endif	// BEHAVIOUR_AVAILABLE
 			
 	#ifdef MCU
 		/* jeweils alle 100 ms kommunizieren Bot, User und Sim */

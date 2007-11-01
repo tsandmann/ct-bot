@@ -247,17 +247,23 @@ void bot_sens_isr(void) {
 
 	sensor_update();	// Weiterverarbeitung der rohen Sensordaten			
 	
-	if ((uint16)(dist_ticks-old_dist) > MS_TO_TICKS(50)){
+	if ((uint16)(dist_ticks-old_dist) > MS_TO_TICKS(50)) {
 		old_dist = dist_ticks;	// Zeit fuer naechste Messung merken
 		// dieser Block braucht insgesamt ca. 80 us (MCU)
 		/* Dist-Sensor links */
 		while (adc_get_active_channel() < 1) {}
 		uint16 voltL = distLeft[0]+distLeft[1]+distLeft[2]+distLeft[3];
 		(*sensor_update_distance)(&sensDistL, &sensDistLToggle, sensDistDataL, voltL);
+		#ifdef TEST_AVAILABLE_ANALOG
+			sensDistL = voltL >> 2;
+		#endif	
 		/* Dist-Sensor rechts */
 		while (adc_get_active_channel() < 2) {}
 		uint16 voltR = distRight[0]+distRight[1]+distRight[2]+distRight[3];
 		(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, voltR);
+		#ifdef TEST_AVAILABLE_ANALOG
+			sensDistR = voltR >> 2;
+		#endif			
 	}
 	
 #ifdef CMPS03_AVAILABLE

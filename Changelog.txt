@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-11-01 Timo Sandmann [mail@timosandmann.de]: Workaround fuer fehlerhafte Compileroptimierung (gcc 4.2.2) in show_sensors(), Bugfix fuer TEST_AVAILABLE_MOTOR und Ausgabe der Distanzsenro-Rohdaten, falls TEST_AVAILABLE_ANALOG
+
 2007-10-23 Timo Sandmann [mail@timosandmann.de]: bot-logik.c: Bugfix fuer deactivateCalledBehaviours() und isInCallHierarchy()
 
 2007-10-19 Frank Menzel  [Menzelfr@gmx.net]: Neues Verhalten behaviour_cancel_behaviour deaktiviert ein anderes Verhalten in Abhaengigkeit einer Check-Funktion
