@@ -103,40 +103,11 @@ void motor_update(uint8 dev){
 	}				
 }
 
-// deprecated
-///*!
-// * unmittelbarer Zugriff auf die Motoren
-// * @param dev 	Motor (0: links; 1: rechts)
-// * @param speed	Soll-Geschwindigkeit
-// */
-//void bot_motor(uint8 dev, int16 speed) {
-//	if (dev == 0) {
-//		/* linker Motor */
-//		if (speed >= 0){
-//			direction.left = DIRECTION_FORWARD;
-////			motor_left = speed;
-//		} else {
-//			direction.left = DIRECTION_BACKWARD;
-////			motor_left = -speed;
-//		}
-//		motor_left = abs(speed);	
-//	} else {
-//		/* rechter Motor */
-//		if (speed >= 0){
-//			direction.right = DIRECTION_FORWARD;
-////			motor_right = speed;
-//		} else {
-//			direction.right = DIRECTION_BACKWARD;
-////			motor_right = -speed;
-//		}			
-//		motor_right = abs(speed);
-//	}
-//	motor_update(dev);			
-//}
-
 /*!
- * Stellt die Servos
- * Sinnvolle Werte liegen zwischen 8 und 16
+ * @brief		Stellt die Servos
+ * @param servo	Nummer des Servos
+ * @param pos	Zielwert
+ * Sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus 
  */
 void servo_low(uint8 servo, uint8 pos){
 	if (servo== SERVO1) {

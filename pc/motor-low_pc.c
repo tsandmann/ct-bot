@@ -71,7 +71,7 @@ void bot_motor(int16 left, int16 right){
  * @brief		Stellt die Servos
  * @param servo	Nummer des Servos
  * @param pos	Zielwert
- * Sinnvolle Werte liegen zwischen 8 und 16
+ * Sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus 
  */
 void servo_low(uint8 servo, uint8 pos){
 	int16 p = pos;

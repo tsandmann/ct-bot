@@ -17,7 +17,8 @@
  * 
  */
 
-/*! @file 	motor-low.h 
+/*! 
+ * @file 	motor-low.h 
  * @brief 	Low-Level Routinen fuer die Motorsteuerung des c't-Bots
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	01.12.05
@@ -51,9 +52,11 @@ void motor_low_init(void);
 void motor_update(uint8_t dev);
 
 /*!
- * Stellt die Servos
- * Sinnvolle Werte liegen zwischen 8 und 16
+ * @brief		Stellt die Servos
+ * @param servo	Nummer des Servos
+ * @param pos	Zielwert
+ * Sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus 
  */
 void servo_low(uint8 servo, uint8 pos);
 
-#endif
+#endif	/*motor_low_H_*/

@@ -1,6 +1,10 @@
 Wunsch- und Aufgabenliste fuer die c't-Bot-Firmware bzw. ihr PC-Pendant:
 ========================================================================
 
+Siehe auch http://www.heise.de/ct/projekte/machmit/ctbot/report/3
+und http://www.heise.de/ct/projekte/machmit/ctbot/wiki/NeueVerhalten
+
+
 Alle hier aufgefuehrten Punkte stehen noch aus. Wer moechte, ist herzlich eingeladen,
 uns Patches (siehe FAQ) zu schicken, die diese Liste sinnvoll ergaenzen. Aber auch ueber Loesungen
 fuer hier genannte Probleme freuen wir uns.
@@ -43,5 +47,4 @@ Ideen/Ausbaustufen
 # Sensorerweiterungen:
   * experimentieren
   * weitere Distanzsensoren
-  * Kompass
   * Beschleunigungssensoren

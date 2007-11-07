@@ -17,11 +17,13 @@
  * 
  */
 
-/*! @file 	srf10.c  
+/*! 
+ * @file 	srf10.c  
  * @brief 	Ansteuerung des Ultraschall Entfernungssensors SRF10
  * @author 	Carsten Giesen (info@cnau.de)
  * @date 	08.04.06
-*/
+ */
+
 #ifdef MCU 
 #include "ct-Bot.h"
 #ifdef SRF10_AVAILABLE 
@@ -35,25 +37,25 @@ static uint8 address=SRF10_UNIT_0;
 /*!
  * SRF10 initialsieren
  */
- 
-void srf10_init(void){
+void srf10_init(void) {
 	srf10_set_range(SRF10_MAX_RANGE);
 	//srf10_set_range(6);	//Mit diesem Wert muss man spielen um das Optimum zu ermitteln
-return;
+	return;
 }
 
 /*!
  * Verstaerkungsfaktor setzen
  * @param gain Verstaerkungsfaktor
  */
- 
-void srf10_set_gain(unsigned char gain){
-    if(gain>16) { gain=16; }
+void srf10_set_gain(unsigned char gain) {
+	if (gain > 16) {
+		gain=16;
+	}
 
 	uint8 temp[2];
 	uint8 state;
 	tx_type tx_frame[2];
-	
+
 	state = SUCCESS;
 
 	tx_frame[0].slave_adr = address+W;
@@ -71,15 +73,14 @@ void srf10_set_gain(unsigned char gain){
  * Reichweite setzen, hat auch Einfluss auf die Messdauer
  * @param millimeters Reichweite in mm
  */
- 
-void srf10_set_range(unsigned int millimeters){
+void srf10_set_range(unsigned int millimeters) {
 	uint8 temp[2];
 	uint8 state;
 	tx_type tx_frame[2];
-	
+
 	state = SUCCESS;
 
-    millimeters= (millimeters/43); 
+	millimeters= (millimeters/43);
 
 	tx_frame[0].slave_adr = address+W;
 	tx_frame[0].size = 2;
@@ -97,12 +98,11 @@ void srf10_set_range(unsigned int millimeters){
  * @param metric_unit 0x50 in Zoll, 0x51 in cm, 0x52 ms
  * @return Resultat der Aktion
  */
-
-uint8 srf10_ping(uint8 metric_unit){
+uint8 srf10_ping(uint8 metric_unit) {
 	uint8 temp[2];
 	uint8 state;
 	tx_type tx_frame[2];
-	
+
 	state = SUCCESS;
 
 	tx_frame[0].slave_adr = address+W;
@@ -114,7 +114,7 @@ uint8 srf10_ping(uint8 metric_unit){
 	tx_frame[1].slave_adr = OWN_ADR;
 
 	state = Send_to_TWI(tx_frame);
-	
+
 	return state;
 }
 
@@ -123,8 +123,7 @@ uint8 srf10_ping(uint8 metric_unit){
  * @param srf10_register welches Register soll ausgelsen werden
  * @return Inhalt des Registers
  */
-
-uint8 srf10_read_register(uint8 srf10_register){
+uint8 srf10_read_register(uint8 srf10_register) {
 	uint8 temp;
 	uint8 value;
 	uint8 state;
@@ -145,7 +144,7 @@ uint8 srf10_read_register(uint8 srf10_register){
 	tx_frame[2].slave_adr = OWN_ADR;
 
 	state = Send_to_TWI(tx_frame);
-	
+
 	return value;
 }
 
@@ -153,20 +152,18 @@ uint8 srf10_read_register(uint8 srf10_register){
  * Messung starten Ergebniss aufbereiten und zurueckgeben
  * @return Messergebniss
  */
+uint16 srf10_get_measure() {
+	uint8 hib;
+	uint8 lob;
 
-uint16 srf10_get_measure(){
-	char hib;
-	char lob;
-	char state;
-
-	state = SUCCESS;
+	uint8 state = SUCCESS;
 
 	state = srf10_ping(SRF10_CENTIMETERS);
-	delay(10);									//Optimierungs Potential
+	delay(10);	// Optimierungs-Potential
 	lob=srf10_read_register(SRF10_LOB);
-	delay(10);									//Optimierungs Potential
+	delay(10);	// Optimierungs-Potential
 	hib=srf10_read_register(SRF10_HIB);
-	
+
 	return (hib*256)+lob;
 }
 

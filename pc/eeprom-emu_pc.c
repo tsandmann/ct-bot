@@ -55,6 +55,7 @@
 	#define LOG_INFO(a, ...) {}
 #endif
 
+#ifdef EEPROM_EMU_AVAILABLE
 extern uint8 __attribute__ ((section (".s1eeprom"),aligned(1))) _eeprom_start1__;
 extern uint8 __attribute__ ((section (".s2eeprom"),aligned(1))) _eeprom_start2__;
 
@@ -514,4 +515,75 @@ void eeprom_write_block(const void *pointer_ram, void *pointer_eeprom, size_t si
 	flush_eeprom_cache();
 }
 
+#else	// EEPROM-Emulation deaktiviert
+
+/*! 
+ * Diese Funktion initialisiert die eeprom-emulation. Sie sorgt fuer die Erstellung der
+ * eeprom.bin, falls nicht vorhanden und erstellt ueber eine Hilfsfunktion eine Adress-
+ * konvertierungstabelle fuer die EEPROM-Adressen, wenn die benoetigten Daten vorliegen.
+ * Statusinformationen werden ueber DEBUG_INFO angezeigt.
+ * @param init	gibt an, ob das EEPROM mit Hilfer einer eep-Datei initialisiert werden soll (0 nein, 1 ja)
+ * @return		0: alles ok, 1: Fehler
+ */
+uint8_t init_eeprom_man(uint8_t init) {
+	return 0;
+}
+
+/*!
+ * Speichert ein Byte im EEPROM.
+ * @param addr	Adresse im EEPROM zwischen 0 und 1023
+ * @param value	Das abzulegende Byte
+ */ 
+void eeprom_write_byte(uint8_t * addr, uint8_t value) {
+	*addr = value;
+}
+
+/*!
+ * Speichert ein Word im EEPROM.
+ * @param addr	Adresse im EEPROM zwischen 0 und 1023
+ * @param value	Das abzulegende Word
+ */ 
+void eeprom_write_word(uint16_t * addr, uint16_t value) {
+	*addr = value;
+}
+
+/*! 
+ * Laedt ein Byte aus dem EEPROM.
+ * @param addr	Adresse im EEPROM zwischen 0 und 1023
+ * @return 		Wert der Speicheraddresse im EEPROM
+ */ 
+uint8_t eeprom_read_byte(const uint8_t * addr) {
+	return *addr;
+}
+
+/*! 
+ * Laedt ein Word aus dem EEPROM.
+ * @param addr	Adresse im EEPROM zwischen 0 und 1023
+ * @return 		Wert der Speicheraddresse im EEPROM
+ */ 
+uint16_t eeprom_read_word(const uint16_t * addr) {
+	return *addr;
+}
+
+/*! 
+ * Kopiert einen Block aus dem EEPROM ins RAM
+ * @param pointer_ram		Adresse im RAM
+ * @param pointer_eeprom	Adresse im EEPROM
+ * @param size				Groesse des Blocks in Byte
+ */ 
+void eeprom_read_block(void *pointer_ram, const void *pointer_eeprom, size_t size) {
+	memcpy(pointer_ram, pointer_eeprom, size);
+}
+
+/*! 
+ * Kopiert einen Block vom RAM in das EEPROM
+ * @param pointer_ram		Adresse im RAM
+ * @param pointer_eeprom	Adresse im EEPROM
+ * @param size				Groesse des Blocks in Byte
+ */ 
+void eeprom_write_block(const void *pointer_ram, void *pointer_eeprom, size_t size) {
+	memcpy(pointer_eeprom, pointer_ram, size);
+}
+
+#endif	// EEPROM_EMU_AVAILABLE
 #endif	// PC

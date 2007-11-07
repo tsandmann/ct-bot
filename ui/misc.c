@@ -49,7 +49,7 @@ uint8_t EEPROM resetsEEPROM = 0;	/*!< Reset-Counter-Wert im EEPROM */
 		void misc_display(void){
 			#ifdef TIME_AVAILABLE
 				display_cursor(1,1);
-				display_printf("Zeit: %04d:%03d", timer_get_s(), timer_get_ms());
+				display_printf("Zeit: %04u:%03u", timer_get_s(), timer_get_ms());
 			#endif
 			
 			#ifdef BEHAVIOUR_AVAILABLE
@@ -59,7 +59,7 @@ uint8_t EEPROM resetsEEPROM = 0;	/*!< Reset-Counter-Wert im EEPROM */
 			
 			#ifdef SRF10_AVAILABLE		
 				display_cursor(2,15);
-				display_printf("US%+4d",sensSRF10);
+				display_printf("US%4u",sensSRF10);
 			#endif
 			
 			display_cursor(3,1);

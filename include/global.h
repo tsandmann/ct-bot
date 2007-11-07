@@ -24,9 +24,13 @@
  * @date 	20.12.05
  */
 
+
 #ifndef global_H
-	#define global_H
-	#ifndef __ASSEMBLER__
+#define global_H
+
+#include "ct-Bot.h"
+	
+#ifndef __ASSEMBLER__
 	#include <stdint.h>
 	
 	#ifndef MCU
@@ -60,13 +64,23 @@
 	#define On                    1		/*!< An */
 	#define Off                   0		/*!< Aus */
 
-	#ifdef __APPLE__
-		/* OS X */
-		#define EEPROM __attribute__ ((section ("__DATA,.eeprom"),aligned(1)))	/*!< EEPROM-Section */
+	#ifdef PC
+		#ifdef EEPROM_EMU_AVAILABLE
+			#ifdef __APPLE__
+				/* OS X */
+				#define EEPROM __attribute__ ((section ("__DATA,.eeprom"),aligned(1)))	/*!< EEPROM-Section */
+			#else
+				/* Linux und Windows */
+				#define EEPROM __attribute__ ((section (".eeprom"),aligned(1)))			/*!< EEPROM-Section */
+			#endif
+		#else
+			/* keine EEPROM-Emulation */
+			#define EEPROM	
+		#endif	// EEPROM_EMU_AVAILABLE
 	#else
-		/* Linux und Windows */
+		/* MCU */
 		#define EEPROM __attribute__ ((section (".eeprom"),aligned(1)))			/*!< EEPROM-Section */
-	#endif
+	#endif	// PC
 
 	#define binary(var,bit) ((var >> bit)&1)	/*!< gibt das Bit "bit" von "var" zurueck */
 #endif	// __ASSEMBLER__

@@ -38,35 +38,35 @@
  * @param init	gibt an, ob das EEPROM mit Hilfer einer eep-Datei initialisiert werden soll (0 nein, 1 ja)
  * @return		0: alles ok, 1: Fehler
  */
-extern uint8_t init_eeprom_man(uint8_t init);
+uint8_t init_eeprom_man(uint8_t init);
 
 /*!
  * Speichert ein Byte im EEPROM.
  * @param addr	Adresse im EEPROM zwischen 0 und 1023
  * @param value	Das abzulegende Byte
  */ 
-extern void eeprom_write_byte(uint8_t * addr, uint8_t value);
+void eeprom_write_byte(uint8_t * addr, uint8_t value);
 
 /*!
  * Speichert ein Word im EEPROM.
  * @param addr	Adresse im EEPROM zwischen 0 und 1023
  * @param value	Das abzulegende Word
  */ 
-extern void eeprom_write_word(uint16_t * addr, uint16_t value);
+void eeprom_write_word(uint16_t * addr, uint16_t value);
 
 /*! 
  * Laedt ein Byte aus dem EEPROM.
  * @param addr	Adresse im EEPROM zwischen 0 und 1023
  * @return 		Wert der Speicheraddresse im EEPROM
  */ 
-extern uint8_t eeprom_read_byte(const uint8_t * addr);
+uint8_t eeprom_read_byte(const uint8_t * addr);
 
 /*! 
  * Laedt ein Word aus dem EEPROM.
  * @param addr	Adresse im EEPROM zwischen 0 und 1023
  * @return 		Wert der Speicheraddresse im EEPROM
  */ 
-extern uint16_t eeprom_read_word(const uint16_t * addr);
+uint16_t eeprom_read_word(const uint16_t * addr);
 
 /*! 
  * Kopiert einen Block aus dem EEPROM ins RAM
@@ -74,7 +74,7 @@ extern uint16_t eeprom_read_word(const uint16_t * addr);
  * @param pointer_eeprom	Adresse im EEPROM
  * @param size				Groesse des Blocks in Byte
  */ 
-extern void eeprom_read_block(void *pointer_ram, const void *pointer_eeprom, size_t size);
+void eeprom_read_block(void *pointer_ram, const void *pointer_eeprom, size_t size);
 
 /*! 
  * Kopiert einen Block vom RAM in das EEPROM
@@ -82,7 +82,7 @@ extern void eeprom_read_block(void *pointer_ram, const void *pointer_eeprom, siz
  * @param pointer_eeprom	Adresse im EEPROM
  * @param size				Groesse des Blocks in Byte
  */ 
-extern void eeprom_write_block(const void *pointer_ram, void *pointer_eeprom, size_t size);
+void eeprom_write_block(const void *pointer_ram, void *pointer_eeprom, size_t size);
 
 #endif	// PC
 #endif	// eeprom_emu_H_

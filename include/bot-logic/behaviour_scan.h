@@ -67,7 +67,7 @@ void border_in_map_handler(void);
 
 /*! 
  * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
- * @param Der aufrufer
+ * @param *caller	Der Aufrufer
  */
 void bot_scan(Behaviour_t* caller);
 #endif

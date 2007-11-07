@@ -58,15 +58,15 @@ typedef union {
 uint32_t mini_fat_lookup_adr(const char * filename, uint8_t * buffer);
 
 /*!
- * @brief			Speichert die Adresse einer Mini-FAT-Datei in einem EERROM-Slab
- * @param adr		(Block-)Adresse der Datei, die gespeichert werden soll
+ * @brief			Speichert die Adresse einer MiniFAT-Datei in einem EERROM-Slab
+ * @param block		(Block-)Adresse der Datei, die gespeichert werden soll
  * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			05.03.2007
  * Gespeichert wird die Adresse des 0. Blocks der Datei (man gibt aber die Adresse des ersten Nutzdatenblocks an, wie sie
  * z.B. mini_fat_find_block() liefert) in einem EEPROM-Slab. Derzeit gibt es 10 Slabs, sind alle belegt (d.h. != 0), speichert
  * diese Funktion die uebergebene Adresse nicht.
  */
-void mini_fat_store_adr(uint32_t adr);
+void mini_fat_store_adr(uint32_t block);
 
 /*!
  * @brief			Sucht einen Block auf der MMC-Karte, dessen erste Bytes dem Dateinamen entsprechen

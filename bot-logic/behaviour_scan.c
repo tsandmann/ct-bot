@@ -220,7 +220,7 @@ void bot_scan_behaviour(Behaviour_t *data) {
 
 /*! 
  * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
- * @param caller der Aufrufer
+ * @param *caller	Der Aufrufer
  */
 void bot_scan(Behaviour_t* caller) {	
 	bot_scan_state = BOT_SCAN_STATE_START;
