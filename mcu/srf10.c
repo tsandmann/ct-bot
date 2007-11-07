@@ -47,7 +47,7 @@ void srf10_init(void) {
  * Verstaerkungsfaktor setzen
  * @param gain Verstaerkungsfaktor
  */
-void srf10_set_gain(unsigned char gain) {
+void srf10_set_gain(uint8_t gain) {
 	if (gain > 16) {
 		gain=16;
 	}
@@ -73,7 +73,7 @@ void srf10_set_gain(unsigned char gain) {
  * Reichweite setzen, hat auch Einfluss auf die Messdauer
  * @param millimeters Reichweite in mm
  */
-void srf10_set_range(unsigned int millimeters) {
+void srf10_set_range(uint16_t millimeters) {
 	uint8 temp[2];
 	uint8 state;
 	tx_type tx_frame[2];
