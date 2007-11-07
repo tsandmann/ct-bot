@@ -243,26 +243,58 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 						/* cdecl-Aufrufkonvention => Parameter von rechts nach links auf den Stack */
 						tmp = *(uint32*)(parameter_data+(parameter_count-i-1)*4);
 						/* Parameter 2 bis n pushen */
-						asm volatile(	// IA32-Support only
-							"pushl %0		# parameter i auf stack	"
-							::	"g" (tmp)
-							: "memory"
-						);
+						#if INTPTR_MAX <= INT32_MAX
+							/* IA-32 */
+							asm volatile(
+								"pushl %0		# parameter i auf stack	"
+								::	"g" (tmp)
+								: "memory"
+							);
+						#else
+							/* AMD64 und Intel 64 */
+							asm volatile(	// IA32-Support only
+								"pushq %0		# parameter i auf stack	"
+								::	"g" (tmp)
+								: "memory"
+							);						
+						#endif	// IA-32
 					}	
 					/* Parameter 1 (data) und Funktionsaufruf */
-					asm volatile(
-						"pushl %0			# push data			\n\t"
-						"movl %1, %%eax		# adresse laden		\n\t"
-						"call *%%eax		# jump to callee	\n\t"
-						:: "m" (data), "m" (func)
-						: "eax", "memory"
-					);
-					/* caller rauemt den Stack wieder auf */
-					for (i=0; i<=parameter_count && td>2; i++){	// Check von td erzwingt, dass das Aufraeumen erst jetzt passiert
+					#if INTPTR_MAX <= INT32_MAX
+						/* IA-32 */
 						asm volatile(
-							"pop %%eax		# stack aufraeumen	"
-							:::	"eax", "memory"
-						);	
+							"pushl %0			# push data			\n\t"
+							"movl %1, %%eax		# adresse laden		\n\t"
+							"call *%%eax		# jump to callee	\n\t"
+							:: "m" (data), "m" (func)
+							: "eax", "memory"
+						);
+					#else
+						/* AMD64 und Intel 64 */
+						#warning "Code fuer AMD64- / Intel 64-Architektur ungetestet!"
+						asm volatile(
+							"pushq %0			# push data			\n\t"
+							"movq %1, %%rax		# adresse laden		\n\t"
+							"call *%%rax		# jump to callee	\n\t"
+							:: "m" (data), "m" (func)
+							: "rax", "memory"
+						);
+					#endif	// IA-32
+					/* caller rauemt den Stack wieder auf */
+					for (i=0; i<=parameter_count && td>2; i++) {	// Check von td erzwingt, dass das Aufraeumen erst jetzt passiert
+						#if INTPTR_MAX <= INT32_MAX
+							/* IA-32 */
+							asm volatile(
+								"pop %%eax		# stack aufraeumen	"
+								:::	"eax", "memory"
+							);
+						#else
+							/* AMD64 und Intel 64 */
+							asm volatile(
+								"popq %%rax		# stack aufraeumen	"
+								:::	"rax", "memory"
+							);							
+						#endif	// IA-32
 					}			
 				#else
 					/* Prinzip auf der MCU: Keine komplizierten Rechnungen, sondern einfach alle Register ueberschreiben.
