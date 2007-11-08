@@ -252,7 +252,7 @@ void bot_remotecall_behaviour(Behaviour_t *data){
 							);
 						#else
 							/* AMD64 und Intel 64 */
-							asm volatile(	// IA32-Support only
+							asm volatile(
 								"pushq %0		# parameter i auf stack	"
 								::	"g" (tmp)
 								: "memory"
