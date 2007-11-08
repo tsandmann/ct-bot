@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-11-08 Timo Sandmann [mail@timosandmann.de]: Ausgabe von avr-size im Postbuild korrigiert (EEPROM-Daten liegen nicht in .data)
+
 2007-11-07 Timo Sandmann [mail@timosandmann.de]: Architekturabhaengigen Remote-Call-Code fuer AMD64 / Intel 64 ergaenzt (64 Bit Version ungetestet!)
 
 2007-11-07 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer SRF10-Treiber und Doxygenwarnings beseitigt
