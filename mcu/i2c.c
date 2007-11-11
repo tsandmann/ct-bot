@@ -180,7 +180,7 @@ uint8_t i2c_wait(void) {
 	/* spinning bis Lock frei */
 	while (i2c_complete == 0) {
 		if (timer_ms_passed(&ticks, 3)) {
-			/* Timeour */
+			/* Timeout */
 			TWCR = 0;	// I2C aus
 			return TW_BUS_ERROR;
 		}
