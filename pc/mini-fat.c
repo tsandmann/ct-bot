@@ -220,6 +220,7 @@ void convert_slog_file(const char* input_file) {
 			}
 		}
 		fwrite("\n", 1, 1, fp_output);	// Leerzeile trennt links und rechts
+		fwrite("\n", 1, 1, fp_output);	// 2. Leerzeile wichtig fuer gnuplot
 	}
 	fclose(fp_input);
 	fclose(fp_output);

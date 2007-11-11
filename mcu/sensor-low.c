@@ -235,7 +235,7 @@ void bot_sens_isr(void) {
 				for (i=slog_count[1]+1; i<25; i++){
 					memset((uint8*)&slog_data[1][i],0,sizeof(slog_t));	// q&d
 				}
-				mmc_write_sector(slog_sector++, (uint8*)slog_data, 0);	// swap-out
+				mmc_write_sector(slog_sector++, (uint8*)slog_data);	// swap-out
 				/* Index-Reset */
 				slog_i[0] = 0;
 				slog_count[0] = 0;

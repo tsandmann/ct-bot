@@ -257,7 +257,7 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
 					display_printf("e = %4d",abs(speed_r)-(encoderRateInfo[1]<<1));
 				#endif
 				display_cursor(3,11);
-				display_printf("L = %4d",motor_right);
+				display_printf("R = %4d",motor_right);
 			}
 			#ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
 				display_cursor(2,1);
@@ -298,7 +298,7 @@ direction_t direction;		/*!< Drehrichtung der Motoren */
  * @author 		Timo Sandmann (mail@timosandmann.de)
  * @date 		17.10.2006 
  * @param left	Geschwindigkeit fuer den linken Motor
- * @param right	Geschwindigkeit fuer den linken Motor
+ * @param right	Geschwindigkeit fuer den rechten Motor
  * Geschwindigkeit liegt zwischen -450 und +450. 0 bedeutet Stillstand, 450 volle Kraft voraus, -450 volle Kraft zurueck.
  * Sinnvoll ist die Verwendung der Konstanten: BOT_SPEED_XXX, also z.B. motor_set(BOT_SPEED_SLOW,-BOT_SPEED_SLOW) fuer eine langsame Drehung
  */
