@@ -41,6 +41,8 @@
 
 //#define BEHAVIOUR_FOLLOW_WALL_AVAILABLE /*!< Follow Wall Explorer Verhalten */
 
+//#define BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE /*!< Transport-Pillar Verhalten */
+
 #define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-kommandos entgegen? */
 #define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE /*!< Deaktivieren eines Verhaltens wenn Abbruchbedingung erfuellt */
 
@@ -96,6 +98,11 @@
 
 #ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 	#define BEHAVIOUR_SERVO_AVAILABLE
+#endif
+
+#ifdef BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE
+	#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
+	#define BEHAVIOUR_FOLLOW_WALL_AVAILABLE
 #endif
 
 #ifndef MCU
@@ -172,6 +179,8 @@
 #include "bot-logic/behaviour_delay.h"
 
 #include "bot-logic/behaviour_cancel_behaviour.h"
+
+#include "bot-logic/behaviour_transport_pillar.h"
 
 #endif	// BEHAVIOUR_AVAILABLE
 #endif	/*AVAILABLE_BEHAVIOURS_H_*/

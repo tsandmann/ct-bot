@@ -186,11 +186,11 @@ void command_write_rawdata(uint8_t command, uint8_t subcommand, int16_t* data_l,
  * Wertet das Kommando im Puffer aus
  * return 1, wenn Kommando schon bearbeitet wurde, 0 sonst
  */
-int command_evaluate(void);
+int8_t command_evaluate(void);
 
 /*! 
  * Gibt ein Kommando auf dem Bildschirm aus
  */
 void command_display(command_t * command);
 
-#endif
+#endif	/*__command_h_*/

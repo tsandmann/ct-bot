@@ -44,6 +44,8 @@
 #define RAM_DISPLAY_AVAILABLE			/*!< Ausgabe des freien RAMs */
 #define DISPLAY_MAP_GO_DESTINATION      /*!< Steuerung Map-Verhalten auf diesem Screen */
 #define DISPLAY_MAP_AVAILABLE			/*!< Zeigt Map-Display an */
+#define DISPLAY_TRANSPORT_PILLAR        /*!< Steuerung Transport-Pillar-Verhalten auf diesem Screen */
+
 
 #ifndef SPEED_CONTROL_AVAILABLE
 	#undef DISPLAY_REGELUNG_AVAILABLE
@@ -66,6 +68,9 @@
 #endif
 #ifndef BEHAVIOUR_MAP_GO_DESTINATION_AVAILABLE
 	#undef DISPLAY_MAP_GO_DESTINATION
+#endif
+#ifndef BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE
+	#undef DISPLAY_TRANSPORT_PILLAR
 #endif
 
 

@@ -60,7 +60,7 @@
 	#else
 		#include <avr/delay.h>
 	#endif
-#endif
+#endif	// MCU
 
 #define COMMAND_TIMEOUT 	10		/*!< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
 
@@ -72,8 +72,7 @@ command_t received_command;		/*!< Puffer fuer Kommandos */
 
 #ifdef PC
 	// Auf dword alignment bestehen, wird fuer MacOS X benoetigt
-	pthread_mutex_t     command_mutex __attribute__ ((aligned (4)))
-		= PTHREAD_MUTEX_INITIALIZER;	/*!< Mutex fuer Commands */
+	pthread_mutex_t command_mutex __attribute__ ((aligned (4))) = PTHREAD_MUTEX_INITIALIZER;	/*!< Mutex fuer Commands */
 #endif
 
 
@@ -83,18 +82,19 @@ command_t received_command;		/*!< Puffer fuer Kommandos */
 	#undef LOG_DEBUG
 	#define LOG_DEBUG(a, ...) {}	/*!< Log-Dummy */
 #endif
+
 /*!
  * Liest ein Kommando ein, ist blockierend!
  * Greift auf low_read() zurueck
  * Achtung, die Payload wird nicht mitgelesen!!!
  * @see low_read()
  */
-int8 command_read(void){
-	int bytesRcvd;
-	int start=0;			// start des Kommandos
-	int i;			
+int8 command_read(void) {
+	int8_t bytesRcvd;
+	int8_t start=0;			// Start des Kommandos
+	int8_t i;			
 	command_t * command;	// Pointer zum Casten der empfangegen Daten
-	char * ptr;				// Nur zu Hilfszwecken
+	uint8_t * ptr;				// Nur zu Hilfszwecken
 	uint8 buffer[RCVBUFSIZE];       // Buffer  
 	#ifdef PC
 		#if BYTE_ORDER == BIG_ENDIAN
@@ -113,7 +113,7 @@ int8 command_read(void){
 	LOG_DEBUG("%x %x %x",buffer[0],buffer[1],buffer[2]);
 
 	// Suche nach dem Beginn des Frames
-	while ((start<bytesRcvd)&&(buffer[start] != CMD_STARTCODE)) {	
+	while ((start<bytesRcvd)&&(buffer[start] != CMD_STARTCODE)) {
 		LOG_DEBUG("falscher Startcode");
 //		printf("\nStartzeichen nicht am Anfang des Puffers! (%d)\n",start);
 //		printf(".");
@@ -131,7 +131,6 @@ int8 command_read(void){
 	// haben wir noch genug Platz im Puffer, um das Packet ferig zu lesen?
 	if ((RCVBUFSIZE-start) < sizeof(command_t)){
 		LOG_DEBUG("not enough space");
-//		printf("not enough space");
 		return -1;	// nein? ==> verwerfen
 	}
 	
@@ -174,7 +173,7 @@ int8 command_read(void){
 		#ifdef PC
 			command_lock();		// on PC make storage threadsafe
 		#endif
-		ptr = (char *) &received_command;
+		ptr = (uint8_t *) &received_command;
 		for (i=0; i<sizeof(command_t);i++){
 			*ptr=buffer[i+start];
 			ptr++;
@@ -198,10 +197,10 @@ int8 command_read(void){
 				store = received_command.request.subcommand;
 				received_command.request.subcommand = store << 1;
 				received_command.request.direction = store >> 7;
-			#endif
+			#endif	// BYTE_ORDER == BIG_ENDIAN
 		
 			command_unlock();	// on PC make storage threadsafe
-		#endif
+		#endif	// PC
 
 		return 0;
 	} else {	// Command not valid
@@ -246,17 +245,6 @@ void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,
 	
 	low_write(&cmd);
 }
-
-
-/*!
- * Uebertraegt ein Kommando und wartet nicht auf eine Antwort
- * @param command Kennung zum Command
- * @param subcommand Kennung des Subcommand
- * @param data_l Daten fuer den linken Kanal
- * @param data_r Daten fuer den rechten Kanal
- */
-//void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r){
-//}
 
 /*!
  * Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort
@@ -326,14 +314,14 @@ void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* d
 			}
 		}
 	}
-#endif
+#endif	// MAUS_AVAILABLE
 
 
 /*!
  * Wertet das Kommando im Puffer aus
  * return 1, wenn Kommando schon bearbeitet wurde, 0 sonst
  */
-int command_evaluate(void){
+int8_t command_evaluate(void) {
 	static uint16 RC5_Last_Toggle = 0xffff;
 	uint8 analyzed = 1;
 	
@@ -401,14 +389,13 @@ int command_evaluate(void){
 							deactivateCalledBehaviours(bot_remotecall_behaviour);
 							break;
 						}
-						
-						
+							
 						default:
 							LOG_DEBUG("unbekanntes Subkommando: %c",received_command.request.subcommand);
 							break;
 					}
 				break;
-		#endif
+		#endif	// BEHAVIOUR_REMOTECALL_AVAILABLE
 
 			
 		// Einige Kommandos ergeben nur fuer simulierte Bots Sinn
@@ -435,7 +422,7 @@ int command_evaluate(void){
 				sensLDRR=received_command.data_r;
 				break;
 			case CMD_SENS_TRANS:
-				sensTrans=(char)received_command.data_l;
+				sensTrans=(uint8_t)received_command.data_l;
 				break;
 			#ifdef MAUS_AVAILABLE
 				case CMD_SENS_MOUSE:
@@ -444,7 +431,7 @@ int command_evaluate(void){
 					break;
 			#endif
 			case CMD_SENS_ERROR:
-				sensError=(char)received_command.data_l;
+				sensError=(uint8_t)received_command.data_l;
 				sensor_update();	/* Error ist der letzte uebertragene Sensorwert, danach koennen wir uns um allgemeine updates kümmern*/
 				break;
 			case CMD_DONE:
@@ -452,7 +439,7 @@ int command_evaluate(void){
 				system_time_isr();		/* Einmal pro Update-Zyklus aktualisieren wir die Systemzeit */
 			//	printf("X-Frame for Simultime = %d received ",simultime);
 				break;
-		#endif
+		#endif	// PC
 		default:
 			analyzed=0;		// Command was not analysed yet
 			break;
@@ -461,65 +448,34 @@ int command_evaluate(void){
 }
 
 
-
 #ifdef LOG_AVAILABLE
 /*! 
  * Gibt ein Kommando auf dem Bildschirm aus
  */
-	void command_display(command_t * command){
-		#ifdef PC
-/*			printf("START= %d\nDIR= %d CMD= %d SUBCMD= %d\nPayload= %d\nDATA = %d %d\nSeq= %d\nCRC= %d",
-				(*command).startCode,
-				(*command).request.direction,
-				(*command).request.command,
-				(*command).request.subcommand,
-				(*command).payload,
-				(*command).data_l,
-				(*command).data_r,
-				(*command).seq,				
-				(*command).CRC);
-*/			
-			LOG_DEBUG("CMD: %c\tData L: %d\tSeq: %d\n",
-				(*command).request.command,
-				(*command).data_l,
-				(*command).seq);
-		#else
-			LOG_DEBUG("CMD: %c\tSub: %c\tData L: %d\tPay: %d\tSeq: %d\n",
-				(*command).request.command,
-				(*command).request.subcommand,
-				(*command).data_l,
-				(*command).payload,
-				(*command).seq);
-
-/*			char* raw= (char*)command;
-			unsigned char i=0;
-			char hex[6];
-			
-			display_cursor(4,1);
-			display_string("0x");
-			to_hex(*raw,hex);
-			display_string(hex);
-			display_string(" ");
-			raw++;
-		
-			for (i=1; i<sizeof(command_t)-1; i++){
-				to_hex(*raw++,hex);
-				display_string(hex);				
-			}
-
-			display_string(" ");
-			to_hex(*raw,hex);
-			display_string(hex);
-			
-			sprintf(hex,"%5d",(*command).seq);
-			display_string(" ");
-			display_string(hex);
-*/
-			#ifdef WIN32
-				printf("\n");
-			#endif
-
-		#endif
-	}
-#endif
-#endif
+void command_display(command_t * command) {
+	#ifdef PC
+//		printf("START= %d\nDIR= %d CMD= %d SUBCMD= %d\nPayload= %d\nDATA = %d %d\nSeq= %d\nCRC= %d\n",
+//			(*command).startCode,
+//			(*command).request.direction,
+//			(*command).request.command,
+//			(*command).request.subcommand,
+//			(*command).payload,
+//			(*command).data_l,
+//			(*command).data_r,
+//			(*command).seq,				
+//			(*command).CRC);			
+		LOG_DEBUG("CMD: %c\tData L: %d\tSeq: %d\n",
+			(*command).request.command,
+			(*command).data_l,
+			(*command).seq);
+	#else	// MCU
+		LOG_DEBUG("CMD: %c\tSub: %c\tData L: %d\tPay: %d\tSeq: %d\n",
+			(*command).request.command,
+			(*command).request.subcommand,
+			(*command).data_l,
+			(*command).payload,
+			(*command).seq);
+	#endif	// PC
+}
+#endif	// LOG_AVAILABLE
+#endif	// COMMAND_AVAILABLE

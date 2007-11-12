@@ -1,5 +1,9 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-11-12 Frank Menzel [Menzelfr@gmx.net]: behaviour_transport_pillar: Bot faehrt zwischen Start- und Zielpos. hin und her und kann dabei Dosen fangen und transportieren; die bisher diversen Fahrverhalten sind hier unter einem Dach vereint und via Defines waehlbar
+
+2007-11-11 Timo Sandmann [mail@timosandmann.de]: Datentypen in command.c korrigiert
+
 2007-11-11 Harald W. Leschner [hari@h9l.net]: Kleinere Korrekturen und gnuplot- / LaTeX-Script zur Speedlog-Auswertung hinzugefuegt (siehe contrib/Tools) 
 
 2007-11-08 Timo Sandmann [mail@timosandmann.de]: Ausgabe von avr-size im Postbuild korrigiert (EEPROM-Daten liegen nicht in .data)

@@ -235,6 +235,10 @@ void bot_behave_init(void){
 		insert_behaviour_to_list(&behaviour, new_behaviour(43, bot_unload_pillar_behaviour,INACTIVE));
 	#endif
 
+	#ifdef BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE
+		insert_behaviour_to_list(&behaviour, new_behaviour(41, bot_transport_pillar_behaviour, INACTIVE));
+	#endif
+
 	#ifdef BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(40, bot_follow_object_behaviour, INACTIVE));
 	#endif

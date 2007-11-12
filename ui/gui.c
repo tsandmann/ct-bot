@@ -24,9 +24,10 @@
  * @date 	12.02.2007
  */
  
+#include "bot-logic/available_behaviours.h"
+#include "ui/available_screens.h"
 #include "ct-Bot.h"
 #include "global.h"
-#include "ui/available_screens.h"
 #include "rc5.h"
 #include "sensor.h"
 #include "motor.h"
@@ -132,6 +133,9 @@ void gui_init(void){
 	#endif
 	#ifdef DISPLAY_MAP_GO_DESTINATION
 		register_screen(&mapgo_display);
+	#endif
+	#ifdef DISPLAY_TRANSPORT_PILLAR
+		register_screen(&transportpillar_display);
 	#endif
 }
 

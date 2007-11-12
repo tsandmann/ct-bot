@@ -144,6 +144,9 @@ const call_t calls[] PROGMEM = {
 	#ifdef BEHAVIOUR_FOLLOW_WALL_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_do_wall_explore,0,""),
 	#endif
+	#ifdef BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_transport_pillar,0,""),
+	#endif
 };
 
 #define STORED_CALLS (sizeof(calls)/sizeof(call_t)) /*!< Anzahl der Remote calls im Array */

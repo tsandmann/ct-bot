@@ -31,10 +31,10 @@
  * @date	30.04.07
  */
 
-
+#include "bot-logic/available_behaviours.h"
+#include "ui/available_screens.h"
 #include "bot-logic/bot-logik.h"
 #include "map.h"
-#include "ui/available_screens.h"
 #include "display.h"
 #include "rc5.h"
 #include "rc5-codes.h"
