@@ -547,11 +547,11 @@ static void trpill_disp_key_handler(void) {
  */
 void transportpillar_display(void) {
 	display_cursor(1, 1);
-	display_printf("S-Z %1.0f %1.0f %1.0f %1.0f",startpad_x,startpad_y,destpad_x,destpad_y);
+	display_printf("S-Z %1d %1d %1d %1d",(int16)startpad_x,(int16)startpad_y,(int16)destpad_x,(int16)destpad_y);
 	display_cursor(2, 1);
-	display_printf("akt.Ziel: %1.0f %1.0f",target_x,target_y);
+	display_printf("akt.Ziel: %1d %1d",(int16)target_x,(int16)target_y);
 	display_cursor(3, 1);
-	display_printf("akt.Pos: %1.0f %1.0f",target_x,target_y);
+	display_printf("akt.Pos: %1d %1d",(int16)x_pos,(int16)y_pos);
 	display_cursor(4, 1);
 	display_printf("Go: 9/SetPos: 7");
 
