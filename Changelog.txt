@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-11-28 Timo Sandmann [mail@timosandmann.de]: Bugfix im UART-Code fuer ATmega644 und 115200 Baud
+
 2007-11-14 Frank Menzel [Menzelfr@gmx.net]: behaviour_transport_pillar: Anzeigewerte fuer Display von float nach int16 geaendert
 
 2007-11-12 Frank Menzel [Menzelfr@gmx.net]: behaviour_transport_pillar: Bot faehrt zwischen Start- und Zielpos. hin und her und kann dabei Dosen fangen und transportieren; die bisher diversen Fahrverhalten sind hier unter einem Dach vereint und via Defines waehlbar

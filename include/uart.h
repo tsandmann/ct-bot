@@ -62,6 +62,7 @@
 		#define UCSZ1	UCSZ01
 		#define RXC		RXC0
 		#define TXC		TXC0
+		#define U2X		U2X0
 	#endif	// __AVR_ATmega644__	
 		
 	/*!
