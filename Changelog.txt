@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-11-30 Harald W. Leschner [hari@h9l.net]: Treiber fuer Sprachmodul SP03 hinzugefuegt
+
 2007-11-28 Timo Sandmann [mail@timosandmann.de]: Bugfix im UART-Code fuer ATmega644 und 115200 Baud
 
 2007-11-14 Frank Menzel [Menzelfr@gmx.net]: behaviour_transport_pillar: Anzeigewerte fuer Display von float nach int16 geaendert

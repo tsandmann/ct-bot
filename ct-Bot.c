@@ -33,6 +33,7 @@
 	#include "bot-2-pc.h"
 	#include <avr/eeprom.h>
 	#include "i2c.h"
+	#include "sp03.h"
 #endif
 	
 #ifdef PC
@@ -512,6 +513,9 @@ init();	// alles initialisieren
 	#ifdef LOG_AVAILABLE
 		LOG_DEBUG("Hallo Welt!");	/*!< Doxygen moechte hier jede Zeilen kommentiert haben :/ */
 	#endif	
+	#ifdef SP03_AVAILABLE
+		sp03_speak_string(1, 4, 1, "Ready");
+	#endif		
 #endif
 
 /*! Hauptschleife des Bots */

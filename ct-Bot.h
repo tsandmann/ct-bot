@@ -77,6 +77,7 @@
 
 //#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
 //#define CMPS03_AVAILABLE		/*!< Kompass CMPS03 vorhanden */
+//#define SP03_AVAILABLE		/*!< Sprachmodul SP03 vorhanden */
 
 //#define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung */
 //#define SPI_AVAILABLE			/*!< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren - Hinweise in mcu/mmc.c beachten! */
@@ -122,6 +123,7 @@
 		#undef MMC_AVAILABLE
 		#undef I2C_AVAILABLE
 		#undef CMPS03_AVAILABLE
+		#undef SP03_AVAILABLE
 	#endif
 
 	#define COMMAND_AVAILABLE		/*!< High-Level Communication */
@@ -279,7 +281,11 @@
 #endif
 
 #ifdef CMPS03_AVAILABLE
-	#define I2C_AVAILABLE	/*!< I2C-Treiber verfuegbar */
+	#define I2C_AVAILABLE	/*!< I2C-Treiber verfuegbar fuer Compassmodul */
+#endif
+
+#ifdef SP03_AVAILABLE
+	#define I2C_AVAILABLE	/*!< I2C-Treiber verfuegbar fuer Sprachmodul */
 #endif
 
 #define F_CPU	16000000L    /*!< Crystal frequency in Hz */
