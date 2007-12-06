@@ -253,24 +253,24 @@ typedef enum {
  * Allgemeines Debugging
  */
 #define LOG_DEBUG(format, args...){	minilog_begin(__LINE__, LOG_TYPE_DEBUG); 	\
-									static const char data[] PROGMEM = format;	\
-									minilog_printf(data, ## args);				\
+									static const char __data[] PROGMEM = format;	\
+									minilog_printf(__data, ## args);				\
 }
 
 /*!
  * Info-Logging
  */
 #define LOG_INFO(format, args...){	minilog_begin(__LINE__, LOG_TYPE_INFO);		\
-									static const char data[] PROGMEM = format;	\
-									minilog_printf(data, ## args);				\
+									static const char __data[] PROGMEM = format;	\
+									minilog_printf(__data, ## args);				\
 }
 
 /*!
  * Fehler-Logging
  */
 #define LOG_ERROR(format, args...){	minilog_begin(__LINE__, LOG_TYPE_ERROR); 	\
-									static const char data[] PROGMEM = format;	\
-									minilog_printf(data, ## args);				\
+									static const char __data[] PROGMEM = format;	\
+									minilog_printf(__data, ## args);				\
 }
 
 /*!
