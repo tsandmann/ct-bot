@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-12-06 Timo Sandmann [mail@timosandmann.de]: Remote-Call-Verhalten einfacher implementiert
+
 2007-12-06 Timo Sandmann [mail@timosandmann.de]: Bugfix im LOG-Code (interne Variable "data" in "__data" umbenannt)
 
 2007-11-30 Harald W. Leschner [hari@h9l.net]: Treiber fuer Sprachmodul SP03 hinzugefuegt

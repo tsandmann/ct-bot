@@ -19,7 +19,7 @@
 
 /*! 
  * @file 	remote_calls.h
- * @brief 	Liste mit Botenfkts, die man aus der Ferne aufrufen kann
+ * @brief 	Ruft auf ein Kommando hin andere Verhalten auf und bestaetigt dann ihre Ausfuehrung
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	19.12.06
  */
@@ -28,9 +28,6 @@
 #define REMOTE_CALLS_H_
 
 #include "bot-logik.h"
-
-
-
 
 #define REMOTE_CALL_FUNCTION_NAME_LEN 20	/*!< Laenge der Funktionsnamen */
 #define PARAM_TEXT_LEN 40					/*!< Laenge des Parameterstrings */
@@ -77,19 +74,20 @@ void bot_remotecall_behaviour(Behaviour_t *data);
 
 /*!
  * @brief			Fuehre einen remote_call aus. Aufrufendes Verhalten bei RemoteCalls == NULL
- * @param caller	Zeiger auf das aufrufende Verhalten
- * @param func 		Zeiger auf den Namen der Fkt
- * @param data		Zeiger auf die Daten
+ * @param *caller	Zeiger auf das aufrufende Verhalten
+ * @param *func 	Zeiger auf den Namen der Fkt
+ * @param *data		Zeiger auf die Daten
  */
 void bot_remotecall(Behaviour_t *caller, char* func, remote_call_data_t* data);
 
 /*!
- * Fuehre einen remote_call aus. Es gibt KEIN aufrufendes Verhalten!!
- * @param data Zeiger die Payload eines Kommandos. Dort muss zuerst ein String mit dem Fkt-Namen stehen. ihm folgen die Nutzdaten
+ * @brief		Fuehre einen remote_call aus. Es gibt KEIN aufrufendes Verhalten!!
+ * @param *data	Zeiger die Payload eines Kommandos. Dort muss zuerst ein String mit dem Fkt-Namen stehen. ihm folgen die Nutzdaten
  */
 void bot_remotecall_from_command(uint8 * data);
 
-/*! Listet alle verfuegbaren Remote-Calls auf und verschickt sie als einzelne Kommanods
+/*! 
+ * Listet alle verfuegbaren Remote-Calls auf und verschickt sie als einzelne Kommanods
  */
 void remote_call_list(void);
 
