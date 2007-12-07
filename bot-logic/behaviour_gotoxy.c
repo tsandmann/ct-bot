@@ -27,6 +27,7 @@
 #include "bot-logic/bot-logik.h"
 #include <math.h>
 #include "math_utils.h"
+#include "log.h"
 
 #ifdef BEHAVIOUR_GOTOXY_AVAILABLE
 
@@ -100,6 +101,7 @@ void bot_gotoxy_behaviour(Behaviour_t *data){
  * @param y Y-Ordinate an die der Bot fahren soll
  */
 void bot_gotoxy(Behaviour_t *caller, float x, float y){
+//	LOG_DEBUG("x=%f\ty=%f", x, y);
 	target_x=x;
 	target_y=y;
 	initialDiffX=x-x_pos;

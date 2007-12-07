@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-12-07 Timo Sandmann [mail@timosandmann.de]: Bot-Code laueft jetzt auch vollstaendig unter PowerPC, Remote-Call-Code fuer MCU optimiert
+
 2007-12-06 Timo Sandmann [mail@timosandmann.de]: Remote-Call-Verhalten einfacher implementiert
 
 2007-12-06 Timo Sandmann [mail@timosandmann.de]: Bugfix im LOG-Code (interne Variable "data" in "__data" umbenannt)

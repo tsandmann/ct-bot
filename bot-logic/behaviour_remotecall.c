@@ -173,7 +173,6 @@ static uint8 getRemoteCall(char * call) {
 	return 255;
 }
 
-#ifdef MCU
 /*!
  * Hilfsfunktion fuer bot_remotecall()
  * Baut einen AVR-kompatiblen Parameterstream aus einem uint32-Parameterarray und einem Infoarray ueber die Parameter
@@ -185,8 +184,9 @@ static uint8 getRemoteCall(char * call) {
  * @date		12.01.2007
  */
 static void remotecall_convert_params(uint8_t * dest, uint8_t count, uint8_t * len, uint8_t * data) {
-	LOG_DEBUG("data=%x %x %x %x", data[0], data[1], data[2], data[3]);
+	LOG_DEBUG("p_data=%x %x %x %x", data[0], data[1], data[2], data[3]);
 	LOG_DEBUG("%x %x %x %x", data[4], data[5], data[6], data[7]);
+#ifdef MCU
 	dest += 8;	// ans Ende springen
 	uint8_t i;
 	/* Parameter rueckwaerts einlesen */
@@ -194,11 +194,37 @@ static void remotecall_convert_params(uint8_t * dest, uint8_t count, uint8_t * l
 		uint8_t pos = len[i] > 1 ? len[i] : 2;	// alle Parameter sind 16-Bit-aligned
 		dest -= pos;
 		memcpy(dest, data, len[i]);
-		data += 4;
+		data += sizeof(remote_call_data_t);
 	}
+#else	// PC
+#if BYTE_ORDER == LITTLE_ENDIAN
+	/* Daten einfach kopieren */
+	memcpy(dest, data, count*sizeof(remote_call_data_t));
+#else	// BIG_EDIAN
+	uint8_t i;
+	for (i=0; i<count; i++) {
+		/* Parameter i von little-endian nach big-endian konvertieren*/
+		remote_call_data_t in, out;
+		in = *((remote_call_data_t *)data);
+		out.u32 = ((in.u32 & 0xff) << 24) | ((in.u32 & 0xff00) << 8) | ((in.u32 & 0xff0000) >> 8) | ((in.u32 & 0xff000000) >> 24);
+		memcpy(dest, &out, sizeof(remote_call_data_t));
+		dest += sizeof(remote_call_data_t);
+		data += sizeof(remote_call_data_t);
+	}
+#endif	// LITTLE_EDIAN
 	
-}
 #endif	// MCU
+}
+
+#ifdef PC
+/*!
+ * Dummy-Funktion, die nur dafuer sorgt, dass die Parameterdaten auch in den 
+ * Floating-Point Registern stehen (PPC)
+ */
+void fl_dummy(Behaviour_t * caller, float f1, float f2, float f3) {
+	asm volatile("nop");
+}
+#endif	// PC
 
 /*! 
  * Dieses Verhalten kuemmert sich darum die Verhalten, die von aussen angefragt wurden zu starten und liefert ein feedback zurueck, wenn sie beendet sind.
@@ -236,9 +262,12 @@ void bot_remotecall_behaviour(Behaviour_t *data) {
 			LOG_DEBUG("function_id=%u", function_id);
 			LOG_DEBUG("parameter_count=%u", parameter_count);
 			#ifdef PC
-				func(data, *(remote_call_data_t*)parameter_data, 
-					*(remote_call_data_t*)(parameter_data+4),
-					*(remote_call_data_t*)(parameter_data+8));
+			fl_dummy(data, (*(remote_call_data_t*)parameter_data).fl32, 
+				(*(remote_call_data_t*)(parameter_data+4)).fl32,
+				(*(remote_call_data_t*)(parameter_data+8)).fl32);
+			func(data, *(remote_call_data_t*)parameter_data,
+				*(remote_call_data_t*)(parameter_data+4),
+				*(remote_call_data_t*)(parameter_data+8));
 			#else	// MCU
 				func(data, *(remote_call_data_t*)(parameter_data+4),	// "rueckwaerts", denn kleinere Parameter-Nr liegen an hoereren Register-Nr.!
 					*(remote_call_data_t*)parameter_data);				
@@ -256,14 +285,7 @@ void bot_remotecall_behaviour(Behaviour_t *data) {
 			#else
 				// Auf dem MCU muessen wir die Daten erstmal aus dem Flash holen
 				char tmp[REMOTE_CALL_FUNCTION_NAME_LEN+1];
-				function_name=(char*)&tmp;
-				
-				uint8* from = (uint8*)&calls[function_id].name;
-
-				uint8 i;	
-				for (i=0; i<REMOTE_CALL_FUNCTION_NAME_LEN+1; i++) {
-					*function_name++ = (uint8)pgm_read_byte(from++);
-				}
+				memcpy_P(tmp, &calls[function_id].name, REMOTE_CALL_FUNCTION_NAME_LEN+1);
 				function_name=(char*)&tmp;
 			#endif	// PC
 			
@@ -294,7 +316,7 @@ void bot_remotecall_behaviour(Behaviour_t *data) {
 void bot_remotecall(Behaviour_t *caller, char* func, remote_call_data_t* data) {
 	switch_to_behaviour(caller, bot_remotecall_behaviour, NOOVERRIDE);
 
-	function_id= getRemoteCall(func);
+	function_id = getRemoteCall(func);
 	if (function_id >= STORED_CALLS){
 		LOG_ERROR("Funktion %s nicht gefunden. Exit!", func);
 		return;
@@ -306,25 +328,17 @@ void bot_remotecall(Behaviour_t *caller, char* func, remote_call_data_t* data) {
 		parameter_length = (uint8*)calls[function_id].param_len;	
 	#else
 		// Auf dem MCU muessen wir die Daten erstmal aus dem Flash holen
-		uint8* from= (uint8*)&calls[function_id].param_len;
-		uint8 i;
-		parameter_count = pgm_read_byte(&calls[function_id].param_count);	
-		for (i=0; i<REMOTE_CALL_MAX_PARAM; i++)
-			parameter_length[i] = (uint8) pgm_read_byte(from++);	
-	#endif
+		parameter_count = pgm_read_byte(&calls[function_id].param_count);
+		memcpy_P(parameter_length, &calls[function_id].param_len, parameter_count);	
+	#endif	// PC
 	
-	LOG_DEBUG("func=%s param_count=%d Len= %u %u %u",func,parameter_count,parameter_length[0],parameter_length[1],parameter_length[2]);
-	if (data != NULL) {
-		LOG_DEBUG("data= %x %x %x",data[0],data[1],data[2]);
-	}
+	LOG_DEBUG("func=%s param_count=%u Len= %u %u %u",func,parameter_count,parameter_length[0],parameter_length[1],parameter_length[2]);
+	
+	remotecall_convert_params(parameter_data, parameter_count, parameter_length, (uint8*)data);
 
-	
-	#ifdef MCU	// Die MCU legt die Parameter nach einem anderen Verfahren ab, diese Funktion konvertiert sie deshalb
-		remotecall_convert_params(parameter_data, parameter_count, parameter_length, (uint8*)data);
-	#else	// Auf dem PC kopieren wir die Daten einfach
-		memcpy(parameter_data, data, parameter_count*4);
-	#endif
-	
+	LOG_DEBUG("p_data=%x %x %x %x", parameter_data[0], parameter_data[1], parameter_data[2], parameter_data[3]);
+	LOG_DEBUG("%x %x %x %x", parameter_data[4], parameter_data[5], parameter_data[6], parameter_data[7]);
+
 	running_behaviour=REMOTE_CALL_SCHEDULED;
 }
 
@@ -332,9 +346,9 @@ void bot_remotecall(Behaviour_t *caller, char* func, remote_call_data_t* data) {
  * Fuehre einen remote_call aus. Es gibt KEIN aufrufendes Verhalten!!
  * @param data Zeiger die Payload eines Kommandos. Dort muss zuerst ein String mit dem Fkt-Namen stehen. ihm folgen die Nutzdaten
  */
-void bot_remotecall_from_command(uint8 * data) {
-	char * function_name = (char*)data;
-	remote_call_data_t * params = (remote_call_data_t *)(data+ strlen(function_name)+1);
+void bot_remotecall_from_command(char * data) {
+	char * function_name = data;
+	remote_call_data_t * params = (remote_call_data_t *)(data + strlen(function_name)+1);
 	bot_remotecall(NULL, function_name, params);
 }
 
@@ -344,28 +358,20 @@ void bot_remotecall_from_command(uint8 * data) {
 void remote_call_list(void) {
 	#ifdef MCU
 		call_t call_storage;
-		uint8* to;
-		uint8* from;
 	#endif
-	call_t* call;
+	call_t * call;
 	
-	LOG_DEBUG("Liste %d remote calls",STORED_CALLS);
+	LOG_DEBUG("Liste %u remote calls",STORED_CALLS);
 	
 	int16 i;
 	for (i=0; i<(STORED_CALLS); i++) {
 		#ifdef MCU
-			// Auf dem MCU muessen die Daten erstmal aus dem Flash ins RAM
-			from= (uint8*)&calls[i];
-			to= (uint8*)&call_storage;
-			uint8 j;
-			for (j=0; j<sizeof(call_t); j++) {
-				*to = (uint8) pgm_read_byte(from++);	
-				to++;
-			}
+			// Auf dem MCU muessen die Daten erstmal aus dem Flash ins RAM		
+			memcpy_P(&call_storage, &calls[i], sizeof(call_t));
 			call = &call_storage;
 		#else
 			call = (call_t*)&calls[i];
-		#endif
+		#endif	// MCU
 		
 		#ifdef COMMAND_AVAILABLE 
 			// und uebertragen

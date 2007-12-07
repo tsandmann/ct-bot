@@ -84,7 +84,7 @@ void bot_remotecall(Behaviour_t *caller, char* func, remote_call_data_t* data);
  * @brief		Fuehre einen remote_call aus. Es gibt KEIN aufrufendes Verhalten!!
  * @param *data	Zeiger die Payload eines Kommandos. Dort muss zuerst ein String mit dem Fkt-Namen stehen. ihm folgen die Nutzdaten
  */
-void bot_remotecall_from_command(uint8 * data);
+void bot_remotecall_from_command(char * data);
 
 /*! 
  * Listet alle verfuegbaren Remote-Calls auf und verschickt sie als einzelne Kommanods

@@ -149,7 +149,7 @@ void tcp_closeConnection(int sock){
  * @param cmd Zeiger auf das Kommando
  * @return Anzahl der gesendete Bytes
  */
-int tcp_send_cmd(command_t *cmd){
+int tcp_send_cmd(command_t *cmd) {
 #if BYTE_ORDER == BIG_ENDIAN
 	command_t le_cmd;
 
@@ -161,17 +161,13 @@ int tcp_send_cmd(command_t *cmd){
 	le_cmd.data_l |= (cmd->data_l >> 8) & 0xff;
 	le_cmd.data_r = cmd->data_r << 8;
 	le_cmd.data_r |= (cmd->data_r >> 8) & 0xff;
-	le_cmd.seq = cmd->seq <<8;
+	le_cmd.seq = cmd->seq << 8;
 	le_cmd.seq |= (cmd->seq >> 8) & 0xff;
 
-	/* "Umdrehen" des Bitfields */
-	le_cmd.request.subcommand = cmd->request.subcommand >> 1;
-	le_cmd.request.direction = (cmd->request.subcommand & 1) << 7;
-
 	return tcp_write(&le_cmd, sizeof(command_t));
-#else
+#else	// LITTLE_ENDIAN
 	return tcp_write(cmd, sizeof(command_t));
-#endif
+#endif	// BIG_ENDIAN
 }
 
 /*! Puffert daten im Sendepuffer zwischen

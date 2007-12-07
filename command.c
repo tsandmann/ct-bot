@@ -191,12 +191,7 @@ int8 command_read(void) {
 	    
 				store = received_command.seq;
 				received_command.seq = store << 8;
-				received_command.seq |= (store >> 8) & 0xff;
-	
-				/* "Umdrehen" des Bitfields */
-				store = received_command.request.subcommand;
-				received_command.request.subcommand = store << 1;
-				received_command.request.direction = store >> 7;
+				received_command.seq |= (store >> 8) & 0xff;;
 			#endif	// BYTE_ORDER == BIG_ENDIAN
 		
 			command_unlock();	// on PC make storage threadsafe
@@ -377,7 +372,7 @@ int8_t command_evaluate(void) {
 							#endif
 							low_read(buffer,received_command.payload);
 							if ((uint16)(TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)){ 	
-								bot_remotecall_from_command((uint8 *)&buffer);
+								bot_remotecall_from_command((char *)&buffer);
 							} else{
 								int16 result = SUBFAIL;
 								command_write_data(CMD_REMOTE_CALL,SUB_REMOTE_CALL_DONE,&result,&result,NULL);
@@ -464,8 +459,9 @@ void command_display(command_t * command) {
 //			(*command).data_r,
 //			(*command).seq,				
 //			(*command).CRC);			
-		LOG_DEBUG("CMD: %c\tData L: %d\tSeq: %d\n",
+		LOG_DEBUG("CMD: %c\tSub: 0x%x\tData L: %d\tSeq: %d\n",
 			(*command).request.command,
+			(*command).request.subcommand,
 			(*command).data_l,
 			(*command).seq);
 	#else	// MCU

@@ -49,9 +49,16 @@
  * Request Teil eines Kommandos
  */
 typedef struct {
+#if (defined PC) && (BYTE_ORDER == BIG_ENDIAN)
+	/* Bitfeld im big-endian-Fall umdrehen */
+	uint8 command:8;	/*!< command */
+	uint8 direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
+	uint8 subcommand:7;	/*!< subcommand */
+#else
 	uint8 command:8;	/*!< command */
 	uint8 subcommand:7;	/*!< subcommand */
-	uint8 direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
+	uint8 direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */	
+#endif
 #ifndef DOXYGEN
 	} __attribute__ ((packed)) request_t; // Keine Luecken in der Struktur lassen
 #else
@@ -118,7 +125,7 @@ typedef struct {
 
 //Kommandos fuer die Verbindung zum c't-Sim
 #define CMD_WELCOME		'W'		/*!< Kommado zum anmelden an c't-Sim */
-#define SUB_WELCOME_REAL	'R'		/*!< Subkommado zum anmelden eine realen Bots an c't-Sim */
+#define SUB_WELCOME_REAL	'R'		/*!< Subkommado zum anmelden eines realen Bots an c't-Sim */
 #define SUB_WELCOME_SIM	'S'		/*!< Subkommado zum anmelden eines simulierten Bots an c't-Sim */
 
 //Kommandos fuer die Remote-Calls
