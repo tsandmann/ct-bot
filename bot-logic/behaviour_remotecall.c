@@ -221,7 +221,7 @@ static void remotecall_convert_params(uint8_t * dest, uint8_t count, uint8_t * l
  * Dummy-Funktion, die nur dafuer sorgt, dass die Parameterdaten auch in den 
  * Floating-Point Registern stehen (PPC)
  */
-void fl_dummy(Behaviour_t * caller, float f1, float f2, float f3) {
+void bot_remotecall_fl_dummy(Behaviour_t * caller, ...) {
 	asm volatile("nop");
 }
 #endif	// PC
@@ -262,7 +262,7 @@ void bot_remotecall_behaviour(Behaviour_t *data) {
 			LOG_DEBUG("function_id=%u", function_id);
 			LOG_DEBUG("parameter_count=%u", parameter_count);
 			#ifdef PC
-			fl_dummy(data, (*(remote_call_data_t*)parameter_data).fl32, 
+			bot_remotecall_fl_dummy(data, (*(remote_call_data_t*)parameter_data).fl32, 
 				(*(remote_call_data_t*)(parameter_data+4)).fl32,
 				(*(remote_call_data_t*)(parameter_data+8)).fl32);
 			func(data, *(remote_call_data_t*)parameter_data,
