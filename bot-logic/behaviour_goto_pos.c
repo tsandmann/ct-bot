@@ -263,7 +263,7 @@ void bot_goto_pos_rel(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) 
  * 					Bewegt den Bot um distance mm in aktueller Blickrichtung ("drive_distance(...)")
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  * @param distance	Distanz in mm, die der Bot fahren soll
- * @param dir		Fahrtrichtung: >0: vorwaerts, <0 rueckwaerts, =0 nach oben
+ * @param dir		Fahrtrichtung: >=0: vorwaerts, <0 rueckwaerts
  */
 void bot_goto_dist(Behaviour_t * caller, int16_t distance, int16_t dir) {
 	drive_dir = dir >=0 ? 1 : -1;
