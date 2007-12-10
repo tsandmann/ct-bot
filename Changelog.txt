@@ -1,5 +1,11 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-12-10 Timo Sandmann [mail@timosandmann.de]: bot_goto_pos() erweitert, so dass es anstelle von bot_drive_distance() und bot_gotoxy() verwendet werden kann und Rueckwaertsgang ergaenzt.
+												 Ist bot_goto_pos() vorhanden, werden alle bot_drive_distance()- und bot_gotoxy()-Aufrufe dorthin umgeleitet. Moechte man das nicht, stellt man in include/bot-logic/behaviour_drive_distance.h / behaviour_gotoxy.h den Schalter USE_GOTO_POS_ aus.
+												 Neues Verhalten bot_goto_obstacle(distance) ergaenzt, das den Bot auf distance mm an ein erkanntes Hindernis heranfahren laesst (benutzt bot_goto_pos() und bot_measure_distance()).
+												 sign(x) Funktion in math_utils.h eingefuehrt, die das Vorzeichen eines Integers liefert.
+												 Bugfix in sensor.c (Distanzsensorauswertung)
+
 2007-12-07 Timo Sandmann [mail@timosandmann.de]: Bot-Code laueft jetzt auch vollstaendig unter PowerPC, Remote-Call-Code fuer MCU optimiert
 
 2007-12-06 Timo Sandmann [mail@timosandmann.de]: Remote-Call-Verhalten einfacher implementiert

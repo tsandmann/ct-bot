@@ -48,4 +48,31 @@ static inline int16_t iroundf(float x) {
  */
 float calc_angle_diff(float xDiff, float yDiff);
 
+/*!
+ * Ermittelt das Vorzeichnen eines 8 Bit Integers. Interpretiert 0 immer als positiv.
+ * @param z	Zahl, deren VZ gewuenscht ist
+ * @return	1, falls z >= 0, -1 sonst
+ */
+static inline int16_t sign8(int8_t z) {
+	return (z & 0x80) ? -1 : 1;
+}
+
+/*!
+ * Ermittelt das Vorzeichnen eines 16 Bit Integers. Interpretiert 0 immer als positiv.
+ * @param z	Zahl, deren VZ gewuenscht ist
+ * @return	1, falls z >= 0, -1 sonst
+ */
+static inline int16_t sign16(int16_t z) {
+	return (z & 0x8000) ? -1 : 1;
+}
+
+/*!
+ * Ermittelt das Vorzeichnen eines 32 Bit Integers. Interpretiert 0 immer als positiv.
+ * @param z	Zahl, deren VZ gewuenscht ist
+ * @return	1, falls z >= 0, -1 sonst
+ */
+static inline int16_t sign32(int32_t z) {
+	return (z & 0x80000000) ? -1 : 1;
+}
+
 #endif	/*MATH_UTILS_H_*/

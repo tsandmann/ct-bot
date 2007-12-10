@@ -17,19 +17,37 @@
  * 
  */
 
-/*! @file 	behaviour_drive_distance.h
+/*! 
+ * @file 	behaviour_drive_distance.h
  * @brief 	Bot faehrt ein Stueck
- * 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
-*/
+ */
+
+
+/*!
+ * bot_drive_distance() beruecksichtig keine waehrend der Fahrt aufgetretenen Fehler, daher ist die
+ * Endposition nicht unbedingt auch die gewuenschte Position des Bots. Das komplexere Verhalten
+ * bot_goto_pos() arbeitet hier deutlich genauer, darum werden jetzt alle bot_drive_distance()-Aufrufe
+ * auf das goto_pos-Verhalten "umgeleitet", falls dieses vorhanden ist. 
+ * Moechte man das jedoch nicht und lieber weiterhin das alte drive_distance-Verhalten, deaktiviert 
+ * man den Schalter USE_GOTO_POS_DIST ein paar Zeilen unter diesem Text, indem man ihm // voranstellt. 
+ */
 
 #ifndef BEHAVIOUR_DRIVE_DISTANCE_H_
 #define BEHAVIOUR_DRIVE_DISTANCE_H_
 
 #include "bot-logic/bot-logik.h"
 
+#define USE_GOTO_POS_DIST	/*!< Ersetzt alle drive_distance()-Aufrufe mit dem goto_pos-Verhalten, falls vorhanden */
+
+
+#ifndef BEHAVIOUR_GOTO_POS_AVAILABLE
+#undef USE_GOTO_POS_DIST
+#endif
+
 #ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+#ifndef USE_GOTO_POS_DIST
 /*!
  * Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren.
  * @param *data der Verhaltensdatensatz
@@ -52,6 +70,11 @@ void bot_drive_distance(Behaviour_t* caller,int8 curve, int16 speed, int16 cm);
  * @param speed Gibt an, wie schnell der Bot fahren soll. */
 void bot_drive(int8 curve, int16 speed);
 
-#endif
-#endif /*BEHAVIOUR_DRIVE_DISTANCE_H_*/
+#else	// USE_GOTO_POS_DIST
+/* wenn goto_pos() vorhanden ist und USE_GOTO_POS_DIST an, leiten wir alle drive_distance()-Aufurfe dorthin um */
+#undef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+#define bot_drive_distance(caller, curve, speed, distance)	bot_goto_dist(caller, (distance*10), speed)
+#endif	// USE_GOTO_POS_DIST
+#endif	// BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+#endif	/*BEHAVIOUR_DRIVE_DISTANCE_H_*/
 

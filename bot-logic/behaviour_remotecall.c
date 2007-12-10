@@ -103,6 +103,8 @@ const call_t calls[] PROGMEM = {
 	#ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_goto_pos, 3, "int16 x, int16 y, int16 head", 2, 2, 2),
 		PREPARE_REMOTE_CALL(bot_goto_pos_rel, 3, "int16 x, int16 y, int16 head", 2, 2, 2),
+		PREPARE_REMOTE_CALL(bot_goto_dist, 2, "int16 distance, int16 dir", 2, 2),
+		PREPARE_REMOTE_CALL(bot_goto_obstacle, 1, "int16 distance", 2),
 	#endif
 	#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_solve_maze,0,""),

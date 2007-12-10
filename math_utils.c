@@ -28,7 +28,7 @@
 #include <math.h>
 
 /*!
- * Berechnung deiner Winkeldifferenz zwischen dem aktuellen Standpunkt und einem anderen Ort
+ * Berechnung einer Winkeldifferenz zwischen dem aktuellen Standpunkt und einem anderen Ort
  * @param xDiff	x-Differenz
  * @param yDiff	y-Differenz
  * @return 		berechnete Winkeldifferenz

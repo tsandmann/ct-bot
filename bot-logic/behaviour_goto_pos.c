@@ -29,7 +29,6 @@
  *		- Speedcontrol fuer unterschiedliche Speeds optimieren?
  * 		- (float-) Code optimieren
  * 		- Fehler / Nachlauf messen und ab ins EEPROM damit?
- * 		- Wrapper fuer drive_distance() und goto_xy() bauen
  */ 
 
 #include "bot-logic/bot-logik.h"
@@ -42,9 +41,9 @@
 #include "log.h"
 
 
-//#define DEBUG_BOT_LOGIC		// Schalter um recht viel Debug-Code anzumachen
+//#define DEBUG_GOTO_POS		// Schalter um recht viel Debug-Code anzumachen
 
-#ifndef DEBUG_BOT_LOGIC
+#ifndef DEBUG_GOTO_POS
 	#undef LOG_DEBUG
 	#define LOG_DEBUG(a, ...) {}
 #endif
@@ -59,6 +58,7 @@
 static float dest_x = 0;		/*!< x-Komponente des Zielpunktes */
 static float dest_y = 0;		/*!< y-Komponente des Zielpunktes */
 static int16_t dest_head = 0;	/*!< gewuenschte Blickrichtung am Zielpunkt */
+static int8_t drive_dir = 1;	/*!< Fahrtrichtung: 1: vorwaerts, -1: rueckwaerts */
 static uint8_t state = 0;		/*!< Status des Verhaltens */
 
 #define FIRST_TURN	0			/*!< Erste Drehung in ungefaehre Zielrichtung */
@@ -100,6 +100,11 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		/* ungefaehr in die Zielrichtung drehen */
 		LOG_DEBUG("first turn");
 		int16_t alpha = calc_angle_diff(dest_x-x_pos, dest_y-y_pos);
+		if (drive_dir < 0) {
+			/* Winkelkorrektur, falls rueckwaerts */
+			alpha += 180;
+			if (alpha > 180) alpha -= 360;
+		}		
 		LOG_DEBUG("alpha=%d", alpha);
 		if (diff_to_target < straight_go) {
 			LOG_DEBUG("bot_turn(%d)", alpha);
@@ -123,8 +128,14 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		float diff_x = dest_x - x_pos;
 		float diff_y = dest_y - y_pos;
 		float alpha = heading;
+		if (drive_dir < 0) {
+			alpha += 180;
+		}		
 		LOG_DEBUG("alpha=%f", alpha);
 		float beta = calc_angle_diff(diff_x, diff_y);
+		if (drive_dir < 0) {
+			beta += 180;
+		}
 		LOG_DEBUG("beta=%f", beta);
 		float gamma = 90 - alpha - beta;
 		alpha *= 2.0*M_PI/360.0;
@@ -155,6 +166,8 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		float x = diff_to_target < 360 ? diff_to_target / (360.0/M_PI*2.0) : M_PI/2;	// (0; pi/2]
 		v_m = sin(x) * (float)(v_max - v_min);	// [    0; v_max-v_min]
 		v_m += v_min;							// [v_min; v_max]
+		v_m *= drive_dir;
+		radius *= drive_dir;
 		/* Geschwindigkeiten auf die beiden Raeder verteilen, um den berechneten Radius der Kreisbahn zu erhalten */
 		v_l = iroundf(radius / (radius + ((float)WHEEL_TO_WHEEL_DIAMETER/2.0)) * (float)v_m);
 		v_r = iroundf(radius / (radius - ((float)WHEEL_TO_WHEEL_DIAMETER/2.0)) * (float)v_m);
@@ -185,6 +198,7 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		speedWishRight = BOT_SPEED_STOP;
 		BLOCK_BEHAVIOUR(data, 1200);
 		LOG_INFO("Fehler=%d mm", diff_to_target);
+		drive_dir = 1;
 		return_from_behaviour(data);
 		if (dest_head == 999) {
 			/* kein Drehen gewuenscht => fertig */
@@ -214,12 +228,21 @@ void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
 	switch_to_behaviour(caller, bot_goto_pos_behaviour, OVERRIDE);
 	
 	/* Inits */
+	if (state != LAST_TURN) {
+		drive_dir = 1;	// unsanfter Abbruch beim letzten Mal
+		LOG_DEBUG("Richtung unbekannt, nehme vorwaerts an");
+	}
 	state = FIRST_TURN;
 	dest_x = x;
 	dest_y = y;
 	dest_head = head;
 	
 	LOG_INFO("(%d mm|%d mm|%d Grad)", x, y, head);
+	if (drive_dir >= 0) {
+		LOG_DEBUG("vorwaerts");
+	} else {
+		LOG_DEBUG("rueckwaerts");
+	}
 }
 
 /*!
@@ -231,7 +254,87 @@ void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
  * @param head		neue Blickrichtung am Zielpunkt oder 999, falls egal
  */
 void bot_goto_pos_rel(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
+	/* Zielposition aus Verschiebung berechnen und bot_goto_pos() aufrufen */
 	bot_goto_pos(caller, x_pos + x, y_pos + y, head);
+}
+
+/*!
+ * @brief			Botenfunktion des Positionierungsverhaltens.
+ * 					Bewegt den Bot um distance mm in aktueller Blickrichtung ("drive_distance(...)")
+ * @param *caller	Der Verhaltensdatensatz des Aufrufers
+ * @param distance	Distanz in mm, die der Bot fahren soll
+ * @param dir		Fahrtrichtung: >0: vorwaerts, <0 rueckwaerts, =0 nach oben
+ */
+void bot_goto_dist(Behaviour_t * caller, int16_t distance, int16_t dir) {
+	drive_dir = dir >=0 ? 1 : -1;
+	/* Zielpunkt aus Blickrichtung und Distanz berechnen */
+	float head = heading * (2.0*M_PI/360.0);
+	if (drive_dir < 0) {
+		head += M_PI;	// rueckwaerts
+	}
+	int16_t target_x = distance * cos(head) + x_pos;
+	int16_t target_y = distance * sin(head) + y_pos;
+	LOG_DEBUG("Zielpunkt=(%d|%d)", target_x, target_y);
+	LOG_DEBUG("Richtung=%d", drive_dir);
+	/* Verhalten starten */
+	bot_goto_pos(caller, target_x, target_y, (int16_t)heading);
+}
+
+static int16_t obst_distance = 0;	/*!< gewuenschte Entfernung zum Hindernis */
+static uint8_t obst_state = 0;		/*!< Status von bot_goto_obstacle */
+
+/*!
+ * @brief		Hilfsverhalten von bot_goto_pos(), das den Bot auf eine gewuenschte Entfernung
+ * 				an ein Hindernis heranfaehrt.
+ * @param *data	Der Verhaltensdatensatz
+ */
+void bot_goto_obstacle_behaviour(Behaviour_t * data) {
+	static int16_t distLeft, distRight;
+	switch (obst_state) {
+	case 0:
+		/* Entfernung zum Hindernis messen */
+		bot_measure_distance(data, &distLeft, &distRight);
+		LOG_DEBUG("Hindernis ist %d|%d mm entfernt", distLeft, distRight);
+		obst_state = 1;
+		break;
+	case 1: {
+		/* Mittelwert aus rechts und links berechnen */
+		int16_t dist = (distLeft + distRight) / 2;
+		if (dist <= 600) {
+			/* Entfernung - gewuenschte Entfernung fahren */
+			int16_t to_drive = dist - obst_distance;
+			LOG_DEBUG("to_drive=%d", to_drive);
+			if (abs(to_drive) > target_margin) {
+				bot_goto_dist(data, abs(to_drive), sign16(to_drive));
+				obst_state = 0;
+			} else {
+				obst_state = 2;
+			}
+		} else {
+			/* kein Hindernis in Sichtweite, also erstmal vorfahren */
+			LOG_DEBUG("Noch kein Hindernis in Sichtweite");
+			bot_goto_dist(data, 200, 1);
+			obst_state = 0;
+		}
+		break;			
+	}
+	case 2:
+		/* fertig :-) */
+		return_from_behaviour(data);
+		break;
+	}
+}
+
+/*!
+ * @brief			Botenfunktion des Positionierungsverhaltens.
+ * 					Bewegt den Bot auf distance mm in aktueller Blickrichtung an ein Hindernis heran
+ * @param *caller	Der Verhaltensdatensatz des Aufrufers
+ * @param distance	Distanz in mm, in der der Bot vor dem Hindernis stehen bleiben soll
+ */
+void bot_goto_obstacle(Behaviour_t * caller, int16_t distance) {
+	obst_distance = distance;
+	switch_to_behaviour(caller, bot_goto_obstacle_behaviour, OVERRIDE);
+	obst_state = 0;
 }
 
 #endif	// BEHAVIOUR_GOTO_POS_AVAILABLE

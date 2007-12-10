@@ -184,6 +184,8 @@ void sensor_dist_lookup(int16_t *const p_sens, uint8_t *const p_toggle, const di
 	if (i == 0) {
 		/* kleinste Entfernung annehmen, falls reale Entfernung < kleinste bekannte Entfernung */
 		*p_sens = SENS_IR_MIN_DIST;	// SENS_IR_INFINITE waere eigentlich besser, das mag aber maze nicht
+		/* Sensorupdate-Info toggeln und beenden */
+		*p_toggle = ~*p_toggle;
 		return;
 	} 
 	

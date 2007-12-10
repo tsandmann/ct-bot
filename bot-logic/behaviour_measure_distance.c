@@ -20,7 +20,6 @@
 /*! 
  * @file 	behaviour_measure_distance.c
  * @brief 	Ermittelt die aktuelle Entfernung eines Hindernisses mit den Distanzsensoren
- * 
  * @author 	Timo Sandmann (mail@timosandmann.de)
  * @date 	27.04.2007
  */

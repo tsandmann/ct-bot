@@ -190,10 +190,11 @@ void bot_behave_init(void){
 	#endif
 	#ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(146, bot_goto_pos_behaviour,INACTIVE));
+		insert_behaviour_to_list(&behaviour, new_behaviour(145, bot_goto_obstacle_behaviour,INACTIVE));
 	#endif
 
 	#ifdef BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
-		insert_behaviour_to_list(&behaviour, new_behaviour(145, bot_measure_distance_behaviour, INACTIVE));		
+		insert_behaviour_to_list(&behaviour, new_behaviour(140, bot_measure_distance_behaviour, INACTIVE));		
 	#endif
 	
     #ifdef BEHAVIOUR_MAP_GO_DESTINATION_AVAILABLE

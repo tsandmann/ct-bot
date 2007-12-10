@@ -138,6 +138,10 @@
 #endif
 #endif
 
+#ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
+	#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
+#endif
+
 #include "bot-logic/behaviour_simple.h"
 #include "bot-logic/behaviour_drive_square.h"
 

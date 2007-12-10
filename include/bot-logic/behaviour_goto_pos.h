@@ -56,5 +56,29 @@ void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head);
  */
 void bot_goto_pos_rel(Behaviour_t * caller, int16_t x, int16_t y, int16_t head);
 
+/*!
+ * @brief			Botenfunktion des Positionierungsverhaltens.
+ * 					Bewegt den Bot um distance mm in aktueller Blickrichtung ("drive_distance(...)")
+ * @param *caller	Der Verhaltensdatensatz des Aufrufers
+ * @param distance	Distanz in mm, die der Bot fahren soll
+ * @param dir		Fahrtrichtung: >=0: vorwaerts, <0 rueckwaerts
+ */
+void bot_goto_dist(Behaviour_t * caller, int16_t distance, int16_t dir);
+
+/*!
+ * @brief		Hilfsverhalten von bot_goto_pos(), das den Bot auf eine gewuenschte Entfernung
+ * 				an ein Hindernis heranfaehrt.
+ * @param *data	Der Verhaltensdatensatz
+ */
+void bot_goto_obstacle_behaviour(Behaviour_t * data);
+
+/*!
+ * @brief			Botenfunktion des Positionierungsverhaltens.
+ * 					Bewegt den Bot auf distance mm in aktueller Blickrichtung an ein Hindernis heran
+ * @param *caller	Der Verhaltensdatensatz des Aufrufers
+ * @param distance	Distanz in mm, in der der Bot vor dem Hindernis stehen bleiben soll
+ */
+void bot_goto_obstacle(Behaviour_t * caller, int16_t distance);
+
 #endif	// BEHAVIOUR_GOTO_POS_AVAILABLE
 #endif	/*BEHAVIOUR_GOTO_POS_H_*/

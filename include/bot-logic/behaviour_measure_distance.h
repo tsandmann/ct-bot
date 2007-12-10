@@ -20,7 +20,6 @@
 /*! 
  * @file 	behaviour_measure_distance.h
  * @brief 	Ermittelt die aktuelle Entfernung eines Hindernisses mit den Distanzsensoren
- * 
  * @author 	Timo Sandmann (mail@timosandmann.de)
  * @date 	27.04.2007
  */
@@ -28,9 +27,8 @@
 #ifndef BEHAVIOUR_MEASURE_DISTANCE_H_
 #define BEHAVIOUR_MEASURE_DISTANCE_H_
 
-#ifdef BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
 #include "bot-logic/bot-logik.h"
-
+#ifdef BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
 
 /*!
  * @brief	Das eigentliche Verhalten
