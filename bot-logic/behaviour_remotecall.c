@@ -316,14 +316,14 @@ void bot_remotecall_behaviour(Behaviour_t *data) {
  * @param data		Zeiger auf die Daten
  */
 void bot_remotecall(Behaviour_t *caller, char* func, remote_call_data_t* data) {
-	switch_to_behaviour(caller, bot_remotecall_behaviour, NOOVERRIDE);
-
 	function_id = getRemoteCall(func);
 	if (function_id >= STORED_CALLS){
 		LOG_ERROR("Funktion %s nicht gefunden. Exit!", func);
 		return;
 	}
 
+	switch_to_behaviour(caller, bot_remotecall_behaviour, NOOVERRIDE);
+	
 	// parameter_length: Zeiger auf ein Array, das zuerst die Anzahl der Parameter und danach die Anzahl der Bytes fuer die jeweiligen Parameter enthaelt
 	#ifdef PC
 		parameter_count = calls[function_id].param_count;
@@ -355,7 +355,7 @@ void bot_remotecall_from_command(char * data) {
 }
 
 /*! 
- * Listet alle verfuegbaren Remote-Calls auf und verschickt sie als einzelne Kommanods
+ * Listet alle verfuegbaren Remote-Calls auf und verschickt sie als einzelne Kommandos
  */
 void remote_call_list(void) {
 	#ifdef MCU
