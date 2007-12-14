@@ -1,0 +1,259 @@
+div.code {
+background:#F7F7F7 none repeat scroll 0%;
+border:1px solid #D7D7D7;
+margin:1em 1.75em;
+overflow:auto;
+padding:0.25em;
+}
+div.code pre {
+margin:0pt;
+}
+table.code {
+border-color:-moz-use-text-color #DDDDDD rgb(221, 221, 221);
+border-spacing:0pt;
+border-style:none solid solid;
+border-width:0pt 1px 1px;
+empty-cells:show;
+font-size:12px;
+line-height:130%;
+margin:0pt auto;
+padding:0pt;
+table-layout:fixed;
+width:100%;
+}
+table.code th {
+border-bottom:1px solid #999988;
+border-right:1px solid #D7D7D7;
+font-size:11px;
+}
+table.code th.lineno {
+width:4em;
+}
+table.code thead th {
+background:#EEEEEE none repeat scroll 0%;
+border-top:1px solid #D7D7D7;
+color:#999999;
+padding:0pt 0.25em;
+text-align:center;
+white-space:nowrap;
+}
+table.code tbody th {
+background:#EEEEDD none repeat scroll 0%;
+color:#888866;
+font-weight:normal;
+padding:0pt 0.5em;
+text-align:right;
+vertical-align:top;
+}
+table.code tbody th *:link, table.code tbody th *:visited {
+border:medium none;
+color:#888866;
+text-decoration:none;
+}
+table.code tbody th *:link:hover, table.code tbody th *:visited:hover {
+color:#000000;
+}
+table.code tbody td {
+background:#FFFFFF none repeat scroll 0%;
+font-family:monospace;
+font-size:11px;
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+line-height:normal;
+overflow:hidden;
+padding:1px 2px;
+vertical-align:top;
+}
+.image-file {
+background:#EEEEEE none repeat scroll 0%;
+padding:0.3em;
+}
+.image-file img {
+background:transparent url(../imggrid.png) repeat scroll 0%;
+}
+.code-block span {
+font-family:monospace;
+}
+.code-comment, .css_comment, .c_comment, .c_commentdoc, .c_commentline, .c_commentlinedoc, .h_comment, .pl_commentline, .p_commentblock, .p_commentline, .hphp_comment, .hphp_commentblock, .hphp_commentline, .yaml_comment {
+color:#999988;
+font-style:italic;
+}
+.code-keyword, .pl_word {
+color:#778899;
+font-weight:bold;
+}
+.code-type, .c_word, .c_word2, .p_classname, .hphp_classname {
+color:#446688;
+font-weight:bold;
+}
+.code-func, .p_defname {
+border-bottom:medium none;
+color:#990000;
+font-weight:bold;
+}
+.code-prep, .c_preprocessor, .pl_preprocessor, .yaml_identifier {
+color:#999999;
+font-weight:bold;
+}
+.code-lang, .p_word {
+color:#000000;
+font-weight:bold;
+}
+.code-string, .c_string, .c_stringeol, .css_doublestring, .css_singlestring, .h_singlestring, .h_doublestring, .pl_string, .pl_string_q, .pl_string_qq, .pl_string_qr, .pl_string_qw, .pl_string_qx, .pl_backticks, .pl_character, .p_string, .p_stringeol, .hphp_string, .hphp_stringeol, .hphp_triple, .hphp_tripledouble, .p_character, .p_triple, .p_tripledouble {
+color:#BB8844;
+font-weight:normal;
+}
+.code-var {
+color:#FF99FF;
+}
+.css_id, .css_class, .css_pseudoclass, .css_tag {
+color:#900000;
+}
+.css_directive {
+color:#009000;
+font-weight:bold;
+}
+.css_important {
+color:blue;
+}
+.css_operator {
+color:#000090;
+font-weight:bold;
+}
+.css_tag {
+font-weight:bold;
+}
+.css_unknown_identifier, .css_unknown_pseudoclass {
+color:red;
+}
+.css_value {
+color:navy;
+}
+.c_commentdockeyword {
+color:navy;
+font-weight:bold;
+}
+.c_commentdockeyworderror {
+color:red;
+font-weight:bold;
+}
+.c_character, .c_regex, .c_uuid, .c_verbatim {
+color:olive;
+}
+.c_number {
+color:#009999;
+}
+.h_asp {
+color:#FFFF00;
+}
+.h_aspat {
+color:#FFDF00;
+}
+.h_attribute {
+color:teal;
+}
+.h_attributeunknown {
+color:red;
+}
+.h_cdata {
+color:#337733;
+}
+.h_entity {
+color:purple;
+}
+.h_number {
+color:#009999;
+}
+.h_other {
+color:purple;
+}
+.h_script, .h_tag, .h_tagend {
+color:navy;
+}
+.h_tagunknown {
+color:red;
+}
+.h_xmlend, .h_xmlstart {
+color:blue;
+}
+.pl_datasection {
+color:olive;
+}
+.pl_error {
+color:red;
+font-weight:bold;
+}
+.pl_hash {
+color:#000000;
+}
+.pl_here_delim, .pl_here_q, .pl_here_qq, .pl_here_qx, .pl_longquote {
+color:olive;
+}
+.pl_number {
+color:#009999;
+}
+.pl_pod {
+font-style:italic;
+}
+.pl_regex, .pl_regsubst {
+color:olive;
+}
+.p_number {
+color:#009999;
+}
+.hphp_character {
+color:olive;
+}
+.hphp_defname {
+color:#009999;
+font-weight:bold;
+}
+.hphp_number {
+color:#009999;
+}
+.hphp_word {
+color:navy;
+font-weight:bold;
+}
+.yaml_document {
+color:gray;
+font-style:italic;
+}
+.yaml_keyword {
+color:#880088;
+}
+.yaml_number {
+color:#880000;
+}
+.yaml_reference {
+color:#008888;
+}
+.v_comment {
+color:gray;
+font-style:italic;
+}
+.v_commentline, .v_commentlinebang {
+color:red;
+font-style:italic;
+}
+.v_number, .v_preprocessor {
+color:#009999;
+}
+.v_string, .v_stringeol {
+color:olive;
+}
+.v_user {
+color:blue;
+font-weight:bold;
+}
+.v_word, .v_word3 {
+color:navy;
+font-weight:bold;
+}
+.v_word2 {
+color:green;
+font-weight:bold;
+}

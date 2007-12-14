@@ -23,6 +23,7 @@
  * @brief 	Ruft auf ein Kommando hin andere Verhalten auf und bestaetigt dann ihre Ausfuehrung
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	07.12.06
+ * @see		<a href="../../Documentation/RemoteCall.html">RemoteCall.html</a>
  */
 
 #include "bot-logic/bot-logik.h"
