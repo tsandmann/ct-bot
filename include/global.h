@@ -65,6 +65,16 @@
 	#define Off                   0		/*!< Aus */
 
 	#ifdef PC
+		#if defined WIN32
+		 	#define LITTLE_ENDIAN	1234
+		 	#define BIG_ENDIAN	4321
+		 	#define BYTE_ORDER	LITTLE_ENDIAN
+		#elif defined __linux__
+		 	#include <endian.h>
+		#else
+			#include <machine/endian.h>
+		#endif	// WIN32
+
 		#ifdef EEPROM_EMU_AVAILABLE
 			#ifdef __APPLE__
 				/* OS X */

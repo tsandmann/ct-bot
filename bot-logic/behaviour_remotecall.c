@@ -32,6 +32,7 @@
 #include <string.h>
 #include "command.h"
 #include "log.h"
+#include "global.h"
 
 #include "bot-logic/remote_calls.h"
 
