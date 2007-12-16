@@ -54,7 +54,7 @@ void srf10_set_gain(uint8_t gain) {
 
 	uint8 temp[2];
 	uint8 state;
-	tx_type tx_frame[2];
+	tx_type_t tx_frame[2];
 
 	state = SUCCESS;
 
@@ -76,7 +76,7 @@ void srf10_set_gain(uint8_t gain) {
 void srf10_set_range(uint16_t millimeters) {
 	uint8 temp[2];
 	uint8 state;
-	tx_type tx_frame[2];
+	tx_type_t tx_frame[2];
 
 	state = SUCCESS;
 
@@ -101,7 +101,7 @@ void srf10_set_range(uint16_t millimeters) {
 uint8 srf10_ping(uint8 metric_unit) {
 	uint8 temp[2];
 	uint8 state;
-	tx_type tx_frame[2];
+	tx_type_t tx_frame[2];
 
 	state = SUCCESS;
 
@@ -127,7 +127,7 @@ uint8 srf10_read_register(uint8 srf10_register) {
 	uint8 temp;
 	uint8 value;
 	uint8 state;
-	tx_type tx_frame[3];
+	tx_type_t tx_frame[3];
 
 	state = SUCCESS;
 	value = 0;

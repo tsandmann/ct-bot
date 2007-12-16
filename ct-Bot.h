@@ -288,6 +288,10 @@
 	#define I2C_AVAILABLE	/*!< I2C-Treiber verfuegbar fuer Sprachmodul */
 #endif
 
+#ifdef TWI_AVAILABLE
+	#define I2C_AVAILABLE	/*!< I2C-Treiber statt TWI-Implementierung benutzen */
+#endif
+
 #define F_CPU	16000000L    /*!< Crystal frequency in Hz */
 #define XTAL F_CPU			 /*!< Crystal frequency in Hz */
 

@@ -180,13 +180,12 @@ void init(void){
 		log_mmc_init();
 	#endif
 
-	#ifdef TWI_AVAILABLE
-		Init_TWI();
-		Close_TWI();
-	#endif
-
 	#ifdef I2C_AVAILABLE
 		i2c_init(42);	// 160 kHz
+	#endif		
+
+	#ifdef TWI_AVAILABLE
+		Init_TWI();
 	#endif		
 		
 	#ifdef DISPLAY_AVAILABLE
