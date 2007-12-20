@@ -141,7 +141,7 @@ static void rc5_number(uint8 key) {
 		#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 			case 8: bot_drive_distance(NULL, 0, BOT_SPEED_NORMAL, 10); break;
 		#elif defined BEHAVIOUR_GOTO_POS_AVAILABLE
-			case 8: bot_goto_dist(NULL, 100, 0);
+			case 8: bot_goto_dist(NULL, 100, 0); break;
 		#endif	// BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 	}
 }

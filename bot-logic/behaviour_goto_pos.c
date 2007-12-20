@@ -59,7 +59,7 @@ static float dest_x = 0;		/*!< x-Komponente des Zielpunktes */
 static float dest_y = 0;		/*!< y-Komponente des Zielpunktes */
 static int16_t dest_head = 0;	/*!< gewuenschte Blickrichtung am Zielpunkt */
 static int8_t drive_dir = 1;	/*!< Fahrtrichtung: 1: vorwaerts, -1: rueckwaerts */
-static uint8_t state = 0;		/*!< Status des Verhaltens */
+static uint8_t state = 3;		/*!< Status des Verhaltens */
 
 #define FIRST_TURN	0			/*!< Erste Drehung in ungefaehre Zielrichtung */
 #define CALC_WAY	1			/*!< Berechnung des Kreisbogens */
