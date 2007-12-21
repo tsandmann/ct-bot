@@ -87,8 +87,6 @@ void bot_push_pos(int16_t pos_x, int16_t pos_y) {
 /*!
  * Sichern der aktuellen Botposition auf den Stack
  * @param *caller einfach nur Zeiger, damit remotecall verwendbar
- * @param pos_x X-Koordinate
- * @param pos_y Y-Koordinate
  */
 void bot_push_actpos(Behaviour_t * caller) {
 	// sichern der aktuellen Botposition auf den Stack

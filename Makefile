@@ -52,10 +52,10 @@ SRCMCU = mcu/adc.c mcu/bootloader.c mcu/bot-2-pc.c mcu/cmps03.c mcu/delay.c mcu/
 
 SRCPC = pc/bot-2-sim.c pc/delay_pc.c pc/display_pc.c pc/eeprom-emu_pc.c pc/ir-rc5_pc.c pc/led_pc.c pc/mini-fat.c pc/mmc-emu_pc.c pc/motor-low_pc.c pc/mouse_pc.c pc/sensor-low_pc.c pc/tcp-server.c pc/tcp.c 
 
-SRCCOM = command.c $(TARGET).c log.c map.c math_utils.c mmc-vm.c motor.c sensor.c timer.c 
+SRCCOM = command.c $(TARGET).c log.c map.c math_utils.c mmc-vm.c motor.c pos_stack.c sensor.c timer.c 
 SRCUI = ui/gui.c ui/misc.c ui/rc5.c
 
-SRCLOGIC = bot-logic/behaviour_avoid_border.c bot-logic/behaviour_avoid_col.c bot-logic/behaviour_calibrate_pid.c bot-logic/behaviour_calibrate_sharps.c bot-logic/behaviour_cancel_behaviour.c bot-logic/behaviour_catch_pillar.c bot-logic/behaviour_delay.c bot-logic/behaviour_drive_distance.c bot-logic/behaviour_drive_square.c bot-logic/behaviour_follow_line.c bot-logic/behaviour_follow_object.c bot-logic/behaviour_follow_wall.c bot-logic/behaviour_goto.c bot-logic/behaviour_gotoxy.c bot-logic/behaviour_hang_on.c bot-logic/behaviour_map_go_destination.c bot-logic/behaviour_measure_distance.c bot-logic/behaviour_olympic.c bot-logic/behaviour_remotecall.c bot-logic/behaviour_scan.c bot-logic/behaviour_servo.c bot-logic/behaviour_simple.c bot-logic/behaviour_solve_maze.c bot-logic/behaviour_transport_pillar.c bot-logic/behaviour_turn.c bot-logic/bot-logik.c  
+SRCLOGIC = bot-logic/behaviour_avoid_border.c bot-logic/behaviour_avoid_col.c bot-logic/behaviour_calibrate_pid.c bot-logic/behaviour_calibrate_sharps.c bot-logic/behaviour_cancel_behaviour.c bot-logic/behaviour_catch_pillar.c bot-logic/behaviour_delay.c bot-logic/behaviour_drive_distance.c bot-logic/behaviour_drive_square.c bot-logic/behaviour_drive_stack.c bot-logic/behaviour_follow_line.c bot-logic/behaviour_follow_object.c bot-logic/behaviour_follow_wall.c bot-logic/behaviour_goto.c bot-logic/behaviour_gotoxy.c bot-logic/behaviour_hang_on.c bot-logic/behaviour_map_go_destination.c bot-logic/behaviour_measure_distance.c bot-logic/behaviour_olympic.c bot-logic/behaviour_remotecall.c bot-logic/behaviour_scan.c bot-logic/behaviour_servo.c bot-logic/behaviour_simple.c bot-logic/behaviour_solve_maze.c bot-logic/behaviour_transport_pillar.c bot-logic/behaviour_turn.c bot-logic/bot-logik.c  
 
    
 

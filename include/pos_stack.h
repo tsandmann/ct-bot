@@ -18,7 +18,7 @@
  */
 
 /*!
- * @file 	stack.h
+ * @file 	pos_stack.h
  * @brief 	Implementierung eines Stacks mit den ueblichen Stackbefehlen push(_pos), pop(_pos),...
  * @author 	Frank Menzel (Menzelfr@gmx.net)
  * @date 	13.12.2007
