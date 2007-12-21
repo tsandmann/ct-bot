@@ -39,6 +39,7 @@
 #include "led.h"
 #include "mini-fat.h"
 #include "map.h"
+#include "pos_stack.h"
 #include <stdlib.h>
 
 #ifdef DISPLAY_AVAILABLE
@@ -136,6 +137,9 @@ void gui_init(void){
 	#endif
 	#ifdef DISPLAY_TRANSPORT_PILLAR
 		register_screen(&transportpillar_display);
+	#endif
+	#ifdef DISPLAY_DRIVE_STACK_AVAILABLE
+		register_screen(&drive_stack_display);
 	#endif
 }
 

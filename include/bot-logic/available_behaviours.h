@@ -33,6 +33,8 @@
 
 #define BEHAVIOUR_SERVO_AVAILABLE 	/*!< Kontrollverhalten fuer die Servos */
 
+//#define BEHAVIOUR_DRIVE_STACK_AVAILABLE /*!< Abfahren der auf dem Stack gesicherten Koordinaten */
+
 //#define BEHAVIOUR_OLYMPIC_AVAILABLE	/*!< Olympiadenverhalten vorhanden? */
 
 //#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE /*!< Suche eine Dose und fange sie ein */
@@ -64,12 +66,20 @@
 	#define BEHAVIOUR_TURN_AVAILABLE
 #endif	
 
+#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+	#define BEHAVIOUR_GOTO_POS_AVAILABLE
+#endif
+
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
 	#define BEHAVIOUR_TURN_AVAILABLE
 #endif	
 
 #ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
 	#define BEHAVIOUR_TURN_AVAILABLE
+#endif
+
+#ifndef POS_STACK_AVAILABLE
+	#undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
@@ -135,6 +145,7 @@
 #ifndef SPEED_CONTROL_AVAILABLE
 	// goto_pos geht nur, wenn wir uns auf die eingestellte Geschwindigkeit verlassen koennen
 	#undef BEHAVIOUR_GOTO_POS_AVAILABLE
+	#undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 #endif
 #endif
 
@@ -185,6 +196,8 @@
 #include "bot-logic/behaviour_cancel_behaviour.h"
 
 #include "bot-logic/behaviour_transport_pillar.h"
+
+#include "bot-logic/behaviour_drive_stack.h"
 
 #endif	// BEHAVIOUR_AVAILABLE
 #endif	/*AVAILABLE_BEHAVIOURS_H_*/

@@ -16,21 +16,12 @@ Gefahren	bot-logik.c		Low-Level-Verhalten muessen andere ueber Gefahren warnen
 
 Ideen/Ausbaustufen
 # Scanner:	
-  * Abtasten der Umgebung mit den IR-Sensoren
-  * Bot langsam drehen, dabei Sensorwerte auslesen
   * Daten per UART an den c't-Sim versenden
   * c't-Sim für Anzeige modifizieren
-  * Daten benutzen um Karte zu zeichnen
 
 # Fehlerkontrolle
   * Batterieschaltung testen
-  
-# Positionsstack
-  * Funktion push_pos() - Sichert eine Position auf dem Stack
-  * Funktion pop_pos() - Holt eine Position vom Stack
-  * geeignete Datenstruktur konzipieren
-  * drive_stack_behaviour fährt alle Punkte auf dem Stack an. Kann man benutzen, um zum Ursprung zurückzufahren, oder einen Weg zu planen
-  
+ 
 # Funk
   * Kommunikationscode erweitern für Punkt zu Multipunkt / From-To
   * testen

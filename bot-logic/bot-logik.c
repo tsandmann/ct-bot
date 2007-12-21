@@ -244,6 +244,10 @@ void bot_behave_init(void){
 		insert_behaviour_to_list(&behaviour, new_behaviour(40, bot_follow_object_behaviour, INACTIVE));
 	#endif
 		
+	#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+		insert_behaviour_to_list(&behaviour, new_behaviour(33, bot_drive_stack_behaviour, INACTIVE));
+	#endif	
+		
 	#ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(30, bot_calibrate_pid_behaviour, INACTIVE));		
 	#endif

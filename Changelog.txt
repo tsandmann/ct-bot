@@ -2,6 +2,8 @@ CHANGELOG fuer c't-Bot
 ======================
 2007-12-20 Timo Sandmann [mail@timosandmann.de]: Bug in bot_goto_dist() korrigiert (Richtung war beim ersten Aufruf undefiniert)
 
+2007-12-17 Frank Menzel [Menzelfr@gmx.net]: Positions-Stack-Implementierung und Stackverhalten bot_drive_stack (laut ToDo-Liste)
+
 2007-12-16 Timo Sandmann [mail@timosandmann.de]: TWI-Treiber auf neue Version umgestellt. Effizienter ist es aber, i2c.h / i2c.c zu benutzen
 
 2007-12-10 Timo Sandmann [mail@timosandmann.de]: bot_goto_pos() erweitert, so dass es anstelle von bot_drive_distance() und bot_gotoxy() verwendet werden kann und Rueckwaertsgang ergaenzt.
