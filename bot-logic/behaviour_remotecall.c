@@ -26,6 +26,7 @@
  * @see		<a href="../../Documentation/RemoteCall.html">RemoteCall.html</a>
  */
 
+#include "bot-logic/available_behaviours.h"
 #include "bot-logic/bot-logik.h"
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 #include <stdlib.h>
@@ -91,7 +92,7 @@ static uint8 parameter_data[8] = {0};	/*!< Hier liegen die eigentlichen Paramete
  *   Anzahl der Bytes Parameter 2 ---------------------------
  * 
  * Zur Info:
- * 1 Byte brauchen: uint8,  int8,char
+ * 1 Byte brauchen: uint8,  int8, char
  * 2 Byte brauchen: uint16, int16
  * 4 Byte brauchen: uint32, int32, float
  */
@@ -106,7 +107,7 @@ const call_t calls[] PROGMEM = {
 		PREPARE_REMOTE_CALL(bot_goto_pos, 3, "int16 x, int16 y, int16 head", 2, 2, 2),
 		PREPARE_REMOTE_CALL(bot_goto_pos_rel, 3, "int16 x, int16 y, int16 head", 2, 2, 2),
 		PREPARE_REMOTE_CALL(bot_goto_dist, 2, "int16 distance, int16 dir", 2, 2),
-		PREPARE_REMOTE_CALL(bot_goto_obstacle, 1, "int16 distance", 2),
+		PREPARE_REMOTE_CALL(bot_goto_obstacle, 2, "int16 distance, uint8 parallel", 2, 1),
 	#endif
 	#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_solve_maze,0,""),
@@ -159,6 +160,9 @@ const call_t calls[] PROGMEM = {
 		PREPARE_REMOTE_CALL(bot_push_actpos,0,""),
 		PREPARE_REMOTE_CALL(bot_drive_stack,0,""),
 	#endif
+	#ifdef BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_check_distance,1,"int16 max_dist",2),
+	#endif		
 };
 
 #define STORED_CALLS (sizeof(calls)/sizeof(call_t)) /*!< Anzahl der Remote-Calls im Array */
