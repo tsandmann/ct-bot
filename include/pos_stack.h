@@ -39,7 +39,7 @@
 /*! ab hier der statische Stack mittels Array */
 #ifdef ARRAY_POINT_STACK
 
-#define STACK_SIZE	20  // Stackgroesse ist beim Array begrenzt
+#define POS_STACK_SIZE	20  // Stackgroesse ist beim Array begrenzt
 
 /*! Datenstruktur eines Koordinatenpunktes */
 typedef struct {

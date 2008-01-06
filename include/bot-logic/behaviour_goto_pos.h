@@ -77,8 +77,9 @@ void bot_goto_obstacle_behaviour(Behaviour_t * data);
  * 					Bewegt den Bot auf distance mm in aktueller Blickrichtung an ein Hindernis heran
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  * @param distance	Distanz in mm, in der der Bot vor dem Hindernis stehen bleiben soll
+ * @param parallel	richtet die Front des Bots parallel zum Hindernis aus, falls 1
  */
-void bot_goto_obstacle(Behaviour_t * caller, int16_t distance);
+void bot_goto_obstacle(Behaviour_t * caller, int16_t distance, uint8_t parallel);
 
 #endif	// BEHAVIOUR_GOTO_POS_AVAILABLE
 #endif	/*BEHAVIOUR_GOTO_POS_H_*/

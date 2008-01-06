@@ -76,7 +76,7 @@
 /*! 
  * Fordert virtuellen Speicher an
  * @param size		Groesse des gewuenschten Speicherblocks
- * @param aligned	0: egal, 1: 512 Byte ausgerichtet
+ * @param aligned	ignored
  * @return			Virtuelle Anfangsadresse des angeforderten Speicherblocks in Byte, 0 falls Fehler 
  */
 uint32_t mmcalloc(uint32_t size, uint8_t aligned);

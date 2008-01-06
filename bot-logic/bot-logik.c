@@ -36,6 +36,7 @@
 
 
 #include "bot-logic/bot-logik.h"
+#include "bot-logic/available_behaviours.h"
 
 #ifdef BEHAVIOUR_AVAILABLE
 
@@ -116,7 +117,7 @@ void bot_base_behaviour(Behaviour_t *data){
 /*!
  * Initialisert das ganze Verhalten
  */
-void bot_behave_init(void){
+void bot_behave_init(void) {
 	#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 		// Dieses Verhalten kann andere starten
 		insert_behaviour_to_list(&behaviour, new_behaviour(254, bot_remotecall_behaviour,INACTIVE));
@@ -194,12 +195,13 @@ void bot_behave_init(void){
 	#endif
 
 	#ifdef BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
-		insert_behaviour_to_list(&behaviour, new_behaviour(140, bot_measure_distance_behaviour, INACTIVE));		
+		insert_behaviour_to_list(&behaviour, new_behaviour(140, bot_measure_distance_behaviour, INACTIVE));
+		insert_behaviour_to_list(&behaviour, new_behaviour(139, bot_check_distance_behaviour, INACTIVE));
 	#endif
 	
     #ifdef BEHAVIOUR_MAP_GO_DESTINATION_AVAILABLE
 		// Verhalten, um laut Map zu einem bestimmten Ziel zu fahren
-        insert_behaviour_to_list(&behaviour, new_behaviour(139, bot_path_bestfirst_behaviour,INACTIVE));
+        insert_behaviour_to_list(&behaviour, new_behaviour(136, bot_path_bestfirst_behaviour,INACTIVE));
  	    insert_behaviour_to_list(&behaviour, new_behaviour(135, bot_gotoxy_behaviour_map,INACTIVE));
  	    bot_set_destination(0,0);  // auf aktuelle Botposition setzen (bei 0,0 sonst Mappos selbst)
  	    // Registrierung zur Behandlung des Notfallverhaltens zum Rueckwaertsfahren
@@ -437,16 +439,17 @@ void switch_to_behaviour(Behaviour_t * from, void (*to)(Behaviour_t *), uint8 ov
 }
 
 /*! 
- * @brief		Kehrt zum aufrufenden Verhalten zurueck
- * @param data 	laufendes Verhalten
+ * @brief		Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg
+ * @param *data	laufendes Verhalten
+ * @param state	Abschlussstatus des Verhaltens (SUBSUCCESS oder SUBFAIL)
  */ 
-void return_from_behaviour(Behaviour_t * data){
-	data->active=INACTIVE; 				// Unterverhalten deaktivieren
-	if (data->caller){			
-		data->caller->active=ACTIVE; 	// aufrufendes Verhalten aktivieren
-		data->caller->subResult=SUBSUCCESS;	// Unterverhalten war erfolgreich
+void exit_behaviour(Behaviour_t * data, uint8_t state) {
+	data->active=INACTIVE;	 				// Unterverhalten deaktivieren
+	if (data->caller) {			
+		data->caller->active = ACTIVE; 		// aufrufendes Verhalten aktivieren
+		data->caller->subResult = state;	// Status beim Aufrufer speichern
 	}
-	data->caller=NULL;				// Job erledigt, Verweis loeschen
+	data->caller = NULL;	// Job erledigt, Verweis loeschen
 }
 
 /*!

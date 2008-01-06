@@ -22,7 +22,7 @@
  * @brief 	Implementierung einer FIFO
  * @author 	http://www.roboternetz.de/wissen/index.php/FIFO_mit_avr-gcc
  * @date 	28.02.2007
- * Abgesichert gegen Interrups, solange sich Producer bzw. Consumer jeweils auf der gleichen Interrupt-Ebene befinden.
+ * Abgesichert gegen Interrupts, solange sich Producer bzw. Consumer jeweils auf der gleichen Interrupt-Ebene befinden.
  */
 
 #include "fifo.h"

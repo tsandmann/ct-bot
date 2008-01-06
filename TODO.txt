@@ -1,41 +1,6 @@
 Wunsch- und Aufgabenliste fuer die c't-Bot-Firmware bzw. ihr PC-Pendant:
 ========================================================================
 
-Siehe auch http://www.heise.de/ct/projekte/machmit/ctbot/report/3
+Diese Liste ist ins Trac umgezogen!
+Siehe http://www.heise.de/ct/projekte/machmit/ctbot/report/3
 und http://www.heise.de/ct/projekte/machmit/ctbot/wiki/NeueVerhalten
-
-
-Alle hier aufgefuehrten Punkte stehen noch aus. Wer moechte, ist herzlich eingeladen,
-uns Patches (siehe FAQ) zu schicken, die diese Liste sinnvoll ergaenzen. Aber auch ueber Loesungen
-fuer hier genannte Probleme freuen wir uns.
-
-Thema		Datei			Task
-=====================================================================================
-Gefahren	bot-logik.c		Low-Level-Verhalten muessen andere ueber Gefahren warnen
-
-
-Ideen/Ausbaustufen
-# Scanner:	
-  * Daten per UART an den c't-Sim versenden
-  * c't-Sim für Anzeige modifizieren
-
-# Fehlerkontrolle
-  * Batterieschaltung testen
- 
-# Funk
-  * Kommunikationscode erweitern für Punkt zu Multipunkt / From-To
-  * testen
-
-# Kamera
-  * anschliessen
-  * testen
-  * Sample-Code entwickeln
-
-# CPU-Modul:
-  * EVM-Board besorgen
-  * Experimentieren mit EVM-Board
-
-# Sensorerweiterungen:
-  * experimentieren
-  * weitere Distanzsensoren
-  * Beschleunigungssensoren

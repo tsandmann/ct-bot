@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-01-06 Timo Sandmann [mail@timosandmann.de]: Bugfix in tcp.c, Updates fuer goto_pos() und measure_distance(), Moeglichkeit fuer Verhalten geschaffen ihr SUBRESULT selbst zu setzen: exit_behaviour(Behaviour_t * data, uint8_t state), TODO.txt ins Trac umgezogen, ein paar kleinere Verschoenerungen
+
 2007-12-20 Timo Sandmann [mail@timosandmann.de]: Bug in bot_goto_dist() korrigiert (Richtung war beim ersten Aufruf undefiniert)
 
 2007-12-17 Frank Menzel [Menzelfr@gmx.net]: Positions-Stack-Implementierung und Stackverhalten bot_drive_stack (laut ToDo-Liste)

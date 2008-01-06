@@ -311,7 +311,7 @@ static uint8_t mmc_load_page(uint32_t addr) {
 /*! 
  * Fordert virtuellen Speicher an
  * @param size		Groesse des gewuenschten Speicherblocks
- * @param aligned	0: egal, 1: 512 Byte ausgerichtet
+ * @param aligned	ignored
  * @return			Virtuelle Anfangsadresse des angeforderten Speicherblocks in Byte, 0 falls Fehler 
  */
 uint32_t mmcalloc(uint32_t size, uint8_t aligned) {
@@ -323,7 +323,7 @@ uint32_t mmcalloc(uint32_t size, uint8_t aligned) {
 		}
 	}
 	uint32 start_addr;
-	if (aligned == 0 || mmc_get_end_of_page(next_mmc_address) == mmc_get_end_of_page(next_mmc_address+size-1)) {
+	if (/*aligned == 0 || */mmc_get_end_of_page(next_mmc_address) == mmc_get_end_of_page(next_mmc_address+size-1)) {
 		/* Daten einfach an der naechsten freien virtuellen Adresse speichern */
 		start_addr = next_mmc_address;
 	} else {

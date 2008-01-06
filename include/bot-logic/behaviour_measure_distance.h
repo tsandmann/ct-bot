@@ -31,20 +31,35 @@
 #ifdef BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
 
 /*!
- * @brief	Das eigentliche Verhalten
- * @param data	Zeiger auf den Verhaltensdatensatz des Aufrufers
- * @see		bot_measure_distance()
+ * @brief		Das eigentliche Verhalten
+ * @param *data	Zeiger auf den Verhaltensdatensatz des Aufrufers
+ * @see			bot_measure_distance()
  * Das Verhalten beendet sich erst, wenn mehrere Messungen sinnvolle Werte ergaben
  */
-void bot_measure_distance_behaviour(Behaviour_t *data);
+void bot_measure_distance_behaviour(Behaviour_t * data);
 
 /*!
  * @brief			Ermittelt die aktuelle Entfernung eines Hindernisses mit den Distanzsensoren
- * @param caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
- * @param p_sensL	Zeiger auf eine Variable fuer den linken Sensorwert (Messwert-Ausgabe)
- * @param p_sensR	Zeiger auf eine Variable fuer den rechten Sensorwert (Messwert-Ausgabe)
+ * @param *caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
+ * @param *p_sensL	Zeiger auf eine Variable fuer den linken Sensorwert (Messwert-Ausgabe)
+ * @param *p_sensR	Zeiger auf eine Variable fuer den rechten Sensorwert (Messwert-Ausgabe)
  */
-void bot_measure_distance(Behaviour_t *caller, int16_t *p_sensL, int16_t *p_sensR);
+void bot_measure_distance(Behaviour_t * caller, int16_t * p_sensL, int16_t * p_sensR);
+
+/*!
+ * @brief		Implementierung des check-distance-Verhaltens
+ * @param *data	Zeiger auf den Verhaltensdatensatz
+ */
+void bot_check_distance_behaviour(Behaviour_t * data);
+
+/*!
+ * @brief			Prueft, ob in Entfernung max_dist [mm] ein Hindernis zu sehen ist.
+ * 					Der Aufrufer bekommt SUBSUCCESS in seinen Verhaltensdatensatz, falls ja, 
+ * 					sonst SUBFAIL.
+ * @param *caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
+ * @param max_dist	Entfernung in mm, bis zu der geprueft werden soll
+ */
+void bot_check_distance(Behaviour_t * caller, int16_t max_dist);
 
 #endif	// BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
 #endif	// BEHAVIOUR_MEASURE_DISTANCE_H_

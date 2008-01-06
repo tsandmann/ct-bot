@@ -76,6 +76,7 @@ static const int16_t max_angle		= 30;	/*!< Maximaler Winkel [Grad] zwischen Star
 static const int16_t v_min			= 100;	/*!< Minimale (mittlere) Geschwindigkeit [mm/s], mit der der Bot zum Ziel fahert */
 static const int16_t v_max			= 200;	/*!< Maximale (mittlere) Geschwindigkeit [mm/s], mit der der Bot zum Ziel fahert */
 static const int16_t recalc_dist	= 30;	/*!< Entfernung [mm], nach der die Kreisbahn neu berechnet wird */
+static const int16_t max_par_diff	= 30;	/*!< Differenz [mm] der Distanzsensorwerte, bis zu der eine parallele Ausrichtung moeglich ist */ 
 
 /*!
  * @brief		Das Positionierungsverhalten
@@ -196,7 +197,10 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		LOG_DEBUG("Nachlauf abwarten...");
 		speedWishLeft = BOT_SPEED_STOP;
 		speedWishRight = BOT_SPEED_STOP;
+#ifdef MCU
+		// Sim hat derzeit keinen Nachlauf
 		BLOCK_BEHAVIOUR(data, 1200);
+#endif
 		LOG_INFO("Fehler=%d mm", diff_to_target);
 		drive_dir = 1;
 		return_from_behaviour(data);
@@ -281,6 +285,7 @@ void bot_goto_dist(Behaviour_t * caller, int16_t distance, int16_t dir) {
 }
 
 static int16_t obst_distance = 0;	/*!< gewuenschte Entfernung zum Hindernis */
+static uint8_t obst_parallel = 0;	/*!< richtet die Front des Bots parallel zum Hindernis aus, falls 1 */
 static uint8_t obst_state = 0;		/*!< Status von bot_goto_obstacle */
 
 /*!
@@ -298,8 +303,8 @@ void bot_goto_obstacle_behaviour(Behaviour_t * data) {
 		obst_state = 1;
 		break;
 	case 1: {
-		/* Mittelwert aus rechts und links berechnen */
-		int16_t dist = (distLeft + distRight) / 2;
+		/* kleinere Distanz als Richtwert benutzen */
+		int16_t dist = distLeft < distRight ? distLeft : distRight;
 		if (dist <= 600) {
 			/* Entfernung - gewuenschte Entfernung fahren */
 			int16_t to_drive = dist - obst_distance;
@@ -319,6 +324,21 @@ void bot_goto_obstacle_behaviour(Behaviour_t * data) {
 		break;			
 	}
 	case 2:
+		if (obst_parallel == 1) {
+			/* heading korrigieren, so dass Bot parallel zum Hindernis steht */
+			int16_t diff = distRight - distLeft;
+			if (abs(diff) < max_par_diff) {
+				/* unsinnig bei zu grosser Differenz */
+				LOG_DEBUG("diff=%d", diff);
+				float alpha = (float)diff / (float)(DISTSENSOR_POS_SW*2);
+				alpha /= 2.0*M_PI/360.0;
+				LOG_DEBUG("alpha=%f", alpha);
+				bot_turn(data, (int16_t)alpha);
+			}
+		}
+		obst_state = 3;
+		break;
+	case 3:
 		/* fertig :-) */
 		return_from_behaviour(data);
 		break;
@@ -330,9 +350,11 @@ void bot_goto_obstacle_behaviour(Behaviour_t * data) {
  * 					Bewegt den Bot auf distance mm in aktueller Blickrichtung an ein Hindernis heran
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  * @param distance	Distanz in mm, in der der Bot vor dem Hindernis stehen bleiben soll
+ * @param parallel	richtet die Front des Bots parallel zum Hindernis aus, falls 1
  */
-void bot_goto_obstacle(Behaviour_t * caller, int16_t distance) {
+void bot_goto_obstacle(Behaviour_t * caller, int16_t distance, uint8_t parallel) {
 	obst_distance = distance;
+	obst_parallel = parallel;
 	switch_to_behaviour(caller, bot_goto_obstacle_behaviour, OVERRIDE);
 	obst_state = 0;
 }

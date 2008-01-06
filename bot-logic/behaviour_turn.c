@@ -117,7 +117,9 @@ void bot_turn_behaviour(Behaviour_t *data) {
 		speedWishLeft  = BOT_SPEED_STOP;
 		speedWishRight = BOT_SPEED_STOP;
 		
+#ifdef MCU	// im Sim kein Nachlauf
 		BLOCK_BEHAVIOUR(data, 1200);
+#endif
 		
 //		LOG_DEBUG("done, heading=%d %u", heading_16/10, TICKS_TO_MS(TIMER_GET_TICKCOUNT_32));
 //		LOG_DEBUG("target=%d", target/10-360); 

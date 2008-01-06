@@ -68,19 +68,16 @@
 int tcp_sock=0;			/*!< Unser TCP-Socket */
 char *tcp_hostname = NULL;		/*!< Hostname, auf dem ct-Sim laeuft */
 
+uint8 sendBuffer[TCP_SEND_BUFFER_SIZE];	/*!< Sendepuffer fuer ausgehende Packete */
+int sendBufferPtr=0;	/*!< Index in den Sendepuffer */
 
-
-#ifdef PC
-	uint8 sendBuffer[TCP_SEND_BUFFER_SIZE];	/*!< Sendepuffer fuer ausgehende Packete */
-	int sendBufferPtr=0;	/*!< Index in den Sendepuffer */
-#endif
 
 /*!
  * Oeffnet eine TCP-Verbindung zum Server 
- * @param hostname Symbolischer Name des Host, auf dem ct-Sim laeuft
- * @return Der Socket
-*/
-int tcp_openConnection(const char *hostname){
+ * @param hostname	Symbolischer Name des Host, auf dem ct-Sim laeuft
+ * @return			Der Socket
+ */
+int tcp_openConnection(const char * hostname) {
     struct sockaddr_in servAddr;   // server address
     int sock=0;                        // Socket descriptor
     struct hostent *he = gethostbyname(hostname);
@@ -125,8 +122,8 @@ int tcp_openConnection(const char *hostname){
 /*!
  * Schliesst eine TCP-Connection
  * @param sock Der Socket
-*/
-void tcp_closeConnection(int sock){
+ */
+void tcp_closeConnection(int sock) {
     close(sock);
     #ifdef WIN32
 		WSACleanup();
@@ -140,8 +137,8 @@ void tcp_closeConnection(int sock){
  * funktioniert darf _POSIX_SOURCE nicht definiert werden. Fuer Windows
  * wird dies in der Headerdatei tcp.h erledigt.
  * Getestet wurde dies bisher auf folgenden Systemen:
- *  - MacOSX (PPC, big endian)
- *  - Gentoo Linux (hppa, big endian)
+ *  - MacOSX (PPC, big endian, i386 little endian)
+ *  - Linux (hppa, big endian, i386 little endian)
  *  - OpenBSD (i386, little endian)
  *  - Windows 2000 (i386, little endian mit dem MinGW)
  * Sollten in command_t weitere Werte mit mehr bzw. weniger als 8 bit
@@ -149,7 +146,7 @@ void tcp_closeConnection(int sock){
  * @param cmd Zeiger auf das Kommando
  * @return Anzahl der gesendete Bytes
  */
-int tcp_send_cmd(command_t *cmd) {
+int tcp_send_cmd(command_t * cmd) {
 #if BYTE_ORDER == BIG_ENDIAN
 	command_t le_cmd;
 
@@ -170,12 +167,13 @@ int tcp_send_cmd(command_t *cmd) {
 #endif	// BIG_ENDIAN
 }
 
-/*! Puffert daten im Sendepuffer zwischen
- * @param data zeiger auf die daten
- * @param length Anzahl der Bytes
- * @return -1 wenn kein Platz mehr im Puffer ist, 0 wenn alles ok ist
+/*! 
+ * Puffert Daten im Sendepuffer zwischen
+ * @param *data		Zeiger auf die Daten
+ * @param length	Anzahl der Bytes
+ * @return 			-1 wenn kein Platz mehr im Puffer ist, 0 wenn alles ok ist
  */
-int copy2Buffer(uint8* data, int length){
+int copy2Buffer(uint8 * data, int length) {
 	int i;
 	uint8 * ptr = data;
 	
@@ -201,11 +199,11 @@ int copy2Buffer(uint8* data, int length){
 
 /*!
  * Uebertrage Daten per TCP/IP
- * @param data Zeiger auf die Daten
- * @param length Anzahl der Bytes
- * @return 0 wenn alles ok, -1 wenn puffer voll
-*/
-int tcp_write(void* data, int length){
+ * @param *data		Zeiger auf die Daten
+ * @param length	Anzahl der Bytes
+ * @return 			0 wenn alles ok, -1 wenn puffer voll
+ */
+int tcp_write(void * data, int length) {
 	#ifdef USE_SEND_BUFFER
 		return copy2Buffer(data, length);
 	#else
@@ -220,15 +218,16 @@ int tcp_write(void* data, int length){
 /*!
  * Lese Daten von TCP/IP-Verbindung.
  * Achtung: blockierend!
- * @param data Zeiger auf die Daten
- * @param length Anzahl der gewuenschten Bytes
- * @return Anzahl der uebertragenen Bytes
-*/
-int tcp_read(void* data, int length){
+ * @param *data		Zeiger auf die Daten
+ * @param length	Anzahl der gewuenschten Bytes
+ * @return 			Anzahl der uebertragenen Bytes
+ */
+int tcp_read(void * data, int length) {
+	if (length == 0) return 0;	// NOP, aber auch kein Programmabbruch noetig
 	int bytesReceived=0;
 
-	if ((bytesReceived = recv(tcp_sock, data, length, 0)) <= 0){
-            printf("recv() failed or connection closed prematurely\n");
+	if ((bytesReceived = recv(tcp_sock, data, length, 0)) <= 0) {
+		printf("recv() failed or connection closed prematurely\n");
 	    exit(1);
 	    return -1;
 	}
@@ -239,7 +238,7 @@ int tcp_read(void* data, int length){
 /*! 
  * Initialisiere TCP/IP Verbindung 
  */ 
-void tcp_init(void){
+void tcp_init(void) {
 	#ifdef WIN32
 	    WSADATA wsaData;
 	    WORD wVersionRequested;
@@ -267,7 +266,7 @@ void tcp_init(void){
  * Schreibt den Sendepuffer auf einen Schlag raus 
  * @return -1 bei Fehlern, sonst zahl der uebertragenen Bytes
  */
-int flushSendBuffer(void){
+int flushSendBuffer(void) {
 	#ifdef USE_SEND_BUFFER
 	//	printf("Flushing Buffer with %d bytes\n",sendBufferPtr);
 	
@@ -283,4 +282,4 @@ int flushSendBuffer(void){
 	#endif
 }
 
-#endif
+#endif	// PC

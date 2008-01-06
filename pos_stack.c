@@ -36,7 +36,7 @@
 /*! bei Verfuegbarkeit des ARRY-Stacks; sonst Stack mit dynamischer Speicherfreigabe */
 #ifdef ARRAY_POINT_STACK
 
-static pos_stack_t pos_stack[STACK_SIZE];
+static pos_stack_t pos_stack[POS_STACK_SIZE];
 static pos_stack_t * pos_sp = pos_stack;
 static uint8_t stack_count = 0;
 
@@ -61,7 +61,7 @@ static uint8_t is_empty(void) {
  * @return True falls Stack voll, sonst false
  */
 static uint8_t is_full(void) {
-	return stack_count == STACK_SIZE;
+	return stack_count == POS_STACK_SIZE;
 }
 
 /*!

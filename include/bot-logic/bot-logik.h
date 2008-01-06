@@ -86,12 +86,12 @@ extern int16 target_speed_r;	/*!< Sollgeschwindigkeit rechter Motor */
  * Kuemmert sich intern um die Ausfuehrung der goto-Kommandos
  * @see bot_goto()
  */
-extern void bot_behave(void);
+void bot_behave(void);
 
 /*!
  * Initilaisert das ganze Verhalten
  */
-extern void bot_behave_init(void);
+void bot_behave_init(void);
 
 /*!
  * Aktiviert eine Regel mit gegebener Funktion
@@ -142,10 +142,19 @@ void deactivateCalledBehaviours(BehaviourFunc function);
 void switch_to_behaviour(Behaviour_t * from, void (*to)(Behaviour_t *), uint8 override );
 
 /*! 
+ * @brief		Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg
+ * @param *data	laufendes Verhalten
+ * @param state	Abschlussstatus des Verhaltens (SUBSUCCESS oder SUBFAIL)
+ */ 
+void exit_behaviour(Behaviour_t * data, uint8_t state);
+
+/*! 
  * @brief		Kehrt zum aufrufenden Verhalten zurueck
- * @param data 	laufendes Verhalten
+ * @param *data laufendes Verhalten
  */
-void return_from_behaviour(Behaviour_t * data);
+static inline void return_from_behaviour(Behaviour_t * data) {
+	exit_behaviour(data, SUBSUCCESS);
+}
 
 /*!
  * Fuegt ein Verhalten der Verhaltenliste anhand der Prioritaet ein.
