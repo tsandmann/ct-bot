@@ -339,12 +339,16 @@ void motor_set(int16 left, int16 right){
 			}
 			
 			/* Geschwindigkeit und Richtung links speichern */
-			if (speedSignLeft > 0){
-				direction.left = DIRECTION_FORWARD;
-				speed_l = left;
+			if (left != 0) {
+				if (speedSignLeft > 0) {
+					direction.left = DIRECTION_FORWARD;
+					speed_l = left;
+				} else {
+					direction.left = DIRECTION_BACKWARD;
+					speed_l = -left;
+				}
 			} else {
-				direction.left = DIRECTION_BACKWARD;
-				speed_l = -left;
+				speed_l = 0;
 			}
 			/* PWM-Wert setzen */
 			motor_update(0);
@@ -377,12 +381,16 @@ void motor_set(int16 left, int16 right){
 			}
 									
 			/* Geschwindigkeit und Richtung rechts speichern */
-			if (speedSignRight > 0){
-				direction.right = DIRECTION_FORWARD;
-				speed_r = right;
+			if (right != 0) {
+				if (speedSignRight > 0){
+					direction.right = DIRECTION_FORWARD;
+					speed_r = right;
+				} else {
+					direction.right = DIRECTION_BACKWARD;
+					speed_r = -right;
+				}
 			} else {
-				direction.right = DIRECTION_BACKWARD;
-				speed_r = -right;
+				speed_r = 0;
 			}
 			motor_update(1);
 			
