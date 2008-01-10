@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-01-10 Timo Sandmann [mail@timosandmann.de]: bot_goto_pos und bot_turn optimiert
+
 2008-01-10 Timo Sandmann [mail@timosandmann.de]: TWI-Treiberdateien an Namenskonvention angepasst
 
 2008-01-10 Timo Sandmann [mail@timosandmann.de]: Wichtiger Bugfix in motor.c (Drehrichtung war teilweise falsch)

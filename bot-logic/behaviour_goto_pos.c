@@ -24,14 +24,17 @@
  * @date 	15.10.2007
  */
 
-/*
- *TODO:	goto_pos:
- *		- Speedcontrol fuer unterschiedliche Speeds optimieren?
- * 		- (float-) Code optimieren
- * 		- Fehler / Nachlauf messen und ab ins EEPROM damit?
- */ 
-
 #include "bot-logic/bot-logik.h"
+
+#ifdef MCU
+#define TARGET_MARGIN	20	/*!< Entfernung zum Ziel [mm], ab der das Ziel als erreicht gilt fuer MCU */
+#include "avr/eeprom.h"
+#else
+#define TARGET_MARGIN	5	/*!< Entfernung zum Ziel [mm], ab der das Ziel als erreicht gilt fuer PC */
+#include "eeprom-emu.h"
+#endif
+
+uint8_t EEPROM goto_pos_err[2] = {TARGET_MARGIN, TARGET_MARGIN};	/*!< Fehlerwerte (Nachlauf) im EEPROM */
 
 #ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
 #include <stdlib.h>
@@ -60,17 +63,13 @@ static float dest_y = 0;		/*!< y-Komponente des Zielpunktes */
 static int16_t dest_head = 0;	/*!< gewuenschte Blickrichtung am Zielpunkt */
 static int8_t drive_dir = 1;	/*!< Fahrtrichtung: 1: vorwaerts, -1: rueckwaerts */
 static uint8_t state = 3;		/*!< Status des Verhaltens */
+static uint8_t * p_goto_pos_err;	/*!< Zeiger auf Fehlervariable im EEPROM */
 
 #define FIRST_TURN	0			/*!< Erste Drehung in ungefaehre Zielrichtung */
 #define CALC_WAY	1			/*!< Berechnung des Kreisbogens */
 #define RUNNING		2			/*!< Fahrt auf der berechneten Kreisbahn */
 #define LAST_TURN	3			/*!< Abschliessende Drehung */
 
-#ifdef MCU
-static const int16_t target_margin	= 20;	/*!< Entfernung zum Ziel [mm], ab der das Ziel als erreicht gilt fuer MCU */
-#else
-static const int16_t target_margin	= 5;	/*!< Entfernung zum Ziel [mm], ab der das Ziel als erreicht gilt fuer PC */
-#endif
 static const int16_t straight_go	= 200;	/*!< Entfernung zum Ziel [mm], bis zu der geradeaus zum Ziel gefahren wird */
 static const int16_t max_angle		= 30;	/*!< Maximaler Winkel [Grad] zwischen Start-Blickrichtung und Ziel */
 static const int16_t v_min			= 100;	/*!< Minimale (mittlere) Geschwindigkeit [mm/s], mit der der Bot zum Ziel fahert */
@@ -92,9 +91,17 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 	
 	/* Abstand zum Ziel berechnen (als Metrik euklidischen Abstand benutzen) */
 	int16_t diff_to_target = sqrt(pow(dest_x-x_pos, 2) + pow(dest_y-y_pos, 2));
+	if (diff_to_target > straight_go) {
+		/* fuer grosse Strecken zweiten Fehlerwert verwenden */
+		p_goto_pos_err = &goto_pos_err[1];
+	}
+	
+	/* gefahrene Strecke berechnen */
+	int16_t driven = sqrt(pow(last_x-x_pos,2) + pow(last_y-y_pos,2));
 
 	/* Pruefen, ob wir schon am Ziel sind */
-	if (diff_to_target < target_margin) state = LAST_TURN;
+	uint8_t margin = eeprom_read_byte(p_goto_pos_err);
+	if (diff_to_target <= margin) state = LAST_TURN;
 	
 	switch (state) {
 	case FIRST_TURN: {
@@ -186,7 +193,7 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		speedWishLeft = v_l;
 		speedWishRight = v_r;
 		/* Alle recalc_dist mm rechnen wir neu, um Fehler zu korrigieren */
-		done += sqrt(pow(last_x - x_pos,2) + pow(last_y - y_pos,2));
+		done += driven;
 		if (done > recalc_dist) state = CALC_WAY;
 		last_x = x_pos;
 		last_y = y_pos;
@@ -201,7 +208,23 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		// Sim hat derzeit keinen Nachlauf
 		BLOCK_BEHAVIOUR(data, 1200);
 #endif
+		int16_t last_diff = sqrt(pow(dest_x-last_x, 2) + pow(dest_y-last_y, 2));
+		if (last_diff < driven) {
+			/* zu weit gefahren */
+			diff_to_target = -diff_to_target;
+		}
 		LOG_INFO("Fehler=%d mm", diff_to_target);
+		/* Aus Fehler neuen Korrekturwert berechnen und im EEPROM speichern */
+		int8_t error = eeprom_read_byte(p_goto_pos_err);
+		LOG_DEBUG("error=%d", error);
+		int8_t new_error = error - diff_to_target / 2; // (error-diff_to_target)/2+error/2
+		LOG_DEBUG("new_error=%d", new_error);
+		if (new_error < TARGET_MARGIN/4) new_error = TARGET_MARGIN/4;
+		if (new_error != error) {
+			eeprom_write_byte(p_goto_pos_err, new_error);
+			LOG_DEBUG("new_error=%d", new_error);
+		}
+		/* fast fertig, evtl. noch drehen */
 		drive_dir = 1;
 		return_from_behaviour(data);
 		if (dest_head == 999) {
@@ -240,6 +263,7 @@ void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
 	dest_x = x;
 	dest_y = y;
 	dest_head = head;
+	p_goto_pos_err = &goto_pos_err[0];	// erstmal kleine Strecke annehmen, Verhalten korrigiert das evtl.
 	
 	LOG_INFO("(%d mm|%d mm|%d Grad)", x, y, head);
 	if (drive_dir >= 0) {
@@ -309,7 +333,7 @@ void bot_goto_obstacle_behaviour(Behaviour_t * data) {
 			/* Entfernung - gewuenschte Entfernung fahren */
 			int16_t to_drive = dist - obst_distance;
 			LOG_DEBUG("to_drive=%d", to_drive);
-			if (abs(to_drive) > target_margin) {
+			if (abs(to_drive) > TARGET_MARGIN) {
 				bot_goto_dist(data, abs(to_drive), sign16(to_drive));
 				obst_state = 0;
 			} else {

@@ -154,8 +154,6 @@ void bot_turn_behaviour(Behaviour_t *data) {
  */
 void bot_turn(Behaviour_t *caller, int16 degrees) {
 //	LOG_DEBUG("bot_turn(%d)", degrees);
-	/* Verhalten aktiv schalten */
-	switch_to_behaviour(caller, bot_turn_behaviour, OVERRIDE);
 
 	/* Parameter begrenzen */
  	while (degrees >  360) degrees -= 360;
@@ -184,6 +182,11 @@ void bot_turn(Behaviour_t *caller, int16 degrees) {
 		*ee_err = 0;
 	}
 	int8_t err = *ee_err;
+	
+	if (abs(degrees*10) <= err) {
+		/* nix zu tun */
+		return;
+	}
 
 	/* Drehrichtung ermitteln */
  	if (degrees < 0) {
@@ -193,6 +196,9 @@ void bot_turn(Behaviour_t *caller, int16 degrees) {
  		err = -err;
  	}
  	target += err;
+ 	
+	/* Verhalten aktiv schalten */
+	switch_to_behaviour(caller, bot_turn_behaviour, OVERRIDE);
 }
 
 #endif	// BEHAVIOUR_TURN_AVAILABLE
