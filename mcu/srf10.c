@@ -28,7 +28,7 @@
 #include "ct-Bot.h"
 #ifdef SRF10_AVAILABLE 
 #include <avr/io.h>
-#include "TWI_driver.h"
+#include "twi.h"
 #include "srf10.h"
 #include "delay.h"
 

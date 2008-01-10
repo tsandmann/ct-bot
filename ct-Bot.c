@@ -49,7 +49,7 @@
 #endif
 
 #ifdef TWI_AVAILABLE
-	#include "TWI_driver.h"
+	#include "twi.h"
 #endif
 
 #include <string.h>

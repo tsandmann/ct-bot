@@ -18,7 +18,7 @@
  */
 
 /*! 
- * @file 	TWI_driver.c  
+ * @file 	twi.c  
  * @brief 	TWI-Treiber (I2C)
  * @author 	Chris efstathiou hendrix@otenet.gr & Carsten Giesen (info@cnau.de)
  * @date 	08.04.06
@@ -27,7 +27,7 @@
 #ifdef MCU 
 #include "ct-Bot.h"
 #ifdef TWI_AVAILABLE 
-#include "TWI_driver.h"
+#include "twi.h"
 #include "global.h"
 
 //#define OLD_VERSION

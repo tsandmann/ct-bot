@@ -18,7 +18,7 @@
  */
 
 /*! 
- * @file 	TWI_driver.h
+ * @file 	twi.h
  * @brief 	TWI Treiber
  * @author 	Chris efstathiou hendrix@otenet.gr & Carsten Giesen (info@cnau.de)
  * @date 	11.04.2006
