@@ -26,8 +26,6 @@
 #ifndef CT_BOT_H_DEF
 #define CT_BOT_H_DEF
 
-#include "global.h"
-
 /************************************************************
 * Module switches, to make code smaller if features are not needed
 ************************************************************/
@@ -311,4 +309,6 @@
 	#endif
 #endif
 
-#endif
+#include "global.h"
+
+#endif	// CT_BOT_H_DEF

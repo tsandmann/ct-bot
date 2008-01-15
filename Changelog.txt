@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-01-14 Achim Pankalla [achim.pankalla@gmx.de]: Ticket #159: Fehler bei eeprom-emulation behoben. Position von include global.h geaendert.
+
 2008-01-10 Timo Sandmann [mail@timosandmann.de]: bot_goto_pos und bot_turn optimiert
 
 2008-01-10 Timo Sandmann [mail@timosandmann.de]: TWI-Treiberdateien an Namenskonvention angepasst
