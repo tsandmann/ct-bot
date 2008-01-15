@@ -267,10 +267,10 @@ uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, uint8_t * buffer) {
 	} else {
 		k = 0;
 	}
+	SPDR = 0;	// start SPI-transfer
 	for (i=2; i>0; i--) {
 		j = k;
 		do {
-			SPDR = 0;						// start SPI-transfer 
 			while(!(SPSR & (1<<SPIF))) {}	// wait for reception complete
 			asm volatile(
 				"in r24, %1		\n\t"		// load from SPDR		
@@ -278,6 +278,7 @@ uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, uint8_t * buffer) {
 				::	"y"	(buffer), "i" (_SFR_IO_ADDR(SPDR))
 				:	"r24"
 			);
+			SPDR = 0;						// start next SPI-transfer
 		} while (++j != 0);
 	}
 
