@@ -41,13 +41,18 @@
 
 #define USE_GOTO_POS_DIST	/*!< Ersetzt alle drive_distance()-Aufrufe mit dem goto_pos-Verhalten, falls vorhanden */
 
-#ifdef BEHAVIOUR_OLYMPIC_AVAILABLE	// olympic braucht bot_drive()
-#undef USE_GOTO_POS_DIST
-#endif
-
 #ifndef BEHAVIOUR_GOTO_POS_AVAILABLE
 #undef USE_GOTO_POS_DIST
 #endif
+
+#if defined BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE || defined BEHAVIOUR_OLYMPIC_AVAILABLE
+/*!
+ * laesst den Bot in eine Richtung fahren. 
+ * Es handelt sich hierbei nicht im eigentlichen Sinn um ein Verhalten, sondern ist nur eine Abstraktion der Motorkontrollen.
+ * @param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
+ * @param speed Gibt an, wie schnell der Bot fahren soll. */
+void bot_drive(int8 curve, int16 speed);
+#endif	// BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE || BEHAVIOUR_OLYMPIC_AVAILABLE
 
 #ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 #ifndef USE_GOTO_POS_DIST
@@ -65,13 +70,6 @@ void bot_drive_distance_behaviour(Behaviour_t* data);
  * @param cm Gibt an, wie weit der Bot fahren soll. In cm :-) Die Strecke muss positiv sein, die Fahrtrichtung wird ueber speed geregelt.
  */
 void bot_drive_distance(Behaviour_t* caller,int8 curve, int16 speed, int16 cm);
-
-/*!
- * laesst den Bot in eine Richtung fahren. 
- * Es handelt sich hierbei nicht im eigentlichen Sinn um ein Verhalten, sondern ist nur eine Abstraktion der Motorkontrollen.
- * @param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
- * @param speed Gibt an, wie schnell der Bot fahren soll. */
-void bot_drive(int8 curve, int16 speed);
 
 #else	// USE_GOTO_POS_DIST
 /* wenn goto_pos() vorhanden ist und USE_GOTO_POS_DIST an, leiten wir alle drive_distance()-Aufurfe dorthin um */
