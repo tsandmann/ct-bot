@@ -363,6 +363,9 @@ void bot_measure_angle_behaviour(Behaviour_t *data) {
 	#define TURN_BACK					3
 	#define CORRECT_ANGLE				4
 	#define MEASUREMENT_DONE			5
+	
+	/*! Hilfskonstante */
+	#define ANGLE_CONSTANT		(WHEEL_TO_WHEEL_DIAMETER * ENCODER_MARKS / WHEEL_DIAMETER)
 
 	/* bereits gedrehte Strecke errechnen */
 	int16 turnedLeft=(measure_direction>0)?-(sensEncL-startEncL):(sensEncL-startEncL);
@@ -558,7 +561,7 @@ void bot_solve_maze_behaviour(Behaviour_t *data){
 					}
 				} else {
 					/* keine wand? dann vorfahren und selbes prozedere nochmal */
-					bot_drive_distance(data,0,BOT_SPEED_NORMAL,BOT_DIAMETER);
+					bot_drive_distance(data,0,BOT_SPEED_NORMAL,BOT_DIAMETER/10);
 					mazeState=CHECK_FOR_WALL_RIGHT;
 					checkedWalls=0;
 					break;
@@ -572,7 +575,7 @@ void bot_solve_maze_behaviour(Behaviour_t *data){
 		case SOLVE_MAZE_LOOP:
 			/* Einen Schritt (=halbe BOT-Groesse) vorwaerts */
 			mazeState=SOLVE_TURN_WALL;
-			bot_drive_distance(data,0,BOT_SPEED_NORMAL,BOT_DIAMETER);
+			bot_drive_distance(data,0,BOT_SPEED_NORMAL,BOT_DIAMETER/10);
 			break;
 			
 		case SOLVE_TURN_WALL:
@@ -586,7 +589,7 @@ void bot_solve_maze_behaviour(Behaviour_t *data){
 			}
 			/* checken, ob wand vor uns (Abstand 2.5*Bot-Durchmesser in mm) */
 			distance=(sensDistL+sensDistR)/2;
-			if (distance<=25*BOT_DIAMETER) { // umrechnen 10*BOT_DIAMETER, da letzteres in cm angegeben wird
+			if (distance<=(int16_t)(2.5*BOT_DIAMETER)) {
 				/* berechnete Entfernung zur Wand abzueglich optimale Distanz fahren */
 				mazeState=DETECTED_CROSS_BRANCH;
 				bot_drive_distance(data,0,BOT_SPEED_NORMAL,(distance-OPTIMAL_DISTANCE)/10);
@@ -635,7 +638,7 @@ void bot_solve_maze_behaviour(Behaviour_t *data){
 			
 		case APPROACH_CORNER:
 			/* ok, nun strecke bis zur Kante berechnen */
-			x=measure_distance*cos(measured_angle*M_PI/180)/10+BOT_DIAMETER*1.5;
+			x=measure_distance*cos(measured_angle*M_PI/180)/10+BOT_DIAMETER*0.15;
 			mazeState=TURN_TO_BRANCH;
 			bot_drive_distance(data,0,BOT_SPEED_NORMAL,(int16)x);
 			break;

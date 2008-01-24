@@ -648,7 +648,7 @@ void map_update_location(float x, float y) {
 	int16 y_map = map_world_to_map(y);
 
 	// Aktualisiere zuerst die vom Bot selbst belegte Flaeche
-	map_update_field_circle(x_map, y_map, BOT_DIAMETER/2*MAP_RESOLUTION/100, MAP_STEP_FREE_LOCATION);
+	map_update_field_circle(x_map, y_map, BOT_DIAMETER/20*MAP_RESOLUTION/100, MAP_STEP_FREE_LOCATION);
 }
 
 /*!
@@ -697,7 +697,7 @@ uint8 map_way_free_fields(uint16 from_x, uint16 from_y, uint16 to_x, uint16 to_y
 	int8 sY = (to_y < from_y ? -1 : 1); 
 	uint16 dY =abs(to_y - from_y);	// Laenge der Linie in Y-Richtung
 
-	int16 width= (BOT_DIAMETER*MAP_RESOLUTION)/100;
+	int16 width= (BOT_DIAMETER/10*MAP_RESOLUTION)/100;
 	int16 w=0;
 	
 	if (dX >= dY) {			// Hangle Dich an der laengeren Achse entlang

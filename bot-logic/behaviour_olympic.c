@@ -59,6 +59,9 @@
 #define SLALOM_ORIENTATION_LEFT	0
 #define SLALOM_ORIENTATION_RIGHT	1
 
+#define SWEEP_STATE_TURN			0	/*!< Zustand: Drehung im Sweep. */
+#define SWEEP_STATE_CHECK			1	/*!< Zustand: Ueberpruefe Objekt vor dem Bot. */
+
 /* Parameter fuer das bot_explore_behaviour() */
 static int8 (*exploration_check_function)(void);	/*!< Die Funktion, mit der das bot_explore_behaviour() feststellt, ob es etwas gefunden hat.
 											 * Die Funktion muss True (1) zurueck geben, wenn dem so ist, sonst False (0).

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-01-24 Timo Sandmann [mail@timosandmann.de]: bot-local.h aufgeraeumt: Einheit fuer Entfernungen ist jetzt durchgaengig mm, nicht bot-spezifische Konstanten in die jeweiligen Verhalten verschoben, nie benutzte Konstanten entfernt
+
 2008-01-14 Timo Sandmann [mail@timosandmann.de]: Lesen von MMC beschleunigt (10 %)
 
 2008-01-14 Achim Pankalla [achim.pankalla@gmx.de]: Ticket #159: Fehler bei eeprom-emulation behoben. Position von include global.h geaendert.

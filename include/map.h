@@ -41,7 +41,7 @@
 #define MAP_SECTION_POINTS 	16		/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 
 /*!  Suchkreis (Botdurchmesser) in Mapfelder je nach Aufloesung umgerechnet*/
-#define MAP_RADIUS_FIELDS_GODEST	  (BOT_DIAMETER * MAP_RESOLUTION / 100)	/*!< Umkreisfelder fuer Pfadsuche */
+#define MAP_RADIUS_FIELDS_GODEST	  (BOT_DIAMETER/10 * MAP_RESOLUTION / 100)	/*!< Umkreisfelder fuer Pfadsuche */
 /*! hier gleich Defines definieren, um kostspielige Berechnungen zu sparen */
 #if MAP_RADIUS_FIELDS_GODEST / 2 < 1 
 	#define MAP_RADIUS_FIELDS_GODEST_HALF 1  // sicherstellen dass nicht 0 auftritt

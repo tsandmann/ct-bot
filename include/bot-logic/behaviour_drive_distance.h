@@ -41,6 +41,9 @@
 
 #define USE_GOTO_POS_DIST	/*!< Ersetzt alle drive_distance()-Aufrufe mit dem goto_pos-Verhalten, falls vorhanden */
 
+#ifdef BEHAVIOUR_OLYMPIC_AVAILABLE	// olympic braucht bot_drive()
+#undef USE_GOTO_POS_DIST
+#endif
 
 #ifndef BEHAVIOUR_GOTO_POS_AVAILABLE
 #undef USE_GOTO_POS_DIST
