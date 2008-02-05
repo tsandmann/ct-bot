@@ -86,19 +86,19 @@ static void rc5_bot_change_speed(int16 left, int16 right) {
 		target_speed_l += left;
 		if ((target_speed_l < -BOT_SPEED_MAX) || (target_speed_l > BOT_SPEED_MAX))
 			target_speed_l = old;
-		if (target_speed_l < BOT_SPEED_SLOW && target_speed_l > 0)
-			target_speed_l = BOT_SPEED_SLOW;
-		else if (target_speed_l > -BOT_SPEED_SLOW && target_speed_l < 0)
-			target_speed_l = -BOT_SPEED_SLOW;
+		if (target_speed_l < BOT_SPEED_MIN && target_speed_l > 0)
+			target_speed_l = BOT_SPEED_MIN;
+		else if (target_speed_l > -BOT_SPEED_MIN && target_speed_l < 0)
+			target_speed_l = -BOT_SPEED_MIN;
 			
 		old = target_speed_r;		
 		target_speed_r += right;
 		if ((target_speed_r <-BOT_SPEED_MAX) ||(target_speed_r > BOT_SPEED_MAX))
 			target_speed_r = old;
-		if (target_speed_r < BOT_SPEED_SLOW && target_speed_r > 0)
-			target_speed_r = BOT_SPEED_SLOW;
-		else if (target_speed_r > -BOT_SPEED_SLOW && target_speed_r < 0)
-			target_speed_r = -BOT_SPEED_SLOW;
+		if (target_speed_r < BOT_SPEED_MIN && target_speed_r > 0)
+			target_speed_r = BOT_SPEED_MIN;
+		else if (target_speed_r > -BOT_SPEED_MIN && target_speed_r < 0)
+			target_speed_r = -BOT_SPEED_MIN;
 	#endif	// BEHAVIOUR_AVAILABLE
 }
 
@@ -166,10 +166,18 @@ void default_key_handler(void){
 		#endif
 		
 		/* Screenwechsel */
+		#ifdef RC5_CODE_GREEN
 		case RC5_CODE_GREEN:	rc5_screen_set(0); break;
+		#endif
+		#ifdef RC5_CODE_RED
 		case RC5_CODE_RED:		rc5_screen_set(1); break;
+		#endif
+		#ifdef RC5_CODE_YELLOW
 		case RC5_CODE_YELLOW:	rc5_screen_set(2); break;
+		#endif
+		#ifdef RC5_CODE_BLUE
 		case RC5_CODE_BLUE:		rc5_screen_set(3); break;
+		#endif
 		case RC5_CODE_TV_VCR:	rc5_screen_set(DISPLAY_SCREEN_TOGGLE); break;
 		
 		/* Geschwindigkeitsaenderung */
@@ -180,8 +188,12 @@ void default_key_handler(void){
 		
 		/* Servoaktivitaet */
 		#ifdef BEHAVIOUR_SERVO_AVAILABLE
+		#ifdef RC5_CH_PLUS
 		case RC5_CH_PLUS:		bot_servo(0, SERVO1, DOOR_CLOSE); break;
+		#endif
+		#ifdef RC5_CH_MINUS
 		case RC5_CH_MINUS:		bot_servo(0, SERVO1, DOOR_OPEN);  break;
+		#endif
 		#endif	// BEHAVIOUR_SERVO_AVAILABLE
 		
 		/* numerische Tasten */

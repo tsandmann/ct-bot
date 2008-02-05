@@ -29,6 +29,7 @@
 
 #include "ui/available_screens.h"
 
+#ifdef DISPLAY_AVAILABLE
 extern int8 max_screens;	/*!< Anzahl der zurzeit registrierten Screens */
 extern void (* screen_functions[DISPLAY_SCREENS])(void);	/*!< hier liegen die Zeiger auf die Display-Funktionen */
 extern uint8_t EEPROM resetsEEPROM;	/*!< Reset-Counter-Wert im EEPROM */
@@ -73,4 +74,5 @@ void gui_init(void);
 	 */
 	void ram_display(void);
 #endif
+#endif	// DISDISPLAY_AVAILABLE
 #endif	// gui_H_

@@ -59,10 +59,9 @@
  * in der c't-Bot-Mailingliste vorgestellt werden. (mb/18.03.2006)
  */
 
-/* Nur auf dem realen Bot gibt es verschiedene FBs */
 #ifdef MCU
 
-	// Dies ist die Standard-Fernbedienung unter anderem fuer den Sim
+	// Dies ist die Standard-Fernbedienung fuer den Bot
 	#define RC_HAVE_HQ_RC_UNIVERS29_334
 	
 	//#define RC_HAVE_HAUPPAUGE_WINTV
@@ -72,10 +71,10 @@
 	//#define RC_HAVE_VIVANCO_UR89_TV_CODE_089
 	//#define RC_HAVE_Technisat_TTS35AI
 	//#define RC_HAVE_LIFETEC_LT3607
- #else
-	// Dies ist die Standard-Fernbedienung unter anderem fuer den Sim
+#else
+	// Dies ist die Standard-Fernbedienung fuer den Sim
 	#define RC_HAVE_HQ_RC_UNIVERS29_334
-	//#define RC_HAVE_DEFAULT
+	//#define RC_HAVE_HAUPPAUGE_WINTV
 	
 #endif	// MCU
 
@@ -155,22 +154,15 @@
 
 	#define RC5_CODE_PWR		(0x1026 & RC5_MASK)		/*!< Taste Minimize */
 	#define RC5_CODE_FULL		(0x102E & RC5_MASK)		/*!< Taste Full Screen */
-	#define RC5_CODE_SOURCE	(0x1022 & RC5_MASK)		/*!< Taste Source */
+	#define RC5_CODE_SOURCE		(0x1022 & RC5_MASK)		/*!< Taste Source */
 
-	#define RC5_CODE_UP		(0x1020 & RC5_MASK)		/*!< Taste CH + */
+	#define RC5_CODE_UP			(0x1020 & RC5_MASK)		/*!< Taste CH + */
 	#define RC5_CODE_DOWN		(0x1021 & RC5_MASK)		/*!< Taste CH - */
 	#define RC5_CODE_LEFT		(0x1011 & RC5_MASK)		/*!< Taste VOL- */
 	#define RC5_CODE_RIGHT		(0x1010 & RC5_MASK)		/*!< Taste VOL+ */
 
-	#define RC5_CODE_FWD		RC5_NOT_AVAIL			/*!< Taste nicht vorhanden */
-	#define RC5_CODE_BWD		RC5_NOT_AVAIL			/*!< Taste nicht vorhanden */
-	#define RC5_CODE_RED		RC5_NOT_AVAIL			/*!< Taste nicht vorhanden */
-	#define RC5_CODE_GREEN		RC5_NOT_AVAIL			/*!< Taste nicht vorhanden */
-	#define RC5_CODE_YELLOW	RC5_NOT_AVAIL			/*!< Taste nicht vorhanden */
-	#define RC5_CODE_BLUE		RC5_NOT_AVAIL			/*!< Taste nicht vorhanden */
-
 	#define RC5_CODE_I_II		RC5_CODE_SOURCE
-	#define RC5_CODE_TV_VCR	RC5_CODE_FULL
+	#define RC5_CODE_TV_VCR		RC5_CODE_FULL
 #endif	// RC_HAVE_HAUPPAUGE_WINTV
 
 /*!
