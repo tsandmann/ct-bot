@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	led.h 
+/*! 
+ * @file 	led.h 
  * @brief 	Routinen zur LED-Steuerung
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 
 #ifndef led_H_
 #define led_H_
@@ -72,17 +73,19 @@ void LED_init(void);
  */
 void LED_set(uint8 LED);
 
-/*! Schaltet eine LED aus
- * 
- * @param LED HEX-Code der LED
+/*! 
+ * Schaltet einzelne LEDs aus
+ * andere werden nicht beeinflusst
+ * @param LED Bitmaske der anzuschaltenden LEDs
  */
 void LED_off(uint8 LED);
 
-/*! Schaltet eine LED an
- * 
- * @param LED HEX-Code der LED
+/*! 
+ * Schaltet einzelne LEDs an
+ * andere werden nicht beeinflusst
+ * @param LED Bitmaske der anzuschaltenden LEDs
  */
 void LED_on(uint8 LED);
-#endif	// __ASSEMBLER__
 
+#endif	// __ASSEMBLER__
 #endif	// led_H_
