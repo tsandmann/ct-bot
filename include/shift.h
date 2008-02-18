@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	shift.h
+/*! 
+ * @file 	shift.h
  * @brief 	Routinen zur Ansteuerung der Shift-Register
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
-*/
+ */
 
 #ifndef SHIFT_H_
 #define SHIFT_H_
@@ -56,8 +57,4 @@ void shift_data_out(uint8 data, uint8 latch_data, uint8 latch_store);
  */
 void shift_data(uint8 data, uint8 latch_data);
 
-/*!
- * Setzt die Shift-Register wieder zurueck
- */ 
-void shift_clear(void);
-#endif
+#endif	// SHIFT_H_

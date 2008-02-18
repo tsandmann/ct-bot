@@ -39,11 +39,18 @@
 #define SHIFT_DDR				DDRC			/*!< DDR des Ports an dem die Register haengen */
 
 /*!
+ * Setzt die Shift-Register wieder zurueck
+ */ 
+static void shift_clear(void) {
+	SHIFT_PORT &= ~SHIFT_OUT;		// und wieder clear	
+}
+
+/*!
  * Initialisert die Shift-Register
  */
-void shift_init(){
+void shift_init(void){
 	SHIFT_DDR |= SHIFT_OUT;		// Ausgaenge Schalten
-	SHIFT_PORT &= ~SHIFT_OUT; 	// Und auf Null
+	shift_clear();				// Und auf Null
 }
 
 /*!
@@ -53,7 +60,7 @@ void shift_init(){
  * @param latch_data 	Der Pin an dem der Daten-latch-Pin des Registers (PIN 11) haengt
  * @param latch_store 	Der Pin an dem der latch-Pin zum transfer des Registers (PIN 12) haengt
  */
-void shift_data_out(uint8 data, uint8 latch_data, uint8 latch_store){
+void shift_data_out(uint8 data, uint8 latch_data, uint8 latch_store) {
 #ifdef I2C_AVAILABLE
 	i2c_wait();		// I2C-Transfer muss beendet sein (benutzt PC0 und PC1)
 #endif
@@ -77,16 +84,9 @@ void shift_data_out(uint8 data, uint8 latch_data, uint8 latch_store){
  * @param data			Das Datenbyte
  * @param latch_data 	Der Pin an dem der Daten-latch-Pin des Registers (PIN 11) haengt
  */
-void shift_data(uint8 data, uint8 latch_data){
+void shift_data(uint8 data, uint8 latch_data) {
 	shift_data_out(data, latch_data, SHIFT_LATCH);
 	shift_clear();
-}
-
-/*!
- * Setzt die Shift-Register wieder zurueck
- */ 
-void shift_clear(){
-	SHIFT_PORT &= ~SHIFT_OUT;		// und wieder clear	
 }
 #endif	// SHIFT_AVAILABLE
 #endif	// MCU
