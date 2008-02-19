@@ -1,6 +1,6 @@
 CHANGELOG fuer c't-Bot
 ======================
-2008-02-19 Timo Sandmann [mail@timosandmann.de]: ct-Bot.c aufgeraeumt, Commandline-Zeug nach pc/cmd_tools_pc.c und Sensor-Test nach sensor.c ausgelagert
+2008-02-19 Timo Sandmann [mail@timosandmann.de]: ct-Bot.c aufgeraeumt, Commandline-Zeug nach pc/cmd-tools_pc.c und Sensor-Test nach sensor.c ausgelagert
 
 2008-01-24 Timo Sandmann [mail@timosandmann.de]: bot-local.h aufgeraeumt: Einheit fuer Entfernungen ist jetzt durchgaengig mm, nicht bot-spezifische Konstanten in die jeweiligen Verhalten verschoben, nie benutzte Konstanten entfernt
 
