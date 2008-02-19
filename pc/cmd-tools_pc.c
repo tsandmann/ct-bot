@@ -80,6 +80,8 @@ void hand_cmd_args(int argc, char * argv[]) {
 	
 	/* Die Kommandozeilenargumente komplett verarbeiten */
 	while ((ch = getopt(argc, argv, "hsTit:M:c:l:e:d:")) != -1) {
+		argc -= optind;
+		argv += optind;
 		switch (ch) {
 		
 		case 's': {
@@ -224,7 +226,5 @@ void hand_cmd_args(int argc, char * argv[]) {
 			exit(1);
 		}
 	}
-	argc -= optind;
-	argv += optind;
 }
 #endif	// PC
