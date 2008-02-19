@@ -150,4 +150,11 @@ int16 is_obstacle_ahead(int16 distance);
 	 */	
 	void odometric_display(void);
 #endif	// DISPLAY_AVAILABLE
+
+#ifdef TEST_AVAILABLE
+	/*! 
+	 * Zeigt den internen Status der Sensoren mit den LEDs an 
+	 */
+	void show_sensors_on_led(void);
+#endif	// TEST_AVAILABLE
 #endif	/*SENSOR_H_*/

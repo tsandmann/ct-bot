@@ -506,3 +506,39 @@ int16 is_obstacle_ahead(int16 distance) {
 		#endif
 	}
 #endif	// DISPLAY_ODOMETRIC_INFO
+
+#ifdef TEST_AVAILABLE
+	/*! 
+	 * Zeigt den internen Status der Sensoren mit den LEDs an 
+	 */
+	void show_sensors_on_led(void) {
+		static volatile uint8_t led_status = 0x00;
+		led_t * status = (led_t *)&led_status;
+		#ifdef TEST_AVAILABLE_ANALOG
+			(*status).rechts	= (sensDistR >> 8) & 0x01;
+			(*status).links		= (sensDistL >> 8) & 0x01;
+			(*status).rot		= (sensLineL >> 9) & 0x01;
+			(*status).orange	= (sensLineR >> 9) & 0x01;
+			(*status).gelb		= (sensLDRL >> 8)  & 0x01;
+			(*status).gruen		= (sensLDRR >> 8)  & 0x01;
+			(*status).tuerkis	= (sensBorderL >> 9) & 0x01;
+			(*status).weiss		= (sensBorderR >> 9) & 0x01;
+		#endif	// TEST_AVAILABLE_ANALOG
+		#ifdef TEST_AVAILABLE_DIGITAL
+			(*status).rechts	= sensEncR  & 0x01;
+			(*status).links		= sensEncL  & 0x01;
+			(*status).rot		= sensTrans & 0x01;
+			(*status).orange	= sensError & 0x01;
+			(*status).gelb		= sensDoor  & 0x01;
+			#ifdef MAUS_AVAILABLE
+				(*status).gruen		= (sensMouseDX >> 1) & 0x01;
+				(*status).tuerkis	= (sensMouseDY >> 1) & 0x01;
+			#endif
+			#ifdef RC5_AVAILABLE
+				(*status).weiss		= RC5_Code & 0x01;
+			#endif
+		#endif	// TEST_AVAILABLE_DIGITAL
+				
+		LED_set(led_status);
+	}
+#endif	// TEST_AVAILABLE
