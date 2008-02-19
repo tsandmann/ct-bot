@@ -39,11 +39,8 @@
 #ifdef PC
 	#include "bot-2-sim.h"
 	#include "tcp.h"
-	#include "tcp-server.h"
 	#include "eeprom-emu.h"
-	#include <pthread.h>
-	#include <unistd.h>
-	#include <stdlib.h>
+	#include <stdio.h>
 	#include <time.h>
 	#include <sys/time.h>
 #endif
@@ -51,10 +48,6 @@
 #ifdef TWI_AVAILABLE
 	#include "twi.h"
 #endif
-
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #include "global.h"
 #include "display.h"
@@ -78,21 +71,21 @@
 #include "rc5.h"
 #include "timer.h"
 #include "mmc.h"
-#include "map.h"
 #include "mmc-emu.h"
-#include "mini-fat.h"
 #include "mmc-vm.h"
 #include "gui.h"
 #include "ui/available_screens.h"
 #include "os_thread.h"
+#include "map.h"
+#include "cmd_tools.h"
 
 /*!
  * Der Mikrocontroller und der PC-Simulator brauchen ein paar Einstellungen, 
  * bevor wir loslegen koennen.
  */
-void init(void){
+void init(void) {
 	#ifdef MCU
-		PORTA=0; DDRA=0;		//Alles Eingang alles Null
+		PORTA=0; DDRA=0;	// Alles Eingang -> alles Null
 		PORTB=0; DDRB=0;
 		PORTC=0; DDRC=0;
 		PORTD=0; DDRD=0;
@@ -126,494 +119,203 @@ void init(void){
 			#endif
 			uint8 resets = eeprom_read_byte(&resetsEEPROM) + 1;
 			eeprom_write_byte(&resetsEEPROM, resets);
-		#endif		
-	#endif
+		#endif	// RESET_INFO_DISPLAY_AVAILABLE	
+	#endif	// MCU
 
 	#ifdef UART_AVAILABLE
 		uart_init();
 	#endif
-
 	#ifdef BOT_2_PC_AVAILABLE
 		bot_2_pc_init();
 	#endif
-
 	#ifdef PC
-//		bot_2_sim_init();
 		if (init_eeprom_man(0) != 0) {
 			LOG_ERROR("EEPROM-Manager nicht korrekt initialisiert!");
 		}
 	#endif
-
 	#ifdef DISPLAY_AVAILABLE
 		display_init();
 	#endif
-
 	#ifdef LED_AVAILABLE
 		LED_init();
 	#endif
-
 	motor_init();
 	bot_sens_init();
 	#ifdef BEHAVIOUR_AVAILABLE
 		bot_behave_init();
 	#endif
-	
 	#ifdef MCU
 		#ifdef RC5_AVAILABLE
 			ir_init();
 		#endif
 	#endif
-
 	#ifdef MMC_AVAILABLE
 		mmc_init();
 	#endif
-			
 	#ifdef MAUS_AVAILABLE
 		maus_sens_init();
 	#endif
-	
 	#ifdef MAP_AVAILABLE
 		map_init();
 	#endif
-	
 	#ifdef LOG_MMC_AVAILABLE
 		log_mmc_init();
 	#endif
-
 	#ifdef I2C_AVAILABLE
 		i2c_init(42);	// 160 kHz
 	#endif		
-
 	#ifdef TWI_AVAILABLE
 		Init_TWI();
 	#endif		
-		
 	#ifdef DISPLAY_AVAILABLE
 		gui_init();
 	#endif	
 }
 
-#ifdef TEST_AVAILABLE
-	/*! Zeigt den internen Status der Sensoren mit den LEDs an */
-	void show_sensors(void) {
-		static volatile uint8_t led_status = 0x00;
-		led_t * status = (led_t *)&led_status;
-		#ifdef TEST_AVAILABLE_ANALOG
-			(*status).rechts	= (sensDistR >> 8) & 0x01;
-			(*status).links		= (sensDistL >> 8) & 0x01;
-			(*status).rot		= (sensLineL >> 9) & 0x01;
-			(*status).orange	= (sensLineR >> 9) & 0x01;
-			(*status).gelb		= (sensLDRL >> 8)  & 0x01;
-			(*status).gruen		= (sensLDRR >> 8)  & 0x01;
-			(*status).tuerkis	= (sensBorderL >> 9) & 0x01;
-			(*status).weiss		= (sensBorderR >> 9) & 0x01;
-		#endif	// TEST_AVAILABLE_ANALOG
-		#ifdef TEST_AVAILABLE_DIGITAL
-			(*status).rechts	= sensEncR  & 0x01;
-			(*status).links		= sensEncL  & 0x01;
-			(*status).rot		= sensTrans & 0x01;
-			(*status).orange	= sensError & 0x01;
-			(*status).gelb		= sensDoor  & 0x01;
-			#ifdef MAUS_AVAILABLE
-				(*status).gruen		= (sensMouseDX >> 1) & 0x01;
-				(*status).tuerkis	= (sensMouseDY >> 1) & 0x01;
-			#endif
-			#ifdef RC5_AVAILABLE
-				(*status).weiss		= RC5_Code & 0x01;
-			#endif
-		#endif	// TEST_AVAILABLE_DIGITAL
-				
-		LED_set(led_status);
-	}
-#endif	// TEST_AVAILABLE
-
-#ifdef PC
-	/*!
-	 * Zeigt Informationen zu den moeglichen Kommandozeilenargumenten an.
-	 * Das Programm wird nach Anzeige des Hilfetextes per exit() beendet.
-	 */
-	void usage(void){
-		puts("USAGE: ct-Bot [-t host] [-T] [-h] [-s] [-M from] [-c FILE ID SIZE] [-e ADDR ID SIZE] [-d ID] [-i]");
-		puts("\t-t\tHostname oder IP Adresse zu der Verbunden werden soll");
-		puts("\t-T\tTestClient");
-		puts("\t-s\tServermodus");
-		puts("\t-M from\tKonvertiert eine Bot-map in eine PGM-Datei");
-		#ifndef MAP_AVAILABLE
-			puts("\t\tACHTUNG, das Programm wurde ohne MAP_AVAILABLE übersetzt, die Option -M steht derzeit also NICHT zur Verfügung");
-		#endif
-		puts("\t-c \tErzeugt eine Mini-Fat-Datei fuer den Bot.");		
-		puts("\t   FILE\tDateiname");
-		puts("\t   ID  \tDie ID aus ASCII-Zeichen");
-		puts("\t   SIZE\tDie Nutzgroesse der Datei in KByte");
-		puts("\t-e \tErzeugt eine Mini-Fat-Datei fuer den Sim (emulierte MMC).");		
-		puts("\t   ADDR\tStartadresse der Mini-Fat-Datei");
-		puts("\t   ID  \tDie ID aus ASCII-Zeichen");
-		puts("\t   SIZE\tDie Nutzgroesse der Datei in KByte");
-		puts("\t-d \tLoescht eine Mini-Fat-Datei fuer den Sim (emulierte MMC).");		
-		puts("\t   ID  \tDie ID aus ASCII-Zeichen");		
-		puts("\t-l \tKonvertiert eine SpeedLog-Datei in eine txt-Datei");
-		puts("\t-i \tInitialisiert das EEPROM mit den Daten der EEP-Datei"); 
-		puts("\t-h\tZeigt diese Hilfe an");
-		exit(1);
-	}
-#endif	// PC
-
 #ifdef MCU
-	/*! 
- 	 * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
- 	 */
-	int main (void){
+/*! 
+ * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
+ */
+int main(void) {
 #endif	// MCU
 
 #ifdef PC
-	/*! 
- 	 * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
- 	 */
- 	int main (int argc, char *argv[]){
-		/* zum Debuggen der Zeiten: */	
-		#ifdef DEBUG_TIMES
-			struct timeval    start, stop;
-		#endif
-
-		int ch;	
-		int start_server = 0;	/*!< Wird auf 1 gesetzt, falls -s angegeben wurde */
-		int start_test_client =0; /*!< Wird auf 1 gesetzt, falls -T angegeben wurde */
-		char *hostname = NULL;	/*!< Speichert den per -t uebergebenen Hostnamen zwischen */
-
-		int convert = 0;	/*!< Wird auf 1 gesetzt, wenn die Karte konvertiert werden soll */
-		int create  = 0;	/*!< Wird auf 1 gesetzt, wenn eine neue Datei fuer Bot-mini-fat erzeugt werden soll */
-		int emu_create = 0;	/*!< Wird auf 1 gesetzt, wenn eine neue Datei fuer Sim-Mini-Fat erzeugt werden soll */
-		int emu_delete = 0;	/*!< Wird auf 1 gesetzt, wenn eine neue Datei fuer Sim-Mini-Fat geloescht werden soll */
-		int ee_init = 0;	/*!< Wird auf 1 gesetzt, wenn das EEPROM mit EEP-Datei initialisiert werden soll */
-		int slog	= 0;
-		char *from = NULL;	/*!< Speichert den per -M uebergebenen Quellnamen zwischen */
-
-
-		/* Die Kommandozeilenargumente komplett verarbeiten */
-		while ((ch = getopt(argc, argv, "hsTit:M:c:l:e:d:")) != -1) {
-			switch (ch) {
-			case 's':
-				/* Servermodus [-s] wird verlangt */
-				start_server = 1;
-				break;
-			case 'T': 	
-				start_test_client=1;
-				break;		
-			case 't':
-				/* Hostname, auf dem ct-Sim laeuft wurde uebergeben. Der String wird in hostname gesichert. */
-				{
-					const int len = strlen(optarg);
-					hostname = malloc(len + 1);
-					if (NULL == hostname)
-						exit(1);
-					strcpy(hostname, optarg);
-				}
-				break;
-			case 'M':
-				/* Dateiname fuer die Map wurde uebergeben. Der String wird in from gesichert. */
-				{
-					#ifndef MAP_AVAILABLE
-						puts("ACHTUNG, das Programm wurde ohne MAP_AVAILABLE übersetzt, die Option -M steht derzeit also NICHT zur Verfügung.");
-						puts("um dennoch Karten zu konvertieren, bitte im Quelltext in der Datei ct-Bot.h die Kommentarzeichen vor MAP_AVAILABLE entfernen");
-						puts("und neu compilieren.");
-						exit(1);
-					#endif
-					#ifdef MMC_VM_AVAILABLE
-						printf("Executable wurde mit MMC_VM_AVAILABLE compiliert.\n");
-						printf("Um Karten des echten Bots einlesen zu koennen, bitte den Code bitte ohne MMC_VM_AVAILABLE neu uebersetzen.\n");
-						exit(1);
-					#endif
-					
-					
-					int len = strlen(optarg);
-					from = malloc(len + 1);
-					if (NULL == from)
-						exit(1);
-					strcpy(from, optarg);
-					
-					convert=1;					
-				}
-				break;
-			case 'c':
-				/* Datei fuer den Bot (mini-fat) soll erzeugt werden. */
-				{
-					int len = strlen(optarg);
-					from = malloc(len + 1);
-					if (NULL == from)
-						exit(1);
-					strcpy(from, optarg);
-					create=1;					
-				}
-				break;	
-			case 'e':
-				/* Datei fuer den Sim (mini-fat) soll erzeugt werden. */
-				{
-					int len = strlen(optarg);
-					from = malloc(len + 1);
-					if (NULL == from)
-						exit(1);
-					strcpy(from, optarg);
-					emu_create=1;
-				}
-				break;	
-			case 'd':
-				/* Datei fuer den Sim (mini-fat) soll geloescht werden. */
-				{
-					int len = strlen(optarg);
-					from = malloc(len + 1);
-					if (NULL == from)
-						exit(1);
-					strcpy(from, optarg);
-					emu_delete=1;
-				}
-				break;					
-			case 'l':
-				/* Speedlog-Datei soll in txt konvertiert werden */
-				{
-					int len = strlen(optarg);
-					from = malloc(len + 1);
-					if (NULL == from)
-						exit(1);
-					strcpy(from, optarg);
-					slog=1;					
-				}				
-				break;			
-			case 'i':
-				/* EEPROM-Init */
-				ee_init = 1;
-				break;
-			case 'h':
-			default:
-				/* -h oder falscher Parameter, Usage anzeigen */
-				usage();
-			}
-		}
-		argc -= optind;
-		argv += optind;
-		
-	if (start_server != 0) {   // Soll der TCP-Server gestartet werden?
-		printf("ARGV[0]= %s\n",argv[0]);
-		tcp_server_init();
-		tcp_server_run(100);
-    } else {
- 		#ifdef MAP_AVAILABLE
-	 		/* Karte in pgm konvertieren */
-	    	if (convert !=0) {
-				printf("Konvertiere Karte %s in PGM %s\n",from,"map.pgm");
-	   		 	map_read(from);
-	   		 	map_to_pgm("map.pgm");
-	   		 	exit(0);
-	       	}     	
-		#endif	// MAP_AVAILABLE    	
-		if (slog != 0){
-			convert_slog_file(from);
-			exit(0);	
-		}
-    	if (create !=0) {
-    			printf("optind= %d argc=%d\n",optind, argc);
-			if (argc != 2){
-				usage();
-				exit(1);
-		    	}
-
-    			char * id;
-    			id = malloc(strlen(argv[0]));	
-    			strcpy(id,argv[0]);
-
-    			char * s;
-    			s = malloc(strlen(argv[1]));	
-    			strcpy(s,argv[1]);
-		
-			int size = atoi(s);
-
-   		 	printf("Mini-Fat-Datei (%s) mit %d kByte und ID=%s fuer den Bot soll erstellt werden.\n", from, size, id);
-   		 	create_mini_fat_file(from,id,size);
-	   		exit(0);
-		}
-    	if (emu_create !=0) {
-    			printf("optind= %d argc=%d\n", optind, argc);
-			if (argc != 2) {
-				usage();
-				exit(1);
-		    }
-
-    		char * id;
-    		id = malloc(strlen(argv[0]));	
-    		strcpy(id, argv[0]);
-
-    		char * s;
-    		s = malloc(strlen(argv[1]));	
-    		strcpy(s, argv[1]);
-			int size = atoi(s);
-			
-    		uint32_t addr = atoi(from); 
-
-   		 	printf("Mini-Fat-Datei mit ID=%s an Adresse 0x%x mit %d kByte auf der emulierten MMC soll erstellt werden.\n", id, addr, size);
-   		 	create_emu_mini_fat_file(addr, id, size);
-	   		exit(0);
-		}		
-    	if (emu_delete !=0) {
-    			printf("optind= %d argc=%d\n", optind, argc);
-			if (argc != 0) {
-				usage();
-				exit(1);
-		    }
-
-   		 	printf("Mini-Fat-Datei mit ID %s auf der emulierten MMC soll geloescht werden.\n", from);
-   		 	delete_emu_mini_fat_file(from);
-	   		exit(0);
-		}
-		if (ee_init != 0) {
-			printf("EEPROM soll mit den Daten einer eep-Datei initialisiert werden.\n");
-			if (init_eeprom_man(1) != 0) {
-				printf("Fehler bei EEPROM-Initialisierung!\n");	
-			} else {
-				printf("done.\n");
-			}
-			exit(0);
-		}
-
-    	printf("c't-Bot\n");
-        if (hostname)
-            // Hostname wurde per Kommandozeile uebergeben
-            tcp_hostname = hostname;
-        else {
-            // Der Zielhost wird per default durch das Macro IP definiert und
-            // tcp_hostname mit einer Kopie des Strings initialisiert.
-            tcp_hostname = malloc(strlen(IP) + 1);
-            if (NULL == tcp_hostname)
-                exit(1);
-            strcpy(tcp_hostname, IP);
-        }
-        
-        if (start_test_client !=0) {
-	       tcp_test_client_init();
-	       tcp_test_client_run(100);
-        }
-    }
-#endif	// PC
-#ifdef  TEST_AVAILABLE_MOTOR
-	uint16 calls=0;	/*!< Im Testfall zaehle die Durchlaeufe */
-#endif
-
-#ifdef PC
+/*! 
+ * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
+ */
+int main(int argc, char * argv[]) {
+	/* zum Debuggen der Zeiten: */	
+	#ifdef DEBUG_TIMES
+		struct timeval start, stop;
+	#endif
+	/* Kommandozeilen-Argumente auswerten */
+	hand_cmd_args(argc, argv);
+	
+	printf("c't-Bot\n");
+	
+	/* Bot2Sim-Kommunikation initialisieren */
 	bot_2_sim_init();
 	receive_until_Frame(CMD_DONE);
 	command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
-	flushSendBuffer();
-#endif
+	flushSendBuffer();	
+#endif	// PC
 	
-init();	// alles initialisieren
-
-#ifdef WELCOME_AVAILABLE
-	display_cursor(1,1);			/*!< Home */
-	display_printf("c't-Roboter");	/*!< Ausgabe */
-	LED_set(0x00);					/*!< LEDs setzen */
-	#ifdef LOG_AVAILABLE
-		LOG_DEBUG("Hallo Welt!");	/*!< Doxygen moechte hier jede Zeilen kommentiert haben :/ */
-	#endif	
-	#ifdef SP03_AVAILABLE
-		sp03_speak_string(1, 4, 1, "Ready");
-	#endif		
-#endif
-
-/*! Hauptschleife des Bots */
-for(;;){
-	#ifdef PC
-		receive_until_Frame(CMD_DONE);
-		#ifdef DEBUG_TIMES
-			//Zum debuggen der Zeiten:	
-	 		GETTIMEOFDAY(&start, NULL);
-			int t1=(start.tv_sec - stop.tv_sec)*1000000 + start.tv_usec - stop.tv_usec;
-			printf("Done-Token (%d) in nach %d usec ",received_command.data_l,t1);
-		#endif	// DEBUG_TIMES
-	#endif	// PC
-		
-	#ifdef MCU
-		bot_sens_isr();
-	#endif
-	#ifdef TEST_AVAILABLE
-		show_sensors();
+	#ifdef  TEST_AVAILABLE_MOTOR
+		uint16 calls=0;	/*!< Im Testfall zaehle die Durchlaeufe */
 	#endif
 
-	/* Testprogramm, das den Bot erst links-, dann rechtsrum dreht */
-	#ifdef TEST_AVAILABLE_MOTOR
-		calls++;
-		if (calls == 1) {
-			motor_set(BOT_SPEED_SLOW,-BOT_SPEED_SLOW);
-		} else if (calls == 501) {
-			motor_set(-BOT_SPEED_SLOW,BOT_SPEED_SLOW);
-		} else if (calls == 1001) {
-			motor_set(BOT_SPEED_STOP,BOT_SPEED_STOP);
-		} else if (calls > 1001) {
-			#ifdef BEHAVIOUR_AVAILABLE
-				bot_behave();
-			#endif			
-		}
-	#else
-		#ifdef BEHAVIOUR_AVAILABLE
-			/* hier drin steckt der Verhaltenscode */
-			bot_behave();
-		#endif	// BEHAVIOUR_AVAILABLE
-	#endif	// TEST_AVAILABLE_MOTOR
-			
-	#ifdef MCU
-		/* jeweils alle 100 ms kommunizieren Bot, User und Sim */
-		static uint16 comm_ticks = 0;
-		static uint8 uart_gui = 0;
-		if (timer_ms_passed(&comm_ticks, 50) || RC5_Code != 0) {
-			if (uart_gui == 0){
-				/* GUI-Behandlung starten */
-//				register uint16 time_ticks = TIMER_GET_TICKCOUNT_16;
-				#ifdef DISPLAY_AVAILABLE
-					gui_display(display_screen);
-				#endif	
-//				register uint16 time_end = TIMER_GET_TICKCOUNT_16;
-//				display_cursor(1,1);
-//				display_printf("%6u", (uint16)(time_end - time_ticks));					
-				uart_gui = 1;	// bot2pc ist erst beim naechsten Mal dran			
-			} else{
-				/* Den PC ueber Sensorern und Aktuatoren informieren */
-//				register uint16 time_ticks = TIMER_GET_TICKCOUNT_16;
-				#ifdef BOT_2_PC_AVAILABLE
-					bot_2_pc_inform();
-				#endif
-//				register uint16 time_end = TIMER_GET_TICKCOUNT_16;
-//				display_cursor(1,1);
-//				display_printf("%6u", (uint16)(time_end - time_ticks));			
-				uart_gui = 0;	// naechstes Mal wieder mit GUI anfangen
-			}
-		}	
-//		static uint16 old_time = 0;
-//		register uint16 time_ticks = TIMER_GET_TICKCOUNT_16;
-//		uint8 time_diff = 0;
-//		time_diff = time_ticks - old_time;		
-//		display_cursor(1,1);
-//		display_printf("%6u", time_diff);
-//		old_time = TIMER_GET_TICKCOUNT_16;				
-		#ifdef BOT_2_PC_AVAILABLE
-			/* Kommandos vom PC empfangen */
-			bot_2_pc_listen();
-		#endif
-	#endif	// MCU
-		
-//	LOG_DEBUG("BOT TIME %lu ms", TICKS_TO_MS(TIMER_GET_TICKCOUNT_32));
-	
-	#ifdef PC
-		#ifdef DISPLAY_AVAILABLE
-			gui_display(display_screen);
+	/* Alles initialisieren */
+	init();
+
+	#ifdef WELCOME_AVAILABLE
+		display_cursor(1,1);			/*!< Home */
+		display_printf("c't-Roboter");	/*!< Ausgabe */
+		LED_set(0x00);					/*!< LEDs setzen */
+		#ifdef LOG_AVAILABLE
+			LOG_DEBUG("Hallo Welt!");	/*!< Doxygen moechte hier jede Zeilen kommentiert haben :/ */
+		#endif	
+		#ifdef SP03_AVAILABLE
+			sp03_speak_string(1, 4, 1, "Ready");
 		#endif		
-		command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
-		flushSendBuffer();
-		/* Zum debuggen der Zeiten: */	
-		#ifdef DEBUG_TIMES
-			GETTIMEOFDAY(&stop, NULL);
- 			int t2=(stop.tv_sec - start.tv_sec)*1000000 +stop.tv_usec - start.tv_usec;
-			printf("Done-Token (%d) out after %d usec\n",simultime,t2);
-		#endif	// DEBUG_TIMES
-	#endif	// PC	
+	#endif	// WELCOME_AVAILABLE
+
+	/*! Hauptschleife des Bots */
+	for(;;) {
+		#ifdef PC
+			receive_until_Frame(CMD_DONE);
+			#ifdef DEBUG_TIMES
+				/* Zum Debuggen der Zeiten: */	
+		 		GETTIMEOFDAY(&start, NULL);
+				int t1=(start.tv_sec - stop.tv_sec)*1000000 + start.tv_usec - stop.tv_usec;
+				printf("Done-Token (%d) in nach %d usec ",received_command.data_l,t1);
+			#endif	// DEBUG_TIMES
+		#endif	// PC
+			
+		#ifdef MCU
+			bot_sens_isr();
+		#endif
+		#ifdef TEST_AVAILABLE
+			show_sensors_on_led();
+		#endif
+	
+		/* Testprogramm, das den Bot erst links-, dann rechtsrum dreht */
+		#ifdef TEST_AVAILABLE_MOTOR
+			calls++;
+			if (calls == 1) {
+				motor_set(BOT_SPEED_SLOW,-BOT_SPEED_SLOW);
+			} else if (calls == 501) {
+				motor_set(-BOT_SPEED_SLOW,BOT_SPEED_SLOW);
+			} else if (calls == 1001) {
+				motor_set(BOT_SPEED_STOP,BOT_SPEED_STOP);
+			} else if (calls > 1001) {
+				#ifdef BEHAVIOUR_AVAILABLE
+					bot_behave();
+				#endif			
+			}
+		#else
+			#ifdef BEHAVIOUR_AVAILABLE
+				/* hier drin steckt der Verhaltenscode */
+				bot_behave();
+			#endif	// BEHAVIOUR_AVAILABLE
+		#endif	// TEST_AVAILABLE_MOTOR
+				
+		#ifdef MCU
+			/* jeweils alle 100 ms kommunizieren Bot, User und Sim */
+			static uint16 comm_ticks = 0;
+			static uint8 uart_gui = 0;
+			if (timer_ms_passed(&comm_ticks, 50) || RC5_Code != 0) {
+				if (uart_gui == 0) {
+					/* GUI-Behandlung starten */
+					//register uint16 time_ticks = TIMER_GET_TICKCOUNT_16;
+					#ifdef DISPLAY_AVAILABLE
+						gui_display(display_screen);
+					#endif	
+					//register uint16 time_end = TIMER_GET_TICKCOUNT_16;
+					//display_cursor(1,1);
+					//display_printf("%6u", (uint16)(time_end - time_ticks));					
+					uart_gui = 1;	// bot2pc ist erst beim naechsten Mal dran			
+				} else {
+					/* Den PC ueber Sensorern und Aktuatoren informieren */
+					//register uint16 time_ticks = TIMER_GET_TICKCOUNT_16;
+					#ifdef BOT_2_PC_AVAILABLE
+						bot_2_pc_inform();
+					#endif
+					//register uint16 time_end = TIMER_GET_TICKCOUNT_16;
+					//display_cursor(1,1);
+					//display_printf("%6u", (uint16)(time_end - time_ticks));			
+					uart_gui = 0;	// naechstes Mal wieder mit GUI anfangen
+				}
+			}	
+			//static uint16 old_time = 0;
+			//register uint16 time_ticks = TIMER_GET_TICKCOUNT_16;
+			//uint8 time_diff = 0;
+			//time_diff = time_ticks - old_time;		
+			//display_cursor(1,1);
+			//display_printf("%6u", time_diff);
+			//old_time = TIMER_GET_TICKCOUNT_16;				
+			#ifdef BOT_2_PC_AVAILABLE
+				/* Kommandos vom PC empfangen */
+				bot_2_pc_listen();
+			#endif
+		#endif	// MCU
+			
+		//LOG_DEBUG("BOT TIME %lu ms", TICKS_TO_MS(TIMER_GET_TICKCOUNT_32));
+		
+		#ifdef PC
+			#ifdef DISPLAY_AVAILABLE
+				gui_display(display_screen);
+			#endif		
+			command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
+			flushSendBuffer();
+			/* Zum Debuggen der Zeiten: */	
+			#ifdef DEBUG_TIMES
+				GETTIMEOFDAY(&stop, NULL);
+	 			int t2=(stop.tv_sec - start.tv_sec)*1000000 +stop.tv_usec - start.tv_usec;
+				printf("Done-Token (%d) out after %d usec\n",simultime,t2);
+			#endif	// DEBUG_TIMES
+		#endif	// PC	
 	}
 	
-	/*! Falls wir das je erreichen sollten ;-) */
+	/* Falls wir das je erreichen sollten ;-) */
 	return 1;	
 }

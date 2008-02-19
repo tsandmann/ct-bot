@@ -18,32 +18,24 @@
  */
 
 /*! 
- * @file 	tcp-server.h
- * @brief 	Demo-TCP-Server
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+ * @file 	cmd_tools.h
+ * @brief 	Funktionen, die per Commandline-Switch aufgerufen werden koennen
+ * @author 	Timo Sandmann (mail@timosandmann.de)
+ * @date 	19.02.2008
  */
 
-#ifndef TCP_SERVER_H_
-#define TCP_SERVER_H_
+#ifndef CMD_TOOLS_H_
+#define CMD_TOOLS_H_
 
-/*!
- * Init TCP-Server
- */
-void tcp_server_init(void);
+#include "ct-Bot.h"
+#ifdef PC
 
 /*!
- * Hauptschleife des TCP-Servers
+ * Behandelt die Kommandozeilen-Argumente
+ * @param argc	Anzahl der Argumente
+ * @param *argv	Zeiger auf String-Array der Argumente
  */
-int tcp_server_run (int runs);
+void hand_cmd_args(int argc, char * argv[]);
 
-/*!
- * Init TCP-test-Client
- */
-void tcp_test_client_init(void);
-
-/*!
- * Hauptschleife des TCP-Test-Clienzs
- */
-int tcp_test_client_run (int runs);
-#endif	// TCP_SERVER_H_
+#endif	// PC
+#endif	// CMD_TOOLS_H_
