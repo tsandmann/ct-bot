@@ -35,6 +35,7 @@
 #include "mouse.h"
 #include "log.h"
 #include "srf10.h"
+#include "led.h"
 
 #define HEADING_START		0			// Blickrichtung, mit der der Bot sich initialisiert
 

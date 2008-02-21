@@ -123,9 +123,6 @@
 		#undef I2C_AVAILABLE
 		#undef CMPS03_AVAILABLE
 		#undef SP03_AVAILABLE
-		#undef TEST_AVAILABLE_ANALOG
-		#undef TEST_AVAILABLE_DIGITAL
-		#undef TEST_AVAILABLE_MOTOR
 	#endif
 
 	#define COMMAND_AVAILABLE		/*!< High-Level Communication */
