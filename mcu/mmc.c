@@ -270,15 +270,13 @@ uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, uint8_t * buffer) {
 	SPDR = 0;	// start SPI-transfer
 	for (i=2; i>0; i--) {
 		j = k;
+		uint8_t tmp;
 		do {
 			while(!(SPSR & (1<<SPIF))) {}	// wait for reception complete
-			asm volatile(
-				"in r24, %1		\n\t"		// load from SPDR		
-				"st Y+, r24			"		// save to *buffer
-				::	"y"	(buffer), "i" (_SFR_IO_ADDR(SPDR))
-				:	"r24"
-			);
+			tmp = SPDR;						// load from SPDR
 			SPDR = 0;						// start next SPI-transfer
+			*buffer = tmp;					// save to *buffer
+			buffer++;
 		} while (++j != 0);
 	}
 
@@ -326,18 +324,22 @@ uint8_t mmc_write_sector_spi(uint32_t addr, uint8_t * buffer) {
 	SPI_MasterTransmit(-2);
 	
 	/* Schreiben des Blocks (512 Bytes) auf MMC/SD-Karte */
-	uint8_t i,j;
+	uint8_t i,j, tmp;
+	tmp = *buffer;		// load from *buffer
+	buffer++;
 	for (i=2; i>0; i--) {
 		j = 0;
 		do {
-			asm volatile(
-				"ld r24, Y+		\n\t"	// load from *buffer
-				"out %1, r24		"	// save to SPDR		
-				::	"y"	(buffer), "i" (_SFR_IO_ADDR(SPDR))
-				:	"r24"
-			);
+			SPDR = tmp;		// save to SPDR
+			tmp = *buffer;	// load from *buffer
+			buffer++;
+			j++;
+			if (j == 0) {
+				while(!(SPSR & (1<<SPIF))) {}
+				break;		// exit inner loop
+			}
 			while(!(SPSR & (1<<SPIF))) {}	// wait for transmission to complete
-		} while (++j != 0);
+		} while (1);
 	}
 
 	/* CRC-Dummy schreiben */
