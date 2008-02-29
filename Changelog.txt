@@ -1,18 +1,276 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-02-28 Frank Menzel [Menzelfr@gmx.net]: RC5_CODE_DOT auf Promo 8 auf AV-Taste sowie Bug im verhalten Drive_Stack korrigiert
+
+2008-02-25 Timo Sandmann [mail@timosandmann.de]: MMC-Zugriff beschleunigt (RAM-Zugriff in die Warteschleife verschoben)
+
+2008-02-19 Timo Sandmann [mail@timosandmann.de]: ct-Bot.c aufgeraeumt, Commandline-Zeug nach pc/cmd-tools_pc.c und Sensor-Test nach sensor.c ausgelagert
+
+2008-01-24 Timo Sandmann [mail@timosandmann.de]: bot-local.h aufgeraeumt: Einheit fuer Entfernungen ist jetzt durchgaengig mm, nicht bot-spezifische Konstanten in die jeweiligen Verhalten verschoben, nie benutzte Konstanten entfernt
+
+2008-01-14 Timo Sandmann [mail@timosandmann.de]: Lesen von MMC beschleunigt (10 %)
+
+2008-01-14 Achim Pankalla [achim.pankalla@gmx.de]: Ticket #159: Fehler bei eeprom-emulation behoben. Position von include global.h geaendert.
+
+2008-01-10 Timo Sandmann [mail@timosandmann.de]: bot_goto_pos und bot_turn optimiert
+
+2008-01-10 Timo Sandmann [mail@timosandmann.de]: TWI-Treiberdateien an Namenskonvention angepasst
+
+2008-01-10 Timo Sandmann [mail@timosandmann.de]: Wichtiger Bugfix in motor.c (Drehrichtung war teilweise falsch)
+
+2008-01-06 Timo Sandmann [mail@timosandmann.de]: Bugfix in tcp.c, Updates fuer goto_pos() und measure_distance(), Moeglichkeit fuer Verhalten geschaffen ihr SUBRESULT selbst zu setzen: exit_behaviour(Behaviour_t * data, uint8_t state), TODO.txt ins Trac umgezogen, ein paar kleinere Verschoenerungen
+
+2007-12-20 Timo Sandmann [mail@timosandmann.de]: Bug in bot_goto_dist() korrigiert (Richtung war beim ersten Aufruf undefiniert)
+
+2007-12-17 Frank Menzel [Menzelfr@gmx.net]: Positions-Stack-Implementierung und Stackverhalten bot_drive_stack (laut ToDo-Liste)
+
+2007-12-16 Timo Sandmann [mail@timosandmann.de]: TWI-Treiber auf neue Version umgestellt. Effizienter ist es aber, i2c.h / i2c.c zu benutzen
+
+2007-12-10 Timo Sandmann [mail@timosandmann.de]: bot_goto_pos() erweitert, so dass es anstelle von bot_drive_distance() und bot_gotoxy() verwendet werden kann und Rueckwaertsgang ergaenzt.
+												 Ist bot_goto_pos() vorhanden, werden alle bot_drive_distance()- und bot_gotoxy()-Aufrufe dorthin umgeleitet. Moechte man das nicht, stellt man in include/bot-logic/behaviour_drive_distance.h / behaviour_gotoxy.h den Schalter USE_GOTO_POS_ aus.
+												 Neues Verhalten bot_goto_obstacle(distance) ergaenzt, das den Bot auf distance mm an ein erkanntes Hindernis heranfahren laesst (benutzt bot_goto_pos() und bot_measure_distance()).
+												 sign(x) Funktion in math_utils.h eingefuehrt, die das Vorzeichen eines Integers liefert.
+												 Bugfix in sensor.c (Distanzsensorauswertung)
+
+2007-12-07 Timo Sandmann [mail@timosandmann.de]: Bot-Code laueft jetzt auch vollstaendig unter PowerPC, Remote-Call-Code fuer MCU optimiert
+
+2007-12-06 Timo Sandmann [mail@timosandmann.de]: Remote-Call-Verhalten einfacher implementiert
+
+2007-12-06 Timo Sandmann [mail@timosandmann.de]: Bugfix im LOG-Code (interne Variable "data" in "__data" umbenannt)
+
+2007-11-30 Harald W. Leschner [hari@h9l.net]: Treiber fuer Sprachmodul SP03 hinzugefuegt
+
+2007-11-28 Timo Sandmann [mail@timosandmann.de]: Bugfix im UART-Code fuer ATmega644 und 115200 Baud
+
+2007-11-14 Frank Menzel [Menzelfr@gmx.net]: behaviour_transport_pillar: Anzeigewerte fuer Display von float nach int16 geaendert
+
+2007-11-12 Frank Menzel [Menzelfr@gmx.net]: behaviour_transport_pillar: Bot faehrt zwischen Start- und Zielpos. hin und her und kann dabei Dosen fangen und transportieren; die bisher diversen Fahrverhalten sind hier unter einem Dach vereint und via Defines waehlbar
+
+2007-11-11 Timo Sandmann [mail@timosandmann.de]: Datentypen in command.c korrigiert
+
+2007-11-11 Harald W. Leschner [hari@h9l.net]: Kleinere Korrekturen und gnuplot- / LaTeX-Script zur Speedlog-Auswertung hinzugefuegt (siehe contrib/Tools) 
+
+2007-11-08 Timo Sandmann [mail@timosandmann.de]: Ausgabe von avr-size im Postbuild korrigiert (EEPROM-Daten liegen nicht in .data)
+
+2007-11-07 Timo Sandmann [mail@timosandmann.de]: Architekturabhaengigen Remote-Call-Code fuer AMD64 / Intel 64 ergaenzt (64 Bit Version ungetestet!)
+
+2007-11-07 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer SRF10-Treiber und Doxygenwarnings beseitigt
+
+2007-11-06 Timo Sandmann [mail@timosandmann.de]: EEPROM-Emulation per #define abschaltbar gemacht (default ist AN) und unter Mac OS X 10.5 deaktiviert (vgl. #151)
+
+2007-11-01 Timo Sandmann [mail@timosandmann.de]: Workaround fuer fehlerhafte Compileroptimierung (gcc 4.2.2) in show_sensors(), Bugfix fuer TEST_AVAILABLE_MOTOR und Ausgabe der Distanzsenro-Rohdaten, falls TEST_AVAILABLE_ANALOG
+
+2007-10-23 Timo Sandmann [mail@timosandmann.de]: bot-logik.c: Bugfix fuer deactivateCalledBehaviours() und isInCallHierarchy()
+
+2007-10-19 Frank Menzel  [Menzelfr@gmx.net]: Neues Verhalten behaviour_cancel_behaviour deaktiviert ein anderes Verhalten in Abhaengigkeit einer Check-Funktion
+
+2007-10-18 Timo Sandmann [mail@timosandmann.de]: interruptbasierten I2C-Treiber und Unterstuetzung fuer Kompass CMPS03 hinzugefuegt
+
+2007-10-17 Timo Sandmann [mail@timosandmann.de]: Verhalten goto_pos entworfen, das eine x/y-Position auf einer Kreisbahn anfaehrt und dabei Fehler korrigiert (genauer als goto_xy), ausserdem math_utils.c angelegt und Code etwas aufgeraeumt
+
+2007-10-14 Timo Sandmann [mail@timosandmann.de]: Mini-OS fuer Map-Update optimiert und fertiggestellt, Maus- / MMC-Zugriffskonflikte ausgeschlossen und Dokumentation ergaenzt
+
+2007-10-10 Timo Sandmann [mail@timosandmann.de]: Mini-OS mit Threads und Prioritaetenscheduling eingebaut (noch unfertig) fuer Map-Update (#129)
+
+2007-10-03 Timo Sandmann [mail@timosandmann.de]: Bug in Transportfach-Erkennung behoben (LED wurde zu schnell wieder ausgeschaltet, falls Maus deaktiviert)
+
+2007-10-01 Timo Sandmann [mail@timosandmann.de]: Position der Sharps in bot-local.h korrigiert und TODO.txt aktualisiert 
+
+2007-09-23 Timo Sandmann [mail@timosandmann.de]: Linienverfolger ueberarbeitet und an Motorregelung angepasst. Auf die vorherige Version laesst sich mit #define OLD_VERSION zurueckgreifen. 
+
+2007-09-21 Timo Sandmann [mail@timosandmann.de]: Bei LINE_SENSE wird jetzt zwischen MCU und PC unterschieden.
+
+2007-09-21 Achim Pankalla [achim.pankalla@gmx.de]: EEPROM Datei wird nun nach Moduswechsel geloescht. Modus am Dateinamen erkennbar. (#143)
+
+2007-09-20 Benjamin Benz [bbe@heise.de]: In den drei TEST_XXX_AVAILBLE Modi bleiben die Sensoren nun permanent an. Das erleichtert das Messen. ==> #145
+
+2007-09-20 Benjamin Benz [bbe@heise.de]: Das Drucken der Karte liegt nun per default auf der Taste RC5_CODE_DOT
+
+2007-09-16 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Liniensensoren
+
+2007-09-13 Timo Sandmann [mail@timosandmann.de]: Bugfix in log.h (#144)
+
+2007-09-08 Timo Sandmann [mail@timosandmann.de]: Bugfix im Map-Code und VM-Code aufgeraeumt (#142)
+
+2007-09-07 Timo Sandmann [mail@timosandmann.de]: Ticket #120: Initialisierungen der Verhaltenszustaende von bot_drive_square, bot_follow_line, bot_goto, bot_gotoxy, bot_olympic, bot_simple und bot_solve_maze korrigiert.
+
+2007-09-01 Timo Sandmann [mail@timosandmann.de]: Mini-LOG eingefuehrt (in ct-Bot.h aktivierbar, spart Flash und RAM @ MCU), Display-Ausgabe optimiert
+
+2007-08-31 Timo Sandmann [mail@timosandmann.de]: Mini-Fat Bugfix, Display-Screen fuer Map und Funktion zum Loeschen einer Map hinzugefuegt
+
+2007-08-31 Timo Sandmann [mail@timosandmann.de]: Mini-Fat verbessert (u.a. Display-Ausgaben), Map aufgeraeumt
+
+2007-08-30 Frank Menzel  [Menzelfr@gmx.net]: Explorer-Verhalten bot_follow_wall_behaviour hinzugefuegt
+
+2007-08-30 Benjamin Benz [bbe@heise.de]: Map-Code für sim und MCU vereinheitlicht. ==> wird auf pc langsamer, aber aehnlicher
+
+2007-08-29 Benjamin Benz [bbe@heise.de]: Map-Code weiter getunt, nun profitieren auch ocupied-Updtaes (circle) von den sections
+
+2007-08-29 Benjamin Benz [bbe@heise.de]: Bugfix #140 in map.c für MCU
+
+2007-08-25 Timo Sandmann [mail@timosandmann.de]: Syntaxfehler in behaviour_remotecall.c korrigiert.
+
+2007-08-21 Frank Menzel  [Menzelfr@gmx.net]: Entladeverhalten bot_unload_pillar_behaviour und Aenderungen catch_pillar
+
+2007-08-16 Benjamin Benz [bbe@heise.de]: neue Kartenorganisation fertiggestellt ==> kann noch per Schalter deaktiviert werden. Testmuster für Karte eingefuehrt
+
+2007-08-16 Timo Sandmann [mail@timosandmann.de]: Hinweise zur Abgrund- und Liniensensorkalibrierung in Documentation/sensor.html ergaenzt 
+
+2007-08-16 Benjamin Benz [bbe@heise.de]: Cast fuer einen Pointer in switch_behaviour macht das ganze mehr ANSI-C konform
+
+2007-08-16 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer -d Option (Loeschen von MiniFAT-Dateien @PC) 
+
+2007-08-09 Benjamin Benz [bbe@heise.de]: neue Kartenorganisation für MMC eingefuehrt
+
+2007-08-07 Achim Pankalla [achim.pankalla@gmx.de]: Kalibrieroutine fuer pid in rc5.c eingebunden
+
+2007-08-07 Timo Sandmann [mail@timosandmann.de]: Warning in tcp.c unter Win32 nach einem Hinweis von Achim Pankalla beseitigt
+
+2007-08-07 Benjamin Benz [bbe@heise.de]: Map aktualisiert die Grundflaeche des Bots nun Sectionweise (==> #129), weitere Performanceprobleme behoben 
+
+2007-08-07 Timo Sandmann [mail@timosandmann.de]: schwerwiegenden Bug in Speedcontrol behoben
+
+2007-08-07 Timo Sandmann [mail@timosandmann.de]: Kleinere Bugfixes fuer delay in mouse.c, bot_scan_onthefly_behaviour und motor.c
+
+2007-08-01 Benjamin Benz [bbe@heise.de]: man kann nun waehlen, welche Sensoren bot_scan_onthefly_behaviour auswertet
+
+2007-08-03 Timo Sandmann [mail@timosandmann.de]: Einfaches Objektverfolgungsverhalten hinzugefuegt (bot_follow_object_behaviour), NOPs im Maus-Code auf delay umgestellt
+
+2007-08-02 Timo Sandmann [mail@timosandmann.de]: hang-on als unabhaengiges Verhalten und unnoetige Synchronisation in ct-Bot.c entfernt
+
+2007-08-02 Timo Sandmann [mail@timosandmann.de]: delay fuer PC korrigiert, um Verhalten eine bestimmte Zeit anzuhalten, aber bitte das delay-VERHALTEN benutzen!
+
+2007-08-02 Timo Sandmann [mail@timosandmann.de]: Mini-FAT-Treiber (MMC) optimiert
+
+2007-08-01 Timo Sandmann [mail@timosandmann.de]: MMC/SD-Karten lassen sich alternativ auch im Hardware-SPI-Modus ansprechen (ist schneller und spart Platz im Flash, linker Radencoder muss dazu aber an anderem Pin angeschlossen werden)
+
+2007-08-01 Benjamin Benz [bbe@heise.de]: Warnung eingefuegt, wenn MAP_AVAILABLE aus ist und ct-Bot mit -M aufgerufen wird
+
+2007-08-01 Timo Sandmann [mail@timosandmann.de]: UART laesst sich nun auch mit 115200 Baud benutzen (umschaltbar in include/uart.h)
+
+2007-07-31 Benjamin Benz [bbe@heise.de]: Bug in der Shrink-Funktion fuer die Karten korrigiert
+
+2007-07-19 Timo Sandmann [mail@timosandmann.de]: PC-EEPROM: Bugfix und Doku-Update
+
+2007-07-13 Achim Pankalla [achim.pankalla@gmx.de]: PC-EEPROM-Emulation weiter optimiert
+
+2007-07-13 Timo Sandmann [mail@timosandmann.de]: Post-Build-Steps fuer EEPROM-Emulation ergaenzt, bitte auch .cdtbuild mit updaten!
+
+2007-07-13 Timo Sandmann [mail@timosandmann.de]: PC-EEPROM-Emulation optimiert / korrigiert 
+
+2007-07-12 Timo Sandmann [mail@timosandmann.de]: Delay-Verhalten etwas vereinfacht und in andere Verhalten eingebaut
+
+2007-07-12 Benjamin Benz [bbe@heise.de]: Delay-Verhalten eingefuegt
+
+2007-07-08 Timo Sandmann [mail@timosandmann.de]: Genauigkeit von bot_turn() deutlich verbessert, Test-Verhalten fuer bot_turn() hinzugefuegt und leicht verbesserte Annaeherung an die reale Motorkennline, wenn Regelung aus ist 
+
+2007-07-07 Achim Pankalla [achim.pankalla@gmx.de]: PC-EEPROM-Emulation ueberarbeitet. Sollte nun auch mit MacOSX und Linux gehen. EEPROM.bin wird gecached.
+
+2007-07-04 Timo Sandmann [mail@timosandmann.de]: 1st_init-Zeug umgebaut (fuer PC-EEPROM-Emulation, #88)
+
+2007-07-02 Benjamin Benz [bbe@heise.de]: Bugfix in map.c (Treppeneffekt unter Windows #126 + Map-shrink beim einlesen)
+
+2007-07-02 Timo Sandmann [mail@timosandmann.de]: Binaerdateien auch als Binaerdateien oeffnen (print_map()-Bug, #126)
+
+2007-07-01 Timo Sandmann [mail@timosandmann.de]: #define-Abhaengigkeiten fuer Remote-Display korrigiert und EEPROM-Section unter OS X ins DATA-Segment verschoben
+
+2007-06-28 Achim Pankalla [achim.pankalla@gmx.de]: EEPROM-Manager fuer PC-Bot eingefuehrt, siehe Documentation/eeprom-simulation.html
+
+2007-06-26 Timo Sandmann [mail@timosandmann.de]: rc5-codes.h Update
+
+2007-06-26 Frank Menzel  [Menzelfr@gmx.net]: Dokumentation zum Pfadplanungsverhalten map_go_destination ergaenzt
+
+2007-06-24 Timo Sandmann [mail@timosandmann.de]: Ein paar Optimierungen in bot-logik.c und Erweiterung des RAM-Displays
+
+2007-06-23 Frank Menzel  [Menzelfr@gmx.net]: Pfadplanungsverhalten map_go_destination und informieren ueber Abgrund via Registrierung
+
+2007-06-08 Timo Sandmann [mail@timosandmann.de]: bot_turn: Nach Hinweis von Frank Menzel Bug behoben, das Verhalten ausserdem genauer gemacht und vereinfacht. Ein paar weitere Detailverbesserungen.
+
+2007-06-01 Timo Sandmann [mail@timosandmann.de]: Doxygen-Warnungen entfernt und Bootloader-Problem geloest
+
+2007-05-29 Timo Sandmann [mail@timosandmann.de]: Funktionen zum Erstellen und Loeschen von Mini-Fat-Dateien auf einer emulierten MMC hinzugefuegt
+
+2007-05-24 Timo Sandmann [mail@timosandmann.de]: Bootloader-Dokumentation ueberarbeitet
+
+2007-05-19 Timo Sandmann [mail@timosandmann.de]: Dokumentation zur Sensorauswertung ergaenzt
+
+2007-05-18 Timo Sandmann [mail@timosandmann.de]: Ein paar #define-Abhaengigkeiten korrigiert
+
+2007-05-13 Timo Sandmann [mail@timosandmann.de]: Bugfix in motor-low.h, vorlaeufiger Workaround fuer solve_maze() und Kommentar in mmc-low.S korrigiert
+
+2007-05-09 Benjamin Benz [bbe@heise.de]: Bugfix in map.c
+
+2007-05-08 Timo Sandmann [mail@timosandmann.de]: Doxygen-Kommentare korrigiert und erweitert
+
+2007-05-05 Timo Sandmann [mail@timosandmann.de]: Distanzsensorauswertung auf Lookup-Table im EEPROM umgestellt, Kalibrierungsverhalten fuer die Distanzsensoren eingefuehrt, Verhalten zum Pruefen auf konstanten Messwert der Distanzsensoren gebaut. Dokumentation folgt in Kuerze, sorry (solange einfach mal BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE anmachen und bot_calibrate_sharps() starten, eigentlich ist das Verhalten selbsterklaerend).
+
+2007-05-02 Benjamin Benz [bbe@heise.de]: Einige Utilities in map.c eingefügt
+
+2007-04-28 Timo Sandmann [mail@timosandmann.de]: Pruefung auf Nullpointer in switch_to_behaviour()
+
 2007-04-27 Benjamin Benz [bbe@heise.de]: Pruefung auf Nullpointer in bot_behave()
+
+2007-04-15 Timo Sandmann [mail@timosandmann.de]: Kalibrierungsverhalten fuer die Motorregelung implementiert
+
+2007-04-14 Timo Sandmann [mail@timosandmann.de]: Display-Timing korrigiert, Warnings entfernt
+
+2007-04-05 Timo Sandmann [mail@timosandmann.de]: Dokumentation fuer neue Motorregelung hinzugefuegt
 
 2007-04-02 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer MMC/Maus-ENA-Code
 
 2007-04-02 Benjamin Benz [bbe@heise.de]: Aktivierung der Simple-Verhalten vereinfacht
 
+2007-04-02 Timo Sandmann [mail@timosandmann.de]: LEDs zeigen Hindernis links/rechts voraus, Transportfach belegt, RC5-Code erkannt und Fehler an, wenn TEST_AVAILABLE aus ist.
+
+2007-03-30 Timo Sandmann [mail@timosandmann.de]: int-Datentypen aus stdint.h eingefuehrt und Bug im Timer (PC) gefixt. Ausserdem "Warten per Timer" vereinfacht, siehe timer_ms_passed() in timer.h
+
+2007-03-29 Timo Sandmann [mail@timosandmann.de]: LOG auf Einfachklammerung (Strings bleiben im Flash) umgestellt und Projekteinstellungen fuer Eclipse aufgeraeumt
+
 2007-03-27 Benjamin Benz [bbe@heise.de]: Makefile überarbeitet
+
+2007-03-24 Timo Sandmann [mail@timosandmann.de]: LEDs zeigen Status der MMC an (gruen == lesen, rot == schreiben, tuerkis == Fehler), wenn TEST_AVAILABLE aus ist.
+
+2007-03-21 Timo Sandmann [mail@timosandmann.de]: Geschwindigkeitsberechnung fuer Motorregelung stabilisiert, LOG-Bug gefixt, UART-Bug gefixt
+
+2007-03-15 Timo Sandmann [mail@timosandmann.de]: TWI- und SFR10-Code ausgeschlossen, wenn kein SFR10 vorhanden => 1 KB Flash gespart
+
+2007-03-15 Timo Sandmann [mail@timosandmann.de]: LOG arbeitet jetzt auch mit Strings im Flash. Ausserdem reichen einfache Klammern, wenn man das moechte
+
+2007-03-12 Torsten Evers [tevers@onlinehome.de]: bot_solve_maze_behaviour() funktioniert nun wieder auch auf dem realen Bot
+
+2007-03-11 Timo Sandmann [mail@timosandmann.de]: Uberpruefung der PID-Paramter auf zulaessigen Wertebereich ergaenzt
+
+2007-03-10 Timo Sandmann [mail@timosandmann.de]: PWM-Frequnez fuer Regelung aus geaendert, Motor-Code aufgeraeumt
+
+2007-03-10 Torsten Evers [tevers@onlinehome.de]: FB-Codes für LifeTec LT3607 korrigiert und eindeutig gemacht
+
+2007-03-09 Timo Sandmann [mail@timosandmann.de]: display_printf() belaesst die Strings nun im Flash => RAM gespart :)
+
+2007-03-08 Benjamin Benz [bbe@heise.de]: Test der Schreibrechte im SVN
+
+2007-03-08 Timo Sandmann [mail@timosandmann.de]: Bugfix Motorregelung (der Bot kann jetzt wieder seine Fahrtrichtung wechseln), Parameter in bot-local.h verschoben, ct-Bot.c Cleanup
+
+2007-03-07 Timo Sandmann [mail@timosandmann.de]: Reset-Counter nach dem Hinweis von Achim Pankalla wieder eingebaut (jetzt auf Reset-Info-Screen)
+
+2007-03-07 Benjamin Benz [bbe@heise.de]: Test eines Releases per SVN
+
+2007-03-05 Timo Sandmann [mail@timosandmann.de]: Mini-Fat-Dateiadressen werden jetzt im EEPROM abgelegt (Speedup beim Dateioeffnen), alle "EEPROM-Variablen" sind jetzt immer deklariert (kostet eh keinen Speicher in Flash und RAM), damit die Adressen konstant sind
 
 2007-03-05 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Remote-Display (falsche Cursorposition, falls nicht vor jedem display_printf() ein display_cursor() efolgte)
 
 2007-03-05 Timo Sandmann [mail@timosandmann.de]: Bugfix im RC5-Code (Toggle-Bit wurde versehentlich komplett ignoriert bei der neuen GUI)
 
-2007-02-28 Timo Sandmann [mail@timosandmann.de]: Linker-Aufruf zu OS X kompatibel gemacht (Leerzeichen ergaenzt)
+2007-03-04 Timo Sandmann [mail@timosandmann.de]: Neue Version der Motorregelung, UART-Umbau (benutzt Sendbuffer und fifo.c), ADC arbeitet nun asynchron, bot_turn-Update. Muss alles noch getestet werden!
+
+2007-03-04 Timo Sandmann [mail@timosandmann.de]: GUI-Bugfix fuer Target PC, Remote-Call-Bugfix fuer Target PC
+
+2007-03-02 Timo Sandmann [mail@timosandmann.de]: GUI- und bot2pc-Update auf Timer umgestellt, Bugfix fuer RemoteCalls (warten auf Parameterdaten vom PC)
+
+2007-03-01 Benjamin Benz [bbe@heise.de]: Der MCU muss nun nicht mehr jeden Zyklus seine Daten an den PC schicken (==> INFORM_RATE)
+
+2007-03-01 Benjamin Benz [bbe@heise.de]: GUI kann jetzt auch seltener aktualisiert werden (==> GUI_REFRESH_RATE)
+
+2007-03-01 Benjamin Benz [bbe@heise.de]: UART-sendepuffer eingefuehrt (noch deaktiviert)
 
 2007-02-27 Benjamin Benz [bbe@heise.de]: Bugfix LOG-Absturz Ticket #40 (https://www.heise.de/trac/ctbot/ticket/40)
 

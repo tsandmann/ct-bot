@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,25 +17,18 @@
  * 
  */
 
-/*! @file 	tcp.h
+/*! 
+ * @file 	tcp.h
  * @brief 	TCP/IP-Kommunikation
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 
 #ifndef TCP_H_
 #define TCP_H_
+#ifdef PC
 
-#if defined WIN32
- 	#define LITTLE_ENDIAN	1234
- 	#define BIG_ENDIAN	4321
- 	#define BYTE_ORDER	LITTLE_ENDIAN
-#elif defined __linux__
- 	#include <endian.h>
-#else
-	#include <machine/endian.h>
- #endif
-
+#include "global.h"
 #include "bot-2-sim.h"
 #include "command.h"
 
@@ -60,7 +53,7 @@ int tcp_send_cmd(command_t *cmd);
  * @param data Zeiger auf die Daten
  * @param length Anzahl der Bytes
  * @return Anzahl der uebertragenen Bytes
-*/
+ */
 int tcp_write(void* data, int length);
 
 /*!
@@ -69,14 +62,14 @@ int tcp_write(void* data, int length);
  * @param data Zeiger auf die Daten
  * @param length Anzahl der gewuenschten Bytes
  * @return Anzahl der uebertragenen Bytes
-*/
+ */
 int tcp_read(void* data, int length);
 
 /*!
  * Oeffnet eine TCP-Verbindung zum Server 
  * @param hostname Symbolischer Name des Host, auf dem ct-Sim laeuft
  * @return Der Socket
-*/
+ */
 int tcp_openConnection(const char *hostname);
 
 /*! 
@@ -89,4 +82,5 @@ void tcp_init(void);
  * @return -1 bei Fehlern, sonst zahl der uebertragenen Bytes
  */
 int flushSendBuffer(void);
-#endif
+#endif	// PC
+#endif	/* TCP_H_ */

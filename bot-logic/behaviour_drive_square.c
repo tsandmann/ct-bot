@@ -17,17 +17,23 @@
  * 
  */
 
-/*! @file 	behaviour_drive_square.c
+/*! 
+ * @file 	behaviour_drive_square.c
  * @brief 	Bot faehrt im Quadrat
- * 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
-*/
+ */
 
 
 #include "bot-logic/bot-logik.h"
-
 #ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
+
+#define STATE_FORWARD		0
+#define STATE_TURN 			1
+#define STATE_INTERRUPTED	2
+	
+static uint8 state = STATE_FORWARD;	/*!< Status des Verhaltens */
+
 /*!
  * Laesst den Roboter ein Quadrat abfahren.
  * Einfaches Beispiel fuer ein Verhalten, das einen Zustand besitzt.
@@ -35,32 +41,24 @@
  * selbst keine speedWishes.
  * @param *data der Verhaltensdatensatz
  */
-void bot_drive_square_behaviour(Behaviour_t *data){
-	#define STATE_TURN 1
-	#define STATE_FORWARD 0
-	#define STATE_INTERRUPTED 2
-	
-	static uint8 state = STATE_FORWARD;
-
-   if (data->subResult == SUBFAIL) // letzter Auftrag schlug fehl?
-   		state= STATE_INTERRUPTED;
-	
+void bot_drive_square_behaviour(Behaviour_t *data) {
 	switch (state) {
-		case STATE_FORWARD: // Vorwaerts
-		   bot_goto(data,100,100);
-		   state = STATE_TURN;
-		   break;
-		case STATE_TURN: // Drehen
-		   bot_goto(data,22,-22);
-		   state=STATE_FORWARD;
-		   break;		
-		case STATE_INTERRUPTED:
-			return_from_behaviour(data);	// Beleidigt sein und sich selbst deaktiviern			
-			break;   
-		   
-		default:		/* Sind wir fertig, dann Kontrolle zurueck an Aufrufer */
-			return_from_behaviour(data);
-			break;
+	case STATE_FORWARD:
+		/* Vorwaerts */
+		bot_drive_distance(data, 0, BOT_SPEED_FOLLOW, 20);
+		state = STATE_TURN;
+		break;
+
+	case STATE_TURN:
+		/* Drehen */
+		bot_turn(data, 90);
+		state = STATE_FORWARD;
+		break;
+
+	default:
+		/* Sind wir fertig, dann Kontrolle zurueck an Aufrufer */
+		return_from_behaviour(data);
+		break;
 	}
 }
 
@@ -68,9 +66,9 @@ void bot_drive_square_behaviour(Behaviour_t *data){
  * Laesst den Roboter ein Quadrat abfahren.
  * @param caller Der obligatorische Verhaltensdatensatz des aufrufers
  */
-void bot_drive_square(Behaviour_t* caller){
-	switch_to_behaviour(caller, bot_drive_square_behaviour,OVERRIDE);
+void bot_drive_square(Behaviour_t* caller) {
+	switch_to_behaviour(caller, bot_drive_square_behaviour, OVERRIDE);
+	state = STATE_FORWARD;
 }
 
-
-#endif
+#endif	// BEHAVIOUR_DRIVE_SQUARE_AVAILABLE

@@ -17,19 +17,29 @@
  * 
  */
 
-/*! @file 	adc.c
+/*!
+ *  @file 	adc.c
  * @brief 	Routinen zum Einlesen der AnalogeingÄnge
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 
 #ifdef MCU
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
 //#include <avr/signal.h>
+#include <stdio.h>
 
 #include "adc.h"
+
+typedef struct{
+	uint8 channel;
+	int16* value;
+} adc_channel_t;
+
+static volatile int8 act_channel = -1;
+static adc_channel_t channels[8];
 
 /*!
  * Initialisert den AD-Umsetzer. 
@@ -42,29 +52,90 @@ void adc_init(uint8 channel){
 	PORTA &= ~ channel;	// Alle Pullups aus.
 }
 
+// deprecated
+///*!
+// * Liest einen analogen Kanal aus
+// * @param channel Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
+// */
+//uint16 adc_read(uint8 channel){
+//	uint16 result = 0x00;
+//
+//	// interne Refernzspannung AVCC, rechts Ausrichtung
+//	ADMUX= _BV(REFS0) ;//| _BV(REFS1);	 //|(0<<ADLAR);	
+//
+//	ADMUX |= (channel & 0x07);		// Und jetzt Kanal waehlen, nur single ended
+//	
+//	ADCSRA= (1<<ADPS2) | (1<<ADPS1)|	// prescale faktor= 128 ADC laeuft
+//		(1 <<ADPS0) |			// mit 14,7456MHz/ 128 = 115,2kHz 
+//		(1 << ADEN)|			// ADC an
+//		(1 << ADSC);			// Beginne mit der Konvertierung
+//			
+//	while ( (ADCSRA & (1<<ADSC)) != 0){asm volatile("nop");} //Warten bis konvertierung beendet
+//					      // Das sollte 25 ADC-Zyklen dauern!
+//					      // also 1/4608 s
+//	result= ADCL; 
+//	result+=(ADCH <<8);	// Ergebnis zusammenbauen
+//	
+//	return result;
+//}
+
 /*!
- * Liest einen analogen Kanal aus
- * @param channel Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
+ * @brief			Fuegt einen analogen Kanal in die ADC-Konvertierungsliste ein und wertet ihn per Interrupt aus
+ * @param channel 	Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
+ * @param p_sens	Zeiger auf den Sensorwert, der das Ergebnis enthalten soll
  */
-uint16 adc_read(uint8 channel){
-	uint16 result = 0x00;
-
-	// interne Refernzspannung AVCC, rechts Ausrichtung
-	ADMUX= _BV(REFS0) ;//| _BV(REFS1);	 //|(0<<ADLAR);	
-
-	ADMUX |= (channel & 0x07);		// Und jetzt Kanal waehlen, nur single ended
+void adc_read_int(uint8 channel, int16* p_sens){
+	static uint8 next_channel = 0;
+	if (act_channel == -1) next_channel = 0;
+	if (next_channel >= 8) return;	// es gibt nur 8 ADC-Channels
+	channels[next_channel].value = p_sens;
+	channels[next_channel++].channel = channel & 0x7;
+	if (act_channel == -1){
+		act_channel = 0;
+		// interne Refernzspannung AVCC, rechts Ausrichtung
+		ADMUX = _BV(REFS0); //| _BV(REFS1);	 //|(0<<ADLAR);	
 	
-	ADCSRA= (1<<ADPS2) | (1<<ADPS1)|	// prescale faktor= 128 ADC laeuft
-		(1 <<ADPS0) |			// mit 14,7456MHz/ 128 = 115,2kHz 
-		(1 << ADEN)|			// ADC an
-		(1 << ADSC);			// Beginne mit der Konvertierung
-			
-	while ( (ADCSRA & (1<<ADSC)) != 0){asm volatile("nop");} //Warten bis konvertierung beendet
-					      // Das sollte 25 ADC-Zyklen dauern!
-					      // also 1/4608 s
-	result= ADCL; 
-	result+=(ADCH <<8);	// Ergebnis zusammenbauen
-	
-	return result;
+		ADMUX |= (channel & 0x07);		// Und jetzt Kanal waehlen, nur single ended
+		
+		ADCSRA= (1<<ADPS2) | (1<<ADPS1) |	// prescale faktor= 128 ADC laeuft
+			(1 << ADPS0)	|				// mit 14,7456MHz/ 128 = 115,2kHz 
+			(1 << ADEN) 	|				// ADC an
+			(1 << ADSC) 	|				// Beginne mit der Konvertierung
+			(1 << ADIE);					// Interrupt an
+	}
 }
+
+/*!
+ * Interrupt-Handler fuer den ADC. Speichert das Ergebnis des aktuellen Channels und 
+ * schaltet in der Liste der auszuwertenden Sensoren eins weiter.
+ */
+SIGNAL (SIG_ADC){
+	/* Daten speichern und Pointer im Puffer loeschen */
+	*channels[act_channel].value = ADCL | (ADCH << 8);
+	channels[act_channel].value = NULL;
+	/* zum naechsten Sensor weiterschalten */
+	act_channel++;	
+	if (act_channel < 8 && channels[act_channel].value != NULL){
+		ADMUX = _BV(REFS0); //| _BV(REFS1);	//|(0<<ADLAR);	// interne Refernzspannung AVCC, rechts Ausrichtung	
+		ADMUX |= channels[act_channel].channel;
+		ADCSRA = (1<<ADPS2) | (1<<ADPS1) |	// prescale faktor= 128 ADC laeuft
+		(1 << ADPS0)	|					// mit 14,7456MHz/ 128 = 115,2kHz 
+		(1 << ADEN) 	|					// ADC an
+		(1 << ADSC) 	|					// Beginne mit der Konvertierung
+		(1 << ADIE);						// Interrupt an
+	} else{
+		ADCSRA = 0;	// ADC aus
+		act_channel = -1;
+	}
+}
+
+/*!
+ * Gibt die laufende Nr. des Channels zurueck, der aktuell ausgewertet wird.
+ * 0: erste registrierter Channel, 1: zweiter registrierter Channel usw.
+ * 255: derzeit wird kein Channel ausgewertet (= Konvertierung fertig)
+ */
+uint8 adc_get_active_channel(void){
+	return (uint8)act_channel;	
+}
+
 #endif

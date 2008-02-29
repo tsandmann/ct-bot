@@ -17,13 +17,15 @@
  * 
  */
 
-/*! @file 	uart.c 
+/*! 
+ * @file 	uart.c 
  * @brief 	Routinen zur seriellen Kommunikation
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
-*/
+ * @author	Timo Sandmann (mail@timosandmann.de)
+ * @date 	26.12.2005
+ */
 
-#ifdef MCU 
+#ifdef MCU
 
 #include "ct-Bot.h"
 
@@ -36,169 +38,126 @@
 #include "uart.h"
 #include "command.h"
 #include "log.h"
+#include "bot-2-pc.h"
 
 #ifdef UART_AVAILABLE
 
-#define UART_RX_BUFFER_SIZE 64	/*!< Größe des UART-Puffers */
+#define BUFSIZE_IN 0x30
+uint8_t inbuf[BUFSIZE_IN];	/*!< Eingangspuffer */
+fifo_t infifo;				/*!< Eingangs-FIFO */
 
-#define UART_RX_BUFFER_MASK ( UART_RX_BUFFER_SIZE - 1 )
-#if ( UART_RX_BUFFER_SIZE & UART_RX_BUFFER_MASK )
-	#error RX buffer size is not a power of 2
-#endif
-
-//#define UART_TIMEOUT	20000	/*!< Timeout. Wartet UART_TIMEOUT CPU-Takte */
-
-static uint8 UART_RxBuf[UART_RX_BUFFER_SIZE];	/*!< UART-Puffer */
-static volatile uint8 UART_RxHead;				/*!< Zeiger für UART-Puffer */
-static volatile uint8 UART_RxTail;				/*!< Zeiger für UART-Puffer */
-
-//char uart_timeout;	/*!< 0, wenn uart_read/uart_send erfolgreich 1, wenn timeout erreicht */
+#if BAUDRATE == 115200
+#define BUFSIZE_OUT	0x70	// wer schneller sendet, braucht auch weniger Pufferspeicher ;)
+#else
+#define BUFSIZE_OUT 0x80
+#endif	// BAUDRATE
+uint8 outbuf[BUFSIZE_OUT];	/*!< Ausgangspuffer */
+fifo_t outfifo;				/*!< Ausgangs-FIFO */
 
 /*!
- * Initialisiere UART
+ * @brief	Initialisiert den UART und aktiviert Receiver und Transmitter sowie den Receive-Interrupt. 
+ * Die Ein- und Ausgebe-FIFO werden initialisiert. Das globale Interrupt-Enable-Flag (I-Bit in SREG) wird nicht veraendert.
  */
 void uart_init(void){	 
-	#ifdef __AVR_ATmega644__
-		/* Senden und Empfangen ermöglichen + RX Interrupt an */
-		UCSR0B= (1<<RXEN0) | (1<<TXEN0)|(1<<RXCIE0); 			
-		/* 8 Bit, 1 Stop, Keine Parity */
-		UCSR0C=0x86;
-	#else
-		/* Senden und Empfangen ermöglichen + RX Interrupt an */
-		UCSRB= (1<<RXEN) | (1<<TXEN)|(1<<RXCIE); 	
-		/* 8 Bit, 1 Stop, Keine Parity */
-		UCSRC=0x86;
-	#endif
+    uint8 sreg = SREG;
+    UBRRH = (UART_CALC_BAUDRATE(BAUDRATE)>>8) & 0xFF;
+    UBRRL = (UART_CALC_BAUDRATE(BAUDRATE) & 0xFF);
+    
+	/* Interrupts kurz deaktivieren */ 
+	cli();
+
+	/* UART Receiver und Transmitter anschalten, Receive-Interrupt aktivieren */ 
+	UCSRB = (1 << RXEN) | (1 << TXEN) | (1 << RXCIE);
+	/* Data mode 8N1, asynchron */
+	uint8 ucsrc = (1 << UCSZ1) | (1 << UCSZ0);
+	#ifdef URSEL 
+		ucsrc |= (1 << URSEL);	// fuer ATMega32
+	#endif    
+	UCSRC = ucsrc;
+
+    /* Flush Receive-Buffer (entfernen evtl. vorhandener ungueltiger Werte) */ 
+    do{
+		UDR;	// UDR auslesen (Wert wird nicht verwendet)
+    } while (UCSRA & (1 << RXC));
+
+    /* Ruecksetzen von Receive und Transmit Complete-Flags */ 
+    UCSRA = (1 << RXC) | (1 << TXC)
+#ifdef UART_DOUBLESPEED
+    		| (1<<U2X)
+#endif
+    		;
 	
-	/* UART auf 9600 baud */
-//	UBRRH=0;
-//	UBRRL= 103;  /* Werte stehen im Datenblatt tabelarisch */
-	#ifdef __AVR_ATmega644__
-		UBRR0L = (uint8) (( ((uint32)F_CPU) / 16 / ((uint32)BAUDRATE) - 1) & 0xFF);
-		UBRR0H = (uint8) (( ((uint32)F_CPU) / 16 / ((uint32)BAUDRATE) - 1) >> 8);
-	#else
-		UBRRL = (uint8) (( ((uint32)F_CPU) / 16 / ((uint32)BAUDRATE) - 1) & 0xFF);
-		UBRRH = (uint8) (( ((uint32)F_CPU) / 16 / ((uint32)BAUDRATE) - 1) >> 8);
-	#endif
-	
-	/* Puffer leeren */
-	UART_RxTail = 0;
-	UART_RxHead = 0;
+    /* Global Interrupt-Flag wiederherstellen */
+    SREG = sreg;
+
+    /* FIFOs für Ein- und Ausgabe initialisieren */ 
+    fifo_init(&infifo, inbuf, BUFSIZE_IN);
+    fifo_init(&outfifo, outbuf, BUFSIZE_OUT);
 }
 
 /*!
- *  Interrupt Handler fuer den Datenempfang per UART
- */
+ * @brief	Interrupthandler fuer eingehende Daten
+ * Empfangene Zeichen werden in die Eingabgs-FIFO gespeichert und warten dort.
+ */ 
 #ifdef __AVR_ATmega644__
-	SIGNAL (USART0_RX_vect){
+	SIGNAL (USART0_RX_vect){		
 #else
 	SIGNAL (SIG_UART_RECV){
 #endif
-
-	/* Pufferindex berechnen */
-	UART_RxHead++;						/* erhoehen */ 
-	UART_RxHead %= UART_RX_BUFFER_MASK; /* Und bei Bedarf umklappen, da Ringpuffer */
-	
-	if (UART_RxHead == UART_RxTail){
-		/* TODO Fehler behandeln !!
-		 * ERROR! Receive buffer overflow */
-	}
-	#ifdef __AVR_ATmega644__
-		UART_RxBuf[UART_RxHead] = UDR0; /* Daten lesen und sichern*/
-	#else
-		UART_RxBuf[UART_RxHead] = UDR; /* Daten lesen und sichern*/	
-	#endif	
-}
-
-/*! 
- * Prüft, ob daten verfügbar 
- * @return Anzahl der verfuegbaren Bytes
- */
-uint8 uart_data_available(void){
-	if (UART_RxHead == UART_RxTail) 	/* Puffer leer */
-		return 0;		
-	else if (UART_RxHead > UART_RxTail)		/* Schreibzeiger vor Lesezeiger */ 
-		return UART_RxHead - UART_RxTail; 
-	else			/* Schreibzeiger ist schon umgelaufen */
-		return UART_RxHead - UART_RxTail + UART_RX_BUFFER_SIZE;
-}
-
-
-/*!
- * Überträgt ein Zeichen per UART
- * Achtung ist noch blockierend!!!!
- * TODO: umstellen auf nicht blockierend und mehr als ein Zeichen
- * @param data Das Zeichen
- */
-void uart_send_byte(uint8 data){ // Achtung ist noch blockierend!!!!
-	#ifdef __AVR_ATmega644__
-		while ((UCSR0A & _BV(UDRE0)) ==0){asm volatile("nop"); }	// warten bis UART sendebereit
-		UDR0= data;
-	#else
-		while ((UCSRA & _BV(UDRE)) ==0){asm volatile("nop"); }	// warten bis UART sendebereit
-		UDR= data;	
-	#endif
+//	UCSRB &= ~(1 << RXCIE);	// diesen Interrupt aus (denn ISR ist nicht reentrant)
+//	sei();					// andere Interrupts wieder an
+//	if (infifo.count == BUFSIZE_IN){   
+//		/* ERROR! Receive buffer full!
+//		 * => Pufferinhalt erst verarbeiten - das funktioniert besser als es aussieht. ;-)
+//		 * Ist allerdings nur dann clever, wenn das ausgewertete Command nicht mehr Daten per
+//		 * uart_read() lesen will, als bereits im Puffer sind, denn der Interrupt ist ja aus... */
+//		#ifdef BOT_2_PC_AVAILABLE
+//			bot_2_pc_listen();		// Daten des Puffers auswerten
+//		#endif
+//	}
+	_inline_fifo_put(&infifo, UDR);
+//	UCSRB |= (1 << RXCIE);	// diesen Interrupt wieder an 	
 }
 
 /*!
- * Sende Kommando per UART im Little Endian
- * @param cmd Zeiger auf das Kommando
- * @return Anzahl der gesendete Bytes
- */
-//#define uart_send_cmd(cmd)  uart_write(cmd,sizeof(command_t));
-
-/* 
-int uart_send_cmd(command_t *cmd){
-	int i;
-	char * ptr = (char*) cmd;
-	for (i=0; i<sizeof(command_t); i++)
-		uart_send_byte(*ptr++);
-		
-	return sizeof(command_t);
-}
-*/
-
-/*!
- * Sende Daten per UART im Little Endian
- * @param data Datenpuffer
- * @param length Groesse des Datenpuffers in bytes
- * @return Anzahl der gesendete Bytes
- */
-int uart_write(uint8 * data, int length){
-	int i;
-	char * ptr = (char*) data;
-	for (i=0; i<length; i++)
-		uart_send_byte(*ptr++);
-		
-	return length;	
-}
-
-/*!
- * Liest Zeichen von der UART
- * @param data Der Zeiger an die die gelesenen Zeichen kommen
- * @param length Anzahl der zu lesenden Bytes
- * @return Anzahl der tatsaechlich gelesenen Zeichen
- */
-int uart_read(void* data, int length){
-	uint8 i;
-	char* ptr = data;
-	
-	uint8 count= uart_data_available();
-
-//	LOG_DEBUG(("%d/%d av/sel",count,length));
-	
-	if (count > length)
-		count=length;
-		
-	for (i=0; i<count; i++){
-		UART_RxTail++;
-		UART_RxTail %= UART_RX_BUFFER_MASK;
-		*ptr++ = UART_RxBuf[UART_RxTail];
-		
-	}
-	
-	return count;
-}
-
+ * @brief	Interrupthandler fuer ausgehende Daten
+ * Ein Zeichen aus der Ausgabe-FIFO lesen und ausgeben.
+ * Ist das Zeichen fertig ausgegeben, wird ein neuer SIG_UART_DATA-IRQ getriggert.
+ * Ist die FIFO leer, deaktiviert die ISR ihren eigenen IRQ.
+ */ 
+#ifdef __AVR_ATmega644__
+	SIGNAL (USART0_UDRE_vect){
+#else
+	SIGNAL (SIG_UART_DATA){
 #endif
-#endif
+	UCSRB &= ~(1 << UDRIE);	// diesen Interrupt aus (denn ISR ist nicht reentrant)
+	sei();					// andere Interrupts wieder an
+	if (outfifo.count > 0){
+		UDR = _inline_fifo_get(&outfifo);
+		UCSRB |= (1 << UDRIE);	// diesen Interrupt wieder an 
+	}	
+}
+
+/*!
+ * @brief			Sendet Daten per UART im Little Endian
+ * @param data		Datenpuffer
+ * @param length	Groesse des Datenpuffers in Bytes
+ */
+void uart_write(uint8* data, uint8 length){
+	if (length > BUFSIZE_OUT){
+		/* das ist zu viel auf einmal => teile und herrsche */
+		uart_write(data, length/2);
+		uart_write(data + length/2, length - length/2);
+		return;
+	} 
+	/* falls Sendepuffer voll, diesen erst flushen */ 
+	uint8 space = BUFSIZE_OUT - outfifo.count;
+	if (space < length) uart_flush();
+	/* Daten in Ausgangs-FIFO kopieren */
+	fifo_put_data(&outfifo, data, length);
+	/* Interrupt an */
+	UCSRB |= (1 << UDRIE);
+}
+
+#endif	// UART_AVAILABLE
+#endif	// MCU

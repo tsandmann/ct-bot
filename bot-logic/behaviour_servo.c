@@ -32,7 +32,6 @@
 #include "motor.h"
 #include "timer.h"
 /*! Uebergabevariable fuer Servo-Verhalten */
-static uint16 servo_time; 
 static uint8 servo_nr;
 static uint8 servo_pos;
 uint8 servo_active = 0;	/*!< 0, wenn kein Servo aktiv, sonst Bit der gerade aktiven Servos gesetzt */
@@ -43,26 +42,26 @@ uint8 servo_active = 0;	/*!< 0, wenn kein Servo aktiv, sonst Bit der gerade akti
  * @param *data der Verhaltensdatensatz
  */
 void bot_servo_behaviour(Behaviour_t *data){
-	/* Servo ausschalten, falls Klappe zu oder Countdown abgelaufen */
-	if ( (servo_pos == DOOR_CLOSE && sensDoor == 0) || (TIMER_GET_TICKCOUNT_16 - servo_time > MS_TO_TICKS(1000L)) ){
-		servo_set(servo_nr, SERVO_OFF);	// Servo aus
-		servo_active &= ~servo_nr;
-		return_from_behaviour(data); 	// und Verhalten auch aus
-	} 
+	BLOCK_BEHAVIOUR(data, 1000);	// 1 s warten
+	
+	return_from_behaviour(data); 	// Verhalten aus
+	servo_set(servo_nr, SERVO_OFF);	// Servo aus
+	servo_active &= ~servo_nr;
 }
 
 /*!
  * Fahre den Servo an eine Position
- * @param servo Nummer des Servos
- * @param pos Zielposition des Servos
+ * @param caller	Der Aufrufer
+ * @param servo		Nummer des Servos
+ * @param pos		Zielposition des Servos
  */
 void bot_servo(Behaviour_t * caller, uint8 servo, uint8 pos){
+	if (pos == DOOR_CLOSE && sensDoor == 0) return;	// Klappe ist bereits geschlossen
+	switch_to_behaviour(caller,bot_servo_behaviour,OVERRIDE);	// Warte-Verahlten an
+	
 	servo_active |= servo;
 	servo_set(servo, pos);	// Servo-PWM einstellen
 	servo_pos = pos;		// Zielposition merken
 	servo_nr = servo;		// Servo-Nr speichern
-	servo_time = TIMER_GET_TICKCOUNT_16;	// Der Count down verschafft dem Servo etwas Zeit
-
-	switch_to_behaviour(caller,bot_servo_behaviour,OVERRIDE);	// Warte-Verahlten an
 }
 #endif

@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,17 +17,20 @@
  * 
  */
 
-/*! @file 	srf10.h
+/*! 
+ * @file 	srf10.h
  * @brief 	Ansteuerung des Ultraschall Entfernungssensors SRF10
  * @author 	Chris efstathiou (hendrix@otenet.gr) & Carsten Giesen (info@cnau.de)
  * @date 	08.04.06
-*/
+ */
 
+#include "ct-Bot.h"
+#ifdef SRF10_AVAILABLE
 
 #include "global.h"
 
-#ifndef srf10_H
-#define srf10_H     1
+#ifndef SRF10_H_
+#define SRF10_H_
 
 /*!
  * Es sind alle moeglichen Adressen eingetragen. In de Regel reicht aber die erste              
@@ -68,38 +71,39 @@
 /*!
  * SRF10 initialsieren
  */
-extern void		srf10_init(void);
+extern void	srf10_init(void);
 
 /*!
  * Verstaerkungsfaktor setzen
  * @param gain Verstaerkungsfaktor
  */
-extern void		srf10_set_gain(uint8 gain);
+extern void	srf10_set_gain(uint8_t gain);
 
 /*!
  * Reichweite setzen, hat auch Einfluss auf die Messdauer
  * @param millimeters Reichweite in mm
  */
-extern void		srf10_set_range(uint16 millimeters);
+extern void	srf10_set_range(uint16_t millimeters);
 
 /*!
  * Messung ausloesen
  * @param metric_unit 0x50 in Zoll, 0x51 in cm, 0x52 ms
  * @return Resultat der Aktion
  */
-extern uint8	srf10_ping(uint8 metric_unit);
+extern uint8 srf10_ping(uint8_t metric_unit);
 
 /*!
  * Register auslesen
- * @param srf10_register welches Register soll ausgelsen werden
+ * @param SRF10_register welches Register soll ausgelsen werden
  * @return Inhalt des Registers
  */
-extern uint8	srf10_read_register(uint8 SRF10_register);
+extern uint8 srf10_read_register(uint8_t SRF10_register);
 
 /*!
  * Messung starten Ergebniss aufbereiten und zurueckgeben
  * @return Messergebniss
  */
-extern uint16	srf10_get_measure(void);
+extern uint16 srf10_get_measure(void);
 
-#endif  /* #ifndef SRF10_H */
+#endif	// SRF10_AVAILABLE
+#endif  /* SRF10_H_ */

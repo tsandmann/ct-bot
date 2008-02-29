@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,18 +17,17 @@
  * 
  */
 
-/*! @file 	rc5-codes.h
+/*! 
+ * @file 	rc5-codes.h
  * @brief 	RC5-Fernbedienungscodes
  * @author 	Andreas Merkle (mail@blue-andi.de)
  * @date 	15.02.06
- * Wer diese Datei angepasst hat, kann Sie durch einen .cvsignore Eintrag schützen. 
- * Dann Ueberschreibt Eclipse Sie nicht mehr automatisch
-*/
+ */
 
 #ifndef RC5CODE_H_
 #define RC5CODE_H_
 
-#define RC5_TOGGLE		0x0800		/*!< Das RC5-Toggle-Bit */
+#define RC5_TOGGLE	0x0800		/*!< Das RC5-Toggle-Bit */
 #define RC5_ADDRESS	0x07C0		/*!< Der Adressbereich */
 #define RC5_COMMAND	0x103F		/*!< Der Kommandobereich */
 
@@ -52,18 +51,17 @@
  * 		waehlen,
  * 	-	diese Konstante in die obere Liste der FB-Selektion eintragen,
  * 	-	die alte FB-Konstante im kopierten Bereich ersetzen,
- * 	-	festlegen, ob die FB ein Jog-Dial hat, ob der RC5_NOT_AVAIL-Code
- * 		wirklich nie von der FB generiert werden kann (0xFFFF ist meisst ok)
+ * 	-	festlegen, ob der RC5_NOT_AVAIL-Code wirklich nie von der FB 
+ * 		generiert werden kann (0xFFFF ist meisst ok)
  * 	-	die eigentlichen, herausgefunden Codes eintragen.
  * 
  * Ist das erledigt, und funktioniert die neue FB-Definition, kann diese
- * in der c't-bot-Entwicklerliste vorgestellt werden. (mb/18.03.2006)
+ * in der c't-Bot-Mailingliste vorgestellt werden. (mb/18.03.2006)
  */
 
-/* Nur auf dem realen Bot gibt es verschiedene FBs */
 #ifdef MCU
 
-	// Dies ist die Standard-Fernbedienung unter anderem fuer den Sim
+	// Dies ist die Standard-Fernbedienung fuer den Bot
 	#define RC_HAVE_HQ_RC_UNIVERS29_334
 	
 	//#define RC_HAVE_HAUPPAUGE_WINTV
@@ -73,12 +71,12 @@
 	//#define RC_HAVE_VIVANCO_UR89_TV_CODE_089
 	//#define RC_HAVE_Technisat_TTS35AI
 	//#define RC_HAVE_LIFETEC_LT3607
- #else
-	// Dies ist die Standard-Fernbedienung unter anderem fuer den Sim
+#else
+	// Dies ist die Standard-Fernbedienung fuer den Sim
 	#define RC_HAVE_HQ_RC_UNIVERS29_334
-	//#define RC_HAVE_DEFAULT
+	//#define RC_HAVE_HAUPPAUGE_WINTV
 	
-#endif
+#endif	// MCU
 
 
 
@@ -91,7 +89,6 @@
  * Default-Fernbedienung 
  * HQ RC Univers 29, Geraetecode 334
  */
-
 #ifdef RC_HAVE_HQ_RC_UNIVERS29_334
 	#define RC5_CODE_PWR		(0x118C & RC5_MASK)		/*!< Taste An/Aus */
 	
@@ -138,69 +135,12 @@
 	#define RC5_CODE_DOWN		RC5_CODE_STOP			/*!< Taste Runter */
 	#define RC5_CODE_LEFT		RC5_CODE_BWD				/*!< Taste Links */
 	#define RC5_CODE_RIGHT		RC5_CODE_FWD				/*!< Taste Rechts */
-#endif
-
-/*!
- * Default-Fernbedienung 
- * HQ RC Univers 29, Geraetecode 335
- */
-
-#ifdef RC_HAVE_HQ_RC_UNIVERS29_335
-	#define RC5_CODE_PWR		(0x100C & RC5_MASK)		/*!< Taste An/Aus */
-	
-	#define RC5_CODE_0			(0x1000 & RC5_MASK)		/*!< Taste 0 /10*/
-	#define RC5_CODE_1			(0x1001 & RC5_MASK)		/*!< Taste 1 */
-	#define RC5_CODE_2			(0x1002 & RC5_MASK)		/*!< Taste 2 */
-	#define RC5_CODE_3			(0x1003 & RC5_MASK)		/*!< Taste 3 */
-	#define RC5_CODE_4			(0x1004 & RC5_MASK)		/*!< Taste 4 */
-	#define RC5_CODE_5			(0x1005 & RC5_MASK)		/*!< Taste 5 */
-	#define RC5_CODE_6			(0x1006 & RC5_MASK)		/*!< Taste 6 */
-	#define RC5_CODE_7			(0x1007 & RC5_MASK)		/*!< Taste 7 */
-	#define RC5_CODE_8			(0x1008 & RC5_MASK)		/*!< Taste 8 */
-	#define RC5_CODE_9			(0x1009 & RC5_MASK)		/*!< Taste 9 */
-	#define RC5_CODE_11		(0x100A & RC5_MASK)		/*!< Taste 11 /1-*/
-	#define RC5_CODE_12		(0x1003 & RC5_MASK)		/*!< Taste 12 /2-*/
-		
-	#define RC5_CODE_GREEN		(0x101E & RC5_MASK)		/*!< Gruene Taste */
-	#define RC5_CODE_RED		(0x101D & RC5_MASK)		/*!< Rote Taste */
-	#define RC5_CODE_YELLOW	(0x1027 & RC5_MASK)		/*!< Gelbe Taste */
-	#define RC5_CODE_BLUE		(0x101C & RC5_MASK)		/*!< Blaue Taste */
-	
-	#define RC5_CODE_I_II		(0x1023 & RC5_MASK)		/*!< I/II-Taste */
-	#define RC5_CODE_TV_VCR	(0x1038 & RC5_MASK)		/*!< TV/VCR-Taste */
-
-	#define RC5_CODE_DOT		(0x1037 & RC5_MASK)		/*!< Taste mit rundem Punkt */
-	
-	#define RC5_CODE_PLAY		(0x11B5 & RC5_MASK)		/*!< PLAY-Taste */
-	#define RC5_CODE_STILL		(0x1029 & RC5_MASK)		/*!< Pause Taste */
-	#define RC5_CODE_STOP		(0x1036 & RC5_MASK)		/*!< Pause Taste */
-	#define RC5_CODE_BWD		(0x1032 & RC5_MASK)		/*!< Backward Taste */
-	#define RC5_CODE_FWD		(0x1034 & RC5_MASK)		/*!< Forward Taste */
-
-	#define RC5_CODE_CH_PC		(0x100B & RC5_MASK)		/*!< CH*P/C Taste */
-	#define RC5_CODE_MUTE		(0x003F & RC5_MASK)		/*!< Mute-Taste */
-
-	#define RC5_VOL_PLUS		(0x1010 & RC5_MASK)		/*!< Vol + Taste */
-	#define RC5_VOL_MINUS		(0x1011 & RC5_MASK)		/*!< Vol - Taste */
-
-	#define RC5_CH_PLUS		(0x1020 & RC5_MASK)		/*!< Ch + Taste */
-	#define RC5_CH_MINUS		(0x1021 & RC5_MASK)		/*!< Ch - Taste */
-	
-	
-	#define RC5_CODE_UP		RC5_CODE_STILL			/*!< Taste Hoch */
-	#define RC5_CODE_DOWN		RC5_CODE_STOP			/*!< Taste Runter */
-	#define RC5_CODE_LEFT		RC5_CODE_BWD				/*!< Taste Links */
-	#define RC5_CODE_RIGHT		RC5_CODE_FWD				/*!< Taste Rechts */
-#endif
+#endif	// RC_HAVE_HQ_RC_UNIVERS29_334
 
 /*!
  * Fernbedienung Hauppauge (simple WinTV-Karten Fernbedienung)
  */
-
 #ifdef RC_HAVE_HAUPPAUGE_WINTV
-	#define RC_HAVE_CODES							/*!< Definiert Codes */
-	#undef JOG_DIAL									/*!< Hat keinen Jog Dial */
-
 	#define RC5_CODE_0			(0x1000 & RC5_MASK)		/*!< Taste 0 */
 	#define RC5_CODE_1			(0x1001 & RC5_MASK)		/*!< Taste 1 */
 	#define RC5_CODE_2			(0x1002 & RC5_MASK)		/*!< Taste 2 */
@@ -214,28 +154,21 @@
 
 	#define RC5_CODE_PWR		(0x1026 & RC5_MASK)		/*!< Taste Minimize */
 	#define RC5_CODE_FULL		(0x102E & RC5_MASK)		/*!< Taste Full Screen */
-	#define RC5_CODE_SOURCE	(0x1022 & RC5_MASK)		/*!< Taste Source */
+	#define RC5_CODE_SOURCE		(0x1022 & RC5_MASK)		/*!< Taste Source */
 
-	#define RC5_CODE_UP		(0x1020 & RC5_MASK)		/*!< Taste CH + */
+	#define RC5_CODE_UP			(0x1020 & RC5_MASK)		/*!< Taste CH + */
 	#define RC5_CODE_DOWN		(0x1021 & RC5_MASK)		/*!< Taste CH - */
 	#define RC5_CODE_LEFT		(0x1011 & RC5_MASK)		/*!< Taste VOL- */
 	#define RC5_CODE_RIGHT		(0x1010 & RC5_MASK)		/*!< Taste VOL+ */
 
-	#define RC5_CODE_FWD		RC5_NOT_AVAIL			/*!< Taste nicht vorhanden */
-	#define RC5_CODE_BWD		RC5_NOT_AVAIL			/*!< Taste nicht vorhanden */
-	#define RC5_CODE_RED		RC5_NOT_AVAIL			/*!< Taste nicht vorhanden */
-	#define RC5_CODE_GREEN		RC5_NOT_AVAIL			/*!< Taste nicht vorhanden */
-	#define RC5_CODE_YELLOW	RC5_NOT_AVAIL			/*!< Taste nicht vorhanden */
-	#define RC5_CODE_BLUE		RC5_NOT_AVAIL			/*!< Taste nicht vorhanden */
-
 	#define RC5_CODE_I_II		RC5_CODE_SOURCE
-	#define RC5_CODE_TV_VCR	RC5_CODE_FULL
-#endif /* RC_HAVE_HAUPPAUGE_WINTV */
+	#define RC5_CODE_TV_VCR		RC5_CODE_FULL
+#endif	// RC_HAVE_HAUPPAUGE_WINTV
 
+/*!
+ * Fernbedienung Hauppauge erweitert
+ */
 #ifdef RC_HAVE_HAUPPAUGE_MediaMPV
-	#define RC_HAVE_CODES							/*!< Definiert Codes */
-	#undef JOG_DIAL									/*!< Hat keinen Jog Dial */
-
 	#define RC5_CODE_0			(0x17C0 & RC5_MASK)		/*!< Taste 0 */
 	#define RC5_CODE_1			(0x17C1 & RC5_MASK)		/*!< Taste 1 */
 	#define RC5_CODE_2			(0x17C2 & RC5_MASK)		/*!< Taste 2 */
@@ -285,16 +218,12 @@
 	#define RC5_CH_PLUS			RC5_CODE_BWD		/*!< Taste fuer Transprtfach schliessen */
 	#define RC5_CH_MINUS 		RC5_CODE_FWD		/*!< Taste fuer Transportfach oeffnen */
 
-#endif /* RC_HAVE_HAUPPAUGE_MediaMPV */
+#endif	// RC_HAVE_HAUPPAUGE_MediaMPV
 
 /*!
  * Fernbedienung Conrad Promo 8
  */
-
 #ifdef RC_HAVE_CONRAD_PROMO8
-	#define RC_HAVE_CODES							/*!< Definiert Codes */
-	#undef JOG_DIAL									/*!< Hat keinen Jog Dial */
-
 	#define RC5_CODE_0			(0x3000 & RC5_MASK)		/*!< Taste 0 */
 	#define RC5_CODE_1			(0x3001 & RC5_MASK)		/*!< Taste 1 */
 	#define RC5_CODE_2			(0x3002 & RC5_MASK)		/*!< Taste 2 */
@@ -328,18 +257,19 @@
 	#define RC5_CH_PLUS		(0x1020 & RC5_MASK)		/*!< Ch + Taste */
  	#define RC5_CH_MINUS		(0x1021 & RC5_MASK)		/*!< Ch - Taste */
 
+    #define RC5_CODE_AV		(0x1038 & RC5_MASK)		/*!< Taste AV */
+	#define RC5_CODE_DOT		RC5_CODE_AV
+
 	#define RC5_CODE_I_II		RC5_CODE_SELECT
 	#define RC5_CODE_TV_VCR	RC5_CODE_VIEW
-#endif
+	#define RC5_CODE_MUTE		RC5_CODE_ENTER
+#endif	// RC_HAVE_CONRAD_PROMO8
 
 /*!
  * Fernbedienung VIVANCO UR89, vor Verwendung auf VCR druecken
  * @author Andreas Staudenmayer
  */
 #ifdef RC_HAVE_VIVANCO_UR89
-	#define RC_HAVE_CODES							/*!< Definiert Codes */
-	#undef JOG_DIAL									/*!< Hat keinen Jog Dial */
-
 	#define RC5_CODE_0			(0x1140 & RC5_MASK)		/*!< Taste 0 			   */
 	#define RC5_CODE_1			(0x1141 & RC5_MASK)		/*!< Taste 1 			   */
 	#define RC5_CODE_2			(0x1142 & RC5_MASK)		/*!< Taste 2 			   */
@@ -369,7 +299,7 @@
 
 	#define RC5_CODE_I_II		RC5_CODE_SELECT
 	#define RC5_CODE_TV_VCR	RC5_CODE_VIEW
-#endif /* RC_HAVE_VIVANCO_UR89 */
+#endif	// RC_HAVE_VIVANCO_UR89
 
 
 /*!
@@ -378,10 +308,6 @@
  * @author Ulrich Scheffler
  */
 #ifdef RC_HAVE_VIVANCO_UR89_TV_CODE_089
-	#define RC_HAVE_CODES							/*!< Definiert Codes */
-	#undef JOG_DIAL									/*!< Hat keinen Jog Dial */
-
-	#define RC5_NOT_AVAIL		(0xFFFF)			/*!< Code fuer Taste nicht vorhanden */
 	/* Jede Taste bekommt erstmal die Bezeichnung, die aufgedruckt ist */
 	#define RC5_CODE_PWR						(0x100C & RC5_MASK)		/*!< Taste An/Aus-Symbol (rot)*/
 	#define RC5_CODE_MUTE						(0x100D & RC5_MASK)		/*!< Taste Mute-Symbol (gruen) */
@@ -433,18 +359,13 @@
 	
 	#define RC5_CODE_I_II		RC5_CODE_SELECT
 	#define RC5_CODE_TV_VCR	RC5_CODE_VIEW
-#endif /* RC_HAVE_VIVANCO_UR89_TV_CODE_089 */ 
+#endif	// RC_HAVE_VIVANCO_UR89_TV_CODE_089
 
 /*!
  * Fernbedienung Technisat_TTS35AI (Receiver Digit CIP)
  * @author Joerg Bullmann
  */
 #ifdef RC_HAVE_Technisat_TTS35AI
-	#define RC_HAVE_CODES							/*!< Definiert Codes */
-	#undef JOG_DIAL									/*!< Hat keinen Jog Dial */
-
-	#define RC5_NOT_AVAIL	(0xFFFF)				/*!< Code fuer Taste nicht vorhanden */
-
 	#define RC5_CODE_0		(0x1289 & RC5_MASK)		/*!< Taste 0 			   */
 	#define RC5_CODE_1		(0x1281 & RC5_MASK)		/*!< Taste 1 			   */
 	#define RC5_CODE_2		(0x1282 & RC5_MASK)		/*!< Taste 2 			   */
@@ -476,19 +397,12 @@
 	#define RC5_CODE_BWD	RC5_CODE_MENU			/*!< Taste Menu - umgewidmet als BWD-Taste */
 	#define RC5_CODE_TV_VCR	RC5_CODE_INFO			/*!< Taste INFO - umgewidmet als View-Taste */
 	#define RC5_CODE_I_II	RC5_CODE_OK			/*!< Taste OK - umgewidmet als Select-Taste */
-
-#endif /* RC_HAVE_Technisat_TTS35AI */
+#endif	// RC_HAVE_Technisat_TTS35AI
 
 /*!
  * Fernbedienung Lifetec LT3607 (aeltere, lernfaehige Medion-Fernbedienung)
  */
 #ifdef RC_HAVE_LIFETEC_LT3607
-	#define RC_HAVE_CODES							/*!< Definiert Codes */
-	#undef JOG_DIAL									/*!< Hat keinen Jog Dial */
-
-	#define RC5_MASK		(RC5_COMMAND)
-	#define RC5_NOT_AVAIL	(0xFFFF)				/*!< Code fuer Taste nicht vorhanden */
-
 	#define RC5_CODE_0		(0x3000 & RC5_MASK)		/*!< Taste 0 */
 	#define RC5_CODE_1		(0x3001 & RC5_MASK)		/*!< Taste 1 */
 	#define RC5_CODE_2		(0x3002 & RC5_MASK)		/*!< Taste 2 */
@@ -501,33 +415,29 @@
 	#define RC5_CODE_9		(0x3009 & RC5_MASK)		/*!< Taste 9 */
 
 	#define RC5_CODE_PWR	(0x300C & RC5_MASK)		/*!< Taste Power */
-	#define RC5_CODE_VIEW	(0x303F & RC5_MASK)		/*!< Taste OSD */
-	#define RC5_CODE_SELECT	(0x303C & RC5_MASK)		/*!< Taste Videotext */
+	#define RC5_CODE_VIEW	(0x302B & RC5_MASK)		/*!< Taste OSD */
+	#define RC5_CODE_SELECT	(0x300A & RC5_MASK)		/*!< Taste -/-- */
 	#define RC5_CH_PLUS		(0x3020 & RC5_MASK)		/*!< Ch + Taste */
 	#define RC5_CH_MINUS	(0x3021 & RC5_MASK)		/*!< Ch - Taste */
 
-	#define RC5_CODE_UP	(0x3020 & RC5_MASK)		/*!< Taste CH + */
-	#define RC5_CODE_DOWN	(0x3021 & RC5_MASK)		/*!< Taste CH - */
-	#define RC5_CODE_LEFT	(0x3011 & RC5_MASK)		/*!< Taste VOL- */
-	#define RC5_CODE_RIGHT	(0x3010 & RC5_MASK)		/*!< Taste VOL+ */
+	#define RC5_CODE_UP		(0x302E & RC5_MASK)		/*!< Taste mit Punkt, zwischen VCR-Tasten */
+	#define RC5_CODE_DOWN	(0x3012 & RC5_MASK)		/*!< Taste Bildschirm mit Kreuz oben rechts */
+	#define RC5_CODE_LEFT	(0x303F & RC5_MASK)		/*!< Taste Bildschirm, leer */
+	#define RC5_CODE_RIGHT	(0x303C & RC5_MASK)		/*!< Taste Videotext */
 	#define RC5_CODE_I_II	(0x3038 & RC5_MASK)		/*!< A/B-Taste */
-	#define RC5_CODE_FWD	(0x302B & RC5_MASK)		/*!< Taste Mischbild */
-	#define RC5_CODE_BWD	(0x302E & RC5_MASK)		/*!< Taste Ueberblenden */
+	#define RC5_CODE_FWD	(0x3010 & RC5_MASK)		/*!< Taste Vol+ */
+	#define RC5_CODE_BWD	(0x3011 & RC5_MASK)		/*!< Taste Vol- */
 	#define RC5_CODE_RED	(0x3037 & RC5_MASK)		/*!< Taste FRWD / Rot */
 	#define RC5_CODE_GREEN	(0x3036 & RC5_MASK)		/*!< Taste STOP / Gruen */
 	#define RC5_CODE_YELLOW	(0x3032 & RC5_MASK)		/*!< Taste PLAY / Gelb */
 	#define RC5_CODE_BLUE	(0x3034 & RC5_MASK)		/*!< Taste FFWD / Blau */
-	#define RC5_CODE_TV_VCR	RC5_NOT_AVAIL
-#endif /* RC_HAVE_LIFETEC_LT3607 */
+	#define RC5_CODE_TV_VCR	(0x300D	& RC5_MASK)		/*!< Taste Mute */
+#endif	// RC_HAVE_LIFETEC_LT3607
 
 /*!
- * Default-Philips-Fernbedienung mit Jog-Dial-Rad
+ * Default-Philips-Fernbedienung
  */
-
 #ifdef RC_HAVE_DEFAULT	/*!< Default RC5-Codes falls keine FB definiert wurde */
- 
-	#undef JOG_DIAL
-	
 	#define RC5_CODE_0			(0x3940 & RC5_MASK)		/*!< Taste 0 */
 	#define RC5_CODE_1			(0x3941 & RC5_MASK)		/*!< Taste 1 */
 	#define RC5_CODE_2			(0x3942 & RC5_MASK)		/*!< Taste 2 */
@@ -562,30 +472,6 @@
 
 	#define RC5_CH_PLUS		RC5_NOT_AVAIL		/*!< Ch + Taste */
 	#define RC5_CH_MINUS		RC5_NOT_AVAIL		/*!< Ch - Taste */
+#endif	// RC_HAVE_DEFAULT
 
-	#ifdef JOG_DIAL		
-		/* Jogdial geht nur inkl. Adresscode */
-		#undef RC5_MASK
-		#define RC5_MASK (RC5_COMMAND | RC5_ADDRESS)
-	
-		#define RC5_CODE_JOG_MID	(0x3969 & RC5_MASK)	/*!< Taste Jog-Dial Mitte */
-		#define RC5_CODE_JOG_L1	(0x3962 & RC5_MASK)	/*!< Taste Jog-Dial Links 1 */
-		#define RC5_CODE_JOG_L2	(0x396F & RC5_MASK)	/*!< Taste Jog-Dial Links 2 */
-		#define RC5_CODE_JOG_L3	(0x395F & RC5_MASK)	/*!< Taste Jog-Dial Links 3 */
-		#define RC5_CODE_JOG_L4	(0x3A6C & RC5_MASK)	/*!< Taste Jog-Dial Links 4 */
-		#define RC5_CODE_JOG_L5	(0x3A6B & RC5_MASK)	/*!< Taste Jog-Dial Links 5 */
-		#define RC5_CODE_JOG_L6	(0x396C & RC5_MASK)	/*!< Taste Jog-Dial Links 6 */
-		#define RC5_CODE_JOG_L7	(0x3A6A & RC5_MASK)	/*!< Taste Jog-Dial Links 7 */
-		
-		#define RC5_CODE_JOG_R1	(0x3968 & RC5_MASK)	/*!< Taste Jog-Dial Rechts 1 */
-		#define RC5_CODE_JOG_R2	(0x3975 & RC5_MASK)	/*!< Taste Jog-Dial Rechts 2 */
-		#define RC5_CODE_JOG_R3	(0x396A & RC5_MASK)	/*!< Taste Jog-Dial Rechts 3 */
-		#define RC5_CODE_JOG_R4	(0x3A6D & RC5_MASK)	/*!< Taste Jog-Dial Rechts 4 */
-		#define RC5_CODE_JOG_R5	(0x3A6E & RC5_MASK)	/*!< Taste Jog-Dial Rechts 5 */
-		#define RC5_CODE_JOG_R6	(0x396E & RC5_MASK)	/*!< Taste Jog-Dial Rechts 6 */
-		#define RC5_CODE_JOG_R7	(0x3A6F & RC5_MASK)	/*!< Taste Jog-Dial Rechts 7 */
-	#endif	/* JOG_DIAL */
-
-#endif /* !RC_HAVE_CODES */
-
-#endif /* RC5CODE_H_ */
+#endif	// RC5CODE_H_

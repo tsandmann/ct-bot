@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	command.h
+/*! 
+ * @file 	command.h
  * @brief 	Kommando-Management
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
-*/
+ */
 
 #ifndef __command_h_
 #define __command_h_ 
@@ -40,7 +41,6 @@
 #ifdef MCU
 	#define low_read uart_read 	/*!< Which function to use to read data */
 	#define low_write uart_send_cmd /*!< Which function to use to write data */
-//	#define low_write uart_send_cmd /*!< Which function to use to write data */
 	#define low_write_data uart_write /*!< Which function to use to write data */
 #endif
 
@@ -49,9 +49,16 @@
  * Request Teil eines Kommandos
  */
 typedef struct {
+#if (defined PC) && (BYTE_ORDER == BIG_ENDIAN)
+	/* Bitfeld im big-endian-Fall umdrehen */
+	uint8 command:8;	/*!< command */
+	uint8 direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
+	uint8 subcommand:7;	/*!< subcommand */
+#else
 	uint8 command:8;	/*!< command */
 	uint8 subcommand:7;	/*!< subcommand */
-	uint8 direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
+	uint8 direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */	
+#endif
 #ifndef DOXYGEN
 	} __attribute__ ((packed)) request_t; // Keine Luecken in der Struktur lassen
 #else
@@ -118,7 +125,7 @@ typedef struct {
 
 //Kommandos fuer die Verbindung zum c't-Sim
 #define CMD_WELCOME		'W'		/*!< Kommado zum anmelden an c't-Sim */
-#define SUB_WELCOME_REAL	'R'		/*!< Subkommado zum anmelden eine realen Bots an c't-Sim */
+#define SUB_WELCOME_REAL	'R'		/*!< Subkommado zum anmelden eines realen Bots an c't-Sim */
 #define SUB_WELCOME_SIM	'S'		/*!< Subkommado zum anmelden eines simulierten Bots an c't-Sim */
 
 //Kommandos fuer die Remote-Calls
@@ -159,7 +166,7 @@ int8 command_read(void);
  * @param data_r Daten fuer den rechten Kanal
  * @param payload Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
-void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,uint8 payload);
+void command_write(uint8_t command, uint8_t subcommand, int16_t* data_l, int16_t* data_r, uint8_t payload);
 
 /*!
  *  Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort
@@ -169,7 +176,7 @@ void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,
  * @param data_r Daten fuer den rechten Kanal
  * @param data Datenanhang an das eigentliche Command
  */
-void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* data_r, const char* data);
+void command_write_data(uint8_t command, uint8_t subcommand, int16_t* data_l, int16_t* data_r, const char* data);
 
 /*!
  * Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort
@@ -180,17 +187,17 @@ void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* d
  * @param payload Anzahl der Bytes im Anhang
  * @param data Datenanhang an das eigentliche Command
  */
-void command_write_rawdata(uint8 command, uint8 subcommand, int16* data_l, int16* data_r, uint8 payload, uint8* data);
+void command_write_rawdata(uint8_t command, uint8_t subcommand, int16_t* data_l, int16_t* data_r, uint8_t payload, uint8_t* data);
 
 /*!
  * Wertet das Kommando im Puffer aus
  * return 1, wenn Kommando schon bearbeitet wurde, 0 sonst
  */
-int command_evaluate(void);
+int8_t command_evaluate(void);
 
 /*! 
  * Gibt ein Kommando auf dem Bildschirm aus
  */
 void command_display(command_t * command);
 
-#endif
+#endif	/*__command_h_*/

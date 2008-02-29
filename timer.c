@@ -51,7 +51,7 @@
 #ifdef MCU
 	volatile tickCount_t tickCount;		/*!< ein Tick alle 176 us */
 #else
-	float tickCount=0;
+	float tickCount=0;					/*!< ein Tick alle 176 us */
 #endif 
 
 #ifdef PC
@@ -107,8 +107,9 @@
 		LOCK();
 		/* TickCounter [176 us] erhoehen */
 		static uint16 last_simultime=0;
-		if (simultime < last_simultime) last_simultime -= 10000;	// der Sim setzt simultime alle 10s zurueck auf 0
-		tickCount += MS_TO_TICKS((float)(simultime - last_simultime));
+		float tmp = (float)simultime - (float)last_simultime;
+		if (tmp < 0) tmp += 10000;	// der Sim setzt simultime alle 10s zurueck auf 0
+		tickCount += MS_TO_TICKS(tmp);
 		last_simultime = simultime;
 		UNLOCK();
 	}

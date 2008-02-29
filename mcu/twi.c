@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,48 +17,41 @@
  * 
  */
 
-/*! @file 	TWI_driver.c  
+/*! 
+ * @file 	twi.c  
  * @brief 	TWI-Treiber (I2C)
  * @author 	Chris efstathiou hendrix@otenet.gr & Carsten Giesen (info@cnau.de)
  * @date 	08.04.06
-*/
-
-#ifdef MCU 
-#include <avr/io.h>
-#include "TWI_driver.h"
-#include "global.h"
-
-
-/*!
- * TWI Bus initialsieren
- * @return Resultat der Aktion
  */
 
-int8 Init_TWI(void){
-	TWAR = OWN_ADR;							/*!< Eigenen Slave Adresse setzen */
-	TWBR = 12;                    			/*!< Setze Baudrate auf 100 KHz  */
-											/*!< 4 MHz xtal */
-	TWCR = (1<<TWEN);						/*!< TWI-Interface einschalten */
+#ifdef MCU 
+#include "ct-Bot.h"
+#ifdef TWI_AVAILABLE 
+#include "twi.h"
+#include "global.h"
 
-    return 1;
-}    
+//#define OLD_VERSION
+
+#ifdef OLD_VERSION
+#warning "veraltete Version, besser i2c-Treiber verwenden"
+
+#include <avr/io.h>
+
+static uint8 Send_adr(uint8 adr);
+static uint8 Get_byte(uint8 * rx_ptr, uint8 last_byte);
+static uint8 Send_byte(uint8 data);
 
 /*!
  * TWI Buss schliesen
- * @return Resultat der Aktion
  */
- 
-int8 Close_TWI(void){
-	TWCR = (0<<TWEN);						/*!< TWI-Interface ausschalten */
-
-    return 0;
+static void Close_TWI(void) {
+	TWCR = 0;	/*!< TWI-Interface ausschalten */
 }    
 
 /*!
  * Warte auf TWI interrupt
  */
- 
-void Wait_TWI_int(void){
+static void Wait_TWI_int(void) {
 	while (!(TWCR & (1<<TWINT)))
 	    ; 
 }    
@@ -67,8 +60,7 @@ void Wait_TWI_int(void){
  * Sende Start Sequence
  * @return Resultat der Aktion
  */
-
-uint8 Send_start(void){
+static uint8 Send_start(void) {
 	TWCR = ((1<<TWINT)+(1<<TWSTA)+(1<<TWEN)); 		/*!< Sende START */
 	
 	Wait_TWI_int();									/*!< Warte auf TWI interrupt */
@@ -81,8 +73,7 @@ uint8 Send_start(void){
 /*!
  * Sende Stop Sequence
  */
- 
-void Send_stop(void){
+static void Send_stop(void) {
 	TWCR = ((1<<TWEN)+(1<<TWINT)+(1<<TWSTO));
 }        
     
@@ -91,12 +82,12 @@ void Send_stop(void){
  * @param *data_pack Container mit den Daten fuer den Treiber
  * @return Resultat der Aktion
  */
-uint8 Send_to_TWI(tx_type *data_pack){
+uint8 Send_to_TWI(tx_type_t * data_pack) {
 	uint8 state,i,j;
 
 	state = SUCCESS;
 	
-	for(i=0;(data_pack[i].slave_adr != OWN_ADR)&&(state == SUCCESS);i++)	{
+	for(i=0;(data_pack[i].slave_adr != OWN_ADR)&&(state == SUCCESS);i++) {
 		state = Send_start();
 		if (state == SUCCESS)				
 			state = Send_adr(data_pack[i].slave_adr);
@@ -144,8 +135,7 @@ uint8 Send_to_TWI(tx_type *data_pack){
  * Sende ein Byte
  * @param data das zu uebertragende Byte
  */
- 
-uint8 Send_byte(uint8 data){
+static uint8 Send_byte(uint8 data) {
 	Wait_TWI_int();
 	TWDR = data;
  	TWCR = ((1<<TWINT)+(1<<TWEN));
@@ -160,8 +150,7 @@ uint8 Send_byte(uint8 data){
  * @param adr die gewuenschte Adresse
  * @return Resultat der Aktion
  */
- 
-uint8 Send_adr(uint8 adr){
+static uint8 Send_adr(uint8 adr) {
 	Wait_TWI_int();
 	TWDR = adr;
 	TWCR = ((1<<TWINT)+(1<<TWEN));
@@ -177,8 +166,7 @@ uint8 Send_adr(uint8 adr){
  * @param last_byte Flag ob noch Daten erwartet werden
  * @return Resultat der Aktion
  */
- 
-uint8 Get_byte(uint8 *rx_ptr,uint8 last_byte){
+static uint8 Get_byte(uint8 * rx_ptr, uint8 last_byte) {
 	Wait_TWI_int();
 	if(last_byte)
 		TWCR = ((1<<TWINT)+(1<<TWEA)+(1<<TWEN));
@@ -191,4 +179,40 @@ uint8 Get_byte(uint8 *rx_ptr,uint8 last_byte){
 	return TWSR;
 }
 
-#endif
+#else
+
+/*!
+ * Datentransfer per I2C-Bus
+ * @param *pData	Container mit den Daten fuer den Treiber
+ * @return 			Resultat der Aktion
+ */
+uint8_t Send_to_TWI(tx_type_t * pData) {
+	uint8_t toRead = 0;
+	uint8_t toWrite = 0;
+	uint8_t * pWrite = NULL;
+	uint8_t * pRead = NULL;
+	tx_type_t * ptr = pData;
+	if (ptr == NULL) return TW_BUS_ERROR;
+	
+	/* Datenformat einlesen */
+	for (; ptr->slave_adr != OWN_ADR; ptr++) {
+		if ((ptr->slave_adr & 0x1) == 1) {
+			/* zu sendende Daten */
+			toWrite = ptr->size;
+			pWrite = ptr->data_ptr;
+		} else {
+			/* zu lesende Daten */
+			toRead = ptr->size;
+			pRead = ptr->data_ptr;
+		}
+	}
+	
+	/* Daten senden und empfangen per i2c-Treiber (blockierend) */
+	i2c_write_read(pData->slave_adr, pWrite, toWrite, pRead, toRead);
+	uint8_t result = i2c_wait(); 
+	return result == TW_NO_INFO ? SUCCESS : result;
+}
+#endif	// OLD_VERSION
+
+#endif	// TWI_AVAILABLE 
+#endif	// MCU

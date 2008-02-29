@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,20 +17,24 @@
  * 
  */
 
-/*! @file 	log.c
+/*! 
+ * @file 	log.c
  * @brief 	Routinen zum Loggen von Informationen. Es sollten ausschliesslich nur
  * die Log-Makros: LOG_DEBUG(), LOG_INFO(), LOG_WARN(), LOG_ERROR() und LOG_FATAL()
  * verwendet werden.
  * Eine Ausgabe kann wie folgt erzeugt werden:
- * LOG_DEBUG(("Hallo Welt!"));
- * LOG_INFO(("Wert x=%d", x));
- * Wichtig ist die doppelte Klammerung. Bei den Ausgaben kann auf ein Line Feed
- * '\n' am Ende des Strings verzichtet werden, da dies automatisch angeh�ngt
- * hinzugefuegt wird.
+ * LOG_DEBUG("Hallo Welt!");
+ * LOG_INFO("Wert x=%d", x);
+ * Bei den Ausgaben kann auf ein Line Feed '\n' am Ende des Strings verzichtet werden, 
+ * da dies automatisch angehaengt hinzugefuegt wird.
+ * Die frueher noetigen Doppelklammern sind nicht mehr noetig, einfach normale Klammern
+ * verwenden, siehe Bsp. oben. 
+ * (Die Doppelklammern funktionieren nicht mit Var-Arg-Makros, die wir aber brauchen, da 
+ * nun fuer MCU alle Strings im Flash belassen werden sollen, das spart viel RAM :-) )
  * 
  * @author 	Andreas Merkle (mail@blue-andi.de)
  * @date 	27.02.06
-*/
+ */
 
 //TODO: Umblaetterfunktion fuer mehr als 4 Logausgaben bei LOG_DISPLAY_AVAILABLE => Keyhandler aehnlich wie bei der Verhaltensanzeige
 
@@ -46,10 +50,11 @@
 #include "mmc-vm.h"
 
 #ifdef LOG_AVAILABLE
+#ifndef USE_MINILOG
 
 #ifdef PC
-#include <pthread.h>
-#endif	/* PC */
+	#include <pthread.h>
+#endif
 
 #ifdef LOG_DISPLAY_AVAILABLE
 	/*! Groesse des Puffers fuer die Logausgaben bei Verwendung des LCD-Displays. */
@@ -67,9 +72,9 @@
 	#define UNLOCK()	pthread_mutex_unlock(&log_buffer_mutex);
 #else
 	/*! Schuetzt den Ausgabepuffer */
-	#define LOCK()		/* TODO */
+	#define LOCK()
 	/*! Hebt den Schutz fuer den Ausgabepuffer wieder auf */
-	#define UNLOCK()	/* TODO */
+	#define UNLOCK()
 #endif	/* PC */
 
 #ifdef LOG_MMC_AVAILABLE
@@ -78,12 +83,19 @@
 	#define LOG_FILENAME "log.txt"
 #endif	/* LOG_MMC_AVAILABLE */
 
+/* Log-Typen als String, auf MCU im Flash */
+static const char debug_str[] PROGMEM = "- DEBUG -";
+static const char info_str[] PROGMEM = "- INFO -";
+static const char warn_str[] PROGMEM = "- WARNING -";
+static const char error_str[] PROGMEM = "- ERROR -";
+static const char fatal_str[] PROGMEM = "- FATAL -";
+
 /*!
- * Liefert den Log-Typ als String.
+ * Liefert den Log-Typ als String (auf MCU als Flash-Referenz).
  * @param log_type Log-Typ
  * @return char*
  */
-static char* log_get_type_str(LOG_TYPE log_type);
+static const char* log_get_type_str(LOG_TYPE log_type);
 
 /*! Puffer fuer das Zusammenstellen einer Logausgabe */
 static char log_buffer[LOG_BUFFER_SIZE];
@@ -99,74 +111,175 @@ static char log_buffer[LOG_BUFFER_SIZE];
 	static char screen_output[4][LOG_BUFFER_SIZE];	// Puffer, damit mehr als eine Zeile pro Hauptschleifendurchlauf geloggt werden kann
 #endif	/* LOG_DISPLAY_AVAILABLE */
 
-/*!
- * Schreibt Angaben ueber Datei, Zeilennummer und den Log-Typ in den Puffer.
- * Achtung, Mutex wird gelockt und muss explizit durch log_end() wieder
- * freigegeben werden!
- * @param filename Dateiname
- * @param line Zeilennummer
- * @param log_type Log-Typ
- */
-extern void log_begin(char *filename, unsigned int line, LOG_TYPE log_type) {
-
-/* Ausgaben ueber das LCD-Display werden ohne Dateiname und Zeilennumer
- * gemacht. Der Log-Typ versteckt sich im ersten Buchstaben. Durch eine
- * die Markierung mit '>' erkennt man das letzte Logging.
- * Nur bei Ausgaben ueber UART und an ct-Sim werden Dateiname, Zeilennummer
- * und der Log-Typ vollstaendig ausgegeben.
- */
-	#ifdef LOG_DISPLAY_AVAILABLE	
-		LOCK();
-		/* Alte Markierung loeschen */
-		if (log_line == 1){
-			screen_output[3][0] = ' ';
-		}
-		else{
-			screen_output[log_line-2][0] = ' ';
-		}
-		snprintf(log_buffer, LOG_BUFFER_SIZE, ">%s:", log_get_type_str(log_type));	
-	#else
+#ifdef PC
+	/*!
+	 * Schreibt Angaben ueber Datei, Zeilennummer und den Log-Typ in den Puffer.
+	 * Achtung, Mutex wird gelockt und muss explizit durch log_end() wieder
+	 * freigegeben werden!
+	 * @param filename Dateiname
+	 * @param line Zeilennummer
+	 * @param log_type Log-Typ
+	 */
+	void log_begin(const char *filename, unsigned int line, LOG_TYPE log_type) {
 	
-		char *ptr = NULL;
-	
-		/* Nur den Dateinamen loggen, ohne Verzeichnisangabe */
-		ptr = strrchr(filename, '/');
-	
-		if (ptr == NULL)
-			ptr = filename;
-		else 
-			ptr++;
-	
-		LOCK();
-	
-		snprintf(log_buffer, LOG_BUFFER_SIZE, "%s(%d)\t%s\t", 
-			ptr, line, log_get_type_str(log_type));
+		/* Ausgaben ueber das LCD-Display werden ohne Dateiname und Zeilennumer
+		 * gemacht. Der Log-Typ versteckt sich im ersten Buchstaben. Durch eine
+		 * die Markierung mit '>' erkennt man das letzte Logging.
+		 * Nur bei Ausgaben ueber UART und an ct-Sim werden Dateiname, Zeilennummer
+		 * und der Log-Typ vollstaendig ausgegeben.
+		 */
+		 
+		#ifdef LOG_DISPLAY_AVAILABLE	
+			LOCK();
+			/* Alte Markierung loeschen */
+			if (log_line == 1){
+				screen_output[3][0] = ' ';
+			}
+			else{
+				screen_output[log_line-2][0] = ' ';
+			}
+			snprintf(log_buffer, LOG_BUFFER_SIZE, ">%c:", *(log_get_type_str(log_type)+2));	
+		#else
 		
-	#endif
+			const char *ptr = NULL;
 		
-	return;	
-}
-
-/*!
- * Schreibt die eigentliche Ausgabeinformation in den Puffer.
- * @param format Format
- */
-extern void log_printf(char *format, ...) {
-
-	va_list	args;
-	unsigned int len = strlen(log_buffer);
+			/* Nur den Dateinamen loggen, ohne Verzeichnisangabe */
+			ptr = strrchr(filename, '/');
+		
+			if (ptr == NULL)
+				ptr = filename;
+			else 
+				ptr++;
+		
+			LOCK();
+		
+			snprintf(log_buffer, LOG_BUFFER_SIZE, "%s(%d)\t%s\t", 
+				ptr, line, log_get_type_str(log_type));
+			
+		#endif
+			
+		return;	
+	}
+#else
+	/*!
+	 * @brief	Kopiert einen String wortweise vom Flash ins Ram
+	 * @param flash	Zeiger auf einen String im FLASH
+	 * @param ram	Zeiger auf den Zielpuffer im RAM
+	 * @param n		Anzahl der zu kopierenden WORTE
+	 * Es werden maximal n Worte kopiert, ist der String schon zuvor nullterminiert, 
+	 * wird bei Auftreten von 0 abgebrochen. 
+	 */
+	static void get_str_from_flash(const char* flash, char* ram, uint8 n) {
+		uint8 i;
+		/* Zeichen des Strings wortweise aus dem Flash holen */
+		uint16* p_ram  = (uint16*)ram;
+		uint16* p_flash = (uint16*)flash;
+		for (i=0; i<n; i++){
+			uint16 tmp = pgm_read_word(p_flash++);
+			*(p_ram++) = tmp;
+			if ((uint8)tmp == 0 || (tmp & 0xFF00) == 0) break;	// Stringende erreicht
+		}
+		*((char*)p_ram) = 0;	// evtl. haben wir ein Byte zu viel gelesen, das korrigieren wir hier	
+	}
 	
-	va_start(args, format);
-	vsnprintf(&log_buffer[len], LOG_BUFFER_SIZE - len, format, args);
-	va_end(args);
+	/*!
+	 * Schreibt Angaben ueber Datei, Zeilennummer und den Log-Typ in den Puffer.
+	 * Achtung, Mutex wird gelockt und muss explizit durch log_end() wieder
+	 * freigegeben werden!
+	 * @param filename Dateiname
+	 * @param line Zeilennummer
+	 * @param log_type Log-Typ
+	 */
+	void log_flash_begin(const char *filename, unsigned int line, LOG_TYPE log_type) {
+	
+		/* Ausgaben ueber das LCD-Display werden ohne Dateiname und Zeilennumer
+		 * gemacht. Der Log-Typ versteckt sich im ersten Buchstaben. Durch eine
+		 * die Markierung mit '>' erkennt man das letzte Logging.
+		 * Nur bei Ausgaben ueber UART und an ct-Sim werden Dateiname, Zeilennummer
+		 * und der Log-Typ vollstaendig ausgegeben.
+		 */		 
+		#ifdef LOG_DISPLAY_AVAILABLE
+			LOCK();
+			/* Alte Markierung loeschen */
+			if (log_line == 1){
+				screen_output[3][0] = ' ';
+			}
+			else{
+				screen_output[log_line-2][0] = ' ';
+			}
+			log_buffer[0] = '>';
+			log_buffer[1] = pgm_read_byte(log_get_type_str(log_type)+2);
+			log_buffer[2] = ':';
+			log_buffer[3] = '\0';
+		#else
+			/* Zeichen des Strings fuer Dateiname wortweise aus dem Flash holen */
+			char flash_filen[80];
+			get_str_from_flash(filename, flash_filen, 40/2);
 
-	return;
-}
+			/* Zeichen des Strings fuer Typ wortweise aus dem Flash holen */
+			char flash_type[12];
+			get_str_from_flash(log_get_type_str(log_type), flash_type, 12/2);
+			const char *ptr = NULL;
+		
+			/* Nur den Dateinamen loggen, ohne Verzeichnisangabe */
+			ptr = strrchr(flash_filen, '/');
+		
+			if (ptr == NULL)
+				ptr = flash_filen;
+			else 
+				ptr++;
+		
+			LOCK();
+		
+			snprintf(log_buffer, LOG_BUFFER_SIZE, "%s(%d)\t%s\t", 
+				ptr, line, flash_type);
+			
+		#endif
+			
+		return;	
+	}
+#endif	// PC
+
+#ifdef PC
+	/*!
+	 * Schreibt die eigentliche Ausgabeinformation in den Puffer.
+	 * @param format Format
+	 */
+	void log_printf(const char *format, ...) {
+	
+		va_list	args;
+		unsigned int len = strlen(log_buffer);
+		
+		va_start(args, format);
+		vsnprintf(&log_buffer[len], LOG_BUFFER_SIZE - len, format, args);
+		va_end(args);
+	
+		return;
+	}
+#else
+	/*!
+	 * Schreibt die eigentliche Ausgabeinformation (aus dem Flash) in den Puffer.
+	 * @param format Format
+	 */
+	void log_flash_printf(const char *format, ...) {
+		char flash_str[LOG_BUFFER_SIZE+4];	// bissel groesser, weil die % ja noch mit drin sind
+		get_str_from_flash(format, flash_str, LOG_BUFFER_SIZE/2+2);	// String aus dem Flash holen
+
+		va_list	args;
+		unsigned int len = strlen(log_buffer);
+		
+		va_start(args, format);
+		vsnprintf(&log_buffer[len], LOG_BUFFER_SIZE - len, flash_str, args);
+		va_end(args);
+	
+		return;
+	}
+#endif	// PC
 
 /*!
  * Gibt den Puffer entsprechend aus.
  */
-extern void log_end(void) {
+void log_end(void) {
 
 	#ifdef LOG_UART_AVAILABLE
 		/* String ueber UART senden, ohne '\0'-Terminierung */
@@ -225,7 +338,10 @@ extern void log_end(void) {
 }
 
 #ifdef LOG_MMC_AVAILABLE
-	uint8 log_mmc_init(void){
+	/*!
+	 * @brief	Initialisierung fuer MMC-Logging
+	 */
+	uint8 log_mmc_init(void) {
 		/* Log-Datei oeffnen und Dateiende merken */
 		log_file = mmc_fopen(LOG_FILENAME);
 		if (log_file == 0) return 1;	// Fehler :(
@@ -237,36 +353,6 @@ extern void log_end(void) {
 
 #ifdef LOG_DISPLAY_AVAILABLE
 	/*!
-	 * Liefert den Log-Typ als String.
-	 * @param log_type Log-Typ
-	 * @return char*
-	 */
-	static char* log_get_type_str(LOG_TYPE log_type) {
-		
-		switch(log_type) {
-			case LOG_TYPE_DEBUG:
-				return "D";
-				
-			case LOG_TYPE_INFO:
-				return "I";
-				
-			case LOG_TYPE_WARN:
-				return "W";
-				
-			case LOG_TYPE_ERROR:
-				return "E";
-				
-			case LOG_TYPE_FATAL:
-				return "F";
-				
-			default:
-				break;
-		}
-	
-		return "";
-	}
-	
-	/*!
 	 * @brief	Display-Handler fuer das Logging
 	 */
 	void log_display(void){	
@@ -277,37 +363,32 @@ extern void log_end(void) {
 			display_printf("%s", screen_output[i]);
 		}
 	}
-#else
+#endif	// LOG_DISPLAY_AVAILABLE
 
-	/*!
-	 * Liefert den Log-Typ als String.
-	 * @param log_type Log-Typ
-	 * @return char*
-	 */
-	static char* log_get_type_str(LOG_TYPE log_type) {
-		
-		switch(log_type) {
-			case LOG_TYPE_DEBUG:
-				return "- DEBUG -";
-				
-			case LOG_TYPE_INFO:
-				return "- INFO -";
-				
-			case LOG_TYPE_WARN:
-				return "- WARNING -";
-				
-			case LOG_TYPE_ERROR:
-				return "- ERROR -";
-				
-			case LOG_TYPE_FATAL:
-				return "- FATAL -";
-				
-			default:
-				break;
-		}
-	
-		return "";
+/*!
+ * Liefert einen Zeiger auf den Log-Typ als String.
+ * @param log_type Log-Typ
+ * @return char*
+ */
+static const char* log_get_type_str(LOG_TYPE log_type) {
+
+	switch(log_type) {
+		case LOG_TYPE_DEBUG:
+			return debug_str;
+			
+		case LOG_TYPE_INFO:
+			return info_str;
+			
+		case LOG_TYPE_WARN:
+			return warn_str;
+			
+		case LOG_TYPE_ERROR:
+			return error_str;
+			
+		case LOG_TYPE_FATAL:
+			return fatal_str;
 	}
-#endif	/* LOG_DISPLAY_AVAILABLE */
-
+	return debug_str;
+}
+#endif	// USE_MINILOG
 #endif	/* LOG_AVAILABLE */

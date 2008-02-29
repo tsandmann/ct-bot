@@ -18,14 +18,14 @@
  */
 
 
-/*! @file 	behaviour_simple.h
+/*! 
+ * @file 	behaviour_simple.h
  * @brief 	ganz einfache Beispielverhalten
  * Diese Datei sollte der Einstiegspunkt fuer eigene Experimente sein, 
  * den Roboter zu steuern.
- * 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
-*/
+ */
 
 #ifndef BEHAVIOUR_SIMPLE_H_
 #define BEHAVIOUR_SIMPLE_H_
@@ -83,8 +83,7 @@ void bot_simple_behaviour(Behaviour_t *data);
  * Rufe das Simple-Verhalten auf 
  * @param caller Der obligatorische Verhaltensdatensatz des Aufrufers
  */
-void bot_simple(Behaviour_t * caller, int16 light);
+void bot_simple(Behaviour_t * caller);
 
-#endif
-
+#endif	// BEHAVIOUR_SIMPLE_AVAILABLE
 #endif /*BEHAVIOUR_SIMPLE_H_*/

@@ -17,12 +17,12 @@
  * 
  */
 
-/*! @file 	behaviour_olympic.h
- * @brief 	Bot sucht saeulen und faehrt dann slalom
- * 
+/*! 
+ * @file 	behaviour_olympic.h
+ * @brief 	Bot sucht Saeulen und faehrt dann Slalom
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
-*/
+ */
 
 #ifndef BEHAVIOUR_OLYMPIC_H_
 #define BEHAVIOUR_OLYMPIC_H_
@@ -32,7 +32,9 @@
 
 /*!
  * Das Verhalten setzt sich aus 3 Teilverhalten zusammen: 
- * Nach Licht suchen, auf das Licht zufahren, im Licht Slalom fahren. */
+ * Nach Licht suchen, auf das Licht zufahren, im Licht Slalom fahren.
+ * @param *data	Verhaltensdatensatz  
+ */
 void bot_olympic_behaviour(Behaviour_t *data);
 
 /*!
@@ -55,13 +57,16 @@ void bot_olympic_behaviour(Behaviour_t *data);
  * 
  * Da das Verhalten jeweils nach 10ms neu aufgerufen wird, muss der Bot sich
  * 'merken', in welchem Zustand er sich gerade befindet.
- * */
+ * 
+ * @param *data	Verhaltensdatensatz
+ */
 void bot_explore_behaviour(Behaviour_t *data);
 
 /*!
  * Das Verhalten laesst den Bot einen Slalom fahren.
  * @see bot_do_slalom()
- * */
+ * @param *data	Verhaltensdatensatz
+ */
 void bot_do_slalom_behaviour(Behaviour_t *data);
 
 
@@ -79,6 +84,8 @@ void bot_do_slalom_behaviour(Behaviour_t *data);
  * Wenn es dieses Objekt gibt, wird es zur aktuellen Saeule und der Bot faehrt jetzt Slalom links.
  * 5. Sonst zurueck drehen, 90 Grad drehen und Slalom rechts fahren.
  * In diesem Schritt kann der Bot das Verhalten auch abbrechen, falls er gar kein Objekt mehr findet.
+ * 
+ * @param *caller	Verhaltensdatensatz des Aufrufers
  */
 void bot_do_slalom(Behaviour_t *caller);
 
@@ -89,5 +96,5 @@ void bot_do_slalom(Behaviour_t *caller);
  * @param active ACTIVE wenn es sofort starten soll, sonst INACTIVE
  */
 void bot_olympic_init(int8 prio_main,int8 prio_helper, int8 active);
-#endif
-#endif /*BEHAVIOUR_OLYMPIC_H_*/
+#endif	// BEHAVIOUR_OLYMPIC_AVAILABLE
+#endif	/*BEHAVIOUR_OLYMPIC_H_*/

@@ -17,52 +17,29 @@
  * 
  */
 
-/*! @file 	behaviour_gotoxy.c
+/*! 
+ * @file 	behaviour_gotoxy.c
  * @brief 	Bot faehrt eine Position an
- * 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
-*/
+ */
 
 #include "bot-logic/bot-logik.h"
+#include <math.h>
+#include "math_utils.h"
+#include "log.h"
 
 #ifdef BEHAVIOUR_GOTOXY_AVAILABLE
-#include <math.h>
 
-
-
-
-/* Parameter fuer bot_gotoxy_behaviour-Verhalten */
-float target_x;				/*!< Zielkoordinate X */
-float target_y;				/*!< Zielkoordinate Y */
-float initialDiffX;			/*!< Anfangsdifferenz in X-Richtung */
-float initialDiffY;			/*!< Anfangsdifferenz in Y-Richtung */
-
-
-/*!
- * Auslagerung der Berechnung der benoetigten Drehung aus dem gotoxy_behaviour
- * @param xDiff
- * @param yDiff
- */
-int16 bot_gotoxy_calc_turn(float xDiff, float yDiff){
-	float newHeading;
-	if(fabs(yDiff)>0.001 && fabs(xDiff)>0.001){
-		newHeading=atan(yDiff/xDiff)*180/(M_PI);
-		if (xDiff<0) 
-			newHeading+=180;
-	} else{
-		if(fabs(xDiff)<=0.001) 
-			newHeading=(yDiff>0)?90:(-90);
-		else 
-			newHeading=(xDiff>0)?0:(180);
-	}
-
-	int16 toTurn=(int16)newHeading-heading;		
-	if (toTurn > 180) toTurn-=360;
-	if (toTurn < -180) toTurn+=360;
-
-	return toTurn;
-}
+#define INITIAL_TURN 	0
+#define GOTO_LOOP 		1
+#define CORRECT_HEAD	2
+#define REACHED_POS		3
+static int8 gotoState=INITIAL_TURN;	/*!< Status des Verhaltens */
+static float target_x;				/*!< Zielkoordinate X */
+static float target_y;				/*!< Zielkoordinate Y */
+static float initialDiffX;			/*!< Anfangsdifferenz in X-Richtung */
+static float initialDiffY;			/*!< Anfangsdifferenz in Y-Richtung */
 
 /*!
  * Das Verhalten faehrt von der aktuellen Position zur angegebenen Position (x/y)
@@ -70,13 +47,6 @@ int16 bot_gotoxy_calc_turn(float xDiff, float yDiff){
  * Verbessert von Thomas Noll, Jens Schoemann, Ben Horst (Philipps-Universitaet Marburg)
  */
 void bot_gotoxy_behaviour(Behaviour_t *data){
-	#define INITIAL_TURN 	0
-	#define GOTO_LOOP 	1
-	#define CORRECT_HEAD	2
-	#define REACHED_POS	3
-	static int16 speedLeft=BOT_SPEED_FOLLOW;
-	static int16 speedRight=BOT_SPEED_FOLLOW;
-	static int8 gotoState=INITIAL_TURN;
 	/* aus aktueller Position und Ziel neuen Zielwinkel berechnen */
 	float xDiff=target_x-x_pos;
 	float yDiff=target_y-y_pos;
@@ -91,18 +61,18 @@ void bot_gotoxy_behaviour(Behaviour_t *data){
 	switch(gotoState) {
 		case INITIAL_TURN:
 			gotoState=GOTO_LOOP;
-			bot_turn(data,bot_gotoxy_calc_turn(xDiff,yDiff));
+			bot_turn(data,calc_angle_diff(xDiff,yDiff));
 			break;
 
 		case GOTO_LOOP:
 			/* Position erreicht? */
 			if ((xDiff)<10 || (yDiff)<10) {
 				gotoState=CORRECT_HEAD;
-				bot_turn(data,bot_gotoxy_calc_turn(xDiff,yDiff));
+				bot_turn(data,calc_angle_diff(xDiff,yDiff));
 				break;
 			}
-			speedWishLeft=speedLeft;
-			speedWishRight=speedRight;
+			speedWishLeft=BOT_SPEED_FOLLOW;
+			speedWishRight=BOT_SPEED_FOLLOW;
 			break;
 
 		case CORRECT_HEAD:
@@ -122,7 +92,6 @@ void bot_gotoxy_behaviour(Behaviour_t *data){
 			return_from_behaviour(data);
 			break;
 	}
-
 }
 
 /*!
@@ -132,10 +101,12 @@ void bot_gotoxy_behaviour(Behaviour_t *data){
  * @param y Y-Ordinate an die der Bot fahren soll
  */
 void bot_gotoxy(Behaviour_t *caller, float x, float y){
+//	LOG_DEBUG("x=%f\ty=%f", x, y);
 	target_x=x;
 	target_y=y;
 	initialDiffX=x-x_pos;
 	initialDiffY=y-y_pos;
+	gotoState=INITIAL_TURN;
 	switch_to_behaviour(caller, bot_gotoxy_behaviour, NOOVERRIDE);
 }
-#endif
+#endif	// BEHAVIOUR_GOTOXY_AVAILABLE

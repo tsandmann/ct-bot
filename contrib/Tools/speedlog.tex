@@ -1,0 +1,50 @@
+%
+% c't-Bot
+% 
+% This program is free software; you can redistribute it
+% and/or modify it under the terms of the GNU General
+% Public License as published by the Free Software
+% Foundation; either version 2 of the License, or (at your
+% option) any later version. 
+% This program is distributed in the hope that it will be 
+% useful, but WITHOUT ANY WARRANTY; without even the implied
+% warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+% PURPOSE. See the GNU General Public License for more details.
+% You should have received a copy of the GNU General Public 
+% License along with this program; if not, write to the Free 
+% Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+% MA 02111-1307, USA.
+%
+
+\documentclass{article}
+\usepackage[a4paper,top=2cm,bottom=2cm,left=1cm,right=1cm]{geometry}
+\usepackage[latin1]{inputenc}
+\usepackage{graphicx}
+\usepackage[german]{babel}
+\usepackage[T1]{fontenc}
+
+\begin{document}
+\thispagestyle{empty}
+
+\begin{figure}
+ \begin{center}
+   \begin{tabular}{cc}
+     \resizebox{180mm}{!}{\includegraphics[angle=0,scale=1]{plots.eps}}
+   \end{tabular}
+   \caption{Soll-Ist-Geschwindigkeit zu PWM Wert}
+   \label{Diagramme}
+ \end{center}
+\end{figure}
+
+
+\section*{Diagramm Auswertung der Motorregelung}
+
+
+Bei den oben gezeigten Diagrammen handelt es sich um den zeitlichen Verlauf der Motorleistung in [PWM] bei entsprechender Soll-Ist Geschwindigkeit in [mm/s] f"ur den linken und rechten Motor. Die Messwerte wurden mittels Odometrie und Speedlog vom Roboter selbst aufgenommen und nach Messfahrt am PC ausgewertet.
+
+\paragraph{Datum} \today
+\paragraph{Messung} Messfahrt mit neuen PID-Parametern
+\paragraph{Bewertung} OK
+
+
+\end{document}

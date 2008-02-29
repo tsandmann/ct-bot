@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	led.h 
+/*! 
+ * @file 	led.h 
  * @brief 	Routinen zur LED-Steuerung
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 
 #ifndef led_H_
 #define led_H_
@@ -39,6 +40,7 @@
 
 #define LED_ALL    0xFF		/*!< LED Alle */
 
+#ifndef __ASSEMBLER__
 /*! Datenfeld fuer den Zugriff auf die LEDs */
 typedef struct {
    uint8 rechts:1;		/*!< LED in Fahrichtung rechts*/
@@ -58,7 +60,7 @@ typedef struct {
 	} led_t;
 #endif
 
-extern uint8 led;
+extern uint8 led;	/*!< Zustand der LEDs */
 
 /*!
  * Initialisiert die LEDs
@@ -71,16 +73,19 @@ void LED_init(void);
  */
 void LED_set(uint8 LED);
 
-/*! Schaltet eine LED aus
- * 
- * @param LED HEX-Code der LED
+/*! 
+ * Schaltet einzelne LEDs aus
+ * andere werden nicht beeinflusst
+ * @param LED Bitmaske der anzuschaltenden LEDs
  */
 void LED_off(uint8 LED);
 
-/*! Schaltet eine LED an
- * 
- * @param LED HEX-Code der LED
+/*! 
+ * Schaltet einzelne LEDs an
+ * andere werden nicht beeinflusst
+ * @param LED Bitmaske der anzuschaltenden LEDs
  */
 void LED_on(uint8 LED);
 
-#endif
+#endif	// __ASSEMBLER__
+#endif	// led_H_

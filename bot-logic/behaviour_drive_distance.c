@@ -17,25 +17,19 @@
  * 
  */
 
-/*! @file 	behaviour_drive_distance.c
+/*! 
+ * @file 	behaviour_drive_distance.c
  * @brief 	Bot faehrt ein Stueck
  * 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
-*/
+ */
 
 #include "bot-logic/bot-logik.h"
 #include "log.h"
 
-#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 
-
-/* Parameter fuer das bot_drive_distance_behaviour() */
-int16 drive_distance_target;	/*!< Zu fahrende Distanz bzw. angepeilter Stand der Radencoder sensEncL bzw. sensEncR */
-int8 drive_distance_curve;		/*!< Kruemmung der zu fahrenden Strecke. */
-int16 drive_distance_speed;		/*!< Angepeilte Geschwindigkeit. */
-
-
+#if defined BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE || defined BEHAVIOUR_OLYMPIC_AVAILABLE
 /*!
  * laesst den Bot in eine Richtung fahren. 
  * Es handelt sich hierbei nicht im eigentlichen Sinn um ein Verhalten, sondern ist nur eine Abstraktion der Motorkontrollen.
@@ -55,6 +49,14 @@ void bot_drive(int8 curve, int16 speed){
 		speedWishRight = speed;	
 	}
 }
+#endif	// BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE || defined BEHAVIOUR_OLYMPIC_AVAILABLE
+
+#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+
+/* Parameter fuer das bot_drive_distance_behaviour() */
+static int16 drive_distance_target;	/*!< Zu fahrende Distanz bzw. angepeilter Stand der Radencoder sensEncL bzw. sensEncR */
+static int8 drive_distance_curve;		/*!< Kruemmung der zu fahrenden Strecke. */
+static int16 drive_distance_speed;		/*!< Angepeilte Geschwindigkeit. */
 
 /*!
  * Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren.
@@ -83,16 +85,15 @@ void bot_drive_distance_behaviour(Behaviour_t* data){
 	}	 
 }
 
-
-
 /*! 
  * Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren. Dabei legt die Geschwindigkeit fest, ob der Bot vorwaerts oder rueckwaerts fahren soll.
- * @param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
- * @param speed Gibt an, wie schnell der Bot fahren soll. Negative Werte lassen den Bot rueckwaerts fahren.
- * @param cm Gibt an, wie weit der Bot fahren soll. In cm :-) Die Strecke muss positiv sein, die Fahrtrichtung wird ueber speed geregelt.
+ * @param caller	Der Aufrufer
+ * @param curve		Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
+ * @param speed		Gibt an, wie schnell der Bot fahren soll. Negative Werte lassen den Bot rueckwaerts fahren.
+ * @param cm		Gibt an, wie weit der Bot fahren soll. In cm :-) Die Strecke muss positiv sein, die Fahrtrichtung wird ueber speed geregelt.
  */
 void bot_drive_distance(Behaviour_t* caller,int8 curve, int16 speed, int16 cm){
-//	LOG_DEBUG(("curve= %d, speed= %d, cm =%d",curve, speed, cm));
+	//LOG_DEBUG("curve= %d, speed= %d, cm =%d",curve, speed, cm);
 
 	int32 tmp = cm;
 	tmp*= 10 * ENCODER_MARKS;
@@ -117,4 +118,4 @@ void bot_drive_distance(Behaviour_t* caller,int8 curve, int16 speed, int16 cm){
 	}
 	switch_to_behaviour(caller, bot_drive_distance_behaviour,NOOVERRIDE);
 }
-#endif
+#endif	// BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE

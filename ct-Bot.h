@@ -22,22 +22,19 @@
  * @brief 	globale Schalter fuer die einzelnen Bot-Funktionalitaeten
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 #ifndef CT_BOT_H_DEF
 #define CT_BOT_H_DEF
-
-#ifndef MMC_LOW_H_
-	#include "global.h"	// denn in mmc-low.S sind typedefs unerwuenscht
-#endif
 
 /************************************************************
 * Module switches, to make code smaller if features are not needed
 ************************************************************/
-#define LOG_CTSIM_AVAILABLE		/*!< Logging ueber das ct-Sim (PC und MCU) */
+//#define LOG_CTSIM_AVAILABLE		/*!< Logging zum ct-Sim (PC und MCU) */
 //#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display (PC und MCU) */
 //#define LOG_UART_AVAILABLE		/*!< Logging ueber UART (NUR fuer MCU) */
 //#define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (NUR fuer PC) */
-//#define LOG_MMC_AVAILABLE			/*!< Logging in eine txt-Datei auf MMC */			
+//#define LOG_MMC_AVAILABLE			/*!< Logging in eine txt-Datei auf MMC */
+#define USE_MINILOG					/*!< schaltet fuer MCU auf schlankes Logging um (nur in Verbindung mit Log2Sim) */
 
 
 #define LED_AVAILABLE		/*!< LEDs for local control */
@@ -45,7 +42,7 @@
 #define IR_AVAILABLE		/*!< Infrared Remote Control */
 #define RC5_AVAILABLE		/*!< Key-Mapping for IR-RC	 */
 
-#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
+#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunizieren? */
 
 //#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit im s und ms? */
 
@@ -54,6 +51,7 @@
 #define MEASURE_MOUSE_AVAILABLE			/*!< Geschwindigkeiten werden aus den Maussensordaten berechnet */
 //#define MEASURE_COUPLED_AVAILABLE		/*!< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
 
+//#define POS_STACK_AVAILABLE  /*!< Positionsstack vorhanden */
 
 //#define WELCOME_AVAILABLE	/*!< kleiner Willkommensgruss */
 
@@ -65,26 +63,27 @@
 #define SHIFT_AVAILABLE		/*!< Shift Register */
 
 //#define TEST_AVAILABLE_ANALOG		/*!< Sollen die LEDs die analoge Sensorwerte anzeigen */
-#define TEST_AVAILABLE_DIGITAL		/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
+//#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
 //#define TEST_AVAILABLE_MOTOR		/*!< Sollen die Motoren ein wenig drehen */
-//#define TEST_AVAILABLE_COUNTER 	/*!< Gibt einen Endlos-Counter auf Screen 3 aus und aktiviert Screen 3 */
-//#define DOXYGEN		/*!< Nur zum Erzeugen der Doku, wenn dieser schalter an ist, jammert der gcc!!! */
 
 #define BEHAVIOUR_AVAILABLE /*!< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 
 //#define MAP_AVAILABLE /*!< Aktiviere die Kartographie */
 
 //#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
-//#define UPDATE_PWM_TABLE		/*!< Aktualisiert die PWM-Lookup-Table regelmaessig */
 //#define ADJUST_PID_PARAMS		/*!< macht PID-Paramter zur Laufzeit per FB einstellbar */
 //#define SPEED_LOG_AVAILABLE 	/*!< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
-//#define VARIABLE_PWM_F		/*!< Ermoeglicht das Wechseln der PWM-Frequenz zur Laufzeit */
 
 //#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
+//#define CMPS03_AVAILABLE		/*!< Kompass CMPS03 vorhanden */
+//#define SP03_AVAILABLE		/*!< Sprachmodul SP03 vorhanden */
 
-#define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung */
-#define MINI_FAT_AVAILABLE		/*!< koennen wir sektoren in FAT-systemen finden */
+//#define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung */
+//#define SPI_AVAILABLE			/*!< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren - Hinweise in mcu/mmc.c beachten! */
 //#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
+//#define OS_AVAILABLE			/*!< Aktiviert BotOS fuer Threads und Scheduling */
+
+//#define EEPROM_EMU_AVAILABLE	/*!< Aktiviert die EEPROM-Emulation fuer PC */
 
 // Achtung, Linkereinstellungen anpassen !!!!! (siehe Documentation/Bootloader.html)!
 //#define BOOTLOADER_AVAILABLE	/*!< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders. Achtung, Linkereinstellungen anpassen (siehe mcu/bootloader.c)! */
@@ -121,25 +120,40 @@
 		#undef TWI_AVAILABLE
 		#undef SPEED_CONTROL_AVAILABLE // Deaktiviere die Motorregelung 
 		#undef MMC_AVAILABLE
+		#undef I2C_AVAILABLE
+		#undef CMPS03_AVAILABLE
+		#undef SP03_AVAILABLE
 	#endif
 
 	#define COMMAND_AVAILABLE		/*!< High-Level Communication */
+	#undef USE_MINILOG
+	#undef OS_AVAILABLE
+
+	#ifdef __APPLE__
+		#include <AvailabilityMacros.h>
+		#ifdef MAC_OS_X_VERSION_10_5
+			#undef EEPROM_EMU_AVAILABLE	// derzeit keine EEPROM-Emulation unter Leopard moeglich
+		#endif
+	#endif	// __APPLE__
 #endif
 
 #ifdef MCU
 	#ifdef LOG_CTSIM_AVAILABLE
-		#define BOT_2_PC_AVAILABLE
+		#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
 	#endif
 	#ifdef BOT_2_PC_AVAILABLE
 		#define UART_AVAILABLE		/*!< Serial Communication */
 		#define COMMAND_AVAILABLE	/*!< High-Level Communication */
+	#else
+		#undef DISPLAY_REMOTE_AVAILABLE
 	#endif
+	#undef EEPROM_EMU_AVAILABLE
 #endif
 
 
 #ifdef TEST_AVAILABLE_MOTOR
 	#define TEST_AVAILABLE			/*!< brauchen wir den Testkrams */
-	#define TEST_AVAILABLE_DIGITAL /*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
+	#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
 #endif
 
 #ifdef TEST_AVAILABLE_DIGITAL
@@ -151,40 +165,49 @@
 	#define TEST_AVAILABLE			/*!< brauchen wir den Testkrams */
 #endif
 
-#ifdef TEST_AVAILABLE_COUNTER
-	#define TEST_AVAILABLE			/*!< brauchen wir den Testkrams */
-	#define RESET_INFO_DISPLAY_AVAILABLE
-#endif
-
 #ifndef SPEED_CONTROL_AVAILABLE
 	#undef ADJUST_PID_PARAMS
 	#undef SPEED_LOG_AVAILABLE	
 #endif
 
 #ifdef LOG_UART_AVAILABLE
-	#define LOG_AVAILABLE
+	#define LOG_AVAILABLE	/*!< LOG aktiv? */
 #endif 
 #ifdef LOG_CTSIM_AVAILABLE
-	#define LOG_AVAILABLE
+	#define LOG_AVAILABLE	/*!< LOG aktiv? */
 #endif 
 #ifdef LOG_DISPLAY_AVAILABLE
-	#define LOG_AVAILABLE
+	#define LOG_AVAILABLE	/*!< LOG aktiv? */
 #endif 
 #ifdef LOG_STDOUT_AVAILABLE
-	#define LOG_AVAILABLE
+	#define LOG_AVAILABLE	/*!< LOG aktiv? */
 #endif 
 #ifdef LOG_MMC_AVAILABLE
-	#define LOG_AVAILABLE
+	#define LOG_AVAILABLE	/*!< LOG aktiv? */
 #endif
 
 #ifndef MMC_AVAILABLE
-	#undef MINI_FAT_AVAILABLE
 	#ifdef MCU
 		#undef MMC_VM_AVAILABLE
 	#endif
 #endif
 
+#ifndef MMC_AVAILABLE
+	#undef SPEED_LOG_AVAILABLE
+	
+	#ifdef MCU
+		#undef MAP_AVAILABLE	// Map geht auf dem MCU nur mit MMC
+	#endif
+#endif
+
+#ifndef MAP_AVAILABLE
+	#undef OS_AVAILABLE		// das BotOS brauchen wir derzeit nur fuer Map mit MMC
+#endif
+
 #ifdef LOG_AVAILABLE
+	#ifndef LOG_CTSIM_AVAILABLE
+		#undef USE_MINILOG
+	#endif
 	#ifdef PC
 		/* Auf dem PC gibts kein Logging ueber UART. */
 		#undef LOG_UART_AVAILABLE
@@ -210,7 +233,7 @@
 	/* Es kann immer nur ueber eine Schnittstelle geloggt werden. */
 	
 	#ifdef LOG_UART_AVAILABLE
-		#define UART_AVAILABLE
+		#define UART_AVAILABLE			/*!< UART vorhanden? */
 		#undef LOG_CTSIM_AVAILABLE
 		#undef LOG_DISPLAY_AVAILABLE
 		#undef LOG_STDOUT_AVAILABLE
@@ -256,19 +279,36 @@
 	#define TWI_AVAILABLE				/*!< TWI-Schnittstelle (I2C) nutzen */
 #endif
 
+#ifdef CMPS03_AVAILABLE
+	#define I2C_AVAILABLE	/*!< I2C-Treiber verfuegbar fuer Compassmodul */
+#endif
+
+#ifdef SP03_AVAILABLE
+	#define I2C_AVAILABLE	/*!< I2C-Treiber verfuegbar fuer Sprachmodul */
+#endif
+
+#ifdef TWI_AVAILABLE
+	#define I2C_AVAILABLE	/*!< I2C-Treiber statt TWI-Implementierung benutzen */
+#endif
 
 #define F_CPU	16000000L    /*!< Crystal frequency in Hz */
 #define XTAL F_CPU			 /*!< Crystal frequency in Hz */
 
-#define LINE_FEED "\n\r"	/*!< Windows und Linux unterscheiden beim Linefeed. Windows erwarten \n\r, Linux nur \n */
+#ifdef WIN32
+	#define LINE_FEED "\n\r"	/*!< Linefeed fuer Windows */
+#else
+	#define LINE_FEED "\n"		/*!< Linefeed fuer nicht Windows */
+#endif
 
 #ifdef MCU
 	#ifndef MMC_LOW_H_
 		#include <avr/interrupt.h>
 	#endif
 	#ifdef SIGNAL
-		#define NEW_AVR_LIB
+		#define NEW_AVR_LIB	/*!< AVR_LIB-Version */
 	#endif
 #endif
 
-#endif
+#include "global.h"
+
+#endif	// CT_BOT_H_DEF

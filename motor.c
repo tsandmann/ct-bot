@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,13 +17,16 @@
  * 
  */
 
-/*! @file 	motor.c
+/*! 
+ * @file 	motor.c
  * @brief 	High-Level-Routinen fuer die Motorsteuerung des c't-Bot
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	15.01.05
-*/
+ * @author 	Timo Sandmann (mail@timosandmann.de)
+ * @date 	17.10.2006
+ */
 
 #include <stdlib.h>
+#include <string.h>
 #include "global.h"
 #include "ct-Bot.h"
 #include "motor.h"
@@ -31,238 +34,509 @@
 #include "motor-low.h"
 #include "timer.h"
 #include "sensor.h"
+#include "sensor-low.h"
 #include "display.h"
+#include "bot-logic/bot-logik.h"
+#include "rc5-codes.h"
+#include "bot-logic/behaviour_calibrate_pid.h"
 
-int16 speed_l=0;	/*!< Geschwindigkeit linker Motor */
-int16 speed_r=0;	/*!< Geschwindigkeit rechter Motor */
+#ifdef MCU
+	#include <avr/eeprom.h>
+#else
+	#include "eeprom-emu.h"
+#endif
 
-direction_t direction;		/*!< Drehrichtung der Motoren */
-
-#define PWMMAX 255   /*!< Maximaler PWM-Wert */
-#define PWMMIN 0     /*!< Minimaler PWM-Wert */
+int16 speed_l = 0;	/*!< Sollgeschwindigkeit linker Motor */
+int16 speed_r = 0;	/*!< Sollgeschwindigkeit rechter Motor */
 
 #ifdef SPEED_CONTROL_AVAILABLE
-	int8 encoderTargetRateL=0;
-	int8 encoderTargetRateR=0;
+	#ifdef ADJUST_PID_PARAMS
+		/* PID-Parameter variabel */
+		int8 Kp = PID_Kp;	/*!< PID-Parameter proportional */
+		int8 Ki = PID_Ki;	/*!< PID-Parameter intergral */
+		int8 Kd = PID_Kd;	/*!< PID-Parameter differential */
+	#else
+		/* PID-Koeffizienten aus Parametern berechnen */
+		#define Q0 ( PID_Kp + PID_Kd/PID_Ta)					/*!< PID-Koeffizient Fehler */
+		#define Q1 (-PID_Kp - 2*PID_Kd/PID_Ta + PID_Ki*PID_Ta)	/*!< PID-Koeffizient letzter Fehler */
+		#define Q2 ( PID_Kd/PID_Ta)								/*!< PID-Koeffizient vorletzter Fehler */
+	#endif	// ADJUST_PID_PARAMS
+	
+	/*! Dividend fuer Umrechnung von Ticks [176 us] in Geschwindigkeit [mm/s] */
+	#define TICKS_TO_SPEED		(uint16)((float)WHEEL_PERIMETER/ENCODER_MARKS*1000000/TIMER_STEPS)	// = 8475*2
+	#define TICKS_TO_SPEED_0	(TICKS_TO_SPEED / 2)		/*!< Dividend fuer shift == 0 */
+	#define TICKS_TO_SPEED_1	(TICKS_TO_SPEED / 2 * 2)	/*!< Dividend fuer shift == 1 */
+	#define TICKS_TO_SPEED_2	(TICKS_TO_SPEED / 2 * 4) 	/*!< Dividend fuer shift == 2 */
+	
+	/*! Typ fuer PWM-Lookup-Werte */
+	typedef struct{
+		uint8 pwm;		/*!< PWM-Wert/2 */	
+		uint8 rating;	/*!< Qualitaet des PWM-Werts */
+	} pwmMap_t;	
+		
+	static uint8 encoderTargetRate[2] = {0,0};	/*!< Fuehrungsgroesse absolut [0; 256] */
+	static uint8 start_signal[2] = {0,0};
+	static volatile pwmMap_t pwm_values[4] = {{0,255},{0,255},{0,255},{0,255}};		/*!< Lookup fuer Zuordnung GeschwindigkeitSLOW <-> PWM */
+	#ifdef DISPLAY_REGELUNG_AVAILABLE
+		uint8 encoderRateInfo[2];		/*!< Puffer fuer Displayausgabe der Ist-Geschwindigkeit */
+	#endif
 
+#endif	// SPEED_CONTROL_AVAILABLE
+
+/* EEPROM-Variable immer deklarieren, damit die Adresse sich nicht veraendert je nach #define */
+uint8_t EEPROM pwmSlow[4] = {255, 255, 255, 255};	/*!< EEPROM-Kopie von pwm_values */
+	
+direction_t direction;		/*!< Drehrichtung der Motoren */
+
+
+#ifdef SPEED_CONTROL_AVAILABLE
 	/*!
-	 * @brief 	Drehzahlregelung fuer die Motoren des c't-Bots
-	 * @author 	Benjamin Benz (bbe@heise.de
-	 * @date 	01.05.06
-	 * Getrennte Drehzahlregelung fuer linken und rechten Motor sorgt fuer konstante Drehzahl und somit annaehernd
-	 * fuer Geradeauslauf
-	 * Feintuning von Kp, Ki, Kd verbessert die Genauigkeit und Schnelligkeit der Regelung
-	 * Querkopplung der Motoren verbessert Gleichlauf, beispielsweise x*(sensEncL - sensEncR) 
-	 * in jeden Regler einbauen
-	*/
-	void speed_control(void){
-		int8 Kp=0;
-		int8 Ki=0;
-	
-		int16 StellwertL=motor_left;  /*!< Stellwert links*/
-		int16 StellwertR=motor_right;  /*!< Stellwert rechts*/
+	 * @brief 			Drehzahlregelung fuer die Motoren des c't-Bots
+	 * @author 			Timo Sandmann (mail@timosandmann.de)
+	 * @date 			17.10.2006
+	 * @param dev		0: linker Motor, 1: rechter Motor
+	 * @param actVar	Zeiger auf Stellgroesse (nicht volatile, da Aufruf aus ISR heraus)
+	 * @param encTime	Zeiger auf Encodertimestamps, mit denen gerechnet werden soll
+	 * @param i_time	Index des aktuellen Timestamps in encTime
+	 * @param enc		Encoder-Pegel (binaer) von dev
+	 * Drehzahlregelung sorgt fuer konstante Drehzahl und somit annaehernd Geradeauslauf.
+	 * Feintuning von PID_Kp bis PID_SPEED_THRESHOLD (bot-local.h) verbessert die Genauigkeit und Schnelligkeit der Regelung.
+	 * Mit PWMMIN, PWMSTART_L und PWMSTART_R laesst sich der Minimal- bzw. Startwert fuer die Motoren anpassen.
+	 */
+	void speed_control(uint8 dev, int16* actVar, uint16* encTime, uint8 i_time, uint8 enc){
+		/* Speicher fuer alte Regeldifferenzen */
+		static int16 lastErr[2] = {0,0};
+		static int16 last2Err[2] = {0,0};
+		static uint8 orignalTargetRate[2] = {0,0};
 		
-		static int16 lastEncoderL=0;      /*!< vorhergehender Wert von sensEncL */	
-		static int8 lastErrL=0;   /*!< letzter Drehzahlfehler links */
-		static int8 last2ErrL=0;  /*!< vorletzter Drehzahlfehler links */
-	
-		static int16 lastEncoderR=0;      /*!< vorhergehender Wert von sensEncR */	
-		static int8 lastErrR=0;   /*!< letzter Drehzahlfehler rechts */
-		static int8 last2ErrR=0;  /*!< vorletzter Drehzahlfehler rechts */
-	
-		int16 err=0;    	        // aktuelle Abweichung vom Soll-Wert
-		int16 encoderRate=0;		// IST-Wert [Encoder-ticks/Aufruf]
-	
-	
-		// Wir arbeiten mit verschiedenen PID-Parametern fuer verschiedene Geschwindigkeitsabschnitte
-		if (encoderTargetRateL <= PID_LOW_RATE){
-			Kp=PID_LOW_Kp;
-			Ki=PID_LOW_Ki;
-		} else {
-			if (encoderTargetRateL >= PID_HIGH_RATE) {
-				Kp=PID_HIGH_Kp;
-				Ki=PID_HIGH_Ki;
-			} else {
-				Kp=(PID_HIGH_Kp+PID_LOW_Kp)/2;
-				Ki=(PID_HIGH_Ki+PID_LOW_Ki)/2;
-			}
-		}
-	
-	
-	
-		//Regler links  
-		if (encoderTargetRateL == 0){
-			StellwertL=0;
-			err=0; lastErrL = 0;
-		} else {
-			encoderRate = sensEncL-lastEncoderL;  	 // aktuelle Ist-Wert berechnen [Encoder-ticks/aufruf]
-			lastEncoderL = sensEncL;   				 // Anzahl der Encoderpulse merken fuer naechsten Aufruf merken
-			err = encoderTargetRateL - encoderRate;  // Regelabweichung links
-	
-			// Stellwert Berechnen
-			StellwertL +=  (Kp * (err - lastErrL)) / 10;				// P-Beitrag
-			StellwertL +=  (Ki * (err + lastErrL)/2 ) /10;			// I-Beitrag
-		//	StellwertL +=  Kd * (errL - 2 * lastErrL + last2ErrL);	// D-Beitrag
+		if (encoderTargetRate[dev] == 0){
+			/* Fuer Stopp einfach alles nullsetzen */  
+			*actVar = 0;
+			lastErr[dev] = 0; 
+			last2Err[dev] = 0;
+		} else{
+			/* Zeitdifferenz zwischen aktueller und ([vor- | 4.-])letzter Encoderflanke berechnen [176 us] */					
+			register uint8* p_time = (uint8*)encTime;
+			uint16 ticks_to_speed;
+			uint16 dt = *(uint16*)(p_time + i_time);	// aktueller Timestamp
+			int8 enc_correct = 0;
 			
-			//berechneten Stellwert auf zulaessige Groesse begrenzen  
-			if (StellwertL >  PWMMAX)	StellwertL =  PWMMAX;         
-			if (StellwertL < -PWMMAX)	StellwertL = -PWMMAX; 
-		
-			#ifdef DISPLAY_REGELUNG_AVAILABLE
-				if (display_screen==DISPLAY_REGELUNG_AVAILABLE){
-					display_cursor(1,1);
-					display_printf("%03d/%03d ",encoderRate,encoderTargetRateL);
-					display_cursor(2,1);
-					display_printf("e =%03d ",err);
-					display_cursor(3,1);	
-					display_printf("L =%04d ", StellwertL);
+			/* Beim ersten Aufruf mit neuem Speed beruecksichtigen wir die Beschleunigung */
+			if (start_signal[dev] == PID_START_DELAY){
+				orignalTargetRate[dev] = encoderTargetRate[dev];	// Zielgeschwindigkeit merken
+				encoderTargetRate[dev] = BOT_SPEED_SLOW/2;	// laaaangsam anfahren
+				
+				#ifdef SPEED_LOG_AVAILABLE
+					/* Daten loggen */
+					register uint8 index = slog_i[dev];	
+					if (index < 24) {
+						slog_data[dev][index].encRate = 1;							// Regelgroesse
+						slog_data[dev][index].err = encoderTargetRate[dev];			// Regeldifferenz
+						slog_data[dev][index].pwm = *actVar;						// Stellgroesse
+						slog_data[dev][index].targetRate = encoderTargetRate[dev];	// Fuehrungsgroesse
+						slog_data[dev][index++].time = TIMER_GET_TICKCOUNT_32;		// Timestamp
+						slog_i[dev] = index > 24 ? 0 : index;	// Z/25Z
+						slog_count[dev]++;
+					}
+				#endif	// SPEED_LOG_AVAILABLE
+								
+			} else{	// 1. Aufruf => es gibt noch keinen korrekten Timestamp in der Vergangenheit => bis zum 2. Aufruf nix tun
+				if (encoderTargetRate[dev] >= PID_SPEED_THRESHOLD){
+					i_time -= 4 * sizeof(encTime[0]);	// Index 4.letzter Timestamp
+					ticks_to_speed = TICKS_TO_SPEED_2;
+				} else if (encoderTargetRate[dev] < PID_SPEED_THRESHOLD/2){ 
+					i_time -= 1 * sizeof(encTime[0]);	// Index letzter Timestamp 
+					ticks_to_speed = TICKS_TO_SPEED_0;
+					/* Regelgroesse korrigieren, wenn mit jeder Encoderflanke gerechnet wurde */
+					enc_correct = dev == 0 ? ENC_CORRECT_L : ENC_CORRECT_R;
+					if (enc == 1) enc_correct = -enc_correct;
+				} else {
+					i_time -= 2 * sizeof(encTime[0]);	// Index vorletzter Timestamp
+					ticks_to_speed = TICKS_TO_SPEED_1;
 				}
-			#endif
-		}
-	
-		last2ErrL = lastErrL;              // alten N-2 Fehler merken
-		lastErrL = err;                   // alten N-1 Fehler merken
-	
-	
-		//Regler rechts  
-		if (encoderTargetRateR == 0){
-			StellwertR=0;
-			err=0; lastErrR=0;
-		} else {
-			encoderRate = sensEncR-lastEncoderR;  	// aktuelle Ist-Wert berechnen [Encoder-ticks/aufruf]
-			lastEncoderR = sensEncR;   				// Anzahl der Encoderpulse merken fuer naechsten Aufruf merken
-			err = encoderTargetRateR - encoderRate;  // Regelabweichung links
-			  
-			// Stellwert Berechnen
-			StellwertR +=  (Kp * (err - lastErrR))/10;					// P-Beitrag
-			StellwertR +=  (Ki * (err + lastErrR)/2)/10;					// I-Beitrag
-		//	StellwertR +=  Kd * (err - 2 * lastErrR + last2ErrR);	// D-Beitrag
+				i_time &= 0xf;						// Index auf 4 Bit begrenzen
+				dt -=  *(uint16*)(p_time + i_time);	// gewaehlten Timestamp subtrahieren
+				
+				/* Bei Fahrt Regelgroesse berechnen */	
+				uint8 encoderRate = ticks_to_speed / dt; // <dt> = [37; 800] -> <encoderRate> = [229; 10]
+				if (encoderRate > 6) encoderRate += enc_correct;
+				/* Regeldifferenz berechnen */	
+				int16 err = (encoderTargetRate[dev] - encoderRate); 
+				int16_t diff;
+				#ifdef ADJUST_PID_PARAMS
+					/* PID-Koeffizienten berechnen, falls PID-Parameter variabel */ 
+					int16 q0 = Kp + Kd/PID_Ta;
+					int16 q1 = -Kp - 2*Kd/PID_Ta + Ki*PID_Ta;
+					int16 q2 = Kd/PID_Ta;
+					
+				/* Stellgroesse mit PID-Reglergleichung berechnen */
+					diff = (q0*err + q1*lastErr[dev] + q2*last2Err[dev]) >> PID_SHIFT;
+				#else
+					diff = (Q0*err + Q1*lastErr[dev] + Q2*last2Err[dev]) >> PID_SHIFT;
+				#endif
+				*actVar += diff;
+				
+				/* berechnete Stellgroesse auf zulaessige Werte begrenzen */
+				if (*actVar > PWMMAX) *actVar = PWMMAX;
+				else if (*actVar < PWMMIN) *actVar = PWMMIN; 
 			
-			//berechneten Stellwert auf zulaessige Groesse begrenzen  
-			if (StellwertR >  PWMMAX) StellwertR =  PWMMAX;         
-			if (StellwertR < -PWMMAX) StellwertR = -PWMMAX;
-	
-			#ifdef DISPLAY_REGELUNG_AVAILABLE
-				if (display_screen==DISPLAY_REGELUNG_AVAILABLE){
-					display_cursor(1,10);
-					display_printf("%03d/%03d ",encoderRate,encoderTargetRateR);
-					display_cursor(2,10);
-					display_printf("e =%03d ",err);
-					display_cursor(3,10);	
-					display_printf("R =%04d ", StellwertR);	
+				/* PWM-Lookup updaten */
+				if (diff != 0 && encoderTargetRate[dev] == BOT_SPEED_SLOW/2 && start_signal[dev] == 0) {
+					uint8 lastErrors = (abs(last2Err[dev]) + abs(lastErr[dev]) + abs(err));
+					uint8 turn = 0;
+					if (direction.left != direction.right) turn = 2;
+					if (pwm_values[dev+turn].rating >= lastErrors){
+						pwm_values[dev+turn].pwm = *actVar >> 1;
+						pwm_values[dev+turn].rating = lastErrors;
+					}
 				}
-			#endif
-		}
-	
-		last2ErrR = lastErrR;              // alten N-2 Fehler merken
-		lastErrR = err;                   // alten N-1 Fehler merken
-	
-		#ifdef DISPLAY_REGELUNG_AVAILABLE
-			if (display_screen==DISPLAY_REGELUNG_AVAILABLE){
-				display_cursor(4,1);	
-				display_printf("Kp=%03d Ki=%03d", Kp, Ki);	
+			
+				/* Regeldifferenzen speichern */
+				last2Err[dev] = lastErr[dev];
+				lastErr[dev]  = err;
+				
+				/* Regelgroesse speichern, falls Displayausgabe gewuenscht */
+				#ifdef DISPLAY_REGELUNG_AVAILABLE
+					encoderRateInfo[dev] = encoderRate;									
+				#endif
+				
+				#ifdef SPEED_LOG_AVAILABLE
+					/* Daten loggen */
+					register uint8 index = slog_i[dev];	
+					if (index < 24) {
+						slog_data[dev][index].encRate = encoderRate;				// Regelgroesse
+						slog_data[dev][index].err = err;							// Regeldifferenz
+						slog_data[dev][index].pwm = *actVar;						// Stellgroesse
+						slog_data[dev][index].targetRate = encoderTargetRate[dev];	// Fuehrungsgroesse
+						slog_data[dev][index++].time = TIMER_GET_TICKCOUNT_32;		// Timestamp
+						slog_i[dev] = index > 24 ? 0 : index;	// Z/25Z
+						slog_count[dev]++;
+					}
+				#endif	// SPEED_LOG_AVAILABLE		
 			}
-		#endif
-	
-		// Und nun den Wert setzen
-		bot_motor(StellwertL,StellwertR);
+
+			if (start_signal[dev] > 0){
+				start_signal[dev]--;
+				// TODO: Faktoren bei START_DELAY optimieren (=> Sinus)
+				/* langsam beschleunigen - eigentlich muesste man das sinusartig tun, aber das ist zu aufwendig */
+				if (start_signal[dev] == (uint8)(PID_START_DELAY*0.75)) encoderTargetRate[dev] += (orignalTargetRate[dev]-BOT_SPEED_SLOW/2) >> 2;	// +1/4
+				else if (start_signal[dev] == (uint8)(PID_START_DELAY*0.5)) encoderTargetRate[dev] += (orignalTargetRate[dev]-BOT_SPEED_SLOW/2) >> 2;	// +2/4
+				else if (start_signal[dev] == (uint8)(PID_START_DELAY*0.25)) encoderTargetRate[dev] += (orignalTargetRate[dev]-BOT_SPEED_SLOW/2) >> 2;	// +3/4
+				else if (start_signal[dev] == 0) encoderTargetRate[dev] = orignalTargetRate[dev];	
+			}
+		}	
+		/* PWM-Wert aktualisieren */
+		motor_update(dev);
 	}
+	
+	#ifdef DISPLAY_REGELUNG_AVAILABLE
+		/*!
+		 * @brief	Zeigt Debug-Informationen der Motorregelung an.
+		 * @author 	Timo Sandmann (mail@timosandmann.de)
+	 	 * @date 	12.02.2007	 
+	 	 * Dargestellt werden pro Moto Ist- / Sollgeschwindigkeit, die Differenz davon, der PWM-Stellwert und die 
+	 	 * Reglerparameter Kp, Ki und Kd.
+	 	 * Die Tasten 1 und 4 veraendern Kp, 2 und 5 veraendern Ki, 3 und 6 veraendern Kd, wenn ADJUST_PID_PARAMS an ist. 
+		 */
+		void speedcontrol_display(void){
+			if (speed_l != 0){
+				display_cursor(1,2);
+				display_printf("%3u/%3u",encoderRateInfo[0]<<1,abs(speed_l));
+				#ifndef BEHAVIOUR_CALIBRATE_PID_AVAILABLE 
+					display_cursor(2,1);
+					display_printf("e = %4d",abs(speed_l)-(encoderRateInfo[0]<<1));
+				#endif					
+				display_cursor(3,1);
+				display_printf("L = %4d",motor_left);				
+			}
+			if (speed_r != 0){
+				display_cursor(1,12);
+				display_printf("%3d/%3d",encoderRateInfo[1]<<1,abs(speed_r));
+				#ifndef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+					display_cursor(2,11);
+					display_printf("e = %4d",abs(speed_r)-(encoderRateInfo[1]<<1));
+				#endif
+				display_cursor(3,11);
+				display_printf("R = %4d",motor_right);
+			}
+			#ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+				display_cursor(2,1);
+				display_printf("ETE = %3u Minuten", cal_pid_ete / 60);
+			#endif
+			display_cursor(4,1);
+			#ifdef ADJUST_PID_PARAMS
+				display_printf("Kp=%3d Ki=%3d Kd=%3d",Kp,Ki,Kd);
+			#else
+				display_printf("Kp=%3d Ki=%3d Kd=%3d",PID_Kp,PID_Ki,PID_Kd);
+			#endif	// ADJUST_PID_PARAMS	
+			
+			/* Keyhandler */
+			switch (RC5_Code){			
+				/* PWM-Parameter einstellbar */
+				#ifdef ADJUST_PID_PARAMS
+					case RC5_CODE_1: Kp++; RC5_Code = 0; break;
+					case RC5_CODE_4: Kp--; RC5_Code = 0; break;
+					case RC5_CODE_2: Ki++; RC5_Code = 0; break;
+					case RC5_CODE_5: Ki--; RC5_Code = 0; break;
+					case RC5_CODE_3: Kd++; RC5_Code = 0; break;
+					case RC5_CODE_6: Kd--; RC5_Code = 0; break;
+				#endif	// ADJUST_PID_PARAMS
+
+				case RC5_CODE_7:
+					target_speed_l = BOT_SPEED_FOLLOW; target_speed_r = BOT_SPEED_FOLLOW; RC5_Code = 0; break;
+				case RC5_CODE_8:
+					target_speed_l = BOT_SPEED_MEDIUM; target_speed_r = BOT_SPEED_MEDIUM; RC5_Code = 0; break;
+				case RC5_CODE_9:
+					target_speed_l = BOT_SPEED_FAST; target_speed_r = BOT_SPEED_FAST; RC5_Code = 0; break;
+			}				
+		}
+	#endif
 #endif
 
 /*!
- * Direkter Zugriff auf den Motor
+ * @brief		Direkter Zugriff auf den Motor
+ * @author 		Timo Sandmann (mail@timosandmann.de)
+ * @date 		17.10.2006 
  * @param left	Geschwindigkeit fuer den linken Motor
- * @param right Geschwindigkeit fuer den linken Motor
- * Geschwindigkeit liegt zwischen -255 und +255.
- * 0 bedeutet Stillstand, 255 volle Kraft voraus, -255 volle Kraft zurueck.
- * Sinnvoll ist die Verwendung der Konstanten: BOT_SPEED_XXX, 
- * also z.B. motor_set(BOT_SPEED_LOW,-BOT_SPEED_LOW);
- * fuer eine langsame Drehung
-*/
+ * @param right	Geschwindigkeit fuer den rechten Motor
+ * Geschwindigkeit liegt zwischen -450 und +450. 0 bedeutet Stillstand, 450 volle Kraft voraus, -450 volle Kraft zurueck.
+ * Sinnvoll ist die Verwendung der Konstanten: BOT_SPEED_XXX, also z.B. motor_set(BOT_SPEED_SLOW,-BOT_SPEED_SLOW) fuer eine langsame Drehung
+ */
 void motor_set(int16 left, int16 right){
-	#ifdef SPEED_CONTROL_AVAILABLE
-		static int16 old_mot_ticks=0;
-	#endif
-
-	if (left == BOT_SPEED_IGNORE)	
-		left=BOT_SPEED_STOP;
-
-	if (right == BOT_SPEED_IGNORE)	
-		right=BOT_SPEED_STOP;
-
-	
-	// Haben wir ueberhaupt etwas zu tun?
-	if ((speed_l == left) && (speed_r == right)){
-		// Hier sitzt die eigentliche Regelung
-		#ifdef SPEED_CONTROL_AVAILABLE
-			register uint16 ticks = TIMER_GET_TICKCOUNT_16;
-			if (ticks-old_mot_ticks > MS_TO_TICKS((uint16)SPEED_CONTROL_INTERVAL)) {
-				speed_control();
-				old_mot_ticks = TIMER_GET_TICKCOUNT_16;
-			}
-		#endif
-		return;		// Keine Aenderung? Dann zuerueck
+	/* Drehrichtung fuer beide Motoren ermitteln */
+	int8 speedSignLeft = 1;	// 1: vor; -1: zurueck
+	if (left < 0){
+		speedSignLeft = -1;
+		left = -left;	// Richtung zum Rechnen zunaechst verwerfen
 	}
-		
-	if (abs(left) > BOT_SPEED_MAX)	// Nicht schneller fahren als moeglich
-		speed_l = BOT_SPEED_MAX;
-	else if (left == 0)				// Stop wird nicht veraendert
-		speed_l = BOT_SPEED_STOP;
-	else if (abs(left) < BOT_SPEED_SLOW)	// Nicht langsamer als die 
-		speed_l = BOT_SPEED_SLOW;	// Motoren koennen
-	else				// Sonst den Wunsch uebernehmen
-		speed_l = abs(left);
-
-	if (abs(right) > BOT_SPEED_MAX)// Nicht schneller fahren als moeglich
-		speed_r = BOT_SPEED_MAX;
-	else if (abs(right) == 0)	// Stop wird nicht veraendert
-		speed_r = BOT_SPEED_STOP;
-	else if (abs(right) < BOT_SPEED_SLOW)	// Nicht langsamer als die 
-		speed_r = BOT_SPEED_SLOW;	// Motoren koennen
-	else				// Sonst den Wunsch uebernehmen
-		speed_r = abs(right);
+	int8 speedSignRight = 1;
+	if (right < 0){
+		speedSignRight = -1;
+		right = -right;
+	}
+	/* Geschwindigkeiten pruefen und begrenzen */
+	if (left == BOT_SPEED_IGNORE) left = BOT_SPEED_STOP;
+	else if (left > BOT_SPEED_MAX) left = BOT_SPEED_MAX;
+	else if (left != 0 && left < BOT_SPEED_MIN) left = BOT_SPEED_MIN;
 	
-	if (left < 0 )
-		speed_l=-speed_l;
+	if (right == BOT_SPEED_IGNORE) right = BOT_SPEED_STOP;
+	else if (right > BOT_SPEED_MAX) right = BOT_SPEED_MAX;
+	else if (right != 0 && right < BOT_SPEED_MIN) right = BOT_SPEED_MIN;
 	
-	if (right < 0 )	
-		speed_r=-speed_r;
-		
+	/* Stellwerte und Zielgeschwindigkeit setzen */
 	#ifdef SPEED_CONTROL_AVAILABLE
-		// TODO Hier koennten wir die Motorkennlinie heranziehen um gute Einstiegswerte fuer die Regelung zu haben
-		// Evtl. sogar eine im EEPROM kalibrierbare Tabelle??
-		encoderTargetRateL = left / SPEED_TO_ENCODER_RATE;	// Geschwindigkeit [mm/s] umrechnen in [EncoderTicks/Aufruf]
-		encoderTargetRateR = right / SPEED_TO_ENCODER_RATE;	// Geschwindigkeit [mm/s] umrechnen in [EncoderTicks/Aufruf]
-	#endif
-	
-	// Zuerst einmal eine lineare Kennlinie annehmen
-	bot_motor(speed_l/2,speed_r/2);
-	
+		/* Bei aktivierter Motorregelung neue Fuehrungsgroesse links setzen */
+		if (speed_l != left*speedSignLeft && (start_signal[0] == 0 || left == 0)){
+			if (encoderTargetRate[0] == 0){
+				start_signal[0] = PID_START_DELAY;
+				if (speedSignLeft == speedSignRight) motor_left = (pwm_values[0].pwm << 1) + (uint16_t)(PWMSTART_L*1.5);	// [0; 511]
+				else motor_left = (pwm_values[2].pwm << 1) + PWMSTART_L;
+			}
+			encoderTargetRate[0] = left >> 1;	// [0; 225]
+			if ((left>>1) == 0){
+				motor_left = 0;
+				start_signal[0] = 0;
+			}
+			
+			/* Geschwindigkeit und Richtung links speichern */
+			if (left != 0) {
+				if (speedSignLeft > 0) {
+					direction.left = DIRECTION_FORWARD;
+					speed_l = left;
+				} else {
+					direction.left = DIRECTION_BACKWARD;
+					speed_l = -left;
+				}
+			} else {
+				speed_l = 0;
+			}
+			/* PWM-Wert setzen */
+			motor_update(0);
+			
+			#ifdef SPEED_LOG_AVAILABLE
+				/* Daten loggen */
+				register uint8 index = slog_i[0];	
+				if (index < 24) {
+					slog_data[0][index].encRate = 1;				// Regelgroesse
+					slog_data[0][index].err = 0;							// Regeldifferenz
+					slog_data[0][index].pwm = 0;						// Stellgroesse
+					slog_data[0][index].targetRate = encoderTargetRate[0];	// Fuehrungsgroesse
+					slog_data[0][index++].time = TIMER_GET_TICKCOUNT_32;		// Timestamp
+					slog_i[0] = index > 24 ? 0 : index;	// Z/25Z
+					slog_count[0]++;
+				}
+			#endif	// SPEED_LOG_AVAILABLE	
+		}
+		/* Neue Fuehrungsgroesse rechts setzen */
+		if (speed_r != right*speedSignRight && (start_signal[1] == 0 || right == 0)){
+			if (encoderTargetRate[1] == 0){
+				start_signal[1] = PID_START_DELAY;
+				if (speedSignLeft == speedSignRight) motor_right = (pwm_values[1].pwm << 1) + (uint16_t)(PWMSTART_R*1.5);	// [0; 511]
+				else motor_right = (pwm_values[3].pwm << 1) + PWMSTART_R;
+			}
+			encoderTargetRate[1] = right >> 1;	// [0; 225]
+			if ((right>>1) == 0){
+				motor_right = 0;
+				start_signal[1] = 0;
+			}
+									
+			/* Geschwindigkeit und Richtung rechts speichern */
+			if (right != 0) {
+				if (speedSignRight > 0){
+					direction.right = DIRECTION_FORWARD;
+					speed_r = right;
+				} else {
+					direction.right = DIRECTION_BACKWARD;
+					speed_r = -right;
+				}
+			} else {
+				speed_r = 0;
+			}
+			motor_update(1);
+			
+			#ifdef SPEED_LOG_AVAILABLE
+				/* Daten loggen */
+				register uint8 index = slog_i[1];	
+				if (index < 24) {
+					slog_data[1][index].encRate = 1;				// Regelgroesse
+					slog_data[1][index].err = 0;							// Regeldifferenz
+					slog_data[1][index].pwm = 0;						// Stellgroesse
+					slog_data[1][index].targetRate = encoderTargetRate[1];	// Fuehrungsgroesse
+					slog_data[1][index++].time = TIMER_GET_TICKCOUNT_32;		// Timestamp
+					slog_i[1] = index > 24 ? 0 : index;	// Z/25Z
+					slog_count[1]++;
+				}
+			#endif	// SPEED_LOG_AVAILABLE			
+		}
+		
+		/* PWM-Lookup im EEPROM updaten */
+		static uint16 old_pwm_ticks = 0;
+		static uint8 i=0;				// nachdem wir 1 Byte geschrieben haben, muessten wir 3.3 ms mit busy-waiting vertroedeln,
+		if (i != 0 || timer_ms_passed(&old_pwm_ticks, 10000)) {	// alle 10 s 
+			uint8 tmp = pwm_values[i].pwm;	// darum schreiben wir erst im naechsten Aufruf das 2. Byte ins EEPROM usw. :-)
+			if (eeprom_read_byte(&pwmSlow[i]) != tmp) eeprom_write_byte(&pwmSlow[i], tmp);				
+			if (++i == 4){	// alle Daten gesichert => 10 s schlafen
+				i = 0;
+			}	
+		}
+	#else
+		#ifdef MCU
+			/* Geschwindigkeit als PWM-Wert an die Motoren weitergeben */
+			if (speedSignLeft > 0){
+				direction.left = DIRECTION_FORWARD;
+				speed_l = left;
+			} else{
+				direction.left = DIRECTION_BACKWARD;
+				speed_l = -left;
+			}
+			uint16_t pwm;
+			if (left <= BOT_SPEED_NORMAL) {
+				pwm = (uint16_t)(((float)PWMMAX/(BOT_SPEED_MAX*4.0)) * left) + 50;
+			} else {
+				pwm = (uint16_t)(((float)PWMMAX/(BOT_SPEED_MAX*1.1)) * left) - 30;
+			}
+			motor_left = left == 0 ? 0 : pwm;
+			if (speedSignRight > 0){
+				direction.right = DIRECTION_FORWARD;
+				speed_r = right;
+			} else{
+				direction.right = DIRECTION_BACKWARD;
+				speed_r = -right;
+			}
+			if (right <= BOT_SPEED_NORMAL) {
+				pwm = (uint16_t)(((float)PWMMAX/(BOT_SPEED_MAX*4.0)) * right) + 50;
+			} else {
+				pwm = (uint16_t)(((float)PWMMAX/(BOT_SPEED_MAX*1.1)) * right) - 30;
+			}
+			motor_right = right == 0 ? 0 : pwm;
+			motor_update(0);
+			motor_update(1);
+		#else
+			/* PC-Version */
+			speed_l = left * speedSignLeft / 2;
+			speed_r = right * speedSignRight / 2;
+			bot_motor(speed_l, speed_r);
+		#endif // MCU
+	#endif	// SPEED_CONTROL_AVAILABLE
 }
 
 /*!
- * Stellt die Servos
- * Sinnvolle Werte liegen zwischen 8 und 16
- * @param servo Nummer des Servos
- * @param servo Zielwert
+ * @brief	Initialisiere den Motorkrams
+ */
+void motor_init(void){
+	#ifdef SPEED_CONTROL_AVAILABLE
+		/* links */
+		uint8 tmp = eeprom_read_byte(&pwmSlow[0]);
+		if (tmp < (511-(uint16_t)(PWMSTART_L*1.5))/2) pwm_values[0].pwm = tmp;
+		else pwm_values[0].pwm = 0;
+		tmp = eeprom_read_byte(&pwmSlow[2]);
+		if (tmp < (511-PWMSTART_L)/2) pwm_values[2].pwm = tmp;
+		else pwm_values[2].pwm = 0;
+		/* rechts */
+		tmp = eeprom_read_byte(&pwmSlow[1]);
+		if (tmp < (511-(uint16_t)(PWMSTART_R*1.5))/2) pwm_values[1].pwm = tmp;
+		else pwm_values[1].pwm = 0; 
+		tmp = eeprom_read_byte(&pwmSlow[3]);
+		if (tmp < (511-PWMSTART_R)/2) pwm_values[3].pwm = tmp;
+		else pwm_values[3].pwm = 0;
+	#endif	// SPEED_CONTROL_AVAILABLE
+
+	motor_low_init();
+}
+
+/*!
+ * @brief		Stellt die Servos
+ * @param servo	Nummer des Servos
+ * @param pos	Zielwert
+ * Sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus 
  */
 void servo_set(uint8 servo, uint8 pos){
-	if ((servo== SERVO1) && (pos != SERVO_OFF)) {
-		if (pos< DOOR_CLOSE)
-			pos=DOOR_CLOSE;
-		if (pos> DOOR_OPEN)
-			pos=DOOR_OPEN;
+	if ((servo == SERVO1) && (pos != SERVO_OFF)){
+		if (pos < DOOR_CLOSE) pos = DOOR_CLOSE;
+		if (pos > DOOR_OPEN) pos = DOOR_OPEN;
 	}
 	servo_low(servo,pos);
 }
 
-/*!
- * Initialisiere den Motorkrams
- */
-void motor_init(void){
-	speed_l=0;
-	speed_r=0;
-	motor_low_init();
-}
-
-
+#ifdef SPEED_CONTROL_AVAILABLE
+	/* Parameter-Wertebereiche pruefen */
+	#if PID_Kp > 127 || PID_Kp < 0
+		#error PID_Kp out of range [0; 127]!
+	#endif
+	#if PID_Ki > 127 || PID_Ki < 0
+		#error PID_Ki out of range [0; 127]!
+	#endif
+	#if PID_Kd > 127 || PID_Kd < 0
+		#error PID_Kd out of range [0; 127]!
+	#endif
+	#if PID_Ta > 127 || PID_Ta < 1
+		#error PID_Ta out of range [1; 127]!
+	#endif
+	#if PID_SHIFT > 127 || PID_SHIFT < 0
+		#error PID_SHIFT out of range [0; 127]!
+	#endif	
+	#if PID_TIME > 655 || PID_TIME < 0
+		#error PID_TIME out of range [0; 655]!
+	#endif
+	#if PID_SPEED_THRESHOLD > (BOT_SPEED_MAX/2) || PID_SPEED_THRESHOLD < BOT_SPEED_SLOW
+		#error PID_SPEED_THRESHOLD out of range [BOT_SPEED_SLOW; BOT_SPEED_MAX/2]!
+	#endif	
+	#if PID_START_DELAY > 255 || PID_START_DELAY < 0
+		#error PID_START_DELAY out of range [0; 255]!
+	#endif	
+	#if PWMMAX > 511
+		#error PWMMAX out of range [PWMMIN; 511]!
+	#endif	
+	#if PWMMIN >= PWMMAX || PWMMIN < 0
+		#error PWMMIN out of range [0; PWMMAX)!
+	#endif
+	#if PWMMAX <= PWMMIN
+		#error PWMMAX out of range (PWMMIN; 511]!
+	#endif		
+	#if PWMSTART_L*3/2 > PWMMAX || PWMSTART_L < PWMMIN
+		#error PWMSTART_L out of range [PWMMIN; PWMMAX/1.5]!
+	#endif	
+	#if PWMSTART_R*3/2 > PWMMAX || PWMSTART_R < PWMMIN
+		#error PWMSTART_R out of range [PWMMIN; PWMMAX/1.5]!
+	#endif
+#endif	// SPEED_CONTROL_AVAILABLE

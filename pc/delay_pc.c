@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	delay_pc.c
+/*! 
+ * @file 	delay_pc.c
  * @brief 	Hilfsroutinen
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
-*/
+ */
 #include "ct-Bot.h"
 
 #ifdef PC
@@ -40,27 +41,23 @@
 	#include <unistd.h>
 	
 	/*! Sleep Funktion */
-	#define SLEEP(__value)	usleep(__value)
+	#define SLEEP(__value)	usleep((__value)*1000)
 
-#endif
-
-/*!
- * Warte 100 ms
- */
-void delay_100ms(void){
-
-	SLEEP(100);
-}
-
+#endif	// WIN32
 
 /*!
  * Verzoegert um ms Millisekunden
- * Wenn RTC_AVAILABLE, dann ueber rtc, sonst ueber delay_100ms.
- * ==> Aufloesung ohne rtc: 100-ms-Schritte, mit rtc: 5-ms-Schritte
  * @param ms Anzahl der Millisekunden
  */
-void delay(int ms){
-
-	SLEEP(ms);
+void delay(uint16_t ms) {
+	int wait = ms;
+	int steps = wait/999;	// max sleep-time = 10^6-1 us
+	int i;
+	/* in 999 ms Schritten warten */
+	for (i=0; i<steps; i++) {
+		SLEEP(999);
+	}
+	/* Rest warten */
+	SLEEP(wait - i*999);
 }
-#endif
+#endif	// PC

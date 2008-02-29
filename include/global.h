@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,14 +17,21 @@
  * 
  */
 
-/*! @file 	global.h
+/*! 
+ * @file 	global.h
  * @brief 	Allgemeine Definitionen
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
-*/
+ */
+
 
 #ifndef global_H
-	#define global_H		/*!< Bereits definiert */
+#define global_H
+
+#include "ct-Bot.h"
+	
+#ifndef __ASSEMBLER__
+	#include <stdint.h>
 	
 	#ifndef MCU
 		#ifndef PC
@@ -33,11 +40,9 @@
 	#endif
 	
 	#ifndef WIN32
-		typedef unsigned char byte;                       /*!< vorzeichenlose 8-Bit-Zahl */
-		typedef byte bool;                                /*!< True/False-Aussage */
+		#define bool byte;				/*!< True/False-Aussage */
 	#endif
 
-	//#define DOXYGEN		/*!< Nur zum Generieren von Doku!!!! */
 	#ifdef DOXYGEN		/*!< Nur zum Generieren von Doku!!!! */
 		#define PC		/*!< Zielplattform PC */
 		#define MCU		/*!< Zielplattform MCU */
@@ -45,23 +50,48 @@
 		#define __linux__	/*!< System Linux */
 	#endif
 	
-	typedef unsigned char uint8;                       /*!< vorzeichenlose 8-Bit-Zahl  */
-	typedef unsigned int word;                         /*!< vorzeichenlose 16-Bit-Zahl  */
-	typedef signed char int8;                          /*!< vorzeichenbehaftete 8-Bit-Zahl */ 
-	typedef short int int16;                           /*!< vorzeichenbehaftete 16-Bit-Zahl  */
-
-	typedef unsigned long uint32;		/*!< vorzeichenlose 32-Bit-Zahl  */
-	typedef signed long int32;			/*!< vorzeichenbehaftete 32-Bit-Zahl  */
-
-	#define uint16                  word				/*!< Int mit 16 Bit */
+	#define byte	uint8_t				/*!< vorzeichenlose 8-Bit-Zahl */
+	#define uint8	uint8_t				/*!< vorzeichenlose 8-Bit-Zahl */
+	#define int8	int8_t				/*!< vorzeichenbehaftete 8-Bit-Zahl */
+	#define uint16	uint16_t			/*!< vorzeichenlose 16-Bit-Zahl */
+	#define int16	int16_t				/*!< vorzeichenbehaftete 16-Bit-Zahl */
+	#define uint32	uint32_t			/*!< vorzeichenlose 32-Bit-Zahl */
+	#define	int32	int32_t				/*!< vorzeichenbehaftete 32-Bit-Zahl */
 	
-	#define True                  1						/*!< Wahr */
-	#define False                 0						/*!< Falsch */
+	#define True                  1		/*!< Wahr */
+	#define False                 0		/*!< Falsch */
 	
-	#define On                    1						/*!< An */
-	#define Off                   0						/*!< Aus */
+	#define On                    1		/*!< An */
+	#define Off                   0		/*!< Aus */
 
-//	#define PI					3.14159					/*!< Kreiszahl Pi fuer trigonometrische Berechnungen */
-	#define binary(var,bit) ((var >> bit)&1)
-	//#define NULL 0
-#endif
+	#ifdef PC
+		#if defined WIN32
+		 	#define LITTLE_ENDIAN	1234
+		 	#define BIG_ENDIAN	4321
+		 	#define BYTE_ORDER	LITTLE_ENDIAN
+		#elif defined __linux__
+		 	#include <endian.h>
+		#else
+			#include <machine/endian.h>
+		#endif	// WIN32
+
+		#ifdef EEPROM_EMU_AVAILABLE
+			#ifdef __APPLE__
+				/* OS X */
+				#define EEPROM __attribute__ ((section ("__DATA,.eeprom"),aligned(1)))	/*!< EEPROM-Section */
+			#else
+				/* Linux und Windows */
+				#define EEPROM __attribute__ ((section (".eeprom"),aligned(1)))			/*!< EEPROM-Section */
+			#endif
+		#else
+			/* keine EEPROM-Emulation */
+			#define EEPROM	
+		#endif	// EEPROM_EMU_AVAILABLE
+	#else
+		/* MCU */
+		#define EEPROM __attribute__ ((section (".eeprom"),aligned(1)))			/*!< EEPROM-Section */
+	#endif	// PC
+
+	#define binary(var,bit) ((var >> bit)&1)	/*!< gibt das Bit "bit" von "var" zurueck */
+#endif	// __ASSEMBLER__
+#endif	// global_H

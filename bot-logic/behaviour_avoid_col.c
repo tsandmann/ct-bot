@@ -17,12 +17,13 @@
  * 
  */
 
-/*! @file 	behaviour_avoid_col.c
+/*! 
+ * @file 	behaviour_avoid_col.c
  * @brief 	Vermeide Kollisionen
  * 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
-*/
+ */
 
 
 #include "bot-logic/bot-logik.h"
@@ -38,8 +39,8 @@
 #define BRAKE_NEAR		0.6 		/*!< Bremsfaktor fuer Nahbereich ( <1 ==> bremsen <0 ==> rueckwaerts) */
 #define BRAKE_FAR		0.8			/*!< Bremsfaktor fuer Fernbereich ( <1 ==> bremsen <0 ==> rueckwaerts) */
 
-uint8 col_zone_l=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der linke Sensor befindet */
-uint8 col_zone_r=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der rechte Sensor befindet */
+static uint8 col_zone_l=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der linke Sensor befindet */
+static uint8 col_zone_r=ZONE_CLEAR;			/*!< Kollisionszone, in der sich der rechte Sensor befindet */
 
 
 /*!

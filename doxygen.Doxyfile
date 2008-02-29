@@ -17,7 +17,7 @@
 # The PROJECT_NAME tag is a single word (or a sequence of words surrounded 
 # by quotes) that should identify the project.
 
-PROJECT_NAME = c't-Bot
+PROJECT_NAME = c't-Bot-devel
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. 
 # This could be handy for archiving the generated documentation or 
@@ -60,8 +60,8 @@ OUTPUT_LANGUAGE = German
 # forces the Windows encoding (this is the default for the Windows binary), 
 # whereas setting the tag to NO uses a Unix-style encoding (the default for 
 # all platforms other than Windows).
-
-USE_WINDOWS_ENCODING = NO
+#
+#USE_WINDOWS_ENCODING = NO
 
 # If the BRIEF_MEMBER_DESC tag is set to YES (the default) Doxygen will 
 # include brief member descriptions after the members that are listed in 
@@ -100,7 +100,7 @@ ALWAYS_DETAILED_SEC = NO
 # members were ordinary class members. Constructors, destructors and assignment 
 # operators of the base classes will not be shown.
 
-INLINE_INHERITED_MEMB = NO
+INLINE_INHERITED_MEMB = YES
 
 # If the FULL_PATH_NAMES tag is set to YES then Doxygen will prepend the full 
 # path before files name in the file list and in the header files. If set 
@@ -177,7 +177,7 @@ SEPARATE_MEMBER_PAGES = NO
 # The TAB_SIZE tag can be used to set the number of spaces in a tab. 
 # Doxygen uses this value to replace tabs by spaces in code fragments.
 
-TAB_SIZE = 8
+TAB_SIZE = 4
 
 # This tag can be used to specify a number of aliases that acts 
 # as commands in the documentation. An alias has the form "name=value". 
@@ -219,17 +219,17 @@ SUBGROUPING = YES
 # Private class members and static file members will be hidden unless 
 # the EXTRACT_PRIVATE and EXTRACT_STATIC tags are set to YES
 
-EXTRACT_ALL = NO
+EXTRACT_ALL = YES
 
 # If the EXTRACT_PRIVATE tag is set to YES all private members of a class 
 # will be included in the documentation.
 
-EXTRACT_PRIVATE = NO
+EXTRACT_PRIVATE = YES
 
 # If the EXTRACT_STATIC tag is set to YES all static members of a file 
 # will be included in the documentation.
 
-EXTRACT_STATIC = NO
+EXTRACT_STATIC = YES
 
 # If the EXTRACT_LOCAL_CLASSES tag is set to YES classes (and structs) 
 # defined locally in source files will be included in the documentation. 
@@ -424,7 +424,7 @@ WARN_IF_DOC_ERROR = YES
 # wrong or incomplete parameter documentation, but not about the absence of 
 # documentation.
 
-WARN_NO_PARAMDOC = NO
+WARN_NO_PARAMDOC = YES
 
 # The WARN_FORMAT tag determines the format of the warning messages that 
 # doxygen can produce. The string should contain the $file, $line, and $text 
@@ -450,7 +450,7 @@ WARN_LOGFILE =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT = 
+INPUT = ./ ./bot-logic ./include ./include/bot-logic ./mcu ./pc ./ui 
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
@@ -459,7 +459,7 @@ INPUT =
 # *.c *.cc *.cxx *.cpp *.c++ *.java *.ii *.ixx *.ipp *.i++ *.inl *.h *.hh *.hxx 
 # *.hpp *.h++ *.idl *.odl *.cs *.php *.php3 *.inc *.m *.mm
 
-FILE_PATTERNS = 
+FILE_PATTERNS = *.h *.c *.S
 
 # The RECURSIVE tag can be used to turn specify whether or not subdirectories 
 # should be searched for input files as well. Possible values are YES and NO. 
@@ -471,7 +471,7 @@ RECURSIVE = YES
 # excluded from the INPUT source files. This way you can easily exclude a 
 # subdirectory from a directory tree whose root is specified with the INPUT tag.
 
-EXCLUDE = .dep Debug-Linux Debug-MCU-Linux Debug-W32 Debug-MCU-W32
+EXCLUDE = .dep Debug-Linux Debug-MCU-Linux Debug-W32 Debug-MCU-W32 Debug-Mac
 
 # The EXCLUDE_SYMLINKS tag can be used select whether or not files or 
 # directories that are symbolic links (a Unix filesystem feature) are excluded 
@@ -547,7 +547,7 @@ FILTER_SOURCE_FILES = NO
 # Note: To get rid of all source code in the generated output, make sure also 
 # VERBATIM_HEADERS is set to NO.
 
-SOURCE_BROWSER = NO
+SOURCE_BROWSER = YES
 
 # Setting the INLINE_SOURCES tag to YES will include the body 
 # of functions and classes directly in the documentation.
@@ -996,7 +996,7 @@ INCLUDE_FILE_PATTERNS =
 # undefined via #undef or recursively expanded use the := operator 
 # instead of the = operator.
 
-PREDEFINED = 
+PREDEFINED = DOXYGEN MCU PC OS_AVAILABLE SPI_AVAILABLE I2C_AVAILABLE CMPS03_AVAILABLE SP03_AVAILABLE MMC_AVAILABLE MMC_VM_AVAILABLE MAP_AVAILABLE SPEED_CONTROL_AVAILABLE BOOTLOADER_AVAILABLE BEHAVIOUR_AVAILABLE POS_STACK_AVAILABLE BEHAVIOUR_SIMPLE_AVAILABLE BEHAVIOUR_DRIVE_SQUARE_AVAILABLE BEHAVIOUR_AVOID_BORDER_AVAILABLE BEHAVIOUR_AVOID_COL_AVAILABLE BEHAVIOUR_GOTO_AVAILABLE BEHAVIOUR_GOTOXY_AVAILABLE BEHAVIOUR_TURN_AVAILABLE BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE BEHAVIOUR_SCAN_AVAILABLE BEHAVIOUR_SOLVE_MAZE_AVAILABLE BEHAVIOUR_FOLLOW_LINE_AVAILABLE BEHAVIOUR_SERVO_AVAILABLE BEHAVIOUR_OLYMPIC_AVAILABLE BEHAVIOUR_CATCH_PILLAR_AVAILABLE BEHAVIOUR_REMOTECALL_AVAILABLE BEHAVIOUR_CALIBRATE_PID_AVAILABLE BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE BEHAVIOUR_MAP_GO_DESTINATION_AVAILABLE BEHAVIOUR_TURN_TEST_AVAILABLE BEHAVIOUR_DELAY_AVAILABLE BEHAVIOUR_HANG_ON_AVAILABLE BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE BEHAVIOUR_FOLLOW_WALL_AVAILABLE BEHAVIOUR_GOTO_POS_AVAILABLE BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE BEHAVIOUR_DRIVE_STACK_AVAILABLE
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then 
 # this tag can be used to specify a list of macro names that should be expanded. 
@@ -1168,16 +1168,16 @@ DOTFILE_DIRS =
 # this value, doxygen will try to truncate the graph, so that it fits within 
 # the specified constraint. Beware that most browsers cannot cope with very 
 # large images.
-
-MAX_DOT_GRAPH_WIDTH = 1024
+#
+#MAX_DOT_GRAPH_WIDTH = 1024
 
 # The MAX_DOT_GRAPH_HEIGHT tag can be used to set the maximum allows height 
 # (in pixels) of the graphs generated by dot. If a graph becomes larger than 
 # this value, doxygen will try to truncate the graph, so that it fits within 
 # the specified constraint. Beware that most browsers cannot cope with very 
 # large images.
-
-MAX_DOT_GRAPH_HEIGHT = 1024
+#
+#MAX_DOT_GRAPH_HEIGHT = 1024
 
 # The MAX_DOT_GRAPH_DEPTH tag can be used to set the maximum depth of the 
 # graphs generated by dot. A depth value of 3 means that only nodes reachable 

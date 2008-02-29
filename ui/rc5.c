@@ -66,7 +66,7 @@ static void rc5_screen_set(uint8 screen){
  * @brief	Stellt die Not-Aus-Funktion dar. 
  * Sie laesst den Bot anhalten und setzt alle Verhalten zurueck mit Sicherung der vorherigen Aktivitaeten.
  */	
- static void rc5_emergency_stop(void) {
+static void rc5_emergency_stop(void) {
 	#ifdef BEHAVIOUR_AVAILABLE
 		target_speed_l = 0;	// Geschwindigkeit nullsetzen
 		target_speed_r = 0;
@@ -86,19 +86,19 @@ static void rc5_bot_change_speed(int16 left, int16 right) {
 		target_speed_l += left;
 		if ((target_speed_l < -BOT_SPEED_MAX) || (target_speed_l > BOT_SPEED_MAX))
 			target_speed_l = old;
-		if (target_speed_l < BOT_SPEED_SLOW && target_speed_l > 0)
-			target_speed_l = BOT_SPEED_SLOW;
-		else if (target_speed_l > -BOT_SPEED_SLOW && target_speed_l < 0)
-			target_speed_l = -BOT_SPEED_SLOW;
+		if (target_speed_l < BOT_SPEED_MIN && target_speed_l > 0)
+			target_speed_l = BOT_SPEED_MIN;
+		else if (target_speed_l > -BOT_SPEED_MIN && target_speed_l < 0)
+			target_speed_l = -BOT_SPEED_MIN;
 			
 		old = target_speed_r;		
 		target_speed_r += right;
 		if ((target_speed_r <-BOT_SPEED_MAX) ||(target_speed_r > BOT_SPEED_MAX))
 			target_speed_r = old;
-		if (target_speed_r < BOT_SPEED_SLOW && target_speed_r > 0)
-			target_speed_r = BOT_SPEED_SLOW;
-		else if (target_speed_r > -BOT_SPEED_SLOW && target_speed_r < 0)
-			target_speed_r = -BOT_SPEED_SLOW;
+		if (target_speed_r < BOT_SPEED_MIN && target_speed_r > 0)
+			target_speed_r = BOT_SPEED_MIN;
+		else if (target_speed_r > -BOT_SPEED_MIN && target_speed_r < 0)
+			target_speed_r = -BOT_SPEED_MIN;
 	#endif	// BEHAVIOUR_AVAILABLE
 }
 
@@ -115,35 +115,34 @@ static void rc5_number(uint8 key) {
 		#endif	// BEHAVIOUR_AVAILABLE
 		
 		#ifdef BEHAVIOUR_TURN_AVAILABLE
-			case 2: bot_turn(0, 90); break;
-			case 7: bot_turn(0, 180); break;
-			case 9: bot_turn(0, -180); break;
+			case 2: bot_turn(NULL, 90); break;
+			case 7: bot_turn(NULL, 180); break;
+			case 9: bot_turn(NULL, -180); break;
 		#endif	// BEHAVIOUR_TURN_AVAILABLE							
 
-		#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
-			case 4: bot_catch_pillar(0); break;
-		#endif
+		#if defined BEHAVIOUR_CATCH_PILLAR_AVAILABLE
+			case 4: bot_catch_pillar(NULL); break;
+		#elif defined BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
+			case 4: bot_follow_object(NULL); break;
+		#endif	// BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 
 		#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
-			case 5: bot_solve_maze(0); break;
-		#else
-			#ifdef BEHAVIOUR_GOTOXY_AVAILABLE
-				case 5: bot_gotoxy(0, 20, 20); break;
-			#endif	// BEHAVIOUR_GOTOXY_AVAILABLE
+			case 5: bot_solve_maze(NULL); break;
 		#endif	// BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 		
-
-		#ifdef BEHAVIOUR_CALIBRATE_PWM_AVAILABLE
-			case 6: bot_calibrate_pwm(0); break;
-		#else 
-			#ifdef BEHAVIOUR_TURN_AVAILABLE
-				case 6: bot_turn(0, -90); break;
-			#endif	// BEHAVIOUR_TURN_AVAILABLE
-		#endif	// BEHAVIOUR_CALIBRATE_PWM_AVAILABLE
+		#if defined BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+			case 6: bot_calibrate_pid(NULL, BOT_SPEED_SLOW); break;
+		#elif defined BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
+			case 6: bot_calibrate_sharps(NULL); break;
+		#elif defined BEHAVIOUR_TURN_AVAILABLE
+			case 6: bot_turn(NULL, -90); break;
+		#endif	// BEHAVIOUR_CALIBRATE_PID_AVAILABLE
 		
 		#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
-			case 8: bot_drive_distance(0, 0, BOT_SPEED_NORMAL, 10); break;
-		#endif
+			case 8: bot_drive_distance(NULL, 0, BOT_SPEED_NORMAL, 10); break;
+		#elif defined BEHAVIOUR_GOTO_POS_AVAILABLE
+			case 8: bot_goto_dist(NULL, 100, 0); break;
+		#endif	// BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 	}
 }
 
@@ -161,11 +160,24 @@ void default_key_handler(void){
 		/* Not-Aus */
 		case RC5_CODE_PWR:		rc5_emergency_stop(); break;
 		
+		/* Karte Drucken */
+		#ifdef MAP_AVAILABLE
+		case RC5_CODE_DOT:		map_print(); break;
+		#endif
+		
 		/* Screenwechsel */
+		#ifdef RC5_CODE_GREEN
 		case RC5_CODE_GREEN:	rc5_screen_set(0); break;
+		#endif
+		#ifdef RC5_CODE_RED
 		case RC5_CODE_RED:		rc5_screen_set(1); break;
+		#endif
+		#ifdef RC5_CODE_YELLOW
 		case RC5_CODE_YELLOW:	rc5_screen_set(2); break;
+		#endif
+		#ifdef RC5_CODE_BLUE
 		case RC5_CODE_BLUE:		rc5_screen_set(3); break;
+		#endif
 		case RC5_CODE_TV_VCR:	rc5_screen_set(DISPLAY_SCREEN_TOGGLE); break;
 		
 		/* Geschwindigkeitsaenderung */
@@ -176,8 +188,12 @@ void default_key_handler(void){
 		
 		/* Servoaktivitaet */
 		#ifdef BEHAVIOUR_SERVO_AVAILABLE
+		#ifdef RC5_CH_PLUS
 		case RC5_CH_PLUS:		bot_servo(0, SERVO1, DOOR_CLOSE); break;
+		#endif
+		#ifdef RC5_CH_MINUS
 		case RC5_CH_MINUS:		bot_servo(0, SERVO1, DOOR_OPEN);  break;
+		#endif
 		#endif	// BEHAVIOUR_SERVO_AVAILABLE
 		
 		/* numerische Tasten */

@@ -17,12 +17,12 @@
  * 
  */
 
-/*! @file 	behaviour_avoid_border.c
+/*! 
+ * @file 	behaviour_avoid_border.c
  * @brief 	Vermeide Abgruende
- * 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
-*/
+ */
 
 #include "bot-logic/bot-logik.h"
 
@@ -37,5 +37,9 @@ void bot_avoid_border_behaviour(Behaviour_t *data){
 	
 	if (sensBorderR > BORDER_DANGEROUS)
 		speedWishRight=-BOT_SPEED_NORMAL;
+	
+	/* Start der registrierten Notfall-Routinen zum informieren der Verhalten */
+	if (sensBorderL > BORDER_DANGEROUS || sensBorderR > BORDER_DANGEROUS)
+		start_registered_emergency_procs();
 }
 #endif

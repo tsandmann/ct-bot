@@ -18,18 +18,22 @@
  */
 
 
-/*! @file 	behaviour_simple.c
+/*! 
+ * @file 	behaviour_simple.c
  * @brief 	ganz einfache Beispielverhalten
  * Diese Datei sollte der Einstiegspunkt fuer eigene Experimente sein, 
- * den Roboter zu steuern.
- * 
+ * den Roboter zu steuern. 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
-*/
+ */
 
 
 #include "bot-logic/bot-logik.h"
 #ifdef BEHAVIOUR_SIMPLE_AVAILABLE
+
+static uint8 simple_state = 0;	/*!< Status des simple-Verhaltens */
+static uint8 simple2_state = 0;	/*!< Status des simple2-Verhaltens */
+static int16 simple2_light = 0;	/*!< Uebergabevariable fuer SIMPLE2 */
 
 
 /*! 
@@ -45,37 +49,30 @@
  * 
  * @param *data der Verhaltensdatensatz
  */
-void bot_simple_behaviour(Behaviour_t *data){
-	static uint8 state=0;
-	
-	switch (state){
-		case 0:
-			bot_drive_distance(data ,0 , BOT_SPEED_MAX, 14);
-			state++;
-			break;
-		case 1:
-			bot_turn(data , 90);
-			state=0;
-			break;
-		default:
-			state=0;
-			return_from_behaviour(data);
-			break;
+void bot_simple_behaviour(Behaviour_t *data) {
+	switch (simple_state) {
+	case 0:
+		bot_drive_distance(data, 0, BOT_SPEED_MAX, 14);
+		simple_state = 1;
+		break;
+	case 1:
+		bot_turn(data, 90);
+		simple_state = 0;
+		break;
+	default:
+		return_from_behaviour(data);
+		break;
 	}
 }
 
-
 /*!
  * Rufe das Simple-Verhalten auf 
- * @param caller Der obligatorische Verhaltensdatensatz des Aufrufers
+ * @param caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
-void bot_simple(Behaviour_t * caller, int16 light){
+void bot_simple(Behaviour_t * caller) {
 	switch_to_behaviour(caller,bot_simple_behaviour,OVERRIDE);	
+	simple_state = 0;
 }
-
-
-/*! Uebergabevariable fuer SIMPLE2 */
-static int16 simple2_light=0; 
 
 /*! 
  * Ein ganz einfaches Beispiel fuer ein Hilfsverhalten, 
@@ -103,30 +100,29 @@ static int16 simple2_light=0;
  * 
  * @param *data der Verhaltensdatensatz
  */
-void bot_simple2_behaviour(Behaviour_t *data){
-	#define STATE_SIMPLE2_INIT 0
-	#define STATE_SIMPLE2_WORK 1
-	#define STATE_SIMPLE2_DONE 2
-	static uint8 state = 0;
+void bot_simple2_behaviour(Behaviour_t *data) {
+#define STATE_SIMPLE2_INIT 0
+#define STATE_SIMPLE2_WORK 1
+#define STATE_SIMPLE2_DONE 2
 
-	switch	(state) {
-		case STATE_SIMPLE2_INIT: 
-			// Nichts zu tun
-			state=STATE_SIMPLE2_WORK;
-			break;
-		case STATE_SIMPLE2_WORK: 
-			// Fahre ganz schnell
-			speedWishLeft = BOT_SPEED_FAST;
-			speedWishRight = BOT_SPEED_FAST; 
-			if (sensLDRL< simple2_light)	// Beispielbedingung
-				// Wenn es dunkler als angegeben wird, dann haben wir unserd Ziel erreicht
-				state=STATE_SIMPLE2_DONE;		
-			break;
-			
-		case STATE_SIMPLE2_DONE:		/* Sind wir fertig, dann Kontrolle zurueck an Aufrufer */
-			state=STATE_SIMPLE2_INIT;
-			return_from_behaviour(data);
-			break;
+	switch (simple2_state) {
+	case STATE_SIMPLE2_INIT:
+		// Nichts zu tun
+		simple2_state=STATE_SIMPLE2_WORK;
+		break;
+	case STATE_SIMPLE2_WORK:
+		/* Fahre ganz schnell */
+		speedWishLeft = BOT_SPEED_FAST;
+		speedWishRight = BOT_SPEED_FAST;
+		if (sensLDRL< simple2_light) // Beispielbedingung
+			// Wenn es dunkler als angegeben wird, dann haben wir unserd Ziel erreicht
+			simple2_state=STATE_SIMPLE2_DONE;
+		break;
+
+	case STATE_SIMPLE2_DONE: 
+		/* Sind wir fertig, dann Kontrolle zurueck an Aufrufer */
+		return_from_behaviour(data);
+		break;
 	}
 }
 
@@ -135,10 +131,9 @@ void bot_simple2_behaviour(Behaviour_t *data){
  * @param caller Der obligatorische Verhaltensdatensatz des Aufrufers
  * @param light Uebergabeparameter
  */
-void bot_simple2(Behaviour_t * caller, int16 light){
-	simple2_light=light;
-
-	// Zielwerte speichern
-	switch_to_behaviour(caller,bot_simple2_behaviour,OVERRIDE);	
+void bot_simple2(Behaviour_t * caller, int16 light) {
+	switch_to_behaviour(caller, bot_simple2_behaviour, OVERRIDE);
+	simple2_light = light;
+	simple2_state = 0;
 }
 #endif

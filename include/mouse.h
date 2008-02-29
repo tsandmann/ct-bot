@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	mouse.h 
+/*! 
+ * @file 	mouse.h 
  * @brief 	Routinen fuer die Ansteuerung eines optischen Maussensors
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 
 #ifndef mouse_H_
 #define mouse_H_

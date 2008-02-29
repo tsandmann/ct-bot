@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	display_pc.c 
+/*! 
+ * @file 	display_pc.c 
  * @brief 	Routinen zur Displaysteuerung
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
-*/
+ */
 
 #include "ct-Bot.h"
 
@@ -56,18 +57,18 @@ uint8 display_screen=0;	/*!< zurzeit aktiver Displayscreen */
 char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausgaben */
 
 #ifdef DISPLAY_REMOTE_AVAILABLE
-    #define CLEAR              command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, NULL, NULL,0)
-    #define POSITION(Ze, Sp)   {Ze--; Sp--; command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, (int16*)&(Sp),(int16*) &(Ze),0);}
-    #define printf(data)       {command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, NULL, NULL, (data));}
+    #define CLEAR              command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, NULL, NULL,0)	/*!< Display loeschen */
+    #define POSITION(Ze, Sp)   {Ze--; Sp--; command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, (int16*)&(Sp),(int16*) &(Ze),0);}	/*!< Cursor positionieren */
+    #define printf(data)       {command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, NULL, NULL, (data));}	/*!< Daten ausgeben */
 #else
  #ifdef WIN32
-    static void clrscr(void);
-    static void gotoxy(int x, int y);
-	#define POSITION(Ze, Sp)   gotoxy(Sp, Ze)
-	#define CLEAR              clrscr()
+    static void clrscr(void);									/*!< Befehl um das Display zu loeschen */
+    static void gotoxy(int x, int y);							/*!< Befehl um eine Position anzuspringen */
+	#define POSITION(Ze, Sp)   gotoxy(Sp, Ze)					/*!< Befehl um eine Position anzuspringen */
+	#define CLEAR              clrscr()							/*!< Befehl um das Display zu loeschen */
  #else 
-	#define POSITION(Ze, Sp)   printf("\033[%d;%dH",Ze,Sp)		/*!< Befehl um eine Posion anzuspringen */
-	#define CLEAR              printf("\033[2J")				/*!< Befehl um das display zu loeschen */
+	#define POSITION(Ze, Sp)   printf("\033[%d;%dH",Ze,Sp)		/*!< Befehl um eine Position anzuspringen */
+	#define CLEAR              printf("\033[2J")				/*!< Befehl um das Display zu loeschen */
  #endif 
 #endif
 

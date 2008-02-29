@@ -17,23 +17,24 @@
  * 
  */
 
-/*! @file 	ena.h 
+/*! 
+ * @file 	ena.h 
  * @brief 	Routinen zur Steuerung der Enable-Leitungen
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 
 #ifndef ENA_H_
 #define ENA_H_
 
-#define ENA_ABSTAND	(1<<0)		/*!< Enable-Leitung Abstandssensoren */
-#define ENA_RADLED		(1<<1)		/*!< Enable-Leitung Radencoder */
-#define ENA_SCHRANKE	(1<<2)		/*!< Enable-Leitung Fachueberwachung */
-#define ENA_KANTLED	(1<<3)		/*!< Enable-Leitung Angrundsensor */
-#define ENA_KLAPPLED	(1<<4)		/*!< Enable-Leitung Schieberueberwachung */
-#define ENA_MAUS		(1<<5)		/*!< Enable-Leitung Liniensensor auf Mausplatine */
-#define ENA_MMC		(1<<6)		/*!< Enable-Leitung Reserve 1 */
-#define ENA_MOUSE_SENSOR		(1<<7)		/*!< Enable-Leitung Reserve 2 */
+#define ENA_ABSTAND			(1<<0)		/*!< Enable-Leitung Abstandssensoren */
+#define ENA_RADLED			(1<<1)		/*!< Enable-Leitung Radencoder */
+#define ENA_SCHRANKE		(1<<2)		/*!< Enable-Leitung Fachueberwachung */
+#define ENA_KANTLED			(1<<3)		/*!< Enable-Leitung Angrundsensor */
+#define ENA_KLAPPLED		(1<<4)		/*!< Enable-Leitung Schieberueberwachung */
+#define ENA_MAUS			(1<<5)		/*!< Enable-Leitung Liniensensor auf Mausplatine */
+#define ENA_MMC				(1<<6)		/*!< Enable-Leitung Reserve 1 */
+#define ENA_MOUSE_SENSOR	(1<<7)		/*!< Enable-Leitung Reserve 2 */
 
 #ifndef __ASSEMBLER__
 #include "global.h"
@@ -51,7 +52,7 @@ void ENA_init(void);
  * Daher zieht es die entsprechende ENA_XXX-Leitung (mit Transistor) auf Low und NICHT auf High
  * @param enable Bitmaske der anzuschaltenden ENA-Leitungen
  */
-void ENA_on(uint8 enable);
+void ENA_on(uint8_t enable);
 
 /*! 
  * Schaltet einzelne Enable-Transistoren aus
@@ -61,16 +62,16 @@ void ENA_on(uint8 enable);
  * Daher zieht es die entsprechende ENA_XXX-Leitung (mit Transistor) auf High und NICHT auf Low
  * @param enable Bitmaske der abzuschaltenden ENA-Leitungen
  */
-void ENA_off(uint8 enable);
+void ENA_off(uint8_t enable);
 
 /*!
  * Schaltet die Enable-Transistoren
  * Achtung, die Treiber-Transistoren sind Low-Aktiv!!! 
  * ENA_set bezieht sich auf die Transistor
  * Daher zieht es die entsprechende ENA_XXX-Leitung auf ~enable
- * @param ENA-Wert, der gesetzt werden soll
+ * @param enable	ENA-Wert, der gesetzt werden soll
  */
-void ENA_set(uint8 enable);
+void ENA_set(uint8_t enable);
 
 #endif	// __ASSEMBLER__
 #endif	// ENA_H_

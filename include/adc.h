@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,33 +17,36 @@
  * 
  */
 
-/*! @file 	adc.h
+/*! 
+ * @file 	adc.h
  * @brief 	Routinen zum Einlesen der Analogeingaenge
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 #ifndef ADC_H_
 #define ADC_H_
 
 #include "global.h"
 
-/*!
- * Liest einen analogen Kanal aus
- * @param channel Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
- */
-uint16 adc_read(uint8 channel);
+///*!
+// * Liest einen analogen Kanal aus
+// * @param channel Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
+// */
+//uint16 adc_read(uint8 channel);
 
 /*!
- *  Wechselt einen ADU-kanal. Dafuer muessen auch die Puffer zurueckgesetzt werden 
- * @param channel Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
+ * @brief			Fuegt einen analogen Kanal in die ADC-Konvertierungsliste ein und wertet ihn per Interrupt aus
+ * @param channel 	Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
+ * @param p_sens	Zeiger auf den Sensorwert, der das Ergebnis enthalten soll
  */
-void adc_select_channel(uint8 channel);
+void adc_read_int(uint8_t channel, int16_t* p_sens);
 
 /*!
- * Diese Routine wird vom Timer-Interrupt aufgerufen und speichert einen 
- * Messwert (vorher wendet sie evtl. noch eine Filterfunktion an).
+ * Gibt die laufende Nr. des Channels zurueck, der aktuell ausgewertet wird.
+ * 0: erste registrierter Channel, 1: zweiter registrierter Channel usw.
+ * 255: derzeit wird kein Channel ausgewertet (= Konvertierung fertig)
  */
-void adc_isr(void);
+uint8 adc_get_active_channel(void);
 
 /*!
  * Initialisert den AD-Umsetzer. 
@@ -51,5 +54,5 @@ void adc_isr(void);
  * muss das entsprechende Bit in channel gesetzt sein.
  * Bit0 = Kanal 0 usw.
  */
-void adc_init(uint8 channel);
+void adc_init(uint8_t channel);
 #endif

@@ -77,11 +77,7 @@ unsigned int clntLen;          /*!< Laenge der Datenstruktur der Client-Adresse 
 /*!
  * Init TCP-Server
  */
-void tcp_server_init(void){
-	#ifdef DISPLAY_AVAILABLE
-//		display_init();
-	#endif
-	
+void tcp_server_init(void) {
 	#ifdef WIN32
 	    WSADATA wsaData;
 	    WORD wVersionRequested;
@@ -151,7 +147,7 @@ int tcp_server_run (int runs){
 		int i;
 		for(i=0;i<runs;i++){
 			simultime+=10;
-
+			printf("i=%d\n", i);
 			command_write(CMD_SENS_IR, SUB_CMD_NORM ,(int16*)&simultime,(int16*)&simultime,0);
 			command_write(CMD_SENS_ENC, SUB_CMD_NORM ,(int16*)&simultime,(int16*)&simultime,0);
 			command_write(CMD_SENS_BORDER, SUB_CMD_NORM ,(int16*)&simultime,(int16*)&simultime,0);
@@ -168,8 +164,7 @@ int tcp_server_run (int runs){
 
 			GETTIMEOFDAY(&stop, NULL);
 			int t2= (stop.tv_sec - start.tv_sec)*1000000 + stop.tv_usec - start.tv_usec;
-			printf("X-Token (%d) out after %d usec ",simultime,t2);
-
+			printf("X-Token (%d) out after %d usec \n",simultime,t2);
 
 			received_command.request.command =0;
 			while(received_command.request.command != CMD_DONE ){
@@ -179,7 +174,7 @@ int tcp_server_run (int runs){
 				} else {
 					// Alles ok, evtl. muessen wir aber eine Payload abholen
 					if (received_command.payload != 0) {					
-				//		printf ("fetching payload (%d bytes)\n",received_command.payload);
+						printf ("fetching payload (%d bytes)\n",received_command.payload);
 						low_read(buffer,received_command.payload);	
 					}
 					if (received_command.seq != seq){
@@ -187,6 +182,7 @@ int tcp_server_run (int runs){
 					}
 				}
 				seq=received_command.seq+1;
+				printf("seq=%d\n",seq);
 			}
 			GETTIMEOFDAY(&start, NULL);
 
@@ -263,7 +259,9 @@ int tcp_test_client_run (int runs){
 		len=0;
 
 		len= tcp_read(&buffer,255);
+		printf("len=%d\n", len);
 		tcp_write(&buffer,len);
+		//flushSendBuffer();
 	}
 	printf("Finished %d frames\n",runs);
 	
@@ -271,4 +269,4 @@ int tcp_test_client_run (int runs){
 	return 1;
 }
 
-#endif
+#endif	// PC

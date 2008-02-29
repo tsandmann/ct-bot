@@ -19,7 +19,7 @@
 
 
 
-/*! @file 	behaviour_catch_pillar.c
+/*! @file 	behaviour_catch_pillar.h
  * @brief 	sucht nach einer Dose und fängt sie ein
  * 
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -45,6 +45,19 @@ void bot_catch_pillar_behaviour(Behaviour_t *data);
  * @param caller Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_catch_pillar(Behaviour_t * caller);
+
+/*!
+ * Gibt die Dose wieder aus, Entladevorgang
+ * @param *data der Verhaltensdatensatz
+ */
+void bot_unload_pillar_behaviour(Behaviour_t *data);
+
+/*!
+ * Botenfkt
+ * Entlaedt das Objekt wieder
+ * @param caller Der obligatorische Verhaltensdatensatz des Aufrufers
+ */
+void bot_unload_pillar(Behaviour_t * caller);
 
 #endif
 

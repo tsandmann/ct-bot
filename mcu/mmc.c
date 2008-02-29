@@ -17,10 +17,12 @@
  * 
  */
 
-/*! @file 	mmc.c
+/*! 
+ * @file 	mcu/mmc.c
  * @brief 	Routinen zum Auslesen/Schreiben einer MMC-Karte
  * @author 	Benjamin Benz (bbe@heise.de)
  * @author  Ulrich Radig (mail@ulrichradig.de) www.ulrichradig.de
+ * @author	Timo Sandmann (mail@timosandmann.de)
  * @date 	07.11.06
  */
 
@@ -29,9 +31,18 @@
  * in mmc-low.S. Der Assembler-Code ist a) wesentlich schneller und macht b) das Timing
  * unabhaengig vom verwendeten Compiler. 
  * Die Portkonfiguration findet sich in mmc-low.h.
+ * 
+ * Die MMC kann auf zwei Weisen angesprochen werden: 
+ * Entweder per Software-Steuerung (das ist die Standard-Einstellung), dafuer muss 
+ * SPI_AVAILABLE in ct-Bot.h AUS sein.
+ * Oder per Hardware-SPI-Steuerung, dafuer ist ein kleiner Hardware-Umbau noetig, man
+ * muss die Verbindung zwischen PC5 und dem Display trennen (busy-Leitung wird vom Display-
+ * Treiber eh nicht genutzt) und auf PC5 den linken Radencoder legen. Außerdem ist PB4
+ * vom Radencoder zu trennen. Der PB4-Pin kann fuer andere Zwecke genutzt werden, er muss 
+ * jedoch immer als OUTPUT konfiguriert sein. Schalten man nun in ct-Bot.h SPI_AVAILABLE
+ * AN, dann wird die Kommunikation mit der MMC per Hardware gesteuert - Vorteil ist eine 
+ * hoehere Transfer-Geschwindigkeit zur MMC und es sind 530 Byte weniger im Flash belegt.  
  */
-
-//TODO:	* kleine Doku machen
 
 #include "ct-Bot.h"
 
@@ -39,10 +50,12 @@
 #ifdef MMC_AVAILABLE
 
 #include "mmc.h"
-#include <avr/io.h>
+#include "spi.h"
 #include "ena.h"
 #include "timer.h"
 #include "display.h"
+#include "led.h"
+#include "map.h"
 #include "ui/available_screens.h"
 
 #include <avr/interrupt.h>
@@ -52,61 +65,328 @@
 
 #include "mmc-low.h"
 #include "mmc-vm.h"
+#include "os_thread.h"
 #include <stdlib.h>
 
-#define MMC_Disable()	ENA_off(ENA_MMC);
-#define MMC_Enable()	ENA_on(ENA_MMC);
-
-#define MMC_prepare()	{ MMC_DDR &=~(1<<SPI_DI);	 MMC_DDR |= (1<<SPI_DO); } 
-
-volatile uint8 mmc_init_state=1;	/*!< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
+uint8_t mmc_init_state = 1;	/*!< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
 
 /*!
  * Checkt die Initialisierung der Karte
  * @return	0, wenn initialisiert
  */
-inline uint8 mmc_get_init_state(void){
+uint8_t mmc_get_init_state(void) {
 	return mmc_init_state;	
 }
 
+#ifndef SPI_AVAILABLE
 /*! 
  * Schreibt ein Byte an die Karte
  * @param data	Das zu sendende Byte
  * @author 		Timo Sandmann (mail@timosandmann.de)
  * @date 		14.11.2006
- * @see			mmc-low.s
+ * @see			mmc-low.S
  */
-void mmc_write_byte(uint8 data);
-
+void mmc_write_byte(uint8_t data);
 
 /*!
  * Liest ein Byte von der Karte
  * @return		Das gelesene Byte
  * @author 		Timo Sandmann (mail@timosandmann.de)
  * @date 		14.11.2006
- * @see			mmc-low.s
+ * @see			mmc-low.S
  */
- uint8 mmc_read_byte(void);
+uint8_t mmc_read_byte(void);
 
+static uint8_t mmc_write_command(uint8_t * cmd);
+
+/*!
+ * Liest einen Block von der Karte
+ * @param cmd 		Zeiger auf das Kommando, das erstmal an die Karte geht
+ * @param buffer 	Ein Puffer mit mindestens count Bytes
+ * @param count 	Anzahl der zu lesenden Bytes
+ */
+static uint8 mmc_read_block(uint8_t * cmd, uint8_t * buffer, uint16_t count) {
+	os_enterCS();
+	/* Kommando cmd an MMC/SD-Karte senden */
+	if (mmc_write_command(cmd) != 0) {
+		mmc_init_state = 1;
+		os_exitCS();
+		return 1;
+	}
+	
+	#ifdef LED_AVAILABLE
+	#ifndef TEST_AVAILABLE
+		LED_on(LED_GRUEN);
+	#endif	// TEST_AVAILABLE
+	#endif	// LED_AVAILABLE
+	os_exitCS();
+	/* Warten auf Start Byte von der MMC/SD-Karte (FEh/Start Byte) */
+	uint8_t timeout = 0;
+	uint8_t result = 0;
+	while (result != 0xfe) {
+		os_enterCS();
+		result = mmc_read_byte();
+		os_exitCS();
+		if (--timeout == 0) break;
+	}
+
+	os_enterCS();
+	uint16_t i;
+	/* Lesen des Blocks (max 512 Bytes) von MMC/SD-Karte */
+	for (i=0; i<count; i++)
+		*buffer++ = mmc_read_byte();
+
+	/* CRC-Byte auslesen */
+	mmc_read_byte();	//CRC - Byte wird nicht ausgewertet
+	mmc_read_byte();	//CRC - Byte wird nicht ausgewertet
+	
+	/* MMC/SD-Karte inaktiv schalten */
+	ENA_off(ENA_MMC);
+	#ifdef LED_AVAILABLE
+	#ifndef TEST_AVAILABLE
+		LED_off(LED_GRUEN);
+	#endif	// TEST_AVAILABLE
+	#endif	// LED_AVAILABLE
+	os_exitCS();
+	if (timeout == 0) {
+		mmc_init_state = 1;
+		return 1;	// Abbruch durch Timeout
+	}
+	
+	return 0;	// alles ok
+}
+#else
+
+#define mmc_read_byte	SPI_MasterReceive		/*!< read_byte per SPI */
+#define mmc_write_byte	SPI_MasterTransmit		/*!< write_byte per SPI */
+
+/*
+ * schaltet die MMC aktiv und initialisiert sie, falls noetig
+ * @return	0: alles ok, Fehler von mmc_init() sonst
+ */
+uint8_t mmc_enable(void) {
+	uint8_t result;
+	if (mmc_init_state != 0 && (result=mmc_init()) != 0) return result;  
+	ENA_on(ENA_MMC);
+	ENA_off(ENA_MMC);
+	MMC_DDR |= _BV(SPI_DO);
+	MMC_DDR &= ~_BV(SPI_DI);
+	SPI_MasterTransmit(-1);
+	ENA_on(ENA_MMC);
+	return 0;
+}
+
+/*!
+ * wartet, bis MMC mit "data" antwortet oder der Timeout (2^16 Versuche) zuschlaegt
+ * @param data	das erwartete Antwortbyte
+ * @return		Rest vom Timeout oder 0 im Fehlerfall
+ */
+static uint16_t wait_for_byte(uint8_t data) {
+	uint16_t timeout = 0xffff;
+	/* warten, bis Karte mit "data" antwortet */
+	uint8_t response = 0;
+	do {
+		SPDR = 0xff; 
+		while(!(SPSR & (1<<SPIF))) {}
+		response = SPDR; 
+		if (--timeout == 0) break;
+	} while (response != data);
+	return timeout;
+}
+
+/*!
+ * bereitet Lesen oder Schreiben eines Blocks vor
+ * @param cmd	1. Byte des Kommandos an die Karte
+ * @param addr	Adresse des Blocks in Byte
+ * @return		0: alles ok, sonst Fehlercode  
+ */
+static uint8_t prepare_transfer_spi(uint8_t cmd, uint32_t addr) {
+	/* Init-Check */
+	if (mmc_enable() != 0) {
+		mmc_init_state = 1;
+		return 1;
+	}
+	
+	/* (addr <<= 1) & 0x00ff ffff */
+	asm volatile(
+		"lsl %A0		\n\t"
+		"rol %B0		\n\t"
+		"rol %C0			"		
+		:	"=r"	(addr)
+		:	"0"		(addr)
+	);
+
+	/* Kommando senden */
+	SPI_MasterTransmit(cmd);		// 0x51: lesen, 0x schreiben
+	typedef union {
+		uint32_t u32;
+		uint8_t u8[4];
+	} mmc_addr_t;
+	
+	mmc_addr_t tmp;
+	tmp.u32 = addr;
+	SPI_MasterTransmit(tmp.u8[2]);	// Byteadresse des Blocks ("big-endian")
+	SPI_MasterTransmit(tmp.u8[1]);
+	SPI_MasterTransmit(tmp.u8[0]);
+	SPI_MasterTransmit(0x00);		
+	SPI_MasterTransmit(0xff);		// CRC
+	return 0;
+}
+
+/*!
+ * Liest einen Block von der Karte
+ * @param cmd		Kommando zum Lesen (0x51 fuer 512-Byte Block)
+ * @param addr 		Adresse des Blocks
+ * @param buffer 	Puffer fuer die Daten
+ * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout
+ */	
+uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, uint8_t * buffer) {
+	os_enterCS();
+	/* cmd[] = {0x51,addr,addr,addr,0x00,0xFF} */
+	uint8_t result = prepare_transfer_spi(cmd, addr);
+	if (result != 0) {
+		os_exitCS();
+		return result;
+	}
+
+#ifdef LED_AVAILABLE
+#ifndef TEST_AVAILABLE
+	LED_on(LED_GRUEN);
+#endif	// TEST_AVAILABLE
+#endif	// LED_AVAILABLE	
+	os_exitCS();	
+	
+	/* Warten auf Start-Byte von der MMC/SD-Karte (0xfe == Start-Byte) */
+	uint16_t timeout = wait_for_byte(0xfe);
+
+	os_enterCS();
+	/* Lesen des Blocks (512 Bytes) von MMC/SD-Karte */
+	uint8_t i,j,k;
+	if (cmd != 0x51) {
+		k = 248;
+	} else {
+		k = 0;
+	}
+	SPDR = 0;	// start SPI-transfer
+	for (i=2; i>0; i--) {
+		j = k;
+		uint8_t tmp;
+		do {
+			while(!(SPSR & (1<<SPIF))) {}	// wait for reception complete
+			tmp = SPDR;						// load from SPDR
+			SPDR = 0;						// start next SPI-transfer
+			*buffer = tmp;					// save to *buffer
+			buffer++;
+		} while (++j != 0);
+	}
+
+	/* CRC-Bytes auslesen */
+	SPI_MasterReceive();	// CRC-Byte wird nicht ausgewertet
+	SPI_MasterReceive();	// CRC-Byte wird nicht ausgewertet
+	
+	ENA_off(ENA_MMC);		// MMC/SD-Karte inaktiv schalten
+#ifdef LED_AVAILABLE
+#ifndef TEST_AVAILABLE
+	LED_off(LED_GRUEN);
+#endif	// TEST_AVAILABLE
+#endif	// LED_AVAILABLE
+	os_exitCS();
+	
+	if (timeout == 0) {
+		mmc_init_state = 1;
+		return 3;	// Abbruch durch Timeout
+	}
+	return 0;
+}
+
+/*! 
+ * Schreibt einen 512-Byte Sektor auf die Karte
+ * @param addr 		Adresse des 512-Byte Blocks
+ * @param buffer 	Zeiger auf den Puffer
+ * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 24, 2 wenn Timeout bei busy
+ */
+uint8_t mmc_write_sector_spi(uint32_t addr, uint8_t * buffer) {
+	os_enterCS();
+	/* cmd[] = {0x58,addr,addr,addr,0x00,0xFF} */
+	uint8_t result = prepare_transfer_spi(0x58, addr);
+	if (result != 0) {
+		os_exitCS();
+		return result;
+	}
+
+#ifdef LED_AVAILABLE
+#ifndef TEST_AVAILABLE
+	LED_on(LED_ROT);
+#endif	// TEST_AVAILABLE
+#endif	// LED_AVAILABLE
+
+	/* Startbyte an MMC/SD-Karte senden */
+	SPI_MasterTransmit(-2);
+	
+	/* Schreiben des Blocks (512 Bytes) auf MMC/SD-Karte */
+	uint8_t i,j, tmp;
+	tmp = *buffer;		// load from *buffer
+	buffer++;
+	for (i=2; i>0; i--) {
+		j = 0;
+		do {
+			SPDR = tmp;		// save to SPDR
+			tmp = *buffer;	// load from *buffer
+			buffer++;
+			j++;
+			if (j == 0) {
+				while(!(SPSR & (1<<SPIF))) {}
+				break;		// exit inner loop
+			}
+			while(!(SPSR & (1<<SPIF))) {}	// wait for transmission to complete
+		} while (1);
+	}
+
+	/* CRC-Dummy schreiben */
+	SPI_MasterTransmit(0xff);
+	SPI_MasterTransmit(0xff);
+	
+	os_exitCS();
+	
+	uint16_t timeout = 0xffff;
+	/* warten, bis Karte nicht mehr busy */
+	timeout = wait_for_byte(0xff);
+	
+	os_enterCS();
+	ENA_off(ENA_MMC);		// MMC/SD-Karte inaktiv schalten
+#ifdef LED_AVAILABLE
+#ifndef TEST_AVAILABLE
+	LED_off(LED_ROT);
+#endif	// TEST_AVAILABLE
+#endif	// LED_AVAILABLE
+	os_exitCS();
+	
+	if (timeout == 0) {
+		mmc_init_state = 1;
+		return 3;
+	}
+	return 0;
+}
+#endif	// SPI_AVAILABLE
 
 /*!
  * Schickt ein Kommando an die Karte
  * @param cmd 	Ein Zeiger auf das Kommando
  * @return 		Die Antwort der Karte oder 0xFF im Fehlerfall
  */
-uint8 mmc_write_command(uint8 *cmd){
-	uint8 result = 0xff;
-	uint16 timeout = 0;
-
-	mmc_enable();	// MMC / SD-Card aktiv schalten
-
+static uint8_t mmc_write_command(uint8_t * cmd) {
+	uint8_t result = 0xff;
+	uint16_t timeout = 0;
+	
+	if (mmc_enable() != 0) return 0xff;	// MMC / SD-Card aktiv schalten
+	
 	// sendet 6 Byte Kommando
-	uint8 i;
+	uint8_t i;
 	for (i=0; i<6; i++) // sendet 6 Byte Kommando zur MMC/SD-Karte
 		mmc_write_byte(*cmd++);
 
 	// Wartet auf eine gueltige Antwort von der MMC/SD-Karte
-	while (result == 0xff){
+	while (result == 0xff) {
 		result = mmc_read_byte();
 		if (timeout++ > MMC_TIMEOUT)
 			break; // Abbruch da die MMC/SD-Karte nicht antwortet
@@ -115,95 +395,74 @@ uint8 mmc_write_command(uint8 *cmd){
 	return result;
 }
 
-
 /*! 
- * Initialisiere die SD/MMC-Karte
+ * Initialisiere die MMC/SD-Karte
  * @return 0 wenn allles ok, sonst Nummer des Kommandos bei dem abgebrochen wurde
  */
-uint8 mmc_init(void){
-	uint16 timeout = 0;
-	uint8 i;
+uint8_t mmc_init(void) {
+	os_enterCS();
 	mmc_init_state = 0;
 	
-	// Konfiguration des Ports an der die MMC/SD-Karte angeschlossen wurde
-	MMC_CLK_DDR |= _BV(SPI_CLK);				// Setzen von Pin MMC_Clock auf Output
-
-	MMC_prepare();
+#ifdef SPI_AVAILABLE
+	SPI_MasterInit();
+#else
+	MMC_CLK_DDR |= _BV(SPI_CLK);
+	MMC_DDR 	&= ~(1<<SPI_DI);
+	MMC_DDR 	|=  (1<<SPI_DO);
+#endif
+	ENA_on(ENA_MMC);
+	ENA_off(ENA_MMC);
 	
-	MMC_Enable();
-	MMC_Disable();
-	
-	// Initialisiere MMC/SD-Karte in den SPI-Mode
+	/* MMC/SD-Karte in den SPI-Mode initialisieren */
+	uint8_t i;
 	for (i=0; i<0x0f; i++) // Sendet min 74+ Clocks an die MMC/SD-Karte
 		mmc_write_byte(0xff);
 	
-	// Sendet Kommando CMD0 an MMC/SD-Karte
-	uint8 cmd[] = {0x40,0x00,0x00,0x00,0x00,0x95};
+	/* Kommando CMD0 an MMC/SD-Karte senden */
+	uint8_t cmd[] = {0x40,0x00,0x00,0x00,0x00,0x95};
+	uint16_t timeout = 0;
 	while (mmc_write_command(cmd) != 1){
-		if (timeout++ > MMC_TIMEOUT){
-			MMC_Disable();
+		if (timeout++ > MMC_TIMEOUT) {
+			ENA_off(ENA_MMC);
 			mmc_init_state = 1;
+			#ifdef LED_AVAILABLE
+			#ifndef TEST_AVAILABLE
+				LED_on(LED_TUERKIS);
+			#endif	// TEST_AVAILABLE
+			#endif	// LED_AVAILABLE
+			os_exitCS();
 			return 1; // Abbruch bei Kommando 1 (Return Code 1)
 		}
 	}
 	
-	// Sendet Kommando CMD1 an MMC/SD-Karte
+	/* Kommando CMD1 an MMC/SD-Karte senden */
 	timeout = 0;
-	cmd[0] = 0x41; // Kommando 1
-	cmd[5] = 0xFF;
-	while (mmc_write_command (cmd) !=0){
-		if (timeout++ > 3*MMC_TIMEOUT){
-			MMC_Disable();
+	cmd[0] = 0x41;	// Kommando 1
+	cmd[5] = 0xFF;	// CRC
+	while (mmc_write_command (cmd) != 0) {
+		if (timeout++ > 3*MMC_TIMEOUT) {
+			ENA_off(ENA_MMC);
 			mmc_init_state = 1;
+			#ifdef LED_AVAILABLE
+			#ifndef TEST_AVAILABLE
+				LED_on(LED_TUERKIS);
+			#endif	// TEST_AVAILABLE
+			#endif	// LED_AVAILABLE
+			os_exitCS();
 			return 2; // Abbruch bei Kommando 2 (Return Code 2)
 		}
 	}
 	
-	// set MMC_Chip_Select to high (MMC/SD-Karte Inaktiv)
-	MMC_Disable();
-	return 0;
-}
-
-
-/*!
- * Liest einen Block von der Karte
- * @param cmd 		Zeiger auf das Kommando, das erstmal an die Karte geht
- * @param Buffer 	Ein Puffer mit mindestens count Bytes
- * @param count 	Anzahl der zu lesenden Bytes
- */
-uint8 mmc_read_block(uint8 *cmd, uint8 *buffer, uint16 count){
-	/* Initialisierung checken */
-	if (mmc_init_state != 0) 
-		if (mmc_init() != 0) return 1;	
-		
-	// Sendet Kommando cmd an MMC/SD-Karte
-	if (mmc_write_command(cmd) != 0) {
-		mmc_init_state = 1;
-		return 1;
-	}
-
-	// Wartet auf Start Byte von der MMC/SD-Karte (FEh/Start Byte)
-	uint8 timeout=1;
-	while (mmc_read_byte() != 0xfe){
-		if (timeout++ == 0) break;
-	};
-
-	uint16 i;
-	// Lesen des Blocks (max 512 Bytes) von MMC/SD-Karte
-	for (i=0; i<count; i++)
-		*buffer++ = mmc_read_byte();
-
-	// CRC-Byte auslesen
-	mmc_read_byte();	//CRC - Byte wird nicht ausgewertet
-	mmc_read_byte();	//CRC - Byte wird nicht ausgewertet
+	#ifdef LED_AVAILABLE
+	#ifndef TEST_AVAILABLE	
+		LED_off(LED_TUERKIS);
+	#endif	// TEST_AVAILABLE
+	#endif	// LED_AVAILABLE
 	
-	// set MMC_Chip_Select to high (MMC/SD-Karte inaktiv)
-	MMC_Disable();
-	if (timeout == 0) {
-		mmc_init_state = 1;
-		return 1;	// Abbruch durch Timeout
-	}
-	return 0;	// alles ok
+	/* MMC/SD-Karte inaktiv schalten */
+	ENA_off(ENA_MMC);
+	os_exitCS();
+	return 0;
 }
 
 #ifdef MMC_INFO_AVAILABLE
@@ -211,9 +470,8 @@ uint8 mmc_read_block(uint8 *cmd, uint8 *buffer, uint16 count){
  * Liest das CID-Register (16 Byte) von der Karte
  * @param Buffer 	Puffer von mindestens 16 Byte
  */
-void mmc_read_cid (uint8 *buffer){
-	// Kommando zum Lesen des CID Registers
-	uint8 cmd[] = {0x4A,0x00,0x00,0x00,0x00,0xFF}; 
+void mmc_read_cid (uint8_t * buffer) {
+	uint8_t cmd[] = {0x4A,0x00,0x00,0x00,0x00,0xFF};	// Kommando zum Lesen des CID Registers 
 	mmc_read_block(cmd, buffer, 16);
 }
 
@@ -221,9 +479,8 @@ void mmc_read_cid (uint8 *buffer){
  * Liest das CSD-Register (16 Byte) von der Karte
  * @param Buffer 	Puffer von mindestens 16 Byte
  */
-void mmc_read_csd (uint8 *buffer){	
-	// Kommando zum lesen des CSD Registers
-	uint8 cmd[] = {0x49,0x00,0x00,0x00,0x00,0xFF};
+void mmc_read_csd (uint8_t * buffer) {	
+	uint8_t cmd[] = {0x49,0x00,0x00,0x00,0x00,0xFF};	// Kommando zum lesen des CSD Registers
 	mmc_read_block(cmd, buffer, 16);
 }
 
@@ -231,15 +488,15 @@ void mmc_read_csd (uint8 *buffer){
  * Liefert die Groesse der Karte zurueck
  * @return Groesse der Karte in Byte. Bei einer 4 GByte-Karte kommt 0xFFFFFFFF zurueck
  */
-uint32 mmc_get_size(void){
-	uint8 csd[16];
+uint32_t mmc_get_size(void) {
+	uint8_t csd[16];
 	
 	mmc_read_csd(csd);
 	
-	uint32 size = (csd[8]>>6) + (csd[7] << 2) + ((csd[6] & 0x03) << 10); // c_size
+	uint32_t size = (csd[8]>>6) + (csd[7] << 2) + ((csd[6] & 0x03) << 10); // c_size
 	size +=1;		// Fest in der Formel drin
 	
-	uint8 shift = 2;	// eine 2 ist fest in der Formel drin
+	uint8_t shift = 2;	// eine 2 ist fest in der Formel drin
 	shift += (csd[10]>>7) + ((csd[9] & 0x03) <<1); // c_size_mult beruecksichtigen
 	shift += csd[5] & 0x0f;	// Blockgroesse beruecksichtigen
 
@@ -248,14 +505,15 @@ uint32 mmc_get_size(void){
 	return size;
 }
 
-#endif //MMC_INFO_AVAILABLE
+#endif // MMC_INFO_AVAILABLE
 
 #ifdef MMC_WRITE_TEST_AVAILABLE
 	/*! Testet die MMC-Karte. Schreibt nacheinander 2 Sektoren a 512 Byte mit Testdaten voll und liest sie wieder aus
 	 * !!! Achtung loescht die Karte
+	 * @param *buffer	Zeiger auf einen 512 Byte grossen Puffer
 	 * @return 0, wenn alles ok
 	 */
-	uint8 mmc_test(void){
+	uint8 mmc_test(uint8_t * buffer) {
 		static uint32 sector = 0xf000;
 		/* Initialisierung checken */
 		if (mmc_init_state != 0) 
@@ -327,7 +585,6 @@ uint32 mmc_get_size(void){
 			display_cursor(4,1);
 			display_printf("Bei %3u PF: %5u us", pagefaults - old_pf, (end_ticks-start_ticks)*176 + timer_reg*4);
 		#else	// alte Version
-			uint8 buffer[512];
 			uint16 i;
 			uint8 result=0;
 			
@@ -335,24 +592,10 @@ uint32 mmc_get_size(void){
 			uint16 start_ticks=TIMER_GET_TICKCOUNT_16;
 			uint8 start_reg=TCNT2;	
 			
-			#if MMC_ASYNC_WRITE == 1
-				/* async-Test (wurde im letzten Durchlauf korrekt geschrieben?) */
-				if (sector > 0xf){
-					result= mmc_read_sector(sector-1, buffer);	
-					if (result != 0){
-						return result*10 + 9;
-					}
-					for (i=0; i<512; i++)
-						if (buffer[i] != (i & 0xFF)){
-							return 10;
-						}				
-				}
-			#endif	// MMC_ASYNC_WRITE
-			
 			// Puffer vorbereiten
 			for (i=0; i< 512; i++)	buffer[i]= (i & 0xFF);
 			// und schreiben
-			result= mmc_write_sector(sector, buffer, 0);
+			result= mmc_write_sector(sector, buffer);
 			if (result != 0){
 				return result*10 + 2;
 			}
@@ -360,7 +603,7 @@ uint32 mmc_get_size(void){
 			// Puffer vorbereiten
 			for (i=0; i< 512; i++)	buffer[i]= 255 - (i & 0xFF);	
 			// und schreiben				
-			result= mmc_write_sector(sector+1, buffer, 0);	
+			result= mmc_write_sector(sector+1, buffer);	
 			if (result != 0){
 				return result*10 + 3;
 			}
@@ -390,26 +633,19 @@ uint32 mmc_get_size(void){
 				if (buffer[i] != (255- (i & 0xFF))){
 					return 7;	
 				}
-			
-			#if MMC_ASYNC_WRITE == 1
-				for (i=0; i< 512; i++)
-					buffer[i]= (i & 0xFF);
-				result= mmc_write_sector(sector-1, buffer, MMC_ASYNC_WRITE);	
-				if (result != 0){
-					return result*10 + 8;
-				}
-			#endif	// MMC_ASYNC_WRITE
 
 			/* Zeitmessung beenden */
 			int8 timer_reg=TCNT2;
 			uint16 end_ticks=TIMER_GET_TICKCOUNT_16;
 			timer_reg -= start_reg;
 			/* kleine Statistik ausgeben */
+			os_enterCS();
 			display_cursor(3,1);
 			display_printf("Dauer: %5u us     ", (end_ticks-start_ticks)*176 + timer_reg*4);	
 			display_cursor(4,1);
 			display_printf("Sektor:%6u/", sector-2);						
-			display_printf("%6u", sector-1);						
+			display_printf("%6u", sector-1);
+			os_exitCS();
 		#endif	// MMC_VM_AVAILABLE			
 		// hierher kommen wir nur, wenn alles ok ist
 		return 0;
@@ -420,22 +656,22 @@ uint32 mmc_get_size(void){
 	/*!
 	 * Zeigt die Daten der MMC-Karte an
 	 */
-	void mmc_display(void){
+	void mmc_display(void) {
 		#ifdef MMC_INFO_AVAILABLE
-			uint32 size = 0;
-			uint8 csd[16];
-			static uint8 mmc_state = 0xFF;
+			uint32_t size = 0;
+			uint8_t csd[16];
+			static uint8_t mmc_state = 0xFF;
 				
-			uint8 dummy = mmc_init();
+			uint8_t dummy = mmc_init();
 			// hat sich was geaendert?
 			if (dummy != mmc_state) {
 				mmc_state = dummy;
 				
-				uint8 i;
+				uint8_t i;
 				for (i=0;i<16;i++) csd[i]=0;		
 	
 				display_cursor(1,1);
-				if (mmc_state != 0){
+				if (mmc_state != 0) {
 					display_printf("MMC not init (%d)  ", mmc_state);
 				}else {
 					size=mmc_get_size();
@@ -448,7 +684,7 @@ uint32 mmc_get_size(void){
 				
 				#ifndef MMC_WRITE_TEST_AVAILABLE
 					display_cursor(3,1);
-					for (i=0;i<16;i++){
+					for (i=0;i<16;i++) {
 						if (i == 8) display_cursor(4,1);
 						if (i%2 == 0) display_printf(" ");
 						display_printf("%02x",csd[i]);
@@ -456,12 +692,13 @@ uint32 mmc_get_size(void){
 				#endif	// MMC_WRITE_TEST_AVAILABLE							
 			}
 			#ifdef MMC_WRITE_TEST_AVAILABLE
-				if (mmc_state == 0){
+				if (mmc_state == 0) {
 					static uint16 time = 0;
-					if (TIMER_GET_TICKCOUNT_16-time > MS_TO_TICKS(200)){
+					static uint8_t buffer[512];
+					if (TIMER_GET_TICKCOUNT_16-time > MS_TO_TICKS(200)) {
 						time = TIMER_GET_TICKCOUNT_16;
-						uint8 result = mmc_test();
-						if (result != 0){
+						uint8 result = mmc_test(buffer);
+						if (result != 0) {
 							display_cursor(3,1);
 							display_printf("mmc_test()=%u :(", result);
 						}
@@ -479,5 +716,5 @@ uint32 mmc_get_size(void){
 	}
 #endif	// DISPLAY_MMC_INFO
 
-#endif
-#endif
+#endif	// MMC_AVAILABLE
+#endif	// MCU

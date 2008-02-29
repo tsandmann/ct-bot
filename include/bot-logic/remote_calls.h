@@ -17,28 +17,27 @@
  *
  */
 
-/*! @file 	remote_calls.h
- * @brief 	Liste mit Botenfkts, die man aus der Ferne aufrufen kann
- *
+/*! 
+ * @file 	remote_calls.h
+ * @brief 	Ruft auf ein Kommando hin andere Verhalten auf und bestaetigt dann ihre Ausfuehrung
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	19.12.06
-*/
+ * @see		<a href="../../Documentation/RemoteCall.html">RemoteCall.html</a>
+ */
 
 #ifndef REMOTE_CALLS_H_
 #define REMOTE_CALLS_H_
 
 #include "bot-logik.h"
 
+#define REMOTE_CALL_FUNCTION_NAME_LEN 20	/*!< Laenge der Funktionsnamen */
+#define PARAM_TEXT_LEN 40					/*!< Laenge des Parameterstrings */
+#define REMOTE_CALL_MAX_PARAM 3				/*!< Maximale Anzahl an Parametern */
 
-
-
-#define REMOTE_CALL_FUNCTION_NAME_LEN 20
-#define PARAM_TEXT_LEN 40
-#define REMOTE_CALL_MAX_PARAM 3
-
+/*! Groesse des Remotecall-Buffers */
 #define REMOTE_CALL_BUFFER_SIZE (REMOTE_CALL_FUNCTION_NAME_LEN+1+REMOTE_CALL_MAX_PARAM*4)
 
-// Die Kommandostruktur
+/*! Kommandostruktur fuer Remotecalls */
 typedef struct {
    uint8 param_count;			/*!< Anzahl der Parameter kommen Und zwar ohne den obligatorischen caller-parameter*/
    uint8 param_len[REMOTE_CALL_MAX_PARAM];	/*!< Angaben ueber die Anzahl an Bytes, die jeder einzelne Parameter belegt */
@@ -48,11 +47,16 @@ typedef struct {
    void* (*func)(void *);      /*!< Zeiger auf die auszufuehrende Funktion*/
 } call_t;
 
-typedef union{
-	uint32 u32;
-	float fl32;
-	uint16 u16;
-} remote_call_data_t;	/*!< uint32 und float werden beide gleich ausgelesen, daher stecken wir sie in einen Speicherbereich */
+/*! Union fuer Remotecall-Daten */
+typedef union {
+	uint32_t u32;	/*!< 32 Bit unsigned integer */
+	int32_t s32;	/*!< 32 Bit signed integer */
+	float fl32;		/*!< 32 Bit float */
+	uint16_t u16;	/*!< 16 Bit unsigned integer */
+	int16_t s16;	/*!< 16 Bit signed integer */
+	uint8_t u8;		/*!<  8 Bit unsigned integer */ 
+	int8_t s8;		/*!<  8 Bit signed integer */
+} remote_call_data_t;	// uint32 und float werden beide gleich ausgelesen, daher stecken wir sie in einen Speicherbereich
 
 /*! Dieses Makro bereitet eine Botenfunktion als Remote-Call-Funktion vor.
  * Der erste parameter ist der Funktionsname selbst
@@ -70,19 +74,21 @@ typedef union{
 void bot_remotecall_behaviour(Behaviour_t *data);
 
 /*!
- * Fuehre einen remote_call aus. Es gibt KEIN aufrufendes Verhalten!!
- * @param func Zeiger auf den Namen der Fkt
- * @param data Zeiger auf die Daten
+ * @brief			Fuehre einen remote_call aus. Aufrufendes Verhalten bei RemoteCalls == NULL
+ * @param *caller	Zeiger auf das aufrufende Verhalten
+ * @param *func 	Zeiger auf den Namen der Fkt
+ * @param *data		Zeiger auf die Daten
  */
-void bot_remotecall(char* func, remote_call_data_t* data);
+void bot_remotecall(Behaviour_t *caller, char* func, remote_call_data_t* data);
 
 /*!
- * Fuehre einen remote_call aus. Es gibt KEIN aufrufendes Verhalten!!
- * @param data Zeiger die Payload eines Kommandos. Dort muss zuerst ein String mit dem Fkt-Namen stehen. ihm folgen die Nutzdaten
+ * @brief		Fuehre einen remote_call aus. Es gibt KEIN aufrufendes Verhalten!!
+ * @param *data	Zeiger die Payload eines Kommandos. Dort muss zuerst ein String mit dem Fkt-Namen stehen. ihm folgen die Nutzdaten
  */
-void bot_remotecall_from_command(uint8 * data);
+void bot_remotecall_from_command(char * data);
 
-/*! Listet alle verfuegbaren Remote-Calls auf und verschickt sie als einzelne Kommanods
+/*! 
+ * Listet alle verfuegbaren Remote-Calls auf und verschickt sie als einzelne Kommanods
  */
 void remote_call_list(void);
 

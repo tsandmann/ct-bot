@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	motor-low_pc.c
+/*! 
+ * @file 	motor-low_pc.c
  * @brief 	Low-Level Routinen fuer die Motorsteuerung des c't-Bots
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	01.12.05
-*/
+ */
 
 #include "ct-Bot.h"
 
@@ -34,8 +35,8 @@
 #include "motor.h"
 
 
-int16 motor_left;	/*!< zuletzt gestellter Wert linker Motor */
-int16 motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
+volatile int16 motor_left;	/*!< zuletzt gestellter Wert linker Motor */
+volatile int16 motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
 
 /*!
  *  Initilisiert alles fuer die Motosteuerung 
@@ -67,10 +68,10 @@ void bot_motor(int16 left, int16 right){
 }
 
 /*!
- * Stellt die Servos
- * Sinnvolle Werte liegen zwischen 8 und 16
- * @param servo Nummer des Servos
- * @param servo Zielwert
+ * @brief		Stellt die Servos
+ * @param servo	Nummer des Servos
+ * @param pos	Zielwert
+ * Sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus 
  */
 void servo_low(uint8 servo, uint8 pos){
 	int16 p = pos;

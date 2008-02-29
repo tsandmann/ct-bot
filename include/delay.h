@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,25 +17,42 @@
  * 
  */
 
-/*! @file 	delay.h
+/*! 
+ * @file 	delay.h
  * @brief 	Hilfsroutinen
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
-*/
+ */
 #ifndef delay_H_
 #define delay_H_
-
 
 /*!
  * Warte 100 ms
  */
-void delay_100ms(void);
+#define delay_100ms()	delay(100)
 
 /*!
  * Verzoegert um ms Millisekunden
- * Wenn RTC_AVAILABLE, dann ueber rtc, sonst ueber delay_100ms
- * ==> Aufloesung ohne rtc: 100-ms-schritte; mit rtc: 5-ms-Schritte
  * @param ms Anzahl der Millisekunden
  */
-void delay(int ms);
-#endif
+void delay(uint16_t ms);
+
+#ifdef MCU
+	/*!
+	 * Delay loop using a 16-bit counter so up to 65536 iterations are possible. 
+	 * (The value 65536 would have to be passed as 0.) 
+	 * The loop executes four CPU cycles per iteration, not including the overhead 
+	 * the compiler requires to setup the counter register pair. 
+	 * Thus, at a CPU speed of 1 MHz, delays of up to about 262.1 milliseconds can be achieved.
+	 * @param __count	1/4 CPU-Zyklen
+	 */
+	static inline void _delay_loop_2(uint16_t __count) {
+		__asm__ volatile (
+			"1: sbiw %0,1" "\n\t"
+			"brne 1b"
+			: "=w" (__count)
+			: "0" (__count)
+		);
+	}
+#endif	// MCU
+#endif	// delay_H_

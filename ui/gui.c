@@ -18,15 +18,16 @@
  */
 
 /*! 
- * @file 	gui.h
+ * @file 	gui.c
  * @brief 	Display-GUI des Bots
  * @author 	Timo Sandmann (mail@timosandmann.de)
  * @date 	12.02.2007
  */
  
+#include "bot-logic/available_behaviours.h"
+#include "ui/available_screens.h"
 #include "ct-Bot.h"
 #include "global.h"
-#include "ui/available_screens.h"
 #include "rc5.h"
 #include "sensor.h"
 #include "motor.h"
@@ -35,12 +36,16 @@
 #include "log.h"
 #include "bot-logic/bot-logik.h"
 #include "gui.h"
+#include "led.h"
+#include "mini-fat.h"
+#include "map.h"
+#include "pos_stack.h"
 #include <stdlib.h>
 
 #ifdef DISPLAY_AVAILABLE
 
 int8 max_screens = 0;	/*!< Anzahl der zurzeit registrierten Screens */
-static void (* screen_functions[DISPLAY_SCREENS])(void) = {NULL};	/*!< hier liegen die Zeiger auf die Display-Funktionen */
+void (* screen_functions[DISPLAY_SCREENS])(void) = {NULL};	/*!< hier liegen die Zeiger auf die Display-Funktionen */
 
 /*! 
  * @brief 		Display-Screen Registrierung
@@ -67,9 +72,19 @@ int8 register_screen(void* fkt){
 void gui_display(int8 screen){
 //	rc5_control();	// Vielleicht waere der Aufruf hier uebersichtlicher?
 	/* Gueltigkeit der Screen-Nr. pruefen und Anzeigefunktion aufrufen, falls Screen belegt ist */
+	#ifdef LED_AVAILABLE
+	#ifndef TEST_AVAILABLE
+		if (RC5_Code != 0) LED_on(LED_WEISS);
+	#endif	// TEST_AVAILABLE
+	#endif	// LED_AVAILABLE 
 	if (screen < max_screens && screen_functions[screen] != NULL) screen_functions[screen]();
 	if (RC5_Code != 0) default_key_handler();	// falls rc5-Code noch nicht abgearbeitet, Standardbehandlung ausfuehren
 	RC5_Code = 0;	// fertig, RC5-Puffer loeschen
+	#ifdef LED_AVAILABLE
+	#ifndef TEST_AVAILABLE
+		LED_off(LED_WEISS);
+	#endif	// TEST_AVAILABLE
+	#endif	// LED_AVAILABLE 	
 }
 
 /*! 
@@ -79,8 +94,16 @@ void gui_display(int8 screen){
  * Traegt die Anzeige-Funktionen in das Array ein.
  */
 void gui_init(void){
+//	register_screen(NULL);
+	#ifdef DISPLAY_MINIFAT_INFO
+		/* MiniFAT wird vor GUI initialisiert und schreibt deshalb einfach auf's leere Display, der Dummy hier verhindert nur das Ueberschreiben in den anschliessenden Bot-Zyklen, damit man die Daten noch lesen kann */
+		register_screen(&mini_fat_display);
+	#endif
 	#ifdef SENSOR_DISPLAY_AVAILABLE 	
 		register_screen(&sensor_display);
+	#endif
+	#ifdef BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
+		register_screen(&bot_calibrate_sharps_display);
 	#endif
 	#ifdef DISPLAY_REGELUNG_AVAILABLE
 		register_screen(&speedcontrol_display);
@@ -105,6 +128,18 @@ void gui_init(void){
 	#endif 
 	#ifdef RAM_DISPLAY_AVAILABLE
 		register_screen(&ram_display);
+	#endif
+	#ifdef DISPLAY_MAP_AVAILABLE
+		register_screen(&map_display);
+	#endif
+	#ifdef DISPLAY_MAP_GO_DESTINATION
+		register_screen(&mapgo_display);
+	#endif
+	#ifdef DISPLAY_TRANSPORT_PILLAR
+		register_screen(&transportpillar_display);
+	#endif
+	#ifdef DISPLAY_DRIVE_STACK_AVAILABLE
+		register_screen(&drive_stack_display);
 	#endif
 }
 
