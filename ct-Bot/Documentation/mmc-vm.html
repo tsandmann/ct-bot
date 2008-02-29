@@ -1,0 +1,154 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="description" content="Uebersicht der Speicherverwaltung mit MMC am c't-Bot" />
+<meta name="author" content="Timo Sandmann" />
+<meta name="keywords" content="c't-Bot,mmc,virtueller Speicher, fat" />
+<meta name="date" content="2007-01-06" />
+<title>c't-Bot - VM-Dokumentation</title>
+<link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+<body>
+<h1>Dokumentation zur virtuellen Speicherverwaltung</h1>
+<br />
+
+<a class="menu" href="#uebersicht">Eine allgemeine &Uuml;bersicht</a><br />
+<a class="menu" href="#vm">Der virtuelle Speicher im Detail</a>
+<ul>
+    <li><a class="menu" href="#alloc">Die Speicherallokierung</a></li>
+    <li><a class="menu" href="#example">Ein kleines Beispiel</a></li>
+    <li><a class="menu" href="#mmc">Die Schnittstelle zur Hardware</a></li>
+    <li><a class="menu" href="#cache">Einige Erl&auml;uterungen zum Cache</a></li>
+</ul>
+<a class="menu" href="#fat">Der Zugriff auf ein FAT16-Dateisystem</a><br />
+<a class="menu" href="#stat">Etwas Statistik zur Leistungsbewertung</a><br />   
+<a class="menu" href="#defines">Eine &Uuml;bersicht aller Konfigurationsparameter</a><br />   
+
+<a name="uebersicht"></a><h2>Eine allgemeine &Uuml;bersicht</h2>
+<p>Das Speichersystem ist wie folgt organisiert: <br />
+Man fordert eine beliebige Menge an Speicher an und bekommt eine virtuelle Adresse in 32 Bit zur&uuml;ck. 
+Diese Adresse entspricht der Adresse auf der MMC / SD-Card, was den Benutzer aber nicht weiter interessieren muss. Zum Arbeiten mit den Daten
+erh&auml;lt man eine "echte" SRAM-Adresse, die auf einen 512 Byte gro&szlig;en Speicherbereich zeigt. Dieser Cacheeintrag wird 
+auf die MMC / SD-Card zur&uuml;ckgeschrieben, sobald der maximal f&uuml;r den <a href="#cache">Cache</a> zugeteilte Speicher komplett belegt ist, das 
+Ein- und Auslagern der Seiten auf die MMC / SD-Card macht die Speicherverwaltung also automatisch.<br />
+Somit kann ein Verhalten beliebig viel (virtuellen) Speicher benutzen, siehe Abschnitt zum <a href="#vm">virtuellen Speicher</a>.
+Au&szlig;erdem kann derselbe Adressraum und Cache auch f&uuml;r den Zugriff auf FAT16-Dateien benutzt werden, N&auml;heres dazu gibt es <a href="#fat">hier</a>.<br />
+Die Bezeichnung "page" (oder "Seite") stellt durchg&auml;ngig etwas logisches (virtuelles) dar, mit "Block" hingegen ist ein physischer Block auf dem verwendeten 
+Datentr&auml;ger gemeint.<br />
+Im Folgenden wird ausschlie&szlig;lich auf die Verwendung einer MMC / SD-Card als Speichermedium eingegangen, l&auml;uft der Code auf einem PC, so wird die 
+Speicherkarte mit Hilfe einer Datei emuliert, die Verwendung ist aber &auml;quivalent (siehe auch <a href="../pc/mmc-emu_pc.c">pc/mmc-emu_pc.c</a>).
+</p>
+
+<a name="vm"></a><h2>Der virtuelle Speicher im Detail</h2>
+<a name="alloc"></a><h3>Die Speicherallokierung</h3>
+<p>Nach der Anforderung einer beliebige Menge an Speicher per<span class="function"> mmcalloc()</span>, bekommt man eine virtuelle Adresse des 32 Bit gro&szlig;en 
+Adressraums zur&uuml;ck.<span class="function"> mmc_get_data(uint32 virtuelle_Adresse)</span> liefert dann eine "echte" SRAM-Adresse auf einen 512 Byte
+gro&szlig;en Puffer zur&uuml;ck, dessen Inhalt auf die MMC / SC-Card geschrieben wird, sobald er nicht mehr im SRAM gehalten werden kann.<br />
+Die Funktion<span class="function"> mmc_get_end_of_page(uint32 virtuelle_Adresse)</span> hilft herauszufinden, bis wohin man diesen Pointer verwenden darf. 
+Ben&ouml;tigt man mehr Speicher, fordert man<span class="function"> mit mmc_get_data(uint32 virtuelle_Adresse)</span> einen neuen Pointer an.<br />
+Zu beachten ist, dass nur soviel virtueller Speicher zur Verf&uuml;gung steht, wie die intuitive Rechnung &quot;letzter Sektor der MMC / SD-Card&quot; minus 
+&quot;<a href="#defines">Startadresse f&uuml;r den virtuellen Speicher</a>&quot; ergibt. Ansonsten liefert<span class="function"> mmcalloc()</span> null zur&uuml;ck. 
+</p>
+
+<a name="example"></a><h3>Ein kleines Beispiel</h3>
+<p>Das folgende Beispiel demonstriert, wie sich der virtuelle Speicher benutzen l&auml;sst:<br />
+<ins><div class="code">
+<span class="keyword">uint32</span> v_addr = mmcalloc(2048, 1);		<span class="comment">// wir wollen 2 KB Speicher</span><br />
+<span class="keyword">uint8</span>* p_addr = mmc_get_data(v_addr);	<span class="comment">// Pointer auf Puffer holen</span><br />
+... <span class="comment">// irgendwas sinnvolles tun</span><br />
+<span class="keyword">if</span> (i &lt; 512) {	<span class="comment">// Ziel liegt noch im gleichen Block</span><br />
+&nbsp;p_addr[i] = my_data;	<span class="comment">// Daten speichern</span><br />
+&nbsp;i++;<br />
+} <span class="keyword">else</span> {			<span class="comment">// Blockende erreicht => zunaechst neuen Pointer holen</span><br />
+&nbsp;v_addr += i;<br />
+&nbsp;i = 0;<br />
+&nbsp;p_addr = mmc_get_data(v_addr);<br />
+&nbsp;p_addr[i] = my_data;	<span class="comment">// Daten koennen nun gespeichert werden</span><br />
+}
+</div></ins><br />
+Der zweite Parameter von<span class="function"> mmcalloc()</span> gibt an, ob man den angeforderten Speicher auf m&ouml;glichst wenige Bl&ouml;cke verteilt 
+haben m&ouml;chte (also 512 Byte ausgerichtet), oder ob er einfach am n&auml;chsten freien Byte auf der Karte beginnen soll (1: aligned, 0: beliebig). Passt der 
+angeforderte Speicher noch komplett in einen bereits teilweise belegten Block, so wird er immer dort untergebracht. 
+</p>
+
+<a name="mmc"></a><h3>Die Schnittstelle zur Hardware</h3>
+<p>
+Das folgende Diagramm zeigt die Beziehung der Funktionen des MMC-Codes und die entsprechenden Schnittstellen: 
+<br /><a href="images/mmc.jpg" onclick="popup=window.open('images/mmc.jpg','','dependent=yes,location=no,menubar=no,status=no,toolbar=no,scrollbars=yes'); popup.focus(); return false"><img src="images/mmc.jpg" width="200" alt="mmc-Code" /></a>
+<br />Die gr&uuml;n gekennzeichneten Funktionen sind in den jeweiligen Header-Dateien deklariert und bilden zusammen 
+die Schnittstelle des MMC-Codes nach au&szlig;en. Die rot Gekennzeichneten hingegen bleiben dem eigentlichen Code f&uuml;r MMC und virtual Memory vorbehalten.<br />
+Die Abh&auml;ngigkeiten untereinander sind durch die Pfeile dargestellt (in Aufrufrichtung).<br />
+Den doppelt umrandeten Funktionen m&ouml;ge man besondere Aufmerksamkeit schenken - diese sind vorrangig in eigenen Verhalten zu verwenden. Die restlichen 
+(internen) Funktionen sind eher zur Dokumentation des Speichersystems an sich aufgef&uuml;hrt, f&uuml;r die Benutzung in Bot-Verhalten sind sie nicht so sehr 
+interessant.
+</p>
+
+<a name="cache"></a><h3 style="clear:both">Einige Erl&auml;uterungen zum Cache</h3>
+<p>
+Um den Zugriff auf die jeweiligen Daten m&ouml;glichst performant zu halten, cached das Speichersystem eine vorgegebene Anzahl an 512 Byte gro&szlig;en 
+Bl&ouml;cken im SRAM. Der Cache ist vollassoziativ, f&uuml;r das Zur&uuml;ckschreiben kommt das LRU-Verfahren zum Einsatz. Im Speicher wird er durch ein Array 
+vom Typ <i>vm_cache_t</i> (siehe auch <a href="../mmc-vm.c">mmc-vm.c</a>) repr&auml;sentiert, die maximale Gr&ouml;&szlig;e l&auml;sst sich mit einem 
+<a href="#defines">Konfigurationsparameter</a> festlegen und wird bei Speichermangel automatisch reduziert. Es wird erst dann Cachespeicher belegt, wenn 
+auch Daten angefordert werden.<br />
+Ein Aufruf der Funktion<span class="function"> mmc_flush_cache()</span> schreibt den kompletten Cache auf die Karte zur&uuml;ck,<span class="function"> 
+mmc_page_write_back(uint32 virtuelle_Adresse)</span> hingegen nur die Seite, die zu der &uuml;bergebenen Adresse geh&ouml;rt. Letztere Funktion tut dies 
+unabh&auml;ngig davon, ob die Seite seit der Einlagerung ver&auml;ndert wurde oder nicht und erm&ouml;glicht so einen &quot;tieferen&quot; Eingriff in das 
+sonst automatisch arbeitende System.<br /> 
+Ein Verhalten sollte also vor seiner Beendigung daf&uuml;r sorgen, dass der Cacheinhalt gesichert wird, wenn die gespeicherten Daten erhalten bleiben sollen!
+</p>
+
+<a name="fat"></a><h2>Der Zugriff auf ein FAT16-Dateisystems</h2>
+<p>
+Die Unterst&uuml;tzung f&uuml;r FAT16-Dateien auf einer MMC / SD-Card ist wie folgt aufgebaut:<br />
+<span class="function"> mmc_fopen(const char *filename)</span> &ouml;ffnet eine Datei im FAT16-Dateisystem der Karte und gibt die virtuelle Startadresse 
+zur&uuml;ck, so dass man mit<span class="function"> mmc_get_data()</span> Zugriff auf die Daten bekommt. Der Dateiname muss dabei ganz am Anfang in der Datei 
+stehen.<br />
+Achtung: &Ouml;ffnet man eine Datei, die bereits mit<span class="function"> mmc_fopen()</span> ge&ouml;ffnet wurde, ist das Verhalten bzgl. dieser Datei derzeit
+undefiniert!<br />
+<span class="function"> mmc_clear_file(uint32 file_start)</span> leert eine Datei im FAT16-Dateisystem, die zuvor mit<span class="function"> 
+mmc_fopen()</span> ge&ouml;ffnet wurde. Die Datei wird komplett mit Nullen &uuml;berschrieben, nur der erste Sektor mit dem &quot;Dateinamen&quot; und der 
+Gr&ouml;&szlig;e bleibt erhalten.<br />
+<span class="function"> mmc_get_filesize(uint32 file_start)</span> gibt die Gr&ouml;&szlig;e einer ge&ouml;ffneten Datei in Byte zur&uuml;ck.
+</p>
+
+<a name="stat"></a><h2>Etwas Statistik zur Leistungsbewertung</h2>
+<p>
+Wenn <a href="#defines">VM_STATS_AVAILABLE</a> definiert ist, l&auml;sst sich mit der Funktion<span class="function"> mmc_get_vm_stats()</span> eine Statistik 
+&uuml;ber die Leistung des Speichersystems erstellen.<span class="function"> mmc_print_statistic()</span> gibt solch eine Statistik in der Konsole aus, wenn der 
+Code auf einem PC l&auml;uft:
+<ins><table class="console">
+<tr><td>*** VM-Statistik ***</td></tr>
+<tr><td>Groesse des Volumes:</td><td>32 MByte</td></tr>
+<tr><td>Groesse des VM:</td><td>16 MByte</td></tr>
+<tr><td>Belegter virt. Speicher:</td><td>0 KByte</td></tr>
+<tr><td>Groesse des Caches:</td><td>1024 Byte</td></tr>
+<tr><td>Auslastung des Caches:</td><td>100 %</td></tr>
+<tr><td>Seitenzugriffe:</td><td>1375054</td></tr>
+<tr><td>Seiteneinlagerungen:</td><td>33770</td></tr>
+<tr><td>Seitenauslagerungen:</td><td>33768</td></tr>
+<tr><td>Seitenzugriffe / s:</td><td>5288</td></tr>
+<tr><td>Seiteneinlagerungen / s:</td><td>129</td></tr>
+<tr><td>Seitenauslagerungen / s:&nbsp;&nbsp;</td><td>129</td></tr>
+<tr><td>Cache-Hit-Rate:</td><td>97.544096 %&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr><td>Messdauer:</td><td>260 s</td></tr>
+</table></ins><br />
+Die hier ersichtlichen Daten stellen die Leistung des Speichersystems dar, unmittelbar nachdem ein Bot das Standardlabyrinth im c't-Sim komplett mit dem Wandfolger-Algorithmus 
+durchfahren und dabei eine Umgebungskarte erstellt hat.<br />
+F&uuml;r die MCU gibt es derzeit noch keine entsprechende Ausgabem&ouml;glichkeit.
+</p>
+
+<a name="defines"></a><h2>Eine &Uuml;bersicht aller Konfigurationsparameter</h2>
+<ul>
+    <li><span class="function"> MMC_VM_AVAILABLE</span> schaltet den Speichermanager ein oder aus.</li>
+    <li><span class="function"> VM_STATS_AVAILABLE</span> erm&ouml;glicht die Berechnung und Ausgabe einer <a href="#stat">Statistik</a> &uuml;ber das Speichersystem, wenn definiert.</li>
+    <li><span class="function"> MMC_START_ADDRESS</span> gibt die physische Adresse (in Byte) an, wo der virtuelle Speicher beginnt. Sinnvoll ist z.B. die H&auml;lfte der MMC- / SD-Card-Gr&ouml;&szlig;e, der Speicherplatz davor kann dann f&uuml;r ein Dateisystem verwendet werden.</li>
+    <li><span class="function"> MAX_SPACE_IN_SRAM</span> definiert die Anzahl der 512 Byte gro&szlig;en Bl&ouml;cke, die maximal gleichzeitig im SRAM gehalten werden.</li>
+    <li><span class="function"> VM_FILENAME_MAX</span> ist die maximale L&auml;nge eines Dateinamens in Zeichen.</li>    
+</ul>
+
+<br /><br />
+<p><a href="http://validator.w3.org/check?uri=referer"><img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a></p>  
+</body>
+</html>
