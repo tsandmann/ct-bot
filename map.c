@@ -64,6 +64,7 @@
 #ifdef MCU
 	// Soll auch der echte Bot Infos ausgeben, kommentiert man die folgende Zeile aus
 	#undef MAP_INFO_AVAILABLE	// spart Flash
+	#warning "MAP auf MCU derzeit im Umbau, siehe auch Ticket 129"
 #endif
 
 #ifndef LOG_AVAILABLE

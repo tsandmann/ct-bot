@@ -51,7 +51,7 @@
 #define MEASURE_MOUSE_AVAILABLE			/*!< Geschwindigkeiten werden aus den Maussensordaten berechnet */
 //#define MEASURE_COUPLED_AVAILABLE		/*!< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
 
-#define POS_STACK_AVAILABLE  /*!< Positionsstack vorhanden */
+//#define POS_STACK_AVAILABLE  /*!< Positionsstack vorhanden */
 
 //#define WELCOME_AVAILABLE	/*!< kleiner Willkommensgruss */
 

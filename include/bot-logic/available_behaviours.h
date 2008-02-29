@@ -24,7 +24,7 @@
 
 #define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE	/*!< Strecke fahren vorhanden ?*/
 
-#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE	/*!< Distanzesensorasuwertung vorhanden? */
+//#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE	/*!< Distanzesensorasuwertung vorhanden? */
 
 #define BEHAVIOUR_SCAN_AVAILABLE	/*!< Gegend scannen vorhanden? */
 #define BEHAVIOUR_SOLVE_MAZE_AVAILABLE	/*!< Wandfolger vorhanden? */
@@ -37,7 +37,7 @@
 
 //#define BEHAVIOUR_OLYMPIC_AVAILABLE	/*!< Olympiadenverhalten vorhanden? */
 
-//#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE /*!< Suche eine Dose und fange sie ein */
+#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE /*!< Suche eine Dose und fange sie ein */
 
 //#define BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE	/*!< verfolge ein (bewegliches) Objekt */
 
@@ -46,7 +46,7 @@
 //#define BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE /*!< Transport-Pillar Verhalten */
 
 #define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-kommandos entgegen? */
-#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE /*!< Deaktivieren eines Verhaltens wenn Abbruchbedingung erfuellt */
+//#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE /*!< Deaktivieren eines Verhaltens wenn Abbruchbedingung erfuellt */
 
 //#define BEHAVIOUR_CALIBRATE_PID_AVAILABLE	/*!< Kalibrierungsverhalten fuer Motorregelung vorhanden? */
 //#define BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE	/*!< Kalibrierungsverhalten fuer Distanzsensoren vorhanden? */
