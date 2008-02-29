@@ -91,7 +91,9 @@ void bot_push_pos(int16_t pos_x, int16_t pos_y) {
 void bot_push_actpos(Behaviour_t * caller) {
 	// sichern der aktuellen Botposition auf den Stack
 	bot_push_pos(x_pos, y_pos);
-	caller->subResult = SUBSUCCESS;
+	if (caller) {
+		caller->subResult = SUBSUCCESS;
+	}
 }
 
 /*!

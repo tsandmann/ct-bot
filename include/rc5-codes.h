@@ -257,6 +257,9 @@
 	#define RC5_CH_PLUS		(0x1020 & RC5_MASK)		/*!< Ch + Taste */
  	#define RC5_CH_MINUS		(0x1021 & RC5_MASK)		/*!< Ch - Taste */
 
+    #define RC5_CODE_AV		(0x1038 & RC5_MASK)		/*!< Taste AV */
+	#define RC5_CODE_DOT		RC5_CODE_AV
+
 	#define RC5_CODE_I_II		RC5_CODE_SELECT
 	#define RC5_CODE_TV_VCR	RC5_CODE_VIEW
 	#define RC5_CODE_MUTE		RC5_CODE_ENTER
