@@ -45,9 +45,7 @@
 #endif
 
 
-/*!
- * Request Teil eines Kommandos
- */
+/*! Request Teil eines Kommandos */
 typedef struct {
 #if (defined PC) && (BYTE_ORDER == BIG_ENDIAN)
 	/* Bitfeld im big-endian-Fall umdrehen */
@@ -65,16 +63,16 @@ typedef struct {
 	} request_t; // Keine Luecken in der Struktur lassen
 #endif
 
-/*!
- * Kommando
- */
+/*! Kommando */
 typedef struct {
 	uint8 startCode;	/*!< Markiert den Beginn eines Commands */
-	request_t request; 			/*!< Command-ID */
+	request_t request; 	/*!< Command-ID */
 	uint8  payload;		/*!< Bytes, die dem Kommando noch folgen*/
-	int16 data_l;				/*!< Daten zum Kommando links*/
-	int16 data_r;				/*!< Daten zum Kommando rechts*/
-	int16 seq;					/*!< Paket-Sequenznummer*/
+	int16 data_l;		/*!< Daten zum Kommando links*/
+	int16 data_r;		/*!< Daten zum Kommando rechts*/
+	uint8 seq;			/*!< Paket-Sequenznummer*/
+	uint8 from;			/*!< Absender-Adresse */	
+	uint8 to;			/*!< Empfaenger-Adresse */
 	uint8 CRC;			/*!< Markiert das Ende des Commands*/
 #ifndef DOXYGEN
 	} __attribute__ ((packed)) command_t;// Keine Luecken in der Struktur lassen

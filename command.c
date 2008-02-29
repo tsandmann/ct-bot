@@ -205,7 +205,7 @@ int8 command_read(void) {
 	}
 }
 
-static uint16 count=1;	/*!< Zaehler fuer Paket-Sequenznummer*/
+static uint8 count=1;	/*!< Zaehler fuer Paket-Sequenznummer*/
 
 /*!
  * Uebertraegt ein Kommando und wartet nicht auf eine Antwort
@@ -459,11 +459,12 @@ void command_display(command_t * command) {
 //			(*command).data_r,
 //			(*command).seq,				
 //			(*command).CRC);			
-		LOG_DEBUG("CMD: %c\tSub: 0x%x\tData L: %d\tSeq: %d\n",
+		LOG_DEBUG("CMD: %c\tSub: 0x%x\tData L: %d\tSeq: %d\tCRC: %d\n",
 			(*command).request.command,
 			(*command).request.subcommand,
 			(*command).data_l,
-			(*command).seq);
+			(*command).seq,
+			(*command).CRC);
 	#else	// MCU
 		LOG_DEBUG("CMD: %c\tSub: %c\tData L: %d\tPay: %d\tSeq: %d\n",
 			(*command).request.command,
