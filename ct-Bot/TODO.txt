@@ -1,6 +1,0 @@
-Wunsch- und Aufgabenliste fuer die c't-Bot-Firmware bzw. ihr PC-Pendant:
-========================================================================
-
-Diese Liste ist ins Trac umgezogen!
-Siehe http://www.heise.de/ct/projekte/machmit/ctbot/report/3
-und http://www.heise.de/ct/projekte/machmit/ctbot/wiki/NeueVerhalten
