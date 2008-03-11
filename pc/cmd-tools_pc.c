@@ -18,7 +18,7 @@
  */
 
 /*! 
- * @file 	cmd_tools_pc.c
+ * @file 	cmd-tools_pc.c
  * @brief 	Funktionen, die per Commandline-Switch aufgerufen werden koennen
  * @author 	Timo Sandmann (mail@timosandmann.de)
  * @date 	19.02.2008

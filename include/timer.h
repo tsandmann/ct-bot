@@ -43,53 +43,70 @@
 #define MS_TO_TICKS(ms)		((ms)*(1000/8)/(TIMER_STEPS/8))
 
 #ifdef TIME_AVAILABLE		
-	/*!
-	 * Diese Funktion liefert den Millisekundenanteil der Systemzeit zurueck.
-	 * @return uint16
-	 */
-	uint16 timer_get_ms(void);
-	
-	/*!
-	 * Diese Funktion liefert den Sekundenanteil der Systemzeit zurueck.
-	 * @return uint16
-	 */
-	uint16 timer_get_s(void);
+/*!
+ * Diese Funktion liefert den Millisekundenanteil der Systemzeit zurueck.
+ * @return Millisekunden der Systemzeit
+ */
+uint16 timer_get_ms(void);
 
-	/*!
-	 *  Liefert die Millisekunden zurueck, die seit old_s, old_ms verstrichen sind 
-	 * @param old_s alter Sekundenstand
-	 * @param old_ms alter Millisekundenstand
-	 */
-	uint16 timer_get_ms_since(uint16 old_s, uint16 old_ms);
+/*!
+ * Diese Funktion liefert den Sekundenanteil der Systemzeit zurueck.
+ * @return Sekunden der Systemzeit
+ */
+uint16 timer_get_s(void);
+
+/*!
+ * Liefert die Millisekunden zurueck, die seit old_s, old_ms verstrichen sind 
+ * @param old_s		alter Sekundenstand
+ * @param old_ms	alter Millisekundenstand
+ */
+uint16 timer_get_ms_since(uint16 old_s, uint16 old_ms);
 #endif // TIME_AVAILABLE
 	
 #ifdef PC
-	/*! 
-	 *  Funktion, die die TickCounts um die vergangene Simulzeit erhoeht
-	 */
-	void system_time_isr(void);
+/*! 
+ *  Funktion, die die TickCounts um die vergangene Simulzeit erhoeht
+ */
+void system_time_isr(void);
 
-	/*! liefert Ticks in 16 Bit seit Systemstart [176 us] */
-	inline uint16 timer_get_tickCount16(void);
-	/*! liefert Ticks in 32 Bit seit Systemstart [176 us] */
-	inline uint32 timer_get_tickCount32(void);	
-	
-	#define TIMER_GET_TICKCOUNT_8  (uint8)timer_get_tickCount16()	/*!< Zeit in 8 Bit */
-	#define TIMER_GET_TICKCOUNT_16 timer_get_tickCount16()			/*!< Zeit in 16 Bit */
-	#define TIMER_GET_TICKCOUNT_32 timer_get_tickCount32()			/*!< Zeit in 32 Bit */
-#else
-	/*! Union fuer TickCount in 8, 16 und 32 Bit */
-	typedef union {
-		uint32 u32;		/*!< 32 Bit Integer */
-		uint16 u16;		/*!< 16 Bit Integer */
-		uint8 u8;		/*!< 8 Bit Integer */
-	} tickCount_t;
-	extern volatile tickCount_t tickCount;			/*!< ein Tick alle 176 us */
-	
-	#define TIMER_GET_TICKCOUNT_8  tickCount.u8		/*!< Zeit in 8 Bit */
-	#define TIMER_GET_TICKCOUNT_16 tickCount.u16	/*!< Zeit in 16 Bit */
-	#define TIMER_GET_TICKCOUNT_32 tickCount.u32	/*!< Zeit in 32 Bit */
-#endif
+/*
+ * Setzt die Systemzeit zurueck auf 0
+ */
+void timer_reset(void);
+
+/*! 
+ * liefert Ticks in 16 Bit seit Systemstart [176 us] 
+ */
+uint16_t timer_get_tickCount16(void);
+
+/*!
+ * liefert Ticks in 32 Bit seit Systemstart [176 us] 
+ */
+uint32_t timer_get_tickCount32(void);	
+
+#define TIMER_GET_TICKCOUNT_8  (uint8)timer_get_tickCount16()	/*!< Zeit in 8 Bit */
+#define TIMER_GET_TICKCOUNT_16 timer_get_tickCount16()			/*!< Zeit in 16 Bit */
+#define TIMER_GET_TICKCOUNT_32 timer_get_tickCount32()			/*!< Zeit in 32 Bit */
+#else	// MCU
+/*! Union fuer TickCount in 8, 16 und 32 Bit */
+typedef union {
+	uint32 u32;		/*!< 32 Bit Integer */
+	uint16 u16;		/*!< 16 Bit Integer */
+	uint8 u8;		/*!< 8 Bit Integer */
+} tickCount_t;
+extern volatile tickCount_t tickCount;			/*!< ein Tick alle 176 us */
+
+/*
+ * Setzt die Systemzeit zurueck auf 0
+ */
+static inline void timer_reset(void) {
+	tickCount.u32 = 0;
+}
+
+#define TIMER_GET_TICKCOUNT_8  tickCount.u8		/*!< Zeit in 8 Bit */
+#define TIMER_GET_TICKCOUNT_16 tickCount.u16	/*!< Zeit in 16 Bit */
+#define TIMER_GET_TICKCOUNT_32 tickCount.u32	/*!< Zeit in 32 Bit */
+#endif	// PC
 
 // Die Werte fuer TIMER_X_CLOCK sind Angaben in Hz
 
@@ -101,8 +118,7 @@
 /*!
  * Mikrosekunden, die zwischen zwei Timer-Aufrufen liegen 
  */
-//	#define TIMER_STEPS	(1 000 000/TIMER_2_CLOCK)
-	#define TIMER_STEPS 176
+#define TIMER_STEPS 176
 
 /*!
  * @brief				Prueft, ob seit dem letzten Aufruf mindestens ms Millisekunden vergangen sind
@@ -158,4 +174,4 @@
  * Initialisiert Timer 2 und startet ihn 
  */
 void timer_2_init(void);
-#endif
+#endif	// TIMER_H_

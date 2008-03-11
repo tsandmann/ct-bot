@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	timer.c
+/*! 
+ * @file 	timer.c
  * @brief 	Zeitmanagement
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 
 #include "ct-Bot.h"
 #include "timer.h"
@@ -55,62 +56,77 @@
 #endif 
 
 #ifdef PC
-	inline uint16 timer_get_tickCount16(void){
-		uint16 temp;
-		LOCK();
-		temp = tickCount;
-		UNLOCK();
-		return temp;
-	}
-	
-	inline uint32 timer_get_tickCount32(void){
-		uint32 temp;
-		LOCK();
-		temp = tickCount;	
-		UNLOCK();
-		return temp;
-	}
-#endif
+/*! 
+ * liefert Ticks in 16 Bit seit Systemstart [176 us] 
+ */
+uint16_t timer_get_tickCount16(void) {
+	uint16 temp;
+	LOCK();
+	temp = tickCount;
+	UNLOCK();
+	return temp;
+}
+
+/*!
+ * liefert Ticks in 32 Bit seit Systemstart [176 us] 
+ */
+uint32_t timer_get_tickCount32(void) {
+	uint32 temp;
+	LOCK();
+	temp = tickCount;	
+	UNLOCK();
+	return temp;
+}
+#endif	// PC
 
 #ifdef TIME_AVAILABLE
-	/*!
-	 * Diese Funktion liefert den Millisekundenanteil der Systemzeit zurueck.
-	 * @return uint16
-	 */
-	uint16 timer_get_ms(void){
-		return ((TIMER_GET_TICKCOUNT_32*(TIMER_STEPS/8))/(1000/8))%1000;
-	}
-	
-	/*!
-	 * Diese Funktion liefert den Sekundenanteil der Systemzeit zurueck.
-	 * @return uint16
-	 */
-	uint16 timer_get_s(void){
-		return TIMER_GET_TICKCOUNT_32*(TIMER_STEPS/16)/(1000000/16);
-	}
-	
-	/*!
-	 *  Liefert die Millisekunden zurueck, die seit old_s, old_ms verstrichen sind 
-	 * @param old_s alter Sekundenstand
-	 * @param old_ms alter Millisekundenstand
-	 */
-	uint16 timer_get_ms_since(uint16 old_s, uint16 old_ms){
-		return (timer_get_s()-old_s)*1000 + timer_get_ms()-old_ms;
-	}
+/*!
+ * Diese Funktion liefert den Millisekundenanteil der Systemzeit zurueck.
+ * @return Millisekunden der Systemzeit
+ */
+uint16 timer_get_ms(void) {
+	return ((TIMER_GET_TICKCOUNT_32*(TIMER_STEPS/8))/(1000/8))%1000;
+}
+
+/*!
+ * Diese Funktion liefert den Sekundenanteil der Systemzeit zurueck.
+ * @return Sekunden der Systemzeit
+ */
+uint16 timer_get_s(void) {
+	return TIMER_GET_TICKCOUNT_32*(TIMER_STEPS/16)/(1000000/16);
+}
+
+/*!
+ * Liefert die Millisekunden zurueck, die seit old_s, old_ms verstrichen sind 
+ * @param old_s		alter Sekundenstand
+ * @param old_ms	alter Millisekundenstand
+ */
+uint16 timer_get_ms_since(uint16 old_s, uint16 old_ms) {
+	return (timer_get_s()-old_s)*1000 + timer_get_ms()-old_ms;
+}
 #endif // TIME_AVAILABLE
 
 #ifdef PC
-	/*! 
-	 * Funktion, die die TickCounts um die vergangene Simulzeit erhoeht
-	 */
-	void system_time_isr(void){
-		LOCK();
-		/* TickCounter [176 us] erhoehen */
-		static uint16 last_simultime=0;
-		float tmp = (float)simultime - (float)last_simultime;
-		if (tmp < 0) tmp += 10000;	// der Sim setzt simultime alle 10s zurueck auf 0
-		tickCount += MS_TO_TICKS(tmp);
-		last_simultime = simultime;
-		UNLOCK();
-	}
-#endif
+/*! 
+ * Funktion, die die TickCounts um die vergangene Simulzeit erhoeht
+ */
+void system_time_isr(void){
+	LOCK();
+	/* TickCounter [176 us] erhoehen */
+	static uint16 last_simultime=0;
+	float tmp = (float)simultime - (float)last_simultime;
+	if (tmp < 0) tmp += 10000;	// der Sim setzt simultime alle 10s zurueck auf 0
+	tickCount += MS_TO_TICKS(tmp);
+	last_simultime = simultime;
+	UNLOCK();
+}
+
+/*
+ * Setzt die Systemzeit zurueck auf 0
+ */
+void timer_reset(void) {
+	LOCK();
+	tickCount = 0;
+	UNLOCK();
+}
+#endif	// PC

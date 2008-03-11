@@ -39,6 +39,7 @@
 
 #include "mmc.h"
 #include "mmc-vm.h"
+#include "pos_stack.h"
 #include <stdlib.h>
 
 #ifdef RC5_AVAILABLE
@@ -103,6 +104,26 @@ static void rc5_bot_change_speed(int16 left, int16 right) {
 }
 
 /*!
+ * Setzt den Bot zurueck
+ */
+static void bot_reset(void) {
+	/* Motoren aus */
+	motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
+	/* alle Verhalten aus */
+	rc5_emergency_stop();
+	/* Sensorauswertungen zuruecksetzen */
+	sensor_reset();
+#ifdef POS_STACK_AVAILABLE
+	/* Positionsstack loeschen */
+	pos_stack_clear();
+#endif
+	/* Display-Reset */
+	rc5_screen_set(0);
+	/* Timer loeschen */
+	timer_reset();
+}
+
+/*!
  * @brief		Verarbeitet die Zifferntasten.
  * @param key	Parameter mit der betaetigten Zifferntaste
  */
@@ -164,6 +185,11 @@ void default_key_handler(void){
 		#ifdef MAP_AVAILABLE
 		case RC5_CODE_DOT:		map_print(); break;
 		#endif
+		
+		/* Reset */
+		#ifdef RC5_CODE_CH_PC
+		case RC5_CODE_CH_PC:	bot_reset(); break;
+		#endif			
 		
 		/* Screenwechsel */
 		#ifdef RC5_CODE_GREEN

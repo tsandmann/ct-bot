@@ -113,10 +113,15 @@ extern float v_center;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, 
 	cmps03_t sensCmps03;		/*!< Lage laut CMPS03-Kompass */
 #endif	
 
-/*! Sensor_update
-* Kuemmert sich um die Weiterverarbeitung der rohen Sensordaten 
-*/
+/*! 
+ * Kuemmert sich um die Weiterverarbeitung der rohen Sensordaten 
+ */
 void sensor_update(void);
+
+/*!
+ * Setzt die Auswertungen der Sensorendaten zurueck
+ */
+void sensor_reset(void);
 
 /*! 
  * @brief			Errechnet aus den rohren Distanzsensordaten die zugehoerige Entfernung

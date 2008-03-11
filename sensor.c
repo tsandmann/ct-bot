@@ -443,6 +443,23 @@ void sensor_update(void){
 }
 
 /*!
+ * Setzt die Auswertungen der Sensorendaten zurueck
+ */
+void sensor_reset(void) {
+	/* Radencoder */
+	heading_enc = HEADING_START;
+	x_enc = 0;
+	y_enc = 0;
+	
+	/* Maussensor */
+	#ifdef MEASURE_MOUSE_AVAILABLE
+	heading_mou = HEADING_START;
+	x_mou = 0;
+	y_mou = 0;
+	#endif	// MEASURE_MOUSE_AVAILABLE
+}
+
+/*!
  * Die Funktion gibt aus, ob sich innerhalb einer gewissen Entfernung ein Objekt-Hindernis befindet.
  * @param distance	Entfernung in mm, bis zu welcher ein Objekt gesichtet wird. 
  * @return 			Gibt False (0) zurueck, wenn kein Objekt innerhalb von distance gesichtet wird. Ansonsten die Differenz 
