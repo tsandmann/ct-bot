@@ -109,6 +109,8 @@ static void rc5_bot_change_speed(int16 left, int16 right) {
 static void bot_reset(void) {
 	/* Motoren aus */
 	motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
+	/* laufende RemoteCalls abbrechen */
+	deactivateCalledBehaviours(bot_remotecall_behaviour);
 	/* alle Verhalten aus */
 	rc5_emergency_stop();
 	/* Sensorauswertungen zuruecksetzen */
