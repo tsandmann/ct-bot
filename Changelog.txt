@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-03-13 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer bot_goto_dist() nach Abbruch von bot_goto_pos()
+
 2008-03-10 Timo Sandmann [mail@timosandmann.de]: Reset-Funktion fuer Bots eingebaut: Taste RC5_CODE_CH_PC setzt einen Bot zurueck
 
 2008-02-29 Timo Sandmann [mail@timosandmann.de]: Datenstruktur fuer Kommunikation auf Sender-IDs erweitert

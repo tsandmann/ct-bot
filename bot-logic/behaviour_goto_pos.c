@@ -304,6 +304,7 @@ void bot_goto_dist(Behaviour_t * caller, int16_t distance, int16_t dir) {
 	int16_t target_y = distance * sin(head) + y_pos;
 	LOG_DEBUG("Zielpunkt=(%d|%d)", target_x, target_y);
 	LOG_DEBUG("Richtung=%d", drive_dir);
+	state = LAST_TURN;
 	/* Verhalten starten */
 	bot_goto_pos(caller, target_x, target_y, (int16_t)heading);
 }
