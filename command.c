@@ -51,29 +51,27 @@
 
 #ifdef PC
 	#include "tcp.h"
-	#include <pthread.h>	
+	#include <pthread.h>
+	#include "eeprom-emu.h"
+#else
+	#include <avr/eeprom.h>
 #endif
 
-#ifdef MCU
-	#ifdef NEW_AVR_LIB
-		#include <util/delay.h>
-	#else
-		#include <avr/delay.h>
-	#endif
-#endif	// MCU
-
 #define COMMAND_TIMEOUT 	10		/*!< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
+
+EEPROM uint8_t bot_address = 0;		/*!< Kommunikations-Adresse des Bots (@EEPROM) */
 
 #ifdef COMMAND_AVAILABLE
 
 #define RCVBUFSIZE (sizeof(command_t)*2)   /*!< Groesse des Empfangspuffers */
 
-command_t received_command;		/*!< Puffer fuer Kommandos */
+command_t received_command;	/*!< Puffer fuer Kommandos */
+static uint8 count=1;		/*!< Zaehler fuer Paket-Sequenznummer */
 
-#ifdef PC
-	// Auf dword alignment bestehen, wird fuer MacOS X benoetigt
-	pthread_mutex_t command_mutex __attribute__ ((aligned (4))) = PTHREAD_MUTEX_INITIALIZER;	/*!< Mutex fuer Commands */
-#endif
+//#ifdef PC
+//	// Auf dword alignment bestehen, wird fuer MacOS X benoetigt
+//	pthread_mutex_t command_mutex __attribute__ ((aligned (4))) = PTHREAD_MUTEX_INITIALIZER;	/*!< Mutex fuer Commands */
+//#endif
 
 
 //#define DEBUG_COMMAND		//Schalter, um auf einmal alle Debugs an oder aus zu machen
@@ -95,7 +93,6 @@ int8 command_read(void) {
 	int8_t start=0;			// Start des Kommandos
 	int8_t i;			
 	command_t * command;	// Pointer zum Casten der empfangegen Daten
-	uint8_t * ptr;				// Nur zu Hilfszwecken
 	uint8 buffer[RCVBUFSIZE];       // Buffer  
 	#ifdef PC
 		#if BYTE_ORDER == BIG_ENDIAN
@@ -138,7 +135,7 @@ int8 command_read(void) {
 	i=sizeof(command_t) - (bytesRcvd-start)-1;
 
 	
-	if (i> 0) {	// Fehlen noch Daten ?
+	if (i > 0) {	// Fehlen noch Daten ?
 		LOG_DEBUG("command.c: Start @ %d es fehlen %d bytes ",start,i);	
 		// Systemzeit erfassen
 		old_ticks = TIMER_GET_TICKCOUNT_16;
@@ -147,7 +144,7 @@ int8 command_read(void) {
 		while (i > 0){
 			// Wenn der Timeout ueberschritten ist
 			if (timer_ms_passed(&old_ticks, COMMAND_TIMEOUT)) {
-				LOG_DEBUG("Timeout beim nachlesen");
+				LOG_DEBUG("Timeout beim Nachlesen");
 				return -1; //	==> Abbruch
 			}
 			LOG_DEBUG("%d bytes missing",i);
@@ -162,7 +159,7 @@ int8 command_read(void) {
 	LOG_DEBUG("%x %x %x",buffer[start],buffer[start+1],buffer[start+2]);
 
 	// Cast in command_t
-	command= (command_t *) ( buffer +start);
+	command = (command_t *) (buffer+start);
 
 	LOG_DEBUG("start: %x ",command->startCode);
 	//	command_display(command);
@@ -170,32 +167,30 @@ int8 command_read(void) {
 	// validate (startcode ist bereits ok, sonst waeren wir nicht hier )
 	if (command->CRC==CMD_STOPCODE){
 		LOG_DEBUG("Command is valid");
-		// Transfer
-		#ifdef PC
-			command_lock();		// on PC make storage threadsafe
-		#endif
-		ptr = (uint8_t *) &received_command;
-		for (i=0; i<sizeof(command_t);i++){
-			*ptr=buffer[i+start];
-			ptr++;
+		
+		/* Ist das Paket ueberhaupt fuer uns? */
+		if (command->to != CMD_BROADCAST && command->to != get_bot_address()) {
+			return -1;
 		}
+		
+		// Transfer
+//		#ifdef PC
+//			command_lock();		// on PC make storage threadsafe
+//		#endif
+		memcpy(&received_command, buffer+start, sizeof(command_t));
 		#ifdef PC
 			#if BYTE_ORDER == BIG_ENDIAN
 				/* Umwandeln der 16 bit Werte in Big Endian */
 				store = received_command.data_l;
 				received_command.data_l = store << 8;
 				received_command.data_l |= (store >> 8) & 0xff;
-	
+
 				store = received_command.data_r;
 				received_command.data_r = store << 8;
 				received_command.data_r |= (store >> 8) & 0xff;
-	    
-				store = received_command.seq;
-				received_command.seq = store << 8;
-				received_command.seq |= (store >> 8) & 0xff;;
 			#endif	// BYTE_ORDER == BIG_ENDIAN
 		
-			command_unlock();	// on PC make storage threadsafe
+//			command_unlock();	// on PC make storage threadsafe
 		#endif	// PC
 
 		return 0;
@@ -206,28 +201,24 @@ int8 command_read(void) {
 	}
 }
 
-static uint8 count=1;	/*!< Zaehler fuer Paket-Sequenznummer*/
-
 /*!
  * Uebertraegt ein Kommando und wartet nicht auf eine Antwort
- * @param command Kennung zum Command
- * @param subcommand Kennung des Subcommand
- * @param data_l Daten fuer den linken Kanal
- * @param data_r Daten fuer den rechten Kanal
- * @param payload Anzahl der Bytes, die diesem Kommando als Payload folgen
- * @param to empfaenger
+ * @param command		Kennung zum Command
+ * @param subcommand	Kennung des Subcommand
+ * @param to			Adresse des Empfaengers
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r 		Daten fuer den rechten Kanal
+ * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
-void command_write_to(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,uint8 payload, uint8 to){
+void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t * data_l, int16_t * data_r, uint8_t payload) {
 	command_t cmd;
-	
 	
 	cmd.startCode=CMD_STARTCODE;
 	cmd.request.direction=DIR_REQUEST;		// Anfrage
 	cmd.request.command= command;
 	cmd.request.subcommand= subcommand;
-	
-	cmd.from=BOT_ID;		// Absender der Nachricht
-	cmd.to=to;
+	cmd.from = get_bot_address();
+	cmd.to = to;
 	
 	cmd.payload=payload;
 	if (data_l != NULL)
@@ -262,15 +253,15 @@ void command_write_to(uint8 command, uint8 subcommand, int16* data_l,int16* data
 }
 
 /*!
- * Uebertraegt ein Kommando und wartet nicht auf eine Antwort
- * @param command Kennung zum Command
- * @param subcommand Kennung des Subcommand
- * @param data_l Daten fuer den linken Kanal
- * @param data_r Daten fuer den rechten Kanal
- * @param payload Anzahl der Bytes, die diesem Kommando als Payload folgen
+ * Uebertraegt ein Kommando an den ct-Sim und wartet nicht auf eine Antwort
+ * @param command		Kennung zum Command
+ * @param subcommand	Kennung des Subcommand
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r 		Daten fuer den rechten Kanal
+ * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
-void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,uint8 payload){
-	command_write_to(command, subcommand, data_l,data_r,payload, SIM_ID);
+void command_write(uint8_t command, uint8_t subcommand, int16_t * data_l, int16_t * data_r, uint8_t payload) {
+	command_write_to(command, subcommand, CMD_SIM_ADDR, data_l, data_r, payload);
 }
 
 /*!
@@ -297,8 +288,8 @@ void command_write_rawdata(uint8 command, uint8 subcommand, int16* data_l, int16
  * @param data Datenanhang an das eigentliche Command
  */
 void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* data_r, const char* data){
-    size_t    len;
-	uint8 	payload;    
+    size_t len;
+	uint8 payload;
     
     if (data != NULL) {
         len = strlen(data);
@@ -357,121 +348,128 @@ int8_t command_evaluate(void) {
 			LOG_DEBUG("Achtung: weitergeleitetes Kommando:");
 		command_display(&received_command);
 	#endif	// LOG_AVAILABLE
-		
-	switch (received_command.request.command) {
-		#ifdef IR_AVAILABLE
-			case CMD_SENS_RC5:
-				ir_data=received_command.data_l | (RC5_Last_Toggle & RC5_TOGGLE);
-				if (received_command.data_l != 0)
-					RC5_Last_Toggle = 0xffff ^ (RC5_Last_Toggle & RC5_TOGGLE);
-				break;
-		#endif
-		case CMD_AKT_LED:	// LED-Steuerung
-			#ifdef LED_AVAILABLE
-				LED_set(received_command.data_l & 255);
-			#endif
-			break;
-			
-		// Einige Kommandos ergeben nur fuer reale Bots Sinn
-			case CMD_WELCOME:
-				#ifdef MCU
-					command_write(CMD_WELCOME, SUB_WELCOME_REAL,0,0,0);
-				#else
-					command_write(CMD_WELCOME, SUB_WELCOME_SIM,0,0,0);
-				#endif					
-				break;
-
-		
-		#ifdef MAUS_AVAILABLE		
-			case CMD_SENS_MOUSE_PICTURE: 	// PC fragt nach dem Bild
-				transmit_mouse_picture();
-			break;
-		#endif
-
-		#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
-			case CMD_REMOTE_CALL:
-					LOG_DEBUG("remote-call-cmd ...");					
-					switch (received_command.request.subcommand) {
-						case SUB_REMOTE_CALL_LIST:
-							LOG_DEBUG("... auflisten ");					
-							remote_call_list();
-							break;
-						case SUB_REMOTE_CALL_ORDER:
-						{	
-							LOG_DEBUG("remote-call-Wunsch empfangen. Data= %d bytes",received_command.payload);					
-							uint8 buffer[REMOTE_CALL_BUFFER_SIZE];
-							uint16 ticks = TIMER_GET_TICKCOUNT_16;
-							#ifdef MCU
-								while (uart_data_available() < received_command.payload && (uint16)(TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
-							#endif
-							low_read(buffer,received_command.payload);
-							if ((uint16)(TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)){ 	
-								bot_remotecall_from_command((char *)&buffer);
-							} else{
-								int16 result = SUBFAIL;
-								command_write_data(CMD_REMOTE_CALL,SUB_REMOTE_CALL_DONE,&result,&result,NULL);
-							}
-							break;
-						}
-						case SUB_REMOTE_CALL_ABORT: {
-							LOG_DEBUG("remote calls werden abgebrochen");
-							deactivateCalledBehaviours(bot_remotecall_behaviour);
-							break;
-						}
-							
-						default:
-							LOG_DEBUG("unbekanntes Subkommando: %c",received_command.request.subcommand);
-							break;
-					}
-				break;
-		#endif	// BEHAVIOUR_REMOTECALL_AVAILABLE
-
-			
-		// Einige Kommandos ergeben nur fuer simulierte Bots Sinn
-		#ifdef PC
-			case CMD_SENS_IR: {
-				(*sensor_update_distance)(&sensDistL, &sensDistLToggle, sensDistDataL, received_command.data_l*4);
-				(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, received_command.data_r*4);
-				break;
-			}
-			case CMD_SENS_ENC:
-				sensEncL+=received_command.data_l;
-				sensEncR+=received_command.data_r;
-				break;
-			case CMD_SENS_BORDER:
-				sensBorderL=received_command.data_l;
-				sensBorderR=received_command.data_r;
-				break;
-			case CMD_SENS_LINE:
-				sensLineL=received_command.data_l;
-				sensLineR=received_command.data_r;
-				break;
-			case CMD_SENS_LDR:
-				sensLDRL=received_command.data_l;
-				sensLDRR=received_command.data_r;
-				break;
-			case CMD_SENS_TRANS:
-				sensTrans=(uint8_t)received_command.data_l;
-				break;
-			#ifdef MAUS_AVAILABLE
-				case CMD_SENS_MOUSE:
-					sensMouseDX=received_command.data_l;
-					sensMouseDY=received_command.data_r;
+	
+	/* woher ist das Kommando? */
+	if (received_command.from == CMD_SIM_ADDR) {
+		/* Daten vom ct-Sim */
+		switch (received_command.request.command) {
+			#ifdef IR_AVAILABLE
+				case CMD_SENS_RC5:
+					ir_data=received_command.data_l | (RC5_Last_Toggle & RC5_TOGGLE);
+					if (received_command.data_l != 0)
+						RC5_Last_Toggle = 0xffff ^ (RC5_Last_Toggle & RC5_TOGGLE);
 					break;
 			#endif
-			case CMD_SENS_ERROR:
-				sensError=(uint8_t)received_command.data_l;
-				sensor_update();	/* Error ist der letzte uebertragene Sensorwert, danach koennen wir uns um allgemeine updates kümmern*/
+			case CMD_AKT_LED:	// LED-Steuerung
+				#ifdef LED_AVAILABLE
+					LED_set(received_command.data_l & 255);
+				#endif
 				break;
-			case CMD_DONE:
-				simultime=received_command.data_l;
-				system_time_isr();		/* Einmal pro Update-Zyklus aktualisieren wir die Systemzeit */
-			//	printf("X-Frame for Simultime = %d received ",simultime);
+				
+			// Einige Kommandos ergeben nur fuer reale Bots Sinn
+				case CMD_WELCOME:
+					#ifdef MCU
+						command_write(CMD_WELCOME, SUB_WELCOME_REAL,0,0,0);
+					#else
+						command_write(CMD_WELCOME, SUB_WELCOME_SIM,0,0,0);
+					#endif					
+					break;
+	
+			
+			#ifdef MAUS_AVAILABLE		
+				case CMD_SENS_MOUSE_PICTURE: 	// PC fragt nach dem Bild
+					transmit_mouse_picture();
 				break;
-		#endif	// PC
-		default:
-			analyzed=0;		// Command was not analysed yet
-			break;
+			#endif
+	
+			#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
+				case CMD_REMOTE_CALL:
+						LOG_DEBUG("remote-call-cmd ...");					
+						switch (received_command.request.subcommand) {
+							case SUB_REMOTE_CALL_LIST:
+								LOG_DEBUG("... auflisten ");					
+								remote_call_list();
+								break;
+							case SUB_REMOTE_CALL_ORDER:
+							{	
+								LOG_DEBUG("remote-call-Wunsch empfangen. Data= %d bytes",received_command.payload);					
+								uint8 buffer[REMOTE_CALL_BUFFER_SIZE];
+								uint16 ticks = TIMER_GET_TICKCOUNT_16;
+								#ifdef MCU
+									while (uart_data_available() < received_command.payload && (uint16)(TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
+								#endif
+								low_read(buffer,received_command.payload);
+								if ((uint16)(TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)){ 	
+									bot_remotecall_from_command((char *)&buffer);
+								} else{
+									int16 result = SUBFAIL;
+									command_write_data(CMD_REMOTE_CALL,SUB_REMOTE_CALL_DONE,&result,&result,NULL);
+								}
+								break;
+							}
+							case SUB_REMOTE_CALL_ABORT: {
+								LOG_DEBUG("remote calls werden abgebrochen");
+								deactivateCalledBehaviours(bot_remotecall_behaviour);
+								break;
+							}
+								
+							default:
+								LOG_DEBUG("unbekanntes Subkommando: %c",received_command.request.subcommand);
+								break;
+						}
+					break;
+			#endif	// BEHAVIOUR_REMOTECALL_AVAILABLE
+	
+				
+			// Einige Kommandos ergeben nur fuer simulierte Bots Sinn
+			#ifdef PC
+				case CMD_SENS_IR: {
+					(*sensor_update_distance)(&sensDistL, &sensDistLToggle, sensDistDataL, received_command.data_l*4);
+					(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, received_command.data_r*4);
+					break;
+				}
+				case CMD_SENS_ENC:
+					sensEncL+=received_command.data_l;
+					sensEncR+=received_command.data_r;
+					break;
+				case CMD_SENS_BORDER:
+					sensBorderL=received_command.data_l;
+					sensBorderR=received_command.data_r;
+					break;
+				case CMD_SENS_LINE:
+					sensLineL=received_command.data_l;
+					sensLineR=received_command.data_r;
+					break;
+				case CMD_SENS_LDR:
+					sensLDRL=received_command.data_l;
+					sensLDRR=received_command.data_r;
+					break;
+				case CMD_SENS_TRANS:
+					sensTrans=(uint8_t)received_command.data_l;
+					break;
+				#ifdef MAUS_AVAILABLE
+					case CMD_SENS_MOUSE:
+						sensMouseDX=received_command.data_l;
+						sensMouseDY=received_command.data_r;
+						break;
+				#endif
+				case CMD_SENS_ERROR:
+					sensError=(uint8_t)received_command.data_l;
+					sensor_update();	/* Error ist der letzte uebertragene Sensorwert, danach koennen wir uns um allgemeine updates kümmern*/
+					break;
+				case CMD_DONE:
+					simultime=received_command.data_l;
+					system_time_isr();		/* Einmal pro Update-Zyklus aktualisieren wir die Systemzeit */
+				//	printf("X-Frame for Simultime = %d received ",simultime);
+					break;
+			#endif	// PC
+			default:
+				analyzed=0;		// Command was not analysed yet
+				break;
+		}
+	} else {
+		/* Kommando kommt von einem anderen Bot */
+		//TODO:	Bot-2-Bot-Datenauswertung
 	}
 	return analyzed;
 }

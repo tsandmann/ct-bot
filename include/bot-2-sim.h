@@ -34,23 +34,23 @@
  */
 void bot_2_sim_init(void);
 
-/*!
- *  Frage Simulator nach Daten
- */
-int bot_2_sim_ask(uint8 command, uint8 subcommand,int16* data_l,int16* data_r);
+///*!
+// *  Frage Simulator nach Daten
+// */
+//int bot_2_sim_ask(uint8 command, uint8 subcommand,int16* data_l,int16* data_r);
 
-/*!
- * Schickt einen Thread in die Warteposition
- * @param timeout_us Wartezeit in Mikrosekunden
- */
-void wait_for_time(long timeout_us);
-/*! 
- * Wartet auf die Antwort des PC
- * Achtung blockierend ohne Timeout
- * @param command Das kommando auf das gewartet wird.
- * @return 0, wenn Ok
- */
-int wait_for_special_command(uint8_t command);
+///*!
+// * Schickt einen Thread in die Warteposition
+// * @param timeout_us Wartezeit in Mikrosekunden
+// */
+//void wait_for_time(long timeout_us);
+///*! 
+// * Wartet auf die Antwort des PC
+// * Achtung blockierend ohne Timeout
+// * @param command Das kommando auf das gewartet wird.
+// * @return 0, wenn Ok
+// */
+//int wait_for_special_command(uint8_t command);
 
 /*! 
  * Schleife, die Kommandis empfaengt und bearbeitet, bis ein Kommando vom Typ Frame kommt 

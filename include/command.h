@@ -29,6 +29,7 @@
 
 #include "global.h"
 #include "ct-Bot.h"
+#include <stdio.h>
 
 #define MAX_PAYLOAD 255  /*!< Max. Anzahl Bytes, die an ein Command angehaengt werden */
 
@@ -36,12 +37,14 @@
 	#define low_read tcp_read 	/*!< Which function to use to read data */
 	#define low_write tcp_send_cmd /*!< Which function to use to write data */
 	#define low_write_data tcp_write /*!< Which function to use to write data */
+	#include "eeprom-emu.h"
 #endif
 
 #ifdef MCU
 	#define low_read uart_read 	/*!< Which function to use to read data */
 	#define low_write uart_send_cmd /*!< Which function to use to write data */
 	#define low_write_data uart_write /*!< Which function to use to write data */
+	#include <avr/eeprom.h>
 #endif
 
 
@@ -122,9 +125,9 @@ typedef struct {
 #define CMD_LOG			'O'		/*!< Logausgaben */
 
 //Kommandos fuer die Verbindung zum c't-Sim
-#define CMD_WELCOME		'W'		/*!< Kommado zum anmelden an c't-Sim */
-#define SUB_WELCOME_REAL	'R'		/*!< Subkommado zum anmelden eines realen Bots an c't-Sim */
-#define SUB_WELCOME_SIM	'S'		/*!< Subkommado zum anmelden eines simulierten Bots an c't-Sim */
+#define CMD_WELCOME		'W'		/*!< Kommado zum Anmelden an c't-Sim */
+#define SUB_WELCOME_REAL	'R'		/*!< Subkommado zum Anmelden eines realen Bots an c't-Sim */
+#define SUB_WELCOME_SIM	'S'		/*!< Subkommado zum Anmelden eines simulierten Bots an c't-Sim */
 
 //Kommandos fuer die Remote-Calls
 #define CMD_REMOTE_CALL			'r'		/*!< Kommado fuer Remote-Calls */
@@ -139,6 +142,9 @@ typedef struct {
 #define DIR_REQUEST	0			/*!< Richtung fuer Anfragen */
 #define DIR_ANSWER		1			/*!< Richtung fuer Antworten */
 
+#define CMD_BROADCAST	0xFF
+#define CMD_SIM_ADDR	0xFE
+	
 #ifdef PC	// Auf dem PC muss der Zugriff auf received_command Thread-sicher sein
 	#include <pthread.h>
 	extern pthread_mutex_t     command_mutex;	/*!< Zugriff auf das Kommando */
@@ -158,24 +164,24 @@ int8 command_read(void);
 
 /*!
  * Uebertraegt ein Kommando und wartet nicht auf eine Antwort
- * @param command Kennung zum Command
- * @param subcommand Kennung des Subcommand
- * @param data_l Daten fuer den linken Kanal
- * @param data_r Daten fuer den rechten Kanal
- * @param payload Anzahl der Bytes, die diesem Kommando als Payload folgen
- * @param to empfaenger
+ * @param command		Kennung zum Command
+ * @param subcommand	Kennung des Subcommand
+ * @param to			Adresse des Empfaengers
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r 		Daten fuer den rechten Kanal
+ * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
-void command_write_to(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,uint8 payload, uint8 to);
+void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t * data_l, int16_t * data_r, uint8_t payload);
 
 /*!
- * Uebertraegt ein Kommando und wartet nicht auf eine Antwort
- * @param command Kennung zum Command
- * @param subcommand Kennung des Subcommand
- * @param data_l Daten fuer den linken Kanal
- * @param data_r Daten fuer den rechten Kanal
- * @param payload Anzahl der Bytes, die diesem Kommando als Payload folgen
+ * Uebertraegt ein Kommando an den ct-Sim und wartet nicht auf eine Antwort
+ * @param command		Kennung zum Command
+ * @param subcommand	Kennung des Subcommand
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r 		Daten fuer den rechten Kanal
+ * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
-void command_write(uint8_t command, uint8_t subcommand, int16_t* data_l, int16_t* data_r, uint8_t payload);
+void command_write(uint8_t command, uint8_t subcommand, int16_t * data_l, int16_t * data_r, uint8_t payload);
 
 /*!
  *  Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort
@@ -208,5 +214,25 @@ int8_t command_evaluate(void);
  * Gibt ein Kommando auf dem Bildschirm aus
  */
 void command_display(command_t * command);
+
+/*! Kommunikations-Adresse des Bots (@EEPROM) */
+extern uint8_t bot_address;
+
+/*!
+ * Gibt die Kommunikations-Adresse des Bots zurueck
+ * @return	Bot-Adresse
+ */
+static inline uint8_t get_bot_address(void) {
+	return eeprom_read_byte(&bot_address);
+}
+
+/*!
+ * Setzt die Bot-Adresse auf einen neuen Wert und speichert diesen im EEPROM
+ * @param bot_addr	neue Bot-Adresse
+ */
+static inline void set_bot_address(uint8_t bot_addr) {
+	eeprom_write_byte(&bot_address, bot_addr);
+	//printf("bot_address=%u\n", get_bot_address());
+}
 
 #endif	/*__command_h_*/

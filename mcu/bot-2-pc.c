@@ -34,6 +34,8 @@
 #include "mouse.h"
 #include "log.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #ifdef MCU
 #ifdef BOT_2_PC_AVAILABLE
@@ -91,24 +93,19 @@ void bot_2_pc_inform(void){
 //	command_write(CMD_SENS_RC5, SUB_CMD_NORM ,(int16*)&RC5_Code,&value2,0);
 }
 
-
-
-#include <stdio.h>
-#include <string.h>
-
 /*! 
  * Meldet den Bot am c't-Sim an
  */
-void bot_2_pc_init(void){
-	int16 null =0;
-	uint8 j;
-	
+void bot_2_pc_init(void) {	
 	uart_init();
-
-	for(j=0;j<5;j++) 
-		command_write(CMD_WELCOME, SUB_WELCOME_REAL ,&null,&null,0);
+	
+	int16 null = 0;
+	uint8 j;
+	for (j=0; j<5; j++) {
+		command_write(CMD_WELCOME, SUB_WELCOME_REAL, &null, &null, 0);
+	}
 }
 
-#endif
-#endif
+#endif	// BOT_2_PC_AVAILABLE
+#endif	// MCU
 

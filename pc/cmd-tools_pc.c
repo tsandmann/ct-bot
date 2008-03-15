@@ -35,13 +35,15 @@
 #include "map.h"
 #include "eeprom-emu.h"
 #include "tcp.h"
+#include "command.h"
 
 /*!
  * Zeigt Informationen zu den moeglichen Kommandozeilenargumenten an.
  */
 static void usage(void) {
-	puts("USAGE: ct-Bot [-t host] [-T] [-h] [-s] [-M from] [-c FILE ID SIZE] [-e ADDR ID SIZE] [-d ID] [-i]");
+	puts("USAGE: ct-Bot [-t host] [-a address] [-T] [-h] [-s] [-M from] [-c FILE ID SIZE] [-e ADDR ID SIZE] [-d ID] [-i]");
 	puts("\t-t\tHostname oder IP Adresse zu der Verbunden werden soll");
+	puts("\t-a\tAdresse des Bots (fuer Bot-2-Bot-Kommunikation), default: 0");
 	puts("\t-T\tTestClient");
 	puts("\t-s\tServermodus");
 	puts("\t-M from\tKonvertiert eine Bot-map in eine PGM-Datei");
@@ -79,7 +81,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 	strcpy(tcp_hostname, IP);
 	
 	/* Die Kommandozeilenargumente komplett verarbeiten */
-	while ((ch = getopt(argc, argv, "hsTit:M:c:l:e:d:")) != -1) {
+	while ((ch = getopt(argc, argv, "hsTit:M:c:l:e:d:a:")) != -1) {
 		argc -= optind;
 		argv += optind;
 		switch (ch) {
@@ -102,6 +104,17 @@ void hand_cmd_args(int argc, char * argv[]) {
 			tcp_hostname = realloc(tcp_hostname, strlen(optarg) + 1);
 			if (tcp_hostname == NULL) exit(1);
 			strcpy(tcp_hostname, optarg);
+			break;
+		}
+		
+		case 'a': {
+			/* Bot-Adresse wurde uebergeben */
+			int addr = atoi(optarg);
+			if (addr >= CMD_SIM_ADDR) {
+				printf("Unzulaessige Bot-Adresse!\n");
+				exit(1);
+			}
+			set_bot_address(addr);
 			break;
 		}
 		
