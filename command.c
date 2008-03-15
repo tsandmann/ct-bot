@@ -79,6 +79,7 @@ command_t received_command;		/*!< Puffer fuer Kommandos */
 //#define DEBUG_COMMAND		//Schalter, um auf einmal alle Debugs an oder aus zu machen
 
 #ifndef DEBUG_COMMAND
+	#undef LOG_AVAILABLE
 	#undef LOG_DEBUG
 	#define LOG_DEBUG(a, ...) {}	/*!< Log-Dummy */
 #endif
@@ -214,8 +215,9 @@ static uint8 count=1;	/*!< Zaehler fuer Paket-Sequenznummer*/
  * @param data_l Daten fuer den linken Kanal
  * @param data_r Daten fuer den rechten Kanal
  * @param payload Anzahl der Bytes, die diesem Kommando als Payload folgen
+ * @param to empfaenger
  */
-void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,uint8 payload){
+void command_write_to(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,uint8 payload, uint8 to){
 	command_t cmd;
 	
 	
@@ -223,6 +225,9 @@ void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,
 	cmd.request.direction=DIR_REQUEST;		// Anfrage
 	cmd.request.command= command;
 	cmd.request.subcommand= subcommand;
+	
+	cmd.from=BOT_ID;		// Absender der Nachricht
+	cmd.to=to;
 	
 	cmd.payload=payload;
 	if (data_l != NULL)
@@ -239,6 +244,33 @@ void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,
 	cmd.CRC=CMD_STOPCODE;
 	
 	low_write(&cmd);
+	
+	/*
+	printf("\nSTART= %d\nDIR= %d CMD= %d SUBCMD= %d\nPayload= %d\nDATA = %d %d\nSeq= %d\nFrom= %d\nTo= %d\nCRC= %d\n",
+				cmd.startCode,
+				cmd.request.direction,
+				cmd.request.command,
+				cmd.request.subcommand,
+				cmd.payload,
+				cmd.data_l,
+				cmd.data_r,
+				cmd.seq,				
+				cmd.from,
+				cmd.to,
+				cmd.CRC);			
+*/
+}
+
+/*!
+ * Uebertraegt ein Kommando und wartet nicht auf eine Antwort
+ * @param command Kennung zum Command
+ * @param subcommand Kennung des Subcommand
+ * @param data_l Daten fuer den linken Kanal
+ * @param data_r Daten fuer den rechten Kanal
+ * @param payload Anzahl der Bytes, die diesem Kommando als Payload folgen
+ */
+void command_write(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,uint8 payload){
+	command_write_to(command, subcommand, data_l,data_r,payload, SIM_ID);
 }
 
 /*!
@@ -321,9 +353,11 @@ int8_t command_evaluate(void) {
 	uint8 analyzed = 1;
 	
 	#ifdef LOG_AVAILABLE	
+		if (received_command.from != SIM_ID)
+			LOG_DEBUG("Achtung: weitergeleitetes Kommando:");
 		command_display(&received_command);
 	#endif	// LOG_AVAILABLE
-	
+		
 	switch (received_command.request.command) {
 		#ifdef IR_AVAILABLE
 			case CMD_SENS_RC5:
@@ -459,11 +493,13 @@ void command_display(command_t * command) {
 //			(*command).data_r,
 //			(*command).seq,				
 //			(*command).CRC);			
-		LOG_DEBUG("CMD: %c\tSub: 0x%x\tData L: %d\tSeq: %d\tCRC: %d\n",
+		LOG_DEBUG("CMD: %c\tSub: 0x%x\tData L: %d\tSeq: %d\t From: %d\tTo:%d\tCRC: %d\n",
 			(*command).request.command,
 			(*command).request.subcommand,
 			(*command).data_l,
 			(*command).seq,
+			(*command).from,
+			(*command).to,
 			(*command).CRC);
 	#else	// MCU
 		LOG_DEBUG("CMD: %c\tSub: %c\tData L: %d\tPay: %d\tSeq: %d\n",

@@ -84,28 +84,28 @@ typedef struct {
 #define CMD_STOPCODE	'<'		/*!< Ende eines Kommandos*/
 
 //Sensoren
-#define CMD_SENS_IR	'I'		/*!< Abstandssensoren*/
+#define CMD_SENS_IR	    'I'		/*!< Abstandssensoren*/
 #define CMD_SENS_ENC	'E'		/*!< Radencoder*/
-#define CMD_SENS_BORDER 'B'	/*!< Abgrundsensoren*/
+#define CMD_SENS_BORDER 'B'		/*!< Abgrundsensoren*/
 #define CMD_SENS_LINE 	'L'		/*!< Liniensensoren*/
 #define CMD_SENS_LDR 	'H'		/*!< Helligkeitssensoren */
 #define CMD_SENS_TRANS	'T'		/*!< Ueberwachung Transportfach */
 #define CMD_SENS_DOOR	'D'		/*!< Ueberwachung Klappe */
 #define CMD_SENS_MOUSE	'm'		/*!< Maussensor */
-#define CMD_SENS_ERROR 'e'		/*!< Motor- oder Batteriefehler */
+#define CMD_SENS_ERROR  'e'		/*!< Motor- oder Batteriefehler */
 #define CMD_SENS_RC5 	'R'		/*!< IR-Fernbedienung */
 
 #define CMD_SENS_MOUSE_PICTURE	'P'		/*!< Bild vom Maussensor in data_l steht, welche Nummer da 1. Pixel hat*/
 
 
 // Aktuatoren
-#define CMD_AKT_MOT	'M'		/*!< Motorgeschwindigkeit */
+#define CMD_AKT_MOT	    'M'		/*!< Motorgeschwindigkeit */
 #define CMD_AKT_DOOR	'd'		/*!< Steuerung Klappe */
 #define CMD_AKT_SERVO	'S'		/*!< Steuerung Servo  */
-#define CMD_AKT_LED	'l'		/*!< LEDs steuern */
-#define CMD_AKT_LCD    'c'     /*!< LCD Anzeige */
+#define CMD_AKT_LED	    'l'		/*!< LEDs steuern */
+#define CMD_AKT_LCD     'c'     /*!< LCD Anzeige */
 
-#define CMD_DONE    'X'     	/*!< Markiert das Ende einer Uebertragung */
+#define CMD_DONE        'X'    	/*!< Markiert das Ende einer Uebertragung */
 
 
 #define SUB_CMD_NORM	'N' 		/*!< Standard-Kommando */
@@ -127,7 +127,7 @@ typedef struct {
 #define SUB_WELCOME_SIM	'S'		/*!< Subkommado zum anmelden eines simulierten Bots an c't-Sim */
 
 //Kommandos fuer die Remote-Calls
-#define CMD_REMOTE_CALL		'r'		/*!< Kommado fuer Remote-Calls */
+#define CMD_REMOTE_CALL			'r'		/*!< Kommado fuer Remote-Calls */
 #define SUB_REMOTE_CALL_LIST	'L'		/*!< Anforderung an den Bot alle verfuegbaren Kommandos zu listen */
 #define SUB_REMOTE_CALL_ENTRY	'E'		/*!< Hiermit leifert der Bot ein erfuegbares Kommandos an den PC */
 #define SUB_REMOTE_CALL_ORDER	'O'		/*!< Hiermit gibt der PC einen Remote-call in Auftrag */
@@ -155,6 +155,17 @@ extern command_t received_command;		/*!< Puffer fuer Kommandos */
  * @see low_read()
  */
 int8 command_read(void);	
+
+/*!
+ * Uebertraegt ein Kommando und wartet nicht auf eine Antwort
+ * @param command Kennung zum Command
+ * @param subcommand Kennung des Subcommand
+ * @param data_l Daten fuer den linken Kanal
+ * @param data_r Daten fuer den rechten Kanal
+ * @param payload Anzahl der Bytes, die diesem Kommando als Payload folgen
+ * @param to empfaenger
+ */
+void command_write_to(uint8 command, uint8 subcommand, int16* data_l,int16* data_r,uint8 payload, uint8 to);
 
 /*!
  * Uebertraegt ein Kommando und wartet nicht auf eine Antwort

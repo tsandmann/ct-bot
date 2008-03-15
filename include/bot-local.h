@@ -30,6 +30,10 @@
 
 #include "ct-Bot.h"
 
+#define BOT_ID	100							/*!< Id des Bots fuer TCP-Kommunikation */
+#define SIM_ID 0xFE							/*!< Id des Sims fuer TCP-Kommunikation */
+#define BROADCAST_ID 0xFF					/*!< Id fuer Broadcasts fuer TCP-Kommunikation */
+
 /*** Bot-Geometrie ***/
 #define BOT_DIAMETER			120			/*!< Bot-Durchmesser [mm] */
 #define ENCODER_MARKS			60			/*!< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weissen + Anzahl der schwarzen Felder */

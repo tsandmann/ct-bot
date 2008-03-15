@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2007-08-16 Benjamin Benz [bbe@heise.de]: Ein wenig an den neuen Kommandos gefeilt, primaer Log-Ausgaben
+
 2008-03-13 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer bot_goto_dist() nach Abbruch von bot_goto_pos()
 
 2008-03-10 Timo Sandmann [mail@timosandmann.de]: Reset-Funktion fuer Bots eingebaut: Taste RC5_CODE_CH_PC setzt einen Bot zurueck

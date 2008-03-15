@@ -258,6 +258,9 @@ int main(int argc, char * argv[]) {
 				bot_behave();
 			#endif	// BEHAVIOUR_AVAILABLE
 		#endif	// TEST_AVAILABLE_MOTOR
+
+				
+		//command_write_to(CMD_AKT_SERVO, SUB_CMD_NORM ,0,0,0,100);		
 				
 		#ifdef MCU
 			/* jeweils alle 100 ms kommunizieren Bot, User und Sim */
