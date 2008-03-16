@@ -110,7 +110,12 @@ typedef struct {
 
 #define CMD_DONE        'X'    	/*!< Markiert das Ende einer Uebertragung */
 
+#define CMD_ID			'A'		/*!< Adressverwaltung */
+#define SUB_ID_REQUEST	'R'		/*!< Fordere eine Adresse an */
+#define SUB_ID_OFFER	'O'		/*!< Bot bekommt eine Adresse angeboten */
+#define SUB_ID_SET		'S'		/*!< Bot Setzt/bestätigt eine Adresse an */
 
+	
 #define SUB_CMD_NORM	'N' 		/*!< Standard-Kommando */
 #define SUB_CMD_LEFT	'L' 		/*!< Kommmando fuer links */
 #define SUB_CMD_RIGHT	'R' 		/*!< Kommando fuer rechts */

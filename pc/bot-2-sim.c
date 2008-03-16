@@ -151,6 +151,10 @@ void bot_2_sim_init(void) {
 		command_write(CMD_WELCOME, SUB_WELCOME_SIM, &null, &null, 0);
 	}
 
+	if (get_bot_address() == BROADCAST_ID)
+		// Fordere eine Adresse an
+		command_write(CMD_ID, SUB_ID_REQUEST, &null, &null, 0);
+
 	flushSendBuffer();
 }
 

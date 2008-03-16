@@ -104,6 +104,11 @@ void bot_2_pc_init(void) {
 	for (j=0; j<5; j++) {
 		command_write(CMD_WELCOME, SUB_WELCOME_REAL, &null, &null, 0);
 	}
+	
+	if (get_bot_address() == BROADCAST_ID)
+		// Fordere eine Adresse an
+		command_write(CMD_ID, SUB_ID_REQUEST, &null, &null, 0);
+
 }
 
 #endif	// BOT_2_PC_AVAILABLE

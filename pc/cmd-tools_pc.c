@@ -110,7 +110,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 		case 'a': {
 			/* Bot-Adresse wurde uebergeben */
 			int addr = atoi(optarg);
-			if (addr >= CMD_SIM_ADDR) {
+			if ((addr >= CMD_SIM_ADDR) && (addr != CMD_BROADCAST)) {
 				printf("Unzulaessige Bot-Adresse!\n");
 				exit(1);
 			}

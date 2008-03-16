@@ -75,7 +75,8 @@ static uint8 count=1;		/*!< Zaehler fuer Paket-Sequenznummer */
 //#endif
 
 
-//#define DEBUG_COMMAND		//Schalter, um auf einmal alle Debugs an oder aus zu machen
+#define DEBUG_COMMAND		//Schalter, um auf einmal alle Debugs an oder aus zu machen
+//#define DEBUG_COMMAND_NOISY	// nun wird es voll im Log, da jedes Command geschrioeben wird		
 
 #ifndef DEBUG_COMMAND
 	#undef LOG_AVAILABLE
@@ -108,9 +109,10 @@ int8 command_read(void) {
 	// Daten holen, maximal soviele, wie ein Kommando lang ist
 	bytesRcvd=low_read(buffer,sizeof(command_t));	
 
-	LOG_DEBUG("%d read",bytesRcvd);
-	LOG_DEBUG("%x %x %x",buffer[0],buffer[1],buffer[2]);
-
+	#ifdef DEBUG_COMMAND_NOISY
+		LOG_DEBUG("%d read",bytesRcvd);
+		LOG_DEBUG("%x %x %x",buffer[0],buffer[1],buffer[2]);
+	#endif
 	// Suche nach dem Beginn des Frames
 	while ((start<bytesRcvd)&&(buffer[start] != CMD_STARTCODE)) {
 		LOG_DEBUG("falscher Startcode");
@@ -125,8 +127,10 @@ int8 command_read(void) {
 		return -1;	
 	}
 	
-	LOG_DEBUG("Start @%d",start);
-	
+	#ifdef DEBUG_COMMAND_NOISY
+		LOG_DEBUG("Start @%d",start);
+	#endif
+		
 	// haben wir noch genug Platz im Puffer, um das Packet ferig zu lesen?
 	if ((RCVBUFSIZE-start) < sizeof(command_t)){
 		LOG_DEBUG("not enough space");
@@ -156,21 +160,29 @@ int8 command_read(void) {
 		}
 	}
 	
-	LOG_DEBUG("%d/%d read/start",bytesRcvd,start);
-	LOG_DEBUG("%x %x %x",buffer[start],buffer[start+1],buffer[start+2]);
-
+	#ifdef DEBUG_COMMAND_NOISY
+		LOG_DEBUG("%d/%d read/start",bytesRcvd,start);
+		LOG_DEBUG("%x %x %x",buffer[start],buffer[start+1],buffer[start+2]);
+	#endif
+		
 	// Cast in command_t
 	command = (command_t *) (buffer+start);
 
-	LOG_DEBUG("start: %x ",command->startCode);
-	//	command_display(command);
+	#ifdef DEBUG_COMMAND_NOISY
+		LOG_DEBUG("start: %x ",command->startCode);
+		//	command_display(command);
+	#endif	
 	
 	// validate (startcode ist bereits ok, sonst waeren wir nicht hier )
 	if (command->CRC==CMD_STOPCODE){
-		LOG_DEBUG("Command is valid");
+		#ifdef DEBUG_COMMAND_NOISY
+			LOG_DEBUG("Command is valid");
+		#endif
 		
 		/* Ist das Paket ueberhaupt fuer uns? */
-		if (command->to != CMD_BROADCAST && command->to != get_bot_address()) {
+		if ((command->to != CMD_BROADCAST) && (command->to != get_bot_address()) && (command->request.command != CMD_WELCOME)) {
+			LOG_DEBUG("Fehler: Paket To= %d statt %d",command->to, get_bot_address());
+			command_display(command);
 			return -1;
 		}
 		
@@ -347,7 +359,9 @@ int8_t command_evaluate(void) {
 	#ifdef LOG_AVAILABLE	
 		if (received_command.from != SIM_ID)
 			LOG_DEBUG("Achtung: weitergeleitetes Kommando:");
-		command_display(&received_command);
+			#ifdef DEBUG_COMMAND_NOISY
+				command_display(&received_command);
+			#endif
 	#endif	// LOG_AVAILABLE
 	
 	/* woher ist das Kommando? */
@@ -376,6 +390,14 @@ int8_t command_evaluate(void) {
 					#endif					
 					break;
 	
+				case CMD_ID:
+					if (received_command.request.subcommand == SUB_ID_OFFER)
+						#ifdef LOG_AVAILABLE	
+							LOG_DEBUG("Bekomme eine Adresse angeboten: %d", received_command.data_l);
+						#endif	// LOG_AVAILABLE
+						set_bot_address(received_command.data_l);	// Setze Adresse
+						command_write(CMD_ID,SUB_ID_SET,&(received_command.data_l),0,0); // Und bestätige dem Sim das ganze
+					break;
 			
 			#ifdef MAUS_AVAILABLE		
 				case CMD_SENS_MOUSE_PICTURE: 	// PC fragt nach dem Bild
