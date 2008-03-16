@@ -182,7 +182,9 @@ int8 command_read(void) {
 		/* Ist das Paket ueberhaupt fuer uns? */
 		if ((command->to != CMD_BROADCAST) && (command->to != get_bot_address()) && (command->request.command != CMD_WELCOME)) {
 			LOG_DEBUG("Fehler: Paket To= %d statt %d",command->to, get_bot_address());
-			command_display(command);
+			#ifdef LOG_AVAILABLE
+				command_display(command);
+			#endif
 			return -1;
 		}
 		
