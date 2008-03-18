@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-03-18 Timo Sandmann [mail@timosandmann.de]: Code fuer automatische Adressvergabe vervollstaendigt, PC-Code fuer Bot-2-Sim aufgeraeumt
+
 2008-03-16 Benjamin Benz [bbe@heise.de]: Rohcode für die automatische Adressvergabe eingefügt
 
 2008-03-16 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer command.c

@@ -60,7 +60,7 @@
 
 #define COMMAND_TIMEOUT 	10		/*!< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
 
-EEPROM uint8_t bot_address = 0;		/*!< Kommunikations-Adresse des Bots (@EEPROM) */
+EEPROM uint8_t bot_address = CMD_BROADCAST;	/*!< Kommunikations-Adresse des Bots (@EEPROM) */
 
 #ifdef COMMAND_AVAILABLE
 
@@ -69,13 +69,8 @@ EEPROM uint8_t bot_address = 0;		/*!< Kommunikations-Adresse des Bots (@EEPROM) 
 command_t received_command;	/*!< Puffer fuer Kommandos */
 static uint8 count=1;		/*!< Zaehler fuer Paket-Sequenznummer */
 
-//#ifdef PC
-//	// Auf dword alignment bestehen, wird fuer MacOS X benoetigt
-//	pthread_mutex_t command_mutex __attribute__ ((aligned (4))) = PTHREAD_MUTEX_INITIALIZER;	/*!< Mutex fuer Commands */
-//#endif
 
-
-#define DEBUG_COMMAND		//Schalter, um auf einmal alle Debugs an oder aus zu machen
+//#define DEBUG_COMMAND		//Schalter, um auf einmal alle Debugs an oder aus zu machen
 //#define DEBUG_COMMAND_NOISY	// nun wird es voll im Log, da jedes Command geschrioeben wird		
 
 #ifndef DEBUG_COMMAND
@@ -116,8 +111,6 @@ int8 command_read(void) {
 	// Suche nach dem Beginn des Frames
 	while ((start<bytesRcvd)&&(buffer[start] != CMD_STARTCODE)) {
 		LOG_DEBUG("falscher Startcode");
-//		printf("\nStartzeichen nicht am Anfang des Puffers! (%d)\n",start);
-//		printf(".");
 		start++;
 	}
 		
@@ -189,9 +182,6 @@ int8 command_read(void) {
 		}
 		
 		// Transfer
-//		#ifdef PC
-//			command_lock();		// on PC make storage threadsafe
-//		#endif
 		memcpy(&received_command, buffer+start, sizeof(command_t));
 		#ifdef PC
 			#if BYTE_ORDER == BIG_ENDIAN
@@ -204,8 +194,6 @@ int8 command_read(void) {
 				received_command.data_r = store << 8;
 				received_command.data_r |= (store >> 8) & 0xff;
 			#endif	// BYTE_ORDER == BIG_ENDIAN
-		
-//			command_unlock();	// on PC make storage threadsafe
 		#endif	// PC
 
 		return 0;
@@ -395,7 +383,7 @@ int8_t command_evaluate(void) {
 				case CMD_ID:
 					if (received_command.request.subcommand == SUB_ID_OFFER)
 						#ifdef LOG_AVAILABLE	
-							LOG_DEBUG("Bekomme eine Adresse angeboten: %d", received_command.data_l);
+							LOG_DEBUG("Bekomme eine Adresse angeboten: %u", (uint8_t)received_command.data_l);
 						#endif	// LOG_AVAILABLE
 						set_bot_address(received_command.data_l);	// Setze Adresse
 						command_write(CMD_ID,SUB_ID_SET,&(received_command.data_l),0,0); // Und bestätige dem Sim das ganze

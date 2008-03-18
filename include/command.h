@@ -150,14 +150,6 @@ typedef struct {
 #define CMD_BROADCAST	0xFF
 #define CMD_SIM_ADDR	0xFE
 	
-#ifdef PC	// Auf dem PC muss der Zugriff auf received_command Thread-sicher sein
-	#include <pthread.h>
-	extern pthread_mutex_t     command_mutex;	/*!< Zugriff auf das Kommando */
-	#define	command_lock()		pthread_mutex_lock(&command_mutex) /*!< Zugriff auf das Kommando */
-	#define	command_unlock()	pthread_mutex_unlock(&command_mutex) /*!< Zugriff auf das Kommando */
-#endif
-
-
 extern command_t received_command;		/*!< Puffer fuer Kommandos */
 
 /*!
@@ -237,7 +229,6 @@ static inline uint8_t get_bot_address(void) {
  */
 static inline void set_bot_address(uint8_t bot_addr) {
 	eeprom_write_byte(&bot_address, bot_addr);
-	//printf("bot_address=%u\n", get_bot_address());
 }
 
 #endif	/*__command_h_*/

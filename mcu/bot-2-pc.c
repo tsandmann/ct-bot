@@ -99,16 +99,22 @@ void bot_2_pc_inform(void){
 void bot_2_pc_init(void) {	
 	uart_init();
 	
-	int16 null = 0;
+	uint8_t addr = get_bot_address();
+	if (addr > 127) {
+		/* gespeicherte Adresse ist eine vom Sim Vergebene,
+		 * schalte auf Adressevergabemodus um */
+		addr = CMD_BROADCAST;
+		set_bot_address(addr);
+	}
 	uint8 j;
 	for (j=0; j<5; j++) {
-		command_write(CMD_WELCOME, SUB_WELCOME_REAL, &null, &null, 0);
+		command_write(CMD_WELCOME, SUB_WELCOME_REAL, NULL, NULL, 0);
 	}
 	
-	if (get_bot_address() == BROADCAST_ID)
+	if (addr == CMD_BROADCAST) {
 		// Fordere eine Adresse an
-		command_write(CMD_ID, SUB_ID_REQUEST, &null, &null, 0);
-
+		command_write(CMD_ID, SUB_ID_REQUEST, NULL, NULL, 0);	
+	}
 }
 
 #endif	// BOT_2_PC_AVAILABLE
