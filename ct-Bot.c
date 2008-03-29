@@ -193,11 +193,8 @@ int main(int argc, char * argv[]) {
 	
 	printf("c't-Bot\n");
 	
-	/* Bot2Sim-Kommunikation initialisieren */
+	/* Bot-2-Sim-Kommunikation initialisieren */
 	bot_2_sim_init();
-	receive_until_Frame(CMD_DONE);
-	command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
-	flushSendBuffer();	
 #endif	// PC
 	
 	#ifdef  TEST_AVAILABLE_MOTOR
@@ -259,9 +256,6 @@ int main(int argc, char * argv[]) {
 			#endif	// BEHAVIOUR_AVAILABLE
 		#endif	// TEST_AVAILABLE_MOTOR
 
-				
-		//command_write_to(CMD_AKT_SERVO, SUB_CMD_NORM ,0,0,0,100);		
-				
 		#ifdef MCU
 			/* jeweils alle 100 ms kommunizieren Bot, User und Sim */
 			static uint16 comm_ticks = 0;

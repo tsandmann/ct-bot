@@ -1,5 +1,11 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-03-28 Timo Sandmann [mail@timosandmann.de]: Redundanten Init-Code aus bot-2-pc.c und bot-2-sim.c in command_init() zusammengefasst,
+												 Bugfix fuer Welcome-Paket-Auswertung,
+												 DONE-Paket fuer reale Bots,
+												 Bot-2-Bot-Kommunikation eingefuehrt (bot-2-bot.c / BOT_2_BOT_AVAILABLE),
+												 Liste fuer aktive Bots gebaut (experimentell) 
+
 2008-03-18 Timo Sandmann [mail@timosandmann.de]: Code fuer automatische Adressvergabe vervollstaendigt, PC-Code fuer Bot-2-Sim aufgeraeumt
 
 2008-03-16 Benjamin Benz [bbe@heise.de]: Rohcode für die automatische Adressvergabe eingefügt

@@ -46,6 +46,7 @@
 #include "bot-2-pc.h"
 #include "uart.h"
 #include "delay.h"
+#include "bot-2-bot.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -78,6 +79,32 @@ static uint8 count=1;		/*!< Zaehler fuer Paket-Sequenznummer */
 	#undef LOG_DEBUG
 	#define LOG_DEBUG(a, ...) {}	/*!< Log-Dummy */
 #endif
+
+/*!
+ * Initialisiert die (High-Level-)Kommunikation
+ */
+void command_init(void) {
+	/* eigene Adresse checken */
+	uint8_t addr = get_bot_address();
+	if (addr != CMD_BROADCAST && addr > 127) {
+		/* gespeicherte Adresse ist eine vom Sim Vergebene,
+		 * schalte auf Adressevergabemodus um */
+		addr = CMD_BROADCAST;
+		set_bot_address(addr);
+	}
+	
+	/* Bot beim Sim anmelden */
+#ifdef MCU
+	command_write(CMD_WELCOME, SUB_WELCOME_REAL, NULL, NULL, 0);
+#else
+	command_write(CMD_WELCOME, SUB_WELCOME_SIM, NULL, NULL, 0);
+#endif
+	
+	if (addr == CMD_BROADCAST) {
+		/* Adresse anfordern */
+		command_write(CMD_ID, SUB_ID_REQUEST, NULL, NULL, 0);
+	}
+}
 
 /*!
  * Liest ein Kommando ein, ist blockierend!
@@ -336,8 +363,7 @@ void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* d
 		}
 	}
 #endif	// MAUS_AVAILABLE
-
-
+	
 /*!
  * Wertet das Kommando im Puffer aus
  * return 1, wenn Kommando schon bearbeitet wurde, 0 sonst
@@ -372,22 +398,32 @@ int8_t command_evaluate(void) {
 				break;
 				
 			// Einige Kommandos ergeben nur fuer reale Bots Sinn
+			#ifdef MCU
 				case CMD_WELCOME:
-					#ifdef MCU
-						command_write(CMD_WELCOME, SUB_WELCOME_REAL,0,0,0);
-					#else
-						command_write(CMD_WELCOME, SUB_WELCOME_SIM,0,0,0);
-					#endif					
+					/* mit WELCOME antworten */
+					command_init();
+					#ifdef BOT_2_BOT_AVAILABLE
+						/* hello (bot-)world! */
+						if (get_bot_address() != CMD_BROADCAST) {
+							command_write_to(BOT_CMD_WELCOME, SUB_CMD_NORM, CMD_BROADCAST, NULL, NULL, 0);
+						}
+					#endif	// BOT_2_BOT_AVAILABLE 
 					break;
+			#endif
 	
-				case CMD_ID:
-					if (received_command.request.subcommand == SUB_ID_OFFER)
-						#ifdef LOG_AVAILABLE	
-							LOG_DEBUG("Bekomme eine Adresse angeboten: %u", (uint8_t)received_command.data_l);
-						#endif	// LOG_AVAILABLE
-						set_bot_address(received_command.data_l);	// Setze Adresse
-						command_write(CMD_ID,SUB_ID_SET,&(received_command.data_l),0,0); // Und bestätige dem Sim das ganze
-					break;
+			case CMD_ID:
+				if (received_command.request.subcommand == SUB_ID_OFFER) {
+					#ifdef LOG_AVAILABLE	
+						LOG_DEBUG("Bekomme eine Adresse angeboten: %u", (uint8_t)received_command.data_l);
+					#endif	// LOG_AVAILABLE
+					set_bot_address(received_command.data_l);	// Setze Adresse
+					command_write(CMD_ID, SUB_ID_SET, &(received_command.data_l), NULL, 0); // Und bestaetige dem Sim das ganze
+					#ifdef BOT_2_BOT_AVAILABLE
+						/* hello (bot-)world! */
+						command_write_to(BOT_CMD_WELCOME, SUB_CMD_NORM, CMD_BROADCAST, NULL, NULL, 0);
+					#endif
+				}
+				break;
 			
 			#ifdef MAUS_AVAILABLE		
 				case CMD_SENS_MOUSE_PICTURE: 	// PC fragt nach dem Bild
@@ -481,8 +517,14 @@ int8_t command_evaluate(void) {
 				break;
 		}
 	} else {
-		/* Kommando kommt von einem anderen Bot */
-		//TODO:	Bot-2-Bot-Datenauswertung
+		#ifdef BOT_2_BOT_AVAILABLE
+			/* kein loop-back */
+			if (received_command.from != get_bot_address()) {
+				/* Kommando kommt von einem anderen Bot */
+				cmd_functions[received_command.request.command](&received_command);
+			}
+		#endif
+		analyzed = 1;
 	}
 	return analyzed;
 }

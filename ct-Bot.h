@@ -43,6 +43,7 @@
 #define RC5_AVAILABLE		/*!< Key-Mapping for IR-RC	 */
 
 #define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunizieren? */
+//#define BOT_2_BOT_AVAILABLE	/*!< Sollen Bots untereinander kommunizieren? */
 
 //#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit im s und ms? */
 
@@ -110,6 +111,10 @@
 #ifndef MAUS_AVAILABLE
 	#undef MEASURE_MOUSE_AVAILABLE
 	#undef MEASURE_COUPLED_AVAILABLE
+#endif
+
+#ifdef BOT_2_BOT_AVAILABLE
+	#define BOT_2_PC_AVAILABLE
 #endif
 
 #ifdef PC

@@ -42,7 +42,7 @@
 #include "bot-logic/bot-logik.h"
 #include "motor.h"
 #include "command.h"
-
+#include "bot-2-bot.h"
 
 
 /* Linux with glibc:
@@ -114,24 +114,21 @@ int8 receive_until_Frame(int8 frame) {
 void bot_2_sim_init(void) {
 	low_init();
 
-	uint8_t addr = get_bot_address();
-	if (addr > 127) {
-		/* gespeicherte Adresse ist eine vom Sim Vergebene,
-		 * schalte auf Adressevergabemodus um */
-		addr = CMD_BROADCAST;
-		set_bot_address(addr);
-	}
-	int j;
-	for (j=0; j<5; j++) { 
-		command_write(CMD_WELCOME, SUB_WELCOME_SIM, NULL, NULL, 0);
-	}
-
-	if (addr == CMD_BROADCAST) {
-		// Fordere eine Adresse an
-		command_write(CMD_ID, SUB_ID_REQUEST, NULL, NULL, 0);
-	}
-
+	command_init();
 	flushSendBuffer();
+
+	receive_until_Frame(CMD_DONE);
+	command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime, NULL, 0);
+	flushSendBuffer();
+	#ifdef BOT_2_BOT_AVAILABLE
+		receive_until_Frame(CMD_DONE);
+		/* hello (bot-)world! */
+		if (get_bot_address() <= 127) {
+			command_write_to(BOT_CMD_WELCOME, SUB_CMD_NORM, CMD_BROADCAST, NULL, NULL, 0);
+		}
+		command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime, NULL, 0);
+		flushSendBuffer();
+	#endif	// BOT_2_BOT_AVAILABLE
 }
 
 #endif	// PC

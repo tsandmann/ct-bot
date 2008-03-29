@@ -130,9 +130,10 @@ typedef struct {
 #define CMD_LOG			'O'		/*!< Logausgaben */
 
 //Kommandos fuer die Verbindung zum c't-Sim
-#define CMD_WELCOME		'W'		/*!< Kommado zum Anmelden an c't-Sim */
-#define SUB_WELCOME_REAL	'R'		/*!< Subkommado zum Anmelden eines realen Bots an c't-Sim */
-#define SUB_WELCOME_SIM	'S'		/*!< Subkommado zum Anmelden eines simulierten Bots an c't-Sim */
+#define CMD_WELCOME		 'W'	/*!< Kommando zum Anmelden an c't-Sim */
+#define SUB_WELCOME_REAL 'R'	/*!< Subkommando zum Anmelden eines realen Bots an c't-Sim */
+#define SUB_WELCOME_SIM	 'S'	/*!< Subkommando zum Anmelden eines simulierten Bots an c't-Sim */
+#define SUB_WELCOME_BOTS 'B'	/*!< Subkommando zu bekanntmachen der eigenen ID bei anderen Bots */	
 
 //Kommandos fuer die Remote-Calls
 #define CMD_REMOTE_CALL			'r'		/*!< Kommado fuer Remote-Calls */
@@ -151,6 +152,11 @@ typedef struct {
 #define CMD_SIM_ADDR	0xFE
 	
 extern command_t received_command;		/*!< Puffer fuer Kommandos */
+
+/*!
+ * Initialisiert die (High-Level-)Kommunikation
+ */
+void command_init(void);
 
 /*!
  * Liest ein Kommando ein, ist blockierend!
