@@ -48,7 +48,7 @@ void i2c_init(uint8_t bitrate);
  * @param *pRx	Zeiger auf Puffer fuer zu lesende Daten
  * @param nRx	Anzahl der zu lesenden Bytes
  */
-void i2c_write_read(uint8_t sla, uint8_t * pTx, uint8_t nTx, uint8_t * pRx, uint8_t nRx);
+void i2c_write_read(uint8_t sla, void * pTx, uint8_t nTx, void * pRx, uint8_t nRx);
 
 /*!
  * Sendet ein Byte an einen I2C-Slave und liest anschliessend nRx Bytes
@@ -57,7 +57,7 @@ void i2c_write_read(uint8_t sla, uint8_t * pTx, uint8_t nTx, uint8_t * pRx, uint
  * @param *pRx		Zeiger auf Puffer fuer zu lesende Daten
  * @param nRx		Anzahl der zu lesenden Bytes
  */
-void i2c_read(uint8_t sla, uint8_t txData, uint8_t * pRx, uint8_t nRx);
+void i2c_read(uint8_t sla, uint8_t txData, void * pRx, uint8_t nRx);
 
 /*!
  * Sendet nTx Bytes an einen I2C-Slave
@@ -65,7 +65,7 @@ void i2c_read(uint8_t sla, uint8_t txData, uint8_t * pRx, uint8_t nRx);
  * @param *pTx	Zeiger auf Puffer fuer zu sendende Daten
  * @param nTx	Anzahl der zu sendenden Bytes	
  */
-static inline void i2c_write(uint8_t sla, uint8_t * pTx, uint8_t nTx) {
+static inline void i2c_write(uint8_t sla, void * pTx, uint8_t nTx) {
 	i2c_write_read(sla, pTx, nTx, NULL, 0);
 }
 

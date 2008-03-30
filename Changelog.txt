@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-03-30 Harald W. Leschner [hari@h9l.net]: SP03-Treiber Update 
+
 2008-03-28 Timo Sandmann [mail@timosandmann.de]: Redundanten Init-Code aus bot-2-pc.c und bot-2-sim.c in command_init() zusammengefasst,
 												 Bugfix fuer Welcome-Paket-Auswertung,
 												 DONE-Paket fuer reale Bots,

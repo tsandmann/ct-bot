@@ -145,7 +145,7 @@ void i2c_init(uint8_t bitrate) {
  * @param *pRx	Zeiger auf Puffer fuer zu lesende Daten
  * @param nRx	Anzahl der zu lesenden Bytes, [0; 255]
  */
-void i2c_write_read(uint8_t sla, uint8_t * pTx, uint8_t nTx, uint8_t * pRx, uint8_t nRx) {
+void i2c_write_read(uint8_t sla, void * pTx, uint8_t nTx, void * pRx, uint8_t nRx) {
 	/* Inits */
 	i2c_complete = 0;
 	i2c_error = TW_NO_INFO;
@@ -165,7 +165,7 @@ void i2c_write_read(uint8_t sla, uint8_t * pTx, uint8_t nTx, uint8_t * pRx, uint
  * @param *pRx		Zeiger auf Puffer fuer zu lesende Daten
  * @param nRx		Anzahl der zu lesenden Bytes
  */
-void i2c_read(uint8_t sla, uint8_t txData, uint8_t * pRx, uint8_t nRx) {
+void i2c_read(uint8_t sla, uint8_t txData, void * pRx, uint8_t nRx) {
 	static uint8_t data;
 	data = txData;
 	i2c_write_read(sla, &data, 1, pRx, nRx);

@@ -212,7 +212,7 @@ int main(int argc, char * argv[]) {
 			LOG_DEBUG("Hallo Welt!");	/*!< Doxygen moechte hier jede Zeilen kommentiert haben :/ */
 		#endif	
 		#ifdef SP03_AVAILABLE
-			sp03_speak_string(1, 4, 1, "Ready");
+			sp03_say("I am Robi %d", sensError); 
 		#endif		
 	#endif	// WELCOME_AVAILABLE
 
