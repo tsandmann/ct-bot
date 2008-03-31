@@ -163,6 +163,10 @@ void bot_behave_init(void) {
 		insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_delay_behaviour,INACTIVE));
 	#endif
 
+	#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+		insert_behaviour_to_list(&behaviour, new_behaviour(190, bot_put_stack_waypositions_behaviour, INACTIVE));
+	#endif
+		
 	#ifdef BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
 		// Verhalten, das andere Verhalten abbricht, sobald eine Bedingung erfuellt ist
 		insert_behaviour_to_list(&behaviour, new_behaviour(154, bot_cancel_behaviour_behaviour,INACTIVE));

@@ -218,7 +218,7 @@ int8_t command_evaluate(void);
  */
 void command_display(command_t * command);
 
-/*! Kommunikations-Adresse des Bots (@EEPROM) */
+/*! Kommunikations-Adresse des Bots (EEPROM) */
 extern uint8_t bot_address;
 
 /*!

@@ -63,7 +63,7 @@
  * 
  * Das Benutzerinterface funktioniert wie folgt:
  * 
- * #include "sp03.h"
+ * # include "sp03.h"
  * ...
  * //Mit Stimmenparameter
  * sp03_set_voice(2,3,1);

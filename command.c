@@ -61,7 +61,7 @@
 
 #define COMMAND_TIMEOUT 	10		/*!< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
 
-EEPROM uint8_t bot_address = CMD_BROADCAST;	/*!< Kommunikations-Adresse des Bots (@EEPROM) */
+EEPROM uint8_t bot_address = CMD_BROADCAST;	/*!< Kommunikations-Adresse des Bots (EEPROM) */
 
 #ifdef COMMAND_AVAILABLE
 

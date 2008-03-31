@@ -26,6 +26,8 @@
 #include "ct-Bot.h"
 #include "sensor.h"
 #include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 /*!
  * Berechnung einer Winkeldifferenz zwischen dem aktuellen Standpunkt und einem anderen Ort
@@ -48,4 +50,47 @@ float calc_angle_diff(float xDiff, float yDiff) {
 	if (toTurn < -180) toTurn += 360;
 
 	return toTurn;
+}
+
+/*!
+ * Berechnet die Differenz eines Winkels zur aktuellen
+ * Botausrichtung.
+ * @param angle		Winkel [Grad] zum Vergleich mit heading 
+ * @return			Winkeldifferenz [Grad] in Richtung der derzeitigen Botdrehung.
+ * 					-1, falls Bot geradeaus faehrt oder steht
+ */
+int16_t turned_angle(int16_t angle) {
+	int16_t diff = 0;
+	if ((int16_t)v_enc_left == (int16_t)v_enc_right) {
+		/* Drehrichtung nicht ermittelbar */
+		return -1;
+	}
+	if (v_enc_right > v_enc_left) {
+		/* Drehung im positiven Sinn */
+		diff = (int16_t)heading - angle;
+	} else {
+		/* Drehung im negativen Sinn */
+		diff = angle - (int16_t)heading;
+	}
+	if (diff < 0) {
+		/* Ueberlauf */
+		diff += 360;
+	}
+	return diff;
+}
+
+/*!
+ * Ermittlung des Quadrat-Abstandes zwischen 2 Koordinaten
+ * @param x1 x-Koordinate des ersten Punktes
+ * @param y1 y-Koordinate des ersten Punktes
+ * @param x2 Map-Koordinate des Zielpunktes
+ * @param y2 Map-Koordinate des Zielpunktes
+ * @return liefert Quadrat-Abstand zwischen den Map-Punkten 
+ */
+int16 get_dist(int16 x1, int16 y1, int16 x2, int16 y2) {
+	int16 xt = x2 - x1;
+	int16 yt = y2 - y1;
+
+	/* Abstandsermittlung nach dem guten alten Pythagoras ohne Ziehen der Wurzel */
+	return (xt * xt + yt * yt);
 }

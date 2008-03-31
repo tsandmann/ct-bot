@@ -75,4 +75,23 @@ static inline int16_t sign32(int32_t z) {
 	return (z & 0x80000000) ? -1 : 1;
 }
 
+/*!
+ * Berechnet die Differenz eines Winkels zur aktuellen
+ * Botausrichtung.
+ * @param angle		Winkel [Grad] zum Vergleich mit heading 
+ * @return			Winkeldifferenz [Grad] in Richtung der derzeitigen Botdrehung.
+ * 					-1, falls Bot geradeaus faehrt oder steht
+ */
+int16_t turned_angle(int16_t angle);
+
+/*!
+ * Ermittlung des Quadrat-Abstandes zwischen 2 Koordinaten
+ * @param x1 x-Koordinate des ersten Punktes
+ * @param y1 y-Koordinate des ersten Punktes
+ * @param x2 Map-Koordinate des Zielpunktes
+ * @param y2 Map-Koordinate des Zielpunktes
+ * @return liefert Quadrat-Abstand zwischen den Map-Punkten 
+ */
+int16 get_dist(int16 x1, int16 y1, int16 x2, int16 y2);
+
 #endif	/*MATH_UTILS_H_*/

@@ -60,6 +60,20 @@ void bot_push_actpos(Behaviour_t * caller);
 void bot_push_pos(int16_t pos_x, int16_t pos_y);
 
 /*!
+ * Verhalten um sich entlang des Fahrweges relevante Koordinaten auf dem Stack zu merken; Verhalten ist nach Aktivierung via Botenroutine
+ * ein Endlosverhalten und sammelt bis zur Deaktivierung die Wegepunkte; deaktiviert wird es via Notaus oder direkt mit Befehl zum Zurueckfahren und
+ * damit Start des Stack-Fahrverhaltens 
+ * @param *data	Der Verhaltensdatensatz
+ */
+void bot_put_stack_waypositions_behaviour(Behaviour_t * data);
+
+/*!
+ * Botenfunktion: Verhalten um sich entlang des Fahrweges relevante Koordinaten auf dem Stack zu merken
+ * @param *caller	Der Verhaltensdatensatz des Aufrufers
+ */
+void bot_put_stack_waypositions(Behaviour_t * caller);
+
+/*!
  * Display zum Setzen und Anfahren der Stackpunkte 
  */
 void drive_stack_display(void);

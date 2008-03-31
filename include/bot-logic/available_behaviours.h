@@ -79,6 +79,9 @@
 #endif
 
 #ifndef POS_STACK_AVAILABLE
+	#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+		#warning "DriveStack geht nur, wenn POS_STACK_AVAILABLE"
+	#endif
 	#undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 #endif
 
@@ -144,10 +147,16 @@
 #ifdef MCU
 #ifndef SPEED_CONTROL_AVAILABLE
 	// goto_pos geht nur, wenn wir uns auf die eingestellte Geschwindigkeit verlassen koennen
+	#ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
+		#warning "GotoPos geht nur, wenn SPEED_CONTROL_AVAILABLE"
+	#endif
 	#undef BEHAVIOUR_GOTO_POS_AVAILABLE
+	#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+		#warning "DriveStack geht nur, wenn SPEED_CONTROL_AVAILABLE"
+	#endif
 	#undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-#endif
-#endif
+#endif	// SPEED_CONTROL_AVAILABLE
+#endif	// MCU
 
 #ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
 	#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
