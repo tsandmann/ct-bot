@@ -233,7 +233,7 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		} else {
 			/* Noch in die gewuenschte Blickrichtung drehen */
 			int16_t to_turn = (int16_t)(dest_head - (int16_t)heading);
-			if (to_turn > 180) to_turn = 360 - to_turn;
+			if (to_turn > 180) to_turn = -360 + to_turn;
 			else if (to_turn < -180) to_turn += 360;
 			LOG_DEBUG("to_turn=%d", to_turn);
 			bot_turn(NULL, to_turn);

@@ -105,12 +105,12 @@ void set_received_bot_state(command_t * cmd);
  */
 void publish_bot_state(void * state);
 
-#ifdef PC
+#ifdef LOG_AVAILABLE
 /*!
  * Gibt die Liste der Bots inkl. Adresse und Status aus
  */
 void print_bot_list(void);
-#endif	// PC
+#endif	// LOG_AVAILABLE
 
 #endif	// BOT_2_BOT_AVAILABLE
 #endif	// BOT2BOT_H_

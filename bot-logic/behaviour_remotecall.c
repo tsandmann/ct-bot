@@ -47,10 +47,11 @@ static uint8 running_behaviour =REMOTE_CALL_IDLE;
 
 static uint8 function_id = 255;			/*!< ID der zu startenden Botenfunktion */
 static uint8 parameter_count = 0;		/*!< Anzahl der Paramter (ohne Zeiger auf Aufrufer) */
-static uint8 parameter_data[8] = {0};	/*!< Hier liegen die eigentlichen Parameter, derzeit brauchen wir maximal 8 Byte (2 floats, 4 (u)int16 oder 4 (u)int8 */
 #ifdef MCU
+	static uint8 parameter_data[8] = {0};	/*!< Hier liegen die eigentlichen Parameter, derzeit brauchen wir maximal 8 Byte (2 floats, 4 (u)int16 oder 4 (u)int8 */
 	static uint8 parameter_length[REMOTE_CALL_MAX_PARAM] = {0};	/*!< Hier speichern wir die Laenge der jeweiligen Parameter */
 #else
+	static uint8 parameter_data[REMOTE_CALL_MAX_PARAM * sizeof(remote_call_data_t)] = {0};	/*!< Hier liegen die eigentlichen Parameter */
 	static uint8* parameter_length = NULL;	/*!< Hier speichern wir die Laenge der jeweiligen Parameter */
 #endif
 	
@@ -67,6 +68,10 @@ static uint8 parameter_data[8] = {0};	/*!< Hier liegen die eigentlichen Paramete
 
 
 //#define DEBUG_REMOTE_CALLS		// Schalter um recht viel Debug-Code anzumachen
+	
+#ifndef LOG_AVAILABLE
+	#undef DEBUG_REMOTE_CALLS
+#endif
 
 #ifndef DEBUG_REMOTE_CALLS
 	#undef LOG_DEBUG
@@ -191,13 +196,17 @@ static uint8 getRemoteCall(char * call) {
  * @param dest	Zeiger auf das Ausgabearray (8 Byte gross)
  * @param count	Anzahl der Parameter
  * @param len	Zeiger auf ein Array, das die Anzahl der Bytes fuer die jeweiligen Parameter enthaelt
- * @param data	Zeiger auf die Daten (32 Bit, Laenge 8)
+ * @param data	Zeiger auf die Daten (3 Parameter, jeweils 32 Bit)
  * @author 		Timo Sandmann (mail@timosandmann.de) 
  * @date		12.01.2007
  */
-static void remotecall_convert_params(uint8_t * dest, uint8_t count, uint8_t * len, uint8_t * data) {
-	LOG_DEBUG("p_data=%x %x %x %x", data[0], data[1], data[2], data[3]);
-	LOG_DEBUG("%x %x %x %x", data[4], data[5], data[6], data[7]);
+static void remotecall_convert_params(uint8_t * dest, uint8_t count, uint8_t * len, void * data) {
+	#ifdef DEBUG_REMOTE_CALLS
+		uint8_t * ptr = data;
+	#endif
+	LOG_DEBUG("p_data=%x %x %x %x", ptr[0], ptr[1], ptr[2], ptr[3]);
+	LOG_DEBUG("%x %x %x %x", ptr[4], ptr[5], ptr[6], ptr[7]);
+	LOG_DEBUG("%x %x %x %x", ptr[8], ptr[9], ptr[10], ptr[11]);
 #ifdef MCU
 	dest += 8;	// ans Ende springen
 	uint8_t i;
@@ -346,10 +355,13 @@ void bot_remotecall(Behaviour_t *caller, char* func, remote_call_data_t* data) {
 	
 	LOG_DEBUG("func=%s param_count=%u Len= %u %u %u",func,parameter_count,parameter_length[0],parameter_length[1],parameter_length[2]);
 	
-	remotecall_convert_params(parameter_data, parameter_count, parameter_length, (uint8*)data);
+	remotecall_convert_params(parameter_data, parameter_count, parameter_length, data);
 
 	LOG_DEBUG("p_data=%x %x %x %x", parameter_data[0], parameter_data[1], parameter_data[2], parameter_data[3]);
 	LOG_DEBUG("%x %x %x %x", parameter_data[4], parameter_data[5], parameter_data[6], parameter_data[7]);
+	#ifdef PC
+		LOG_DEBUG("%x %x %x %x", parameter_data[8], parameter_data[9], parameter_data[10], parameter_data[11]);
+	#endif
 
 	running_behaviour=REMOTE_CALL_SCHEDULED;
 }
