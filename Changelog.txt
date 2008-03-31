@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-03-31 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer bot_gotoxy (funktioniert jetzt auch mit negativen Koordinaten)
+
 2008-03-31 Timo Sandmann [mail@timosandmann.de]: Makefile aktualisiert, Doxygen-Warnungen beseitigt und Warnings, falls wichtige Verhaltensabhaengigkeiten nicht erfuellt sind
 
 2008-03-31 Frank Menzel [Menzelfr@gmx.net]: Verhalten um sich entlang des Fahrweges relevante Koordinaten auf dem Stack zu merken
