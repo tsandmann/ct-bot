@@ -283,26 +283,15 @@ void bot_sens_isr(void) {
 	#endif
 		
 	/* LEDs updaten */
+	led_update();
 	#ifdef LED_AVAILABLE
-	#ifndef TEST_AVAILABLE
-		if (sensTrans != 0) LED_on(LED_GELB);
-		else LED_off(LED_GELB);
-		if (sensError != 0) LED_on(LED_ORANGE);
-		else LED_off(LED_ORANGE);
-
-		if (sensDistL < 500) LED_on(LED_LINKS);
-		else LED_off(LED_LINKS);
-		if (sensDistR < 500) LED_on(LED_RECHTS);
-		else LED_off(LED_RECHTS);
-
-		/* Sollen die LEDs mit den Rohdaten der Sensoren arbeiten, 
-		 * kommentiert man die folgenden Zeilen ein (und die Obigen aus) */
-		 
-		//if (voltL > 80) LED_on(LED_LINKS);
-		//else LED_off(LED_LINKS);
-		//if (voltR > 80) LED_on(LED_RECHTS);
-		//else LED_off(LED_RECHTS);
-	#endif	// TEST_AVAILABLE
+	/* Sollen die LEDs mit den Rohdaten der Sensoren arbeiten, 
+	 * kommentiert man die folgenden Zeilen ein */
+	 
+	//if (voltL > 80) LED_on(LED_LINKS);
+	//else LED_off(LED_LINKS);
+	//if (voltR > 80) LED_on(LED_RECHTS);
+	//else LED_off(LED_RECHTS);
 	#endif	// LED_AVAILABLE	
 }
 

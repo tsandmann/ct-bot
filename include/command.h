@@ -103,7 +103,6 @@ typedef struct {
 
 // Aktuatoren
 #define CMD_AKT_MOT	    'M'		/*!< Motorgeschwindigkeit */
-#define CMD_AKT_DOOR	'd'		/*!< Steuerung Klappe */
 #define CMD_AKT_SERVO	'S'		/*!< Steuerung Servo  */
 #define CMD_AKT_LED	    'l'		/*!< LEDs steuern */
 #define CMD_AKT_LCD     'c'     /*!< LCD Anzeige */

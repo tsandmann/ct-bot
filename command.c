@@ -391,11 +391,6 @@ int8_t command_evaluate(void) {
 						RC5_Last_Toggle = 0xffff ^ (RC5_Last_Toggle & RC5_TOGGLE);
 					break;
 			#endif
-			case CMD_AKT_LED:	// LED-Steuerung
-				#ifdef LED_AVAILABLE
-					LED_set(received_command.data_l & 255);
-				#endif
-				break;
 				
 			// Einige Kommandos ergeben nur fuer reale Bots Sinn
 			#ifdef MCU
@@ -504,7 +499,8 @@ int8_t command_evaluate(void) {
 				#endif
 				case CMD_SENS_ERROR:
 					sensError=(uint8_t)received_command.data_l;
-					sensor_update();	/* Error ist der letzte uebertragene Sensorwert, danach koennen wir uns um allgemeine updates kümmern*/
+					sensor_update();	/* Error ist der letzte uebertragene Sensorwert, danach koennen wir uns um allgemeine updates kuemmern*/
+					led_update();
 					break;
 				case CMD_DONE:
 					simultime=received_command.data_l;

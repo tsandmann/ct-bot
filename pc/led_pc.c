@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,26 +17,29 @@
  * 
  */
 
-/*! @file 	led_pc.c 
+/*! 
+ * @file 	led_pc.c 
  * @brief 	Routinen zur LED-Steuerung
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
-*/
+ */
 
 #include "ct-Bot.h"
 #include "bot-2-sim.h"
 #include "command.h"
+#include "log.h"
 
 #ifdef PC
 
 #include "led.h"
 
 #ifdef LED_AVAILABLE
-uint8 led=0;			/*!< Status der LEDs */
+uint8 led=0;	/*!< Status der LEDs */
+
 /*!
  * Initialisiert die LEDs
  */
-void LED_init(){
+void LED_init() {
 }
 
 /*! 
@@ -44,7 +47,7 @@ void LED_init(){
  * andere werden nicht beeinflusst
  * @param LED Bitmaske der anzuschaltenden LEDs
  */
-void LED_on(uint8 LED){
+void LED_on(uint8 LED) {
 	led |= LED;
 	LED_set(led);
 }
@@ -54,7 +57,7 @@ void LED_on(uint8 LED){
  * andere werden nicht beeinflusst
  * @param LED Bitmaske der anzuschaltenden LEDs
  */
-void LED_off(uint8 LED){
+void LED_off(uint8 LED) {
 	led &= ~LED;
 	LED_set(led);
 }
@@ -63,10 +66,10 @@ void LED_off(uint8 LED){
  * Zeigt eine 8-Bit-Variable mit den LEDs an
  * @param LED Wert, der gezeigt werden soll
  */
-void LED_set(uint8 LED){
+void LED_set(uint8 LED) {
 	int16 led=LED;
-	command_write(CMD_AKT_LED, SUB_CMD_NORM ,&led,&led,0);
+	command_write(CMD_AKT_LED, SUB_CMD_NORM, &led, &led, 0);
 }
 
-#endif
-#endif
+#endif	// LED_AVAILABLE
+#endif	// PC
