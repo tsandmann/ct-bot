@@ -144,6 +144,11 @@ void sensor_dist_lookup(int16_t *const p_sens, uint8_t *const p_toggle, const di
  */
 int16 is_obstacle_ahead(int16 distance);
 
+/*!
+ * Updatet die LEDs je nach Sensorwert
+ */
+void led_update(void);
+
 #ifdef DISPLAY_AVAILABLE
 /*!
  * @brief	Displayhandler fuer Sensoranzeige
@@ -156,15 +161,4 @@ void sensor_display(void);
 void odometric_display(void);
 #endif	// DISPLAY_AVAILABLE
 
-#ifdef TEST_AVAILABLE
-/*! 
- * Zeigt den internen Status der Sensoren mit den LEDs an 
- */
-void show_sensors_on_led(void);
-#else
-/*!
- * Updatet die LEDs je nach Sensorwert
- */
-void led_update(void);
-#endif	// TEST_AVAILABLE
 #endif	/*SENSOR_H_*/

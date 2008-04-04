@@ -34,7 +34,7 @@ extern void bot_sens_init(void);
 /*!
  * Alle Sensoren aktualisieren
  */
-extern void bot_sens_isr(void);
+extern void bot_sens(void);
 
 /*!
  * Kuemmert sich um die Radencoder
@@ -43,26 +43,25 @@ extern void bot_sens_isr(void);
  */
 extern void bot_encoder_isr(void);
 
-/*! Datenstruktur fuer Speedlog-Eintraege */
-typedef struct {
-	uint8 encRate;		/*!< Ist-Geschwindigkeit (halbiert) */
-	uint8 targetRate;	/*!< Soll-Geschwindigkeit (halbiert) */
-	int16 err;			/*!< Regelfehler */
-	int16 pwm;			/*!< aktueller PWM-Wert */
-	uint32 time;		/*!< Timestamp */
-} slog_t;
-
 #ifdef SPEED_CONTROL_AVAILABLE
 	extern uint16 encTimeL[8];	/*!< Timestamps linker Encoder */
 	extern uint16 encTimeR[8];	/*!< Timestamps rechter Encoder */
 	extern uint8 i_encTimeL;		/*!< Array-Index auf letzten Timestampeintrag links */
 	extern uint8 i_encTimeR;		/*!< Array-Index auf letzten Timestampeintrag rechts */
-#endif // SPEED_CONTROL_AVAILABLE
+#endif	// SPEED_CONTROL_AVAILABLE
 
 #ifdef SPEED_LOG_AVAILABLE
+	/*! Datenstruktur fuer Speedlog-Eintraege */
+	typedef struct {
+		uint8 encRate;		/*!< Ist-Geschwindigkeit (halbiert) */
+		uint8 targetRate;	/*!< Soll-Geschwindigkeit (halbiert) */
+		int16 err;			/*!< Regelfehler */
+		int16 pwm;			/*!< aktueller PWM-Wert */
+		uint32 time;		/*!< Timestamp */
+	} slog_t;
 	extern volatile slog_t slog_data[2][25];	/*!< Speed-Log Daten */
 	extern volatile uint8 slog_i[2];			/*!< Array-Index */
 	extern uint32 slog_sector;					/*!< Sektor auf der MMC fuer die Daten */
 	extern volatile uint8 slog_count[2];		/*!< Anzahl Loggings seit letztem Rueckschreiben */
-#endif // SPEED_LOG_AVAILABLE
-#endif
+#endif	// SPEED_LOG_AVAILABLE
+#endif	// sens_low_H_

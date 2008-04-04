@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-04-04 Timo Sandmann [mail@timosandmann.de]: LED-Update: Bugfix und Vereinheitlichung von TEST_AVAILABLE und normal, Sensor-Code etwas aufgeraeumt
+
 2008-04-01 Timo Sandmann [mail@timosandmann.de]: LED-Update in Funktion ausgelagert, damit auch bei simulierten Bots die LEDs benutzt werden
 
 2008-03-31 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer bot_gotoxy (funktioniert jetzt auch mit negativen Koordinaten)

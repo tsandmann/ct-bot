@@ -36,6 +36,7 @@
 #include "log.h"
 #include "srf10.h"
 #include "led.h"
+#include "command.h"
 
 #define HEADING_START		0			// Blickrichtung, mit der der Bot sich initialisiert
 
@@ -475,101 +476,12 @@ int16 is_obstacle_ahead(int16 distance) {
 	return sensDistL - sensDistR;
 }
 
-#ifdef SENSOR_DISPLAY_AVAILABLE
-	/*!
-	 * @brief	Displayhandler fuer Sensoranzeige
-	 */
-	void sensor_display(void){
-		display_cursor(1,1);
-		display_printf("P=%03X %03X D=%03d %03d ",sensLDRL,sensLDRR,sensDistL,sensDistR);
-		
-		display_cursor(2,1);
-		display_printf("B=%03X %03X L=%03X %03X ",sensBorderL,sensBorderR,sensLineL,sensLineR);
-		
-		display_cursor(3,1);
-		display_printf("R=%2d %2d F=%d K=%d T=%d ",sensEncL%10,sensEncR%10,sensError,sensDoor,sensTrans);
-		
-		display_cursor(4,1);
-		#ifdef RC5_AVAILABLE
-			static uint16 RC5_old;
-			if (RC5_Code != 0) RC5_old = RC5_Code;
-			#ifdef MAUS_AVAILABLE
-				display_printf("I=%04X M=%05d %05d",RC5_old,sensMouseX,sensMouseY);
-			#else
-				display_printf("I=%04X",RC5_old);
-			#endif				
-		#else
-			#ifdef MAUS_AVAILABLE
-				display_printf("M=%05d %05d",sensMouseX,sensMouseY);
-			#endif
-		#endif	
-	}
-#endif	// SENSOR_DISPLAY_AVAILABLE
-
-#ifdef DISPLAY_ODOMETRIC_INFO
-	#include "command.h"
-	
-	/*!
-	 * @brief	Displayhandler fuer Odometrieanzeige
-	 */
-	void odometric_display(void){
-		/* Zeige Positions- und Geschwindigkeitsdaten */
-		display_cursor(1,1);
-		display_printf("heading: %3d.%u  ",(int16)heading, (int16)((heading-(int16)heading)*10));
-		display_cursor(2,1);
-		display_printf("x: %3d  y: %3d  ",(int16)x_pos,(int16)y_pos);
-		display_cursor(3,1);
-		display_printf("v_l: %3d v_r: %3d  ",(int16)v_left,(int16)v_right);						
-		#ifdef MEASURE_MOUSE_AVAILABLE
-			display_cursor(4,1);
-			display_printf("squal: %3d v_c: %3d",maus_get_squal(),(int16)v_mou_center);
-		#else
-			display_cursor(4,1);
-			display_printf("bot_addr=0x%x", get_bot_address());
-		#endif
-	}
-#endif	// DISPLAY_ODOMETRIC_INFO
-
-#ifdef TEST_AVAILABLE
-/*! 
- * Zeigt den internen Status der Sensoren mit den LEDs an 
- */
-void show_sensors_on_led(void) {
-	static volatile uint8_t led_status = 0x00;
-	led_t * status = (led_t *)&led_status;
-	#ifdef TEST_AVAILABLE_ANALOG
-		(*status).rechts	= (sensDistR >> 8) & 0x01;
-		(*status).links		= (sensDistL >> 8) & 0x01;
-		(*status).rot		= (sensLineL >> 9) & 0x01;
-		(*status).orange	= (sensLineR >> 9) & 0x01;
-		(*status).gelb		= (sensLDRL >> 8)  & 0x01;
-		(*status).gruen		= (sensLDRR >> 8)  & 0x01;
-		(*status).tuerkis	= (sensBorderL >> 9) & 0x01;
-		(*status).weiss		= (sensBorderR >> 9) & 0x01;
-	#endif	// TEST_AVAILABLE_ANALOG
-	#ifdef TEST_AVAILABLE_DIGITAL
-		(*status).rechts	= sensEncR  & 0x01;
-		(*status).links		= sensEncL  & 0x01;
-		(*status).rot		= sensTrans & 0x01;
-		(*status).orange	= sensError & 0x01;
-		(*status).gelb		= sensDoor  & 0x01;
-		#ifdef MAUS_AVAILABLE
-			(*status).gruen		= (sensMouseDX >> 1) & 0x01;
-			(*status).tuerkis	= (sensMouseDY >> 1) & 0x01;
-		#endif
-		#ifdef RC5_AVAILABLE
-			(*status).weiss		= RC5_Code & 0x01;
-		#endif
-	#endif	// TEST_AVAILABLE_DIGITAL
-			
-	LED_set(led_status);
-}
-#else
 /*!
  * Updatet die LEDs je nach Sensorwert
  */
 void led_update(void) {
-	#ifdef LED_AVAILABLE
+#ifdef LED_AVAILABLE
+	#ifndef TEST_AVAILABLE
 		if (sensTrans != 0) LED_on(LED_GELB);
 		else LED_off(LED_GELB);
 		if (sensError != 0) LED_on(LED_ORANGE);
@@ -579,6 +491,88 @@ void led_update(void) {
 		else LED_off(LED_LINKS);
 		if (sensDistR < 500) LED_on(LED_RECHTS);
 		else LED_off(LED_RECHTS);
-	#endif	// LED_AVAILABLE
+	#else	// TEST_AVAILABLE
+		static volatile uint8_t led_status = 0x00;
+		led_t * status = (led_t *)&led_status;
+		#ifdef TEST_AVAILABLE_ANALOG
+			(*status).rechts	= (sensDistR >> 8) & 0x01;
+			(*status).links		= (sensDistL >> 8) & 0x01;
+			(*status).rot		= (sensLineL >> 9) & 0x01;
+			(*status).orange	= (sensLineR >> 9) & 0x01;
+			(*status).gelb		= (sensLDRL >> 8)  & 0x01;
+			(*status).gruen		= (sensLDRR >> 8)  & 0x01;
+			(*status).tuerkis	= (sensBorderL >> 9) & 0x01;
+			(*status).weiss		= (sensBorderR >> 9) & 0x01;
+		#endif	// TEST_AVAILABLE_ANALOG
+		#ifdef TEST_AVAILABLE_DIGITAL
+			(*status).rechts	= sensEncR  & 0x01;
+			(*status).links		= sensEncL  & 0x01;
+			(*status).rot		= sensTrans & 0x01;
+			(*status).orange	= sensError & 0x01;
+			(*status).gelb		= sensDoor  & 0x01;
+			#ifdef MAUS_AVAILABLE
+				(*status).gruen		= (sensMouseDX >> 1) & 0x01;
+				(*status).tuerkis	= (sensMouseDY >> 1) & 0x01;
+			#endif
+			#ifdef RC5_AVAILABLE
+				(*status).weiss		= RC5_Code & 0x01;
+			#endif
+		#endif	// TEST_AVAILABLE_DIGITAL
+
+		LED_set(led_status);		
+	#endif	// !TEST_AVAILABLE
+#endif	// LED_AVAILABLE
 }
-#endif	// TEST_AVAILABLE
+
+#ifdef SENSOR_DISPLAY_AVAILABLE
+/*!
+ * @brief	Displayhandler fuer Sensoranzeige
+ */
+void sensor_display(void) {
+	display_cursor(1,1);
+	display_printf("P=%03X %03X D=%03d %03d ",sensLDRL,sensLDRR,sensDistL,sensDistR);
+	
+	display_cursor(2,1);
+	display_printf("B=%03X %03X L=%03X %03X ",sensBorderL,sensBorderR,sensLineL,sensLineR);
+	
+	display_cursor(3,1);
+	display_printf("R=%2d %2d F=%d K=%d T=%d ",sensEncL%10,sensEncR%10,sensError,sensDoor,sensTrans);
+	
+	display_cursor(4,1);
+	#ifdef RC5_AVAILABLE
+		static uint16 RC5_old;
+		if (RC5_Code != 0) RC5_old = RC5_Code;
+		#ifdef MAUS_AVAILABLE
+			display_printf("I=%04X M=%05d %05d",RC5_old,sensMouseX,sensMouseY);
+		#else
+			display_printf("I=%04X",RC5_old);
+		#endif				
+	#else
+		#ifdef MAUS_AVAILABLE
+			display_printf("M=%05d %05d",sensMouseX,sensMouseY);
+		#endif
+	#endif	
+}
+#endif	// SENSOR_DISPLAY_AVAILABLE
+
+#ifdef DISPLAY_ODOMETRIC_INFO	
+/*!
+ * @brief	Displayhandler fuer Odometrieanzeige
+ */
+void odometric_display(void) {
+	/* Zeige Positions- und Geschwindigkeitsdaten */
+	display_cursor(1,1);
+	display_printf("heading: %3d.%u  ",(int16)heading, (int16)((heading-(int16)heading)*10));
+	display_cursor(2,1);
+	display_printf("x: %3d  y: %3d  ",(int16)x_pos,(int16)y_pos);
+	display_cursor(3,1);
+	display_printf("v_l: %3d v_r: %3d  ",(int16)v_left,(int16)v_right);						
+	#ifdef MEASURE_MOUSE_AVAILABLE
+		display_cursor(4,1);
+		display_printf("squal: %3d v_c: %3d",maus_get_squal(),(int16)v_mou_center);
+	#else
+		display_cursor(4,1);
+		display_printf("bot_addr=0x%x", get_bot_address());
+	#endif	// MEASURE_MOUSE_AVAILABLE
+}
+#endif	// DISPLAY_ODOMETRIC_INFO

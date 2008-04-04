@@ -33,6 +33,7 @@
 	#include "bot-2-pc.h"
 	#include <avr/eeprom.h>
 	#include "i2c.h"
+	#include "twi.h"
 	#include "sp03.h"
 #endif
 	
@@ -43,10 +44,6 @@
 	#include <stdio.h>
 	#include <time.h>
 	#include <sys/time.h>
-#endif
-
-#ifdef TWI_AVAILABLE
-	#include "twi.h"
 #endif
 
 #include "global.h"
@@ -198,18 +195,18 @@ int main(int argc, char * argv[]) {
 #endif	// PC
 	
 	#ifdef  TEST_AVAILABLE_MOTOR
-		uint16 calls=0;	/*!< Im Testfall zaehle die Durchlaeufe */
+		uint16 calls=0;	// Im Testfall zaehle die Durchlaeufe
 	#endif
 
 	/* Alles initialisieren */
 	init();
 
 	#ifdef WELCOME_AVAILABLE
-		display_cursor(1,1);			/*!< Home */
-		display_printf("c't-Roboter");	/*!< Ausgabe */
-		LED_set(0x00);					/*!< LEDs setzen */
+		display_cursor(1,1);
+		display_printf("c't-Roboter");
+		LED_set(0x00);
 		#ifdef LOG_AVAILABLE
-			LOG_DEBUG("Hallo Welt!");	/*!< Doxygen moechte hier jede Zeilen kommentiert haben :/ */
+			LOG_DEBUG("Hallo Welt!");
 		#endif	
 		#ifdef SP03_AVAILABLE
 			sp03_say("I am Robi %d", sensError); 
@@ -229,10 +226,7 @@ int main(int argc, char * argv[]) {
 		#endif	// PC
 			
 		#ifdef MCU
-			bot_sens_isr();
-		#endif
-		#ifdef TEST_AVAILABLE
-			show_sensors_on_led();
+			bot_sens();	// Sensordaten aktualisieren / auswerten
 		#endif
 	
 		/* Testprogramm, das den Bot erst links-, dann rechtsrum dreht */

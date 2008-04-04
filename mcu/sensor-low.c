@@ -132,16 +132,8 @@ void bot_sens_init(void){
 
 /*!
  * Alle Sensoren aktualisieren
- * Derzeit pollt diese Routine alle Sensoren. Insbesondere bei den 
- * analogen dauert das eine Weile. Daher kann man hier einiges
- * an Performance gewinnen, wenn man die Routine aufspaltet und
- * zumindest die analogen Sensoren per Interrupt bearbeitet,
- * denn im Moment blockiert adc_read so lange, bis ein Sensorwert ausgelesen ist.
- * Die digitalen Sensoren liefern ihre Werte dagegen unmittelbar
- * Aber Achtung es lohnt auch nicht, immer alles so schnell als moeglich
- * zu aktualiseren, der Bot braucht auch Zeit zum nachdenken ueber Verhalten
  */
-void bot_sens_isr(void) {
+void bot_sens(void) {
 	ENA_on(ENA_KANTLED|ENA_MAUS|ENA_SCHRANKE|ENA_KLAPPLED);	// Die Distanzsensoren sind im Normalfall an, da sie 50 ms zum booten brauchen	
 
 #ifdef CMPS03_AVAILABLE
@@ -272,14 +264,10 @@ void bot_sens_isr(void) {
 #endif
 	
 	/* alle anderen analogen Sensoren */	
-	while (adc_get_active_channel() != 255) {}	// restliche Zeit mit busy-waiting verbrauchen
+	while (adc_get_active_channel() != 255) {}	// restliche Zeit verbrauchen
 	// in den Testmodi bleibt imemr alles an.
-	#ifndef TEST_AVAILABLE_ANALOG 
-	  #ifndef TEST_AVAILABLE_DIGITAL 
-	     #ifndef TEST_AVAILABLE_MOTOR
-	  		ENA_off(ENA_KANTLED|ENA_MAUS|ENA_SCHRANKE|ENA_KLAPPLED);	// Kanten (ENA_KANTLED), Liniensensoren (ENA_MAUS), Transportfach-LED und Klappensensor aus
-	  	  #endif
-	  #endif
+	#ifndef TEST_AVAILABLE
+  		ENA_off(ENA_KANTLED|ENA_MAUS|ENA_SCHRANKE|ENA_KLAPPLED);	// Kanten (ENA_KANTLED), Liniensensoren (ENA_MAUS), Transportfach-LED und Klappensensor aus
 	#endif
 		
 	/* LEDs updaten */
@@ -300,12 +288,12 @@ void bot_sens_isr(void) {
  * Das muss schneller gehen als die anderen Sensoren,
  * daher Update per Timer-Interrupt und nicht per Polling
  */
-void bot_encoder_isr(void){
+void bot_encoder_isr(void) {
 	static uint8 enc_l=0;		/*!< Puffer fuer die letzten Encoder-Staende */
 	static uint8 enc_r=0;		/*!< Puffer fuer die letzten Encoder-Staende */
 	static uint8 enc_l_cnt=0;	/*!< Entprell-Counter fuer L-Encoder */
 	static uint8 enc_r_cnt=0;	/*!< Entprell-Counter fuer R-Encoder */
-	register uint8 enc_tmp;					// Pegel der Encoderpins im Register zwischenspeichern
+	register uint8 enc_tmp;		// Pegel der Encoderpins im Register zwischenspeichern
 	
 	#ifdef SPEED_CONTROL_AVAILABLE 
 		register uint16 ticks = TIMER_GET_TICKCOUNT_16;	// aktuelle Systemzeit zwischenspeichern
@@ -313,13 +301,13 @@ void bot_encoder_isr(void){
 	#endif	// SPEED_CONTROL_AVAILABLE 
 	/* Rad-Encoder links */
 	enc_tmp = ENC_L;
-	if (enc_tmp != enc_l){	// uns interesieren nur Veraenderungen
+	if (enc_tmp != enc_l) {	// uns interesieren nur Veraenderungen
 		enc_l=enc_tmp;		// neuen Wert sichern
 		enc_l_cnt=0;		// Counter zuruecksetzen
 	} else {				// zaehlen, wie lange Pegel bleibt
 		if (enc_l_cnt < ENC_ENTPRELL) // Nur bis zur Entprell-Marke
 			enc_l_cnt++;				
-		else if (enc_l_cnt == ENC_ENTPRELL){ 	// wenn lange genug konstant
+		else if (enc_l_cnt == ENC_ENTPRELL) { 	// wenn lange genug konstant
 			enc_l_cnt++;	// diese Flanke nur einmal auswerten
 			if (direction.left == DIRECTION_FORWARD)	// Drehrichtung beachten
 				sensEncL++;	//vorwaerts
@@ -341,13 +329,13 @@ void bot_encoder_isr(void){
 	
 	/* Rad-Encoder rechts */
 	enc_tmp = ENC_R;
-	if (enc_tmp != enc_r){	// uns interesieren nur Veraenderungen
+	if (enc_tmp != enc_r) {	// uns interesieren nur Veraenderungen
 		enc_r=enc_tmp;		// neuen Wert sichern
 		enc_r_cnt=0;		// Counter zuruecksetzen
 	} else { 				// zaehlen, wie lange Pegel bleibt
 		if (enc_r_cnt < ENC_ENTPRELL)	// nur bis zur Entprell-Marke
 			enc_r_cnt++;	
-		else if (enc_r_cnt == ENC_ENTPRELL){ 	// wenn lange genug konstant
+		else if (enc_r_cnt == ENC_ENTPRELL) { 	// wenn lange genug konstant
 			enc_r_cnt++;	// diese Flanke nur einmal auswerten
 			if (direction.right == DIRECTION_FORWARD)	// Drehrichtung beachten
 				sensEncR++;	//vorwaerts
