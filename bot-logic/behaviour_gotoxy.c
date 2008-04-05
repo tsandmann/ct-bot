@@ -26,6 +26,7 @@
 
 #include "bot-logic/bot-logik.h"
 #include <math.h>
+#include <stdlib.h>
 #include "math_utils.h"
 #include "log.h"
 
@@ -66,7 +67,7 @@ void bot_gotoxy_behaviour(Behaviour_t *data){
 
 		case GOTO_LOOP:
 			/* Position erreicht? */
-			if ((xDiff)<10 || (yDiff)<10) {
+			if (abs(xDiff)<10 || abs(yDiff)<10) {
 				gotoState=CORRECT_HEAD;
 				bot_turn(data,calc_angle_diff(xDiff,yDiff));
 				break;
@@ -77,7 +78,7 @@ void bot_gotoxy_behaviour(Behaviour_t *data){
 
 		case CORRECT_HEAD:
 			/* Position erreicht? */
-			if ((xDiff)<3 && (yDiff)<3) {
+			if (abs(xDiff)<3 && abs(yDiff)<3) {
 				gotoState=REACHED_POS;
 				speedWishLeft=BOT_SPEED_STOP;
 				speedWishRight=BOT_SPEED_STOP;

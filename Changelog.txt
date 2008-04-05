@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-04-05 Timo Sandmann [mail@timosandmann.de]: Bugfixes fuer goto_pos, gotoxy und Remote-Calls aus devel-Zweig uebernommen
+
 2008-02-28 Frank Menzel [Menzelfr@gmx.net]: RC5_CODE_DOT auf Promo 8 auf AV-Taste sowie Bug im verhalten Drive_Stack korrigiert
 
 2008-02-25 Timo Sandmann [mail@timosandmann.de]: MMC-Zugriff beschleunigt (RAM-Zugriff in die Warteschleife verschoben)
