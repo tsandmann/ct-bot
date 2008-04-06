@@ -37,6 +37,7 @@
 #include <stdlib.h>
 
 static uint8_t drivestack_state = 0;	/*!< Status des drive_stack-Verhaltens */
+static uint8_t put_stack_active = 0;	/*!< merkt sich, ob put_stack_waypos aktiv war */
 
 /* hier die vom Stack geholten oder zu sichernden xy-Koordinaten; werden im Display angezeigt */
 static int16_t posx = 0;
@@ -60,6 +61,10 @@ void bot_drive_stack_behaviour(Behaviour_t * data) {
 		pos_stack_clear(); // sicherheitshalber bereinigen und auf Null
 //		deactivateBehaviour(bot_goto_pos_behaviour); //komischerweise fuhr bot hier weiter, daher deaktivieren
 		return_from_behaviour(data);
+		if (put_stack_active) {
+			/* put_stack_waypos wieder an */
+			bot_put_stack_waypositions(NULL);
+		}
 		break;
 	}
 }
@@ -71,7 +76,13 @@ void bot_drive_stack_behaviour(Behaviour_t * data) {
 void bot_drive_stack(Behaviour_t * caller) {
 	switch_to_behaviour(caller, bot_drive_stack_behaviour, OVERRIDE);
 	drivestack_state = 0;
-	deactivateBehaviour(bot_put_stack_waypositions_behaviour);
+	if (behaviour_is_activated(bot_put_stack_waypositions_behaviour)) {
+		/* falls put_stack_waypos an ist, temporaer deaktivieren */
+		deactivateBehaviour(bot_put_stack_waypositions_behaviour);
+		put_stack_active = 1;
+	} else {
+		put_stack_active = 0;
+	}
 }
 
 /*!

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-04-04 Timo Sandmann [mail@timosandmann.de]: bot_put_stack_waypositions() / bot_drive_stack() in bot_follow_object() integriert
+
 2008-04-04 Timo Sandmann [mail@timosandmann.de]: LED-Update: Bugfix und Vereinheitlichung von TEST_AVAILABLE und normal, Sensor-Code etwas aufgeraeumt
 
 2008-04-01 Timo Sandmann [mail@timosandmann.de]: LED-Update in Funktion ausgelagert, damit auch bei simulierten Bots die LEDs benutzt werden

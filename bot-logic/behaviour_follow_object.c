@@ -49,11 +49,16 @@
 #ifdef BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
 #include <stdlib.h>
 #include "sensor_correction.h"
+#include "timer.h"
+#include "log.h"
 
 /* globale Variablen */
 static int16_t speedLeft	= 0;	/*!< Geschwindigkeitsvorgabe links */
 static int16_t speedRight	= 0;	/*!< Geschwindigkeitsvorgabe rechts */
 static uint8_t state 		= 0;	/*!< aktueller Status {warten auf Messwerte,Geschw. anpassen,Stopp} */
+#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+static uint32_t lastMove	= 0;	/*!< letzter Fahrt-Zeitpunkt */
+#endif
 
 /* Konfig-Parameter */
 static const uint8_t FOLLOW_DISTANCE	= 200;	/*!< optimale Distanz zum anderen Objekt [mm] */
@@ -92,6 +97,9 @@ static void update_speed(int16_t * pSensDist, int16_t * pSpeed) {
  */
 void bot_follow_object_behaviour(Behaviour_t * data) {
 	static uint8_t distToggle = 0;
+#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+	static uint8_t movedState = 0;
+#endif
 	switch (state) {
 	case 0:
 		/* auf neue Messwerte der Distanzsensoren warten */
@@ -108,9 +116,23 @@ void bot_follow_object_behaviour(Behaviour_t * data) {
 		
 		/* ganz allein :( -> anhalten */
 		if (sensDistL == SENS_IR_INFINITE && sensDistR == SENS_IR_INFINITE) {
-			//TODO:	Such-Algo hier
+#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+			/* zurueck zum Startpunkt mit bot_drive_stack(), falls 
+			 * mindestens 8 Sekunden kein Objekt in Sichtweite */
+			if (movedState == 0) {
+				lastMove = TIMER_GET_TICKCOUNT_32;
+				movedState = 1;
+			} else {
+				if (timer_ms_passed(&lastMove, MS_TO_TICKS(8000UL))) {
+					bot_drive_stack(data);
+					movedState = 0;
+				}
+			}
+#endif	// BEHAVIOUR_DRIVE_STACK_AVAILABLE
+
 			speedLeft	= BOT_SPEED_STOP;
 			speedRight	= BOT_SPEED_STOP;
+			break;
 		}
 		state = 0;
 		break;
@@ -138,6 +160,9 @@ void bot_follow_object(Behaviour_t * caller) {
 	switch_to_behaviour(caller, bot_follow_object_behaviour, OVERRIDE);
 	
 	/* Inits */
+#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+	bot_put_stack_waypositions(NULL);
+#endif
 	state		= 0;
 	speedLeft	= BOT_SPEED_STOP;
 	speedRight	= BOT_SPEED_STOP;
