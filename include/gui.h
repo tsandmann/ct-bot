@@ -51,6 +51,19 @@ void gui_display(int8 screen);
  */
 void gui_init(void);
 
+#ifdef KEYPAD_AVAILABLE
+/*!
+ * Startet eine neue Keypad-Eingabe. Abgeschlossen wird sie mit der
+ * Taste "Play", abgebrochen mit "Stop".
+ * Nach  Abschluss wird die uebergebene Callback-Funktion aufgerufen
+ * mit dem Eingabe-String als Parameter.
+ * @param *callback	Zeiger auf eine Funktion, die die Eingabe bekommt
+ * @param row		Zeile der Cursorposition fuer die Anzeige der Eingabe
+ * @param col		Spalte der Cursorposition fuer die Anzeige der Eingabe 
+ */
+void gui_keypad_request(void (* callback)(char * result), uint8_t row, uint8_t col);
+#endif	// KEYPAD_AVAILABLE
+
 #ifdef MISC_DISPLAY_AVAILABLE
 	/*! 
 	 * @brief	Zeigt ein paar Infos an, die man nicht naeher zuordnen kann

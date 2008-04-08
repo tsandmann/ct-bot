@@ -36,7 +36,6 @@
 #include "log.h"
 #include "srf10.h"
 #include "led.h"
-#include "command.h"
 
 #define HEADING_START		0			// Blickrichtung, mit der der Bot sich initialisiert
 
@@ -555,7 +554,7 @@ void sensor_display(void) {
 }
 #endif	// SENSOR_DISPLAY_AVAILABLE
 
-#ifdef DISPLAY_ODOMETRIC_INFO	
+#ifdef DISPLAY_ODOMETRIC_INFO
 /*!
  * @brief	Displayhandler fuer Odometrieanzeige
  */
@@ -570,9 +569,6 @@ void odometric_display(void) {
 	#ifdef MEASURE_MOUSE_AVAILABLE
 		display_cursor(4,1);
 		display_printf("squal: %3d v_c: %3d",maus_get_squal(),(int16)v_mou_center);
-	#else
-		display_cursor(4,1);
-		display_printf("bot_addr=0x%x", get_bot_address());
 	#endif	// MEASURE_MOUSE_AVAILABLE
 }
 #endif	// DISPLAY_ODOMETRIC_INFO

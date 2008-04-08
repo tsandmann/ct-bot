@@ -60,28 +60,27 @@ void display_cursor (uint8 row, uint8 column);
 	 * @brief			Schreibt einen String auf das Display.
 	 * @param format 	Format, wie beim printf
 	 * @param ... 		Variable Argumentenliste, wie beim printf
+	 * @return			Anzahl der geschriebenen Zeichen
 	 */
-	void display_printf(char *format, ...);
+	uint8_t display_printf(char *format, ...);
 #else
 	/*!
 	 * @brief			Schreibt einen String auf das Display, der im Flash gespeichert ist
 	 * @param format 	Format, wie beim printf
 	 * @param ... 		Variable Argumentenliste, wie beim printf
+	 * @return			Anzahl der geschriebenen Zeichen
 	 * Ganz genauso wie das "alte" display_printf(...) zu benutzen, das Makro 
 	 * display_printf(format, args...) erledigt alles automatisch, damit der String
 	 * im Flash verbleibt und erst zur Laufzeit temporaer (jeweils nur eine Zeile) geladen wird.
 	 */
-	void display_flash_printf(const char* format, ...);
+	uint8_t display_flash_printf(const char* format, ...);
 	
 	/*!
 	 * @brief			Schreibt einen String auf das Display, der String verbleibt im Flash
 	 * @param format	Format, wie beim printf
 	 * @param args 		Variable Argumentenliste, wie beim printf
 	 */
-	#define display_printf(format, args...) {		\
-		static const char data[] PROGMEM = format;	\
-		display_flash_printf(data, ## args);		\
-	}
+	#define display_printf(format, args...)	display_flash_printf(PSTR(format), ## args)
 #endif	// PC
 
 #endif	// display_H_

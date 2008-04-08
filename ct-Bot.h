@@ -41,6 +41,7 @@
 
 #define IR_AVAILABLE		/*!< Infrared Remote Control */
 #define RC5_AVAILABLE		/*!< Key-Mapping for IR-RC	 */
+//#define KEYPAD_AVAILABLE	/*!< Keypad-Eingabe vorhanden? */
 
 #define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunizieren? */
 //#define BOT_2_BOT_AVAILABLE	/*!< Sollen Bots untereinander kommunizieren? */

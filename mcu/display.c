@@ -188,7 +188,7 @@ void display_init(void) {
 	DISPLAY_PORT= DPC;
 	delay(5);		
 	
-	display_cmd(0x0f);  		//Display On, Cursor On, Cursor Blink
+	display_cmd(0x0f);  		// Display On, Cursor On, Cursor Blink
 	
 	display_cmd(DISPLAY_CLEAR); // Display loeschen, Cursor Home
 }
@@ -197,33 +197,35 @@ void display_init(void) {
  * @brief			Schreibt einen String auf das Display, der im Flash gespeichert ist
  * @param format 	Format, wie beim printf
  * @param ... 		Variable Argumentenliste, wie beim printf
+ * @return			Anzahl der geschriebenen Zeichen
  * Ganz genauso wie das "alte" display_printf(...) zu benutzen, das Makro 
  * define display_printf(format, args...) erledigt alles automatisch, damit der String
  * im Flash verbleibt und erst zur Laufzeit temporaer (jeweils nur eine Zeile) geladen wird.
  */
-void display_flash_printf(const char* format, ...){
+uint8_t display_flash_printf(const char* format, ...) {
 	char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausgaben */
-	uint8 run = 0;
 	va_list	args;
 	
 	/* Sicher gehen, dass der zur Verfuegung stehende Puffer nicht ueberlaeuft */
 	va_start(args, format);
-	vsnprintf_P(display_buf, DISPLAY_BUFFER_SIZE, format, args);	
+	uint8_t len = vsnprintf_P(display_buf, DISPLAY_BUFFER_SIZE, format, args);	
 	va_end(args);
 	
 	/* Ausgeben bis Puffer leer ist */
-	while(display_buf[run] != '\0') {
-		display_data(display_buf[run]);
-		run++;
+	char * ptr = display_buf;
+	uint8_t i;
+	for (i=len; i>0; i--) {
+		display_data(*ptr++);
 	}
-	
+
 	#ifdef DISPLAY_REMOTE_AVAILABLE
 		int16 c = remote_column;
 		int16 r = remote_row;
 		command_write(CMD_AKT_LCD, SUB_LCD_CURSOR,&c,&r,0);
 		command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, NULL, NULL, display_buf);
-		remote_column += run;
-	#endif	
+		remote_column += len;
+	#endif
+	return len;
 }
 
 #endif	// DISPLAY_AVAILABLE
