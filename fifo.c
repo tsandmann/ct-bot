@@ -27,7 +27,6 @@
 
 #include "fifo.h"
 #include "log.h"
-#include <string.h>
 
 /*!
  * @brief			Initialisiert die FIFO, setzt Lese- und Schreibzeiger, etc. 
@@ -57,12 +56,10 @@ void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
 	uint8_t write2end = f->write2end;
 	uint8_t n = length > write2end ? write2end : length;
 	uint8_t i,j;
-	for (j=0; j<2; j++){
+	for (j=0; j<2; j++) {
 		for (i=0; i<n; i++) {
 			*(pwrite++) = *(src++);
 		}
-//		memcpy(pwrite, data, n);
-//		pwrite += n;
 
 		write2end -= n;
 		if (write2end == 0) {
@@ -107,9 +104,9 @@ uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length) {
 #ifdef PC
 	if (count == 0) {
 		/* blockieren */
-		LOG_DEBUG("Fifo leer -> Thread blockiert");
+//		LOG_DEBUG("Fifo leer -> Thread blockiert");
 		pthread_cond_wait(&f->cond, &f->mutex);
-		LOG_DEBUG("Thread laeuft weiter");
+//		LOG_DEBUG("Thread laeuft weiter");
 		count = f->count;
 	}
 	pthread_mutex_unlock(&f->mutex);
