@@ -48,6 +48,8 @@
 #endif
 
 //#define DEBUG_MAP
+//TODO:	Status fuer Loecher eintragen, Status fuer vollen Cache ignorieren
+//TODO:	int16 statt float fuer Position
 uint8 scan_on_the_fly_source = SENSOR_LOCATION | SENSOR_DISTANCE;
 
 typedef struct {
@@ -120,14 +122,20 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 
 	int16_t diff_x = abs((int16_t)x_pos - last_x);
 	int16_t diff_y = abs((int16_t)y_pos - last_y);
-
-	/* Cache updaten, falls sich der Bot weit genug bewegt hat.
-	 * Falls Cache voll, kein Update */
+	
+	/* Falls Cache voll, kein Update */
 	//TODO:	Cache voll => Bot anhalten (bzw. verschiedene Modi, siehe Chat-Log)
-	if (map_update_fifo.size - map_update_fifo.count > 0 && (
-			diff_x > SCAN_ONTHEFLY_DIST_RESOLUTION || 
+	if (map_update_fifo.size - map_update_fifo.count == 0) {
+		/* Stopp */
+		motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
+//		LOG_DEBUG("Map-Cache voll, halte Bot an");
+		os_thread_sleep(2000);
+		return;
+	}
+	/* Cache updaten, falls sich der Bot weit genug bewegt hat. */
+	if (diff_x > SCAN_ONTHEFLY_DIST_RESOLUTION || 
 			diff_y > SCAN_ONTHEFLY_DIST_RESOLUTION || 
-			turned_angle(last_head) > SCAN_ONTHEFLY_ANGLE_RESOLUTION)) {
+			turned_angle(last_head) > SCAN_ONTHEFLY_ANGLE_RESOLUTION) {
 		cache_tmp.x_pos = x_pos;
 		cache_tmp.y_pos = y_pos;
 		cache_tmp.heading = (int16_t)(heading*10.0f);
