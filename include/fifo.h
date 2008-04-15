@@ -22,122 +22,129 @@
  * @brief 	Implementierung einer FIFO
  * @author 	http://www.roboternetz.de/wissen/index.php/FIFO_mit_avr-gcc
  * @date 	28.02.2007
- * Abgesichert gegen Interrups, solange sich Producer bzw. Consumer jeweils auf der gleichen Interrupt-Ebene befinden.
+ * Thread-Safe, abgesichert gegen Interrups, solange sich Producer bzw. Consumer jeweils auf der gleichen Interrupt-Ebene befinden.
  */
 
 #ifndef _FIFO_H_
 #define _FIFO_H_
 
 #include "ct-Bot.h"
+#include "global.h"
 #ifdef MCU
-	#include <avr/io.h>
-	#include <avr/interrupt.h>
-	#include "global.h"
-	
-	/*! FIFO-Datentyp */
-	typedef struct {
-		uint8 volatile count;       /*!< # Zeichen im Puffer */
-		uint8 size;                 /*!< Puffer-Grosse */
-		uint8 *pread;               /*!< Lesezeiger */
-		uint8 *pwrite;              /*!< Schreibzeiger */
-		uint8 read2end;				/*!< # Zeichen bis zum Ueberlauf Lesezeiger */
-		uint8 write2end; 			/*!< # Zeichen bis zum Ueberlauf Schreibzeiger */
-	} fifo_t;
-	
-	/*!
-	 * @brief			Initialisiert die FIFO, setzt Lese- und Schreibzeiger, etc. 
-	 * @param f			Zeiger auf FIFO-Datenstruktur
-	 * @param buf		Zeiger auf den Puffer der Groesse size fuer die FIFO
-	 * @param size		Anzahl der Bytes, die die FIFO speichern soll	.
-	 */
-	extern void fifo_init(fifo_t *f, uint8_t* buf, const uint8_t size);
-	
-//	/*!
-//	 * Schreibt das Byte data in die FIFO. Liefert 1 bei Erfolg und 0, falls die FIFO voll ist.
-//	 */
-//	extern uint8 fifo_put(fifo_t*, const uint8 data);
-	
-	/*!
-	 * @brief			Schreibt length Byte in die FIFO
-	 * @param f			Zeiger auf FIFO-Datenstruktur
-	 * @param data		Zeiger auf Quelldaten
-	 * @param length	Anzahl der zu kopierenden Bytes
-	 */	
-	extern void fifo_put_data(fifo_t *f, uint8_t* data, uint8_t length);
-	
-//	/*!
-//	 * Liefert das naechste Byte aus der FIFO, bei leerer FIFO wird gewartet, bis das naechste Zeichen eintrifft.
-//	 */
-//	extern uint8 fifo_get_wait(fifo_t*);
-	
-//	/*!
-//	 * Liefert das naechste Byte aus der FIFO als int16 bzw. -1, falls die FIFO leer ist.
-//	 */
-//	extern int16 fifo_get_nowait(fifo_t*);
-
-	/*!
-	 * @brief			Liefert length Bytes aus der FIFO, nicht blockierend.
-	 * @param f			Zeiger auf FIFO-Datenstruktur
-	 * @param data		Zeiger auf Speicherbereich fuer Zieldaten
-	 * @param length	Anzahl der zu kopierenden Bytes
-	 * @return			Anzahl der tatsaechlich gelieferten Bytes
-	 */	
-	extern uint8 fifo_get_data(fifo_t *f, uint8_t* data, uint8_t length);
-	
-	/*!
-	 * @brief		Schreibt ein Byte in die FIFO.
-	 * @param f		Zeiger auf FIFO-Datenstruktur
-	 * @param data	Das zu schreibende Byte
-	 * @return		1 bei Erfolg und 0, falls die FIFO voll ist.
-	 */
-	static inline uint8 _inline_fifo_put(fifo_t *f, const uint8_t data){
-		if (f->count >= f->size) return 0;
-			
-		uint8* pwrite = f->pwrite;
-		*(pwrite++) = data;
-		
-		uint8 write2end = f->write2end;
-		if (--write2end == 0){
-			write2end = f->size;
-			pwrite -= write2end;
-		}
-		
-		f->write2end = write2end;
-		f->pwrite = pwrite;
-	
-		uint8 sreg = SREG;
-		cli();
-		f->count++;
-		SREG = sreg;
-		
-		return 1;
-	}
-	
-	/*!
-	 * @brief	Liefert das naechste Byte aus der FIFO. 
-	 * @param f	Zeiger auf FIFO-Datenstruktur
-	 * @return	Das Byte aus der FIFO
-	 * Ob überhaupt ein Byte in der FIFO ist, muss vorher extra abgeprueft werden!
-	 */
-	static inline uint8 _inline_fifo_get(fifo_t *f){
-		uint8 *pread = f->pread;
-		uint8 data = *(pread++);
-		uint8 read2end = f->read2end;
-		
-		if (--read2end == 0){
-			read2end = f->size;
-			pread -= read2end;
-		}
-		
-		f->pread = pread;
-		f->read2end = read2end;
-		
-		uint8 sreg = SREG;
-		cli();
-		f->count--;
-		SREG = sreg;
-		
-		return data;
-	}
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#else
+#include <pthread.h>
 #endif	// MCU
+	
+/*! FIFO-Datentyp */
+typedef struct {
+	uint8_t volatile count;	/*!< # Zeichen im Puffer */
+	uint8_t size;			/*!< Puffer-Grosse */
+	uint8_t * pread;		/*!< Lesezeiger */
+	uint8_t * pwrite;		/*!< Schreibzeiger */
+	uint8_t read2end;		/*!< # Zeichen bis zum Ueberlauf Lesezeiger */
+	uint8_t write2end;		/*!< # Zeichen bis zum Ueberlauf Schreibzeiger */
+#ifdef PC
+	pthread_mutex_t mutex;	/*!< Mutex zur Synchronisation */
+	pthread_cond_t cond;	/*!< Signal zur Synchronisation */
+#endif
+} fifo_t;
+
+/*!
+ * @brief			Initialisiert die FIFO, setzt Lese- und Schreibzeiger, etc. 
+ * @param f			Zeiger auf FIFO-Datenstruktur
+ * @param buf		Zeiger auf den Puffer der Groesse size fuer die FIFO
+ * @param size		Anzahl der Bytes, die die FIFO speichern soll	.
+ */
+extern void fifo_init(fifo_t * f, void * buf, const uint8_t size);
+	
+/*!
+ * @brief			Schreibt length Byte in die FIFO
+ * @param f			Zeiger auf FIFO-Datenstruktur
+ * @param data		Zeiger auf Quelldaten
+ * @param length	Anzahl der zu kopierenden Bytes
+ */	
+extern void fifo_put_data(fifo_t * f, void * data, uint8_t length);
+
+/*!
+ * @brief			Liefert length Bytes aus der FIFO, nicht blockierend.
+ * @param f			Zeiger auf FIFO-Datenstruktur
+ * @param data		Zeiger auf Speicherbereich fuer Zieldaten
+ * @param length	Anzahl der zu kopierenden Bytes
+ * @return			Anzahl der tatsaechlich gelieferten Bytes
+ */	
+extern uint8 fifo_get_data(fifo_t * f, void * data, uint8_t length);
+
+/*!
+ * @brief		Schreibt ein Byte in die FIFO.
+ * @param f		Zeiger auf FIFO-Datenstruktur
+ * @param data	Das zu schreibende Byte
+ * @return		1 bei Erfolg und 0, falls die FIFO voll ist.
+ */
+static inline uint8_t _inline_fifo_put(fifo_t * f, const uint8_t data) {
+	if (f->count >= f->size) return 0;
+		
+	uint8_t * pwrite = f->pwrite;
+	*(pwrite++) = data;
+	
+	uint8 write2end = f->write2end;
+	if (--write2end == 0){
+		write2end = f->size;
+		pwrite -= write2end;
+	}
+	
+	f->write2end = write2end;
+	f->pwrite = pwrite;
+
+#ifdef MCU
+	uint8_t sreg = SREG;
+	cli();
+#else
+	pthread_mutex_lock(&f->mutex);
+#endif
+	f->count++;
+#ifdef MCU
+	SREG = sreg;
+#else
+	pthread_mutex_unlock(&f->mutex);
+#endif
+	
+	return 1;
+}
+
+/*!
+ * @brief	Liefert das naechste Byte aus der FIFO. 
+ * @param f	Zeiger auf FIFO-Datenstruktur
+ * @return	Das Byte aus der FIFO
+ * Ob ueberhaupt ein Byte in der FIFO ist, muss vorher extra abgeprueft werden!
+ */
+static inline uint8_t _inline_fifo_get(fifo_t * f) {
+	uint8_t * pread = f->pread;
+	uint8_t data = *(pread++);
+	uint8_t read2end = f->read2end;
+	
+	if (--read2end == 0) {
+		read2end = f->size;
+		pread -= read2end;
+	}
+	
+	f->pread = pread;
+	f->read2end = read2end;
+	
+#ifdef MCU
+	uint8_t sreg = SREG;
+	cli();
+#else
+	pthread_mutex_lock(&f->mutex);
+#endif
+	f->count--;
+#ifdef MCU
+	SREG = sreg;
+#else
+	pthread_mutex_unlock(&f->mutex);
+#endif
+	return data;
+}
+
 #endif	// _FIFO_H_

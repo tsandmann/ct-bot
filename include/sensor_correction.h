@@ -76,6 +76,6 @@
 /* Grenzwerte fuer die IR-Sensoren */
 #define SENS_IR_MIN_DIST	100		/*!< Untergrenze des Erfassungsbereichs */
 #define SENS_IR_MAX_DIST	690		/*!< Obergrenze des Erfassungsbereichs */
-#define SENS_IR_INFINITE	999		/*!< Kennzeichnung fuer "kein Objekt im Erfassungsbereich" */	
+#define SENS_IR_INFINITE	995		/*!< Kennzeichnung fuer "kein Objekt im Erfassungsbereich" */	
 
 #endif // SENSOR_CORRECTION_H_

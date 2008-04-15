@@ -28,14 +28,12 @@
 #define _THREAD_H
 
 #include "ct-Bot.h"
-#ifdef MCU
 #ifdef OS_AVAILABLE
-
 #include "timer.h"
 #include "os_scheduler.h"
-
 #define OS_MAX_THREADS	2	/*!< maximale Anzahl an Threads im System */
 
+#ifdef MCU
 /*! TCB eines Threads */
 typedef struct {
 	uint8_t * stack;		/*!< Stack-Pointer */
@@ -45,17 +43,6 @@ typedef struct {
 
 extern Tcb_t os_threads[OS_MAX_THREADS];	/*!< Thread-Pool (ist gleichzeitig running- und waiting-queue) */
 extern Tcb_t * os_thread_running;			/*!< Zeiger auf den Thread, der zurzeit laeuft */ 
-
-/*!
- * Legt einen neuen Thread an und setzt ihn auf runnable.
- * Der zuerst angelegt Thread bekommt die hoechste Prioritaet,
- * je spaeter ein Thread erzeugt wird, desto niedriger ist seine
- * Prioritaet, das laesst sich auch nicht mehr aendern!
- * @param *pStack	Zeiger auf den Stack (Ende!) des neuen Threads
- * @param *pIp		Zeiger auf die Main-Funktion des Threads (Instruction-Pointer)
- * @return			Zeiger auf den TCB des angelegten Threads
- */
-Tcb_t * os_create_thread(uint8_t * pStack, void * pIp);
 
 /*!
  * Schuetzt den folgenden Block (bis exitCS()) vor Threadswitches.
@@ -94,6 +81,36 @@ static inline void os_thread_sleep(uint32_t sleep) {
 	os_schedule(now);
 }
 
+#else	// PC
+#include <pthread.h>
+
+typedef pthread_t Tcb_t;
+
+/*!
+ * Schuetzt den folgenden Block (bis exitCS()) vor Threadswitches.
+ * Ermoeglicht einfaches Locking zum exklusiven Ressourcen-Zugriff.
+ */
+#define os_enterCS()
+
+/*!
+ * Beendet den kritischen Abschnitt wieder, der mit enterCS began.
+ * Falls ein Scheduler-Aufruf ansteht, wird er nun ausgefuehrt.
+ */
+#define os_exitCS()
+
+#endif	// MCU 
+
+/*!
+ * Legt einen neuen Thread an und setzt ihn auf runnable.
+ * Der zuerst angelegt Thread bekommt die hoechste Prioritaet,
+ * je spaeter ein Thread erzeugt wird, desto niedriger ist seine
+ * Prioritaet, das laesst sich auch nicht mehr aendern!
+ * @param *pStack	Zeiger auf den Stack (Ende!) des neuen Threads
+ * @param *pIp		Zeiger auf die Main-Funktion des Threads (Instruction-Pointer)
+ * @return			Zeiger auf den TCB des angelegten Threads
+ */
+Tcb_t * os_create_thread(uint8_t * pStack, void * pIp);
+
 /*!
  * Schaltet auf den Thread mit der naechst niedrigeren Prioritaet um, der lauffaehig ist,
  * indem diesem der Rest der Zeitscheibe geschenkt wird.
@@ -106,5 +123,4 @@ void os_thread_yield(void);
 #define os_exitCS()		// NOP
 
 #endif	// OS_AVAILABLE
-#endif	// MCU
 #endif	// _THREAD_H

@@ -133,7 +133,6 @@
 
 	#define COMMAND_AVAILABLE		/*!< High-Level Communication */
 	#undef USE_MINILOG
-	#undef OS_AVAILABLE
 
 	#ifdef __APPLE__
 		#include <AvailabilityMacros.h>

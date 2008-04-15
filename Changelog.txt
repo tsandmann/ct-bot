@@ -1,5 +1,10 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-04-15 Timo Sandmann [mail@timosandmann.de]: Map-Update laeuft nun in einem zweiten Thread
+												 Fifo verallgemeinert (MCU und PC), threadsicher gemacht
+												 BotOS-Threading fuer PC auf PThreads abgebildet
+												 include/sensor_correction.h mit updaten!
+
 2008-04-08 Timo Sandmann [mail@timosandmann.de]: Eingabe von Text und Zahlen per Fernbedienung hinzugefuegt. 
 												 Wird ueber KEYPAD_AVAILABLE eingeschaltet und funktioniert wie von Handy oder Telefon gewohnt.
 												 Abschliessen der Eingabe mit Taste "play", Abbruch mit "stop".
