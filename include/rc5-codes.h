@@ -254,6 +254,7 @@
 	#define RC5_CODE_BWD		(0x3011 & RC5_MASK)		/*!< Backward Taste */
 	#define RC5_CODE_FWD		(0x3010 & RC5_MASK)		/*!< Forward Taste */
 
+	#define RC5_CODE_CH_PC		(0x1010 & RC5_MASK)		/*!< Taste neben dem Minus */
 	#define RC5_CH_PLUS		(0x1020 & RC5_MASK)		/*!< Ch + Taste */
  	#define RC5_CH_MINUS		(0x1021 & RC5_MASK)		/*!< Ch - Taste */
 
