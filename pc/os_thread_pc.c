@@ -67,6 +67,16 @@ void os_thread_yield(void) {
 }
 
 /*!
+ * Blockiert den aktuellten Thread fuer die angegebene Zeit und schaltet
+ * auf einen anderen Thread um 
+ * => coorporative threadswitch
+ * @param sleep		Zeit in ms, die der aktuelle Thread blockiert wird
+ */
+void os_thread_sleep(uint32_t sleep) {
+	// NOP
+}
+
+/*!
  * Weckt einen wartenden Thread auf, falls dieser eine hoehere Prioritaet hat
  * @param *thread	Zeiger auf TCB des zu weckenden Threads
  */

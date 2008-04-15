@@ -100,6 +100,13 @@ extern Tcb_t os_threads[OS_MAX_THREADS];	/*!< Thread-Pool (ist gleichzeitig runn
  */
 #define os_exitCS()
 
+/*!
+ * Blockiert den aktuellten Thread fuer die angegebene Zeit und schaltet
+ * auf einen anderen Thread um 
+ * => coorporative threadswitch
+ * @param sleep		Zeit in ms, die der aktuelle Thread blockiert wird
+ */
+void os_thread_sleep(uint32_t sleep);
 #endif	// MCU 
 
 /*!
