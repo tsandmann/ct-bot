@@ -86,6 +86,8 @@ static inline void os_thread_sleep(uint32_t sleep) {
 
 typedef pthread_t Tcb_t;
 
+extern Tcb_t os_threads[OS_MAX_THREADS];	/*!< Thread-Pool (ist gleichzeitig running- und waiting-queue) */
+
 /*!
  * Schuetzt den folgenden Block (bis exitCS()) vor Threadswitches.
  * Ermoeglicht einfaches Locking zum exklusiven Ressourcen-Zugriff.
@@ -117,6 +119,11 @@ Tcb_t * os_create_thread(uint8_t * pStack, void * pIp);
  */
 void os_thread_yield(void);
 
+/*!
+ * Weckt einen wartenden Thread auf, falls dieser eine hoehere Prioritaet hat
+ * @param *thread	Zeiger auf TCB des zu weckenden Threads
+ */
+void os_thread_wakeup(Tcb_t * thread);
 #else 	// OS_AVAILABLE
 
 #define os_enterCS()	// NOP

@@ -76,7 +76,7 @@ void bot_scan_onthefly_do_map_update(void) {
 	while (1) {
 		/* Cache-Eintrag holen 
 		 * PC-Version blockiert hier, falls Fifo leer */
-		if (fifo_get_data(&map_update_fifo, (uint8_t *)&cache_tmp, sizeof(map_cache_t)) > 0) {
+		if (fifo_get_data(&map_update_fifo, &cache_tmp, sizeof(map_cache_t)) > 0) {
 			/* Strahlen updaten */
 			if ((scan_on_the_fly_source & SENSOR_DISTANCE) != 0) {
 				map_update(cache_tmp.x_pos, cache_tmp.y_pos, cache_tmp.heading/10.0f, cache_tmp.distL*5, cache_tmp.distR*5);
@@ -90,7 +90,8 @@ void bot_scan_onthefly_do_map_update(void) {
 				last_y = cache_tmp.y_pos;
 			}
 		} else {
-			// Spinlock durch while (1) fuer MCU
+			/* Fifo leer => weiter mit Main-Thread */
+			os_thread_wakeup(os_threads);
 		}
 	}
 }
@@ -132,7 +133,7 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 		cache_tmp.heading = (int16_t)(heading*10.0f);
 		cache_tmp.distL = sensDistL/5;
 		cache_tmp.distR = sensDistR/5;
-		fifo_put_data(&map_update_fifo, (uint8_t *)&cache_tmp, sizeof(map_cache_t));
+		fifo_put_data(&map_update_fifo, &cache_tmp, sizeof(map_cache_t));
 
 		last_x = x_pos;
 		last_y = y_pos;
@@ -149,11 +150,8 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 //	LOG_INFO("MAIN is going to sleep for 100 ms");
 //	os_thread_sleep(100L);
 	
-	/* Ist was im Cache? */
-	if (map_update_fifo.count > 0) {
-		/* Rest der Zeitscheibe (10 ms) schlafen legen */
-		os_thread_yield();
-	}
+	/* Rest der Zeitscheibe (10 ms) schlafen legen */
+	os_thread_yield();
 	
 //	LOG_INFO("MAIN is back! :-)");
 }

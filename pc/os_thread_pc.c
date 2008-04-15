@@ -66,5 +66,13 @@ void os_thread_yield(void) {
 	//pthread_yield();
 }
 
+/*!
+ * Weckt einen wartenden Thread auf, falls dieser eine hoehere Prioritaet hat
+ * @param *thread	Zeiger auf TCB des zu weckenden Threads
+ */
+void os_thread_wakeup(Tcb_t * thread) {
+	// NOP
+}
+
 #endif	// OS_AVAILABLE
 #endif	// PC

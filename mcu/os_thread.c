@@ -120,6 +120,16 @@ void os_thread_yield(void) {
 }
 
 /*!
+ * Weckt einen wartenden Thread auf, falls dieser eine hoehere Prioritaet hat
+ * @param *thread	Zeiger auf TCB des zu weckenden Threads
+ */
+void os_thread_wakeup(Tcb_t * thread) {
+	uint32_t now = TIMER_GET_TICKCOUNT_32;
+	thread->nextSchedule = now;
+	os_schedule(now);
+}
+
+/*!
  * Schaltet "von aussen" auf einen neuen Thread um. 
  * => kernel threadswitch
  * Achtung, es wird erwartet, dass Interrupts an sind. 
