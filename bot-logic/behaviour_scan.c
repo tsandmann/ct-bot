@@ -48,25 +48,29 @@
 #endif
 
 //#define DEBUG_MAP
-//TODO:	Status fuer Loecher eintragen, Status fuer vollen Cache ignorieren
+//TODO:	Status fuer Loecher eintragen
 //TODO:	int16 statt float fuer Position
-uint8 scan_on_the_fly_source = SENSOR_LOCATION | SENSOR_DISTANCE;
+//TODO:	Stacksize nachrechnen / optimieren
 
+#define MAP_UPDATE_STACK_SIZE	256	
+#define MAP_UPDATE_CACHE_SIZE	30
+
+scan_mode_t scan_otf_modes = {1, 1, 1, 1};	/*!< Modi des Verhaltens. Default: location, distance, border an, Kartographie-Modus */
+
+/*! Map-Cache-Eintrag */
 typedef struct {
-	int16_t x_pos;
-	int16_t y_pos;
-	int16_t heading;
-	uint8_t distL;
-	uint8_t distR;
+	int16_t x_pos;		/*!< X-Komponente der Position [mm] */
+	int16_t y_pos;		/*!< Y-Komponente der Position [mm] */
+	int16_t heading;	/*!< Blickrichtung [1/10 Grad]*/
+	uint8_t distL;		/*!< Entfernung linker Distanzsensor [5 mm] */
+	uint8_t distR;		/*!< Entfernung rechter Distanzsensor [5 mm] */
 } map_cache_t;
 
-map_cache_t map_update_cache[30];
-fifo_t map_update_fifo;
+map_cache_t map_update_cache[MAP_UPDATE_CACHE_SIZE];	/*!< Cache */
+fifo_t map_update_fifo;									/*!< Fifo fuer Cache */
 
-//TODO:	Stacksize nachrechnen
-#define MAP_UPDATE_STACK_SIZE	256	
-uint8_t map_update_stack[MAP_UPDATE_STACK_SIZE];
-static Tcb_t * map_update_thread;
+uint8_t map_update_stack[MAP_UPDATE_STACK_SIZE];		/*!< Stack des Update-Threads */
+static Tcb_t * map_update_thread;						/*!< Thread fuer Map-Update */
 
 /*!
  * Main-Funktion des Map-Update-Threads
@@ -80,20 +84,21 @@ void bot_scan_onthefly_do_map_update(void) {
 		 * PC-Version blockiert hier, falls Fifo leer */
 		if (fifo_get_data(&map_update_fifo, &cache_tmp, sizeof(map_cache_t)) > 0) {
 			/* Strahlen updaten */
-			if ((scan_on_the_fly_source & SENSOR_DISTANCE) != 0) {
+			if (scan_otf_modes.distance && cache_tmp.distL != 0) {
 				map_update(cache_tmp.x_pos, cache_tmp.y_pos, cache_tmp.heading/10.0f, cache_tmp.distL*5, cache_tmp.distR*5);
 			}
 			/* Grundflaeche updaten */
-			if ((scan_on_the_fly_source & SENSOR_LOCATION) != 0) {
-				if (last_x != cache_tmp.x_pos || last_y != cache_tmp.y_pos) {
-					map_update_location(cache_tmp.x_pos, cache_tmp.y_pos);
-				}
+			if (scan_otf_modes.location) {
+				int16_t diff = get_dist(cache_tmp.x_pos, cache_tmp.y_pos, last_x, last_y);
 				last_x = cache_tmp.x_pos;
 				last_y = cache_tmp.y_pos;
+				if (diff > SCAN_ONTHEFLY_DIST_RESOLUTION) {
+					map_update_location(cache_tmp.x_pos, cache_tmp.y_pos);
+				}
 			}
 		} else {
 			/* Fifo leer => weiter mit Main-Thread */
-			os_thread_wakeup(os_threads);
+			os_thread_wakeup(os_threads);	// main ist immer der Erste im Array
 		}
 	}
 }
@@ -117,30 +122,50 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 	#ifdef DEBUG_MAP
 		uint32_t start_ticks = TIMER_GET_TICKCOUNT_32;
 	#endif
-	static int16_t last_x, last_y, last_head;
+	static int16_t last_x, last_y, last_dist_x, last_dist_y, last_head;
 	map_cache_t cache_tmp;
 
-	int16_t diff_x = abs((int16_t)x_pos - last_x);
-	int16_t diff_y = abs((int16_t)y_pos - last_y);
-	
-	/* Falls Cache voll, kein Update */
-	//TODO:	Cache voll => Bot anhalten (bzw. verschiedene Modi, siehe Chat-Log)
-	if (map_update_fifo.size - map_update_fifo.count == 0) {
-		/* Stopp */
-		motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
-//		LOG_DEBUG("Map-Cache voll, halte Bot an");
-		os_thread_sleep(2000);
-		return;
+	/* Verhalten je nach Cache-Fuellstand */
+	uint8_t cache_free = map_update_fifo.size - map_update_fifo.count;
+	if (cache_free < MAP_UPDATE_CACHE_SIZE/3) {
+		if (cache_free == 0) {
+			/* Cache ganz voll */
+			if (scan_otf_modes.map_mode) {
+				/* Stopp */
+				motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
+//				LOG_DEBUG("Map-Cache voll, halte Bot an");
+				os_thread_sleep(2000);
+			} else {
+				/* Cache voll, neuen Eintrag verwerfen */
+//				LOG_DEBUG("Map-Cache voll, verwerfe neuen Eintrag");
+			}
+			return;
+		}
+		/* Cache sehr voll */
+		if ((int16_t)v_enc_left == 0 && (int16_t)v_enc_right == 0) {
+			/* Standzeit als Pause nutzen */
+			os_thread_sleep(2000);
+			return;
+		}
 	}
 	/* Cache updaten, falls sich der Bot weit genug bewegt hat. */
-	if (diff_x > SCAN_ONTHEFLY_DIST_RESOLUTION || 
-			diff_y > SCAN_ONTHEFLY_DIST_RESOLUTION || 
-			turned_angle(last_head) > SCAN_ONTHEFLY_ANGLE_RESOLUTION) {
+	int16_t diff = get_dist(x_pos, y_pos, last_x, last_y);
+	int16_t turned = turned_angle(last_head);
+	if (diff > (SCAN_ONTHEFLY_DIST_RESOLUTION*SCAN_ONTHEFLY_DIST_RESOLUTION) ||
+			turned > SCAN_ONTHEFLY_ANGLE_RESOLUTION) {
 		cache_tmp.x_pos = x_pos;
 		cache_tmp.y_pos = y_pos;
 		cache_tmp.heading = (int16_t)(heading*10.0f);
-		cache_tmp.distL = sensDistL/5;
-		cache_tmp.distR = sensDistR/5;
+		int16_t diff_dist = get_dist(x_pos, y_pos, last_dist_x, last_dist_y);
+		if (diff_dist > (SCAN_ONTHEFLY_DIST_RESOLUTION_DISTSENS*SCAN_ONTHEFLY_DIST_RESOLUTION_DISTSENS) ||
+				turned > SCAN_ONTHEFLY_ANGLE_RESOLUTION) {
+			cache_tmp.distL = sensDistL/5;
+			cache_tmp.distR = sensDistR/5;
+			last_dist_x = x_pos;
+			last_dist_y = y_pos;
+		} else {
+			cache_tmp.distL = 0;		
+		}
 		fifo_put_data(&map_update_fifo, &cache_tmp, sizeof(map_cache_t));
 
 		last_x = x_pos;

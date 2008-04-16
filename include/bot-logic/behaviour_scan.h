@@ -31,15 +31,53 @@
 
 #ifdef BEHAVIOUR_SCAN_AVAILABLE
 
-#define SENSOR_LOCATION		1		/*!< Quelle die das Verhalten bot_scan_onthefly nutzt, um die Karte zu aktualisieren: Ort des Bots */
-#define SENSOR_DISTANCE		2		/*!< Quelle die das Verhalten bot_scan_onthefly nutzt, um die Karte zu aktualisieren: Distanzsensoren des Bots */
+#define SCAN_ONTHEFLY_DIST_RESOLUTION 30			/*!< Alle wieviel gefahrene Strecke [mm] soll die Karte aktualisiert werden */
+#define SCAN_ONTHEFLY_DIST_RESOLUTION_DISTSENS 60	/*!< Alle wieviel gefahrene Strecke [mm] sollen die Distanzsensordaten in der Karte aktualisiert werden */
+#define SCAN_ONTHEFLY_ANGLE_RESOLUTION 10			/*!< Alle wieviel Gerad Drehung [Grad] soll die Karte aktualisiert werden */
 
-#define SCAN_ONTHEFLY_DIST_RESOLUTION 30		/*!< Alle wieviel gefahrene Strecke [mm] soll die Karte aktualisiert werden. Achtung er prueft x und y getrennt, daher ist die tatsaechlich zurueckgelegte Strecke im worst case sqrt(2)*ONTHEFLY_DIST_RESOLUTION  */
-#define SCAN_ONTHEFLY_ANGLE_RESOLUTION 10		/*!< Alle wieviel Gerad Drehung [Grad] soll die Karte aktualisiert werden */
+/*! Modi des Scan-Verhaltens */
+typedef struct {
+	uint8_t location:1;	/*!< Grundflaechen-Update an/aus */
+	uint8_t distance:1;	/*!< Distanzsensor-Update an/aus */
+	uint8_t border:1;	/*!< Abgrundsensor-Update an/aus */
+	uint8_t map_mode:1;	/*!< Kartograhpie-Modus an/aus (Bot stoppt, falls Cache voll) */
+} scan_mode_t;
 
-extern uint8 scan_on_the_fly_source; 
+extern scan_mode_t scan_otf_modes;	/*!< Modi des Verhaltens */
 
-#define bot_scan_onthefly( sensor) {scan_on_the_fly_source = sensor;}
+/*!
+ * Schaltet Grundflaechen-Update an oder aus
+ * @param value	1: an, 0: aus
+ */
+static inline void set_scan_otf_location(uint8_t value) {
+	scan_otf_modes.location = value;
+}
+
+/*!
+ * Schaltet Distanzsensor-Update an oder aus
+ * @param value	1: an, 0: aus
+ */
+static inline void set_scan_otf_distance(uint8_t value) {
+	scan_otf_modes.distance = value;
+}
+
+/*!
+ * Schaltet Abgrundsensor-Update an oder aus
+ * @param value	1: an, 0: aus
+ */
+static inline void set_scan_otf_border(uint8_t value) {
+	scan_otf_modes.border = value;
+}
+
+/*!
+ * Schaltet Kartographie-Modus an oder aus.
+ * Im Kartographie-Modus haelt der Bot an, falls der Cache voll 
+ * ist, anstatt Eintraege zu verwerfen.
+ * @param value	1: an, 0: aus
+ */
+static inline void set_scan_otf_mapmode(uint8_t value) {
+	scan_otf_modes.map_mode = value;
+}
 
 /*!
  * Initialisiert das Scan-Verhalten

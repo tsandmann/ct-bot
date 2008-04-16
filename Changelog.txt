@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-04-16 Timo Sandmann [mail@timosandmann.de]: Verschiedene Modi fuer bot_scan_otf eingebaut (siehe include/bot-logic/behaviour_scan.h)
+
 2008-04-15 Timo Sandmann [mail@timosandmann.de]: Map-Update laeuft nun in einem zweiten Thread
 												 Fifo verallgemeinert (MCU und PC), threadsicher gemacht
 												 BotOS-Threading fuer PC auf PThreads abgebildet
