@@ -41,14 +41,14 @@
 #define MAP_SECTION_POINTS 	16		/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 
 /*!  Suchkreis (Botdurchmesser) in Mapfelder je nach Aufloesung umgerechnet*/
-#define MAP_RADIUS_FIELDS_GODEST	  (BOT_DIAMETER/10 * MAP_RESOLUTION / 100)	/*!< Umkreisfelder fuer Pfadsuche */
+//#define MAP_RADIUS_FIELDS_GODEST	  (BOT_DIAMETER/10 * MAP_RESOLUTION / 100)	/*!< Umkreisfelder fuer Pfadsuche */
 /*! hier gleich Defines definieren, um kostspielige Berechnungen zu sparen */
-#if MAP_RADIUS_FIELDS_GODEST / 2 < 1 
-	#define MAP_RADIUS_FIELDS_GODEST_HALF 1  // sicherstellen dass nicht 0 auftritt
-#else
-	#define MAP_RADIUS_FIELDS_GODEST_HALF (MAP_RADIUS_FIELDS_GODEST / 2)
-#endif
-#define MAP_RADIUS_FIELDS_GODEST_HALF_QUAD (MAP_RADIUS_FIELDS_GODEST_HALF * MAP_RADIUS_FIELDS_GODEST_HALF) // halber Quadratradius
+//#if MAP_RADIUS_FIELDS_GODEST / 2 < 1 
+//	#define MAP_RADIUS_FIELDS_GODEST_HALF 1  // sicherstellen dass nicht 0 auftritt
+//#else
+//	#define MAP_RADIUS_FIELDS_GODEST_HALF (MAP_RADIUS_FIELDS_GODEST / 2)
+//#endif
+//#define MAP_RADIUS_FIELDS_GODEST_HALF_QUAD (MAP_RADIUS_FIELDS_GODEST_HALF * MAP_RADIUS_FIELDS_GODEST_HALF) // halber Quadratradius
 
 #define MAPFIELD_IGNORE          20  /*!< negativer Schwellwert, bei dem Laut Map Hindernis gemeldet wird */
 #define HAZPOT                   5   /*! hohe Hinderniswahrscheinlichkeit und trotzdem weiter beruecksichtigt */
@@ -68,7 +68,15 @@
 	#define map_max_y (MAP_SIZE*MAP_RESOLUTION)
 #endif
 
-
+/*!
+ * Aktualisiert die interne Karte anhand der Abgrund-Sensordaten
+ * @param x X-Achse der Position in Weltkoordinaten
+ * @param y Y-Achse der Position in Weltkoordinaten
+ * @param head Blickrichtung in Grad
+ * @param borderL Sensor links 1= abgrund 0 = frei
+ * @param borderR Sensor rechts 1= abgrund 0 = frei
+ */
+void map_update_border(float x, float y, float head, uint8 borderL, uint8 borderR);
 
 /*!
  * Aktualisiert die interne Karte
@@ -78,12 +86,12 @@
  * @param distL Sensorwert links
  * @param distR Sensorwert rechts
  */
-void map_update(float x, float y, float head, int16 distL, int16 distR);
+void map_update_distance(float x, float y, float head, int16 distL, int16 distR);
 
 /*!
  * Aktualisiert den Standkreis der internen Karte
- * @param x X-Achse der Position
- * @param y Y-Achse der Position
+ * @param x X-Achse der Position in Weltkoordinaten
+ * @param y Y-Achse der Position in Weltkoordinaten
  */
 void map_update_location(float x, float y);
 
@@ -172,13 +180,12 @@ void map_update_occupied (uint16 x, uint16 y);
 void map_set_value_occupied (uint16 x, uint16 y, int8 val);
 
 
-/*! 
+/*!
  * markiert die Mapkoordinaten als Loch zum entsprechenden Abgrundsensor
- * @param x	bereits berechnete Koordinaten nach links vom Mittelpunkt in Hoehe des Sensors
- * @param y	bereits berechnete Koordinaten nach rechts vom Mittelpunkt in Hoehe des Sensors
- * @param h	Blickrichtung bereits umgerechnet in Bogenmass
+ * @param x X-Ordinate des Abgrundsensors in Kartenkoordinaten
+ * @param y Y-Ordinate des Abgrundsensors in Kartenkoordinaten
  */
-void map_update_sensor_hole(float x, float y, float h);
+void map_update_sensor_hole(uint16 x, uint16 y);
 
 /*!
  * gibt True zurueck wenn Map-Wert value innerhalb des Umkreises radius von xy liegt sonst False;

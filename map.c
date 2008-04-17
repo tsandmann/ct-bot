@@ -22,7 +22,7 @@
  * @brief 	Karte 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	19.09.06
- */
+ */	
  
 #include <stdio.h>
 #include "ct-Bot.h"
@@ -59,6 +59,8 @@
 
 //#define DEBUG_MAP			// Schalter um recht viel Debug-Code anzumachen
 //#define DEBUG_MAP_TIMES	// Schalter um Performance-Messungen fuer MMC anzumachen
+//#define DEBUG_STORAGE		// Noch mehr Ausgaben zum Thema organisation der Kartenstruktur, Macroblocks, Sections
+
 
 #define MAP_INFO_AVAILABLE
 #ifdef MCU
@@ -66,11 +68,13 @@
 	#undef MAP_INFO_AVAILABLE	// spart Flash
 	#warning "MAP auf MCU derzeit im Umbau, siehe auch Ticket 129"
 #endif
-
+	
 #ifndef LOG_AVAILABLE
 	#undef DEBUG_MAP
+	#undef DEBUG_STORAGE
 #endif
 #ifndef DEBUG_MAP
+	#undef DEBUG_STORAGE
 	#undef LOG_DEBUG
 	#define LOG_DEBUG(a, ...) {}
 #endif
@@ -241,8 +245,9 @@ static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
 	// Sicherheitscheck 1
 	if ((section_x>= MAP_SECTIONS) || (section_y >= MAP_SECTIONS)){
 		#ifdef PC
-			printf("Versuch auf ein Feld ausserhalb der Karte zu zugreifen!! x=%u y=%u\n",x,y);
+			//printf("Versuch auf ein Feld ausserhalb der Karte zu zugreifen!! x=%u y=%u\n",x,y);
 		#endif
+		LOG_DEBUG("Versuch auf ein Feld ausserhalb der Karte zu zugreifen!! x=%u y=%u",x,y);
 		return NULL;
 	}
 
@@ -265,14 +270,18 @@ static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
 	#else		
 		uint16 macroblock = x / MACRO_BLOCK_LENGTH + (y / MACRO_BLOCK_LENGTH)* MAP_LENGTH_IN_MACRO_BLOCKS; 
 
-		LOG_DEBUG("Macroblock= %u ",macroblock);
+		#ifdef DEBUG_STORAGE
+			LOG_DEBUG("Macroblock= %u ",macroblock);
+		#endif
 		// Berechne den gesuchten Block
 		uint32 block; 
 
 		uint16 local_x = x % MACRO_BLOCK_LENGTH;	// wenn MACRO_BLOCK_LENGTH eine 2er Potenz ist kann man hier optimieren
 		uint16 local_y = y % MACRO_BLOCK_LENGTH;
 
-		LOG_DEBUG("\tlocal_x= %u, local_y= %u ",local_x,local_y);
+		#ifdef DEBUG_STORAGE
+			LOG_DEBUG("\tlocal_x= %u, local_y= %u ",local_x,local_y);
+		#endif
 
 		block= local_x / MAP_SECTION_POINTS + (local_y/MAP_SECTION_POINTS)* (MACRO_BLOCK_LENGTH/MAP_SECTION_POINTS);
 		
@@ -299,12 +308,16 @@ static map_section_t * map_get_section(uint16 x, uint16 y, uint8 create) {
 
 		// Ist der Block schon geladen 
 		if (map_current_block == block){
-			LOG_DEBUG("ist noch im Puffer\n");
+			#ifdef DEBUG_STORAGE
+				LOG_DEBUG("ist noch im Puffer\n");
+			#endif
 			return map[index];	
 		}
 			
-		LOG_DEBUG("ist nicht im Puffer ");
 		// Block ist also nicht im Puffer
+		#ifdef DEBUG_STORAGE
+			LOG_DEBUG("ist nicht im Puffer ");
+		#endif
 		
 		// Wurde der Block im RAM veraendert?
 		if (map_current_block_updated == True) {
@@ -575,32 +588,30 @@ float map_to_world(uint16 map_koord){
 }
 
 /*! 
- * Aktualisiert die Karte mit den Daten eines Sensors
+ * Aktualisiert die Karte mit den Daten eines Distanz-Sensors
  * @param x		X-Achse der Position des Sensors
  * @param y 	Y-Achse der Position des Sensors
  * @param h 	Blickrichtung im Bogenmaß
  * @param dist 	Sensorwert 
  */ 
-static void map_update_sensor(float x, float y, float h, int16 dist){
+static void map_update_sensor_distance(float x, float y, float h, int16 dist){
 	//Ort des Sensors in Kartenkoordinaten
 	uint16 X = map_world_to_map(x);
 	uint16 Y = map_world_to_map(y);
+
+	// liefert die Mapkoordinaten des Hindernisses 
+	uint16 PH_X= map_world_to_map(x + (float)dist * cos(h));
+	uint16 PH_Y= map_world_to_map(y + (float)dist * sin(h));	
 	
 	uint16 d;
 	if (dist==SENS_IR_INFINITE)
 		d=SENS_IR_MAX_DIST;
 	else 
 		d=dist;
-		
-		
-	// liefert die Mapkoordinaten im Abstand dist vom Punkt xy
-	uint16 PH_X=map_get_posx_dist(x,y,h,dist);
-	uint16 PH_Y=map_get_posy_dist(x,y,h,dist);
-
+	
 	if ((dist > 80 ) && (dist <SENS_IR_INFINITE))
 			map_update_occupied(PH_X,PH_Y);
 	
-
 
 	// Nun markiere alle Felder vor dem Hinderniss als frei
 	uint16 i;
@@ -641,8 +652,8 @@ static void map_update_sensor(float x, float y, float h, int16 dist){
 
 /*!
  * Aktualisiert den Standkreis der internen Karte
- * @param x X-Achse der Position
- * @param y Y-Achse der Position
+ * @param x X-Achse der Position in Weltkoordinaten
+ * @param y Y-Achse der Position in Weltkoordinaten
  */
 void map_update_location(float x, float y) {
 	int16 x_map = map_world_to_map(x);
@@ -654,27 +665,30 @@ void map_update_location(float x, float y) {
 
 /*!
  * Aktualisiert die interne Karte anhand der Sensordaten
- * @param x X-Achse der Position
- * @param y Y-Achse der Position
+ * @param x X-Achse der Position in Weltkoordinaten
+ * @param y Y-Achse der Position in Weltkoordinaten
  * @param head Blickrichtung in Grad
  * @param distL Sensorwert links
  * @param distR Sensorwert rechts
  */
-void map_update(float x, float y, float head, int16 distL, int16 distR){
+void map_update_distance(float x, float y, float head, int16 distL, int16 distR){
 //	LOG_DEBUG("update_map: x=%f, y=%f, head=%f, distL=%d, distR=%d\n",x,y,head,distL,distR);
-	
+		
     float h= head * (M_PI/180.0);
 	        
+    float cos_h=cos(h);
+    float sin_h=sin(h);
+    
     //Ort des rechten Sensors in Weltkoordinaten
-    float Pr_x = x + (DISTSENSOR_POS_SW * sin(h));
-	float Pr_y = y - (DISTSENSOR_POS_SW * cos(h));
+    float Pr_x = x + (DISTSENSOR_POS_SW * sin_h) + (DISTSENSOR_POS_FW * cos_h);
+	float Pr_y = y - (DISTSENSOR_POS_SW * cos_h) + (DISTSENSOR_POS_FW * sin_h);
 
     //Ort des linken Sensors in Weltkoordinaten
-    float Pl_x = x - (DISTSENSOR_POS_SW * sin(h));
-	float Pl_y = y + (DISTSENSOR_POS_SW * cos(h));
+    float Pl_x = x - (DISTSENSOR_POS_SW * sin_h) + (DISTSENSOR_POS_FW * cos_h);
+	float Pl_y = y + (DISTSENSOR_POS_SW * cos_h) + (DISTSENSOR_POS_FW * sin_h);
 
-	map_update_sensor(Pl_x,Pl_y,h,distL);
-	map_update_sensor(Pr_x,Pr_y,h,distR);
+	map_update_sensor_distance(Pl_x,Pl_y,h,distL);
+	map_update_sensor_distance(Pr_x,Pr_y,h,distR);
 }
 
 /*!
@@ -779,17 +793,12 @@ uint8 map_get_value_field_circle(uint16 x, uint16 y, uint8 radius, int8 value) {
  * @return True wenn Wert val gefunden
  */
 uint8 map_value_in_circle (uint16 x, uint16 y, uint8 radius, int8 val) {
-
-	#if MAP_RADIUS_FIELDS_GODEST > 0
-		uint8 r;
-		for (r=1; r<=radius; r++){          // Botradius
-			if (map_get_value_field_circle(x,y,r,val))      // Schluss sobald Wert erkannt wird
-				return True;
-		}
-		return False;                                         // Wert nicht vorhanden
-	#else
-		return map_get_field(x,y)==val;  	                    // niedrige Aufloesung, direkter Feldvergleich
-	#endif	// MAP_RADIUS_FIELDS_GODEST > 0
+	uint8 r;
+	for (r=1; r<=radius; r++){          // Botradius
+		if (map_get_value_field_circle(x,y,r,val))      // Schluss sobald Wert erkannt wird
+			return True;
+	}
+	return False;                                         // Wert nicht vorhanden
 }
 
 /*!
@@ -803,73 +812,44 @@ uint8 map_value_in_circle (uint16 x, uint16 y, uint8 radius, int8 val) {
  * @return True wenn xy im Umkreis vorhanden oder identisch ist
  */
 uint8 map_in_dest (uint16 x, uint16 y, uint16 destx, uint16 desty) {
-	// MAP_RADIUS_FIELDS_GODEST sind die Mapfelder im Botdurchmesser fuer Suchkreis
-	#if MAP_RADIUS_FIELDS_GODEST > 1 // gilt nur fuer hoehere Aufloesungen, sonst direkter Vergleich
-		//Distanzen in Mapfelder
-		int16 distx=destx-x;
-		int16 disty=desty-y;
-		// Radius, also Abstand ermitteln; Wurzel ziehen spare ich mir
-		return distx*distx + disty*disty <= MAP_RADIUS_FIELDS_GODEST_HALF_QUAD;
-	#else
-		//bei geringer Aufloesung (MCU) direkt mit Zielkoords vergleichen
-		return  (x==destx && y==desty);
-	#endif	// MAP_RADIUS_FIELDS_GODEST > 1
+	//Distanzen in Mapfelder
+	int16 distx=destx-x;
+	int16 disty=desty-y;
+	// Radius, also Abstand ermitteln; Wurzel ziehen spare ich mir
+	return distx*distx + disty*disty <= MAP_RADIUS_FIELDS;
 }
 
-#if MAP_RADIUS_FIELDS_GODEST > 0
-	/*!
-	 * Map-Umfeldaktualisierung mit einem bestimmten Wert ab einer Position xy mit Radius r bei
-	 * hoeherer Aufloesung; z.B. verwendet zur Lochmarkierung in einem Umkreis, Hinderniswahrscheinlichkeit
-	 * @param x Map-Koordinate
-	 * @param y Map-Koordinate
-	 * @param radius Radius des Umfeldes
-	 * @param value Mapwert; nur eingetragen wenn aktueller Mapwert groesser value ist
-	 */
-	static void map_set_value_field_circle(uint16 x, uint16 y, int8 radius, int8 value) {
-		int16 dX,dY;
-	    uint16 h=radius*radius;
-		for(dX = -radius; dX <= radius; dX++){
-			for(dY = -radius; dY <= radius; dY++) {
-				if(dX*dX + dY*dY <= h)	                    // nur innerhalb des Umkreises
-					if (map_get_field(x + dX, y + dY)>value)   // Mapwert hoeher Richtung frei ?
-						map_set_field (x + dX, y + dY,value); // dann Wert eintragen
-			}
+/*!
+ * Map-Umfeldaktualisierung mit einem bestimmten Wert ab einer Position xy mit Radius r bei
+ * @param x Map-Koordinate
+ * @param y Map-Koordinate
+ * @param radius Radius des Umfeldes
+ * @param value Mapwert; nur eingetragen wenn aktueller Mapwert groesser value ist
+ */
+static void map_set_value_field_circle(uint16 x, uint16 y, int8 radius, int8 value) {
+	int16 dX,dY;
+    uint16 h=radius*radius;
+	for(dX = -radius; dX <= radius; dX++){
+		for(dY = -radius; dY <= radius; dY++) {
+			if(dX*dX + dY*dY <= h)	                    // nur innerhalb des Umkreises
+				if (map_get_field(x + dX, y + dY)>value)   // Mapwert hoeher Richtung frei ?
+					map_set_field (x + dX, y + dY,value); // dann Wert eintragen
 		}
 	}
-#endif  // hoehere Aufloesung
+}
 
 /*!
- * setzt ein Map-Feld auf einen Wert mit Umfeldaktualisierung; Hindernis wird mit halben Botradius
- * eingetragen, da die Pfadpunkte im ganzen Umkreis liegen und nicht ueberschrieben werden duerfen;
- * Abgrund/ Loch wird aber auch im ganzen Botradius eingetragen; bei geringer MCU-Aufloesung ohne Umfeld mit
- * direktem Eintragen des Wertes auf xy; Umfeld wird dann in Richtung Hindernis gedrueckt
+ * setzt ein Map-Feld auf einen Wert mit Umfeldaktualisierung; Hindernis wird mit MAP_RADIUS_FIELDS
+ * eingetragen
  * @param x Map-Koordinate
  * @param y Map-Koordinate
  * @param val im Umkreis einzutragender Wert
  */
 void map_set_value_occupied (uint16 x, uint16 y, int8 val) {
-	#if MAP_RADIUS_FIELDS_GODEST > 0              // bei hoeherer Aufloesung
-		uint8 r;
-		uint8 maxr;
+	uint8 r;
 
-		if (val==-128)
-			maxr=MAP_RADIUS_FIELDS_GODEST;        // Loch wird mit ganzem Botradius eingetragen
-		else
-			maxr=MAP_RADIUS_FIELDS           ;   // im Normalfall halber Botradius
-
-		for (r=1; r<=maxr; r++)                   // in Map mit dem Radius um xy eintragen
-			map_set_value_field_circle(x,y,r,val);
-
-	#else                                         // bei geringer MCU-Aufloesung direkt auf xy
-		if (map_get_field(x,y)>val)                 // nur Eintragen wenn aktueller Wert freier ist
-		map_set_field(x,y,val);               // damit auch -128 Lochwert eingetragen wird
-	#endif	// MAP_RADIUS_FIELDS_GODEST > 0
-
-	// Punkt xy nun in Richtung Hindernis druecken mit Umfeld; falls Wert fuer kuenstl. Hindernis erreicht
-	// muss Wert aber so bleiben, damit diese Mapfelder bei Neuberechnung der Map-Potenziale erkannt und wieder
-	// freigegeben werden koennen zur Neuberuecksichtigung
-	if (val != -MAP_ART_HAZARD) 
-		map_update_occupied(x,y);
+	for (r=1; r<=MAP_RADIUS_FIELDS; r++)                   // in Map mit dem Radius um xy eintragen
+		map_set_value_field_circle(x,y,r,val);
 }
 
 /*! 
@@ -891,51 +871,40 @@ void map_clear(int8 min_val, int8 max_val) {
 	}
 } 
 
-/*! 
- * Routine ermittelt ab dem vom Mittelpunkt links/ rechts versetzten Punkt xp yp, in Blickrichtung
- * dist mm von den Abgrundsensoren voraus, die Mapkoordinaten XY
- * verwendet zur Map-Lochmarkierung; kann aber allgemeingueltig verwendet werden um
- * Mapkoordinaten zu erhalten in einem bestimmten Abstand voraus
- * @param xp Koord vom Mittelpunkt des Bots verschoben
- * @param yp Koord vom Mittelpunkt des Bots verschoben
- * @param h Blickrichtung
- * @param dist Abstand voraus in mm
- */
-uint16 map_get_posx_dist(float xp, float yp, float h, uint16 dist) {
-
-	// Hinderniss auf X-Koord, dass der Sensor sieht in Weltkoordinaten
-	float PH_x = xp + (DISTSENSOR_POS_FW + dist) * cos(h);
-
-	// Hinderniss, welches der Sensor sieht in, umgerechnet in Karten-Map-Koordinaten
-	return map_world_to_map(PH_x);
-}
-
-uint16 map_get_posy_dist(float xp, float yp, float h, uint16 dist) {
-
-	// Hinderniss auf Y-Koord, dass der Sensor sieht in Weltkoordinaten
-	float PH_y = yp + (DISTSENSOR_POS_FW + dist) * sin(h);
-
-	// Hinderniss, welches der Sensor sieht in, umgerechnet in Karten-Map-Koordinaten
-	return  map_world_to_map(PH_y);
-}
 
 /*!
- * markiert die Mapkoordinaten als Loch zum entsprechenden Abgrundsensor
- * @param x bereits berechnete Koordinate nach links rechts vom Mittelpunkt in Hoehe des Sensors
- * @param y bereits berechnete Koordinate nach links rechts vom Mittelpunkt in Hoehe des Sensors
- * @param h Blickrichtung bereits umgerechnet in Bogenmass
+ * Aktualisiert die interne Karte anhand der Abgrund-Sensordaten
+ * @param x X-Achse der Position in Weltkoordinaten
+ * @param y Y-Achse der Position in Weltkoordinaten
+ * @param head Blickrichtung in Grad
+ * @param borderL Sensor links 1= abgrund 0 = frei
+ * @param borderR Sensor rechts 1= abgrund 0 = frei
  */
-void map_update_sensor_hole(float x, float y, float h){
-	uint16 PH_X=0;
-	uint16 PH_Y=0;
-
-	// 0 mm voraus Loch ab Abgrundsensoren
-	PH_X=map_get_posx_dist(x,y,h,0);
-	PH_Y=map_get_posy_dist(x,y,h,0);
-
-	// nur wenn noch nicht als Loch gekennzeichnet auf Umgebungskreis Loch vermerken
-	if (map_get_field(PH_X,PH_Y) > -128)
-		map_set_value_occupied(PH_X,PH_Y,-128);
+void map_update_border(float x, float y, float head, uint8 borderL, uint8 borderR){
+	float sin_head= sin(head);
+	float cos_head= cos(head);
+	
+    if (borderR >0){
+    	//Ort des rechten Sensors in Mapkordinaten
+    	uint16 x_map = map_world_to_map(x + 
+    								BORDERSENSOR_POS_SW * sin_head+ 
+    								BORDERSENSOR_POS_FW * cos_head);
+    	uint16 y_map = map_world_to_map( y - 
+    								BORDERSENSOR_POS_SW * cos_head + 
+    								BORDERSENSOR_POS_FW * sin_head);
+    	map_set_value_occupied(x_map,y_map,-128);
+    }
+    
+    if (borderL >0){
+    	uint16 x_map = map_world_to_map(x -
+    								BORDERSENSOR_POS_SW * sin_head + 
+    								BORDERSENSOR_POS_FW * cos_head);
+    	
+    	uint16 y_map = map_world_to_map( y +
+    								BORDERSENSOR_POS_SW * cos_head + 
+    								BORDERSENSOR_POS_FW * sin_head);
+    	map_set_value_occupied(x_map,y_map,-128);
+    }
 }
 
 #if 0

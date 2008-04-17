@@ -40,8 +40,9 @@
 
 #define DISTSENSOR_POS_FW		47			/*!< Abstand der Distanzsensoren von der Radachse (in Fahrtrichtung) [mm] */
 #define DISTSENSOR_POS_SW		32			/*!< Abstand der Distanzsensoren von der Mittelachse (in Querrichtung) [m] */
-#define DISTSENSOR_POS_B_SW	(DISTSENSOR_POS_SW + 5) /*!< Abgrundsensoren 5 mm weiter aussen als Distsensoren */
 
+#define BORDERSENSOR_POS_FW		DISTSENSOR_POS_FW  /*!< Abgrundsensoren unter Distsensoren */
+#define BORDERSENSOR_POS_SW		(DISTSENSOR_POS_SW + 5) /*!< Abgrundsensoren 5 mm weiter aussen als Distsensoren */
 
 /*** einstellbare Parameter ***/
 

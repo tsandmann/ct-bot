@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-04-16 Benjamin Benz [bbe@heise.de]:	Karte aktualisert nun auch Abgrundsensoren 
+
 2008-04-17 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer pc/os_thread_pc.c :: os_create_thread() unter Windows
 
 2008-04-16 Timo Sandmann [mail@timosandmann.de]: Verschiedene Modi fuer bot_scan_otf eingebaut (siehe include/bot-logic/behaviour_scan.h)

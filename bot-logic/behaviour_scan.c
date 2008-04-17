@@ -47,13 +47,18 @@
 	#error "OS_AVAILABLE muss an sein fuer behaviour_scan"
 #endif
 
+#ifndef OS_AVAILABLE
+  	#error behaviour_scan_on_the_fly geht nicht ohne OS_AVAILABLE
+#endif
+
 //#define DEBUG_MAP
-//TODO:	Status fuer Loecher eintragen
+//#define DEBUG_SCAN_OTF	// Debug-Infos an
+
 //TODO:	int16 statt float fuer Position
 //TODO:	Stacksize nachrechnen / optimieren
 
 #define MAP_UPDATE_STACK_SIZE	256	
-#define MAP_UPDATE_CACHE_SIZE	30
+#define MAP_UPDATE_CACHE_SIZE	26
 
 scan_mode_t scan_otf_modes = {1, 1, 1, 1};	/*!< Modi des Verhaltens. Default: location, distance, border an, Kartographie-Modus */
 
@@ -62,9 +67,14 @@ typedef struct {
 	int16_t x_pos;		/*!< X-Komponente der Position [mm] */
 	int16_t y_pos;		/*!< Y-Komponente der Position [mm] */
 	int16_t heading;	/*!< Blickrichtung [1/10 Grad]*/
-	uint8_t distL;		/*!< Entfernung linker Distanzsensor [5 mm] */
-	uint8_t distR;		/*!< Entfernung rechter Distanzsensor [5 mm] */
-} map_cache_t;
+	uint8_t dataL;		/*!< Entfernung linker Distanzsensor [5 mm] aber auch BorderSensor [0/1] */
+	uint8_t dataR;		/*!< Entfernung rechter Distanzsensor [5 mm] aber auch BorderSensor [0/1] */
+	scan_mode_t mode;	/*!< Was soll aktualisiert werden */
+#ifndef DOXYGEN
+	} __attribute__ ((packed)) map_cache_t;// Keine Luecken in der Struktur lassen
+#else
+	} map_cache_t;
+#endif
 
 map_cache_t map_update_cache[MAP_UPDATE_CACHE_SIZE];	/*!< Cache */
 fifo_t map_update_fifo;									/*!< Fifo fuer Cache */
@@ -77,25 +87,35 @@ static Tcb_t * map_update_thread;						/*!< Thread fuer Map-Update */
  */
 void bot_scan_onthefly_do_map_update(void) {
 	static map_cache_t cache_tmp;	// Stackspeicher sparen
-	static int16_t last_x, last_y;
 	LOG_INFO("MAP-thread started");
+	
 	while (1) {
 		/* Cache-Eintrag holen 
 		 * PC-Version blockiert hier, falls Fifo leer */
 		if (fifo_get_data(&map_update_fifo, &cache_tmp, sizeof(map_cache_t)) > 0) {
-			/* Strahlen updaten */
-			if (scan_otf_modes.distance && cache_tmp.distL != 0) {
-				map_update(cache_tmp.x_pos, cache_tmp.y_pos, cache_tmp.heading/10.0f, cache_tmp.distL*5, cache_tmp.distR*5);
+			
+			#ifdef DEBUG_SCAN_OTF
+				LOG_DEBUG("lese Cache: x= %d y= %d head= %f distance= %d loaction=%d border=%d",cache_tmp.x_pos, cache_tmp.y_pos, cache_tmp.heading/10.0f,cache_tmp.mode.distance, cache_tmp.mode.location, cache_tmp.mode.border);
+
+				if ((cache_tmp.mode.distance || cache_tmp.mode.location || cache_tmp.mode.border)==0)
+					LOG_DEBUG("Achtung: Dieser Eintrag ergibt keinen Sinn, kein einziges mode-bit gesetzt");
+			#endif
+			
+			/* Strahlen updaten, falls distance-mode und der aktuelle Eintrag Daten dazu hat*/
+			if (scan_otf_modes.distance && cache_tmp.mode.distance) {
+				map_update_distance(cache_tmp.x_pos, cache_tmp.y_pos, cache_tmp.heading/10.0f, cache_tmp.dataL*5, cache_tmp.dataR*5);
 			}
-			/* Grundflaeche updaten */
-			if (scan_otf_modes.location) {
-				int16_t diff = get_dist(cache_tmp.x_pos, cache_tmp.y_pos, last_x, last_y);
-				last_x = cache_tmp.x_pos;
-				last_y = cache_tmp.y_pos;
-				if (diff > SCAN_ONTHEFLY_DIST_RESOLUTION) {
+			
+			/* Grundflaeche updaten, falls location-mode */
+			if (scan_otf_modes.location && cache_tmp.mode.location) {
 					map_update_location(cache_tmp.x_pos, cache_tmp.y_pos);
-				}
 			}
+			
+			/* Abgrundsensoren updaten, falls border-mode */
+			if (scan_otf_modes.border && cache_tmp.mode.border) {
+				map_update_border(cache_tmp.x_pos, cache_tmp.y_pos,cache_tmp.heading/10.0f, cache_tmp.dataL,cache_tmp.dataR);
+			}
+			
 		} else {
 			/* Fifo leer => weiter mit Main-Thread */
 			os_thread_wakeup(os_threads);	// main ist immer der Erste im Array
@@ -131,9 +151,10 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 		if (cache_free == 0) {
 			/* Cache ganz voll */
 			if (scan_otf_modes.map_mode) {
-				/* Stopp */
+				/* Stoppe den Bot, damit wir zeit haben die Karte einzutragen */
 				motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
 //				LOG_DEBUG("Map-Cache voll, halte Bot an");
+				/* HAlte alle Verhalten eine Weile an, weil sie ja sonst weiterfahren würden */
 				os_thread_sleep(2000);
 			} else {
 				/* Cache voll, neuen Eintrag verwerfen */
@@ -143,42 +164,87 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 		}
 		/* Cache sehr voll */
 		if ((int16_t)v_enc_left == 0 && (int16_t)v_enc_right == 0) {
-			/* Standzeit als Pause nutzen */
+			/* Falls Bot gerade steht, dann kleine Pause */
 			os_thread_sleep(2000);
 			return;
 		}
 	}
+	
 	/* Cache updaten, falls sich der Bot weit genug bewegt hat. */
+	cache_tmp.mode.location=0;
+	cache_tmp.mode.distance=0;
+	cache_tmp.mode.border=0;
+	cache_tmp.dataL=0;
+	cache_tmp.dataR=0;
+	
+	// ermitteln, wie weit der Bot seit dem letzten location-update gefahren ist
 	int16_t diff = get_dist(x_pos, y_pos, last_x, last_y);
-	int16_t turned = turned_angle(last_head);
-	if (diff > (SCAN_ONTHEFLY_DIST_RESOLUTION*SCAN_ONTHEFLY_DIST_RESOLUTION) ||
-			turned > SCAN_ONTHEFLY_ANGLE_RESOLUTION) {
-		cache_tmp.x_pos = x_pos;
-		cache_tmp.y_pos = y_pos;
-		cache_tmp.heading = (int16_t)(heading*10.0f);
-		int16_t diff_dist = get_dist(x_pos, y_pos, last_dist_x, last_dist_y);
-		if (diff_dist > (SCAN_ONTHEFLY_DIST_RESOLUTION_DISTSENS*SCAN_ONTHEFLY_DIST_RESOLUTION_DISTSENS) ||
-				turned > SCAN_ONTHEFLY_ANGLE_RESOLUTION) {
-			cache_tmp.distL = sensDistL/5;
-			cache_tmp.distR = sensDistR/5;
-			last_dist_x = x_pos;
-			last_dist_y = y_pos;
-		} else {
-			cache_tmp.distL = 0;		
-		}
-		fifo_put_data(&map_update_fifo, &cache_tmp, sizeof(map_cache_t));
-
+	if (diff > (SCAN_ONTHEFLY_DIST_RESOLUTION*SCAN_ONTHEFLY_DIST_RESOLUTION)){
+		// ist er weiter als SCAN_ONTHEFLY_DIST_RESOLUTION gefahren ==> standfläche aktualisieren
+		cache_tmp.mode.location = 1;
+		// Letzte Location-Update-position sichern
 		last_x = x_pos;
 		last_y = y_pos;
-		last_head = (int16_t) heading;
+	}
 
+	
+	/* Die Distanzsensoren tragen wir beim geradeausfahren selten ein, 
+	 da sie viele Map-zellen überstreichen und das Eintragen teuer ist
+	 und sie auf der anderen Seite (beim vorwärtsfahren wenig neue Info liefern
+	*/
+	
+	// ermitteln, wie weit der Bot gedreht hat
+	int16_t turned = turned_angle(last_head);
+	// ermitteln, wie weit der Bot seit dem letzten distance-update gefahren ist
+	diff = get_dist(x_pos, y_pos, last_dist_x, last_dist_y);
+	if ((turned > SCAN_ONTHEFLY_ANGLE_RESOLUTION) ||
+		diff > (SCAN_ONTHEFLY_DIST_RESOLUTION_DISTSENS*SCAN_ONTHEFLY_DIST_RESOLUTION_DISTSENS)) {
+		// Hat sich der Bot mehr als SCAN_ONTHEFLY_ANGLE_RESOLUTION gedreht ==> Blickstrahlen aktualisieren
+		cache_tmp.mode.distance = 1;
+
+		cache_tmp.dataL = sensDistL/5;
+		cache_tmp.dataR = sensDistR/5;
+		// Letzte Distance-Update-position sichern
+		last_dist_x = x_pos;
+		last_dist_y = y_pos;
+		last_head = (int16_t) heading;
+	}
+	
+	/* Abbgrundbehandlung */
+	if (sensBorderL > BORDER_DANGEROUS) {
+		cache_tmp.mode.border = 1;
+		cache_tmp.mode.distance = 0;
+		cache_tmp.dataL = 1;
+	}
+
+	if (sensBorderR > BORDER_DANGEROUS) {
+			cache_tmp.mode.border = 1;
+			cache_tmp.mode.distance = 0;
+			cache_tmp.dataR = 1;
+	}	
+	
+	// ist ein Update angesagt?
+	if (cache_tmp.mode.distance || cache_tmp.mode.location || cache_tmp.mode.border){			
+		cache_tmp.x_pos = x_pos;
+		cache_tmp.y_pos = y_pos;
+		cache_tmp.heading = (int16_t)(heading*10.0f);		
+
+
+		fifo_put_data(&map_update_fifo, &cache_tmp, sizeof(map_cache_t));
+
+		#ifdef DEBUG_SCAN_OTF
+			LOG_DEBUG("neuer Eintrag: x= %d y= %d head= %f distance= %d loaction=%d border=%d",cache_tmp.x_pos, cache_tmp.y_pos, cache_tmp.heading/10.0f,cache_tmp.mode.distance, cache_tmp.mode.location, cache_tmp.mode.border);
+		#endif
+	}
+	
+			
 		#ifdef DEBUG_MAP
 			uint32_t end_ticks= TIMER_GET_TICKCOUNT_32;
 			uint16_t diff = (end_ticks-start_ticks)*176/1000;
 			LOG_DEBUG("time: %u ms", TIMER_GET_TICKCOUNT_32*176/1000);
 			LOG_DEBUG("map updated, took %u ms", diff);
 		#endif
-	}
+	
 
 //	LOG_INFO("MAIN is going to sleep for 100 ms");
 //	os_thread_sleep(100L);
@@ -227,7 +293,7 @@ void bot_scan_behaviour(Behaviour_t * data) {
 
 			#ifdef MAP_AVAILABLE
 				// Eigentlicher Scan hier
-				map_update(x_pos, y_pos, heading, sensDistL, sensDistR);
+				map_update_distance(x_pos, y_pos, heading, sensDistL, sensDistR);
 				////////////
 			#endif
 		}
@@ -258,47 +324,4 @@ void bot_scan(Behaviour_t * caller) {
 #endif
 }
 
-#if 0	// inaktiv
-/*! 
- * eigentliche Aufrufroutine zum Eintragen des Abgrundes in den Mapkoordinaten, wenn
- * die Abgrundsensoren zugeschlagen haben  
- * @param x aktuelle Bot-Koordinate als Welt- (nicht Map-) Koordinaten
- * @param y aktuelle Bot-Koordinate als Welt- (nicht Map-) Koordinaten
- * @param head Blickrichtung 
- */
-void update_map_hole(float x, float y, float head) {
-	float h= head * (M_PI/180.0f); // Umrechnung in Bogenmass 
-	// uint8 border_behaviour_fired=False;
-
-	if (sensBorderL > BORDER_DANGEROUS) {
-		//Ort des linken Sensors in Weltkoordinaten (Mittelpunktentfernung)
-		float Pl_x = x - (DISTSENSOR_POS_B_SW * sin(h));
-		float Pl_y = y + (DISTSENSOR_POS_B_SW * cos(h));
-		map_update_sensor_hole(Pl_x, Pl_y, h); // Eintragen des Loches in die Map	   
-	}
-
-	if (sensBorderR > BORDER_DANGEROUS) {
-		//Ort des rechten Sensors in Weltkoordinaten (Mittelpunktentfernung)
-		float Pr_x = x + (DISTSENSOR_POS_B_SW * sin(h));
-		float Pr_y = y - (DISTSENSOR_POS_B_SW * cos(h));
-		map_update_sensor_hole(Pr_x, Pr_y, h); // Eintragen des Loches in die Map
-	}
-}
-#endif
-
-/*!
- * Notfallhandler, ausgefuehrt bei Abgrunderkennung; muss registriert werden um
- * den erkannten Abgrund in die Map einzutragen
- */
-void border_in_map_handler(void) {
-#if 0	// inaktiv
-	// Routine muss zuerst checken, ob on_the_fly auch gerade aktiv ist, da nur in diesem
-	// Fall etwas gemacht werden muss
-	if (!behaviour_is_activated(bot_scan_onthefly_behaviour))
-		return;
-
-	/* bei Abgrunderkennung Position des Abgrundes in Map mit -128 eintragen */
-	update_map_hole(x_pos, y_pos, heading);
-#endif
-}
 #endif	// BEHAVIOUR_SCAN_AVAILABLE
