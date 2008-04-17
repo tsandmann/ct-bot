@@ -133,9 +133,6 @@ const call_t calls[] PROGMEM = {
 	#ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_do_slalom,0,""),
 	#endif
-	#ifdef BEHAVIOUR_SCAN_AVAILABLE
-		PREPARE_REMOTE_CALL(bot_scan,0,""),
-	#endif
 	#ifdef BEHAVIOUR_SERVO_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_servo,2,"uint8 servo, uint8 pos",1,1),
 	#endif

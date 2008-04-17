@@ -47,10 +47,6 @@
 	#error "OS_AVAILABLE muss an sein fuer behaviour_scan"
 #endif
 
-#ifndef OS_AVAILABLE
-  	#error behaviour_scan_on_the_fly geht nicht ohne OS_AVAILABLE
-#endif
-
 //#define DEBUG_MAP
 //#define DEBUG_SCAN_OTF	// Debug-Infos an
 
@@ -287,75 +283,6 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 	os_thread_yield();
 	
 //	LOG_INFO("MAIN is back! :-)");
-}
-
-#if 0	// inaktiv
-#define BOT_SCAN_STATE_START 0
-static uint8 bot_scan_state = BOT_SCAN_STATE_START;	/*!< Zustandsvariable fuer bot_scan_behaviour */
-#endif
-
-/*!
- * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
- * @param *data der Verhaltensdatensatz
- */
-void bot_scan_behaviour(Behaviour_t * data) {
-#if 0	// inaktiv
-	#define BOT_SCAN_STATE_SCAN 1	
-
-	#define ANGLE_RESOLUTION 5	/*!< Aufloesung fuer den Scan in Grad */
-
-	//	static uint16 bot_scan_start_angle; /*!< Winkel, bei dem mit dem Scan begonnen wurde */
-	static float turned; /*!< Winkel um den bereits gedreht wurde */
-
-	static float last_scan_angle; /*!< Winkel bei dem zuletzt gescannt wurde */
-
-	float diff;
-
-	switch (bot_scan_state) {
-	case BOT_SCAN_STATE_START:
-		turned=0;
-		last_scan_angle=heading-ANGLE_RESOLUTION;
-		bot_scan_state=BOT_SCAN_STATE_SCAN;
-		break;
-	case BOT_SCAN_STATE_SCAN:
-		diff = heading - last_scan_angle;
-		if (diff < -180)
-			diff+=360;
-		if (diff*1.15>= ANGLE_RESOLUTION) {
-			turned+= diff;
-			last_scan_angle=heading;
-
-			#ifdef MAP_AVAILABLE
-				// Eigentlicher Scan hier
-				map_update_distance(x_pos, y_pos, heading, sensDistL, sensDistR);
-				////////////
-			#endif
-		}
-
-		if (turned >= 360-ANGLE_RESOLUTION) // Ende erreicht
-			bot_scan_state++;
-		break;
-	default:
-		bot_scan_state = BOT_SCAN_STATE_START;
-		#ifdef MAP_AVAILABLE
-			map_print();
-		#endif
-		return_from_behaviour(data);
-		break;
-	}
-#endif
-}
-
-/*! 
- * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
- * @param *caller	Der Aufrufer
- */
-void bot_scan(Behaviour_t * caller) {	
-	bot_turn(caller, 360);
-#if 0	// inaktiv
-	bot_scan_state = BOT_SCAN_STATE_START;
-	switch_to_behaviour(0, bot_scan_behaviour, OVERRIDE);
-#endif
 }
 
 #endif	// BEHAVIOUR_SCAN_AVAILABLE

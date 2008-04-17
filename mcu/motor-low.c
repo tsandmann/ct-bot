@@ -140,15 +140,15 @@ void servo_low(uint8 servo, uint8 pos){
 	
 }
 
-/*!
- * Interrupt Handler fuer Timer/Counter 0 
- */
-#ifdef __AVR_ATmega644__
-	SIGNAL (TIMER0_COMPA_vect){
-#else
-	SIGNAL (SIG_OUTPUT_COMPARE0){
-#endif
-}
+///*!
+// * Interrupt Handler fuer Timer/Counter 0 
+// */
+//#ifdef __AVR_ATmega644__
+//	SIGNAL (TIMER0_COMPA_vect){
+//#else
+//	SIGNAL (SIG_OUTPUT_COMPARE0){
+//#endif
+//}
 
 /*!
  * Timer 0: Kontrolliert den Servo per PWM
@@ -177,17 +177,17 @@ void pwm_0_init(void){
 
 // ---- Timer 1 ------
 
-/*!
- * Interrupt Handler fuer Timer/Counter 1A 
- */
-SIGNAL (SIG_OUTPUT_COMPARE1A){
-}
-
-/*!
- * Interrupt Handler fuer Timer/Counter 1B 
- */
-SIGNAL (SIG_OUTPUT_COMPARE1B){
-}
+///*!
+// * Interrupt Handler fuer Timer/Counter 1A 
+// */
+//SIGNAL (SIG_OUTPUT_COMPARE1A){
+//}
+//
+///*!
+// * Interrupt Handler fuer Timer/Counter 1B 
+// */
+//SIGNAL (SIG_OUTPUT_COMPARE1B){
+//}
 
 /*!
  * Timer 1: Kontrolliert die Motoren per PWM

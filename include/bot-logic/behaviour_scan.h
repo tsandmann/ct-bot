@@ -86,23 +86,5 @@ void bot_scan_onthefly_init(void);
  */
 void bot_scan_onthefly_behaviour(Behaviour_t *data);
 
-/*!
- * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
- * @param *data der Verhaltensdatensatz
- */
-void bot_scan_behaviour(Behaviour_t *data);
-
-
-/*!
- * Notfallhandler, ausgefuehrt bei Abgrunderkennung; muss registriert werden um
- * den erkannten Abgrund in die Map einzutragen
- */
-void border_in_map_handler(void); 
-
-/*! 
- * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
- * @param *caller	Der Aufrufer
- */
-void bot_scan(Behaviour_t* caller);
-#endif
-#endif /*BEHAVIOUR_SCAN_H_*/
+#endif	// BEHAVIOUR_SCAN_AVAILABLE
+#endif	/*BEHAVIOUR_SCAN_H_*/

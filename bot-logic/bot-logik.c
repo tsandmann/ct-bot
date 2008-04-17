@@ -169,11 +169,6 @@ void bot_behave_init(void) {
 		insert_behaviour_to_list(&behaviour, new_behaviour(154, bot_cancel_behaviour_behaviour,INACTIVE));
 	#endif
 
-	#ifdef BEHAVIOUR_SCAN_AVAILABLE
-		// Verhalten, das einmal die Umgebung des Bots scannt
-		insert_behaviour_to_list(&behaviour, new_behaviour(152, bot_scan_behaviour,INACTIVE));
-	#endif
-	
 	// Alle Hilfsroutinen sind relativ wichtig, da sie auch von den Notverhalten her genutzt werden
 	// Hilfsverhalten, die Befehle von Boten-Funktionen ausfuehren, erst inaktiv, werden von Boten aktiviert	
 	#ifdef BEHAVIOUR_TURN_AVAILABLE
