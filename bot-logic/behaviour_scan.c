@@ -60,6 +60,14 @@
 #define MAP_UPDATE_STACK_SIZE	256	
 #define MAP_UPDATE_CACHE_SIZE	26
 
+#define SCAN_OTF_RESOLUTION_DISTANCE_LOCATION (BOT_DIAMETER/2)		/*!< Nach welcher gefahrenen Strecke [mm] soll die Standfläche aktualisiert werden*/
+
+#define SCAN_OTF_RESOLUTION_DISTANCE_BORDER  10		/*!< Nach welcher gefahrenen Strecke [mm] sollen die Abgrundsensoren für die Karte ausgewertet werden */
+#define SCAN_OTF_RESOLUTION_ANGLE_BORDER 	  10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Abgrundsensoren für die Karte ausgewertet werden */
+
+#define SCAN_OTF_RESOLUTION_ANGLE_DISTSENS 	  10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Distanzsensoren für die Karte ausgewertet werden */
+#define SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS (BOT_DIAMETER*2)	/*!< Nach welcher gefahrenen Strecke [mm] sollen die  Distanzsensoren für die Karte ausgewertet werden */
+
 scan_mode_t scan_otf_modes = {1, 1, 1, 1};	/*!< Modi des Verhaltens. Default: location, distance, border an, Kartographie-Modus */
 
 /*! Map-Cache-Eintrag */
@@ -142,7 +150,9 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 	#ifdef DEBUG_MAP
 		uint32_t start_ticks = TIMER_GET_TICKCOUNT_32;
 	#endif
-	static int16_t last_x, last_y, last_dist_x, last_dist_y, last_head;
+	static int16_t last_location_x, last_location_y;
+	static int16_t last_dist_x, last_dist_y, last_dist_head;
+	static int16_t last_border_x, last_border_y, last_border_head;
 	map_cache_t cache_tmp;
 
 	/* Verhalten je nach Cache-Fuellstand */
@@ -177,28 +187,34 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 	cache_tmp.dataL=0;
 	cache_tmp.dataR=0;
 	
+	
+	/*
+	 * STANDFLÄCHE
+	 * Die Standfläche tragen wir nur ein, wenn der Bot auch ein Stück gefahren ist
+	 */ 
 	// ermitteln, wie weit der Bot seit dem letzten location-update gefahren ist
-	int16_t diff = get_dist(x_pos, y_pos, last_x, last_y);
-	if (diff > (SCAN_ONTHEFLY_DIST_RESOLUTION*SCAN_ONTHEFLY_DIST_RESOLUTION)){
+	uint16_t diff = get_dist(x_pos, y_pos, last_location_x, last_location_y);
+	if (diff > (SCAN_OTF_RESOLUTION_DISTANCE_LOCATION*SCAN_OTF_RESOLUTION_DISTANCE_LOCATION)){
 		// ist er weiter als SCAN_ONTHEFLY_DIST_RESOLUTION gefahren ==> standfläche aktualisieren
 		cache_tmp.mode.location = 1;
 		// Letzte Location-Update-position sichern
-		last_x = x_pos;
-		last_y = y_pos;
+		last_location_x = x_pos;
+		last_location_y = y_pos;
 	}
 
 	
-	/* Die Distanzsensoren tragen wir beim geradeausfahren selten ein, 
-	 da sie viele Map-zellen überstreichen und das Eintragen teuer ist
-	 und sie auf der anderen Seite (beim vorwärtsfahren wenig neue Info liefern
+	/* 
+	 * DISTANZSENSOREN
+	 * Die Distanzsensoren tragen wir beim geradeausfahren selten ein, 
+	 * da sie viele Map-zellen überstreichen und das Eintragen teuer ist
+	 * und sie auf der anderen Seite (beim vorwärtsfahren wenig neue Info liefern
 	*/
-	
 	// ermitteln, wie weit der Bot gedreht hat
-	int16_t turned = turned_angle(last_head);
+	int16_t turned = turned_angle(last_dist_head);
 	// ermitteln, wie weit der Bot seit dem letzten distance-update gefahren ist
 	diff = get_dist(x_pos, y_pos, last_dist_x, last_dist_y);
-	if ((turned > SCAN_ONTHEFLY_ANGLE_RESOLUTION) ||
-		diff > (SCAN_ONTHEFLY_DIST_RESOLUTION_DISTSENS*SCAN_ONTHEFLY_DIST_RESOLUTION_DISTSENS)) {
+	if ((turned > SCAN_OTF_RESOLUTION_ANGLE_DISTSENS) ||
+		(diff > (SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS*SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS))) {
 		// Hat sich der Bot mehr als SCAN_ONTHEFLY_ANGLE_RESOLUTION gedreht ==> Blickstrahlen aktualisieren
 		cache_tmp.mode.distance = 1;
 
@@ -207,21 +223,34 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 		// Letzte Distance-Update-position sichern
 		last_dist_x = x_pos;
 		last_dist_y = y_pos;
-		last_head = (int16_t) heading;
+		last_dist_head = (int16_t) heading;
 	}
 	
-	/* Abbgrundbehandlung */
-	if (sensBorderL > BORDER_DANGEROUS) {
-		cache_tmp.mode.border = 1;
-		cache_tmp.mode.distance = 0;
-		cache_tmp.dataL = 1;
-	}
 
-	if (sensBorderR > BORDER_DANGEROUS) {
+	/*
+	 * ABGRUNDSENSOREN
+	 * Wir werten diese nur aus, wenn der Bot entweder 
+	 * SCAN_OTF_RESOLUTION_DISTANCE_BORDER mm gefahren ist oder
+	 * SCAN_OTF_RESOLUTION_ANGLE_BORDER Grad gedreht hat 
+	 */
+	// ermitteln, wie weit der Bot seit dem letzten border-update gefahren ist
+	diff = get_dist(x_pos, y_pos, last_border_x, last_border_y);
+	// ermitteln, wie weit der Bot gedreht hat
+	turned = turned_angle(last_border_head);
+	if ((
+		  (diff > (SCAN_OTF_RESOLUTION_DISTANCE_BORDER*SCAN_OTF_RESOLUTION_DISTANCE_BORDER)) ||
+		  (turned > SCAN_OTF_RESOLUTION_ANGLE_BORDER)		
+		) && 
+		((sensBorderL > BORDER_DANGEROUS) || (sensBorderR > BORDER_DANGEROUS))) {
 			cache_tmp.mode.border = 1;
 			cache_tmp.mode.distance = 0;
-			cache_tmp.dataR = 1;
-	}	
+			cache_tmp.dataL = (sensBorderL > BORDER_DANGEROUS);
+			cache_tmp.dataR = (sensBorderR > BORDER_DANGEROUS);
+			
+			last_border_x = x_pos;
+			last_border_y = y_pos;
+			last_border_head = (int16_t) heading;
+	}
 	
 	// ist ein Update angesagt?
 	if (cache_tmp.mode.distance || cache_tmp.mode.location || cache_tmp.mode.border){			

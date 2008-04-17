@@ -31,10 +31,6 @@
 
 #ifdef BEHAVIOUR_SCAN_AVAILABLE
 
-#define SCAN_ONTHEFLY_DIST_RESOLUTION 30			/*!< Alle wieviel gefahrene Strecke [mm] soll die Karte aktualisiert werden */
-#define SCAN_ONTHEFLY_DIST_RESOLUTION_DISTSENS 60	/*!< Alle wieviel gefahrene Strecke [mm] sollen die Distanzsensordaten in der Karte aktualisiert werden */
-#define SCAN_ONTHEFLY_ANGLE_RESOLUTION 10			/*!< Alle wieviel Gerad Drehung [Grad] soll die Karte aktualisiert werden */
-
 /*! Modi des Scan-Verhaltens */
 typedef struct {
 	uint8_t location:1;	/*!< Grundflaechen-Update an/aus */
