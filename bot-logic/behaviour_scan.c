@@ -66,7 +66,7 @@
 #define SCAN_OTF_RESOLUTION_ANGLE_BORDER 	  10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Abgrundsensoren für die Karte ausgewertet werden */
 
 #define SCAN_OTF_RESOLUTION_ANGLE_DISTSENS 	  10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Distanzsensoren für die Karte ausgewertet werden */
-#define SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS (BOT_DIAMETER*2)	/*!< Nach welcher gefahrenen Strecke [mm] sollen die  Distanzsensoren für die Karte ausgewertet werden */
+#define SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS 180	/*!< Nach welcher gefahrenen Strecke [mm] sollen die  Distanzsensoren für die Karte ausgewertet werden */
 
 scan_mode_t scan_otf_modes = {1, 1, 1, 1};	/*!< Modi des Verhaltens. Default: location, distance, border an, Kartographie-Modus */
 
