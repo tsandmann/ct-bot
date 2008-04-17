@@ -60,13 +60,13 @@
 #define MAP_UPDATE_STACK_SIZE	256	
 #define MAP_UPDATE_CACHE_SIZE	26
 
-#define SCAN_OTF_RESOLUTION_DISTANCE_LOCATION (BOT_DIAMETER/2)		/*!< Nach welcher gefahrenen Strecke [mm] soll die Standfläche aktualisiert werden*/
+#define SCAN_OTF_RESOLUTION_DISTANCE_LOCATION	60	/*!< Nach welcher gefahrenen Strecke [mm] soll die Standfläche aktualisiert werden*/
 
-#define SCAN_OTF_RESOLUTION_DISTANCE_BORDER  10		/*!< Nach welcher gefahrenen Strecke [mm] sollen die Abgrundsensoren für die Karte ausgewertet werden */
-#define SCAN_OTF_RESOLUTION_ANGLE_BORDER 	  10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Abgrundsensoren für die Karte ausgewertet werden */
+#define SCAN_OTF_RESOLUTION_DISTANCE_BORDER		10	/*!< Nach welcher gefahrenen Strecke [mm] sollen die Abgrundsensoren für die Karte ausgewertet werden */
+#define SCAN_OTF_RESOLUTION_ANGLE_BORDER		10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Abgrundsensoren für die Karte ausgewertet werden */
 
-#define SCAN_OTF_RESOLUTION_ANGLE_DISTSENS 	  10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Distanzsensoren für die Karte ausgewertet werden */
-#define SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS 180	/*!< Nach welcher gefahrenen Strecke [mm] sollen die  Distanzsensoren für die Karte ausgewertet werden */
+#define SCAN_OTF_RESOLUTION_ANGLE_DISTSENS		10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Distanzsensoren für die Karte ausgewertet werden */
+#define SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS	180	/*!< Nach welcher gefahrenen Strecke [mm] sollen die  Distanzsensoren für die Karte ausgewertet werden */
 
 scan_mode_t scan_otf_modes = {1, 1, 1, 1};	/*!< Modi des Verhaltens. Default: location, distance, border an, Kartographie-Modus */
 
@@ -90,6 +90,11 @@ fifo_t map_update_fifo;									/*!< Fifo fuer Cache */
 uint8_t map_update_stack[MAP_UPDATE_STACK_SIZE];		/*!< Stack des Update-Threads */
 static Tcb_t * map_update_thread;						/*!< Thread fuer Map-Update */
 
+#ifdef MCU
+// kein Pro- und Epilog
+void bot_scan_onthefly_do_map_update(void) __attribute__((naked));
+#endif
+
 /*!
  * Main-Funktion des Map-Update-Threads
  */
@@ -110,17 +115,17 @@ void bot_scan_onthefly_do_map_update(void) {
 			#endif
 			
 			/* Strahlen updaten, falls distance-mode und der aktuelle Eintrag Daten dazu hat*/
-			if (scan_otf_modes.distance && cache_tmp.mode.distance) {
+			if (cache_tmp.mode.distance) {
 				map_update_distance(cache_tmp.x_pos, cache_tmp.y_pos, cache_tmp.heading/10.0f, cache_tmp.dataL*5, cache_tmp.dataR*5);
 			}
 			
 			/* Grundflaeche updaten, falls location-mode */
-			if (scan_otf_modes.location && cache_tmp.mode.location) {
-					map_update_location(cache_tmp.x_pos, cache_tmp.y_pos);
+			if (cache_tmp.mode.location) {
+				map_update_location(cache_tmp.x_pos, cache_tmp.y_pos);
 			}
 			
 			/* Abgrundsensoren updaten, falls border-mode */
-			if (scan_otf_modes.border && cache_tmp.mode.border) {
+			if (cache_tmp.mode.border) {
 				map_update_border(cache_tmp.x_pos, cache_tmp.y_pos,cache_tmp.heading/10.0f, cache_tmp.dataL,cache_tmp.dataR);
 			}
 			
@@ -157,7 +162,7 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 
 	/* Verhalten je nach Cache-Fuellstand */
 	uint8_t cache_free = map_update_fifo.size - map_update_fifo.count;
-	if (cache_free < MAP_UPDATE_CACHE_SIZE/3) {
+	if (cache_free < (MAP_UPDATE_CACHE_SIZE*sizeof(map_cache_t)/3)) {
 		if (cache_free == 0) {
 			/* Cache ganz voll */
 			if (scan_otf_modes.map_mode) {
