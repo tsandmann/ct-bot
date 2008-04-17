@@ -46,15 +46,16 @@ Tcb_t * os_thread_running = NULL;	/*!< Zeiger auf den Thread, der gerade laeuft 
  * @return			Zeiger auf den TCB des angelegten Threads
  */
 Tcb_t * os_create_thread(uint8_t * pStack, void * pIp) {
-	uint8_t i;
-	for (i=0; i<OS_MAX_THREADS; i++) {	
-		if (os_threads[i] == NULL) {
-			pthread_create(&os_threads[i], NULL, pIp, NULL);
-			/* Thread zurueckgeben */
-			return &os_threads[i];
-		}
+	static uint8_t thread_count = 0;
+	if (thread_count == OS_MAX_THREADS-1) {	// Main-Thread existiert fuer PC nicht im Array
+		/* kein Thread mehr moeglich */
+		return NULL;
 	}
-	return NULL;	// Fehler :(
+	uint8_t i = thread_count;
+	thread_count++;
+	pthread_create(&os_threads[i], NULL, pIp, NULL);
+	/* Thread zurueckgeben */
+	return &os_threads[i];
 }
 
 /*!
