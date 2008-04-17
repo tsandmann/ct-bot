@@ -32,11 +32,14 @@
 #ifdef BEHAVIOUR_SCAN_AVAILABLE
 
 /*! Modi des Scan-Verhaltens */
-typedef struct {
-	uint8_t location:1;	/*!< Grundflaechen-Update an/aus */
-	uint8_t distance:1;	/*!< Distanzsensor-Update an/aus */
-	uint8_t border:1;	/*!< Abgrundsensor-Update an/aus */
-	uint8_t map_mode:1;	/*!< Kartograhpie-Modus an/aus (Bot stoppt, falls Cache voll) */
+typedef union {
+	struct {
+		uint8_t location:1;	/*!< Grundflaechen-Update an/aus */
+		uint8_t distance:1;	/*!< Distanzsensor-Update an/aus */
+		uint8_t border:1;	/*!< Abgrundsensor-Update an/aus */
+		uint8_t map_mode:1;	/*!< Kartograhpie-Modus an/aus (Bot stoppt, falls Cache voll) */
+	};
+	uint8_t raw;			/*!< Alle Modi als Raw-Daten */
 } scan_mode_t;
 
 extern scan_mode_t scan_otf_modes;	/*!< Modi des Verhaltens */

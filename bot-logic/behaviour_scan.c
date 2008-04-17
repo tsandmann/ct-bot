@@ -64,13 +64,13 @@
 #define SCAN_OTF_RESOLUTION_ANGLE_DISTSENS		10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Distanzsensoren für die Karte ausgewertet werden */
 #define SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS	180	/*!< Nach welcher gefahrenen Strecke [mm] sollen die  Distanzsensoren für die Karte ausgewertet werden */
 
-scan_mode_t scan_otf_modes = {1, 1, 1, 1};	/*!< Modi des Verhaltens. Default: location, distance, border an, Kartographie-Modus */
+scan_mode_t scan_otf_modes = {{1, 1, 1, 1}};	/*!< Modi des Verhaltens. Default: location, distance, border an, Kartographie-Modus */
 
 /*! Map-Cache-Eintrag */
 typedef struct {
 	int16_t x_pos;		/*!< X-Komponente der Position [mm] */
 	int16_t y_pos;		/*!< Y-Komponente der Position [mm] */
-	int16_t heading;	/*!< Blickrichtung [1/10 Grad]*/
+	int16_t heading;	/*!< Blickrichtung [1/10 Grad] */
 	uint8_t dataL;		/*!< Entfernung linker Distanzsensor [5 mm] aber auch BorderSensor [0/1] */
 	uint8_t dataR;		/*!< Entfernung rechter Distanzsensor [5 mm] aber auch BorderSensor [0/1] */
 	scan_mode_t mode;	/*!< Was soll aktualisiert werden */
@@ -122,7 +122,7 @@ void bot_scan_onthefly_do_map_update(void) {
 			
 			/* Abgrundsensoren updaten, falls border-mode */
 			if (cache_tmp.mode.border) {
-				map_update_border(cache_tmp.x_pos, cache_tmp.y_pos,cache_tmp.heading/10.0f, cache_tmp.dataL,cache_tmp.dataR);
+				map_update_border(cache_tmp.x_pos, cache_tmp.y_pos, cache_tmp.heading/10.0f, cache_tmp.dataL, cache_tmp.dataR);
 			}
 			
 		} else {
@@ -161,8 +161,10 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 	if (cache_free < (MAP_UPDATE_CACHE_SIZE*sizeof(map_cache_t)/3)) {
 		if (cache_free == 0) {
 			/* Cache ganz voll */
-			if (scan_otf_modes.map_mode) {
-				/* Stoppe den Bot, damit wir zeit haben die Karte einzutragen */
+			if (scan_otf_modes.map_mode && 
+					sensBorderL < BORDER_DANGEROUS && sensBorderR < BORDER_DANGEROUS) {
+				/* Stoppe den Bot, damit wir Zeit haben die Karte einzutragen 
+				 * aber nur, wenn kein Abgrund erkannt wurde */
 				motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
 //				LOG_DEBUG("Map-Cache voll, halte Bot an");
 				/* HAlte alle Verhalten eine Weile an, weil sie ja sonst weiterfahren würden */
@@ -182,11 +184,9 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 	}
 	
 	/* Cache updaten, falls sich der Bot weit genug bewegt hat. */
-	cache_tmp.mode.location=0;
-	cache_tmp.mode.distance=0;
-	cache_tmp.mode.border=0;
-	cache_tmp.dataL=0;
-	cache_tmp.dataR=0;
+	cache_tmp.mode.raw = 0;
+	cache_tmp.dataL = 0;
+	cache_tmp.dataR = 0;
 	
 	
 	/*

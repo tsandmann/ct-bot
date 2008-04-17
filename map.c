@@ -61,12 +61,12 @@
 //#define DEBUG_MAP_TIMES	// Schalter um Performance-Messungen fuer MMC anzumachen
 //#define DEBUG_STORAGE		// Noch mehr Ausgaben zum Thema organisation der Kartenstruktur, Macroblocks, Sections
 
+#warning "MAP derzeit im Umbau, siehe auch Ticket 129"
 
 #define MAP_INFO_AVAILABLE
 #ifdef MCU
 	// Soll auch der echte Bot Infos ausgeben, kommentiert man die folgende Zeile aus
 	#undef MAP_INFO_AVAILABLE	// spart Flash
-	#warning "MAP auf MCU derzeit im Umbau, siehe auch Ticket 129"
 #endif
 	
 #ifndef LOG_AVAILABLE
@@ -880,9 +880,10 @@ void map_clear(int8 min_val, int8 max_val) {
  * @param borderL Sensor links 1= abgrund 0 = frei
  * @param borderR Sensor rechts 1= abgrund 0 = frei
  */
-void map_update_border(float x, float y, float head, uint8 borderL, uint8 borderR){
-	float sin_head= sin(head);
-	float cos_head= cos(head);
+void map_update_border(float x, float y, float head, uint8 borderL, uint8 borderR) {
+	float h = head * (M_PI/180.0);	// Bogenmass
+	float sin_head = sin(h);
+	float cos_head = cos(h);
 	
     if (borderR >0){
     	//Ort des rechten Sensors in Mapkordinaten
