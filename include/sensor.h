@@ -59,8 +59,8 @@ extern int16 sensLineL;	/*!<  Lininensensor links [0-1023];  1023 = dunkel*/
 extern int16 sensLineR;	/*!<  Lininensensor rechts [0-1023];  1023 = dunkel*/
 
 /* digitale Sensoren */
-extern volatile int16 sensEncL;		/*!< Encoder linker Motor [-32768 bis 32767] */
-extern volatile int16 sensEncR;		/*!< Encoder rechter Motor [-32768 bis 32767] */
+extern int16_t sensEncL;		/*!< Encoder linker Motor [-32768 bis 32767] */
+extern int16_t sensEncR;		/*!< Encoder rechter Motor [-32768 bis 32767] */
 
 extern uint8 sensTrans;		/*!< Sensor Ueberwachung Transportfach [0/1]*/
 
@@ -81,9 +81,9 @@ extern uint16 RC5_Code;        /*!< Letzter empfangener RC5-Code */
 extern float heading_enc;		/*!< Blickrichtung aus Encodern */
 extern float x_enc;			/*!< X-Koordinate aus Encodern [mm] */
 extern float y_enc;			/*!< Y-Koordinate aus Encodern [mm] */
-extern float v_enc_left;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
-extern float v_enc_right;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
-extern float v_enc_center;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
+extern int16_t v_enc_left;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+extern int16_t v_enc_right;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+extern int16_t v_enc_center;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
 
 #ifdef PC
 	extern uint16 simultime;	/*!< Simulierte Zeit */
@@ -93,17 +93,17 @@ extern float v_enc_center;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
 	extern float heading_mou;		/*!< Aktuelle Blickrichtung relativ zur Startposition aus Mausmessungen */
 	extern float x_mou;			/*!< Aktuelle X-Koordinate in mm relativ zur Startposition aus Mausmessungen */
 	extern float y_mou;			/*!< Aktuelle Y-Koordinate in mm relativ zur Startposition aus Mausmessungen */
-	extern float v_mou_center;	/*!< Geschwindigkeit in mm/s ausschliesslich aus den Maussensorwerten berechnet */
-	extern float v_mou_left;		/*!< ...aufgeteilt auf linkes Rad */
-	extern float v_mou_right;		/*!< ...aufgeteilt auf rechtes Rad */
+	extern int16_t v_mou_center;	/*!< Geschwindigkeit in mm/s ausschliesslich aus den Maussensorwerten berechnet */
+	extern int16_t v_mou_left;		/*!< ...aufgeteilt auf linkes Rad */
+	extern int16_t v_mou_right;		/*!< ...aufgeteilt auf rechtes Rad */
 #endif
 
 extern float heading;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
-extern float x_pos;			/*!< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
-extern float y_pos;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
-extern float v_left;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
-extern float v_right;			/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
-extern float v_center;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
+extern int16_t x_pos;			/*!< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
+extern int16_t y_pos;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
+extern int16_t v_left;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
+extern int16_t v_right;			/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
+extern int16_t v_center;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
 
 #ifdef SRF10_AVAILABLE
 	extern uint16 sensSRF10;	/*!< Messergebniss Ultraschallsensor */

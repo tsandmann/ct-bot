@@ -28,8 +28,15 @@
 #define BEHAVIOUR_SCAN_H_
 
 #include "bot-logic/bot-logik.h"
+#include "fifo.h"
 
-#ifdef BEHAVIOUR_SCAN_AVAILABLE
+#define SCAN_OTF_RESOLUTION_DISTANCE_LOCATION	60	/*!< Nach welcher gefahrenen Strecke [mm] soll die Standflaeche aktualisiert werden */
+
+#define SCAN_OTF_RESOLUTION_DISTANCE_BORDER		10	/*!< Nach welcher gefahrenen Strecke [mm] sollen die Abgrundsensoren fuer die Karte ausgewertet werden */
+#define SCAN_OTF_RESOLUTION_ANGLE_BORDER		10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Abgrundsensoren fuer die Karte ausgewertet werden */
+
+#define SCAN_OTF_RESOLUTION_ANGLE_DISTSENS		10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Distanzsensoren fuer die Karte ausgewertet werden */
+#define SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS	180	/*!< Nach welcher gefahrenen Strecke [mm] sollen die  Distanzsensoren fuer die Karte ausgewertet werden */
 
 /*! Modi des Scan-Verhaltens */
 typedef union {
@@ -41,6 +48,8 @@ typedef union {
 	};
 	uint8_t raw;			/*!< Alle Modi als Raw-Daten */
 } scan_mode_t;
+
+#ifdef BEHAVIOUR_SCAN_AVAILABLE
 
 extern scan_mode_t scan_otf_modes;	/*!< Modi des Verhaltens */
 
@@ -79,15 +88,10 @@ static inline void set_scan_otf_mapmode(uint8_t value) {
 }
 
 /*!
- * Initialisiert das Scan-Verhalten
- */
-void bot_scan_onthefly_init(void);
-
-/*!
  * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
  * @param *data der Verhaltensdatensatz
  */
-void bot_scan_onthefly_behaviour(Behaviour_t *data);
+void bot_scan_onthefly_behaviour(Behaviour_t * data);
 
 #endif	// BEHAVIOUR_SCAN_AVAILABLE
 #endif	/*BEHAVIOUR_SCAN_H_*/

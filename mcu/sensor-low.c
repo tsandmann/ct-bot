@@ -110,7 +110,7 @@
 /*!
  * Initialisiere alle Sensoren
  */
-void bot_sens_init(void){	
+void bot_sens_init(void) {	
 	ENA_init();
 	adc_init(0xFF);		// Alle ADC-Ports aktivieren
 	
@@ -127,6 +127,8 @@ void bot_sens_init(void){
 	SENS_ENCR_DDR	&= ~(1<<SENS_ENCR);		// Input	
 
 	timer_2_init();
+	sensEncL = 0;
+	sensEncR = 0;	
 }
 
 

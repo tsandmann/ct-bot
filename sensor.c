@@ -83,14 +83,14 @@ uint8 sensError=0;		/*!< Ueberwachung Motor oder Batteriefehler */
 	int16 sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
 #endif
 
-volatile int16 sensEncL=0;		/*!< Encoder linkes Rad */
-volatile int16 sensEncR=0;		/*!< Encoder rechtes Rad */
+int16_t sensEncL=0;		/*!< Encoder linkes Rad */
+int16_t sensEncR=0;		/*!< Encoder rechtes Rad */
 float heading_enc=HEADING_START;	/*!< Blickrichtung aus Encodern */
 float x_enc=0;		/*!< X-Koordinate aus Encodern [mm] */
 float y_enc=0;		/*!< Y-Koordinate aus Encodern [mm] */
-float v_enc_left=0;	/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
-float v_enc_right=0;	/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
-float v_enc_center=0;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
+int16_t v_enc_left=0;	/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+int16_t v_enc_right=0;	/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+int16_t v_enc_center=0;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
 
 #ifdef PC
 	uint16 simultime=0;	/*! Simulierte Zeit */
@@ -100,17 +100,17 @@ float v_enc_center=0;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
 	float heading_mou=HEADING_START;		/*!< Aktuelle Blickrichtung relativ zur Startposition aus Mausmessungen */
 	float x_mou=0;			/*!< Aktuelle X-Koordinate in mm relativ zur Startposition aus Mausmessungen */
 	float y_mou=0;			/*!< Aktuelle Y-Koordinate in mm relativ zur Startposition aus Mausmessungen */
-	float v_mou_center=0;		/*!< Geschwindigkeit in mm/s ausschliesslich aus den Maussensorwerten berechnet */
-	float v_mou_left=0;		/*!< ...aufgeteilt auf linkes Rad */
-	float v_mou_right=0;		/*!< ...aufgeteilt auf rechtes Rad */
+	int16_t v_mou_center=0;		/*!< Geschwindigkeit in mm/s ausschliesslich aus den Maussensorwerten berechnet */
+	int16_t v_mou_left=0;		/*!< ...aufgeteilt auf linkes Rad */
+	int16_t v_mou_right=0;		/*!< ...aufgeteilt auf rechtes Rad */
 #endif
 
 float heading=HEADING_START;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
-float x_pos=0;			/*!< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
-float y_pos=0;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
-float v_left=0;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
-float v_right=0;			/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
-float v_center=0;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
+int16_t x_pos=0;			/*!< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
+int16_t y_pos=0;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
+int16_t v_left=0;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
+int16_t v_right=0;			/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
+int16_t v_center=0;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
 
 #ifdef SRF10_AVAILABLE
 	uint16 sensSRF10;	/*!< Messergebniss Ultraschallsensor */

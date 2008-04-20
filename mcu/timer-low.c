@@ -42,6 +42,7 @@
 #include "sensor-low.h"
 #include "bot-local.h"
 #include "os_scheduler.h"
+#include "os_thread.h"
 
 #ifdef OS_AVAILABLE
 	static uint8_t scheduler_ticks = 0;
@@ -50,7 +51,7 @@
 // ---- Timer 2 ------
 
 /*!
-  Interrupt Handler fuer Timer/Counter 2(A)
+ Interrupt Handler fuer Timer/Counter 2(A)
  */
 #ifdef __AVR_ATmega644__
 ISR(TIMER2_COMPA_vect) {
@@ -58,33 +59,43 @@ ISR(TIMER2_COMPA_vect) {
 ISR(SIG_OUTPUT_COMPARE2) {
 #endif
 	/* ----- TIMER ----- */
-	uint32_t ticks = tickCount.u32;	// TickCounter [176 us] erhoehen
+	uint32_t ticks = tickCount.u32; // TickCounter [176 us] erhoehen
 	ticks++;
-	tickCount.u32 = ticks;	// optimiert volatile weg, weil Ints eh aus sind
-	sei(); 	// Interrupts wieder an, z.B. UART-Kommunikation kann parallel zu RC5 und Encoderauswertung laufen   
+	tickCount.u32 = ticks; // optimiert volatile weg, weil Ints eh aus sind
+
+#ifdef OS_AVAILABLE
+	/* ab hier Kernel-Stack verwenden */
+	void * user_stack;
+	user_stack = (void *)SP;
+	SP = (int)&os_kernel_stack[OS_KERNEL_STACKSIZE-1];
+#endif	// OS_AVAILABLE
+	
+	sei(); // Interrupts wieder an, z.B. UART-Kommunikation kann parallel zu RC5 und Encoderauswertung laufen   
+
 	/* - FERNBEDIENUNG - */
-	
-	#ifdef IR_AVAILABLE
-		ir_isr();
-	#endif	
-	
+#ifdef IR_AVAILABLE
+	ir_isr();
+#endif	
+
 	/* --- RADENCODER --- */
-	bot_encoder_isr();
-	
+	bot_encoder_isr();	
+
 	/* --- SCHEDULER --- */
-	#ifdef OS_AVAILABLE
-		/* Scheduling-Frequenz betraegt ca. 1 kHz */
-		if ((uint8_t)((uint8_t)ticks-scheduler_ticks) > MS_TO_TICKS(OS_TIME_SLICE)) {
-			scheduler_ticks = (uint8_t)ticks;
-			os_schedule(ticks);
-		}
-	#endif	// OS_AVAILABLE
+#ifdef OS_AVAILABLE
+	/* zurueck zum User-Stack */
+	cli();
+	SP = (int)user_stack;
 	
+	/* Scheduling-Frequenz betraegt ca. 1 kHz */
+	if ((uint8_t)((uint8_t)ticks-scheduler_ticks)> MS_TO_TICKS(OS_TIME_SLICE)) {
+		scheduler_ticks = (uint8_t)ticks;
+		os_schedule(ticks);
+	}
+#endif
 	/* Achtung, hier darf (falls OS_AVAILABLE) kein Code mehr folgen, der bei jedem Aufruf 
 	 * dieser ISR ausgefuehrt werden muss! Nach dem Scheduler-Aufruf kommen wir u.U. nicht 
 	 * (sofort) wieder hieher zurueck, sondern es koennte auch ein Thread weiterlaufen, der
-	 * vor seiner Unterbrechung nicht in hier war. Darum muessen VOR dem Scheduler-Aufruf
-	 * bereits Interrupts wieder aktiviert sein. */
+	 * vor seiner Unterbrechung nicht hier war. */
 }
 
 /*!

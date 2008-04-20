@@ -28,7 +28,6 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-//#include <avr/signal.h>
 #include <stdio.h>
 
 #include "adc.h"
@@ -109,7 +108,7 @@ void adc_read_int(uint8 channel, int16* p_sens){
  * Interrupt-Handler fuer den ADC. Speichert das Ergebnis des aktuellen Channels und 
  * schaltet in der Liste der auszuwertenden Sensoren eins weiter.
  */
-SIGNAL (SIG_ADC){
+ISR(SIG_ADC) {
 	/* Daten speichern und Pointer im Puffer loeschen */
 	*channels[act_channel].value = ADCL | (ADCH << 8);
 	channels[act_channel].value = NULL;

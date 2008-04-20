@@ -22,7 +22,7 @@
  * @brief 	Implementierung einer FIFO
  * @author 	http://www.roboternetz.de/wissen/index.php/FIFO_mit_avr-gcc
  * @date 	28.02.2007
- * Thread-Safe, abgesichert gegen Interrups, solange sich Producer bzw. Consumer jeweils auf der gleichen Interrupt-Ebene befinden.
+ * Thread-Safe, abgesichert gegen Interrupts, solange sich Producer bzw. Consumer jeweils auf der gleichen Interrupt-Ebene befinden.
  */
 
 #ifndef _FIFO_H_
@@ -74,43 +74,26 @@ extern void fifo_put_data(fifo_t * f, void * data, uint8_t length);
  * @param length	Anzahl der zu kopierenden Bytes
  * @return			Anzahl der tatsaechlich gelieferten Bytes
  */	
-extern uint8 fifo_get_data(fifo_t * f, void * data, uint8_t length);
+extern uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length);
 
 /*!
  * @brief		Schreibt ein Byte in die FIFO.
  * @param f		Zeiger auf FIFO-Datenstruktur
  * @param data	Das zu schreibende Byte
- * @return		1 bei Erfolg und 0, falls die FIFO voll ist.
  */
-static inline uint8_t _inline_fifo_put(fifo_t * f, const uint8_t data) {
-	if (f->count >= f->size) return 0;
-		
+static inline void _inline_fifo_put(fifo_t * f, const uint8_t data) {
 	uint8_t * pwrite = f->pwrite;
 	*(pwrite++) = data;
 	
-	uint8 write2end = f->write2end;
-	if (--write2end == 0){
+	uint8_t write2end = f->write2end;
+	if (--write2end == 0) {
 		write2end = f->size;
 		pwrite -= write2end;
 	}
 	
 	f->write2end = write2end;
 	f->pwrite = pwrite;
-
-#ifdef MCU
-	uint8_t sreg = SREG;
-	cli();
-#else
-	pthread_mutex_lock(&f->mutex);
-#endif
 	f->count++;
-#ifdef MCU
-	SREG = sreg;
-#else
-	pthread_mutex_unlock(&f->mutex);
-#endif
-	
-	return 1;
 }
 
 /*!
@@ -131,19 +114,8 @@ static inline uint8_t _inline_fifo_get(fifo_t * f) {
 	
 	f->pread = pread;
 	f->read2end = read2end;
-	
-#ifdef MCU
-	uint8_t sreg = SREG;
-	cli();
-#else
-	pthread_mutex_lock(&f->mutex);
-#endif
 	f->count--;
-#ifdef MCU
-	SREG = sreg;
-#else
-	pthread_mutex_unlock(&f->mutex);
-#endif
+	
 	return data;
 }
 

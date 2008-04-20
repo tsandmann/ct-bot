@@ -39,6 +39,7 @@
 #include "command.h"
 #include "log.h"
 #include "bot-2-pc.h"
+#include "os_thread.h"
 
 #ifdef UART_AVAILABLE
 
@@ -51,15 +52,15 @@ fifo_t infifo;				/*!< Eingangs-FIFO */
 #else
 #define BUFSIZE_OUT 0x80
 #endif	// BAUDRATE
-uint8 outbuf[BUFSIZE_OUT];	/*!< Ausgangspuffer */
+uint8_t outbuf[BUFSIZE_OUT];	/*!< Ausgangspuffer */
 fifo_t outfifo;				/*!< Ausgangs-FIFO */
 
 /*!
  * @brief	Initialisiert den UART und aktiviert Receiver und Transmitter sowie den Receive-Interrupt. 
  * Die Ein- und Ausgebe-FIFO werden initialisiert. Das globale Interrupt-Enable-Flag (I-Bit in SREG) wird nicht veraendert.
  */
-void uart_init(void){	 
-    uint8 sreg = SREG;
+void uart_init(void) {	 
+    uint8_t sreg = SREG;
     UBRRH = (UART_CALC_BAUDRATE(BAUDRATE)>>8) & 0xFF;
     UBRRL = (UART_CALC_BAUDRATE(BAUDRATE) & 0xFF);
     
@@ -69,14 +70,14 @@ void uart_init(void){
 	/* UART Receiver und Transmitter anschalten, Receive-Interrupt aktivieren */ 
 	UCSRB = (1 << RXEN) | (1 << TXEN) | (1 << RXCIE);
 	/* Data mode 8N1, asynchron */
-	uint8 ucsrc = (1 << UCSZ1) | (1 << UCSZ0);
+	uint8_t ucsrc = (1 << UCSZ1) | (1 << UCSZ0);
 	#ifdef URSEL 
 		ucsrc |= (1 << URSEL);	// fuer ATMega32
 	#endif    
 	UCSRC = ucsrc;
 
     /* Flush Receive-Buffer (entfernen evtl. vorhandener ungueltiger Werte) */ 
-    do{
+    do {
 		UDR;	// UDR auslesen (Wert wird nicht verwendet)
     } while (UCSRA & (1 << RXC));
 
@@ -100,23 +101,11 @@ void uart_init(void){
  * Empfangene Zeichen werden in die Eingabgs-FIFO gespeichert und warten dort.
  */ 
 #ifdef __AVR_ATmega644__
-	SIGNAL (USART0_RX_vect){		
+	ISR(USART0_RX_vect) {		
 #else
-	SIGNAL (SIG_UART_RECV){
+	ISR(SIG_UART_RECV) {
 #endif
-//	UCSRB &= ~(1 << RXCIE);	// diesen Interrupt aus (denn ISR ist nicht reentrant)
-//	sei();					// andere Interrupts wieder an
-//	if (infifo.count == BUFSIZE_IN){   
-//		/* ERROR! Receive buffer full!
-//		 * => Pufferinhalt erst verarbeiten - das funktioniert besser als es aussieht. ;-)
-//		 * Ist allerdings nur dann clever, wenn das ausgewertete Command nicht mehr Daten per
-//		 * uart_read() lesen will, als bereits im Puffer sind, denn der Interrupt ist ja aus... */
-//		#ifdef BOT_2_PC_AVAILABLE
-//			bot_2_pc_listen();		// Daten des Puffers auswerten
-//		#endif
-//	}
 	_inline_fifo_put(&infifo, UDR);
-//	UCSRB |= (1 << RXCIE);	// diesen Interrupt wieder an 	
 }
 
 /*!
@@ -126,16 +115,15 @@ void uart_init(void){
  * Ist die FIFO leer, deaktiviert die ISR ihren eigenen IRQ.
  */ 
 #ifdef __AVR_ATmega644__
-	SIGNAL (USART0_UDRE_vect){
+	ISR(USART0_UDRE_vect) {
 #else
-	SIGNAL (SIG_UART_DATA){
+	ISR(SIG_UART_DATA) {
 #endif
-	UCSRB &= ~(1 << UDRIE);	// diesen Interrupt aus (denn ISR ist nicht reentrant)
-	sei();					// andere Interrupts wieder an
-	if (outfifo.count > 0){
+	if (outfifo.count > 0) {
 		UDR = _inline_fifo_get(&outfifo);
-		UCSRB |= (1 << UDRIE);	// diesen Interrupt wieder an 
-	}	
+	} else {
+		UCSRB &= ~(1 << UDRIE);	// diesen Interrupt aus
+	}
 }
 
 /*!
@@ -143,15 +131,15 @@ void uart_init(void){
  * @param data		Datenpuffer
  * @param length	Groesse des Datenpuffers in Bytes
  */
-void uart_write(uint8* data, uint8 length){
-	if (length > BUFSIZE_OUT){
+void uart_write(void * data, uint8_t length) {
+	if (length > BUFSIZE_OUT) {
 		/* das ist zu viel auf einmal => teile und herrsche */
 		uart_write(data, length/2);
 		uart_write(data + length/2, length - length/2);
 		return;
 	} 
 	/* falls Sendepuffer voll, diesen erst flushen */ 
-	uint8 space = BUFSIZE_OUT - outfifo.count;
+	uint8_t space = BUFSIZE_OUT - outfifo.count;
 	if (space < length) uart_flush();
 	/* Daten in Ausgangs-FIFO kopieren */
 	fifo_put_data(&outfifo, data, length);

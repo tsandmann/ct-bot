@@ -205,8 +205,8 @@
 	#endif
 #endif
 
-#ifndef MAP_AVAILABLE
-	#undef OS_AVAILABLE		// das BotOS brauchen wir derzeit nur fuer Map mit MMC
+#ifdef MAP_AVAILABLE
+	#define OS_AVAILABLE		// Map braucht BotOS
 #endif
 
 #ifdef LOG_AVAILABLE

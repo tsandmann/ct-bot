@@ -31,18 +31,30 @@
 #ifdef OS_AVAILABLE
 #include "timer.h"
 #include "os_scheduler.h"
-#define OS_MAX_THREADS	2	/*!< maximale Anzahl an Threads im System */
+#include <stdlib.h>
+
+#define OS_MAX_THREADS		2	/*!< maximale Anzahl an Threads im System */
+#define OS_KERNEL_STACKSIZE	32	/*!< Groesse des Kernel-Stacks (fuer Timer-ISR) */	
+#define OS_DEBUG				/*!< Schalter fuer Debug-Code */
+
+
+#ifdef PC
+#undef OS_DEBUG
+#endif
 
 #ifdef MCU
 /*! TCB eines Threads */
 typedef struct {
-	uint8_t * stack;		/*!< Stack-Pointer */
+	void * stack;			/*!< Stack-Pointer */
 	uint32_t nextSchedule;	/*!< Zeitpunkt der naechsten Ausfuehrung. Ergibt im Zusammenhang mit der aktuellen Zeit den Status eines Threads. */
 	uint8_t lastSchedule;	/*!< Zeitpunkt der letzten Ausfuehrung, untere 8 Bit */
+	void * wait_for;		/*!< Zeiger auf Signal, bis zu dessen Freigabe blockiert wird */ 
 } Tcb_t;
 
 extern Tcb_t os_threads[OS_MAX_THREADS];	/*!< Thread-Pool (ist gleichzeitig running- und waiting-queue) */
-extern Tcb_t * os_thread_running;			/*!< Zeiger auf den Thread, der zurzeit laeuft */ 
+extern Tcb_t * os_thread_running;			/*!< Zeiger auf den Thread, der zurzeit laeuft */
+extern uint8_t os_kernel_stack[];			/*!< Kernel-Stack */
+extern uint8_t dummy_signal; 				/*!< Signal, das referenziert wird, wenn sonst keins gesetzt ist */
 
 /*!
  * Schuetzt den folgenden Block (bis exitCS()) vor Threadswitches.
@@ -81,6 +93,30 @@ static inline void os_thread_sleep(uint32_t sleep) {
 	os_schedule(now);
 }
 
+/*!
+ * Entfernt ein Signal vom aktuellen Thread
+ */
+static inline void os_signal_release(void) {
+	os_thread_running->wait_for = &dummy_signal;
+}
+
+/*!
+ * Sperrt ein Signal
+ * @param *signal	Zu sperrendes Signal
+ */
+static inline void os_signal_lock(uint8_t * signal) {
+	*signal = 1;
+}
+
+/*!
+ * Gibt ein Signal frei
+ * @param *signal	Freizugebendes Signal
+ */
+static inline void os_signal_unlock(uint8_t * signal) {
+	*signal = 0;
+//	os_schedule(TIMER_GET_TICKCOUNT_32);
+}
+
 #else	// PC
 #include <pthread.h>
 
@@ -107,6 +143,23 @@ extern Tcb_t os_threads[OS_MAX_THREADS];	/*!< Thread-Pool (ist gleichzeitig runn
  * @param sleep		Zeit in ms, die der aktuelle Thread blockiert wird
  */
 void os_thread_sleep(uint32_t sleep);
+
+/*!
+ * Entfernt ein Signal vom aktuellen Thread
+ */
+void os_signal_release(void);
+
+/*!
+ * Sperrt ein Signal
+ * @param *signal	Zu sperrendes Signal
+ */
+void os_signal_lock(uint8_t * signal);
+
+/*!
+ * Gibt ein Signal frei
+ * @param *signal	Freizugebendes Signal
+ */
+void os_signal_unlock(uint8_t * signal);
 #endif	// MCU 
 
 /*!
@@ -118,7 +171,7 @@ void os_thread_sleep(uint32_t sleep);
  * @param *pIp		Zeiger auf die Main-Funktion des Threads (Instruction-Pointer)
  * @return			Zeiger auf den TCB des angelegten Threads
  */
-Tcb_t * os_create_thread(uint8_t * pStack, void * pIp);
+Tcb_t * os_create_thread(void * pStack, void * pIp);
 
 /*!
  * Schaltet auf den Thread mit der naechst niedrigeren Prioritaet um, der lauffaehig ist,
@@ -131,6 +184,32 @@ void os_thread_yield(void);
  * @param *thread	Zeiger auf TCB des zu weckenden Threads
  */
 void os_thread_wakeup(Tcb_t * thread);
+
+/*!
+ * Blockiert den aktuellen Thread, bis ein Signal freigegeben wird
+ * @param *signal	Zeiger auf Signal
+ */
+void os_signal_set(void * signal);
+
+#ifdef OS_DEBUG
+/*!
+ * Maskiert einen Stack, um spaeter ermitteln zu koennen,
+ * wieviel Byte ungenutzt bleiben
+ * @param *stack	Anfangsadresse des Stacks
+ * @param size		Groesse des Stacks in Byte
+ */
+void os_mask_stack(void * stack, size_t size);
+
+/*!
+ * Ermittelt wieviel Bytes auf einem Stack bisher
+ * ungenutzt sind. Der Stack muss dafuer VOR der
+ * Initialisierung seines Threads mit
+ * os_stack_mask() praepariert worden sein!
+ * @param *stack	Anfangsadresse des Stacks
+ */
+uint16_t os_stack_unused(void * stack);
+#endif	// OS_DEBUG
+
 #else 	// OS_AVAILABLE
 
 #define os_enterCS()	// NOP

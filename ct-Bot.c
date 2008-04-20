@@ -80,7 +80,7 @@
  * Der Mikrocontroller und der PC-Simulator brauchen ein paar Einstellungen, 
  * bevor wir loslegen koennen.
  */
-void init(void) {
+static void init(void) {
 	#ifdef MCU
 		PORTA=0; DDRA=0;	// Alles Eingang -> alles Null
 		PORTB=0; DDRB=0;
@@ -89,7 +89,7 @@ void init(void) {
 			
 		wdt_disable();	// Watchdog aus!
 		#ifdef OS_AVAILABLE
-			os_create_thread((uint8_t *)SP, NULL);	// Hauptthread anlegen
+			os_create_thread((void *)SP, NULL);	// Hauptthread anlegen
 		#endif
 		timer_2_init();
 		
@@ -305,6 +305,23 @@ int main(int argc, char * argv[]) {
 				printf("Done-Token (%d) out after %d usec\n",simultime,t2);
 			#endif	// DEBUG_TIMES
 		#endif	// PC	
+
+#ifdef OS_DEBUG
+		/* Debug-Info zum freiech Stackspeicher ausgeben */
+		extern void * map_update_stack;
+		static uint16_t map_stack_free = -1;
+		static uint16_t kernel_stack_free = -1;
+		uint16_t tmp = os_stack_unused(map_update_stack);
+		if (tmp < map_stack_free) {
+			map_stack_free = tmp; 
+			LOG_INFO("Map-Stack unused=%u", tmp);
+		}
+		tmp = os_stack_unused(os_kernel_stack);
+		if (tmp < kernel_stack_free) {
+			kernel_stack_free = tmp;
+			LOG_INFO("Kernel-Stack unused=%u", tmp);
+		}
+#endif	// OS_DEBUG
 	}
 	
 	/* Falls wir das je erreichen sollten ;-) */

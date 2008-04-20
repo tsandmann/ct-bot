@@ -30,7 +30,6 @@
 
 #include "os_thread.h"
 #include "os_utils.h"
-#include <stdlib.h>
 #include <pthread.h>
 
 Tcb_t os_threads[OS_MAX_THREADS];	/*!< Array aller Threads */
@@ -45,7 +44,7 @@ Tcb_t * os_thread_running = NULL;	/*!< Zeiger auf den Thread, der gerade laeuft 
  * @param *pIp		Zeiger auf die Main-Funktion des Threads (Instruction-Pointer)
  * @return			Zeiger auf den TCB des angelegten Threads
  */
-Tcb_t * os_create_thread(uint8_t * pStack, void * pIp) {
+Tcb_t * os_create_thread(void * pStack, void * pIp) {
 	static uint8_t thread_count = 0;
 	if (thread_count == OS_MAX_THREADS-1) {	// Main-Thread existiert fuer PC nicht im Array
 		/* kein Thread mehr moeglich */
@@ -82,6 +81,37 @@ void os_thread_sleep(uint32_t sleep) {
  * @param *thread	Zeiger auf TCB des zu weckenden Threads
  */
 void os_thread_wakeup(Tcb_t * thread) {
+	// NOP
+}
+
+/*!
+ * Blockiert den aktuellen Thread, bis ein Signal freigegeben wird
+ * @param *signal	Zeiger auf Signal
+ */
+void os_signal_set(void * signal) {
+	// NOP
+}
+
+/*!
+ * Entfernt ein Signal vom aktuellen Thread
+ */
+void os_signal_release(void) {
+	// NOP
+}
+
+/*!
+ * Sperrt ein Signal
+ * @param *signal	Zu sperrendes Signal
+ */
+void os_signal_lock(uint8_t * signal) {
+	// NOP
+}
+
+/*!
+ * Gibt ein Signal frei
+ * @param *signal	Freizugebendes Signal
+ */
+void os_signal_unlock(uint8_t * signal) {
 	// NOP
 }
 

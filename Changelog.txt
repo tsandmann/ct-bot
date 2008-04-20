@@ -1,6 +1,14 @@
 CHANGELOG fuer c't-Bot
 ======================
-2008-04-16 Benjamin Benz [bbe@heise.de]:	Karte aktualisert nun auch Abgrundsensoren 
+2008-04-18 Timo Sandmann [mail@timosandmann.de]: Positions- und Map-Code auf int16 umgestellt und optimiert.
+												 Map-Update-Thread nach map.c verschoben (inlining der Sensor-Update-Funktionen) 
+												 Map-Aufloesung auf 125 umgestellt (ergibt 2er-Potenz beim Umrechnungsfaktor fuer Welt zu Map)
+												 Map-Interface nach aussen auf map_get_average(), map_get_point() und map_way_free() beschraenkt
+												 Debug-Code fuer BotOS hinzugefuegt (ermittelt die belegten Stack-Speicher)
+												 Ein paar kleinere Optimierungen (Timer-ISR)
+												 Map-Umbau ist aber noch nicht ganz fertig!
+
+2008-04-16 Benjamin Benz [bbe@heise.de]: Karte aktualisert nun auch Abgrundsensoren 
 
 2008-04-17 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer pc/os_thread_pc.c :: os_create_thread() unter Windows
 
