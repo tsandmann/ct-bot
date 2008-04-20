@@ -192,8 +192,6 @@ int8_t map_init(void) {
 	/* Update-Thread initialisieren */
 #ifdef OS_DEBUG
 	os_mask_stack(map_update_stack, MAP_UPDATE_STACK_SIZE);
-	uint16_t stack_free = os_stack_unused(map_update_stack);
-	LOG_INFO("Stack unused=%u", stack_free);
 #endif
 	fifo_init(&map_update_fifo, map_update_cache, sizeof(map_update_cache));
 	map_update_thread = os_create_thread(&map_update_stack[MAP_UPDATE_STACK_SIZE-1], map_update_main);
