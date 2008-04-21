@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-04-21 Timo Sandmann [mail@timosandmann.de]: Bugfix LOG auf MMC (#165)
+
 2008-04-18 Timo Sandmann [mail@timosandmann.de]: Positions- und Map-Code auf int16 umgestellt und optimiert.
 												 Map-Update-Thread nach map.c verschoben (inlining der Sensor-Update-Funktionen) 
 												 Map-Aufloesung auf 125 umgestellt (ergibt 2er-Potenz beim Umrechnungsfaktor fuer Welt zu Map)
