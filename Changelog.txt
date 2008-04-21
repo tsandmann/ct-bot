@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-04-21 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer map_read()
+
 2008-04-21 Timo Sandmann [mail@timosandmann.de]: Bugfix LOG auf MMC (#165)
 
 2008-04-18 Timo Sandmann [mail@timosandmann.de]: Positions- und Map-Code auf int16 umgestellt und optimiert.

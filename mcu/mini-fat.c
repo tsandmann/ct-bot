@@ -156,9 +156,8 @@ uint32_t mini_fat_find_block_P(const char * filename, uint8_t * buffer, uint32_t
 #endif	// DISPLAY_MINIFAT_INFO
 		if (mmc_read_sector(block, buffer) != 0) return 0xffffffff;
 		if (strcmp_P((char *)buffer, filename) == 0) {
-			/* gefunden, Nutzdaten laden und Adresse ins EEPROM schreiben */
-			if (mmc_read_sector(++block, buffer) != 0) return 0xffffffff;
-			mini_fat_store_adr(block);
+			/* gefunden, Adresse ins EEPROM schreiben */
+			mini_fat_store_adr(++block);
 #ifdef DISPLAY_MINIFAT_INFO
 			display_cursor(4,1);
 			display_printf("Found:");

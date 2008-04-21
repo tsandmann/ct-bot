@@ -121,7 +121,7 @@
 #define MAP_PRINT_SCALE					/*!< Soll das PGM eine Skala erhalten */
 #define MAP_SCALE	(MAP_RESOLUTION/2)	/*!< Alle wieviel Punkte kommt ein Skalen-Strich */
 
-#define MACRO_BLOCK_LENGTH	512L // kantenlaenge eines Macroblocks in Punkten/Byte
+#define MACRO_BLOCK_LENGTH	512L // Kantenlaenge eines Macroblocks in Punkten/Byte
 #define MAP_LENGTH_IN_MACRO_BLOCKS ((uint16_t)(MAP_SIZE*MAP_RESOLUTION)/MACRO_BLOCK_LENGTH)
 
 #ifdef SHRINK_MAP_ONLINE
@@ -217,8 +217,14 @@ int8_t map_init(void) {
 		return 1;
 	}
 	// Makroblock-Alignment auf ihre Groesse
+	uint32_t file_block = map_start_block;
 	map_start_block += 2 * MACRO_BLOCK_LENGTH * (MACRO_BLOCK_LENGTH / 512) - 1;
 	map_start_block &= 0xFFFFFC00;
+	
+	// Map-Offset im Datei-Header (0x120-0x123) speichern
+	*((uint32_t *)&map_buffer[0x120]) = map_start_block - file_block;
+	mmc_write_sector(file_block-1, map_buffer);
+	
 	map_current_block_updated = False;
 	map_current_block = 0;
 #endif	// MCU
@@ -1098,9 +1104,6 @@ void map_to_pgm(char * filename) {
 	fclose(fp);
 }
 
-//TODO:	Macroblock-Alignment auf der MMC muss von map_read() 
-//		beruecksichtigt werden! Vielleicht Startadresse der 
-//		eigentlichen Map im Mini-FAT-Header speichern?
 /*! 
  * Liest eine Map wieder ein 
  * @param filename	Quelldatei
@@ -1118,6 +1121,11 @@ void map_read(char * filename) {
 		printf("Datei %s enthaelt keine Karte\n", filename);
 		return;
 	}
+	
+	/* um Makroblock-Offset vorspulen */
+	uint32_t offset = buffer[0x120] | buffer[0x121]<<8;
+	printf("Makroblock-Offset=0x%04x\n", offset);
+	fseek(fp, offset*512, SEEK_CUR);
 
 	// Karte liegt auf der MMC genau wie im PC-RAM
 	fread(&map_storage, sizeof(map_storage), 1, fp);
