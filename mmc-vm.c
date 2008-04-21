@@ -44,7 +44,7 @@
 
 #ifdef MCU
 	#define MMC_START_ADDRESS 0x2000000		/*!< Startadresse des virtuellen Speichers [512;2^32-1] in Byte - Sinnvoll ist z.B. Haelfte der MMC / SD-Card Groesse, der Speicherplatz davor kann dann fuer ein Dateisystem verwendet werden. */
-	#define MAX_SPACE_IN_SRAM 2				/*!< Anzahl der Seiten, die maximal im SRAM gehalten werden [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald diese verwendet wird. */
+	#define MAX_SPACE_IN_SRAM 1				/*!< Anzahl der Seiten, die maximal im SRAM gehalten werden [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald diese verwendet wird. */
 	#define swap_out	mmc_write_sector	/*!< Funktion zum Schreiben auf die MMC */
 	#define swap_in		mmc_read_sector		/*!< Funktion zum Lesen von der MMC */
 	#define swap_space	mmc_get_size()		/*!< Funktion zur Groessenermittlung der MMC */
@@ -407,8 +407,11 @@ uint32_t mmc_fopen_P(const char * filename) {
 	uint32_t block = mini_fat_find_block_P(filename, p_data, mmc_start_address);
 	uint8_t idx = mmc_get_cacheblock_of_page(v_addr);
 	if (block != 0xffffffff) {
-		page_cache[idx].addr = block;	// Cache-Tag auf gefundene Datei umbiegen
-		return block<<9;
+		page_cache[idx].addr = 0;
+		page_cache[idx].dirty = 0;
+		block <<= 9;
+		mmc_get_data(block);
+		return block;
 	}
 	/* Suche erfolglos, aber der Cache soll konsistent bleiben */
 	page_cache[idx].addr = 0x800000;	// Diesen Sektor gibt es auf keiner Karte <= 4 GB 
