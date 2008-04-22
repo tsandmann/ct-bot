@@ -38,6 +38,9 @@
 #define SCAN_OTF_RESOLUTION_ANGLE_DISTSENS		10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Distanzsensoren fuer die Karte ausgewertet werden */
 #define SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS	180	/*!< Nach welcher gefahrenen Strecke [mm] sollen die  Distanzsensoren fuer die Karte ausgewertet werden */
 
+#define SCAN_OTF_SLEEP_TIME					2000	/*!< Wartezeit fuer andere Verhalten, falls Cache (sehr) voll ist [ms] */
+#define SCAN_OTF_CACHE_LEVEL_THRESHOLD		(MAP_UPDATE_CACHE_SIZE*sizeof(map_cache_t)/3)	/*!< Schwellwert fuer freien Cache-Speicher, ab dem der Cache als sehr voll gilt [Byte] */	
+
 /*! Modi des Scan-Verhaltens */
 typedef union {
 	struct {

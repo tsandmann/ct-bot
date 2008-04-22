@@ -62,6 +62,7 @@ static int16_t old_heading = 0;					/*!< letztes heading*10 */
 static int8_t turn_direction = 0;				/*!< Richtung der Drehung, 0: pos. math. Drehsinn, -1: Uhrzeigersinn */
 static int8_t *ee_err;							/*!< Zeiger auf Wert fuer Drehfehler */
 static int8_t err_cache[3] = {-128,-128,-128};	/*!< Fehler bei Drehungen */
+static uint8_t max_speed = 0;					/*!< Anfangsgeschwindigkeit */
 #ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
  	static float target_fl = 0.0;				/*!< Zielwinkel*10 als float */
  	float turn_last_err = 0.0;					/*!< letzter Drehfehler in Grad */
@@ -76,7 +77,7 @@ static int8_t err_cache[3] = {-128,-128,-128};	/*!< Fehler bei Drehungen */
  * zunaechst mit hoeherer Geschwindigkeit ausgefuehrt. Bei kleineren
  * Winkeln dann nur noch mit geringer Geschwindigkeit.
  */
-void bot_turn_behaviour(Behaviour_t *data) {
+void bot_turn_behaviour(Behaviour_t * data) {
 	/* Differenz zum Zielwinkel berechnen (in Drehrichtung gesehen) */
 	int16_t heading_16 = (int16_t)(heading*10);
 	int16_t diff;
@@ -107,8 +108,8 @@ void bot_turn_behaviour(Behaviour_t *data) {
 		/* Bot drehen, solange Zielwinkel noch nicht erreicht ist */
 		uint8_t new_speed;	// schneller als mit 255 mm/s drehen ist zu ungenau, also reichen hier 8 Bit
 		float x = diff < 1800 ? diff / (360.0/M_PI*10) : M_PI/2;	// (0; pi/2]
-		new_speed = sin(x) * 125.0;		// [ 0; 125]
-		new_speed += 25;				// [25; 150]
+		new_speed = sin(x) * (float)max_speed;	// [ 0; 125]
+		new_speed += 25;						// [25; 150]
  		
  		speedWishRight = turn_direction < 0 ? -new_speed : new_speed;
  		speedWishLeft  = -speedWishRight;
@@ -145,19 +146,19 @@ void bot_turn_behaviour(Behaviour_t *data) {
  	}
 }
 
-
 /*!
  * @brief			Dreht den Bot im mathematischen Drehsinn.
- * @param caller	Der Aufrufer
+ * @param *caller	Der Aufrufer
  * @param degrees 	Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
  * 					zwischen -360 und +360
+ * @param speed		maximale Drehgeschwindigkeit [mm/s]
  */
-void bot_turn(Behaviour_t *caller, int16 degrees) {
-//	LOG_DEBUG("bot_turn(%d)", degrees);
-
+void bot_turn_speed(Behaviour_t * caller, int16_t degrees, uint16_t speed) {
 	/* Parameter begrenzen */
  	while (degrees >  360) degrees -= 360;
  	while (degrees < -360) degrees += 360;
+ 	uint8_t tmp = speed > 150 ? 150 : speed;
+ 	max_speed = tmp < 50 ? 25 : tmp - 25;
 
 	/* Zielwinkel berechnen */
 #ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
@@ -199,6 +200,16 @@ void bot_turn(Behaviour_t *caller, int16 degrees) {
  	
 	/* Verhalten aktiv schalten */
 	switch_to_behaviour(caller, bot_turn_behaviour, OVERRIDE);
+}
+
+/*!
+ * @brief			Dreht den Bot im mathematischen Drehsinn.
+ * @param *caller	Der Aufrufer
+ * @param degrees 	Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
+ * 					zwischen -360 und +360
+ */
+void bot_turn(Behaviour_t * caller, int16_t degrees) {
+	bot_turn_speed(caller, degrees, 150);
 }
 
 #endif	// BEHAVIOUR_TURN_AVAILABLE

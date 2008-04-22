@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-04-22 Timo Sandmann [mail@timosandmann.de]: bot_turn_speed() hinzugefuegt, fuehrt bot_turn() mit max. speed mm/s aus
+
 2008-04-21 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer map_read()
 
 2008-04-21 Timo Sandmann [mail@timosandmann.de]: Bugfix LOG auf MMC (#165)

@@ -63,7 +63,7 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 
 	/* Verhalten je nach Cache-Fuellstand */
 	uint8_t cache_free = map_update_fifo.size - map_update_fifo.count;
-	if (cache_free < (MAP_UPDATE_CACHE_SIZE*sizeof(map_cache_t)/3)) {
+	if (cache_free < SCAN_OTF_CACHE_LEVEL_THRESHOLD) {
 		if (cache_free == 0) {
 			/* Cache ganz voll */
 			if (scan_otf_modes.map_mode && 
@@ -72,8 +72,8 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 				 * aber nur, wenn kein Abgrund erkannt wurde */
 				motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
 //				LOG_DEBUG("Map-Cache voll, halte Bot an");
-				/* HAlte alle Verhalten eine Weile an, weil sie ja sonst weiterfahren würden */
-				os_thread_sleep(2000);
+				/* Halte alle Verhalten eine Weile an, weil sie ja sonst weiterfahren wuerden */
+				os_thread_sleep(SCAN_OTF_SLEEP_TIME);
 			} else {
 				/* Cache voll, neuen Eintrag verwerfen */
 //				LOG_DEBUG("Map-Cache voll, verwerfe neuen Eintrag");
@@ -83,7 +83,7 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 		/* Cache sehr voll */
 		if (v_enc_left == 0 && v_enc_right == 0) {
 			/* Falls Bot gerade steht, dann kleine Pause */
-			os_thread_sleep(2000);
+			os_thread_sleep(SCAN_OTF_SLEEP_TIME);
 			return;
 		}
 	}
