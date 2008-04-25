@@ -44,9 +44,9 @@ static inline int16_t iroundf(float x) {
  * Berechnung deiner Winkeldifferenz zwischen dem aktuellen Standpunkt und einem anderen Ort
  * @param xDiff	x-Differenz
  * @param yDiff	y-Differenz
- * @return 		berechnete Winkeldifferenz
+ * @return 		Berechnete Winkeldifferenz [Grad]
  */
-float calc_angle_diff(float xDiff, float yDiff);
+float calc_angle_diff(int16_t xDiff, int16_t yDiff);
 
 /*!
  * Ermittelt das Vorzeichnen eines 8 Bit Integers. Interpretiert 0 immer als positiv.
@@ -85,13 +85,13 @@ static inline int16_t sign32(int32_t z) {
 int16_t turned_angle(int16_t angle);
 
 /*!
- * Ermittlung des Quadrat-Abstandes zwischen 2 Koordinaten
- * @param x1 x-Koordinate des ersten Punktes
- * @param y1 y-Koordinate des ersten Punktes
- * @param x2 Map-Koordinate des Zielpunktes
- * @param y2 Map-Koordinate des Zielpunktes
- * @return liefert Quadrat-Abstand zwischen den Map-Punkten 
+ * Ermittlung des Quadrat-Abstandes zwischen zwei Punkten
+ * @param x1	X-Koordinate des ersten Punktes
+ * @param y1	y-Koordinate des ersten Punktes
+ * @param x2	X-Koordinate des zweiten Punktes
+ * @param y2	Y-Koordiante des zweiten Punktes
+ * @return		liefert Quadrat-Abstand zwischen den zwei Punkten 
  */
-int16 get_dist(int16 x1, int16 y1, int16 x2, int16 y2);
+uint32_t get_dist(int16_t x1, int16_t y1, int16_t x2, int16_t y2);
 
 #endif	/*MATH_UTILS_H_*/

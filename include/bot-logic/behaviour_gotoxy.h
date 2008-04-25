@@ -57,11 +57,11 @@ void bot_gotoxy_behaviour(Behaviour_t *data);
 
 /*!
  * Botenfunktion: Das Verhalten faehrt von der aktuellen Position zur angegebenen Position (x/y)
- * @param caller Aufrufendes Verhalten
- * @param x X-Ordinate an die der Bot fahren soll
- * @param y Y-Ordinate an die der Bot fahren soll
+ * @param caller	Aufrufendes Verhalten
+ * @param x 		X-Ordinate an die der Bot fahren soll
+ * @param y 		Y-Ordinate an die der Bot fahren soll
  */
-void bot_gotoxy(Behaviour_t *caller, float x, float y);
+void bot_gotoxy(Behaviour_t * caller, int16_t x, int16_t y);
 
 #else	// USE_GOTO_POS_XY
 /* wenn goto_pos() vorhanden und USE_GOTO_POS_XY an ist, leiten wir alle goto_xy()-Aufrufe dorthin um */

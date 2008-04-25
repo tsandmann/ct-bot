@@ -136,6 +136,11 @@
 	#define BEHAVIOUR_DELAY_AVAILABLE
 #endif
 
+#ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
+	#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
+	#define BEHAVIOUR_TURN_AVAILABLE
+#endif
+
 #ifdef BEHAVIOUR_TURN_AVAILABLE
 	#define BEHAVIOUR_DELAY_AVAILABLE
 #endif
@@ -157,10 +162,6 @@
 	#undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 #endif	// SPEED_CONTROL_AVAILABLE
 #endif	// MCU
-
-#ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
-	#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
-#endif
 
 #include "bot-logic/behaviour_simple.h"
 #include "bot-logic/behaviour_drive_square.h"

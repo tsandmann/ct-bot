@@ -33,19 +33,20 @@
  * Berechnung einer Winkeldifferenz zwischen dem aktuellen Standpunkt und einem anderen Ort
  * @param xDiff	x-Differenz
  * @param yDiff	y-Differenz
- * @return 		berechnete Winkeldifferenz
+ * @return 		Berechnete Winkeldifferenz [Grad]
  */
-float calc_angle_diff(float xDiff, float yDiff) {
+float calc_angle_diff(int16_t xDiff, int16_t yDiff) {
+//TODO:	int16_t ?
 	float newHeading;
-	if(fabs(yDiff)>0.001 && fabs(xDiff)>0.001) {
-		newHeading = atan(yDiff/xDiff)*(180.0f/M_PI);
-		if (xDiff<0) newHeading += 180;
+	if (yDiff != 0 && xDiff != 0) {
+		newHeading = atan((float)yDiff / (float)xDiff) * (180.0f/M_PI);
+		if (xDiff < 0) newHeading += 180;
 	} else {
-		if(fabs(xDiff) <= 0.001) newHeading = (yDiff>0) ? 90 : -90;
-		else newHeading = (xDiff>0) ? 0 : 180;
+		if (xDiff != 0) newHeading = (yDiff > 0) ? 90 : -90;
+		else newHeading = (xDiff > 0) ? 0 : 180;
 	}
 
-	float toTurn = newHeading-heading;
+	float toTurn = newHeading - heading;
 	if (toTurn > 180) toTurn -= 360;
 	if (toTurn < -180) toTurn += 360;
 
@@ -61,7 +62,7 @@ float calc_angle_diff(float xDiff, float yDiff) {
  */
 int16_t turned_angle(int16_t angle) {
 	int16_t diff = 0;
-	if ((int16_t)v_enc_left == (int16_t)v_enc_right) {
+	if (v_enc_left == v_enc_right) {
 		/* Drehrichtung nicht ermittelbar */
 		return -1;
 	}
@@ -80,17 +81,17 @@ int16_t turned_angle(int16_t angle) {
 }
 
 /*!
- * Ermittlung des Quadrat-Abstandes zwischen 2 Koordinaten
- * @param x1 x-Koordinate des ersten Punktes
- * @param y1 y-Koordinate des ersten Punktes
- * @param x2 Map-Koordinate des Zielpunktes
- * @param y2 Map-Koordinate des Zielpunktes
- * @return liefert Quadrat-Abstand zwischen den Map-Punkten 
+ * Ermittlung des Quadrat-Abstandes zwischen zwei Punkten
+ * @param x1	X-Koordinate des ersten Punktes
+ * @param y1	y-Koordinate des ersten Punktes
+ * @param x2	X-Koordinate des zweiten Punktes
+ * @param y2	Y-Koordiante des zweiten Punktes
+ * @return		liefert Quadrat-Abstand zwischen den zwei Punkten 
  */
-int16 get_dist(int16 x1, int16 y1, int16 x2, int16 y2) {
-	int16 xt = x2 - x1;
-	int16 yt = y2 - y1;
+uint32_t get_dist(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
+	int16_t xt = x2 - x1;
+	int16_t yt = y2 - y1;
 
 	/* Abstandsermittlung nach dem guten alten Pythagoras ohne Ziehen der Wurzel */
-	return (xt * xt + yt * yt);
+	return (int32_t)xt * (int32_t)xt + (int32_t)yt * (int32_t)yt;
 }

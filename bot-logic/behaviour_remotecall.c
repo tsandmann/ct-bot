@@ -106,7 +106,7 @@ const call_t calls[] PROGMEM = {
 		PREPARE_REMOTE_CALL(bot_drive_distance,3, "int8 curve, int16 speed, int16 cm", 1,2,2),
 	#endif
 	#ifdef BEHAVIOUR_GOTOXY_AVAILABLE	
-		PREPARE_REMOTE_CALL(bot_gotoxy, 2, "float x, float y", 4, 4),
+		PREPARE_REMOTE_CALL(bot_gotoxy, 2, "int16 x, int16 y", 2, 2),
 	#endif
 	#ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_goto_pos, 3, "int16 x, int16 y, int16 head", 2, 2, 2),
