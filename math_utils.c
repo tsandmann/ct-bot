@@ -36,7 +36,6 @@
  * @return 		Berechnete Winkeldifferenz [Grad]
  */
 float calc_angle_diff(int16_t xDiff, int16_t yDiff) {
-//TODO:	int16_t ?
 	float newHeading;
 	if (yDiff != 0 && xDiff != 0) {
 		newHeading = atan((float)yDiff / (float)xDiff) * (180.0f/M_PI);

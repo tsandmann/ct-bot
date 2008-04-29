@@ -34,8 +34,6 @@
 #include "map.h"
 #include "mmc.h"
 #include "mini-fat.h"
-#include "mmc-emu.h"
-#include "mmc-vm.h"
 #include "ui/available_screens.h"
 #include "rc5-codes.h"
 #include "sensor.h"
@@ -58,8 +56,6 @@
 //#define DEBUG_MAP_TIMES	// Schalter um Performance-Messungen fuer MMC anzumachen
 //#define DEBUG_STORAGE		// Noch mehr Ausgaben zum Thema organisation der Kartenstruktur, Macroblocks, Sections
 //#define DEBUG_SCAN_OTF	// Debug-Infos des Update-Threads an
-
-#warning "MAP-Umbau noch nicht ganz abgeschlossen, siehe auch Ticket 129"
 
 #define MAP_INFO_AVAILABLE
 #ifdef MCU
@@ -146,25 +142,29 @@ static uint32_t map_start_block = 0;	/*!< Block, bei dem die Karte auf der MMC-K
 map_cache_t map_update_cache[MAP_UPDATE_CACHE_SIZE];	/*!< Cache */
 fifo_t map_update_fifo;									/*!< Fifo fuer Cache */
 
-//TODO:	Stacksize optimieren
 uint8_t map_update_stack[MAP_UPDATE_STACK_SIZE];		/*!< Stack des Update-Threads */
 static Tcb_t * map_update_thread;						/*!< Thread fuer Map-Update */
 static uint8_t lock_signal = 0;							/*!< Signal zur Synchronisation von Kartenzugriffen */
 
 #ifdef MCU
+//  avr-gcc >= 4.2.2 ?
+#if __GNUC__ >= 4 && __GNUC_MINOR__ >= 2 && __GNUC_PATCHLEVEL__ >= 2
 // kein Pro- und Epilog
-//TODO:	Seit welcher Compiler-Version gibt's das?
 void map_update_main(void) __attribute__((OS_task));
-/*
+#define PROLOG()	// NOP
+#else
+// kein Pro- und Epilog
+void map_update_main(void) __attribute__((naked));
 // Frame-Pointer laden (bei naked macht der Compiler das nicht)
 #define PROLOG()	asm volatile(							\
 					"ldi r28, lo8(map_update_stack)	\n\t"	\
 					"ldi r29, hi8(map_update_stack)		"	\
 					:::	"memory")
-*/
+#endif	// GCC-Version
 #else
 void map_update_main(void);
-#endif
+#define PROLOG()	// NOP
+#endif	// MCU
 
 // Es passen immer 2 Sektionen in den Puffer
 uint8_t map_buffer[sizeof(map_section_t) * 2];	/*!< statischer Puffer */
@@ -462,8 +462,7 @@ static int8_t get_average_fields(uint16_t x, uint16_t y, int16_t radius) {
 	int16_t dX, dY;
 	int16_t h = radius * radius;
 	
-	/* warten bis Karte frei ist */
-//TODO:	Signal-Spass noch ungetestet
+	/* warten bis Karte frei ist (nur MCU) */
 	os_signal_set(&lock_signal);
 	
 	/* Daten auslesen */
@@ -476,7 +475,7 @@ static int8_t get_average_fields(uint16_t x, uint16_t y, int16_t radius) {
 		avg += avg_line / (radius * 2);
 	}
 	
-	/* Signal zur Kartensperre wieder freigeben */
+	/* Signal zur Kartensperre wieder freigeben (nur MCU) */
 	os_signal_release();
 
 	return (int8_t)(avg / (radius * 2));
@@ -484,9 +483,9 @@ static int8_t get_average_fields(uint16_t x, uint16_t y, int16_t radius) {
 
 /*!
  * liefert den Durschnittswert um eine Ort herum 
- * @param x			x-Ordinate der Welt 
+ * @param x			x-Ordinate der Welt
  * @param y			y-Ordinate der Welt
- * @param radius	Radius der Umgebung, die beruecksichtigt wird
+ * @param radius	Radius der Umgebung, die beruecksichtigt wird [mm]
  * @return 			Durchschnitsswert im Umkreis um den Ort (>0 heisst frei, <0 heisst belegt)
  */
 int8_t map_get_average(int16_t x, int16_t y, int16_t radius) {
@@ -866,6 +865,8 @@ int8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y) 
  * Main-Funktion des Map-Update-Threads
  */
 void map_update_main(void) {
+	PROLOG();	// bei aelteren Compilern Frame-Pointer manuell laden
+	
 	map_cache_t cache_tmp;
 
 	/* Endlosschleife -> Thread wird vom OS blockiert / gibt die Kontrolle ab, 

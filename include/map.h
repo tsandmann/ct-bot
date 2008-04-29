@@ -81,9 +81,9 @@ extern fifo_t map_update_fifo;			/*!< Fifo fuer Cache */
 
 /*!
  * liefert den Durschnittswert um eine Ort herum 
- * @param x			X-Ordinate der Welt 
+ * @param x			X-Ordinate der Welt
  * @param y			Y-Ordinate der Welt
- * @param radius	Radius der Umgebung, die beruecksichtigt wird
+ * @param radius	Radius der Umgebung, die beruecksichtigt wird [mm]
  * @return			Durchschnitsswert im Umkreis um den Ort (>0 heisst frei, <0 heisst belegt)
  */
 int8_t map_get_average(int16_t x, int16_t y, int16_t radius);
