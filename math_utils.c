@@ -41,7 +41,7 @@ float calc_angle_diff(int16_t xDiff, int16_t yDiff) {
 		newHeading = atan((float)yDiff / (float)xDiff) * (180.0f/M_PI);
 		if (xDiff < 0) newHeading += 180;
 	} else {
-		if (xDiff != 0) newHeading = (yDiff > 0) ? 90 : -90;
+		if (xDiff == 0) newHeading = (yDiff > 0) ? 90 : -90;
 		else newHeading = (xDiff > 0) ? 0 : 180;
 	}
 
