@@ -35,12 +35,22 @@
 
 #define OS_MAX_THREADS		2	/*!< maximale Anzahl an Threads im System */
 #define OS_KERNEL_STACKSIZE	32	/*!< Groesse des Kernel-Stacks (fuer Timer-ISR) */	
-#define OS_DEBUG				/*!< Schalter fuer Debug-Code */
+//#define OS_DEBUG				/*!< Schalter fuer Debug-Code */
 
 
 #ifdef PC
 #undef OS_DEBUG
+#include <pthread.h>
 #endif
+
+/*! Signal-Typ zur Threadsynchronisation */
+typedef struct {
+	uint8_t value;			/*!< Signal-Wert */
+#ifdef PC
+	pthread_mutex_t mutex;	/*!< Mutex zur Synchronisation */
+	pthread_cond_t cond;	/*!< Signal zur Synchronisation */
+#endif
+} os_signal_t;
 
 #ifdef MCU
 /*! TCB eines Threads */
@@ -48,13 +58,13 @@ typedef struct {
 	void * stack;			/*!< Stack-Pointer */
 	uint32_t nextSchedule;	/*!< Zeitpunkt der naechsten Ausfuehrung. Ergibt im Zusammenhang mit der aktuellen Zeit den Status eines Threads. */
 	uint8_t lastSchedule;	/*!< Zeitpunkt der letzten Ausfuehrung, untere 8 Bit */
-	void * wait_for;		/*!< Zeiger auf Signal, bis zu dessen Freigabe blockiert wird */ 
+	os_signal_t * wait_for;	/*!< Zeiger auf Signal, bis zu dessen Freigabe blockiert wird */ 
 } Tcb_t;
 
 extern Tcb_t os_threads[OS_MAX_THREADS];	/*!< Thread-Pool (ist gleichzeitig running- und waiting-queue) */
 extern Tcb_t * os_thread_running;			/*!< Zeiger auf den Thread, der zurzeit laeuft */
 extern uint8_t os_kernel_stack[];			/*!< Kernel-Stack */
-extern uint8_t dummy_signal; 				/*!< Signal, das referenziert wird, wenn sonst keins gesetzt ist */
+extern os_signal_t dummy_signal; 			/*!< Signal, das referenziert wird, wenn sonst keins gesetzt ist */
 
 /*!
  * Schuetzt den folgenden Block (bis exitCS()) vor Threadswitches.
@@ -95,8 +105,9 @@ static inline void os_thread_sleep(uint32_t sleep) {
 
 /*!
  * Entfernt ein Signal vom aktuellen Thread
+ * @param *signal	Signal, das entfernt werden soll
  */
-static inline void os_signal_release(void) {
+static inline void os_signal_release(os_signal_t * signal) {
 	os_thread_running->wait_for = &dummy_signal;
 }
 
@@ -104,17 +115,16 @@ static inline void os_signal_release(void) {
  * Sperrt ein Signal
  * @param *signal	Zu sperrendes Signal
  */
-static inline void os_signal_lock(uint8_t * signal) {
-	*signal = 1;
+static inline void os_signal_lock(os_signal_t * signal) {
+	signal->value = 1;
 }
 
 /*!
  * Gibt ein Signal frei
  * @param *signal	Freizugebendes Signal
  */
-static inline void os_signal_unlock(uint8_t * signal) {
-	*signal = 0;
-//	os_schedule(TIMER_GET_TICKCOUNT_32);
+static inline void os_signal_unlock(os_signal_t * signal) {
+	signal->value = 0;
 }
 
 #else	// PC
@@ -147,19 +157,19 @@ void os_thread_sleep(uint32_t sleep);
 /*!
  * Entfernt ein Signal vom aktuellen Thread
  */
-void os_signal_release(void);
+void os_signal_release(os_signal_t * signal);
 
 /*!
  * Sperrt ein Signal
  * @param *signal	Zu sperrendes Signal
  */
-void os_signal_lock(uint8_t * signal);
+void os_signal_lock(os_signal_t * signal);
 
 /*!
  * Gibt ein Signal frei
  * @param *signal	Freizugebendes Signal
  */
-void os_signal_unlock(uint8_t * signal);
+void os_signal_unlock(os_signal_t * signal);
 #endif	// MCU 
 
 /*!
@@ -189,7 +199,7 @@ void os_thread_wakeup(Tcb_t * thread);
  * Blockiert den aktuellen Thread, bis ein Signal freigegeben wird
  * @param *signal	Zeiger auf Signal
  */
-void os_signal_set(void * signal);
+void os_signal_set(os_signal_t * signal);
 
 #ifdef OS_DEBUG
 /*!

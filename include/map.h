@@ -80,6 +80,12 @@ extern map_cache_t map_update_cache[];	/*!< Cache */
 extern fifo_t map_update_fifo;			/*!< Fifo fuer Cache */
 
 /*!
+ * Prueft, ob die Karte zurzeit gesperrt ist.
+ * @return	1, falls Karte gesperrt, 0 sonst
+ */
+uint8_t map_locked(void);
+
+/*!
  * liefert den Durschnittswert um eine Ort herum 
  * @param x			X-Ordinate der Welt
  * @param y			Y-Ordinate der Welt
@@ -106,7 +112,7 @@ static inline int8_t map_get_point(int16_t x, int16_t y) {
  * @param to_y		Zielort y Weltkoordinaten
  * @return 			1 wenn alles frei ist
  */
-int8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y);
+uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y);
 
 /*!
  * Zeigt die Karte an

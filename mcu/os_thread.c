@@ -48,7 +48,7 @@ typedef union {
 Tcb_t os_threads[OS_MAX_THREADS];				/*!< Array aller TCBs */
 Tcb_t * os_thread_running = NULL;				/*!< Zeiger auf den TCB des Threads, der gerade laeuft */
 uint8_t os_kernel_stack[OS_KERNEL_STACKSIZE];	/*!< Kernel-Stack */
-uint8_t dummy_signal = 0;						/*!< Signal, das referenziert wird, wenn sonst keins gesetzt ist */
+os_signal_t dummy_signal;						/*!< Signal, das referenziert wird, wenn sonst keins gesetzt ist */
 
 /*!
  * Legt einen neuen Thread an.
@@ -140,7 +140,7 @@ void os_thread_wakeup(Tcb_t * thread) {
  * Blockiert den aktuellen Thread, bis ein Signal freigegeben wird
  * @param *signal	Zeiger auf Signal
  */
-void os_signal_set(void * signal) {
+void os_signal_set(os_signal_t * signal) {
 	os_thread_running->wait_for = signal;
 	os_schedule(TIMER_GET_TICKCOUNT_32);
 }

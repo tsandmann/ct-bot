@@ -30,6 +30,7 @@
 
 #include "os_thread.h"
 #include "os_utils.h"
+#include "log.h"
 #include <pthread.h>
 
 Tcb_t os_threads[OS_MAX_THREADS];	/*!< Array aller Threads */
@@ -88,31 +89,44 @@ void os_thread_wakeup(Tcb_t * thread) {
  * Blockiert den aktuellen Thread, bis ein Signal freigegeben wird
  * @param *signal	Zeiger auf Signal
  */
-void os_signal_set(void * signal) {
-	// NOP
+void os_signal_set(os_signal_t * signal) {
+	pthread_mutex_lock(&signal->mutex);
+	if (signal->value == 1) {
+#ifdef LOG_AVAILABLE
+		pthread_t myself = pthread_self();
+		LOG_DEBUG("Thread %lu wird blockiert...", myself);
+#endif
+		pthread_cond_wait(&signal->cond, &signal->mutex);
+	}
 }
 
 /*!
  * Entfernt ein Signal vom aktuellen Thread
+ * @param *signal	Signal, das entfernt werden soll
  */
-void os_signal_release(void) {
-	// NOP
+void os_signal_release(os_signal_t * signal) {
+	pthread_mutex_unlock(&signal->mutex);
 }
 
 /*!
  * Sperrt ein Signal
  * @param *signal	Zu sperrendes Signal
  */
-void os_signal_lock(uint8_t * signal) {
-	// NOP
+void os_signal_lock(os_signal_t * signal) {
+	pthread_mutex_lock(&signal->mutex);
+	signal->value = 1;
+	pthread_mutex_unlock(&signal->mutex);
 }
 
 /*!
  * Gibt ein Signal frei
  * @param *signal	Freizugebendes Signal
  */
-void os_signal_unlock(uint8_t * signal) {
-	// NOP
+void os_signal_unlock(os_signal_t * signal) {
+	pthread_mutex_lock(&signal->mutex);
+	signal->value = 0;
+	pthread_cond_signal(&signal->cond);
+	pthread_mutex_unlock(&signal->mutex);
 }
 
 #endif	// OS_AVAILABLE

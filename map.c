@@ -144,7 +144,7 @@ fifo_t map_update_fifo;									/*!< Fifo fuer Cache */
 
 uint8_t map_update_stack[MAP_UPDATE_STACK_SIZE];		/*!< Stack des Update-Threads */
 static Tcb_t * map_update_thread;						/*!< Thread fuer Map-Update */
-static uint8_t lock_signal = 0;							/*!< Signal zur Synchronisation von Kartenzugriffen */
+static os_signal_t lock_signal;							/*!< Signal zur Synchronisation von Kartenzugriffen */
 
 #ifdef MCU
 //  avr-gcc >= 4.2.2 ?
@@ -194,6 +194,10 @@ int8_t map_init(void) {
 	os_mask_stack(map_update_stack, MAP_UPDATE_STACK_SIZE);
 #endif
 	fifo_init(&map_update_fifo, map_update_cache, sizeof(map_update_cache));
+#ifdef PC
+	pthread_mutex_init(&lock_signal.mutex, NULL);
+	pthread_cond_init(&lock_signal.cond, NULL);
+#endif
 	map_update_thread = os_create_thread(&map_update_stack[MAP_UPDATE_STACK_SIZE-1], map_update_main);
 
 #ifdef BEHAVIOUR_SCAN_AVAILABLE
@@ -342,6 +346,14 @@ static uint16_t world_to_map(int16_t koord) {
 	return tmp / (1000 / MAP_RESOLUTION);
 }
 
+/*!
+ * Prueft, ob die Karte zurzeit gesperrt ist.
+ * @return	1, falls Karte gesperrt, 0 sonst
+ */
+uint8_t map_locked(void) {
+	return lock_signal.value;
+}
+
 //#define OLD_GET_SET
 
 #ifdef OLD_GET_SET
@@ -462,7 +474,7 @@ static int8_t get_average_fields(uint16_t x, uint16_t y, int16_t radius) {
 	int16_t dX, dY;
 	int16_t h = radius * radius;
 	
-	/* warten bis Karte frei ist (nur MCU) */
+	/* warten bis Karte frei ist */
 	os_signal_set(&lock_signal);
 	
 	/* Daten auslesen */
@@ -475,8 +487,8 @@ static int8_t get_average_fields(uint16_t x, uint16_t y, int16_t radius) {
 		avg += avg_line / (radius * 2);
 	}
 	
-	/* Signal zur Kartensperre wieder freigeben (nur MCU) */
-	os_signal_release();
+	/* Signal zur Kartensperre wieder freigeben */
+	os_signal_release(&lock_signal);
 
 	return (int8_t)(avg / (radius * 2));
 }
@@ -489,7 +501,7 @@ static int8_t get_average_fields(uint16_t x, uint16_t y, int16_t radius) {
  * @return 			Durchschnitsswert im Umkreis um den Ort (>0 heisst frei, <0 heisst belegt)
  */
 int8_t map_get_average(int16_t x, int16_t y, int16_t radius) {
-	//Ort in Kartenkoordinaten
+	// Ort in Kartenkoordinaten
 	uint16_t X = world_to_map(x);
 	uint16_t Y = world_to_map(y);
 	int16_t R = radius * MAP_RESOLUTION / 1000;
@@ -790,6 +802,7 @@ static void update_border(int16_t x, int16_t y, float head, uint8_t borderL,
  */
 static uint8_t way_free_fields(uint16_t from_x, uint16_t from_y,
 		uint16_t to_x, uint16_t to_y) {
+
 //TODO:	Aehnlichkeiten mit map_update_sensor_distance() in Fkt auslagern?
 //		Idee: process_line(from_x, from_y, to_x, to_y, line_width, worker_function);
 	
@@ -855,9 +868,17 @@ static uint8_t way_free_fields(uint16_t from_x, uint16_t from_y,
  * @param  to_y		Zielort y Weltkoordinaten
  * @return			1 wenn alles frei ist
  */
-int8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y) {
-	return way_free_fields(world_to_map(from_x), world_to_map(from_y),
-			world_to_map(to_x), world_to_map(to_y));
+uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y) {
+	/* warten bis Karte frei ist */
+	os_signal_set(&lock_signal);
+
+	uint8_t result = way_free_fields(world_to_map(from_x),
+			world_to_map(from_y), world_to_map(to_x), world_to_map(to_y));
+
+	/* Signal zur Kartensperre wieder freigeben */
+	os_signal_release(&lock_signal);
+
+	return result;
 }
 
 
@@ -904,6 +925,12 @@ void map_update_main(void) {
 						cache_tmp.dataR);
 			}
 
+#ifdef PC
+			/* Falls Fifo leer, Sperre aufheben (PC-Code laeuft niemals in den else-Zweig!) */
+			if (map_update_fifo.count == 0) {
+				os_signal_unlock(&lock_signal);	// Zugriff auf Map wieder freigeben
+			}
+#endif
 		} else {
 			/* Fifo leer => weiter mit Main-Thread */
 			os_signal_unlock(&lock_signal);	// Zugriff auf Map wieder freigeben
@@ -926,14 +953,19 @@ void map_print(void) {
  * Loescht die komplette Karte
  */
 static void delete(void) {
+	/* warten bis Karte frei ist */
+	os_signal_set(&lock_signal);	
 #ifdef MCU
 	uint32_t map_filestart = mini_fat_find_block("MAP", map_buffer);
 	mini_fat_clear_file(map_filestart, map_buffer);
-	map_current_block_updated = False;
-	map_current_block = 0;
 #else
 	memset(map_storage, 0, sizeof(map_storage));
 #endif	// MCU
+	map_current_block_updated = False;
+	map_current_block = 0;
+	
+	/* Signal zur Kartensperre wieder freigeben */
+	os_signal_release(&lock_signal);	
 
 #ifdef SHRINK_MAP_ONLINE
 	// Groesse neu initialisieren
@@ -954,6 +986,9 @@ static void delete(void) {
 static void draw_test_scheme(void) {
 	int16_t x, y;
 
+	/* warten bis Karte frei ist */
+	os_signal_set(&lock_signal);
+	
 	// Erstmal eine ganz simple Linie
 	for (x=0; x< MAP_SECTION_POINTS*MAP_SECTIONS; x++) {
 		set_field(x, x, -120);
@@ -975,6 +1010,9 @@ static void draw_test_scheme(void) {
 			set_field(y*MACRO_BLOCK_LENGTH, x, -60);
 		}
 	}
+	
+	/* Signal zur Kartensperre wieder freigeben */
+	os_signal_release(&lock_signal);	
 }
 
 /*!
@@ -995,6 +1033,9 @@ static void shrink(uint16_t * min_x, uint16_t * max_x, uint16_t * min_y,
 	*min_y = map_min_y;
 	*max_y = map_max_y;
 
+	/* warten bis Karte frei ist */
+	os_signal_set(&lock_signal);
+	
 	// Kartengroesse reduzieren
 	int8_t free=1;
 	while ((*min_y < *max_y) && (free ==1)) {
@@ -1038,6 +1079,9 @@ static void shrink(uint16_t * min_x, uint16_t * max_x, uint16_t * min_y,
 		}
 		*max_x-=1;
 	}
+	
+	/* Signal zur Kartensperre wieder freigeben */
+	os_signal_release(&lock_signal);
 }
 
 /*!
@@ -1070,6 +1114,9 @@ void map_to_pgm(char * filename) {
 			"Karte beginnt bei X=%d,Y=%d und geht bis X=%d,Y=%d (%d * %d Punkte)\n",
 			min_x, min_y, max_x, max_y, map_size_x, map_size_y);
 
+	/* warten bis Karte frei ist */
+	os_signal_set(&lock_signal);
+	
 	uint8_t tmp;
 	for (y=max_y; y>min_y; y--) {
 		for (x=min_x; x<max_x; x++) {
@@ -1089,6 +1136,9 @@ void map_to_pgm(char * filename) {
 		}
 #endif	// MAP_PRINT_SCALE
 	}
+	
+	/* Signal zur Kartensperre wieder freigeben */
+	os_signal_release(&lock_signal);
 
 #ifdef MAP_PRINT_SCALE
 	for (y=0; y<10; y++) {
