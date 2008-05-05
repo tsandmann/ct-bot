@@ -307,15 +307,18 @@ int main(int argc, char * argv[]) {
 		#endif	// PC	
 
 #ifdef OS_DEBUG
-		/* Debug-Info zum freiech Stackspeicher ausgeben */
+		/* Debug-Info zum freien Stackspeicher ausgeben */
+		uint16_t tmp;
+#ifdef MAP_AVAILABLE
 		extern void * map_update_stack;
 		static uint16_t map_stack_free = -1;
-		static uint16_t kernel_stack_free = -1;
-		uint16_t tmp = os_stack_unused(map_update_stack);
+		tmp = os_stack_unused(map_update_stack);
 		if (tmp < map_stack_free) {
 			map_stack_free = tmp; 
 			LOG_INFO("Map-Stack unused=%u", tmp);
 		}
+#endif	// MAP_AVAILABLE
+		static uint16_t kernel_stack_free = -1;
 		tmp = os_stack_unused(os_kernel_stack);
 		if (tmp < kernel_stack_free) {
 			kernel_stack_free = tmp;
