@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-05-09 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer i2c::write()
+
 2008-05-05 Timo Sandmann [mail@timosandmann.de]: map_locked() prueft, ob die Map frei ist. Map-Sperre auch fuer PC. Bugfix fuer calc_angle_diff() und Map-Debug-Code.
 
 2008-04-25 Timo Sandmann [mail@timosandmann.de]: goto_pos, gotoxy und Hilfsfunktionen auf int16-Positionsdaten umgestellt (#166)

@@ -69,7 +69,13 @@ ISR(TWI_vect) {
 		/* Datum versandt, ACK empfangen */
 		case TW_MT_DATA_ACK: {
 			if (txSize == 0) {
-				/* ReStart senden */
+				if (rxSize == 0) {
+					/* Stopp Senden und beenden */
+					TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWSTO);	// Stopp senden
+					i2c_complete = 128;	// Lock freigeben
+					break;
+				}
+ 				/* ReStart senden */
 				TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWIE) | (1<<TWSTA);	// ReStart senden
 				break;
 			}
