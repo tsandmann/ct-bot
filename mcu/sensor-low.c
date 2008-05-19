@@ -143,22 +143,33 @@ void bot_sens(void) {
 #endif
 	
 	/* aktualisiere Distanz-Sensoren, interrupt-driven I/O */
-	static uint8 measure_count = 0;
-	static int16 distLeft[4];
-	static int16 distRight[4];
-	static uint16 old_dist;		// Zeit der letzten Messung der Distanzsensoren
+#ifdef DISTSENS_AVERAGE
+	static uint8_t measure_count = 0;
+	static int16_t distLeft[4];
+	static int16_t distRight[4];
+#endif	// DISTSENS_AVERAGE
+	static uint16_t old_dist;		// Zeit der letzten Messung der Distanzsensoren
 
 	/* Auswertung der Distanzsensoren alle 50 ms */
 	uint16 dist_ticks = TIMER_GET_TICKCOUNT_16;
-	if ((uint16)(dist_ticks-old_dist) > MS_TO_TICKS(50)){	
-		adc_read_int(SENS_ABST_L, &distLeft[measure_count]);
+	if ((uint16)(dist_ticks-old_dist) > MS_TO_TICKS(50)) {
+		int16_t * pDistL, * pDistR;
+#ifdef DISTSENS_AVERAGE
+		pDistL = &distLeft[measure_count];
+		pDistR = &distRight[measure_count];
+#else
+		pDistL = &sensDistL;
+		pDistR = &sensDistR;
+#endif	// DISTSENS_AVERAGE
+		adc_read_int(SENS_ABST_L, pDistL);
 		#ifdef BEHAVIOUR_SERVO_AVAILABLE
 			if ((servo_active & SERVO1) == 0)	// Wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensor nicht
 		#endif
-				adc_read_int(SENS_ABST_R, &distRight[measure_count]);
-				
+				adc_read_int(SENS_ABST_R, pDistR);
+#ifdef DISTSENS_AVERAGE				
 		measure_count++;
 		measure_count &= 0x3;	// Z/4Z
+#endif
 	}
 
 	/* die anderen analogen Sensoren, auch int-driven I/O */
@@ -246,18 +257,27 @@ void bot_sens(void) {
 		// dieser Block braucht insgesamt ca. 80 us (MCU)
 		/* Dist-Sensor links */
 		while (adc_get_active_channel() < 1) {}
-		uint16 voltL = distLeft[0]+distLeft[1]+distLeft[2]+distLeft[3];
-		(*sensor_update_distance)(&sensDistL, &sensDistLToggle, sensDistDataL, voltL);
-		#ifdef TEST_AVAILABLE_ANALOG
-			sensDistL = voltL >> 2;
-		#endif	
+		uint16_t volt;
+#ifdef DISTSENS_AVERAGE
+		volt = (distLeft[0] + distLeft[1] + distLeft[2] + distLeft[3]) >> 2;
+#else
+		volt = sensDistL;
+#endif
+		(*sensor_update_distance)(&sensDistL, &sensDistLToggle, sensDistDataL, volt);
+#ifdef TEST_AVAILABLE_ANALOG
+		sensDistL = volt;
+#endif
 		/* Dist-Sensor rechts */
 		while (adc_get_active_channel() < 2) {}
-		uint16 voltR = distRight[0]+distRight[1]+distRight[2]+distRight[3];
-		(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, voltR);
-		#ifdef TEST_AVAILABLE_ANALOG
-			sensDistR = voltR >> 2;
-		#endif			
+#ifdef DISTSENS_AVERAGE
+		volt = (distRight[0] + distRight[1] + distRight[2] + distRight[3]) >> 2;
+#else
+		volt = sensDistR;
+#endif
+		(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, volt);
+#ifdef TEST_AVAILABLE_ANALOG
+		sensDistR = volt;
+#endif			
 	}
 	
 #ifdef CMPS03_AVAILABLE

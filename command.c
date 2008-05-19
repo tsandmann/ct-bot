@@ -468,8 +468,8 @@ int8_t command_evaluate(void) {
 			// Einige Kommandos ergeben nur fuer simulierte Bots Sinn
 			#ifdef PC
 				case CMD_SENS_IR: {
-					(*sensor_update_distance)(&sensDistL, &sensDistLToggle, sensDistDataL, received_command.data_l*4);
-					(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, received_command.data_r*4);
+					(*sensor_update_distance)(&sensDistL, &sensDistLToggle, sensDistDataL, received_command.data_l);
+					(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, received_command.data_r);
 					break;
 				}
 				case CMD_SENS_ENC:

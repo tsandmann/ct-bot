@@ -94,3 +94,21 @@ uint32_t get_dist(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
 	/* Abstandsermittlung nach dem guten alten Pythagoras ohne Ziehen der Wurzel */
 	return (int32_t)xt * (int32_t)xt + (int32_t)yt * (int32_t)yt;
 }
+
+/*!
+ * Ermittelt die Koordinaten eines Punktes, der um dx mm in x- und 
+ * dy mm in y-Richtung gegenueber der aktuellen Bot-Position verschoben ist.
+ * @param alpha	Winkel zum Punkt [Grad]
+ * @param dx	x-Komponente des Verschiebungsvektors [mm]
+ * @param dy	y-Komponente des Verschiebungsvektors [mm]
+ * @param *x	Zeiger auf x-Koordinate des gesuchten Punktes
+ * @param *y	Zeiger auf y-Koordinate des gesuchten Punktes
+ */
+void calc_point_in_distance(float alpha, int16_t dx, int16_t dy, int16_t * x, int16_t * y) {
+	float h = alpha * (M_PI/180.0f);
+	float cos_h = cos(h);
+	float sin_h = sin(h);
+
+	*x = x_pos + (int16_t)((dx * cos_h) - (dy * sin_h));
+	*y = y_pos + (int16_t)((dy * cos_h) + (dx * sin_h));
+}

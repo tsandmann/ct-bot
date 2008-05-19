@@ -19,12 +19,12 @@
 
 
 
-/*! @file 	behaviour_catch_pillar.h
- * @brief 	sucht nach einer Dose und fängt sie ein
- * 
+/*! 
+ * @file 	behaviour_catch_pillar.h
+ * @brief 	Sucht nach einer Dose und faengt sie ein
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	08.12.06
-*/
+ */
 
 #ifndef BEHAVIOUR_CATCH_PILLAR_H_
 #define BEHAVIOUR_CATCH_PILLAR_H_
@@ -35,30 +35,29 @@
 #ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 /*! 
  * Fange eine Dose ein 
- * @param *data der Verhaltensdatensatz
+ * @param *data	Der Verhaltensdatensatz
  */
-void bot_catch_pillar_behaviour(Behaviour_t *data);
+void bot_catch_pillar_behaviour(Behaviour_t * data);
 
 /*!
  * Botenfkt
  * Fange eine Dose ein 
- * @param caller Der obligatorische Verhaltensdatensatz des Aufrufers
+ * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_catch_pillar(Behaviour_t * caller);
 
 /*!
  * Gibt die Dose wieder aus, Entladevorgang
- * @param *data der Verhaltensdatensatz
+ * @param *data	Der Verhaltensdatensatz
  */
-void bot_unload_pillar_behaviour(Behaviour_t *data);
+void bot_unload_pillar_behaviour(Behaviour_t * data);
 
 /*!
  * Botenfkt
  * Entlaedt das Objekt wieder
- * @param caller Der obligatorische Verhaltensdatensatz des Aufrufers
+ * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_unload_pillar(Behaviour_t * caller);
 
-#endif
-
-#endif /*BEHAVIOUR_CATCH_PILLAR_H_*/
+#endif	// BEHAVIOUR_CATCH_PILLAR_AVAILABLE
+#endif	/*BEHAVIOUR_CATCH_PILLAR_H_*/

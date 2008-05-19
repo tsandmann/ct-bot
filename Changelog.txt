@@ -1,5 +1,10 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-05-19 Timo Sandmann [mail@timosandmann.de]: 3. Version fuer catch_pillar(), aehnlich zu Version 2, berechnet die Entfernung zum Objekt aber anders. Einstellbar mit #define CATCH_PILLAR_VERSION in behaviour_catch_pillar.c
+												 Distanzsensorauswertung mit und ohne Mittelwertbildung der Rohdaten, umschaltbar mit #define DISTSENS_AVERAGE in include/sensor_correction.h. Kalibrierungsverhalten entsprechend angepasst.
+
+2008-05-19 Frank Menzel [Menzelfr@gmx.net]: Neues catch_pillar-Verhalten mit Verwendung goto_pos; altes Verhalten im Code drin gelassen und mit define aktivierbar
+
 2008-05-09 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer i2c::write()
 
 2008-05-05 Timo Sandmann [mail@timosandmann.de]: map_locked() prueft, ob die Map frei ist. Map-Sperre auch fuer PC. Bugfix fuer calc_angle_diff() und Map-Debug-Code.

@@ -150,7 +150,7 @@ static inline uint8_t lin_interpolate(uint8_t x1, uint8_t y1, uint8_t x2, uint8_
  * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			21.04.2007
  */
-void sensor_dist_lookup(int16_t *const p_sens, uint8_t *const p_toggle, const distSens_t *ptr, int16_t volt_16) {
+void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t volt_16) {
 	if (sizeof(sensDistDataL) != sizeof(sensDistDataR)) {
 		/* sensDistDataL und sensDistDataR muessen gleich gross sein! */
 		LOG_ERROR("sensDistData unzulaessig");
@@ -161,11 +161,11 @@ void sensor_dist_lookup(int16_t *const p_sens, uint8_t *const p_toggle, const di
 	uint8_t volt;
 	/* Offset einlesen und Messwerte pruefen */
 	uint8_t offset = eeprom_read_byte(&sensDistOffset);
-	if (volt_16 > 255*8 + offset) volt = 255; 
-	else  volt = (volt_16 >> 3) - offset;
+	if (volt_16 > 255*2 + offset) volt = 255; 
+	else volt = (volt_16 >> 1) - offset;
 	
 	/* Spannung in LT-Table suchen */
-	uint8 pivot = eeprom_read_byte(&ptr[n-1].voltage);	// in welcher Region muessen wir suchen?
+	uint8_t pivot = eeprom_read_byte(&ptr[n-1].voltage);	// in welcher Region muessen wir suchen?
 	if (volt > pivot) {
 		/* in unterer Haelfte suchen */
 		i = 0;
@@ -191,7 +191,7 @@ void sensor_dist_lookup(int16_t *const p_sens, uint8_t *const p_toggle, const di
 	} 
 	
 	/* Entfernung berechnen und speichern */
-	uint8 distance = lin_interpolate(eeprom_read_byte(&(ptr-1)->voltage), eeprom_read_byte(&(ptr-1)->dist), tmp, eeprom_read_byte(&ptr->dist), volt);
+	uint8_t distance = lin_interpolate(eeprom_read_byte(&(ptr-1)->voltage), eeprom_read_byte(&(ptr-1)->dist), tmp, eeprom_read_byte(&ptr->dist), volt);
 	*p_sens = distance >= SENS_IR_MAX_DIST/5 ? SENS_IR_INFINITE : distance * 5;	// Distanz ist gefuenftelt in den Ref.-Daten;
 	
 	/* Sensorupdate-Info toggeln */

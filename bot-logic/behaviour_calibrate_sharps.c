@@ -119,6 +119,7 @@ static inline void wait_for_userinput(void) {
 /*!
  * @brief			Berechnet die aktuelle Entfernung eines Sensors zum Ausganspunkt / dem Hindernis	
  * @param sensor	0: links, 1: rechts
+ * @return			Entfernung [mm]
  */
 static int16_t calc_distance(uint8_t sensor) {
 //	float dHead = (start_head - heading) * 2.0f*M_PI/360.0f;
@@ -157,20 +158,23 @@ static void update_data(void) {
  * @brief	Misst die Entfernung mit den Sharps
  */
 static void measure_distance(void) {
+	if (measure_count == 0) {
+		distL = 0;
+		distR = 0;
+	}
+	/* auf neue Messung pruefen */
 	if (last_toggle != sensDistLToggle) {
-		/* auf neue Messung pruefen */
 		last_toggle = sensDistLToggle;
 		measure_count++;
+	} else {
+		return;
 	}
-	/* zweimal vier Messungen abwarten */
-	if (measure_count == 4) {
-		distL = (float)sensDistL / 8.0f - volt_offset;
-		distR = (float)sensDistR / 8.0f - volt_offset;
-	} else if (measure_count == 8) {
-		distL += (float)sensDistL / 8.0f - volt_offset;
-		distR += (float)sensDistR / 8.0f - volt_offset;
-		distL >>= 1;
-		distR >>= 1;	
+	distL += (float)sensDistL / 2.0f - volt_offset;
+	distR += (float)sensDistR / 2.0f - volt_offset;
+	/* acht Messungen abwarten */
+	if (measure_count == 8) {
+		distL >>= 3;
+		distR >>= 3;	
 		if (distL > 255 || distR > 255) {
 			/* Offset zu kleine => erhoehen und neu messen */
 			volt_offset += 5;
@@ -202,7 +206,7 @@ static void goto_next_pos(void) {
  * @param ptr		Zeiger auf auf Sensorrohdaten im EEPROM fuer p_sens
  * @param volt		Spannungs-Ist-Wert, zu dem die Distanz gesucht wird 
  */ 
-void sensor_dist_direct(int16_t *const p_sens, uint8_t *const p_toggle, const distSens_t *ptr, int16_t volt) {
+void sensor_dist_direct(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t volt) {
 	*p_sens = volt;	
 	*p_toggle = ~*p_toggle;
 }
@@ -214,7 +218,7 @@ void sensor_dist_direct(int16_t *const p_sens, uint8_t *const p_toggle, const di
  * Die Funktionalitaet des Verhaltens ist aufgeteilt in: 
  * @see goto_next_pos(), @see measure_distance(), @see update_data()
  */
-void bot_calibrate_sharps_behaviour(Behaviour_t *data) {
+void bot_calibrate_sharps_behaviour(Behaviour_t * data) {
 	if (pNextJob) pNextJob();
 	else {
 		/* fertig! */
@@ -257,7 +261,7 @@ void bot_calibrate_sharps_behaviour(Behaviour_t *data) {
  * @brief			Kalibriert die Distanzsensoren des ct-Bots
  * @param caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
  */
-void bot_calibrate_sharps(Behaviour_t *caller) {
+void bot_calibrate_sharps(Behaviour_t * caller) {
 	/* Inits */
 //	data = caller;
 //	start_head = heading;
@@ -267,6 +271,8 @@ void bot_calibrate_sharps(Behaviour_t *caller) {
 	step = 5;
 	distance = 10;
 	volt_offset = 0;
+	distL = 0;
+	distR = 0;
 	count = 0;
 	userinput_done = 0;
 	

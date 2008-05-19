@@ -109,11 +109,7 @@
 #endif	// PC
 
 /* Konstanten fuer bot_catch_pillar_behaviour() */
-#ifdef PC
-	#define MAX_PILLAR_DISTANCE	350	/*!< max. Entfernung zum Objekt [mm] Sim */	
-#else
-	#define MAX_PILLAR_DISTANCE	300 /*!< max. Entfernung zum Objekt [mm] realer Bot */
-#endif
+#define MAX_PILLAR_DISTANCE	500 /*!< max. Entfernung zum Objekt [mm] */
 
 /* Konstanten fuer Verhaltensanzeige, Verhalten mit prio von bis sichtbar */
 #define PRIO_VISIBLE_MIN	3	/*!< Prioritaet, die ein Verhalten mindestens haben muss, um angezeigt zu werden */

@@ -94,4 +94,15 @@ int16_t turned_angle(int16_t angle);
  */
 uint32_t get_dist(int16_t x1, int16_t y1, int16_t x2, int16_t y2);
 
+/*!
+ * Ermittelt die Koordinaten eines Punktes, der um dx mm in x- und 
+ * dy mm in y-Richtung gegenueber der aktuellen Bot-Position verschoben ist.
+ * @param alpha	Winkel zum Punkt [Grad]
+ * @param dx	x-Komponente des Verschiebungsvektors [mm]
+ * @param dy	y-Komponente des Verschiebungsvektors [mm]
+ * @param *x	Zeiger auf x-Koordinate des gesuchten Punktes
+ * @param *y	Zeiger auf y-Koordinate des gesuchten Punktes
+ */
+void calc_point_in_distance(float alpha, int16_t dx, int16_t dy, int16_t * x, int16_t * y);
+
 #endif	/*MATH_UTILS_H_*/
