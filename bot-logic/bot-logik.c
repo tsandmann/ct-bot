@@ -194,15 +194,6 @@ void bot_behave_init(void) {
 		insert_behaviour_to_list(&behaviour, new_behaviour(139, bot_check_distance_behaviour, INACTIVE));
 	#endif
 	
-    #ifdef BEHAVIOUR_MAP_GO_DESTINATION_AVAILABLE
-		// Verhalten, um laut Map zu einem bestimmten Ziel zu fahren
-        insert_behaviour_to_list(&behaviour, new_behaviour(136, bot_path_bestfirst_behaviour,INACTIVE));
- 	    insert_behaviour_to_list(&behaviour, new_behaviour(135, bot_gotoxy_behaviour_map,INACTIVE));
- 	    bot_set_destination(0,0);  // auf aktuelle Botposition setzen (bei 0,0 sonst Mappos selbst)
- 	    // Registrierung zur Behandlung des Notfallverhaltens zum Rueckwaertsfahren
- 	    register_emergency_proc(&border_mapgo_handler);
-    #endif
-
 	#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 		bot_solve_maze_init(100,43,INACTIVE);
 	#endif

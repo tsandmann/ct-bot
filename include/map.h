@@ -45,8 +45,6 @@
 #define MAP_UPDATE_CACHE_SIZE	26	/*!< Groesse des Map-Caches */
 
 #define MAPFIELD_IGNORE		20  	/*!< negativer Schwellwert, bei dem Laut Map Hindernis gemeldet wird */
-#define HAZPOT				5   	/*! hohe Hinderniswahrscheinlichkeit und trotzdem weiter beruecksichtigt */
-#define MAP_ART_HAZARD		30  	/*!< kuenstliches Hindernis in MAP fuer Pathplaning in lokalem Minimum */
 
 // Die folgenden Variablen/konstanten NICHT direkt benutzen, sondern die zugehoerigen Makros: get_map_min_x() und Co!
 // Denn sonst erhaelt man Karten und nicht Weltkoordinaten!

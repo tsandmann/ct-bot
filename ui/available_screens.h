@@ -38,11 +38,10 @@
 //#define DISPLAY_BEHAVIOUR_AVAILABLE		/*!< zeigt Verhalten an */
 //#define MISC_DISPLAY_AVAILABLE			/*!< aehm ja, der Rest irgendwie... */
 #define DISPLAY_ODOMETRIC_INFO			/*!< zeigt Positions- und Geschwindigkeitsdaten an */
-#define DISPLAY_MMC_INFO				/*!< Zeigt die Daten der MMC-Karte an */
+//#define DISPLAY_MMC_INFO				/*!< Zeigt die Daten der MMC-Karte an */
 //#define DISPLAY_MINIFAT_INFO			/*!< Zeigt Ausgaben des MiniFAT-Treibers an */
 //#define RESET_INFO_DISPLAY_AVAILABLE	/*!< Zeigt Informationen ueber Resets an */
 #define RAM_DISPLAY_AVAILABLE			/*!< Ausgabe des freien RAMs */
-#define DISPLAY_MAP_GO_DESTINATION      /*!< Steuerung Map-Verhalten auf diesem Screen */
 #define DISPLAY_MAP_AVAILABLE			/*!< Zeigt Map-Display an */
 #define DISPLAY_TRANSPORT_PILLAR        /*!< Steuerung Transport-Pillar-Verhalten auf diesem Screen */
 #define DISPLAY_DRIVE_STACK_AVAILABLE	/*!< Steuerung Stack-Verhalten auf diesem Screen */
@@ -65,9 +64,6 @@
 #endif	// MMC_AVAILABLE
 #ifndef MAP_AVAILABLE
 	#undef DISPLAY_MAP_AVAILABLE
-#endif
-#ifndef BEHAVIOUR_MAP_GO_DESTINATION_AVAILABLE
-	#undef DISPLAY_MAP_GO_DESTINATION
 #endif
 #ifndef BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE
 	#undef DISPLAY_TRANSPORT_PILLAR
