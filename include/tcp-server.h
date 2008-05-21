@@ -34,8 +34,9 @@ void tcp_server_init(void);
 
 /*!
  * Hauptschleife des TCP-Servers
+ * @param runs	Anzahl der Durchlaeufe
  */
-int tcp_server_run (int runs);
+void tcp_server_run(int runs);
 
 /*!
  * Init TCP-test-Client
@@ -43,7 +44,8 @@ int tcp_server_run (int runs);
 void tcp_test_client_init(void);
 
 /*!
- * Hauptschleife des TCP-Test-Clienzs
+ * Hauptschleife des TCP-Test-Clients
+ * @param runs	Anzahl der Durchlaeufe, 0 fuer unendlich
  */
-int tcp_test_client_run (int runs);
+void tcp_test_client_run(int runs);
 #endif	// TCP_SERVER_H_

@@ -90,13 +90,13 @@ void hand_cmd_args(int argc, char * argv[]) {
 			/* Servermodus [-s] wird verlangt */
 			printf("ARGV[0]= %s\n", argv[0]);
 			tcp_server_init();
-			tcp_server_run(100);	// beendet per exit()
+			tcp_server_run(1000);	// beendet per exit()
 		}
 			
 		case 'T': {
 			/* Testclient starten */
 			tcp_test_client_init();
-			tcp_test_client_run(100);	// beendet per exit()
+			tcp_test_client_run(1000);	// beendet per exit()
 		}
 			
 		case 't': {

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-05-21 Timo Sandmann [mail@timosandmann.de]: TCP-Testserver / -Client debuggt (#161), funktioniert nun (wieder)
+
 2008-05-19 Timo Sandmann [mail@timosandmann.de]: 3. Version fuer catch_pillar(), aehnlich zu Version 2, berechnet die Entfernung zum Objekt aber anders. Einstellbar mit #define CATCH_PILLAR_VERSION in behaviour_catch_pillar.c
 												 Distanzsensorauswertung mit und ohne Mittelwertbildung der Rohdaten, umschaltbar mit #define DISTSENS_AVERAGE in include/sensor_correction.h. Kalibrierungsverhalten entsprechend angepasst.
 

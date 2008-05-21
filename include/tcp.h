@@ -33,12 +33,11 @@
 #include "command.h"
 
 
-#define IP "localhost"		/*!<  IP, mit der verbunden werden soll (normalerweise localhost) */
-//#define IP "10.10.22.242"		
+#define IP "localhost"		/*!<  IP, mit der verbunden werden soll (normalerweise localhost) */	
 #define PORT 10001			/*!<  Port, mit dem verbunden werden soll  */
 
-extern int tcp_sock;			/*!< Unser TCP-Socket */
-extern char *tcp_hostname;		/*!< Hostname, auf dem ct-Sim laeuft */
+extern int tcp_sock;		/*!< Unser TCP-Socket */
+extern char *tcp_hostname;	/*!< Hostname, auf dem ct-Sim laeuft */
 
 /*!
  * Sende Kommando per TCP/IP im Little Endian
@@ -82,5 +81,11 @@ void tcp_init(void);
  * @return -1 bei Fehlern, sonst zahl der uebertragenen Bytes
  */
 int flushSendBuffer(void);
+
+/*!
+ * Schliesst eine TCP-Connection
+ * @param sock Der Socket
+ */
+void tcp_closeConnection(int sock);
 #endif	// PC
 #endif	/* TCP_H_ */
