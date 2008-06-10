@@ -85,7 +85,7 @@
 //#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
 //#define OS_AVAILABLE			/*!< Aktiviert BotOS fuer Threads und Scheduling */
 
-//#define EEPROM_EMU_AVAILABLE	/*!< Aktiviert die EEPROM-Emulation fuer PC */
+#define EEPROM_EMU_AVAILABLE	/*!< Aktiviert die EEPROM-Emulation fuer PC */
 
 // Achtung, Linkereinstellungen anpassen !!!!! (siehe Documentation/Bootloader.html)!
 //#define BOOTLOADER_AVAILABLE	/*!< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders. Achtung, Linkereinstellungen anpassen (siehe mcu/bootloader.c)! */
@@ -133,13 +133,6 @@
 
 	#define COMMAND_AVAILABLE		/*!< High-Level Communication */
 	#undef USE_MINILOG
-
-	#ifdef __APPLE__
-		#include <AvailabilityMacros.h>
-		#ifdef MAC_OS_X_VERSION_10_5
-			#undef EEPROM_EMU_AVAILABLE	// derzeit keine EEPROM-Emulation unter Leopard moeglich
-		#endif
-	#endif	// __APPLE__
 #endif
 
 #ifdef MCU

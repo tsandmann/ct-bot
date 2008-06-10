@@ -32,12 +32,12 @@
 
 /* OS X */
 .globl __eeprom_start1__
-	.section __DATA,.s1eeprom
+	.section __eeprom,__s1data
 __eeprom_start1__:
 	.space 1
 	
 .globl __eeprom_start2__
-	.section __DATA,.s2eeprom
+	.section __eeprom,__s2data
 __eeprom_start2__:
 	.space 1
 
