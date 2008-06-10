@@ -125,11 +125,6 @@ static void init(void) {
 	#ifdef BOT_2_PC_AVAILABLE
 		bot_2_pc_init();
 	#endif
-	#ifdef PC
-		if (init_eeprom_man(0) != 0) {
-			LOG_ERROR("EEPROM-Manager nicht korrekt initialisiert!");
-		}
-	#endif
 	#ifdef DISPLAY_AVAILABLE
 		display_init();
 	#endif
@@ -181,10 +176,16 @@ int main(void) {
  * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
  */
 int main(int argc, char * argv[]) {
-	/* zum Debuggen der Zeiten: */	
-	#ifdef DEBUG_TIMES
-		struct timeval start, stop;
-	#endif
+#ifdef DEBUG_TIMES
+	/* zum Debuggen der Zeiten: */
+	struct timeval start, stop;
+#endif
+	
+	/* PC-EEPROM-Init vor hand_cmd_args() */
+	if (init_eeprom_man(0) != 0) {
+		LOG_ERROR("EEPROM-Manager nicht korrekt initialisiert!");
+	}
+	
 	/* Kommandozeilen-Argumente auswerten */
 	hand_cmd_args(argc, argv);
 	
