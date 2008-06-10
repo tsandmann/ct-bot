@@ -40,7 +40,7 @@
 
 //#define BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE	/*!< verfolge ein (bewegliches) Objekt */
 
-#define BEHAVIOUR_FOLLOW_WALL_AVAILABLE /*!< Follow Wall Explorer Verhalten */
+//#define BEHAVIOUR_FOLLOW_WALL_AVAILABLE /*!< Follow Wall Explorer Verhalten */
 
 //#define BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE /*!< Transport-Pillar Verhalten */
 
