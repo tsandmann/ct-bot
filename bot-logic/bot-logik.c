@@ -195,7 +195,8 @@ void bot_behave_init(void) {
 	#endif
 	
 	#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
-		bot_solve_maze_init(100,43,INACTIVE);
+		/* solve_maze belegt Prios 100, 90, 89 */
+		bot_solve_maze_init(100,90,INACTIVE);
 	#endif
 
 	#ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
@@ -204,7 +205,8 @@ void bot_behave_init(void) {
 	#endif
 
 	#ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
-		bot_olympic_init(52,80,INACTIVE);
+		/* olympic belegt Prios 60, 55, 54 */
+		bot_olympic_init(60,55,INACTIVE);
 	#endif
 		
 	#ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
