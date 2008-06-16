@@ -53,24 +53,24 @@ typedef struct {
 
 /*!
  * @brief			Initialisiert die FIFO, setzt Lese- und Schreibzeiger, etc. 
- * @param f			Zeiger auf FIFO-Datenstruktur
- * @param buf		Zeiger auf den Puffer der Groesse size fuer die FIFO
+ * @param *f		Zeiger auf FIFO-Datenstruktur
+ * @param *buffer	Zeiger auf den Puffer der Groesse size fuer die FIFO
  * @param size		Anzahl der Bytes, die die FIFO speichern soll	.
  */
-extern void fifo_init(fifo_t * f, void * buf, const uint8_t size);
+extern void fifo_init(fifo_t * f, void * buffer, const uint8_t size);
 	
 /*!
  * @brief			Schreibt length Byte in die FIFO
- * @param f			Zeiger auf FIFO-Datenstruktur
- * @param data		Zeiger auf Quelldaten
+ * @param *f		Zeiger auf FIFO-Datenstruktur
+ * @param *data		Zeiger auf Quelldaten
  * @param length	Anzahl der zu kopierenden Bytes
  */	
 extern void fifo_put_data(fifo_t * f, void * data, uint8_t length);
 
 /*!
  * @brief			Liefert length Bytes aus der FIFO, nicht blockierend.
- * @param f			Zeiger auf FIFO-Datenstruktur
- * @param data		Zeiger auf Speicherbereich fuer Zieldaten
+ * @param *f		Zeiger auf FIFO-Datenstruktur
+ * @param *data		Zeiger auf Speicherbereich fuer Zieldaten
  * @param length	Anzahl der zu kopierenden Bytes
  * @return			Anzahl der tatsaechlich gelieferten Bytes
  */	
@@ -78,7 +78,7 @@ extern uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length);
 
 /*!
  * @brief		Schreibt ein Byte in die FIFO.
- * @param f		Zeiger auf FIFO-Datenstruktur
+ * @param *f	Zeiger auf FIFO-Datenstruktur
  * @param data	Das zu schreibende Byte
  */
 static inline void _inline_fifo_put(fifo_t * f, const uint8_t data) {
@@ -97,9 +97,9 @@ static inline void _inline_fifo_put(fifo_t * f, const uint8_t data) {
 }
 
 /*!
- * @brief	Liefert das naechste Byte aus der FIFO. 
- * @param f	Zeiger auf FIFO-Datenstruktur
- * @return	Das Byte aus der FIFO
+ * @brief		Liefert das naechste Byte aus der FIFO. 
+ * @param *f	Zeiger auf FIFO-Datenstruktur
+ * @return		Das Byte aus der FIFO
  * Ob ueberhaupt ein Byte in der FIFO ist, muss vorher extra abgeprueft werden!
  */
 static inline uint8_t _inline_fifo_get(fifo_t * f) {

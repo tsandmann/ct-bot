@@ -30,8 +30,8 @@
 
 /*!
  * @brief			Initialisiert die FIFO, setzt Lese- und Schreibzeiger, etc. 
- * @param f			Zeiger auf FIFO-Datenstruktur
- * @param buffer	Zeiger auf den Puffer der Groesse size fuer die FIFO
+ * @param *f		Zeiger auf FIFO-Datenstruktur
+ * @param *buffer	Zeiger auf den Puffer der Groesse size fuer die FIFO
  * @param size		Anzahl der Bytes, die die FIFO speichern soll	.
  */
 void fifo_init(fifo_t * f, void * buffer, const uint8_t size) {
@@ -46,8 +46,8 @@ void fifo_init(fifo_t * f, void * buffer, const uint8_t size) {
 	
 /*!
  * @brief			Schreibt length Byte in die FIFO
- * @param f			Zeiger auf FIFO-Datenstruktur
- * @param data		Zeiger auf Quelldaten
+ * @param *f		Zeiger auf FIFO-Datenstruktur
+ * @param *data		Zeiger auf Quelldaten
  * @param length	Anzahl der zu kopierenden Bytes
  */
 void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
@@ -91,8 +91,8 @@ void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
 
 /*!
  * @brief			Liefert length Bytes aus der FIFO, nicht blockierend fuer MCU, aber fuer PC / phtreads
- * @param f			Zeiger auf FIFO-Datenstruktur
- * @param data		Zeiger auf Speicherbereich fuer Zieldaten
+ * @param *f		Zeiger auf FIFO-Datenstruktur
+ * @param *data		Zeiger auf Speicherbereich fuer Zieldaten
  * @param length	Anzahl der zu kopierenden Bytes
  * @return			Anzahl der tatsaechlich gelieferten Bytes
  */	
