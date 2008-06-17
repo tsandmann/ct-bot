@@ -40,8 +40,14 @@
 void bot_catch_pillar_behaviour(Behaviour_t * data);
 
 /*!
- * Botenfkt
- * Fange eine Dose ein 
+ * Fange ein Objekt ein
+ * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * @param degrees	Wie weit [Grad] soll maximal gedreht werden?
+ */
+void bot_catch_pillar_turn(Behaviour_t * caller, int16_t degrees);
+
+/*!
+ * Fange ein Objekt ein
  * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_catch_pillar(Behaviour_t * caller);
@@ -53,9 +59,8 @@ void bot_catch_pillar(Behaviour_t * caller);
 void bot_unload_pillar_behaviour(Behaviour_t * data);
 
 /*!
- * Botenfkt
  * Entlaedt das Objekt wieder
- * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * @param caller Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_unload_pillar(Behaviour_t * caller);
 

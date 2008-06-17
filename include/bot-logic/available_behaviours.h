@@ -37,6 +37,7 @@
 //#define BEHAVIOUR_OLYMPIC_AVAILABLE	/*!< Olympiadenverhalten vorhanden? */
 
 #define BEHAVIOUR_CATCH_PILLAR_AVAILABLE /*!< Suche eine Dose und fange sie ein */
+//#define BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE	/*!< Trennt zwei Arten von Dosen (hell / dunkel) */
 
 //#define BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE	/*!< verfolge ein (bewegliches) Objekt */
 
@@ -106,6 +107,10 @@
 	#define BEHAVIOUR_TURN_AVAILABLE
 	#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 #endif	
+
+#ifdef BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE
+	#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE
+#endif
 
 #ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 	#define BEHAVIOUR_SERVO_AVAILABLE
@@ -184,6 +189,7 @@
 
 #include "bot-logic/behaviour_servo.h"
 #include "bot-logic/behaviour_catch_pillar.h"
+#include "bot-logic/behaviour_classify_objects.h"
 
 #include "bot-logic/behaviour_follow_object.h"
 

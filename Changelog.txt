@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-06-17 Timo Sandmann [mail@timosandmann.de]: Neues Verhalten bot_classify_objects(), Details unter bot-logic/behaviour_classify_objects.c
+
 2008-06-10 Timo Sandmann [mail@timosandmann.de]: EEPROM-Emulation an Mac OS 10.5 angepasst, #151
 
 2008-06-10 Achim Pankalla [achim.pankalla@gmx.de]: EEPROM Emulation (#167), Benutzung von EEPROM Variablen vor der Initialisierung des EEPROM-Emulators. Emulation geht nun wieder mit Bot-Adressuebergabe.

@@ -221,6 +221,10 @@ void bot_behave_init(void) {
  	    register_emergency_proc(&border_follow_wall_handler);
 	#endif
 	
+	#ifdef BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE
+ 	    insert_behaviour_to_list(&behaviour, new_behaviour(45, bot_classify_objects_behaviour, INACTIVE));
+	#endif
+ 	    
 	#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
  	    insert_behaviour_to_list(&behaviour, new_behaviour(44, bot_catch_pillar_behaviour,INACTIVE));
 		insert_behaviour_to_list(&behaviour, new_behaviour(43, bot_unload_pillar_behaviour,INACTIVE));

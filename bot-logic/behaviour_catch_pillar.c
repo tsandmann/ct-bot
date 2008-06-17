@@ -355,6 +355,7 @@ static uint8_t state_after_cancel;	/*!< Status, der nach einem Abbruch eingestel
 static uint8_t side; 				/*!< Auswahl des Distanzsensors (0: links, 1: rechts */
 static int16_t headingL;			/*!< heading bei Erkennung links [Grad] */
 static int16_t headingR;			/*!< heading bei Erkennung rechts [Grad] */
+static int16_t max_turn;			/*!< Wie weit [Grad] maximal gedreht werden soll */
 
 /*!
  * Abbruchfunktion fuer das Cancelverhalten waehrend der Drehung zum 
@@ -406,7 +407,7 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 	/* Auf los geht's los */
 	case START:
 		/* Drehen mit Abbruch bei Objekterkennung */
-		bot_turn_speed(data, 360, BOT_SPEED_SLOW);
+		bot_turn_speed(data, max_turn, BOT_SPEED_SLOW);
 		bot_cancel_behaviour(data, bot_turn_behaviour, turn_cancel_check);
 		side = 0;
 		headingL = -1;
@@ -462,14 +463,24 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 /*!
  * Fange ein Objekt ein
  * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * @param degrees	Wie weit [Grad] soll maximal gedreht werden?
  */
-void bot_catch_pillar(Behaviour_t * caller) {
+void bot_catch_pillar_turn(Behaviour_t * caller, int16_t degrees) {
 	switch_to_behaviour(caller, bot_catch_pillar_behaviour, OVERRIDE);
 	catch_pillar_state = START;
-	/* Kollisions-Verhalten ausschalten  */
+	max_turn = degrees;
+	/* Kollisions-Verhalten ausschalten */
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
 	deactivateBehaviour(bot_avoid_col_behaviour);
 #endif	
+}
+
+/*!
+ * Fange ein Objekt ein
+ * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ */
+void bot_catch_pillar(Behaviour_t * caller) {
+	bot_catch_pillar_turn(caller, 360);
 }
 
 #endif	// CATCH_PILLAR_VERSION
