@@ -826,7 +826,7 @@ static uint8_t way_free_fields(uint16_t from_x, uint16_t from_y,
 		for (i=0; i<dX; ++i) {
 			for (w=-width; w<= width; w++) {
 				// wir muessen die ganze Breite des absuchen
-				if (get_field(lX+i*sX, lY+w) < -MAPFIELD_IGNORE) {
+				if (get_field(lX+i*sX, lY+w) < MAP_OBSTACLE_THRESHOLD) {
 					// ein Hinderniss reicht fuer den Abbruch
 					return 0;
 				}
@@ -843,7 +843,7 @@ static uint8_t way_free_fields(uint16_t from_x, uint16_t from_y,
 		for (i=0; i<dY; ++i) {
 			for (w=-width; w<= width; w++) {
 				// wir muessen die ganze Breite des absuchen
-				if (get_field(lX+w, lY+i*sY) <-MAPFIELD_IGNORE) { 
+				if (get_field(lX+w, lY+i*sY) < MAP_OBSTACLE_THRESHOLD) { 
 					// ein Hinderniss reicht fuer den Abbruch
 					return 0;
 				}

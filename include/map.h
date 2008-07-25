@@ -44,7 +44,7 @@
 #define MAP_UPDATE_STACK_SIZE	240	/*!< Groesse des Stacks, der das Map-Update ausfuehrt */	
 #define MAP_UPDATE_CACHE_SIZE	26	/*!< Groesse des Map-Caches */
 
-#define MAPFIELD_IGNORE		20  	/*!< negativer Schwellwert, bei dem Laut Map Hindernis gemeldet wird */
+#define MAP_OBSTACLE_THRESHOLD	-20	/*!< Schwellwert, ab dem ein Feld als Hindernis gilt */
 
 // Die folgenden Variablen/konstanten NICHT direkt benutzen, sondern die zugehoerigen Makros: get_map_min_x() und Co!
 // Denn sonst erhaelt man Karten und nicht Weltkoordinaten!
