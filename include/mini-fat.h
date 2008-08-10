@@ -45,30 +45,6 @@ typedef union {
 #include <avr/pgmspace.h>
 
 /*!
- * @brief			Sucht die Adresse einer Mini-FAT-Datei im EERROM
- * @param filename	Datei-ID
- * @param buffer	Zeiger auf 512 Byte großen Speicherbereich (wird ueberschrieben)
- * @return			(Byte-)Adresse des ersten Nutzdatenblock der gesuchten Datei oder 0, falls nicht im EEPROM
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			05.03.2007
- * Das Nachschlagen im EEPROM und durchprobieren der Adressen geht relativ schnell, somit verkuerzt sich die Wartezeit
- * beim Dateioeffnen von einer MMC erheblich durch diese Methode. Die Adressen (32 Bit) liegen in insgesamt 10 Slabs
- * im EEPROM.
- */
-uint32_t mini_fat_lookup_adr(const char * filename, uint8_t * buffer);
-
-/*!
- * @brief			Speichert die Adresse einer MiniFAT-Datei in einem EERROM-Slab
- * @param block		(Block-)Adresse der Datei, die gespeichert werden soll
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			05.03.2007
- * Gespeichert wird die Adresse des 0. Blocks der Datei (man gibt aber die Adresse des ersten Nutzdatenblocks an, wie sie
- * z.B. mini_fat_find_block() liefert) in einem EEPROM-Slab. Derzeit gibt es 10 Slabs, sind alle belegt (d.h. != 0), speichert
- * diese Funktion die uebergebene Adresse nicht.
- */
-void mini_fat_store_adr(uint32_t block);
-
-/*!
  * @brief			Sucht einen Block auf der MMC-Karte, dessen erste Bytes dem Dateinamen entsprechen
  * @param filename	String im Flash zur Identifikation
  * @param buffer 	Zeiger auf 512 Byte Puffer im SRAM
@@ -76,7 +52,7 @@ void mini_fat_store_adr(uint32_t block);
  * @return			Anfangsblock der Nutzdaten der Datei
  * Achtung das Prinzip geht nur, wenn die Dateien nicht fragmentiert sind
  */
-uint32_t mini_fat_find_block_P(const char * filename, uint8_t * buffer, uint32_t end_addr);
+uint32_t mini_fat_find_block_P(const char * filename, void * buffer, uint32_t end_addr);
 
 /*!
  * @brief			Sucht einen Block auf der MMC-Karte, dessen erste Bytes dem Dateinamen entsprechen
@@ -93,14 +69,14 @@ uint32_t mini_fat_find_block_P(const char * filename, uint8_t * buffer, uint32_t
  * @param *buffer		Zeiger auf 512 Byte Puffer im SRAM, wird veraendert!
  * @return				Groesse der Datei in Byte, 0 falls Fehler
  */
-uint32_t mini_fat_get_filesize(uint32_t file_start, uint8_t * buffer);
+uint32_t mini_fat_get_filesize(uint32_t file_start, void * buffer);
 
 /*! 
  * Leert eine Datei im MiniFAT-Dateisystem auf der MMC/SD-Karte
  * @param file_start	Anfangsblock der Datei
  * @param *buffer		Zeiger auf 512 Byte Puffer im SRAM, wird geloescht!
  */
-void mini_fat_clear_file(uint32_t file_start, uint8_t * buffer);
+void mini_fat_clear_file(uint32_t file_start, void * buffer);
 #endif	// MMC_AVAILABLE
 
 #else	// MCU
