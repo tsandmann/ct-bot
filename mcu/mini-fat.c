@@ -52,6 +52,55 @@ uint32_t EEPROM eefat[10] = {0};	/*!< EEPROM-Cache fuer FAT-Eintraege */
 #define LOG_DEBUG(a, ...) {}
 #endif
 
+
+//TODO:	Ticket #173, die folgenden zwei Funktionen werden damit dann ueberfluessig
+/* Workaround fuer aeltere avr-libc-Versionen, ausserdem effizienter */
+#define eeprom_read_dword(__addr)				ee_read_dword(__addr) 
+#define eeprom_write_dword(__addr, __value)		ee_write_dword(__addr, __value)
+
+/*! Aufteilung eines DWords in seine vier Bytes */
+typedef union {
+	uint32_t dword;
+	struct {
+		uint8_t byte_0;
+		uint8_t byte_1;
+		uint8_t byte_2;
+		uint8_t byte_3;
+	} bytes;
+} eeprom_dword_t;
+
+/*!
+ * Liest die vier Bytes eines DWords aus dem EEPROM.
+ * @param *addr	Adresse des DWords im EEPROM
+ * @return		Das DWord an Adresse addr im EEPROM
+ */
+static inline uint32_t ee_read_dword(uint32_t * addr) {
+	eeprom_dword_t data;
+	uint16_t eeprom_addr = (uint16_t)addr;
+
+	data.bytes.byte_0 = eeprom_read_byte((const uint8_t *) eeprom_addr++);
+	data.bytes.byte_1 = eeprom_read_byte((const uint8_t *) eeprom_addr++);
+	data.bytes.byte_2 = eeprom_read_byte((const uint8_t *) eeprom_addr++);
+	data.bytes.byte_3 = eeprom_read_byte((const uint8_t *) eeprom_addr);
+	return data.dword;
+}
+
+/*!
+ * Schreibt die vier Bytes eines DWords ins EEPROM.
+ * @param *addr	Adresse des DWords im EEPROM
+ * @param value	Neuer Wert des DWords
+ */
+static inline void ee_write_dword(uint32_t * addr, uint32_t value) {
+	eeprom_dword_t data;
+	data.dword = value;
+	uint16_t eeprom_addr = (uint16_t)addr;
+
+	eeprom_write_byte((uint8_t *) eeprom_addr++, data.bytes.byte_0);
+	eeprom_write_byte((uint8_t *) eeprom_addr++, data.bytes.byte_1);
+	eeprom_write_byte((uint8_t *) eeprom_addr++, data.bytes.byte_2);
+	eeprom_write_byte((uint8_t *) eeprom_addr, data.bytes.byte_3);
+}
+
 #ifdef DISPLAY_MINIFAT_INFO
 /*!
  * Hilfsfunktion, die eine 23-Bit Blockadresse auf dem Display als hex anzeigt.
@@ -122,20 +171,20 @@ static void mini_fat_store_adr(uint32_t block) {
 	uint32_t * p_eefat = eefat;
 	block--;	// Block mit der Datei-ID speichern, nicht ersten Nutzdatenblock
 	/* freien Block im EEPROM suchen */
-	for (i=10; i>0; i--) {
+	for (i=9; i>0; i--) {
 		uint32_t tmp = eeprom_read_dword(p_eefat++);
 		if (tmp == 0) {	// hier noch ist Platz :-)
-			eeprom_write_dword(--p_eefat, block);	// Adresse speichern
 #ifdef DISPLAY_MINIFAT_INFO
 			display_cursor(3, 1);
 			display_printf("eestore %u:", 11-i);
 			display_cursor(3, 13);
 			display_block(block);
 #endif	// DISPLAY_MINIFAT_INFO
-			return;	// fertig	
-		} 
+			p_eefat--;
+			break;	// fertig
+		}
 	}
-	eeprom_write_dword(&eefat[TCNT2 % 8], block);	// Adresse an zufaelliger Position speichern
+	eeprom_write_dword(p_eefat, block);	// Adresse speichern
 }
 
 #ifdef MINI_FAT_CHECK_FRAGMENTATION

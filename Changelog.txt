@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-08-24 Timo Sandmann [mail@timosandmann.de]: Bugfix in mcu/minifat.c fuer aeltere avr-libc-Versionen, Makefile korrigiert, kleine Ergaenzung (1st_init.S) des PC-Codes fuer ARM-Architektur (arm-linux-eabi)
+
 2008-08-10 Timo Sandmann [mail@timosandmann.de]: Mini-FAT ueberprueft nun, ob eine Datei fragmentiert auf der MMC liegt (Workaround fuer #172). Ueberpruefung mit MINI_FAT_CHECK_FRAGMENTATION in mcu/mini-fat.c einstellbar. 
 
 2008-06-19 Marko Bolowski: Bugfix fuer TWI-Treiber
