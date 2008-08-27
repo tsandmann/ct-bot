@@ -1,25 +1,25 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
- * @file 	map.h  
- * @brief 	Karte 
+/*!
+ * @file 	map.h
+ * @brief 	Karte
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	19.09.06
  */
@@ -41,7 +41,7 @@
 #define MAP_RESOLUTION 		125		/*!< Aufloesung der Karte in Punkte pro Meter */
 #define MAP_SECTION_POINTS 	16		/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 
-#define MAP_UPDATE_STACK_SIZE	240	/*!< Groesse des Stacks, der das Map-Update ausfuehrt */	
+#define MAP_UPDATE_STACK_SIZE	240	/*!< Groesse des Stacks, der das Map-Update ausfuehrt */
 #define MAP_UPDATE_CACHE_SIZE	26	/*!< Groesse des Map-Caches */
 
 #define MAP_OBSTACLE_THRESHOLD	-20	/*!< Schwellwert, ab dem ein Feld als Hindernis gilt */
@@ -84,7 +84,7 @@ extern fifo_t map_update_fifo;			/*!< Fifo fuer Cache */
 uint8_t map_locked(void);
 
 /*!
- * liefert den Durschnittswert um eine Ort herum 
+ * liefert den Durschnittswert um eine Ort herum
  * @param x			X-Ordinate der Welt
  * @param y			Y-Ordinate der Welt
  * @param radius	Radius der Umgebung, die beruecksichtigt wird [mm]
@@ -93,8 +93,8 @@ uint8_t map_locked(void);
 int8_t map_get_average(int16_t x, int16_t y, int16_t radius);
 
 /*!
- * liefert den Wert eines Feldes 
- * @param x	X-Ordinate der Welt 
+ * liefert den Wert eines Feldes
+ * @param x	X-Ordinate der Welt
  * @param y	Y-Ordinate der Welt
  * @return	Wert des Feldes (>0 heisst frei, <0 heisst belegt)
  */
@@ -111,6 +111,11 @@ static inline int8_t map_get_point(int16_t x, int16_t y) {
  * @return 			1 wenn alles frei ist
  */
 uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y);
+
+/*!
+ * Haelt den Bot an und schreibt den Map-Update-Cache komplett zurueck (auf MCU)
+ */
+void map_flush_cache(void);
 
 /*!
  * Zeigt die Karte an
@@ -143,8 +148,8 @@ static inline int16_t map_to_world(uint16_t map_koord) {
 #define map_get_max_y() map_to_world(map_max_y)		/*!< Maximum in Y-Richtung */
 
 #ifdef PC
-/*! 
- * Liest eine Map wieder ein 
+/*!
+ * Liest eine Map wieder ein
  * @param filename	Quelldatei
  */
 void map_read(char * filename);

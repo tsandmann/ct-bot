@@ -1,29 +1,29 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
- * @file 	map.c  
- * @brief 	Karte 
+/*!
+ * @file 	map.c
+ * @brief 	Karte
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	19.09.06
- */	
- 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -49,8 +49,8 @@
   #ifdef MCU
   	#error Map geht auf dem MCU nicht ohne MMC
   #endif
-#endif 
- 
+#endif
+
 
 //#define DEBUG_MAP			// Schalter um recht viel Debug-Code anzumachen
 //#define DEBUG_MAP_TIMES	// Schalter um Performance-Messungen fuer MMC anzumachen
@@ -62,7 +62,7 @@
 	// Soll auch der echte Bot Infos ausgeben, kommentiert man die folgende Zeile aus
 	#undef MAP_INFO_AVAILABLE	// spart Flash
 #endif
-	
+
 #ifndef LOG_AVAILABLE
 	#undef DEBUG_MAP
 	#undef DEBUG_STORAGE
@@ -75,31 +75,31 @@
 
 /*
  * Eine Karte ist wie folgt organisiert:
- * Es gibt Sektionen zu je MAP_SECTION_POINTS * MAP_SECTION_POINTS. 
+ * Es gibt Sektionen zu je MAP_SECTION_POINTS * MAP_SECTION_POINTS.
  * Diese Sektionen enthalten direkt die Pixel-Daten
  * Auf dem PC liegen die Daten genauso im RAM, wie sie auf der MMC
  * angeordnet sind.
- * 
- * Auf dem MCU passt eine Sektion in einen Flashblock, bzw immer 2 
- * Sektionen in einen Block Es stehen immer 2 Sections also 1 
+ *
+ * Auf dem MCU passt eine Sektion in einen Flashblock, bzw immer 2
+ * Sektionen in einen Block Es stehen immer 2 Sections also 1
  * Flash-Block im SRAM und werden bei Bedarf gewechselt.
- * 
- * Felder sind vom Typ int8 und haben einen Wertebereich von -128 
+ *
+ * Felder sind vom Typ int8 und haben einen Wertebereich von -128
  * bis 127.
  * 0 bedeutet: wir wissen nichts über das Feld
  * negative Werte bedeuten: Hinderniss
  * postivie Werte bedeuten: freier Weg
- * je groesser der Betrag ist, desto sicherer die Aussage ueber das 
+ * je groesser der Betrag ist, desto sicherer die Aussage ueber das
  * Feld.
- * Der Wert -128 ist Loechern vorbehalten und wird dann auch nicht 
+ * Der Wert -128 ist Loechern vorbehalten und wird dann auch nicht
  * durch die Abstandssensoren veraendert.
  *
  * Felder werden wie folgt aktualisiert:
- * Wird ein Punkt als frei betrachtet, erhoehen wir den Wert des 
+ * Wird ein Punkt als frei betrachtet, erhoehen wir den Wert des
  * Feldes um MAP_STEP_FREE.
- * Wird ein Punkt als belegt erkannt, ziehen wir um ihn einen 
- * Streukreis mit dem Radius MAP_RADIUS.  
- * Das Zentrum des Kreises wird um MAP_STEP_OCCUPIED dekrementiert, 
+ * Wird ein Punkt als belegt erkannt, ziehen wir um ihn einen
+ * Streukreis mit dem Radius MAP_RADIUS.
+ * Das Zentrum des Kreises wird um MAP_STEP_OCCUPIED dekrementiert,
  * nach aussen hin immer weniger.
  * Wird ein Feld als Loch erkannt, setzen wir den Wert fest auf -128.
  */
@@ -207,7 +207,7 @@ int8_t map_init(void) {
 	scan_otf_modes.border = 0;
 	scan_otf_modes.map_mode = 1;
 #endif
-	
+
 	// Die Karte auf den Puffer biegen
 	map[0] = (map_section_t *)map_buffer;
 	map[1] = (map_section_t *)(map_buffer+sizeof(map_section_t));
@@ -224,11 +224,11 @@ int8_t map_init(void) {
 	uint32_t file_block = map_start_block;
 	map_start_block += 2 * MACRO_BLOCK_LENGTH * (MACRO_BLOCK_LENGTH / 512) - 1;
 	map_start_block &= 0xFFFFFC00;
-	
+
 	// Map-Offset im Datei-Header (0x120-0x123) speichern
 	*((uint32_t *)&map_buffer[0x120]) = map_start_block - file_block;
 	mmc_write_sector(file_block-1, map_buffer);
-	
+
 	map_current_block_updated = False;
 	map_current_block = 0;
 #endif	// MCU
@@ -262,7 +262,7 @@ static map_section_t * get_section(uint16_t x, uint16_t y) {
 	if (map_current_block_updated == 0xFF) {
 		return map[0];
 	}
-	
+
 	uint16_t macroblock = x / MACRO_BLOCK_LENGTH + (y / MACRO_BLOCK_LENGTH) * MAP_LENGTH_IN_MACRO_BLOCKS;
 
 #ifdef DEBUG_STORAGE
@@ -315,9 +315,9 @@ static map_section_t * get_section(uint16_t x, uint16_t y) {
 	// Statusvariablen anpassen
 	map_current_block = block;
 	map_current_block_updated = False;
-	
+
 	// Lade den neuen Block
-	// Auf der MMC beginnt die Karte nicht bei 0, sondern irgendwo, auf dem PC schadet es nix		
+	// Auf der MMC beginnt die Karte nicht bei 0, sondern irgendwo, auf dem PC schadet es nix
 	uint32_t mmc_block = block + map_start_block;	// Offset fuer die Lage der Karte drauf
 #ifdef DEBUG_MAP_TIMES
 	LOG_INFO("reading block 0x%04x%04x", (uint16_t)(mmc_block>>16), (uint16_t)mmc_block);
@@ -358,23 +358,23 @@ uint8_t map_locked(void) {
 
 #ifdef OLD_GET_SET
 /*!
- * liefert den Wert eines Feldes 
+ * liefert den Wert eines Feldes
  * @param x	X-Ordinate der Karte (nicht der Welt!!!)
  * @param y	Y-Ordinate der Karte (nicht der Welt!!!)
  * @return	Wert des Feldes (>0 heisst frei, <0 heisst belegt)
  */
 static int8_t get_field(uint16_t x, uint16_t y) {
 	uint16_t index_x, index_y;
-	
+
 	// Suche die Section heraus
 	map_section_t * section = get_section(x, y);
-	
+
 
 	// Berechne den Index innerhalb der Section
 	index_x = x % MAP_SECTION_POINTS;
 	index_y = y % MAP_SECTION_POINTS;
 
-	return section->section[index_x][index_y];	
+	return section->section[index_x][index_y];
 }
 
 /*!
@@ -434,10 +434,10 @@ static int8_t access_field(uint16_t x, uint16_t y, int8_t value, uint8_t set) {
 	// Berechne den Index innerhalb der Section
 	index_x = x % MAP_SECTION_POINTS;
 	index_y = y % MAP_SECTION_POINTS;
-	
+
 	int8_t * data = &section->section[index_x][index_y];
-	
-	if (set) {	
+
+	if (set) {
 		*data = value;
 
 		if (map_current_block_updated != 0xFF) {
@@ -461,8 +461,8 @@ static int8_t access_field(uint16_t x, uint16_t y, int8_t value, uint8_t set) {
 #endif	// OLD_GET_SET
 
 /*!
- * liefert den Durschnittswert um einen Punkt der Karte herum 
- * @param x 		x-Ordinate der Karte 
+ * liefert den Durschnittswert um einen Punkt der Karte herum
+ * @param x 		x-Ordinate der Karte
  * @param y 		y-Ordinate der Karte
  * @param radius	gewuenschter Radius
  * @return 			Wert des Durchschnitts um das Feld (>0 heisst frei, <0 heisst belegt)
@@ -470,23 +470,23 @@ static int8_t access_field(uint16_t x, uint16_t y, int8_t value, uint8_t set) {
 static int8_t get_average_fields(uint16_t x, uint16_t y, int16_t radius) {
 	int16_t avg = 0;
 	int16_t avg_line = 0;
-	
+
 	int16_t dX, dY;
 	int16_t h = radius * radius;
-	
+
 	/* warten bis Karte frei ist */
 	os_signal_set(&lock_signal);
-	
+
 	/* Daten auslesen */
 	for (dX = -radius; dX <= radius; dX++) {
 		for (dY = -radius; dY <= radius; dY++) {
-			if (dX*dX + dY*dY <= h) {	 
+			if (dX*dX + dY*dY <= h) {
 				avg_line += get_field(x + dX, y + dY);
 			}
 		}
 		avg += avg_line / (radius * 2);
 	}
-	
+
 	/* Signal zur Kartensperre wieder freigeben */
 	os_signal_release(&lock_signal);
 
@@ -494,7 +494,7 @@ static int8_t get_average_fields(uint16_t x, uint16_t y, int16_t radius) {
 }
 
 /*!
- * liefert den Durschnittswert um eine Ort herum 
+ * liefert den Durschnittswert um eine Ort herum
  * @param x			x-Ordinate der Welt
  * @param y			y-Ordinate der Welt
  * @param radius	Radius der Umgebung, die beruecksichtigt wird [mm]
@@ -509,12 +509,12 @@ int8_t map_get_average(int16_t x, int16_t y, int16_t radius) {
 		/* nur ein Feld gewuenscht, kleiner geht auch nicht */
 		R = 1;
 	}
-	
+
 	return get_average_fields(X, Y, R);
 }
 
 /*!
- * Aendert den Wert eines Feldes um den angegebenen Betrag 
+ * Aendert den Wert eines Feldes um den angegebenen Betrag
  * @param x		x-Ordinate der Karte (nicht der Welt!!!)
  * @param y		y-Ordinate der Karte (nicht der Welt!!!)
  * @param value	Betrag um den das Feld veraendert wird (>= heisst freier, <0 heisst belegter)
@@ -533,7 +533,7 @@ static void update_field(uint16_t x, uint16_t y, int8_t value) {
 }
 
 /*!
- * Aendert den Wert eines Kreises um den angegebenen Betrag 
+ * Aendert den Wert eines Kreises um den angegebenen Betrag
  * @param x			x-Ordinate der Karte (nicht der Welt!!!)
  * @param y			y-Ordinate der Karte (nicht der Welt!!!)
  * @param radius	Radius in Kartenpunkten
@@ -551,7 +551,7 @@ static void update_field_circle(uint16_t x, uint16_t y, int16_t radius,
 
 	int16_t sec_x, sec_y, X, Y, dX, dY;
 	int16_t starty, startx, stopx, stopy;
-	// Gehe über alle betroffenen Sektionen 
+	// Gehe über alle betroffenen Sektionen
 	for (sec_y = sec_y_min; sec_y <= sec_y_max; sec_y++) {
 		// Bereich weiter eingrenzen
 		if (sec_y*MAP_SECTION_POINTS > (y-radius))
@@ -579,7 +579,7 @@ static void update_field_circle(uint16_t x, uint16_t y, int16_t radius,
 				for (X = startx; X < stopx; X++) {
 					dX= x-X; // Distanz berechnen
 					dX*=dX; // Quadrat vorberechnen
-					if (dX + dY <= square) // wenn Punkt unter Bot	 
+					if (dX + dY <= square) // wenn Punkt unter Bot
 						update_field(X, Y, value); // dann aktualisieren
 				}
 
@@ -600,7 +600,7 @@ static void update_occupied(uint16_t x, uint16_t y) {
 	for (r=1; r<=MAP_RADIUS_FIELDS; r++) {
 		update_field_circle(x, y, r, -MAP_STEP_OCCUPIED/MAP_RADIUS_FIELDS);
 	}
-#else 
+#else
 	update_field(x, y, -MAP_STEP_OCCUPIED);
 #endif
 }
@@ -629,7 +629,7 @@ static void set_value_field_circle(uint16_t x, uint16_t y, int8_t radius, int8_t
 }
 
 /*!
- * setzt ein Map-Feld auf einen Wert mit Umfeldaktualisierung; 
+ * setzt ein Map-Feld auf einen Wert mit Umfeldaktualisierung;
  * Hindernis wird mit MAP_RADIUS_FIELDS eingetragen
  * @param x		Map-Koordinate
  * @param y		Map-Koordinate
@@ -643,13 +643,13 @@ static void set_value_occupied(uint16_t x, uint16_t y, int8_t val) {
 	}
 }
 
-/*! 
+/*!
  * Aktualisiert die Karte mit den Daten eines Distanz-Sensors
  * @param x		X-Achse der Position des Sensors
  * @param y 	Y-Achse der Position des Sensors
  * @param h 	Blickrichtung im Bogenmass
- * @param dist 	Sensorwert 
- */ 
+ * @param dist 	Sensorwert
+ */
 static void update_sensor_distance(int16_t x, int16_t y, float h, int16_t dist) {
 	// Ort des Sensors in Kartenkoordinaten
 	uint16_t X = world_to_map(x);
@@ -661,8 +661,8 @@ static void update_sensor_distance(int16_t x, int16_t y, float h, int16_t dist) 
 	} else {
 		d = dist;
 	}
-	
-	// liefert die Mapkoordinaten des Hindernisses / Ende des Frei-Strahls 
+
+	// liefert die Mapkoordinaten des Hindernisses / Ende des Frei-Strahls
 	uint16_t PH_X = world_to_map(x + (int16_t)(d * cos(h)));
 	uint16_t PH_Y = world_to_map(y + (int16_t)(d * sin(h)));
 
@@ -719,7 +719,7 @@ static void update_distance(int16_t x, int16_t y, float head, int16_t distL,
 		int16_t distR) {
 //	LOG_DEBUG("update_map: x=%f, y=%f, head=%f, distL=%d, distR=%d\n",x,y,head,distL,distR);
 
-//TODO:	Berechnungen optimieren, 
+//TODO:	Berechnungen optimieren,
 //		vielleicht Start und Endpunkt an map_update_sensor_distance() uebergeben?
 	float h = head * (M_PI/180.0f);
 	float cos_h = cos(h);
@@ -805,7 +805,7 @@ static uint8_t way_free_fields(uint16_t from_x, uint16_t from_y,
 
 //TODO:	Aehnlichkeiten mit map_update_sensor_distance() in Fkt auslagern?
 //		Idee: process_line(from_x, from_y, to_x, to_y, line_width, worker_function);
-	
+
 	// gehe alle Felder der Reihe nach durch
 	uint16_t i;
 
@@ -843,12 +843,12 @@ static uint8_t way_free_fields(uint16_t from_x, uint16_t from_y,
 		for (i=0; i<dY; ++i) {
 			for (w=-width; w<= width; w++) {
 				// wir muessen die ganze Breite des absuchen
-				if (get_field(lX+w, lY+i*sY) < MAP_OBSTACLE_THRESHOLD) { 
+				if (get_field(lX+w, lY+i*sY) < MAP_OBSTACLE_THRESHOLD) {
 					// ein Hinderniss reicht fuer den Abbruch
 					return 0;
 				}
 			}
-			
+
 			lh += dX;
 			if (lh >= dY) {
 				lh -= dY;
@@ -887,13 +887,13 @@ uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y)
  */
 void map_update_main(void) {
 	PROLOG();	// bei aelteren Compilern Frame-Pointer manuell laden
-	
+
 	map_cache_t cache_tmp;
 
-	/* Endlosschleife -> Thread wird vom OS blockiert / gibt die Kontrolle ab, 
+	/* Endlosschleife -> Thread wird vom OS blockiert / gibt die Kontrolle ab,
 	 * wenn der Puffer leer ist */
 	while (1) {
-		/* Cache-Eintrag holen 
+		/* Cache-Eintrag holen
 		 * PC-Version blockiert hier, falls Fifo leer */
 		if (fifo_get_data(&map_update_fifo, &cache_tmp, sizeof(map_cache_t))
 				> 0) {
@@ -939,6 +939,13 @@ void map_update_main(void) {
 	}
 }
 
+/*!
+ * Haelt den Bot an und schreibt den Map-Update-Cache komplett zurueck (auf MCU)
+ */
+void map_flush_cache(void) {
+	motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
+	os_thread_sleep(0xffffff);
+}
 
 /*!
  * Zeigt die Karte an
@@ -954,7 +961,7 @@ void map_print(void) {
  */
 static void delete(void) {
 	/* warten bis Karte frei ist */
-	os_signal_set(&lock_signal);	
+	os_signal_set(&lock_signal);
 #ifdef MCU
 	uint32_t map_filestart = mini_fat_find_block("MAP", map_buffer);
 	mini_fat_clear_file(map_filestart, map_buffer);
@@ -963,9 +970,9 @@ static void delete(void) {
 #endif	// MCU
 	map_current_block_updated = False;
 	map_current_block = 0;
-	
+
 	/* Signal zur Kartensperre wieder freigeben */
-	os_signal_release(&lock_signal);	
+	os_signal_release(&lock_signal);
 
 #ifdef SHRINK_MAP_ONLINE
 	// Groesse neu initialisieren
@@ -988,7 +995,7 @@ static void draw_test_scheme(void) {
 
 	/* warten bis Karte frei ist */
 	os_signal_set(&lock_signal);
-	
+
 	// Erstmal eine ganz simple Linie
 	for (x=0; x< MAP_SECTION_POINTS*MAP_SECTIONS; x++) {
 		set_field(x, x, -120);
@@ -1010,13 +1017,13 @@ static void draw_test_scheme(void) {
 			set_field(y*MACRO_BLOCK_LENGTH, x, -60);
 		}
 	}
-	
+
 	/* Signal zur Kartensperre wieder freigeben */
-	os_signal_release(&lock_signal);	
+	os_signal_release(&lock_signal);
 }
 
 /*!
- * Verkleinert die Karte vom uebergebenen auf den benutzten Bereich. Achtung, 
+ * Verkleinert die Karte vom uebergebenen auf den benutzten Bereich. Achtung,
  * unter Umstaenden muss man vorher die Puffervariablen sinnvoll initialisieren!!!
  * @param min_x Zeiger auf einen uint16, der den miniamlen X-Wert puffert
  * @param max_x Zeiger auf einen uint16, der den maxinmalen X-Wert puffert
@@ -1035,7 +1042,7 @@ static void shrink(uint16_t * min_x, uint16_t * max_x, uint16_t * min_y,
 
 	/* warten bis Karte frei ist */
 	os_signal_set(&lock_signal);
-	
+
 	// Kartengroesse reduzieren
 	int8_t free=1;
 	while ((*min_y < *max_y) && (free ==1)) {
@@ -1079,7 +1086,7 @@ static void shrink(uint16_t * min_x, uint16_t * max_x, uint16_t * min_y,
 		}
 		*max_x-=1;
 	}
-	
+
 	/* Signal zur Kartensperre wieder freigeben */
 	os_signal_release(&lock_signal);
 }
@@ -1116,7 +1123,7 @@ void map_to_pgm(char * filename) {
 
 	/* warten bis Karte frei ist */
 	os_signal_set(&lock_signal);
-	
+
 	uint8_t tmp;
 	for (y=max_y; y>min_y; y--) {
 		for (x=min_x; x<max_x; x++) {
@@ -1136,7 +1143,7 @@ void map_to_pgm(char * filename) {
 		}
 #endif	// MAP_PRINT_SCALE
 	}
-	
+
 	/* Signal zur Kartensperre wieder freigeben */
 	os_signal_release(&lock_signal);
 
@@ -1155,8 +1162,8 @@ void map_to_pgm(char * filename) {
 	fclose(fp);
 }
 
-/*! 
- * Liest eine Map wieder ein 
+/*!
+ * Liest eine Map wieder ein
  * @param filename	Quelldatei
  */
 void map_read(char * filename) {
@@ -1172,7 +1179,7 @@ void map_read(char * filename) {
 		printf("Datei %s enthaelt keine Karte\n", filename);
 		return;
 	}
-	
+
 	/* um Makroblock-Offset vorspulen */
 	uint32_t offset = buffer[0x120] | buffer[0x121]<<8;
 	printf("Makroblock-Offset=0x%04x\n", offset);
@@ -1199,7 +1206,7 @@ void map_read(char * filename) {
 
 // Gui-Code
 
-#ifdef MAP_INFO_AVAILABLE	
+#ifdef MAP_INFO_AVAILABLE
 /*!
  * Zeigt ein paar Infos ueber die Karte an
  */
@@ -1253,14 +1260,14 @@ void map_display(void) {
 		map_print(); RC5_Code = 0; break;
 		case RC5_CODE_2:
 		delete(); RC5_Code = 0; break;
-#ifdef PC		
+#ifdef PC
 		case RC5_CODE_3:
 		draw_test_scheme(); RC5_Code = 0; break;
 #endif
 #ifdef MAP_INFO_AVAILABLE
 		case RC5_CODE_4:
 		info(); RC5_Code = 0; break;
-#endif	
+#endif
 	}
 }
 #endif	// DISPLAY_MAP_AVAILABLE
