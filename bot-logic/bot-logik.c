@@ -1,34 +1,34 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	bot-logik.c
  * @brief 	High-Level Routinen fuer die Steuerung des c't-Bots.
- * Diese Datei sollte der Einstiegspunkt fuer eigene Experimente sein, 
+ * Diese Datei sollte der Einstiegspunkt fuer eigene Experimente sein,
  * den Roboter zu steuern.
- * 
- * bot_behave() arbeitet eine Liste von Verhalten ab. 
+ *
+ * bot_behave() arbeitet eine Liste von Verhalten ab.
  * Jedes Verhalten kann entweder absolute Werte setzen, dann kommen niedrigerpriorisierte nicht mehr dran.
  * Alternativ dazu kann es Modifikatoren aufstellen, die bei niedriger priorisierten angewendet werden.
  * bot_behave_init() baut diese Liste auf.
  * Jede Verhaltensfunktion bekommt einen Verhaltensdatensatz uebergeben, in den Sie ihre Daten eintraegt
- * 
+ *
  * @author 	Benjamin Benz (bbe@heise.de)
  * @author 	Christoph Grimmer (c.grimmer@futurio.de)
  * @date 	01.12.05
@@ -77,7 +77,7 @@ static int8_t count_arr_emerg = 0;	/*!< Anzahl der zurzeit registrierten Notfall
 /*! hier liegen die Zeiger auf die auszufuehrenden Abgrund Notfall-Funktionen */
 static void (* emerg_functions[MAX_PROCS])(void) = {NULL};
 
-/*! 
+/*!
  * Routine zum Registrieren einer Notfallfunktion, die beim Ausloesen eines Abgrundsensors
  * aufgerufen wird; hierdurch kann ein Verhalten vom Abgrund benachrichtigt werden und
  * entsprechend dem Verhalten reagieren
@@ -91,9 +91,9 @@ int8_t register_emergency_proc(void* fkt) {
 	return proc_nr;
 }
 
-/*! 
- * Beim Ausloesen eines Abgrundes wird diese Routine am Ende des Notfall-Abgrundverhaltens angesprungen 
- * und ruft alle registrierten Prozeduren der Reihe nach auf 
+/*!
+ * Beim Ausloesen eines Abgrundes wird diese Routine am Ende des Notfall-Abgrundverhaltens angesprungen
+ * und ruft alle registrierten Prozeduren der Reihe nach auf
  */
 void start_registered_emergency_procs(void) {
 	uint8_t i=0;
@@ -102,8 +102,8 @@ void start_registered_emergency_procs(void) {
 	}
 }
 
-/*! 
- * Das einfachste Grundverhalten 
+/*!
+ * Das einfachste Grundverhalten
  * @param *data der Verhaltensdatensatz
  */
 void bot_base_behaviour(Behaviour_t *data){
@@ -137,13 +137,13 @@ void bot_behave_init(void) {
 	// Hoechste Prioritate haben die Notfall Verhalten
 
 	// Verhalten zum Schutz des Bots, hohe Prioritaet, Aktiv
-	#ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE	
+	#ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(250, bot_avoid_border_behaviour,ACTIVE));
 	#endif
-	#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE	
+	#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(249, bot_avoid_col_behaviour,ACTIVE));
 	#endif
-    #ifdef BEHAVIOUR_HANG_ON_AVAILABLE	
+    #ifdef BEHAVIOUR_HANG_ON_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(245, bot_hang_on_behaviour,ACTIVE));
 		// Registrierung des Handlers zur Behandlung des Haengenbleibens zum Rueckwaertsfahren
  	    register_emergency_proc(&hang_on_handler);
@@ -162,14 +162,14 @@ void bot_behave_init(void) {
 	#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(190, bot_put_stack_waypositions_behaviour, INACTIVE));
 	#endif
-		
+
 	#ifdef BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
 		// Verhalten, das andere Verhalten abbricht, sobald eine Bedingung erfuellt ist
 		insert_behaviour_to_list(&behaviour, new_behaviour(154, bot_cancel_behaviour_behaviour,INACTIVE));
 	#endif
 
 	// Alle Hilfsroutinen sind relativ wichtig, da sie auch von den Notverhalten her genutzt werden
-	// Hilfsverhalten, die Befehle von Boten-Funktionen ausfuehren, erst inaktiv, werden von Boten aktiviert	
+	// Hilfsverhalten, die Befehle von Boten-Funktionen ausfuehren, erst inaktiv, werden von Boten aktiviert
 	#ifdef BEHAVIOUR_TURN_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(150, bot_turn_behaviour,INACTIVE));
 	#endif
@@ -186,6 +186,8 @@ void bot_behave_init(void) {
 	#endif
 	#ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(146, bot_goto_pos_behaviour,INACTIVE));
+	#endif
+	#ifdef BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(145, bot_goto_obstacle_behaviour,INACTIVE));
 	#endif
 
@@ -193,11 +195,21 @@ void bot_behave_init(void) {
 		insert_behaviour_to_list(&behaviour, new_behaviour(140, bot_measure_distance_behaviour, INACTIVE));
 		insert_behaviour_to_list(&behaviour, new_behaviour(139, bot_check_distance_behaviour, INACTIVE));
 	#endif
-	
+
 	#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 		/* solve_maze belegt Prios 100, 90, 89 */
 		bot_solve_maze_init(100,90,INACTIVE);
 	#endif
+
+	#ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
+		      // Registrierung des Handlers zur Behandlung des Abgrundes im Area-Verhalten
+		 	  register_emergency_proc(&border_drive_area_handler);
+		 	  // Observer bekomemn hohe Prio um noch vor goto_pos zum Zuge zu kommen
+		      insert_behaviour_to_list(&behaviour, new_behaviour(170, bot_observe_left_behaviour, INACTIVE));
+		      insert_behaviour_to_list(&behaviour, new_behaviour(170, bot_observe_right_behaviour, INACTIVE));
+
+		      insert_behaviour_to_list(&behaviour, new_behaviour(72, bot_drive_area_behaviour, INACTIVE));
+    #endif
 
 	#ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 		// Verhalten um einer Linie zu folgen
@@ -208,23 +220,23 @@ void bot_behave_init(void) {
 		/* olympic belegt Prios 60, 55, 54 */
 		bot_olympic_init(60,55,INACTIVE);
 	#endif
-		
+
 	#ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
 		// Demo-Verhalten, etwas komplexer, inaktiv
 		insert_behaviour_to_list(&behaviour, new_behaviour(51, bot_drive_square_behaviour,INACTIVE));
 	#endif
-				
+
     #ifdef BEHAVIOUR_FOLLOW_WALL_AVAILABLE
  	    // Explorer-Verhalten um einer Wand zu folgen
  	    insert_behaviour_to_list(&behaviour, new_behaviour(48, bot_follow_wall_behaviour, INACTIVE));
  	    // Registrierung zur Behandlung des Notfallverhaltens zum R ueckwaertsfahren
  	    register_emergency_proc(&border_follow_wall_handler);
 	#endif
-	
+
 	#ifdef BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE
  	    insert_behaviour_to_list(&behaviour, new_behaviour(45, bot_classify_objects_behaviour, INACTIVE));
 	#endif
- 	    
+
 	#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
  	    insert_behaviour_to_list(&behaviour, new_behaviour(44, bot_catch_pillar_behaviour,INACTIVE));
 		insert_behaviour_to_list(&behaviour, new_behaviour(43, bot_unload_pillar_behaviour,INACTIVE));
@@ -237,23 +249,23 @@ void bot_behave_init(void) {
 	#ifdef BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(40, bot_follow_object_behaviour, INACTIVE));
 	#endif
-		
+
 	#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(33, bot_drive_stack_behaviour, INACTIVE));
-	#endif	
-		
+	#endif
+
 	#ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
-		insert_behaviour_to_list(&behaviour, new_behaviour(30, bot_calibrate_pid_behaviour, INACTIVE));		
+		insert_behaviour_to_list(&behaviour, new_behaviour(30, bot_calibrate_pid_behaviour, INACTIVE));
 	#endif
 
 	#ifdef BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
-		insert_behaviour_to_list(&behaviour, new_behaviour(29, bot_calibrate_sharps_behaviour, INACTIVE));		
+		insert_behaviour_to_list(&behaviour, new_behaviour(29, bot_calibrate_sharps_behaviour, INACTIVE));
 	#endif
 
 	#ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(28, bot_turn_test_behaviour, INACTIVE));
 	#endif
-		
+
 	// Grundverhalten, setzt aeltere FB-Befehle um, aktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(2, bot_base_behaviour, ACTIVE));
 
@@ -280,8 +292,8 @@ void activateBehaviour(BehaviourFunc function) {
  */
 void deactivateBehaviour(BehaviourFunc function) {
 	Behaviour_t *job;	// Zeiger auf ein Verhalten
-		
-	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben 
+
+	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben
 	for (job = behaviour; job; job = job->next) {
 		if (job->work == function) {
 			LOG_DEBUG("Verhalten %u wird deaktiviert", job->priority);
@@ -300,7 +312,7 @@ void deactivateBehaviour(BehaviourFunc function) {
 uint8_t behaviour_is_activated(BehaviourFunc function) {
 	Behaviour_t *job;	// Zeiger auf ein Verhalten
 
-	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben 
+	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben
 	for (job = behaviour; job; job = job->next) {
 		if (job->work == function)
 			return job->active;
@@ -317,9 +329,9 @@ uint8_t behaviour_is_activated(BehaviourFunc function) {
  */
 static uint8_t isInCallHierarchy(Behaviour_t *job, BehaviourFunc function) {
 	uint8_t level = 0;
-		
+
 	if (job == NULL) return 0;	// Liste ist leer
-	
+
 	for (; job->caller; job=job->caller) {
 		level++;
 		if (job->caller->work == function) {
@@ -327,23 +339,23 @@ static uint8_t isInCallHierarchy(Behaviour_t *job, BehaviourFunc function) {
 			return level;	// Direkter Aufrufer in Tiefe level gefunden
 		}
 	}
-	return 0;	// function kommt in Caller-Liste von job nicht vor	
+	return 0;	// function kommt in Caller-Liste von job nicht vor
 }	// O(n), n:=|Caller-Liste|
 
 /*!
- * Deaktiviert alle von diesem Verhalten aufgerufenen Verhalten. 
+ * Deaktiviert alle von diesem Verhalten aufgerufenen Verhalten.
  * Das Verhalten selbst bleibt aktiv und bekommt ein SUBCANCEL in seine Datanestruktur eingetragen.
  * @param function	Die Funktion, die das Verhalten realisiert.
  */
 void deactivateCalledBehaviours(BehaviourFunc function) {
 	Behaviour_t *job;	// Zeiger auf ein Verhalten
-	
+
 	LOG_DEBUG("Beginne mit dem Durchsuchen der Liste");
 	// Einmal durch die Liste gehen, und alle aktiven Funktionen pruefen, ob sie von dem uebergebenen Verhalten aktiviert wurden
 	uint8_t i=0;
 	Behaviour_t* beh_of_function = NULL;
 	for (job=behaviour; job; job=job->next) {	// n mal
-		if (job->active == ACTIVE) { 
+		if (job->active == ACTIVE) {
 			i++;
 			uint8_t level = isInCallHierarchy(job, function);	// O(n)
 			LOG_DEBUG("Verhalten mit Prio = %u ist ACTIVE, Durchlauf %u", job->priority, i);
@@ -355,8 +367,8 @@ void deactivateCalledBehaviours(BehaviourFunc function) {
 				Behaviour_t* tmp = job;
 				job = job->caller;	// zur naechsten Ebene
 				tmp->caller = NULL;	// Caller loeschen, damit Verhalten auch ohne OVERRIDE neu gestartet werden koennen
-			}			
-		} 
+			}
+		}
 		if (job->work == function) {
 			/* Verhalten von function fuer spaeter merken, wenn wir hier eh schon die ganze Liste absuchen */
 			beh_of_function = job;
@@ -370,30 +382,30 @@ void deactivateCalledBehaviours(BehaviourFunc function) {
 	}
 }	// O(n^2)
 
-/*! 
- * Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung 
+/*!
+ * Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung
  * return_from_behaviour() kehrt dann spaeter wieder zum aufrufenden Verhalten zurueck
  * @param from aufrufendes Verhalten
  * @param to aufgerufenes Verhalten
  * @param override Hier sind zwei Werte Moeglich:
- * 		1. OVERRIDE : Das Zielverhalten to wird aktiviert, auch wenn es noch aktiv ist. 
- * 					  Das Verhalten, das es zuletzt aufgerufen hat wird dadurch automatisch 
+ * 		1. OVERRIDE : Das Zielverhalten to wird aktiviert, auch wenn es noch aktiv ist.
+ * 					  Das Verhalten, das es zuletzt aufgerufen hat wird dadurch automatisch
  * 					  wieder aktiv und muss selbst sein eigenes Feld subResult auswerten, um zu pruefen, ob das
- * 					  gewuenschte Ziel erreicht wurde, oder vorher ein Abbruch stattgefunden hat. 
+ * 					  gewuenschte Ziel erreicht wurde, oder vorher ein Abbruch stattgefunden hat.
  * 		2. NOOVERRIDE : Das Zielverhalten wird nur aktiviert, wenn es gerade nichts zu tun hat.
  * 						In diesem Fall kann der Aufrufer aus seinem eigenen subResult auslesen,
  * 						ob seibem Wunsch Folge geleistet wurde.
- */ 
+ */
 void switch_to_behaviour(Behaviour_t * from, void (*to)(Behaviour_t *), uint8 override ){
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
-	
-	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben 
+
+	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben
 	for (job = behaviour; job; job = job->next) {
 		if (job->work == to) {
 			break;		// Abbruch der Schleife, job zeigt nun auf die Datenstruktur des Zielverhaltens
 		}
-	}	
-	
+	}
+
 	if (!job) {
 		/* Zielverhalten existiert gar nicht */
 		if (from) from->subResult=SUBFAIL;
@@ -415,29 +427,29 @@ void switch_to_behaviour(Behaviour_t * from, void (*to)(Behaviour_t *), uint8 ov
 		from->active=INACTIVE;
 		from->subResult=SUBRUNNING;
 	}
-		
+
 	// neues Verhalten aktivieren
 	job->active=ACTIVE;
 	// Aufrufer sichern
 	job->caller =  from;
-	
+
 	#ifdef DEBUG_BOT_LOGIC
 		if (from) {
 			LOG_DEBUG("Verhaltenscall: %d wurde von %d aufgerufen",job->priority,from->priority);
-		} else { 
+		} else {
 			LOG_DEBUG("Verhaltenscall: %d wurde direkt aufgerufen",job->priority);
 		}
 	#endif
 }
 
-/*! 
+/*!
  * @brief		Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg
  * @param *data	laufendes Verhalten
  * @param state	Abschlussstatus des Verhaltens (SUBSUCCESS oder SUBFAIL)
- */ 
+ */
 void exit_behaviour(Behaviour_t * data, uint8_t state) {
 	data->active=INACTIVE;	 				// Unterverhalten deaktivieren
-	if (data->caller) {			
+	if (data->caller) {
 		data->caller->active = ACTIVE; 		// aufrufendes Verhalten aktivieren
 		data->caller->subResult = state;	// Status beim Aufrufer speichern
 	}
@@ -449,25 +461,25 @@ void exit_behaviour(Behaviour_t * data, uint8_t state) {
  */
 void deactivateAllBehaviours(void){
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
-	// Einmal durch die Liste gehen und (fast) alle deaktivieren, Grundverhalten nicht 
+	// Einmal durch die Liste gehen und (fast) alle deaktivieren, Grundverhalten nicht
 	for (job = behaviour; job; job = job->next) {
 		if ((job->priority >= PRIO_VISIBLE_MIN) && (job->priority <= PRIO_VISIBLE_MAX)) {
-            // Verhalten deaktivieren 
-			job->active = INACTIVE;	
+            // Verhalten deaktivieren
+			job->active = INACTIVE;
 			job->caller = NULL;	// Caller loeschen, damit Verhalten auch ohne OVERRIDE neu gestartet werden koennen
 		}
-	}	
+	}
 }
 
-/*! 
- * @brief	Zentrale Verhaltens-Routine, wird regelmaessig aufgerufen. 
+/*!
+ * @brief	Zentrale Verhaltens-Routine, wird regelmaessig aufgerufen.
  */
-void bot_behave(void){	
+void bot_behave(void){
 	Behaviour_t *job;						// Zeiger auf ein Verhalten
-	
+
 	float faktorLeft = 1.0;					// Puffer fuer Modifkatoren
 	float faktorRight = 1.0;				// Puffer fuer Modifkatoren
-	
+
 	#ifdef RC5_AVAILABLE
 		rc5_control();						// Abfrage der IR-Fernbedienung
 	#endif
@@ -479,15 +491,15 @@ void bot_behave(void){
 			/* WunschVariablen initialisieren */
 			speedWishLeft = BOT_SPEED_IGNORE;
 			speedWishRight = BOT_SPEED_IGNORE;
-			
+
 			faktorWishLeft = 1.0;
 			faktorWishRight = 1.0;
-			
+
 			if (job->work)	// hat das Verhalten eine Work-Routine
 				job->work(job);	/* Verhalten ausfuehren */
 			else // wenn nicht: Verhalten deaktivieren, da es nicht sinnvoll arbeiten kann
-				job->active=INACTIVE;	
-				
+				job->active=INACTIVE;
+
 			/* Modifikatoren sammeln  */
 			faktorLeft  *= faktorWishLeft;
 			faktorRight *= faktorWishRight;
@@ -497,11 +509,11 @@ void bot_behave(void){
 					speedWishLeft *= faktorLeft;
 				if (speedWishRight != BOT_SPEED_IGNORE)
 					speedWishRight *= faktorRight;
-					
+
 				motor_set(speedWishLeft, speedWishRight);
 				break;						/* Wenn ein Verhalten Werte direkt setzen will, nicht weitermachen */
 			}
-			
+
 		}
 		/* Dieser Punkt wird nur erreicht, wenn keine Regel im System die Motoren beeinflusen will */
 		if (job->next == NULL) {
@@ -510,18 +522,18 @@ void bot_behave(void){
 	}
 }
 
-/*! 
- * @brief			Erzeugt ein neues Verhalten 
+/*!
+ * @brief			Erzeugt ein neues Verhalten
  * @param priority 	Die Prioritaet
  * @param *work 	Den Namen der Funktion, die sich drum kuemmert
  * @param active	Boolean, ob das Verhalten aktiv oder inaktiv erstellt wird
  */
 Behaviour_t *new_behaviour(uint8 priority, void (*work) (struct _Behaviour_t *data), int8 active){
-	Behaviour_t *newbehaviour = (Behaviour_t *) malloc(sizeof(Behaviour_t)); 
-	
-	if (newbehaviour == NULL) 
+	Behaviour_t *newbehaviour = (Behaviour_t *) malloc(sizeof(Behaviour_t));
+
+	if (newbehaviour == NULL)
 		return NULL;
-	
+
 	newbehaviour->priority = priority;
 	newbehaviour->active=active;
 	newbehaviour->next= NULL;
@@ -539,11 +551,11 @@ Behaviour_t *new_behaviour(uint8 priority, void (*work) (struct _Behaviour_t *da
 void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 	Behaviour_t	*ptr	= *list;
 	Behaviour_t *temp	= NULL;
-	
+
 	/* Kein Eintrag dabei? */
 	if (behave == NULL)
 		return;
-	
+
 	/* Erster Eintrag in der Liste? */
 	if (ptr == NULL){
 		ptr = behave;
@@ -557,13 +569,13 @@ void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 		} else {
 			/* Mit dem naechsten Eintrag vergleichen */
 			while(NULL != ptr->next) {
-				if (ptr->next->priority < behave->priority)	
+				if (ptr->next->priority < behave->priority)
 					break;
-				
+
 				/* Naechster Eintrag */
 				ptr = ptr->next;
 			}
-			
+
 			temp = ptr->next;
 			ptr->next = behave;
 			behave->next = temp;
@@ -575,7 +587,7 @@ void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 	/*!
 	 * @brief		Behandelt die Tasten fuer die Verhaltensanezeige, die das jeweilige Verhalten aktivieren oder deaktivieren.
 	 * @author 		Timo Sandmann (mail@timosandmann.de)
- 	 * @date 		14.02.2007	
+ 	 * @date 		14.02.2007
  	 * @param data	Zeiger auf ein Array mit Verhaltensdatensatzzeigern
 	 */
 	static void beh_disp_key_handler(Behaviour_t** data){
@@ -584,12 +596,12 @@ void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 		switch (RC5_Code){
 			case RC5_CODE_1: callee = data[0]; break;
 			case RC5_CODE_2: callee = data[1]; break;
-			case RC5_CODE_3: callee = data[2]; break;			
-			case RC5_CODE_4: callee = data[3]; break;			
-			case RC5_CODE_5: callee = data[4]; break;			
-			case RC5_CODE_6: callee = data[5]; break;			
-			case RC5_CODE_7: callee = data[6]; break;			
-			case RC5_CODE_8: callee = data[7]; break;			
+			case RC5_CODE_3: callee = data[2]; break;
+			case RC5_CODE_4: callee = data[3]; break;
+			case RC5_CODE_5: callee = data[4]; break;
+			case RC5_CODE_6: callee = data[5]; break;
+			case RC5_CODE_7: callee = data[6]; break;
+			case RC5_CODE_8: callee = data[7]; break;
 		}
 		/* Verhaltensstatus toggeln */
 		if (callee != NULL){
@@ -597,29 +609,29 @@ void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 			callee->active ^= 1;
 		}
 	}
-	
+
 	/*!
 	 * @brief	Zeigt Informationen ueber Verhalten an, 'A' fuer Verhalten aktiv, 'I' fuer Verhalten inaktiv.
 	 * @author 	Timo Sandmann (mail@timosandmann.de)
- 	 * @date 	12.02.2007	 
- 	 * Es werden zwei Spalten mit jeweils 4 Verhalten angezeigt. Gibt es mehr Verhalten in der Liste, kommt man 
+ 	 * @date 	12.02.2007
+ 	 * Es werden zwei Spalten mit jeweils 4 Verhalten angezeigt. Gibt es mehr Verhalten in der Liste, kommt man
  	 * mit der Taste DOWN auf eine weitere Seite (die aber kein extra Screen ist). Mit der Taste UP geht's bei Bedarf
  	 * wieder zurueck. Vor den Prioritaeten steht eine Nummer von 1 bis 8, drueckt man die entsprechende Zifferntaste
  	 * auf der Fernbedienung, so wird das Verhalten aktiv oder inaktiv geschaltet, komplementaer zum aktuellen Status.
- 	 * Den Keyhandler dazu stellt beh_disp_key_handler() dar. 
+ 	 * Den Keyhandler dazu stellt beh_disp_key_handler() dar.
 	 */
-	void behaviour_display(void){		
+	void behaviour_display(void){
 		static uint8 behaviour_page = 0;	/*!< zuletzt angezeigte Verhaltensseite */
-		if (RC5_Code == RC5_CODE_DOWN){	
+		if (RC5_Code == RC5_CODE_DOWN){
 			/* naechste Seite */
 			behaviour_page++;
 			display_clear();	// Screen-Nr. wechselt nicht => Screen selbst loeschen
-			RC5_Code = 0;	// Taste behandelt	
-		} else if (RC5_Code == RC5_CODE_UP){	
+			RC5_Code = 0;	// Taste behandelt
+		} else if (RC5_Code == RC5_CODE_UP){
 			/* vorherige Seite */
 			if (behaviour_page > 0) behaviour_page--;
 			display_clear();
-			RC5_Code = 0;	
+			RC5_Code = 0;
 		}
 		Behaviour_t* behaviours[8] = {NULL};	/*!< speichert Zeiger auf die Verhalten fuer den Keyhandler zwischen */
 		uint8 i,j,k=0;
@@ -639,7 +651,7 @@ void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 			}
 		}
 		char status[2] = "IA";	// I: inactive, A: active
-		/* max. 4 Zeilen mit jeweils 2 Verhalten (= 8 Verhalten) anzeigbar */ 
+		/* max. 4 Zeilen mit jeweils 2 Verhalten (= 8 Verhalten) anzeigbar */
 		for (i=1; i<=20; i+=11){	// Spalten
 			for (j=1; j<=4; j++){	// Zeilen
 				while (ptr != NULL && ptr->priority > PRIO_VISIBLE_MAX)
@@ -647,16 +659,16 @@ void insert_behaviour_to_list(Behaviour_t **list, Behaviour_t *behave){
 				if (ptr == NULL || ptr->priority < PRIO_VISIBLE_MIN){
 					if (i==1 && j==1 && behaviour_page > 0) behaviour_page--;	// keine unnoetige leere Seite anzeigen
 					if (RC5_Code !=0) beh_disp_key_handler(behaviours);	// Tasten auswerten
-					return; // fertig, da ptr == NULL oder Prioritaet bereits zu klein					
+					return; // fertig, da ptr == NULL oder Prioritaet bereits zu klein
 				}
 				/* Ausgabe */
 				display_cursor(j, i);
 				display_printf("%u: %3d=%c ", k+1, ptr->priority, status[ptr->active]);
 				behaviours[k++] = ptr;	// speichern fuer Tastenhandler
 				ptr = ptr->next;
-			} 	
-		} 
+			}
+		}
 		if (RC5_Code !=0) beh_disp_key_handler(behaviours);	// Tasten auswerten
-	}  
+	}
 #endif	// DISPLAY_BEHAVIOUR_AVAILABLE
 #endif	// BEHAVIOUR_AVAILABLE

@@ -5,7 +5,7 @@
 
 #ifdef BEHAVIOUR_AVAILABLE
 
-/*! 
+/*!
  * @file 	available_behaviours.h
  * @brief 	globale Schalter fuer die einzelnen Verhalten
  */
@@ -19,6 +19,7 @@
 //#define BEHAVIOUR_GOTO_AVAILABLE	/*!< goto vorhanden? */
 //#define BEHAVIOUR_GOTOXY_AVAILABLE	/*!< gotoxy vorhanden? */
 //#define BEHAVIOUR_GOTO_POS_AVAILABLE	/*!< goto_pos vorhanden? */
+//#define BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE	/*!< goto_obstacle vorhanden? */
 #define BEHAVIOUR_TURN_AVAILABLE	/*!< turn vorhanden? */
 //#define BEHAVIOUR_TURN_TEST_AVAILABLE	/*!< turn_test vorhanden? */
 
@@ -45,7 +46,7 @@
 
 //#define BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE /*!< Transport-Pillar Verhalten */
 
-#define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-kommandos entgegen? */
+#define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-Kommandos entgegen? */
 //#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE /*!< Deaktivieren eines Verhaltens wenn Abbruchbedingung erfuellt */
 
 //#define BEHAVIOUR_CALIBRATE_PID_AVAILABLE	/*!< Kalibrierungsverhalten fuer Motorregelung vorhanden? */
@@ -53,17 +54,26 @@
 
 #define BEHAVIOUR_DELAY_AVAILABLE /*!< Delay-Routinen als Verhalten */
 
-/* Aufgrund einer ganzen reihe von Abhaengigkeiten sollte man beim Versuch Speicher 
- * zu sparen, zuerst mal bei den Hauptverhalten ausmisten, sonst kommen die 
+//#define BEHAVIOUR_DRIVE_AREA_AVAILABLE /*!< flaechendeckendes Fahren mit Map */
+
+/* Aufgrund einer ganzen reihe von Abhaengigkeiten sollte man beim Versuch Speicher
+ * zu sparen, zuerst mal bei den Hauptverhalten ausmisten, sonst kommen die
  * Unterverhalten durch die Hintertuer wieder rein
  */
 #ifndef MAP_AVAILABLE
 	#undef BEHAVIOUR_SCAN_AVAILABLE
+	#undef BEHAVIOUR_DRIVE_AREA_AVAILABLE
+#endif
+
+#ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
+	#define BEHAVIOUR_GOTO_POS_AVAILABLE
+	#define BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
+	#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_GOTOXY_AVAILABLE
 	#define BEHAVIOUR_TURN_AVAILABLE
-#endif	
+#endif
 
 #ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 	#define BEHAVIOUR_GOTO_POS_AVAILABLE
@@ -71,7 +81,7 @@
 
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
 	#define BEHAVIOUR_TURN_AVAILABLE
-#endif	
+#endif
 
 #ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
 	#define BEHAVIOUR_TURN_AVAILABLE
@@ -87,26 +97,26 @@
 #ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 	#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 	#define BEHAVIOUR_TURN_AVAILABLE
-#endif	
+#endif
 
 #ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
 	#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 	#define BEHAVIOUR_TURN_AVAILABLE
-#endif	
+#endif
 
 #ifdef BEHAVIOUR_SIMPLE_AVAILABLE
 	#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
-#endif	
+#endif
 
 #ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 	#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 	#define BEHAVIOUR_DELAY_AVAILABLE
-#endif	
+#endif
 
 #ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
 	#define BEHAVIOUR_TURN_AVAILABLE
 	#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
-#endif	
+#endif
 
 #ifdef BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE
 	#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE
@@ -173,6 +183,7 @@
 #include "bot-logic/behaviour_goto.h"
 #include "bot-logic/behaviour_gotoxy.h"
 #include "bot-logic/behaviour_goto_pos.h"
+#include "bot-logic/behaviour_goto_obstacle.h"
 
 #include "bot-logic/behaviour_turn.h"
 #include "bot-logic/behaviour_turn_test.h"
@@ -207,6 +218,8 @@
 #include "bot-logic/behaviour_transport_pillar.h"
 
 #include "bot-logic/behaviour_drive_stack.h"
+
+#include "bot-logic/behaviour_drive_area.h"
 
 #endif	// BEHAVIOUR_AVAILABLE
 #endif	/*AVAILABLE_BEHAVIOURS_H_*/

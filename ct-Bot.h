@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	ct-Bot.h
  * @brief 	globale Schalter fuer die einzelnen Bot-Funktionalitaeten
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -124,7 +124,7 @@
 		#undef BOT_2_PC_AVAILABLE
 		#undef SRF10_AVAILABLE
 		#undef TWI_AVAILABLE
-		#undef SPEED_CONTROL_AVAILABLE // Deaktiviere die Motorregelung 
+		#undef SPEED_CONTROL_AVAILABLE // Deaktiviere die Motorregelung
 		#undef MMC_AVAILABLE
 		#undef I2C_AVAILABLE
 		#undef CMPS03_AVAILABLE
@@ -165,21 +165,21 @@
 
 #ifndef SPEED_CONTROL_AVAILABLE
 	#undef ADJUST_PID_PARAMS
-	#undef SPEED_LOG_AVAILABLE	
+	#undef SPEED_LOG_AVAILABLE
 #endif
 
 #ifdef LOG_UART_AVAILABLE
 	#define LOG_AVAILABLE	/*!< LOG aktiv? */
-#endif 
+#endif
 #ifdef LOG_CTSIM_AVAILABLE
 	#define LOG_AVAILABLE	/*!< LOG aktiv? */
-#endif 
+#endif
 #ifdef LOG_DISPLAY_AVAILABLE
 	#define LOG_AVAILABLE	/*!< LOG aktiv? */
-#endif 
+#endif
 #ifdef LOG_STDOUT_AVAILABLE
 	#define LOG_AVAILABLE	/*!< LOG aktiv? */
-#endif 
+#endif
 #ifdef LOG_MMC_AVAILABLE
 	#define LOG_AVAILABLE	/*!< LOG aktiv? */
 #endif
@@ -192,7 +192,7 @@
 
 #ifndef MMC_AVAILABLE
 	#undef SPEED_LOG_AVAILABLE
-	
+
 	#ifdef MCU
 		#undef MAP_AVAILABLE	// Map geht auf dem MCU nur mit MMC
 	#endif
@@ -210,7 +210,7 @@
 		/* Auf dem PC gibts kein Logging ueber UART. */
 		#undef LOG_UART_AVAILABLE
 	#endif
-	
+
 	#ifdef MCU
 		/* Mit Bot zu PC Kommunikation auf dem MCU gibts kein Logging ueber UART.
 		 * Ohne gibts keine Kommunikation ueber ct-Sim.
@@ -222,14 +222,14 @@
 			#undef LOG_CTSIM_AVAILABLE
 		#endif
 	#endif
-	
+
 	/* Ohne Display gibts auch keine Ausgaben auf diesem. */
 	#ifndef DISPLAY_AVAILABLE
 		#undef LOG_DISPLAY_AVAILABLE
 	#endif
-	
+
 	/* Es kann immer nur ueber eine Schnittstelle geloggt werden. */
-	
+
 	#ifdef LOG_UART_AVAILABLE
 		#define UART_AVAILABLE			/*!< UART vorhanden? */
 		#undef LOG_CTSIM_AVAILABLE
@@ -237,25 +237,25 @@
 		#undef LOG_STDOUT_AVAILABLE
 		#undef LOG_MMC_AVAILABLE
 	#endif
-	
+
 	#ifdef LOG_CTSIM_AVAILABLE
 		#undef LOG_DISPLAY_AVAILABLE
 		#undef LOG_STDOUT_AVAILABLE
 		#undef LOG_MMC_AVAILABLE
 	#endif
-	
+
 	#ifdef LOG_DISPLAY_AVAILABLE
 		#undef LOG_STDOUT_AVAILABLE
 		#undef LOG_MMC_AVAILABLE
 	#endif
-	
+
 	#ifdef LOG_STDOUT_AVAILABLE
 		#undef LOG_MMC_AVAILABLE
 	#endif
-	
+
 	#ifndef MMC_VM_AVAILABLE
 		#undef LOG_MMC_AVAILABLE
-	#endif 
+	#endif
 
 	// Wenn keine sinnvolle Log-Option mehr uebrig, loggen wir auch nicht
 	#ifndef LOG_CTSIM_AVAILABLE

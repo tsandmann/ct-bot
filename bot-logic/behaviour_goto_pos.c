@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	behaviour_goto_pos.c
  * @brief 	Anfahren einer Position
  * @author 	Timo Sandmann (mail@timosandmann.de)
@@ -26,11 +26,12 @@
 
 #include "bot-logic/bot-logik.h"
 
+#define MIN_TARGET_MARGIN	5	/*!< Entfernung zum Ziel [mm], ab der das Ziel auf jeden Fall als erreicht gilt */
 #ifdef MCU
-#define TARGET_MARGIN	20	/*!< Entfernung zum Ziel [mm], ab der das Ziel als erreicht gilt fuer MCU */
+#define TARGET_MARGIN	20	/*!< Init-Wert Entfernung zum Ziel [mm], ab der das Ziel als erreicht gilt fuer MCU */
 #include "avr/eeprom.h"
 #else
-#define TARGET_MARGIN	5	/*!< Entfernung zum Ziel [mm], ab der das Ziel als erreicht gilt fuer PC */
+#define TARGET_MARGIN	10	/*!< Init-Wert Entfernung zum Ziel [mm], ab der das Ziel als erreicht gilt fuer PC */
 #include "eeprom-emu.h"
 #endif
 
@@ -72,10 +73,11 @@ static uint8_t * p_goto_pos_err;	/*!< Zeiger auf Fehlervariable im EEPROM */
 
 static const int16_t straight_go	= 200;	/*!< Entfernung zum Ziel [mm], bis zu der geradeaus zum Ziel gefahren wird */
 static const int16_t max_angle		= 30;	/*!< Maximaler Winkel [Grad] zwischen Start-Blickrichtung und Ziel */
-static const int16_t v_min			= 100;	/*!< Minimale (mittlere) Geschwindigkeit [mm/s], mit der der Bot zum Ziel fahert */
-static const int16_t v_max			= 200;	/*!< Maximale (mittlere) Geschwindigkeit [mm/s], mit der der Bot zum Ziel fahert */
+static const int16_t v_m_min			= 100;	/*!< Minimale (mittlere) Geschwindigkeit [mm/s], mit der der Bot zum Ziel fahert */
+static const int16_t v_m_max			= 250;	/*!< Maximale (mittlere) Geschwindigkeit [mm/s], mit der der Bot zum Ziel fahert */
+static const int16_t v_min				= 50;	/*!< Minimale Geschwindigkeit [mm/s] */
+static const int16_t v_max				= 350;	/*!< Maximale Geschwindigkeit [mm/s] */
 static const int16_t recalc_dist	= 30;	/*!< Entfernung [mm], nach der die Kreisbahn neu berechnet wird */
-static const int16_t max_par_diff	= 30;	/*!< Differenz [mm] der Distanzsensorwerte, bis zu der eine parallele Ausrichtung moeglich ist */ 
 
 /*!
  * @brief		Das Positionierungsverhalten
@@ -87,8 +89,8 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 	static int16_t done;
 	static int16_t v_m;
 	static int16_t v_l;
-	static int16_t v_r;		
-	
+	static int16_t v_r;
+
 	/* Abstand zum Ziel berechnen (als Metrik euklidischen Abstand benutzen) */
 	int16_t diff_to_target = sqrt(get_dist(dest_x, dest_y, x_pos, y_pos));
 	LOG_DEBUG("diff_to_target=%d", diff_to_target);
@@ -96,14 +98,14 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		/* fuer grosse Strecken zweiten Fehlerwert verwenden */
 		p_goto_pos_err = &goto_pos_err[1];
 	}
-	
+
 	/* gefahrene Strecke berechnen */
 	int16_t driven = sqrt(get_dist(last_x, last_y, x_pos, y_pos));
 
 	/* Pruefen, ob wir schon am Ziel sind */
 	uint8_t margin = eeprom_read_byte(p_goto_pos_err);
 	if (diff_to_target <= margin) state = LAST_TURN;
-	
+
 	switch (state) {
 	case FIRST_TURN: {
 		/* ungefaehr in die Zielrichtung drehen */
@@ -113,12 +115,12 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 			/* Winkelkorrektur, falls rueckwaerts */
 			alpha += 180;
 			if (alpha > 180) alpha -= 360;
-		}		
+		}
 		LOG_DEBUG("alpha=%d", alpha);
+		state = CALC_WAY;
 		if (diff_to_target < straight_go) {
 			LOG_DEBUG("bot_turn(%d)", alpha);
 			bot_turn(data, alpha);
-			state = CALC_WAY;
 			return;
 		}
 		if (abs(alpha) > max_angle) {
@@ -126,9 +128,10 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 			if (alpha < 0) to_turn = -to_turn;
 			bot_turn(data, to_turn);
 			LOG_DEBUG("bot_turn(%d)", to_turn);
+			break;
 		}
-		state = CALC_WAY;
-		break;
+
+		/* no break */
 	}
 	case CALC_WAY: {
 		/* Kreisbogenfahrt zum Ziel berechnen */
@@ -139,7 +142,7 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		float alpha = heading;
 		if (drive_dir < 0) {
 			alpha += 180;
-		}		
+		}
 		LOG_DEBUG("alpha=%f", alpha);
 		float beta = calc_angle_diff(diff_x, diff_y);
 		if (drive_dir < 0) {
@@ -163,21 +166,10 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		if ((int16_t)radius == 0) {
 			radius = 100000.0f;	// geradeaus
 		}
-		if (fabs(radius) < 50.0) {
-			/* zu starke Kruemmung der Kreisbahn. 
-			 * Wenn der Radius zu klein wird, bekommen wir fuer die Raeder Geschwindigkeiten,
-			 * die kleiner bzw. groesser als moeglich sind, auesserdem faehrt der Bot dann
-			 * eher Slalom, darum beginnen wir in diesem Fall neu mit dem Verhalten.
-			 * Grenze: |radius| = 48.5 * v_min / (v_min - 100), mit v_min := 50 => |radius| = 48.5 */
-			state = FIRST_TURN;
-			speedWishLeft = BOT_SPEED_STOP;
-			speedWishRight = BOT_SPEED_STOP;
-			return;
-		}
 		/* Geschwindigkeit an Entfernung zum Zielpunkt anpassen */
 		float x = diff_to_target < 360 ? diff_to_target / (360.0/M_PI*2.0) : M_PI/2;	// (0; pi/2]
-		v_m = sin(x) * (float)(v_max - v_min);	// [    0; v_max-v_min]
-		v_m += v_min;							// [v_min; v_max]
+		v_m = sin(x) * (float)(v_m_max - v_m_min);	// [      0; v_m_max - v_m_min]
+		v_m += v_m_min;								// [v_m_min; v_m_max]
 		if (drive_dir < 0) {
 			v_m = -v_m;
 			radius = -radius;
@@ -185,9 +177,20 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		/* Geschwindigkeiten auf die beiden Raeder verteilen, um den berechneten Radius der Kreisbahn zu erhalten */
 		v_l = iroundf(radius / (radius + ((float)WHEEL_TO_WHEEL_DIAMETER/2.0)) * (float)v_m);
 		v_r = iroundf(radius / (radius - ((float)WHEEL_TO_WHEEL_DIAMETER/2.0)) * (float)v_m);
+
+		int16_t vl_abs = abs(v_l);
+		int16_t vr_abs = abs(v_r);
+		/* Wenn der Radius zu klein wird, bekommen wir fuer die Raeder Geschwindigkeiten,
+		 * die kleiner bzw. groesser als moeglich sind, auesserdem faehrt der Bot dann
+		 * eher Slalom, darum beginnen wir in diesem Fall neu mit dem Verhalten.
+		 */
+		if (vl_abs < v_min || vr_abs < v_min || vl_abs > v_max || vr_abs > v_max) {
+			state = FIRST_TURN;
+			LOG_DEBUG("Geschwindigkeiten ungueltig, beginne neu");
+			LOG_DEBUG("v_l=%d\tv_r=%d\tv_m=%d", v_l, v_r, v_m);
+			return;
+		}
 		/* Statusupdate */
-		last_x = x_pos;
-		last_y = y_pos;
 		done = 0;
 		state = RUNNING;
 		/* no break */
@@ -219,13 +222,14 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 			/* zu weit gefahren */
 			diff_to_target = -diff_to_target;
 		}
-		LOG_INFO("Fehler=%d mm", diff_to_target);
+//		LOG_INFO("Fehler=%d mm", diff_to_target);
+		LOG_DEBUG("Fehler=%d mm", diff_to_target);
 		/* Aus Fehler neuen Korrekturwert berechnen und im EEPROM speichern */
 		int8_t error = eeprom_read_byte(p_goto_pos_err);
 		LOG_DEBUG("error=%d", error);
 		int8_t new_error = error - diff_to_target / 2; // (error-diff_to_target)/2+error/2
 		LOG_DEBUG("new_error=%d", new_error);
-		if (new_error < TARGET_MARGIN/4) new_error = TARGET_MARGIN/4;
+		if (new_error < MIN_TARGET_MARGIN) new_error = MIN_TARGET_MARGIN;
 		if (new_error != error) {
 			eeprom_write_byte(p_goto_pos_err, new_error);
 			LOG_DEBUG("new_error=%d", new_error);
@@ -263,7 +267,7 @@ void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
 
 	/* Verhalten starten */
 	switch_to_behaviour(caller, bot_goto_pos_behaviour, OVERRIDE);
-	
+
 	/* Inits */
 	if (state != LAST_TURN) {
 		drive_dir = 1;	// unsanfter Abbruch beim letzten Mal
@@ -271,8 +275,9 @@ void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
 	}
 	state = FIRST_TURN;
 	p_goto_pos_err = &goto_pos_err[0];	// erstmal kleine Strecke annehmen, Verhalten korrigiert das evtl.
-	
-	LOG_INFO("(%d mm|%d mm|%d Grad)", x, y, head);
+
+//	LOG_INFO("(%d mm|%d mm|%d Grad)", x, y, head);
+	LOG_DEBUG("(%d mm|%d mm|%d Grad)", x, y, head);
 	if (drive_dir >= 0) {
 		LOG_DEBUG("vorwaerts");
 	} else {
@@ -314,81 +319,6 @@ void bot_goto_dist(Behaviour_t * caller, int16_t distance, int16_t dir) {
 	state = LAST_TURN;
 	/* Verhalten starten */
 	bot_goto_pos(caller, target_x, target_y, (int16_t)heading);
-}
-
-static int16_t obst_distance = 0;	/*!< gewuenschte Entfernung zum Hindernis */
-static uint8_t obst_parallel = 0;	/*!< richtet die Front des Bots parallel zum Hindernis aus, falls 1 */
-static uint8_t obst_state = 0;		/*!< Status von bot_goto_obstacle */
-
-/*!
- * @brief		Hilfsverhalten von bot_goto_pos(), das den Bot auf eine gewuenschte Entfernung
- * 				an ein Hindernis heranfaehrt.
- * @param *data	Der Verhaltensdatensatz
- */
-void bot_goto_obstacle_behaviour(Behaviour_t * data) {
-	static int16_t distLeft, distRight;
-	switch (obst_state) {
-	case 0:
-		/* Entfernung zum Hindernis messen */
-		bot_measure_distance(data, &distLeft, &distRight);
-		LOG_DEBUG("Hindernis ist %d|%d mm entfernt", distLeft, distRight);
-		obst_state = 1;
-		break;
-	case 1: {
-		/* kleinere Distanz als Richtwert benutzen */
-		int16_t dist = distLeft < distRight ? distLeft : distRight;
-		if (dist <= 600) {
-			/* Entfernung - gewuenschte Entfernung fahren */
-			int16_t to_drive = dist - obst_distance;
-			LOG_DEBUG("to_drive=%d", to_drive);
-			if (abs(to_drive) > TARGET_MARGIN) {
-				bot_goto_dist(data, abs(to_drive), sign16(to_drive));
-				obst_state = 0;
-			} else {
-				obst_state = 2;
-			}
-		} else {
-			/* kein Hindernis in Sichtweite, also erstmal vorfahren */
-			LOG_DEBUG("Noch kein Hindernis in Sichtweite");
-			bot_goto_dist(data, 200, 1);
-			obst_state = 0;
-		}
-		break;			
-	}
-	case 2:
-		if (obst_parallel == 1) {
-			/* heading korrigieren, so dass Bot parallel zum Hindernis steht */
-			int16_t diff = distRight - distLeft;
-			if (abs(diff) < max_par_diff) {
-				/* unsinnig bei zu grosser Differenz */
-				LOG_DEBUG("diff=%d", diff);
-				float alpha = (float)diff / (float)(DISTSENSOR_POS_SW*2);
-				alpha /= 2.0*M_PI/360.0;
-				LOG_DEBUG("alpha=%f", alpha);
-				bot_turn(data, (int16_t)alpha);
-			}
-		}
-		obst_state = 3;
-		break;
-	case 3:
-		/* fertig :-) */
-		return_from_behaviour(data);
-		break;
-	}
-}
-
-/*!
- * @brief			Botenfunktion des Positionierungsverhaltens.
- * 					Bewegt den Bot auf distance mm in aktueller Blickrichtung an ein Hindernis heran
- * @param *caller	Der Verhaltensdatensatz des Aufrufers
- * @param distance	Distanz in mm, in der der Bot vor dem Hindernis stehen bleiben soll
- * @param parallel	richtet die Front des Bots parallel zum Hindernis aus, falls 1
- */
-void bot_goto_obstacle(Behaviour_t * caller, int16_t distance, uint8_t parallel) {
-	obst_distance = distance;
-	obst_parallel = parallel;
-	switch_to_behaviour(caller, bot_goto_obstacle_behaviour, OVERRIDE);
-	obst_state = 0;
 }
 
 #endif	// BEHAVIOUR_GOTO_POS_AVAILABLE

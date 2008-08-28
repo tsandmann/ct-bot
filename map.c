@@ -204,7 +204,7 @@ int8_t map_init(void) {
 	/* Modi des Update-Verhaltens. Default: location, distance, border an, Kartographie-Modus */
 	scan_otf_modes.location = 1;
 	scan_otf_modes.distance = 1;
-	scan_otf_modes.border = 0;
+	scan_otf_modes.border = 1;
 	scan_otf_modes.map_mode = 1;
 #endif
 
@@ -233,6 +233,17 @@ int8_t map_init(void) {
 	map_current_block = 0;
 #endif	// MCU
 	return 0;
+}
+
+/*!
+ * Haelt den Bot an und schreibt den Map-Update-Cache komplett zurueck
+ */
+void map_flush_cache(void) {
+	motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
+	/* Warten, bis Update fertig */
+	os_signal_set(&lock_signal);
+	/* Sperre sofort wieder freigeben */
+	os_signal_release(&lock_signal);
 }
 
 /*!
@@ -475,7 +486,7 @@ static int8_t get_average_fields(uint16_t x, uint16_t y, int16_t radius) {
 	int16_t h = radius * radius;
 
 	/* warten bis Karte frei ist */
-	os_signal_set(&lock_signal);
+	map_flush_cache();
 
 	/* Daten auslesen */
 	for (dX = -radius; dX <= radius; dX++) {
@@ -486,9 +497,6 @@ static int8_t get_average_fields(uint16_t x, uint16_t y, int16_t radius) {
 		}
 		avg += avg_line / (radius * 2);
 	}
-
-	/* Signal zur Kartensperre wieder freigeben */
-	os_signal_release(&lock_signal);
 
 	return (int8_t)(avg / (radius * 2));
 }
@@ -870,13 +878,10 @@ static uint8_t way_free_fields(uint16_t from_x, uint16_t from_y,
  */
 uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y) {
 	/* warten bis Karte frei ist */
-	os_signal_set(&lock_signal);
+	map_flush_cache();
 
 	uint8_t result = way_free_fields(world_to_map(from_x),
 			world_to_map(from_y), world_to_map(to_x), world_to_map(to_y));
-
-	/* Signal zur Kartensperre wieder freigeben */
-	os_signal_release(&lock_signal);
 
 	return result;
 }
@@ -940,14 +945,6 @@ void map_update_main(void) {
 }
 
 /*!
- * Haelt den Bot an und schreibt den Map-Update-Cache komplett zurueck (auf MCU)
- */
-void map_flush_cache(void) {
-	motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
-	os_thread_sleep(0xffffff);
-}
-
-/*!
  * Zeigt die Karte an
  */
 void map_print(void) {
@@ -961,18 +958,19 @@ void map_print(void) {
  */
 static void delete(void) {
 	/* warten bis Karte frei ist */
-	os_signal_set(&lock_signal);
+	map_flush_cache();
 #ifdef MCU
 	uint32_t map_filestart = mini_fat_find_block("MAP", map_buffer);
 	mini_fat_clear_file(map_filestart, map_buffer);
 #else
+	os_signal_lock(&lock_signal);
 	memset(map_storage, 0, sizeof(map_storage));
 #endif	// MCU
 	map_current_block_updated = False;
 	map_current_block = 0;
-
-	/* Signal zur Kartensperre wieder freigeben */
-	os_signal_release(&lock_signal);
+#ifdef PC
+	os_signal_unlock(&lock_signal);
+#endif
 
 #ifdef SHRINK_MAP_ONLINE
 	// Groesse neu initialisieren
@@ -994,7 +992,8 @@ static void draw_test_scheme(void) {
 	int16_t x, y;
 
 	/* warten bis Karte frei ist */
-	os_signal_set(&lock_signal);
+	map_flush_cache();
+	os_signal_lock(&lock_signal);
 
 	// Erstmal eine ganz simple Linie
 	for (x=0; x< MAP_SECTION_POINTS*MAP_SECTIONS; x++) {
@@ -1017,9 +1016,7 @@ static void draw_test_scheme(void) {
 			set_field(y*MACRO_BLOCK_LENGTH, x, -60);
 		}
 	}
-
-	/* Signal zur Kartensperre wieder freigeben */
-	os_signal_release(&lock_signal);
+	os_signal_unlock(&lock_signal);
 }
 
 /*!
@@ -1041,7 +1038,8 @@ static void shrink(uint16_t * min_x, uint16_t * max_x, uint16_t * min_y,
 	*max_y = map_max_y;
 
 	/* warten bis Karte frei ist */
-	os_signal_set(&lock_signal);
+	map_flush_cache();
+	os_signal_lock(&lock_signal);
 
 	// Kartengroesse reduzieren
 	int8_t free=1;
@@ -1086,9 +1084,7 @@ static void shrink(uint16_t * min_x, uint16_t * max_x, uint16_t * min_y,
 		}
 		*max_x-=1;
 	}
-
-	/* Signal zur Kartensperre wieder freigeben */
-	os_signal_release(&lock_signal);
+	os_signal_unlock(&lock_signal);
 }
 
 /*!
@@ -1122,7 +1118,8 @@ void map_to_pgm(char * filename) {
 			min_x, min_y, max_x, max_y, map_size_x, map_size_y);
 
 	/* warten bis Karte frei ist */
-	os_signal_set(&lock_signal);
+	map_flush_cache();
+	os_signal_lock(&lock_signal);
 
 	uint8_t tmp;
 	for (y=max_y; y>min_y; y--) {
@@ -1143,9 +1140,7 @@ void map_to_pgm(char * filename) {
 		}
 #endif	// MAP_PRINT_SCALE
 	}
-
-	/* Signal zur Kartensperre wieder freigeben */
-	os_signal_release(&lock_signal);
+	os_signal_unlock(&lock_signal);
 
 #ifdef MAP_PRINT_SCALE
 	for (y=0; y<10; y++) {
