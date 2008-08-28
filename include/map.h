@@ -113,7 +113,7 @@ static inline int8_t map_get_point(int16_t x, int16_t y) {
 uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y);
 
 /*!
- * Haelt den Bot an und schreibt den Map-Update-Cache komplett zurueck (auf MCU)
+ * Haelt den Bot an und schreibt den Map-Update-Cache komplett zurueck
  */
 void map_flush_cache(void);
 
