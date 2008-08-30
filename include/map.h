@@ -103,6 +103,28 @@ static inline int8_t map_get_point(int16_t x, int16_t y) {
 }
 
 /*!
+ * Berechnet das Verhaeltnis der Felder einer Region R die ausschliesslich mit Werten zwischen
+ * min und max belegt sind und allen Feldern von R.
+ * Die Region R wird als Gerade von (x1|y1) bis (x2|y2) und eine Breite width angegeben. Die Gerade
+ * verlaeuft in der Mitte von R.
+ * Beispiel: Steht der Bot an (0|0) und man moechte den Weg 50 cm voraus pruefen, gibt man x1 = y1 = y2 = 0,
+ * x2 = 500 und width = BOT_DIAMETER an.
+ * @param x1		Startpunkt der Region R, X-Anteil; Weltkoordinaten [mm]
+ * @param y1		Startpunkt der Region R, Y-Anteil; Weltkoordinaten [mm]
+ * @param x2		Endpunkt der Region R, X-Anteil; Weltkoordinaten [mm]
+ * @param y2		Endpunkt der Region R, Y-Anteil; Weltkoordinaten [mm]
+ * @param width		Breite der Region R (jeweils width/2 links und rechts der Gerade) [mm]
+ * @param min_val	minimaler Feldwert, der vorkommen darf
+ * @param max_val	maximaler Feldwert, der vorkommen darf
+ * @return			Verhaeltnis von Anzahl der Felder, die zwischen min_val und max_val liegen, zu
+ * 					Anzahl aller Felder der Region * 255;
+ * 					0 	-> kein Feld liegt im gewuenschten Bereich;
+ * 					255	-> alle Felder liegen im gewuenschten Bereich
+ */
+uint8_t map_get_ratio(int16_t x1, int16_t y1, int16_t x2, int16_t y2,
+		int16_t width, int8_t min_val, int8_t max_val);
+
+/*!
  * Prueft ob eine direkte Passage frei von Hindernissen ist
  * @param from_x	Startort x Weltkoordinaten
  * @param from_y	Startort y Weltkoordinaten
@@ -151,8 +173,9 @@ static inline int16_t map_to_world(uint16_t map_koord) {
 /*!
  * Liest eine Map wieder ein
  * @param filename	Quelldatei
+ * @return			Fehlercode, 0 falls alles ok
  */
-void map_read(char * filename);
+int map_read(const char * filename);
 
 /*!
  * Schreibt einbe Karte in eine PGM-Datei

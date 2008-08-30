@@ -1,24 +1,24 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
 
-/*! 
+/*!
  * @file 	behaviour_catch_pillar.c
  * @brief 	Sucht nach einer Dose und faengt sie ein
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -41,17 +41,17 @@
 #define GO			4
 #define END			99
 
-// Zustaende für das Ausladeverhalten START und END sind bereits weiter oben definiert  
+// Zustaende für das Ausladeverhalten START und END sind bereits weiter oben definiert
 #define GO_BACK		1
 #define CLOSE_DOOR	2
 
 static uint8_t catch_pillar_state = START;		/*!< Statusvariable für das Einfang-Verhalten */
 static uint8_t unload_pillar_state = START;		/*!< Statusvariable für das Auslade-Verhalten */
- 
+
 #ifndef BEHAVIOUR_GOTO_POS_AVAILABLE
 #undef CATCH_PILLAR_VERSION
 #define CATCH_PILLAR_VERSION	1
-#endif 
+#endif
 
 
 #if CATCH_PILLAR_VERSION == 1
@@ -62,7 +62,7 @@ static int16 startangle=0;      			/*!< gemerkter Anfangswinkel einfach als Inte
  * @param *data der Verhaltensdatensatz
  */
 void bot_catch_pillar_behaviour(Behaviour_t * data) {
-	static uint8 cancelcheck=False; 
+	static uint8 cancelcheck=False;
 	static float angle;
 
 	switch (catch_pillar_state){
@@ -71,7 +71,7 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 		       cancelcheck=False;
 		       catch_pillar_state=SEARCH_LEFT;
 		     break;
-		
+
 		case SEARCH_LEFT:
 		    // Nach 1x Rundumsuche und nix gefunden ist Schluss; Dazu wird der Check zum Start
 		    // nach Ueberschreiten der 5Grad-Toleranz eingeschaltet und die Drehung dann beendet wenn
@@ -79,12 +79,12 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 	        if (cancelcheck) {
 	          if (fabs(heading - startangle) < 5 )
 		        // Damit nicht endlos rundum gedreht wird Abbruch, wenn kein Gegenstand gefunden
-		        catch_pillar_state = END;	          
+		        catch_pillar_state = END;
 	        } else {
-	        	if (fabs(heading - startangle) >= 5) 
-	        	  cancelcheck=True;	        	
+	        	if (fabs(heading - startangle) >= 5)
+	        	  cancelcheck=True;
 	        }
-		
+
 		    // linker Sensor muss was sehen, der rechte aber nicht
 			if (sensDistL < MAX_PILLAR_DISTANCE && sensDistR > MAX_PILLAR_DISTANCE){	// sieht der linke Sensor schon was?
 				angle=heading;
@@ -94,14 +94,14 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 				speedWishRight=+BOT_SPEED_SLOW;
 				//bot_turn(data,5);	// Ein Stueck drehen
 			break;
-			
+
 		case LEFT_FOUND:
 		    // links und rechts darf nicht gleichzeitig was gesehen werden, sonst weiter mit drehen
 			if (sensDistL < MAX_PILLAR_DISTANCE && sensDistR < MAX_PILLAR_DISTANCE){
 		    	catch_pillar_state=SEARCH_LEFT;
 		    	break;
-		    }	
-		    
+		    }
+
 			if (sensDistR < MAX_PILLAR_DISTANCE){	// sieht der rechte Sensor schon was?
 				angle= heading- angle;
 				if (angle < 0)
@@ -114,7 +114,7 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 				speedWishRight=+BOT_SPEED_SLOW;
 //				bot_turn(data,5);	// Eins Stueck drehen
 			break;
-			
+
 		case TURN_MIDDLE:
 				if (fabs(heading - angle) > 2){
 					speedWishLeft=+BOT_SPEED_SLOW;
@@ -124,14 +124,14 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 					catch_pillar_state=GO;
 				}
 			break;
-			
+
 		case GO:
 			if (sensTrans ==0){
 				speedWishLeft=+BOT_SPEED_SLOW;
 				speedWishRight=+BOT_SPEED_SLOW;
-				// nicht endlos vorwaertslaufen, weiter mit Suche bis Drehende 
+				// nicht endlos vorwaertslaufen, weiter mit Suche bis Drehende
 				if (sensDistL < MAX_PILLAR_DISTANCE && sensDistR < MAX_PILLAR_DISTANCE)
-		    		catch_pillar_state=SEARCH_LEFT;			  
+		    		catch_pillar_state=SEARCH_LEFT;
 			}
 			else {
 				  bot_servo(data,SERVO1,DOOR_CLOSE);
@@ -141,7 +141,7 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 			break;
 
 		default:
-			catch_pillar_state=START;  
+			catch_pillar_state=START;
 			return_from_behaviour(data);
 			break;
 	}
@@ -162,10 +162,12 @@ void bot_catch_pillar(Behaviour_t * caller) {
 
 static int16_t start_heading;		/*!< gemerkter Winkel bei Start, der damit auch Zielwinkel ist zur Differenzbildung */
 static int8_t check_sensorside;		/*! Seite, auf der der Sensorabstand gecheckt wird */
-static int16_t obj_x_posL;			/*!< berechnete X-Koordinate zum Objekt (links) */
-static int16_t obj_y_posL;			/*!< berechnete Y-Koordinate zum Objekt (links) */
-static int16_t obj_x_posR;			/*!< berechnete X-Koordinate zum Objekt (rechts) */
-static int16_t obj_y_posR;			/*!< berechnete Y-Koordinate zum Objekt (rechts) */
+//static int16_t obj_x_posL;			/*!< berechnete X-Koordinate zum Objekt (links) */
+//static int16_t obj_y_posL;			/*!< berechnete Y-Koordinate zum Objekt (links) */
+static position_t obj_posL;			/*!< berechnete Position des Objekts (links) */
+//static int16_t obj_x_posR;			/*!< berechnete X-Koordinate zum Objekt (rechts) */
+//static int16_t obj_y_posR;			/*!< berechnete Y-Koordinate zum Objekt (rechts) */
+static position_t obj_posR;			/*!< berechnete Position des Objekts (rechts) */
 static uint8_t state_after_cancel;	/*!< Status, der nach einem Abbruch eingestellt wird */
 
 #define MIN_DIST_SENSES		90		/*!< groesster zulaessiger Abstand in mm zwischen beiden Sensoren */
@@ -195,8 +197,8 @@ static uint8_t object_invalid(void) {
 }
 
 /*!
- * Abbruchfunktion fuer das Cancelverhalten waehrend der Drehung zum 
- * Erkennen eines Einfangobjektes. Anschliessend geht es mit 
+ * Abbruchfunktion fuer das Cancelverhalten waehrend der Drehung zum
+ * Erkennen eines Einfangobjektes. Anschliessend geht es mit
  * state_after_cancel weiter.
  * @return	True wenn gueltiges Objekt erkannt wurde, sonst False
  */
@@ -277,13 +279,13 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 	}
 
 	case MEASURE_DIST:
-		// genaue Entfernung zum Hindernis messen 
+		// genaue Entfernung zum Hindernis messen
 		bot_measure_distance(data, &distLeft, &distRight);
 		catch_pillar_state = OPEN_DOOR;
 		break;
 
 	case OPEN_DOOR:
-		if (distLeft > MAX_PILLAR_DISTANCE && distRight > MAX_PILLAR_DISTANCE) { 	
+		if (distLeft > MAX_PILLAR_DISTANCE && distRight > MAX_PILLAR_DISTANCE) {
 			// bei ungueltigem Abstand nach Messung Restdrehung
 			catch_pillar_state = OBJECT_INVALID;
 			LOG_DEBUG("OBJECT_INVALID nach OPEN_DOOR");
@@ -295,10 +297,10 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 	case OBJECT_FOUND_AFTER_MEASURE:
 		// nehme den Sensorabstand vom Sensor, welcher auch Objekt sieht
 		if (distLeft <= MAX_PILLAR_DISTANCE) {
-			calc_point_in_distance(heading, DISTSENSOR_POS_FW + distLeft, DISTSENSOR_POS_SW, &obj_x_posL, &obj_y_posL);
+			obj_posL = calc_point_in_distance(heading, DISTSENSOR_POS_FW + distLeft, DISTSENSOR_POS_SW);
 			catch_pillar_state = TURN_TO_RIGHT_SENSOR;
 		} else {
-			calc_point_in_distance(heading, DISTSENSOR_POS_FW + distRight, -DISTSENSOR_POS_SW, &obj_x_posR, &obj_y_posR);
+			obj_posR = calc_point_in_distance(heading, DISTSENSOR_POS_FW + distRight, -DISTSENSOR_POS_SW);
 			catch_pillar_state = GO_TO_POINT;
 			bot_servo(data, SERVO1, DOOR_OPEN); // Klappe auf
 		}
@@ -310,8 +312,8 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 		break;
 
 	case GO_TO_POINT:
-		bot_goto_pos(data, ((obj_x_posL + obj_x_posR) / 2), ((obj_y_posL
-				+ obj_y_posR) / 2), 999);
+		bot_goto_pos(data, ((obj_posL.x + obj_posR.x) / 2), ((obj_posL.y
+				+ obj_posR.y) / 2), 999);
 		catch_pillar_state = END;
 		break;
 
@@ -335,14 +337,14 @@ void bot_catch_pillar(Behaviour_t * caller) {
 	catch_pillar_state = START;
 	check_sensorside = -1; // linker Sensor ergibt Abbruchbedingung
 	start_heading = heading;
-	obj_x_posL = 0;
-	obj_y_posL = 0;
-	obj_x_posR = 0;
-	obj_y_posR = 0;
+	obj_posL.x = 0;
+	obj_posL.y = 0;
+	obj_posR.x = 0;
+	obj_posR.y = 0;
 	/* Kollisions-Verhalten ausschalten  */
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
 	deactivateBehaviour(bot_avoid_col_behaviour);
-#endif	
+#endif
 }
 
 #elif CATCH_PILLAR_VERSION == 3
@@ -358,8 +360,8 @@ static int16_t headingR;			/*!< heading bei Erkennung rechts [Grad] */
 static int16_t max_turn;			/*!< Wie weit [Grad] maximal gedreht werden soll */
 
 /*!
- * Abbruchfunktion fuer das Cancelverhalten waehrend der Drehung zum 
- * Erkennen eines Einfangobjektes. Anschliessend geht es mit 
+ * Abbruchfunktion fuer das Cancelverhalten waehrend der Drehung zum
+ * Erkennen eines Einfangobjektes. Anschliessend geht es mit
  * state_after_cancel weiter.
  * Wurde das Objekt links erkannt, wird erst abgebrochen, nachdem
  * es auch rechts erkannt wurde.
@@ -401,7 +403,7 @@ static uint8_t goto_pos_cancel(void) {
  * @param *data	Der Verhaltensdatensatz
  */
 void bot_catch_pillar_behaviour(Behaviour_t * data) {
-	static int16_t obj_x_pos, obj_y_pos;
+	static position_t obj_pos;
 
 	switch (catch_pillar_state) {
 	/* Auf los geht's los */
@@ -431,8 +433,8 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 		}
 		int16_t dist = (DISTSENSOR_POS_SW * 2.0f) / dHead * (180.0f / M_PI);
 		/* Objektkoordis berechnen */
-		calc_point_in_distance(headingR, /*DISTSENSOR_POS_FW + */ dist,
-				-DISTSENSOR_POS_SW, &obj_x_pos, &obj_y_pos);
+		obj_pos = calc_point_in_distance(headingR, /*DISTSENSOR_POS_FW + */ dist,
+				-DISTSENSOR_POS_SW);
 		break;
 
 		/* Klappe auf */
@@ -443,7 +445,7 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 
 		/* zum Objekt fahren und Stopp, wenn das Objekt im Fach erkannt wird */
 	case GO_TO_POINT:
-		bot_goto_pos(data, obj_x_pos, obj_y_pos, 999);
+		bot_goto_pos(data, obj_pos.x, obj_pos.y, 999);
 		bot_cancel_behaviour(data, bot_goto_pos_behaviour, goto_pos_cancel);
 		catch_pillar_state = END;
 		break;
@@ -472,7 +474,7 @@ void bot_catch_pillar_turn(Behaviour_t * caller, int16_t degrees) {
 	/* Kollisions-Verhalten ausschalten */
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
 	deactivateBehaviour(bot_avoid_col_behaviour);
-#endif	
+#endif
 }
 
 /*!
@@ -497,7 +499,7 @@ void bot_unload_pillar_behaviour(Behaviour_t * data) {
 			// Klappe auf und danach Rueckwaerts
 			bot_servo(data, SERVO1, DOOR_OPEN);
 		} else
-			// nix zu tun 
+			// nix zu tun
 			unload_pillar_state = END;
 		break;
 	case GO_BACK:

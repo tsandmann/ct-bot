@@ -212,22 +212,21 @@ static uint8_t pointdist_low(int16_t xs, int16_t ys, int16_t xd, int16_t yd) {
 
 /*!
  * Berechnung des Seitenpunktes der Nebenbahn mit Rueckgabe des Punktes und des Map-Durchschnittswertes
- * @param sidedist seitlicher Abstand vom Botmittelpunkt
- * @param dist Punkt im Abstand voraus
- * @param side Trackleft (-1) oder Trackright (+1) fuer links oder rechts vom bot gesehen
- * @param *point_x berechnete X-Map-Weltkoordinate
- * @param *point_y berechnete Y-Map-Weltkoordinate
- * @return Mapwert an dem ermittelten Punkt in Blickrichtung zum Abstand dist
+ * @param sidedist	seitlicher Abstand vom Botmittelpunkt
+ * @param dist 		Punkt im Abstand voraus
+ * @param side 		Trackleft (-1) oder Trackright (+1) fuer links oder rechts vom bot gesehen
+ * @param *point 	berechnete Map-Weltkoordinate
+ * @return 			Mapwert an dem ermittelten Punkt in Blickrichtung zum Abstand dist
  */
 static int8_t getpoint_side_dist(uint16_t sidedist, int16_t dist, int8_t side,
-		int16_t * point_x, int16_t * point_y) {
+		position_t * point) {
 	// Berechnung je nach zu blickender Seite des Bots
-	(side == TRACKLEFT) ? calc_point_in_distance(heading, DISTSENSOR_POS_FW
-			+ dist, sidedist, point_x, point_y) : calc_point_in_distance(
-			heading, DISTSENSOR_POS_FW + dist, -sidedist, point_x, point_y);
+	*point = (side == TRACKLEFT) ? calc_point_in_distance(heading, DISTSENSOR_POS_FW
+			+ dist, sidedist) : calc_point_in_distance(
+			heading, DISTSENSOR_POS_FW + dist, -sidedist);
 
 	// Rueckgabe des Mapwertes
-	return map_get_average(*point_x, *point_y, 20); // Mapwert Durchschnitt ueber 2 cm
+	return map_get_average(point->x, point->y, 20); // Mapwert Durchschnitt ueber 2 cm
 }
 
 
@@ -247,8 +246,7 @@ static int8_t getpoint_side_dist(uint16_t sidedist, int16_t dist, int8_t side,
  */
 static uint8_t observe_get_startpoint(int8_t checkside, trackpoint_t * observe,
 		uint32_t * lastCorrectTime) {
-	int16_t mapx;
-	int16_t mapy;
+	position_t map_pos;
 	int8_t mapval;
 
 	// nur alle x ms Mapzugriff des Observers
@@ -257,7 +255,7 @@ static uint8_t observe_get_startpoint(int8_t checkside, trackpoint_t * observe,
 
 	// hier seitenabhaengig auf die Spur nebenan sehen auf Hoehe Mittelpunkt und Mapwert checken
 	mapval = getpoint_side_dist(BOT_DIAMETER - SIDEDIST_MINUS,
-			-DISTSENSOR_POS_FW, checkside, &mapx, &mapy);
+			-DISTSENSOR_POS_FW, checkside, &map_pos);
 
 	// falls Punkt bereits als befahren gekennzeichnet ist oder Hinderniswert hat gehts weiter mit Startpunktsuche
 	if (mapval >= MAP_TRACKVAL || mapval < 0)
@@ -265,7 +263,7 @@ static uint8_t observe_get_startpoint(int8_t checkside, trackpoint_t * observe,
 
 	// hier ist also der Trackpunkt frei, dann merken und zur Endpunktsuche im Observer
 	// zuweisen der Initwerte in die richtigen Puntvars
-	set_point_to_lastpoint(&observe->point1x, &observe->point1y, mapx, mapy);
+	set_point_to_lastpoint(&observe->point1x, &observe->point1y, map_pos.x, map_pos.y);
 	set_point_to_lastpoint(&observe->point2x, &observe->point2y, 0, 0);
 
 	return True;
@@ -294,8 +292,7 @@ static uint8_t endrequest = False;
 static uint8_t observe_get_endpoint(int8_t checkside, uint8_t * behavstate,
 		trackpoint_t * observer, int16_t * lastpointx, int16_t * lastpointy,
 		uint32_t * lastCorrectTime) {
-	int16_t mapx;
-	int16_t mapy;
+	position_t map_pos;
 	int8_t mapval = 0;
 
 	// wenn Zeit noch nicht um dann sofort beenden ohne weitere Checks
@@ -304,7 +301,7 @@ static uint8_t observe_get_endpoint(int8_t checkside, uint8_t * behavstate,
 
 	// hier seitenabhaengig auf die jeweilige Spur sehen und Mapwert holen
 	mapval = getpoint_side_dist(BOT_DIAMETER - SIDEDIST_MINUS, 0, checkside,
-			&mapx, &mapy);
+			&map_pos);
 
 	//Endepunktsuche nicht weiter verfolgen falls noch kein Startpunkt vorliegt
 	if ((observer->point1x == 0 && observer->point1y == 0)) {
@@ -324,7 +321,7 @@ static uint8_t observe_get_endpoint(int8_t checkside, uint8_t * behavstate,
 
 		// bei Hindernis auf aktuellem Punkt wird der letzte gemerkte Nicht-Hindernispunkt auf den Stack gespeichert, der
 		// vorher auf Gueltigkeit gecheckt wird, d.h. muss bestimmten Mindestabstand zum Startpunkt haben und kein Hindernis sein
-		if (dist_valid(observer->point1x, observer->point1y, mapx, mapy)
+		if (dist_valid(observer->point1x, observer->point1y, map_pos.x, map_pos.y)
 				&& map_get_field(*lastpointx, *lastpointy) >= 0 && !endrequest) {
 			set_point_to_lastpoint(&observer->point2x, &observer->point2y,
 					*lastpointx, *lastpointy);
@@ -348,7 +345,7 @@ static uint8_t observe_get_endpoint(int8_t checkside, uint8_t * behavstate,
 	} else { //Punkt auf Nebenbahn hat keine Hinderniswahrscheinlichkeit
 
 		// Abstand zum Startpunkt muss gueltig sein
-		if (!(dist_valid(observer->point1x, observer->point1y, mapx, mapy))) {
+		if (!(dist_valid(observer->point1x, observer->point1y, map_pos.x, map_pos.y))) {
 			if (endrequest)
 				*behavstate = TRACK_END;
 
@@ -356,7 +353,7 @@ static uint8_t observe_get_endpoint(int8_t checkside, uint8_t * behavstate,
 		}
 
 		// gueltigen Zwischenpunkt merken
-		set_point_to_lastpoint(lastpointx, lastpointy, mapx, mapy);
+		set_point_to_lastpoint(lastpointx, lastpointy, map_pos.x, map_pos.y);
 
 		// falls sich bei diesem gueltigen Endpunkt herausstellt, dass der vorhin ermittelte Startpunkt nun Hinderniswert besitzt, so wird der Endpunkt zum Startpunkt
 		// und weiter mit Endpunktsuche
@@ -607,8 +604,7 @@ static void set_nextline(int16_t x1, int16_t y1, int16_t x2, int16_t y2,
  static uint8_t check_side_for_decision(trackpoint_t observe_track,
 		trackpoint_t observe_track_to_push, int8_t checkside,
 		int8_t * side_to_go) {
-	int16_t mapx = 0;
-	int16_t mapy = 0;
+	position_t map_pos;
 	int8_t mapval = 0;
 
 	*side_to_go = 0;
@@ -619,7 +615,7 @@ static void set_nextline(int16_t x1, int16_t y1, int16_t x2, int16_t y2,
 
 	// Punkt laut Map holen
 	mapval = getpoint_side_dist(BOT_DIAMETER - SIDEDIST_MINUS, 0, checkside,
-			&mapx, &mapy);
+			&map_pos);
 
 	//Mapwert darf keine Hinderniswahrscheinlichkeit haben und noch nicht befahren worden sein
 	if (!(mapval < 0 || mapval >= MAP_TRACKVAL)) {
@@ -703,8 +699,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 
 	static uint32_t lastCheckTime = 0;
 
-	int16_t x = 0;
-	int16_t y = 0;
+	position_t pos;
 
 	switch (track_state) {
 	case check_trackside: //Vorwaeertsfahren mit Start der Observer
@@ -714,9 +709,9 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 		set_point_to_lastpoint(&nextline.point2x, &nextline.point2y, 0, 0);
 
 		//Naechste anzufahrende Bahn vom Stack holen wenn die Bahnen nebenan schon befahren wurden oder Hindernis voraus
-		if (getpoint_side_dist(BOT_DIAMETER - SIDEDIST_MINUS, 0, TRACKLEFT, &x,
-				&y) >= MAP_TRACKVAL && getpoint_side_dist(BOT_DIAMETER
-				- SIDEDIST_MINUS, 0, TRACKRIGHT, &x, &y) >= MAP_TRACKVAL) {
+		if (getpoint_side_dist(BOT_DIAMETER - SIDEDIST_MINUS, 0, TRACKLEFT, &pos)
+				>= MAP_TRACKVAL && getpoint_side_dist(BOT_DIAMETER
+				- SIDEDIST_MINUS, 0, TRACKRIGHT, &pos) >= MAP_TRACKVAL) {
 			track_state = get_line_from_stack;
 			break;
 		}

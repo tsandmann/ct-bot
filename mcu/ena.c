@@ -31,13 +31,14 @@
 #include "ct-Bot.h"
 #include "shift.h"
 #include "mouse.h"
+#include "mmc-low.h"
 
 #ifdef ENA_AVAILABLE
 
 
 static uint8_t ena = 0;				/*!< Sichert den Zustand der Enable-Leitungen */
 #ifdef MAUS_AVAILABLE
-	static uint8_t mmc_interrupted = 0;	/*!< Speichert, ob die MMC vom Maussensor ausgeschaltet wurde */
+static uint8_t mmc_interrupted = 0;	/*!< Speichert, ob die MMC vom Maussensor ausgeschaltet wurde */
 #endif
 
 /*!
@@ -58,48 +59,46 @@ void ENA_init() {
  * @param enable Bitmaske der anzuschaltenden ENA-Leitungen
  */
 void ENA_on(uint8_t enable) {
-	#ifdef MAUS_AVAILABLE
-		/* Maussensor und MMC-Karte haengen zusammen */
-		if (enable == ENA_MOUSE_SENSOR) {
-			if ((ena & ENA_MMC) == 0) {	// War die MMC an?	
-				#ifdef SPI_AVAILABLE
-					SPCR = 0;	// SPI aus
-				#endif
-				/* MMC aus */
-				ena |= ENA_MMC;
-				#ifdef MAUS_AVAILABLE
-					mmc_interrupted = 1;
-				#endif
-			}
-			/* Maussensor an */
-			ena &= ~ENA_MOUSE_SENSOR;
-		} else
-	#endif	// MAUS_AVAILABLE
-	if (enable == ENA_MMC) {		
-		#ifdef MAUS_AVAILABLE
-			/* Maussensor aus */
-			if ((ena & ENA_MOUSE_SENSOR) == 0) { // War der Maussensor an?
-				maus_sens_highZ();	// Der Maussensor muss die Datenleitung freigeben
-				ena |= ENA_MOUSE_SENSOR;	// Maus aus
-			}
-		#endif	// MAUS_AVAILABLE
+#ifdef MAUS_AVAILABLE
+	/* Maussensor und MMC-Karte haengen zusammen */
+	if (enable == ENA_MOUSE_SENSOR) {
+		if ((ena & ENA_MMC) == 0) {	// War die MMC an?	
+#ifdef SPI_AVAILABLE
+			SPCR = 0;	// SPI aus
+#endif
+			/* MMC aus */
+			ena |= ENA_MMC;
+			mmc_interrupted = 1;
+		}
+		/* Maussensor an */
+		ena &= ~ENA_MOUSE_SENSOR;
+	} else
+#endif	// MAUS_AVAILABLE
+	if (enable == ENA_MMC) {
+#ifdef MAUS_AVAILABLE
+		/* Maussensor aus */
+		if ((ena & ENA_MOUSE_SENSOR) == 0) {	// War der Maussensor an?
+			maus_sens_highZ();	// Der Maussensor muss die Datenleitung freigeben
+			ena |= ENA_MOUSE_SENSOR;	// Maus aus
+		}
+#endif	// MAUS_AVAILABLE
 		/* MMC an */
 		ena &= ~enable;	// CS der MMC und SCLK fuer Maus haengen an not-Q der FlipFlops!
 	} else {
 		ena |= enable;
 	}
-	
+
 	ENA_set(ena);
-	
+
 	if ((enable & (ENA_MOUSE_SENSOR | ENA_MMC)) != 0) {
-        /* Flipflops takten */
-        PORTD |= 4;
-        PORTD &= ~4;
-		#ifdef SPI_AVAILABLE
-        	if (enable == ENA_MMC) {
-        		SPCR = (1<<SPE) | (1<<MSTR);	// SPI an
-        	}
-		#endif	// SPI_AVAILABLE
+		/* Flipflops takten */
+		PORTD |= 4;
+		PORTD &= ~4;
+#ifdef SPI_AVAILABLE
+		if (enable == ENA_MMC) {
+			SPCR = (1 << SPE) | (1 << MSTR);	// SPI an
+		}
+#endif	// SPI_AVAILABLE
 	}
 }
 
@@ -120,12 +119,15 @@ void ENA_off(uint8_t enable) {
 
 	ENA_set(ena);
 
-	#ifdef MAUS_AVAILABLE
-		if (mmc_interrupted == 1) {
-			ENA_on(ENA_MMC);
-		}
-	#endif	// MAUS_AVAILABLE
-	
+#ifdef MAUS_AVAILABLE
+	if (mmc_interrupted == 1) {
+		mmc_interrupted = 0;
+		MMC_DDR |= _BV(SPI_DO);
+		MMC_DDR &= ~_BV(SPI_DI);
+		ENA_on(ENA_MMC);
+	}
+#endif	// MAUS_AVAILABLE
+
 	if ((enable & (ENA_MOUSE_SENSOR | ENA_MMC)) != 0) {
 		/* Flipflops takten */
 		PORTD |= 4;

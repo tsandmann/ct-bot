@@ -66,6 +66,7 @@
 #endif
 
 #ifndef POS_STACK_AVAILABLE
+	#warning "drive_area() geht nur, wenn POS_STACK_AVAILABLE"
 	#undef BEHAVIOUR_DRIVE_AREA_AVAILABLE
 #endif
 

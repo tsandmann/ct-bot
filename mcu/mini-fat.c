@@ -37,6 +37,7 @@ uint32_t EEPROM eefat[10] = {0};	/*!< EEPROM-Cache fuer FAT-Eintraege */
 
 #ifdef MCU
 #ifdef MMC_AVAILABLE
+#ifndef BOT_FS_AVAILABLE
 #include <avr/eeprom.h>
 #include <string.h>
 #include "mmc.h"
@@ -426,5 +427,6 @@ void mini_fat_clear_file(uint32_t file_start, void * buffer) {
 #endif	// DISPLAY_MINIFAT_INFO
 	}
 }
+#endif	// BOT_FS_AVAILABLE
 #endif	// MMC_AVAILABLE
 #endif	// MCU

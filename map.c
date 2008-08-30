@@ -42,6 +42,7 @@
 #include "timer.h"
 #include "fifo.h"
 #include "os_thread.h"
+#include "math_utils.h"
 
 #ifdef MAP_AVAILABLE
 
@@ -87,7 +88,7 @@
  * Felder sind vom Typ int8 und haben einen Wertebereich von -128
  * bis 127.
  * 0 bedeutet: wir wissen nichts über das Feld
- * negative Werte bedeuten: Hinderniss
+ * negative Werte bedeuten: Hindernis
  * postivie Werte bedeuten: freier Weg
  * je groesser der Betrag ist, desto sicherer die Aussage ueber das
  * Feld.
@@ -107,17 +108,17 @@
 #define MAP_SECTIONS (((uint16_t)(MAP_SIZE*MAP_RESOLUTION)/MAP_SECTION_POINTS))	/*!< Anzahl der Sections in der Map */
 
 #define MAP_STEP_FREE_SENSOR		2	/*!< Um diesen Wert wird ein Feld inkrementiert, wenn es vom Sensor als frei erkannt wird */
-#define MAP_STEP_FREE_LOCATION		20	/*!< Um diesen Wert wird ein Feld inkrementiert, wenn der Bot drüber fährt */
+#define MAP_STEP_FREE_LOCATION		20	/*!< Um diesen Wert wird ein Feld inkrementiert, wenn der Bot drueber faehrt */
 
-#define MAP_STEP_OCCUPIED	10	/*!< Um diesen Wert wird ein Feld dekrementiert, wenn es als belegt erkannt wird */
+#define MAP_STEP_OCCUPIED			10	/*!< Um diesen Wert wird ein Feld dekrementiert, wenn es als belegt erkannt wird */
 
-#define MAP_RADIUS			50	/*!< Umkreis eines Messpunktes, der als Besetzt aktualisiert wird (Streukreis) [mm]*/
-#define MAP_RADIUS_FIELDS	(MAP_RESOLUTION*MAP_RADIUS/1000)	/*!< Umkreis einen Messpunkt, der als Besetzt aktualisiert wird (Streukreis) [Felder]*/
+#define MAP_RADIUS					50	/*!< Umkreis eines Messpunktes, der als besetzt aktualisiert wird (Streukreis) [mm]*/
+#define MAP_RADIUS_FIELDS	(MAP_RESOLUTION*MAP_RADIUS/1000)	/*!< Umkreis einen Messpunkt, der als besetzt aktualisiert wird (Streukreis) [Felder]*/
 
 #define MAP_PRINT_SCALE					/*!< Soll das PGM eine Skala erhalten */
 #define MAP_SCALE	(MAP_RESOLUTION/2)	/*!< Alle wieviel Punkte kommt ein Skalen-Strich */
 
-#define MACRO_BLOCK_LENGTH	512L // Kantenlaenge eines Macroblocks in Punkten/Byte
+#define MACRO_BLOCK_LENGTH		512L	/*!< Kantenlaenge eines Macroblocks in Punkten/Byte */
 #define MAP_LENGTH_IN_MACRO_BLOCKS ((uint16_t)(MAP_SIZE*MAP_RESOLUTION)/MACRO_BLOCK_LENGTH)
 
 #ifdef SHRINK_MAP_ONLINE
@@ -148,7 +149,7 @@ static os_signal_t lock_signal;							/*!< Signal zur Synchronisation von Karten
 
 #ifdef MCU
 //  avr-gcc >= 4.2.2 ?
-#if __GNUC__ >= 4 && __GNUC_MINOR__ >= 2 && __GNUC_PATCHLEVEL__ >= 2
+#if __GNUC__ >= 4 && ((__GNUC_MINOR__ > 2) || (__GNUC_MINOR__ == 2 && __GNUC_PATCHLEVEL__ >= 2))
 // kein Pro- und Epilog
 void map_update_main(void) __attribute__((OS_task));
 #define PROLOG()	// NOP
@@ -198,7 +199,7 @@ int8_t map_init(void) {
 	pthread_mutex_init(&lock_signal.mutex, NULL);
 	pthread_cond_init(&lock_signal.cond, NULL);
 #endif
-	map_update_thread = os_create_thread(&map_update_stack[MAP_UPDATE_STACK_SIZE-1], map_update_main);
+	map_update_thread = os_create_thread(&map_update_stack[MAP_UPDATE_STACK_SIZE - 1], map_update_main);
 
 #ifdef BEHAVIOUR_SCAN_AVAILABLE
 	/* Modi des Update-Verhaltens. Default: location, distance, border an, Kartographie-Modus */
@@ -227,7 +228,9 @@ int8_t map_init(void) {
 
 	// Map-Offset im Datei-Header (0x120-0x123) speichern
 	*((uint32_t *)&map_buffer[0x120]) = map_start_block - file_block;
-	mmc_write_sector(file_block-1, map_buffer);
+	if (mmc_write_sector(file_block - 1, map_buffer) != 0) {
+		return 1;
+	}
 
 	map_current_block_updated = False;
 	map_current_block = 0;
@@ -239,7 +242,9 @@ int8_t map_init(void) {
  * Haelt den Bot an und schreibt den Map-Update-Cache komplett zurueck
  */
 void map_flush_cache(void) {
-	motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
+	if (map_locked() == 1) {
+		motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
+	}
 	/* Warten, bis Update fertig */
 	os_signal_set(&lock_signal);
 	/* Sperre sofort wieder freigeben */
@@ -255,31 +260,22 @@ void map_flush_cache(void) {
  */
 static map_section_t * get_section(uint16_t x, uint16_t y) {
 
-	// Berechne in welcher Sektion sich der Punkt befindet
-	uint16_t section_x = x / MAP_SECTION_POINTS;
-	uint16_t section_y = y / MAP_SECTION_POINTS;
+	/* Sicherheitscheck 1 */
+	if (map_current_block_updated == 0xFF) {
+		// wenn die Karte nicht sauber initialisiert ist, mache nix!
+		return map[0];
+	}
 
 	// Da imemr 2 Sections in einem Block stehen: richtige der beiden Sections raussuchen
-	uint8_t index = section_x & 0x01;
+	uint8_t index = (x / MAP_SECTION_POINTS) & 0x01;
 
-	// Sicherheitscheck 1
-	if ((section_x >= MAP_SECTIONS) || (section_y >= MAP_SECTIONS)) {
-		LOG_DEBUG("Versuch auf ein Feld ausserhalb der Karte zu zugreifen!! x=%u y=%u",x,y);
+	/* Sicherheitscheck 2 */
+	if ((x >= (uint16_t)(MAP_SIZE * MAP_RESOLUTION)) || (y >= (uint16_t)(MAP_SIZE * MAP_RESOLUTION))) {
+		LOG_DEBUG("Versuch auf ein Feld ausserhalb der Karte zu zugreifen!! x=%u y=%u", x, y);
 		return map[0];
 	}
 
-	// Sicherheitscheck 2
-	// wenn die Karte nicht sauber initialisiert ist, mache nix!
-	if (map_current_block_updated == 0xFF) {
-		return map[0];
-	}
-
-	uint16_t macroblock = x / MACRO_BLOCK_LENGTH + (y / MACRO_BLOCK_LENGTH) * MAP_LENGTH_IN_MACRO_BLOCKS;
-
-#ifdef DEBUG_STORAGE
-	LOG_DEBUG("Macroblock= %u", macroblock);
-#endif
-	// Berechne den gesuchten Block
+	/* Berechne den gesuchten Block */
 	uint16_t local_x = x % MACRO_BLOCK_LENGTH;
 	// wenn MACRO_BLOCK_LENGTH eine 2er Potenz ist, optimiert der Compiler hier
 	uint16_t local_y = y % MACRO_BLOCK_LENGTH;
@@ -293,9 +289,16 @@ static map_section_t * get_section(uint16_t x, uint16_t y) {
 
 	block = block >> 1; // es passen immer 2 Sections in einen Block
 
-	block += macroblock * MACRO_BLOCK_LENGTH * (MACRO_BLOCK_LENGTH / 512); // noch in den richtigen Macroblock springen
+	/* Makroblock berechnen */
+	uint16_t macroblock = x / MACRO_BLOCK_LENGTH + (y / MACRO_BLOCK_LENGTH) * MAP_LENGTH_IN_MACRO_BLOCKS;
 
-	// Ist der Block schon geladen?
+#ifdef DEBUG_STORAGE
+	LOG_DEBUG("Macroblock= %u", macroblock);
+#endif
+
+	block += macroblock * MACRO_BLOCK_LENGTH * (MACRO_BLOCK_LENGTH / 512); // noch in den richtigen Makroblock springen
+
+	/* Ist der Block schon geladen? */
 	if (map_current_block == block) {
 #ifdef DEBUG_STORAGE
 		LOG_DEBUG("ist noch im Puffer");
@@ -303,14 +306,14 @@ static map_section_t * get_section(uint16_t x, uint16_t y) {
 		return map[index];
 	}
 
-	// Block ist also nicht im Puffer
+	/* Block ist also nicht im Puffer */
 #ifdef DEBUG_STORAGE
 	LOG_DEBUG("ist nicht im Puffer");
 #endif
 
-	// Wurde der Block im RAM veraendert?
+	/* Wurde der Block im RAM veraendert? */
 	if (map_current_block_updated == True) {
-		// Dann erstmal sichern
+		/* Dann erstmal sichern */
 		uint32_t mmc_block = map_start_block + map_current_block;	// Offset fuer die Lage der Karte drauf
 #ifdef DEBUG_MAP_TIMES
 		LOG_INFO("writing block 0x%04x%04x", (uint16_t)(mmc_block>>16), (uint16_t)mmc_block);
@@ -323,11 +326,11 @@ static map_section_t * get_section(uint16_t x, uint16_t y) {
 #endif
 	}
 
-	// Statusvariablen anpassen
+	/* Statusvariablen anpassen */
 	map_current_block = block;
 	map_current_block_updated = False;
 
-	// Lade den neuen Block
+	/* Lade den neuen Block */
 	// Auf der MMC beginnt die Karte nicht bei 0, sondern irgendwo, auf dem PC schadet es nix
 	uint32_t mmc_block = block + map_start_block;	// Offset fuer die Lage der Karte drauf
 #ifdef DEBUG_MAP_TIMES
@@ -353,8 +356,25 @@ static uint16_t world_to_map(int16_t koord) {
 #if (1000 / MAP_RESOLUTION) * MAP_RESOLUTION != 1000
 	#warning "MAP_RESOLUTION ist kein Teiler von 1000, Code in world_to_map() anpassen!"
 #endif
+#if defined MCU && MAP_RESOLUTION == 125
+	asm volatile(
+		"lsr %B0				\n\t"
+		"ror %A0				\n\t"
+		"lsr %B0				\n\t"
+		"ror %A0				\n\t"
+		"lsr %B0				\n\t"
+		"ror %A0				\n\t"
+		"sbrc %B0,4				\n\t"
+		"ori %B0,224			\n\t"
+		"subi %A0,lo8(-(768))	\n\t"
+		"sbci %B0,hi8(-(768))		"
+		:	"+d" (koord)
+	);
+	return koord;
+#else
 	uint32_t tmp = koord + (uint16_t)(MAP_SIZE * MAP_RESOLUTION * 4);
 	return tmp / (1000 / MAP_RESOLUTION);
+#endif
 }
 
 /*!
@@ -364,70 +384,6 @@ static uint16_t world_to_map(int16_t koord) {
 uint8_t map_locked(void) {
 	return lock_signal.value;
 }
-
-//#define OLD_GET_SET
-
-#ifdef OLD_GET_SET
-/*!
- * liefert den Wert eines Feldes
- * @param x	X-Ordinate der Karte (nicht der Welt!!!)
- * @param y	Y-Ordinate der Karte (nicht der Welt!!!)
- * @return	Wert des Feldes (>0 heisst frei, <0 heisst belegt)
- */
-static int8_t get_field(uint16_t x, uint16_t y) {
-	uint16_t index_x, index_y;
-
-	// Suche die Section heraus
-	map_section_t * section = get_section(x, y);
-
-
-	// Berechne den Index innerhalb der Section
-	index_x = x % MAP_SECTION_POINTS;
-	index_y = y % MAP_SECTION_POINTS;
-
-	return section->section[index_x][index_y];
-}
-
-/*!
- * Setzt den Wert eines Feldes auf den angegebenen Wert
- * @param x		X-Ordinate der Karte (nicht der Welt!!!)
- * @param y		Y-Ordinate der Karte (nicht der Welt!!!)
- * @param value	Neuer Wert des Feldes (> 0 heisst frei, <0 heisst belegt)
- */
-static void set_field(uint16_t x, uint16_t y, int8_t value) {
-	uint16_t index_x, index_y;
-
-	// Suche die Section heraus
-	map_section_t * section = get_section(x, y);
-
-	// Berechne den Index innerhalb der Section
-	index_x = x % MAP_SECTION_POINTS;
-	index_y = y % MAP_SECTION_POINTS;
-
-	section->section[index_x][index_y] = value;
-
-#ifdef SHRINK_MAP_ONLINE
-	// Belegte Kartengroesse anpassen
-	if (x < map_min_x)
-		map_min_x=x;
-	if (x > map_max_x)
-		map_max_x= x;
-	if (y < map_min_y)
-		map_min_y=y;
-	if (y > map_max_y)
-		map_max_y= y;
-#endif
-
-	if (map_current_block_updated != 0xFF) {
-		map_current_block_updated = True;
-	}
-}
-
-#else	// !OLD_GET_SET
-
-/* get/set_field auf access_field umleiten */
-#define get_field(x, y)		access_field(x, y, 0, 0)
-#define set_field(x, y, v)	access_field(x, y, v, 1)
 
 /*!
  * Zugriff auf ein Feld der Karte. Kann lesend oder schreibend sein.
@@ -469,7 +425,6 @@ static int8_t access_field(uint16_t x, uint16_t y, int8_t value, uint8_t set) {
 	}
 	return *data;
 }
-#endif	// OLD_GET_SET
 
 /*!
  * liefert den Durschnittswert um einen Punkt der Karte herum
@@ -478,21 +433,18 @@ static int8_t access_field(uint16_t x, uint16_t y, int8_t value, uint8_t set) {
  * @param radius	gewuenschter Radius
  * @return 			Wert des Durchschnitts um das Feld (>0 heisst frei, <0 heisst belegt)
  */
-static int8_t get_average_fields(uint16_t x, uint16_t y, int16_t radius) {
+static int8_t get_average_fields(uint16_t x, uint16_t y, int8_t radius) {
 	int16_t avg = 0;
 	int16_t avg_line = 0;
 
 	int16_t dX, dY;
-	int16_t h = radius * radius;
-
-	/* warten bis Karte frei ist */
-	map_flush_cache();
+	const int16_t h = muls8(radius, radius);
 
 	/* Daten auslesen */
 	for (dX = -radius; dX <= radius; dX++) {
 		for (dY = -radius; dY <= radius; dY++) {
 			if (dX*dX + dY*dY <= h) {
-				avg_line += get_field(x + dX, y + dY);
+				avg_line += access_field(x + dX, y + dY, 0, 0);
 			}
 		}
 		avg += avg_line / (radius * 2);
@@ -512,32 +464,40 @@ int8_t map_get_average(int16_t x, int16_t y, int16_t radius) {
 	// Ort in Kartenkoordinaten
 	uint16_t X = world_to_map(x);
 	uint16_t Y = world_to_map(y);
-	int16_t R = radius * MAP_RESOLUTION / 1000;
+	int8_t R = radius / (1000 / MAP_RESOLUTION);
 	if (R == 0) {
 		/* nur ein Feld gewuenscht, kleiner geht auch nicht */
 		R = 1;
 	}
 
-	return get_average_fields(X, Y, R);
+	/* warten bis Karte frei ist */
+	map_flush_cache();
+
+	int8_t result = get_average_fields(X, Y, R);
+
+	return result;
 }
 
 /*!
  * Aendert den Wert eines Feldes um den angegebenen Betrag
  * @param x		x-Ordinate der Karte (nicht der Welt!!!)
  * @param y		y-Ordinate der Karte (nicht der Welt!!!)
- * @param value	Betrag um den das Feld veraendert wird (>= heisst freier, <0 heisst belegter)
+ * @param value	Betrag um den das Feld veraendert wird (>0 heisst freier, <0 heisst belegter)
  */
 static void update_field(uint16_t x, uint16_t y, int8_t value) {
-
-	int16_t tmp = get_field(x, y);
-	if (tmp == -128) // Nicht aktualiseren, wenn es sich um ein Loch handelt
+	int8_t tmp = access_field(x, y, 0, 0);
+	if (tmp == -128) {
+		// Nicht aktualiseren, wenn es sich um ein Loch handelt
 		return;
+	}
 
-	tmp += value;
+	int16_t tmp16 = tmp;
+	tmp16 += value;
 
 	// pruefen, ob kein Ueberlauf stattgefunden hat
-	if ((tmp < 128) && (tmp > -128))
-		set_field(x, y, (int8_t)tmp);
+	if ((tmp16 < 128) && (tmp16 > -128)) {
+		access_field(x, y, (int8_t)tmp16, 1);
+	}
 }
 
 /*!
@@ -545,11 +505,10 @@ static void update_field(uint16_t x, uint16_t y, int8_t value) {
  * @param x			x-Ordinate der Karte (nicht der Welt!!!)
  * @param y			y-Ordinate der Karte (nicht der Welt!!!)
  * @param radius	Radius in Kartenpunkten
- * @param value		Betrag um den das Feld veraendert wird (>= heisst freier, <0 heisst belegter)
+ * @param value		Betrag um den das Feld veraendert wird (>0 heisst freier, <0 heisst belegter)
  */
-static void update_field_circle(uint16_t x, uint16_t y, int16_t radius,
-		int8_t value) {
-	const int16_t square = radius * radius;
+static void update_field_circle(uint16_t x, uint16_t y, int8_t radius, int8_t value) {
+	const int16_t square = muls8(radius, radius);
 
 	int16_t sec_x_max = ((x + radius) / MAP_SECTION_POINTS);
 	int16_t sec_x_min = ((x - radius) / MAP_SECTION_POINTS);
@@ -582,11 +541,11 @@ static void update_field_circle(uint16_t x, uint16_t y, int16_t radius,
 				stopx=x+radius;
 
 			for (Y = starty; Y < stopy; Y++) {
-				dY= y-Y; // Distanz berechnen
-				dY*=dY; // Quadrat vorberechnen
+				int8_t tmp = y - Y;		// Distanz berechnen
+				dY = muls8(tmp, tmp);	// Quadrat vorberechnen
 				for (X = startx; X < stopx; X++) {
-					dX= x-X; // Distanz berechnen
-					dX*=dX; // Quadrat vorberechnen
+					tmp = x - X;	// Distanz berechnen
+					dX = muls8(tmp, tmp);	// Quadrat vorberechnen
 					if (dX + dY <= square) // wenn Punkt unter Bot
 						update_field(X, Y, value); // dann aktualisieren
 				}
@@ -606,7 +565,7 @@ static void update_occupied(uint16_t x, uint16_t y) {
 #if MAP_RADIUS_FIELDS > 0
 	uint8_t r;
 	for (r=1; r<=MAP_RADIUS_FIELDS; r++) {
-		update_field_circle(x, y, r, -MAP_STEP_OCCUPIED/MAP_RADIUS_FIELDS);
+		update_field_circle(x, y, r, -MAP_STEP_OCCUPIED / MAP_RADIUS_FIELDS);
 	}
 #else
 	update_field(x, y, -MAP_STEP_OCCUPIED);
@@ -621,15 +580,16 @@ static void update_occupied(uint16_t x, uint16_t y) {
  * @param value 	Mapwert; nur eingetragen wenn aktueller Mapwert groesser value ist
  */
 static void set_value_field_circle(uint16_t x, uint16_t y, int8_t radius, int8_t value) {
-	int16_t dX, dY;
-    int16_t h = radius*radius;
-	for (dX = -radius; dX <= radius; dX++) {
-		for (dY = -radius; dY <= radius; dY++) {
-			if (dX*dX + dY*dY <= h) {
+	int8_t dX, dY;
+	int16_t h = muls8(radius, radius);
+	for (dX=-radius; dX<=radius; dX++) {
+		int16_t dX2 = muls8(dX, dX);
+		for (dY=-radius; dY<=radius; dY++) {
+			if (dX2 + muls8(dY, dY) <= h) {
 				// nur innerhalb des Umkreises
-				if (get_field(x + dX, y + dY) > value) {
+				if (access_field(x + dX, y + dY, 0, 0) > value) {
 					// Mapwert hoeher Richtung frei
-					set_field (x + dX, y + dY,value);	// dann Wert eintragen
+					access_field (x + dX, y + dY, value, 1);	// dann Wert eintragen
 				}
 			}
 		}
@@ -674,11 +634,7 @@ static void update_sensor_distance(int16_t x, int16_t y, float h, int16_t dist) 
 	uint16_t PH_X = world_to_map(x + (int16_t)(d * cos(h)));
 	uint16_t PH_Y = world_to_map(y + (int16_t)(d * sin(h)));
 
-	if ((dist > 80 ) && (dist < SENS_IR_INFINITE)) {
-		update_occupied(PH_X, PH_Y);
-	}
-
-	// Nun markiere alle Felder vor dem Hinderniss als frei
+	// Nun markiere alle Felder vor dem Hindernis als frei
 	uint16_t i;
 
 	uint16_t lX = X; //	Beginne mit dem Feld, in dem der Sensor steht
@@ -691,10 +647,10 @@ static void update_sensor_distance(int16_t x, int16_t y, float h, int16_t dist) 
 	uint16_t dY =abs(PH_Y - Y); // Laenge der Linie in Y-Richtung
 
 	if (dX >= dY) { // Hangle Dich an der laengeren Achse entlang
-		dY--; // stoppe ein Feld vor dem Hinderniss
+		if (dY > 0) dY--; // stoppe ein Feld vor dem Hindernis
 		uint16_t lh = dX / 2;
 		for (i=0; i<dX; ++i) {
-			update_field(lX+i*sX, lY, MAP_STEP_FREE_SENSOR);
+			update_field(lX + i * sX, lY, MAP_STEP_FREE_SENSOR);
 			lh += dY;
 			if (lh >= dX) {
 				lh -= dX;
@@ -702,16 +658,21 @@ static void update_sensor_distance(int16_t x, int16_t y, float h, int16_t dist) 
 			}
 		}
 	} else {
-		dX--; // stoppe ein Feld vor dem Hinderniss
+		if (dX > 0) dX--; // stoppe ein Feld vor dem Hindernis
 		uint16_t lh = dY / 2;
 		for (i=0; i<dY; ++i) {
-			update_field(lX, lY+i*sY, MAP_STEP_FREE_SENSOR);
+			update_field(lX, lY + i * sY, MAP_STEP_FREE_SENSOR);
 			lh += dX;
 			if (lh >= dY) {
 				lh -= dY;
 				lX += sX;
 			}
 		}
+	}
+
+	/* Hindernis eintragen */
+	if (dist < SENS_IR_INFINITE) {
+		update_occupied(PH_X, PH_Y);
 	}
 }
 
@@ -725,10 +686,7 @@ static void update_sensor_distance(int16_t x, int16_t y, float h, int16_t dist) 
  */
 static void update_distance(int16_t x, int16_t y, float head, int16_t distL,
 		int16_t distR) {
-//	LOG_DEBUG("update_map: x=%f, y=%f, head=%f, distL=%d, distR=%d\n",x,y,head,distL,distR);
 
-//TODO:	Berechnungen optimieren,
-//		vielleicht Start und Endpunkt an map_update_sensor_distance() uebergeben?
 	float h = head * (M_PI/180.0f);
 	float cos_h = cos(h);
 	float sin_h = sin(h);
@@ -758,7 +716,7 @@ static void update_location(int16_t x, int16_t y) {
 	uint16_t x_map = world_to_map(x);
 	uint16_t y_map = world_to_map(y);
 
-	// Aktualisiere zuerst die vom Bot selbst belegte Flaeche
+	// Aktualisiere die vom Bot selbst belegte Flaeche
 	update_field_circle(x_map, y_map, BOT_DIAMETER/20*MAP_RESOLUTION/100,
 			MAP_STEP_FREE_LOCATION);
 }
@@ -773,6 +731,7 @@ static void update_location(int16_t x, int16_t y) {
  */
 static void update_border(int16_t x, int16_t y, float head, uint8_t borderL,
 		uint8_t borderR) {
+
 	float h = head * (M_PI/180.0); // Bogenmass
 	float sin_head = sin(h);
 	float cos_head = cos(h);
@@ -800,6 +759,132 @@ static void update_border(int16_t x, int16_t y, float head, uint8_t borderL,
 	}
 }
 
+#if 1
+/*!
+ * Berechnet das Verhaeltnis der Felder einer Region R die ausschliesslich mit Werten zwischen
+ * min und max belegt sind und allen Feldern von R.
+ * Die Region R wird als Gerade von (x1|y1) bis (x2|y2) und eine Breite width angegeben. Die Gerade
+ * verlaeuft in der Mitte von R.
+ * @param x1		Startpunkt der Region R, X-Anteil; Kartenkoordinaten
+ * @param y1		Startpunkt der Region R, Y-Anteil; Kartenkoordinaten
+ * @param x2		Endpunkt der Region R, X-Anteil; Kartenkoordinaten
+ * @param y2		Endpunkt der Region R, Y-Anteil; Kartenkoordinaten
+ * @param width		Breite der Region R (jeweils width/2 links und rechts der Gerade)
+ * @param min_val	minimaler Feldwert, der vorkommen darf
+ * @param max_val	maximaler Feldwert, der vorkommen darf
+ * @return			Verhaeltnis von Anzahl der Felder, die zwischen min_val und max_val liegen, zu
+ * 					Anzahl aller Felder der Region * 255;
+ * 					0 	-> kein Feld liegt im gewuenschten Bereich;
+ * 					255	-> alle Felder liegen im gewuenschten Bereich
+ */
+static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
+		uint16_t y2, int16_t width, int8_t min_val, int8_t max_val) {
+
+	uint16_t count = 0;
+	uint16_t i;
+
+	/* Gehe alle Felder der Reihe nach durch */
+	uint16_t lX = x1;
+	uint16_t lY = y2;
+
+	int8_t sX = (x2 < x1 ? -1 : 1);
+	uint16_t dX = abs(x2 - x1);	// Laenge der Linie in X-Richtung
+
+	int8_t sY = (y2 < y1 ? -1 : 1);
+	uint16_t dY = abs(y2 - y1);	// Laenge der Linie in Y-Richtung
+
+	int16_t w = 0;
+	if (width == 0) {
+		width = 1;
+	}
+
+	/* Hangle Dich an der laengeren Achse entlang */
+	if (dX >= dY) {
+		uint16_t lh = dX / 2;
+		for (i=0; i<dX; i++) {
+			for (w=-width; w<width; w++) {
+				int8_t field = access_field(lX + i * sX, lY + w, 0, 0);
+				if (field >= min_val && field <= max_val) {
+					count++;
+				}
+			}
+
+			lh += dY;
+			if (lh >= dX) {
+				lh -= dX;
+				lY += sY;
+			}
+		}
+	} else {
+		uint16_t lh = dY / 2;
+		for (i=0; i<dY; i++) {
+			for (w=-width; w<width; w++) {
+				int8_t field = access_field(lX + w, lY + i * sY, 0, 0);
+				if (field >= min_val && field <= max_val) {
+					count++;
+				}
+			}
+
+			lh += dX;
+			if (lh >= dY) {
+				lh -= dY;
+				lX += sX;
+			}
+		}
+	}
+
+	/* Verhaeltnis zu allen Feldern berechnen */
+	uint16_t fields = i * width * 2;
+	return (uint32_t)count * 255 / fields;
+}
+
+/*!
+ * Berechnet das Verhaeltnis der Felder einer Region R die ausschliesslich mit Werten zwischen
+ * min und max belegt sind und allen Feldern von R.
+ * Die Region R wird als Gerade von (x1|y1) bis (x2|y2) und eine Breite width angegeben. Die Gerade
+ * verlaeuft in der Mitte von R.
+ * Beispiel: Steht der Bot an (0|0) und man moechte den Weg 50 cm voraus pruefen, gibt man x1 = y1 = y2 = 0,
+ * x2 = 500 und width = BOT_DIAMETER an.
+ * @param x1		Startpunkt der Region R, X-Anteil; Weltkoordinaten [mm]
+ * @param y1		Startpunkt der Region R, Y-Anteil; Weltkoordinaten [mm]
+ * @param x2		Endpunkt der Region R, X-Anteil; Weltkoordinaten [mm]
+ * @param y2		Endpunkt der Region R, Y-Anteil; Weltkoordinaten [mm]
+ * @param width		Breite der Region R (jeweils width/2 links und rechts der Gerade) [mm]
+ * @param min_val	minimaler Feldwert, der vorkommen darf
+ * @param max_val	maximaler Feldwert, der vorkommen darf
+ * @return			Verhaeltnis von Anzahl der Felder, die zwischen min_val und max_val liegen, zu
+ * 					Anzahl aller Felder der Region * 255;
+ * 					0 	-> kein Feld liegt im gewuenschten Bereich;
+ * 					255	-> alle Felder liegen im gewuenschten Bereich
+ */
+uint8_t map_get_ratio(int16_t x1, int16_t y1, int16_t x2, int16_t y2,
+		int16_t width, int8_t min_val, int8_t max_val) {
+
+	/* warten bis Karte frei ist */
+	map_flush_cache();
+
+	/* Ergebnis berechnen */
+	uint8_t result = get_ratio(world_to_map(x1), world_to_map(y1),
+			world_to_map(x2), world_to_map(y2), width / (1000 / MAP_RESOLUTION), min_val, max_val);
+
+	return result;
+}
+
+/*!
+ * Prueft ob eine direkte Passage frei von Hindernissen ist
+ * @param  from_x	Startort x Weltkoordinaten [mm]
+ * @param  from_y	Startort y Weltkoordinaten [mm]
+ * @param  to_x		Zielort x Weltkoordinaten [mm]
+ * @param  to_y		Zielort y Weltkoordinaten [mm]
+ * @return			1, wenn alles frei ist
+ */
+uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y) {
+	uint8_t result = map_get_ratio(from_x, from_y, to_x, to_y, BOT_DIAMETER, MAP_OBSTACLE_THRESHOLD, 127);
+	return result == 255;
+}
+
+#else
+
 /*!
  * Prueft ob eine direkte Passage frei von Hindernissen ist
  * @param  from_x	Startort x Kartenkoordinaten
@@ -810,9 +895,6 @@ static void update_border(int16_t x, int16_t y, float head, uint8_t borderL,
  */
 static uint8_t way_free_fields(uint16_t from_x, uint16_t from_y,
 		uint16_t to_x, uint16_t to_y) {
-
-//TODO:	Aehnlichkeiten mit map_update_sensor_distance() in Fkt auslagern?
-//		Idee: process_line(from_x, from_y, to_x, to_y, line_width, worker_function);
 
 	// gehe alle Felder der Reihe nach durch
 	uint16_t i;
@@ -833,9 +915,9 @@ static uint8_t way_free_fields(uint16_t from_x, uint16_t from_y,
 		uint16_t lh = dX / 2;
 		for (i=0; i<dX; ++i) {
 			for (w=-width; w<= width; w++) {
-				// wir muessen die ganze Breite des absuchen
-				if (get_field(lX+i*sX, lY+w) < MAP_OBSTACLE_THRESHOLD) {
-					// ein Hinderniss reicht fuer den Abbruch
+				// wir muessen die ganze Breite des Bots absuchen
+				if (access_field(lX+i*sX, lY+w, 0, 0) < MAP_OBSTACLE_THRESHOLD) {
+					// ein Hindernis reicht fuer den Abbruch
 					return 0;
 				}
 			}
@@ -850,9 +932,9 @@ static uint8_t way_free_fields(uint16_t from_x, uint16_t from_y,
 		uint16_t lh = dY / 2;
 		for (i=0; i<dY; ++i) {
 			for (w=-width; w<= width; w++) {
-				// wir muessen die ganze Breite des absuchen
-				if (get_field(lX+w, lY+i*sY) < MAP_OBSTACLE_THRESHOLD) {
-					// ein Hinderniss reicht fuer den Abbruch
+				// wir muessen die ganze Breite des Bots absuchen
+				if (access_field(lX+w, lY+i*sY, 0, 0) < MAP_OBSTACLE_THRESHOLD) {
+					// ein Hindernis reicht fuer den Abbruch
 					return 0;
 				}
 			}
@@ -885,6 +967,9 @@ uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y)
 
 	return result;
 }
+#endif
+
+
 
 
 /*!
@@ -956,7 +1041,7 @@ void map_print(void) {
 /*!
  * Loescht die komplette Karte
  */
-static void delete(void) {
+static inline void delete(void) {
 	/* warten bis Karte frei ist */
 	map_flush_cache();
 #ifdef MCU
@@ -997,23 +1082,23 @@ static void draw_test_scheme(void) {
 
 	// Erstmal eine ganz simple Linie
 	for (x=0; x< MAP_SECTION_POINTS*MAP_SECTIONS; x++) {
-		set_field(x, x, -120);
-		set_field(MAP_SECTION_POINTS*MAP_SECTIONS-x-1,x,-120);
+		access_field(x, x, -120, 1);
+		access_field(MAP_SECTION_POINTS*MAP_SECTIONS-x-1, x, -120, 1);
 	}
 
 	// Grenzen der Sections Zeichnen
 	for (x=0; x< MAP_SECTION_POINTS*MAP_SECTIONS; x++) {
 		for (y=0; y< MAP_SECTIONS; y++) {
-			set_field(x, y*MAP_SECTION_POINTS, -10);
-			set_field(y*MAP_SECTION_POINTS, x, -10);
+			access_field(x, y*MAP_SECTION_POINTS, -10, 1);
+			access_field(y*MAP_SECTION_POINTS, x, -10, 1);
 		}
 	}
 
 	// Grenzen der Macroblocks einzeichnen
 	for (x=0; x< MAP_SECTION_POINTS*MAP_SECTIONS; x++) {
 		for (y=0; y< MAP_LENGTH_IN_MACRO_BLOCKS; y++) {
-			set_field(x, y*MACRO_BLOCK_LENGTH, -60);
-			set_field(y*MACRO_BLOCK_LENGTH, x, -60);
+			access_field(x, y*MACRO_BLOCK_LENGTH, -60, 1);
+			access_field(y*MACRO_BLOCK_LENGTH, x, -60, 1);
 		}
 	}
 	os_signal_unlock(&lock_signal);
@@ -1027,7 +1112,7 @@ static void draw_test_scheme(void) {
  * @param min_y Zeiger auf einen uint16, der den miniamlen Y-Wert puffert
  * @param max_y Zeiger auf einen uint16, der den maxinmalen Y-Wert puffert
  */
-static void shrink(uint16_t * min_x, uint16_t * max_x, uint16_t * min_y,
+static inline void shrink(uint16_t * min_x, uint16_t * max_x, uint16_t * min_y,
 		uint16_t * max_y) {
 	uint16_t x, y;
 
@@ -1042,47 +1127,47 @@ static void shrink(uint16_t * min_x, uint16_t * max_x, uint16_t * min_y,
 	os_signal_lock(&lock_signal);
 
 	// Kartengroesse reduzieren
-	int8_t free=1;
-	while ((*min_y < *max_y) && (free ==1)) {
-		for (x=*min_x; x<*max_x; x++) {
-			if (get_field(x, *min_y) != 0) {
-				free=0;
+	int8_t free = 1;
+	while ((*min_y < *max_y) && (free == 1)) {
+		for (x = *min_x; x < *max_x; x++) {
+			if (access_field(x, *min_y, 0, 0) != 0) {
+				free = 0;
 				break;
 			}
 		}
-		*min_y+=1;
+		*min_y += 1;
 	}
 
-	free=1;
-	while ((*min_y < *max_y) && (free ==1)) {
-		for (x=*min_x; x<*max_x; x++) {
-			if (get_field(x, *max_y-1) != 0) {
-				free=0;
+	free = 1;
+	while ((*min_y < *max_y) && (free == 1)) {
+		for (x = *min_x; x < *max_x; x++) {
+			if (access_field(x, *max_y-1, 0, 0) != 0) {
+				free = 0;
 				break;
 			}
 		}
-		*max_y-=1;
+		*max_y -= 1;
 	}
 
-	free=1;
-	while ((*min_x < *max_x) && (free ==1)) {
-		for (y=*min_y; y<*max_y; y++) {
-			if (get_field(*min_x, y) != 0) {
-				free=0;
+	free = 1;
+	while ((*min_x < *max_x) && (free == 1)) {
+		for (y = *min_y; y < *max_y; y++) {
+			if (access_field(*min_x, y, 0, 0) != 0) {
+				free = 0;
 				break;
 			}
 		}
-		*min_x+=1;
+		*min_x += 1;
 	}
-	free=1;
-	while ((*min_x < *max_x) && (free ==1)) {
-		for (y=*min_y; y<*max_y; y++) {
-			if (get_field(*max_x-1, y) != 0) {
-				free=0;
+	free = 1;
+	while ((*min_x < *max_x) && (free == 1)) {
+		for (y = *min_y; y < *max_y; y++) {
+			if (access_field(*max_x-1, y, 0, 0) != 0) {
+				free = 0;
 				break;
 			}
 		}
-		*max_x-=1;
+		*max_x -= 1;
 	}
 	os_signal_unlock(&lock_signal);
 }
@@ -1103,7 +1188,7 @@ void map_to_pgm(char * filename) {
 	uint16_t min_y = map_min_y;
 	uint16_t max_y = map_max_y;
 
-#ifdef SHRINK_MAP_OFFLINE	// nun muessen wir die Grenezn ermitteln
+#ifdef SHRINK_MAP_OFFLINE	// nun muessen wir die Grenzen ermitteln
 	shrink(&min_x, &max_x, &min_y, &max_y);
 #endif
 	uint16_t map_size_x = max_x - min_x;
@@ -1124,7 +1209,7 @@ void map_to_pgm(char * filename) {
 	uint8_t tmp;
 	for (y=max_y; y>min_y; y--) {
 		for (x=min_x; x<max_x; x++) {
-			tmp=get_field(x, y-1)+128;
+			tmp = access_field(x, y - 1, 0, 0) + 128;
 			fwrite(&tmp, 1, 1, fp);
 		}
 
@@ -1146,9 +1231,9 @@ void map_to_pgm(char * filename) {
 	for (y=0; y<10; y++) {
 		for (x=min_x; x<max_x+10; x++) {
 			if (x % MAP_SCALE == 0) {
-				tmp=0;
+				tmp = 0;
 			} else {
-				tmp=255;
+				tmp = 255;
 			}
 			fwrite(&tmp, 1, 1, fp);
 		}
@@ -1160,41 +1245,155 @@ void map_to_pgm(char * filename) {
 /*!
  * Liest eine Map wieder ein
  * @param filename	Quelldatei
+ * @return			Fehlercode, 0 falls alles ok
  */
-void map_read(char * filename) {
+int map_read(const char * filename) {
 	map_init();
 
-	printf("Lese Karte (%s) von MMC/SD (Bot-Format)\n", filename);
+	printf("Lese Karte \"%s\" von MMC/SD (Bot-Format)...\n", filename);
 	FILE * fp = fopen(filename, "rb");
+	if (fp == NULL) {
+		printf("Datei konnte nicht geoeffnet werden!\n");
+		return 1;
+	}
 
 	uint8_t buffer[512];
-	fread(buffer, 512, 1, fp);
+	if (fread(buffer, 1, 512, fp) != 512) {
+		printf("Konnte Datei-Header nicht einlesen!\n");
+		fclose(fp);
+		return 1;
+	}
 
 	if (buffer[0] != 'M' || buffer[1] != 'A' || buffer[2] != 'P') {
-		printf("Datei %s enthaelt keine Karte\n", filename);
-		return;
+		printf("Datei \"%s\" enthaelt keine Karte\n", filename);
+		fclose(fp);
+		return 1;
 	}
 
 	/* um Makroblock-Offset vorspulen */
-	uint32_t offset = buffer[0x120] | buffer[0x121]<<8;
+	uint32_t offset = (uint32_t)buffer[0x120] | (uint32_t)buffer[0x121]<<8;
 	printf("Makroblock-Offset=0x%04x\n", offset);
-	fseek(fp, offset*512, SEEK_CUR);
+	if (fseek(fp, offset*512, SEEK_CUR) != 0) {
+		printf("Fehler beim Dateizugriff!\n");
+		fclose(fp);
+		return 1;
+	}
 
-	// Karte liegt auf der MMC genau wie im PC-RAM
-	fread(&map_storage, sizeof(map_storage), 1, fp);
+	/* Karte liegt auf der MMC genau wie im PC-RAM */
+	size_t cnt = fread(&map_storage, 1, sizeof(map_storage), fp);
+	if (cnt != (size_t) ((MAP_SIZE * MAP_RESOLUTION) * (MAP_SIZE * MAP_RESOLUTION))) {
+		printf("Konnte nur %lu Bytes lesen, Karte ist aber %lu Bytes gross!\n",
+			cnt, (size_t) ((MAP_SIZE * MAP_RESOLUTION) * (MAP_SIZE* MAP_RESOLUTION)));
+	}
 
 	fclose(fp);
 
 #ifdef SHRINK_MAP_ONLINE
-	// Groesse neu initialisieren
+	/* Groesse neu initialisieren */
 	map_min_x = 0;
 	map_max_x = MAP_SIZE * MAP_RESOLUTION;
 	map_min_y = 0;
 	map_max_y = MAP_SIZE * MAP_RESOLUTION;
 
-	// und Karte verkleinern
+	/* und Karte verkleinern */
 	shrink(&map_min_x, &map_max_x, &map_min_y, &map_max_y);
 #endif
+#if !defined SHRINK_MAP_ONLINE && !defined SHRINK_MAP_OFFLINE
+	draw_test_scheme();
+#endif
+	return 0;
+}
+
+/*!
+ * Testet die Funktion map_get_ratio()
+ * @return	0 falls alles OK, 1 falls Fehler
+ */
+static int map_test_get_ratio(void) {
+	delete();
+	printf("map deleted\n");
+	int all_ok = 1;
+	uint8_t result = map_get_ratio(-100, -100, 100, 100, 100, 0, 0);
+	if (result != 255) {
+		all_ok = 0;
+	}
+	printf("map_get_probability(-100, -100, 100, 100, 100, 0, 0) = %u\n", result);
+	result = map_get_ratio(-100, -100, 100, 100, 100, 100, 100);
+	if (result != 0) {
+		all_ok = 0;
+	}
+	printf("map_get_probability(-100, -100, 100, 100, 100, 100, 100) = %u\n", result);
+	int i, j, k;
+	int8_t value = -120;
+	for (k=0; k<13; k++) {
+		for (i=-800; i<800; i++) {
+			for (j=-800; j<800; j++) {
+				access_field(world_to_map(i), world_to_map(j), value, 1);
+			}
+		}
+		printf("\nmap filled with %d\n", value);
+		result = map_get_ratio(-200, -100, 100, 200, 100, 0, 0);
+		if (result != 0) {
+			if (value != 0) {
+				all_ok = 0;
+				printf("map_get_probability(-200, -100, 100, 200, 100, 0, 0) = %u\n", result);
+			}
+		} else {
+			if (value == 0) {
+				all_ok = 0;
+				printf("map_get_probability(-200, -100, 100, 200, 100, 0, 0) = %u\n", result);
+			}
+		}
+		result = map_get_ratio(-200, -100, 100, 200, 100, value, value);
+		if (result != 255) {
+			all_ok = 0;
+			printf("map_get_probability(-200, -100, 100, 200, 100, %d, %d) = %u\n", value, value, result);
+		}
+		int16_t width;
+		int ok = 1;
+		for (i=-150; i<=150; i+=50) {
+			for (j=-150; j<=150; j+=50) {
+				int last_result = map_get_ratio(i, j, 155, 155, 0, value, value);
+				if (last_result != 255) {
+					printf("\tmap_get_probability(%d, %d, 155, 155, %u, %d, %d) = %u\n", i, j, width, value, value, last_result);
+					printf("test(%4d,%4d)\tFAILED\n", i, j);
+					continue;
+				}
+				for (width=0; width<=6400; width+=8) {
+					result = map_get_ratio(i, j, 155, 155, width, value, value);
+					int diff = abs((int)result - last_result);
+					if (diff > 2) {
+						ok = 0;
+						printf("\tmap_get_probability(%d, %d, 155, 155, %u, %d, %d) = %u\n", i, j, width, value, value, result);
+						printf("\tlast_result=%d\n", last_result);
+						break;
+					}
+					last_result = result;
+				}
+				if (result >= 255 && value != 0) {
+					ok = 0;
+				}
+				if (value == 0 && result != 255) {
+					ok = 0;
+				}
+				if (ok == 1) {
+					printf("test(%4d,%4d)\tPASSED\n", i, j);
+				} else {
+					printf("test(%4d,%4d)\tFAILED\n", i, j);
+				}
+				all_ok += ok;
+				ok = 1;
+			}
+		}
+		value += 20;
+	}
+	if (all_ok == 7 * 7 * 13 + 1) {
+		printf("all tests PASSED\n");
+		return 0;
+	} else {
+		printf(">=1 test FAILED\n");
+		printf("all_ok=%d\n", all_ok);
+		return 1;
+	}
 }
 #endif	// PC
 
@@ -1214,10 +1413,10 @@ static void info(void) {
 	uint32_t points_in_map = (uint32_t)MAP_SECTION_POINTS
 			*(uint32_t)MAP_SECTION_POINTS*(uint32_t)MAP_SECTIONS
 			*(uint32_t)MAP_SECTIONS;
-	LOG_INFO("%u%u\t Punkte gesamt", (uint16)(points_in_map/10000),
+	LOG_INFO("%u%u\t Punkte gesamt", (uint16_t)(points_in_map/10000),
 			(uint16_t) (points_in_map % 10000) );
 	points_in_map /= 1024; // Umrechnen in KByte
-	LOG_INFO("%u%u\t KByte", (uint16)(points_in_map/10000),
+	LOG_INFO("%u%u\t KByte", (uint16_t)(points_in_map/10000),
 			(uint16_t) (points_in_map % 10000));
 	LOG_INFO("%u\t Punkte pro Meter (MAP_RESOLUTION)", MAP_RESOLUTION);
 	LOG_INFO("%u\t Meter Kantenlaenge (MAP_SIZE)", (uint16_t)MAP_SIZE);
@@ -1262,6 +1461,10 @@ void map_display(void) {
 #ifdef MAP_INFO_AVAILABLE
 		case RC5_CODE_4:
 		info(); RC5_Code = 0; break;
+#endif
+#ifdef PC
+		case RC5_CODE_5:
+		map_test_get_ratio(); RC5_Code = 0; break;
 #endif
 	}
 }

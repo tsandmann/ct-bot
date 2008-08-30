@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	tcp.c
  * @brief 	TCP/IP-Kommunikation
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -53,7 +53,7 @@
 	#include <sys/socket.h>
 	#include <netinet/in.h>
 	#include <netdb.h>		// for gethostbyname()
-	#include <netinet/tcp.h> 
+	#include <netinet/tcp.h>
 #endif
 
 
@@ -64,6 +64,7 @@
 
 #include "tcp.h"
 #include "display.h"
+#include "log.h"
 
 int tcp_sock=0;				/*!< Unser TCP-Socket */
 char *tcp_hostname = NULL;	/*!< Hostname, auf dem ct-Sim laeuft */
@@ -73,7 +74,7 @@ static int sendBufferPtr = 0;						/*!< Index in den Sendepuffer */
 
 
 /*!
- * Oeffnet eine TCP-Verbindung zum Server 
+ * Oeffnet eine TCP-Verbindung zum Server
  * @param hostname	Symbolischer Name des Host, auf dem ct-Sim laeuft
  * @return			Der Socket
  */
@@ -133,7 +134,7 @@ void tcp_closeConnection(int sock) {
 /*!
  * Sende Kommando per TCP/IP im Little Endian
  * Diese Funktion setzt vorraus, dass die Symbole BYTE_ORDER und BIG_ENDIAN
- * bzw. LITTLE_ENDIAN definiert wurden. Damit dies auf Linux/Unix 
+ * bzw. LITTLE_ENDIAN definiert wurden. Damit dies auf Linux/Unix
  * funktioniert darf _POSIX_SOURCE nicht definiert werden. Fuer Windows
  * wird dies in der Headerdatei tcp.h erledigt.
  * Getestet wurde dies bisher auf folgenden Systemen:
@@ -143,7 +144,7 @@ void tcp_closeConnection(int sock) {
  *  - Windows 2000 (i386, little endian mit dem MinGW)
  * Sollten in command_t weitere Werte mit mehr bzw. weniger als 8 Bit
  * aufgenommen werden muss hier eine entsprechende Anpassung erfolgen.
- * 
+ *
  * @param *cmd	Zeiger auf das Kommando
  * @return		Anzahl der gesendete Bytes
  */
@@ -168,7 +169,7 @@ int tcp_send_cmd(command_t * cmd) {
 #endif	// BIG_ENDIAN
 }
 
-/*! 
+/*!
  * Puffert Daten im Sendepuffer zwischen
  * @param *data		Zeiger auf die Daten
  * @param length	Anzahl der Bytes
@@ -177,14 +178,14 @@ int tcp_send_cmd(command_t * cmd) {
 static int copy2Buffer(void * data, int length) {
 	int i;
 	uint8_t * ptr = data;
-	
-	if ((sendBufferPtr + length) > sizeof(sendBuffer)) {
-		printf("%s() %s:%u: sendBuffer filled with %u/%u Bytes, another %u bytes pending. Full! Aborting copy!\n",__FUNCTION__,__FILE__, __LINE__,sendBufferPtr,(unsigned int)sizeof(sendBuffer),length);
 
-		printf("  ==> Trying to recover by calling flushSendBuffer()\n");
-		flushSendBuffer(); 
+	if ((sendBufferPtr + length) > sizeof(sendBuffer)) {
+		LOG_ERROR("%s() %s:%u: sendBuffer filled with %u/%u Bytes, another %u bytes pending. Full! Aborting copy!",__FUNCTION__,__FILE__, __LINE__,sendBufferPtr,(unsigned int)sizeof(sendBuffer),length);
+
+		LOG_ERROR("  ==> Trying to recover by calling flushSendBuffer()");
+		flushSendBuffer();
 		if ((sendBufferPtr + length) > sizeof(sendBuffer)) {
-			printf("  ==> Still not enough Space\n");
+			LOG_ERROR("  ==> Still not enough Space");
 			return -1;
 		}
 	}
@@ -231,12 +232,12 @@ int tcp_read(void * data, int length) {
 	    exit(1);
 	    return -1;
 	}
-	
+
 	return bytesReceived;
 }
 
-/*! 
- * Initialisiere TCP/IP Verbindung 
+/*!
+ * Initialisiere TCP/IP Verbindung
  */
 void tcp_init(void) {
 #ifdef WIN32
@@ -261,8 +262,8 @@ void tcp_init(void) {
 
 }
 
-/*! 
- * Schreibt den Sendepuffer auf einen Schlag raus 
+/*!
+ * Schreibt den Sendepuffer auf einen Schlag raus
  * @return -1 bei Fehlern, sonst Anzahl der uebertragenen Bytes
  */
 int flushSendBuffer(void) {
