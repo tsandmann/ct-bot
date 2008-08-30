@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	bot-local.h
  * @brief 	Konstanten, die den Bot an reale Umgebungen anpassen
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -35,7 +35,7 @@
 #define BOT_DIAMETER			120			/*!< Bot-Durchmesser [mm] */
 #define ENCODER_MARKS			60			/*!< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weissen + Anzahl der schwarzen Felder */
 #define WHEEL_DIAMETER			56.7		/*!< Durchmesser eines Rades [mm] */
-#define WHEEL_PERIMETER			178.1283 	/*!< Umfang eines Rades [mm] */	
+#define WHEEL_PERIMETER			178.1283 	/*!< Umfang eines Rades [mm] */
 #define WHEEL_TO_WHEEL_DIAMETER 97.2 		/*!< Abstand der beiden Raeder [mm] */
 
 #define DISTSENSOR_POS_FW		47			/*!< Abstand der Distanzsensoren von der Radachse (in Fahrtrichtung) [mm] */
@@ -48,7 +48,7 @@
 
 /* Parameter der Motorregelung */
 #define PID_Kp				70				/*!< PID-Parameter proportional */
-#define PID_Ki				10				/*!< PID-Parameter intergral */ 
+#define PID_Ki				10				/*!< PID-Parameter intergral */
 #define PID_Kd				20				/*!< PID-Parameter differential */
 #define PID_Ta				1				/*!< Abtastzeit */
 #define PID_SHIFT			4				/*!< Rechtsshift der Stellgroessenkorrektur */
@@ -80,6 +80,9 @@
 #define G_SPEED				0.5		/*!< Kopplung Encoder- und Maussensor fuer Geschwindigkeiten (0.0=nur Radencoder, 1.0=nur Maussensor) */
 #define G_POS				0.5		/*!< Kopplung Encoder- und Maussensor fuer Positionen und Winkel (0.0=nur Radencoder, 1.0=nur Maussensor) */
 
+/* System-Konstanten */
+#define F_CPU	16000000L	/*!< CPU-Frequenz [Hz] */
+#define XTAL	F_CPU		/*!< CPU-Frequenz [Hz] */
 
 /*** Einstellungen fuer die Verhaltensregeln ***/
 

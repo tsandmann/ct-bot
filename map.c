@@ -185,6 +185,8 @@ mmc_container_t map_storage[MAP_SECTIONS * MAP_SECTIONS / 2];	/*!< Statischer Sp
 #define mmc_write_sector(block, buffer)		memcpy(&(map_storage[block]), &buffer, sizeof(mmc_container_t));
 #endif	// PC
 
+static inline void delete(void);
+
 /*!
  * initialisiere die Karte
  * @return	0 wenn alles ok ist
@@ -205,7 +207,7 @@ int8_t map_init(void) {
 	/* Modi des Update-Verhaltens. Default: location, distance, border an, Kartographie-Modus */
 	scan_otf_modes.location = 1;
 	scan_otf_modes.distance = 1;
-	scan_otf_modes.border = 1;
+	scan_otf_modes.border   = 1;
 	scan_otf_modes.map_mode = 1;
 #endif
 
@@ -235,6 +237,10 @@ int8_t map_init(void) {
 	map_current_block_updated = False;
 	map_current_block = 0;
 #endif	// MCU
+
+#ifdef CLEAR_MAP_ON_INIT
+	delete();
+#endif
 	return 0;
 }
 

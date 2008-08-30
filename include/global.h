@@ -19,15 +19,13 @@
 
 /*!
  * @file 	global.h
- * @brief 	Allgemeine Definitionen
+ * @brief 	Allgemeine Definitionen und Datentypen
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
  */
 
 #ifndef global_H
 #define global_H
-
-#include "ct-Bot.h"
 
 #ifndef __ASSEMBLER__
 #include <stdint.h>
@@ -91,6 +89,21 @@
 #endif	// PC
 
 #define binary(var,bit) ((var >> bit)&1)	/*!< gibt das Bit "bit" von "var" zurueck */
+
+#ifdef WIN32
+#define LINE_FEED "\n\r"	/*!< Linefeed fuer Windows */
+#else
+#define LINE_FEED "\n"		/*!< Linefeed fuer nicht Windows */
+#endif
+
+#ifdef MCU
+#include <avr/interrupt.h>
+#ifdef SIGNAL
+#define NEW_AVR_LIB	/*!< AVR_LIB-Version */
+#else
+#include <avr/signal.h>
+#endif
+#endif	// MCU
 
 /*!
  * 2D-Position. Ist effizienter, als Zeiger auf X- und Y-Anteil

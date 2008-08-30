@@ -289,24 +289,7 @@
 	#define I2C_AVAILABLE	/*!< I2C-Treiber statt TWI-Implementierung benutzen */
 #endif
 
-#define F_CPU	16000000L    /*!< Crystal frequency in Hz */
-#define XTAL F_CPU			 /*!< Crystal frequency in Hz */
-
-#ifdef WIN32
-	#define LINE_FEED "\n\r"	/*!< Linefeed fuer Windows */
-#else
-	#define LINE_FEED "\n"		/*!< Linefeed fuer nicht Windows */
-#endif
-
-#ifdef MCU
-	#ifndef MMC_LOW_H_
-		#include <avr/interrupt.h>
-	#endif
-	#ifdef SIGNAL
-		#define NEW_AVR_LIB	/*!< AVR_LIB-Version */
-	#endif
-#endif
-
 #include "global.h"
+#include "bot-local.h"
 
 #endif	// CT_BOT_H_DEF

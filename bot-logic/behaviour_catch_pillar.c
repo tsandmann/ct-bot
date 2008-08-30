@@ -162,11 +162,7 @@ void bot_catch_pillar(Behaviour_t * caller) {
 
 static int16_t start_heading;		/*!< gemerkter Winkel bei Start, der damit auch Zielwinkel ist zur Differenzbildung */
 static int8_t check_sensorside;		/*! Seite, auf der der Sensorabstand gecheckt wird */
-//static int16_t obj_x_posL;			/*!< berechnete X-Koordinate zum Objekt (links) */
-//static int16_t obj_y_posL;			/*!< berechnete Y-Koordinate zum Objekt (links) */
 static position_t obj_posL;			/*!< berechnete Position des Objekts (links) */
-//static int16_t obj_x_posR;			/*!< berechnete X-Koordinate zum Objekt (rechts) */
-//static int16_t obj_y_posR;			/*!< berechnete Y-Koordinate zum Objekt (rechts) */
 static position_t obj_posR;			/*!< berechnete Position des Objekts (rechts) */
 static uint8_t state_after_cancel;	/*!< Status, der nach einem Abbruch eingestellt wird */
 
