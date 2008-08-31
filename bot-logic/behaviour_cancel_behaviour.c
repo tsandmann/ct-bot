@@ -21,7 +21,7 @@
  * @file 	behaviour_cancel_behaviour.c
  * @brief 	Deaktiviert ein anderes Verhalten in Abhaengigkeit einer Check-Funktion;
  *          So kann z.B. der Wandfolger (bot_solve_maze) beendet werden, falls dieser auf
- *          eine Linie faehrt und der Linienfolger uebernehmen. 
+ *          eine Linie faehrt und der Linienfolger uebernehmen.
  * @author 	Frank Menzel (Menzelfr@gmx.net)
  * @date 	19.10.2007
  */
@@ -31,11 +31,11 @@
 
 #ifdef BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
 
-/*! 
+/*!
  * Zeiger auf Abbruchfunktion des Verhaltens.
- * Die Funktion muss True (1) zurueckgeben, wenn abgebrochen werden soll, sonst False (0). 
+ * Die Funktion muss True (1) zurueckgeben, wenn abgebrochen werden soll, sonst False (0).
  */
-static uint8_t (*check_function)(void) = NULL;
+static uint8_t (* check_function)(void) = NULL;
 
 /*!
  * Zeiger auf die Verhaltensfunktion des zu deaktivierenden Verhaltens, falls Check True ergibt.
@@ -62,7 +62,7 @@ void bot_cancel_behaviour_behaviour(Behaviour_t * data) {
  * @param behaviour	abzubrechendes Verhalten
  * @param *check 	Zeiger auf die Abbruchfunktion; liefert diese True, wird das Verhalten beendet
  */
-void bot_cancel_behaviour(Behaviour_t * caller, BehaviourFunc behaviour, uint8_t (*check)(void)) {
+void bot_cancel_behaviour(Behaviour_t * caller, BehaviourFunc behaviour, uint8_t (* check)(void)) {
 	check_function = check;
 	behaviourFuncCancel = behaviour;
 	switch_to_behaviour(caller, bot_cancel_behaviour_behaviour, OVERRIDE);

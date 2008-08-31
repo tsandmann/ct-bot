@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	cmd-tools_pc.c
  * @brief 	Funktionen, die per Commandline-Switch aufgerufen werden koennen
  * @author 	Timo Sandmann (mail@timosandmann.de)
@@ -33,7 +33,7 @@
 #include "tcp-server.h"
 #include "mini-fat.h"
 #include "map.h"
-#include "eeprom-emu.h"
+#include "eeprom.h"
 #include "tcp.h"
 #include "command.h"
 
@@ -50,18 +50,18 @@ static void usage(void) {
 	#ifndef MAP_AVAILABLE
 		puts("\t\tACHTUNG, das Programm wurde ohne MAP_AVAILABLE übersetzt, die Option -M steht derzeit also NICHT zur Verfügung");
 	#endif
-	puts("\t-c \tErzeugt eine Mini-Fat-Datei fuer den Bot.");		
+	puts("\t-c \tErzeugt eine Mini-Fat-Datei fuer den Bot.");
 	puts("\t   FILE\tDateiname");
 	puts("\t   ID  \tDie ID aus ASCII-Zeichen");
 	puts("\t   SIZE\tDie Nutzgroesse der Datei in KByte");
-	puts("\t-e \tErzeugt eine Mini-Fat-Datei fuer den Sim (emulierte MMC).");		
+	puts("\t-e \tErzeugt eine Mini-Fat-Datei fuer den Sim (emulierte MMC).");
 	puts("\t   ADDR\tStartadresse der Mini-Fat-Datei");
 	puts("\t   ID  \tDie ID aus ASCII-Zeichen");
 	puts("\t   SIZE\tDie Nutzgroesse der Datei in KByte");
-	puts("\t-d \tLoescht eine Mini-Fat-Datei fuer den Sim (emulierte MMC).");		
-	puts("\t   ID  \tDie ID aus ASCII-Zeichen");		
+	puts("\t-d \tLoescht eine Mini-Fat-Datei fuer den Sim (emulierte MMC).");
+	puts("\t   ID  \tDie ID aus ASCII-Zeichen");
 	puts("\t-l \tKonvertiert eine SpeedLog-Datei in eine txt-Datei");
-	puts("\t-i \tInitialisiert das EEPROM mit den Daten der EEP-Datei"); 
+	puts("\t-i \tInitialisiert das EEPROM mit den Daten der EEP-Datei");
 	puts("\t-h\tZeigt diese Hilfe an");
 }
 
@@ -79,26 +79,26 @@ void hand_cmd_args(int argc, char * argv[]) {
 	tcp_hostname = malloc(strlen(IP) + 1);
 	if (NULL == tcp_hostname) exit(1);
 	strcpy(tcp_hostname, IP);
-	
+
 	/* Die Kommandozeilenargumente komplett verarbeiten */
 	while ((ch = getopt(argc, argv, "hsTit:M:c:l:e:d:a:")) != -1) {
 		argc -= optind;
 		argv += optind;
 		switch (ch) {
-		
+
 		case 's': {
 			/* Servermodus [-s] wird verlangt */
 			printf("ARGV[0]= %s\n", argv[0]);
 			tcp_server_init();
 			tcp_server_run(1000);	// beendet per exit()
 		}
-			
+
 		case 'T': {
 			/* Testclient starten */
 			tcp_test_client_init();
 			tcp_test_client_run(1000);	// beendet per exit()
 		}
-			
+
 		case 't': {
 			/* Hostname, auf dem ct-Sim laeuft, wurde uebergeben. Der String wird in hostname gesichert. */
 			tcp_hostname = realloc(tcp_hostname, strlen(optarg) + 1);
@@ -106,7 +106,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 			strcpy(tcp_hostname, optarg);
 			break;
 		}
-		
+
 		case 'a': {
 			/* Bot-Adresse wurde uebergeben */
 			int addr = atoi(optarg);
@@ -117,7 +117,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 			set_bot_address(addr);
 			break;
 		}
-		
+
 		case 'M': {
 			/* Dateiname fuer die Map wurde uebergeben. Der String wird in from gesichert. */
 			#ifndef MAP_AVAILABLE
@@ -143,7 +143,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 				exit(0);
 			#endif	// MAP_AVAILABLE
 		}
-		
+
 		case 'c': {
 			/* Datei fuer den Bot (mini-fat) soll erzeugt werden. */
 			int len = strlen(optarg);
@@ -166,7 +166,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 			create_mini_fat_file(from, id, size);
 			exit(0);
 		}
-		
+
 		case 'e': {
 			/* Datei fuer den Sim (mini-fat) soll erzeugt werden. */
 			int len = strlen(optarg);
@@ -191,7 +191,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 			create_emu_mini_fat_file(addr, id, size);
 			exit(0);
 		}
-		
+
 		case 'd': {
 			/* Datei fuer den Sim (mini-fat) soll geloescht werden. */
 			int len = strlen(optarg);
@@ -210,7 +210,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 			delete_emu_mini_fat_file(from);
 			exit(0);
 		}
-		
+
 		case 'l': {
 			/* Speedlog-Datei soll in txt konvertiert werden */
 			int len = strlen(optarg);
@@ -220,7 +220,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 			convert_slog_file(from);
 			exit(0);
 		}
-		
+
 		case 'i': {
 			/* EEPROM-Init */
 			printf("EEPROM soll mit den Daten einer eep-Datei initialisiert werden.\n");
@@ -231,7 +231,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 			}
 			exit(0);
 		}
-		
+
 		case 'h':
 		default:
 			/* -h oder falscher Parameter, Usage anzeigen */

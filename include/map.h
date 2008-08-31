@@ -48,6 +48,9 @@
 
 #define MAP_OBSTACLE_THRESHOLD	-20	/*!< Schwellwert, ab dem ein Feld als Hindernis gilt */
 
+#define MAP_RATIO_NONE	0		/*!< Rueckgabe von map_get_ratio(), falls kein Feld den Kriterien entspricht */
+#define MAP_RATIO_FULL	255		/*!< Rueckgabe von map_get_tatio(), falls alle Felder den Kriterien entsprechen */
+
 // Die folgenden Variablen/konstanten NICHT direkt benutzen, sondern die zugehoerigen Makros: get_map_min_x() und Co!
 // Denn sonst erhaelt man Karten und nicht Weltkoordinaten!
 #ifdef SHRINK_MAP_ONLINE
@@ -111,6 +114,7 @@ static inline int8_t map_get_point(int16_t x, int16_t y) {
  * verlaeuft in der Mitte von R.
  * Beispiel: Steht der Bot an (0|0) und man moechte den Weg 50 cm voraus pruefen, gibt man x1 = y1 = y2 = 0,
  * x2 = 500 und width = BOT_DIAMETER an.
+ * Am besten bewertet man das Ergebnis mit Hilfe der defines MAP_RATIO_FULL und MAP_RATIO_NONE (s.u.)
  * @param x1		Startpunkt der Region R, X-Anteil; Weltkoordinaten [mm]
  * @param y1		Startpunkt der Region R, Y-Anteil; Weltkoordinaten [mm]
  * @param x2		Endpunkt der Region R, X-Anteil; Weltkoordinaten [mm]
@@ -119,9 +123,9 @@ static inline int8_t map_get_point(int16_t x, int16_t y) {
  * @param min_val	minimaler Feldwert, der vorkommen darf
  * @param max_val	maximaler Feldwert, der vorkommen darf
  * @return			Verhaeltnis von Anzahl der Felder, die zwischen min_val und max_val liegen, zu
- * 					Anzahl aller Felder der Region * 255;
- * 					0 	-> kein Feld liegt im gewuenschten Bereich;
- * 					255	-> alle Felder liegen im gewuenschten Bereich
+ * 					Anzahl aller Felder der Region * MAP_RATIO_FULL;
+ * 					MAP_RATIO_NONE 	-> kein Feld liegt im gewuenschten Bereich;
+ * 					MAP_RATIO_FULL	-> alle Felder liegen im gewuenschten Bereich
  */
 uint8_t map_get_ratio(int16_t x1, int16_t y1, int16_t x2, int16_t y2,
 		int16_t width, int8_t min_val, int8_t max_val);

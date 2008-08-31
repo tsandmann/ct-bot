@@ -779,9 +779,9 @@ static void update_border(int16_t x, int16_t y, float head, uint8_t borderL,
  * @param min_val	minimaler Feldwert, der vorkommen darf
  * @param max_val	maximaler Feldwert, der vorkommen darf
  * @return			Verhaeltnis von Anzahl der Felder, die zwischen min_val und max_val liegen, zu
- * 					Anzahl aller Felder der Region * 255;
- * 					0 	-> kein Feld liegt im gewuenschten Bereich;
- * 					255	-> alle Felder liegen im gewuenschten Bereich
+ * 					Anzahl aller Felder der Region * MAP_RATIO_FULL;
+ * 					MAP_RATIO_NONE 	-> kein Feld liegt im gewuenschten Bereich;
+ * 					MAP_RATIO_FULL	-> alle Felder liegen im gewuenschten Bereich
  */
 static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
 		uint16_t y2, int16_t width, int8_t min_val, int8_t max_val) {
@@ -851,6 +851,7 @@ static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
  * verlaeuft in der Mitte von R.
  * Beispiel: Steht der Bot an (0|0) und man moechte den Weg 50 cm voraus pruefen, gibt man x1 = y1 = y2 = 0,
  * x2 = 500 und width = BOT_DIAMETER an.
+ * Am besten bewertet man das Ergebnis mit Hilfe der defines MAP_RATIO_FULL und MAP_RATIO_NONE (s.u.)
  * @param x1		Startpunkt der Region R, X-Anteil; Weltkoordinaten [mm]
  * @param y1		Startpunkt der Region R, Y-Anteil; Weltkoordinaten [mm]
  * @param x2		Endpunkt der Region R, X-Anteil; Weltkoordinaten [mm]
@@ -859,9 +860,9 @@ static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
  * @param min_val	minimaler Feldwert, der vorkommen darf
  * @param max_val	maximaler Feldwert, der vorkommen darf
  * @return			Verhaeltnis von Anzahl der Felder, die zwischen min_val und max_val liegen, zu
- * 					Anzahl aller Felder der Region * 255;
- * 					0 	-> kein Feld liegt im gewuenschten Bereich;
- * 					255	-> alle Felder liegen im gewuenschten Bereich
+ * 					Anzahl aller Felder der Region * MAP_RATIO_FULL;
+ * 					MAP_RATIO_NONE 	-> kein Feld liegt im gewuenschten Bereich;
+ * 					MAP_RATIO_FULL	-> alle Felder liegen im gewuenschten Bereich
  */
 uint8_t map_get_ratio(int16_t x1, int16_t y1, int16_t x2, int16_t y2,
 		int16_t width, int8_t min_val, int8_t max_val) {
@@ -886,7 +887,7 @@ uint8_t map_get_ratio(int16_t x1, int16_t y1, int16_t x2, int16_t y2,
  */
 uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y) {
 	uint8_t result = map_get_ratio(from_x, from_y, to_x, to_y, BOT_DIAMETER, MAP_OBSTACLE_THRESHOLD, 127);
-	return result == 255;
+	return result == MAP_RATIO_FULL;
 }
 
 #else

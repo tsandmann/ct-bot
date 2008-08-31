@@ -28,10 +28,8 @@
 
 #ifdef MCU
 	#include <avr/io.h>
-	#include <avr/interrupt.h>
 	#include <avr/wdt.h>
 	#include "bot-2-pc.h"
-	#include <avr/eeprom.h>
 	#include "i2c.h"
 	#include "twi.h"
 	#include "sp03.h"
@@ -40,7 +38,6 @@
 #ifdef PC
 	#include "bot-2-sim.h"
 	#include "tcp.h"
-	#include "eeprom-emu.h"
 	#include <stdio.h>
 	#include <time.h>
 	#include <sys/time.h>
@@ -75,6 +72,7 @@
 #include "os_thread.h"
 #include "map.h"
 #include "cmd_tools.h"
+#include "eeprom.h"
 
 /*!
  * Der Mikrocontroller und der PC-Simulator brauchen ein paar Einstellungen,
@@ -114,8 +112,8 @@ static void init(void) {
 				reset_flag = MCUCSR & 0x1F;	//Lese Grund fuer Reset und sichere Wert
 				MCUCSR = 0;	//setze Register auf 0x00 (loeschen)
 			#endif
-			uint8 resets = eeprom_read_byte(&resetsEEPROM) + 1;
-			eeprom_write_byte(&resetsEEPROM, resets);
+			uint8_t resets = ctbot_eeprom_read_byte(&resetsEEPROM) + 1;
+			ctbot_eeprom_write_byte(&resetsEEPROM, resets);
 		#endif	// RESET_INFO_DISPLAY_AVAILABLE
 	#endif	// MCU
 

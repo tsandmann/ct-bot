@@ -90,7 +90,7 @@ void bot_drive_stack(Behaviour_t * caller) {
  * @param pos_x	X-Koordinate
  * @param pos_y	Y-Koordinate
  */
-void bot_push_pos(int16_t pos_x, int16_t pos_y) {
+static void bot_push_pos(int16_t pos_x, int16_t pos_y) {
 	// sichern der Koordinaten in den Stack
 	posx = pos_x;
 	posy = pos_y;
@@ -131,7 +131,7 @@ static void set_pos_to_last(void) {
 /*!
  * Verhalten um sich entlang des Fahrweges relevante Koordinaten auf dem Stack zu merken; Verhalten ist nach Aktivierung via Botenroutine
  * ein Endlosverhalten und sammelt bis zur Deaktivierung die Wegepunkte; deaktiviert wird es via Notaus oder direkt mit Befehl zum Zurueckfahren und
- * damit Start des Stack-Fahrverhaltens 
+ * damit Start des Stack-Fahrverhaltens
  * @param *data	Der Verhaltensdatensatz
  */
 void bot_put_stack_waypositions_behaviour(Behaviour_t * data) {
@@ -143,7 +143,7 @@ void bot_put_stack_waypositions_behaviour(Behaviour_t * data) {
 
 		// Abstand zur letzten Position ueberschritten
 		if (get_dist(last_xpos, last_ypos, x_pos, y_pos) > DIST_FOR_PUSH) {
-			// kein Push notwendig bei gerader Fahrt voraus zum Sparen des Stack-Speicherplatzes  	    
+			// kein Push notwendig bei gerader Fahrt voraus zum Sparen des Stack-Speicherplatzes
 			if ((int16) heading != last_heading) {
 				bot_push_pos(x_pos, y_pos);
 			}
@@ -219,7 +219,7 @@ static void drivestack_disp_key_handler(void) {
 
 
 /*!
- * Display zum Setzen und Anfahren der Stackpunkte 
+ * Display zum Setzen und Anfahren der Stackpunkte
  */
 void drive_stack_display(void) {
 	display_cursor(1, 1);

@@ -58,8 +58,7 @@
 
 /* Aufgrund einer ganzen reihe von Abhaengigkeiten sollte man beim Versuch Speicher
  * zu sparen, zuerst mal bei den Hauptverhalten ausmisten, sonst kommen die
- * Unterverhalten durch die Hintertuer wieder rein
- */
+ * Unterverhalten durch die Hintertuer wieder rein */
 #ifndef MAP_AVAILABLE
 	#undef BEHAVIOUR_SCAN_AVAILABLE
 	#undef BEHAVIOUR_DRIVE_AREA_AVAILABLE
@@ -86,6 +85,7 @@
 
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
 	#define BEHAVIOUR_TURN_AVAILABLE
+	#define BEHAVIOUR_FACTOR_WISH_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_TURN_TEST_AVAILABLE

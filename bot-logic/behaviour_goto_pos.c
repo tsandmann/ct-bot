@@ -25,14 +25,13 @@
  */
 
 #include "bot-logic/bot-logik.h"
+#include "eeprom.h"
 
 #define MIN_TARGET_MARGIN	5	/*!< Entfernung zum Ziel [mm], ab der das Ziel auf jeden Fall als erreicht gilt */
 #ifdef MCU
 #define TARGET_MARGIN	20	/*!< Init-Wert Entfernung zum Ziel [mm], ab der das Ziel als erreicht gilt fuer MCU */
-#include "avr/eeprom.h"
 #else
 #define TARGET_MARGIN	10	/*!< Init-Wert Entfernung zum Ziel [mm], ab der das Ziel als erreicht gilt fuer PC */
-#include "eeprom-emu.h"
 #endif
 
 uint8_t EEPROM goto_pos_err[2] = {TARGET_MARGIN, TARGET_MARGIN};	/*!< Fehlerwerte (Nachlauf) im EEPROM */
@@ -103,7 +102,7 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 	int16_t driven = sqrt(get_dist(last_x, last_y, x_pos, y_pos));
 
 	/* Pruefen, ob wir schon am Ziel sind */
-	uint8_t margin = eeprom_read_byte(p_goto_pos_err);
+	uint8_t margin = ctbot_eeprom_read_byte(p_goto_pos_err);
 	if (diff_to_target <= margin) state = LAST_TURN;
 
 	switch (state) {
@@ -225,13 +224,13 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 //		LOG_INFO("Fehler=%d mm", diff_to_target);
 		LOG_DEBUG("Fehler=%d mm", diff_to_target);
 		/* Aus Fehler neuen Korrekturwert berechnen und im EEPROM speichern */
-		int8_t error = eeprom_read_byte(p_goto_pos_err);
+		int8_t error = ctbot_eeprom_read_byte(p_goto_pos_err);
 		LOG_DEBUG("error=%d", error);
 		int8_t new_error = error - diff_to_target / 2; // (error-diff_to_target)/2+error/2
 		LOG_DEBUG("new_error=%d", new_error);
 		if (new_error < MIN_TARGET_MARGIN) new_error = MIN_TARGET_MARGIN;
 		if (new_error != error) {
-			eeprom_write_byte(p_goto_pos_err, new_error);
+			ctbot_eeprom_write_byte(p_goto_pos_err, new_error);
 			LOG_DEBUG("new_error=%d", new_error);
 		}
 		/* fast fertig, evtl. noch drehen */

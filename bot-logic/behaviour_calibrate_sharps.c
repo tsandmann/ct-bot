@@ -1,30 +1,30 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	behaviour_calibrate_sharps.c
  * @brief 	Kalibriert die Distanzsensoren des Bots
- * 
- * Einige Zeilen sind auskommentiert. Sie waren dazu gedacht, die Kalibrierung zu automatisieren, 
+ *
+ * Einige Zeilen sind auskommentiert. Sie waren dazu gedacht, die Kalibrierung zu automatisieren,
  * das geht aber zurzeit (noch) nicht, weil die Positionsbestimmung fuer kleine Distanzen etwas
  * zu ungenau ist (=> Encoderdatenauswertung checken!)
- * 
+ *
  * @author 	Timo Sandmann (mail@timosandmann.de)
  * @date 	21.04.2007
  */
@@ -41,12 +41,7 @@
 #include "gui.h"
 #include "rc5-codes.h"
 #include "log.h"
-
-#ifdef MCU
-	#include <avr/eeprom.h>
-#else
-	#include "eeprom-emu.h"
-#endif
+#include "eeprom.h"
 
 //static Behaviour_t* data = NULL;
 //static float start_x = 0;
@@ -71,13 +66,13 @@ static void goto_next_pos(void);		/*!< Stellt den Bot auf die naechste Position 
 static const uint8_t max_steps = 14;	/*!< Anzahl der Entfernungen, an denen gemessen wird */
 
 ///*!
-// * @brief	Hilfsfunktion fuer wait_for_stop()
+// * Hilfsfunktion fuer wait_for_stop()
 // * @see		wait_for_stop()
 // */
 //static void wait_for_stop_helper(void) {
 //	speedWishLeft = BOT_SPEED_STOP;
 //	speedWishRight = BOT_SPEED_STOP;
-//	
+//
 //	/* Nachlauf abwarten */
 //	if (fabs(v_enc_left) < 1.0f && fabs(v_enc_right) < 1.0f) {
 //		/* zurueck zum Aufrufer */
@@ -86,7 +81,7 @@ static const uint8_t max_steps = 14;	/*!< Anzahl der Entfernungen, an denen geme
 //}
 //
 ///*!
-// * @brief	Haelt den Bot an und wartet den Nachlauf ab
+// * Haelt den Bot an und wartet den Nachlauf ab
 // * anschliessend geht's mit dem Aufrufer weiter
 // */
 //static inline void wait_for_stop(void) {
@@ -95,7 +90,7 @@ static const uint8_t max_steps = 14;	/*!< Anzahl der Entfernungen, an denen geme
 //}
 
 /*!
- * @brief	Hilfsfunktion fuer wait_for_userinput()
+ * Hilfsfunktion fuer wait_for_userinput()
  * @see		wait_for_userinput()
  */
 static void wait_for_userinput_helper(void) {
@@ -108,16 +103,16 @@ static void wait_for_userinput_helper(void) {
 }
 
 /*!
- * @brief	Haelt den Bot an und wartet eine Useraktion ab
+ * Haelt den Bot an und wartet eine Useraktion ab
  * anschliessend geht's mit dem Aufrufer weiter
  */
 static inline void wait_for_userinput(void) {
 	pLastJob = pNextJob;
 	pNextJob = wait_for_userinput_helper;
-}  
+}
 
 /*!
- * @brief			Berechnet die aktuelle Entfernung eines Sensors zum Ausganspunkt / dem Hindernis	
+ * Berechnet die aktuelle Entfernung eines Sensors zum Ausganspunkt / dem Hindernis
  * @param sensor	0: links, 1: rechts
  * @return			Entfernung [mm]
  */
@@ -132,7 +127,7 @@ static int16_t calc_distance(uint8_t sensor) {
 }
 
 /*!
- * @brief	Schreibt Spannung und Entfernung in den RAM-Puffer
+ * Schreibt Spannung und Entfernung in den RAM-Puffer
  */
 static void update_data(void) {
 	int16_t dist = calc_distance(0);
@@ -143,10 +138,10 @@ static void update_data(void) {
 //	LOG_INFO("%u: rechts: %d", count, dist);
 	buffer[1][count].dist = dist/5;
 	buffer[1][count].voltage = distR;
-	
+
 	if (count != max_steps-1)
-		/* neue Entfernung */ 
-		pNextJob = goto_next_pos;		
+		/* neue Entfernung */
+		pNextJob = goto_next_pos;
 	else {
 		/* fertig */
 		count++;
@@ -155,7 +150,7 @@ static void update_data(void) {
 }
 
 /*!
- * @brief	Misst die Entfernung mit den Sharps
+ * Misst die Entfernung mit den Sharps
  */
 static void measure_distance(void) {
 	if (measure_count == 0) {
@@ -174,7 +169,7 @@ static void measure_distance(void) {
 	/* acht Messungen abwarten */
 	if (measure_count == 8) {
 		distL >>= 3;
-		distR >>= 3;	
+		distR >>= 3;
 		if (distL > 255 || distR > 255) {
 			/* Offset zu kleine => erhoehen und neu messen */
 			volt_offset += 5;
@@ -189,7 +184,7 @@ static void measure_distance(void) {
 }
 
 /*!
- * @brief	Stellt den Bot auf die naechste Position bzw. laesst den User das tun
+ * Stellt den Bot auf die naechste Position bzw. laesst den User das tun
  */
 static void goto_next_pos(void) {
 	//bot_drive_distance(data, 0, -50, step);	// step cm zurueck
@@ -200,22 +195,22 @@ static void goto_next_pos(void) {
 }
 
 /*!
- * @brief			Ersetzt die Sensorauswertungsfunktion, damit wir hier die Rohdaten bekommen
+ * Ersetzt die Sensorauswertungsfunktion, damit wir hier die Rohdaten bekommen
  * @param p_sens	Zeiger auf den (Ziel-)Sensorwert
  * @param p_toggle	Zeiger auf die Toggle-Variable des Zielsensors
  * @param ptr		Zeiger auf auf Sensorrohdaten im EEPROM fuer p_sens
- * @param volt		Spannungs-Ist-Wert, zu dem die Distanz gesucht wird 
- */ 
+ * @param volt		Spannungs-Ist-Wert, zu dem die Distanz gesucht wird
+ */
 void sensor_dist_direct(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t volt) {
-	*p_sens = volt;	
+	*p_sens = volt;
 	*p_toggle = ~*p_toggle;
 }
 
 /*!
- * @brief		Das eigentliche Verhalten
+ * Das eigentliche Verhalten
  * @param data	Zeiger auf den Verhaltensdatensatz des Aufrufers
  * @see			bot_calibrate_sharps()
- * Die Funktionalitaet des Verhaltens ist aufgeteilt in: 
+ * Die Funktionalitaet des Verhaltens ist aufgeteilt in:
  * @see goto_next_pos(), @see measure_distance(), @see update_data()
  */
 void bot_calibrate_sharps_behaviour(Behaviour_t * data) {
@@ -225,9 +220,9 @@ void bot_calibrate_sharps_behaviour(Behaviour_t * data) {
 		display_clear();
 		sensor_update_distance = sensor_dist_lookup;	// Sensorauswertung wieder aktivieren
 		/* Puffer ins EEPROM schreiben */
-		eeprom_write_byte((uint8_t*)&sensDistOffset, volt_offset);
-		eeprom_write_block(buffer[0], (uint8_t*)sensDistDataL, max_steps*sizeof(distSens_t));
-		eeprom_write_block(buffer[1], (uint8_t*)sensDistDataR, max_steps*sizeof(distSens_t));
+		ctbot_eeprom_write_byte((uint8_t *)&sensDistOffset, volt_offset);
+		ctbot_eeprom_write_block(sensDistDataL, buffer[0], max_steps * sizeof(distSens_t));
+		ctbot_eeprom_write_block(sensDistDataR, buffer[1], max_steps * sizeof(distSens_t));
 		return_from_behaviour(data);
 		/* Fuer sensor_correction.h formatierte Logausgabe, erleichtert das Speichern der Init-EEPROM- / Sim-Werte */
 		LOG_INFO("SENSDIST_OFFSET %u", volt_offset);
@@ -238,7 +233,7 @@ void bot_calibrate_sharps_behaviour(Behaviour_t * data) {
 			for (j=0; j<2; j++) {
 				tmp_s[0] = '\0';
 				for (i=0; i<max_steps/2; i++) {
-					sprintf(tmp_s, "%s{%u/2,%u/5},", tmp_s, buffer[k][i+j*max_steps/2].voltage*2, buffer[k][i+j*max_steps/2].dist*5);		
+					sprintf(tmp_s, "%s{%u/2,%u/5},", tmp_s, buffer[k][i+j*max_steps/2].voltage*2, buffer[k][i+j*max_steps/2].dist*5);
 				}
 				if (j==1) tmp_s[strlen(tmp_s)-1] = '\0';	// kein Komma ausgeben, falls letzter Wert
 				/* Log-Ausgabe auf 40 Zeichen begrenzen */
@@ -258,7 +253,7 @@ void bot_calibrate_sharps_behaviour(Behaviour_t * data) {
 }
 
 /*!
- * @brief			Kalibriert die Distanzsensoren des ct-Bots
+ * Kalibriert die Distanzsensoren des ct-Bots
  * @param caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
  */
 void bot_calibrate_sharps(Behaviour_t * caller) {
@@ -275,27 +270,27 @@ void bot_calibrate_sharps(Behaviour_t * caller) {
 	distR = 0;
 	count = 0;
 	userinput_done = 0;
-	
+
 	sensor_update_distance = sensor_dist_direct;	// Sensorauswertung deaktivieren
-	
+
 	uint8_t i;
 	for (i=0; i<sizeof(screen_functions)/sizeof(screen_functions[0]); i++) {
 		if (screen_functions[i] == bot_calibrate_sharps_display) break;
 	}
 	display_screen = i;
 	display_clear();
-	
+
 	/* Als erstes Entfernung / Spannung messen */
 	pNextJob = measure_distance;
-	
+
 	wait_for_userinput();
-	
+
 	/* Verhalten an */
 	switch_to_behaviour(caller, bot_calibrate_sharps_behaviour, OVERRIDE);
 }
 
 /*!
- * @brief	Displayhandler fuer bot_calibrate_sharps-Verhalten
+ * Displayhandler fuer bot_calibrate_sharps-Verhalten
  */
 void bot_calibrate_sharps_display(void) {
 	/* Displayausgabe */
@@ -308,7 +303,7 @@ void bot_calibrate_sharps_display(void) {
 		display_printf("stellen und mit");
 		display_cursor(4,1);
 		display_printf("\"Mute\" bestaetigen");
-		
+
 		/* Keyhandler */
 		if (RC5_Code == RC5_CODE_MUTE) {
 			userinput_done = 1;
@@ -320,7 +315,7 @@ void bot_calibrate_sharps_display(void) {
 	} else if (count == max_steps) {
 		display_printf("fertig :-)");
 	} else {
-		display_printf("run calibrate_sharps");	
+		display_printf("run calibrate_sharps");
 	}
 }
 

@@ -1,29 +1,29 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	gui.c
  * @brief 	Display-GUI des Bots
  * @author 	Timo Sandmann (mail@timosandmann.de)
  * @date 	12.02.2007
  */
- 
+
 #include "bot-logic/available_behaviours.h"
 #include "ui/available_screens.h"
 #include "ct-Bot.h"
@@ -43,12 +43,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "rc5-codes.h"
-
-#ifdef MCU
-#include <avr/eeprom.h>
-#else
-#include "eeprom-emu.h"
-#endif	// MCU
+#include "eeprom.h"
 
 /*! Keymap fuer Keypad-Eingaben */
 EEPROM uint8_t gui_keypad_table[][5] = {
@@ -85,7 +80,7 @@ static void (* keypad_callback)(char * result) = NULL;	/*!< Callback-Funktion na
  * mit dem Eingabe-String als Parameter.
  * @param *callback	Zeiger auf eine Funktion, die die Eingabe bekommt
  * @param row		Zeile der Cursorposition fuer die Anzeige der Eingabe
- * @param col		Spalte der Cursorposition fuer die Anzeige der Eingabe 
+ * @param col		Spalte der Cursorposition fuer die Anzeige der Eingabe
  */
 void gui_keypad_request(void (* callback)(char * result), uint8_t row, uint8_t col) {
 	keypad_callback = callback;
@@ -100,12 +95,12 @@ void gui_keypad_request(void (* callback)(char * result), uint8_t row, uint8_t c
  * RC5-Code entsprechend aus.
  * Mit der Taste "Play" wird eine Eingabe abgeschlossen, mit "Stop" verworfen.
  * @param rc5	RC5-Code, der ausgewertet werden soll
- * @return		RC5-Code unveraendert, falls Keypad nicht aktiv, sonst 0 
+ * @return		RC5-Code unveraendert, falls Keypad nicht aktiv, sonst 0
  */
 static uint16_t gui_keypad_check(uint16_t rc5) {
 	static uint8_t pressed = 0;
 	static uint16_t last_rc5 = 0;
-	
+
 	if (keypad_callback == NULL) {
 		/* keine Keypad-Eingabe aktiv */
 		return rc5;
@@ -125,7 +120,7 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
 		/* keine neue Eingabe */
 		return 0;
 	}
-	
+
 	if (!timer_ms_passed(&keypad_last_pressed, 1000) && rc5 == last_rc5) {
 		/* dieselbe Taste wurde mehrfach gedrueckt */
 		pressed++;
@@ -134,9 +129,9 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
 		keypad_result++;
 		pressed = 0;
 	}
-	
+
 //	LOG_DEBUG("pressed=%u", pressed);
-	
+
 	uint8_t key = rc5 - RC5_CODE_0;
 	if (key > 9) {
 		/* ungueltige Eingabe */
@@ -149,7 +144,7 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
 
 //	LOG_DEBUG("key=%u", key);
 	char data;
-	while ((data = eeprom_read_byte(&gui_keypad_table[key][pressed])) == 0) {
+	while ((data = ctbot_eeprom_read_byte(&gui_keypad_table[key][pressed])) == 0) {
 		/* bei einigen Tasten ist nicht alles belegt */
 		pressed = 0;
 	}
@@ -162,25 +157,25 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
 }
 #endif	// KEYPAD_AVAILABLE
 
-/*! 
+/*!
  * @brief 		Display-Screen Registrierung
  * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		12.02.2007	
- * @param fkt 	Zeiger auf eine Funktion, die den Display-Screen anzeigt 
+ * @date 		12.02.2007
+ * @param fkt 	Zeiger auf eine Funktion, die den Display-Screen anzeigt
  * Legt einen neuen Display-Screen an und haengt eine Anzeigefunktion ein.
  * Diese Funktion kann auch RC5-Kommandos behandeln. Wurde eine Taste ausgewertet, setzt man RC5_Code auf 0.
  */
-int8 register_screen(void* fkt) {
+static int8 register_screen(void* fkt) {
 	if (max_screens == DISPLAY_SCREENS) return -1;	// sorry, aber fuer dich ist kein Platz mehr da :(
 	int8 screen_nr = max_screens++;		// neuen Screen hinten anfuegen
 	screen_functions[screen_nr] = fkt;	// Pointer im Array speichern
 	return screen_nr;
 }
 
-/*! 
+/*!
  * @brief 			Display-Screen Anzeige
  * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			12.02.2007	
+ * @date 			12.02.2007
  * @param screen 	Nummer des Screens, der angezeigt werden soll
  * Zeigt einen Screen an und fuehrt die RC5-Kommandoauswertung aus, falls noch nicht geschehen.
  */
@@ -194,15 +189,15 @@ void gui_display(int8 screen) {
 	#ifndef TEST_AVAILABLE
 		if (RC5_Code != 0) LED_on(LED_WEISS);
 	#endif	// TEST_AVAILABLE
-	#endif	// LED_AVAILABLE 
+	#endif	// LED_AVAILABLE
 	if (screen < max_screens && screen_functions[screen] != NULL) screen_functions[screen]();
-	
+
 	#ifdef KEYPAD_AVAILABLE
 		/* Keypad-Eingabe */
 		if (keypad_callback != NULL) {
 			display_cursor(keypad_row, keypad_col);
 			display_printf("%s", keypad_buffer);
-			
+
 			uint8_t col = keypad_col + strlen(keypad_buffer);
 			if ((uint32_t)(TIMER_GET_TICKCOUNT_32 - keypad_last_pressed) > MS_TO_TICKS(1000UL)) {
 				col++;
@@ -210,20 +205,20 @@ void gui_display(int8 screen) {
 			display_cursor(keypad_row, col);
 		}
 	#endif	// KEYPAD_AVAILABLE
-	
+
 	if (RC5_Code != 0) default_key_handler();	// falls rc5-Code noch nicht abgearbeitet, Standardbehandlung ausfuehren
 	RC5_Code = 0;	// fertig, RC5-Puffer loeschen
 	#ifdef LED_AVAILABLE
 	#ifndef TEST_AVAILABLE
 		LED_off(LED_WEISS);
 	#endif	// TEST_AVAILABLE
-	#endif	// LED_AVAILABLE 	
+	#endif	// LED_AVAILABLE
 }
 
-/*! 
+/*!
  * @brief 	Display-Screen Initialisierung
  * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	12.02.2007	
+ * @date 	12.02.2007
  * Traegt die Anzeige-Funktionen in das Array ein.
  */
 void gui_init(void) {
@@ -232,7 +227,7 @@ void gui_init(void) {
 		/* MiniFAT wird vor GUI initialisiert und schreibt deshalb einfach auf's leere Display, der Dummy hier verhindert nur das Ueberschreiben in den anschliessenden Bot-Zyklen, damit man die Daten noch lesen kann */
 		register_screen(&mini_fat_display);
 	#endif
-	#ifdef SENSOR_DISPLAY_AVAILABLE 	
+	#ifdef SENSOR_DISPLAY_AVAILABLE
 		register_screen(&sensor_display);
 	#endif
 	#ifdef BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
@@ -258,7 +253,7 @@ void gui_init(void) {
 	#endif
 	#ifdef RESET_INFO_DISPLAY_AVAILABLE
 		register_screen(&reset_info_display);
-	#endif 
+	#endif
 	#ifdef RAM_DISPLAY_AVAILABLE
 		register_screen(&ram_display);
 	#endif

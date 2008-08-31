@@ -17,7 +17,7 @@
  *
  */
 
-/*! 
+/*!
  * @file 	behaviour_transport_pillar.c
  * @brief 	Bot startet von einem Farb-Startpad und entdeckt die Welt, bis er auf ein anderes
  *          Farbpad stoesst. Er faehrt nun zwischen den beiden Farbpads hin und her, sammelt bei
@@ -43,6 +43,7 @@
 #include "ui/available_screens.h"
 #include "bot-logic/bot-logik.h"
 #include <math.h>
+#include <stdlib.h>
 #include "math_utils.h"
 #include "map.h"
 #include "display.h"
@@ -88,7 +89,7 @@
 #ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
 #define   GO_WITH_GOTO_POS    // auskommentieren wenn nicht mit Goto_pos Verhalten gefahren werden soll
 #undef  GO_WITH_SOLVE_MAZE          // nach Karte den Wandfolger entdefinieren
-#undef  GO_WITH_MAP_GO_DESTINATION  
+#undef  GO_WITH_MAP_GO_DESTINATION
 #endif
 #endif
 
@@ -118,7 +119,7 @@ static float target_y=0; /*!< Zwischenzielkoordinaten Y des xy-Fahrverhaltens */
  * @param y y-Ordinate
  * @param destx Ziel-x-Ordinate
  * @param desty Ziel-y-Ordinate
- * @return True wenn xy im Umkreis liegt6 
+ * @return True wenn xy im Umkreis liegt6
  */
 uint8 koord_in_circle_world (float x, float y, float destx, float desty) {
 	//Punktdifferenzen
@@ -136,7 +137,7 @@ uint8 koord_in_circle_world (float x, float y, float destx, float desty) {
 #endif
 
 	// Ist Abstand im Radiusabstand, dann ist der Punkt innerhalb des Umkreises
-	// gerechnet mit Quadratzahlen, sparen der Wurzel 
+	// gerechnet mit Quadratzahlen, sparen der Wurzel
 	return (distx*distx + disty*disty) < radquad; // 9cm Umkreis des Bots
 
 }
@@ -221,7 +222,7 @@ uint8 bot_on_pad(void) {
 #ifdef USE_KOORDS
 		return koord_in_circle_world(x_pos,y_pos,target_x,target_y)?True:False;
 #else
-		// finden keine Koordinaten Verwendung, dann nur nach Farbpads fahren		  
+		// finden keine Koordinaten Verwendung, dann nur nach Farbpads fahren
 #ifdef CHECK_BORDERSENS_FOR_COL
 		return check_pad(destpad_value,destpad_bvalue)?True:False;
 #else
@@ -260,7 +261,7 @@ uint8 destpad_found(void) {
 	return False; // nicht auf einem Startpadfield
 }
 
-/*! 
+/*!
  * Endebedingung des Explorerverhaltens
  * @return True wenn Endebedingung erfuellt
  */
@@ -307,7 +308,7 @@ void bot_transport_pillar_behaviour(Behaviour_t *data) {
 
 	case BOT_EXPLORE:
 		// Solange exploren bis anderes bekanntes Farbpad gruen oder rot gefunden oder Zielkoords/Pad
-		// manuell gesetzt wurde; 
+		// manuell gesetzt wurde;
 		// wird bot zu Beginn bei Koordinatenverwendung auf Linie gesetzt, dann geht follow_line los
 
 		state = BOT_ROLL; // Pad gefunden oder waehrend der Fahrt Taste 7 -> ausrollen lassen
@@ -358,7 +359,7 @@ void bot_transport_pillar_behaviour(Behaviour_t *data) {
 			bot_goto_pos(data,target_x,target_y,999);
 		}
 #else
-		// hier koennte man noch andere Explorerverhalten einbinden und verwenden 
+		// hier koennte man noch andere Explorerverhalten einbinden und verwenden
 		bot_follow_wall(data, check_end_exploring);
 #endif
 #endif
@@ -384,7 +385,7 @@ void bot_transport_pillar_behaviour(Behaviour_t *data) {
 
 #ifdef SHOW_CLAPS_ON_DEST
 		if (state==GET_PILLAR) {
-			bot_servo(data, SERVO1, DOOR_OPEN); // Klappe auf  
+			bot_servo(data, SERVO1, DOOR_OPEN); // Klappe auf
 		}
 #endif
 
@@ -417,7 +418,7 @@ void bot_transport_pillar_behaviour(Behaviour_t *data) {
 		break;
 
 #ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
-#ifndef NO_PILLAR_BEHAVIOUR  
+#ifndef NO_PILLAR_BEHAVIOUR
 		case UNLOAD:
 		state=GOTO_NEXTPAD;
 		bot_unload_pillar(data);
@@ -437,7 +438,7 @@ void bot_transport_pillar_behaviour(Behaviour_t *data) {
 
 #ifdef GO_WITH_MAP_GO_DESTINATION
 		bot_set_destination(map_world_to_map(target_x),map_world_to_map(target_y));
-#endif 
+#endif
 
 		// bei fahren nach Farbpads die Zielpadfarbe wechseln; nur ausgewertet, wenn auch nicht
 		// nach Koords gefahren wird
@@ -451,7 +452,7 @@ void bot_transport_pillar_behaviour(Behaviour_t *data) {
 		state=INITIAL_TURN;
 
 #ifdef SHOW_CLAPS_ON_DEST
-		bot_servo(data, SERVO1, DOOR_CLOSE); // Klappe zu  
+		bot_servo(data, SERVO1, DOOR_CLOSE); // Klappe zu
 #endif
 
 		break;
@@ -542,7 +543,7 @@ static void trpill_disp_key_handler(void) {
 	} // switch
 } // Ende Keyhandler
 
-/*! 
+/*!
  * @brief	Display zum Start der Transport_Pillar-Routinen
  */
 void transportpillar_display(void) {

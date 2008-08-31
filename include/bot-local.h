@@ -63,8 +63,8 @@
 #define ENC_CORRECT_R		5				/*!< Korrekturoffset fuer rechten Radencoder */
 
 /* Servo-Parameter */
-#define DOOR_CLOSE 	7			/*!< Rechter Anschlag des Servos */
-#define DOOR_OPEN	14			/*!< Linker Anschlag des Servos */
+#define DOOR_CLOSE 	8			/*!< Rechter Anschlag des Servos */
+#define DOOR_OPEN	15			/*!< Linker Anschlag des Servos */
 
 /* Odometrie-Konstanten */
 #ifdef PC
@@ -87,7 +87,7 @@
 /*** Einstellungen fuer die Verhaltensregeln ***/
 
 /* bot_avoid_border_behaviour() */
-#define BORDER_DANGEROUS	0x3A0	/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */
+#define BORDER_DANGEROUS	0x4A0	/*!< Wert, ab dem wir sicher sind, dass es eine Kante ist */
 
 /* bot_avoid_col_behaviour() */
 #define COL_CLOSEST			200		/*!< Abstand [mm], den wir als zu nah betrachten -- je nach echtem Sensor ist das schon zu nah! */

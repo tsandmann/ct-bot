@@ -1,32 +1,33 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	mcu/mini-fat.c
- * @brief 	Routinen zum Auffinden von markierten Files auf einer MMC-Karte. 
- *          Dies ist keine vollstaendige FAT-Unterstuetzung, sondern sucht nur eien Datei, die mit einer Zeichensequenz beginnt. 
+ * @brief 	Routinen zum Auffinden von markierten Files auf einer MMC-Karte.
+ *          Dies ist keine vollstaendige FAT-Unterstuetzung, sondern sucht nur eien Datei, die mit einer Zeichensequenz beginnt.
  * @author 	Benjamin Benz (bbe@heise.de)
  * @author  Ulrich Radig (mail@ulrichradig.de) www.ulrichradig.de
  * @date 	07.11.2006
  */
 
 #include "ct-Bot.h"
+#include "eeprom.h"
 
 /* EEPROM-Variable immer deklarieren, damit die Adresse sich nicht veraendert je nach #define */
 uint32_t EEPROM eefat[10] = {0};	/*!< EEPROM-Cache fuer FAT-Eintraege */
@@ -38,7 +39,6 @@ uint32_t EEPROM eefat[10] = {0};	/*!< EEPROM-Cache fuer FAT-Eintraege */
 #ifdef MCU
 #ifdef MMC_AVAILABLE
 #ifndef BOT_FS_AVAILABLE
-#include <avr/eeprom.h>
 #include <string.h>
 #include "mmc.h"
 #include "display.h"
@@ -54,54 +54,6 @@ uint32_t EEPROM eefat[10] = {0};	/*!< EEPROM-Cache fuer FAT-Eintraege */
 #endif
 
 
-//TODO:	Ticket #173, die folgenden zwei Funktionen werden damit dann ueberfluessig
-/* Workaround fuer aeltere avr-libc-Versionen, ausserdem effizienter */
-#define eeprom_read_dword(__addr)				ee_read_dword(__addr) 
-#define eeprom_write_dword(__addr, __value)		ee_write_dword(__addr, __value)
-
-/*! Aufteilung eines DWords in seine vier Bytes */
-typedef union {
-	uint32_t dword;
-	struct {
-		uint8_t byte_0;
-		uint8_t byte_1;
-		uint8_t byte_2;
-		uint8_t byte_3;
-	} bytes;
-} eeprom_dword_t;
-
-/*!
- * Liest die vier Bytes eines DWords aus dem EEPROM.
- * @param *addr	Adresse des DWords im EEPROM
- * @return		Das DWord an Adresse addr im EEPROM
- */
-static inline uint32_t ee_read_dword(uint32_t * addr) {
-	eeprom_dword_t data;
-	uint16_t eeprom_addr = (uint16_t)addr;
-
-	data.bytes.byte_0 = eeprom_read_byte((const uint8_t *) eeprom_addr++);
-	data.bytes.byte_1 = eeprom_read_byte((const uint8_t *) eeprom_addr++);
-	data.bytes.byte_2 = eeprom_read_byte((const uint8_t *) eeprom_addr++);
-	data.bytes.byte_3 = eeprom_read_byte((const uint8_t *) eeprom_addr);
-	return data.dword;
-}
-
-/*!
- * Schreibt die vier Bytes eines DWords ins EEPROM.
- * @param *addr	Adresse des DWords im EEPROM
- * @param value	Neuer Wert des DWords
- */
-static inline void ee_write_dword(uint32_t * addr, uint32_t value) {
-	eeprom_dword_t data;
-	data.dword = value;
-	uint16_t eeprom_addr = (uint16_t)addr;
-
-	eeprom_write_byte((uint8_t *) eeprom_addr++, data.bytes.byte_0);
-	eeprom_write_byte((uint8_t *) eeprom_addr++, data.bytes.byte_1);
-	eeprom_write_byte((uint8_t *) eeprom_addr++, data.bytes.byte_2);
-	eeprom_write_byte((uint8_t *) eeprom_addr, data.bytes.byte_3);
-}
-
 #ifdef DISPLAY_MINIFAT_INFO
 /*!
  * Hilfsfunktion, die eine 23-Bit Blockadresse auf dem Display als hex anzeigt.
@@ -116,7 +68,7 @@ static void display_block(uint32_t addr) {
 /*!
  * Display-Screen fuer Ausgaben des MiniFAT-Treibers, falls dieser welche erzeugt.
  * Da die MiniFat-Funktionen im Wesentlichen den aktuellen Suchstatus der MMC
- * ausgeben, erfolgt die eigentliche Ausgabe in der jeweiligen Schleife der 
+ * ausgeben, erfolgt die eigentliche Ausgabe in der jeweiligen Schleife der
  * MiniFAT-Funktion, dieser Screen ist dafuer nur ein Platzhalter
  */
 void mini_fat_display(void) {
@@ -142,7 +94,7 @@ static uint32_t mini_fat_lookup_adr(const char * filename, void * buffer) {
 	/* EEPROM-Slabs nach gewuenschter Datei-ID durchsuchen */
 	for (i=10; i>0; i--) {
 		uint32_t block;
-		block = eeprom_read_dword(p_eefat++);	// Adresse aus dem EEPROM laden
+		block = ctbot_eeprom_read_dword(p_eefat++);	// Adresse aus dem EEPROM laden
 		if (mmc_read_sector(block, buffer) != 0) return 0;
 		/* Datei-ID vergleichen */
 		if (strcmp_P((char *)buffer, filename) == 0) {
@@ -173,7 +125,7 @@ static void mini_fat_store_adr(uint32_t block) {
 	block--;	// Block mit der Datei-ID speichern, nicht ersten Nutzdatenblock
 	/* freien Block im EEPROM suchen */
 	for (i=9; i>0; i--) {
-		uint32_t tmp = eeprom_read_dword(p_eefat++);
+		uint32_t tmp = ctbot_eeprom_read_dword(p_eefat++);
 		if (tmp == 0) {	// hier noch ist Platz :-)
 #ifdef DISPLAY_MINIFAT_INFO
 			display_cursor(3, 1);
@@ -185,7 +137,7 @@ static void mini_fat_store_adr(uint32_t block) {
 			break;	// fertig
 		}
 	}
-	eeprom_write_dword(p_eefat, block);	// Adresse speichern
+	ctbot_eeprom_write_dword(p_eefat, block);	// Adresse speichern
 }
 
 #ifdef MINI_FAT_CHECK_FRAGMENTATION
@@ -262,7 +214,7 @@ static uint32_t check_fragmentation(uint32_t block, void * buffer) {
 	mbr_t * p_mbr = buffer;
 	uint16_t first_sect = p_mbr->part0.first_sect_offset;
 	LOG_DEBUG("first_sect=0x%04x", first_sect);
-	
+
 	/* Bootsektor von Partition 1 lesen */
 	mmc_read_sector(first_sect, buffer);
 	fat16_bootsector_t * p_bs = buffer;
@@ -271,7 +223,7 @@ static uint32_t check_fragmentation(uint32_t block, void * buffer) {
 #ifdef DISPLAY_MINIFAT_INFO
 		display_cursor(2, 1);
 		display_printf("Kein FAT16");
-#endif		
+#endif
 		LOG_ERROR("Keine FAT16-Partition");
 		return 0xffffffff;
 	}
@@ -283,11 +235,11 @@ static uint32_t check_fragmentation(uint32_t block, void * buffer) {
 	LOG_DEBUG("data_offset=0x%04x", data_offset);
 	uint8_t sect_per_cluster = p_bs->sect_per_cluster;
 	LOG_DEBUG("sect_per_cluster=%u", sect_per_cluster);
-	
+
 	/* 1. Cluster der Datei berechnen */
 	uint16_t first_cluster = (block - 1 - data_offset) / sect_per_cluster + 2;
 	LOG_DEBUG("first_cluster=0x%04x", first_cluster);
-	
+
 	/* 1. FAT-Eintrag der Datei einlesen */
 	uint16_t fat_block = fat_offset + first_cluster / (512 / sizeof(uint16_t));
 	LOG_DEBUG("fat_block=0x%04x", fat_block);
@@ -296,9 +248,9 @@ static uint32_t check_fragmentation(uint32_t block, void * buffer) {
 	LOG_DEBUG("entry_offset=0x%04x", entry_offset);
 	uint16_t * ptr = buffer;
 	uint16_t entry = ptr[entry_offset];
-	
+
 	mmc_read_sector(block - 1, buffer);	// Dateiheader wieder in Puffer laden
-	
+
 	LOG_DEBUG("Fat-Eintrag=0x%04x", entry);
 	if (entry < 0xfff8 && entry != first_cluster + 1) {
 		/* Datei ist fragmentiert */
@@ -313,7 +265,7 @@ static uint32_t check_fragmentation(uint32_t block, void * buffer) {
 #ifdef DISPLAY_MINIFAT_INFO
 		display_cursor(2, 1);
 		display_printf("Datei ok");
-#endif	
+#endif
 	LOG_DEBUG("Datei ist nicht fragmentiert");
 	return block;
 }
@@ -335,15 +287,15 @@ static uint32_t check_fragmentation(uint32_t block, void * buffer) {
  * @param buffer 	Zeiger auf 512 Byte Puffer im SRAM
  * @param end_addr	Byte-Adresse, bis zu der gesucht werden soll
  * @return			Anfangsblock der Nutzdaten der Datei
- * Achtung das Prinzip geht nur, wenn die Dateien nicht fragmentiert sind 
+ * Achtung das Prinzip geht nur, wenn die Dateien nicht fragmentiert sind
  */
 uint32_t mini_fat_find_block_P(const char * filename, void * buffer, uint32_t end_addr) {
 	end_addr >>= 9;	// letzte Blockadresse ermitteln
-	
+
 	/* zunaechst im EEPROM-FAT-Cache nachschauen */
 	uint32_t block = mini_fat_lookup_adr(filename, buffer);
 	if (block != 0)	return check_fragmentation(block, buffer);
-	
+
 #ifdef DISPLAY_MINIFAT_INFO
 	display_cursor(2,1);
 	display_printf("Find %s: ", filename);
@@ -372,7 +324,7 @@ uint32_t mini_fat_find_block_P(const char * filename, void * buffer, uint32_t en
 }
 
 /*!
- * Liest die Groesse einer Datei im MiniFAT-Dateisystem auf der MMC/SD-Karte aus 
+ * Liest die Groesse einer Datei im MiniFAT-Dateisystem auf der MMC/SD-Karte aus
  * @param file_start	Anfangsblock der Datei (Nutzdaten, nicht Header)
  * @param *buffer		Zeiger auf 512 Byte Puffer im SRAM, wird veraendert!
  * @return				Groesse der Datei in Byte, 0 falls Fehler
@@ -389,7 +341,7 @@ uint32_t mini_fat_get_filesize(uint32_t file_start, void * buffer) {
 	return length.u32;
 }
 
-/*! 
+/*!
  * Leert eine Datei im MiniFAT-Dateisystem auf der MMC/SD-Karte
  * @param file_start	Anfangsblock der Datei
  * @param *buffer		Zeiger auf 512 Byte Puffer im SRAM, wird geloescht!

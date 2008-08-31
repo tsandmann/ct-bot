@@ -1,30 +1,30 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	motor.h
  * @brief 	High-Level Routinen fuer die Motorsteuerung des c't-Bots
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	15.01.05
  */
-#ifndef motor_H_
-#define motor_H_
+#ifndef MOTOR_H_
+#define MOTOR_H_
 
 
 #include "global.h"
@@ -49,36 +49,36 @@
 
 #define SERVO_OFF 0					/*!< Servo wird zum Stromsparen deaktiviert */
 
-#define SERVO1 1					/*!< Servo1 */
-#define SERVO2 2					/*!< Servo1 */
+#define SERVO1 1					/*!< Servo 1 */
+#define SERVO2 2					/*!< Servo 2 */
 
-extern int16 speed_l;				/*!< Sollgeschwindigkeit des linken Motors */
-extern int16 speed_r;				/*!< Sollgeschwindigkeit des rechten Motors */
+extern int16_t speed_l;				/*!< Sollgeschwindigkeit des linken Motors */
+extern int16_t speed_r;				/*!< Sollgeschwindigkeit des rechten Motors */
 
-extern volatile int16 motor_left;	/*!< zuletzt gestellter Wert linker Motor */
-extern volatile int16 motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
+extern volatile int16_t motor_left;		/*!< zuletzt gestellter Wert linker Motor */
+extern volatile int16_t motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
 
 /*! In diesem Typ steht die Drehrichtung, auch wenn die Speed-Variablen bereits wieder auf Null sind */
 typedef struct {
-	uint8 left:1;	/*!< linksrum */
-	uint8 right:1;	/*!< rechtsrum */
+	uint8_t left:1;		/*!< linksrum */
+	uint8_t right:1;	/*!< rechtsrum */
 #ifndef DOXYGEN
 	} __attribute__ ((packed)) direction_t;
 #else
 	} direction_t;
 #endif
 
-extern direction_t direction;		/*!< Drehrichtung der Motoren, auch wenn die Speed-Variablen bereits wieder auf Null sind */ 
+extern direction_t direction;		/*!< Drehrichtung der Motoren, auch wenn die Speed-Variablen bereits wieder auf Null sind */
 
 /*!
- * @brief	Initialisiere den Motorkrams
+ * Initialisiere den Motorkrams
  */
 void motor_init(void);
 
 /*!
  * @brief		Direkter Zugriff auf den Motor
  * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		17.10.2006 
+ * @date 		17.10.2006
  * @param left	Geschwindigkeit fuer den linken Motor
  * @param right	Geschwindigkeit fuer den linken Motor
  * Geschwindigkeit liegt zwischen -450 und +450. 0 bedeutet Stillstand, 450 volle Kraft voraus, -450 volle Kraft zurueck.
@@ -90,36 +90,36 @@ void motor_set(int16_t left, int16_t right);
  * @brief		Stellt die Servos
  * @param servo	Nummer des Servos
  * @param pos	Zielwert
- * Sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus 
+ * Sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus
  */
 void servo_set(uint8_t servo, uint8_t pos);
 
 #ifdef SPEED_CONTROL_AVAILABLE
-	/*!
-	 * @brief 			Drehzahlregelung fuer die Motoren des c't-Bots
-	 * @author 			Timo Sandmann (mail@timosandmann.de)
-	 * @date 			17.10.2006
-	 * @param dev		0: linker Motor, 1: rechter Motor
-	 * @param actVar	Zeiger auf Stellgroesse (nicht volatile, da Aufruf aus ISR heraus)
-	 * @param encTime	Zeiger auf Encodertimestamps, mit denen gerechnet werden soll
-	 * @param i_time	Index des aktuellen Timestamps in encTime
-	 * @param enc		Encoder-Pegel (binaer) von dev
-	 * Drehzahlregelung sorgt fuer konstante Drehzahl und somit annaehernd Geradeauslauf.
-	 * Feintuning von PID_Kp bis PID_SPEED_THRESHOLD (bot-local.h) verbessert die Genauigkeit und Schnelligkeit der Regelung.
-	 * Mit PWMMIN, PWMSTART_L und PWMSTART_R laesst sich der Minimal- bzw. Startwert fuer die Motoren anpassen.
-	 */
-	void speed_control(uint8_t dev, int16_t* actVar, uint16_t* encTime, uint8_t i_time, uint8_t enc);
-	
-	#ifdef DISPLAY_REGELUNG_AVAILABLE
-		/*!
-		 * @brief	Zeigt Debug-Informationen der Motorregelung an.
-		 * @author 	Timo Sandmann (mail@timosandmann.de)
-	 	 * @date 	12.02.2007	 
-	 	 * Dargestellt werden pro Moto Ist- / Sollgeschwindigkeit, die Differenz davon, der PWM-Stellwert und die 
-	 	 * Reglerparameter Kp, Ki und Kd.
-	 	 * Die Tasten 1 und 4 veraendern Kp, 2 und 5 veraendern Ki, 3 und 6 veraendern Kd, wenn ADJUST_PID_PARAMS an ist. 
-		 */	
-		void speedcontrol_display(void);
-	#endif
-#endif // SPEED_CONTROL_AVAILABLE
-#endif
+/*!
+ * @brief 			Drehzahlregelung fuer die Motoren des c't-Bots
+ * @author 			Timo Sandmann (mail@timosandmann.de)
+ * @date 			17.10.2006
+ * @param dev		0: linker Motor, 1: rechter Motor
+ * @param actVar	Zeiger auf Stellgroesse (nicht volatile, da Aufruf aus ISR heraus)
+ * @param encTime	Zeiger auf Encodertimestamps, mit denen gerechnet werden soll
+ * @param i_time	Index des aktuellen Timestamps in encTime
+ * @param enc		Encoder-Pegel (binaer) von dev
+ * Drehzahlregelung sorgt fuer konstante Drehzahl und somit annaehernd Geradeauslauf.
+ * Feintuning von PID_Kp bis PID_SPEED_THRESHOLD (bot-local.h) verbessert die Genauigkeit und Schnelligkeit der Regelung.
+ * Mit PWMMIN, PWMSTART_L und PWMSTART_R laesst sich der Minimal- bzw. Startwert fuer die Motoren anpassen.
+ */
+void speed_control(uint8_t dev, int16_t* actVar, uint16_t* encTime, uint8_t i_time, uint8_t enc);
+
+#ifdef DISPLAY_REGELUNG_AVAILABLE
+/*!
+ * @brief	Zeigt Debug-Informationen der Motorregelung an.
+ * @author 	Timo Sandmann (mail@timosandmann.de)
+ * @date 	12.02.2007
+ * Dargestellt werden pro Moto Ist- / Sollgeschwindigkeit, die Differenz davon, der PWM-Stellwert und die
+ * Reglerparameter Kp, Ki und Kd.
+ * Die Tasten 1 und 4 veraendern Kp, 2 und 5 veraendern Ki, 3 und 6 veraendern Kd, wenn ADJUST_PID_PARAMS an ist.
+ */
+void speedcontrol_display(void);
+#endif	// DISPLAY_REGELUNG_AVAILABLE
+#endif	// SPEED_CONTROL_AVAILABLE
+#endif	// MOTOR_H_
