@@ -1080,7 +1080,7 @@ static inline void delete(void) {
 /*!
  * zeichnet ein Testmuster in die Karte
  */
-static void draw_test_scheme(void) {
+static inline void draw_test_scheme(void) {
 	int16_t x, y;
 
 	/* warten bis Karte frei ist */
@@ -1287,10 +1287,10 @@ int map_read(const char * filename) {
 	}
 
 	/* Karte liegt auf der MMC genau wie im PC-RAM */
-	size_t cnt = fread(&map_storage, 1, sizeof(map_storage), fp);
-	if (cnt != (size_t) ((MAP_SIZE * MAP_RESOLUTION) * (MAP_SIZE * MAP_RESOLUTION))) {
-		printf("Konnte nur %lu Bytes lesen, Karte ist aber %lu Bytes gross!\n",
-			cnt, (size_t) ((MAP_SIZE * MAP_RESOLUTION) * (MAP_SIZE* MAP_RESOLUTION)));
+	uint32_t cnt = fread(&map_storage, 1, sizeof(map_storage), fp);
+	if (cnt != (uint32_t) ((MAP_SIZE * MAP_RESOLUTION) * (MAP_SIZE * MAP_RESOLUTION))) {
+		printf("Konnte nur %u Bytes lesen, Karte ist aber %u Bytes gross!\n",
+			cnt, (uint32_t) ((MAP_SIZE * MAP_RESOLUTION) * (MAP_SIZE* MAP_RESOLUTION)));
 	}
 
 	fclose(fp);
@@ -1315,7 +1315,7 @@ int map_read(const char * filename) {
  * Testet die Funktion map_get_ratio()
  * @return	0 falls alles OK, 1 falls Fehler
  */
-static int map_test_get_ratio(void) {
+static inline int map_test_get_ratio(void) {
 	delete();
 	printf("map deleted\n");
 	int all_ok = 1;
@@ -1411,7 +1411,7 @@ static int map_test_get_ratio(void) {
 /*!
  * Zeigt ein paar Infos ueber die Karte an
  */
-static void info(void) {
+static inline void info(void) {
 	LOG_INFO("MAP:");
 	LOG_INFO("%u\t Punkte pro Section (MAP_SECTIONS)", MAP_SECTIONS);
 	LOG_INFO("%u\t Sections (MAP_SECTION_POINTS)", MAP_SECTION_POINTS);
