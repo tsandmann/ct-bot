@@ -64,6 +64,9 @@
 #endif	// MMC_AVAILABLE
 #ifndef MAP_AVAILABLE
 	#undef DISPLAY_MAP_AVAILABLE
+#else
+	// MMC-Zugriff geht nur, wenn gerade kein Map-Update laueft
+	#undef DISPLAY_MMC_INFO
 #endif
 #ifndef BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE
 	#undef DISPLAY_TRANSPORT_PILLAR
