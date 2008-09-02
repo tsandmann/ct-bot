@@ -62,9 +62,6 @@ typedef struct _Behaviour_t {
 /*! Dieser Typ definiert eine Funktion die das eigentliche Verhalten ausfuehrt */
 typedef void (* BehaviourFunc)(Behaviour_t * data);
 
-/*! Liste mit allen Verhalten */
-extern Behaviour_t * behaviour;
-
 extern int16_t speedWishLeft;		/*!< Puffervariablen fuer die Verhaltensfunktionen absolut Geschwindigkeit links */
 extern int16_t speedWishRight;	/*!< Puffervariablen fuer die Verhaltensfunktionen absolut Geschwindigkeit rechts */
 

@@ -28,6 +28,14 @@
 
 #include "bot-logic/available_behaviours.h"
 #include <stdlib.h>
+#include "log.h"
+
+#define DEBUG_CANCEL	// Debug-Code an
+
+#ifndef DEBUG_CANCEL
+	#undef LOG_DEBUG
+	#define LOG_DEBUG(a, ...) {}
+#endif
 
 #ifdef BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
 
@@ -49,6 +57,7 @@ static BehaviourFunc behaviourFuncCancel = NULL;
 void bot_cancel_behaviour_behaviour(Behaviour_t * data) {
 	if (check_function != NULL && check_function() != 0) {
 		/* Check-Funktion vorhanden und Abbruchbedingung erfuellt */
+		LOG_DEBUG("Abbruch des Verhaltens 0x%x", behaviourFuncCancel);
 		check_function = NULL;
 		deactivateCalledBehaviours(behaviourFuncCancel);	// vom Zielverhalten aufgerufenen Verhalten beenden
 		deactivateBehaviour(behaviourFuncCancel);	// Zielverhalten beenden
@@ -63,9 +72,10 @@ void bot_cancel_behaviour_behaviour(Behaviour_t * data) {
  * @param *check 	Zeiger auf die Abbruchfunktion; liefert diese True, wird das Verhalten beendet
  */
 void bot_cancel_behaviour(Behaviour_t * caller, BehaviourFunc behaviour, uint8_t (* check)(void)) {
+	LOG_DEBUG("cancel(0x%x, 0x%x, 0x%x)", caller, behaviour, check);
 	check_function = check;
 	behaviourFuncCancel = behaviour;
-	switch_to_behaviour(caller, bot_cancel_behaviour_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_cancel_behaviour_behaviour, NOOVERRIDE);
 }
 
 #endif	// BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE

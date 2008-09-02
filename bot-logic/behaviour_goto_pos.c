@@ -58,24 +58,24 @@ uint8_t EEPROM goto_pos_err[2] = {TARGET_MARGIN, TARGET_MARGIN};	/*!< Fehlerwert
 #endif
 #endif
 
-static int16_t dest_x = 0;		/*!< x-Komponente des Zielpunktes */
-static int16_t dest_y = 0;		/*!< y-Komponente des Zielpunktes */
-static int16_t dest_head = 0;	/*!< gewuenschte Blickrichtung am Zielpunkt */
-static int8_t drive_dir = 1;	/*!< Fahrtrichtung: 1: vorwaerts, -1: rueckwaerts */
-static uint8_t state = 3;		/*!< Status des Verhaltens */
+static int16_t dest_x = 0;			/*!< x-Komponente des Zielpunktes */
+static int16_t dest_y = 0;			/*!< y-Komponente des Zielpunktes */
+static int16_t dest_head = 0;		/*!< gewuenschte Blickrichtung am Zielpunkt */
+static int8_t drive_dir = 1;		/*!< Fahrtrichtung: 1: vorwaerts, -1: rueckwaerts */
+static uint8_t state = 3;			/*!< Status des Verhaltens */
 static uint8_t * p_goto_pos_err;	/*!< Zeiger auf Fehlervariable im EEPROM */
 
-#define FIRST_TURN	0			/*!< Erste Drehung in ungefaehre Zielrichtung */
-#define CALC_WAY	1			/*!< Berechnung des Kreisbogens */
-#define RUNNING		2			/*!< Fahrt auf der berechneten Kreisbahn */
-#define LAST_TURN	3			/*!< Abschliessende Drehung */
+#define FIRST_TURN	0				/*!< Erste Drehung in ungefaehre Zielrichtung */
+#define CALC_WAY	1				/*!< Berechnung des Kreisbogens */
+#define RUNNING		2				/*!< Fahrt auf der berechneten Kreisbahn */
+#define LAST_TURN	3				/*!< Abschliessende Drehung */
 
 static const int16_t straight_go	= 200;	/*!< Entfernung zum Ziel [mm], bis zu der geradeaus zum Ziel gefahren wird */
 static const int16_t max_angle		= 30;	/*!< Maximaler Winkel [Grad] zwischen Start-Blickrichtung und Ziel */
-static const int16_t v_m_min			= 100;	/*!< Minimale (mittlere) Geschwindigkeit [mm/s], mit der der Bot zum Ziel fahert */
-static const int16_t v_m_max			= 250;	/*!< Maximale (mittlere) Geschwindigkeit [mm/s], mit der der Bot zum Ziel fahert */
-static const int16_t v_min				= 50;	/*!< Minimale Geschwindigkeit [mm/s] */
-static const int16_t v_max				= 350;	/*!< Maximale Geschwindigkeit [mm/s] */
+static const int16_t v_m_min		= 100;	/*!< Minimale (mittlere) Geschwindigkeit [mm/s], mit der der Bot zum Ziel fahert */
+static const int16_t v_m_max		= 200;	/*!< Maximale (mittlere) Geschwindigkeit [mm/s], mit der der Bot zum Ziel fahert */
+static const int16_t v_min			= 50;	/*!< Minimale Geschwindigkeit [mm/s] */
+static const int16_t v_max			= 350;	/*!< Maximale Geschwindigkeit [mm/s] */
 static const int16_t recalc_dist	= 30;	/*!< Entfernung [mm], nach der die Kreisbahn neu berechnet wird */
 
 /*!

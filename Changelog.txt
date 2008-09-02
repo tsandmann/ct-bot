@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-09-02 Timo Sandmann [mail@timosandmann.de]: Kleinere Verbesserungen in den Fahrverhalten und drive_area() fuer den echten Bot, Timer-Makro zur Zeitmessung
+
 2008-08-30 Timo Sandmann [mail@timosandmann.de]: EEPROM-Zugriff jetzt ueber eeprom.h (#173) und Verhaltens-Code aufgeraeumt
 
 2008-08-30 Timo Sandmann [mail@timosandmann.de]: Datentyp position_t eingefuehrt (siehe global.h), MMC-Code optimiert, Neue Map-Funktion map_get_ratio() (siehe map.c), Bugfixes im Map-Code (u.a. #171), Map-Code optimiert, Bugfix fuer MMC-ENA-Code, neue Option MMC_AGGRESSIVE_OPTIMIZATION in mmc.h

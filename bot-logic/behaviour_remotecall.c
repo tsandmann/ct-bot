@@ -172,7 +172,7 @@ const call_t calls[] PROGMEM = {
 		PREPARE_REMOTE_CALL(bot_drive_stack,0,""),
 	#endif
 	#ifdef BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
-		PREPARE_REMOTE_CALL(bot_check_distance,1,"int16 max_dist",2),
+		PREPARE_REMOTE_CALL(bot_check_distance,2,"int16 max_dist, uint8 diff",2,1),
 	#endif
 	#ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_drive_area,0,""),

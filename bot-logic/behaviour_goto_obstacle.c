@@ -30,9 +30,9 @@
 #include "math_utils.h"
 #include "log.h"
 
-//#define DEBUG_GOTO_POS		// Schalter um recht viel Debug-Code anzumachen
+//#define DEBUG_GOTO_OBSTACLE		// Schalter um recht viel Debug-Code anzumachen
 
-#ifndef DEBUG_GOTO_POS
+#ifndef DEBUG_GOTO_OBSTACLE
 	#undef LOG_DEBUG
 	#define LOG_DEBUG(a, ...) {}
 #endif
@@ -41,16 +41,35 @@
 
 #ifdef MCU
 #ifndef SPEED_CONTROL_AVAILABLE
-#error "Das goto_pos-Verhalten geht nur mit Motorregelung!"
+#error "Das goto_obstacle-Verhalten geht nur mit Motorregelung!"
 #endif
 #endif
 
-#define TARGET_MARGIN	20					/*!< Entfernung zum Ziel [mm], ab der das Ziel als erreicht gilt */
-static const int16_t max_par_diff	= 30;	/*!< Differenz [mm] der Distanzsensorwerte, bis zu der eine parallele Ausrichtung moeglich ist */
+#define TARGET_MARGIN	10					/*!< Entfernung zum Ziel [mm], ab der das Ziel als erreicht gilt */
+static const int16_t max_par_diff = 30;		/*!< Differenz [mm] der Distanzsensorwerte, bis zu der eine parallele Ausrichtung moeglich ist */
+//static const uint8_t max_measure_diff = 15;	/*!< Maximale Differenz [mm] der Distanzsensormessungen fuer bot_measure_distance() */
 
 static int16_t obst_distance = 0;			/*!< gewuenschte Entfernung zum Hindernis */
 static uint8_t obst_parallel = 0;			/*!< richtet die Front des Bots parallel zum Hindernis aus, falls 1 */
 static uint8_t obst_state = 0;				/*!< Status von bot_goto_obstacle */
+
+#define MEASURE_DIST_STATE	0
+#define GOTO_DIST_STATE		1
+#define ALIGN_STATE			2
+#define END					99
+
+///*!
+// * Prueft, ob ein Hindernis in Sichtweite ist
+// * @result	True, falls ein Hindernis naeher als 60 cm ist
+// */
+//static uint8_t check_distance(void) {
+//	int16_t dist = sensDistL < sensDistR ? sensDistL : sensDistR;
+//	if (dist <= 600) {
+//		LOG_DEBUG("Hindernis in Sichtweite (%d mm)", dist);
+//		return True;
+//	}
+//	return False;
+//}
 
 /*!
  * Hilfsverhalten von bot_goto_pos(), das den Bot auf eine gewuenschte Entfernung
@@ -60,34 +79,41 @@ static uint8_t obst_state = 0;				/*!< Status von bot_goto_obstacle */
 void bot_goto_obstacle_behaviour(Behaviour_t * data) {
 	static int16_t distLeft, distRight;
 	switch (obst_state) {
-	case 0:
-		/* Entfernung zum Hindernis messen */
-		bot_measure_distance(data, &distLeft, &distRight);
-		LOG_DEBUG("Hindernis ist %d|%d mm entfernt", distLeft, distRight);
-		obst_state = 1;
-		break;
-	case 1: {
+//	case MEASURE_DIST_STATE:
+//		/* Entfernung zum Hindernis messen */
+//		bot_measure_distance(data, &distLeft, &distRight, max_measure_diff);
+//		LOG_DEBUG("Hindernis ist %d|%d mm entfernt", distLeft, distRight);
+//		obst_state = GOTO_DIST_STATE;
+//		break;
+	case GOTO_DIST_STATE: {
 		/* kleinere Distanz als Richtwert benutzen */
-		int16_t dist = distLeft < distRight ? distLeft : distRight;
+		int16_t dist = sensDistL < sensDistR ? sensDistL : sensDistR;
+		LOG_DEBUG("Hindernis ist %d|%d mm entfernt", sensDistL, sensDistR);
+//		int16_t dist = distLeft < distRight ? distLeft : distRight;
 		if (dist <= 600) {
 			/* Entfernung - gewuenschte Entfernung fahren */
 			int16_t to_drive = dist - obst_distance;
 			LOG_DEBUG("to_drive=%d", to_drive);
 			if (abs(to_drive) > TARGET_MARGIN) {
 				bot_goto_dist(data, abs(to_drive), sign16(to_drive));
-				obst_state = 0;
+//				obst_state = GOTO_DIST_STATE;
 			} else {
-				obst_state = 2;
+				obst_state = ALIGN_STATE;
 			}
 		} else {
 			/* kein Hindernis in Sichtweite, also erstmal vorfahren */
 			LOG_DEBUG("Noch kein Hindernis in Sichtweite");
 			bot_goto_dist(data, 400, 1);
-			obst_state = 0;
+//TODO:	Eleganter waere es, nicht nur 40 cm zu fahren und bei Hinderniserkennung per
+//		cancel_behaviour abzubrechen. Geht allerdings nicht, wenn cancel_behaviour
+//		schon anderweitig verwendet wird.
+	//		bot_goto_dist(data, 4000, 1);
+	//		bot_cancel_behaviour(data, bot_goto_pos_behaviour, check_distance);
+//			obst_state = MEASURE_DIST_STATE;
 		}
 		break;
 	}
-	case 2:
+	case ALIGN_STATE:
 		if (obst_parallel == 1) {
 			/* heading korrigieren, so dass Bot parallel zum Hindernis steht */
 			int16_t diff = distRight - distLeft;
@@ -100,9 +126,9 @@ void bot_goto_obstacle_behaviour(Behaviour_t * data) {
 				bot_turn(data, (int16_t)alpha);
 			}
 		}
-		obst_state = 3;
+		obst_state = END;
 		break;
-	case 3:
+	default:
 		/* fertig :-) */
 		return_from_behaviour(data);
 		break;
@@ -120,7 +146,7 @@ void bot_goto_obstacle(Behaviour_t * caller, int16_t distance, uint8_t parallel)
 	obst_distance = distance;
 	obst_parallel = parallel;
 	switch_to_behaviour(caller, bot_goto_obstacle_behaviour, OVERRIDE);
-	obst_state = 0;
+	obst_state = GOTO_DIST_STATE;
 }
 
 #endif	// BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE

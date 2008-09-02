@@ -125,6 +125,8 @@ static void bot_reset(void) {
 	rc5_screen_set(0);
 	/* Timer loeschen */
 	timer_reset();
+	/* Map-Init */
+	map_init();
 }
 
 /*!

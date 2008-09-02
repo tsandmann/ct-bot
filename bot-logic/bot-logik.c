@@ -70,7 +70,7 @@ int16_t target_speed_r = BOT_SPEED_STOP;	/*!< Sollgeschwindigkeit rechter Motor 
 
 
 /*! Liste mit allen Verhalten */
-Behaviour_t * behaviour = NULL;
+static Behaviour_t * behaviour = NULL;
 
 #define MAX_PROCS 6					/*!< Maximale Anzahl der registrierbaren Funktionen */
 static int8_t count_arr_emerg = 0;	/*!< Anzahl der zurzeit registrierten Notfallfunktionen */
