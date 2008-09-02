@@ -561,7 +561,7 @@ void bot_behave(void) {
 			speedWishLeft = BOT_SPEED_IGNORE;
 			speedWishRight = BOT_SPEED_IGNORE;
 
-#ifdef BEHAVIOR_FACTOR_WISH_AVAILABLE
+#ifdef BEHAVIOUR_FACTOR_WISH_AVAILABLE
 			factorWishLeft = 1.0;
 			factorWishRight = 1.0;
 #endif
