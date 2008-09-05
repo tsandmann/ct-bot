@@ -278,14 +278,14 @@ uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, void * buffer) {
 		"adiw %2,1		; 2 nop		\n\t"
 		"sbiw %2,1		; 2 nop		\n\t"
 		"nop			; 1 nop		\n\t"
-		"in %0,47-0x20	; tmp		\n\t"	// load from SPDR
-		"out 47-0x20,__zero_reg__	\n\t"	// start next SPI-transfer
+		"in %0,%3		; tmp		\n\t"	// load from SPDR
+		"out %3,__zero_reg__		\n\t"	// start next SPI-transfer
 		"st Z+,%0	 	; tmp		\n\t"	// save to *buffer
 		"sbiw %A1,1		; i			\n\t"	// i--
 		"sbrs %B1,7		; i			\n\t"	// i == 0?
 		"rjmp %=b						"
 		: "=&r" (tmp)
-		: "w" (i), "z" (buffer)
+		: "w" (i), "z" (buffer), "M" (_SFR_IO_ADDR(SPDR))
 		: "memory"
 	);
 #else
@@ -357,7 +357,7 @@ uint8_t mmc_write_sector_spi(uint32_t addr, void * buffer) {
 	asm volatile(
 		"%=:						\n\t"
 		"ld %0,Y	 	; tmp		\n\t"	// load from *buffer
-		"out 47-0x20,%0				\n\t"	// start next SPI-transfer
+		"out %3,%0					\n\t"	// start next SPI-transfer
 		"adiw %2,1 		; 2 nop		\n\t"	// wait 16 cycles for reception complete
 		"sbiw %2,1		; 2 nop		\n\t"
 		"adiw %2,1		; 2 nop		\n\t"
@@ -367,7 +367,7 @@ uint8_t mmc_write_sector_spi(uint32_t addr, void * buffer) {
 		"sbrs %B1,7		; i			\n\t"
 		"rjmp %=b						"
 		: "=&r" (tmp)
-		: "w" (i), "y" (buffer)
+		: "w" (i), "y" (buffer), "M" (_SFR_IO_ADDR(SPDR))
 		: "memory"
 	);
 	/* Wait for SPI ready */
@@ -414,13 +414,14 @@ uint8_t mmc_write_sector_spi(uint32_t addr, void * buffer) {
 		"sbiw %0,1			; 2 nop		\n\t"
 		"nop				; 1 nop		\n\t"
 		"ldi r25,lo8(-1)	; 1 nop		\n\t"
-		"in r24,47-0x20		;			\n\t"
-		"out 47-0x20,r25	;			\n\t"
+		"in r24,%1			;			\n\t"
+		"out %1,r25			;			\n\t"
 		"cpi r24,lo8(-1)	; == 0xff?	\n\t"
 		"brne 1b						\n\t"
 		"2:									"
 		: "=&y"	(timeout)
-		:: "r24", "r25"
+		: "M" (_SFR_IO_ADDR(SPDR))
+		: "r24", "r25"
 	);
 #else
 	uint16_t timeout = 0xffff;

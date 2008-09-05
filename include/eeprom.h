@@ -60,11 +60,12 @@ typedef union {
  * prueft, ob das EEPROM bereit ist
  * @return	1, falls EEPROM bereit, 0 sonst
  */
-#ifdef DEECR
-#define eeprom_is_ready() bit_is_clear(DEECR, BSY)
-#else
+#ifdef __AVR_ATmega644__
+#define EEWE	EEPE
+#define EEMWE	EEMPE
+#endif	// __AVR_ATmega644__
+
 #define eeprom_is_ready() bit_is_clear(EECR, EEWE)
-#endif	// DEECR
 
 /*!
  * Wartet, bis das EEPROM bereit ist
