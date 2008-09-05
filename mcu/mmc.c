@@ -533,7 +533,7 @@ uint8_t mmc_init(void) {
 	cmd[0] = 0x41; // Kommando 1
 	cmd[5] = 0xFF; // CRC
 	while (mmc_write_command(cmd) != 0) {
-		if (timeout++ > 3 * MMC_TIMEOUT) {
+		if (timeout++ > 6 * MMC_TIMEOUT) {
 			ENA_off(ENA_MMC);
 			mmc_init_state = 1;
 #ifdef LED_AVAILABLE
