@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-09-06 Frank Menzel [Menzelfr@gmx.net]: Verhalten drive_area stark ueberarbeitet
+
 2008-09-05 Timo Sandmann [mail@timosandmann.de]: Anpassungen fuer ATmega644 (EEPROM und SPI)
 
 2008-09-02 Timo Sandmann [mail@timosandmann.de]: Kleinere Verbesserungen in den Fahrverhalten und drive_area() fuer den echten Bot, Timer-Makro zur Zeitmessung

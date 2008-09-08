@@ -30,7 +30,7 @@
  *
  * @author 	Frank Menzel (Menzelfr@gmx.net)
  * @date 	16.07.2008
-*/
+ */
 
 #include "bot-logic/bot-logik.h"
 
@@ -48,11 +48,6 @@
 
 //#define DEBUG_DRIVE_AREA	// Schalter fuer Debug-Code
 
-#ifndef DEBUG_DRIVE_AREA
-#undef LOG_DEBUG
-#define LOG_DEBUG(a, ...) {}
-#endif
-
 /*! nur alle X-Millisekunden Mapzugriff der Observer-Verhalten */
 #define	CORRECTION_DELAY	700
 
@@ -60,13 +55,11 @@
 #define MAP_TRACKVAL   30
 
 /*!  In diesem Abstand voraus [mm] ab Abstandssensoren wird auf Hindernis gecheckt */
-#define DIST_AWARD_HAZ  150
+#define DIST_AWARD_HAZ  OPTIMAL_DISTANCE
 
-/*! ca. 1 1/2 Botbreiten, Mindestabstand der Punkte fuer eine gueltige Bahn, welche es zu befahren gilt */
+/*! Mindestabstand der Punkte fuer eine gueltige Bahn, welche es zu befahren gilt */
 #define DIST_VALID_QUAD (uint32_t)(150 * 150)
 
-/*! anzufahrender Punkt gilt als sehr nah zum Bot, wenn Abstand kleiner Botdurchmesser (Quadrat) */
-#define DIST_VALID_LOW (uint32_t)(BOT_DIAMETER * BOT_DIAMETER)
 
 /*! Defines zum festlegen, auf welcher Seite des Bots sich die Spur befindet */
 #define TRACKLEFT  -1
@@ -80,6 +73,10 @@
  */
 #define SIDEDIST_MINUS  30
 
+/*! Mapzugriff der Observer nach dieser gefahrenen Strecke in mm
+ */
+#define MAPACCESS_AFTER_DISTANCE 30
+#define MAPACCESS_AFTER_DISTANCE_QUAD (MAPACCESS_AFTER_DISTANCE * MAPACCESS_AFTER_DISTANCE)  // Quadrat der gefahrenen Strecke
 
 /*! Statusvariable des area-Verhaltens */
 static uint8_t track_state = 0;
@@ -93,8 +90,6 @@ static uint8_t observe2_state = 0;
 
 /*! Zeit-Merkvariable fuer die Observer-Verhalten fuer Mapzugriff erst nach Ablauf einer gewissen Zeit */
 static uint32_t lastCorrectionTime = 0;
-static uint32_t lastCorrectionTimeObserveLeft = 0;
-static uint32_t lastCorrectionTimeObserveRight = 0;
 
 /*! Strukturtyp fuer die beobachteten Nachbar-Bahnen; fuer Links und Rechts bestehend aus 2 Punkten */
 typedef struct {
@@ -108,9 +103,11 @@ typedef struct {
 static trackpoint_t observe_trackleft;
 static trackpoint_t observe_trackright;
 
-/*! nachste anzufahrende Bahn */
+/*! naechste anzufahrende Bahn */
 static trackpoint_t nextline;
 
+/*! gemerkte letzte Position des Bots, um nur aller xx gefahrender mm auf Map zuzugreifen */
+static trackpoint_t observe_lastpos;
 
 /* ==================================================================================
  * ===== Start der allgemein fuer diese Verhalten notwendigen Routinen ==============
@@ -212,20 +209,6 @@ static uint8_t dist_valid(int16_t xs, int16_t ys, int16_t xd, int16_t yd) {
 }
 
 /*!
- * Liefert True, wenn der Abstand zwischen den beiden Punkten sehr klein ist
- * @param xs World-Koordinate des zu untersuchenden Punktes
- * @param ys World-Koordinate des zu untersuchenden Punktes
- * @param xd World-Koordinate des Zielpunktes
- * @param yd World-Koordinate des Zielpunktes
- * @return True bei geringem Abstand zwischen den beiden Punkten sonst False
- */
-static uint8_t pointdist_low(int16_t xs, int16_t ys, int16_t xd, int16_t yd) {
-
-	/* Abstandsermittlung nach dem guten alten Pythagoras ohne Ziehen der Wurzel */
-	return (get_dist(xs, ys, xd, yd) < DIST_VALID_LOW);
-}
-
-/*!
  * Berechnung des Seitenpunktes der Nebenbahn mit Rueckgabe des Punktes und des Map-Durchschnittswertes
  * @param sidedist	seitlicher Abstand vom Botmittelpunkt
  * @param dist 		Punkt im Abstand voraus
@@ -243,10 +226,10 @@ static int8_t getpoint_side_dist(uint16_t sidedist, int16_t dist, int8_t side,
 	// Rueckgabe des Mapwertes
 #ifdef DEBUG_DRIVE_AREA
 	uint8_t result;
-	TIMER_MEASURE_TIME(result = map_get_average(point->x, point->y, 20));
+	TIMER_MEASURE_TIME(result = map_get_field(point->x, point->y));
 	return result;
 #else
-	return map_get_average(point->x, point->y, 20); // Mapwert Durchschnitt ueber 2 cm
+	return map_get_field(point->x, point->y);
 #endif
 }
 
@@ -257,16 +240,38 @@ static int8_t getpoint_side_dist(uint16_t sidedist, int16_t dist, int8_t side,
  * =========================================================================================*/
 
 
+/*! Prueft ob der Bot schon eine bestimmte Strecke gefahren ist seit dem letzten Observerdurchgang
+ * @param  *last_xpoint   letzte gemerkte X-Koordinate
+ * @param  *last_ypoint   letzte gemerkte Y-Koordinate
+ * @return True, wenn Bot schon gewisse Strecke gefahren ist und Map zu checken ist sonst False
+ */
+static uint8_t check_map_after_distance(int16_t * last_xpoint, int16_t * last_ypoint) {
+
+        // Abstand seit letztem Observerlauf ermitteln
+        uint16_t diff = get_dist(x_pos, y_pos, *last_xpoint, *last_ypoint);
+
+		//erst nach gewissem Abstand oder gleich bei noch initialem Wert Mappruefung
+		if ((diff >= MAPACCESS_AFTER_DISTANCE_QUAD) || (*last_xpoint==0 && *last_ypoint==0)) {
+			*last_xpoint = x_pos;
+            *last_ypoint = y_pos;
+            return True;
+		}
+	return False;
+}
+
+/*!  Kennung, dass die Observer-Verhalten beendet werden sollen; bei True soll Verhalten sofort beendet werden mit
+ *   vorherigem Gueltigkeitscheck des Endpunktes
+ */
+static uint8_t endrequest = False;
+
 /*! Verhaltensroutine fuer beide Observer zur Ermittlung des Startpunktes der Nebenspur
  * Je nach zu checkender Botseite wird der Punkt in der Nachbarspur auf Anfahrbarkeit gecheckt
  * und hier der Startpunkt der nebenbahn ermittelt
  * @param checkside  zu checkende Seite (TRACKLEFT TRACKRIGHT)
  * @param *observe Zeiger auf die Koordinaten der Bahn, hier Startpunkt zurueckgegeben
- * @param *lastCorrectTime Zeiger auf Timervariable; erst nach Ablauf einer Zeitspanne erfolgt Mapzugriff
  * @return True falls Startpunkt anfahrbar ist und zurueckgegeben wurde sonst False
  */
-static uint8_t observe_get_startpoint(int8_t checkside, trackpoint_t * observe,
-		uint32_t * lastCorrectTime) {
+static uint8_t observe_get_startpoint(int8_t checkside, trackpoint_t * observe, uint8_t * behavstate) {
 	position_t map_pos;
 	int8_t mapval;
 
@@ -274,9 +279,15 @@ static uint8_t observe_get_startpoint(int8_t checkside, trackpoint_t * observe,
 		return False;
 	}
 
-	// nur alle x ms Mapzugriff des Observers
-	if (!timer_ms_passed(lastCorrectTime, CORRECTION_DELAY))
-		return False;
+    // nur wenn bot seit letztem Zugriff gewisse Strecke gefahren ist erfolgt Mapzugriff; Check erfolgt seitenabhaengig
+    uint8_t mapaccess = (checkside == TRACKLEFT) ? check_map_after_distance(&observe_lastpos.point1x, &observe_lastpos.point1y) :
+    	check_map_after_distance(&observe_lastpos.point2x,&observe_lastpos.point2y);
+
+    // Schluss bei Endeanforderung oder noch nicht weit genug gefahren
+	if (endrequest || !mapaccess) {
+		  *behavstate = (endrequest) ? TRACK_END : 0;
+	  return False;
+	}
 
 	// hier seitenabhaengig auf die Spur nebenan sehen auf Hoehe Mittelpunkt und Mapwert checken
 	mapval = getpoint_side_dist(BOT_DIAMETER - SIDEDIST_MINUS,
@@ -291,13 +302,11 @@ static uint8_t observe_get_startpoint(int8_t checkside, trackpoint_t * observe,
 	set_point_to_lastpoint(&observe->point1x, &observe->point1y, map_pos.x, map_pos.y);
 	set_point_to_lastpoint(&observe->point2x, &observe->point2y, 0, 0);
 
+    // Startpunkt gefunden
 	return True;
 }
 
-/*!  Kennung, dass die Observer-Verhalten beendet werden sollen; bei True soll Verhalten sofort beendet werden mit
- *   vorherigem Gueltigkeitscheck des Endpunktes
- */
-static uint8_t endrequest = False;
+
 
 /*! Statusvariable der Obserververhalten */
 #define OBSERVE_SEARCH_STARTPOINT     0
@@ -311,77 +320,68 @@ static uint8_t endrequest = False;
  * @param *observer			Zeiger auf Punkte der Nebenbahn, gueltiger Endepunkt wird hier vermerkt
  * @param *lastpointx		letzter gueltiger X-Wert der Nebenbahn, verwendeter Wert bei Erkennung Hindernis
  * @param *lastpointy		letzter gueltiger Y-Wert der Nebenbahn, verwendeter Wert bei Erkennung Hindernis
- * @param *lastCorrectTime	Merkvariable der abgelaufenen Zeit; erst nach Ablauf gewisser Zeit erfolgt Mapzugriff
  * @return True falls Endpunkt auf der Seite ermittelt werden konnte sonst False
  */
 static uint8_t observe_get_endpoint(int8_t checkside, uint8_t * behavstate,
-		trackpoint_t * observer, int16_t * lastpointx, int16_t * lastpointy,
-		uint32_t * lastCorrectTime) {
+		trackpoint_t * observer, int16_t * lastpointx, int16_t * lastpointy) {
 	position_t map_pos;
 	int8_t mapval = 0;
 
-	if (map_locked() == 1) {
-		return False;
-	}
-
-	// wenn Zeit noch nicht um dann sofort beenden ohne weitere Checks
-	if (!endrequest && !timer_ms_passed(lastCorrectTime, CORRECTION_DELAY))
+	if (map_locked() == 1)
 		return False;
 
-	// hier seitenabhaengig auf die jeweilige Spur sehen und Mapwert holen
-	mapval = getpoint_side_dist(BOT_DIAMETER - SIDEDIST_MINUS, 0, checkside,
+
+	// nur wenn bot seit letztem Zugriff gewisse Strecke gefahren ist erfolgt Mapzugriff
+    uint8_t mapaccess = (checkside == TRACKLEFT) ? check_map_after_distance(&observe_lastpos.point1x, &observe_lastpos.point1y) :
+    	check_map_after_distance(&observe_lastpos.point2x, &observe_lastpos.point2y);
+
+	// weitere Checks nur wenn gewisse Strecke gefahren oder Endeanforderung besteht
+    if (!endrequest && !mapaccess)
+		return False;  //Endepunktsuche ungueltig
+
+	// hier seitenabhaengig auf die jeweilige Spur sehen, Mapwert holen und die Koordinaten des Punktes der Nebenbahn
+	mapval = getpoint_side_dist(BOT_DIAMETER - SIDEDIST_MINUS, 10, checkside,//etwas voraus
 			&map_pos);
 
 	//Endepunktsuche nicht weiter verfolgen falls noch kein Startpunkt vorliegt
 	if ((observer->point1x == 0 && observer->point1y == 0)) {
 		*behavstate = (endrequest) ? TRACK_END : 0; // weiter mit Startpunktsuche oder Ende
-		return False;
+		return False; //Endepunktsuche ungueltig
 	}
 
-	if (mapval < 0) { //Punkt auf Nebenbahn hat Hinderniswahrscheinlichkeit
-
-		if (*lastpointx == 0 && *lastpointy == 0) {
-			// noch kein gueltiger Zwischenendpunkt ermittelt; Ende falls Endeanforderung kam sonst weiter mit Endepunktsuche
-			if (endrequest)
-				*behavstate = TRACK_END;
-
-			return False;
+    //Hindernis oder schon befahren erkannt aber noch kein gueltiger Zwischenendpunkt ermittelt; Ende falls
+    //Endeanforderung kam sonst weiter mit Startpunktsuche
+    if ((mapval < 0 || mapval >= MAP_TRACKVAL) && *lastpointx == 0 && *lastpointy == 0) {
+			set_point_to_lastpoint(&observer->point1x, &observer->point1y, 0, 0);
+            *behavstate = (endrequest) ? TRACK_END : 0;// weiter mit Startpunktsuche
+            set_point_to_lastpoint(lastpointx, lastpointy, 0, 0);
+			return False; //Endepunktsuche ungueltig
 		}
+
+    // Abstand zum Startpunkt muss gueltig sein sonst ist Schluss
+	if (!(dist_valid(observer->point1x, observer->point1y, map_pos.x, map_pos.y))) {
+			*behavstate = (endrequest) ? TRACK_END : 1;// bleibt in Endepunktsuche wenn nicht Endeanforderung kam
+			return False; //Endepunktsuche ungueltig
+		}
+
+    // hier wird nun unterschieden ob Nebenspur schon befahren ist oder sich dort Hindernis befindet; in diesem Fall wird sich
+    // die Strecke als gueltig bis zu dem Punkt vor dem Hindernis auf dem Stack gemerkt; weiter dann mit Startpunktsuche
+	if (mapval < 0 || mapval >= MAP_TRACKVAL) { //Punkt auf Nebenbahn hat Hinderniswahrscheinlichkeit oder ist schon befahren
 
 		// bei Hindernis auf aktuellem Punkt wird der letzte gemerkte Nicht-Hindernispunkt auf den Stack gespeichert, der
 		// vorher auf Gueltigkeit gecheckt wird, d.h. muss bestimmten Mindestabstand zum Startpunkt haben und kein Hindernis sein
-		if (dist_valid(observer->point1x, observer->point1y, map_pos.x, map_pos.y)
-				&& map_get_field(*lastpointx, *lastpointy) >= 0 && !endrequest) {
-			set_point_to_lastpoint(&observer->point2x, &observer->point2y,
-					*lastpointx, *lastpointy);
+		set_point_to_lastpoint(&observer->point2x, &observer->point2y, *lastpointx, *lastpointy);
 
-			//zuletzt gueltigen Endpunkt auf Stack sichern
-			push_stack_pos_line(observer->point1x, observer->point1y,
-					*lastpointx, *lastpointy);
+		//zuletzt gueltigen Endpunkt auf Stack sichern
+		push_stack_pos_line(observer->point1x, observer->point1y,*lastpointx, *lastpointy);
 
-			set_point_to_lastpoint(lastpointx, lastpointy, 0, 0);
-			set_point_to_lastpoint(&observer->point1x, &observer->point1y, 0, 0);
-			*behavstate = (endrequest) ? TRACK_END : 0; // weiter mit Startpunktsuche
-			return True;
-		}
+		//letzten gemerkten Punkt wieder als ungueltig kennzeichnen
+	    set_point_to_lastpoint(lastpointx, lastpointy, 0, 0);
 
-		if (endrequest) // Verhaltensende nach Anforderung
-			*behavstate = TRACK_END;
+	} else {
+		//Punkt auf Nebenbahn hat hier keine Hinderniswahrscheinlichkeit und ist noch nicht befahren
 
-		return False; //Verhalten erst mal beendet
-
-
-	} else { //Punkt auf Nebenbahn hat keine Hinderniswahrscheinlichkeit
-
-		// Abstand zum Startpunkt muss gueltig sein
-		if (!(dist_valid(observer->point1x, observer->point1y, map_pos.x, map_pos.y))) {
-			if (endrequest)
-				*behavstate = TRACK_END;
-
-			return False;
-		}
-
-		// gueltigen Zwischenpunkt merken
+		// aktuellen gueltigen Zwischenpunkt der Nebenbahn merken; wird als Endepunkt genommen bei Hindernis auf Nebenbahn
 		set_point_to_lastpoint(lastpointx, lastpointy, map_pos.x, map_pos.y);
 
 		// falls sich bei diesem gueltigen Endpunkt herausstellt, dass der vorhin ermittelte Startpunkt nun Hinderniswert besitzt, so wird der Endpunkt zum Startpunkt
@@ -389,23 +389,30 @@ static uint8_t observe_get_endpoint(int8_t checkside, uint8_t * behavstate,
 		if (map_get_field(observer->point1x, observer->point1y) < 0) {
 			set_point_to_lastpoint(&observer->point1x, &observer->point1y,
 					*lastpointx, *lastpointy); // Startpunkt ueberschreiben
-			if (endrequest)
-				*behavstate = TRACK_END;
+		    *behavstate = (endrequest) ? TRACK_END : 1;// bleibt in Endepunktsuche wenn nicht Endeanforderung kam
+
 			set_point_to_lastpoint(lastpointx, lastpointy, 0, 0);
 			set_point_to_lastpoint(&observer->point2x, &observer->point2y, 0, 0);
-			return True;
+			return True; // gueltiger Endepunkt ermittelt
 		}
 
-		// freien befahrbaren Punkt merken; bei Endeanforderung ist dies der aktuelle Endpunkt
-		if (!endrequest) // weiter nur falls kein Ende kommen soll
+		// bei Nicht Ende geht Endesuche weiter;bei Endeanforderung ist dies der aktuelle Endpunkt fuer den Stack
+		if (!endrequest) // weiter nur falls kein Ende kommen soll sonst ist dies nicht der echte Endpunkt
 			return False;
 
-		// gueltigen Endepunkt merken
-		set_point_to_lastpoint(&observer->point2x, &observer->point2y,
-				*lastpointx, *lastpointy);
+		// gueltigen Endepunkt in Observervar vermerken
+		set_point_to_lastpoint(&observer->point2x, &observer->point2y, *lastpointx, *lastpointy);
+
+		//Merken der Strecke bei Endanforderung auf dem Stack
+		push_stack_pos_line(observer->point1x, observer->point1y, *lastpointx, *lastpointy);
+
 	}
 
+    // weiter mit Startpunktsuche wenn nicht Ende gefordert
 	*behavstate = (endrequest) ? TRACK_END : 0;
+
+	// solange die Startpunktsuche keinen neuen Startpunkt ermittelt hat, ist dieser initial
+	set_point_to_lastpoint(&observer->point1x, &observer->point1y, 0, 0);
 
 	return True; // Streckenpunkt ist hier gueltig
 
@@ -428,8 +435,7 @@ void bot_observe_left_behaviour(Behaviour_t * data) {
 	switch (observe1_state) {
 	case OBSERVE_SEARCH_STARTPOINT:
 		// Eingang fuer Startpunktsuche
-		if (!observe_get_startpoint(CHECK_SIDE, &observe_trackleft,
-				&lastCorrectionTimeObserveLeft))
+		if (!observe_get_startpoint(CHECK_SIDE, &observe_trackleft, &observe1_state))
 			break;
 
 		observe1_state = OBSERVE_SEARCH_ENDPOINT;
@@ -439,11 +445,8 @@ void bot_observe_left_behaviour(Behaviour_t * data) {
 		// Anfangspunkt wurde bestimmt und ist hier auf der Suche nach dem Endpunkt; ein Endpunkt wird als Ende der Strecke
 		// vom bereits vorhandenen Startpunkt erkannt, wenn der Botbereich neben dem Bot nicht mehr befahren werden kann; es
 		// wird dann der zuletzt gemerkte befahrbare Punkt als Endpunkt genommen
-		// nur alle x ms Mapvergleich
-
 		if (!observe_get_endpoint(CHECK_SIDE, &observe1_state,
-				&observe_trackleft, &lastpointleft_x, &lastpointleft_y,
-				&lastCorrectionTimeObserveLeft))
+				&observe_trackleft, &lastpointleft_x, &lastpointleft_y))
 			break;
 
 		break;
@@ -451,6 +454,7 @@ void bot_observe_left_behaviour(Behaviour_t * data) {
 		if (observe_trackleft.point2x == 0 && observe_trackleft.point2y == 0)
 			set_point_to_lastpoint(&observe_trackleft.point1x,
 					&observe_trackleft.point1y, 0, 0);
+
 		return_from_behaviour(data);
 		break;
 	}
@@ -470,7 +474,8 @@ void bot_observe_left(Behaviour_t * caller) {
 		set_point_to_lastpoint(&observe_trackleft.point2x,
 				&observe_trackleft.point2y, 0, 0);
 		set_point_to_lastpoint(&lastpointleft_x, &lastpointleft_y, 0, 0);
-		lastCorrectionTimeObserveLeft = 9999;
+		set_point_to_lastpoint(&observe_lastpos.point1x, &observe_lastpos.point1y, 0, 0);
+
 	}
 }
 
@@ -491,8 +496,7 @@ void bot_observe_right_behaviour(Behaviour_t * data) {
 	switch (observe2_state) {
 	case OBSERVE_SEARCH_STARTPOINT:
 		// Eingang fuer Startpunktsuche
-		if (!observe_get_startpoint(CHECK_SIDE, &observe_trackright,
-				&lastCorrectionTimeObserveRight))
+		if (!observe_get_startpoint(CHECK_SIDE, &observe_trackright, &observe2_state))
 			break;
 
 		observe2_state = OBSERVE_SEARCH_ENDPOINT;
@@ -503,11 +507,8 @@ void bot_observe_right_behaviour(Behaviour_t * data) {
 		// Anfangspunkt wurde bestimmt und ist hier auf der Suche nach dem Endpunkt; ein Endpunkt wird als Ende der Strecke
 		// vom bereits vorhandenen Startpunkt erkannt, wenn der Botbereich neben dem Bot nicht mehr befahren werden kann; es
 		// wird dann der zuletzt gemerkte befahrbare Punkt als Endpunkt genommen
-		// nur alle x ms Mapvergleich
-
 		if (!observe_get_endpoint(CHECK_SIDE, &observe2_state,
-				&observe_trackright, &lastpointright_x, &lastpointright_y,
-				&lastCorrectionTimeObserveRight))
+				&observe_trackright, &lastpointright_x, &lastpointright_y))
 			break;
 
 		break;
@@ -515,6 +516,7 @@ void bot_observe_right_behaviour(Behaviour_t * data) {
 		if (observe_trackright.point2x == 0 && observe_trackright.point2y == 0)
 			set_point_to_lastpoint(&observe_trackright.point1x,
 					&observe_trackright.point1y, 0, 0);
+
 		return_from_behaviour(data);
 		break;
 	}
@@ -533,7 +535,8 @@ void bot_observe_right(Behaviour_t * caller) {
 		set_point_to_lastpoint(&observe_trackright.point2x,
 				&observe_trackright.point2y, 0, 0);
 		set_point_to_lastpoint(&lastpointright_x, &lastpointright_y, 0, 0);
-		lastCorrectionTimeObserveRight = 9999;
+		set_point_to_lastpoint(&observe_lastpos.point2x, &observe_lastpos.point2y, 0, 0);
+
 	}
 
 }
@@ -620,83 +623,6 @@ static void set_nextline(int16_t x1, int16_t y1, int16_t x2, int16_t y2,
 	}
 }
 
- /*!
- * Routine zur Entscheidungsfindung, welche Richtung (links oder rechts) der bot nach Ankunft vor Hindernis nehmen soll; Routine
- * wird seitenabhaengig aufgerufen und gibt nach Gueltigkeitspruefung des Punktes in der Map die Gueltigkeit zurueck
- * koennen hierbei vertauscht werden oder in point1x/y die zum Bot nahesten Werte gespeichert
- * @param observe_track zu pruefende Seitenbahn mit Start- und Endpunkt aus Ermittlung des Observers
- * @param observe_track_to_push Koordinaten der anderen Seitenbahn, wird auf Stack gelegt als Alternativweg zum spaeteren Anfahren
- * @param checkside zu pruefende Seite der Bahn (TRACKLEFT TRACKRIGHT)
- * @param *side_to_go Rueckgabe der Seite, zu der der bot sich bewegen soll; 0 falls nicht gueltig
- * @return True falls die zu pruefende Seite gueltig ist, bot kann sich zu dieser Seite hinbewegen, sonst false
- */
- static uint8_t check_side_for_decision(trackpoint_t observe_track,
-		trackpoint_t observe_track_to_push, int8_t checkside,
-		int8_t * side_to_go) {
-	position_t map_pos;
-	int8_t mapval = 0;
-
-	*side_to_go = 0;
-
-	// Strecke muss vom Observer als gueltig gesetzt worden sein, nur dann gehts weiter
-	if (observe_track.point1x == 0 && observe_track.point1y == 0)
-		return False;
-
-	// Punkt laut Map holen
-	mapval = getpoint_side_dist(BOT_DIAMETER - SIDEDIST_MINUS, 0, checkside,
-			&map_pos);
-
-	//Mapwert darf keine Hinderniswahrscheinlichkeit haben und noch nicht befahren worden sein
-	if (!(mapval < 0 || mapval >= MAP_TRACKVAL)) {
-
-		//Observer-Track init.
-		set_nextline(observe_track.point1x, observe_track.point1y,
-				observe_track.point2x, observe_track.point2y, 0);
-
-		//gueltige Seite zurueckgeben
-		*side_to_go = checkside;
-
-		// Alternative auf Stack speichern; d.h. die vom anderen Observer ermittelte gueltige Strecke auf Stack merken
-		push_stack_pos_line(observe_track_to_push.point1x,
-				observe_track_to_push.point1y, observe_track_to_push.point2x,
-				observe_track_to_push.point2y);
-
-		return True; // Seite ist gueltig und raus
-	}
-	return False; // Seite ungueltig
-}
-
-
- /*!
- * Entscheidungsfindung, welche Richtung (links oder rechts) der bot nach Ankunft vor Hindernis nehmen soll; Routine
- * checkt die Gueltigkeit zuerst der rechten Seite (damit bevorzugter Weg) und erst dann die linke Seite
- * @param observe_trackleft  linke Seitenbahn mit Start- und Endpunkt aus Ermittlung des Observers
- * @param observe_trackright rechte Seitenbahn mit Start- und Endpunkt aus Ermittlung des Observers
- * @param *side_to_go Rueckgabe der Seite, zu der der bot sich bewegen soll; 0 falls nicht gueltig
- * @return True falls eine gueltige Seite links oder rechts ermittelt werden konnte
- */
- uint8_t decision_for_one_direction(trackpoint_t observe_trackleft,
-		trackpoint_t observe_trackright, int8_t * side_to_go) {
-
-	*side_to_go = 0; // erst mal init. mit kein Weg gueltig
-
-	// zuerst nextline auf 0, ist keiner nah so ist nextline 0
-	set_point_to_lastpoint(&nextline.point1x, &nextline.point1y, 0, 0);
-	set_point_to_lastpoint(&nextline.point2x, &nextline.point2y, 0, 0);
-
-	// Rechts ist ja die zuerst bevorzugte Richtung, also nach rechts gucken; dazu muss eine
-	if (check_side_for_decision(observe_trackright, observe_trackleft,
-			TRACKRIGHT, side_to_go))
-		return True;
-
-	// bei rechts ungueltig wird nun die linke Seite ueberprueft
-	if (check_side_for_decision(observe_trackleft, observe_trackright,
-			TRACKLEFT, side_to_go))
-		return True;
-
-	return False;
-
-}
 
 
 /* ==================================================================================
@@ -705,16 +631,15 @@ static void set_nextline(int16_t x1, int16_t y1, int16_t x2, int16_t y2,
 
 /* Zustaende des Verhaltens */
 #define CHECK_TRACKSIDE		0
-//#define GO_ON_TRACK		1
+#define GO_FORWARD          1
 #define AFTER_FORWARD		2
 #define ONWALL_TO_TRACK		3
 #define DELAY_AFTER_FORWARD 4
 #define TURN_TO_DESTINATION 5
-//#define GO_ON_WALL		6
-#define GET_LINE_FROM_STACK 7
-#define TURN_TO_NEAREST		8
-//#define GO_BACK			9
-#define GOTO_FIRST_DEST		10
+#define GET_LINE_FROM_STACK 6
+#define TURN_TO_NEAREST		7
+#define GOTO_FIRST_DEST		8
+#define CHECK_DIST	        9
 
 /*!
  * Das Fahrverhalten selbst; Fahren bis zu einem Hindernis, drehen zu einer Seite und merken des anderen Weges auf den Stack; waehrend der
@@ -722,59 +647,86 @@ static void set_nextline(int16_t x1, int16_t y1, int16_t x2, int16_t y2,
  * @param *data der Verhaltensdatensatz
  */
 void bot_drive_area_behaviour(Behaviour_t * data) {
-	static int8_t direct_choice = 0; // Entscheidungsrichtung
-
 	static uint8_t go_long_distance = 0; //Kennung ob nach Stackholen weit gefahren wurde
-
 	static uint32_t lastCheckTime = 0;
+	static uint8_t backward = False;	// Kennung auf Rueckwaerts gefahren wegen zu nah
+	static uint16_t disttodrive = 0;	//Abstand fuer das Vorwaertsfahren
 
 	position_t pos;
+
+	uint8_t free1;
+	uint8_t free2;
 
 	deactivateBehaviour(bot_cancel_behaviour_behaviour);	// Cancel-Verhalten abbrechen, damit es nicht ewig weiterlaeuft
 
 	switch (track_state) {
+
 	case CHECK_TRACKSIDE: //Vorwaeertsfahren mit Start der Observer
+
+        BLOCK_BEHAVIOUR(data, 500); // etwas warten
 
 		// anzufahrende naechste Strecke erst mal initialisieren
 		set_point_to_lastpoint(&nextline.point1x, &nextline.point1y, 0, 0);
 		set_point_to_lastpoint(&nextline.point2x, &nextline.point2y, 0, 0);
 
-		//Naechste anzufahrende Bahn vom Stack holen wenn die Bahnen nebenan schon befahren wurden oder Hindernis voraus
-		if (getpoint_side_dist(BOT_DIAMETER - SIDEDIST_MINUS, 0, TRACKLEFT, &pos)
-				>= MAP_TRACKVAL && getpoint_side_dist(BOT_DIAMETER
-				- SIDEDIST_MINUS, 0, TRACKRIGHT, &pos) >= MAP_TRACKVAL) {
+
+		if (check_haz_in_map() || (sensDistL <= 200 || sensDistR <= 200)) { //gar nicht erst fahren bei <20cm Hindernis
 			track_state = GET_LINE_FROM_STACK;
 			break;
 		}
 
-		if (check_haz_in_map()) { //Hindernis voraus erkannt
-			track_state = GET_LINE_FROM_STACK;
-			break;
-		}
-
-		//naechster Verhaltenszustand
-		track_state = DELAY_AFTER_FORWARD;
+       //naechster Verhaltenszustand nach diesen Pruefungen; notwendig damit Observer bereits
+       //laufen vor direktem Losfahren
+        track_state = GO_FORWARD;
 
 		//Observer starten zum Beobachten der Nebenspuren
 		start_observe_left_right();
 
-		//Verhalten zum Vorwaertsfahren bis Hindernis voraus
-		bot_goto_obstacle(data, DIST_AWARD_HAZ, 0);
+		//wird jetzt zum Startzeitpunkt des Vorausfahrens bereits was gesehen, dann in Abhaengigkeit davon
+		//einen Punkt in der Bahn voraus berechnen um Wegfreiheit laut Map zu bestimmen
+		 disttodrive = 900; //hoher init. Wert
+		 if (sensDistL < 400 || sensDistR < 400) {
+		 	disttodrive = (sensDistL < sensDistR) ? sensDistL - 50 : sensDistR - 50;	//in kurzer Entfernung Hind. gesehen
+		 	getpoint_side_dist(0, disttodrive, TRACKLEFT, &pos);  // Punkt etwas vor Hindernis berechnen
+         }
+         else
+          getpoint_side_dist(0, 250, TRACKLEFT, &pos); //nur etwas voraus Punkt berechnen wenn weiter gesehen
 
-		bot_cancel_behaviour(data, bot_goto_pos_behaviour, check_haz_in_map); //damit auch Abgrund erkannt wird beim Vorfahren
+         // Wegfreiheit bis zum Punkt auf Strecke voraus bestimmen; manchmal kein Hind gesehen aber schon in Map
+         free1 = map_way_free(x_pos, y_pos, pos.x,pos.y);
+
+	     // ist der Weg voraus nicht frei laut Map, dann gar nicht erst fahren und verwerfen
+		 if (!free1) {
+			track_state = GET_LINE_FROM_STACK;
+			LOG_DEBUG("Weg versperrt");
+			break;
+		  }
 
 		break;
+
+    case GO_FORWARD:  //nach bestandenen Pruefungen fuer Bahn voraus nun vorwaertsfahren
+        track_state = DELAY_AFTER_FORWARD;  //naechster Verhaltenszustand
+
+        //wenn bereits Hindernis voraus gesehen wurde, dann nur Fahren bis kurz vor dem Hindernis falls
+        //naemlich Hindernis wieder aus Blick der Sensoren verschwindet und nicht daran kleben bleibt
+        if (disttodrive < 900)
+         	bot_goto_dist(data, disttodrive, 1);  //bei kleinem Abstand mit goto_dist fahren
+        else
+		    bot_goto_obstacle(data, DIST_AWARD_HAZ, 0); //mit hohem Abstand voraus via obstacle
+
+        //damit auch Abgrund erkannt wird beim Vorfahren; obige Verhalten benutzen beide goto_pos
+		bot_cancel_behaviour(data, bot_goto_pos_behaviour, check_haz_in_map);
+        break;
 
 	case DELAY_AFTER_FORWARD:
 		// kommt hierher, wenn das Fahrverhalten (cancel-Verhalten) Hindernis oder Abgrund voraus erkannt hat; hier wird etwas gewartet
 
 		//bei Abgrund etwas rueckwaerts fahren
-		if (border_fired) {
+		if (border_fired)
 			bot_drive_distance(data, 0, -BOT_SPEED_NORMAL, OPTIMAL_DISTANCE/10); // rueckwaerts bei Abgrund
-		}
+
 		lastCheckTime = TIMER_GET_TICKCOUNT_16; // Var auf Systemzeit setzen, damit etwas zeit vergehen kann im naechsten Zustand
 		track_state = AFTER_FORWARD; //naechster Verhaltenszustand
-		BLOCK_BEHAVIOUR(data, 500); // etwas warten
 
 		break;
 
@@ -794,15 +746,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 		if (!timer_ms_passed(&lastCheckTime, CORRECTION_DELAY + 300))
 			break;
 
-		//naechster Verhaltenszustand
-		track_state = TURN_TO_NEAREST;
-
-		// Entscheidungslogik welche Richtung genommen wird; Alternative wird auf Stack gespeichert und der anzufahrende Weg in nextline
-		if (decision_for_one_direction(observe_trackleft, observe_trackright,
-				&direct_choice))
-			break;
-
-		// hier war keine Richtungsentscheidung moeglich, daher naechsten Weg from Stack holen
+		// der naechste Weg liegt immer auf dem Stack und von dort holen
 		track_state = GET_LINE_FROM_STACK;
 
 		break;
@@ -811,9 +755,12 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 		// in nextline befindet sich nun der naechste Fahrweg mit Start- und Endpunkt; hier wird der bot nun zum naechsten Zielpunkt ausgerichtet; das Ausrichten
 		// haette auch Entfallen koennen weil ja sowieso direkt mit goto_pos gefahren wird, aber so wird erst in die Richtung des Fahrens gesehen und es kann schon
 		// die Map aktualisiert und Hindernis gecheckt werden vor Start des Fahrverhaltens selbst
+		// kommt nach dem Stackholen hierher
 
 		//naechster Verhaltenszustand
 		track_state = ONWALL_TO_TRACK;
+
+		backward=False; //init. vor dem naechsten Verhaltenszustand
 
 		//Drehen des Bots zum nahesten Punkt bei Gueltigkeit desselben
 		if (nextline.point1x != 0 || nextline.point1y != 0)
@@ -825,50 +772,88 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 	case ONWALL_TO_TRACK:
 		//bot ist hier zum naechsten Zielpunkt ausgerichtet und faehrt nun dahin
 		// 2stufig zu einem weiten Zielpunkt fahren, damit Map aktualisiert werden kann ; zuerst bis 30cm ranfahren und dann je nach Mapwert weiter
-		// das Fahrverhalten greift hier nur fuer weite Distanzen (nach Stackholen)
+		// das Fahrverhalten greift hier nur fuer nicht ganz nahe Distanzen
+       BLOCK_BEHAVIOUR(data, 500); // etwas warten
+
+        //Nach Drehung links und Abstand rechts ist zu klein (oder umgedreht) rueckwaerts fahren; der Punkt nebenan ist etwas vor seitlich und der bot dreht sich
+        //somit zum Punkt aber etwas schraeg und der rechte Sensor ist etwas weiter weg als der linke (oder umgedreht), der bei zu nah unendlich liefert; also der von Wand weitere Sensor
+        //wird zur Pruefung herangezogen, da bei zu nah der andere keinen gueltigen sinnvollen Wert liefert
+        if (!backward && (sensDistR <= DIST_AWARD_HAZ || sensDistL <= DIST_AWARD_HAZ)) {
+         	//etwas zurueck um Map zu checken
+        		bot_drive_distance(data, 0, -BOT_SPEED_NORMAL, 5);  // rueckwaerts bei Abgrund
+        		//direct_choice=0;//beim naechsten Mal immer noch zu nah Stackholen
+        		backward=True;  // Kennung auf rueckwaerts gefahren setzen, da nur 1x erlaubt
+        		break;// in aktuellem Eingang drin bleiben
+        }
+
+        // Nach Ausrichtung zum Ziel darf kein Hind. in geringem Abstand voraus zu sehen sein
+        if (check_haz_in_map()) {
+        	track_state = GET_LINE_FROM_STACK;
+        	LOG_DEBUG("Hind voraus");
+         	break;
+        }
 
 		//naechster Verhaltenszustand
 		track_state = GOTO_FIRST_DEST;
 
-		//Mapwert des Zielpunktes ermitteln; hat dieser Hinderniswert, dann zuerst den anderen Punkt anfahren um sich diesem hier von der
-		//anderen Seite zu naehern
-		if (map_get_field(nextline.point1x, nextline.point1y) < 0) {
-			track_state = TURN_TO_DESTINATION; //Zustand zum Anfahren des anderen Punktes
-			break;
+		//Abstand des bots zum ersten Zielpunkt bestimmen
+		int16_t dist_to_point = sqrt(get_dist(nextline.point1x, nextline.point1y, x_pos, y_pos));
 
-		}
+		//Kennung fuer grossen Abstand zum Zielpunkt init.
+        go_long_distance = (dist_to_point>150) ? True : False;
 
-		//Abstand des bots zum ersten Zielpunkt bestimmen (hier mal mit Ziehen der Wurzel-spaeter vielleicht mal mit Quadratwert)
-		int16_t dist_to_point = sqrt(get_dist(nextline.point1x,
-				nextline.point1y, x_pos, y_pos));
-
-		go_long_distance = False; //Kennung fuer grossen Abstand zum Zielpunkt init.
-
-
-		//fuer grossen Abstand zum Zielpunkt (nach Stackholen) wird hier gefahren bis Hindernis etwas voraus gesehen wird; dadurch kann die Map
+		//fuer grossen Abstand zum Zielpunkt wird hier gefahren bis Hindernis etwas voraus gesehen wird; dadurch kann die Map
 		// aktualisiert werden und dann vor dem weiteren Ranfahren Entscheidungen getroffen werden
-		if (dist_to_point > 300) {
+		if (dist_to_point > 400) {
+			//es wird eine weite Distanz zurueckgelegt
 
-			//es wird eine lange Distanz zurueckgelegt
-			go_long_distance = True;
+            track_state = CHECK_DIST;// Restweg ermitteln nach Zuschlagen von cancel
 
-			//track_state = TRACK_END;
-			bot_goto_dist(data, dist_to_point - 300, 1); // bis 300mm vor Ziel
+			bot_goto_dist(data, dist_to_point - 400, 1); // bis 400mm vor Ziel
 
 			//damit bot nicht auf seinem weiten Weg zum Zielpunkt in den Abgrund faellt
 			bot_cancel_behaviour(data, bot_goto_pos_behaviour, check_haz_in_map);
 		}
+
+		break;
+
+    case CHECK_DIST:
+        //bot kommt nach langer Fahrt zum Startpunkt der naechsten Strecke hier an, bei Abbruch,
+        //also Abbruchbed erfuellt kann es sein, dass ein Hindernis den Weg versperrt und es noch recht weit
+        //zum Ziel ist; damit diese Strecke nicht verloren geht, Weg auf Stack nehmen
+
+		// Bot hat sein Ziel erreicht ohne wegen Hindernis voraus Fahrt abgebrochen zu haben
+		if (!check_haz_in_map()) {
+			track_state = GOTO_FIRST_DEST; //naechster Zustand ohne Abbruch
+			break;
+		}
+
+		//hier wurde Fahrt unterbrochen auf Weg zu P1 wegen Hindernis und anzufahrende Strecke wird auf den Stack gesichert nach
+		//Tausch mit letztem Eintrag, der gleich der erste sein wird; es besteht immerhin damit die Chance, dass in
+		// einem spaeteren Anfahrversuch der Weg dorthin frei ist; besser waere vorn in den Stack zu schieben aber erst mal so
+		static trackpoint_t p_temp; //zum Merken beim Vertauschen
+		//gibt es noch einen Stackeintrag, so wird die aktuell anzufahrende Strecke (nextline) auf den Stack gelegt und darueber
+		//als gueltige naechste Strecke wieder den letzten Stackeintrag
+		if (pop_stack_pos_line(&p_temp.point1x, &p_temp.point1y,
+				&p_temp.point2x, &p_temp.point2y)) {
+			push_stack_pos_line(nextline.point1x, nextline.point1y,
+					nextline.point2x, nextline.point2y);
+			push_stack_pos_line(p_temp.point1x, p_temp.point1y, p_temp.point2x,
+					p_temp.point2y);
+		}
+		track_state = GET_LINE_FROM_STACK; //weiterfahren mit der naechsten gueltigen Strecke
+
 		break;
 
 	case GOTO_FIRST_DEST:
-		//bot ist hier nicht mehr weit von dem Zielpunkt entfernt und kann nun naeher ranfahren; Mapwerte sollten hier voraus vorliegen
-
+		//bot ist hier nicht mehr weit von dem Start-Zielpunkt der naechsten Bahn entfernt und kann nun naeher ranfahren; Mapwerte sollten hier voraus vorliegen
+		BLOCK_BEHAVIOUR(data, 500); // etwas warten
 		//naechster Verhaltenszustand
 		track_state = TURN_TO_DESTINATION;
 
 		//falls weit gefahren wurde und Hindernis zum naechsten Zielpunkt erkannt wird aber der andere Streckenpunkt freie Fahrt bietet, dann einfach
 		//Punkte tauschen und den anderen Punkt zuerst anfahren um sich diesem von der anderen Seite zu naehern
-		if (((go_long_distance && check_haz_in_map()) || map_get_field(
+		if (go_long_distance && ((check_haz_in_map()) || map_get_field(
 				nextline.point1x, nextline.point1y) < 0) && map_way_free(x_pos,
 				y_pos, nextline.point2x, nextline.point2y))
 			set_nextline(0, 0, 0, 0, True); //Werte egal da nextline nur getauscht
@@ -878,74 +863,91 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 
 		lastCorrectionTime = 0; //Ablaufzeit init.
 
-		//bei geringem Abstand nur Abgrund ueberwachen sonst ebenfalls auch Hindernisse mit Sensoren
-		if (pointdist_low(nextline.point1x, nextline.point1y, x_pos, y_pos)) {
+
+		//bei kleinem Abstand nur Abgrund ueberwachen sonst ebenfalls auch Hindernisse mit Sensoren
+		if (go_long_distance)
+			bot_cancel_behaviour(data, bot_goto_pos_behaviour, check_haz_in_map); // Abgrund und Abstandsensorcheck bei langer Entfernung (nach Stackholen oder rueckwaerts wg. zu nah)
+		else
 			bot_cancel_behaviour(data, bot_goto_pos_behaviour,
-					check_border_fired); // kurzer Abstand nur Abgrundcheck
-		} else
-			bot_cancel_behaviour(data, bot_goto_pos_behaviour, check_haz_in_map); // Abgrund und Abstandsensorcheck
+					check_border_fired); // kurzer Abstand nur Abgrundcheck oder sehr nah
 
 		break;
 
 	case TURN_TO_DESTINATION:
 		//bot ist hier beim ersten Zielpunkt angekommen oder Cancelverhalten hat das Fahren dorthin unterbrochen wegen Hindernis oder Abgrund
 
-		//nach Abgrund etwas rueckwaerts und weiter mit Stackholen
+		//nach Abgrund etwas rueckwaerts
 		if (border_fired) {
-			bot_drive_distance(data,0,-BOT_SPEED_NORMAL,OPTIMAL_DISTANCE/10);
+			bot_drive_distance(data, 0, -BOT_SPEED_NORMAL, OPTIMAL_DISTANCE/10);
 			border_fired = False;
-			track_state = GET_LINE_FROM_STACK;
 			break;
 		}
+		BLOCK_BEHAVIOUR(data, 500); // etwas warten
 
 		//Ausrichten auf den Endpunkt der Fahrstrecke; ebenfalls wieder zum Aktualisieren der Map vor dem Anfahren selbst
-		bot_turn(data, calc_angle_diff(nextline.point2x - x_pos,
-				nextline.point2y - y_pos));
+		bot_turn(data, calc_angle_diff(nextline.point2x - x_pos,nextline.point2y - y_pos));
 
 		//naechster Verhaltenszustand, welches wiederum der Starteintritt des Verhaltens selbst ist und geht hiermit von vorn los
 		track_state = CHECK_TRACKSIDE;
+
 		break;
 
 	case GET_LINE_FROM_STACK:
-		//kommt hierher, wenn Bot weder nach linsk noch rechts fahren kann und deswegen wird hier eine gemerkte Fahrstrecke
-		//vom Stack geholt und angefahren
+		//kommt hierher, wenn  die naechste Fahrstrecke zu holen ist; kann sowohl die Bahn daneben sein als auch eine weit
+		//entfernte Strecke, die ehemals eine Wegalternative war
+
+        //etwas hier verbleiben, damit Observer sicher gestoppt sind
+		if (!timer_ms_passed(&lastCheckTime, CORRECTION_DELAY + 300))
+			break;
 
 		// auf jeden Fall hier Stop der Obserververhalten
-		bot_stop_observe();
+		if (!endrequest)
+		  bot_stop_observe();
 
 		// Weg vom Stack holen und Ende falls leer
-		if (!pop_stack_pos_line(&nextline.point1x, &nextline.point1y,
-				&nextline.point2x, &nextline.point2y)) {
+		if (!pop_stack_pos_line(&nextline.point1x, &nextline.point1y, &nextline.point2x, &nextline.point2y)) {
+			LOG_DEBUG("Stack leer");
 			track_state = TRACK_END;
 			break;
 		}
 
-		// der naheste Punkt zum Bot laut Luftdistance wird nextline.x1y1
-		set_nextline(nextline.point1x, nextline.point1y, nextline.point2x,
-				nextline.point2y, 0);
-
-		//Mapwerte des Start- und Endepunktes holen
-		int8_t mapval1 = map_get_field(nextline.point1x, nextline.point1y);
-		int8_t mapval2 = map_get_field(nextline.point2x, nextline.point2y);
+		// der naheste Punkt zum Bot laut Luftdistance wird nextline
+		set_nextline(nextline.point1x, nextline.point1y, nextline.point2x, nextline.point2y, 0);
 
 		//pruefen, ob Wege zu den Punkten frei sind und Freikennungen speichern
-		uint8_t free1;
-		uint8_t free2;
-#ifdef DEBUG_DRIVE_AREA
-		TIMER_MEASURE_TIME(free1 = map_way_free(x_pos, y_pos, nextline.point1x, nextline.point1y); \
-		free2 = map_way_free(x_pos, y_pos, nextline.point2x, nextline.point2y));
-#else
 		free1 = map_way_free(x_pos, y_pos, nextline.point1x, nextline.point1y);
 		free2 = map_way_free(x_pos, y_pos, nextline.point2x, nextline.point2y);
-#endif
 
-		//falls nur der weiter liegende Punkt freie Fahrt voraus bietet, dann Reihenfolge vertauschen
-		//sind beide eigentlich nicht anfahrbar laut Map aber der weiter liegende hat hoehere Freiwahrscheinlichkeit,
-		//dann ebenfalls tauschen
-		if ((free2 && !free1) || (!free1 && !free2 && (mapval2 > mapval1)))
-			set_nextline(0, 0, 0, 0, True); //Werte egal da nextline nur Werte vertauscht
 
-		//naechster Verhaltenszustand mit Ausrichten auf den naeheren Punkt laut nextline
+        // falls Weg zu keinem Punkt frei, dann mit dem naechsten Stackweg tauschen; ist dieser auch nicht befahrbar,
+        // wird dieser verworfen und der Weg
+        if (!free1 && !free2) {
+
+          LOG_DEBUG("Stackweg nicht frei");
+
+          static trackpoint_t pt;  //zum Merken beim Vertauschen
+
+		  if (pop_stack_pos_line(&pt.point1x, &pt.point1y, &pt.point2x, &pt.point2y)) {
+
+
+		    free1 = map_way_free(x_pos, y_pos, pt.point1x, pt.point1y);
+		    free2 = map_way_free(x_pos, y_pos, pt.point2x, pt.point2y);
+
+            if (!free1 && !free2) {
+        	  LOG_DEBUG("Folgeweg auch nicht frei");  //Weg verworfen wenn nicht anfahrbar->naechsten Stackweg holen
+              break;
+            }
+
+		 	//falls naechster Stackweg auch nicht frei, dann weiter Stackwege holen bis zum Ende
+		 	//hier ist aber der Folgeweg anfahrbar und wird getauscht mit vorher geholtem, noch nicht anfahrbarem Weg
+		 	push_stack_pos_line(nextline.point1x, nextline.point1y, nextline.point2x, nextline.point2y);	//wieder auf Stack
+		 	push_stack_pos_line(pt.point1x, pt.point1y, pt.point2x, pt.point2y);	//wieder auf Stack
+		 	LOG_DEBUG("Weg mit Folgeweg getauscht");
+		 	break;
+		   }
+
+        }
+		//naechster Verhaltenszustand zum Anfahren der naechsten Bahn mit Ausrichten auf den naeheren Punkt laut nextline
 		track_state = TURN_TO_NEAREST;
 		break;
 

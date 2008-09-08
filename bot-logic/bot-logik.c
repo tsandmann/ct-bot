@@ -269,9 +269,10 @@ void bot_behave_init(void) {
 	#ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
 		// Registrierung des Handlers zur Behandlung des Abgrundes im Area-Verhalten
 		register_emergency_proc(&border_drive_area_handler);
-		// Observer bekomemn hohe Prio um noch vor goto_pos zum Zuge zu kommen
-		insert_behaviour_to_list(&behaviour, new_behaviour(170, bot_observe_left_behaviour, INACTIVE));
-		insert_behaviour_to_list(&behaviour, new_behaviour(171, bot_observe_right_behaviour, INACTIVE));
+		// Observer bekomemn hohe Prio um noch vor goto_pos zum Zuge zu kommen;
+		// links hoeher als rechts, damit rechts zuletzt Werte in den Stack schreibt
+		insert_behaviour_to_list(&behaviour, new_behaviour(171, bot_observe_left_behaviour, INACTIVE));
+		insert_behaviour_to_list(&behaviour, new_behaviour(170, bot_observe_right_behaviour, INACTIVE));
 		insert_behaviour_to_list(&behaviour, new_behaviour(72, bot_drive_area_behaviour, INACTIVE));
     #endif
 
