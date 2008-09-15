@@ -46,6 +46,7 @@ uint32_t EEPROM eefat[10] = {0};	/*!< EEPROM-Cache fuer FAT-Eintraege */
 #include "gui.h"
 #include "mini-fat.h"
 #include "log.h"
+#include "led.h"
 
 
 #ifndef MINI_FAT_DEBUG
@@ -225,6 +226,11 @@ static uint32_t check_fragmentation(uint32_t block, void * buffer) {
 		display_printf("Kein FAT16");
 #endif
 		LOG_ERROR("Keine FAT16-Partition");
+#ifdef LED_AVAILABLE
+#ifndef TEST_AVAILABLE
+			LED_on(LED_TUERKIS);
+#endif	// TEST_AVAILABLE
+#endif	// LED_AVAILABLE
 		return 0xffffffff;
 	}
 	uint16_t fat_offset = p_bs->reserved_sect + first_sect;
@@ -259,6 +265,11 @@ static uint32_t check_fragmentation(uint32_t block, void * buffer) {
 		display_printf("Datei fragmentiert  ");
 #endif
 		LOG_ERROR("Datei ist fragmentiert!");
+#ifdef LED_AVAILABLE
+#ifndef TEST_AVAILABLE
+			LED_on(LED_TUERKIS);
+#endif	// TEST_AVAILABLE
+#endif	// LED_AVAILABLE
 		return 0xffffffff;
 	}
 	/* alles gut */
@@ -297,24 +308,38 @@ uint32_t mini_fat_find_block_P(const char * filename, void * buffer, uint32_t en
 	if (block != 0)	return check_fragmentation(block, buffer);
 
 #ifdef DISPLAY_MINIFAT_INFO
-	display_cursor(2,1);
-	display_printf("Find %s: ", filename);
+	display_cursor(2, 1);
+	char name[7];
+	strncpy_P(name, filename, 8);
+	display_printf("Find %s: ", name);
 #endif	// DISPLAY_MINIFAT_INFO
 
 	/* sequenziell die Karte durchsuchen */
 	for (block=0; block<end_addr; block++) {
 #ifdef DISPLAY_MINIFAT_INFO
-		display_cursor(2,13);
+		display_cursor(2, 13);
 		display_block(block);
 #endif	// DISPLAY_MINIFAT_INFO
-		if (mmc_read_sector(block, buffer) != 0) return 0xffffffff;
+		uint8_t result = mmc_read_sector(block, buffer);
+		if (result != 0) {
+#ifdef DISPLAY_MINIFAT_INFO
+			display_cursor(4, 10);
+			display_printf("Fehler %u", result);
+#endif	// DISPLAY_MINIFAT_INFO
+#ifdef LED_AVAILABLE
+#ifndef TEST_AVAILABLE
+			LED_on(LED_TUERKIS);
+#endif	// TEST_AVAILABLE
+#endif	// LED_AVAILABLE
+			return 0xffffffff;
+		}
 		if (strcmp_P((char *)buffer, filename) == 0) {
 			/* gefunden, Adresse ins EEPROM schreiben */
 			mini_fat_store_adr(++block);
 #ifdef DISPLAY_MINIFAT_INFO
-			display_cursor(4,1);
+			display_cursor(4, 1);
 			display_printf("Found:");
-			display_cursor(4,7);
+			display_cursor(4, 7);
 			display_block(block);
 #endif	// DISPLAY_MINIFAT_INFO
 			return check_fragmentation(block, buffer);
@@ -356,16 +381,16 @@ void mini_fat_clear_file(uint32_t file_start, void * buffer) {
 	display_screen = i;
 	display_clear();
 	mini_fat_display();
-	display_cursor(2,1);
+	display_cursor(2, 1);
 	display_printf("Start:");
-	display_cursor(2,7);
+	display_cursor(2, 7);
 	display_block(file_start);
 #endif	// DISPLAY_MINIFAT_INFO
 	uint32_t length = mini_fat_get_filesize(file_start, buffer) >> 9;
 #ifdef DISPLAY_MINIFAT_INFO
-	display_cursor(3,1);
+	display_cursor(3, 1);
 	display_printf("End:");
-	display_cursor(3,5);
+	display_cursor(3, 5);
 	display_block(file_start+length-1);
 #endif	// DISPLAY_MINIFAT_INFO
 	memset(buffer, 0, 512);	// Puffer leeren
@@ -378,10 +403,15 @@ void mini_fat_clear_file(uint32_t file_start, void * buffer) {
 			display_cursor(4, 10);
 			display_printf("Fehler %u", result);
 #endif	// DISPLAY_MINIFAT_INFO
+#ifdef LED_AVAILABLE
+#ifndef TEST_AVAILABLE
+			LED_on(LED_TUERKIS);
+#endif	// TEST_AVAILABLE
+#endif	// LED_AVAILABLE
 			return;
 		}
 #ifdef DISPLAY_MINIFAT_INFO
-		display_cursor(4,1);
+		display_cursor(4, 1);
 		display_block(addr);
 #endif	// DISPLAY_MINIFAT_INFO
 	}

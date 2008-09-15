@@ -164,7 +164,9 @@ static uint8_t mmc_read_block(uint8_t * cmd, void * buffer, uint16_t count) {
  */
 uint8_t mmc_enable(void) {
 	uint8_t result;
-	if (mmc_init_state != 0 && (result=mmc_init()) != 0) return result;
+	if (mmc_init_state != 0 && (result = mmc_init()) != 0) {
+		return result;
+	}
 	os_enterCS();
 	ENA_off(ENA_MMC);
 	SPI_MasterTransmit(-1);
@@ -195,7 +197,7 @@ static uint16_t wait_for_byte(uint8_t data) {
  * bereitet Lesen oder Schreiben eines Blocks vor
  * @param cmd	1. Byte des Kommandos an die Karte
  * @param addr	Adresse des Blocks in Byte
- * @return		0: alles ok, sonst Fehlercode
+ * @return		0: alles ok, sonst Fehlercode von mmc_enable()
  */
 static uint8_t prepare_transfer_spi(uint8_t cmd, uint32_t addr) {
 	/* Init-Check */
