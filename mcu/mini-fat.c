@@ -372,7 +372,14 @@ void mini_fat_clear_file(uint32_t file_start, void * buffer) {
 	/* Alle Bloecke der Datei mit dem 0-Puffer ueberschreiben */
 	uint32_t addr;
 	for (addr=file_start; addr<file_start+length; addr++) {
-		if (mmc_write_sector(addr, buffer) != 0) return;
+		uint8_t result = mmc_write_sector(addr, buffer);
+		if (result != 0) {
+#ifdef DISPLAY_MINIFAT_INFO
+			display_cursor(4, 10);
+			display_printf("Fehler %u", result);
+#endif	// DISPLAY_MINIFAT_INFO
+			return;
+		}
 #ifdef DISPLAY_MINIFAT_INFO
 		display_cursor(4,1);
 		display_block(addr);

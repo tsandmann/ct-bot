@@ -241,7 +241,7 @@ static uint8_t prepare_transfer_spi(uint8_t cmd, uint32_t addr) {
  * @param cmd		Kommando zum Lesen (0x51 fuer 512-Byte Block)
  * @param addr 		Adresse des Blocks
  * @param *buffer 	Zeiger auf Puffer fuer die Daten
- * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich, 3 bei Timeout
+ * @return 			0 wenn alles ok ist, 1 wenn prepare_transfer_spi() Fehler meldet, 3 bei Timeout
  */
 uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, void * buffer) {
 	/* cmd[] = {0x51,addr,addr,addr,0x00,0xFF} */
@@ -328,7 +328,7 @@ uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, void * buffer) {
  * Schreibt einen 512-Byte Sektor auf die Karte
  * @param addr 		Adresse des 512-Byte Blocks
  * @param *buffer 	Zeiger auf den Puffer
- * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 24, 2 wenn Timeout bei busy
+ * @return 			0 wenn alles ok ist, 1 wenn prepare_transfer_spi() Fehler meldet, 3 wenn Timeout bis zur Bestaetigung
  */
 uint8_t mmc_write_sector_spi(uint32_t addr, void * buffer) {
 	/* cmd[] = {0x58,addr,addr,addr,0x00,0xFF} */
