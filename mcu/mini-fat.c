@@ -310,7 +310,7 @@ uint32_t mini_fat_find_block_P(const char * filename, void * buffer, uint32_t en
 #ifdef DISPLAY_MINIFAT_INFO
 	display_cursor(2, 1);
 	char name[7];
-	strncpy_P(name, filename, 8);
+	strncpy_P(name, filename, sizeof(name) - 1);
 	display_printf("Find %s: ", name);
 #endif	// DISPLAY_MINIFAT_INFO
 
