@@ -400,43 +400,34 @@ uint8_t mmc_write_sector_spi(uint32_t addr, void * buffer) {
 	SPI_MasterTransmit(0xff);
 
 	/* warten, bis Karte nicht mehr busy */
+	uint8_t timeout_high = 0;
 #ifdef MMC_AGGRESSIVE_OPTIMIZATION
-#if 1
 	uint16_t timeout;
 	SPDR = 0xff;
 	asm volatile(
-		"ldi %A0,lo8(-1)	; timeout	\n\t"
-		"ldi %B0,hi8(-1)	; timeout	\n\t"
+		"ldi %A0,255		; timeout	\n\t"
+		"ldi %B0,1			; =			\n\t"
+		"mov %1,%B0			; 0x01ffff	\n\t"
+		"ldi %B0,255					\n\t"
 		"1:								\n\t"
-		"sbiw %0,1			; timeout--	\n\t"
+		"subi %A0,1			; timeout--	\n\t"
+		"sbci %B0,0						\n\t"
+		"sbc %1,__zero_reg__			\n\t"
 		"breq 2f						\n\t"
-		"adiw %0,1			; 2 nop		\n\t"
-		"sbiw %0,1			; 2 nop		\n\t"
-		"adiw %0,1			; 2 nop		\n\t"
-		"sbiw %0,1			; 2 nop		\n\t"
-		"nop				; 1 nop		\n\t"
+		"adiw r28,1			; 2 nop		\n\t"
+		"sbiw r28,1			; 2 nop		\n\t"
+		"adiw r28,1			; 2 nop		\n\t"
+		"sbiw r28,1			; 2 nop		\n\t"
 		"ldi r25,lo8(-1)	; 1 nop		\n\t"
-		"in r24,%1			;			\n\t"
-		"out %1,r25			;			\n\t"
+		"in r24,%2			;			\n\t"
+		"out %2,r25			;			\n\t"
 		"cpi r24,lo8(-1)	; == 0xff?	\n\t"
 		"brne 1b						\n\t"
 		"2:									"
-		: "=&y"	(timeout)
+		: "=&d"	(timeout), "=&r" (timeout_high)
 		: "M" (_SFR_IO_ADDR(SPDR))
 		: "r24", "r25"
 	);
-#else
-	uint16_t timeout = 0xffff;
-	/* warten, bis Karte mit "0xff" antwortet */
-	uint8_t response = 0;
-	SPDR = 0xff;
-	do {
-		if (--timeout == 0) break;
-		while(!(SPSR & (1<<SPIF))) {}
-		response = SPDR;
-		SPDR = 0xff;
-	} while (response != 0xff);
-#endif
 #else
 	uint16_t timeout = wait_for_byte(0xff);
 #endif	// MMC_AMMC_AGGRESSIVE_OPTIMIZATION
@@ -449,7 +440,7 @@ uint8_t mmc_write_sector_spi(uint32_t addr, void * buffer) {
 #endif	// LED_AVAILABLE
 	os_exitCS();
 
-	if (timeout == 0) {
+	if (timeout == 0 && timeout_high == 0) {
 		mmc_init_state = 1;
 		return 3;
 	}
