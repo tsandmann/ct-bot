@@ -1060,6 +1060,7 @@ static inline void delete(void) {
 #endif	// MCU
 	map_current_block_updated = False;
 	map_current_block = 0;
+	memset(map_buffer, 0, sizeof(map_buffer));
 #ifdef PC
 	os_signal_unlock(&lock_signal);
 #endif
