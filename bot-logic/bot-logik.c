@@ -275,6 +275,10 @@ void bot_behave_init(void) {
 		insert_behaviour_to_list(&behaviour, new_behaviour(170, bot_observe_right_behaviour, INACTIVE));
 		insert_behaviour_to_list(&behaviour, new_behaviour(72, bot_drive_area_behaviour, INACTIVE));
     #endif
+    
+    #ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
+      insert_behaviour_to_list(&behaviour, new_behaviour(71, bot_calc_wave_behaviour, INACTIVE));       
+    #endif
 
 	#ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 		// Verhalten um einer Linie zu folgen

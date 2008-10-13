@@ -39,7 +39,7 @@
 
 #include "mmc.h"
 #include "mmc-vm.h"
-#include "pos_stack.h"
+#include "pos_store.h"
 #include <stdlib.h>
 
 #ifdef RC5_AVAILABLE
@@ -117,9 +117,9 @@ static void bot_reset(void) {
 	rc5_emergency_stop();
 	/* Sensorauswertungen zuruecksetzen */
 	sensor_reset();
-#ifdef POS_STACK_AVAILABLE
-	/* Positionsstack loeschen */
-	pos_stack_clear();
+#ifdef POS_STORE_AVAILABLE
+	/* Positionsspeicher loeschen */
+	pos_store_clear();
 #endif
 	/* Display-Reset */
 	rc5_screen_set(0);

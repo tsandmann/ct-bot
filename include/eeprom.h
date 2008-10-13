@@ -184,7 +184,7 @@ uint8_t init_eeprom_man(uint8_t init);
  */
 static inline uint16_t ctbot_eeprom_read_word(const uint16_t * address) {
 	eeprom_word_t data;
-	unsigned eeprom_addr = (unsigned)address;
+	size_t eeprom_addr = (size_t)address;
 
 	data.bytes.byte_0 = ctbot_eeprom_read_byte((const uint8_t *)eeprom_addr++);
 	data.bytes.byte_1 = ctbot_eeprom_read_byte((const uint8_t *)eeprom_addr);
@@ -198,7 +198,7 @@ static inline uint16_t ctbot_eeprom_read_word(const uint16_t * address) {
  */
 static inline uint32_t ctbot_eeprom_read_dword(const uint32_t * address) {
 	eeprom_dword_t data;
-	unsigned eeprom_addr = (unsigned)address;
+	size_t eeprom_addr = (size_t)address;
 
 	data.bytes.byte_0 = ctbot_eeprom_read_byte((const uint8_t *)eeprom_addr++);
 	data.bytes.byte_1 = ctbot_eeprom_read_byte((const uint8_t *)eeprom_addr++);
@@ -228,7 +228,7 @@ static inline void ctbot_eeprom_read_block(void * dst, const void * src, size_t 
 static inline void ctbot_eeprom_write_word(uint16_t * address, uint16_t value) {
 	eeprom_word_t data;
 	data.word = value;
-	unsigned eeprom_addr = (unsigned)address;
+	size_t eeprom_addr = (size_t)address;
 
 	ctbot_eeprom_write_byte((uint8_t *)eeprom_addr++, data.bytes.byte_0);
 	ctbot_eeprom_write_byte((uint8_t *)eeprom_addr, data.bytes.byte_1);
@@ -242,7 +242,7 @@ static inline void ctbot_eeprom_write_word(uint16_t * address, uint16_t value) {
 static inline void ctbot_eeprom_write_dword(uint32_t * address, uint32_t value) {
 	eeprom_dword_t data;
 	data.dword = value;
-	unsigned eeprom_addr = (unsigned)address;
+	size_t eeprom_addr = (size_t)address;
 
 	ctbot_eeprom_write_byte((uint8_t *)eeprom_addr++, data.bytes.byte_0);
 	ctbot_eeprom_write_byte((uint8_t *)eeprom_addr++, data.bytes.byte_1);

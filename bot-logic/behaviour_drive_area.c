@@ -150,8 +150,8 @@ static void push_stack_pos_line(int16_t x1, int16_t y1, int16_t x2, int16_t y2) 
 		return; // ungueltige Werte werden nicht uebernommen
 
 	// Push der Einzelpunkte
-	pos_stack_push(x1, y1);
-	pos_stack_push(x2, y2);
+	pos_store_push(x1, y1);
+	pos_store_push(x2, y2);
 }
 
 /*!
@@ -166,12 +166,12 @@ static uint8_t pop_stack_pos_line(int16_t * x1, int16_t * y1, int16_t * x2,
 		int16_t * y2) {
 	int16_t x_i;
 	int16_t y_i;
-	if (!pos_stack_pop(&x_i, &y_i))
+	if (!pos_store_pop(&x_i, &y_i))
 		return False;
 	*x1 = x_i;
 	*y1 = y_i;
 
-	if (!pos_stack_pop(&x_i, &y_i))
+	if (!pos_store_pop(&x_i, &y_i))
 		return False;
 	*x2 = x_i;
 	*y2 = y_i;
@@ -267,9 +267,10 @@ static uint8_t endrequest = False;
 /*! Verhaltensroutine fuer beide Observer zur Ermittlung des Startpunktes der Nebenspur
  * Je nach zu checkender Botseite wird der Punkt in der Nachbarspur auf Anfahrbarkeit gecheckt
  * und hier der Startpunkt der nebenbahn ermittelt
- * @param checkside  zu checkende Seite (TRACKLEFT TRACKRIGHT)
- * @param *observe Zeiger auf die Koordinaten der Bahn, hier Startpunkt zurueckgegeben
- * @return True falls Startpunkt anfahrbar ist und zurueckgegeben wurde sonst False
+ * @param checkside		zu checkende Seite (TRACKLEFT TRACKRIGHT)
+ * @param *observe		Zeiger auf die Koordinaten der Bahn, hier Startpunkt zurueckgegeben
+ * @param *behavstate	Zeiger auf Status
+ * @return 				True falls Startpunkt anfahrbar ist und zurueckgegeben wurde sonst False
  */
 static uint8_t observe_get_startpoint(int8_t checkside, trackpoint_t * observe, uint8_t * behavstate) {
 	position_t map_pos;
@@ -954,7 +955,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 	default:
 		// am Ende des Verhaltens Observer stoppen
 		bot_stop_observe();
-		pos_stack_clear(); // Stack bereinigen
+		pos_store_clear(); // Stack bereinigen
 		return_from_behaviour(data);
 		break;
 	}
@@ -970,7 +971,7 @@ void bot_drive_area(Behaviour_t * caller) {
 	switch_to_behaviour(caller, bot_drive_area_behaviour, OVERRIDE);
 	track_state = CHECK_TRACKSIDE;
 	border_fired = False;
-	pos_stack_clear();
+	pos_store_clear();
 
 	/* Kollisions-Verhalten ausschalten  */
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE

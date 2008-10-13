@@ -35,8 +35,8 @@
 #define CLEAR_MAP_ON_INIT	/*!< Loescht die Karte, wenn der Bot gebootet wird */
 
 /* Es lohnt nicht gigantische Karten auszugeben, wenn sie nichts enthalten, daher hier zwei Varianten, um die Karte auf die realen Groesse zu reduzieren */
-//#define SHRINK_MAP_ONLINE		/*!< Wenn gesetzt, wird bei jedem Update der belegte Bereich der Karte protokolliert. Pro: schnelle ausgabe Contra permanenter aufwand  */
-#define SHRINK_MAP_OFFLINE		/*!< Wenn gesetzt, wird erst bei der Ausgabe der belegte Bereich der Karte berechnet. Pro: kein permanenter aufwand Contra: ausgabe dauert lange */
+#define SHRINK_MAP_ONLINE		/*!< Wenn gesetzt, wird bei jedem Update der belegte Bereich der Karte protokolliert. Pro: schnelle ausgabe Contra permanenter aufwand  */
+//#define SHRINK_MAP_OFFLINE		/*!< Wenn gesetzt, wird erst bei der Ausgabe der belegte Bereich der Karte berechnet. Pro: kein permanenter aufwand Contra: ausgabe dauert lange */
 
 /* Geomtrie der Karte - Achtung, nur aendern, wenn man die Konsequenzen genau kennt! */
 #define MAP_SIZE			12.288	/*!< Kantenlaenge der Karte in Metern. Zentrum ist der Startplatz des Bots. Achtung, MAP_SIZE*MAP_RESOLUTION muss ganzzahliges Vielfaches von MACRO_BLOCK_LENGTH sein */

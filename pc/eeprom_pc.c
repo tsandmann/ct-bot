@@ -60,7 +60,7 @@ extern uint8_t __attribute__ ((section (".s1eeprom"), aligned(1))) _eeprom_start
 extern uint8_t __attribute__ ((section (".s2eeprom"), aligned(1))) _eeprom_start2__;
 
 /*! Normiert PC EEPROM Adressen*/
-#define EEPROM_ADDR(x) ((uint32_t)x - (uint32_t)&_eeprom_start2__ - ((uint32_t)&_eeprom_start2__ - (uint32_t)&_eeprom_start1__))
+#define EEPROM_ADDR(x) ((size_t)x - (size_t)&_eeprom_start2__ - ((size_t)&_eeprom_start2__ - (size_t)&_eeprom_start1__))
 /*! Makros zum Mitloggen von EEPROM Zugriffen*/
 #define LOG_LOAD 	if(addrconv) {LOG_DEBUG("LOAD:%s : %u", ctab[lastctabi].varname, eeprom[address]);}\
 					else {LOG_DEBUG("load-addr=0x%x/%u", address, eeprom[address]);}

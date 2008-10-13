@@ -39,7 +39,7 @@
 #include "led.h"
 #include "mini-fat.h"
 #include "map.h"
-#include "pos_stack.h"
+#include "pos_store.h"
 #include <stdlib.h>
 #include <string.h>
 #include "rc5-codes.h"
@@ -268,6 +268,11 @@ void gui_init(void) {
 	#endif
 	#ifdef DISPLAY_DRIVE_STACK_AVAILABLE
 		register_screen(&drive_stack_display);
+	#endif
+	#ifdef PATHPLANING_DISPLAY
+	#ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
+		register_screen(&pathplaning_display);
+	#endif
 	#endif
 }
 

@@ -33,6 +33,7 @@
 
 #define BEHAVIOUR_SERVO_AVAILABLE 	/*!< Kontrollverhalten fuer die Servos */
 
+//#define BEHAVIOUR_PATHPLANING_AVAILABLE /*!< Pfadplanungsverhalten  */
 //#define BEHAVIOUR_DRIVE_STACK_AVAILABLE /*!< Abfahren der auf dem Stack gesicherten Koordinaten */
 
 //#define BEHAVIOUR_OLYMPIC_AVAILABLE	/*!< Olympiadenverhalten vorhanden? */
@@ -62,12 +63,17 @@
 #ifndef MAP_AVAILABLE
 	#undef BEHAVIOUR_SCAN_AVAILABLE
 	#undef BEHAVIOUR_DRIVE_AREA_AVAILABLE
+	#undef BEHAVIOUR_PATHPLANING_AVAILABLE
 #endif
 
-#ifndef POS_STACK_AVAILABLE
+#ifndef POS_STORE_AVAILABLE
 #ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
-	#warning "drive_area() geht nur, wenn POS_STACK_AVAILABLE"
+	#warning "drive_area() geht nur, wenn POS_STORE_AVAILABLE"
 	#undef BEHAVIOUR_DRIVE_AREA_AVAILABLE
+#endif
+#ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
+	#warning "Pfadplanung geht nur, wenn POS_STORE_AVAILABLE"
+	#undef BEHAVIOUR_PATHPLANING_AVAILABLE
 #endif
 #endif
 
@@ -75,6 +81,10 @@
 	#define BEHAVIOUR_GOTO_POS_AVAILABLE
 	#define BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
 	#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
+#endif
+
+#ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
+    #define BEHAVIOUR_DRIVE_STACK_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_GOTOXY_AVAILABLE
@@ -94,9 +104,9 @@
 	#define BEHAVIOUR_TURN_AVAILABLE
 #endif
 
-#ifndef POS_STACK_AVAILABLE
+#ifndef POS_STORE_AVAILABLE
 	#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-		#warning "DriveStack geht nur, wenn POS_STACK_AVAILABLE"
+		#warning "DriveStack geht nur, wenn POS_STORE_AVAILABLE"
 	#endif
 	#undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 #endif
@@ -229,6 +239,8 @@
 #include "bot-logic/behaviour_drive_stack.h"
 
 #include "bot-logic/behaviour_drive_area.h"
+
+#include "bot-logic/behaviour_pathplaning.h"
 
 #endif	// BEHAVIOUR_AVAILABLE
 #endif	/*AVAILABLE_BEHAVIOURS_H_*/

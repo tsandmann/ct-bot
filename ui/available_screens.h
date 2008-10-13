@@ -45,6 +45,7 @@
 #define DISPLAY_MAP_AVAILABLE			/*!< Zeigt Map-Display an */
 #define DISPLAY_TRANSPORT_PILLAR        /*!< Steuerung Transport-Pillar-Verhalten auf diesem Screen */
 #define DISPLAY_DRIVE_STACK_AVAILABLE	/*!< Steuerung Stack-Verhalten auf diesem Screen */
+#define PATHPLANING_DISPLAY				/*!< Display zur Pfadplanung */
 
 #ifndef SPEED_CONTROL_AVAILABLE
 	#undef DISPLAY_REGELUNG_AVAILABLE

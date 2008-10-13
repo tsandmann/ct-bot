@@ -47,6 +47,12 @@ void bot_drive_stack_behaviour(Behaviour_t * data);
 void bot_drive_stack(Behaviour_t * caller);
 
 /*!
+ * Botenfunktion: Verhalten zum Anfahren aller in der FIFO-Queue befindlichen Punkte
+ * @param *caller	Der Verhaltensdatensatz des Aufrufers
+ */
+void bot_drive_stack_fifo(Behaviour_t * caller);
+
+/*!
  * Sichern der aktuellen Botposition auf den Stack
  * @param *caller	einfach nur Zeiger, damit remotecall verwendbar
  */
