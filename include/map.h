@@ -34,10 +34,6 @@
 
 #define CLEAR_MAP_ON_INIT	/*!< Loescht die Karte, wenn der Bot gebootet wird */
 
-/* Es lohnt nicht gigantische Karten auszugeben, wenn sie nichts enthalten, daher hier zwei Varianten, um die Karte auf die realen Groesse zu reduzieren */
-#define SHRINK_MAP_ONLINE		/*!< Wenn gesetzt, wird bei jedem Update der belegte Bereich der Karte protokolliert. Pro: schnelle ausgabe Contra permanenter aufwand  */
-//#define SHRINK_MAP_OFFLINE		/*!< Wenn gesetzt, wird erst bei der Ausgabe der belegte Bereich der Karte berechnet. Pro: kein permanenter aufwand Contra: ausgabe dauert lange */
-
 /* Geomtrie der Karte - Achtung, nur aendern, wenn man die Konsequenzen genau kennt! */
 #define MAP_SIZE			12.288	/*!< Kantenlaenge der Karte in Metern. Zentrum ist der Startplatz des Bots. Achtung, MAP_SIZE*MAP_RESOLUTION muss ganzzahliges Vielfaches von MACRO_BLOCK_LENGTH sein */
 #define MAP_RESOLUTION 		125		/*!< Aufloesung der Karte in Punkte pro Meter */
@@ -52,18 +48,11 @@
 #define MAP_RATIO_FULL	255		/*!< Rueckgabe von map_get_tatio(), falls alle Felder den Kriterien entsprechen */
 
 // Die folgenden Variablen/konstanten NICHT direkt benutzen, sondern die zugehoerigen Makros: get_map_min_x() und Co!
-// Denn sonst erhaelt man Karten und nicht Weltkoordinaten!
-#ifdef SHRINK_MAP_ONLINE
-extern uint16_t map_min_x;			/*!< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
-extern uint16_t map_max_x;			/*!< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
-extern uint16_t map_min_y;			/*!< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
-extern uint16_t map_max_y;			/*!< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate  */
-#else
-extern const uint16_t map_min_x;	/*!< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
-extern const uint16_t map_min_y;	/*!< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
-extern const uint16_t map_max_x;	/*!< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
-extern const uint16_t map_max_y;	/*!< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate */
-#endif	// SHRINK_MAP_ONLINE
+// Denn sonst erhaelt man Karten- und nicht Weltkoordinaten!
+extern uint16_t map_min_x;		/*!< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
+extern uint16_t map_max_x;		/*!< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
+extern uint16_t map_min_y;		/*!< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
+extern uint16_t map_max_y;		/*!< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate */
 
 /*! Map-Cache-Eintrag */
 typedef struct {

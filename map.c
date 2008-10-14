@@ -121,17 +121,10 @@
 #define MACRO_BLOCK_LENGTH		512L	/*!< Kantenlaenge eines Macroblocks in Punkten/Byte */
 #define MAP_LENGTH_IN_MACRO_BLOCKS ((uint16_t)(MAP_SIZE*MAP_RESOLUTION)/MACRO_BLOCK_LENGTH)
 
-#ifdef SHRINK_MAP_ONLINE
-	uint16_t map_min_x = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
-	uint16_t map_max_x = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
-	uint16_t map_min_y = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
-	uint16_t map_max_y = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate */
-#else
-	const uint16_t map_min_x = 0;							/*!< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
-	const uint16_t map_min_y = 0;							/*!< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
-	const uint16_t map_max_x = MAP_SIZE * MAP_RESOLUTION;	/*!< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
-	const uint16_t map_max_y = MAP_SIZE * MAP_RESOLUTION;	/*!< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate */
-#endif
+uint16_t map_min_x = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
+uint16_t map_max_x = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
+uint16_t map_min_y = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
+uint16_t map_max_y = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate */
 
 /*! Datentyp fuer die Elementarfelder einer Gruppe */
 typedef struct {
@@ -170,8 +163,14 @@ void map_update_main(void);
 // Es passen immer 2 Sektionen in den Puffer
 static uint8_t map_buffer[sizeof(map_section_t) * 2];	/*!< statischer Puffer */
 static map_section_t * map[2];							/*!< Array mit den Zeigern auf die Elemente */
-static uint16_t map_current_block = 0; 				/*!< Block, der aktuell im Puffer steht. Nur bis 32 MByte adressierbar */
-static uint8_t map_current_block_updated = False; 		/*!< markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde */
+
+static struct {
+	uint16_t block;		/*!< Block, der aktuell im Puffer steht. Nur bis 32 MByte adressierbar */
+	uint8_t updated;	/*!< markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde */
+	uint16_t x;			/*!< X-Koordinate des Blocks */
+	uint16_t y;			/*!< Y-Koordinate des Blocks */
+} map_current_block = { 0, False, 0, 0 };	/*!< Daten des aktuellen Blocks */
+
 static uint8_t init_state = 0;	/*!< Status der Initialisierung (1, falls init OK) */
 
 #ifdef PC
@@ -220,10 +219,10 @@ int8_t map_init(void) {
 
 	// Die Karte auf den Puffer biegen
 	map[0] = (map_section_t *)map_buffer;
-	map[1] = (map_section_t *)(map_buffer+sizeof(map_section_t));
+	map[1] = (map_section_t *)(map_buffer + sizeof(map_section_t));
 
 #ifdef MCU
-	map_current_block_updated = 0xFF; // Die MMC-Karte ist erstmal nicht verfuegbar
+	map_current_block.updated = 0xFF; // Die MMC-Karte ist erstmal nicht verfuegbar
 	if (mmc_get_init_state() != 0)
 		return 1;
 	map_start_block = mini_fat_find_block("MAP", map_buffer);
@@ -241,8 +240,8 @@ int8_t map_init(void) {
 		return 1;
 	}
 
-	map_current_block_updated = False;
-	map_current_block = 0;
+	map_current_block.updated = False;
+	map_current_block.block = 0;
 #endif	// MCU
 
 #ifdef CLEAR_MAP_ON_INIT
@@ -276,12 +275,12 @@ void map_flush_cache(void) {
 static map_section_t * get_section(uint16_t x, uint16_t y) {
 
 	/* Sicherheitscheck 1 */
-	if (map_current_block_updated == 0xFF) {
+	if (map_current_block.updated == 0xFF) {
 		// wenn die Karte nicht sauber initialisiert ist, mache nix!
 		return map[0];
 	}
 
-	// Da imemr 2 Sections in einem Block stehen: richtige der beiden Sections raussuchen
+	// Da immer 2 Sections in einem Block stehen: richtige der beiden Sections raussuchen
 	uint8_t index = (x / MAP_SECTION_POINTS) & 0x01;
 
 	/* Sicherheitscheck 2 */
@@ -314,7 +313,7 @@ static map_section_t * get_section(uint16_t x, uint16_t y) {
 	block += macroblock * MACRO_BLOCK_LENGTH * (MACRO_BLOCK_LENGTH / 512); // noch in den richtigen Makroblock springen
 
 	/* Ist der Block schon geladen? */
-	if (map_current_block == block) {
+	if (map_current_block.block == block) {
 #ifdef DEBUG_STORAGE
 		LOG_DEBUG("ist noch im Puffer");
 #endif
@@ -327,9 +326,21 @@ static map_section_t * get_section(uint16_t x, uint16_t y) {
 #endif
 
 	/* Wurde der Block im RAM veraendert? */
-	if (map_current_block_updated == True) {
+	if (map_current_block.updated == True) {
+		/* Shrinking */
+		if (map_current_block.x < map_min_x) {
+			map_min_x = map_current_block.x;
+		} else if (map_current_block.x > map_max_x) {
+			map_max_x = map_current_block.x + ((MAP_SECTION_POINTS * 2) - 1);
+		}
+		if (map_current_block.y < map_min_y) {
+			map_min_y = map_current_block.y;
+		} else if (map_current_block.y > map_max_y) {
+			map_max_y = map_current_block.y + (MAP_SECTION_POINTS - 1);
+		}
+
 		/* Dann erstmal sichern */
-		uint32_t mmc_block = map_start_block + map_current_block;	// Offset fuer die Lage der Karte drauf
+		uint32_t mmc_block = map_start_block + map_current_block.block;	// Offset fuer die Lage der Karte drauf
 #ifdef DEBUG_MAP_TIMES
 		LOG_INFO("writing block 0x%04x%04x", (uint16_t)(mmc_block>>16), (uint16_t)mmc_block);
 		uint16_t start_ticks = TIMER_GET_TICKCOUNT_16;
@@ -342,8 +353,10 @@ static map_section_t * get_section(uint16_t x, uint16_t y) {
 	}
 
 	/* Statusvariablen anpassen */
-	map_current_block = block;
-	map_current_block_updated = False;
+	map_current_block.block = block;
+	map_current_block.x = x & ~((MAP_SECTION_POINTS * 2) - 1);	// 32 Einheiten in X-Richtung und
+	map_current_block.y = y & ~(MAP_SECTION_POINTS - 1);		// 16 Einheiten in Y-Richtung pro Block
+	map_current_block.updated = False;
 
 	/* Lade den neuen Block */
 	// Auf der MMC beginnt die Karte nicht bei 0, sondern irgendwo, auf dem PC schadet es nix
@@ -422,21 +435,9 @@ static int8_t access_field(uint16_t x, uint16_t y, int8_t value, uint8_t set) {
 	if (set) {
 		*data = value;
 
-		if (map_current_block_updated != 0xFF) {
-			map_current_block_updated = True;
+		if (map_current_block.updated != 0xFF) {
+			map_current_block.updated = True;
 		}
-
-#ifdef SHRINK_MAP_ONLINE
-		// Belegte Kartengroesse anpassen
-		if (x < map_min_x)
-			map_min_x=x;
-		if (x > map_max_x)
-			map_max_x= x;
-		if (y < map_min_y)
-			map_min_y=y;
-		if (y > map_max_y)
-			map_max_y= y;
-#endif
 	}
 	return *data;
 }
@@ -1067,20 +1068,18 @@ static inline void delete(void) {
 	os_signal_lock(&lock_signal);
 	memset(map_storage, 0, sizeof(map_storage));
 #endif	// MCU
-	map_current_block_updated = False;
-	map_current_block = 0;
+	map_current_block.updated = False;
+	map_current_block.block = 0;
 	memset(map_buffer, 0, sizeof(map_buffer));
 #ifdef PC
 	os_signal_unlock(&lock_signal);
 #endif
 
-#ifdef SHRINK_MAP_ONLINE
-	// Groesse neu initialisieren
-	map_min_x = (uint16_t)(MAP_SIZE * MAP_RESOLUTION / 2);
-	map_max_x = (uint16_t)(MAP_SIZE * MAP_RESOLUTION / 2);
-	map_min_y = (uint16_t)(MAP_SIZE * MAP_RESOLUTION / 2);
-	map_max_y = (uint16_t)(MAP_SIZE * MAP_RESOLUTION / 2);
-#endif	// SHRINK_MAP_ONLINE
+// Groesse neu initialisieren
+map_min_x = (uint16_t)(MAP_SIZE * MAP_RESOLUTION / 2);
+map_max_x = (uint16_t)(MAP_SIZE * MAP_RESOLUTION / 2);
+map_min_y = (uint16_t)(MAP_SIZE * MAP_RESOLUTION / 2);
+map_max_y = (uint16_t)(MAP_SIZE * MAP_RESOLUTION / 2);
 }
 
 
@@ -1205,9 +1204,6 @@ void map_to_pgm(char * filename) {
 	uint16_t min_y = map_min_y;
 	uint16_t max_y = map_max_y;
 
-#ifdef SHRINK_MAP_OFFLINE	// nun muessen wir die Grenzen ermitteln
-	shrink(&min_x, &max_x, &min_y, &max_y);
-#endif
 	uint16_t map_size_x = max_x - min_x;
 	uint16_t map_size_y = max_y - min_y;
 #ifdef MAP_PRINT_SCALE
@@ -1333,7 +1329,6 @@ int map_read(const char * filename) {
 
 	fclose(fp);
 
-#ifdef SHRINK_MAP_ONLINE
 	/* Groesse neu initialisieren */
 	map_min_x = 0;
 	map_max_x = MAP_SIZE * MAP_RESOLUTION;
@@ -1342,10 +1337,7 @@ int map_read(const char * filename) {
 
 	/* und Karte verkleinern */
 	shrink(&map_min_x, &map_max_x, &map_min_y, &map_max_y);
-#endif
-#if !defined SHRINK_MAP_ONLINE && !defined SHRINK_MAP_OFFLINE
-	draw_test_scheme();
-#endif
+
 	return 0;
 }
 

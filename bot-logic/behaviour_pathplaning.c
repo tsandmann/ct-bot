@@ -65,10 +65,6 @@
 
 /****** fuer geringaufloesende Map zur Pfadplanung  --ACHTUNG ONLINE_SHRINK einschalten -- *****************/
 
-#ifndef SHRINK_MAP_ONLINE
-#warning "ONLINE Shrink einschalten!"
-#endif
-
 #ifdef MCU
 #ifndef __AVR_ATmega644__
 //TODO:	ATmega32-Version ueberlegen
@@ -188,6 +184,10 @@ static int8_t access_field_lowres(position_t field, int8_t value, uint8_t set) {
 			// Dann anlegen
 			map_lowres[section_x][section_y] = malloc(
 					sizeof(map_section_lowres_t));
+			if (map_lowres[section_x][section_y] == NULL) {
+				deactivateBehaviour(bot_calc_wave_behaviour);
+				return 0;
+			}
 			memset(map_lowres[section_x][section_y], 0,
 					sizeof(map_section_lowres_t));
 		}
@@ -221,7 +221,7 @@ static inline void delete_lowres(void) {
 /*!
  * Eintragen der Hindernisse in Lowres-Karte aus der Map-Highres-Karte
  */
-void set_hazards(void) {
+static void set_hazards(void) {
 	int16_t x, y;
 
 	// Umrechnen des die Welt umschliessenden Rechtecks in Lowres-Koordinaten

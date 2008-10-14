@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-10-14 Timo Sandmann [mail@timosandmann.de]: Map-Shrinking umgestellt: Erfolgt jetzt immer online, aber lazy (blockweise) (#176)
+
 2008-10-14 Timo Sandmann [mail@timosandmann.de]: Ex- und Import fuer Map @ PC (Import: Kommandozeilenparameter -m, Export: Taste 6) 
 
 2008-10-12 Timo Sandmann [mail@timosandmann.de]: Warnings beseitigt, Positionsstack zu allgemeinem Positionsspeicher (Stack & FIFO) umgebaut (heisst jetzt pos_store) 
