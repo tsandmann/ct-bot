@@ -135,6 +135,12 @@ void map_flush_cache(void);
 void map_print(void);
 
 /*!
+ * Entfernt alle frei-Informationen aus der Karte, so dass nur die
+ * Hindernisse uebrig bleiben.
+ */
+void map_clean(void);
+
+/*!
  * initialisiere die Karte
  * @return	0 wenn alles ok ist
  */

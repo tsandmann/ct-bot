@@ -89,8 +89,8 @@
  * bis 127.
  * 0 bedeutet: wir wissen nichts über das Feld
  * negative Werte bedeuten: Hindernis
- * postivie Werte bedeuten: freier Weg
- * je groesser der Betrag ist, desto sicherer die Aussage ueber das
+ * positive Werte bedeuten: freier Weg
+ * Je groesser der Betrag ist, desto sicherer die Aussage ueber das
  * Feld.
  * Der Wert -128 ist Loechern vorbehalten und wird dann auch nicht
  * durch die Abstandssensoren veraendert.
@@ -1075,13 +1075,32 @@ static inline void delete(void) {
 	os_signal_unlock(&lock_signal);
 #endif
 
-// Groesse neu initialisieren
-map_min_x = (uint16_t)(MAP_SIZE * MAP_RESOLUTION / 2);
-map_max_x = (uint16_t)(MAP_SIZE * MAP_RESOLUTION / 2);
-map_min_y = (uint16_t)(MAP_SIZE * MAP_RESOLUTION / 2);
-map_max_y = (uint16_t)(MAP_SIZE * MAP_RESOLUTION / 2);
+	// Groesse neu initialisieren
+	map_min_x = (uint16_t)(MAP_SIZE * MAP_RESOLUTION / 2);
+	map_max_x = (uint16_t)(MAP_SIZE * MAP_RESOLUTION / 2);
+	map_min_y = (uint16_t)(MAP_SIZE * MAP_RESOLUTION / 2);
+	map_max_y = (uint16_t)(MAP_SIZE * MAP_RESOLUTION / 2);
 }
 
+/*!
+ * Entfernt alle frei-Informationen aus der Karte, so dass nur die
+ * Hindernisse uebrig bleiben.
+ */
+void map_clean(void) {
+	/* warten bis Karte frei ist */
+	map_flush_cache();
+
+	/* Alle positiven Werte auf 0 setzen */
+	uint16_t x, y;
+	for (x=map_min_x; x<map_max_x; x++) {
+		for (y=map_min_y; y<map_max_y; y++) {
+			int8_t tmp = access_field(x, y, 0, 0);
+			if (tmp > 0) {
+				access_field(x, y, 0, 1);
+			}
+		}
+	}
+}
 
 // PC-only Code
 
@@ -1462,7 +1481,7 @@ static inline void info(void) {
 	LOG_INFO("%u\t Laenge eine Macroblocks in Punkten (MACRO_BLOCK_LENGTH)",
 			MACRO_BLOCK_LENGTH);
 	LOG_INFO(
-			"%u\t Anzahl der Macroblocks in einer Zeile(MAP_LENGTH_IN_MACRO_BLOCKS)",
+			"%u\t Anzahl der Macroblocks in einer Zeile (MAP_LENGTH_IN_MACRO_BLOCKS)",
 			MAP_LENGTH_IN_MACRO_BLOCKS);
 }
 #endif	// MAP_INFO_AVAILABLE
@@ -1478,10 +1497,13 @@ void map_display(void) {
 	display_cursor(2, 1);
 	display_printf("3: draw_scheme");
 	display_cursor(3, 1);
-	display_printf("6: export");
-#endif
+	display_printf("6: export 7: clean");
+#else	// MCU
+	display_cursor(2, 1);
+	display_printf("7: clean");
+#endif	// PC
 #ifdef MAP_INFO_AVAILABLE
-	display_cursor(4,1);
+	display_cursor(4, 1);
 	display_printf("4: map_info");
 #endif
 
@@ -1506,6 +1528,8 @@ void map_display(void) {
 		case RC5_CODE_6:
 		map_export(map_file); RC5_Code = 0; break;
 #endif
+		case RC5_CODE_7:
+		map_clean(); RC5_Code = 0; break;
 	}
 }
 #endif	// DISPLAY_MAP_AVAILABLE
