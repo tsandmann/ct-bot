@@ -73,13 +73,8 @@ typedef struct {
 	uint8_t dataL;		/*!< Entfernung linker Distanzsensor [5 mm] aber auch BorderSensor [0/1] */
 	uint8_t dataR;		/*!< Entfernung rechter Distanzsensor [5 mm] aber auch BorderSensor [0/1] */
 	scan_mode_t mode;	/*!< Was soll aktualisiert werden */
-#ifndef DOXYGEN
 } __attribute__ ((packed)) map_cache_t;	// Keine Luecken in der Struktur lassen
-#else
-} map_cache_t;
-#endif
 
-extern map_cache_t map_update_cache[];	/*!< Cache */
 extern fifo_t map_update_fifo;			/*!< Fifo fuer Cache */
 
 /*!
@@ -176,12 +171,21 @@ static inline int16_t map_to_world(uint16_t map_koord) {
 #define map_get_max_y() map_to_world(map_max_y)		/*!< Maximum in Y-Richtung */
 
 #ifdef PC
+char * map_file;	/*!< Dateiname fuer Ex- / Import */
+
 /*!
  * Liest eine Map wieder ein
  * @param filename	Quelldatei
  * @return			Fehlercode, 0 falls alles ok
  */
 int map_read(const char * filename);
+
+/*!
+ * Speichert eine Map in eine (MiniFAT-)Datei, die mit map_read() wieder eingelesen werden kann
+ * @param *filename	Zieldatei
+ * @return			Fehlercode, 0 falls alles ok
+ */
+int map_export(const char * filename);
 
 /*!
  * Schreibt einbe Karte in eine PGM-Datei

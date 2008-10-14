@@ -41,14 +41,15 @@
  * Zeigt Informationen zu den moeglichen Kommandozeilenargumenten an.
  */
 static void usage(void) {
-	puts("USAGE: ct-Bot [-t host] [-a address] [-T] [-h] [-s] [-M from] [-c FILE ID SIZE] [-e ADDR ID SIZE] [-d ID] [-i]");
+	puts("USAGE: ct-Bot [-t host] [-a address] [-T] [-h] [-s] [-M from] [-m FILE] [-c FILE ID SIZE] [-e ADDR ID SIZE] [-d ID] [-i]");
 	puts("\t-t\tHostname oder IP Adresse zu der Verbunden werden soll");
 	puts("\t-a\tAdresse des Bots (fuer Bot-2-Bot-Kommunikation), default: 0");
 	puts("\t-T\tTestClient");
 	puts("\t-s\tServermodus");
-	puts("\t-M from\tKonvertiert eine Bot-map in eine PGM-Datei");
+	puts("\t-M from\tKonvertiert eine Bot-Map in eine PGM-Datei");
+	puts("\t-m FILE\tGibt den Pfad zu einer MiniFat-Datei an, die vom Map-Code verwendet wird (Ex- und Import)");
 	#ifndef MAP_AVAILABLE
-		puts("\t\tACHTUNG, das Programm wurde ohne MAP_AVAILABLE übersetzt, die Option -M steht derzeit also NICHT zur Verfügung");
+		puts("\t\tACHTUNG, das Programm wurde ohne MAP_AVAILABLE übersetzt, die Optionen -M / -m stehen derzeit also NICHT zur Verfuegung");
 	#endif
 	puts("\t-c \tErzeugt eine Mini-Fat-Datei fuer den Bot.");
 	puts("\t   FILE\tDateiname");
@@ -81,7 +82,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 	strcpy(tcp_hostname, IP);
 
 	/* Die Kommandozeilenargumente komplett verarbeiten */
-	while ((ch = getopt(argc, argv, "hsTit:M:c:l:e:d:a:")) != -1) {
+	while ((ch = getopt(argc, argv, "hsTit:M:m:c:l:e:d:a:")) != -1) {
 		argc -= optind;
 		argv += optind;
 		switch (ch) {
@@ -121,7 +122,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 		case 'M': {
 			/* Dateiname fuer die Map wurde uebergeben. Der String wird in from gesichert. */
 			#ifndef MAP_AVAILABLE
-				puts("ACHTUNG, das Programm wurde ohne MAP_AVAILABLE übersetzt, die Option -M steht derzeit also NICHT zur Verfügung.");
+				puts("ACHTUNG, das Programm wurde ohne MAP_AVAILABLE übersetzt, die Option -M steht derzeit also NICHT zur Verfuegung.");
 				puts("um dennoch Karten zu konvertieren, bitte im Quelltext in der Datei ct-Bot.h die Kommentarzeichen vor MAP_AVAILABLE entfernen");
 				puts("und neu compilieren.");
 				exit(1);
@@ -137,11 +138,29 @@ void hand_cmd_args(int argc, char * argv[]) {
 				from = malloc(len + 1);
 				if (NULL == from) exit(1);
 				strcpy(from, optarg);
-				printf("Konvertiere Karte %s in PGM %s\n",from,"map.pgm");
+				printf("Konvertiere Karte %s in PGM %s\n", from, "map.pgm");
 				map_read(from);
 				map_to_pgm("map.pgm");
 				exit(0);
 			#endif	// MAP_AVAILABLE
+		}
+
+		case 'm': {
+#ifndef MAP_AVAILABLE
+			puts("ACHTUNG, das Programm wurde ohne MAP_AVAILABLE übersetzt, die Option -m steht derzeit also NICHT zur Verfuegung.");
+			puts("um dennoch Karten zu konvertieren, bitte im Quelltext in der Datei ct-Bot.h die Kommentarzeichen vor MAP_AVAILABLE entfernen");
+			puts("und neu compilieren.");
+			exit(1);
+#else
+			/* Karte einlesen */
+			int len = strlen(optarg);
+			map_file = malloc(len + 1);
+			if (NULL == map_file) exit(1);
+			strcpy(map_file, optarg);
+			printf("Lese Karte von \"%s\" ein\n", map_file);
+			map_read(map_file);
+#endif	// MAP_AVAILABLE
+			break;
 		}
 
 		case 'c': {

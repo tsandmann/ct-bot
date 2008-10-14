@@ -140,8 +140,8 @@ typedef struct {
 
 static uint32_t map_start_block = 0;	/*!< Block, bei dem die Karte auf der MMC-Karte beginnt */
 
-map_cache_t map_update_cache[MAP_UPDATE_CACHE_SIZE];	/*!< Cache */
-fifo_t map_update_fifo;									/*!< Fifo fuer Cache */
+static map_cache_t map_update_cache[MAP_UPDATE_CACHE_SIZE];	/*!< Cache */
+fifo_t map_update_fifo;										/*!< Fifo fuer Cache */
 
 uint8_t map_update_stack[MAP_UPDATE_STACK_SIZE];		/*!< Stack des Update-Threads */
 static Tcb_t * map_update_thread;						/*!< Thread fuer Map-Update */
@@ -168,21 +168,24 @@ void map_update_main(void);
 #endif	// MCU
 
 // Es passen immer 2 Sektionen in den Puffer
-uint8_t map_buffer[sizeof(map_section_t) * 2];	/*!< statischer Puffer */
-map_section_t * map[2];							/*!< Array mit den Zeigern auf die Elemente */
-uint16_t map_current_block = 0; 				/*!< Block, der aktuell im Puffer steht. Nur bis 32 MByte adressierbar */
-uint8_t map_current_block_updated = False; 		/*!< markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde */
+static uint8_t map_buffer[sizeof(map_section_t) * 2];	/*!< statischer Puffer */
+static map_section_t * map[2];							/*!< Array mit den Zeigern auf die Elemente */
+static uint16_t map_current_block = 0; 				/*!< Block, der aktuell im Puffer steht. Nur bis 32 MByte adressierbar */
+static uint8_t map_current_block_updated = False; 		/*!< markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde */
+static uint8_t init_state = 0;	/*!< Status der Initialisierung (1, falls init OK) */
 
 #ifdef PC
 typedef struct {
 	map_section_t sections[2];
 } mmc_container_t;
 
-mmc_container_t map_storage[MAP_SECTIONS * MAP_SECTIONS / 2];	/*!< Statischer Speicherplatz fuer die Karte */
+static mmc_container_t map_storage[MAP_SECTIONS * MAP_SECTIONS / 2];	/*!< Statischer Speicherplatz fuer die Karte */
 
 // MMC-Zugriffe emuliert der PC
 #define mmc_read_sector(block, buffer)		memcpy(&buffer, &(map_storage[block]), sizeof(mmc_container_t));
 #define mmc_write_sector(block, buffer)		memcpy(&(map_storage[block]), &buffer, sizeof(mmc_container_t));
+
+char * map_file = NULL;	/*!< Dateiname fuer Ex- / Import */
 #endif	// PC
 
 static inline void delete(void);
@@ -192,6 +195,10 @@ static inline void delete(void);
  * @return	0 wenn alles ok ist
  */
 int8_t map_init(void) {
+	if (init_state == 1) {
+		return 0;
+	}
+
 	/* Update-Thread initialisieren */
 #ifdef OS_DEBUG
 	os_mask_stack(map_update_stack, MAP_UPDATE_STACK_SIZE);
@@ -241,6 +248,8 @@ int8_t map_init(void) {
 #ifdef CLEAR_MAP_ON_INIT
 	delete();
 #endif
+
+	init_state = 1;
 	return 0;
 }
 
@@ -1251,6 +1260,34 @@ void map_to_pgm(char * filename) {
 }
 
 /*!
+ * Speichert eine Map in eine (MiniFAT-)Datei, die mit map_read() wieder eingelesen werden kann
+ * @param *filename	Zieldatei
+ * @return			Fehlercode, 0 falls alles ok
+ */
+int map_export(const char * filename) {
+	if (filename == NULL || strlen(filename) < 1) {
+		return 1;
+	}
+	// MiniFAT-Datei anlegen / ueberschreiben
+	create_mini_fat_file(filename, "MAP", 2400);
+	FILE * fd = fopen(filename, "r+b");
+	if (fd == NULL) {
+		return 1;
+	}
+	// Header ueberspringen
+	if (fseek(fd, 512, SEEK_CUR) != 0) {
+		return 1;
+	}
+	// Speicher in Datei schreiben
+	if (fwrite(map_storage, sizeof(map_storage), 1, fd) != 1) {
+		return 1;
+	}
+	printf("Map wurde nach \"%s\" exportiert.\n", filename);
+	fclose(fd);
+	return 0;
+}
+
+/*!
  * Liest eine Map wieder ein
  * @param filename	Quelldatei
  * @return			Fehlercode, 0 falls alles ok
@@ -1444,12 +1481,12 @@ static inline void info(void) {
  */
 void map_display(void) {
 	display_cursor(1, 1);
-	display_printf("1: map_print");
-	display_cursor(2, 1);
-	display_printf("2: map_delete");
+	display_printf("1: print 2: delete");
 #ifdef PC
+	display_cursor(2, 1);
+	display_printf("3: draw_scheme");
 	display_cursor(3, 1);
-	display_printf	("3: draw_scheme");
+	display_printf("6: export");
 #endif
 #ifdef MAP_INFO_AVAILABLE
 	display_cursor(4,1);
@@ -1473,6 +1510,9 @@ void map_display(void) {
 #ifdef PC
 		case RC5_CODE_5:
 		map_test_get_ratio(); RC5_Code = 0; break;
+
+		case RC5_CODE_6:
+		map_export(map_file); RC5_Code = 0; break;
 #endif
 	}
 }
