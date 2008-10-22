@@ -1,0 +1,95 @@
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head><title>DokuPathplaning - c't-Bot und c't-Sim - Trac</title>
+<link type="text/css" href="trac.css" rel="stylesheet"/>
+<link type="text/css" href="wiki.css" rel="stylesheet"/>
+<link type="text/css" href="code.css" rel="stylesheet"/>
+</head>
+<body>
+
+   <div class="wikipage">
+    <div id="searchable"><p>
+<div class="wiki-toc"><ol><li><a href="#Pfadplanungs-Verhaltenbehaviour_pathplaning">Pfadplanungs-Verhalten behaviour_pathplaning</a><ol><li><a href="#Implementierung">Implementierung</a></li><li>
+<a href="#ScreenderPfadplanung">Screen der Pfadplanung</a></li><li>
+<a href="#PfadplanunginverschiedenenParcours">Pfadplanung in verschiedenen Parcours</a><ol><li><a href="#Ausschnittaustestparcours2.xml">Ausschnitt aus testparcours2.xml</a></li><li>
+<a href="#testbots_home.xml">testbots_home.xml</a></li><li>
+
+<a href="#selbsterstellterTestparcours">selbst erstellter Testparcours</a></li><li>
+<a href="#TestparcoursmitAbgrund">Testparcours mit Abgrund</a></li></ol></li></ol></li></ol></div>
+</p>
+<h1 id="Pfadplanungs-Verhaltenbehaviour_pathplaning">Pfadplanungs-Verhalten behaviour_pathplaning</h1>
+<p>
+Das Verhalten wurde realisiert nach dem Prinzip der Wellenausbreitung (wave-front), wie <a class="wiki" href="/ct/projekte/machmit/ctbot/wiki/NeueVerhalten#Pfadplanung">hier</a> beschrieben. <br /><i>TODO: Auch hierher &uuml;bernehmen</i>
+</p>
+<h2 id="Implementierung">Implementierung</h2>
+
+<p>
+Es wurde eine niedrigaufl&ouml;sende Karte im RAM des Bots implementiert mit je 8 Rastern pro Meter, also ca. 12 cm Kantenbreite.
+</p>
+<p>
+Das Verhalten f&uuml;hrt nun mehrere Schritte aus:
+</p>
+<p>
+Step 1: Vorbereitende Ma&szlig;nahmen, wie L&ouml;schen der Lowres-Planungskarte und des Positionsspeichers.
+</p>
+<p>
+Step 2: &Uuml;bertragen der Hindernisse aus der hochaufl&ouml;senden Karte in die Rasterfelder der Planungskarte; rasterfeldweise wird in der hochaufl&ouml;senden Karte der Durchschnittswert ermittelt und bei Hinderniswahrscheinlichkeit &lt; 0 das Rasterfeld mit 1 (Hindernis) gekennzeichnet; weiterhin wird die zu erreichende Zielposition (Zielraster) mit dem Wert 2 belegt.
+</p>
+<p>
+Step 3: Ausgehend von der Zielposition wird nun eine Welle losgeschickt, um die jeweiligen (noch initialen)  Nachbar-Rasterfelder mit dem jeweils h&ouml;heren Wellenwert zu kennzeichnen, d.h. die 4 Nachbarfelder vom Zielpunkt 2 erhalten den Wert 3, alle Nachbarn der 3 die 4 usw. Dies geschieht solange, bis das Rasterfeld der Botposition erreicht wurde.
+</p>
+
+<p>
+Step 4: Wenn die Welle die Botposition erreicht hat, wird diese zur&uuml;ckverfolgt bis zum Wellen-Ursprungspunkt (Zielraster 2) und sich hierbei die einzelnen Rasterkoordinaten auf dem Positionsspeicher gemerkt. D.h. ausgehend vom Raster der Botposition wird der Nachbar mit dem kleinsten Wert (und ungleich Hindernis  1) bestimmt und dann wieder von diesem ausgehend usw.
+</p>
+<p>
+ 
+Die Planungskarte hat dann folgendes Aussehen:
+</p>
+<p>
+<a style="padding:0; border:none"><img width="150" alt="Raster zur Pfadplanung" src="images/path001.png" title="Raster zur Pfadplanung" /></a><br />
+</p>
+<h2 id="ScreenderPfadplanung">Screen der Pfadplanung</h2>
+<p>
+<a style="padding:0; border:none"><img src="images/path003.png" alt="Displayscreen" title="Displayscreen" /></a><br /> 
+</p>
+<p>
+Taste 4: L&ouml;schen der Planungskarte (macht das Verhalten aber auch selbst).
+
+</p>
+<p>
+Taste 5: Start der Pfadplanung mit Abfahren des Pfadweges zum Zielpunkt.
+</p>
+<p>
+Taste 8: Festlegen der aktuellen Botposition als sp&auml;ter anzufahrenden Zielpunkt.
+</p>
+<h2 id="PfadplanunginverschiedenenParcours">Pfadplanung in verschiedenen Parcours</h2>
+<p>
+In den folgenden Beispielparcous sind die einzelnen Pfadpunkte des geplanten Weges als wei&szlig;e Punkte gekennzeichnet.
+</p>
+<h3 id="Ausschnittaustestparcours2.xml">Ausschnitt aus testparcours2.xml</h3>
+<p>
+Der Bot wurde manuell hochgefahren bis zum Zielpunkt, dort gedreht zum Eintragen der Hindernisse, dann die Botposition als anzufahrendes Ziel markiert mittels Taste 6 und weiter den linken Weg hochgefahren bis zur Position laut 1. Bild. Nach Start der Pfadplanung f&uuml;hrt der Bot zum Endziel und plant seinen Weg um die Lampe herum (markierter Weg). Am Ende steht er an seinem festgelegten Zielpunkt. 
+</p>
+
+<p>
+<a style="padding:0; border:none"><img width="150" alt="Welt 1" src="images/path005.png" title="Welt 1" /></a> <a style="padding:0; border:none"><img width="150" alt="Karte 1" src="images/path007.png" title="Karte 1" /></a> <a style="padding:0; border:none"><img width="150" alt="Welt 2" src="images/path009.png" title="Welt 2" /></a> <br />
+</p>
+<h3 id="testbots_home.xml">testbots_home.xml</h3>
+<p>
+<a style="padding:0; border:none"><img width="150" alt="Welt 3" src="images/path011.png" title="Welt 3" /></a> <a style="padding:0; border:none"><img width="150" alt="Karte 2" src="images/path013.png" title="Karte 2" /></a> <br />
+</p>
+<h3 id="selbsterstellterTestparcours">selbst erstellter Testparcours</h3>
+<p>
+<a style="padding:0; border:none"><img width="150" alt="Welt 4" src="images/path015.png" title="Welt 4" /></a> <a style="padding:0; border:none"><img width="150" alt="Karte 3" src="images/path017.png" title="Karte 3" /></a> <br />
+
+</p>
+<h3 id="TestparcoursmitAbgrund">Testparcours mit Abgrund</h3>
+<p>
+<a style="padding:0; border:none"><img width="150" alt="Welt 5" src="images/path019.png" title="Welt 5" /></a> <a style="padding:0; border:none"><img width="150" alt="Karte 4" src="images/path021.png" title="Karte 4" /></a> <br />
+</p>
+</div>
+   </div>
+  
+
+</body>
+</html>

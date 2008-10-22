@@ -627,14 +627,14 @@ void pathplaning_display(void) {
 	display_cursor(1, 1);
 	display_printf("-Pathplaning-");
 	display_cursor(2, 1);
-	display_printf("F4:Delete");
+	display_printf("4:Delete");
 	display_cursor(3, 1);
-	display_printf("F5:GoPlaning");
+	display_printf("5:GoPlaning");
 	display_cursor(4, 1);
 #ifdef DEBUG_PATHPLANING
-	display_printf("F6/8:ShowMap/SetDest");
+	display_printf("6/8:ShowMap/SetDest");
 #else
-	display_printf("F8:SetDest");
+	display_printf("8:SetDest");
 #endif
 
 	pathplaning_disp_key_handler();
