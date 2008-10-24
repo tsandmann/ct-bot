@@ -33,11 +33,30 @@
 
 #ifdef POS_STORE_AVAILABLE
 
-#define POS_STORE_SIZE	32  /*!< Stackgroesse */
+#define POS_STORE_SIZE	32  /*!< Speichergroesse */
 
 #if POS_STORE_SIZE & (POS_STORE_SIZE-1)
 #error "POS_STORE_SIZE ist keine 2er-Potenz!"
 #endif
+
+extern uint8_t pos_store_sp;				/*!< Stackpointer */
+extern uint8_t pos_store_fp;				/*!< FIFO-Pointer */
+
+/*!
+ * Liefert den aktuellen Stackpointer des Positionsspeichers
+ * @return	Index des naechsten freien Platzes im Array
+ */
+static inline uint8_t pos_store_get_sp(void) {
+	return pos_store_sp;
+}
+
+/*!
+ * Liefer den aktuellen FIFO-Pointer des Positionsspeichers
+ * @return	Index des ersten belegten Platzes im Array
+ */
+static inline uint8_t pos_store_get_fp(void) {
+	return pos_store_fp;
+}
 
 /*!
  * Leert den Positionsspeicher
@@ -49,7 +68,7 @@ void pos_store_clear(void);
  * @param *pos	Zeiger auf Rueckgabe-Speicher der Position
  * @return		False falls Pop nicht erfolgreich, d.h. kein Punkt mehr auf dem Stack, sonst True nach erfolgreichem Pop
  */
-uint8_t pos_store_pop(position_t * pos);
+uint8_t pos_store_pop(position_t * pos) __attribute__((noinline));
 
 /*!
  * Speichern einer Koordinate auf dem Stack
@@ -72,7 +91,7 @@ static inline uint8_t pos_store_queue(position_t pos) {
  * @param * pos	Zeiger auf Rueckgabe-Speicher der Position
  * @return True wenn Element erfolgreich entnommen werden konnte sonst False falls kein Element mehr enthalten ist
  */
-uint8_t pos_store_dequeue(position_t * pos);
+uint8_t pos_store_dequeue(position_t * pos) __attribute__((noinline));
 
 #ifdef PC
 /*!

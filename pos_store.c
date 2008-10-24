@@ -34,15 +34,15 @@
 
 static position_t pos_stack[POS_STORE_SIZE];	/*!< Datenspeicher */
 static uint8_t count = 0;						/*!< Anzahl der gespeicherten Elemente */
-static uint8_t sp = 0;							/*!< Stackpointer */
-static uint8_t fp = 0;							/*!< FIFO-Pointer */
+uint8_t pos_store_sp = 0;				/*!< Stackpointer */
+uint8_t pos_store_fp = 0;				/*!< FIFO-Pointer */
 
 /*!
  * Leert den Positionsspeicher
  */
 void pos_store_clear(void) {
-	sp = 0;
-	fp = 0;
+	pos_store_sp = 0;
+	pos_store_fp = 0;
 	count = 0;
 }
 
@@ -71,9 +71,9 @@ uint8_t pos_store_push(position_t pos) {
 	if (is_full()) {
 		return False;
 	}
-	pos_stack[sp] = pos;
-	sp++;
-	sp &= POS_STORE_SIZE - 1;
+	pos_stack[pos_store_sp] = pos;
+	pos_store_sp++;
+	pos_store_sp &= POS_STORE_SIZE - 1;
 	count++;
 	return True;
 }
@@ -88,11 +88,24 @@ uint8_t pos_store_pop(position_t * pos) {
 		return False;
 	}
 	count--;
-	sp--;
-	sp &= POS_STORE_SIZE - 1;
-	*pos = pos_stack[sp];
+	pos_store_sp--;
+	pos_store_sp &= POS_STORE_SIZE - 1;
+	*pos = pos_stack[pos_store_sp];
 
 	return True;
+}
+
+/*!
+ * Pop-Routine zur Rueckgabe des letzten auf dem Stack gepushten Punktes, falls Stackpointer until_sp noch nicht erreicht ist
+ * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
+ * @param until_sp	Stackpointer (per pos_store_get_sp() geholt), bis zu dem ein Pop maximal erfolgen soll
+ * @return			False falls Pop nicht erfolgreich, d.h. kein Punkt mehr auf dem Stack, sonst True nach erfolgreichem Pop
+ */
+uint8_t pos_store_pop_until(position_t * pos, uint8_t until_sp) {
+	if (pos_store_sp == until_sp) {
+		return False;
+	}
+	return pos_store_pop(pos);
 }
 
 /*!
@@ -105,11 +118,24 @@ uint8_t pos_store_dequeue(position_t * pos) {
 		return False;
 	}
 	count--;
-	*pos = pos_stack[fp];
-	fp++;
-	fp &= POS_STORE_SIZE - 1;
+	*pos = pos_stack[pos_store_fp];
+	pos_store_fp++;
+	pos_store_fp &= POS_STORE_SIZE - 1;
 
 	return True;
+}
+
+/*!
+ * Erweiterung des Stacks zur Queue; Element wird vorn entnommen, falls FIFO-Pointer until_fp noch nicht erreicht ist
+ * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
+ * @param until_fp	FIFO-Pointer (per pos_store_get_fp() geholt), bis zu dem ein Dequeue maximal erfolgen soll
+ * @return 			True wenn Element erfolgreich entnommen werden konnte sonst False falls kein Element mehr enthalten ist
+ */
+uint8_t pos_store_dequeue_until(position_t * pos, uint8_t until_fp) {
+	if (pos_store_fp == until_fp) {
+		return False;
+	}
+	return pos_store_dequeue(pos);
 }
 
 #ifdef PC
@@ -119,11 +145,11 @@ uint8_t pos_store_dequeue(position_t * pos) {
 static void dump(void) {
 	int i;
 	for (i=0; i<count; i++) {
-		int x = pos_stack[(fp + i) & (POS_STORE_SIZE - 1)].x;
-		int y = pos_stack[(fp + i) & (POS_STORE_SIZE - 1)].y;
+		int x = pos_stack[(pos_store_fp + i) & (POS_STORE_SIZE - 1)].x;
+		int y = pos_stack[(pos_store_fp + i) & (POS_STORE_SIZE - 1)].y;
 		printf("%d:\tx=%d\ty=%d\n", i + 1, x, y);
 	}
-	printf("fp=%u\tsp=%u\tcount=%u\t\n\n", fp, sp, count);
+	printf("fp=%u\tsp=%u\tcount=%u\t\n\n", pos_store_fp, pos_store_sp, count);
 }
 
 /*!

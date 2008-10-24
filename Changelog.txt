@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-10-24 Timo Sandmann [mail@timosandmann.de]: Positionsspeicher um pos_store_get_sp(), pos_store_get_fp(), pos_store_pop_until() und pos_store_dequeue_until() ergaenzt. Ermoeglicht pop / dequeue bis zu einem gegebenen Stack- / FIFO-Pointer. 
+
 2008-10-24 Timo Sandmann [mail@timosandmann.de]: Bot-2-Bot-Kommunikation gegen ungueltige Kommandos abgesichert, Debug-Ausgaben ausgeschaltet
 
 2008-10-14 Timo Sandmann [mail@timosandmann.de]: map_clean() Funktion entfernt alle frei-Informationen aus der Karte, so dass nur die Hindernisse uebrig bleiben (#174)
