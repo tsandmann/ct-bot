@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	bot-2-bot.c
  * @brief 	Bot-2-Bot-Kommunikation
  * @author 	Timo Sandmann (mail@timosandmann.de)
@@ -26,7 +26,7 @@
 
 //TODO:	regelmaessig Pings senden, um inaktive Bots aus der Liste entfernen zu koennen?
 
-#define DEBUG_BOT2BOT		/*!< Schaltet LOG-Ausgaben (z.B. Bot-Liste) ein oder aus */
+//#define DEBUG_BOT2BOT		/*!< Schaltet LOG-Ausgaben (z.B. Bot-Liste) ein oder aus */
 
 #include "ct-Bot.h"
 #ifdef BOT_2_BOT_AVAILABLE
@@ -37,9 +37,9 @@
 #undef LOG_AVAILABLE
 #endif
 
-bot_list_entry_t * bot_list = NULL;	/*!< Liste aller bekannten Bots */
+bot_list_entry_t * bot_list = NULL;		/*!< Liste aller bekannten Bots */
 
-int16_t my_state = BOT_STATE_AVAILABLE;
+int16_t my_state = BOT_STATE_AVAILABLE;	/*!< Der eigene Status */
 
 /*!
  * Dummy, fuer Kommandos, die nicht bearbeitet werden sollen
@@ -58,6 +58,14 @@ void (* cmd_functions[])(command_t * cmd) = {
 };
 
 /*!
+ * Gibt die Anzahl der Kommando-Funktionen zurueck
+ * @return	Anzahl der Funktionen in cmd_functions
+ */
+uint8_t get_bot2bot_cmds(void) {
+	return sizeof(cmd_functions) / sizeof(cmd_functions[0]);
+}
+
+/*!
  * Liefert die Kommando-Nummer zu einer Kommando-Funktion
  * @param *func	Name der auswertenden Funktion
  * @return		Kommando-ID
@@ -73,12 +81,13 @@ uint8_t get_command_of_function(void (* func)(command_t * cmd)) {
 /*!
  * Fuegt der Bot-Liste einen Bot hinzu.
  * Neue Bots sind per Definition erstmal AVAILABLE
+ * @param *cmd	Zeiger auf empfangenes Kommando
  */
 void add_bot_to_list(command_t * cmd) {
 	uint8_t addr = cmd->from;
 	/* dem neuen Bot Hallo sagen */
 	command_write_to(BOT_CMD_STATE, 0, addr, &my_state, NULL, 0);
-	
+
 	/* und ihn in die eigene Liste eintragen */
 	bot_list_entry_t * ptr = bot_list;
 	if (ptr == NULL) {
@@ -93,7 +102,7 @@ void add_bot_to_list(command_t * cmd) {
 		#endif
 		return;
 	}
-	
+
 	/* Adresse in der Liste suchen */
 	while (1) {
 		if (ptr->address == addr) {
@@ -101,13 +110,13 @@ void add_bot_to_list(command_t * cmd) {
 			ptr->state = BOT_STATE_AVAILABLE;
 			#ifdef LOG_AVAILABLE
 				print_bot_list();
-			#endif			
+			#endif
 			return;	// fertig
 		}
 		if (ptr->next == NULL) break;	// Ende, ptr zeigt auf letzten Eintrag
 		ptr = ptr->next;		// auf zum Naechsten
 	}
-	
+
 	/* Zombies suchen */
 	ptr = bot_list;
 	while (1) {
@@ -123,12 +132,12 @@ void add_bot_to_list(command_t * cmd) {
 		if (ptr->next == NULL) break;
 		ptr = ptr->next;
 	}
-	
+
 	/* neuen Eintrag anhaengen */
 	ptr->next = malloc(sizeof(bot_list_entry_t));
 	ptr = ptr->next;
 	if (ptr == NULL) return;	// Fehler
-	
+
 	/* und initialisieren */
 	ptr->address = addr;
 	ptr->state = BOT_STATE_AVAILABLE;

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-10-24 Timo Sandmann [mail@timosandmann.de]: Bot-2-Bot-Kommunikation gegen ungueltige Kommandos abgesichert, Debug-Ausgaben ausgeschaltet
+
 2008-10-14 Timo Sandmann [mail@timosandmann.de]: map_clean() Funktion entfernt alle frei-Informationen aus der Karte, so dass nur die Hindernisse uebrig bleiben (#174)
 
 2008-10-14 Timo Sandmann [mail@timosandmann.de]: Map-Shrinking umgestellt: Erfolgt jetzt immer online, aber lazy (blockweise) (#176)

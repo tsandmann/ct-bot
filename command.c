@@ -515,6 +515,10 @@ int8_t command_evaluate(void) {
 			/* kein loop-back */
 			if (received_command.from != get_bot_address()) {
 				/* Kommando kommt von einem anderen Bot */
+				if (received_command.request.command >= get_bot2bot_cmds()) {
+					/* ungueltig */
+					return 0;
+				}
 				cmd_functions[received_command.request.command](&received_command);
 			}
 		#endif

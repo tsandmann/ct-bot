@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	bot-2-bot.h
  * @brief 	Bot-2-Bot-Kommunikation
  * @author 	Timo Sandmann (mail@timosandmann.de)
@@ -49,8 +49,14 @@ typedef struct _bot_list_entry_t {
 #define BOT_CMD_WELCOME		get_command_of_function(add_bot_to_list)
 #define BOT_CMD_STATE		get_command_of_function(set_received_bot_state)
 
-extern bot_list_entry_t * bot_list;	/*!< Liste aller bekannten Bots */
-extern void (* cmd_functions[])(command_t * cmd);
+extern bot_list_entry_t * bot_list;					/*!< Liste aller bekannten Bots */
+extern void (* cmd_functions[])(command_t * cmd);	/*!< Funktionstabelle fuer alle Bot-2-Bot-Kommandos */
+
+/*!
+ * Gibt die Anzahl der Kommando-Funktionen zurueck
+ * @return	Anzahl der Funktionen in cmd_functions
+ */
+uint8_t get_bot2bot_cmds(void);
 
 /*!
  * Fuegt der Bot-Liste einen Bot hinzu
