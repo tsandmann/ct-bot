@@ -71,6 +71,14 @@ void pos_store_clear(void);
 uint8_t pos_store_pop(position_t * pos) __attribute__((noinline));
 
 /*!
+ * Pop-Routine zur Rueckgabe des letzten auf dem Stack gepushten Punktes, falls Stackpointer until_sp noch nicht erreicht ist
+ * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
+ * @param until_sp	Stackpointer (per pos_store_get_sp() geholt), bis zu dem ein Pop maximal erfolgen soll
+ * @return			False falls Pop nicht erfolgreich, d.h. kein Punkt mehr auf dem Stack, sonst True nach erfolgreichem Pop
+ */
+uint8_t pos_store_pop_until(position_t * pos, uint8_t until_sp);
+
+/*!
  * Speichern einer Koordinate auf dem Stack
  * @param pos	X/Y-Koordinaten des zu sichernden Punktes
  * @return		True wenn erfolgreich sonst False wenn Array voll ist

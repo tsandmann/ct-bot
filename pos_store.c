@@ -125,19 +125,6 @@ uint8_t pos_store_dequeue(position_t * pos) {
 	return True;
 }
 
-/*!
- * Erweiterung des Stacks zur Queue; Element wird vorn entnommen, falls FIFO-Pointer until_fp noch nicht erreicht ist
- * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
- * @param until_fp	FIFO-Pointer (per pos_store_get_fp() geholt), bis zu dem ein Dequeue maximal erfolgen soll
- * @return 			True wenn Element erfolgreich entnommen werden konnte sonst False falls kein Element mehr enthalten ist
- */
-uint8_t pos_store_dequeue_until(position_t * pos, uint8_t until_fp) {
-	if (pos_store_fp == until_fp) {
-		return False;
-	}
-	return pos_store_dequeue(pos);
-}
-
 #ifdef PC
 /*!
  * Gibt alle Eintraege auf stdout aus
