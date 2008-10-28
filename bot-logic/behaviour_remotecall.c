@@ -332,6 +332,7 @@ void bot_remotecall_behaviour(Behaviour_t *data) {
 			break;
 		}
 		default:
+			running_behaviour=REMOTE_CALL_IDLE;
 			return_from_behaviour(data); 	// und Verhalten auch aus
 			break;
 	}
@@ -344,6 +345,10 @@ void bot_remotecall_behaviour(Behaviour_t *data) {
  * @param data		Zeiger auf die Daten
  */
 void bot_remotecall(Behaviour_t *caller, char* func, remote_call_data_t* data) {
+	if (running_behaviour != REMOTE_CALL_IDLE) {
+		/* Verhalten noch aktiv, Abbruch */
+		return;
+	}
 	function_id = getRemoteCall(func);
 	if (function_id >= STORED_CALLS){
 		LOG_ERROR("Funktion %s nicht gefunden. Exit!", func);

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-10-28 Timo Sandmann [mail@timosandmann.de]: Robustheit der RemoteCalls verbessert
+
 2008-10-24 Timo Sandmann [mail@timosandmann.de]: Positionsspeicher um pos_store_get_sp(), pos_store_get_fp() und pos_store_pop_until() ergaenzt. Ermoeglicht pop bis zu einem gegebenen Stackpointer. 
 
 2008-10-24 Timo Sandmann [mail@timosandmann.de]: Bot-2-Bot-Kommunikation gegen ungueltige Kommandos abgesichert, Debug-Ausgaben ausgeschaltet
