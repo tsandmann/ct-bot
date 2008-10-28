@@ -43,7 +43,7 @@
 #define REMOTE_CALL_RUNNING 2
 
 /*! Uebergabevariable fuer Remotecall-Verhalten */
-static uint8 running_behaviour =REMOTE_CALL_IDLE;
+static uint8 running_behaviour = REMOTE_CALL_IDLE;
 
 static uint8 function_id = 255;			/*!< ID der zu startenden Botenfunktion */
 static uint8 parameter_count = 0;		/*!< Anzahl der Paramter (ohne Zeiger auf Aufrufer) */
@@ -347,6 +347,7 @@ void bot_remotecall_behaviour(Behaviour_t *data) {
 void bot_remotecall(Behaviour_t *caller, char* func, remote_call_data_t* data) {
 	if (running_behaviour != REMOTE_CALL_IDLE) {
 		/* Verhalten noch aktiv, Abbruch */
+		LOG_DEBUG("bereits ein RemoteCall aktiv (ID=%u)!", function_id);
 		return;
 	}
 	function_id = getRemoteCall(func);
