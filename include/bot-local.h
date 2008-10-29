@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	bot-local.h
  * @brief 	Konstanten, die den Bot an reale Umgebungen anpassen
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -30,23 +30,25 @@
 
 #include "ct-Bot.h"
 
+
 /*** Bot-Geometrie ***/
 #define BOT_DIAMETER			120			/*!< Bot-Durchmesser [mm] */
 #define ENCODER_MARKS			60			/*!< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weissen + Anzahl der schwarzen Felder */
 #define WHEEL_DIAMETER			56.7		/*!< Durchmesser eines Rades [mm] */
-#define WHEEL_PERIMETER			178.1283 	/*!< Umfang eines Rades [mm] */	
+#define WHEEL_PERIMETER			178.1283 	/*!< Umfang eines Rades [mm] */
 #define WHEEL_TO_WHEEL_DIAMETER 97.2 		/*!< Abstand der beiden Raeder [mm] */
 
 #define DISTSENSOR_POS_FW		47			/*!< Abstand der Distanzsensoren von der Radachse (in Fahrtrichtung) [mm] */
-#define DISTSENSOR_POS_SW		32			/*!< Abstand der Distanzsensoren von der Mittelachse (in Querrichtung) [m] */
-#define DISTSENSOR_POS_B_SW	(DISTSENSOR_POS_SW + 5) /*!< Abgrundsensoren 5 mm weiter aussen als Distsensoren */
+#define DISTSENSOR_POS_SW		32			/*!< Abstand der Distanzsensoren von der Mittelachse (in Querrichtung) [mm] */
 
+#define BORDERSENSOR_POS_FW		DISTSENSOR_POS_FW  /*!< Abgrundsensoren unter Distsensoren */
+#define BORDERSENSOR_POS_SW		(DISTSENSOR_POS_SW + 5) /*!< Abgrundsensoren 5 mm weiter aussen als Distsensoren */
 
 /*** einstellbare Parameter ***/
 
 /* Parameter der Motorregelung */
 #define PID_Kp				70				/*!< PID-Parameter proportional */
-#define PID_Ki				10				/*!< PID-Parameter intergral */ 
+#define PID_Ki				10				/*!< PID-Parameter intergral */
 #define PID_Kd				20				/*!< PID-Parameter differential */
 #define PID_Ta				1				/*!< Abtastzeit */
 #define PID_SHIFT			4				/*!< Rechtsshift der Stellgroessenkorrektur */
@@ -78,6 +80,9 @@
 #define G_SPEED				0.5		/*!< Kopplung Encoder- und Maussensor fuer Geschwindigkeiten (0.0=nur Radencoder, 1.0=nur Maussensor) */
 #define G_POS				0.5		/*!< Kopplung Encoder- und Maussensor fuer Positionen und Winkel (0.0=nur Radencoder, 1.0=nur Maussensor) */
 
+/* System-Konstanten */
+#define F_CPU	16000000L	/*!< CPU-Frequenz [Hz] */
+#define XTAL	F_CPU		/*!< CPU-Frequenz [Hz] */
 
 /*** Einstellungen fuer die Verhaltensregeln ***/
 
@@ -107,11 +112,7 @@
 #endif	// PC
 
 /* Konstanten fuer bot_catch_pillar_behaviour() */
-#ifdef PC
-	#define MAX_PILLAR_DISTANCE	350	/*!< max. Entfernung zum Objekt [mm] Sim */	
-#else
-	#define MAX_PILLAR_DISTANCE	300 /*!< max. Entfernung zum Objekt [mm] realer Bot */
-#endif
+#define MAX_PILLAR_DISTANCE	500 /*!< max. Entfernung zum Objekt [mm] */
 
 /* Konstanten fuer Verhaltensanzeige, Verhalten mit prio von bis sichtbar */
 #define PRIO_VISIBLE_MIN	3	/*!< Prioritaet, die ein Verhalten mindestens haben muss, um angezeigt zu werden */

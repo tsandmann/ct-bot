@@ -69,7 +69,13 @@ ISR(TWI_vect) {
 		/* Datum versandt, ACK empfangen */
 		case TW_MT_DATA_ACK: {
 			if (txSize == 0) {
-				/* ReStart senden */
+				if (rxSize == 0) {
+					/* Stopp Senden und beenden */
+					TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWSTO);	// Stopp senden
+					i2c_complete = 128;	// Lock freigeben
+					break;
+				}
+ 				/* ReStart senden */
 				TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWIE) | (1<<TWSTA);	// ReStart senden
 				break;
 			}
@@ -145,7 +151,7 @@ void i2c_init(uint8_t bitrate) {
  * @param *pRx	Zeiger auf Puffer fuer zu lesende Daten
  * @param nRx	Anzahl der zu lesenden Bytes, [0; 255]
  */
-void i2c_write_read(uint8_t sla, uint8_t * pTx, uint8_t nTx, uint8_t * pRx, uint8_t nRx) {
+void i2c_write_read(uint8_t sla, void * pTx, uint8_t nTx, void * pRx, uint8_t nRx) {
 	/* Inits */
 	i2c_complete = 0;
 	i2c_error = TW_NO_INFO;
@@ -165,7 +171,7 @@ void i2c_write_read(uint8_t sla, uint8_t * pTx, uint8_t nTx, uint8_t * pRx, uint
  * @param *pRx		Zeiger auf Puffer fuer zu lesende Daten
  * @param nRx		Anzahl der zu lesenden Bytes
  */
-void i2c_read(uint8_t sla, uint8_t txData, uint8_t * pRx, uint8_t nRx) {
+void i2c_read(uint8_t sla, uint8_t txData, void * pRx, uint8_t nRx) {
 	static uint8_t data;
 	data = txData;
 	i2c_write_read(sla, &data, 1, pRx, nRx);

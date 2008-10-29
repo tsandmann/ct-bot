@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	ct-Bot.c
  * @brief 	Bot-Hauptprogramm
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -28,25 +28,19 @@
 
 #ifdef MCU
 	#include <avr/io.h>
-	#include <avr/interrupt.h>
 	#include <avr/wdt.h>
 	#include "bot-2-pc.h"
-	#include <avr/eeprom.h>
 	#include "i2c.h"
+	#include "twi.h"
 	#include "sp03.h"
 #endif
-	
+
 #ifdef PC
 	#include "bot-2-sim.h"
 	#include "tcp.h"
-	#include "eeprom-emu.h"
 	#include <stdio.h>
 	#include <time.h>
 	#include <sys/time.h>
-#endif
-
-#ifdef TWI_AVAILABLE
-	#include "twi.h"
 #endif
 
 #include "global.h"
@@ -78,24 +72,25 @@
 #include "os_thread.h"
 #include "map.h"
 #include "cmd_tools.h"
+#include "eeprom.h"
 
 /*!
- * Der Mikrocontroller und der PC-Simulator brauchen ein paar Einstellungen, 
+ * Der Mikrocontroller und der PC-Simulator brauchen ein paar Einstellungen,
  * bevor wir loslegen koennen.
  */
-void init(void) {
+static void init(void) {
 	#ifdef MCU
 		PORTA=0; DDRA=0;	// Alles Eingang -> alles Null
 		PORTB=0; DDRB=0;
 		PORTC=0; DDRC=0;
 		PORTD=0; DDRD=0;
-			
+
 		wdt_disable();	// Watchdog aus!
 		#ifdef OS_AVAILABLE
-			os_create_thread((uint8_t *)SP, NULL);	// Hauptthread anlegen
+			os_create_thread((void *)SP, NULL);	// Hauptthread anlegen
 		#endif
 		timer_2_init();
-		
+
 		/* Ist das ein Power on Reset? */
 		#ifdef __AVR_ATmega644__
 			if ((MCUSR & 1) == 1) {
@@ -107,8 +102,8 @@ void init(void) {
 			delay(100);
 			asm volatile("jmp 0");
 		}
-		
-		delay(100);	
+
+		delay(100);
 		#ifdef RESET_INFO_DISPLAY_AVAILABLE
 			#ifdef __AVR_ATmega644__
 				reset_flag = MCUSR & 0x1F;	//Lese Grund fuer Reset und sichere Wert
@@ -117,9 +112,9 @@ void init(void) {
 				reset_flag = MCUCSR & 0x1F;	//Lese Grund fuer Reset und sichere Wert
 				MCUCSR = 0;	//setze Register auf 0x00 (loeschen)
 			#endif
-			uint8 resets = eeprom_read_byte(&resetsEEPROM) + 1;
-			eeprom_write_byte(&resetsEEPROM, resets);
-		#endif	// RESET_INFO_DISPLAY_AVAILABLE	
+			uint8_t resets = ctbot_eeprom_read_byte(&resetsEEPROM) + 1;
+			ctbot_eeprom_write_byte(&resetsEEPROM, resets);
+		#endif	// RESET_INFO_DISPLAY_AVAILABLE
 	#endif	// MCU
 
 	#ifdef UART_AVAILABLE
@@ -127,11 +122,6 @@ void init(void) {
 	#endif
 	#ifdef BOT_2_PC_AVAILABLE
 		bot_2_pc_init();
-	#endif
-	#ifdef PC
-		if (init_eeprom_man(0) != 0) {
-			LOG_ERROR("EEPROM-Manager nicht korrekt initialisiert!");
-		}
 	#endif
 	#ifdef DISPLAY_AVAILABLE
 		display_init();
@@ -163,60 +153,63 @@ void init(void) {
 	#endif
 	#ifdef I2C_AVAILABLE
 		i2c_init(42);	// 160 kHz
-	#endif		
+	#endif
 	#ifdef TWI_AVAILABLE
 		Init_TWI();
-	#endif		
+	#endif
 	#ifdef DISPLAY_AVAILABLE
 		gui_init();
-	#endif	
+	#endif
 }
 
 #ifdef MCU
-/*! 
+/*!
  * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
  */
 int main(void) {
 #endif	// MCU
 
 #ifdef PC
-/*! 
+/*!
  * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
  */
 int main(int argc, char * argv[]) {
-	/* zum Debuggen der Zeiten: */	
-	#ifdef DEBUG_TIMES
-		struct timeval start, stop;
-	#endif
+#ifdef DEBUG_TIMES
+	/* zum Debuggen der Zeiten: */
+	struct timeval start, stop;
+#endif
+
+	/* PC-EEPROM-Init vor hand_cmd_args() */
+	if (init_eeprom_man(0) != 0) {
+		LOG_ERROR("EEPROM-Manager nicht korrekt initialisiert!");
+	}
+
 	/* Kommandozeilen-Argumente auswerten */
 	hand_cmd_args(argc, argv);
-	
+
 	printf("c't-Bot\n");
-	
-	/* Bot2Sim-Kommunikation initialisieren */
+
+	/* Bot-2-Sim-Kommunikation initialisieren */
 	bot_2_sim_init();
-	receive_until_Frame(CMD_DONE);
-	command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
-	flushSendBuffer();	
 #endif	// PC
-	
+
 	#ifdef  TEST_AVAILABLE_MOTOR
-		uint16 calls=0;	/*!< Im Testfall zaehle die Durchlaeufe */
+		uint16 calls=0;	// Im Testfall zaehle die Durchlaeufe
 	#endif
 
 	/* Alles initialisieren */
 	init();
 
 	#ifdef WELCOME_AVAILABLE
-		display_cursor(1,1);			/*!< Home */
-		display_printf("c't-Roboter");	/*!< Ausgabe */
-		LED_set(0x00);					/*!< LEDs setzen */
+		display_cursor(1,1);
+		display_printf("c't-Roboter");
+		LED_set(0x00);
 		#ifdef LOG_AVAILABLE
-			LOG_DEBUG("Hallo Welt!");	/*!< Doxygen moechte hier jede Zeilen kommentiert haben :/ */
-		#endif	
+			LOG_DEBUG("Hallo Welt!");
+		#endif
 		#ifdef SP03_AVAILABLE
-			sp03_speak_string(1, 4, 1, "Ready");
-		#endif		
+			sp03_say("I am Robi %d", sensError);
+		#endif
 	#endif	// WELCOME_AVAILABLE
 
 	/*! Hauptschleife des Bots */
@@ -224,20 +217,17 @@ int main(int argc, char * argv[]) {
 		#ifdef PC
 			receive_until_Frame(CMD_DONE);
 			#ifdef DEBUG_TIMES
-				/* Zum Debuggen der Zeiten: */	
+				/* Zum Debuggen der Zeiten: */
 		 		GETTIMEOFDAY(&start, NULL);
 				int t1=(start.tv_sec - stop.tv_sec)*1000000 + start.tv_usec - stop.tv_usec;
 				printf("Done-Token (%d) in nach %d usec ",received_command.data_l,t1);
 			#endif	// DEBUG_TIMES
 		#endif	// PC
-			
+
 		#ifdef MCU
-			bot_sens_isr();
+			bot_sens();	// Sensordaten aktualisieren / auswerten
 		#endif
-		#ifdef TEST_AVAILABLE
-			show_sensors_on_led();
-		#endif
-	
+
 		/* Testprogramm, das den Bot erst links-, dann rechtsrum dreht */
 		#ifdef TEST_AVAILABLE_MOTOR
 			calls++;
@@ -250,7 +240,7 @@ int main(int argc, char * argv[]) {
 			} else if (calls > 1001) {
 				#ifdef BEHAVIOUR_AVAILABLE
 					bot_behave();
-				#endif			
+				#endif
 			}
 		#else
 			#ifdef BEHAVIOUR_AVAILABLE
@@ -258,7 +248,7 @@ int main(int argc, char * argv[]) {
 				bot_behave();
 			#endif	// BEHAVIOUR_AVAILABLE
 		#endif	// TEST_AVAILABLE_MOTOR
-				
+
 		#ifdef MCU
 			/* jeweils alle 100 ms kommunizieren Bot, User und Sim */
 			static uint16 comm_ticks = 0;
@@ -269,11 +259,11 @@ int main(int argc, char * argv[]) {
 					//register uint16 time_ticks = TIMER_GET_TICKCOUNT_16;
 					#ifdef DISPLAY_AVAILABLE
 						gui_display(display_screen);
-					#endif	
+					#endif
 					//register uint16 time_end = TIMER_GET_TICKCOUNT_16;
 					//display_cursor(1,1);
-					//display_printf("%6u", (uint16)(time_end - time_ticks));					
-					uart_gui = 1;	// bot2pc ist erst beim naechsten Mal dran			
+					//display_printf("%6u", (uint16)(time_end - time_ticks));
+					uart_gui = 1;	// bot2pc ist erst beim naechsten Mal dran
 				} else {
 					/* Den PC ueber Sensorern und Aktuatoren informieren */
 					//register uint16 time_ticks = TIMER_GET_TICKCOUNT_16;
@@ -282,40 +272,60 @@ int main(int argc, char * argv[]) {
 					#endif
 					//register uint16 time_end = TIMER_GET_TICKCOUNT_16;
 					//display_cursor(1,1);
-					//display_printf("%6u", (uint16)(time_end - time_ticks));			
+					//display_printf("%6u", (uint16)(time_end - time_ticks));
 					uart_gui = 0;	// naechstes Mal wieder mit GUI anfangen
 				}
-			}	
+			}
 			//static uint16 old_time = 0;
 			//register uint16 time_ticks = TIMER_GET_TICKCOUNT_16;
 			//uint8 time_diff = 0;
-			//time_diff = time_ticks - old_time;		
+			//time_diff = time_ticks - old_time;
 			//display_cursor(1,1);
 			//display_printf("%6u", time_diff);
-			//old_time = TIMER_GET_TICKCOUNT_16;				
+			//old_time = TIMER_GET_TICKCOUNT_16;
 			#ifdef BOT_2_PC_AVAILABLE
 				/* Kommandos vom PC empfangen */
 				bot_2_pc_listen();
 			#endif
 		#endif	// MCU
-			
+
 		//LOG_DEBUG("BOT TIME %lu ms", TICKS_TO_MS(TIMER_GET_TICKCOUNT_32));
-		
+
 		#ifdef PC
 			#ifdef DISPLAY_AVAILABLE
 				gui_display(display_screen);
-			#endif		
+			#endif
 			command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
 			flushSendBuffer();
-			/* Zum Debuggen der Zeiten: */	
+			/* Zum Debuggen der Zeiten: */
 			#ifdef DEBUG_TIMES
 				GETTIMEOFDAY(&stop, NULL);
 	 			int t2=(stop.tv_sec - start.tv_sec)*1000000 +stop.tv_usec - start.tv_usec;
 				printf("Done-Token (%d) out after %d usec\n",simultime,t2);
 			#endif	// DEBUG_TIMES
-		#endif	// PC	
+		#endif	// PC
+
+#ifdef OS_DEBUG
+		/* Debug-Info zum freien Stackspeicher ausgeben */
+		uint16_t tmp;
+#ifdef MAP_AVAILABLE
+		extern void * map_update_stack;
+		static uint16_t map_stack_free = -1;
+		tmp = os_stack_unused(map_update_stack);
+		if (tmp < map_stack_free) {
+			map_stack_free = tmp;
+			LOG_INFO("Map-Stack unused=%u", tmp);
+		}
+#endif	// MAP_AVAILABLE
+		static uint16_t kernel_stack_free = -1;
+		tmp = os_stack_unused(os_kernel_stack);
+		if (tmp < kernel_stack_free) {
+			kernel_stack_free = tmp;
+			LOG_INFO("Kernel-Stack unused=%u", tmp);
+		}
+#endif	// OS_DEBUG
 	}
-	
+
 	/* Falls wir das je erreichen sollten ;-) */
-	return 1;	
+	return 1;
 }

@@ -34,7 +34,7 @@
 
 #include "os_thread.h"
 #include "os_utils.h"
-#include <stdlib.h>
+#include <string.h>
 
 /*! Datentyp fuer Instruction-Pointer */
 typedef union {
@@ -45,8 +45,10 @@ typedef union {
 	};
 } os_ip_t;
 
-Tcb_t os_threads[OS_MAX_THREADS];	/*!< Array aller TCBs */
-Tcb_t * os_thread_running = NULL;	/*!< Zeiger auf den TCB des Threads, der gerade laeuft */
+Tcb_t os_threads[OS_MAX_THREADS];				/*!< Array aller TCBs */
+Tcb_t * os_thread_running = NULL;				/*!< Zeiger auf den TCB des Threads, der gerade laeuft */
+uint8_t os_kernel_stack[OS_KERNEL_STACKSIZE];	/*!< Kernel-Stack */
+os_signal_t dummy_signal;						/*!< Signal, das referenziert wird, wenn sonst keins gesetzt ist */
 
 /*!
  * Legt einen neuen Thread an.
@@ -57,27 +59,32 @@ Tcb_t * os_thread_running = NULL;	/*!< Zeiger auf den TCB des Threads, der gerad
  * @param *pIp		Zeiger auf die Main-Funktion des Threads (Instruction-Pointer)
  * @return			Zeiger auf den TCB des angelegten Threads
  */
-Tcb_t * os_create_thread(uint8_t * pStack, void * pIp) {
+Tcb_t * os_create_thread(void * pStack, void * pIp) {
 	os_enterCS();	// Scheduler deaktivieren
 	uint8_t i;
 	Tcb_t * ptr = os_threads;
 	// os_scheduling_allowed == 0 wegen os_enterCS()
 	for (i=os_scheduling_allowed; i<OS_MAX_THREADS; i++, ptr++) {	
 		if (ptr->stack == NULL) {
+			ptr->wait_for = &dummy_signal;	// wait_for belegen
 			if (os_thread_running == NULL) {
 				/* Main-Thread anlegen (laeuft bereits) */
 				os_thread_running = ptr;
 				ptr->stack = pStack;
+#ifdef OS_DEBUG
+				os_mask_stack(os_kernel_stack, OS_KERNEL_STACKSIZE);
+#endif
 			} else {
 				/* "normalen" Thread anlegen */
 				os_ip_t tmp;
 				tmp.ip = pIp;
 				/* Return-Adresse liegt in Big-Endian auf dem Stack! */
-				*pStack = tmp.lo8;
-				*(pStack-1) = tmp.hi8;
+				uint8_t * sp = pStack;
+				*sp = tmp.lo8;
+				*(sp-1) = tmp.hi8;
 				tmp.ip = &os_exitCS;
-				*(pStack-2) = tmp.lo8;
-				*(pStack-3) = tmp.hi8;
+				*(sp-2) = tmp.lo8;
+				*(sp-3) = tmp.hi8;
 				ptr->stack = pStack-4;	// 4x push => Stack-Pointer - 4
 			}
 			os_scheduling_allowed = 1;	// Scheduling wieder erlaubt
@@ -117,6 +124,25 @@ void os_thread_yield(void) {
 	}
 	/* Scheduler wechselt die Threads */
 	os_schedule(now);
+}
+
+/*!
+ * Weckt einen wartenden Thread auf, falls dieser eine hoehere Prioritaet hat
+ * @param *thread	Zeiger auf TCB des zu weckenden Threads
+ */
+void os_thread_wakeup(Tcb_t * thread) {
+	uint32_t now = TIMER_GET_TICKCOUNT_32;
+	thread->nextSchedule = now;
+	os_schedule(now);
+}
+
+/*!
+ * Blockiert den aktuellen Thread, bis ein Signal freigegeben wird
+ * @param *signal	Zeiger auf Signal
+ */
+void os_signal_set(os_signal_t * signal) {
+	os_thread_running->wait_for = signal;
+	os_schedule(TIMER_GET_TICKCOUNT_32);
 }
 
 /*!
@@ -177,9 +203,11 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to) {
 	);
 }
 
+void os_switch_helper(void) __attribute__((naked));
+
 /*
  * Hilfsfunktion fuer Thread-Switch, nicht beliebig aufrufbar!
- * (Erwartet Zeiger auf TCBs in Z und Y).
+ * (Erwartet Zeiger auf die Stacks in Z und Y).
  * Als extra Funktion implementiert, um die Return-Adresse auf dem Stack zu haben.
  */
 void os_switch_helper(void) {
@@ -195,11 +223,40 @@ void os_switch_helper(void) {
 		"out __SP_L__, r16							\n\t"
 		"ld r16, Y 									\n\t"
 		"out __SP_H__, r16							\n\t"
-		"sei				; Interrupts on				"
+		"reti				; Interrupts on				"
 		::: "memory"
 	);
 	//-- continue as "Y" --//
 }
+
+#ifdef OS_DEBUG
+/*!
+ * Maskiert einen Stack, um spaeter ermitteln zu koennen,
+ * wieviel Byte ungenutzt bleiben
+ * @param *stack	Anfangsadresse des Stacks
+ * @param size		Groesse des Stacks in Byte
+ */
+void os_mask_stack(void * stack, size_t size) {
+	memset(stack, 0x42, size);
+}
+
+/*!
+ * Ermittelt wieviel Bytes auf einem Stack bisher
+ * ungenutzt sind. Der Stack muss dafuer VOR der
+ * Initialisierung seines Threads mit
+ * os_stack_mask() praepariert worden sein!
+ * @param *stack	Anfangsadresse des Stacks
+ */
+uint16_t os_stack_unused(void * stack) {
+	uint8_t * ptr = stack;
+	uint16_t unused = 0;
+	while (*ptr == 0x42) {
+		unused++;
+		ptr++;
+	}
+	return unused;
+}
+#endif	// OS_DEBUG
 
 #endif	// OS_AVAILABLE
 #endif	// MCU

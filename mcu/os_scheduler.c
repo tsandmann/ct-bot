@@ -53,7 +53,7 @@ void os_schedule(uint32_t tickcount) {
 	for (i=os_scheduling_allowed; i<OS_MAX_THREADS; i++, ptr++) { 
 		if (ptr->stack != NULL) {
 			/* Es existiert noch ein Thread in der Liste */
-			if (ptr->nextSchedule < tickcount) {
+			if (ptr->wait_for->value == 0 && ptr->nextSchedule < tickcount) {
 				/* Der Thread ist nicht blockiert */
 				if (ptr != os_thread_running) {
 					/* switch Thread */

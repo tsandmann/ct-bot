@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	sensor-low_pc.c  
+/*! 
+ * @file 	sensor-low_pc.c  
  * @brief 	Low-Level Routinen fuer die Sensor Steuerung des c't-Bots
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	01.12.05
-*/
+ */
 
 #include "ct-Bot.h"
 
@@ -32,14 +33,13 @@
 /*!
  * Initialisiere alle Sensoren
  */
-void bot_sens_init(void){
+void bot_sens_init(void) {
 }
 
 /*!
  * Alle Sensoren aktualisieren.
- * Das geschieht auf der PC Seite anders -- in einem eigenen Thread.
  * Diese Funktion ist nur ein Dummy zur Kompatibilitaet.
  */
-void bot_sens_isr(void){
+void bot_sens(void) {
 }
-#endif
+#endif	// PC

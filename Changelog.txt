@@ -1,8 +1,136 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-10-29 Timo Sandmann [mail@timosandmann.de]: Release 15 
+
+2008-10-28 Timo Sandmann [mail@timosandmann.de]: Robustheit der RemoteCalls verbessert
+
+2008-10-24 Timo Sandmann [mail@timosandmann.de]: Positionsspeicher um pos_store_get_sp(), pos_store_get_fp() und pos_store_pop_until() ergaenzt. Ermoeglicht pop bis zu einem gegebenen Stackpointer. 
+
+2008-10-24 Timo Sandmann [mail@timosandmann.de]: Bot-2-Bot-Kommunikation gegen ungueltige Kommandos abgesichert, Debug-Ausgaben ausgeschaltet
+
+2008-10-14 Timo Sandmann [mail@timosandmann.de]: map_clean() Funktion entfernt alle frei-Informationen aus der Karte, so dass nur die Hindernisse uebrig bleiben (#174)
+
+2008-10-14 Timo Sandmann [mail@timosandmann.de]: Map-Shrinking umgestellt: Erfolgt jetzt immer online, aber lazy (blockweise) (#176)
+
+2008-10-14 Timo Sandmann [mail@timosandmann.de]: Ex- und Import fuer Map @ PC (Import: Kommandozeilenparameter -m, Export: Taste 6) 
+
+2008-10-12 Timo Sandmann [mail@timosandmann.de]: Warnings beseitigt, Positionsstack zu allgemeinem Positionsspeicher (Stack & FIFO) umgebaut (heisst jetzt pos_store) 
+
+2008-09-30 Frank Menzel [Menzelfr@gmx.net]: behaviour_pathplaning hinzugefuegt mit eigenem Screen
+
+2008-09-16 Timo Sandmann [mail@timosandmann.de]: Verbesserungen im MMC-Code (groesserer Timeout bei HW-SPI, Debug-Ausgaben bei MiniFAT)
+
+2008-09-06 Frank Menzel [Menzelfr@gmx.net]: Verhalten drive_area stark ueberarbeitet
+
+2008-09-05 Timo Sandmann [mail@timosandmann.de]: Anpassungen fuer ATmega644 (EEPROM und SPI)
+
+2008-09-02 Timo Sandmann [mail@timosandmann.de]: Kleinere Verbesserungen in den Fahrverhalten und drive_area() fuer den echten Bot, Timer-Makro zur Zeitmessung
+
+2008-08-30 Timo Sandmann [mail@timosandmann.de]: EEPROM-Zugriff jetzt ueber eeprom.h (#173) und Verhaltens-Code aufgeraeumt
+
+2008-08-30 Timo Sandmann [mail@timosandmann.de]: Datentyp position_t eingefuehrt (siehe global.h), MMC-Code optimiert, Neue Map-Funktion map_get_ratio() (siehe map.c), Bugfixes im Map-Code (u.a. #171), Map-Code optimiert, Bugfix fuer MMC-ENA-Code, neue Option MMC_AGGRESSIVE_OPTIMIZATION in mmc.h
+
+2008-08-28 Timo Sandmann [mail@timosandmann.de]: Verbesserungen in goto_pos, goto_obstacle in eigene Datei ausgelagert, Map-Code robuster gemacht
+
+2008-08-28 Frank Menzel [Menzelfr@gmx.net]: Verhalten behaviour_drive_area zum flaechendeckenden Fahren nach der Map unter Verwendung des pos_stacks
+
+2008-08-27 Timo Sandmann [mail@timosandmann.de]: Bugfix in bot_reset() und neue Map-Funktion map_flush_cache(), die den Map-Update-Cache sofort komplett zurueckschreibt.
+
+2008-08-24 Timo Sandmann [mail@timosandmann.de]: Bugfix in mcu/minifat.c fuer aeltere avr-libc-Versionen, Makefile korrigiert, kleine Ergaenzung (1st_init.S) des PC-Codes fuer ARM-Architektur (arm-linux-eabi)
+
+2008-08-10 Timo Sandmann [mail@timosandmann.de]: Mini-FAT ueberprueft nun, ob eine Datei fragmentiert auf der MMC liegt (Workaround fuer #172). Ueberpruefung mit MINI_FAT_CHECK_FRAGMENTATION in mcu/mini-fat.c einstellbar. 
+
+2008-06-19 Marko Bolowski: Bugfix fuer TWI-Treiber
+
+2008-06-17 Timo Sandmann [mail@timosandmann.de]: Neues Verhalten bot_classify_objects(), Details unter bot-logic/behaviour_classify_objects.c
+
+2008-06-10 Timo Sandmann [mail@timosandmann.de]: EEPROM-Emulation an Mac OS 10.5 angepasst, #151
+
+2008-06-10 Achim Pankalla [achim.pankalla@gmx.de]: EEPROM Emulation (#167), Benutzung von EEPROM Variablen vor der Initialisierung des EEPROM-Emulators. Emulation geht nun wieder mit Bot-Adressuebergabe.
+
+2008-06-10 Benjamin Benz [bbe@heise.de]: Follow-Line liegt nun auf FB-Taste 5, sofern BEHAVIOUR_FOLLOW_LINE_AVAILABLE an ist (nun default) 
+
+2008-05-21 Timo Sandmann [mail@timosandmann.de]: TCP-Testserver / -Client debuggt (#161), funktioniert nun (wieder)
+
+2008-05-19 Timo Sandmann [mail@timosandmann.de]: 3. Version fuer catch_pillar(), aehnlich zu Version 2, berechnet die Entfernung zum Objekt aber anders. Einstellbar mit #define CATCH_PILLAR_VERSION in behaviour_catch_pillar.c
+												 Distanzsensorauswertung mit und ohne Mittelwertbildung der Rohdaten, umschaltbar mit #define DISTSENS_AVERAGE in include/sensor_correction.h. Kalibrierungsverhalten entsprechend angepasst.
+
+2008-05-19 Frank Menzel [Menzelfr@gmx.net]: Neues catch_pillar-Verhalten mit Verwendung goto_pos; altes Verhalten im Code drin gelassen und mit define aktivierbar
+
+2008-05-09 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer i2c::write()
+
+2008-05-05 Timo Sandmann [mail@timosandmann.de]: map_locked() prueft, ob die Map frei ist. Map-Sperre auch fuer PC. Bugfix fuer calc_angle_diff() und Map-Debug-Code.
+
+2008-04-25 Timo Sandmann [mail@timosandmann.de]: goto_pos, gotoxy und Hilfsfunktionen auf int16-Positionsdaten umgestellt (#166)
+
+2008-04-22 Timo Sandmann [mail@timosandmann.de]: bot_turn_speed() hinzugefuegt, fuehrt bot_turn() mit max. speed mm/s aus
+
+2008-04-21 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer map_read()
+
 2008-04-21 Timo Sandmann [mail@timosandmann.de]: Bugfix LOG auf MMC (#165)
 
-2008-04-05 Timo Sandmann [mail@timosandmann.de]: Bugfixes fuer goto_pos, gotoxy und Remote-Calls aus devel-Zweig uebernommen
+2008-04-18 Timo Sandmann [mail@timosandmann.de]: Positions- und Map-Code auf int16 umgestellt und optimiert.
+												 Map-Update-Thread nach map.c verschoben (inlining der Sensor-Update-Funktionen) 
+												 Map-Aufloesung auf 125 umgestellt (ergibt 2er-Potenz beim Umrechnungsfaktor fuer Welt zu Map)
+												 Map-Interface nach aussen auf map_get_average(), map_get_point() und map_way_free() beschraenkt
+												 Debug-Code fuer BotOS hinzugefuegt (ermittelt die belegten Stack-Speicher)
+												 Ein paar kleinere Optimierungen (Timer-ISR)
+												 Map-Umbau ist aber noch nicht ganz fertig!
+
+2008-04-16 Benjamin Benz [bbe@heise.de]: Karte aktualisert nun auch Abgrundsensoren 
+
+2008-04-17 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer pc/os_thread_pc.c :: os_create_thread() unter Windows
+
+2008-04-16 Timo Sandmann [mail@timosandmann.de]: Verschiedene Modi fuer bot_scan_otf eingebaut (siehe include/bot-logic/behaviour_scan.h)
+
+2008-04-15 Timo Sandmann [mail@timosandmann.de]: Map-Update laeuft nun in einem zweiten Thread
+												 Fifo verallgemeinert (MCU und PC), threadsicher gemacht
+												 BotOS-Threading fuer PC auf PThreads abgebildet
+												 include/sensor_correction.h mit updaten!
+
+2008-04-08 Timo Sandmann [mail@timosandmann.de]: Eingabe von Text und Zahlen per Fernbedienung hinzugefuegt. 
+												 Wird ueber KEYPAD_AVAILABLE eingeschaltet und funktioniert wie von Handy oder Telefon gewohnt.
+												 Abschliessen der Eingabe mit Taste "play", Abbruch mit "stop".
+												 EEPROM-Abbild muss neu uebertragen werden!
+												 Bot-Adresse (jetzt auf Display Misc) per FB veraenderbar (Taste "Mute"; Eingabe als Dezimalzahl).
+
+2008-04-04 Timo Sandmann [mail@timosandmann.de]: bot_put_stack_waypositions() / bot_drive_stack() in bot_follow_object() integriert
+
+2008-04-04 Timo Sandmann [mail@timosandmann.de]: LED-Update: Bugfix und Vereinheitlichung von TEST_AVAILABLE und normal, Sensor-Code etwas aufgeraeumt
+
+2008-04-01 Timo Sandmann [mail@timosandmann.de]: LED-Update in Funktion ausgelagert, damit auch bei simulierten Bots die LEDs benutzt werden
+
+2008-03-31 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer bot_gotoxy (funktioniert jetzt auch mit negativen Koordinaten)
+
+2008-03-31 Timo Sandmann [mail@timosandmann.de]: Makefile aktualisiert, Doxygen-Warnungen beseitigt und Warnings, falls wichtige Verhaltensabhaengigkeiten nicht erfuellt sind
+
+2008-03-31 Frank Menzel [Menzelfr@gmx.net]: Verhalten um sich entlang des Fahrweges relevante Koordinaten auf dem Stack zu merken
+
+2008-03-31 Timo Sandmann [mail@timosandmann.de]: Bugfixes fuer Remote-Calls, goto_pos() und Bot-2-Bot
+
+2008-03-30 Harald W. Leschner [hari@h9l.net]: SP03-Treiber Update 
+
+2008-03-28 Timo Sandmann [mail@timosandmann.de]: Redundanten Init-Code aus bot-2-pc.c und bot-2-sim.c in command_init() zusammengefasst,
+												 Bugfix fuer Welcome-Paket-Auswertung,
+												 DONE-Paket fuer reale Bots,
+												 Bot-2-Bot-Kommunikation eingefuehrt (bot-2-bot.c / BOT_2_BOT_AVAILABLE),
+												 Liste fuer aktive Bots gebaut (experimentell) 
+
+2008-03-18 Timo Sandmann [mail@timosandmann.de]: Code fuer automatische Adressvergabe vervollstaendigt, PC-Code fuer Bot-2-Sim aufgeraeumt
+
+2008-03-16 Benjamin Benz [bbe@heise.de]: Rohcode für die automatische Adressvergabe eingefügt
+
+2008-03-16 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer command.c
+
+2008-03-15 Timo Sandmann [mail@timosandmann.de]: Ergaenzung zur Bot-Kommunikation: Bot-Code wertet Komm'-Adresse aus, Adresse per Kommandozeile einstellbar (-a), unnoetigen Komm'-Code auskommentiert
+
+2008-08-15 Benjamin Benz [bbe@heise.de]: Ein wenig an den neuen Kommandos gefeilt, primaer Log-Ausgaben
+
+2008-03-13 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer bot_goto_dist() nach Abbruch von bot_goto_pos()
+
+2008-03-10 Timo Sandmann [mail@timosandmann.de]: Reset-Funktion fuer Bots eingebaut: Taste RC5_CODE_CH_PC setzt einen Bot zurueck
+
+2008-02-29 Timo Sandmann [mail@timosandmann.de]: Datenstruktur fuer Kommunikation auf Sender-IDs erweitert
 
 2008-02-28 Frank Menzel [Menzelfr@gmx.net]: RC5_CODE_DOT auf Promo 8 auf AV-Taste sowie Bug im verhalten Drive_Stack korrigiert
 

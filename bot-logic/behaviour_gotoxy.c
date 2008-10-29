@@ -36,40 +36,39 @@
 #define GOTO_LOOP 		1
 #define CORRECT_HEAD	2
 #define REACHED_POS		3
-static int8 gotoState=INITIAL_TURN;	/*!< Status des Verhaltens */
-static float target_x;				/*!< Zielkoordinate X */
-static float target_y;				/*!< Zielkoordinate Y */
-static float initialDiffX;			/*!< Anfangsdifferenz in X-Richtung */
-static float initialDiffY;			/*!< Anfangsdifferenz in Y-Richtung */
+static int8_t gotoState=INITIAL_TURN;	/*!< Status des Verhaltens */
+static int16_t target_x;				/*!< Zielkoordinate X */
+static int16_t target_y;				/*!< Zielkoordinate Y */
+static int16_t initialDiffX;			/*!< Anfangsdifferenz in X-Richtung */
+static int16_t initialDiffY;			/*!< Anfangsdifferenz in Y-Richtung */
 
 /*!
  * Das Verhalten faehrt von der aktuellen Position zur angegebenen Position (x/y)
- * @param *data der Verhaltensdatensatz
+ * @param *data	Der Verhaltensdatensatz
  * Verbessert von Thomas Noll, Jens Schoemann, Ben Horst (Philipps-Universitaet Marburg)
  */
-void bot_gotoxy_behaviour(Behaviour_t *data){
+void bot_gotoxy_behaviour(Behaviour_t * data) {
 	/* aus aktueller Position und Ziel neuen Zielwinkel berechnen */
-	float xDiff=target_x-x_pos;
-	float yDiff=target_y-y_pos;
+	int16_t xDiff = target_x - x_pos;
+	int16_t yDiff = target_y - y_pos;
 	
-	if(xDiff*initialDiffX <0 || yDiff*initialDiffY <0){	// Hier kann noch verbessert werden
+	if(xDiff*initialDiffX < 0 || yDiff*initialDiffY < 0) {	// Hier kann noch verbessert werden
 		gotoState=REACHED_POS;			// z.B. Abfragen statt *-Operation
 		speedWishLeft=BOT_SPEED_STOP;		// bzw. neue Drehung statt Stehenbleiben
 		speedWishRight=BOT_SPEED_STOP;
 	}
 
-	
 	switch(gotoState) {
 		case INITIAL_TURN:
 			gotoState=GOTO_LOOP;
-			bot_turn(data,calc_angle_diff(xDiff,yDiff));
+			bot_turn(data, calc_angle_diff(xDiff, yDiff));
 			break;
 
 		case GOTO_LOOP:
 			/* Position erreicht? */
 			if (abs(xDiff)<10 || abs(yDiff)<10) {
 				gotoState=CORRECT_HEAD;
-				bot_turn(data,calc_angle_diff(xDiff,yDiff));
+				bot_turn(data, calc_angle_diff(xDiff, yDiff));
 				break;
 			}
 			speedWishLeft=BOT_SPEED_FOLLOW;
@@ -78,7 +77,7 @@ void bot_gotoxy_behaviour(Behaviour_t *data){
 
 		case CORRECT_HEAD:
 			/* Position erreicht? */
-			if (abs(xDiff)<3 && abs(yDiff)<3) {
+			if (abs(xDiff) < 3 && abs(yDiff) < 3) {
 				gotoState=REACHED_POS;
 				speedWishLeft=BOT_SPEED_STOP;
 				speedWishRight=BOT_SPEED_STOP;
@@ -97,12 +96,11 @@ void bot_gotoxy_behaviour(Behaviour_t *data){
 
 /*!
  * Botenfunktion: Das Verhalten faehrt von der aktuellen Position zur angegebenen Position (x/y)
- * @param caller Aufrufendes Verhalten
- * @param x X-Ordinate an die der Bot fahren soll
- * @param y Y-Ordinate an die der Bot fahren soll
+ * @param caller	Aufrufendes Verhalten
+ * @param x 		X-Ordinate an die der Bot fahren soll
+ * @param y 		Y-Ordinate an die der Bot fahren soll
  */
-void bot_gotoxy(Behaviour_t *caller, float x, float y){
-//	LOG_DEBUG("x=%f\ty=%f", x, y);
+void bot_gotoxy(Behaviour_t * caller, int16_t x, int16_t y) {
 	target_x=x;
 	target_y=y;
 	initialDiffX=x-x_pos;

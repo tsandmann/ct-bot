@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	ct-Bot.h
  * @brief 	globale Schalter fuer die einzelnen Bot-Funktionalitaeten
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -32,7 +32,7 @@
 //#define LOG_CTSIM_AVAILABLE		/*!< Logging zum ct-Sim (PC und MCU) */
 //#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display (PC und MCU) */
 //#define LOG_UART_AVAILABLE		/*!< Logging ueber UART (NUR fuer MCU) */
-//#define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (NUR fuer PC) */
+#define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (NUR fuer PC) */
 //#define LOG_MMC_AVAILABLE			/*!< Logging in eine txt-Datei auf MMC */
 #define USE_MINILOG					/*!< schaltet fuer MCU auf schlankes Logging um (nur in Verbindung mit Log2Sim) */
 
@@ -41,8 +41,10 @@
 
 #define IR_AVAILABLE		/*!< Infrared Remote Control */
 #define RC5_AVAILABLE		/*!< Key-Mapping for IR-RC	 */
+//#define KEYPAD_AVAILABLE	/*!< Keypad-Eingabe vorhanden? */
 
 #define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunizieren? */
+//#define BOT_2_BOT_AVAILABLE	/*!< Sollen Bots untereinander kommunizieren? */
 
 //#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit im s und ms? */
 
@@ -51,7 +53,7 @@
 #define MEASURE_MOUSE_AVAILABLE			/*!< Geschwindigkeiten werden aus den Maussensordaten berechnet */
 //#define MEASURE_COUPLED_AVAILABLE		/*!< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
 
-//#define POS_STACK_AVAILABLE  /*!< Positionsstack vorhanden */
+//#define POS_STORE_AVAILABLE  /*!< Positionsspeicher vorhanden */
 
 //#define WELCOME_AVAILABLE	/*!< kleiner Willkommensgruss */
 
@@ -83,7 +85,7 @@
 //#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
 //#define OS_AVAILABLE			/*!< Aktiviert BotOS fuer Threads und Scheduling */
 
-//#define EEPROM_EMU_AVAILABLE	/*!< Aktiviert die EEPROM-Emulation fuer PC */
+#define EEPROM_EMU_AVAILABLE	/*!< Aktiviert die EEPROM-Emulation fuer PC */
 
 // Achtung, Linkereinstellungen anpassen !!!!! (siehe Documentation/Bootloader.html)!
 //#define BOOTLOADER_AVAILABLE	/*!< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders. Achtung, Linkereinstellungen anpassen (siehe mcu/bootloader.c)! */
@@ -112,13 +114,17 @@
 	#undef MEASURE_COUPLED_AVAILABLE
 #endif
 
+#ifdef BOT_2_BOT_AVAILABLE
+	#define BOT_2_PC_AVAILABLE
+#endif
+
 #ifdef PC
 	#ifndef DOXYGEN
 		#undef UART_AVAILABLE
 		#undef BOT_2_PC_AVAILABLE
 		#undef SRF10_AVAILABLE
 		#undef TWI_AVAILABLE
-		#undef SPEED_CONTROL_AVAILABLE // Deaktiviere die Motorregelung 
+		#undef SPEED_CONTROL_AVAILABLE // Deaktiviere die Motorregelung
 		#undef MMC_AVAILABLE
 		#undef I2C_AVAILABLE
 		#undef CMPS03_AVAILABLE
@@ -127,14 +133,6 @@
 
 	#define COMMAND_AVAILABLE		/*!< High-Level Communication */
 	#undef USE_MINILOG
-	#undef OS_AVAILABLE
-
-	#ifdef __APPLE__
-		#include <AvailabilityMacros.h>
-		#ifdef MAC_OS_X_VERSION_10_5
-			#undef EEPROM_EMU_AVAILABLE	// derzeit keine EEPROM-Emulation unter Leopard moeglich
-		#endif
-	#endif	// __APPLE__
 #endif
 
 #ifdef MCU
@@ -167,21 +165,21 @@
 
 #ifndef SPEED_CONTROL_AVAILABLE
 	#undef ADJUST_PID_PARAMS
-	#undef SPEED_LOG_AVAILABLE	
+	#undef SPEED_LOG_AVAILABLE
 #endif
 
 #ifdef LOG_UART_AVAILABLE
 	#define LOG_AVAILABLE	/*!< LOG aktiv? */
-#endif 
+#endif
 #ifdef LOG_CTSIM_AVAILABLE
 	#define LOG_AVAILABLE	/*!< LOG aktiv? */
-#endif 
+#endif
 #ifdef LOG_DISPLAY_AVAILABLE
 	#define LOG_AVAILABLE	/*!< LOG aktiv? */
-#endif 
+#endif
 #ifdef LOG_STDOUT_AVAILABLE
 	#define LOG_AVAILABLE	/*!< LOG aktiv? */
-#endif 
+#endif
 #ifdef LOG_MMC_AVAILABLE
 	#define LOG_AVAILABLE	/*!< LOG aktiv? */
 #endif
@@ -194,14 +192,14 @@
 
 #ifndef MMC_AVAILABLE
 	#undef SPEED_LOG_AVAILABLE
-	
+
 	#ifdef MCU
 		#undef MAP_AVAILABLE	// Map geht auf dem MCU nur mit MMC
 	#endif
 #endif
 
-#ifndef MAP_AVAILABLE
-	#undef OS_AVAILABLE		// das BotOS brauchen wir derzeit nur fuer Map mit MMC
+#ifdef MAP_AVAILABLE
+	#define OS_AVAILABLE		// Map braucht BotOS
 #endif
 
 #ifdef LOG_AVAILABLE
@@ -212,7 +210,7 @@
 		/* Auf dem PC gibts kein Logging ueber UART. */
 		#undef LOG_UART_AVAILABLE
 	#endif
-	
+
 	#ifdef MCU
 		/* Mit Bot zu PC Kommunikation auf dem MCU gibts kein Logging ueber UART.
 		 * Ohne gibts keine Kommunikation ueber ct-Sim.
@@ -224,14 +222,14 @@
 			#undef LOG_CTSIM_AVAILABLE
 		#endif
 	#endif
-	
+
 	/* Ohne Display gibts auch keine Ausgaben auf diesem. */
 	#ifndef DISPLAY_AVAILABLE
 		#undef LOG_DISPLAY_AVAILABLE
 	#endif
-	
+
 	/* Es kann immer nur ueber eine Schnittstelle geloggt werden. */
-	
+
 	#ifdef LOG_UART_AVAILABLE
 		#define UART_AVAILABLE			/*!< UART vorhanden? */
 		#undef LOG_CTSIM_AVAILABLE
@@ -239,25 +237,25 @@
 		#undef LOG_STDOUT_AVAILABLE
 		#undef LOG_MMC_AVAILABLE
 	#endif
-	
+
 	#ifdef LOG_CTSIM_AVAILABLE
 		#undef LOG_DISPLAY_AVAILABLE
 		#undef LOG_STDOUT_AVAILABLE
 		#undef LOG_MMC_AVAILABLE
 	#endif
-	
+
 	#ifdef LOG_DISPLAY_AVAILABLE
 		#undef LOG_STDOUT_AVAILABLE
 		#undef LOG_MMC_AVAILABLE
 	#endif
-	
+
 	#ifdef LOG_STDOUT_AVAILABLE
 		#undef LOG_MMC_AVAILABLE
 	#endif
-	
+
 	#ifndef MMC_VM_AVAILABLE
 		#undef LOG_MMC_AVAILABLE
-	#endif 
+	#endif
 
 	// Wenn keine sinnvolle Log-Option mehr uebrig, loggen wir auch nicht
 	#ifndef LOG_CTSIM_AVAILABLE
@@ -291,24 +289,7 @@
 	#define I2C_AVAILABLE	/*!< I2C-Treiber statt TWI-Implementierung benutzen */
 #endif
 
-#define F_CPU	16000000L    /*!< Crystal frequency in Hz */
-#define XTAL F_CPU			 /*!< Crystal frequency in Hz */
-
-#ifdef WIN32
-	#define LINE_FEED "\n\r"	/*!< Linefeed fuer Windows */
-#else
-	#define LINE_FEED "\n"		/*!< Linefeed fuer nicht Windows */
-#endif
-
-#ifdef MCU
-	#ifndef MMC_LOW_H_
-		#include <avr/interrupt.h>
-	#endif
-	#ifdef SIGNAL
-		#define NEW_AVR_LIB	/*!< AVR_LIB-Version */
-	#endif
-#endif
-
 #include "global.h"
+#include "bot-local.h"
 
 #endif	// CT_BOT_H_DEF

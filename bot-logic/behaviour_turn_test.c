@@ -17,7 +17,7 @@
  *
  */
 
-/*! 
+/*!
  * @file 	behaviour_turn_test.c
  * @brief 	Fuehrt mehrere Drehungen mit bot_turn() aus und misst die Fehler
  * @author	Timo Sandmann (mail@timosandmann.de)
@@ -31,12 +31,7 @@
 #include <math.h>
 #include "sensor.h"
 #include "log.h"
-
-#ifdef MCU
-	#include <avr/eeprom.h>
-#else
-	#include "eeprom-emu.h"
-#endif	// MCU
+#include "eeprom.h"
 
 #define FLOAT_PRINTF	/*!< aktiviert float-Ausgaben mit printf ("-Wl,-u,vfprintf -lprintf_flt") */
 
@@ -71,7 +66,7 @@ void bot_turn_test_behaviour(Behaviour_t *data) {
 #else
 			LOG_DEBUG("durchschn. Fehler=%d.%u Grad", (int16_t)(err/10.0), (int16_t)((err/10.0 - (int16_t)(err/10.0))*10));
 #endif
-			LOG_DEBUG("degrees=%d: turn_err[]={%d,%d,%d}", degrees, eeprom_read_byte(&turn_err[0]), eeprom_read_byte(&turn_err[1]), eeprom_read_byte(&turn_err[2]));
+			LOG_DEBUG("degrees=%d: turn_err[]={%d,%d,%d}", degrees, ctbot_eeprom_read_byte(&turn_err[0]), ctbot_eeprom_read_byte(&turn_err[1]), ctbot_eeprom_read_byte(&turn_err[2]));
 			turn_count = 0;
 			err = 0.0;
 			degrees -= 5;

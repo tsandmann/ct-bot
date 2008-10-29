@@ -32,18 +32,20 @@
 
 /* OS X */
 .globl __eeprom_start1__
-	.section __DATA,.s1eeprom
+	.section __eeprom,__s1data
 __eeprom_start1__:
 	.space 1
 	
 .globl __eeprom_start2__
-	.section __DATA,.s2eeprom
+	.section __eeprom,__s2data
 __eeprom_start2__:
 	.space 1
 
 #elif defined (__linux__)
 
 /* Linux */
+#ifndef __arm__
+/* PC-Linux */
 .globl _eeprom_start1__
 	.section	.s1eeprom,"aw",@progbits
 	.type		_eeprom_start1__, @object
@@ -56,7 +58,21 @@ _eeprom_start1__:
 	.size		_eeprom_start2__, 1
 _eeprom_start2__:
 	.zero	1
-
+#else
+/* ARM-Linux */
+	.globl _eeprom_start1__
+		.section	.s1eeprom,"aw"
+		.type		_eeprom_start1__,object
+		.size		_eeprom_start1__, 1
+	_eeprom_start1__:
+		.zero	1
+	.globl _eeprom_start2__
+		.section	.s2eeprom,"aw"
+		.type		_eeprom_start2__,object
+		.size		_eeprom_start2__, 1
+	_eeprom_start2__:
+		.zero	1	
+#endif	/* __arm__ */
 #elif defined (__WIN32__)
 
 /* Windows */

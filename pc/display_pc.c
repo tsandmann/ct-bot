@@ -51,7 +51,6 @@
 /*! Puffergroesse fuer eine Zeile in bytes */
 #define DISPLAY_BUFFER_SIZE	(DISPLAY_LENGTH + 1)
 
-//uint8 display_update=0;	/*!< Muss das Display aktualisiert werden? */
 uint8 display_screen=0;	/*!< zurzeit aktiver Displayscreen */
 
 char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausgaben */
@@ -108,8 +107,9 @@ int display_string(char data[DISPLAY_LENGTH]){
  * Schreibt einen String auf das Display.
  * @param format Format, wie beim printf
  * @param ... Variable Argumentenliste, wie beim printf
+ * @return			Anzahl der geschriebenen Zeichen
  */
-void display_printf(char *format, ...) {
+uint8_t display_printf(char *format, ...) {
 	
 	va_list	args;
 	
@@ -117,12 +117,12 @@ void display_printf(char *format, ...) {
 	 * ueberschrieben wird.
 	 */
 	va_start(args, format);
-	vsnprintf(display_buf, DISPLAY_BUFFER_SIZE, format, args);
+	uint8_t len = vsnprintf(display_buf, DISPLAY_BUFFER_SIZE, format, args);
 	va_end(args);
 
 	printf(display_buf);	
 	
-	return;
+	return len;
 }
 
 #ifndef DISPLAY_REMOTE_AVAILABLE
@@ -170,5 +170,5 @@ static void gotoxy(int x, int y) {
 #endif	/* WIN32 */
 #endif  /* !DISPLAY_REMOTE_AVAILABLE */
 
-#endif
-#endif
+#endif	// DISPLAY_AVAILABLE
+#endif	// PC

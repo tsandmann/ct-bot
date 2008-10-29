@@ -110,7 +110,7 @@
 /*!
  * Initialisiere alle Sensoren
  */
-void bot_sens_init(void){	
+void bot_sens_init(void) {	
 	ENA_init();
 	adc_init(0xFF);		// Alle ADC-Ports aktivieren
 	
@@ -127,21 +127,15 @@ void bot_sens_init(void){
 	SENS_ENCR_DDR	&= ~(1<<SENS_ENCR);		// Input	
 
 	timer_2_init();
+	sensEncL = 0;
+	sensEncR = 0;	
 }
 
 
 /*!
  * Alle Sensoren aktualisieren
- * Derzeit pollt diese Routine alle Sensoren. Insbesondere bei den 
- * analogen dauert das eine Weile. Daher kann man hier einiges
- * an Performance gewinnen, wenn man die Routine aufspaltet und
- * zumindest die analogen Sensoren per Interrupt bearbeitet,
- * denn im Moment blockiert adc_read so lange, bis ein Sensorwert ausgelesen ist.
- * Die digitalen Sensoren liefern ihre Werte dagegen unmittelbar
- * Aber Achtung es lohnt auch nicht, immer alles so schnell als moeglich
- * zu aktualiseren, der Bot braucht auch Zeit zum nachdenken ueber Verhalten
  */
-void bot_sens_isr(void) {
+void bot_sens(void) {
 	ENA_on(ENA_KANTLED|ENA_MAUS|ENA_SCHRANKE|ENA_KLAPPLED);	// Die Distanzsensoren sind im Normalfall an, da sie 50 ms zum booten brauchen	
 
 #ifdef CMPS03_AVAILABLE
@@ -149,22 +143,33 @@ void bot_sens_isr(void) {
 #endif
 	
 	/* aktualisiere Distanz-Sensoren, interrupt-driven I/O */
-	static uint8 measure_count = 0;
-	static int16 distLeft[4];
-	static int16 distRight[4];
-	static uint16 old_dist;		// Zeit der letzten Messung der Distanzsensoren
+#ifdef DISTSENS_AVERAGE
+	static uint8_t measure_count = 0;
+	static int16_t distLeft[4];
+	static int16_t distRight[4];
+#endif	// DISTSENS_AVERAGE
+	static uint16_t old_dist;		// Zeit der letzten Messung der Distanzsensoren
 
 	/* Auswertung der Distanzsensoren alle 50 ms */
 	uint16 dist_ticks = TIMER_GET_TICKCOUNT_16;
-	if ((uint16)(dist_ticks-old_dist) > MS_TO_TICKS(50)){	
-		adc_read_int(SENS_ABST_L, &distLeft[measure_count]);
+	if ((uint16)(dist_ticks-old_dist) > MS_TO_TICKS(50)) {
+		int16_t * pDistL, * pDistR;
+#ifdef DISTSENS_AVERAGE
+		pDistL = &distLeft[measure_count];
+		pDistR = &distRight[measure_count];
+#else
+		pDistL = &sensDistL;
+		pDistR = &sensDistR;
+#endif	// DISTSENS_AVERAGE
+		adc_read_int(SENS_ABST_L, pDistL);
 		#ifdef BEHAVIOUR_SERVO_AVAILABLE
 			if ((servo_active & SERVO1) == 0)	// Wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensor nicht
 		#endif
-				adc_read_int(SENS_ABST_R, &distRight[measure_count]);
-				
+				adc_read_int(SENS_ABST_R, pDistR);
+#ifdef DISTSENS_AVERAGE				
 		measure_count++;
 		measure_count &= 0x3;	// Z/4Z
+#endif
 	}
 
 	/* die anderen analogen Sensoren, auch int-driven I/O */
@@ -252,18 +257,27 @@ void bot_sens_isr(void) {
 		// dieser Block braucht insgesamt ca. 80 us (MCU)
 		/* Dist-Sensor links */
 		while (adc_get_active_channel() < 1) {}
-		uint16 voltL = distLeft[0]+distLeft[1]+distLeft[2]+distLeft[3];
-		(*sensor_update_distance)(&sensDistL, &sensDistLToggle, sensDistDataL, voltL);
-		#ifdef TEST_AVAILABLE_ANALOG
-			sensDistL = voltL >> 2;
-		#endif	
+		uint16_t volt;
+#ifdef DISTSENS_AVERAGE
+		volt = (distLeft[0] + distLeft[1] + distLeft[2] + distLeft[3]) >> 2;
+#else
+		volt = sensDistL;
+#endif
+		(*sensor_update_distance)(&sensDistL, &sensDistLToggle, sensDistDataL, volt);
+#ifdef TEST_AVAILABLE_ANALOG
+		sensDistL = volt;
+#endif
 		/* Dist-Sensor rechts */
 		while (adc_get_active_channel() < 2) {}
-		uint16 voltR = distRight[0]+distRight[1]+distRight[2]+distRight[3];
-		(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, voltR);
-		#ifdef TEST_AVAILABLE_ANALOG
-			sensDistR = voltR >> 2;
-		#endif			
+#ifdef DISTSENS_AVERAGE
+		volt = (distRight[0] + distRight[1] + distRight[2] + distRight[3]) >> 2;
+#else
+		volt = sensDistR;
+#endif
+		(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, volt);
+#ifdef TEST_AVAILABLE_ANALOG
+		sensDistR = volt;
+#endif			
 	}
 	
 #ifdef CMPS03_AVAILABLE
@@ -272,37 +286,22 @@ void bot_sens_isr(void) {
 #endif
 	
 	/* alle anderen analogen Sensoren */	
-	while (adc_get_active_channel() != 255) {}	// restliche Zeit mit busy-waiting verbrauchen
+	while (adc_get_active_channel() != 255) {}	// restliche Zeit verbrauchen
 	// in den Testmodi bleibt imemr alles an.
-	#ifndef TEST_AVAILABLE_ANALOG 
-	  #ifndef TEST_AVAILABLE_DIGITAL 
-	     #ifndef TEST_AVAILABLE_MOTOR
-	  		ENA_off(ENA_KANTLED|ENA_MAUS|ENA_SCHRANKE|ENA_KLAPPLED);	// Kanten (ENA_KANTLED), Liniensensoren (ENA_MAUS), Transportfach-LED und Klappensensor aus
-	  	  #endif
-	  #endif
+	#ifndef TEST_AVAILABLE
+  		ENA_off(ENA_KANTLED|ENA_MAUS|ENA_SCHRANKE|ENA_KLAPPLED);	// Kanten (ENA_KANTLED), Liniensensoren (ENA_MAUS), Transportfach-LED und Klappensensor aus
 	#endif
 		
 	/* LEDs updaten */
+	led_update();
 	#ifdef LED_AVAILABLE
-	#ifndef TEST_AVAILABLE
-		if (sensTrans != 0) LED_on(LED_GELB);
-		else LED_off(LED_GELB);
-		if (sensError != 0) LED_on(LED_ORANGE);
-		else LED_off(LED_ORANGE);
-
-		if (sensDistL < 500) LED_on(LED_LINKS);
-		else LED_off(LED_LINKS);
-		if (sensDistR < 500) LED_on(LED_RECHTS);
-		else LED_off(LED_RECHTS);
-
-		/* Sollen die LEDs mit den Rohdaten der Sensoren arbeiten, 
-		 * kommentiert man die folgenden Zeilen ein (und die Obigen aus) */
-		 
-		//if (voltL > 80) LED_on(LED_LINKS);
-		//else LED_off(LED_LINKS);
-		//if (voltR > 80) LED_on(LED_RECHTS);
-		//else LED_off(LED_RECHTS);
-	#endif	// TEST_AVAILABLE
+	/* Sollen die LEDs mit den Rohdaten der Sensoren arbeiten, 
+	 * kommentiert man die folgenden Zeilen ein */
+	 
+	//if (voltL > 80) LED_on(LED_LINKS);
+	//else LED_off(LED_LINKS);
+	//if (voltR > 80) LED_on(LED_RECHTS);
+	//else LED_off(LED_RECHTS);
 	#endif	// LED_AVAILABLE	
 }
 
@@ -311,12 +310,12 @@ void bot_sens_isr(void) {
  * Das muss schneller gehen als die anderen Sensoren,
  * daher Update per Timer-Interrupt und nicht per Polling
  */
-void bot_encoder_isr(void){
+void bot_encoder_isr(void) {
 	static uint8 enc_l=0;		/*!< Puffer fuer die letzten Encoder-Staende */
 	static uint8 enc_r=0;		/*!< Puffer fuer die letzten Encoder-Staende */
 	static uint8 enc_l_cnt=0;	/*!< Entprell-Counter fuer L-Encoder */
 	static uint8 enc_r_cnt=0;	/*!< Entprell-Counter fuer R-Encoder */
-	register uint8 enc_tmp;					// Pegel der Encoderpins im Register zwischenspeichern
+	register uint8 enc_tmp;		// Pegel der Encoderpins im Register zwischenspeichern
 	
 	#ifdef SPEED_CONTROL_AVAILABLE 
 		register uint16 ticks = TIMER_GET_TICKCOUNT_16;	// aktuelle Systemzeit zwischenspeichern
@@ -324,13 +323,13 @@ void bot_encoder_isr(void){
 	#endif	// SPEED_CONTROL_AVAILABLE 
 	/* Rad-Encoder links */
 	enc_tmp = ENC_L;
-	if (enc_tmp != enc_l){	// uns interesieren nur Veraenderungen
+	if (enc_tmp != enc_l) {	// uns interesieren nur Veraenderungen
 		enc_l=enc_tmp;		// neuen Wert sichern
 		enc_l_cnt=0;		// Counter zuruecksetzen
 	} else {				// zaehlen, wie lange Pegel bleibt
 		if (enc_l_cnt < ENC_ENTPRELL) // Nur bis zur Entprell-Marke
 			enc_l_cnt++;				
-		else if (enc_l_cnt == ENC_ENTPRELL){ 	// wenn lange genug konstant
+		else if (enc_l_cnt == ENC_ENTPRELL) { 	// wenn lange genug konstant
 			enc_l_cnt++;	// diese Flanke nur einmal auswerten
 			if (direction.left == DIRECTION_FORWARD)	// Drehrichtung beachten
 				sensEncL++;	//vorwaerts
@@ -352,13 +351,13 @@ void bot_encoder_isr(void){
 	
 	/* Rad-Encoder rechts */
 	enc_tmp = ENC_R;
-	if (enc_tmp != enc_r){	// uns interesieren nur Veraenderungen
+	if (enc_tmp != enc_r) {	// uns interesieren nur Veraenderungen
 		enc_r=enc_tmp;		// neuen Wert sichern
 		enc_r_cnt=0;		// Counter zuruecksetzen
 	} else { 				// zaehlen, wie lange Pegel bleibt
 		if (enc_r_cnt < ENC_ENTPRELL)	// nur bis zur Entprell-Marke
 			enc_r_cnt++;	
-		else if (enc_r_cnt == ENC_ENTPRELL){ 	// wenn lange genug konstant
+		else if (enc_r_cnt == ENC_ENTPRELL) { 	// wenn lange genug konstant
 			enc_r_cnt++;	// diese Flanke nur einmal auswerten
 			if (direction.right == DIRECTION_FORWARD)	// Drehrichtung beachten
 				sensEncR++;	//vorwaerts

@@ -15,7 +15,7 @@
 </extensions>
 </storageModule>
 <storageModule moduleId="cdtBuildSystem" version="4.0.0">
-<configuration artifactExtension="exe" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="Windows mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.1077176217" name="Debug-W32" parent="cdt.managedbuild.config.gnu.exe.debug" postbuildStep="objcopy -j .eeprom --change-section-lma .eeprom=0 -O binary ct-Bot.exe ct-Bot.eep; objdump -t ct-bot.exe | grep &quot;(sec  5)&quot; | grep &quot;(nx 0)&quot; &gt; eeprom_pc.map">
+<configuration artifactExtension="exe" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Windows mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.1077176217" name="Debug-W32" parent="cdt.managedbuild.config.gnu.exe.debug" postbuildStep="objcopy -j .eeprom --change-section-lma .eeprom=0 -O binary ct-Bot.exe ct-Bot.eep; objdump -t ct-bot.exe | grep &quot;(sec  5)&quot; | grep &quot;(nx 0)&quot; &gt; eeprom_pc.map">
 <folderInfo id="cdt.managedbuild.config.gnu.exe.debug.1077176217.380212843" name="/" resourcePath="">
 <toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1011694867" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 <targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.debug.1735484471" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
@@ -34,6 +34,21 @@
 <option id="gnu.c.compiler.option.misc.other.1772115072" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -Wstrict-prototypes" valueType="string"/>
 <option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.1419278972" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
 <option id="gnu.c.compiler.exe.debug.option.debugging.level.462024817" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+<option id="gnu.c.compiler.option.preprocessor.nostdinc.1970779788" name="Do not search system directories (-nostdinc)" superClass="gnu.c.compiler.option.preprocessor.nostdinc"/>
+<option id="gnu.c.compiler.option.preprocessor.preprocess.885951065" name="Preprocess only (-E)" superClass="gnu.c.compiler.option.preprocessor.preprocess"/>
+<option id="gnu.c.compiler.option.preprocessor.undef.symbol.2123164949" name="Undefined symbols (-U)" superClass="gnu.c.compiler.option.preprocessor.undef.symbol"/>
+<option id="gnu.c.compiler.option.optimization.flags.1480606714" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags"/>
+<option id="gnu.c.compiler.option.debugging.other.1044360423" name="Other debugging flags" superClass="gnu.c.compiler.option.debugging.other"/>
+<option id="gnu.c.compiler.option.debugging.gprof.1495470564" name="Generate gprof information (-pg)" superClass="gnu.c.compiler.option.debugging.gprof"/>
+<option id="gnu.c.compiler.option.debugging.prof.1190954692" name="Generate prof information (-p)" superClass="gnu.c.compiler.option.debugging.prof"/>
+<option id="gnu.c.compiler.option.warnings.syntax.995807193" name="Check syntax only (-fsyntax-only)" superClass="gnu.c.compiler.option.warnings.syntax"/>
+<option id="gnu.c.compiler.option.warnings.pedantic.1257805862" name="Pedantic (-pedantic)" superClass="gnu.c.compiler.option.warnings.pedantic"/>
+<option id="gnu.c.compiler.option.warnings.pedantic.error.1618807186" name="Pedantic warnings as errors (-pedantic-errors)" superClass="gnu.c.compiler.option.warnings.pedantic.error"/>
+<option id="gnu.c.compiler.option.warnings.nowarn.1933899649" name="Inhibit all warnings (-w)" superClass="gnu.c.compiler.option.warnings.nowarn"/>
+<option id="gnu.c.compiler.option.warnings.allwarn.1547398557" name="All warnings (-Wall)" superClass="gnu.c.compiler.option.warnings.allwarn"/>
+<option id="gnu.c.compiler.option.warnings.toerrors.329193539" name="Warnings as errors (-Werror)" superClass="gnu.c.compiler.option.warnings.toerrors"/>
+<option id="gnu.c.compiler.option.misc.verbose.558138514" name="Verbose (-v)" superClass="gnu.c.compiler.option.misc.verbose"/>
+<option id="gnu.c.compiler.option.misc.ansi.1754913585" name="Support ANSI programs (-ansi)" superClass="gnu.c.compiler.option.misc.ansi"/>
 <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.96318568" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 </tool>
 <tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.919152894" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
@@ -51,6 +66,17 @@
 <listOptionValue builtIn="false" value="&quot;C:\Programme\MinGW\lib&quot;"/>
 </option>
 <option id="gnu.c.link.option.noshared.1812776571" name="No shared libraries (-static)" superClass="gnu.c.link.option.noshared" value="true" valueType="boolean"/>
+<option id="gnu.c.link.option.nostart.218083037" name="Do not use standard start files (-nostartfiles)" superClass="gnu.c.link.option.nostart"/>
+<option id="gnu.c.link.option.nodeflibs.2145081867" name="Do not use default libraries (-nodefaultlibs)" superClass="gnu.c.link.option.nodeflibs"/>
+<option id="gnu.c.link.option.nostdlibs.1335406222" name="No startup or default libs (-nostdlib)" superClass="gnu.c.link.option.nostdlibs"/>
+<option id="gnu.c.link.option.strip.5771781" name="Omit all symbol information (-s)" superClass="gnu.c.link.option.strip"/>
+<option id="gnu.c.link.option.ldflags.1722209658" name="Linker flags" superClass="gnu.c.link.option.ldflags"/>
+<option id="gnu.c.link.option.other.447960524" name="Other options (-Xlinker [option])" superClass="gnu.c.link.option.other"/>
+<option id="gnu.c.link.option.userobjs.115653526" name="Other objects" superClass="gnu.c.link.option.userobjs"/>
+<option id="gnu.c.link.option.shared.1941779058" name="Shared (-shared)" superClass="gnu.c.link.option.shared"/>
+<option id="gnu.c.link.option.soname.941669649" name="Shared object name (-Wl,-soname=)" superClass="gnu.c.link.option.soname"/>
+<option id="gnu.c.link.option.implname.345705909" name="Import Library name (-Wl,--out-implib=)" superClass="gnu.c.link.option.implname"/>
+<option id="gnu.c.link.option.defname.1880682302" name="DEF file name (-Wl,--output-def=)" superClass="gnu.c.link.option.defname"/>
 </tool>
 <tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1957316739" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
 <tool command="as" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.149224953" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
@@ -2246,7 +2272,7 @@
 </extensions>
 </storageModule>
 <storageModule moduleId="cdtBuildSystem" version="4.0.0">
-<configuration artifactExtension="" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Mac OS X mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.1152668458" name="Debug-Mac" parent="cdt.managedbuild.config.gnu.exe.debug" postbuildStep="objcopy -j LC_SEGMENT.__DATA..eeprom --change-section-lma LC_SEGMENT.__DATA..eeprom=0 -O binary ct-Bot ct-Bot.eep; objdump -t -j LC_SEGMENT.__DATA..s2eeprom -C ct-Bot | grep &quot;g&quot; &gt; eeprom_pc.map">
+<configuration artifactExtension="" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="Mac OS X mit Debug-Code" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.exe.debug.1152668458" name="Debug-Mac" parent="cdt.managedbuild.config.gnu.exe.debug" postannouncebuildStep="" postbuildStep="objcopy -j LC_SEGMENT.__eeprom.__data --change-section-lma LC_SEGMENT.__eeprom.__data=0 -O binary ct-Bot ct-Bot.eep 2&gt; /dev/null; objdump -t -j LC_SEGMENT.__eeprom.__s2data -C ct-Bot 2&gt; /dev/null | grep &quot;g&quot; &gt; eeprom_pc.map" preannouncebuildStep="" prebuildStep="">
 <folderInfo id="cdt.managedbuild.config.gnu.exe.debug.1152668458.1856054667" name="/" resourcePath="">
 <toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.450163375" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 <targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.debug.939045186" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
@@ -2255,14 +2281,28 @@
 <option id="gnu.c.compiler.option.include.paths.868884851" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 <listOptionValue builtIn="false" value="${ProjDirPath}"/>
 <listOptionValue builtIn="false" value="${ProjDirPath}/include"/>
-<listOptionValue builtIn="false" value="/usr/include"/>
 </option>
 <option id="gnu.c.compiler.option.preprocessor.def.symbols.2045381193" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 <listOptionValue builtIn="false" value="PC"/>
 </option>
 <option id="gnu.c.compiler.option.misc.other.1127391550" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -Wstrict-prototypes" valueType="string"/>
-<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.2012381532" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
+<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.2012381532" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" value="gnu.c.optimization.level.more" valueType="enumerated"/>
 <option id="gnu.c.compiler.exe.debug.option.debugging.level.1952350202" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+<option id="gnu.c.compiler.option.preprocessor.nostdinc.1839645707" name="Do not search system directories (-nostdinc)" superClass="gnu.c.compiler.option.preprocessor.nostdinc"/>
+<option id="gnu.c.compiler.option.preprocessor.preprocess.1585150088" name="Preprocess only (-E)" superClass="gnu.c.compiler.option.preprocessor.preprocess"/>
+<option id="gnu.c.compiler.option.preprocessor.undef.symbol.1594318889" name="Undefined symbols (-U)" superClass="gnu.c.compiler.option.preprocessor.undef.symbol"/>
+<option id="gnu.c.compiler.option.optimization.flags.1877981644" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags"/>
+<option id="gnu.c.compiler.option.debugging.other.395649601" name="Other debugging flags" superClass="gnu.c.compiler.option.debugging.other"/>
+<option id="gnu.c.compiler.option.debugging.gprof.1162077931" name="Generate gprof information (-pg)" superClass="gnu.c.compiler.option.debugging.gprof"/>
+<option id="gnu.c.compiler.option.debugging.prof.338653975" name="Generate prof information (-p)" superClass="gnu.c.compiler.option.debugging.prof"/>
+<option id="gnu.c.compiler.option.warnings.syntax.35621647" name="Check syntax only (-fsyntax-only)" superClass="gnu.c.compiler.option.warnings.syntax"/>
+<option id="gnu.c.compiler.option.warnings.pedantic.682304562" name="Pedantic (-pedantic)" superClass="gnu.c.compiler.option.warnings.pedantic"/>
+<option id="gnu.c.compiler.option.warnings.pedantic.error.817621461" name="Pedantic warnings as errors (-pedantic-errors)" superClass="gnu.c.compiler.option.warnings.pedantic.error"/>
+<option id="gnu.c.compiler.option.warnings.nowarn.336727408" name="Inhibit all warnings (-w)" superClass="gnu.c.compiler.option.warnings.nowarn"/>
+<option id="gnu.c.compiler.option.warnings.allwarn.821746755" name="All warnings (-Wall)" superClass="gnu.c.compiler.option.warnings.allwarn"/>
+<option id="gnu.c.compiler.option.warnings.toerrors.1162265542" name="Warnings as errors (-Werror)" superClass="gnu.c.compiler.option.warnings.toerrors"/>
+<option id="gnu.c.compiler.option.misc.verbose.866541367" name="Verbose (-v)" superClass="gnu.c.compiler.option.misc.verbose"/>
+<option id="gnu.c.compiler.option.misc.ansi.801089400" name="Support ANSI programs (-ansi)" superClass="gnu.c.compiler.option.misc.ansi"/>
 <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1999720027" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 </tool>
 <tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1290802480" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
@@ -2274,10 +2314,19 @@
 <listOptionValue builtIn="false" value="pthread"/>
 <listOptionValue builtIn="false" value="m"/>
 </option>
-<option id="gnu.c.link.option.paths.2078050341" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="stringList">
-<listOptionValue builtIn="false" value="/usr/lib"/>
-</option>
+<option id="gnu.c.link.option.paths.2078050341" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="stringList"/>
 <option id="gnu.c.link.option.noshared.1379246706" name="No shared libraries (-static)" superClass="gnu.c.link.option.noshared" value="false" valueType="boolean"/>
+<option id="gnu.c.link.option.nostart.1035368462" superClass="gnu.c.link.option.nostart"/>
+<option id="gnu.c.link.option.nodeflibs.333703011" superClass="gnu.c.link.option.nodeflibs"/>
+<option id="gnu.c.link.option.nostdlibs.1314143999" superClass="gnu.c.link.option.nostdlibs"/>
+<option id="gnu.c.link.option.strip.217464277" superClass="gnu.c.link.option.strip"/>
+<option id="gnu.c.link.option.ldflags.868969286" superClass="gnu.c.link.option.ldflags"/>
+<option id="gnu.c.link.option.other.540212499" superClass="gnu.c.link.option.other"/>
+<option id="gnu.c.link.option.userobjs.1552438440" superClass="gnu.c.link.option.userobjs"/>
+<option id="gnu.c.link.option.shared.582822042" superClass="gnu.c.link.option.shared"/>
+<option id="gnu.c.link.option.soname.227595431" superClass="gnu.c.link.option.soname"/>
+<option id="gnu.c.link.option.implname.221598722" superClass="gnu.c.link.option.implname"/>
+<option id="gnu.c.link.option.defname.381306305" superClass="gnu.c.link.option.defname"/>
 </tool>
 <tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1991293861" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
 <tool command="as" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1833220446" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">

@@ -28,47 +28,73 @@
 #define BEHAVIOUR_SCAN_H_
 
 #include "bot-logic/bot-logik.h"
+#include "fifo.h"
+
+#define SCAN_OTF_RESOLUTION_DISTANCE_LOCATION	60	/*!< Nach welcher gefahrenen Strecke [mm] soll die Standflaeche aktualisiert werden */
+
+#define SCAN_OTF_RESOLUTION_DISTANCE_BORDER		10	/*!< Nach welcher gefahrenen Strecke [mm] sollen die Abgrundsensoren fuer die Karte ausgewertet werden */
+#define SCAN_OTF_RESOLUTION_ANGLE_BORDER		10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Abgrundsensoren fuer die Karte ausgewertet werden */
+
+#define SCAN_OTF_RESOLUTION_ANGLE_DISTSENS		10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Distanzsensoren fuer die Karte ausgewertet werden */
+#define SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS	180	/*!< Nach welcher gefahrenen Strecke [mm] sollen die  Distanzsensoren fuer die Karte ausgewertet werden */
+
+#define SCAN_OTF_SLEEP_TIME					2000	/*!< Wartezeit fuer andere Verhalten, falls Cache (sehr) voll ist [ms] */
+#define SCAN_OTF_CACHE_LEVEL_THRESHOLD		(MAP_UPDATE_CACHE_SIZE*sizeof(map_cache_t)/3)	/*!< Schwellwert fuer freien Cache-Speicher, ab dem der Cache als sehr voll gilt [Byte] */	
+
+/*! Modi des Scan-Verhaltens */
+typedef union {
+	struct {
+		uint8_t location:1;	/*!< Grundflaechen-Update an/aus */
+		uint8_t distance:1;	/*!< Distanzsensor-Update an/aus */
+		uint8_t border:1;	/*!< Abgrundsensor-Update an/aus */
+		uint8_t map_mode:1;	/*!< Kartograhpie-Modus an/aus (Bot stoppt, falls Cache voll) */
+	};
+	uint8_t raw;			/*!< Alle Modi als Raw-Daten */
+} scan_mode_t;
 
 #ifdef BEHAVIOUR_SCAN_AVAILABLE
 
-#define SENSOR_LOCATION		1		/*!< Quelle die das Verhalten bot_scan_onthefly nutzt, um die Karte zu aktualisieren: Ort des Bots */
-#define SENSOR_DISTANCE		2		/*!< Quelle die das Verhalten bot_scan_onthefly nutzt, um die Karte zu aktualisieren: Distanzsensoren des Bots */
-
-#define SCAN_ONTHEFLY_DIST_RESOLUTION 20		/*!< Alle wieviel gefahrene Strecke [mm] soll die Karte aktualisiert werden. Achtung er prueft x und y getrennt, daher ist die tatsaechlich zurueckgelegte Strecke im worst case sqrt(2)*ONTHEFLY_DIST_RESOLUTION  */
-#define SCAN_ONTHEFLY_ANGLE_RESOLUTION 10		/*!< Alle wieviel Gerad Drehung [Grad] soll die Karte aktualisiert werden */
-
-extern uint8 scan_on_the_fly_source; 
-
-#define bot_scan_onthefly( sensor) {scan_on_the_fly_source = sensor;}
+extern scan_mode_t scan_otf_modes;	/*!< Modi des Verhaltens */
 
 /*!
- * Initialisiert das Scan-Verhalten
+ * Schaltet Grundflaechen-Update an oder aus
+ * @param value	1: an, 0: aus
  */
-void bot_scan_onthefly_init(void);
+static inline void set_scan_otf_location(uint8_t value) {
+	scan_otf_modes.location = value;
+}
+
+/*!
+ * Schaltet Distanzsensor-Update an oder aus
+ * @param value	1: an, 0: aus
+ */
+static inline void set_scan_otf_distance(uint8_t value) {
+	scan_otf_modes.distance = value;
+}
+
+/*!
+ * Schaltet Abgrundsensor-Update an oder aus
+ * @param value	1: an, 0: aus
+ */
+static inline void set_scan_otf_border(uint8_t value) {
+	scan_otf_modes.border = value;
+}
+
+/*!
+ * Schaltet Kartographie-Modus an oder aus.
+ * Im Kartographie-Modus haelt der Bot an, falls der Cache voll 
+ * ist, anstatt Eintraege zu verwerfen.
+ * @param value	1: an, 0: aus
+ */
+static inline void set_scan_otf_mapmode(uint8_t value) {
+	scan_otf_modes.map_mode = value;
+}
 
 /*!
  * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
  * @param *data der Verhaltensdatensatz
  */
-void bot_scan_onthefly_behaviour(Behaviour_t *data);
+void bot_scan_onthefly_behaviour(Behaviour_t * data);
 
-/*!
- * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
- * @param *data der Verhaltensdatensatz
- */
-void bot_scan_behaviour(Behaviour_t *data);
-
-
-/*!
- * Notfallhandler, ausgefuehrt bei Abgrunderkennung; muss registriert werden um
- * den erkannten Abgrund in die Map einzutragen
- */
-void border_in_map_handler(void); 
-
-/*! 
- * Der Roboter faehrt einen Vollkreis und scannt dabei die Umgebung
- * @param *caller	Der Aufrufer
- */
-void bot_scan(Behaviour_t* caller);
-#endif
-#endif /*BEHAVIOUR_SCAN_H_*/
+#endif	// BEHAVIOUR_SCAN_AVAILABLE
+#endif	/*BEHAVIOUR_SCAN_H_*/

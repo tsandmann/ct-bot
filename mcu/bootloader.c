@@ -168,7 +168,7 @@
 	/* Part-Code ISP */
 	#define DEVTYPE_ISP     0x74
 	/* Part-Code Boot */
-	#define DEVTYPE_BOOT    0x73	// TODO: might be wrong...
+	#define DEVTYPE_BOOT    0x73
 	
 	#define SIG_BYTE1	0x1E
 	#define SIG_BYTE2	0x96

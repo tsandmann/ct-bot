@@ -197,13 +197,13 @@ uint8_t Send_to_TWI(tx_type_t * pData) {
 	/* Datenformat einlesen */
 	for (; ptr->slave_adr != OWN_ADR; ptr++) {
 		if ((ptr->slave_adr & 0x1) == 1) {
-			/* zu sendende Daten */
-			toWrite = ptr->size;
-			pWrite = ptr->data_ptr;
-		} else {
 			/* zu lesende Daten */
 			toRead = ptr->size;
 			pRead = ptr->data_ptr;
+		} else {
+			/* zu sendende Daten */
+			toWrite = ptr->size;
+			pWrite = ptr->data_ptr;
 		}
 	}
 	
