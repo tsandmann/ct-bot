@@ -50,7 +50,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-//#define DEBUG_BOT_LOGIC		// Schalter um recht viel Debug-Code anzumachen
+#define DEBUG_BOT_LOGIC		// Schalter um recht viel Debug-Code anzumachen
 
 #ifndef DEBUG_BOT_LOGIC
 	#undef LOG_DEBUG
@@ -223,6 +223,7 @@ void bot_behave_init(void) {
 	#endif
 
 	#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+//		insert_behaviour_to_list(&behaviour, new_behaviour(190, bot_save_waypositions_behaviour, INACTIVE));
 		insert_behaviour_to_list(&behaviour, new_behaviour(190, bot_put_stack_waypositions_behaviour, INACTIVE));
 	#endif
 
@@ -275,9 +276,10 @@ void bot_behave_init(void) {
 		insert_behaviour_to_list(&behaviour, new_behaviour(170, bot_observe_right_behaviour, INACTIVE));
 		insert_behaviour_to_list(&behaviour, new_behaviour(72, bot_drive_area_behaviour, INACTIVE));
     #endif
-    
+
     #ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
-      insert_behaviour_to_list(&behaviour, new_behaviour(71, bot_calc_wave_behaviour, INACTIVE));       
+//	    insert_behaviour_to_list(&behaviour, new_behaviour(71, bot_calc_wave_behaviour, INACTIVE));
+		insert_behaviour_to_list(&behaviour, new_behaviour(71, bot_calc_wave_behaviour, INACTIVE));       
     #endif
 
 	#ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
@@ -350,29 +352,41 @@ void bot_behave_init(void) {
 
 /*!
  * Aktiviert eine Regel mit gegebener Funktion
- * @param function Die Funktion, die das Verhalten realisiert.
+ * @param function	Die Funktion, die das Verhalten realisiert
  */
 void activateBehaviour(BehaviourFunc function) {
 	switch_to_behaviour(NULL, function, NOOVERRIDE);
 }
 
+/*!
+ * Liefert das Verhalten zurueck, welches durch function implementiert ist
+ * @param function	Die Funktion, die das Verhalten realisiert
+ * @return			Zeiger auf Verhaltensdatensatz oder NULL
+ */
+Behaviour_t * get_behaviour(BehaviourFunc function) {
+	Behaviour_t * job;	// Zeiger auf ein Verhalten
+
+	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben
+	for (job = behaviour; job; job = job->next) {
+		if (job->work == function) {
+			return job;
+		}
+	}
+	return NULL;
+}
 
 /*!
  * Deaktiviert eine Regel mit gegebener Funktion
  * @param function Die Funktion, die das Verhalten realisiert.
  */
 void deactivateBehaviour(BehaviourFunc function) {
-	Behaviour_t * job;	// Zeiger auf ein Verhalten
-
-	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben
-	for (job = behaviour; job; job = job->next) {
-		if (job->work == function) {
-			LOG_DEBUG("Verhalten %u wird deaktiviert", job->priority);
-			job->active = INACTIVE;
-			job->caller = NULL;	// Caller loeschen, damit Verhalten auch ohne OVERRIDE neu gestartet werden koennen
-			break;
-		}
+	Behaviour_t * job = get_behaviour(function);
+	if (job == NULL) {
+		return;
 	}
+	LOG_DEBUG("Verhalten %u wird deaktiviert", job->priority);
+	job->active = INACTIVE;
+	job->caller = NULL;	// Caller loeschen, damit Verhalten auch ohne OVERRIDE neu gestartet werden koennen
 }
 
 /*!
@@ -381,32 +395,34 @@ void deactivateBehaviour(BehaviourFunc function) {
  * @return True wenn Verhalten aktiv sonst False
  */
 uint8_t behaviour_is_activated(BehaviourFunc function) {
-	Behaviour_t * job;	// Zeiger auf ein Verhalten
-
-	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben
-	for (job = behaviour; job; job = job->next) {
-		if (job->work == function)
-			return job->active;
+	Behaviour_t * job = get_behaviour(function);
+	if (job == NULL) {
+		return False;
 	}
-	return False;
+
+	return job->active;
 }
 
 
 /*!
  * liefert !=0 zurueck, wenn function ueber eine beliebige Kette (job->caller->caller ....) von anderen Verhalten job aufgerufen hat
- * @param job Zeiger auf den Datensatz des aufgerufenen Verhaltens
- * @param function Das Verhalten, das urspruenglich aufgerufen hat
- * @return 0 wenn keine Call-Abhaengigkeit besteht, ansonsten die Anzahl der Stufen
+ * @param *job		Zeiger auf den Datensatz des aufgerufenen Verhaltens
+ * @param function	Das Verhalten, das urspruenglich aufgerufen hat
+ * @return 			0 wenn keine Call-Abhaengigkeit besteht, ansonsten die Anzahl der Stufen
  */
 static uint8_t isInCallHierarchy(Behaviour_t * job, BehaviourFunc function) {
 	uint8_t level = 0;
 
-	if (job == NULL) return 0;	// Liste ist leer
+	if (job == NULL) {
+		LOG_DEBUG("kein Verhaltensdatensatz gegeben");
+		return 0;	// Liste ist leer
+	}
 
 	for (; job->caller; job=job->caller) {
+		LOG_DEBUG("  ueberpruefe Verhalten %u mit caller %u...", job->priority, job->caller->priority);
 		level++;
 		if (job->caller->work == function) {
-			LOG_DEBUG("Verhalten %u wurde direkt von %u aufgerufen",job->priority,job->caller->priority);
+			LOG_DEBUG("   Verhalten %u wurde direkt von %u aufgerufen", job->priority, job->caller->priority);
 			return level;	// Direkter Aufrufer in Tiefe level gefunden
 		}
 	}
@@ -421,6 +437,8 @@ static uint8_t isInCallHierarchy(Behaviour_t * job, BehaviourFunc function) {
 void deactivateCalledBehaviours(BehaviourFunc function) {
 	Behaviour_t * job;	// Zeiger auf ein Verhalten
 
+	LOG_DEBUG("");	// new line
+	LOG_DEBUG("Callees von Verhalten %u sollen abgeschaltet werden.", get_behaviour(function)->priority);
 	LOG_DEBUG("Beginne mit dem Durchsuchen der Liste");
 	// Einmal durch die Liste gehen, und alle aktiven Funktionen pruefen, ob sie von dem uebergebenen Verhalten aktiviert wurden
 	uint8_t i = 0;
@@ -428,30 +446,43 @@ void deactivateCalledBehaviours(BehaviourFunc function) {
 	for (job=behaviour; job; job=job->next) {	// n mal
 		if (job->active == ACTIVE) {
 			i++;
-			uint8_t level = isInCallHierarchy(job, function);	// O(n)
 			LOG_DEBUG("Verhalten mit Prio = %u ist ACTIVE, Durchlauf %u", job->priority, i);
-			LOG_DEBUG("    und hat level %u Call-Abhaengigkeit", level);
+			uint8_t level = isInCallHierarchy(job, function);	// O(n)
+			LOG_DEBUG(" und hat Level %u Call-Abhaengigkeit", level);
 			/* die komplette Caller-Liste (aber auch nur die) abschalten */
+			Behaviour_t * ptr = job;
 			for (; level>0; level--) {	// n mal
-				LOG_DEBUG("Verhalten %u wird in Tiefe %u abgeschaltet", job->priority, level);
-				job->active = INACTIVE;	// callee abschalten
-				Behaviour_t* tmp = job;
-				job = job->caller;	// zur naechsten Ebene
-				tmp->caller = NULL;	// Caller loeschen, damit Verhalten auch ohne OVERRIDE neu gestartet werden koennen
-			}
+				Behaviour_t * beh;
+				for (beh=behaviour; beh; beh=beh->next) {	// n mal
+					/* Falls das Verhalten Caller eines anderen Verhaltens ist, duerfen wir es (noch) nicht deaktivieren! */
+//TODO:	Problem: Wenn ptr's Callee nicht in Call-Anhaengigkeit zu function steht, muesste ptr doch deaktiviert werden! (oder???)
+					if (beh->caller == ptr) {
+						LOG_DEBUG("  Verhalten %u ist Caller eines anderen Verhaltens", ptr->priority);
+						break;
+					}
+				}	// O(n)
+				Behaviour_t * tmp = ptr;
+				ptr = ptr->caller;	// zur naechsten Ebene
+				if (beh == NULL) {
+					LOG_DEBUG("  Verhalten %u wird in Tiefe %u abgeschaltet", tmp->priority, level);
+					tmp->active = INACTIVE;	// callee abschalten
+					tmp->caller = NULL;	// Caller loeschen, damit Verhalten auch ohne OVERRIDE neu gestartet werden koennen
+				}
+			}	// O(n^2)
+			LOG_DEBUG("");	// new line
 		}
 		if (job->work == function) {
 			/* Verhalten von function fuer spaeter merken, wenn wir hier eh schon die ganze Liste absuchen */
 			beh_of_function = job;
 		}
-	}	// O(2n^2)
+	}	// O(n^3)
 	/* Verhaltenseintrag zu function benachrichtigen und wieder aktiv schalten */
 	if (beh_of_function != NULL) {
 		LOG_DEBUG("Verhalten %u wird aktiviert", beh_of_function->priority);
 		beh_of_function->subResult = SUBCANCEL;	// externer Abbruch
 		beh_of_function->active = ACTIVE;
 	}
-}	// O(n^2)
+}	// O(n^3)
 
 /*!
  * Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung
@@ -468,20 +499,15 @@ void deactivateCalledBehaviours(BehaviourFunc function) {
  *						ob seinem Wunsch Folge geleistet wurde.
  */
 void switch_to_behaviour(Behaviour_t * from, void (*to)(Behaviour_t *), uint8_t override ) {
-	Behaviour_t * job;						// Zeiger auf ein Verhalten
-
-	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben
-	for (job = behaviour; job; job = job->next) {
-		if (job->work == to) {
-			break;		// Abbruch der Schleife, job zeigt nun auf die Datenstruktur des Zielverhaltens
-		}
-	}
-
-	if (!job) {
+	Behaviour_t * job = get_behaviour(to);
+	if (job == NULL) {
 		/* Zielverhalten existiert gar nicht */
-		if (from) from->subResult = SUBFAIL;
+		if (from) {
+			from->subResult = SUBFAIL;
+		}
 		return;
 	}
+
 	if (job->caller) {		// Ist das auzurufende Verhalten noch beschaeftigt?
 		if (override == NOOVERRIDE){	// nicht ueberschreiben, sofortige Rueckkehr
 			if (from) {
@@ -532,11 +558,12 @@ void exit_behaviour(Behaviour_t * data, uint8_t state) {
  * Deaktiviert alle Verhalten bis auf Grundverhalten.
  */
 void deactivateAllBehaviours(void) {
-	Behaviour_t * job;						// Zeiger auf ein Verhalten
+	Behaviour_t * job;	// Zeiger auf ein Verhalten
 	// Einmal durch die Liste gehen und (fast) alle deaktivieren, Grundverhalten nicht
 	for (job = behaviour; job; job = job->next) {
 		if ((job->priority >= PRIO_VISIBLE_MIN) && (job->priority <= PRIO_VISIBLE_MAX)) {
             // Verhalten deaktivieren
+			LOG_DEBUG("Verhalten %u wird deaktiviert", job->priority);
 			job->active = INACTIVE;
 			job->caller = NULL;	// Caller loeschen, damit Verhalten auch ohne OVERRIDE neu gestartet werden koennen
 		}

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-10-30 Timo Sandmann [mail@timosandmann.de]: Vorlaeufiger Bugfix fuer deactivateCalledBehaviours(), hat aber noch ein Problem
+
 2008-10-29 Timo Sandmann [mail@timosandmann.de]: Release 15 
 
 2008-10-28 Timo Sandmann [mail@timosandmann.de]: Robustheit der RemoteCalls verbessert

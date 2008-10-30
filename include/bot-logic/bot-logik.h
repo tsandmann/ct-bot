@@ -82,6 +82,13 @@ void bot_behave(void);
 void bot_behave_init(void);
 
 /*!
+ * Liefert das Verhalten zurueck, welches durch function implementiert ist
+ * @param function	Die Funktion, die das Verhalten realisiert
+ * @return			Zeiger auf Verhaltensdatensatz oder NULL
+ */
+Behaviour_t * get_behaviour(BehaviourFunc function);
+
+/*!
  * Aktiviert eine Regel mit gegebener Funktion
  * @param function Die Funktion, die das Verhalten realisiert.
  */
