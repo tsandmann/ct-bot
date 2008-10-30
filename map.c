@@ -1404,7 +1404,7 @@ static inline int map_test_get_ratio(void) {
 			all_ok = 0;
 			printf("map_get_probability(-200, -100, 100, 200, 100, %d, %d) = %u\n", value, value, result);
 		}
-		int16_t width;
+		int16_t width = 0;
 		int ok = 1;
 		for (i=-150; i<=150; i+=50) {
 			for (j=-150; j<=150; j+=50) {

@@ -42,7 +42,7 @@
 #include "map.h"
 #include "timer.h"
 #include "math_utils.h"
-#include "pos_stack.h"
+#include "pos_store.h"
 #include "log.h"
 
 
@@ -150,8 +150,13 @@ static void push_stack_pos_line(int16_t x1, int16_t y1, int16_t x2, int16_t y2) 
 		return; // ungueltige Werte werden nicht uebernommen
 
 	// Push der Einzelpunkte
-	pos_store_push(x1, y1);
-	pos_store_push(x2, y2);
+	position_t pos;
+	pos.x = x1;
+	pos.y = y1;
+	pos_store_push(pos);
+	pos.x = x2;
+	pos.y = y2;
+	pos_store_push(pos);
 }
 
 /*!
@@ -164,17 +169,18 @@ static void push_stack_pos_line(int16_t x1, int16_t y1, int16_t x2, int16_t y2) 
  */
 static uint8_t pop_stack_pos_line(int16_t * x1, int16_t * y1, int16_t * x2,
 		int16_t * y2) {
-	int16_t x_i;
-	int16_t y_i;
-	if (!pos_store_pop(&x_i, &y_i))
+	position_t pos;
+	if (!pos_store_pop(&pos)) {
 		return False;
-	*x1 = x_i;
-	*y1 = y_i;
+	}
+	*x1 = pos.x;
+	*y1 = pos.y;
 
-	if (!pos_store_pop(&x_i, &y_i))
+	if (!pos_store_pop(&pos)) {
 		return False;
-	*x2 = x_i;
-	*y2 = y_i;
+	}
+	*x2 = pos.x;
+	*y2 = pos.y;
 	return True;
 }
 
