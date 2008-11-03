@@ -41,6 +41,14 @@
 void bot_drive_stack_behaviour(Behaviour_t * data);
 
 /*!
+ * Botenfunktion: Verhalten zum Anfahren aller auf dem Stack X befindlichen Punkte
+ * @param *caller	Der Verhaltensdatensatz des Aufrufers
+ * @param stack		Nummer des Stacks, der abgefahren werden soll
+ * @param mode		0: Stack, 1: FIFO
+ */
+void bot_drive_stack_x(Behaviour_t * caller, uint8_t stack, uint8_t mode);
+
+/*!
  * Botenfunktion: Verhalten zum Anfahren aller auf dem Stack befindlichen Punkte
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  */
@@ -50,13 +58,14 @@ void bot_drive_stack(Behaviour_t * caller);
  * Botenfunktion: Verhalten zum Anfahren aller in der FIFO-Queue befindlichen Punkte
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  */
-void bot_drive_stack_fifo(Behaviour_t * caller);
+void bot_drive_fifo(Behaviour_t * caller);
 
 /*!
  * Sichern der aktuellen Botposition auf den Stack
  * @param *caller	einfach nur Zeiger, damit remotecall verwendbar
+ * @param stack		Nummer des Stacks, auf den gepusht werden soll
  */
-void bot_push_actpos(Behaviour_t * caller);
+void bot_push_actpos(Behaviour_t * caller, uint8_t stack);
 
 /*!
  * Verhalten um sich entlang des Fahrweges relevante Koordinaten auf dem Stack zu merken; Verhalten ist nach Aktivierung via Botenroutine
@@ -64,13 +73,13 @@ void bot_push_actpos(Behaviour_t * caller);
  * damit Start des Stack-Fahrverhaltens
  * @param *data	Der Verhaltensdatensatz
  */
-void bot_put_stack_waypositions_behaviour(Behaviour_t * data);
+void bot_save_waypositions_behaviour(Behaviour_t * data);
 
 /*!
  * Botenfunktion: Verhalten um sich entlang des Fahrweges relevante Koordinaten auf dem Stack zu merken
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  */
-void bot_put_stack_waypositions(Behaviour_t * caller);
+void bot_save_waypositions(Behaviour_t * caller);
 
 /*!
  * Display zum Setzen und Anfahren der Stackpunkte

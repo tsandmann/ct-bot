@@ -119,7 +119,7 @@ static void bot_reset(void) {
 	sensor_reset();
 #ifdef POS_STORE_AVAILABLE
 	/* Positionsspeicher loeschen */
-	pos_store_clear();
+	pos_store_release_all();
 #endif
 	/* Display-Reset */
 	rc5_screen_set(0);

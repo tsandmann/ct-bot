@@ -161,7 +161,7 @@ void bot_follow_object(Behaviour_t * caller) {
 	
 	/* Inits */
 #ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-	bot_put_stack_waypositions(NULL);
+	bot_save_waypositions(NULL);
 #endif
 	state		= 0;
 	speedLeft	= BOT_SPEED_STOP;

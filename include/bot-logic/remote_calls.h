@@ -17,7 +17,7 @@
  *
  */
 
-/*! 
+/*!
  * @file 	remote_calls.h
  * @brief 	Ruft auf ein Kommando hin andere Verhalten auf und bestaetigt dann ihre Ausfuehrung
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -39,12 +39,11 @@
 
 /*! Kommandostruktur fuer Remotecalls */
 typedef struct {
-   uint8 param_count;			/*!< Anzahl der Parameter kommen Und zwar ohne den obligatorischen caller-parameter*/
-   uint8 param_len[REMOTE_CALL_MAX_PARAM];	/*!< Angaben ueber die Anzahl an Bytes, die jeder einzelne Parameter belegt */
-   char name[REMOTE_CALL_FUNCTION_NAME_LEN+1]; 	    /*!< Text, maximal TEXT_LEN Zeichen lang +  1 Zeichen terminierung*/
-   char param_info[PARAM_TEXT_LEN+1];			/*!< String, der Angibt, welche und was fuer Parameter die Fkt erwartet */
-
-   void* (*func)(void *);      /*!< Zeiger auf die auszufuehrende Funktion*/
+   uint8_t param_count;								/*!< Anzahl der Parameter kommen Und zwar ohne den obligatorischen caller-parameter */
+   uint8_t param_len[REMOTE_CALL_MAX_PARAM];		/*!< Angaben ueber die Anzahl an Bytes, die jeder einzelne Parameter belegt */
+   const char name[REMOTE_CALL_FUNCTION_NAME_LEN+1];/*!< Text, maximal TEXT_LEN Zeichen lang +  1 Zeichen terminierung */
+   const char param_info[PARAM_TEXT_LEN+1];			/*!< String, der Angibt, welche und was fuer Parameter die Fkt erwartet */
+   BehaviourFunc func;								/*!< Zeiger auf die auszufuehrende Funktion */
 } call_t;
 
 /*! Union fuer Remotecall-Daten */
@@ -54,7 +53,7 @@ typedef union {
 	float fl32;		/*!< 32 Bit float */
 	uint16_t u16;	/*!< 16 Bit unsigned integer */
 	int16_t s16;	/*!< 16 Bit signed integer */
-	uint8_t u8;		/*!<  8 Bit unsigned integer */ 
+	uint8_t u8;		/*!<  8 Bit unsigned integer */
 	int8_t s8;		/*!<  8 Bit signed integer */
 } remote_call_data_t;	// uint32 und float werden beide gleich ausgelesen, daher stecken wir sie in einen Speicherbereich
 
@@ -71,7 +70,7 @@ typedef union {
  * Dieses Verhalten kuemmert sich darum die Verhalten, die von außen angefragt wurden zu starten und liefert ein feedback zurueck, wenn sie beendet sind.
  * @param *data der Verhaltensdatensatz
  */
-void bot_remotecall_behaviour(Behaviour_t *data);
+void bot_remotecall_behaviour(Behaviour_t * data);
 
 /*!
  * @brief			Fuehre einen remote_call aus. Aufrufendes Verhalten bei RemoteCalls == NULL
@@ -79,7 +78,7 @@ void bot_remotecall_behaviour(Behaviour_t *data);
  * @param *func 	Zeiger auf den Namen der Fkt
  * @param *data		Zeiger auf die Daten
  */
-void bot_remotecall(Behaviour_t *caller, char* func, remote_call_data_t* data);
+void bot_remotecall(Behaviour_t * caller, char * func, remote_call_data_t * data);
 
 /*!
  * @brief		Fuehre einen remote_call aus. Es gibt KEIN aufrufendes Verhalten!!
@@ -87,10 +86,9 @@ void bot_remotecall(Behaviour_t *caller, char* func, remote_call_data_t* data);
  */
 void bot_remotecall_from_command(char * data);
 
-/*! 
+/*!
  * Listet alle verfuegbaren Remote-Calls auf und verschickt sie als einzelne Kommanods
  */
 void remote_call_list(void);
-
 
 #endif /*REMOTE_CALLS_H_*/

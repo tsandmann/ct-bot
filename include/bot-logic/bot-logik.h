@@ -37,13 +37,16 @@
 #define INACTIVE	0	/*!< Verhalten ist aus */
 #define ACTIVE		1	/*!< Verhalten ist an */
 
-#define OVERRIDE	1	/*!< Konstante, wenn Verhalten beim Aufruf alte Wuensche ueberschreiben sollen */
-#define NOOVERRIDE	0	/*!< Konstanten, wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen */
+#define NOOVERRIDE	(0<<0)	/*!< Konstanten, wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen */
+#define OVERRIDE	(1<<0)	/*!< Konstante, wenn Verhalten beim Aufruf alte Wuensche ueberschreiben sollen */
+#define FOREGROUND	(0<<1)	/*!< Konstante, wenn Verhalten im Vordergrund laufen sollen (default), also z.B. die Motoren beeinflussen */
+#define BACKGROUND	(1<<1)	/*!< Konstante, wenn Verhalten im Hintergrund laufen sollen */
 
 #define SUBSUCCESS	1	/*!< Konstante fuer Behaviour_t->subResult: Aufgabe erfolgreich abgeschlossen */
 #define SUBFAIL		0	/*!< Konstante fuer Behaviour_t->subResult: Aufgabe nicht abgeschlossen */
 #define SUBRUNNING 	2	/*!< Konstante fuer Behaviour_t->subResult: Aufgabe wird noch beabeitet */
 #define SUBCANCEL	3	/*!< Konstante fuer Behaviour_t->subResult: Aufgabe wurde unterbrochen */
+#define SUBBACKGR	4	/*!< Konstange fuer Behaviour_t->subResult: Aufgabe wird im Hintergrund bearbeitet */
 
 #define RECURSIVE	255	/*!< Konstante, die anzeigt, dass auch die Aufrufer eines Verhaltens mit deaktiviert werden */
 #define NORECURSIVE 0	/*!< Konstante, die anzeigt, dass die Aufrufer eines Verhaltens nicht mit deaktiviert werden */
@@ -51,16 +54,21 @@
 
 /*! Verwaltungsstruktur fuer die Verhaltensroutinen */
 typedef struct _Behaviour_t {
-   void (* work) (struct _Behaviour_t *data); 	/*!< Zeiger auf die Funktion, die das Verhalten bearbeitet */
+   void (* work) (struct _Behaviour_t * data); 	/*!< Zeiger auf die Funktion, die das Verhalten bearbeitet */
    uint8_t priority;							/*!< Prioritaet */
    struct _Behaviour_t * caller;				/*!< aufrufendes Verhalten */
    uint8_t active:1;							/*!< Ist das Verhalten aktiv */
-   uint8_t subResult:2;							/*!< War das aufgerufene unterverhalten erfolgreich (==1)? */
+   uint8_t subResult:3;							/*!< War das aufgerufene unterverhalten erfolgreich (==1)? */
    struct _Behaviour_t * next;					/*!< Naechster Eintrag in der Liste */
 } __attribute__ ((packed)) Behaviour_t;
 
 /*! Dieser Typ definiert eine Funktion die das eigentliche Verhalten ausfuehrt */
 typedef void (* BehaviourFunc)(Behaviour_t * data);
+
+typedef struct {
+	uint8_t override:1;		/*!< 0 wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen; 1 sonst */
+	uint8_t background:1;	/*!< 0 wenn Verhalten im Vordergrund laufen sollen (default), also z.B. die Motoren beeinflussen; 1 sonst */
+} __attribute__ ((packed)) behaviour_mode_t;
 
 extern int16_t speedWishLeft;		/*!< Puffervariablen fuer die Verhaltensfunktionen absolut Geschwindigkeit links */
 extern int16_t speedWishRight;	/*!< Puffervariablen fuer die Verhaltensfunktionen absolut Geschwindigkeit rechts */
@@ -87,12 +95,6 @@ void bot_behave_init(void);
  * @return			Zeiger auf Verhaltensdatensatz oder NULL
  */
 Behaviour_t * get_behaviour(BehaviourFunc function);
-
-/*!
- * Aktiviert eine Regel mit gegebener Funktion
- * @param function Die Funktion, die das Verhalten realisiert.
- */
-void activateBehaviour(BehaviourFunc function);
 
 /*!
  * Deaktiviert eine Regel mit gegebener Funktion
@@ -125,7 +127,7 @@ void deactivateCalledBehaviours(BehaviourFunc function);
  * return_from_behaviour() kehrt dann spaeter wieder zum aufrufenden Verhalten zurueck
  * @param *from		aufrufendes Verhalten
  * @param *to		aufgerufenes Verhalten
- * @param override	Hier sind zwei Werte moeglich:
+ * @param mode		Hier sind vier Werte moeglich:
  * 		1. OVERRIDE:	Das Zielverhalten to wird aktiviert, auch wenn es noch aktiv ist.
  *						Das Verhalten, das es zuletzt aufgerufen hat wird dadurch automatisch
  *						wieder aktiv und muss selbst sein eigenes Feld subResult auswerten, um zu pruefen, ob das
@@ -133,8 +135,20 @@ void deactivateCalledBehaviours(BehaviourFunc function);
  * 		2. NOOVERRIDE:	Das Zielverhalten wird nur aktiviert, wenn es gerade nichts zu tun hat.
  *						In diesem Fall kann der Aufrufer aus seinem eigenen subResult auslesen,
  *						ob seinem Wunsch Folge geleistet wurde.
+ *		3. FOREGROUND	Das Verhalten laeuft im Fordergrund (Aufrufer wird solange deaktiviert)
+ *		4. BACKGROUND	Das Verhalten laeuft im Hintergrund (Aufrufer bleibt aktiv)
  */
-void switch_to_behaviour(Behaviour_t * from, void (*to)(Behaviour_t *), uint8_t override);
+void switch_to_behaviour(Behaviour_t * from, void (*to)(Behaviour_t *), uint8_t mode);
+
+/*!
+ * Aktiviert eine Regel mit gegebener Funktion, impliziert NOOVERRIDE.
+ * Im Gegensatz zu switch_to_behaviour() wird der Aufrufer jedoch nicht deaktiviert (Hintergrundausfuehrung).
+ * @param *from		aufrufendes Verhalten
+ * @param *to		aufgerufendes Verhalten
+ */
+static inline void activateBehaviour(Behaviour_t * from, void (*to)(Behaviour_t *)) {
+	switch_to_behaviour(from, to, NOOVERRIDE | BACKGROUND);
+}
 
 /*!
  * Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg

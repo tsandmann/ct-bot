@@ -67,8 +67,7 @@
 
 #ifdef MCU
 #ifndef __AVR_ATmega644__
-//TODO:	ATmega32-Version ueberlegen
-#warning "nur der ATmega644 hat genug RAM!"
+#error "behaviour_pathplaning derzeit nur mit ATmega644 moeglich!"
 #endif
 #endif	// MCU
 #ifdef PC
@@ -90,6 +89,8 @@ typedef struct {
 
 map_section_lowres_t * map_lowres[MAP_SECTIONS_LOWRES][MAP_SECTIONS_LOWRES]; /*!< Array mit den Zeigern auf die Elemente */
 
+static pos_store_t * planning_pos_store = NULL;		/*!< Positionsspeicher */
+static position_t pos_store_data[POS_STORE_SIZE];	/*!< Stack-Speicher fuer Positionsspeicher */
 
 /*! Ausgangspunkt der Welle (eigentlicher Zielpunkt) */
 static position_t startwave = { (MAP_SIZE_LOWRES*MAP_RESOLUTION_LOWRES / 2),
@@ -283,7 +284,7 @@ static uint8_t get_neighbour(position_t map, int8_t actual_wave,
 		*neighbour_found = True;
 
 		// in FIFO-Queue aufnehmen zur weiteren Nachbarsuche
-		if (!pos_store_queue(map)) {
+		if (!pos_store_queue(planning_pos_store, map)) {
 			LOG_DEBUG(">> -Queue voll- %1d %1d bei Punkt: %1d %1d zu Welle: %1d", map.x, map.y, actual_wave);
 		}
 	} // nur initiale Felder
@@ -324,7 +325,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 	case 0:
 		LOG_DEBUG("Loeschen der Lowres-Karte");
 		delete_lowres();
-		pos_store_clear(); // Stack / Queue loeschen
+		planning_pos_store = pos_store_create(data, pos_store_data); // Stack / Queue anlegen / und leeren
 		wavecounter = 2; // geht ab Wert 2 los; d.h. Wert Wellenzentrum - Zielpunkt bekommt diesen Wert
 
 		wave_state = SET_HAZARDS_TO_LOWRES;
@@ -342,14 +343,14 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 		wavecounter++; // die ersten Nachbarn haben den Startwellenwert (2) + 1
 		endreached = False; // Abbruchbedingung der Schleife init.
 
-		pos_store_queue(startwave); // Startpunkt der Welle in die Queue einfuegen, damit gehts los
+		pos_store_queue(planning_pos_store, startwave); // Startpunkt der Welle in die Queue einfuegen, damit gehts los
 
 		LOG_DEBUG("Wellenstart bei %1d %1d Welle %1d, avg %1d", startwave.x, startwave.y, wavecounter, average_val);
 
-		pos_store_queue((position_t) {999, 999}); // nach Abarbeiten des Wellenstartpunktes muss Wellenzaehler erhoeht werden
+		pos_store_queue(planning_pos_store, (position_t) {999, 999}); // nach Abarbeiten des Wellenstartpunktes muss Wellenzaehler erhoeht werden
 
 		// Solange FIFO-Queue durchgehen und Nachbarn wieder anfuegen bis Queue leer ist oder Ziel (Botstartpunkt) gefunden (1 Nachbar ist Zielfeld)
-		while (!endreached && pos_store_dequeue(&pos)) {
+		while (!endreached && pos_store_dequeue(planning_pos_store, &pos)) {
 			// bei Kennung 999 ist Welle abgearbeitet, d.h. zu allen Punkten der Welle die Nachbarn wieder hinten angefuegt und Wellenzaehler wird erhoeht
 			// wenn die Nachbarn der neuen Welle beginnen wird Wellenzaehler erhoeht
 			if (pos.x == 999 && pos.y == 999) {
@@ -359,7 +360,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 
 				// Erhoehung fuer Wellenzaehler vermerken wenn Endepunkt noch nicht gefunden ist und gueltiger Nachbarpunkt vorhanden war
 				if (!endreached && neighbour_found) {
-					pos_store_queue((position_t) {999, 999});
+					pos_store_queue(planning_pos_store, (position_t) {999, 999});
 				}
 
 				// Kennung fuer gueltigen Nachbarn wieder ruecksetzen
@@ -382,7 +383,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 
 		// Loeschen der FIFO-Queue; Stack- bzw. Queue-Array wird ja im folgenden
 		// verwendet zur Speicherung der Abfahrpositionen bei der Wellenrueckverfolgung vom Bot ausgehend zum Wellenstartpunkt
-		pos_store_clear();
+		pos_store_clear(planning_pos_store);
 
 		// Wellenpfad zurueckverfolgen oder gleich Ende wenn nichts gefunden
 		wave_state = (endreached) ? SEARCH_STACKPATH_AND_QUEUE : WAVE_NEXT_TRY;
@@ -452,7 +453,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 			if (neighbour_found || endreached) {
 				LOG_DEBUG("Pfadpunkt in Queue %1d %1d Ende %1d", nextdest.x, nextdest.y, endreached);
 				// zum spaeteren Stack-Abfahren die Zwischenziel-Koordinaten als Weltkoordinaten auf den Stack legen
-				if (!pos_store_queue((position_t) {map_to_world_lowres(nextdest.x), map_to_world_lowres(nextdest.y)})) {
+				if (!pos_store_queue(planning_pos_store, (position_t) {map_to_world_lowres(nextdest.x), map_to_world_lowres(nextdest.y)})) {
 					LOG_DEBUG("Queue ging schief - voll?");
 					endreached = True;
 				}
@@ -495,12 +496,14 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 
 	case START_BOT_GO_STACK_BEHAVIOUR:
 		LOG_DEBUG("--Pfad gefunden und Abfahren -STACKGO-- avg %1d", average_val);
-		bot_drive_stack_fifo(data);
+		bot_drive_stack_x(data, pos_store_get_index(planning_pos_store), 1);
 		wave_state = 99;
 		break;
 
 	default:
 		LOG_DEBUG("Waveverhalten beendet Wavecounter %1d Durchmesserwert %1d", wavecounter, average_val);
+		pos_store_release(planning_pos_store);
+		planning_pos_store = NULL;
 		return_from_behaviour(data);
 		break;
 	}

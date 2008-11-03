@@ -33,20 +33,18 @@
  */
 
 #include "bot-logic/bot-logik.h"
-
-#ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
-
-#include <math.h>
-#include <stdlib.h>
-
 #include "map.h"
 #include "timer.h"
 #include "math_utils.h"
 #include "pos_store.h"
 #include "log.h"
+#include <math.h>
+#include <stdlib.h>
 
+#ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
 
-//#define DEBUG_DRIVE_AREA	// Schalter fuer Debug-Code
+//#define DEBUG_DRIVE_AREA			// Schalter fuer Debug-Code
+//#define DEBUG_DRIVE_AREA_TIMES	// Schalter fuer Zeitmessungen
 
 /*! nur alle X-Millisekunden Mapzugriff der Observer-Verhalten */
 #define	CORRECTION_DELAY	700
@@ -109,6 +107,9 @@ static trackpoint_t nextline;
 /*! gemerkte letzte Position des Bots, um nur aller xx gefahrender mm auf Map zuzugreifen */
 static trackpoint_t observe_lastpos;
 
+static pos_store_t * pos_store = NULL;				/*!< Positionsspeicher, den das Verhalten benutzt */
+static position_t pos_store_data[POS_STORE_SIZE];	/*!< Statischer Speicher fuer pos_store */
+
 /* ==================================================================================
  * ===== Start der allgemein fuer diese Verhalten notwendigen Routinen ==============
  * ==================================================================================*/
@@ -128,7 +129,7 @@ void border_drive_area_handler(void) {
  * @return	Durchschnittswert des Feldes (>0 heisst frei, <0 heisst belegt)
  */
 static int8_t map_get_field(int16_t x, int16_t y) {
-#ifdef DEBUG_DRIVE_AREA
+#ifdef DEBUG_DRIVE_AREA_TIMES
 	uint8_t result;
 	TIMER_MEASURE_TIME(result = map_get_average(x, y, 50));
 	return result;
@@ -153,10 +154,10 @@ static void push_stack_pos_line(int16_t x1, int16_t y1, int16_t x2, int16_t y2) 
 	position_t pos;
 	pos.x = x1;
 	pos.y = y1;
-	pos_store_push(pos);
+	pos_store_push(pos_store, pos);
 	pos.x = x2;
 	pos.y = y2;
-	pos_store_push(pos);
+	pos_store_push(pos_store, pos);
 }
 
 /*!
@@ -170,13 +171,13 @@ static void push_stack_pos_line(int16_t x1, int16_t y1, int16_t x2, int16_t y2) 
 static uint8_t pop_stack_pos_line(int16_t * x1, int16_t * y1, int16_t * x2,
 		int16_t * y2) {
 	position_t pos;
-	if (!pos_store_pop(&pos)) {
+	if (!pos_store_pop(pos_store, &pos)) {
 		return False;
 	}
 	*x1 = pos.x;
 	*y1 = pos.y;
 
-	if (!pos_store_pop(&pos)) {
+	if (!pos_store_pop(pos_store, &pos)) {
 		return False;
 	}
 	*x2 = pos.x;
@@ -230,7 +231,7 @@ static int8_t getpoint_side_dist(uint16_t sidedist, int16_t dist, int8_t side,
 			heading, DISTSENSOR_POS_FW + dist, -sidedist);
 
 	// Rueckgabe des Mapwertes
-#ifdef DEBUG_DRIVE_AREA
+#ifdef DEBUG_DRIVE_AREA_TIMES
 	uint8_t result;
 	TIMER_MEASURE_TIME(result = map_get_field(point->x, point->y));
 	return result;
@@ -473,7 +474,7 @@ void bot_observe_left_behaviour(Behaviour_t * data) {
  */
 void bot_observe_left(Behaviour_t * caller) {
 	if (!behaviour_is_activated(bot_observe_left_behaviour)) {
-		switch_to_behaviour(caller, bot_observe_left_behaviour, OVERRIDE);
+		activateBehaviour(caller, bot_observe_left_behaviour);
 		observe1_state = 0;
 		endrequest = False;
 		set_point_to_lastpoint(&observe_trackleft.point1x,
@@ -535,7 +536,7 @@ void bot_observe_right_behaviour(Behaviour_t * data) {
  */
 void bot_observe_right(Behaviour_t * caller) {
 	if (!behaviour_is_activated(bot_observe_right_behaviour)) {
-		switch_to_behaviour(caller, bot_observe_right_behaviour, OVERRIDE);
+		activateBehaviour(caller, bot_observe_right_behaviour);
 		observe2_state = 0;
 		set_point_to_lastpoint(&observe_trackright.point1x,
 				&observe_trackright.point1y, 0, 0);
@@ -551,10 +552,10 @@ void bot_observe_right(Behaviour_t * caller) {
 /*!
  * Startet die Observer
  */
-static void start_observe_left_right(void) {
+static void start_observe_left_right(Behaviour_t * caller) {
+	bot_observe_right(caller);
+	bot_observe_left(caller);
 	endrequest = False;
-	bot_observe_right(NULL);
-	bot_observe_left(NULL);
 }
 
 /*!
@@ -686,8 +687,8 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
        //laufen vor direktem Losfahren
         track_state = GO_FORWARD;
 
-		//Observer starten zum Beobachten der Nebenspuren
-		start_observe_left_right();
+		// Observer starten zum Beobachten der Nebenspuren
+		start_observe_left_right(data);
 
 		//wird jetzt zum Startzeitpunkt des Vorausfahrens bereits was gesehen, dann in Abhaengigkeit davon
 		//einen Punkt in der Bahn voraus berechnen um Wegfreiheit laut Map zu bestimmen
@@ -961,7 +962,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 	default:
 		// am Ende des Verhaltens Observer stoppen
 		bot_stop_observe();
-		pos_store_clear(); // Stack bereinigen
+		pos_store_release(pos_store); // Positionsspeicher bereinigen
 		return_from_behaviour(data);
 		break;
 	}
@@ -977,7 +978,7 @@ void bot_drive_area(Behaviour_t * caller) {
 	switch_to_behaviour(caller, bot_drive_area_behaviour, OVERRIDE);
 	track_state = CHECK_TRACKSIDE;
 	border_fired = False;
-	pos_store_clear();
+	pos_store = pos_store_create(get_behaviour(bot_drive_area_behaviour), pos_store_data);
 
 	/* Kollisions-Verhalten ausschalten  */
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
@@ -986,7 +987,7 @@ void bot_drive_area(Behaviour_t * caller) {
 
 	/* Einschalten sicherheitshalber des Scan-on_the_fly Verhaltens */
 #ifdef BEHAVIOUR_SCAN_AVAILABLE
-	activateBehaviour(bot_scan_onthefly_behaviour);
+	activateBehaviour(get_behaviour(bot_drive_area_behaviour), bot_scan_onthefly_behaviour);
 #endif
 }
 

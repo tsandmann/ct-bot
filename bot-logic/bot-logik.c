@@ -50,7 +50,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define DEBUG_BOT_LOGIC		// Schalter um recht viel Debug-Code anzumachen
+//#define DEBUG_BOT_LOGIC		// Schalter um recht viel Debug-Code anzumachen
 
 #ifndef DEBUG_BOT_LOGIC
 	#undef LOG_DEBUG
@@ -197,9 +197,9 @@ void bot_behave_init(void) {
 		insert_behaviour_to_list(&behaviour, new_behaviour(251, bot_simple2_behaviour, INACTIVE));
 	#endif
 
-	// Hoechste Prioritate haben die Notfall Verhalten
+	// Sehr hohe Prioritaet haben die Notfall Verhalten
 
-	// Verhalten zum Schutz des Bots, hohe Prioritaet, Aktiv
+	// Verhalten zum Schutz des Bots, hohe Prioritaet, aktiv
 	#ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(250, bot_avoid_border_behaviour, ACTIVE));
 	#endif
@@ -208,13 +208,13 @@ void bot_behave_init(void) {
 	#endif
     #ifdef BEHAVIOUR_HANG_ON_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(245, bot_hang_on_behaviour, ACTIVE));
-		// Registrierung des Handlers zur Behandlung des Haengenbleibens zum Rueckwaertsfahren
+		// Registrierung des Handlers zur Behandlung des Haengenbleibens
  	    register_emergency_proc(&hang_on_handler);
 	#endif
 
 	#ifdef BEHAVIOUR_SCAN_AVAILABLE
 		// Verhalten, das die Umgebung des Bots on-the-fly beim Fahren scannt
-		insert_behaviour_to_list(&behaviour, new_behaviour(254, bot_scan_onthefly_behaviour, ACTIVE));
+		insert_behaviour_to_list(&behaviour, new_behaviour(240, bot_scan_onthefly_behaviour, ACTIVE));
 	#endif
 
 	#ifdef BEHAVIOUR_DELAY_AVAILABLE
@@ -223,8 +223,7 @@ void bot_behave_init(void) {
 	#endif
 
 	#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-//		insert_behaviour_to_list(&behaviour, new_behaviour(190, bot_save_waypositions_behaviour, INACTIVE));
-		insert_behaviour_to_list(&behaviour, new_behaviour(190, bot_put_stack_waypositions_behaviour, INACTIVE));
+		insert_behaviour_to_list(&behaviour, new_behaviour(190, bot_save_waypositions_behaviour, INACTIVE));
 	#endif
 
 	#ifdef BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
@@ -278,8 +277,7 @@ void bot_behave_init(void) {
     #endif
 
     #ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
-//	    insert_behaviour_to_list(&behaviour, new_behaviour(71, bot_calc_wave_behaviour, INACTIVE));
-		insert_behaviour_to_list(&behaviour, new_behaviour(71, bot_calc_wave_behaviour, INACTIVE));       
+		insert_behaviour_to_list(&behaviour, new_behaviour(71, bot_calc_wave_behaviour, INACTIVE));
     #endif
 
 	#ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
@@ -345,17 +343,9 @@ void bot_behave_init(void) {
 
 	#ifdef BEHAVIOUR_SIMPLE_AVAILABLE
 		// Um das Simple2-Behaviour zu nutzen, die Kommentarzeichen der folgenden beiden Zeilen tauschen
-		activateBehaviour(bot_simple_behaviour);
+		activateBehaviour(NULL, bot_simple_behaviour);
 		//activateBehaviour(bot_simple2_behaviour);
 	#endif
-}
-
-/*!
- * Aktiviert eine Regel mit gegebener Funktion
- * @param function	Die Funktion, die das Verhalten realisiert
- */
-void activateBehaviour(BehaviourFunc function) {
-	switch_to_behaviour(NULL, function, NOOVERRIDE);
 }
 
 /*!
@@ -384,9 +374,13 @@ void deactivateBehaviour(BehaviourFunc function) {
 	if (job == NULL) {
 		return;
 	}
-	LOG_DEBUG("Verhalten %u wird deaktiviert", job->priority);
 	job->active = INACTIVE;
 	job->caller = NULL;	// Caller loeschen, damit Verhalten auch ohne OVERRIDE neu gestartet werden koennen
+#ifdef DEBUG_BOT_LOGIC
+	if (behaviour_is_activated(function) == 1) {
+		LOG_DEBUG("Verhalten %u wird deaktiviert", job->priority);
+	}
+#endif
 }
 
 /*!
@@ -455,7 +449,6 @@ void deactivateCalledBehaviours(BehaviourFunc function) {
 				Behaviour_t * beh;
 				for (beh=behaviour; beh; beh=beh->next) {	// n mal
 					/* Falls das Verhalten Caller eines anderen Verhaltens ist, duerfen wir es (noch) nicht deaktivieren! */
-//TODO:	Problem: Wenn ptr's Callee nicht in Call-Anhaengigkeit zu function steht, muesste ptr doch deaktiviert werden! (oder???)
 					if (beh->caller == ptr) {
 						LOG_DEBUG("  Verhalten %u ist Caller eines anderen Verhaltens", ptr->priority);
 						break;
@@ -489,7 +482,7 @@ void deactivateCalledBehaviours(BehaviourFunc function) {
  * return_from_behaviour() kehrt dann spaeter wieder zum aufrufenden Verhalten zurueck
  * @param *from		aufrufendes Verhalten
  * @param *to		aufgerufenes Verhalten
- * @param override	Hier sind zwei Werte moeglich:
+ * @param mode		Hier sind vier Werte moeglich:
  * 		1. OVERRIDE:	Das Zielverhalten to wird aktiviert, auch wenn es noch aktiv ist.
  *						Das Verhalten, das es zuletzt aufgerufen hat wird dadurch automatisch
  *						wieder aktiv und muss selbst sein eigenes Feld subResult auswerten, um zu pruefen, ob das
@@ -497,8 +490,11 @@ void deactivateCalledBehaviours(BehaviourFunc function) {
  * 		2. NOOVERRIDE:	Das Zielverhalten wird nur aktiviert, wenn es gerade nichts zu tun hat.
  *						In diesem Fall kann der Aufrufer aus seinem eigenen subResult auslesen,
  *						ob seinem Wunsch Folge geleistet wurde.
+ *		3. FOREGROUND	Das Verhalten laeuft im Fordergrund (Aufrufer wird solange deaktiviert)
+ *		4. BACKGROUND	Das Verhalten laeuft im Hintergrund (Aufrufer bleibt aktiv)
  */
-void switch_to_behaviour(Behaviour_t * from, void (*to)(Behaviour_t *), uint8_t override ) {
+void switch_to_behaviour(Behaviour_t * from, void (*to)(Behaviour_t *), uint8_t mode) {
+	LOG_DEBUG("switch_to_behaviour(0x%lx, 0x%lx, %u)", (size_t) from, (size_t) to, mode);
 	Behaviour_t * job = get_behaviour(to);
 	if (job == NULL) {
 		/* Zielverhalten existiert gar nicht */
@@ -507,9 +503,10 @@ void switch_to_behaviour(Behaviour_t * from, void (*to)(Behaviour_t *), uint8_t 
 		}
 		return;
 	}
+	behaviour_mode_t beh_mode = {mode & 1, (mode & 2) >> 1};
 
 	if (job->caller) {		// Ist das auzurufende Verhalten noch beschaeftigt?
-		if (override == NOOVERRIDE){	// nicht ueberschreiben, sofortige Rueckkehr
+		if (beh_mode.override == NOOVERRIDE) {	// nicht ueberschreiben, sofortige Rueckkehr
 			if (from) {
 				from->subResult = SUBFAIL;
 			}
@@ -521,9 +518,13 @@ void switch_to_behaviour(Behaviour_t * from, void (*to)(Behaviour_t *), uint8_t 
 	}
 
 	if (from) {
-		// laufendes Verhalten abschalten
-		from->active = INACTIVE;
-		from->subResult = SUBRUNNING;
+		if (beh_mode.background == 0) {
+			// laufendes Verhalten abschalten
+			from->active = INACTIVE;
+			from->subResult = SUBRUNNING;
+		} else {
+			from->subResult = SUBBACKGR;
+		}
 	}
 
 	// neues Verhalten aktivieren
@@ -531,13 +532,16 @@ void switch_to_behaviour(Behaviour_t * from, void (*to)(Behaviour_t *), uint8_t 
 	// Aufrufer sichern
 	job->caller = from;
 
-	#ifdef DEBUG_BOT_LOGIC
-		if (from) {
-			LOG_DEBUG("Verhaltenscall: %d wurde von %d aufgerufen",job->priority,from->priority);
-		} else {
-			LOG_DEBUG("Verhaltenscall: %d wurde direkt aufgerufen",job->priority);
-		}
-	#endif
+#ifdef DEBUG_BOT_LOGIC
+	if (from) {
+		LOG_DEBUG("Verhaltenscall: %u wurde von %u aufgerufen", job->priority, from->priority);
+	} else {
+		LOG_DEBUG("Verhaltenscall: %u wurde direkt aufgerufen", job->priority);
+	}
+	if (beh_mode.background == 1) {
+		LOG_DEBUG(" Verhalten laeuft im Hintergrund");
+	}
+#endif
 }
 
 /*!

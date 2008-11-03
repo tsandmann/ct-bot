@@ -170,6 +170,8 @@ const call_t calls[] PROGMEM = {
 	#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_push_actpos,0,""),
 		PREPARE_REMOTE_CALL(bot_drive_stack,0,""),
+		PREPARE_REMOTE_CALL(bot_drive_fifo,0,""),
+		PREPARE_REMOTE_CALL(bot_save_waypositions,0,""),
 	#endif
 	#ifdef BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_check_distance,2,"int16 max_dist, uint8 diff",2,1),
@@ -183,13 +185,13 @@ const call_t calls[] PROGMEM = {
 
 /*!
  * Sucht den Index des Remote-Calls heraus
- * @param call String mit dem namen der gesuchten fkt
- * @return Index in das calls-Array. Wenn nicht gefunden, dann 255
+ * @param *call	String mit dem namen der gesuchten fkt
+ * @return 		Index in das calls-Array. Wenn nicht gefunden, dann 255
  */
-static uint8 getRemoteCall(char * call) {
+static uint8_t getRemoteCall(char * call) {
 	LOG_DEBUG("Suche nach Funktion: %s",call);
 
-	uint8 i;
+	uint8_t i;
 	for (i=0; i< (STORED_CALLS); i++) {
 		if (!strcmp_P (call, calls[i].name)) {
 			LOG_DEBUG("calls[%d].name=%s passt",i,call);
@@ -260,7 +262,7 @@ void bot_remotecall_fl_dummy(Behaviour_t * caller, ...) {
  * Dieses Verhalten kuemmert sich darum die Verhalten, die von aussen angefragt wurden zu starten und liefert ein feedback zurueck, wenn sie beendet sind.
  * @param *data der Verhaltensdatensatz
  */
-void bot_remotecall_behaviour(Behaviour_t *data) {
+void bot_remotecall_behaviour(Behaviour_t * data) {
 	LOG_DEBUG("Enter bot_remotecall_behaviour");
 
 	switch (running_behaviour) {
@@ -269,7 +271,8 @@ void bot_remotecall_behaviour(Behaviour_t *data) {
 
 			if (function_id >= STORED_CALLS) {
 				LOG_DEBUG("keine Funktion gefunden. Exit");
-				running_behaviour=REMOTE_CALL_IDLE;
+				running_behaviour = REMOTE_CALL_IDLE;
+				exit_behaviour(data, SUBFAIL);
 				return;
 			}
 
@@ -285,7 +288,7 @@ void bot_remotecall_behaviour(Behaviour_t *data) {
 
 			if (parameter_count > REMOTE_CALL_MAX_PARAM) {
 				LOG_DEBUG("Parameteranzahl unzulaessig!");
-				running_behaviour=REMOTE_CALL_IDLE;
+				running_behaviour = REMOTE_CALL_IDLE;
 				return;
 			}
 
@@ -302,7 +305,7 @@ void bot_remotecall_behaviour(Behaviour_t *data) {
 				func(data, *(remote_call_data_t*)(parameter_data+4),	// "rueckwaerts", denn kleinere Parameter-Nr liegen an hoereren Register-Nr.!
 					*(remote_call_data_t*)parameter_data);
 			#endif	// PC
-			running_behaviour=REMOTE_CALL_RUNNING;
+			running_behaviour = REMOTE_CALL_RUNNING;
 			return;
 
 		case REMOTE_CALL_RUNNING: // Es lief ein Verhalten und ist nun zuende (sonst waeren wir nicht hier)
@@ -311,28 +314,28 @@ void bot_remotecall_behaviour(Behaviour_t *data) {
 			char * function_name;
 
 			#ifdef PC
-				function_name=(char*)&calls[function_id].name;
+				function_name = (char *)&calls[function_id].name;
 			#else
 				// Auf dem MCU muessen wir die Daten erstmal aus dem Flash holen
-				char tmp[REMOTE_CALL_FUNCTION_NAME_LEN+1];
-				memcpy_P(tmp, &calls[function_id].name, REMOTE_CALL_FUNCTION_NAME_LEN+1);
-				function_name=(char*)&tmp;
+				char tmp[REMOTE_CALL_FUNCTION_NAME_LEN + 1];
+				memcpy_P(tmp, &calls[function_id].name, REMOTE_CALL_FUNCTION_NAME_LEN + 1);
+				function_name=(char *)&tmp;
 			#endif	// PC
 
 			#ifdef COMMAND_AVAILABLE
-				int16 result = data->subResult;
-				command_write_data(CMD_REMOTE_CALL,SUB_REMOTE_CALL_DONE,&result,&result,function_name);
-				LOG_DEBUG("Remote-call %s beendet (%d)",function_name,result);
+				int16_t result = data->subResult;
+				command_write_data(CMD_REMOTE_CALL, SUB_REMOTE_CALL_DONE, &result, &result, function_name);
+				LOG_DEBUG("Remote-call %s beendet (%u)", function_name, result);
 			#endif
 
 			// Aufrauemen
-			function_id=255;
-			running_behaviour=REMOTE_CALL_IDLE;
+			function_id = 255;
+			running_behaviour = REMOTE_CALL_IDLE;
 			return_from_behaviour(data); 	// und Verhalten auch aus
 			break;
 		}
 		default:
-			running_behaviour=REMOTE_CALL_IDLE;
+			running_behaviour = REMOTE_CALL_IDLE;
 			return_from_behaviour(data); 	// und Verhalten auch aus
 			break;
 	}
@@ -344,14 +347,14 @@ void bot_remotecall_behaviour(Behaviour_t *data) {
  * @param func 		Zeiger auf den Namen der Fkt
  * @param data		Zeiger auf die Daten
  */
-void bot_remotecall(Behaviour_t *caller, char* func, remote_call_data_t* data) {
+void bot_remotecall(Behaviour_t * caller, char * func, remote_call_data_t * data) {
 	if (running_behaviour != REMOTE_CALL_IDLE) {
 		/* Verhalten noch aktiv, Abbruch */
 		LOG_DEBUG("bereits ein RemoteCall aktiv (ID=%u)!", function_id);
 		return;
 	}
 	function_id = getRemoteCall(func);
-	if (function_id >= STORED_CALLS){
+	if (function_id >= STORED_CALLS) {
 		LOG_ERROR("Funktion %s nicht gefunden. Exit!", func);
 		return;
 	}
@@ -378,7 +381,7 @@ void bot_remotecall(Behaviour_t *caller, char* func, remote_call_data_t* data) {
 		LOG_DEBUG("%x %x %x %x", parameter_data[8], parameter_data[9], parameter_data[10], parameter_data[11]);
 	#endif
 
-	running_behaviour=REMOTE_CALL_SCHEDULED;
+	running_behaviour = REMOTE_CALL_SCHEDULED;
 }
 
 /*!
@@ -402,22 +405,22 @@ void remote_call_list(void) {
 
 	LOG_DEBUG("Liste %u remote calls",STORED_CALLS);
 
-	int16 i;
+	int16_t i;
 	for (i=0; i<(STORED_CALLS); i++) {
 		#ifdef MCU
 			// Auf dem MCU muessen die Daten erstmal aus dem Flash ins RAM
 			memcpy_P(&call_storage, &calls[i], sizeof(call_t));
 			call = &call_storage;
 		#else
-			call = (call_t*)&calls[i];
+			call = (call_t *)&calls[i];
 		#endif	// MCU
 
 		#ifdef COMMAND_AVAILABLE
 			// und uebertragen
-			command_write_rawdata(CMD_REMOTE_CALL,SUB_REMOTE_CALL_ENTRY,&i,&i, sizeof(call_t),(uint8*)call);
+			command_write_rawdata(CMD_REMOTE_CALL, SUB_REMOTE_CALL_ENTRY, &i, &i, sizeof(call_t),(uint8_t *)call);
 		#endif
 
-		LOG_DEBUG("%s(%s)",call->name,call->param_info);
+		LOG_DEBUG("%s(%s)", call->name, call->param_info);
 	}
 }
 

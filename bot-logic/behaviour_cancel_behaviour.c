@@ -27,10 +27,10 @@
  */
 
 #include "bot-logic/available_behaviours.h"
-#include <stdlib.h>
 #include "log.h"
+#include <stdlib.h>
 
-#define DEBUG_CANCEL	// Debug-Code an
+//#define DEBUG_CANCEL	// Debug-Code an
 
 #ifndef DEBUG_CANCEL
 	#undef LOG_DEBUG
@@ -75,7 +75,7 @@ void bot_cancel_behaviour(Behaviour_t * caller, BehaviourFunc behaviour, uint8_t
 	LOG_DEBUG("cancel(0x%x, 0x%x, 0x%x)", caller, behaviour, check);
 	check_function = check;
 	behaviourFuncCancel = behaviour;
-	switch_to_behaviour(caller, bot_cancel_behaviour_behaviour, NOOVERRIDE);
+	activateBehaviour(caller, bot_cancel_behaviour_behaviour);
 }
 
 #endif	// BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE

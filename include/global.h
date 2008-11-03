@@ -96,7 +96,7 @@
 typedef struct {
 	int16_t x; /*!< X-Anteil der Position */
 	int16_t y; /*!< Y-Anteil der Position */
-} position_t;
+} __attribute__ ((packed)) position_t;
 
 #endif	// __ASSEMBLER__
 #endif	// global_H

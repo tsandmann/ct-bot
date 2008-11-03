@@ -224,7 +224,7 @@ void bot_explore_behaviour(Behaviour_t * data) {
 		bot_turn(data,85);
 		explore_state = EXPLORATION_STATE_DRIVE_ARC;
 		#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
-			activateBehaviour(bot_avoid_col_behaviour);
+			activateBehaviour(NULL, bot_avoid_col_behaviour);
 		#endif
 		break;
 	case EXPLORATION_STATE_TURN_ORTHOGONAL_RIGHT:
@@ -234,7 +234,7 @@ void bot_explore_behaviour(Behaviour_t * data) {
 		bot_turn(data,-85);
 		explore_state = EXPLORATION_STATE_DRIVE_ARC;
 		#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
-			activateBehaviour(bot_avoid_col_behaviour);
+			activateBehaviour(NULL, bot_avoid_col_behaviour);
 		#endif
 		break;
 	case EXPLORATION_STATE_DRIVE_ARC:
@@ -270,7 +270,7 @@ void bot_explore_behaviour(Behaviour_t * data) {
 		explore_state = EXPLORATION_STATE_GOTO_WALL;
 		explore_curve = 0;
 		#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
-			activateBehaviour(bot_avoid_col_behaviour);
+			activateBehaviour(NULL, bot_avoid_col_behaviour);
 		#endif
 	}
 
@@ -313,7 +313,7 @@ void bot_do_slalom_behaviour(Behaviour_t * data) {
 			} else bot_goto_light();
 		} else {// ... sonst muss er den Slalom-Kurs neu suchen.
 			#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
-				activateBehaviour(bot_avoid_col_behaviour);
+				activateBehaviour(NULL, bot_avoid_col_behaviour);
 			#endif
 			return_from_behaviour(data);
 		}
