@@ -1,24 +1,24 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
 
-/*! 
+/*!
  * @file 	behaviour_classify_objects.c
  * @brief 	Teilt Objekte nach ihrer Farbe in Klassen ein und
  * 			transportiert sie ins Lager der Klasse.
@@ -27,10 +27,10 @@
  * 			reicht (z.B. runde Pappscheibe unter einer Dose).
  * 			Den Schwellwert fuer die Klasseneinteilung muss man derzeit im
  * 			Array targets fest einstellen, ebenso die Zielpositionen.
- * 			Objekte gleicher Klasse werden mit einem Abstand von 10 cm in 
+ * 			Objekte gleicher Klasse werden mit einem Abstand von 10 cm in
  * 			positiver Y-Richtung nebeneinander gestellt.
  * 			Funktioniert derzeit nur mit Catch-Pillar-Version 3.
- *  
+ *
  * @author 	Timo Sandmann (mail@timosandmann.de)
  * @date 	15.06.2008
  */
@@ -47,6 +47,7 @@
 #define CO_DRIVE	3
 #define CO_UNLOAD	4
 #define CO_HOME		5
+#define CO_END		99
 
 static uint8_t state = 0;	/*!< Status des Verhaltens */
 /*! Klasseneinteilung nach Farben */
@@ -67,14 +68,14 @@ static struct {
 void bot_classify_objects_behaviour(Behaviour_t * data) {
 	static uint8_t measure_count;
 	static int16_t object_brightness;
-	
+
 	switch (state) {
 	case CO_SEARCH:
 		/* Objekte suchen */
 		state = CO_CATCH;
 		/* Such-Algo / Explore-Verhalten */
 		//break;
-		
+
 	case CO_CATCH:
 		/* Objekt einfangen */
 		bot_catch_pillar_turn(data, 180);
@@ -82,13 +83,13 @@ void bot_classify_objects_behaviour(Behaviour_t * data) {
 		measure_count = 0;
 		object_brightness = 0;
 		break;
-		
+
 	case CO_IDENTIFY:
 		/* Objekterkennung */
 		if (data->subResult == SUBFAIL) {
-			exit_behaviour(data, SUBFAIL);
-			bot_turn(NULL, -180);
-			return;
+			state = CO_END;
+			bot_turn(data, -180);
+			break;
 		}
 		if (measure_count < 10) {
 			/* Durchschnitt aus 10 Messungen */
@@ -111,18 +112,22 @@ void bot_classify_objects_behaviour(Behaviour_t * data) {
 			}
 		}
 		break;
-	
+
 	case CO_UNLOAD:
 		/* Objekt ausladen */
 		bot_unload_pillar(data);
 		state = CO_HOME;
 		break;
-	
+
 	case CO_HOME:
 		/* zurueck zum Startpunkt */
 		bot_goto_pos(data, 0, 0, 0);
 		state = CO_SEARCH;
 		break;
+
+	default:
+		exit_behaviour(data, SUBFAIL);
+		return;
 	}
 }
 

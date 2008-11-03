@@ -550,10 +550,13 @@ void switch_to_behaviour(Behaviour_t * from, void (*to)(Behaviour_t *), uint8_t 
  * @param state	Abschlussstatus des Verhaltens (SUBSUCCESS oder SUBFAIL)
  */
 void exit_behaviour(Behaviour_t * data, uint8_t state) {
-	data->active=INACTIVE;	 				// Unterverhalten deaktivieren
+	LOG_DEBUG("exit_behaviour(0x%lx, %u)", (size_t)data, state);
+	data->active = INACTIVE;	 				// Unterverhalten deaktivieren
+	LOG_DEBUG("Verhalten %u wurde beendet", data->priority);
 	if (data->caller) {
 		data->caller->active = ACTIVE; 		// aufrufendes Verhalten aktivieren
 		data->caller->subResult = state;	// Status beim Aufrufer speichern
+		LOG_DEBUG("Caller %u wurde wieder aktiviert", data->caller->priority);
 	}
 	data->caller = NULL;	// Job erledigt, Verweis loeschen
 }
