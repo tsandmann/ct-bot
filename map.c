@@ -184,7 +184,7 @@ static mmc_container_t map_storage[MAP_SECTIONS * MAP_SECTIONS / 2];	/*!< Statis
 #define mmc_read_sector(block, buffer)		memcpy(&buffer, &(map_storage[block]), sizeof(mmc_container_t));
 #define mmc_write_sector(block, buffer)		memcpy(&(map_storage[block]), &buffer, sizeof(mmc_container_t));
 
-char * map_file = NULL;	/*!< Dateiname fuer Ex- / Import */
+char * map_file = "sim.map";	/*!< Dateiname fuer Ex- / Import */
 #endif	// PC
 
 static inline void delete(void);
