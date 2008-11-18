@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-11-18 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer bot_goto_dist(), rueckwaerts klappt wieder
+
 2008-11-03 Timo Sandmann [mail@timosandmann.de]: Verhalten koennen mit activateBehaviour() (oder switch_to_behaviour()) im Hintergrund ausgefuehrt werden (ging vorher auch schon, aber jetzt kann der behaviour-Code auch korrekt damit umgehen),
 												 Remote-Calls unterstuetzen Hintergrundausfuehrung von Verhalten,
 												 mehrere Positionsspeicher moeglich, anlegen mit pos_store_create() oder pos_store_new(). 
