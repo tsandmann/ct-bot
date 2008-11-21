@@ -118,7 +118,7 @@ void pos_store_release_all(void) {
 	uint8_t i;
 	for (i=0; i<SLOT_COUNT; i++) {
 		pos_stores[i].owner = NULL;
-		if (pos_stores[i].data != NULL) {
+		if (pos_stores[i].stat_data == 0 && pos_stores[i].data != NULL) {
 			free(pos_stores[i].data);
 			pos_stores[i].data = NULL;
 		}
