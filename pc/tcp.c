@@ -25,36 +25,43 @@
  */
 
 #include "ct-Bot.h"
+#include "log.h"
 
 #define USE_SEND_BUFFER				/*!< Schalter fuer Sendepuffer an/aus */
-#define TCP_SEND_BUFFER_SIZE 2048	/*!< Groesse des Sendepuffers */
+#define TCP_SEND_BUFFER_SIZE 4096	/*!< Groesse des Sendepuffers */
+
+//#define DEBUG_TCP	/*!< Schalter fuer Debug-Ausgaben */
+
+#ifndef DEBUG_TCP
+#undef LOG_AVAILABLE
+#undef LOG_DEBUG
+#define LOG_DEBUG(a, ...) {}	/*!< Log-Dummy */
+#endif
 
 #ifdef PC
-
 #ifndef WIN32
-	#define _REENTRANT		/*!< to grab thread-safe libraries */
-//	#define _POSIX_SOURCE	/*!< to get POSIX semantics */
+#define _REENTRANT		/*!< to grab thread-safe libraries */
+//#define _POSIX_SOURCE	/*!< to get POSIX semantics */
 #else
-//	#define WIN32
+//#define WIN32
 #endif
 
 /* Hack for LinuxThreads */
 #ifdef __linux__
-	#define _P __P
+#define _P __P
 #endif
 
 #include <pthread.h>
 
-
 #ifdef WIN32
-	#include <winsock.h>
+#include <winsock.h>
 #else
-	#include <arpa/inet.h>
-	#include <sys/socket.h>
-	#include <netinet/in.h>
-	#include <netdb.h>		// for gethostbyname()
-	#include <netinet/tcp.h>
-#endif
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>		// for gethostbyname()
+#include <netinet/tcp.h>
+#endif	// WIN32
 
 
 #include <stdio.h>      // for printf() and fprintf()
@@ -64,9 +71,8 @@
 
 #include "tcp.h"
 #include "display.h"
-#include "log.h"
 
-int tcp_sock=0;				/*!< Unser TCP-Socket */
+int tcp_sock = 0;			/*!< Unser TCP-Socket */
 char *tcp_hostname = NULL;	/*!< Hostname, auf dem ct-Sim laeuft */
 
 static uint8_t sendBuffer[TCP_SEND_BUFFER_SIZE];	/*!< Sendepuffer fuer ausgehende Packete */
@@ -75,7 +81,7 @@ static int sendBufferPtr = 0;						/*!< Index in den Sendepuffer */
 
 /*!
  * Oeffnet eine TCP-Verbindung zum Server
- * @param hostname	Symbolischer Name des Host, auf dem ct-Sim laeuft
+ * @param *hostname	Symbolischer Name des Host, auf dem ct-Sim laeuft
  * @return			Der Socket
  */
 int tcp_openConnection(const char * hostname) {
@@ -91,7 +97,7 @@ int tcp_openConnection(const char * hostname) {
 
 	// Create a stream socket for TCP
 	if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
-		printf("socket() failed");
+		printf("socket() failed\n");
 		exit(1);
 	}
 
@@ -138,10 +144,10 @@ void tcp_closeConnection(int sock) {
  * funktioniert darf _POSIX_SOURCE nicht definiert werden. Fuer Windows
  * wird dies in der Headerdatei tcp.h erledigt.
  * Getestet wurde dies bisher auf folgenden Systemen:
- *  - MacOSX (PPC, big endian, i386 little endian)
- *  - Linux (hppa, big endian, i386 little endian)
+ *  - MacOSX (PPC, big endian, i386 / x86-64 little endian)
+ *  - Linux (hppa, big endian, i386 / x86-64 little endian)
  *  - OpenBSD (i386, little endian)
- *  - Windows 2000 (i386, little endian mit dem MinGW)
+ *  - Windows 2000 - Vista (i386, little endian mit dem MinGW)
  * Sollten in command_t weitere Werte mit mehr bzw. weniger als 8 Bit
  * aufgenommen werden muss hier eine entsprechende Anpassung erfolgen.
  *
@@ -173,47 +179,47 @@ int tcp_send_cmd(command_t * cmd) {
  * Puffert Daten im Sendepuffer zwischen
  * @param *data		Zeiger auf die Daten
  * @param length	Anzahl der Bytes
- * @return 			-1 wenn kein Platz mehr im Puffer ist, 0 wenn alles ok ist
+ * @return 			Anzahl der kopierten Bytes, -1 wenn Puffer zu klein
  */
 static int copy2Buffer(void * data, int length) {
-	int i;
-	uint8_t * ptr = data;
-
 	if ((sendBufferPtr + length) > sizeof(sendBuffer)) {
-		LOG_ERROR("%s() %s:%u: sendBuffer filled with %u/%u Bytes, another %u bytes pending. Full! Aborting copy!",__FUNCTION__,__FILE__, __LINE__,sendBufferPtr,(unsigned int)sizeof(sendBuffer),length);
-
-		LOG_ERROR("  ==> Trying to recover by calling flushSendBuffer()");
+		LOG_DEBUG("Sendbuffer filled with %u/%u bytes, another %d bytes pending.", sendBufferPtr, (unsigned int)sizeof(sendBuffer), length);
+		LOG_DEBUG("  ==> Trying to recover by calling flushSendBuffer()...");
 		flushSendBuffer();
 		if ((sendBufferPtr + length) > sizeof(sendBuffer)) {
-			LOG_ERROR("  ==> Still not enough Space");
+			printf("ERROR - Not enough space in sendbuffer!\n");
+			LOG_DEBUG("  ==> Failed, Aborting");
 			return -1;
+		} else {
+			LOG_DEBUG("  ==> Succeeded, data copied");
 		}
 	}
-//	printf("Store %d bytes",length);
+//	printf("Store %d bytes", length);
 	// Auf dem PC kopieren wir nur alles in den Ausgangspuffer
-	for (i=0; i<length; i++) {
-		sendBuffer[sendBufferPtr++] = *ptr++;
-	}
-//	printf(" %d Bytes now in buffer\n",sendBufferPtr);
-	return 0;
+	memcpy(&sendBuffer[sendBufferPtr], data, length);
+	sendBufferPtr += length;
+//	printf(" %d bytes now in buffer\n", sendBufferPtr);
+	return length;
 }
 
 /*!
  * Uebertrage Daten per TCP/IP
  * @param *data		Zeiger auf die Daten
  * @param length	Anzahl der Bytes
- * @return 			0 wenn alles ok, -1 wenn puffer voll
+ * @return 			Anzahl der gesendeten Byte, -1 wenn Fehler
  */
 int tcp_write(void * data, int length) {
+	int bytes_sent;
 #ifdef USE_SEND_BUFFER
-	return copy2Buffer(data, length);
+	bytes_sent = copy2Buffer(data, length);
 #else
+	bytes_sent = length;
 	if (send(tcp_sock, data, length, 0) != length) {
-		printf("send() sent a different number of bytes than expected");
-		return -1;
+		printf("send() sent a different number of bytes than expected\n");
+		bytes_sent = -1;
 	}
-	return length;
-#endif
+#endif	// USE_SEND_BUFFER
+	return bytes_sent;
 }
 
 /*!
@@ -225,7 +231,7 @@ int tcp_write(void * data, int length) {
  */
 int tcp_read(void * data, int length) {
 	if (length == 0) return 0;	// NOP, aber auch kein Programmabbruch noetig
-	int bytesReceived=0;
+	int bytesReceived = 0;
 
 	if ((bytesReceived = recv(tcp_sock, data, length, 0)) <= 0) {
 		printf("recv() failed or connection closed prematurely\n");
@@ -251,7 +257,7 @@ void tcp_init(void) {
 		printf("Couldn't not find a usable WinSock DLL.\n");
 		exit(1);
 	}
-#endif
+#endif	// WIN32
 
 	if ((tcp_sock = tcp_openConnection(tcp_hostname)) != -1) {
 		printf("Connection to %s established on Port: %u\n", tcp_hostname, PORT);
@@ -267,19 +273,18 @@ void tcp_init(void) {
  * @return -1 bei Fehlern, sonst Anzahl der uebertragenen Bytes
  */
 int flushSendBuffer(void) {
+	int length = 0;
 #ifdef USE_SEND_BUFFER
-	//	printf("Flushing Buffer with %d bytes\n",sendBufferPtr);
+//	printf("Flushing Buffer with %d bytes\n",sendBufferPtr);
 
-	int length = sendBufferPtr;
+	length = sendBufferPtr;
 	sendBufferPtr = 0; // Puffer auf jedenfall leeren
 	if (send(tcp_sock, (char *)&sendBuffer, length, 0) != length) {
-		printf("send() sent a different number of bytes than expected");
-		return -1;
+		printf("send() sent a different number of bytes than expected\n");
+		length = -1;
 	}
+#endif	// USE_SEND_BUFFER
 	return length;
-#else
-	return 0;
-#endif
 }
 
 #endif	// PC

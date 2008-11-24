@@ -1,5 +1,9 @@
 CHANGELOG fuer c't-Bot
 ======================
+2008-11-20 Timo Sandmann [mail@timosandmann.de]: Anpassung RemoteCalls an neuere Compiler-Version, Ziffernmode fuer Keypad, kleinere Verbesserungen im TCP-Code
+
+2008-11-19 Frank Menzel [Menzelfr@gmx.net]:      Einbau der Pfadplanung und des Positionstyps in behaviour_drive_area
+
 2008-11-18 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer bot_goto_dist(), rueckwaerts klappt wieder
 
 2008-11-03 Timo Sandmann [mail@timosandmann.de]: Verhalten koennen mit activateBehaviour() (oder switch_to_behaviour()) im Hintergrund ausgefuehrt werden (ging vorher auch schon, aber jetzt kann der behaviour-Code auch korrekt damit umgehen),

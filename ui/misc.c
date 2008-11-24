@@ -74,7 +74,7 @@ void misc_display(void){
 			#ifdef PC
 				display_cursor(1,10);
 			#endif
-			display_printf("    ");	// clean
+			display_printf("          ");	// clean
 			new_address = 1;
 			RC5_Code = 0;
 		}

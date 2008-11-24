@@ -32,7 +32,7 @@
 
 #ifdef POS_STORE_AVAILABLE
 
-#define DEBUG_POS_STORE		// Schalter fuer Debug-Ausgaben
+//#define DEBUG_POS_STORE		// Schalter fuer Debug-Ausgaben
 
 #ifndef LOG_AVAILABLE
 	#undef DEBUG_POS_STORE

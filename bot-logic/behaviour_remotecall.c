@@ -249,6 +249,8 @@ static void remotecall_convert_params(uint8_t * dest, uint8_t count, uint8_t * l
 }
 
 #ifdef PC
+void bot_remotecall_fl_dummy(Behaviour_t * caller, ...) __attribute__((noinline));
+
 /*!
  * Dummy-Funktion, die nur dafuer sorgt, dass die Parameterdaten auch in den
  * Floating-Point Registern stehen (PPC)
@@ -294,17 +296,13 @@ void bot_remotecall_behaviour(Behaviour_t * data) {
 
 			LOG_DEBUG("function_id=%u", function_id);
 			LOG_DEBUG("parameter_count=%u", parameter_count);
-			#ifdef PC
-			bot_remotecall_fl_dummy(data, (*(remote_call_data_t*)parameter_data).fl32,
-				(*(remote_call_data_t*)(parameter_data+4)).fl32,
-				(*(remote_call_data_t*)(parameter_data+8)).fl32);
-			func(data, *(remote_call_data_t*)parameter_data,
-				*(remote_call_data_t*)(parameter_data+4),
-				*(remote_call_data_t*)(parameter_data+8));
-			#else	// MCU
-				func(data, *(remote_call_data_t*)(parameter_data+4),	// "rueckwaerts", denn kleinere Parameter-Nr liegen an hoereren Register-Nr.!
-					*(remote_call_data_t*)parameter_data);
-			#endif	// PC
+			remote_call_data_t * parameter = (remote_call_data_t *)parameter_data;
+#ifdef PC
+			bot_remotecall_fl_dummy(data, parameter[0].fl32, parameter[1].fl32, parameter[2].fl32);
+			func(data, parameter[0], parameter[1], parameter[2]);
+#else	// MCU
+			func(data, parameter[1], parameter[0]);	// "rueckwaerts", denn kleinere Parameter-Nr liegen an hoereren Register-Nr.!
+#endif	// PC
 			running_behaviour = REMOTE_CALL_RUNNING;
 			return;
 
