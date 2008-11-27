@@ -42,6 +42,8 @@
 #define MAP_UPDATE_STACK_SIZE	240	/*!< Groesse des Stacks, der das Map-Update ausfuehrt */
 #define MAP_UPDATE_CACHE_SIZE	26	/*!< Groesse des Map-Caches */
 
+#define MAP_2_SIM_BUFFER_SIZE	4	/*!< Anzahl der Bloecke, die gesammelt uebertragen werden */
+
 #define MAP_OBSTACLE_THRESHOLD	-20	/*!< Schwellwert, ab dem ein Feld als Hindernis gilt */
 
 #define MAP_RATIO_NONE	0		/*!< Rueckgabe von map_get_ratio(), falls kein Feld den Kriterien entspricht */

@@ -48,14 +48,11 @@
 #include "delay.h"
 #include "bot-2-bot.h"
 #include "eeprom.h"
+#include "tcp.h"
+#include "os_thread.h"
 
 #include <stdio.h>
 #include <string.h>
-
-#ifdef PC
-	#include "tcp.h"
-	#include <pthread.h>
-#endif
 
 #define COMMAND_TIMEOUT 	10		/*!< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
 
@@ -66,16 +63,19 @@ EEPROM uint8_t bot_address = CMD_BROADCAST;	/*!< Kommunikations-Adresse des Bots
 #define RCVBUFSIZE (sizeof(command_t)*2)   /*!< Groesse des Empfangspuffers */
 
 command_t received_command;	/*!< Puffer fuer Kommandos */
-static uint8 count=1;		/*!< Zaehler fuer Paket-Sequenznummer */
+static uint8_t count = 1;	/*!< Zaehler fuer Paket-Sequenznummer */
 
+#ifdef PC
+static pthread_mutex_t send_lock = PTHREAD_MUTEX_INITIALIZER;	/*!< Zur Synchronisation von Pufferzugriffen */
+#endif
 
 //#define DEBUG_COMMAND		//Schalter, um auf einmal alle Debugs an oder aus zu machen
 //#define DEBUG_COMMAND_NOISY	// nun wird es voll im Log, da jedes Command geschrioeben wird
 
 #ifndef DEBUG_COMMAND
-	#undef LOG_AVAILABLE
-	#undef LOG_DEBUG
-	#define LOG_DEBUG(a, ...) {}	/*!< Log-Dummy */
+#undef LOG_AVAILABLE
+#undef LOG_DEBUG
+#define LOG_DEBUG(a, ...) {}	/*!< Log-Dummy */
 #endif
 
 /*!
@@ -110,7 +110,7 @@ void command_init(void) {
  * Achtung, die Payload wird nicht mitgelesen!!!
  * @see low_read()
  */
-int8 command_read(void) {
+int8_t command_read(void) {
 	int8_t bytesRcvd;
 	int8_t start=0;			// Start des Kommandos
 	int8_t i;
@@ -230,7 +230,7 @@ int8 command_read(void) {
 }
 
 /*!
- * Uebertraegt ein Kommando und wartet nicht auf eine Antwort
+ * Uebertraegt ein Kommando und wartet nicht auf eine Antwort. Interne Version, nicht threadsicher!
  * @param command		Kennung zum Command
  * @param subcommand	Kennung des Subcommand
  * @param to			Adresse des Empfaengers
@@ -238,29 +238,31 @@ int8 command_read(void) {
  * @param data_r 		Daten fuer den rechten Kanal
  * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
-void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t * data_l, int16_t * data_r, uint8_t payload) {
+static void command_write_to_internal(uint8_t command, uint8_t subcommand, uint8_t to, int16_t * data_l, int16_t * data_r, uint8_t payload) {
 	command_t cmd;
 
-	cmd.startCode=CMD_STARTCODE;
-	cmd.request.direction=DIR_REQUEST;		// Anfrage
-	cmd.request.command= command;
-	cmd.request.subcommand= subcommand;
+	cmd.startCode = CMD_STARTCODE;
+	cmd.request.direction = DIR_REQUEST; // Anfrage
+	cmd.request.command = command;
+	cmd.request.subcommand = subcommand;
 	cmd.from = get_bot_address();
 	cmd.to = to;
 
-	cmd.payload=payload;
-	if (data_l != NULL)
+	cmd.payload = payload;
+	if (data_l != NULL) {
 		cmd.data_l = *data_l;
-	else
+	} else {
 		cmd.data_l = 0;
+	}
 
-	if (data_r != NULL)
+	if (data_r != NULL) {
     	cmd.data_r = *data_r;
-    else
+	} else {
 		cmd.data_r = 0;
+	}
 
-	cmd.seq=count++;
-	cmd.CRC=CMD_STOPCODE;
+	cmd.seq = count++;
+	cmd.CRC = CMD_STOPCODE;
 
 	low_write(&cmd);
 
@@ -277,7 +279,31 @@ void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t *
 				cmd.from,
 				cmd.to,
 				cmd.CRC);
-*/
+	 */
+}
+
+/*!
+ * Uebertraegt ein Kommando und wartet nicht auf eine Antwort
+ * @param command		Kennung zum Command
+ * @param subcommand	Kennung des Subcommand
+ * @param to			Adresse des Empfaengers
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r 		Daten fuer den rechten Kanal
+ * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
+ */
+void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t * data_l, int16_t * data_r, uint8_t payload) {
+//TODO:	Allgemeine Loesung fuer PC und MCU
+#ifdef PC
+   	pthread_mutex_lock(&send_lock);
+#else
+   	os_enterCS();
+#endif
+	command_write_to_internal(command, subcommand, to, data_l, data_r, payload);
+#ifdef PC
+	pthread_mutex_unlock(&send_lock);
+#else
+ 	os_exitCS();
+#endif
 }
 
 /*!
@@ -289,35 +315,60 @@ void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t *
  * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
 void command_write(uint8_t command, uint8_t subcommand, int16_t * data_l, int16_t * data_r, uint8_t payload) {
-	command_write_to(command, subcommand, CMD_SIM_ADDR, data_l, data_r, payload);
+//TODO:	Allgemeine Loesung fuer PC und MCU
+#ifdef PC
+   	pthread_mutex_lock(&send_lock);
+#else
+   	os_enterCS();
+#endif
+	command_write_to_internal(command, subcommand, CMD_SIM_ADDR, data_l, data_r, payload);
+#ifdef PC
+	if (command == CMD_DONE) {
+		flushSendBuffer();	// Flushen hier, bevor das Mutex freigegeben wird!
+	}
+	pthread_mutex_unlock(&send_lock);
+#else
+	os_exitCS();
+#endif
 }
 
 /*!
  * Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort
- * @param command Kennung zum Command
- * @param subcommand Kennung des Subcommand
- * @param data_l Daten fuer den linken Kanal
- * @param data_r Daten fuer den rechten Kanal
- * @param payload Anzahl der Bytes im Anhang
- * @param data Datenanhang an das eigentliche Command
+ * @param command 		Kennung zum Command
+ * @param subcommand	Kennung des Subcommand
+ * @param *data_l 		Daten fuer den linken Kanal
+ * @param *data_r		Daten fuer den rechten Kanal
+ * @param payload 		Anzahl der Bytes im Anhang
+ * @param *data 		Datenanhang an das eigentliche Command
  */
-void command_write_rawdata(uint8 command, uint8 subcommand, int16* data_l, int16* data_r, uint8 payload, uint8* data){
-	command_write(command, subcommand, data_l, data_r,payload);
+void command_write_rawdata(uint8_t command, uint8_t subcommand, int16_t * data_l, int16_t * data_r, uint8_t payload, uint8_t * data) {
+//TODO:	Allgemeine Loesung fuer PC und MCU
+#ifdef PC
+	pthread_mutex_lock(&send_lock);
+#else
+	os_enterCS();
+#endif
+	command_write_to_internal(command, subcommand, CMD_SIM_ADDR, data_l, data_r, payload);
     low_write_data(data, payload);
+#ifdef PC
+	pthread_mutex_unlock(&send_lock);
+#else
+	os_exitCS();
+#endif
 }
 
 
 /*!
  * Gibt dem Simulator Daten mit String-Anhang und wartet nicht auf Antwort
- * @param command Kennung zum Command
- * @param subcommand Kennung des Subcommand
- * @param data_l Daten fuer den linken Kanal
- * @param data_r Daten fuer den rechten Kanal
- * @param data Datenanhang an das eigentliche Command
+ * @param command		Kennung zum Command
+ * @param subcommand	Kennung des Subcommand
+ * @param *data_l		Daten fuer den linken Kanal
+ * @param *data_r		Daten fuer den rechten Kanal
+ * @param *data			Datenanhang an das eigentliche Command
  */
-void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* data_r, const char* data){
+void command_write_data(uint8_t command, uint8_t subcommand, int16_t * data_l, int16_t * data_r, const char * data) {
     size_t len;
-	uint8 payload;
+	uint8_t payload;
 
     if (data != NULL) {
         len = strlen(data);
@@ -330,36 +381,46 @@ void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* d
         payload = 0;
     }
 
-	command_write(command, subcommand, data_l, data_r,payload);
-    low_write_data((uint8 *)data, payload);
+//TODO:	Allgemeine Loesung fuer PC und MCU
+#ifdef PC
+   	pthread_mutex_lock(&send_lock);
+#else
+  	os_enterCS();
+#endif
+	command_write_to_internal(command, subcommand, CMD_SIM_ADDR, data_l, data_r, payload);
+    low_write_data((uint8_t *)data, payload);
+#ifdef PC
+	pthread_mutex_unlock(&send_lock);
+#else
+	os_exitCS();
+#endif
 }
 
 #ifdef MAUS_AVAILABLE
-	/*!
-	 * Uebertraegt ein Bild vom Maussensor an den PC
-	 */
-	void transmit_mouse_picture(void){
-		int16 dummy,i;
+/*!
+ * Uebertraegt ein Bild vom Maussensor an den PC
+ */
+void transmit_mouse_picture(void) {
+	int16_t dummy;
+	int16_t pixel;
+	uint8_t data, i;
+	maus_image_prepare();
 
-		int16 pixel;
-		uint8 data;
-		maus_image_prepare();
-
-		for (i=0; i<6; i++) {
-			dummy= i*54 +1;
-			command_write(CMD_SENS_MOUSE_PICTURE, SUB_CMD_NORM,  &dummy , &dummy,54);
-			for (pixel=0; pixel <54; pixel++){
-				data= maus_image_read();
-				low_write_data((uint8 *)&data,1);
-				#ifdef MCU
-					#if BAUDRATE > 17777	// Grenzwert: 8 Bit / 450 us = 17778 Baud
-//						_delay_loop_2(1800);	// warten, weil Sendezeit < Maussensordelay (450 us)
-						_delay_loop_2(3600);	// warten, weil Sendezeit < Maussensordelay (450 us)
-					#endif
-				#endif
-			}
+	for (i=0; i<6; i++) {
+		dummy = i * 54 + 1;
+		command_write(CMD_SENS_MOUSE_PICTURE, SUB_CMD_NORM, &dummy, &dummy, 54);
+		for (pixel=0; pixel<54; pixel++) {
+			data = maus_image_read();
+			low_write_data((uint8_t *)&data, 1);
+#ifdef MCU
+#if BAUDRATE > 17777	// Grenzwert: 8 Bit / 450 us = 17778 Baud
+//			_delay_loop_2(1800);	// warten, weil Sendezeit < Maussensordelay (450 us)
+			_delay_loop_2(3600);	// warten, weil Sendezeit < Maussensordelay (450 us)
+#endif
+#endif	// MCU
 		}
 	}
+}
 #endif	// MAUS_AVAILABLE
 
 /*!
@@ -367,8 +428,8 @@ void command_write_data(uint8 command, uint8 subcommand, int16* data_l, int16* d
  * return 1, wenn Kommando schon bearbeitet wurde, 0 sonst
  */
 int8_t command_evaluate(void) {
-	static uint16 RC5_Last_Toggle = 0xffff;
-	uint8 analyzed = 1;
+	static uint16_t RC5_Last_Toggle = 0xffff;
+	uint8_t analyzed = 1;
 
 	#ifdef LOG_AVAILABLE
 		if (received_command.from != SIM_ID)

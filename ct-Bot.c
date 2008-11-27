@@ -295,8 +295,8 @@ int main(int argc, char * argv[]) {
 			#ifdef DISPLAY_AVAILABLE
 				gui_display(display_screen);
 			#endif
-			command_write(CMD_DONE, SUB_CMD_NORM ,(int16*)&simultime,0,0);
-			flushSendBuffer();
+			command_write(CMD_DONE, SUB_CMD_NORM, (int16_t *)&simultime, 0, 0);
+//			flushSendBuffer();	// macht im Moment command_write(CMD_DONE, ...) bevor das Mutex freigegeben wird!
 			/* Zum Debuggen der Zeiten: */
 			#ifdef DEBUG_TIMES
 				GETTIMEOFDAY(&stop, NULL);

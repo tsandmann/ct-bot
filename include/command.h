@@ -34,16 +34,16 @@
 #define MAX_PAYLOAD 255  /*!< Max. Anzahl Bytes, die an ein Command angehaengt werden */
 
 #ifdef PC
-	#define low_read tcp_read 	/*!< Which function to use to read data */
-	#define low_write tcp_send_cmd /*!< Which function to use to write data */
-	#define low_write_data tcp_write /*!< Which function to use to write data */
-#endif
+#define low_read tcp_read			/*!< Which function to use to read data */
+#define low_write tcp_send_cmd		/*!< Which function to use to write data */
+#define low_write_data tcp_write	/*!< Which function to use to write data */
+#endif	// PC
 
 #ifdef MCU
-	#define low_read uart_read 	/*!< Which function to use to read data */
-	#define low_write uart_send_cmd /*!< Which function to use to write data */
-	#define low_write_data uart_write /*!< Which function to use to write data */
-#endif
+#define low_read uart_read 			/*!< Which function to use to read data */
+#define low_write uart_send_cmd		/*!< Which function to use to write data */
+#define low_write_data uart_write	/*!< Which function to use to write data */
+#endif	// MCU
 
 
 /*! Request Teil eines Kommandos */
@@ -58,11 +58,8 @@ typedef struct {
 	uint8 subcommand:7;	/*!< subcommand */
 	uint8 direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
 #endif
-#ifndef DOXYGEN
-	} __attribute__ ((packed)) request_t; // Keine Luecken in der Struktur lassen
-#else
-	} request_t; // Keine Luecken in der Struktur lassen
-#endif
+} __attribute__ ((packed)) request_t; // Keine Luecken in der Struktur lassen
+
 
 /*! Kommando */
 typedef struct {
@@ -75,11 +72,7 @@ typedef struct {
 	uint8 from;			/*!< Absender-Adresse */
 	uint8 to;			/*!< Empfaenger-Adresse */
 	uint8 CRC;			/*!< Markiert das Ende des Commands*/
-#ifndef DOXYGEN
-	} __attribute__ ((packed)) command_t;// Keine Luecken in der Struktur lassen
-#else
-	} command_t;
-#endif
+} __attribute__ ((packed)) command_t; // Keine Luecken in der Struktur lassen
 
 #define CMD_STARTCODE	'>'		/*!< Anfang eines Kommandos*/
 #define CMD_STOPCODE	'<'		/*!< Ende eines Kommandos*/
@@ -126,24 +119,31 @@ typedef struct {
 // Log-Ausgaben
 #define CMD_LOG			'O'		/*!< Logausgaben */
 
-//Kommandos fuer die Verbindung zum c't-Sim
+// Kommandos fuer die Verbindung zum c't-Sim
 #define CMD_WELCOME		 'W'	/*!< Kommando zum Anmelden an c't-Sim */
 #define SUB_WELCOME_REAL 'R'	/*!< Subkommando zum Anmelden eines realen Bots an c't-Sim */
 #define SUB_WELCOME_SIM	 'S'	/*!< Subkommando zum Anmelden eines simulierten Bots an c't-Sim */
 #define SUB_WELCOME_BOTS 'B'	/*!< Subkommando zu bekanntmachen der eigenen ID bei anderen Bots */
 
-//Kommandos fuer die Remote-Calls
+// Kommandos fuer die Remote-Calls
 #define CMD_REMOTE_CALL			'r'		/*!< Kommado fuer Remote-Calls */
 #define SUB_REMOTE_CALL_LIST	'L'		/*!< Anforderung an den Bot alle verfuegbaren Kommandos zu listen */
-#define SUB_REMOTE_CALL_ENTRY	'E'		/*!< Hiermit leifert der Bot ein erfuegbares Kommandos an den PC */
-#define SUB_REMOTE_CALL_ORDER	'O'		/*!< Hiermit gibt der PC einen Remote-call in Auftrag */
-#define SUB_REMOTE_CALL_DONE	'D'		/*!< Hiermit signalisiert der MCU dem PC die beendigung des Auftrags. Ergebins steht in DataL 0=FAIL 1=SUCCESS */
-#define SUB_REMOTE_CALL_ABORT	'A'		/*!< Hiermit signalisiert der PC dem MCU die berarbeitung des laufenden remote-calls zu beenden */
+#define SUB_REMOTE_CALL_ENTRY	'E'		/*!< Hiermit liefert der Bot ein erfuegbares Kommandos an den PC */
+#define SUB_REMOTE_CALL_ORDER	'O'		/*!< Hiermit gibt der PC einen Remote-Call in Auftrag */
+#define SUB_REMOTE_CALL_DONE	'D'		/*!< Hiermit signalisiert der MCU dem PC die Beendigung des Auftrags. Ergebins steht in DataL 0=FAIL 1=SUCCESS */
+#define SUB_REMOTE_CALL_ABORT	'A'		/*!< Hiermit signalisiert der PC dem MCU die Berarbeitung des laufenden Remote-Calls zu beenden */
 
+// Kommandos fuer Map
+#define CMD_MAP			'Q'	/*!< Kommando fuer Map */
+#define SUB_MAP_DATA_1	'D'	/*!< Daten eines Map-Blocks (bzw. die ersten 128 Byte davon, es sind also 4 Kommandos noetig fuer einen kompletten Block) */
+#define SUB_MAP_DATA_2	'E'	/*!< Map-Daten Teil 2 */
+#define SUB_MAP_DATA_3	'F'	/*!< Map-Daten Teil 3 */
+#define SUB_MAP_DATA_4	'G'	/*!< Map-Daten Teil 4 */
+#define SUB_MAP_FLUSH	'U'	/*!< Aufforderung alle ausstehenden Updates zu uebertragen */
 
 
 #define DIR_REQUEST	0			/*!< Richtung fuer Anfragen */
-#define DIR_ANSWER		1			/*!< Richtung fuer Antworten */
+#define DIR_ANSWER	1			/*!< Richtung fuer Antworten */
 
 #define CMD_BROADCAST	0xFF
 #define CMD_SIM_ADDR	0xFE

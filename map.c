@@ -43,13 +43,14 @@
 #include "fifo.h"
 #include "os_thread.h"
 #include "math_utils.h"
+#include "command.h"
 
 #ifdef MAP_AVAILABLE
 
 #ifndef MMC_AVAILABLE
-  #ifdef MCU
-  	#error Map geht auf dem MCU nicht ohne MMC
-  #endif
+#ifdef MCU
+#error "Map geht auf dem MCU nicht ohne MMC"
+#endif
 #endif
 
 
@@ -62,6 +63,8 @@
 #ifdef MCU
 	// Soll auch der echte Bot Infos ausgeben, kommentiert man die folgende Zeile aus
 	#undef MAP_INFO_AVAILABLE	// spart Flash
+//TODO:	Map-2-Sim fuer MCU optimieren / anpassen
+	#undef MAP_2_SIM_AVAILABLE	// Map-2-Sim (noch) nicht fuer MCU ausgelegt
 #endif
 
 #ifndef LOG_AVAILABLE
@@ -173,6 +176,11 @@ static struct {
 
 static uint8_t init_state = 0;	/*!< Status der Initialisierung (1, falls init OK) */
 
+#ifdef MAP_2_SIM_AVAILABLE
+static uint16_t send_buffer[MAP_2_SIM_BUFFER_SIZE];	/*!< Puffer fuer zu sendende Map-Bloecke */
+#warning "Map-2-Sim ist experimentiell!"
+#endif
+
 #ifdef PC
 typedef struct {
 	map_section_t sections[2];
@@ -266,6 +274,36 @@ void map_flush_cache(void) {
 }
 
 /*!
+ * Konvertiert eine Weltkoordinate in eine Kartenkoordinate
+ * @param koord	Weltkoordiante
+ * @return		Kartenkoordinate
+ */
+static uint16_t world_to_map(int16_t koord) {
+#if (1000 / MAP_RESOLUTION) * MAP_RESOLUTION != 1000
+	#warning "MAP_RESOLUTION ist kein Teiler von 1000, Code in world_to_map() anpassen!"
+#endif
+#if defined MCU && MAP_RESOLUTION == 125
+	asm volatile(
+		"lsr %B0				\n\t"
+		"ror %A0				\n\t"
+		"lsr %B0				\n\t"
+		"ror %A0				\n\t"
+		"lsr %B0				\n\t"
+		"ror %A0				\n\t"
+		"sbrc %B0,4				\n\t"
+		"ori %B0,224			\n\t"
+		"subi %A0,lo8(-(768))	\n\t"
+		"sbci %B0,hi8(-(768))		"
+		:	"+d" (koord)
+	);
+	return koord;
+#else
+	uint32_t tmp = koord + (uint16_t)(MAP_SIZE * MAP_RESOLUTION * 4);
+	return tmp / (1000 / MAP_RESOLUTION);
+#endif
+}
+
+/*!
  * liefert einen Zeiger auf die Section zurueck, in der der Punkt liegt.
  * Auf dem MCU kuemmert sie sich darum, die entsprechende Karte aus der MMC-Karte zu laden
  * @param x	X-Ordinate der Karte (nicht der Welt!!!)
@@ -285,7 +323,7 @@ static map_section_t * get_section(uint16_t x, uint16_t y) {
 
 	/* Sicherheitscheck 2 */
 	if ((x >= (uint16_t)(MAP_SIZE * MAP_RESOLUTION)) || (y >= (uint16_t)(MAP_SIZE * MAP_RESOLUTION))) {
-		LOG_DEBUG("Versuch auf ein Feld ausserhalb der Karte zu zugreifen!! x=%u y=%u", x, y);
+		LOG_ERROR("Versuch auf ein Feld ausserhalb der Karte zu zugreifen!! x=%u y=%u", x, y);
 		return map[0];
 	}
 
@@ -346,6 +384,51 @@ static map_section_t * get_section(uint16_t x, uint16_t y) {
 		uint16_t start_ticks = TIMER_GET_TICKCOUNT_16;
 #endif
 		mmc_write_sector(mmc_block, map_buffer);
+
+#ifdef MAP_2_SIM_AVAILABLE
+//#define DEBUG_MAP_2_SIM
+
+#ifdef DEBUG_MAP_2_SIM
+		static uint32_t last_sent = 0;
+		if (last_sent == 0) {
+			last_sent = TIMER_GET_TICKCOUNT_32;
+		}
+#endif
+		uint8_t i;
+		for (i=0; i<MAP_2_SIM_BUFFER_SIZE; i++) {
+			if (send_buffer[i] == map_current_block.block) {
+				break;
+			} else {
+				if (send_buffer[i] == 0) {
+					send_buffer[i] = map_current_block.block;
+					break;
+				}
+			}
+		}
+		if (i == MAP_2_SIM_BUFFER_SIZE) {
+#ifdef DEBUG_MAP_2_SIM
+			LOG_INFO("Uebertrage Puffer aus %u Bloecken", MAP_2_SIM_BUFFER_SIZE);
+			LOG_INFO("letzte Uebertragung war vor %u ms", TIMER_GET_TICKCOUNT_32 - last_sent);
+			last_sent = TIMER_GET_TICKCOUNT_32;
+#endif
+
+//TODO:	Die Position stimmt so nicht, weil das Map-Update verzoegert ausgefuehrt wird
+			/* Bot-Position berechnen */
+			uint16_t x_in_map = world_to_map(x_pos);
+			uint16_t y_in_map = world_to_map(y_pos);
+
+			for (i=0; i<MAP_2_SIM_BUFFER_SIZE; i++) {
+				mmc_read_sector(map_start_block + send_buffer[i], map_buffer);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, (int16_t *)&send_buffer[i], (int16_t *)&x_in_map, 128, map_buffer);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, (int16_t *)&send_buffer[i], (int16_t *)&y_in_map, 128, &map_buffer[128]);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, (int16_t *)&send_buffer[i], NULL, 128, &map_buffer[256]);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_4, (int16_t *)&send_buffer[i], NULL, 128, &map_buffer[384]);
+			}
+
+			memset(send_buffer, 0, MAP_2_SIM_BUFFER_SIZE * sizeof(uint16_t));
+		}
+#endif	// MAP_2_SIM_AVAILABLE
+
 #ifdef DEBUG_MAP_TIMES
 		uint16_t end_ticks = TIMER_GET_TICKCOUNT_16;
 		LOG_INFO("swapout took %u ms", (end_ticks-start_ticks)*176/1000);
@@ -373,36 +456,6 @@ static map_section_t * get_section(uint16_t x, uint16_t y) {
 #endif
 
 	return map[index];
-}
-
-/*!
- * Konvertiert eine Weltkoordinate in eine Kartenkoordinate
- * @param koord	Weltkoordiante
- * @return		Kartenkoordinate
- */
-static uint16_t world_to_map(int16_t koord) {
-#if (1000 / MAP_RESOLUTION) * MAP_RESOLUTION != 1000
-	#warning "MAP_RESOLUTION ist kein Teiler von 1000, Code in world_to_map() anpassen!"
-#endif
-#if defined MCU && MAP_RESOLUTION == 125
-	asm volatile(
-		"lsr %B0				\n\t"
-		"ror %A0				\n\t"
-		"lsr %B0				\n\t"
-		"ror %A0				\n\t"
-		"lsr %B0				\n\t"
-		"ror %A0				\n\t"
-		"sbrc %B0,4				\n\t"
-		"ori %B0,224			\n\t"
-		"subi %A0,lo8(-(768))	\n\t"
-		"sbci %B0,hi8(-(768))		"
-		:	"+d" (koord)
-	);
-	return koord;
-#else
-	uint32_t tmp = koord + (uint16_t)(MAP_SIZE * MAP_RESOLUTION * 4);
-	return tmp / (1000 / MAP_RESOLUTION);
-#endif
 }
 
 /*!
