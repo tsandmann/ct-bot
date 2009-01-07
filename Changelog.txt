@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-01-07 Timo Sandmann [mail@timosandmann.de]: ADC-Code optimiert
+
 2008-11-21 Timo Sandmann [mail@timosandmann.de]: Bot sendet Map-Updates an den Sim, wenn MAP_2_SIM_AVAILABLE eingeschaltet ist. Der entscheidende Parameter ist MAP_2_SIM_BUFFER_SIZE in include/map.h
 
 2008-11-20 Timo Sandmann [mail@timosandmann.de]: Anpassung RemoteCalls an neuere Compiler-Version, Ziffernmode fuer Keypad, kleinere Verbesserungen im TCP-Code
