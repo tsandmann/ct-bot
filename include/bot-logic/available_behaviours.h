@@ -57,7 +57,7 @@
 
 //#define BEHAVIOUR_DRIVE_AREA_AVAILABLE /*!< flaechendeckendes Fahren mit Map */
 
-#define BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE /*!< Linienfolger ueber Kreuzungen zum Ziel */
+//#define BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE /*!< Linienfolger ueber Kreuzungen zum Ziel */
 
 /* Aufgrund einer ganzen reihe von Abhaengigkeiten sollte man beim Versuch Speicher
  * zu sparen, zuerst mal bei den Hauptverhalten ausmisten, sonst kommen die
