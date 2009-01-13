@@ -739,7 +739,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 		border_fired = False; //Abgrundvar init.
 
 		//etwas hier verbleiben, damit Observer sicher gestoppt sind
-		if (!timer_ms_passed(&lastCheckTime, CORRECTION_DELAY + 300))
+		if (!timer_ms_passed_32(&lastCheckTime, CORRECTION_DELAY + 300))
 			break;
 
 		// der naechste Weg liegt immer auf dem Stack und von dort holen
@@ -894,7 +894,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 		//entfernte Strecke, die ehemals eine Wegalternative war
 
 		//etwas hier verbleiben, damit Observer sicher gestoppt sind
-		if (!timer_ms_passed(&lastCheckTime, CORRECTION_DELAY + 300)) {
+		if (!timer_ms_passed_32(&lastCheckTime, CORRECTION_DELAY + 300)) {
 			break;
 		}
 

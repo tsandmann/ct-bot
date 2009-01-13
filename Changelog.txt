@@ -1,5 +1,10 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-01-13 Frank Menzel [Menzelfr@gmx.net]: Neues Verhalten bot_line_shortest_way und hierfuer neuer Linienfolger; Linienfolger mit Versionen auswaehlbar
+
+2009-01-13 Timo Sandmann [mail@timosandmann.de]: Wichtiger Bugfix fuer timer_ms_passed(): Es gibt jetzt je nach gewuenschter Aufloesung timer_ms_passed_8(), timer_ms_passed_16() und timer_ms_passed_32(), siehe include/timer.h
+												 Optimierungen im Timer-Code
+
 2009-01-07 Timo Sandmann [mail@timosandmann.de]: ADC-Code optimiert
 
 2008-11-21 Timo Sandmann [mail@timosandmann.de]: Bot sendet Map-Updates an den Sim, wenn MAP_2_SIM_AVAILABLE eingeschaltet ist. Der entscheidende Parameter ist MAP_2_SIM_BUFFER_SIZE in include/map.h

@@ -34,13 +34,13 @@
 
 /*!
  * Makro zur Umrechnung von Ticks in ms
- * (ms / ticks evtl. nach uint32 casten, fuer grosse Werte)
+ * (ms / ticks evtl. nach uint32_t casten, fuer grosse Werte)
  */
 #define TICKS_TO_MS(ticks)	((ticks)*(TIMER_STEPS/8)/(1000/8))
 
 /*!
  * Makro zur Umrechnung von ms in Ticks
- * (ms / ticks evtl. nach uint32 casten, fuer grosse Werte)
+ * (ms / ticks evtl. nach uint32_t casten, fuer grosse Werte)
  */
 #define MS_TO_TICKS(ms)		((ms)*(1000/8)/(TIMER_STEPS/8))
 
@@ -49,20 +49,20 @@
  * Diese Funktion liefert den Millisekundenanteil der Systemzeit zurueck.
  * @return Millisekunden der Systemzeit
  */
-uint16 timer_get_ms(void);
+uint16_t timer_get_ms(void);
 
 /*!
  * Diese Funktion liefert den Sekundenanteil der Systemzeit zurueck.
  * @return Sekunden der Systemzeit
  */
-uint16 timer_get_s(void);
+uint16_t timer_get_s(void);
 
 /*!
  * Liefert die Millisekunden zurueck, die seit old_s, old_ms verstrichen sind
  * @param old_s		alter Sekundenstand
  * @param old_ms	alter Millisekundenstand
  */
-uint16 timer_get_ms_since(uint16 old_s, uint16 old_ms);
+uint16_t timer_get_ms_since(uint16_t old_s, uint16_t old_ms);
 #endif // TIME_AVAILABLE
 
 #ifdef PC
@@ -86,19 +86,22 @@ uint16_t timer_get_tickCount16(void);
  */
 uint32_t timer_get_tickCount32(void);
 
-#define TIMER_GET_TICKCOUNT_8  (uint8)timer_get_tickCount16()	/*!< Zeit in 8 Bit */
+#define TIMER_GET_TICKCOUNT_8  (uint8_t)timer_get_tickCount16()	/*!< Zeit in 8 Bit */
 #define TIMER_GET_TICKCOUNT_16 timer_get_tickCount16()			/*!< Zeit in 16 Bit */
 #define TIMER_GET_TICKCOUNT_32 timer_get_tickCount32()			/*!< Zeit in 32 Bit */
+
 #else	// MCU
+
 /*! Union fuer TickCount in 8, 16 und 32 Bit */
 typedef union {
-	uint32 u32;		/*!< 32 Bit Integer */
-	uint16 u16;		/*!< 16 Bit Integer */
-	uint8 u8;		/*!< 8 Bit Integer */
+	uint32_t u32;	/*!< 32 Bit Integer */
+	uint16_t u16;	/*!< 16 Bit Integer */
+	uint8_t u8;		/*!< 8 Bit Integer */
 } tickCount_t;
+
 extern volatile tickCount_t tickCount;			/*!< ein Tick alle 176 us */
 
-/*
+/*!
  * Setzt die Systemzeit zurueck auf 0
  */
 static inline void timer_reset(void) {
@@ -112,18 +115,15 @@ static inline void timer_reset(void) {
 
 // Die Werte fuer TIMER_X_CLOCK sind Angaben in Hz
 
-/*!
- * Frequenz von Timer 2 in Hz
- */
-#define TIMER_2_CLOCK	5619	// Derzeit genutzt fuer RC5-Dekodierung
+/*! Frequenz von Timer 2 in Hz */
+#define TIMER_2_CLOCK 5619	// Derzeit genutzt fuer RC5-Dekodierung
 
-/*!
- * Mikrosekunden, die zwischen zwei Timer-Aufrufen liegen
- */
+/*! Mikrosekunden, die zwischen zwei Timer-Aufrufen liegen */
 #define TIMER_STEPS 176
 
 /*!
- * @brief				Prueft, ob seit dem letzten Aufruf mindestens ms Millisekunden vergangen sind
+ * Prueft, ob seit dem letzten Aufruf mindestens ms Millisekunden vergangen sind.
+ * 32-Bit Version, fuer Code, der (teilweise) seltener als alle 11 s aufgerufen wird.
  * @param old_ticks		Zeiger auf eine Variable, die einen Timestamp speichern kann
  * @param ms			Zeit in ms, die vergangen sein muss, damit True geliefert wird
  * @return				True oder False
@@ -131,45 +131,65 @@ static inline void timer_reset(void) {
  * Die Funktion aktualisiert den Timestamp, der die alte Zeit zum Vergleich speichert, automatisch,
  * falls ms Millisekunden vergangen sind.
  * Man verwendet sie z.B. wie folgt:
- * static uint32 old_time;
+ * static uint32_t old_time;
  * ...
  * if (timer_ms_passed(&old_time, 50)) {
  * 		// wird alle 50 ms ausgefuehrt //
  * }
  */
-#ifndef DOXYGEN
-	static inline uint8_t __attribute__((always_inline)) timer_ms_passed(void * old_ticks, uint32_t ms) {
-#else
-	static inline uint8_t timer_ms_passed(void* old_ticks, uint32_t ms) {
-#endif
-
-	/* 8 Bit Version */
-	if (MS_TO_TICKS(ms) < UINT8_MAX) {
-		register uint8_t ticks = TIMER_GET_TICKCOUNT_8;
-		if ((uint8_t)(ticks - *(uint8_t *)old_ticks) > MS_TO_TICKS(ms)) {
-			*(uint8_t *)old_ticks = ticks;
-			return True;
-		}
-		return False;
-
-	/* 16 Bit Version */
-	} else if (MS_TO_TICKS(ms) < UINT16_MAX) {
-		register uint16_t ticks = TIMER_GET_TICKCOUNT_16;
-		if ((uint16_t)(ticks - *(uint16_t *)old_ticks) > MS_TO_TICKS(ms)) {
-			*(uint16_t *)old_ticks = ticks;
-			return True;
-		}
-		return False;
-
-	/* 32 Bit Version */
-	} else {
-		register uint32_t ticks = TIMER_GET_TICKCOUNT_32;
-		if ((uint32_t)(ticks - *(uint32_t *)old_ticks) > MS_TO_TICKS(ms)) {
-			*(uint32_t *)old_ticks = ticks;
-			return True;
-		}
-		return False;
+static inline uint8_t __attribute__((always_inline)) timer_ms_passed_32(uint32_t * old_ticks, uint32_t ms) {
+	uint32_t ticks = TIMER_GET_TICKCOUNT_32;
+	if ((uint32_t)(ticks - *old_ticks) > MS_TO_TICKS(ms)) {
+		*old_ticks = ticks;
+		return True;
 	}
+	return False;
+}
+
+/*!
+ * Prueft, ob seit dem letzten Aufruf mindestens ms Millisekunden vergangen sind.
+ * Siehe auch timer_ms_passed_32()
+ * 16-Bit Version, fuer Code, der alle 11 s oder oefter ausgefuehrt werden soll.
+ * @param old_ticks		Zeiger auf eine Variable, die einen Timestamp speichern kann
+ * @param ms			Zeit in ms, die vergangen sein muss, damit True geliefert wird
+ * @return				True oder False
+ */
+static inline uint8_t __attribute__((always_inline)) timer_ms_passed_16(uint16_t * old_ticks, uint32_t ms) {
+	uint16_t ticks = TIMER_GET_TICKCOUNT_16;
+	if ((uint16_t)(ticks - *old_ticks) > MS_TO_TICKS(ms)) {
+		*old_ticks = ticks;
+		return True;
+	}
+	return False;
+}
+
+/*!
+ * Prueft, ob seit dem letzten Aufruf mindestens ms Millisekunden vergangen sind.
+ * Siehe auch timer_ms_passed_32()
+ * 8-Bit Version, fuer Code, der alle 40 ms oder oefter ausgefuehrt werden soll.
+ * @param old_ticks		Zeiger auf eine Variable, die einen Timestamp speichern kann
+ * @param ms			Zeit in ms, die vergangen sein muss, damit True geliefert wird
+ * @return				True oder False
+ */
+static inline uint8_t __attribute__((always_inline)) timer_ms_passed_8(uint8_t * old_ticks, uint16_t ms) {
+	uint8_t ticks = TIMER_GET_TICKCOUNT_8;
+	if ((uint8_t)(ticks - *old_ticks) > MS_TO_TICKS(ms)) {
+		*old_ticks = ticks;
+		return True;
+	}
+	return False;
+}
+
+/*!
+ * Prueft, ob seit dem letzten Aufruf mindestens ms Millisekunden vergangen sind.
+ * Siehe auch timer_ms_passed_32()
+ * 32-Bit Version, fuer Code, der (teilweise) seltener als alle 11 s aufgerufen wird.
+ * @param old_ticks		Zeiger auf eine Variable, die einen Timestamp speichern kann
+ * @param ms			Zeit in ms, die vergangen sein muss, damit True geliefert wird
+ * @return				True oder False
+ */
+static inline uint8_t __attribute__((always_inline)) timer_ms_passed(uint32_t * old_ticks, uint32_t ms) {
+	return timer_ms_passed_32(old_ticks, ms);
 }
 
 /*!

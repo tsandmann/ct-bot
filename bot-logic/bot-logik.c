@@ -284,6 +284,11 @@ void bot_behave_init(void) {
 		// Verhalten um einer Linie zu folgen
 		insert_behaviour_to_list(&behaviour, new_behaviour(70, bot_follow_line_behaviour, INACTIVE));
 	#endif
+	
+	#ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
+		// Linie folgen ueber Kreuzungen hinweg zum Ziel, kuerzester Weg befindet sich danach im Stack
+		insert_behaviour_to_list(&behaviour, new_behaviour(69, bot_line_shortest_way_behaviour, INACTIVE));
+	#endif
 
 	#ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
 		// unwichtigere Hilfsverhalten

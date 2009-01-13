@@ -151,10 +151,10 @@ static void rc5_number(uint8 key) {
 			case 4: bot_follow_object(NULL); break;
 		#endif	// BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 
-		#if defined BEHAVIOUR_FOLLOW_LINE_AVAILABLE
-			case 5: bot_follow_line(NULL); break;
-		#elif defined BEHAVIOUR_SOLVE_MAZE_AVAILABLE
+		#if defined BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 			case 5: bot_solve_maze(NULL); break;
+		#elif defined BEHAVIOUR_FOLLOW_LINE_AVAILABLE
+			case 5: bot_follow_line(NULL); break;
 		#endif	// BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 
 		#if defined BEHAVIOUR_CALIBRATE_PID_AVAILABLE

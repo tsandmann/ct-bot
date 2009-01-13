@@ -57,6 +57,8 @@
 
 //#define BEHAVIOUR_DRIVE_AREA_AVAILABLE /*!< flaechendeckendes Fahren mit Map */
 
+#define BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE /*!< Linienfolger ueber Kreuzungen zum Ziel */
+
 /* Aufgrund einer ganzen reihe von Abhaengigkeiten sollte man beim Versuch Speicher
  * zu sparen, zuerst mal bei den Hauptverhalten ausmisten, sonst kommen die
  * Unterverhalten durch die Hintertuer wieder rein */
@@ -74,6 +76,10 @@
 #ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
 	#warning "Pfadplanung geht nur, wenn POS_STORE_AVAILABLE"
 	#undef BEHAVIOUR_PATHPLANING_AVAILABLE
+#endif
+#ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
+	#warning "bot_line_shortest_way geht nur, wenn POS_STORE_AVAILABLE"
+	#undef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
 #endif
 #endif
 
@@ -93,6 +99,12 @@
 
 #ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 	#define BEHAVIOUR_GOTO_POS_AVAILABLE
+#endif
+
+#ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
+	#define BEHAVIOUR_GOTO_POS_AVAILABLE
+	#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
+	#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
@@ -241,6 +253,8 @@
 #include "bot-logic/behaviour_drive_area.h"
 
 #include "bot-logic/behaviour_pathplaning.h"
+
+#include "bot-logic/behaviour_line_shortest_way.h"
 
 #endif	// BEHAVIOUR_AVAILABLE
 #endif	/*AVAILABLE_BEHAVIOURS_H_*/

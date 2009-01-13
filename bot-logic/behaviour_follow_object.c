@@ -123,7 +123,7 @@ void bot_follow_object_behaviour(Behaviour_t * data) {
 				lastMove = TIMER_GET_TICKCOUNT_32;
 				movedState = 1;
 			} else {
-				if (timer_ms_passed(&lastMove, 10000)) {
+				if (timer_ms_passed_32(&lastMove, 10000)) {
 					bot_drive_stack(data);
 					movedState = 0;
 				}

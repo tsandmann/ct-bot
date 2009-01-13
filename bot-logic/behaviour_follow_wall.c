@@ -207,7 +207,7 @@ void bot_follow_wall_behaviour(Behaviour_t *data) {
 		// und mit Drehen aufhoert wenn er ueber die Ecke schielt sondern sich wieder etwas von wegdreht; bei Abgrund dreht er
 		// sich damit auch sicher weg mit hoeherer Drehzeit
 		// Wartezeit hier nicht init. da dies dann noch zufaelliger wird
-		if (timer_ms_passed(&lastmsTime, delay_time_turn)) {
+		if (timer_ms_passed_16(&lastmsTime, delay_time_turn)) {
 			delay_time_turn = DELAY_NORMAL + TIMER_GET_TICKCOUNT_8; // wieder mit normalen Pseudo-Zufallswert belegen
 
 			if (sensDistL > COL_NEAR&& sensDistR > COL_NEAR) { // keine Wand mehr in Sichtweite

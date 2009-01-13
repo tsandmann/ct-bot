@@ -405,9 +405,9 @@ void motor_set(int16 left, int16 right){
 		}
 
 		/* PWM-Lookup im EEPROM updaten */
-		static uint16 old_pwm_ticks = 0;
-		static uint8 i=0;				// nachdem wir 1 Byte geschrieben haben, muessten wir 3.3 ms mit busy-waiting vertroedeln,
-		if (i != 0 || timer_ms_passed(&old_pwm_ticks, 10000)) {	// alle 10 s
+		static uint16_t old_pwm_ticks = 0;
+		static uint8_t i = 0;	// nachdem wir 1 Byte geschrieben haben, muessten wir 3.3 ms warten,
+		if (i != 0 || timer_ms_passed_16(&old_pwm_ticks, 10000)) {	// alle 10 s
 			uint8 tmp = pwm_values[i].pwm;	// darum schreiben wir erst im naechsten Aufruf das 2. Byte ins EEPROM usw. :-)
 			if (ctbot_eeprom_read_byte(&pwmSlow[i]) != tmp) ctbot_eeprom_write_byte(&pwmSlow[i], tmp);
 			if (++i == 4){	// alle Daten gesichert => 10 s schlafen

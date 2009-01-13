@@ -179,6 +179,9 @@ const call_t calls[] PROGMEM = {
 	#ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_drive_area,0,""),
 	#endif
+	#ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_line_shortest_way,0,""),
+	#endif
 };
 
 #define STORED_CALLS (sizeof(calls)/sizeof(call_t)) /*!< Anzahl der Remote-Calls im Array */

@@ -128,7 +128,7 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
 		return 0;
 	}
 
-	if (!timer_ms_passed(&keypad_last_pressed, 1000) && rc5 == last_rc5) {
+	if (!timer_ms_passed_32(&keypad_last_pressed, 1000) && rc5 == last_rc5) {
 		/* dieselbe Taste wurde mehrfach gedrueckt */
 		pressed++;
 	} else {
@@ -291,6 +291,9 @@ void gui_init(void) {
 	#ifdef PATHPLANING_DISPLAY
 	#ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
 		register_screen(&pathplaning_display);
+	#endif
+	#ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
+		register_screen(&bot_line_shortest_way_display);
 	#endif
 	#endif
 }

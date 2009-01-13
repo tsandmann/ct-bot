@@ -87,7 +87,7 @@ int16_t v_enc_right=0;	/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-1
 int16_t v_enc_center=0;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
 
 #ifdef PC
-	uint16 simultime=0;	/*! Simulierte Zeit */
+int16_t simultime = 0;	/*!< Simulierte Zeit */
 #endif
 
 #ifdef MEASURE_MOUSE_AVAILABLE
@@ -197,10 +197,10 @@ void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const 
  */
 void sensor_update(void){
 	static uint8_t old_pos=0;			/*!< Ticks fuer Positionsberechnungsschleife */
-	static uint16 old_speed=0;			/*!< Ticks fuer Geschwindigkeitsberechnungsschleife */
+	static uint16_t old_speed=0;		/*!< Ticks fuer Geschwindigkeitsberechnungsschleife */
 	#ifdef MEASURE_MOUSE_AVAILABLE
-		static int16 lastMouseX=0;		/*!< letzter Mauswert X fuer Positionsberechnung */
-		static int16 lastMouseY=0;		/*!< letzter Mauswert Y fuer Positionsberechnung */
+		static int16_t lastMouseX=0;	/*!< letzter Mauswert X fuer Positionsberechnung */
+		static int16_t lastMouseY=0;	/*!< letzter Mauswert Y fuer Positionsberechnung */
 		static float lastDistance=0;	/*!< letzte gefahrene Strecke */
 		static float lastHead=HEADING_START;		/*!< letzter gedrehter Winkel */
 		static float oldHead=HEADING_START;		/*!< Winkel aus dem letzten Durchgang */
@@ -216,34 +216,34 @@ void sensor_update(void){
 		float right_radius=0;			/*!< Radius des Drehkreises des rechten Rads */
 		float left_radius=0;			/*!< Radius des Drehkreises des linken Rads */
 	#endif	// MEASURE_MOUSE_AVAILABLE
-	static int16 lastEncL =0;		/*!< letzter Encoderwert links fuer Positionsberechnung */
-	static int16 lastEncR =0;		/*!< letzter Encoderwert rechts fuer Positionsberechnung */
-	static int16 lastEncL1=0;		/*!< letzter Encoderwert links fuer Geschwindigkeitsberechnung */
-	static int16 lastEncR1=0;		/*!< letzter Encoderwert rechts fuer Geschwindigkeitsberechnung */
+	static int16_t lastEncL =0;		/*!< letzter Encoderwert links fuer Positionsberechnung */
+	static int16_t lastEncR =0;		/*!< letzter Encoderwert rechts fuer Positionsberechnung */
+	static int16_t lastEncL1=0;		/*!< letzter Encoderwert links fuer Geschwindigkeitsberechnung */
+	static int16_t lastEncR1=0;		/*!< letzter Encoderwert rechts fuer Geschwindigkeitsberechnung */
 	float dHead=0;					/*!< Winkeldifferenz aus Encodern */
-	float deltaY=0;				/*!< errechneter Betrag Richtungsvektor aus Encodern */
-	int16 diffEncL;					/*!< Differenzbildung linker Encoder */
-	int16 diffEncR;					/*!< Differenzbildung rechter Encoder */
+	float deltaY=0;					/*!< errechneter Betrag Richtungsvektor aus Encodern */
+	int16_t diffEncL;				/*!< Differenzbildung linker Encoder */
+	int16_t diffEncR;				/*!< Differenzbildung rechter Encoder */
 	float sl;						/*!< gefahrene Strecke linkes Rad */
 	float sr;						/*!< gefahrene Strecke rechtes Rad */
 	#ifdef MEASURE_MOUSE_AVAILABLE
-		int16 dX;						/*!< Differenz der X-Mauswerte */
-		int16 dY;						/*!< Differenz der Y-Mauswerte */
-		int8 modifiedAngles=False;		/*!< Wird True, wenn aufgrund 90 Grad oder 270 Grad die Winkel veraendert werden mussten */
+		int16_t dX;						/*!< Differenz der X-Mauswerte */
+		int16_t dY;						/*!< Differenz der Y-Mauswerte */
+		int8_t modifiedAngles=False;	/*!< Wird True, wenn aufgrund 90 Grad oder 270 Grad die Winkel veraendert werden mussten */
 
 		sensMouseY += sensMouseDY;		/*!< Mausdelta Y aufaddieren */
 		sensMouseX += sensMouseDX;		/*!< Mausdelta X aufaddieren */
 	#endif	// MEASURE_MOUSE_AVAILABLE
 
-	if (timer_ms_passed(&old_pos, 10)) {
+	if (timer_ms_passed_8(&old_pos, 10)) {
 		/* Gefahrene Boegen aus Encodern berechnen */
 		#ifdef MCU
-			uint8 sreg = SREG;
+			uint8_t sreg = SREG;
 			cli();
 		#endif
 		/* <CS> */
-		register int16 sensEncL_tmp = sensEncL;
-		register int16 sensEncR_tmp = sensEncR;
+		register int16_t sensEncL_tmp = sensEncL;
+		register int16_t sensEncR_tmp = sensEncR;
 		/* </CS> */
 		#ifdef MCU
 			SREG = sreg;
@@ -323,14 +323,14 @@ void sensor_update(void){
 			#endif	// MEASURE_MOUSE_AVAILABLE
 		#endif	// MEASURE_COUPLED_AVAILABLE
 	}
-	if (timer_ms_passed(&old_speed, 250)) {
+	if (timer_ms_passed_16(&old_speed, 250)) {
 		#ifdef MCU
-			uint8 sreg = SREG;
+			uint8_t sreg = SREG;
 			cli();
 		#endif
 		/* <CS> */
-		register int16 sensEncL_tmp = sensEncL;
-		register int16 sensEncR_tmp = sensEncR;
+		register int16_t sensEncL_tmp = sensEncL;
+		register int16_t sensEncR_tmp = sensEncR;
 		/* </CS> */
 		#ifdef MCU
 			SREG = sreg;

@@ -27,20 +27,20 @@
 #include "ct-Bot.h"
 
 #ifdef MCU
-	#include <avr/io.h>
-	#include <avr/wdt.h>
-	#include "bot-2-pc.h"
-	#include "i2c.h"
-	#include "twi.h"
-	#include "sp03.h"
+#include <avr/io.h>
+#include <avr/wdt.h>
+#include "bot-2-pc.h"
+#include "i2c.h"
+#include "twi.h"
+#include "sp03.h"
 #endif
 
 #ifdef PC
-	#include "bot-2-sim.h"
-	#include "tcp.h"
-	#include <stdio.h>
-	#include <time.h>
-	#include <sys/time.h>
+#include "bot-2-sim.h"
+#include "tcp.h"
+#include <stdio.h>
+#include <time.h>
+#include <sys/time.h>
 #endif
 
 #include "global.h"
@@ -251,9 +251,9 @@ int main(int argc, char * argv[]) {
 
 		#ifdef MCU
 			/* jeweils alle 100 ms kommunizieren Bot, User und Sim */
-			static uint16 comm_ticks = 0;
-			static uint8 uart_gui = 0;
-			if (timer_ms_passed(&comm_ticks, 50) || RC5_Code != 0) {
+			static uint16_t comm_ticks = 0;
+			static uint8_t uart_gui = 0;
+			if (timer_ms_passed_16(&comm_ticks, 50) || RC5_Code != 0) {
 				if (uart_gui == 0) {
 					/* GUI-Behandlung starten */
 					//register uint16 time_ticks = TIMER_GET_TICKCOUNT_16;
@@ -295,8 +295,12 @@ int main(int argc, char * argv[]) {
 			#ifdef DISPLAY_AVAILABLE
 				gui_display(display_screen);
 			#endif
-			command_write(CMD_DONE, SUB_CMD_NORM, (int16_t *)&simultime, 0, 0);
+			command_write(CMD_DONE, SUB_CMD_NORM, &simultime, 0, 0);
 //			flushSendBuffer();	// macht im Moment command_write(CMD_DONE, ...) bevor das Mutex freigegeben wird!
+
+			/* Ausgabemoeglichkeit der Positionsdaten (z.B. zur Analyse der Genauigkeit): */
+			//LOG_INFO("%f\t%f\t%f\t%f\t%f\t%f", x_enc, x_mou, y_enc, y_mou, heading_enc, heading_mou);
+
 			/* Zum Debuggen der Zeiten: */
 			#ifdef DEBUG_TIMES
 				GETTIMEOFDAY(&stop, NULL);

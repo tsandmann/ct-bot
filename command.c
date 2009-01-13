@@ -112,119 +112,118 @@ void command_init(void) {
  */
 int8_t command_read(void) {
 	int8_t bytesRcvd;
-	int8_t start=0;			// Start des Kommandos
+	int8_t start = 0; // Start des Kommandos
 	int8_t i;
-	command_t * command;	// Pointer zum Casten der empfangegen Daten
-	uint8 buffer[RCVBUFSIZE];       // Buffer
-	#ifdef PC
-		#if BYTE_ORDER == BIG_ENDIAN
-			uint16 store;			//Puffer für die Endian-Konvertierung
-		#endif
-	#endif
+	command_t * command; // Pointer zum Casten der empfangegen Daten
+	uint8_t buffer[RCVBUFSIZE]; // Buffer
+#ifdef PC
+#if BYTE_ORDER == BIG_ENDIAN
+	uint16_t store; // Puffer für die Endian-Konvertierung
+#endif
+#endif
 
-	uint16 old_ticks;			// alte Systemzeit
-
-	buffer[0]=0;				// Sicherheitshalber mit sauberem Puffer anfangen
+	uint16_t old_ticks; // alte Systemzeit
+	buffer[0] = 0; // Sicherheitshalber mit sauberem Puffer anfangen
 
 	// Daten holen, maximal soviele, wie ein Kommando lang ist
-	bytesRcvd=low_read(buffer,sizeof(command_t));
+	bytesRcvd = low_read(buffer, sizeof(command_t));
 
-	#ifdef DEBUG_COMMAND_NOISY
-		LOG_DEBUG("%d read",bytesRcvd);
-		LOG_DEBUG("%x %x %x",buffer[0],buffer[1],buffer[2]);
-	#endif
+#ifdef DEBUG_COMMAND_NOISY
+	LOG_DEBUG("%d read",bytesRcvd);
+	LOG_DEBUG("%x %x %x",buffer[0],buffer[1],buffer[2]);
+#endif
 	// Suche nach dem Beginn des Frames
-	while ((start<bytesRcvd)&&(buffer[start] != CMD_STARTCODE)) {
+	while ((start < bytesRcvd) && (buffer[start] != CMD_STARTCODE)) {
 		LOG_DEBUG("falscher Startcode");
 		start++;
 	}
 
 	// Wenn keine STARTCODE gefunden ==> Daten verwerfen
-	if (buffer[start] != CMD_STARTCODE){
+	if (buffer[start] != CMD_STARTCODE) {
 		LOG_DEBUG("kein Startcode");
 		return -1;
 	}
 
-	#ifdef DEBUG_COMMAND_NOISY
-		LOG_DEBUG("Start @%d",start);
-	#endif
+#ifdef DEBUG_COMMAND_NOISY
+	LOG_DEBUG("Start @%d",start);
+#endif
 
 	// haben wir noch genug Platz im Puffer, um das Packet ferig zu lesen?
-	if ((RCVBUFSIZE-start) < sizeof(command_t)){
+	if ((RCVBUFSIZE-start) < sizeof(command_t)) {
 		LOG_DEBUG("not enough space");
-		return -1;	// nein? ==> verwerfen
+		return -1; // nein? ==> verwerfen
 	}
 
-	i=sizeof(command_t) - (bytesRcvd-start)-1;
+	i = sizeof(command_t) - (bytesRcvd - start) - 1;
 
-
-	if (i > 0) {	// Fehlen noch Daten ?
+	if (i > 0) { // Fehlen noch Daten ?
 		LOG_DEBUG("command.c: Start @ %d es fehlen %d bytes ",start,i);
 		// Systemzeit erfassen
 		old_ticks = TIMER_GET_TICKCOUNT_16;
 
 		// So lange Daten lesen, bis das Packet vollstaendig ist, oder der Timeout zuschlaegt
-		while (i > 0){
+		while (i > 0) {
 			// Wenn der Timeout ueberschritten ist
-			if (timer_ms_passed(&old_ticks, COMMAND_TIMEOUT)) {
+			if (timer_ms_passed_16(&old_ticks, COMMAND_TIMEOUT)) {
 				LOG_DEBUG("Timeout beim Nachlesen");
 				return -1; //	==> Abbruch
 			}
 			LOG_DEBUG("%d bytes missing",i);
-			i= low_read(buffer+bytesRcvd,i);
+			i = low_read(buffer + bytesRcvd, i);
 			LOG_DEBUG("%d read",i);
-			bytesRcvd+=i;
-			i=sizeof(command_t) - (bytesRcvd-start);
+			bytesRcvd += i;
+			i = sizeof(command_t) - (bytesRcvd - start);
 		}
 	}
 
-	#ifdef DEBUG_COMMAND_NOISY
-		LOG_DEBUG("%d/%d read/start",bytesRcvd,start);
-		LOG_DEBUG("%x %x %x",buffer[start],buffer[start+1],buffer[start+2]);
-	#endif
+#ifdef DEBUG_COMMAND_NOISY
+	LOG_DEBUG("%d/%d read/start",bytesRcvd,start);
+	LOG_DEBUG("%x %x %x",buffer[start],buffer[start+1],buffer[start+2]);
+#endif
 
 	// Cast in command_t
-	command = (command_t *) (buffer+start);
+	command = (command_t *) (buffer + start);
 
-	#ifdef DEBUG_COMMAND_NOISY
-		LOG_DEBUG("start: %x ",command->startCode);
-		//	command_display(command);
-	#endif
+#ifdef DEBUG_COMMAND_NOISY
+	LOG_DEBUG("start: %x ",command->startCode);
+	//	command_display(command);
+#endif
 
 	// validate (startcode ist bereits ok, sonst waeren wir nicht hier )
-	if (command->CRC==CMD_STOPCODE){
-		#ifdef DEBUG_COMMAND_NOISY
-			LOG_DEBUG("Command is valid");
-		#endif
+	if (command->CRC == CMD_STOPCODE) {
+#ifdef DEBUG_COMMAND_NOISY
+		LOG_DEBUG("Command is valid");
+#endif
 
 		/* Ist das Paket ueberhaupt fuer uns? */
-		if ((command->to != CMD_BROADCAST) && (command->to != get_bot_address()) && (command->request.command != CMD_WELCOME)) {
+		if ((command->to != CMD_BROADCAST)
+				&& (command->to != get_bot_address())
+				&& (command->request.command != CMD_WELCOME)) {
 			LOG_DEBUG("Fehler: Paket To= %d statt %d",command->to, get_bot_address());
-			#ifdef LOG_AVAILABLE
-				command_display(command);
-			#endif
+#ifdef LOG_AVAILABLE
+			command_display(command);
+#endif
 			return -1;
 		}
 
 		// Transfer
-		memcpy(&received_command, buffer+start, sizeof(command_t));
-		#ifdef PC
-			#if BYTE_ORDER == BIG_ENDIAN
-				/* Umwandeln der 16 bit Werte in Big Endian */
-				store = received_command.data_l;
-				received_command.data_l = store << 8;
-				received_command.data_l |= (store >> 8) & 0xff;
+		memcpy(&received_command, buffer + start, sizeof(command_t));
+#ifdef PC
+#if BYTE_ORDER == BIG_ENDIAN
+		/* Umwandeln der 16 bit Werte in Big Endian */
+		store = received_command.data_l;
+		received_command.data_l = store << 8;
+		received_command.data_l |= (store >> 8) & 0xff;
 
-				store = received_command.data_r;
-				received_command.data_r = store << 8;
-				received_command.data_r |= (store >> 8) & 0xff;
-			#endif	// BYTE_ORDER == BIG_ENDIAN
-		#endif	// PC
-
+		store = received_command.data_r;
+		received_command.data_r = store << 8;
+		received_command.data_r |= (store >> 8) & 0xff;
+#endif	// BYTE_ORDER == BIG_ENDIAN
+#endif	// PC
 		return 0;
-	} else {	// Command not valid
+	} else { // Command not valid
 		LOG_ERROR("Invalid Command:");
-		LOG_DEBUG("%x %x %x",command->startCode,command->request.command,command->CRC);
+		LOG_DEBUG("%x %x %x", command->startCode, command->request.command, command->CRC);
 		return -1;
 	}
 }
@@ -562,9 +561,8 @@ int8_t command_evaluate(void) {
 					led_update();
 					break;
 				case CMD_DONE:
-					simultime=received_command.data_l;
-					system_time_isr();		/* Einmal pro Update-Zyklus aktualisieren wir die Systemzeit */
-				//	printf("X-Frame for Simultime = %d received ",simultime);
+					simultime = received_command.data_l;
+					system_time_isr();	// Einmal pro Update-Zyklus aktualisieren wir die Systemzeit
 					break;
 			#endif	// PC
 			default:

@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	sensor.h
  * @brief 	Architekturunabhaengiger Teil der Sensorsteuerung
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -73,7 +73,7 @@ extern uint16 RC5_Code;        /*!< Letzter empfangener RC5-Code */
 #ifdef MAUS_AVAILABLE
 	extern int8 sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
 	extern int8 sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
-	
+
 	extern int16 sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
 	extern  int16 sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
 #endif
@@ -86,7 +86,7 @@ extern int16_t v_enc_right;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/
 extern int16_t v_enc_center;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
 
 #ifdef PC
-	extern uint16 simultime;	/*!< Simulierte Zeit */
+extern int16_t simultime;	/*!< Simulierte Zeit */
 #endif
 
 #ifdef MEASURE_MOUSE_AVAILABLE
@@ -108,13 +108,13 @@ extern int16_t v_center;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-
 #ifdef SRF10_AVAILABLE
 	extern uint16 sensSRF10;	/*!< Messergebniss Ultraschallsensor */
 #endif
-	
+
 #ifdef CMPS03_AVAILABLE
 	cmps03_t sensCmps03;		/*!< Lage laut CMPS03-Kompass */
-#endif	
+#endif
 
-/*! 
- * Kuemmert sich um die Weiterverarbeitung der rohen Sensordaten 
+/*!
+ * Kuemmert sich um die Weiterverarbeitung der rohen Sensordaten
  */
 void sensor_update(void);
 
@@ -123,12 +123,12 @@ void sensor_update(void);
  */
 void sensor_reset(void);
 
-/*! 
+/*!
  * @brief			Errechnet aus den rohren Distanzsensordaten die zugehoerige Entfernung
  * @param p_sens	Zeiger auf den (Ziel-)Sensorwert
  * @param p_toggle	Zeiger auf die Toggle-Variable des Zielsensors
  * @param ptr		Zeiger auf auf Sensorrohdaten im EEPROM fuer p_sens
- * @param volt_16	Spannungs-Ist-Wert, zu dem die Distanz gesucht wird (in 16 Bit) 
+ * @param volt_16	Spannungs-Ist-Wert, zu dem die Distanz gesucht wird (in 16 Bit)
  * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			21.04.2007
  */
@@ -136,11 +136,11 @@ void sensor_dist_lookup(int16_t *const p_sens, uint8_t *const p_toggle, const di
 
 /*!
  * Die Funktion gibt aus, ob sich innerhalb einer gewissen Entfernung ein Objekt-Hindernis befindet.
- * @param distance	Entfernung in mm, bis zu welcher ein Objekt gesichtet wird. 
- * @return 			Gibt False (0) zurueck, wenn kein Objekt innerhalb von distance gesichtet wird. Ansonsten die Differenz 
- * zwischen dem linken und rechten Sensor. Negative Werte besagen, dass das Objekt naeher am linken, positive, dass 
+ * @param distance	Entfernung in mm, bis zu welcher ein Objekt gesichtet wird.
+ * @return 			Gibt False (0) zurueck, wenn kein Objekt innerhalb von distance gesichtet wird. Ansonsten die Differenz
+ * zwischen dem linken und rechten Sensor. Negative Werte besagen, dass das Objekt naeher am linken, positive, dass
  * es naeher am rechten Sensor ist. Sollten beide Sensoren den gleichen Wert haben, gibt die Funktion 1 zurueck, um
- * von False unterscheiden zu koennen. 
+ * von False unterscheiden zu koennen.
  */
 int16 is_obstacle_ahead(int16 distance);
 
@@ -157,7 +157,7 @@ void sensor_display(void);
 
 /*!
  * @brief	Displayhandler fuer Odometrieanzeige
- */	
+ */
 void odometric_display(void);
 #endif	// DISPLAY_AVAILABLE
 
