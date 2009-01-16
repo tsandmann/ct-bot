@@ -30,6 +30,7 @@
 #include "ct-Bot.h"
 #ifdef BOT_2_BOT_AVAILABLE
 #include "command.h"
+#include "bot-logic/bot-logik.h"
 #include <stdlib.h>
 
 //#define DELETE_BOTS		/*!< wollen wir Bots aus der Liste loeschen koennen? */
@@ -48,9 +49,34 @@ typedef struct _bot_list_entry_t {
 
 #define BOT_CMD_WELCOME		get_command_of_function(add_bot_to_list)
 #define BOT_CMD_STATE		get_command_of_function(set_received_bot_state)
+#define BOT_CMD_REQ			get_command_of_function(bot_2_bot_handle_payload_request)
+#define BOT_CMD_ACK			get_command_of_function(bot_2_bot_handle_payload_ack)
+#define BOT_CMD_PAYLOAD		get_command_of_function(bot_2_bot_handle_payload_data)
+
+#ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
+#define BOT_2_BOT_PAYLOAD_TEST	get_type_of_payload_function(bot_2_bot_payload_test_verify)
+
+#define BOT_2_BOT_MAX_PAYLOAD			255
+#define BOT_2_BOT_PAYLOAD_WINDOW_SIZE	32
+
+#if BOT_2_BOT_MAX_PAYLOAD > MAX_PAYLOAD
+#error "BOT_2_BOT_MAX_PAYLOAD zu gross"
+#endif
+#if defined MCU && BOT_2_BOT_PAYLOAD_WINDOW_SIZE > BUFSIZE_IN
+#error "BOT_2_BOT_PAYLOAD_WINDOW_SIZE zu gross"
+#endif
+#endif	// BOT_2_BOT_PAYLOAD_AVAILABLE
 
 extern bot_list_entry_t * bot_list;					/*!< Liste aller bekannten Bots */
 extern void (* cmd_functions[])(command_t * cmd);	/*!< Funktionstabelle fuer alle Bot-2-Bot-Kommandos */
+/*! Datentyp der Bot-2-Bot-Payload-Zuordnungen */
+typedef struct {
+	void (* function)(void);	/*!< Callback-Funktion, die nach Abschluss des Empfangs ausgefuehrt wird */
+	void * data;				/*!< Zeiger auf Datenpuffer */
+	uint8_t size;				/*!< Groesse des Datenpuffers in Byte [0; 255] */
+} bot_2_bot_payload_mappings_t;
+
+extern bot_2_bot_payload_mappings_t bot_2_bot_payload_mappings[];	/*!< Tabelle fuer alle Bot-2-Bot-Payload-Zuordnungen */
 
 /*!
  * Gibt die Anzahl der Kommando-Funktionen zurueck
@@ -94,7 +120,7 @@ static inline bot_list_entry_t * get_next_bot(bot_list_entry_t * ptr) {
 /*!
  * Liefert die Kommando-Nummer zu einer Kommando-Funktion
  * @param *func	Name der auswertenden Funktion
- * @return		Kommando-ID
+ * @return		Kommando-ID, oder 255, falls Funktion nicht vorhanden
  */
 uint8_t get_command_of_function(void (* func)(command_t * cmd));
 
@@ -110,6 +136,64 @@ void set_received_bot_state(command_t * cmd);
  * @param *state	Zeiger auf Status
  */
 void publish_bot_state(void * state);
+
+#ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
+/*!
+ * Liefert den Payload-Typ (Subkommando) zu einer Auswertungsfunktion
+ * @param *func	Name der auswertenden Funktion
+ * @return		Subcommand oder 255, falls Funktion nicht vorhanden
+ */
+uint8_t get_type_of_payload_function(void(* func)(void));
+
+/*!
+ * Sendet eine Payload-Transferanfrage an einen anderen Bot
+ * @param to			Empfaengeradresse
+ * @param type			Typ der Daten fuer den anderen Bot
+ * @param *data			Zeiger auf zu sendende Daten
+ * @param size			Anzahl der Bytes, die zum anderen Bot uebertragen werden sollen
+ * @return				0, falls die Daten korrekt uebertragen wurden, sonst Fehlercode
+ */
+int8_t bot_2_bot_send_payload_request(uint8_t to, uint8_t type,
+		void * data, int16_t size);
+
+/*!
+ * Behandelt eine Payload-Sende-Anfrage
+ * @param *cmd	Zeiger auf der empfangene Kommand
+ */
+void bot_2_bot_handle_payload_request(command_t * cmd);
+
+/*!
+ * Behandelt eine Payload-Sende-Bestaetigung
+ * @param *cmd	Zeiger auf das empfangene Kommando
+ */
+void bot_2_bot_handle_payload_ack(command_t * cmd);
+
+/*!
+ * Behandelt eingehende Payload-Daten, die von einem anderen Bot kommen
+ * @param *cmd	Zeiger auf das empfangene Kommando
+ */
+void bot_2_bot_handle_payload_data(command_t * cmd);
+
+/*!
+ * Gibt die empfangenen Daten auf stdout aus (nur PC)
+ */
+void bot_2_bot_print_recv_data(void);
+
+#ifdef BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
+/*!
+ * Testet den Payload-Empfang
+ */
+void bot_2_bot_payload_test_verify(void);
+
+/*!
+ * Testet den Payload-Versand
+ * @param *caller	Dummy-Zeiger, damit per RemoteCall verwendbar
+ * @param to		Adresse des Empfangsbots
+ * @return			0, falls kein Fehler, sonst Fehlercode
+ */
+int8_t bot_2_bot_pl_test(Behaviour_t * caller, uint8_t to);
+#endif	// BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
+#endif	// BOT_2_BOT_PAYLOAD_AVAILABLE
 
 #ifdef LOG_AVAILABLE
 /*!

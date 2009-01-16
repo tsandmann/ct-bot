@@ -47,11 +47,9 @@
 
 /* Linux with glibc:
  *   _REENTRANT to grab thread-safe libraries
- *   _POSIX_SOURCE to get POSIX semantics
  */
 #ifdef __linux__
 #define _REENTRANT
-//#define _POSIX_SOURCE
 #endif
 
 /* Hack for LinuxThreads */
@@ -90,7 +88,7 @@
  * @param frame	Kommando zum Abbruch
  * @return		Fehlercode
  */
-int8_t receive_until_Frame(int8 frame) {
+int8_t receive_until_Frame(int8_t frame) {
 	int8_t result = 0;
 	for(;;) {
 		result = command_read();

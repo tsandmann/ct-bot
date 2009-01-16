@@ -1,6 +1,10 @@
 CHANGELOG fuer c't-Bot
 ======================
-2009-01-13 Frank Menzel [Menzelfr@gmx.net]: Neues Verhalten bot_line_shortest_way und hierfuer neuer Linienfolger; Linienfolger mit Versionen auswaehlbar
+2009-01-16 Timo Sandmann [mail@timosandmann.de]: Bot-2-Bot-Kommunikation um Payload-Versand erweitert. BOT_2_BOT_PAYLOAD_AVAILABLE muss an sein, die Funktion "bot_2_bot_send_payload_request(uint8_t to, uint8_t type, void * data, int16_t size)" sendet size Bytes, 
+												 auf die data zeigt, an den Bot mit der Adresse to und uebermittelt diesem ebenfalls den Nachrichtentyp type. BOT_2_BOT_PAYLOAD_TEST_AVAILABLE ermoeglicht einen Test per RemoteCall. 
+												 Weitere Informationen befinden sich in bot-2-bot.c, Doku folgt. 
+
+2009-01-13 Frank Menzel [Menzelfr@gmx.net]:      Neues Verhalten bot_line_shortest_way und hierfuer neuer Linienfolger; Linienfolger mit Versionen auswaehlbar
 
 2009-01-13 Timo Sandmann [mail@timosandmann.de]: Wichtiger Bugfix fuer timer_ms_passed(): Es gibt jetzt je nach gewuenschter Aufloesung timer_ms_passed_8(), timer_ms_passed_16() und timer_ms_passed_32(), siehe include/timer.h
 												 Optimierungen im Timer-Code

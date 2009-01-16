@@ -1,24 +1,24 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
- * @file 	bot-2-sim.h 
+/*!
+ * @file 	bot-2-sim.h
  * @brief 	Verbindung c't-Bot zu c't-Sim
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
@@ -30,15 +30,16 @@
 #include "global.h"
 
 /*!
- * Ein wenig Initilisierung kann nicht schaden 
+ * Ein wenig Initilisierung kann nicht schaden
  */
 void bot_2_sim_init(void);
 
-/*! 
- * Schleife, die Kommandos empfaengt und bearbeitet, bis ein Kommando vom Typ Frame kommt 
+/*!
+ * Schleife, die Kommandos empfaengt und bearbeitet, bis ein Kommando vom Typ Frame kommt
  * @param frame Kommando zum Abbruch
+ * @return		Fehlercode
  */
-int8 receive_until_Frame(int8 frame);
+int8_t receive_until_Frame(int8_t frame);
 
 #ifdef WIN32
 	#include <sys/time.h>

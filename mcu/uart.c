@@ -43,11 +43,9 @@
 
 #ifdef UART_AVAILABLE
 
-#define BUFSIZE_IN 0x30
 uint8_t inbuf[BUFSIZE_IN];	/*!< Eingangspuffer */
 fifo_t infifo;				/*!< Eingangs-FIFO */
 
-#define BUFSIZE_OUT 0x80
 uint8_t outbuf[BUFSIZE_OUT];	/*!< Ausgangspuffer */
 fifo_t outfifo;					/*!< Ausgangs-FIFO */
 

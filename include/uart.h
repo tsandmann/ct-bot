@@ -39,6 +39,9 @@
 	#define UART_DOUBLESPEED	// 2X-Mode, sonst Takt zu ungenau
 #endif
 
+#define BUFSIZE_IN	0x30
+#define BUFSIZE_OUT	0x80
+
 #ifdef UART_DOUBLESPEED
 	#define UART_CALC_BAUDRATE(baudRate) ((uint32_t)(F_CPU) / ((uint32_t)(baudRate) *8) -1)
 #else

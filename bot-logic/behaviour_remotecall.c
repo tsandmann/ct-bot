@@ -35,6 +35,7 @@
 #include "command.h"
 #include "log.h"
 #include "global.h"
+#include "bot-2-bot.h"
 
 #include "bot-logic/remote_calls.h"
 
@@ -181,6 +182,9 @@ const call_t calls[] PROGMEM = {
 	#endif
 	#ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_line_shortest_way,0,""),
+	#endif
+	#ifdef BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_2_bot_pl_test,1,"uint8 to",1),
 	#endif
 };
 
