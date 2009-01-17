@@ -29,8 +29,7 @@
  * @date 	21.12.2008
  */
 
-//TODO:	- Erkennung der Linienenden ohne gruene Felder
-//		- Unterstuetzung fuer Linienlabyrinthe mit Zyklen
+//TODO:	Unterstuetzung fuer Linienlabyrinthe mit Zyklen
 
 #include "bot-logic/bot-logik.h"
 
@@ -40,7 +39,7 @@
 #include "rc5-codes.h"
 #include "math_utils.h"
 
-//#define DEBUG_BEHAVIOUR_LINE_SHORTEST_WAY // Schalter fuer Debug-Code
+#define DEBUG_BEHAVIOUR_LINE_SHORTEST_WAY // Schalter fuer Debug-Code
 
 #ifndef LOG_AVAILABLE
 #undef DEBUG_BEHAVIOUR_LINE_SHORTEST_WAY
@@ -52,6 +51,10 @@
 
 /*! Version des Linefolgers, die optimal fuer dieses Verhalten ist */
 #define OPTIMAL_LINE_BEHAVIOUR_VERSION 3
+
+/*! Check-Umkehrverhalten soll Drehrichtungswechsel erkennen (fuer Gruenfeld als Umkehrfeld auskommentieren)
+ *  Gruenfeld nicht mehr Umkehrfeld sondern nur noch Zielfeld */
+#define CHECK_REVERSE_BEHAVIOUR
 
 #if FOLLOW_LINE_VERSION != OPTIMAL_LINE_BEHAVIOUR_VERSION
 #warning "Optimal nur mit Version 3 des Linienfolgers"
@@ -107,6 +110,25 @@ static uint8_t crossing_reached = 0;
 /*! zaehlt gruene Felder */
 static uint8_t greencounter = 0;
 
+/*! Merkkoordinaten fuer bereits gefahrene Strecke */
+static int16_t lastpos_x = 0;
+static int16_t lastpos_y = 0;
+
+/*! Pruefung auf gefahrene Strecke notwendig fuer nicht optimalen Linienfolger */
+#if FOLLOW_LINE_VERSION != OPTIMAL_LINE_BEHAVIOUR_VERSION
+  #define DISTCHECK_NEEDED
+#endif
+
+/*!Check-Umkehrverhalten benoetigt ebenfalls Pruefung auf gefahrene Strecke; Define setzen */
+#ifdef CHECK_REVERSE_BEHAVIOUR
+  #define DISTCHECK_NEEDED
+#endif
+
+/*! Schwellwert fuer Pruefung der gefahrenen Strecke in mm
+ */
+#define CHECK_DISTANCE 60
+#define CHECK_DISTANCE_QUAD (CHECK_DISTANCE * CHECK_DISTANCE)  // Quadrat der gefahrenen Strecke
+
 /* Zustaende des Verhaltens */
 #define GO_TO_LINE	              0
 #define CHECK_LINE	              1
@@ -117,6 +139,100 @@ static uint8_t greencounter = 0;
 #define TURN_ON_GREEN             6
 #define GOAL_FOUND                7
 #define END					      99
+
+
+
+/*     *************************************************************************
+ *     ** Verhalten zum Erkennung einer 180 Grad Drehung **
+ *     *************************************************************************
+*/
+
+#ifdef DISTCHECK_NEEDED
+
+/*! Prueft ob der Bot schon eine bestimmte Strecke gefahren ist seit dem letzten Durchgang
+ * @param  *last_xpoint   letzte gemerkte X-Koordinate
+ * @param  *last_ypoint   letzte gemerkte Y-Koordinate
+ * @return True, wenn Bot schon gewisse Strecke gefahren ist und Map zu checken ist sonst False
+ */
+static uint8_t distance_reached(int16_t * last_xpoint,int16_t * last_ypoint) {
+
+	// Abstand seit letztem Observerlauf ermitteln
+	uint16_t diff = get_dist(x_pos, y_pos, *last_xpoint, *last_ypoint);
+
+	//erst nach gewissem Abstand oder gleich bei noch initialem Wert Mappruefung
+	if (diff >= CHECK_DISTANCE_QUAD) {
+
+		*last_xpoint = x_pos;
+		*last_ypoint = y_pos;
+		return True;
+	}
+	return False;
+}
+
+#endif  // nur wenn gefordert
+
+
+#ifdef CHECK_REVERSE_BEHAVIOUR  // nur wenn Verhalten anstatt Gruenfeld verwendet werden soll
+
+static uint8_t reverse_state=0;
+static int16_t last_heading = 0;		/*!< letzte gemerkte Botausrichtung */
+#define CHECK_ANGLE_REV 170           /*!< nach Erreichen dieses Drehwinkels [Grad] wird Richtungsumkehr erkannt */
+
+static uint8_t bot_reverse=0;          /*!<  Kennung dass Bot die Umgedrehte Richtung eingenommen hat nach Richtungsumkehr */
+
+int16_t angle_t=0;
+
+/*!
+ * Verhalten zum Checken auf Einnehmen der entgegengesetzten Richtung (Linienende)
+ * @param *data	eigener Verhaltensdatensatz
+ */
+void bot_check_reverse_direction_behaviour(Behaviour_t * data) {
+	switch (reverse_state) {
+	case 0:
+		last_heading = heading;
+		reverse_state = 1;
+		bot_reverse = False;
+		//LOG_DEBUG("-Start Check reverse mit ang %1d", last_heading);
+		/* no break */
+	case 1:
+		// bei Drehwinkelaenderung und Uberschreitung einer gewissen Groesse (um 180 Grad) feuern
+		angle_t = turned_angle(last_heading);
+		if (angle_t > 180)
+			angle_t = 360 - angle_t;
+
+		if (angle_t > CHECK_ANGLE_REV) {
+			last_heading = heading;
+			LOG_DEBUG("-um Winkel gedreht %1d", angle_t);
+			bot_reverse = True; // Kennung muss vom Auswerteverhalten nach Erkennung rueckgesetzt werden
+			return_from_behaviour(data); // gleich Deaktivierung nach Erkennung entgegengesetzte Richtung
+		}
+
+		break;
+
+	default:
+		// kommt eigentlich nie hierher, da es solange aktiv ist bis Deaktivierung eintritt (Notaus oder Steuerung vom Verhalten selbst)
+		return_from_behaviour(data);
+		break;
+	}
+}
+
+/*!
+ * Botenfunktion: Verhalten zum Checken der Botrichtung auf Einnehmen der entgegengesetzten Richtung (Linienende)
+ * @param *caller	Der Verhaltensdatensatz des Aufrufers
+ */
+void bot_check_reverse_direction(Behaviour_t * caller) {
+	// via Override umschalten; Aufruf erfolgt aller x mm gefahrene Strecke, falls Kurve gefahren wurde zum Setzen des neuen Pruefwinkels
+	switch_to_behaviour(caller, bot_check_reverse_direction_behaviour, OVERRIDE);
+	reverse_state = 0;
+}
+#else
+/*!
+ * Dummy fuer bot-logic.c
+ * @param *data	Der Verhaltensdatensatz des Aufrufers
+ */
+void bot_check_reverse_direction_behaviour(Behaviour_t * data) {
+}
+#endif	// CHECK_REVERSE_BEHAVIOUR
 
 /*!
  * Push der Kreuzungsinformationen, etwas tricky dazu der eigentliche Positionsspeicher benutzt
@@ -164,21 +280,37 @@ static uint8_t dequeue_stack_crossing(int8_t * crosstype, int8_t * direction) {
 	return True;
 }
 
+
+
+
+
 /*!
  * Prueft ob sich der Bot auf dem definierten Umkehr- Zielfeld befindet (via Default gruen; gut im Simulator verwendbar)
+ * @param goalcheck True falls Aufruf von Zielerkennung kam, False sonst fuer Pruefung auf Umkehrfeld
  * @return True falls Bot sich auf dem Farbfeld befindet sonst False
  */
-uint8_t green_field(void) {
+uint8_t green_field(uint8_t goalcheck) {
 	if (crossing_reached && ((sensLineL > GROUND_GOAL_DEF - 5 && sensLineL
 			< GROUND_GOAL_DEF + 5) || (sensLineR > GROUND_GOAL_DEF - 5
 			&& sensLineR < GROUND_GOAL_DEF + 5))) {
-		greencounter++;
-		if (greencounter > 5)
-			return True;
+#ifdef CHECK_REVERSE_BEHAVIOUR
+        if (goalcheck)  // nur fuer Zielcheck
+          return True;
+#else
+        if (goalcheck) {  // bei Zielpruefung sofort True
+        	return True;
+        }
+        else {
+		  greencounter++;
+		  LOG_DEBUG("Gruen erkannt counter %1d, l/r %1d %1d",greencounter,sensLineL,sensLineR);
+		  if (greencounter > 5) {  //muss mehrmals hintereinander Gruenfeld erkennen um Fehlausloesungen besser zu vermeiden
+			  greencounter = 0;
+  		      return True;
+		  }
+        }
+#endif
 	}
-
 	return False;
-	greencounter = 0;
 }
 
 /*!
@@ -186,7 +318,7 @@ uint8_t green_field(void) {
  * @return True falls bot sich auf dem Zielfarbfeld befindet sonst False
  */
 uint8_t goal_reached(void) {
-	if (green_field() && sensDistL < 300 && sensDistR < 300)
+	if (green_field(True) && sensDistL < 300 && sensDistR < 300)
 		return True;
 
 	return False;
@@ -194,33 +326,6 @@ uint8_t goal_reached(void) {
 
 
 #if FOLLOW_LINE_VERSION != OPTIMAL_LINE_BEHAVIOUR_VERSION
-
-static int16_t lastpos_x = 0;
-static int16_t lastpos_y = 0;
-
-/*! nach dieser gefahrenen Strecke in mm werden Borderkennungen rueckgesetzt */
-#define CHECK_DISTANCE 30
-#define CHECK_DISTANCE_QUAD (CHECK_DISTANCE * CHECK_DISTANCE)  /*!< Quadrat der gefahrenen Strecke */
-
-
-/*!
- * Prueft ob der Bot schon eine bestimmte Strecke gefahren ist seit dem letzten Observerdurchgang
- * @param  *last_xpoint   letzte gemerkte X-Koordinate
- * @param  *last_ypoint   letzte gemerkte Y-Koordinate
- * @return True, wenn Bot schon gewisse Strecke gefahren ist und Map zu checken ist sonst False
- */
-static uint8_t distance_reached(int16_t * last_xpoint, int16_t * last_ypoint) {
-	// Abstand seit letztem Observerlauf ermitteln
-	uint16_t diff = get_dist(x_pos, y_pos, *last_xpoint, *last_ypoint);
-
-	//erst nach gewissem Abstand oder gleich bei noch initialem Wert Mappruefung
-	if (diff >= CHECK_DISTANCE_QUAD) {
-		*last_xpoint = x_pos;
-		*last_ypoint = y_pos;
-		return True;
-	}
-	return False;
-}
 
 /*!
  * Prueft ob der Bot sich auf einer Kreuzung befindet; weil Abgrundsensoren nicht gleichzeitig ueber Kreuzungslinie erscheinen, werden hier Kennungen fuer
@@ -233,12 +338,26 @@ uint8_t check_crossing(void) {
 		lineState = GOAL_FOUND; // Verhalten Ende
 		return True;
 	}
-	if (green_field()) {
+
+#ifdef CHECK_REVERSE_BEHAVIOUR
+	if (bot_reverse ) { // entgegengesetzte Richtung wurde eingenommen
 		way_back = True;
-		LOG_DEBUG("auf Gruen Umkehr");
-		lineState = TURN_ON_GREEN; // weiter mit Eintritt nach Gruenerkennung
+		bot_reverse=False;               // Kennung Richtungswechsel wegsetzen
+		LOG_DEBUG("Richtungswechsel-Umkehr");
+		lineState = TURN_ON_GREEN;       // weiter mit Eintritt nach Gruenerkennung
+		//deactivateBehaviour(bot_check_reverse_direction_behaviour);  //Verhaltensueberwachung Richtungsumkehr beenden
 		return True;
 	}
+#else
+	if (green_field(False)) { // Umkehrfeld Gruenfeld erkannt
+		way_back = True;
+		LOG_DEBUG("auf Gruen Umkehr");
+		lineState = TURN_ON_GREEN;       // weiter mit Eintritt nach Gruenerkennung
+		return True;
+	}
+#endif
+
+
 
 	if (sensBorderL > BORDER_DANGEROUS || sensBorderR > BORDER_DANGEROUS) {
 		// Kennungen setzen auf Querlinie erkannt links oder rechts voraus, also wenn Abgrundsensor Linie (vorausgesetzt Abgrund gibt es nicht) erkennt
@@ -266,10 +385,15 @@ uint8_t check_crossing(void) {
 	}
 
 	if (distance_reached(&lastpos_x, &lastpos_y)) {
-		LOG_DEBUG("Abstand gefahren und false");
 		border_side_l_fired = False;
 		border_side_r_fired = False;
+
+#ifdef CHECK_REVERSE_BEHAVIOUR
+		// Ueberwachungsverhalten zum Check auf entgegengesetzte Richtung
+		bot_check_reverse_direction(0);
+#endif
 	}
+
 
 	return False;
 }
@@ -285,12 +409,31 @@ uint8_t check_crossing(void) {
 		lineState = 99; // Verhalten Ende
 		return True;
 	}
-	if (green_field()) {
+
+#ifdef CHECK_REVERSE_BEHAVIOUR
+	if (bot_reverse ) { // entgegengesetzte Richtung wurde eingenommen
 		way_back = True;
-		LOG_DEBUG("auf Gruen Umkehr");
-		lineState = TURN_ON_GREEN; // weiter mit Eintritt nach Gruenerkennung
+		bot_reverse=False;               // Kennung Richtungswechsel wegsetzen
+		LOG_DEBUG("Richtungswechsel-Umkehr");
+		lineState = TURN_ON_GREEN;       // weiter mit Eintritt nach Gruenerkennung
+		deactivateBehaviour(bot_check_reverse_direction_behaviour);  //Verhaltensueberwachung Richtungsumkehr beenden
 		return True;
 	}
+
+    if (distance_reached(&lastpos_x, &lastpos_y))
+  	    // Ueberwachungsverhalten zum Check auf entgegengesetzte Richtung starten oder mit neuer Ausrichtung weiterpruefen
+	    bot_check_reverse_direction(0);
+
+#else
+  if (green_field(False)) { // Gruenfeld erkannt
+		way_back = True;
+		LOG_DEBUG("auf Gruen Umkehr");
+		lineState = TURN_ON_GREEN;       // weiter mit Eintritt nach Gruenerkennung
+		return True;
+	}
+
+#endif // Drehrichtungsumkehr mit Verhalten ueberwachen
+
 	return False;
 }
 #endif	// OPTIMAL_VERSION
@@ -341,14 +484,14 @@ void bot_line_shortest_way_behaviour(Behaviour_t * data) {
 		// cancel nur fuer die Linienfolger, die nicht Kreuzungen oder Abgrund erkennen
 		// der optimale Linienfolger 3 macht dies von sich aus
 #if FOLLOW_LINE_VERSION != OPTIMAL_LINE_BEHAVIOUR_VERSION
-		// fuer Cancel-Check_Verhalten letzten Positionen, also Botpos, belegen
-		lastpos_x = x_pos;
-		lastpos_y = y_pos;
-
 		// ebenfalls Kennungen initialisieren fuer Endeerkennung der Kreuzungen
 		border_side_l_fired = False;
 		border_side_r_fired = False;
 #endif
+        // fuer Cancel-Check_Verhalten letzten Positionen, also Botpos, belegen
+		lastpos_x = x_pos;
+		lastpos_y = y_pos;
+
 		bot_cancel_behaviour(data, bot_follow_line_behaviour, check_crossing);
 
 		lineState = CHECK_BORDER; // naechster Zustand
@@ -501,11 +644,13 @@ void bot_line_shortest_way_behaviour(Behaviour_t * data) {
 		break;
 
 	case TURN_ON_GREEN: // hierher nach Erkennung des Gruenfeldes mit Richtungsumkehr
-		LOG_DEBUG("Gruen erkannt und Umkehr");
 		deactivateBehaviour(bot_cancel_behaviour_behaviour); // Cancelverhalten fuer Linienfolger beenden
 		BLOCK_BEHAVIOUR(data, 500); // evtl. etwas warten
 		lineState = CHECK_LINE;
+#ifndef CHECK_REVERSE_BEHAVIOUR		// hat ja bereits die entgegengesetzte Richtung eingenommen und damit wieder in Ausgangs-Zielrichtung
 		bot_turn(data, 180);
+		LOG_DEBUG("Umkehr erkannt und bot_turn");
+#endif
 		break;
 
 	case GOAL_FOUND:

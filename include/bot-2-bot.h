@@ -34,6 +34,7 @@
 #include <stdlib.h>
 
 //#define DELETE_BOTS		/*!< wollen wir Bots aus der Liste loeschen koennen? */
+#define BOT_2_BOT_PAYLOAD_TEST_AVAILABLE	/*!< Aktiviert Test-Code fuer Bot-2-Bot Kommunikation mit Payload */
 
 //TODO:	Vielleicht noch weitere Infos pro Bot speichern?
 /*! Datentyp fuer Bot-Liste */

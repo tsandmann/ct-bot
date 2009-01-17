@@ -288,6 +288,8 @@ void bot_behave_init(void) {
 	#ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
 		// Linie folgen ueber Kreuzungen hinweg zum Ziel, kuerzester Weg befindet sich danach im Stack
 		insert_behaviour_to_list(&behaviour, new_behaviour(69, bot_line_shortest_way_behaviour, INACTIVE));
+		// Ueberwacherverhalten auf Fahren in entgegengesetzte Richtung bekommt hohe Prio, um vor bot_turn zu kommen
+		insert_behaviour_to_list(&behaviour, new_behaviour(169, bot_check_reverse_direction_behaviour, INACTIVE));
 	#endif
 
 	#ifdef BEHAVIOUR_OLYMPIC_AVAILABLE

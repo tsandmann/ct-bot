@@ -46,7 +46,6 @@
 #define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunizieren? */
 //#define BOT_2_BOT_AVAILABLE	/*!< Sollen Bots untereinander kommunizieren? */
 //#define BOT_2_BOT_PAYLOAD_AVAILABLE		/*!< Aktiviert Payload-Versand per Bot-2-Bot Kommunikation */
-//#define BOT_2_BOT_PAYLOAD_TEST_AVAILABLE	/*!< Aktiviert Test-Code fuer Bot-2-Bot Kommunikation mit Payload */
 
 //#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit im s und ms? */
 
@@ -207,9 +206,6 @@
 
 #ifndef BOT_2_BOT_AVAILABLE
 #undef BOT_2_BOT_PAYLOAD_AVAILABLE
-#endif
-#ifndef BOT_2_BOT_PAYLOAD_AVAILABLE
-#undef BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
 #endif
 
 #ifdef LOG_AVAILABLE

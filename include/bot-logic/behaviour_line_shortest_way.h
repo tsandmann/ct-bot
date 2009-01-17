@@ -71,6 +71,12 @@ void bot_line_shortest_way_forward(Behaviour_t * caller);
 void bot_line_shortest_way_backward(Behaviour_t * caller);
 
 /*!
+ * Verhalten zum Checken auf Einnehmen der entgegengesetzten Richtung (Linienende)
+ * @param *data	eigener Verhaltensdatensatz
+ */
+void bot_check_reverse_direction_behaviour(Behaviour_t * data);
+
+/*!
  * Display zum Verhalten
  */
 void bot_line_shortest_way_display(void);
