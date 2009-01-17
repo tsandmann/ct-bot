@@ -56,12 +56,8 @@ typedef struct _bot_list_entry_t {
 #ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
 #define BOT_2_BOT_PAYLOAD_TEST	get_type_of_payload_function(bot_2_bot_payload_test_verify)
 
-#define BOT_2_BOT_MAX_PAYLOAD			255
 #define BOT_2_BOT_PAYLOAD_WINDOW_SIZE	32
 
-#if BOT_2_BOT_MAX_PAYLOAD > MAX_PAYLOAD
-#error "BOT_2_BOT_MAX_PAYLOAD zu gross"
-#endif
 #if defined MCU && BOT_2_BOT_PAYLOAD_WINDOW_SIZE > BUFSIZE_IN
 #error "BOT_2_BOT_PAYLOAD_WINDOW_SIZE zu gross"
 #endif
@@ -73,7 +69,7 @@ extern void (* cmd_functions[])(command_t * cmd);	/*!< Funktionstabelle fuer all
 typedef struct {
 	void (* function)(void);	/*!< Callback-Funktion, die nach Abschluss des Empfangs ausgefuehrt wird */
 	void * data;				/*!< Zeiger auf Datenpuffer */
-	uint8_t size;				/*!< Groesse des Datenpuffers in Byte [0; 255] */
+	int16_t size;				/*!< Maximale Groesse des Datenpuffers in Byte */
 } bot_2_bot_payload_mappings_t;
 
 extern bot_2_bot_payload_mappings_t bot_2_bot_payload_mappings[];	/*!< Tabelle fuer alle Bot-2-Bot-Payload-Zuordnungen */

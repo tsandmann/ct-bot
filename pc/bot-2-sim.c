@@ -28,9 +28,9 @@
 
 #ifdef PC
 
-#include <stdio.h>      // for printf() and fprintf()
-#include <stdlib.h>     // for atoi() and exit()
-#include <string.h>     // for strlen()
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/time.h>
 #include <time.h>
 
@@ -46,7 +46,7 @@
 
 
 /* Linux with glibc:
- *   _REENTRANT to grab thread-safe libraries
+ * _REENTRANT to grab thread-safe libraries
  */
 #ifdef __linux__
 #define _REENTRANT
@@ -60,37 +60,37 @@
 #define low_init tcp_init	/*!< Low-Funktion zum Initialisieren */
 
 #ifdef WIN32
-	 /* These are winbase.h definitions, but to avoid including
-	tons of Windows related stuff, it is reprinted here */
+/* These are winbase.h definitions, but to avoid including
+ * tons of Windows related stuff, it is reprinted here */
 
-	typedef struct _FILETIME {
-		unsigned long dwLowDateTime;
-		unsigned long dwHighDateTime;
-	} FILETIME;
+typedef struct _FILETIME {
+	unsigned long dwLowDateTime;
+	unsigned long dwHighDateTime;
+} FILETIME;
 
-	void __stdcall GetSystemTimeAsFileTime(FILETIME*);
+void __stdcall GetSystemTimeAsFileTime(FILETIME*);
 
-	void gettimeofday_win(struct timeval* p, void* tz /* IGNORED */){
-		union {
-			long long ns100; // time since 1 Jan 1601 in 100ns units
-			FILETIME ft;
-		} _now;
+void gettimeofday_win(struct timeval * p, void * tz /* IGNORED */) {
+	union {
+		long long ns100; // time since 1 Jan 1601 in 100ns units
+		FILETIME ft;
+	} _now;
 
-		GetSystemTimeAsFileTime( &(_now.ft) );
-		p->tv_usec=(long)((_now.ns100 / 10LL) % 1000000LL );
-		p->tv_sec= (long)((_now.ns100-(116444736000000000LL))/10000000LL);
-		return;
-	}
+	GetSystemTimeAsFileTime(&(_now.ft));
+	p->tv_usec = (long) ((_now.ns100 / 10LL) % 1000000LL);
+	p->tv_sec = (long) ((_now.ns100 - (116444736000000000LL)) / 10000000LL);
+	return;
+}
 #endif	// WIN32
 
 /*!
- * Schleife, die Kommandos empfaengt und bearbeitet, bis ein Kommando vom Typ Frame kommt
+ * Schleife, die Kommandos empfaengt und bearbeitet, bis ein Kommando vom Typ frame kommt
  * @param frame	Kommando zum Abbruch
  * @return		Fehlercode
  */
-int8_t receive_until_Frame(int8_t frame) {
-	int8_t result = 0;
-	for(;;) {
+int8_t receive_until_Frame(uint8_t frame) {
+	int8_t result;
+	for (;;) {
 		result = command_read();
 		if (result != 0) {
 			/* Fehler werden in command_read() ausgegeben
@@ -100,8 +100,9 @@ int8_t receive_until_Frame(int8_t frame) {
 			command_evaluate();
 		}
 
-		if (received_command.request.command == frame)
+		if (received_command.request.command == frame) {
 			return 0;
+		}
 	}
 }
 
@@ -118,15 +119,16 @@ void bot_2_sim_init(void) {
 	receive_until_Frame(CMD_DONE);
 	command_write(CMD_DONE, SUB_CMD_NORM, &simultime, NULL, 0);
 	flushSendBuffer();
-	#ifdef BOT_2_BOT_AVAILABLE
-		receive_until_Frame(CMD_DONE);
-		/* hello (bot-)world! */
-		if (get_bot_address() <= 127) {
-			command_write_to(BOT_CMD_WELCOME, SUB_CMD_NORM, CMD_BROADCAST, NULL, NULL, 0);
-		}
-		command_write(CMD_DONE, SUB_CMD_NORM, &simultime, NULL, 0);
-		flushSendBuffer();
-	#endif	// BOT_2_BOT_AVAILABLE
+#ifdef BOT_2_BOT_AVAILABLE
+	receive_until_Frame(CMD_DONE);
+	/* hello (bot-)world! */
+	if (get_bot_address() <= 127) {
+		command_write_to(BOT_CMD_WELCOME, SUB_CMD_NORM, CMD_BROADCAST, NULL,
+				NULL, 0);
+	}
+	command_write(CMD_DONE, SUB_CMD_NORM, &simultime, NULL, 0);
+	flushSendBuffer();
+#endif	// BOT_2_BOT_AVAILABLE
 }
 
 #endif	// PC

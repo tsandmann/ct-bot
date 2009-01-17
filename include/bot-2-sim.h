@@ -23,8 +23,8 @@
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
  */
-#ifndef __bot_2_sim
-#define __bot_2_sim
+#ifndef BOT2SIM_H_
+#define BOT2SIM_H_
 
 #include "ct-Bot.h"
 #include "global.h"
@@ -35,21 +35,21 @@
 void bot_2_sim_init(void);
 
 /*!
- * Schleife, die Kommandos empfaengt und bearbeitet, bis ein Kommando vom Typ Frame kommt
+ * Schleife, die Kommandos empfaengt und bearbeitet, bis ein Kommando vom Typ frame kommt
  * @param frame Kommando zum Abbruch
  * @return		Fehlercode
  */
-int8_t receive_until_Frame(int8_t frame);
+int8_t receive_until_Frame(uint8_t frame);
 
 #ifdef WIN32
-	#include <sys/time.h>
-	/*!
-	 * Hilfsfunktion, die es nur auf dem PC gibt
-	 */
-	void gettimeofday_win(struct timeval* p, void* tz /* IGNORED */);
-	#define GETTIMEOFDAY gettimeofday_win	/*!< nur fuer Windows implementierte Funktion */
+#include <sys/time.h>
+/*!
+ * Hilfsfunktion, die es nur auf dem PC gibt
+ */
+void gettimeofday_win(struct timeval * p, void * tz /* IGNORED */);
+#define GETTIMEOFDAY gettimeofday_win	/*!< nur fuer Windows implementierte Funktion */
 #else
-	#define GETTIMEOFDAY gettimeofday	/*!< unter nicht-Win benutzen wir die Systemfunktion fuer gettimeofday */
+#define GETTIMEOFDAY gettimeofday	/*!< unter nicht-Win benutzen wir die Systemfunktion fuer gettimeofday */
 #endif	// WIN32
 
-#endif	// __bot_2_sim
+#endif	// BOT2SIM_H_

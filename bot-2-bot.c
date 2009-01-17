@@ -280,6 +280,8 @@ uint8_t get_type_of_payload_function(void(* func)(void)) {
 	return 255;
 }
 
+//TODO:	Bot-Adressen ueberpruefen
+
 /*!
  * Sendet eine Payload-Transferanfrage an einen anderen Bot
  * @param to			Empfaengeradresse
@@ -294,10 +296,10 @@ int8_t bot_2_bot_send_payload_request(uint8_t to, uint8_t type,
 		/* kein loop-back */
 		return -1;
 	}
-	if (size > BOT_2_BOT_MAX_PAYLOAD) {
-		/* Datenmenge zu gross */
-		return -2;
-	}
+//	if (size > BOT_2_BOT_MAX_PAYLOAD) {
+//		/* Datenmenge zu gross */
+//		return -2;
+//	}
 	LOG_DEBUG("Fordere Payload-Senderecht (%u) vom Typ %u bei Bot %u an", BOT_CMD_REQ, type, to);
 	LOG_DEBUG(" zu sendende Daten umfassen %d Bytes @ 0x%lx", size, (size_t) data);
 	command_write_to(BOT_CMD_REQ, 0, to, (int16_t *) &size, (int16_t *) &type, 0);
@@ -307,16 +309,15 @@ int8_t bot_2_bot_send_payload_request(uint8_t to, uint8_t type,
 	bot_2_bot_data = data;
 	bot_2_bot_payload_size = size;
 //TODO:	Timeouts
-#ifdef MCU
 	/* warten auf ACK */
 	while (bot_2_bot_payload_size >= 0) {
+#ifdef MCU
+//TODO:	receive_until_Frame() fuer MCU => einheitlicher Code hier fuer MCU und PC
 		while (uart_data_available() < sizeof(command_t)) {}
 		if (command_read() == 0) {
 			command_evaluate();
 		}
-	}
 #else	// PC
-	while (bot_2_bot_payload_size >= 0) {
 		LOG_DEBUG(" Warte auf (naechstes) ACK von Bot %u", to);
 		if (receive_until_Frame(BOT_CMD_ACK) != 0) {
 			LOG_DEBUG(" receive_until_Frame() meldet Fehler, Abbruch");
@@ -325,8 +326,8 @@ int8_t bot_2_bot_send_payload_request(uint8_t to, uint8_t type,
 			bot_2_bot_payload_size = 0;
 			return -3;
 		}
-	}
 #endif	// MCU
+	}
 	if (bot_2_bot_payload_size == -2) {
 		LOG_DEBUG(" Alle Daten fehlerfrei zu Bot %u uebertragen", to);
 		return 0;
@@ -351,16 +352,16 @@ void bot_2_bot_handle_payload_request(command_t * cmd) {
 	uint8_t error = 0;
 	if (type > sizeof(bot_2_bot_payload_mappings) / sizeof(bot_2_bot_payload_mappings[0])) {
 		LOG_DEBUG("  Typ %u ist ungueltig, Abbruch", type);
-		error++;
+		error = 1;
 	}
 //	if (bot_2_bot_payload_mappings[type].data == NULL) {
 //		LOG_DEBUG("  Typ %u ist nicht aktiv", type);
 //		error++;
 //	}
-	if (size > BOT_2_BOT_MAX_PAYLOAD) {
-		LOG_DEBUG("  Datenumfang ist zu gross, max. %u Bytes", BOT_2_BOT_MAX_PAYLOAD);
-		error++;
-	}
+//	if (size > BOT_2_BOT_MAX_PAYLOAD) {
+//		LOG_DEBUG("  Datenumfang ist zu gross, max. %u Bytes", BOT_2_BOT_MAX_PAYLOAD);
+//		error++;
+//	}
 	if (size > bot_2_bot_payload_mappings[type].size) {
 		LOG_DEBUG("  Datenumfang ist fuer Typ %u zu gross, max. %u Bytes", type, bot_2_bot_payload_mappings[type].size);
 		error++;
@@ -368,7 +369,7 @@ void bot_2_bot_handle_payload_request(command_t * cmd) {
 
 	if (error != 0) {
 		/* Anfrage ablehnen */
-		LOG_DEBUG(" Lehne Anfrage ab");
+		LOG_DEBUG(" Lehne Anfrage ab, error=%u", error);
 		int16_t result = 1;
 		command_write_to(BOT_CMD_ACK, 0, cmd->from, NULL, &result, 0);
 		bot_2_bot_payload_size = 0;
