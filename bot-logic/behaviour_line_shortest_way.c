@@ -291,24 +291,25 @@ static uint8_t dequeue_stack_crossing(int8_t * crosstype, int8_t * direction) {
  */
 uint8_t green_field(uint8_t goalcheck) {
 	if (crossing_reached && ((sensLineL > GROUND_GOAL_DEF - 5 && sensLineL
-			< GROUND_GOAL_DEF + 5) || (sensLineR > GROUND_GOAL_DEF - 5
+			< GROUND_GOAL_DEF + 5) && (sensLineR > GROUND_GOAL_DEF - 5
 			&& sensLineR < GROUND_GOAL_DEF + 5))) {
 #ifdef CHECK_REVERSE_BEHAVIOUR
-        if (goalcheck)  // nur fuer Zielcheck
+        if (goalcheck) {  // nur fuer Zielcheck
           return True;
+        }
 #else
         if (goalcheck) {  // bei Zielpruefung sofort True
         	return True;
         }
         else {
 		  greencounter++;
-		  LOG_DEBUG("Gruen erkannt counter %1d, l/r %1d %1d",greencounter,sensLineL,sensLineR);
-		  if (greencounter > 5) {  //muss mehrmals hintereinander Gruenfeld erkennen um Fehlausloesungen besser zu vermeiden
+		  LOG_DEBUG("Gruen erkannt counter %1d, l/r %1d %1d", greencounter, sensLineL, sensLineR);
+		  if (greencounter > 5) {  // muss mehrmals hintereinander Gruenfeld erkennen um Fehlausloesungen besser zu vermeiden
 			  greencounter = 0;
   		      return True;
 		  }
         }
-#endif
+#endif	// CHECK_REVERSE_BEHAVIOUR
 	}
 	return False;
 }
