@@ -83,7 +83,7 @@
 //#define SP03_AVAILABLE		/*!< Sprachmodul SP03 vorhanden */
 
 //#define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung */
-//#define SPI_AVAILABLE			/*!< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren - Hinweise in mcu/mmc.c beachten! */
+//#define SPI_AVAILABLE			/*!< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 //#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
 //#define OS_AVAILABLE			/*!< Aktiviert BotOS fuer Threads und Scheduling */
 

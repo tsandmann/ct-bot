@@ -38,7 +38,6 @@ extern uint8_t servo_active;	/*!< 0, wenn kein Servo aktiv, sonst Bit der gerade
 
 /*!
  * Dieses Verhalten fuehrt ein Servo-Kommando aus und schaltet danach den Servo wieder ab
- *
  * @param *data der Verhaltensdatensatz
  */
 void bot_servo_behaviour(Behaviour_t * data);

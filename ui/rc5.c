@@ -223,10 +223,10 @@ void default_key_handler(void) {
 		/* Servoaktivitaet */
 		#ifdef BEHAVIOUR_SERVO_AVAILABLE
 		#ifdef RC5_CH_PLUS
-		case RC5_CH_PLUS:		bot_servo(0, SERVO1, DOOR_CLOSE); break;
+		case RC5_CH_PLUS:		bot_servo(NULL, SERVO1, DOOR_CLOSE); break;
 		#endif
 		#ifdef RC5_CH_MINUS
-		case RC5_CH_MINUS:		bot_servo(0, SERVO1, DOOR_OPEN);  break;
+		case RC5_CH_MINUS:		bot_servo(NULL, SERVO1, DOOR_OPEN);  break;
 		#endif
 		#endif	// BEHAVIOUR_SERVO_AVAILABLE
 

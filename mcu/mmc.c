@@ -43,6 +43,9 @@
  * AN, dann wird die Kommunikation mit der MMC per Hardware gesteuert - Vorteil ist eine
  * hoehere Transfer-Geschwindigkeit zur MMC (Faktor 2) und es sind 530 Byte weniger im
  * Flash belegt.
+ * Zu beachten ist, dass SPI_AVAILABLE von jetzt an immer eingeschaltet sein muss, auch
+ * wenn man keine MMC-Unterstuetzung benoetigt, weil die Radencoder-Auswertung die
+ * veraenderte Pin-Belegung immer beruecksichtigen muss.
  */
 
 #include "ct-Bot.h"

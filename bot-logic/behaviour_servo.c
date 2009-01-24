@@ -31,14 +31,11 @@
 
 #include "motor.h"
 #include "timer.h"
-/*! Uebergabevariable fuer Servo-Verhalten */
-static uint8_t servo_nr;
-static uint8_t servo_pos;
+static uint8_t servo_nr;	/*!< Nr. des aktiven Servos */
 uint8_t servo_active = 0;	/*!< 0, wenn kein Servo aktiv, sonst Bit der gerade aktiven Servos gesetzt */
 
 /*!
  * Dieses Verhalten fuehrt ein Servo-Kommando aus und schaltet danach den Servo wieder ab
- *
  * @param *data der Verhaltensdatensatz
  */
 void bot_servo_behaviour(Behaviour_t * data) {
@@ -59,11 +56,10 @@ void bot_servo(Behaviour_t * caller, uint8_t servo, uint8_t pos) {
 	if (pos == DOOR_CLOSE && sensDoor == 0) {
 		return;	// Klappe ist bereits geschlossen
 	}
-	switch_to_behaviour(caller, bot_servo_behaviour, OVERRIDE);	// Warte-Verahlten an
+	switch_to_behaviour(caller, bot_servo_behaviour, OVERRIDE);	// Warte-Verhalten an
 
 	servo_active |= servo;
 	servo_set(servo, pos);	// Servo-PWM einstellen
-	servo_pos = pos;		// Zielposition merken
 	servo_nr = servo;		// Servo-Nr speichern
 }
 #endif	// BEHAVIOUR_SERVO_AVAILABLE
