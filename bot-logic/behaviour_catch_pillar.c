@@ -42,8 +42,8 @@
 #define END			99
 
 // Zustaende für das Ausladeverhalten START und END sind bereits weiter oben definiert
-#define GO_BACK		1
-#define CLOSE_DOOR	2
+#define GO_BACK		21
+#define CLOSE_DOOR	22
 
 static uint8_t catch_pillar_state = START;		/*!< Statusvariable für das Einfang-Verhalten */
 static uint8_t unload_pillar_state = START;		/*!< Statusvariable für das Auslade-Verhalten */
@@ -276,7 +276,7 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 
 	case MEASURE_DIST:
 		// genaue Entfernung zum Hindernis messen
-		bot_measure_distance(data, &distLeft, &distRight);
+		bot_measure_distance(data, &distLeft, &distRight, 15);
 		catch_pillar_state = OPEN_DOOR;
 		break;
 
@@ -310,15 +310,19 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 	case GO_TO_POINT:
 		bot_goto_pos(data, ((obj_posL.x + obj_posR.x) / 2), ((obj_posL.y
 				+ obj_posR.y) / 2), 999);
+		catch_pillar_state = CLOSE_DOOR;
+		break;
+
+	case CLOSE_DOOR:
+		if (sensTrans == 1) {
+			// Klappe schliessen falls Objekt eingefangen wurde
+			bot_servo(data, SERVO1, DOOR_CLOSE);
+		}
 		catch_pillar_state = END;
 		break;
 
 	default:
 		deactivateBehaviour(bot_cancel_behaviour_behaviour);
-		if (sensTrans == 1) {
-			// Klappe schliessen falls Objekt eingefangen wurde
-			bot_servo(data, SERVO1, DOOR_CLOSE);
-		}
 		exit_behaviour(data, sensTrans); // == SUBSUCCESS, falls Objekt eingefangen
 		break;
 	}
@@ -443,16 +447,21 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 	case GO_TO_POINT:
 		bot_goto_pos(data, obj_pos.x, obj_pos.y, 999);
 		bot_cancel_behaviour(data, bot_goto_pos_behaviour, goto_pos_cancel);
+		catch_pillar_state = CLOSE_DOOR;
+		break;
+
+		/* Klappe zu */
+	case CLOSE_DOOR:
+		if (sensTrans == 1) {
+			// Klappe schliessen falls Objekt eingefangen wurde
+			bot_servo(data, SERVO1, DOOR_CLOSE);
+		}
 		catch_pillar_state = END;
 		break;
 
 		/* Ende */
 	default:
 		deactivateBehaviour(bot_cancel_behaviour_behaviour);
-		if (sensTrans == 1) {
-			// Klappe schliessen falls Objekt eingefangen wurde
-			bot_servo(data, SERVO1, DOOR_CLOSE);
-		}
 		exit_behaviour(data, sensTrans); // == SUBSUCCESS, falls Objekt eingefangen
 		break;
 	}
