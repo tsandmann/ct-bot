@@ -130,12 +130,14 @@ typedef struct {
 #define SUB_REMOTE_CALL_ABORT	'A'		/*!< Hiermit signalisiert der PC dem MCU die Berarbeitung des laufenden Remote-Calls zu beenden */
 
 // Kommandos fuer Map
-#define CMD_MAP			'Q'	/*!< Kommando fuer Map */
-#define SUB_MAP_DATA_1	'D'	/*!< Daten eines Map-Blocks (bzw. die ersten 128 Byte davon, es sind also 4 Kommandos noetig fuer einen kompletten Block) */
-#define SUB_MAP_DATA_2	'E'	/*!< Map-Daten Teil 2 */
-#define SUB_MAP_DATA_3	'F'	/*!< Map-Daten Teil 3 */
-#define SUB_MAP_DATA_4	'G'	/*!< Map-Daten Teil 4 */
-#define SUB_MAP_FLUSH	'U'	/*!< Aufforderung alle ausstehenden Updates zu uebertragen */
+#define CMD_MAP				'Q'	/*!< Kommando fuer Map */
+#define SUB_MAP_DATA_1		'D'	/*!< Daten eines Map-Blocks (bzw. die ersten 128 Byte davon, es sind also 4 Kommandos noetig fuer einen kompletten Block) */
+#define SUB_MAP_DATA_2		'E'	/*!< Map-Daten Teil 2 */
+#define SUB_MAP_DATA_3		'F'	/*!< Map-Daten Teil 3 */
+#define SUB_MAP_DATA_4		'G'	/*!< Map-Daten Teil 4 */
+#define SUB_MAP_FLUSH		'U'	/*!< Aufforderung alle ausstehenden Updates zu uebertragen */
+#define SUB_MAP_LINE		'L'	/*!< Linie zeichnen */
+#define SUB_MAP_CLEAR_LINES	'X'	/*!< Linien loeschen */
 
 
 #define DIR_REQUEST	0			/*!< Richtung fuer Anfragen */

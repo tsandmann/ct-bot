@@ -45,7 +45,7 @@ static uint8_t scheduler_ticks = 0;
 /*!
  Interrupt Handler fuer Timer/Counter 2(A)
  */
-#ifdef __AVR_ATmega644__
+#ifdef MCU_ATMEGA644X
 ISR(TIMER2_COMPA_vect) {
 #else
 ISR(SIG_OUTPUT_COMPARE2) {
@@ -94,11 +94,11 @@ ISR(SIG_OUTPUT_COMPARE2) {
  * initilaisiert Timer 0 und startet ihn
  */
 void timer_2_init(void) {
-	TCNT2  = 0x00;            // TIMER vorladen
+	TCNT2 = 0x00;            // TIMER vorladen
 
 	// aendert man den Prescaler muss man die Formel fuer OCR2 anpassen !!!
 	// Compare Register nur 8-Bit breit --> evtl. Teiler anpassen
-	#ifdef __AVR_ATmega644__
+	#ifdef MCU_ATMEGA644X
 		TCCR2A = _BV(WGM21);	// CTC Mode
 		TCCR2B = _BV(CS22);		// Prescaler = CLK/64
 		OCR2A = ((XTAL/64/TIMER_2_CLOCK) - 1);	// Timer2A
@@ -108,7 +108,7 @@ void timer_2_init(void) {
 		TCCR2 = _BV(WGM21) | _BV(CS22);
 		OCR2 = ((XTAL/64/TIMER_2_CLOCK) - 1);
 		TIMSK  |= _BV(OCIE2);	// enable Output Compare 0 overflow interrupt
-	#endif
+	#endif	// MCU_ATMEGA644X
 
 	sei();                       // enable interrupts
 }

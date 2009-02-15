@@ -38,67 +38,64 @@
 #include "motor-low.h"
 
 /* Drehrichtung der Motoren */
-#define BOT_DIR_L_PIN 		(1<<6)	// PC7
+#define BOT_DIR_L_PIN 	(1<<6)	// PC7
 #define BOT_DIR_L_PORT 	PORTC
-#define BOT_DIR_L_DDR 		DDRC
+#define BOT_DIR_L_DDR 	DDRC
 
-#define BOT_DIR_R_PIN 		(1<<7)	// PC6
+#define BOT_DIR_R_PIN 	(1<<7)	// PC6
 #define BOT_DIR_R_PORT 	PORTC
-#define BOT_DIR_R_DDR 		DDRC
+#define BOT_DIR_R_DDR 	DDRC
 
 #define PWM_L 	OCR1A
 #define PWM_R 	OCR1B
 
-#define PWM_CLK_0	 (_BV(CS02)  |  _BV(CS00))			/*!< Prescaler fuer PWM 0 = 1024 */
-//#define PWM_CLK_2	 (_BV(CS22) | _BV(CS21) |_BV(CS20)) /*!< Prescaler fuer PWM 2 =1024 */
+#define PWM_CLK_0	 (_BV(CS02) | _BV(CS00))			/*!< Prescaler fuer PWM 0 = 1024 */
+//#define PWM_CLK_2	 (_BV(CS22) | _BV(CS21) |_BV(CS20)) /*!< Prescaler fuer PWM 2 = 1024 */
 
 volatile int16_t motor_left;	/*!< zuletzt gestellter Wert linker Motor */
 volatile int16_t motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
 
 /*!
  * Timer 0: Kontrolliert den Servo per PWM
- * PWM loescht bei erreichen. daher steht in OCR0 255-Speed!!!
- * initilaisiert Timer 0 und startet ihn
+ * Initilaisiert Timer 0 und startet ihn
  */
 static void pwm_0_init(void) {
-	DDRB |= (1<<3);			   // PWM-Pin als Output
-	TCNT0  = 0x00;            // TIMER0 vorladen
+	DDRB |= (1 << 3);	// PWM-Pin als Output
+	TCNT0 = 0x00;		// TIMER0 vorladen
 
-	#ifdef __AVR_ATmega644__
-		TCCR0A = _BV(WGM00)  | 	// Normal PWM
-			 	 _BV(COM0A1);	// Clear on Compare , Set on Top
+#ifdef MCU_ATMEGA644X
+	TCCR0A = _BV(WGM00) |	// Phase Correct PWM Mode
+			 _BV(COM0A1); 	// Clear on Compare Match when up-counting. Set on Compare Match when down-counting
 
-		OCR0A = 8;
-	#else
-		TCCR0 = _BV(WGM00) | 	// Normal PWM
-				_BV(COM01);		// Clear on Compare , Set on Top
+#else
+	TCCR0 = _BV(WGM00) |	// Phase Correct PWM Mode
+			_BV(COM01);		// Clear on Compare Match when up-counting. Set on Compare Match when down-counting
 
-		OCR0 = 8;	// PWM loescht bei erreichen. daher steht in OCR0 255-Speed!!!
-	#endif
+#endif	// MCU_ATMEGA644X
 }
 
 /*!
  * Timer 1: Kontrolliert die Motoren per PWM
- * PWM loescht bei erreichen. daher steht in OCR1A/OCR1B 255-Speed!!!
- * initilaisiert Timer 0 und startet ihn
+ * PWM loescht bei erreichen. Daher steht in OCR1A/OCR1B 511-Speed!!!
+ * Initilaisiert Timer 0 und startet ihn
  */
 static void pwm_1_init(void) {
-	DDRD |= 0x30 ;			  // PWM-Pins als Output
-	TCNT1 = 0x0000;           // TIMER1 vorladen
+	DDRD |= 0x30;	// PWM-Pins als Output
+	TCNT1 = 0x0000;	// TIMER1 vorladen
 
 	TCCR1A = _BV(WGM11)  |				// Fast PWM 9 Bit
 			 _BV(COM1A1) |_BV(COM1A0) |	// Clear on Top, Set on Compare
 			 _BV(COM1B1) |_BV(COM1B0);	// Clear on Top, Set on Compare
 
 	TCCR1B = _BV(WGM12) |
-	#ifdef SPEED_CONTROL_AVAILABLE
-			 _BV(CS10);					// Prescaler = 1	=>	31.2 kHz
-	#else
-			 _BV(CS12);					// Prescaler = 256	=>	122 Hz
-	#endif	// SPEED_CONTROL_AVAILABLE
+#ifdef SPEED_CONTROL_AVAILABLE
+	_BV(CS10);		// Prescaler = 1	=>	31.2 kHz
+#else
+	_BV(CS12);		// Prescaler = 256	=>	122 Hz
+#endif	// SPEED_CONTROL_AVAILABLE
 
-	OCR1A = 255;	// PWM loescht bei erreichen. daher steht in OCR1A 255-Speed!!!
-	OCR1B = 255;	// PWM loescht bei erreichen. daher steht in OCR1B 255-Speed!!!
+	OCR1A = 511;	// PWM loescht bei erreichen. daher steht in OCR1A 511-Speed!!!
+	OCR1B = 511;	// PWM loescht bei erreichen. daher steht in OCR1B 511-Speed!!!
 }
 
 // Kollidiert derzeit mit Timer2 fuer IR
@@ -130,11 +127,11 @@ void motor_low_init() {
 	pwm_0_init();
 	pwm_1_init();
 //	pwm_2_init();	// Kollidiert mit Timer2 fuer IR-Fernbedienung
-	motor_left = 0;
+	motor_left  = 0;
 	motor_right = 0;
 	PWM_L = 511;
 	PWM_R = 511;
-	direction.left = DIRECTION_FORWARD;
+	direction.left  = DIRECTION_FORWARD;
 	direction.right = DIRECTION_FORWARD;
 }
 
@@ -143,45 +140,44 @@ void motor_low_init() {
  * low-level
  * @param dev Motor (0: links; 1: rechts)
  */
-void motor_update(uint8 dev) {
+void motor_update(uint8_t dev) {
 	if (dev == 0) {
 		/* linker Motor */
-		if (direction.left == DIRECTION_FORWARD) BOT_DIR_L_PORT |= BOT_DIR_L_PIN;	//vorwaerts
-		else BOT_DIR_L_PORT &= ~BOT_DIR_L_PIN;	// rueckwaerts
+		if (direction.left == DIRECTION_FORWARD) BOT_DIR_L_PORT |= BOT_DIR_L_PIN; // vorwaerts
+		else BOT_DIR_L_PORT &= ~BOT_DIR_L_PIN; // rueckwaerts
 		PWM_L = 511 - motor_left;
 	} else {
 		/* rechter Motor */
 		/* Einer der Motoren ist invertiert, da er ja in die andere Richtung schaut */
-		if (direction.right == DIRECTION_BACKWARD) BOT_DIR_R_PORT |= BOT_DIR_R_PIN;	// rueckwaerts
-		else BOT_DIR_R_PORT &= ~BOT_DIR_R_PIN;	// vorwaerts
+		if (direction.right == DIRECTION_BACKWARD) BOT_DIR_R_PORT |= BOT_DIR_R_PIN; // rueckwaerts
+		else BOT_DIR_R_PORT &= ~BOT_DIR_R_PIN; // vorwaerts
 		PWM_R = 511 - motor_right;
 	}
 }
 
 /*!
- * @brief		Stellt die Servos
+ * Stellt die Servos
  * @param servo	Nummer des Servos
  * @param pos	Zielwert
  * Sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus
  */
-void servo_low(uint8 servo, uint8 pos) {
+void servo_low(uint8_t servo, uint8_t pos) {
 	if (servo == SERVO1) {
 		if (pos == SERVO_OFF) {
-			#ifdef __AVR_ATmega644__
-				TCCR0B &= ~PWM_CLK_0 ; // PWM aus
-			#else
-				TCCR0 &= ~PWM_CLK_0 ; // PWM aus
-			#endif
+#ifdef MCU_ATMEGA644X
+			TCCR0B &= ~PWM_CLK_0; // PWM aus
+#else
+			TCCR0 &= ~PWM_CLK_0; // PWM aus
+#endif	// MCU_ATMEGA644X
 		} else {
-			#ifdef __AVR_ATmega644__
-				TCCR0B |= PWM_CLK_0; // PWM an
-				OCR0A=pos;
-			#else
-				TCCR0 |= PWM_CLK_0; // PWM an
-				OCR0=pos;
-			#endif
+#ifdef MCU_ATMEGA644X
+			TCCR0B |= PWM_CLK_0; // PWM an
+			OCR0A = pos;
+#else
+			TCCR0 |= PWM_CLK_0; // PWM an
+			OCR0 = pos;
+#endif	// MCU_ATMEGA644X
 		}
-
 	}
 }
 

@@ -200,6 +200,10 @@
 	#endif
 #endif
 
+#ifndef BEHAVIOUR_AVAILABLE
+	#undef MAP_AVAILABLE
+#endif
+
 #ifdef MAP_AVAILABLE
 	#define OS_AVAILABLE		// Map braucht BotOS
 #endif

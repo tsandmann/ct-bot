@@ -485,12 +485,12 @@ void motor_init(void){
  * @param pos	Zielwert
  * Sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus
  */
-void servo_set(uint8 servo, uint8 pos){
-	if ((servo == SERVO1) && (pos != SERVO_OFF)){
+void servo_set(uint8_t servo, uint8_t pos) {
+	if ((servo == SERVO1) && (pos != SERVO_OFF)) {
 		if (pos < DOOR_CLOSE) pos = DOOR_CLOSE;
 		if (pos > DOOR_OPEN) pos = DOOR_OPEN;
 	}
-	servo_low(servo,pos);
+	servo_low(servo, pos);
 }
 
 #ifdef SPEED_CONTROL_AVAILABLE

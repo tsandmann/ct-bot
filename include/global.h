@@ -88,6 +88,10 @@
 #else
 #include <avr/signal.h>
 #endif
+
+#if defined __AVR_ATmega644__ || defined __AVR_ATmega644P__
+#define MCU_ATMEGA644X	/*!< ATmega644-Familie (ATmega644 oder ATmega644P) */
+#endif
 #endif	// MCU
 
 /*!

@@ -40,17 +40,18 @@
 #include "mmc.h"
 #include "mmc-vm.h"
 #include "pos_store.h"
+#include "timer.h"
 #include <stdlib.h>
 
 #ifdef RC5_AVAILABLE
 
-uint16 RC5_Code = 0;	/*!< Letzter empfangener RC5-Code */
+uint16_t RC5_Code = 0;	/*!< Letzter empfangener RC5-Code */
 
 /*!
  * @brief			Setzt das Display auf eine andere Ausgabe.
  * @param screen	Parameter mit dem zu setzenden Screen.
  */
-static void rc5_screen_set(uint8 screen) {
+static void rc5_screen_set(uint8_t screen) {
 #ifdef DISPLAY_AVAILABLE
 	if (screen == DISPLAY_SCREEN_TOGGLE)
 		display_screen++;			// zappen
@@ -80,9 +81,9 @@ static void rc5_emergency_stop(void) {
  * @param left	linke, relative Geschwindigkeitsaenderung
  * @param right	rechte, relative Geschwindigkeitsaenderung
  */
-static void rc5_bot_change_speed(int16 left, int16 right) {
+static void rc5_bot_change_speed(int16_t left, int16_t right) {
 #ifdef BEHAVIOUR_AVAILABLE
-	int16 old;
+	int16_t old;
 	old = target_speed_l;
 	target_speed_l += left;
 	if ((target_speed_l < -BOT_SPEED_MAX) || (target_speed_l > BOT_SPEED_MAX))
@@ -131,7 +132,7 @@ static void bot_reset(void) {
  * @brief		Verarbeitet die Zifferntasten.
  * @param key	Parameter mit der betaetigten Zifferntaste
  */
-static void rc5_number(uint8 key) {
+static void rc5_number(uint8_t key) {
 	switch (key) {	// richtige Aktion heraussuchen
 		#ifdef BEHAVIOUR_AVAILABLE
 			case 0:	target_speed_l = BOT_SPEED_STOP; target_speed_r = BOT_SPEED_STOP; break;
@@ -248,8 +249,8 @@ void default_key_handler(void) {
  * @brief	Liest ein RC5-Codeword und wertet es aus
  */
 void rc5_control(void) {
-	static uint16 RC5_Last_Toggle = 1;	/*!< Toggle-Wert des zuletzt empfangenen RC5-Codes*/
-	uint16 rc5 = ir_read();				// empfangenes RC5-Kommando
+	static uint16_t RC5_Last_Toggle = 1; /*!< Toggle-Wert des zuletzt empfangenen RC5-Codes */
+	uint16_t rc5 = ir_read(); // empfangenes RC5-Kommando
 
 	if (rc5 != 0) {
 		/* Toggle kommt nicht im Simulator, immer gewechseltes Toggle-Bit sicherstellen */
@@ -257,13 +258,13 @@ void rc5_control(void) {
 		RC5_Last_Toggle = !(rc5 & RC5_TOGGLE);
 #endif
 		/* Bei Aenderung des Toggle-Bits, entspricht neuem Tastendruck, gehts nur weiter */
-		if ((rc5 & RC5_TOGGLE) != RC5_Last_Toggle){	// Nur Toggle-Bit abfragen, bei Ungleichheit weiter
-			RC5_Last_Toggle = rc5 & RC5_TOGGLE;           // Toggle-Bit neu belegen
-			RC5_Code = rc5 & RC5_MASK;	// alle uninteressanten Bits ausblenden
+		if ((rc5 & RC5_TOGGLE) != RC5_Last_Toggle) { // Nur Toggle-Bit abfragen, bei Ungleichheit weiter
+			RC5_Last_Toggle = rc5 & RC5_TOGGLE; // Toggle-Bit neu belegen
+			RC5_Code = rc5 & RC5_MASK; // alle uninteressanten Bits ausblenden
 		}
 	}
 #ifndef DISPLAY_AVAILABLE
-	default_key_handler();	// Falls Display aus ist, ist auch GUI aus => Tastenbehandlung hier abarbeiten
+	default_key_handler(); // Falls Display aus ist, ist auch GUI aus => Tastenbehandlung hier abarbeiten
 #endif
 }
 

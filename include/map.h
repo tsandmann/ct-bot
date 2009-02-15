@@ -167,6 +167,25 @@ static inline int16_t map_to_world(uint16_t map_koord) {
 #define map_get_max_x() map_to_world(map_max_x)		/*!< Maximum in X-Richtung */
 #define map_get_max_y() map_to_world(map_max_y)		/*!< Maximum in Y-Richtung */
 
+#ifdef MAP_2_SIM_AVAILABLE
+/*!
+ * Zeichnet eine Linie in die Map-Anzeige des Sim
+ * @param from	Startpunkt der Linie
+ * @param to	Endpunkt der Linie
+ * @param color	Farbe der Linie: 0=gruen, 1=rot, sonst schwarz
+ */
+void map_draw_line(position_t from, position_t to, uint8_t color);
+
+/*!
+ * Zeichnet ein Rechteck in die Map-Anzeige des Sim
+ * @param from	Startpunkt der Geraden mittig durch das Rechteck
+ * @param to	Endpunkt der Geraden mittig durch das Rechteck
+ * @param width	Breite des Rechtecks (jeweils width/2 links und rechts der Gerade)
+ * @param color	Farbe der Linien: 0=gruen, 1=rot, sonst schwarz
+ */
+void map_draw_rect(position_t from, position_t to, uint8_t width, uint8_t color);
+#endif	// MAP_2_SIM_AVAILABLE
+
 #ifdef PC
 char * map_file;	/*!< Dateiname fuer Ex- / Import */
 

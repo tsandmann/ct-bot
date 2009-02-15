@@ -44,6 +44,7 @@
 #include "os_thread.h"
 #include "math_utils.h"
 #include "command.h"
+#include "motor.h"
 
 #ifdef MAP_AVAILABLE
 
@@ -58,6 +59,8 @@
 //#define DEBUG_MAP_TIMES	// Schalter um Performance-Messungen fuer MMC anzumachen
 //#define DEBUG_STORAGE		// Noch mehr Ausgaben zum Thema organisation der Kartenstruktur, Macroblocks, Sections
 //#define DEBUG_SCAN_OTF	// Debug-Infos des Update-Threads an
+//#define DEBUG_GET_RATIO	// zeichnet Debug-Infos in die Map-Anzeige des Sim, gruen: Bereich frei, rot: Bereich nicht (ganz) frei
+//#define DEBUG_GET_RATIO_VERBOSE	// zeichnet detaillierte Infos in die Map-Anzeige, gruen: freie Felder, rot: belegte Felder
 
 #define MAP_INFO_AVAILABLE
 #ifdef MCU
@@ -65,6 +68,11 @@
 	#undef MAP_INFO_AVAILABLE	// spart Flash
 //TODO:	Map-2-Sim fuer MCU optimieren / anpassen
 	#undef MAP_2_SIM_AVAILABLE	// Map-2-Sim (noch) nicht fuer MCU ausgelegt
+#endif
+
+#ifndef MAP_2_SIM_AVAILABLE
+#undef DEBUG_GET_RATIO
+#undef DEBUG_GET_RATIO_VERBOSE
 #endif
 
 #ifndef LOG_AVAILABLE
@@ -283,7 +291,7 @@ static uint16_t world_to_map(int16_t koord) {
 	#warning "MAP_RESOLUTION ist kein Teiler von 1000, Code in world_to_map() anpassen!"
 #endif
 #if defined MCU && MAP_RESOLUTION == 125
-	asm volatile(
+	__asm__ __volatile__(
 		"lsr %B0				\n\t"
 		"ror %A0				\n\t"
 		"lsr %B0				\n\t"
@@ -416,12 +424,13 @@ static map_section_t * get_section(uint16_t x, uint16_t y) {
 			/* Bot-Position berechnen */
 			uint16_t x_in_map = world_to_map(x_pos);
 			uint16_t y_in_map = world_to_map(y_pos);
+			int16_t heading_in_map = heading;
 
 			for (i=0; i<MAP_2_SIM_BUFFER_SIZE; i++) {
 				mmc_read_sector(map_start_block + send_buffer[i], map_buffer);
 				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, (int16_t *)&send_buffer[i], (int16_t *)&x_in_map, 128, map_buffer);
 				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, (int16_t *)&send_buffer[i], (int16_t *)&y_in_map, 128, &map_buffer[128]);
-				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, (int16_t *)&send_buffer[i], NULL, 128, &map_buffer[256]);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, (int16_t *)&send_buffer[i], &heading_in_map, 128, &map_buffer[256]);
 				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_4, (int16_t *)&send_buffer[i], NULL, 128, &map_buffer[384]);
 			}
 
@@ -854,7 +863,7 @@ static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
 
 	/* Gehe alle Felder der Reihe nach durch */
 	uint16_t lX = x1;
-	uint16_t lY = y2;
+	uint16_t lY = y1;
 
 	int8_t sX = (x2 < x1 ? -1 : 1);
 	uint16_t dX = abs(x2 - x1);	// Laenge der Linie in X-Richtung
@@ -863,9 +872,15 @@ static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
 	uint16_t dY = abs(y2 - y1);	// Laenge der Linie in Y-Richtung
 
 	int16_t w = 0;
+	width /= 2;
 	if (width == 0) {
 		width = 1;
 	}
+
+#ifdef DEBUG_GET_RATIO_VERBOSE
+	int16_t keep1 = 4;
+	command_write(CMD_MAP, SUB_MAP_CLEAR_LINES, &keep1, NULL, 0);
+#endif	// DEBUG_GET_RATIO_VERBOSE
 
 	/* Hangle Dich an der laengeren Achse entlang */
 	if (dX >= dY) {
@@ -875,6 +890,17 @@ static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
 				int8_t field = access_field(lX + i * sX, lY + w, 0, 0);
 				if (field >= min_val && field <= max_val) {
 					count++;
+#ifdef DEBUG_GET_RATIO_VERBOSE
+					position_t tmp;
+					tmp.x = lX + i * sX;
+					tmp.y = lY + w;
+					map_draw_line(tmp, tmp, 0);
+				} else {
+					position_t tmp;
+					tmp.x = lX + i * sX;
+					tmp.y = lY + w;
+					map_draw_line(tmp, tmp, 1);
+#endif	// DEBUG_GET_RATIO_VERBOSE
 				}
 			}
 
@@ -891,6 +917,17 @@ static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
 				int8_t field = access_field(lX + w, lY + i * sY, 0, 0);
 				if (field >= min_val && field <= max_val) {
 					count++;
+#ifdef DEBUG_GET_RATIO_VERBOSE
+					position_t tmp;
+					tmp.x = lX + w;
+					tmp.y = lY + i * sY;
+					map_draw_line(tmp, tmp, 0);
+				} else {
+					position_t tmp;
+					tmp.x = lX + w;
+					tmp.y = lY + i * sY;
+					map_draw_line(tmp, tmp, 1);
+#endif	// DEBUG_GET_RATIO_VERBOSE
 				}
 			}
 
@@ -904,7 +941,22 @@ static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
 
 	/* Verhaeltnis zu allen Feldern berechnen */
 	uint16_t fields = i * width * 2;
-	return (uint32_t)count * 255 / fields;
+	uint8_t result = (uint32_t)count * 255 / fields;
+
+#ifdef DEBUG_GET_RATIO
+#ifndef DEBUG_GET_RATIO_VERBOSE
+	int16_t keep2 = 12;
+	command_write(CMD_MAP, SUB_MAP_CLEAR_LINES, &keep2, NULL, 0);
+#endif
+	position_t from, to;
+	from.x = x1;
+	from.y = y1;
+	to.x = x2;
+	to.y = y2;
+	map_draw_rect(from, to, width * 2, result == MAP_RATIO_FULL ? 0 : 1);
+#endif	// DEBUG_GET_RATIO
+
+	return result;
 }
 
 /*!
@@ -1040,6 +1092,62 @@ uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y)
 #endif
 
 
+#ifdef MAP_2_SIM_AVAILABLE
+/*!
+ * Zeichnet eine Linie in die Map-Anzeige des Sim
+ * @param from	Startpunkt der Linie
+ * @param to	Endpunkt der Linie
+ * @param color	Farbe der Linie: 0=gruen, 1=rot, sonst schwarz
+ */
+void map_draw_line(position_t from, position_t to, uint8_t color) {
+	// Datenformat: {from.x, from.y, to.x, to.y} als payload, color in data_l
+	uint8_t data[8];
+	uint16_t * ptr = (uint16_t *)&data[0];
+	*ptr = from.x;
+	ptr++;
+	*ptr = from.y;
+	ptr++;
+	*ptr = to.x;
+	ptr++;
+	*ptr = to.y;
+	int16_t c = color;
+	command_write_rawdata(CMD_MAP, SUB_MAP_LINE, &c, NULL, sizeof(data), data);
+}
+
+/*!
+ * Zeichnet ein Rechteck in die Map-Anzeige des Sim
+ * @param from	Startpunkt der Geraden mittig durch das Rechteck
+ * @param to	Endpunkt der Geraden mittig durch das Rechteck
+ * @param width	Breite des Rechtecks (jeweils width/2 links und rechts der Gerade)
+ * @param color	Farbe der Linien: 0=gruen, 1=rot, sonst schwarz
+ */
+void map_draw_rect(position_t from, position_t to, uint8_t width, uint8_t color) {
+	/* Eckpunkte des Rechtecks berechnen */
+	float alpha = atan2(to.y - from.y, to.x - from.x);
+	float w_2 = width / 2.0f;
+	float dx = w_2 * sin(alpha);
+	float dy = w_2 * cos(alpha);
+
+	position_t from1;
+	from1.x = from.x - dx;
+	from1.y = from.y + dy;
+	position_t to1;
+	to1.x = to.x - dx;
+	to1.y = to.y + dy;
+	position_t from2;
+	from2.x = from.x + dx;
+	from2.y = from.y - dy;
+	position_t to2;
+	to2.x = to.x + dx;
+	to2.y = to.y - dy;
+
+	/* Linien zeichnen */
+	map_draw_line(from1, to1, color);
+	map_draw_line(from2, to2, color);
+	map_draw_line(from1, from2, color);
+	map_draw_line(to1, to2, color);
+}
+#endif	// MAP_2_SIM_AVAILABLE
 
 
 /*!

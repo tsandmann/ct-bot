@@ -66,8 +66,8 @@
 /****** fuer geringaufloesende Map zur Pfadplanung  --ACHTUNG ONLINE_SHRINK einschalten -- *****************/
 
 #ifdef MCU
-#ifndef __AVR_ATmega644__
-#error "behaviour_pathplaning derzeit nur mit ATmega644 moeglich!"
+#ifndef MCU_ATMEGA644X
+#error "behaviour_pathplaning derzeit nur mit ATmega644(P) moeglich!"
 #endif
 #endif	// MCU
 #ifdef PC
@@ -75,7 +75,7 @@
 #else
 //TODO:	Groessere Karte auch fuer MCU waere wuenschenswert
 #define MAP_SIZE_LOWRES			4	/*!< Kartengroesse */
-#endif
+#endif	// PC
 
 #define MAP_SECTION_POINTS_LOWRES 32 /*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 #define MAP_RESOLUTION_LOWRES 	8	 /*!< Aufloesung der Karte in Punkte pro Meter */

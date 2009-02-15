@@ -113,7 +113,7 @@ position_t calc_point_in_distance(float alpha, int16_t dx, int16_t dy);
 static inline int16_t muls8(int8_t a, int8_t b) {
 #ifdef MCU
 	int16_t result;
-	asm volatile(
+	__asm__ __volatile__(
 		"muls %1,%2	\n\t"
 		"movw %0,r0	\n\t"
 		"clr r1			"

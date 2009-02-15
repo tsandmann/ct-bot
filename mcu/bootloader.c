@@ -25,24 +25,24 @@
 
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	bootloader.c
  * @brief 	AVR109 kompatibler Bootloader fuer den c't-Bot
  * @author	Martin Thomas (eversmith@heizung-thomas.de)
@@ -55,12 +55,11 @@
 #ifdef BOOTLOADER_AVAILABLE
 
 /* UART Baudrate */
-//#define BAUDRATE 57600
 #include "uart.h"	// Die Baudrate wird zentral fuer den Bot in uart.h festgelegt!!
 
 
 /* Device-Type:
-   For AVRProg the BOOT-option is prefered 
+   For AVRProg the BOOT-option is prefered
    which is the "correct" value for a bootloader.
    avrdude may only detect the part-code for ISP */
 //#define DEVTYPE     DEVTYPE_BOOT
@@ -70,14 +69,14 @@
 #if defined(__AVR_ATmega32__)	// => Fuse Bits: low: 0xFF, high: 0xDC
 	#define BOOTSIZE 512		// => Linker-Settings: -Wl,--section-start=.bootloader=0x7C00
 	#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0x7C00 startet "
-	
-#elif defined(__AVR_ATmega644__)// => Fuse Bits: low: 0xFF, high: 0xDC, Ext'd: 0xFF
+
+#elif defined(MCU_ATMEGA644X)// => Fuse Bits: low: 0xFF, high: 0xDC, Ext'd: 0xFF
 	#define BOOTSIZE 1024		// => Linker-Settings: -Wl,--section-start=.bootloader=0xF800
 	#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0xF800 startet "
 #endif
 
 /*! Startup-Timeout */
-#define START_WAIT	
+#define START_WAIT
 
 /*! character to start the bootloader in mode START_WAIT */
 #define START_WAIT_UARTCHAR 'S'
@@ -141,17 +140,17 @@
 	#define DEVTYPE_ISP     0x72
 	/* Part-Code Boot */
 	#define DEVTYPE_BOOT    0x73
-	
+
 	#define SIG_BYTE1	0x1E
 	#define SIG_BYTE2	0x95
 	#define SIG_BYTE3	0x02
-	
+
 	#ifdef UART_DOUBLESPEED
 		#define UART_CALC_BAUDRATE(baudRate) ((uint32_t)(F_CPU) / ((uint32_t)(baudRate) *8) -1)
 	#else
 		#define UART_CALC_BAUDRATE(baudRate) ((uint32_t)(F_CPU) / ((uint32_t)(baudRate)*16) -1)
 	#endif
-	
+
 	#define UART_BAUD_HIGH	UBRRH
 	#define UART_BAUD_LOW	UBRRL
 	#define UART_STATUS	UCSRA
@@ -169,17 +168,46 @@
 	#define DEVTYPE_ISP     0x74
 	/* Part-Code Boot */
 	#define DEVTYPE_BOOT    0x73
-	
+
 	#define SIG_BYTE1	0x1E
 	#define SIG_BYTE2	0x96
 	#define SIG_BYTE3	0x09
-	
+
 	#ifdef UART_DOUBLESPEED
 		#define UART_CALC_BAUDRATE(baudRate) ((uint32_t)(F_CPU) / ((uint32_t)(baudRate) *8) -1)
 	#else
 		#define UART_CALC_BAUDRATE(baudRate) ((uint32_t)(F_CPU) / ((uint32_t)(baudRate)*16) -1)
 	#endif
-	
+
+	#define UART_BAUD_HIGH	UBRR0H
+	#define UART_BAUD_LOW	UBRR0L
+	#define UART_STATUS	UCSR0A
+	#define UART_TXREADY	UDRE0
+	#define UART_RXREADY	RXC0
+	#define UART_DOUBLE	U2X0
+	#define UART_CTRL	UCSR0B
+	#define UART_CTRL_DATA	((1<<TXEN0) | (1<<RXEN0))
+	#define UART_CTRL2	UCSR0C
+	//#define UART_CTRL2_DATA	((1<<URSEL) | (1<<UCSZ1) | (1<<UCSZ0))
+	#define UART_CTRL2_DATA 0x86	// just 8N1
+	#define UART_DATA	UDR0
+
+#elif defined(__AVR_ATmega644P__)
+	/* Part-Code ISP */
+	#define DEVTYPE_ISP     0x74
+	/* Part-Code Boot */
+	#define DEVTYPE_BOOT    0x73
+
+	#define SIG_BYTE1	0x1E
+	#define SIG_BYTE2	0x96
+	#define SIG_BYTE3	0x0A
+
+	#ifdef UART_DOUBLESPEED
+		#define UART_CALC_BAUDRATE(baudRate) ((uint32_t)(F_CPU) / ((uint32_t)(baudRate) *8) -1)
+	#else
+		#define UART_CALC_BAUDRATE(baudRate) ((uint32_t)(F_CPU) / ((uint32_t)(baudRate)*16) -1)
+	#endif
+
 	#define UART_BAUD_HIGH	UBRR0H
 	#define UART_BAUD_LOW	UBRR0L
 	#define UART_STATUS	UCSR0A
@@ -261,11 +289,11 @@ static uint16_t __attribute__ ((always_inline)) writeEEpromPage(uint16_t address
 		EEDR = *tmp++;
 		address++;			// Select next byte
 
-		#ifdef __AVR_ATmega644__
+		#ifdef MCU_ATMEGA644X
 			EECR |= (1<<EEMPE);		// Write data into EEPROM
 			EECR |= (1<<EEPE);
 		#else
-			EECR |= (1<<EEMWE);	
+			EECR |= (1<<EEMWE);
 			EECR |= (1<<EEWE);
 		#endif
 		eeprom_busy_wait();
@@ -314,7 +342,7 @@ static uint16_t __attribute__ ((always_inline)) readEEpromPage(uint16_t address,
 	static uint8_t __attribute__ ((always_inline)) read_fuse_lock(uint16_t addr){
 		uint8_t mode = (1<<BLBSET) | (1<<SPMEN);
 		uint8_t retval;
-	
+
 		asm volatile
 		(
 			"movw r30, %3\n\t"		/* Z to addr */ \
@@ -343,7 +371,7 @@ static void __attribute__ ((always_inline)) send_boot(void){
 
 static void (*jump_to_app)(void) = 0x0000;
 
-/* Der eigentliche Bootloader. Die Section "bootloader" muss dort beginnen, 
+/* Der eigentliche Bootloader. Die Section "bootloader" muss dort beginnen,
  * wohin die MCU beim Booten springt (=> Fuse Bits). Deshalb die Linkereinstellungen
  * anpassen, wie oben beschrieben!
  */
@@ -440,7 +468,7 @@ void __attribute__ ((section (".bootloader"))) bootloader_main(void) {
 		// Exit upgrade
 		} else if (val == 'E') {
 			sendchar('\r');
-			jump_to_app();		// Fertig, nun main() starten 
+			jump_to_app();		// Fertig, nun main() starten
 
 		// Enter programming mode
 		} else if (val == 'P') {
@@ -459,15 +487,15 @@ void __attribute__ ((section (".bootloader"))) bootloader_main(void) {
 			// read "low" fuse bits
 			} else if (val == 'F') {
 				sendchar(read_fuse_lock(GET_LOW_FUSE_BITS));
-	
+
 			// read lock bits
 			} else if (val == 'r') {
 				sendchar(read_fuse_lock(GET_LOCK_BITS));
-	
+
 			// read high fuse bits
 			} else if (val == 'N') {
 				sendchar(read_fuse_lock(GET_HIGH_FUSE_BITS));
-	
+
 			// read extended fuse bits
 			} else if (val == 'Q') {
 				sendchar(read_fuse_lock(GET_EXTENDED_FUSE_BITS));
@@ -497,7 +525,7 @@ void __attribute__ ((section (".bootloader"))) bootloader_main(void) {
 			sendchar(VERSION_HIGH);
 			sendchar(VERSION_LOW);
 
-		// Return Signature Bytes (it seems that 
+		// Return Signature Bytes (it seems that
 		// AVRProg expects the "Atmel-byte" 0x1E last
 		// but shows it first in the dialog-window)
 		} else if (val == 's') {

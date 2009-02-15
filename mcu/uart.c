@@ -94,11 +94,11 @@ void uart_init(void) {
  * @brief	Interrupthandler fuer eingehende Daten
  * Empfangene Zeichen werden in die Eingabgs-FIFO gespeichert und warten dort.
  */
-#ifdef __AVR_ATmega644__
+#ifdef MCU_ATMEGA644X
 	ISR(USART0_RX_vect) {
 #else
 	ISR(SIG_UART_RECV) {
-#endif
+#endif	// MCU_ATMEGA644X
 	_inline_fifo_put(&infifo, UDR);
 }
 
@@ -108,11 +108,11 @@ void uart_init(void) {
  * Ist das Zeichen fertig ausgegeben, wird ein neuer SIG_UART_DATA-IRQ getriggert.
  * Ist die FIFO leer, deaktiviert die ISR ihren eigenen IRQ.
  */
-#ifdef __AVR_ATmega644__
+#ifdef MCU_ATMEGA644X
 	ISR(USART0_UDRE_vect) {
 #else
 	ISR(SIG_UART_DATA) {
-#endif
+#endif	// MCU_ATMEGA644X
 	if (outfifo.count > 0) {
 		UDR = _inline_fifo_get(&outfifo);
 	} else {

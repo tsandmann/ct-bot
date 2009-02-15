@@ -92,26 +92,26 @@ static void init(void) {
 		timer_2_init();
 
 		/* Ist das ein Power on Reset? */
-		#ifdef __AVR_ATmega644__
+		#ifdef MCU_ATMEGA644X
 			if ((MCUSR & 1) == 1) {
 				MCUSR &= ~1;	// Bit loeschen
 		#else
 			if ((MCUCSR & 1) == 1) {
 				MCUCSR &= ~1;	// Bit loeschen
-		#endif
+		#endif	// MCU_ATMEGA644X
 			delay(100);
-			asm volatile("jmp 0");
+			__asm__ __volatile__("jmp 0");
 		}
 
 		delay(100);
 		#ifdef RESET_INFO_DISPLAY_AVAILABLE
-			#ifdef __AVR_ATmega644__
-				reset_flag = MCUSR & 0x1F;	//Lese Grund fuer Reset und sichere Wert
-				MCUSR = 0;	//setze Register auf 0x00 (loeschen)
+			#ifdef MCU_ATMEGA644X
+				reset_flag = MCUSR & 0x1F;	// Lese Grund fuer Reset und sichere Wert
+				MCUSR = 0;	// setze Register auf 0x00 (loeschen)
 			#else
-				reset_flag = MCUCSR & 0x1F;	//Lese Grund fuer Reset und sichere Wert
-				MCUCSR = 0;	//setze Register auf 0x00 (loeschen)
-			#endif
+				reset_flag = MCUCSR & 0x1F;	// Lese Grund fuer Reset und sichere Wert
+				MCUCSR = 0;	// setze Register auf 0x00 (loeschen)
+			#endif	// MCU_ATMEGA644X
 			uint8_t resets = ctbot_eeprom_read_byte(&resetsEEPROM) + 1;
 			ctbot_eeprom_write_byte(&resetsEEPROM, resets);
 		#endif	// RESET_INFO_DISPLAY_AVAILABLE
