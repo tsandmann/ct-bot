@@ -801,7 +801,7 @@ static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
 
 	/* Gehe alle Felder der Reihe nach durch */
 	uint16_t lX = x1;
-	uint16_t lY = y2;
+	uint16_t lY = y1;
 
 	int8_t sX = (x2 < x1 ? -1 : 1);
 	uint16_t dX = abs(x2 - x1);	// Laenge der Linie in X-Richtung

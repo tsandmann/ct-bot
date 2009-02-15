@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-02-15 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer map_get_ratio() und map_way_free()
+
 2008-10-29 Timo Sandmann [mail@timosandmann.de]: Release 15 
 
 2008-10-28 Timo Sandmann [mail@timosandmann.de]: Robustheit der RemoteCalls verbessert
