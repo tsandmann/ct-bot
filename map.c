@@ -810,6 +810,7 @@ static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
 	uint16_t dY = abs(y2 - y1);	// Laenge der Linie in Y-Richtung
 
 	int16_t w = 0;
+	width /= 2;
 	if (width == 0) {
 		width = 1;
 	}
