@@ -405,32 +405,6 @@ void command_write_data(uint8_t command, uint8_t subcommand, int16_t * data_l,
 #endif
 }
 
-#ifdef MAUS_AVAILABLE
-/*!
- * Uebertraegt ein Bild vom Maussensor an den PC
- */
-void transmit_mouse_picture(void) {
-	int16_t dummy;
-	int16_t pixel;
-	uint8_t data, i;
-	maus_image_prepare();
-
-	for (i = 0; i < 6; i++) {
-		dummy = i * 54 + 1;
-		command_write(CMD_SENS_MOUSE_PICTURE, SUB_CMD_NORM, &dummy, &dummy, 54);
-		for (pixel = 0; pixel < 54; pixel++) {
-			data = maus_image_read();
-			low_write_data((uint8_t *) &data, 1);
-#ifdef MCU
-#if BAUDRATE > 17777	// Grenzwert: 8 Bit / 450 us = 17778 Baud
-			//			_delay_loop_2(1800);	// warten, weil Sendezeit < Maussensordelay (450 us)
-			_delay_loop_2(3600); // warten, weil Sendezeit < Maussensordelay (450 us)
-#endif
-#endif	// MCU
-		}
-	}
-}
-#endif	// MAUS_AVAILABLE
 /*!
  * Wertet das Kommando im Puffer aus
  * return 1, wenn Kommando schon bearbeitet wurde, 0 sonst
@@ -487,9 +461,9 @@ int8_t command_evaluate(void) {
 			}
 			break;
 
-#ifdef MAUS_AVAILABLE
+#ifdef MOUSE_AVAILABLE
 		case CMD_SENS_MOUSE_PICTURE: // PC fragt nach dem Bild
-			transmit_mouse_picture();
+			mouse_transmit_picture();
 			break;
 #endif
 
@@ -558,7 +532,7 @@ int8_t command_evaluate(void) {
 		case CMD_SENS_TRANS:
 			sensTrans = (uint8_t) received_command.data_l;
 			break;
-#ifdef MAUS_AVAILABLE
+#ifdef MOUSE_AVAILABLE
 		case CMD_SENS_MOUSE:
 			sensMouseDX = received_command.data_l;
 			sensMouseDY = received_command.data_r;

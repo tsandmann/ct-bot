@@ -60,7 +60,7 @@
 
 #define ADC_AVAILABLE		/*!< A/D-Converter */
 
-#define MAUS_AVAILABLE		/*!< Maus Sensor */
+#define MOUSE_AVAILABLE		/*!< Maus Sensor */
 
 #define ENA_AVAILABLE		/*!< Enable-Leitungen */
 #define SHIFT_AVAILABLE		/*!< Shift Register */
@@ -111,7 +111,7 @@
 	#undef RC5_AVAILABLE
 #endif
 
-#ifndef MAUS_AVAILABLE
+#ifndef MOUSE_AVAILABLE
 	#undef MEASURE_MOUSE_AVAILABLE
 	#undef MEASURE_COUPLED_AVAILABLE
 #endif

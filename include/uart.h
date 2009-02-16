@@ -33,39 +33,40 @@
 #include <avr/io.h>
 #include "fifo.h"
 
-#define BAUDRATE	57600	/*!< Baudrate fuer UART-Kommunikation */
-//#define BAUDRATE	115200	/*!< Baudrate fuer UART-Kommunikation */
+//#define BAUDRATE	57600	/*!< Baudrate  57600 fuer UART-Kommunikation */
+#define BAUDRATE	115200	/*!< Baudrate 115200 fuer UART-Kommunikation */
+
 #if BAUDRATE == 115200
-	#define UART_DOUBLESPEED	// 2X-Mode, sonst Takt zu ungenau
+#define UART_DOUBLESPEED	// 2X-Mode, sonst Takt zu ungenau
 #endif
 
 #define BUFSIZE_IN	0x30
 #define BUFSIZE_OUT	0x80
 
 #ifdef UART_DOUBLESPEED
-	#define UART_CALC_BAUDRATE(baudRate) ((uint32_t)(F_CPU) / ((uint32_t)(baudRate) *8) -1)
+#define UART_CALC_BAUDRATE(baudRate) ((uint32_t)(F_CPU) / ((uint32_t)(baudRate) * 8) - 1)
 #else
-	#define UART_CALC_BAUDRATE(baudRate) ((uint32_t)(F_CPU) / ((uint32_t)(baudRate)*16) -1)
+#define UART_CALC_BAUDRATE(baudRate) ((uint32_t)(F_CPU) / ((uint32_t)(baudRate) * 16) - 1)
 #endif
 
 #ifdef MCU_ATMEGA644X
-	/* Auf dem ATMega644(P) benutzen wir UART 0 */
-	#define UBRRH	UBRR0H
-	#define UBRRL	UBRR0L
-	#define UCSRA	UCSR0A
-	#define UCSRB	UCSR0B
-	#define UCSRC	UCSR0C
-	#define UDR		UDR0
-	#define RXEN	RXEN0
-	#define TXEN	TXEN0
-	#define RXCIE	RXCIE0
-	#define UDRIE	UDRIE0
-	#define UDRE	UDRE0
-	#define UCSZ0	UCSZ00
-	#define UCSZ1	UCSZ01
-	#define RXC		RXC0
-	#define TXC		TXC0
-	#define U2X		U2X0
+/* Auf dem ATMega644(P) benutzen wir UART 0 */
+#define UBRRH	UBRR0H
+#define UBRRL	UBRR0L
+#define UCSRA	UCSR0A
+#define UCSRB	UCSR0B
+#define UCSRC	UCSR0C
+#define UDR		UDR0
+#define RXEN	RXEN0
+#define TXEN	TXEN0
+#define RXCIE	RXCIE0
+#define UDRIE	UDRIE0
+#define UDRE	UDRE0
+#define UCSZ0	UCSZ00
+#define UCSZ1	UCSZ01
+#define RXC		RXC0
+#define TXC		TXC0
+#define U2X		U2X0
 #endif	// MCU_ATMEGA644X
 
 /*!

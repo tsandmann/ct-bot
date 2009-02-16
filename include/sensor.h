@@ -70,13 +70,12 @@ extern uint8 sensError;		/*!< Ueberwachung Motor oder Batteriefehler [0/1]  1= a
 
 extern uint16 RC5_Code;        /*!< Letzter empfangener RC5-Code */
 
-#ifdef MAUS_AVAILABLE
-	extern int8 sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-	extern int8 sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
-
-	extern int16 sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-	extern  int16 sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
-#endif
+#ifdef MOUSE_AVAILABLE
+extern int8_t sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+extern int8_t sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
+extern int16_t sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+extern int16_t sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
+#endif	// MOUSE_AVAILABLE
 
 extern float heading_enc;		/*!< Blickrichtung aus Encodern */
 extern float x_enc;			/*!< X-Koordinate aus Encodern [mm] */

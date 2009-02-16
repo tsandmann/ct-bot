@@ -208,7 +208,7 @@ static uint8_t prepare_transfer_spi(uint8_t cmd, uint32_t addr) {
 	if (result != 0) {
 		return result;
 	}
-#ifdef MAUS_AVAILABLE
+#ifdef MOUSE_AVAILABLE
 	os_enterCS();
 #endif
 
@@ -235,7 +235,7 @@ static uint8_t prepare_transfer_spi(uint8_t cmd, uint32_t addr) {
 	SPI_MasterTransmit(tmp.u8[0]);
 	SPI_MasterTransmit(0x00);
 	SPI_MasterTransmit(0xff);		// CRC
-#ifdef MAUS_AVAILABLE
+#ifdef MOUSE_AVAILABLE
 	os_exitCS();
 #endif
 	return 0;
@@ -268,7 +268,7 @@ uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, void * buffer) {
 		return 3;	// Abbruch durch Timeout
 	}
 
-#ifdef MAUS_AVAILABLE
+#ifdef MOUSE_AVAILABLE
 	os_enterCS();
 #endif
 	/* Lesen des Blocks (512 Bytes) von MMC/SD-Karte */
@@ -349,7 +349,7 @@ uint8_t mmc_write_sector_spi(uint32_t addr, void * buffer) {
 #endif	// TEST_AVAILABLE
 #endif	// LED_AVAILABLE
 
-#ifdef MAUS_AVAILABLE
+#ifdef MOUSE_AVAILABLE
 	os_enterCS();
 #endif
 	/* Startbyte an MMC/SD-Karte senden */

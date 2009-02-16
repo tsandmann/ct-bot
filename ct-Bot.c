@@ -142,8 +142,8 @@ static void init(void) {
 	#ifdef MMC_AVAILABLE
 		mmc_init();
 	#endif
-	#ifdef MAUS_AVAILABLE
-		maus_sens_init();
+	#ifdef MOUSE_AVAILABLE
+		mouse_sens_init();
 	#endif
 	#ifdef MAP_AVAILABLE
 		map_init();

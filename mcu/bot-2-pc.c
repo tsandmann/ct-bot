@@ -81,12 +81,12 @@ void bot_2_pc_inform(void) {
 	value1 = sensError;
 	command_write(CMD_SENS_ERROR, SUB_CMD_NORM, &value1, NULL, 0);
 	
-	#ifdef MAUS_AVAILABLE
-		static int16_t value2;
-		value1 = sensMouseDX;
-		value2 = sensMouseDY;
-		command_write(CMD_SENS_MOUSE, SUB_CMD_NORM, &value1, &value2, 0);
-	#endif	
+#ifdef MOUSE_AVAILABLE
+	static int16_t value2;
+	value1 = sensMouseDX;
+	value2 = sensMouseDY;
+	command_write(CMD_SENS_MOUSE, SUB_CMD_NORM, &value1, &value2, 0);
+#endif	
 	
 	command_write(CMD_DONE, SUB_CMD_NORM, NULL, 0, 0);
 }

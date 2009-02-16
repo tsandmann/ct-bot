@@ -69,13 +69,12 @@ uint8 sensDoor=0;		/*!< Sensor Ueberwachung Klappe */
 
 uint8 sensError=0;		/*!< Ueberwachung Motor oder Batteriefehler */
 
-#ifdef MAUS_AVAILABLE
-	int8 sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-	int8 sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
-
-	int16 sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-	int16 sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
-#endif
+#ifdef MOUSE_AVAILABLE
+int8_t sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+int8_t sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
+int16_t sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+int16_t sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
+#endif	// MOUSE_AVAILABLE
 
 int16_t sensEncL=0;		/*!< Encoder linkes Rad */
 int16_t sensEncR=0;		/*!< Encoder rechtes Rad */
@@ -503,7 +502,7 @@ void led_update(void) {
 			(*status).rot		= sensTrans & 0x01;
 			(*status).orange	= sensError & 0x01;
 			(*status).gelb		= sensDoor  & 0x01;
-			#ifdef MAUS_AVAILABLE
+			#ifdef MOUSE_AVAILABLE
 				(*status).gruen		= (sensMouseDX >> 1) & 0x01;
 				(*status).tuerkis	= (sensMouseDY >> 1) & 0x01;
 			#endif
@@ -535,13 +534,13 @@ void sensor_display(void) {
 	#ifdef RC5_AVAILABLE
 		static uint16 RC5_old;
 		if (RC5_Code != 0) RC5_old = RC5_Code;
-		#ifdef MAUS_AVAILABLE
+		#ifdef MOUSE_AVAILABLE
 			display_printf("I=%04X M=%05d %05d",RC5_old,sensMouseX,sensMouseY);
 		#else
 			display_printf("I=%04X",RC5_old);
 		#endif
 	#else
-		#ifdef MAUS_AVAILABLE
+		#ifdef MOUSE_AVAILABLE
 			display_printf("M=%05d %05d",sensMouseX,sensMouseY);
 		#endif
 	#endif
@@ -562,7 +561,7 @@ void odometric_display(void) {
 	display_printf("v_l: %3d v_r: %3d  ",(int16)v_left,(int16)v_right);
 	#ifdef MEASURE_MOUSE_AVAILABLE
 		display_cursor(4,1);
-		display_printf("squal: %3d v_c: %3d",maus_get_squal(),(int16)v_mou_center);
+		display_printf("squal: %3d v_c: %3d",mouse_get_squal(),(int16)v_mou_center);
 	#endif	// MEASURE_MOUSE_AVAILABLE
 }
 #endif	// DISPLAY_ODOMETRIC_INFO

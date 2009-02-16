@@ -1,68 +1,75 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
- * @file 	mouse.c 
+/*!
+ * @file 	mouse.c
  * @brief 	Routinen fuer die Ansteuerung eines opt. Maussensors
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
  */
 #include "global.h"
 
-
-#ifdef MCU 
+#ifdef MCU
 
 #include <avr/io.h>
 #include "ct-Bot.h"
 #include "mouse.h"
 #include "delay.h"
 #include "ena.h"
+#include "command.h"
 
-#ifdef MAUS_AVAILABLE
+#ifdef MOUSE_AVAILABLE
 
-#define MAUS_DDR 	DDRB			/*!< DDR fuer Maus-SCLK */
-#define MAUS_PORT 	PORTB			/*!< PORT fuer Maus-SCLK */
-#define MAUS_SCK_PIN	(1<<7)		/*!< PIN fuer Maus-SCLK */
+#define MOUSE_DDR 		DDRB	/*!< DDR fuer Maus-SCLK */
+#define MOUSE_PORT 		PORTB	/*!< PORT fuer Maus-SCLK */
+#define MOUSE_SCK_PIN	(1<<7)	/*!< PIN fuer Maus-SCLK */
 
-#define MAUS_SDA_NR		6		/*!< Pin an dem die SDA-Leitung haengt */
-#define MAUS_SDA_PINR 	PINB		/*!< Leseregister */
-#define MAUS_SDA_PIN 	(1<<MAUS_SDA_NR)	/*!< Bit-Wert der SDA-Leitung */
+#define MOUSE_SDA_NR	6		/*!< Pin an dem die SDA-Leitung haengt */
+#define MOUSE_SDA_PINR 	PINB	/*!< Leseregister */
+#define MOUSE_SDA_PIN 	(1<<MOUSE_SDA_NR)	/*!< Bit-Wert der SDA-Leitung */
 
-#define MOUSE_Enable() ENA_on(ENA_MOUSE_SENSOR)
+#define MOUSE_Enable()	ENA_on(ENA_MOUSE_SENSOR)
 
 /*!
  * Uebertraegt ein Byte an den Sensor
  * @param data das Byte
  */
-static void maus_sens_writeByte(uint8 data){
-	int8 i;
-	MAUS_DDR  |= MAUS_SDA_PIN; 		// SDA auf Output
-	
-	for (i=7; i>=0;) {
-		MAUS_PORT &= ~MAUS_SCK_PIN;		// SCK auf Low, vorbereiten
-		
-		//Daten rausschreiben
-		MAUS_PORT = (MAUS_PORT & (~MAUS_SDA_PIN)) |  ((data >> (7 - MAUS_SDA_NR)) & MAUS_SDA_PIN);	
-		data = data <<1;		// naechstes Bit vorbereiten
-		i--;	// etwas warten
-		
-		MAUS_PORT |= MAUS_SCK_PIN;		// SCK =1 Sensor uebernimmt auf steigender Flanke
+static void mouse_sens_writeByte(uint8_t data) {
+	int8_t i;
+	MOUSE_DDR |= MOUSE_SDA_PIN; // SDA auf Output
+
+	for (i = 7; i >= 0;) {
+		MOUSE_PORT &= ~MOUSE_SCK_PIN; // SCK auf low, vorbereiten
+
+		/* Daten rausschreiben */
+		if ((data & 0x80) == 0x80) {
+			MOUSE_PORT |= MOUSE_SDA_PIN;
+		} else {
+			MOUSE_PORT &= ~MOUSE_SDA_PIN;
+		}
+
+		i--; // etwas warten
+		__asm__ __volatile__("nop");
+
+		MOUSE_PORT |= MOUSE_SCK_PIN; // SCK =1 Sensor uebernimmt auf steigender Flanke
+
+		data = data << 1; // naechstes Bit vorbereiten
 	}
 }
 
@@ -70,20 +77,25 @@ static void maus_sens_writeByte(uint8 data){
  * Liest ein Byte vom Sensor
  * @return das Byte
  */
-static int8_t maus_sens_readByte(void){
+static uint8_t mouse_sens_readByte(void) {
 	int8_t i;
-	int8_t data=0;
+	uint8_t data = 0;
 
-	MAUS_DDR  &= ~MAUS_SDA_PIN; 	// SDA auf Input
+	MOUSE_DDR &= ~MOUSE_SDA_PIN; // SDA auf Input
 
-	for (i=7; i>-1;) {
-		MAUS_PORT &= ~MAUS_SCK_PIN;		// SCK =0 Sensor bereitet Daten auf fallender Flanke vor !
-		data=data<<1;					// Platz schaffen
+	for (i = 7; i >= 0;) {
+		MOUSE_PORT &= ~MOUSE_SCK_PIN; // SCK =0 Sensor bereitet Daten auf fallender Flanke vor!
+		data = data << 1; // Platz schaffen
 
-		i--;	// etwas warten
-		MAUS_PORT |= MAUS_SCK_PIN;		// SCK =1 Daten lesen  auf steigender Flanke
-		
-		data |= (MAUS_SDA_PINR >> MAUS_SDA_NR) & 0x01;			//Daten lesen
+		i--; // etwas warten
+		__asm__ __volatile__("nop");
+
+		MOUSE_PORT |= MOUSE_SCK_PIN; // SCK =1 Daten lesen auf steigender Flanke
+
+		/* Daten lesen */
+		if ((MOUSE_SDA_PINR & MOUSE_SDA_PIN) == MOUSE_SDA_PIN) {
+			data |= 1;
+		}
 	}
 
 	return data;
@@ -92,7 +104,7 @@ static int8_t maus_sens_readByte(void){
 /*!
  * wartet 100 us
  */
-static void maus_sens_wait(void) {
+static void mouse_sens_wait(void) {
 	_delay_loop_2(F_CPU / 4000000L * 100);
 }
 
@@ -101,12 +113,11 @@ static void maus_sens_wait(void) {
  * @param adr Adresse
  * @param data Datum
  */
-void maus_sens_write(int8 adr, uint8 data){
+void mouse_sens_write(uint8_t adr, uint8_t data) {
 	MOUSE_Enable();
-	
-	maus_sens_writeByte(adr|=0x80);  //rl MSB muss 1 sein Datenblatt S.12 Write Operation
-	maus_sens_writeByte(data);
-	maus_sens_wait();		// 100 us Pause
+	mouse_sens_writeByte(adr |= 0x80); // MSB muss 1 sein, Datenblatt S.12 Write Operation
+	mouse_sens_writeByte(data);
+	mouse_sens_wait(); // 100 us Pause
 }
 
 /*!
@@ -115,43 +126,31 @@ void maus_sens_write(int8 adr, uint8 data){
  * @param adr die Adresse
  * @return das Datum
  */
-uint8 maus_sens_read(uint8 adr){
+uint8_t mouse_sens_read(uint8_t adr) {
 	MOUSE_Enable();
-	maus_sens_writeByte(adr);
-	maus_sens_wait();	// 100 us Pause
-	return maus_sens_readByte();
+	mouse_sens_writeByte(adr);
+	mouse_sens_wait(); // 100 us Pause
+	return mouse_sens_readByte();
 }
 
-/*! 
+/*!
  * Initialisiere Maussensor
- */ 
-void maus_sens_init(void){
-	MOUSE_Enable();	
-	delay(100);
-	
-	MAUS_DDR  |= MAUS_SCK_PIN; 	// SCK auf Output
-	MAUS_PORT &= ~MAUS_SCK_PIN;	// SCK auf 0
-	
-	delay(10);
-	
-	maus_sens_write(MOUSE_CONFIG_REG,MOUSE_CFG_RESET);	//Reset sensor
-	maus_sens_write(MOUSE_CONFIG_REG,MOUSE_CFG_FORCEAWAKE);	//Always on
-}
-
-/*! muessen wir nach dem ersten Pixel suchen?*/
-static uint8 firstRead;
-/*!
- * Bereitet das auslesen eines ganzen Bildes vor
  */
-void maus_image_prepare(void){
-	maus_sens_write(MOUSE_CONFIG_REG,MOUSE_CFG_FORCEAWAKE);	//Always on
+void mouse_sens_init(void) {
+	MOUSE_Enable();
+	delay(100);
 
-	maus_sens_write(MOUSE_PIXEL_DATA_REG,0x00);	// Frame grabben anstossen
-	firstRead=1; //suche erstes Pixel 
+	MOUSE_DDR |= MOUSE_SCK_PIN; // SCK auf Output
+	MOUSE_PORT &= ~MOUSE_SCK_PIN; // SCK auf 0
+
+	delay(10);
+
+	mouse_sens_write(MOUSE_CONFIG_REG, MOUSE_CFG_RESET); // reset sensor
+	mouse_sens_write(MOUSE_CONFIG_REG, MOUSE_CFG_FORCEAWAKE); // always on
 }
 
 /*!
- * Liefert bei jedem Aufruf das naechste Pixel des Bildes
+ * Uebertraegt ein Bild vom Maussensor an den PC
  * Insgesamt gibt es 324 Pixel
  * <pre>
  * 18 36 ... 324
@@ -159,30 +158,31 @@ void maus_image_prepare(void){
  *  2 20 ... ..
  *  1 19 ... 307
  * </pre>
- * Bevor diese Funktion aufgerufen wird, muss maus_image_prepare() aufgerufen werden!
- * @return Die Pixeldaten (Bit 0 bis Bit5), Pruefbit, ob Daten gueltig (Bit6), Markierung fuer den Anfang eines Frames (Bit7)
+ * Gesendet weren: Pixeldaten (Bit 0 bis Bit 5), Pruefbit, ob Daten gueltig (Bit 6), Markierung fuer den Anfang eines Frames (Bit 7)
  */
-int8 maus_image_read(void){
-	int8 pixel=maus_sens_read(MOUSE_PIXEL_DATA_REG);
-	if ( firstRead ==1){
-		while ( (pixel & 0x80) != 0x80){
-			pixel=maus_sens_read(MOUSE_PIXEL_DATA_REG);
-//			if ((pixel & 0x70) != 0x70)
-//				return 0;
+void mouse_transmit_picture(void) {
+	int16_t dummy = 1;
+	uint8_t data, i, pixel;
+	mouse_sens_write(MOUSE_PIXEL_DATA_REG, 0x00); // Frame grabben anstossen
+
+	for (i = 0; i < 6; i++, dummy += 54) {
+		command_write(CMD_SENS_MOUSE_PICTURE, SUB_CMD_NORM, &dummy, &dummy, 54);
+		for (pixel = 0; pixel < 54; pixel++) {
+			do {
+				data = mouse_sens_read(MOUSE_PIXEL_DATA_REG);
+			} while ((data & 0x40) != 0x40);
+			low_write_data(&data, 1);
 		}
-		firstRead=0;
 	}
-	
-	return pixel;
 }
 
 /*!
- * Gibt den SQUAL-Wert zurueck. Dieser gibt an, wieviele Merkmale der Sensor 
+ * Gibt den SQUAL-Wert zurueck. Dieser gibt an, wieviele Merkmale der Sensor
  * im aktuell aufgenommenen Bild des Untergrunds wahrnimmt
  */
-uint8 maus_get_squal(void) {
-	return maus_sens_read(MOUSE_SQUAL_REG);
+uint8_t mouse_get_squal(void) {
+	return mouse_sens_read(MOUSE_SQUAL_REG);
 }
 
-#endif
-#endif
+#endif	// MOUSE_AVAILABLE
+#endif	// MCU

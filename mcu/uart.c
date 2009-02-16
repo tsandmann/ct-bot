@@ -30,11 +30,6 @@
 #include "ct-Bot.h"
 
 #include <avr/io.h>
-#include <avr/interrupt.h>
-#ifndef NEW_AVR_LIB
-	#include <avr/signal.h>
-#endif
-#include "ct-Bot.h"
 #include "uart.h"
 #include "command.h"
 #include "log.h"
@@ -55,7 +50,7 @@ fifo_t outfifo;					/*!< Ausgangs-FIFO */
  */
 void uart_init(void) {
     uint8_t sreg = SREG;
-    UBRRH = (UART_CALC_BAUDRATE(BAUDRATE)>>8) & 0xFF;
+    UBRRH = (UART_CALC_BAUDRATE(BAUDRATE) >> 8) & 0xFF;
     UBRRL = (UART_CALC_BAUDRATE(BAUDRATE) & 0xFF);
 
 	/* Interrupts kurz deaktivieren */
@@ -65,9 +60,9 @@ void uart_init(void) {
 	UCSRB = (1 << RXEN) | (1 << TXEN) | (1 << RXCIE);
 	/* Data mode 8N1, asynchron */
 	uint8_t ucsrc = (1 << UCSZ1) | (1 << UCSZ0);
-	#ifdef URSEL
-		ucsrc |= (1 << URSEL);	// fuer ATMega32
-	#endif
+#ifdef URSEL
+	ucsrc |= (1 << URSEL); // fuer ATMega32
+#endif
 	UCSRC = ucsrc;
 
     /* Flush Receive-Buffer (entfernen evtl. vorhandener ungueltiger Werte) */
