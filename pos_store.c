@@ -203,9 +203,28 @@ static uint8_t is_full(pos_store_t * store) {
 }
 
 /*!
- * Speichern einer Koordinate auf dem Stack
- * @param pos		X/Y-Koordinaten des zu sichernden Punktes
+ * Speichern einer Koordinate vorne im Speicher
  * @param *store	Zeiger auf Positionsspeicher
+ * @param pos		X/Y-Koordinaten des zu sichernden Punktes
+ * @return			True wenn erfolgreich sonst False wenn Array voll ist
+ */
+uint8_t pos_store_insert(pos_store_t * store, position_t pos) {
+	if (is_full(store)) {
+		return False;
+	}
+	uint8_t fp = store->fp;
+	fp--;
+	fp &= POS_STORE_SIZE - 1;
+	store->data[fp] = pos;
+	store->fp = fp;
+	store->count++;
+	return True;
+}
+
+/*!
+ * Speichern einer Koordinate auf dem Stack
+ * @param *store	Zeiger auf Positionsspeicher
+ * @param pos		X/Y-Koordinaten des zu sichernden Punktes
  * @return			True wenn erfolgreich sonst False wenn Array voll ist
  */
 uint8_t pos_store_push(pos_store_t * store, position_t pos) {
@@ -223,8 +242,8 @@ uint8_t pos_store_push(pos_store_t * store, position_t pos) {
 
 /*!
  * Pop-Routine zur Rueckgabe des letzten auf dem Stack gepushten Punktes
- * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
  * @param *store	Zeiger auf Positionsspeicher
+ * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
  * @return			False falls Pop nicht erfolgreich, d.h. kein Punkt mehr auf dem Stack, sonst True nach erfolgreichem Pop
  */
 uint8_t pos_store_pop(pos_store_t * store, position_t * pos) {
@@ -240,8 +259,8 @@ uint8_t pos_store_pop(pos_store_t * store, position_t * pos) {
 
 /*!
  * Erweiterung des Stacks zur Queue; Element wird vorn entnommen
- * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
  * @param *store	Zeiger auf Positionsspeicher
+ * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
  * @return 			True wenn Element erfolgreich entnommen werden konnte sonst False falls kein Element mehr enthalten ist
  */
 uint8_t pos_store_dequeue(pos_store_t * store, position_t * pos) {
@@ -360,7 +379,50 @@ void pos_store_test(void) {
 		exspected_x++;
 		exspected_y++;
 	}
+
+	exspected_x = -96;
+	exspected_y = 4;
 	for (i=0; i<10; i++) {
+		position_t pos = {0, 0};
+		uint8_t result = pos_store_pop(store, &pos);
+		printf("pop()=%u\tx=%d\ty=%d\n", result, pos.x, pos.y);
+		dump(store);
+		if (pos.x != exspected_x || pos.y != exspected_y) {
+			printf("ERROR\n\n");
+			return;
+		}
+		exspected_x--;
+		exspected_y--;
+		if (exspected_x == -101 && exspected_y == -1) {
+			exspected_x = 26;
+			exspected_y = 76;
+		}
+	}
+	for (i=0; i<15; i++) {
+		uint8_t result = pos_store_insert(store, (position_t) {i - 300, i});
+		printf("insert(%d, %d)=%u\n", i - 300, i, result);
+		dump(store);
+		if (result != 1) {
+			printf("ERROR\n\n");
+			return;
+		}
+	}
+	exspected_x = -286;
+	exspected_y = 14;
+	for (i=0; i<15; i++) {
+		position_t pos = {0, 0};
+		uint8_t result = pos_store_dequeue(store, &pos);
+		printf("dequeue()=%u\tx=%d\ty=%d\n", result, pos.x, pos.y);
+		dump(store);
+		if (pos.x != exspected_x || pos.y != exspected_y) {
+			printf("ERROR\n\n");
+			return;
+		}
+		exspected_x--;
+		exspected_y--;
+	}
+
+	for (i=0; i<20; i++) {
 		uint8_t result = pos_store_push(store, (position_t) {i - 200, i});
 		printf("push(%d, %d)=%u\n", i - 200, i, result);
 		dump(store);
@@ -369,8 +431,8 @@ void pos_store_test(void) {
 			return;
 		}
 	}
-	exspected_x = -191;
-	exspected_y = 9;
+	exspected_x = -181;
+	exspected_y = 19;
 	for (i=0; i<POS_STORE_SIZE+1; i++) {
 		position_t pos = {0, 0};
 		uint8_t result = pos_store_pop(store, &pos);
@@ -391,11 +453,8 @@ void pos_store_test(void) {
 		exspected_x--;
 		exspected_y--;
 		if (exspected_x == -201) {
-			exspected_x = -96;
-			exspected_y = 4;
-		} else if (exspected_x == -101) {
-			exspected_x = 26;
-			exspected_y = 76;
+			exspected_x = 21;
+			exspected_y = 71;
 		}
 	}
 	pos_store_clear(store);

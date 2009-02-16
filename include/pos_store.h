@@ -111,24 +111,32 @@ void pos_store_release_all(void);
 
 /*!
  * Pop-Routine zur Rueckgabe des letzten auf dem Stack gepushten Punktes
- * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
  * @param *store	Zeiger auf Positionsspeicher
+ * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
  * @return			False falls Pop nicht erfolgreich, d.h. kein Punkt mehr auf dem Stack, sonst True nach erfolgreichem Pop
  */
 uint8_t pos_store_pop(pos_store_t * store, position_t * pos);
 
 /*!
- * Speichern einer Koordinate auf dem Stack
- * @param pos		X/Y-Koordinaten des zu sichernden Punktes
+ * Speichern einer Koordinate vorne im Speicher
  * @param *store	Zeiger auf Positionsspeicher
+ * @param pos		X/Y-Koordinaten des zu sichernden Punktes
+ * @return			True wenn erfolgreich sonst False wenn Array voll ist
+ */
+uint8_t pos_store_insert(pos_store_t * store, position_t pos);
+
+/*!
+ * Speichern einer Koordinate auf dem Stack
+ * @param *store	Zeiger auf Positionsspeicher
+ * @param pos		X/Y-Koordinaten des zu sichernden Punktes
  * @return			True wenn erfolgreich sonst False wenn Array voll ist
  */
 uint8_t pos_store_push(pos_store_t * store, position_t pos);
 
 /*!
  * Erweiterung des Stacks zur Queue; Element wird hinten angefuegt, identisch dem Stack-Push
- * @param pos		X/Y-Koordinaten des zu sichernden Punktes
  * @param *store	Zeiger auf Positionsspeicher
+ * @param pos		X/Y-Koordinaten des zu sichernden Punktes
  * @return 			True wenn erfolgreich sonst False wenn Array voll ist
  */
 static inline uint8_t pos_store_queue(pos_store_t * store, position_t pos) {
@@ -137,8 +145,8 @@ static inline uint8_t pos_store_queue(pos_store_t * store, position_t pos) {
 
 /*!
  * Erweiterung des Stacks zur Queue; Element wird vorn entnommen
- * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
  * @param *store	Zeiger auf Positionsspeicher
+ * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
  * @return 			True wenn Element erfolgreich entnommen werden konnte sonst False falls kein Element mehr enthalten ist
  */
 uint8_t pos_store_dequeue(pos_store_t * store, position_t * pos);
