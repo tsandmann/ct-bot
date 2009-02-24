@@ -34,9 +34,16 @@
 /*** Bot-Geometrie ***/
 #define BOT_DIAMETER			120			/*!< Bot-Durchmesser [mm] */
 #define ENCODER_MARKS			60			/*!< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weissen + Anzahl der schwarzen Felder */
+#ifdef PC
+#define WHEEL_DIAMETER			56.7		/*!< Durchmesser eines Rades (Sim) [mm] */
+#define WHEEL_PERIMETER			178.1283 	/*!< Umfang eines Rades (Sim) [mm] */
+#define WHEEL_TO_WHEEL_DIAMETER 97.2 		/*!< Abstand der beiden Raeder (Sim) [mm] */
+#else	// MCU
+/* hier kann man die genauen Werte fuer den eigenen Bot eintragen */
 #define WHEEL_DIAMETER			56.7		/*!< Durchmesser eines Rades [mm] */
 #define WHEEL_PERIMETER			178.1283 	/*!< Umfang eines Rades [mm] */
 #define WHEEL_TO_WHEEL_DIAMETER 97.2 		/*!< Abstand der beiden Raeder [mm] */
+#endif	// PC
 
 #define DISTSENSOR_POS_FW		47			/*!< Abstand der Distanzsensoren von der Radachse (in Fahrtrichtung) [mm] */
 #define DISTSENSOR_POS_SW		32			/*!< Abstand der Distanzsensoren von der Mittelachse (in Querrichtung) [mm] */
@@ -68,20 +75,21 @@
 
 /* Odometrie-Konstanten */
 #ifdef PC
-	#define MOUSE_CPI		400		/*!< CPI-Wert aus Kalibrierung (Wert fuer den Sim) */
-	#define MOUSE_FULL_TURN	1484	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis (Wert fuer den Sim) */
-#else
-	#define MOUSE_CPI		415		/*!< CPI-Wert aus Kalibrierung */
-	#define MOUSE_FULL_TURN	1600	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis */
-#endif
+#define MOUSE_CPI		400		/*!< CPI-Wert aus Kalibrierung (Wert fuer den Sim) */
+#define MOUSE_FULL_TURN	1484	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis (Wert fuer den Sim) */
+#else	// MCU
+#define MOUSE_CPI		415		/*!< CPI-Wert aus Kalibrierung */
+#define MOUSE_FULL_TURN	1600	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis */
+#endif	// PC
 
-#define WHEEL_DISTANCE		(WHEEL_TO_WHEEL_DIAMETER/2.0)	/*!< Abstand eines Rades zur Mitte des Bots [mm] */
+#define WHEEL_DISTANCE		(WHEEL_TO_WHEEL_DIAMETER / 2.0f)	/*!< Abstand eines Rades zur Mitte des Bots [mm] */
 #define STUCK_DIFF			100		/*!< ab welcher Differenz haben wir durchdrehende Raeder? */
 #define G_SPEED				0.5		/*!< Kopplung Encoder- und Maussensor fuer Geschwindigkeiten (0.0=nur Radencoder, 1.0=nur Maussensor) */
 #define G_POS				0.5		/*!< Kopplung Encoder- und Maussensor fuer Positionen und Winkel (0.0=nur Radencoder, 1.0=nur Maussensor) */
 
 /* System-Konstanten */
 #define F_CPU	16000000L	/*!< CPU-Frequenz [Hz] */
+//#define F_CPU	20000000L	/*!< CPU-Frequenz [Hz] */
 #define XTAL	F_CPU		/*!< CPU-Frequenz [Hz] */
 
 /*** Einstellungen fuer die Verhaltensregeln ***/
@@ -95,7 +103,7 @@
 #define COL_FAR				400		/*!< Fernbereich [mm] */
 
 /* Zustaende und Konstanten fuer das bot_solve_maze_behaviour-Verhalten */
-#define OPTIMAL_DISTANCE	(int16_t)(BOT_DIAMETER*1.2)	/*!< Optimale Distanz zur Wand [mm]. Etwas mehr als Bot-Durchmesser ist ideal (vergroessert aufgrund der Kennlinien der Sharps) */
+#define OPTIMAL_DISTANCE	(int16_t)(BOT_DIAMETER * 1.2f)	/*!< Optimale Distanz zur Wand [mm]. Etwas mehr als Bot-Durchmesser ist ideal (vergroessert aufgrund der Kennlinien der Sharps) */
 #define ADJUST_DISTANCE		10		/*!< Toleranzbereich [mm] */
 #define IGNORE_DISTANCE		240		/*!< Entfernung, ab der eine Wand ignoriert wird [mm] */
 #define GROUND_GOAL			0x221	/*!< Farbe des Ziels */
@@ -105,10 +113,10 @@
 /* bot_follow_line_behaviour() */
 #ifdef PC
 	/*! Konstante fuer das bot_follow_line_behaviour-Verhalten im Sim */
-	#define LINE_SENSE		0x350	// Linie im Sim = 0x350
+#define LINE_SENSE		0x350	// Linie im Sim = 0x350
 #else
 	/*! Konstante fuer das bot_follow_line_behaviour-Verhalten auf dem echten Bot*/
-	#define LINE_SENSE		0x200	// Ab wann ist es eine Linie? (schwarz ca. 0x300, helle Tischflaeche 0x50)
+#define LINE_SENSE		0x200	// Ab wann ist es eine Linie? (schwarz ca. 0x300, helle Tischflaeche 0x50)
 #endif	// PC
 
 /* Konstanten fuer bot_catch_pillar_behaviour() */

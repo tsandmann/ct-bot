@@ -44,6 +44,7 @@
 #include <string.h>
 #include "rc5-codes.h"
 #include "eeprom.h"
+#include "os_scheduler.h"
 
 /*! Keymap fuer Keypad-Eingaben */
 EEPROM uint8_t gui_keypad_table[][5] = {
@@ -269,6 +270,9 @@ void gui_init(void) {
 	#endif
 	#ifdef DISPLAY_MMC_INFO
 		register_screen(&mmc_display);
+	#endif
+	#ifdef DISPLAY_OS_AVAILABLE
+		register_screen(&os_display);
 	#endif
 	#ifdef RESET_INFO_DISPLAY_AVAILABLE
 		register_screen(&reset_info_display);

@@ -166,7 +166,7 @@ void mouse_transmit_picture(void) {
 	mouse_sens_write(MOUSE_PIXEL_DATA_REG, 0x00); // Frame grabben anstossen
 
 	for (i = 0; i < 6; i++, dummy += 54) {
-		command_write(CMD_SENS_MOUSE_PICTURE, SUB_CMD_NORM, &dummy, &dummy, 54);
+		command_write(CMD_SENS_MOUSE_PICTURE, SUB_CMD_NORM, dummy, 0, 54);
 		for (pixel = 0; pixel < 54; pixel++) {
 			do {
 				data = mouse_sens_read(MOUSE_PIXEL_DATA_REG);

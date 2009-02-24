@@ -69,6 +69,9 @@
 #define U2X		U2X0
 #endif	// MCU_ATMEGA644X
 
+extern fifo_t uart_infifo;	/*!< FIFO fuer Empfangspuffer */
+extern fifo_t uart_outfifo;	/*!< Ausgangs-FIFO */
+
 /*!
  * @brief		Sende Kommando per UART im Little Endian
  * @param cmd	Zeiger auf das Kommando
@@ -89,7 +92,7 @@ void uart_write(void * data, uint8_t length);
  * @param length	Anzahl der zu lesenden Bytes
  * @return			Anzahl der tatsaechlich gelesenen Zeichen
  */
-#define uart_read(data, length)	fifo_get_data(&infifo, data, length);
+#define uart_read(data, length)	fifo_get_data(&uart_infifo, data, length);
 
 /*!
  * @brief	Initialisiert den UART und aktiviert Receiver und Transmitter sowie den Receive-Interrupt.
@@ -104,13 +107,11 @@ static inline void uart_flush(void) {
 	while (UCSRB & (1 << UDRIE));
 }
 
-extern fifo_t infifo;	/*!< FIFO fuer Empfangspuffer */
-
 /*!
  * @brief	Prueft, ob Daten verfuegbar
  * @return	Anzahl der verfuegbaren Bytes
  */
-#define uart_data_available()	infifo.count
+#define uart_data_available()	uart_infifo.count
 
 #endif	// MCU
 #endif	// UART_H_

@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	tcp-server.c
  * @brief 	Demo-TCP-Server
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -80,40 +80,40 @@ void tcp_server_init(void) {
     WSADATA wsaData;
     WORD wVersionRequested;
     int err;
-	
+
     wVersionRequested = MAKEWORD(2, 0);	// 2.0 and above version of WinSock
     err = WSAStartup(wVersionRequested, &wsaData);
     if (err != 0) {
         printf("Couldn't not find a usable WinSock DLL.\n");
-        exit(1); 
+        exit(1);
     }
-#endif	
+#endif
 
-    /* Wir geben uns als Sim aus, weil die Pakete mit derselben Zieladresse 
+    /* Wir geben uns als Sim aus, weil die Pakete mit derselben Zieladresse
      * wieder zurueckkommen */
 	set_bot_address(CMD_SIM_ADDR);
-	
+
 	/* Create socket for incoming connections */
 	if ((server = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
 		printf("socket() failed\n");
 		exit(1);
 	}
-	
+
 	int i = 1;
 	setsockopt(server, SOL_SOCKET, SO_REUSEADDR, (char *)&i, sizeof(i));
-	
+
 	memset(&serverAddr, 0, sizeof(serverAddr));   // Clean up
 	serverAddr.sin_family = AF_INET;              // Internet address family
 	serverAddr.sin_addr.s_addr = htonl(INADDR_ANY); // Any incoming interface
 	serverAddr.sin_port = htons(PORT);      // Local port to listen on
-	
+
 	/* Bind to the local address */
 	if (bind(server, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
 		printf("bind() failed\n");
-		exit(1);		
+		exit(1);
 	}
-	
-	/* Mark the socket so it will listen for incoming connections */ 
+
+	/* Mark the socket so it will listen for incoming connections */
 	if (listen(server, 5) < 0) {
 		printf("listen() failed\n");
 		exit(1);
@@ -131,7 +131,7 @@ void tcp_server_run(int runs) {
 
 	uint8_t seq = 1;
 	unsigned long t_sum = 0, t2_sum = 0;
-	
+
 	/* Set the size of the in-out parameter */
 	clntLen = sizeof(clientAddr);
 
@@ -149,18 +149,18 @@ void tcp_server_run(int runs) {
 		simultime += 10;
 		//printf("i=%d\n", i);
 		GETTIMEOFDAY(&start, NULL);
-		command_write(CMD_SENS_IR, SUB_CMD_NORM, &simultime, NULL, 0);
-		command_write(CMD_SENS_ENC, SUB_CMD_NORM, &simultime, &simultime, 0);
-		command_write(CMD_SENS_BORDER, SUB_CMD_NORM, &simultime, &simultime, 0);
-		command_write(CMD_SENS_LINE, SUB_CMD_NORM, &simultime, &simultime, 0);
-		command_write(CMD_SENS_LDR, SUB_CMD_NORM, &simultime, &simultime, 0);
-		command_write(CMD_SENS_TRANS, SUB_CMD_NORM, &simultime, NULL, 0);
-		command_write(CMD_SENS_DOOR, SUB_CMD_NORM, &simultime, NULL, 0);
-		command_write(CMD_SENS_MOUSE, SUB_CMD_NORM, &simultime, &simultime, 0);
-		command_write(CMD_SENS_ERROR, SUB_CMD_NORM, &simultime, NULL, 0);
-		command_write(CMD_SENS_RC5, SUB_CMD_NORM, &simultime, NULL, 0);
+		command_write(CMD_SENS_IR, SUB_CMD_NORM, simultime, 0, 0);
+		command_write(CMD_SENS_ENC, SUB_CMD_NORM, simultime, simultime, 0);
+		command_write(CMD_SENS_BORDER, SUB_CMD_NORM, simultime, simultime, 0);
+		command_write(CMD_SENS_LINE, SUB_CMD_NORM, simultime, simultime, 0);
+		command_write(CMD_SENS_LDR, SUB_CMD_NORM, simultime, simultime, 0);
+		command_write(CMD_SENS_TRANS, SUB_CMD_NORM, simultime, 0, 0);
+		command_write(CMD_SENS_DOOR, SUB_CMD_NORM, simultime, 0, 0);
+		command_write(CMD_SENS_MOUSE, SUB_CMD_NORM, simultime, simultime, 0);
+		command_write(CMD_SENS_ERROR, SUB_CMD_NORM, simultime, 0, 0);
+		command_write(CMD_SENS_RC5, SUB_CMD_NORM, simultime, 0, 0);
 
-		command_write(CMD_DONE, SUB_CMD_NORM, &simultime, NULL, 0);
+		command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0);
 		flushSendBuffer();
 
 		GETTIMEOFDAY(&stop, NULL);
@@ -231,13 +231,13 @@ void tcp_test_client_init(void) {
  */
 void tcp_test_client_run(int runs) {
 	char buffer[sizeof(command_t)];
-	
+
 	if (runs > 0) {
 		printf("Answering %d frames\n", runs);
 	} else {
 		printf("Answering all frames\n");
 	}
-	
+
 	int i;
 	for(i=0; runs==0 || i<runs; i++) {
 		//printf("i=%d\n", i);

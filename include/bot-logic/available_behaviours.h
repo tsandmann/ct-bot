@@ -48,7 +48,9 @@
 //#define BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE /*!< Transport-Pillar Verhalten */
 
 #define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-Kommandos entgegen? */
-//#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE /*!< Deaktivieren eines Verhaltens wenn Abbruchbedingung erfuellt */
+//#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE	/*!< Deaktivieren eines Verhaltens wenn Abbruchbedingung erfuellt */
+
+//#define BEHAVIOUR_GET_UTILIZATION_AVAILABLE	/*!< CPU-Auslastung eines Verhaltens messen */
 
 //#define BEHAVIOUR_CALIBRATE_PID_AVAILABLE	/*!< Kalibrierungsverhalten fuer Motorregelung vorhanden? */
 //#define BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE	/*!< Kalibrierungsverhalten fuer Distanzsensoren vorhanden? */
@@ -163,6 +165,7 @@
 
 #ifndef MCU
 	#undef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+	#undef BEHAVIOUR_GET_UTILIZATION_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
@@ -188,6 +191,10 @@
 
 #ifndef MEASURE_MOUSE_AVAILABLE
 	#undef BEHAVIOUR_HANG_ON_AVAILABLE
+#endif
+
+#ifndef OS_AVAILABLE
+	#undef BEHAVIOUR_GET_UTILIZATION_AVAILABLE
 #endif
 
 #ifdef MCU
@@ -245,6 +252,7 @@
 #include "bot-logic/behaviour_delay.h"
 
 #include "bot-logic/behaviour_cancel_behaviour.h"
+#include "bot-logic/behaviour_get_utilization.h"
 
 #include "bot-logic/behaviour_transport_pillar.h"
 

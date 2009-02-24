@@ -24,8 +24,8 @@
  * @date 	20.12.05
  */
 
-#ifndef __command_h_
-#define __command_h_
+#ifndef COMMAND_H_
+#define COMMAND_H_
 
 #include "ct-Bot.h"
 #include "eeprom.h"
@@ -105,7 +105,7 @@ typedef struct {
 #define CMD_ID			'A'		/*!< Adressverwaltung */
 #define SUB_ID_REQUEST	'R'		/*!< Fordere eine Adresse an */
 #define SUB_ID_OFFER	'O'		/*!< Bot bekommt eine Adresse angeboten */
-#define SUB_ID_SET		'S'		/*!< Bot Setzt/bestaetigt eine Adresse an */
+#define SUB_ID_SET		'S'		/*!< Bot Setzt/bestaetigt eine Adresse */
 
 // Subcommandos fuer LCD
 #define SUB_LCD_CLEAR   'c'     /*!< Subkommando Clear Screen */
@@ -165,54 +165,54 @@ int8_t command_read(void);
  * @param command		Kennung zum Command
  * @param subcommand	Kennung des Subcommand
  * @param to			Adresse des Empfaengers
- * @param *data_l 		Daten fuer den linken Kanal
- * @param *data_r 		Daten fuer den rechten Kanal
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r 		Daten fuer den rechten Kanal
  * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
-void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t * data_l, int16_t * data_r, uint8_t payload);
+void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload);
 
 /*!
  * Uebertraegt ein Kommando an den ct-Sim und wartet nicht auf eine Antwort
  * @param command		Kennung zum Command
  * @param subcommand	Kennung des Subcommand
- * @param *data_l 		Daten fuer den linken Kanal
- * @param *data_r 		Daten fuer den rechten Kanal
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r 		Daten fuer den rechten Kanal
  * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
-void command_write(uint8_t command, uint8_t subcommand, int16_t * data_l, int16_t * data_r, uint8_t payload);
+void command_write(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload);
 
 /*!
  * Gibt dem Simulator Daten mit String-Anhang und wartet nicht auf Antwort
  * @param command 		Kennung zum Command
  * @param subcommand 	Kennung des Subcommand
- * @param *data_l		Daten fuer den linken Kanal
- * @param *data_r		Daten fuer den rechten Kanal
+ * @param data_l		Daten fuer den linken Kanal
+ * @param data_r		Daten fuer den rechten Kanal
  * @param *data 		Datenanhang an das eigentliche Command, null-terminiert
  */
-void command_write_data(uint8_t command, uint8_t subcommand, int16_t * data_l, int16_t * data_r, const char * data);
+void command_write_data(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, const char * data);
 
 /*!
  * Versendet Daten mit Anhang und wartet nicht auf Antwort
  * @param command 		Kennung zum Command
  * @param subcommand	Kennung des Subcommand
  * @param to			Adresse, an die die Daten gesendet werden sollen
- * @param *data_l 		Daten fuer den linken Kanal
- * @param *data_r		Daten fuer den rechten Kanal
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r		Daten fuer den rechten Kanal
  * @param payload 		Anzahl der Bytes im Anhang
  * @param *data 		Datenanhang an das eigentliche Command
  */
-void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t * data_l, int16_t * data_r, uint8_t payload, uint8_t * data);
+void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload, void * data);
 
 /*!
  * Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort
  * @param command 		Kennung zum Command
  * @param subcommand	Kennung des Subcommand
- * @param *data_l 		Daten fuer den linken Kanal
- * @param *data_r 		Daten fuer den rechten Kanal
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r 		Daten fuer den rechten Kanal
  * @param payload 		Anzahl der Bytes im Anhang
- * @param *data 			Datenanhang an das eigentliche Command
+ * @param *data 		Datenanhang an das eigentliche Command
  */
-void command_write_rawdata(uint8_t command, uint8_t subcommand, int16_t * data_l, int16_t * data_r, uint8_t payload, uint8_t * data);
+void command_write_rawdata(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload, void * data);
 
 /*!
  * Wertet das Kommando im Puffer aus
@@ -244,4 +244,4 @@ static inline void set_bot_address(uint8_t bot_addr) {
 	ctbot_eeprom_write_byte(&bot_address, bot_addr);
 }
 
-#endif	/*__command_h_*/
+#endif	/* COMMAND_H_ */

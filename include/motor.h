@@ -62,11 +62,7 @@ extern volatile int16_t motor_right;	/*!< zuletzt gestellter Wert rechter Motor 
 typedef struct {
 	uint8_t left:1;		/*!< linksrum */
 	uint8_t right:1;	/*!< rechtsrum */
-#ifndef DOXYGEN
-	} __attribute__ ((packed)) direction_t;
-#else
-	} direction_t;
-#endif
+} __attribute__ ((packed)) direction_t;
 
 extern direction_t direction;		/*!< Drehrichtung der Motoren, auch wenn die Speed-Variablen bereits wieder auf Null sind */
 
@@ -76,9 +72,7 @@ extern direction_t direction;		/*!< Drehrichtung der Motoren, auch wenn die Spee
 void motor_init(void);
 
 /*!
- * @brief		Direkter Zugriff auf den Motor
- * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		17.10.2006
+ * Direkter Zugriff auf den Motor
  * @param left	Geschwindigkeit fuer den linken Motor
  * @param right	Geschwindigkeit fuer den linken Motor
  * Geschwindigkeit liegt zwischen -450 und +450. 0 bedeutet Stillstand, 450 volle Kraft voraus, -450 volle Kraft zurueck.
@@ -87,7 +81,7 @@ void motor_init(void);
 void motor_set(int16_t left, int16_t right);
 
 /*!
- * @brief		Stellt die Servos
+ * Stellt die Servos
  * @param servo	Nummer des Servos
  * @param pos	Zielwert
  * Sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus
@@ -96,9 +90,7 @@ void servo_set(uint8_t servo, uint8_t pos);
 
 #ifdef SPEED_CONTROL_AVAILABLE
 /*!
- * @brief 			Drehzahlregelung fuer die Motoren des c't-Bots
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			17.10.2006
+ * Drehzahlregelung fuer die Motoren des c't-Bots
  * @param dev		0: linker Motor, 1: rechter Motor
  * @param actVar	Zeiger auf Stellgroesse (nicht volatile, da Aufruf aus ISR heraus)
  * @param encTime	Zeiger auf Encodertimestamps, mit denen gerechnet werden soll
@@ -108,13 +100,11 @@ void servo_set(uint8_t servo, uint8_t pos);
  * Feintuning von PID_Kp bis PID_SPEED_THRESHOLD (bot-local.h) verbessert die Genauigkeit und Schnelligkeit der Regelung.
  * Mit PWMMIN, PWMSTART_L und PWMSTART_R laesst sich der Minimal- bzw. Startwert fuer die Motoren anpassen.
  */
-void speed_control(uint8_t dev, int16_t* actVar, uint16_t* encTime, uint8_t i_time, uint8_t enc);
+void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_time, uint8_t enc);
 
 #ifdef DISPLAY_REGELUNG_AVAILABLE
 /*!
- * @brief	Zeigt Debug-Informationen der Motorregelung an.
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	12.02.2007
+ * Zeigt Debug-Informationen der Motorregelung an.
  * Dargestellt werden pro Moto Ist- / Sollgeschwindigkeit, die Differenz davon, der PWM-Stellwert und die
  * Reglerparameter Kp, Ki und Kd.
  * Die Tasten 1 und 4 veraendern Kp, 2 und 5 veraendern Ki, 3 und 6 veraendern Kd, wenn ADJUST_PID_PARAMS an ist.

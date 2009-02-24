@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	os_thread_pc.c
  * @brief 	Threadmanagement fuer BotOS (PC)
  * @author 	Timo Sandmann (mail@timosandmann.de)
@@ -69,7 +69,7 @@ void os_thread_yield(void) {
 
 /*!
  * Blockiert den aktuellten Thread fuer die angegebene Zeit und schaltet
- * auf einen anderen Thread um 
+ * auf einen anderen Thread um
  * => coorporative threadswitch
  * @param sleep		Zeit in ms, die der aktuelle Thread blockiert wird
  */
@@ -125,7 +125,7 @@ void os_signal_lock(os_signal_t * signal) {
 void os_signal_unlock(os_signal_t * signal) {
 	pthread_mutex_lock(&signal->mutex);
 	signal->value = 0;
-	pthread_cond_signal(&signal->cond);
+	pthread_cond_broadcast(&signal->cond);
 	pthread_mutex_unlock(&signal->mutex);
 }
 

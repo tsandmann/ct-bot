@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	log.h
  * @brief 	Routinen zum Loggen von Informationen. Es sollten ausschliesslich nur
  * die Log-Makros: LOG_DEBUG(), LOG_INFO(), LOG_WARN(), LOG_ERROR() und LOG_FATAL()
@@ -25,26 +25,26 @@
  * Eine Ausgabe kann wie folgt erzeugt werden:
  * LOG_DEBUG("Hallo Welt!");
  * LOG_INFO("Wert x=%d", x);
- * Bei den Ausgaben kann auf ein Line Feed '\n' am Ende des Strings verzichtet werden, 
+ * Bei den Ausgaben kann auf ein Line Feed '\n' am Ende des Strings verzichtet werden,
  * da dies automatisch angehaengt hinzugefuegt wird.
  * Die frueher noetigen Doppelklammern sind nicht mehr noetig, einfach normale Klammern
- * verwenden, siehe Bsp. oben. 
- * (Die Doppelklammern funktionieren nicht mit Var-Arg-Makros, die wir aber brauchen, da 
+ * verwenden, siehe Bsp. oben.
+ * (Die Doppelklammern funktionieren nicht mit Var-Arg-Makros, die wir aber brauchen, da
  * nun fuer MCU alle Strings im Flash belassen werden sollen, das spart viel RAM :-) )
- * 
+ *
  * <pre>
  * Die Logausgaben werden generell mit der Definition von LOG_AVAILABLE eingeschaltet
  * und sind ansonsten nicht aktiv.
- * 
+ *
  * Loggings auf dem PC:
  * --------------------
  * Hier stehen drei Arten der Ausgabeschnittstellen zur Verfuegung.
  * 1. Logging ueber ct-Sim:		LOG_CTSIM_AVAILABLE muss definiert sein.
  * 2. Logging ueber Display:	LOG_DISPLAY_AVAILABLE muss definiert sein, sowie DISPLAY_AVAILABLE.
  * 3. Logging ueber Konsole:  	Es muss LOG_STDOUT_AVAILABLE definiert sein.
- * 
+ *
  * LOG_UART_AVAILABLE steht auf dem PC nicht zur Verfuegung.
- * 
+ *
  * Loggings auf dem MCU:
  * ---------------------
  * Hier stehen drei Arten der Ausgabeschnittstellen zur Verfuegung.
@@ -56,10 +56,10 @@
  * 3. Logging ueber Display:	LOG_DISPLAY_AVAILABLE muss definiert sein, sowie DISPLAY_AVAILABLE.
  * 4. Logging in txt auf MMC:	MMC_AVAILABLE und MMC_VM_AVAILABLE muessen an sein.
  * </pre>
- * 
- * Alternativ schlankere Variante fuer MCU und CTSIM, indem man USE_MINILOG aktiviert. 
+ *
+ * Alternativ schlankere Variante fuer MCU und CTSIM, indem man USE_MINILOG aktiviert.
  * Das spart viel Platz in Flash und RAM.
- * 
+ *
  * @author 	Andreas Merkle (mail@blue-andi.de)
  * @date 	27.02.06
  */
@@ -69,9 +69,9 @@
 
 #include "ct-Bot.h"
 #ifdef MCU
-	#include <avr/pgmspace.h>
+#include <avr/pgmspace.h>
 #else
-	#define PROGMEM			/*!< Alibideklaration hat keine Funktion, verhindert aber eine Warning */
+#define PROGMEM			/*!< Alibideklaration hat keine Funktion, verhindert aber eine Warning */
 #endif
 
 #ifdef LOG_AVAILABLE
@@ -90,7 +90,7 @@ typedef enum {
 
 #ifdef PC
 /*!
- * Allgemeines Debugging (Methode DiesUndDas wurde mit Parameter SoUndSo 
+ * Allgemeines Debugging (Methode DiesUndDas wurde mit Parameter SoUndSo
  * aufgerufen ...)
  */
 #define LOG_DEBUG(format, args...){	log_begin(__FILE__, __LINE__, LOG_TYPE_DEBUG); 	\
@@ -99,7 +99,7 @@ typedef enum {
 }
 
 /*!
- * Allgemeine Informationen (Programm gestartet, Programm beendet, Verbindung 
+ * Allgemeine Informationen (Programm gestartet, Programm beendet, Verbindung
  * zu Host Foo aufgebaut, Verarbeitung dauerte SoUndSoviel Sekunden ...)
  */
 #define LOG_INFO(format, args...){	log_begin(__FILE__, __LINE__, LOG_TYPE_INFO); 	\
@@ -153,7 +153,7 @@ void log_printf(const char *format, ...);
 void log_end(void);
 #else	// PC
 /*!
- * Allgemeines Debugging (Methode DiesUndDas wurde mit Parameter SoUndSo 
+ * Allgemeines Debugging (Methode DiesUndDas wurde mit Parameter SoUndSo
  * aufgerufen ...)
  */
 #define LOG_DEBUG(format, args...){	static const char file[] PROGMEM = __FILE__;		\
@@ -164,7 +164,7 @@ void log_end(void);
 }
 
 /*!
- * Allgemeine Informationen (Programm gestartet, Programm beendet, Verbindung 
+ * Allgemeine Informationen (Programm gestartet, Programm beendet, Verbindung
  * zu Host Foo aufgebaut, Verarbeitung dauerte SoUndSoviel Sekunden ...)
  */
 #define LOG_INFO(format, args...){	static const char file[] PROGMEM = __FILE__;		\
@@ -231,7 +231,7 @@ void log_end(void);
 uint8 log_mmc_init(void);
 #endif	// LOG_MMC_AVAILABLE
 
-#ifdef LOG_DISPLAY_AVAILABLE	
+#ifdef LOG_DISPLAY_AVAILABLE
 /*!
  * @brief	Display-Handler fuer das Logging
  */
@@ -244,6 +244,7 @@ typedef enum {
 	LOG_TYPE_DEBUG = 0,	/*!< Allgemeines Debugging */
 	LOG_TYPE_INFO,		/*!< Allgemeine Informationen */
 	LOG_TYPE_ERROR,		/*!< Fehler aufgetreten */
+	LOG_TYPE_RAW,		/*!< Nur Datenausgabe */
 } LOG_TYPE;
 
 #define LOG_WARN	LOG_INFO
@@ -252,15 +253,15 @@ typedef enum {
 /*!
  * Allgemeines Debugging
  */
-#define LOG_DEBUG(format, args...){	minilog_begin(__LINE__, LOG_TYPE_DEBUG); 	\
-									static const char __data[] PROGMEM = format;	\
-									minilog_printf(__data, ## args);				\
+#define LOG_DEBUG(format, args...) { minilog_begin(__LINE__, LOG_TYPE_DEBUG); 		\
+									 static const char __data[] PROGMEM = format;	\
+									 minilog_printf(__data, ## args);				\
 }
 
 /*!
  * Info-Logging
  */
-#define LOG_INFO(format, args...){	minilog_begin(__LINE__, LOG_TYPE_INFO);		\
+#define LOG_INFO(format, args...) {	minilog_begin(__LINE__, LOG_TYPE_INFO);			\
 									static const char __data[] PROGMEM = format;	\
 									minilog_printf(__data, ## args);				\
 }
@@ -268,7 +269,15 @@ typedef enum {
 /*!
  * Fehler-Logging
  */
-#define LOG_ERROR(format, args...){	minilog_begin(__LINE__, LOG_TYPE_ERROR); 	\
+#define LOG_ERROR(format, args...) { minilog_begin(__LINE__, LOG_TYPE_ERROR); 		\
+									 static const char __data[] PROGMEM = format;	\
+									 minilog_printf(__data, ## args);				\
+}
+
+/*!
+ * Reine Datenausgabe
+ */
+#define LOG_RAW(format, args...) {	minilog_begin(0, LOG_TYPE_RAW); 				\
 									static const char __data[] PROGMEM = format;	\
 									minilog_printf(__data, ## args);				\
 }
@@ -283,7 +292,7 @@ void minilog_begin(uint16_t line, LOG_TYPE log_type);
 /*!
  * Schreibt den Log-Text in den Log-Puffer und versendet die Daten
  * @param format	Format-String, wie bei printf
- * @param ... 		Variable Argumentenliste, wie beim printf
+ * @param ... 		Variable Argumentenliste, wie bei printf
  */
 void minilog_printf(const char * format, ...);
 #endif	// USE_MINILOG

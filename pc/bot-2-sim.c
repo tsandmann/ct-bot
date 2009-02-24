@@ -117,16 +117,15 @@ void bot_2_sim_init(void) {
 	flushSendBuffer();
 
 	receive_until_Frame(CMD_DONE);
-	command_write(CMD_DONE, SUB_CMD_NORM, &simultime, NULL, 0);
+	command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0);
 	flushSendBuffer();
 #ifdef BOT_2_BOT_AVAILABLE
 	receive_until_Frame(CMD_DONE);
 	/* hello (bot-)world! */
 	if (get_bot_address() <= 127) {
-		command_write_to(BOT_CMD_WELCOME, SUB_CMD_NORM, CMD_BROADCAST, NULL,
-				NULL, 0);
+		command_write_to(BOT_CMD_WELCOME, SUB_CMD_NORM, CMD_BROADCAST, 0, 0, 0);
 	}
-	command_write(CMD_DONE, SUB_CMD_NORM, &simultime, NULL, 0);
+	command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0);
 	flushSendBuffer();
 #endif	// BOT_2_BOT_AVAILABLE
 }

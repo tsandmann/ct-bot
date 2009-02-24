@@ -130,9 +130,9 @@ void set_received_bot_state(command_t * cmd);
 /*!
  * Setzt den eigenen Status auf einen neuen Wert und schickt ihn an
  * alle Bots
- * @param *state	Zeiger auf Status
+ * @param state	Neuer Status
  */
-void publish_bot_state(void * state);
+void publish_bot_state(int16_t state);
 
 #ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
 /*!

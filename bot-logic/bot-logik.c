@@ -53,8 +53,8 @@
 //#define DEBUG_BOT_LOGIC		// Schalter um recht viel Debug-Code anzumachen
 
 #ifndef DEBUG_BOT_LOGIC
-	#undef LOG_DEBUG
-	#define LOG_DEBUG(a, ...) {}
+#undef LOG_DEBUG
+#define LOG_DEBUG(a, ...) {}
 #endif
 
 int16_t speedWishLeft;				/*!< Puffervariablen fuer die Verhaltensfunktionen absolut Geschwindigkeit links */
@@ -72,7 +72,7 @@ int16_t target_speed_r = BOT_SPEED_STOP;	/*!< Sollgeschwindigkeit rechter Motor 
 /*! Liste mit allen Verhalten */
 static Behaviour_t * behaviour = NULL;
 
-#define MAX_PROCS 6					/*!< Maximale Anzahl der registrierbaren Funktionen */
+#define MAX_PROCS 3					/*!< Maximale Anzahl der registrierbaren Funktionen */
 static int8_t count_arr_emerg = 0;	/*!< Anzahl der zurzeit registrierten Notfallfunktionen */
 /*! hier liegen die Zeiger auf die auszufuehrenden Abgrund Notfall-Funktionen */
 static void (* emerg_functions[MAX_PROCS])(void) = {NULL};
@@ -85,8 +85,10 @@ static void (* emerg_functions[MAX_PROCS])(void) = {NULL};
  * @return 		Index, den die Routine im Array einnimmt, bei -1 ist alles voll
  */
 static inline int8_t register_emergency_proc(void * fkt) {
-	if (count_arr_emerg == MAX_PROCS) return -1;	// sorry, aber fuer dich ist kein Platz mehr da :(
-	int8_t proc_nr = count_arr_emerg++;		// neue Routine hinten anfuegen
+	if (count_arr_emerg == MAX_PROCS) {
+		return -1;	// sorry, aber fuer dich ist kein Platz mehr da :(
+	}
+	int8_t proc_nr = count_arr_emerg++;	// neue Routine hinten anfuegen
 	emerg_functions[proc_nr] = fkt;	// Pointer im Array speichern
 	return proc_nr;
 }
@@ -98,7 +100,9 @@ static inline int8_t register_emergency_proc(void * fkt) {
 void start_registered_emergency_procs(void) {
 	uint8_t i;
 	for (i=0; i<MAX_PROCS; i++) {
-		if (emerg_functions[i] != NULL) emerg_functions[i]();
+		if (emerg_functions[i] != NULL) {
+			emerg_functions[i]();
+		}
 	}
 }
 
@@ -197,14 +201,19 @@ void bot_behave_init(void) {
 		insert_behaviour_to_list(&behaviour, new_behaviour(251, bot_simple2_behaviour, INACTIVE));
 	#endif
 
+	#ifdef BEHAVIOUR_SCAN_AVAILABLE
+		// Verhalten, das die Umgebung des Bots on-the-fly beim Fahren scannt
+	    insert_behaviour_to_list(&behaviour, new_behaviour(250, bot_scan_onthefly_behaviour, ACTIVE));
+	#endif
+
 	// Sehr hohe Prioritaet haben die Notfall Verhalten
 
 	// Verhalten zum Schutz des Bots, hohe Prioritaet, aktiv
 	#ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE
-		insert_behaviour_to_list(&behaviour, new_behaviour(250, bot_avoid_border_behaviour, ACTIVE));
+		insert_behaviour_to_list(&behaviour, new_behaviour(249, bot_avoid_border_behaviour, ACTIVE));
 	#endif
 	#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
-		insert_behaviour_to_list(&behaviour, new_behaviour(249, bot_avoid_col_behaviour, ACTIVE));
+		insert_behaviour_to_list(&behaviour, new_behaviour(248, bot_avoid_col_behaviour, ACTIVE));
 	#endif
     #ifdef BEHAVIOUR_HANG_ON_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(245, bot_hang_on_behaviour, ACTIVE));
@@ -212,13 +221,12 @@ void bot_behave_init(void) {
  	    register_emergency_proc(&hang_on_handler);
 	#endif
 
-	#ifdef BEHAVIOUR_SCAN_AVAILABLE
-		// Verhalten, das die Umgebung des Bots on-the-fly beim Fahren scannt
-		insert_behaviour_to_list(&behaviour, new_behaviour(240, bot_scan_onthefly_behaviour, ACTIVE));
+	#ifdef BEHAVIOUR_GET_UTILIZATION_AVAILABLE
+ 	    insert_behaviour_to_list(&behaviour, new_behaviour(244, bot_get_utilization_behaviour, INACTIVE));
 	#endif
 
 	#ifdef BEHAVIOUR_DELAY_AVAILABLE
-		// Delay-Routinen als Verhalten
+		// Delay-Routine als Verhalten
 		insert_behaviour_to_list(&behaviour, new_behaviour(200, bot_delay_behaviour, INACTIVE));
 	#endif
 
@@ -284,7 +292,7 @@ void bot_behave_init(void) {
 		// Verhalten um einer Linie zu folgen
 		insert_behaviour_to_list(&behaviour, new_behaviour(70, bot_follow_line_behaviour, INACTIVE));
 	#endif
-	
+
 	#ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
 		// Linie folgen ueber Kreuzungen hinweg zum Ziel, kuerzester Weg befindet sich danach im Stack
 		insert_behaviour_to_list(&behaviour, new_behaviour(69, bot_line_shortest_way_behaviour, INACTIVE));
@@ -366,6 +374,23 @@ Behaviour_t * get_behaviour(BehaviourFunc function) {
 	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben
 	for (job = behaviour; job; job = job->next) {
 		if (job->work == function) {
+			return job;
+		}
+	}
+	return NULL;
+}
+
+/*!
+ * Zu ein Verhalten mit der gegebenen Prioritaet
+ * @param prio	Prioritaet des gesuchten Verhaltens
+ * @return		Zeiger auf Verhaltensdatensatz oder NULL
+ */
+Behaviour_t * get_behaviour_from_prio(uint8_t prio) {
+	Behaviour_t * job;	// Zeiger auf ein Verhalten
+
+	// Einmal durch die Liste gehen, bis wir den gewuenschten Eintrag haben
+	for (job = behaviour; job; job = job->next) {
+		if (job->priority == prio) {
 			return job;
 		}
 	}

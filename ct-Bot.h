@@ -37,10 +37,10 @@
 #define USE_MINILOG					/*!< schaltet fuer MCU auf schlankes Logging um (nur in Verbindung mit Log2Sim) */
 
 
-#define LED_AVAILABLE		/*!< LEDs for local control */
+#define LED_AVAILABLE		/*!< LEDs aktiv */
 
-#define IR_AVAILABLE		/*!< Infrared Remote Control */
-#define RC5_AVAILABLE		/*!< Key-Mapping for IR-RC	 */
+#define IR_AVAILABLE		/*!< Infrarot Remote Control */
+#define RC5_AVAILABLE		/*!< Key-Mapping fuer IR-RC	 */
 //#define KEYPAD_AVAILABLE	/*!< Keypad-Eingabe vorhanden? */
 
 #define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunizieren? */
@@ -49,18 +49,17 @@
 
 //#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit im s und ms? */
 
-#define DISPLAY_AVAILABLE	/*!< Display for local control */
+#define DISPLAY_AVAILABLE	/*!< Display aktiv */
 #define DISPLAY_REMOTE_AVAILABLE /*!< Sende LCD Anzeigedaten an den Simulator */
+
 #define MEASURE_MOUSE_AVAILABLE			/*!< Geschwindigkeiten werden aus den Maussensordaten berechnet */
 //#define MEASURE_COUPLED_AVAILABLE		/*!< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
 
-//#define POS_STORE_AVAILABLE  /*!< Positionsspeicher vorhanden */
-
 //#define WELCOME_AVAILABLE	/*!< kleiner Willkommensgruss */
 
-#define ADC_AVAILABLE		/*!< A/D-Converter */
+#define ADC_AVAILABLE		/*!< A/D-Konverter */
 
-#define MOUSE_AVAILABLE		/*!< Maus Sensor */
+//#define MOUSE_AVAILABLE	/*!< Maus Sensor */
 
 #define ENA_AVAILABLE		/*!< Enable-Leitungen */
 #define SHIFT_AVAILABLE		/*!< Shift Register */
@@ -70,6 +69,8 @@
 //#define TEST_AVAILABLE_MOTOR		/*!< Sollen die Motoren ein wenig drehen */
 
 #define BEHAVIOUR_AVAILABLE /*!< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
+
+//#define POS_STORE_AVAILABLE  /*!< Positionsspeicher vorhanden */
 
 //#define MAP_AVAILABLE			/*!< Aktiviert die Kartographie */
 //#define MAP_2_SIM_AVAILABLE	/*!< Sendet die Map zur Anzeige an den Sim */
@@ -85,7 +86,7 @@
 //#define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung */
 //#define SPI_AVAILABLE			/*!< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 //#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
-//#define OS_AVAILABLE			/*!< Aktiviert BotOS fuer Threads und Scheduling */
+#define OS_AVAILABLE			/*!< Aktiviert BotOS fuer Threads und Scheduling */
 
 #define EEPROM_EMU_AVAILABLE	/*!< Aktiviert die EEPROM-Emulation fuer PC */
 
@@ -100,7 +101,6 @@
 	#define MCU		/*!< Beim generieren der Doku alles anschalten */
 	#define TEST_AVAILABLE_MOTOR	/*!< Beim generieren der Doku alles anschalten */
 #endif
-
 
 #ifndef DISPLAY_AVAILABLE
 	#undef WELCOME_AVAILABLE
@@ -139,13 +139,14 @@
 
 #ifdef MCU
 	#ifdef LOG_CTSIM_AVAILABLE
-		#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunmizieren? */
+		#define BOT_2_PC_AVAILABLE	/*!< Soll der Bot mit dem PC kommunizieren? */
 	#endif
 	#ifdef BOT_2_PC_AVAILABLE
 		#define UART_AVAILABLE		/*!< Serial Communication */
 		#define COMMAND_AVAILABLE	/*!< High-Level Communication */
 	#else
 		#undef DISPLAY_REMOTE_AVAILABLE
+		#undef MAP_2_SIM_AVAILABLE
 	#endif
 	#undef EEPROM_EMU_AVAILABLE
 #endif

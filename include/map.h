@@ -28,6 +28,7 @@
 #define MAP_H_
 
 #include "ct-Bot.h"
+#include "os_thread.h"
 #include "bot-logic/available_behaviours.h"
 
 #ifdef MAP_AVAILABLE
@@ -39,10 +40,14 @@
 #define MAP_RESOLUTION 		125		/*!< Aufloesung der Karte in Punkte pro Meter */
 #define MAP_SECTION_POINTS 	16		/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 
-#define MAP_UPDATE_STACK_SIZE	240	/*!< Groesse des Stacks, der das Map-Update ausfuehrt */
+#define MAP_UPDATE_STACK_SIZE	256	/*!< Groesse des Stacks, der das Map-Update ausfuehrt */
 #define MAP_UPDATE_CACHE_SIZE	26	/*!< Groesse des Map-Caches */
 
+#ifdef MCU
+#define MAP_2_SIM_BUFFER_SIZE	32	/*!< Anzahl der Bloecke, die gesammelt uebertragen werden */
+#else
 #define MAP_2_SIM_BUFFER_SIZE	4	/*!< Anzahl der Bloecke, die gesammelt uebertragen werden */
+#endif	// MCU
 
 #define MAP_OBSTACLE_THRESHOLD	-20	/*!< Schwellwert, ab dem ein Feld als Hindernis gilt */
 
@@ -67,6 +72,8 @@ typedef struct {
 } __attribute__ ((packed)) map_cache_t;	// Keine Luecken in der Struktur lassen
 
 extern fifo_t map_update_fifo;			/*!< Fifo fuer Cache */
+extern uint8_t map_update_stack[];		/*!< Stack des Update-Threads */
+extern os_signal_t map_buffer_signal;	/*!< Signal das anzeigt, ob Daten im Map-Puffer sind */
 
 /*!
  * Prueft, ob die Karte zurzeit gesperrt ist.

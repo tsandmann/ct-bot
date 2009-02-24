@@ -89,7 +89,7 @@ uint8 display_screen=0;	/*!< zurzeit aktiver Displayscreen */
  */
 
 #ifdef DISPLAY_REMOTE_AVAILABLE
-static uint8_t remote_column = 0;		/*!< Spalte der aktuellen Cursorposition fuer Remote-LCD */
+static uint8_t remote_column = 0;	/*!< Spalte der aktuellen Cursorposition fuer Remote-LCD */
 static uint8_t remote_row = 0;		/*!< Zeile der aktuellen Cursorposition fuer Remote-LCD */
 #endif
 
@@ -99,11 +99,11 @@ static uint8_t remote_row = 0;		/*!< Zeile der aktuellen Cursorposition fuer Rem
  */
 static void display_cmd(uint8_t cmd) {
 	/* Kommando cmd an das Display senden */
-	shift_data_out(cmd,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
+	shift_data_out(cmd, SHIFT_LATCH, SHIFT_REGISTER_DISPLAY);
 
 	/* 47 us warten */
 	_delay_loop_2(F_CPU / 4000000L * 47);
-	DISPLAY_PORT=DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
+	DISPLAY_PORT = DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
 
 	if (cmd == DISPLAY_CLEAR) {
 		/* 1.52 ms warten */
@@ -111,18 +111,17 @@ static void display_cmd(uint8_t cmd) {
 	}
 }
 
-
 /*!
  * @brief 		Schreibt ein Zeichen auf das Display
  * @param data 	Das Zeichen
  */
-static void display_data(char data) {
+void display_data(char data) {
 	/* Zeichen aus data in den Displayspeicher schreiben */
-	shift_data_out(data,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY|DISPLAY_RS);
+	shift_data_out(data, SHIFT_LATCH, SHIFT_REGISTER_DISPLAY | DISPLAY_RS);
 
 	/* 47 us warten */
 	_delay_loop_2(F_CPU / 4000000L * 47);
-	DISPLAY_PORT=DPC;	// Alles zurueck setzen ==> Fallende Flanke von Enable
+	DISPLAY_PORT = DPC;	// Alles zurueck setzen ==> Fallende Flanke von Enable
 }
 
 /*!
@@ -130,9 +129,9 @@ static void display_data(char data) {
  */
 void display_clear(void) {
 	display_cmd(DISPLAY_CLEAR); // Display loeschen, Cursor Home
-	#ifdef DISPLAY_REMOTE_AVAILABLE
-		command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, NULL, NULL,0);
-	#endif
+#ifdef DISPLAY_REMOTE_AVAILABLE
+	command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, 0, 0, 0);
+#endif
 }
 
 /*!
@@ -158,10 +157,10 @@ void display_cursor (uint8_t row, uint8_t column) {
    }
 
 #ifdef DISPLAY_REMOTE_AVAILABLE
-	int16_t r = row - 1;
-	int16_t c = column - 1;
-	remote_column = c;
-	remote_row = r;
+  int16_t r = row - 1;
+  int16_t c = column - 1;
+  remote_column = c;
+  remote_row = r;
 #endif
 
 }
@@ -178,14 +177,14 @@ void display_init(void) {
 	delay(12);		// Display steht erst 10ms nach dem Booten bereit
 
 	// Register in 8-Bit-Modus 3x uebertragen, dazwischen warten
-	shift_data_out(0x38,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
+	shift_data_out(0x38, SHIFT_LATCH, SHIFT_REGISTER_DISPLAY);
 	DISPLAY_PORT= DPC;
 	delay(5);
-	shift_data_out(0x38,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
+	shift_data_out(0x38, SHIFT_LATCH, SHIFT_REGISTER_DISPLAY);
 	DISPLAY_PORT= DPC;
 	delay(5);
-	shift_data_out(0x38,SHIFT_LATCH,SHIFT_REGISTER_DISPLAY);
-	DISPLAY_PORT= DPC;
+	shift_data_out(0x38, SHIFT_LATCH, SHIFT_REGISTER_DISPLAY);
+	DISPLAY_PORT = DPC;
 	delay(5);
 
 	display_cmd(0x0f);  		// Display On, Cursor On, Cursor Blink
@@ -221,8 +220,8 @@ uint8_t display_flash_printf(const char * format, ...) {
 #ifdef DISPLAY_REMOTE_AVAILABLE
 	int16_t c = remote_column;
 	int16_t r = remote_row;
-	command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, &c, &r, 0);
-	command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, NULL, NULL, display_buf);
+	command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, c, r, 0);
+	command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, 0, 0, display_buf);
 	remote_column += len;
 #endif
 	return len;

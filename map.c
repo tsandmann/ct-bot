@@ -64,10 +64,8 @@
 
 #define MAP_INFO_AVAILABLE
 #ifdef MCU
-	// Soll auch der echte Bot Infos ausgeben, kommentiert man die folgende Zeile aus
-	#undef MAP_INFO_AVAILABLE	// spart Flash
-//TODO:	Map-2-Sim fuer MCU optimieren / anpassen
-	#undef MAP_2_SIM_AVAILABLE	// Map-2-Sim (noch) nicht fuer MCU ausgelegt
+// Soll auch der echte Bot Infos ausgeben, kommentiert man die folgende Zeile aus
+#undef MAP_INFO_AVAILABLE	// spart Flash
 #endif
 
 #ifndef MAP_2_SIM_AVAILABLE
@@ -76,13 +74,13 @@
 #endif
 
 #ifndef LOG_AVAILABLE
-	#undef DEBUG_MAP
-	#undef DEBUG_STORAGE
+#undef DEBUG_MAP
+#undef DEBUG_STORAGE
 #endif
 #ifndef DEBUG_MAP
-	#undef DEBUG_STORAGE
-	#undef LOG_DEBUG
-	#define LOG_DEBUG(a, ...) {}
+#undef DEBUG_STORAGE
+#undef LOG_DEBUG
+#define LOG_DEBUG(a, ...) {}
 #endif
 
 /*
@@ -150,6 +148,7 @@ fifo_t map_update_fifo;										/*!< Fifo fuer Cache */
 uint8_t map_update_stack[MAP_UPDATE_STACK_SIZE];		/*!< Stack des Update-Threads */
 static Tcb_t * map_update_thread;						/*!< Thread fuer Map-Update */
 static os_signal_t lock_signal;							/*!< Signal zur Synchronisation von Kartenzugriffen */
+os_signal_t map_buffer_signal;							/*!< Signal das anzeigt, ob Daten im Map-Puffer sind */
 
 #ifdef MCU
 //  avr-gcc >= 4.2.2 ?
@@ -161,7 +160,7 @@ void map_update_main(void) __attribute__((OS_task));
 // kein Pro- und Epilog
 void map_update_main(void) __attribute__((naked));
 // Frame-Pointer laden (bei naked macht der Compiler das nicht)
-#define PROLOG()	asm volatile(							\
+#define PROLOG()	__asm__ __volatile__(					\
 					"ldi r28, lo8(map_update_stack)	\n\t"	\
 					"ldi r29, hi8(map_update_stack)		"	\
 					:::	"memory")
@@ -428,10 +427,10 @@ static map_section_t * get_section(uint16_t x, uint16_t y) {
 
 			for (i=0; i<MAP_2_SIM_BUFFER_SIZE; i++) {
 				mmc_read_sector(map_start_block + send_buffer[i], map_buffer);
-				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, (int16_t *)&send_buffer[i], (int16_t *)&x_in_map, 128, map_buffer);
-				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, (int16_t *)&send_buffer[i], (int16_t *)&y_in_map, 128, &map_buffer[128]);
-				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, (int16_t *)&send_buffer[i], &heading_in_map, 128, &map_buffer[256]);
-				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_4, (int16_t *)&send_buffer[i], NULL, 128, &map_buffer[384]);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, (int16_t)send_buffer[i], (int16_t)x_in_map, 128, map_buffer);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, (int16_t)send_buffer[i], (int16_t)y_in_map, 128, &map_buffer[128]);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, (int16_t)send_buffer[i], heading_in_map, 128, &map_buffer[256]);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_4, (int16_t)send_buffer[i], 0, 128, &map_buffer[384]);
 			}
 
 			memset(send_buffer, 0, MAP_2_SIM_BUFFER_SIZE * sizeof(uint16_t));
@@ -879,7 +878,7 @@ static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
 
 #ifdef DEBUG_GET_RATIO_VERBOSE
 	int16_t keep1 = 4;
-	command_write(CMD_MAP, SUB_MAP_CLEAR_LINES, &keep1, NULL, 0);
+	command_write(CMD_MAP, SUB_MAP_CLEAR_LINES, keep1, 0, 0);
 #endif	// DEBUG_GET_RATIO_VERBOSE
 
 	/* Hangle Dich an der laengeren Achse entlang */
@@ -946,7 +945,7 @@ static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
 #ifdef DEBUG_GET_RATIO
 #ifndef DEBUG_GET_RATIO_VERBOSE
 	int16_t keep2 = 12;
-	command_write(CMD_MAP, SUB_MAP_CLEAR_LINES, &keep2, NULL, 0);
+	command_write(CMD_MAP, SUB_MAP_CLEAR_LINES, keep2, 0, 0);
 #endif
 	position_t from, to;
 	from.x = x1;
@@ -1111,7 +1110,7 @@ void map_draw_line(position_t from, position_t to, uint8_t color) {
 	ptr++;
 	*ptr = to.y;
 	int16_t c = color;
-	command_write_rawdata(CMD_MAP, SUB_MAP_LINE, &c, NULL, sizeof(data), data);
+	command_write_rawdata(CMD_MAP, SUB_MAP_LINE, c, 0, sizeof(data), data);
 }
 
 /*!
@@ -1177,8 +1176,8 @@ void map_update_main(void) {
 			/* Strahlen updaten, falls distance-mode und der aktuelle Eintrag Daten dazu hat*/
 			if (cache_tmp.mode.distance) {
 				update_distance(cache_tmp.x_pos, cache_tmp.y_pos,
-						cache_tmp.heading/10.0f, cache_tmp.dataL*5,
-						cache_tmp.dataR*5);
+						cache_tmp.heading / 10.0f, cache_tmp.dataL * 5,
+						cache_tmp.dataR * 5);
 			}
 
 			/* Grundflaeche updaten, falls location-mode */
@@ -1189,7 +1188,7 @@ void map_update_main(void) {
 			/* Abgrundsensoren updaten, falls border-mode */
 			if (cache_tmp.mode.border) {
 				update_border(cache_tmp.x_pos, cache_tmp.y_pos,
-						cache_tmp.heading/10.0f, cache_tmp.dataL,
+						cache_tmp.heading / 10.0f, cache_tmp.dataL,
 						cache_tmp.dataR);
 			}
 
@@ -1202,7 +1201,8 @@ void map_update_main(void) {
 		} else {
 			/* Fifo leer => weiter mit Main-Thread */
 			os_signal_unlock(&lock_signal);	// Zugriff auf Map wieder freigeben
-			os_thread_wakeup(os_threads);	// Main ist immer der Erste im Array
+			os_signal_lock(&map_buffer_signal);	// Map-Cache leer, daher blockieren bis wieder Daten da sind
+			os_signal_set(&map_buffer_signal);
 		}
 	}
 }

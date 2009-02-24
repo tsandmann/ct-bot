@@ -18,34 +18,30 @@
  */
 
 /*!
- * @file 	behaviour_avoid_border.c
- * @brief 	Vermeide Abgruende
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	03.11.06
+ * @file 	behaviour_get_utilization.h
+ * @brief 	Misst die CPU-Auslastung eines anderen Verhaltens
+ * @author 	Timo Sandmann (mail@timosandmann.de)
+ * @date 	14.12.2008
  */
+
+#ifndef BEHAVIOUR_GET_UTILIZATION_H_
+#define BEHAVIOUR_GET_UTILIZATION_H_
 
 #include "bot-logic/bot-logik.h"
+#ifdef BEHAVIOUR_GET_UTILIZATION_AVAILABLE
 
-#ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE
 /*!
- * Verhindert, dass der Bot in Graeben faellt
+ * Verhalten, dass die CPU-Auslastung eines anderen Verhaltens misst
  * @param *data	Der Verhaltensdatensatz
  */
-void bot_avoid_border_behaviour(Behaviour_t * data) {
-	uint8_t flag = 0;
-	if (sensBorderL > BORDER_DANGEROUS) {
-		speedWishLeft = -BOT_SPEED_FAST;
-		flag = 1;
-	}
+void bot_get_utilization_behaviour(Behaviour_t * data);
 
-	if (sensBorderR > BORDER_DANGEROUS) {
-		speedWishRight = -BOT_SPEED_FAST;
-		flag = 1;
-	}
+/*!
+ * Verhalten, dass die CPU-Auslastung eines anderen Verhaltens misst
+ * @param *caller	Der Verhaltensdatensatz des Aufrufers
+ * @param baheviour	Prioritaet des zu ueberwachenden Verhaltens
+ */
+void bot_get_utilization(Behaviour_t * caller, uint8_t behaviour);
 
-	/* Start der registrierten Notfall-Routinen zum Informieren der Verhalten */
-	if (flag == 1) {
-		start_registered_emergency_procs();
-	}
-}
-#endif	// BEHAVIOUR_AVOID_BORDER_AVAILABLE
+#endif	// BEHAVIOUR_GET_UTILIZATION_AVAILABLE
+#endif	/* BEHAVIOUR_GET_UTILIZATION_H_ */

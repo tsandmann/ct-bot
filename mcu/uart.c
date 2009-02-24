@@ -39,10 +39,10 @@
 #ifdef UART_AVAILABLE
 
 uint8_t inbuf[BUFSIZE_IN];	/*!< Eingangspuffer */
-fifo_t infifo;				/*!< Eingangs-FIFO */
+fifo_t uart_infifo;				/*!< Eingangs-FIFO */
 
 uint8_t outbuf[BUFSIZE_OUT];	/*!< Ausgangspuffer */
-fifo_t outfifo;					/*!< Ausgangs-FIFO */
+fifo_t uart_outfifo;					/*!< Ausgangs-FIFO */
 
 /*!
  * @brief	Initialisiert den UART und aktiviert Receiver und Transmitter sowie den Receive-Interrupt.
@@ -81,8 +81,8 @@ void uart_init(void) {
     SREG = sreg;
 
     /* FIFOs für Ein- und Ausgabe initialisieren */
-    fifo_init(&infifo, inbuf, BUFSIZE_IN);
-    fifo_init(&outfifo, outbuf, BUFSIZE_OUT);
+    fifo_init(&uart_infifo, inbuf, BUFSIZE_IN);
+    fifo_init(&uart_outfifo, outbuf, BUFSIZE_OUT);
 }
 
 /*!
@@ -94,7 +94,7 @@ void uart_init(void) {
 #else
 	ISR(SIG_UART_RECV) {
 #endif	// MCU_ATMEGA644X
-	_inline_fifo_put(&infifo, UDR);
+	_inline_fifo_put(&uart_infifo, UDR);
 }
 
 /*!
@@ -108,8 +108,8 @@ void uart_init(void) {
 #else
 	ISR(SIG_UART_DATA) {
 #endif	// MCU_ATMEGA644X
-	if (outfifo.count > 0) {
-		UDR = _inline_fifo_get(&outfifo);
+	if (uart_outfifo.count > 0) {
+		UDR = _inline_fifo_get(&uart_outfifo);
 	} else {
 		UCSRB &= ~(1 << UDRIE);	// diesen Interrupt aus
 	}
@@ -123,15 +123,18 @@ void uart_init(void) {
 void uart_write(void * data, uint8_t length) {
 	if (length > BUFSIZE_OUT) {
 		/* das ist zu viel auf einmal => teile und herrsche */
-		uart_write(data, length/2);
-		uart_write(data + length/2, length - length/2);
+		uart_write(data, length / 2);
+		uart_write(data + length / 2, length - length / 2);
 		return;
 	}
-	/* falls Sendepuffer voll, diesen erst flushen */
-	uint8_t space = BUFSIZE_OUT - outfifo.count;
-	if (space < length) uart_flush();
+	/* falls Sendepuffer zu voll, warten bis genug Platz vorhanden ist */
+	while (BUFSIZE_OUT - uart_outfifo.count < length) {
+#ifdef OS_AVAILABLE
+		os_thread_sleep(1);
+#endif
+	}
 	/* Daten in Ausgangs-FIFO kopieren */
-	fifo_put_data(&outfifo, data, length);
+	fifo_put_data(&uart_outfifo, data, length);
 	/* Interrupt an */
 	UCSRB |= (1 << UDRIE);
 }

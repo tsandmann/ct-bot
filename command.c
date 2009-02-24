@@ -51,6 +51,13 @@ EEPROM uint8_t bot_address = CMD_BROADCAST; /*!< Kommunikations-Adresse des Bots
 
 command_t received_command; /*!< Puffer fuer Kommandos */
 static uint8_t count = 1;	/*!< Zaehler fuer Paket-Sequenznummer */
+/*! Puffer fuer zu sendendes Kommando */
+static command_t cmd_to_send = {
+	CMD_STARTCODE,
+	{0, 0, 0},
+	0, 0, 0, 0, 0, 0,
+	CMD_STOPCODE
+};
 
 #ifdef PC
 static pthread_mutex_t send_lock = PTHREAD_MUTEX_INITIALIZER; /*!< Zur Synchronisation von Pufferzugriffen */
@@ -80,14 +87,14 @@ void command_init(void) {
 
 	/* Bot beim Sim anmelden */
 #ifdef MCU
-	command_write(CMD_WELCOME, SUB_WELCOME_REAL, NULL, NULL, 0);
+	command_write(CMD_WELCOME, SUB_WELCOME_REAL, 0, 0, 0);
 #else
-	command_write(CMD_WELCOME, SUB_WELCOME_SIM, NULL, NULL, 0);
+	command_write(CMD_WELCOME, SUB_WELCOME_SIM, 0, 0, 0);
 #endif
 
 	if (addr == CMD_BROADCAST) {
 		/* Adresse anfordern */
-		command_write(CMD_ID, SUB_ID_REQUEST, NULL, NULL, 0);
+		command_write(CMD_ID, SUB_ID_REQUEST, 0, 0, 0);
 	}
 }
 
@@ -102,7 +109,7 @@ int8_t command_read(void) {
 	int8_t start = 0; // Start des Kommandos
 	int8_t i;
 	command_t * command; // Pointer zum Casten der empfangegen Daten
-	uint8_t buffer[RCVBUFSIZE]; // Buffer
+	uint8_t buffer[RCVBUFSIZE]; // Puffer
 #ifdef PC
 #if BYTE_ORDER == BIG_ENDIAN
 	uint16_t store; // Puffer für die Endian-Konvertierung
@@ -132,7 +139,7 @@ int8_t command_read(void) {
 	}
 
 #ifdef DEBUG_COMMAND_NOISY
-	LOG_DEBUG("Start @%d",start);
+	LOG_DEBUG("Start @%d", start);
 #endif
 
 	// haben wir noch genug Platz im Puffer, um das Packet ferig zu lesen?
@@ -144,7 +151,7 @@ int8_t command_read(void) {
 	i = sizeof(command_t) - (bytesRcvd - start) - 1;
 
 	if (i > 0) { // Fehlen noch Daten ?
-		LOG_DEBUG("command.c: Start @ %d es fehlen %d bytes ", start,i);
+		LOG_DEBUG("command.c: Start @ %d es fehlen %d bytes ", start, i);
 		// Systemzeit erfassen
 		old_ticks = TIMER_GET_TICKCOUNT_16;
 
@@ -155,7 +162,7 @@ int8_t command_read(void) {
 				LOG_DEBUG("Timeout beim Nachlesen");
 				return -1; //	==> Abbruch
 			}
-			LOG_DEBUG("%d bytes missing",i);
+			LOG_DEBUG("%d bytes missing", i);
 			i = low_read(buffer + bytesRcvd, i);
 			LOG_DEBUG("%d read", i);
 			bytesRcvd += i;
@@ -164,19 +171,19 @@ int8_t command_read(void) {
 	}
 
 #ifdef DEBUG_COMMAND_NOISY
-	LOG_DEBUG("%d/%d read/start",bytesRcvd,start);
-	LOG_DEBUG("%x %x %x",buffer[start],buffer[start+1],buffer[start+2]);
+	LOG_DEBUG("%d/%d read/start", bytesRcvd, start);
+	LOG_DEBUG("%x %x %x", buffer[start], buffer[start+1], buffer[start+2]);
 #endif
 
 	// Cast in command_t
 	command = (command_t *) (buffer + start);
 
 #ifdef DEBUG_COMMAND_NOISY
-	LOG_DEBUG("start: %x ",command->startCode);
+	LOG_DEBUG("start: %x ", command->startCode);
 	//	command_display(command);
 #endif
 
-	// validate (startcode ist bereits ok, sonst waeren wir nicht hier )
+	// validate (Startcode ist bereits ok, sonst waeren wir nicht hier)
 	if (command->CRC == CMD_STOPCODE) {
 #ifdef DEBUG_COMMAND_NOISY
 		LOG_DEBUG("Command is valid");
@@ -186,7 +193,7 @@ int8_t command_read(void) {
 		if ((command->to != CMD_BROADCAST)
 				&& (command->to != get_bot_address())
 				&& (command->request.command != CMD_WELCOME)) {
-			LOG_DEBUG("Fehler: Paket To= %d statt %d",command->to, get_bot_address());
+			LOG_DEBUG("Fehler: Paket To= %d statt %d", command->to, get_bot_address());
 #ifdef LOG_AVAILABLE
 			command_display(command);
 #endif
@@ -220,54 +227,28 @@ int8_t command_read(void) {
  * @param command		Kennung zum Command
  * @param subcommand	Kennung des Subcommand
  * @param to			Adresse des Empfaengers
- * @param *data_l 		Daten fuer den linken Kanal
- * @param *data_r 		Daten fuer den rechten Kanal
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r 		Daten fuer den rechten Kanal
  * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
 static void command_write_to_internal(uint8_t command, uint8_t subcommand,
-		uint8_t to, int16_t * data_l, int16_t * data_r, uint8_t payload) {
-	command_t cmd;
+		uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload) {
+	request_t request;
+	request.command = command;
+	request.subcommand = subcommand;
+	request.direction = DIR_REQUEST; // Anfrage
+	cmd_to_send.request = request;
+	cmd_to_send.from = get_bot_address();
+	cmd_to_send.to = to;
 
-	cmd.startCode = CMD_STARTCODE;
-	cmd.request.direction = DIR_REQUEST; // Anfrage
-	cmd.request.command = command;
-	cmd.request.subcommand = subcommand;
-	cmd.from = get_bot_address();
-	cmd.to = to;
+	cmd_to_send.payload = payload;
 
-	cmd.payload = payload;
-	if (data_l != NULL) {
-		cmd.data_l = *data_l;
-	} else {
-		cmd.data_l = 0;
-	}
+	cmd_to_send.data_l = data_l;
+	cmd_to_send.data_r = data_r;
 
-	if (data_r != NULL) {
-		cmd.data_r = *data_r;
-	} else {
-		cmd.data_r = 0;
-	}
+	cmd_to_send.seq = count++;
 
-	cmd.seq = count++;
-	cmd.CRC = CMD_STOPCODE;
-
-	low_write(&cmd);
-
-/*	printf("\nSTART= '%c'\nDIR= %d CMD= %d ('%c') SUBCMD= %d ('%c')\nPayload= %u\nDATA= %d %d\nSeq= %u\nFrom= %u\nTo= %u\nCRC= '%c'\n",
-			cmd.startCode,
-			cmd.request.direction,
-			cmd.request.command,
-			cmd.request.command,
-			cmd.request.subcommand,
-			cmd.request.subcommand,
-			cmd.payload,
-			cmd.data_l,
-			cmd.data_r,
-			cmd.seq,
-			cmd.from,
-			cmd.to,
-			cmd.CRC
-	);*/
+	low_write(&cmd_to_send);
 }
 
 /*!
@@ -275,12 +256,12 @@ static void command_write_to_internal(uint8_t command, uint8_t subcommand,
  * @param command		Kennung zum Command
  * @param subcommand	Kennung des Subcommand
  * @param to			Adresse des Empfaengers
- * @param *data_l 		Daten fuer den linken Kanal
- * @param *data_r 		Daten fuer den rechten Kanal
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r 		Daten fuer den rechten Kanal
  * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
 void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to,
-		int16_t * data_l, int16_t * data_r, uint8_t payload) {
+		int16_t data_l, int16_t data_r, uint8_t payload) {
 	//TODO:	Allgemeine Loesung fuer PC und MCU
 #ifdef PC
 	pthread_mutex_lock(&send_lock);
@@ -299,12 +280,12 @@ void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to,
  * Uebertraegt ein Kommando an den ct-Sim und wartet nicht auf eine Antwort
  * @param command		Kennung zum Command
  * @param subcommand	Kennung des Subcommand
- * @param *data_l 		Daten fuer den linken Kanal
- * @param *data_r 		Daten fuer den rechten Kanal
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r 		Daten fuer den rechten Kanal
  * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
-void command_write(uint8_t command, uint8_t subcommand, int16_t * data_l,
-		int16_t * data_r, uint8_t payload) {
+void command_write(uint8_t command, uint8_t subcommand, int16_t data_l,
+		int16_t data_r, uint8_t payload) {
 	//TODO:	Allgemeine Loesung fuer PC und MCU
 #ifdef PC
 	pthread_mutex_lock(&send_lock);
@@ -328,13 +309,13 @@ void command_write(uint8_t command, uint8_t subcommand, int16_t * data_l,
  * @param command 		Kennung zum Command
  * @param subcommand	Kennung des Subcommand
  * @param to			Adresse, an die die Daten gesendet werden sollen
- * @param *data_l 		Daten fuer den linken Kanal
- * @param *data_r		Daten fuer den rechten Kanal
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r		Daten fuer den rechten Kanal
  * @param payload 		Anzahl der Bytes im Anhang
  * @param *data 		Datenanhang an das eigentliche Command
  */
 void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to,
-		int16_t * data_l, int16_t * data_r, uint8_t payload, uint8_t * data) {
+		int16_t data_l, int16_t data_r, uint8_t payload, void * data) {
 	//TODO:	Allgemeine Loesung fuer PC und MCU
 #ifdef PC
 	pthread_mutex_lock(&send_lock);
@@ -354,13 +335,13 @@ void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to,
  * Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort
  * @param command 		Kennung zum Command
  * @param subcommand	Kennung des Subcommand
- * @param *data_l 		Daten fuer den linken Kanal
- * @param *data_r		Daten fuer den rechten Kanal
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r		Daten fuer den rechten Kanal
  * @param payload 		Anzahl der Bytes im Anhang
  * @param *data 		Datenanhang an das eigentliche Command
  */
 void command_write_rawdata(uint8_t command, uint8_t subcommand,
-		int16_t * data_l, int16_t * data_r, uint8_t payload, uint8_t * data) {
+		int16_t data_l, int16_t data_r, uint8_t payload, void * data) {
 	command_write_rawdata_to(command, subcommand, CMD_SIM_ADDR, data_l, data_r,
 			payload, data);
 }
@@ -369,12 +350,12 @@ void command_write_rawdata(uint8_t command, uint8_t subcommand,
  * Gibt dem Simulator Daten mit String-Anhang und wartet nicht auf Antwort
  * @param command 		Kennung zum Command
  * @param subcommand 	Kennung des Subcommand
- * @param *data_l		Daten fuer den linken Kanal
- * @param *data_r		Daten fuer den rechten Kanal
+ * @param data_l		Daten fuer den linken Kanal
+ * @param data_r		Daten fuer den rechten Kanal
  * @param *data 		Datenanhang an das eigentliche Command, null-terminiert
  */
-void command_write_data(uint8_t command, uint8_t subcommand, int16_t * data_l,
-		int16_t * data_r, const char * data) {
+void command_write_data(uint8_t command, uint8_t subcommand, int16_t data_l,
+		int16_t data_r, const char * data) {
 	size_t len;
 	uint8_t payload;
 
@@ -414,11 +395,12 @@ int8_t command_evaluate(void) {
 	uint8_t analyzed = 1;
 
 #ifdef LOG_AVAILABLE
-	if (received_command.from != SIM_ID)
-	LOG_DEBUG("Achtung: weitergeleitetes Kommando:");
+	if (received_command.from != SIM_ID) {
+		LOG_DEBUG("Achtung: weitergeleitetes Kommando:");
+	}
 #ifdef DEBUG_COMMAND_NOISY
-	command_display(&received_command);
-#endif
+		command_display(&received_command);
+#endif	// DEBUG_COMMAND_NOISY
 #endif	// LOG_AVAILABLE
 	/* woher ist das Kommando? */
 	if (received_command.from == CMD_SIM_ADDR) {
@@ -430,17 +412,17 @@ int8_t command_evaluate(void) {
 			if (received_command.data_l != 0)
 				RC5_Last_Toggle = 0xffff ^ (RC5_Last_Toggle & RC5_TOGGLE);
 			break;
-#endif
+#endif	// IR_AVAILABLE
 
 			// Einige Kommandos ergeben nur fuer reale Bots Sinn
 #ifdef MCU
-			case CMD_WELCOME:
+		case CMD_WELCOME:
 			/* mit WELCOME antworten */
 			command_init();
 #ifdef BOT_2_BOT_AVAILABLE
 			/* hello (bot-)world! */
 			if (get_bot_address() != CMD_BROADCAST) {
-				command_write_to(BOT_CMD_WELCOME, SUB_CMD_NORM, CMD_BROADCAST, NULL, NULL, 0);
+				command_write_to(BOT_CMD_WELCOME, SUB_CMD_NORM, CMD_BROADCAST, 0, 0, 0);
 			}
 #endif	// BOT_2_BOT_AVAILABLE
 			break;
@@ -451,13 +433,11 @@ int8_t command_evaluate(void) {
 				LOG_DEBUG("Bekomme eine Adresse angeboten: %u", (uint8_t)received_command.data_l);
 #endif	// LOG_AVAILABLE
 				set_bot_address(received_command.data_l); // Setze Adresse
-				command_write(CMD_ID, SUB_ID_SET, &(received_command.data_l),
-						NULL, 0); // Und bestaetige dem Sim das ganze
+				command_write(CMD_ID, SUB_ID_SET, received_command.data_l, 0, 0); // Und bestaetige dem Sim das ganze
 #ifdef BOT_2_BOT_AVAILABLE
 				/* hello (bot-)world! */
-				command_write_to(BOT_CMD_WELCOME, SUB_CMD_NORM, CMD_BROADCAST,
-						NULL, NULL, 0);
-#endif
+				command_write_to(BOT_CMD_WELCOME, SUB_CMD_NORM, CMD_BROADCAST, 0, 0, 0);
+#endif	// BOT_2_BOT_AVAILABLE
 			}
 			break;
 
@@ -465,7 +445,7 @@ int8_t command_evaluate(void) {
 		case CMD_SENS_MOUSE_PICTURE: // PC fragt nach dem Bild
 			mouse_transmit_picture();
 			break;
-#endif
+#endif	// MOUSE_AVAILABLE
 
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 		case CMD_REMOTE_CALL:
@@ -487,8 +467,7 @@ int8_t command_evaluate(void) {
 					bot_remotecall_from_command((char *) &buffer);
 				} else {
 					int16_t result = SUBFAIL;
-					command_write_data(CMD_REMOTE_CALL,SUB_REMOTE_CALL_DONE,
-							&result, &result, NULL);
+					command_write(CMD_REMOTE_CALL, SUB_REMOTE_CALL_DONE, result, result, 0);
 				}
 				break;
 			}
@@ -499,7 +478,7 @@ int8_t command_evaluate(void) {
 			}
 
 			default:
-			LOG_DEBUG("unbekanntes Subkommando: %c", received_command.request.subcommand);
+				LOG_DEBUG("unbekanntes Subkommando: %c", received_command.request.subcommand);
 				break;
 			}
 			break;
@@ -537,7 +516,7 @@ int8_t command_evaluate(void) {
 			sensMouseDX = received_command.data_l;
 			sensMouseDY = received_command.data_r;
 			break;
-#endif
+#endif	// MOUSE_AVAILABLE
 		case CMD_SENS_ERROR:
 			sensError = (uint8_t) received_command.data_l;
 			sensor_update(); /* Error ist der letzte uebertragene Sensorwert, danach koennen wir uns um allgemeine updates kuemmern*/
@@ -575,31 +554,31 @@ int8_t command_evaluate(void) {
  */
 void command_display(command_t * command) {
 #ifdef PC
-	//		printf("START= %d\nDIR= %d CMD= %d SUBCMD= %d\nPayload= %d\nDATA = %d %d\nSeq= %d\nCRC= %d\n",
-	//			(*command).startCode,
-	//			(*command).request.direction,
-	//			(*command).request.command,
-	//			(*command).request.subcommand,
-	//			(*command).payload,
-	//			(*command).data_l,
-	//			(*command).data_r,
-	//			(*command).seq,
-	//			(*command).CRC);
+//	printf("START= %d\nDIR= %d CMD= %d SUBCMD= %d\nPayload= %d\nDATA = %d %d\nSeq= %d\nCRC= %d\n",
+//		(*command).startCode,
+//		(*command).request.direction,
+//		(*command).request.command,
+//		(*command).request.subcommand,
+//		(*command).payload,
+//		(*command).data_l,
+//		(*command).data_r,
+//		(*command).seq,
+//		(*command).CRC);
 	LOG_DEBUG("CMD: %c\tSub: 0x%x\tData L: %d\tSeq: %d\t From: %d\tTo:%d\tCRC: %d\n",
-			(*command).request.command,
-			(*command).request.subcommand,
-			(*command).data_l,
-			(*command).seq,
-			(*command).from,
-			(*command).to,
-			(*command).CRC);
+		(*command).request.command,
+		(*command).request.subcommand,
+		(*command).data_l,
+		(*command).seq,
+		(*command).from,
+		(*command).to,
+		(*command).CRC);
 #else	// MCU
 	LOG_DEBUG("CMD: %c\tSub: %c\tData L: %d\tPay: %d\tSeq: %d\n",
-			(*command).request.command,
-			(*command).request.subcommand,
-			(*command).data_l,
-			(*command).payload,
-			(*command).seq);
+		(*command).request.command,
+		(*command).request.subcommand,
+		(*command).data_l,
+		(*command).payload,
+		(*command).seq);
 #endif	// PC
 }
 #endif	// LOG_AVAILABLE

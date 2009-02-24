@@ -47,8 +47,11 @@ static adc_channel_t channels[8];
  * Bit0 = Kanal 0 usw.
  */
 void adc_init(uint8_t channel) {
-	DDRA &= ~ channel;	// Pin als input
-	PORTA &= ~ channel;	// Alle Pullups aus.
+	DDRA &= ~channel;	// Pin als input
+	PORTA &= ~channel;	// Alle Pullups aus.
+#ifdef MCU_ATMEGA644X
+	DIDR0 = channel;	// Digital Input Disable
+#endif
 }
 
 // deprecated

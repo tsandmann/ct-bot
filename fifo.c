@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	fifo.c
  * @brief 	Implementierung einer FIFO
  * @author 	http://www.roboternetz.de/wissen/index.php/FIFO_mit_avr-gcc
@@ -29,7 +29,7 @@
 #include "log.h"
 
 /*!
- * @brief			Initialisiert die FIFO, setzt Lese- und Schreibzeiger, etc. 
+ * @brief			Initialisiert die FIFO, setzt Lese- und Schreibzeiger, etc.
  * @param *f		Zeiger auf FIFO-Datenstruktur
  * @param *buffer	Zeiger auf den Puffer der Groesse size fuer die FIFO
  * @param size		Anzahl der Bytes, die die FIFO speichern soll	.
@@ -43,7 +43,7 @@ void fifo_init(fifo_t * f, void * buffer, const uint8_t size) {
 	pthread_cond_init(&f->cond, NULL);
 #endif
 }
-	
+
 /*!
  * @brief			Schreibt length Byte in die FIFO
  * @param *f		Zeiger auf FIFO-Datenstruktur
@@ -68,7 +68,7 @@ void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
 		}
 		n = length - n;
 	}
-			
+
 	f->write2end = write2end;
 	f->pwrite = pwrite;
 
@@ -84,7 +84,7 @@ void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
 	SREG = sreg;
 #else
 	/* Consumer aufwecken */
-	pthread_cond_signal(&f->cond);
+	pthread_cond_broadcast(&f->cond);
 	pthread_mutex_unlock(&f->mutex);
 #endif
 }
@@ -95,7 +95,7 @@ void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
  * @param *data		Zeiger auf Speicherbereich fuer Zieldaten
  * @param length	Anzahl der zu kopierenden Bytes
  * @return			Anzahl der tatsaechlich gelieferten Bytes
- */	
+ */
 uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length) {
 #ifdef PC
 	pthread_mutex_lock(&f->mutex);
@@ -131,7 +131,7 @@ uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length) {
 
 	f->pread = pread;
 	f->read2end = read2end;
-		
+
 #ifdef MCU
 	uint8_t sreg = SREG;
 	cli();
@@ -144,6 +144,6 @@ uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length) {
 #else
 	pthread_mutex_unlock(&f->mutex);
 #endif
-		
+
 	return length;
 }

@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	log.c
  * @brief 	Routinen zum Loggen von Informationen. Es sollten ausschliesslich nur
  * die Log-Makros: LOG_DEBUG(), LOG_INFO(), LOG_WARN(), LOG_ERROR() und LOG_FATAL()
@@ -25,13 +25,13 @@
  * Eine Ausgabe kann wie folgt erzeugt werden:
  * LOG_DEBUG("Hallo Welt!");
  * LOG_INFO("Wert x=%d", x);
- * Bei den Ausgaben kann auf ein Line Feed '\n' am Ende des Strings verzichtet werden, 
+ * Bei den Ausgaben kann auf ein Line Feed '\n' am Ende des Strings verzichtet werden,
  * da dies automatisch angehaengt hinzugefuegt wird.
  * Die frueher noetigen Doppelklammern sind nicht mehr noetig, einfach normale Klammern
- * verwenden, siehe Bsp. oben. 
- * (Die Doppelklammern funktionieren nicht mit Var-Arg-Makros, die wir aber brauchen, da 
+ * verwenden, siehe Bsp. oben.
+ * (Die Doppelklammern funktionieren nicht mit Var-Arg-Makros, die wir aber brauchen, da
  * nun fuer MCU alle Strings im Flash belassen werden sollen, das spart viel RAM :-) )
- * 
+ *
  * @author 	Andreas Merkle (mail@blue-andi.de)
  * @date 	27.02.06
  */
@@ -121,15 +121,15 @@ static char log_buffer[LOG_BUFFER_SIZE];
 	 * @param log_type Log-Typ
 	 */
 	void log_begin(const char *filename, unsigned int line, LOG_TYPE log_type) {
-	
+
 		/* Ausgaben ueber das LCD-Display werden ohne Dateiname und Zeilennumer
 		 * gemacht. Der Log-Typ versteckt sich im ersten Buchstaben. Durch eine
 		 * die Markierung mit '>' erkennt man das letzte Logging.
 		 * Nur bei Ausgaben ueber UART und an ct-Sim werden Dateiname, Zeilennummer
 		 * und der Log-Typ vollstaendig ausgegeben.
 		 */
-		 
-		#ifdef LOG_DISPLAY_AVAILABLE	
+
+		#ifdef LOG_DISPLAY_AVAILABLE
 			LOCK();
 			/* Alte Markierung loeschen */
 			if (log_line == 1){
@@ -138,27 +138,27 @@ static char log_buffer[LOG_BUFFER_SIZE];
 			else{
 				screen_output[log_line-2][0] = ' ';
 			}
-			snprintf(log_buffer, LOG_BUFFER_SIZE, ">%c:", *(log_get_type_str(log_type)+2));	
+			snprintf(log_buffer, LOG_BUFFER_SIZE, ">%c:", *(log_get_type_str(log_type)+2));
 		#else
-		
+
 			const char *ptr = NULL;
-		
+
 			/* Nur den Dateinamen loggen, ohne Verzeichnisangabe */
 			ptr = strrchr(filename, '/');
-		
+
 			if (ptr == NULL)
 				ptr = filename;
-			else 
+			else
 				ptr++;
-		
+
 			LOCK();
-		
-			snprintf(log_buffer, LOG_BUFFER_SIZE, "%s(%d)\t%s\t", 
+
+			snprintf(log_buffer, LOG_BUFFER_SIZE, "%s(%d)\t%s\t",
 				ptr, line, log_get_type_str(log_type));
-			
+
 		#endif
-			
-		return;	
+
+		return;
 	}
 #else
 	/*!
@@ -166,8 +166,8 @@ static char log_buffer[LOG_BUFFER_SIZE];
 	 * @param flash	Zeiger auf einen String im FLASH
 	 * @param ram	Zeiger auf den Zielpuffer im RAM
 	 * @param n		Anzahl der zu kopierenden WORTE
-	 * Es werden maximal n Worte kopiert, ist der String schon zuvor nullterminiert, 
-	 * wird bei Auftreten von 0 abgebrochen. 
+	 * Es werden maximal n Worte kopiert, ist der String schon zuvor nullterminiert,
+	 * wird bei Auftreten von 0 abgebrochen.
 	 */
 	static void get_str_from_flash(const char* flash, char* ram, uint8 n) {
 		uint8 i;
@@ -179,9 +179,9 @@ static char log_buffer[LOG_BUFFER_SIZE];
 			*(p_ram++) = tmp;
 			if ((uint8)tmp == 0 || (tmp & 0xFF00) == 0) break;	// Stringende erreicht
 		}
-		*((char*)p_ram) = 0;	// evtl. haben wir ein Byte zu viel gelesen, das korrigieren wir hier	
+		*((char*)p_ram) = 0;	// evtl. haben wir ein Byte zu viel gelesen, das korrigieren wir hier
 	}
-	
+
 	/*!
 	 * Schreibt Angaben ueber Datei, Zeilennummer und den Log-Typ in den Puffer.
 	 * Achtung, Mutex wird gelockt und muss explizit durch log_end() wieder
@@ -191,13 +191,13 @@ static char log_buffer[LOG_BUFFER_SIZE];
 	 * @param log_type Log-Typ
 	 */
 	void log_flash_begin(const char *filename, unsigned int line, LOG_TYPE log_type) {
-	
+
 		/* Ausgaben ueber das LCD-Display werden ohne Dateiname und Zeilennumer
 		 * gemacht. Der Log-Typ versteckt sich im ersten Buchstaben. Durch eine
 		 * die Markierung mit '>' erkennt man das letzte Logging.
 		 * Nur bei Ausgaben ueber UART und an ct-Sim werden Dateiname, Zeilennummer
 		 * und der Log-Typ vollstaendig ausgegeben.
-		 */		 
+		 */
 		#ifdef LOG_DISPLAY_AVAILABLE
 			LOCK();
 			/* Alte Markierung loeschen */
@@ -220,23 +220,23 @@ static char log_buffer[LOG_BUFFER_SIZE];
 			char flash_type[12];
 			get_str_from_flash(log_get_type_str(log_type), flash_type, 12/2);
 			const char *ptr = NULL;
-		
+
 			/* Nur den Dateinamen loggen, ohne Verzeichnisangabe */
 			ptr = strrchr(flash_filen, '/');
-		
+
 			if (ptr == NULL)
 				ptr = flash_filen;
-			else 
+			else
 				ptr++;
-		
+
 			LOCK();
-		
-			snprintf(log_buffer, LOG_BUFFER_SIZE, "%s(%d)\t%s\t", 
+
+			snprintf(log_buffer, LOG_BUFFER_SIZE, "%s(%d)\t%s\t",
 				ptr, line, flash_type);
-			
+
 		#endif
-			
-		return;	
+
+		return;
 	}
 #endif	// PC
 
@@ -246,14 +246,14 @@ static char log_buffer[LOG_BUFFER_SIZE];
 	 * @param format Format
 	 */
 	void log_printf(const char *format, ...) {
-	
+
 		va_list	args;
 		unsigned int len = strlen(log_buffer);
-		
+
 		va_start(args, format);
 		vsnprintf(&log_buffer[len], LOG_BUFFER_SIZE - len, format, args);
 		va_end(args);
-	
+
 		return;
 	}
 #else
@@ -267,11 +267,11 @@ static char log_buffer[LOG_BUFFER_SIZE];
 
 		va_list	args;
 		unsigned int len = strlen(log_buffer);
-		
+
 		va_start(args, format);
 		vsnprintf(&log_buffer[len], LOG_BUFFER_SIZE - len, flash_str, args);
 		va_end(args);
-	
+
 		return;
 	}
 #endif	// PC
@@ -287,16 +287,16 @@ void log_end(void) {
 		/* Line feed senden */
 		uart_write((uint8*)LINE_FEED,strlen(LINE_FEED));
 	#endif	/* LOG_UART_AVAILABLE */
-	
+
 	#ifdef LOG_CTSIM_AVAILABLE
 		/* Kommando an ct-Sim senden, ohne Line feed am Ende. */
-		command_write_data(CMD_LOG, SUB_CMD_NORM, NULL, NULL, log_buffer);
+		command_write_data(CMD_LOG, SUB_CMD_NORM, 0, 0, log_buffer);
 	#endif	/* LOG_CTSIM_AVAILABLE */
-	
+
 	#ifdef LOG_DISPLAY_AVAILABLE
 		/* aktuelle Log-Zeile in Ausgabepuffer kopieren */
 		memcpy(screen_output[log_line-1], log_buffer, strlen(log_buffer));
-		/* Zeile weiterschalten */  
+		/* Zeile weiterschalten */
 		log_line++;
 		if (log_line > 4) log_line = 1;
 	#endif	/* LOG_DISPLAY_AVAILABLE */
@@ -307,7 +307,7 @@ void log_end(void) {
 	#ifdef LOG_STDOUT_AVAILABLE
 		printf("%s\n", log_buffer);
 	#endif	/* LOG_STDOUT_AVAILABLE */
-	
+
 	#ifdef LOG_MMC_AVAILABLE
 		static uint16 f_offset = 512;	// Init erzwingt Ueberlauf im ersten Aufruf, damit p_file geholt wird
 		static uint8* p_file;
@@ -333,7 +333,7 @@ void log_end(void) {
 	#endif	/* LOG_MMC_AVAILABLE */
 
 	UNLOCK();
-	
+
 	return;
 }
 
@@ -347,7 +347,7 @@ void log_end(void) {
 		if (log_file == 0) return 1;	// Fehler :(
 		log_file_end = log_file + mmc_get_filesize(log_file);
 		log_file -= 512;	// denn beim ersten Logging springen wir in den Block-Ueberlauf-Fall
-		return 0;	
+		return 0;
 	}
 #endif	/* LOG_MMC_AVAILABLE */
 
@@ -355,7 +355,7 @@ void log_end(void) {
 	/*!
 	 * @brief	Display-Handler fuer das Logging
 	 */
-	void log_display(void){	
+	void log_display(void){
 		/* Strings aufs LCD-Display schreiben */
 		uint8 i;
 		for (i=0; i<4; i++){	// Das Display hat 4 Zeilen
@@ -375,16 +375,16 @@ static const char* log_get_type_str(LOG_TYPE log_type) {
 	switch(log_type) {
 		case LOG_TYPE_DEBUG:
 			return debug_str;
-			
+
 		case LOG_TYPE_INFO:
 			return info_str;
-			
+
 		case LOG_TYPE_WARN:
 			return warn_str;
-			
+
 		case LOG_TYPE_ERROR:
 			return error_str;
-			
+
 		case LOG_TYPE_FATAL:
 			return fatal_str;
 	}

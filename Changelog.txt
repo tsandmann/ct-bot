@@ -1,9 +1,20 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-02-24 Timo Sandmann [mail@timosandmann.de]: Command-Code optimiert
+												 Bugfix fuer HW-SPI und MOUSE_AVAILABLE (#180)
+												 SPI-Code unterstuetzt verschiedene Geschwindigkeiten
+												 Verhalten bei Abgruenden korrigiert, werden auch wieder in die Map eingetragen
+												 Map-2-Sim auch fuer den echten Bot
+												 Code in ct-bot.c aufgeraeumt
+												 Mini-OS verbessert, fest definiertes Zeitverhalten, Bot-Hauptschleife wird alle 10 ms durchlaufen, umfangreiche Debugmoeglichkeiten ergaenzt
+												 Neues Verhalten bot_get_utilization() misst die CPU-Auslastung, waehrend ein anderes Verhalten aktiv ist
+												 Senden ueber UART flusht den Sendepuffer nicht mehr komplett, sondern wartet nur bis genug Platz fuer die zu sendenden Daten und schaltet wahrend dessen auf einen anderen Thread um
+												 Display mit CPU-Auslastung des Bots, zeigt auch UART-Auslastung an
+
 2009-02-21 Frank Menzel [Menzelfr@gmx.de]:       Dokumentation zum Verhalten bot_drive_area()
 
 2009-02-16 Timo Sandmann [mail@timosandmann.de]: Pos-Store um pos_store_insert() ergaenzt zum Einfuegen von Daten vorne (Gegenteil zu push)
- 
+
 2009-02-16 Timo Sandmann [mail@timosandmann.de]: Maustreiber ueberarbeitet, einheitliche Bezeichner MOUSE_ (statt MAUS_) eingefuert
 
 2009-02-15 Timo Sandmann [mail@timosandmann.de]: Unterstuetzung fuer ATmega644P, Bugfix fuer map_get_ratio() und map_way_free(), Map-Visualisierung um Debug-Funktion zum Einzeichnen von Linien erweitert. 

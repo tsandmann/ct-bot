@@ -97,6 +97,13 @@ void bot_behave_init(void);
 Behaviour_t * get_behaviour(BehaviourFunc function);
 
 /*!
+ * Zu ein Verhalten mit der gegebenen Prioritaet
+ * @param prio	Prioritaet des gesuchten Verhaltens
+ * @return		Zeiger auf Verhaltensdatensatz oder NULL
+ */
+Behaviour_t * get_behaviour_from_prio(uint8_t prio);
+
+/*!
  * Deaktiviert eine Regel mit gegebener Funktion
  * @param function Die Funktion, die das Verhalten realisiert.
  */

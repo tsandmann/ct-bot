@@ -31,7 +31,7 @@
 
 #ifdef DISPLAY_AVAILABLE
 
-#define DISPLAY_SCREENS 8				/*!< Anzahl der Screens */
+#define DISPLAY_SCREENS 10				/*!< Anzahl der Screens */
 
 #define SENSOR_DISPLAY_AVAILABLE		/*!< zeigt die Sensordaten an */
 //#define DISPLAY_REGELUNG_AVAILABLE		/*!< Gibt Debug-Infos der Motorregelung aus */
@@ -41,6 +41,7 @@
 //#define DISPLAY_MMC_INFO				/*!< Zeigt die Daten der MMC-Karte an */
 //#define DISPLAY_MINIFAT_INFO			/*!< Zeigt Ausgaben des MiniFAT-Treibers an */
 //#define RESET_INFO_DISPLAY_AVAILABLE	/*!< Zeigt Informationen ueber Resets an */
+#define DISPLAY_OS_AVAILABLE			/*!< Zeigt die CPU-Auslastung an und bietet Debugging-Funktionen */
 #define RAM_DISPLAY_AVAILABLE			/*!< Ausgabe des freien RAMs */
 #define DISPLAY_MAP_AVAILABLE			/*!< Zeigt Map-Display an */
 #define DISPLAY_TRANSPORT_PILLAR        /*!< Steuerung Transport-Pillar-Verhalten auf diesem Screen */
@@ -54,6 +55,7 @@
 #ifndef MCU
 	#undef RESET_INFO_DISPLAY_AVAILABLE
 	#undef RAM_DISPLAY_AVAILABLE
+	#undef DISPLAY_OS_AVAILABLE
 #endif
 #ifndef MMC_AVAILABLE
 	#undef DISPLAY_MMC_INFO
@@ -75,6 +77,9 @@
 #endif
 #ifndef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 	#undef DISPLAY_DRIVE_STACK_AVAILABLE
+#endif
+#ifndef OS_AVAILABLE
+	#undef DISPLAY_OS_AVAILABLE
 #endif
 
 #endif	// DISPLAY_AVAILABLE

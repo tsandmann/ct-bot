@@ -30,13 +30,13 @@
 #ifdef MCU
 #include <avr/pgmspace.h>
 #else
-#define PROGMEM		/*!< Alibideklaration hat keine Funktion, verhindert aber eine Warning */
+#define PROGMEM	/*!< Alibideklaration hat keine Funktion, verhindert aber eine Warning */
 #endif	// MCU
 
 #define DISPLAY_LENGTH	20	/*!< Wieviele Zeichen passen in eine Zeile */
 
 #define DISPLAY_SCREEN_TOGGLE	42	/*!< Screen-Nummer, die zum wechseln verwendet wird */
-extern uint8 display_screen;		/*!< Welcher Screen soll gezeigt werden? */
+extern uint8_t display_screen;		/*!< Welcher Screen soll gezeigt werden? */
 
 /*!
  * @brief	Initialisiert das Display
@@ -53,7 +53,13 @@ void display_clear(void);
  * @param row		Zeile
  * @param column	Spalte
  */
-void display_cursor (uint8 row, uint8 column);
+void display_cursor (uint8_t row, uint8_t column);
+
+/*!
+ * @brief 		Schreibt ein Zeichen auf das Display
+ * @param data 	Das Zeichen
+ */
+void display_data(char data);
 
 #ifdef PC
 /*!
@@ -62,7 +68,7 @@ void display_cursor (uint8 row, uint8 column);
  * @param ... 		Variable Argumentenliste, wie beim printf
  * @return			Anzahl der geschriebenen Zeichen
  */
-uint8_t display_printf(char *format, ...);
+uint8_t display_printf(const char * format, ...);
 #else
 /*!
  * @brief			Schreibt einen String auf das Display, der im Flash gespeichert ist
@@ -73,7 +79,7 @@ uint8_t display_printf(char *format, ...);
  * display_printf(format, args...) erledigt alles automatisch, damit der String
  * im Flash verbleibt und erst zur Laufzeit temporaer (jeweils nur eine Zeile) geladen wird.
  */
-uint8_t display_flash_printf(const char* format, ...);
+uint8_t display_flash_printf(const char * format, ...);
 
 /*!
  * @brief			Schreibt einen String auf das Display, der String verbleibt im Flash

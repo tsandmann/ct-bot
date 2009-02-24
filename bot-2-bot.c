@@ -141,7 +141,7 @@ uint8_t get_command_of_function(void(* func)(command_t * cmd)) {
 void add_bot_to_list(command_t * cmd) {
 	uint8_t addr = cmd->from;
 	/* dem neuen Bot Hallo sagen */
-	command_write_to(BOT_CMD_STATE, 0, addr, &my_state, NULL, 0);
+	command_write_to(BOT_CMD_STATE, 0, addr, my_state, 0, 0);
 
 	/* und ihn in die eigene Liste eintragen */
 	bot_list_entry_t * ptr = bot_list;
@@ -259,10 +259,11 @@ void set_received_bot_state(command_t * cmd) {
 /*!
  * Setzt den eigenen Status auf einen neuen Wert und schickt ihn an
  * alle Bots
- * @param *state	Zeiger auf Status
+ * @param state	Neuer Status
  */
-void publish_bot_state(void * state) {
-	command_write_to(BOT_CMD_STATE, 0, CMD_BROADCAST, state, NULL, 0);
+void publish_bot_state(int16_t state) {
+	my_state = state;
+	command_write_to(BOT_CMD_STATE, 0, CMD_BROADCAST, my_state, 0, 0);
 }
 
 #ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
@@ -302,9 +303,9 @@ int8_t bot_2_bot_send_payload_request(uint8_t to, uint8_t type,
 //	}
 	LOG_DEBUG("Fordere Payload-Senderecht (%u) vom Typ %u bei Bot %u an", BOT_CMD_REQ, type, to);
 	LOG_DEBUG(" zu sendende Daten umfassen %d Bytes @ 0x%lx", size, (size_t) data);
-	command_write_to(BOT_CMD_REQ, 0, to, (int16_t *) &size, (int16_t *) &type, 0);
+	command_write_to(BOT_CMD_REQ, 0, to, size, type, 0);
 #ifdef PC
-	command_write(CMD_DONE, SUB_CMD_NORM, &simultime, 0, 0); //TODO: etwas unschoene Loesung
+	command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0); //TODO: etwas unschoene Loesung
 #endif
 	bot_2_bot_data = data;
 	bot_2_bot_payload_size = size;
@@ -371,14 +372,14 @@ void bot_2_bot_handle_payload_request(command_t * cmd) {
 		/* Anfrage ablehnen */
 		LOG_DEBUG(" Lehne Anfrage ab, error=%u", error);
 		int16_t result = 1;
-		command_write_to(BOT_CMD_ACK, 0, cmd->from, NULL, &result, 0);
+		command_write_to(BOT_CMD_ACK, 0, cmd->from, 0, result, 0);
 		bot_2_bot_payload_size = 0;
 	} else {
 		/* Anfrage ok, ACK senden */
 		int16_t window_size = BOT_2_BOT_PAYLOAD_WINDOW_SIZE;
 		int16_t result = 0;
 		LOG_DEBUG(" Anfrage akzeptiert, setze window_size auf %d", window_size);
-		command_write_to(BOT_CMD_ACK, 0, cmd->from, &window_size, &result, 0);
+		command_write_to(BOT_CMD_ACK, 0, cmd->from, window_size, result, 0);
 
 		/* Typ setzen */
 		bot_2_bot_callback = bot_2_bot_payload_mappings[type].function;
@@ -427,10 +428,10 @@ void bot_2_bot_handle_payload_ack(command_t * cmd) {
 			}
 			bot_2_bot_payload_size = to_send;
 			LOG_DEBUG(" Sende %d Bytes zu Bot %u", window_size, cmd->from);
-			command_write_rawdata_to(BOT_CMD_PAYLOAD, 0, cmd->from, &last_packet, NULL,
+			command_write_rawdata_to(BOT_CMD_PAYLOAD, 0, cmd->from, last_packet, 0,
 					window_size, bot_2_bot_data);
 #ifdef PC
-			command_write(CMD_DONE, SUB_CMD_NORM, &simultime, 0, 0); //TODO: etwas unschoene Loesung
+			command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0); //TODO: etwas unschoene Loesung
 #endif
 			bot_2_bot_data += window_size;
 			break;
@@ -475,7 +476,7 @@ void bot_2_bot_handle_payload_data(command_t * cmd) {
 	LOG_DEBUG(" %u Bytes der Payload gelesen", n);
 	if (size != n) {
 		int16_t result = 1;
-		command_write_to(BOT_CMD_ACK, 0, cmd->from, NULL, &result, 0);
+		command_write_to(BOT_CMD_ACK, 0, cmd->from, 0, result, 0);
 		bot_2_bot_data = NULL;
 		bot_2_bot_callback = NULL;
 		bot_2_bot_payload_size = 0;
@@ -494,13 +495,13 @@ void bot_2_bot_handle_payload_data(command_t * cmd) {
 		/* letztes ACK senden */
 		LOG_DEBUG(" bestaetige Bot %u den Abschluss der Uebertragung", cmd->from);
 		int16_t result = 2;
-		command_write_to(BOT_CMD_ACK, 0, cmd->from, NULL, &result, 0);
+		command_write_to(BOT_CMD_ACK, 0, cmd->from, 0, result, 0);
 	} else {
 		/* ACK senden */
 		int16_t window_size = BOT_2_BOT_PAYLOAD_WINDOW_SIZE;
 		int16_t result = 0;
 		LOG_DEBUG(" bestaetige Bot %u den Empfang, window_size=%d", cmd->from, window_size);
-		command_write_to(BOT_CMD_ACK, 0, cmd->from, &window_size, &result, 0);
+		command_write_to(BOT_CMD_ACK, 0, cmd->from, window_size, result, 0);
 	}
 }
 
