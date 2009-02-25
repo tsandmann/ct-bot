@@ -39,7 +39,7 @@ void bot_get_utilization_behaviour(Behaviour_t * data);
 /*!
  * Verhalten, dass die CPU-Auslastung eines anderen Verhaltens misst
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
- * @param baheviour	Prioritaet des zu ueberwachenden Verhaltens
+ * @param behaviour	Prioritaet des zu ueberwachenden Verhaltens
  */
 void bot_get_utilization(Behaviour_t * caller, uint8_t behaviour);
 

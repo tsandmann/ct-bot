@@ -221,6 +221,8 @@ int8_t map_init(void) {
 #ifdef PC
 	pthread_mutex_init(&lock_signal.mutex, NULL);
 	pthread_cond_init(&lock_signal.cond, NULL);
+	pthread_mutex_init(&map_buffer_signal.mutex, NULL);
+	pthread_cond_init(&map_buffer_signal.cond, NULL);
 #endif
 	map_update_thread = os_create_thread(&map_update_stack[MAP_UPDATE_STACK_SIZE - 1], map_update_main);
 

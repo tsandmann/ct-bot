@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-02-25 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer map_init() und Makefile-Update, Doxygen-Typo korrigiert
+
 2009-02-24 Timo Sandmann [mail@timosandmann.de]: Command-Code optimiert
 												 Bugfix fuer HW-SPI und MOUSE_AVAILABLE (#180)
 												 SPI-Code unterstuetzt verschiedene Geschwindigkeiten
