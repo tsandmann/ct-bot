@@ -1,5 +1,9 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-02-26 Frank Menzel [Menzelfr@gmx.de]:		 Neues Verhalten behaviour_follow_line_enhanced; erweiterter Linienfolger um auch mit Unterbrechungen und Hindernissen klarzukommen
+
+2009-02-26 Timo Sandmann [mail@timosandmann.de]: Timer-Auswertung zusaetzlich gegen Interrupts abgesichert, bot_follow_line() stellt beim Start benoetigte Map-Optionen ein
+
 2009-02-25 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer map_init() und Makefile-Update, Doxygen-Typo korrigiert
 
 2009-02-24 Timo Sandmann [mail@timosandmann.de]: Command-Code optimiert

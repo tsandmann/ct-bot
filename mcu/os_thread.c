@@ -132,7 +132,8 @@ Tcb_t * os_create_thread(void * pStack, void * pIp) {
 }
 
 /*!
- * Beendet den kritischen Abschnitt wieder, der mit enterCS began
+ * Beendet den kritischen Abschnitt wieder, der mit os_enterCS began.
+ * Falls ein Scheduler-Aufruf ansteht, wird er nun ausgefuehrt.
  */
 void os_exitCS(void) {
 	if (test_and_set((uint8_t *)&os_scheduling_allowed, 1) == 2) {

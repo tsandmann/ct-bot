@@ -288,6 +288,11 @@ void bot_behave_init(void) {
 		insert_behaviour_to_list(&behaviour, new_behaviour(71, bot_calc_wave_behaviour, INACTIVE));
     #endif
 
+	#ifdef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
+	  	// erweiterter Linienfolge, der mit Unterbrechungen und Hindernissen klarkommt
+		insert_behaviour_to_list(&behaviour, new_behaviour(71, bot_follow_line_enh_behaviour, INACTIVE));	  
+	#endif
+
 	#ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 		// Verhalten um einer Linie zu folgen
 		insert_behaviour_to_list(&behaviour, new_behaviour(70, bot_follow_line_behaviour, INACTIVE));

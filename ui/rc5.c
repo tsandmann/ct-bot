@@ -146,16 +146,20 @@ static void rc5_number(uint8_t key) {
 			case 9: bot_turn(NULL, -180); break;
 		#endif	// BEHAVIOUR_TURN_AVAILABLE
 
-		#if defined BEHAVIOUR_CATCH_PILLAR_AVAILABLE
+		#if defined BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
+			case 4: bot_follow_line_enh(NULL); break;
+		#elif defined BEHAVIOUR_FOLLOW_LINE_AVAILABLE
+			case 4: bot_follow_line(NULL); break;
+		#elif defined BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 			case 4: bot_catch_pillar(NULL); break;
 		#elif defined BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
 			case 4: bot_follow_object(NULL); break;
-		#endif	// BEHAVIOUR_CATCH_PILLAR_AVAILABLE
+		#endif
 
-		#if defined BEHAVIOUR_SOLVE_MAZE_AVAILABLE
+		#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
+			/* Taste 5 ist bot_solve_maze() vorbehalten
+			 * fuer die Autostartfunktion des ct-Sim */
 			case 5: bot_solve_maze(NULL); break;
-		#elif defined BEHAVIOUR_FOLLOW_LINE_AVAILABLE
-			case 5: bot_follow_line(NULL); break;
 		#endif	// BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 
 		#if defined BEHAVIOUR_CALIBRATE_PID_AVAILABLE

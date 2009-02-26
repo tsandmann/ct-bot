@@ -107,15 +107,17 @@ void os_kernel_log_init(void);
 void os_idle(void) __attribute__((OS_task));
 
 /*!
- * Schuetzt den folgenden Block (bis exitCS()) vor Threadswitches.
+ * Schuetzt den folgenden Block (bis os_exitCS()) vor Threadswitches.
  * Ermoeglicht einfaches Locking zum exklusiven Ressourcen-Zugriff.
+ * Es ist allerdings keine Verschachtelung moeglich! Zwischen os_enterCS()
+ * und os_exitCS() sollte daher kein Funktionsaufruf erfolgen.
  */
 #define os_enterCS() {								\
 	os_scheduling_allowed = 0;						\
 }
 
 /*!
- * Beendet den kritischen Abschnitt wieder, der mit enterCS began.
+ * Beendet den kritischen Abschnitt wieder, der mit os_enterCS began.
  * Falls ein Scheduler-Aufruf ansteht, wird er nun ausgefuehrt.
  */
 void os_exitCS(void);

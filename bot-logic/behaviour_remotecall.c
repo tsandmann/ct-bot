@@ -133,6 +133,9 @@ const call_t calls[] PROGMEM = {
 	#ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_follow_line,0,""),
 	#endif
+	#ifdef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_follow_line_enh,0,""),
+	#endif
 	#ifdef BEHAVIOUR_GOTO_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_goto,2," int16 left, int16 right",2,2),
 	#endif

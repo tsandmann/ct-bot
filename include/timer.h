@@ -108,9 +108,33 @@ static inline void timer_reset(void) {
 	tickCount.u32 = 0;
 }
 
-#define TIMER_GET_TICKCOUNT_8  tickCount.u8		/*!< Zeit in 8 Bit */
-#define TIMER_GET_TICKCOUNT_16 tickCount.u16	/*!< Zeit in 16 Bit */
-#define TIMER_GET_TICKCOUNT_32 tickCount.u32	/*!< Zeit in 32 Bit */
+#define TIMER_GET_TICKCOUNT_8  tickCount.u8				/*!< Systemzeit [176 us] in 8 Bit */
+#define TIMER_GET_TICKCOUNT_16 timer_get_tickcount_16()	/*!< Systemzeit [176 us] in 16 Bit */
+#define TIMER_GET_TICKCOUNT_32 timer_get_tickcount_32()	/*!< Systemzeit [176 us] in 32 Bit */
+
+/*!
+ * Liefert die unteren 16 Bit der Systemzeit zurueck
+ * @return	Ticks [176 us]
+ */
+static inline uint16_t timer_get_tickcount_16(void) {
+	uint8_t sreg = SREG;
+	cli();
+	uint16_t ticks = tickCount.u16;
+	SREG = sreg;
+	return ticks;
+}
+
+/*!
+ * Liefert die vollen 32 Bit der Systemzeit zurueck
+ * @return	Ticks [176 us]
+ */
+static inline uint32_t timer_get_tickcount_32(void) {
+	uint8_t sreg = SREG;
+	cli();
+	uint32_t ticks = tickCount.u32;
+	SREG = sreg;
+	return ticks;
+}
 #endif	// PC
 
 // Die Werte fuer TIMER_X_CLOCK sind Angaben in Hz

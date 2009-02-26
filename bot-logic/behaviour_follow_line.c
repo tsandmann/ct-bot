@@ -261,6 +261,10 @@ void bot_follow_line(Behaviour_t * caller) {
 #ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE
 	deactivateBehaviour(bot_avoid_border_behaviour);
 #endif
+#ifdef BEHAVIOUR_SCAN_AVAILABLE
+	set_scan_otf_border(0); // keine Abgruende (die Linie) in die Map eintragen
+	set_scan_otf_mapmode(0); // Kartographiemodus aus
+#endif
 }
 
 #elif FOLLOW_LINE_VERSION == 3  // neueste Version des Linienfolgers, die mit drive_line_shortest_way entstanden ist
