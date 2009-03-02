@@ -40,14 +40,11 @@
 #define MAP_RESOLUTION 		125		/*!< Aufloesung der Karte in Punkte pro Meter */
 #define MAP_SECTION_POINTS 	16		/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 
-#define MAP_UPDATE_STACK_SIZE	256	/*!< Groesse des Stacks, der das Map-Update ausfuehrt */
-#define MAP_UPDATE_CACHE_SIZE	26	/*!< Groesse des Map-Caches */
+#define MAP_UPDATE_STACK_SIZE	256	/*!< Groesse des Stacks, der das Map-Update ausfuehrt [Byte] */
+#define MAP_UPDATE_CACHE_SIZE	26	/*!< Groesse des Map-Caches [Byte] */
+#define MAP_2_SIM_STACK_SIZE	150	/*!< Groesse des Map-2-Sim-Thread-Stacks [Byte]*/
 
-#ifdef MCU
-#define MAP_2_SIM_BUFFER_SIZE	32	/*!< Anzahl der Bloecke, die gesammelt uebertragen werden */
-#else
-#define MAP_2_SIM_BUFFER_SIZE	4	/*!< Anzahl der Bloecke, die gesammelt uebertragen werden */
-#endif	// MCU
+#define MAP_2_SIM_BUFFER_SIZE	32	/*!< Anzahl der Bloecke, die fuer Map-2-Sim gecachet werden koennen */
 
 #define MAP_OBSTACLE_THRESHOLD	-20	/*!< Schwellwert, ab dem ein Feld als Hindernis gilt */
 
@@ -74,6 +71,10 @@ typedef struct {
 extern fifo_t map_update_fifo;			/*!< Fifo fuer Cache */
 extern uint8_t map_update_stack[];		/*!< Stack des Update-Threads */
 extern os_signal_t map_buffer_signal;	/*!< Signal das anzeigt, ob Daten im Map-Puffer sind */
+
+#ifdef MAP_2_SIM_AVAILABLE
+extern uint8_t map_2_sim_worker_stack[];	/*!< Stack des Map-2-Sim-Threads */
+#endif // MAP_2_SIM_AVAILABLE
 
 /*!
  * Prueft, ob die Karte zurzeit gesperrt ist.

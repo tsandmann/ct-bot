@@ -33,7 +33,7 @@
 #include "os_scheduler.h"
 #include <stdlib.h>
 
-#define OS_MAX_THREADS		3	/*!< maximale Anzahl an Threads im System */
+#define OS_MAX_THREADS		4	/*!< maximale Anzahl an Threads im System */
 #define OS_KERNEL_STACKSIZE	32	/*!< Groesse des Kernel-Stacks (fuer Timer-ISR) */
 #define OS_IDLE_STACKSIZE	64	/*!< Groesse des Idle-Stacks */
 //#define OS_DEBUG				/*!< Schalter fuer Debug-Code */
@@ -253,7 +253,7 @@ void os_signal_set(os_signal_t * signal);
 void os_mask_stack(void * stack, size_t size);
 
 /*!
- * Gibt per LOG aus, wieviel Bytes auf den Stacks der Thread noch nie benutzt wurden
+ * Gibt per LOG aus, wieviel Bytes auf den Stacks der Threads noch nie benutzt wurden
  */
 void os_print_stackusage(void);
 

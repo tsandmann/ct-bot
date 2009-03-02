@@ -312,7 +312,7 @@ static uint16_t os_stack_unused(void * stack) {
 }
 
 /*!
- * Gibt per LOG aus, wieviel Bytes auf den Stacks der Thread noch nie benutzt wurden
+ * Gibt per LOG aus, wieviel Bytes auf den Stacks der Threads noch nie benutzt wurden
  */
 void os_print_stackusage(void) {
 	uint16_t tmp;
@@ -323,6 +323,14 @@ void os_print_stackusage(void) {
 		map_stack_free = tmp;
 		LOG_INFO("Map-Stack unused=%u", tmp);
 	}
+#ifdef MAP_2_SIM_AVAILABLE
+	static uint16_t map_2_sim_stack_free = -1;
+	tmp = os_stack_unused(map_2_sim_worker_stack);
+	if (tmp < map_2_sim_stack_free) {
+		map_2_sim_stack_free = tmp;
+		LOG_INFO("Map-2-Sim-Stack unused=%u", tmp);
+	}
+#endif	// MAP_2_SIM_AVAILABLE
 #endif	// MAP_AVAILABLE
 	static uint16_t kernel_stack_free = -1;
 	tmp = os_stack_unused(os_kernel_stack);

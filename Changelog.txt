@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-03-02 Timo Sandmann [mail@timosandmann.de]: Map-2-Sim ueberarbeitet, funktioniert jetzt auch auf dem echten Bot ohne grosse Verzoegerungen
+
 2009-03-02 Timo Sandmann [mail@timosandmann.de]: mmc-Init-Code verbessert, Motorsteuerung bei 20 MHz optimiert
 
 2009-02-26 Frank Menzel [Menzelfr@gmx.de]:		 Neues Verhalten behaviour_follow_line_enhanced; erweiterter Linienfolger um auch mit Unterbrechungen und Hindernissen klarzukommen
