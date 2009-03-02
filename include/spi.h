@@ -41,9 +41,9 @@ typedef union {
 	uint8_t raw;	/*!< Alle Bits als Rawdaten */
 } spi_speed_t;	/*!< Speed-Einstellung fuer SPI */
 
-#define SPI_SPEED_8MHZ		{{0, 0, 1}}	// !SPR0, !SPR1, SPI2X
+#define SPI_SPEED_MAX		{{0, 0, 1}}	// !SPR0, !SPR1,  SPI2X -> F_CPU / 2 Hz
 #define SPI_SPEED_4MHZ		{{0, 0, 0}}	// !SPR0, !SPR1, !SPI2X
-#define SPI_SPEED_250KHZ	{{0, 1, 0}}	// !SPR0, SPR1, !SPI2X
+#define SPI_SPEED_250KHZ	{{0, 1, 0}}	// !SPR0,  SPR1, !SPI2X -> F_CPU / 64 Hz
 
 /*!
  * Initialisiert und aktiviert das SPI-Modul

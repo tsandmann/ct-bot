@@ -30,6 +30,7 @@
 #define BEHAVIOUR_SCAN_AVAILABLE	/*!< Gegend scannen vorhanden? */
 //#define BEHAVIOUR_SOLVE_MAZE_AVAILABLE	/*!< Wandfolger vorhanden? */
 #define BEHAVIOUR_FOLLOW_LINE_AVAILABLE	/*!< Linienfolger vorhanden? */
+//#define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE /*!< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernis klarkommt */
 
 #define BEHAVIOUR_SERVO_AVAILABLE 	/*!< Kontrollverhalten fuer die Servos */
 
@@ -125,6 +126,13 @@
 	#undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 #endif
 
+#ifdef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
+  #define BEHAVIOUR_FOLLOW_LINE_AVAILABLE
+  #define BEHAVIOUR_GOTO_POS_AVAILABLE
+  #define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
+  #define BEHAVIOUR_SOLVE_MAZE_AVAILABLE
+#endif
+
 #ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 	#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 	#define BEHAVIOUR_TURN_AVAILABLE
@@ -208,6 +216,7 @@
 		#warning "DriveStack geht nur, wenn SPEED_CONTROL_AVAILABLE"
 	#endif
 	#undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+	#undef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
 #endif	// SPEED_CONTROL_AVAILABLE
 #endif	// MCU
 
@@ -233,6 +242,7 @@
 
 #include "bot-logic/behaviour_solve_maze.h"
 #include "bot-logic/behaviour_follow_line.h"
+#include "bot-logic/behaviour_follow_line_enhanced.h"
 
 #include "bot-logic/behaviour_olympic.h"
 

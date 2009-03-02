@@ -317,8 +317,8 @@ void bot_encoder_isr(void) {
 	register uint8_t enc_tmp; // Pegel der Encoderpins im Register zwischenspeichern
 
 #ifdef SPEED_CONTROL_AVAILABLE
-	register uint16_t ticks = TIMER_GET_TICKCOUNT_16;	// aktuelle Systemzeit zwischenspeichern
-	register uint8_t i_time;							// Index des Timestamparrays zwischenspeichern
+	register uint16_t ticks = tickCount.u16;	// aktuelle Systemzeit zwischenspeichern
+	register uint8_t i_time;					// Index des Timestamparrays zwischenspeichern
 #endif	// SPEED_CONTROL_AVAILABLE
 	/* Rad-Encoder links */
 	enc_tmp = ENC_L;

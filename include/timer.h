@@ -116,7 +116,7 @@ static inline void timer_reset(void) {
  * Liefert die unteren 16 Bit der Systemzeit zurueck
  * @return	Ticks [176 us]
  */
-static inline uint16_t timer_get_tickcount_16(void) {
+static inline __attribute__((always_inline)) uint16_t timer_get_tickcount_16(void) {
 	uint8_t sreg = SREG;
 	cli();
 	uint16_t ticks = tickCount.u16;
@@ -128,7 +128,7 @@ static inline uint16_t timer_get_tickcount_16(void) {
  * Liefert die vollen 32 Bit der Systemzeit zurueck
  * @return	Ticks [176 us]
  */
-static inline uint32_t timer_get_tickcount_32(void) {
+static inline __attribute__((always_inline)) uint32_t timer_get_tickcount_32(void) {
 	uint8_t sreg = SREG;
 	cli();
 	uint32_t ticks = tickCount.u32;

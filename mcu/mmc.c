@@ -482,13 +482,13 @@ uint8_t mmc_init(void) {
 	mmc_init_state = 0;
 
 #ifdef SPI_AVAILABLE
-	spi_speed_t speed = SPI_SPEED_8MHZ;
+	spi_speed_t speed = SPI_SPEED_250KHZ;
 	SPI_MasterInit(speed);
 #else
 	MMC_CLK_DDR |= _BV(SPI_CLK);
 	MMC_DDR &= ~(1<<SPI_DI);
 	MMC_DDR |= (1<<SPI_DO);
-#endif
+#endif	// SPI_AVAILABLE
 	ENA_on(ENA_MMC);
 	ENA_off(ENA_MMC);
 
@@ -533,6 +533,11 @@ uint8_t mmc_init(void) {
 			return 2; // Abbruch bei Kommando 2 (Return Code 2)
 		}
 	}
+
+#ifdef SPI_AVAILABLE
+	spi_speed_t speed_high = SPI_SPEED_MAX;
+	SPI_MasterInit(speed_high);
+#endif	// SPI_AVAILABLE
 
 #ifdef LED_AVAILABLE
 #ifndef TEST_AVAILABLE

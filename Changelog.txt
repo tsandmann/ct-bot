@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-03-02 Timo Sandmann [mail@timosandmann.de]: mmc-Init-Code verbessert, Motorsteuerung bei 20 MHz optimiert
+
 2009-02-26 Frank Menzel [Menzelfr@gmx.de]:		 Neues Verhalten behaviour_follow_line_enhanced; erweiterter Linienfolger um auch mit Unterbrechungen und Hindernissen klarzukommen
 
 2009-02-26 Timo Sandmann [mail@timosandmann.de]: Timer-Auswertung zusaetzlich gegen Interrupts abgesichert, bot_follow_line() stellt beim Start benoetigte Map-Optionen ein

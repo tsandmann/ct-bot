@@ -76,26 +76,33 @@ static void pwm_0_init(void) {
 
 /*!
  * Timer 1: Kontrolliert die Motoren per PWM
- * PWM loescht bei erreichen. Daher steht in OCR1A/OCR1B 511-Speed!!!
  * Initilaisiert Timer 0 und startet ihn
  */
 static void pwm_1_init(void) {
 	DDRD |= 0x30;	// PWM-Pins als Output
 	TCNT1 = 0x0000;	// TIMER1 vorladen
 
-	TCCR1A = _BV(WGM11)  |				// Fast PWM 9 Bit
+	TCCR1A = _BV(WGM11)  |				// Fast PWM 9 Bit @ 16 MHz
+#if F_CPU == 20000000 && defined SPEED_CONTROL_AVAILABLE
+			 _BV(WGM10)  |				// Fast PWM 10 Bit @ 20 MHz
+#endif
 			 _BV(COM1A1) |_BV(COM1A0) |	// Clear on Top, Set on Compare
 			 _BV(COM1B1) |_BV(COM1B0);	// Clear on Top, Set on Compare
 
 	TCCR1B = _BV(WGM12) |
 #ifdef SPEED_CONTROL_AVAILABLE
-	_BV(CS10);		// Prescaler = 1	=>	31.2 kHz
+	_BV(CS10);		// Prescaler = 1	=>	31.2 kHz @ 16 MHz, 19.5 kHz @ 20 MHz
 #else
-	_BV(CS12);		// Prescaler = 256	=>	122 Hz
+	_BV(CS12);		// Prescaler = 256	=>	122 Hz @ 16 MHz, 152.5 Hz @ 20 MHz
 #endif	// SPEED_CONTROL_AVAILABLE
 
+#if F_CPU == 20000000
+	OCR1A = 1023;	// PWM loescht bei erreichen. daher steht in OCR1A 1023-Speed!!!
+	OCR1B = 1023;
+#else
 	OCR1A = 511;	// PWM loescht bei erreichen. daher steht in OCR1A 511-Speed!!!
-	OCR1B = 511;	// PWM loescht bei erreichen. daher steht in OCR1B 511-Speed!!!
+	OCR1B = 511;
+#endif
 }
 
 // Kollidiert derzeit mit Timer2 fuer IR
@@ -129,8 +136,13 @@ void motor_low_init() {
 //	pwm_2_init();	// Kollidiert mit Timer2 fuer IR-Fernbedienung
 	motor_left  = 0;
 	motor_right = 0;
+#if F_CPU == 20000000 && defined SPEED_CONTROL_AVAILABLE
+	PWM_L = 1023;
+	PWM_R = 1023;
+#else
 	PWM_L = 511;
 	PWM_R = 511;
+#endif	// F_CPU
 	direction.left  = DIRECTION_FORWARD;
 	direction.right = DIRECTION_FORWARD;
 }
@@ -145,13 +157,21 @@ void motor_update(uint8_t dev) {
 		/* linker Motor */
 		if (direction.left == DIRECTION_FORWARD) BOT_DIR_L_PORT |= BOT_DIR_L_PIN; // vorwaerts
 		else BOT_DIR_L_PORT &= ~BOT_DIR_L_PIN; // rueckwaerts
+#if F_CPU == 20000000 && defined SPEED_CONTROL_AVAILABLE
+		PWM_L = 1023 - (motor_left << 1);
+#else
 		PWM_L = 511 - motor_left;
+#endif	// F_CPU
 	} else {
 		/* rechter Motor */
 		/* Einer der Motoren ist invertiert, da er ja in die andere Richtung schaut */
 		if (direction.right == DIRECTION_BACKWARD) BOT_DIR_R_PORT |= BOT_DIR_R_PIN; // rueckwaerts
 		else BOT_DIR_R_PORT &= ~BOT_DIR_R_PIN; // vorwaerts
+#if F_CPU == 20000000 && defined SPEED_CONTROL_AVAILABLE
+		PWM_R = 1023 - (motor_right << 1);
+#else
 		PWM_R = 511 - motor_right;
+#endif	// F_CPU
 	}
 }
 
