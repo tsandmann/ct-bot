@@ -28,6 +28,7 @@
 #define MAP_H_
 
 #include "ct-Bot.h"
+#include "fifo.h"
 #include "os_thread.h"
 #include "bot-logic/available_behaviours.h"
 

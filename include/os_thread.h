@@ -34,8 +34,8 @@
 #include <stdlib.h>
 
 #define OS_MAX_THREADS		4	/*!< maximale Anzahl an Threads im System */
-#define OS_KERNEL_STACKSIZE	32	/*!< Groesse des Kernel-Stacks (fuer Timer-ISR) */
-#define OS_IDLE_STACKSIZE	64	/*!< Groesse des Idle-Stacks */
+#define OS_KERNEL_STACKSIZE	32	/*!< Groesse des Kernel-Stacks (fuer Timer-ISR) [Byte] */
+#define OS_IDLE_STACKSIZE	64	/*!< Groesse des Idle-Stacks [Byte] */
 //#define OS_DEBUG				/*!< Schalter fuer Debug-Code */
 //#define OS_KERNEL_LOG_AVAILABLE	/*!< Aktiviert das Kernel-LOG mit laufenden Debug-Ausgaben */
 
@@ -136,13 +136,13 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to);
  * Blockiert den aktuellten Thread fuer die angegebene Zeit und schaltet
  * auf einen anderen Thread um
  * => coorporative threadswitch
- * @param sleep		Zeit in ms, die der aktuelle Thread blockiert wird
+ * @param ms	Zeit in ms, die der aktuelle Thread blockiert wird
  */
-static inline void os_thread_sleep(uint32_t sleep) {
-	uint32_t sleep_ticks = MS_TO_TICKS(sleep);
-	uint32_t now = TIMER_GET_TICKCOUNT_32;
+static inline void os_thread_sleep(uint32_t ms) {
+	uint32_t sleep_ticks = MS_TO_TICKS(ms); // Zeitspanne in Timer-Ticks umrechnen
+	uint32_t now = TIMER_GET_TICKCOUNT_32;  // Aktuelle Systemzeit
 	os_thread_running->nextSchedule = now + sleep_ticks;
-	os_schedule(now);
+	os_schedule(now); // Aufruf des Schedulers
 }
 
 /*!
@@ -167,6 +167,7 @@ static inline void os_signal_lock(os_signal_t * signal) {
  */
 static inline void os_signal_unlock(os_signal_t * signal) {
 	signal->value = 0;
+	os_schedule(TIMER_GET_TICKCOUNT_32);
 }
 
 #else	// PC
@@ -231,11 +232,11 @@ Tcb_t * os_create_thread(void * pStack, void * pIp);
  */
 void os_thread_yield(void);
 
-/*!
- * Weckt einen wartenden Thread auf, falls dieser eine hoehere Prioritaet hat
- * @param *thread	Zeiger auf TCB des zu weckenden Threads
- */
-void os_thread_wakeup(Tcb_t * thread);
+///*!
+// * Weckt einen wartenden Thread auf, falls dieser eine hoehere Prioritaet hat
+// * @param *thread	Zeiger auf TCB des zu weckenden Threads
+// */
+//void os_thread_wakeup(Tcb_t * thread);
 
 /*!
  * Blockiert den aktuellen Thread, bis ein Signal freigegeben wird

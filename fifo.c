@@ -28,8 +28,18 @@
 #include "fifo.h"
 #include "log.h"
 
+//#define DEBUG_FIFO		/*!< Schalter fuer Debug-Ausgaben */
+
+#ifndef LOG_AVAILABLE
+#undef DEBUG_FIFO
+#endif
+#ifndef DEBUG_FIFO
+#undef LOG_DEBUG
+#define LOG_DEBUG(a, ...) {}
+#endif
+
 /*!
- * @brief			Initialisiert die FIFO, setzt Lese- und Schreibzeiger, etc.
+ * Initialisiert die FIFO, setzt Lese- und Schreibzeiger, etc.
  * @param *f		Zeiger auf FIFO-Datenstruktur
  * @param *buffer	Zeiger auf den Puffer der Groesse size fuer die FIFO
  * @param size		Anzahl der Bytes, die die FIFO speichern soll	.
@@ -38,24 +48,61 @@ void fifo_init(fifo_t * f, void * buffer, const uint8_t size) {
 	f->count = 0;
 	f->pread = f->pwrite = buffer;
 	f->read2end = f->write2end = f->size = size;
+	f->signal.value = 0;	// Fifo leer
 #ifdef PC
-	pthread_mutex_init(&f->mutex, NULL);
-	pthread_cond_init(&f->cond, NULL);
-#endif
+	pthread_mutex_init(&f->signal.mutex, NULL);
+	pthread_cond_init(&f->signal.cond, NULL);
+#endif	// PC
+	LOG_DEBUG("Fifo 0x%08x initialisiert", f);
 }
 
 /*!
- * @brief			Schreibt length Byte in die FIFO
+ * Schreibt length Byte in die FIFO.
+ * Achtung, wenn der freie Platz nicht ausreicht, werden die
+ * aeltesten Daten verworfen!
  * @param *f		Zeiger auf FIFO-Datenstruktur
  * @param *data		Zeiger auf Quelldaten
  * @param length	Anzahl der zu kopierenden Bytes
  */
 void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
+	if (length == 0) {
+		return;
+	}
+	uint8_t space;
+	if (length > (space = f->size - f->count)) {
+		/* nicht genug Platz -> alte Daten rauswerfen */
+		uint8_t to_discard = length - space;
+		LOG_DEBUG("verwerfe %u Bytes", to_discard);
+		uint8_t read2end = f->read2end;
+		uint8_t * pread = f->pread;
+		if (to_discard > read2end) {
+			/* Ueberlauf */
+			read2end += f->size;
+			pread -= f->size;
+		}
+		read2end -= to_discard;
+		pread += to_discard;
+		f->read2end = read2end;
+		f->pread = pread;
+
+#ifdef MCU
+		uint8_t sreg = SREG;
+		cli();
+#else
+		pthread_mutex_lock(&f->signal.mutex);
+#endif
+		f->count -= to_discard;
+#ifdef MCU
+		SREG = sreg;
+#else
+		pthread_mutex_unlock(&f->signal.mutex);
+#endif
+	}
 	uint8_t * src = data;
 	uint8_t * pwrite = f->pwrite;
 	uint8_t write2end = f->write2end;
 	uint8_t n = length > write2end ? write2end : length;
-	uint8_t i,j;
+	uint8_t i, j;
 	for (j=0; j<2; j++) {
 		for (i=0; i<n; i++) {
 			*(pwrite++) = *(src++);
@@ -76,41 +123,39 @@ void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
 	uint8_t sreg = SREG;
 	cli();
 #else
-	if (length == 0) return;
-	pthread_mutex_lock(&f->mutex);
+	pthread_mutex_lock(&f->signal.mutex);
 #endif
 	f->count += length;
 #ifdef MCU
 	SREG = sreg;
 #else
-	/* Consumer aufwecken */
-	pthread_cond_broadcast(&f->cond);
-	pthread_mutex_unlock(&f->mutex);
+	pthread_mutex_unlock(&f->signal.mutex);
 #endif
+	/* Consumer aufwecken */
+	os_signal_unlock(&f->signal);
 }
 
 /*!
- * @brief			Liefert length Bytes aus der FIFO, nicht blockierend fuer MCU, aber fuer PC / phtreads
+ * Liefert length Bytes aus der FIFO, blockierend, falls Fifo leer!
  * @param *f		Zeiger auf FIFO-Datenstruktur
  * @param *data		Zeiger auf Speicherbereich fuer Zieldaten
  * @param length	Anzahl der zu kopierenden Bytes
  * @return			Anzahl der tatsaechlich gelieferten Bytes
  */
 uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length) {
-#ifdef PC
-	pthread_mutex_lock(&f->mutex);
-#endif
+	if (length == 0) {
+		return 0;
+	}
 	uint8_t count = f->count;
-#ifdef PC
 	if (count == 0) {
 		/* blockieren */
-//		LOG_DEBUG("Fifo leer -> Thread blockiert");
-		pthread_cond_wait(&f->cond, &f->mutex);
-//		LOG_DEBUG("Thread laeuft weiter");
+		LOG_DEBUG("Fifo 0x%08x ist leer, blockiere", f);
+		os_signal_lock(&f->signal);
+		os_signal_set(&f->signal);
+		LOG_DEBUG("Fifo 0x%08x enthaelt wieder Daten, weiter geht's", f);
+		os_signal_release(&f->signal);
 		count = f->count;
 	}
-	pthread_mutex_unlock(&f->mutex);
-#endif
 	if (count < length) length = count;
 	uint8_t * pread = f->pread;
 	uint8_t read2end = f->read2end;
@@ -136,13 +181,13 @@ uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length) {
 	uint8_t sreg = SREG;
 	cli();
 #else
-	pthread_mutex_lock(&f->mutex);
+	pthread_mutex_lock(&f->signal.mutex);
 #endif
 	f->count -= length;
 #ifdef MCU
 	SREG = sreg;
 #else
-	pthread_mutex_unlock(&f->mutex);
+	pthread_mutex_unlock(&f->signal.mutex);
 #endif
 
 	return length;

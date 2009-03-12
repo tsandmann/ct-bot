@@ -1,24 +1,24 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
- * @file 	fifo.h 
+/*!
+ * @file 	fifo.h
  * @brief 	Implementierung einer FIFO
  * @author 	http://www.roboternetz.de/wissen/index.php/FIFO_mit_avr-gcc
  * @date 	28.02.2007
@@ -30,13 +30,8 @@
 
 #include "ct-Bot.h"
 #include "global.h"
-#ifdef MCU
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#else
-#include <pthread.h>
-#endif	// MCU
-	
+#include "os_thread.h"
+
 /*! FIFO-Datentyp */
 typedef struct {
 	uint8_t volatile count;	/*!< # Zeichen im Puffer */
@@ -45,59 +40,58 @@ typedef struct {
 	uint8_t * pwrite;		/*!< Schreibzeiger */
 	uint8_t read2end;		/*!< # Zeichen bis zum Ueberlauf Lesezeiger */
 	uint8_t write2end;		/*!< # Zeichen bis zum Ueberlauf Schreibzeiger */
-#ifdef PC
-	pthread_mutex_t mutex;	/*!< Mutex zur Synchronisation */
-	pthread_cond_t cond;	/*!< Signal zur Synchronisation */
-#endif
+	os_signal_t signal;		/*!< Signal das den Fifo-Status meldet */
 } fifo_t;
 
 /*!
- * @brief			Initialisiert die FIFO, setzt Lese- und Schreibzeiger, etc. 
+ * Initialisiert die FIFO, setzt Lese- und Schreibzeiger, etc.
  * @param *f		Zeiger auf FIFO-Datenstruktur
  * @param *buffer	Zeiger auf den Puffer der Groesse size fuer die FIFO
  * @param size		Anzahl der Bytes, die die FIFO speichern soll	.
  */
 extern void fifo_init(fifo_t * f, void * buffer, const uint8_t size);
-	
+
 /*!
- * @brief			Schreibt length Byte in die FIFO
+ * Schreibt length Byte in die FIFO.
+ * Achtung, wenn der freie Platz nicht ausreicht, werden die
+ * aeltesten Daten verworfen!
  * @param *f		Zeiger auf FIFO-Datenstruktur
  * @param *data		Zeiger auf Quelldaten
  * @param length	Anzahl der zu kopierenden Bytes
- */	
-extern void fifo_put_data(fifo_t * f, void * data, uint8_t length);
+ */
+void fifo_put_data(fifo_t * f, void * data, uint8_t length);
 
 /*!
- * @brief			Liefert length Bytes aus der FIFO, nicht blockierend.
+ * Liefert length Bytes aus der FIFO, blockierend, falls Fifo leer!
  * @param *f		Zeiger auf FIFO-Datenstruktur
  * @param *data		Zeiger auf Speicherbereich fuer Zieldaten
  * @param length	Anzahl der zu kopierenden Bytes
  * @return			Anzahl der tatsaechlich gelieferten Bytes
- */	
+ */
 extern uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length);
 
 /*!
- * @brief		Schreibt ein Byte in die FIFO.
+ * Schreibt ein Byte in die FIFO.
  * @param *f	Zeiger auf FIFO-Datenstruktur
  * @param data	Das zu schreibende Byte
  */
 static inline void _inline_fifo_put(fifo_t * f, const uint8_t data) {
 	uint8_t * pwrite = f->pwrite;
 	*(pwrite++) = data;
-	
+
 	uint8_t write2end = f->write2end;
 	if (--write2end == 0) {
 		write2end = f->size;
 		pwrite -= write2end;
 	}
-	
+
 	f->write2end = write2end;
 	f->pwrite = pwrite;
 	f->count++;
 }
 
 /*!
- * @brief		Liefert das naechste Byte aus der FIFO. 
+ * Liefert das naechste Byte aus der FIFO.
  * @param *f	Zeiger auf FIFO-Datenstruktur
  * @return		Das Byte aus der FIFO
  * Ob ueberhaupt ein Byte in der FIFO ist, muss vorher extra abgeprueft werden!
@@ -106,16 +100,16 @@ static inline uint8_t _inline_fifo_get(fifo_t * f) {
 	uint8_t * pread = f->pread;
 	uint8_t data = *(pread++);
 	uint8_t read2end = f->read2end;
-	
+
 	if (--read2end == 0) {
 		read2end = f->size;
 		pread -= read2end;
 	}
-	
+
 	f->pread = pread;
 	f->read2end = read2end;
 	f->count--;
-	
+
 	return data;
 }
 

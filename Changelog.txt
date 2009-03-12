@@ -1,5 +1,9 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-03-11 Frank Menzel [Menzelfr@gmx.de]: kleinen Bug in line_shortest_way_beseitigt bei Zielerkennung; ein Liniensensor braucht nur auf Zielfeld zu stehen zur Erkennung
+
+2009-03-11 Timo Sandmann [mail@timosandmann.de]: Fifo-Implementierung verbessert: Automatische Blockierung bei leerer Fifo, Anwendungscode wird so einfacher und ist unabhaengig von der Zielarchitektur; Debug-Code fuer pthreads
+
 2009-03-02 Timo Sandmann [mail@timosandmann.de]: Map-2-Sim ueberarbeitet, funktioniert jetzt auch auf dem echten Bot ohne grosse Verzoegerungen
 
 2009-03-02 Timo Sandmann [mail@timosandmann.de]: mmc-Init-Code verbessert, Motorsteuerung bei 20 MHz optimiert

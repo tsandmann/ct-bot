@@ -149,8 +149,7 @@ void os_thread_yield(void) {
 	os_enterCS();
 	uint32_t now = TIMER_GET_TICKCOUNT_32;
 	/* Zeitpunkt der letzten Ausfuehrung nur in 16 Bit, da yield() nur Sinn macht, wenn es
-	 * regelmaessig aufgerufen wird und eine Aufloesung im ms-Bereich gebraucht wird.
-	 * Sonst sleep() benutzen! */
+	 * regelmaessig aufgerufen wird, sonst sleep() benutzen. */
 	uint16_t runtime = (uint16_t)now - (uint16_t)os_thread_running->lastSchedule;
 	if (runtime > MS_TO_TICKS(OS_TIME_SLICE)) {
 		/* Zeitscheibe wurde bereits ueberschritten ==> kein Threadwechsel */
@@ -159,31 +158,32 @@ void os_thread_yield(void) {
 #endif	// OS_KERNEL_LOG_AVAILABLE
 #ifdef MEASURE_UTILIZATION
 		os_thread_running->statistics.runtime += runtime;
-#endif
-		/* Timestamp zuruecksetzen, weil Scheduler vielleicht gar nicht aufgerufen wird */
-		os_thread_running->lastSchedule = now;
-#ifdef MEASURE_UTILIZATION
 		/* Zaehler fuer verpasste Deadlines erhoehen */
 		os_thread_running->statistics.missed_deadlines++;
 #endif
+		/* Timestamp zuruecksetzen */
+		os_thread_running->lastSchedule = now;
 	} else {
 		/* Wir haben noch Zeit frei, die wir dem naechsten Thread schenken koennen */
 		os_thread_running->nextSchedule = now + (uint16_t)(MS_TO_TICKS(OS_TIME_SLICE) - runtime);
-		/* Scheduler wechselt die Threads, Aufruf durch os_exitCS() */
+		/* Scheduler wechselt die Threads, Aufruf am Ende der Funktion */
 		os_scheduling_allowed = 2;
 	}
-	os_exitCS();
+	/* os_exitCS() */
+	if (test_and_set((uint8_t *)&os_scheduling_allowed, 1) == 2) {
+		os_schedule(now);
+	}
 }
 
-/*!
- * Weckt einen wartenden Thread auf, falls dieser eine hoehere Prioritaet hat
- * @param *thread	Zeiger auf TCB des zu weckenden Threads
- */
-void os_thread_wakeup(Tcb_t * thread) {
-	uint32_t now = TIMER_GET_TICKCOUNT_32;
-	thread->nextSchedule = now;
-	os_schedule(now);
-}
+///*!
+// * Weckt einen wartenden Thread auf, falls dieser eine hoehere Prioritaet hat
+// * @param *thread	Zeiger auf TCB des zu weckenden Threads
+// */
+//void os_thread_wakeup(Tcb_t * thread) {
+//	uint32_t now = TIMER_GET_TICKCOUNT_32;
+//	thread->nextSchedule = now;
+//	os_schedule(now);
+//}
 
 /*!
  * Blockiert den aktuellen Thread, bis ein Signal freigegeben wird

@@ -184,9 +184,6 @@ static uint16_t map_2_sim_heading;	/*!< letzte Bot-Ausrichtung */
 static Tcb_t * map_2_sim_worker;	/*!< Worker-Thread fuer die Map-2-Sim-Anzeige */
 uint8_t map_2_sim_worker_stack[MAP_2_SIM_STACK_SIZE];	/*!< Stack des Map-2-Sim-Threads */
 static uint8_t map_2_sim_buffer[512];	/*!< Puffer fuer Map-Block (von der MMC) zur Map-2-Sim-Kommunikation */
-static os_signal_t map_2_sim_signal;	/*!< Signal, falls Daten im Map-2-Sim-Cache */
-
-#warning "Map-2-Sim ist experimentiell!"
 #endif	// MAP_2_SIM_AVAILABLE
 
 #ifdef PC
@@ -226,8 +223,6 @@ int8_t map_init(void) {
 #ifdef PC
 	pthread_mutex_init(&lock_signal.mutex, NULL);
 	pthread_cond_init(&lock_signal.cond, NULL);
-	pthread_mutex_init(&map_buffer_signal.mutex, NULL);
-	pthread_cond_init(&map_buffer_signal.cond, NULL);
 #endif	// PC
 	map_update_thread = os_create_thread(&map_update_stack[MAP_UPDATE_STACK_SIZE - 1], map_update_main);
 
@@ -404,15 +399,10 @@ static map_section_t * get_section(uint16_t x, uint16_t y) {
 		mmc_write_sector(mmc_block, map_buffer);
 
 #ifdef MAP_2_SIM_AVAILABLE
-		if (map_2_sim_fifo.count == map_2_sim_fifo.size) {
-			/* Fifo voll , also aeltesten Eintrag rauswerfen */
-			fifo_get_data(&map_2_sim_fifo, &map_2_sim_heading, sizeof(map_current_block.block));
-		}
 		map_2_sim_pos.x = world_to_map(x_pos);
 		map_2_sim_pos.y = world_to_map(y_pos);
 		map_2_sim_heading = heading;
 		fifo_put_data(&map_2_sim_fifo, &map_current_block.block, sizeof(map_current_block.block));
-		os_signal_unlock(&map_2_sim_signal); // Worker-Thread aufwecken
 #endif	// MAP_2_SIM_AVAILABLE
 
 #ifdef DEBUG_MAP_TIMES
@@ -569,7 +559,7 @@ static void update_field_circle(uint16_t x, uint16_t y, int8_t radius, int8_t va
 	int16_t sec_x_min = ((x - radius) / MAP_SECTION_POINTS);
 	int16_t sec_y_max = ((y + radius) / MAP_SECTION_POINTS);
 	int16_t sec_y_min = ((y - radius) / MAP_SECTION_POINTS);
-	//	LOG_DEBUG("Betroffene Sektionen X: %d-%d, Y:%d-%d\n",sec_x_min,sec_x_max,sec_y_min,sec_y_max);
+//	LOG_DEBUG("Betroffene Sektionen X: %d-%d, Y:%d-%d\n",sec_x_min,sec_x_max,sec_y_min,sec_y_max);
 
 	int16_t sec_x, sec_y, X, Y, dX, dY;
 	int16_t starty, startx, stopx, stopy;
@@ -1137,48 +1127,39 @@ void map_update_main(void) {
 	 * wenn der Puffer leer ist */
 	while (1) {
 		/* Cache-Eintrag holen
-		 * PC-Version blockiert hier, falls Fifo leer */
-		if (fifo_get_data(&map_update_fifo, &cache_tmp, sizeof(map_cache_t))
-				> 0) {
+		 * Thread blockiert hier, falls Fifo leer */
+		fifo_get_data(&map_update_fifo, &cache_tmp, sizeof(map_cache_t));
 
-			os_signal_lock(&lock_signal);	// Zugriff auf die Map sperren
+		os_signal_lock(&lock_signal);	// Zugriff auf die Map sperren
 #ifdef DEBUG_SCAN_OTF
-			LOG_DEBUG("lese Cache: x= %d y= %d head= %f distance= %d loaction=%d border=%d",cache_tmp.x_pos, cache_tmp.y_pos, cache_tmp.heading/10.0f,cache_tmp.mode.distance, cache_tmp.mode.location, cache_tmp.mode.border);
+		LOG_DEBUG("lese Cache: x= %d y= %d head= %f distance= %d loaction=%d border=%d",cache_tmp.x_pos, cache_tmp.y_pos, cache_tmp.heading/10.0f,cache_tmp.mode.distance, cache_tmp.mode.location, cache_tmp.mode.border);
 
-			if ((cache_tmp.mode.distance || cache_tmp.mode.location || cache_tmp.mode.border) == 0)
-			LOG_DEBUG("Achtung: Dieser Eintrag ergibt keinen Sinn, kein einziges mode-bit gesetzt");
+		if ((cache_tmp.mode.distance || cache_tmp.mode.location || cache_tmp.mode.border) == 0)
+		LOG_DEBUG("Achtung: Dieser Eintrag ergibt keinen Sinn, kein einziges mode-bit gesetzt");
 #endif
 
-			/* Strahlen updaten, falls distance-mode und der aktuelle Eintrag Daten dazu hat*/
-			if (cache_tmp.mode.distance) {
-				update_distance(cache_tmp.x_pos, cache_tmp.y_pos,
-						cache_tmp.heading / 10.0f, cache_tmp.dataL * 5,
-						cache_tmp.dataR * 5);
-			}
+		/* Strahlen updaten, falls distance-mode und der aktuelle Eintrag Daten dazu hat*/
+		if (cache_tmp.mode.distance) {
+			update_distance(cache_tmp.x_pos, cache_tmp.y_pos,
+					cache_tmp.heading / 10.0f, cache_tmp.dataL * 5,
+					cache_tmp.dataR * 5);
+		}
 
-			/* Grundflaeche updaten, falls location-mode */
-			if (cache_tmp.mode.location) {
-				update_location(cache_tmp.x_pos, cache_tmp.y_pos);
-			}
+		/* Grundflaeche updaten, falls location-mode */
+		if (cache_tmp.mode.location) {
+			update_location(cache_tmp.x_pos, cache_tmp.y_pos);
+		}
 
-			/* Abgrundsensoren updaten, falls border-mode */
-			if (cache_tmp.mode.border) {
-				update_border(cache_tmp.x_pos, cache_tmp.y_pos,
-						cache_tmp.heading / 10.0f, cache_tmp.dataL,
-						cache_tmp.dataR);
-			}
+		/* Abgrundsensoren updaten, falls border-mode */
+		if (cache_tmp.mode.border) {
+			update_border(cache_tmp.x_pos, cache_tmp.y_pos,
+					cache_tmp.heading / 10.0f, cache_tmp.dataL,
+					cache_tmp.dataR);
+		}
 
-#ifdef PC
-			/* Falls Fifo leer, Sperre aufheben (PC-Code laeuft niemals in den else-Zweig!) */
-			if (map_update_fifo.count == 0) {
-				os_signal_unlock(&lock_signal);	// Zugriff auf Map wieder freigeben
-			}
-#endif	 // PC
-		} else {
-			/* Fifo leer => blockieren */
+		/* Falls Fifo leer, Sperre aufheben */
+		if (map_update_fifo.count == 0) {
 			os_signal_unlock(&lock_signal);	// Zugriff auf Map wieder freigeben
-			os_signal_lock(&map_buffer_signal);	// Map-Cache leer, daher blockieren bis wieder Daten da sind
-			os_signal_set(&map_buffer_signal);
 		}
 	}
 }
@@ -1189,7 +1170,6 @@ void map_update_main(void) {
  * Main-Funktion des Map-2-Sim-Threads
  */
 void map_2_sim_main(void) {
-//TODO:	Ohne Kopie direkt auf den Fifo-Daten arbeiten?
 	uint16_t cache_copy[MAP_2_SIM_BUFFER_SIZE] = {0};
 #ifdef MAP_2_SIM_DEBUG
 	static uint8_t max_entries = 0;
@@ -1200,47 +1180,42 @@ void map_2_sim_main(void) {
 	while (1) {
 		uint8_t size;
 		/* Daten aus Fifo holen
-		 * PC-Version blockiert hier, falls Fifo leer */
-		if ((size = fifo_get_data(&map_2_sim_fifo, &cache_copy, MAP_2_SIM_BUFFER_SIZE * sizeof(cache_copy[0]))) > 0) {
-			uint8_t i;
-			int8_t j;
-			size /= sizeof(cache_copy[0]); // size ab hier Anzahl der Eintraege, nicht Bytes!
+		 * Thread blockiert hier, falls Fifo leer */
+		size = fifo_get_data(&map_2_sim_fifo, &cache_copy, MAP_2_SIM_BUFFER_SIZE * sizeof(cache_copy[0]));
+		uint8_t i;
+		int8_t j;
+		size /= sizeof(cache_copy[0]); // size ab hier Anzahl der Eintraege, nicht Bytes!
 #ifdef MAP_2_SIM_DEBUG
-			if (size > max_entries) {
-				max_entries = size;
-				LOG_INFO("max_entries=%u", max_entries);
-			}
-#endif	// MAP_2_SIM_DEBUG
-			for (i=0; i<size; i++) {
-				/* eingetragenen Block in der Liste der bereits Gesendeten suchen */
-				for (j=size; j>i; j--) {
-					if (cache_copy[i] == cache_copy[j]) {
-//						printf("ueberspringe Block %u\n", cache_copy[i]);
-						cache_copy[i] = 0;
-						break; // Treffer, block kommt spaeter noch mal, also verwerfen
-					}
-				}
-				if (j == i) {
-					if (cache_copy[i] > MAP_SECTIONS * MAP_SECTIONS / 2) {
-						LOG_ERROR("Block %u ausserhalb der Karte!", cache_copy[i]);
-						continue;
-					}
-					/* Block nicht gefunden -> wurde noch nicht gesendet, also jetzt senden */
-//					printf("sende Block %u\n", cache_copy[i]);
-					mmc_read_sector(map_start_block + cache_copy[i], map_2_sim_buffer);
-					command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, (int16_t)cache_copy[i], map_2_sim_pos.x, 128, map_2_sim_buffer);
-					command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, (int16_t)cache_copy[i], map_2_sim_pos.y, 128, &map_2_sim_buffer[128]);
-					command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, (int16_t)cache_copy[i], map_2_sim_heading, 128, &map_2_sim_buffer[256]);
-					command_write_rawdata(CMD_MAP, SUB_MAP_DATA_4, (int16_t)cache_copy[i], 0, 128, &map_2_sim_buffer[384]);
-					cache_copy[i] = 0;
-				}
-			}
-//			printf("\n");
-		} else {
-			/* Fifo leer => blockieren */
-			os_signal_lock(&map_2_sim_signal);
-			os_signal_set(&map_2_sim_signal); // warten bis wieder Daten verfuegbar sind
+		if (size > max_entries) {
+			max_entries = size;
+			LOG_INFO("max_entries=%u", max_entries);
 		}
+#endif	// MAP_2_SIM_DEBUG
+		for (i=0; i<size; i++) {
+			/* eingetragenen Block in der Liste der bereits Gesendeten suchen */
+			for (j=size; j>i; j--) {
+				if (cache_copy[i] == cache_copy[j]) {
+//					printf("ueberspringe Block %u\n", cache_copy[i]);
+					cache_copy[i] = 0;
+					break; // Treffer, block kommt spaeter noch mal, also verwerfen
+				}
+			}
+			if (j == i) {
+				if (cache_copy[i] > MAP_SECTIONS * MAP_SECTIONS / 2) {
+					LOG_ERROR("Block %u ausserhalb der Karte!", cache_copy[i]);
+					continue;
+				}
+				/* Block nicht gefunden -> wurde noch nicht gesendet, also jetzt senden */
+//				printf("sende Block %u\n", cache_copy[i]);
+				mmc_read_sector(map_start_block + cache_copy[i], map_2_sim_buffer);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, (int16_t)cache_copy[i], map_2_sim_pos.x, 128, map_2_sim_buffer);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, (int16_t)cache_copy[i], map_2_sim_pos.y, 128, &map_2_sim_buffer[128]);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, (int16_t)cache_copy[i], map_2_sim_heading, 128, &map_2_sim_buffer[256]);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_4, (int16_t)cache_copy[i], 0, 128, &map_2_sim_buffer[384]);
+				cache_copy[i] = 0;
+			}
+		}
+//		printf("\n");
 	}
 }
 #endif	// MAP_2_SIM_AVAILABLE
@@ -1260,19 +1235,18 @@ void map_print(void) {
 static inline void delete(void) {
 	/* warten bis Karte frei ist */
 	map_flush_cache();
+	os_signal_lock(&lock_signal);
 #ifdef MCU
 	uint32_t map_filestart = mini_fat_find_block("MAP", map_buffer);
 	mini_fat_clear_file(map_filestart, map_buffer);
 #else
-	os_signal_lock(&lock_signal);
 	memset(map_storage, 0, sizeof(map_storage));
 #endif	// MCU
 	map_current_block.updated = False;
 	map_current_block.block = 0;
 	memset(map_buffer, 0, sizeof(map_buffer));
-#ifdef PC
+
 	os_signal_unlock(&lock_signal);
-#endif
 
 	// Groesse neu initialisieren
 	map_min_x = (uint16_t)(MAP_SIZE * MAP_RESOLUTION / 2);

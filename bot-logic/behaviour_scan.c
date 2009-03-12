@@ -173,7 +173,6 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 
 
 		fifo_put_data(&map_update_fifo, &cache_tmp, sizeof(map_cache_t));
-		os_signal_unlock(&map_buffer_signal);	// Map-Update-Thread aufwecken
 
 		#ifdef DEBUG_SCAN_OTF
 			LOG_DEBUG("neuer Eintrag: x=%d y=%d head=%f distance=%d loaction=%d border=%d", cache_tmp.x_pos, cache_tmp.y_pos, cache_tmp.heading/10.0f, cache_tmp.mode.distance, cache_tmp.mode.location, cache_tmp.mode.border);

@@ -291,7 +291,7 @@ static uint8_t dequeue_stack_crossing(int8_t * crosstype, int8_t * direction) {
  */
 uint8_t green_field(uint8_t goalcheck) {
 	if (crossing_reached && ((sensLineL > GROUND_GOAL_DEF - 5 && sensLineL
-			< GROUND_GOAL_DEF + 5) && (sensLineR > GROUND_GOAL_DEF - 5
+			< GROUND_GOAL_DEF + 5) || (sensLineR > GROUND_GOAL_DEF - 5
 			&& sensLineR < GROUND_GOAL_DEF + 5))) {
 #ifdef CHECK_REVERSE_BEHAVIOUR
         if (goalcheck) {  // nur fuer Zielcheck

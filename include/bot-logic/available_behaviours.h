@@ -28,9 +28,9 @@
 //#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE	/*!< Distanzesensorasuwertung vorhanden? */
 
 #define BEHAVIOUR_SCAN_AVAILABLE	/*!< Gegend scannen vorhanden? */
-//#define BEHAVIOUR_SOLVE_MAZE_AVAILABLE	/*!< Wandfolger vorhanden? */
+#define BEHAVIOUR_SOLVE_MAZE_AVAILABLE	/*!< Wandfolger vorhanden? */
 #define BEHAVIOUR_FOLLOW_LINE_AVAILABLE	/*!< Linienfolger vorhanden? */
-//#define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE /*!< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernis klarkommt */
+//#define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE /*!< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernissen klarkommt */
 
 #define BEHAVIOUR_SERVO_AVAILABLE 	/*!< Kontrollverhalten fuer die Servos */
 
