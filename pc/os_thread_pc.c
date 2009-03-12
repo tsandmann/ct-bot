@@ -53,12 +53,14 @@ Tcb_t * os_thread_running = NULL;	/*!< Zeiger auf den Thread, der gerade laeuft 
  * @return	Zeiger auf TCB aus os_threads[]
  */
 static Tcb_t * get_this_thread(void) {
+#ifndef WIN32
 	uint8_t i;
 	for (i=0; i<OS_MAX_THREADS-1; i++) {
 		if (os_threads[i] == pthread_self()) {
 			return &os_threads[i];
 		}
 	}
+#endif	// WIN32
 	return NULL;
 }
 
@@ -92,11 +94,7 @@ Tcb_t * os_create_thread(void * pStack, void * pIp) {
  * Auf PC ueberlassen wir diese Aufgabe dem Scheduler
  */
 void os_thread_yield(void) {
-#ifndef __APPLE__
-	pthread_yield();
-#else
 	sched_yield();
-#endif	// __APPLE__
 }
 
 /*!
