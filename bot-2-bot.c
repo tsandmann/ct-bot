@@ -54,6 +54,10 @@ static void (* bot_2_bot_callback)(void) = NULL;	/*!< Callback-Funktion, die nac
 #ifdef BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
 static uint8_t payload_test_buffer[255];	/*!< Datenpuffer fuer Bot-2-Bot-Payload-Test */
 #endif	// BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
+
+#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
+static char remotecall_buffer[REMOTE_CALL_BUFFER_SIZE];	/*!< Puffer fuer RemoteCall-Empfang von anderem Bot */
+#endif
 #endif	// BOT_2_BOT_PAYLOAD_AVAILABLE
 
 /*!
@@ -107,7 +111,12 @@ bot_2_bot_payload_mappings_t bot_2_bot_payload_mappings[] = {
 	{ bot_2_bot_payload_test_verify, payload_test_buffer, sizeof(payload_test_buffer) },
 #else
 	BOT_2_BOT_PAYLOAD_DUMMY,
-#endif
+#endif	// BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
+#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
+	{ bot_2_bot_handle_remotecall, remotecall_buffer, sizeof(remotecall_buffer) },
+#else
+	BOT_2_BOT_PAYLOAD_DUMMY,
+#endif	// BEHAVIOUR_REMOTECALL_AVAILABLE
 };
 #endif	// BOT_2_BOT_PAYLOAD_AVAILABLE
 
@@ -583,6 +592,55 @@ int8_t bot_2_bot_pl_test(Behaviour_t * caller, uint8_t to) {
 	return result;
 }
 #endif	// BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
+
+#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
+/*!
+ * Fuehrt einen RemoteCall aus, der von einem
+ * anderen Bot kam
+ */
+void bot_2_bot_handle_remotecall(void) {
+	bot_remotecall_from_command(remotecall_buffer);
+}
+
+/*!
+ * Startet einen RemoteCall auf einem anderen Bot
+ * @param bot_addr	Adresse des anderen Bots
+ * @param *function	Name der Botenfunktion des zu startenden Verhaltens
+ * @param par1		Erster Parameter des zu startenden Verhaltens
+ * @param par2		Zweiter Parameter des zu startenden Verhaltens
+ * @param par3		Dritter Parameter des zu startenden Verhaltens
+ * @return			Fehlercode (0, falls alles OK)
+ */
+int8_t bot_2_bot_start_remotecall(uint8_t bot_addr, char * function, remote_call_data_t par1,
+		remote_call_data_t par2, remote_call_data_t par3) {
+
+	/* Funktionsnamen auf Gueltigkeit / Laenge pruefen */
+	uint8_t len = strlen(function);
+	if (len == 0 || len > REMOTE_CALL_FUNCTION_NAME_LEN) {
+		return -1;
+	}
+
+	LOG_DEBUG("Starte RemoteCall auf Bot mit Adresse 0x%02x (%u)", bot_addr, bot_addr);
+
+	/* alle Parameter in den Puffer kopieren */
+	remote_call_data_t * pPar = (void *)&remotecall_buffer[len + 1];
+	*pPar = par1;
+	LOG_DEBUG("Parameter 1: 0x%x", pPar->u32);
+	pPar++;
+	*pPar = par2;
+	LOG_DEBUG("Parameter 2: 0x%x", pPar->u32);
+	pPar++;
+	*pPar = par3;
+	LOG_DEBUG("Parameter 3: 0x%x", pPar->u32);
+
+	/* Funktionsnamen in den Puffer kopieren */
+	strcpy(remotecall_buffer, function);
+	LOG_DEBUG("Funktionsname: \"%s\"", remotecall_buffer);
+
+	/* Payloaduebertragung starten */
+	return bot_2_bot_send_payload_request(bot_addr, BOT_2_BOT_REMOTECALL, remotecall_buffer, REMOTE_CALL_BUFFER_SIZE);
+}
+#endif	// BEHAVIOUR_REMOTECALL_AVAILABLE
 #endif	// BOT_2_BOT_PAYLOAD_AVAILABLE
 
 #ifdef LOG_AVAILABLE

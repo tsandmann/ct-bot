@@ -41,6 +41,7 @@
 #include "mmc-vm.h"
 #include "pos_store.h"
 #include "timer.h"
+#include "bot-2-bot.h"
 #include <stdlib.h>
 
 #ifdef RC5_AVAILABLE
@@ -142,6 +143,21 @@ static void rc5_number(uint8_t key) {
 
 		#ifdef BEHAVIOUR_TURN_AVAILABLE
 			case 2: bot_turn(NULL, 90); break;
+
+			/* Testcode fuer Bot-2-Bot-RemoteCall */
+//			case 2: {
+//				bot_list_entry_t * ptr = get_next_bot(NULL); // ersten Bot aus der Liste der bekannten Bots ansprechen
+//				if (ptr != NULL) {
+//					remote_call_data_t par1;
+//					par1.s16 = 400; // Parameter 1 des Verhaltens
+//					remote_call_data_t par2;
+//					par2.s16 = -100; // Parameter 2 des Verhaltens
+//					remote_call_data_t par3;
+//					par3.u16 = 90; // Parameter 3 des Verhaltens
+//					bot_2_bot_start_remotecall(ptr->address, "bot_goto_pos", par1, par2, par3); // bot_goto_pos(400, -100, 90)
+//				}
+//				break;
+//			}
 			case 7: bot_turn(NULL, 180); break;
 			case 9: bot_turn(NULL, -180); break;
 		#endif	// BEHAVIOUR_TURN_AVAILABLE

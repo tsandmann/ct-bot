@@ -34,7 +34,7 @@
 #include <stdlib.h>
 
 //#define DELETE_BOTS		/*!< wollen wir Bots aus der Liste loeschen koennen? */
-#define BOT_2_BOT_PAYLOAD_TEST_AVAILABLE	/*!< Aktiviert Test-Code fuer Bot-2-Bot Kommunikation mit Payload */
+//#define BOT_2_BOT_PAYLOAD_TEST_AVAILABLE	/*!< Aktiviert Test-Code fuer Bot-2-Bot Kommunikation mit Payload */
 
 //TODO:	Vielleicht noch weitere Infos pro Bot speichern?
 /*! Datentyp fuer Bot-Liste */
@@ -56,6 +56,7 @@ typedef struct _bot_list_entry_t {
 
 #ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
 #define BOT_2_BOT_PAYLOAD_TEST	get_type_of_payload_function(bot_2_bot_payload_test_verify)
+#define BOT_2_BOT_REMOTECALL	get_type_of_payload_function(bot_2_bot_handle_remotecall)
 
 #define BOT_2_BOT_PAYLOAD_WINDOW_SIZE	32
 
@@ -190,6 +191,26 @@ void bot_2_bot_payload_test_verify(void);
  */
 int8_t bot_2_bot_pl_test(Behaviour_t * caller, uint8_t to);
 #endif	// BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
+
+#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
+/*!
+ * Fuehrt einen RemoteCall aus, der von einem
+ * anderen Bot kam
+ */
+void bot_2_bot_handle_remotecall(void);
+
+/*!
+ * Startet einen RemoteCall auf einem anderen Bot
+ * @param bot_addr	Adresse des anderen Bots
+ * @param *function	Name der Botenfunktion des zu startenden Verhaltens
+ * @param par1		Erster Parameter des zu startenden Verhaltens
+ * @param par2		Zweiter Parameter des zu startenden Verhaltens
+ * @param par3		Dritter Parameter des zu startenden Verhaltens
+ * @return			Fehlercode (0, falls alles OK)
+ */
+int8_t bot_2_bot_start_remotecall(uint8_t bot_addr, char * function, remote_call_data_t par1,
+		remote_call_data_t par2, remote_call_data_t par3);
+#endif	// BEHAVIOUR_REMOTECALL_AVAILABLE
 #endif	// BOT_2_BOT_PAYLOAD_AVAILABLE
 
 #ifdef LOG_AVAILABLE

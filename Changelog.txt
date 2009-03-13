@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-03-13 Timo Sandmann [mail@timosandmann.de]: RemoteCalls per Bot-2-Bot-Kommunikation
+
 2009-03-11 Frank Menzel [Menzelfr@gmx.de]: kleinen Bug in line_shortest_way_beseitigt bei Zielerkennung; ein Liniensensor braucht nur auf Zielfeld zu stehen zur Erkennung
 
 2009-03-11 Timo Sandmann [mail@timosandmann.de]: Fifo-Implementierung verbessert: Automatische Blockierung bei leerer Fifo, Anwendungscode wird so einfacher und ist unabhaengig von der Zielarchitektur; Debug-Code fuer pthreads
