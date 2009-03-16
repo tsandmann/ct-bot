@@ -49,10 +49,10 @@
  * ---------------------
  * Hier stehen drei Arten der Ausgabeschnittstellen zur Verfuegung.
  * 1. Logging ueber UART:		LOG_UART_AVAILABLE muss definiert sein.
- * 								Es darf BOT_2_PC_AVAILABLE nicht definiert sein, da ansonsten
+ * 								Es darf BOT_2_SIM_AVAILABLE nicht definiert sein, da ansonsten
  * 								diese Kommunikation ueber den UART laeuft.
  * 2. Logging ueber ct-Sim:		LOG_CTSIM_AVAILABLE muss definiert sein.
- * 								BOT_2_PC_AVAILABLE muss zusaetzlich definiert sein.
+ * 								BOT_2_SIM_AVAILABLE muss zusaetzlich definiert sein.
  * 3. Logging ueber Display:	LOG_DISPLAY_AVAILABLE muss definiert sein, sowie DISPLAY_AVAILABLE.
  * 4. Logging in txt auf MMC:	MMC_AVAILABLE und MMC_VM_AVAILABLE muessen an sein.
  * </pre>
@@ -61,7 +61,7 @@
  * Das spart viel Platz in Flash und RAM.
  *
  * @author 	Andreas Merkle (mail@blue-andi.de)
- * @date 	27.02.06
+ * @date 	27.02.2006
  */
 
 #ifndef LOG_H_

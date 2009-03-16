@@ -31,9 +31,6 @@
 
 #include <avr/io.h>
 #include "uart.h"
-#include "command.h"
-#include "log.h"
-#include "bot-2-pc.h"
 #include "os_thread.h"
 
 #ifdef UART_AVAILABLE

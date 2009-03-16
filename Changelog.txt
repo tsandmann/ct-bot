@@ -1,5 +1,8 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-03-16 Timo Sandmann [mail@timosandmann.de]: ToDo-Punkte erledigt: bot-2-pc und bot-2-sim vereinheitlicht zu bot-2-sim;
+																	   Unterschiede zwischen MCU und PC in ct-Bot.c und command.c minimiert
+
 2009-03-13 Timo Sandmann [mail@timosandmann.de]: RemoteCalls per Bot-2-Bot-Kommunikation
 
 2009-03-11 Frank Menzel [Menzelfr@gmx.de]: kleinen Bug in line_shortest_way_beseitigt bei Zielerkennung; ein Liniensensor braucht nur auf Zielfeld zu stehen zur Erkennung

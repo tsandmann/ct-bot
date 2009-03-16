@@ -314,6 +314,9 @@ void os_display(void) {
 #endif
 
 #ifdef OS_DEBUG
+	/* Debug-Info zum freien Stackspeicher ausgeben */
+	os_print_stackusage();
+
 	extern unsigned char * __brkval;
 
 	/* Idle-Thread suchen */

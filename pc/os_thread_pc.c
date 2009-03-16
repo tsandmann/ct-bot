@@ -47,6 +47,7 @@
 
 Tcb_t os_threads[OS_MAX_THREADS];	/*!< Array aller Threads */
 Tcb_t * os_thread_running = NULL;	/*!< Zeiger auf den Thread, der gerade laeuft */
+pthread_mutex_t os_enterCS_mutex = PTHREAD_MUTEX_INITIALIZER;	/*!< Mutex fuer os_enterCS() / os_exitCS() auf PC */
 
 /*!
  * Gibt einen Zeiger auf den TCB des aktuellen Threads zurueck
@@ -110,17 +111,6 @@ void os_thread_sleep(uint32_t ms) {
 		LOG_DEBUG("Thread 0x%08x soll %u ms schlafen, os_thread_sleep() ist aber nicht implementiert", thread, ms);
 	}
 }
-
-///*!
-// * Weckt einen wartenden Thread auf, falls dieser eine hoehere Prioritaet hat
-// * @param *thread	Zeiger auf TCB des zu weckenden Threads
-// */
-//void os_thread_wakeup(Tcb_t * thread) {
-//	// NOP
-//	if (DEBUG_THREAD_N == -1 || thread == &os_threads[DEBUG_THREAD_N]) {
-//		LOG_DEBUG("Soll 0x%08x aufwecken, os_thread_wakeup() ist aber nicht implementiert", thread);
-//	}
-//}
 
 /*!
  * Blockiert den aktuellen Thread, bis ein Signal freigegeben wird

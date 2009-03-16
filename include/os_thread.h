@@ -176,18 +176,19 @@ static inline void os_signal_unlock(os_signal_t * signal) {
 typedef pthread_t Tcb_t;
 
 extern Tcb_t os_threads[OS_MAX_THREADS];	/*!< Thread-Pool (ist gleichzeitig running- und waiting-queue) */
+extern pthread_mutex_t os_enterCS_mutex;	/*!< Mutex fuer os_enterCS() / os_exitCS() auf PC */
 
 /*!
- * Schuetzt den folgenden Block (bis exitCS()) vor Threadswitches.
+ * Schuetzt den folgenden Block (bis exitCS()) vor konkurrierenden Zugriffen
+ * verschiedener Threads.
  * Ermoeglicht einfaches Locking zum exklusiven Ressourcen-Zugriff.
  */
-#define os_enterCS()
+#define os_enterCS()	pthread_mutex_lock(&os_enterCS_mutex);
 
 /*!
  * Beendet den kritischen Abschnitt wieder, der mit enterCS began.
- * Falls ein Scheduler-Aufruf ansteht, wird er nun ausgefuehrt.
  */
-#define os_exitCS()
+#define os_exitCS()		pthread_mutex_unlock(&os_enterCS_mutex);
 
 /*!
  * Blockiert den aktuellten Thread fuer die angegebene Zeit und schaltet
@@ -231,12 +232,6 @@ Tcb_t * os_create_thread(void * pStack, void * pIp);
  * indem diesem der Rest der Zeitscheibe geschenkt wird.
  */
 void os_thread_yield(void);
-
-///*!
-// * Weckt einen wartenden Thread auf, falls dieser eine hoehere Prioritaet hat
-// * @param *thread	Zeiger auf TCB des zu weckenden Threads
-// */
-//void os_thread_wakeup(Tcb_t * thread);
 
 /*!
  * Blockiert den aktuellen Thread, bis ein Signal freigegeben wird

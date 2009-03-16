@@ -1,4 +1,4 @@
-file /home/cttest/.eclipse/ct-Bot/Debug-MCU-Linux/ct-Bot.elf
+file Debug-MCU-Linux/ct-Bot.elf
 target remote localhost:1212
 load
 break main

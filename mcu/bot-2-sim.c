@@ -18,17 +18,17 @@
  */
 
 /*!
- * @file 	bot-2-pc.c
- * @brief 	Verbindung zwischen c't-Bot und PC
+ * @file 	bot-2-sim.c
+ * @brief 	Verbindung zwischen c't-Bot und c't-Sim
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	28.2.06
+ * @date 	28.02.2006
  */
 
 #include "ct-Bot.h"
 #include "command.h"
+#include "bot-2-sim.h"
 #include "bot-2-bot.h"
 #include "uart.h"
-#include "bot-2-pc.h"
 #include "sensor.h"
 #include "motor.h"
 #include "led.h"
@@ -39,16 +39,16 @@
 #include <string.h>
 
 #ifdef MCU
-#ifdef BOT_2_PC_AVAILABLE
+#ifdef BOT_2_SIM_AVAILABLE
 
 /*!
  * Diese Funktion nimmt die Daten vom PC entgegen
  * und wertet sie aus. Dazu nutzt sie die Funktion command_evaluate()
  */
-void bot_2_pc_listen(void) {
-//	LOG_DEBUG("%d bytes recvd",uart_data_available());
+void bot_2_sim_listen(void) {
+//	LOG_DEBUG("%u bytes recvd", uart_data_available());
 	if (uart_data_available() >= sizeof(command_t)) {
-//		LOG_DEBUG("%d bytes recvd",uart_data_available());
+//		LOG_DEBUG("%u bytes recvd", uart_data_available());
 		if (command_read() == 0) {
 //			LOG_DEBUG("command received");
 			command_evaluate();
@@ -61,7 +61,7 @@ void bot_2_pc_listen(void) {
 /*!
  * Diese Funktion informiert den PC ueber alle Sensor und Aktuator-Werte
  */
-void bot_2_pc_inform(void) {
+void bot_2_sim_inform(void) {
 	command_write(CMD_AKT_MOT, SUB_CMD_NORM, speed_l, speed_r, 0);
 	command_write(CMD_SENS_IR, SUB_CMD_NORM, sensDistL, sensDistR, 0);
 	command_write(CMD_SENS_ENC, SUB_CMD_NORM, sensEncL, sensEncR, 0);
@@ -86,12 +86,10 @@ void bot_2_pc_inform(void) {
 /*!
  * Meldet den Bot am c't-Sim an
  */
-void bot_2_pc_init(void) {
-	uart_init();
-
+void bot_2_sim_init(void) {
 	command_init();
 }
 
-#endif	// BOT_2_PC_AVAILABLE
+#endif	// BOT_2_SIM_AVAILABLE
 #endif	// MCU
 

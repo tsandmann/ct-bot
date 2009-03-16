@@ -22,7 +22,7 @@
  * @brief 	Konstanten, die den Bot an reale Umgebungen anpassen
  * @author 	Benjamin Benz (bbe@heise.de)
  * @author  Christoph Grimmer (c.grimmer@futurio.de)
- * @date 	28.02.06
+ * @date 	28.02.2006
  */
 
 #ifndef BOTLOCAL_H_

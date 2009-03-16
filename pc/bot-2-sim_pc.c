@@ -18,10 +18,10 @@
  */
 
 /*!
- * @file 	bot-2-sim.c
+ * @file 	bot-2-sim_pc.c
  * @brief 	Verbindung c't-Bot zu c't-Sim
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+ * @date 	26.12.2005
  */
 
 #include "ct-Bot.h"
@@ -106,6 +106,12 @@ int8_t receive_until_Frame(uint8_t frame) {
 	}
 }
 
+/*!
+ * Empfaengt alle Kommondos vom Sim
+ */
+void bot_2_sim_listen(void) {
+	receive_until_Frame(CMD_DONE);
+}
 
 /*!
  * Ein wenig Initialisierung kann nicht schaden

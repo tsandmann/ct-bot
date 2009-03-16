@@ -21,7 +21,7 @@
  * @file 	command.c
  * @brief 	Kommando-Management
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	20.12.05
+ * @date 	20.12.2005
  */
 #include "command.h"
 #include "tcp.h"
@@ -37,7 +37,7 @@
 #include "ir-rc5.h"
 #include "rc5-codes.h"
 #include "bot-logic/bot-logik.h"
-#include "bot-2-pc.h"
+#include "bot-2-sim.h"
 #include "delay.h"
 #include "bot-2-bot.h"
 #include "os_thread.h"
@@ -58,10 +58,6 @@ static command_t cmd_to_send = {
 	0, 0, 0, 0, 0, 0,
 	CMD_STOPCODE
 };
-
-#ifdef PC
-static pthread_mutex_t send_lock = PTHREAD_MUTEX_INITIALIZER; /*!< Zur Synchronisation von Pufferzugriffen */
-#endif
 
 //#define DEBUG_COMMAND		//Schalter, um auf einmal alle Debugs an oder aus zu machen
 //#define DEBUG_COMMAND_NOISY	// nun wird es voll im Log, da jedes Command geschrioeben wird
@@ -262,18 +258,9 @@ static void command_write_to_internal(uint8_t command, uint8_t subcommand,
  */
 void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to,
 		int16_t data_l, int16_t data_r, uint8_t payload) {
-	//TODO:	Allgemeine Loesung fuer PC und MCU
-#ifdef PC
-	pthread_mutex_lock(&send_lock);
-#else
 	os_enterCS();
-#endif
 	command_write_to_internal(command, subcommand, to, data_l, data_r, payload);
-#ifdef PC
-	pthread_mutex_unlock(&send_lock);
-#else
 	os_exitCS();
-#endif
 }
 
 /*!
@@ -286,22 +273,15 @@ void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to,
  */
 void command_write(uint8_t command, uint8_t subcommand, int16_t data_l,
 		int16_t data_r, uint8_t payload) {
-	//TODO:	Allgemeine Loesung fuer PC und MCU
-#ifdef PC
-	pthread_mutex_lock(&send_lock);
-#else
 	os_enterCS();
-#endif
 	command_write_to_internal(command, subcommand, CMD_SIM_ADDR, data_l,
 			data_r, payload);
 #ifdef PC
 	if (command == CMD_DONE) {
 		flushSendBuffer(); // Flushen hier, bevor das Mutex freigegeben wird!
 	}
-	pthread_mutex_unlock(&send_lock);
-#else
+#endif	// PC
 	os_exitCS();
-#endif
 }
 
 /*!
@@ -316,19 +296,10 @@ void command_write(uint8_t command, uint8_t subcommand, int16_t data_l,
  */
 void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to,
 		int16_t data_l, int16_t data_r, uint8_t payload, void * data) {
-	//TODO:	Allgemeine Loesung fuer PC und MCU
-#ifdef PC
-	pthread_mutex_lock(&send_lock);
-#else
 	os_enterCS();
-#endif
 	command_write_to_internal(command, subcommand, to, data_l, data_r, payload);
 	low_write_data(data, payload);
-#ifdef PC
-	pthread_mutex_unlock(&send_lock);
-#else
 	os_exitCS();
-#endif
 }
 
 /*!
@@ -370,20 +341,11 @@ void command_write_data(uint8_t command, uint8_t subcommand, int16_t data_l,
 		payload = 0;
 	}
 
-	//TODO:	Allgemeine Loesung fuer PC und MCU
-#ifdef PC
-	pthread_mutex_lock(&send_lock);
-#else
 	os_enterCS();
-#endif
 	command_write_to_internal(command, subcommand, CMD_SIM_ADDR, data_l,
 			data_r, payload);
 	low_write_data((uint8_t *) data, payload);
-#ifdef PC
-	pthread_mutex_unlock(&send_lock);
-#else
 	os_exitCS();
-#endif
 }
 
 /*!
@@ -519,8 +481,6 @@ int8_t command_evaluate(void) {
 #endif	// MOUSE_AVAILABLE
 		case CMD_SENS_ERROR:
 			sensError = (uint8_t) received_command.data_l;
-			sensor_update(); /* Error ist der letzte uebertragene Sensorwert, danach koennen wir uns um allgemeine updates kuemmern*/
-			led_update();
 			break;
 		case CMD_DONE:
 			simultime = received_command.data_l;

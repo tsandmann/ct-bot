@@ -21,7 +21,7 @@
  * @file 	ct-Bot.c
  * @brief 	Bot-Hauptprogramm
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+ * @date 	26.12.2005
  */
 
 #include "ct-Bot.h"
@@ -29,21 +29,14 @@
 #ifdef MCU
 #include <avr/io.h>
 #include <avr/wdt.h>
-#include "bot-2-pc.h"
-#include "i2c.h"
-#include "twi.h"
-#include "sp03.h"
-#endif
-
-#ifdef PC
-#include "bot-2-sim.h"
+#else	// PC
 #include "tcp.h"
 #include <stdio.h>
 #include <time.h>
 #include <sys/time.h>
-#endif
+#endif	// MCU
 
-#include "global.h"
+#include "bot-2-sim.h"
 #include "display.h"
 #include "led.h"
 #include "ena.h"
@@ -54,12 +47,10 @@
 #include "timer.h"
 #include "sensor.h"
 #include "log.h"
-
 #include "motor.h"
 #include "sensor-low.h"
 #include "bot-logic/bot-logik.h"
 #include "mouse.h"
-
 #include "command.h"
 #include "ir-rc5.h"
 #include "rc5.h"
@@ -73,6 +64,11 @@
 #include "map.h"
 #include "cmd_tools.h"
 #include "eeprom.h"
+#include "i2c.h"
+#include "twi.h"
+#include "sp03.h"
+
+//#define DEBUG_TIMES	/*!< Gibt Debug-Infos zum Timing aus (PC) */
 
 /*!
  * Der Mikrocontroller und der PC-Simulator brauchen ein paar Einstellungen,
@@ -128,11 +124,12 @@ static void init(void) {
 	ctbot_eeprom_write_byte(&resetsEEPROM, resets);
 #endif	// RESET_INFO_DISPLAY_AVAILABLE
 #endif	// MCU
+
 #ifdef UART_AVAILABLE
 	uart_init();
 #endif
-#ifdef BOT_2_PC_AVAILABLE
-	bot_2_pc_init();
+#ifdef BOT_2_SIM_AVAILABLE
+	bot_2_sim_init();
 #endif
 #ifdef DISPLAY_AVAILABLE
 	display_init();
@@ -178,19 +175,19 @@ static void init(void) {
 }
 
 #ifdef MCU
-/*!
- * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
- */
-int main(void) {
+int main(int argc, char * argv[]) __attribute__((OS_main)); // kein Caller, Interrupts disabled
 #endif	// MCU
 
-#ifdef PC
 /*!
  * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
  */
 int main(int argc, char * argv[]) {
+	static uint16_t comm_ticks = 0;
+	static uint8_t uart_gui = 0;
+
+#ifdef PC
 #ifdef DEBUG_TIMES
-	/* zum Debuggen der Zeiten: */
+	/* zum Debuggen der Zeiten */
 	struct timeval start, stop;
 #endif	// DEBUG_TIMES
 
@@ -203,9 +200,6 @@ int main(int argc, char * argv[]) {
 	hand_cmd_args(argc, argv);
 
 	printf("c't-Bot\n");
-
-	/* Bot-2-Sim-Kommunikation initialisieren */
-	bot_2_sim_init();
 #endif	// PC
 
 	/* Alles initialisieren */
@@ -228,22 +222,21 @@ int main(int argc, char * argv[]) {
 #endif
 
 	/* Hauptschleife des Bots */
-	for(;;) {
-//TODO:	Code fuer MCU und PC vereinheitlichen: Z.B. bot_sens() ruft im PC-Fall receive_until_Frame() auf usw.
-#ifdef PC
-		receive_until_Frame(CMD_DONE);
-#ifdef DEBUG_TIMES
-		/* Zum Debuggen der Zeiten: */
+	for (;;) {
+#ifdef BOT_2_SIM_AVAILABLE
+		/* Daten vom Sim empfangen */
+		bot_2_sim_listen();
+#endif	// BOT_2_SIM_AVAILABLE
+
+		/* Sensordaten aktualisieren / auswerten */
+		bot_sens();
+
+#if defined PC && defined DEBUG_TIMES
+		/* Zum Debuggen der Zeiten */
 		GETTIMEOFDAY(&start, NULL);
 		int t1 = (start.tv_sec - stop.tv_sec) * 1000000 + start.tv_usec - stop.tv_usec;
 		printf("Done-Token (%d) in nach %d usec ", received_command.data_l, t1);
 #endif	// DEBUG_TIMES
-#endif	// PC
-
-#ifdef MCU
-		/* Sensordaten aktualisieren / auswerten */
-		bot_sens();
-#endif	// MCU
 
 #ifdef TEST_AVAILABLE_MOTOR
 		/* Testprogramm, das den Bot erst links-, dann rechtsrum dreht */
@@ -265,56 +258,39 @@ int main(int argc, char * argv[]) {
 #endif	// BEHAVIOUR_AVAILABLE
 		}
 
-#ifdef MCU
 		/* jeweils alle 100 ms kommunizieren Bot, User und Sim */
-		static uint16_t comm_ticks = 0;
-		static uint8_t uart_gui = 0;
 		if (timer_ms_passed_16(&comm_ticks, 50) || RC5_Code != 0) {
-			if (uart_gui == 0) {
+			if (uart_gui == 0 || RC5_Code != 0) {
 #ifdef DISPLAY_AVAILABLE
 				/* GUI-Behandlung starten */
 				gui_display(display_screen);
 #endif	// DISPLAY_AVAILABLE
-				uart_gui = 1; // bot-2-pc ist erst beim naechsten Mal dran
+				uart_gui = 1; // bot-2-sim ist erst beim naechsten Mal dran
 			} else {
-#ifdef BOT_2_PC_AVAILABLE
-				/* Den PC ueber Sensorern und Aktuatoren informieren */
-				bot_2_pc_inform();
-#endif	// BOT_2_PC_AVAILABLE
+#ifdef BOT_2_SIM_AVAILABLE
+				/* Den Sim ueber Sensoren und Aktuatoren informieren */
+				bot_2_sim_inform(); // NOP auf PC
+#endif	// BOT_2_SIM_AVAILABLE
 				uart_gui = 0; // naechstes Mal wieder mit GUI anfangen
 			}
 		}
 
-#ifdef BOT_2_PC_AVAILABLE
-		/* Kommandos vom PC empfangen */
-		bot_2_pc_listen();
-#endif	// BOT_2_PC_AVAILABLE
-#endif	// MCU
-
 #ifdef PC
-#ifdef DISPLAY_AVAILABLE
-		gui_display(display_screen);
-#endif
-		command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0);
-		//flushSendBuffer(); // macht im Moment command_write(CMD_DONE, ...) bevor das Mutex freigegeben wird!
+		/* Sim ueber naechsten Schleifendurchlauf / Bot-Zyklus informieren */
+		command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0); // flusht auch den Sendepuffer
 
-		/* Ausgabemoeglichkeit der Positionsdaten (z.B. zur Analyse der Genauigkeit): */
-//		LOG_INFO("%f\t%f\t%f\t%f\t%f\t%f", x_enc, x_mou, y_enc, y_mou, heading_enc, heading_mou);
-
-		/* Zum Debuggen der Zeiten: */
 #ifdef DEBUG_TIMES
+		/* Zum Debuggen der Zeiten */
 		GETTIMEOFDAY(&stop, NULL);
 		int t2 = (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec;
 		printf("Done-Token (%d) out after %d usec\n", simultime, t2);
 #endif	// DEBUG_TIMES
 #endif	// PC
 
-#ifdef OS_AVAILABLE
-#ifdef OS_DEBUG
-		/* Debug-Info zum freien Stackspeicher ausgeben */
-		os_print_stackusage();
-#endif	// OS_DEBUG
+		/* Ausgabemoeglichkeit der Positionsdaten (z.B. zur Analyse der Genauigkeit): */
+//		LOG_INFO("%f\t%f\t%f\t%f\t%f\t%f", x_enc, x_mou, y_enc, y_mou, heading_enc, heading_mou);
 
+#ifdef OS_AVAILABLE
 		/* Rest der Zeitscheibe (OS_TIME_SLICE ms) schlafen legen */
 		os_thread_yield();
 #endif	// OS_AVAILABLE
