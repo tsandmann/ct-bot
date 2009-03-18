@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-03-18 Timo Sandmann [mail@timosandmann.de]: Delay-Code an aktuellen Timer-Code angepasst
+
 2009-03-16 Timo Sandmann [mail@timosandmann.de]: ToDo-Punkte erledigt: bot-2-pc und bot-2-sim vereinheitlicht zu bot-2-sim;
 																	   Unterschiede zwischen MCU und PC in ct-Bot.c und command.c minimiert
 

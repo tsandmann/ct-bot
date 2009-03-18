@@ -21,7 +21,7 @@
  * @file 	delay.h
  * @brief 	Hilfsroutinen
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	20.12.05
+ * @date 	20.12.2005
  */
 #ifndef delay_H_
 #define delay_H_
