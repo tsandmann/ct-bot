@@ -52,6 +52,9 @@
 #include "pos_store.h"
 
 //#define DEBUG_PATHPLANING	// Schalter fuer Debugausgaben
+#ifdef MCU
+#undef DEBUG_PATHPLANING
+#endif
 #ifndef LOG_AVAILABLE
 #undef DEBUG_PATHPLANING
 #endif
@@ -60,8 +63,7 @@
 #define LOG_DEBUG(a, ...) {}
 #endif
 
-// Einzeichenn des geplanten Weges in die Highres-Map als helle Punkte
-//#define SHOW_PATH_IN_MAP
+// Rotes Einzeichenn des geplanten Weges in die Highres-Map ueber MAP_2_SIM_AVAILABLE
 
 /****** fuer geringaufloesende Map zur Pfadplanung  --ACHTUNG ONLINE_SHRINK einschalten -- *****************/
 
@@ -123,6 +125,8 @@ static uint8_t wavecounter = 0;
 
 static uint8_t wave_state = 0; /*!< Statusvariable */
 
+static int8_t map_compare_haz = 0; /*!< Vergleichswert unterhalb dem Hindernioswert gesetzt wird */
+
 /*!
  * Konvertiert eine Lowres-Kartenkoordinate in eine Weltkoordinate
  * @param map_koord	Kartenkoordinate
@@ -130,7 +134,7 @@ static uint8_t wave_state = 0; /*!< Statusvariable */
  */
 static int16_t map_to_world_lowres(uint16_t map_koord) {
 #if (1000 / MAP_RESOLUTION_LOWRES) * MAP_RESOLUTION_LOWRES != 1000
-#warning "MAP_RESOLUTION_LOWRES ist kein Teiler von 1000!"
+#error "MAP_RESOLUTION_LOWRES ist kein Teiler von 1000!"
 #endif
 	int16_t tmp = ((map_koord - (MAP_SIZE_LOWRES*MAP_RESOLUTION_LOWRES / 2.0))
 			* 1000) / MAP_RESOLUTION_LOWRES; // in dieser Reihenfolge wegen Integerdivision
@@ -144,7 +148,7 @@ static int16_t map_to_world_lowres(uint16_t map_koord) {
  */
 static uint16_t world_to_map_lowres(int16_t koord) {
 #if (1000 / MAP_RESOLUTION_LOWRES) * MAP_RESOLUTION_LOWRES != 1000
-#warning "MAP_RESOLUTION_LOWRES ist kein Teiler von 1000"
+#error "MAP_RESOLUTION_LOWRES ist kein Teiler von 1000"
 #endif
 	return ((koord * MAP_RESOLUTION_LOWRES) / 1000) + (MAP_SIZE_LOWRES
 			* MAP_RESOLUTION_LOWRES / 2);
@@ -169,9 +173,7 @@ static int8_t access_field_lowres(position_t field, int8_t value, uint8_t set) {
 
 	if ((section_x >= MAP_SECTIONS_LOWRES)
 			|| (section_y >= MAP_SECTIONS_LOWRES)) {
-#ifdef PC
-		printf("Versuch ein Feld ausserhalb der Karte zu lesen!! x=%d y=%d\n", field.x, field.y);
-#endif
+		LOG_ERROR("Versuch ein Feld ausserhalb der Karte zu lesen!! x=%d y=%d\n", field.x, field.y);
 		return 0;
 	}
 
@@ -211,10 +213,10 @@ static inline void delete_lowres(void) {
 	uint8_t i, j;
 	LOG_DEBUG("Delete von 0-%1d", MAP_SECTION_POINTS_LOWRES);
 	for (j = 0; j < MAP_SECTIONS_LOWRES*MAP_SECTION_POINTS_LOWRES; j++) {
-		LOG_DEBUG("Zeile %1d", j);
+		//LOG_DEBUG("Zeile %1d", j);
 		for (i = 0; i < MAP_SECTIONS_LOWRES*MAP_SECTION_POINTS_LOWRES; i++) {
 			access_field_lowres((position_t) {i, j}, 0, 1);
-					//LOG_DEBUG("Spalte %1d",i);
+			//LOG_DEBUG("Spalte %1d",i);
 		}
 	}
 }
@@ -247,9 +249,9 @@ static void set_hazards(void) {
 //TODO: Ganze Zelle sollte als Hindernis eingetragen werden, sobald auch nur ein Feld der Map als belegt markiert ist!
 
 			mapavg = map_get_average(map_to_world_lowres(x), ym, average_val); // probiert: 80 zu viele Hind 60 40 gut, 30 gut, 20 gut weniger auch weniger Hindernisse
-			if (mapavg < 0) { // hier koennte man bei Weg nicht findbar auch Schwellenwert schrittweise veraendern
+			if (mapavg < map_compare_haz)  // Vergleichswert; damit kann auch auf nur befahrenen Wegen geplant werden bei Wert 30
 				access_field_lowres((position_t) {x, y}, 1, 1);
-			}
+
 		}
 	}
 
@@ -299,6 +301,64 @@ static uint8_t get_neighbour(position_t map, int8_t actual_wave,
 	return end_reached;
 } // Ende get_neighbour
 
+#ifdef DEBUG_PATHPLANING
+/*!
+ * Zeigt einen Ausschnitt der Planungs-Map auf Konsole an; gut zum Pruefen wo Hindernisse gesehen werden und die Welle verlaeuft
+ */
+static void show_labmap(void) {
+	int16_t x, y;
+	int16_t xw;
+	int16_t yw;
+
+	LOG_DEBUG("Wellenstart vom Zielpunkt %1d %1d", startwave.x, startwave.y);
+	access_field_lowres(startwave, 2, 1); // vermerken des Wellen-Startpunktes
+	LOG_DEBUG("Botpunkt %1d %1d", endkoord.x, endkoord.y);
+	access_field_lowres(endkoord, 88, 1); // Botpos vermerken
+
+	/* Grenzen finden */
+	int16_t start_y, end_y;
+	if (startwave.y > endkoord.y) {
+		start_y = endkoord.y;
+		end_y = startwave.y;
+	} else {
+		start_y = startwave.y;
+		end_y = endkoord.y;
+	}
+	int16_t start_x, end_x;
+	if (startwave.x > endkoord.x) {
+		start_x = endkoord.x;
+		end_x = startwave.x;
+	} else {
+		start_x = startwave.x;
+		end_x = endkoord.x;
+	}
+	start_x -= 5;
+	end_x += 5;
+	start_y -= 5;
+	end_y += 5;
+
+	printf("y:    ");
+	for (y=end_y; y>=start_y; y--) {
+		printf("%2d|", y);
+	}
+	printf("\n");
+
+	int8_t tmp = 0;
+	for (x=end_x; x>=start_x; x--) {
+		printf("x: %2d:", x);
+
+		for (y=end_y; y>=start_y; y--) {
+			xw = map_to_world_lowres(x);
+			yw = map_to_world_lowres(y);
+			tmp = access_field_lowres((position_t) {x, y}, tmp, 0);
+
+			printf("%2d|", tmp);
+		}
+		printf("\n");
+	}
+}
+#endif	// DEBUG_PATHPLANING
+
 /*!
  * Wave-Verhalten; berechnet die Welle ausgehend vom Zielpunkt bis zur Botposition; dann wird diese zurueckverfolgt und sich der Pfad
  * auf dem Stack gemerkt und anschliessend das Stack-Fahrverhalten aufgerufen
@@ -317,7 +377,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 	static uint8_t neighbour_found = 0;
 
 	// Endekennung
-	static uint8_t endreached = False; //Kennung gesetzt fuer Ziel gefunden; Terminierung der Schleife
+	static uint8_t endreached = False; // Kennung gesetzt fuer Ziel gefunden; Terminierung der Schleife
 
 
 	switch (wave_state) {
@@ -370,6 +430,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 				for (j=-1; j<=1; j++) {
 					for (i=-1; i<=1; i++) {
 						if ((j == 0 && i != 0) || (i == 0 && j != 0)) {
+//						if (!(i == 0 && j == 0)) { // Diagonalversion
 							position_t tmp = pos;
 							tmp.x += i;
 							tmp.y += j;
@@ -412,37 +473,47 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 		endreached = False; // Schleifenabbruchvar init.
 		wavecounter = 0; // Wellenzaehler init.
 
+#ifdef MAP_2_SIM_AVAILABLE
+        position_t lastpos ;
+        position_t aktpos ;
+        lastpos.x = 0; // initialisieren
+        lastpos.y = 0;
+#endif	// MAP_2_SIM_AVAILABLE
+
 		// Map durchlaufen und den Nachbarn mit immer niedrigerem Mapwert verfolgen bis Wellenstartpunkt erreicht wurde
 		while (!endreached) {
 			neighbour_found = False;
 
 			// fuer jeden Nachbarn von Botposition bis Wellenstartpunkt den immer kleineren Wellenwert verfolgen
-			for (j=-1; (j<=1) && !endreached; j++)
-			for (i=-1; (i<=1) && !endreached; i++)
+			for (j=-1; (j<=1) && !endreached; j++) {
+				for (i=-1; (i<=1) && !endreached; i++) {
 
-			// Vergleich nur fuer die richtigen 4 Nachbarn und wenn Wellenstartpunkt noch nicht erreicht
-			if (((j == 0 && i != 0) || (i == 0 && j != 0)) && !(pos.x + i == endkoord.x && pos.y + j == endkoord.y)) {
-				// nur gueltige Koords gecheckt
-				position_t tmp = pos;
-				tmp.x += i;
-				tmp.y += j;
-				minval = access_field_lowres(tmp, 0, 0); // Mapwert auslesen
+					// Vergleich nur fuer die richtigen 8 Nachbarn und wenn Wellenstartpunkt noch nicht erreicht
+//					if (((j == 0 && i != 0) || (i == 0 && j != 0)) && !(pos.x + i == endkoord.x && pos.y + j == endkoord.y)) { // nur orthogonal
+					if ((!(i == 0 && j == 0)) && !(pos.x + i == endkoord.x && pos.y + j == endkoord.y)) { // Diagonalversion
+						// nur gueltige Koords gecheckt
 
-				// die Koordinate mit niedrigstem Wellenwert merken
-				if (minval> 1 && minval < mapval_min) { // naechster genommener Wellenwert muss kleiner aus letztem Lauf sein
-					nextdest.x = pos.x + i;
-					nextdest.y = pos.y + j;
+						position_t tmp = pos;
+						tmp.x += i;
+						tmp.y += j;
+						minval = access_field_lowres(tmp, 0, 0); // Mapwert auslesen
+						// die Koordinate mit niedrigstem Wellenwert merken
+						if (minval> 1 && minval < mapval_min) { // naechster genommener Wellenwert muss kleiner aus letztem Lauf sein
+							nextdest.x = pos.x + i;
+							nextdest.y = pos.y + j;
 
-					LOG_DEBUG("kleinster Wellenwert %1d Koord %1d %1d", minval, nextdest.x, nextdest.y);
+							LOG_DEBUG("kleinster Wellenwert %1d Koord %1d %1d", minval, nextdest.x, nextdest.y);
 
-					// Wellenwert und Kennung fuer Nachbar gefunden setzen
-					mapval_min = minval;
-					neighbour_found = True;
+							// Wellenwert und Kennung fuer Nachbar gefunden setzen
+							mapval_min = minval;
+							neighbour_found = True;
 
-					// wenn ein Nachbar Zielpunkt ist Endekennung setzen
-					if (nextdest.x == startwave.x && nextdest.y == startwave.y) {
-						endreached = True;
-						LOG_DEBUG("Ende gefunden %1d %1d", nextdest.x, nextdest.y);
+							// wenn ein Nachbar Zielpunkt ist Endekennung setzen
+							if (nextdest.x == startwave.x && nextdest.y == startwave.y) {
+								endreached = True;
+								LOG_DEBUG("Ende gefunden %1d %1d", nextdest.x, nextdest.y);
+							}
+						}
 					}
 				}
 			}
@@ -460,9 +531,14 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 
 				// Der zu fahrende Pfad kann in der Highres-Map als helle Punkte eingezeichnet werden; dazu nach Pfadplanung und zu Beginn des Fahrverhaltens
 				// abbrechen und der zu fahrende Weg ist nun in der Highres-map eingezeichnet; die Routine access_field() muss dazu aber auch in der map.h deklariert werden
-#ifdef   SHOW_PATH_IN_MAP
-				access_field(world_to_map(map_to_world_lowres(nextdest.x)), world_to_map(map_to_world_lowres(nextdest.y)), 127, 1);
-#endif
+#ifdef MAP_2_SIM_AVAILABLE
+				aktpos.x = world_to_map(map_to_world_lowres(nextdest.x));
+				aktpos.y = world_to_map(map_to_world_lowres(nextdest.y));
+				if (lastpos.x != 0 && lastpos.y != 0) {
+					map_draw_line(lastpos, aktpos, 1); // Pfadpunkte Rot darstellen
+				}
+				lastpos = aktpos;
+#endif	// MAP_2_SIM_AVAILABLE
 			}
 			wavecounter++; // Wellencounter erhoehen; dient hier nur fuer Abbruchbedingung nach erreichen eines bestimmten Zaehlerstandes
 
@@ -496,6 +572,9 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 
 	case START_BOT_GO_STACK_BEHAVIOUR:
 		LOG_DEBUG("--Pfad gefunden und Abfahren -STACKGO-- avg %1d", average_val);
+#ifdef DEBUG_PATHPLANING
+		show_labmap();
+#endif
 		bot_drive_stack_x(data, pos_store_get_index(planning_pos_store), 1);
 		wave_state = 99;
 		break;
@@ -525,11 +604,13 @@ static void bot_set_destination(int16_t x, int16_t y) {
 /*!
  * Rufe das Wave-Verhalten auf
  * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * @param map_compare Map-Vergleichswert; Mapwerte kleiner dem Wert werden als Hindernisse eingetragen
  */
-void bot_do_calc_wave(Behaviour_t * caller) {
+void bot_do_calc_wave(Behaviour_t * caller, int8_t map_compare) {
 	switch_to_behaviour(caller, bot_calc_wave_behaviour, OVERRIDE);
 	wave_state = 0;
-	average_val = 40; // beginnend mit Radius 40 mm zum Eintragen der Hindernisse aus der Highres- in die Planungs-Lowres-Karte
+	average_val = 30; // beginnend mit Radius 30 mm zum Eintragen der Hindernisse aus der Highres- in die Planungs-Lowres-Karte
+    map_compare_haz = map_compare; // Wert setzen, unterhalb dessen Hindernis gesetzt wird
 
 	LOG_DEBUG("Start Welle vom Zielpunkt %1d %1d", startwave.x, startwave.y);
 
@@ -549,46 +630,14 @@ void bot_do_calc_wave(Behaviour_t * caller) {
  * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  * @param dest_x    X-World-Zielkoordinate
  * @param dest_y    Y-World-Zielkoordinate
+ * @param map_compare Map-Vergleichswert; Mapwerte kleiner dem Wert werden als Hindernisse eingetragen
  */
-void bot_calc_wave(Behaviour_t * caller, int16_t dest_x, int16_t dest_y) {
+void bot_calc_wave(Behaviour_t * caller, int16_t dest_x, int16_t dest_y, int8_t map_compare) {
 	// Zielpunkt setzen, ab dem die Welle losgeht
 	bot_set_destination(world_to_map_lowres(dest_x),
 			world_to_map_lowres(dest_y)); // Weltkoords in Lowres-Mapkoords umrechnen
-
-	bot_do_calc_wave(caller);
+ 	bot_do_calc_wave(caller, map_compare);
 }
-
-#ifdef DEBUG_PATHPLANING
-/*!
- * Zeigt einen Ausschnitt der Planungs-Map auf Konsole an; gut zum Pruefen wo Hindernisse gesehen werden und die Welle verlaeuft
- */
-void show_labmap(void) {
-	int16_t x, y;
-	int16_t xw;
-	int16_t yw;
-
-	LOG_DEBUG("Wellenstart vom Zielpunkt %1d %1d", startwave.x, startwave.y);
-	access_field_lowres(startwave, 2, 1); // vermerken des Wellen-Startpunktes
-	LOG_DEBUG("Botpunkt %1d %1d", endkoord.x, endkoord.y);
-	access_field_lowres(endkoord, 88, 1); // Botpos vermerken
-
-	int8_t tmp = 0;
-	for (y=40; y<60; y++) {
-	// for (y=0; y<20; y++) { // wenn nur 4m
-		printf("y: %2d:", y);
-
-		// for (x=10; x<=30; x++) { // wenn nur 4m
-		for (x=40; x<=60; x++) {
-			xw = map_to_world_lowres(x);
-			yw = map_to_world_lowres(y);
-			tmp = access_field_lowres((position_t) {x, y}, tmp, 0);
-
-			printf("%2d|", tmp);
-		}
-		printf("\n");
-	}
-}
-#endif	// DEBUG_PATHPLANING
 
 #ifdef PATHPLANING_DISPLAY
 /*!
@@ -600,12 +649,13 @@ static void pathplaning_disp_key_handler(void) {
 
 	case RC5_CODE_4:
 		RC5_Code = 0;
-		delete_lowres();
+		//delete_lowres();
+		bot_do_calc_wave(0, 30);  // nur auf bereits befahrenem Gebiet Weg zum Ziel planen
 		break;
 
 	case RC5_CODE_5:
 		RC5_Code = 0;
-		bot_do_calc_wave(0);
+		bot_do_calc_wave(0, 0);  // Aufruf mit Map-Vergleichswert 0; Werte darunter gelten als Hindernisse
 		break;
 
 #ifdef DEBUG_PATHPLANING
@@ -630,7 +680,7 @@ void pathplaning_display(void) {
 	display_cursor(1, 1);
 	display_printf("-Pathplaning-");
 	display_cursor(2, 1);
-	display_printf("4:Delete");
+	display_printf("4:PlanOnDrivenArea"); // nur auf befahrenem Gebiet planen
 	display_cursor(3, 1);
 	display_printf("5:GoPlaning");
 	display_cursor(4, 1);

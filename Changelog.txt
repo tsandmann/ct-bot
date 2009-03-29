@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-03-27 Frank Menzel [Menzelfr@gmx.de]: Pfadplanungsverhalten erweitert: schraeges Fahren und Planung nur auf befahrenem Gebiet ermoeglicht sowie Einzeichnen des Pfadweges (rot) via MAP_2_SIM_AVAILABLE
+
 2009-03-18 Timo Sandmann [mail@timosandmann.de]: Delay-Code an aktuellen Timer-Code angepasst
 
 2009-03-16 Timo Sandmann [mail@timosandmann.de]: ToDo-Punkte erledigt: bot-2-pc und bot-2-sim vereinheitlicht zu bot-2-sim;

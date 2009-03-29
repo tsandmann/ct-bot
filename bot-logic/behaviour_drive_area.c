@@ -924,7 +924,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 		if (!free1) {
 			bot_stop_observe(); // auf jeden Fall erst mal stoppen
 			LOG_DEBUG("Weg nicht frei, >> Pfadplanung << zu %1d %1d", nextline.point1.x, nextline.point1.y);
-			bot_calc_wave(data, nextline.point1.x, nextline.point1.y);
+			bot_calc_wave(data, nextline.point1.x, nextline.point1.y, MAP_TRACKVAL);
 		}
 #else
 		uint8_t free2 = map_way_free(x_pos, y_pos, nextline.point2.x, nextline.point2.y);

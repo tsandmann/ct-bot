@@ -55,14 +55,16 @@ void pathplaning_display(void);
  * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  * @param dest_x    X-World-Zielkoordinate
  * @param dest_y    Y-World-Zielkoordinate
+ * @param map_compare Map-Vergleichswert; Mapwerte kleiner dem Wert werden als Hindernisse eingetragen 
  */
-void bot_calc_wave(Behaviour_t * caller, int16_t dest_x, int16_t dest_y);
+void bot_calc_wave(Behaviour_t * caller, int16_t dest_x, int16_t dest_y, int8_t map_compare);
 
 /*!
  * Rufe das Wave-Verhalten auf
  * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * @param map_compare Map-Vergleichswert; Mapwerte kleiner dem Wert werden als Hindernisse eingetragen 
  */
-void bot_do_calc_wave(Behaviour_t * caller);
+void bot_do_calc_wave(Behaviour_t * caller, int8_t map_compare);
 
 /*!
  * Wave-Verhalten; berechnet die Welle ausgehend vom Zielpunkt bis zur Botposition; dann wird diese zurueckverfolgt und sich der Pfad

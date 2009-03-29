@@ -291,9 +291,9 @@ void map_flush_cache(void) {
  * @param koord	Weltkoordiante
  * @return		Kartenkoordinate
  */
-static uint16_t world_to_map(int16_t koord) {
+uint16_t world_to_map(int16_t koord) {
 #if (1000 / MAP_RESOLUTION) * MAP_RESOLUTION != 1000
-	#warning "MAP_RESOLUTION ist kein Teiler von 1000, Code in world_to_map() anpassen!"
+#error "MAP_RESOLUTION ist kein Teiler von 1000, Code in world_to_map() anpassen!"
 #endif
 #if defined MCU && MAP_RESOLUTION == 125
 	__asm__ __volatile__(
@@ -1062,8 +1062,8 @@ uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y)
 #ifdef MAP_2_SIM_AVAILABLE
 /*!
  * Zeichnet eine Linie in die Map-Anzeige des Sim
- * @param from	Startpunkt der Linie
- * @param to	Endpunkt der Linie
+ * @param from	Startpunkt der Linie (Map-Koordinate)
+ * @param to	Endpunkt der Linie (Map-Koordinate)
  * @param color	Farbe der Linie: 0=gruen, 1=rot, sonst schwarz
  */
 void map_draw_line(position_t from, position_t to, uint8_t color) {
@@ -1083,9 +1083,9 @@ void map_draw_line(position_t from, position_t to, uint8_t color) {
 
 /*!
  * Zeichnet ein Rechteck in die Map-Anzeige des Sim
- * @param from	Startpunkt der Geraden mittig durch das Rechteck
- * @param to	Endpunkt der Geraden mittig durch das Rechteck
- * @param width	Breite des Rechtecks (jeweils width/2 links und rechts der Gerade)
+ * @param from	Startpunkt der Geraden mittig durch das Rechteck (Map-Koordinate)
+ * @param to	Endpunkt der Geraden mittig durch das Rechteck (Map-Koordinate)
+ * @param width	Breite des Rechtecks (jeweils width/2 links und rechts der Gerade; in Map-Aufloesung)
  * @param color	Farbe der Linien: 0=gruen, 1=rot, sonst schwarz
  */
 void map_draw_rect(position_t from, position_t to, uint8_t width, uint8_t color) {

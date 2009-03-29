@@ -158,13 +158,20 @@ void map_clean(void);
 int8_t map_init(void);
 
 /*!
+ * Konvertiert eine Weltkoordinate in eine Kartenkoordinate
+ * @param koord	Weltkoordiante
+ * @return		Kartenkoordinate
+ */
+uint16_t world_to_map(int16_t koord);
+
+/*!
  * Konvertiert eine Kartenkoordinate in eine Weltkoordinate
  * @param map_koord	Kartenkoordinate
  * @return 			Weltkoordiante
  */
 static inline int16_t map_to_world(uint16_t map_koord) {
 #if (1000 / MAP_RESOLUTION) * MAP_RESOLUTION != 1000
-	#warning "MAP_RESOLUTION ist kein Teiler von 1000, Code in map_to_world() anpassen!"
+#error "MAP_RESOLUTION ist kein Teiler von 1000, Code in map_to_world() anpassen!"
 #endif
 	int32_t tmp = map_koord * (1000 / MAP_RESOLUTION);
 	return tmp - (uint16_t)(MAP_SIZE * MAP_RESOLUTION * 4);
@@ -179,17 +186,17 @@ static inline int16_t map_to_world(uint16_t map_koord) {
 #ifdef MAP_2_SIM_AVAILABLE
 /*!
  * Zeichnet eine Linie in die Map-Anzeige des Sim
- * @param from	Startpunkt der Linie
- * @param to	Endpunkt der Linie
+ * @param from	Startpunkt der Linie (Map-Koordinate)
+ * @param to	Endpunkt der Linie (Map-Koordinate)
  * @param color	Farbe der Linie: 0=gruen, 1=rot, sonst schwarz
  */
 void map_draw_line(position_t from, position_t to, uint8_t color);
 
 /*!
  * Zeichnet ein Rechteck in die Map-Anzeige des Sim
- * @param from	Startpunkt der Geraden mittig durch das Rechteck
- * @param to	Endpunkt der Geraden mittig durch das Rechteck
- * @param width	Breite des Rechtecks (jeweils width/2 links und rechts der Gerade)
+ * @param from	Startpunkt der Geraden mittig durch das Rechteck (Map-Koordinate)
+ * @param to	Endpunkt der Geraden mittig durch das Rechteck (Map-Koordinate)
+ * @param width	Breite des Rechtecks (jeweils width/2 links und rechts der Gerade; in Map-Aufloesung)
  * @param color	Farbe der Linien: 0=gruen, 1=rot, sonst schwarz
  */
 void map_draw_rect(position_t from, position_t to, uint8_t width, uint8_t color);
