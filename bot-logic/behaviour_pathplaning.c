@@ -650,12 +650,12 @@ static void pathplaning_disp_key_handler(void) {
 	case RC5_CODE_4:
 		RC5_Code = 0;
 		//delete_lowres();
-		bot_do_calc_wave(0, 30);  // nur auf bereits befahrenem Gebiet Weg zum Ziel planen
+		bot_do_calc_wave(NULL, 30);  // nur auf bereits befahrenem Gebiet Weg zum Ziel planen
 		break;
 
 	case RC5_CODE_5:
 		RC5_Code = 0;
-		bot_do_calc_wave(0, 0);  // Aufruf mit Map-Vergleichswert 0; Werte darunter gelten als Hindernisse
+		bot_do_calc_wave(NULL, 0);  // Aufruf mit Map-Vergleichswert 0; Werte darunter gelten als Hindernisse
 		break;
 
 #ifdef DEBUG_PATHPLANING
