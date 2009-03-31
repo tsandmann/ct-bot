@@ -185,6 +185,11 @@ static inline int16_t map_to_world(uint16_t map_koord) {
 
 #ifdef MAP_2_SIM_AVAILABLE
 /*!
+ * Uebertraegt die komplette Karte an den Sim
+ */
+void map_2_sim_send(void);
+
+/*!
  * Zeichnet eine Linie in die Map-Anzeige des Sim
  * @param from	Startpunkt der Linie (Map-Koordinate)
  * @param to	Endpunkt der Linie (Map-Koordinate)

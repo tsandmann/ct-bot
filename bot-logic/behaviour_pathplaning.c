@@ -626,7 +626,7 @@ void bot_do_calc_wave(Behaviour_t * caller, int8_t map_compare) {
 }
 
 /*!
- * Rufe das Wave-Verhalten auf mit Uebergabe des zu erreichenden Zielpunkten
+ * Rufe das Wave-Verhalten auf mit Uebergabe des zu erreichenden Zielpunktes
  * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  * @param dest_x    X-World-Zielkoordinate
  * @param dest_y    Y-World-Zielkoordinate

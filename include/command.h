@@ -135,7 +135,7 @@ typedef struct {
 #define SUB_MAP_DATA_2		'E'	/*!< Map-Daten Teil 2 */
 #define SUB_MAP_DATA_3		'F'	/*!< Map-Daten Teil 3 */
 #define SUB_MAP_DATA_4		'G'	/*!< Map-Daten Teil 4 */
-#define SUB_MAP_FLUSH		'U'	/*!< Aufforderung alle ausstehenden Updates zu uebertragen */
+#define SUB_MAP_REQUEST		'R'	/*!< Aufforderung die komplette Karte (neu) zu uebertragen */
 #define SUB_MAP_LINE		'L'	/*!< Linie zeichnen */
 #define SUB_MAP_CLEAR_LINES	'X'	/*!< Linien loeschen */
 

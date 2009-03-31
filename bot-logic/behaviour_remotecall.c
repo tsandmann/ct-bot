@@ -180,6 +180,9 @@ const call_t calls[] PROGMEM = {
 	#ifdef BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_check_distance,2,"int16 max_dist, uint8 diff",2,1),
 	#endif
+	#ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_calc_wave,3,"int16 dest_x, int16 dest_y, int8 compare",2,2,1),
+	#endif
 	#ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_drive_area,0,""),
 	#endif

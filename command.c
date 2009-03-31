@@ -445,6 +445,15 @@ int8_t command_evaluate(void) {
 			}
 			break;
 #endif	// BEHAVIOUR_REMOTECALL_AVAILABLE
+#ifdef MAP_2_SIM_AVAILABLE
+		case CMD_MAP:
+			switch (received_command.request.subcommand) {
+			case SUB_MAP_REQUEST:
+				map_2_sim_send();
+				break;
+			}
+			break;
+#endif	// MAP_2_SIM_AVAILABLE
 		// Einige Kommandos ergeben nur fuer simulierte Bots Sinn
 #ifdef PC
 		case CMD_SENS_IR: {

@@ -134,6 +134,7 @@ uint16_t map_min_x = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Ka
 uint16_t map_max_x = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
 uint16_t map_min_y = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
 uint16_t map_max_y = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate */
+//TODO:	min/max-Werte auch in der Map-Datei speichern (fier Ex- / Import)
 
 /*! Datentyp fuer die Elementarfelder einer Gruppe */
 typedef struct {
@@ -184,6 +185,7 @@ static uint16_t map_2_sim_heading;	/*!< letzte Bot-Ausrichtung */
 static Tcb_t * map_2_sim_worker;	/*!< Worker-Thread fuer die Map-2-Sim-Anzeige */
 uint8_t map_2_sim_worker_stack[MAP_2_SIM_STACK_SIZE];	/*!< Stack des Map-2-Sim-Threads */
 static uint8_t map_2_sim_buffer[512];	/*!< Puffer fuer Map-Block (von der MMC) zur Map-2-Sim-Kommunikation */
+static os_signal_t map_2_sim_signal;	/*!< Signal, um gleichzeitges Senden von Map-Daten zu verhindern */
 #endif	// MAP_2_SIM_AVAILABLE
 
 #ifdef PC
@@ -228,7 +230,11 @@ int8_t map_init(void) {
 
 #ifdef MAP_2_SIM_AVAILABLE
 	map_2_sim_worker = os_create_thread(&map_2_sim_worker_stack[MAP_2_SIM_STACK_SIZE] - 1, map_2_sim_main);
+#ifdef PC
+	pthread_mutex_init(&map_2_sim_signal.mutex, NULL);
+	pthread_cond_init(&map_2_sim_signal.cond, NULL);
 #endif
+#endif	// MAP_2_SIM_AVAILABLE
 
 #ifdef BEHAVIOUR_SCAN_AVAILABLE
 	/* Modi des Update-Verhaltens. Default: location, distance, border an, Kartographie-Modus */
@@ -1182,6 +1188,7 @@ void map_2_sim_main(void) {
 		/* Daten aus Fifo holen
 		 * Thread blockiert hier, falls Fifo leer */
 		size = fifo_get_data(&map_2_sim_fifo, &cache_copy, MAP_2_SIM_BUFFER_SIZE * sizeof(cache_copy[0]));
+		os_signal_set(&map_2_sim_signal);
 		uint8_t i;
 		int8_t j;
 		size /= sizeof(cache_copy[0]); // size ab hier Anzahl der Eintraege, nicht Bytes!
@@ -1216,7 +1223,34 @@ void map_2_sim_main(void) {
 			}
 		}
 //		printf("\n");
+		os_signal_release(&map_2_sim_signal);
 	}
+}
+
+/*!
+ * Uebertraegt die komplette Karte an den Sim
+ */
+void map_2_sim_send(void) {
+	/* Warten, bis Map-Update fertig */
+	map_flush_cache();
+	os_signal_lock(&lock_signal);
+	os_signal_lock(&map_2_sim_signal);
+
+	/* Alle Bloecke uebertragen */
+	uint16_t x, y;
+	for (x=map_min_x; x<=map_max_x; x+=MAP_SECTION_POINTS*2) { // in einem Block liegen 2 Sections in x-Richtung aneinander
+		for (y=map_min_y; y<=map_max_y; y+=MAP_SECTION_POINTS) {
+			access_field(x, y, 0, 0); // Block in Puffer laden
+			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, (int16_t)map_current_block.block, MAP_SIZE * MAP_RESOLUTION / 2, 128, map_buffer);
+			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, (int16_t)map_current_block.block, MAP_SIZE * MAP_RESOLUTION / 2, 128, &map_buffer[128]);
+			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, (int16_t)map_current_block.block, 0, 128, &map_buffer[256]);
+			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_4, (int16_t)map_current_block.block, 0, 128, &map_buffer[384]);
+		}
+	}
+
+	/* Sperre wieder freigeben */
+	os_signal_unlock(&map_2_sim_signal);
+	os_signal_unlock(&lock_signal);
 }
 #endif	// MAP_2_SIM_AVAILABLE
 

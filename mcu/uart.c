@@ -36,10 +36,10 @@
 #ifdef UART_AVAILABLE
 
 uint8_t inbuf[BUFSIZE_IN];	/*!< Eingangspuffer */
-fifo_t uart_infifo;				/*!< Eingangs-FIFO */
+fifo_t uart_infifo;			/*!< Eingangs-FIFO */
 
 uint8_t outbuf[BUFSIZE_OUT];	/*!< Ausgangspuffer */
-fifo_t uart_outfifo;					/*!< Ausgangs-FIFO */
+fifo_t uart_outfifo;			/*!< Ausgangs-FIFO */
 
 /*!
  * @brief	Initialisiert den UART und aktiviert Receiver und Transmitter sowie den Receive-Interrupt.
@@ -126,9 +126,6 @@ void uart_write(void * data, uint8_t length) {
 	}
 	/* falls Sendepuffer zu voll, warten bis genug Platz vorhanden ist */
 	while (BUFSIZE_OUT - uart_outfifo.count < length) {
-#ifdef OS_AVAILABLE
-		os_thread_sleep(1);
-#endif
 	}
 	/* Daten in Ausgangs-FIFO kopieren */
 	fifo_put_data(&uart_outfifo, data, length);
