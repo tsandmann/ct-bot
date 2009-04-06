@@ -84,10 +84,10 @@ extern uint8_t map_2_sim_worker_stack[];	/*!< Stack des Map-2-Sim-Threads */
 uint8_t map_locked(void);
 
 /*!
- * liefert den Durschnittswert um eine Ort herum
+ * liefert den Durschnittswert um einen Ort herum
  * @param x			X-Ordinate der Welt
  * @param y			Y-Ordinate der Welt
- * @param radius	Radius der Umgebung, die beruecksichtigt wird [mm]
+ * @param radius	Radius der Umgebung, die beruecksichtigt wird [mm]; 0 fuer ein Map-Feld (Punkt)
  * @return			Durchschnitsswert im Umkreis um den Ort (>0 heisst frei, <0 heisst belegt)
  */
 int8_t map_get_average(int16_t x, int16_t y, int16_t radius);

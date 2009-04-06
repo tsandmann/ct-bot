@@ -41,6 +41,7 @@
 #include "delay.h"
 #include "bot-2-bot.h"
 #include "os_thread.h"
+#include "map.h"
 #include <string.h>
 #define COMMAND_TIMEOUT 	10				/*!< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
 EEPROM uint8_t bot_address = CMD_BROADCAST; /*!< Kommunikations-Adresse des Bots (EEPROM) */

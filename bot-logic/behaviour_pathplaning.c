@@ -51,7 +51,9 @@
 #include "log.h"
 #include "pos_store.h"
 
-//#define DEBUG_PATHPLANING	// Schalter fuer Debugausgaben
+#define DEBUG_PATHPLANING	// Schalter fuer Debugausgaben
+//#define DEBUG_PATHPLANING_VERBOSE	// zeichnet Zellen in die Map-Anzeige des Sim ein, rot: Hindernis, gruen: frei
+
 #ifdef MCU
 #undef DEBUG_PATHPLANING
 #endif
@@ -63,9 +65,8 @@
 #define LOG_DEBUG(a, ...) {}
 #endif
 
-// Rotes Einzeichenn des geplanten Weges in die Highres-Map ueber MAP_2_SIM_AVAILABLE
 
-/****** fuer geringaufloesende Map zur Pfadplanung  --ACHTUNG ONLINE_SHRINK einschalten -- *****************/
+/****** fuer geringaufloesende Map zur Pfadplanung ******/
 
 #ifdef MCU
 #ifndef MCU_ATMEGA644X
@@ -73,17 +74,19 @@
 #endif
 #endif	// MCU
 #ifdef PC
-#define MAP_SIZE_LOWRES			12	/*!< Kartengroesse */
+#define MAP_SIZE_LOWRES			12.288	/*!< Breite / Hoehe der Karte [m] */
 #else
 //TODO:	Groessere Karte auch fuer MCU waere wuenschenswert
-#define MAP_SIZE_LOWRES			4	/*!< Kartengroesse */
+#define MAP_SIZE_LOWRES			4.096	/*!< Breite / Hoehe der Karte [m] */
 #endif	// PC
 
 #define MAP_SECTION_POINTS_LOWRES 32 /*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
-#define MAP_RESOLUTION_LOWRES 	8	 /*!< Aufloesung der Karte in Punkte pro Meter */
+#define MAP_RESOLUTION_LOWRES 	7.8125	 /*!< Aufloesung der Karte in Punkte pro Meter */
+#define MAP_CELL_SIZE_LOWRES	((uint16_t)(1000 / MAP_RESOLUTION_LOWRES))	/*!< Breite eines Map-Feldes in mm */
+#define MAP_LENGTH_LOWRES		((uint16_t)(MAP_SIZE_LOWRES * MAP_RESOLUTION_LOWRES))	/*!< Kantenlaenge der gesamten Karte in Map-Punkten */
 
 /*! Anzahl der Sections in der Lowres-Map */
-#define MAP_SECTIONS_LOWRES (((uint16_t)(MAP_SIZE_LOWRES*MAP_RESOLUTION_LOWRES)/MAP_SECTION_POINTS_LOWRES))
+#define MAP_SECTIONS_LOWRES (((uint16_t)(MAP_SIZE_LOWRES * MAP_RESOLUTION_LOWRES) / MAP_SECTION_POINTS_LOWRES))
 
 typedef struct {
 	int8_t section[MAP_SECTION_POINTS_LOWRES][MAP_SECTION_POINTS_LOWRES]; /*!< Einzelne Punkte */
@@ -94,12 +97,11 @@ map_section_lowres_t * map_lowres[MAP_SECTIONS_LOWRES][MAP_SECTIONS_LOWRES]; /*!
 static pos_store_t * planning_pos_store = NULL;		/*!< Positionsspeicher */
 static position_t pos_store_data[POS_STORE_SIZE];	/*!< Stack-Speicher fuer Positionsspeicher */
 
-/*! Ausgangspunkt der Welle (eigentlicher Zielpunkt) */
-static position_t startwave = { (MAP_SIZE_LOWRES*MAP_RESOLUTION_LOWRES / 2),
-		(MAP_SIZE_LOWRES*MAP_RESOLUTION_LOWRES / 2) };
+static position_t startwave;	/*!< Ausgangspunkt der Welle (eigentlicher Zielpunkt), in Mapkoordinaten */
+static position_t destination;	/*!< Zielpunkt in Weltkoordinaten */
 
-/*! Koordinate des Startpunktes (Botpos) zum Terminieren der fortlaufenden Welle, da diese vom Zielpunkt ausgeht */
-static position_t endkoord = { 0, 0 };
+/*! Map-Koordinate des Startpunktes (Botpos) zum Terminieren der fortlaufenden Welle, da diese vom Zielpunkt ausgeht */
+static position_t endkoord;
 
 /* das Rechteck der real benutzten Koordinaten der Welt */
 static int16_t min_x;
@@ -107,25 +109,24 @@ static int16_t min_y;
 static int16_t max_x;
 static int16_t max_y;
 
-/*! gibt den Umkreisradius in mm an fuer die Durchschnittsermittlung */
-static int16_t average_val = 0;
-
-/*! Wellenzaehler; uint8 ausreichend da in dieser Aufloesung 8 Punkte je Meter -> bei 12 Meter noch unterhalb Wertebereich */
+/*! Wellenzaehler; uint8_t ausreichend da in dieser Aufloesung 8 Punkte je Meter -> bei 12 Meter noch unterhalb Wertebereich */
 static uint8_t wavecounter = 0;
 
 // Zustaende des Wellenverhaltens
+#define START							0
 #define SET_HAZARDS_TO_LOWRES			1
 #define NEIGHBOURS_FROM_FIFO			2
 #define SEARCH_STACKPATH_AND_QUEUE		3
 #define START_BOT_GO_STACK_BEHAVIOUR	4
-#define WAVE_NEXT_TRY					5
+#define CORRECT_POSITION				5
+#define END								99
 
 /*! Begrenzung des Wellenzaehlers, d.h. obere Grenze als Abbruchbedingung */
 #define MAX_WAVECOUNTER 120
 
 static uint8_t wave_state = 0; /*!< Statusvariable */
 
-static int8_t map_compare_haz = 0; /*!< Vergleichswert unterhalb dem Hindernioswert gesetzt wird */
+static int8_t map_compare_haz = 0; /*!< Vergleichswert unterhalb dem Hinderniswert gesetzt wird */
 
 /*!
  * Konvertiert eine Lowres-Kartenkoordinate in eine Weltkoordinate
@@ -133,12 +134,7 @@ static int8_t map_compare_haz = 0; /*!< Vergleichswert unterhalb dem Hinderniosw
  * @return 			Weltkoordiante
  */
 static int16_t map_to_world_lowres(uint16_t map_koord) {
-#if (1000 / MAP_RESOLUTION_LOWRES) * MAP_RESOLUTION_LOWRES != 1000
-#error "MAP_RESOLUTION_LOWRES ist kein Teiler von 1000!"
-#endif
-	int16_t tmp = ((map_koord - (MAP_SIZE_LOWRES*MAP_RESOLUTION_LOWRES / 2.0))
-			* 1000) / MAP_RESOLUTION_LOWRES; // in dieser Reihenfolge wegen Integerdivision
-	return tmp;
+	return (map_koord - MAP_LENGTH_LOWRES / 2) * MAP_CELL_SIZE_LOWRES;
 }
 
 /*!
@@ -147,11 +143,8 @@ static int16_t map_to_world_lowres(uint16_t map_koord) {
  * @return		Kartenkoordinate
  */
 static uint16_t world_to_map_lowres(int16_t koord) {
-#if (1000 / MAP_RESOLUTION_LOWRES) * MAP_RESOLUTION_LOWRES != 1000
-#error "MAP_RESOLUTION_LOWRES ist kein Teiler von 1000"
-#endif
-	return ((koord * MAP_RESOLUTION_LOWRES) / 1000) + (MAP_SIZE_LOWRES
-			* MAP_RESOLUTION_LOWRES / 2);
+	return (koord + MAP_LENGTH_LOWRES * (MAP_CELL_SIZE_LOWRES / 2))
+			/ MAP_CELL_SIZE_LOWRES;
 }
 
 /*!
@@ -164,7 +157,6 @@ static uint16_t world_to_map_lowres(int16_t koord) {
 static int8_t access_field_lowres(position_t field, int8_t value, uint8_t set) {
 	uint16_t section_x, section_y, index_x, index_y;
 
-//TODO:	Lohnt der Overhead mit den Sections, wenn es (auf MCU) nur eine gibt?
 //TODO: Sectiongroesse von 512 Byte waere besser, um auf MMC auslagern zu koennen.
 
 	// Berechne in welcher Sektion sich der Punkt befindet
@@ -228,35 +220,45 @@ static void set_hazards(void) {
 	int16_t x, y;
 
 	// Umrechnen des die Welt umschliessenden Rechtecks in Lowres-Koordinaten
-	min_x = world_to_map_lowres(map_get_min_x());
-	max_x = world_to_map_lowres(map_get_max_x());
-	min_y = world_to_map_lowres(map_get_min_y());
-	max_y = world_to_map_lowres(map_get_max_y());
+	min_x = world_to_map_lowres(map_get_min_x()) - 1;
+	max_x = world_to_map_lowres(map_get_max_x()) + 1;
+	min_y = world_to_map_lowres(map_get_min_y()) - 1;
+	max_y = world_to_map_lowres(map_get_max_y()) + 1;
 	min_y = (min_y > 0) ? min_y : 0; // sicherstellen dass Grenzen positiv sind
 	min_x = (min_x > 0) ? min_x : 0;
 
-	int16_t ym;
-	int8_t mapavg;
+	int16_t yw;
 
 	// Zellen durchlaufen und aus der hochaufloesenden Weltkarte Hindernisse hier eintragen
 	for (y = max_y; y >= min_y; y--) {
-		ym = (map_to_world_lowres(y)); // Zeilenwert als Weltkoord umrechnen
+		yw = map_to_world_lowres(y) + MAP_CELL_SIZE_LOWRES / 2; // Zeilenwert als Weltkoord umrechnen, Mittelpunkt der Zelle
 		for (x = min_x; x <= max_x; x++) {
-			// Durchschnittswert der echten Weltkarte fuer diese Zelle holen; falls mal Weg nicht gefunden werden konnte, wird
-			// schrittweise Radius fuer den Durchschnitt verringert-vielleicht wird dann Weg gefunden
-
-//TODO:	Warum Durchschnitt? Fuehrt bei kleinen "Loechern" in der Map zu Problemen
-//TODO: Ganze Zelle sollte als Hindernis eingetragen werden, sobald auch nur ein Feld der Map als belegt markiert ist!
-
-			mapavg = map_get_average(map_to_world_lowres(x), ym, average_val); // probiert: 80 zu viele Hind 60 40 gut, 30 gut, 20 gut weniger auch weniger Hindernisse
-			if (mapavg < map_compare_haz)  // Vergleichswert; damit kann auch auf nur befahrenen Wegen geplant werden bei Wert 30
+			int16_t xw = map_to_world_lowres(x) + MAP_CELL_SIZE_LOWRES / 2; // Mittelpunkt der Zelle, also Haelfte addieren
+			int16_t x1 = xw - MAP_CELL_SIZE_LOWRES / 2; // Punkt "unten", darum Haelfte der Zellengroesse abziehen
+			int16_t x2 = xw + MAP_CELL_SIZE_LOWRES / 2; // Punkt "oben", darum Haelfte der Zellegroesse addieren
+#ifdef DEBUG_PATHPLANING_VERBOSE
+			position_t from, to;
+			from.x = world_to_map(x1);
+			from.y = world_to_map(yw);
+			to.x = world_to_map(x2);
+			to.y = from.y;
+#endif	// DEBUG_PATHPLANING_VERBOSE
+			uint8_t ratio = map_get_ratio(x1, yw, x2, yw, MAP_CELL_SIZE_LOWRES,
+					map_compare_haz, 127);
+			if (ratio < MAP_RATIO_FULL) {
 				access_field_lowres((position_t) {x, y}, 1, 1);
-
+#ifdef DEBUG_PATHPLANING_VERBOSE
+//				LOG_DEBUG("Trage Hindernis in (%d|%d) ein, ratio=%u", x, y, ratio);
+				map_draw_rect(from, to, MAP_CELL_SIZE_LOWRES / (1000 / MAP_RESOLUTION), 1);
+#endif	// DEBUG_PATHPLANING_VERBOSE
+			} else {
+#ifdef DEBUG_PATHPLANING_VERBOSE
+//				LOG_DEBUG("KEIN Hindernis in (%d|%d), ratio=%u", x, y, ratio);
+				map_draw_rect(from, to, MAP_CELL_SIZE_LOWRES / (1000 / MAP_RESOLUTION), 0);
+#endif	// DEBUG_PATHPLANING_VERBOSE
+			}
 		}
 	}
-
-	// Wellen-Startpunkt eintragen mit Mapwert 2
-	access_field_lowres(startwave, 2, 1);
 }
 
 /*!
@@ -382,11 +384,12 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 
 	switch (wave_state) {
 	// zuerst loeschen der Planungs-LowRes-Karte
-	case 0:
+	case START:
 		LOG_DEBUG("Loeschen der Lowres-Karte");
 		delete_lowres();
 		planning_pos_store = pos_store_create(data, pos_store_data); // Stack / Queue anlegen / und leeren
 		wavecounter = 2; // geht ab Wert 2 los; d.h. Wert Wellenzentrum - Zielpunkt bekommt diesen Wert
+		access_field_lowres(startwave, 2, 1);
 
 		wave_state = SET_HAZARDS_TO_LOWRES;
 		break;
@@ -405,7 +408,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 
 		pos_store_queue(planning_pos_store, startwave); // Startpunkt der Welle in die Queue einfuegen, damit gehts los
 
-		LOG_DEBUG("Wellenstart bei %1d %1d Welle %1d, avg %1d", startwave.x, startwave.y, wavecounter, average_val);
+		LOG_DEBUG("Wellenstart bei %1d %1d Welle %1d", startwave.x, startwave.y, wavecounter);
 
 		pos_store_queue(planning_pos_store, (position_t) {999, 999}); // nach Abarbeiten des Wellenstartpunktes muss Wellenzaehler erhoeht werden
 
@@ -447,12 +450,12 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 		pos_store_clear(planning_pos_store);
 
 		// Wellenpfad zurueckverfolgen oder gleich Ende wenn nichts gefunden
-		wave_state = (endreached) ? SEARCH_STACKPATH_AND_QUEUE : WAVE_NEXT_TRY;
+		wave_state = (endreached) ? SEARCH_STACKPATH_AND_QUEUE : END;
 
 		if (endreached) {
 			LOG_DEBUG("Welle hat Botpos erreicht")
 		} else {
-			LOG_DEBUG("Welle konnte Botpos nicht erreichen->next try");
+			LOG_DEBUG("Welle konnte Botpos nicht erreichen->Abbruch");
 		}
 
 		break;
@@ -460,7 +463,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 	// in der Lowres-Karte sind nun die Hindernisse und die Welle eingetragen; vom Botpunkt zum Wellenstartpunkt
 	// wird die Welle nun zurueckverfolgt und die anzufahrenden Koordinaten in den Stack gespeichert
 	case SEARCH_STACKPATH_AND_QUEUE:
-		LOG_DEBUG("--Welle hat Botposition erreicht bei Wert %1d avg %1d", wavecounter, average_val);
+		LOG_DEBUG("--Welle hat Botposition erreicht bei Wert %1d", wavecounter);
 
 		// ein paar notwendige Initialisierungen und Variablendeklarationen
 		int8_t minval = 1;
@@ -524,18 +527,19 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 			if (neighbour_found || endreached) {
 				LOG_DEBUG("Pfadpunkt in Queue %1d %1d Ende %1d", nextdest.x, nextdest.y, endreached);
 				// zum spaeteren Stack-Abfahren die Zwischenziel-Koordinaten als Weltkoordinaten auf den Stack legen
-				if (!pos_store_queue(planning_pos_store, (position_t) {map_to_world_lowres(nextdest.x), map_to_world_lowres(nextdest.y)})) {
+				position_t pos;
+				pos.x = map_to_world_lowres(nextdest.x) + MAP_CELL_SIZE_LOWRES / 2;
+				pos.y = map_to_world_lowres(nextdest.y) + MAP_CELL_SIZE_LOWRES / 2;
+				if (!pos_store_queue(planning_pos_store, pos)) {
 					LOG_DEBUG("Queue ging schief - voll?");
 					endreached = True;
 				}
 
-				// Der zu fahrende Pfad kann in der Highres-Map als helle Punkte eingezeichnet werden; dazu nach Pfadplanung und zu Beginn des Fahrverhaltens
-				// abbrechen und der zu fahrende Weg ist nun in der Highres-map eingezeichnet; die Routine access_field() muss dazu aber auch in der map.h deklariert werden
 #ifdef MAP_2_SIM_AVAILABLE
-				aktpos.x = world_to_map(map_to_world_lowres(nextdest.x));
-				aktpos.y = world_to_map(map_to_world_lowres(nextdest.y));
+				aktpos.x = world_to_map(map_to_world_lowres(nextdest.x) + MAP_CELL_SIZE_LOWRES / 2);
+				aktpos.y = world_to_map(map_to_world_lowres(nextdest.y) + MAP_CELL_SIZE_LOWRES / 2);
 				if (lastpos.x != 0 && lastpos.y != 0) {
-					map_draw_line(lastpos, aktpos, 1); // Pfadpunkte Rot darstellen
+					map_draw_line(lastpos, aktpos, 2); // Pfadpunkte schwarz darstellen
 				}
 				lastpos = aktpos;
 #endif	// MAP_2_SIM_AVAILABLE
@@ -552,7 +556,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 		}
 
 		// Wenn erfolgreich Pfad gefunden wurde, dann abfahren sonst Ende
-		wave_state = (endreached) ? START_BOT_GO_STACK_BEHAVIOUR : 99;
+		wave_state = (endreached) ? START_BOT_GO_STACK_BEHAVIOUR : END;
 		if (endreached) {
 			LOG_DEBUG("Pfad rueckwaerts gefunden->Stackgo")
 		} else {
@@ -560,27 +564,22 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 		}
 		break;
 
-	// Welle konnte nicht Botposition erreichen, evtl. versperren zu viel eingetargene Hindernisse den Weg;
-	// hier mehrfacher Versuch durch Verringerung des Durchmesserumkreises weniger Hindernisse einzutragen
-	case WAVE_NEXT_TRY:
-		average_val = average_val - 10;
-		wave_state = (average_val >= 10) ? 0 : 99;
-		if (average_val >= 10) {
-			LOG_DEBUG(">>>>>>>>>>> nix gefunden und naechster Versuch im Umkreis  %1d", average_val);
-		}
-		break;
-
 	case START_BOT_GO_STACK_BEHAVIOUR:
-		LOG_DEBUG("--Pfad gefunden und Abfahren -STACKGO-- avg %1d", average_val);
+		LOG_DEBUG("--Pfad gefunden und Abfahren -STACKGO--");
 #ifdef DEBUG_PATHPLANING
 		show_labmap();
 #endif
 		bot_drive_stack_x(data, pos_store_get_index(planning_pos_store), 1);
-		wave_state = 99;
+		wave_state = CORRECT_POSITION;
+		break;
+
+	case CORRECT_POSITION:
+		bot_goto_pos(data, destination.x, destination.y, 999);
+		wave_state = END;
 		break;
 
 	default:
-		LOG_DEBUG("Waveverhalten beendet Wavecounter %1d Durchmesserwert %1d", wavecounter, average_val);
+		LOG_DEBUG("Waveverhalten beendet. Wavecounter %1d", wavecounter);
 		pos_store_release(planning_pos_store);
 		planning_pos_store = NULL;
 		return_from_behaviour(data);
@@ -590,15 +589,17 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 
 /*!
  * Routine zum Setzen der Zielkoordinaten
- * @param x X-Map-Zielkoordinate
- * @param y Y-Map-Zielkoordinate
+ * @param x X-Welt-Zielkoordinate
+ * @param y Y-Welt-Zielkoordinate
  */
 static void bot_set_destination(int16_t x, int16_t y) {
-	startwave.x = x;
-	startwave.y = y;
+	destination.x = x;
+	destination.y = y;
 
-	// Wellen Startpunkt eintragen
 	LOG_DEBUG("Wellen-Start bei %1d %1d", x, y);
+
+	startwave.x = world_to_map_lowres(x);
+	startwave.y = world_to_map_lowres(y);
 }
 
 /*!
@@ -609,8 +610,7 @@ static void bot_set_destination(int16_t x, int16_t y) {
 void bot_do_calc_wave(Behaviour_t * caller, int8_t map_compare) {
 	switch_to_behaviour(caller, bot_calc_wave_behaviour, OVERRIDE);
 	wave_state = 0;
-	average_val = 30; // beginnend mit Radius 30 mm zum Eintragen der Hindernisse aus der Highres- in die Planungs-Lowres-Karte
-    map_compare_haz = map_compare; // Wert setzen, unterhalb dessen Hindernis gesetzt wird
+    map_compare_haz = map_compare > -128 ? map_compare : -127; // Wert setzen, unterhalb dessen Hindernis gesetzt wird
 
 	LOG_DEBUG("Start Welle vom Zielpunkt %1d %1d", startwave.x, startwave.y);
 
@@ -628,14 +628,13 @@ void bot_do_calc_wave(Behaviour_t * caller, int8_t map_compare) {
 /*!
  * Rufe das Wave-Verhalten auf mit Uebergabe des zu erreichenden Zielpunktes
  * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
- * @param dest_x    X-World-Zielkoordinate
- * @param dest_y    Y-World-Zielkoordinate
+ * @param dest_x    X-Welt-Zielkoordinate
+ * @param dest_y    Y-Welt-Zielkoordinate
  * @param map_compare Map-Vergleichswert; Mapwerte kleiner dem Wert werden als Hindernisse eingetragen
  */
 void bot_calc_wave(Behaviour_t * caller, int16_t dest_x, int16_t dest_y, int8_t map_compare) {
 	// Zielpunkt setzen, ab dem die Welle losgeht
-	bot_set_destination(world_to_map_lowres(dest_x),
-			world_to_map_lowres(dest_y)); // Weltkoords in Lowres-Mapkoords umrechnen
+	bot_set_destination(dest_x, dest_y); // Weltkoords werden in Lowres-Mapkoords umgerechnet
  	bot_do_calc_wave(caller, map_compare);
 }
 
@@ -666,8 +665,7 @@ static void pathplaning_disp_key_handler(void) {
 #endif
 	case RC5_CODE_8:
 		RC5_Code = 0;
-		bot_set_destination(world_to_map_lowres(x_pos), world_to_map_lowres(
-				y_pos));
+		bot_set_destination(x_pos, y_pos);
 		break;
 
 	}

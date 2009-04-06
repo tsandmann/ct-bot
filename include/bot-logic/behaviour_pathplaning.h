@@ -53,8 +53,8 @@ void pathplaning_display(void);
 /*!
  * Rufe das Wave-Verhalten auf mit Uebergabe des zu erreichenden Zielpunktes
  * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
- * @param dest_x    X-World-Zielkoordinate
- * @param dest_y    Y-World-Zielkoordinate
+ * @param dest_x    X-Welt-Zielkoordinate
+ * @param dest_y    Y-Welt-Zielkoordinate
  * @param map_compare Map-Vergleichswert; Mapwerte kleiner dem Wert werden als Hindernisse eingetragen
  */
 void bot_calc_wave(Behaviour_t * caller, int16_t dest_x, int16_t dest_y, int8_t map_compare);

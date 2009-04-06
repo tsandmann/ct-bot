@@ -59,8 +59,10 @@
 //#define DEBUG_MAP_TIMES	// Schalter um Performance-Messungen fuer MMC anzumachen
 //#define DEBUG_STORAGE		// Noch mehr Ausgaben zum Thema organisation der Kartenstruktur, Macroblocks, Sections
 //#define DEBUG_SCAN_OTF	// Debug-Infos des Update-Threads an
-//#define DEBUG_GET_RATIO	// zeichnet Debug-Infos in die Map-Anzeige des Sim, gruen: Bereich frei, rot: Bereich nicht (ganz) frei
-//#define DEBUG_GET_RATIO_VERBOSE	// zeichnet detaillierte Infos in die Map-Anzeige, gruen: freie Felder, rot: belegte Felder
+//#define DEBUG_GET_RATIO	// zeichnet Debug-Infos in die Map-Anzeige des Sim, gruen: Bereich komplett innerhalb des gewuenschten Intervalls, rot: Bereich nicht (komplett) innerhalb des gewuenschten Intervalls
+//#define DEBUG_GET_RATIO_VERBOSE	// zeichnet detaillierte Infos in die Map-Anzeige, gruen: Felder innerhalb des gewuenschten Intervalls, rot: Felder ausserhalb des gewuenschten Intervalls
+//#define DEBUG_MAP_GET_AVERAGE		// zeichnet Debug-Infos in die Map-Anzeige des Sim fuer map_get_average(), gruen: Durchschnitt des Feldes >= MAP_OBSTACLE_THRESHOLD, rot: sonst
+//#define DEBUG_MAP_GET_AVERAGE_VERBOSE	// zeichnet belegte Map-Felder, die map_get_average() auswertet rot und freie gruen
 
 #define MAP_INFO_AVAILABLE
 #ifdef MCU
@@ -485,30 +487,51 @@ static int8_t access_field(uint16_t x, uint16_t y, int8_t value, uint8_t set) {
  * @return 			Wert des Durchschnitts um das Feld (>0 heisst frei, <0 heisst belegt)
  */
 static int8_t get_average_fields(uint16_t x, uint16_t y, int8_t radius) {
-	int16_t avg = 0;
-	int16_t avg_line = 0;
-
-	int16_t dX, dY;
+	int32_t avg = 0;
+	int8_t dX, dY;
+	int16_t count = 0;
 	const int16_t h = muls8(radius, radius);
 
 	/* Daten auslesen */
-	for (dX = -radius; dX <= radius; dX++) {
-		for (dY = -radius; dY <= radius; dY++) {
-			if (dX*dX + dY*dY <= h) {
-				avg_line += access_field(x + dX, y + dY, 0, 0);
+	for (dX=-radius; dX<=radius; dX++) {
+		for (dY=-radius; dY<=radius; dY++) {
+			if (muls8(dX, dX) + muls8(dY, dY) <= h) {
+				int8_t tmp = access_field(x + dX, y + dY, 0, 0);
+				avg += tmp;
+				count++;
+#ifdef DEBUG_MAP_GET_AVERAGE_VERBOSE
+				uint8_t color = tmp < MAP_OBSTACLE_THRESHOLD ? 1 : 0;
+				position_t pos;
+				pos.x = x + dX;
+				pos.y = y + dY;
+				map_draw_line(pos, pos, color);
+#endif	// DEBUG_MAP_GET_AVERAGE
 			}
 		}
-		avg += avg_line / (radius * 2);
 	}
 
-	return (int8_t)(avg / (radius * 2));
+	int8_t result = count > 0 ? avg / count : 0;
+#if defined DEBUG_MAP_GET_AVERAGE && !defined DEBUG_MAP_GET_AVERAGE_VERBOSE
+	uint8_t color = result < MAP_OBSTACLE_THRESHOLD ? 1 : 0;
+	for (dX=-radius; dX<=radius; dX++) {
+		for (dY=-radius; dY<=radius; dY++) {
+			if (muls8(dX, dX) + muls8(dY, dY) <= h) {
+				position_t pos;
+				pos.x = x + dX;
+				pos.y = y + dY;
+				map_draw_line(pos, pos, color);
+			}
+		}
+	}
+#endif	// DEBUG_MAP_GET_AVERAGE
+	return result;
 }
 
 /*!
- * liefert den Durschnittswert um eine Ort herum
+ * liefert den Durschnittswert um einen Ort herum
  * @param x			x-Ordinate der Welt
  * @param y			y-Ordinate der Welt
- * @param radius	Radius der Umgebung, die beruecksichtigt wird [mm]
+ * @param radius	Radius der Umgebung, die beruecksichtigt wird [mm]; 0 fuer ein Map-Feld (Punkt)
  * @return 			Durchschnitsswert im Umkreis um den Ort (>0 heisst frei, <0 heisst belegt)
  */
 int8_t map_get_average(int16_t x, int16_t y, int16_t radius) {
@@ -516,10 +539,6 @@ int8_t map_get_average(int16_t x, int16_t y, int16_t radius) {
 	uint16_t X = world_to_map(x);
 	uint16_t Y = world_to_map(y);
 	int8_t R = radius / (1000 / MAP_RESOLUTION);
-	if (R == 0) {
-		/* nur ein Feld gewuenscht, kleiner geht auch nicht */
-		R = 1;
-	}
 
 	/* warten bis Karte frei ist */
 	map_flush_cache();
@@ -810,7 +829,6 @@ static void update_border(int16_t x, int16_t y, float head, uint8_t borderL,
 	}
 }
 
-#if 1
 /*!
  * Berechnet das Verhaeltnis der Felder einer Region R die ausschliesslich mit Werten zwischen
  * min und max belegt sind und allen Feldern von R.
@@ -845,21 +863,21 @@ static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
 	uint16_t dY = abs(y2 - y1);	// Laenge der Linie in Y-Richtung
 
 	int16_t w = 0;
+	int8_t corr = width & 1; // LSB von width, falls width ungerade ist, muss die Schleife eins weiter laufen
 	width /= 2;
 	if (width == 0) {
 		width = 1;
 	}
 
 #ifdef DEBUG_GET_RATIO_VERBOSE
-	int16_t keep1 = 4;
-	command_write(CMD_MAP, SUB_MAP_CLEAR_LINES, keep1, 0, 0);
+	command_write(CMD_MAP, SUB_MAP_CLEAR_LINES, 4, 0, 0);
 #endif	// DEBUG_GET_RATIO_VERBOSE
 
 	/* Hangle Dich an der laengeren Achse entlang */
 	if (dX >= dY) {
 		uint16_t lh = dX / 2;
 		for (i=0; i<dX; i++) {
-			for (w=-width; w<width; w++) {
+			for (w=-width; w<width+corr; w++) {
 				int8_t field = access_field(lX + i * sX, lY + w, 0, 0);
 				if (field >= min_val && field <= max_val) {
 					count++;
@@ -918,8 +936,7 @@ static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
 
 #ifdef DEBUG_GET_RATIO
 #ifndef DEBUG_GET_RATIO_VERBOSE
-	int16_t keep2 = 12;
-	command_write(CMD_MAP, SUB_MAP_CLEAR_LINES, keep2, 0, 0);
+	command_write(CMD_MAP, SUB_MAP_CLEAR_LINES, 12, 0, 0);
 #endif
 	position_t from, to;
 	from.x = x1;
@@ -977,93 +994,6 @@ uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y)
 	uint8_t result = map_get_ratio(from_x, from_y, to_x, to_y, BOT_DIAMETER, MAP_OBSTACLE_THRESHOLD, 127);
 	return result == MAP_RATIO_FULL;
 }
-
-#else
-
-/*!
- * Prueft ob eine direkte Passage frei von Hindernissen ist
- * @param  from_x	Startort x Kartenkoordinaten
- * @param  from_y	Startort y Kartenkoordinaten
- * @param  to_x		Zielort x Kartenkoordinaten
- * @param  to_y		Zielort y Kartenkoordinaten
- * @return			1 wenn alles frei ist
- */
-static uint8_t way_free_fields(uint16_t from_x, uint16_t from_y,
-		uint16_t to_x, uint16_t to_y) {
-
-	// gehe alle Felder der Reihe nach durch
-	uint16_t i;
-
-	uint16_t lX = from_x; //	Beginne mit dem Feld, in dem der Bot steht
-	uint16_t lY = from_y;
-
-	int8_t sX = (to_x < from_x ? -1 : 1);
-	uint16_t dX = abs(to_x - from_x); // Laenge der Linie in X-Richtung
-
-	int8_t sY = (to_y < from_y ? -1 : 1);
-	uint16_t dY = abs(to_y - from_y); // Laenge der Linie in Y-Richtung
-
-	int16_t width = (BOT_DIAMETER/10*MAP_RESOLUTION)/100;
-	int16_t w = 0;
-
-	if (dX >= dY) { // Hangle Dich an der laengeren Achse entlang
-		uint16_t lh = dX / 2;
-		for (i=0; i<dX; ++i) {
-			for (w=-width; w<= width; w++) {
-				// wir muessen die ganze Breite des Bots absuchen
-				if (access_field(lX+i*sX, lY+w, 0, 0) < MAP_OBSTACLE_THRESHOLD) {
-					// ein Hindernis reicht fuer den Abbruch
-					return 0;
-				}
-			}
-
-			lh += dY;
-			if (lh >= dX) {
-				lh -= dX;
-				lY += sY;
-			}
-		}
-	} else {
-		uint16_t lh = dY / 2;
-		for (i=0; i<dY; ++i) {
-			for (w=-width; w<= width; w++) {
-				// wir muessen die ganze Breite des Bots absuchen
-				if (access_field(lX+w, lY+i*sY, 0, 0) < MAP_OBSTACLE_THRESHOLD) {
-					// ein Hindernis reicht fuer den Abbruch
-					return 0;
-				}
-			}
-
-			lh += dX;
-			if (lh >= dY) {
-				lh -= dY;
-				lX += sX;
-			}
-		}
-	}
-
-	return 1;
-}
-
-/*!
- * Prueft ob eine direkte Passage frei von Hindernissen ist
- * @param  from_x	Startort x Weltkoordinaten
- * @param  from_y	Startort y Weltkoordinaten
- * @param  to_x		Zielort x Weltkoordinaten
- * @param  to_y		Zielort y Weltkoordinaten
- * @return			1 wenn alles frei ist
- */
-uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y) {
-	/* warten bis Karte frei ist */
-	map_flush_cache();
-
-	uint8_t result = way_free_fields(world_to_map(from_x),
-			world_to_map(from_y), world_to_map(to_x), world_to_map(to_y));
-
-	return result;
-}
-#endif
-
 
 #ifdef MAP_2_SIM_AVAILABLE
 /*!
