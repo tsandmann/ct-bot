@@ -1,5 +1,8 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-04-07 Timo Sandmann [mail@timosandmann.de]: Neue Funktion pos_store_top() gibt den n-letzten Eintrag des Positionsspeichers zurueck, ohne ihn zu loeschen.
+												 Pfadplanung meldet Fehler an Aufrufer, falls kein Pfad gefunden werden konnte, Pfadpunkte auf einer Linie werden zusammengefasst, um pos_store-Speicher zu sparen.
+
 2009-04-06 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer map_get_average, kleine Verbesserungen beim Pfadplanungsverhalten (#185)
 
 2009-03-31 Timo Sandmann [mail@timosandmann.de]: Map-2-Sim-Code ueberarbeitet, Sim kann jetzt die komplette Karte anfordern

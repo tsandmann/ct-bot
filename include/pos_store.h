@@ -151,6 +151,16 @@ static inline uint8_t pos_store_queue(pos_store_t * store, position_t pos) {
  */
 uint8_t pos_store_dequeue(pos_store_t * store, position_t * pos);
 
+/*!
+ * Gibt das n-letzte Element des Stacks / der Queue zurueck, entfernt es aber nicht.
+ * pos_store_top(&store,  &pos, 2) gibt z.B. das vorletzte Element zurueck
+ * @param *store	Zeiger auf Positionsspeicher
+ * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
+ * @param index		Index des gewuenschten Elements vom Ende aus gezaehlt, 1-based
+ * @return			True, wenn ein Element im Speicher ist, sonst False
+ */
+uint8_t pos_store_top(pos_store_t * store, position_t * pos, uint8_t index);
+
 #ifdef PC
 /*!
  * Testet push(), pop() und dequeue()

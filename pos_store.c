@@ -274,6 +274,27 @@ uint8_t pos_store_dequeue(pos_store_t * store, position_t * pos) {
 	return True;
 }
 
+/*!
+ * Gibt das n-letzte Element des Stacks / der Queue zurueck, entfernt es aber nicht.
+ * pos_store_top(&store,  &pos, 2) gibt z.B. das vorletzte Element zurueck
+ * @param *store	Zeiger auf Positionsspeicher
+ * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
+ * @param index		Index des gewuenschten Elements vom Ende aus gezaehlt, 1-based
+ * @return			True, wenn ein Element im Speicher ist, sonst False
+ */
+uint8_t pos_store_top(pos_store_t * store, position_t * pos, uint8_t index) {
+	if (store == NULL) {
+		return False;
+	}
+	if (store->count <= index) {
+		return False;
+	}
+	uint8_t sp = store->sp - index;
+	sp &= POS_STORE_SIZE - 1;
+	*pos = store->data[sp];
+	return True;
+}
+
 #ifdef PC
 /*!
  * Gibt alle Eintraege auf stdout aus

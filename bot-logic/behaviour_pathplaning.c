@@ -80,8 +80,8 @@
 #define MAP_SIZE_LOWRES			4.096	/*!< Breite / Hoehe der Karte [m] */
 #endif	// PC
 
-#define MAP_SECTION_POINTS_LOWRES 32 /*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
-#define MAP_RESOLUTION_LOWRES 	7.8125	 /*!< Aufloesung der Karte in Punkte pro Meter */
+#define MAP_SECTION_POINTS_LOWRES 32 	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
+#define MAP_RESOLUTION_LOWRES 	7.8125	/*!< Aufloesung der Karte in Punkte pro Meter */
 #define MAP_CELL_SIZE_LOWRES	((uint16_t)(1000 / MAP_RESOLUTION_LOWRES))	/*!< Breite eines Map-Feldes in mm */
 #define MAP_LENGTH_LOWRES		((uint16_t)(MAP_SIZE_LOWRES * MAP_RESOLUTION_LOWRES))	/*!< Kantenlaenge der gesamten Karte in Map-Punkten */
 
@@ -381,6 +381,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 	// Endekennung
 	static uint8_t endreached = False; // Kennung gesetzt fuer Ziel gefunden; Terminierung der Schleife
 
+	static uint8_t skip_count = 0; // Zaehlt die Anzahl der in der Queue uebersprungenen Punkte
 
 	switch (wave_state) {
 	// zuerst loeschen der Planungs-LowRes-Karte
@@ -475,6 +476,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 		int8_t mapval_min = wavecounter + 1; // auf erhoehten Wellenwert setzen, weil in Schleife der Wellenwert immer kleiner dem letzten Wellewert ist
 		endreached = False; // Schleifenabbruchvar init.
 		wavecounter = 0; // Wellenzaehler init.
+		skip_count = 0;
 
 #ifdef MAP_2_SIM_AVAILABLE
         position_t lastpos ;
@@ -530,9 +532,38 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 				position_t pos;
 				pos.x = map_to_world_lowres(nextdest.x) + MAP_CELL_SIZE_LOWRES / 2;
 				pos.y = map_to_world_lowres(nextdest.y) + MAP_CELL_SIZE_LOWRES / 2;
+
+				position_t pos_1, pos_2;
+				if (pos_store_top(planning_pos_store, &pos_1, 1) == True && pos_store_top(planning_pos_store, &pos_2, 2) == True) {
+					int8_t m_1 = pos_1.x == pos_2.x ? 100 : (pos_1.y - pos_2.y) / (pos_1.x - pos_2.x);
+					int8_t m = pos.x == pos_1.x ? 100 : (pos.y - pos_1.y) / (pos.x - pos_1.x);
+#ifdef DEBUG_PATHPLANING_VERBOSE
+					LOG_DEBUG(" pos_2=(%d|%d)", pos_2.x, pos_2.y);
+					LOG_DEBUG(" pos_1=(%d|%d)", pos_1.x, pos_1.y);
+					LOG_DEBUG(" pos  =(%d|%d)", pos.x, pos.y);
+					LOG_DEBUG("  m_1=%3d\tm=%3d", m_1, m);
+					LOG_DEBUG("  skip_count=%u", skip_count);
+#endif	// DEBUG_PATHPLANING_VERBOSE
+					if (m_1 == m) {
+						LOG_DEBUG("Neuer Punkt auf einer Linie mit beiden Letzten");
+						if (skip_count < 3) {
+							LOG_DEBUG(" Verwerfe letzten Queue-Eintrag (%d|%d)", pos_1.x, pos_1.y);
+							pos_store_pop(planning_pos_store, &pos_1);
+							skip_count++;
+						} else {
+							LOG_DEBUG(" Verwerfe Eintrag NICHT, skip_count=%u", skip_count);
+							skip_count = 0;
+						}
+					} else {
+						skip_count = 0;
+					}
+				}
+
 				if (!pos_store_queue(planning_pos_store, pos)) {
 					LOG_DEBUG("Queue ging schief - voll?");
-					endreached = True;
+					endreached = False;
+					wave_state = END; // Fehler und Abbruch
+					break;
 				}
 
 #ifdef MAP_2_SIM_AVAILABLE
@@ -547,8 +578,10 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 			wavecounter++; // Wellencounter erhoehen; dient hier nur fuer Abbruchbedingung nach erreichen eines bestimmten Zaehlerstandes
 
 			if (wavecounter >= MAX_WAVECOUNTER) { // spaetestens jetzt Abbruchbedingung zur Sicherheit
-				endreached = True;
 				LOG_DEBUG("Endecounter erreicht %1d", wavecounter);
+				endreached = False;
+				wave_state = END; // Fehler und Abbruch
+				break;
 			}
 
 			// Ausgangspunkt fuer naechsten Durchlauf setzen, also ab Nachbarpunkt mit geringstem Wellenwert weiter zurueckverfolgen
@@ -582,7 +615,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 		LOG_DEBUG("Waveverhalten beendet. Wavecounter %1d", wavecounter);
 		pos_store_release(planning_pos_store);
 		planning_pos_store = NULL;
-		return_from_behaviour(data);
+		exit_behaviour(data, endreached ? SUBSUCCESS : SUBFAIL);
 		break;
 	}
 }
@@ -610,7 +643,7 @@ static void bot_set_destination(int16_t x, int16_t y) {
 void bot_do_calc_wave(Behaviour_t * caller, int8_t map_compare) {
 	switch_to_behaviour(caller, bot_calc_wave_behaviour, OVERRIDE);
 	wave_state = 0;
-    map_compare_haz = map_compare > -128 ? map_compare : -127; // Wert setzen, unterhalb dessen Hindernis gesetzt wird
+    map_compare_haz = map_compare; // Wert setzen, unterhalb dessen Hindernis gesetzt wird
 
 	LOG_DEBUG("Start Welle vom Zielpunkt %1d %1d", startwave.x, startwave.y);
 
