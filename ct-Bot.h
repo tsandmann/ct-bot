@@ -213,6 +213,8 @@
 
 #ifdef MAP_AVAILABLE
 	#define OS_AVAILABLE // Map braucht BotOS
+#else
+	#undef MAP_2_SIM_AVAILABLE
 #endif
 
 #ifndef BOT_2_BOT_AVAILABLE

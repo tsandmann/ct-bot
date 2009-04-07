@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-04-07 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Fifo-Code, wenn OS_AVAILABLE aus ist
+
 2009-04-07 Timo Sandmann [mail@timosandmann.de]: Neue Funktion pos_store_top() gibt den n-letzten Eintrag des Positionsspeichers zurueck, ohne ihn zu loeschen.
 												 Pfadplanung meldet Fehler an Aufrufer, falls kein Pfad gefunden werden konnte, Pfadpunkte auf einer Linie werden zusammengefasst, um pos_store-Speicher zu sparen.
 

@@ -131,8 +131,10 @@ void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
 #else
 	pthread_mutex_unlock(&f->signal.mutex);
 #endif
+#ifdef OS_AVAILABLE
 	/* Consumer aufwecken */
 	os_signal_unlock(&f->signal);
+#endif	// OS_AVAILABLE
 }
 
 /*!
@@ -147,6 +149,7 @@ uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length) {
 		return 0;
 	}
 	uint8_t count = f->count;
+#ifdef OS_AVAILABLE
 	if (count == 0) {
 		/* blockieren */
 		LOG_DEBUG("Fifo 0x%08x ist leer, blockiere", f);
@@ -156,6 +159,7 @@ uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length) {
 		os_signal_release(&f->signal);
 		count = f->count;
 	}
+#endif	// OS_AVAILABLE
 	if (count < length) length = count;
 	uint8_t * pread = f->pread;
 	uint8_t read2end = f->read2end;

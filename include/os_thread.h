@@ -28,10 +28,25 @@
 #define _THREAD_H
 
 #include "ct-Bot.h"
-#ifdef OS_AVAILABLE
 #include "timer.h"
 #include "os_scheduler.h"
 #include <stdlib.h>
+
+#ifdef PC
+#undef OS_DEBUG
+#include <pthread.h>
+#endif	// PC
+
+/*! Signal-Typ zur Threadsynchronisation */
+typedef struct {
+	volatile uint8_t value;	/*!< Signal-Wert */
+#ifdef PC
+	pthread_mutex_t mutex;	/*!< Mutex zur Synchronisation */
+	pthread_cond_t cond;	/*!< Signal zur Synchronisation */
+#endif
+} os_signal_t;
+
+#ifdef OS_AVAILABLE
 
 #define OS_MAX_THREADS		4	/*!< maximale Anzahl an Threads im System */
 #define OS_KERNEL_STACKSIZE	32	/*!< Groesse des Kernel-Stacks (fuer Timer-ISR) [Byte] */
@@ -53,20 +68,6 @@
 #error "OS_MAX_THREADS muss >= 3 sein, wenn MAP_AVAILABLE"
 #endif
 #endif
-
-#ifdef PC
-#undef OS_DEBUG
-#include <pthread.h>
-#endif
-
-/*! Signal-Typ zur Threadsynchronisation */
-typedef struct {
-	volatile uint8_t value;	/*!< Signal-Wert */
-#ifdef PC
-	pthread_mutex_t mutex;	/*!< Mutex zur Synchronisation */
-	pthread_cond_t cond;	/*!< Signal zur Synchronisation */
-#endif
-} os_signal_t;
 
 /*! Statistikdaten wie Laufzeit und Anzahl der ueberschrittenen Deadlines */
 typedef struct {
