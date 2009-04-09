@@ -170,8 +170,8 @@ static int8_t access_field_lowres(position_t field, int8_t value, uint8_t set) {
 	}
 
 	// Berechne den Index innerhalb der Section
-	index_x = field.x % MAP_SECTION_POINTS_LOWRES;
-	index_y = field.y % MAP_SECTION_POINTS_LOWRES;
+	index_x = (uint16_t)field.x % MAP_SECTION_POINTS_LOWRES;
+	index_y = (uint16_t)field.y % MAP_SECTION_POINTS_LOWRES;
 
 	if (set) { // Schreibzugriff
 		// Eventuell existiert die Section noch nicht
@@ -335,8 +335,10 @@ static void show_labmap(void) {
 		end_x = endkoord.x;
 	}
 	start_x -= 5;
+	if (start_x < 0) start_x = 0;
 	end_x += 5;
 	start_y -= 5;
+	if (start_y < 0) start_y = 0;
 	end_y += 5;
 
 	printf("y:    ");
