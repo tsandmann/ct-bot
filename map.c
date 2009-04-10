@@ -904,7 +904,7 @@ static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
 	} else {
 		uint16_t lh = dY / 2;
 		for (i=0; i<dY; i++) {
-			for (w=-width; w<width; w++) {
+			for (w=-width; w<width+corr; w++) {
 				int8_t field = access_field(lX + w, lY + i * sY, 0, 0);
 				if (field >= min_val && field <= max_val) {
 					count++;
@@ -931,7 +931,7 @@ static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
 	}
 
 	/* Verhaeltnis zu allen Feldern berechnen */
-	uint16_t fields = i * width * 2;
+	uint16_t fields = i * (width * 2 + corr);
 	uint8_t result = (uint32_t)count * 255 / fields;
 
 #ifdef DEBUG_GET_RATIO

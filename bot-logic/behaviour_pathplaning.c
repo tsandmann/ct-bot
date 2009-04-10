@@ -84,6 +84,7 @@
 #define MAP_RESOLUTION_LOWRES 	7.8125	/*!< Aufloesung der Karte in Punkte pro Meter */
 #define MAP_CELL_SIZE_LOWRES	((uint16_t)(1000 / MAP_RESOLUTION_LOWRES))	/*!< Breite eines Map-Feldes in mm */
 #define MAP_LENGTH_LOWRES		((uint16_t)(MAP_SIZE_LOWRES * MAP_RESOLUTION_LOWRES))	/*!< Kantenlaenge der gesamten Karte in Map-Punkten */
+#define RATIO_THRESHOLD			(MAP_RATIO_FULL - 5)	/*!< Schwellwert, unterhalb dem das Ergebnis von map_get_ratio() als Hindernis gilt */
 
 /*! Anzahl der Sections in der Lowres-Map */
 #define MAP_SECTIONS_LOWRES (((uint16_t)(MAP_SIZE_LOWRES * MAP_RESOLUTION_LOWRES) / MAP_SECTION_POINTS_LOWRES))
@@ -245,7 +246,7 @@ static void set_hazards(void) {
 #endif	// DEBUG_PATHPLANING_VERBOSE
 			uint8_t ratio = map_get_ratio(x1, yw, x2, yw, MAP_CELL_SIZE_LOWRES,
 					map_compare_haz, 127);
-			if (ratio < MAP_RATIO_FULL) {
+			if (ratio < RATIO_THRESHOLD) {
 				access_field_lowres((position_t) {x, y}, 1, 1);
 #ifdef DEBUG_PATHPLANING_VERBOSE
 //				LOG_DEBUG("Trage Hindernis in (%d|%d) ein, ratio=%u", x, y, ratio);
@@ -684,7 +685,7 @@ static void pathplaning_disp_key_handler(void) {
 	case RC5_CODE_4:
 		RC5_Code = 0;
 		//delete_lowres();
-		bot_do_calc_wave(NULL, 30);  // nur auf bereits befahrenem Gebiet Weg zum Ziel planen
+		bot_do_calc_wave(NULL, MAP_DRIVEN_THRESHOLD);  // nur auf bereits befahrenem Gebiet Weg zum Ziel planen
 		break;
 
 	case RC5_CODE_5:

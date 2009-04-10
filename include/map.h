@@ -48,6 +48,7 @@
 #define MAP_2_SIM_BUFFER_SIZE	32	/*!< Anzahl der Bloecke, die fuer Map-2-Sim gecachet werden koennen */
 
 #define MAP_OBSTACLE_THRESHOLD	-20	/*!< Schwellwert, ab dem ein Feld als Hindernis gilt */
+#define MAP_DRIVEN_THRESHOLD	1	/*!< Schwellwert, ab dem ein Feld als befahren gilt */
 
 #define MAP_RATIO_NONE	0		/*!< Rueckgabe von map_get_ratio(), falls kein Feld den Kriterien entspricht */
 #define MAP_RATIO_FULL	255		/*!< Rueckgabe von map_get_tatio(), falls alle Felder den Kriterien entsprechen */
