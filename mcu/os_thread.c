@@ -53,37 +53,6 @@ Tcb_t * os_thread_running = NULL;				/*!< Zeiger auf den TCB des Threads, der ge
 uint8_t os_kernel_stack[OS_KERNEL_STACKSIZE];	/*!< Kernel-Stack */
 os_signal_t dummy_signal;						/*!< Signal, das referenziert wird, wenn sonst keins gesetzt ist */
 
-void os_create_helper(Tcb_t * new)__attribute__((naked, noinline));
-
-/*!
- * Erzeugt eine Historie fuer einen neuen Thread
- */
-#define os_setup_thread(__new)	os_create_helper(__new);		\
-								__asm__ __volatile__("clr r1");	\
-								sei(); // os_switch_thread() schaltet interrupts aus
-
-/*!
- * Hilfsunktion fuer os_create_thread().
- * Erzeugt auf dem Stack eines neuen Threads eine Historie,
- * als ob der Thread bereits einmal unterbrochen wurde.
- * Achtung, aktiviert Interrupts!
- * @param *new	Zeiger auf den TCB eines neuen Threads
- */
-void os_create_helper(Tcb_t * new) {
-	cli();
-	os_thread_running->stack = (void *)SP;
-	SP = (int)new->stack;
-	sei();
-	__asm__ __volatile__(
-		"lds r22,  os_thread_running	\n\t"
-		"lds r23, (os_thread_running)+1	\n\t"
-		"movw r24, %0					\n\t"
-		"jmp os_switch_thread				"
-		::	"w" (new)
-		:	"memory"
-	);
-}
-
 /*!
  * Legt einen neuen Thread an.
  * Der zuerst angelegt Thread bekommt die hoechste Prioritaet,
@@ -119,8 +88,8 @@ Tcb_t * os_create_thread(void * pStack, void * pIp) {
 				tmp.ip = &os_exitCS; // setzt os_scheduling_allowed auf 1, nachdem der Thread das erste Mal geschedult wurde
 				*(sp-2) = tmp.lo8;
 				*(sp-3) = tmp.hi8;
-				ptr->stack = pStack - 4;// 4x push => Stack-Pointer - 4
-				os_setup_thread(ptr);
+				*(sp-4) = SREG; // beim ersten Wechsel auf diesen Thread wird das Statusregister vom Stack geholt, darum hier auf den Stack schreiben
+				ptr->stack = pStack - (4 + OS_CONTEXT_SIZE); // 4x push und 17 Bytes fuer Kontext => Stack-Pointer - (4 + 17)
 			}
 			os_scheduling_allowed = 1;	// Scheduling wieder erlaubt
 			/* TCB zurueckgeben */
@@ -139,6 +108,7 @@ void os_exitCS(void) {
 	if (test_and_set((uint8_t *)&os_scheduling_allowed, 1) == 2) {
 		os_schedule(TIMER_GET_TICKCOUNT_32);
 	}
+	__asm__ __volatile__("":::"memory");
 }
 
 /*!
@@ -222,7 +192,15 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to) {
 		"push r16									\n\t"
 		"push r17									\n\t"
 	//-- hier ist noch "from" (Z) der aktive Thread 	--//
-		"call os_switch_helper	; switch stacks		\n\t"
+		"in r16, __SP_L__	; switch Stacks			\n\t"
+		"st Z+, r16									\n\t"
+		"in r16, __SP_H__							\n\t"
+		"st Z, r16									\n\t"
+				//-- live changes here --//
+		"ld r16, X+ 								\n\t"
+		"out __SP_L__, r16							\n\t"
+		"ld r16, X 									\n\t"
+		"out __SP_H__, r16							\n\t"
 	//-- jetzt ist schon "to" (Y) der aktive Thread 	--//
 		"pop r17				; restore registers	\n\t"
 		"pop r16									\n\t"
@@ -243,34 +221,9 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to) {
 		"pop r1					; load SREG			\n\t"
 		"out __SREG__, r1		; restore SREG		\n\t"
 		"clr r1					; cleanup r1			"
-		::	"y" (&to->stack), "z" (&from->stack)	// Stackpointer
+		::	"x" (&to->stack), "z" (&from->stack)	// Stackpointer
 		:	"memory"
 	);
-}
-
-void os_switch_helper(void) __attribute__((naked));
-
-/*
- * Hilfsfunktion fuer Thread-Switch, nicht beliebig aufrufbar!
- * (Erwartet Zeiger auf die Stacks in Z und Y).
- * Als extra Funktion implementiert, um die Return-Adresse auf dem Stack zu haben.
- */
-void os_switch_helper(void) {
-	//-- coming in as "Z" --//
-	__asm__ __volatile__(
-		"in r16, __SP_L__	; switch Stacks			\n\t"
-		"st Z+, r16									\n\t"
-		"in r16, __SP_H__							\n\t"
-		"st Z, r16									\n\t"
-			//-- live changes here --//
-		"ld r16, Y+ 								\n\t"
-		"out __SP_L__, r16							\n\t"
-		"ld r16, Y 									\n\t"
-		"out __SP_H__, r16							\n\t"
-		"ret											"
-		::: "memory"
-	);
-	//-- continue as "Y" --//
 }
 
 #ifdef OS_DEBUG

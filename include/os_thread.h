@@ -51,6 +51,7 @@ typedef struct {
 #define OS_MAX_THREADS		4	/*!< maximale Anzahl an Threads im System */
 #define OS_KERNEL_STACKSIZE	32	/*!< Groesse des Kernel-Stacks (fuer Timer-ISR) [Byte] */
 #define OS_IDLE_STACKSIZE	64	/*!< Groesse des Idle-Stacks [Byte] */
+#define OS_CONTEXT_SIZE		17	/*!< Groesse des Kontextes eines Threads [Byte], muss zum Code in os_switch_thread() passen! */
 //#define OS_DEBUG				/*!< Schalter fuer Debug-Code */
 //#define OS_KERNEL_LOG_AVAILABLE	/*!< Aktiviert das Kernel-LOG mit laufenden Debug-Ausgaben */
 
@@ -113,8 +114,9 @@ void os_idle(void) __attribute__((OS_task));
  * Es ist allerdings keine Verschachtelung moeglich! Zwischen os_enterCS()
  * und os_exitCS() sollte daher kein Funktionsaufruf erfolgen.
  */
-#define os_enterCS() {								\
-	os_scheduling_allowed = 0;						\
+#define os_enterCS() {						\
+	os_scheduling_allowed = 0;				\
+	__asm__ __volatile__("":::"memory");	\
 }
 
 /*!

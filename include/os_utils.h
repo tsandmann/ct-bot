@@ -44,9 +44,10 @@
  */
 static inline uint8_t test_and_set(uint8_t * var, uint8_t x) {
 	uint8_t sreg = SREG;
-	cli();
+	__asm__ __volatile__("cli":::"memory");
 	uint8_t old = *var;
 	*var = x;
+	__asm__ __volatile__("":::"memory");
 	SREG = sreg;
 	return old;
 }

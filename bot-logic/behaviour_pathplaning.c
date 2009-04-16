@@ -98,8 +98,8 @@ map_section_lowres_t * map_lowres[MAP_SECTIONS_LOWRES][MAP_SECTIONS_LOWRES]; /*!
 static pos_store_t * planning_pos_store = NULL;		/*!< Positionsspeicher */
 static position_t pos_store_data[POS_STORE_SIZE];	/*!< Stack-Speicher fuer Positionsspeicher */
 
-static position_t startwave;	/*!< Ausgangspunkt der Welle (eigentlicher Zielpunkt), in Mapkoordinaten */
-static position_t destination;	/*!< Zielpunkt in Weltkoordinaten */
+static position_t startwave = {MAP_LENGTH_LOWRES / 2, MAP_LENGTH_LOWRES / 2};	/*!< Ausgangspunkt der Welle (eigentlicher Zielpunkt), in Mapkoordinaten */
+static position_t destination = {0, 0};	/*!< Zielpunkt in Weltkoordinaten */
 
 /*! Map-Koordinate des Startpunktes (Botpos) zum Terminieren der fortlaufenden Welle, da diese vom Zielpunkt ausgeht */
 static position_t endkoord;

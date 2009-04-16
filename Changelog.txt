@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-04-16 Timo Sandmann [mail@timosandmann.de]: Initialisierung in Pfadplanung korrigiert, Code in mcu/os_thread.c etwas verbessert
+
 2009-04-10 Timo Sandmann [mail@timosandmann.de]: Kleinere Korrekturen fuer map_get_ratio() und Pfadplanung ueber befahrenes Gebiet
 
 2009-04-10 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer show_labmap() in Pfadplanung
