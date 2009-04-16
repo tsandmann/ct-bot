@@ -201,7 +201,7 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to) {
 		"out __SP_L__, r16							\n\t"
 		"ld r16, X 									\n\t"
 		"out __SP_H__, r16							\n\t"
-	//-- jetzt ist schon "to" (Y) der aktive Thread 	--//
+	//-- jetzt ist schon "to" (X) der aktive Thread 	--//
 		"pop r17				; restore registers	\n\t"
 		"pop r16									\n\t"
 		"pop r15									\n\t"
