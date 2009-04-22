@@ -1168,7 +1168,7 @@ void map_2_sim_send(void) {
 
 	/* Alle Bloecke uebertragen */
 	uint16_t x, y;
-	for (x=map_min_x; x<=map_max_x; x+=MAP_SECTION_POINTS*2) { // in einem Block liegen 2 Sections in x-Richtung aneinander
+	for (x=map_min_x; x<=map_max_x+MAP_SECTION_POINTS; x+=MAP_SECTION_POINTS*2) { // in einem Block liegen 2 Sections in x-Richtung aneinander
 		for (y=map_min_y; y<=map_max_y; y+=MAP_SECTION_POINTS) {
 			access_field(x, y, 0, 0); // Block in Puffer laden
 			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, (int16_t)map_current_block.block, MAP_SIZE * MAP_RESOLUTION / 2, 128, map_buffer);
