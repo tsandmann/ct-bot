@@ -37,9 +37,7 @@
 #include "srf10.h"
 #include "led.h"
 #include "eeprom.h"
-
-
-#define DEG2RAD (2 * M_PI / 360)	/*!< Umrechnung von Grad nach Bogenmass */
+#include "math_utils.h"
 
 #define HEADING_START	0	/*!< Blickrichtung, mit der der Bot sich initialisiert */
 
@@ -78,6 +76,7 @@ int16_t sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung
 
 int16_t sensEncL = 0;	/*!< Encoder linkes Rad */
 int16_t sensEncR = 0;	/*!< Encoder rechtes Rad */
+
 float heading_enc = HEADING_START;	/*!< Blickrichtung aus Encodern */
 float x_enc = 0;		/*!< X-Koordinate aus Encodern [mm] */
 float y_enc = 0;		/*!< Y-Koordinate aus Encodern [mm] */

@@ -51,7 +51,7 @@
 #include "log.h"
 #include "pos_store.h"
 
-#define DEBUG_PATHPLANING	// Schalter fuer Debugausgaben
+//#define DEBUG_PATHPLANING	// Schalter fuer Debugausgaben
 //#define DEBUG_PATHPLANING_VERBOSE	// zeichnet Zellen in die Map-Anzeige des Sim ein, rot: Hindernis, gruen: frei
 
 #ifdef MCU

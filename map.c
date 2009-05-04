@@ -757,7 +757,7 @@ static void update_sensor_distance(int16_t x, int16_t y, float h, int16_t dist) 
 static void update_distance(int16_t x, int16_t y, float head, int16_t distL,
 		int16_t distR) {
 
-	float h = head * (M_PI/180.0f);
+	float h = head * DEG2RAD;
 	float cos_h = cos(h);
 	float sin_h = sin(h);
 
@@ -802,7 +802,7 @@ static void update_location(int16_t x, int16_t y) {
 static void update_border(int16_t x, int16_t y, float head, uint8_t borderL,
 		uint8_t borderR) {
 
-	float h = head * (M_PI/180.0); // Bogenmass
+	float h = head * DEG2RAD; // Bogenmass
 	float sin_head = sin(h);
 	float cos_head = cos(h);
 
@@ -961,7 +961,7 @@ static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
  * @param y1		Startpunkt der Region R, Y-Anteil; Weltkoordinaten [mm]
  * @param x2		Endpunkt der Region R, X-Anteil; Weltkoordinaten [mm]
  * @param y2		Endpunkt der Region R, Y-Anteil; Weltkoordinaten [mm]
- * @param width		Breite der Region R (jeweils width/2 links und rechts der Gerade) [mm]
+ * @param width		Breite der Region R (jeweils width/2 links und rechts der Geraden) [mm]
  * @param min_val	minimaler Feldwert, der vorkommen darf
  * @param max_val	maximaler Feldwert, der vorkommen darf
  * @return			Verhaeltnis von Anzahl der Felder, die zwischen min_val und max_val liegen, zu
@@ -984,14 +984,15 @@ uint8_t map_get_ratio(int16_t x1, int16_t y1, int16_t x2, int16_t y2,
 
 /*!
  * Prueft ob eine direkte Passage frei von Hindernissen ist
- * @param  from_x	Startort x Weltkoordinaten [mm]
- * @param  from_y	Startort y Weltkoordinaten [mm]
- * @param  to_x		Zielort x Weltkoordinaten [mm]
- * @param  to_y		Zielort y Weltkoordinaten [mm]
+ * @param from_x	Startort x Weltkoordinaten [mm]
+ * @param from_y	Startort y Weltkoordinaten [mm]
+ * @param to_x		Zielort x Weltkoordinaten [mm]
+ * @param to_y		Zielort y Weltkoordinaten [mm]
+ * @param margin	Breite eines Toleranzbereichs links und rechts der Fahrspur, der ebenfalls frei sein muss [mm]
  * @return			1, wenn alles frei ist
  */
-uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y) {
-	uint8_t result = map_get_ratio(from_x, from_y, to_x, to_y, BOT_DIAMETER, MAP_OBSTACLE_THRESHOLD, 127);
+uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y, uint8_t margin) {
+	uint8_t result = map_get_ratio(from_x, from_y, to_x, to_y, BOT_DIAMETER + 2 * margin, MAP_OBSTACLE_THRESHOLD, 127);
 	return result == MAP_RATIO_FULL;
 }
 
@@ -1015,6 +1016,21 @@ void map_draw_line(position_t from, position_t to, uint8_t color) {
 	*ptr = to.y;
 	int16_t c = color;
 	command_write_rawdata(CMD_MAP, SUB_MAP_LINE, c, 0, sizeof(data), data);
+}
+
+/*!
+ * Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein;
+ * dient zur Visualisierung der Arbeitsweise des Verhaltens
+ * @param from	Koordinaten des ersten Punktes der Linie (Welt)
+ * @param to	Koordinaten des zweiten Punktes der Linie (Welt)
+ * @param color Farbe der Linie: 0=gruen, 1=rot, sonst schwarz
+ */
+void map_draw_line_world(position_t from, position_t to, uint8_t color) {
+	from.x = world_to_map(from.x);
+	from.y = world_to_map(from.y);
+	to.x = world_to_map(to.x);
+	to.y = world_to_map(to.y);
+	map_draw_line(from, to, color);
 }
 
 /*!

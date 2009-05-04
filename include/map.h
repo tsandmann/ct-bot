@@ -128,13 +128,14 @@ uint8_t map_get_ratio(int16_t x1, int16_t y1, int16_t x2, int16_t y2,
 
 /*!
  * Prueft ob eine direkte Passage frei von Hindernissen ist
- * @param from_x	Startort x Weltkoordinaten
- * @param from_y	Startort y Weltkoordinaten
- * @param to_x		Zielort x Weltkoordinaten
- * @param to_y		Zielort y Weltkoordinaten
- * @return 			1 wenn alles frei ist
+ * @param from_x	Startort x Weltkoordinaten [mm]
+ * @param from_y	Startort y Weltkoordinaten [mm]
+ * @param to_x		Zielort x Weltkoordinaten [mm]
+ * @param to_y		Zielort y Weltkoordinaten [mm]
+ * @param margin	Breite eines Toleranzbereichs links und rechts der Fahrspur, der ebenfalls frei sein muss [mm]
+ * @return			1, wenn alles frei ist
  */
-uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y);
+uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y, uint8_t margin);
 
 /*!
  * Haelt den Bot an und schreibt den Map-Update-Cache komplett zurueck
@@ -197,6 +198,15 @@ void map_2_sim_send(void);
  * @param color	Farbe der Linie: 0=gruen, 1=rot, sonst schwarz
  */
 void map_draw_line(position_t from, position_t to, uint8_t color);
+
+/*!
+ * Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein;
+ * dient zur Visualisierung der Arbeitsweise des Verhaltens
+ * @param from	Koordinaten des ersten Punktes der Linie (Welt)
+ * @param to	Koordinaten des zweiten Punktes der Linie (Welt)
+ * @param color Farbe der Linie: 0=gruen, 1=rot, sonst schwarz
+ */
+void map_draw_line_world(position_t from, position_t to, uint8_t color);
 
 /*!
  * Zeichnet ein Rechteck in die Map-Anzeige des Sim
