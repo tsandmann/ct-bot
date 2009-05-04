@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	rc5-codes.h
  * @brief 	RC5-Fernbedienungscodes
  * @author 	Andreas Merkle (mail@blue-andi.de)
@@ -31,8 +31,8 @@
 #define RC5_ADDRESS	0x07C0		/*!< Der Adressbereich */
 #define RC5_COMMAND	0x103F		/*!< Der Kommandobereich */
 
-/* Im Normalbetrieb hilft die Beschränkung der RC5_MASK auf RC5_COMMAND dem Bot, 
- * moeglichst viele FBs zu erkennen. 
+/* Im Normalbetrieb hilft die Beschränkung der RC5_MASK auf RC5_COMMAND dem Bot,
+ * moeglichst viele FBs zu erkennen.
  * Zum erfassen neuer  Codes sollte man unbedingt RC5_MASK auf (RC5_COMMAND|RC5_ADDRESS) setzen */
 
 // Normalbetrieb
@@ -40,21 +40,22 @@
 // Erfassen neuer FB-Codes
 //#define RC5_MASK (RC5_COMMAND|RC5_ADDRESS)	/*!< Welcher Teil des Kommandos wird ausgewertet? */
 
+//TODO:	alle Codes mit (RC5_COMMAND|RC5_ADDRESS) maskieren
 
 
 /*!
  * Definition RC5-Codes verschiedener Fernbedienungen. Wer eine neue FB
  * einfuegen will, sollte
- * 
+ *
  * 	- 	eine Definition per cut&paste duplizieren,
  * 	- 	eine geeignete Konstante RC_HAVE_{Herstellername}_{Fernbedienungsname}
  * 		waehlen,
  * 	-	diese Konstante in die obere Liste der FB-Selektion eintragen,
  * 	-	die alte FB-Konstante im kopierten Bereich ersetzen,
- * 	-	festlegen, ob der RC5_NOT_AVAIL-Code wirklich nie von der FB 
+ * 	-	festlegen, ob der RC5_NOT_AVAIL-Code wirklich nie von der FB
  * 		generiert werden kann (0xFFFF ist meisst ok)
  * 	-	die eigentlichen, herausgefunden Codes eintragen.
- * 
+ *
  * Ist das erledigt, und funktioniert die neue FB-Definition, kann diese
  * in der c't-Bot-Mailingliste vorgestellt werden. (mb/18.03.2006)
  */
@@ -63,7 +64,7 @@
 
 	// Dies ist die Standard-Fernbedienung fuer den Bot
 	#define RC_HAVE_HQ_RC_UNIVERS29_334
-	
+
 	//#define RC_HAVE_HAUPPAUGE_WINTV
 	//#define RC_HAVE_HAUPPAUGE_MediaMPV
 	//#define RC_HAVE_CONRAD_PROMO8
@@ -75,7 +76,7 @@
 	// Dies ist die Standard-Fernbedienung fuer den Sim
 	#define RC_HAVE_HQ_RC_UNIVERS29_334
 	//#define RC_HAVE_HAUPPAUGE_WINTV
-	
+
 #endif	// MCU
 
 
@@ -86,12 +87,12 @@
 
 
 /*!
- * Default-Fernbedienung 
+ * Default-Fernbedienung
  * HQ RC Univers 29, Geraetecode 334
  */
 #ifdef RC_HAVE_HQ_RC_UNIVERS29_334
 	#define RC5_CODE_PWR		(0x118C & RC5_MASK)		/*!< Taste An/Aus */
-	
+
 	#define RC5_CODE_0			(0x1180 & RC5_MASK)		/*!< Taste 0 /10*/
 	#define RC5_CODE_1			(0x1181 & RC5_MASK)		/*!< Taste 1 */
 	#define RC5_CODE_2			(0x1182 & RC5_MASK)		/*!< Taste 2 */
@@ -104,17 +105,17 @@
 	#define RC5_CODE_9			(0x1189 & RC5_MASK)		/*!< Taste 9 */
 	#define RC5_CODE_11		(0x118A & RC5_MASK)		/*!< Taste 11 /1-*/
 	#define RC5_CODE_12		(0x11A3 & RC5_MASK)		/*!< Taste 12 /2-*/
-		
+
 	#define RC5_CODE_GREEN		(0x01BA & RC5_MASK)		/*!< Gruene Taste */
 	#define RC5_CODE_RED		(0x01BD & RC5_MASK)		/*!< Rote Taste */
 	#define RC5_CODE_YELLOW	(0x01B1 & RC5_MASK)		/*!< Gelbe Taste */
 	#define RC5_CODE_BLUE		(0x01B0 & RC5_MASK)		/*!< Blaue Taste */
-	
+
 	#define RC5_CODE_I_II		(0x11AB & RC5_MASK)		/*!< I/II-Taste */
 	#define RC5_CODE_TV_VCR	(0x11B8 & RC5_MASK)		/*!< TV/VCR-Taste */
 
 	#define RC5_CODE_DOT		(0x11AB & RC5_MASK)		/*!< Taste mit rundem Punkt */
-	
+
 	#define RC5_CODE_PLAY		(0x11B5 & RC5_MASK)		/*!< PLAY-Taste */
 	#define RC5_CODE_STILL		(0x11A9 & RC5_MASK)		/*!< Pause Taste */
 	#define RC5_CODE_STOP		(0x11B6 & RC5_MASK)		/*!< Pause Taste */
@@ -129,8 +130,8 @@
 
 	#define RC5_CH_PLUS		(0x11A0 & RC5_MASK)		/*!< Ch + Taste */
 	#define RC5_CH_MINUS		(0x11A1 & RC5_MASK)		/*!< Ch - Taste */
-	
-	
+
+
 	#define RC5_CODE_UP		RC5_CODE_STILL			/*!< Taste Hoch */
 	#define RC5_CODE_DOWN		RC5_CODE_STOP			/*!< Taste Runter */
 	#define RC5_CODE_LEFT		RC5_CODE_BWD				/*!< Taste Links */
@@ -188,14 +189,14 @@
 	#define RC5_CODE_RIGHT		(0x17D0 & RC5_MASK)		/*!< Taste VOL+ */
 
 	#define RC5_CODE_OK		(0x17E5 & RC5_MASK)		/*!< Taste OK */
-	
-	#define RC5_CODE_PWR   	(0x17FD & RC5_MASK)		/*!< Taste An/Aus */ 
-	
+
+	#define RC5_CODE_PWR   	(0x17FD & RC5_MASK)		/*!< Taste An/Aus */
+
 	#define RC5_CODE_RED   	(0x17CB & RC5_MASK)		/*!< Taste Rot */
 	#define RC5_CODE_GREEN		(0x17EE & RC5_MASK)		/*!< Taste Gruen */
 	#define RC5_CODE_YELLOW	(0x17F8 & RC5_MASK)		/*!< Taste Gelb */
 	#define RC5_CODE_BLUE		(0x17E9 & RC5_MASK)		/*!< Taste Blau */
-	
+
 	#define RC5_CODE_FWD		(0x17F4 & RC5_MASK)		/*!< Taste >> */
 	#define RC5_CODE_BWD		(0x17F2 & RC5_MASK)		/*!< Taste << */
 	#define RC5_CODE_PLAY		(0x17F5 & RC5_MASK)		/*!< Taste > */
@@ -204,11 +205,11 @@
 	#define RC5_CODE_WAIT		(0x17F0 & RC5_MASK)		/*!< Taste Pause */
 	#define RC5_CODE_REPLAY	(0x17E4 & RC5_MASK)		/*!< Taste Anfang |< */
 	#define RC5_CODE_SKIP		(0x17DE & RC5_MASK)		/*!< Taste Ende >| */
-	
+
 	#define RC5_CODE_MUTE		(0x17CF & RC5_MASK)		/*!< Taste Mute */
 	#define RC5_CODE_VIEW		(0x17CC & RC5_MASK)		/*!< Taste View zwischen Mute und Full */
 	#define RC5_CODE_FULL		(0x17FC & RC5_MASK)		/*!< Taste Full */
-	
+
 	#define RC5_CODE_BACK		(0x17DF & RC5_MASK)		/*!< Taste Back/Exit */
 	#define RC5_CODE_MENU		(0x17CD & RC5_MASK)		/*!< Taste Menue */
 	#define RC5_CODE_GO		(0x17FB & RC5_MASK)		/*!< Taste GO */
@@ -347,7 +348,7 @@
 	#define RC5_CODE_OK						(0x1023 & RC5_MASK)		/*!< Taste OK (gruen)  */
 	#define RC5_CODE_MENU						(0x0012 & RC5_MASK)		/*!< Taste MENU */
 	#define RC5_CODE_EXIT						(0x1022 & RC5_MASK)		/*!< Taste EXIT (gleicher Code wie Taste Return) */
-	
+
 	/* Vorhandene Tasten werden hier mit der Wunsch-Funktion belegt (Umwidmung)*/
 	#define RC5_CODE_UP		RC5_CODE_CH_PLUS		/*!< Taste CH +  wird genutzt fuer UP-Funktion */
 	#define RC5_CODE_DOWN		RC5_CODE_CH_MINUS		/*!< Taste CH -  wird genutzt fuer  DOWN-Funktion */
@@ -357,7 +358,7 @@
 	#define RC5_CODE_SELECT	RC5_CODE_RETURN			/*!< Taste Return & Exit werden genutzt fuer SELECT-Funktion */
 	#define RC5_CODE_BWD		RC5_CODE_GREEN_LEFT		/*!< Taste links  (gruen) wird genutzt fuer BWD-Funktion (backward)*/
 	#define RC5_CODE_FWD		RC5_CODE_GREEN_RIGHT	/*!< Taste rechts (gruen) wird genutzt fuer FWD-Funktion (forward)*/
-	
+
 	#define RC5_CODE_I_II		RC5_CODE_SELECT
 	#define RC5_CODE_TV_VCR	RC5_CODE_VIEW
 #endif	// RC_HAVE_VIVANCO_UR89_TV_CODE_089
@@ -449,22 +450,22 @@
 	#define RC5_CODE_7			(0x3947 & RC5_MASK)		/*!< Taste 7 */
 	#define RC5_CODE_8			(0x3948 & RC5_MASK)		/*!< Taste 8 */
 	#define RC5_CODE_9			(0x3949 & RC5_MASK)		/*!< Taste 9 */
-	
+
 	#define RC5_CODE_UP		(0x2950 & RC5_MASK)		/*!< Taste Hoch */
 	#define RC5_CODE_DOWN		(0x2951 & RC5_MASK)		/*!< Taste Runter */
 	#define RC5_CODE_LEFT		(0x2955 & RC5_MASK)		/*!< Taste Links */
 	#define RC5_CODE_RIGHT		(0x2956 & RC5_MASK)		/*!< Taste Rechts */
-	
+
 	#define RC5_CODE_PWR		(0x394C & RC5_MASK)		/*!< Taste An/Aus */
-	
+
 	#define RC5_CODE_RED		(0x100B & RC5_MASK)		/*!< Rote Taste */
 	#define RC5_CODE_GREEN		(0x102E & RC5_MASK)		/*!< Gruene Taste */
 	#define RC5_CODE_YELLOW	(0x1038 & RC5_MASK)		/*!< Gelbe Taste */
 	#define RC5_CODE_BLUE		(0x1029 & RC5_MASK)		/*!< Blaue Taste */
 	#define RC5_CODE_VIEW		(0x000F & RC5_MASK)		/*!< Instant View Taste */
-	
+
 	#define RC5_CODE_SELECT	(0x100B & RC5_MASK)		/*!< Select Taste */
-	
+
 	#define RC5_CODE_BWD		(0x1025 & RC5_MASK)		/*!< Backward Taste */
 	#define RC5_CODE_FWD		(0x1026 & RC5_MASK)		/*!< Forward Taste */
 

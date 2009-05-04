@@ -115,7 +115,7 @@ static inline int8_t map_get_point(int16_t x, int16_t y) {
  * @param y1		Startpunkt der Region R, Y-Anteil; Weltkoordinaten [mm]
  * @param x2		Endpunkt der Region R, X-Anteil; Weltkoordinaten [mm]
  * @param y2		Endpunkt der Region R, Y-Anteil; Weltkoordinaten [mm]
- * @param width		Breite der Region R (jeweils width/2 links und rechts der Gerade) [mm]
+ * @param width		Breite der Region R (jeweils width/2 links und rechts der Geraden) [mm]
  * @param min_val	minimaler Feldwert, der vorkommen darf
  * @param max_val	maximaler Feldwert, der vorkommen darf
  * @return			Verhaeltnis von Anzahl der Felder, die zwischen min_val und max_val liegen, zu

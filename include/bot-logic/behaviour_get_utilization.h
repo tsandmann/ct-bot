@@ -31,13 +31,13 @@
 #ifdef BEHAVIOUR_GET_UTILIZATION_AVAILABLE
 
 /*!
- * Verhalten, dass die CPU-Auslastung eines anderen Verhaltens misst
+ * Verhalten, das die CPU-Auslastung eines anderen Verhaltens misst
  * @param *data	Der Verhaltensdatensatz
  */
 void bot_get_utilization_behaviour(Behaviour_t * data);
 
 /*!
- * Verhalten, dass die CPU-Auslastung eines anderen Verhaltens misst
+ * Verhalten, das die CPU-Auslastung eines anderen Verhaltens misst
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  * @param behaviour	Prioritaet des zu ueberwachenden Verhaltens
  */

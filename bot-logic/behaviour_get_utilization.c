@@ -38,7 +38,7 @@ static uint8_t state = 0;
 static Behaviour_t * beh = NULL;
 
 /*!
- * Verhalten, dass die CPU-Auslastung eines anderen Verhaltens misst
+ * Verhalten, das die CPU-Auslastung eines anderen Verhaltens misst
  * @param *data	Der Verhaltensdatensatz
  */
 void bot_get_utilization_behaviour(Behaviour_t * data) {
@@ -84,7 +84,7 @@ void bot_get_utilization_behaviour(Behaviour_t * data) {
 }
 
 /*!
- * Verhalten, dass die CPU-Auslastung eines anderen Verhaltens misst
+ * Verhalten, das die CPU-Auslastung eines anderen Verhaltens misst
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  * @param behaviour	Prioritaet des zu ueberwachenden Verhaltens
  */

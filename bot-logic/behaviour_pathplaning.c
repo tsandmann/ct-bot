@@ -248,12 +248,12 @@ static void set_hazards(void) {
 					map_compare_haz, 127);
 			if (ratio < RATIO_THRESHOLD) {
 				access_field_lowres((position_t) {x, y}, 1, 1);
-#ifdef DEBUG_PATHPLANING_VERBOSE
+#if defined DEBUG_PATHPLANING_VERBOSE && defined MAP_2_SIM_AVAILABLE
 //				LOG_DEBUG("Trage Hindernis in (%d|%d) ein, ratio=%u", x, y, ratio);
 				map_draw_rect(from, to, MAP_CELL_SIZE_LOWRES / (1000 / MAP_RESOLUTION), 1);
 #endif	// DEBUG_PATHPLANING_VERBOSE
 			} else {
-#ifdef DEBUG_PATHPLANING_VERBOSE
+#if defined DEBUG_PATHPLANING_VERBOSE && defined MAP_2_SIM_AVAILABLE
 //				LOG_DEBUG("KEIN Hindernis in (%d|%d), ratio=%u", x, y, ratio);
 				map_draw_rect(from, to, MAP_CELL_SIZE_LOWRES / (1000 / MAP_RESOLUTION), 0);
 #endif	// DEBUG_PATHPLANING_VERBOSE
