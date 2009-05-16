@@ -85,6 +85,11 @@
 #define MAP_CELL_SIZE_LOWRES	((uint16_t)(1000 / MAP_RESOLUTION_LOWRES))	/*!< Breite eines Map-Feldes in mm */
 #define MAP_LENGTH_LOWRES		((uint16_t)(MAP_SIZE_LOWRES * MAP_RESOLUTION_LOWRES))	/*!< Kantenlaenge der gesamten Karte in Map-Punkten */
 #define RATIO_THRESHOLD			(MAP_RATIO_FULL - 5)	/*!< Schwellwert, unterhalb dem das Ergebnis von map_get_ratio() als Hindernis gilt */
+#define RATIO_THRESHOLD_DRIVEN  110     /*!< bei Pfadsuche auf befahrener Strecke gilt dieser Schwellwert. Einfach auskommentieren, um einheitlich RATIO_THRESHOLD zu verwenden */
+
+#ifndef RATIO_THRESHOLD_DRIVEN
+#define RATIO_THRESHOLD_DRIVEN	RATIO_THRESHOLD
+#endif
 
 /*! Anzahl der Sections in der Lowres-Map */
 #define MAP_SECTIONS_LOWRES (((uint16_t)(MAP_SIZE_LOWRES * MAP_RESOLUTION_LOWRES) / MAP_SECTION_POINTS_LOWRES))
@@ -246,7 +251,8 @@ static void set_hazards(void) {
 #endif	// DEBUG_PATHPLANING_VERBOSE
 			uint8_t ratio = map_get_ratio(x1, yw, x2, yw, MAP_CELL_SIZE_LOWRES,
 					map_compare_haz, 127);
-			if (ratio < RATIO_THRESHOLD) {
+//fuer Vergleich auf bereits befahrene Strecke gilt anderer Schwellwert als fuer Hindernis
+			if (ratio < ((map_compare_haz==0)?RATIO_THRESHOLD:RATIO_THRESHOLD_DRIVEN)) {
 				access_field_lowres((position_t) {x, y}, 1, 1);
 #if defined DEBUG_PATHPLANING_VERBOSE && defined MAP_2_SIM_AVAILABLE
 //				LOG_DEBUG("Trage Hindernis in (%d|%d) ein, ratio=%u", x, y, ratio);
@@ -434,6 +440,8 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 				neighbour_found = False;
 			} else {
 				// abarbeiten aller 4 Nachbarn zu einem Punkt der Queue, auch wenn schon gefunden wurde zwecks guter Pfadfindung; ein True wird nicht ueberschrieben
+				// nur 4 Nachbarn kann bei Pfadsuche auf befahrenem Gebiet zu keinem Pfad fuehren, wenn Bot bisher nur eine Fahrspur hat und schraeg faehrt, dann wuerde
+				// nur 8er Nachbarschaft Pfad erkennen
 				for (j=-1; j<=1; j++) {
 					for (i=-1; i<=1; i++) {
 						if ((j == 0 && i != 0) || (i == 0 && j != 0)) {
@@ -505,6 +513,14 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 						tmp.x += i;
 						tmp.y += j;
 						minval = access_field_lowres(tmp, 0, 0); // Mapwert auslesen
+
+						// Mapwert ist zur Zielerkennung egal, sind die Koords erreicht ist Schluss; wegen Mapwert 1 wurde manchmal oft kein Ziel erkannt
+						// wenn ein Nachbar Zielpunkt ist, wird Endekennung gesetzt egal wie der Mapwert aussieht
+						if (tmp.x == startwave.x && tmp.y == startwave.y) {
+							endreached = True;
+							LOG_DEBUG("Ende gefunden %1d %1d map: %1d", tmp.x, tmp.y, minval);
+						}
+
 						// die Koordinate mit niedrigstem Wellenwert merken
 						if (minval> 1 && minval < mapval_min) { // naechster genommener Wellenwert muss kleiner aus letztem Lauf sein
 							nextdest.x = pos.x + i;
@@ -515,12 +531,6 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 							// Wellenwert und Kennung fuer Nachbar gefunden setzen
 							mapval_min = minval;
 							neighbour_found = True;
-
-							// wenn ein Nachbar Zielpunkt ist Endekennung setzen
-							if (nextdest.x == startwave.x && nextdest.y == startwave.y) {
-								endreached = True;
-								LOG_DEBUG("Ende gefunden %1d %1d", nextdest.x, nextdest.y);
-							}
 						}
 					}
 				}
@@ -698,6 +708,11 @@ static void pathplaning_disp_key_handler(void) {
 		RC5_Code = 0;
 		show_labmap();
 		break;
+
+	case RC5_CODE_7:
+		RC5_Code = 0;
+		set_hazards();
+		break;
 #endif
 	case RC5_CODE_8:
 		RC5_Code = 0;
@@ -716,7 +731,11 @@ void pathplaning_display(void) {
 	display_cursor(2, 1);
 	display_printf("4:PlanOnDrivenArea"); // nur auf befahrenem Gebiet planen
 	display_cursor(3, 1);
+#ifdef DEBUG_PATHPLANING
+    display_printf("5/7:GoPlaning/Haz");
+#else
 	display_printf("5:GoPlaning");
+#endif
 	display_cursor(4, 1);
 #ifdef DEBUG_PATHPLANING
 	display_printf("6/8:ShowMap/SetDest");
