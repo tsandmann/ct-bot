@@ -680,6 +680,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 	static trackpoint_t p_temp; // zum Merken beim Vertauschen
 
 	position_t pos;
+	int8_t mapval;
 
 	deactivateBehaviour(bot_cancel_behaviour_behaviour); // Cancel-Verhalten abbrechen, damit es nicht ewig weiterlaeuft
 
@@ -715,8 +716,27 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 			getpoint_side_dist(0, disttodrive, TRACKLEFT, &pos); // Punkt etwas vor Hindernis berechnen
 			LOG_DEBUG("Mappunkt fuer %1d voraus berechnet l/r: %1d %1d", disttodrive, sensDistL, sensDistR);
 		} else {
-			getpoint_side_dist(0,250, TRACKLEFT, &pos); // nur etwas voraus Punkt berechnen wenn weiter gesehen
-			LOG_DEBUG("Mappunkt fuer 25cm voraus berechnet l/r: %1d %1d", sensDistL, sensDistR);
+            // falls bei Weitsicht voraus berechneter Streckenpunkt schon befahren ist, dann nur bis dorthin fahren und nicht via obstacle; danach geht's wieder von
+            // vorn  mit geradeausfahren weiter und saemtlichen Pruefungen; Beispielparcour hierfuer ist testbots_home
+ 			mapval=getpoint_side_dist(0,800, TRACKLEFT, &pos); //nur etwas voraus Punkt berechnen wenn weiter gesehen
+			LOG_DEBUG("Map-Punkt %1d 80cm voraus ",mapval);
+
+			if (mapval>MAP_TRACKVAL) {
+			  LOG_DEBUG("Map-Punkt %1d 80cm voraus befahren l/r: %1d %1d",mapval,sensDistL, sensDistR);
+			  disttodrive=400;  // bei befahren voraus stueckchenweise ranfahren
+			}
+			else {
+				mapval=getpoint_side_dist(0,250, TRACKLEFT, &pos); //nur etwas voraus Punkt berechnen wenn weiter gesehen
+				LOG_DEBUG("MapPunkt %1d fuer 25cm voraus: %1d",mapval);
+			}
+			// wenn Zielpunkt bekannt ist, dann nur Strecke bis Zielpunkt fahren und danach alle Plausis neu fuer moegliche Weiterfahrt
+			if (nextline.point2.x!=0 || nextline.point2.y!=0) {
+			 position_t bot_pos;
+		     bot_pos.x=x_pos;
+		     bot_pos.y=y_pos;
+		     disttodrive=sqrt(get_dist(bot_pos.x,bot_pos.y,pos.x,pos.y));
+		     LOG_DEBUG("Weitsicht und P2 bekannt-nur bestimmte Laenge fahren %1d",disttodrive);
+			}
 		}
 
 		if (nextline.point2.x!=0 || nextline.point2.y!=0) {
@@ -772,14 +792,20 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 		break;
 
 	case GO_FORWARD: //nach bestandenen Pruefungen fuer Bahn voraus nun vorwaertsfahren
-		track_state = DELAY_AFTER_FORWARD; //naechster Verhaltenszustand
+		track_state = DELAY_AFTER_FORWARD;    //naechster Verhaltenszustand
+		next_behavstate=GET_LINE_FROM_STACK;  //Verhaltenszustand nach AFTER_FORWARD
 
 		//wenn bereits Hindernis voraus gesehen wurde, dann nur Fahren bis kurz vor dem Hindernis falls
 		//naemlich Hindernis wieder aus Blick der Sensoren verschwindet und nicht daran kleben bleibt
 		if (disttodrive < 900) {
 			bot_goto_dist(data, disttodrive, 1); //bei kleinem Abstand mit goto_dist fahren
+			LOG_DEBUG("fahre disttodrive %1d",disttodrive);
+			track_state=DELAY_AFTER_FORWARD;  // um Observer zu stoppen und Nebenbahnen zu pushen
+			next_behavstate=CHECK_TRACKSIDE;  // mit voraus weiter nach AFTER_FORWARD und saemtlichen Checks voraus
+			set_point_to_lastpoint(&nextline.point2, 0, 0);  // Zielpunkt ist dann bereits angefahren und einfach vorwaerts weiter
 		} else {
 			bot_goto_obstacle(data, DIST_AWARD_HAZ, 0); //mit hohem Abstand voraus via obstacle
+			LOG_DEBUG("fahre obstacle ");
 		}
 
 		//damit auch Abgrund erkannt wird beim Vorfahren; obige Verhalten benutzen beide goto_pos
@@ -796,7 +822,6 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 
 		lastCheckTime = TIMER_GET_TICKCOUNT_16; // Var auf Systemzeit setzen, damit etwas zeit vergehen kann im naechsten Zustand
 		track_state = AFTER_FORWARD; //naechster Verhaltenszustand
-		next_behavstate=GET_LINE_FROM_STACK;  //Verhaltenszustand nach AFTER_FORWARD
 
 		break;
 
@@ -818,6 +843,16 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 
 		// naechster Verhaltenszustand abhaengig von gesetzter naechster Zustandsvariablen
 		track_state = next_behavstate;
+
+		// Falls es mit Weiterfahrt weitergehen soll, dann erst pruefen auf Befahren voraus
+		if (track_state==CHECK_TRACKSIDE) {
+			mapval=getpoint_side_dist(0,250, TRACKLEFT, &pos);
+			LOG_DEBUG("AFTER_FORWARD Spur voraus %1d",mapval);
+			if (mapval > MAP_TRACKVAL) {
+			      track_state = GET_LINE_FROM_STACK;
+			      LOG_DEBUG("Spur knapp voraus befahren->zu Stackholen");
+		     }
+		}
 
 		break;
 
@@ -1043,6 +1078,14 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 
 		LOG_DEBUG("Stackholen P1: %1d %1d P2: %1d %1d", nextline.point1.x, nextline.point1.y, nextline.point2.x, nextline.point2.y);
 
+		if (map_get_field(nextline.point1)>MAP_TRACKVAL || map_get_field(nextline.point2)>MAP_TRACKVAL) {
+			LOG_DEBUG("Start- oder EndPunkt schon befahren->Track verwerfen");
+#if defined MAP_2_SIM_AVAILABLE && defined DEBUG_BEHAVIOUR_AREA
+		map_draw_line_world(nextline.point1,nextline.point2,1);//verworfene Linie Rot
+#endif
+		  break;
+		}
+
 		//pruefen, ob Wege zu den Punkten frei sind und Freikennungen speichern
 		free1 = map_way_free(x_pos, y_pos, nextline.point1.x, nextline.point1.y, MAP_WAY_FREE_MARGIN);
 	    LOG_DEBUG("Wegfreiheit zu P1: %1d, Abstand P1: %1.0f P2: %1.0f",free1, sqrt(get_dist(x_pos,y_pos,nextline.point1.x, nextline.point1.y)),sqrt(get_dist(x_pos,y_pos,nextline.point2.x, nextline.point2.y)));
@@ -1062,49 +1105,58 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 			}
 		}
 
-		// bei Pfadplanung Weg um Hindernis finden und fahren; problematisch, weil auch ueber noch unbefahrene Gebiete geplant und gefahren wird
-//TODO: Pfadplanung ueber nur bereits befahrene Gebiete
+		if (!free1) {
+		 uint8_t free2 = map_way_free(x_pos, y_pos, nextline.point2.x, nextline.point2.y, MAP_WAY_FREE_MARGIN);
+		 LOG_DEBUG("Wegfreiheit zu P2 ohne Pfadplanung: %1d, Mapwert: %1d",free2,map_get_field(nextline.point2));
+
+		// falls Weg zu keinem Punkt frei, dann mit dem naechsten Stackweg tauschen; ist dieser auch nicht befahrbar,
+		// wird dieser verworfen und der Weg
+		if (!free2) {
+			LOG_DEBUG("Stackweg nicht frei");
+
 #ifdef GO_WITH_PATHPLANING
-		if (!free1) {
 			bot_stop_observe(); // auf jeden Fall erst mal stoppen
-			LOG_DEBUG("Weg nicht frei, >> Pfadplanung << zu %1d %1d", nextline.point1.x, nextline.point1.y);
-			bot_calc_wave(data, nextline.point1.x, nextline.point1.y, /*MAP_DRIVEN_THRESHOLD*/0); // Pfadplanung klappt nie ueber befahrenes Gebiet
-			track_state = TURN_TO_DESTINATION;//muss sich hiernach zum Zielpunkt ausrichten
-			break;
-		}
+			// Fuer Pfadplanung nur Strecken anfahren mit gewisser Laenge
+			if (get_dist(nextline.point1.x, nextline.point1.y,nextline.point2.x, nextline.point2.y)>200*200) {
+			 if (get_dist(nextline.point1.x,nextline.point1.y,x_pos,y_pos) >=300*300)	{
+			  LOG_DEBUG("Weg nicht frei, >> Pfadplanung zu P1 << %1d %1d", nextline.point1.x, nextline.point1.y);
+			 }
+			 else {
+				 set_nextline(nextline.point1, nextline.point2, True); //Werte egal da nextline nur getauscht
+			     LOG_DEBUG("Weg nicht frei, >> Pfadplanung zu P2 nach Tausch wg. zu geringem Abstand << %1d %1d", nextline.point1.x, nextline.point1.y);
+			 }
+			 bot_calc_wave(data, nextline.point1.x, nextline.point1.y, /*MAP_DRIVEN_THRESHOLD*/0);// Pfadplanung ueber befahrenes Gebiet wehnn es denn mal geht
+			 track_state=TURN_TO_DESTINATION;//muss sich hiernach zum Zielpunkt ausrichten
+			 break;
+			}
+			else {
+			  LOG_DEBUG("Strecke zu kurz fuer Pfadplanung, evtl. Vertauschen");
+			}
 #else
-		if (!free1) {
-			uint8_t free2 = map_way_free(x_pos, y_pos, nextline.point2.x, nextline.point2.y, MAP_WAY_FREE_MARGIN);
-			LOG_DEBUG("Wegfreiheit zu P2 ohne Pfadplanung: %1d",free2);
 
-			// falls Weg zu keinem Punkt frei, dann mit dem naechsten Stackweg tauschen; ist dieser auch nicht befahrbar,
-			// wird dieser verworfen und der Weg
-			if (!free2) {
-				LOG_DEBUG("Stackweg nicht frei");
+			static trackpoint_t pt; //zum Merken beim Vertauschen
 
-				static trackpoint_t pt; //zum Merken beim Vertauschen
+			if (pop_stack_pos_line(&pt.point1, &pt.point2)) {
 
-				if (pop_stack_pos_line(&pt.point1, &pt.point2)) {
+				free1 = map_way_free(x_pos, y_pos, pt.point1.x, pt.point1.y, MAP_WAY_FREE_MARGIN);
+				free2 = map_way_free(x_pos, y_pos, pt.point2.x, pt.point2.y, MAP_WAY_FREE_MARGIN);
 
-					free1 = map_way_free(x_pos, y_pos, pt.point1.x, pt.point1.y, MAP_WAY_FREE_MARGIN);
-					free2 = map_way_free(x_pos, y_pos, pt.point2.x, pt.point2.y, MAP_WAY_FREE_MARGIN);
-
-					if (!free1 && !free2) {
-						LOG_DEBUG("Folgeweg auch nicht frei"); //Weg verworfen wenn nicht anfahrbar->naechsten Stackweg holen
-						break;
-					}
-
-					//falls naechster Stackweg auch nicht frei, dann weiter Stackwege holen bis zum Ende
-					//hier ist aber der Folgeweg anfahrbar und wird getauscht mit vorher geholtem, noch nicht anfahrbarem Weg
-					push_stack_pos_line(nextline.point1, nextline.point2); //wieder auf Stack
-					push_stack_pos_line(pt.point1, pt.point2); //wieder auf Stack
-					LOG_DEBUG("Weg mit Folgeweg getauscht");
+				if (!free1 && !free2) {
+					LOG_DEBUG("Folgeweg auch nicht frei"); //Weg verworfen wenn nicht anfahrbar->naechsten Stackweg holen
 					break;
 				}
 
+				//falls naechster Stackweg auch nicht frei, dann weiter Stackwege holen bis zum Ende
+				//hier ist aber der Folgeweg anfahrbar und wird getauscht mit vorher geholtem, noch nicht anfahrbarem Weg
+				push_stack_pos_line(nextline.point1, nextline.point2); //wieder auf Stack
+				push_stack_pos_line(pt.point1, pt.point2); //wieder auf Stack
+				LOG_DEBUG("Weg mit Folgeweg getauscht");
+				break;
 			}
-		}
 #endif	// GO_WITH_PATHPLANING
+		 }
+		}
+
 		//naechster Verhaltenszustand zum Anfahren der naechsten Bahn mit Ausrichten auf den naeheren Punkt laut nextline
 		track_state = TURN_TO_NEAREST;
 		break;

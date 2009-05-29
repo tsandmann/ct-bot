@@ -55,7 +55,7 @@ static pos_store_t pos_stores[SLOT_COUNT];	/*!< Liste der Positionsspeicher */
  */
 pos_store_t * pos_store_create(Behaviour_t * owner, void * data) {
 	if (owner == NULL) {
-		LOG_DEBUG("Fehler: owner==NULL!");
+		LOG_ERROR("Fehler: owner==NULL!");
 		return NULL;
 	}
 	LOG_DEBUG("Erzeuge Positionsspeicher fuer 0x%lx", (size_t)owner);
@@ -79,7 +79,7 @@ pos_store_t * pos_store_create(Behaviour_t * owner, void * data) {
 					LOG_DEBUG("verwende statischen Speicher @ 0x%lx", (size_t)data);
 				}
 				if (store->data == NULL) {
-					LOG_DEBUG("Kein Speicher zur Verfuegung, Abbruch!");
+					LOG_ERROR("Kein Speicher zur Verfuegung, Abbruch!");
 					pos_store_release(store);
 					return NULL;
 				}
@@ -210,6 +210,7 @@ static uint8_t is_full(pos_store_t * store) {
  */
 uint8_t pos_store_insert(pos_store_t * store, position_t pos) {
 	if (is_full(store)) {
+		LOG_INFO("Pos-Store 0x%lx voll, kein push moeglich", (size_t)store);
 		return False;
 	}
 	uint8_t fp = store->fp;
@@ -229,6 +230,7 @@ uint8_t pos_store_insert(pos_store_t * store, position_t pos) {
  */
 uint8_t pos_store_push(pos_store_t * store, position_t pos) {
 	if (is_full(store)) {
+		LOG_INFO("Pos-Store 0x%lx voll, kein push moeglich", (size_t)store);
 		return False;
 	}
 	uint8_t sp = store->sp;
