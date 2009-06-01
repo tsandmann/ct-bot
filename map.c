@@ -932,6 +932,9 @@ static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
 
 	/* Verhaeltnis zu allen Feldern berechnen */
 	uint16_t fields = i * (width * 2 + corr);
+	if (fields == 0) {
+		return 255;
+	}
 	uint8_t result = (uint32_t)count * 255 / fields;
 
 #ifdef DEBUG_GET_RATIO
