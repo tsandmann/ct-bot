@@ -852,6 +852,9 @@ static uint8_t get_ratio(uint16_t x1, uint16_t y1, uint16_t x2,
 
 	/* Verhaeltnis zu allen Feldern berechnen */
 	uint16_t fields = i * width * 2;
+	if (fields == 0) {
+		return 255;
+	}
 	return (uint32_t)count * 255 / fields;
 }
 

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-06-01 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer map::map_get_ratio() (Division durch 0 ausgeschlossen)
+
 2009-02-15 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer map_get_ratio() und map_way_free()
 
 2008-10-29 Timo Sandmann [mail@timosandmann.de]: Release 15 
