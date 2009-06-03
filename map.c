@@ -285,9 +285,11 @@ int8_t map_init(void) {
  * Haelt den Bot an und schreibt den Map-Update-Cache komplett zurueck
  */
 void map_flush_cache(void) {
+#ifdef MCU
 	if (map_locked() == 1) {
 		motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
 	}
+#endif	// MCU
 	/* Warten, bis Update fertig */
 	os_signal_set(&lock_signal);
 	/* Sperre sofort wieder freigeben */
