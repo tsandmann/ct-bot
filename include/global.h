@@ -102,5 +102,13 @@ typedef struct {
 	int16_t y; /*!< Y-Anteil der Position */
 } __attribute__ ((packed)) position_t;
 
+#else	// __ASSEMBLER__
+
+#if defined __APPLE__ || defined __linux__ || defined __WIN32__
+#ifndef PC
+#define PC
+#endif	// PC
+#endif	// Plattform
+
 #endif	// __ASSEMBLER__
 #endif	// global_H
