@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-06-10 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer drive_area() auf dem echten Bot
+
 2009-06-03 Timo Sandmann [mail@timosandmann.de]: Map-Code fuer PC deterministisch gemacht
 
 2009-06-01 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer map::map_get_ratio() (Division durch 0 ausgeschlossen)
