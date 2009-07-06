@@ -34,12 +34,12 @@
 void bot_avoid_border_behaviour(Behaviour_t * data) {
 	uint8_t flag = 0;
 	if (sensBorderL > BORDER_DANGEROUS) {
-		speedWishLeft = -BOT_SPEED_NORMAL;
+		speedWishLeft = -BOT_SPEED_FAST;
 		flag = 1;
 	}
 
 	if (sensBorderR > BORDER_DANGEROUS) {
-		speedWishRight = -BOT_SPEED_NORMAL;
+		speedWishRight = -BOT_SPEED_FAST;
 		flag = 1;
 	}
 

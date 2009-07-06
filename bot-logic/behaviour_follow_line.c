@@ -1,105 +1,50 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	behaviour_follow_line.c
  * @brief 	Linienverfolger
- * @author 	Torsten Evers (tevers@onlinehome.de)
- * @author 	Timo Sandmann (mail@timosandmann.de)
+ * @author 	Torsten Evers (tevers@onlinehome.de) Version 1
+ * @author 	Timo Sandmann (mail@timosandmann.de) Version 2
+ * @author 	Frank Menzel (Menzelfr@gmx.de) Version 3
  * @date 	21.09.2007
  */
+
+//TODO:	- Version 3 funktioniert auf dem echten Bot nicht sehr zuverlaessig (Probleme bei Winkeln < 120 Grad)
 
 #include "bot-logic/bot-logik.h"
 
 #ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 
-//#define OLD_VERSION	/*!< aktiviert die alte Version den Linienverfolgers mit Eckendetektion (hat Probleme mit SPEED_CONTROL) */
+//#define DEBUG_BEHAVIOUR_FOLLOW_LINE // Schalter fuer Debug-Code
 
-#ifndef OLD_VERSION
-#include "timer.h"
-
-/*! 
- * Zeit zwischen zwei Korrekturen [ms]. Groessere Werte bewirken "ruhigeres" Fahren, 
- * erhoehen damit aber auch die Reaktionszeit (z.B. bei scharfen Kurven problematisch) 
- */
-#define	CORRECTION_DELAY	150
-
-/*! 
- * Folgt einer Linie. Der linke Liniensensor ist dabei auf der Linie, der Rechte daneben.
- * Der Bot faehrt also auf der rechten Kante der Linie. Sie sollte in etwa die Breite 
- * beider CNY70 haben.
- * @param *data	Verhaltensdatensatz
- */
-void bot_follow_line_behaviour(Behaviour_t * data) {
-	static int16_t lastLeft = 0;
-	static int16_t lastRight= 0;
-	static uint8_t lastCorrection = 0;
-	static uint32_t lastCorrectionTime = 0;
-	uint8_t correction = 0;
-	
-	if (sensLineL >= LINE_SENSE && sensLineR < LINE_SENSE) {
-		/* Bot faehrt auf rechter Linienkante */
-		speedWishLeft  = BOT_SPEED_SLOW;
-		speedWishRight = BOT_SPEED_SLOW;
-	} else if (sensLineL < LINE_SENSE) {
-		/* Bot fahert rechts neben der Linie */
-		speedWishLeft  = -BOT_SPEED_FOLLOW;
-		speedWishRight = BOT_SPEED_FOLLOW;
-		correction = 1;
-	} else {
-		/* Bot faehrt auf der Linie */	
-		speedWishLeft  = BOT_SPEED_FOLLOW;
-		speedWishRight = -BOT_SPEED_FOLLOW;
-		correction = 2;
-	}
-
-	if (lastCorrection != correction && !timer_ms_passed(&lastCorrectionTime, CORRECTION_DELAY)) {
-		/* Falls die letzte Korrektur gerade erst war, reagieren wir (noch) nicht */
-		speedWishLeft  = lastLeft;
-		speedWishRight = lastRight;
-		return;
-	}
-
-	/* neue Werte merken */
-	lastCorrection = correction;
-	lastLeft  = speedWishLeft;
-	lastRight = speedWishRight;
-}
-
-/*! 
- * Folgt einer Linie. Der linke Liniensensor ist dabei auf der Linie, der Rechte daneben.
- * Der Bot faehrt also auf der rechten Kante der Linie. Sie sollte in etwa die Breite 
- * beider CNY70 haben.
- * @param	*caller Verhaltensdatensatz des Aufrufers
- */
-void bot_follow_line(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_follow_line_behaviour, NOOVERRIDE);
-	/* stoerende Notfallverhalten aus */
-#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
-	deactivateBehaviour(bot_avoid_col_behaviour);
+#ifndef LOG_AVAILABLE
+#undef DEBUG_BEHAVIOUR_FOLLOW_LINE
 #endif
-#ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE
-	deactivateBehaviour(bot_avoid_border_behaviour);
-#endif	
-}
+#ifndef DEBUG_BEHAVIOUR_FOLLOW_LINE
+#undef LOG_DEBUG
+#define LOG_DEBUG(a, ...) {}
+#endif
 
-#else	// OLD_VERSION
+
+#if FOLLOW_LINE_VERSION == 1  // urspruenglich altes Linienverhalten
+
 /* Konstanten fuer das Verhalten */
 #define CORNER_LEFT					1
 #define CORNER_RIGHT				2
@@ -116,7 +61,7 @@ void bot_follow_line(Behaviour_t * caller) {
 static int8 lineState=CHECK_LINE;
 static int8 cornerDetected=False;
 
-/*! 
+/*!
  * Folgt einer Linie, sobald beide Liniensensoren ausloesen
  * Die Linie sollte in etwa die Breite beider CNY70 haben
  * @param *data	Verhaltensdatensatz
@@ -182,7 +127,7 @@ void bot_follow_line_behaviour(Behaviour_t *data) {
 			//LOG_DEBUG("Fahre geradeaus");
 			speedWishLeft=BOT_SPEED_FOLLOW;
 			speedWishRight=BOT_SPEED_FOLLOW;
-		}			
+		}
 		break;
 
 	case CHECK_BORDER:
@@ -238,7 +183,7 @@ void bot_follow_line_behaviour(Behaviour_t *data) {
 	}
 }
 
-/*! 
+/*!
  * Folgt einer Linie, sobald beide Liniensensoren ausloesen
  * Die Linie sollte in etwa die Breite beider CNY70 haben
  * @param	*caller Verhaltensdatensatz des Aufrufers
@@ -248,5 +193,236 @@ void bot_follow_line(Behaviour_t *caller) {
 	lineState=CHECK_LINE;
 	cornerDetected=False;
 }
-#endif	// OLD_VERSION
+
+#elif FOLLOW_LINE_VERSION == 2    // neuere Version des Linienfolgers
+#include "timer.h"
+
+/*!
+ * Zeit zwischen zwei Korrekturen [ms]. Groessere Werte bewirken "ruhigeres" Fahren,
+ * erhoehen damit aber auch die Reaktionszeit (z.B. bei scharfen Kurven problematisch)
+ */
+#define	CORRECTION_DELAY	150
+
+/*!
+ * Folgt einer Linie. Der linke Liniensensor ist dabei auf der Linie, der Rechte daneben.
+ * Der Bot faehrt also auf der rechten Kante der Linie. Sie sollte in etwa die Breite
+ * beider CNY70 haben.
+ * @param *data	Verhaltensdatensatz
+ */
+void bot_follow_line_behaviour(Behaviour_t * data) {
+	static int16_t lastLeft = 0;
+	static int16_t lastRight = 0;
+	static uint8_t lastCorrection = 0;
+	static uint32_t lastCorrectionTime = 0;
+	uint8_t correction = 0;
+
+	if (sensLineL >= LINE_SENSE && sensLineR < LINE_SENSE) {
+		/* Bot faehrt auf rechter Linienkante */
+		speedWishLeft = BOT_SPEED_SLOW;
+		speedWishRight = BOT_SPEED_SLOW;
+	} else if (sensLineL < LINE_SENSE) {
+		/* Bot fahert rechts neben der Linie */
+		speedWishLeft = -BOT_SPEED_FOLLOW;
+		speedWishRight = BOT_SPEED_FOLLOW;
+		correction = 1;
+	} else {
+		/* Bot faehrt auf der Linie */
+		speedWishLeft = BOT_SPEED_FOLLOW;
+		speedWishRight = -BOT_SPEED_FOLLOW;
+		correction = 2;
+	}
+
+	if (lastCorrection != correction && !timer_ms_passed_32(
+			&lastCorrectionTime, CORRECTION_DELAY)) {
+		/* Falls die letzte Korrektur gerade erst war, reagieren wir (noch) nicht */
+		speedWishLeft = lastLeft;
+		speedWishRight = lastRight;
+		return;
+	}
+
+	/* neue Werte merken */
+	lastCorrection = correction;
+	lastLeft = speedWishLeft;
+	lastRight = speedWishRight;
+}
+
+/*!
+ * Folgt einer Linie. Der linke Liniensensor ist dabei auf der Linie, der Rechte daneben.
+ * Der Bot faehrt also auf der rechten Kante der Linie. Sie sollte in etwa die Breite
+ * beider CNY70 haben.
+ * @param	*caller Verhaltensdatensatz des Aufrufers
+ */
+void bot_follow_line(Behaviour_t * caller) {
+	switch_to_behaviour(caller, bot_follow_line_behaviour, NOOVERRIDE);
+	/* stoerende Notfallverhalten aus */
+#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
+	deactivateBehaviour(bot_avoid_col_behaviour);
+#endif
+#ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE
+	deactivateBehaviour(bot_avoid_border_behaviour);
+#endif
+#ifdef BEHAVIOUR_SCAN_AVAILABLE
+	set_scan_otf_border(0); // keine Abgruende (die Linie) in die Map eintragen
+	set_scan_otf_mapmode(0); // Kartographiemodus aus
+#endif
+}
+
+#elif FOLLOW_LINE_VERSION == 3  // neueste Version des Linienfolgers, die mit drive_line_shortest_way entstanden ist
+#include "math_utils.h"
+
+/*!
+ * Zeit zwischen zwei Korrekturen [ms]. Groessere Werte bewirken "ruhigeres" Fahren,
+ * erhoehen damit aber auch die Reaktionszeit (z.B. bei scharfen Kurven problematisch)
+ */
+#define	CORRECTION_DELAY	100
+
+/*! Kennung links, welcher der Bordersensoren zugeschlagen hat zur Erkennung der Kreuzungen, notwendig
+ *  weil sicht nicht immer beide gleichzeitig ueber Kreuzungslinie befinden */
+static uint8_t border_side_l_fired = 0;
+
+/*! Kennung links, welcher der Bordersensoren zugeschlagen hat zur Erkennung der Kreuzungen, notwendig
+ *  weil sicht nicht immer beide gleichzeitig ueber Kreuzungslinie befinden */
+static uint8_t border_side_r_fired = 0;
+
+static int16_t lastpos_x = 0;
+static int16_t lastpos_y = 0;
+
+/*! nach dieser gefahrenen Strecke in mm werden Borderkennungen rueckgesetzt */
+#define CHECK_DISTANCE 100
+#define CHECK_DISTANCE_QUAD (CHECK_DISTANCE * CHECK_DISTANCE)  /*!< Quadrat der gefahrenen Strecke */
+
+
+/*!
+ * Prueft ob der Bot schon eine bestimmte Strecke gefahren ist seit dem letzten Observerdurchgang
+ * @param  *last_xpoint   letzte gemerkte X-Koordinate
+ * @param  *last_ypoint   letzte gemerkte Y-Koordinate
+ * @return True, wenn Bot schon gewisse Strecke gefahren ist und Map zu checken ist sonst False
+ */
+static uint8_t distance_reached(int16_t * last_xpoint, int16_t * last_ypoint) {
+	// Abstand seit letztem Observerlauf ermitteln
+	uint16_t diff = get_dist(x_pos, y_pos, *last_xpoint, *last_ypoint);
+
+	//erst nach gewissem Abstand oder gleich bei noch initialem Wert Mappruefung
+	if (diff >= CHECK_DISTANCE_QUAD) {
+		*last_xpoint = x_pos;
+		*last_ypoint = y_pos;
+		return True;
+	}
+	return False;
+}
+
+/*!
+ * Folgt einer Linie. Der linke Liniensensor oder auch beide sind dabei auf der Linie.
+ * Version optimal fuer bot_line_shortest_way, hat auf dem echten Bot aber zurzeit Probleme mit spitzen Winkeln
+ * @param *data	Verhaltensdatensatz
+ */
+void bot_follow_line_behaviour(Behaviour_t * data) {
+	static int16_t lastLeft = 0;
+	static int16_t lastRight = 0;
+	static uint8_t lastCorrection = 0;
+	static uint32_t lastCorrectionTime = 0;
+	uint8_t correction = 0;
+
+	if (sensLineL >= LINE_SENSE) {
+		/* Bot faehrt auf linker Linienkante oder beide Sensoren auf Linie */
+		speedWishLeft = BOT_SPEED_SLOW;
+		speedWishRight = BOT_SPEED_SLOW;
+		lastCorrection = 0;
+
+		if (sensBorderL > BORDER_DANGEROUS || sensBorderR > BORDER_DANGEROUS) {
+
+			// Kennungen setzen auf Querlinie erkannt links oder rechts voraus, also wenn Abgrundsensor Linie (vorausgesetzt Abgrund gibt es nicht) erkennt
+			if (sensBorderR > BORDER_DANGEROUS) {
+				border_side_r_fired = True;
+			} else {
+				border_side_l_fired = True;
+			}
+
+			LOG_DEBUG("Border l/r: %1d %1d", border_side_l_fired, border_side_r_fired);
+
+			// Beide erkennen Querlinie, ist Abgrund oder auch moeglicherweise X-Kreuzung
+			if (sensBorderL > BORDER_DANGEROUS && sensBorderR
+					> BORDER_DANGEROUS) {
+				border_side_l_fired = True;
+				border_side_r_fired = True;
+			}
+
+			if (border_side_l_fired && border_side_r_fired) {
+				LOG_DEBUG("beide zugeschlagen => Ende");
+				return_from_behaviour(data);
+			}
+
+		} else {
+
+			if (lastLeft < 0 || lastRight < 0) {
+				// bei Wechsel zu geradeaus Abgrundsensorkennungen ruecksetzen
+				if (distance_reached(&lastpos_x, &lastpos_y)) {
+					LOG_DEBUG("Abstand gefahren und false l/r %1d %1d", sensBorderL, sensBorderR);
+					border_side_l_fired = False;
+					border_side_r_fired = False;
+				}
+			}
+		}
+
+	// Naechstes klappt prima im Sim, beim echten Bot jedoch nicht und dreht dort links, scheinbar wird die Var zu frueh rueckgesetzt
+	} else if (sensLineL < LINE_SENSE && sensLineR < LINE_SENSE
+			&& !border_side_r_fired) {
+		/* Linker Sensor und rechter nicht auf Linie, dann rechts daneben und links drehen */
+		speedWishLeft = -BOT_SPEED_FOLLOW;
+		speedWishRight = BOT_SPEED_FOLLOW;
+		correction = 1;
+	} else {
+		/* Bot befindet sich links von der Linie und rechts drehen */
+		speedWishLeft = BOT_SPEED_FOLLOW;
+		speedWishRight = -BOT_SPEED_FOLLOW;
+		correction = 2;
+	}
+
+	if (lastCorrection != correction && !timer_ms_passed_32(
+			&lastCorrectionTime, CORRECTION_DELAY)) {
+		/* Falls die letzte Korrektur gerade erst war, reagieren wir (noch) nicht */
+		speedWishLeft = lastLeft;
+		speedWishRight = lastRight;
+//		LOG_DEBUG("correction %u delayed", correction);
+//		LOG_DEBUG("lastLeft=%d\tlastRight=%d", lastLeft, lastRight);
+//		LOG_DEBUG("lastCorrectionTime=%lu", lastCorrectionTime);
+//		LOG_DEBUG("time=%lu", TIMER_GET_TICKCOUNT_32);
+//		if (TIMER_GET_TICKCOUNT_32 > lastCorrectionTime + MS_TO_TICKS(CORRECTION_DELAY)) {
+//			LOG_ERROR("*** TIMER-BUG! ***");
+//		}
+		return;
+	}
+
+	/* neue Werte merken */
+	lastCorrection = correction;
+	lastLeft = speedWishLeft;
+	lastRight = speedWishRight;
+}
+
+/*!
+ * Folgt einer Linie. Der linke Liniensensor oder auch beide sind dabei auf der Linie.
+ * Der Bot faehrt also auf der rechten Kante der Linie oder der Linie selbst. Sie sollte in etwa die Breite
+ * beider CNY70 haben.
+ * Version optimal fuer bot_line_shortest_way
+ * @param *caller Verhaltensdatensatz des Aufrufers
+ */
+void bot_follow_line(Behaviour_t * caller) {
+	switch_to_behaviour(caller, bot_follow_line_behaviour, NOOVERRIDE);
+
+	// Kennungen init.
+	border_side_l_fired = False;
+	border_side_r_fired = False;
+	lastpos_x = x_pos;
+	lastpos_y = y_pos;
+
+	/* stoerende Notfallverhalten aus */
+#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
+	deactivateBehaviour(bot_avoid_col_behaviour);
+#endif
+#ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE
+	deactivateBehaviour(bot_avoid_border_behaviour);
+#endif
+}
+
+#endif	// VERSION
 #endif	// BEHAVIOUR_FOLLOW_LINE_AVAILABLE

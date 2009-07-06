@@ -27,6 +27,11 @@
 #ifndef MATH_UTILS_H_
 #define MATH_UTILS_H_
 
+#define DEG2RAD (M_PI / 180.0)	/*!< Umrechnungsfaktor von Grad nach Bogenmass */
+#ifndef M_PI_2
+#define M_PI_2	(M_PI / 2.0)	/*!< pi/2 */
+#endif
+
 /*!
  * Rundet float und gibt das Ergebnis als int zurueck.
  * Selbst implementiert, weil es kein roundf() in der avr-libc gibt.
@@ -113,7 +118,7 @@ position_t calc_point_in_distance(float alpha, int16_t dx, int16_t dy);
 static inline int16_t muls8(int8_t a, int8_t b) {
 #ifdef MCU
 	int16_t result;
-	asm volatile(
+	__asm__ __volatile__(
 		"muls %1,%2	\n\t"
 		"movw %0,r0	\n\t"
 		"clr r1			"

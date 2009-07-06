@@ -90,11 +90,11 @@ extern uint8_t __attribute__ ((section (".s2eeprom"), aligned(1))) _eeprom_start
 #define BSIZE_POS 28	/*!< Pos. der Variablengroesse in MCU Map */
 #endif
 
-#ifdef __AVR_ATmega644__  // Dieser Prozessor hat 2048 Bytes EEPROM
+#ifdef MCU_ATMEGA644X  // Dieser Prozessor hat 2048 Bytes EEPROM
 #define EE_SIZE 2048
 #else
 #define EE_SIZE 1024
-#endif
+#endif	// MCU_ATMEGA644X
 
 #define MCU_EEPROM_FN	"./mcu_eeprom.bin" 		/*!< Name und Pfad der EEPROM Datei fuer MCU-Modus*/
 #define PC_EEPROM_FN	"./pc_eeprom.bin" 		/*!< Name und Pfad der EEPROM Datei fuer PC-Modus*/

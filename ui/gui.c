@@ -44,6 +44,7 @@
 #include <string.h>
 #include "rc5-codes.h"
 #include "eeprom.h"
+#include "os_scheduler.h"
 
 /*! Keymap fuer Keypad-Eingaben */
 EEPROM uint8_t gui_keypad_table[][5] = {
@@ -61,13 +62,14 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 
 #ifdef DISPLAY_AVAILABLE
 
-int8 max_screens = 0;	/*!< Anzahl der zurzeit registrierten Screens */
+int8_t max_screens = 0;	/*!< Anzahl der zurzeit registrierten Screens */
 void (* screen_functions[DISPLAY_SCREENS])(void) = {NULL};	/*!< hier liegen die Zeiger auf die Display-Funktionen */
 
 #ifdef KEYPAD_AVAILABLE
 static uint32_t keypad_last_pressed = 0;	/*!< Zeitpunkt der letzten Tasteneingabe */
 static uint8_t keypad_row = 0;				/*!< Zeile fuer Ausgabe der Eingabe */
 static uint8_t keypad_col = 0;				/*!< Spalte fuer Ausgabe der Eingabe */
+static uint8_t keypad_mode = 0;					/*!< Modus, 0: alphanumerisch, 1: numerisch */
 static char keypad_buffer[21];				/*!< Eingabepuffer */
 static char * keypad_result = NULL;			/*!< aktuelle Position im Puffer */
 static void (* keypad_callback)(char * result) = NULL;	/*!< Callback-Funktion nach Abschluss */
@@ -86,7 +88,8 @@ void gui_keypad_request(void (* callback)(char * result), uint8_t row, uint8_t c
 	keypad_callback = callback;
 	keypad_row = row;
 	keypad_col = col;
-	keypad_result = keypad_buffer-1;
+	keypad_mode = 0;
+	keypad_result = keypad_buffer - 1;
 }
 
 /*!
@@ -106,6 +109,9 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
 		return rc5;
 	}
 	switch (rc5) {
+	case RC5_CODE_I_II:
+		keypad_mode = (keypad_mode + 1) & 1;
+		return 0;
 	case RC5_CODE_STOP:
 		/* Abbruch */
 		*keypad_buffer = 0;
@@ -114,6 +120,8 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
 		/* fertig */
 		keypad_callback(keypad_buffer);
 		keypad_callback = NULL;
+		display_cursor(keypad_row, keypad_col);
+		display_printf("%s  ", keypad_buffer);
 		memset(keypad_buffer, 0, 21);
 		// no break;
 	case 0:
@@ -121,7 +129,7 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
 		return 0;
 	}
 
-	if (!timer_ms_passed(&keypad_last_pressed, 1000) && rc5 == last_rc5) {
+	if (!timer_ms_passed_32(&keypad_last_pressed, 1000) && rc5 == last_rc5) {
 		/* dieselbe Taste wurde mehrfach gedrueckt */
 		pressed++;
 	} else {
@@ -147,6 +155,15 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
 	while ((data = ctbot_eeprom_read_byte(&gui_keypad_table[key][pressed])) == 0) {
 		/* bei einigen Tasten ist nicht alles belegt */
 		pressed = 0;
+	}
+
+	/* im numerischen Fall nur Ziffern auswaehlen */
+	if (keypad_mode == 1) {
+		uint8_t i = 4;
+		while ((data = ctbot_eeprom_read_byte(&gui_keypad_table[key][i])) == 0) {
+			i--;
+		}
+		rc5 = 0;	// naechsten Tastendruck als neue Taste registrieren
 	}
 
 	last_rc5 = rc5;
@@ -196,12 +213,15 @@ void gui_display(int8 screen) {
 		/* Keypad-Eingabe */
 		if (keypad_callback != NULL) {
 			display_cursor(keypad_row, keypad_col);
-			display_printf("%s", keypad_buffer);
+			display_printf("%s ", keypad_buffer);
 
 			uint8_t col = keypad_col + strlen(keypad_buffer);
 			if ((uint32_t)(TIMER_GET_TICKCOUNT_32 - keypad_last_pressed) > MS_TO_TICKS(1000UL)) {
 				col++;
 			}
+			display_cursor(keypad_row, col);
+			char c = keypad_mode == 1 ? '#' : '_';
+			display_printf("%c", c);
 			display_cursor(keypad_row, col);
 		}
 	#endif	// KEYPAD_AVAILABLE
@@ -251,6 +271,9 @@ void gui_init(void) {
 	#ifdef DISPLAY_MMC_INFO
 		register_screen(&mmc_display);
 	#endif
+	#ifdef DISPLAY_OS_AVAILABLE
+		register_screen(&os_display);
+	#endif
 	#ifdef RESET_INFO_DISPLAY_AVAILABLE
 		register_screen(&reset_info_display);
 	#endif
@@ -272,6 +295,9 @@ void gui_init(void) {
 	#ifdef PATHPLANING_DISPLAY
 	#ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
 		register_screen(&pathplaning_display);
+	#endif
+	#ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
+		register_screen(&bot_line_shortest_way_display);
 	#endif
 	#endif
 }

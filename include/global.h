@@ -88,6 +88,10 @@
 #else
 #include <avr/signal.h>
 #endif
+
+#if defined __AVR_ATmega644__ || defined __AVR_ATmega644P__
+#define MCU_ATMEGA644X	/*!< ATmega644-Familie (ATmega644 oder ATmega644P) */
+#endif
 #endif	// MCU
 
 /*!
@@ -96,7 +100,15 @@
 typedef struct {
 	int16_t x; /*!< X-Anteil der Position */
 	int16_t y; /*!< Y-Anteil der Position */
-} position_t;
+} __attribute__ ((packed)) position_t;
+
+#else	// __ASSEMBLER__
+
+#if defined __APPLE__ || defined __linux__ || defined __WIN32__
+#ifndef PC
+#define PC
+#endif	// PC
+#endif	// Plattform
 
 #endif	// __ASSEMBLER__
 #endif	// global_H

@@ -1,30 +1,30 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	os_thread.c
  * @brief 	Threadmanagement fuer BotOS
  * @author 	Timo Sandmann (mail@timosandmann.de)
  * @date 	02.10.2007
  */
 
-/* 
+/*
  * Dokumentation: siehe Documentation/BotOS.html
  */
 
@@ -34,7 +34,10 @@
 
 #include "os_thread.h"
 #include "os_utils.h"
+#include "log.h"
+#include "map.h"
 #include <string.h>
+#include <stdio.h>
 
 /*! Datentyp fuer Instruction-Pointer */
 typedef union {
@@ -64,7 +67,7 @@ Tcb_t * os_create_thread(void * pStack, void * pIp) {
 	uint8_t i;
 	Tcb_t * ptr = os_threads;
 	// os_scheduling_allowed == 0 wegen os_enterCS()
-	for (i=os_scheduling_allowed; i<OS_MAX_THREADS; i++, ptr++) {	
+	for (i=os_scheduling_allowed; i<OS_MAX_THREADS; i++, ptr++) {
 		if (ptr->stack == NULL) {
 			ptr->wait_for = &dummy_signal;	// wait_for belegen
 			if (os_thread_running == NULL) {
@@ -78,14 +81,15 @@ Tcb_t * os_create_thread(void * pStack, void * pIp) {
 				/* "normalen" Thread anlegen */
 				os_ip_t tmp;
 				tmp.ip = pIp;
-				/* Return-Adresse liegt in Big-Endian auf dem Stack! */
-				uint8_t * sp = pStack;
-				*sp = tmp.lo8;
+				/* Stack so aufbauen, als waere der Thread bereits einmal unterbrochen worden */
+				uint8_t * sp = pStack; // Entry-Point des Threads
+				*sp = tmp.lo8; // Return-Adresse liegt in Big-Endian auf dem Stack!
 				*(sp-1) = tmp.hi8;
-				tmp.ip = &os_exitCS;
+				tmp.ip = &os_exitCS; // setzt os_scheduling_allowed auf 1, nachdem der Thread das erste Mal geschedult wurde
 				*(sp-2) = tmp.lo8;
 				*(sp-3) = tmp.hi8;
-				ptr->stack = pStack-4;	// 4x push => Stack-Pointer - 4
+				*(sp-4) = SREG; // beim ersten Wechsel auf diesen Thread wird das Statusregister vom Stack geholt, darum hier auf den Stack schreiben
+				ptr->stack = pStack - (4 + OS_CONTEXT_SIZE); // 4x push und 17 Bytes fuer Kontext => Stack-Pointer - (4 + 17)
 			}
 			os_scheduling_allowed = 1;	// Scheduling wieder erlaubt
 			/* TCB zurueckgeben */
@@ -97,12 +101,14 @@ Tcb_t * os_create_thread(void * pStack, void * pIp) {
 }
 
 /*!
- * Beendet den kritischen Abschnitt wieder, der mit enterCS began
+ * Beendet den kritischen Abschnitt wieder, der mit os_enterCS began.
+ * Falls ein Scheduler-Aufruf ansteht, wird er nun ausgefuehrt.
  */
 void os_exitCS(void) {
 	if (test_and_set((uint8_t *)&os_scheduling_allowed, 1) == 2) {
 		os_schedule(TIMER_GET_TICKCOUNT_32);
 	}
+	__asm__ __volatile__("":::"memory");
 }
 
 /*!
@@ -110,30 +116,33 @@ void os_exitCS(void) {
  * indem diesem der Rest der Zeitscheibe geschenkt wird.
  */
 void os_thread_yield(void) {
+	os_enterCS();
 	uint32_t now = TIMER_GET_TICKCOUNT_32;
-	/* Zeitpunkt der letzten Ausfuehrung nur in 8 Bit, da yield() nur Sinn macht, wenn es
-	 * regelmaessig aufgerufen wird und eine Aufloesung im ms-Bereich gebraucht wird. 
-	 * Sonst sleep() benutzen! */
-	uint8_t diff = (uint8_t)now - os_thread_running->lastSchedule;
-	if (diff > MS_TO_TICKS(OS_TIME_SLICE)) {
-		/* Zeitscheibe wurde ueberschritten */
-		os_thread_running->nextSchedule = now;
+	/* Zeitpunkt der letzten Ausfuehrung nur in 16 Bit, da yield() nur Sinn macht, wenn es
+	 * regelmaessig aufgerufen wird, sonst sleep() benutzen. */
+	uint16_t runtime = (uint16_t)now - (uint16_t)os_thread_running->lastSchedule;
+	if (runtime > MS_TO_TICKS(OS_TIME_SLICE)) {
+		/* Zeitscheibe wurde bereits ueberschritten ==> kein Threadwechsel */
+#ifdef OS_KERNEL_LOG_AVAILABLE
+		LOG_DEBUG("%u missed dl\t%5uus", os_thread_running - os_threads, runtime * TIMER_STEPS);
+#endif	// OS_KERNEL_LOG_AVAILABLE
+#ifdef MEASURE_UTILIZATION
+		os_thread_running->statistics.runtime += runtime;
+		/* Zaehler fuer verpasste Deadlines erhoehen */
+		os_thread_running->statistics.missed_deadlines++;
+#endif
+		/* Timestamp zuruecksetzen */
+		os_thread_running->lastSchedule = now;
 	} else {
 		/* Wir haben noch Zeit frei, die wir dem naechsten Thread schenken koennen */
-		os_thread_running->nextSchedule = now - (uint8_t)(diff + (uint8_t)MS_TO_TICKS(OS_TIME_SLICE));
+		os_thread_running->nextSchedule = now + (uint16_t)(MS_TO_TICKS(OS_TIME_SLICE) - runtime);
+		/* Scheduler wechselt die Threads, Aufruf am Ende der Funktion */
+		os_scheduling_allowed = 2;
 	}
-	/* Scheduler wechselt die Threads */
-	os_schedule(now);
-}
-
-/*!
- * Weckt einen wartenden Thread auf, falls dieser eine hoehere Prioritaet hat
- * @param *thread	Zeiger auf TCB des zu weckenden Threads
- */
-void os_thread_wakeup(Tcb_t * thread) {
-	uint32_t now = TIMER_GET_TICKCOUNT_32;
-	thread->nextSchedule = now;
-	os_schedule(now);
+	/* os_exitCS() */
+	if (test_and_set((uint8_t *)&os_scheduling_allowed, 1) == 2) {
+		os_schedule(now);
+	}
 }
 
 /*!
@@ -146,9 +155,9 @@ void os_signal_set(os_signal_t * signal) {
 }
 
 /*!
- * Schaltet "von aussen" auf einen neuen Thread um. 
+ * Schaltet "von aussen" auf einen neuen Thread um.
  * => kernel threadswitch
- * Achtung, es wird erwartet, dass Interrupts an sind. 
+ * Achtung, es wird erwartet, dass Interrupts an sind.
  * Sollte eigentlich nur vom Scheduler aus aufgerufen werden!
  * @param *from	Zeiger auf TCB des aktuell laufenden Threads
  * @param *to	Zeiger auf TCB des Threads, der nun laufen soll
@@ -157,12 +166,15 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to) {
 	os_thread_running = to;
 	/* r0, r1, r18 bis r27, Z und SREG werden hier nach folgender Ueberlegung NICHT gesichert:
 	 * r0, r18 bis r27 und Z wurden bereits vor dem Eintritt in diese Funktion auf dem (korrekten) Stack gesichert!
-	 * Falls wir aus der Timer-ISR kommen, wurden auch r1 und das Statusregister bereits gerettet. Falls nicht, 
-	 * duerfen wir das SREG ruhig ueberschreiben, weil der (noch) aktuelle Thread in diesem Fall den Scheduler explizit 
+	 * Falls wir aus der Timer-ISR kommen, wurden auch r1 und das Statusregister bereits gerettet. Falls nicht,
+	 * duerfen wir das SREG ruhig ueberschreiben, weil der (noch) aktuelle Thread in diesem Fall den Scheduler explizit
 	 * aufrufen wollte, der Compiler also weiss, dass sich das Statusregister aendern kann (kooperativer Threadswitch).
-	 * In r1 muss vor jedem Funktionsaufruf bereits 0 stehen.  
+	 * In r1 muss vor jedem Funktionsaufruf bereits 0 stehen.
 	 */
-	asm volatile(
+	__asm__ __volatile__(
+		"in r1, __SREG__		; r1 == 0			\n\t"
+		"cli					; interrupts off	\n\t"
+		"push r1				; push SREG			\n\t"
 		"push r2				; save GP registers	\n\t"
 		"push r3									\n\t"
 		"push r4									\n\t"
@@ -180,53 +192,38 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to) {
 		"push r16									\n\t"
 		"push r17									\n\t"
 	//-- hier ist noch "from" (Z) der aktive Thread 	--//
-		"call os_switch_helper	; switch stacks		\n\t"
-	//-- jetzt ist schon "to" (Y) der aktive Thread 	--//
+		"in r16, __SP_L__	; switch Stacks			\n\t"
+		"st Z+, r16									\n\t"
+		"in r16, __SP_H__							\n\t"
+		"st Z, r16									\n\t"
+				//-- live changes here --//
+		"ld r16, X+ 								\n\t"
+		"out __SP_L__, r16							\n\t"
+		"ld r16, X 									\n\t"
+		"out __SP_H__, r16							\n\t"
+	//-- jetzt ist schon "to" (X) der aktive Thread 	--//
 		"pop r17				; restore registers	\n\t"
-		"pop r16									\n\t"			
+		"pop r16									\n\t"
 		"pop r15									\n\t"
 		"pop r14									\n\t"
 		"pop r13									\n\t"
 		"pop r12									\n\t"
 		"pop r11									\n\t"
-		"pop r10									\n\t"			
-		"pop r9										\n\t"			
-		"pop r8										\n\t"			
-		"pop r7										\n\t"			
-		"pop r6										\n\t"			
-		"pop r5										\n\t"			
-		"pop r4										\n\t"			
-		"pop r3										\n\t"			
-		"pop r2											"			
-		::	"y" (&to->stack), "z" (&from->stack)	// Stackpointer
+		"pop r10									\n\t"
+		"pop r9										\n\t"
+		"pop r8										\n\t"
+		"pop r7										\n\t"
+		"pop r6										\n\t"
+		"pop r5										\n\t"
+		"pop r4										\n\t"
+		"pop r3										\n\t"
+		"pop r2										\n\t"
+		"pop r1					; load SREG			\n\t"
+		"out __SREG__, r1		; restore SREG		\n\t"
+		"clr r1					; cleanup r1			"
+		::	"x" (&to->stack), "z" (&from->stack)	// Stackpointer
 		:	"memory"
 	);
-}
-
-void os_switch_helper(void) __attribute__((naked));
-
-/*
- * Hilfsfunktion fuer Thread-Switch, nicht beliebig aufrufbar!
- * (Erwartet Zeiger auf die Stacks in Z und Y).
- * Als extra Funktion implementiert, um die Return-Adresse auf dem Stack zu haben.
- */
-void os_switch_helper(void) {
-	//-- coming in as "Z" --//
-	asm volatile(
-		"cli				; Interrupts off		\n\t"			
-		"in r16, __SP_L__	; switch Stacks			\n\t"
-		"st Z+, r16									\n\t"	
-		"in r16, __SP_H__							\n\t"
-		"st Z, r16									\n\t"	
-			//-- live changes here --//
-		"ld r16, Y+ 								\n\t"
-		"out __SP_L__, r16							\n\t"
-		"ld r16, Y 									\n\t"
-		"out __SP_H__, r16							\n\t"
-		"reti				; Interrupts on				"
-		::: "memory"
-	);
-	//-- continue as "Y" --//
 }
 
 #ifdef OS_DEBUG
@@ -247,7 +244,7 @@ void os_mask_stack(void * stack, size_t size) {
  * os_stack_mask() praepariert worden sein!
  * @param *stack	Anfangsadresse des Stacks
  */
-uint16_t os_stack_unused(void * stack) {
+static uint16_t os_stack_unused(void * stack) {
 	uint8_t * ptr = stack;
 	uint16_t unused = 0;
 	while (*ptr == 0x42) {
@@ -255,6 +252,69 @@ uint16_t os_stack_unused(void * stack) {
 		ptr++;
 	}
 	return unused;
+}
+
+/*!
+ * Gibt per LOG aus, wieviel Bytes auf den Stacks der Threads noch nie benutzt wurden
+ */
+void os_print_stackusage(void) {
+	uint16_t tmp;
+#ifdef MAP_AVAILABLE
+	static uint16_t map_stack_free = -1;
+	tmp = os_stack_unused(map_update_stack);
+	if (tmp < map_stack_free) {
+		map_stack_free = tmp;
+		LOG_INFO("Map-Stack unused=%u", tmp);
+	}
+#ifdef MAP_2_SIM_AVAILABLE
+	static uint16_t map_2_sim_stack_free = -1;
+	tmp = os_stack_unused(map_2_sim_worker_stack);
+	if (tmp < map_2_sim_stack_free) {
+		map_2_sim_stack_free = tmp;
+		LOG_INFO("Map-2-Sim-Stack unused=%u", tmp);
+	}
+#endif	// MAP_2_SIM_AVAILABLE
+#endif	// MAP_AVAILABLE
+	static uint16_t kernel_stack_free = -1;
+	tmp = os_stack_unused(os_kernel_stack);
+	if (tmp < kernel_stack_free) {
+		kernel_stack_free = tmp;
+		LOG_INFO("Kernel-Stack unused=%u", tmp);
+	}
+	static uint16_t idle_stack_free = -1;
+	tmp = os_stack_unused(os_idle_stack);
+	if (tmp < idle_stack_free) {
+		idle_stack_free = tmp;
+		LOG_INFO("Idle-Stack unused=%u", tmp);
+	}
+}
+
+/*!
+ * Gibt den Inhalt des Stacks eines Threads per LOG aus
+ * @param *thread	Zeiger auf den TCB des Threads
+ * @param *stack	Zeiger auf die hoechste Adresse des Stacks (Anfang)
+ * @param size		Groesse des Stacks in Byte
+ */
+void os_stack_dump(Tcb_t * thread, void * stack, uint16_t size) {
+	size_t n;
+	if (thread == os_thread_running) {
+		n = stack - (void *)SP;
+	} else {
+		n = stack - thread->stack;
+	}
+	LOG_INFO("Thread 0x%04x\t uses %u Bytes", (size_t)thread, n);
+	int16_t i;
+	uint8_t * ptr = stack;
+	for (i=n; i>0; i--) {
+		LOG_INFO("0x%04x:\t0x%02x", ptr, *ptr);
+		ptr--;
+	}
+	LOG_INFO("0x%04x:\t0x%02x <= SP", ptr, *ptr);
+	ptr--;
+	for (i=size-n; i>1; i--) {
+		LOG_INFO("0x%04x:\t0x%02x", ptr, *ptr);
+		ptr--;
+	}
 }
 #endif	// OS_DEBUG
 

@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	i2c.c
  * @brief 	I2C-Treiber, derzeit nur Master, interruptbasiert
  * @author 	Timo Sandmann (mail@timosandmann.de)
@@ -49,7 +49,7 @@ static volatile uint8_t i2c_complete = 0;	/*!< Spin-Lock; 0: ready, 128: Transfe
 ISR(TWI_vect) {
 	uint8_t state = TWSR;
 #if I2C_PRESCALER != 0
-	state &= 0xf8; 
+	state &= 0xf8;
 #endif
 	switch (state) {
 		/* Start gesendet */
@@ -61,7 +61,7 @@ ISR(TWI_vect) {
 				TWDR = sl_addr & 0xfe;	// W
 			} else {
 				/* Adresse+R senden */
-				TWDR = sl_addr | 0x1;	// R				
+				TWDR = sl_addr | 0x1;	// R
 			}
 			TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWIE);
 			break;
@@ -122,7 +122,7 @@ ISR(TWI_vect) {
 			TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWSTO);	// Stopp-Code senden
 			i2c_complete = 128;	// Lock freigeben
 			break;
-		}		
+		}
 		/* Fehler */
 		default: {
 			/* Abbruch */
@@ -185,7 +185,7 @@ uint8_t i2c_wait(void) {
 	uint8_t ticks = TIMER_GET_TICKCOUNT_8;
 	/* spinning bis Lock frei */
 	while (i2c_complete == 0) {
-		if (timer_ms_passed(&ticks, 3)) {
+		if (timer_ms_passed_8(&ticks, 3)) {
 			/* Timeout */
 			TWCR = 0;	// I2C aus
 			return TW_BUS_ERROR;

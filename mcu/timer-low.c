@@ -35,6 +35,7 @@
 #include "bot-local.h"
 #include "os_scheduler.h"
 #include "os_thread.h"
+#include "uart.h"
 
 #ifdef OS_AVAILABLE
 static uint8_t scheduler_ticks = 0;
@@ -45,7 +46,7 @@ static uint8_t scheduler_ticks = 0;
 /*!
  Interrupt Handler fuer Timer/Counter 2(A)
  */
-#ifdef __AVR_ATmega644__
+#ifdef MCU_ATMEGA644X
 ISR(TIMER2_COMPA_vect) {
 #else
 ISR(SIG_OUTPUT_COMPARE2) {
@@ -59,7 +60,7 @@ ISR(SIG_OUTPUT_COMPARE2) {
 	/* ab hier Kernel-Stack verwenden */
 	void * user_stack;
 	user_stack = (void *)SP;
-	SP = (int)&os_kernel_stack[OS_KERNEL_STACKSIZE-1];
+	SP = (int)&os_kernel_stack[OS_KERNEL_STACKSIZE - 1];
 #endif	// OS_AVAILABLE
 
 	sei(); // Interrupts wieder an, z.B. UART-Kommunikation kann parallel zu RC5 und Encoderauswertung laufen
@@ -79,11 +80,16 @@ ISR(SIG_OUTPUT_COMPARE2) {
 	SP = (int)user_stack;
 
 	/* Scheduling-Frequenz betraegt ca. 1 kHz */
-	if ((uint8_t)((uint8_t)ticks-scheduler_ticks) > MS_TO_TICKS(OS_TIME_SLICE)) {
+	if ((uint8_t)((uint8_t)ticks - scheduler_ticks) > MS_TO_TICKS(1)) {
+#if defined DISPLAY_OS_AVAILABLE && defined UART_AVAILABLE
+		if (uart_outfifo.count != 0) {
+			uart_log++;	// zaehlt die ms, in denen UART inaktiv
+		}
+#endif	// MEASURE_UTILIZATION && UART_AVAILABLE
 		scheduler_ticks = (uint8_t)ticks;
 		os_schedule(ticks);
 	}
-#endif
+#endif	// OS_AVAILABLE
 	/* Achtung, hier darf (falls OS_AVAILABLE) kein Code mehr folgen, der bei jedem Aufruf
 	 * dieser ISR ausgefuehrt werden muss! Nach dem Scheduler-Aufruf kommen wir u.U. nicht
 	 * (sofort) wieder hieher zurueck, sondern es koennte auch ein Thread weiterlaufen, der
@@ -94,11 +100,11 @@ ISR(SIG_OUTPUT_COMPARE2) {
  * initilaisiert Timer 0 und startet ihn
  */
 void timer_2_init(void) {
-	TCNT2  = 0x00;            // TIMER vorladen
+	TCNT2 = 0x00;            // TIMER vorladen
 
 	// aendert man den Prescaler muss man die Formel fuer OCR2 anpassen !!!
 	// Compare Register nur 8-Bit breit --> evtl. Teiler anpassen
-	#ifdef __AVR_ATmega644__
+	#ifdef MCU_ATMEGA644X
 		TCCR2A = _BV(WGM21);	// CTC Mode
 		TCCR2B = _BV(CS22);		// Prescaler = CLK/64
 		OCR2A = ((XTAL/64/TIMER_2_CLOCK) - 1);	// Timer2A
@@ -108,7 +114,7 @@ void timer_2_init(void) {
 		TCCR2 = _BV(WGM21) | _BV(CS22);
 		OCR2 = ((XTAL/64/TIMER_2_CLOCK) - 1);
 		TIMSK  |= _BV(OCIE2);	// enable Output Compare 0 overflow interrupt
-	#endif
+	#endif	// MCU_ATMEGA644X
 
 	sei();                       // enable interrupts
 }

@@ -25,81 +25,141 @@
  * @date 	13.12.2007
  */
 
-#ifndef POS_STACK_H_
-#define POS_STACK_H_
+#ifndef POS_STORE_H_
+#define POS_STORE_H_
 
 #include "ct-Bot.h"
 #include "global.h"
+#include "bot-logic/bot-logik.h"
+#include <stdlib.h>
 
 #ifdef POS_STORE_AVAILABLE
 
-#define POS_STORE_SIZE	32  /*!< Speichergroesse */
+#define POS_STORE_SIZE	32  /*!< Groesse (pro Platz) */
 
 #if POS_STORE_SIZE & (POS_STORE_SIZE-1)
 #error "POS_STORE_SIZE ist keine 2er-Potenz!"
 #endif
+#if POS_STORE_SIZE > 127
+#error "POS_STORE_SIZE ist zu gross!"
+#endif
 
-extern uint8_t pos_store_sp;				/*!< Stackpointer */
-extern uint8_t pos_store_fp;				/*!< FIFO-Pointer */
+/*! Positionsspeicher-Datentyp */
+typedef struct {
+	Behaviour_t * owner;	/*!< Besitzer dieses Speicher (ein Verhalten) */
+	position_t * data;		/*!< Speicher fuer die Daten */
+	uint8_t count;			/*!< Anzahl der Elemente im Speicher */
+	uint8_t stat_data;		/*!< 1: Statischer Speicher; 0: Heap-Speicher */
+	uint8_t sp;				/*!< Stackpointer */
+	uint8_t fp;				/*!< FIFO-Pointer */
+} pos_store_t;
 
 /*!
- * Liefert den aktuellen Stackpointer des Positionsspeichers
- * @return	Index des naechsten freien Platzes im Array
+ * Erzeugt einen neuen Positionsspeicher
+ * @param *owner	Zeiger Verhaltensdatensatz
+ * @param *data		NULL oder Zeiger auf Speicher fuer POS_STORE_SIZE * sizeof(position_t) Bytes
+ * @return			Zeiger auf neuen Positionsspeicher oder NULL
  */
-static inline uint8_t pos_store_get_sp(void) {
-	return pos_store_sp;
+pos_store_t * pos_store_create(Behaviour_t * owner, void * data);
+
+/*!
+ * Erzeugt einen neuen Positionsspeicher
+ * @param *owner	Zeiger Verhaltensdatensatz
+ * @return			Zeiger auf neuen Positionsspeicher oder NULL
+ */
+static inline pos_store_t * pos_store_new(Behaviour_t * owner) {
+	return pos_store_create(owner, NULL);
 }
 
 /*!
- * Liefer den aktuellen FIFO-Pointer des Positionsspeichers
- * @return	Index des ersten belegten Platzes im Array
+ * Ermittelt den Positionsspeicher, der zu einem Verhalten gehoert
+ * @param *owner	Zeiger auf Verhaltensdatensatz
+ * @return			Zeiger auf Positionsspeicher oder NULL
  */
-static inline uint8_t pos_store_get_fp(void) {
-	return pos_store_fp;
-}
+pos_store_t * pos_store_from_beh(Behaviour_t * owner);
+
+/*!
+ * Ermittelt den Positionsspeicher, der den gegebenen Index im Array hat
+ * @param index	Index des Positionsspeichers im Array
+ * @return		Zeiger auf Positionsspeicher oder NULL
+ */
+pos_store_t * pos_store_from_index(uint8_t index);
+
+/*!
+ * Ermittelt den Index eines Positionsspeichers
+ * @param *store	Zeiger auf Positionsspeicher
+ * @return			Index des Positionsspeichers im Array
+ */
+uint8_t pos_store_get_index(pos_store_t * store);
 
 /*!
  * Leert den Positionsspeicher
+ * @param *store	Zeiger auf Positionsspeicher
  */
-void pos_store_clear(void);
+void pos_store_clear(pos_store_t * store);
+
+/*!
+ * Loescht einen Positionsspeicher
+ * @param *store	Zeiger auf Positionsspeicher
+ */
+void pos_store_release(pos_store_t * store);
+
+/*!
+ * Loescht alle Positionsspeicher
+ */
+void pos_store_release_all(void);
 
 /*!
  * Pop-Routine zur Rueckgabe des letzten auf dem Stack gepushten Punktes
- * @param *pos	Zeiger auf Rueckgabe-Speicher der Position
- * @return		False falls Pop nicht erfolgreich, d.h. kein Punkt mehr auf dem Stack, sonst True nach erfolgreichem Pop
- */
-uint8_t pos_store_pop(position_t * pos) __attribute__((noinline));
-
-/*!
- * Pop-Routine zur Rueckgabe des letzten auf dem Stack gepushten Punktes, falls Stackpointer until_sp noch nicht erreicht ist
+ * @param *store	Zeiger auf Positionsspeicher
  * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
- * @param until_sp	Stackpointer (per pos_store_get_sp() geholt), bis zu dem ein Pop maximal erfolgen soll
  * @return			False falls Pop nicht erfolgreich, d.h. kein Punkt mehr auf dem Stack, sonst True nach erfolgreichem Pop
  */
-uint8_t pos_store_pop_until(position_t * pos, uint8_t until_sp);
+uint8_t pos_store_pop(pos_store_t * store, position_t * pos);
+
+/*!
+ * Speichern einer Koordinate vorne im Speicher
+ * @param *store	Zeiger auf Positionsspeicher
+ * @param pos		X/Y-Koordinaten des zu sichernden Punktes
+ * @return			True wenn erfolgreich sonst False wenn Array voll ist
+ */
+uint8_t pos_store_insert(pos_store_t * store, position_t pos);
 
 /*!
  * Speichern einer Koordinate auf dem Stack
- * @param pos	X/Y-Koordinaten des zu sichernden Punktes
- * @return		True wenn erfolgreich sonst False wenn Array voll ist
+ * @param *store	Zeiger auf Positionsspeicher
+ * @param pos		X/Y-Koordinaten des zu sichernden Punktes
+ * @return			True wenn erfolgreich sonst False wenn Array voll ist
  */
-uint8_t pos_store_push(position_t pos);
+uint8_t pos_store_push(pos_store_t * store, position_t pos);
 
 /*!
  * Erweiterung des Stacks zur Queue; Element wird hinten angefuegt, identisch dem Stack-Push
- * @param pos	X/Y-Koordinaten des zu sichernden Punktes
- * @return 		True wenn erfolgreich sonst False wenn Array voll ist
+ * @param *store	Zeiger auf Positionsspeicher
+ * @param pos		X/Y-Koordinaten des zu sichernden Punktes
+ * @return 			True wenn erfolgreich sonst False wenn Array voll ist
  */
-static inline uint8_t pos_store_queue(position_t pos) {
-	return pos_store_push(pos);
+static inline uint8_t pos_store_queue(pos_store_t * store, position_t pos) {
+	return pos_store_push(store, pos);
 }
 
 /*!
  * Erweiterung des Stacks zur Queue; Element wird vorn entnommen
- * @param * pos	Zeiger auf Rueckgabe-Speicher der Position
- * @return True wenn Element erfolgreich entnommen werden konnte sonst False falls kein Element mehr enthalten ist
+ * @param *store	Zeiger auf Positionsspeicher
+ * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
+ * @return 			True wenn Element erfolgreich entnommen werden konnte sonst False falls kein Element mehr enthalten ist
  */
-uint8_t pos_store_dequeue(position_t * pos) __attribute__((noinline));
+uint8_t pos_store_dequeue(pos_store_t * store, position_t * pos);
+
+/*!
+ * Gibt das n-letzte Element des Stacks / der Queue zurueck, entfernt es aber nicht.
+ * pos_store_top(&store,  &pos, 2) gibt z.B. das vorletzte Element zurueck
+ * @param *store	Zeiger auf Positionsspeicher
+ * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
+ * @param index		Index des gewuenschten Elements vom Ende aus gezaehlt, 1-based
+ * @return			True, wenn ein Element im Speicher ist, sonst False
+ */
+uint8_t pos_store_top(pos_store_t * store, position_t * pos, uint8_t index);
 
 #ifdef PC
 /*!
@@ -111,4 +171,4 @@ void pos_store_test(void);
 #endif	// PC
 
 #endif	// POS_STORE_AVAILABLE
-#endif	/*POS_STACK_H_*/
+#endif	/*POS_STORE_H_*/

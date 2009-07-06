@@ -158,7 +158,7 @@ static void compare_weightings(const uint16 dt, int8* pid_param, const int8 step
 	float weight = calc_weighting();
 
 	/* nach dt ms aktuelle Bewertung mit bisher bester vergleichen */
-	if (timer_ms_passed(&ticks, dt)) {
+	if (timer_ms_passed_32(&ticks, dt)) {
 		uint32 dt_real = TIMER_GET_TICKCOUNT_32 - ticks_start;
 		weight = weight / (float)dt_real * (dt*1000.0f/176.0f);		// Bewertung normieren
 		if (best_weight >= weight) {

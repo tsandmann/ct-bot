@@ -46,18 +46,18 @@
  * anschliessend gewartet.
  * Ein einfaches Beispiel fuer die Verwendung findet sich in bot_servo_behaviour().
  *
- * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
- * @param ms		Die Verzoegerungszeit in ms
+ * @param *_caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * @param _ms		Die Verzoegerungszeit in ms
  */
-#define BLOCK_BEHAVIOUR(caller, ms)	{	\
-	static uint8_t delay_state = 0;		\
-	if (delay_state == 0) {				\
-		if (bot_delay(data, ms) == 0) {	\
-			delay_state = 1;			\
-		}								\
-		return;							\
-	}									\
-	delay_state = 0;					\
+#define BLOCK_BEHAVIOUR(_caller, _ms)	{	\
+	static uint8_t _delay_state = 0;		\
+	if (_delay_state == 0) {				\
+		if (bot_delay(_caller, _ms) == 0) {	\
+			_delay_state = 1;				\
+		}									\
+		return;								\
+	}										\
+	_delay_state = 0;						\
 }
 
 /*!

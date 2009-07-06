@@ -60,10 +60,10 @@ typedef union {
  * prueft, ob das EEPROM bereit ist
  * @return	1, falls EEPROM bereit, 0 sonst
  */
-#ifdef __AVR_ATmega644__
+#ifdef MCU_ATMEGA644X
 #define EEWE	EEPE
 #define EEMWE	EEMPE
-#endif	// __AVR_ATmega644__
+#endif	// MCU_ATMEGA644X
 
 #define eeprom_is_ready() bit_is_clear(EECR, EEWE)
 
@@ -85,7 +85,7 @@ static inline uint8_t ctbot_eeprom_read_byte(const uint8_t * address) {
     EEAR = (uint16_t)address;
 #endif
     uint8_t result;
-    asm volatile(
+    __asm__ __volatile__(
         "/* START EEPROM READ CRITICAL SECTION */	\n\t"
         "sbi %1, %2									\n\t"
         "in %0, %3									\n\t"
@@ -119,7 +119,7 @@ static inline void ctbot_eeprom_write_byte(uint8_t * address, uint8_t value) {
 #endif
 	EEDR = value;
 
-	asm volatile(
+	__asm__ __volatile__(
 		"/* START EEPROM WRITE CRITICAL SECTION */	\n\t"
 		"in	r0, %[__sreg]							\n\t"
 		"cli										\n\t"

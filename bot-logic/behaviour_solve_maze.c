@@ -116,7 +116,7 @@ void bot_check_wall_behaviour(Behaviour_t * data) {
 			 	bot_delay(data, 50);	// 50 ms nix tun
 			 	break;
 			 }
-			 //if (!timer_ms_passed(&old_ms, 50)) break;	// 50 ms nix tun
+			 //if (!timer_ms_passed_16(&old_ms, 50)) break;	// 50 ms nix tun
 
 			 if (sensor>=lastSensor-5 && sensor<=lastSensor+5 && measureCount<4) {
 			 	/* Messwert ist ok */

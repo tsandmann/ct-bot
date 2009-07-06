@@ -38,10 +38,8 @@
 #define MMC_INFO_AVAILABLE			/*!< Die Karte kann uns einiges ueber sich verrraten, wenn wir sie danach fragen. Aber es kostet halt Platz im Flash */
 //#define MMC_WRITE_TEST_AVAILABLE	/*!< Achtung dieser Test zerstoert die Daten auf der Karte ab Sektor 0x20000 (^= 64 MB)!!! */
 
-#ifdef MMC_WRITE_TEST_AVAILABLE
-#ifdef MAP_AVAILABLE
-#warning "MMC_WRITE_TEST_AVAILABLE und MAP_AVAILABLE sollten nicht gleichzeitig aktiv sein!"
-#endif
+#if defined MMC_WRITE_TEST_AVAILABLE && defined MAP_AVAILABLE
+#error "MMC_WRITE_TEST_AVAILABLE und MAP_AVAILABLE duerfen nicht gleichzeitig aktiv sein!"
 #endif
 
 #ifdef SPI_AVAILABLE
@@ -56,15 +54,13 @@
  */
 uint8_t mmc_get_init_state(void);
 
+#ifndef SPI_AVAILABLE
 /*!
- * Schaltet die Karte aktiv und checkt dabei die Initialisierung
- * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			09.12.2006
+ * schaltet die MMC aktiv und initialisiert sie, falls noetig
+ * @return	0: alles ok, Fehler von mmc_init() sonst
  */
 uint8_t mmc_enable(void);
 
-#ifndef SPI_AVAILABLE
 /*!
  * Liest einen Block von der Karte
  * @param addr 		Nummer des 512-Byte Blocks
@@ -116,14 +112,9 @@ uint8_t mmc_init (void);
 /*!
  * Liest das CSD-Register (16 Byte) von der Karte
  * @param *buffer	Zeiger auf Puffer von mindestens 16 Byte
+ * @return			0, falls alles OK
  */
-void mmc_read_csd(void * buffer);
-
-/*!
- * Liest das CID-Register (16 Byte) von der Karte
- * @param *buffer	Zeiger auf Puffer von mindestens 16 Byte
- */
-void mmc_read_cid(void * buffer);
+uint8_t mmc_read_csd(void * buffer);
 
 /*!
  * Liefert die Groesse der Karte zurueck

@@ -43,6 +43,9 @@
  * AN, dann wird die Kommunikation mit der MMC per Hardware gesteuert - Vorteil ist eine
  * hoehere Transfer-Geschwindigkeit zur MMC (Faktor 2) und es sind 530 Byte weniger im
  * Flash belegt.
+ * Zu beachten ist, dass SPI_AVAILABLE von jetzt an immer eingeschaltet sein muss, auch
+ * wenn man keine MMC-Unterstuetzung benoetigt, weil die Radencoder-Auswertung die
+ * veraenderte Pin-Belegung immer beruecksichtigen muss.
  */
 
 #include "ct-Bot.h"
@@ -63,6 +66,7 @@
 #include "os_thread.h"
 #include "log.h"
 #include <stdlib.h>
+#include <string.h>
 
 uint8_t mmc_init_state = 1;	/*!< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
 
@@ -153,35 +157,33 @@ static uint8_t mmc_read_block(uint8_t * cmd, void * buffer, uint16_t count) {
 
 	return 0;	// alles ok
 }
-#else
+#else	// SPI_AVAILABLE
 
 #define mmc_read_byte	SPI_MasterReceive		/*!< read_byte per SPI */
 #define mmc_write_byte	SPI_MasterTransmit		/*!< write_byte per SPI */
 
-/*
+/*!
  * schaltet die MMC aktiv und initialisiert sie, falls noetig
  * @return	0: alles ok, Fehler von mmc_init() sonst
  */
-uint8_t mmc_enable(void) {
+static uint8_t mmc_enable(void) {
 	uint8_t result;
 	if (mmc_init_state != 0 && (result = mmc_init()) != 0) {
 		return result;
 	}
-	os_enterCS();
 	ENA_off(ENA_MMC);
 	SPI_MasterTransmit(-1);
 	ENA_on(ENA_MMC);
-	os_exitCS();
 	return 0;
 }
 
 /*!
- * wartet, bis MMC mit "data" antwortet oder der Timeout (2^16 Versuche) zuschlaegt
+ * wartet, bis MMC mit "data" antwortet oder der Timeout zuschlaegt
  * @param data	Das erwartete Antwortbyte
  * @return		Rest vom Timeout oder 0 im Fehlerfall
  */
-static uint16_t wait_for_byte(uint8_t data) {
-	uint16_t timeout = 0xffff;
+static uint32_t wait_for_byte(uint8_t data) {
+	uint32_t timeout = 0x1ffff;
 	/* warten, bis Karte mit "data" antwortet */
 	uint8_t response = 0;
 	do {
@@ -205,12 +207,9 @@ static uint8_t prepare_transfer_spi(uint8_t cmd, uint32_t addr) {
 	if (result != 0) {
 		return result;
 	}
-#ifdef MAUS_AVAILABLE
-	os_enterCS();
-#endif
 
 	/* (addr <<= 1) & 0x00ff ffff */
-	asm volatile(
+	__asm__ __volatile__(
 		"lsl %A0		\n\t"
 		"rol %B0		\n\t"
 		"rol %C0			"
@@ -232,9 +231,6 @@ static uint8_t prepare_transfer_spi(uint8_t cmd, uint32_t addr) {
 	SPI_MasterTransmit(tmp.u8[0]);
 	SPI_MasterTransmit(0x00);
 	SPI_MasterTransmit(0xff);		// CRC
-#ifdef MAUS_AVAILABLE
-	os_exitCS();
-#endif
 	return 0;
 }
 
@@ -246,6 +242,7 @@ static uint8_t prepare_transfer_spi(uint8_t cmd, uint32_t addr) {
  * @return 			0 wenn alles ok ist, 1 wenn prepare_transfer_spi() Fehler meldet, 3 bei Timeout
  */
 uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, void * buffer) {
+	os_enterCS();
 	/* cmd[] = {0x51,addr,addr,addr,0x00,0xFF} */
 	if (prepare_transfer_spi(cmd, addr) != 0) {
 		return 1;
@@ -253,27 +250,28 @@ uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, void * buffer) {
 
 #ifdef LED_AVAILABLE
 #ifndef TEST_AVAILABLE
-	os_enterCS();
 	LED_on(LED_GRUEN);
-	os_exitCS();
 #endif	// TEST_AVAILABLE
 #endif	// LED_AVAILABLE
 
 	/* Warten auf Start-Byte von der MMC/SD-Karte (0xfe == Start-Byte) */
 	if (wait_for_byte(0xfe) == 0) {
 		mmc_init_state = 1;
+#ifdef LED_AVAILABLE
+#ifndef TEST_AVAILABLE
+		LED_off(LED_GRUEN);
+		os_exitCS();
+#endif	// TEST_AVAILABLE
+#endif	// LED_AVAILABLE
 		return 3;	// Abbruch durch Timeout
 	}
 
-#ifdef MAUS_AVAILABLE
-	os_enterCS();
-#endif
 	/* Lesen des Blocks (512 Bytes) von MMC/SD-Karte */
 #ifdef MMC_AGGRESSIVE_OPTIMIZATION
 	SPDR = 0;	// start 1st SPI-transfer
 	int16_t i = cmd != 0x51 ? 15 : 511;		// num of bytes to read
 	uint8_t tmp;
-	asm volatile(
+	__asm__ __volatile__(
 		"%=:						\n\t"
 		"adiw %2,1	 	; 2 nop		\n\t"	// wait 16 cycles for reception complete
 		"sbiw %2,1		; 2 nop		\n\t"
@@ -316,7 +314,6 @@ uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, void * buffer) {
 	SPI_MasterReceive();	// CRC-Byte wird nicht ausgewertet
 	SPI_MasterReceive();	// CRC-Byte wird nicht ausgewertet
 
-	os_enterCS();
 #ifdef LED_AVAILABLE
 #ifndef TEST_AVAILABLE
 	LED_off(LED_GRUEN);
@@ -333,6 +330,7 @@ uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, void * buffer) {
  * @return 			0 wenn alles ok ist, 1 wenn prepare_transfer_spi() Fehler meldet, 3 wenn Timeout bis zur Bestaetigung
  */
 uint8_t mmc_write_sector_spi(uint32_t addr, void * buffer) {
+	os_enterCS();
 	/* cmd[] = {0x58,addr,addr,addr,0x00,0xFF} */
 	if (prepare_transfer_spi(0x58, addr) != 0) {
 		return 1;
@@ -340,15 +338,10 @@ uint8_t mmc_write_sector_spi(uint32_t addr, void * buffer) {
 
 #ifdef LED_AVAILABLE
 #ifndef TEST_AVAILABLE
-	os_enterCS();
 	LED_on(LED_ROT);
-	os_exitCS();
 #endif	// TEST_AVAILABLE
 #endif	// LED_AVAILABLE
 
-#ifdef MAUS_AVAILABLE
-	os_enterCS();
-#endif
 	/* Startbyte an MMC/SD-Karte senden */
 	SPI_MasterTransmit(-2);
 
@@ -356,7 +349,7 @@ uint8_t mmc_write_sector_spi(uint32_t addr, void * buffer) {
 #ifdef MMC_AGGRESSIVE_OPTIMIZATION
 	int16_t i = 511;
 	uint8_t tmp;
-	asm volatile(
+	__asm__ __volatile__(
 		"%=:						\n\t"
 		"ld %0,Y	 	; tmp		\n\t"	// load from *buffer
 		"out %3,%0					\n\t"	// start next SPI-transfer
@@ -400,11 +393,12 @@ uint8_t mmc_write_sector_spi(uint32_t addr, void * buffer) {
 	SPI_MasterTransmit(0xff);
 
 	/* warten, bis Karte nicht mehr busy */
+	os_exitCS();
 	uint8_t timeout_high = 0;
 #ifdef MMC_AGGRESSIVE_OPTIMIZATION
 	uint16_t timeout;
 	SPDR = 0xff;
-	asm volatile(
+	__asm__ __volatile__(
 		"ldi %A0,255		; timeout	\n\t"
 		"ldi %B0,1			; =			\n\t"
 		"mov %1,%B0			; 0x01ffff	\n\t"
@@ -429,7 +423,7 @@ uint8_t mmc_write_sector_spi(uint32_t addr, void * buffer) {
 		: "r24", "r25"
 	);
 #else
-	uint16_t timeout = wait_for_byte(0xff);
+	uint32_t timeout = wait_for_byte(0xff);
 #endif	// MMC_AMMC_AGGRESSIVE_OPTIMIZATION
 
 	os_enterCS();
@@ -488,12 +482,13 @@ uint8_t mmc_init(void) {
 	mmc_init_state = 0;
 
 #ifdef SPI_AVAILABLE
-	SPI_MasterInit();
+	spi_speed_t speed = SPI_SPEED_250KHZ;
+	SPI_MasterInit(speed);
 #else
 	MMC_CLK_DDR |= _BV(SPI_CLK);
 	MMC_DDR &= ~(1<<SPI_DI);
 	MMC_DDR |= (1<<SPI_DO);
-#endif
+#endif	// SPI_AVAILABLE
 	ENA_on(ENA_MMC);
 	ENA_off(ENA_MMC);
 
@@ -539,6 +534,11 @@ uint8_t mmc_init(void) {
 		}
 	}
 
+#ifdef SPI_AVAILABLE
+	spi_speed_t speed_high = SPI_SPEED_MAX;
+	SPI_MasterInit(speed_high);
+#endif	// SPI_AVAILABLE
+
 #ifdef LED_AVAILABLE
 #ifndef TEST_AVAILABLE
 	LED_off(LED_TUERKIS);
@@ -549,24 +549,35 @@ uint8_t mmc_init(void) {
 }
 
 #ifdef MMC_INFO_AVAILABLE
-#ifdef DISPLAY_MMC_INFO
-/*!
- * Liest das CID-Register (16 Byte) von der Karte
- * @param *buffer	Zeiger auf Puffer von mindestens 16 Byte
- */
-void mmc_read_cid(void * buffer) {
-	uint8_t cmd[] = {0x4A,0x00,0x00,0x00,0x00,0xFF};	// Kommando zum Lesen des CID Registers
-	mmc_read_block(cmd, buffer, 16);
-}
-#endif	// DISPLAY_MMC_INFO
+//#ifdef DISPLAY_MMC_INFO
+///*!
+// * Liest das CID-Register (16 Byte) von der Karte
+// * @param *buffer	Zeiger auf Puffer von mindestens 16 Byte
+// * @return			0, falls alles OK
+// */
+//uint8_t mmc_read_cid(void * buffer) {
+//	uint8_t cmd[] = {0x4A,0x00,0x00,0x00,0x00,0xFF};	// Kommando zum Lesen des CID Registers
+//	if (mmc_read_block(cmd, buffer, 16) != 0) {
+//		memset(buffer, 0, 16);
+//		return 1;
+//	}
+//	return 0;
+//}
+//#endif	// DISPLAY_MMC_INFO
 
 /*!
  * Liest das CSD-Register (16 Byte) von der Karte
  * @param *buffer	Zeiger auf Puffer von mindestens 16 Byte
+ * @return			0, falls alles OK
  */
-void mmc_read_csd(void * buffer) {
-	uint8_t cmd[] = {0x49,0x00,0x00,0x00,0x00,0xFF};	// Kommando zum lesen des CSD Registers
-	mmc_read_block(cmd, buffer, 16);
+uint8_t mmc_read_csd(void * buffer) {
+	uint8_t cmd[] = {0x49,0x00,0x00,0x00,0x00,0xFF};	// Kommando zum Lesen des CSD Registers
+	uint8_t result = mmc_read_block(cmd, buffer, 16);
+	if (result != 0) {
+		memset(buffer, result, 16);
+		return 1;
+	}
+	return 0;
 }
 
 /*!
@@ -576,7 +587,9 @@ void mmc_read_csd(void * buffer) {
 uint32_t mmc_get_size(void) {
 	uint8_t csd[16];
 
-	mmc_read_csd(csd);
+	if (mmc_read_csd(csd) != 0) {
+		return 0;
+	}
 
 	uint32_t size = (csd[8]>>6) + (csd[7] << 2) + ((csd[6] & 0x03) << 10); // c_size
 	size +=1;		// Fest in der Formel drin

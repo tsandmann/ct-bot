@@ -28,8 +28,9 @@
 //#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE	/*!< Distanzesensorasuwertung vorhanden? */
 
 #define BEHAVIOUR_SCAN_AVAILABLE	/*!< Gegend scannen vorhanden? */
-//#define BEHAVIOUR_SOLVE_MAZE_AVAILABLE	/*!< Wandfolger vorhanden? */
+#define BEHAVIOUR_SOLVE_MAZE_AVAILABLE	/*!< Wandfolger vorhanden? */
 #define BEHAVIOUR_FOLLOW_LINE_AVAILABLE	/*!< Linienfolger vorhanden? */
+//#define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE /*!< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernissen klarkommt */
 
 #define BEHAVIOUR_SERVO_AVAILABLE 	/*!< Kontrollverhalten fuer die Servos */
 
@@ -48,7 +49,9 @@
 //#define BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE /*!< Transport-Pillar Verhalten */
 
 #define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-Kommandos entgegen? */
-//#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE /*!< Deaktivieren eines Verhaltens wenn Abbruchbedingung erfuellt */
+//#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE	/*!< Deaktivieren eines Verhaltens wenn Abbruchbedingung erfuellt */
+
+//#define BEHAVIOUR_GET_UTILIZATION_AVAILABLE	/*!< CPU-Auslastung eines Verhaltens messen */
 
 //#define BEHAVIOUR_CALIBRATE_PID_AVAILABLE	/*!< Kalibrierungsverhalten fuer Motorregelung vorhanden? */
 //#define BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE	/*!< Kalibrierungsverhalten fuer Distanzsensoren vorhanden? */
@@ -56,6 +59,8 @@
 #define BEHAVIOUR_DELAY_AVAILABLE /*!< Delay-Routinen als Verhalten */
 
 //#define BEHAVIOUR_DRIVE_AREA_AVAILABLE /*!< flaechendeckendes Fahren mit Map */
+
+//#define BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE /*!< Linienfolger ueber Kreuzungen zum Ziel */
 
 /* Aufgrund einer ganzen reihe von Abhaengigkeiten sollte man beim Versuch Speicher
  * zu sparen, zuerst mal bei den Hauptverhalten ausmisten, sonst kommen die
@@ -74,6 +79,10 @@
 #ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
 	#warning "Pfadplanung geht nur, wenn POS_STORE_AVAILABLE"
 	#undef BEHAVIOUR_PATHPLANING_AVAILABLE
+#endif
+#ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
+	#warning "bot_line_shortest_way geht nur, wenn POS_STORE_AVAILABLE"
+	#undef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
 #endif
 #endif
 
@@ -95,6 +104,12 @@
 	#define BEHAVIOUR_GOTO_POS_AVAILABLE
 #endif
 
+#ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
+	#define BEHAVIOUR_GOTO_POS_AVAILABLE
+	#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
+	#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE
+#endif
+
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
 	#define BEHAVIOUR_TURN_AVAILABLE
 	#define BEHAVIOUR_FACTOR_WISH_AVAILABLE
@@ -109,6 +124,13 @@
 		#warning "DriveStack geht nur, wenn POS_STORE_AVAILABLE"
 	#endif
 	#undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+#endif
+
+#ifdef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
+  #define BEHAVIOUR_FOLLOW_LINE_AVAILABLE
+  #define BEHAVIOUR_GOTO_POS_AVAILABLE
+  #define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
+  #define BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
@@ -151,6 +173,7 @@
 
 #ifndef MCU
 	#undef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+	#undef BEHAVIOUR_GET_UTILIZATION_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
@@ -178,6 +201,10 @@
 	#undef BEHAVIOUR_HANG_ON_AVAILABLE
 #endif
 
+#ifndef OS_AVAILABLE
+	#undef BEHAVIOUR_GET_UTILIZATION_AVAILABLE
+#endif
+
 #ifdef MCU
 #ifndef SPEED_CONTROL_AVAILABLE
 	// goto_pos geht nur, wenn wir uns auf die eingestellte Geschwindigkeit verlassen koennen
@@ -189,6 +216,7 @@
 		#warning "DriveStack geht nur, wenn SPEED_CONTROL_AVAILABLE"
 	#endif
 	#undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+	#undef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
 #endif	// SPEED_CONTROL_AVAILABLE
 #endif	// MCU
 
@@ -214,6 +242,7 @@
 
 #include "bot-logic/behaviour_solve_maze.h"
 #include "bot-logic/behaviour_follow_line.h"
+#include "bot-logic/behaviour_follow_line_enhanced.h"
 
 #include "bot-logic/behaviour_olympic.h"
 
@@ -233,6 +262,7 @@
 #include "bot-logic/behaviour_delay.h"
 
 #include "bot-logic/behaviour_cancel_behaviour.h"
+#include "bot-logic/behaviour_get_utilization.h"
 
 #include "bot-logic/behaviour_transport_pillar.h"
 
@@ -241,6 +271,8 @@
 #include "bot-logic/behaviour_drive_area.h"
 
 #include "bot-logic/behaviour_pathplaning.h"
+
+#include "bot-logic/behaviour_line_shortest_way.h"
 
 #endif	// BEHAVIOUR_AVAILABLE
 #endif	/*AVAILABLE_BEHAVIOURS_H_*/

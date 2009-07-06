@@ -1,24 +1,24 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
- * @file 	sensor-low.c  
+/*!
+ * @file 	sensor-low.c
  * @brief 	Low-Level Routinen fuer die Sensor Steuerung des c't-Bots
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	01.12.05
@@ -27,7 +27,7 @@
 #ifdef MCU
 
 #include <avr/io.h>
-#include "adc.h" 
+#include "adc.h"
 #include "global.h"
 
 #include "ena.h"
@@ -48,8 +48,8 @@
 #include <string.h>
 
 // ADC-PINS
-#define SENS_ABST_L	0			/*!< ADC-PIN Abstandssensor Links */
-#define SENS_ABST_R	1			/*!< ADC-PIN Abstandssensor Rechts */
+#define SENS_ABST_L		0		/*!< ADC-PIN Abstandssensor Links */
+#define SENS_ABST_R		1		/*!< ADC-PIN Abstandssensor Rechts */
 #define SENS_M_L		2		/*!< ADC-PIN Liniensensor Links */
 #define SENS_M_R		3		/*!< ADC-PIN Liniensensor Rechts */
 #define SENS_LDR_L		4		/*!< ADC-PIN Lichtsensor Links */
@@ -70,7 +70,7 @@
 #define SENS_ENCL_PINR		PINB	/*!< Port an dem der linke Encoder hängt */
 #define SENS_ENCL_DDR		DDRB	/*!< DDR für den linken Encoder  */
 #define SENS_ENCL			4		/*!< Pin an dem der linke Encoder hängt */
-#endif
+#endif	// SPI_AVAILABLE
 
 #define SENS_ENCR_PINR		PIND	/*!< Port an dem der rechte Encoder hängt */
 #define SENS_ENCR_DDR		DDRD	/*!< DDR für den rechten Encoder  */
@@ -91,44 +91,44 @@
 #define ENC_ENTPRELL	12		/*!< Nur wenn der Encoder ein paar mal den gleichen wert gibt uebernehmen */
 
 #ifdef SPEED_CONTROL_AVAILABLE
-	uint16 encTimeL[8] = {0};	/*!< Timestamps linker Encoder */
-	uint16 encTimeR[8] = {0};	/*!< Timestamps rechter Encoder */
-	uint8 i_encTimeL = 0;		/*!< Array-Index auf letzten Timestampeintrag links */
-	uint8 i_encTimeR = 0;		/*!< Array-Index auf letzten Timestampeintrag rechts */
-	uint8 timeCorrectL = 0;
-	uint8 timeCorrectR = 0; 
+uint16_t encTimeL[8] = {0};	/*!< Timestamps linker Encoder */
+uint16_t encTimeR[8] = {0};	/*!< Timestamps rechter Encoder */
+uint8_t i_encTimeL = 0;		/*!< Array-Index auf letzten Timestampeintrag links */
+uint8_t i_encTimeR = 0;		/*!< Array-Index auf letzten Timestampeintrag rechts */
+uint8_t timeCorrectL = 0;
+uint8_t timeCorrectR = 0;
 #endif // SPEED_CONTROL_AVAILABLE
 
+#ifdef SPEED_LOG_AVAILABLE
 /* Some Debug-Loggings */
-#ifdef SPEED_LOG_AVAILABLE	
-	volatile slog_t slog_data[2][25] = {{{0}}, {{0}}};	/*!< Speed-Log Daten */
-	volatile uint8 slog_i[2] = {0,0};					/*!< Array-Index */
-	uint32 slog_sector = 0;								/*!< Sektor auf der MMC fuer die Daten */
-	volatile uint8 slog_count[2] = {0,0};				/*!< Anzahl Loggings seit letztem Rueckschreiben */
+volatile slog_t slog_data[2][25] = {{{0}}, {{0}}};	/*!< Speed-Log Daten */
+volatile uint8_t slog_i[2] = {0,0};					/*!< Array-Index */
+uint32_t slog_sector = 0;							/*!< Sektor auf der MMC fuer die Daten */
+volatile uint8_t slog_count[2] = {0,0};				/*!< Anzahl Loggings seit letztem Rueckschreiben */
 #endif // SPEED_LOG_AVAILABLE
 
 /*!
  * Initialisiere alle Sensoren
  */
-void bot_sens_init(void) {	
+void bot_sens_init(void) {
 	ENA_init();
 	adc_init(0xFF);		// Alle ADC-Ports aktivieren
-	
+
 	ENA_set(ENA_RADLED | ENA_ABSTAND);		// Alle Sensoren bis auf Radencoder & Abstandssensoren deaktivieren
-	
+
 	SENS_DOOR_DDR	&= ~(1<<SENS_DOOR);		// Input
-	
+
 	SENS_ERROR_DDR	&= ~(1<<SENS_ERROR);	// Input
 
-	SENS_TRANS_DDR	&= ~(1<<SENS_TRANS);	// Input	
+	SENS_TRANS_DDR	&= ~(1<<SENS_TRANS);	// Input
 	SENS_TRANS_PORT	|=  (1<<SENS_TRANS);	// Pullup an
-	
-	SENS_ENCL_DDR	&= ~(1<<SENS_ENCL);		// Input	
-	SENS_ENCR_DDR	&= ~(1<<SENS_ENCR);		// Input	
+
+	SENS_ENCL_DDR	&= ~(1<<SENS_ENCL);		// Input
+	SENS_ENCR_DDR	&= ~(1<<SENS_ENCR);		// Input
 
 	timer_2_init();
 	sensEncL = 0;
-	sensEncR = 0;	
+	sensEncR = 0;
 }
 
 
@@ -136,12 +136,12 @@ void bot_sens_init(void) {
  * Alle Sensoren aktualisieren
  */
 void bot_sens(void) {
-	ENA_on(ENA_KANTLED|ENA_MAUS|ENA_SCHRANKE|ENA_KLAPPLED);	// Die Distanzsensoren sind im Normalfall an, da sie 50 ms zum booten brauchen	
+	ENA_on(ENA_KANTLED|ENA_LINE|ENA_SCHRANKE|ENA_KLAPPLED);	// Die Distanzsensoren sind im Normalfall an, da sie 50 ms zum booten brauchen
 
 #ifdef CMPS03_AVAILABLE
 	cmps03_get_bearing(&sensCmps03);
 #endif
-	
+
 	/* aktualisiere Distanz-Sensoren, interrupt-driven I/O */
 #ifdef DISTSENS_AVERAGE
 	static uint8_t measure_count = 0;
@@ -151,8 +151,8 @@ void bot_sens(void) {
 	static uint16_t old_dist;		// Zeit der letzten Messung der Distanzsensoren
 
 	/* Auswertung der Distanzsensoren alle 50 ms */
-	uint16 dist_ticks = TIMER_GET_TICKCOUNT_16;
-	if ((uint16)(dist_ticks-old_dist) > MS_TO_TICKS(50)) {
+	uint16_t dist_ticks = TIMER_GET_TICKCOUNT_16;
+	if ((uint16_t)(dist_ticks - old_dist) > MS_TO_TICKS(50)) {
 		int16_t * pDistL, * pDistR;
 #ifdef DISTSENS_AVERAGE
 		pDistL = &distLeft[measure_count];
@@ -162,11 +162,11 @@ void bot_sens(void) {
 		pDistR = &sensDistR;
 #endif	// DISTSENS_AVERAGE
 		adc_read_int(SENS_ABST_L, pDistL);
-		#ifdef BEHAVIOUR_SERVO_AVAILABLE
-			if ((servo_active & SERVO1) == 0)	// Wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensor nicht
-		#endif
-				adc_read_int(SENS_ABST_R, pDistR);
-#ifdef DISTSENS_AVERAGE				
+#ifdef BEHAVIOUR_SERVO_AVAILABLE
+		if ((servo_active & SERVO1) == 0)	// Wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensor nicht
+#endif
+			adc_read_int(SENS_ABST_R, pDistR);
+#ifdef DISTSENS_AVERAGE
 		measure_count++;
 		measure_count &= 0x3;	// Z/4Z
 #endif
@@ -175,84 +175,83 @@ void bot_sens(void) {
 	/* die anderen analogen Sensoren, auch int-driven I/O */
 	adc_read_int(SENS_M_L, &sensLineL);
 	adc_read_int(SENS_M_R, &sensLineR);
-	
+
 	adc_read_int(SENS_LDR_L, &sensLDRL);
 	adc_read_int(SENS_LDR_R, &sensLDRR);
 
 	adc_read_int(SENS_KANTE_L, &sensBorderL);
 	adc_read_int(SENS_KANTE_R, &sensBorderR);
-			
-	#ifdef MAUS_AVAILABLE
-	 	// Aktualisiere die Position des Maussensors 
-		sensMouseDX = maus_sens_read(MOUSE_DELTA_X_REG);	
-		sensMouseDY = maus_sens_read(MOUSE_DELTA_Y_REG);
-	#endif
-		
+
+#ifdef MOUSE_AVAILABLE
+	// Aktualisiere die Position des Maussensors
+	sensMouseDX = mouse_sens_read(MOUSE_DELTA_X_REG);
+	sensMouseDY = mouse_sens_read(MOUSE_DELTA_Y_REG);
+#endif
+
 	/* alle digitalen Sensoren */
 	sensDoor = (SENS_DOOR_PINR >> SENS_DOOR) & 0x01;
 	sensTrans = (SENS_TRANS_PINR >> SENS_TRANS) & 0x01;
-	sensError = (SENS_ERROR_PINR >> SENS_ERROR) & 0x01;		
-	
-	/* Aufruf der Motorregler, falls Stillstand */
-	#ifdef SPEED_CONTROL_AVAILABLE 
-		/* us-Ticks sichern */
-		register uint16 pid_ticks = TIMER_GET_TICKCOUNT_16;	// [178 us]
-		register uint8 i_time;
-		register uint8* p_time;
-		/* Index auf Encodertimestamps zwischenspeichern */
-		i_time = i_encTimeL;
-		p_time = (uint8*)encTimeL;	
-		/* Bei Stillstand Regleraufruf links nach PID_TIME ms */
-		if (pid_ticks-*(uint16*)(p_time+i_time) > PID_TIME*50/TIMER_STEPS*20){
-			/* Timestamp links verschieben / speichern */
-			i_time = (i_time + sizeof(encTimeL[0])) & 0xf;	// encTime ist Z/8Z und jeder Eintrag hat 2 Byte => 0xf
-			*(uint16*)(p_time + i_time) = pid_ticks;
-			i_encTimeL = i_time;
-			/* Regleraufruf */
-			speed_control(0,  (int16*)&motor_left, (uint16*)encTimeL, i_encTimeL, 0);
-			timeCorrectL = 1;
-		}
-		/* Bei Stillstand Regleraufruf rechts nach PID_TIME ms */
-		i_time = i_encTimeR;
-		p_time = (uint8*)encTimeR;
-		if (pid_ticks-*(uint16*)(p_time+i_time) > PID_TIME*50/TIMER_STEPS*20) {
-			/* Timestamp rechts verschieben / speichern */ 
-			i_time = (i_time + sizeof(encTimeR[0])) & 0xf;	// encTime ist Z/8Z und jeder Eintrag hat 2 Byte => 0xf
-			*(uint16*)(p_time + i_time) = pid_ticks;
-			i_encTimeR = i_time;
-			/* Regleraufruf rechts */
-			speed_control(1, (int16*)&motor_right, (uint16*)encTimeR, i_encTimeR, 0);
-			timeCorrectR = 1;
-		}
-		
-		#ifdef SPEED_LOG_AVAILABLE
-			/* Speed-Log-Daten auf MMC schreiben, falls Puffer voll */
-			if (slog_sector == 0){
-				/* init-stuff here */
-				slog_sector = mini_fat_find_block("slog", __builtin_alloca(512));
-				//slog_start_sector = slog_sector;
-			}
-			if (slog_count[0] > 20 || slog_count[1] > 20){	// etwas Luft lassen, denn die Daten kommen per ISR
-				uint8 i;
-				for (i=slog_count[0]+1; i<25; i++){
-					memset((uint8*)&slog_data[0][i],0,sizeof(slog_t));	// q&d
-				}
-				for (i=slog_count[1]+1; i<25; i++){
-					memset((uint8*)&slog_data[1][i],0,sizeof(slog_t));	// q&d
-				}
-				mmc_write_sector(slog_sector++, (uint8*)slog_data);	// swap-out
-				/* Index-Reset */
-				slog_i[0] = 0;
-				slog_count[0] = 0;
-				slog_i[1] = 0;
-				slog_count[1] = 0;				
-			}
-		#endif // SPEED_LOG_AVAILABLE
-	#endif // SPEED_CONTROL_AVAILABLE
+	sensError = (SENS_ERROR_PINR >> SENS_ERROR) & 0x01;
 
-	sensor_update();	// Weiterverarbeitung der rohen Sensordaten			
-	
-	if ((uint16)(dist_ticks-old_dist) > MS_TO_TICKS(50)) {
+#ifdef SPEED_CONTROL_AVAILABLE
+	/* Aufruf der Motorregler, falls Stillstand */
+	register uint16_t pid_ticks = TIMER_GET_TICKCOUNT_16;	// Ticks sichern [178 us]
+	register uint8_t i_time;
+	register uint8_t * p_time;
+	/* Index auf Encodertimestamps zwischenspeichern */
+	i_time = i_encTimeL;
+	p_time = (uint8_t *)encTimeL;
+	/* Bei Stillstand Regleraufruf links nach PID_TIME ms */
+	if (pid_ticks - *(uint16_t *)(p_time + i_time) > PID_TIME * 50 / TIMER_STEPS * 20) {
+		/* Timestamp links verschieben / speichern */
+		i_time = (i_time + sizeof(encTimeL[0])) & 0xf;	// encTime ist Z/8Z und jeder Eintrag hat 2 Byte => 0xf
+		*(uint16_t *)(p_time + i_time) = pid_ticks;
+		i_encTimeL = i_time;
+		/* Regleraufruf */
+		speed_control(0,  (int16_t *)&motor_left, (uint16_t *)encTimeL, i_encTimeL, 0);
+		timeCorrectL = 1;
+	}
+	/* Bei Stillstand Regleraufruf rechts nach PID_TIME ms */
+	i_time = i_encTimeR;
+	p_time = (uint8_t *)encTimeR;
+	if (pid_ticks - *(uint16_t *)(p_time + i_time) > PID_TIME * 50 / TIMER_STEPS * 20) {
+		/* Timestamp rechts verschieben / speichern */
+		i_time = (i_time + sizeof(encTimeR[0])) & 0xf;	// encTime ist Z/8Z und jeder Eintrag hat 2 Byte => 0xf
+		*(uint16_t *)(p_time + i_time) = pid_ticks;
+		i_encTimeR = i_time;
+		/* Regleraufruf rechts */
+		speed_control(1, (int16_t *)&motor_right, (uint16_t *)encTimeR, i_encTimeR, 0);
+		timeCorrectR = 1;
+	}
+
+#ifdef SPEED_LOG_AVAILABLE
+	/* Speed-Log-Daten auf MMC schreiben, falls Puffer voll */
+	if (slog_sector == 0) {
+		/* init-stuff here */
+		slog_sector = mini_fat_find_block("slog", __builtin_alloca(512));
+		//slog_start_sector = slog_sector;
+	}
+	if (slog_count[0] > 20 || slog_count[1] > 20) {	// etwas Luft lassen, denn die Daten kommen per ISR
+		uint8_t i;
+		for (i=slog_count[0]+1; i<25; i++){
+			memset((uint8_t *)&slog_data[0][i], 0, sizeof(slog_t));	// q&d
+		}
+		for (i=slog_count[1]+1; i<25; i++){
+			memset((uint8_t *)&slog_data[1][i], 0, sizeof(slog_t));	// q&d
+		}
+		mmc_write_sector(slog_sector++, (uint8_t *)slog_data);	// swap-out
+		/* Index-Reset */
+		slog_i[0] = 0;
+		slog_count[0] = 0;
+		slog_i[1] = 0;
+		slog_count[1] = 0;
+	}
+#endif // SPEED_LOG_AVAILABLE
+#endif // SPEED_CONTROL_AVAILABLE
+
+	sensor_update(); // Weiterverarbeitung der rohen Sensordaten
+
+	if ((uint16_t)(dist_ticks - old_dist) > MS_TO_TICKS(50)) {
 		old_dist = dist_ticks;	// Zeit fuer naechste Messung merken
 		// dieser Block braucht insgesamt ca. 80 us (MCU)
 		/* Dist-Sensor links */
@@ -277,32 +276,32 @@ void bot_sens(void) {
 		(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, volt);
 #ifdef TEST_AVAILABLE_ANALOG
 		sensDistR = volt;
-#endif			
+#endif
 	}
-	
+
 #ifdef CMPS03_AVAILABLE
 	cmps03_finish(&sensCmps03);
 	heading = (float)sensCmps03.bearing / 10.0;
 #endif
-	
-	/* alle anderen analogen Sensoren */	
+
+	/* alle anderen analogen Sensoren */
 	while (adc_get_active_channel() != 255) {}	// restliche Zeit verbrauchen
-	// in den Testmodi bleibt imemr alles an.
-	#ifndef TEST_AVAILABLE
-  		ENA_off(ENA_KANTLED|ENA_MAUS|ENA_SCHRANKE|ENA_KLAPPLED);	// Kanten (ENA_KANTLED), Liniensensoren (ENA_MAUS), Transportfach-LED und Klappensensor aus
-	#endif
-		
+	// in den Testmodi bleibt immer alles an.
+#ifndef TEST_AVAILABLE
+  	ENA_off(ENA_KANTLED|ENA_LINE|ENA_SCHRANKE|ENA_KLAPPLED);	// Kanten (ENA_KANTLED), Liniensensoren (ENA_LINE), Transportfach-LED und Klappensensor aus
+#endif
+
 	/* LEDs updaten */
 	led_update();
-	#ifdef LED_AVAILABLE
-	/* Sollen die LEDs mit den Rohdaten der Sensoren arbeiten, 
+#ifdef LED_AVAILABLE
+	/* Sollen die LEDs mit den Rohdaten der Sensoren arbeiten,
 	 * kommentiert man die folgenden Zeilen ein */
-	 
+
 	//if (voltL > 80) LED_on(LED_LINKS);
 	//else LED_off(LED_LINKS);
 	//if (voltR > 80) LED_on(LED_RECHTS);
 	//else LED_off(LED_RECHTS);
-	#endif	// LED_AVAILABLE	
+#endif	// LED_AVAILABLE
 }
 
 /*!
@@ -311,44 +310,48 @@ void bot_sens(void) {
  * daher Update per Timer-Interrupt und nicht per Polling
  */
 void bot_encoder_isr(void) {
-	static uint8 enc_l=0;		/*!< Puffer fuer die letzten Encoder-Staende */
-	static uint8 enc_r=0;		/*!< Puffer fuer die letzten Encoder-Staende */
-	static uint8 enc_l_cnt=0;	/*!< Entprell-Counter fuer L-Encoder */
-	static uint8 enc_r_cnt=0;	/*!< Entprell-Counter fuer R-Encoder */
-	register uint8 enc_tmp;		// Pegel der Encoderpins im Register zwischenspeichern
-	
-	#ifdef SPEED_CONTROL_AVAILABLE 
-		register uint16 ticks = TIMER_GET_TICKCOUNT_16;	// aktuelle Systemzeit zwischenspeichern
-		register uint8 i_time;							// Index des Timestamparrays zwischenspeichern
-	#endif	// SPEED_CONTROL_AVAILABLE 
+	static uint8_t enc_l = 0;		/*!< Puffer fuer die letzten Encoder-Staende */
+	static uint8_t enc_r = 0;		/*!< Puffer fuer die letzten Encoder-Staende */
+	static uint8_t enc_l_cnt = 0;	/*!< Entprell-Counter fuer L-Encoder */
+	static uint8_t enc_r_cnt = 0;	/*!< Entprell-Counter fuer R-Encoder */
+	register uint8_t enc_tmp; // Pegel der Encoderpins im Register zwischenspeichern
+
+#ifdef SPEED_CONTROL_AVAILABLE
+	register uint16_t ticks = tickCount.u16;	// aktuelle Systemzeit zwischenspeichern
+	register uint8_t i_time;					// Index des Timestamparrays zwischenspeichern
+#endif	// SPEED_CONTROL_AVAILABLE
 	/* Rad-Encoder links */
 	enc_tmp = ENC_L;
 	if (enc_tmp != enc_l) {	// uns interesieren nur Veraenderungen
 		enc_l=enc_tmp;		// neuen Wert sichern
-		enc_l_cnt=0;		// Counter zuruecksetzen
+		enc_l_cnt = 0;		// Counter zuruecksetzen
 	} else {				// zaehlen, wie lange Pegel bleibt
 		if (enc_l_cnt < ENC_ENTPRELL) // Nur bis zur Entprell-Marke
-			enc_l_cnt++;				
+			enc_l_cnt++;
 		else if (enc_l_cnt == ENC_ENTPRELL) { 	// wenn lange genug konstant
 			enc_l_cnt++;	// diese Flanke nur einmal auswerten
-			if (direction.left == DIRECTION_FORWARD)	// Drehrichtung beachten
+			if (direction.left == DIRECTION_FORWARD) {	// Drehrichtung beachten
 				sensEncL++;	//vorwaerts
-			else 
+			} else {
 				sensEncL--;	//rueckwaerts
-			#ifdef SPEED_CONTROL_AVAILABLE
-				/* Timestamps fuer Regler links verschieben und speichern */ 
-				i_time = (i_encTimeL + sizeof(encTimeL[0])) & 0xf;	// encTime ist Z/8Z und jeder Eintrag hat 2 Byte => 0xf
-				*(uint16*)((uint8*)encTimeL + i_time) = ticks;
-				i_encTimeL = i_time;
-				/* Regleraufruf links */
-				if (timeCorrectL == 0) speed_control(0, (int16*)&motor_left, (uint16*)encTimeL, i_encTimeL, enc_tmp);
-				else timeCorrectL = 0;		
-				/* pro TIMER_STEP wird maximal ein Encoder ausgewertet, da max alle 6 ms (Fullspeed) eine Flanke kommen kann */
-				return;	// hackhack	
-			#endif // SPEED_CONTROL_AVAILABLE		
+			}
+#ifdef SPEED_CONTROL_AVAILABLE
+			/* Timestamps fuer Regler links verschieben und speichern */
+			i_time = (i_encTimeL + sizeof(encTimeL[0])) & 0xf;	// encTime ist Z/8Z und jeder Eintrag hat 2 Byte => 0xf
+			*(uint16_t *)((uint8_t *)encTimeL + i_time) = ticks;
+			i_encTimeL = i_time;
+			/* Regleraufruf links */
+			if (timeCorrectL == 0) {
+				speed_control(0, (int16_t *)&motor_left, (uint16_t *)encTimeL, i_encTimeL, enc_tmp);
+			} else {
+				timeCorrectL = 0;
+			}
+			/* pro TIMER_STEP wird maximal ein Encoder ausgewertet, da max alle 6 ms (Fullspeed) eine Flanke kommen kann */
+			return;	// hackhack
+#endif // SPEED_CONTROL_AVAILABLE
 		}
 	}
-	
+
 	/* Rad-Encoder rechts */
 	enc_tmp = ENC_R;
 	if (enc_tmp != enc_r) {	// uns interesieren nur Veraenderungen
@@ -356,22 +359,26 @@ void bot_encoder_isr(void) {
 		enc_r_cnt=0;		// Counter zuruecksetzen
 	} else { 				// zaehlen, wie lange Pegel bleibt
 		if (enc_r_cnt < ENC_ENTPRELL)	// nur bis zur Entprell-Marke
-			enc_r_cnt++;	
+			enc_r_cnt++;
 		else if (enc_r_cnt == ENC_ENTPRELL) { 	// wenn lange genug konstant
 			enc_r_cnt++;	// diese Flanke nur einmal auswerten
-			if (direction.right == DIRECTION_FORWARD)	// Drehrichtung beachten
+			if (direction.right == DIRECTION_FORWARD) {	// Drehrichtung beachten
 				sensEncR++;	//vorwaerts
-			else 
+			} else {
 				sensEncR--;	//rueckwaerts
-			#ifdef SPEED_CONTROL_AVAILABLE
-				/* Timestamps fuer Regler rechts verschieben und speichern */ 
-				i_time = (i_encTimeR + sizeof(encTimeR[0])) & 0xf;	// encTime ist Z/8Z und jeder Eintrag hat 2 Byte => 0xf
-				*(uint16*)((uint8*)encTimeR + i_time) = ticks;
-				i_encTimeR = i_time;
-				/* Regleraufruf rechts */
-				if (timeCorrectR == 0) speed_control(1, (int16*)&motor_right, (uint16*)encTimeR, i_encTimeR, enc_tmp);
-				else timeCorrectR = 0;
-			#endif // SPEED_CONTROL_AVAILABLE
+			}
+#ifdef SPEED_CONTROL_AVAILABLE
+			/* Timestamps fuer Regler rechts verschieben und speichern */
+			i_time = (i_encTimeR + sizeof(encTimeR[0])) & 0xf;	// encTime ist Z/8Z und jeder Eintrag hat 2 Byte => 0xf
+			*(uint16_t *)((uint8_t *)encTimeR + i_time) = ticks;
+			i_encTimeR = i_time;
+			/* Regleraufruf rechts */
+			if (timeCorrectR == 0) {
+				speed_control(1, (int16_t *)&motor_right, (uint16_t *)encTimeR, i_encTimeR, enc_tmp);
+			} else {
+				timeCorrectR = 0;
+			}
+#endif // SPEED_CONTROL_AVAILABLE
 		}
 	}
 }

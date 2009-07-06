@@ -37,81 +37,79 @@
 #include "srf10.h"
 #include "led.h"
 #include "eeprom.h"
+#include "math_utils.h"
 
+#define HEADING_START	0	/*!< Blickrichtung, mit der der Bot sich initialisiert */
 
-#define DEG2RAD (2*M_PI/360)	/*!< Umrechnung von Grad nach Bogenmass */
+int16_t sensLDRL = 0;		/*!< Lichtsensor links */
+int16_t sensLDRR = 0;		/*!< Lichtsensor rechts */
 
-#define HEADING_START		0	/*!< Blickrichtung, mit der der Bot sich initialisiert */
-
-int16 sensLDRL=0;		/*!< Lichtsensor links */
-int16 sensLDRR=0;		/*!< Lichtsensor rechts */
-
-int16 sensDistL=1023;		/*!< Distanz linker IR-Sensor in [mm], wenn korrekt umgerechnet wird */
-int16 sensDistR=1023;		/*!< Distanz rechter IR-Sensor in [mm], wenn korrekt umgerechnet wird */
-uint8_t sensDistLToggle=0;	/*!< Toggle-Bit des linken IR-Sensors */
-uint8_t sensDistRToggle=0;	/*!< Toggle-Bit des rechten IR-Sensors */
+int16_t sensDistL = 1023;	/*!< Distanz linker IR-Sensor in [mm], wenn korrekt umgerechnet wird */
+int16_t sensDistR = 1023;	/*!< Distanz rechter IR-Sensor in [mm], wenn korrekt umgerechnet wird */
+uint8_t sensDistLToggle = 0;	/*!< Toggle-Bit des linken IR-Sensors */
+uint8_t sensDistRToggle = 0;	/*!< Toggle-Bit des rechten IR-Sensors */
 /*! Zeiger auf die Auswertungsfunktion fuer die Distanzsensordaten, const. solange sie nicht kalibriert werden */
-void (* sensor_update_distance)(int16* const p_sens, uint8* const p_toggle, const distSens_t* ptr, int16 volt) = sensor_dist_lookup;
+void (* sensor_update_distance)(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t volt) = sensor_dist_lookup;
 
 distSens_t EEPROM sensDistDataL[] = SENSDIST_DATA_LEFT;		/*!< kalibrierte Referenzdaten fuer linken IR-Sensor */
 distSens_t EEPROM sensDistDataR[] = SENSDIST_DATA_RIGHT;	/*!< kalibrierte Referenzdaten fuer rechten IR-Sensor */
 uint8_t EEPROM sensDistOffset = SENSDIST_OFFSET;			/*!< Spannungs-Offset IR-Sensoren */
 
-int16 sensBorderL=0;	/*!< Abgrundsensor links */
-int16 sensBorderR=0;	/*!< Abgrundsensor rechts */
+int16_t sensBorderL = 0;	/*!< Abgrundsensor links */
+int16_t sensBorderR = 0;	/*!< Abgrundsensor rechts */
 
-int16 sensLineL=0;	/*!< Lininensensor links */
-int16 sensLineR=0;	/*!< Lininensensor rechts */
+int16_t sensLineL = 0;	/*!< Lininensensor links */
+int16_t sensLineR = 0;	/*!< Lininensensor rechts */
 
-uint8 sensTrans=0;		/*!< Sensor Ueberwachung Transportfach */
+uint8_t sensTrans = 0;	/*!< Sensor Ueberwachung Transportfach */
 
-uint8 sensDoor=0;		/*!< Sensor Ueberwachung Klappe */
+uint8_t sensDoor = 0;	/*!< Sensor Ueberwachung Klappe */
 
-uint8 sensError=0;		/*!< Ueberwachung Motor oder Batteriefehler */
+uint8_t sensError = 0;	/*!< Ueberwachung Motor oder Batteriefehler */
 
-#ifdef MAUS_AVAILABLE
-	int8 sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-	int8 sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
+#ifdef MOUSE_AVAILABLE
+int8_t sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+int8_t sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
+int16_t sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+int16_t sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
+#endif	// MOUSE_AVAILABLE
 
-	int16 sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-	int16 sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
-#endif
+int16_t sensEncL = 0;	/*!< Encoder linkes Rad */
+int16_t sensEncR = 0;	/*!< Encoder rechtes Rad */
 
-int16_t sensEncL=0;		/*!< Encoder linkes Rad */
-int16_t sensEncR=0;		/*!< Encoder rechtes Rad */
-float heading_enc=HEADING_START;	/*!< Blickrichtung aus Encodern */
-float x_enc=0;		/*!< X-Koordinate aus Encodern [mm] */
-float y_enc=0;		/*!< Y-Koordinate aus Encodern [mm] */
-int16_t v_enc_left=0;	/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
-int16_t v_enc_right=0;	/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
-int16_t v_enc_center=0;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
+float heading_enc = HEADING_START;	/*!< Blickrichtung aus Encodern */
+float x_enc = 0;		/*!< X-Koordinate aus Encodern [mm] */
+float y_enc = 0;		/*!< Y-Koordinate aus Encodern [mm] */
+int16_t v_enc_left = 0;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+int16_t v_enc_right = 0;	/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+int16_t v_enc_center = 0;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
 
 #ifdef PC
-	uint16 simultime=0;	/*! Simulierte Zeit */
+int16_t simultime = 0;	/*!< Simulierte Zeit */
 #endif
 
 #ifdef MEASURE_MOUSE_AVAILABLE
-	float heading_mou=HEADING_START;		/*!< Aktuelle Blickrichtung relativ zur Startposition aus Mausmessungen */
-	float x_mou=0;			/*!< Aktuelle X-Koordinate in mm relativ zur Startposition aus Mausmessungen */
-	float y_mou=0;			/*!< Aktuelle Y-Koordinate in mm relativ zur Startposition aus Mausmessungen */
-	int16_t v_mou_center=0;		/*!< Geschwindigkeit in mm/s ausschliesslich aus den Maussensorwerten berechnet */
-	int16_t v_mou_left=0;		/*!< ...aufgeteilt auf linkes Rad */
-	int16_t v_mou_right=0;		/*!< ...aufgeteilt auf rechtes Rad */
-#endif
+float heading_mou = HEADING_START;	/*!< Aktuelle Blickrichtung relativ zur Startposition aus Mausmessungen */
+float x_mou = 0;			/*!< Aktuelle X-Koordinate in mm relativ zur Startposition aus Mausmessungen */
+float y_mou = 0;			/*!< Aktuelle Y-Koordinate in mm relativ zur Startposition aus Mausmessungen */
+int16_t v_mou_center = 0;	/*!< Geschwindigkeit in mm/s ausschliesslich aus den Maussensorwerten berechnet */
+int16_t v_mou_left = 0;		/*!< ...aufgeteilt auf linkes Rad */
+int16_t v_mou_right = 0;	/*!< ...aufgeteilt auf rechtes Rad */
+#endif	// MEASURE_MOUSE_AVAILABLE
 
-float heading=HEADING_START;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
-int16_t x_pos=0;			/*!< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
-int16_t y_pos=0;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
-int16_t v_left=0;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
-int16_t v_right=0;			/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
-int16_t v_center=0;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
+float heading = HEADING_START;		/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
+int16_t x_pos = 0;			/*!< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
+int16_t y_pos = 0;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
+int16_t v_left = 0;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
+int16_t v_right = 0;		/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
+int16_t v_center = 0;		/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
 
 #ifdef SRF10_AVAILABLE
-	uint16 sensSRF10;	/*!< Messergebniss Ultraschallsensor */
+uint16_t sensSRF10;		/*!< Messergebniss Ultraschallsensor */
 #endif
 
 #ifdef CMPS03_AVAILABLE
-	cmps03_t sensCmps03 = {{0}};	/*!< Lage laut CMPS03-Kompass */
+cmps03_t sensCmps03 = {{0}};	/*!< Lage laut CMPS03-Kompass */
 #endif
 
 /*!
@@ -130,9 +128,9 @@ int16_t v_center=0;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Mau
  */
 static inline uint8_t lin_interpolate(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t xs) {
 	if (x1 == x2) return -1;
-	uint16_t m = ((uint16_t)(y2-y1)<<8) / (uint8_t)(x1-x2);	// m >= 0
+	uint16_t m = ((uint16_t)(y2 - y1) << 8) / (uint8_t)(x1 - x2);	// m >= 0
 	uint8_t x_diff = x1 - xs;
-	return (uint8_t)((x_diff*m)>>8) + y1;	// m war kuenstlich um 8 Bit hochskaliert
+	return (uint8_t)((x_diff * m) >> 8) + y1;	// m war kuenstlich um 8 Bit hochskaliert
 }
 
 /*!
@@ -151,11 +149,11 @@ void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const 
 		return;
 	}
 	uint8_t i;
-	uint8_t n = sizeof(sensDistDataL)/sizeof(distSens_t)/2;
+	uint8_t n = sizeof(sensDistDataL) / sizeof(distSens_t) / 2;
 	uint8_t volt;
 	/* Offset einlesen und Messwerte pruefen */
 	uint8_t offset = ctbot_eeprom_read_byte(&sensDistOffset);
-	if (volt_16 > 255*2 + offset) volt = 255;
+	if (volt_16 > 255 * 2 + offset) volt = 255;
 	else volt = (volt_16 >> 1) - offset;
 
 	/* Spannung in LT-Table suchen */
@@ -167,7 +165,7 @@ void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const 
 		/* in oberer Haelfte suchen */
 		i = n;
 		ptr += n;
-		n = sizeof(sensDistDataL)/sizeof(distSens_t);
+		n = sizeof(sensDistDataL) / sizeof(distSens_t);
 	}
 	uint8_t tmp=0;
 	for (; i<n; i++) {
@@ -195,244 +193,258 @@ void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const 
 /*!
  * Kuemmert sich um die Weiterverarbeitung der rohen Sensordaten
  */
-void sensor_update(void){
-	static uint8_t old_pos=0;			/*!< Ticks fuer Positionsberechnungsschleife */
-	static uint16 old_speed=0;			/*!< Ticks fuer Geschwindigkeitsberechnungsschleife */
-	#ifdef MEASURE_MOUSE_AVAILABLE
-		static int16 lastMouseX=0;		/*!< letzter Mauswert X fuer Positionsberechnung */
-		static int16 lastMouseY=0;		/*!< letzter Mauswert Y fuer Positionsberechnung */
-		static float lastDistance=0;	/*!< letzte gefahrene Strecke */
-		static float lastHead=HEADING_START;		/*!< letzter gedrehter Winkel */
-		static float oldHead=HEADING_START;		/*!< Winkel aus dem letzten Durchgang */
-		static float old_x=0;			/*!< Position X aus dem letzten Durchgang */
-		static float old_y=0;			/*!< Position Y aus dem letzten Durchgang */
-		float radius=0;				/*!< errechneter Radius des Drehkreises */
-		float s1=0;					/*!< Steigung der Achsengerade aus dem letzten Durchgang */
-		float s2=0;					/*!< Steigung der aktuellen Achsengerade */
-		float a1=0;					/*!< Y-Achsenabschnitt der Achsengerade aus dem letzten Durchgang */
-		float a2=0;					/*!< Y-Achsenabschnitt der aktuellen Achsengerade */
-		float xd=0;					/*!< X-Koordinate Drehpunkt */
-		float yd=0;					/*!< Y-Koordinate Drehpunkt */
-		float right_radius=0;			/*!< Radius des Drehkreises des rechten Rads */
-		float left_radius=0;			/*!< Radius des Drehkreises des linken Rads */
-	#endif	// MEASURE_MOUSE_AVAILABLE
-	static int16 lastEncL =0;		/*!< letzter Encoderwert links fuer Positionsberechnung */
-	static int16 lastEncR =0;		/*!< letzter Encoderwert rechts fuer Positionsberechnung */
-	static int16 lastEncL1=0;		/*!< letzter Encoderwert links fuer Geschwindigkeitsberechnung */
-	static int16 lastEncR1=0;		/*!< letzter Encoderwert rechts fuer Geschwindigkeitsberechnung */
-	float dHead=0;					/*!< Winkeldifferenz aus Encodern */
-	float deltaY=0;				/*!< errechneter Betrag Richtungsvektor aus Encodern */
-	int16 diffEncL;					/*!< Differenzbildung linker Encoder */
-	int16 diffEncR;					/*!< Differenzbildung rechter Encoder */
+void sensor_update(void) {
+#ifndef OS_AVAILABLE
+	static uint8_t old_pos = 0;			/*!< Ticks fuer Positionsberechnungsschleife */
+#endif
+	static uint16_t old_speed = 0;		/*!< Ticks fuer Geschwindigkeitsberechnungsschleife */
+#ifdef MEASURE_MOUSE_AVAILABLE
+	static int16_t lastMouseX = 0;	/*!< letzter Mauswert X fuer Positionsberechnung */
+	static int16_t lastMouseY = 0;	/*!< letzter Mauswert Y fuer Positionsberechnung */
+	static float lastDistance = 0;	/*!< letzte gefahrene Strecke */
+	static float lastHead = HEADING_START;		/*!< letzter gedrehter Winkel */
+	static float oldHead = HEADING_START;		/*!< Winkel aus dem letzten Durchgang */
+	static float old_x = 0;			/*!< Position X aus dem letzten Durchgang */
+	static float old_y = 0;			/*!< Position Y aus dem letzten Durchgang */
+	float radius = 0;				/*!< errechneter Radius des Drehkreises */
+	float s1 = 0;					/*!< Steigung der Achsengerade aus dem letzten Durchgang */
+	float s2 = 0;					/*!< Steigung der aktuellen Achsengerade */
+	float a1 = 0;					/*!< Y-Achsenabschnitt der Achsengerade aus dem letzten Durchgang */
+	float a2 = 0;					/*!< Y-Achsenabschnitt der aktuellen Achsengerade */
+	float xd = 0;					/*!< X-Koordinate Drehpunkt */
+	float yd = 0;					/*!< Y-Koordinate Drehpunkt */
+	float right_radius = 0;			/*!< Radius des Drehkreises des rechten Rads */
+	float left_radius = 0;			/*!< Radius des Drehkreises des linken Rads */
+#endif	// MEASURE_MOUSE_AVAILABLE
+	static int16_t lastEncL = 0;	/*!< letzter Encoderwert links fuer Positionsberechnung */
+	static int16_t lastEncR = 0;	/*!< letzter Encoderwert rechts fuer Positionsberechnung */
+	static int16_t lastEncL1 = 0;	/*!< letzter Encoderwert links fuer Geschwindigkeitsberechnung */
+	static int16_t lastEncR1 = 0;	/*!< letzter Encoderwert rechts fuer Geschwindigkeitsberechnung */
+	float dHead = 0;				/*!< Winkeldifferenz aus Encodern */
+	float deltaY = 0;				/*!< errechneter Betrag Richtungsvektor aus Encodern */
+	int16_t diffEncL;				/*!< Differenzbildung linker Encoder */
+	int16_t diffEncR;				/*!< Differenzbildung rechter Encoder */
 	float sl;						/*!< gefahrene Strecke linkes Rad */
 	float sr;						/*!< gefahrene Strecke rechtes Rad */
-	#ifdef MEASURE_MOUSE_AVAILABLE
-		int16 dX;						/*!< Differenz der X-Mauswerte */
-		int16 dY;						/*!< Differenz der Y-Mauswerte */
-		int8 modifiedAngles=False;		/*!< Wird True, wenn aufgrund 90 Grad oder 270 Grad die Winkel veraendert werden mussten */
+#ifdef MEASURE_MOUSE_AVAILABLE
+	int16_t dX;						/*!< Differenz der X-Mauswerte */
+	int16_t dY;						/*!< Differenz der Y-Mauswerte */
+	int8_t modifiedAngles = False;	/*!< Wird True, wenn aufgrund 90 Grad oder 270 Grad die Winkel veraendert werden mussten */
 
-		sensMouseY += sensMouseDY;		/*!< Mausdelta Y aufaddieren */
-		sensMouseX += sensMouseDX;		/*!< Mausdelta X aufaddieren */
-	#endif	// MEASURE_MOUSE_AVAILABLE
+	sensMouseY += sensMouseDY;		/*!< Mausdelta Y aufaddieren */
+	sensMouseX += sensMouseDX;		/*!< Mausdelta X aufaddieren */
+#endif	// MEASURE_MOUSE_AVAILABLE
 
-	if (timer_ms_passed(&old_pos, 10)) {
+#ifndef OS_AVAILABLE
+	if (timer_ms_passed_8(&old_pos, 10))
+#endif
+	{
 		/* Gefahrene Boegen aus Encodern berechnen */
-		#ifdef MCU
-			uint8 sreg = SREG;
-			cli();
-		#endif
+#ifdef MCU
+		uint8_t sreg = SREG;
+		cli();
+#endif
 		/* <CS> */
-		register int16 sensEncL_tmp = sensEncL;
-		register int16 sensEncR_tmp = sensEncR;
+		register int16_t sensEncL_tmp = sensEncL;
+		register int16_t sensEncR_tmp = sensEncR;
 		/* </CS> */
-		#ifdef MCU
-			SREG = sreg;
-		#endif
-		diffEncL=sensEncL_tmp-lastEncL;
-		diffEncR=sensEncR_tmp-lastEncR;
-		lastEncL=sensEncL_tmp;
-		lastEncR=sensEncR_tmp;
-		sl=(float)diffEncL*((float)WHEEL_PERIMETER/ENCODER_MARKS);
-		sr=(float)diffEncR*((float)WHEEL_PERIMETER/ENCODER_MARKS);
+#ifdef MCU
+		SREG = sreg;
+#endif
+		diffEncL = sensEncL_tmp - lastEncL;
+		diffEncR = sensEncR_tmp - lastEncR;
+		lastEncL = sensEncL_tmp;
+		lastEncR = sensEncR_tmp;
+		sl = (float)diffEncL * ((float)WHEEL_PERIMETER / ENCODER_MARKS);
+		sr = (float)diffEncR * ((float)WHEEL_PERIMETER / ENCODER_MARKS);
 		/* Winkel berechnen */
-		dHead=(float)(sr-sl)/(WHEEL_TO_WHEEL_DIAMETER);
+		dHead = (float)(sr - sl) / (WHEEL_TO_WHEEL_DIAMETER);
 		/* Winkel ist hier noch im Bogenmass */
 		/* Position berechnen */
 		/* dazu Betrag des Vektors berechnen */
-		if (dHead==0) {
+		if (dHead == 0) {
 			/* Geradeausfahrt, deltaY=diffEncL=diffEncR */
-			deltaY=sl;
+			deltaY = sl;
 		} else {
 			/* Laenge berechnen aus alpha/2 */
-			deltaY=(sl+sr)*sin(dHead/2)/dHead;
+			deltaY = (sl + sr) * sin(dHead / 2) / dHead;
 		}
 		/* Winkel in Grad umrechnen */
-		dHead=dHead/DEG2RAD;
+		dHead = dHead / DEG2RAD;
 
 		/* neue Positionen berechnen */
-		heading_enc+=dHead;
-		while (heading_enc>=360) heading_enc=heading_enc-360;
-		while (heading_enc<0) heading_enc=heading_enc+360;
+		heading_enc += dHead;
+		if (heading_enc >= 360) {
+			heading_enc -= 360;
+		}
+		if (heading_enc < 0) {
+			heading_enc += 360;
+		}
 
-		x_enc+=(float)deltaY*cos(heading_enc*DEG2RAD);
-		y_enc+=(float)deltaY*sin(heading_enc*DEG2RAD);
-		#ifdef MEASURE_MOUSE_AVAILABLE
-			dX=sensMouseX-lastMouseX;
-			/* heading berechnen */
-			dHead=(float)dX*(360.0/(float)MOUSE_FULL_TURN);
-			heading_mou+=dHead;
-			lastHead+=dHead;
-			if (heading_mou>=360) heading_mou=heading_mou-360;
-			if (heading_mou<0) heading_mou=heading_mou+360;
-			/* x/y pos berechnen */
-			dY=sensMouseY-lastMouseY;
-			lastDistance+=dY*(25.4/MOUSE_CPI);
-			x_mou+=(float)dY*cos(heading_mou*DEG2RAD)*(25.4/MOUSE_CPI);
-			y_mou+=(float)dY*sin(heading_mou*DEG2RAD)*(25.4/MOUSE_CPI);
+		x_enc += (float)deltaY * cos(heading_enc * DEG2RAD);
+		y_enc += (float)deltaY * sin(heading_enc * DEG2RAD);
+#ifdef MEASURE_MOUSE_AVAILABLE
+		dX = sensMouseX - lastMouseX;
+		/* heading berechnen */
+		dHead = (float)dX * (360.0f / (float)MOUSE_FULL_TURN);
+		heading_mou += dHead;
+		lastHead += dHead;
+		if (heading_mou >= 360) {
+			heading_mou -= 360;
+		}
+		if (heading_mou < 0) {
+			heading_mou += 360;
+		}
+		/* x/y pos berechnen */
+		dY = sensMouseY - lastMouseY;
+		lastDistance += dY * (25.4f / MOUSE_CPI);
+		x_mou += (float)dY * cos(heading_mou * DEG2RAD) * (25.4f / MOUSE_CPI);
+		y_mou += (float)dY * sin(heading_mou * DEG2RAD) * (25.4f / MOUSE_CPI);
 
-			lastMouseX=sensMouseX;
-			lastMouseY=sensMouseY;
-		#endif	// MEASURE_MOUSE_AVAILABLE
-		#ifdef MEASURE_COUPLED_AVAILABLE
-			/* Werte der Encoder und der Maus mit dem Faktor G_POS verrechnen */
-			x_pos=G_POS*x_mou+(1-G_POS)*x_enc;
-			y_pos=G_POS*y_mou+(1-G_POS)*y_enc;
-			/* Korrektur, falls mou und enc zu unterschiedlichen Seiten zeigen */
-			if (fabs(heading_mou-heading_enc) > 180) {
-				/* wir nutzen zum Rechnen zwei Drehrichtungen */
-				heading = heading_mou<=180 ? heading_mou*G_POS : (heading_mou-360)*G_POS;
-				heading += heading_enc<=180 ? heading_enc*(1-G_POS) : (heading_enc-360)*(1-G_POS);
-				/* wieder auf eine Drehrichtung zurueck */
-				if (heading < 0) heading += 360;
-			} else
-				heading = G_POS*heading_mou + (1-G_POS)*heading_enc;
-			if (heading >= 360) heading -= 360;
-		#else
-			#ifdef MEASURE_MOUSE_AVAILABLE
-				/* Mauswerte als Standardwerte benutzen */
-				heading=heading_mou;
-				x_pos=x_mou;
-				y_pos=y_mou;
-			#else
-				/* Encoderwerte als Standardwerte benutzen */
-				#ifndef CMPS03_AVAILABLE
-					heading=heading_enc;
-				#endif
-				x_pos=x_enc;
-				y_pos=y_enc;
-			#endif	// MEASURE_MOUSE_AVAILABLE
-		#endif	// MEASURE_COUPLED_AVAILABLE
+		lastMouseX = sensMouseX;
+		lastMouseY = sensMouseY;
+#endif	// MEASURE_MOUSE_AVAILABLE
+#ifdef MEASURE_COUPLED_AVAILABLE
+		/* Werte der Encoder und der Maus mit dem Faktor G_POS verrechnen */
+		x_pos = G_POS * x_mou + (1 - G_POS) * x_enc;
+		y_pos = G_POS * y_mou + (1 - G_POS) * y_enc;
+		/* Korrektur, falls mou und enc zu unterschiedlichen Seiten zeigen */
+		if (fabs(heading_mou - heading_enc) > 180) {
+			/* wir nutzen zum Rechnen zwei Drehrichtungen */
+			heading = heading_mou <= 180 ? heading_mou * G_POS : (heading_mou - 360) * G_POS;
+			heading += heading_enc <= 180 ? heading_enc * (1 - G_POS) : (heading_enc - 360) * (1 - G_POS);
+			/* wieder auf eine Drehrichtung zurueck */
+			if (heading < 0) heading += 360;
+		} else
+			heading = G_POS * heading_mou + (1 - G_POS) * heading_enc;
+		if (heading >= 360) heading -= 360;
+#else
+#ifdef MEASURE_MOUSE_AVAILABLE
+		/* Mauswerte als Standardwerte benutzen */
+		heading = heading_mou;
+		x_pos = x_mou;
+		y_pos = y_mou;
+#else
+		/* Encoderwerte als Standardwerte benutzen */
+#ifndef CMPS03_AVAILABLE
+		heading = heading_enc;
+#endif
+		x_pos = x_enc;
+		y_pos = y_enc;
+#endif	// MEASURE_MOUSE_AVAILABLE
+#endif	// MEASURE_COUPLED_AVAILABLE
 	}
-	if (timer_ms_passed(&old_speed, 250)) {
-		#ifdef MCU
-			uint8 sreg = SREG;
-			cli();
-		#endif
+
+	if (timer_ms_passed_16(&old_speed, 250)) {
+#ifdef MCU
+		uint8_t sreg = SREG;
+		cli();
+#endif
 		/* <CS> */
-		register int16 sensEncL_tmp = sensEncL;
-		register int16 sensEncR_tmp = sensEncR;
+		register int16_t sensEncL_tmp = sensEncL;
+		register int16_t sensEncR_tmp = sensEncR;
 		/* </CS> */
-		#ifdef MCU
-			SREG = sreg;
-		#endif
-		v_enc_left=  (((sensEncL_tmp - lastEncL1) * (float)WHEEL_PERIMETER) / ENCODER_MARKS)*4;
-		v_enc_right= (((sensEncR_tmp - lastEncR1) * (float)WHEEL_PERIMETER) / ENCODER_MARKS)*4;
-		v_enc_center=(v_enc_left+v_enc_right)/2;
-		lastEncL1= sensEncL_tmp;
-		lastEncR1= sensEncR_tmp;
-		#ifdef MEASURE_MOUSE_AVAILABLE
-			/* Speed aufgrund Maussensormessungen */
-			v_mou_center=lastDistance*4;
-			/* Aufteilung auf die Raeder zum Vergleich mit den Radencodern */
-			/* Sonderfaelle pruefen */
-			if (oldHead==90 || oldHead==270 || heading_mou==90 || heading_mou==270) {
-				float temp;
-				/* winkel um 90 Grad vergroessern */
-				oldHead+=90;
-				heading_mou+=90;
-				// Koordinaten anpassen
-				temp=old_x;
-				old_x=old_y;
-				old_y=-temp;
-				temp=x_mou;
-				x_mou=y_mou;
-				y_mou=-temp;
-				modifiedAngles=True;
-			}
+#ifdef MCU
+		SREG = sreg;
+#endif
+		v_enc_left = (((sensEncL_tmp - lastEncL1) * (float)WHEEL_PERIMETER) / ENCODER_MARKS) * 4;
+		v_enc_right = (((sensEncR_tmp - lastEncR1) * (float)WHEEL_PERIMETER) / ENCODER_MARKS) * 4;
+		v_enc_center = (v_enc_left + v_enc_right) / 2;
+		lastEncL1 = sensEncL_tmp;
+		lastEncR1 = sensEncR_tmp;
+#ifdef MEASURE_MOUSE_AVAILABLE
+		/* Speed aufgrund Maussensormessungen */
+		v_mou_center = lastDistance * 4;
+		/* Aufteilung auf die Raeder zum Vergleich mit den Radencodern */
+		/* Sonderfaelle pruefen */
+		if (oldHead == 90 || oldHead == 270 || heading_mou == 90 || heading_mou == 270) {
+			float temp;
+			/* winkel um 90 Grad vergroessern */
+			oldHead += 90;
+			heading_mou += 90;
+			// Koordinaten anpassen
+			temp = old_x;
+			old_x = old_y;
+			old_y = -temp;
+			temp = x_mou;
+			x_mou = y_mou;
+			y_mou = -temp;
+			modifiedAngles = True;
+		}
 
-			/* Steigungen berechnen */
-			s1=-tan(oldHead*DEG2RAD);
-			s2=-tan(heading_mou*DEG2RAD);
+		/* Steigungen berechnen */
+		s1 = -tan(oldHead * DEG2RAD);
+		s2 = -tan(heading_mou * DEG2RAD);
 
-			/* Geradeausfahrt? (s1==s2) */
-			if (s1==s2) {
-				/* Bei Geradeausfahrt ist v_left==v_right==v_center */
-				v_mou_left=v_mou_right=v_mou_center;
-			} else {
-				/* y-Achsenabschnitte berechnen */
-				a1=old_x-s1*old_y;
-				a2=x_mou-s2*y_mou;
-				/* Schnittpunkt berechnen */
-				yd=(a2-a1)/(s1-s2);
-				xd=s2*yd+a2;
-				/* Radius ermitteln */
-				radius=sqrt((x_mou-xd)*(x_mou-xd)+(y_mou-yd)*(y_mou-yd));
-				/* Vorzeichen des Radius feststellen */
-				if (lastHead<0) {
-					/* Drehung rechts, Drehpunkt liegt rechts vom Mittelpunkt
-					 * daher negativer Radius */
-					 radius=-radius;
-				}
-				if (v_mou_center<0) {
-					/* rueckwaerts => links und rechts vertauscht, daher VZ vom Radius umdrehen */
-					radius=-radius;
-				}
-				/* Geschwindigkeiten berechnen */
-				right_radius=radius+WHEEL_DISTANCE;
-				left_radius=radius-WHEEL_DISTANCE;
-				v_mou_right=lastHead*right_radius*(4*2*M_PI/360);
-				v_mou_left=lastHead*left_radius*(4*2*M_PI/360);
+		/* Geradeausfahrt? (s1==s2) */
+		if (s1 == s2) {
+			/* Bei Geradeausfahrt ist v_left==v_right==v_center */
+			v_mou_left = v_mou_right = v_mou_center;
+		} else {
+			/* y-Achsenabschnitte berechnen */
+			a1 = old_x - s1 * old_y;
+			a2 = x_mou - s2 * y_mou;
+			/* Schnittpunkt berechnen */
+			yd = (a2 - a1) / (s1 - s2);
+			xd = s2 * yd + a2;
+			/* Radius ermitteln */
+			radius = sqrt((x_mou - xd) * (x_mou - xd) + (y_mou - yd) * (y_mou - yd));
+			/* Vorzeichen des Radius feststellen */
+			if (lastHead < 0) {
+				/* Drehung rechts, Drehpunkt liegt rechts vom Mittelpunkt
+				 * daher negativer Radius */
+				 radius = -radius;
 			}
-			/* Falls Koordinaten/Winkel angepasst wurden, nun wieder korrigieren */
-			if (modifiedAngles){
-				float temp;
-				/* Winkel wieder um 90 Grad reduzieren */
-				oldHead-=90;
-				heading_mou-=90;
-				/* Koordinaten wieder korrigieren */
-				temp=old_x;
-				old_x=-old_y;
-				old_y=temp;
-				temp=x_mou;
-				x_mou=-y_mou;
-				y_mou=temp;
+			if (v_mou_center < 0) {
+				/* rueckwaerts => links und rechts vertauscht, daher VZ vom Radius umdrehen */
+				radius = -radius;
 			}
-			lastDistance=0;
-			lastHead=0;
-			old_x=x_mou;
-			old_y=y_mou;
-			oldHead=heading_mou;
-		#endif	// MEASURE_MOUSE_AVAILABLE
-		#ifdef MEASURE_COUPLED_AVAILABLE
-			v_left=G_SPEED*v_mou_left+(1-G_SPEED)*v_enc_left;
-			v_right=G_SPEED*v_mou_right+(1-G_SPEED)*v_enc_left;
-			v_center=G_SPEED*v_mou_center+(1-G_SPEED)*v_enc_center;
-		#else
-			#ifdef MEASURE_MOUSE_AVAILABLE
-				/* Mauswerte als Standardwerte benutzen */
-				v_left=v_mou_left;
-				v_right=v_mou_right;
-				v_center=v_mou_center;
-			#else
-				/* Encoderwerte als Standardwerte benutzen */
-				v_left=v_enc_left;
-				v_right=v_enc_right;
-				v_center=v_enc_center;
-			#endif	// MEASURE_MOUSE_AVAILABLE
-		#endif	// MEASURE_COUPLED_AVAILABLE
-		#ifdef SRF10_AVAILABLE
-			sensSRF10 = srf10_get_measure();	/*!< Messung Ultraschallsensor */
-		#endif	// SRF10_AVAILABLE
+			/* Geschwindigkeiten berechnen */
+			right_radius = radius + WHEEL_DISTANCE;
+			left_radius = radius - WHEEL_DISTANCE;
+			v_mou_right = lastHead * right_radius * (4 * 2 * M_PI / 360);
+			v_mou_left = lastHead * left_radius * (4 * 2 * M_PI / 360);
+		}
+		/* Falls Koordinaten/Winkel angepasst wurden, nun wieder korrigieren */
+		if (modifiedAngles) {
+			float temp;
+			/* Winkel wieder um 90 Grad reduzieren */
+			oldHead -= 90;
+			heading_mou -= 90;
+			/* Koordinaten wieder korrigieren */
+			temp = old_x;
+			old_x = -old_y;
+			old_y = temp;
+			temp = x_mou;
+			x_mou = -y_mou;
+			y_mou = temp;
+		}
+		lastDistance = 0;
+		lastHead = 0;
+		old_x = x_mou;
+		old_y = y_mou;
+		oldHead = heading_mou;
+#endif	// MEASURE_MOUSE_AVAILABLE
+#ifdef MEASURE_COUPLED_AVAILABLE
+		v_left = G_SPEED * v_mou_left + (1 - G_SPEED) * v_enc_left;
+		v_right = G_SPEED * v_mou_right + (1 - G_SPEED) * v_enc_left;
+		v_center = G_SPEED * v_mou_center + (1 - G_SPEED) * v_enc_center;
+#else
+#ifdef MEASURE_MOUSE_AVAILABLE
+		/* Mauswerte als Standardwerte benutzen */
+		v_left = v_mou_left;
+		v_right = v_mou_right;
+		v_center = v_mou_center;
+#else
+		/* Encoderwerte als Standardwerte benutzen */
+		v_left = v_enc_left;
+		v_right = v_enc_right;
+		v_center = v_enc_center;
+#endif	// MEASURE_MOUSE_AVAILABLE
+#endif	// MEASURE_COUPLED_AVAILABLE
+#ifdef SRF10_AVAILABLE
+		sensSRF10 = srf10_get_measure();	/*!< Messung Ultraschallsensor */
+#endif	// SRF10_AVAILABLE
 	}
 }
 
@@ -445,12 +457,12 @@ void sensor_reset(void) {
 	x_enc = 0;
 	y_enc = 0;
 
+#ifdef MEASURE_MOUSE_AVAILABLE
 	/* Maussensor */
-	#ifdef MEASURE_MOUSE_AVAILABLE
 	heading_mou = HEADING_START;
 	x_mou = 0;
 	y_mou = 0;
-	#endif	// MEASURE_MOUSE_AVAILABLE
+#endif	// MEASURE_MOUSE_AVAILABLE
 }
 
 /*!
@@ -461,11 +473,13 @@ void sensor_reset(void) {
  * es naeher am rechten Sensor ist. Sollten beide Sensoren den gleichen Wert haben, gibt die Funktion 1 zurueck, um
  * von False unterscheiden zu koennen.
  */
-int16 is_obstacle_ahead(int16 distance) {
-	if (sensDistL > distance && sensDistR > distance)
+int16_t is_obstacle_ahead(int16_t distance) {
+	if (sensDistL > distance && sensDistR > distance) {
 		return False;
-	if (sensDistL - sensDistR == 0)
+	}
+	if (sensDistL - sensDistR == 0) {
 		return 1;
+	}
 	return sensDistL - sensDistR;
 }
 
@@ -474,95 +488,95 @@ int16 is_obstacle_ahead(int16 distance) {
  */
 void led_update(void) {
 #ifdef LED_AVAILABLE
-	#ifndef TEST_AVAILABLE
-		if (sensTrans != 0) LED_on(LED_GELB);
-		else LED_off(LED_GELB);
-		if (sensError != 0) LED_on(LED_ORANGE);
-		else LED_off(LED_ORANGE);
+#ifndef TEST_AVAILABLE
+	if (sensTrans != 0) LED_on(LED_GELB);
+	else LED_off(LED_GELB);
+	if (sensError != 0) LED_on(LED_ORANGE);
+	else LED_off(LED_ORANGE);
 
-		if (sensDistL < 500) LED_on(LED_LINKS);
-		else LED_off(LED_LINKS);
-		if (sensDistR < 500) LED_on(LED_RECHTS);
-		else LED_off(LED_RECHTS);
-	#else	// TEST_AVAILABLE
-		static volatile uint8_t led_status = 0x00;
-		led_t * status = (led_t *)&led_status;
-		#ifdef TEST_AVAILABLE_ANALOG
-			(*status).rechts	= (sensDistR >> 8) & 0x01;
-			(*status).links		= (sensDistL >> 8) & 0x01;
-			(*status).rot		= (sensLineL >> 9) & 0x01;
-			(*status).orange	= (sensLineR >> 9) & 0x01;
-			(*status).gelb		= (sensLDRL >> 8)  & 0x01;
-			(*status).gruen		= (sensLDRR >> 8)  & 0x01;
-			(*status).tuerkis	= (sensBorderL >> 9) & 0x01;
-			(*status).weiss		= (sensBorderR >> 9) & 0x01;
-		#endif	// TEST_AVAILABLE_ANALOG
-		#ifdef TEST_AVAILABLE_DIGITAL
-			(*status).rechts	= sensEncR  & 0x01;
-			(*status).links		= sensEncL  & 0x01;
-			(*status).rot		= sensTrans & 0x01;
-			(*status).orange	= sensError & 0x01;
-			(*status).gelb		= sensDoor  & 0x01;
-			#ifdef MAUS_AVAILABLE
-				(*status).gruen		= (sensMouseDX >> 1) & 0x01;
-				(*status).tuerkis	= (sensMouseDY >> 1) & 0x01;
-			#endif
-			#ifdef RC5_AVAILABLE
-				(*status).weiss		= RC5_Code & 0x01;
-			#endif
-		#endif	// TEST_AVAILABLE_DIGITAL
+	if (sensDistL < 500) LED_on(LED_LINKS);
+	else LED_off(LED_LINKS);
+	if (sensDistR < 500) LED_on(LED_RECHTS);
+	else LED_off(LED_RECHTS);
+#else	// TEST_AVAILABLE
+	static volatile uint8_t led_status = 0x00;
+	led_t * status = (led_t *)&led_status;
+#ifdef TEST_AVAILABLE_ANALOG
+	(*status).rechts	= (sensDistR >> 8) & 0x01;
+	(*status).links		= (sensDistL >> 8) & 0x01;
+	(*status).rot		= (sensLineL >> 9) & 0x01;
+	(*status).orange	= (sensLineR >> 9) & 0x01;
+	(*status).gelb		= (sensLDRL >> 8)  & 0x01;
+	(*status).gruen		= (sensLDRR >> 8)  & 0x01;
+	(*status).tuerkis	= (sensBorderL >> 9) & 0x01;
+	(*status).weiss		= (sensBorderR >> 9) & 0x01;
+#endif	// TEST_AVAILABLE_ANALOG
+#ifdef TEST_AVAILABLE_DIGITAL
+	(*status).rechts	= sensEncR  & 0x01;
+	(*status).links		= sensEncL  & 0x01;
+	(*status).rot		= sensTrans & 0x01;
+	(*status).orange	= sensError & 0x01;
+	(*status).gelb		= sensDoor  & 0x01;
+#ifdef MOUSE_AVAILABLE
+	(*status).gruen		= (sensMouseDX >> 1) & 0x01;
+	(*status).tuerkis	= (sensMouseDY >> 1) & 0x01;
+#endif
+#ifdef RC5_AVAILABLE
+	(*status).weiss		= RC5_Code & 0x01;
+#endif
+#endif	// TEST_AVAILABLE_DIGITAL
 
-		LED_set(led_status);
-	#endif	// !TEST_AVAILABLE
+	LED_set(led_status);
+#endif	// !TEST_AVAILABLE
 #endif	// LED_AVAILABLE
 }
 
 #ifdef SENSOR_DISPLAY_AVAILABLE
 /*!
- * @brief	Displayhandler fuer Sensoranzeige
+ * Displayhandler fuer Sensoranzeige
  */
 void sensor_display(void) {
-	display_cursor(1,1);
-	display_printf("P=%03X %03X D=%03d %03d ",sensLDRL,sensLDRR,sensDistL,sensDistR);
+	display_cursor(1, 1);
+	display_printf("P=%03X %03X D=%03d %03d ", sensLDRL, sensLDRR, sensDistL, sensDistR);
 
-	display_cursor(2,1);
-	display_printf("B=%03X %03X L=%03X %03X ",sensBorderL,sensBorderR,sensLineL,sensLineR);
+	display_cursor(2, 1);
+	display_printf("B=%03X %03X L=%03X %03X ", sensBorderL, sensBorderR, sensLineL, sensLineR);
 
-	display_cursor(3,1);
-	display_printf("R=%2d %2d F=%d K=%d T=%d ",sensEncL%10,sensEncR%10,sensError,sensDoor,sensTrans);
+	display_cursor(3, 1);
+	display_printf("R=%2d %2d F=%d K=%d T=%d ", sensEncL % 10, sensEncR % 10, sensError, sensDoor, sensTrans);
 
-	display_cursor(4,1);
-	#ifdef RC5_AVAILABLE
-		static uint16 RC5_old;
-		if (RC5_Code != 0) RC5_old = RC5_Code;
-		#ifdef MAUS_AVAILABLE
-			display_printf("I=%04X M=%05d %05d",RC5_old,sensMouseX,sensMouseY);
-		#else
-			display_printf("I=%04X",RC5_old);
-		#endif
-	#else
-		#ifdef MAUS_AVAILABLE
-			display_printf("M=%05d %05d",sensMouseX,sensMouseY);
-		#endif
-	#endif
+	display_cursor(4, 1);
+#ifdef RC5_AVAILABLE
+	static uint16_t RC5_old;
+	if (RC5_Code != 0) RC5_old = RC5_Code;
+#ifdef MOUSE_AVAILABLE
+	display_printf("I=%04X M=%05d %05d", RC5_old, sensMouseX, sensMouseY);
+#else
+	display_printf("I=%04X", RC5_old);
+#endif	// MOUSE_AVAILABLE
+#else
+#ifdef MOUSE_AVAILABLE
+	display_printf("M=%05d %05d", sensMouseX, sensMouseY);
+#endif	// MOUSE_AVAILABLE
+#endif	// RC5_AVAILABLE
 }
 #endif	// SENSOR_DISPLAY_AVAILABLE
 
 #ifdef DISPLAY_ODOMETRIC_INFO
 /*!
- * @brief	Displayhandler fuer Odometrieanzeige
+ * Displayhandler fuer Odometrieanzeige
  */
 void odometric_display(void) {
 	/* Zeige Positions- und Geschwindigkeitsdaten */
-	display_cursor(1,1);
-	display_printf("heading: %3d.%u  ",(int16)heading, (int16)((heading-(int16)heading)*10));
-	display_cursor(2,1);
-	display_printf("x: %3d  y: %3d  ",(int16)x_pos,(int16)y_pos);
-	display_cursor(3,1);
-	display_printf("v_l: %3d v_r: %3d  ",(int16)v_left,(int16)v_right);
-	#ifdef MEASURE_MOUSE_AVAILABLE
-		display_cursor(4,1);
-		display_printf("squal: %3d v_c: %3d",maus_get_squal(),(int16)v_mou_center);
-	#endif	// MEASURE_MOUSE_AVAILABLE
+	display_cursor(1, 1);
+	display_printf("heading: %3d.%u  ",(int16_t)heading, (int16_t)((heading - (int16_t)heading) * 10));
+	display_cursor(2, 1);
+	display_printf("x: %3d  y: %3d  ", x_pos, y_pos);
+	display_cursor(3, 1);
+	display_printf("v_l: %3d v_r: %3d  ", v_left, v_right);
+#ifdef MEASURE_MOUSE_AVAILABLE
+	display_cursor(4, 1);
+	display_printf("squal: %3d v_c: %3d", mouse_get_squal(), (int16_t)v_mou_center);
+#endif	// MEASURE_MOUSE_AVAILABLE
 }
 #endif	// DISPLAY_ODOMETRIC_INFO

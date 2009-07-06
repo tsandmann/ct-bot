@@ -28,6 +28,8 @@
 #define MAP_H_
 
 #include "ct-Bot.h"
+#include "fifo.h"
+#include "os_thread.h"
 #include "bot-logic/available_behaviours.h"
 
 #ifdef MAP_AVAILABLE
@@ -39,10 +41,14 @@
 #define MAP_RESOLUTION 		125		/*!< Aufloesung der Karte in Punkte pro Meter */
 #define MAP_SECTION_POINTS 	16		/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 
-#define MAP_UPDATE_STACK_SIZE	240	/*!< Groesse des Stacks, der das Map-Update ausfuehrt */
-#define MAP_UPDATE_CACHE_SIZE	26	/*!< Groesse des Map-Caches */
+#define MAP_UPDATE_STACK_SIZE	256	/*!< Groesse des Stacks, der das Map-Update ausfuehrt [Byte] */
+#define MAP_UPDATE_CACHE_SIZE	26	/*!< Groesse des Map-Caches [Byte] */
+#define MAP_2_SIM_STACK_SIZE	150	/*!< Groesse des Map-2-Sim-Thread-Stacks [Byte]*/
+
+#define MAP_2_SIM_BUFFER_SIZE	32	/*!< Anzahl der Bloecke, die fuer Map-2-Sim gecachet werden koennen */
 
 #define MAP_OBSTACLE_THRESHOLD	-20	/*!< Schwellwert, ab dem ein Feld als Hindernis gilt */
+#define MAP_DRIVEN_THRESHOLD	1	/*!< Schwellwert, ab dem ein Feld als befahren gilt */
 
 #define MAP_RATIO_NONE	0		/*!< Rueckgabe von map_get_ratio(), falls kein Feld den Kriterien entspricht */
 #define MAP_RATIO_FULL	255		/*!< Rueckgabe von map_get_tatio(), falls alle Felder den Kriterien entsprechen */
@@ -65,6 +71,12 @@ typedef struct {
 } __attribute__ ((packed)) map_cache_t;	// Keine Luecken in der Struktur lassen
 
 extern fifo_t map_update_fifo;			/*!< Fifo fuer Cache */
+extern uint8_t map_update_stack[];		/*!< Stack des Update-Threads */
+extern os_signal_t map_buffer_signal;	/*!< Signal das anzeigt, ob Daten im Map-Puffer sind */
+
+#ifdef MAP_2_SIM_AVAILABLE
+extern uint8_t map_2_sim_worker_stack[];	/*!< Stack des Map-2-Sim-Threads */
+#endif // MAP_2_SIM_AVAILABLE
 
 /*!
  * Prueft, ob die Karte zurzeit gesperrt ist.
@@ -73,10 +85,10 @@ extern fifo_t map_update_fifo;			/*!< Fifo fuer Cache */
 uint8_t map_locked(void);
 
 /*!
- * liefert den Durschnittswert um eine Ort herum
+ * liefert den Durschnittswert um einen Ort herum
  * @param x			X-Ordinate der Welt
  * @param y			Y-Ordinate der Welt
- * @param radius	Radius der Umgebung, die beruecksichtigt wird [mm]
+ * @param radius	Radius der Umgebung, die beruecksichtigt wird [mm]; 0 fuer ein Map-Feld (Punkt)
  * @return			Durchschnitsswert im Umkreis um den Ort (>0 heisst frei, <0 heisst belegt)
  */
 int8_t map_get_average(int16_t x, int16_t y, int16_t radius);
@@ -103,7 +115,7 @@ static inline int8_t map_get_point(int16_t x, int16_t y) {
  * @param y1		Startpunkt der Region R, Y-Anteil; Weltkoordinaten [mm]
  * @param x2		Endpunkt der Region R, X-Anteil; Weltkoordinaten [mm]
  * @param y2		Endpunkt der Region R, Y-Anteil; Weltkoordinaten [mm]
- * @param width		Breite der Region R (jeweils width/2 links und rechts der Gerade) [mm]
+ * @param width		Breite der Region R (jeweils width/2 links und rechts der Geraden) [mm]
  * @param min_val	minimaler Feldwert, der vorkommen darf
  * @param max_val	maximaler Feldwert, der vorkommen darf
  * @return			Verhaeltnis von Anzahl der Felder, die zwischen min_val und max_val liegen, zu
@@ -116,13 +128,14 @@ uint8_t map_get_ratio(int16_t x1, int16_t y1, int16_t x2, int16_t y2,
 
 /*!
  * Prueft ob eine direkte Passage frei von Hindernissen ist
- * @param from_x	Startort x Weltkoordinaten
- * @param from_y	Startort y Weltkoordinaten
- * @param to_x		Zielort x Weltkoordinaten
- * @param to_y		Zielort y Weltkoordinaten
- * @return 			1 wenn alles frei ist
+ * @param from_x	Startort x Weltkoordinaten [mm]
+ * @param from_y	Startort y Weltkoordinaten [mm]
+ * @param to_x		Zielort x Weltkoordinaten [mm]
+ * @param to_y		Zielort y Weltkoordinaten [mm]
+ * @param margin	Breite eines Toleranzbereichs links und rechts der Fahrspur, der ebenfalls frei sein muss [mm]
+ * @return			1, wenn alles frei ist
  */
-uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y);
+uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y, uint8_t margin);
 
 /*!
  * Haelt den Bot an und schreibt den Map-Update-Cache komplett zurueck
@@ -147,13 +160,20 @@ void map_clean(void);
 int8_t map_init(void);
 
 /*!
+ * Konvertiert eine Weltkoordinate in eine Kartenkoordinate
+ * @param koord	Weltkoordiante
+ * @return		Kartenkoordinate
+ */
+uint16_t world_to_map(int16_t koord);
+
+/*!
  * Konvertiert eine Kartenkoordinate in eine Weltkoordinate
  * @param map_koord	Kartenkoordinate
  * @return 			Weltkoordiante
  */
 static inline int16_t map_to_world(uint16_t map_koord) {
 #if (1000 / MAP_RESOLUTION) * MAP_RESOLUTION != 1000
-	#warning "MAP_RESOLUTION ist kein Teiler von 1000, Code in map_to_world() anpassen!"
+#error "MAP_RESOLUTION ist kein Teiler von 1000, Code in map_to_world() anpassen!"
 #endif
 	int32_t tmp = map_koord * (1000 / MAP_RESOLUTION);
 	return tmp - (uint16_t)(MAP_SIZE * MAP_RESOLUTION * 4);
@@ -164,6 +184,39 @@ static inline int16_t map_to_world(uint16_t map_koord) {
 #define map_get_min_y() map_to_world(map_min_y)		/*!< Minimum in Y-Richtung */
 #define map_get_max_x() map_to_world(map_max_x)		/*!< Maximum in X-Richtung */
 #define map_get_max_y() map_to_world(map_max_y)		/*!< Maximum in Y-Richtung */
+
+#ifdef MAP_2_SIM_AVAILABLE
+/*!
+ * Uebertraegt die komplette Karte an den Sim
+ */
+void map_2_sim_send(void);
+
+/*!
+ * Zeichnet eine Linie in die Map-Anzeige des Sim
+ * @param from	Startpunkt der Linie (Map-Koordinate)
+ * @param to	Endpunkt der Linie (Map-Koordinate)
+ * @param color	Farbe der Linie: 0=gruen, 1=rot, sonst schwarz
+ */
+void map_draw_line(position_t from, position_t to, uint8_t color);
+
+/*!
+ * Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein;
+ * dient zur Visualisierung der Arbeitsweise des Verhaltens
+ * @param from	Koordinaten des ersten Punktes der Linie (Welt)
+ * @param to	Koordinaten des zweiten Punktes der Linie (Welt)
+ * @param color Farbe der Linie: 0=gruen, 1=rot, sonst schwarz
+ */
+void map_draw_line_world(position_t from, position_t to, uint8_t color);
+
+/*!
+ * Zeichnet ein Rechteck in die Map-Anzeige des Sim
+ * @param from	Startpunkt der Geraden mittig durch das Rechteck (Map-Koordinate)
+ * @param to	Endpunkt der Geraden mittig durch das Rechteck (Map-Koordinate)
+ * @param width	Breite des Rechtecks (jeweils width/2 links und rechts der Gerade; in Map-Aufloesung)
+ * @param color	Farbe der Linien: 0=gruen, 1=rot, sonst schwarz
+ */
+void map_draw_rect(position_t from, position_t to, uint8_t width, uint8_t color);
+#endif	// MAP_2_SIM_AVAILABLE
 
 #ifdef PC
 char * map_file;	/*!< Dateiname fuer Ex- / Import */

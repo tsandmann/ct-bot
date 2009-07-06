@@ -58,17 +58,18 @@ uint8_t EEPROM goto_pos_err[2] = {TARGET_MARGIN, TARGET_MARGIN};	/*!< Fehlerwert
 #endif
 #endif
 
-static int16_t dest_x = 0;			/*!< x-Komponente des Zielpunktes */
-static int16_t dest_y = 0;			/*!< y-Komponente des Zielpunktes */
-static int16_t dest_head = 0;		/*!< gewuenschte Blickrichtung am Zielpunkt */
-static int8_t drive_dir = 1;		/*!< Fahrtrichtung: 1: vorwaerts, -1: rueckwaerts */
-static uint8_t state = 3;			/*!< Status des Verhaltens */
-static uint8_t * p_goto_pos_err;	/*!< Zeiger auf Fehlervariable im EEPROM */
-
 #define FIRST_TURN	0				/*!< Erste Drehung in ungefaehre Zielrichtung */
 #define CALC_WAY	1				/*!< Berechnung des Kreisbogens */
 #define RUNNING		2				/*!< Fahrt auf der berechneten Kreisbahn */
 #define LAST_TURN	3				/*!< Abschliessende Drehung */
+#define END			99				/*!< Verhalten beenden */
+
+static int16_t dest_x = 0;			/*!< x-Komponente des Zielpunktes */
+static int16_t dest_y = 0;			/*!< y-Komponente des Zielpunktes */
+static int16_t dest_head = 0;		/*!< gewuenschte Blickrichtung am Zielpunkt */
+static int8_t drive_dir = 1;		/*!< Fahrtrichtung: 1: vorwaerts, -1: rueckwaerts */
+static uint8_t state = END;			/*!< Status des Verhaltens */
+static uint8_t * p_goto_pos_err;	/*!< Zeiger auf Fehlervariable im EEPROM */
 
 static const int16_t straight_go	= 200;	/*!< Entfernung zum Ziel [mm], bis zu der geradeaus zum Ziel gefahren wird */
 static const int16_t max_angle		= 30;	/*!< Maximaler Winkel [Grad] zwischen Start-Blickrichtung und Ziel */
@@ -103,7 +104,7 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 
 	/* Pruefen, ob wir schon am Ziel sind */
 	uint8_t margin = ctbot_eeprom_read_byte(p_goto_pos_err);
-	if (diff_to_target <= margin) state = LAST_TURN;
+	if (state != END && diff_to_target <= margin) state = LAST_TURN;
 
 	switch (state) {
 	case FIRST_TURN: {
@@ -234,20 +235,21 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 			LOG_DEBUG("new_error=%d", new_error);
 		}
 		/* fast fertig, evtl. noch drehen */
-		drive_dir = 1;
-		return_from_behaviour(data);
-		if (dest_head == 999) {
-			/* kein Drehen gewuenscht => fertig */
-			return;
-		} else {
+		if (dest_head != 999) {
 			/* Noch in die gewuenschte Blickrichtung drehen */
 			int16_t to_turn = (int16_t)(dest_head - (int16_t)heading);
 			if (to_turn > 180) to_turn = -360 + to_turn;
 			else if (to_turn < -180) to_turn += 360;
 			LOG_DEBUG("to_turn=%d", to_turn);
-			bot_turn(NULL, to_turn);
+			bot_turn(data, to_turn);
 		}
+		state = END;
+		break;
 	}
+	default:
+		drive_dir = 1;
+		return_from_behaviour(data);
+		return;
 	}
 }
 
@@ -268,9 +270,10 @@ void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
 	switch_to_behaviour(caller, bot_goto_pos_behaviour, OVERRIDE);
 
 	/* Inits */
-	if (state != LAST_TURN) {
+	if (state != END) {
 		drive_dir = 1;	// unsanfter Abbruch beim letzten Mal
 		LOG_DEBUG("Richtung unbekannt, nehme vorwaerts an");
+		LOG_DEBUG("state=%u", state);
 	}
 	state = FIRST_TURN;
 	p_goto_pos_err = &goto_pos_err[0];	// erstmal kleine Strecke annehmen, Verhalten korrigiert das evtl.
@@ -315,7 +318,7 @@ void bot_goto_dist(Behaviour_t * caller, int16_t distance, int16_t dir) {
 	int16_t target_y = distance * sin(head) + y_pos;
 	LOG_DEBUG("Zielpunkt=(%d|%d)", target_x, target_y);
 	LOG_DEBUG("Richtung=%d", drive_dir);
-	state = LAST_TURN;
+	state = END;
 	/* Verhalten starten */
 	bot_goto_pos(caller, target_x, target_y, (int16_t)heading);
 }

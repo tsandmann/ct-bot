@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	behaviour_scan.c
  * @brief 	Scannt die Umgebung und traegt sie in die Karte ein
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -41,10 +41,10 @@
 #ifdef BEHAVIOUR_SCAN_AVAILABLE
 
 #ifndef MAP_AVAILABLE
-	#error "MAP_AVAILABLE muss an sein, damit behaviour_scan.c etwas sinnvolles tun kann"
+#error "MAP_AVAILABLE muss an sein, damit behaviour_scan.c etwas sinnvolles tun kann"
 #endif
 #ifndef OS_AVAILABLE
-	#error "OS_AVAILABLE muss an sein fuer behaviour_scan"
+#error "OS_AVAILABLE muss an sein fuer behaviour_scan"
 #endif
 
 //#define DEBUG_SCAN_OTF	// Debug-Infos an
@@ -66,17 +66,21 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 	if (cache_free < SCAN_OTF_CACHE_LEVEL_THRESHOLD) {
 		if (cache_free == 0) {
 			/* Cache ganz voll */
-			if (scan_otf_modes.map_mode && 
+			if (scan_otf_modes.map_mode &&
 					sensBorderL < BORDER_DANGEROUS && sensBorderR < BORDER_DANGEROUS) {
-				/* Stoppe den Bot, damit wir Zeit haben die Karte einzutragen 
+				/* Stoppe den Bot, damit wir Zeit haben die Karte einzutragen
 				 * aber nur, wenn kein Abgrund erkannt wurde */
 				motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
-//				LOG_DEBUG("Map-Cache voll, halte Bot an");
+#ifdef DEBUG_SCAN_OTF
+				LOG_DEBUG("Map-Cache voll, halte Bot an");
+#endif
 				/* Halte alle Verhalten eine Weile an, weil sie ja sonst weiterfahren wuerden */
 				os_thread_sleep(SCAN_OTF_SLEEP_TIME);
 			} else {
 				/* Cache voll, neuen Eintrag verwerfen */
-//				LOG_DEBUG("Map-Cache voll, verwerfe neuen Eintrag");
+#ifdef DEBUG_SCAN_OTF
+				LOG_DEBUG("Map-Cache voll, verwerfe neuen Eintrag");
+#endif
 			}
 			return;
 		}
@@ -87,16 +91,16 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 			return;
 		}
 	}
-	
+
 	/* Cache updaten, falls sich der Bot weit genug bewegt hat. */
 	cache_tmp.mode.raw = 0;
 	cache_tmp.dataL = 0;
 	cache_tmp.dataR = 0;
-	
+
 	/*
 	 * STANDFLAECHE
 	 * Die Standflaeche tragen wir nur ein, wenn der Bot auch ein Stueck gefahren ist
-	 */ 
+	 */
 	if (scan_otf_modes.location) {
 		// ermitteln, wie weit der Bot seit dem letzten location-update gefahren ist
 		uint16_t diff = get_dist(x_pos, y_pos, last_location_x, last_location_y);
@@ -108,10 +112,10 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 			last_location_y = y_pos;
 		}
 	}
-	
-	/* 
+
+	/*
 	 * DISTANZSENSOREN
-	 * Die Distanzsensoren tragen wir beim Geradeausfahren selten ein, 
+	 * Die Distanzsensoren tragen wir beim Geradeausfahren selten ein,
 	 * da sie viele Map-zellen ueberstreichen und das Eintragen teuer ist
 	 * und sie auf der anderen Seite (beim Vorwaertsfahren) wenig neue Infos liefern
 	*/
@@ -124,7 +128,7 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 			(diff > (SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS*SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS))) {
 			// Hat sich der Bot mehr als SCAN_ONTHEFLY_ANGLE_RESOLUTION gedreht ==> Blickstrahlen aktualisieren
 			cache_tmp.mode.distance = 1;
-	
+
 			cache_tmp.dataL = sensDistL/5;
 			cache_tmp.dataR = sensDistR/5;
 			// Letzte Distance-Update-Position sichern
@@ -136,9 +140,9 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 
 	/*
 	 * ABGRUNDSENSOREN
-	 * Wir werten diese nur aus, wenn der Bot entweder 
+	 * Wir werten diese nur aus, wenn der Bot entweder
 	 * SCAN_OTF_RESOLUTION_DISTANCE_BORDER mm gefahren ist oder
-	 * SCAN_OTF_RESOLUTION_ANGLE_BORDER Grad gedreht hat 
+	 * SCAN_OTF_RESOLUTION_ANGLE_BORDER Grad gedreht hat
 	 */
 	if (scan_otf_modes.border) {
 		// ermitteln, wie weit der Bot seit dem letzten border-update gefahren ist
@@ -148,35 +152,32 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 		if ((
 			  (diff > (SCAN_OTF_RESOLUTION_DISTANCE_BORDER*SCAN_OTF_RESOLUTION_DISTANCE_BORDER)) ||
 			  (turned > SCAN_OTF_RESOLUTION_ANGLE_BORDER)
-			) && 
+			) &&
 			((sensBorderL > BORDER_DANGEROUS) || (sensBorderR > BORDER_DANGEROUS))) {
 				cache_tmp.mode.border = 1;
 				cache_tmp.mode.distance = 0;
 				cache_tmp.dataL = (sensBorderL > BORDER_DANGEROUS);
 				cache_tmp.dataR = (sensBorderR > BORDER_DANGEROUS);
-				
+
 				last_border_x = x_pos;
 				last_border_y = y_pos;
 				last_border_head = (int16_t) heading;
 		}
 	}
-	
+
 	// ist ein Update angesagt?
-	if (cache_tmp.mode.distance || cache_tmp.mode.location || cache_tmp.mode.border) {			
+	if (cache_tmp.mode.distance || cache_tmp.mode.location || cache_tmp.mode.border) {
 		cache_tmp.x_pos = x_pos;
 		cache_tmp.y_pos = y_pos;
-		cache_tmp.heading = (int16_t)(heading*10.0f);		
+		cache_tmp.heading = (int16_t)(heading * 10.0f);
 
 
 		fifo_put_data(&map_update_fifo, &cache_tmp, sizeof(map_cache_t));
 
 		#ifdef DEBUG_SCAN_OTF
-			LOG_DEBUG("neuer Eintrag: x= %d y= %d head= %f distance= %d loaction=%d border=%d",cache_tmp.x_pos, cache_tmp.y_pos, cache_tmp.heading/10.0f,cache_tmp.mode.distance, cache_tmp.mode.location, cache_tmp.mode.border);
+			LOG_DEBUG("neuer Eintrag: x=%d y=%d head=%f distance=%d loaction=%d border=%d", cache_tmp.x_pos, cache_tmp.y_pos, cache_tmp.heading/10.0f, cache_tmp.mode.distance, cache_tmp.mode.location, cache_tmp.mode.border);
 		#endif
 	}
-	
-	/* Rest der Zeitscheibe (10 ms) schlafen legen */
-	os_thread_yield();
 }
 
 #endif	// BEHAVIOUR_SCAN_AVAILABLE

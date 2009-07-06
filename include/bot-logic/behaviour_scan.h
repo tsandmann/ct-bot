@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	behaviour_scan.h
  * @brief 	Scannt die Umgebung und traegt sie in die Karte ein
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -28,7 +28,6 @@
 #define BEHAVIOUR_SCAN_H_
 
 #include "bot-logic/bot-logik.h"
-#include "fifo.h"
 
 #define SCAN_OTF_RESOLUTION_DISTANCE_LOCATION	60	/*!< Nach welcher gefahrenen Strecke [mm] soll die Standflaeche aktualisiert werden */
 
@@ -39,7 +38,7 @@
 #define SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS	180	/*!< Nach welcher gefahrenen Strecke [mm] sollen die  Distanzsensoren fuer die Karte ausgewertet werden */
 
 #define SCAN_OTF_SLEEP_TIME					2000	/*!< Wartezeit fuer andere Verhalten, falls Cache (sehr) voll ist [ms] */
-#define SCAN_OTF_CACHE_LEVEL_THRESHOLD		(MAP_UPDATE_CACHE_SIZE*sizeof(map_cache_t)/3)	/*!< Schwellwert fuer freien Cache-Speicher, ab dem der Cache als sehr voll gilt [Byte] */	
+#define SCAN_OTF_CACHE_LEVEL_THRESHOLD		(MAP_UPDATE_CACHE_SIZE*sizeof(map_cache_t)/3)	/*!< Schwellwert fuer freien Cache-Speicher, ab dem der Cache als sehr voll gilt [Byte] */
 
 /*! Modi des Scan-Verhaltens */
 typedef union {
@@ -82,7 +81,7 @@ static inline void set_scan_otf_border(uint8_t value) {
 
 /*!
  * Schaltet Kartographie-Modus an oder aus.
- * Im Kartographie-Modus haelt der Bot an, falls der Cache voll 
+ * Im Kartographie-Modus haelt der Bot an, falls der Cache voll
  * ist, anstatt Eintraege zu verwerfen.
  * @param value	1: an, 0: aus
  */

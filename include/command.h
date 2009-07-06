@@ -24,71 +24,67 @@
  * @date 	20.12.05
  */
 
-#ifndef __command_h_
-#define __command_h_
+#ifndef COMMAND_H_
+#define COMMAND_H_
 
 #include "ct-Bot.h"
-#include <stdio.h>
 #include "eeprom.h"
+#include "uart.h"
+#include <stdio.h>
 
-#define MAX_PAYLOAD 255  /*!< Max. Anzahl Bytes, die an ein Command angehaengt werden */
+#define MAX_PAYLOAD 255  /*!< Max. Anzahl Bytes, die an ein Command angehaengt werden koennen */
 
 #ifdef PC
-	#define low_read tcp_read 	/*!< Which function to use to read data */
-	#define low_write tcp_send_cmd /*!< Which function to use to write data */
-	#define low_write_data tcp_write /*!< Which function to use to write data */
-#endif
+#define low_read tcp_read			/*!< Which function to use to read data */
+#define low_write tcp_send_cmd		/*!< Which function to use to write data */
+#define low_write_data tcp_write	/*!< Which function to use to write data */
+#endif	// PC
 
 #ifdef MCU
-	#define low_read uart_read 	/*!< Which function to use to read data */
-	#define low_write uart_send_cmd /*!< Which function to use to write data */
-	#define low_write_data uart_write /*!< Which function to use to write data */
-#endif
+#define low_read uart_read 			/*!< Which function to use to read data */
+#define low_write uart_send_cmd		/*!< Which function to use to write data */
+#define low_write_data uart_write	/*!< Which function to use to write data */
+#endif	// MCU
 
 
 /*! Request Teil eines Kommandos */
 typedef struct {
 #if (defined PC) && (BYTE_ORDER == BIG_ENDIAN)
 	/* Bitfeld im big-endian-Fall umdrehen */
-	uint8 command:8;	/*!< command */
-	uint8 direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
-	uint8 subcommand:7;	/*!< subcommand */
+	uint8_t command:8;		/*!< Kommando */
+	uint8_t direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
+	uint8_t subcommand:7;	/*!< Subkommando */
 #else
-	uint8 command:8;	/*!< command */
-	uint8 subcommand:7;	/*!< subcommand */
-	uint8 direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
+	uint8_t command:8;		/*!< Kommando */
+	uint8_t subcommand:7;	/*!< Subkommando */
+	uint8_t direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
 #endif
-#ifndef DOXYGEN
-	} __attribute__ ((packed)) request_t; // Keine Luecken in der Struktur lassen
-#else
-	} request_t; // Keine Luecken in der Struktur lassen
-#endif
+} __attribute__ ((packed)) request_t; // Keine Luecken in der Struktur lassen
+
 
 /*! Kommando */
 typedef struct {
-	uint8 startCode;	/*!< Markiert den Beginn eines Commands */
+	uint8_t startCode;	/*!< Markiert den Beginn eines Commands */
 	request_t request; 	/*!< Command-ID */
-	uint8  payload;		/*!< Bytes, die dem Kommando noch folgen*/
-	int16 data_l;		/*!< Daten zum Kommando links*/
-	int16 data_r;		/*!< Daten zum Kommando rechts*/
-	uint8 seq;			/*!< Paket-Sequenznummer*/
-	uint8 from;			/*!< Absender-Adresse */
-	uint8 to;			/*!< Empfaenger-Adresse */
-	uint8 CRC;			/*!< Markiert das Ende des Commands*/
-#ifndef DOXYGEN
-	} __attribute__ ((packed)) command_t;// Keine Luecken in der Struktur lassen
-#else
-	} command_t;
-#endif
+	uint8_t  payload;	/*!< Bytes, die dem Kommando noch folgen */
+	int16_t data_l;		/*!< Daten zum Kommando link s*/
+	int16_t data_r;		/*!< Daten zum Kommando rechts */
+	uint8_t seq;		/*!< Paket-Sequenznummer */
+	uint8_t from;		/*!< Absender-Adresse */
+	uint8_t to;			/*!< Empfaenger-Adresse */
+	uint8_t CRC;		/*!< Markiert das Ende des Commands */
+} __attribute__ ((packed)) command_t; // Keine Luecken in der Struktur lassen
 
-#define CMD_STARTCODE	'>'		/*!< Anfang eines Kommandos*/
-#define CMD_STOPCODE	'<'		/*!< Ende eines Kommandos*/
+#define CMD_STARTCODE	'>'		/*!< Anfang eines Kommandos */
+#define CMD_STOPCODE	'<'		/*!< Ende eines Kommandos */
 
-//Sensoren
-#define CMD_SENS_IR	    'I'		/*!< Abstandssensoren*/
-#define CMD_SENS_ENC	'E'		/*!< Radencoder*/
-#define CMD_SENS_BORDER 'B'		/*!< Abgrundsensoren*/
-#define CMD_SENS_LINE 	'L'		/*!< Liniensensoren*/
+#define SUB_CMD_NORM	'N' 	/*!< Standard-Subkommando */
+
+// Sensoren
+#define CMD_SENS_IR	    'I'		/*!< Abstandssensoren */
+#define CMD_SENS_ENC	'E'		/*!< Radencoder */
+#define CMD_SENS_BORDER 'B'		/*!< Abgrundsensoren */
+#define CMD_SENS_LINE 	'L'		/*!< Liniensensoren */
 #define CMD_SENS_LDR 	'H'		/*!< Helligkeitssensoren */
 #define CMD_SENS_TRANS	'T'		/*!< Ueberwachung Transportfach */
 #define CMD_SENS_DOOR	'D'		/*!< Ueberwachung Klappe */
@@ -96,8 +92,7 @@ typedef struct {
 #define CMD_SENS_ERROR  'e'		/*!< Motor- oder Batteriefehler */
 #define CMD_SENS_RC5 	'R'		/*!< IR-Fernbedienung */
 
-#define CMD_SENS_MOUSE_PICTURE	'P'		/*!< Bild vom Maussensor in data_l steht, welche Nummer da 1. Pixel hat*/
-
+#define CMD_SENS_MOUSE_PICTURE	'P'		/*!< Bild vom Maussensor in data_l steht, welche Nummer der 1. Pixel hat */
 
 // Aktuatoren
 #define CMD_AKT_MOT	    'M'		/*!< Motorgeschwindigkeit */
@@ -110,13 +105,7 @@ typedef struct {
 #define CMD_ID			'A'		/*!< Adressverwaltung */
 #define SUB_ID_REQUEST	'R'		/*!< Fordere eine Adresse an */
 #define SUB_ID_OFFER	'O'		/*!< Bot bekommt eine Adresse angeboten */
-#define SUB_ID_SET		'S'		/*!< Bot Setzt/bestätigt eine Adresse an */
-
-
-#define SUB_CMD_NORM	'N' 		/*!< Standard-Kommando */
-#define SUB_CMD_LEFT	'L' 		/*!< Kommmando fuer links */
-#define SUB_CMD_RIGHT	'R' 		/*!< Kommando fuer rechts */
-
+#define SUB_ID_SET		'S'		/*!< Bot Setzt/bestaetigt eine Adresse */
 
 // Subcommandos fuer LCD
 #define SUB_LCD_CLEAR   'c'     /*!< Subkommando Clear Screen */
@@ -126,29 +115,38 @@ typedef struct {
 // Log-Ausgaben
 #define CMD_LOG			'O'		/*!< Logausgaben */
 
-//Kommandos fuer die Verbindung zum c't-Sim
+// Kommandos fuer die Verbindung zum c't-Sim
 #define CMD_WELCOME		 'W'	/*!< Kommando zum Anmelden an c't-Sim */
 #define SUB_WELCOME_REAL 'R'	/*!< Subkommando zum Anmelden eines realen Bots an c't-Sim */
 #define SUB_WELCOME_SIM	 'S'	/*!< Subkommando zum Anmelden eines simulierten Bots an c't-Sim */
 #define SUB_WELCOME_BOTS 'B'	/*!< Subkommando zu bekanntmachen der eigenen ID bei anderen Bots */
 
-//Kommandos fuer die Remote-Calls
+// Kommandos fuer die Remote-Calls
 #define CMD_REMOTE_CALL			'r'		/*!< Kommado fuer Remote-Calls */
 #define SUB_REMOTE_CALL_LIST	'L'		/*!< Anforderung an den Bot alle verfuegbaren Kommandos zu listen */
-#define SUB_REMOTE_CALL_ENTRY	'E'		/*!< Hiermit leifert der Bot ein erfuegbares Kommandos an den PC */
-#define SUB_REMOTE_CALL_ORDER	'O'		/*!< Hiermit gibt der PC einen Remote-call in Auftrag */
-#define SUB_REMOTE_CALL_DONE	'D'		/*!< Hiermit signalisiert der MCU dem PC die beendigung des Auftrags. Ergebins steht in DataL 0=FAIL 1=SUCCESS */
-#define SUB_REMOTE_CALL_ABORT	'A'		/*!< Hiermit signalisiert der PC dem MCU die berarbeitung des laufenden remote-calls zu beenden */
+#define SUB_REMOTE_CALL_ENTRY	'E'		/*!< Hiermit liefert der Bot ein erfuegbares Kommandos an den PC */
+#define SUB_REMOTE_CALL_ORDER	'O'		/*!< Hiermit gibt der PC einen Remote-Call in Auftrag */
+#define SUB_REMOTE_CALL_DONE	'D'		/*!< Hiermit signalisiert der MCU dem PC die Beendigung des Auftrags. Ergebins steht in DataL 0=FAIL 1=SUCCESS */
+#define SUB_REMOTE_CALL_ABORT	'A'		/*!< Hiermit signalisiert der PC dem MCU die Berarbeitung des laufenden Remote-Calls zu beenden */
 
+// Kommandos fuer Map
+#define CMD_MAP				'Q'	/*!< Kommando fuer Map */
+#define SUB_MAP_DATA_1		'D'	/*!< Daten eines Map-Blocks (bzw. die ersten 128 Byte davon, es sind also 4 Kommandos noetig fuer einen kompletten Block) */
+#define SUB_MAP_DATA_2		'E'	/*!< Map-Daten Teil 2 */
+#define SUB_MAP_DATA_3		'F'	/*!< Map-Daten Teil 3 */
+#define SUB_MAP_DATA_4		'G'	/*!< Map-Daten Teil 4 */
+#define SUB_MAP_REQUEST		'R'	/*!< Aufforderung die komplette Karte (neu) zu uebertragen */
+#define SUB_MAP_LINE		'L'	/*!< Linie zeichnen */
+#define SUB_MAP_CLEAR_LINES	'X'	/*!< Linien loeschen */
 
 
 #define DIR_REQUEST	0			/*!< Richtung fuer Anfragen */
-#define DIR_ANSWER		1			/*!< Richtung fuer Antworten */
+#define DIR_ANSWER	1			/*!< Richtung fuer Antworten */
 
-#define CMD_BROADCAST	0xFF
-#define CMD_SIM_ADDR	0xFE
+#define CMD_BROADCAST	0xFF	/*!< Broadcast-Adresse, Daten gehen an alle Bot */
+#define CMD_SIM_ADDR	0xFE	/*!< "Bot"-Adresse des Sim */
 
-extern command_t received_command;		/*!< Puffer fuer Kommandos */
+extern command_t received_command;	/*!< Puffer fuer Kommandos */
 
 /*!
  * Initialisiert die (High-Level-)Kommunikation
@@ -160,7 +158,7 @@ void command_init(void);
  * greift auf low_read() zurueck
  * @see low_read()
  */
-int8 command_read(void);
+int8_t command_read(void);
 
 /*!
  * Uebertraegt ein Kommando und wartet nicht auf eine Antwort
@@ -171,7 +169,7 @@ int8 command_read(void);
  * @param data_r 		Daten fuer den rechten Kanal
  * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
-void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t * data_l, int16_t * data_r, uint8_t payload);
+void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload);
 
 /*!
  * Uebertraegt ein Kommando an den ct-Sim und wartet nicht auf eine Antwort
@@ -181,28 +179,40 @@ void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t *
  * @param data_r 		Daten fuer den rechten Kanal
  * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
-void command_write(uint8_t command, uint8_t subcommand, int16_t * data_l, int16_t * data_r, uint8_t payload);
+void command_write(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload);
+
+/*!
+ * Gibt dem Simulator Daten mit String-Anhang und wartet nicht auf Antwort
+ * @param command 		Kennung zum Command
+ * @param subcommand 	Kennung des Subcommand
+ * @param data_l		Daten fuer den linken Kanal
+ * @param data_r		Daten fuer den rechten Kanal
+ * @param *data 		Datenanhang an das eigentliche Command, null-terminiert
+ */
+void command_write_data(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, const char * data);
+
+/*!
+ * Versendet Daten mit Anhang und wartet nicht auf Antwort
+ * @param command 		Kennung zum Command
+ * @param subcommand	Kennung des Subcommand
+ * @param to			Adresse, an die die Daten gesendet werden sollen
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r		Daten fuer den rechten Kanal
+ * @param payload 		Anzahl der Bytes im Anhang
+ * @param *data 		Datenanhang an das eigentliche Command
+ */
+void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload, void * data);
 
 /*!
  * Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort
- * @param command Kennung zum Command
- * @param subcommand Kennung des Subcommand
- * @param data_l Daten fuer den linken Kanal
- * @param data_r Daten fuer den rechten Kanal
- * @param data Datenanhang an das eigentliche Command
+ * @param command 		Kennung zum Command
+ * @param subcommand	Kennung des Subcommand
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r 		Daten fuer den rechten Kanal
+ * @param payload 		Anzahl der Bytes im Anhang
+ * @param *data 		Datenanhang an das eigentliche Command
  */
-void command_write_data(uint8_t command, uint8_t subcommand, int16_t* data_l, int16_t* data_r, const char* data);
-
-/*!
- * Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort
- * @param command Kennung zum Command
- * @param subcommand Kennung des Subcommand
- * @param data_l Daten fuer den linken Kanal
- * @param data_r Daten fuer den rechten Kanal
- * @param payload Anzahl der Bytes im Anhang
- * @param data Datenanhang an das eigentliche Command
- */
-void command_write_rawdata(uint8_t command, uint8_t subcommand, int16_t* data_l, int16_t* data_r, uint8_t payload, uint8_t* data);
+void command_write_rawdata(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload, void * data);
 
 /*!
  * Wertet das Kommando im Puffer aus
@@ -234,4 +244,4 @@ static inline void set_bot_address(uint8_t bot_addr) {
 	ctbot_eeprom_write_byte(&bot_address, bot_addr);
 }
 
-#endif	/*__command_h_*/
+#endif	/* COMMAND_H_ */
