@@ -86,6 +86,7 @@ uint8_t mouse_sens_read(uint8_t adr);
  */
 void mouse_sens_write(uint8_t adr, uint8_t data);
 
+#ifdef BOT_2_SIM_AVAILABLE
 /*!
  * Uebertraegt ein Bild vom Maussensor an den PC
  * Insgesamt gibt es 324 Pixel
@@ -98,6 +99,7 @@ void mouse_sens_write(uint8_t adr, uint8_t data);
  * Gesendet weren: Pixeldaten (Bit 0 bis Bit 5), Pruefbit, ob Daten gueltig (Bit 6), Markierung fuer den Anfang eines Frames (Bit 7)
  */
 void mouse_transmit_picture(void);
+#endif // BOT_2_SIM_AVAILABLE
 
 /*!
  * Gibt den SQUAL-Wert zurueck. Dieser gibt an, wieviele Merkmale der Sensor
