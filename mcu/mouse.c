@@ -149,6 +149,7 @@ void mouse_sens_init(void) {
 	mouse_sens_write(MOUSE_CONFIG_REG, MOUSE_CFG_FORCEAWAKE); // always on
 }
 
+#ifdef BOT_2_SIM_AVAILABLE
 /*!
  * Uebertraegt ein Bild vom Maussensor an den PC
  * Insgesamt gibt es 324 Pixel
@@ -175,6 +176,7 @@ void mouse_transmit_picture(void) {
 		}
 	}
 }
+#endif // BOT_2_SIM_AVAILABLE
 
 /*!
  * Gibt den SQUAL-Wert zurueck. Dieser gibt an, wieviele Merkmale der Sensor
