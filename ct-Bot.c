@@ -130,7 +130,10 @@ static void init(void) {
 #endif
 #ifdef BOT_2_SIM_AVAILABLE
 	bot_2_sim_init();
-#endif
+#ifdef PC
+	os_create_thread(NULL, read_command_thread);
+#endif // PC
+#endif // BOT_2_SIM_AVAILABLE
 #ifdef DISPLAY_AVAILABLE
 	display_init();
 #endif
@@ -182,6 +185,8 @@ int main(int argc, char * argv[]) __attribute__((OS_main)); // kein Caller, Inte
  * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
  */
 int main(int argc, char * argv[]) {
+	argc = argc;
+	argv = argv;
 	static uint16_t comm_ticks = 0;
 	static uint8_t uart_gui = 0;
 

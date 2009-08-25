@@ -236,7 +236,6 @@ int tcp_read(void * data, int length) {
 	if ((bytesReceived = recv(tcp_sock, data, length, 0)) <= 0) {
 		printf("recv() failed or connection closed prematurely\n");
 	    exit(1);
-	    return -1;
 	}
 
 	return bytesReceived;

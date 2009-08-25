@@ -21,7 +21,7 @@
  * @file 	remote_calls.h
  * @brief 	Ruft auf ein Kommando hin andere Verhalten auf und bestaetigt dann ihre Ausfuehrung
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	19.12.06
+ * @date 	19.12.2006
  * @see		<a href="../../Documentation/RemoteCall.html">RemoteCall.html</a>
  */
 
@@ -35,15 +35,15 @@
 #define REMOTE_CALL_MAX_PARAM 3				/*!< Maximale Anzahl an Parametern */
 
 /*! Groesse des Remotecall-Buffers */
-#define REMOTE_CALL_BUFFER_SIZE (REMOTE_CALL_FUNCTION_NAME_LEN+1+REMOTE_CALL_MAX_PARAM*4)
+#define REMOTE_CALL_BUFFER_SIZE (REMOTE_CALL_FUNCTION_NAME_LEN + 1 + REMOTE_CALL_MAX_PARAM * 4)
 
 /*! Kommandostruktur fuer Remotecalls */
 typedef struct {
-   uint8_t param_count;								/*!< Anzahl der Parameter kommen Und zwar ohne den obligatorischen caller-parameter */
-   uint8_t param_len[REMOTE_CALL_MAX_PARAM];		/*!< Angaben ueber die Anzahl an Bytes, die jeder einzelne Parameter belegt */
-   const char name[REMOTE_CALL_FUNCTION_NAME_LEN+1];/*!< Text, maximal TEXT_LEN Zeichen lang +  1 Zeichen terminierung */
-   const char param_info[PARAM_TEXT_LEN+1];			/*!< String, der Angibt, welche und was fuer Parameter die Fkt erwartet */
-   BehaviourFunc func;								/*!< Zeiger auf die auszufuehrende Funktion */
+   uint8_t param_count;									/*!< Anzahl der Parameter kommen Und zwar ohne den obligatorischen caller-Parameter */
+   uint8_t param_len[REMOTE_CALL_MAX_PARAM];			/*!< Angaben ueber die Anzahl an Bytes, die jeder einzelne Parameter belegt */
+   const char name[REMOTE_CALL_FUNCTION_NAME_LEN + 1];	/*!< Text, maximal TEXT_LEN Zeichen lang +  1 Zeichen terminierung */
+   const char param_info[PARAM_TEXT_LEN + 1];			/*!< String, der Angibt, welche und was fuer Parameter die Fkt erwartet */
+   void (* func) (Behaviour_t *, ...);					/*!< Zeiger auf die auszufuehrende Funktion */
 } call_t;
 
 /*! Union fuer Remotecall-Daten */
@@ -63,7 +63,7 @@ typedef union {
  * Und zwar unabhaengig vom Datentyp. will man also einen uin16 uebergeben steht da 2
  * Will man einen Float uebergeben eine 4. Fuer zwei Floats eine 8, usw.
  */
-#define PREPARE_REMOTE_CALL(func,count,param,param_len...)  {count, {param_len}, #func,param,(void*)func }
+#define PREPARE_REMOTE_CALL(func, count, param, ...)  {count, {__VA_ARGS__}, #func, param, (void (*) (Behaviour_t *, ...)) func}
 
 
 /*!
@@ -73,15 +73,16 @@ typedef union {
 void bot_remotecall_behaviour(Behaviour_t * data);
 
 /*!
- * @brief			Fuehre einen remote_call aus. Aufrufendes Verhalten bei RemoteCalls == NULL
+ * Fuehre einen remote_call aus. Aufrufendes Verhalten bei RemoteCalls == NULL
  * @param *caller	Zeiger auf das aufrufende Verhalten
  * @param *func 	Zeiger auf den Namen der Fkt
  * @param *data		Zeiger auf die Daten
+ * @return 			Fehlercode (0: RemoteCall gestartet, -1: noch ein RC aktiv, -2: Funktion nicht gefunden)
  */
-void bot_remotecall(Behaviour_t * caller, char * func, remote_call_data_t * data);
+int8_t bot_remotecall(Behaviour_t * caller, char * func, remote_call_data_t * data);
 
 /*!
- * @brief		Fuehre einen remote_call aus. Es gibt KEIN aufrufendes Verhalten!!
+ * Fuehre einen remote_call aus. Es gibt KEIN aufrufendes Verhalten!!
  * @param *data	Zeiger die Payload eines Kommandos. Dort muss zuerst ein String mit dem Fkt-Namen stehen. ihm folgen die Nutzdaten
  */
 void bot_remotecall_from_command(char * data);

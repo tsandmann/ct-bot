@@ -26,6 +26,7 @@
 
 #include "ct-Bot.h"
 #ifdef PC
+#include "cmd_tools.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -36,6 +37,7 @@
 #include "eeprom.h"
 #include "tcp.h"
 #include "command.h"
+#include "bot-logic/remote_calls.h"
 
 /*!
  * Zeigt Informationen zu den moeglichen Kommandozeilenargumenten an.
@@ -256,6 +258,74 @@ void hand_cmd_args(int argc, char * argv[]) {
 			/* -h oder falscher Parameter, Usage anzeigen */
 			usage();
 			exit(1);
+		}
+	}
+}
+
+/*!
+ * Liest RemoteCall-Commands von stdin ein
+ */
+void read_command_thread(void) {
+	char input[255];
+
+	while (42) {
+		putc('>', stdout);
+		fgets(input, sizeof(input) - 1, stdin);
+		if (*input == '\n' || strncmp(input, "list", strlen("list")) == 0) {
+			extern const call_t calls[];
+			int i=0;
+			while (calls[i].func != NULL) {
+				printf("%s(%s)\n", calls[i].name, calls[i].param_info);
+				i++;
+			}
+			continue;
+		} else if (strncmp(input, "cancel", strlen("cancel")) == 0) {
+			printf("RemoteCall abgebrochen.\n");
+			deactivateCalledBehaviours(bot_remotecall_behaviour);
+			continue;
+		}
+
+		char * function = strtok(input, "(\n");
+		if (function == NULL || *function == '\n') {
+			continue;
+		}
+		char * param[REMOTE_CALL_MAX_PARAM] = {NULL};
+		remote_call_data_t params[REMOTE_CALL_MAX_PARAM] = {{0}};
+		int i;
+		for (i=0; i<REMOTE_CALL_MAX_PARAM; ++i) {
+			param[i] = strtok(NULL, ",)");
+			if (param[i] != NULL && *param[i] != '\n') {
+				params[i].s32 = atoi(param[i]);
+			}
+		}
+
+#ifdef DEBUG
+		printf("function=\"%s\"\n", function);
+#endif // DEBUG
+
+		for (i=0; i<REMOTE_CALL_MAX_PARAM; ++i) {
+			if (param[i] != NULL && *param[i] != '\n') {
+#ifdef DEBUG
+				printf("param[%d]=\"%s\"\n", i, param[i]);
+				printf("params[%d].s32=%d\tparams[%d].u32=0x%x\n", i, params[0].s32, i, params[0].u32);
+#endif // DEBUG
+			}
+		}
+
+		int8_t result = bot_remotecall(NULL, function, params);
+		if (result == 0) {
+			printf("RemoteCall \"%s(%d,%d,%d)\" gestartet\n", function, params[0].s32, params[1].s32, params[2].s32);
+		} else if (result == -1) {
+			printf("Es ist bereits ein RemoteCall aktiv!\n");
+		} else if (result == -2) {
+			char func[255] = "bot_";
+			strncpy(func + strlen(func), function, 255 - strlen(func));
+			result = bot_remotecall(NULL, func, params);
+			if (result == 0) {
+				printf("RemoteCall \"%s(%d,%d,%d)\" gestartet\n", func, params[0].s32, params[1].s32, params[2].s32);
+			} else {
+				printf("RemoteCall \"%s(%d,%d,%d)\" nicht vorhanden\n", function, params[0].s32, params[1].s32, params[2].s32);
+			}
 		}
 	}
 }

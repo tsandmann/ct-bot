@@ -37,5 +37,10 @@
  */
 void hand_cmd_args(int argc, char * argv[]);
 
+/*!
+ * Liest RemoteCall-Commands von stdin ein
+ */
+void read_command_thread(void);
+
 #endif	// PC
 #endif	// CMD_TOOLS_H_
