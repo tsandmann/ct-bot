@@ -43,11 +43,11 @@
 /*! Modi des Scan-Verhaltens */
 typedef union {
 	struct {
-		uint8_t location:1;	/*!< Grundflaechen-Update an/aus */
-		uint8_t distance:1;	/*!< Distanzsensor-Update an/aus */
-		uint8_t border:1;	/*!< Abgrundsensor-Update an/aus */
-		uint8_t map_mode:1;	/*!< Kartograhpie-Modus an/aus (Bot stoppt, falls Cache voll) */
-	};
+		unsigned location:1;	/*!< Grundflaechen-Update an/aus */
+		unsigned distance:1;	/*!< Distanzsensor-Update an/aus */
+		unsigned border:1;		/*!< Abgrundsensor-Update an/aus */
+		unsigned map_mode:1;	/*!< Kartograhpie-Modus an/aus (Bot stoppt, falls Cache voll) */
+	} data;
 	uint8_t raw;			/*!< Alle Modi als Raw-Daten */
 } scan_mode_t;
 
@@ -60,7 +60,8 @@ extern scan_mode_t scan_otf_modes;	/*!< Modi des Verhaltens */
  * @param value	1: an, 0: aus
  */
 static inline void set_scan_otf_location(uint8_t value) {
-	scan_otf_modes.location = value;
+	bit_t tmp = {value};
+	scan_otf_modes.data.location = tmp.bit;
 }
 
 /*!
@@ -68,7 +69,8 @@ static inline void set_scan_otf_location(uint8_t value) {
  * @param value	1: an, 0: aus
  */
 static inline void set_scan_otf_distance(uint8_t value) {
-	scan_otf_modes.distance = value;
+	bit_t tmp = {value};
+	scan_otf_modes.data.distance = tmp.bit;
 }
 
 /*!
@@ -76,7 +78,8 @@ static inline void set_scan_otf_distance(uint8_t value) {
  * @param value	1: an, 0: aus
  */
 static inline void set_scan_otf_border(uint8_t value) {
-	scan_otf_modes.border = value;
+	bit_t tmp = {value};
+	scan_otf_modes.data.border = tmp.bit;
 }
 
 /*!
@@ -86,7 +89,8 @@ static inline void set_scan_otf_border(uint8_t value) {
  * @param value	1: an, 0: aus
  */
 static inline void set_scan_otf_mapmode(uint8_t value) {
-	scan_otf_modes.map_mode = value;
+	bit_t tmp = {value};
+	scan_otf_modes.data.map_mode = tmp.bit;
 }
 
 /*!

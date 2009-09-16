@@ -65,7 +65,7 @@ void bot_drive_fifo(Behaviour_t * caller);
  * @param *caller	einfach nur Zeiger, damit remotecall verwendbar
  * @param stack		Nummer des Stacks, auf den gepusht werden soll
  */
-void bot_push_actpos(Behaviour_t * caller, uint8_t stack);
+void bot_push_actpos(Behaviour_t * caller, uint8_t stack) __attribute__((noinline));
 
 /*!
  * Verhalten um sich entlang des Fahrweges relevante Koordinaten auf dem Stack zu merken; Verhalten ist nach Aktivierung via Botenroutine

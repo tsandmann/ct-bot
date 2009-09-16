@@ -108,7 +108,7 @@ void uart_init(void) {
 	if (uart_outfifo.count > 0) {
 		UDR = _inline_fifo_get(&uart_outfifo);
 	} else {
-		UCSRB &= ~(1 << UDRIE);	// diesen Interrupt aus
+		UCSRB = (uint8_t) (UCSRB & ~(1 << UDRIE)); // diesen Interrupt aus
 	}
 }
 
@@ -118,10 +118,11 @@ void uart_init(void) {
  * @param length	Groesse des Datenpuffers in Bytes
  */
 void uart_write(void * data, uint8_t length) {
+	uint8_t * ptr = data;
 	if (length > BUFSIZE_OUT) {
 		/* das ist zu viel auf einmal => teile und herrsche */
 		uart_write(data, length / 2);
-		uart_write(data + length / 2, length - length / 2);
+		uart_write(ptr + length / 2, (uint8_t)(length - length / 2));
 		return;
 	}
 	/* falls Sendepuffer zu voll, warten bis genug Platz vorhanden ist */

@@ -27,7 +27,7 @@
 #include "ct-Bot.h"
 
 #ifdef PC
-
+#include "tcp-server.h"
 #include "bot-2-sim.h"
 #include "tcp.h"
 #include "display.h"

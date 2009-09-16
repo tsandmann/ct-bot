@@ -66,7 +66,7 @@ static command_t cmd_to_send = {
 #ifndef DEBUG_COMMAND
 #undef LOG_AVAILABLE
 #undef LOG_DEBUG
-#define LOG_DEBUG(a, ...) {}	/*!< Log-Dummy */
+#define LOG_DEBUG(...) {}	/*!< Log-Dummy */
 #endif
 
 /*!
@@ -117,7 +117,7 @@ int8_t command_read(void) {
 	buffer[0] = 0; // Sicherheitshalber mit sauberem Puffer anfangen
 
 	// Daten holen, maximal soviele, wie ein Kommando lang ist
-	bytesRcvd = low_read(buffer, sizeof(command_t));
+	bytesRcvd = (int8_t) low_read(buffer, sizeof(command_t));
 
 #ifdef DEBUG_COMMAND_NOISY
 	LOG_DEBUG("%d read", bytesRcvd);
@@ -140,12 +140,12 @@ int8_t command_read(void) {
 #endif
 
 	// haben wir noch genug Platz im Puffer, um das Packet ferig zu lesen?
-	if ((RCVBUFSIZE-start) < sizeof(command_t)) {
+	if ((RCVBUFSIZE - (uint8_t) (start)) < sizeof(command_t)) {
 		LOG_DEBUG("not enough space");
 		return -1; // nein? ==> verwerfen
 	}
 
-	i = sizeof(command_t) - (bytesRcvd - start) - 1;
+	i = (int8_t) ((int8_t) sizeof(command_t) - (bytesRcvd - start) - 1);
 
 	if (i > 0) { // Fehlen noch Daten ?
 		LOG_DEBUG("command.c: Start @ %d es fehlen %d bytes ", start, i);
@@ -160,10 +160,10 @@ int8_t command_read(void) {
 				return -1; //	==> Abbruch
 			}
 			LOG_DEBUG("%d bytes missing", i);
-			i = low_read(buffer + bytesRcvd, i);
+			i = (int8_t) low_read(buffer + bytesRcvd, (uint8_t) i);
 			LOG_DEBUG("%d read", i);
-			bytesRcvd += i;
-			i = sizeof(command_t) - (bytesRcvd - start);
+			bytesRcvd = (int8_t) (bytesRcvd + i);
+			i = (int8_t) ((int8_t) sizeof(command_t) - (bytesRcvd - start));
 		}
 	}
 
@@ -232,7 +232,13 @@ static void command_write_to_internal(uint8_t command, uint8_t subcommand,
 		uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload) {
 	request_t request;
 	request.command = command;
-	request.subcommand = subcommand;
+
+	union {
+		uint8_t byte;
+		unsigned bits:7;
+	} tmp = {subcommand};
+	request.subcommand = tmp.bits;
+
 	request.direction = DIR_REQUEST; // Anfrage
 	cmd_to_send.request = request;
 	cmd_to_send.from = get_bot_address();
@@ -336,7 +342,7 @@ void command_write_data(uint8_t command, uint8_t subcommand, int16_t data_l,
 		if (len > MAX_PAYLOAD) {
 			payload = MAX_PAYLOAD;
 		} else {
-			payload = len;
+			payload = (uint8_t) len;
 		}
 	} else {
 		payload = 0;
@@ -355,10 +361,10 @@ void command_write_data(uint8_t command, uint8_t subcommand, int16_t data_l,
  */
 int8_t command_evaluate(void) {
 	static uint16_t RC5_Last_Toggle = 0xffff;
-	uint8_t analyzed = 1;
+	int8_t analyzed = 1;
 
 #ifdef LOG_AVAILABLE
-	if (received_command.from != SIM_ID) {
+	if (received_command.from != CMD_SIM_ADDR) {
 		LOG_DEBUG("Achtung: weitergeleitetes Kommando:");
 	}
 #ifdef DEBUG_COMMAND_NOISY
@@ -371,7 +377,7 @@ int8_t command_evaluate(void) {
 		switch (received_command.request.command) {
 #ifdef IR_AVAILABLE
 		case CMD_SENS_RC5:
-			ir_data = received_command.data_l | (RC5_Last_Toggle & RC5_TOGGLE);
+			rc5_ir_data.ir_data = received_command.data_l | (RC5_Last_Toggle & RC5_TOGGLE);
 			if (received_command.data_l != 0)
 				RC5_Last_Toggle = 0xffff ^ (RC5_Last_Toggle & RC5_TOGGLE);
 			break;
@@ -395,7 +401,7 @@ int8_t command_evaluate(void) {
 #ifdef LOG_AVAILABLE
 				LOG_DEBUG("Bekomme eine Adresse angeboten: %u", (uint8_t)received_command.data_l);
 #endif	// LOG_AVAILABLE
-				set_bot_address(received_command.data_l); // Setze Adresse
+				set_bot_address((uint8_t) received_command.data_l); // Setze Adresse
 				command_write(CMD_ID, SUB_ID_SET, received_command.data_l, 0, 0); // Und bestaetige dem Sim das ganze
 #ifdef BOT_2_BOT_AVAILABLE
 				/* hello (bot-)world! */
@@ -419,7 +425,7 @@ int8_t command_evaluate(void) {
 				remote_call_list();
 				break;
 			case SUB_REMOTE_CALL_ORDER: {
-				LOG_DEBUG("remote-call-Wunsch empfangen. Data= %d bytes",received_command.payload);
+				LOG_DEBUG("remote-call-Wunsch empfangen. Data= %d bytes", received_command.payload);
 				uint8_t buffer[REMOTE_CALL_BUFFER_SIZE];
 				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
 #ifdef MCU
@@ -435,7 +441,7 @@ int8_t command_evaluate(void) {
 				break;
 			}
 			case SUB_REMOTE_CALL_ABORT: {
-				LOG_DEBUG("remote calls werden abgebrochen");
+				LOG_DEBUG("remote calls werden abgebrochen", 0);
 				deactivateCalledBehaviours(bot_remotecall_behaviour);
 				break;
 			}
@@ -492,6 +498,12 @@ int8_t command_evaluate(void) {
 		case CMD_SENS_ERROR:
 			sensError = (uint8_t) received_command.data_l;
 			break;
+#ifdef BPS_AVAILABLE
+		case CMD_SENS_BPS:
+			sensBPSF = received_command.data_l;
+//			sensBPSR = received_command.data_r;
+			break;
+#endif	// BPS_AVAILABLE
 		case CMD_DONE:
 			simultime = received_command.data_l;
 			system_time_isr(); // Einmal pro Update-Zyklus aktualisieren wir die Systemzeit

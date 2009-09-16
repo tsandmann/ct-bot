@@ -71,6 +71,7 @@ typedef struct _FILETIME {
 void __stdcall GetSystemTimeAsFileTime(FILETIME*);
 
 void gettimeofday_win(struct timeval * p, void * tz /* IGNORED */) {
+	tz = tz; // kein warning
 	union {
 		long long ns100; // time since 1 Jan 1601 in 100ns units
 		FILETIME ft;

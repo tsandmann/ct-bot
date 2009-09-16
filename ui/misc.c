@@ -168,22 +168,22 @@ void ram_display(void) {
 			RC5_Code = 0;
 		}
 	#endif	// LOG_AVAILABLE
-	size_t data_size = &__bss_start - &__data_start;
-	size_t bss_size = &__heap_start - &__bss_start;
-	display_cursor(1,1);
+	size_t data_size = (size_t) (&__bss_start - &__data_start);
+	size_t bss_size = (size_t) (&__heap_start - &__bss_start);
+	display_cursor(1, 1);
 	display_printf("bss/data:%4u/%4u B", bss_size, data_size);
-	display_cursor(2,1);
+	display_cursor(2, 1);
 	display_printf("heap:");
-	display_cursor(2,15);
-	size_t heap_size = __brkval - &__heap_start;
+	display_cursor(2, 15);
+	size_t heap_size = (size_t) (__brkval - &__heap_start);
 	display_printf("%4u B", heap_size);
-	display_cursor(3,1);
+	display_cursor(3, 1);
 	display_printf("stack:");
-	display_cursor(3,15);
-	size_t stack_size = (unsigned char *)RAMEND - sp;
+	display_cursor(3, 15);
+	size_t stack_size = (size_t) ((unsigned char *)RAMEND - sp);
 	display_printf("%4u B", stack_size);
-	display_cursor(4,1);
-	size_t ram_size = (unsigned char *)(RAMEND+1) - &__data_start;
+	display_cursor(4, 1);
+	size_t ram_size = (size_t) ((unsigned char *)(RAMEND + 1) - &__data_start);
 	size_t frei = ram_size - (data_size + bss_size + heap_size + stack_size);
 	display_printf("free/all:%4u/%4u B", frei, ram_size);
 }

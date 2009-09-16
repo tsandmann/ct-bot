@@ -117,6 +117,7 @@ static inline void wait_for_userinput(void) {
  * @return			Entfernung [mm]
  */
 static int16_t calc_distance(uint8_t sensor) {
+	sensor = sensor;
 //	float dHead = (start_head - heading) * 2.0f*M_PI/360.0f;
 //	float dX = start_x - x_enc;
 //	float s_m = dX / cos(dHead);
@@ -201,7 +202,8 @@ static void goto_next_pos(void) {
  * @param ptr		Zeiger auf auf Sensorrohdaten im EEPROM fuer p_sens
  * @param volt		Spannungs-Ist-Wert, zu dem die Distanz gesucht wird
  */
-void sensor_dist_direct(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t volt) {
+static void sensor_dist_direct(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t volt) {
+	ptr = ptr; // kein warning
 	*p_sens = volt;
 	*p_toggle = ~*p_toggle;
 }

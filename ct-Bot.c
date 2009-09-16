@@ -67,6 +67,7 @@
 #include "i2c.h"
 #include "twi.h"
 #include "sp03.h"
+#include "trace.h"
 
 //#define DEBUG_TIMES	/*!< Gibt Debug-Infos zum Timing aus (PC) */
 
@@ -75,6 +76,10 @@
  * bevor wir loslegen koennen.
  */
 static void init(void) {
+#ifdef CREATE_TRACEFILE_AVAILABLE
+	trace_init();
+#endif	// CREATE_TRACEFILE_AVAILABLE
+
 #ifdef MCU
 	PORTA = 0;
 	DDRA  = 0; // Alles Eingang -> alles Null
@@ -102,7 +107,7 @@ static void init(void) {
 	/* Ist das ein Power on Reset? */
 #ifdef MCU_ATMEGA644X
 	if ((MCUSR & 1) == 1) {
-		MCUSR &= ~1; // Bit loeschen
+		MCUSR = (uint8_t)(MCUSR & ~1); // Bit loeschen
 #else
 	if ((MCUCSR & 1) == 1) {
 		MCUCSR &= ~1; // Bit loeschen
@@ -146,7 +151,10 @@ static void init(void) {
 	bot_behave_init();
 #endif
 #ifdef RC5_AVAILABLE
-	ir_init();
+	ir_init(&RC5_PORT, &RC5_DDR, RC5_PIN);
+#endif
+#ifdef BPS_AVAILABLE
+	ir_init(&BPS_PORT, &BPS_DDR, BPS_PIN);
 #endif
 #ifdef MMC_AVAILABLE
 	mmc_init();
@@ -185,6 +193,7 @@ int main(int argc, char * argv[]) __attribute__((OS_main)); // kein Caller, Inte
  * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
  */
 int main(int argc, char * argv[]) {
+	/* keine warnings */
 	argc = argc;
 	argv = argv;
 	static uint16_t comm_ticks = 0;
@@ -236,6 +245,10 @@ int main(int argc, char * argv[]) {
 		/* Sensordaten aktualisieren / auswerten */
 		bot_sens();
 
+#ifdef CREATE_TRACEFILE_AVAILABLE
+		trace_add_sensors();
+#endif	// CREATE_TRACEFILE_AVAILABLE
+
 #if defined PC && defined DEBUG_TIMES
 		/* Zum Debuggen der Zeiten */
 		GETTIMEOFDAY(&start, NULL);
@@ -281,6 +294,10 @@ int main(int argc, char * argv[]) {
 		}
 
 #ifdef PC
+#ifdef CREATE_TRACEFILE_AVAILABLE
+		trace_add_actuators();
+#endif	// CREATE_TRACEFILE_AVAILABLE
+
 		/* Sim ueber naechsten Schleifendurchlauf / Bot-Zyklus informieren */
 		command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0); // flusht auch den Sendepuffer
 
@@ -300,7 +317,4 @@ int main(int argc, char * argv[]) {
 		os_thread_yield();
 #endif	// OS_AVAILABLE
 	}
-
-	/* Falls wir das je erreichen sollten ;-) */
-	return 1;
 }

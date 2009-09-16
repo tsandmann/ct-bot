@@ -32,7 +32,7 @@
 #include "srf10.h"
 #include "delay.h"
 
-static uint8 address=SRF10_UNIT_0;
+static uint8_t address = SRF10_UNIT_0;
 
 /*!
  * SRF10 initialsieren
@@ -49,11 +49,11 @@ void srf10_init(void) {
  */
 void srf10_set_gain(uint8_t gain) {
 	if (gain > 16) {
-		gain=16;
+		gain = 16;
 	}
 
-	uint8 temp[2];
-	uint8 state;
+	uint8_t temp[2];
+	uint8_t state;
 	tx_type_t tx_frame[2];
 
 	state = SUCCESS;
@@ -74,19 +74,19 @@ void srf10_set_gain(uint8_t gain) {
  * @param millimeters Reichweite in mm
  */
 void srf10_set_range(uint16_t millimeters) {
-	uint8 temp[2];
-	uint8 state;
+	uint8_t temp[2];
+	uint8_t state;
 	tx_type_t tx_frame[2];
 
 	state = SUCCESS;
 
-	millimeters= (millimeters/43);
+	millimeters = millimeters / 43;
 
-	tx_frame[0].slave_adr = address+W;
+	tx_frame[0].slave_adr = address + W;
 	tx_frame[0].size = 2;
 	tx_frame[0].data_ptr = temp;
 	tx_frame[0].data_ptr[0] = 2;
-	tx_frame[0].data_ptr[1] = millimeters;
+	tx_frame[0].data_ptr[1] = (uint8_t) millimeters;
 
 	tx_frame[1].slave_adr = OWN_ADR;
 
@@ -98,14 +98,14 @@ void srf10_set_range(uint16_t millimeters) {
  * @param metric_unit 0x50 in Zoll, 0x51 in cm, 0x52 ms
  * @return Resultat der Aktion
  */
-uint8 srf10_ping(uint8 metric_unit) {
-	uint8 temp[2];
-	uint8 state;
+uint8_t srf10_ping(uint8_t metric_unit) {
+	uint8_t temp[2];
+	uint8_t state;
 	tx_type_t tx_frame[2];
 
 	state = SUCCESS;
 
-	tx_frame[0].slave_adr = address+W;
+	tx_frame[0].slave_adr = address + W;
 	tx_frame[0].size = 2;
 	tx_frame[0].data_ptr = temp;
 	tx_frame[0].data_ptr[0] = SRF10_COMMAND;
@@ -123,10 +123,10 @@ uint8 srf10_ping(uint8 metric_unit) {
  * @param srf10_register welches Register soll ausgelsen werden
  * @return Inhalt des Registers
  */
-uint8 srf10_read_register(uint8 srf10_register) {
-	uint8 temp;
-	uint8 value;
-	uint8 state;
+uint8_t srf10_read_register(uint8_t srf10_register) {
+	uint8_t temp;
+	uint8_t value;
+	uint8_t state;
 	tx_type_t tx_frame[3];
 
 	state = SUCCESS;
@@ -137,7 +137,7 @@ uint8 srf10_read_register(uint8 srf10_register) {
 	tx_frame[0].data_ptr = &temp;
 	tx_frame[0].data_ptr[0] = srf10_register;
 
-	tx_frame[1].slave_adr = address+R;
+	tx_frame[1].slave_adr = (uint8_t) (address + R);
 	tx_frame[1].size = 1;
 	tx_frame[1].data_ptr = &value;
 
@@ -152,19 +152,19 @@ uint8 srf10_read_register(uint8 srf10_register) {
  * Messung starten Ergebniss aufbereiten und zurueckgeben
  * @return Messergebniss
  */
-uint16 srf10_get_measure() {
-	uint8 hib;
-	uint8 lob;
+uint16_t srf10_get_measure() {
+	uint8_t hib;
+	uint8_t lob;
 
-	uint8 state = SUCCESS;
+	uint8_t state = SUCCESS;
 
 	state = srf10_ping(SRF10_CENTIMETERS);
 	delay(10);	// Optimierungs-Potential
-	lob=srf10_read_register(SRF10_LOB);
+	lob = srf10_read_register(SRF10_LOB);
 	delay(10);	// Optimierungs-Potential
-	hib=srf10_read_register(SRF10_HIB);
+	hib = srf10_read_register(SRF10_HIB);
 
-	return (hib*256)+lob;
+	return (uint16_t) (hib * 256 + lob);
 }
 
 #endif	// SRF10_AVAILABLE 

@@ -61,7 +61,7 @@ uint32_t timer_get_tickCount32(void) {
  * @return Millisekunden der Systemzeit
  */
 uint16_t timer_get_ms(void) {
-	return ((TIMER_GET_TICKCOUNT_32 * (TIMER_STEPS/8))/(1000/8)) % 1000;
+	return (uint16_t) (((TIMER_GET_TICKCOUNT_32 * (TIMER_STEPS / 8)) / (1000 / 8)) % 1000);
 }
 
 /*!
@@ -69,7 +69,7 @@ uint16_t timer_get_ms(void) {
  * @return Sekunden der Systemzeit
  */
 uint16_t timer_get_s(void) {
-	return TIMER_GET_TICKCOUNT_32 * (TIMER_STEPS/16)/(1000000/16);
+	return (uint16_t) (TIMER_GET_TICKCOUNT_32 * (TIMER_STEPS / 16) / (1000000 / 16));
 }
 
 /*!

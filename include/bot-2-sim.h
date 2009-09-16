@@ -27,6 +27,12 @@
 #define BOT2SIM_H_
 
 #include "ct-Bot.h"
+#include <stdio.h>
+
+#ifdef CREATE_TRACEFILE_AVAILABLE
+extern FILE * tracefile;	/*!< Trace-Datei zum Debugging */
+#endif	// CREATE_TRACEFILE_AVAILABLE
+
 #ifdef BOT_2_SIM_AVAILABLE
 /*!
  * Ein wenig Initilisierung kann nicht schaden

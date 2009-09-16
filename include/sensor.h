@@ -59,14 +59,20 @@ extern int16_t sensLineL;	/*!<  Lininensensor links [0-1023];  1023 = dunkel*/
 extern int16_t sensLineR;	/*!<  Lininensensor rechts [0-1023];  1023 = dunkel*/
 
 /* digitale Sensoren */
-extern int16_t sensEncL;		/*!< Encoder linker Motor [-32768 bis 32767] */
-extern int16_t sensEncR;		/*!< Encoder rechter Motor [-32768 bis 32767] */
+extern int16_t sensEncL;	/*!< Encoder linker Motor [-32768 bis 32767] */
+extern int16_t sensEncR;	/*!< Encoder rechter Motor [-32768 bis 32767] */
 
-extern uint8_t sensTrans;		/*!< Sensor Ueberwachung Transportfach [0/1]*/
-extern uint8_t sensDoor;		/*!< Sensor Ueberwachung Klappe [0/1] */
-extern uint8_t sensError;		/*!< Ueberwachung Motor oder Batteriefehler [0/1]  1= alles ok */
+extern uint8_t sensTrans;	/*!< Sensor Ueberwachung Transportfach [0/1]*/
+extern uint8_t sensDoor;	/*!< Sensor Ueberwachung Klappe [0/1] */
+extern uint8_t sensError;	/*!< Ueberwachung Motor oder Batteriefehler [0/1]  1= alles ok */
 
-extern uint16_t RC5_Code;        /*!< Letzter empfangener RC5-Code */
+extern uint16_t RC5_Code;	/*!< Letzter empfangener RC5-Code */
+
+#ifdef BPS_AVAILABLE
+extern int16_t sensBPSF;	/*!< Bot Positioning System vorn */
+extern int16_t sensBPSR;	/*!< Bot Positioning System hinten */
+#endif	// BPS_AVAILABLE
+
 
 #ifdef MOUSE_AVAILABLE
 extern int8_t sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */

@@ -33,6 +33,7 @@
  */
 
 #include "bot-logic/bot-logik.h"
+#include "bot-logic/behaviour_drive_area.h"
 #include "map.h"
 #include "timer.h"
 #include "math_utils.h"
@@ -496,10 +497,10 @@ void bot_observe_left_behaviour(Behaviour_t * data) {
 }
 
 /*!
- * Rufe das Observer-Verhalten Links auf
+ * Rufe das Observer-Verhalten links auf
  * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
-void bot_observe_left(Behaviour_t * caller) {
+static void bot_observe_left(Behaviour_t * caller) {
 	if (!behaviour_is_activated(bot_observe_left_behaviour)) {
 		activateBehaviour(caller, bot_observe_left_behaviour);
 		observe1_state = 0;
@@ -559,7 +560,7 @@ void bot_observe_right_behaviour(Behaviour_t * data) {
  * Rufe das Rechts-Observer-Verhalten auf
  * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
-void bot_observe_right(Behaviour_t * caller) {
+static void bot_observe_right(Behaviour_t * caller) {
 	if (!behaviour_is_activated(bot_observe_right_behaviour)) {
 		activateBehaviour(caller, bot_observe_right_behaviour);
 		observe2_state = 0;
@@ -582,7 +583,7 @@ static void start_observe_left_right(Behaviour_t * caller) {
 /*!
  * Stopanforderung der beiden Observer-Verhalten links und rechts
  */
-void bot_stop_observe(void) {
+static void bot_stop_observe(void) {
 	// Verhalten soll beendet werden
 	endrequest = True;
 }

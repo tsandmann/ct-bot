@@ -21,7 +21,7 @@
  * @file 	behaviour_avoid_col.c
  * @brief 	Vermeide Kollisionen
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	03.11.06
+ * @date 	03.11.2006
  */
 
 

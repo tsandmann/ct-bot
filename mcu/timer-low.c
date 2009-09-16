@@ -60,14 +60,19 @@ ISR(SIG_OUTPUT_COMPARE2) {
 	/* ab hier Kernel-Stack verwenden */
 	void * user_stack;
 	user_stack = (void *)SP;
-	SP = (int)&os_kernel_stack[OS_KERNEL_STACKSIZE - 1];
+	SP = (unsigned)&os_kernel_stack[OS_KERNEL_STACKSIZE - 1];
 #endif	// OS_AVAILABLE
 
 	sei(); // Interrupts wieder an, z.B. UART-Kommunikation kann parallel zu RC5 und Encoderauswertung laufen
 
 	/* - FERNBEDIENUNG - */
 #ifdef IR_AVAILABLE
-	ir_isr();
+	ir_isr(&rc5_ir_data, &RC5_PINR, RC5_PIN, RC5_PAUSE_SAMPLES, RC5_SAMPLES_PER_BIT, RC5_BITS);
+#endif
+
+	/* -- BPS-SENSOR -- */
+#ifdef BPS_AVAILABLE
+	ir_isr(&bps_ir_data, &BPS_PINR, BPS_PIN, BPS_PAUSE_SAMPLES, BPS_SAMPLES_PER_BIT, BPS_BITS);
 #endif
 
 	/* --- RADENCODER --- */
@@ -77,7 +82,7 @@ ISR(SIG_OUTPUT_COMPARE2) {
 #ifdef OS_AVAILABLE
 	/* zurueck zum User-Stack */
 	cli();
-	SP = (int)user_stack;
+	SP = (unsigned)user_stack;
 
 	/* Scheduling-Frequenz betraegt ca. 1 kHz */
 	if ((uint8_t)((uint8_t)ticks - scheduler_ticks) > MS_TO_TICKS(1)) {

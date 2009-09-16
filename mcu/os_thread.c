@@ -41,11 +41,11 @@
 
 /*! Datentyp fuer Instruction-Pointer */
 typedef union {
-	void * ip;			/*!< Instruction-Pointer des Threads */
+	void (* ip)(void);	/*!< Instruction-Pointer des Threads */
 	struct {
 		uint8_t lo8;	/*!< untere 8 Bit der Adresse */
 		uint8_t hi8;	/*!< obere 8 Bit der Adresse */
-	};
+	} bytes;
 } os_ip_t;
 
 Tcb_t os_threads[OS_MAX_THREADS];				/*!< Array aller TCBs */
@@ -62,7 +62,7 @@ os_signal_t dummy_signal;						/*!< Signal, das referenziert wird, wenn sonst ke
  * @param *pIp		Zeiger auf die Main-Funktion des Threads (Instruction-Pointer)
  * @return			Zeiger auf den TCB des angelegten Threads
  */
-Tcb_t * os_create_thread(void * pStack, void * pIp) {
+Tcb_t * os_create_thread(void * pStack, void (* pIp)(void)) {
 	os_enterCS();	// Scheduler deaktivieren
 	uint8_t i;
 	Tcb_t * ptr = os_threads;
@@ -83,13 +83,14 @@ Tcb_t * os_create_thread(void * pStack, void * pIp) {
 				tmp.ip = pIp;
 				/* Stack so aufbauen, als waere der Thread bereits einmal unterbrochen worden */
 				uint8_t * sp = pStack; // Entry-Point des Threads
-				*sp = tmp.lo8; // Return-Adresse liegt in Big-Endian auf dem Stack!
-				*(sp-1) = tmp.hi8;
+				*sp = tmp.bytes.lo8; // Return-Adresse liegt in Big-Endian auf dem Stack!
+				*(sp-1) = tmp.bytes.hi8;
 				tmp.ip = &os_exitCS; // setzt os_scheduling_allowed auf 1, nachdem der Thread das erste Mal geschedult wurde
-				*(sp-2) = tmp.lo8;
-				*(sp-3) = tmp.hi8;
+				*(sp-2) = tmp.bytes.lo8;
+				*(sp-3) = tmp.bytes.hi8;
 				*(sp-4) = SREG; // beim ersten Wechsel auf diesen Thread wird das Statusregister vom Stack geholt, darum hier auf den Stack schreiben
-				ptr->stack = pStack - (4 + OS_CONTEXT_SIZE); // 4x push und 17 Bytes fuer Kontext => Stack-Pointer - (4 + 17)
+				uint8_t * p = pStack;
+				ptr->stack = p - (4 + OS_CONTEXT_SIZE); // 4x push und 17 Bytes fuer Kontext => Stack-Pointer - (4 + 17)
 			}
 			os_scheduling_allowed = 1;	// Scheduling wieder erlaubt
 			/* TCB zurueckgeben */
@@ -132,7 +133,7 @@ void os_thread_yield(void) {
 		os_thread_running->statistics.missed_deadlines++;
 #endif
 		/* Timestamp zuruecksetzen */
-		os_thread_running->lastSchedule = now;
+		os_thread_running->lastSchedule = (uint16_t) now;
 	} else {
 		/* Wir haben noch Zeit frei, die wir dem naechsten Thread schenken koennen */
 		os_thread_running->nextSchedule = now + (uint16_t)(MS_TO_TICKS(OS_TIME_SLICE) - runtime);

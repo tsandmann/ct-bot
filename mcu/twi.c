@@ -210,7 +210,7 @@ uint8_t Send_to_TWI(tx_type_t * pData) {
 	/* Daten senden und empfangen per i2c-Treiber (blockierend) */
 	i2c_write_read(pData->slave_adr, pWrite, toWrite, pRead, toRead);
 	uint8_t result = i2c_wait();
-	return result == TW_NO_INFO ? SUCCESS : result;
+	return (uint8_t) (result == TW_NO_INFO ? SUCCESS : result);
 }
 #endif	// OLD_VERSION
 

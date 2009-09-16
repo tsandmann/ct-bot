@@ -58,7 +58,7 @@ pos_store_t * pos_store_create(Behaviour_t * owner, void * data) {
 		LOG_ERROR("Fehler: owner==NULL!");
 		return NULL;
 	}
-	LOG_DEBUG("Erzeuge Positionsspeicher fuer 0x%lx", (size_t)owner);
+	LOG_DEBUG("Erzeuge Positionsspeicher fuer 0x%lx", (size_t) owner);
 	pos_store_t * store = pos_store_from_beh(owner);
 	if (store == NULL) {
 		/* Verhalten hat noch keinen Positionsspeicher -> anlegen */
@@ -72,11 +72,11 @@ pos_store_t * pos_store_create(Behaviour_t * owner, void * data) {
 				if (data == NULL) {
 					store->data = malloc(POS_STORE_SIZE * sizeof(position_t));
 					store->stat_data = 0;
-					LOG_DEBUG("verwende Heap-Speicher @ 0x%lx", (size_t)store->data);
+					LOG_DEBUG("verwende Heap-Speicher @ 0x%lx", (size_t) store->data);
 				} else {
 					store->data = data;
 					store->stat_data = 1;
-					LOG_DEBUG("verwende statischen Speicher @ 0x%lx", (size_t)data);
+					LOG_DEBUG("verwende statischen Speicher @ 0x%lx", (size_t) data);
 				}
 				if (store->data == NULL) {
 					LOG_ERROR("Kein Speicher zur Verfuegung, Abbruch!");
@@ -89,7 +89,7 @@ pos_store_t * pos_store_create(Behaviour_t * owner, void * data) {
 	}
 
 	pos_store_clear(store);
-	LOG_DEBUG("Positionsspeicher @ 0x%lx angelegt", (size_t)store);
+	LOG_DEBUG("Positionsspeicher @ 0x%lx angelegt", (size_t) store);
 	return store;
 }
 
@@ -98,7 +98,7 @@ pos_store_t * pos_store_create(Behaviour_t * owner, void * data) {
  * @param *store	Zeiger auf Positionsspeicher
  */
 void pos_store_release(pos_store_t * store) {
-	LOG_DEBUG("Gebe Positionsspeicher 0x%lx frei", (size_t)store);
+	LOG_DEBUG("Gebe Positionsspeicher 0x%lx frei", (size_t) store);
 	if (store == NULL) {
 		return;
 	}
@@ -106,7 +106,7 @@ void pos_store_release(pos_store_t * store) {
 	if (store->stat_data == 0 && store->data != NULL) {
 		/* Datenspeicher freigeben */
 		free(store->data);
-		LOG_DEBUG("Heap-Speicher 0x%lx freigegeben", (size_t)store->data);
+		LOG_DEBUG("Heap-Speicher 0x%lx freigegeben", (size_t) store->data);
 		store->data = NULL;
 	}
 }
@@ -146,9 +146,9 @@ pos_store_t * pos_store_from_beh(Behaviour_t * owner) {
  * @return			Index des Positionsspeichers im Array
  */
 uint8_t pos_store_get_index(pos_store_t * store) {
-	size_t index = (size_t)store - (size_t)pos_stores;	// offset abziehen
+	size_t index = (size_t)store - (size_t) pos_stores;	// offset abziehen
 	index /= sizeof(pos_store_t);	// Differenz in Groesse umrechnen
-	return index;
+	return (uint8_t) index;
 }
 
 /*!
@@ -168,7 +168,7 @@ pos_store_t * pos_store_from_index(uint8_t index) {
  * @param *store	Zeiger auf Positionsspeicher
  */
 void pos_store_clear(pos_store_t * store) {
-	LOG_DEBUG("Loesche Positionsspeicher 0x%lx", (size_t)store);
+	LOG_DEBUG("Loesche Positionsspeicher 0x%lx", (size_t) store);
 	if (store == NULL) {
 		return;
 	}
@@ -187,7 +187,7 @@ static uint8_t is_empty(pos_store_t * store) {
 		/* Fehler */
 		return True;
 	}
-	return store->count == 0;
+	return (uint8_t) (store->count == 0);
 }
 
 /*!
@@ -199,7 +199,7 @@ static uint8_t is_full(pos_store_t * store) {
 		/* Fehler */
 		return True;
 	}
-	return store->count == POS_STORE_SIZE;
+	return (uint8_t) (store->count == POS_STORE_SIZE);
 }
 
 /*!
@@ -210,12 +210,12 @@ static uint8_t is_full(pos_store_t * store) {
  */
 uint8_t pos_store_insert(pos_store_t * store, position_t pos) {
 	if (is_full(store)) {
-		LOG_INFO("Pos-Store 0x%lx voll, kein push moeglich", (size_t)store);
+		LOG_INFO("Pos-Store 0x%lx voll, kein push moeglich", (size_t) store);
 		return False;
 	}
 	uint8_t fp = store->fp;
 	fp--;
-	fp &= POS_STORE_SIZE - 1;
+	fp = (uint8_t) (fp & (POS_STORE_SIZE - 1));
 	store->data[fp] = pos;
 	store->fp = fp;
 	store->count++;
@@ -230,13 +230,13 @@ uint8_t pos_store_insert(pos_store_t * store, position_t pos) {
  */
 uint8_t pos_store_push(pos_store_t * store, position_t pos) {
 	if (is_full(store)) {
-		LOG_INFO("Pos-Store 0x%lx voll, kein push moeglich", (size_t)store);
+		LOG_INFO("Pos-Store 0x%lx voll, kein push moeglich", (size_t) store);
 		return False;
 	}
 	uint8_t sp = store->sp;
 	store->data[sp] = pos;
 	sp++;
-	sp &= POS_STORE_SIZE - 1;
+	sp = (uint8_t) (sp & (POS_STORE_SIZE - 1));
 	store->sp = sp;
 	store->count++;
 	return True;
@@ -254,7 +254,7 @@ uint8_t pos_store_pop(pos_store_t * store, position_t * pos) {
 	}
 	store->count--;
 	store->sp--;
-	store->sp &= POS_STORE_SIZE - 1;
+	store->sp = (uint8_t) (store->sp & (POS_STORE_SIZE - 1));
 	*pos = store->data[store->sp];
 	return True;
 }
@@ -272,7 +272,7 @@ uint8_t pos_store_dequeue(pos_store_t * store, position_t * pos) {
 	store->count--;
 	*pos = store->data[store->fp];
 	store->fp++;
-	store->fp &= POS_STORE_SIZE - 1;
+	store->fp = (uint8_t) (store->fp & (POS_STORE_SIZE - 1));
 	return True;
 }
 
@@ -291,8 +291,8 @@ uint8_t pos_store_top(pos_store_t * store, position_t * pos, uint8_t index) {
 	if (store->count <= index) {
 		return False;
 	}
-	uint8_t sp = store->sp - index;
-	sp &= POS_STORE_SIZE - 1;
+	uint8_t sp = (uint8_t) (store->sp - index);
+	sp = (uint8_t) (sp & (POS_STORE_SIZE - 1));
 	*pos = store->data[sp];
 	return True;
 }

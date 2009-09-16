@@ -110,7 +110,7 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
 	}
 	switch (rc5) {
 	case RC5_CODE_I_II:
-		keypad_mode = (keypad_mode + 1) & 1;
+		keypad_mode = (uint8_t) ((keypad_mode + 1) & 1);
 		return 0;
 	case RC5_CODE_STOP:
 		/* Abbruch */
@@ -140,7 +140,7 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
 
 //	LOG_DEBUG("pressed=%u", pressed);
 
-	uint8_t key = rc5 - RC5_CODE_0;
+	uint8_t key = (uint8_t) (rc5 - RC5_CODE_0);
 	if (key > 9) {
 		/* ungueltige Eingabe */
 		return 0;
@@ -152,7 +152,7 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
 
 //	LOG_DEBUG("key=%u", key);
 	char data;
-	while ((data = ctbot_eeprom_read_byte(&gui_keypad_table[key][pressed])) == 0) {
+	while ((data = (char) ctbot_eeprom_read_byte(&gui_keypad_table[key][pressed])) == 0) {
 		/* bei einigen Tasten ist nicht alles belegt */
 		pressed = 0;
 	}
@@ -160,7 +160,7 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
 	/* im numerischen Fall nur Ziffern auswaehlen */
 	if (keypad_mode == 1) {
 		uint8_t i = 4;
-		while ((data = ctbot_eeprom_read_byte(&gui_keypad_table[key][i])) == 0) {
+		while ((data = (char) ctbot_eeprom_read_byte(&gui_keypad_table[key][i])) == 0) {
 			i--;
 		}
 		rc5 = 0;	// naechsten Tastendruck als neue Taste registrieren
@@ -182,9 +182,9 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
  * Legt einen neuen Display-Screen an und haengt eine Anzeigefunktion ein.
  * Diese Funktion kann auch RC5-Kommandos behandeln. Wurde eine Taste ausgewertet, setzt man RC5_Code auf 0.
  */
-static int8 register_screen(void* fkt) {
+static int8_t register_screen(void (* fkt)(void)) {
 	if (max_screens == DISPLAY_SCREENS) return -1;	// sorry, aber fuer dich ist kein Platz mehr da :(
-	int8 screen_nr = max_screens++;		// neuen Screen hinten anfuegen
+	int8_t screen_nr = max_screens++;		// neuen Screen hinten anfuegen
 	screen_functions[screen_nr] = fkt;	// Pointer im Array speichern
 	return screen_nr;
 }
@@ -196,7 +196,7 @@ static int8 register_screen(void* fkt) {
  * @param screen 	Nummer des Screens, der angezeigt werden soll
  * Zeigt einen Screen an und fuehrt die RC5-Kommandoauswertung aus, falls noch nicht geschehen.
  */
-void gui_display(int8 screen) {
+void gui_display(uint8_t screen) {
 	#ifdef KEYPAD_AVAILABLE
 		/* Keypad-Eingabe checken */
 		RC5_Code = gui_keypad_check(RC5_Code);
@@ -215,12 +215,12 @@ void gui_display(int8 screen) {
 			display_cursor(keypad_row, keypad_col);
 			display_printf("%s ", keypad_buffer);
 
-			uint8_t col = keypad_col + strlen(keypad_buffer);
+			uint8_t col = (uint8_t) (keypad_col + strlen(keypad_buffer));
 			if ((uint32_t)(TIMER_GET_TICKCOUNT_32 - keypad_last_pressed) > MS_TO_TICKS(1000UL)) {
 				col++;
 			}
 			display_cursor(keypad_row, col);
-			char c = keypad_mode == 1 ? '#' : '_';
+			char c = (char) (keypad_mode == 1 ? '#' : '_');
 			display_printf("%c", c);
 			display_cursor(keypad_row, col);
 		}

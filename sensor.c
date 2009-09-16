@@ -67,6 +67,11 @@ uint8_t sensDoor = 0;	/*!< Sensor Ueberwachung Klappe */
 
 uint8_t sensError = 0;	/*!< Ueberwachung Motor oder Batteriefehler */
 
+#ifdef BPS_AVAILABLE
+int16_t sensBPSF = 1023; /*!< Bot Positioning System vorn */
+int16_t sensBPSR = 1023; /*!< Bot Positioning System hinten */
+#endif	// BPS_AVAILABLE
+
 #ifdef MOUSE_AVAILABLE
 int8_t sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
 int8_t sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
@@ -109,7 +114,7 @@ uint16_t sensSRF10;		/*!< Messergebniss Ultraschallsensor */
 #endif
 
 #ifdef CMPS03_AVAILABLE
-cmps03_t sensCmps03 = {{0}};	/*!< Lage laut CMPS03-Kompass */
+cmps03_t sensCmps03 = {0};	/*!< Lage laut CMPS03-Kompass */
 #endif
 
 /*!
@@ -127,10 +132,12 @@ cmps03_t sensCmps03 = {{0}};	/*!< Lage laut CMPS03-Kompass */
  * wenn x1 >= xs >= x2, y2 >= y1, x1 != x2 erfuellt ist!
  */
 static inline uint8_t lin_interpolate(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t xs) {
-	if (x1 == x2) return -1;
-	uint16_t m = ((uint16_t)(y2 - y1) << 8) / (uint8_t)(x1 - x2);	// m >= 0
-	uint8_t x_diff = x1 - xs;
-	return (uint8_t)((x_diff * m) >> 8) + y1;	// m war kuenstlich um 8 Bit hochskaliert
+	if (x1 == x2) {
+		return 255;
+	}
+	uint16_t m = ((uint16_t) (y2 - y1) << 8) / (uint8_t) (x1 - x2);	// m >= 0
+	uint8_t x_diff = (uint8_t) (x1 - xs);
+	return (uint8_t) ((uint8_t) ((x_diff * m) >> 8) + y1);	// m war kuenstlich um 8 Bit hochskaliert
 }
 
 /*!
@@ -143,18 +150,18 @@ static inline uint8_t lin_interpolate(uint8_t x1, uint8_t y1, uint8_t x2, uint8_
  * @date 			21.04.2007
  */
 void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t volt_16) {
-	if (sizeof(sensDistDataL) != sizeof(sensDistDataR)) {
-		/* sensDistDataL und sensDistDataR muessen gleich gross sein! */
-		LOG_ERROR("sensDistData unzulaessig");
-		return;
-	}
+//	if (sizeof(sensDistDataL) != sizeof(sensDistDataR)) {
+//		/* sensDistDataL und sensDistDataR muessen gleich gross sein! */
+//		LOG_ERROR("sensDistData unzulaessig");
+//		return;
+//	}
 	uint8_t i;
 	uint8_t n = sizeof(sensDistDataL) / sizeof(distSens_t) / 2;
 	uint8_t volt;
 	/* Offset einlesen und Messwerte pruefen */
 	uint8_t offset = ctbot_eeprom_read_byte(&sensDistOffset);
 	if (volt_16 > 255 * 2 + offset) volt = 255;
-	else volt = (volt_16 >> 1) - offset;
+	else volt = (uint8_t) ((volt_16 >> 1) - offset);
 
 	/* Spannung in LT-Table suchen */
 	uint8_t pivot = ctbot_eeprom_read_byte(&ptr[n-1].voltage);	// in welcher Region muessen wir suchen?
@@ -178,7 +185,7 @@ void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const 
 		/* kleinste Entfernung annehmen, falls reale Entfernung < kleinste bekannte Entfernung */
 		*p_sens = SENS_IR_MIN_DIST;	// SENS_IR_INFINITE waere eigentlich besser, das mag aber maze nicht
 		/* Sensorupdate-Info toggeln und beenden */
-		*p_toggle = ~*p_toggle;
+		*p_toggle = (uint8_t) (~*p_toggle);
 		return;
 	}
 
@@ -187,7 +194,7 @@ void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const 
 	*p_sens = distance >= SENS_IR_MAX_DIST/5 ? SENS_IR_INFINITE : distance * 5;	// Distanz ist gefuenftelt in den Ref.-Daten;
 
 	/* Sensorupdate-Info toggeln */
-	*p_toggle = ~*p_toggle;
+	*p_toggle = (uint8_t) (~*p_toggle);
 }
 
 /*!
@@ -306,8 +313,8 @@ void sensor_update(void) {
 #endif	// MEASURE_MOUSE_AVAILABLE
 #ifdef MEASURE_COUPLED_AVAILABLE
 		/* Werte der Encoder und der Maus mit dem Faktor G_POS verrechnen */
-		x_pos = G_POS * x_mou + (1 - G_POS) * x_enc;
-		y_pos = G_POS * y_mou + (1 - G_POS) * y_enc;
+		x_pos = (int16_t) (G_POS * x_mou + (1 - G_POS) * x_enc);
+		y_pos = (int16_t) (G_POS * y_mou + (1 - G_POS) * y_enc);
 		/* Korrektur, falls mou und enc zu unterschiedlichen Seiten zeigen */
 		if (fabs(heading_mou - heading_enc) > 180) {
 			/* wir nutzen zum Rechnen zwei Drehrichtungen */
@@ -322,15 +329,15 @@ void sensor_update(void) {
 #ifdef MEASURE_MOUSE_AVAILABLE
 		/* Mauswerte als Standardwerte benutzen */
 		heading = heading_mou;
-		x_pos = x_mou;
-		y_pos = y_mou;
+		x_pos = (int16_t) x_mou;
+		y_pos = (int16_t) y_mou;
 #else
 		/* Encoderwerte als Standardwerte benutzen */
 #ifndef CMPS03_AVAILABLE
 		heading = heading_enc;
 #endif
-		x_pos = x_enc;
-		y_pos = y_enc;
+		x_pos = (int16_t) x_enc;
+		y_pos = (int16_t) y_enc;
 #endif	// MEASURE_MOUSE_AVAILABLE
 #endif	// MEASURE_COUPLED_AVAILABLE
 	}
@@ -347,14 +354,14 @@ void sensor_update(void) {
 #ifdef MCU
 		SREG = sreg;
 #endif
-		v_enc_left = (((sensEncL_tmp - lastEncL1) * (float)WHEEL_PERIMETER) / ENCODER_MARKS) * 4;
-		v_enc_right = (((sensEncR_tmp - lastEncR1) * (float)WHEEL_PERIMETER) / ENCODER_MARKS) * 4;
+		v_enc_left = (int16_t) ((((sensEncL_tmp - lastEncL1) * (float)WHEEL_PERIMETER) / ENCODER_MARKS) * 4);
+		v_enc_right = (int16_t) ((((sensEncR_tmp - lastEncR1) * (float)WHEEL_PERIMETER) / ENCODER_MARKS) * 4);
 		v_enc_center = (v_enc_left + v_enc_right) / 2;
 		lastEncL1 = sensEncL_tmp;
 		lastEncR1 = sensEncR_tmp;
 #ifdef MEASURE_MOUSE_AVAILABLE
 		/* Speed aufgrund Maussensormessungen */
-		v_mou_center = lastDistance * 4;
+		v_mou_center = (int16_t) lastDistance * 4;
 		/* Aufteilung auf die Raeder zum Vergleich mit den Radencodern */
 		/* Sonderfaelle pruefen */
 		if (oldHead == 90 || oldHead == 270 || heading_mou == 90 || heading_mou == 270) {
@@ -402,8 +409,8 @@ void sensor_update(void) {
 			/* Geschwindigkeiten berechnen */
 			right_radius = radius + WHEEL_DISTANCE;
 			left_radius = radius - WHEEL_DISTANCE;
-			v_mou_right = lastHead * right_radius * (4 * 2 * M_PI / 360);
-			v_mou_left = lastHead * left_radius * (4 * 2 * M_PI / 360);
+			v_mou_right = (int16_t) (lastHead * right_radius * (4 * 2 * M_PI / 360));
+			v_mou_left = (int16_t) (lastHead * left_radius * (4 * 2 * M_PI / 360));
 		}
 		/* Falls Koordinaten/Winkel angepasst wurden, nun wieder korrigieren */
 		if (modifiedAngles) {
@@ -426,9 +433,9 @@ void sensor_update(void) {
 		oldHead = heading_mou;
 #endif	// MEASURE_MOUSE_AVAILABLE
 #ifdef MEASURE_COUPLED_AVAILABLE
-		v_left = G_SPEED * v_mou_left + (1 - G_SPEED) * v_enc_left;
-		v_right = G_SPEED * v_mou_right + (1 - G_SPEED) * v_enc_left;
-		v_center = G_SPEED * v_mou_center + (1 - G_SPEED) * v_enc_center;
+		v_left = (int16_t) (G_SPEED * v_mou_left + (1 - G_SPEED) * v_enc_left);
+		v_right = (int16_t) (G_SPEED * v_mou_right + (1 - G_SPEED) * v_enc_left);
+		v_center = (int16_t) (G_SPEED * v_mou_center + (1 - G_SPEED) * v_enc_center);
 #else
 #ifdef MEASURE_MOUSE_AVAILABLE
 		/* Mauswerte als Standardwerte benutzen */
@@ -569,14 +576,28 @@ void sensor_display(void) {
 void odometric_display(void) {
 	/* Zeige Positions- und Geschwindigkeitsdaten */
 	display_cursor(1, 1);
-	display_printf("heading: %3d.%u  ",(int16_t)heading, (int16_t)((heading - (int16_t)heading) * 10));
+	display_printf("heading: %3d.%u  ", (int16_t)heading, (int16_t)((heading - (int16_t)heading) * 10));
 	display_cursor(2, 1);
 	display_printf("x: %3d  y: %3d  ", x_pos, y_pos);
 	display_cursor(3, 1);
 	display_printf("v_l: %3d v_r: %3d  ", v_left, v_right);
-#ifdef MEASURE_MOUSE_AVAILABLE
+#ifdef BPS_AVAILABLE
+	display_cursor(4, 1);
+	static int16_t BPS_old[2] = {1023, 1023};
+	static uint8_t count = 0;
+	if (sensBPSF != 1023 || count > 10) {
+		BPS_old[0] = sensBPSF;
+		count = 0;
+	}
+	count++;
+
+	if (sensBPSR != 1023) {
+		BPS_old[1] = sensBPSR;
+	}
+	display_printf("BPS: 0x%04x 0x%04x", BPS_old[0], BPS_old[1]);
+#elif defined MEASURE_MOUSE_AVAILABLE
 	display_cursor(4, 1);
 	display_printf("squal: %3d v_c: %3d", mouse_get_squal(), (int16_t)v_mou_center);
-#endif	// MEASURE_MOUSE_AVAILABLE
+#endif	// BPS_AVAILABLE
 }
 #endif	// DISPLAY_ODOMETRIC_INFO

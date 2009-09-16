@@ -68,10 +68,10 @@
 /* Boot Size in Words */
 #if defined(__AVR_ATmega32__)	// => Fuse Bits: low: 0xFF, high: 0xDC
 #define BOOTSIZE 512		// => Linker-Settings: -Wl,--section-start=.bootloader=0x7C00
-#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0x7C00 startet "
+//#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0x7C00 startet "
 #elif defined(MCU_ATMEGA644X)// => Fuse Bits: low: 0xFF, high: 0xDC, Ext'd: 0xFF
 #define BOOTSIZE 1024		// => Linker-Settings: -Wl,--section-start=.bootloader=0xF800
-#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0xF800 startet "
+//#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0xF800 startet"
 #endif
 
 /*! Startup-Timeout */
@@ -210,17 +210,17 @@ typedef uint8_t pagebuf_t; /*!< Seitengroesse */
 uint8_t gBuffer[SPM_PAGESIZE];	/*!< Puffer */
 
 /* all inline! Sonst stimmt die Startadresse der bl_main nicht */
-static void __attribute__ ((always_inline)) sendchar(uint8_t data){
+static void __attribute__ ((always_inline)) sendchar(uint8_t data) {
 	while (!(UART_STATUS & (1<<UART_TXREADY)));
 	UART_DATA = data;
 }
 
-static uint8_t __attribute__ ((always_inline)) recvchar(void){
+static uint8_t __attribute__ ((always_inline)) recvchar(void) {
 	while (!(UART_STATUS & (1<<UART_RXREADY)));
 	return UART_DATA;
 }
 
-static void __attribute__ ((always_inline)) eraseFlash(void){
+static void __attribute__ ((always_inline)) eraseFlash(void) {
 	// erase only main section (bootloader protection)
 	uint32_t addr = 0;
 	while (APP_END > addr) {
@@ -231,15 +231,15 @@ static void __attribute__ ((always_inline)) eraseFlash(void){
 	boot_rww_enable();
 }
 
-static void __attribute__ ((always_inline)) recvBuffer(pagebuf_t size){
+static void __attribute__ ((always_inline)) recvBuffer(pagebuf_t size) {
 	pagebuf_t cnt;
 	uint8_t *tmp = gBuffer;
 
 	for (cnt = 0; cnt < sizeof(gBuffer); cnt++)
-		*tmp++ = (cnt < size) ? recvchar() : 0xFF;
+		*tmp++ = (uint8_t) ((cnt < size) ? recvchar() : 0xff);
 }
 
-static uint16_t __attribute__ ((always_inline)) writeFlashPage(uint16_t waddr, pagebuf_t size){
+static uint16_t __attribute__ ((always_inline)) writeFlashPage(uint16_t waddr, pagebuf_t size) {
 	uint32_t pagestart = (uint32_t)waddr<<1;
 	uint32_t baddr = pagestart;
 	uint16_t data;
@@ -258,15 +258,15 @@ static uint16_t __attribute__ ((always_inline)) writeFlashPage(uint16_t waddr, p
 	boot_spm_busy_wait();
 	boot_rww_enable();			// Re-enable the RWW section
 
-	return baddr>>1;
+	return (uint16_t) (baddr >> 1);
 }
 
-static uint16_t __attribute__ ((always_inline)) writeEEpromPage(uint16_t address, pagebuf_t size){
+static uint16_t __attribute__ ((always_inline)) writeEEpromPage(uint16_t address, pagebuf_t size) {
 	uint8_t *tmp = gBuffer;
 
 	do {
-		EEARL = address;		// Setup EEPROM address
-		EEARH = (address >> 8);
+		EEARL = (uint8_t) address; // Setup EEPROM address
+		EEARH = (uint8_t) (address >> 8);
 		EEDR = *tmp++;
 		address++; // Select next byte
 
@@ -280,12 +280,12 @@ static uint16_t __attribute__ ((always_inline)) writeEEpromPage(uint16_t address
 		eeprom_busy_wait();
 
 		size--;				// Decreas number of bytes to write
-	} while (size);				// Loop until all bytes written
+	} while (size);			// Loop until all bytes written
 
 	return address;
 }
 
-static uint16_t __attribute__ ((always_inline)) readFlashPage(uint16_t waddr, pagebuf_t size){
+static uint16_t __attribute__ ((always_inline)) readFlashPage(uint16_t waddr, pagebuf_t size) {
 	uint32_t baddr = (uint32_t)waddr<<1;
 	uint16_t data;
 
@@ -295,19 +295,19 @@ static uint16_t __attribute__ ((always_inline)) readFlashPage(uint16_t waddr, pa
 #else
 		data = pgm_read_word_near(baddr);
 #endif
-		sendchar(data);			// send LSB
-		sendchar((data >> 8));		// send MSB
+		sendchar((uint8_t) data); // send LSB
+		sendchar((uint8_t) (data >> 8)); // send MSB
 		baddr += 2;			// Select next word in memory
 		size -= 2;			// Subtract two bytes from number of bytes to read
-	} while (size);				// Repeat until all block has been read
+	} while (size);			// Repeat until all block has been read
 
-	return baddr>>1;
+	return (uint16_t) (baddr >> 1);
 }
 
-static uint16_t __attribute__ ((always_inline)) readEEpromPage(uint16_t address, pagebuf_t size){
+static uint16_t __attribute__ ((always_inline)) readEEpromPage(uint16_t address, pagebuf_t size) {
 	do {
-		EEARL = address;		// Setup EEPROM address
-		EEARH = (address >> 8);
+		EEARL = (uint8_t) address; // Setup EEPROM address
+		EEARH = (uint8_t) (address >> 8);
 		EECR |= (1<<EERE);		// Read EEPROM
 		address++;			// Select next EEPROM byte
 
@@ -352,11 +352,13 @@ static void __attribute__ ((always_inline)) send_boot(void){
 
 static void (*jump_to_app)(void) = 0x0000;
 
+void bootloader_main(void) __attribute__ ((section (".bootloader")));
+
 /* Der eigentliche Bootloader. Die Section "bootloader" muss dort beginnen,
  * wohin die MCU beim Booten springt (=> Fuse Bits). Deshalb die Linkereinstellungen
  * anpassen, wie oben beschrieben!
  */
-void __attribute__ ((section (".bootloader"))) bootloader_main(void) {
+void bootloader_main(void) {
 	uint16_t address = 0;
 	uint8_t device = 0, val;
 
@@ -407,7 +409,7 @@ void __attribute__ ((section (".bootloader"))) bootloader_main(void) {
 		// Start buffer load
 		} else if (val == 'B') {
 			pagebuf_t size;
-			size = recvchar() << 8;				// Load high byte of buffersize
+			size = (pagebuf_t) (recvchar() << 8); // Load high byte of buffersize
 			size |= recvchar();				// Load low byte of buffersize
 			val = recvchar();				// Load memory type ('E' or 'F')
 			recvBuffer(size);
@@ -428,7 +430,7 @@ void __attribute__ ((section (".bootloader"))) bootloader_main(void) {
 		// Block read
 		} else if (val == 'g') {
 			pagebuf_t size;
-			size = recvchar() << 8;				// Load high byte of buffersize
+			size = (pagebuf_t) (recvchar() << 8); // Load high byte of buffersize
 			size |= recvchar();				// Load low byte of buffersize
 			val = recvchar();				// Get memtype
 

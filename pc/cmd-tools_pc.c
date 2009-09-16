@@ -39,6 +39,8 @@
 #include "command.h"
 #include "bot-logic/remote_calls.h"
 
+//#define DEBUG
+
 /*!
  * Zeigt Informationen zu den moeglichen Kommandozeilenargumenten an.
  */

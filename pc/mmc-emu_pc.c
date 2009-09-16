@@ -197,9 +197,12 @@ void mmc_emu_clear_file(uint32_t file_start) {
  * Nur DUMMY fuer MMC-Emulation am PC. Wenn es mal eine EEPROM-Emulation fuer PC gibt, kann man diese Funktion implementieren.
  */
 uint32_t mmc_emu_fat_lookup_adr(const char * filename, uint8_t * buffer) {
+	/* keine warnings */
+	filename = filename;
+	buffer = buffer;
 	// absichtlich leer
 #ifdef DISPLAY_MINIFAT_INFO
-	display_cursor(2,1);
+	display_cursor(2, 1);
 	display_printf("no EEPROM:");
 	display_block(0);
 #endif	// DISPLAY_MINIFAT_INFO
@@ -212,11 +215,12 @@ uint32_t mmc_emu_fat_lookup_adr(const char * filename, uint8_t * buffer) {
  * Nur DUMMY fuer MMC-Emulation am PC. Wenn es mal eine EEPROM-Emulation fuer PC gibt, kann man diese Funktion implementieren.
  */
 void mmc_emu_fat_store_adr(uint32_t block) {
+	block = block; // kein warning
 	// absichtlich leer
 #ifdef DISPLAY_MINIFAT_INFO
-	display_cursor(3,1);
+	display_cursor(3, 1);
 	display_printf("no EEPROM:");
-	display_cursor(3,13);
+	display_cursor(3, 13);
 	display_block(0);
 #endif	// DISPLAY_MINIFAT_INFO	
 }

@@ -48,7 +48,7 @@ int16_t my_state = BOT_STATE_AVAILABLE; /*!< Der eigene Status */
 
 #ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
 static volatile int16_t bot_2_bot_payload_size = 0;	/*!< Anzahl der (noch) zu sendenden oder erwarteten Bytes */
-static void * bot_2_bot_data = NULL;				/*!< Zeiger auf die zu sendenden oder empfangenen Daten */
+static uint8_t * bot_2_bot_data = NULL;				/*!< Zeiger auf die zu sendenden oder empfangenen Daten */
 static void (* bot_2_bot_callback)(void) = NULL;	/*!< Callback-Funktion, die nach Abschluss des Empfangs ausgefuehrt wird */
 
 #ifdef BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
@@ -60,11 +60,14 @@ static char remotecall_buffer[REMOTE_CALL_BUFFER_SIZE];	/*!< Puffer fuer RemoteC
 #endif
 #endif	// BOT_2_BOT_PAYLOAD_AVAILABLE
 
+void default_cmd(command_t * cmd);
+
 /*!
  * Dummy, fuer Kommandos, die nicht bearbeitet werden sollen
  * @param *cmd	Zeiger auf ein Kommando
  */
 void default_cmd(command_t * cmd) {
+	cmd = cmd;
 	// NOP
 }
 
@@ -95,7 +98,7 @@ void (* cmd_functions[])(command_t * cmd) = {
 
 #ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
 /*! Dummy-Eintrag fuer Payload-Mappings, falls entsprechender Code inaktiv */
-#define BOT_2_BOT_PAYLOAD_DUMMY	{ (void *)default_cmd, NULL, 0 }
+#define BOT_2_BOT_PAYLOAD_DUMMY	{ (void (*)(void)) default_cmd, NULL, 0 }
 
 /*!
  * Tabelle fuer alle Bot-2-Bot-Payload-Zuordnungen.
@@ -255,7 +258,7 @@ void set_received_bot_state(command_t * cmd) {
 		if (ptr == NULL)
 			break;
 		if (ptr->address == cmd->from) {
-			ptr->state = cmd->data_l;
+			ptr->state = (uint8_t) cmd->data_l;
 #ifdef LOG_AVAILABLE
 			print_bot_list();
 #endif
@@ -357,7 +360,7 @@ void bot_2_bot_handle_payload_request(command_t * cmd) {
 	int16_t size = cmd->data_l;
 	bot_2_bot_payload_size = size;
 	LOG_DEBUG("  Anfrage umfasst %d Bytes", size);
-	uint8_t type = cmd->data_r;
+	uint8_t type = (uint8_t) cmd->data_r;
 	LOG_DEBUG("  und ist vom Typ %u", type);
 	uint8_t error = 0;
 	if (type > sizeof(bot_2_bot_payload_mappings) / sizeof(bot_2_bot_payload_mappings[0])) {
@@ -423,7 +426,7 @@ void bot_2_bot_handle_payload_ack(command_t * cmd) {
 	switch (cmd->data_r) {
 	case 0: {
 			/* Der andere Bot hat unsere Anfrage akzeptiert */
-			int16_t window_size = cmd->data_l;
+			uint8_t window_size = (uint8_t) cmd->data_l;
 			int16_t to_send = bot_2_bot_payload_size;
 			LOG_DEBUG(" ACK von Bot %u, habe noch %d Bytes zu senden", cmd->from, to_send);
 			LOG_DEBUG("  Bot %u hat window_size=%d festgelegt", cmd->from, window_size);
@@ -431,7 +434,7 @@ void bot_2_bot_handle_payload_ack(command_t * cmd) {
 			int16_t last_packet = 0;
 			if (to_send < 0) {
 				/* Rest */
-				window_size += to_send;
+				window_size = (uint8_t) (window_size + to_send);
 				to_send = 0;
 				last_packet = 1;
 			}
@@ -615,7 +618,7 @@ int8_t bot_2_bot_start_remotecall(uint8_t bot_addr, char * function, remote_call
 		remote_call_data_t par2, remote_call_data_t par3) {
 
 	/* Funktionsnamen auf Gueltigkeit / Laenge pruefen */
-	uint8_t len = strlen(function);
+	uint8_t len = (uint8_t) strlen(function);
 	if (len == 0 || len > REMOTE_CALL_FUNCTION_NAME_LEN) {
 		return -1;
 	}

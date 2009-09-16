@@ -97,13 +97,13 @@ extern uint8 srf10_ping(uint8_t metric_unit);
  * @param SRF10_register welches Register soll ausgelsen werden
  * @return Inhalt des Registers
  */
-extern uint8 srf10_read_register(uint8_t SRF10_register);
+extern uint8_t srf10_read_register(uint8_t SRF10_register);
 
 /*!
  * Messung starten Ergebniss aufbereiten und zurueckgeben
  * @return Messergebniss
  */
-extern uint16 srf10_get_measure(void);
+extern uint16_t srf10_get_measure(void);
 
 #endif	// SRF10_AVAILABLE
 #endif  /* SRF10_H_ */

@@ -17,30 +17,34 @@
  *
  */
 
-/*! @file 	delay.c
- * @brief 	Hilfsroutinen
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	20.12.2005
-*/
+/*!
+ * @file 	trace.h
+ * @brief 	Trace-Modul
+ * @author 	Timo Sandmann (mail@timosandmann.de)
+ * @date 	01.06.2009
+ */
 
-#ifdef MCU
-
+#ifndef TRACE_H_
+#define TRACE_H_
 #include "ct-Bot.h"
-#include "delay.h"
 
-#include "timer.h"
+#ifdef CREATE_TRACEFILE_AVAILABLE
+
 
 /*!
- * Verzoegert um ms Millisekunden
- * @param ms Anzahl der Millisekunden
+ * Initialisiert das Trace-System
  */
-void delay(uint16_t ms) {
-	uint32_t start = TIMER_GET_TICKCOUNT_32;
-	uint32_t ticksToWait = MS_TO_TICKS((uint32_t)ms);
-	uint32_t now;
-	do {
-		now = TIMER_GET_TICKCOUNT_32;
-	} while (now - start < ticksToWait);
+void trace_init(void);
 
-}
-#endif	// MCU
+/*!
+ * Fuegt dem Trace-Puffer die aktuellen Sensordaten hinzu
+ */
+void trace_add_sensors(void);
+
+/*!
+ * Fuegt dem Tace-Puffer die aktuellen Aktuatordaten hinzu
+ */
+void trace_add_actuators(void);
+
+#endif	// CREATE_TRACEFILE_AVAILABLE
+#endif /* TRACE_H_ */

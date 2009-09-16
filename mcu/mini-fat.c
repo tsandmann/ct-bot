@@ -51,7 +51,7 @@ uint32_t EEPROM eefat[10] = {0};	/*!< EEPROM-Cache fuer FAT-Eintraege */
 
 #ifndef MINI_FAT_DEBUG
 #undef LOG_DEBUG
-#define LOG_DEBUG(a, ...) {}
+#define LOG_DEBUG(...) {}
 #endif
 
 
@@ -213,7 +213,7 @@ static uint32_t check_fragmentation(uint32_t block, void * buffer) {
 	/* MBR lesen */
 	mmc_read_sector(0, buffer);
 	mbr_t * p_mbr = buffer;
-	uint16_t first_sect = p_mbr->part0.first_sect_offset;
+	uint16_t first_sect = (uint16_t) p_mbr->part0.first_sect_offset;
 	LOG_DEBUG("first_sect=0x%04x", first_sect);
 
 	/* Bootsektor von Partition 1 lesen */
@@ -243,7 +243,7 @@ static uint32_t check_fragmentation(uint32_t block, void * buffer) {
 	LOG_DEBUG("sect_per_cluster=%u", sect_per_cluster);
 
 	/* 1. Cluster der Datei berechnen */
-	uint16_t first_cluster = (block - 1 - data_offset) / sect_per_cluster + 2;
+	uint16_t first_cluster = (uint16_t) ((block - 1 - data_offset) / sect_per_cluster + 2);
 	LOG_DEBUG("first_cluster=0x%04x", first_cluster);
 
 	/* 1. FAT-Eintrag der Datei einlesen */

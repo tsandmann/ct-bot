@@ -195,10 +195,13 @@ const call_t calls[] PROGMEM = {
 	#ifdef BEHAVIOUR_GET_UTILIZATION_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_get_utilization, 1, "uint8 beh", 1),
 	#endif
+	#ifdef BEHAVIOUR_SCAN_BEACONS_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_scan_beacons, 1, "uint8 pos_upd", 1),
+	#endif
 		{0, {0}, "", "", NULL}
 };
 
-#define STORED_CALLS (sizeof(calls)/sizeof(call_t)) /*!< Anzahl der Remote-Calls im Array */
+#define STORED_CALLS (sizeof(calls) / sizeof(call_t)) /*!< Anzahl der Remote-Calls im Array */
 
 /*!
  * Sucht den Index des Remote-Calls heraus

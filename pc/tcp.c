@@ -35,7 +35,7 @@
 #ifndef DEBUG_TCP
 #undef LOG_AVAILABLE
 #undef LOG_DEBUG
-#define LOG_DEBUG(a, ...) {}	/*!< Log-Dummy */
+#define LOG_DEBUG(...) {}	/*!< Log-Dummy */
 #endif
 
 #ifdef PC
@@ -73,7 +73,7 @@
 #include "display.h"
 
 int tcp_sock = 0;			/*!< Unser TCP-Socket */
-char *tcp_hostname = NULL;	/*!< Hostname, auf dem ct-Sim laeuft */
+char * tcp_hostname = NULL;	/*!< Hostname, auf dem ct-Sim laeuft */
 
 static uint8_t sendBuffer[TCP_SEND_BUFFER_SIZE];	/*!< Sendepuffer fuer ausgehende Packete */
 static int sendBufferPtr = 0;						/*!< Index in den Sendepuffer */
@@ -181,7 +181,7 @@ int tcp_send_cmd(command_t * cmd) {
  * @param length	Anzahl der Bytes
  * @return 			Anzahl der kopierten Bytes, -1 wenn Puffer zu klein
  */
-static int copy2Buffer(void * data, int length) {
+static int copy2Buffer(void * data, unsigned length) {
 	if ((sendBufferPtr + length) > sizeof(sendBuffer)) {
 		LOG_DEBUG("Sendbuffer filled with %u/%u bytes, another %d bytes pending.", sendBufferPtr, (unsigned int)sizeof(sendBuffer), length);
 		LOG_DEBUG("  ==> Trying to recover by calling flushSendBuffer()...");

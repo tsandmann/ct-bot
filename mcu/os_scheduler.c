@@ -110,7 +110,7 @@ void os_calc_utilization(void) {
 			uint32_t tmp = data[i].runtime;
 			tmp *= 100;
 			tmp /= sum;
-			util_data[util_count][i] = tmp;
+			util_data[util_count][i] = (uint8_t) tmp;
 		}
 		util_count++;
 		util_count &= MAX_UTIL_ENTRIES - 1;
@@ -144,8 +144,10 @@ void os_print_utilization(void) {
 		LOG_INFO("%3u\t%3u", util_data[i][0], util_data[i][1]);
 #elif (OS_MAX_THREADS == 3)
 		LOG_INFO("%3u\t%3u\t%3u", util_data[i][0], util_data[i][1], util_data[i][2]);
+#elif (OS_MAX_THREADS == 4)
+		LOG_INFO("%3u\t%3u\t%3u\t%3u", util_data[i][0], util_data[i][1], util_data[i][2], util_data[i][3]);
 #else
-#error "Auslastungsstatistik fuer OS_MAX_THREADS > 3 nicht implementiert!"
+#error "Auslastungsstatistik fuer OS_MAX_THREADS > 4 nicht implementiert!"
 #endif
 	}
 
@@ -154,8 +156,11 @@ void os_print_utilization(void) {
 	LOG_INFO("%5u\t%5u", missed_deadlines[0], missed_deadlines[1]);
 #elif (OS_MAX_THREADS == 3)
 	LOG_INFO("%5u\t%5u\t%5u", missed_deadlines[0], missed_deadlines[1], missed_deadlines[2]);
+#elif (OS_MAX_THREADS == 4)
+	LOG_INFO("%5u\t%5u\t%5u\t%5u", missed_deadlines[0], missed_deadlines[1], missed_deadlines[2], missed_deadlines[3]);
 #endif
 
+#ifdef LOG_AVAILABLE
 	uint32_t runtime = TIMER_GET_TICKCOUNT_32 - first_util_time;
 	/* idle_counter kann nicht atomar inkrementiert werden und wir wissen nicht, bei welcher Instruktion
 	 * der idle-Thread unterbrochen wurde. Da es aber 3 Kopien des Idle-Zaehlers gibt, muessen immer
@@ -166,14 +171,13 @@ void os_print_utilization(void) {
 	if (idle != idle2 && idle != idle3) {
 		idle = idle2;	// idle enthaelt den falschen Wert, also sind idle2 und idle3 korrekt
 	}
-	uint32_t idle_ticks = idle * (ZYCLES_PER_IDLERUN * 1000000.0f / F_CPU / TIMER_STEPS);
+	uint32_t idle_ticks = (uint32_t) ((float) idle * (ZYCLES_PER_IDLERUN * 1000000.0f / F_CPU / TIMER_STEPS));
 
 	uint8_t idle_pc = idle_ticks * 100 / runtime;
 	LOG_INFO("%u %% idle", idle_pc);
+#endif // LOG_AVAILABLE
 }
 #endif	// MEASURE_UTILIZATION
-
-void os_idle(void) __attribute__((OS_task));
 
 /*!
  * Idle-Thread
@@ -235,7 +239,7 @@ void os_schedule(uint32_t tickcount) {
 					os_thread_running->statistics.runtime += (uint16_t)((uint16_t)tickcount - os_thread_running->lastSchedule);
 #endif
 					/* switch Thread */
-					ptr->lastSchedule = tickcount;
+					ptr->lastSchedule = (uint16_t)tickcount;
 					//-- hier laeuft noch der alte Thread (SP zeigt auf os_thread_running's Stack) --//
 					os_switch_thread(os_thread_running, ptr);
 					//-- jetzt laeuft bereits der neue Thread (SP zeigt auf ptr's Stack) --//
@@ -274,17 +278,17 @@ void os_display(void) {
 	uint32_t idle_diff = idle - last_idle;
 	last_time = time;
 	last_idle = idle;
-	uint32_t idle_ticks = idle_diff * (ZYCLES_PER_IDLERUN * 1000000.0f / F_CPU / TIMER_STEPS);
-	uint8_t idle_pc = idle_ticks * 100 / time_diff;
-	uint8_t cpu_pc = 100 - idle_pc;
+	uint32_t idle_ticks = (uint32_t)((float)idle_diff * (ZYCLES_PER_IDLERUN * 1000000.0f / F_CPU / TIMER_STEPS));
+	uint8_t idle_pc = (uint8_t)(idle_ticks * 100 / time_diff);
+	uint8_t cpu_pc = (uint8_t)(100 - idle_pc);
 
-	uint8_t uart_pc = uart_log * (100.0f / (176.0f / 1000.0f)) / time_diff; // uart_log wird jede ms inkrementiert
+	uint8_t uart_pc = (uint8_t)((float)uart_log * (100.0f / (176.0f / 1000.0f)) / (float)time_diff); // uart_log wird jede ms inkrementiert
 	uart_log = 0;
 
 	/* Balken fuer Auslastung ausgeben */
 	display_cursor(1, 1);
 	for (i=0; i<cpu_pc/5; i++) {
-		display_data(0xff);	// schwarzes Feld
+		display_data((char)0xff);	// schwarzes Feld
 	}
 
 	/* Spaces fuer Idle ausgeben */

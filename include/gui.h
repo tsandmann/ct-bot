@@ -42,7 +42,7 @@ extern uint8_t EEPROM resetsEEPROM;	/*!< Reset-Counter-Wert im EEPROM */
  * @param screen 	Nummer des Screens, der angezeigt werden soll
  * Zeigt einen Screen an und fuehrt die RC5-Kommandoauswertung aus, falls noch nicht geschehen.
  */
-void gui_display(int8 screen);
+void gui_display(uint8_t screen);
 
 /*!
  * @brief 	Display-Screen Initialisierung

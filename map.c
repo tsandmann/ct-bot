@@ -220,7 +220,7 @@ int8_t map_init(void) {
 	os_mask_stack(map_update_stack, MAP_UPDATE_STACK_SIZE);
 	os_mask_stack(map_2_sim_worker_stack, MAP_2_SIM_STACK_SIZE);
 #endif
-	fifo_init(&map_update_fifo, map_update_cache, sizeof(map_update_cache));
+	fifo_init(&map_update_fifo, map_update_cache, (uint8_t) sizeof(map_update_cache));
 #ifdef MAP_2_SIM_AVAILABLE
 	fifo_init(&map_2_sim_fifo, map_2_sim_cache, sizeof(map_2_sim_cache));
 #endif
@@ -240,10 +240,10 @@ int8_t map_init(void) {
 
 #ifdef BEHAVIOUR_SCAN_AVAILABLE
 	/* Modi des Update-Verhaltens. Default: location, distance, border an, Kartographie-Modus */
-	scan_otf_modes.location = 1;
-	scan_otf_modes.distance = 1;
-	scan_otf_modes.border   = 1;
-	scan_otf_modes.map_mode = 1;
+	scan_otf_modes.data.location = 1;
+	scan_otf_modes.data.distance = 1;
+	scan_otf_modes.data.border   = 1;
+	scan_otf_modes.data.map_mode = 1;
 #endif
 
 	// Die Karte auf den Puffer biegen
@@ -1089,26 +1089,26 @@ void map_update_main(void) {
 
 		os_signal_lock(&lock_signal);	// Zugriff auf die Map sperren
 #ifdef DEBUG_SCAN_OTF
-		LOG_DEBUG("lese Cache: x= %d y= %d head= %f distance= %d loaction=%d border=%d",cache_tmp.x_pos, cache_tmp.y_pos, cache_tmp.heading/10.0f,cache_tmp.mode.distance, cache_tmp.mode.location, cache_tmp.mode.border);
+		LOG_DEBUG("lese Cache: x= %d y= %d head= %f distance= %d loaction=%d border=%d", cache_tmp.x_pos, cache_tmp.y_pos, cache_tmp.heading / 10.0f, cache_tmp.mode.data.distance, cache_tmp.mode.data.location, cache_tmp.mode.data.border);
 
-		if ((cache_tmp.mode.distance || cache_tmp.mode.location || cache_tmp.mode.border) == 0)
+		if ((cache_tmp.mode.data.distance || cache_tmp.mode.data.location || cache_tmp.mode.data.border) == 0)
 		LOG_DEBUG("Achtung: Dieser Eintrag ergibt keinen Sinn, kein einziges mode-bit gesetzt");
 #endif
 
 		/* Strahlen updaten, falls distance-mode und der aktuelle Eintrag Daten dazu hat*/
-		if (cache_tmp.mode.distance) {
+		if (cache_tmp.mode.data.distance) {
 			update_distance(cache_tmp.x_pos, cache_tmp.y_pos,
 					cache_tmp.heading / 10.0f, cache_tmp.dataL * 5,
 					cache_tmp.dataR * 5);
 		}
 
 		/* Grundflaeche updaten, falls location-mode */
-		if (cache_tmp.mode.location) {
+		if (cache_tmp.mode.data.location) {
 			update_location(cache_tmp.x_pos, cache_tmp.y_pos);
 		}
 
 		/* Abgrundsensoren updaten, falls border-mode */
-		if (cache_tmp.mode.border) {
+		if (cache_tmp.mode.data.border) {
 			update_border(cache_tmp.x_pos, cache_tmp.y_pos,
 					cache_tmp.heading / 10.0f, cache_tmp.dataL,
 					cache_tmp.dataR);

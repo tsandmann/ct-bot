@@ -39,7 +39,7 @@
 #include "rc5-codes.h"
 #include "math_utils.h"
 
-#define DEBUG_BEHAVIOUR_LINE_SHORTEST_WAY // Schalter fuer Debug-Code
+//#define DEBUG_BEHAVIOUR_LINE_SHORTEST_WAY // Schalter fuer Debug-Code
 
 #ifndef LOG_AVAILABLE
 #undef DEBUG_BEHAVIOUR_LINE_SHORTEST_WAY
@@ -220,7 +220,7 @@ void bot_check_reverse_direction_behaviour(Behaviour_t * data) {
  * Botenfunktion: Verhalten zum Checken der Botrichtung auf Einnehmen der entgegengesetzten Richtung (Linienende)
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  */
-void bot_check_reverse_direction(Behaviour_t * caller) {
+static void bot_check_reverse_direction(Behaviour_t * caller) {
 	// via Override umschalten; Aufruf erfolgt aller x mm gefahrene Strecke, falls Kurve gefahren wurde zum Setzen des neuen Pruefwinkels
 	switch_to_behaviour(caller, bot_check_reverse_direction_behaviour, OVERRIDE);
 	reverse_state = 0;
@@ -289,7 +289,7 @@ static uint8_t dequeue_stack_crossing(int8_t * crosstype, int8_t * direction) {
  * @param goalcheck True falls Aufruf von Zielerkennung kam, False sonst fuer Pruefung auf Umkehrfeld
  * @return True falls Bot sich auf dem Farbfeld befindet sonst False
  */
-uint8_t green_field(uint8_t goalcheck) {
+static uint8_t green_field(uint8_t goalcheck) {
 	if (crossing_reached && ((sensLineL > GROUND_GOAL_DEF - 5 && sensLineL
 			< GROUND_GOAL_DEF + 5) || (sensLineR > GROUND_GOAL_DEF - 5
 			&& sensLineR < GROUND_GOAL_DEF + 5))) {
@@ -318,7 +318,7 @@ uint8_t green_field(uint8_t goalcheck) {
  * Prueft ob der Bot sich auf dem Ziel befindet, also wenn er auf dem definierten Farbfeld steht und Hindernis dahinter
  * @return True falls bot sich auf dem Zielfarbfeld befindet sonst False
  */
-uint8_t goal_reached(void) {
+static uint8_t goal_reached(void) {
 	if (green_field(True) && sensDistL < 300 && sensDistR < 300)
 		return True;
 
@@ -404,7 +404,7 @@ uint8_t check_crossing(void) {
  * Prueft ob der Bot sich auf Umkehr- oder Zielfeld befindet; hier wurde der optimal Linienfolger gestartet, der sich beendet bei Kreuzungen oder Abgruenden
  * @return True falls bot sich auf Ziel- oder Umkehrfeld befindet sonst False
  */
-uint8_t check_crossing(void) {
+static uint8_t check_crossing(void) {
 	if (goal_reached()) {
 		LOG_DEBUG("Ziel erreicht und Ende");
 		lineState = 99; // Verhalten Ende
@@ -566,26 +566,26 @@ void bot_line_shortest_way_behaviour(Behaviour_t * data) {
 				}
 
 				// je nach Start-Ausgangs-Richtungswahl Richtungswert interpretieren
-				if (START_SIDEWISH == 1) { // links bevorzugt
-					if (direction_counter == 1) {
-						LOG_DEBUG("nach rechts");
-						sidewish = -1;
-					}
-					if (direction_counter == 3) {
-						LOG_DEBUG("nach links");
-						sidewish = 1;
-					}
-				} else { // rechts bevorzugt
-					LOG_DEBUG("neg wg. rechts zuerst");
-					if (direction_counter == 1) {
-						LOG_DEBUG("nach links");
-						sidewish = 1;
-					}
-					if (direction_counter == 3) {
-						LOG_DEBUG("nach rechts");
-						sidewish = -1;
-					}
+#if START_SIDEWISH == 1 // links bevorzugt
+				if (direction_counter == 1) {
+					LOG_DEBUG("nach rechts");
+					sidewish = -1;
 				}
+				if (direction_counter == 3) {
+					LOG_DEBUG("nach links");
+					sidewish = 1;
+				}
+#else // rechts bevorzugt
+				LOG_DEBUG("neg wg. rechts zuerst");
+				if (direction_counter == 1) {
+					LOG_DEBUG("nach links");
+					sidewish = 1;
+				}
+				if (direction_counter == 3) {
+					LOG_DEBUG("nach rechts");
+					sidewish = -1;
+				}}
+#endif // START_SIDEWISH == 1
 
 			} // Ende zurueck vom Ziel
 			else {
@@ -598,27 +598,26 @@ void bot_line_shortest_way_behaviour(Behaviour_t * data) {
 				}
 
 				// auch hier je nach Wunsch-Start-Richtungswahl die Richtung interpretieren
-				if (START_SIDEWISH == 1) {
-					if (direction_counter == 1) { // links bevorzugt
-						LOG_DEBUG("nach links");
-						sidewish = 1;
-					}
-					if (direction_counter == 3) {
-						LOG_DEBUG("nach rechts");
-						sidewish = -1;
-					}
-				} else { // rechts bevorzugt
-					LOG_DEBUG("neg wegen rechts zuerst");
-					if (direction_counter == 1) {
-						LOG_DEBUG("nach rechts");
-						sidewish = -1;
-					}
-					if (direction_counter == 3) {
-						LOG_DEBUG("nach links");
-						sidewish = 1;
-					}
+#if START_SIDEWISH == 1 // links bevorzugt
+				if (direction_counter == 1) { // links bevorzugt
+					LOG_DEBUG("nach links");
+					sidewish = 1;
 				}
-
+				if (direction_counter == 3) {
+					LOG_DEBUG("nach rechts");
+					sidewish = -1;
+				}
+#else // rechts bevorzugt
+				LOG_DEBUG("neg wegen rechts zuerst");
+				if (direction_counter == 1) {
+					LOG_DEBUG("nach rechts");
+					sidewish = -1;
+				}
+				if (direction_counter == 3) {
+					LOG_DEBUG("nach links");
+					sidewish = 1;
+				}
+#endif // START_SIDEWISH
 			}
 
 			LOG_DEBUG("X Richtg. %1d", direction_counter);

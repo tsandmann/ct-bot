@@ -54,7 +54,7 @@
 
 #ifndef DEBUG_BOT_LOGIC
 #undef LOG_DEBUG
-#define LOG_DEBUG(a, ...) {}
+#define LOG_DEBUG(...) {}
 #endif
 
 int16_t speedWishLeft;				/*!< Puffervariablen fuer die Verhaltensfunktionen absolut Geschwindigkeit links */
@@ -84,7 +84,7 @@ static void (* emerg_functions[MAX_PROCS])(void) = {NULL};
  * @param *fkt	Die zu registrierende Routine, welche aufzurufen ist
  * @return 		Index, den die Routine im Array einnimmt, bei -1 ist alles voll
  */
-static inline int8_t register_emergency_proc(void * fkt) {
+static inline int8_t register_emergency_proc(void (* fkt)(void)) {
 	if (count_arr_emerg == MAX_PROCS) {
 		return -1;	// sorry, aber fuer dich ist kein Platz mehr da :(
 	}
@@ -111,6 +111,7 @@ void start_registered_emergency_procs(void) {
  * @param *data der Verhaltensdatensatz
  */
 static void bot_base_behaviour(Behaviour_t * data) {
+	data = data; // kein warning
 	speedWishLeft = target_speed_l;
 	speedWishRight = target_speed_r;
 //	LOG_DEBUG("\tMaus:\t%d\tSpeed:\t%d", (int16)x_pos, target_speed_r);
@@ -124,14 +125,17 @@ static void bot_base_behaviour(Behaviour_t * data) {
  * @param *work 	Die Funktion, die sich drum kuemmert
  * @param active	Boolean, ob das Verhalten aktiv oder inaktiv erstellt wird
  */
-static Behaviour_t * new_behaviour(uint8_t priority, void (* work) (struct _Behaviour_t * data), int8_t active) {
+static Behaviour_t * new_behaviour(uint8_t priority, void (* work) (struct _Behaviour_t * data), uint8_t active) {
 	Behaviour_t * newbehaviour = (Behaviour_t *) malloc(sizeof(Behaviour_t));
 	if (newbehaviour == NULL) {
 		return NULL;
 	}
 
 	newbehaviour->priority = priority;
-	newbehaviour->active = active;
+
+	bit_t tmp = {active};
+	newbehaviour->active = tmp.bit;
+
 	newbehaviour->next = NULL;
 	newbehaviour->work = work;
 	newbehaviour->caller = NULL;
@@ -290,7 +294,7 @@ void bot_behave_init(void) {
 
 	#ifdef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
 	  	// erweiterter Linienfolge, der mit Unterbrechungen und Hindernissen klarkommt
-		insert_behaviour_to_list(&behaviour, new_behaviour(71, bot_follow_line_enh_behaviour, INACTIVE));	  
+		insert_behaviour_to_list(&behaviour, new_behaviour(71, bot_follow_line_enh_behaviour, INACTIVE));
 	#endif
 
 	#ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
@@ -344,6 +348,10 @@ void bot_behave_init(void) {
 
 	#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(33, bot_drive_stack_behaviour, INACTIVE));
+	#endif
+
+	#ifdef BEHAVIOUR_SCAN_BEACONS_AVAILABLE
+		insert_behaviour_to_list(&behaviour, new_behaviour(32, bot_scan_beacons_behaviour, INACTIVE));
 	#endif
 
 	#ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
@@ -540,7 +548,13 @@ void switch_to_behaviour(Behaviour_t * from, void (*to)(Behaviour_t *), uint8_t 
 		}
 		return;
 	}
-	behaviour_mode_t beh_mode = {mode & 1, (mode & 2) >> 1};
+
+	bit_t tmp;
+	behaviour_mode_t beh_mode;
+	tmp.byte = (uint8_t) (mode & 1);
+	beh_mode.override = tmp.bit;
+	tmp.byte = (uint8_t) ((mode & 2) >> 1);
+	beh_mode.background = tmp.bit;
 
 	if (job->caller) {		// Ist das auzurufende Verhalten noch beschaeftigt?
 		if (beh_mode.override == NOOVERRIDE) {	// nicht ueberschreiben, sofortige Rueckkehr
@@ -592,7 +606,13 @@ void exit_behaviour(Behaviour_t * data, uint8_t state) {
 	LOG_DEBUG("Verhalten %u wurde beendet", data->priority);
 	if (data->caller) {
 		data->caller->active = ACTIVE; 		// aufrufendes Verhalten aktivieren
-		data->caller->subResult = state;	// Status beim Aufrufer speichern
+
+		union {
+			uint8_t byte;
+			unsigned bits:3;
+		} tmp = {state};
+		data->caller->subResult = tmp.bits;	// Status beim Aufrufer speichern
+
 		LOG_DEBUG("Caller %u wurde wieder aktiviert", data->caller->priority);
 	}
 	data->caller = NULL;	// Job erledigt, Verweis loeschen
@@ -658,9 +678,9 @@ void bot_behave(void) {
 			if ((speedWishLeft != BOT_SPEED_IGNORE) || (speedWishRight != BOT_SPEED_IGNORE)) {
 #ifdef BEHAVIOUR_FACTOR_WISH_AVAILABLE
 				if (speedWishLeft != BOT_SPEED_IGNORE)
-					speedWishLeft *= factorLeft;
+					speedWishLeft = (int16_t) (speedWishLeft * factorLeft);
 				if (speedWishRight != BOT_SPEED_IGNORE)
-					speedWishRight *= factorRight;
+					speedWishRight = (int16_t) (speedWishRight * factorRight);
 #endif
 
 				motor_set(speedWishLeft, speedWishRight);
@@ -671,6 +691,19 @@ void bot_behave(void) {
 		if (job->next == NULL) {
 			motor_set(BOT_SPEED_IGNORE, BOT_SPEED_IGNORE);
 		}
+	}
+}
+
+/*!
+ * Gibt das naechste Verhalten der Liste zurueck
+ * @param *beh	Zeiger auf Verhalten, dessen Nachfolger gewuenscht ist, NULL fuer Listenanfang
+ * @return		Zeiger auf Nachfolger von beh
+ */
+Behaviour_t * get_next_behaviour(Behaviour_t * beh) {
+	if (beh == NULL) {
+		return behaviour;
+	} else {
+		return beh->next;
 	}
 }
 

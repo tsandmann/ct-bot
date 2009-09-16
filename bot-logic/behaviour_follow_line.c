@@ -210,6 +210,7 @@ void bot_follow_line(Behaviour_t *caller) {
  * @param *data	Verhaltensdatensatz
  */
 void bot_follow_line_behaviour(Behaviour_t * data) {
+	data = data; // kein warning
 	static int16_t lastLeft = 0;
 	static int16_t lastRight = 0;
 	static uint8_t lastCorrection = 0;

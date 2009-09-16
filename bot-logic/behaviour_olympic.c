@@ -21,7 +21,7 @@
  * @file 	behaviour_olympic.c
  * @brief 	Bot sucht Saeulen und faehrt dann Slalom
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	03.11.06
+ * @date 	03.11.2006
  */
 
 #include "bot-logic/bot-logik.h"
@@ -63,7 +63,7 @@
 #define SWEEP_STATE_CHECK			1	/*!< Zustand: Ueberpruefe Objekt vor dem Bot. */
 
 /* Parameter fuer das bot_explore_behaviour() */
-static int8 (* exploration_check_function)(void);	/*!< Die Funktion, mit der das bot_explore_behaviour() feststellt, ob es etwas gefunden hat.
+static int8_t (* exploration_check_function)(void);	/*!< Die Funktion, mit der das bot_explore_behaviour() feststellt, ob es etwas gefunden hat.
 											 * Die Funktion muss True (1) zurueck geben, wenn dem so ist, sonst False (0).
 											 * Beispiele fuer eine solche Funktion sind check_for_light, is_good_pillar_ahead etc.*/
 
@@ -73,38 +73,40 @@ static int8 (* exploration_check_function)(void);	/*!< Die Funktion, mit der das
  * Das Verhalten dreht den Bot so, dass er auf eine Lichtquelle zufaehrt.
  */
 static void bot_goto_light(void) {
-	int16 speed, curve = (sensLDRL - sensLDRR)/1.5;
+	int16_t speed, curve = (sensLDRL - sensLDRR) / 1.5;
 
-		if(curve < -127) curve = -127;
-		if(curve > 127) curve = 127;
+	if (curve < -127)
+		curve = -127;
+	if (curve > 127)
+		curve = 127;
 
-	if(abs(sensLDRL - sensLDRR) < 20){
+	if (abs(sensLDRL - sensLDRR) < 20) {
 		speed = BOT_SPEED_MAX;
-	}else if(abs(sensLDRL - sensLDRR) < 150) {
+	} else if (abs(sensLDRL - sensLDRR) < 150) {
 		speed = BOT_SPEED_FAST;
-	}else {
+	} else {
 		speed = BOT_SPEED_NORMAL;
 	}
 
 	bot_drive(curve, speed);
 }
 
-
-
 /*!
  * Gibt aus, ob der Bot Licht sehen kann.
  * @return True, wenn der Bot Licht sieht, sonst False.
  */
-int8 check_for_light(void) {
+static int8_t check_for_light(void) {
 	// Im Simulator kann man den Bot gut auf den kleinsten Lichtschein
 	// reagieren lassen, in der Realitaet gibt es immer Streulicht, so dass
 	// hier ein hoeherer Schwellwert besser erscheint.
 	// Simulator:
-	if(sensLDRL >= 1023 && sensLDRR >= 1023) return False;
+	if (sensLDRL >= 1023 && sensLDRR >= 1023)
+		return False;
 	// Beim echten Bot eher:
 	// if(sensLDRL >= 100 && sensLDRR >= 100) return False;
 
-	else return True;
+	else
+		return True;
 }
 
 
@@ -112,7 +114,7 @@ int8 check_for_light(void) {
  * Gibt aus, ob der Bot eine fuer sein Slalomverhalten geeignete Saeule vor sich hat.
  * @return True, wenn er eine solche Saeule vor sich hat, sonst False.
  */
-int8 is_good_pillar_ahead(void) {
+static int8_t is_good_pillar_ahead(void) {
 	if(is_obstacle_ahead(COL_NEAR) != False && sensLDRL < 600 && sensLDRR < 600) return True;
 	else return False;
 }
@@ -122,7 +124,7 @@ int8 is_good_pillar_ahead(void) {
  * @return Bestand Handlungsbedarf? True, wenn das Verhalten ausweichen musste, sonst False.
  * TODO: Parameter einfuegen, der dem Verhalten vorschlaegt, wie zu reagieren ist.
  * */
-int8 bot_avoid_harm(void) {
+static int8_t bot_avoid_harm(void) {
 	if(is_obstacle_ahead(COL_CLOSEST) != False || sensBorderL > BORDER_DANGEROUS || sensBorderR > BORDER_DANGEROUS) {
 		speedWishLeft = -BOT_SPEED_NORMAL;
 		speedWishRight = -BOT_SPEED_NORMAL;
@@ -130,9 +132,9 @@ int8 bot_avoid_harm(void) {
 	} else return False;
 }
 
-static int8 explore_curve = 0;	/*!< Kurve des explore-Verhaltens */
-static int8 explore_state = 0;	/*!< Status des explore-Verhaltens */
-static int8 explore_running_curve = 0;	/*!< Kurvenfahrt bei explore-Verhalten */
+static int8_t explore_curve = 0;	/*!< Kurve des explore-Verhaltens */
+static int8_t explore_state = 0;	/*!< Status des explore-Verhaltens */
+static int8_t explore_running_curve = 0;	/*!< Kurvenfahrt bei explore-Verhalten */
 
 /*!
  * Das Verhalten laesst den Roboter den Raum durchsuchen.
@@ -159,53 +161,54 @@ static int8 explore_running_curve = 0;	/*!< Kurvenfahrt bei explore-Verhalten */
  */
 void bot_explore_behaviour(Behaviour_t * data) {
 
-	if((*exploration_check_function)()) return_from_behaviour(data);
+	if ((*exploration_check_function)())
+		return_from_behaviour(data);
 
-	switch(explore_state) {
+	switch (explore_state) {
 	// Volle Fahrt voraus, bis ein Hindernis erreicht ist.
 	case EXPLORATION_STATE_GOTO_WALL:
 		// Der Bot steht jetzt vor einem Hindernis und soll sich nach rechts drehen
-		if(bot_avoid_harm()) {
+		if (bot_avoid_harm()) {
 			explore_state = EXPLORATION_STATE_TURN_PARALLEL_RIGHT;
-			#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
-				deactivateBehaviour(bot_avoid_col_behaviour);
-			#endif
+#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
+			deactivateBehaviour(bot_avoid_col_behaviour);
+#endif
 		}
 		// Es befindet sich kein Hindernis direkt vor dem Bot.
 		else {
-			if(sensDistL < COL_NEAR || sensDistR < COL_NEAR){
-				bot_drive(0,BOT_SPEED_FAST);
+			if (sensDistL < COL_NEAR || sensDistR < COL_NEAR) {
+				bot_drive(0, BOT_SPEED_FAST);
 			} else {
-				bot_drive(0,BOT_SPEED_MAX);
+				bot_drive(0, BOT_SPEED_MAX);
 			}
 		}
 		break;
-	// Nach links drehen, bis der Bot parallel zum Hindernis auf der rechten Seite steht.
-	/* TODO: Aufgabe: Entwickle ein Verhalten, dass auch bei Loechern funktioniert.
-	 * Tipp dazu: Drehe den Roboter auf das Loch zu, bis beide Bodensensoren das Loch 'sehen'. Anschliessend drehe den Bot um 90 Grad.
-	 * Es ist noetig, neue Zustaende zu definieren, die diese Zwischenschritte beschreiben.
-	 * TODO: Drehung mit dem Maussensor ueberwachen. */
+		// Nach links drehen, bis der Bot parallel zum Hindernis auf der rechten Seite steht.
+		/* TODO: Aufgabe: Entwickle ein Verhalten, dass auch bei Loechern funktioniert.
+		 * Tipp dazu: Drehe den Roboter auf das Loch zu, bis beide Bodensensoren das Loch 'sehen'. Anschliessend drehe den Bot um 90 Grad.
+		 * Es ist noetig, neue Zustaende zu definieren, die diese Zwischenschritte beschreiben.
+		 * TODO: Drehung mit dem Maussensor ueberwachen. */
 	case EXPLORATION_STATE_TURN_PARALLEL_LEFT:
-		if(sensDistR < COL_FAR){
+		if (sensDistR < COL_FAR) {
 			// Volle Drehung nach links mit ca. 3Grad/10ms
-			bot_drive(-127,BOT_SPEED_FAST);
+			bot_drive(-127, BOT_SPEED_FAST);
 		} else {
 			// Nachdem das Hindernis nicht mehr in Sicht ist, dreht der Bot noch ca. 3 Grad weiter.
 			// Im Zweifelsfall dreht das den Bot zu weit, aber das ist besser, als ihn zu kurz zu drehen.
-			bot_drive(-127,BOT_SPEED_FAST);
+			bot_drive(-127, BOT_SPEED_FAST);
 			explore_state = EXPLORATION_STATE_DRIVE_PARALLEL_RIGHT;
 		}
 		break;
-	// Nach rechts drehen, bis der Bot parallel zum Hindernis auf der linken Seite steht.
-	/* Aufgabe: siehe EXPLORATION_STATE_TURN_PARALLEL_LEFT */
+		// Nach rechts drehen, bis der Bot parallel zum Hindernis auf der linken Seite steht.
+		/* Aufgabe: siehe EXPLORATION_STATE_TURN_PARALLEL_LEFT */
 	case EXPLORATION_STATE_TURN_PARALLEL_RIGHT:
-		if(sensDistL < COL_FAR){
+		if (sensDistL < COL_FAR) {
 			// Volle Drehung nach rechts mit ca. 3Grad/10ms
-			bot_drive(127,BOT_SPEED_FAST);
+			bot_drive(127, BOT_SPEED_FAST);
 		} else {
 			/* Nachdem das Hindernis nicht mehr in Sicht ist, dreht der Bot noch ca. 3 Grad weiter.
 			 * Im Zweifelsfall dreht das den Bot zu weit, aber das ist besser, als ihn zu kurz zu drehen. */
-			bot_drive(127,BOT_SPEED_FAST);
+			bot_drive(127, BOT_SPEED_FAST);
 			explore_state = EXPLORATION_STATE_DRIVE_PARALLEL_LEFT;
 		}
 		break;
@@ -221,21 +224,21 @@ void bot_explore_behaviour(Behaviour_t * data) {
 		// Drehe den Bot um 90 Grad nach links.
 		/* Da der Bot sich immer ein bisschen zu weit von der Wand weg dreht, soll er sich
 		 * hier nur um 85 Grad drehen. Nicht schoen, aber klappt.*/
-		bot_turn(data,85);
+		bot_turn(data, 85);
 		explore_state = EXPLORATION_STATE_DRIVE_ARC;
-		#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
-			activateBehaviour(NULL, bot_avoid_col_behaviour);
-		#endif
+#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
+		activateBehaviour(NULL, bot_avoid_col_behaviour);
+#endif
 		break;
 	case EXPLORATION_STATE_TURN_ORTHOGONAL_RIGHT:
 		// Drehe den Bot um 90 Grad nach rechts.
 		/* Da der Bot sich immer ein bisschen zu weit von der Wand weg dreht, soll er sich
 		 * hier nur um 85 Grad drehen. Nicht schoen, aber klappt.*/
-		bot_turn(data,-85);
+		bot_turn(data, -85);
 		explore_state = EXPLORATION_STATE_DRIVE_ARC;
-		#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
-			activateBehaviour(NULL, bot_avoid_col_behaviour);
-		#endif
+#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
+		activateBehaviour(NULL, bot_avoid_col_behaviour);
+#endif
 		break;
 	case EXPLORATION_STATE_DRIVE_ARC:
 		/* Fahre einen Bogen.
@@ -246,22 +249,24 @@ void bot_explore_behaviour(Behaviour_t * data) {
 		 * Aufgabe: Manchmal kann es passieren, dass der Bot bei einer kleinen Kurve zu weit weg von der Wand
 		 * startet und dann nur noch im Kreis faehrt. Unterbinde dieses Verhalten.
 		 */
-		if(explore_curve == 0){
+		if (explore_curve == 0) {
 			explore_curve = 25;
 			explore_running_curve = True;
-		} else if (explore_running_curve == False){
+		} else if (explore_running_curve == False) {
 			explore_curve *= -0.9;
 			explore_running_curve = True;
 		}
 		/* Sobald der Bot auf ein Hindernis stoesst, wird der naechste Zyklus eingeleitet.
 		 * Auf einen Rechtsbogen (curve > 0) folgt eine Linksdrehung und auf einen Linksbogen eine Rechtsdrehung.
 		 * Wenn der Wert von curve (durch Rundungsfehler bei int) auf 0 faellt, beginnt das Suchverhalten erneut.*/
-		if(bot_avoid_harm()) {
-			explore_state = (explore_curve > 0) ? EXPLORATION_STATE_TURN_PARALLEL_LEFT : EXPLORATION_STATE_TURN_PARALLEL_RIGHT;
+		if (bot_avoid_harm()) {
+			explore_state
+					= (explore_curve > 0) ? EXPLORATION_STATE_TURN_PARALLEL_LEFT
+							: EXPLORATION_STATE_TURN_PARALLEL_RIGHT;
 			explore_running_curve = False;
-			#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
-				deactivateBehaviour(bot_avoid_col_behaviour);
-			#endif
+#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
+			deactivateBehaviour(bot_avoid_col_behaviour);
+#endif
 		} else {
 			bot_drive(explore_curve, BOT_SPEED_MAX);
 		}
@@ -269,11 +274,10 @@ void bot_explore_behaviour(Behaviour_t * data) {
 	default:
 		explore_state = EXPLORATION_STATE_GOTO_WALL;
 		explore_curve = 0;
-		#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
-			activateBehaviour(NULL, bot_avoid_col_behaviour);
-		#endif
+#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
+		activateBehaviour(NULL, bot_avoid_col_behaviour);
+#endif
 	}
-
 }
 
 /*!
@@ -281,18 +285,18 @@ void bot_explore_behaviour(Behaviour_t * data) {
  * @param *caller	Verhaltensdatensatz des Aufrufers
  * @param *check	Bewertungsfunktion fuer Suche
  */
-static void bot_explore(Behaviour_t * caller, int8 (* check)(void)) {
-	switch_to_behaviour(caller,bot_explore_behaviour,NOOVERRIDE);
+static void bot_explore(Behaviour_t * caller, int8_t (* check)(void)) {
+	switch_to_behaviour(caller, bot_explore_behaviour, NOOVERRIDE);
 	exploration_check_function = check;
 	explore_state = EXPLORATION_STATE_GOTO_WALL;
 	explore_curve = 0;
 	explore_running_curve = False;
 }
 
-static int8 slalom_state = 0;
-static int8 slalom_orientation = 0;
-static int8 slalom_sweep_state = 0;
-static int8 slalom_sweep_steps = 0;
+static int8_t slalom_state = 0;
+static int8_t slalom_orientation = 0;
+static int8_t slalom_sweep_state = 0;
+static int8_t slalom_sweep_steps = 0;
 
 /*!
  * Das Verhalten laesst den Bot einen Slalom fahren.
@@ -300,34 +304,35 @@ static int8 slalom_sweep_steps = 0;
  * @param *data	Verhaltensdatensatz
  */
 void bot_do_slalom_behaviour(Behaviour_t * data) {
-	int16 turn;
-	int8 curve;
+	int16_t turn;
+	int8_t curve;
 
-	switch(slalom_state){
+	switch (slalom_state) {
 	case SLALOM_STATE_CHECK_PILLAR:
 		// Der Bot sollte jetzt Licht sehen koennen...
-		if(check_for_light()){
+		if (check_for_light()) {
 			// Wenn der Bot direkt vor der Saeule steht, kann der Slalom anfangen, sonst zum Licht fahren
-			if(bot_avoid_harm()){
+			if (bot_avoid_harm()) {
 				slalom_state = SLALOM_STATE_START;
-			} else bot_goto_light();
+			} else
+				bot_goto_light();
 		} else {// ... sonst muss er den Slalom-Kurs neu suchen.
-			#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
-				activateBehaviour(NULL, bot_avoid_col_behaviour);
-			#endif
+#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
+			activateBehaviour(NULL, bot_avoid_col_behaviour);
+#endif
 			return_from_behaviour(data);
 		}
 		break;
 	case SLALOM_STATE_START:
 		// Hier ist Platz fuer weitere Vorbereitungen, falls noetig.
-		#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
-			deactivateBehaviour(bot_avoid_col_behaviour);
-		#endif
-			slalom_state = SLALOM_STATE_TURN_1;
+#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
+		deactivateBehaviour(bot_avoid_col_behaviour);
+#endif
+		slalom_state = SLALOM_STATE_TURN_1;
 		// break;
 	case SLALOM_STATE_TURN_1:
 		turn = (slalom_orientation == SLALOM_ORIENTATION_LEFT) ? 90 : -90;
-		bot_turn(data,turn);
+		bot_turn(data, turn);
 		slalom_state = SLALOM_STATE_DRIVE_ARC;
 		break;
 	case SLALOM_STATE_DRIVE_ARC:
@@ -338,50 +343,52 @@ void bot_do_slalom_behaviour(Behaviour_t * data) {
 		break;
 	case SLALOM_STATE_TURN_2:
 		turn = (slalom_orientation == SLALOM_ORIENTATION_LEFT) ? 45 : -45;
-		bot_turn(data,turn);
+		bot_turn(data, turn);
 		slalom_state = SLALOM_STATE_SWEEP_RUNNING;
 		break;
 	case SLALOM_STATE_SWEEP_RUNNING:
-		if(slalom_sweep_steps == 0){
+		if (slalom_sweep_steps == 0) {
 			slalom_sweep_state = SWEEP_STATE_CHECK;
 		}
 		// Insgesamt 6 Schritte drehen
-		if(slalom_sweep_steps < 6) {
-			if(slalom_sweep_state == SWEEP_STATE_CHECK){
-			// Phase 1: Pruefen, ob vor dem Bot eine gute Saeule ist
-				if(is_good_pillar_ahead() == True){
-				// Wenn die Saeule gut ist, drauf zu und Slalom anders rum fahren.
+		if (slalom_sweep_steps < 6) {
+			if (slalom_sweep_state == SWEEP_STATE_CHECK) {
+				// Phase 1: Pruefen, ob vor dem Bot eine gute Saeule ist
+				if (is_good_pillar_ahead() == True) {
+					// Wenn die Saeule gut ist, drauf zu und Slalom anders rum fahren.
 					slalom_state = SLALOM_STATE_CHECK_PILLAR;
-					slalom_orientation = (slalom_orientation == SLALOM_ORIENTATION_LEFT) ? SLALOM_ORIENTATION_RIGHT : SLALOM_ORIENTATION_LEFT;
+					slalom_orientation
+							= (slalom_orientation == SLALOM_ORIENTATION_LEFT) ? SLALOM_ORIENTATION_RIGHT
+									: SLALOM_ORIENTATION_LEFT;
 					slalom_sweep_steps = 0;
 				} else {
 					// Sonst drehen.
 					slalom_sweep_state = SWEEP_STATE_TURN;
 				}
 			}
-			if(slalom_sweep_state == SWEEP_STATE_TURN) {
-			// Phase 2: Bot um 15 Grad drehen
-				turn = (slalom_orientation == SLALOM_ORIENTATION_LEFT) ? 15 : -15;
-				bot_turn(data,turn);
+			if (slalom_sweep_state == SWEEP_STATE_TURN) {
+				// Phase 2: Bot um 15 Grad drehen
+				turn = (slalom_orientation == SLALOM_ORIENTATION_LEFT) ? 15
+						: -15;
+				bot_turn(data, turn);
 				slalom_sweep_state = SWEEP_STATE_CHECK;
 				slalom_sweep_steps++;
 			}
 		} else {
 			turn = (slalom_orientation == SLALOM_ORIENTATION_LEFT) ? -90 : 90;
-			bot_turn(data,turn);
+			bot_turn(data, turn);
 			slalom_state = SLALOM_STATE_SWEEP_DONE;
 			slalom_sweep_steps = 0;
 		}
 		break;
 	case SLALOM_STATE_SWEEP_DONE:
 		turn = (slalom_orientation == SLALOM_ORIENTATION_LEFT) ? -135 : 135;
-		bot_turn(data,turn);
+		bot_turn(data, turn);
 		slalom_state = SLALOM_STATE_CHECK_PILLAR;
 		break;
 	default:
 		slalom_state = SLALOM_STATE_CHECK_PILLAR;
 	}
-
 }
 
 /*!
@@ -402,7 +409,7 @@ void bot_do_slalom_behaviour(Behaviour_t * data) {
  * @param *caller	Verhaltensdatensatz des Aufrufers
  */
 void bot_do_slalom(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_do_slalom_behaviour,NOOVERRIDE);
+	switch_to_behaviour(caller, bot_do_slalom_behaviour, NOOVERRIDE);
 	slalom_state = SLALOM_STATE_CHECK_PILLAR;
 	slalom_orientation = SLALOM_ORIENTATION_RIGHT;
 	slalom_sweep_state = 0;
@@ -415,14 +422,16 @@ void bot_do_slalom(Behaviour_t * caller) {
  * @param *data	Verhaltensdatensatz
  */
 void bot_olympic_behaviour(Behaviour_t * data) {
-	if(check_for_light()){
+	if (check_for_light()) {
 		/* Sobald der Bot auf ein Objekt-Hinderniss stoesst, versucht er, Slalom zu fahren.
 		 * Aufgabe: Wenn der Bot vor einem Loch steht, hinter welchem sich die Lichtquelle
 		 * befindet, wird er daran haengen bleiben. Schreibe ein Verhalten, dass das verhindert. */
-		if(bot_avoid_harm() && is_obstacle_ahead(COL_NEAR)) {
+		if (bot_avoid_harm() && is_obstacle_ahead(COL_NEAR)) {
 			bot_do_slalom(data);
-		} else bot_goto_light();
-	} else bot_explore(data,check_for_light);
+		} else
+			bot_goto_light();
+	} else
+		bot_explore(data, check_for_light);
 }
 
 #endif	// BEHAVIOUR_OLYMPIC_AVAILABLE

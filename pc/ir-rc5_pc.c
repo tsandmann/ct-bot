@@ -1,5 +1,5 @@
 /*
- * c't-Sim - Robotersimulator fuer den c't-Bot
+ * c't-Bot
  * 
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -17,11 +17,12 @@
  * 
  */
 
-/*! @file 	ir-rc5_pc.c
+/*!
+ * @file 	ir-rc5_pc.c
  * @brief 	Routinen fuer die Dekodierung von RC5-Fernbedienungs-Codes
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
-*/
+ */
 
 #include "ct-Bot.h"
 
@@ -33,22 +34,29 @@
 
 #ifdef IR_AVAILABLE
 
-volatile uint16	ir_data	= 0;	/*!< letztes komplett gelesenes RC5-Paket */
+//TODO:	Das gehoert eigentlich nicht hierhin
+#ifdef RC5_AVAILABLE
+ir_data_t rc5_ir_data = {
+	0, 0, 0, 0, 0, 0
+};
+#endif
+
+#ifdef BPS_AVAILABLE
+ir_data_t bps_ir_data = {
+	0, 0, 0, 0, 0, 1023
+};
+#endif
 
 /*!
  * IR-Daten lesen
+ * @param *data Zeiger auf Arbeitsdaten
  * @return Wert von ir_data, loescht anschliessend ir_data
  */
-uint16 ir_read(void) {
-	uint16 retvalue = ir_data;
-	ir_data = 0;
+uint16_t ir_read(ir_data_t * data) {
+	uint16 retvalue = data->ir_data;
+	data->ir_data = 0;
 	return retvalue;
 }
 
-/*!
- * Init IR-System
- */
-void ir_init(void) {
-}
-#endif
-#endif
+#endif // IR_AVAILABLE
+#endif // PC

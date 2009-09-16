@@ -86,7 +86,7 @@ uint8_t display_flash_printf(const char * format, ...);
  * @param format	Format, wie beim printf
  * @param args 		Variable Argumentenliste, wie beim printf
  */
-#define display_printf(format, args...)	display_flash_printf(PSTR(format), ## args)
+#define display_printf(format, ...)	display_flash_printf(PSTR(format), ## __VA_ARGS__)
 #endif	// PC
 
 #endif	// display_H_

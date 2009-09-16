@@ -368,10 +368,9 @@ void log_end(void) {
 /*!
  * Liefert einen Zeiger auf den Log-Typ als String.
  * @param log_type Log-Typ
- * @return char*
+ * @return char* Log-Typ als String
  */
-static const char* log_get_type_str(LOG_TYPE log_type) {
-
+static const char * log_get_type_str(LOG_TYPE log_type) {
 	switch(log_type) {
 		case LOG_TYPE_DEBUG:
 			return debug_str;

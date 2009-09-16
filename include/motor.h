@@ -60,8 +60,8 @@ extern volatile int16_t motor_right;	/*!< zuletzt gestellter Wert rechter Motor 
 
 /*! In diesem Typ steht die Drehrichtung, auch wenn die Speed-Variablen bereits wieder auf Null sind */
 typedef struct {
-	uint8_t left:1;		/*!< linksrum */
-	uint8_t right:1;	/*!< rechtsrum */
+	unsigned left:1;	/*!< linksrum */
+	unsigned right:1;	/*!< rechtsrum */
 } __attribute__ ((packed)) direction_t;
 
 extern direction_t direction;		/*!< Drehrichtung der Motoren, auch wenn die Speed-Variablen bereits wieder auf Null sind */

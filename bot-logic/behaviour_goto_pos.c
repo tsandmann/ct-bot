@@ -47,8 +47,8 @@ uint8_t EEPROM goto_pos_err[2] = {TARGET_MARGIN, TARGET_MARGIN};	/*!< Fehlerwert
 //#define DEBUG_GOTO_POS		// Schalter um recht viel Debug-Code anzumachen
 
 #ifndef DEBUG_GOTO_POS
-	#undef LOG_DEBUG
-	#define LOG_DEBUG(a, ...) {}
+#undef LOG_DEBUG
+#define LOG_DEBUG(...) {}
 #endif
 
 
@@ -92,7 +92,7 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 	static int16_t v_r;
 
 	/* Abstand zum Ziel berechnen (als Metrik euklidischen Abstand benutzen) */
-	int16_t diff_to_target = sqrt(get_dist(dest_x, dest_y, x_pos, y_pos));
+	int16_t diff_to_target = (int16_t) sqrt((float) get_dist(dest_x, dest_y, x_pos, y_pos));
 	LOG_DEBUG("diff_to_target=%d", diff_to_target);
 	if (diff_to_target > straight_go) {
 		/* fuer grosse Strecken zweiten Fehlerwert verwenden */
@@ -100,7 +100,7 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 	}
 
 	/* gefahrene Strecke berechnen */
-	int16_t driven = sqrt(get_dist(last_x, last_y, x_pos, y_pos));
+	int16_t driven = (int16_t) sqrt((float) get_dist(last_x, last_y, x_pos, y_pos));
 
 	/* Pruefen, ob wir schon am Ziel sind */
 	uint8_t margin = ctbot_eeprom_read_byte(p_goto_pos_err);
@@ -110,7 +110,7 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 	case FIRST_TURN: {
 		/* ungefaehr in die Zielrichtung drehen */
 		LOG_DEBUG("first turn");
-		int16_t alpha = calc_angle_diff(dest_x-x_pos, dest_y-y_pos);
+		int16_t alpha = (int16_t) calc_angle_diff(dest_x - x_pos, dest_y - y_pos);
 		if (drive_dir < 0) {
 			/* Winkelkorrektur, falls rueckwaerts */
 			alpha += 180;
@@ -168,8 +168,8 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		}
 		/* Geschwindigkeit an Entfernung zum Zielpunkt anpassen */
 		float x = diff_to_target < 360 ? diff_to_target / (360.0/M_PI*2.0) : M_PI/2;	// (0; pi/2]
-		v_m = sin(x) * (float)(v_m_max - v_m_min);	// [      0; v_m_max - v_m_min]
-		v_m += v_m_min;								// [v_m_min; v_m_max]
+		v_m = (int16_t) (sin(x) * (float) (v_m_max - v_m_min));	// [0; v_m_max - v_m_min]
+		v_m += v_m_min; // [v_m_min; v_m_max]
 		if (drive_dir < 0) {
 			v_m = -v_m;
 			radius = -radius;
@@ -217,7 +217,7 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		// Sim hat derzeit keinen Nachlauf
 		BLOCK_BEHAVIOUR(data, 1200);
 #endif
-		int16_t last_diff = sqrt(get_dist(dest_x, dest_y, last_x, last_y));
+		int16_t last_diff = (int16_t) sqrt((float) get_dist(dest_x, dest_y, last_x, last_y));
 		if (last_diff < driven) {
 			/* zu weit gefahren */
 			diff_to_target = -diff_to_target;
@@ -225,13 +225,13 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 //		LOG_INFO("Fehler=%d mm", diff_to_target);
 		LOG_DEBUG("Fehler=%d mm", diff_to_target);
 		/* Aus Fehler neuen Korrekturwert berechnen und im EEPROM speichern */
-		int8_t error = ctbot_eeprom_read_byte(p_goto_pos_err);
+		int8_t error = (int8_t) ctbot_eeprom_read_byte(p_goto_pos_err);
 		LOG_DEBUG("error=%d", error);
-		int8_t new_error = error - diff_to_target / 2; // (error-diff_to_target)/2+error/2
+		int8_t new_error = (int8_t) (error - diff_to_target / 2); // (error-diff_to_target)/2+error/2
 		LOG_DEBUG("new_error=%d", new_error);
 		if (new_error < MIN_TARGET_MARGIN) new_error = MIN_TARGET_MARGIN;
 		if (new_error != error) {
-			ctbot_eeprom_write_byte(p_goto_pos_err, new_error);
+			ctbot_eeprom_write_byte(p_goto_pos_err, (uint8_t) new_error);
 			LOG_DEBUG("new_error=%d", new_error);
 		}
 		/* fast fertig, evtl. noch drehen */
@@ -308,19 +308,19 @@ void bot_goto_pos_rel(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) 
  * @param dir		Fahrtrichtung: >=0: vorwaerts, <0 rueckwaerts
  */
 void bot_goto_dist(Behaviour_t * caller, int16_t distance, int16_t dir) {
-	drive_dir = dir >=0 ? 1 : -1;
+	drive_dir =  (int8_t) (dir >=0 ? 1 : -1);
 	/* Zielpunkt aus Blickrichtung und Distanz berechnen */
 	float head = heading * (2.0*M_PI/360.0);
 	if (drive_dir < 0) {
 		head += M_PI;	// rueckwaerts
 	}
-	int16_t target_x = distance * cos(head) + x_pos;
-	int16_t target_y = distance * sin(head) + y_pos;
+	int16_t target_x = (int16_t) (distance * cos(head) + x_pos);
+	int16_t target_y = (int16_t) (distance * sin(head) + y_pos);
 	LOG_DEBUG("Zielpunkt=(%d|%d)", target_x, target_y);
 	LOG_DEBUG("Richtung=%d", drive_dir);
 	state = END;
 	/* Verhalten starten */
-	bot_goto_pos(caller, target_x, target_y, (int16_t)heading);
+	bot_goto_pos(caller, target_x, target_y, (int16_t) heading);
 }
 
 #endif	// BEHAVIOUR_GOTO_POS_AVAILABLE

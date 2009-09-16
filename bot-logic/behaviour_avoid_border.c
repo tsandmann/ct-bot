@@ -21,7 +21,7 @@
  * @file 	behaviour_avoid_border.c
  * @brief 	Vermeide Abgruende
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	03.11.06
+ * @date 	03.11.2006
  */
 
 #include "bot-logic/bot-logik.h"
@@ -32,6 +32,7 @@
  * @param *data	Der Verhaltensdatensatz
  */
 void bot_avoid_border_behaviour(Behaviour_t * data) {
+	data = data; // kein warning
 	uint8_t flag = 0;
 	if (sensBorderL > BORDER_DANGEROUS) {
 		speedWishLeft = -BOT_SPEED_FAST;

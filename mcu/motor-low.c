@@ -155,20 +155,26 @@ void motor_low_init() {
 void motor_update(uint8_t dev) {
 	if (dev == 0) {
 		/* linker Motor */
-		if (direction.left == DIRECTION_FORWARD) BOT_DIR_L_PORT |= BOT_DIR_L_PIN; // vorwaerts
-		else BOT_DIR_L_PORT &= ~BOT_DIR_L_PIN; // rueckwaerts
+		if (direction.left == DIRECTION_FORWARD) {
+			BOT_DIR_L_PORT |= BOT_DIR_L_PIN; // vorwaerts
+		} else {
+			BOT_DIR_L_PORT = (uint8_t) (BOT_DIR_L_PORT & ~BOT_DIR_L_PIN); // rueckwaerts
+		}
 #if F_CPU == 20000000 && defined SPEED_CONTROL_AVAILABLE
-		PWM_L = 1023 - (motor_left << 1);
+		PWM_L = (uint16_t) (1023 - (motor_left << 1));
 #else
-		PWM_L = 511 - motor_left;
+		PWM_L = (uint16_t) (511 - motor_left);
 #endif	// F_CPU
 	} else {
 		/* rechter Motor */
 		/* Einer der Motoren ist invertiert, da er ja in die andere Richtung schaut */
-		if (direction.right == DIRECTION_BACKWARD) BOT_DIR_R_PORT |= BOT_DIR_R_PIN; // rueckwaerts
-		else BOT_DIR_R_PORT &= ~BOT_DIR_R_PIN; // vorwaerts
+		if (direction.right == DIRECTION_BACKWARD) {
+			BOT_DIR_R_PORT |= BOT_DIR_R_PIN; // rueckwaerts
+		} else {
+			BOT_DIR_R_PORT = (uint8_t) (BOT_DIR_R_PORT & ~BOT_DIR_R_PIN); // vorwaerts
+		}
 #if F_CPU == 20000000 && defined SPEED_CONTROL_AVAILABLE
-		PWM_R = 1023 - (motor_right << 1);
+		PWM_R = (uint16_t) (1023 - (motor_right << 1));
 #else
 		PWM_R = 511 - motor_right;
 #endif	// F_CPU
@@ -185,7 +191,7 @@ void servo_low(uint8_t servo, uint8_t pos) {
 	if (servo == SERVO1) {
 		if (pos == SERVO_OFF) {
 #ifdef MCU_ATMEGA644X
-			TCCR0B &= ~PWM_CLK_0; // PWM aus
+			TCCR0B = (uint8_t) (TCCR0B & ~PWM_CLK_0); // PWM aus
 #else
 			TCCR0 &= ~PWM_CLK_0; // PWM aus
 #endif	// MCU_ATMEGA644X

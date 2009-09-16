@@ -132,4 +132,17 @@ static inline int16_t muls8(int8_t a, int8_t b) {
 #endif
 }
 
+#ifdef BPS_AVAILABLE
+/*!
+ * Berechnet den Standort via Rueckwaertseinschnitt nach Cassini, wenn drei angepeilte Positionen bekannt sind.
+ * @param a			Koordinaten von Bake A [mm]
+ * @param m			Koordinaten von Bake M [mm]
+ * @param b			Koordinaten von Bake B [mm]
+ * @param angle_am	Winkel zwischen A und M [Grad] aus Peilung, > 0
+ * @param angle_mb	Winkel zwischen M und B [Grad] aus Peilung, > 0
+ * @return			Koordinaten des berechneten Standorts [mm], oder {INT16_MAX, INT16_MAX} falls Fehler
+ */
+position_t calc_resection(position_t a, position_t m, position_t b, float angle_am, float angle_mb);
+#endif // BPS_AVAILABLE
+
 #endif	/*MATH_UTILS_H_*/

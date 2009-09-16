@@ -69,18 +69,18 @@ void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
 		return;
 	}
 	uint8_t space;
-	if (length > (space = f->size - f->count)) {
+	if (length > (space = (uint8_t) (f->size - f->count))) {
 		/* nicht genug Platz -> alte Daten rauswerfen */
-		uint8_t to_discard = length - space;
+		uint8_t to_discard = (uint8_t) (length - space);
 		LOG_DEBUG("verwerfe %u Bytes", to_discard);
 		uint8_t read2end = f->read2end;
 		uint8_t * pread = f->pread;
 		if (to_discard > read2end) {
 			/* Ueberlauf */
-			read2end += f->size;
+			read2end = (uint8_t) (read2end + f->size);
 			pread -= f->size;
 		}
-		read2end -= to_discard;
+		read2end = (uint8_t) (read2end - to_discard);
 		pread += to_discard;
 		f->read2end = read2end;
 		f->pread = pread;
@@ -91,7 +91,7 @@ void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
 #else
 		pthread_mutex_lock(&f->signal.mutex);
 #endif
-		f->count -= to_discard;
+		f->count = (uint8_t) (f->count - to_discard);
 #ifdef MCU
 		SREG = sreg;
 #else
@@ -108,12 +108,12 @@ void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
 			*(pwrite++) = *(src++);
 		}
 
-		write2end -= n;
+		write2end = (uint8_t) (write2end - n);
 		if (write2end == 0) {
 			write2end = f->size;
 			pwrite -= write2end;
 		}
-		n = length - n;
+		n = (uint8_t) (length - n);
 	}
 
 	f->write2end = write2end;
@@ -125,7 +125,7 @@ void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
 #else
 	pthread_mutex_lock(&f->signal.mutex);
 #endif
-	f->count += length;
+	f->count = (uint8_t) (f->count + length);
 #ifdef MCU
 	SREG = sreg;
 #else
@@ -170,12 +170,12 @@ uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length) {
 		for (i=0; i<n; i++) {
 			*(dest++) = *(pread++);
 		}
-		read2end -= n;
+		read2end = (uint8_t) (read2end - n);
 		if (read2end == 0) {
 			read2end = f->size;
 			pread -= read2end;
 		}
-		n = length - n;
+		n = (uint8_t) (length - n);
 	}
 
 	f->pread = pread;
@@ -187,7 +187,7 @@ uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length) {
 #else
 	pthread_mutex_lock(&f->signal.mutex);
 #endif
-	f->count -= length;
+	f->count = (uint8_t) (f->count - length);
 #ifdef MCU
 	SREG = sreg;
 #else

@@ -51,13 +51,13 @@
 typedef struct {
 #if (defined PC) && (BYTE_ORDER == BIG_ENDIAN)
 	/* Bitfeld im big-endian-Fall umdrehen */
-	uint8_t command:8;		/*!< Kommando */
-	uint8_t direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
-	uint8_t subcommand:7;	/*!< Subkommando */
+	uint8_t command;			/*!< Kommando */
+	unsigned direction:1;		/*!< 0 ist Anfrage, 1 ist Antwort */
+	unsigned subcommand:7;	/*!< Subkommando */
 #else
-	uint8_t command:8;		/*!< Kommando */
-	uint8_t subcommand:7;	/*!< Subkommando */
-	uint8_t direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
+	uint8_t command;			/*!< Kommando */
+	unsigned subcommand:7;	/*!< Subkommando */
+	unsigned direction:1;		/*!< 0 ist Anfrage, 1 ist Antwort */
 #endif
 } __attribute__ ((packed)) request_t; // Keine Luecken in der Struktur lassen
 
@@ -91,6 +91,7 @@ typedef struct {
 #define CMD_SENS_MOUSE	'm'		/*!< Maussensor */
 #define CMD_SENS_ERROR  'e'		/*!< Motor- oder Batteriefehler */
 #define CMD_SENS_RC5 	'R'		/*!< IR-Fernbedienung */
+#define CMD_SENS_BPS	'b'		/*!< Bot Positioning System */
 
 #define CMD_SENS_MOUSE_PICTURE	'P'		/*!< Bild vom Maussensor in data_l steht, welche Nummer der 1. Pixel hat */
 

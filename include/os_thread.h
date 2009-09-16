@@ -153,6 +153,7 @@ static inline void os_thread_sleep(uint32_t ms) {
  * @param *signal	Signal, das entfernt werden soll
  */
 static inline void os_signal_release(os_signal_t * signal) {
+	signal = signal; // kein warning
 	os_thread_running->wait_for = &dummy_signal;
 }
 
@@ -228,7 +229,7 @@ void os_signal_unlock(os_signal_t * signal);
  * @param *pIp		Zeiger auf die Main-Funktion des Threads (Instruction-Pointer)
  * @return			Zeiger auf den TCB des angelegten Threads
  */
-Tcb_t * os_create_thread(void * pStack, void * pIp);
+Tcb_t * os_create_thread(void * pStack, void (* pIp)(void));
 
 /*!
  * Schaltet auf den Thread mit der naechst niedrigeren Prioritaet um, der lauffaehig ist,

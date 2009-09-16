@@ -42,7 +42,7 @@ static const uint8_t max_measure = 4;	/*!< Anzahl der Messungen, die aehnliche W
 
 
 /*!
- * @brief		Das eigentliche Verhalten
+ * Das eigentliche Verhalten
  * @param *data	Zeiger auf den Verhaltensdatensatz des Aufrufers
  * @see			bot_measure_distance()
  * Das Verhalten beendet sich erst, wenn mehrere Messungen sinnvolle Werte ergaben
@@ -70,7 +70,7 @@ void bot_measure_distance_behaviour(Behaviour_t * data) {
 }
 
 /*!
- * @brief			Ermittelt die aktuelle Entfernung eines Hindernisses mit den Distanzsensoren
+ * Ermittelt die aktuelle Entfernung eines Hindernisses mit den Distanzsensoren
  * @param *caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
  * @param *p_sensL	Zeiger auf eine Variable fuer den linken Sensorwert (Messwert-Ausgabe)
  * @param *p_sensR	Zeiger auf eine Variable fuer den rechten Sensorwert (Messwert-Ausgabe)
@@ -93,7 +93,7 @@ void bot_measure_distance(Behaviour_t * caller, int16_t * p_sensL, int16_t * p_s
 static int16_t range = 0;	/*!< Entfernung [mm] fuer bot_check_distance() */
 
 /*!
- * @brief		Implementierung des check-distance-Verhaltens
+ * Implementierung des check-distance-Verhaltens
  * @param *data	Zeiger auf den Verhaltensdatensatz
  */
 void bot_check_distance_behaviour(Behaviour_t * data) {
@@ -102,15 +102,15 @@ void bot_check_distance_behaviour(Behaviour_t * data) {
 	if (left == 0) {
 		bot_measure_distance(data, &left, &right, max_diff);
 	} else {
-		exit_behaviour(data, (left <= range) || (right <= range));
+		exit_behaviour(data, (uint8_t) ((left <= range) || (right <= range)));
 		left = 0;
 	}
 }
 
 /*!
- * @brief			Prueft, ob in Entfernung max_dist [mm] ein Hindernis zu sehen ist.
- * 					Der Aufrufer bekommt SUBSUCCESS in seinen Verhaltensdatensatz, falls ja,
- * 					sonst SUBFAIL.
+ * Prueft, ob in Entfernung max_dist [mm] ein Hindernis zu sehen ist.
+ * Der Aufrufer bekommt SUBSUCCESS in seinen Verhaltensdatensatz, falls ja,
+ * sonst SUBFAIL.
  * @param *caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
  * @param max_dist	Entfernung in mm, bis zu der geprueft werden soll
  * @param diff		Maximal zulaessige Differenz zwischen den Messungen

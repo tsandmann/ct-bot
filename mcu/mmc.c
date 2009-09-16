@@ -172,7 +172,7 @@ static uint8_t mmc_enable(void) {
 		return result;
 	}
 	ENA_off(ENA_MMC);
-	SPI_MasterTransmit(-1);
+	SPI_MasterTransmit(0xff);
 	ENA_on(ENA_MMC);
 	return 0;
 }
@@ -343,7 +343,7 @@ uint8_t mmc_write_sector_spi(uint32_t addr, void * buffer) {
 #endif	// LED_AVAILABLE
 
 	/* Startbyte an MMC/SD-Karte senden */
-	SPI_MasterTransmit(-2);
+	SPI_MasterTransmit(0xfe);
 
 	/* Schreiben des Blocks (512 Bytes) auf MMC/SD-Karte */
 #ifdef MMC_AGGRESSIVE_OPTIMIZATION
@@ -591,16 +591,16 @@ uint32_t mmc_get_size(void) {
 		return 0;
 	}
 
-	uint32_t size = (csd[8]>>6) + (csd[7] << 2) + ((csd[6] & 0x03) << 10); // c_size
-	size +=1;		// Fest in der Formel drin
+	uint16_t size = (uint16_t)((csd[8] >> 6) + (csd[7] << 2) + ((csd[6] & 0x03) << 10)); // c_size
+	size += 1;		// Fest in der Formel drin
 
 	uint8_t shift = 2;	// eine 2 ist fest in der Formel drin
-	shift += (csd[10]>>7) + ((csd[9] & 0x03) <<1); // c_size_mult beruecksichtigen
-	shift += csd[5] & 0x0f;	// Blockgroesse beruecksichtigen
+	shift = (uint8_t) (shift + (csd[10] >> 7) + ((csd[9] & 0x03) << 1)); // c_size_mult beruecksichtigen
+	shift = (uint8_t) (shift + (csd[5] & 0x0f));	// Blockgroesse beruecksichtigen
 
-	size = size << shift;
+	uint32_t result = (uint32_t)size << shift;
 
-	return size;
+	return result;
 }
 
 #endif // MMC_INFO_AVAILABLE
@@ -618,23 +618,23 @@ uint8 mmc_test(uint8_t * buffer) {
 		return 1;
 	}
 #ifdef MMC_VM_AVAILABLE	// Version mit virtuellen Aressen
-	uint16 i;
-	static uint16 pagefaults = 0;
-	static uint16 old_pf;
+	uint16_t i;
+	static uint16_t pagefaults = 0;
+	static uint16_t old_pf;
 	/* virtuelle Adressen holen */
-	static uint32 v_addr1 = 0;
-	static uint32 v_addr2 = 0;
-	static uint32 v_addr3 = 0;
-	static uint32 v_addr4 = 0;
+	static uint32_t v_addr1 = 0;
+	static uint32_t v_addr2 = 0;
+	static uint32_t v_addr3 = 0;
+	static uint32_t v_addr4 = 0;
 	if (v_addr1 == 0) v_addr1 = mmcalloc(512, 1); // Testdaten 1
 	if (v_addr2 == 0) v_addr2 = mmcalloc(512, 1); // Testdaten 2
 	if (v_addr3 == 0) v_addr3 = mmcalloc(512, 1); // Dummy 1
 	if (v_addr4 == 0) v_addr4 = mmcalloc(512, 1); // Dummy 2
 	/* Zeitmessung starten */
-	uint16 start_ticks=TIMER_GET_TICKCOUNT_16;
-	uint8 start_reg=TCNT2;
+	uint16_t start_ticks=TIMER_GET_TICKCOUNT_16;
+	uint8_t start_reg=TCNT2;
 	/* Pointer auf Puffer holen */
-	uint8* p_addr = mmc_get_data(v_addr1); // Cache-Hit, CB 0
+	uint8_t * p_addr = mmc_get_data(v_addr1); // Cache-Hit, CB 0
 	if (p_addr == NULL) return 2;
 	/* Testdaten schreiben */
 	for (i=0; i<512; i++)
@@ -667,8 +667,8 @@ uint8 mmc_test(uint8_t * buffer) {
 
 	p_addr = mmc_get_data(v_addr4);
 	/* Zeitmessung beenden */
-	int8 timer_reg=TCNT2;
-	uint16 end_ticks=TIMER_GET_TICKCOUNT_16;
+	int8_t timer_reg=TCNT2;
+	uint16_t end_ticks=TIMER_GET_TICKCOUNT_16;
 	timer_reg -= start_reg;
 #ifdef VM_STATS_AVAILABLE
 	/* Pagefaults merken */
@@ -676,9 +676,9 @@ uint8 mmc_test(uint8_t * buffer) {
 	pagefaults = mmc_get_pagefaults();
 #endif
 	/* kleine Statistik ausgeben */
-	display_cursor(3,1);
+	display_cursor(3, 1);
 	display_printf("Pagefaults: %5u   ", pagefaults);
-	display_cursor(4,1);
+	display_cursor(4, 1);
 	display_printf("Bei %3u PF: %5u us", pagefaults - old_pf, (end_ticks-start_ticks)*176 + timer_reg*4);
 #else	// alte Version
 	uint16_t i;
@@ -686,8 +686,6 @@ uint8 mmc_test(uint8_t * buffer) {
 
 	/* Zeitmessung */
 	uint16_t start_ticks;
-	uint8_t start_reg;
-	int8_t timer_reg;
 	uint16_t end_ticks;
 	static uint32_t time_read = 0;
 	static uint32_t time_write = 0;
@@ -695,64 +693,55 @@ uint8 mmc_test(uint8_t * buffer) {
 
 	// Puffer vorbereiten
 	for (i = 0; i < 512; i++) {
-		buffer[i] = (i & 0xFF);
+		buffer[i] = (uint8_t)(i & 0xff);
 	}
 
 	/* Zeitmessung starten */
 	start_ticks = TIMER_GET_TICKCOUNT_16;
-	start_reg = TCNT2;
 
 	// und schreiben
 	result = mmc_write_sector(sector, buffer);
 
 	/* Zeitmessung beenden */
-	timer_reg = TCNT2;
 	end_ticks = TIMER_GET_TICKCOUNT_16;
-	timer_reg -= start_reg;
-	time_write += (end_ticks - start_ticks) * 176 + timer_reg * 4;
+	time_write = time_write + (uint16_t) ((end_ticks - start_ticks) * 176U);
 
 	if (result != 0) {
-		return result * 10 + 2;
+		return (uint8_t) (result * 10 + 2);
 	}
 
 	// Puffer vorbereiten
 	for (i = 0; i < 512; i++) {
-		buffer[i] = 255 - (i & 0xFF);
+		buffer[i] = (uint8_t) (255 - (i & 0xff));
 	}
 
 	/* Zeitmessung starten */
 	start_ticks = TIMER_GET_TICKCOUNT_16;
-	start_reg = TCNT2;
 
 	// und schreiben
 	result = mmc_write_sector(sector + 1, buffer);
 
 	/* Zeitmessung beenden */
-	timer_reg = TCNT2;
 	end_ticks = TIMER_GET_TICKCOUNT_16;
-	timer_reg -= start_reg;
-	time_write += (end_ticks - start_ticks) * 176 + timer_reg * 4;
+	time_write = time_write + (uint16_t) ((end_ticks - start_ticks) * 176U);
 
 	if (result != 0) {
-		return result * 10 + 3;
+		return (uint8_t) (result * 10 + 3);
 	}
 
 	/* Zeitmessung starten */
 	start_ticks = TIMER_GET_TICKCOUNT_16;
-	start_reg = TCNT2;
 
 	// Puffer lesen
 	result = mmc_read_sector(sector++, buffer);
 
 	/* Zeitmessung beenden */
-	timer_reg = TCNT2;
 	end_ticks = TIMER_GET_TICKCOUNT_16;
-	timer_reg -= start_reg;
-	time_read += (end_ticks - start_ticks) * 176 + timer_reg * 4;
+	time_read = time_read + (uint16_t) ((end_ticks - start_ticks) * 176U);
 
 	if (result != 0) {
 		sector--;
-		return result * 10 + 4;
+		return (uint8_t) (result * 10 + 4);
 	}
 
 	// und vergleichen
@@ -765,20 +754,17 @@ uint8 mmc_test(uint8_t * buffer) {
 
 	/* Zeitmessung starten */
 	start_ticks = TIMER_GET_TICKCOUNT_16;
-	start_reg = TCNT2;
 
 	// Puffer lesen
 	result = mmc_read_sector(sector++, buffer);
 
 	/* Zeitmessung beenden */
-	timer_reg = TCNT2;
 	end_ticks = TIMER_GET_TICKCOUNT_16;
-	timer_reg -= start_reg;
-	time_read += (end_ticks - start_ticks) * 176 + timer_reg * 4;
+	time_read = time_read + (uint16_t) ((end_ticks - start_ticks) * 176U);
 
 	if (result != 0) {
 		sector--;
-		return result * 10 + 6;
+		return (uint8_t) (result * 10 + 6);
 	}
 	// und vergleichen
 	for (i = 0; i < 512; i++) {
@@ -792,10 +778,11 @@ uint8 mmc_test(uint8_t * buffer) {
 	os_enterCS();
 	display_cursor(3, 1);
 	n += 2;
-	display_printf("Dauer r/w%5u/%5u", (uint16_t)(time_read/n), (uint16_t)(time_write/n));
+	display_printf("Dauer r/w%5u/%5u", (uint16_t) (time_read / n), (uint16_t) (time_write / n));
 	display_cursor(4, 1);
 	display_printf("Sektor: 0x%04x", (sector-2) >> 16);
-	display_printf("%04x  ", (sector-2) & 0xffff);os_exitCS();
+	display_printf("%04x  ", (sector-2) & 0xffff);
+	os_exitCS();
 #endif	// MMC_VM_AVAILABLE
 	// hierher kommen wir nur, wenn alles ok ist
 	return 0;
@@ -808,7 +795,7 @@ uint8 mmc_test(uint8_t * buffer) {
  */
 void mmc_display(void) {
 #ifdef MMC_INFO_AVAILABLE
-	static uint8_t mmc_state = 0xFF;
+	static uint8_t mmc_state = 0xff;
 
 	uint8_t dummy = mmc_init();
 	/* hat sich was geaendert? */

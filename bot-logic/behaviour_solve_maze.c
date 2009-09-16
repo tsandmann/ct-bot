@@ -400,9 +400,9 @@ void bot_measure_angle_behaviour(Behaviour_t * data) {
 
 		case FOUND_OBSTACLE:
 			/* Hindernis gefunden, nun Bot wieder in Ausgangsstellung drehen */
-			measure_direction=-measure_direction;
-			measured_angle=(int16)((int32)(turnedSteps*360)/ANGLE_CONSTANT);
-			measureState=TURN_BACK;
+			measure_direction = (int8_t) -measure_direction;
+			measured_angle = (int16_t) ((float)(int32_t)(turnedSteps * 360) / ANGLE_CONSTANT);
+			measureState = TURN_BACK;
 			speedWishLeft = (measure_direction > 0) ? -BOT_SPEED_SLOW : BOT_SPEED_SLOW;
 			speedWishRight = (measure_direction > 0) ? BOT_SPEED_SLOW : -BOT_SPEED_SLOW;
 			break;

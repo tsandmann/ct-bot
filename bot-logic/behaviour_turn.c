@@ -106,8 +106,8 @@ void bot_turn_behaviour(Behaviour_t * data) {
 		/* Bot drehen, solange Zielwinkel noch nicht erreicht ist */
 		uint8_t new_speed;	// schneller als mit 255 mm/s drehen ist zu ungenau, also reichen hier 8 Bit
 		float x = diff < 1800 ? diff / (360.0/M_PI*10) : M_PI/2;	// (0; pi/2]
-		new_speed = sin(x) * (float)max_speed;	// [ 0; 125]
-		new_speed += 25;						// [25; 150]
+		new_speed = (uint8_t) (sin(x) * (float) max_speed); // [ 0; 125]
+		new_speed = (uint8_t) (new_speed + 25); // [25; 150]
 
  		speedWishRight = turn_direction < 0 ? -new_speed : new_speed;
  		speedWishLeft  = -speedWishRight;
@@ -124,17 +124,17 @@ void bot_turn_behaviour(Behaviour_t * data) {
 //		LOG_DEBUG("target=%d", target/10-360);
 
 		/* Nachlauf beendet, jetzt Drehfehler aktualisieren */
-		uint8_t diff_8 = -diff;
-		uint8_t err = *ee_err;
+		uint8_t diff_8 = (uint8_t) -diff;
+		uint8_t err = (uint8_t) *ee_err;
 //		LOG_DEBUG("Fehler: %d.%u Grad", (diff_8-err)/10, abs((err-diff_8)-(err-diff_8)/10*10));
 #ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
 		turn_last_err = fabs(target_fl/10.0-360.0-heading);
 #endif
 //		LOG_DEBUG("old err=%u\tdiff_8=%u", err, diff_8);
-		*ee_err = (uint8_t)(diff_8 + err) / 2;
+		*ee_err = (int8_t) ((uint8_t) (diff_8 + err) / 2);
 		if (abs(*ee_err - err) >= 10) {
 			/* EEPROM-Update bei Aenderung um mehr als 1 Grad */
-			ctbot_eeprom_write_byte(&turn_err[ee_err-err_cache], *ee_err);
+			ctbot_eeprom_write_byte(&turn_err[ee_err-err_cache], (uint8_t) *ee_err);
 // 			LOG_DEBUG("err1=%d\terr2=%d\terr3=%d", err_cache[0], err_cache[1], err_cache[2]);
 		}
 //		LOG_DEBUG("new err=%u", *ee_err);
@@ -155,14 +155,14 @@ void bot_turn_speed(Behaviour_t * caller, int16_t degrees, uint16_t speed) {
 	/* Parameter begrenzen */
  	while (degrees >  360) degrees -= 360;
  	while (degrees < -360) degrees += 360;
- 	uint8_t tmp = speed > 150 ? 150 : speed;
- 	max_speed = tmp < 50 ? 25 : tmp - 25;
+ 	uint8_t tmp = (uint8_t) (speed > 150 ? 150 : speed);
+ 	max_speed = (uint8_t) (tmp < 50 ? 25 : tmp - 25);
 
 	/* Zielwinkel berechnen */
 #ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
  	target_fl = heading*10.0 + degrees*10.0 + 3600.0;
 #endif
-	target = (int16_t)(heading*10) + degrees*10 + 3600;
+	target = (int16_t) (heading * 10) + degrees * 10 + 3600;
  	old_heading = (int16_t)(heading*10);
 
 	/* Drehfehler beruecksichtigen */
@@ -175,7 +175,7 @@ void bot_turn_speed(Behaviour_t * caller, int16_t degrees, uint16_t speed) {
 
 	/* (re-)Inits */
 	if (*ee_err == -128) {
-		*ee_err = ctbot_eeprom_read_byte(&turn_err[ee_err-err_cache]);
+		*ee_err = (int8_t) ctbot_eeprom_read_byte(&turn_err[ee_err-err_cache]);
 	}
 	if ((uint8_t)*ee_err > 200) {
 		*ee_err = 0;
@@ -192,7 +192,7 @@ void bot_turn_speed(Behaviour_t * caller, int16_t degrees, uint16_t speed) {
  		turn_direction = -1;
  	} else {
  		turn_direction = 0;
- 		err = -err;
+ 		err = (int8_t) -err;
  	}
  	target += err;
 

@@ -61,12 +61,14 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 	static int16_t last_border_x, last_border_y, last_border_head;
 	map_cache_t cache_tmp;
 
+	data = data; // kein warning
+
 	/* Verhalten je nach Cache-Fuellstand */
-	uint8_t cache_free = map_update_fifo.size - map_update_fifo.count;
+	uint8_t cache_free = (uint8_t) (map_update_fifo.size - map_update_fifo.count);
 	if (cache_free < SCAN_OTF_CACHE_LEVEL_THRESHOLD) {
 		if (cache_free == 0) {
 			/* Cache ganz voll */
-			if (scan_otf_modes.map_mode &&
+			if (scan_otf_modes.data.map_mode &&
 					sensBorderL < BORDER_DANGEROUS && sensBorderR < BORDER_DANGEROUS) {
 				/* Stoppe den Bot, damit wir Zeit haben die Karte einzutragen
 				 * aber nur, wenn kein Abgrund erkannt wurde */
@@ -101,12 +103,12 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 	 * STANDFLAECHE
 	 * Die Standflaeche tragen wir nur ein, wenn der Bot auch ein Stueck gefahren ist
 	 */
-	if (scan_otf_modes.location) {
-		// ermitteln, wie weit der Bot seit dem letzten location-update gefahren ist
-		uint16_t diff = get_dist(x_pos, y_pos, last_location_x, last_location_y);
+	if (scan_otf_modes.data.location) {
+		// ermitteln, wie weit der Bot seit dem letzten Location-Update gefahren ist
+		uint16_t diff = (uint16_t) get_dist(x_pos, y_pos, last_location_x, last_location_y);
 		if (diff > (SCAN_OTF_RESOLUTION_DISTANCE_LOCATION*SCAN_OTF_RESOLUTION_DISTANCE_LOCATION)){
-			// ist er weiter als SCAN_ONTHEFLY_DIST_RESOLUTION gefahren ==> standfläche aktualisieren
-			cache_tmp.mode.location = 1;
+			// ist er weiter als SCAN_ONTHEFLY_DIST_RESOLUTION gefahren ==> Standflaeche aktualisieren
+			cache_tmp.mode.data.location = 1;
 			// Letzte Location-Update-Position sichern
 			last_location_x = x_pos;
 			last_location_y = y_pos;
@@ -119,18 +121,18 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 	 * da sie viele Map-zellen ueberstreichen und das Eintragen teuer ist
 	 * und sie auf der anderen Seite (beim Vorwaertsfahren) wenig neue Infos liefern
 	*/
-	if (scan_otf_modes.distance) {
+	if (scan_otf_modes.data.distance) {
 		// ermitteln, wie weit der Bot gedreht hat
 		int16_t turned = turned_angle(last_dist_head);
 		// ermitteln, wie weit der Bot seit dem letzten distance-update gefahren ist
-		uint16_t diff = get_dist(x_pos, y_pos, last_dist_x, last_dist_y);
+		uint16_t diff = (uint16_t) get_dist(x_pos, y_pos, last_dist_x, last_dist_y);
 		if ((turned > SCAN_OTF_RESOLUTION_ANGLE_DISTSENS) ||
 			(diff > (SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS*SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS))) {
 			// Hat sich der Bot mehr als SCAN_ONTHEFLY_ANGLE_RESOLUTION gedreht ==> Blickstrahlen aktualisieren
-			cache_tmp.mode.distance = 1;
+			cache_tmp.mode.data.distance = 1;
 
-			cache_tmp.dataL = sensDistL/5;
-			cache_tmp.dataR = sensDistR/5;
+			cache_tmp.dataL = (uint8_t) (sensDistL / 5);
+			cache_tmp.dataR = (uint8_t) (sensDistR / 5);
 			// Letzte Distance-Update-Position sichern
 			last_dist_x = x_pos;
 			last_dist_y = y_pos;
@@ -144,20 +146,20 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 	 * SCAN_OTF_RESOLUTION_DISTANCE_BORDER mm gefahren ist oder
 	 * SCAN_OTF_RESOLUTION_ANGLE_BORDER Grad gedreht hat
 	 */
-	if (scan_otf_modes.border) {
+	if (scan_otf_modes.data.border) {
 		// ermitteln, wie weit der Bot seit dem letzten border-update gefahren ist
-		int16_t diff = get_dist(x_pos, y_pos, last_border_x, last_border_y);
+		uint16_t diff = (uint16_t) get_dist(x_pos, y_pos, last_border_x, last_border_y);
 		// ermitteln, wie weit der Bot gedreht hat
-		uint16_t turned = turned_angle(last_border_head);
+		int16_t turned = turned_angle(last_border_head);
 		if ((
 			  (diff > (SCAN_OTF_RESOLUTION_DISTANCE_BORDER*SCAN_OTF_RESOLUTION_DISTANCE_BORDER)) ||
 			  (turned > SCAN_OTF_RESOLUTION_ANGLE_BORDER)
 			) &&
 			((sensBorderL > BORDER_DANGEROUS) || (sensBorderR > BORDER_DANGEROUS))) {
-				cache_tmp.mode.border = 1;
-				cache_tmp.mode.distance = 0;
-				cache_tmp.dataL = (sensBorderL > BORDER_DANGEROUS);
-				cache_tmp.dataR = (sensBorderR > BORDER_DANGEROUS);
+				cache_tmp.mode.data.border = 1;
+				cache_tmp.mode.data.distance = 0;
+				cache_tmp.dataL = (uint8_t) (sensBorderL > BORDER_DANGEROUS);
+				cache_tmp.dataR = (uint8_t) (sensBorderR > BORDER_DANGEROUS);
 
 				last_border_x = x_pos;
 				last_border_y = y_pos;
@@ -166,17 +168,17 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 	}
 
 	// ist ein Update angesagt?
-	if (cache_tmp.mode.distance || cache_tmp.mode.location || cache_tmp.mode.border) {
+	if (cache_tmp.mode.data.distance || cache_tmp.mode.data.location || cache_tmp.mode.data.border) {
 		cache_tmp.x_pos = x_pos;
 		cache_tmp.y_pos = y_pos;
-		cache_tmp.heading = (int16_t)(heading * 10.0f);
+		cache_tmp.heading = (int16_t) (heading * 10.0f);
 
 
 		fifo_put_data(&map_update_fifo, &cache_tmp, sizeof(map_cache_t));
 
-		#ifdef DEBUG_SCAN_OTF
-			LOG_DEBUG("neuer Eintrag: x=%d y=%d head=%f distance=%d loaction=%d border=%d", cache_tmp.x_pos, cache_tmp.y_pos, cache_tmp.heading/10.0f, cache_tmp.mode.distance, cache_tmp.mode.location, cache_tmp.mode.border);
-		#endif
+#ifdef DEBUG_SCAN_OTF
+		LOG_DEBUG("neuer Eintrag: x=%d y=%d head=%f distance=%d loaction=%d border=%d", cache_tmp.x_pos, cache_tmp.y_pos, cache_tmp.heading/10.0f, cache_tmp.mode.distance, cache_tmp.mode.location, cache_tmp.mode.border);
+#endif
 	}
 }
 

@@ -176,7 +176,7 @@ static inline int16_t map_to_world(uint16_t map_koord) {
 #error "MAP_RESOLUTION ist kein Teiler von 1000, Code in map_to_world() anpassen!"
 #endif
 	int32_t tmp = map_koord * (1000 / MAP_RESOLUTION);
-	return tmp - (uint16_t)(MAP_SIZE * MAP_RESOLUTION * 4);
+	return (int16_t) (tmp - (uint16_t) (MAP_SIZE * MAP_RESOLUTION * 4));
 }
 
 // Makros, um die belegten Kartenbereiche (in Weltkoordinaten) zu ermitteln

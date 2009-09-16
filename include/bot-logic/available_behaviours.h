@@ -62,6 +62,8 @@
 
 //#define BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE /*!< Linienfolger ueber Kreuzungen zum Ziel */
 
+//#define BEHAVIOUR_SCAN_BEACONS_AVAILABLE	/*!< Suchen von Landmarken zur Lokalisierung */
+
 /* Aufgrund einer ganzen reihe von Abhaengigkeiten sollte man beim Versuch Speicher
  * zu sparen, zuerst mal bei den Hauptverhalten ausmisten, sonst kommen die
  * Unterverhalten durch die Hintertuer wieder rein */
@@ -205,6 +207,10 @@
 	#undef BEHAVIOUR_GET_UTILIZATION_AVAILABLE
 #endif
 
+#ifndef BPS_AVAILABLE
+	#undef BEHAVIOUR_SCAN_BEACONS_AVAILABLE
+#endif
+
 #ifdef MCU
 #ifndef SPEED_CONTROL_AVAILABLE
 	// goto_pos geht nur, wenn wir uns auf die eingestellte Geschwindigkeit verlassen koennen
@@ -273,6 +279,8 @@
 #include "bot-logic/behaviour_pathplaning.h"
 
 #include "bot-logic/behaviour_line_shortest_way.h"
+
+#include "bot-logic/behaviour_scan_beacons.h"
 
 #endif	// BEHAVIOUR_AVAILABLE
 #endif	/*AVAILABLE_BEHAVIOURS_H_*/

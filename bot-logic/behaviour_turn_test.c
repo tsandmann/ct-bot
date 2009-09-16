@@ -40,11 +40,11 @@ static uint8_t turn_count = 0;
 extern uint8_t EEPROM turn_err[3];
 
 /*!
- * @brief		Das eigentliche Verhalten
+ * Das eigentliche Verhalten
  * @param data	Zeiger auf den Verhaltensdatensatz
  * @see			bot_turn_test()
  */
-void bot_turn_test_behaviour(Behaviour_t *data) {
+void bot_turn_test_behaviour(Behaviour_t * data) {
 	static float last_heading = 0.0;
 	static float err = 0.0;
 	if (degrees > 0) {
@@ -55,7 +55,7 @@ void bot_turn_test_behaviour(Behaviour_t *data) {
 //				LOG_DEBUG("Fehler=%f Grad", turn_last_err);
 			}
 			last_heading = heading;
-			bot_turn(data, degrees);
+			bot_turn(data, (int16_t) degrees);
 			turn_count++;
 		} else {
 			err += turn_last_err;
@@ -80,11 +80,11 @@ void bot_turn_test_behaviour(Behaviour_t *data) {
 }
 
 /*!
- * @brief			Testet das bot_turn-Verhalten und gibt Informationen ueber die Drehgenauigkeit aus
+ * Testet das bot_turn-Verhalten und gibt Informationen ueber die Drehgenauigkeit aus
  * @param caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
  */
-void bot_turn_test(Behaviour_t* caller) {
-	switch_to_behaviour(caller, bot_turn_test_behaviour,NOOVERRIDE);
+void bot_turn_test(Behaviour_t * caller) {
+	switch_to_behaviour(caller, bot_turn_test_behaviour, NOOVERRIDE);
 	degrees = 360;
 	turn_count = 0;
 }

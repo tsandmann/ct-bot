@@ -44,24 +44,24 @@ extern void bot_sens(void);
 extern void bot_encoder_isr(void);
 
 #ifdef SPEED_CONTROL_AVAILABLE
-	extern uint16 encTimeL[8];	/*!< Timestamps linker Encoder */
-	extern uint16 encTimeR[8];	/*!< Timestamps rechter Encoder */
-	extern uint8 i_encTimeL;		/*!< Array-Index auf letzten Timestampeintrag links */
-	extern uint8 i_encTimeR;		/*!< Array-Index auf letzten Timestampeintrag rechts */
+extern uint16_t encTimeL[8];	/*!< Timestamps linker Encoder */
+extern uint16_t encTimeR[8];	/*!< Timestamps rechter Encoder */
+extern uint8_t i_encTimeL;		/*!< Array-Index auf letzten Timestampeintrag links */
+extern uint8_t i_encTimeR;		/*!< Array-Index auf letzten Timestampeintrag rechts */
 #endif	// SPEED_CONTROL_AVAILABLE
 
 #ifdef SPEED_LOG_AVAILABLE
-	/*! Datenstruktur fuer Speedlog-Eintraege */
-	typedef struct {
-		uint8 encRate;		/*!< Ist-Geschwindigkeit (halbiert) */
-		uint8 targetRate;	/*!< Soll-Geschwindigkeit (halbiert) */
-		int16 err;			/*!< Regelfehler */
-		int16 pwm;			/*!< aktueller PWM-Wert */
-		uint32 time;		/*!< Timestamp */
-	} slog_t;
-	extern volatile slog_t slog_data[2][25];	/*!< Speed-Log Daten */
-	extern volatile uint8 slog_i[2];			/*!< Array-Index */
-	extern uint32 slog_sector;					/*!< Sektor auf der MMC fuer die Daten */
-	extern volatile uint8 slog_count[2];		/*!< Anzahl Loggings seit letztem Rueckschreiben */
+/*! Datenstruktur fuer Speedlog-Eintraege */
+typedef struct {
+	uint8_t encRate;	/*!< Ist-Geschwindigkeit (halbiert) */
+	uint8_t targetRate;	/*!< Soll-Geschwindigkeit (halbiert) */
+	int16_t err;		/*!< Regelfehler */
+	int16_t pwm;		/*!< aktueller PWM-Wert */
+	uint32_t time;		/*!< Timestamp */
+} slog_t;
+extern volatile slog_t slog_data[2][25];	/*!< Speed-Log Daten */
+extern volatile uint8_t slog_i[2];			/*!< Array-Index */
+extern uint32_t slog_sector;					/*!< Sektor auf der MMC fuer die Daten */
+extern volatile uint8_t slog_count[2];		/*!< Anzahl Loggings seit letztem Rueckschreiben */
 #endif	// SPEED_LOG_AVAILABLE
 #endif	// sens_low_H_

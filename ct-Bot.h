@@ -36,6 +36,8 @@
 //#define LOG_MMC_AVAILABLE			/*!< Logging in eine txt-Datei auf MMC */
 #define USE_MINILOG					/*!< schaltet fuer MCU auf schlankes Logging um (nur in Verbindung mit Log2Sim) */
 
+//#define CREATE_TRACEFILE_AVAILABLE	/*!< Aktiviert das Schreiben einer Trace-Datei (nur PC) */
+
 
 #define LED_AVAILABLE		/*!< LEDs aktiv */
 
@@ -63,6 +65,8 @@
 
 #define ENA_AVAILABLE		/*!< Enable-Leitungen */
 #define SHIFT_AVAILABLE		/*!< Shift Register */
+
+//#define BPS_AVAILABLE		/*!< Bot Positioning System */
 
 //#define TEST_AVAILABLE_ANALOG		/*!< Sollen die LEDs die analoge Sensorwerte anzeigen */
 //#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
@@ -155,6 +159,7 @@
 		#undef MAP_2_SIM_AVAILABLE
 	#endif
 	#undef EEPROM_EMU_AVAILABLE
+	#undef CREATE_TRACEFILE_AVAILABLE
 #endif	// MCU
 
 

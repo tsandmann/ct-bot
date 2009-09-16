@@ -41,7 +41,7 @@
 #endif
 #ifndef DEBUG_THREADING
 #undef LOG_DEBUG
-#define LOG_DEBUG(a, ...) {}
+#define LOG_DEBUG(...) {}
 #endif
 
 
@@ -74,16 +74,17 @@ static Tcb_t * get_this_thread(void) {
  * @param *pIp		Zeiger auf die Main-Funktion des Threads (Instruction-Pointer)
  * @return			Zeiger auf den TCB des angelegten Threads
  */
-Tcb_t * os_create_thread(void * pStack, void * pIp) {
+Tcb_t * os_create_thread(void * pStack, void (* pIp)(void)) {
 	static uint8_t thread_count = 0;
+	pStack = pStack; // kein warning
 	if (thread_count == OS_MAX_THREADS - 1) {	// Main-Thread existiert fuer PC nicht im Array
 		/* kein Thread mehr moeglich */
-		LOG_DEBUG("Thread konnte nicht angelegt werden");
+		LOG_ERROR("Thread konnte nicht angelegt werden");
 		return NULL;
 	}
 	uint8_t i = thread_count;
 	thread_count++;
-	pthread_create(&os_threads[i], NULL, pIp, NULL);
+	pthread_create(&os_threads[i], NULL, (void * (*)(void *)) pIp, NULL);
 	LOG_DEBUG("Thread 0x%08x als Thread Nr. %u angelegt", &os_threads[i], i);
 	/* Zeiger auf TCB des Threads zurueckgeben */
 	return &os_threads[i];
@@ -105,6 +106,7 @@ void os_thread_yield(void) {
  * @param ms	Zeit in ms, die der aktuelle Thread blockiert wird
  */
 void os_thread_sleep(uint32_t ms) {
+	ms = ms; // kein warning
 	// NOP
 	Tcb_t * thread = get_this_thread();
 	if (DEBUG_THREAD_N == -1 || thread == &os_threads[DEBUG_THREAD_N]) {

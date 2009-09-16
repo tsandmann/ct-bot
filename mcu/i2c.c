@@ -30,6 +30,7 @@
 #include <util/twi.h>
 #include <avr/interrupt.h>
 #include <stdlib.h>
+#include "i2c.h"
 #include "timer.h"
 
 #define I2C_PRESCALER 0				/*!< Prescaler fuer I2C-CLK */
@@ -58,7 +59,7 @@ ISR(TWI_vect) {
 		case TW_REP_START: {
 			if (txSize > 0) {
 				/* Adresse+W senden */
-				TWDR = sl_addr & 0xfe;	// W
+				TWDR = (uint8_t) (sl_addr & 0xfe); // W
 			} else {
 				/* Adresse+R senden */
 				TWDR = sl_addr | 0x1;	// R

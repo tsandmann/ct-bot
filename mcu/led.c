@@ -33,8 +33,7 @@
 
 #ifdef LED_AVAILABLE
 
-uint8 led=0;
-/*!< Zustand der LEDs */
+uint8_t led = 0; /*!< Zustand der LEDs */
 
 /*!
  * Initialisiert die LEDs
@@ -49,7 +48,7 @@ void LED_init() {
  * andere werden nicht beeinflusst
  * @param LED Bitmaske der anzuschaltenden LEDs
  */
-void LED_on(uint8 LED) {
+void LED_on(uint8_t LED) {
 	LED_set(led | LED);
 }
 
@@ -58,16 +57,16 @@ void LED_on(uint8 LED) {
  * andere werden nicht beeinflusst
  * @param LED Bitmaske der anzuschaltenden LEDs
  */
-void LED_off(uint8 LED) {
-	LED_set(led & ~LED);
+void LED_off(uint8_t LED) {
+	LED_set(led & (uint8_t) (~LED));
 }
 
 /*!
  * Zeigt eine 8-Bit Variable mit den LEDs an
  * @param LED Wert der gezeigt werden soll
  */
-void LED_set(uint8 LED) {
-	led=LED;
+void LED_set(uint8_t LED) {
+	led = LED;
 	shift_data(led, SHIFT_REGISTER_LED);
 }
 
