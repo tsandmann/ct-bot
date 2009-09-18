@@ -4567,7 +4567,7 @@
 <toolChain id="cdt.managedbuild.toolchain.gnu.macosx.base.2016297507" name="MacOSX GCC" resourceTypeBasedDiscovery="false" superClass="cdt.managedbuild.toolchain.gnu.macosx.base">
 <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.MachO;org.eclipse.cdt.core.PE;org.eclipse.cdt.core.GNU_ELF" id="cdt.managedbuild.target.gnu.platform.macosx.base.912996456" name="Debug Platform" osList="macosx" superClass="cdt.managedbuild.target.gnu.platform.macosx.base"/>
 <builder buildPath="${workspace_loc:/ct-Bot-svn/Debug-Mac}" enableAutoBuild="true" id="cdt.managedbuild.target.gnu.builder.macosx.base.1969798087" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="-4" superClass="cdt.managedbuild.target.gnu.builder.macosx.base"/>
-<tool command="x86_64-apple-darwin9.8.0-gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.macosx.c.linker.macosx.base.700810639" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.base">
+<tool command="gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.macosx.c.linker.macosx.base.700810639" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.base">
 <option id="macosx.c.link.option.libs.274432872" name="Libraries (-l)" superClass="macosx.c.link.option.libs" valueType="libs">
 <listOptionValue builtIn="false" value="pthread"/>
 <listOptionValue builtIn="false" value="m"/>
@@ -4578,7 +4578,7 @@
 <option id="macosx.c.link.option.strip.446725627" name="Omit all symbol information (-s)" superClass="macosx.c.link.option.strip"/>
 <option id="macosx.c.link.option.noshared.1238989611" name="No shared libraries (-static)" superClass="macosx.c.link.option.noshared"/>
 <option id="macosx.c.link.option.paths.1087087860" name="Library search path (-L)" superClass="macosx.c.link.option.paths"/>
-<option id="macosx.c.link.option.ldflags.614831542" name="Linker flags" superClass="macosx.c.link.option.ldflags" value="-m32" valueType="string"/>
+<option id="macosx.c.link.option.ldflags.614831542" name="Linker flags" superClass="macosx.c.link.option.ldflags" value="" valueType="string"/>
 <option id="macosx.c.link.option.other.296889694" name="Other options (-Xlinker [option])" superClass="macosx.c.link.option.other"/>
 <option id="macosx.c.link.option.userobjs.225509914" name="Other objects" superClass="macosx.c.link.option.userobjs"/>
 <option id="macosx.c.link.option.shared.385397604" name="Shared (-dynamiclib)" superClass="macosx.c.link.option.shared"/>
@@ -4588,8 +4588,8 @@
 </inputType>
 </tool>
 <tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base.818239827" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base"/>
-<tool command="x86_64-apple-darwin9.8.0-gcc" id="cdt.managedbuild.tool.gnu.assembler.macosx.base.790888938" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.base">
-<option id="gnu.both.asm.option.flags.339239648" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -m32" valueType="string"/>
+<tool command="gcc" id="cdt.managedbuild.tool.gnu.assembler.macosx.base.790888938" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.base">
+<option id="gnu.both.asm.option.flags.339239648" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c " valueType="string"/>
 <option id="gnu.both.asm.option.include.paths.2018470200" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 <listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 <listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -4598,7 +4598,7 @@
 </tool>
 <tool id="cdt.managedbuild.tool.gnu.archiver.macosx.base.1020939635" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.macosx.base"/>
 <tool id="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.base.1227031295" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.base"/>
-<tool command="x86_64-apple-darwin9.8.0-gcc" id="cdt.managedbuild.tool.gnu.c.compiler.macosx.base.1396563354" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.base">
+<tool command="gcc" id="cdt.managedbuild.tool.gnu.c.compiler.macosx.base.1396563354" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.base">
 <option id="gnu.c.compiler.option.include.paths.1990281976" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 <listOptionValue builtIn="false" value="${ProjDirPath}"/>
 <listOptionValue builtIn="false" value="${ProjDirPath}/include"/>
@@ -4621,7 +4621,7 @@
 <option id="gnu.c.compiler.option.warnings.nowarn.407409942" name="Inhibit all warnings (-w)" superClass="gnu.c.compiler.option.warnings.nowarn"/>
 <option id="gnu.c.compiler.option.warnings.allwarn.1234997218" name="All warnings (-Wall)" superClass="gnu.c.compiler.option.warnings.allwarn"/>
 <option id="gnu.c.compiler.option.warnings.toerrors.569552387" name="Warnings as errors (-Werror)" superClass="gnu.c.compiler.option.warnings.toerrors"/>
-<option id="gnu.c.compiler.option.misc.other.49539221" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -m32 -ansi -std=c99 -Wextra -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -save-temps -fverbose-asm -dA" valueType="string"/>
+<option id="gnu.c.compiler.option.misc.other.49539221" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -ansi -std=c99 -Wextra -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations" valueType="string"/>
 <option id="gnu.c.compiler.option.misc.verbose.1036013516" name="Verbose (-v)" superClass="gnu.c.compiler.option.misc.verbose"/>
 <option id="gnu.c.compiler.option.misc.ansi.646495438" name="Support ANSI programs (-ansi)" superClass="gnu.c.compiler.option.misc.ansi"/>
 <inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.491678996" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
@@ -10696,7 +10696,7 @@
 <toolChain id="cdt.managedbuild.toolchain.gnu.macosx.base.554485280" name="MacOSX GCC" resourceTypeBasedDiscovery="false" superClass="cdt.managedbuild.toolchain.gnu.macosx.base">
 <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.MachO;org.eclipse.cdt.core.PE;org.eclipse.cdt.core.GNU_ELF" id="cdt.managedbuild.target.gnu.platform.macosx.base.1206622437" name="Debug Platform" osList="macosx" superClass="cdt.managedbuild.target.gnu.platform.macosx.base"/>
 <builder buildPath="${workspace_loc:/ct-Bot-svn/Debug-Mac}" enableAutoBuild="true" id="cdt.managedbuild.target.gnu.builder.macosx.base.594431134" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="-4" superClass="cdt.managedbuild.target.gnu.builder.macosx.base"/>
-<tool command="x86_64-apple-darwin9.8.0-gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.macosx.c.linker.macosx.base.1389725260" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.base">
+<tool command="gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.macosx.c.linker.macosx.base.1389725260" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.base">
 <option id="macosx.c.link.option.libs.1191056366" name="Libraries (-l)" superClass="macosx.c.link.option.libs" valueType="libs">
 <listOptionValue builtIn="false" value="pthread"/>
 <listOptionValue builtIn="false" value="m"/>
@@ -10717,8 +10717,8 @@
 </inputType>
 </tool>
 <tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base.1915293172" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base"/>
-<tool command="x86_64-apple-darwin9.8.0-gcc" id="cdt.managedbuild.tool.gnu.assembler.macosx.base.738406140" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.base">
-<option id="gnu.both.asm.option.flags.1212678784" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -m64" valueType="string"/>
+<tool command="gcc" id="cdt.managedbuild.tool.gnu.assembler.macosx.base.738406140" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.base">
+<option id="gnu.both.asm.option.flags.1212678784" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c" valueType="string"/>
 <option id="gnu.both.asm.option.include.paths.915148991" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 <listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 <listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -10727,7 +10727,7 @@
 </tool>
 <tool id="cdt.managedbuild.tool.gnu.archiver.macosx.base.223797575" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.macosx.base"/>
 <tool id="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.base.95219494" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.base"/>
-<tool command="x86_64-apple-darwin9.8.0-gcc" id="cdt.managedbuild.tool.gnu.c.compiler.macosx.base.44042489" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.base">
+<tool command="gcc" id="cdt.managedbuild.tool.gnu.c.compiler.macosx.base.44042489" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.base">
 <option id="gnu.c.compiler.option.include.paths.1193120136" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 <listOptionValue builtIn="false" value="${ProjDirPath}"/>
 <listOptionValue builtIn="false" value="${ProjDirPath}/include"/>
