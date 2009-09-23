@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-09-23 Timo Sandmann [mail@timosandmann.de]: Bugfix im Command-Code, keine Uebertragung der Lichtsensordaten, falls keine Lichtsensoren aktiv sind
+
 2009-09-19 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Projekteinstellungen
 
 2009-09-16 Timo Sandmann [mail@timosandmann.de]: Bot-Lokalisierung: BPS-Sensor (BPS_AVAILABLE) und neues Verhalten bot_scan_beacons (BEHAVIOUR_SCAN_BEACONS_AVAILABLE); Trace-File Erzeugung um alle Sensor- und Aktuator-Daten zu loggen (CREATE_TRACEFILE_AVAILABLE); Code aufgraeumt / Warnings entfernt 

@@ -145,7 +145,7 @@ int8_t command_read(void) {
 		return -1; // nein? ==> verwerfen
 	}
 
-	i = (int8_t) ((int8_t) sizeof(command_t) - (bytesRcvd - start) - 1);
+	i = (int8_t) ((int8_t) sizeof(command_t) - (bytesRcvd - start));
 
 	if (i > 0) { // Fehlen noch Daten ?
 		LOG_DEBUG("command.c: Start @ %d es fehlen %d bytes ", start, i);
