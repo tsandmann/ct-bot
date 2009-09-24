@@ -69,7 +69,9 @@ void bot_2_sim_inform(void) {
 	command_write(CMD_SENS_LINE, SUB_CMD_NORM, sensLineL, sensLineR, 0);
 #ifndef BPS_AVAILABLE
 	command_write(CMD_SENS_LDR, SUB_CMD_NORM , sensLDRL, sensLDRR, 0);
-#endif
+#else
+	command_write(CMD_SENS_BPS, SUB_CMD_NORM , sensBPSF, sensBPSR, 0);
+#endif // BPS_AVAILABLE
 
 #ifdef LED_AVAILABLE
 	command_write(CMD_AKT_LED, SUB_CMD_NORM, led, 0, 0);

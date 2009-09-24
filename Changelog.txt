@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-09-24 Timo Sandmann [mail@timosandmann.de]: BPS-Sensordaten des echten Bots werden zum Sim uebertragen
+
 2009-09-23 Timo Sandmann [mail@timosandmann.de]: Bugfix im Command-Code, keine Uebertragung der Lichtsensordaten, falls keine Lichtsensoren aktiv sind
 
 2009-09-19 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Projekteinstellungen

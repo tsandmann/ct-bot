@@ -148,7 +148,7 @@ int8_t command_read(void) {
 	i = (int8_t) ((int8_t) sizeof(command_t) - (bytesRcvd - start));
 
 	if (i > 0) { // Fehlen noch Daten ?
-		LOG_DEBUG("command.c: Start @ %d es fehlen %d Bytes ", start, i);
+		LOG_DEBUG("Start @ %d es fehlen %d Bytes ", start, i);
 		// Systemzeit erfassen
 		old_ticks = TIMER_GET_TICKCOUNT_16;
 
