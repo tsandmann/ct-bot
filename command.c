@@ -148,7 +148,7 @@ int8_t command_read(void) {
 	i = (int8_t) ((int8_t) sizeof(command_t) - (bytesRcvd - start));
 
 	if (i > 0) { // Fehlen noch Daten ?
-		LOG_DEBUG("command.c: Start @ %d es fehlen %d bytes ", start, i);
+		LOG_DEBUG("command.c: Start @ %d es fehlen %d Bytes ", start, i);
 		// Systemzeit erfassen
 		old_ticks = TIMER_GET_TICKCOUNT_16;
 
@@ -159,7 +159,7 @@ int8_t command_read(void) {
 				LOG_DEBUG("Timeout beim Nachlesen");
 				return -1; //	==> Abbruch
 			}
-			LOG_DEBUG("%d bytes missing", i);
+			LOG_DEBUG("%d Bytes missing", i);
 			i = (int8_t) low_read(buffer + bytesRcvd, (uint8_t) i);
 			LOG_DEBUG("%d read", i);
 			bytesRcvd = (int8_t) (bytesRcvd + i);
@@ -176,7 +176,7 @@ int8_t command_read(void) {
 	command = (command_t *) (buffer + start);
 
 #ifdef DEBUG_COMMAND_NOISY
-	LOG_DEBUG("start: %x ", command->startCode);
+	LOG_DEBUG("start: %c ", command->startCode);
 	//	command_display(command);
 #endif
 
@@ -418,14 +418,14 @@ int8_t command_evaluate(void) {
 
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 		case CMD_REMOTE_CALL:
-			LOG_DEBUG("remote-call-cmd ...");
+			LOG_DEBUG("RemoteCall-cmd ...");
 			switch (received_command.request.subcommand) {
 			case SUB_REMOTE_CALL_LIST:
 				LOG_DEBUG("... auflisten ");
 				remote_call_list();
 				break;
 			case SUB_REMOTE_CALL_ORDER: {
-				LOG_DEBUG("remote-call-Wunsch empfangen. Data= %d bytes", received_command.payload);
+				LOG_DEBUG("RemoteCall-Wunsch empfangen. Data= %d Bytes", received_command.payload);
 				uint8_t buffer[REMOTE_CALL_BUFFER_SIZE];
 				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
 #ifdef MCU
@@ -441,7 +441,7 @@ int8_t command_evaluate(void) {
 				break;
 			}
 			case SUB_REMOTE_CALL_ABORT: {
-				LOG_DEBUG("remote calls werden abgebrochen", 0);
+				LOG_DEBUG("RemoteCalls werden abgebrochen");
 				deactivateCalledBehaviours(bot_remotecall_behaviour);
 				break;
 			}
