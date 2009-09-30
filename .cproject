@@ -19,7 +19,7 @@
 <folderInfo id="cdt.managedbuild.config.gnu.exe.debug.1077176217.380212843" name="/" resourcePath="">
 <toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1011694867" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 <targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.debug.1735484471" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
-<builder arguments="" autoBuildTarget="all" buildPath="${workspace_loc:/ct-Bot/Debug-W32}" cleanBuildTarget="clean" command="mingw32-make" enableAutoBuild="true" enableCleanBuild="true" enabledIncrementalBuild="true" id="cdt.managedbuild.target.gnu.builder.exe.debug.1690147207" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="-3" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
+<builder arguments="" autoBuildTarget="all" buildPath="${workspace_loc:/ct-Bot/Debug-W32}" cleanBuildTarget="clean" command="mingw32-make" enableAutoBuild="true" enableCleanBuild="true" enabledIncrementalBuild="true" id="cdt.managedbuild.target.gnu.builder.exe.debug.1690147207" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="3" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
 <tool command="gcc" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.629250704" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
 <option id="gnu.c.compiler.option.include.paths.387475860" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 <listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -31,7 +31,7 @@
 <listOptionValue builtIn="false" value="PC"/>
 <listOptionValue builtIn="false" value="WIN32"/>
 </option>
-<option id="gnu.c.compiler.option.misc.other.1772115072" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -Wextra -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations" valueType="string"/>
+<option id="gnu.c.compiler.option.misc.other.1772115072" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion" valueType="string"/>
 <option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.1419278972" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
 <option id="gnu.c.compiler.exe.debug.option.debugging.level.462024817" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 <option id="gnu.c.compiler.option.preprocessor.nostdinc.1970779788" name="Do not search system directories (-nostdinc)" superClass="gnu.c.compiler.option.preprocessor.nostdinc"/>
@@ -79,7 +79,8 @@
 <option id="gnu.c.link.option.defname.1880682302" name="DEF file name (-Wl,--output-def=)" superClass="gnu.c.link.option.defname"/>
 </tool>
 <tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1957316739" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
-<tool command="as" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.149224953" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
+<tool command="gcc" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.149224953" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
+<option id="gnu.both.asm.option.flags.691790667" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c" valueType="string"/>
 <inputType id="cdt.managedbuild.tool.gnu.assembler.input.1000193643" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 </tool>
 <tool id="cdt.managedbuild.tool.gnu.archiver.base.487852515" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
@@ -3057,7 +3058,7 @@
 <folderInfo id="cdt.managedbuild.config.gnu.exe.debug.1150677647.2049531078" name="/" resourcePath="">
 <toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.84194754" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 <targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.debug.220042603" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
-<builder autoBuildTarget="all" buildPath="${workspace_loc:/ct-Bot/Debug-MCU-W32}" cleanBuildTarget="clean" enableAutoBuild="true" enableCleanBuild="true" enabledIncrementalBuild="true" id="cdt.managedbuild.target.gnu.builder.exe.debug.239679071" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="-3" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
+<builder autoBuildTarget="all" buildPath="${workspace_loc:/ct-Bot/Debug-MCU-W32}" cleanBuildTarget="clean" enableAutoBuild="true" enableCleanBuild="true" enabledIncrementalBuild="true" id="cdt.managedbuild.target.gnu.builder.exe.debug.239679071" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="3" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
 <tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.113274235" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
 <option id="gnu.c.compiler.option.include.paths.818995866" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 <listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -3066,7 +3067,7 @@
 <option id="gnu.c.compiler.option.preprocessor.def.symbols.736140060" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 <listOptionValue builtIn="false" value="MCU"/>
 </option>
-<option id="gnu.c.compiler.option.misc.other.462981231" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega32 -Wextra -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2 -save-temps -fverbose-asm -dA" valueType="string"/>
+<option id="gnu.c.compiler.option.misc.other.462981231" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega32 -Wextra -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
 <option id="gnu.c.compiler.option.optimization.flags.1587419901" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
 <option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.1328780867" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
 <option id="gnu.c.compiler.exe.debug.option.debugging.level.1031987734" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
@@ -3087,7 +3088,8 @@
 <option id="gnu.c.link.option.ldflags.918822459" name="Linker flags" superClass="gnu.c.link.option.ldflags" value="-mmcu=atmega32" valueType="string"/>
 </tool>
 <tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1073017226" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
-<tool command="as" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.212943627" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
+<tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.212943627" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
+<option id="gnu.both.asm.option.flags.1592671213" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c" valueType="string"/>
 <inputType id="cdt.managedbuild.tool.gnu.assembler.input.1891728546" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 </tool>
 <tool id="cdt.managedbuild.tool.gnu.archiver.base.2005262820" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
@@ -15265,7 +15267,7 @@
 <folderInfo id="cdt.managedbuild.config.gnu.exe.debug.1150677647.524243973." name="/" resourcePath="">
 <toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.429633714" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 <targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.debug.1117984936" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
-<builder autoBuildTarget="all" buildPath="${workspace_loc:/ct-Bot/Debug-MCU-W32}" cleanBuildTarget="clean" enableAutoBuild="true" enableCleanBuild="true" enabledIncrementalBuild="true" id="cdt.managedbuild.target.gnu.builder.exe.debug.448041450" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="-3" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
+<builder autoBuildTarget="all" buildPath="${workspace_loc:/ct-Bot/Debug-MCU-W32}" cleanBuildTarget="clean" enableAutoBuild="true" enableCleanBuild="true" enabledIncrementalBuild="true" id="cdt.managedbuild.target.gnu.builder.exe.debug.448041450" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="3" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
 <tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.701775752" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
 <option id="gnu.c.compiler.option.include.paths.1729544017" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 <listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -15274,7 +15276,7 @@
 <option id="gnu.c.compiler.option.preprocessor.def.symbols.1955861847" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 <listOptionValue builtIn="false" value="MCU"/>
 </option>
-<option id="gnu.c.compiler.option.misc.other.366297387" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega644 -Wextra -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2 -save-temps -fverbose-asm -dA" valueType="string"/>
+<option id="gnu.c.compiler.option.misc.other.366297387" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega644 -Wextra -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
 <option id="gnu.c.compiler.option.optimization.flags.59372809" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
 <option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.2099585891" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
 <option id="gnu.c.compiler.exe.debug.option.debugging.level.2084200111" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
@@ -15295,7 +15297,8 @@
 <option id="gnu.c.link.option.ldflags.117135106" name="Linker flags" superClass="gnu.c.link.option.ldflags" value="-mmcu=atmega644" valueType="string"/>
 </tool>
 <tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.330734554" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
-<tool command="as" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.38546799" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
+<tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.38546799" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
+<option id="gnu.both.asm.option.flags.848917243" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c" valueType="string"/>
 <inputType id="cdt.managedbuild.tool.gnu.assembler.input.1685216944" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 </tool>
 <tool id="cdt.managedbuild.tool.gnu.archiver.base.1852483446" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
@@ -16769,7 +16772,7 @@
 <folderInfo id="cdt.managedbuild.config.gnu.exe.debug.1150677647.524243973.907339710." name="/" resourcePath="">
 <toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.736382802" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 <targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.debug.655945789" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
-<builder autoBuildTarget="all" buildPath="${workspace_loc:/ct-Bot/Debug-MCU-W32}" cleanBuildTarget="clean" enableAutoBuild="true" enableCleanBuild="true" enabledIncrementalBuild="true" id="cdt.managedbuild.target.gnu.builder.exe.debug.1119452241" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="-3" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
+<builder autoBuildTarget="all" buildPath="${workspace_loc:/ct-Bot/Debug-MCU-W32}" cleanBuildTarget="clean" enableAutoBuild="true" enableCleanBuild="true" enabledIncrementalBuild="true" id="cdt.managedbuild.target.gnu.builder.exe.debug.1119452241" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" parallelBuildOn="true" parallelizationNumber="3" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
 <tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.2086844775" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
 <option id="gnu.c.compiler.option.include.paths.924179082" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 <listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
@@ -16778,7 +16781,7 @@
 <option id="gnu.c.compiler.option.preprocessor.def.symbols.962110603" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 <listOptionValue builtIn="false" value="MCU"/>
 </option>
-<option id="gnu.c.compiler.option.misc.other.1091714490" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega644p -Wextra -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2 -save-temps -fverbose-asm -dA" valueType="string"/>
+<option id="gnu.c.compiler.option.misc.other.1091714490" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega644p -Wextra -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
 <option id="gnu.c.compiler.option.optimization.flags.2026348384" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
 <option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.1636572473" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
 <option id="gnu.c.compiler.exe.debug.option.debugging.level.159105961" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
@@ -16799,7 +16802,8 @@
 <option id="gnu.c.link.option.ldflags.1858759256" name="Linker flags" superClass="gnu.c.link.option.ldflags" value="-mmcu=atmega644p" valueType="string"/>
 </tool>
 <tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.645511932" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
-<tool command="as" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1069713473" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
+<tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1069713473" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
+<option id="gnu.both.asm.option.flags.1984687850" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c" valueType="string"/>
 <inputType id="cdt.managedbuild.tool.gnu.assembler.input.1269179283" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 </tool>
 <tool id="cdt.managedbuild.tool.gnu.archiver.base.624862852" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
