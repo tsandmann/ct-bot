@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <getopt.h>
 #include <string.h>
 #include "tcp-server.h"
 #include "mini-fat.h"

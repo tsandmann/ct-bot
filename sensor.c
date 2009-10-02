@@ -23,8 +23,9 @@
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	15.01.05
  */
-#include <stdio.h>
+
 #include "ct-Bot.h"
+#include <stdio.h>
 #include "timer.h"
 #include "bot-local.h"
 #include "math.h"

@@ -24,10 +24,10 @@
  * @date 	17.10.2007
  */
 #include "ct-Bot.h"
+#include "math_utils.h"
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "math_utils.h"
 #include "sensor.h"
 #include "log.h"
 

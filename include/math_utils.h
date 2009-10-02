@@ -28,9 +28,6 @@
 #define MATH_UTILS_H_
 
 #define DEG2RAD (M_PI / 180.0)	/*!< Umrechnungsfaktor von Grad nach Bogenmass */
-#ifndef M_PI_2
-#define M_PI_2	(M_PI / 2.0)	/*!< pi/2 */
-#endif
 
 /*!
  * Rundet float und gibt das Ergebnis als int zurueck.

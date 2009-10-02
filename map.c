@@ -24,11 +24,11 @@
  * @date 	19.09.06
  */
 
+#include "ct-Bot.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "ct-Bot.h"
 #include "bot-local.h"
 #include "sensor_correction.h"
 #include "map.h"

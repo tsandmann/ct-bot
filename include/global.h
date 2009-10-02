@@ -21,13 +21,42 @@
  * @file 	global.h
  * @brief 	Allgemeine Definitionen und Datentypen
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	20.12.05
+ * @date 	20.12.2005
  */
 
 #ifndef global_H
 #define global_H
 
 #ifndef __ASSEMBLER__
+#ifdef __WIN32__
+/* Prototypes, die in den MinGW-Includes fehlen -> keine Warnings */
+#include <stddef.h>
+#include <stdarg.h>
+#ifndef _FILE_DEFINED
+#define _FILE_DEFINED
+typedef struct _iobuf {
+	char * _ptr;
+	int _cnt;
+	char * _base;
+	int _flag;
+	int _file;
+	int _charbuf;
+	int _bufsiz;
+	char * _tmpfname;
+} FILE;
+#endif	/* Not _FILE_DEFINED */
+FILE * fopen64(const char *, const char *);
+long long ftello64 (FILE *);
+int getc (FILE *);
+int getchar (void);
+int putc (int, FILE *);
+int putchar(int);
+#ifndef __VALIST
+#define __VALIST __gnuc_va_list
+#endif
+int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
+#endif // __WIN32__
+
 #include <stdint.h>
 
 #ifndef MCU
@@ -105,6 +134,13 @@ typedef union {
 	uint8_t byte;
 	unsigned bit:1;
 } __attribute__ ((packed)) bit_t;
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+#ifndef M_PI_2
+#define M_PI_2	(M_PI / 2.0)	/*!< pi/2 */
+#endif
 
 #else	// __ASSEMBLER__
 

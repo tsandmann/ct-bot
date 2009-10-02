@@ -38,6 +38,7 @@
 
 //TODO: Umblaetterfunktion fuer mehr als 4 Logausgaben bei LOG_DISPLAY_AVAILABLE => Keyhandler aehnlich wie bei der Verhaltensanzeige
 
+#include "global.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
