@@ -152,7 +152,11 @@ typedef struct {
 	uint16_t end_sect;
 	uint32_t first_sect_offset;
 	uint32_t sectors;
-} __attribute__ ((packed)) part_entry_t;
+}
+#ifndef DOXYGEN
+__attribute__ ((packed))
+#endif
+part_entry_t;
 
 /*! Master-Boot-Record */
 typedef struct {
@@ -162,7 +166,11 @@ typedef struct {
 	part_entry_t part2;
 	part_entry_t part3;
 	uint16_t executable_mark;
-} __attribute__ ((packed)) mbr_t;
+}
+#ifndef DOXYGEN
+__attribute__ ((packed))
+#endif
+mbr_t;
 
 /*! FAT16-Bootsektor */
 typedef struct {
@@ -187,7 +195,11 @@ typedef struct {
 	char fat_name[8];
 	uint8_t exec_code[448];
 	uint16_t executable_mark;
-} __attribute__ ((packed)) fat16_bootsector_t;
+}
+#ifndef DOXYGEN
+__attribute__ ((packed))
+#endif
+fat16_bootsector_t;
 
 /*! FAT16-Verzeichniseintrag */
 typedef struct {
@@ -199,7 +211,11 @@ typedef struct {
 	uint16_t date;
 	uint16_t first_cluster;
 	uint32_t size;
-} __attribute__ ((packed)) fat16_dir_entry_t;
+}
+#ifndef DOXYGEN
+__attribute__ ((packed))
+#endif
+fat16_dir_entry_t;
 
 /*!
  * Prueft, ob eine Mini-FAT-Datei fragmentiert ist.

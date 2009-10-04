@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-10-04 Timo Sandmann [mail@timosandmann.de]: Schoenheitskorrekturen fuer Doxygen
+
 2009-10-02 Timo Sandmann [mail@timosandmann.de]: Projekteinstellungen korrigiert und Warnings unter Windows beseitigt 
 
 2009-09-24 Timo Sandmann [mail@timosandmann.de]: BPS-Sensordaten des echten Bots werden zum Sim uebertragen

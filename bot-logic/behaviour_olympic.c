@@ -49,9 +49,9 @@
 /* Zustaende des bot_do_slalom-Verhaltens */
 
 #define SLALOM_STATE_START			0	/*!< Zustand: Bot startet eine Slalomlauf und positioniert sich vor der Saeule. */
-#define SLALOM_STATE_TURN_1			1	/*!< Zustand: Bot dreht sich um 90�. */
+#define SLALOM_STATE_TURN_1			1	/*!< Zustand: Bot dreht sich um 90 Grad. */
 #define SLALOM_STATE_DRIVE_ARC		2	/*!< Zustand: Bot faehrt den Bogen um die Saeule. */
-#define SLALOM_STATE_TURN_2			3	/*!< Zustand: Bot dreht sich fuer den Sweep um 45�. */
+#define SLALOM_STATE_TURN_2			3	/*!< Zustand: Bot dreht sich fuer den Sweep um 45 Grad. */
 #define SLALOM_STATE_SWEEP_RUNNING	4	/*!< Zustand: Bot macht den Sweep. */
 #define SLALOM_STATE_SWEEP_DONE		5	/*!< Zustand: Bot ist fertig mit dem Sweep. */
 #define SLALOM_STATE_CHECK_PILLAR	6	/*!< Zustand: Bot ueberprueft, ob er den Slalom fortsetzen kann. */

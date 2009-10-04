@@ -62,7 +62,11 @@ extern volatile int16_t motor_right;	/*!< zuletzt gestellter Wert rechter Motor 
 typedef struct {
 	unsigned left:1;	/*!< linksrum */
 	unsigned right:1;	/*!< rechtsrum */
-} __attribute__ ((packed)) direction_t;
+}
+#ifndef DOXYGEN
+__attribute__ ((packed))
+#endif
+direction_t;
 
 extern direction_t direction;		/*!< Drehrichtung der Motoren, auch wenn die Speed-Variablen bereits wieder auf Null sind */
 

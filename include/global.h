@@ -127,13 +127,21 @@ int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 typedef struct {
 	int16_t x; /*!< X-Anteil der Position */
 	int16_t y; /*!< Y-Anteil der Position */
-} __attribute__ ((packed)) position_t;
+}
+#ifndef DOXYGEN
+__attribute__ ((packed))
+#endif
+position_t;
 
 /*! Repraesentation eines Bits, dem ein Byte-Wert zugewiesen werden kann */
 typedef union {
 	uint8_t byte;
 	unsigned bit:1;
-} __attribute__ ((packed)) bit_t;
+}
+#ifndef DOXYGEN
+__attribute__ ((packed))
+#endif
+bit_t;
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846

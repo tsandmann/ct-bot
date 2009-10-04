@@ -51,7 +51,11 @@ typedef struct {
 	unsigned gruen:1;		/*!< LED Gruen */
 	unsigned tuerkis:1;	/*!< LED Tuerkis */
 	unsigned weiss:1;		/*!< LED Weiss */
-} __attribute__ ((packed)) led_t;
+}
+#ifndef DOXYGEN
+__attribute__ ((packed))
+#endif
+led_t;
 
 extern uint8_t led;	/*!< Zustand der LEDs */
 

@@ -60,7 +60,11 @@ typedef struct _Behaviour_t {
    unsigned active:1;							/*!< Ist das Verhalten aktiv */
    unsigned subResult:3;						/*!< War das aufgerufene unterverhalten erfolgreich (==1)? */
    struct _Behaviour_t * next;					/*!< Naechster Eintrag in der Liste */
-} __attribute__ ((packed)) Behaviour_t;
+}
+#ifndef DOXYGEN
+__attribute__ ((packed))
+#endif
+Behaviour_t;
 
 /*! Dieser Typ definiert eine Funktion die das eigentliche Verhalten ausfuehrt */
 typedef void (* BehaviourFunc)(Behaviour_t * data);
@@ -68,7 +72,11 @@ typedef void (* BehaviourFunc)(Behaviour_t * data);
 typedef struct {
 	unsigned override:1;	/*!< 0 wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen; 1 sonst */
 	unsigned background:1;	/*!< 0 wenn Verhalten im Vordergrund laufen sollen (default), also z.B. die Motoren beeinflussen; 1 sonst */
-} __attribute__ ((packed)) behaviour_mode_t;
+}
+#ifndef DOXYGEN
+__attribute__ ((packed))
+#endif
+behaviour_mode_t;
 
 extern int16_t speedWishLeft;		/*!< Puffervariablen fuer die Verhaltensfunktionen absolut Geschwindigkeit links */
 extern int16_t speedWishRight;	/*!< Puffervariablen fuer die Verhaltensfunktionen absolut Geschwindigkeit rechts */

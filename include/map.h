@@ -68,7 +68,11 @@ typedef struct {
 	uint8_t dataL;		/*!< Entfernung linker Distanzsensor [5 mm] aber auch BorderSensor [0/1] */
 	uint8_t dataR;		/*!< Entfernung rechter Distanzsensor [5 mm] aber auch BorderSensor [0/1] */
 	scan_mode_t mode;	/*!< Was soll aktualisiert werden */
-} __attribute__ ((packed)) map_cache_t;	// Keine Luecken in der Struktur lassen
+}
+#ifndef DOXYGEN
+__attribute__ ((packed))
+#endif
+map_cache_t;	// Keine Luecken in der Struktur lassen
 
 extern fifo_t map_update_fifo;			/*!< Fifo fuer Cache */
 extern uint8_t map_update_stack[];		/*!< Stack des Update-Threads */

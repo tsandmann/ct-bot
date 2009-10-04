@@ -59,7 +59,11 @@ typedef struct {
 	unsigned subcommand:7;	/*!< Subkommando */
 	unsigned direction:1;		/*!< 0 ist Anfrage, 1 ist Antwort */
 #endif
-} __attribute__ ((packed)) request_t; // Keine Luecken in der Struktur lassen
+}
+#ifndef DOXYGEN
+__attribute__ ((packed))
+#endif
+request_t; // Keine Luecken in der Struktur lassen
 
 
 /*! Kommando */
@@ -73,7 +77,11 @@ typedef struct {
 	uint8_t from;		/*!< Absender-Adresse */
 	uint8_t to;			/*!< Empfaenger-Adresse */
 	uint8_t CRC;		/*!< Markiert das Ende des Commands */
-} __attribute__ ((packed)) command_t; // Keine Luecken in der Struktur lassen
+}
+#ifndef DOXYGEN
+__attribute__ ((packed))
+#endif
+command_t; // Keine Luecken in der Struktur lassen
 
 #define CMD_STARTCODE	'>'		/*!< Anfang eines Kommandos */
 #define CMD_STOPCODE	'<'		/*!< Ende eines Kommandos */

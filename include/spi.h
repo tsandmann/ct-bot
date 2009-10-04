@@ -37,7 +37,11 @@ typedef union {
 		unsigned spr0:1;	/*!< SPR0 Bit in SPCR */
 		unsigned spr1:1;	/*!< SPR1 Bit in SPCR */
 		unsigned spi2x:1;	/*!< SPI 2x-Mode in SPSR */
-	} __attribute__((packed)) data;
+	}
+#ifndef DOXYGEN
+	__attribute__((packed))
+#endif
+	data;
 	uint8_t raw;	/*!< Alle Bits als Rawdaten */
 } spi_speed_t;	/*!< Speed-Einstellung fuer SPI */
 
