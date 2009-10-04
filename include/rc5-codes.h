@@ -40,7 +40,7 @@
 // Erfassen neuer FB-Codes
 //#define RC5_MASK (RC5_COMMAND|RC5_ADDRESS)	/*!< Welcher Teil des Kommandos wird ausgewertet? */
 
-//TODO:	alle Codes mit (RC5_COMMAND|RC5_ADDRESS) maskieren
+/*! @todo alle Codes mit (RC5_COMMAND|RC5_ADDRESS) maskieren */
 
 
 /*!

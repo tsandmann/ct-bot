@@ -22,9 +22,9 @@
  * @brief 	Bot-2-Bot-Kommunikation
  * @author 	Timo Sandmann (mail@timosandmann.de)
  * @date 	19.03.2008
+ *
+ * @todo regelmaessig Pings senden, um inaktive Bots aus der Liste entfernen zu koennen?
  */
-
-//TODO:	regelmaessig Pings senden, um inaktive Bots aus der Liste entfernen zu koennen?
 
 #define DEBUG_BOT2BOT		/*!< Schaltet LOG-Ausgaben (z.B. Bot-Liste) ein oder aus */
 
@@ -293,7 +293,7 @@ uint8_t get_type_of_payload_function(void(* func)(void)) {
 	return 255;
 }
 
-//TODO:	Bot-Adressen ueberpruefen
+/*! @todo Bot-Adressen ueberpruefen */
 
 /*!
  * Sendet eine Payload-Transferanfrage an einen anderen Bot
@@ -317,15 +317,16 @@ int8_t bot_2_bot_send_payload_request(uint8_t to, uint8_t type,
 	LOG_DEBUG(" zu sendende Daten umfassen %d Bytes @ 0x%lx", size, (size_t) data);
 	command_write_to(BOT_CMD_REQ, 0, to, size, type, 0);
 #ifdef PC
-	command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0); //TODO: etwas unschoene Loesung
+/*! @todo etwas unschoene Loesung */
+	command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0);
 #endif
 	bot_2_bot_data = data;
 	bot_2_bot_payload_size = size;
-//TODO:	Timeouts
+/*! @todo Timeout */
 	/* warten auf ACK */
 	while (bot_2_bot_payload_size >= 0) {
 #ifdef MCU
-//TODO:	receive_until_Frame() fuer MCU => einheitlicher Code hier fuer MCU und PC
+/*! @todo receive_until_Frame() fuer MCU => einheitlicher Code hier fuer MCU und PC */
 		while (uart_data_available() < sizeof(command_t)) {}
 		if (command_read() == 0) {
 			command_evaluate();
@@ -354,7 +355,7 @@ int8_t bot_2_bot_send_payload_request(uint8_t to, uint8_t type,
  * @param *cmd	Zeiger auf das empfangene Kommando
  */
 void bot_2_bot_handle_payload_request(command_t * cmd) {
-//TODO:	Nur wenn Bot steht?
+/*! @todo Nur wenn Bot steht? */
 	LOG_DEBUG("Payload-Sendeanfrage von Bot %u erhalten", cmd->from);
 	LOG_DEBUG(" werte Payload-Sendeanfrage aus...");
 	int16_t size = cmd->data_l;
@@ -399,7 +400,7 @@ void bot_2_bot_handle_payload_request(command_t * cmd) {
 		bot_2_bot_data = bot_2_bot_payload_mappings[type].data;
 		LOG_DEBUG("  Datenpuffer @ 0x%lx", (size_t)bot_2_bot_data);
 #ifdef MCU
-//TODO:	Timeout
+/*! @todo Timeout */
 		/* warten auf Kommando, dem die Payload-Daten folgen */
 		while (42) {
 			while (uart_data_available() < sizeof(command_t)) {}
@@ -443,7 +444,8 @@ void bot_2_bot_handle_payload_ack(command_t * cmd) {
 			command_write_rawdata_to(BOT_CMD_PAYLOAD, 0, cmd->from, last_packet, 0,
 					window_size, bot_2_bot_data);
 #ifdef PC
-			command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0); //TODO: etwas unschoene Loesung
+/*! @todo etwas unschoene Loesung */
+			command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0);
 #endif
 			bot_2_bot_data += window_size;
 			break;
@@ -480,7 +482,7 @@ void bot_2_bot_handle_payload_data(command_t * cmd) {
 	uint8_t size = cmd->payload;
 	LOG_DEBUG(" Payload mit %u Bytes angekuendigt", size);
 #ifdef MCU
-//TODO:	Timeout
+/*! @todo Timeout */
 	/* warten, bis Payload-Daten im Empfangspuffer */
 	while (uart_data_available() < size) {}
 #endif	// MCU

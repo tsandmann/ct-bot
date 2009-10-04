@@ -55,7 +55,7 @@ static float turned;				/*!< Winkel, um den sich der Bot bisher gedreht hat */
 #define CALC_POSITION			2	/*!< Es wurden genuegend Landmarken erkannt, um die Position berechnen zu koennen */
 #define END						99	/*!< Ende des Verhaltens */
 
-//TODO:	Bisher kann nur vorne _oder_ hinten eine Landmarke erkannt werden, ideal waere eine Erkennung vorn und hinten gleichzeitig
+/*! @todo Bisher kann nur vorne _oder_ hinten eine Landmarke erkannt werden, ideal waere eine Erkennung vorn und hinten gleichzeitig */
 
 /*!
  * Ermittelt aus einer Landmarken-ID die Position dieser Landmarke
@@ -68,7 +68,7 @@ static position_t get_position_from_id(int16_t id) {
 	pos.x = ((id & 0x3e0) >> 5) * BEACON_GRID_SIZE;
 	pos.y = (id & 0x1f) * BEACON_GRID_SIZE;
 #else // MCU
-//TODO:	Nur Test-Daten
+/*! @todo Nur Test-Daten */
 	switch (id) {
 	case 0xd:
 		pos.x = 0;
@@ -113,7 +113,7 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 
 		if (sensBPSF != NO_DATA || sensBPSR != NO_DATA) {
 			/* Landmarke erkannt */
-//TODO:	disappeared_counter fuer vorn und hinten
+/*! @todo disappeared_counter fuer vorn und hinten */
 			if (sensBPSF != NO_DATA) {
 				pBPS = &sensBPSF;
 				LOG_DEBUG(" BPS-Sensor vorn meldet Landmarke:");
@@ -204,7 +204,7 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 			angle_mb += 360.0f;
 		}
 
-//TODO:	vielleicht laesst sich der Tausch-Spass hier noch optimieren
+/*! @todo vielleicht laesst sich der Tausch-Spass hier noch optimieren */
 		if (angle_am > 180.0f) {
 			int16_t tmp_id = recognized_beacons[2].id;
 			float tmp_head = recognized_beacons[2].heading;
@@ -266,7 +266,7 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 			LOG_DEBUG(" Aktualisiere Positionsdaten");
 			x_pos = n.x;
 			y_pos = n.y;
-//TODO:	heading genauer berechnen
+/*! @todo heading genauer berechnen */
 //			heading = head;
 			x_enc = n.x;
 			y_enc = n.y;

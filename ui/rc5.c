@@ -53,7 +53,11 @@ uint16_t RC5_Code = 0;	/*!< Letzter empfangener RC5-Code */
  * Setzt das Display auf eine andere Ausgabe.
  * @param screen Parameter mit dem zu setzenden Screen.
  */
-static void __attribute__((noinline)) rc5_screen_set(uint8_t screen) {
+static void
+#ifndef DOXYGEN
+__attribute__((noinline))
+#endif
+rc5_screen_set(uint8_t screen) {
 #ifdef DISPLAY_AVAILABLE
 	if (screen == DISPLAY_SCREEN_TOGGLE) {
 		display_screen++; // zappen

@@ -205,7 +205,7 @@ void sensor_update(void) {
 #ifndef OS_AVAILABLE
 	static uint8_t old_pos = 0;			/*!< Ticks fuer Positionsberechnungsschleife */
 #endif
-	static uint16_t old_speed = 0;		/*!< Ticks fuer Geschwindigkeitsberechnungsschleife */
+	static uint16_t old_speed = 0;	/* Ticks fuer Geschwindigkeitsberechnungsschleife */
 #ifdef MEASURE_MOUSE_AVAILABLE
 	static int16_t lastMouseX = 0;	/*!< letzter Mauswert X fuer Positionsberechnung */
 	static int16_t lastMouseY = 0;	/*!< letzter Mauswert Y fuer Positionsberechnung */
@@ -224,16 +224,16 @@ void sensor_update(void) {
 	float right_radius = 0;			/*!< Radius des Drehkreises des rechten Rads */
 	float left_radius = 0;			/*!< Radius des Drehkreises des linken Rads */
 #endif	// MEASURE_MOUSE_AVAILABLE
-	static int16_t lastEncL = 0;	/*!< letzter Encoderwert links fuer Positionsberechnung */
-	static int16_t lastEncR = 0;	/*!< letzter Encoderwert rechts fuer Positionsberechnung */
-	static int16_t lastEncL1 = 0;	/*!< letzter Encoderwert links fuer Geschwindigkeitsberechnung */
-	static int16_t lastEncR1 = 0;	/*!< letzter Encoderwert rechts fuer Geschwindigkeitsberechnung */
-	float dHead = 0;				/*!< Winkeldifferenz aus Encodern */
-	float deltaY = 0;				/*!< errechneter Betrag Richtungsvektor aus Encodern */
-	int16_t diffEncL;				/*!< Differenzbildung linker Encoder */
-	int16_t diffEncR;				/*!< Differenzbildung rechter Encoder */
-	float sl;						/*!< gefahrene Strecke linkes Rad */
-	float sr;						/*!< gefahrene Strecke rechtes Rad */
+	static int16_t lastEncL = 0;	/* letzter Encoderwert links fuer Positionsberechnung */
+	static int16_t lastEncR = 0;	/* letzter Encoderwert rechts fuer Positionsberechnung */
+	static int16_t lastEncL1 = 0;	/* letzter Encoderwert links fuer Geschwindigkeitsberechnung */
+	static int16_t lastEncR1 = 0;	/* letzter Encoderwert rechts fuer Geschwindigkeitsberechnung */
+	float dHead = 0;				/* Winkeldifferenz aus Encodern */
+	float deltaY = 0;				/* errechneter Betrag Richtungsvektor aus Encodern */
+	int16_t diffEncL;				/* Differenzbildung linker Encoder */
+	int16_t diffEncR;				/* Differenzbildung rechter Encoder */
+	float sl;						/* gefahrene Strecke linkes Rad */
+	float sr;						/* gefahrene Strecke rechtes Rad */
 #ifdef MEASURE_MOUSE_AVAILABLE
 	int16_t dX;						/*!< Differenz der X-Mauswerte */
 	int16_t dY;						/*!< Differenz der Y-Mauswerte */

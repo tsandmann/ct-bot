@@ -122,8 +122,8 @@ static int8_t is_good_pillar_ahead(void) {
 /*!
  * Das Verhalten verhindert, dass dem Bot boese Dinge wie Kollisionen oder Abstuerze widerfahren.
  * @return Bestand Handlungsbedarf? True, wenn das Verhalten ausweichen musste, sonst False.
- * TODO: Parameter einfuegen, der dem Verhalten vorschlaegt, wie zu reagieren ist.
- * */
+ * @todo Parameter einfuegen, der dem Verhalten vorschlaegt, wie zu reagieren ist.
+ */
 static int8_t bot_avoid_harm(void) {
 	if(is_obstacle_ahead(COL_CLOSEST) != False || sensBorderL > BORDER_DANGEROUS || sensBorderR > BORDER_DANGEROUS) {
 		speedWishLeft = -BOT_SPEED_NORMAL;
@@ -184,10 +184,10 @@ void bot_explore_behaviour(Behaviour_t * data) {
 		}
 		break;
 		// Nach links drehen, bis der Bot parallel zum Hindernis auf der rechten Seite steht.
-		/* TODO: Aufgabe: Entwickle ein Verhalten, dass auch bei Loechern funktioniert.
-		 * Tipp dazu: Drehe den Roboter auf das Loch zu, bis beide Bodensensoren das Loch 'sehen'. Anschliessend drehe den Bot um 90 Grad.
-		 * Es ist noetig, neue Zustaende zu definieren, die diese Zwischenschritte beschreiben.
-		 * TODO: Drehung mit dem Maussensor ueberwachen. */
+/*! @todo	Entwickle ein Verhalten, dass auch bei Loechern funktioniert.
+ * 			Tipp dazu: Drehe den Roboter auf das Loch zu, bis beide Bodensensoren das Loch 'sehen'. Anschliessend drehe den Bot um 90 Grad.
+ * 			Es ist noetig, neue Zustaende zu definieren, die diese Zwischenschritte beschreiben.
+ * 			Drehung mit dem Maussensor ueberwachen. */
 	case EXPLORATION_STATE_TURN_PARALLEL_LEFT:
 		if (sensDistR < COL_FAR) {
 			// Volle Drehung nach links mit ca. 3Grad/10ms
@@ -200,7 +200,7 @@ void bot_explore_behaviour(Behaviour_t * data) {
 		}
 		break;
 		// Nach rechts drehen, bis der Bot parallel zum Hindernis auf der linken Seite steht.
-		/* Aufgabe: siehe EXPLORATION_STATE_TURN_PARALLEL_LEFT */
+/*! @todo siehe EXPLORATION_STATE_TURN_PARALLEL_LEFT */
 	case EXPLORATION_STATE_TURN_PARALLEL_RIGHT:
 		if (sensDistL < COL_FAR) {
 			// Volle Drehung nach rechts mit ca. 3Grad/10ms

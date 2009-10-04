@@ -25,7 +25,7 @@
  * Eine Ausgabe kann wie folgt erzeugt werden:
  * LOG_DEBUG("Hallo Welt!");
  * LOG_INFO("Wert x=%d", x);
- * Bei den Ausgaben kann auf ein Line Feed '\n' am Ende des Strings verzichtet werden,
+ * Bei den Ausgaben kann auf ein Line Feed am Ende des Strings verzichtet werden,
  * da dies automatisch angehaengt hinzugefuegt wird.
  * Die frueher noetigen Doppelklammern sind nicht mehr noetig, einfach normale Klammern
  * verwenden, siehe Bsp. oben.

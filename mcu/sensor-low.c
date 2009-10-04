@@ -321,10 +321,10 @@ void bot_sens(void) {
  * daher Update per Timer-Interrupt und nicht per Polling
  */
 void bot_encoder_isr(void) {
-	static uint8_t enc_l = 0;		/*!< Puffer fuer die letzten Encoder-Staende */
-	static uint8_t enc_r = 0;		/*!< Puffer fuer die letzten Encoder-Staende */
-	static uint8_t enc_l_cnt = 0;	/*!< Entprell-Counter fuer L-Encoder */
-	static uint8_t enc_r_cnt = 0;	/*!< Entprell-Counter fuer R-Encoder */
+	static uint8_t enc_l = 0;		// Puffer fuer die letzten Encoder-Staende
+	static uint8_t enc_r = 0;		// Puffer fuer die letzten Encoder-Staende
+	static uint8_t enc_l_cnt = 0;	// Entprell-Counter fuer L-Encoder
+	static uint8_t enc_r_cnt = 0;	// Entprell-Counter fuer R-Encoder
 	register uint8_t enc_tmp; // Pegel der Encoderpins im Register zwischenspeichern
 
 #ifdef SPEED_CONTROL_AVAILABLE

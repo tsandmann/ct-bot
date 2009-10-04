@@ -52,7 +52,6 @@
 #define NORECURSIVE 0	/*!< Konstante, die anzeigt, dass die Aufrufer eines Verhaltens nicht mit deaktiviert werden */
 
 
-/*! Verwaltungsstruktur fuer die Verhaltensroutinen */
 typedef struct _Behaviour_t {
    void (* work) (struct _Behaviour_t * data); 	/*!< Zeiger auf die Funktion, die das Verhalten bearbeitet */
    uint8_t priority;							/*!< Prioritaet */
@@ -64,7 +63,7 @@ typedef struct _Behaviour_t {
 #ifndef DOXYGEN
 __attribute__ ((packed))
 #endif
-Behaviour_t;
+Behaviour_t; /*!< Verwaltungsstruktur fuer die Verhaltensroutinen */
 
 /*! Dieser Typ definiert eine Funktion die das eigentliche Verhalten ausfuehrt */
 typedef void (* BehaviourFunc)(Behaviour_t * data);

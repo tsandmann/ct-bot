@@ -214,7 +214,7 @@ void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_
 
 		if (start_signal[dev] > 0) {
 			start_signal[dev]--;
-			// TODO: Faktoren bei START_DELAY optimieren (=> Sinus)
+/*! @todo Faktoren bei START_DELAY optimieren (=> Sinus) */
 			/* langsam beschleunigen - eigentlich muesste man das sinusartig tun, aber das ist zu aufwendig */
 			if (start_signal[dev] == (uint8_t)(PID_START_DELAY * 0.75f)) {
 				encoderTargetRate[dev] = (uint8_t) (encoderTargetRate[dev] + ((orignalTargetRate[dev] - BOT_SPEED_SLOW / 2) >> 2)); // +1/4

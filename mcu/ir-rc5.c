@@ -43,7 +43,7 @@
 // -----------------------------------------------------------------------------
 #define IR_SAMPLES_PER_BIT_MIN		2	/*!< Flanke vor 3 Samples -> Paket verwerfen */
 
-//TODO:	Das gehoert eigentlich nicht hierhin
+/*! @todo Das gehoert eigentlich nicht hierhin */
 #ifdef RC5_AVAILABLE
 ir_data_t rc5_ir_data = {
 	0, 0, 0, 0, 0, 0

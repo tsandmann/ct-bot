@@ -78,7 +78,7 @@
  * @date 	29.03.08
  */
 
-/* TODO:
+/*! @todo
  *  - Abfragen von STATUS bevor neues Sprechen
  * 	- Ein eigenes Behaviour, LOG_SAY und RemoteCall anlegen ...
  *  - Fehler abfangen und evtl. sprachlich ausgeben

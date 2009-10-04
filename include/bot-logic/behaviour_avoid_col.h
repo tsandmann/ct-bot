@@ -33,7 +33,7 @@
 /*!
  * Passt auf, dass keine Kollision mit Hindernissen an der Front des Roboters
  * geschieht.
- * TODO: Diese Funktion ist nur ein Dummy-Beispiel, wie eine Kollisionsvermeidung aussehen
+ * @todo Diese Funktion ist nur ein Dummy-Beispiel, wie eine Kollisionsvermeidung aussehen
  * koennte. Hier ist ein guter Einstiegspunkt fuer eigene Experimente und Algorithmen!
  * @param *data	Der Verhaltensdatensatz
  */

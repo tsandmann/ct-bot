@@ -136,7 +136,7 @@ uint16_t map_min_x = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Ka
 uint16_t map_max_x = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
 uint16_t map_min_y = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
 uint16_t map_max_y = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate */
-//TODO:	min/max-Werte auch in der Map-Datei speichern (fier Ex- / Import)
+/*! @todo min/max-Werte auch in der Map-Datei speichern (fier Ex- / Import) */
 
 /*! Datentyp fuer die Elementarfelder einer Gruppe */
 typedef struct {

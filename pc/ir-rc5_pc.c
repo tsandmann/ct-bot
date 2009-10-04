@@ -34,7 +34,7 @@
 
 #ifdef IR_AVAILABLE
 
-//TODO:	Das gehoert eigentlich nicht hierhin
+/*! @todo Das gehoert eigentlich nicht hierhin */
 #ifdef RC5_AVAILABLE
 ir_data_t rc5_ir_data = {
 	0, 0, 0, 0, 0, 0

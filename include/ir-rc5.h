@@ -68,7 +68,7 @@ typedef struct {
 	uint16_t no_data;			/*!< RC5-Code, der gesetzt wird, falls nichts empfangen wurde */
 } ir_data_t;	/*!< Daten fuer RC-Decoder */
 
-//TODO:	Das gehoert eigentlich nicht hierhin
+/*! @todo Das gehoert eigentlich nicht hierhin */
 #ifdef RC5_AVAILABLE
 extern ir_data_t rc5_ir_data;
 #endif

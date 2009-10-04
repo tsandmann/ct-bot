@@ -36,8 +36,8 @@
 //#define DELETE_BOTS		/*!< wollen wir Bots aus der Liste loeschen koennen? */
 //#define BOT_2_BOT_PAYLOAD_TEST_AVAILABLE	/*!< Aktiviert Test-Code fuer Bot-2-Bot Kommunikation mit Payload */
 
-//TODO:	Vielleicht noch weitere Infos pro Bot speichern?
-/*! Datentyp fuer Bot-Liste */
+/*! Datentyp fuer Bot-Liste
+ * @todo Vielleicht noch weitere Infos pro Bot speichern? */
 typedef struct _bot_list_entry_t {
 	uint8_t address;					/*!< Bot-Adresse */
 	uint8_t state;						/*!< letzter Status des Bots */

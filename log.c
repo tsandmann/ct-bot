@@ -19,13 +19,13 @@
 
 /*!
  * @file 	log.c
- * @brief 	Routinen zum Loggen von Informationen. Es sollten ausschliesslich nur
+ * Routinen zum Loggen von Informationen. Es sollten ausschliesslich nur
  * die Log-Makros: LOG_DEBUG(), LOG_INFO(), LOG_WARN(), LOG_ERROR() und LOG_FATAL()
  * verwendet werden.
  * Eine Ausgabe kann wie folgt erzeugt werden:
  * LOG_DEBUG("Hallo Welt!");
  * LOG_INFO("Wert x=%d", x);
- * Bei den Ausgaben kann auf ein Line Feed '\n' am Ende des Strings verzichtet werden,
+ * Bei den Ausgaben kann auf ein Line Feed am Ende des Strings verzichtet werden,
  * da dies automatisch angehaengt hinzugefuegt wird.
  * Die frueher noetigen Doppelklammern sind nicht mehr noetig, einfach normale Klammern
  * verwenden, siehe Bsp. oben.
@@ -33,10 +33,11 @@
  * nun fuer MCU alle Strings im Flash belassen werden sollen, das spart viel RAM :-) )
  *
  * @author 	Andreas Merkle (mail@blue-andi.de)
- * @date 	27.02.06
+ * @date 	27.02.2006
+ *
+ * @todo Umblaetterfunktion fuer mehr als 4 Logausgaben bei LOG_DISPLAY_AVAILABLE => Keyhandler aehnlich wie bei der Verhaltensanzeige
  */
 
-//TODO: Umblaetterfunktion fuer mehr als 4 Logausgaben bei LOG_DISPLAY_AVAILABLE => Keyhandler aehnlich wie bei der Verhaltensanzeige
 
 #include "global.h"
 #include <stdio.h>

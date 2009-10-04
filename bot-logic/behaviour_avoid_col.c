@@ -45,7 +45,7 @@ static uint8_t col_zone_r = ZONE_CLEAR;	/*!< Kollisionszone, in der sich der rec
 /*!
  * Passt auf, dass keine Kollision mit Hindernissen an der Front des Roboters
  * geschieht.
- * TODO: Diese Funktion ist nur ein Dummy-Beispiel, wie eine Kollisionsvermeidung aussehen
+ * @todo Diese Funktion ist nur ein Dummy-Beispiel, wie eine Kollisionsvermeidung aussehen
  * koennte. Hier ist ein guter Einstiegspunkt fuer eigene Experimente und Algorithmen!
  * @param *data der Verhaltensdatensatz
  */

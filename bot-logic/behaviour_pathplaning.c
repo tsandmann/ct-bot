@@ -76,7 +76,7 @@
 #ifdef PC
 #define MAP_SIZE_LOWRES			12.288	/*!< Breite / Hoehe der Karte [m] */
 #else
-//TODO:	Groessere Karte auch fuer MCU waere wuenschenswert
+/*! @todo Groessere Karte auch fuer MCU waere wuenschenswert */
 #define MAP_SIZE_LOWRES			4.096	/*!< Breite / Hoehe der Karte [m] */
 #endif	// PC
 
@@ -163,7 +163,7 @@ static uint16_t world_to_map_lowres(int16_t koord) {
 static int8_t access_field_lowres(position_t field, int8_t value, uint8_t set) {
 	uint16_t section_x, section_y, index_x, index_y;
 
-//TODO: Sectiongroesse von 512 Byte waere besser, um auf MMC auslagern zu koennen.
+/*! @todo Sectiongroesse von 512 Byte waere besser, um auf MMC auslagern zu koennen. */
 
 	// Berechne in welcher Sektion sich der Punkt befindet
 	section_x = field.x / MAP_SECTION_POINTS_LOWRES;
