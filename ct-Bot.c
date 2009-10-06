@@ -110,7 +110,7 @@ static void init(void) {
 		MCUSR = (uint8_t)(MCUSR & ~1); // Bit loeschen
 #else
 	if ((MCUCSR & 1) == 1) {
-		MCUCSR &= ~1; // Bit loeschen
+		MCUCSR = (uint8_t)(MCUCSR & ~1); // Bit loeschen
 #endif	// MCU_ATMEGA644X
 		delay(100);
 		__asm__ __volatile__("jmp 0");	// reboot

@@ -193,7 +193,7 @@ void servo_low(uint8_t servo, uint8_t pos) {
 #ifdef MCU_ATMEGA644X
 			TCCR0B = (uint8_t) (TCCR0B & ~PWM_CLK_0); // PWM aus
 #else
-			TCCR0 &= ~PWM_CLK_0; // PWM aus
+			TCCR0 = (uint8_t) (TCCR0 & ~PWM_CLK_0); // PWM aus
 #endif	// MCU_ATMEGA644X
 		} else {
 #ifdef MCU_ATMEGA644X
