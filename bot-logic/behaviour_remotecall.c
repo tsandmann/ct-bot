@@ -175,7 +175,10 @@ const call_t calls[] PROGMEM = {
 		PREPARE_REMOTE_CALL(bot_push_actpos, 0, "", 0),
 		PREPARE_REMOTE_CALL(bot_drive_stack, 0, "", 0),
 		PREPARE_REMOTE_CALL(bot_drive_fifo, 0, "", 0),
-		PREPARE_REMOTE_CALL(bot_save_waypositions, 0, "", 0),
+		PREPARE_REMOTE_CALL(bot_save_waypos, 1, "uint8 optimize", 1),
+#ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
+		PREPARE_REMOTE_CALL(bot_send_stack_b2b, 1, "uint8 bot", 1),
+#endif // BOT_2_BOT_PAYLOAD_AVAILABLE
 	#endif
 	#ifdef BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_check_distance, 2, "int16 max_dist, uint8 diff", 2, 1),
@@ -209,7 +212,7 @@ const call_t calls[] PROGMEM = {
  * @return 		Index in das calls-Array. Wenn nicht gefunden, dann 255
  */
 static uint8_t getRemoteCall(char * call) {
-	LOG_DEBUG("Suche nach Funktion: %s",call);
+	LOG_DEBUG("Suche nach Funktion: %s", call);
 
 	uint8_t i;
 	for (i=0; i<(STORED_CALLS); i++) {

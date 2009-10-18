@@ -53,10 +53,12 @@ typedef struct _bot_list_entry_t {
 #define BOT_CMD_REQ			get_command_of_function(bot_2_bot_handle_payload_request)
 #define BOT_CMD_ACK			get_command_of_function(bot_2_bot_handle_payload_ack)
 #define BOT_CMD_PAYLOAD		get_command_of_function(bot_2_bot_handle_payload_data)
+#define BOT_CMD_POS_STORE	get_command_of_function(bot_2_bot_handle_pos_store)
 
 #ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
 #define BOT_2_BOT_PAYLOAD_TEST	get_type_of_payload_function(bot_2_bot_payload_test_verify)
 #define BOT_2_BOT_REMOTECALL	get_type_of_payload_function(bot_2_bot_handle_remotecall)
+#define BOT_2_BOT_POS_STORE		get_type_of_payload_function(bot_2_bot_handle_pos_store_data)
 
 #define BOT_2_BOT_PAYLOAD_WINDOW_SIZE	32
 

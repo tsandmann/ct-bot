@@ -34,16 +34,35 @@
 #include "pos_store.h"
 #include "math_utils.h"
 #include "rc5-codes.h"
+#include "map.h"
 #include <stdlib.h>
 
 #ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+
+#define DEBUG
+
+#define STACK_SIZE	64	/*!< Groesse des Positionsspeichers */
+
+#if STACK_SIZE > POS_STORE_SIZE
+#undef STACK_SIZE
+#define STACK_SIZE POS_STORE_SIZE
+#endif
+
+#ifndef LOG_AVAILABLE
+#undef DEBUG
+#endif
+#ifndef DEBUG
+#undef LOG_DEBUG
+#define LOG_DEBUG(...) {}
+#endif // DEBUG
 
 static uint8_t drivestack_state = 0; /*!< Status des drive_stack-Verhaltens */
 static uint8_t put_stack_active = 0; /*!< merkt sich, ob put_stack_waypos aktiv war */
 
 /*! hier die vom Stack geholten oder zu sichernden xy-Koordinaten; werden im Display angezeigt */
 static position_t pos = { 0, 0 };
-static uint8_t go_fifo = 0; 			/*!< falls True wird nich mit Pop nach LIFO sondern via Queue FIFO gefahren */
+static uint8_t go_fifo = 0; 			/*!< falls True, wird nich mit Pop nach LIFO sondern via Queue FIFO gefahren */
+static uint8_t optimized_push = 0;		/*!< Optimierungslevel */
 static pos_store_t * pos_store = NULL;	/*!< Positionsspeicher, den das Verhalten benutzt */
 
 /*!
@@ -57,8 +76,12 @@ void bot_drive_stack_behaviour(Behaviour_t * data) {
 	case 0:
 		// Koordinaten werden vom Stack geholt und angefahren; Ende nach nicht mehr erfolgreichem Pop
 
-		// wenn Fifo-Queue definiert, kann sowohl nach LIFO (Stack) oder FIFO (Queue) gefahren werden
-		get_pos = (go_fifo) ? pos_store_dequeue(pos_store, &pos) : pos_store_pop(pos_store, &pos);
+		/* wenn Fifo-Queue definiert, kann sowohl nach LIFO (Stack) oder FIFO (Queue) gefahren werden */
+		if (go_fifo) {
+			get_pos = pos_store_dequeue(pos_store, &pos);
+		} else {
+			get_pos = pos_store_pop(pos_store, &pos);
+		}
 
 		if (!get_pos) {
 			drivestack_state = 1;
@@ -73,7 +96,7 @@ void bot_drive_stack_behaviour(Behaviour_t * data) {
 		return_from_behaviour(data);
 		if (put_stack_active == 1) {
 			/* put_stack_waypos wieder an */
-			bot_save_waypositions(NULL);
+			bot_save_waypos(NULL, optimized_push);
 		}
 		break;
 	}
@@ -89,11 +112,12 @@ void bot_drive_stack_x(Behaviour_t * caller, uint8_t stack, uint8_t mode) {
 	pos_store_t * store = pos_store_from_index(stack);
 	if (store == NULL) {
 		caller->subResult = SUBFAIL;
+		LOG_DEBUG("Fehler, Positionsspeicher %u ungueltig", stack);
 		return;
 	}
-	if (behaviour_is_activated(bot_save_waypositions_behaviour)) {
+	if (behaviour_is_activated(bot_save_waypos_behaviour)) {
 		/* falls put_stack_waypos an ist, temporaer deaktivieren */
-		deactivateBehaviour(bot_save_waypositions_behaviour);
+		deactivateBehaviour(bot_save_waypos_behaviour);
 		put_stack_active = 1;
 	} else {
 		put_stack_active = 0;
@@ -110,8 +134,8 @@ void bot_drive_stack_x(Behaviour_t * caller, uint8_t stack, uint8_t mode) {
  * @return	Indexwert oder 255, falls kein Positionsspeicher angelegt
  */
 static uint8_t get_waypos_index(void) {
-	pos_store_t * store = pos_store_from_beh(get_behaviour(bot_save_waypositions_behaviour));
-	if (pos_store != NULL) {
+	pos_store_t * store = pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour));
+	if (store != NULL) {
 		return pos_store_get_index(store);
 	} else {
 		return 255;
@@ -133,6 +157,32 @@ void bot_drive_stack(Behaviour_t * caller) {
 void bot_drive_fifo(Behaviour_t * caller) {
 	bot_drive_stack_x(caller, get_waypos_index(), 1);
 }
+
+#ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
+/*!
+ * Schickt den Positionsspeicher per Bot-2-Bot-Kommunikation an einen anderen Bot
+ * @param *caller Der Verhaltensdatensatz des Aufrufers
+ * @param bot Adresse des Zielbots
+ */
+void bot_send_stack_b2b(Behaviour_t * caller, uint8_t bot) {
+	uint8_t result = SUBFAIL;
+	LOG_DEBUG("pos_store_send_to_bot(0x%x, %u)", pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot);
+	if (pos_store_send_to_bot(pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot) == 0) {
+		if (bot_2_bot_start_remotecall(bot, "bot_drive_fifo", (remote_call_data_t) 0, (remote_call_data_t) 0,
+			(remote_call_data_t) 0) == 0) {
+			result = SUBSUCCESS;
+		} else {
+			LOG_DEBUG("Fehler, konnte bot_drive_fifo() nicht starten");
+		}
+	} else {
+		LOG_DEBUG("Fehler, konnte Positionsspeicher nicht uebertragen");
+	}
+	if (caller) {
+		caller->subResult = result;
+		caller->active = ACTIVE;
+	}
+}
+#endif // BOT_2_BOT_PAYLOAD_AVAILABLE
 
 /*!
  * Sichern der aktuellen Botposition auf den Stack
@@ -164,7 +214,7 @@ static int16_t last_heading = 0;		/*!< letzte gemerkte Botausrichtung */
 static void set_pos_to_last(void) {
 	last_pos.x = x_pos;
 	last_pos.y = y_pos;
-	last_heading = heading;
+	last_heading = (int16_t) heading;
 }
 
 /*!
@@ -186,10 +236,11 @@ static void bot_push_pos(int16_t pos_x, int16_t pos_y) {
  * damit Start des Stack-Fahrverhaltens
  * @param *data	Der Verhaltensdatensatz
  */
-void bot_save_waypositions_behaviour(Behaviour_t * data) {
+void bot_save_waypos_behaviour(Behaviour_t * data) {
+	static uint8_t skip_count = 0;
 	switch (waypos_state) {
 	case 0:
-		pos_store = pos_store_new(data);
+		pos_store = pos_store_new_size(data, STACK_SIZE);
 		if (pos_store == NULL) {
 			exit_behaviour(data, SUBFAIL);
 			return;
@@ -197,48 +248,131 @@ void bot_save_waypositions_behaviour(Behaviour_t * data) {
 		set_pos_to_last(); // aktuelle Botposition wird zum ersten Stackeintrag und merken der Position
 		bot_push_pos(last_pos.x, last_pos.y);
 		waypos_state = 1;
-		/* no break */
-	case 1:
+		break;
+	case 1: {
 		// Botpos wird in den Stack geschrieben zum Startzeitpunkt des Verhaltens (Stack noch leer) oder
 		// wenn die Entfernung zur zuletzt gemerkten Koordinate gewissen Abstand ueberschreitet oder
 		// wenn Entfernung noch nicht erreicht ist aber ein gewisser Drehwinkel erreicht wurde
 
+		uint8_t update = False;
 		// Abstand zur letzten Position ueberschritten
 		if (get_dist(last_pos.x, last_pos.y, x_pos, y_pos) > DIST_FOR_PUSH) {
 			// kein Push notwendig bei gerader Fahrt voraus zum Sparen des Stack-Speicherplatzes
 			if ((int16_t) heading != last_heading) {
-				bot_push_pos(x_pos, y_pos);
+				update = True;
 			}
 
 			set_pos_to_last(); // Position jedenfalls merken
-			break;
 		}
 
 		// bei Drehwinkelaenderung und Uberschreitung einer gewissen Groesse mit geringer Abstandsentfernung zum letzten Punkt kommt er in den Stack
 		if (turned_angle(last_heading) > ANGLE_FOR_PUSH && get_dist(last_pos.x,
 				last_pos.y, x_pos, y_pos) > DIST_FOR_PUSH_TURN) {
 			set_pos_to_last();
+			update = True;
+		}
+
+		if (update) {
+			LOG_DEBUG("Position (%d|%d) kommt in den Stack", x_pos, y_pos);
+			position_t pos_0;
+			pos_0.x = x_pos / 16;
+			pos_0.y = y_pos / 16;
+			if (optimized_push >= 1) {
+				/* Positionen entfernen, die auf einer Linie liegen */
+				position_t pos_1, pos_2;
+				if (pos_store_top(pos_store, &pos_1, 1) == True && pos_store_top(pos_store, &pos_2, 2) == True) {
+					pos_1.x /= 16;
+					pos_1.y /= 16;
+					if (abs(pos_1.x - pos_0.x) <= 1) {
+						pos_0.x = pos_1.x;
+					}
+					pos_2.x /= 16;
+					pos_2.y /= 16;
+					if (abs(pos_2.x - pos_1.x) <= 1) {
+						pos_2.x = pos_1.x;
+					}
+					int8_t m_1 = pos_1.x == pos_2.x ? 100 : abs((pos_1.y - pos_2.y) / (pos_1.x - pos_2.x));
+					int8_t m = pos_0.x == pos_1.x ? 100 : abs((pos_0.y - pos_1.y) / (pos_0.x - pos_1.x));
+					LOG_DEBUG(" pos_2=(%d|%d)", pos_2.x, pos_2.y);
+					LOG_DEBUG(" pos_1=(%d|%d)", pos_1.x, pos_1.y);
+					LOG_DEBUG(" pos  =(%d|%d)", pos_0.x, pos_0.y);
+					LOG_DEBUG("  m_1=%3d\tm=%3d", m_1, m);
+					LOG_DEBUG("  skip_count=%u", skip_count);
+					if (abs(m_1 - m) < 10) {
+						LOG_DEBUG("Neue Position auf einer Linie mit beiden Letzten");
+						if (skip_count < 3) {
+							LOG_DEBUG(" Verwerfe letzten Eintrag (%d|%d)", pos_1.x, pos_1.y);
+							pos_store_pop(pos_store, &pos_1);
+							skip_count++;
+						} else {
+							LOG_DEBUG(" Verwerfe Eintrag NICHT, skip_count=%u", skip_count);
+							skip_count = 0;
+						}
+					} else {
+						skip_count = 0;
+					}
+				}
+				if (optimized_push >= 2) {
+					/* Schleifen entfernen */
+					uint16_t i;
+					for (i=2; pos_store_top(pos_store, &pos_1, i); ++i) {
+						uint32_t diff = get_dist(x_pos, y_pos, pos_1.x, pos_1.y);
+						LOG_DEBUG(" diff=%u", diff);
+						if (diff < 200UL * 200UL) {
+							LOG_DEBUG(" Position (%d|%d)@%u liegt in der Naehe", pos_1.x, pos_1.y, i);
+							uint16_t k;
+							for (k=i; k>1; --k) {
+								pos_store_pop(pos_store, &pos_1); // die Positionen bis zur i-ten zurueck loeschen
+								LOG_DEBUG(" Loesche (%d|%d) vom Stack", pos_1.x, pos_1.y);
+							}
+							i = 2;
+						}
+					}
+				}
+			}
+
 			bot_push_pos(x_pos, y_pos);
+#if defined PC && defined DEBUG
+			pos_store_dump(pos_store);
+#endif
+
+#ifdef DEBUG
+#ifdef MAP_2_SIM_AVAILABLE
+			command_write(CMD_MAP, SUB_MAP_CLEAR_LINES, 0, 0, 0);
+			position_t pos_1, pos_2;
+			pos_store_top(pos_store, &pos_0, 1);
+			uint16_t i;
+			for (i=2; pos_store_top(pos_store, &pos_1, i); ++i) {
+				map_draw_line_world(pos_0, pos_1, 0);
+				pos_0 = pos_1;
+				pos_1.x = pos_0.x - 16;
+				pos_1.y = pos_0.y;
+				pos_2.x = pos_0.x + 16;
+				pos_2.y = pos_0.y;
+				map_draw_line_world(pos_1, pos_2, 1);
+				pos_1.x = pos_0.x;
+				pos_1.y = pos_0.y - 16;
+				pos_2.x = pos_0.x;
+				pos_2.y = pos_0.y + 16;
+				map_draw_line_world(pos_1, pos_2, 1);
+			}
+#endif // MAP_2_SIM_AVAILABLE
+#endif // DEBUG
 		}
 
 		break;
-
-	default:
-		// kommt eigentlich nie hierher, da es solange aktiv ist bis Deaktivierung eintritt; das kann Notaus sein oder das Stackfahrverhalten
-		// zum Zurueck-Abfahren der Stackpunkte
-		pos_store_release(pos_store);
-		pos_store = NULL;
-		return_from_behaviour(data);
-		break;
-	}
+	} // case 1
+	} // switch
 }
 
 /*!
  * Botenfunktion: Verhalten um sich entlang des Fahrweges relevante Koordinaten auf dem Stack zu merken
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
+ * @param optimize	Optimierungslevel (unnoetige Stackeintraege werden automatisch geloescht)
  */
-void bot_save_waypositions(Behaviour_t * caller) {
-	activateBehaviour(caller, bot_save_waypositions_behaviour);
+void bot_save_waypos(Behaviour_t * caller, uint8_t optimize) {
+	optimized_push = optimize;
+	activateBehaviour(caller, bot_save_waypos_behaviour);
 	drivestack_state = 0;
 	waypos_state = 0;
 	last_pos.x = 0;
@@ -267,9 +401,9 @@ static void drivestack_disp_key_handler(void) {
 		break;
 
 		case RC5_CODE_5:
-		/* Verhalten zum Speichern relevanter Wegepopsitionen zum Spaeteren Zurueckfahren */
+		/* Verhalten zum Speichern relevanter Wegepopsitionen zum spaeteren Zurueckfahren */
 		RC5_Code = 0;
-		bot_save_waypositions(NULL);
+		bot_save_waypos(NULL, True);
 		break;
 
 		case RC5_CODE_7:

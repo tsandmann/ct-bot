@@ -235,7 +235,7 @@ void bot_behave_init(void) {
 	#endif
 
 	#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-		insert_behaviour_to_list(&behaviour, new_behaviour(190, bot_save_waypositions_behaviour, INACTIVE));
+		insert_behaviour_to_list(&behaviour, new_behaviour(190, bot_save_waypos_behaviour, INACTIVE));
 	#endif
 
 	#ifdef BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE

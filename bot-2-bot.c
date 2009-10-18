@@ -34,6 +34,7 @@
 #include "log.h"
 #include "tcp.h"
 #include "sensor.h"
+#include "pos_store.h"
 #include <string.h>
 
 #ifndef DEBUG_BOT2BOT
@@ -89,7 +90,13 @@ void (* cmd_functions[])(command_t * cmd) = {
 		bot_2_bot_handle_payload_request,
 		bot_2_bot_handle_payload_ack,
 		bot_2_bot_handle_payload_data,
+#ifdef POS_STORE_AVAILABLE
+		bot_2_bot_handle_pos_store,
 #else
+		BOT_2_BOT_DUMMY,
+#endif // POS_STORE_AVAILABLE
+#else
+		BOT_2_BOT_DUMMY,
 		BOT_2_BOT_DUMMY,
 		BOT_2_BOT_DUMMY,
 		BOT_2_BOT_DUMMY,
@@ -120,6 +127,11 @@ bot_2_bot_payload_mappings_t bot_2_bot_payload_mappings[] = {
 #else
 	BOT_2_BOT_PAYLOAD_DUMMY,
 #endif	// BEHAVIOUR_REMOTECALL_AVAILABLE
+#ifdef POS_STORE_AVAILABLE
+	{ bot_2_bot_handle_pos_store_data, NULL, 0 },
+#else
+	BOT_2_BOT_PAYLOAD_DUMMY,
+#endif // POS_STORE_AVAILABLE
 };
 #endif	// BOT_2_BOT_PAYLOAD_AVAILABLE
 

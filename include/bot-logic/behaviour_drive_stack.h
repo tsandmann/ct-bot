@@ -60,6 +60,15 @@ void bot_drive_stack(Behaviour_t * caller);
  */
 void bot_drive_fifo(Behaviour_t * caller);
 
+#ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
+/*!
+ * Schickt den Positionsspeicher per Bot-2-Bot-Kommunikation an einen anderen Bot
+ * @param *caller Der Verhaltensdatensatz des Aufrufers
+ * @param bot Adresse des Zielbots
+ */
+void bot_send_stack_b2b(Behaviour_t * caller, uint8_t bot);
+#endif // BOT_2_BOT_PAYLOAD_AVAILABLE
+
 /*!
  * Sichern der aktuellen Botposition auf den Stack
  * @param *caller	einfach nur Zeiger, damit remotecall verwendbar
@@ -73,13 +82,14 @@ void bot_push_actpos(Behaviour_t * caller, uint8_t stack) __attribute__((noinlin
  * damit Start des Stack-Fahrverhaltens
  * @param *data	Der Verhaltensdatensatz
  */
-void bot_save_waypositions_behaviour(Behaviour_t * data);
+void bot_save_waypos_behaviour(Behaviour_t * data);
 
 /*!
  * Botenfunktion: Verhalten um sich entlang des Fahrweges relevante Koordinaten auf dem Stack zu merken
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
+ * @param optimize	Optimierungslevel (unnoetige Stackeintraege werden automatisch geloescht)
  */
-void bot_save_waypositions(Behaviour_t * caller);
+void bot_save_waypos(Behaviour_t * caller, uint8_t optimize);
 
 /*!
  * Display zum Setzen und Anfahren der Stackpunkte

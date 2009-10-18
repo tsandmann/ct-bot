@@ -41,12 +41,19 @@
 
 //#define DEBUG_BEHAVIOUR_LINE_SHORTEST_WAY // Schalter fuer Debug-Code
 
+#define STACK_SIZE 32 /*!< Groesse des verwendeten Positionsspeichers */
+
+#if STACK_SIZE > POS_STORE_SIZE
+#undef STACK_SIZE
+#define STACK_SIZE POS_STORE_SIZE
+#endif
+
 #ifndef LOG_AVAILABLE
 #undef DEBUG_BEHAVIOUR_LINE_SHORTEST_WAY
 #endif
 #ifndef DEBUG_BEHAVIOUR_LINE_SHORTEST_WAY
 #undef LOG_DEBUG
-#define LOG_DEBUG(a, ...) {}
+#define LOG_DEBUG(...) {}
 #endif
 
 /*! Version des Linefolgers, die optimal fuer dieses Verhalten ist */
@@ -77,7 +84,7 @@ static int8_t lineState = 0;
 static pos_store_t * pos_store = NULL;
 
 /*! Statischer Speicher fuer pos_store */
-static position_t pos_store_data[POS_STORE_SIZE];
+static position_t pos_store_data[STACK_SIZE];
 
 /*! Kennung links, welcher der Bordersensoren zugeschlagen hat zur Erkennung der Kreuzungen, notwendig
  *  weil sicht nicht immer beide gleichzeitig ueber Kreuzungslinie befinden */
@@ -685,8 +692,8 @@ void bot_line_shortest_way(Behaviour_t * caller) {
 	sidewish = START_SIDEWISH;
 	way_back = False;
 	go_stack_way = False;
-	pos_store = pos_store_create(get_behaviour(bot_line_shortest_way_behaviour),
-			pos_store_data);
+	pos_store = pos_store_create_size(get_behaviour(bot_line_shortest_way_behaviour),
+			pos_store_data, STACK_SIZE);
 
 	/* stoerende Notfallverhalten aus */
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE

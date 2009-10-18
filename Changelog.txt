@@ -1,5 +1,9 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-10-18 Timo Sandmann [mail@timosandmann.de]: Positionsspeicher koennen per Bot-2-Bot-Kommunikation uebertragen werden; bot_save_waypos() kann mit zwei Optimierungsstufen gestartet werden, 1 entfernt Positionen, die auf einer Linie liegen und somit redundant sind, 2 entfernt auch Schleifen, so dass der Weg durch ein Labyrinth optimiert wird 
+
+2009-10-17 Timo Sandmann [mail@timosandmann.de]: Positionsspeicher koennen nun mit individueller Groesse angelegt werden
+
 2009-10-04 Timo Sandmann [mail@timosandmann.de]: Schoenheitskorrekturen fuer Doxygen
 
 2009-10-02 Timo Sandmann [mail@timosandmann.de]: Projekteinstellungen korrigiert und Warnings unter Windows beseitigt 

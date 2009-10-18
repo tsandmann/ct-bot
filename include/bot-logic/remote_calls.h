@@ -41,7 +41,7 @@
 typedef struct {
    uint8_t param_count;									/*!< Anzahl der Parameter kommen Und zwar ohne den obligatorischen caller-Parameter */
    uint8_t param_len[REMOTE_CALL_MAX_PARAM];			/*!< Angaben ueber die Anzahl an Bytes, die jeder einzelne Parameter belegt */
-   const char name[REMOTE_CALL_FUNCTION_NAME_LEN + 1];	/*!< Text, maximal TEXT_LEN Zeichen lang +  1 Zeichen terminierung */
+   const char name[REMOTE_CALL_FUNCTION_NAME_LEN + 1];	/*!< Text, maximal TEXT_LEN Zeichen lang +  1 Zeichen Terminierung */
    const char param_info[PARAM_TEXT_LEN + 1];			/*!< String, der Angibt, welche und was fuer Parameter die Fkt erwartet */
    void (* func) (Behaviour_t *, ...);					/*!< Zeiger auf die auszufuehrende Funktion */
 } call_t;

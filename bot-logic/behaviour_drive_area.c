@@ -64,6 +64,13 @@
 #endif
 
 
+#define STACK_SIZE	32 /*!< Groesse des verwendeten Positionsspeichers */
+
+#if STACK_SIZE > POS_STORE_SIZE
+#undef STACK_SIZE
+#define STACK_SIZE POS_STORE_SIZE
+#endif
+
 /*! nur alle X-Millisekunden Mapzugriff der Observer-Verhalten */
 #define	CORRECTION_DELAY	700
 
@@ -127,8 +134,8 @@ static trackpoint_t nextline;
 /*! gemerkte letzte Position des Bots, um nur aller xx gefahrender mm auf Map zuzugreifen */
 static trackpoint_t observe_lastpos;
 
-static pos_store_t * pos_store = NULL;				/*!< Positionsspeicher, den das Verhalten benutzt */
-static position_t pos_store_data[POS_STORE_SIZE];	/*!< Statischer Speicher fuer pos_store */
+static pos_store_t * pos_store = NULL;			/*!< Positionsspeicher, den das Verhalten benutzt */
+static position_t pos_store_data[STACK_SIZE];	/*!< Statischer Speicher fuer pos_store */
 
 /* ==================================================================================
  * ===== Start der allgemein fuer diese Verhalten notwendigen Routinen ==============
@@ -1181,7 +1188,7 @@ void bot_drive_area(Behaviour_t * caller) {
 	switch_to_behaviour(caller, bot_drive_area_behaviour, OVERRIDE);
 	track_state = CHECK_TRACKSIDE;
 	border_fired = False;
-	pos_store = pos_store_create(get_behaviour(bot_drive_area_behaviour), pos_store_data);
+	pos_store = pos_store_create_size(get_behaviour(bot_drive_area_behaviour), pos_store_data, STACK_SIZE);
 
 	/* Kollisions-Verhalten ausschalten  */
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE

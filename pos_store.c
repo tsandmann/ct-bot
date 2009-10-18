@@ -32,15 +32,15 @@
 
 #ifdef POS_STORE_AVAILABLE
 
-//#define DEBUG_POS_STORE		// Schalter fuer Debug-Ausgaben
+#define DEBUG_POS_STORE		// Schalter fuer Debug-Ausgaben
 
 #ifndef LOG_AVAILABLE
-	#undef DEBUG_POS_STORE
+#undef DEBUG_POS_STORE
 #endif
 
 #ifndef DEBUG_POS_STORE
-	#undef LOG_DEBUG
-	#define LOG_DEBUG(a, ...) {}
+#undef LOG_DEBUG
+#define LOG_DEBUG(...) {}
 #endif
 
 #define SLOT_COUNT	4	/*!< Anzahl der Plaetze im Array */
@@ -48,18 +48,33 @@
 static pos_store_t pos_stores[SLOT_COUNT];	/*!< Liste der Positionsspeicher */
 
 /*!
- * Erzeugt einen neuen Positionsspeicher
+ * Erzeugt einen neuen Positionsspeicher angegebener Groesse
  * @param *owner	Zeiger Verhaltensdatensatz
- * @param *data		NULL oder Zeiger auf Speicher fuer POS_STORE_SIZE * sizeof(position_t) Bytes
+ * @param *data		NULL oder Zeiger auf Speicher fuer size * sizeof(position_t) Bytes
+ * @param size		Groesse des Speichers, <= POS_STORE_SIZE
  * @return			Zeiger auf neuen Positionsspeicher oder NULL
  */
-pos_store_t * pos_store_create(Behaviour_t * owner, void * data) {
+pos_store_t * pos_store_create_size(Behaviour_t * owner, void * data, pos_store_size_t size) {
 	if (owner == NULL) {
 		LOG_ERROR("Fehler: owner==NULL!");
 		return NULL;
 	}
-	LOG_DEBUG("Erzeuge Positionsspeicher fuer 0x%lx", (size_t) owner);
+	if (size > POS_STORE_SIZE) {
+		LOG_ERROR("Fehler: size > POS_STORE_SIZE");
+		return NULL;
+	}
+	if (size & (size - 1)) {
+		LOG_ERROR("Fehler: size keine 2er Potenz");
+		return NULL;
+	}
+
+	LOG_DEBUG("Erzeuge Positionsspeicher (%u) fuer 0x%lx", size, (size_t) owner);
 	pos_store_t * store = pos_store_from_beh(owner);
+	if (store && store->mask != size - 1) {
+		/* Positionsspeicher existiert bereits, aber mit anderer Groesse */
+		pos_store_release(store);
+		store = NULL;
+	}
 	if (store == NULL) {
 		/* Verhalten hat noch keinen Positionsspeicher -> anlegen */
 		pos_store_t * ptr;
@@ -68,9 +83,10 @@ pos_store_t * pos_store_create(Behaviour_t * owner, void * data) {
 				/* freien Platz gefunden */
 				store = ptr;
 				store->owner = owner;
+				store->mask = (pos_store_size_t) (size - 1);
 				LOG_DEBUG("verwende Slot %u", (store - pos_stores));
 				if (data == NULL) {
-					store->data = malloc(POS_STORE_SIZE * sizeof(position_t));
+					store->data = malloc(size * sizeof(position_t));
 					store->stat_data = 0;
 					LOG_DEBUG("verwende Heap-Speicher @ 0x%lx", (size_t) store->data);
 				} else {
@@ -146,8 +162,8 @@ pos_store_t * pos_store_from_beh(Behaviour_t * owner) {
  * @return			Index des Positionsspeichers im Array
  */
 uint8_t pos_store_get_index(pos_store_t * store) {
-	size_t index = (size_t)store - (size_t) pos_stores;	// offset abziehen
-	index /= sizeof(pos_store_t);	// Differenz in Groesse umrechnen
+	size_t index = (size_t) store - (size_t) pos_stores; // Offset abziehen
+	index /= sizeof(pos_store_t); // Differenz in Groesse umrechnen
 	return (uint8_t) index;
 }
 
@@ -199,7 +215,7 @@ static uint8_t is_full(pos_store_t * store) {
 		/* Fehler */
 		return True;
 	}
-	return (uint8_t) (store->count == POS_STORE_SIZE);
+	return (uint8_t) (store->count > store->mask);
 }
 
 /*!
@@ -213,9 +229,9 @@ uint8_t pos_store_insert(pos_store_t * store, position_t pos) {
 		LOG_INFO("Pos-Store 0x%lx voll, kein push moeglich", (size_t) store);
 		return False;
 	}
-	uint8_t fp = store->fp;
+	pos_store_pointer_t fp = store->fp;
 	fp--;
-	fp = (uint8_t) (fp & (POS_STORE_SIZE - 1));
+	fp = (pos_store_pointer_t) (fp & store->mask);
 	store->data[fp] = pos;
 	store->fp = fp;
 	store->count++;
@@ -233,10 +249,10 @@ uint8_t pos_store_push(pos_store_t * store, position_t pos) {
 		LOG_INFO("Pos-Store 0x%lx voll, kein push moeglich", (size_t) store);
 		return False;
 	}
-	uint8_t sp = store->sp;
+	pos_store_pointer_t sp = store->sp;
 	store->data[sp] = pos;
 	sp++;
-	sp = (uint8_t) (sp & (POS_STORE_SIZE - 1));
+	sp = (pos_store_pointer_t) (sp & store->mask);
 	store->sp = sp;
 	store->count++;
 	return True;
@@ -254,7 +270,7 @@ uint8_t pos_store_pop(pos_store_t * store, position_t * pos) {
 	}
 	store->count--;
 	store->sp--;
-	store->sp = (uint8_t) (store->sp & (POS_STORE_SIZE - 1));
+	store->sp = (pos_store_pointer_t) (store->sp & store->mask);
 	*pos = store->data[store->sp];
 	return True;
 }
@@ -272,7 +288,7 @@ uint8_t pos_store_dequeue(pos_store_t * store, position_t * pos) {
 	store->count--;
 	*pos = store->data[store->fp];
 	store->fp++;
-	store->fp = (uint8_t) (store->fp & (POS_STORE_SIZE - 1));
+	store->fp = (pos_store_pointer_t) (store->fp & store->mask);
 	return True;
 }
 
@@ -291,25 +307,95 @@ uint8_t pos_store_top(pos_store_t * store, position_t * pos, uint8_t index) {
 	if (store->count <= index) {
 		return False;
 	}
-	uint8_t sp = (uint8_t) (store->sp - index);
-	sp = (uint8_t) (sp & (POS_STORE_SIZE - 1));
+	pos_store_pointer_t sp = (pos_store_pointer_t) (store->sp - index);
+	sp = (pos_store_pointer_t) (sp & store->mask);
 	*pos = store->data[sp];
 	return True;
 }
 
+#ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
+pos_store_t * bot_2_bot_pos_store;
+
+/*!
+ * Uebertraegt einen Positionsspeicher an einen anderen Bot
+ * @param *store	Zeiger auf den zu uebertragenden Positionsspeicher
+ * @param bot		Adresse des Zielbots
+ * @return			Fehlercode (0: alles ok)
+ */
+int8_t pos_store_send_to_bot(pos_store_t * store, uint8_t bot) {
+	if (store == NULL || store->owner == NULL) {
+		return -1;
+	}
+	command_write_to(BOT_CMD_POS_STORE, 0, bot, store->owner->priority, (store->mask + 1) * sizeof(position_t), 0);
+	command_write_to(BOT_CMD_POS_STORE, 1, bot, store->count, store->fp, 0);
+	command_write_to(BOT_CMD_POS_STORE, 2, bot, store->sp, 0, 0);
+	return bot_2_bot_send_payload_request(bot, BOT_2_BOT_POS_STORE, store->data, (store->mask + 1) * sizeof(position_t));
+}
+
+/*!
+ * Verarbeitet eine Positionsspeicher-Empfang-Anfrage
+ */
+void bot_2_bot_handle_pos_store(command_t * cmd) {
+	switch (cmd->request.subcommand) {
+	case 0:
+		bot_2_bot_pos_store = pos_store_new_size(get_behaviour_from_prio(cmd->data_l), cmd->data_r);
+		break;
+
+	case 1:
+		if (bot_2_bot_pos_store->owner != NULL) {
+			bot_2_bot_pos_store->count = cmd->data_l;
+			bot_2_bot_pos_store->fp = cmd->data_r;
+		}
+		break;
+
+	case 2:
+		if (bot_2_bot_pos_store->owner != NULL) {
+			bot_2_bot_pos_store->sp = cmd->data_l;
+			if (bot_2_bot_pos_store->data != NULL) {
+				uint8_t index = BOT_2_BOT_POS_STORE;
+				bot_2_bot_payload_mappings[index].size = (bot_2_bot_pos_store->mask + 1) * sizeof(position_t);
+				bot_2_bot_payload_mappings[index].data = bot_2_bot_pos_store->data;
+			} else {
+				pos_store_release(bot_2_bot_pos_store);
+				LOG_DEBUG("Fehler, Positionsspeicher hat keinen Datenpuffer zugewiesen");
+			}
+		}
+		break;
+	}
+}
+
+/*!
+ * Verarbeitet einen Positionsspeicher-Empfang
+ */
+void bot_2_bot_handle_pos_store_data(void) {
+	if (bot_2_bot_pos_store && bot_2_bot_pos_store->owner) {
+		LOG_DEBUG("Pos-Store fuer Verhalten %u empfangen", bot_2_bot_pos_store->owner->priority);
+		LOG_DEBUG(" Groesse:%u\tfp=%u\tsp=%u\tcount=%u", bot_2_bot_pos_store->mask + 1,
+			bot_2_bot_pos_store->fp, bot_2_bot_pos_store->sp, bot_2_bot_pos_store->count);
+		LOG_DEBUG(" data=0x%lx", bot_2_bot_pos_store->data);
+#ifdef PC
+		pos_store_dump(bot_2_bot_pos_store);
+#endif // PC
+		uint8_t index = BOT_2_BOT_POS_STORE;
+		bot_2_bot_payload_mappings[index].size = 0;
+		bot_2_bot_payload_mappings[index].data = NULL;
+	}
+}
+#endif // BOT_2_BOT_PAYLOAD_AVAILABLE
+
 #ifdef PC
 /*!
  * Gibt alle Eintraege auf stdout aus
- * @param *store	Zeiger auf Positionsspeicher
+ * @param *store Zeiger auf Positionsspeicher
  */
-static void dump(pos_store_t * store) {
+void pos_store_dump(pos_store_t * store) {
 	int i;
 	for (i=0; i<store->count; i++) {
-		int x = store->data[(store->fp + i) & (POS_STORE_SIZE - 1)].x;
-		int y = store->data[(store->fp + i) & (POS_STORE_SIZE - 1)].y;
+		int x = store->data[(store->fp + i) & store->mask].x;
+		int y = store->data[(store->fp + i) & store->mask].y;
 		printf("%d:\tx=%d\ty=%d\n", i + 1, x, y);
 	}
-	printf("fp=%u\tsp=%u\tcount=%u\t\n\n", store->fp, store->sp, store->count);
+	printf("fp=%u\tsp=%u\tcount=%u\tsize=%u\t\n\n", store->fp, store->sp, store->count, store->mask + 1);
 }
 
 /*!
@@ -318,62 +404,63 @@ static void dump(pos_store_t * store) {
 void pos_store_test(void) {
 	pos_store_t * store = pos_store_new((Behaviour_t *)0x42);
 	if (store == NULL) {
-		printf("ERROR\n\n");
+		printf("ERROR 1\n\n");
 		return;
 	}
 	pos_store_t * store2 = pos_store_from_beh((Behaviour_t *)0x42);
 	if (store2 != store) {
-		printf("ERROR\n\n");
+		printf("ERROR 2\n\n");
 		return;
 	}
 	uint8_t index = pos_store_get_index(store);
 	printf("index=%u\n", index);
 	store2 = pos_store_from_index(index);
 	if (store2 != store) {
-		printf("ERROR\n\n");
+		printf("ERROR 3\n\n");
 		return;
 	}
 	store2 = pos_store_new((Behaviour_t *)0x42);
 	if (store2 != store) {
-		printf("ERROR\n\n");
+		printf("ERROR 4\n\n");
 		return;
 	}
 	store2 = pos_store_new((Behaviour_t *)42);
 	if (store2 == store) {
-		printf("ERROR\n\n");
+		printf("ERROR 5\n\n");
 		return;
 	}
 	index = pos_store_get_index(store2);
 	printf("index2=%u\n\n", index);
 	pos_store_release(store2);
 	if (store2->owner != NULL || store2->data != NULL) {
-		printf("ERROR\n\n");
+		printf("ERROR 6\n\n");
 		return;
 	}
-	dump(store);
+	pos_store_dump(store);
 	int i;
-	for (i=0; i<POS_STORE_SIZE+1; i++) {
+	for (i=0; i<=store->mask+1; i++) {
 		uint8_t result = pos_store_push(store, (position_t) {i, i + 50});
 		printf("push(%d, %d)=%u\n", i, i + 50, result);
-		dump(store);
-		if (result != 1 && i < POS_STORE_SIZE) {
-			printf("ERROR\n\n");
+		pos_store_dump(store);
+		if (result != 1 && i < store->mask + 1) {
+			printf("ERROR 7\ti=%d\n\n", i);
 			return;
 		}
-		if (result != 0 && i >= POS_STORE_SIZE) {
-			printf("ERROR\n\n");
+		if (result != 0 && i >= store->mask + 1) {
+			printf("ERROR 8\ti=%d\n\n", i);
 			return;
 		}
 	}
-	int16_t exspected_x = 31;
-	int16_t exspected_y = 81;
+	int16_t exspected_x = store->mask;
+	int16_t exspected_y = exspected_x + 50;
 	for (i=0; i<5; i++) {
 		position_t pos = {0, 0};
 		uint8_t result = pos_store_pop(store, &pos);
 		printf("pop()=%u\tx=%d\ty=%d\n", result, pos.x, pos.y);
-		dump(store);
+		pos_store_dump(store);
 		if (pos.x != exspected_x || pos.y != exspected_y) {
-			printf("ERROR\n\n");
+			printf("ERROR 9\ti=%d\n\n", i);
+			printf("pos.x=%d exspected_x=%d\tpos.y=%d exspected_y=%d\n\n", pos.x, exspected_x, pos.y, exspected_y);
 			return;
 		}
 		exspected_x--;
@@ -382,9 +469,9 @@ void pos_store_test(void) {
 	for (i=0; i<5; i++) {
 		uint8_t result = pos_store_push(store, (position_t) {i - 100, i});
 		printf("push(%d, %d)=%u\n", i - 100, i, result);
-		dump(store);
+		pos_store_dump(store);
 		if (result != 1) {
-			printf("ERROR\n\n");
+			printf("ERROR 10\n\n");
 			return;
 		}
 	}
@@ -394,13 +481,22 @@ void pos_store_test(void) {
 		position_t pos = {0, 0};
 		uint8_t result = pos_store_dequeue(store, &pos);
 		printf("dequeue()=%u\tx=%d\ty=%d\n", result, pos.x, pos.y);
-		dump(store);
+		pos_store_dump(store);
 		if (pos.x != exspected_x || pos.y != exspected_y) {
-			printf("ERROR\n\n");
+			printf("ERROR 11\ti=%d\n\n", i);
+			printf("pos.x=%d exspected_x=%d\tpos.y=%d exspected_y=%d\n\n", pos.x, exspected_x, pos.y, exspected_y);
 			return;
 		}
 		exspected_x++;
 		exspected_y++;
+	}
+
+	if (store->mask < 31) {
+		pos_store_clear(store);
+		pos_store_dump(store);
+		pos_store_release(store);
+		printf("Test PASSED\n\n");
+		return;
 	}
 
 	exspected_x = -96;
@@ -409,24 +505,25 @@ void pos_store_test(void) {
 		position_t pos = {0, 0};
 		uint8_t result = pos_store_pop(store, &pos);
 		printf("pop()=%u\tx=%d\ty=%d\n", result, pos.x, pos.y);
-		dump(store);
+		pos_store_dump(store);
 		if (pos.x != exspected_x || pos.y != exspected_y) {
-			printf("ERROR\n\n");
+			printf("ERROR 12\ti=%d\n\n", i);
+			printf("pos.x=%d exspected_x=%d\tpos.y=%d exspected_y=%d\n\n", pos.x, exspected_x, pos.y, exspected_y);
 			return;
 		}
 		exspected_x--;
 		exspected_y--;
 		if (exspected_x == -101 && exspected_y == -1) {
-			exspected_x = 26;
-			exspected_y = 76;
+			exspected_x = store->mask - 5;
+			exspected_y = exspected_x + 50;
 		}
 	}
 	for (i=0; i<15; i++) {
 		uint8_t result = pos_store_insert(store, (position_t) {i - 300, i});
 		printf("insert(%d, %d)=%u\n", i - 300, i, result);
-		dump(store);
+		pos_store_dump(store);
 		if (result != 1) {
-			printf("ERROR\n\n");
+			printf("ERROR 13\ti=%d\n\n", i);
 			return;
 		}
 	}
@@ -436,9 +533,10 @@ void pos_store_test(void) {
 		position_t pos = {0, 0};
 		uint8_t result = pos_store_dequeue(store, &pos);
 		printf("dequeue()=%u\tx=%d\ty=%d\n", result, pos.x, pos.y);
-		dump(store);
+		pos_store_dump(store);
 		if (pos.x != exspected_x || pos.y != exspected_y) {
-			printf("ERROR\n\n");
+			printf("ERROR 14\ti=%d\n\n", i);
+			printf("pos.x=%d exspected_x=%d\tpos.y=%d exspected_y=%d\n\n", pos.x, exspected_x, pos.y, exspected_y);
 			return;
 		}
 		exspected_x--;
@@ -448,40 +546,41 @@ void pos_store_test(void) {
 	for (i=0; i<20; i++) {
 		uint8_t result = pos_store_push(store, (position_t) {i - 200, i});
 		printf("push(%d, %d)=%u\n", i - 200, i, result);
-		dump(store);
+		pos_store_dump(store);
 		if (result != 1) {
-			printf("ERROR\n\n");
+			printf("ERROR 15\ti=%d\n\n", i);
 			return;
 		}
 	}
 	exspected_x = -181;
 	exspected_y = 19;
-	for (i=0; i<POS_STORE_SIZE+1; i++) {
+	for (i=0; i<=store->mask+1; i++) {
 		position_t pos = {0, 0};
 		uint8_t result = pos_store_pop(store, &pos);
 		printf("pop()=%u\tx=%d\ty=%d\n", result, pos.x, pos.y);
-		dump(store);
-		if (result != 1 && i < POS_STORE_SIZE) {
-			printf("ERROR\n\n");
+		pos_store_dump(store);
+		if (result != 1 && i < store->mask + 1) {
+			printf("ERROR 16\ti=%d\n\n", i);
 			return;
 		}
-		if (result != 0 && i >= POS_STORE_SIZE) {
-			printf("ERROR!\n\n");
+		if (result != 0 && i >= store->mask + 1) {
+			printf("ERROR 17\ti=%d\n\n", i);
 			return;
 		}
 		if (result == 1 && (pos.x != exspected_x || pos.y != exspected_y)) {
-			printf("ERROR\n\n");
+			printf("ERROR 18\ti=%d\n\n", i);
+			printf("pos.x=%d exspected_x=%d\tpos.y=%d exspected_y=%d\n\n", pos.x, exspected_x, pos.y, exspected_y);
 			return;
 		}
 		exspected_x--;
 		exspected_y--;
 		if (exspected_x == -201) {
-			exspected_x = 21;
-			exspected_y = 71;
+			exspected_x = store->mask - 10;
+			exspected_y = exspected_x + 50;
 		}
 	}
 	pos_store_clear(store);
-	dump(store);
+	pos_store_dump(store);
 	pos_store_release(store);
 	printf("Test PASSED\n\n");
 }

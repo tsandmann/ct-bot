@@ -54,6 +54,13 @@
 //#define DEBUG_PATHPLANING	// Schalter fuer Debugausgaben
 //#define DEBUG_PATHPLANING_VERBOSE	// zeichnet Zellen in die Map-Anzeige des Sim ein, rot: Hindernis, gruen: frei
 
+#define QUEUE_SIZE 32 /*!< Groesse des verwendeten Positionsspeichers */
+
+#if QUEUE_SIZE > POS_STORE_SIZE
+#undef QUEUE_SIZE
+#define QUEUE_SIZE POS_STORE_SIZE
+#endif
+
 #ifdef MCU
 #undef DEBUG_PATHPLANING
 #endif
@@ -62,7 +69,7 @@
 #endif
 #ifndef DEBUG_PATHPLANING
 #undef LOG_DEBUG
-#define LOG_DEBUG(a, ...) {}
+#define LOG_DEBUG(...) {}
 #endif
 
 
@@ -101,7 +108,7 @@ typedef struct {
 map_section_lowres_t * map_lowres[MAP_SECTIONS_LOWRES][MAP_SECTIONS_LOWRES]; /*!< Array mit den Zeigern auf die Elemente */
 
 static pos_store_t * planning_pos_store = NULL;		/*!< Positionsspeicher */
-static position_t pos_store_data[POS_STORE_SIZE];	/*!< Stack-Speicher fuer Positionsspeicher */
+static position_t pos_store_data[QUEUE_SIZE];	/*!< Stack-Speicher fuer Positionsspeicher */
 
 static position_t startwave = {MAP_LENGTH_LOWRES / 2, MAP_LENGTH_LOWRES / 2};	/*!< Ausgangspunkt der Welle (eigentlicher Zielpunkt), in Mapkoordinaten */
 static position_t destination = {0, 0};	/*!< Zielpunkt in Weltkoordinaten */
@@ -397,7 +404,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 	case START:
 		LOG_DEBUG("Loeschen der Lowres-Karte");
 		delete_lowres();
-		planning_pos_store = pos_store_create(data, pos_store_data); // Stack / Queue anlegen / und leeren
+		planning_pos_store = pos_store_create_size(data, pos_store_data, QUEUE_SIZE); // Stack / Queue anlegen / und leeren
 		wavecounter = 2; // geht ab Wert 2 los; d.h. Wert Wellenzentrum - Zielpunkt bekommt diesen Wert
 		access_field_lowres(startwave, 2, 1);
 

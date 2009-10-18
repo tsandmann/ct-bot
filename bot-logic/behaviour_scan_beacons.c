@@ -267,14 +267,14 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 			x_pos = n.x;
 			y_pos = n.y;
 /*! @todo heading genauer berechnen */
-//			heading = head;
+			heading = head;
 			x_enc = n.x;
 			y_enc = n.y;
-//			heading_enc = head;
+			heading_enc = head;
 #ifdef MEASURE_MOUSE_AVAILABLE
 			x_mou = n.x;
 			y_mou = n.y;
-//			heading_mou = head;
+			heading_mou = head;
 #endif	// MEASURE_MOUSE_AVAILABLE
 		}
 

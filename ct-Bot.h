@@ -46,8 +46,8 @@
 //#define KEYPAD_AVAILABLE	/*!< Keypad-Eingabe vorhanden? */
 
 #define BOT_2_SIM_AVAILABLE	/*!< Soll der Bot mit dem Sim kommunizieren? */
-//#define BOT_2_BOT_AVAILABLE	/*!< Sollen Bots untereinander kommunizieren? */
-//#define BOT_2_BOT_PAYLOAD_AVAILABLE		/*!< Aktiviert Payload-Versand per Bot-2-Bot Kommunikation */
+#define BOT_2_BOT_AVAILABLE	/*!< Sollen Bots untereinander kommunizieren? */
+#define BOT_2_BOT_PAYLOAD_AVAILABLE		/*!< Aktiviert Payload-Versand per Bot-2-Bot Kommunikation */
 
 //#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit im s und ms? */
 
@@ -61,12 +61,12 @@
 
 #define ADC_AVAILABLE		/*!< A/D-Konverter */
 
-//#define MOUSE_AVAILABLE	/*!< Maus Sensor */
+#define MOUSE_AVAILABLE	/*!< Maus Sensor */
 
 #define ENA_AVAILABLE		/*!< Enable-Leitungen */
 #define SHIFT_AVAILABLE		/*!< Shift Register */
 
-//#define BPS_AVAILABLE		/*!< Bot Positioning System */
+#define BPS_AVAILABLE		/*!< Bot Positioning System */
 
 //#define TEST_AVAILABLE_ANALOG		/*!< Sollen die LEDs die analoge Sensorwerte anzeigen */
 //#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
@@ -76,10 +76,10 @@
 
 #define POS_STORE_AVAILABLE		/*!< Positionsspeicher vorhanden */
 
-//#define MAP_AVAILABLE			/*!< Aktiviert die Kartographie */
-//#define MAP_2_SIM_AVAILABLE	/*!< Sendet die Map zur Anzeige an den Sim */
+#define MAP_AVAILABLE			/*!< Aktiviert die Kartographie */
+#define MAP_2_SIM_AVAILABLE	/*!< Sendet die Map zur Anzeige an den Sim */
 
-//#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
+#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
 //#define ADJUST_PID_PARAMS		/*!< macht PID-Paramter zur Laufzeit per FB einstellbar */
 //#define SPEED_LOG_AVAILABLE 	/*!< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
 
@@ -88,7 +88,7 @@
 //#define SP03_AVAILABLE		/*!< Sprachmodul SP03 vorhanden */
 
 //#define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung */
-//#define SPI_AVAILABLE			/*!< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
+#define SPI_AVAILABLE			/*!< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 //#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
 #define OS_AVAILABLE			/*!< Aktiviert BotOS fuer Threads und Scheduling */
 
