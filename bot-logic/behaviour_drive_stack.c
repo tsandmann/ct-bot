@@ -41,7 +41,10 @@
 
 #define DEBUG
 
-#define STACK_SIZE	64	/*!< Groesse des Positionsspeichers */
+/* bot_save_waypos()-Parameter */
+#define STACK_SIZE		64	/*!< Groesse des Positionsspeichers */
+#define MAX_GRADIENT	10	/*!< Maximale Steigungsdifferenz, die noch als gleich angesehen wird */
+#define MAX_POS_DIFF	(200UL * 200UL)	/*!< Quadrat der maximalen Entfernung, bis zu der eine Schleife noch geschlossen wird */
 
 #if STACK_SIZE > POS_STORE_SIZE
 #undef STACK_SIZE
@@ -298,7 +301,7 @@ void bot_save_waypos_behaviour(Behaviour_t * data) {
 					LOG_DEBUG(" pos  =(%d|%d)", pos_0.x, pos_0.y);
 					LOG_DEBUG("  m_1=%3d\tm=%3d", m_1, m);
 					LOG_DEBUG("  skip_count=%u", skip_count);
-					if (abs(m_1 - m) < 10) {
+					if (abs(m_1 - m) < MAX_GRADIENT) {
 						LOG_DEBUG("Neue Position auf einer Linie mit beiden Letzten");
 						if (skip_count < 3) {
 							LOG_DEBUG(" Verwerfe letzten Eintrag (%d|%d)", pos_1.x, pos_1.y);
@@ -318,7 +321,7 @@ void bot_save_waypos_behaviour(Behaviour_t * data) {
 					for (i=2; pos_store_top(pos_store, &pos_1, i); ++i) {
 						uint32_t diff = get_dist(x_pos, y_pos, pos_1.x, pos_1.y);
 						LOG_DEBUG(" diff=%u", diff);
-						if (diff < 200UL * 200UL) {
+						if (diff < MAX_POS_DIFF) {
 							LOG_DEBUG(" Position (%d|%d)@%u liegt in der Naehe", pos_1.x, pos_1.y, i);
 							uint16_t k;
 							for (k=i; k>1; --k) {
