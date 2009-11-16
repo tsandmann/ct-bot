@@ -346,6 +346,10 @@ void bot_behave_init(void) {
 		insert_behaviour_to_list(&behaviour, new_behaviour(40, bot_follow_object_behaviour, INACTIVE));
 	#endif
 
+	#ifdef BEHAVIOUR_DRIVE_CHESS_AVAILABLE
+		insert_behaviour_to_list(&behaviour, new_behaviour(39, bot_drive_chess_behaviour, INACTIVE));
+	#endif
+
 	#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(33, bot_drive_stack_behaviour, INACTIVE));
 	#endif

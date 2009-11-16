@@ -299,6 +299,9 @@ void gui_init(void) {
 	#ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
 		register_screen(&bot_line_shortest_way_display);
 	#endif
+	#ifdef DISPLAY_DRIVE_CHESS_AVAILABLE
+			register_screen(&drive_chess_display);
+	#endif
 	#endif
 }
 

@@ -48,6 +48,7 @@
 #define DISPLAY_DRIVE_STACK_AVAILABLE	/*!< Steuerung Stack-Verhalten auf diesem Screen */
 #define PATHPLANING_DISPLAY				/*!< Display zur Pfadplanung */
 #define DISPLAY_LINE_SHORTEST_WAY_AVAILABLE	/*!< Steuerung des Verhaltens auf diesem Screen */
+#define DISPLAY_DRIVE_CHESS_AVAILABLE	/*!< Steuerung des Schach-Verhaltens */
 
 #ifndef SPEED_CONTROL_AVAILABLE
 	#undef DISPLAY_REGELUNG_AVAILABLE
@@ -77,6 +78,9 @@
 #endif
 #ifndef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 	#undef DISPLAY_DRIVE_STACK_AVAILABLE
+#endif
+#ifndef BEHAVIOUR_DRIVE_CHESS_AVAILABLE
+#undef DISPLAY_DRIVE_CHESS_AVAILABLE
 #endif
 #ifndef OS_AVAILABLE
 	#undef DISPLAY_OS_AVAILABLE

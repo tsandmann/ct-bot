@@ -60,6 +60,8 @@
 
 //#define BEHAVIOUR_DRIVE_AREA_AVAILABLE /*!< flaechendeckendes Fahren mit Map */
 
+//#define BEHAVIOUR_DRIVE_CHESS_AVAILABLE /*!< Schach fuer den Bot */
+
 //#define BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE /*!< Linienfolger ueber Kreuzungen zum Ziel */
 
 //#define BEHAVIOUR_SCAN_BEACONS_AVAILABLE	/*!< Suchen von Landmarken zur Lokalisierung */
@@ -86,6 +88,10 @@
 	#warning "bot_line_shortest_way geht nur, wenn POS_STORE_AVAILABLE"
 	#undef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
 #endif
+#endif
+
+#ifdef BEHAVIOUR_DRIVE_CHESS_AVAILABLE
+	#define BEHAVIOUR_GOTO_POS_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
@@ -275,6 +281,8 @@
 #include "bot-logic/behaviour_drive_stack.h"
 
 #include "bot-logic/behaviour_drive_area.h"
+
+#include "bot-logic/behaviour_drive_chess.h"
 
 #include "bot-logic/behaviour_pathplaning.h"
 
