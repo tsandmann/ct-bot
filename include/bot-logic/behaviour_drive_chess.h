@@ -22,8 +22,8 @@
  * @file 	behaviour_drive_chess.h
  * @brief 	Der Bot spielt Schach! Das Schachverhalten ermoeglicht die manuelle Eingabe 
  *          eines Schachzuges des Spielers 1 (weiss) ueber das Screeninterface. Nach Betaetigen 
- *          der GO-Taste zieht der Bot-Spieler und der Bot f√§hrt auf dem Schachbrett diesen
- *          Zug nach. Nun ist der menschliche Spieler wieder am Zug via Screeneingabe bzw. dr√ºckt sofort GO,
+ *          der GO-Taste zieht der Bot-Spieler und der Bot faehrt auf dem Schachbrett diesen
+ *          Zug nach. Nun ist der menschliche Spieler wieder am Zug via Screeneingabe bzw. drueckt sofort GO,
  *          um fuer sich den Zug machen zu lassen. Am besten ist es (weil ja die Schachfiguren nicht visualisiert werden), 
  *          sich parallel dazu ein echtes Schachbrett aufzubauen und manuell die Zuege nachzuvollziehen. In meinem ersten Test 
  *          musste ich eine Niederlage gegen den Bot einstecken:-)
@@ -36,7 +36,7 @@
  * 
  *          Brainstorming fuer moegliche Erweiterungen:
  *          Der Bot koennte gegen den anderen spielen ohne Mensch, d.h. Bot 1 ist Spieler 1 und der andere der Gegenspieler.
- *          Jeder bot macht jeweils einen Zug und f√§hrt diesen ab. Danach ist der andere dran. Dies muesste/koennte dann ueber die
+ *          Jeder bot macht jeweils einen Zug und faehrt diesen ab. Danach ist der andere dran. Dies muesste/koennte dann ueber die
  *          bot_2_bot-Kommunikation laufen. Noch schoener waere es natuerlich, echte Spielfiguren auf dem Java3D-Schachbrett zu haben 
  *          (oder zuerst auch einfache Objekte), wobei der bot sich jeweils die Figur greift (bot_catch_pillar) und an der Zielposition 
  *          ablaedt (bot_unload_pillar)...
