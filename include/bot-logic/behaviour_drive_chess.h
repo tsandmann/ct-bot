@@ -54,7 +54,7 @@
 
 /*!
  * Das eigentliche Schach-Fahrverhalten
- * Fuer den Bot-Spieler Schwarz wird nach dessen Zugberechnung der Zug vom Bot nachgefahren, f√§hrt also von der Zug-Startposition
+ * Fuer den Bot-Spieler Schwarz wird nach dessen Zugberechnung der Zug vom Bot nachgefahren, faehrt also von der Zug-Startposition
  * zur Zug-Endposition. Das Verhalten ist dann damit abgeschlossen
  * @param *data	Der Verhaltensdatensatz
  */
@@ -62,7 +62,7 @@ void bot_drive_chess_behaviour(Behaviour_t * data);
 
 /*!
  * Neustart des eigentlichen Schach-Fahrverhalten
- * Fuer den Bot-Spieler Schwarz wird nach dessen Zugberechnung der Zug vom Bot nachgefahren, f√§hrt also von der Zug-Startposition
+ * Fuer den Bot-Spieler Schwarz wird nach dessen Zugberechnung der Zug vom Bot nachgefahren, faehrt also von der Zug-Startposition
  * zur Zug-Endposition. Das Verhalten ist dann damit abgeschlossen
  * @param *caller	Der Verhaltensdatensatz
  */

@@ -38,7 +38,7 @@
  *          Der Bot koennte gegen den anderen spielen ohne Mensch, d.h. Bot 1 ist Spieler 1 und der andere der Gegenspieler.
  *          Jeder bot macht jeweils einen Zug und faehrt diesen ab. Danach ist der andere dran. Dies muesste/koennte dann ueber die
  *          bot_2_bot-Kommunikation laufen. Noch schoener waere es natuerlich, echte Spielfiguren auf dem Java3D-Schachbrett zu haben 
- *          (oder zuerst auch einfache Objekte), wobei der bot sich jeweils die Figur greift (bot_catch_pillar) und an der Zielposition 
+ *          (oder zuerst auch einfache Objekte), wobei der Bot sich jeweils die Figur greift (bot_catch_pillar) und an der Zielposition
  *          ablaedt (bot_unload_pillar)...
  *
  * @author 	Frank Menzel (Menzelfr@gmx.de), H.G. Muller (Micro-Max Schach)
@@ -573,7 +573,7 @@ static void new_game_init(void) {
 
 /*!
  * Das eigentliche Schach-Fahrverhalten
- * Fuer den Bot-Spieler Schwarz wird nach dessen Zugberechnung der Zug vom Bot nachgefahren, f√§hrt also von der Zug-Startposition
+ * Fuer den Bot-Spieler Schwarz wird nach dessen Zugberechnung der Zug vom Bot nachgefahren, faehrt also von der Zug-Startposition
  * zur Zug-Endposition. Das Verhalten ist dann damit abgeschlossen
  * @param *data	Der Verhaltensdatensatz
  */
@@ -608,7 +608,7 @@ void bot_drive_chess_behaviour(Behaviour_t * data) {
 				white = !white;
 				if (white) {
 					LOG_DEBUG("Weiss-keine Botbewegung");
-				} else { // nur wenn Schwarz an der Reihe ist bot bewegen
+				} else { // nur wenn Schwarz an der Reihe ist Bot bewegen
 					LOG_DEBUG("Bot fahren nach Autozug");
 					LOG_DEBUG("Zug aus D() von %c %c nach %c %c", 'a' + (K & 7), '8' - (K >> 4), 'a' + ( L& 7), '8' - (L >> 4 & 7));
 					chess2worldkoords('a' + (K & 7), '8' - (K >> 4 & 7), &wx, &wy);
@@ -640,7 +640,7 @@ void bot_drive_chess_behaviour(Behaviour_t * data) {
 
 /*!
  * Neustart des eigentlichen Schach-Fahrverhalten
- * Fuer den Bot-Spieler Schwarz wird nach dessen Zugberechnung der Zug vom Bot nachgefahren, f√§hrt also von der Zug-Startposition
+ * Fuer den Bot-Spieler schwarz wird nach dessen Zugberechnung der Zug vom Bot nachgefahren, faehrt also von der Zug-Startposition
  * zur Zug-Endposition. Das Verhalten ist dann damit abgeschlossen
  * @param *caller	Der Verhaltensdatensatz
  */

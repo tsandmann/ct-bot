@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2009-12-02 Timo Sandmann [mail@timosandmann.de]: Inhaltsverzeichnis der pdf-Doku korrigiert
+
 2009-11-16 Frank Menzel [Menzelfr@gmx.de]: Der Bot spielt Schach! Neues Schachverhalten behaviour_drive_chess()
 
 2009-10-18 Timo Sandmann [mail@timosandmann.de]: Positionsspeicher koennen per Bot-2-Bot-Kommunikation uebertragen werden; bot_save_waypos() kann mit zwei Optimierungsstufen gestartet werden, 1 entfernt Positionen, die auf einer Linie liegen und somit redundant sind, 2 entfernt auch Schleifen, so dass der Weg durch ein Labyrinth optimiert wird 
