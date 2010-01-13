@@ -35,10 +35,11 @@
 #define SCAN_OTF_RESOLUTION_ANGLE_BORDER		10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Abgrundsensoren fuer die Karte ausgewertet werden */
 
 #define SCAN_OTF_RESOLUTION_ANGLE_DISTSENS		10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Distanzsensoren fuer die Karte ausgewertet werden */
-#define SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS	180	/*!< Nach welcher gefahrenen Strecke [mm] sollen die  Distanzsensoren fuer die Karte ausgewertet werden */
+#define SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS	120	/*!< Nach welcher gefahrenen Strecke [mm] sollen die  Distanzsensoren fuer die Karte ausgewertet werden */
 
 #define SCAN_OTF_SLEEP_TIME					2000	/*!< Wartezeit fuer andere Verhalten, falls Cache (sehr) voll ist [ms] */
-#define SCAN_OTF_CACHE_LEVEL_THRESHOLD		(MAP_UPDATE_CACHE_SIZE*sizeof(map_cache_t)/3)	/*!< Schwellwert fuer freien Cache-Speicher, ab dem der Cache als sehr voll gilt [Byte] */
+/*! Schwellwert fuer freien Cache-Speicher, ab dem der Cache als sehr voll gilt */
+#define SCAN_OTF_CACHE_LEVEL_THRESHOLD		(MAP_UPDATE_CACHE_SIZE / 3)
 
 /*! Modi des Scan-Verhaltens */
 typedef union {
@@ -47,7 +48,11 @@ typedef union {
 		unsigned distance:1;	/*!< Distanzsensor-Update an/aus */
 		unsigned border:1;		/*!< Abgrundsensor-Update an/aus */
 		unsigned map_mode:1;	/*!< Kartograhpie-Modus an/aus (Bot stoppt, falls Cache voll) */
-	} data;
+	}
+#ifndef DOXYGEN
+	__attribute__ ((packed)) // Keine Luecken in der Struktur lassen
+#endif
+	data;
 	uint8_t raw;			/*!< Alle Modi als Raw-Daten */
 } scan_mode_t;
 

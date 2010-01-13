@@ -21,7 +21,7 @@
  * @file 	sensor.h
  * @brief 	Architekturunabhaengiger Teil der Sensorsteuerung
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	15.01.05
+ * @date 	15.01.2005
  */
 
 #ifndef SENSOR_H_
@@ -102,6 +102,10 @@ extern int16_t v_mou_right;		/*!< ...aufgeteilt auf rechtes Rad */
 #endif	// MEASURE_MOUSE_AVAILABLE
 
 extern float heading;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
+extern int16_t heading_int;		 /*!< (int16_t) heading */
+extern int16_t heading_10_int;	/*!< = (int16_t) (heading * 10.0f) */
+extern float heading_sin;		/*!< = sin(heading * DEG2RAD) */
+extern float heading_cos;		/*!< = cos(heading * DEG2RAD) */
 extern int16_t x_pos;			/*!< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
 extern int16_t y_pos;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
 extern int16_t v_left;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
@@ -127,13 +131,11 @@ void sensor_update(void);
 void sensor_reset(void);
 
 /*!
- * @brief			Errechnet aus den rohren Distanzsensordaten die zugehoerige Entfernung
+ * Errechnet aus den rohren Distanzsensordaten die zugehoerige Entfernung
  * @param p_sens	Zeiger auf den (Ziel-)Sensorwert
  * @param p_toggle	Zeiger auf die Toggle-Variable des Zielsensors
  * @param ptr		Zeiger auf auf Sensorrohdaten im EEPROM fuer p_sens
  * @param volt_16	Spannungs-Ist-Wert, zu dem die Distanz gesucht wird (in 16 Bit)
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			21.04.2007
  */
 void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t volt_16);
 

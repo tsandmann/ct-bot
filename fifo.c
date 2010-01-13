@@ -26,17 +26,6 @@
  */
 
 #include "fifo.h"
-#include "log.h"
-
-//#define DEBUG_FIFO		/*!< Schalter fuer Debug-Ausgaben */
-
-#ifndef LOG_AVAILABLE
-#undef DEBUG_FIFO
-#endif
-#ifndef DEBUG_FIFO
-#undef LOG_DEBUG
-#define LOG_DEBUG(a, ...) {}
-#endif
 
 /*!
  * Initialisiert die FIFO, setzt Lese- und Schreibzeiger, etc.
@@ -72,7 +61,8 @@ void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
 	if (length > (space = (uint8_t) (f->size - f->count))) {
 		/* nicht genug Platz -> alte Daten rauswerfen */
 		uint8_t to_discard = (uint8_t) (length - space);
-		LOG_DEBUG("verwerfe %u Bytes", to_discard);
+		LOG_DEBUG("verwerfe %u Bytes in Fifo 0x%08x", to_discard, f);
+		LOG_DEBUG(" size=%u, count=%u, length=%u", f->size, f->count, length);
 		uint8_t read2end = f->read2end;
 		uint8_t * pread = f->pread;
 		if (to_discard > read2end) {

@@ -91,7 +91,7 @@ void uart_init(void) {
 #else
 	ISR(SIG_UART_RECV) {
 #endif	// MCU_ATMEGA644X
-	_inline_fifo_put(&uart_infifo, UDR);
+	_inline_fifo_put(&uart_infifo, UDR, True);
 }
 
 /*!
@@ -106,7 +106,7 @@ void uart_init(void) {
 	ISR(SIG_UART_DATA) {
 #endif	// MCU_ATMEGA644X
 	if (uart_outfifo.count > 0) {
-		UDR = _inline_fifo_get(&uart_outfifo);
+		UDR = _inline_fifo_get(&uart_outfifo, True);
 	} else {
 		UCSRB = (uint8_t) (UCSRB & ~(1 << UDRIE)); // diesen Interrupt aus
 	}

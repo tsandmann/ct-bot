@@ -64,14 +64,14 @@ void ENA_on(uint8_t enable) {
 	if (enable == ENA_MOUSE_SENSOR) {
 		if ((ena & ENA_MMC) == 0) {	// War die MMC an?
 #ifdef SPI_AVAILABLE
-			SPCR &= ~(1 << SPE);	// SPI aus
+			SPCR = (uint8_t) (SPCR & (~(1 << SPE))); // SPI aus
 #endif
 			/* MMC aus */
 			ena |= ENA_MMC;
 			mmc_interrupted = 1;
 		}
 		/* Maussensor an */
-		ena &= ~ENA_MOUSE_SENSOR;
+		ena = (uint8_t) (ena & (~ENA_MOUSE_SENSOR));
 	} else
 #endif	// MOUSE_AVAILABLE
  	  if (enable == ENA_MMC) {
@@ -129,7 +129,7 @@ void ENA_off(uint8_t enable) {
 	if (mmc_interrupted == 1) {
 		mmc_interrupted = 0;
 		MMC_DDR |= _BV(SPI_DO);
-		MMC_DDR &= ~_BV(SPI_DI);
+		MMC_DDR = (uint8_t) (MMC_DDR & (~_BV(SPI_DI)));
 		ENA_on(ENA_MMC);
 	}
 #endif	// MOUSE_AVAILABLE

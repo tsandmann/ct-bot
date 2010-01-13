@@ -35,6 +35,7 @@
 #ifdef MAP_AVAILABLE
 
 #define CLEAR_MAP_ON_INIT	/*!< Loescht die Karte, wenn der Bot gebootet wird */
+#define MAP_USE_TRIG_CACHE	/*!< Sollen sin(heading) und cos(heading) mit gecachet werden? */
 
 /* Geomtrie der Karte - Achtung, nur aendern, wenn man die Konsequenzen genau kennt! */
 #define MAP_SIZE			12.288	/*!< Kantenlaenge der Karte in Metern. Zentrum ist der Startplatz des Bots. Achtung, MAP_SIZE*MAP_RESOLUTION muss ganzzahliges Vielfaches von MACRO_BLOCK_LENGTH sein */
@@ -42,7 +43,7 @@
 #define MAP_SECTION_POINTS 	16		/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 
 #define MAP_UPDATE_STACK_SIZE	256	/*!< Groesse des Stacks, der das Map-Update ausfuehrt [Byte] */
-#define MAP_UPDATE_CACHE_SIZE	26	/*!< Groesse des Map-Caches [Byte] */
+#define MAP_UPDATE_CACHE_SIZE	16	/*!< Groesse des Map-Caches [# Eintraege] */
 #define MAP_2_SIM_STACK_SIZE	150	/*!< Groesse des Map-2-Sim-Thread-Stacks [Byte]*/
 
 #define MAP_2_SIM_BUFFER_SIZE	32	/*!< Anzahl der Bloecke, die fuer Map-2-Sim gecachet werden koennen */
@@ -55,26 +56,32 @@
 
 // Die folgenden Variablen/konstanten NICHT direkt benutzen, sondern die zugehoerigen Makros: get_map_min_x() und Co!
 // Denn sonst erhaelt man Karten- und nicht Weltkoordinaten!
-extern uint16_t map_min_x;		/*!< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
-extern uint16_t map_max_x;		/*!< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
-extern uint16_t map_min_y;		/*!< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
-extern uint16_t map_max_y;		/*!< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate */
+extern int16_t map_min_x;		/*!< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
+extern int16_t map_max_x;		/*!< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
+extern int16_t map_min_y;		/*!< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
+extern int16_t map_max_y;		/*!< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate */
 
 /*! Map-Cache-Eintrag */
 typedef struct {
 	int16_t x_pos;		/*!< X-Komponente der Position [mm] */
 	int16_t y_pos;		/*!< Y-Komponente der Position [mm] */
+#ifdef MAP_USE_TRIG_CACHE
+	float sin;			/*!< sin(heading) */
+	float cos;			/*!< cos(heading) */
+#else
 	int16_t heading;	/*!< Blickrichtung [1/10 Grad] */
+#endif // MAP_USE_TRIG_CACHE
 	uint8_t dataL;		/*!< Entfernung linker Distanzsensor [5 mm] aber auch BorderSensor [0/1] */
 	uint8_t dataR;		/*!< Entfernung rechter Distanzsensor [5 mm] aber auch BorderSensor [0/1] */
 	scan_mode_t mode;	/*!< Was soll aktualisiert werden */
 }
 #ifndef DOXYGEN
-__attribute__ ((packed))
+__attribute__ ((packed)) // Keine Luecken in der Struktur lassen
 #endif
-map_cache_t;	// Keine Luecken in der Struktur lassen
+map_cache_t;
 
 extern fifo_t map_update_fifo;			/*!< Fifo fuer Cache */
+extern map_cache_t map_update_cache[];	/*!< Map-Cache */
 extern uint8_t map_update_stack[];		/*!< Stack des Update-Threads */
 extern os_signal_t map_buffer_signal;	/*!< Signal das anzeigt, ob Daten im Map-Puffer sind */
 
@@ -168,14 +175,14 @@ int8_t map_init(void);
  * @param koord	Weltkoordiante
  * @return		Kartenkoordinate
  */
-uint16_t world_to_map(int16_t koord);
+int16_t world_to_map(int16_t koord);
 
 /*!
  * Konvertiert eine Kartenkoordinate in eine Weltkoordinate
  * @param map_koord	Kartenkoordinate
  * @return 			Weltkoordiante
  */
-static inline int16_t map_to_world(uint16_t map_koord) {
+static inline int16_t map_to_world(int16_t map_koord) {
 #if (1000 / MAP_RESOLUTION) * MAP_RESOLUTION != 1000
 #error "MAP_RESOLUTION ist kein Teiler von 1000, Code in map_to_world() anpassen!"
 #endif

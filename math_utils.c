@@ -69,10 +69,10 @@ int16_t turned_angle(int16_t angle) {
 	}
 	if (v_enc_right > v_enc_left) {
 		/* Drehung im positiven Sinn */
-		diff = (int16_t)heading - angle;
+		diff = heading_int - angle;
 	} else {
 		/* Drehung im negativen Sinn */
-		diff = angle - (int16_t)heading;
+		diff = angle - heading_int;
 	}
 	if (diff < 0) {
 		/* Ueberlauf */

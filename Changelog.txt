@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2010-01-13 Timo Sandmann [mail@timosandmann.de]: Positionsberechnungen und Map-Code optimiert
+
 2009-12-02 Timo Sandmann [mail@timosandmann.de]: Inhaltsverzeichnis der pdf-Doku korrigiert
 
 2009-11-16 Frank Menzel [Menzelfr@gmx.de]: Der Bot spielt Schach! Neues Schachverhalten behaviour_drive_chess()

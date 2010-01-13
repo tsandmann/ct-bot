@@ -35,6 +35,7 @@
 #include "math_utils.h"
 #include "rc5-codes.h"
 #include "map.h"
+#include "command.h"
 #include <stdlib.h>
 
 #ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
@@ -168,12 +169,14 @@ void bot_drive_fifo(Behaviour_t * caller) {
  * @param bot Adresse des Zielbots
  */
 void bot_send_stack_b2b(Behaviour_t * caller, uint8_t bot) {
-	uint8_t result = SUBFAIL;
+	struct {
+		unsigned subresult:3;
+	} result = {SUBFAIL};
 	LOG_DEBUG("pos_store_send_to_bot(0x%x, %u)", pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot);
 	if (pos_store_send_to_bot(pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot) == 0) {
 		if (bot_2_bot_start_remotecall(bot, "bot_drive_fifo", (remote_call_data_t) 0, (remote_call_data_t) 0,
 			(remote_call_data_t) 0) == 0) {
-			result = SUBSUCCESS;
+			result.subresult = SUBSUCCESS;
 		} else {
 			LOG_DEBUG("Fehler, konnte bot_drive_fifo() nicht starten");
 		}
@@ -181,7 +184,7 @@ void bot_send_stack_b2b(Behaviour_t * caller, uint8_t bot) {
 		LOG_DEBUG("Fehler, konnte Positionsspeicher nicht uebertragen");
 	}
 	if (caller) {
-		caller->subResult = result;
+		caller->subResult = result.subresult;
 		caller->active = ACTIVE;
 	}
 }
@@ -294,8 +297,8 @@ void bot_save_waypos_behaviour(Behaviour_t * data) {
 					if (abs(pos_2.x - pos_1.x) <= 1) {
 						pos_2.x = pos_1.x;
 					}
-					int8_t m_1 = pos_1.x == pos_2.x ? 100 : abs((pos_1.y - pos_2.y) / (pos_1.x - pos_2.x));
-					int8_t m = pos_0.x == pos_1.x ? 100 : abs((pos_0.y - pos_1.y) / (pos_0.x - pos_1.x));
+					int8_t m_1 = (int8_t) (pos_1.x == pos_2.x ? 100 : abs((pos_1.y - pos_2.y) / (pos_1.x - pos_2.x)));
+					int8_t m = (int8_t) (pos_0.x == pos_1.x ? 100 : abs((pos_0.y - pos_1.y) / (pos_0.x - pos_1.x)));
 					LOG_DEBUG(" pos_2=(%d|%d)", pos_2.x, pos_2.y);
 					LOG_DEBUG(" pos_1=(%d|%d)", pos_1.x, pos_1.y);
 					LOG_DEBUG(" pos  =(%d|%d)", pos_0.x, pos_0.y);
@@ -317,13 +320,13 @@ void bot_save_waypos_behaviour(Behaviour_t * data) {
 				}
 				if (optimized_push >= 2) {
 					/* Schleifen entfernen */
-					uint16_t i;
+					uint8_t i;
 					for (i=2; pos_store_top(pos_store, &pos_1, i); ++i) {
 						uint32_t diff = get_dist(x_pos, y_pos, pos_1.x, pos_1.y);
 						LOG_DEBUG(" diff=%u", diff);
 						if (diff < MAX_POS_DIFF) {
 							LOG_DEBUG(" Position (%d|%d)@%u liegt in der Naehe", pos_1.x, pos_1.y, i);
-							uint16_t k;
+							uint8_t k;
 							for (k=i; k>1; --k) {
 								pos_store_pop(pos_store, &pos_1); // die Positionen bis zur i-ten zurueck loeschen
 								LOG_DEBUG(" Loesche (%d|%d) vom Stack", pos_1.x, pos_1.y);

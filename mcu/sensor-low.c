@@ -28,6 +28,7 @@
 
 #include <avr/io.h>
 #include <string.h>
+#include <math.h>
 #include "adc.h"
 #include "global.h"
 
@@ -47,6 +48,8 @@
 #include "sensor-low.h"
 #include "i2c.h"
 #include "ir-rc5.h"
+#include "math_utils.h"
+#include "srf10.h"
 
 // ADC-PINS
 #define SENS_ABST_L		0		/*!< ADC-PIN Abstandssensor Links */
@@ -292,8 +295,20 @@ void bot_sens(void) {
 
 #ifdef CMPS03_AVAILABLE
 	cmps03_finish(&sensCmps03);
-	heading = (float)sensCmps03.bearing / 10.0f;
+	heading_10_int = sensCmps03.bearing;
+	heading_int = heading_10_int / 10;
+	heading = (float) sensCmps03.bearing / 10.0f;
+	const float h = heading * DEG2RAD;
+	heading_sin = sin(h);
+	heading_cos = cos(h);
 #endif
+
+#ifdef SRF10_AVAILABLE
+	static uint16_t srf_time = 0;
+	if (timer_ms_passed_16(&srf_time, 250)) {
+		sensSRF10 = srf10_get_measure();	/*!< Messung Ultraschallsensor */
+	}
+#endif	// SRF10_AVAILABLE
 
 	/* alle anderen analogen Sensoren */
 	while (adc_get_active_channel() != 255) {}	// restliche Zeit verbrauchen

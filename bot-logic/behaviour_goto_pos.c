@@ -237,7 +237,7 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		/* fast fertig, evtl. noch drehen */
 		if (dest_head != 999) {
 			/* Noch in die gewuenschte Blickrichtung drehen */
-			int16_t to_turn = (int16_t)(dest_head - (int16_t)heading);
+			int16_t to_turn = (int16_t)(dest_head - heading_int);
 			if (to_turn > 180) to_turn = -360 + to_turn;
 			else if (to_turn < -180) to_turn += 360;
 			LOG_DEBUG("to_turn=%d", to_turn);
@@ -310,17 +310,20 @@ void bot_goto_pos_rel(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) 
 void bot_goto_dist(Behaviour_t * caller, int16_t distance, int16_t dir) {
 	drive_dir =  (int8_t) (dir >=0 ? 1 : -1);
 	/* Zielpunkt aus Blickrichtung und Distanz berechnen */
-	float head = heading * (2.0*M_PI/360.0);
+	int16_t target_x = (int16_t) (distance * heading_cos);
+	int16_t target_y = (int16_t) (distance * heading_sin);
 	if (drive_dir < 0) {
-		head += M_PI;	// rueckwaerts
+		// rueckwaerts
+		target_x = -target_x;
+		target_y = -target_y;
 	}
-	int16_t target_x = (int16_t) (distance * cos(head) + x_pos);
-	int16_t target_y = (int16_t) (distance * sin(head) + y_pos);
+	target_x += x_pos;
+	target_y += y_pos;
 	LOG_DEBUG("Zielpunkt=(%d|%d)", target_x, target_y);
 	LOG_DEBUG("Richtung=%d", drive_dir);
 	state = END;
 	/* Verhalten starten */
-	bot_goto_pos(caller, target_x, target_y, (int16_t) heading);
+	bot_goto_pos(caller, target_x, target_y, heading_int);
 }
 
 #endif	// BEHAVIOUR_GOTO_POS_AVAILABLE

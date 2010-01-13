@@ -245,19 +245,38 @@ timer_ms_passed(uint32_t * old_ticks, uint32_t ms) {
  */
 void timer_2_init(void);
 
+#ifdef MCU
 /*!
  * Misst die Zeitspanne, die vergegangen ist,
  * waehrend __code ausgefuehrt wurde und gibt
  * diese per LOG_DEBUG und Display aus.
  * @param __code	Der auszufuehrende Code
  */
-#define TIMER_MEASURE_TIME(__code) {			\
-	uint32_t start = TIMER_GET_TICKCOUNT_32;	\
-	{ __code; }									\
-	uint32_t end = TIMER_GET_TICKCOUNT_32;		\
-	uint16_t diff = end - start;				\
-	LOG_DEBUG("%u Ticks", diff);				\
-	display_cursor(4, 1);						\
-	display_printf("%4u Ticks", diff);			\
+#define TIMER_MEASURE_TIME(__code) \
+	uint16_t __us = 0; \
+	{ \
+	uint32_t start = TIMER_GET_TICKCOUNT_32; \
+	int8_t start_reg = (int8_t) TCNT2; \
+	{ __code; } \
+	uint8_t sreg = SREG; \
+	cli(); \
+	int8_t end_reg = (int8_t) TCNT2; \
+	uint32_t end = TIMER_GET_TICKCOUNT_32; \
+	SREG = sreg; \
+	uint16_t diff = (uint16_t) (end - start) * 176U; \
+	int8_t diff_reg = (int8_t) ((float)(end_reg - start_reg) * 3.2f); \
+	if (diff_reg < 0) { \
+		diff_reg = (int8_t) (diff_reg + 55); \
+	} \
+	uint8_t diff_r = (uint8_t) diff_reg; \
+	__us = diff + (uint16_t) diff_r; \
+ 	LOG_DEBUG("%u us", __us); \
+	display_cursor(4, 1); \
+	display_printf("%4u us", __us); \
 }
+#else // PC
+#define TIMER_MEASURE_TIME(__code) \
+	const uint16_t __us = 0; \
+	__code
+#endif // MCU
 #endif	// TIMER_H_
