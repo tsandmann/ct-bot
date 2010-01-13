@@ -571,7 +571,7 @@ static void update_field(int16_t x, int16_t y, int8_t value) {
 			new_value = 127;
 		}
 	} else {
-		if (new_value > tmp) {
+		if (new_value > tmp || new_value == -128) {
 			new_value = -127;
 		}
 	}
