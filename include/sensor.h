@@ -104,13 +104,17 @@ extern int16_t v_mou_right;		/*!< ...aufgeteilt auf rechtes Rad */
 extern float heading;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
 extern int16_t heading_int;		 /*!< (int16_t) heading */
 extern int16_t heading_10_int;	/*!< = (int16_t) (heading * 10.0f) */
-extern float heading_sin;		/*!< = sin(heading * DEG2RAD) */
-extern float heading_cos;		/*!< = cos(heading * DEG2RAD) */
+extern float heading_sin;		/*!< = sin(rad(heading)) */
+extern float heading_cos;		/*!< = cos(rad(heading)) */
 extern int16_t x_pos;			/*!< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
 extern int16_t y_pos;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
 extern int16_t v_left;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
 extern int16_t v_right;			/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
-extern int16_t v_center;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
+extern int16_t v_center;		/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
+
+#ifdef MEASURE_POSITION_ERRORS_AVAILABLE
+extern int16_t pos_error_radius;	/*!< Aktueller Fehlerradius der Position */
+#endif
 
 #ifdef SRF10_AVAILABLE
 extern uint16_t sensSRF10;	/*!< Messergebniss Ultraschallsensor */

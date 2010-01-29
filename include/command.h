@@ -146,7 +146,9 @@ command_t; // Keine Luecken in der Struktur lassen
 #define SUB_MAP_DATA_4		'G'	/*!< Map-Daten Teil 4 */
 #define SUB_MAP_REQUEST		'R'	/*!< Aufforderung die komplette Karte (neu) zu uebertragen */
 #define SUB_MAP_LINE		'L'	/*!< Linie zeichnen */
+#define SUB_MAP_CIRCLE		'C'	/*!< Kreis zeichnen */
 #define SUB_MAP_CLEAR_LINES	'X'	/*!< Linien loeschen */
+#define SUB_MAP_CLEAR_CIRCLES	'Y' /*!< Kreise loeschen */
 
 
 #define DIR_REQUEST	0			/*!< Richtung fuer Anfragen */

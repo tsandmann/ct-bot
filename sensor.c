@@ -26,6 +26,7 @@
 
 #include "ct-Bot.h"
 #include <stdio.h>
+#include <float.h>
 #include "timer.h"
 #include "bot-local.h"
 #include "math.h"
@@ -37,6 +38,7 @@
 #include "log.h"
 #include "led.h"
 #include "eeprom.h"
+#include "motor.h"
 #include "math_utils.h"
 
 #define HEADING_START		0	/*!< Blickrichtung, mit der sich der Bot initialisiert */
@@ -109,13 +111,17 @@ int16_t v_mou_right = 0;	/*!< ...aufgeteilt auf rechtes Rad */
 float heading = HEADING_START;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
 int16_t heading_int = HEADING_START;	/*!< (int16_t) heading */
 int16_t heading_10_int = HEADING_START * 10;	/*!< = (int16_t) (heading * 10.0f) */
-float heading_sin = HEADING_SIN_START;			/*!< = sin(heading * DEG2RAD) */
-float heading_cos = HEADING_COS_START;			/*!< = cos(heading * DEG2RAD) */
+float heading_sin = HEADING_SIN_START;			/*!< = sin(rad(heading)) */
+float heading_cos = HEADING_COS_START;			/*!< = cos(rad(heading)) */
 int16_t x_pos = 0;			/*!< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
 int16_t y_pos = 0;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
 int16_t v_left = 0;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
 int16_t v_right = 0;		/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
 int16_t v_center = 0;		/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
+
+#ifdef MEASURE_POSITION_ERRORS_AVAILABLE
+int16_t pos_error_radius = 0;	/*!< Aktueller Fehlerradius der Position */
+#endif
 
 #ifdef SRF10_AVAILABLE
 uint16_t sensSRF10;		/*!< Messergebniss Ultraschallsensor */
@@ -237,6 +243,14 @@ void sensor_update(void) {
 	int16_t diffEncR;				/* Differenzbildung rechter Encoder */
 	float sl;						/* gefahrene Strecke linkes Rad */
 	float sr;						/* gefahrene Strecke rechtes Rad */
+
+#ifdef MEASURE_POSITION_ERRORS_AVAILABLE
+	static direction_t last_dir = {{0, 0}};		/* letzte Drehrichtungen der Raeder */
+	static position_t last_dir_change = {0, 0}; /* Position des letzten Richtungswechsels */
+	static float error_angle = 0.0f;			/* Betrag des Fehlerwinkels [Bogenmass] */
+	static int16_t last_error_radius = 0;		/* letzte Fehlerdistanz (Radius) [mm] */
+#endif // MEASURE_POSITION_ERRORS_AVAILABLE
+
 #ifdef MEASURE_MOUSE_AVAILABLE
 	int16_t dX;						/*!< Differenz der X-Mauswerte */
 	int16_t dY;						/*!< Differenz der Y-Mauswerte */
@@ -269,6 +283,7 @@ void sensor_update(void) {
 			lastEncR = sensEncR_tmp;
 			sl = diffEncL * ((float) WHEEL_PERIMETER / ENCODER_MARKS);
 			sr = diffEncR * ((float) WHEEL_PERIMETER / ENCODER_MARKS);
+
 			/* Winkel berechnen */
 			dHead = (sr - sl) / WHEEL_TO_WHEEL_DIAMETER;
 			/* Winkel ist hier noch im Bogenmass */
@@ -279,10 +294,10 @@ void sensor_update(void) {
 				deltaY = sl;
 			} else {
 				/* Laenge berechnen aus alpha/2 */
-				deltaY = (sl + sr) * sin(dHead / 2) / dHead;
+				deltaY = (sl + sr) * sin(dHead / 2.0f) / dHead;
 
 				/* Winkel in Grad umrechnen */
-				dHead /= DEG2RAD;
+				dHead = deg(dHead);
 
 				heading_enc += dHead;
 				if (heading_enc >= 360) {
@@ -297,7 +312,7 @@ void sensor_update(void) {
 				heading_int = (int16_t) heading_enc;
 				heading_10_int = (int16_t) (heading_enc * 10.0f);
 #endif // !MEASURE_MOUSE_AVAILABLE
-				const float h_enc = heading_enc * DEG2RAD;
+				const float h_enc = rad(heading_enc);
 				heading_sin = sin(h_enc);
 				heading_cos = cos(h_enc);
 #endif // CMPS03_AVAILABLE
@@ -313,6 +328,37 @@ void sensor_update(void) {
 				y_pos = (int16_t) y_enc;
 #endif // !MEASURE_MOUSE_AVAILABLE
 			}
+
+#ifdef MEASURE_POSITION_ERRORS_AVAILABLE
+			direction_t dir_change = {{0, 0}};
+			dir_change.raw = direction.raw ^ last_dir.raw;
+
+			float head_diff = 0.0f;
+			const int16_t x_enc_int = (int16_t) x_enc;
+			const int16_t y_enc_int = (int16_t) y_enc;
+
+			if (dir_change.raw != 0) {
+				/* Richtungswechsel bei min. einem Rad */
+				last_dir = direction;
+				if (dir_change.left && dir_change.right) {
+					/* Drehrichtung beider Raeder hat sich geaendert */
+					head_diff = (float) WHEEL_PERIMETER / ENCODER_MARKS / WHEEL_TO_WHEEL_DIAMETER * 2.0f;
+				} else {
+					/* Drehrichtung eines Rads hat sich geaendert */
+					head_diff = (float) WHEEL_PERIMETER / ENCODER_MARKS / WHEEL_TO_WHEEL_DIAMETER;
+				}
+
+//				LOG_DEBUG("head_diff=%f Grad", deg(head_diff));
+				error_angle = head_diff;
+//				LOG_DEBUG("error_angle=%f Grad", deg(error_angle));
+				last_error_radius = pos_error_radius;
+//				LOG_DEBUG("last_error_radius=%d mm", last_error_radius);
+				last_dir_change.x = x_enc_int;
+				last_dir_change.y = y_enc_int;
+			}
+			const int16_t dist = (int16_t) sqrtf((float) get_dist(x_enc_int, y_enc_int, last_dir_change.x, last_dir_change.y));
+			pos_error_radius = (int16_t) (error_angle * (float) dist) + last_error_radius; // Kreisbogenlaenge + bisheriger Fehler
+#endif // MEASURE_POSITION_ERRORS_AVAILABLE
 		}
 
 #ifdef MEASURE_MOUSE_AVAILABLE
@@ -332,7 +378,7 @@ void sensor_update(void) {
 			heading_int = (int16_t) heading_mou;
 			heading_10_int = (int16_t) (heading_mou * 10.0f);
 #endif // MEASURE_COUPLED_AVAILABLE
-			const float h_mou = heading_mou * DEG2RAD;
+			const float h_mou = rad(heading_mou);
 			heading_sin = sin(h_mou);
 			heading_cos = cos(h_mou);
 		}
@@ -370,7 +416,7 @@ void sensor_update(void) {
 		}
 		heading_int = (int16_t) heading;
 		heading_10_int = (int16_t) (heading * 10.0f);
-		const float h = heading * DEG2RAD;
+		const float h = rad(heading);
 		heading_sin = sin(h);
 		heading_cos = cos(h);
 #else
@@ -381,14 +427,11 @@ void sensor_update(void) {
 #endif	// MEASURE_MOUSE_AVAILABLE
 #endif	// MEASURE_COUPLED_AVAILABLE
 
-		uint16_t now = TIMER_GET_TICKCOUNT_16;
-		uint16_t t_diff = now - old_speed;
-		if (t_diff > MS_TO_TICKS(SPEED_UPDATE_TIME)) {
-			old_speed = now;
+		if (timer_ms_passed_16(&old_speed, SPEED_UPDATE_TIME)) {
 			const int16_t diffEncL1 = sensEncL_tmp - lastEncL1;
 			const int16_t diffEncR1 = sensEncR_tmp - lastEncR1;
 			const float time_correction = (((float) WHEEL_PERIMETER / ENCODER_MARKS) * (1000000.0f / (float) TIMER_STEPS))
-				/ MS_TO_TICKS((float)SPEED_UPDATE_TIME);
+				/ MS_TO_TICKS((float) SPEED_UPDATE_TIME);
 			v_enc_left = (int16_t) (diffEncL1 * time_correction);
 			v_enc_right = (int16_t) (diffEncR1 * time_correction);
 			v_enc_center = (v_enc_left + v_enc_right) / 2;
@@ -422,8 +465,8 @@ void sensor_update(void) {
 			}
 
 			/* Steigungen berechnen */
-			s1 = -tan(oldHead * DEG2RAD);
-			s2 = -tan(heading_mou * DEG2RAD);
+			s1 = -tan(rad(oldHead));
+			s2 = -tan(rad(heading_mou));
 
 			/* Geradeausfahrt? (s1==s2) */
 			if (s1 == s2) {
@@ -437,7 +480,7 @@ void sensor_update(void) {
 				yd = (a2 - a1) / (s1 - s2);
 				xd = s2 * yd + a2;
 				/* Radius ermitteln */
-				radius = sqrt((x_mou - xd) * (x_mou - xd) + (y_mou - yd) * (y_mou - yd));
+				radius = sqrtf((x_mou - xd) * (x_mou - xd) + (y_mou - yd) * (y_mou - yd));
 				/* Vorzeichen des Radius feststellen */
 				if (lastHead < 0) {
 					/* Drehung rechts, Drehpunkt liegt rechts vom Mittelpunkt
@@ -635,7 +678,11 @@ void odometric_display(void) {
 	display_printf("squal: %3d v_c: %3d", mouse_get_squal(), (int16_t) v_mou_center);
 #else
 	display_cursor(4, 1);
+#ifdef MEASURE_POSITION_ERRORS_AVAILABLE
+	display_printf("v_c: %3d err: %5d", v_center, pos_error_radius);
+#else
 	display_printf("v_c: %3d", v_center);
+#endif // MEASURE_POSITION_ERRORS_AVAILABLE
 #endif	// BPS_AVAILABLE
 }
 #endif	// DISPLAY_ODOMETRIC_INFO

@@ -58,6 +58,7 @@ int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 #endif // __WIN32__
 
 #include <stdint.h>
+#include <math.h>
 
 #ifndef MCU
 #ifndef PC

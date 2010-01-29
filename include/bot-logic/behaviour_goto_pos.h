@@ -31,14 +31,14 @@
 #ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
 
 /*!
- * @brief		Das Positionierungsverhalten
+ * Das Positionierungsverhalten
  * @param data	Der Verhaltensdatensatz
  */
 void bot_goto_pos_behaviour(Behaviour_t * data);
 
 /*!
- * @brief			Botenfunktion des Positionierungsverhaltens.
- * 					Faehrt einen absoluten angegebenen Punkt an und dreht den Bot in die gewuenschte Blickrichtung.
+ * Botenfunktion des Positionierungsverhaltens.
+ * Faehrt einen absoluten angegebenen Punkt an und dreht den Bot in die gewuenschte Blickrichtung.
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  * @param x			x-Komponente des Ziels
  * @param y			y-Komponente des Ziels
@@ -47,8 +47,8 @@ void bot_goto_pos_behaviour(Behaviour_t * data);
 void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head);
 
 /*!
- * @brief			Botenfunktion des Positionierungsverhaltens.
- * 					Faehrt einen als Verschiebungsvektor angegebenen Punkt an und dreht den Bot in die gewuenschte Blickrichtung.
+ * Botenfunktion des relativen Positionierungsverhaltens.
+ * Faehrt einen als Verschiebungsvektor angegebenen Punkt an und dreht den Bot in die gewuenschte Blickrichtung.
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  * @param x			x-Komponente des Vektors vom Standort zum Ziel
  * @param y			y-Komponente des Vektors vom Standort zum Ziel
@@ -57,13 +57,13 @@ void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head);
 void bot_goto_pos_rel(Behaviour_t * caller, int16_t x, int16_t y, int16_t head);
 
 /*!
- * @brief			Botenfunktion des Positionierungsverhaltens.
- * 					Bewegt den Bot um distance mm in aktueller Blickrichtung ("drive_distance(...)")
+ * Botenfunktion des Distanz-Positionierungsverhaltens.
+ * Bewegt den Bot um distance mm in aktueller Blickrichtung ("drive_distance(...)")
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  * @param distance	Distanz in mm, die der Bot fahren soll
  * @param dir		Fahrtrichtung: >=0: vorwaerts, <0 rueckwaerts
  */
-void bot_goto_dist(Behaviour_t * caller, int16_t distance, int16_t dir);
+void bot_goto_dist(Behaviour_t * caller, int16_t distance, int8_t dir);
 
 #endif	// BEHAVIOUR_GOTO_POS_AVAILABLE
 #endif	/*BEHAVIOUR_GOTO_POS_H_*/

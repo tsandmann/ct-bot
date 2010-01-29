@@ -27,6 +27,8 @@
 #ifndef MATH_UTILS_H_
 #define MATH_UTILS_H_
 
+#include "global.h"
+
 #define DEG2RAD (M_PI / 180.0)	/*!< Umrechnungsfaktor von Grad nach Bogenmass */
 
 /*!
@@ -43,20 +45,60 @@ static inline int16_t iroundf(float x) {
 }
 
 /*!
- * Berechnung deiner Winkeldifferenz zwischen dem aktuellen Standpunkt und einem anderen Ort
+ * Wandelt einen Winkel in Grad in Bogenmass um
+ * @param degree Winkel [Grad]
+ * @return Winkel [Bogenmass]
+ */
+static inline double rad(double degree) {
+	return degree * (M_PI / 180.0);
+}
+
+/*!
+ * Wandelt einen Winkel in Bogenmass in Grad um
+ * @param radian Winkel [Bogenmass]
+ * @return Winkel [Grad]
+ */
+static inline double deg(double radian) {
+	return radian / (M_PI / 180.0);
+}
+
+#ifdef MCU
+/*!
+ * Berechnet die Quadratwurzel eines float-Wertes
+ * @param x	Wert
+ * @return	sqrt(x)
+ */
+static inline float sqrtf(float x) {
+	return (float) sqrt((double) x);
+}
+#endif // MCU
+
+/*!
+ * Berechnung einer Winkeldifferenz zwischen dem aktuellen Standpunkt und einem anderen Ort
+ * @param xDiff	x-Differenz
+ * @param yDiff	y-Differenz
+ * @return 		Berechnete Winkeldifferenz [Bogenmass]
+ */
+float calc_angle_diff_rad(int16_t xDiff, int16_t yDiff);
+
+
+/*!
+ * Berechnung einer Winkeldifferenz zwischen dem aktuellen Standpunkt und einem anderen Ort
  * @param xDiff	x-Differenz
  * @param yDiff	y-Differenz
  * @return 		Berechnete Winkeldifferenz [Grad]
  */
-float calc_angle_diff(int16_t xDiff, int16_t yDiff);
+static inline float calc_angle_diff(int16_t xDiff, int16_t yDiff) {
+	return deg(calc_angle_diff_rad(xDiff, yDiff));
+}
 
 /*!
  * Ermittelt das Vorzeichnen eines 8 Bit Integers. Interpretiert 0 immer als positiv.
  * @param z	Zahl, deren VZ gewuenscht ist
  * @return	1, falls z >= 0, -1 sonst
  */
-static inline int16_t sign8(int8_t z) {
-	return (z & 0x80) ? -1 : 1;
+static inline int8_t sign8(int8_t z) {
+	return (int8_t) ((z & 0x80) ? -1 : 1);
 }
 
 /*!
@@ -64,8 +106,8 @@ static inline int16_t sign8(int8_t z) {
  * @param z	Zahl, deren VZ gewuenscht ist
  * @return	1, falls z >= 0, -1 sonst
  */
-static inline int16_t sign16(int16_t z) {
-	return (z & 0x8000) ? -1 : 1;
+static inline int8_t sign16(int16_t z) {
+	return (int8_t) ((z & 0x8000) ? -1 : 1);
 }
 
 /*!
@@ -73,13 +115,12 @@ static inline int16_t sign16(int16_t z) {
  * @param z	Zahl, deren VZ gewuenscht ist
  * @return	1, falls z >= 0, -1 sonst
  */
-static inline int16_t sign32(int32_t z) {
-	return (z & 0x80000000) ? -1 : 1;
+static inline int8_t sign32(int32_t z) {
+	return (int8_t) ((z & 0x80000000) ? -1 : 1);
 }
 
 /*!
- * Berechnet die Differenz eines Winkels zur aktuellen
- * Botausrichtung.
+ * Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung
  * @param angle		Winkel [Grad] zum Vergleich mit heading
  * @return			Winkeldifferenz [Grad] in Richtung der derzeitigen Botdrehung.
  * 					-1, falls Bot geradeaus faehrt oder steht
@@ -87,14 +128,14 @@ static inline int16_t sign32(int32_t z) {
 int16_t turned_angle(int16_t angle);
 
 /*!
- * Ermittlung des Quadrat-Abstandes zwischen zwei Punkten
+ * Ermittlung des Quadrat-Abstands zwischen zwei Punkten
  * @param x1	X-Koordinate des ersten Punktes
  * @param y1	y-Koordinate des ersten Punktes
  * @param x2	X-Koordinate des zweiten Punktes
  * @param y2	Y-Koordiante des zweiten Punktes
  * @return		liefert Quadrat-Abstand zwischen den zwei Punkten
  */
-uint32_t get_dist(int16_t x1, int16_t y1, int16_t x2, int16_t y2);
+int32_t get_dist(int16_t x1, int16_t y1, int16_t x2, int16_t y2);
 
 /*!
  * Ermittelt die Koordinaten eines Punktes, der um dx mm in x- und

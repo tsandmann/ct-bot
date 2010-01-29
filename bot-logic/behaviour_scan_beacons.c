@@ -249,7 +249,7 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 		if (head < 0) {
 			head += (2.0f * M_PI);
 		}
-		head /= DEG2RAD;
+		head = deg(head);
 		LOG_DEBUG(" > Berechnete Position: (%d|%d)", n.x, n.y);
 		LOG_DEBUG(" >  Heading: %d", (int16_t) head);
 		LOG_DEBUG(" > Bisherige Position: (%d|%d)", x_pos, y_pos);

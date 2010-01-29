@@ -298,7 +298,7 @@ void bot_sens(void) {
 	heading_10_int = sensCmps03.bearing;
 	heading_int = heading_10_int / 10;
 	heading = (float) sensCmps03.bearing / 10.0f;
-	const float h = heading * DEG2RAD;
+	const float h = rad(heading);
 	heading_sin = sin(h);
 	heading_cos = cos(h);
 #endif

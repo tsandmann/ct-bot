@@ -35,28 +35,20 @@
  * Berechnung einer Winkeldifferenz zwischen dem aktuellen Standpunkt und einem anderen Ort
  * @param xDiff	x-Differenz
  * @param yDiff	y-Differenz
- * @return 		Berechnete Winkeldifferenz [Grad]
+ * @return 		Berechnete Winkeldifferenz [Bogenmass]
  */
-float calc_angle_diff(int16_t xDiff, int16_t yDiff) {
-	float newHeading;
-	if (yDiff != 0 && xDiff != 0) {
-		newHeading = atan((float)yDiff / (float)xDiff) / DEG2RAD;
-		if (xDiff < 0) newHeading += 180;
-	} else {
-		if (xDiff == 0) newHeading = (yDiff > 0) ? 90 : -90;
-		else newHeading = (xDiff > 0) ? 0 : 180;
-	}
+float calc_angle_diff_rad(int16_t xDiff, int16_t yDiff) {
+	const float newHeading = atan2((float) yDiff, (float) xDiff);
 
-	float toTurn = newHeading - heading;
-	if (toTurn > 180) toTurn -= 360;
-	if (toTurn < -180) toTurn += 360;
+	float toTurn = newHeading - rad(heading);
+	if (toTurn > M_PI) toTurn -= 2.0f * M_PI;
+	if (toTurn < -M_PI) toTurn += 2.0f * M_PI;
 
 	return toTurn;
 }
 
 /*!
- * Berechnet die Differenz eines Winkels zur aktuellen
- * Botausrichtung.
+ * Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung
  * @param angle		Winkel [Grad] zum Vergleich mit heading
  * @return			Winkeldifferenz [Grad] in Richtung der derzeitigen Botdrehung.
  * 					-1, falls Bot geradeaus faehrt oder steht
@@ -82,19 +74,19 @@ int16_t turned_angle(int16_t angle) {
 }
 
 /*!
- * Ermittlung des Quadrat-Abstandes zwischen zwei Punkten
+ * Ermittlung des Quadrat-Abstands zwischen zwei Punkten
  * @param x1	X-Koordinate des ersten Punktes
  * @param y1	y-Koordinate des ersten Punktes
  * @param x2	X-Koordinate des zweiten Punktes
  * @param y2	Y-Koordiante des zweiten Punktes
  * @return		liefert Quadrat-Abstand zwischen den zwei Punkten
  */
-uint32_t get_dist(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
+int32_t get_dist(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
 	int16_t xt = x2 - x1;
 	int16_t yt = y2 - y1;
 
 	/* Abstandsermittlung nach dem guten alten Pythagoras ohne Ziehen der Wurzel */
-	return (uint32_t) ((int32_t) xt * (int32_t) xt) + (uint32_t) ((int32_t) yt * (int32_t) yt);
+	return (int32_t) ((int32_t) xt * (int32_t) xt) + (int32_t) ((int32_t) yt * (int32_t) yt);
 }
 
 /*!
@@ -106,7 +98,7 @@ uint32_t get_dist(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
  * @return		Gesuchter Punkt
  */
 position_t calc_point_in_distance(float alpha, int16_t dx, int16_t dy) {
-	float h = alpha * DEG2RAD;
+	float h = rad(alpha);
 	float cos_h = cos(h);
 	float sin_h = sin(h);
 
@@ -128,8 +120,8 @@ position_t calc_point_in_distance(float alpha, int16_t dx, int16_t dy) {
  */
 position_t calc_resection(position_t a, position_t m, position_t b, float angle_am, float angle_mb) {
 	// Bezeichner wie im pdf
-	float alpha = angle_am * DEG2RAD; // ab hier Bogenmass
-	float beta = angle_mb * DEG2RAD;
+	float alpha = rad(angle_am); // ab hier Bogenmass
+	float beta = rad(angle_mb);
 
 	/* Definitionsbereich von tan() und cot() pruefen */
 	if (fmod(alpha, M_PI_2) == 0.0f) {
@@ -243,9 +235,9 @@ void test_calc_resection(void) {
 										continue;
 									}
 
-									double n_a = atan2(a.x - n.x, a.y - n.y) / DEG2RAD;
-									double n_m = atan2(m.x - n.x, m.y - n.y) / DEG2RAD;
-									double n_b = atan2(b.x - n.x, b.y - n.y) / DEG2RAD;
+									double n_a = deg(atan2(a.x - n.x, a.y - n.y));
+									double n_m = deg(atan2(m.x - n.x, m.y - n.y));
+									double n_b = deg(atan2(b.x - n.x, b.y - n.y));
 
 									am = n_m - n_a;
 									mb = n_b - n_m;

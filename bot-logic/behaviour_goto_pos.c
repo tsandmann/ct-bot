@@ -27,24 +27,22 @@
 #include "bot-logic/bot-logik.h"
 #include "eeprom.h"
 
-#define MIN_TARGET_MARGIN	5	/*!< Entfernung zum Ziel [mm], ab der das Ziel auf jeden Fall als erreicht gilt */
+//#define DEBUG_GOTO_POS		// Schalter um recht viel Debug-Code anzumachen
+
+#define MIN_TARGET_MARGIN	(6 * 6)	/*!< (Entfernung zum Ziel)^2 [mm^2], ab der das Ziel auf jeden Fall als erreicht gilt */
 #ifdef MCU
-#define TARGET_MARGIN	20	/*!< Init-Wert Entfernung zum Ziel [mm], ab der das Ziel als erreicht gilt fuer MCU */
+#define TARGET_MARGIN	(20 * 20)	/*!< Init-Wert (Entfernung zum Ziel)^2 [mm^2], ab der das Ziel als erreicht gilt fuer MCU */
 #else
-#define TARGET_MARGIN	10	/*!< Init-Wert Entfernung zum Ziel [mm], ab der das Ziel als erreicht gilt fuer PC */
+#define TARGET_MARGIN	(10 * 10)	/*!< Init-Wert (Entfernung zum Ziel)^2 [mm^2], ab der das Ziel als erreicht gilt fuer PC */
 #endif
 
-uint8_t EEPROM goto_pos_err[2] = {TARGET_MARGIN, TARGET_MARGIN};	/*!< Fehlerwerte (Nachlauf) im EEPROM */
+uint16_t EEPROM goto_pos_err[2] = {TARGET_MARGIN, TARGET_MARGIN};	/*!< Fehlerwerte (Nachlauf) im EEPROM */
 
 #ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
 #include <stdlib.h>
-#include <math.h>
 #include "math_utils.h"
 #include "bot-local.h"
 #include "log.h"
-
-
-//#define DEBUG_GOTO_POS		// Schalter um recht viel Debug-Code anzumachen
 
 #ifndef DEBUG_GOTO_POS
 #undef LOG_DEBUG
@@ -69,42 +67,40 @@ static int16_t dest_y = 0;			/*!< y-Komponente des Zielpunktes */
 static int16_t dest_head = 0;		/*!< gewuenschte Blickrichtung am Zielpunkt */
 static int8_t drive_dir = 1;		/*!< Fahrtrichtung: 1: vorwaerts, -1: rueckwaerts */
 static uint8_t state = END;			/*!< Status des Verhaltens */
-static uint8_t * p_goto_pos_err;	/*!< Zeiger auf Fehlervariable im EEPROM */
+static int32_t last_diff_to_target;	/*!< letzte Entfernung zum Ziel */
+static uint16_t * p_goto_pos_err;	/*!< Zeiger auf Fehlervariable im EEPROM */
+static uint16_t margin;				/*!< aktueller Fehlerwert laut EEPROM */
 
-static const int16_t straight_go	= 200;	/*!< Entfernung zum Ziel [mm], bis zu der geradeaus zum Ziel gefahren wird */
+static const int32_t straight_go	= 200L * 200L;	/*!< (Entfernung zum Ziel)^2 [mm^2], bis zu der geradeaus zum Ziel gefahren wird */
 static const int16_t max_angle		= 30;	/*!< Maximaler Winkel [Grad] zwischen Start-Blickrichtung und Ziel */
 static const int16_t v_m_min		= 100;	/*!< Minimale (mittlere) Geschwindigkeit [mm/s], mit der der Bot zum Ziel fahert */
 static const int16_t v_m_max		= 200;	/*!< Maximale (mittlere) Geschwindigkeit [mm/s], mit der der Bot zum Ziel fahert */
 static const int16_t v_min			= 50;	/*!< Minimale Geschwindigkeit [mm/s] */
 static const int16_t v_max			= 350;	/*!< Maximale Geschwindigkeit [mm/s] */
-static const int16_t recalc_dist	= 30;	/*!< Entfernung [mm], nach der die Kreisbahn neu berechnet wird */
+static const int32_t recalc_dist	= 30 * 30;	/*!< Entfernung^2 [mm^2], nach der die Kreisbahn neu berechnet wird */
 
 /*!
- * @brief		Das Positionierungsverhalten
+ * Das Positionierungsverhalten
  * @param *data	Der Verhaltensdatensatz
  */
 void bot_goto_pos_behaviour(Behaviour_t * data) {
-	static int16_t last_x;
-	static int16_t last_y;
-	static int16_t done;
+	static int32_t done;
 	static int16_t v_m;
 	static int16_t v_l;
 	static int16_t v_r;
 
 	/* Abstand zum Ziel berechnen (als Metrik euklidischen Abstand benutzen) */
-	int16_t diff_to_target = (int16_t) sqrt((float) get_dist(dest_x, dest_y, x_pos, y_pos));
+	int32_t diff_to_target = get_dist(dest_x, dest_y, x_pos, y_pos);
 	LOG_DEBUG("diff_to_target=%d", diff_to_target);
-	if (diff_to_target > straight_go) {
-		/* fuer grosse Strecken zweiten Fehlerwert verwenden */
-		p_goto_pos_err = &goto_pos_err[1];
-	}
 
 	/* gefahrene Strecke berechnen */
-	int16_t driven = (int16_t) sqrt((float) get_dist(last_x, last_y, x_pos, y_pos));
+	int32_t driven = last_diff_to_target - diff_to_target;
+	last_diff_to_target = diff_to_target;
 
 	/* Pruefen, ob wir schon am Ziel sind */
-	uint8_t margin = ctbot_eeprom_read_byte(p_goto_pos_err);
-	if (state != END && diff_to_target <= margin) state = LAST_TURN;
+	if (state != END && (driven < 0 || diff_to_target <= (int32_t) margin)) {
+		state = LAST_TURN;
+	}
 
 	switch (state) {
 	case FIRST_TURN: {
@@ -124,7 +120,7 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 			return;
 		}
 		if (abs(alpha) > max_angle) {
-			int16_t to_turn = abs(alpha) - (max_angle-10);
+			int16_t to_turn = abs(alpha) - (max_angle - 10);
 			if (alpha < 0) to_turn = -to_turn;
 			bot_turn(data, to_turn);
 			LOG_DEBUG("bot_turn(%d)", to_turn);
@@ -139,44 +135,52 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		/* Winkel- und Streckenbezeichnungen wie in -> Documentation/images/bot_pos.png */
 		int16_t diff_x = dest_x - x_pos;
 		int16_t diff_y = dest_y - y_pos;
-		float alpha = heading;
+		float sin_alpha = heading_sin;
+		float tan_alpha = heading_sin / heading_cos;
 		if (drive_dir < 0) {
-			alpha += 180;
+			sin_alpha = -sin_alpha;
+			LOG_DEBUG("alpha=%f", heading + 180.0f);
+		} else {
+			LOG_DEBUG("alpha=%f", heading);
 		}
-		LOG_DEBUG("alpha=%f", alpha);
-		float beta = calc_angle_diff(diff_x, diff_y);
+		float beta = calc_angle_diff_rad(diff_x, diff_y); // [-M_PI; M_PI]
 		if (drive_dir < 0) {
-			beta += 180;
+			LOG_DEBUG("beta=%f", deg(beta) + 180.0f);
+		} else {
+			LOG_DEBUG("beta=%f", deg(beta));
 		}
-		LOG_DEBUG("beta=%f", beta);
-		float gamma = 90 - alpha - beta;
-		alpha *= 2.0*M_PI/360.0;
-		if (fmod(alpha, M_PI) == 0) alpha += 0.000001;
-		beta *= 2.0*M_PI/360.0;
-		if (fmod(beta, M_PI) == 0) beta = M_PI + 0.000001;
-		gamma *= 2.0*M_PI/360.0;
-		float h1 = diff_y / 2.0;
-		float h2 = diff_x / 2.0;
-		float h4 = h1 * tan(alpha);
-		float h5 = h4 / sin(alpha);
-		float h6 = (h2 + h4) * sin(gamma);
-		float h7 = h6 / sin(beta);
-		float radius = h5 + h7;
+		const float gamma = (float) M_PI_2 - beta - rad(heading);
+		if (sin_alpha == 0.0f) {
+			sin_alpha = 0.000001f;
+		}
+		/* gegenueber bot_pos.png enthalten alle Variablen mit dem Suffix "_2" den doppelten Wert ("/2" ausgeklammert) */
+		const int16_t h1_2 = diff_y;
+		const int16_t h2_2 = diff_x;
+		const float h4_2 = h1_2 * tan_alpha;
+		const float h5_2 = h4_2 / sin_alpha;
+		const float h6_2 = (h2_2 + h4_2) * sin(gamma);
+		float sin_beta = sin(beta);
+		if (sin_beta == 0.0f) {
+			sin_beta = 0.000001f;
+		}
+		const float h7_2 = h6_2 / sin_beta;
+		float radius = (h5_2 + h7_2) / 2.0f;
 		LOG_DEBUG("radius=%f", radius);
-		if ((int16_t)radius == 0) {
+		if ((int16_t) radius == 0) {
 			radius = 100000.0f;	// geradeaus
 		}
 		/* Geschwindigkeit an Entfernung zum Zielpunkt anpassen */
-		float x = diff_to_target < 360 ? diff_to_target / (360.0/M_PI*2.0) : M_PI/2;	// (0; pi/2]
-		v_m = (int16_t) (sin(x) * (float) (v_m_max - v_m_min));	// [0; v_m_max - v_m_min]
+		float x = diff_to_target < 360L * 360L ? (float) diff_to_target / ((360.0f / M_PI * 2.0f) * (360.0f / M_PI
+			* 2.0f)) : M_PI / 2; // (0; pi/2]
+		v_m = (int16_t) (sin(x) * (float) (v_m_max - v_m_min)); // [0; v_m_max - v_m_min]
 		v_m += v_m_min; // [v_m_min; v_m_max]
 		if (drive_dir < 0) {
 			v_m = -v_m;
 			radius = -radius;
 		}
 		/* Geschwindigkeiten auf die beiden Raeder verteilen, um den berechneten Radius der Kreisbahn zu erhalten */
-		v_l = iroundf(radius / (radius + ((float)WHEEL_TO_WHEEL_DIAMETER/2.0)) * (float)v_m);
-		v_r = iroundf(radius / (radius - ((float)WHEEL_TO_WHEEL_DIAMETER/2.0)) * (float)v_m);
+		v_l = iroundf(radius / (radius + ((float) WHEEL_TO_WHEEL_DIAMETER / 2.0f)) * (float) v_m);
+		v_r = iroundf(radius / (radius - ((float) WHEEL_TO_WHEEL_DIAMETER / 2.0f)) * (float) v_m);
 
 		int16_t vl_abs = abs(v_l);
 		int16_t vr_abs = abs(v_r);
@@ -201,11 +205,13 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		LOG_DEBUG("x_pos=%d; y_pos=%d", x_pos, y_pos);
 		speedWishLeft = v_l;
 		speedWishRight = v_r;
-		/* Alle recalc_dist mm rechnen wir neu, um Fehler zu korrigieren */
+		/* Alle sqrt(recalc_dist) mm rechnen wir neu, um Fehler zu korrigieren */
 		done += driven;
-		if (done > recalc_dist) state = CALC_WAY;
-		last_x = x_pos;
-		last_y = y_pos;
+		if (done > recalc_dist) {
+			state = CALC_WAY;
+		}
+//		last_x = x_pos;
+//		last_y = y_pos;
 		break;
 	}
 	case LAST_TURN: {
@@ -217,29 +223,35 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		// Sim hat derzeit keinen Nachlauf
 		BLOCK_BEHAVIOUR(data, 1200);
 #endif
-		int16_t last_diff = (int16_t) sqrt((float) get_dist(dest_x, dest_y, last_x, last_y));
-		if (last_diff < driven) {
+//		int16_t last_diff = (int16_t) get_dist(dest_x, dest_y, last_x, last_y);
+		int16_t diff = (int16_t) diff_to_target;
+		int16_t last_diff = (int16_t) last_diff_to_target;
+		if (last_diff < (int16_t) driven || (int16_t) driven < 0) {
 			/* zu weit gefahren */
-			diff_to_target = -diff_to_target;
+			diff = -diff;
 		}
-//		LOG_INFO("Fehler=%d mm", diff_to_target);
-		LOG_DEBUG("Fehler=%d mm", diff_to_target);
+		LOG_DEBUG("Fehler^2=%d mm^2", diff);
 		/* Aus Fehler neuen Korrekturwert berechnen und im EEPROM speichern */
-		int8_t error = (int8_t) ctbot_eeprom_read_byte(p_goto_pos_err);
+		const int16_t error = (int16_t) margin;
 		LOG_DEBUG("error=%d", error);
-		int8_t new_error = (int8_t) (error - diff_to_target / 2); // (error-diff_to_target)/2+error/2
+		int16_t new_error = (error + diff) / 2;
 		LOG_DEBUG("new_error=%d", new_error);
-		if (new_error < MIN_TARGET_MARGIN) new_error = MIN_TARGET_MARGIN;
+		if (new_error < MIN_TARGET_MARGIN) {
+			new_error = MIN_TARGET_MARGIN;
+		}
 		if (new_error != error) {
-			ctbot_eeprom_write_byte(p_goto_pos_err, (uint8_t) new_error);
-			LOG_DEBUG("new_error=%d", new_error);
+			ctbot_eeprom_write_word(p_goto_pos_err, (uint16_t) new_error);
+			LOG_DEBUG("EEPROM: new_error=%d", new_error);
 		}
 		/* fast fertig, evtl. noch drehen */
 		if (dest_head != 999) {
 			/* Noch in die gewuenschte Blickrichtung drehen */
-			int16_t to_turn = (int16_t)(dest_head - heading_int);
-			if (to_turn > 180) to_turn = -360 + to_turn;
-			else if (to_turn < -180) to_turn += 360;
+			int16_t to_turn = (int16_t) (dest_head - heading_int);
+			if (to_turn > 180) {
+				to_turn = -360 + to_turn;
+			} else if (to_turn < -180) {
+				to_turn += 360;
+			}
 			LOG_DEBUG("to_turn=%d", to_turn);
 			bot_turn(data, to_turn);
 		}
@@ -254,8 +266,8 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 }
 
 /*!
- * @brief			Botenfunktion des Positionierungsverhaltens.
- * 					Faehrt einen absoluten angegebenen Punkt an und dreht den Bot in die gewuenschte Blickrichtung.
+ * Botenfunktion des Positionierungsverhaltens.
+ * Faehrt einen absoluten angegebenen Punkt an und dreht den Bot in die gewuenschte Blickrichtung.
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  * @param x			x-Komponente des Ziels
  * @param y			y-Komponente des Ziels
@@ -265,6 +277,7 @@ void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
 	dest_x = x;
 	dest_y = y;
 	dest_head = head;
+	last_diff_to_target = INT32_MAX;
 
 	/* Verhalten starten */
 	switch_to_behaviour(caller, bot_goto_pos_behaviour, OVERRIDE);
@@ -276,9 +289,18 @@ void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
 		LOG_DEBUG("state=%u", state);
 	}
 	state = FIRST_TURN;
-	p_goto_pos_err = &goto_pos_err[0];	// erstmal kleine Strecke annehmen, Verhalten korrigiert das evtl.
 
-//	LOG_INFO("(%d mm|%d mm|%d Grad)", x, y, head);
+	int32_t diff_to_target = get_dist(dest_x, dest_y, x_pos, y_pos);
+	LOG_DEBUG("diff_to_target=%d", diff_to_target);
+	if (diff_to_target > straight_go) {
+		/* fuer grosse Strecken zweiten Fehlerwert verwenden */
+		p_goto_pos_err = &goto_pos_err[1];
+	} else {
+		p_goto_pos_err = &goto_pos_err[0];
+	}
+	margin = ctbot_eeprom_read_word(p_goto_pos_err);
+	LOG_DEBUG("margin=%u", margin);
+
 	LOG_DEBUG("(%d mm|%d mm|%d Grad)", x, y, head);
 	if (drive_dir >= 0) {
 		LOG_DEBUG("vorwaerts");
@@ -288,8 +310,8 @@ void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
 }
 
 /*!
- * @brief			Botenfunktion des Positionierungsverhaltens.
- * 					Faehrt einen als Verschiebungsvektor angegebenen Punkt an und dreht den Bot in die gewuenschte Blickrichtung.
+ * Botenfunktion des relativen Positionierungsverhaltens.
+ * Faehrt einen als Verschiebungsvektor angegebenen Punkt an und dreht den Bot in die gewuenschte Blickrichtung.
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  * @param x			x-Komponente des Vektors vom Standort zum Ziel
  * @param y			y-Komponente des Vektors vom Standort zum Ziel
@@ -301,14 +323,15 @@ void bot_goto_pos_rel(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) 
 }
 
 /*!
- * @brief			Botenfunktion des Positionierungsverhaltens.
- * 					Bewegt den Bot um distance mm in aktueller Blickrichtung ("drive_distance(...)")
+ * Botenfunktion des Distanz-Positionierungsverhaltens.
+ * Bewegt den Bot um distance mm in aktueller Blickrichtung ("drive_distance(...)")
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  * @param distance	Distanz in mm, die der Bot fahren soll
  * @param dir		Fahrtrichtung: >=0: vorwaerts, <0 rueckwaerts
  */
-void bot_goto_dist(Behaviour_t * caller, int16_t distance, int16_t dir) {
-	drive_dir =  (int8_t) (dir >=0 ? 1 : -1);
+void bot_goto_dist(Behaviour_t * caller, int16_t distance, int8_t dir) {
+	drive_dir = dir;
+
 	/* Zielpunkt aus Blickrichtung und Distanz berechnen */
 	int16_t target_x = (int16_t) (distance * heading_cos);
 	int16_t target_y = (int16_t) (distance * heading_sin);

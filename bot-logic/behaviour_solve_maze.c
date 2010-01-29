@@ -555,7 +555,7 @@ void bot_solve_maze_behaviour(Behaviour_t * data) {
 						break;
 					}
 				} else {
-					/* keine wand? dann vorfahren und selbes Prozedere nochmal */
+					/* keine Wand? Dann vorfahren und selbes Prozedere nochmal */
 					bot_drive_distance(data, 0, BOT_SPEED_NORMAL, BOT_DIAMETER / 10);
 					mazeState = CHECK_FOR_WALL_RIGHT;
 					checkedWalls = 0;
@@ -633,7 +633,7 @@ void bot_solve_maze_behaviour(Behaviour_t * data) {
 
 		case APPROACH_CORNER:
 			/* ok, nun Strecke bis zur Kante berechnen */
-			x = measure_distance * cos(measured_angle * DEG2RAD) / 10 + (BOT_DIAMETER * 0.15f);
+			x = measure_distance * cos(rad(measured_angle)) / 10.0f + (BOT_DIAMETER * 0.15f);
 			mazeState = TURN_TO_BRANCH;
 			bot_drive_distance(data, 0, BOT_SPEED_NORMAL, (int16_t) x);
 			break;

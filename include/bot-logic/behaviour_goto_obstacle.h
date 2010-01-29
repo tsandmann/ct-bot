@@ -38,7 +38,7 @@
 void bot_goto_obstacle_behaviour(Behaviour_t * data);
 
 /*!
- * Botenfunktion des Positionierungsverhaltens.
+ * Botenfunktion des goto_obstacle-Verhaltens.
  * Bewegt den Bot auf distance mm in aktueller Blickrichtung an ein Hindernis heran
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  * @param distance	Distanz in mm, in der der Bot vor dem Hindernis stehen bleiben soll

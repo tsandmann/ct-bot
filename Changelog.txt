@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2010-01-29 Timo Sandmann [mail@timosandmann.de]: Positionsbestimmung um Fehlerabschaetzung erweitert (MEASURE_POSITION_ERRORS_AVAILABLE), verfuegbar ueber globale Variable pos_error_radius, Anzeige der Positionsunsicherheit in der Map-Anzeige des Sim, got_pos() optimiert, Funktionen rad() und deg() zur Umrechnung von Grad in Bogenmass und umgekehrt, calc_angle_diff_rad() liefert Winkeldifferenz wie calc_angle_diff() aber im Bogenmass.  
+
 2010-01-13 Timo Sandmann [mail@timosandmann.de]: Positionsberechnungen und Map-Code optimiert
 
 2009-12-02 Timo Sandmann [mail@timosandmann.de]: Inhaltsverzeichnis der pdf-Doku korrigiert

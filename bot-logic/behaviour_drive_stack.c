@@ -45,7 +45,7 @@
 /* bot_save_waypos()-Parameter */
 #define STACK_SIZE		64	/*!< Groesse des Positionsspeichers */
 #define MAX_GRADIENT	10	/*!< Maximale Steigungsdifferenz, die noch als gleich angesehen wird */
-#define MAX_POS_DIFF	(200UL * 200UL)	/*!< Quadrat der maximalen Entfernung, bis zu der eine Schleife noch geschlossen wird */
+#define MAX_POS_DIFF	(200L * 200L)	/*!< Quadrat der maximalen Entfernung, bis zu der eine Schleife noch geschlossen wird */
 
 #if STACK_SIZE > POS_STORE_SIZE
 #undef STACK_SIZE
@@ -322,8 +322,8 @@ void bot_save_waypos_behaviour(Behaviour_t * data) {
 					/* Schleifen entfernen */
 					uint8_t i;
 					for (i=2; pos_store_top(pos_store, &pos_1, i); ++i) {
-						uint32_t diff = get_dist(x_pos, y_pos, pos_1.x, pos_1.y);
-						LOG_DEBUG(" diff=%u", diff);
+						int32_t diff = get_dist(x_pos, y_pos, pos_1.x, pos_1.y);
+						LOG_DEBUG(" diff=%d", diff);
 						if (diff < MAX_POS_DIFF) {
 							LOG_DEBUG(" Position (%d|%d)@%u liegt in der Naehe", pos_1.x, pos_1.y, i);
 							uint8_t k;

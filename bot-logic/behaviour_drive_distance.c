@@ -21,12 +21,10 @@
  * @file 	behaviour_drive_distance.c
  * @brief 	Bot faehrt ein Stueck
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	03.11.06
+ * @date 	03.11.2006
  */
 
 #include "bot-logic/bot-logik.h"
-#include "log.h"
-
 
 #if defined BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE || defined BEHAVIOUR_OLYMPIC_AVAILABLE
 /*!

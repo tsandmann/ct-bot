@@ -28,7 +28,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #include "bot-local.h"
 #include "sensor_correction.h"
 #include "map.h"
@@ -185,8 +184,13 @@ void map_2_sim_main(void);
 
 static fifo_t map_2_sim_fifo;	/*!< Fifo fuer Map-2-Sim-Daten */
 static uint16_t map_2_sim_cache[MAP_2_SIM_BUFFER_SIZE];	/*!< Speicher fuer Map-2-Sim-Daten (Adressen der geaenderten Bloecke) */
-static position_t map_2_sim_pos;	/*!< letzte Bot-Position */
-static int16_t map_2_sim_heading;	/*!< letzte Bot-Ausrichtung */
+static struct {
+	position_t pos;		/*!< letzte Bot-Position */
+	int16_t heading;	/*!< letzte Bot-Ausrichtung */
+#ifdef MEASURE_POSITION_ERRORS_AVAILABLE
+	int16_t error;		/*!< letzter Fehlerradius */
+#endif
+} map_2_sim_data;
 static Tcb_t * map_2_sim_worker;	/*!< Worker-Thread fuer die Map-2-Sim-Anzeige */
 uint8_t map_2_sim_worker_stack[MAP_2_SIM_STACK_SIZE];	/*!< Stack des Map-2-Sim-Threads */
 static uint8_t map_2_sim_buffer[512];	/*!< Puffer fuer Map-Block (von der MMC) zur Map-2-Sim-Kommunikation */
@@ -412,9 +416,12 @@ static map_section_t * get_section(int16_t x, int16_t y) {
 		mmc_write_sector(mmc_block, map_buffer);
 
 #ifdef MAP_2_SIM_AVAILABLE
-		map_2_sim_pos.x = world_to_map(x_pos);
-		map_2_sim_pos.y = world_to_map(y_pos);
-		map_2_sim_heading = heading_int;
+		map_2_sim_data.pos.x = world_to_map(x_pos);
+		map_2_sim_data.pos.y = world_to_map(y_pos);
+		map_2_sim_data.heading = heading_int;
+#ifdef MEASURE_POSITION_ERRORS_AVAILABLE
+		map_2_sim_data.error = pos_error_radius / (1000 / MAP_RESOLUTION) + (BOT_DIAMETER / 2 / (1000 / MAP_RESOLUTION));
+#endif
 		fifo_put_data(&map_2_sim_fifo, &map_current_block.block, sizeof(map_current_block.block));
 #endif	// MAP_2_SIM_AVAILABLE
 
@@ -1019,7 +1026,7 @@ uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y,
  * @param color	Farbe der Linie: 0=gruen, 1=rot, sonst schwarz
  */
 void map_draw_line(position_t from, position_t to, uint8_t color) {
-	// Datenformat: {from.x, from.y, to.x, to.y} als payload, color in data_l
+	// Datenformat: {from.x, from.y, to.x, to.y} als payload, color in data_l, 0 in data_r
 	uint8_t data[8];
 	int16_t * ptr = (int16_t *)&data[0];
 	*ptr = from.x;
@@ -1081,6 +1088,23 @@ void map_draw_rect(position_t from, position_t to, uint8_t width, uint8_t color)
 	map_draw_line(from1, from2, color);
 	map_draw_line(to1, to2, color);
 }
+
+/*!
+ * Zeichnet einen Kreis in die Map-Anzeige des Sim
+ * @param center Korrdinaten des Kreismittelpunkts (Map-Koordinaten)
+ * @param radius Radius des Kreies (in Map-Aufloesung)
+ * @param color	Farbe der Linien: 0=gruen, 1=rot, sonst schwarz
+ */
+void map_draw_circle(position_t center, int16_t radius, uint8_t color) {
+	// Datenformat: {center.x, center.y} als payload, color in data_l, radius in data_r
+	uint8_t data[4];
+	int16_t * ptr = (int16_t *)&data[0];
+	*ptr = center.x;
+	ptr++;
+	*ptr = center.y;
+	const int16_t c = color;
+	command_write_rawdata(CMD_MAP, SUB_MAP_CIRCLE, c, radius, sizeof(data), data);
+}
 #endif	// MAP_2_SIM_AVAILABLE
 
 
@@ -1116,7 +1140,7 @@ void map_update_main(void) {
 		float * sin_head = NULL;
 		float * cos_head = NULL;
 		if (cache_tmp->mode.data.border || cache_tmp->mode.data.distance) {
-			const float head = (cache_tmp->heading / 10.0f) * DEG2RAD;
+			const float head = rad(cache_tmp->heading / 10.0f);
 			float sin_tmp = sin(head);
 			float cos_tmp = cos(head);
 			sin_head = &sin_tmp;
@@ -1191,13 +1215,17 @@ void map_2_sim_main(void) {
 				/* Block nicht gefunden -> wurde noch nicht gesendet, also jetzt senden */
 //				printf("sende Block %u\n", cache_copy[i]);
 				mmc_read_sector(map_start_block + cache_copy[i], map_2_sim_buffer);
-				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, (int16_t)cache_copy[i], map_2_sim_pos.x, 128, map_2_sim_buffer);
-				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, (int16_t)cache_copy[i], map_2_sim_pos.y, 128, &map_2_sim_buffer[128]);
-				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, (int16_t)cache_copy[i], map_2_sim_heading, 128, &map_2_sim_buffer[256]);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, (int16_t)cache_copy[i], map_2_sim_data.pos.x, 128, map_2_sim_buffer);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, (int16_t)cache_copy[i], map_2_sim_data.pos.y, 128, &map_2_sim_buffer[128]);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, (int16_t)cache_copy[i], map_2_sim_data.heading, 128, &map_2_sim_buffer[256]);
 				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_4, (int16_t)cache_copy[i], 0, 128, &map_2_sim_buffer[384]);
 				cache_copy[i] = 0;
 			}
 		}
+#ifdef MEASURE_POSITION_ERRORS_AVAILABLE
+		command_write(CMD_MAP, SUB_MAP_CLEAR_CIRCLES, 0, 0, 0);
+		map_draw_circle(map_2_sim_data.pos, map_2_sim_data.error, 0);
+#endif
 //		printf("\n");
 		os_signal_release(&map_2_sim_signal);
 	}
