@@ -548,6 +548,11 @@ void sensor_reset(void) {
 	x_mou = 0;
 	y_mou = 0;
 #endif	// MEASURE_MOUSE_AVAILABLE
+
+#ifdef MEASURE_POSITION_ERRORS_AVAILABLE
+	direction.raw = (uint8_t) ((~direction.raw) & 0x3);
+	pos_error_radius = 0;
+#endif
 }
 
 /*!

@@ -95,7 +95,7 @@
  * Sektionen in einen Block Es stehen immer 2 Sections also 1
  * Flash-Block im SRAM und werden bei Bedarf gewechselt.
  *
- * Felder sind vom Typ int8 und haben einen Wertebereich von -128
+ * Felder sind vom Typ int8_t und haben einen Wertebereich von -128
  * bis 127.
  * 0 bedeutet: wir wissen nichts über das Feld
  * negative Werte bedeuten: Hindernis
@@ -121,7 +121,7 @@
 #define MAP_STEP_FREE_SENSOR		2	/*!< Um diesen Wert wird ein Feld inkrementiert, wenn es vom Sensor als frei erkannt wird */
 #define MAP_STEP_FREE_LOCATION		20	/*!< Um diesen Wert wird ein Feld inkrementiert, wenn der Bot drueber faehrt */
 
-#define MAP_STEP_OCCUPIED			10	/*!< Um diesen Wert wird ein Feld dekrementiert, wenn es als belegt erkannt wird */
+#define MAP_STEP_OCCUPIED			5	/*!< Um diesen Wert wird ein Feld dekrementiert, wenn es als belegt erkannt wird */
 
 #define MAP_RADIUS					50	/*!< Umkreis eines Messpunktes, der als besetzt aktualisiert wird (Streukreis) [mm] */
 /*! Umkreis einen Messpunkt, der als besetzt aktualisiert wird (Streukreis) [Felder] */
@@ -155,12 +155,7 @@ static Tcb_t * map_update_thread;					/*!< Thread fuer Map-Update */
 static os_signal_t lock_signal;						/*!< Signal zur Synchronisation von Kartenzugriffen */
 os_signal_t map_buffer_signal;						/*!< Signal das anzeigt, ob Daten im Map-Puffer sind */
 
-#ifdef MCU
-// kein Pro- und Epilog
-void map_update_main(void) __attribute__((OS_task));
-#else	// PC
-void map_update_main(void);
-#endif	// MCU
+void map_update_main(void) OS_TASK_ATTR;
 
 // Es passen immer 2 Sektionen in den Puffer
 static uint8_t map_buffer[sizeof(map_section_t) * 2];	/*!< statischer Puffer */
@@ -176,11 +171,7 @@ static struct {
 static uint8_t init_state = 0;	/*!< Status der Initialisierung (1, falls init OK) */
 
 #ifdef MAP_2_SIM_AVAILABLE
-#ifdef MCU
-void map_2_sim_main(void) __attribute__((OS_task));
-#else	 // PC
-void map_2_sim_main(void);
-#endif	// MCU
+void map_2_sim_main(void) OS_TASK_ATTR;
 
 static fifo_t map_2_sim_fifo;	/*!< Fifo fuer Map-2-Sim-Daten */
 static uint16_t map_2_sim_cache[MAP_2_SIM_BUFFER_SIZE];	/*!< Speicher fuer Map-2-Sim-Daten (Adressen der geaenderten Bloecke) */
@@ -604,7 +595,7 @@ static void update_field_circle(int16_t x, int16_t y, int8_t radius, int8_t valu
 
 	int16_t sec_x, sec_y, X, Y, dX, dY;
 	int16_t starty, startx, stopx, stopy;
-	// Gehe über alle betroffenen Sektionen
+	// Gehe ueber alle betroffenen Sektionen
 	for (sec_y = sec_y_min; sec_y <= sec_y_max; sec_y++) {
 		// Bereich weiter eingrenzen
 		if (sec_y * MAP_SECTION_POINTS > (y - radius)) {
@@ -649,17 +640,33 @@ static void update_field_circle(int16_t x, int16_t y, int8_t radius, int8_t valu
  * Markiert ein Feld als belegt -- drueckt den Feldwert etwas mehr in Richtung "belegt"
  * @param x	x-Ordinate der Karte (nicht der Welt!!!)
  * @param y	y-Ordinate der Karte (nicht der Welt!!!)
+ * @param location_prob Gibt an, wie sicher wir ueber die Position sind [0; 255]
  */
-static void update_occupied(int16_t x, int16_t y) {
-	// Nur wenn ein Umkreis gewuenscht ist, auch einen malen
-#if MAP_RADIUS_FIELDS > 0
-	int8_t r;
-	for (r=1; r<=MAP_RADIUS_FIELDS; r++) {
-		update_field_circle(x, y, r, -MAP_STEP_OCCUPIED / MAP_RADIUS_FIELDS);
-	}
+static void update_occupied(int16_t x, int16_t y, uint8_t location_prob) {
+#ifdef MEASURE_POSITION_ERRORS_AVAILABLE
+	const uint8_t prob = location_prob;
 #else
-	update_field(x, y, -MAP_STEP_OCCUPIED);
+	location_prob = location_prob;
+	const uint8_t prob = 255;
 #endif
+	const int8_t r = MAP_RADIUS_FIELDS;
+	const int8_t r_2 = r * r;
+	int16_t X, Y;
+	int8_t dX = r;
+	for (X=x-r; X<=x+r; ++X, --dX) {
+		const int8_t dX_2 = (int8_t) (dX * dX);
+		int8_t dY = r;
+		for (Y=y-r; Y<=y+r; ++Y, --dY) {
+			int8_t h = (int8_t) (dY * dY + dX_2);
+			if (h <= r_2) {
+				h /= 2;
+				if (h < MAP_STEP_OCCUPIED) {
+					h = MAP_STEP_OCCUPIED;
+				}
+				update_field(X, Y, (int8_t) ((((- MAP_STEP_OCCUPIED * MAP_STEP_OCCUPIED) / h) + 1) * prob / 255 - 1));
+			}
+		}
+	}
 }
 
 /*!
@@ -710,8 +717,9 @@ static void set_value_occupied(int16_t x, int16_t y, int8_t val) {
  * @param h_sin sin(Blickrichtung)
  * @param h_cos	cos(Blickrichtung)
  * @param dist 	Sensorwert
+ * @param location_prob Gibt an, wie sicher wir ueber die Position sind [0; 255]
  */
-static void update_sensor_distance(int16_t x, int16_t y, float h_sin, float h_cos, int16_t dist) {
+static void update_sensor_distance(int16_t x, int16_t y, float h_sin, float h_cos, int16_t dist, uint8_t location_prob) {
 	// Ort des Sensors in Kartenkoordinaten
 	int16_t X = world_to_map(x);
 	int16_t Y = world_to_map(y);
@@ -739,11 +747,17 @@ static void update_sensor_distance(int16_t x, int16_t y, float h_sin, float h_co
 	const int8_t sY =  (int8_t) (PH_Y < Y ? -1 : 1);
 	int8_t dY = (int8_t) abs(PH_Y - Y); // Laenge der Linie in Y-Richtung
 
+#ifdef MEASURE_POSITION_ERRORS_AVAILABLE
+	const int8_t step_value = (int8_t) ((MAP_STEP_FREE_SENSOR - 1) * location_prob / 255 + 1);
+#else
+	const int8_t step_value = MAP_STEP_FREE_SENSOR;
+#endif
+
 	if (dX >= dY) { // Hangle Dich an der laengeren Achse entlang
 		if (dY > 0) dY--; // stoppe ein Feld vor dem Hindernis
 		int8_t lh = dX / 2;
 		for (i=0; i<dX; ++i) {
-			update_field(lX, lY, MAP_STEP_FREE_SENSOR);
+			update_field(lX, lY, step_value);
 			lX += sX;
 			lh = (int8_t) (lh + dY);
 			if (lh >= dX) {
@@ -755,7 +769,7 @@ static void update_sensor_distance(int16_t x, int16_t y, float h_sin, float h_co
 		if (dX > 0) dX--; // stoppe ein Feld vor dem Hindernis
 		int8_t lh = dY / 2;
 		for (i=0; i<dY; ++i) {
-			update_field(lX, lY, MAP_STEP_FREE_SENSOR);
+			update_field(lX, lY, step_value);
 			lY += sY;
 			lh = (int8_t) (lh + dX);
 			if (lh >= dY) {
@@ -767,7 +781,7 @@ static void update_sensor_distance(int16_t x, int16_t y, float h_sin, float h_co
 
 	/* Hindernis eintragen */
 	if (dist <= SENS_IR_MAX_DIST) {
-		update_occupied(PH_X, PH_Y);
+		update_occupied(PH_X, PH_Y, location_prob);
 	}
 }
 
@@ -779,9 +793,10 @@ static void update_sensor_distance(int16_t x, int16_t y, float h_sin, float h_co
  * @param cos_head	cos(Blickrichtung)
  * @param distL		Sensorwert links
  * @param distR		Sensorwert rechts
+ * @param location_prob Gibt an, wie sicher wir ueber die Position sind [0; 255]
  */
 static void update_distance(int16_t x, int16_t y, float sin_head, float cos_head, int16_t distL,
-		int16_t distR) {
+		int16_t distR, uint8_t location_prob) {
 
 	// Ort des rechten Sensors in Weltkoordinaten
 	int16_t Pr_x = x + (int16_t)(DISTSENSOR_POS_SW * sin_head
@@ -795,22 +810,23 @@ static void update_distance(int16_t x, int16_t y, float sin_head, float cos_head
 	int16_t Pl_y = y + (int16_t)(DISTSENSOR_POS_SW * cos_head
 			+ DISTSENSOR_POS_FW * sin_head);
 
-	update_sensor_distance(Pl_x, Pl_y, sin_head, cos_head, distL);
-	update_sensor_distance(Pr_x, Pr_y, sin_head, cos_head, distR);
+	update_sensor_distance(Pl_x, Pl_y, sin_head, cos_head, distL, location_prob);
+	update_sensor_distance(Pr_x, Pr_y, sin_head, cos_head, distR, location_prob);
 }
 
 /*!
  * Aktualisiert den Standkreis der internen Karte
  * @param x X-Achse der Position in Weltkoordinaten
  * @param y Y-Achse der Position in Weltkoordinaten
+ * @param location_prob Gibt an, wie sicher wir ueber die Position sind [0; 255]
  */
-static void update_location(int16_t x, int16_t y) {
+static void update_location(int16_t x, int16_t y, uint8_t location_prob) {
 	int16_t x_map = world_to_map(x);
 	int16_t y_map = world_to_map(y);
 
 	// Aktualisiere die vom Bot selbst belegte Flaeche
-	update_field_circle(x_map, y_map, BOT_DIAMETER/20*MAP_RESOLUTION/100,
-			MAP_STEP_FREE_LOCATION);
+	update_field_circle(x_map, y_map, BOT_DIAMETER / 20 * MAP_RESOLUTION / 100,
+			(int8_t) ((MAP_STEP_FREE_LOCATION - 1) * location_prob / 255 + 1));
 }
 
 /*!
@@ -965,7 +981,7 @@ static uint8_t get_ratio(int16_t x1, int16_t y1, int16_t x2,
 	from.y = y1;
 	to.x = x2;
 	to.y = y2;
-	map_draw_rect(from, to, width * 2, result == MAP_RATIO_FULL ? 0 : 1);
+	map_draw_rect(from, to, (uint8_t) (width * 2), (uint8_t) (result == MAP_RATIO_FULL ? 0 : 1));
 #endif	// DEBUG_GET_RATIO
 
 	return result;
@@ -1128,9 +1144,15 @@ void map_update_main(void) {
 		LOG_DEBUG("Achtung: Dieser Eintrag ergibt keinen Sinn, kein einziges mode-bit gesetzt");
 #endif
 
+#ifdef MEASURE_POSITION_ERRORS_AVAILABLE
+		const uint8_t location_prob = cache_tmp->loc_prob;
+#else
+		const uint8_t location_prob = 255;
+#endif
+
 		/* Grundflaeche updaten, falls location-mode */
 		if (cache_tmp->mode.data.location) {
-			update_location(cache_tmp->x_pos, cache_tmp->y_pos);
+			update_location(cache_tmp->x_pos, cache_tmp->y_pos, location_prob);
 		}
 
 #ifdef MAP_USE_TRIG_CACHE
@@ -1160,7 +1182,7 @@ void map_update_main(void) {
 		if (cache_tmp->mode.data.distance) {
 			update_distance(cache_tmp->x_pos, cache_tmp->y_pos,
 				*sin_head, *cos_head, cache_tmp->dataL * 5,
-				cache_tmp->dataR * 5);
+				cache_tmp->dataR * 5, location_prob);
 		}
 
 		/* Falls Fifo leer, Sperre aufheben */
@@ -1583,12 +1605,12 @@ static inline int map_test_get_ratio(void) {
 	if (result != 255) {
 		all_ok = 0;
 	}
-	printf("map_get_probability(-100, -100, 100, 100, 100, 0, 0) = %u\n", result);
+	printf("map_get_ratio(-100, -100, 100, 100, 100, 0, 0) = %u\n", result);
 	result = map_get_ratio(-100, -100, 100, 100, 100, 100, 100);
 	if (result != 0) {
 		all_ok = 0;
 	}
-	printf("map_get_probability(-100, -100, 100, 100, 100, 100, 100) = %u\n", result);
+	printf("map_get_ratio(-100, -100, 100, 100, 100, 100, 100) = %u\n", result);
 	int i, j, k;
 	int8_t value = -120;
 	for (k=0; k<13; k++) {
@@ -1602,18 +1624,18 @@ static inline int map_test_get_ratio(void) {
 		if (result != 0) {
 			if (value != 0) {
 				all_ok = 0;
-				printf("map_get_probability(-200, -100, 100, 200, 100, 0, 0) = %u\n", result);
+				printf("map_get_ratio(-200, -100, 100, 200, 100, 0, 0) = %u\n", result);
 			}
 		} else {
 			if (value == 0) {
 				all_ok = 0;
-				printf("map_get_probability(-200, -100, 100, 200, 100, 0, 0) = %u\n", result);
+				printf("map_get_ratio(-200, -100, 100, 200, 100, 0, 0) = %u\n", result);
 			}
 		}
 		result = map_get_ratio(-200, -100, 100, 200, 100, value, value);
 		if (result != 255) {
 			all_ok = 0;
-			printf("map_get_probability(-200, -100, 100, 200, 100, %d, %d) = %u\n", value, value, result);
+			printf("map_get_ratio(-200, -100, 100, 200, 100, %d, %d) = %u\n", value, value, result);
 		}
 		int16_t width = 0;
 		int ok = 1;
@@ -1621,7 +1643,7 @@ static inline int map_test_get_ratio(void) {
 			for (j=-150; j<=150; j+=50) {
 				int last_result = map_get_ratio(i, j, 155, 155, 0, value, value);
 				if (last_result != 255) {
-					printf("\tmap_get_probability(%d, %d, 155, 155, %u, %d, %d) = %u\n", i, j, width, value, value, last_result);
+					printf("\tmap_get_ratio(%d, %d, 155, 155, %u, %d, %d) = %u\n", i, j, width, value, value, last_result);
 					printf("test(%4d,%4d)\tFAILED\n", i, j);
 					continue;
 				}
@@ -1630,7 +1652,7 @@ static inline int map_test_get_ratio(void) {
 					int diff = abs((int)result - last_result);
 					if (diff > 2) {
 						ok = 0;
-						printf("\tmap_get_probability(%d, %d, 155, 155, %u, %d, %d) = %u\n", i, j, width, value, value, result);
+						printf("\tmap_get_ratio(%d, %d, 155, 155, %u, %d, %d) = %u\n", i, j, width, value, value, result);
 						printf("\tlast_result=%d\n", last_result);
 						break;
 					}

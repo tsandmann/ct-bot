@@ -74,6 +74,9 @@ typedef struct {
 	uint8_t dataL;		/*!< Entfernung linker Distanzsensor [5 mm] aber auch BorderSensor [0/1] */
 	uint8_t dataR;		/*!< Entfernung rechter Distanzsensor [5 mm] aber auch BorderSensor [0/1] */
 	scan_mode_t mode;	/*!< Was soll aktualisiert werden */
+#ifdef MEASURE_POSITION_ERRORS_AVAILABLE
+	uint8_t loc_prob;	/*!< gibt an, wie sicher wir ueber die Position sind [0; 255] */
+#endif
 }
 #ifndef DOXYGEN
 __attribute__ ((packed)) // Keine Luecken in der Struktur lassen

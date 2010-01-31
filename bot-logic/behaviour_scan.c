@@ -21,7 +21,7 @@
  * @file 	behaviour_scan.c
  * @brief 	Scannt die Umgebung und traegt sie in die Karte ein
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	03.11.06
+ * @date 	03.11.2006
  */
 
 #include "bot-logic/bot-logik.h"
@@ -103,6 +103,10 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 	cache_tmp->mode.raw = 0;
 	cache_tmp->dataL = 0;
 	cache_tmp->dataR = 0;
+#ifdef MEASURE_POSITION_ERRORS_AVAILABLE
+	cache_tmp->loc_prob = (uint8_t) (pos_error_radius < MAP_MAX_ERROR_RADIUS ? 255 - (pos_error_radius * 256
+			/ MAP_MAX_ERROR_RADIUS) : 0);
+#endif // MEASURE_POSITION_ERRORS_AVAILABLE
 
 	/*
 	 * STANDFLAECHE

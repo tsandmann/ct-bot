@@ -21,7 +21,7 @@
  * @file 	behaviour_scan.h
  * @brief 	Scannt die Umgebung und traegt sie in die Karte ein
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	03.11.06
+ * @date 	03.11.2006
  */
 
 #ifndef BEHAVIOUR_SCAN_H_
@@ -35,7 +35,9 @@
 #define SCAN_OTF_RESOLUTION_ANGLE_BORDER		10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Abgrundsensoren fuer die Karte ausgewertet werden */
 
 #define SCAN_OTF_RESOLUTION_ANGLE_DISTSENS		10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Distanzsensoren fuer die Karte ausgewertet werden */
-#define SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS	120	/*!< Nach welcher gefahrenen Strecke [mm] sollen die  Distanzsensoren fuer die Karte ausgewertet werden */
+#define SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS	180	/*!< Nach welcher gefahrenen Strecke [mm] sollen die  Distanzsensoren fuer die Karte ausgewertet werden */
+
+#define MAP_MAX_ERROR_RADIUS				200		/*!< maximaler Wert [mm] von pos_error_radius, der fuer die Berechnung der Positionssicherheit verwendet wird (alles darueber wird mit location_prob = 0 eingetragen) */
 
 #define SCAN_OTF_SLEEP_TIME					2000	/*!< Wartezeit fuer andere Verhalten, falls Cache (sehr) voll ist [ms] */
 /*! Schwellwert fuer freien Cache-Speicher, ab dem der Cache als sehr voll gilt */
