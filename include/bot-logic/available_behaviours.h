@@ -18,7 +18,7 @@
 //#define BEHAVIOUR_HANG_ON_AVAILABLE	/*!< Erkennen des Haengenbleibens als Notfallverhalten? */
 //#define BEHAVIOUR_GOTO_AVAILABLE	/*!< goto vorhanden? */
 //#define BEHAVIOUR_GOTOXY_AVAILABLE	/*!< gotoxy vorhanden? */
-//#define BEHAVIOUR_GOTO_POS_AVAILABLE	/*!< goto_pos vorhanden? */
+#define BEHAVIOUR_GOTO_POS_AVAILABLE	/*!< goto_pos vorhanden? */
 //#define BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE	/*!< goto_obstacle vorhanden? */
 #define BEHAVIOUR_TURN_AVAILABLE	/*!< turn vorhanden? */
 //#define BEHAVIOUR_TURN_TEST_AVAILABLE	/*!< turn_test vorhanden? */

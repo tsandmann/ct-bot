@@ -1572,7 +1572,7 @@
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.934712041" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="PC"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.185426673" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -pipe -Wextra -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.185426673" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -pipe -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations" valueType="string"/>
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.273588025" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.2122697880" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1000123183" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
@@ -3084,7 +3084,7 @@
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.736140060" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="MCU"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.462981231" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega32 -Wextra -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.462981231" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega32 -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
 								<option id="gnu.c.compiler.option.optimization.flags.1587419901" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.1328780867" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.1031987734" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
@@ -6135,7 +6135,7 @@
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1707492998" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="MCU"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.66348866" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -pipe -mmcu=atmega32 -Wextra -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.66348866" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -pipe -mmcu=atmega32 -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
 								<option id="gnu.c.compiler.option.debugging.gprof.108953983" name="Generate gprof information (-pg)" superClass="gnu.c.compiler.option.debugging.gprof" value="false" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.debugging.prof.847701515" name="Generate prof information (-p)" superClass="gnu.c.compiler.option.debugging.prof" value="false" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.optimization.flags.313568021" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
@@ -7673,7 +7673,7 @@
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.356937357" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="MCU"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.1377346187" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -pipe -mmcu=atmega644 -Wextra -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.1377346187" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -pipe -mmcu=atmega644 -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
 								<option id="gnu.c.compiler.option.debugging.gprof.1544585124" name="Generate gprof information (-pg)" superClass="gnu.c.compiler.option.debugging.gprof" value="false" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.debugging.prof.802297104" name="Generate prof information (-p)" superClass="gnu.c.compiler.option.debugging.prof" value="false" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.optimization.flags.2007278287" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
@@ -9212,7 +9212,7 @@
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1923705249" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="MCU"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.1354787988" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -pipe -mmcu=atmega644p -Wextra -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.1354787988" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -pipe -mmcu=atmega644p -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
 								<option id="gnu.c.compiler.option.debugging.gprof.575711919" name="Generate gprof information (-pg)" superClass="gnu.c.compiler.option.debugging.gprof" value="false" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.debugging.prof.1082868659" name="Generate prof information (-p)" superClass="gnu.c.compiler.option.debugging.prof" value="false" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.optimization.flags.480060782" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
@@ -15337,7 +15337,7 @@
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1955861847" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="MCU"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.366297387" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega644 -Wextra -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.366297387" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega644 -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
 								<option id="gnu.c.compiler.option.optimization.flags.59372809" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.2099585891" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.2084200111" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
@@ -16850,7 +16850,7 @@
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.962110603" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="MCU"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.1091714490" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega644p -Wextra -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.1091714490" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega644p -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
 								<option id="gnu.c.compiler.option.optimization.flags.2026348384" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.1636572473" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.159105961" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
@@ -18363,7 +18363,7 @@
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.351935420" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="PC"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.952345496" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -pipe -mtune=cortex-a8 -mfpu=neon -mfloat-abi=softfp -Wextra -Wunreachable-code -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.952345496" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -pipe -mtune=cortex-a8 -mfpu=neon -mfloat-abi=softfp -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations" valueType="string"/>
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.34276927" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" value="gnu.c.optimization.level.more" valueType="enumerated"/>
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.834541131" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.302854621" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>

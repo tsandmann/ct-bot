@@ -36,10 +36,10 @@ void bot_drive(int8_t curve, int16_t speed) {
 	// Wenn etwas ausgewichen wurde, bricht das Verhalten hier ab, sonst wuerde es evtl. die Handlungsanweisungen von bot_avoid_harm() stoeren.
 	//if(bot_avoid_harm()) return;
 	if(curve < 0) {
-		speedWishLeft = speed * (1.0 + 2.0*((float)curve/127));
+		speedWishLeft = (int16_t) (speed * (1.0f + 2.0f * ((float) curve / 127.0f)));
 		speedWishRight = speed;
 	} else if (curve > 0) {
-		speedWishRight = speed * (1.0 - 2.0*((float)curve/127));
+		speedWishRight = (int16_t) (speed * (1.0f - 2.0f * ((float) curve / 127.0f)));
 		speedWishLeft = speed;
 	} else {
 		speedWishLeft = speed;
@@ -98,7 +98,7 @@ void bot_drive_distance(Behaviour_t * caller, int8_t curve, int16_t speed, int16
 
 	int32_t tmp = cm;
 	tmp *= 10 * ENCODER_MARKS;
-	tmp /= WHEEL_PERIMETER;
+	tmp = (int32_t) ((float) tmp / (float) WHEEL_PERIMETER);
 	int16_t marks_to_drive = (int16_t) tmp;
 
 	int16_t * encoder;

@@ -67,7 +67,7 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 
 	switch (catch_pillar_state){
 		case START:
-		       startangle=heading;
+		       startangle=heading_int;
 		       cancelcheck=False;
 		       catch_pillar_state=SEARCH_LEFT;
 		     break;

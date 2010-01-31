@@ -176,7 +176,7 @@ void motor_update(uint8_t dev) {
 #if F_CPU == 20000000 && defined SPEED_CONTROL_AVAILABLE
 		PWM_R = (uint16_t) (1023 - (motor_right << 1));
 #else
-		PWM_R = 511 - motor_right;
+		PWM_R = (uint16_t) (511 - motor_right);
 #endif	// F_CPU
 	}
 }

@@ -435,11 +435,11 @@ void motor_set(int16_t left, int16_t right) {
 		direction.left = DIRECTION_BACKWARD;
 		speed_l = -left;
 	}
-	uint16_t pwm;
+	int16_t pwm;
 	if (left <= BOT_SPEED_NORMAL) {
-		pwm = (uint16_t)(((float)PWMMAX / (BOT_SPEED_MAX * 4.0f)) * left) + 50;
+		pwm = (int16_t)(((float)PWMMAX / (BOT_SPEED_MAX * 4.0f)) * left) + 50;
 	} else {
-		pwm = (uint16_t)(((float)PWMMAX / (BOT_SPEED_MAX * 1.1f)) * left) - 30;
+		pwm = (int16_t)(((float)PWMMAX / (BOT_SPEED_MAX * 1.1f)) * left) - 30;
 	}
 	motor_left = left == 0 ? 0 : pwm;
 	if (speedSignRight > 0) {
@@ -450,9 +450,9 @@ void motor_set(int16_t left, int16_t right) {
 		speed_r = -right;
 	}
 	if (right <= BOT_SPEED_NORMAL) {
-		pwm = (uint16_t)(((float)PWMMAX / (BOT_SPEED_MAX * 4.0f)) * right) + 50;
+		pwm = (int16_t)(((float)PWMMAX / (BOT_SPEED_MAX * 4.0f)) * right) + 50;
 	} else {
-		pwm = (uint16_t)(((float)PWMMAX / (BOT_SPEED_MAX * 1.1f)) * right) - 30;
+		pwm = (int16_t)(((float)PWMMAX / (BOT_SPEED_MAX * 1.1f)) * right) - 30;
 	}
 	motor_right = right == 0 ? 0 : pwm;
 	motor_update(0);
