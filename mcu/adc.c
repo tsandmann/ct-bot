@@ -37,7 +37,7 @@ typedef struct {
 	int16_t * value;
 } adc_channel_t;
 
-static int8_t act_channel = -1;
+static uint8_t act_channel = 255;
 static adc_channel_t channels[8];
 
 /*!
@@ -88,22 +88,26 @@ void adc_init(uint8_t channel) {
  */
 void adc_read_int(uint8_t channel, int16_t * p_sens) {
 	static uint8_t next_channel = 0;
-	if (act_channel == -1) next_channel = 0;
-	if (next_channel >= 8) return;	// es gibt nur 8 ADC-Channels
+	if (act_channel == 255) {
+		next_channel = 0;
+	}
+	if (next_channel >= 8) {
+		return;	// es gibt nur 8 ADC-Channels
+	}
 	channels[next_channel].value = p_sens;
-	channels[next_channel++].channel = (uint8_t)(channel & 0x7);
-	if (act_channel == -1) {
+	channels[next_channel++].channel = (uint8_t) (channel & 0x7);
+	if (act_channel == 255) {
 		act_channel = 0;
 		// interne Refernzspannung AVCC, rechts Ausrichtung
 		ADMUX = _BV(REFS0); //| _BV(REFS1);	 //|(0<<ADLAR);
 
-		ADMUX = (uint8_t)(ADMUX | (channel & 0x07)); // Und jetzt Kanal waehlen, nur single ended
+		ADMUX = (uint8_t) (ADMUX | (channel & 0x07)); // Und jetzt Kanal waehlen, nur single ended
 
-		ADCSRA= (1<<ADPS2) | (1<<ADPS1) |	// prescale faktor = 128 => ADC laeuft
-			(1 << ADPS0)   |				// mit 16 MHz / 128 = 125 kHz
-			(1 << ADEN)    |				// ADC an
-			(1 << ADSC)    |				// Beginne mit der Konvertierung
-			(1 << ADIE);					// Interrupt an
+		ADCSRA = (1 << ADPS2) | (1 << ADPS1) | // prescale Faktor = 128 => ADC laeuft
+			(1 << ADPS0) | // mit 16 MHz / 128 = 125 kHz
+			(1 << ADEN)  | // ADC an
+			(1 << ADSC)  | // Beginne mit der Konvertierung
+			(1 << ADIE);   // Interrupt an
 	}
 }
 
@@ -113,21 +117,21 @@ void adc_read_int(uint8_t channel, int16_t * p_sens) {
  */
 ISR(SIG_ADC) {
 	/* Daten speichern und Pointer im Puffer loeschen */
-	*channels[act_channel].value = (int16_t)ADC;
+	*channels[act_channel].value = (int16_t) ADC;
 	channels[act_channel].value = NULL;
 	/* zum naechsten Sensor weiterschalten */
 	act_channel++;
 	if (act_channel < 8 && channels[act_channel].value != NULL) {
 		ADMUX = _BV(REFS0); //| _BV(REFS1);	//|(0<<ADLAR);	// interne Refernzspannung AVCC, rechts Ausrichtung
 		ADMUX |= channels[act_channel].channel;
-		ADCSRA = (1<<ADPS2) | (1<<ADPS1) |	// prescale faktor = 128 => ADC laeuft
-		(1 << ADPS0)	|					// mit 16 MHz / 128 = 125 kHz
-		(1 << ADEN) 	|					// ADC an
-		(1 << ADSC) 	|					// Beginne mit der Konvertierung
-		(1 << ADIE);						// Interrupt an
+		ADCSRA = (1 << ADPS2) | (1 << ADPS1) | // prescale Faktor = 128 => ADC laeuft
+			(1 << ADPS0) | // mit 16 MHz / 128 = 125 kHz
+			(1 << ADEN)  | // ADC an
+			(1 << ADSC)  | // Beginne mit der Konvertierung
+			(1 << ADIE);   // Interrupt an
 	} else {
 		ADCSRA = 0;	// ADC aus
-		act_channel = -1;
+		act_channel = 255;
 	}
 }
 
@@ -137,7 +141,7 @@ ISR(SIG_ADC) {
  * 255: derzeit wird kein Channel ausgewertet (= Konvertierung fertig)
  */
 uint8_t adc_get_active_channel(void) {
-	return (uint8_t)act_channel;
+	return act_channel;
 }
 
-#endif	// MCU
+#endif // MCU

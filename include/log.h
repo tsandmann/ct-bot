@@ -298,10 +298,11 @@ void minilog_printf(const char * format, ...);
 #endif	// USE_MINILOG
 #else	// LOG_AVAILABLE
 
-#define LOG_DEBUG(...)
-#define LOG_INFO(...)
-#define LOG_WARN(...)
-#define LOG_ERROR(...)
-#define LOG_FATAL(...)
+#define LOG_DEBUG(a, ...)
+#define LOG_INFO(a, ...)
+#define LOG_WARN(a, ...)
+#define LOG_ERROR(a, ...)
+#define LOG_FATAL(a, ...)
+#define LOG_RAW(a, ...)
 #endif	// LOG_AVAILABLE
 #endif	// LOG_H_

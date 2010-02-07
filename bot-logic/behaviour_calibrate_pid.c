@@ -175,7 +175,7 @@ static void compare_weightings(const uint16 dt, int8* pid_param, const int8 step
 		}
 
 		/* neuen Parameter einstellen und Nachlauf abwarten */
-		*pid_param += step;
+		*pid_param = (int8_t) (*pid_param + step);
 
 //		uint32_t weight_int = weight * 1000000.0f;
 //		LOG_DEBUG("weight=%lu", weight_int);
@@ -209,8 +209,8 @@ static void find_Kp_region(void) {
 		pNextJob = find_best_Kp_Ki;
 
 		/* wir suchen Ki in der Umgebung (+/- 10) von best_Kp */
-		Kp = best_Kp > 10 ? best_Kp - 10 : 0;
-		Kp_region_end = best_Kp < 116 ? best_Kp + 10 : 120;
+		Kp = (int8_t) (best_Kp > 10 ? best_Kp - 10 : 0);
+		Kp_region_end = (int8_t) (best_Kp < 116 ? best_Kp + 10 : 120);
 		Ki = 1;
 		best_weight = FLT_MAX;
 	}
@@ -234,7 +234,7 @@ static void find_best_Kp_Ki(void) {
 
 	if (Kp > Kp_region_end) {
 		/* alle Kp fuer aktuelles Ki ueberprueft => mit naechstem Ki weiter */
-		Kp -= 22;
+		Kp = (int8_t) (Kp - 22);
 		Ki++;
 	}
 	if (Ki < 0 || Ki > max_Ki) {

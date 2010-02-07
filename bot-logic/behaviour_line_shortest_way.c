@@ -30,7 +30,6 @@
  *
  * @todo	Unterstuetzung fuer Linienlabyrinthe mit Zyklen
  */
-
 #include "bot-logic/bot-logik.h"
 
 #ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
@@ -164,7 +163,7 @@ static int16_t lastpos_y = 0;
 static uint8_t distance_reached(int16_t * last_xpoint,int16_t * last_ypoint) {
 
 	// Abstand seit letztem Observerlauf ermitteln
-	uint16_t diff = get_dist(x_pos, y_pos, *last_xpoint, *last_ypoint);
+	uint16_t diff = (uint16_t) get_dist(x_pos, y_pos, *last_xpoint, *last_ypoint);
 
 	//erst nach gewissem Abstand oder gleich bei noch initialem Wert Mappruefung
 	if (diff >= CHECK_DISTANCE_QUAD) {
@@ -196,7 +195,7 @@ int16_t angle_t=0;
 void bot_check_reverse_direction_behaviour(Behaviour_t * data) {
 	switch (reverse_state) {
 	case 0:
-		last_heading = heading;
+		last_heading = heading_int;
 		reverse_state = 1;
 		bot_reverse = False;
 		//LOG_DEBUG("-Start Check reverse mit ang %1d", last_heading);
@@ -208,7 +207,7 @@ void bot_check_reverse_direction_behaviour(Behaviour_t * data) {
 			angle_t = 360 - angle_t;
 
 		if (angle_t > CHECK_ANGLE_REV) {
-			last_heading = heading;
+			last_heading = heading_int;
 			LOG_DEBUG("-um Winkel gedreht %1d", angle_t);
 			bot_reverse = True; // Kennung muss vom Auswerteverhalten nach Erkennung rueckgesetzt werden
 			return_from_behaviour(data); // gleich Deaktivierung nach Erkennung entgegengesetzte Richtung
@@ -263,10 +262,11 @@ static void push_stack_crossing(int8_t crosstype, int8_t direction) {
  */
 static uint8_t pop_stack_crossing(int8_t * crosstype, int8_t * direction) {
 	position_t p_temp; // Stack erlaubt nur Speicherung von Positionstypen
-	if (!pos_store_pop(pos_store, &p_temp))
+	if (!pos_store_pop(pos_store, &p_temp)) {
 		return False;
-	*crosstype = p_temp.x;
-	*direction = p_temp.y;
+	}
+	*crosstype = (int8_t) p_temp.x;
+	*direction = (int8_t) p_temp.y;
 
 	return True;
 }
@@ -279,10 +279,11 @@ static uint8_t pop_stack_crossing(int8_t * crosstype, int8_t * direction) {
  */
 static uint8_t dequeue_stack_crossing(int8_t * crosstype, int8_t * direction) {
 	position_t p_temp; // Stack erlaubt nur Speicherung von Positionstypen
-	if (!pos_store_dequeue(pos_store, &p_temp))
+	if (!pos_store_dequeue(pos_store, &p_temp)) {
 		return False;
-	*crosstype = p_temp.x;
-	*direction = p_temp.y;
+	}
+	*crosstype = (int8_t) p_temp.x;
+	*direction = (int8_t) p_temp.y;
 
 	return True;
 }

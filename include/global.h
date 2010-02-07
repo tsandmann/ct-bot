@@ -124,25 +124,23 @@ int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 #endif
 #endif	// MCU
 
+#ifndef DOXYGEN
+#define PACKED __attribute__ ((packed)) /*!< packed-Attribut fuer Strukturen */
+#else
+#define PACKED /*!< Dummy, falls Doxygen aktiv */
+#endif
+
 /*!2D-Position. Ist effizienter, als Zeiger auf X- und Y-Anteil */
 typedef struct {
 	int16_t x; /*!< X-Anteil der Position */
 	int16_t y; /*!< Y-Anteil der Position */
-}
-#ifndef DOXYGEN
-__attribute__ ((packed))
-#endif
-position_t;
+} PACKED position_t;
 
 /*! Repraesentation eines Bits, dem ein Byte-Wert zugewiesen werden kann */
 typedef union {
 	uint8_t byte;
 	unsigned bit:1;
-}
-#ifndef DOXYGEN
-__attribute__ ((packed))
-#endif
-bit_t;
+} PACKED bit_t;
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846

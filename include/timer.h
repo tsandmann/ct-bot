@@ -21,7 +21,7 @@
  * @file 	timer.h
  * @brief 	Timer und Zaehler
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+ * @date 	26.12.2005
  */
 
 #ifndef TIMER_H_

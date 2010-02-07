@@ -21,7 +21,7 @@
  * @file 	behaviour_drive_square.h
  * @brief 	Bot faehrt im Quadrat
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	03.11.06
+ * @date 	03.11.2006
  */
 
 
@@ -37,13 +37,13 @@
  * selbst keine speedWishes.
  * @param *data der Verhaltensdatensatz
  */
-void bot_drive_square_behaviour(Behaviour_t *data);
+void bot_drive_square_behaviour(Behaviour_t * data);
 
 /*! 
  * Laesst den Roboter ein Quadrat abfahren.
- * @param caller Der obligatorische Verhaltensdatensatz des aufrufers
+ * @param *caller Der obligatorische Verhaltensdatensatz des aufrufers
  */
-void bot_drive_square(Behaviour_t* caller);
+void bot_drive_square(Behaviour_t * caller);
 
 #endif	// BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
 #endif /*BEHAVIOUR_DRIVE_SQUARE_H_*/

@@ -27,9 +27,10 @@
 #include "bot-logic/bot-logik.h"
 #include "eeprom.h"
 
-//#define DEBUG_GOTO_POS		// Schalter um recht viel Debug-Code anzumachen
+//#define DEBUG_GOTO_POS // Schalter um recht viel Debug-Code anzumachen
 
-#define MIN_TARGET_MARGIN	(6 * 6)	/*!< (Entfernung zum Ziel)^2 [mm^2], ab der das Ziel auf jeden Fall als erreicht gilt */
+#define MIN_TARGET_MARGIN	(6 * 6)		/*!< (Entfernung zum Ziel)^2 [mm^2], ab der das Ziel auf jeden Fall als erreicht gilt */
+#define MAX_TARGET_MARGIN	(30 * 30)	/*!< maximaler Wert von margin */
 #ifdef MCU
 #define TARGET_MARGIN	(20 * 20)	/*!< Init-Wert (Entfernung zum Ziel)^2 [mm^2], ab der das Ziel als erreicht gilt fuer MCU */
 #else
@@ -91,14 +92,16 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 
 	/* Abstand zum Ziel berechnen (als Metrik euklidischen Abstand benutzen) */
 	int32_t diff_to_target = get_dist(dest_x, dest_y, x_pos, y_pos);
-	LOG_DEBUG("diff_to_target=%d", diff_to_target);
+	LOG_DEBUG("diff_to_target=%ld", diff_to_target);
 
 	/* gefahrene Strecke berechnen */
 	int32_t driven = last_diff_to_target - diff_to_target;
+	LOG_DEBUG("last_diff_to_t=%ld", last_diff_to_target);
+	LOG_DEBUG("driven=%ld", driven);
 	last_diff_to_target = diff_to_target;
 
 	/* Pruefen, ob wir schon am Ziel sind */
-	if (state != END && (driven < 0 || diff_to_target <= (int32_t) margin)) {
+	if (state != END && diff_to_target <= (int32_t) margin) {
 		state = LAST_TURN;
 	}
 
@@ -110,7 +113,9 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		if (drive_dir < 0) {
 			/* Winkelkorrektur, falls rueckwaerts */
 			alpha += 180;
-			if (alpha > 180) alpha -= 360;
+			if (alpha > 180) {
+				alpha -= 360;
+			}
 		}
 		LOG_DEBUG("alpha=%d", alpha);
 		state = CALC_WAY;
@@ -121,7 +126,9 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		}
 		if (abs(alpha) > max_angle) {
 			int16_t to_turn = abs(alpha) - (max_angle - 10);
-			if (alpha < 0) to_turn = -to_turn;
+			if (alpha < 0) {
+				to_turn = -to_turn;
+			}
 			bot_turn(data, to_turn);
 			LOG_DEBUG("bot_turn(%d)", to_turn);
 			break;
@@ -206,12 +213,10 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		speedWishLeft = v_l;
 		speedWishRight = v_r;
 		/* Alle sqrt(recalc_dist) mm rechnen wir neu, um Fehler zu korrigieren */
-		done += driven;
+		done += labs(driven);
 		if (done > recalc_dist) {
 			state = CALC_WAY;
 		}
-//		last_x = x_pos;
-//		last_y = y_pos;
 		break;
 	}
 	case LAST_TURN: {
@@ -223,7 +228,6 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		// Sim hat derzeit keinen Nachlauf
 		BLOCK_BEHAVIOUR(data, 1200);
 #endif
-//		int16_t last_diff = (int16_t) get_dist(dest_x, dest_y, last_x, last_y);
 		int16_t diff = (int16_t) diff_to_target;
 		int16_t last_diff = (int16_t) last_diff_to_target;
 		if (last_diff < (int16_t) driven || (int16_t) driven < 0) {
@@ -238,6 +242,8 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		LOG_DEBUG("new_error=%d", new_error);
 		if (new_error < MIN_TARGET_MARGIN) {
 			new_error = MIN_TARGET_MARGIN;
+		} else if (new_error > MAX_TARGET_MARGIN) {
+			new_error = MAX_TARGET_MARGIN;
 		}
 		if (new_error != error) {
 			ctbot_eeprom_write_word(p_goto_pos_err, (uint16_t) new_error);
@@ -277,7 +283,6 @@ void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
 	dest_x = x;
 	dest_y = y;
 	dest_head = head;
-	last_diff_to_target = INT32_MAX;
 
 	/* Verhalten starten */
 	switch_to_behaviour(caller, bot_goto_pos_behaviour, OVERRIDE);
@@ -291,7 +296,8 @@ void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
 	state = FIRST_TURN;
 
 	int32_t diff_to_target = get_dist(dest_x, dest_y, x_pos, y_pos);
-	LOG_DEBUG("diff_to_target=%d", diff_to_target);
+	last_diff_to_target = diff_to_target;
+	LOG_DEBUG("diff_to_target=%ld", diff_to_target);
 	if (diff_to_target > straight_go) {
 		/* fuer grosse Strecken zweiten Fehlerwert verwenden */
 		p_goto_pos_err = &goto_pos_err[1];

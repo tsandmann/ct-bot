@@ -47,14 +47,14 @@
 #define CHECK_FOR_READY             4
 
 /* Verhaltens- und letzter gemerkter Status  */
-static uint8 state=CHECK_FOR_BACK;
-static uint8 laststate=0;
+static uint8_t state = CHECK_FOR_BACK;
+static uint8_t laststate = 0;
 
 /* Zeitzaehlerwert vor Neusetzen */
-static uint16 lastmsTime =0;
+static uint16_t lastmsTime = 0;
 
 /* Abgrund wurde erkannt */
-static int8 border_follow_wall_fired=False;
+static int8_t border_follow_wall_fired = False;
 
 /* Mindest-Wartezeiten fuer Drehung; auf diese Werte wird noch der Pseudo-Zufallswert aus
  * TIMER_GET_TICKCOUNT_8 raufaddiert, kann also bis 255 mehr sein */
@@ -67,9 +67,9 @@ static int8 border_follow_wall_fired=False;
 	#define DELAY_AFTER_HOLE_VERT 200
 #endif	// PC
 /* Delay-Time, solange wird mindestens gedreht, gesetzt im Prog */
-static uint16 delay_time_turn = 0;
+static uint16_t delay_time_turn = 0;
 
-static int16 wall_side=0; // <0 Hindernis links, sonst rechts
+static int16_t wall_side = 0; // <0 Hindernis links, sonst rechts
 
 /*!
  * Abbruchfunktion des Verhaltens()
@@ -77,15 +77,15 @@ static int16 wall_side=0; // <0 Hindernis links, sonst rechts
  * Die Funktion muss True (1) zurueckgeben, wenn dem so ist, sonst False (0).
  * Beispiele fuer eine solche Funktion sind check_for_light, is_good_pillar_ahead etc.
  */
- static uint8 (*check_function)(void)=0;
+ static uint8_t (*check_function)(void) = 0;
 
 /*!
  * ermittelt Zufallswert je nach Zeitzaehler
  * @param compval	Zeit-Vergleichswert
  * @return  		liefert 1 oder -1 in Abhaengigkeit der abgelaufenen Zeit als Zufallskomponente
  */
-static int8 get_randomside(uint8 compval) {
-	return (TIMER_GET_TICKCOUNT_8 >compval) ? -1 : 1;
+static int8_t get_randomside(uint8 compval) {
+	return (int8_t) (TIMER_GET_TICKCOUNT_8 > compval ? -1 : 1);
 }
 
 /*!
@@ -102,12 +102,12 @@ void border_follow_wall_handler(void) {
 
 	state = CHECK_FOR_BACK;
 
-	if (sensBorderL > BORDER_DANGEROUS&& sensBorderR > BORDER_DANGEROUS) {
+	if (sensBorderL > BORDER_DANGEROUS && sensBorderR > BORDER_DANGEROUS) {
 		wall_side = get_randomside(127); // links fuer < 127 sonst rechts
-		delay_time_turn = DELAY_AFTER_HOLE_VERT + TIMER_GET_TICKCOUNT_8; // Mindest- und Zufallszeit
+		delay_time_turn = (uint16_t) (DELAY_AFTER_HOLE_VERT + TIMER_GET_TICKCOUNT_8); // Mindest- und Zufallszeit
 	} else {
 		wall_side = (sensBorderL > BORDER_DANGEROUS) ? -1 : 1; // Drehseite festlegen
-		delay_time_turn = DELAY_AFTER_HOLE + TIMER_GET_TICKCOUNT_8; // Mindest- und Zufallszeit
+		delay_time_turn = (uint16_t) (DELAY_AFTER_HOLE + TIMER_GET_TICKCOUNT_8); // Mindest- und Zufallszeit
 	}
 
 	// rueckwaertsfahren; bei schon aktivem Verhalten durch Notfallverhalten selbst wird dieses
@@ -119,10 +119,10 @@ void border_follow_wall_handler(void) {
  * Das eigentliche Wandfolgerverhalten; Bot faehrt gerade voraus bis zu einer Wand und dreht sich gewisse Zeit solange,
  * bis keine Wand mehr in geringem Abstand gefunden wird; trifft er senkrecht auf eine Wand, wird per Zufall die Seite
  * ermittelt, wohin sich der Bot wegdreht (gilt auch fuer Abgrund); das Speiel geht wieder von vorn los
- * @param data  der Verhaltensdatensatz
+ * @param *data  der Verhaltensdatensatz
  */
-void bot_follow_wall_behaviour(Behaviour_t *data) {
-	int16 sensor = 0; // Merker fuer Abstandssensor je nach Wand links oder rechts
+void bot_follow_wall_behaviour(Behaviour_t * data) {
+	int16_t sensor = 0; // Merker fuer Abstandssensor je nach Wand links oder rechts
 
 	if (check_function && (*check_function)()) // wenn ueberhaupt definiert und Abbruchbedingung erfuellt
 		state = CHECK_FOR_READY;
@@ -132,15 +132,14 @@ void bot_follow_wall_behaviour(Behaviour_t *data) {
 	case CHECK_FOR_BACK: // Check auf zu nah oder bei Abgrund mit Rueckwaertsfahren
 		// Der Bot erkennt Hindernis
 		if (border_follow_wall_fired
-				|| is_obstacle_ahead(OPTIMAL_DISTANCE+ADJUST_DISTANCE)) { // aus bot_olympic
+				|| is_obstacle_ahead(OPTIMAL_DISTANCE + ADJUST_DISTANCE)) { // aus bot_olympic
 			/* Abhaengig von der Seite, auf der die Wand ist, Entfernung ermitteln fuer rueckwaerts */
-			sensor
-					= (is_obstacle_ahead(OPTIMAL_DISTANCE+ADJUST_DISTANCE)<0) ? sensDistL
-							: sensDistR ;
+			sensor = (is_obstacle_ahead(OPTIMAL_DISTANCE + ADJUST_DISTANCE) < 0) ? sensDistL
+				: sensDistR ;
 
 			if (border_follow_wall_fired) { // gesetzt durch registriertes Abgrundverhalten
 				state = CHECK_WALL_TURN; // nach rueckwaerts immer zum drehen
-				border_follow_wall_fired=False;
+				border_follow_wall_fired = False;
 				lastmsTime = TIMER_GET_TICKCOUNT_16; // Zeitzaehler geht jetzt los, damit mindestens xxms gedreht wird
 				break;
 			} // Notfall erkannt
@@ -148,44 +147,45 @@ void bot_follow_wall_behaviour(Behaviour_t *data) {
 		} // Hindernis oder Abgrund vorhanden
 
 		/* kam ich von Drehung, dann auch wieder dorthin sonst fahren */
-		state = (laststate == CHECK_WALL_TURN) ? CHECK_WALL_TURN : CHECK_WALL_GO;
+		state = (uint8_t) (laststate == CHECK_WALL_TURN ? CHECK_WALL_TURN : CHECK_WALL_GO);
 
 		break;
 
 	case CHECK_WALL_GO:
 
 		// Der Bot erkennt Hindernis oder Abgrund und muss gecheckt werden
-		if (is_obstacle_ahead(OPTIMAL_DISTANCE+ADJUST_DISTANCE)) { // innerhalb xx cm Hindernis
+		if (is_obstacle_ahead(OPTIMAL_DISTANCE + ADJUST_DISTANCE)) { // innerhalb xx cm Hindernis
 
 			/* naechsten Status setzen und aktuellen merken */
-			state=CHECK_FOR_BACK;
-			laststate=CHECK_WALL_TURN;
+			state = CHECK_FOR_BACK;
+			laststate = CHECK_WALL_TURN;
 
 			// Seite des Hindernisses ermitteln; <0 links, >= 0 rechts
-			wall_side = is_obstacle_ahead(OPTIMAL_DISTANCE+ADJUST_DISTANCE); // Seite ermitteln
+			wall_side = is_obstacle_ahead(OPTIMAL_DISTANCE + ADJUST_DISTANCE); // Seite ermitteln
 
 			/* bei Wand 90Grad voraus, dann per Zufall nach links oder rechts wegdrehen */
-			if (sensDistL < COL_FAR&& sensDistR < COL_FAR)
+			if (sensDistL < COL_FAR && sensDistR < COL_FAR) {
 				wall_side = get_randomside(127); // < 127 links sonst rechts
+			}
 
 			break;
 		}
 
 		// Geschwindigkeiten je nach gesehener Entfernung setzen
-		if (sensDistL > COL_FAR&& sensDistR > COL_FAR) {
-			speedWishLeft=BOT_SPEED_FAST;
-			speedWishRight=BOT_SPEED_FAST;
+		if (sensDistL > COL_FAR && sensDistR > COL_FAR) {
+			speedWishLeft = BOT_SPEED_FAST;
+			speedWishRight = BOT_SPEED_FAST;
 		} else {
-			if (sensDistL > COL_CLOSEST&& sensDistR > COL_CLOSEST) {
-				speedWishLeft=BOT_SPEED_NORMAL;
-				speedWishRight=BOT_SPEED_NORMAL;
+			if (sensDistL > COL_CLOSEST && sensDistR > COL_CLOSEST) {
+				speedWishLeft = BOT_SPEED_NORMAL;
+				speedWishRight = BOT_SPEED_NORMAL;
 			} else {
-				speedWishLeft=BOT_SPEED_FOLLOW;
-				speedWishRight=BOT_SPEED_FOLLOW;
+				speedWishLeft = BOT_SPEED_FOLLOW;
+				speedWishRight = BOT_SPEED_FOLLOW;
 			}
 		}
 
-		laststate=CHECK_WALL_GO; // merken dass ich aus GO komme
+		laststate = CHECK_WALL_GO; // merken dass ich aus GO komme
 
 		break; // immer weiter fahren in GO
 
@@ -208,11 +208,11 @@ void bot_follow_wall_behaviour(Behaviour_t *data) {
 		// sich damit auch sicher weg mit hoeherer Drehzeit
 		// Wartezeit hier nicht init. da dies dann noch zufaelliger wird
 		if (timer_ms_passed_16(&lastmsTime, delay_time_turn)) {
-			delay_time_turn = DELAY_NORMAL + TIMER_GET_TICKCOUNT_8; // wieder mit normalen Pseudo-Zufallswert belegen
+			delay_time_turn = (uint16_t) (DELAY_NORMAL + TIMER_GET_TICKCOUNT_8); // wieder mit normalen Pseudo-Zufallswert belegen
 
 			if (sensDistL > COL_NEAR&& sensDistR > COL_NEAR) { // keine Wand mehr in Sichtweite
-				state=CHECK_FOR_BACK; // Abgrund-/ Abstandscheck und dann los
-				laststate=0; // Initialwert
+				state = CHECK_FOR_BACK; // Abgrund-/ Abstandscheck und dann los
+				laststate = 0; // Initialwert
 				break;
 			}
 		} // Check auf Ablauf der Wartezeit
@@ -220,8 +220,8 @@ void bot_follow_wall_behaviour(Behaviour_t *data) {
 		break;
 
 	default:
-		state=CHECK_FOR_BACK;
-		laststate=0;
+		state = CHECK_FOR_BACK;
+		laststate = 0;
 		return_from_behaviour(data);
 		break;
 	}
@@ -229,11 +229,11 @@ void bot_follow_wall_behaviour(Behaviour_t *data) {
 
 /*!
  * Faehrt vorwaerts bis zu einer Wand, von die er sich wegdreht
- * @param check		Abbruchfunktion; wenn diese True liefert wird das Verhalten beendet sonst endlos
+ * @param *check	Abbruchfunktion; wenn diese True liefert wird das Verhalten beendet sonst endlos
  * 					einfach NULL uebergeben, wenn keine definiert ist
- * @param caller	Verhaltensdatensatz
+ * @param *caller	Verhaltensdatensatz
  */
-void bot_follow_wall(Behaviour_t *caller, uint8 (*check)(void)) {
+void bot_follow_wall(Behaviour_t * caller, uint8_t (*check)(void)) {
 	// Umschalten zum eigentlichen Verhalten
 	switch_to_behaviour(caller, bot_follow_wall_behaviour, NOOVERRIDE);
 
@@ -252,18 +252,18 @@ void bot_follow_wall(Behaviour_t *caller, uint8 (*check)(void)) {
 #endif
 
 	// nach Notaus stehen diese Vars sonst undefiniert rum, also init.
-	state=CHECK_FOR_BACK;
-	laststate=0;
+	state = CHECK_FOR_BACK;
+	laststate = 0;
 }
 
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 /*!
  * Botenverhalten zum Aufruf via Remotecall ohne weitere params, d.h. da kein Abbruchverhalten
  * uebergeben wird, ist dies dann ein Endlos-Explorerverhalten
- * @param caller Verhaltensdatensatz
+ * @param *caller Verhaltensdatensatz
  */
-void bot_do_wall_explore(Behaviour_t *caller) {
-	bot_follow_wall(caller, 0);
+void bot_do_wall_explore(Behaviour_t * caller) {
+	bot_follow_wall(caller, NULL);
 }
 #endif	// BEHAVIOUR_REMOTECALL_AVAILABLE
 #endif	// BEHAVIOUR_FOLLOW_WALL_AVAILABLE

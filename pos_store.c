@@ -227,6 +227,7 @@ static uint8_t is_full(pos_store_t * store) {
 uint8_t pos_store_insert(pos_store_t * store, position_t pos) {
 	if (is_full(store)) {
 		LOG_INFO("Pos-Store 0x%lx voll, kein push moeglich", (size_t) store);
+		LOG_DEBUG(" count=%u", store->count);
 		return False;
 	}
 	pos_store_pointer_t fp = store->fp;
@@ -247,6 +248,7 @@ uint8_t pos_store_insert(pos_store_t * store, position_t pos) {
 uint8_t pos_store_push(pos_store_t * store, position_t pos) {
 	if (is_full(store)) {
 		LOG_INFO("Pos-Store 0x%lx voll, kein push moeglich", (size_t) store);
+		LOG_DEBUG(" count=%u", store->count);
 		return False;
 	}
 	pos_store_pointer_t sp = store->sp;

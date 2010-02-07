@@ -72,10 +72,11 @@ static const uint8_t MAX_SPEED			= 200;	/*!< maximale Verfolgungs- / Fluchtgesch
  */
 static void update_speed(int16_t * pSensDist, int16_t * pSpeed) {
 	/* Entfernung zu gross -> hinterher! */
-	if (*pSensDist > FOLLOW_DISTANCE) *pSpeed += (*pSensDist - FOLLOW_DISTANCE) / (FOLLOW_DISTANCE/10);
+	if (*pSensDist > FOLLOW_DISTANCE) *pSpeed += (*pSensDist - FOLLOW_DISTANCE) / (FOLLOW_DISTANCE / 10);
 
 	/* Entfernung zu klein -> bitte Abstand halten! */
-	if (*pSensDist < (FOLLOW_DISTANCE-20)) *pSpeed -= ((uint16_t)(FOLLOW_DISTANCE*1.5f) - *pSensDist) / ((uint16_t)(FOLLOW_DISTANCE*1.5f)/10);
+	if (*pSensDist < (FOLLOW_DISTANCE - 20)) *pSpeed -= ((int16_t) (FOLLOW_DISTANCE * 1.5f) - *pSensDist)
+		/ ((int16_t) (FOLLOW_DISTANCE * 1.5f) / 10);
 
 	/* Objekt wid nur noch halb erfasst -> abbiegen! */
 	if (sensDistL - *pSensDist > FOLLOW_DISTANCE || sensDistR - *pSensDist > FOLLOW_DISTANCE) {
@@ -161,7 +162,7 @@ void bot_follow_object(Behaviour_t * caller) {
 
 	/* Inits */
 #ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-	bot_save_waypos(get_behaviour(bot_follow_object_behaviour));
+	bot_save_waypos(get_behaviour(bot_follow_object_behaviour), 1);
 #endif
 	state		= 0;
 	speedLeft	= BOT_SPEED_STOP;

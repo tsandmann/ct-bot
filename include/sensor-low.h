@@ -53,15 +53,23 @@ extern uint8_t i_encTimeR;		/*!< Array-Index auf letzten Timestampeintrag rechts
 #ifdef SPEED_LOG_AVAILABLE
 /*! Datenstruktur fuer Speedlog-Eintraege */
 typedef struct {
+#ifdef SPEED_CONTROL_AVAILABLE
 	uint8_t encRate;	/*!< Ist-Geschwindigkeit (halbiert) */
 	uint8_t targetRate;	/*!< Soll-Geschwindigkeit (halbiert) */
 	int16_t err;		/*!< Regelfehler */
+#endif // SPEED_CONTROL_AVAILABLE
 	int16_t pwm;		/*!< aktueller PWM-Wert */
 	uint32_t time;		/*!< Timestamp */
-} slog_t;
-extern volatile slog_t slog_data[2][25];	/*!< Speed-Log Daten */
-extern volatile uint8_t slog_i[2];			/*!< Array-Index */
-extern uint32_t slog_sector;					/*!< Sektor auf der MMC fuer die Daten */
-extern volatile uint8_t slog_count[2];		/*!< Anzahl Loggings seit letztem Rueckschreiben */
+} PACKED slog_data_t;
+#define SLOG_WITH_SPEED_CONTROL	1
+#define SLOG_WITHOUT_SPEED_CONTROL 0
+
+typedef union {
+	slog_data_t data[2][25];	/*!< Speed-Log Daten */
+	uint8_t raw[512];			/*!< Platzfueller auf MMC-Block-Groesse */
+} slog_t; /*!< Speed-Log Datentyp */
+extern slog_t slog; /*!< Speed-Log */
+extern volatile uint8_t slog_i[2];		/*!< Array-Index */
+extern uint32_t slog_sector;			/*!< Sektor auf der MMC fuer die Daten */
 #endif	// SPEED_LOG_AVAILABLE
 #endif	// sens_low_H_

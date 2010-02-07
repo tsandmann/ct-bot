@@ -92,7 +92,7 @@ static uint8_t check_sensors(void) {
 	// Abstand seit letztem Check ermitteln; nur bei Ueberschreitung des Mindestabstandes seit letzter Hindernisumrundung
 	// darf wegen Hindernis abgebrochen werden, da sonst nach Umrundung und gleichem Hindernis beim Ausrichten des Linienfolgers
 	// dieser sonst gleich wieder moeglicherweise abgebrochen wird
-	uint16_t diff = get_dist(x_pos, y_pos, pos_on_line.x, pos_on_line.y);
+	uint16_t diff = (uint16_t) get_dist(x_pos, y_pos, pos_on_line.x, pos_on_line.y);
 	if ((diff >= 100 * 100) || (pos_on_line.x == 0 && pos_on_line.y == 0)) {
 		// Merkpos auf 0, wenn Abstand ueberschritten wurde
 		pos_on_line.x = 0;

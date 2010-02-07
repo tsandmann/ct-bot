@@ -99,30 +99,28 @@ uint16_t encTimeL[8] = {0};	/*!< Timestamps linker Encoder */
 uint16_t encTimeR[8] = {0};	/*!< Timestamps rechter Encoder */
 uint8_t i_encTimeL = 0;		/*!< Array-Index auf letzten Timestampeintrag links */
 uint8_t i_encTimeR = 0;		/*!< Array-Index auf letzten Timestampeintrag rechts */
-uint8_t timeCorrectL = 0;
-uint8_t timeCorrectR = 0;
+uint8_t timeCorrectL = 0;	/*!< markiert, ob der Encoder-Timestamp des linken Rads ungueltig ist (wg. Stillstand) */
+uint8_t timeCorrectR = 0;	/*!< markiert, ob der Encoder-Timestamp des rechten Rads ungueltig ist (wg. Stillstand) */
 #endif // SPEED_CONTROL_AVAILABLE
 
 #ifdef SPEED_LOG_AVAILABLE
-/* Some Debug-Loggings */
-volatile slog_t slog_data[2][25];		/*!< Speed-Log Daten */
+/* Debug-Loggings */
+slog_t slog; /*!< Speed-Log */
 volatile uint8_t slog_i[2] = {0,0};		/*!< Array-Index */
 uint32_t slog_sector = 0;				/*!< Sektor auf der MMC fuer die Daten */
-volatile uint8_t slog_count[2] = {0,0};	/*!< Anzahl Loggings seit letztem Rueckschreiben */
 #endif // SPEED_LOG_AVAILABLE
 
 /*!
  * Initialisiere alle Sensoren
  */
 void bot_sens_init(void) {
-	ENA_init();
 #ifdef BPS_AVAILABLE
-	adc_init(0xcf);		// Alle ADC-Ports aktivieren
+	adc_init(0xcf); // ADC-Ports aktivieren
 #else
-	adc_init(0xff);		// Alle ADC-Ports aktivieren
+	adc_init(0xff); // Alle ADC-Ports aktivieren
 #endif	// BPS_AVAILABLE
 
-	ENA_set(ENA_RADLED | ENA_ABSTAND);		// Alle Sensoren bis auf Radencoder & Abstandssensoren deaktivieren
+	ENA_set(ENA_RADLED | ENA_ABSTAND); // Alle Sensoren bis auf Radencoder & Abstandssensoren deaktivieren
 
 	SENS_DOOR_DDR = (uint8_t) (SENS_DOOR_DDR & ~(1<<SENS_DOOR)); // Input
 
@@ -134,9 +132,28 @@ void bot_sens_init(void) {
 	SENS_ENCL_DDR = (uint8_t) (SENS_ENCL_DDR & ~(1<<SENS_ENCL)); // Input
 	SENS_ENCR_DDR = (uint8_t) (SENS_ENCR_DDR & ~(1<<SENS_ENCR)); // Input
 
-	timer_2_init();
+	/* Reset Encoderstaende */
 	sensEncL = 0;
 	sensEncR = 0;
+
+#ifdef SPEED_LOG_AVAILABLE
+	void * buffer = &slog;
+	slog_sector = mini_fat_find_block("slog", buffer);
+
+	if (slog_sector != 0xffffffff) {
+		/* Datei leeren */
+		mini_fat_clear_file(slog_sector, buffer);
+		/* Typ in den Header schreiben (mit oder ohne Motorregelung) */
+		uint8_t * header = mini_fat_read_header_data(slog_sector, buffer);
+#ifdef SPEED_CONTROL_AVAILABLE
+		*header = SLOG_WITH_SPEED_CONTROL;
+#else // ! SPEED_CONTROL_AVAILABLE
+		*header = SLOG_WITHOUT_SPEED_CONTROL;
+#endif // SPEED_CONTROL_AVAILABLE
+		mini_fat_write_header_data(slog_sector, header, buffer);
+		memset(buffer, 0, sizeof(slog));
+	}
+#endif // SPEED_LOG_AVAILABLE
 }
 
 /*!
@@ -204,59 +221,50 @@ void bot_sens(void) {
 
 #ifdef SPEED_CONTROL_AVAILABLE
 	/* Aufruf der Motorregler, falls Stillstand */
-	register uint16_t pid_ticks = TIMER_GET_TICKCOUNT_16;	// Ticks sichern [178 us]
+	register uint16_t pid_ticks = TIMER_GET_TICKCOUNT_16; // Ticks sichern [178 us]
 	register uint8_t i_time;
 	register uint8_t * p_time;
 	/* Index auf Encodertimestamps zwischenspeichern */
 	i_time = i_encTimeL;
-	p_time = (uint8_t *)encTimeL;
+	p_time = (uint8_t *) encTimeL;
 	/* Bei Stillstand Regleraufruf links nach PID_TIME ms */
 	if (pid_ticks - *(uint16_t *)(p_time + i_time) > PID_TIME * 50 / TIMER_STEPS * 20) {
 		/* Timestamp links verschieben / speichern */
-		i_time = (uint8_t) ((i_time + sizeof(encTimeL[0])) & 0xf);	// encTime ist Z/8Z und jeder Eintrag hat 2 Byte => 0xf
+		i_time = (uint8_t) ((i_time + sizeof(encTimeL[0])) & 0xf); // encTime ist Z/8Z und jeder Eintrag hat 2 Byte => 0xf
 		*(uint16_t *)(p_time + i_time) = pid_ticks;
 		i_encTimeL = i_time;
 		/* Regleraufruf */
-		speed_control(0,  (int16_t *)&motor_left, (uint16_t *)encTimeL, i_encTimeL, 0);
+		speed_control(0,  (int16_t *) &motor_left, (uint16_t *) encTimeL, i_encTimeL, 0);
 		timeCorrectL = 1;
 	}
 	/* Bei Stillstand Regleraufruf rechts nach PID_TIME ms */
 	i_time = i_encTimeR;
-	p_time = (uint8_t *)encTimeR;
+	p_time = (uint8_t *) encTimeR;
 	if (pid_ticks - *(uint16_t *)(p_time + i_time) > PID_TIME * 50 / TIMER_STEPS * 20) {
 		/* Timestamp rechts verschieben / speichern */
-		i_time = (uint8_t) ((i_time + sizeof(encTimeR[0])) & 0xf);	// encTime ist Z/8Z und jeder Eintrag hat 2 Byte => 0xf
+		i_time = (uint8_t) ((i_time + sizeof(encTimeR[0])) & 0xf); // encTime ist Z/8Z und jeder Eintrag hat 2 Byte => 0xf
 		*(uint16_t *)(p_time + i_time) = pid_ticks;
 		i_encTimeR = i_time;
 		/* Regleraufruf rechts */
-		speed_control(1, (int16_t *)&motor_right, (uint16_t *)encTimeR, i_encTimeR, 0);
+		speed_control(1, (int16_t *) &motor_right, (uint16_t *) encTimeR, i_encTimeR, 0);
 		timeCorrectR = 1;
 	}
+#endif // SPEED_CONTROL_AVAILABLE
 
 #ifdef SPEED_LOG_AVAILABLE
 	/* Speed-Log-Daten auf MMC schreiben, falls Puffer voll */
-	if (slog_sector == 0) {
-		/* init-stuff here */
-		slog_sector = mini_fat_find_block("slog", __builtin_alloca(512));
-		//slog_start_sector = slog_sector;
-	}
-	if (slog_count[0] > 20 || slog_count[1] > 20) {	// etwas Luft lassen, denn die Daten kommen per ISR
-		uint8_t i;
-		for (i = (uint8_t) (slog_count[0] + 1); i < 25; i++) {
-			memset((uint8_t *) &slog_data[0][i], 0, sizeof(slog_t));
+	if (slog_sector != 0xffffffff && (slog_i[0] > 20 || slog_i[1] > 20)) { // etwas Luft lassen, denn die Daten kommen per ISR
+		const size_t n = sizeof(slog.data[0]) / sizeof(slog.data[0][0]);
+		uint8_t j;
+		for (j=0; j<2; ++j) {
+			const uint8_t i = (uint8_t) (slog_i[j] + 1);
+			slog_i[j] = 0; // Index-Reset
+			const uint16_t length = mul8(sizeof(slog_data_t), (uint8_t) (n - i));
+			memset((uint8_t *) &slog.data[j][i], 0, length);
 		}
-		for (i = (uint8_t) (slog_count[1] + 1); i < 25; i++) {
-			memset((uint8_t *) &slog_data[1][i], 0, sizeof(slog_t));
-		}
-		mmc_write_sector(slog_sector++, (uint8_t *) slog_data);	// swap-out
-		/* Index-Reset */
-		slog_i[0] = 0;
-		slog_count[0] = 0;
-		slog_i[1] = 0;
-		slog_count[1] = 0;
+		mmc_write_sector(slog_sector++, (uint8_t *) slog.data);	// swap-out
 	}
 #endif // SPEED_LOG_AVAILABLE
-#endif // SPEED_CONTROL_AVAILABLE
 
 #ifdef BPS_AVAILABLE
 	int16_t tmp = (int16_t) ir_read(&bps_ir_data);
@@ -336,34 +344,34 @@ void bot_sens(void) {
  * daher Update per Timer-Interrupt und nicht per Polling
  */
 void bot_encoder_isr(void) {
-	static uint8_t enc_l = 0;		// Puffer fuer die letzten Encoder-Staende
-	static uint8_t enc_r = 0;		// Puffer fuer die letzten Encoder-Staende
-	static uint8_t enc_l_cnt = 0;	// Entprell-Counter fuer L-Encoder
-	static uint8_t enc_r_cnt = 0;	// Entprell-Counter fuer R-Encoder
+	static uint8_t enc_l = 0; // Puffer fuer die letzte Encoder-Staende
+	static uint8_t enc_r = 0; // Puffer fuer die letzte Encoder-Staende
+	static uint8_t enc_l_cnt = 0; // Entprell-Counter fuer L-Encoder
+	static uint8_t enc_r_cnt = 0; // Entprell-Counter fuer R-Encoder
 	register uint8_t enc_tmp; // Pegel der Encoderpins im Register zwischenspeichern
 
 #ifdef SPEED_CONTROL_AVAILABLE
 	register uint16_t ticks = tickCount.u16;	// aktuelle Systemzeit zwischenspeichern
 	register uint8_t i_time;					// Index des Timestamparrays zwischenspeichern
-#endif	// SPEED_CONTROL_AVAILABLE
+#endif // SPEED_CONTROL_AVAILABLE
 	/* Rad-Encoder links */
 	enc_tmp = (uint8_t) ENC_L;
-	if (enc_tmp != enc_l) {	// uns interesieren nur Veraenderungen
-		enc_l=enc_tmp;		// neuen Wert sichern
-		enc_l_cnt = 0;		// Counter zuruecksetzen
-	} else {				// zaehlen, wie lange Pegel bleibt
-		if (enc_l_cnt < ENC_ENTPRELL) // Nur bis zur Entprell-Marke
+	if (enc_tmp != enc_l) { // uns interessieren nur Veraenderungen
+		enc_l = enc_tmp; // neuen Wert sichern
+		enc_l_cnt = 0; // Counter zuruecksetzen
+	} else { // zaehlen, wie lange Pegel bleibt
+		if (enc_l_cnt < ENC_ENTPRELL) { // Nur bis zur Entprell-Marke
 			enc_l_cnt++;
-		else if (enc_l_cnt == ENC_ENTPRELL) { 	// wenn lange genug konstant
-			enc_l_cnt++;	// diese Flanke nur einmal auswerten
-			if (direction.left == DIRECTION_FORWARD) {	// Drehrichtung beachten
-				sensEncL++;	//vorwaerts
+		} else if (enc_l_cnt == ENC_ENTPRELL) { // wenn lange genug konstant
+			enc_l_cnt++; // diese Flanke nur einmal auswerten
+			if (direction.left == DIRECTION_FORWARD) { // Drehrichtung beachten
+				sensEncL++;	// vorwaerts
 			} else {
-				sensEncL--;	//rueckwaerts
+				sensEncL--;	// rueckwaerts
 			}
 #ifdef SPEED_CONTROL_AVAILABLE
 			/* Timestamps fuer Regler links verschieben und speichern */
-			i_time = (uint8_t) ((i_encTimeL + sizeof(encTimeL[0])) & 0xf);	// encTime ist Z/8Z und jeder Eintrag hat 2 Byte => 0xf
+			i_time = (uint8_t) ((i_encTimeL + sizeof(encTimeL[0])) & 0xf); // encTime ist Z/8Z und jeder Eintrag hat 2 Byte => 0xf
 			*(uint16_t *)((uint8_t *) encTimeL + i_time) = ticks;
 			i_encTimeL = i_time;
 			/* Regleraufruf links */
@@ -373,29 +381,37 @@ void bot_encoder_isr(void) {
 				timeCorrectL = 0;
 			}
 			/* pro TIMER_STEP wird maximal ein Encoder ausgewertet, da max alle 6 ms (Fullspeed) eine Flanke kommen kann */
-			return;	// hackhack
+			return; // hackhack
+#else // ! SPEED_CONTROL_AVAILABLE
+#ifdef SPEED_LOG_AVAILABLE
+			uint8_t index = slog_i[0];
+			slog.data[0][index].pwm = motor_left;
+			slog.data[0][index].time = tickCount.u32;
+			index++;
+			slog_i[0] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
+#endif // SPEED_LOG_AVAILABLE
 #endif // SPEED_CONTROL_AVAILABLE
 		}
 	}
 
 	/* Rad-Encoder rechts */
 	enc_tmp = (uint8_t) ENC_R;
-	if (enc_tmp != enc_r) {	// uns interesieren nur Veraenderungen
-		enc_r=enc_tmp;		// neuen Wert sichern
-		enc_r_cnt=0;		// Counter zuruecksetzen
-	} else { 				// zaehlen, wie lange Pegel bleibt
-		if (enc_r_cnt < ENC_ENTPRELL)	// nur bis zur Entprell-Marke
+	if (enc_tmp != enc_r) { // uns interessieren nur Veraenderungen
+		enc_r = enc_tmp; // neuen Wert sichern
+		enc_r_cnt=0; // Counter zuruecksetzen
+	} else { // zaehlen, wie lange Pegel bleibt
+		if (enc_r_cnt < ENC_ENTPRELL) { // nur bis zur Entprell-Marke
 			enc_r_cnt++;
-		else if (enc_r_cnt == ENC_ENTPRELL) { 	// wenn lange genug konstant
-			enc_r_cnt++;	// diese Flanke nur einmal auswerten
-			if (direction.right == DIRECTION_FORWARD) {	// Drehrichtung beachten
-				sensEncR++;	//vorwaerts
+		} else if (enc_r_cnt == ENC_ENTPRELL) { // wenn lange genug konstant
+			enc_r_cnt++; // diese Flanke nur einmal auswerten
+			if (direction.right == DIRECTION_FORWARD) { // Drehrichtung beachten
+				sensEncR++; // vorwaerts
 			} else {
-				sensEncR--;	//rueckwaerts
+				sensEncR--; // rueckwaerts
 			}
 #ifdef SPEED_CONTROL_AVAILABLE
 			/* Timestamps fuer Regler rechts verschieben und speichern */
-			i_time = (uint8_t) ((i_encTimeR + sizeof(encTimeR[0])) & 0xf);	// encTime ist Z/8Z und jeder Eintrag hat 2 Byte => 0xf
+			i_time = (uint8_t) ((i_encTimeR + sizeof(encTimeR[0])) & 0xf); // encTime ist Z/8Z und jeder Eintrag hat 2 Byte => 0xf
 			*(uint16_t *)((uint8_t *) encTimeR + i_time) = ticks;
 			i_encTimeR = i_time;
 			/* Regleraufruf rechts */
@@ -404,6 +420,14 @@ void bot_encoder_isr(void) {
 			} else {
 				timeCorrectR = 0;
 			}
+#else // ! SPEED_CONTROL_AVAILABLE
+#ifdef SPEED_LOG_AVAILABLE
+			uint8_t index = slog_i[1];
+			slog.data[1][index].pwm = motor_right;
+			slog.data[1][index].time = tickCount.u32;
+			index++;
+			slog_i[1] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
+#endif // SPEED_LOG_AVAILABLE
 #endif // SPEED_CONTROL_AVAILABLE
 		}
 	}

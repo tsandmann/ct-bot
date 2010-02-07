@@ -21,7 +21,7 @@
  * @file 	timer-low.c
  * @brief 	Timer und Counter fuer den Mikrocontroller
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+ * @date 	26.12.2005
  */
 
 #ifdef MCU
@@ -102,7 +102,7 @@ ISR(SIG_OUTPUT_COMPARE2) {
 }
 
 /*!
- * initilaisiert Timer 0 und startet ihn
+ * initialisiert Timer 2 und startet ihn
  */
 void timer_2_init(void) {
 	TCNT2 = 0x00;            // TIMER vorladen

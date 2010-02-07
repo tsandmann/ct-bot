@@ -42,7 +42,7 @@ void fifo_init(fifo_t * f, void * buffer, const uint8_t size) {
 	pthread_mutex_init(&f->signal.mutex, NULL);
 	pthread_cond_init(&f->signal.cond, NULL);
 #endif	// PC
-	LOG_DEBUG("Fifo 0x%08x initialisiert", f);
+	LOG_DEBUG_FIFO("Fifo 0x%08x initialisiert", f);
 }
 
 /*!
@@ -61,8 +61,8 @@ void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
 	if (length > (space = (uint8_t) (f->size - f->count))) {
 		/* nicht genug Platz -> alte Daten rauswerfen */
 		uint8_t to_discard = (uint8_t) (length - space);
-		LOG_DEBUG("verwerfe %u Bytes in Fifo 0x%08x", to_discard, f);
-		LOG_DEBUG(" size=%u, count=%u, length=%u", f->size, f->count, length);
+		LOG_DEBUG_FIFO("verwerfe %u Bytes in Fifo 0x%08x", to_discard, f);
+		LOG_DEBUG_FIFO(" size=%u, count=%u, length=%u", f->size, f->count, length);
 		uint8_t read2end = f->read2end;
 		uint8_t * pread = f->pread;
 		if (to_discard > read2end) {
@@ -142,10 +142,10 @@ uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length) {
 #ifdef OS_AVAILABLE
 	if (count == 0) {
 		/* blockieren */
-		LOG_DEBUG("Fifo 0x%08x ist leer, blockiere", f);
+		LOG_DEBUG_FIFO("Fifo 0x%08x ist leer, blockiere", f);
 		os_signal_lock(&f->signal);
 		os_signal_set(&f->signal);
-		LOG_DEBUG("Fifo 0x%08x enthaelt wieder Daten, weiter geht's", f);
+		LOG_DEBUG_FIFO("Fifo 0x%08x enthaelt wieder Daten, weiter geht's", f);
 		os_signal_release(&f->signal);
 		count = f->count;
 	}

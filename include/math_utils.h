@@ -167,7 +167,30 @@ static inline int16_t muls8(int8_t a, int8_t b) {
 	return result;
 #else
 	return a * b;
-#endif
+#endif // MCU
+}
+
+/*!
+ * Multipliziert zwei vorzeichenlose 8 Bit Werte
+ * @param a	Faktor 1 (8 Bit unsigned)
+ * @param b	Faktor 2 (8 Bit unsigned)
+ * @return	a * b (16 Bit unsigned)
+ */
+static inline uint16_t mul8(uint8_t a, uint8_t b) {
+#ifdef MCU
+	uint16_t result;
+	__asm__ __volatile__(
+		"mul %1,%2	\n\t"
+		"movw %0,r0	\n\t"
+		"clr r1			"
+		: "=&r"	(result)
+		: "d" (a), "d" (b)
+		: "r0"
+	);
+	return result;
+#else
+	return a * b;
+#endif // MCU
 }
 
 #ifdef BPS_AVAILABLE

@@ -220,17 +220,23 @@
 #ifdef MCU
 #ifndef SPEED_CONTROL_AVAILABLE
 	// goto_pos geht nur, wenn wir uns auf die eingestellte Geschwindigkeit verlassen koennen
-	#ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
-		#warning "GotoPos geht nur, wenn SPEED_CONTROL_AVAILABLE"
-	#endif
-	#undef BEHAVIOUR_GOTO_POS_AVAILABLE
-	#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-		#warning "DriveStack geht nur, wenn SPEED_CONTROL_AVAILABLE"
-	#endif
-	#undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-	#undef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
+#ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
+#warning "GotoPos geht nur, wenn SPEED_CONTROL_AVAILABLE"
+#endif
+#undef BEHAVIOUR_GOTO_POS_AVAILABLE
+#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+#warning "DriveStack geht nur, wenn SPEED_CONTROL_AVAILABLE"
+#endif
+#undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+#undef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
 #endif	// SPEED_CONTROL_AVAILABLE
 #endif	// MCU
+
+#ifndef BEHAVIOUR_GOTO_POS_AVAILABLE
+#undef BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
+#undef BEHAVIOUR_DRIVE_AREA_AVAILABLE
+#undef BEHAVIOUR_PATHPLANING_AVAILABLE
+#endif // BEHAVIOUR_GOTO_POS_AVAILABLE
 
 #include "bot-logic/behaviour_simple.h"
 #include "bot-logic/behaviour_drive_square.h"

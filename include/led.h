@@ -43,19 +43,15 @@
 #ifndef __ASSEMBLER__
 /*! Datenfeld fuer den Zugriff auf die LEDs */
 typedef struct {
-	unsigned rechts:1;		/*!< LED in Fahrichtung rechts */
-	unsigned links:1;		/*!< LED in Fahrichtung links */
-	unsigned rot:1;			/*!< LED Rot */
-	unsigned orange:1;		/*!< LED Orange */
-	unsigned gelb:1;		/*!< LED Gelb */
-	unsigned gruen:1;		/*!< LED Gruen */
+	unsigned rechts:1;	/*!< LED in Fahrichtung rechts */
+	unsigned links:1;	/*!< LED in Fahrichtung links */
+	unsigned rot:1;		/*!< LED Rot */
+	unsigned orange:1;	/*!< LED Orange */
+	unsigned gelb:1;	/*!< LED Gelb */
+	unsigned gruen:1;	/*!< LED Gruen */
 	unsigned tuerkis:1;	/*!< LED Tuerkis */
-	unsigned weiss:1;		/*!< LED Weiss */
-}
-#ifndef DOXYGEN
-__attribute__ ((packed))
-#endif
-led_t;
+	unsigned weiss:1;	/*!< LED Weiss */
+} PACKED led_t;
 
 extern uint8_t led;	/*!< Zustand der LEDs */
 

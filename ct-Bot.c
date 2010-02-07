@@ -95,8 +95,9 @@ static void init(void) {
 	os_create_thread((void *) SP, NULL); // Hauptthread anlegen
 #ifdef OS_DEBUG
 	extern unsigned char * __brkval;
+	extern size_t __malloc_margin;
 	malloc(0);	// initialisiert __brkval
-	os_mask_stack(__brkval, (unsigned char *)SP - __brkval - 32);
+	os_mask_stack(__brkval, (size_t) ((unsigned char *) SP - __brkval) - __malloc_margin);
 #endif	// OS_DEBUG
 #ifdef OS_KERNEL_LOG_AVAILABLE
 	os_kernel_log_init();
@@ -146,6 +147,12 @@ static void init(void) {
 	LED_init();
 #endif
 	motor_init();
+#ifdef ENA_AVAILABLE
+	ENA_init();
+#endif
+#ifdef MMC_AVAILABLE
+	mmc_init();
+#endif
 	bot_sens_init();
 #ifdef BEHAVIOUR_AVAILABLE
 	bot_behave_init();
@@ -155,9 +162,6 @@ static void init(void) {
 #endif
 #ifdef BPS_AVAILABLE
 	ir_init(&BPS_PORT, &BPS_DDR, BPS_PIN);
-#endif
-#ifdef MMC_AVAILABLE
-	mmc_init();
 #endif
 #ifdef MOUSE_AVAILABLE
 	mouse_sens_init();

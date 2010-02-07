@@ -38,7 +38,6 @@ uint32_t EEPROM eefat[10] = {0};	/*!< EEPROM-Cache fuer FAT-Eintraege */
 
 #ifdef MCU
 #ifdef MMC_AVAILABLE
-#ifndef BOT_FS_AVAILABLE
 #include <string.h>
 #include "mmc.h"
 #include "display.h"
@@ -61,8 +60,8 @@ uint32_t EEPROM eefat[10] = {0};	/*!< EEPROM-Cache fuer FAT-Eintraege */
  * Da display_printf() @MCU maximal mit 16 Bit Zahlen umgehen kann, zerlegt diese Funktion die Adresse ein zwei Teile.
  */
 static void display_block(uint32_t addr) {
-	uint16_t low  = (uint16_t)addr;
-	uint16_t high = (uint16_t)(addr>>16);
+	uint16_t low  = (uint16_t) addr;
+	uint16_t high = (uint16_t) (addr >> 16);
 	display_printf("0x%02x%04x", high, low);
 }
 
@@ -73,7 +72,7 @@ static void display_block(uint32_t addr) {
  * MiniFAT-Funktion, dieser Screen ist dafuer nur ein Platzhalter
  */
 void mini_fat_display(void) {
-	display_cursor(1,1);
+	display_cursor(1, 1);
 	display_printf("MiniFAT:");
 }
 #endif	// DISPLAY_MINIFAT_INFO
@@ -98,10 +97,10 @@ static uint32_t mini_fat_lookup_adr(const char * filename, void * buffer) {
 		block = ctbot_eeprom_read_dword(p_eefat++);	// Adresse aus dem EEPROM laden
 		if (mmc_read_sector(block, buffer) != 0) return 0;
 		/* Datei-ID vergleichen */
-		if (strcmp_P((char *)buffer, filename) == 0) {
+		if (strcmp_P((char *) buffer, filename) == 0) {
 #ifdef DISPLAY_MINIFAT_INFO
 			display_cursor(3, 1);
-			display_printf("eefound %u:", 11-i);
+			display_printf("eefound %u:", 11 - i);
 			display_cursor(3, 13);
 			display_block(block);
 #endif	// DISPLAY_MINIFAT_INFO
@@ -130,7 +129,7 @@ static void mini_fat_store_adr(uint32_t block) {
 		if (tmp == 0) {	// hier noch ist Platz :-)
 #ifdef DISPLAY_MINIFAT_INFO
 			display_cursor(3, 1);
-			display_printf("eestore %u:", 11-i);
+			display_printf("eestore %u:", 11 - i);
 			display_cursor(3, 13);
 			display_block(block);
 #endif	// DISPLAY_MINIFAT_INFO
@@ -152,11 +151,7 @@ typedef struct {
 	uint16_t end_sect;
 	uint32_t first_sect_offset;
 	uint32_t sectors;
-}
-#ifndef DOXYGEN
-__attribute__ ((packed))
-#endif
-part_entry_t;
+} PACKED part_entry_t;
 
 /*! Master-Boot-Record */
 typedef struct {
@@ -166,11 +161,7 @@ typedef struct {
 	part_entry_t part2;
 	part_entry_t part3;
 	uint16_t executable_mark;
-}
-#ifndef DOXYGEN
-__attribute__ ((packed))
-#endif
-mbr_t;
+} PACKED mbr_t;
 
 /*! FAT16-Bootsektor */
 typedef struct {
@@ -195,11 +186,7 @@ typedef struct {
 	char fat_name[8];
 	uint8_t exec_code[448];
 	uint16_t executable_mark;
-}
-#ifndef DOXYGEN
-__attribute__ ((packed))
-#endif
-fat16_bootsector_t;
+} PACKED fat16_bootsector_t;
 
 /*! FAT16-Verzeichniseintrag */
 typedef struct {
@@ -211,11 +198,7 @@ typedef struct {
 	uint16_t date;
 	uint16_t first_cluster;
 	uint32_t size;
-}
-#ifndef DOXYGEN
-__attribute__ ((packed))
-#endif
-fat16_dir_entry_t;
+} PACKED fat16_dir_entry_t;
 
 /*!
  * Prueft, ob eine Mini-FAT-Datei fragmentiert ist.
@@ -321,7 +304,9 @@ uint32_t mini_fat_find_block_P(const char * filename, void * buffer, uint32_t en
 
 	/* zunaechst im EEPROM-FAT-Cache nachschauen */
 	uint32_t block = mini_fat_lookup_adr(filename, buffer);
-	if (block != 0)	return check_fragmentation(block, buffer);
+	if (block != 0)	{
+		return check_fragmentation(block, buffer);
+	}
 
 #ifdef DISPLAY_MINIFAT_INFO
 	display_cursor(2, 1);
@@ -349,7 +334,7 @@ uint32_t mini_fat_find_block_P(const char * filename, void * buffer, uint32_t en
 #endif	// LED_AVAILABLE
 			return 0xffffffff;
 		}
-		if (strcmp_P((char *)buffer, filename) == 0) {
+		if (strcmp_P((char *) buffer, filename) == 0) {
 			/* gefunden, Adresse ins EEPROM schreiben */
 			mini_fat_store_adr(++block);
 #ifdef DISPLAY_MINIFAT_INFO
@@ -362,24 +347,6 @@ uint32_t mini_fat_find_block_P(const char * filename, void * buffer, uint32_t en
 		}
 	}
 	return 0xffffffff;
-}
-
-/*!
- * Liest die Groesse einer Datei im MiniFAT-Dateisystem auf der MMC/SD-Karte aus
- * @param file_start	Anfangsblock der Datei (Nutzdaten, nicht Header)
- * @param *buffer		Zeiger auf 512 Byte Puffer im SRAM, wird veraendert!
- * @return				Groesse der Datei in Byte, 0 falls Fehler
- */
-uint32_t mini_fat_get_filesize(uint32_t file_start, void * buffer) {
-	file_len_t length;
-	if (mmc_read_sector(file_start-1, buffer) != 0) return 0;
-	/* Dateilaenge aus Block 0, Byte 256 bis 259 der Datei lesen */
-	uint8_t i;
-	uint8_t * ptr = buffer;
-	for (i=0; i<4; i++) {
-		length.u8[i] = ptr[259-i];
-	}
-	return length.u32;
 }
 
 /*!
@@ -404,10 +371,12 @@ void mini_fat_clear_file(uint32_t file_start, void * buffer) {
 #endif	// DISPLAY_MINIFAT_INFO
 	uint32_t length = mini_fat_get_filesize(file_start, buffer) >> 9;
 #ifdef DISPLAY_MINIFAT_INFO
+	display_cursor(1, 10);
+	display_block(length << 9);
 	display_cursor(3, 1);
 	display_printf("End:");
 	display_cursor(3, 5);
-	display_block(file_start+length-1);
+	display_block(file_start + length - 1);
 #endif	// DISPLAY_MINIFAT_INFO
 	memset(buffer, 0, 512);	// Puffer leeren
 	/* Alle Bloecke der Datei mit dem 0-Puffer ueberschreiben */
@@ -432,6 +401,5 @@ void mini_fat_clear_file(uint32_t file_start, void * buffer) {
 #endif	// DISPLAY_MINIFAT_INFO
 	}
 }
-#endif	// BOT_FS_AVAILABLE
 #endif	// MMC_AVAILABLE
 #endif	// MCU

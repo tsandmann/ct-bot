@@ -37,12 +37,11 @@
 void hang_on_handler(void) {
 	// Routine muss zuerst checken, ob das hang_on Verhalten auch gerade aktiv ist, da nur in diesem
 	// Fall etwas gemacht werden muss
-	if (!behaviour_is_activated(bot_hang_on_behaviour)) 
+	if (!behaviour_is_activated(bot_hang_on_behaviour)) {
 		return;
+	}
 
-    #ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
-	  bot_drive_distance(0,0,-BOT_SPEED_FOLLOW,5);	// 5cm rueckwaerts bei Haengenbleiben	
-    #endif
+	bot_drive_distance(0, 0, -BOT_SPEED_FOLLOW, 5);	// 5 cm rueckwaerts bei Haengenbleiben
 }
 
 
@@ -51,7 +50,8 @@ void hang_on_handler(void) {
  * Encoderdaten miteinander verglichen; wird der Bot-Stillstand erkannt, wird etwas rueckwaerts gefahren
  * @param *data der Verhaltensdatensatz
  */
-void bot_hang_on_behaviour(Behaviour_t * data) {	 
+void bot_hang_on_behaviour(Behaviour_t * data) {
+	data = data;
 	if  ( !((abs(v_enc_left-v_mou_left) < STUCK_DIFF) && (abs(v_enc_right-v_mou_right) < STUCK_DIFF)) ) {            
 		// Es kann entweder durch die eigene Notfallroutine rueckwaertsgefahren werden oder die Notverhalten 
 		// machen dies in ihren eigenen registrierten Notfallroutinen

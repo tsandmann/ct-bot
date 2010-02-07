@@ -123,13 +123,12 @@ void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_
 			/* Daten loggen */
 			register uint8_t index = slog_i[dev];
 			if (index < 24) {
-				slog_data[dev][index].encRate = 1;							// Regelgroesse
-				slog_data[dev][index].err = encoderTargetRate[dev];			// Regeldifferenz
-				slog_data[dev][index].pwm = *actVar;						// Stellgroesse
-				slog_data[dev][index].targetRate = encoderTargetRate[dev];	// Fuehrungsgroesse
-				slog_data[dev][index++].time = TIMER_GET_TICKCOUNT_32;		// Timestamp
-				slog_i[dev] = (uint8_t) (index > 24 ? 0 : index);	// Z/25Z
-				slog_count[dev]++;
+				slog.data[dev][index].encRate = 1; // Regelgroesse
+				slog.data[dev][index].err = encoderTargetRate[dev]; // Regeldifferenz
+				slog.data[dev][index].pwm = *actVar; // Stellgroesse
+				slog.data[dev][index].targetRate = encoderTargetRate[dev]; // Fuehrungsgroesse
+				slog.data[dev][index++].time = tickCount.u32; // Timestamp
+				slog_i[dev] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
 			}
 #endif	// SPEED_LOG_AVAILABLE
 
@@ -201,13 +200,12 @@ void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_
 			/* Daten loggen */
 			register uint8_t index = slog_i[dev];
 			if (index < 24) {
-				slog_data[dev][index].encRate = encoderRate;				// Regelgroesse
-				slog_data[dev][index].err = err;							// Regeldifferenz
-				slog_data[dev][index].pwm = *actVar;						// Stellgroesse
-				slog_data[dev][index].targetRate = encoderTargetRate[dev];	// Fuehrungsgroesse
-				slog_data[dev][index++].time = TIMER_GET_TICKCOUNT_32;		// Timestamp
-				slog_i[dev] = (uint8_t) (index > 24 ? 0 : index);	// Z/25Z
-				slog_count[dev]++;
+				slog.data[dev][index].encRate = encoderRate; // Regelgroesse
+				slog.data[dev][index].err = err; // Regeldifferenz
+				slog.data[dev][index].pwm = *actVar; // Stellgroesse
+				slog.data[dev][index].targetRate = encoderTargetRate[dev]; // Fuehrungsgroesse
+				slog.data[dev][index++].time = tickCount.u32; // Timestamp
+				slog_i[dev] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
 			}
 #endif	// SPEED_LOG_AVAILABLE
 		}
@@ -358,13 +356,12 @@ void motor_set(int16_t left, int16_t right) {
 		/* Daten loggen */
 		register uint8_t index = slog_i[0];
 		if (index < 24) {
-			slog_data[0][index].encRate = 1;				// Regelgroesse
-			slog_data[0][index].err = 0;							// Regeldifferenz
-			slog_data[0][index].pwm = 0;						// Stellgroesse
-			slog_data[0][index].targetRate = encoderTargetRate[0];	// Fuehrungsgroesse
-			slog_data[0][index++].time = TIMER_GET_TICKCOUNT_32;		// Timestamp
-			slog_i[0] = (uint8_t) (index > 24 ? 0 : index);	// Z/25Z
-			slog_count[0]++;
+			slog.data[0][index].encRate = 1; // Regelgroesse
+			slog.data[0][index].err = 0; // Regeldifferenz
+			slog.data[0][index].pwm = 0; // Stellgroesse
+			slog.data[0][index].targetRate = encoderTargetRate[0]; // Fuehrungsgroesse
+			slog.data[0][index++].time = tickCount.u32; // Timestamp
+			slog_i[0] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
 		}
 #endif	// SPEED_LOG_AVAILABLE
 	}
@@ -402,13 +399,12 @@ void motor_set(int16_t left, int16_t right) {
 		/* Daten loggen */
 		register uint8_t index = slog_i[1];
 		if (index < 24) {
-			slog_data[1][index].encRate = 1;				// Regelgroesse
-			slog_data[1][index].err = 0;							// Regeldifferenz
-			slog_data[1][index].pwm = 0;						// Stellgroesse
-			slog_data[1][index].targetRate = encoderTargetRate[1];	// Fuehrungsgroesse
-			slog_data[1][index++].time = TIMER_GET_TICKCOUNT_32;		// Timestamp
-			slog_i[1] = (uint8_t) (index > 24 ? 0 : index);	// Z/25Z
-			slog_count[1]++;
+			slog.data[1][index].encRate = 1; // Regelgroesse
+			slog.data[1][index].err = 0; // Regeldifferenz
+			slog.data[1][index].pwm = 0; // Stellgroesse
+			slog.data[1][index].targetRate = encoderTargetRate[1]; // Fuehrungsgroesse
+			slog.data[1][index++].time = tickCount.u32; // Timestamp
+			slog_i[1] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
 		}
 #endif	// SPEED_LOG_AVAILABLE
 	}
@@ -425,7 +421,7 @@ void motor_set(int16_t left, int16_t right) {
 			i = 0;
 		}
 	}
-#else
+#else // ! SPEED_CONTROL_AVAILABLE
 #ifdef MCU
 	/* Geschwindigkeit als PWM-Wert an die Motoren weitergeben */
 	if (speedSignLeft > 0) {

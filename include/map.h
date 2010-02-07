@@ -42,7 +42,7 @@
 #define MAP_RESOLUTION 		125		/*!< Aufloesung der Karte in Punkte pro Meter */
 #define MAP_SECTION_POINTS 	16		/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 
-#define MAP_UPDATE_STACK_SIZE	256	/*!< Groesse des Stacks, der das Map-Update ausfuehrt [Byte] */
+#define MAP_UPDATE_STACK_SIZE	180	/*!< Groesse des Stacks, der das Map-Update ausfuehrt [Byte] */
 #define MAP_UPDATE_CACHE_SIZE	16	/*!< Groesse des Map-Caches [# Eintraege] */
 #define MAP_2_SIM_STACK_SIZE	150	/*!< Groesse des Map-2-Sim-Thread-Stacks [Byte]*/
 
@@ -77,11 +77,7 @@ typedef struct {
 #ifdef MEASURE_POSITION_ERRORS_AVAILABLE
 	uint8_t loc_prob;	/*!< gibt an, wie sicher wir ueber die Position sind [0; 255] */
 #endif
-}
-#ifndef DOXYGEN
-__attribute__ ((packed)) // Keine Luecken in der Struktur lassen
-#endif
-map_cache_t;
+} PACKED map_cache_t;
 
 extern fifo_t map_update_fifo;			/*!< Fifo fuer Cache */
 extern map_cache_t map_update_cache[];	/*!< Map-Cache */

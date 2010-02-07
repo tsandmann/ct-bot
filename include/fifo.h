@@ -39,8 +39,9 @@
 #undef DEBUG_FIFO
 #endif
 #ifndef DEBUG_FIFO
-#undef LOG_DEBUG
-#define LOG_DEBUG(a, ...) {}
+#define LOG_DEBUG_FIFO(a, ...) {}
+#else
+#define LOG_DEBUG_FIFO LOG_DEBUG
 #endif
 
 /*! FIFO-Datentyp */
@@ -133,10 +134,10 @@ static inline uint8_t _inline_fifo_get(fifo_t * f, uint8_t isr) {
 		uint8_t count = f->count;
 		if (count == 0) {
 			/* blockieren */
-			LOG_DEBUG("Fifo 0x%08x ist leer, blockiere", f);
+			LOG_DEBUG_FIFO("Fifo 0x%08x ist leer, blockiere", f);
 			os_signal_lock(&f->signal);
 			os_signal_set(&f->signal);
-			LOG_DEBUG("Fifo 0x%08x enthaelt wieder Daten, weiter geht's", f);
+			LOG_DEBUG_FIFO("Fifo 0x%08x enthaelt wieder Daten, weiter geht's", f);
 			os_signal_release(&f->signal);
 		}
 	}

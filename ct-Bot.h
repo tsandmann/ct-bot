@@ -134,6 +134,7 @@
 		#undef SRF10_AVAILABLE
 		#undef TWI_AVAILABLE
 		#undef SPEED_CONTROL_AVAILABLE
+		#undef SPEED_LOG_AVAILABLE
 		#undef MMC_AVAILABLE
 		#undef I2C_AVAILABLE
 		#undef CMPS03_AVAILABLE
@@ -180,7 +181,6 @@
 
 #ifndef SPEED_CONTROL_AVAILABLE
 	#undef ADJUST_PID_PARAMS
-	#undef SPEED_LOG_AVAILABLE
 #endif
 
 #ifdef LOG_UART_AVAILABLE
@@ -200,21 +200,20 @@
 #endif
 
 #ifndef MMC_AVAILABLE
-	#ifdef MCU
-		#undef MMC_VM_AVAILABLE
-	#endif
-#endif
-
-#ifndef MMC_AVAILABLE
 	#undef SPEED_LOG_AVAILABLE
-
 	#ifdef MCU
 		#undef MAP_AVAILABLE // Map geht auf dem MCU nur mit MMC
+		#undef MMC_VM_AVAILABLE
 	#endif
 #endif
 
 #ifndef BEHAVIOUR_AVAILABLE
 	#undef MAP_AVAILABLE
+#endif
+
+#if defined SPEED_LOG_AVAILABLE && defined MAP_AVAILABLE
+	#undef MAP_AVAILABLE
+	#warning "Speed-Log und Map schliessen sich aus, deaktiviere Map"
 #endif
 
 #ifdef MAP_AVAILABLE

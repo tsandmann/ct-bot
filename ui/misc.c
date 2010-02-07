@@ -106,23 +106,23 @@ void misc_display(void){
 #endif	// MISC_DISPLAY_AVAILABLE
 
 #ifdef RESET_INFO_DISPLAY_AVAILABLE
-uint8 reset_flag;	/*!< Nimmt den Status von MCU(C)SR bevor dieses Register auf 0x00 gesetzt wird */
+uint8_t reset_flag;	/*!< Nimmt den Status von MCU(C)SR bevor dieses Register auf 0x00 gesetzt wird */
 
 /*!
  * @brief Zeigt Informationen ueber Resets an
  */
 void reset_info_display(void){
-	display_cursor(1,1);
+	display_cursor(1, 1);
 	display_printf("#Resets:%3u | (C)SR:", ctbot_eeprom_read_byte(&resetsEEPROM));
 
-	display_cursor(2,1);
-	display_printf("PORF :%d  WDRF :%d",binary(reset_flag,0),binary(reset_flag,3));
+	display_cursor(2, 1);
+	display_printf("PORF :%d  WDRF :%d", binary(reset_flag, 0), binary(reset_flag, 3));
 
-	display_cursor(3,1);
-	display_printf("EXTRF:%d  JTRF :%d",binary(reset_flag,1),binary(reset_flag,4));
+	display_cursor(3, 1);
+	display_printf("EXTRF:%d  JTRF :%d", binary(reset_flag, 1), binary(reset_flag, 4));
 
-	display_cursor(4,1);
-	display_printf("BORF :%d",binary(reset_flag,2));
+	display_cursor(4, 1);
+	display_printf("BORF :%d", binary(reset_flag, 2));
 }
 #endif	// RESET_INFO_DISPLAY_AVAILABLE
 
@@ -148,7 +148,7 @@ void reset_info_display(void){
  * 			Die Heapgroesse stimmt nur, wenn es dort keine Luecken gibt (z.b. durch free())
  */
 void ram_display(void) {
-	unsigned char * sp = (unsigned char *)SP;
+	unsigned char * sp = (unsigned char *) SP;
 	extern unsigned char __data_start;
 	extern unsigned char __bss_start;
 	extern unsigned char __heap_start;
@@ -180,10 +180,10 @@ void ram_display(void) {
 	display_cursor(3, 1);
 	display_printf("stack:");
 	display_cursor(3, 15);
-	size_t stack_size = (size_t) ((unsigned char *)RAMEND - sp);
+	size_t stack_size = (size_t) ((unsigned char *) RAMEND - sp);
 	display_printf("%4u B", stack_size);
 	display_cursor(4, 1);
-	size_t ram_size = (size_t) ((unsigned char *)(RAMEND + 1) - &__data_start);
+	size_t ram_size = (size_t) ((unsigned char *) (RAMEND + 1) - &__data_start);
 	size_t frei = ram_size - (data_size + bss_size + heap_size + stack_size);
 	display_printf("free/all:%4u/%4u B", frei, ram_size);
 }

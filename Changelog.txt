@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2010-02-06 Timo Sandmann [mail@timosandmann.de]: Speed-Log und Mini-FAT verbessert, Verhaltenscode aufgeraeumt, Init-Code vereinheitlicht, Warnings beseitigt
+
 2010-01-31 Timo Sandmann [mail@timosandmann.de]: Map-Update beruecksichtigt Positionsunsicherheit, wenn MEASURE_POSITION_ERRORS_AVAILABLE an ist
 
 2010-01-29 Timo Sandmann [mail@timosandmann.de]: Positionsbestimmung um Fehlerabschaetzung erweitert (MEASURE_POSITION_ERRORS_AVAILABLE), verfuegbar ueber globale Variable pos_error_radius, Anzeige der Positionsunsicherheit in der Map-Anzeige des Sim, got_pos() optimiert, Funktionen rad() und deg() zur Umrechnung von Grad in Bogenmass und umgekehrt, calc_angle_diff_rad() liefert Winkeldifferenz wie calc_angle_diff() aber im Bogenmass.  

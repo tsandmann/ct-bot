@@ -45,7 +45,7 @@ typedef union {
 	struct {
 		uint8_t lo8;	/*!< untere 8 Bit der Adresse */
 		uint8_t hi8;	/*!< obere 8 Bit der Adresse */
-	} bytes;
+	} PACKED bytes;
 } os_ip_t;
 
 Tcb_t os_threads[OS_MAX_THREADS];				/*!< Array aller TCBs */
@@ -261,14 +261,14 @@ static uint16_t os_stack_unused(void * stack) {
 void os_print_stackusage(void) {
 	uint16_t tmp;
 #ifdef MAP_AVAILABLE
-	static uint16_t map_stack_free = -1;
+	static uint16_t map_stack_free = UINT16_MAX;
 	tmp = os_stack_unused(map_update_stack);
 	if (tmp < map_stack_free) {
 		map_stack_free = tmp;
 		LOG_INFO("Map-Stack unused=%u", tmp);
 	}
 #ifdef MAP_2_SIM_AVAILABLE
-	static uint16_t map_2_sim_stack_free = -1;
+	static uint16_t map_2_sim_stack_free = UINT16_MAX;
 	tmp = os_stack_unused(map_2_sim_worker_stack);
 	if (tmp < map_2_sim_stack_free) {
 		map_2_sim_stack_free = tmp;
@@ -276,13 +276,13 @@ void os_print_stackusage(void) {
 	}
 #endif	// MAP_2_SIM_AVAILABLE
 #endif	// MAP_AVAILABLE
-	static uint16_t kernel_stack_free = -1;
+	static uint16_t kernel_stack_free = UINT16_MAX;
 	tmp = os_stack_unused(os_kernel_stack);
 	if (tmp < kernel_stack_free) {
 		kernel_stack_free = tmp;
 		LOG_INFO("Kernel-Stack unused=%u", tmp);
 	}
-	static uint16_t idle_stack_free = -1;
+	static uint16_t idle_stack_free = UINT16_MAX;
 	tmp = os_stack_unused(os_idle_stack);
 	if (tmp < idle_stack_free) {
 		idle_stack_free = tmp;
@@ -299,12 +299,12 @@ void os_print_stackusage(void) {
 void os_stack_dump(Tcb_t * thread, void * stack, uint16_t size) {
 	size_t n;
 	if (thread == os_thread_running) {
-		n = stack - (void *)SP;
+		n = (size_t) stack - (size_t) (void *) SP;
 	} else {
-		n = stack - thread->stack;
+		n = (size_t) stack - (size_t) thread->stack;
 	}
-	LOG_INFO("Thread 0x%04x\t uses %u Bytes", (size_t)thread, n);
-	int16_t i;
+	LOG_INFO("Thread 0x%04x\t uses %u Bytes", (size_t) thread, n);
+	size_t i;
 	uint8_t * ptr = stack;
 	for (i=n; i>0; i--) {
 		LOG_INFO("0x%04x:\t0x%02x", ptr, *ptr);

@@ -228,9 +228,9 @@ void os_schedule(uint32_t tickcount) {
 				if (ptr != os_thread_running) {
 #ifdef OS_KERNEL_LOG_AVAILABLE
 					if (kernel_log_on != 0) {
-						log_entry.time = tickcount;
-						log_entry.from = os_thread_running - os_threads;
-						log_entry.to = ptr - os_threads;
+						log_entry.time = (uint16_t) tickcount;
+						log_entry.from = (uint8_t) (os_thread_running - os_threads);
+						log_entry.to = (uint8_t) (ptr - os_threads);
 						fifo_put_data(&kernel_log_fifo, &log_entry, sizeof(log_entry));
 					}
 #endif	// OS_KERNEL_LOG_AVAILABLE
@@ -336,7 +336,7 @@ void os_display(void) {
 	switch (RC5_Code) {
 	case RC5_CODE_1:
 #ifdef OS_DEBUG
-		os_stack_dump(&os_threads[0], (unsigned char *)RAMEND, (unsigned char *)RAMEND - __brkval);
+		os_stack_dump(&os_threads[0], (unsigned char *) RAMEND, (uint16_t) ((unsigned char *) RAMEND - __brkval));
 #endif
 		RC5_Code = 0;
 		break;
@@ -359,7 +359,7 @@ void os_display(void) {
 
 #ifdef OS_KERNEL_LOG_AVAILABLE
 	case RC5_CODE_4:
-		kernel_log_on = ~kernel_log_on;
+		kernel_log_on = (uint8_t) ~kernel_log_on;
 		RC5_Code = 0;
 		break;
 #endif	// OS_KERNEL_LOG_AVAILABLE

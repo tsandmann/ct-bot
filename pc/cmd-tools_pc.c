@@ -67,6 +67,7 @@ static void usage(void) {
 	puts("\t-d \tLoescht eine Mini-Fat-Datei fuer den Sim (emulierte MMC).");
 	puts("\t   ID  \tDie ID aus ASCII-Zeichen");
 	puts("\t-l \tKonvertiert eine SpeedLog-Datei in eine txt-Datei");
+	puts("\t   FILE\tEingabedatei");
 	puts("\t-i \tInitialisiert das EEPROM mit den Daten der EEP-Datei");
 	puts("\t-h\tZeigt diese Hilfe an");
 }

@@ -48,7 +48,7 @@ static void shift_clear(void) {
 /*!
  * Initialisert die Shift-Register
  */
-void shift_init(void){
+void shift_init(void) {
 	SHIFT_DDR |= SHIFT_OUT;		// Ausgaenge Schalten
 	shift_clear();				// Und auf Null
 }

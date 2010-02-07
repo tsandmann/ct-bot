@@ -301,7 +301,7 @@ static int16_t lastpos_y = 0;
  */
 static uint8_t distance_reached(int16_t * last_xpoint, int16_t * last_ypoint) {
 	// Abstand seit letztem Observerlauf ermitteln
-	uint16_t diff = get_dist(x_pos, y_pos, *last_xpoint, *last_ypoint);
+	uint16_t diff = (uint16_t) get_dist(x_pos, y_pos, *last_xpoint, *last_ypoint);
 
 	//erst nach gewissem Abstand oder gleich bei noch initialem Wert Mappruefung
 	if (diff >= CHECK_DISTANCE_QUAD) {

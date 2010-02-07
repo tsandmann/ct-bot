@@ -21,7 +21,7 @@
  * @file 	behaviour_drive_square.c
  * @brief 	Bot faehrt im Quadrat
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	03.11.06
+ * @date 	03.11.2006
  */
 
 
@@ -32,7 +32,7 @@
 #define STATE_TURN 			1
 #define STATE_INTERRUPTED	2
 	
-static uint8 state = STATE_FORWARD;	/*!< Status des Verhaltens */
+static uint8_t state = STATE_FORWARD;	/*!< Status des Verhaltens */
 
 /*!
  * Laesst den Roboter ein Quadrat abfahren.
@@ -41,7 +41,7 @@ static uint8 state = STATE_FORWARD;	/*!< Status des Verhaltens */
  * selbst keine speedWishes.
  * @param *data der Verhaltensdatensatz
  */
-void bot_drive_square_behaviour(Behaviour_t *data) {
+void bot_drive_square_behaviour(Behaviour_t * data) {
 	switch (state) {
 	case STATE_FORWARD:
 		/* Vorwaerts */
@@ -66,7 +66,7 @@ void bot_drive_square_behaviour(Behaviour_t *data) {
  * Laesst den Roboter ein Quadrat abfahren.
  * @param caller Der obligatorische Verhaltensdatensatz des aufrufers
  */
-void bot_drive_square(Behaviour_t* caller) {
+void bot_drive_square(Behaviour_t * caller) {
 	switch_to_behaviour(caller, bot_drive_square_behaviour, OVERRIDE);
 	state = STATE_FORWARD;
 }

@@ -63,11 +63,7 @@ typedef union {
 	struct {
 		unsigned left:1;	/*!< linksrum */
 		unsigned right:1;	/*!< rechtsrum */
-	}
-#ifndef DOXYGEN
-__attribute__ ((packed))
-#endif
-	;
+	} PACKED;
 	uint8_t raw;
 } direction_t;
 

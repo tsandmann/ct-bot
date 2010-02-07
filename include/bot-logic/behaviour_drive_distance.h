@@ -63,7 +63,7 @@ void bot_drive_distance_behaviour(Behaviour_t * data);
  */
 void bot_drive_distance(Behaviour_t * caller, int8_t curve, int16_t speed, int16_t cm);
 
-#else	// USE_GOTO_POS_DIST
+#else // USE_GOTO_POS_DIST
 /* wenn goto_pos() vorhanden ist und USE_GOTO_POS_DIST an, leiten wir alle drive_distance()-Aufurfe dorthin um */
 #undef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 static inline void bot_drive_distance(Behaviour_t * caller, int8_t curve, const int16_t speed, const int16_t cm) {

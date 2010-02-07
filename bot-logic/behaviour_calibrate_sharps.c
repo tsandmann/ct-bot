@@ -133,12 +133,12 @@ static int16_t calc_distance(uint8_t sensor) {
 static void update_data(void) {
 	int16_t dist = calc_distance(0);
 //	LOG_INFO("%u: links: %d", count, dist);
-	buffer[0][count].dist = dist/5;
-	buffer[0][count].voltage = distL;
+	buffer[0][count].dist = (uint8_t) (dist / 5);
+	buffer[0][count].voltage = (uint8_t) distL;
 	dist = calc_distance(1);
 //	LOG_INFO("%u: rechts: %d", count, dist);
-	buffer[1][count].dist = dist/5;
-	buffer[1][count].voltage = distR;
+	buffer[1][count].dist = (uint8_t) (dist / 5);
+	buffer[1][count].voltage = (uint8_t) distR;
 
 	if (count != max_steps-1)
 		/* neue Entfernung */
@@ -165,15 +165,15 @@ static void measure_distance(void) {
 	} else {
 		return;
 	}
-	distL += (float)sensDistL / 2.0f - volt_offset;
-	distR += (float)sensDistR / 2.0f - volt_offset;
+	distL += (int16_t) ((float) sensDistL / 2.0f - volt_offset);
+	distR += (int16_t) ((float) sensDistR / 2.0f - volt_offset);
 	/* acht Messungen abwarten */
 	if (measure_count == 8) {
 		distL >>= 3;
 		distR >>= 3;
 		if (distL > 255 || distR > 255) {
 			/* Offset zu kleine => erhoehen und neu messen */
-			volt_offset += 5;
+			volt_offset = (uint8_t) (volt_offset + 5);
 //			LOG_INFO("Offset-Update auf %u", volt_offset);
 		} else {
 			/* Messwerte ok */
@@ -189,7 +189,7 @@ static void measure_distance(void) {
  */
 static void goto_next_pos(void) {
 	//bot_drive_distance(data, 0, -50, step);	// step cm zurueck
-	distance += step;
+	distance = (uint8_t) (distance + step);
 	count++;
 	pNextJob = measure_distance;
 	wait_for_userinput();
@@ -205,7 +205,7 @@ static void goto_next_pos(void) {
 static void sensor_dist_direct(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t volt) {
 	ptr = ptr; // kein warning
 	*p_sens = volt;
-	*p_toggle = ~*p_toggle;
+	*p_toggle = (uint8_t) ~*p_toggle;
 }
 
 /*!
@@ -249,7 +249,9 @@ void bot_calibrate_sharps_behaviour(Behaviour_t * data) {
 				tmp_s[66] = tmp;
 				LOG_INFO("%s \\", &tmp_s[66]);
 			}
-			if (k==0) LOG_INFO("SENSDIST_DATA_RIGHT:");
+			if (k == 0) {
+				LOG_INFO("SENSDIST_DATA_RIGHT:");
+			}
 		}
 	}
 }
