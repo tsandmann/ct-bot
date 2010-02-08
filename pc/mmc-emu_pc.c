@@ -55,8 +55,8 @@
 #ifdef PC
 #ifdef MMC_VM_AVAILABLE
 
-volatile uint8 mmc_emu_init_state=1;	/*!< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
-static FILE* mmc_emu_file;				/*!< Der Inhalt der emulierten Karte wird einfach in eine Datei geschrieben */
+volatile uint8_t mmc_emu_init_state = 1;	/*!< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
+static FILE * mmc_emu_file;					/*!< Der Inhalt der emulierten Karte wird einfach in eine Datei geschrieben */
 
 #ifdef DISPLAY_MINIFAT_INFO
 /*!
@@ -276,19 +276,19 @@ uint32_t mmc_emu_find_block(const char * filename, uint8_t * buffer, uint32_t en
 uint8_t mmc_emu_test(void) {
 	/* Initialisierung checken */
 	if (mmc_emu_init_state != 0 && mmc_emu_init() != 0) return 1;
-	uint16 i;
-	static uint16 pagefaults = 0;
+	uint16_t i;
+	static uint16_t pagefaults = 0;
 	/* virtuelle Adressen holen */
-	static uint32 v_addr1 = 0;
-	static uint32 v_addr2 = 0;
-	static uint32 v_addr3 = 0;
-	static uint32 v_addr4 = 0;
+	static uint32_t v_addr1 = 0;
+	static uint32_t v_addr2 = 0;
+	static uint32_t v_addr3 = 0;
+	static uint32_t v_addr4 = 0;
 	if (v_addr1 == 0) v_addr1 = mmcalloc(512, 1);	// Testdaten 1
 	if (v_addr2 == 0) v_addr2 = mmcalloc(512, 1);	// Testdaten 2
 	if (v_addr3 == 0) v_addr3 = mmcalloc(512, 1);	// Dummy 1
 	if (v_addr4 == 0) v_addr4 = mmcalloc(512, 1);	// Dummy 2
 	/* Pointer auf Puffer holen */
-	uint8* p_addr = mmc_get_data(v_addr1);
+	uint8_t * p_addr = mmc_get_data(v_addr1);
 	if (p_addr == NULL) return 2;
 	/* Testdaten schreiben */
 	for (i=0; i<512; i++)
@@ -323,7 +323,7 @@ uint8_t mmc_emu_test(void) {
 		pagefaults = mmc_get_pagefaults();
 	#endif
 	/* kleine Statistik ausgeben */
-	display_cursor(3,1);
+	display_cursor(3, 1);
 	display_printf("Pagefaults: %5u  ", pagefaults);
 	// hierher kommen wir nur, wenn alles ok ist		
 	return 0;

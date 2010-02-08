@@ -73,7 +73,7 @@ static int8_t (* exploration_check_function)(void);	/*!< Die Funktion, mit der d
  * Das Verhalten dreht den Bot so, dass er auf eine Lichtquelle zufaehrt.
  */
 static void bot_goto_light(void) {
-	int16_t speed, curve = (sensLDRL - sensLDRR) / 1.5;
+	int16_t speed, curve = (int16_t) ((sensLDRL - sensLDRR) / 1.5f);
 
 	if (curve < -127)
 		curve = -127;
@@ -88,7 +88,7 @@ static void bot_goto_light(void) {
 		speed = BOT_SPEED_NORMAL;
 	}
 
-	bot_drive(curve, speed);
+	bot_drive((int8_t) curve, speed);
 }
 
 /*!
@@ -253,7 +253,7 @@ void bot_explore_behaviour(Behaviour_t * data) {
 			explore_curve = 25;
 			explore_running_curve = True;
 		} else if (explore_running_curve == False) {
-			explore_curve *= -0.9;
+			explore_curve = (int8_t) (explore_curve * -0.9f);
 			explore_running_curve = True;
 		}
 		/* Sobald der Bot auf ein Hindernis stoesst, wird der naechste Zyklus eingeleitet.
@@ -261,8 +261,8 @@ void bot_explore_behaviour(Behaviour_t * data) {
 		 * Wenn der Wert von curve (durch Rundungsfehler bei int) auf 0 faellt, beginnt das Suchverhalten erneut.*/
 		if (bot_avoid_harm()) {
 			explore_state
-					= (explore_curve > 0) ? EXPLORATION_STATE_TURN_PARALLEL_LEFT
-							: EXPLORATION_STATE_TURN_PARALLEL_RIGHT;
+					= (int8_t) (explore_curve > 0 ? EXPLORATION_STATE_TURN_PARALLEL_LEFT
+							: EXPLORATION_STATE_TURN_PARALLEL_RIGHT);
 			explore_running_curve = False;
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
 			deactivateBehaviour(bot_avoid_col_behaviour);
@@ -337,7 +337,7 @@ void bot_do_slalom_behaviour(Behaviour_t * data) {
 		break;
 	case SLALOM_STATE_DRIVE_ARC:
 		// Nicht wundern: Bei einem Links-Slalom faehrt der Bot eine Rechtskurve.
-		curve = (slalom_orientation == SLALOM_ORIENTATION_LEFT) ? 25 : -25;
+		curve = (int8_t) (slalom_orientation == SLALOM_ORIENTATION_LEFT ? 25 : -25);
 		bot_drive_distance(data,curve,BOT_SPEED_FAST,20);
 		slalom_state = SLALOM_STATE_TURN_2;
 		break;
@@ -358,8 +358,8 @@ void bot_do_slalom_behaviour(Behaviour_t * data) {
 					// Wenn die Saeule gut ist, drauf zu und Slalom anders rum fahren.
 					slalom_state = SLALOM_STATE_CHECK_PILLAR;
 					slalom_orientation
-							= (slalom_orientation == SLALOM_ORIENTATION_LEFT) ? SLALOM_ORIENTATION_RIGHT
-									: SLALOM_ORIENTATION_LEFT;
+							= (int8_t) (slalom_orientation == SLALOM_ORIENTATION_LEFT ? SLALOM_ORIENTATION_RIGHT
+									: SLALOM_ORIENTATION_LEFT);
 					slalom_sweep_steps = 0;
 				} else {
 					// Sonst drehen.

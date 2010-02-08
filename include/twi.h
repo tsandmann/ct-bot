@@ -41,9 +41,9 @@
  * Pointer auf den Sende- oder Empfangspuffer
  */
 typedef struct {
-	uint8 slave_adr;	/*!< Slave Adresse and W/R byte */
-	uint8 size;			/*!< Anzahl der Bytes, die gesendet oder empfagen werden sollen */
-	uint8 *data_ptr;	/*!< Pointer zum Sende und Empfangs Puffer */
+	uint8_t slave_adr;	/*!< Slave Adresse and W/R byte */
+	uint8_t size;		/*!< Anzahl der Bytes, die gesendet oder empfagen werden sollen */
+	uint8_t * data_ptr;	/*!< Pointer zum Sende und Empfangs Puffer */
 } tx_type_t;							
 	
 /*!

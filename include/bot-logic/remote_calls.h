@@ -55,7 +55,7 @@ typedef union {
 	int16_t s16;	/*!< 16 Bit signed integer */
 	uint8_t u8;		/*!<  8 Bit unsigned integer */
 	int8_t s8;		/*!<  8 Bit signed integer */
-} remote_call_data_t;	// uint32 und float werden beide gleich ausgelesen, daher stecken wir sie in einen Speicherbereich
+} remote_call_data_t;	// uint32_t und float werden beide gleich ausgelesen, daher stecken wir sie in einen Speicherbereich
 
 /*! Dieses Makro bereitet eine Botenfunktion als Remote-Call-Funktion vor.
  * Der erste parameter ist der Funktionsname selbst

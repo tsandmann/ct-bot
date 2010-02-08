@@ -59,49 +59,49 @@ void change_bot_addr_callback(char * data) {
 /*!
  * @brief	Zeigt ein paar Infos an, die man nicht naeher zuordnen kann
  */
-void misc_display(void){
-	#ifdef TIME_AVAILABLE
-		display_cursor(1,1);
-		display_printf("Zeit: %04u:%03u", timer_get_s(), timer_get_ms());
-	#else
-		/* Anzeige der Bot-Adresse (aenderbar) */
-		display_cursor(1,1);
-		display_printf("bot_addr=");
+void misc_display(void) {
+#ifdef TIME_AVAILABLE
+	display_cursor(1, 1);
+	display_printf("Zeit: %04u:%03u", timer_get_s(), timer_get_ms());
+#else
+	/* Anzeige der Bot-Adresse (aenderbar) */
+	display_cursor(1, 1);
+	display_printf("bot_addr=");
 
-	#ifdef KEYPAD_AVAILABLE
-		if (RC5_Code == RC5_CODE_MUTE) {
-			gui_keypad_request(change_bot_addr_callback, 1, 10);
-			#ifdef PC
-				display_cursor(1,10);
-			#endif
-			display_printf("          ");	// clean
-			new_address = 1;
-			RC5_Code = 0;
-		}
-	#endif	// KEYPAD_AVAILABLE
-		if (new_address == 0) {
-			#ifdef PC
-				display_cursor(1,10);
-			#endif
-			display_printf("0x%x", get_bot_address());
-		}
-	#endif	// TIME_AVAILABLE
+#ifdef KEYPAD_AVAILABLE
+	if (RC5_Code == RC5_CODE_MUTE) {
+		gui_keypad_request(change_bot_addr_callback, 1, 10);
+#ifdef PC
+		display_cursor(1, 10);
+#endif
+		display_printf("          ");	// clean
+		new_address = 1;
+		RC5_Code = 0;
+	}
+#endif	// KEYPAD_AVAILABLE
+	if (new_address == 0) {
+#ifdef PC
+		display_cursor(1, 10);
+#endif
+		display_printf("0x%x", get_bot_address());
+	}
+#endif	// TIME_AVAILABLE
 
-	#ifdef BEHAVIOUR_AVAILABLE
-		display_cursor(2,1);
-		display_printf("TS=%+4d %+4d",target_speed_l,target_speed_r);
-	#endif
+#ifdef BEHAVIOUR_AVAILABLE
+	display_cursor(2, 1);
+	display_printf("TS=%+4d %+4d", target_speed_l, target_speed_r);
+#endif
 
-	#ifdef SRF10_AVAILABLE
-		display_cursor(2,15);
-		display_printf("US%4u",sensSRF10);
-	#endif
+#ifdef SRF10_AVAILABLE
+	display_cursor(2, 15);
+	display_printf("US%4u", sensSRF10);
+#endif
 
-	display_cursor(3,1);
-	display_printf("RC=%+4d %+4d",sensEncL,sensEncR);
+	display_cursor(3, 1);
+	display_printf("RC=%+4d %+4d", sensEncL, sensEncR);
 
-	display_cursor(4,1);
-	display_printf("Speed= %04d",(int16)v_center);
+	display_cursor(4, 1);
+	display_printf("Speed= %04d", (int16_t) v_center);
 }
 #endif	// MISC_DISPLAY_AVAILABLE
 
@@ -111,7 +111,7 @@ uint8_t reset_flag;	/*!< Nimmt den Status von MCU(C)SR bevor dieses Register auf
 /*!
  * @brief Zeigt Informationen ueber Resets an
  */
-void reset_info_display(void){
+void reset_info_display(void) {
 	display_cursor(1, 1);
 	display_printf("#Resets:%3u | (C)SR:", ctbot_eeprom_read_byte(&resetsEEPROM));
 
@@ -153,21 +153,21 @@ void ram_display(void) {
 	extern unsigned char __bss_start;
 	extern unsigned char __heap_start;
 	extern unsigned char * __brkval;
-	#ifdef LOG_AVAILABLE
-		extern unsigned char __data_end;
-		extern unsigned char __bss_end;
-		if (RC5_Code == RC5_CODE_1) {
-			LOG_DEBUG("__data_start = 0x%04x", &__data_start);
-			LOG_DEBUG("__data_end = 0x%04x", &__data_end);
-			LOG_DEBUG("__bss_start = 0x%04x", &__bss_start);
-			LOG_DEBUG("__bss_end = 0x%04x", &__bss_end);
-			LOG_DEBUG("__heap_start = 0x%04x", &__heap_start);
-			LOG_DEBUG("__heap_end = 0x%04x", __brkval);
-			LOG_DEBUG("SP = 0x%04x", sp);
-			LOG_DEBUG("RAMEND = 0x%04x", RAMEND);
-			RC5_Code = 0;
-		}
-	#endif	// LOG_AVAILABLE
+#ifdef LOG_AVAILABLE
+	extern unsigned char __data_end;
+	extern unsigned char __bss_end;
+	if (RC5_Code == RC5_CODE_1) {
+		LOG_DEBUG("__data_start = 0x%04x", &__data_start);
+		LOG_DEBUG("__data_end = 0x%04x", &__data_end);
+		LOG_DEBUG("__bss_start = 0x%04x", &__bss_start);
+		LOG_DEBUG("__bss_end = 0x%04x", &__bss_end);
+		LOG_DEBUG("__heap_start = 0x%04x", &__heap_start);
+		LOG_DEBUG("__heap_end = 0x%04x", __brkval);
+		LOG_DEBUG("SP = 0x%04x", sp);
+		LOG_DEBUG("RAMEND = 0x%04x", RAMEND);
+		RC5_Code = 0;
+	}
+#endif	// LOG_AVAILABLE
 	size_t data_size = (size_t) (&__bss_start - &__data_start);
 	size_t bss_size = (size_t) (&__heap_start - &__bss_start);
 	display_cursor(1, 1);

@@ -213,7 +213,7 @@ static uint16_t check_eeprom_file(char * initfile, uint8_t eeprom_init,
 
 				naddr = conv_eeaddr((uint32_t) i);
 				if (naddr < 0xfffffffe) {
-					fseek(fpw, (int32) naddr, SEEK_SET);
+					fseek(fpw, (int32_t) naddr, SEEK_SET);
 				} else {
 					continue; // Nichts schreiben Adresse nicht belegt
 				}

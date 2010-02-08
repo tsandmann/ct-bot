@@ -225,17 +225,6 @@ static int16_t moves;
 #endif // PC
 
 
-/* -------------------------------------------------------------------------- */
-/* -------------------------------------------------------------------------- */
-// nein, in dem folgenden Codefragment fusche ich dann nicht mehr rum, es
-// scheint sich dabei um das eigentliche Orginal von H.G. Muller zu handeln, 
-// was sowie keiner versteht...
-// F. Menzel: Leider kommen hier diverse Warnings beim Uebersetzen, funktioniert
-//            aber durch die Vorrangregeln prima. Mir ist es leider nicht geglueckt,
-//            die Klammern entsprechend richtig zu setzen, damit die Quelle
-//            warnungsfrei wird
-/*! @todo Klammernsetzung fuer Warnungsfreiheit */
-/* -------------------------------------------------------------------------- */
 /* better readability of working struct variables */
 #define q _.q
 #define l _.l
@@ -265,13 +254,9 @@ static int16_t moves;
 #define Y _.Y
 #define a _.a
 
-
-/*! *****************************************************************************
- * @todo MEL: hier kommen leider lauter Warnungen, ist aber der Originalcode, welcher
- * wohl mit Absicht genau so geschrieben wurde; 
- * ist mir leider nicht geglueckt, die Klammern an der richtigen Stelle zu setzen
- * vielleicht kann das ja jemand anderes machen mit tieferem C-Wissen??? 
- *******************************************************************************/
+/*!
+ * fuehrt die Schach-Zuege aus
+ */
 static void D(void) { 														/* iterative Negamax search */
 	D: if (--J < A) { 														/* stack pointer decrement and underrun check */
 		++J;
@@ -290,10 +275,11 @@ static void D(void) { 														/* iterative Negamax search */
 	k ^= 24; 																/* change sides */
 	d = X = Y = 0; 															/* start iter. from scratch */
 	while (d++ < n || d < 3 || 												/* iterative deepening loop */
-	z & K == I && (timer < 0 & d < 98 || 									/* root: deepen upto time */
-	(K = X, L = Y & ~M, d = 3))) {											/* time's up: go do best */
+		((z & (K == I)) && (((timer < 0) & (d < 98) || 						/* root: deepen upto time */
+		(K = X, L = (unsigned char) (Y & ~M), d = 3))))) {					/* time's up: go do best */
+
 		x = B = X; 															/* start scan at prev. best */
-		h = Y & S; 															/* request try noncastl. 1st */
+		h = (unsigned char) (Y & S);										/* request try noncastl. 1st */
 		if (d < 3) {
 			P = I;
 		}
@@ -304,39 +290,42 @@ static void D(void) { 														/* iterative Negamax search */
 			De = -e;
 			DE = S;
 			Dz = 0;
-			Dn = d - 3;														/* save locals, arguments */
+			Dn = (unsigned char) (d - 3);									/* save locals, arguments */
 			Da = 0;
 			goto D; 														/* Search null move */
 			R0: _ = *J;
 			P = DD; 														/* load locals, return value */
 		}
-		m = -P < l | R > 35 ? d > 2 ? -I : e : -P; 							/* Prune or stand-pat */
+		m = (-P < l) | (R > 35) ? d > 2 ? -I : e : -P; 						/* Prune or stand-pat */
 		++timer; 															/* node count (for timing) */
 		do {
 			u = b[x]; 														/* scan board looking for */
 			if (u & k) {													/* own piece (inefficient!) */
-				r = p = u & 7; 												/* p = piece type (set r>0) */
-				j = o(p+16); 												/* first step vector f.piece */
-				while (r = p > 2 & r < 0 ? -r : -o(++j)) {					/* loop over directions o[] */
+				p = (unsigned char) (u & 7); 								/* p = piece type (set r>0) */
+				r = (signed char) p;
+				j = (unsigned char) (o(p+16));								/* first step vector f.piece */
+				while ((r = (signed char) ((p > 2) & (r < 0) ? -r :
+					-o(++j)))) {											/* loop over directions o[] */
 					A: 														/* resume normal after best */
 					y = x;
 					F = G = S; 												/* (x,y)=move, (F,G)=castl.R */
 					do { 													/* y traverses ray, or: */
-						H = y = h ? Y ^ h : y + r; 							/* sneak in prev. best move */
+						H = y = (unsigned char) (h ? Y ^ h : y + r); 		/* sneak in prev. best move */
 						if (y & M) {
 							break; 											/* board edge hit */
 						}
-						m = E - S & b[E] && y - E < 2 & E - y < 2 ? I : m;	/* bad castling */
-						if (p < 3 & y == E) {
+						m = (E - S) & b[E] && (y - E < 2) &
+							((E - y) < 2) ? I : m;							/* bad castling */
+						if ((p < 3) & (y == E)) {
 							H ^= 16; 										/* shift capt.sqr. H if e.p.*/
 						}
 						t = b[H];
-						if (t & k | p < 3 & !(y - x & 7) - !t) {
+						if ((t & k) | ((p < 3) & (!((y - x) & 7) - !t))) {
 							break;	 										/* capt. own, bad pawn mode */
 						}
 						i = 37 * w(t&7) + (t & 192); 						/* value of capt. piece t */
 						m = i < 0 ? I : m; 									/* K capture */
-						if (m >= l & d > 1) {
+						if ((m >= l) & (d > 1)) {
 							goto J;
 						}													/* abort on fail high */
 
@@ -346,24 +335,27 @@ static void D(void) { 														/* iterative Negamax search */
 							b[G] = b[H] = b[x] = 0;
 							b[y] = u | 32; 									/* do move, set non-virgin */
 							if (!(G & M)) {
-								b[F] = k + 6, v += 50; 						/* castling: put R & score */
+								b[F] = (unsigned char) (k + 6);				/* castling: put R & score */
+								v += 50;
 							}
-							v -= p - 4 | R > 29 ? 0 : 20; 					/* penalize mid-game K move */
+							v -= (p - 4) | (R > 29) ? 0 : 20; 				/* penalize mid-game K move */
 							if (p < 3) {									/* pawns: */
-								v -= 9 * ((x - 2 & M || b[x - 2] - u) + 	/* structure, undefended */
-								(x + 2 & M || b[x + 2] - u) - 1 			/* squares plus bias */
+								v -= 9 * (((x - 2 )& M || (b[x - 2] - u)) + /* structure, undefended */
+								((x + 2) & M || (b[x + 2] - u)) - 1 		/* squares plus bias */
 								+ (b[x ^ 16] == k + 36)) 					/* kling to non-virgin King */
 								- (R >> 2); 								/* end-game Pawn-push bonus */
-								V = y + r + 1 & S ? 647 - p : 2 * (u & y + 16 & 32); /* promotion or 6/7th bonus */
-								b[y] += V;
-								i += V; 									/* change piece, add score  */
+								V = (y + r + 1) & S ? 647 - p : 2 * (u & (y + 16) & 32); /* promotion or 6/7th bonus */
+								b[y] = (unsigned char) (b[y] + V);
+								i += V; 									/* change piece, add score */
 							}
 							v += e + i;
-							V = m > q ? m : q; 								/* new eval and alpha       */
-							C = d - 1 - (d > 5 & p > 2 & !t & !h);
-							C = R > 29 | d < 3 | P - I ? C : d; 			/* extend 1 ply if in check */
+							V = m > q ? m : q; 								/* new eval and alpha */
+							C = (unsigned char) (d - 1 - ((d > 5) &
+								(p > 2) & !t & !h));
+							C = (unsigned char) ((R > 29) | (d < 3) |		/* extend 1 ply if in check */
+								(P - I) ? C : d);
 							do
-								if (C > 2 | v > V) {
+								if ((C > 2) | (v > V)) {
 									*J = _;
 									Dq = -l;
 									Dl = -V;
@@ -378,46 +370,49 @@ static void D(void) { 														/* iterative Negamax search */
 								} else {
 									s = v; 									/* or fail low if futile */
 								}
-							while (s > q & ++C < d);
+							while ((s > q) & (++C < d));
 							v = s;
-							if (z && K - I && v + I && x == K & y == L) {	/* move pending & in root: */
+							if (z && K - I && v + I &&
+								(x == K) & (y == L)) {						/* move pending & in root: */
 								Q = -e - i;
 								O = F;										/* exit if legal & found */
-								R += i >> 7;
+								R = (unsigned char) (R + (i >> 7));
 								++J;
 								DD = l;
 								goto R;
 																			/* captured non-P material */
 							}
-							b[G] = k + 6;
+							b[G] = (unsigned char) (k + 6);
 							b[F] = b[y] = 0;
 							b[x] = u;
 							b[H] = t; 										/* undo move,G can be dummy */
 						}
 						if (v > m) {										/* new best, update max,best */
-							m = v, X = x, Y = y | S & F; 					/* mark double move with S */
+							m = v;
+							X = x;
+							Y = (unsigned char) (y | (S & F));				/* mark double move with S */
 						}
 						if (h) {
 							h = 0;
 							goto A;
 						} 													/* redo after doing old best */
-						if (x + r - y | u & 32 | 							/* not 1st step,moved before */
-						p > 2 & (p - 4 | j - 7 ||							/* no P & no lateral K move, */
-						b[G = x + 3 ^ r >> 1 & 7] - k - 6					/* no virgin R in corner G, */
-						|| b[G ^ 1] | b[G ^ 2])								/* no 2 empty sq. next to R */
-						) {
-							t += p < 5;										/* fake capt. for nonsliding */
+						if ((x + r - y) | (u & 32) | 						/* not 1st step,moved before */
+							((p > 2) & ((p - 4) | (j - 7) ||				/* no P & no lateral K move, */
+							b[G = (unsigned char) ((x + 3) ^
+							(r >> 1 & 7))] - k - 6							/* no virgin R in corner G, */
+							|| b[G ^ 1] | b[G ^ 2]))) {						/* no 2 empty sq. next to R */
+							t = (unsigned char) (t + (p < 5));				/* fake capt. for nonsliding */
 						} else {
 							F = y;											/* enable e.p. */
 						}
 					} while (!t);											/* if not capt. continue ray */
 				}
 			}
-		} while ((x = x + 9 & ~M) - B);										/* next sqr. of board, wrap */
-		J: if (m > I - M | m < M - I) {
+		} while ((x = (unsigned char) ((x + 9) & ~M)) - B);					/* next sqr. of board, wrap */
+		J: if ((m > I - M) | (m < M - I)) {
 			d = 98; 														/* mate holds to any depth */
 		}
-		m = m + I | P == I ? m : 0; 										/* best loses K: (stale)mate */
+		m = (m + I) | (P == I) ? m : 0; 									/* best loses K: (stale)mate */
 /*		if(z & hv & d > 2) {
 			print_move('a'+(X&7), '8'-(X>>4), 'a'+(Y&7), '8'-(Y>>4&7));
 		}
@@ -488,7 +483,7 @@ static uint8_t chess_go(void) {
 	if (*c - GO) {
 		/* parse entered move */
 		K = *c - 16 * c[1] + 799;
-		L = c[2] - 16 * c[3] + 799;
+		L = (unsigned char) (c[2] - 16 * c[3] + 799);
 		LOG_DEBUG("Zug wurde eingegeben und parsen");
 	} else {
 		K = I;
@@ -518,7 +513,7 @@ static uint8_t chess_go(void) {
 	} else { // Computerzug
 		result = 2;
 		++moves; // Zuganzahl erhoehen
-		print_move('a' + (K & 7), '8' - (K >> 4), 'a' + (L & 7), '8' - (L >> 4 & 7)); // Displayausgabe
+		print_move((uint8_t) ('a' + (K & 7)), (uint8_t) ('8' - (K >> 4)), (uint8_t) ('a' + (L & 7)), (uint8_t) ('8' - (L >> 4 & 7))); // Displayausgabe
 		LOG_DEBUG("Computerzug Zug %1d", moves);
 		LOG_DEBUG("Zug aus D() von %c %c nach %c %c", 'a' + (K & 7), '8' - ( K >> 4), 'a' + (L & 7), '8' - (L >> 4 & 7));
 		if (!(DD > -I + 1)) {
@@ -539,7 +534,8 @@ static void new_game_init(void) {
 	print_move('S', 'H', 'A', 'H');
 
 	k = 16;
-	O = Q = R = 0;
+	Q = R = 0;
+	O = (unsigned char) Q;
 	for (W = 0; W < sizeof b; ++W) {
 		b[W] = 0;
 	}
@@ -548,13 +544,13 @@ static void new_game_init(void) {
 	}
 	W = 8;
 	while (W--) { // initial board setup
-		b[W] = (b[W + 112] = o(W+24) + 8) + 8;
+		b[W] = (unsigned char) ((b[W + 112] = (unsigned char) (o(W+24) + 8)) + 8);
 
 		b[W + 16] = 18;
 		b[W + 96] = 9;
 		L = 8;
 		while (L--) {
-			b[16 * L + W + 8] = (W - 4) * (W - 4) + (L + L - 7) * (L + L - 7) / 4; // center-pts table
+			b[16 * L + W + 8] = (unsigned char) ((W - 4) * (W - 4) + (L + L - 7) * (L + L - 7) / 4); // center-pts table
 		}
 	} // (in unused half b[])
 
@@ -598,20 +594,20 @@ void bot_drive_chess_behaviour(Behaviour_t * data) {
 		res_go = chess_go();
 
 		if (res_go == 1) { // nach man. Zug gleich Computerzug hinterher
-			white = !white;
+			white = (uint8_t) ! white;
 			LOG_DEBUG("gleich Compi ziehen lassen, Zug war OK, weiss %1d", white);
 
 			state = GO_STATE; // gleichen Verhaltensstatus aufrufen
 
 		} else {
 			if (res_go == 2) {
-				white = !white;
+				white = (uint8_t) ! white;
 				if (white) {
 					LOG_DEBUG("Weiss-keine Botbewegung");
 				} else { // nur wenn Schwarz an der Reihe ist Bot bewegen
 					LOG_DEBUG("Bot fahren nach Autozug");
 					LOG_DEBUG("Zug aus D() von %c %c nach %c %c", 'a' + (K & 7), '8' - (K >> 4), 'a' + ( L& 7), '8' - (L >> 4 & 7));
-					chess2worldkoords('a' + (K & 7), '8' - (K >> 4 & 7), &wx, &wy);
+					chess2worldkoords((char) ('a' + (K & 7)), (char) ('8' - (K >> 4 & 7)), &wx, &wy);
 					LOG_DEBUG("gehe zu Zug-Startpos %1d,%1d,weiss %1d", wy, wx, white);
 					bot_goto_pos(data, wy, wx, 999);
 
@@ -624,7 +620,7 @@ void bot_drive_chess_behaviour(Behaviour_t * data) {
 
 	case GO_STATE_NEXT:
 		/* Bot wird zu den Zug-Zielkoordinaten gefahren */
-		chess2worldkoords('a' + (L & 7), '8' - (L >> 4 & 7), &wx, &wy);
+		chess2worldkoords((char) ('a' + (L & 7)), (char) ('8' - (L >> 4 & 7)), &wx, &wy);
 		LOG_DEBUG("gehe zu Zug-Zielpos %1d,%1d,weiss %1d", wy, wx, white);
 		bot_goto_pos(data, wy, wx, 999);
 
@@ -663,7 +659,7 @@ void bot_drive_chess_go(Behaviour_t * caller) {
  */
 static void after_input(void) {
 	if (!(W & 1)) { // Umwandlung Zahl->Zeichen an je 1. Stelle, also an je ungerader Position
-		c[W] += 'a' - '1'; // W ist hierbei der Digit-Positionszaehler des Digits fuer den Zug
+		c[W] = (unsigned char) (c[W] + 'a' - '1'); // W ist hierbei der Digit-Positionszaehler des Digits fuer den Zug
 	}
 	switch (W) {
 	default:

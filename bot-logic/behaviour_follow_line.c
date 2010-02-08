@@ -58,15 +58,15 @@
 #define RETREAT_AND_STOP			6	/* !< Zurueckfahren mit voller Geschwindigkeit, dann Stop und Verhalten verlassen */
 
 /* Status- und Hilfsvariablen */
-static int8 lineState=CHECK_LINE;
-static int8 cornerDetected=False;
+static int8_t lineState=CHECK_LINE;
+static int8_t cornerDetected=False;
 
 /*!
  * Folgt einer Linie, sobald beide Liniensensoren ausloesen
  * Die Linie sollte in etwa die Breite beider CNY70 haben
  * @param *data	Verhaltensdatensatz
  */
-void bot_follow_line_behaviour(Behaviour_t *data) {
+void bot_follow_line_behaviour(Behaviour_t * data) {
 	switch (lineState) {
 	case CHECK_LINE: /* sind beide Sensoren ueber einer Linie? */
 		if (sensLineL>=LINE_SENSE&& sensLineR>=LINE_SENSE) {
@@ -188,7 +188,7 @@ void bot_follow_line_behaviour(Behaviour_t *data) {
  * Die Linie sollte in etwa die Breite beider CNY70 haben
  * @param	*caller Verhaltensdatensatz des Aufrufers
  */
-void bot_follow_line(Behaviour_t *caller) {
+void bot_follow_line(Behaviour_t * caller) {
 	switch_to_behaviour(caller, bot_follow_line_behaviour, NOOVERRIDE);
 	lineState=CHECK_LINE;
 	cornerDetected=False;

@@ -87,11 +87,11 @@
 // Fahren mittels goto_pos Verhalten
 #ifdef USE_KOORDS   // geht nur mit Koordinaten selbst, nicht mit Fahren  nach Farbe
 #ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
-#define   GO_WITH_GOTO_POS    // auskommentieren wenn nicht mit Goto_pos Verhalten gefahren werden soll
-#undef  GO_WITH_SOLVE_MAZE          // nach Karte den Wandfolger entdefinieren
-#undef  GO_WITH_MAP_GO_DESTINATION
-#endif
-#endif
+#define GO_WITH_GOTO_POS    // auskommentieren wenn nicht mit Goto_pos Verhalten gefahren werden soll
+#undef GO_WITH_SOLVE_MAZE          // nach Karte den Wandfolger entdefinieren
+#undef GO_WITH_MAP_GO_DESTINATION
+#endif // BEHAVIOUR_GOTO_POS_AVAILABLE
+#endif // USE_KOORDS
 
 // trotz aktiviertem Pillarverhalten nur Hin- und Herfahren ohne Dosen einzufangen
 //#define NO_PILLAR_BEHAVIOUR
@@ -122,7 +122,7 @@ static float target_y = 0; /*!< Zwischenzielkoordinaten Y des xy-Fahrverhaltens 
  * @return True wenn xy im Umkreis liegt6
  */
 static uint8_t koord_in_circle_world (float x, float y, float destx, float desty) {
-	//Punktdifferenzen
+	// Punktdifferenzen
 	float distx = destx - x;
 	float disty = desty - y;
 	uint16_t radquad = 0; // Vergleichs-Radiusabstand im Quadrat
@@ -132,40 +132,41 @@ static uint8_t koord_in_circle_world (float x, float y, float destx, float desty
 
 	// Fahre ich gerade mit Linienfolger, dann Umkreis kleiner
 #ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
-	if (behaviour_is_activated(bot_follow_line_behaviour))
-	radquad = 900; // 3cm Umkreis
+	if (behaviour_is_activated(bot_follow_line_behaviour)) {
+		radquad = 900; // 3cm Umkreis
+	}
 #endif
 
 	// Ist Abstand im Radiusabstand, dann ist der Punkt innerhalb des Umkreises
 	// gerechnet mit Quadratzahlen, sparen der Wurzel
-	return (distx*distx + disty*disty) < radquad; // 9cm Umkreis des Bots
+	return (uint8_t) ((distx * distx + disty * disty) < radquad); // 9cm Umkreis des Bots
 
 }
 #else
 //hier wird immer die Farbe des Zielpads eingetragen, welche es zu erreichen gilt
-static uint16_t destpad_value = 0;
+static int16_t destpad_value = 0;
 
 // Farbe der Abgrundsensoren; im Sim identisch der Liniensensoren
 #ifdef CHECK_BORDERSENS_FOR_COL
-static uint16_t destpad_bvalue = 0;
+static int16_t destpad_bvalue = 0;
 #endif
 
 #endif
 
-//Startpad1 wird mit Farbe bei Start belegt und Startpad2 fuer das andere Pad
-static uint16_t STARTPAD_COL1 = 0;
-static uint16_t STARTPAD_COL2 = 0; // weiss geht somit nicht
+// Startpad1 wird mit Farbe bei Start belegt und Startpad2 fuer das andere Pad
+static int16_t startpad_col_1 = 0;
+static int16_t startpad_col_2 = 0; // weiss geht somit nicht
 
 static uint8_t key_pressed = 0; // Kennung ob Taste gedrueckt fuer man. Zielvorgabe
 
 //real haben die Bordersensoren andere Werte als die Liniensensoren, daher hier mitfuehren
 #ifdef CHECK_BORDERSENS_FOR_COL
-static uint16_t STARTPAD_BCOL1 = 0;
-static uint16_t STARTPAD_BCOL2 = 0; // weiss geht somit nicht
+static int16_t startpad_bcol_1 = 0;
+static int16_t startpad_bcol_2 = 0; // weiss geht somit nicht
 #endif
 
 // Farbe des selbst definierbaren Zielpads; wird zusaetzlich zu den bekannten Standardfarben gecheckt wenn <> 0
-static uint16_t PAD_MYCOL = 0;
+static const int16_t PAD_MYCOL = 0;
 
 //kurze Wartezeit wenn bot auf Zielposition
 #define DELAY_ROLLTIME  800
@@ -175,27 +176,28 @@ static uint16_t PAD_MYCOL = 0;
  * @param value_pad   zu checkender Farbwert der Liniensensoren
  * @param value_bpad  zu checkender farbwert der Bordersensoren
  */
-static uint8_t check_pad(uint16_t value_pad, uint16_t value_bpad) {
+static uint8_t check_pad(int16_t value_pad, int16_t value_bpad) {
 #define COL_TOL 5
 
 	// beide Liniensensoren muessen auf der Zielfarbe sein oder nur einer, wenn der andere dafuer Linie erkennt
-	uint8_t ret = (sensLineL>=value_pad-COL_TOL && sensLineL<=value_pad+COL_TOL &&
-			sensLineR>=value_pad-COL_TOL && sensLineR<=value_pad+COL_TOL);
+	uint8_t ret = (uint8_t) (sensLineL >= value_pad - COL_TOL && sensLineL <= value_pad + COL_TOL &&
+		sensLineR >= value_pad - COL_TOL && sensLineR <= value_pad + COL_TOL);
 
-	if (!ret)
-	ret= (sensLineL>=value_pad-COL_TOL && sensLineL<=value_pad+COL_TOL && sensLineR >= LINE_SENSE) ||
-	(sensLineR>=value_pad-COL_TOL && sensLineR<=value_pad+COL_TOL && sensLineL >= LINE_SENSE);
+	if (! ret) {
+		ret = (uint8_t) ((sensLineL >= value_pad - COL_TOL && sensLineL <= value_pad + COL_TOL && sensLineR >= LINE_SENSE) ||
+			(sensLineR >= value_pad - COL_TOL && sensLineR <= value_pad + COL_TOL && sensLineL >= LINE_SENSE));
+	}
 
 	if (ret) {
 #ifdef CHECK_BORDERSENS_FOR_COL
 		// Bordersensoren nur auswerten wenn das Zielpad schon gefunden wurde
-		if (STARTPAD_COL2>0) {
-			ret = ((sensBorderL>=value_bpad-COL_TOL && sensBorderL<=value_bpad+COL_TOL) ||
-					(sensBorderR>=value_bpad-COL_TOL && sensBorderR<=value_bpad+COL_TOL));
+		if (startpad_col_2 > 0) {
+			ret = (uint8_t) ((sensBorderL >= value_bpad - COL_TOL && sensBorderL <= value_bpad + COL_TOL) ||
+				(sensBorderR >= value_bpad - COL_TOL && sensBorderR <= value_bpad + COL_TOL));
 		}
 #else
 		value_bpad = value_bpad;
-#endif
+#endif // CHECK_BORDERSENS_FOR_COL
 	}
 	return ret;
 }
@@ -210,25 +212,25 @@ static uint8_t check_pad(uint16_t value_pad, uint16_t value_bpad) {
 static uint8_t bot_on_pad(void) {
 	// es gilt: es sind immer die anderen Koords zu checken, wo ich mich nicht im Umkreis befinde oder fuer
 	// Farbpads: immer den anderen checken wo ich gerade nicht drauf bin, solange laeuft der Explorer
-	if (STARTPAD_COL2 == 0) {
+	if (startpad_col_2 == 0) {
 		// noch kein Ziel definiert bzw. gefunden; mit bekannten Farb-Pad-Werten auf Linien-Sensorebene
 		// vergleichen; Bordersensoren egal
-		return (check_pad(STARTPAD1, 0) || check_pad(STARTPAD2, 0) || check_pad(GROUND_GOAL, 0) ||
-				(PAD_MYCOL > 0 && check_pad(PAD_MYCOL, 0))) ? True : False;
+		return (uint8_t) ((check_pad(STARTPAD1, 0) || check_pad(STARTPAD2, 0) || check_pad(GROUND_GOAL, 0) ||
+				(PAD_MYCOL > 0 && check_pad(PAD_MYCOL, 0))) ? True : False);
 
 	}
 	else { // Zielpad/- koordinaten hier bereits festgelegt
 		// Wenn Umkreispunkt erreicht in Weltkoordinaten Schluss bei Koordinatenverwendung
 #ifdef USE_KOORDS
-		return koord_in_circle_world(x_pos, y_pos, target_x, target_y) ? True : False;
+		return (uint8_t) (koord_in_circle_world(x_pos, y_pos, target_x, target_y) ? True : False);
 #else
 		// finden keine Koordinaten Verwendung, dann nur nach Farbpads fahren
 #ifdef CHECK_BORDERSENS_FOR_COL
 		return check_pad(destpad_value, destpad_bvalue) ? True : False;
 #else
 		return check_pad(destpad_value, 0) ? True : False;
-#endif
-#endif
+#endif // CHECK_BORDERSENS_FOR_COL
+#endif // USE_KOORDS
 	}
 }
 
@@ -241,15 +243,15 @@ static uint8_t destpad_found(void) {
 #ifdef AUTOSEARCH_PADCOL  // automatische Suche eingeschaltet
 	// Check ob Bot auf einem bekannten Farbpad rot/blau/gruen oder Linienfarbe steht,
 	// welche nicht der Farbe zum Startzeitpunkt entspricht
-	if (bot_on_pad() && !check_pad(STARTPAD_COL1, 0)) {
-		STARTPAD_COL2 = sensLineL; // einfach mal linken genommen
+	if (bot_on_pad() && !check_pad(startpad_col_1, 0)) {
+		startpad_col_2 = sensLineL; // einfach mal linken genommen
 #ifdef CHECK_BORDERSENS_FOR_COL
-		STARTPAD_BCOL2 = (sensBorderL + sensBorderR) / 2; // Mittelwert beider Abgrundsensoren
+		startpad_bcol_2 = (sensBorderL + sensBorderR) / 2; // Mittelwert beider Abgrundsensoren
 #endif
 #ifndef USE_KOORDS
-		destpad_value=STARTPAD_COL2;
+		destpad_value=startpad_col_2;
 #ifdef CHECK_BORDERSENS_FOR_COL
-		destpad_bvalue = STARTPAD_BCOL2;
+		destpad_bvalue = startpad_bcol_2;
 #endif
 #endif
 		// Weltkoordinaten speichern fuer Drehung genau zu diesen Koordinaten
@@ -271,7 +273,7 @@ static uint8_t check_end_exploring(void) {
 		key_pressed = 0;
 		return True;
 	}
-	return (STARTPAD_COL2 == 0) ? destpad_found() : bot_on_pad();
+	return(uint8_t) (startpad_col_2 == 0 ? destpad_found() : bot_on_pad());
 }
 
 /*!
@@ -298,9 +300,9 @@ void bot_transport_pillar_behaviour(Behaviour_t * data) {
 		state=BOT_EXPLORE;
 
 		// Start-Farbpad belegen mit Farbwert
-		STARTPAD_COL1 = sensLineL; // linken nehmen
+		startpad_col_1 = sensLineL; // linken nehmen
 #ifdef CHECK_BORDERSENS_FOR_COL
-		STARTPAD_BCOL1 = (sensBorderL + sensBorderR) / 2; // Mittelwert beider Abgrundsensoren
+		startpad_bcol_1 = (sensBorderL + sensBorderR) / 2; // Mittelwert beider Abgrundsensoren
 #endif
 		// Start-Weltkoordinaten speichern
 		startpad_x = x_pos;
@@ -341,7 +343,7 @@ void bot_transport_pillar_behaviour(Behaviour_t * data) {
 #else
 #ifdef GO_WITH_MAP_GO_DESTINATION
 		// nach Karte kann ich nur fahren, wenn auch Zielpad schon bekannt ist sonst follow_wall
-		if (STARTPAD_COL2 == 0) {
+		if (startpad_col_2 == 0) {
 			bot_follow_wall(data, check_end_exploring);
 		} else {
 			bot_gotodest_map(data);
@@ -350,10 +352,10 @@ void bot_transport_pillar_behaviour(Behaviour_t * data) {
 #ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
 
 		// nach Karte kann ich nur fahren, wenn auch Zielpad schon bekannt ist sonst follow_wall
-		if (STARTPAD_COL2 == 0) {
+		if (startpad_col_2 == 0) {
 			bot_follow_wall(data, check_end_exploring);
 		} else {
-			bot_goto_pos(data, target_x, target_y, 999);
+			bot_goto_pos(data, (int16_t) target_x, (int16_t) target_y, 999);
 		}
 #else
 		// hier koennte man noch andere Explorerverhalten einbinden und verwenden
@@ -378,7 +380,7 @@ void bot_transport_pillar_behaviour(Behaviour_t * data) {
 	case BOT_ON_PAD:
 		// hier wird entschieden, ob ich ein Objekt suchen muss zum mitnehmen oder wenn ich was im
 		// Bauch habe, muss dieses entladen werden
-		state= (sensTrans == 0) ? GET_PILLAR : UNLOAD_PILLAR;
+		state = (uint8_t) (sensTrans == 0 ? GET_PILLAR : UNLOAD_PILLAR);
 
 #ifdef SHOW_CLAPS_ON_DEST
 		if (state == GET_PILLAR) {
@@ -442,9 +444,9 @@ void bot_transport_pillar_behaviour(Behaviour_t * data) {
 #ifndef USE_KOORDS
 		// zuerst fuer Abgrundsensoren
 #ifdef CHECK_BORDERSENS_FOR_COL
-		destpad_bvalue = (destpad_value == STARTPAD_COL1) ? STARTPAD_BCOL2 : STARTPAD_BCOL1;
+		destpad_bvalue = (destpad_value == startpad_col_1) ? startpad_bcol_2 : startpad_bcol_1;
 #endif
-		destpad_value = (destpad_value == STARTPAD_COL1) ? STARTPAD_COL2 : STARTPAD_COL1;
+		destpad_value = (destpad_value == startpad_col_1) ? startpad_col_2 : startpad_col_1;
 #endif
 		state = INITIAL_TURN;
 
@@ -457,7 +459,7 @@ void bot_transport_pillar_behaviour(Behaviour_t * data) {
 	case INITIAL_TURN:
 		// Drehung genau in Richtung Zielkoordinaten, auch wenn ich gerade von einer Wand komme und damit nicht
 		// aus der Zielrichtung; Koordinaten auch benutzt beim Fahren nach Farben
-		bot_turn(data, calc_angle_diff(target_x - x_pos, target_y - y_pos));
+		bot_turn(data, (int16_t) calc_angle_diff((int16_t) target_x - x_pos, (int16_t) target_y - y_pos));
 		state = BOT_EXPLORE;
 
 		break;
@@ -481,11 +483,11 @@ void bot_transport_pillar(Behaviour_t * caller) {
 	target_x = -1;
 	target_y = -1; // nicht 0, weil bei 0 auch Startpos losgeht
 
-	STARTPAD_COL1 =0;
-	STARTPAD_COL2 = 0 ;
+	startpad_col_1 =0;
+	startpad_col_2 = 0 ;
 #ifdef CHECK_BORDERSENS_FOR_COL
-	STARTPAD_BCOL1 = 0;
-	STARTPAD_BCOL2 = 0;
+	startpad_bcol_1 = 0;
+	startpad_bcol_2 = 0;
 #endif
 	switch_to_behaviour(caller, bot_transport_pillar_behaviour, OVERRIDE);
 }
@@ -500,11 +502,11 @@ void bot_set_destkoords(float x, float y) {
 	// Farbe zum Zeitpunkt des Tastendruckes wird als Zielfarbe definiert
 	// Weiss -wohl nur so im Sim so moeglich- bekommt 1, Hauptsache ungleich 0
 	// Wess kann nur manuell als Zielfarbe gesetzt werden
-	STARTPAD_COL2 = sensLineL > 0 ? sensLineL : 1;
+	startpad_col_2 = sensLineL > 0 ? sensLineL : 1;
 	key_pressed = True;
 
 #ifdef CHECK_BORDERSENS_FOR_COL
-	STARTPAD_BCOL2 = (sensBorderL + sensBorderR) / 2; // Mittelwert beider Abgrundsensoren
+	startpad_bcol_2 = (sensBorderL + sensBorderR) / 2; // Mittelwert beider Abgrundsensoren
 #endif
 
 	// Weltkoordinaten speichern; diese werden nur verwendet

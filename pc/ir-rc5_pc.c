@@ -53,7 +53,7 @@ ir_data_t bps_ir_data = {
  * @return Wert von ir_data, loescht anschliessend ir_data
  */
 uint16_t ir_read(ir_data_t * data) {
-	uint16 retvalue = data->ir_data;
+	uint16_t retvalue = data->ir_data;
 	data->ir_data = 0;
 	return retvalue;
 }

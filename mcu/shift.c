@@ -66,7 +66,7 @@ void shift_data_out(uint8_t data, uint8_t latch_data, uint8_t latch_store) {
 #endif
 	
 	SHIFT_PORT = (uint8_t) (SHIFT_PORT & ~SHIFT_OUT); // und wieder clear
-	int8 i;
+	int8_t i;
 	for (i=8; i>0; i--){
 		SHIFT_PORT |= ((data >> 7) & 0x01);	// Das oberste Bit von data auf PC0.0 (Datenleitung Schieberegister)
 		SHIFT_PORT |= latch_data ;			// und ins jeweilige Storageregister latchen
@@ -84,7 +84,7 @@ void shift_data_out(uint8_t data, uint8_t latch_data, uint8_t latch_store) {
  * @param data			Das Datenbyte
  * @param latch_data 	Der Pin an dem der Daten-latch-Pin des Registers (PIN 11) haengt
  */
-void shift_data(uint8 data, uint8 latch_data) {
+void shift_data(uint8_t data, uint8_t latch_data) {
 	shift_data_out(data, latch_data, SHIFT_LATCH);
 	shift_clear();
 }

@@ -611,7 +611,7 @@ uint32_t mmc_get_size(void) {
  * @param *buffer	Zeiger auf einen 512 Byte grossen Puffer
  * @return 			0, wenn alles ok
  */
-uint8 mmc_test(uint8_t * buffer) {
+uint8_t mmc_test(uint8_t * buffer) {
 	static uint32_t sector = 0x20000;
 	/* Initialisierung checken */
 	if (mmc_init_state != 0 && mmc_init() != 0) {

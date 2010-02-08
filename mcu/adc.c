@@ -59,8 +59,8 @@ void adc_init(uint8_t channel) {
 // * Liest einen analogen Kanal aus
 // * @param channel Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
 // */
-//uint16 adc_read(uint8 channel){
-//	uint16 result = 0x00;
+//uint16_t adc_read(uint8_t channel) {
+//	uint16_t result = 0x00;
 //
 //	// interne Refernzspannung AVCC, rechts Ausrichtung
 //	ADMUX= _BV(REFS0) ;//| _BV(REFS1);	 //|(0<<ADLAR);

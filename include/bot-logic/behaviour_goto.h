@@ -19,7 +19,6 @@
 
 /*! @file 	behaviour_goto.h
  * @brief 	Fahre ein stueck
- * 
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
 */
@@ -34,13 +33,14 @@
  * @param *data der Verhaltensdatensatz
  * @see bot_goto()
  */
-void bot_goto_behaviour(Behaviour_t *data);
+void bot_goto_behaviour(Behaviour_t  *data);
 
 /*!
  * Drehe die Raeder um die gegebene Zahl an Encoder-Schritten weiter
+ * @param *caller Verhaltensdatensatz des Aufrufers
  * @param left Schritte links
  * @param right Schritte rechts
  */
-void bot_goto(Behaviour_t * caller, int16 left, int16 right);
+void bot_goto(Behaviour_t * caller, int16_t left, int16_t right);
 #endif
 #endif /*BEHAVIOUR_GOTO_H_*/

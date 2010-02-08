@@ -40,7 +40,7 @@
 /*! Puffergroesse fuer eine Zeile in Bytes */
 #define DISPLAY_BUFFER_SIZE	(DISPLAY_LENGTH + 1)
 
-uint8 display_screen=0;	/*!< zurzeit aktiver Displayscreen */
+uint8_t display_screen = 0;	/*!< zurzeit aktiver Displayscreen */
 
 #define DISPLAY_CLEAR 0x01		/*!< Kommando zum Loeschen */
 #define DISPLAY_CURSORHOME 0x02	/*!< Kommando fuer den Cursor */

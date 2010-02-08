@@ -36,26 +36,26 @@ void border_follow_wall_handler(void);
 
 /*!
  * Faehrt vorwaerts bis zu einer Wand, von die er sich wegdreht
- * @param data Verhaltensdatensatz
+ * @param *data Verhaltensdatensatz
  */
-void bot_follow_wall_behaviour(Behaviour_t *data);
+void bot_follow_wall_behaviour(Behaviour_t * data);
 
 /*! 
  * Botenfunktion
  * Faehrt vorwaerts bis zu einer Wand, von die er sich wegdreht
- * @param check 	Abbruchfunktion; wenn diese True liefert wird das Verhalten beendet sonst endlos
+ * @param *caller 	Verhaltensdatensatz
+ * @param *check 	Abbruchfunktion; wenn diese True liefert wird das Verhalten beendet sonst endlos
  * 			        einfach NULL uebergeben, wenn keine definiert ist 
- * @param caller 	Verhaltensdatensatz
  */
-void bot_follow_wall(Behaviour_t *caller,uint8 (*check)(void));
+void bot_follow_wall(Behaviour_t * caller, uint8_t (*check)(void));
 
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 /*! 
  * Botenverhalten zum Aufruf via Remotecall ohne weitere params, d.h. da kein Abbruchverhalten
  * uebergeben wird, ist dies dann ein Endlos-Explorerverhalten 
- * @param caller Verhaltensdatensatz
+ * @param *caller Verhaltensdatensatz
  */
-void bot_do_wall_explore(Behaviour_t *caller);
+void bot_do_wall_explore(Behaviour_t * caller);
 #endif	// BEHAVIOUR_REMOTECALL_AVAILABLE
 
 #endif	// BEHAVIOUR_FOLLOW_WALL_AVAILABLE

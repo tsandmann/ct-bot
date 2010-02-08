@@ -108,12 +108,12 @@
  * @param format 	Format, wie beim printf
  * @param ... 		Variable Argumentenliste, wie beim printf
  */
-void sp03_flash_speakf(const char* format, ...){
+void sp03_flash_speakf(const char * format, ...) {
 
 	char sp03_buf[SP03_BUFFER_SIZE];		 // Pufferstring fuer Sprachausgabe
 	va_list	args;
-	uint8 state = TW_NO_INFO;
-	uint8 length = 0;						// Laenge Text
+	uint8_t state = TW_NO_INFO;
+	uint8_t length = 0;						// Laenge Text
 	
 	//Zuerst die Registerbefehle einfuegen
 	sp03_buf[0] = SP03_COMMAND_REG; 		// Befehlsregister 
@@ -121,7 +121,7 @@ void sp03_flash_speakf(const char* format, ...){
 
 	//Formatierte Ausgabe der Argumente
 	va_start(args, format);
-	length = vsnprintf_P(sp03_buf+2, SP03_MAX_TEXT_SIZE, format, args);	//Kopiert max. 81 Zeichen in sp03_buf
+	length = vsnprintf_P(sp03_buf + 2, SP03_MAX_TEXT_SIZE, format, args);	//Kopiert max. 81 Zeichen in sp03_buf
 	va_end(args);
 
 	sp03_buf[(length+2)] = SP03_COMMAND_NOP;		// NOP: Load buffer - Ende Text
@@ -138,10 +138,10 @@ void sp03_flash_speakf(const char* format, ...){
  * @param sp03_pitch Geschwindigkeit
  * @param sp03_speed Stimmlage
  */
-void sp03_set_voice(uint8 sp03_volume, uint8 sp03_pitch, uint8 sp03_speed) {
+void sp03_set_voice(uint8_t sp03_volume, uint8_t sp03_pitch, uint8_t sp03_speed) {
 
-	uint8 bufvox[5];
-	uint8 state = TW_NO_INFO;
+	uint8_t bufvox[5];
+	uint8_t state = TW_NO_INFO;
 
 	bufvox[0] = SP03_COMMAND_REG;
 	bufvox[1] = SP03_COMMAND_NOP;
@@ -160,8 +160,8 @@ void sp03_set_voice(uint8 sp03_volume, uint8 sp03_pitch, uint8 sp03_speed) {
  */
 void sp03_cmd_speak(void) {
 
-	uint8 bufspk[2];
-	uint8 state = TW_NO_INFO;
+	uint8_t bufspk[2];
+	uint8_t state = TW_NO_INFO;
 
 	bufspk[0] = SP03_COMMAND_REG;
 	bufspk[1] = SP03_SPEAK_BUFFER;
@@ -184,8 +184,8 @@ void sp03_speak_phrase(uint8_t sp03_pre_id) {
 		}
 	}
 
-	uint8 bufpid[3];
-	uint8 state = TW_NO_INFO;
+	uint8_t bufpid[3];
+	uint8_t state = TW_NO_INFO;
 
 	bufpid[0] = SP03_COMMAND_REG; //SP03 Befehlsregister
 	bufpid[1] = sp03_pre_id; //SP03 Vordefinierter Satz ID
@@ -202,8 +202,8 @@ void sp03_speak_phrase(uint8_t sp03_pre_id) {
  */
 void sp03_get_version(void) {
 	
-	uint8 version = 0;
-	uint8 state = TW_NO_INFO;
+	uint8_t version = 0;
+	uint8_t state = TW_NO_INFO;
 
 	// Liest Register 0x01 mit Versionsnummer
 	i2c_read(SP03_TWI_ADDRESS, SP03_VERSION_REG, &version, 1);
@@ -230,7 +230,7 @@ void sp03_get_version(void) {
  * @param sp03_pitch Stimmlage
  * @param *sp03_text Der zu sprechende Text
  */
-void sp03_speak_string(uint8 sp03_volume, uint8 sp03_pitch, uint8 sp03_speed, char *sp03_text) {
+void sp03_speak_string(uint8_t sp03_volume, uint8_t sp03_pitch, uint8_t sp03_speed, char * sp03_text) {
 	
 	sp03_set_voice(sp03_volume, sp03_pitch, sp03_speed);
 	sp03_set_buffer(sp03_text);
@@ -241,10 +241,10 @@ void sp03_speak_string(uint8 sp03_volume, uint8 sp03_pitch, uint8 sp03_speed, ch
  * OBSOLET: SP03 Text in den Buffer laden, max. 81 ASCII Zeichen
  * @param *sp03_textb Textbuffer
  */
-void sp03_set_buffer(const char *sp03_textb) {
+void sp03_set_buffer(const char * sp03_textb) {
 
 	// Stringlaenge der Texteingabe berechnen
-	uint8 len = strlen(sp03_textb);
+	uint8_t len = strlen(sp03_textb);
 	//LOG_DEBUG("Length string:%d",len);
 
 	// Falls Text zu lang, dann Defaultspruch
@@ -254,15 +254,15 @@ void sp03_set_buffer(const char *sp03_textb) {
 	}
 
 	// Container fuer TWI Treiber anlegen 
-	uint8 buftxt[(len+3)];
+	uint8_t buftxt[(len+3)];
 	// Speicherplatz abhaengig von Textlaenge
-	uint8 state = TW_NO_INFO;
+	uint8_t state = TW_NO_INFO;
 
 	buftxt[0] = SP03_COMMAND_REG; 		// Befehlsregister 
 	buftxt[1] = SP03_COMMAND_NOP; 		// NOP: Load buffer 
 
 	// Char-String in einzelne Buchstaben aufloesen 
-	uint8 run = 0;
+	uint8_t run = 0;
 	while (sp03_textb[run] !='\0') { // Fuer jeden Buchstaben bis Ende einen Eintrag generieren 
 		buftxt[(run+2)] = sp03_textb[run]; // '\0' wird nichtmehr durchgefuehrt, 
 		//LOG_DEBUG("%d %c",run, sp03_textb[run]);

@@ -35,21 +35,21 @@
 #include "timer.h"
 #include "log.h"
 
-extern uint8 encoderRateInfo[2];		/*!< aktuelle Ist-Geschwindigkeit */
-extern int8 Kp, Ki, Kd;					/*!< PID-Parameter */
-uint16 cal_pid_ete = 0;					/*!< verbleibende Zeit bis zum Ende der Kalibrierung in Sekunden */
-static int16 cal_speed;					/*!< Bot-Speed fuer waehrend der Kalibrierung */
-static uint32 ticks = 0;				/*!< Timestamp-Speicher */
-static uint32 ticks_start = 0;			/*!< Timestamp zu Beginn der Bewertungsbrechnung */
+extern uint8_t encoderRateInfo[2];		/*!< aktuelle Ist-Geschwindigkeit */
+extern int8_t Kp, Ki, Kd;				/*!< PID-Parameter */
+uint16_t cal_pid_ete = 0;				/*!< verbleibende Zeit bis zum Ende der Kalibrierung in Sekunden */
+static int16_t cal_speed;				/*!< Bot-Speed fuer waehrend der Kalibrierung */
+static uint32_t ticks = 0;				/*!< Timestamp-Speicher */
+static uint32_t ticks_start = 0;		/*!< Timestamp zu Beginn der Bewertungsbrechnung */
 static float xm_left;					/*!< gleitender Mittelwert links */
 static float xm_right;					/*!< gleitender Mittelwert rechts */
 static float vm_left;					/*!< gleitende Varianz links */
 static float vm_right;					/*!< gleitende Varianz rechts */
 static float best_weight;				/*!< beste Bewertung bisher */
-static int8 best_Kp = 0;				/*!< bester Kp-Wert bisher */
-static int8 best_Ki = 0;				/*!< bester Ki-Wert bisher */
-static int8 best_Kd = 0;				/*!< bester Kd-Wert bisher */
-static int8 Kp_region_end = 0;			/*!< obere Schranke des grob ermittelten Kp-Bereichs */
+static int8_t best_Kp = 0;				/*!< bester Kp-Wert bisher */
+static int8_t best_Ki = 0;				/*!< bester Ki-Wert bisher */
+static int8_t best_Kd = 0;				/*!< bester Kd-Wert bisher */
+static int8_t Kp_region_end = 0;		/*!< obere Schranke des grob ermittelten Kp-Bereichs */
 
 static void (* pNextJob)(void) = NULL;	/*!< naechste Teilaufgabe */
 static void (* pLastJob)(void) = NULL;	/*!< letzte Teilaufgabe (vor Stopp) */
@@ -80,9 +80,9 @@ static void find_best_Kd(void);
 
 /*	<einstellbare Parameter>	*/
 static const float a = 0.01;			/*!< Gewichtungsfaktor */
-static const uint8 max_Kp = 126;		/*!< groesstes Kp, das behandelt wird (0; 127) */
-static const uint8 max_Ki = 32;			/*!< groesstes Ki, das behandelt wird (0; 127) */
-static const uint8 max_Kd = 64;			/*!< groesstes Kd, das behandelt wird [0; 127) */
+static const uint8_t max_Kp = 126;		/*!< groesstes Kp, das behandelt wird (0; 127) */
+static const uint8_t max_Ki = 32;		/*!< groesstes Ki, das behandelt wird (0; 127) */
+static const uint8_t max_Kd = 64;		/*!< groesstes Kd, das behandelt wird [0; 127) */
 /*	</einstellbare Parameter>	*/
 
 
@@ -153,13 +153,13 @@ static void clear_weighting(void) {
  * Neue beste Parameter werden gespeichert und vor jeder Parameteraenderung wird der Bot kurz angehalten.
  * Bei neuem besten Wert werden die bisher besten Parameter per LOG ausgegeben
  */
-static void compare_weightings(const uint16 dt, int8* pid_param, const int8 step) {
+static void compare_weightings(const uint16_t dt, int8_t * pid_param, const int8_t step) {
 	/* Mittelwerte und Varianzen aktualisieren */
 	float weight = calc_weighting();
 
 	/* nach dt ms aktuelle Bewertung mit bisher bester vergleichen */
 	if (timer_ms_passed_32(&ticks, dt)) {
-		uint32 dt_real = TIMER_GET_TICKCOUNT_32 - ticks_start;
+		uint32_t dt_real = TIMER_GET_TICKCOUNT_32 - ticks_start;
 		weight = weight / (float)dt_real * (dt*1000.0f/176.0f);		// Bewertung normieren
 		if (best_weight >= weight) {
 			/* Verbesserung => die aktuellen Parameter merken */
@@ -307,11 +307,11 @@ void bot_calibrate_pid_behaviour(Behaviour_t *data) {
 
 /*!
  * @brief			Kalibriert die Motorregelung des ct-Bots
- * @param caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
+ * @param *caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
  * @param speed		Geschwindigkeit, mit der Kalibriert werden soll (normalerweise BOT_SPEED_SLOW)
  * Die ermittelten Parameter werden eingestellt, aber nicht dauerhaft gespeichert!
  */
-void bot_calibrate_pid(Behaviour_t *caller, int16 speed) {
+void bot_calibrate_pid(Behaviour_t * caller, int16_t speed) {
 	/* Inits */
 	ticks = TIMER_GET_TICKCOUNT_32;
 	cal_speed = speed;

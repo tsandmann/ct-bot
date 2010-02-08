@@ -84,7 +84,7 @@ static int16_t wall_side = 0; // <0 Hindernis links, sonst rechts
  * @param compval	Zeit-Vergleichswert
  * @return  		liefert 1 oder -1 in Abhaengigkeit der abgelaufenen Zeit als Zufallskomponente
  */
-static int8_t get_randomside(uint8 compval) {
+static int8_t get_randomside(uint8_t compval) {
 	return (int8_t) (TIMER_GET_TICKCOUNT_8 > compval ? -1 : 1);
 }
 

@@ -228,7 +228,7 @@ void log_end(void);
 /*!
  * @brief	Initialisierung fuer MMC-Logging
  */
-uint8 log_mmc_init(void);
+uint8_t log_mmc_init(void);
 #endif	// LOG_MMC_AVAILABLE
 
 #ifdef LOG_DISPLAY_AVAILABLE

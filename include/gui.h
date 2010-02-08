@@ -31,7 +31,7 @@
 #include "eeprom.h"
 
 #ifdef DISPLAY_AVAILABLE
-extern int8 max_screens;	/*!< Anzahl der zurzeit registrierten Screens */
+extern int8_t max_screens;	/*!< Anzahl der zurzeit registrierten Screens */
 extern void (* screen_functions[DISPLAY_SCREENS])(void);	/*!< hier liegen die Zeiger auf die Display-Funktionen */
 extern uint8_t EEPROM resetsEEPROM;	/*!< Reset-Counter-Wert im EEPROM */
 
@@ -73,7 +73,7 @@ void gui_keypad_request(void (* callback)(char * result), uint8_t row, uint8_t c
 #endif
 
 #ifdef RESET_INFO_DISPLAY_AVAILABLE
-	extern uint8 reset_flag;	 /*!< Nimmt den Status von MCU(C)SR bevor dieses Register auf 0x00 gesetzt wird */
+	extern uint8_t reset_flag;	 /*!< Nimmt den Status von MCU(C)SR bevor dieses Register auf 0x00 gesetzt wird */
 	/*!
 	 * @brief	Zeigt Informationen ueber den Reset an
 	 */

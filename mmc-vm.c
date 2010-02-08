@@ -67,131 +67,131 @@
 
 /*! Struktur eines Cacheeintrags */
 typedef struct {
-	uint32	addr;		/*!< Tag = MMC-Blockadresse der ins RAM geladenen Seite */ 
-	uint8*	p_data;		/*!< Daten = Zeiger auf 512 Byte grosse Seite im RAM */ 
-	#if MAX_PAGES_IN_SRAM > 2
-		uint8	succ;	/*!< Zeiger auf Nachfolger (LRU) */
-		uint8	prec;	/*!< Zeiger auf Vorgaenger (LRU) */
-	#endif
-	uint8	dirty;		/*!< Dirty-Bit (0: Daten wurden bereits auf die MMC / SD-Card zurueckgeschrieben) */
+	uint32_t addr;		/*!< Tag = MMC-Blockadresse der ins RAM geladenen Seite */
+	uint8_t * p_data;	/*!< Daten = Zeiger auf 512 Byte grosse Seite im RAM */
+#if MAX_PAGES_IN_SRAM > 2
+	uint8_t	succ;		/*!< Zeiger auf Nachfolger (LRU) */
+	uint8_t	prec;		/*!< Zeiger auf Vorgaenger (LRU) */
+#endif
+	uint8_t	dirty;		/*!< Dirty-Bit (0: Daten wurden bereits auf die MMC / SD-Card zurueckgeschrieben) */
 } vm_cache_t;
 
 #ifdef VM_STATS_AVAILABLE
-	typedef struct{
-		uint32 page_access;		/*!< Anzahl der Seitenzugriffe seit Systemstart */
-		uint32 swap_ins;		/*!< Anzahl der Seiteneinlagerungen seit Systemstart */
-		uint32 swap_outs;		/*!< Anzahl der Seitenauslagerungen seit Systemstart */
-		uint32 vm_used_bytes;	/*!< Anzahl der vom VM belegten Bytes auf der MMC / SD-Card */
-		uint32 time;			/*!< Timestamp bei erster Speicheranforderung */
-	} vm_stats_t;
-	
-	vm_stats_t stats_data = {0};	
-#endif
+typedef struct{
+	uint32_t page_access;		/*!< Anzahl der Seitenzugriffe seit Systemstart */
+	uint32_t swap_ins;		/*!< Anzahl der Seiteneinlagerungen seit Systemstart */
+	uint32_t swap_outs;		/*!< Anzahl der Seitenauslagerungen seit Systemstart */
+	uint32_t vm_used_bytes;	/*!< Anzahl der vom VM belegten Bytes auf der MMC / SD-Card */
+	uint32_t time;			/*!< Timestamp bei erster Speicheranforderung */
+} vm_stats_t;
 
-static uint32 mmc_start_address = MMC_START_ADDRESS;	/*!< physische Adresse der MMC / SD-Card, wo unser VM beginnt */
-static uint32 next_mmc_address = MMC_START_ADDRESS;		/*!< naechste freie virtuelle Adresse */
-static uint8 pages_in_sram = MAX_PAGES_IN_SRAM;			/*!< Groesse des Caches im RAM */
-static int8 allocated_pages = 0;						/*!< Anzahl bereits belegter Cachebloecke */
-static uint8 oldest_cacheblock = 0;						/*!< Zeiger auf den am laengsten nicht genutzten Eintrag (LRU) */
-static uint8 recent_cacheblock = 0;						/*!< Zeiger auf den letzten genutzten Eintrag (LRU) */
+vm_stats_t stats_data = {0};
+#endif // VM_STATS_AVAILABLE
+
+static uint32_t mmc_start_address = MMC_START_ADDRESS;	/*!< physische Adresse der MMC / SD-Card, wo unser VM beginnt */
+static uint32_t next_mmc_address = MMC_START_ADDRESS;		/*!< naechste freie virtuelle Adresse */
+static uint8_t pages_in_sram = MAX_PAGES_IN_SRAM;			/*!< Groesse des Caches im RAM */
+static int8_t allocated_pages = 0;						/*!< Anzahl bereits belegter Cachebloecke */
+static uint8_t oldest_cacheblock = 0;						/*!< Zeiger auf den am laengsten nicht genutzten Eintrag (LRU) */
+static uint8_t recent_cacheblock = 0;						/*!< Zeiger auf den letzten genutzten Eintrag (LRU) */
 
 static vm_cache_t page_cache[MAX_PAGES_IN_SRAM];				/*!< der eigentliche Cache, vollassoziativ, LRU-Policy */
 
 #ifdef VM_STATS_AVAILABLE
-	/*! 
-	 * Gibt die Anzahl der Pagefaults seit Systemstart bzw. Ueberlauf zurueck
-	 * @return		#Pagefaults
-	 */
-	uint32_t mmc_get_pagefaults(void) {
-		return stats_data.swap_ins;
-	}
+/*!
+ * Gibt die Anzahl der Pagefaults seit Systemstart bzw. Ueberlauf zurueck
+ * @return		#Pagefaults
+ */
+uint32_t mmc_get_pagefaults(void) {
+	return stats_data.swap_ins;
+}
 
-	/*! 
-	 * Erstellt eine kleine Statistik ueber den VM
-	 * @return		Zeiger auf Statistikdaten
-	 */	
-	vm_extern_stats_t* mmc_get_vm_stats(void) {
-		static vm_extern_stats_t extern_stats = {0};
-		memcpy(&extern_stats, &stats_data, sizeof(vm_stats_t));	// .time wird spaeter ueberschrieben
-		uint16 delta_t = TICKS_TO_MS(TIMER_GET_TICKCOUNT_32 - stats_data.time)/1000;
-		if (delta_t == 0) delta_t = 1;
-		extern_stats.page_access_s = extern_stats.page_access / delta_t;
-		extern_stats.swap_ins_s = extern_stats.swap_ins / delta_t;
-		extern_stats.swap_outs_s = extern_stats.swap_outs / delta_t;		
-		extern_stats.device_size = swap_space;
-		extern_stats.vm_size = swap_space - mmc_start_address;
-		extern_stats.cache_size = pages_in_sram;
-		extern_stats.cache_load = allocated_pages;
-		extern_stats.delta_t = delta_t;
-		return &extern_stats;	
-	}
+/*!
+ * Erstellt eine kleine Statistik ueber den VM
+ * @return		Zeiger auf Statistikdaten
+ */
+vm_extern_stats_t * mmc_get_vm_stats(void) {
+	static vm_extern_stats_t extern_stats = {0};
+	memcpy(&extern_stats, &stats_data, sizeof(vm_stats_t));	// .time wird spaeter ueberschrieben
+	uint16_t delta_t = TICKS_TO_MS(TIMER_GET_TICKCOUNT_32 - stats_data.time) / 1000;
+	if (delta_t == 0) delta_t = 1;
+	extern_stats.page_access_s = extern_stats.page_access / delta_t;
+	extern_stats.swap_ins_s = extern_stats.swap_ins / delta_t;
+	extern_stats.swap_outs_s = extern_stats.swap_outs / delta_t;
+	extern_stats.device_size = swap_space;
+	extern_stats.vm_size = swap_space - mmc_start_address;
+	extern_stats.cache_size = pages_in_sram;
+	extern_stats.cache_load = allocated_pages;
+	extern_stats.delta_t = delta_t;
+	return &extern_stats;
+}
 
-	/*! 
-	 * Gibt eine kleine Statistik ueber den VM aus
-	 */		
-	void mmc_print_statistic(void) {
-		#ifdef PC
-			vm_extern_stats_t* vm_stats = mmc_get_vm_stats();
-			printf("\n\r*** VM-Statistik *** \n\r");
-			printf("Groesse des Volumes: \t\t%lu MByte \n\r", vm_stats->device_size>>20);
-			printf("Groesse des VM: \t\t%lu MByte \n\r", vm_stats->vm_size>>20);
-			printf("Belegter virt. Speicher: \t%lu KByte \n\r", vm_stats->vm_used_bytes>>10);									
-			printf("Groesse des Caches: \t\t%u Byte \n\r", (uint16)vm_stats->cache_size<<9);
-			printf("Auslastung des Caches: \t\t%u %% \n\r", ((uint16)vm_stats->cache_load<<9)/((uint16)vm_stats->cache_size<<9)*100);
-			printf("Seitenzugriffe: \t\t%lu \n\r", vm_stats->page_access);
-			printf("Seiteneinlagerungen: \t\t%lu \n\r", vm_stats->swap_ins);
-			printf("Seitenauslagerungen: \t\t%lu \n\r", vm_stats->swap_outs);
-			printf("Seitenzugriffe / s: \t\t%u \n\r", vm_stats->page_access_s);
-			printf("Seiteneinlagerungen / s: \t%u \n\r", vm_stats->swap_ins_s);
-			printf("Seitenauslagerungen / s: \t%u \n\r", vm_stats->swap_outs_s);
-			printf("Cache-Hit-Rate: \t\t%f %% \n\r", (100.0-((float)vm_stats->swap_ins/(float)vm_stats->page_access)*100.0));
-			printf("Messdauer: \t\t\t%u s \n\r", vm_stats->delta_t);
-		#else
-			/* Ausgabe fuer MCU derzeit nur ueber Logging */
-			#ifdef LOG_AVAILABLE 
-				vm_extern_stats_t* vm_stats = mmc_get_vm_stats();
-				/* Texte wie oben */
-				LOG_INFO("%lu", vm_stats->device_size>>20);
-				LOG_INFO("%lu", vm_stats->vm_size>>20);
-				LOG_INFO("%lu", vm_stats->vm_used_bytes>>10);									
-				LOG_INFO("%u", (uint16)vm_stats->cache_size<<9);
-				LOG_INFO("%u", ((uint16)vm_stats->cache_load<<9)/((uint16)vm_stats->cache_size<<9)*100);
-				LOG_INFO("%lu", vm_stats->page_access);
-				LOG_INFO("%lu", vm_stats->swap_ins);
-				LOG_INFO("%lu", vm_stats->swap_outs);
-				LOG_INFO("%u", vm_stats->page_access_s);
-				LOG_INFO("%u", vm_stats->swap_ins_s);
-				LOG_INFO("%u", vm_stats->swap_outs_s);
-				LOG_INFO("%u", (uint8)(100.0-((float)vm_stats->swap_ins/(float)vm_stats->page_access)*100.0));
-				LOG_INFO("%u", vm_stats->delta_t);				
-			#endif
-		#endif	
-	}
-#endif
+/*!
+ * Gibt eine kleine Statistik ueber den VM aus
+ */
+void mmc_print_statistic(void) {
+#ifdef PC
+	vm_extern_stats_t* vm_stats = mmc_get_vm_stats();
+	printf("\n\r*** VM-Statistik *** \n\r");
+	printf("Groesse des Volumes: \t\t%lu MByte \n\r", vm_stats->device_size>>20);
+	printf("Groesse des VM: \t\t%lu MByte \n\r", vm_stats->vm_size>>20);
+	printf("Belegter virt. Speicher: \t%lu KByte \n\r", vm_stats->vm_used_bytes>>10);
+	printf("Groesse des Caches: \t\t%u Byte \n\r", (uint16_t) vm_stats->cache_size<<9);
+	printf("Auslastung des Caches: \t\t%u %% \n\r", ((uint16_t )vm_stats->cache_load<<9)/((uint16_t) vm_stats->cache_size<<9)*100);
+	printf("Seitenzugriffe: \t\t%lu \n\r", vm_stats->page_access);
+	printf("Seiteneinlagerungen: \t\t%lu \n\r", vm_stats->swap_ins);
+	printf("Seitenauslagerungen: \t\t%lu \n\r", vm_stats->swap_outs);
+	printf("Seitenzugriffe / s: \t\t%u \n\r", vm_stats->page_access_s);
+	printf("Seiteneinlagerungen / s: \t%u \n\r", vm_stats->swap_ins_s);
+	printf("Seitenauslagerungen / s: \t%u \n\r", vm_stats->swap_outs_s);
+	printf("Cache-Hit-Rate: \t\t%f %% \n\r", (100.0-((float)vm_stats->swap_ins/(float)vm_stats->page_access)*100.0));
+	printf("Messdauer: \t\t\t%u s \n\r", vm_stats->delta_t);
+#else // MCU
+	/* Ausgabe fuer MCU derzeit nur ueber Logging */
+#ifdef LOG_AVAILABLE
+	vm_extern_stats_t * vm_stats = mmc_get_vm_stats();
+	/* Texte wie oben */
+	LOG_INFO("%lu", vm_stats->device_size>>20);
+	LOG_INFO("%lu", vm_stats->vm_size>>20);
+	LOG_INFO("%lu", vm_stats->vm_used_bytes>>10);
+	LOG_INFO("%u", (uint16_t) vm_stats->cache_size<<9);
+	LOG_INFO("%u", ((uint16_t) vm_stats->cache_load<<9)/((uint16_t) vm_stats->cache_size<<9)*100);
+	LOG_INFO("%lu", vm_stats->page_access);
+	LOG_INFO("%lu", vm_stats->swap_ins);
+	LOG_INFO("%lu", vm_stats->swap_outs);
+	LOG_INFO("%u", vm_stats->page_access_s);
+	LOG_INFO("%u", vm_stats->swap_ins_s);
+	LOG_INFO("%u", vm_stats->swap_outs_s);
+	LOG_INFO("%u", (uint8_t)(100.0-((float)vm_stats->swap_ins/(float)vm_stats->page_access)*100.0));
+	LOG_INFO("%u", vm_stats->delta_t);
+#endif // LOG_AVAILABLE
+#endif // PC
+}
+#endif // VM_STATS_AVAILABLE
 
 /*! 
  * Gibt die Blockadresse einer Seite zurueck
  * @param addr	Eine virtuelle Adresse in Byte
  * @return		Blockadresse
  */
-static inline uint32_t mmc_get_mmcblock_of_page(uint32 addr) {
-	#ifdef MCU
-		/* Eine effizientere Variante von addr >> 9 */
-		asm volatile(
-			"mov %A0, %B0	\n\t"
-			"mov %B0, %C0	\n\t"
-			"mov %C0, %D0	\n\t"
-			"lsr %C0		\n\t"
-			"ror %B0		\n\t"
-			"ror %A0		\n\t"		
-			"clr %D0			"		
-			:	"=r"	(addr)
-			:	"0"		(addr)
-		);	
-		return addr;
-	#else
-		return addr >> 9;
-	#endif	// MCU		
+static inline uint32_t mmc_get_mmcblock_of_page(uint32_t addr) {
+#ifdef MCU
+	/* Eine effizientere Variante von addr >> 9 */
+	asm volatile(
+		"mov %A0, %B0	\n\t"
+		"mov %B0, %C0	\n\t"
+		"mov %C0, %D0	\n\t"
+		"lsr %C0		\n\t"
+		"ror %B0		\n\t"
+		"ror %A0		\n\t"
+		"clr %D0			"
+		:	"=r"	(addr)
+		:	"0"		(addr)
+	);
+	return addr;
+#else
+	return addr >> 9;
+#endif // MCU
 }	
 	
 /*! 
@@ -322,7 +322,7 @@ uint32_t mmcalloc(uint32_t size, uint8_t aligned) {
 			next_mmc_address = mmc_start_address;
 		}
 	}
-	uint32 start_addr;
+	uint32_t start_addr;
 	if (/*aligned == 0 || */mmc_get_end_of_page(next_mmc_address) == mmc_get_end_of_page(next_mmc_address+size-1)) {
 		/* Daten einfach an der naechsten freien virtuellen Adresse speichern */
 		start_addr = next_mmc_address;

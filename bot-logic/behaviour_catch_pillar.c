@@ -56,13 +56,13 @@ static uint8_t unload_pillar_state = START;		/*!< Statusvariable für das Auslad
 
 #if CATCH_PILLAR_VERSION == 1
 
-static int16 startangle=0;      			/*!< gemerkter Anfangswinkel einfach als Integer */
+static int16_t startangle = 0; /*!< gemerkter Anfangswinkel einfach als Integer */
 /*!
  * Fange eine Dose ein
  * @param *data der Verhaltensdatensatz
  */
 void bot_catch_pillar_behaviour(Behaviour_t * data) {
-	static uint8 cancelcheck=False;
+	static uint8_t cancelcheck=False;
 	static float angle;
 
 	switch (catch_pillar_state){

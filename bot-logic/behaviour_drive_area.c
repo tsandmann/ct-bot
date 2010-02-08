@@ -640,8 +640,8 @@ static uint8_t check_haz_sensDist(void) {
  */
 static void set_nextline(position_t point1, position_t point2, uint8_t change_points) {
 	if (change_points) {
-		int16 xtemp = nextline.point1.x;
-		int16 ytemp = nextline.point1.y;
+		int16_t xtemp = nextline.point1.x;
+		int16_t ytemp = nextline.point1.y;
 		nextline.point1.x = nextline.point2.x;
 		nextline.point1.y = nextline.point2.y;
 		nextline.point2.x = xtemp;

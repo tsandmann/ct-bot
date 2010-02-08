@@ -59,7 +59,7 @@ int8_t Kd = PID_Kd;	/*!< PID-Parameter differential */
 #endif	// ADJUST_PID_PARAMS
 
 /*! Dividend fuer Umrechnung von Ticks [176 us] in Geschwindigkeit [mm/s] */
-#define TICKS_TO_SPEED		(uint16)((float)WHEEL_PERIMETER/ENCODER_MARKS*1000000/TIMER_STEPS)	// = 8475*2
+#define TICKS_TO_SPEED		(uint16_t)((float)WHEEL_PERIMETER/ENCODER_MARKS*1000000/TIMER_STEPS)	// = 8475*2
 #define TICKS_TO_SPEED_0	(TICKS_TO_SPEED / 2)		/*!< Dividend fuer shift == 0 */
 #define TICKS_TO_SPEED_1	(TICKS_TO_SPEED / 2 * 2)	/*!< Dividend fuer shift == 1 */
 #define TICKS_TO_SPEED_2	(TICKS_TO_SPEED / 2 * 4) 	/*!< Dividend fuer shift == 2 */
@@ -214,11 +214,11 @@ void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_
 			start_signal[dev]--;
 /*! @todo Faktoren bei START_DELAY optimieren (=> Sinus) */
 			/* langsam beschleunigen - eigentlich muesste man das sinusartig tun, aber das ist zu aufwendig */
-			if (start_signal[dev] == (uint8_t)(PID_START_DELAY * 0.75f)) {
+			if (start_signal[dev] == (uint8_t) (PID_START_DELAY * 0.75f)) {
 				encoderTargetRate[dev] = (uint8_t) (encoderTargetRate[dev] + ((orignalTargetRate[dev] - BOT_SPEED_SLOW / 2) >> 2)); // +1/4
-			} else if (start_signal[dev] == (uint8)(PID_START_DELAY * 0.5f)) {
+			} else if (start_signal[dev] == (uint8_t) (PID_START_DELAY * 0.5f)) {
 				encoderTargetRate[dev] = (uint8_t) (encoderTargetRate[dev] + ((orignalTargetRate[dev] - BOT_SPEED_SLOW / 2) >> 2));	// +2/4
-			} else if (start_signal[dev] == (uint8)(PID_START_DELAY * 0.25f)) {
+			} else if (start_signal[dev] == (uint8_t) (PID_START_DELAY * 0.25f)) {
 				encoderTargetRate[dev] = (uint8_t) (encoderTargetRate[dev] + ((orignalTargetRate[dev] - BOT_SPEED_SLOW / 2) >> 2));	// +3/4
 			} else if (start_signal[dev] == 0) {
 				encoderTargetRate[dev] = orignalTargetRate[dev];

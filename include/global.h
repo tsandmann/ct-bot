@@ -66,24 +66,12 @@ int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 #endif
 #endif
 
-#ifndef WIN32
-#define bool byte;	/*!< True/False-Aussage */
-#endif
-
 #ifdef DOXYGEN		/*!< Nur zum Generieren von Doku!!!! */
 #define PC			/*!< Zielplattform PC */
 #define MCU			/*!< Zielplattform MCU */
 #define WIN32		/*!< System Windows */
 #define __linux__	/*!< System Linux */
 #endif	// DOXYGEN
-
-#define byte	uint8_t		/*!< vorzeichenlose 8-Bit-Zahl */
-#define uint8	uint8_t		/*!< vorzeichenlose 8-Bit-Zahl */
-#define int8	int8_t		/*!< vorzeichenbehaftete 8-Bit-Zahl */
-#define uint16	uint16_t	/*!< vorzeichenlose 16-Bit-Zahl */
-#define int16	int16_t		/*!< vorzeichenbehaftete 16-Bit-Zahl */
-#define uint32	uint32_t	/*!< vorzeichenlose 32-Bit-Zahl */
-#define	int32	int32_t		/*!< vorzeichenbehaftete 32-Bit-Zahl */
 
 #define True	1			/*!< Wahr */
 #define False	0			/*!< Falsch */
@@ -103,7 +91,7 @@ int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 #endif	// WIN32
 #endif	// PC
 
-#define binary(var,bit) ((var >> bit)&1)	/*!< gibt das Bit "bit" von "var" zurueck */
+#define binary(var, bit) ((var >> bit) & 1)	/*!< gibt das Bit "bit" von "var" zurueck */
 
 #ifdef WIN32
 #define LINE_FEED "\n\r"	/*!< Linefeed fuer Windows */

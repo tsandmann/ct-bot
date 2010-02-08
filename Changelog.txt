@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2010-02-08 Timo Sandmann [mail@timosandmann.de]: Aufraeumarbeiten, Warnings im Schach-Verhalten beseitigt
+
 2010-02-06 Timo Sandmann [mail@timosandmann.de]: Speed-Log und Mini-FAT verbessert, Verhaltenscode aufgeraeumt, Init-Code vereinheitlicht, Warnings beseitigt
 
 2010-01-31 Timo Sandmann [mail@timosandmann.de]: Map-Update beruecksichtigt Positionsunsicherheit, wenn MEASURE_POSITION_ERRORS_AVAILABLE an ist

@@ -114,7 +114,7 @@ static void bot_base_behaviour(Behaviour_t * data) {
 	data = data; // kein warning
 	speedWishLeft = target_speed_l;
 	speedWishRight = target_speed_r;
-//	LOG_DEBUG("\tMaus:\t%d\tSpeed:\t%d", (int16)x_pos, target_speed_r);
+//	LOG_DEBUG("\tMaus:\t%d\tSpeed:\t%d", x_pos, target_speed_r);
 //	LOG_DEBUG("\tDistL:\t%u\tDistR:\t%u", sensDistL, sensDistR);
 //	LOG_DEBUG("\tTime:\t%lu", TIMER_GET_TICKCOUNT_32);
 }
@@ -749,7 +749,7 @@ static void beh_disp_key_handler(Behaviour_t ** data){
  * Den Keyhandler dazu stellt beh_disp_key_handler() dar.
  */
 void behaviour_display(void) {
-	static uint8 behaviour_page = 0;	/*!< zuletzt angezeigte Verhaltensseite */
+	static uint8_t behaviour_page = 0;	/*!< zuletzt angezeigte Verhaltensseite */
 	if (RC5_Code == RC5_CODE_DOWN) {
 		/* naechste Seite */
 		behaviour_page++;
@@ -762,8 +762,8 @@ void behaviour_display(void) {
 		RC5_Code = 0;
 	}
 	Behaviour_t* behaviours[8] = {NULL};	/*!< speichert Zeiger auf die Verhalten fuer den Keyhandler zwischen */
-	uint8 i,j,k=0;
-	Behaviour_t* ptr = behaviour;
+	uint8_t i, j, k = 0;
+	Behaviour_t * ptr = behaviour;
 	while (ptr != NULL && ptr->priority > PRIO_VISIBLE_MAX)
 		ptr = ptr->next;	// alles ausserhalb der Sichtbarkeit ueberspringen
 	/* Verhalten auf vorherigen Seiten ueberspringen */
@@ -791,7 +791,7 @@ void behaviour_display(void) {
 			}
 			/* Ausgabe */
 			display_cursor(j, i);
-			display_printf("%u: %3d=%c ", k+1, ptr->priority, status[ptr->active]);
+			display_printf("%u: %3d=%c ", k + 1, ptr->priority, status[ptr->active]);
 			behaviours[k++] = ptr;	// speichern fuer Tastenhandler
 			ptr = ptr->next;
 		}
