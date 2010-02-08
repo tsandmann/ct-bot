@@ -40,6 +40,7 @@
 #include "eeprom.h"
 #include "motor.h"
 #include "math_utils.h"
+#include "ir-rc5.h"
 
 #define HEADING_START		0	/*!< Blickrichtung, mit der sich der Bot initialisiert */
 #define HEADING_SIN_START	0	/*!< sin(HEADING_START) */
@@ -590,29 +591,46 @@ void led_update(void) {
 	else LED_off(LED_RECHTS);
 #else	// TEST_AVAILABLE
 	static volatile uint8_t led_status = 0x00;
-	led_t * status = (led_t *)&led_status;
+	led_t * status = (led_t *) &led_status;
+	bit_t tmp;
 #ifdef TEST_AVAILABLE_ANALOG
-	(*status).rechts	= (sensDistR >> 8) & 0x01;
-	(*status).links		= (sensDistL >> 8) & 0x01;
-	(*status).rot		= (sensLineL >> 9) & 0x01;
-	(*status).orange	= (sensLineR >> 9) & 0x01;
-	(*status).gelb		= (sensLDRL >> 8)  & 0x01;
-	(*status).gruen		= (sensLDRR >> 8)  & 0x01;
-	(*status).tuerkis	= (sensBorderL >> 9) & 0x01;
-	(*status).weiss		= (sensBorderR >> 9) & 0x01;
+	tmp.byte = (uint8_t) (sensDistR >> 8);
+	(*status).rechts = tmp.bit;
+	tmp.byte = (uint8_t) (sensDistL >> 8);
+	(*status).links = tmp.bit;
+	tmp.byte = (uint8_t) (sensLineL >> 9);
+	(*status).rot = tmp.bit;
+	tmp.byte = (uint8_t) (sensLineR >> 9);
+	(*status).orange =  tmp.bit;
+	tmp.byte = (uint8_t) (sensLDRL >> 8);
+	(*status).gelb = tmp.bit;
+	tmp.byte = (uint8_t) (sensLDRR >> 8);
+	(*status).gruen = tmp.bit;
+	tmp.byte = (uint8_t) (sensBorderL >> 9);
+	(*status).tuerkis = tmp.bit;
+	tmp.byte = (uint8_t) (sensBorderR >> 9);
+	(*status).weiss = tmp.bit;
 #endif	// TEST_AVAILABLE_ANALOG
 #ifdef TEST_AVAILABLE_DIGITAL
-	(*status).rechts	= sensEncR  & 0x01;
-	(*status).links		= sensEncL  & 0x01;
-	(*status).rot		= sensTrans & 0x01;
-	(*status).orange	= sensError & 0x01;
-	(*status).gelb		= sensDoor  & 0x01;
+	tmp.byte = (uint8_t) sensEncR;
+	(*status).rechts = tmp.bit;
+	tmp.byte = (uint8_t) sensEncL;
+	(*status).links = tmp.bit;
+	tmp.byte = sensTrans;
+	(*status).rot = tmp.bit;
+	tmp.byte = sensError;
+	(*status).orange = tmp.bit;
+	tmp.byte = sensDoor;
+	(*status).gelb = tmp.bit;
 #ifdef MOUSE_AVAILABLE
-	(*status).gruen		= (sensMouseDX >> 1) & 0x01;
-	(*status).tuerkis	= (sensMouseDY >> 1) & 0x01;
+	tmp.byte = (uint8_t) (sensMouseDX >> 1);
+	(*status).gruen = tmp.bit;
+	tmp.byte = (uint8_t) (sensMouseDY >> 1);
+	(*status).tuerkis = tmp.bit;
 #endif
 #ifdef RC5_AVAILABLE
-	(*status).weiss		= RC5_Code & 0x01;
+	tmp.byte = (uint8_t) rc5_ir_data.ir_data;
+	(*status).weiss = tmp.bit;
 #endif
 #endif	// TEST_AVAILABLE_DIGITAL
 

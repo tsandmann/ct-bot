@@ -121,13 +121,13 @@ void sp03_flash_speakf(const char * format, ...) {
 
 	//Formatierte Ausgabe der Argumente
 	va_start(args, format);
-	length = vsnprintf_P(sp03_buf + 2, SP03_MAX_TEXT_SIZE, format, args);	//Kopiert max. 81 Zeichen in sp03_buf
+	length = (uint8_t) vsnprintf_P(sp03_buf + 2, SP03_MAX_TEXT_SIZE, format, args);	//Kopiert max. 81 Zeichen in sp03_buf
 	va_end(args);
 
 	sp03_buf[(length+2)] = SP03_COMMAND_NOP;		// NOP: Load buffer - Ende Text
 	
 	//Telegramm fertig, ab zum Treiber...
-	i2c_write(SP03_TWI_ADDRESS, sp03_buf, (length+3));
+	i2c_write(SP03_TWI_ADDRESS, sp03_buf, (uint8_t) (length + 3));
 	state = i2c_wait();
 	//LOG_DEBUG("Status buffer set:%x",state);
 }

@@ -734,7 +734,10 @@ static void beh_disp_key_handler(Behaviour_t ** data){
 	/* Verhaltensstatus toggeln */
 	if (callee != NULL) {
 		RC5_Code = 0;
-		callee->active ^= 1;
+		bit_t tmp;
+		tmp.bit = callee->active;
+		tmp.byte = (uint8_t) (~ tmp.byte);
+		callee->active = tmp.bit;
 	}
 }
 
@@ -780,7 +783,7 @@ void behaviour_display(void) {
 	}
 	char status[2] = "IA";	// I: inactive, A: active
 	/* max. 4 Zeilen mit jeweils 2 Verhalten (= 8 Verhalten) anzeigbar */
-	for (i=1; i<=20; i+=11) {	// Spalten
+	for (i = 1; i <= 20; i = (uint8_t) (i + 11)) { // Spalten
 		for (j=1; j<=4; j++) {	// Zeilen
 			while (ptr != NULL && ptr->priority > PRIO_VISIBLE_MAX)
 				ptr = ptr->next;	// alles ausserhalb der Sichtbarkeit ueberspringen

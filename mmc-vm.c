@@ -224,44 +224,44 @@ static int8_t mmc_get_cacheblock_of_page(uint32_t addr) {
  */
 static uint8_t mmc_load_page(uint32_t addr) {
 	if (addr >= next_mmc_address) return 1;	// ungueltige virtuelle Adresse :(
-	#ifdef VM_STATS_AVAILABLE
-		stats_data.page_access++;
-	#endif
+#ifdef VM_STATS_AVAILABLE
+	stats_data.page_access++;
+#endif
 	int8_t cacheblock = mmc_get_cacheblock_of_page(addr); 
 	if (cacheblock >= 0){	// Cache-Hit, Seite ist bereits geladen :)
 		/* LRU */	
 //		printf("hit: cacheblock: %d\t", cacheblock);
-		#if MAX_PAGES_IN_SRAM > 2
-			if (recent_cacheblock == cacheblock) {
-				page_cache[cacheblock].succ = cacheblock;	// Nachfolger des neuesten Eintrags ist die Identitaet
-//				printf("3) %d.succ: %d\t", recent_cacheblock, cacheblock);
-			}
-			if (oldest_cacheblock == cacheblock) {
-				oldest_cacheblock = page_cache[cacheblock].succ;	// Nachfolger ist neuer aeltester Eintrag
-				page_cache[page_cache[cacheblock].succ].prec = oldest_cacheblock;	// Vorgaenger der Nachfolgers ist seine Identitaet				
-			}  
-			else {
-				page_cache[page_cache[cacheblock].prec].succ = page_cache[cacheblock].succ;	// Nachfolger des Vorgaengers ist eigener Nachfolger
-//				printf("1) %d.succ: %d\t", page_cache[cacheblock].prec, page_cache[cacheblock].succ);
-				page_cache[page_cache[cacheblock].succ].prec = page_cache[cacheblock].prec;	// Vorganeger des Nachfolgers ist eigener Vorgaenger
-//				printf("2) %d.prec: %d\t", page_cache[cacheblock].succ, page_cache[cacheblock].prec); 
-			}
-			if (recent_cacheblock != cacheblock) {
-				page_cache[recent_cacheblock].succ = cacheblock;
-//				printf("3) %d.succ: %d\t", recent_cacheblock, cacheblock);
-				page_cache[cacheblock].prec = recent_cacheblock;	// alter neuester Eintrag ist neuer Vorgaenger
-//				printf("4) %d.prec: %d\t", cacheblock, page_cache[cacheblock].prec);
-			}
-		#else
-			oldest_cacheblock = (pages_in_sram - 1) - cacheblock;	// aeltester Eintrag ist nun der andere Cacheblock (wenn verfuegbar)
-		#endif
-		recent_cacheblock = cacheblock;						// neuester Eintrag ist nun die Identitaet
+#if MAX_PAGES_IN_SRAM > 2
+		if (recent_cacheblock == cacheblock) {
+			page_cache[cacheblock].succ = cacheblock;	// Nachfolger des neuesten Eintrags ist die Identitaet
+//			printf("3) %d.succ: %d\t", recent_cacheblock, cacheblock);
+		}
+		if (oldest_cacheblock == cacheblock) {
+			oldest_cacheblock = page_cache[cacheblock].succ;	// Nachfolger ist neuer aeltester Eintrag
+			page_cache[page_cache[cacheblock].succ].prec = oldest_cacheblock;	// Vorgaenger der Nachfolgers ist seine Identitaet
+		}
+		else {
+			page_cache[page_cache[cacheblock].prec].succ = page_cache[cacheblock].succ;	// Nachfolger des Vorgaengers ist eigener Nachfolger
+//			printf("1) %d.succ: %d\t", page_cache[cacheblock].prec, page_cache[cacheblock].succ);
+			page_cache[page_cache[cacheblock].succ].prec = page_cache[cacheblock].prec;	// Vorganeger des Nachfolgers ist eigener Vorgaenger
+//			printf("2) %d.prec: %d\t", page_cache[cacheblock].succ, page_cache[cacheblock].prec);
+		}
+		if (recent_cacheblock != cacheblock) {
+			page_cache[recent_cacheblock].succ = cacheblock;
+//			printf("3) %d.succ: %d\t", recent_cacheblock, cacheblock);
+			page_cache[cacheblock].prec = recent_cacheblock;	// alter neuester Eintrag ist neuer Vorgaenger
+//			printf("4) %d.prec: %d\t", cacheblock, page_cache[cacheblock].prec);
+		}
+#else
+		oldest_cacheblock = (uint8_t) ((pages_in_sram - 1) - cacheblock); // aeltester Eintrag ist nun der andere Cacheblock (wenn verfuegbar)
+#endif
+		recent_cacheblock = (uint8_t) cacheblock; // neuester Eintrag ist nun die Identitaet
 //		printf("recent: %d\t", recent_cacheblock);
 //		printf("oldest: %d\n", oldest_cacheblock);
 		return 0;
 	}
 	/* Cache-Miss => neue Seite einlagern, LRU Policy */
-	int8_t next_cacheblock = oldest_cacheblock;
+	int8_t next_cacheblock = (int8_t) oldest_cacheblock;
 	if (allocated_pages < pages_in_sram) {
 		/* Es ist noch Platz im Cache */
 		next_cacheblock = allocated_pages;
@@ -275,26 +275,26 @@ static uint8_t mmc_load_page(uint32_t addr) {
 		allocated_pages++;	// Cache-Fuellstand aktualisieren		
 	}
 	/* Pager muss nun aktiv werden */
-	#ifdef VM_STATS_AVAILABLE
-		stats_data.swap_ins++;
-	#endif
+#ifdef VM_STATS_AVAILABLE
+	stats_data.swap_ins++;
+#endif
 	if (page_cache[next_cacheblock].dirty == 1) {	// Seite zurueckschreiben, falls Daten veraendert wurden
-		#ifdef VM_STATS_AVAILABLE
-			stats_data.swap_outs++;
-		#endif
+#ifdef VM_STATS_AVAILABLE
+		stats_data.swap_outs++;
+#endif
 		if (swap_out(page_cache[next_cacheblock].addr, page_cache[next_cacheblock].p_data) != 0) return 2;
 	}
 	if (swap_in(mmc_get_mmcblock_of_page(addr), page_cache[next_cacheblock].p_data) != 0) return 3;
 //	printf("miss: cacheblock: %d\t", next_cacheblock);
-	#if MAX_PAGES_IN_SRAM > 2
-		if (oldest_cacheblock == next_cacheblock) {
-			oldest_cacheblock = page_cache[next_cacheblock].succ;	// Nachfolger ist neuer aeltester Eintrag
-//			printf("1) %d.succ: %d\t", next_cacheblock, page_cache[next_cacheblock].succ);
-		}
-	#else
-		oldest_cacheblock = (pages_in_sram - 1) - next_cacheblock;	// neuer aeltester Eintrag ist nun der andere Cacheblock (wenn verfuegbar)
-	#endif
-	page_cache[next_cacheblock].addr = mmc_get_mmcblock_of_page(addr);	// Cache-Tag aktualisieren
+#if MAX_PAGES_IN_SRAM > 2
+	if (oldest_cacheblock == next_cacheblock) {
+		oldest_cacheblock = page_cache[next_cacheblock].succ;	// Nachfolger ist neuer aeltester Eintrag
+//		printf("1) %d.succ: %d\t", next_cacheblock, page_cache[next_cacheblock].succ);
+	}
+#else
+	oldest_cacheblock = (uint8_t) ((pages_in_sram - 1) - next_cacheblock); // neuer aeltester Eintrag ist nun der andere Cacheblock (wenn verfuegbar)
+#endif
+	page_cache[next_cacheblock].addr = mmc_get_mmcblock_of_page(addr); // Cache-Tag aktualisieren
 	/* LRU */
 	#if MAX_PAGES_IN_SRAM > 2
 		page_cache[next_cacheblock].prec = recent_cacheblock;	// Vorgaenger dieses Cacheblocks ist der bisher neueste Eintrag
@@ -302,7 +302,7 @@ static uint8_t mmc_load_page(uint32_t addr) {
 		page_cache[recent_cacheblock].succ = next_cacheblock;	// Nachfolger des bisher neuesten Eintrags ist dieser Cacheblock
 //		printf("3) %d.succ: %d\t", recent_cacheblock, page_cache[recent_cacheblock].succ);
 	#endif
-	recent_cacheblock = next_cacheblock;					// Dieser Cacheblock ist der neueste Eintrag
+	recent_cacheblock = (uint8_t) next_cacheblock; // Dieser Cacheblock ist der neueste Eintrag
 //	printf("recent: %d\t", recent_cacheblock);
 //	printf("oldest: %d\n", oldest_cacheblock);	
 	return 0;
@@ -315,6 +315,7 @@ static uint8_t mmc_load_page(uint32_t addr) {
  * @return			Virtuelle Anfangsadresse des angeforderten Speicherblocks in Byte, 0 falls Fehler 
  */
 uint32_t mmcalloc(uint32_t size, uint8_t aligned) {
+	aligned = aligned;
 	if (next_mmc_address == mmc_start_address) {
 		/* Inits */
 		if (mmc_start_address > swap_space) {
@@ -333,9 +334,9 @@ uint32_t mmcalloc(uint32_t size, uint8_t aligned) {
 	if (start_addr+size > swap_space) return 0;	// wir haben nicht mehr virtuellen Speicher als Platz auf dem Swap-Device
 	/* interne Daten aktualisieren */
 	next_mmc_address = start_addr + size;
-	#ifdef VM_STATS_AVAILABLE
-		stats_data.vm_used_bytes = next_mmc_address-mmc_start_address;
-	#endif
+#ifdef VM_STATS_AVAILABLE
+	stats_data.vm_used_bytes = next_mmc_address - mmc_start_address;
+#endif
 	return start_addr;
 }
 
@@ -350,7 +351,7 @@ uint8_t * mmc_get_data(uint32_t addr) {
 	int8_t cacheblock = mmc_get_cacheblock_of_page(addr);
 	page_cache[cacheblock].dirty = 1;	// Daten sind veraendert
 	/* Zeiger auf Adresse in gecacheter Seite laden / berechnen und zurueckgeben */
-	uint16_t offset = addr & 0x1ff;
+	uint16_t offset = (uint16_t) (addr & 0x1ff);
 	//return page_cache[cacheblock].p_data + (addr - (mmc_get_mmcblock_of_page(addr)<<9));
 	return page_cache[cacheblock].p_data + offset;
 }
@@ -378,7 +379,7 @@ uint8_t mmc_flush_cache(void) {
 	for (i=0; i<allocated_pages; i++) {
 		if (page_cache[i].dirty == 1) {
 			if (page_cache[i].addr < mmc_get_mmcblock_of_page(swap_space))
-				result += swap_out(page_cache[i].addr, page_cache[i].p_data);	// synchrones Zurueckschreiben
+				result = (uint8_t) (result + swap_out(page_cache[i].addr, page_cache[i].p_data)); // synchrones Zurueckschreiben
 			page_cache[i].dirty = 0;
 		}
 	}
@@ -400,12 +401,12 @@ uint32_t mmc_fopen_P(const char * filename) {
 	if (p_data == NULL)	return 0;
 	/* Die Dateiadressen liegen ausserhalb des Bereichs fuer den VM, also interne Datenanpassungen hier rueckgaengig machen */
 	next_mmc_address -= 512;
-	#ifdef VM_STATS_AVAILABLE
-		stats_data.vm_used_bytes -= 512;
-	#endif
+#ifdef VM_STATS_AVAILABLE
+	stats_data.vm_used_bytes -= 512;
+#endif
 		
 	uint32_t block = mini_fat_find_block_P(filename, p_data, mmc_start_address);
-	uint8_t idx = mmc_get_cacheblock_of_page(v_addr);
+	uint8_t idx = (uint8_t) mmc_get_cacheblock_of_page(v_addr);
 	if (block != 0xffffffff) {
 		page_cache[idx].addr = 0;
 		page_cache[idx].dirty = 0;

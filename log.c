@@ -199,6 +199,8 @@ void log_flash_begin(const char * filename, unsigned int line, LOG_TYPE log_type
 	 * und der Log-Typ vollstaendig ausgegeben.
 	 */
 #ifdef LOG_DISPLAY_AVAILABLE
+	line = line;
+	filename = filename;
 	LOCK();
 	/* Alte Markierung loeschen */
 	if (log_line == 1) {
@@ -207,7 +209,7 @@ void log_flash_begin(const char * filename, unsigned int line, LOG_TYPE log_type
 		screen_output[log_line-2][0] = ' ';
 	}
 	log_buffer[0] = '>';
-	log_buffer[1] = pgm_read_byte(log_get_type_str(log_type)+2);
+	log_buffer[1] = (char) pgm_read_byte(log_get_type_str(log_type)+2);
 	log_buffer[2] = ':';
 	log_buffer[3] = '\0';
 #else
@@ -280,9 +282,9 @@ void log_flash_printf(const char * format, ...) {
 void log_end(void) {
 #ifdef LOG_UART_AVAILABLE
 	/* String ueber UART senden, ohne '\0'-Terminierung */
-	uart_write((uint8_t *)log_buffer, strlen(log_buffer));
+	uart_write((uint8_t *) log_buffer, (uint8_t) strlen(log_buffer));
 	/* Line feed senden */
-	uart_write((uint8_t *)LINE_FEED,strlen(LINE_FEED));
+	uart_write((uint8_t *) LINE_FEED, strlen(LINE_FEED));
 #endif // LOG_UART_AVAILABLE
 
 #ifdef LOG_CTSIM_AVAILABLE
@@ -308,7 +310,7 @@ void log_end(void) {
 #ifdef LOG_MMC_AVAILABLE
 	static uint16_t f_offset = 512;	// Init erzwingt Ueberlauf im ersten Aufruf, damit p_file geholt wird
 	static uint8_t * p_file;
-	uint8_t len = strlen(log_buffer);	// |log_buffer| < 256
+	uint8_t len = (uint8_t) strlen(log_buffer);	// |log_buffer| < 256
 	if (f_offset + len > 512){
 		/* der Log-Puffer passt nicht mehr komplett in den aktuellen Block */
 		f_offset = 0;
@@ -326,7 +328,7 @@ void log_end(void) {
 	/* Log-Puffer uebertragen und Dateizeiger fortschreiben */
 	memcpy(p_file, log_buffer, len);
 	p_file += len;
-	f_offset += len + 1;
+	f_offset = (uint16_t) (f_offset + len + 1);
 #endif // LOG_MMC_AVAILABLE
 
 	UNLOCK();
@@ -357,7 +359,7 @@ void log_display(void) {
 	/* Strings aufs LCD-Display schreiben */
 	uint8_t i;
 	for (i=0; i<4; i++) {	// Das Display hat 4 Zeilen
-		display_cursor(i+1, 1);
+		display_cursor((uint8_t) (i + 1), 1);
 		display_printf("%s", screen_output[i]);
 	}
 }

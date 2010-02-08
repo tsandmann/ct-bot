@@ -48,9 +48,9 @@ static uint8_t new_address = 0;	/*!< True, falls neue Adresse eingegeben wird */
  * die Eingabe abgeschlossen ist.
  * @param *data	Daten-String
  */
-void change_bot_addr_callback(char * data) {
+static void change_bot_addr_callback(char * data) {
 	new_address = 0;
-	uint8_t addr = atoi(data);
+	uint8_t addr = (uint8_t) atoi(data);
 	if (addr != 0) {
 		set_bot_address(addr);
 	}

@@ -120,13 +120,13 @@ static void init(void) {
 	delay(100);
 #ifdef RESET_INFO_DISPLAY_AVAILABLE
 #ifdef MCU_ATMEGA644X
-	reset_flag = MCUSR & 0x1F; // Lese Grund fuer Reset und sichere Wert
+	reset_flag = (uint8_t) (MCUSR & 0x1F); // Lese Grund fuer Reset und sichere Wert
 	MCUSR = 0; // setze Register auf 0x00 (loeschen)
 #else
-	reset_flag = MCUCSR & 0x1F; // Lese Grund fuer Reset und sichere Wert
+	reset_flag = (uint8_t) (MCUCSR & 0x1F); // Lese Grund fuer Reset und sichere Wert
 	MCUCSR = 0; // setze Register auf 0x00 (loeschen)
 #endif	// MCU_ATMEGA644X
-	uint8_t resets = ctbot_eeprom_read_byte(&resetsEEPROM) + 1;
+	uint8_t resets = (uint8_t) (ctbot_eeprom_read_byte(&resetsEEPROM) + 1);
 	ctbot_eeprom_write_byte(&resetsEEPROM, resets);
 #endif	// RESET_INFO_DISPLAY_AVAILABLE
 #endif	// MCU
@@ -226,7 +226,7 @@ int main(int argc, char * argv[]) {
 #ifdef WELCOME_AVAILABLE
 	display_cursor(1, 1);
 	display_printf("c't-Roboter");
-	LED_set(0x00);
+
 #ifdef LOG_AVAILABLE
 	LOG_INFO("Hallo Welt!");
 #endif
