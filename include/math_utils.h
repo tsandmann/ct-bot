@@ -19,7 +19,7 @@
 
 /*!
  * @file 	math_utils.h
- * @brief 	Hilfsfunktionen fuer mathematische Dinge, architekturunabhaenigig
+ * @brief 	Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig
  * @author 	Timo Sandmann (mail@timosandmann.de)
  * @date 	17.10.2007
  */
@@ -63,6 +63,9 @@ static inline double deg(double radian) {
 }
 
 #ifdef MCU
+#ifndef sqrtf
+static inline float sqrtf(float x) __attribute__((__const__));
+
 /*!
  * Berechnet die Quadratwurzel eines float-Wertes
  * @param x	Wert
@@ -71,6 +74,40 @@ static inline double deg(double radian) {
 static inline float sqrtf(float x) {
 	return (float) sqrt((double) x);
 }
+#endif // !sqrtf
+
+#ifndef sinf
+static inline float sinf(float x) __attribute__((__const__));
+
+/*!
+ *
+ */
+static inline float sinf(float x) {
+	return (float) sin((double) x);
+}
+#endif // !sinf
+
+#ifndef cosf
+static inline float cosf(float x) __attribute__((__const__));
+
+/*!
+ *
+ */
+static inline float cosf(float x) {
+	return (float) cos((double) x);
+}
+#endif // !cosf
+
+#ifndef tanf
+static inline float tanf(float x) __attribute__((__const__));
+
+/*!
+ *
+ */
+static inline float tanf(float x) {
+	return (float) tan((double) x);
+}
+#endif // !tanf
 #endif // MCU
 
 /*!

@@ -105,7 +105,7 @@ void bot_turn_behaviour(Behaviour_t * data) {
 		/* Bot drehen, solange Zielwinkel noch nicht erreicht ist */
 		uint8_t new_speed;	// schneller als mit 255 mm/s drehen ist zu ungenau, also reichen hier 8 Bit
 		float x = diff < 1800 ? diff / (360.0/M_PI*10) : M_PI/2;	// (0; pi/2]
-		new_speed = (uint8_t) (sin(x) * (float) max_speed); // [ 0; 125]
+		new_speed = (uint8_t) (sinf(x) * (float) max_speed); // [ 0; 125]
 		new_speed = (uint8_t) (new_speed + 25); // [25; 150]
 
  		speedWishRight = turn_direction < 0 ? -new_speed : new_speed;

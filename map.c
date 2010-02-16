@@ -1082,8 +1082,8 @@ void map_draw_rect(position_t from, position_t to, uint8_t width, uint8_t color)
 	/* Eckpunkte des Rechtecks berechnen */
 	float alpha = atan2(to.y - from.y, to.x - from.x);
 	float w_2 = width / 2.0f;
-	int16_t dx = (int16_t)(w_2 * sin(alpha));
-	int16_t dy = (int16_t)(w_2 * cos(alpha));
+	int16_t dx = (int16_t)(w_2 * sinf(alpha));
+	int16_t dy = (int16_t)(w_2 * cosf(alpha));
 
 	position_t from1;
 	from1.x = from.x - dx;
@@ -1163,8 +1163,8 @@ void map_update_main(void) {
 		float * cos_head = NULL;
 		if (cache_tmp->mode.data.border || cache_tmp->mode.data.distance) {
 			const float head = rad(cache_tmp->heading / 10.0f);
-			float sin_tmp = sin(head);
-			float cos_tmp = cos(head);
+			float sin_tmp = sinf(head);
+			float cos_tmp = cosf(head);
 			sin_head = &sin_tmp;
 			cos_head = &cos_tmp;
 		}

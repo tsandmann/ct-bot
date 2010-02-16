@@ -22,6 +22,7 @@
 //#define BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE	/*!< goto_obstacle vorhanden? */
 #define BEHAVIOUR_TURN_AVAILABLE	/*!< turn vorhanden? */
 //#define BEHAVIOUR_TURN_TEST_AVAILABLE	/*!< turn_test vorhanden? */
+//#define BEHAVIOUR_TEST_ENCODER_AVAILABLE /*!< Encoder-Test Verhalten vorhanden? */
 
 #define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE	/*!< Strecke fahren vorhanden ?*/
 
@@ -295,6 +296,8 @@
 #include "bot-logic/behaviour_line_shortest_way.h"
 
 #include "bot-logic/behaviour_scan_beacons.h"
+
+#include "bot-logic/behaviour_test_encoder.h"
 
 #endif	// BEHAVIOUR_AVAILABLE
 #endif	/*AVAILABLE_BEHAVIOURS_H_*/

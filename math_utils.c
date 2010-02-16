@@ -19,7 +19,7 @@
 
 /*!
  * @file 	math_utils.c
- * @brief 	Hilfsfunktionen fuer mathematische Dinge, architekturunabhaenigig
+ * @brief 	Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig
  * @author 	Timo Sandmann (mail@timosandmann.de)
  * @date 	17.10.2007
  */
@@ -99,8 +99,8 @@ int32_t get_dist(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
  */
 position_t calc_point_in_distance(float alpha, int16_t dx, int16_t dy) {
 	float h = rad(alpha);
-	float cos_h = cos(h);
-	float sin_h = sin(h);
+	float cos_h = cosf(h);
+	float sin_h = sinf(h);
 
 	position_t dest;
 	dest.x = x_pos + (int16_t)((dx * cos_h) - (dy * sin_h));

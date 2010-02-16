@@ -295,7 +295,7 @@ void sensor_update(void) {
 				deltaY = sl;
 			} else {
 				/* Laenge berechnen aus alpha/2 */
-				deltaY = (sl + sr) * sin(dHead / 2.0f) / dHead;
+				deltaY = (sl + sr) * sinf(dHead / 2.0f) / dHead;
 
 				/* Winkel in Grad umrechnen */
 				dHead = deg(dHead);
@@ -314,8 +314,8 @@ void sensor_update(void) {
 				heading_10_int = (int16_t) (heading_enc * 10.0f);
 #endif // !MEASURE_MOUSE_AVAILABLE
 				const float h_enc = rad(heading_enc);
-				heading_sin = sin(h_enc);
-				heading_cos = cos(h_enc);
+				heading_sin = sinf(h_enc);
+				heading_cos = cosf(h_enc);
 #endif // CMPS03_AVAILABLE
 			}
 
@@ -380,8 +380,8 @@ void sensor_update(void) {
 			heading_10_int = (int16_t) (heading_mou * 10.0f);
 #endif // MEASURE_COUPLED_AVAILABLE
 			const float h_mou = rad(heading_mou);
-			heading_sin = sin(h_mou);
-			heading_cos = cos(h_mou);
+			heading_sin = sinf(h_mou);
+			heading_cos = cosf(h_mou);
 		}
 
 		/* x/y pos berechnen */
@@ -418,8 +418,8 @@ void sensor_update(void) {
 		heading_int = (int16_t) heading;
 		heading_10_int = (int16_t) (heading * 10.0f);
 		const float h = rad(heading);
-		heading_sin = sin(h);
-		heading_cos = cos(h);
+		heading_sin = sinf(h);
+		heading_cos = cosf(h);
 #else
 #ifdef MEASURE_MOUSE_AVAILABLE
 		/* Mauswerte als Standardwerte benutzen */

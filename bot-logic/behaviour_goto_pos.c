@@ -165,8 +165,8 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		const int16_t h2_2 = diff_x;
 		const float h4_2 = h1_2 * tan_alpha;
 		const float h5_2 = h4_2 / sin_alpha;
-		const float h6_2 = (h2_2 + h4_2) * sin(gamma);
-		float sin_beta = sin(beta);
+		const float h6_2 = (h2_2 + h4_2) * sinf(gamma);
+		float sin_beta = sinf(beta);
 		if (sin_beta == 0.0f) {
 			sin_beta = 0.000001f;
 		}
@@ -179,7 +179,7 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		/* Geschwindigkeit an Entfernung zum Zielpunkt anpassen */
 		float x = diff_to_target < 360L * 360L ? (float) diff_to_target / ((360.0f / M_PI * 2.0f) * (360.0f / M_PI
 			* 2.0f)) : M_PI / 2; // (0; pi/2]
-		v_m = (int16_t) (sin(x) * (float) (v_m_max - v_m_min)); // [0; v_m_max - v_m_min]
+		v_m = (int16_t) (sinf(x) * (float) (v_m_max - v_m_min)); // [0; v_m_max - v_m_min]
 		v_m += v_m_min; // [v_m_min; v_m_max]
 		if (drive_dir < 0) {
 			v_m = -v_m;

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2010-02-16 Timo Sandmann [mail@timosandmann.de]: Anpassungen fuer avr-libc 1.6.8 / WinAVR-20100110, Test-Verhalten bot_test_encoder(), um die Positionierungsgenauigkeit aus den Radencoder-Daten testen zu koennen. 
+
 2010-02-08 Timo Sandmann [mail@timosandmann.de]: Aufraeumarbeiten, Warnings im Schach-Verhalten beseitigt
 
 2010-02-06 Timo Sandmann [mail@timosandmann.de]: Speed-Log und Mini-FAT verbessert, Verhaltenscode aufgeraeumt, Init-Code vereinheitlicht, Warnings beseitigt

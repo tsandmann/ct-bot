@@ -370,6 +370,10 @@ void bot_behave_init(void) {
 		insert_behaviour_to_list(&behaviour, new_behaviour(28, bot_turn_test_behaviour, INACTIVE));
 	#endif
 
+	#ifdef BEHAVIOUR_TEST_ENCODER_AVAILABLE
+		insert_behaviour_to_list(&behaviour, new_behaviour(20, bot_test_encoder_behaviour, INACTIVE));
+	#endif
+
 	// Grundverhalten, setzt aeltere FB-Befehle um, aktiv
 	insert_behaviour_to_list(&behaviour, new_behaviour(2, bot_base_behaviour, ACTIVE));
 

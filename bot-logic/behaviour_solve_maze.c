@@ -633,7 +633,7 @@ void bot_solve_maze_behaviour(Behaviour_t * data) {
 
 		case APPROACH_CORNER:
 			/* ok, nun Strecke bis zur Kante berechnen */
-			x = measure_distance * cos(rad(measured_angle)) / 10.0f + (BOT_DIAMETER * 0.15f);
+			x = measure_distance * cosf(rad(measured_angle)) / 10.0f + (BOT_DIAMETER * 0.15f);
 			mazeState = TURN_TO_BRANCH;
 			bot_drive_distance(data, 0, BOT_SPEED_NORMAL, (int16_t) x);
 			break;

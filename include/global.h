@@ -102,7 +102,7 @@ int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 #ifdef MCU
 #include <avr/interrupt.h>
 #ifdef SIGNAL
-#define NEW_AVR_LIB	/*!< AVR_LIB-Version */
+#define NEW_AVR_LIB	/*!< neuere AVR_LIB-Version */
 #else
 #include <avr/signal.h>
 #endif

@@ -307,8 +307,8 @@ void bot_sens(void) {
 	heading_int = heading_10_int / 10;
 	heading = (float) sensCmps03.bearing / 10.0f;
 	const float h = rad(heading);
-	heading_sin = sin(h);
-	heading_cos = cos(h);
+	heading_sin = sinf(h);
+	heading_cos = cosf(h);
 #endif
 
 #ifdef SRF10_AVAILABLE
