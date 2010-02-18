@@ -102,12 +102,12 @@ static void display_cmd(uint8_t cmd) {
 	shift_data_out(cmd, SHIFT_LATCH, SHIFT_REGISTER_DISPLAY);
 
 	/* 47 us warten */
-	_delay_loop_2(F_CPU / 4000000L * 47);
+	delay_us(47);
 	DISPLAY_PORT = DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
 
 	if (cmd == DISPLAY_CLEAR) {
 		/* 1.52 ms warten */
-		_delay_loop_2(F_CPU / 4000000L * 1520);
+		delay_us(1520);
 	}
 }
 
@@ -120,7 +120,7 @@ void display_data(char data) {
 	shift_data_out((uint8_t) data, SHIFT_LATCH, SHIFT_REGISTER_DISPLAY | DISPLAY_RS);
 
 	/* 47 us warten */
-	_delay_loop_2(F_CPU / 4000000L * 47);
+	delay_us(47);
 	DISPLAY_PORT = DPC;	// Alles zurueck setzen ==> Fallende Flanke von Enable
 }
 

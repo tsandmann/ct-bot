@@ -18,7 +18,7 @@
  */
 
 /*! @file 	delay.c
- * @brief 	Hilfsroutinen
+ * @brief 	Hilfsroutinen fuer Wartezeiten
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.2005
 */
@@ -36,7 +36,7 @@
  */
 void delay(uint16_t ms) {
 	uint32_t start = TIMER_GET_TICKCOUNT_32;
-	uint32_t ticksToWait = MS_TO_TICKS((uint32_t)ms);
+	uint32_t ticksToWait = MS_TO_TICKS((uint32_t) ms);
 	uint32_t now;
 	do {
 		now = TIMER_GET_TICKCOUNT_32;

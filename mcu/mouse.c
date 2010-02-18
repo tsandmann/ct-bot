@@ -105,7 +105,7 @@ static uint8_t mouse_sens_readByte(void) {
  * wartet 100 us
  */
 static void mouse_sens_wait(void) {
-	_delay_loop_2(F_CPU / 4000000L * 100);
+	delay_us(100);
 }
 
 /*!

@@ -19,17 +19,12 @@
 
 /*!
  * @file 	delay.h
- * @brief 	Hilfsroutinen
+ * @brief 	Hilfsroutinen fuer Wartezeiten
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.2005
  */
-#ifndef delay_H_
-#define delay_H_
-
-/*!
- * Warte 100 ms
- */
-#define delay_100ms()	delay(100)
+#ifndef DELAY_H_
+#define DELAY_H_
 
 /*!
  * Verzoegert um ms Millisekunden
@@ -38,21 +33,15 @@
 void delay(uint16_t ms);
 
 #ifdef MCU
+#include <avr/builtins.h>
+
 /*!
- * Delay loop using a 16-bit counter so up to 65536 iterations are possible.
- * (The value 65536 would have to be passed as 0.)
- * The loop executes four CPU cycles per iteration, not including the overhead
- * the compiler requires to setup the counter register pair.
- * Thus, at a CPU speed of 1 MHz, delays of up to about 262.1 milliseconds can be achieved.
- * @param __count	1/4 CPU-Zyklen
+ * Verzoegert um us Millisekunden
+ * @param us Anzahl der Mikrosekunden
  */
-static inline void _delay_loop_2(uint16_t __count) {
-	__asm__ __volatile__(
-		"1: sbiw %0,1" "\n\t"
-		"brne 1b"
-		: "=w" (__count)
-		: "0" (__count)
-	);
+static inline void delay_us(uint32_t us) {
+	const uint32_t cycles = F_CPU / 1000000L * us;
+	__builtin_avr_delay_cycles(cycles);
 }
-#endif	// MCU
-#endif	// delay_H_
+#endif // MCU
+#endif // DELAY_H_
