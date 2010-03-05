@@ -124,15 +124,15 @@ position_t calc_resection(position_t a, position_t m, position_t b, float angle_
 	float beta = rad(angle_mb);
 
 	/* Definitionsbereich von tan() und cot() pruefen */
-	if (fmod(alpha, M_PI_2) == 0.0f) {
+	if (fmodf(alpha, M_PI_2) == 0.0f) {
 		alpha += 0.001f;
 	}
-	if (fmod(beta, M_PI_2) == 0.0f) {
+	if (fmodf(beta, M_PI_2) == 0.0f) {
 		beta += 0.001f;
 	}
 
-	float cot_alpha = 1.0f / tan(alpha); // cot(alpha)
-	float cot_beta = 1.0f / tan(beta);
+	float cot_alpha = 1.0f / tanf(alpha); // cot(alpha)
+	float cot_beta = 1.0f / tanf(beta);
 
 	float Yc = a.y + (a.x - m.x) * cot_alpha;
 	float Xc = a.x - (a.y - m.y) * cot_alpha;

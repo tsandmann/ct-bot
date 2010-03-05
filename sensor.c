@@ -75,8 +75,7 @@ uint8_t sensDoor = 0;	/*!< Sensor Ueberwachung Klappe */
 uint8_t sensError = 0;	/*!< Ueberwachung Motor oder Batteriefehler */
 
 #ifdef BPS_AVAILABLE
-int16_t sensBPSF = 1023; /*!< Bot Positioning System vorn */
-int16_t sensBPSR = 1023; /*!< Bot Positioning System hinten */
+int16_t sensBPS = 1023; /*!< Bot Positioning System vorn */
 #endif	// BPS_AVAILABLE
 
 #ifdef MOUSE_AVAILABLE
@@ -268,7 +267,7 @@ void sensor_update(void) {
 		/* Gefahrene Boegen aus Encodern berechnen */
 #ifdef MCU
 		uint8_t sreg = SREG;
-		cli();
+		__builtin_avr_cli();
 #endif
 		/* <CS> */
 		int16_t sensEncL_tmp = sensEncL;
@@ -684,18 +683,15 @@ void odometric_display(void) {
 	display_printf("v_l: %3d v_r: %3d  ", v_left, v_right);
 #ifdef BPS_AVAILABLE
 	display_cursor(4, 1);
-	static int16_t BPS_old[2] = {1023, 1023};
+	static int16_t BPS_old = 1023;
 	static uint8_t count = 0;
-	if (sensBPSF != 1023 || count > 10) {
-		BPS_old[0] = sensBPSF;
+	if (sensBPS != 1023 || count > 10) {
+		BPS_old = sensBPS;
 		count = 0;
 	}
 	count++;
 
-	if (sensBPSR != 1023) {
-		BPS_old[1] = sensBPSR;
-	}
-	display_printf("BPS: 0x%04x 0x%04x", BPS_old[0], BPS_old[1]);
+	display_printf("BPS: 0x%04x", BPS_old);
 #elif defined MEASURE_MOUSE_AVAILABLE
 	display_cursor(4, 1);
 	display_printf("squal: %3d v_c: %3d", mouse_get_squal(), (int16_t) v_mou_center);

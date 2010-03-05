@@ -1,8 +1,6 @@
 /*****************************************************************************
 *
 * AVRPROG compatible boot-loader
-* Version  : 0.80beta3 (May 2006)
-* Compiler : avr-gcc 3.4.6 / avr-libc 1.4.4
 * size     : depends on features and startup (minmal features < 512 words)
 * by       : Martin Thomas, Kaiserslautern, Germany
 *            eversmith@heizung-thomas.de
@@ -16,7 +14,7 @@
 *            owners in source-code and documentation of derived
 *            work. No warranty!
 *
-* Tested with ATmega8, ATmega16, ATmega32, ATmega128, AT90CAN128
+* Tested with ATmega8, ATmega16, ATmega32, ATmega128, AT90CAN128, ATmega644(P), ATmega1284P
 *
 * - Initial versions have been based on the Butterfly bootloader-code
 *   by Atmel Corporation (Authors: BBrandal, PKastnes, ARodland, LHM)
@@ -66,12 +64,15 @@
 #define DEVTYPE     DEVTYPE_ISP		/*!< Device-Typ des emulierten Programmers */
 
 /* Boot Size in Words */
-#if defined(__AVR_ATmega32__)	// => Fuse Bits: low: 0xFF, high: 0xDC
+#if defined __AVR_ATmega32__ // => Fuse Bits: low: 0xFF, high: 0xDC
 #define BOOTSIZE 512		// => Linker-Settings: -Wl,--section-start=.bootloader=0x7C00
 //#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0x7C00 startet "
-#elif defined(MCU_ATMEGA644X)// => Fuse Bits: low: 0xFF, high: 0xDC, Ext'd: 0xFF
+#elif defined MCU_ATMEGA644X // => Fuse Bits: low: 0xFF, high: 0xDC, Ext'd: 0xFF
 #define BOOTSIZE 1024		// => Linker-Settings: -Wl,--section-start=.bootloader=0xF800
 //#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0xF800 startet"
+#elif defined __AVR_ATmega1284P__ // => Fuse Bits: low: 0xFF, high: 0xDC, Ext'd: 0xFF
+#define BOOTSIZE 1024		// => Linker-Settings: -Wl,--section-start=.bootloader=0x1F800
+//#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0x1F800 startet"
 #endif
 
 /*! Startup-Timeout */
@@ -91,31 +92,13 @@
 //#define ENABLEREADFUSELOCK
 
 #define VERSION_HIGH '0'	/*!< Versionsnummer */
-#define VERSION_LOW  '8'	/*!< Versionsnummer */
+#define VERSION_LOW  '9'	/*!< Versionsnummer */
 
 #include <stdint.h>
 #include <avr/io.h>
 #include <avr/boot.h>
 #include <avr/pgmspace.h>
-#ifdef NEW_AVR_LIB
 #include <util/delay.h>
-#else
-#include <avr/delay.h>
-#endif
-
-/* Fusebit-Defs, since avr-libc 1.2.5 in boot.h */
-#ifndef GET_LOCK_BITS
-#define GET_LOCK_BITS			0x0001	/*!< Lock-Bits */
-#endif
-#ifndef GET_LOW_FUSE_BITS
-#define GET_LOW_FUSE_BITS		0x0000	/*!< Low-Fuse-Bits */
-#endif
-#ifndef GET_HIGH_FUSE_BITS
-#define GET_HIGH_FUSE_BITS      0x0003	/*!< High-Fuse-Bits */
-#endif
-#ifndef GET_EXTENDED_FUSE_BITS
-#define GET_EXTENDED_FUSE_BITS  0x0002	/*!< Extended-Fuse-Bits */
-#endif
 
 /* Chipdefs */
 #if defined (SPMCSR)
@@ -202,12 +185,35 @@ typedef uint8_t pagebuf_t; /*!< Seitengroesse */
 #define UART_CTRL2_DATA 0x86	// just 8N1
 #define UART_DATA	UDR0
 
+#elif defined __AVR_ATmega1284P__
+/* Part-Code ISP */
+#define DEVTYPE_ISP     0x74
+/* Part-Code Boot */
+#define DEVTYPE_BOOT    0x73
+
+#define SIG_BYTE1	0x1E
+#define SIG_BYTE2	0x97
+#define SIG_BYTE3	0x05
+
+#define UART_BAUD_HIGH	UBRR0H
+#define UART_BAUD_LOW	UBRR0L
+#define UART_STATUS	UCSR0A
+#define UART_TXREADY	UDRE0
+#define UART_RXREADY	RXC0
+#define UART_DOUBLE	U2X0
+#define UART_CTRL	UCSR0B
+#define UART_CTRL_DATA	((1<<TXEN0) | (1<<RXEN0))
+#define UART_CTRL2	UCSR0C
+//#define UART_CTRL2_DATA	((1<<URSEL) | (1<<UCSZ1) | (1<<UCSZ0))
+#define UART_CTRL2_DATA 0x86 // just 8N1
+#define UART_DATA	UDR0
+
 #else
 #error "no definition for MCU available"
 #endif
 // end Chipdefs
 
-uint8_t gBuffer[SPM_PAGESIZE];	/*!< Puffer */
+static uint8_t gBuffer[SPM_PAGESIZE];	/*!< Puffer */
 
 /* all inline! Sonst stimmt die Startadresse der bl_main nicht */
 static void __attribute__ ((always_inline)) sendchar(uint8_t data) {
@@ -270,7 +276,7 @@ static uint16_t __attribute__ ((always_inline)) writeEEpromPage(uint16_t address
 		EEDR = *tmp++;
 		address++; // Select next byte
 
-#ifdef MCU_ATMEGA644X
+#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
 		EECR |= (1<<EEMPE); // Write data into EEPROM
 		EECR |= (1<<EEPE);
 #else
@@ -340,7 +346,7 @@ static uint8_t __attribute__ ((always_inline)) read_fuse_lock(uint16_t addr) {
 }
 #endif
 
-static void __attribute__ ((always_inline)) send_boot(void){
+static void __attribute__ ((always_inline)) send_boot(void) {
 	sendchar('A');
 	sendchar('V');
 	sendchar('R');

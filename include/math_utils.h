@@ -80,7 +80,9 @@ static inline float sqrtf(float x) {
 static inline float sinf(float x) __attribute__((__const__));
 
 /*!
- *
+ * Berechnet Sinus eines float-Wertes
+ * @param x	Wert
+ * @return	sin(x)
  */
 static inline float sinf(float x) {
 	return (float) sin((double) x);
@@ -91,7 +93,9 @@ static inline float sinf(float x) {
 static inline float cosf(float x) __attribute__((__const__));
 
 /*!
- *
+ * Berechnet Cosinus eines float-Wertes
+ * @param x	Wert
+ * @return	cos(x)
  */
 static inline float cosf(float x) {
 	return (float) cos((double) x);
@@ -102,12 +106,42 @@ static inline float cosf(float x) {
 static inline float tanf(float x) __attribute__((__const__));
 
 /*!
- *
+ * Berechnet Tangens eines float-Wertes
+ * @param x	Wert
+ * @return	tan(x)
  */
 static inline float tanf(float x) {
 	return (float) tan((double) x);
 }
 #endif // !tanf
+
+#ifndef fmodf
+static inline float fmodf(float x, float y) __attribute__((__const__));
+
+/*!
+ * Berechnet Modulo zweier float-Werte
+ * @param x	Dividend
+ * @param y	Divisor
+ * @return	fmod(x, y)
+ */
+static inline float fmodf(float x, float y) {
+	return (float) fmod((double) x, (double) y);
+}
+#endif // !fmodf
+
+#ifndef atan2f
+static inline float atan2f(float y, float x) __attribute__((__const__));
+
+/*!
+ * Berechnet Arcustangens2 zweier float-Werte
+ * @param y	Y
+ * @param x	X
+ * @return	atan2(y, x)
+ */
+static inline float atan2f(float y, float x) {
+	return (float) atan2((double) y, (double) x);
+}
+#endif // !atan2f
 #endif // MCU
 
 /*!

@@ -51,7 +51,7 @@ void uart_init(void) {
     UBRRL = (UART_CALC_BAUDRATE(BAUDRATE) & 0xFF);
 
 	/* Interrupts kurz deaktivieren */
-	cli();
+    __builtin_avr_cli();
 
 	/* UART Receiver und Transmitter anschalten, Receive-Interrupt aktivieren */
 	UCSRB = (1 << RXEN) | (1 << TXEN) | (1 << RXCIE);
@@ -86,11 +86,11 @@ void uart_init(void) {
  * @brief	Interrupthandler fuer eingehende Daten
  * Empfangene Zeichen werden in die Eingabgs-FIFO gespeichert und warten dort.
  */
-#ifdef MCU_ATMEGA644X
+#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
 	ISR(USART0_RX_vect) {
 #else
 	ISR(SIG_UART_RECV) {
-#endif	// MCU_ATMEGA644X
+#endif // MCU_ATMEGA644X || ATmega1284P
 	_inline_fifo_put(&uart_infifo, UDR, True);
 }
 
@@ -100,11 +100,11 @@ void uart_init(void) {
  * Ist das Zeichen fertig ausgegeben, wird ein neuer SIG_UART_DATA-IRQ getriggert.
  * Ist die FIFO leer, deaktiviert die ISR ihren eigenen IRQ.
  */
-#ifdef MCU_ATMEGA644X
+#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
 	ISR(USART0_UDRE_vect) {
 #else
 	ISR(SIG_UART_DATA) {
-#endif	// MCU_ATMEGA644X
+#endif // MCU_ATMEGA644X || ATmega1284P
 	if (uart_outfifo.count > 0) {
 		UDR = _inline_fifo_get(&uart_outfifo, True);
 	} else {

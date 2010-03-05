@@ -31,7 +31,7 @@
 //	objcopy -j .eeprom --change-section-lma .eeprom=0 -O binary ct-Bot.elf ct-Bot.eep; objdump -t -j .eeprom -C ct-Bot.elf | grep "g" > eeprom_pc.map
 
 //	Post-Build Mac OS X:
-//	objcopy -j LC_SEGMENT.__eeprom.__data --change-section-lma LC_SEGMENT.__eeprom.__data=0 -O binary ct-Bot ct-Bot.eep 2> /dev/null; objdump -t -j LC_SEGMENT.__eeprom.__s2data -C ct-Bot 2> /dev/null | grep "g" > eeprom_pc.map
+//	objcopy -j __eeprom.__data --change-section-lma __eeprom.__data=0 -O binary ct-Bot ct-Bot.eep 2> /dev/null; objdump -t -j __eeprom.__data -C ct-Bot 2> /dev/null | grep "g" > eeprom_pc.map
 
 //	Post-Build Windows:
 //	objcopy -j .eeprom --change-section-lma .eeprom=0 -O binary ct-Bot.exe ct-Bot.eep;objdump -t ct-Bot.exe | grep "(sec  5)" | grep "(nx 0)" > eeprom_pc.map
@@ -84,30 +84,40 @@ extern uint8_t __attribute__ ((section (".s2eeprom"), aligned(1))) _eeprom_start
 #endif
 #ifdef __APPLE__
 #define SADDR_POS  0	/*!< Pos. der Adresse in PC Map Datei */
-#define SNAME_POS 45	/*!< Pos. des Variablennamen ohne _ */
+#define SNAME_POS 59	/*!< Pos. des Variablennamen ohne _ */
 #define BADDR_POS  0	/*!< Pos. der Adresse in MCU Map Datei */
 #define BNAME_POS 34	/*!< Pos. des Variablennamen in MCU Map */
 #define BSIZE_POS 28	/*!< Pos. der Variablengroesse in MCU Map */
 #endif
 
-#ifdef MCU_ATMEGA644X  // Dieser Prozessor hat 2048 Bytes EEPROM
+#ifdef MCU_ATMEGA644X
 #define EE_SIZE 2048
-#else
+#elif defined __AVR_ATmega1284P__
+#define EE_SIZE 4096
+#else // ATmega32
 #define EE_SIZE 1024
-#endif	// MCU_ATMEGA644X
+#endif
 
-#define MCU_EEPROM_FN	"./mcu_eeprom.bin" 		/*!< Name und Pfad der EEPROM Datei fuer MCU-Modus*/
-#define PC_EEPROM_FN	"./pc_eeprom.bin" 		/*!< Name und Pfad der EEPROM Datei fuer PC-Modus*/
+const char * MCU_EEPROM_FN = "./mcu_eeprom.bin";	/*!< Name und Pfad der EEPROM Datei fuer MCU-Modus*/
+const char * PC_EEPROM_FN = "./pc_eeprom.bin"; 		/*!< Name und Pfad der EEPROM Datei fuer PC-Modus*/
 #define MAX_VAR 200  						/*!< Maximale Anzahl von Variablen*/
-#define EEMAP_PC  "./eeprom_pc.map"			/*!< Pfad fuer PC-MAP Datei */
-#define EEP_PC    "./ct-Bot.eep"			/*!< Pfad fuer PC-EEP Datei */
+const char * EEMAP_PC = "./eeprom_pc.map";	/*!< Pfad fuer PC-MAP Datei */
+const char * EEP_PC = "./ct-Bot.eep";		/*!< Pfad fuer PC-EEP Datei */
+const char * EEMAP_MCU[4] = {
 #ifdef WIN32
 /* Windows */
-#define EEMAP_MCU "../debug-mcu-w32/eeprom_mcu.map"		/*!< Pfad fuer MCU MAP Datei */
+	"../Debug-MCU-m32-W32/eeprom_mcu.map",
+	"../Debug-MCU-m644-W32/eeprom_mcu.map",
+	"../Debug-MCU-m644p-W32/eeprom_mcu.map",
+	"../Debug-MCU-m1284p-W32/eeprom_mcu.map"
 #else
-/* Linux und OS X */
-#define EEMAP_MCU "../Debug-MCU-Linux/eeprom_mcu.map"	/*!< Pfad fuer MCU MAP Datei */
-#endif
+/* Linux und Mac OS X */
+	"../Debug-MCU-m32-Linux/eeprom_mcu.map",
+	"../Debug-MCU-m644-Linux/eeprom_mcu.map",
+	"../Debug-MCU-m644p-Linux/eeprom_mcu.map",
+	"../Debug-MCU-m1284p-Linux/eeprom_mcu.map"
+#endif // WIN32
+}; /*!< Pfad fuer MCU MAP Datei */
 
 typedef struct addrtab {
 	char varname[30];
@@ -163,8 +173,7 @@ static uint32_t conv_eeaddr(uint32_t addr) {
  * @param fn			Dateiname der EEPROM-Datei
  * @return 				Status der Funktion
  */
-static uint16_t check_eeprom_file(char * initfile, uint8_t eeprom_init,
-		char * fn) {
+static uint16_t check_eeprom_file(const char * initfile, uint8_t eeprom_init, const char * fn) {
 	FILE * fpr, * fpw; // Filepointer fuer Dateizugriffe
 	uint16_t i; // Laufvariable
 	char data[2]; // Datenspeicher
@@ -246,34 +255,40 @@ static uint16_t check_eeprom_file(char * initfile, uint8_t eeprom_init,
  * @param botfile	MAP mit den Adressen der EEPROM-Variablen im MCU elf
  * @return 			Statuscode
  */
-static uint16_t create_ctab(char * simfile, char * botfile) {
+static uint16_t create_ctab(const char * simfile, const char * botfile) {
 	FILE * fps, * fpb;
 	char sline[250], bline[250]; // Textzeilen aus Dateien
 	char vname_s[30], vname_b[30]; // Variablennamen
-	long int addr_s, addr_b; // Adressen der Variablen
+	long addr_s, addr_b; // Adressen der Variablen
 	uint16_t size; // Variablengroesse
-	uint16_t vc = 0; // Variablenzaehler
-	long int first_botaddr = 0xffffffff; // Erste ct-Bot EEPROM Adressse
+	int16_t vc = 0; // Variablenzaehler
+	long first_botaddr = 0xffffffff; // Erste ct-Bot EEPROM Adressse
+
+//	LOG_INFO("->simfile=\"%s\"", simfile);
+//	LOG_INFO("->botfile=\"%s\"", botfile);
 
 	/* Dateien oeffnen */
 	if (!(fps = fopen(simfile, "r"))) {
-		LOG_INFO("->EEPROM-MAP fuer PC fehlt");
+		LOG_INFO("->keine PC-EEPROM-MAP in \"%s\"", simfile);
 		return (1);
 	}
 	if (!(fpb = fopen(botfile, "r"))) {
-		LOG_INFO("->EEPROM-MAP fuer MCU fehlt");
+		LOG_INFO("->keine MCU-EEPROM-MAP in \"%s\"", botfile);
 		return (2);
 	}
 
 	/* Anzahl Variablen vergleichen */
-	while (fgets(sline, 249, fps))
+	while (fgets(sline, sizeof(sline), fps)) {
 		vc++;
-	while (fgets(sline, 249, fpb))
+	}
+	while (fgets(sline, sizeof(sline), fpb)) {
 		vc--;
+	}
 	if (vc) {
 		fclose(fps);
 		fclose(fpb);
 		LOG_INFO("->Unterschiedliche Variablenanzahl");
+		LOG_INFO("->vc=%d", vc);
 		return (6);
 	}
 	rewind(fps);
@@ -283,19 +298,20 @@ static uint16_t create_ctab(char * simfile, char * botfile) {
 	while (fgets(sline, 249, fps)) {
 		rewind(fpb);
 		sscanf(&sline[SNAME_POS], "%s", vname_s);
-		//		printf("vname_s=%s\n", vname_s);
+//		printf("vname_s=%s\n", vname_s);
 		addr_s = strtol(&sline[SADDR_POS], NULL, 16);
-		//		printf("addr_s=0x%lx\n", addr_s);
+//		printf("addr_s=0x%lx\n", addr_s);
 		while (fgets(bline, 249, fpb)) {
-			/*Variablennamen suchen*/
+			/* Variablennamen suchen */
 			sscanf(&bline[BNAME_POS], "%s", vname_b);
-			//			printf("vname_b=%s\n", vname_b);
+//			printf("vname_b=%s\n", vname_b);
 			addr_b = strtol(&bline[BADDR_POS], NULL, 16);
-			//			printf("addr_b=0x%lx\n", addr_b);
-			if (addr_b < first_botaddr) //Kleinste ct-bot Adresse bestimmen
+//			printf("addr_b=0x%lx\n", addr_b);
+			if (addr_b < first_botaddr) { // Kleinste ct-bot Adresse bestimmen
 				first_botaddr = addr_b;
+			}
 			size = strtol(&bline[BSIZE_POS], NULL, 16);
-			//			printf("size=0x%x\n", size);
+//			printf("size=0x%x\n", size);
 
 			if (!strcmp(vname_s, vname_b)) {
 				/* Daten kopieren */
@@ -362,11 +378,13 @@ static uint16_t create_ctab(char * simfile, char * botfile) {
 	if (first_simaddr || first_botaddr) {
 		LOG_INFO("->Adressen werden normiert");
 		for (i = 0; i < tsize; i++) {
-			if (first_simaddr)
+			if (first_simaddr) {
 				ctab[i].simaddr -= first_simaddr;
-			if (first_botaddr)
+			}
+			if (first_botaddr) {
 				ctab[i].botaddr -= first_botaddr;
-			//			printf("addr_b=0x%x addr_b=0x%x\n", ctab[i].botaddr, ctab[i].simaddr);
+			}
+//			printf("addr_b=0x%x addr_b=0x%x\n", ctab[i].botaddr, ctab[i].simaddr);
 		}
 	}
 
@@ -389,22 +407,32 @@ static uint16_t create_ctab(char * simfile, char * botfile) {
  * @return		0: alles ok, 1: Fehler
  */
 uint8_t init_eeprom_man(uint8_t init) {
-	uint16_t status; // Status von create_ctab
 	uint16_t sflag; // Sectionstatus
 	char fn[30] = "";
 
 	LOG_INFO("EEPROM-Manager");
 
 	/* Adresskonvertierungstabelle anlegen */
-	if ((status = create_ctab(EEMAP_PC, EEMAP_MCU))) {
+	unsigned i;
+	const unsigned n = sizeof(EEMAP_MCU) / sizeof(EEMAP_MCU[0]);
+	for (i=0; i<n; ++i) {
+		uint16_t status;
+		if ((status = create_ctab(EEMAP_PC, EEMAP_MCU[i])) == 0) {
+			LOG_INFO("->EEPROM im MCU-Modus, i=%u", i);
+			strncat(fn, MCU_EEPROM_FN, 30);
+			remove(PC_EEPROM_FN);
+			addrconv = 1;
+			break;
+		} else if (status != 2) {
+			LOG_INFO("=>EEPROM-Emulation fehlerhaft");
+			return 1;
+		}
+	}
+
+	if (i == n) {
 		LOG_INFO("->EEPROM im PC-Modus");
-		strcat(fn, PC_EEPROM_FN);
+		strncat(fn, PC_EEPROM_FN, 30);
 		remove(MCU_EEPROM_FN);
-	} else {
-		LOG_INFO("->EEPROM im MCU-Modus");
-		strcat(fn, MCU_EEPROM_FN);
-		remove(PC_EEPROM_FN);
-		addrconv = 1;
 	}
 
 	/* Sections ueberpruefen */
@@ -420,12 +448,12 @@ uint8_t init_eeprom_man(uint8_t init) {
 
 	/* eeprom.bin checken */
 	if (sflag || check_eeprom_file(EEP_PC, init, fn)) {
-		LOG_INFO("EEPROM-Emulation fehlerhaft");
+		LOG_INFO("=>EEPROM-Emulation fehlerhaft");
 		return 1;
 	} else {
 		LOG_INFO("->EEPROM Groesse: %d Bytes", EE_SIZE);
 		if (addrconv)LOG_INFO("->Belegter EEPROM Speicher: %d Bytes", esize);
-		LOG_INFO("EEPROM-Emulation einsatzbereit");
+		LOG_INFO("=>EEPROM-Emulation einsatzbereit");
 	}
 
 	if ((ee_file = fopen(fn, "r+b")) == NULL)

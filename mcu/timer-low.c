@@ -46,7 +46,7 @@ static uint8_t scheduler_ticks = 0;
 /*!
  Interrupt Handler fuer Timer/Counter 2(A)
  */
-#ifdef MCU_ATMEGA644X
+#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
 ISR(TIMER2_COMPA_vect) {
 #else
 ISR(SIG_OUTPUT_COMPARE2) {
@@ -63,7 +63,7 @@ ISR(SIG_OUTPUT_COMPARE2) {
 	SP = (unsigned)&os_kernel_stack[OS_KERNEL_STACKSIZE - 1];
 #endif	// OS_AVAILABLE
 
-	sei(); // Interrupts wieder an, z.B. UART-Kommunikation kann parallel zu RC5 und Encoderauswertung laufen
+	__builtin_avr_sei(); // Interrupts wieder an, z.B. UART-Kommunikation kann parallel zu RC5 und Encoderauswertung laufen
 
 	/* - FERNBEDIENUNG - */
 #ifdef IR_AVAILABLE
@@ -81,7 +81,7 @@ ISR(SIG_OUTPUT_COMPARE2) {
 	/* --- SCHEDULER --- */
 #ifdef OS_AVAILABLE
 	/* zurueck zum User-Stack */
-	cli();
+	__builtin_avr_cli();
 	SP = (unsigned)user_stack;
 
 	/* Scheduling-Frequenz betraegt ca. 1 kHz */
@@ -109,18 +109,18 @@ void timer_2_init(void) {
 
 	// aendert man den Prescaler muss man die Formel fuer OCR2 anpassen !!!
 	// Compare Register nur 8-Bit breit --> evtl. Teiler anpassen
-	#ifdef MCU_ATMEGA644X
-		TCCR2A = _BV(WGM21);	// CTC Mode
-		TCCR2B = _BV(CS22);		// Prescaler = CLK/64
-		OCR2A = ((XTAL/64/TIMER_2_CLOCK) - 1);	// Timer2A
-		TIMSK2  |= _BV(OCIE2A);	// TIMER2 Output Compare Match A Interrupt an
-	#else
-		// use CLK/64 prescale value, clear timer/counter on compare match
-		TCCR2 = _BV(WGM21) | _BV(CS22);
-		OCR2 = ((XTAL/64/TIMER_2_CLOCK) - 1);
-		TIMSK  |= _BV(OCIE2);	// enable Output Compare 0 overflow interrupt
-	#endif	// MCU_ATMEGA644X
+#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
+	TCCR2A = _BV(WGM21);	// CTC Mode
+	TCCR2B = _BV(CS22);		// Prescaler = CLK/64
+	OCR2A = ((XTAL/64/TIMER_2_CLOCK) - 1);	// Timer2A
+	TIMSK2  |= _BV(OCIE2A);	// TIMER2 Output Compare Match A Interrupt an
+#else
+	// use CLK/64 prescale value, clear timer/counter on compare match
+	TCCR2 = _BV(WGM21) | _BV(CS22);
+	OCR2 = ((XTAL/64/TIMER_2_CLOCK) - 1);
+	TIMSK  |= _BV(OCIE2);	// enable Output Compare 0 overflow interrupt
+#endif // MCU_ATMEGA644X || ATmega1284P
 
-	sei();                       // enable interrupts
+	__builtin_avr_sei(); // enable interrupts
 }
-#endif	// MCU
+#endif // MCU

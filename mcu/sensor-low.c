@@ -268,7 +268,7 @@ void bot_sens(void) {
 
 #ifdef BPS_AVAILABLE
 	int16_t tmp = (int16_t) ir_read(&bps_ir_data);
-	sensBPSF = tmp != 1023 ? tmp & 0xf : 1023; // untere 4 Bit
+	sensBPS = tmp != 1023 ? tmp & 0xf : 1023; // untere 4 Bit
 #endif // BPS_AVAILABLE
 
 	sensor_update(); // Weiterverarbeitung der rohen Sensordaten

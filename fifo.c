@@ -77,7 +77,7 @@ void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
 
 #ifdef MCU
 		uint8_t sreg = SREG;
-		cli();
+		__builtin_avr_cli();
 #else
 		pthread_mutex_lock(&f->signal.mutex);
 #endif
@@ -111,7 +111,7 @@ void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
 
 #ifdef MCU
 	uint8_t sreg = SREG;
-	cli();
+	__builtin_avr_cli();
 #else
 	pthread_mutex_lock(&f->signal.mutex);
 #endif
@@ -173,7 +173,7 @@ uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length) {
 
 #ifdef MCU
 	uint8_t sreg = SREG;
-	cli();
+	__builtin_avr_cli();
 #else
 	pthread_mutex_lock(&f->signal.mutex);
 #endif

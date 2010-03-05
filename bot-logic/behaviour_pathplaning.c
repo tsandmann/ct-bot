@@ -76,8 +76,8 @@
 /****** fuer geringaufloesende Map zur Pfadplanung ******/
 
 #ifdef MCU
-#ifndef MCU_ATMEGA644X
-#error "behaviour_pathplaning derzeit nur mit ATmega644(P) moeglich!"
+#if ! (defined MCU_ATMEGA644X || __AVR_ATmega1284P__)
+#error "behaviour_pathplaning derzeit nur mit ATmega644(P) oder ATmega1284P moeglich!"
 #endif
 #endif	// MCU
 #ifdef PC

@@ -35,6 +35,10 @@
 #include "os_thread.h"
 #include "log.h"
 
+#ifdef MCU
+#include <avr/builtins.h>
+#endif
+
 #ifndef LOG_AVAILABLE
 #undef DEBUG_FIFO
 #endif
@@ -105,7 +109,7 @@ static inline void _inline_fifo_put(fifo_t * f, const uint8_t data, uint8_t isr)
 	} else {
 #ifdef MCU
 		uint8_t sreg = SREG;
-		cli();
+		__builtin_avr_cli();
 #else
 		pthread_mutex_lock(&f->signal.mutex);
 #endif
@@ -159,7 +163,7 @@ static inline uint8_t _inline_fifo_get(fifo_t * f, uint8_t isr) {
 	} else {
 #ifdef MCU
 		uint8_t sreg = SREG;
-		cli();
+		__builtin_avr_cli();
 #else
 		pthread_mutex_lock(&f->signal.mutex);
 #endif

@@ -60,10 +60,10 @@ typedef union {
  * prueft, ob das EEPROM bereit ist
  * @return	1, falls EEPROM bereit, 0 sonst
  */
-#ifdef MCU_ATMEGA644X
+#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
 #define EEWE	EEPE
 #define EEMWE	EEMPE
-#endif	// MCU_ATMEGA644X
+#endif	// MCU_ATMEGA644X || ATmega1284P
 
 #define eeprom_is_ready() bit_is_clear(EECR, EEWE)
 

@@ -32,6 +32,10 @@
 #include "log.h"
 #include "display.h"
 
+#ifdef MCU
+#include <avr/builtins.h>
+#endif
+
 /*!
  * Makro zur Umrechnung von Ticks in ms
  * (ms / ticks evtl. nach uint32_t casten, fuer grosse Werte)
@@ -122,7 +126,7 @@ __attribute__((always_inline))
 #endif
 uint16_t timer_get_tickcount_16(void) {
 	uint8_t sreg = SREG;
-	cli();
+	__builtin_avr_cli();
 	uint16_t ticks = tickCount.u16;
 	SREG = sreg;
 	return ticks;
@@ -138,7 +142,7 @@ __attribute__((always_inline))
 #endif
 uint32_t timer_get_tickcount_32(void) {
 	uint8_t sreg = SREG;
-	cli();
+	__builtin_avr_cli();
 	uint32_t ticks = tickCount.u32;
 	SREG = sreg;
 	return ticks;
@@ -259,7 +263,7 @@ void timer_2_init(void);
 	int8_t start_reg = (int8_t) TCNT2; \
 	{ __code; } \
 	uint8_t sreg = SREG; \
-	cli(); \
+	__builtin_avr_cli(); \
 	int8_t end_reg = (int8_t) TCNT2; \
 	uint32_t end = TIMER_GET_TICKCOUNT_32; \
 	SREG = sreg; \

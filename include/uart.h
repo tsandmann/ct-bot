@@ -49,7 +49,7 @@
 #define UART_CALC_BAUDRATE(baudRate) ((uint32_t)(F_CPU) / ((uint32_t)(baudRate) * 16) - 1)
 #endif
 
-#ifdef MCU_ATMEGA644X
+#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
 /* Auf dem ATMega644(P) benutzen wir UART 0 */
 #define UBRRH	UBRR0H
 #define UBRRL	UBRR0L
@@ -67,7 +67,7 @@
 #define RXC		RXC0
 #define TXC		TXC0
 #define U2X		U2X0
-#endif	// MCU_ATMEGA644X
+#endif	// MCU_ATMEGA644X || ATmega1284P
 
 extern fifo_t uart_infifo;	/*!< FIFO fuer Empfangspuffer */
 extern fifo_t uart_outfifo;	/*!< Ausgangs-FIFO */

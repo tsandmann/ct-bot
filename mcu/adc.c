@@ -49,7 +49,7 @@ static adc_channel_t channels[8];
 void adc_init(uint8_t channel) {
 	DDRA = (uint8_t) (DDRA & ~channel); // Pin als input
 	PORTA = (uint8_t) (PORTA & ~channel); // Alle Pullups aus.
-#ifdef MCU_ATMEGA644X
+#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
 	DIDR0 = channel;	// Digital Input Disable
 #endif
 }
@@ -115,7 +115,7 @@ void adc_read_int(uint8_t channel, int16_t * p_sens) {
  * Interrupt-Handler fuer den ADC. Speichert das Ergebnis des aktuellen Channels und
  * schaltet in der Liste der auszuwertenden Sensoren eins weiter.
  */
-ISR(SIG_ADC) {
+ISR(ADC_vect) {
 	/* Daten speichern und Pointer im Puffer loeschen */
 	*channels[act_channel].value = (int16_t) ADC;
 	channels[act_channel].value = NULL;

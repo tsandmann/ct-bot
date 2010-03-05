@@ -185,6 +185,6 @@ void ram_display(void) {
 	display_cursor(4, 1);
 	size_t ram_size = (size_t) ((unsigned char *) (RAMEND + 1) - &__data_start);
 	size_t frei = ram_size - (data_size + bss_size + heap_size + stack_size);
-	display_printf("free/all:%4u/%4u B", frei, ram_size);
+	display_printf("free/all:%5u/%5u", frei, ram_size);
 }
 #endif	// RAM_DISPLAY_AVAILABLE

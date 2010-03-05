@@ -49,8 +49,8 @@ extern distSens_t sensDistDataR[];	/*!< kalibrierte Referenzdaten fuer rechten I
 extern uint8_t sensDistOffset;		/*!< Spannungs-Offset IR-Sensoren */
 
 
-extern int16_t sensLDRL;		/*!< Lichtsensor links [0-1023];  1023 = dunkel*/
-extern int16_t sensLDRR;		/*!< Lichtsensor rechts [0-1023];  1023 = dunkel*/
+extern int16_t sensLDRL;	/*!< Lichtsensor links [0-1023];  1023 = dunkel*/
+extern int16_t sensLDRR;	/*!< Lichtsensor rechts [0-1023];  1023 = dunkel*/
 
 extern int16_t sensBorderL;	/*!< Abgrundsensor links [0-1023];  1023 = dunkel*/
 extern int16_t sensBorderR;	/*!<  Abgrundsensor rechts [0-1023];  1023 = dunkel*/
@@ -69,19 +69,18 @@ extern uint8_t sensError;	/*!< Ueberwachung Motor oder Batteriefehler [0/1]  1= 
 extern uint16_t RC5_Code;	/*!< Letzter empfangener RC5-Code */
 
 #ifdef BPS_AVAILABLE
-extern int16_t sensBPSF;	/*!< Bot Positioning System vorn */
-extern int16_t sensBPSR;	/*!< Bot Positioning System hinten */
+extern int16_t sensBPS;	/*!< Bot Positioning System */
 #endif	// BPS_AVAILABLE
 
 
 #ifdef MOUSE_AVAILABLE
-extern int8_t sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-extern int8_t sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
-extern int16_t sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-extern int16_t sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
+extern int8_t sensMouseDX;	/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+extern int8_t sensMouseDY;	/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
+extern int16_t sensMouseX;	/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+extern int16_t sensMouseY;	/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
 #endif	// MOUSE_AVAILABLE
 
-extern float heading_enc;		/*!< Blickrichtung aus Encodern */
+extern float heading_enc;	/*!< Blickrichtung aus Encodern */
 extern float x_enc;			/*!< X-Koordinate aus Encodern [mm] */
 extern float y_enc;			/*!< Y-Koordinate aus Encodern [mm] */
 extern int16_t v_enc_left;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
@@ -102,7 +101,7 @@ extern int16_t v_mou_right;		/*!< ...aufgeteilt auf rechtes Rad */
 #endif	// MEASURE_MOUSE_AVAILABLE
 
 extern float heading;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
-extern int16_t heading_int;		 /*!< (int16_t) heading */
+extern int16_t heading_int;		/*!< (int16_t) heading */
 extern int16_t heading_10_int;	/*!< = (int16_t) (heading * 10.0f) */
 extern float heading_sin;		/*!< = sin(rad(heading)) */
 extern float heading_cos;		/*!< = cos(rad(heading)) */

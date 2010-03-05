@@ -500,8 +500,7 @@ int8_t command_evaluate(void) {
 			break;
 #ifdef BPS_AVAILABLE
 		case CMD_SENS_BPS:
-			sensBPSF = received_command.data_l;
-//			sensBPSR = received_command.data_r;
+			sensBPS = received_command.data_l;
 			break;
 #endif	// BPS_AVAILABLE
 		case CMD_DONE:
