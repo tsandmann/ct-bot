@@ -65,21 +65,21 @@ extern fifo_t uart_infifo;	/*!< FIFO fuer Empfangspuffer */
 extern fifo_t uart_outfifo;	/*!< Ausgangs-FIFO */
 
 /*!
- * @brief		Sende Kommando per UART im Little Endian
+ * Sende Kommando per UART im Little Endian
  * @param cmd	Zeiger auf das Kommando
  * @return 	Anzahl der gesendete Bytes
  */
 #define uart_send_cmd(cmd)  uart_write(cmd, sizeof(command_t));
 
 /*!
- * @brief			Sendet Daten per UART im Little Endian
+ * Sendet Daten per UART im Little Endian
  * @param data		Datenpuffer
  * @param length	Groesse des Datenpuffers in Bytes
  */
 void uart_write(void * data, uint8_t length);
 
 /*!
- * @brief			Liest Zeichen von der UART
+ * Liest Zeichen von der UART
  * @param data		Der Zeiger an den die gelesenen Zeichen kommen
  * @param length	Anzahl der zu lesenden Bytes
  * @return			Anzahl der tatsaechlich gelesenen Zeichen
@@ -87,20 +87,20 @@ void uart_write(void * data, uint8_t length);
 #define uart_read(data, length)	fifo_get_data(&uart_infifo, data, length);
 
 /*!
- * @brief	Initialisiert den UART und aktiviert Receiver und Transmitter sowie den Receive-Interrupt.
+ * Initialisiert den UART und aktiviert Receiver und Transmitter sowie den Receive-Interrupt.
  * Die Ein- und Ausgebe-FIFO werden initialisiert. Das globale Interrupt-Enable-Flag (I-Bit in SREG) wird nicht veraendert.
  */
 extern void uart_init(void);
 
 /*!
- * @brief	Wartet, bis die Uebertragung fertig ist.
+ * Wartet, bis die Uebertragung fertig ist.
  */
 static inline void uart_flush(void) {
 	while (UCSRB & (1 << UDRIE));
 }
 
 /*!
- * @brief	Prueft, ob Daten verfuegbar
+ * Prueft, ob Daten verfuegbar
  * @return	Anzahl der verfuegbaren Bytes
  */
 #define uart_data_available()	uart_infifo.count

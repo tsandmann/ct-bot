@@ -41,11 +41,11 @@ uint8_t outbuf[BUFSIZE_OUT];	/*!< Ausgangspuffer */
 fifo_t uart_outfifo;			/*!< Ausgangs-FIFO */
 
 /*!
- * @brief	Initialisiert den UART und aktiviert Receiver und Transmitter sowie die Interrupts.
+ * Initialisiert den UART und aktiviert Receiver und Transmitter sowie die Interrupts.
  * Die Ein- und Ausgebe-FIFO werden initialisiert. Das globale Interrupt-Enable-Flag (I-Bit in SREG) wird nicht veraendert.
  */
 void uart_init(void) {
-    /* FIFOs für Ein- und Ausgabe initialisieren */
+    /* FIFOs fuer Ein- und Ausgabe initialisieren */
     fifo_init(&uart_infifo, inbuf, BUFSIZE_IN);
     fifo_init(&uart_outfifo, outbuf, BUFSIZE_OUT);
 
@@ -82,7 +82,7 @@ void uart_init(void) {
 }
 
 /*!
- * @brief	Interrupthandler fuer eingehende Daten
+ * Interrupthandler fuer eingehende Daten
  * Empfangene Zeichen werden in die Eingabgs-FIFO gespeichert und warten dort.
  */
 #if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
@@ -94,7 +94,7 @@ void uart_init(void) {
 }
 
 /*!
- * @brief	Interrupthandler fuer ausgehende Daten
+ * Interrupthandler fuer ausgehende Daten
  * Ein Zeichen aus der Ausgabe-FIFO lesen und ausgeben.
  * Ist das Zeichen fertig ausgegeben, wird ein neuer SIG_UART_DATA-IRQ getriggert.
  * Ist die FIFO leer, deaktiviert die ISR ihren eigenen IRQ.
@@ -112,7 +112,7 @@ void uart_init(void) {
 }
 
 /*!
- * @brief			Sendet Daten per UART im Little Endian
+ * Sendet Daten per UART im Little Endian
  * @param data		Datenpuffer
  * @param length	Groesse des Datenpuffers in Bytes
  */
