@@ -87,6 +87,8 @@
 #define G_SPEED				0.5		/*!< Kopplung Encoder- und Maussensor fuer Geschwindigkeiten (0.0=nur Radencoder, 1.0=nur Maussensor) */
 #define G_POS				0.5		/*!< Kopplung Encoder- und Maussensor fuer Positionen und Winkel (0.0=nur Radencoder, 1.0=nur Maussensor) */
 
+#define BPS_NO_DATA			0xffff /*!< Wert des BPS-Sensors, falls keine Daten verfuegbar sind */
+
 /* System-Konstanten */
 #define F_CPU	16000000L	/*!< CPU-Frequenz [Hz] */
 //#define F_CPU	20000000L	/*!< CPU-Frequenz [Hz] */

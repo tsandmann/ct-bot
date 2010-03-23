@@ -29,11 +29,10 @@
 
 #include "ct-Bot.h"
 
+#ifdef UART_AVAILABLE
 #include <avr/io.h>
 #include "uart.h"
 #include "os_thread.h"
-
-#ifdef UART_AVAILABLE
 
 uint8_t inbuf[BUFSIZE_IN];	/*!< Eingangspuffer */
 fifo_t uart_infifo;			/*!< Eingangs-FIFO */
@@ -42,16 +41,20 @@ uint8_t outbuf[BUFSIZE_OUT];	/*!< Ausgangspuffer */
 fifo_t uart_outfifo;			/*!< Ausgangs-FIFO */
 
 /*!
- * @brief	Initialisiert den UART und aktiviert Receiver und Transmitter sowie den Receive-Interrupt.
+ * @brief	Initialisiert den UART und aktiviert Receiver und Transmitter sowie die Interrupts.
  * Die Ein- und Ausgebe-FIFO werden initialisiert. Das globale Interrupt-Enable-Flag (I-Bit in SREG) wird nicht veraendert.
  */
 void uart_init(void) {
-    uint8_t sreg = SREG;
-    UBRRH = (UART_CALC_BAUDRATE(BAUDRATE) >> 8) & 0xFF;
-    UBRRL = (UART_CALC_BAUDRATE(BAUDRATE) & 0xFF);
+    /* FIFOs für Ein- und Ausgabe initialisieren */
+    fifo_init(&uart_infifo, inbuf, BUFSIZE_IN);
+    fifo_init(&uart_outfifo, outbuf, BUFSIZE_OUT);
 
 	/* Interrupts kurz deaktivieren */
+    uint8_t sreg = SREG;
     __builtin_avr_cli();
+
+    UBRRH = UBRRH_VALUE;
+    UBRRL = UBRRL_VALUE;
 
 	/* UART Receiver und Transmitter anschalten, Receive-Interrupt aktivieren */
 	UCSRB = (1 << RXEN) | (1 << TXEN) | (1 << RXCIE);
@@ -69,17 +72,13 @@ void uart_init(void) {
 
     /* Ruecksetzen von Receive und Transmit Complete-Flags */
     UCSRA = (1 << RXC) | (1 << TXC)
-#ifdef UART_DOUBLESPEED
-    		| (1<<U2X)
+#if USE_2X
+    		| (1 << U2X)
 #endif
     		;
 
     /* Global Interrupt-Flag wiederherstellen */
     SREG = sreg;
-
-    /* FIFOs für Ein- und Ausgabe initialisieren */
-    fifo_init(&uart_infifo, inbuf, BUFSIZE_IN);
-    fifo_init(&uart_outfifo, outbuf, BUFSIZE_OUT);
 }
 
 /*!
@@ -89,7 +88,7 @@ void uart_init(void) {
 #if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
 	ISR(USART0_RX_vect) {
 #else
-	ISR(SIG_UART_RECV) {
+	ISR(USART_RXC_vect) {
 #endif // MCU_ATMEGA644X || ATmega1284P
 	_inline_fifo_put(&uart_infifo, UDR, True);
 }
@@ -103,7 +102,7 @@ void uart_init(void) {
 #if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
 	ISR(USART0_UDRE_vect) {
 #else
-	ISR(SIG_UART_DATA) {
+	ISR(USART_UDRE_vect) {
 #endif // MCU_ATMEGA644X || ATmega1284P
 	if (uart_outfifo.count > 0) {
 		UDR = _inline_fifo_get(&uart_outfifo, True);

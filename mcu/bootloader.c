@@ -52,10 +52,6 @@
 #ifdef MCU
 #ifdef BOOTLOADER_AVAILABLE
 
-/* UART Baudrate */
-#include "uart.h"	// Die Baudrate wird zentral fuer den Bot in uart.h festgelegt!!
-
-
 /* Device-Type:
    For AVRProg the BOOT-option is prefered
    which is the "correct" value for a bootloader.
@@ -94,6 +90,7 @@
 #define VERSION_HIGH '0'	/*!< Versionsnummer */
 #define VERSION_LOW  '9'	/*!< Versionsnummer */
 
+#include "uart.h" // UART Baudrate
 #include <stdint.h>
 #include <avr/io.h>
 #include <avr/boot.h>
@@ -369,10 +366,10 @@ void bootloader_main(void) {
 	uint8_t device = 0, val;
 
 	// Set baud rate
-	UART_BAUD_HIGH = (UART_CALC_BAUDRATE(BAUDRATE) >> 8) & 0xFF;
-	UART_BAUD_LOW = (UART_CALC_BAUDRATE(BAUDRATE) & 0xFF);
+	UART_BAUD_HIGH = UBRRH_VALUE;
+	UART_BAUD_LOW = UBRRL_VALUE;
 
-#ifdef UART_DOUBLESPEED
+#if USE_2X
 	UART_STATUS = (1 << UART_DOUBLE);
 #endif
 
@@ -382,7 +379,7 @@ void bootloader_main(void) {
 	uint16_t cnt = 0;
 
 	while (1) {
-		if (UART_STATUS & (1<<UART_RXREADY))
+		if (UART_STATUS & (1 << UART_RXREADY))
 			if (UART_DATA == START_WAIT_UARTCHAR)
 				break;
 
@@ -400,9 +397,9 @@ void bootloader_main(void) {
 		if (val == 'a') {
 			sendchar('Y');			// Autoincrement is quicker
 
-		//write address
-        	} else if (val == 'A') {
-			address = recvchar();		//read address 8 MSB
+		// write address
+        } else if (val == 'A') {
+			address = recvchar();		// read address 8 MSB
 			address = (address<<8) | recvchar();
 			sendchar('\r');
 

@@ -35,19 +35,19 @@
 
 static uint8_t state;		/*!< Status des Verhaltens */
 static uint8_t pos_update;	/*!< Update der Positionsdaten gewuenscht? */
+static uint8_t turn_mode;	/*!< 0: Auf der Stelle drehen, 1: Kreis um das linke Rad fahren */
 static uint8_t index;		/*!< Index fuer naechste Baken-Daten */
 static struct {
-	int16_t id;						/*!< Landmarken-ID (enhaelt die Position) */
+	uint16_t id;					/*!< Landmarken-ID */
 	float heading;					/*!< Bot-Ausrichtung, unter der die Landmarke gesehen wurde */
 } recognized_beacons[3];			/*!< Array aller erkannten Landmarken */
 static float appearance_heading;	/*!< Bot-Ausrichtung, bei der eine Landmarke zuerst gesehen wurde */
+static float last_beacon_heading;	/*!< Bot-Ausrichtung bei letzter Landmarke */
 static float last_heading;			/*!< Letzte Bot-Ausrichtung */
 static float turned;				/*!< Winkel, um den sich der Bot bisher gedreht hat */
 
 #define MAX_BEACONS (sizeof(recognized_beacons) / sizeof(recognized_beacons[0]))
-#define BEACON_GRID_SIZE		360	/*!< Raster-Breite fuer die Baken [mm] */
-
-#define NO_DATA					1023/*!< Wert der Sensoren, falls keine Daten verfuegbar sind */
+#define BEACON_GRID_SIZE		240	/*!< Raster-Breite fuer die Baken [mm] */
 
 #define SEARCH_APPEARANCE		0	/*!< Punkt suchen, ab dem das Baken-Signal zuerst erkannt wird */
 #define SEARCH_DISAPPEARANCE	1	/*!< Punkt suchen, ab dem das Baken-Signal nicht mehr erkannt wird */
@@ -59,11 +59,11 @@ static float turned;				/*!< Winkel, um den sich der Bot bisher gedreht hat */
  * @param id	ID der Landmarke. Darin ist ihre Position codiert
  * @return		Position der Landmarke in Weltkoordinaten
  */
-static position_t get_position_from_id(int16_t id) {
+static position_t get_position_from_id(uint16_t id) {
 	position_t pos = {0, 0};
 #ifdef PC
-	pos.x = ((id & 0x3e0) >> 5) * BEACON_GRID_SIZE;
-	pos.y = (id & 0x1f) * BEACON_GRID_SIZE;
+	pos.x = (id >> 8) * BEACON_GRID_SIZE + (BEACON_GRID_SIZE / 2);
+	pos.y = (id & 0xff) * BEACON_GRID_SIZE + (BEACON_GRID_SIZE / 2);
 #else // MCU
 /*! @todo Nur Test-Daten */
 	switch (id) {
@@ -93,7 +93,7 @@ static position_t get_position_from_id(int16_t id) {
  */
 void bot_scan_beacons_behaviour(Behaviour_t * data) {
 	static uint8_t disappeared_counter = 0;
-	static int16_t lastb_id = NO_DATA;
+	static uint16_t lastb_id = BPS_NO_DATA;
 	float diff = heading - last_heading;
 
 	switch (state) {
@@ -103,12 +103,12 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 			diff += 360.0f;
 		}
 		turned += diff;
-		if (turned > 400.0f) {
+		if (turned > 360.0f) {
 			/* Bot hat sich bereits um mehr als 360 Grad gedreht -> Ende */
 			state = END;
 		}
 
-		if (sensBPS != NO_DATA) {
+		if (sensBPS != BPS_NO_DATA) {
 			/* Landmarke erkannt */
 			LOG_DEBUG(" BPS-Sensor meldet Landmarke:");
 			LOG_DEBUG("  ID=0x%x", sensBPS);
@@ -132,7 +132,7 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 		break;
 
 	case SEARCH_DISAPPEARANCE:
-		if (sensBPS == NO_DATA) {
+		if (sensBPS == BPS_NO_DATA) {
 			disappeared_counter++;
 #ifdef PC
 			disappeared_counter = 3; // im Sim kommt das Signal nicht gepulst, sondern dauerhaft
@@ -143,14 +143,14 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 				if (diff < 0.0f) {
 					diff += 360.0f;
 				}
-				float beacon_heading = heading - diff / 2.0f;
-				if (beacon_heading < 0.0f) {
-					beacon_heading += 360.0f;
+				last_beacon_heading = heading - diff / 2.0f;
+				if (last_beacon_heading < 0.0f) {
+					last_beacon_heading += 360.0f;
 				}
 				LOG_DEBUG(" %u.Landmarke sichtbar bis %dG.", index + 1, heading_int);
-				recognized_beacons[index].heading = beacon_heading;
+				recognized_beacons[index].heading = last_beacon_heading;
 				index++;
-				LOG_DEBUG("  Nehme %dG. als Richtung d. Landmarke", (int16_t) beacon_heading);
+				LOG_DEBUG("  Nehme %dG. als Richtung d. Landmarke", (int16_t) last_beacon_heading);
 				if (index == MAX_BEACONS) {
 					/* maximale Anzahl an Landmarken erkannt */
 					state = CALC_POSITION;
@@ -185,7 +185,7 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 
 /*! @todo vielleicht laesst sich der Tausch-Spass hier noch optimieren */
 		if (angle_am > 180.0f) {
-			int16_t tmp_id = recognized_beacons[2].id;
+			uint16_t tmp_id = recognized_beacons[2].id;
 			float tmp_head = recognized_beacons[2].heading;
 			recognized_beacons[2] = recognized_beacons[1];
 			recognized_beacons[1] = recognized_beacons[0];
@@ -200,7 +200,7 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 				angle_mb += 360.0f;
 			}
 		} else if (angle_mb > 180.0f) {
-			int16_t tmp_id = recognized_beacons[2].id;
+			uint16_t tmp_id = recognized_beacons[2].id;
 			float tmp_head = recognized_beacons[2].heading;
 			recognized_beacons[2] = recognized_beacons[0];
 			recognized_beacons[0] = recognized_beacons[1];
@@ -229,11 +229,18 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 			head += (2.0f * M_PI);
 		}
 		head = fmodf(head + M_PI_2, 2.0f * M_PI); // Sensor zeigt nach -90 Grad
+		if (turn_mode == 1) {
+			/* Botmittelpunkt berechnen aus Position des linken Rades */
+			const float dX = sinf(head) * (WHEEL_TO_WHEEL_DIAMETER / 2.0f);
+			const float dY = cosf(head) * (WHEEL_TO_WHEEL_DIAMETER / 2.0f);
+			n.x += iroundf(dX);
+			n.y += iroundf(dY);
+		}
 		head = deg(head);
 		LOG_DEBUG(" > Berechnete Position: (%d|%d)", n.x, n.y);
 		LOG_DEBUG(" >  Heading: %d", (int16_t) head);
 		LOG_DEBUG(" > Bisherige Position: (%d|%d)", x_pos, y_pos);
-		LOG_DEBUG(" >  Heading: %d", heading_int);
+		LOG_DEBUG(" >  Heading: %d", (int16_t) last_beacon_heading);
 
 		if (pos_update != 1) {
 			/* kein Positionsupdate gewuenscht */
@@ -246,15 +253,16 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 			LOG_DEBUG(" Aktualisiere Positionsdaten");
 			x_pos = n.x;
 			y_pos = n.y;
-/*! @todo heading genauer berechnen */
-			heading = head;
+
+			float head_diff = head - last_beacon_heading;
+			heading = fmodf(heading + head_diff, 360.0f);
 			x_enc = n.x;
 			y_enc = n.y;
-			heading_enc = head;
+			heading_enc = fmodf(heading_enc + head_diff, 360.0f);
 #ifdef MEASURE_MOUSE_AVAILABLE
 			x_mou = n.x;
 			y_mou = n.y;
-			heading_mou = head;
+			heading_mou = fmodf(heading_mou + head_diff, 360.0f);
 #endif	// MEASURE_MOUSE_AVAILABLE
 		}
 
@@ -269,19 +277,30 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 		return;
 	}
 	/* Bot drehen */
-	speedWishLeft = -BOT_SPEED_MIN;
-//	speedWishLeft  = BOT_SPEED_STOP;
 	speedWishRight = BOT_SPEED_MIN;
+	if (turn_mode == 0) {
+		speedWishLeft = -BOT_SPEED_MIN;
+	} else if (turn_mode == 1) {
+		speedWishLeft  = BOT_SPEED_STOP;
+	}
 }
 
 /*!
  * Verhalten, das Landmarken im Umkreis des Bots sucht und die Bot-Position
  * aktualisiert, falls drei oder mehr Landmarken gefunden wurden.
- * @param *caller	Der Verhaltensdatensatz des Aufrufers
+ * @param *caller Der Verhaltensdatensatz des Aufrufers
  * @param position_update Sollen die Positionsdaten aktualisiert werden? 1: ja
+ * @param mode 0: Auf der Stelle drehen, 1: Kreis um das linke Rad fahren
  */
-void bot_scan_beacons(Behaviour_t * caller, uint8_t position_update) {
+void bot_scan_beacons(Behaviour_t * caller, uint8_t position_update, uint8_t mode) {
 	pos_update = position_update;
+	turn_mode = mode;
+	if (mode > 1) {
+		if (caller != NULL) {
+			caller->subResult = SUBFAIL;
+		}
+		return;
+	}
 	switch_to_behaviour(caller, bot_scan_beacons_behaviour, OVERRIDE);
 	state = SEARCH_APPEARANCE;
 	index = 0;
@@ -290,7 +309,7 @@ void bot_scan_beacons(Behaviour_t * caller, uint8_t position_update) {
 	int8_t i;
 	/* Landmarken-Speicher leeren */
 	for (i=MAX_BEACONS-1; i>=0; i--) {
-		recognized_beacons[i].id = NO_DATA;
+		recognized_beacons[i].id = BPS_NO_DATA;
 	}
 	LOG_DEBUG("Suche 1. Landmarke...");
 }

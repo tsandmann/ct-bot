@@ -33,21 +33,16 @@
 #ifdef DISPLAY_AVAILABLE
 extern int8_t max_screens;	/*!< Anzahl der zurzeit registrierten Screens */
 extern void (* screen_functions[DISPLAY_SCREENS])(void);	/*!< hier liegen die Zeiger auf die Display-Funktionen */
-extern uint8_t EEPROM resetsEEPROM;	/*!< Reset-Counter-Wert im EEPROM */
 
 /*!
- * @brief 			Display-Screen Anzeige
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			12.02.2007
+ * Display-Screen Anzeige
  * @param screen 	Nummer des Screens, der angezeigt werden soll
  * Zeigt einen Screen an und fuehrt die RC5-Kommandoauswertung aus, falls noch nicht geschehen.
  */
 void gui_display(uint8_t screen);
 
 /*!
- * @brief 	Display-Screen Initialisierung
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	12.02.2007
+ * Display-Screen Initialisierung
  * Traegt die Anzeige-Funktionen in das Array ein.
  */
 void gui_init(void);
@@ -63,30 +58,29 @@ void gui_init(void);
  * @param col		Spalte der Cursorposition fuer die Anzeige der Eingabe
  */
 void gui_keypad_request(void (* callback)(char * result), uint8_t row, uint8_t col);
-#endif	// KEYPAD_AVAILABLE
+#endif // KEYPAD_AVAILABLE
 
 #ifdef MISC_DISPLAY_AVAILABLE
-	/*!
-	 * @brief	Zeigt ein paar Infos an, die man nicht naeher zuordnen kann
-	 */
-	void misc_display(void);
-#endif
+/*!
+ * Zeigt ein paar Infos an, die man nicht naeher zuordnen kann
+ */
+void misc_display(void);
+#endif // MISC_DISPLAY_AVAILABLE
 
 #ifdef RESET_INFO_DISPLAY_AVAILABLE
-	extern uint8_t reset_flag;	 /*!< Nimmt den Status von MCU(C)SR bevor dieses Register auf 0x00 gesetzt wird */
-	/*!
-	 * @brief	Zeigt Informationen ueber den Reset an
-	 */
-	void reset_info_display(void);
-#endif
+/*!
+ * Zeigt Informationen ueber den Reset an
+ */
+void reset_info_display(void);
+#endif // RESET_INFO_DISPLAY_AVAILABLE
 
 #ifdef RAM_DISPLAY_AVAILABLE
-	/*!
-	 * @brief	Zeigt die aktuelle Speicherbelegung an.
-	 * 			Achtung, die Stackgroesse bezieht sich auf den Stack *dieser* Funktion!
-	 * 			Die Heapgroesse stimmt nur, wenn es dort keine Luecken gibt (z.b. durch free())
-	 */
-	void ram_display(void);
-#endif
-#endif	// DISDISPLAY_AVAILABLE
-#endif	// gui_H_
+/*!
+ * Zeigt die aktuelle Speicherbelegung an.
+ * Achtung, die Stackgroesse bezieht sich auf den Stack *dieser* Funktion!
+ * Die Heapgroesse stimmt nur, wenn es dort keine Luecken gibt (z.b. durch free())
+ */
+void ram_display(void);
+#endif // RAM_DISPLAY_AVAILABLE
+#endif // DISPLAY_AVAILABLE
+#endif // gui_H_

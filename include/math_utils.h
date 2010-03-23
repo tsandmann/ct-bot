@@ -38,10 +38,10 @@
  * @return	roundf(x)
  */
 static inline int16_t iroundf(float x) {
-	if (x >= 0) {
-		return (int16_t) (x + 0.5);
+	if (x >= 0.0f) {
+		return (int16_t) (x + 0.5f);
 	}
-	return (int16_t) (x - 0.5);
+	return (int16_t) (x - 0.5f);
 }
 
 /*!

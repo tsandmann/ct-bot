@@ -47,6 +47,7 @@
 
 #include "log.h"
 #include "gui.h"
+#include "init.h"
 
 //#define DEBUG_EEPROM		// Schalter um LOG-Ausgaben anzumachen
 

@@ -67,8 +67,8 @@ static inline void bot_2_sim_inform(void) {
  */
 int8_t receive_until_Frame(uint8_t frame);
 
-#ifdef WIN32
 #include <sys/time.h>
+#ifdef WIN32
 /*!
  * Hilfsfunktion, die es nur auf dem PC gibt
  */

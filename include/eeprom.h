@@ -78,7 +78,7 @@ typedef union {
  * @return			Das zu lesende Byte
  */
 static inline uint8_t ctbot_eeprom_read_byte(const uint8_t * address) {
-    do {} while (!eeprom_is_ready ());
+	eeprom_busy_wait();
 #if E2END <= 0xFF
     EEARL = (uint8_t)address;
 #else

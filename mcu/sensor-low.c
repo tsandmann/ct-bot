@@ -64,7 +64,7 @@
 // Sonstige Sensoren
 #define SENS_DOOR_PINR 		PIND	/*!< Port an dem der Klappensensor hängt */
 #define SENS_DOOR_DDR 		DDRD	/*!< DDR für den Klappensensor */
-#define SENS_DOOR			6		/*!< Pin  an dem der Klappensensor hängt */
+#define SENS_DOOR			6		/*!< Pin an dem der Klappensensor hängt */
 
 #ifdef SPI_AVAILABLE
 #define SENS_ENCL_PINR		PINC	/*!< Port an dem der linke Encoder hängt */
@@ -115,22 +115,22 @@ uint32_t slog_sector = 0;				/*!< Sektor auf der MMC fuer die Daten */
  */
 void bot_sens_init(void) {
 #ifdef BPS_AVAILABLE
-	adc_init(0xcf); // ADC-Ports aktivieren
+	adc_init(0xff & ~_BV(BPS_PIN)); // ADC-Ports (ausser BPS-Pin) aktivieren
 #else
 	adc_init(0xff); // Alle ADC-Ports aktivieren
-#endif	// BPS_AVAILABLE
+#endif // BPS_AVAILABLE
 
 	ENA_set(ENA_RADLED | ENA_ABSTAND); // Alle Sensoren bis auf Radencoder & Abstandssensoren deaktivieren
 
-	SENS_DOOR_DDR = (uint8_t) (SENS_DOOR_DDR & ~(1<<SENS_DOOR)); // Input
+	SENS_DOOR_DDR = (uint8_t) (SENS_DOOR_DDR & ~_BV(SENS_DOOR)); // Input
 
-	SENS_ERROR_DDR = (uint8_t) (SENS_ERROR_DDR & ~(1<<SENS_ERROR)); // Input
+	SENS_ERROR_DDR = (uint8_t) (SENS_ERROR_DDR & ~_BV(SENS_ERROR)); // Input
 
-	SENS_TRANS_DDR = (uint8_t) (SENS_TRANS_DDR & ~(1<<SENS_TRANS)); // Input
-	SENS_TRANS_PORT	|= (1<<SENS_TRANS); // Pullup an
+	SENS_TRANS_DDR = (uint8_t) (SENS_TRANS_DDR & ~_BV(SENS_TRANS)); // Input
+	SENS_TRANS_PORT	|= (1 << SENS_TRANS); // Pullup an
 
-	SENS_ENCL_DDR = (uint8_t) (SENS_ENCL_DDR & ~(1<<SENS_ENCL)); // Input
-	SENS_ENCR_DDR = (uint8_t) (SENS_ENCR_DDR & ~(1<<SENS_ENCR)); // Input
+	SENS_ENCL_DDR = (uint8_t) (SENS_ENCL_DDR & ~_BV(SENS_ENCL)); // Input
+	SENS_ENCR_DDR = (uint8_t) (SENS_ENCR_DDR & ~_BV(SENS_ENCR)); // Input
 
 	/* Reset Encoderstaende */
 	sensEncL = 0;
@@ -171,8 +171,8 @@ void bot_sens(void) {
 	static uint8_t measure_count = 0;
 	static int16_t distLeft[4];
 	static int16_t distRight[4];
-#endif	// DISTSENS_AVERAGE
-	static uint16_t old_dist;		// Zeit der letzten Messung der Distanzsensoren
+#endif // DISTSENS_AVERAGE
+	static uint16_t old_dist; // Zeit der letzten Messung der Distanzsensoren
 
 	/* Auswertung der Distanzsensoren alle 50 ms */
 	uint16_t dist_ticks = TIMER_GET_TICKCOUNT_16;
@@ -184,15 +184,15 @@ void bot_sens(void) {
 #else
 		pDistL = &sensDistL;
 		pDistR = &sensDistR;
-#endif	// DISTSENS_AVERAGE
+#endif // DISTSENS_AVERAGE
 		adc_read_int(SENS_ABST_L, pDistL);
 #ifdef BEHAVIOUR_SERVO_AVAILABLE
-		if ((servo_active & SERVO1) == 0)	// Wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensor nicht
+		if ((servo_active & SERVO1) == 0) // wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensor nicht
 #endif
 			adc_read_int(SENS_ABST_R, pDistR);
 #ifdef DISTSENS_AVERAGE
 		measure_count++;
-		measure_count &= 0x3;	// Z/4Z
+		measure_count &= 0x3; // Z/4Z
 #endif
 	}
 
@@ -202,8 +202,8 @@ void bot_sens(void) {
 
 #ifndef BPS_AVAILABLE
 	adc_read_int(SENS_LDR_L, &sensLDRL);
+#endif
 	adc_read_int(SENS_LDR_R, &sensLDRR);
-#endif	// BPS_AVAILABLE
 
 	adc_read_int(SENS_KANTE_L, &sensBorderL);
 	adc_read_int(SENS_KANTE_R, &sensBorderR);
@@ -267,8 +267,8 @@ void bot_sens(void) {
 #endif // SPEED_LOG_AVAILABLE
 
 #ifdef BPS_AVAILABLE
-	int16_t tmp = (int16_t) ir_read(&bps_ir_data);
-	sensBPS = tmp != 1023 ? tmp & 0xf : 1023; // untere 4 Bit
+	uint16_t tmp = ir_read(&bps_ir_data);
+	sensBPS = tmp != BPS_NO_DATA ? tmp & 0xf : BPS_NO_DATA; // untere 4 Bit
 #endif // BPS_AVAILABLE
 
 	sensor_update(); // Weiterverarbeitung der rohen Sensordaten
@@ -309,14 +309,14 @@ void bot_sens(void) {
 	const float h = rad(heading);
 	heading_sin = sinf(h);
 	heading_cos = cosf(h);
-#endif
+#endif // CMPS03_AVAILABLE
 
 #ifdef SRF10_AVAILABLE
 	static uint16_t srf_time = 0;
 	if (timer_ms_passed_16(&srf_time, 250)) {
 		sensSRF10 = srf10_get_measure();	/*!< Messung Ultraschallsensor */
 	}
-#endif	// SRF10_AVAILABLE
+#endif // SRF10_AVAILABLE
 
 	/* alle anderen analogen Sensoren */
 	while (adc_get_active_channel() != 255) {}	// restliche Zeit verbrauchen
@@ -335,7 +335,7 @@ void bot_sens(void) {
 	//else LED_off(LED_LINKS);
 	//if (voltR > 80) LED_on(LED_RECHTS);
 	//else LED_off(LED_RECHTS);
-#endif	// LED_AVAILABLE
+#endif // LED_AVAILABLE
 }
 
 /*!
@@ -432,4 +432,4 @@ void bot_encoder_isr(void) {
 		}
 	}
 }
-#endif	// MCU
+#endif // MCU

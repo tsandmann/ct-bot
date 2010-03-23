@@ -34,12 +34,12 @@
 #include "rc5-codes.h"
 #include "command.h"
 #include "gui.h"
+#include "init.h"
 #include "eeprom.h"
 #include <stdlib.h>
 
-uint8_t EEPROM resetsEEPROM = 0;	/*!< Reset-Counter-Wert im EEPROM */
-
 #ifdef MISC_DISPLAY_AVAILABLE
+#ifdef KEYPAD_AVAILABLE
 static uint8_t new_address = 0;	/*!< True, falls neue Adresse eingegeben wird */
 
 /*!
@@ -55,9 +55,10 @@ static void change_bot_addr_callback(char * data) {
 		set_bot_address(addr);
 	}
 }
+#endif // KEYPAD_AVAILABLE
 
 /*!
- * @brief	Zeigt ein paar Infos an, die man nicht naeher zuordnen kann
+ * Zeigt ein paar Infos an, die man nicht naeher zuordnen kann
  */
 void misc_display(void) {
 #ifdef TIME_AVAILABLE
@@ -78,14 +79,15 @@ void misc_display(void) {
 		new_address = 1;
 		RC5_Code = 0;
 	}
-#endif	// KEYPAD_AVAILABLE
-	if (new_address == 0) {
+	if (new_address == 0)
+#endif // KEYPAD_AVAILABLE
+	{
 #ifdef PC
 		display_cursor(1, 10);
 #endif
 		display_printf("0x%x", get_bot_address());
 	}
-#endif	// TIME_AVAILABLE
+#endif // TIME_AVAILABLE
 
 #ifdef BEHAVIOUR_AVAILABLE
 	display_cursor(2, 1);
@@ -103,28 +105,26 @@ void misc_display(void) {
 	display_cursor(4, 1);
 	display_printf("Speed= %04d", (int16_t) v_center);
 }
-#endif	// MISC_DISPLAY_AVAILABLE
+#endif // MISC_DISPLAY_AVAILABLE
 
 #ifdef RESET_INFO_DISPLAY_AVAILABLE
-uint8_t reset_flag;	/*!< Nimmt den Status von MCU(C)SR bevor dieses Register auf 0x00 gesetzt wird */
-
 /*!
- * @brief Zeigt Informationen ueber Resets an
+ * Zeigt Informationen ueber Resets an
  */
 void reset_info_display(void) {
 	display_cursor(1, 1);
 	display_printf("#Resets:%3u | (C)SR:", ctbot_eeprom_read_byte(&resetsEEPROM));
 
 	display_cursor(2, 1);
-	display_printf("PORF :%d  WDRF :%d", binary(reset_flag, 0), binary(reset_flag, 3));
+	display_printf("PORF :%d  WDRF :%d", binary(mcucsr, 0), binary(mcucsr, 3));
 
 	display_cursor(3, 1);
-	display_printf("EXTRF:%d  JTRF :%d", binary(reset_flag, 1), binary(reset_flag, 4));
+	display_printf("EXTRF:%d  JTRF :%d", binary(mcucsr, 1), binary(mcucsr, 4));
 
 	display_cursor(4, 1);
-	display_printf("BORF :%d", binary(reset_flag, 2));
+	display_printf("BORF :%d #SResets:%3u", binary(mcucsr, 2), soft_resets);
 }
-#endif	// RESET_INFO_DISPLAY_AVAILABLE
+#endif // RESET_INFO_DISPLAY_AVAILABLE
 
 #ifdef RAM_DISPLAY_AVAILABLE
 /*
@@ -143,9 +143,9 @@ void reset_info_display(void) {
  */
 
 /*!
- * @brief	Zeigt die aktuelle Speicherbelegung an.
- * 			Achtung, die Stackgroesse bezieht sich auf den Stack *dieser* Funktion!
- * 			Die Heapgroesse stimmt nur, wenn es dort keine Luecken gibt (z.b. durch free())
+ * Zeigt die aktuelle Speicherbelegung an.
+ * Achtung, die Stackgroesse bezieht sich auf den Stack *dieser* Funktion!
+ * Die Heapgroesse stimmt nur, wenn es dort keine Luecken gibt (z.b. durch free())
  */
 void ram_display(void) {
 	unsigned char * sp = (unsigned char *) SP;
@@ -167,7 +167,7 @@ void ram_display(void) {
 		LOG_DEBUG("RAMEND = 0x%04x", RAMEND);
 		RC5_Code = 0;
 	}
-#endif	// LOG_AVAILABLE
+#endif // LOG_AVAILABLE
 	size_t data_size = (size_t) (&__bss_start - &__data_start);
 	size_t bss_size = (size_t) (&__heap_start - &__bss_start);
 	display_cursor(1, 1);
@@ -187,4 +187,4 @@ void ram_display(void) {
 	size_t frei = ram_size - (data_size + bss_size + heap_size + stack_size);
 	display_printf("free/all:%5u/%5u", frei, ram_size);
 }
-#endif	// RAM_DISPLAY_AVAILABLE
+#endif // RAM_DISPLAY_AVAILABLE

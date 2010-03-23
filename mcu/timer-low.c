@@ -49,7 +49,7 @@ static uint8_t scheduler_ticks = 0;
 #if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
 ISR(TIMER2_COMPA_vect) {
 #else
-ISR(SIG_OUTPUT_COMPARE2) {
+ISR(TIMER2_COMP_vect) {
 #endif
 	/* ----- TIMER ----- */
 	uint32_t ticks = tickCount.u32; // TickCounter [176 us] erhoehen

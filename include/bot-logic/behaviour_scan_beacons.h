@@ -41,10 +41,11 @@ void bot_scan_beacons_behaviour(Behaviour_t * data);
 /*!
  * Verhalten, das Landmarken im Umkreis des Bots sucht und die Bot-Position
  * aktualisiert, falls drei oder mehr Landmarken gefunden wurden.
- * @param *caller	Der Verhaltensdatensatz des Aufrufers
+ * @param *caller Der Verhaltensdatensatz des Aufrufers
  * @param position_update Sollen die Positionsdaten aktualisiert werden? 1: ja
+ * @param mode 0: Auf der Stelle drehen, 1: Kreis um das linke Rad fahren
  */
-void bot_scan_beacons(Behaviour_t * caller, uint8_t position_update);
+void bot_scan_beacons(Behaviour_t * caller, uint8_t position_update, uint8_t mode);
 
 #endif	// BEHAVIOUR_SCAN_BEACONS_AVAILABLE
 #endif	/* BEHAVIOUR_SCAN_BEACONS_H_ */

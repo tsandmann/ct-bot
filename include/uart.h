@@ -33,21 +33,13 @@
 #include <avr/io.h>
 #include "fifo.h"
 
-//#define BAUDRATE	57600	/*!< Baudrate  57600 fuer UART-Kommunikation */
-#define BAUDRATE	115200	/*!< Baudrate 115200 fuer UART-Kommunikation */
+//#define BAUD	57600	/*!< Baudrate  57600 fuer UART-Kommunikation */
+#define BAUD	115200	/*!< Baudrate 115200 fuer UART-Kommunikation */
 
-#if BAUDRATE == 115200
-#define UART_DOUBLESPEED	// 2X-Mode, sonst Takt zu ungenau
-#endif
+#include <util/setbaud.h>
 
 #define BUFSIZE_IN	0x30
 #define BUFSIZE_OUT	0x90
-
-#ifdef UART_DOUBLESPEED
-#define UART_CALC_BAUDRATE(baudRate) ((uint32_t)(F_CPU) / ((uint32_t)(baudRate) * 8) - 1)
-#else
-#define UART_CALC_BAUDRATE(baudRate) ((uint32_t)(F_CPU) / ((uint32_t)(baudRate) * 16) - 1)
-#endif
 
 #if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
 /* Auf dem ATMega644(P) benutzen wir UART 0 */

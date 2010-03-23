@@ -51,7 +51,7 @@ ir_data_t rc5_ir_data = {
 #endif
 #ifdef BPS_AVAILABLE
 ir_data_t bps_ir_data = {
-	0, 0, 0, 0, 0, 1023
+	0, 0, 0, 0, 0, BPS_NO_DATA
 };
 #endif
 

@@ -75,8 +75,8 @@ uint8_t sensDoor = 0;	/*!< Sensor Ueberwachung Klappe */
 uint8_t sensError = 0;	/*!< Ueberwachung Motor oder Batteriefehler */
 
 #ifdef BPS_AVAILABLE
-int16_t sensBPS = 1023; /*!< Bot Positioning System vorn */
-#endif	// BPS_AVAILABLE
+uint16_t sensBPS = BPS_NO_DATA; /*!< Bot Positioning System */
+#endif // BPS_AVAILABLE
 
 #ifdef MOUSE_AVAILABLE
 int8_t sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
@@ -683,9 +683,9 @@ void odometric_display(void) {
 	display_printf("v_l: %3d v_r: %3d  ", v_left, v_right);
 #ifdef BPS_AVAILABLE
 	display_cursor(4, 1);
-	static int16_t BPS_old = 1023;
+	static uint16_t BPS_old = BPS_NO_DATA;
 	static uint8_t count = 0;
-	if (sensBPS != 1023 || count > 10) {
+	if (sensBPS != BPS_NO_DATA || count > 10) {
 		BPS_old = sensBPS;
 		count = 0;
 	}

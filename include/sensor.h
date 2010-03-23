@@ -69,7 +69,7 @@ extern uint8_t sensError;	/*!< Ueberwachung Motor oder Batteriefehler [0/1]  1= 
 extern uint16_t RC5_Code;	/*!< Letzter empfangener RC5-Code */
 
 #ifdef BPS_AVAILABLE
-extern int16_t sensBPS;	/*!< Bot Positioning System */
+extern uint16_t sensBPS;	/*!< Bot Positioning System */
 #endif	// BPS_AVAILABLE
 
 

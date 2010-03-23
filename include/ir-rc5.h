@@ -30,14 +30,14 @@
 #include "global.h"
 
 #ifdef MCU
-#define RC5_PORT	PORTB /*!< Port B fuer RC5-Fernbedienung */
-#define BPS_PORT	PORTA /*!< Port A fuer BPS-Sensor */
-#define RC5_DDR		DDRB /*!< DDR fuer RC5-Fernbedienung */
-#define BPS_DDR		DDRA /*!< DDR fuer BPS-Sensor */
-#define RC5_PINR	PINB /*!< Port B input fuer RC5-Fernbedienung */
-#define BPS_PINR	PINA /*!< Port A input fuer BPS-Sensor */
-#define RC5_PIN		1 /*!< Pin 1 fuer RC5-Fernbedienung */
-#define BPS_PIN		PA4 /*!< Pin 4 fuer BPS-Sensor */
+#define RC5_PORT	PORTB	/*!< Port B fuer RC5-Fernbedienung */
+#define BPS_PORT	PORTA	/*!< Port A fuer BPS-Sensor */
+#define RC5_DDR		DDRB	/*!< DDR fuer RC5-Fernbedienung */
+#define BPS_DDR		DDRA	/*!< DDR fuer BPS-Sensor */
+#define RC5_PINR	PINB	/*!< Port B input fuer RC5-Fernbedienung */
+#define BPS_PINR	PINA	/*!< Port A input fuer BPS-Sensor */
+#define RC5_PIN		1		/*!< Pin 1 fuer RC5-Fernbedienung */
+#define BPS_PIN		PA4		/*!< Pin 4 fuer BPS-Sensor */
 #else
 #define RC5_PORT	(*(volatile uint8_t *)NULL) /*!< Port B fuer RC5-Fernbedienung */
 #define BPS_PORT	(*(volatile uint8_t *)NULL) /*!< Port A fuer BPS-Sensor */

@@ -199,7 +199,7 @@ const call_t calls[] PROGMEM = {
 		PREPARE_REMOTE_CALL(bot_get_utilization, 1, "uint8 beh", 1),
 	#endif
 	#ifdef BEHAVIOUR_SCAN_BEACONS_AVAILABLE
-		PREPARE_REMOTE_CALL(bot_scan_beacons, 1, "uint8 pos_upd", 1),
+		PREPARE_REMOTE_CALL(bot_scan_beacons, 2, "uint8 pos_upd, uint8 mode", 1, 1),
 	#endif
 	#ifdef BEHAVIOUR_TEST_ENCODER_AVAILABLE
 		PREPARE_REMOTE_CALL(bot_test_encoder, 0, "", 0),

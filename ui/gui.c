@@ -69,7 +69,7 @@ void (* screen_functions[DISPLAY_SCREENS])(void) = {NULL};	/*!< hier liegen die 
 static uint32_t keypad_last_pressed = 0;	/*!< Zeitpunkt der letzten Tasteneingabe */
 static uint8_t keypad_row = 0;				/*!< Zeile fuer Ausgabe der Eingabe */
 static uint8_t keypad_col = 0;				/*!< Spalte fuer Ausgabe der Eingabe */
-static uint8_t keypad_mode = 0;					/*!< Modus, 0: alphanumerisch, 1: numerisch */
+static uint8_t keypad_mode = 0;				/*!< Modus, 0: alphanumerisch, 1: numerisch */
 static char keypad_buffer[21];				/*!< Eingabepuffer */
 static char * keypad_result = NULL;			/*!< aktuelle Position im Puffer */
 static void (* keypad_callback)(char * result) = NULL;	/*!< Callback-Funktion nach Abschluss */
@@ -163,7 +163,7 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
 		while ((data = (char) ctbot_eeprom_read_byte(&gui_keypad_table[key][i])) == 0) {
 			i--;
 		}
-		rc5 = 0;	// naechsten Tastendruck als neue Taste registrieren
+		rc5 = 0; // naechsten Tastendruck als neue Taste registrieren
 	}
 
 	last_rc5 = rc5;
@@ -172,137 +172,131 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
 //	LOG_DEBUG("data=%c", data);
 	return 0;
 }
-#endif	// KEYPAD_AVAILABLE
+#endif // KEYPAD_AVAILABLE
 
 /*!
- * @brief 		Display-Screen Registrierung
- * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		12.02.2007
+ * Display-Screen Registrierung
  * @param fkt 	Zeiger auf eine Funktion, die den Display-Screen anzeigt
  * Legt einen neuen Display-Screen an und haengt eine Anzeigefunktion ein.
  * Diese Funktion kann auch RC5-Kommandos behandeln. Wurde eine Taste ausgewertet, setzt man RC5_Code auf 0.
  */
 static int8_t register_screen(void (* fkt)(void)) {
-	if (max_screens == DISPLAY_SCREENS) return -1;	// sorry, aber fuer dich ist kein Platz mehr da :(
-	int8_t screen_nr = max_screens++;		// neuen Screen hinten anfuegen
-	screen_functions[screen_nr] = fkt;	// Pointer im Array speichern
+	if (max_screens == DISPLAY_SCREENS) return -1; // sorry, aber fuer dich ist kein Platz mehr da :(
+	int8_t screen_nr = max_screens++; // neuen Screen hinten anfuegen
+	screen_functions[screen_nr] = fkt; // Pointer im Array speichern
 	return screen_nr;
 }
 
 /*!
- * @brief 			Display-Screen Anzeige
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			12.02.2007
+ * Display-Screen Anzeige
  * @param screen 	Nummer des Screens, der angezeigt werden soll
  * Zeigt einen Screen an und fuehrt die RC5-Kommandoauswertung aus, falls noch nicht geschehen.
  */
 void gui_display(uint8_t screen) {
-	#ifdef KEYPAD_AVAILABLE
-		/* Keypad-Eingabe checken */
-		RC5_Code = gui_keypad_check(RC5_Code);
-	#endif
+#ifdef KEYPAD_AVAILABLE
+	/* Keypad-Eingabe checken */
+	RC5_Code = gui_keypad_check(RC5_Code);
+#endif
 	/* Gueltigkeit der Screen-Nr. pruefen und Anzeigefunktion aufrufen, falls Screen belegt ist */
-	#ifdef LED_AVAILABLE
-	#ifndef TEST_AVAILABLE
-		if (RC5_Code != 0) LED_on(LED_WEISS);
-	#endif	// TEST_AVAILABLE
-	#endif	// LED_AVAILABLE
+#ifdef LED_AVAILABLE
+#ifndef TEST_AVAILABLE
+	if (RC5_Code != 0) LED_on(LED_WEISS);
+#endif // TEST_AVAILABLE
+#endif // LED_AVAILABLE
 	if (screen < max_screens && screen_functions[screen] != NULL) screen_functions[screen]();
 
-	#ifdef KEYPAD_AVAILABLE
-		/* Keypad-Eingabe */
-		if (keypad_callback != NULL) {
-			display_cursor(keypad_row, keypad_col);
-			display_printf("%s ", keypad_buffer);
+#ifdef KEYPAD_AVAILABLE
+	/* Keypad-Eingabe */
+	if (keypad_callback != NULL) {
+		display_cursor(keypad_row, keypad_col);
+		display_printf("%s ", keypad_buffer);
 
-			uint8_t col = (uint8_t) (keypad_col + strlen(keypad_buffer));
-			if ((uint32_t)(TIMER_GET_TICKCOUNT_32 - keypad_last_pressed) > MS_TO_TICKS(1000UL)) {
-				col++;
-			}
-			display_cursor(keypad_row, col);
-			char c = (char) (keypad_mode == 1 ? '#' : '_');
-			display_printf("%c", c);
-			display_cursor(keypad_row, col);
+		uint8_t col = (uint8_t) (keypad_col + strlen(keypad_buffer));
+		if ((uint32_t)(TIMER_GET_TICKCOUNT_32 - keypad_last_pressed) > MS_TO_TICKS(1000UL)) {
+			col++;
 		}
-	#endif	// KEYPAD_AVAILABLE
+		display_cursor(keypad_row, col);
+		char c = (char) (keypad_mode == 1 ? '#' : '_');
+		display_printf("%c", c);
+		display_cursor(keypad_row, col);
+	}
+#endif // KEYPAD_AVAILABLE
 
-	if (RC5_Code != 0) default_key_handler();	// falls rc5-Code noch nicht abgearbeitet, Standardbehandlung ausfuehren
-	RC5_Code = 0;	// fertig, RC5-Puffer loeschen
-	#ifdef LED_AVAILABLE
-	#ifndef TEST_AVAILABLE
-		LED_off(LED_WEISS);
-	#endif	// TEST_AVAILABLE
-	#endif	// LED_AVAILABLE
+	if (RC5_Code != 0) default_key_handler(); // falls rc5-Code noch nicht abgearbeitet, Standardbehandlung ausfuehren
+	RC5_Code = 0; // fertig, RC5-Puffer loeschen
+#ifdef LED_AVAILABLE
+#ifndef TEST_AVAILABLE
+	LED_off(LED_WEISS);
+#endif // TEST_AVAILABLE
+#endif // LED_AVAILABLE
 }
 
 /*!
- * @brief 	Display-Screen Initialisierung
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	12.02.2007
+ * Display-Screen Initialisierung
  * Traegt die Anzeige-Funktionen in das Array ein.
  */
 void gui_init(void) {
 //	register_screen(NULL);
-	#ifdef DISPLAY_MINIFAT_INFO
-		/* MiniFAT wird vor GUI initialisiert und schreibt deshalb einfach auf's leere Display, der Dummy hier verhindert nur das Ueberschreiben in den anschliessenden Bot-Zyklen, damit man die Daten noch lesen kann */
-		register_screen(&mini_fat_display);
-	#endif
-	#ifdef SENSOR_DISPLAY_AVAILABLE
-		register_screen(&sensor_display);
-	#endif
-	#ifdef BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
-		register_screen(&bot_calibrate_sharps_display);
-	#endif
-	#ifdef DISPLAY_REGELUNG_AVAILABLE
-		register_screen(&speedcontrol_display);
-	#endif
-	#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-		register_screen(&behaviour_display);
-	#endif
-	#ifdef LOG_DISPLAY_AVAILABLE
-		register_screen(&log_display);
-	#endif
-	#ifdef MISC_DISPLAY_AVAILABLE
-		register_screen(&misc_display);
-	#endif
-	#ifdef DISPLAY_ODOMETRIC_INFO
-		register_screen(&odometric_display);
-	#endif
-	#ifdef DISPLAY_MMC_INFO
-		register_screen(&mmc_display);
-	#endif
-	#ifdef DISPLAY_OS_AVAILABLE
-		register_screen(&os_display);
-	#endif
-	#ifdef RESET_INFO_DISPLAY_AVAILABLE
-		register_screen(&reset_info_display);
-	#endif
-	#ifdef RAM_DISPLAY_AVAILABLE
-		register_screen(&ram_display);
-	#endif
-	#ifdef DISPLAY_MAP_AVAILABLE
-		register_screen(&map_display);
-	#endif
-	#ifdef DISPLAY_MAP_GO_DESTINATION
-		register_screen(&mapgo_display);
-	#endif
-	#ifdef DISPLAY_TRANSPORT_PILLAR
-		register_screen(&transportpillar_display);
-	#endif
-	#ifdef DISPLAY_DRIVE_STACK_AVAILABLE
-		register_screen(&drive_stack_display);
-	#endif
-	#ifdef PATHPLANING_DISPLAY
-	#ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
-		register_screen(&pathplaning_display);
-	#endif
-	#ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
-		register_screen(&bot_line_shortest_way_display);
-	#endif
-	#ifdef DISPLAY_DRIVE_CHESS_AVAILABLE
-			register_screen(&drive_chess_display);
-	#endif
-	#endif
+#ifdef DISPLAY_MINIFAT_INFO
+	/* MiniFAT wird vor GUI initialisiert und schreibt deshalb einfach auf's leere Display, der Dummy hier verhindert nur das Ueberschreiben in den anschliessenden Bot-Zyklen, damit man die Daten noch lesen kann */
+	register_screen(&mini_fat_display);
+#endif
+#ifdef RESET_INFO_DISPLAY_AVAILABLE
+	register_screen(&reset_info_display);
+#endif
+#ifdef SENSOR_DISPLAY_AVAILABLE
+	register_screen(&sensor_display);
+#endif
+#ifdef BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
+	register_screen(&bot_calibrate_sharps_display);
+#endif
+#ifdef DISPLAY_REGELUNG_AVAILABLE
+	register_screen(&speedcontrol_display);
+#endif
+#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+	register_screen(&behaviour_display);
+#endif
+#ifdef LOG_DISPLAY_AVAILABLE
+	register_screen(&log_display);
+#endif
+#ifdef MISC_DISPLAY_AVAILABLE
+	register_screen(&misc_display);
+#endif
+#ifdef DISPLAY_ODOMETRIC_INFO
+	register_screen(&odometric_display);
+#endif
+#ifdef DISPLAY_MMC_INFO
+	register_screen(&mmc_display);
+#endif
+#ifdef DISPLAY_OS_AVAILABLE
+	register_screen(&os_display);
+#endif
+#ifdef RAM_DISPLAY_AVAILABLE
+	register_screen(&ram_display);
+#endif
+#ifdef DISPLAY_MAP_AVAILABLE
+	register_screen(&map_display);
+#endif
+#ifdef DISPLAY_MAP_GO_DESTINATION
+	register_screen(&mapgo_display);
+#endif
+#ifdef DISPLAY_TRANSPORT_PILLAR
+	register_screen(&transportpillar_display);
+#endif
+#ifdef DISPLAY_DRIVE_STACK_AVAILABLE
+	register_screen(&drive_stack_display);
+#endif
+#ifdef PATHPLANING_DISPLAY
+#ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
+	register_screen(&pathplaning_display);
+#endif
+#ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
+	register_screen(&bot_line_shortest_way_display);
+#endif
+#ifdef DISPLAY_DRIVE_CHESS_AVAILABLE
+	register_screen(&drive_chess_display);
+#endif
+#endif
 }
 
-#endif	// DISPLAY_AVAILABLE
+#endif // DISPLAY_AVAILABLE
