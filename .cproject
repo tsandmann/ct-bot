@@ -5267,7 +5267,7 @@
 							</tool>
 							<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.369480900" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
 							<tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1493541672" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
-								<option id="gnu.both.asm.option.flags.679494827" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -mmcu=atmega32" valueType="string"/>
+								<option id="gnu.both.asm.option.flags.679494827" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -mmcu=atmega32 -DMCU" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.670310921" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -6987,7 +6987,7 @@
 							</tool>
 							<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.848286817" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
 							<tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1962834123" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
-								<option id="gnu.both.asm.option.flags.303145975" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -mmcu=atmega644" valueType="string"/>
+								<option id="gnu.both.asm.option.flags.303145975" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -mmcu=atmega644 -DMCU" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.1123878803" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -8707,7 +8707,7 @@
 							</tool>
 							<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.283825927" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
 							<tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.361398654" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
-								<option id="gnu.both.asm.option.flags.52455667" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -mmcu=atmega644p" valueType="string"/>
+								<option id="gnu.both.asm.option.flags.52455667" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -mmcu=atmega644p -DMCU" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.2028862760" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -10427,7 +10427,7 @@
 							</tool>
 							<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.210727567" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
 							<tool command="avr-gcc" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.884843983" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
-								<option id="gnu.both.asm.option.flags.309989616" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -mmcu=atmega1284p" valueType="string"/>
+								<option id="gnu.both.asm.option.flags.309989616" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -mmcu=atmega1284p -DMCU" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.702746102" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -12171,7 +12171,7 @@
 							</tool>
 							<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1603712723" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
 							<tool command="avr-gcc" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1832045125" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
-								<option id="gnu.both.asm.option.flags.163877977" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -pipe -mmcu=atmega32" valueType="string"/>
+								<option id="gnu.both.asm.option.flags.163877977" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -pipe -mmcu=atmega32 -DMCU" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.1976256242" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -13915,7 +13915,7 @@
 							</tool>
 							<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1313328474" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
 							<tool command="avr-gcc" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.103580297" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
-								<option id="gnu.both.asm.option.flags.797773408" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -pipe -mmcu=atmega644" valueType="string"/>
+								<option id="gnu.both.asm.option.flags.797773408" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -pipe -mmcu=atmega644 -DMCU" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.575014902" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -15659,7 +15659,7 @@
 							</tool>
 							<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1454870777" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
 							<tool command="avr-gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.440060863" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
-								<option id="gnu.both.asm.option.flags.1100541118" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -pipe -mmcu=atmega644p" valueType="string"/>
+								<option id="gnu.both.asm.option.flags.1100541118" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -pipe -mmcu=atmega644p -DMCU" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.1181362699" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -17403,7 +17403,7 @@
 							</tool>
 							<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1772316660" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
 							<tool command="avr-gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1281420680" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
-								<option id="gnu.both.asm.option.flags.1250783110" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -pipe -mmcu=atmega1284p" valueType="string"/>
+								<option id="gnu.both.asm.option.flags.1250783110" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -pipe -mmcu=atmega1284p -DMCU" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.408309543" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>

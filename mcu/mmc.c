@@ -486,7 +486,7 @@ uint8_t mmc_init(void) {
 	SPI_MasterInit(speed);
 #else
 	MMC_CLK_DDR |= _BV(SPI_CLK);
-	MMC_DDR &= ~(1<<SPI_DI);
+	MMC_DDR = (uint8_t) (MMC_DDR & ~(1<<SPI_DI));
 	MMC_DDR |= (1<<SPI_DO);
 #endif	// SPI_AVAILABLE
 	ENA_on(ENA_MMC);
