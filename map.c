@@ -342,7 +342,7 @@ static map_section_t * get_section(int16_t x, int16_t y) {
 	uint8_t index = (uint8_t)((x / MAP_SECTION_POINTS) & 0x01);
 
 	/* Sicherheitscheck */
-	if ((x >= (int16_t) (MAP_SIZE * MAP_RESOLUTION)) || (y >= (int16_t) (MAP_SIZE * MAP_RESOLUTION))) {
+	if (((uint16_t) x >= (MAP_SIZE * MAP_RESOLUTION)) || ((uint16_t) y >= (MAP_SIZE * MAP_RESOLUTION))) {
 		LOG_ERROR("Versuch auf ein Feld ausserhalb der Karte zu zugreifen!! x=%u y=%u", x, y);
 		return map[0];
 	}

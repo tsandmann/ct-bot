@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2010-05-18 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Map
+
 2010-03-23 Timo Sandmann [mail@timosandmann.de]: Lokalisierungsverhalten verbessert, Init-Code fuer MCU und PC getrennt
 
 2010-03-04 Timo Sandmann [mail@timosandmann.de]: Support fuer ATmega1284P, Projekteinstellungen aufgeraeumt, Anpassungen fuer EEPROM-Emulation

@@ -63,6 +63,11 @@ void ctbot_init_low_1st(int argc, char * argv[]) {
  * ausgefuehrt werden sollen
  */
 void ctbot_init_low_last(void) {
+#ifdef OS_AVAILABLE
 	os_create_thread(NULL, read_command_thread);
+#else
+	static pthread_t thread;
+	pthread_create(&thread, NULL, (void * (*)(void *)) read_command_thread, NULL);
+#endif
 }
 #endif // PC
