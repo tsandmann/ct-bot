@@ -24,14 +24,15 @@
  * @date 	19.02.2008
  */
 
-#include "ct-Bot.h"
 #ifdef PC
+#include "ct-Bot.h"
 #include "cmd_tools.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <getopt.h>
 #include <string.h>
+#include <pthread.h>
 #include "tcp-server.h"
 #include "mini-fat.h"
 #include "map.h"
@@ -41,6 +42,8 @@
 #include "bot-logic/remote_calls.h"
 
 //#define DEBUG
+
+static pthread_t cmd_thread; /*!< Thread fuer die RemoteCall-Auswertung per Kommandozeile */
 
 /*!
  * Zeigt Informationen zu den moeglichen Kommandozeilenargumenten an.
@@ -269,7 +272,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 /*!
  * Liest RemoteCall-Commands von stdin ein
  */
-void read_command_thread(void) {
+static void read_command_thread(void) {
 	char input[255];
 
 	while (42) {
@@ -333,4 +336,12 @@ void read_command_thread(void) {
 		}
 	}
 }
-#endif	// PC
+
+/*!
+ * Initialisiert die Eingabekonsole fuer RemoteCalls
+ */
+void cmd_init(void) {
+	pthread_create(&cmd_thread, NULL, (void * (*)(void *)) read_command_thread, NULL);
+}
+
+#endif // PC

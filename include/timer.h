@@ -70,6 +70,8 @@ uint16_t timer_get_ms_since(uint16_t old_s, uint16_t old_ms);
 #endif // TIME_AVAILABLE
 
 #ifdef PC
+extern volatile float tickCount;
+
 /*!
  *  Funktion, die die TickCounts um die vergangene Simulzeit erhoeht
  */
@@ -283,4 +285,4 @@ void timer_2_init(void);
 	const uint16_t __us = 0; \
 	__code
 #endif // MCU
-#endif	// TIMER_H_
+#endif // TIMER_H_

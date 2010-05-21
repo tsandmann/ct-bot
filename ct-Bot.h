@@ -31,8 +31,8 @@
 ************************************************************/
 //#define LOG_CTSIM_AVAILABLE		/*!< Logging zum ct-Sim (PC und MCU) */
 //#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display (PC und MCU) */
-//#define LOG_UART_AVAILABLE		/*!< Logging ueber UART (NUR fuer MCU) */
-#define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (NUR fuer PC) */
+//#define LOG_UART_AVAILABLE		/*!< Logging ueber UART (nur fuer MCU) */
+#define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (nur fuer PC) */
 //#define LOG_MMC_AVAILABLE			/*!< Logging in eine txt-Datei auf MMC */
 #define USE_MINILOG					/*!< schaltet fuer MCU auf schlankes Logging um (nur in Verbindung mit Log2Sim) */
 

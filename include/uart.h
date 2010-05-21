@@ -35,6 +35,7 @@
 
 //#define BAUD	57600	/*!< Baudrate  57600 fuer UART-Kommunikation */
 #define BAUD	115200	/*!< Baudrate 115200 fuer UART-Kommunikation */
+//#define BAUD	500000	/*!< Baudrate 500000 fuer UART-Kommunikation */
 
 #include <util/setbaud.h>
 

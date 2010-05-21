@@ -24,18 +24,13 @@
  * @date 	09.03.2010
  */
 
-#include "init.h"
-
 #ifdef PC
-#include "tcp.h"
-#include <stdio.h>
-#include <time.h>
-#include <sys/time.h>
-#include "eeprom.h"
+#include "init.h"
 #include "log.h"
 #include "cmd_tools.h"
 #include "trace.h"
-#include "os_thread.h"
+#include "eeprom.h"
+#include <stdio.h>
 
 /*!
  * Hardwareabhaengige Initialisierungen, die zuerst ausgefuehrt werden sollen
@@ -63,11 +58,6 @@ void ctbot_init_low_1st(int argc, char * argv[]) {
  * ausgefuehrt werden sollen
  */
 void ctbot_init_low_last(void) {
-#ifdef OS_AVAILABLE
-	os_create_thread(NULL, read_command_thread);
-#else
-	static pthread_t thread;
-	pthread_create(&thread, NULL, (void * (*)(void *)) read_command_thread, NULL);
-#endif
+	cmd_init();
 }
 #endif // PC

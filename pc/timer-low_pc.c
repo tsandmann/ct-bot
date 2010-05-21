@@ -28,11 +28,32 @@
 
 #include "ct-Bot.h"
 #include "timer.h"
+#include "sensor.h"
 
 /*!
  * initialisiert Timer 2 und startet ihn
  */
 void timer_2_init(void) {
 	// Dummy
+}
+
+/*!
+ * Funktion, die die TickCounts um die vergangene Simulzeit erhoeht
+ */
+void system_time_isr(void) {
+//	LOG_DEBUG("simultime=%d", simultime);
+	/* TickCounter [176 us] erhoehen */
+	static int last_simultime = -11; // kommt vom Sim zuerst als -1, warum auch immer!?!
+	int tmp = simultime - last_simultime;
+	if (tmp < 0) tmp += 10000; // der Sim setzt simultime alle 10s zurueck auf 0
+	tickCount += MS_TO_TICKS((float) tmp);
+	last_simultime = simultime;
+}
+
+/*
+ * Setzt die Systemzeit zurueck auf 0
+ */
+void timer_reset(void) {
+	tickCount = 0;
 }
 #endif // PC

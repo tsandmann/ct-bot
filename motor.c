@@ -459,7 +459,7 @@ void motor_set(int16_t left, int16_t right) {
 	speed_r = right * speedSignRight / 2;
 	bot_motor(speed_l, speed_r);
 #endif // MCU
-#endif	// SPEED_CONTROL_AVAILABLE
+#endif // SPEED_CONTROL_AVAILABLE
 }
 
 /*!

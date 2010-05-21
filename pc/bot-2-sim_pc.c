@@ -125,7 +125,6 @@ void bot_2_sim_init(void) {
 
 	receive_until_Frame(CMD_DONE);
 	command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0);
-	flushSendBuffer();
 #ifdef BOT_2_BOT_AVAILABLE
 	receive_until_Frame(CMD_DONE);
 	/* hello (bot-)world! */
@@ -133,8 +132,7 @@ void bot_2_sim_init(void) {
 		command_write_to(BOT_CMD_WELCOME, SUB_CMD_NORM, CMD_BROADCAST, 0, 0, 0);
 	}
 	command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0);
-	flushSendBuffer();
-#endif	// BOT_2_BOT_AVAILABLE
+#endif // BOT_2_BOT_AVAILABLE
 }
 
-#endif	// PC
+#endif // PC

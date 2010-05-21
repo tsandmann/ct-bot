@@ -88,7 +88,7 @@ int main(int argc, char * argv[]) {
 		struct timeval start, stop;
 		GETTIMEOFDAY(&start, NULL);
 		int t1 = (start.tv_sec - stop.tv_sec) * 1000000 + start.tv_usec - stop.tv_usec;
-		printf("Done-Token (%d) in nach %d usec ", received_command.data_l, t1);
+		printf("Done-Token (%d) in nach %d usec\n", received_command.data_l, t1);
 #endif // PC && DEBUG_TIMES
 
 #ifdef TEST_AVAILABLE_MOTOR

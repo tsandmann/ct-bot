@@ -48,7 +48,8 @@ EEPROM uint8_t bot_address = CMD_BROADCAST; /*!< Kommunikations-Adresse des Bots
 
 #ifdef COMMAND_AVAILABLE
 
-#define RCVBUFSIZE (sizeof(command_t) * 2)   /*!< Groesse des Empfangspuffers */
+#define CHECK_CMD_ADDRESS /*!< soll die Zieladresse der Kommandos ueberprueft werden? */
+#define RCVBUFSIZE (sizeof(command_t) * 2) /*!< Groesse des Empfangspuffers */
 
 command_t received_command; /*!< Puffer fuer Kommandos */
 static uint8_t count = 1;	/*!< Zaehler fuer Paket-Sequenznummer */
@@ -60,13 +61,13 @@ static command_t cmd_to_send = {
 	CMD_STOPCODE
 };
 
-//#define DEBUG_COMMAND		//Schalter, um auf einmal alle Debugs an oder aus zu machen
-//#define DEBUG_COMMAND_NOISY	// nun wird es voll im Log, da jedes Command geschrioeben wird
+//#define DEBUG_COMMAND       // Schalter, um auf einmal alle Debugs an oder aus zu machen
+//#define DEBUG_COMMAND_NOISY // nun wird es voll im Log, da jedes Command geschrieben wird
 
 #ifndef DEBUG_COMMAND
 #undef LOG_AVAILABLE
 #undef LOG_DEBUG
-#define LOG_DEBUG(...) {}	/*!< Log-Dummy */
+#define LOG_DEBUG(...) {} /*!< Log-Dummy */
 #endif
 
 /*!
@@ -88,11 +89,6 @@ void command_init(void) {
 #else
 	command_write(CMD_WELCOME, SUB_WELCOME_SIM, 0, 0, 0);
 #endif
-
-	if (addr == CMD_BROADCAST) {
-		/* Adresse anfordern */
-		command_write(CMD_ID, SUB_ID_REQUEST, 0, 0, 0);
-	}
 }
 
 /*!
@@ -111,25 +107,25 @@ int8_t command_read(void) {
 #if BYTE_ORDER == BIG_ENDIAN
 	uint16_t store; // Puffer für die Endian-Konvertierung
 #endif
-#endif
+#endif // PC
 
 	uint16_t old_ticks; // alte Systemzeit
 	buffer[0] = 0; // Sicherheitshalber mit sauberem Puffer anfangen
 
-	// Daten holen, maximal soviele, wie ein Kommando lang ist
+	/* Daten holen, maximal soviele, wie ein Kommando lang ist */
 	bytesRcvd = (int8_t) low_read(buffer, sizeof(command_t));
 
 #ifdef DEBUG_COMMAND_NOISY
 	LOG_DEBUG("%d read", bytesRcvd);
 	LOG_DEBUG("%x %x %x", buffer[0], buffer[1], buffer[2]);
 #endif
-	// Suche nach dem Beginn des Frames
+	/* Suche nach dem Beginn des Frames */
 	while ((start < bytesRcvd) && (buffer[start] != CMD_STARTCODE)) {
 		LOG_DEBUG("falscher Startcode");
 		start++;
 	}
 
-	// Wenn keine STARTCODE gefunden ==> Daten verwerfen
+	/* Wenn keine STARTCODE gefunden ==> Daten verwerfen */
 	if (buffer[start] != CMD_STARTCODE) {
 		LOG_DEBUG("kein Startcode");
 		return -1;
@@ -149,15 +145,14 @@ int8_t command_read(void) {
 
 	if (i > 0) { // Fehlen noch Daten ?
 		LOG_DEBUG("Start @ %d es fehlen %d Bytes ", start, i);
-		// Systemzeit erfassen
-		old_ticks = TIMER_GET_TICKCOUNT_16;
+		old_ticks = TIMER_GET_TICKCOUNT_16; // Systemzeit erfassen
 
-		// So lange Daten lesen, bis das Packet vollstaendig ist, oder der Timeout zuschlaegt
+		/* So lange Daten lesen, bis das Packet vollstaendig ist, oder der Timeout zuschlaegt */
 		while (i > 0) {
-			// Wenn der Timeout ueberschritten ist
 			if (timer_ms_passed_16(&old_ticks, COMMAND_TIMEOUT)) {
+				/* Timeout ueberschritten */
 				LOG_DEBUG("Timeout beim Nachlesen");
-				return -1; //	==> Abbruch
+				return -1; // ==> Abbruch
 			}
 			LOG_DEBUG("%d Bytes missing", i);
 			i = (int8_t) low_read(buffer + bytesRcvd, (uint8_t) i);
@@ -172,8 +167,7 @@ int8_t command_read(void) {
 	LOG_DEBUG("%x %x %x", buffer[start], buffer[start+1], buffer[start+2]);
 #endif
 
-	// Cast in command_t
-	command = (command_t *) (buffer + start);
+	command = (command_t *) (buffer + start); // Cast in command_t
 
 #ifdef DEBUG_COMMAND_NOISY
 	LOG_DEBUG("start: %c ", command->startCode);
@@ -186,16 +180,18 @@ int8_t command_read(void) {
 		LOG_DEBUG("Command is valid");
 #endif
 
+#ifdef CHECK_CMD_ADDRESS
 		/* Ist das Paket ueberhaupt fuer uns? */
 		if ((command->to != CMD_BROADCAST)
 				&& (command->to != get_bot_address())
 				&& (command->request.command != CMD_WELCOME)) {
-			LOG_DEBUG("Fehler: Paket To= %d statt %d", command->to, get_bot_address());
+			LOG_DEBUG("Fehler: Paket To= %d statt %u", command->to, get_bot_address());
 #ifdef LOG_AVAILABLE
 			command_display(command);
 #endif
 			return -1;
 		}
+#endif // CHECK_CMD_ADDRESS
 
 		// Transfer
 		memcpy(&received_command, buffer + start, sizeof(command_t));
@@ -209,8 +205,8 @@ int8_t command_read(void) {
 		store = received_command.data_r;
 		received_command.data_r = store << 8;
 		received_command.data_r |= (store >> 8) & 0xff;
-#endif	// BYTE_ORDER == BIG_ENDIAN
-#endif	// PC
+#endif // BYTE_ORDER == BIG_ENDIAN
+#endif // PC
 		return 0;
 	} else { // Command not valid
 		LOG_ERROR("Invalid Command:");
@@ -287,7 +283,7 @@ void command_write(uint8_t command, uint8_t subcommand, int16_t data_l,
 	if (command == CMD_DONE) {
 		flushSendBuffer(); // Flushen hier, bevor das Mutex freigegeben wird!
 	}
-#endif	// PC
+#endif // PC
 	os_exitCS();
 }
 
@@ -369,10 +365,12 @@ int8_t command_evaluate(void) {
 	}
 #ifdef DEBUG_COMMAND_NOISY
 		command_display(&received_command);
-#endif	// DEBUG_COMMAND_NOISY
-#endif	// LOG_AVAILABLE
+#endif // DEBUG_COMMAND_NOISY
+#endif // LOG_AVAILABLE
 	/* woher ist das Kommando? */
+#ifdef CHECK_CMD_ADDRESS
 	if (received_command.from == CMD_SIM_ADDR) {
+#endif
 		/* Daten vom ct-Sim */
 		switch (received_command.request.command) {
 #ifdef IR_AVAILABLE
@@ -381,40 +379,45 @@ int8_t command_evaluate(void) {
 			if (received_command.data_l != 0)
 				RC5_Last_Toggle = 0xffff ^ (RC5_Last_Toggle & RC5_TOGGLE);
 			break;
-#endif	// IR_AVAILABLE
+#endif // IR_AVAILABLE
 
-			// Einige Kommandos ergeben nur fuer reale Bots Sinn
-#ifdef MCU
 		case CMD_WELCOME:
-			/* mit WELCOME antworten */
-			command_init();
+			/* Bot beim Sim anmelden */
+#ifdef MCU
+			command_write(CMD_WELCOME, SUB_WELCOME_REAL, 0, 0, 0);
+#else
+			command_write(CMD_WELCOME, SUB_WELCOME_SIM, 0, 0, 0);
+#endif // MCU
+			if (get_bot_address() == CMD_BROADCAST) {
+				/* Adresse anfordern */
+				command_write(CMD_ID, SUB_ID_REQUEST, 0, 0, 0);
+			}
 #ifdef BOT_2_BOT_AVAILABLE
 			/* hello (bot-)world! */
-			if (get_bot_address() != CMD_BROADCAST) {
+			else {
 				command_write_to(BOT_CMD_WELCOME, SUB_CMD_NORM, CMD_BROADCAST, 0, 0, 0);
 			}
-#endif	// BOT_2_BOT_AVAILABLE
+#endif // BOT_2_BOT_AVAILABLE
 			break;
-#endif	// MCU
 		case CMD_ID:
 			if (received_command.request.subcommand == SUB_ID_OFFER) {
 #ifdef LOG_AVAILABLE
 				LOG_DEBUG("Bekomme eine Adresse angeboten: %u", (uint8_t)received_command.data_l);
-#endif	// LOG_AVAILABLE
+#endif // LOG_AVAILABLE
 				set_bot_address((uint8_t) received_command.data_l); // Setze Adresse
 				command_write(CMD_ID, SUB_ID_SET, received_command.data_l, 0, 0); // Und bestaetige dem Sim das ganze
 #ifdef BOT_2_BOT_AVAILABLE
 				/* hello (bot-)world! */
 				command_write_to(BOT_CMD_WELCOME, SUB_CMD_NORM, CMD_BROADCAST, 0, 0, 0);
-#endif	// BOT_2_BOT_AVAILABLE
+#endif // BOT_2_BOT_AVAILABLE
 			}
 			break;
 
 #ifdef MOUSE_AVAILABLE
-		case CMD_SENS_MOUSE_PICTURE: // PC fragt nach dem Bild
+		case CMD_SENS_MOUSE_PICTURE: // Sim fragt nach dem Bild
 			mouse_transmit_picture();
 			break;
-#endif	// MOUSE_AVAILABLE
+#endif // MOUSE_AVAILABLE
 
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 		case CMD_REMOTE_CALL:
@@ -429,7 +432,8 @@ int8_t command_evaluate(void) {
 				uint8_t buffer[REMOTE_CALL_BUFFER_SIZE];
 				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
 #ifdef MCU
-				while (uart_data_available() < received_command.payload && (uint16_t)(TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
+				while (uart_data_available() < received_command.payload &&
+					(uint16_t)(TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
 #endif
 				low_read(buffer, received_command.payload);
 				if ((uint16_t)(TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)) {
@@ -451,7 +455,7 @@ int8_t command_evaluate(void) {
 				break;
 			}
 			break;
-#endif	// BEHAVIOUR_REMOTECALL_AVAILABLE
+#endif // BEHAVIOUR_REMOTECALL_AVAILABLE
 #ifdef MAP_2_SIM_AVAILABLE
 		case CMD_MAP:
 			switch (received_command.request.subcommand) {
@@ -460,9 +464,9 @@ int8_t command_evaluate(void) {
 				break;
 			}
 			break;
-#endif	// MAP_2_SIM_AVAILABLE
-		// Einige Kommandos ergeben nur fuer simulierte Bots Sinn
+#endif // MAP_2_SIM_AVAILABLE
 #ifdef PC
+		/* Einige Kommandos ergeben nur fuer simulierte Bots Sinn */
 		case CMD_SENS_IR: {
 			(*sensor_update_distance)(&sensDistL, &sensDistLToggle,
 					sensDistDataL, received_command.data_l);
@@ -494,7 +498,7 @@ int8_t command_evaluate(void) {
 			sensMouseDX = received_command.data_l;
 			sensMouseDY = received_command.data_r;
 			break;
-#endif	// MOUSE_AVAILABLE
+#endif // MOUSE_AVAILABLE
 		case CMD_SENS_ERROR:
 			sensError = (uint8_t) received_command.data_l;
 			break;
@@ -502,16 +506,17 @@ int8_t command_evaluate(void) {
 		case CMD_SENS_BPS:
 			sensBPS = received_command.data_l;
 			break;
-#endif	// BPS_AVAILABLE
-		case CMD_DONE:
+#endif // BPS_AVAILABLE
+		case CMD_DONE: {
 			simultime = received_command.data_l;
 			system_time_isr(); // Einmal pro Update-Zyklus aktualisieren wir die Systemzeit
-			break;
-#endif	// PC
+		}
+#endif // PC
 		default:
 			analyzed = 0; // Command was not analysed yet
 			break;
 		}
+#ifdef CHECK_CMD_ADDRESS
 	} else {
 #ifdef BOT_2_BOT_AVAILABLE
 		/* kein loop-back */
@@ -523,9 +528,10 @@ int8_t command_evaluate(void) {
 			}
 			cmd_functions[received_command.request.command](&received_command);
 		}
-#endif	// BOT_2_BOT_AVAILABLE
+#endif // BOT_2_BOT_AVAILABLE
 		analyzed = 1;
 	}
+#endif // CHECK_CMD_ADDRESS
 	return analyzed;
 }
 
@@ -553,14 +559,14 @@ void command_display(command_t * command) {
 		(*command).from,
 		(*command).to,
 		(*command).CRC);
-#else	// MCU
+#else // MCU
 	LOG_DEBUG("CMD: %c\tSub: %c\tData L: %d\tPay: %d\tSeq: %d\n",
 		(*command).request.command,
 		(*command).request.subcommand,
 		(*command).data_l,
 		(*command).payload,
 		(*command).seq);
-#endif	// PC
+#endif // PC
 }
-#endif	// LOG_AVAILABLE
-#endif	// COMMAND_AVAILABLE
+#endif // LOG_AVAILABLE
+#endif // COMMAND_AVAILABLE
