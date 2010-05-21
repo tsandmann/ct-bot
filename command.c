@@ -510,6 +510,7 @@ int8_t command_evaluate(void) {
 		case CMD_DONE: {
 			simultime = received_command.data_l;
 			system_time_isr(); // Einmal pro Update-Zyklus aktualisieren wir die Systemzeit
+			break;
 		}
 #endif // PC
 		default:
