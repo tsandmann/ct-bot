@@ -192,7 +192,7 @@ void mmc_emu_clear_file(uint32_t file_start) {
 /*!
  * @brief			Sucht die Adresse einer Mini-FAT-Datei im EERROM
  * @param filename	Datei-ID
- * @param buffer	Zeiger auf 512 Byte großen Speicherbereich (wird ueberschrieben)
+ * @param buffer	Zeiger auf 512 Byte grossen Speicherbereich (wird ueberschrieben)
  * @return			(Byte-)Adresse des ersten Nutzdatenblock der gesuchten Datei oder 0, falls nicht im EEPROM
  * Nur DUMMY fuer MMC-Emulation am PC. Wenn es mal eine EEPROM-Emulation fuer PC gibt, kann man diese Funktion implementieren.
  */

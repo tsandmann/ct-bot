@@ -41,12 +41,12 @@
 #define GO			4
 #define END			99
 
-// Zustaende für das Ausladeverhalten START und END sind bereits weiter oben definiert
+// Zustaende fuer das Ausladeverhalten START und END sind bereits weiter oben definiert
 #define GO_BACK		21
 #define CLOSE_DOOR	22
 
-static uint8_t catch_pillar_state = START;		/*!< Statusvariable für das Einfang-Verhalten */
-static uint8_t unload_pillar_state = START;		/*!< Statusvariable für das Auslade-Verhalten */
+static uint8_t catch_pillar_state = START;		/*!< Statusvariable fuer das Einfang-Verhalten */
+static uint8_t unload_pillar_state = START;		/*!< Statusvariable fuer das Auslade-Verhalten */
 
 #ifndef BEHAVIOUR_GOTO_POS_AVAILABLE
 #undef CATCH_PILLAR_VERSION

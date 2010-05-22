@@ -97,7 +97,7 @@
  *
  * Felder sind vom Typ int8_t und haben einen Wertebereich von -128
  * bis 127.
- * 0 bedeutet: wir wissen nichts über das Feld
+ * 0 bedeutet: wir wissen nichts ueber das Feld
  * negative Werte bedeuten: Hindernis
  * positive Werte bedeuten: freier Weg
  * Je groesser der Betrag ist, desto sicherer die Aussage ueber das

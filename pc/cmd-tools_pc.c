@@ -57,7 +57,7 @@ static void usage(void) {
 	puts("\t-M from\tKonvertiert eine Bot-Map in eine PGM-Datei");
 	puts("\t-m FILE\tGibt den Pfad zu einer MiniFat-Datei an, die vom Map-Code verwendet wird (Ex- und Import)");
 	#ifndef MAP_AVAILABLE
-		puts("\t\tACHTUNG, das Programm wurde ohne MAP_AVAILABLE übersetzt, die Optionen -M / -m stehen derzeit also NICHT zur Verfuegung");
+		puts("\t\tACHTUNG, das Programm wurde ohne MAP_AVAILABLE uebersetzt, die Optionen -M / -m stehen derzeit also NICHT zur Verfuegung");
 	#endif
 	puts("\t-c \tErzeugt eine Mini-Fat-Datei fuer den Bot.");
 	puts("\t   FILE\tDateiname");
@@ -131,7 +131,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 		case 'M': {
 			/* Dateiname fuer die Map wurde uebergeben. Der String wird in from gesichert. */
 			#ifndef MAP_AVAILABLE
-				puts("ACHTUNG, das Programm wurde ohne MAP_AVAILABLE übersetzt, die Option -M steht derzeit also NICHT zur Verfuegung.");
+				puts("ACHTUNG, das Programm wurde ohne MAP_AVAILABLE uebersetzt, die Option -M steht derzeit also NICHT zur Verfuegung.");
 				puts("um dennoch Karten zu konvertieren, bitte im Quelltext in der Datei ct-Bot.h die Kommentarzeichen vor MAP_AVAILABLE entfernen");
 				puts("und neu compilieren.");
 				exit(1);
@@ -156,7 +156,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 
 		case 'm': {
 #ifndef MAP_AVAILABLE
-			puts("ACHTUNG, das Programm wurde ohne MAP_AVAILABLE übersetzt, die Option -m steht derzeit also NICHT zur Verfuegung.");
+			puts("ACHTUNG, das Programm wurde ohne MAP_AVAILABLE uebersetzt, die Option -m steht derzeit also NICHT zur Verfuegung.");
 			puts("um dennoch Karten zu konvertieren, bitte im Quelltext in der Datei ct-Bot.h die Kommentarzeichen vor MAP_AVAILABLE entfernen");
 			puts("und neu compilieren.");
 			exit(1);

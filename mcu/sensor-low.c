@@ -62,31 +62,31 @@
 #define SENS_KANTE_R	7		/*!< ADC-PIN Kantensensor Rechts */
 
 // Sonstige Sensoren
-#define SENS_DOOR_PINR 		PIND	/*!< Port an dem der Klappensensor hängt */
-#define SENS_DOOR_DDR 		DDRD	/*!< DDR für den Klappensensor */
-#define SENS_DOOR			6		/*!< Pin an dem der Klappensensor hängt */
+#define SENS_DOOR_PINR 		PIND	/*!< Port an dem der Klappensensor haengt */
+#define SENS_DOOR_DDR 		DDRD	/*!< DDR fuer den Klappensensor */
+#define SENS_DOOR			6		/*!< Pin an dem der Klappensensor haengt */
 
 #ifdef SPI_AVAILABLE
-#define SENS_ENCL_PINR		PINC	/*!< Port an dem der linke Encoder hängt */
-#define SENS_ENCL_DDR		DDRC	/*!< DDR für den linken Encoder  */
-#define SENS_ENCL			5		/*!< Pin an dem der linke Encoder hängt */
+#define SENS_ENCL_PINR		PINC	/*!< Port an dem der linke Encoder haengt */
+#define SENS_ENCL_DDR		DDRC	/*!< DDR fuer den linken Encoder  */
+#define SENS_ENCL			5		/*!< Pin an dem der linke Encoder haengt */
 #else
-#define SENS_ENCL_PINR		PINB	/*!< Port an dem der linke Encoder hängt */
-#define SENS_ENCL_DDR		DDRB	/*!< DDR für den linken Encoder  */
-#define SENS_ENCL			4		/*!< Pin an dem der linke Encoder hängt */
+#define SENS_ENCL_PINR		PINB	/*!< Port an dem der linke Encoder haengt */
+#define SENS_ENCL_DDR		DDRB	/*!< DDR fuer den linken Encoder  */
+#define SENS_ENCL			4		/*!< Pin an dem der linke Encoder haengt */
 #endif	// SPI_AVAILABLE
 
-#define SENS_ENCR_PINR		PIND	/*!< Port an dem der rechte Encoder hängt */
-#define SENS_ENCR_DDR		DDRD	/*!< DDR für den rechten Encoder  */
-#define SENS_ENCR			3		/*!< Pin an dem der rechte Encoder hängt */
+#define SENS_ENCR_PINR		PIND	/*!< Port an dem der rechte Encoder haengt */
+#define SENS_ENCR_DDR		DDRD	/*!< DDR fuer den rechten Encoder  */
+#define SENS_ENCR			3		/*!< Pin an dem der rechte Encoder haengt */
 
-#define SENS_ERROR_PINR		PINB	/*!< Port an dem die Fehlerüberwachung hängt */
-#define SENS_ERROR_DDR		DDRB	/*!< DDR für die Fehlerüberwachung */
-#define SENS_ERROR			2		/*!< Pin an dem die Fehlerüberwachung hängt */
+#define SENS_ERROR_PINR		PINB	/*!< Port an dem die Fehlerueberwachung haengt */
+#define SENS_ERROR_DDR		DDRB	/*!< DDR fuer die Fehlerueberwachung */
+#define SENS_ERROR			2		/*!< Pin an dem die Fehlerueberwachung haengt */
 
 #define SENS_TRANS_PINR		PINB	/*!< Port an dem die Transportfachueberwachung haengt */
 #define SENS_TRANS_PORT		PORTB	/*!< Port an dem die Transportfachueberwachung haengt */
-#define SENS_TRANS_DDR		DDRB	/*!< DDR für die Transportfachueberwachung */
+#define SENS_TRANS_DDR		DDRB	/*!< DDR fuer die Transportfachueberwachung */
 #define SENS_TRANS			0		/*!< Pin an dem die Transportfachueberwachung haengt */
 
 #define ENC_L ((SENS_ENCL_PINR >> SENS_ENCL) & 0x01)	/*!< Abkuerzung zum Zugriff auf Encoder */

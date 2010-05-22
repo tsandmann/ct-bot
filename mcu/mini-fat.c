@@ -80,7 +80,7 @@ void mini_fat_display(void) {
 /*!
  * @brief			Sucht die Adresse einer MiniFAT-Datei im EERROM
  * @param filename	Datei-ID
- * @param buffer	Zeiger auf 512 Byte großen Speicherbereich (wird ueberschrieben)
+ * @param buffer	Zeiger auf 512 Byte grossen Speicherbereich (wird ueberschrieben)
  * @return			(Block-)Adresse des ersten Nutzdatenblock der gesuchten Datei oder 0, falls nicht im EEPROM
  * @author 			Timo Sandmann (mail@timosandmann.de)
  * @date 			05.03.2007

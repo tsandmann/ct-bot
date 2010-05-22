@@ -103,7 +103,7 @@ static void display_cmd(uint8_t cmd) {
 
 	/* 47 us warten */
 	delay_us(47);
-	DISPLAY_PORT = DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
+	DISPLAY_PORT = DPC;	// Alles zurueck setzen ==> Fallende Flanke von Enable
 
 	if (cmd == DISPLAY_CLEAR) {
 		/* 1.52 ms warten */

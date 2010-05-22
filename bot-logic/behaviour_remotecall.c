@@ -82,7 +82,7 @@ static uint8_t * parameter_length = NULL;	/*!< Hier speichern wir die Laenge der
 
 /*!
  * Hier muessen alle Boten-Funktionen rein, die Remote aufgerufen werden sollen
- * Diese stoßen dann das zugehoerige Verhalten an
+ * Diese stossen dann das zugehoerige Verhalten an
  * Ein Eintrag erfolgt so:
  * PREPARE_REMOTE_CALL(BOTENFUNKTION,NUMBER_OF_PARAMS, STRING DER DIE PARAMETER BESCHREIBT,laenge der jeweiligen Parameter in Byte)
  *

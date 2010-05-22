@@ -105,7 +105,7 @@ int8_t command_read(void) {
 	uint8_t buffer[RCVBUFSIZE]; // Puffer
 #ifdef PC
 #if BYTE_ORDER == BIG_ENDIAN
-	uint16_t store; // Puffer für die Endian-Konvertierung
+	uint16_t store; // Puffer fuer die Endian-Konvertierung
 #endif
 #endif // PC
 

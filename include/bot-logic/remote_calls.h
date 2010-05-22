@@ -67,7 +67,7 @@ typedef union {
 
 
 /*!
- * Dieses Verhalten kuemmert sich darum die Verhalten, die von außen angefragt wurden zu starten und liefert ein feedback zurueck, wenn sie beendet sind.
+ * Dieses Verhalten kuemmert sich darum die Verhalten, die von aussen angefragt wurden zu starten und liefert ein feedback zurueck, wenn sie beendet sind.
  * @param *data der Verhaltensdatensatz
  */
 void bot_remotecall_behaviour(Behaviour_t * data);

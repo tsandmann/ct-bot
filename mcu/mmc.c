@@ -37,7 +37,7 @@
  * SPI_AVAILABLE in ct-Bot.h AUS sein.
  * Oder per Hardware-SPI-Steuerung, dafuer ist ein kleiner Hardware-Umbau noetig, man
  * muss die Verbindung zwischen PC5 und dem Display trennen (busy-Leitung wird vom Display-
- * Treiber eh nicht genutzt) und auf PC5 den linken Radencoder legen. Außerdem ist PB4
+ * Treiber eh nicht genutzt) und auf PC5 den linken Radencoder legen. Ausserdem ist PB4
  * vom Radencoder zu trennen. Der PB4-Pin kann fuer andere Zwecke genutzt werden, er muss
  * jedoch immer als OUTPUT konfiguriert sein. Schalten man nun in ct-Bot.h SPI_AVAILABLE
  * AN, dann wird die Kommunikation mit der MMC per Hardware gesteuert - Vorteil ist eine
