@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2010-05-23 Timo Sandmann [mail@timosandmann.de]: Release 17
+
 2010-05-21 Timo Sandmann [mail@timosandmann.de]: Code-Cleanup
 
 2010-05-18 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Map
