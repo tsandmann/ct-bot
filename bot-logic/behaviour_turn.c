@@ -77,37 +77,36 @@ static uint8_t max_speed = 0;					/*!< Anfangsgeschwindigkeit */
  */
 void bot_turn_behaviour(Behaviour_t * data) {
 	/* Differenz zum Zielwinkel berechnen (in Drehrichtung gesehen) */
-	int16_t heading_16 = (int16_t)(heading*10);
 	int16_t diff;
 	if (turn_direction < 0) {	// Uhrzeigersinn
-		if (heading_16 > old_heading && old_heading < 50) {
+		if (heading_10_int > old_heading && old_heading < 50) {
 			target += 3600;	// es gab einen Ueberlauf von heading
 #ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
 			target_fl += 3600.0;
 #endif
 //			LOG_DEBUG("Ueberlauf");
-//			LOG_DEBUG("head16=%d, old=%d", heading_16, old_heading);
+//			LOG_DEBUG("head=%d, old=%d", heading_10_int, old_heading);
 		}
-		diff = heading_16 - target + 3600;
+		diff = heading_10_int - target + 3600;
 	} else {
-		if (heading_16 < old_heading && old_heading > 3550) {
+		if (heading_10_int < old_heading && old_heading > 3550) {
 			target -= 3600;	// es gab einen Ueberlauf von heading
 #ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
 			target_fl -= 3600.0;
 #endif
 //			LOG_DEBUG("Ueberlauf");
-//			LOG_DEBUG("head16=%d, old=%d", heading_16, old_heading);
+//			LOG_DEBUG("head=%d, old=%d", heading_10_int, old_heading);
 		}
-		diff = target - (heading_16 + 3600);
+		diff = target - (heading_10_int + 3600);
 	}
-	old_heading = heading_16;
+	old_heading = heading_10_int;
 
 	if (diff > 0) {
 		/* Bot drehen, solange Zielwinkel noch nicht erreicht ist */
 		uint8_t new_speed;	// schneller als mit 255 mm/s drehen ist zu ungenau, also reichen hier 8 Bit
 		float x = diff < 1800 ? diff / (360.0/M_PI*10) : M_PI/2;	// (0; pi/2]
-		new_speed = sin(x) * (float)max_speed;	// [ 0; 125]
-		new_speed += 25;						// [25; 150]
+		new_speed = (uint8_t) (sinf(x) * (float) max_speed); // [ 0; 125]
+		new_speed = (uint8_t) (new_speed + 25); // [25; 150]
 
  		speedWishRight = turn_direction < 0 ? -new_speed : new_speed;
  		speedWishLeft  = -speedWishRight;
@@ -120,21 +119,21 @@ void bot_turn_behaviour(Behaviour_t * data) {
 		BLOCK_BEHAVIOUR(data, 1200);
 #endif
 
-//		LOG_DEBUG("done, heading=%d %u", heading_16/10, TICKS_TO_MS(TIMER_GET_TICKCOUNT_32));
+//		LOG_DEBUG("done, heading=%d %u", heading_int, TICKS_TO_MS(TIMER_GET_TICKCOUNT_32));
 //		LOG_DEBUG("target=%d", target/10-360);
 
 		/* Nachlauf beendet, jetzt Drehfehler aktualisieren */
-		uint8_t diff_8 = -diff;
-		uint8_t err = *ee_err;
+		uint8_t diff_8 = (uint8_t) -diff;
+		uint8_t err = (uint8_t) *ee_err;
 //		LOG_DEBUG("Fehler: %d.%u Grad", (diff_8-err)/10, abs((err-diff_8)-(err-diff_8)/10*10));
 #ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
 		turn_last_err = fabs(target_fl/10.0-360.0-heading);
 #endif
 //		LOG_DEBUG("old err=%u\tdiff_8=%u", err, diff_8);
-		*ee_err = (uint8_t)(diff_8 + err) / 2;
+		*ee_err = (int8_t) ((uint8_t) (diff_8 + err) / 2);
 		if (abs(*ee_err - err) >= 10) {
 			/* EEPROM-Update bei Aenderung um mehr als 1 Grad */
-			ctbot_eeprom_write_byte(&turn_err[ee_err-err_cache], *ee_err);
+			ctbot_eeprom_write_byte(&turn_err[ee_err-err_cache], (uint8_t) *ee_err);
 // 			LOG_DEBUG("err1=%d\terr2=%d\terr3=%d", err_cache[0], err_cache[1], err_cache[2]);
 		}
 //		LOG_DEBUG("new err=%u", *ee_err);
@@ -155,15 +154,15 @@ void bot_turn_speed(Behaviour_t * caller, int16_t degrees, uint16_t speed) {
 	/* Parameter begrenzen */
  	while (degrees >  360) degrees -= 360;
  	while (degrees < -360) degrees += 360;
- 	uint8_t tmp = speed > 150 ? 150 : speed;
- 	max_speed = tmp < 50 ? 25 : tmp - 25;
+ 	uint8_t tmp = (uint8_t) (speed > 150 ? 150 : speed);
+ 	max_speed = (uint8_t) (tmp < 50 ? 25 : tmp - 25);
 
 	/* Zielwinkel berechnen */
 #ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
  	target_fl = heading*10.0 + degrees*10.0 + 3600.0;
 #endif
-	target = (int16_t)(heading*10) + degrees*10 + 3600;
- 	old_heading = (int16_t)(heading*10);
+	target = heading_10_int + degrees * 10 + 3600;
+ 	old_heading = heading_10_int;
 
 	/* Drehfehler beruecksichtigen */
  	if (abs(degrees) <= TUNR_ERR_SMALL) {
@@ -175,14 +174,14 @@ void bot_turn_speed(Behaviour_t * caller, int16_t degrees, uint16_t speed) {
 
 	/* (re-)Inits */
 	if (*ee_err == -128) {
-		*ee_err = ctbot_eeprom_read_byte(&turn_err[ee_err-err_cache]);
+		*ee_err = (int8_t) ctbot_eeprom_read_byte(&turn_err[ee_err - err_cache]);
 	}
-	if ((uint8_t)*ee_err > 200) {
+	if ((uint8_t) *ee_err > 200) {
 		*ee_err = 0;
 	}
 	int8_t err = *ee_err;
 
-	if (abs(degrees*10) <= err) {
+	if (abs(degrees * 10) <= err) {
 		/* nix zu tun */
 		return;
 	}
@@ -192,7 +191,7 @@ void bot_turn_speed(Behaviour_t * caller, int16_t degrees, uint16_t speed) {
  		turn_direction = -1;
  	} else {
  		turn_direction = 0;
- 		err = -err;
+ 		err = (int8_t) -err;
  	}
  	target += err;
 

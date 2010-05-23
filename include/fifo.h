@@ -28,9 +28,25 @@
 #ifndef _FIFO_H_
 #define _FIFO_H_
 
+//#define DEBUG_FIFO		/*!< Schalter fuer Debug-Ausgaben */
+
 #include "ct-Bot.h"
 #include "global.h"
 #include "os_thread.h"
+#include "log.h"
+
+#ifdef MCU
+#include <avr/builtins.h>
+#endif
+
+#ifndef LOG_AVAILABLE
+#undef DEBUG_FIFO
+#endif
+#ifndef DEBUG_FIFO
+#define LOG_DEBUG_FIFO(a, ...) {}
+#else
+#define LOG_DEBUG_FIFO LOG_DEBUG
+#endif
 
 /*! FIFO-Datentyp */
 typedef struct {
@@ -49,7 +65,7 @@ typedef struct {
  * @param *buffer	Zeiger auf den Puffer der Groesse size fuer die FIFO
  * @param size		Anzahl der Bytes, die die FIFO speichern soll	.
  */
-extern void fifo_init(fifo_t * f, void * buffer, const uint8_t size);
+void fifo_init(fifo_t * f, void * buffer, const uint8_t size);
 
 /*!
  * Schreibt length Byte in die FIFO.
@@ -68,14 +84,15 @@ void fifo_put_data(fifo_t * f, void * data, uint8_t length);
  * @param length	Anzahl der zu kopierenden Bytes
  * @return			Anzahl der tatsaechlich gelieferten Bytes
  */
-extern uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length);
+uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length);
 
 /*!
  * Schreibt ein Byte in die FIFO.
  * @param *f	Zeiger auf FIFO-Datenstruktur
  * @param data	Das zu schreibende Byte
+ * @param isr	wird die Funktion von einer ISR aus aufgerufen?
  */
-static inline void _inline_fifo_put(fifo_t * f, const uint8_t data) {
+static inline void _inline_fifo_put(fifo_t * f, const uint8_t data, uint8_t isr) {
 	uint8_t * pwrite = f->pwrite;
 	*(pwrite++) = data;
 
@@ -87,16 +104,49 @@ static inline void _inline_fifo_put(fifo_t * f, const uint8_t data) {
 
 	f->write2end = write2end;
 	f->pwrite = pwrite;
-	f->count++;
+	if (isr) {
+		f->count++;
+	} else {
+#ifdef MCU
+		uint8_t sreg = SREG;
+		__builtin_avr_cli();
+#else
+		pthread_mutex_lock(&f->signal.mutex);
+#endif
+		f->count++;
+#ifdef MCU
+		SREG = sreg;
+#else
+		pthread_mutex_unlock(&f->signal.mutex);
+#endif
+#ifdef OS_AVAILABLE
+		/* Consumer aufwecken */
+		os_signal_unlock(&f->signal);
+#endif	// OS_AVAILABLE
+	}
 }
 
 /*!
  * Liefert das naechste Byte aus der FIFO.
  * @param *f	Zeiger auf FIFO-Datenstruktur
+ * @param isr	wird die Funktion von einer ISR aus aufgerufen?
  * @return		Das Byte aus der FIFO
- * Ob ueberhaupt ein Byte in der FIFO ist, muss vorher extra abgeprueft werden!
  */
-static inline uint8_t _inline_fifo_get(fifo_t * f) {
+static inline uint8_t _inline_fifo_get(fifo_t * f, uint8_t isr) {
+#ifdef OS_AVAILABLE
+	if (! isr) {
+		uint8_t count = f->count;
+		if (count == 0) {
+			/* blockieren */
+			LOG_DEBUG_FIFO("Fifo 0x%08x ist leer, blockiere", f);
+			os_signal_lock(&f->signal);
+			os_signal_set(&f->signal);
+			LOG_DEBUG_FIFO("Fifo 0x%08x enthaelt wieder Daten, weiter geht's", f);
+			os_signal_release(&f->signal);
+		}
+	}
+#endif	// OS_AVAILABLE
+
 	uint8_t * pread = f->pread;
 	uint8_t data = *(pread++);
 	uint8_t read2end = f->read2end;
@@ -108,7 +158,22 @@ static inline uint8_t _inline_fifo_get(fifo_t * f) {
 
 	f->pread = pread;
 	f->read2end = read2end;
-	f->count--;
+	if (isr) {
+		f->count--;
+	} else {
+#ifdef MCU
+		uint8_t sreg = SREG;
+		__builtin_avr_cli();
+#else
+		pthread_mutex_lock(&f->signal.mutex);
+#endif
+		f->count--;
+#ifdef MCU
+		SREG = sreg;
+#else
+		pthread_mutex_unlock(&f->signal.mutex);
+#endif
+	}
 
 	return data;
 }

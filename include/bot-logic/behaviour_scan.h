@@ -21,7 +21,7 @@
  * @file 	behaviour_scan.h
  * @brief 	Scannt die Umgebung und traegt sie in die Karte ein
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	03.11.06
+ * @date 	03.11.2006
  */
 
 #ifndef BEHAVIOUR_SCAN_H_
@@ -37,17 +37,20 @@
 #define SCAN_OTF_RESOLUTION_ANGLE_DISTSENS		10	/*!< Alle wieviel Grad Drehung [Grad] sollen die Distanzsensoren fuer die Karte ausgewertet werden */
 #define SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS	180	/*!< Nach welcher gefahrenen Strecke [mm] sollen die  Distanzsensoren fuer die Karte ausgewertet werden */
 
+#define MAP_MAX_ERROR_RADIUS				200		/*!< maximaler Wert [mm] von pos_error_radius, der fuer die Berechnung der Positionssicherheit verwendet wird (alles darueber wird mit location_prob = 0 eingetragen) */
+
 #define SCAN_OTF_SLEEP_TIME					2000	/*!< Wartezeit fuer andere Verhalten, falls Cache (sehr) voll ist [ms] */
-#define SCAN_OTF_CACHE_LEVEL_THRESHOLD		(MAP_UPDATE_CACHE_SIZE*sizeof(map_cache_t)/3)	/*!< Schwellwert fuer freien Cache-Speicher, ab dem der Cache als sehr voll gilt [Byte] */
+/*! Schwellwert fuer freien Cache-Speicher, ab dem der Cache als sehr voll gilt */
+#define SCAN_OTF_CACHE_LEVEL_THRESHOLD		(MAP_UPDATE_CACHE_SIZE / 3)
 
 /*! Modi des Scan-Verhaltens */
 typedef union {
 	struct {
-		uint8_t location:1;	/*!< Grundflaechen-Update an/aus */
-		uint8_t distance:1;	/*!< Distanzsensor-Update an/aus */
-		uint8_t border:1;	/*!< Abgrundsensor-Update an/aus */
-		uint8_t map_mode:1;	/*!< Kartograhpie-Modus an/aus (Bot stoppt, falls Cache voll) */
-	};
+		unsigned location:1;	/*!< Grundflaechen-Update an/aus */
+		unsigned distance:1;	/*!< Distanzsensor-Update an/aus */
+		unsigned border:1;		/*!< Abgrundsensor-Update an/aus */
+		unsigned map_mode:1;	/*!< Kartograhpie-Modus an/aus (Bot stoppt, falls Cache voll) */
+	} PACKED data;
 	uint8_t raw;			/*!< Alle Modi als Raw-Daten */
 } scan_mode_t;
 
@@ -60,7 +63,8 @@ extern scan_mode_t scan_otf_modes;	/*!< Modi des Verhaltens */
  * @param value	1: an, 0: aus
  */
 static inline void set_scan_otf_location(uint8_t value) {
-	scan_otf_modes.location = value;
+	bit_t tmp = {value};
+	scan_otf_modes.data.location = tmp.bit;
 }
 
 /*!
@@ -68,7 +72,8 @@ static inline void set_scan_otf_location(uint8_t value) {
  * @param value	1: an, 0: aus
  */
 static inline void set_scan_otf_distance(uint8_t value) {
-	scan_otf_modes.distance = value;
+	bit_t tmp = {value};
+	scan_otf_modes.data.distance = tmp.bit;
 }
 
 /*!
@@ -76,7 +81,8 @@ static inline void set_scan_otf_distance(uint8_t value) {
  * @param value	1: an, 0: aus
  */
 static inline void set_scan_otf_border(uint8_t value) {
-	scan_otf_modes.border = value;
+	bit_t tmp = {value};
+	scan_otf_modes.data.border = tmp.bit;
 }
 
 /*!
@@ -86,7 +92,8 @@ static inline void set_scan_otf_border(uint8_t value) {
  * @param value	1: an, 0: aus
  */
 static inline void set_scan_otf_mapmode(uint8_t value) {
-	scan_otf_modes.map_mode = value;
+	bit_t tmp = {value};
+	scan_otf_modes.data.map_mode = tmp.bit;
 }
 
 /*!

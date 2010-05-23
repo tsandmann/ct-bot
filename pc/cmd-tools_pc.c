@@ -24,18 +24,26 @@
  * @date 	19.02.2008
  */
 
-#include "ct-Bot.h"
 #ifdef PC
+#include "ct-Bot.h"
+#include "cmd_tools.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <getopt.h>
 #include <string.h>
+#include <pthread.h>
 #include "tcp-server.h"
 #include "mini-fat.h"
 #include "map.h"
 #include "eeprom.h"
 #include "tcp.h"
 #include "command.h"
+#include "bot-logic/remote_calls.h"
+
+//#define DEBUG
+
+static pthread_t cmd_thread; /*!< Thread fuer die RemoteCall-Auswertung per Kommandozeile */
 
 /*!
  * Zeigt Informationen zu den moeglichen Kommandozeilenargumenten an.
@@ -49,7 +57,7 @@ static void usage(void) {
 	puts("\t-M from\tKonvertiert eine Bot-Map in eine PGM-Datei");
 	puts("\t-m FILE\tGibt den Pfad zu einer MiniFat-Datei an, die vom Map-Code verwendet wird (Ex- und Import)");
 	#ifndef MAP_AVAILABLE
-		puts("\t\tACHTUNG, das Programm wurde ohne MAP_AVAILABLE übersetzt, die Optionen -M / -m stehen derzeit also NICHT zur Verfuegung");
+		puts("\t\tACHTUNG, das Programm wurde ohne MAP_AVAILABLE uebersetzt, die Optionen -M / -m stehen derzeit also NICHT zur Verfuegung");
 	#endif
 	puts("\t-c \tErzeugt eine Mini-Fat-Datei fuer den Bot.");
 	puts("\t   FILE\tDateiname");
@@ -62,6 +70,7 @@ static void usage(void) {
 	puts("\t-d \tLoescht eine Mini-Fat-Datei fuer den Sim (emulierte MMC).");
 	puts("\t   ID  \tDie ID aus ASCII-Zeichen");
 	puts("\t-l \tKonvertiert eine SpeedLog-Datei in eine txt-Datei");
+	puts("\t   FILE\tEingabedatei");
 	puts("\t-i \tInitialisiert das EEPROM mit den Daten der EEP-Datei");
 	puts("\t-h\tZeigt diese Hilfe an");
 }
@@ -122,7 +131,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 		case 'M': {
 			/* Dateiname fuer die Map wurde uebergeben. Der String wird in from gesichert. */
 			#ifndef MAP_AVAILABLE
-				puts("ACHTUNG, das Programm wurde ohne MAP_AVAILABLE übersetzt, die Option -M steht derzeit also NICHT zur Verfuegung.");
+				puts("ACHTUNG, das Programm wurde ohne MAP_AVAILABLE uebersetzt, die Option -M steht derzeit also NICHT zur Verfuegung.");
 				puts("um dennoch Karten zu konvertieren, bitte im Quelltext in der Datei ct-Bot.h die Kommentarzeichen vor MAP_AVAILABLE entfernen");
 				puts("und neu compilieren.");
 				exit(1);
@@ -147,7 +156,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 
 		case 'm': {
 #ifndef MAP_AVAILABLE
-			puts("ACHTUNG, das Programm wurde ohne MAP_AVAILABLE übersetzt, die Option -m steht derzeit also NICHT zur Verfuegung.");
+			puts("ACHTUNG, das Programm wurde ohne MAP_AVAILABLE uebersetzt, die Option -m steht derzeit also NICHT zur Verfuegung.");
 			puts("um dennoch Karten zu konvertieren, bitte im Quelltext in der Datei ct-Bot.h die Kommentarzeichen vor MAP_AVAILABLE entfernen");
 			puts("und neu compilieren.");
 			exit(1);
@@ -259,4 +268,80 @@ void hand_cmd_args(int argc, char * argv[]) {
 		}
 	}
 }
-#endif	// PC
+
+/*!
+ * Liest RemoteCall-Commands von stdin ein
+ */
+static void read_command_thread(void) {
+	char input[255];
+
+	while (42) {
+		putc('>', stdout);
+		fgets(input, sizeof(input) - 1, stdin);
+		if (*input == '\n' || strncmp(input, "list", strlen("list")) == 0) {
+			extern const call_t calls[];
+			int i=0;
+			while (calls[i].func != NULL) {
+				printf("%s(%s)\n", calls[i].name, calls[i].param_info);
+				i++;
+			}
+			continue;
+		} else if (strncmp(input, "cancel", strlen("cancel")) == 0) {
+			printf("RemoteCall abgebrochen.\n");
+			deactivateCalledBehaviours(bot_remotecall_behaviour);
+			continue;
+		}
+
+		char * function = strtok(input, "(\n");
+		if (function == NULL || *function == '\n') {
+			continue;
+		}
+		char * param[REMOTE_CALL_MAX_PARAM] = {NULL};
+		remote_call_data_t params[REMOTE_CALL_MAX_PARAM] = {{0}};
+		int i;
+		for (i=0; i<REMOTE_CALL_MAX_PARAM; ++i) {
+			param[i] = strtok(NULL, ",)");
+			if (param[i] != NULL && *param[i] != '\n') {
+				params[i].s32 = atoi(param[i]);
+			}
+		}
+
+#ifdef DEBUG
+		printf("function=\"%s\"\n", function);
+#endif // DEBUG
+
+		for (i=0; i<REMOTE_CALL_MAX_PARAM; ++i) {
+			if (param[i] != NULL && *param[i] != '\n') {
+#ifdef DEBUG
+				printf("param[%d]=\"%s\"\n", i, param[i]);
+				printf("params[%d].s32=%d\tparams[%d].u32=0x%x\n", i, params[0].s32, i, params[0].u32);
+#endif // DEBUG
+			}
+		}
+
+		int8_t result = bot_remotecall(NULL, function, params);
+		if (result == 0) {
+			printf("RemoteCall \"%s(%d,%d,%d)\" gestartet\n", function, params[0].s32, params[1].s32, params[2].s32);
+		} else if (result == -1) {
+			printf("Es ist bereits ein RemoteCall aktiv!\n");
+		} else if (result == -2) {
+			char func[255] = "bot_";
+			strncpy(func + strlen(func), function, 255 - strlen(func));
+			result = bot_remotecall(NULL, func, params);
+			if (result == 0) {
+				printf("RemoteCall \"%s(%d,%d,%d)\" gestartet\n", func, params[0].s32, params[1].s32, params[2].s32);
+			} else {
+				printf("RemoteCall \"%s(%d,%d,%d)\" nicht vorhanden\n", function, params[0].s32, params[1].s32, params[2].s32);
+			}
+		}
+	}
+}
+
+/*!
+ * Initialisiert die Eingabekonsole fuer RemoteCalls
+ */
+void cmd_init(void) {
+	pthread_create(&cmd_thread, NULL, (void * (*)(void *)) read_command_thread, NULL);
+}
+
+#endif // PC

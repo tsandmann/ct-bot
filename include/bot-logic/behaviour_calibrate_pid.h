@@ -20,7 +20,6 @@
 /*! 
  * @file 	behaviour_calibrate_pid.h
  * @brief 	Kalibriert die Motorregelung des Bots
- * 
  * @author 	Timo Sandmann (mail@timosandmann.de)
  * @date 	14.04.2007
  */
@@ -31,24 +30,24 @@
 #ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
 #include "bot-logic/bot-logik.h"
 
-uint16 cal_pid_ete;		/*!< verbleibende Zeit bis zum Ende der Kalibrierung in Sekunden */
+uint16_t cal_pid_ete; /*!< verbleibende Zeit bis zum Ende der Kalibrierung in Sekunden */
 
 /*!
  * @brief		Das eigentliche Verhalten
- * @param data	Zeiger auf den Verhaltensdatensatz des Aufrufers
+ * @param *data	Zeiger auf den Verhaltensdatensatz des Aufrufers
  * @see			bot_calibrate_pid()
  * Die Funktionalitaet des Verhaltens ist aufgeteilt in: 
  * @see find_Kp_region(), @see find_best_Kp_Ki(), @see find_best_Kp() und @see find_best_Kd()
  */
-void bot_calibrate_pid_behaviour(Behaviour_t *data);
+void bot_calibrate_pid_behaviour(Behaviour_t * data);
 
 /*!
  * @brief			Kalibriert die Motorregelung des ct-Bots
- * @param caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
+ * @param *caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
  * @param speed		Geschwindigkeit, mit der Kalibriert werden soll (normalerweise BOT_SPEED_SLOW)
  * Die ermittelten Parameter werden eingestellt, aber nicht dauerhaft gespeichert!
  */
-void bot_calibrate_pid(Behaviour_t *caller, int16 speed);
+void bot_calibrate_pid(Behaviour_t * caller, int16_t speed);
 
 #endif	// BEHAVIOUR_CALIBRATE_PID_AVAILABLE
 #endif	// BEHAVIOUR_CALIBRATE_PID_H_

@@ -55,13 +55,13 @@ static void mouse_sens_writeByte(uint8_t data) {
 	MOUSE_DDR |= MOUSE_SDA_PIN; // SDA auf Output
 
 	for (i = 7; i >= 0;) {
-		MOUSE_PORT &= ~MOUSE_SCK_PIN; // SCK auf low, vorbereiten
+		MOUSE_PORT = (uint8_t) (MOUSE_PORT & ~MOUSE_SCK_PIN); // SCK auf low, vorbereiten
 
 		/* Daten rausschreiben */
 		if ((data & 0x80) == 0x80) {
 			MOUSE_PORT |= MOUSE_SDA_PIN;
 		} else {
-			MOUSE_PORT &= ~MOUSE_SDA_PIN;
+			MOUSE_PORT = (uint8_t) (MOUSE_PORT & ~MOUSE_SDA_PIN);
 		}
 
 		i--; // etwas warten
@@ -69,7 +69,7 @@ static void mouse_sens_writeByte(uint8_t data) {
 
 		MOUSE_PORT |= MOUSE_SCK_PIN; // SCK =1 Sensor uebernimmt auf steigender Flanke
 
-		data = data << 1; // naechstes Bit vorbereiten
+		data = (uint8_t) (data << 1); // naechstes Bit vorbereiten
 	}
 }
 
@@ -81,11 +81,11 @@ static uint8_t mouse_sens_readByte(void) {
 	int8_t i;
 	uint8_t data = 0;
 
-	MOUSE_DDR &= ~MOUSE_SDA_PIN; // SDA auf Input
+	MOUSE_DDR = (uint8_t) (MOUSE_DDR & ~MOUSE_SDA_PIN); // SDA auf Input
 
 	for (i = 7; i >= 0;) {
-		MOUSE_PORT &= ~MOUSE_SCK_PIN; // SCK =0 Sensor bereitet Daten auf fallender Flanke vor!
-		data = data << 1; // Platz schaffen
+		MOUSE_PORT = (uint8_t) (MOUSE_PORT & ~MOUSE_SCK_PIN); // SCK =0 Sensor bereitet Daten auf fallender Flanke vor!
+		data = (uint8_t) (data << 1); // Platz schaffen
 
 		i--; // etwas warten
 		__asm__ __volatile__("nop");
@@ -105,7 +105,7 @@ static uint8_t mouse_sens_readByte(void) {
  * wartet 100 us
  */
 static void mouse_sens_wait(void) {
-	_delay_loop_2(F_CPU / 4000000L * 100);
+	delay_us(100);
 }
 
 /*!
@@ -141,7 +141,7 @@ void mouse_sens_init(void) {
 	delay(100);
 
 	MOUSE_DDR |= MOUSE_SCK_PIN; // SCK auf Output
-	MOUSE_PORT &= ~MOUSE_SCK_PIN; // SCK auf 0
+	MOUSE_PORT = (uint8_t) (MOUSE_PORT & ~MOUSE_SCK_PIN); // SCK auf 0
 
 	delay(10);
 

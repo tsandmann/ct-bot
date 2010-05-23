@@ -51,15 +51,15 @@
 typedef struct {
 #if (defined PC) && (BYTE_ORDER == BIG_ENDIAN)
 	/* Bitfeld im big-endian-Fall umdrehen */
-	uint8_t command:8;		/*!< Kommando */
-	uint8_t direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
-	uint8_t subcommand:7;	/*!< Subkommando */
+	uint8_t command;		/*!< Kommando */
+	unsigned direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
+	unsigned subcommand:7;	/*!< Subkommando */
 #else
-	uint8_t command:8;		/*!< Kommando */
-	uint8_t subcommand:7;	/*!< Subkommando */
-	uint8_t direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
+	uint8_t command;		/*!< Kommando */
+	unsigned subcommand:7;	/*!< Subkommando */
+	unsigned direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
 #endif
-} __attribute__ ((packed)) request_t; // Keine Luecken in der Struktur lassen
+} PACKED request_t;
 
 
 /*! Kommando */
@@ -73,7 +73,7 @@ typedef struct {
 	uint8_t from;		/*!< Absender-Adresse */
 	uint8_t to;			/*!< Empfaenger-Adresse */
 	uint8_t CRC;		/*!< Markiert das Ende des Commands */
-} __attribute__ ((packed)) command_t; // Keine Luecken in der Struktur lassen
+} PACKED command_t;
 
 #define CMD_STARTCODE	'>'		/*!< Anfang eines Kommandos */
 #define CMD_STOPCODE	'<'		/*!< Ende eines Kommandos */
@@ -91,6 +91,7 @@ typedef struct {
 #define CMD_SENS_MOUSE	'm'		/*!< Maussensor */
 #define CMD_SENS_ERROR  'e'		/*!< Motor- oder Batteriefehler */
 #define CMD_SENS_RC5 	'R'		/*!< IR-Fernbedienung */
+#define CMD_SENS_BPS	'b'		/*!< Bot Positioning System */
 
 #define CMD_SENS_MOUSE_PICTURE	'P'		/*!< Bild vom Maussensor in data_l steht, welche Nummer der 1. Pixel hat */
 
@@ -137,7 +138,9 @@ typedef struct {
 #define SUB_MAP_DATA_4		'G'	/*!< Map-Daten Teil 4 */
 #define SUB_MAP_REQUEST		'R'	/*!< Aufforderung die komplette Karte (neu) zu uebertragen */
 #define SUB_MAP_LINE		'L'	/*!< Linie zeichnen */
+#define SUB_MAP_CIRCLE		'C'	/*!< Kreis zeichnen */
 #define SUB_MAP_CLEAR_LINES	'X'	/*!< Linien loeschen */
+#define SUB_MAP_CLEAR_CIRCLES	'Y' /*!< Kreise loeschen */
 
 
 #define DIR_REQUEST	0			/*!< Richtung fuer Anfragen */

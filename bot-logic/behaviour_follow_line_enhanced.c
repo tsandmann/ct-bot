@@ -92,7 +92,7 @@ static uint8_t check_sensors(void) {
 	// Abstand seit letztem Check ermitteln; nur bei Ueberschreitung des Mindestabstandes seit letzter Hindernisumrundung
 	// darf wegen Hindernis abgebrochen werden, da sonst nach Umrundung und gleichem Hindernis beim Ausrichten des Linienfolgers
 	// dieser sonst gleich wieder moeglicherweise abgebrochen wird
-	uint16_t diff = get_dist(x_pos, y_pos, pos_on_line.x, pos_on_line.y);
+	uint16_t diff = (uint16_t) get_dist(x_pos, y_pos, pos_on_line.x, pos_on_line.y);
 	if ((diff >= 100 * 100) || (pos_on_line.x == 0 && pos_on_line.y == 0)) {
 		// Merkpos auf 0, wenn Abstand ueberschritten wurde
 		pos_on_line.x = 0;
@@ -138,16 +138,16 @@ void bot_follow_line_enh_behaviour(Behaviour_t * data) {
 		break;
 
 	case TURN_AROUND_HAZARD: // auf jeden Fall erst mal in Ausgangsrichtung drehen
-//TODO:	beim Drehen in beide Richtungen ermitteln, ob schon Kante, also Ende, des Hindernisses (Stein auf Linie) gesehen wird und
-		// weil umgehen in diese Richtung kuerzer ist, dortlang drehen und Hindernisumgeher starten; solve_maze geht leider nur wenn bot sich
-		// hier links dreht und dann rechts die Wand hat
+/*! @todo	beim Drehen in beide Richtungen ermitteln, ob schon Kante, also Ende, des Hindernisses (Stein auf Linie) gesehen wird und
+			weil umgehen in diese Richtung kuerzer ist, dortlang drehen und Hindernisumgeher starten; solve_maze geht leider nur wenn bot sich
+			hier links dreht und dann rechts die Wand hat */
 		bot_turn(data, 70); // links drehen
 		line_state_enh = GO_AROUND_HAZARD; // naechsten Einsprung setzen
 		break;
 
 	case GO_AROUND_HAZARD: // etwas vorwaerts fahren um von Linie wegzukommen
-//TODO:	beim Drehen in beide Richtungen ermitteln, ob schon Kante, also Ende, des Hindernisses (Stein auf Linie) gesehen wird und
-		// weil umgehen in diese Richtung kuerzer ist, dortlang drehen und Hindernisumgeher starten
+/*! @todo	beim Drehen in beide Richtungen ermitteln, ob schon Kante, also Ende, des Hindernisses (Stein auf Linie) gesehen wird und
+			weil umgehen in diese Richtung kuerzer ist, dortlang drehen und Hindernisumgeher starten */
 		bot_goto_dist(data, 50, 1); // etwas vorwaerts fahren um von Linie wegzukommen
 		line_state_enh = START_SOLVE_MAZE; // naechster Einsprung: Start solve_maze zum Umrunden des Hindernisses
 		break;

@@ -37,9 +37,9 @@
 
 #include <avr/io.h>
 
-static uint8 Send_adr(uint8 adr);
-static uint8 Get_byte(uint8 * rx_ptr, uint8 last_byte);
-static uint8 Send_byte(uint8 data);
+static uint8_t Send_adr(uint8_t adr);
+static uint8_t Get_byte(uint8_t * rx_ptr, uint8_t last_byte);
+static uint8_t Send_byte(uint8_t data);
 
 /*!
  * TWI Buss schliesen
@@ -60,7 +60,7 @@ static void Wait_TWI_int(void) {
  * Sende Start Sequence
  * @return Resultat der Aktion
  */
-static uint8 Send_start(void) {
+static uint8_t Send_start(void) {
 	TWCR = ((1<<TWINT)+(1<<TWSTA)+(1<<TWEN)); 		/*!< Sende START */
 
 	Wait_TWI_int();									/*!< Warte auf TWI interrupt */
@@ -82,8 +82,8 @@ static void Send_stop(void) {
  * @param *data_pack Container mit den Daten fuer den Treiber
  * @return Resultat der Aktion
  */
-uint8 Send_to_TWI(tx_type_t * data_pack) {
-	uint8 state,i,j;
+uint8_t Send_to_TWI(tx_type_t * data_pack) {
+	uint8_t state,i,j;
 
 	state = SUCCESS;
 
@@ -135,7 +135,7 @@ uint8 Send_to_TWI(tx_type_t * data_pack) {
  * Sende ein Byte
  * @param data das zu uebertragende Byte
  */
-static uint8 Send_byte(uint8 data) {
+static uint8_t Send_byte(uint8_t data) {
 	Wait_TWI_int();
 	TWDR = data;
  	TWCR = ((1<<TWINT)+(1<<TWEN));
@@ -150,7 +150,7 @@ static uint8 Send_byte(uint8 data) {
  * @param adr die gewuenschte Adresse
  * @return Resultat der Aktion
  */
-static uint8 Send_adr(uint8 adr) {
+static uint8_t Send_adr(uint8_t adr) {
 	Wait_TWI_int();
 	TWDR = adr;
 	TWCR = ((1<<TWINT)+(1<<TWEN));
@@ -166,7 +166,7 @@ static uint8 Send_adr(uint8 adr) {
  * @param last_byte Flag ob noch Daten erwartet werden
  * @return Resultat der Aktion
  */
-static uint8 Get_byte(uint8 * rx_ptr, uint8 last_byte) {
+static uint8_t Get_byte(uint8_t * rx_ptr, uint8_t last_byte) {
 	Wait_TWI_int();
 	if(last_byte)
 		TWCR = ((1<<TWINT)+(1<<TWEA)+(1<<TWEN));
@@ -210,7 +210,7 @@ uint8_t Send_to_TWI(tx_type_t * pData) {
 	/* Daten senden und empfangen per i2c-Treiber (blockierend) */
 	i2c_write_read(pData->slave_adr, pWrite, toWrite, pRead, toRead);
 	uint8_t result = i2c_wait();
-	return result == TW_NO_INFO ? SUCCESS : result;
+	return (uint8_t) (result == TW_NO_INFO ? SUCCESS : result);
 }
 #endif	// OLD_VERSION
 

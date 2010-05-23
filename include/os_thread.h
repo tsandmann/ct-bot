@@ -77,6 +77,9 @@ typedef struct {
 } os_stat_data_t;
 
 #ifdef MCU
+
+#define OS_TASK_ATTR	__attribute__((OS_task)) /*!< Attribut fuer main-Funktion eines Threads */
+
 /*! TCB eines Threads */
 typedef struct {
 	void * stack;				/*!< Stack-Pointer */
@@ -106,7 +109,7 @@ void os_kernel_log_init(void);
 /*!
  * Idle-Thread
  */
-void os_idle(void) __attribute__((OS_task));
+void os_idle(void) OS_TASK_ATTR;
 
 /*!
  * Schuetzt den folgenden Block (bis os_exitCS()) vor Threadswitches.
@@ -114,9 +117,9 @@ void os_idle(void) __attribute__((OS_task));
  * Es ist allerdings keine Verschachtelung moeglich! Zwischen os_enterCS()
  * und os_exitCS() sollte daher kein Funktionsaufruf erfolgen.
  */
-#define os_enterCS() {						\
-	os_scheduling_allowed = 0;				\
-	__asm__ __volatile__("":::"memory");	\
+#define os_enterCS() { \
+	os_scheduling_allowed = 0; \
+	__asm__ __volatile__("":::"memory"); \
 }
 
 /*!
@@ -153,6 +156,7 @@ static inline void os_thread_sleep(uint32_t ms) {
  * @param *signal	Signal, das entfernt werden soll
  */
 static inline void os_signal_release(os_signal_t * signal) {
+	signal = signal; // kein warning
 	os_thread_running->wait_for = &dummy_signal;
 }
 
@@ -175,6 +179,8 @@ static inline void os_signal_unlock(os_signal_t * signal) {
 
 #else	// PC
 #include <pthread.h>
+
+#define OS_TASK_ATTR /*!< Attribut fuer main-Funktion eines Threads (Dummy fuer PC) */
 
 typedef pthread_t Tcb_t;
 
@@ -228,7 +234,7 @@ void os_signal_unlock(os_signal_t * signal);
  * @param *pIp		Zeiger auf die Main-Funktion des Threads (Instruction-Pointer)
  * @return			Zeiger auf den TCB des angelegten Threads
  */
-Tcb_t * os_create_thread(void * pStack, void * pIp);
+Tcb_t * os_create_thread(void * pStack, void (* pIp)(void));
 
 /*!
  * Schaltet auf den Thread mit der naechst niedrigeren Prioritaet um, der lauffaehig ist,

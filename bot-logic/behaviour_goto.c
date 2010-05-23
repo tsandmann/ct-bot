@@ -40,10 +40,10 @@
 #define GOTO_FAST		40			/*!< Wenn Encoder-Distanz < GOTO_FAST dann schnelle Fahrt, sonst maximale Fahrt */
 
 
-static int16 mot_l_goto=0;		/*!< Speichert wie weit der linke Motor drehen soll */
-static int16 mot_r_goto=0;		/*!< Speichert wie weit der rechte Motor drehen soll */
-static int16 mot_goto_l=0;	/*!< Muss der linke Motor noch drehen?  */
-static int16 mot_goto_r=0;	/*!< Muss der rechte Motor noch drehen?  */
+static int16_t mot_l_goto=0;		/*!< Speichert wie weit der linke Motor drehen soll */
+static int16_t mot_r_goto=0;		/*!< Speichert wie weit der rechte Motor drehen soll */
+static int16_t mot_goto_l=0;	/*!< Muss der linke Motor noch drehen?  */
+static int16_t mot_goto_r=0;	/*!< Muss der rechte Motor noch drehen?  */
 
 
 /*!
@@ -51,11 +51,11 @@ static int16 mot_goto_r=0;	/*!< Muss der rechte Motor noch drehen?  */
  * @param *data der Verhaltensdatensatz
  * @see bot_goto()
  */
-void bot_goto_behaviour(Behaviour_t *data) {
+void bot_goto_behaviour(Behaviour_t * data) {
 
-	int16 diff_l;
+	int16_t diff_l;
 	/* Restdistanz links */
-	int16 diff_r;
+	int16_t diff_r;
 	/* Restdistanz rechts */
 
 	/* Sind beide Zaehler Null und ist die Funktion active 
@@ -136,11 +136,11 @@ void bot_goto_behaviour(Behaviour_t *data) {
 
 /*!
  * Drehe die Raeder um die gegebene Zahl an Encoder-Schritten weiter
- * @param caller	Der Aufrufer
+ * @param *caller	Der Aufrufer
  * @param left		Schritte links
  * @param right		Schritte rechts
  */
-void bot_goto(Behaviour_t * caller, int16 left, int16 right) {
+void bot_goto(Behaviour_t * caller, int16_t left, int16_t right) {
 	// Zielwerte speichern
 	mot_l_goto=left;
 	mot_r_goto=right;

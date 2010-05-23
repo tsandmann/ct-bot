@@ -21,23 +21,49 @@
  * @file 	global.h
  * @brief 	Allgemeine Definitionen und Datentypen
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	20.12.05
+ * @date 	20.12.2005
  */
 
 #ifndef global_H
 #define global_H
 
 #ifndef __ASSEMBLER__
+#ifdef __WIN32__
+/* Prototypes, die in den MinGW-Includes fehlen -> keine Warnings */
+#include <stddef.h>
+#include <stdarg.h>
+#ifndef _FILE_DEFINED
+#define _FILE_DEFINED
+typedef struct _iobuf {
+	char * _ptr;
+	int _cnt;
+	char * _base;
+	int _flag;
+	int _file;
+	int _charbuf;
+	int _bufsiz;
+	char * _tmpfname;
+} FILE;
+#endif	/* Not _FILE_DEFINED */
+FILE * fopen64(const char *, const char *);
+long long ftello64 (FILE *);
+int getc (FILE *);
+int getchar (void);
+int putc (int, FILE *);
+int putchar(int);
+#ifndef __VALIST
+#define __VALIST __gnuc_va_list
+#endif
+int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
+#endif // __WIN32__
+
 #include <stdint.h>
+#include <math.h>
 
 #ifndef MCU
 #ifndef PC
 #define PC		/*!< Zielplattform PC */
 #endif
-#endif
-
-#ifndef WIN32
-#define bool byte;	/*!< True/False-Aussage */
 #endif
 
 #ifdef DOXYGEN		/*!< Nur zum Generieren von Doku!!!! */
@@ -46,14 +72,6 @@
 #define WIN32		/*!< System Windows */
 #define __linux__	/*!< System Linux */
 #endif	// DOXYGEN
-
-#define byte	uint8_t		/*!< vorzeichenlose 8-Bit-Zahl */
-#define uint8	uint8_t		/*!< vorzeichenlose 8-Bit-Zahl */
-#define int8	int8_t		/*!< vorzeichenbehaftete 8-Bit-Zahl */
-#define uint16	uint16_t	/*!< vorzeichenlose 16-Bit-Zahl */
-#define int16	int16_t		/*!< vorzeichenbehaftete 16-Bit-Zahl */
-#define uint32	uint32_t	/*!< vorzeichenlose 32-Bit-Zahl */
-#define	int32	int32_t		/*!< vorzeichenbehaftete 32-Bit-Zahl */
 
 #define True	1			/*!< Wahr */
 #define False	0			/*!< Falsch */
@@ -73,7 +91,7 @@
 #endif	// WIN32
 #endif	// PC
 
-#define binary(var,bit) ((var >> bit)&1)	/*!< gibt das Bit "bit" von "var" zurueck */
+#define binary(var, bit) ((var >> bit) & 1)	/*!< gibt das Bit "bit" von "var" zurueck */
 
 #ifdef WIN32
 #define LINE_FEED "\n\r"	/*!< Linefeed fuer Windows */
@@ -84,7 +102,7 @@
 #ifdef MCU
 #include <avr/interrupt.h>
 #ifdef SIGNAL
-#define NEW_AVR_LIB	/*!< AVR_LIB-Version */
+#define NEW_AVR_LIB	/*!< neuere AVR_LIB-Version */
 #else
 #include <avr/signal.h>
 #endif
@@ -94,13 +112,30 @@
 #endif
 #endif	// MCU
 
-/*!
- * 2D-Position. Ist effizienter, als Zeiger auf X- und Y-Anteil
- */
+#ifndef DOXYGEN
+#define PACKED __attribute__ ((packed)) /*!< packed-Attribut fuer Strukturen */
+#else
+#define PACKED /*!< Dummy, falls Doxygen aktiv */
+#endif
+
+/*!2D-Position. Ist effizienter, als Zeiger auf X- und Y-Anteil */
 typedef struct {
 	int16_t x; /*!< X-Anteil der Position */
 	int16_t y; /*!< Y-Anteil der Position */
-} __attribute__ ((packed)) position_t;
+} PACKED position_t;
+
+/*! Repraesentation eines Bits, dem ein Byte-Wert zugewiesen werden kann */
+typedef union {
+	uint8_t byte;
+	unsigned bit:1;
+} PACKED bit_t;
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+#ifndef M_PI_2
+#define M_PI_2	(M_PI / 2.0)	/*!< pi/2 */
+#endif
 
 #else	// __ASSEMBLER__
 

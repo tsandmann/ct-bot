@@ -61,14 +61,14 @@ void bot_gotoxy_behaviour(Behaviour_t * data) {
 	switch(gotoState) {
 		case INITIAL_TURN:
 			gotoState=GOTO_LOOP;
-			bot_turn(data, calc_angle_diff(xDiff, yDiff));
+			bot_turn(data, (int16_t) calc_angle_diff(xDiff, yDiff));
 			break;
 
 		case GOTO_LOOP:
 			/* Position erreicht? */
 			if (abs(xDiff)<10 || abs(yDiff)<10) {
 				gotoState=CORRECT_HEAD;
-				bot_turn(data, calc_angle_diff(xDiff, yDiff));
+				bot_turn(data, (int16_t) calc_angle_diff(xDiff, yDiff));
 				break;
 			}
 			speedWishLeft=BOT_SPEED_FOLLOW;

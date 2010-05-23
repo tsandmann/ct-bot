@@ -41,12 +41,12 @@
 #define GO			4
 #define END			99
 
-// Zustaende für das Ausladeverhalten START und END sind bereits weiter oben definiert
+// Zustaende fuer das Ausladeverhalten START und END sind bereits weiter oben definiert
 #define GO_BACK		21
 #define CLOSE_DOOR	22
 
-static uint8_t catch_pillar_state = START;		/*!< Statusvariable für das Einfang-Verhalten */
-static uint8_t unload_pillar_state = START;		/*!< Statusvariable für das Auslade-Verhalten */
+static uint8_t catch_pillar_state = START;		/*!< Statusvariable fuer das Einfang-Verhalten */
+static uint8_t unload_pillar_state = START;		/*!< Statusvariable fuer das Auslade-Verhalten */
 
 #ifndef BEHAVIOUR_GOTO_POS_AVAILABLE
 #undef CATCH_PILLAR_VERSION
@@ -56,18 +56,18 @@ static uint8_t unload_pillar_state = START;		/*!< Statusvariable für das Auslad
 
 #if CATCH_PILLAR_VERSION == 1
 
-static int16 startangle=0;      			/*!< gemerkter Anfangswinkel einfach als Integer */
+static int16_t startangle = 0; /*!< gemerkter Anfangswinkel einfach als Integer */
 /*!
  * Fange eine Dose ein
  * @param *data der Verhaltensdatensatz
  */
 void bot_catch_pillar_behaviour(Behaviour_t * data) {
-	static uint8 cancelcheck=False;
+	static uint8_t cancelcheck=False;
 	static float angle;
 
 	switch (catch_pillar_state){
 		case START:
-		       startangle=heading;
+		       startangle=heading_int;
 		       cancelcheck=False;
 		       catch_pillar_state=SEARCH_LEFT;
 		     break;
@@ -372,7 +372,7 @@ static uint8_t turn_cancel_check(void) {
 	case 0:
 		/* Check mit linkem Sensor */
 		if (sensDistL <= MAX_PILLAR_DISTANCE) {
-			headingL = heading;
+			headingL = (int16_t) heading;
 			side = 1;
 			return False;
 		}
@@ -381,7 +381,7 @@ static uint8_t turn_cancel_check(void) {
 		/* Check mit rechtem Sensor */
 		if (sensDistR <= MAX_PILLAR_DISTANCE) {
 			catch_pillar_state = state_after_cancel;
-			headingR = heading;
+			headingR = (int16_t) heading;
 			return True;
 		}
 		break;
@@ -431,7 +431,7 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 		if (dHead < 0) {
 			dHead += 360;
 		}
-		int16_t dist = (DISTSENSOR_POS_SW * 2.0f) / dHead * (180.0f / M_PI);
+		int16_t dist = (int16_t) ((DISTSENSOR_POS_SW * 2.0f) / dHead * (180.0f / M_PI));
 		/* Objektkoordis berechnen */
 		obj_pos = calc_point_in_distance(headingR, /*DISTSENSOR_POS_FW + */ dist,
 				-DISTSENSOR_POS_SW);

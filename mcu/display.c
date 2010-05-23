@@ -40,7 +40,7 @@
 /*! Puffergroesse fuer eine Zeile in Bytes */
 #define DISPLAY_BUFFER_SIZE	(DISPLAY_LENGTH + 1)
 
-uint8 display_screen=0;	/*!< zurzeit aktiver Displayscreen */
+uint8_t display_screen = 0;	/*!< zurzeit aktiver Displayscreen */
 
 #define DISPLAY_CLEAR 0x01		/*!< Kommando zum Loeschen */
 #define DISPLAY_CURSORHOME 0x02	/*!< Kommando fuer den Cursor */
@@ -50,7 +50,7 @@ uint8 display_screen=0;	/*!< zurzeit aktiver Displayscreen */
 
 #define DISPLAY_PORT			PORTC		/*!< Port an dem das Display haengt */
 #define DISPLAY_DDR				DDRC		/*!< Port an dem das Display haengt */
-#define DPC (DISPLAY_PORT & ~DISPLAY_OUT)	/*!< Port des Displays */
+#define DPC (uint8_t) (DISPLAY_PORT & ~DISPLAY_OUT)	/*!< Port des Displays */
 //#define DRC (DDRC & ~DISPLAY_PINS)
 
 //#define DISPLAY_READY_PINR	PINC		/*!< Port an dem das Ready-Flag des Display haengt */
@@ -102,12 +102,12 @@ static void display_cmd(uint8_t cmd) {
 	shift_data_out(cmd, SHIFT_LATCH, SHIFT_REGISTER_DISPLAY);
 
 	/* 47 us warten */
-	_delay_loop_2(F_CPU / 4000000L * 47);
-	DISPLAY_PORT = DPC;	// Alles zurück setzen ==> Fallende Flanke von Enable
+	delay_us(47);
+	DISPLAY_PORT = DPC;	// Alles zurueck setzen ==> Fallende Flanke von Enable
 
 	if (cmd == DISPLAY_CLEAR) {
 		/* 1.52 ms warten */
-		_delay_loop_2(F_CPU / 4000000L * 1520);
+		delay_us(1520);
 	}
 }
 
@@ -117,10 +117,10 @@ static void display_cmd(uint8_t cmd) {
  */
 void display_data(char data) {
 	/* Zeichen aus data in den Displayspeicher schreiben */
-	shift_data_out(data, SHIFT_LATCH, SHIFT_REGISTER_DISPLAY | DISPLAY_RS);
+	shift_data_out((uint8_t) data, SHIFT_LATCH, SHIFT_REGISTER_DISPLAY | DISPLAY_RS);
 
 	/* 47 us warten */
-	_delay_loop_2(F_CPU / 4000000L * 47);
+	delay_us(47);
 	DISPLAY_PORT = DPC;	// Alles zurueck setzen ==> Fallende Flanke von Enable
 }
 
@@ -142,23 +142,23 @@ void display_clear(void) {
 void display_cursor (uint8_t row, uint8_t column) {
    switch (row) {
     case 1:
-		display_cmd (0x80 + column - 1);
+		display_cmd ((uint8_t) (0x80 + column - 1));
 		break;
     case 2:
-		display_cmd (0xc0 + column - 1);
+		display_cmd ((uint8_t) (0xc0 + column - 1));
 		break;
     case 3:
-		display_cmd (0x94 + column - 1);
+		display_cmd ((uint8_t) (0x94 + column - 1));
 		break;
     case 4:
-		display_cmd (0xd4 + column - 1);
+		display_cmd ((uint8_t) (0xd4 + column - 1));
 		break;
     default: break;
    }
 
 #ifdef DISPLAY_REMOTE_AVAILABLE
-  int16_t r = row - 1;
-  int16_t c = column - 1;
+  uint8_t r = (uint8_t) (row - 1);
+  uint8_t c = (uint8_t) (column - 1);
   remote_column = c;
   remote_row = r;
 #endif
@@ -172,16 +172,16 @@ void display_init(void) {
 	shift_init();
 
 	DISPLAY_DDR |= DISPLAY_OUT;		// Ausgaenge
-	DISPLAY_DDR &= ~DISPLAY_IN;		// Eingaenge
+	DISPLAY_DDR = (uint8_t) (DISPLAY_DDR & ~DISPLAY_IN); // Eingaenge
 
 	delay(12);		// Display steht erst 10ms nach dem Booten bereit
 
 	// Register in 8-Bit-Modus 3x uebertragen, dazwischen warten
 	shift_data_out(0x38, SHIFT_LATCH, SHIFT_REGISTER_DISPLAY);
-	DISPLAY_PORT= DPC;
+	DISPLAY_PORT = DPC;
 	delay(5);
 	shift_data_out(0x38, SHIFT_LATCH, SHIFT_REGISTER_DISPLAY);
-	DISPLAY_PORT= DPC;
+	DISPLAY_PORT = DPC;
 	delay(5);
 	shift_data_out(0x38, SHIFT_LATCH, SHIFT_REGISTER_DISPLAY);
 	DISPLAY_PORT = DPC;
@@ -207,7 +207,7 @@ uint8_t display_flash_printf(const char * format, ...) {
 
 	/* Sicher gehen, dass der zur Verfuegung stehende Puffer nicht ueberlaeuft */
 	va_start(args, format);
-	uint8_t len = vsnprintf_P(display_buf, DISPLAY_BUFFER_SIZE, format, args);
+	uint8_t len = (uint8_t) vsnprintf_P(display_buf, DISPLAY_BUFFER_SIZE, format, args);
 	va_end(args);
 
 	/* Ausgeben bis Puffer leer ist */
@@ -222,7 +222,7 @@ uint8_t display_flash_printf(const char * format, ...) {
 	int16_t r = remote_row;
 	command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, c, r, 0);
 	command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, 0, 0, display_buf);
-	remote_column += len;
+	remote_column = (uint8_t) (remote_column + len);
 #endif
 	return len;
 }

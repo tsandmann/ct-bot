@@ -21,7 +21,7 @@
  * @file 	behaviour_drive_distance.h
  * @brief 	Bot faehrt ein Stueck
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	03.11.06
+ * @date 	03.11.2006
  */
 
 
@@ -38,21 +38,13 @@
 #define BEHAVIOUR_DRIVE_DISTANCE_H_
 
 #include "bot-logic/bot-logik.h"
+#include "math_utils.h"
 
 #define USE_GOTO_POS_DIST	/*!< Ersetzt alle drive_distance()-Aufrufe mit dem goto_pos-Verhalten, falls vorhanden */
 
 #ifndef BEHAVIOUR_GOTO_POS_AVAILABLE
 #undef USE_GOTO_POS_DIST
 #endif
-
-#if defined BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE || defined BEHAVIOUR_OLYMPIC_AVAILABLE
-/*!
- * laesst den Bot in eine Richtung fahren.
- * Es handelt sich hierbei nicht im eigentlichen Sinn um ein Verhalten, sondern ist nur eine Abstraktion der Motorkontrollen.
- * @param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
- * @param speed Gibt an, wie schnell der Bot fahren soll. */
-void bot_drive(int8 curve, int16 speed);
-#endif	// BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE || BEHAVIOUR_OLYMPIC_AVAILABLE
 
 #ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 #ifndef USE_GOTO_POS_DIST
@@ -71,11 +63,23 @@ void bot_drive_distance_behaviour(Behaviour_t * data);
  */
 void bot_drive_distance(Behaviour_t * caller, int8_t curve, int16_t speed, int16_t cm);
 
-#else	// USE_GOTO_POS_DIST
+#else // USE_GOTO_POS_DIST
 /* wenn goto_pos() vorhanden ist und USE_GOTO_POS_DIST an, leiten wir alle drive_distance()-Aufurfe dorthin um */
 #undef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
-#define bot_drive_distance(caller, curve, speed, distance)	bot_goto_dist(caller, (distance*10), speed)
+static inline void bot_drive_distance(Behaviour_t * caller, int8_t curve, const int16_t speed, const int16_t cm) {
+	curve = curve;
+	bot_goto_dist(caller, cm * 10, sign16(speed));
+}
 #endif	// USE_GOTO_POS_DIST
 #endif	// BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+
+#if defined BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE || defined BEHAVIOUR_OLYMPIC_AVAILABLE
+/*!
+ * laesst den Bot in eine Richtung fahren.
+ * Es handelt sich hierbei nicht im eigentlichen Sinn um ein Verhalten, sondern ist nur eine Abstraktion der Motorkontrollen.
+ * @param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
+ * @param speed Gibt an, wie schnell der Bot fahren soll. */
+void bot_drive(int8_t curve, int16_t speed);
+#endif	// BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE || BEHAVIOUR_OLYMPIC_AVAILABLE
 #endif	/*BEHAVIOUR_DRIVE_DISTANCE_H_*/
 

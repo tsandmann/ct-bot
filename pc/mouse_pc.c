@@ -27,6 +27,8 @@
 
 #ifdef PC
 
+#include "mouse.h"
+
 /*!
  * Initialisiere Maussensor
  */
@@ -45,7 +47,7 @@ void mouse_transmit_picture(void) {
  * Fuer simulierten Bot zur Zeit mit einem fixen Wert belegt, da fuer den
  * Boden im Sim keine Texturen verwendet werden
  */
-int8_t mouse_get_squal(void) {
+uint8_t mouse_get_squal(void) {
 	return 70;
 }
 

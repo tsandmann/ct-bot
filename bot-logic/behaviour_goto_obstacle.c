@@ -195,14 +195,12 @@ void bot_goto_obstacle_behaviour(Behaviour_t * data) {
 		/* kleinere Distanz als Richtwert benutzen */
 		int16_t dist = sensDistL < sensDistR ? sensDistL : sensDistR;
 		LOG_DEBUG("Hindernis ist %d|%d mm entfernt", sensDistL, sensDistR);
-//		int16_t dist = distLeft < distRight ? distLeft : distRight;
 		if (dist <= 600) {
 			/* Entfernung - gewuenschte Entfernung fahren */
 			int16_t to_drive = dist - obst_distance;
 			LOG_DEBUG("to_drive=%d", to_drive);
 			if (abs(to_drive) > TARGET_MARGIN) {
 				bot_goto_dist(data, abs(to_drive), sign16(to_drive));
-//				obst_state = GOTO_DIST_STATE;
 			} else {
 				obst_state = ALIGN_STATE;
 			}
@@ -210,9 +208,9 @@ void bot_goto_obstacle_behaviour(Behaviour_t * data) {
 			/* kein Hindernis in Sichtweite, also erstmal vorfahren */
 			LOG_DEBUG("Noch kein Hindernis in Sichtweite");
 			bot_goto_dist(data, 400, 1);
-//TODO:	Eleganter waere es, nicht nur 40 cm zu fahren und bei Hinderniserkennung per
-//		cancel_behaviour abzubrechen. Geht allerdings nicht, wenn cancel_behaviour
-//		schon anderweitig verwendet wird.
+/*! @todo	Eleganter waere es, nicht nur 40 cm zu fahren und bei Hinderniserkennung per
+			cancel_behaviour abzubrechen. Geht allerdings nicht, wenn cancel_behaviour
+			schon anderweitig verwendet wird. */
 	//		bot_goto_dist(data, 4000, 1);
 	//		bot_cancel_behaviour(data, bot_goto_pos_behaviour, check_distance);
 //			obst_state = MEASURE_DIST_STATE;
@@ -242,7 +240,7 @@ void bot_goto_obstacle_behaviour(Behaviour_t * data) {
 }
 
 /*!
- * Botenfunktion des Positionierungsverhaltens.
+ * Botenfunktion des goto_obstacle-Verhaltens.
  * Bewegt den Bot auf distance mm in aktueller Blickrichtung an ein Hindernis heran
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  * @param distance	Distanz in mm, in der der Bot vor dem Hindernis stehen bleiben soll

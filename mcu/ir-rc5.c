@@ -19,7 +19,7 @@
 
 /*!
  * @file 	ir-rc5.c
- * @brief 	Routinen für die Dekodierung von RC5-Fernbedienungs-Codes
+ * @brief 	Routinen fuer die Dekodierung von RC5-Fernbedienungs-Codes
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
  */
@@ -38,124 +38,112 @@
 #include "ir-rc5.h"
 #include "timer.h"
 
-
 // -----------------------------------------------------------------------------
 // Timing
 // -----------------------------------------------------------------------------
-#define IR_SAMPLES_PER_BIT	10  	/*!< 10 Samples per Bit */
-#define IR_SAMPLES_PER_BIT_EARLY 8	/*!< Flanke fruehestens nach 8 Samples */
-#define IR_SAMPLES_PER_BIT_LATE 12	/*!< Flanke spaetestens nach 12 Samples */
-#define IR_SAMPLES_PER_BIT_MIN	 3 	/*!< Flanke vor 3 Samples -> paket verwerfen */
-#define IR_PAUSE_SAMPLES      250	/*!< Startbit ist erst nach 250 Samples ohne */
-				    // Pegelaenderung gueltig -- eigentlich muesste
-				    // man rund 500 Samples abwarten (50 x
-				    // Bitzeit), doch weil der Samplezaehler ein
-				    // Byte ist, beschraenken wir uns hier auf ein
-				    // Minimum von 250 Samples
+#define IR_SAMPLES_PER_BIT_MIN		2	/*!< Flanke vor 3 Samples -> Paket verwerfen */
 
-#define IR_PORT		PORTB			/*!< Port B */
-#define IR_DDR		DDRB			/*!< DDR of Port B */
-#define IR_PINR		PINB			/*!< Port B input */
-#define IR_PIN		1				/*!< Pin 1 */
-
-
-
-static uint8_t ir_lastsample = 0;	/*!< zuletzt gelesenes Sample */
-static uint8_t ir_bittimer   = 0;	/*!< zaehlt die Aufrufe von ir_isr() */
-
-static uint16_t ir_data_tmp = 0; /*!< RC5-Bitstream */
-static uint8_t ir_bitcount = 0;	/*!< Anzahl gelesener Bits */
-
-volatile uint16_t ir_data	= 0; /*!< letztes komplett gelesenes RC5-Paket */
+/*! @todo Das gehoert eigentlich nicht hierhin */
+#ifdef RC5_AVAILABLE
+ir_data_t rc5_ir_data = {
+	0, 0, 0, 0, 0, 0
+};
+#endif
+#ifdef BPS_AVAILABLE
+ir_data_t bps_ir_data = {
+	0, 0, 0, 0, 0, BPS_NO_DATA
+};
+#endif
 
 /*!
- * Interrupt Serviceroutine
+ * Interrupt Serviceroutine,
  * wird alle 176 us aufgerufen
+ * @param *data Zeiger auf Arbeitsdaten
+ * @param pin_r Input-Port
+ * @param pin Input-Pin
+ * @param pause_samples Anzahl der Samples, bevor ein Startbit erkannt wird
+ * @param samples_per_bit Anzahl der Samples / Bit
+ * @param bits Anzahl der Bits, die Empfangen werden sollen (inkl. Startbit)
  */
-void ir_isr(void) {
-	// sample lesen
-	byte sample = 1;
+void ir_isr(ir_data_t * data, volatile uint8_t * pin_r, const uint8_t pin, const uint8_t pause_samples,
+		const uint8_t samples_per_bit, const uint8_t bits) {
 
-	if ((IR_PINR & (1 << IR_PIN)) != 0) {
+	const uint8_t samples_per_bit_early = (uint8_t)(samples_per_bit - 2); /*!< Flanke fruehestens nach X Samples */
+	const uint8_t samples_per_bit_late = (uint8_t)(samples_per_bit + 2); /*!< Flanke spaetestens nach X Samples */
+
+	/* Sample lesen */
+	uint8_t sample = 1;
+
+	if ((*pin_r & (1 << pin)) != 0) {
 		sample = 0;
 	}
 
-	// bittimer erhoehen (bleibt bei 255 stehen)
-	if (ir_bittimer < 255) {
-		ir_bittimer++;
+	/* Bittimer erhoehen (bleibt bei 255 stehen) */
+	if (data->ir_bittimer < 255) {
+		data->ir_bittimer++;
 	}
 
-	// flankenerkennung
-	if (ir_lastsample != sample) {
-		if (ir_bittimer <= IR_SAMPLES_PER_BIT_MIN) {
-			// flanke kommt zu frueh: paket verwerfen
-			ir_bitcount=0;
+	/* Flankenerkennung */
+	if (data->ir_lastsample != sample) {
+		if (data->ir_bittimer <= IR_SAMPLES_PER_BIT_MIN) {
+			data->ir_bitcount = 0; // Flanke kommt zu frueh: Paket verwerfen
 		} else {
-			// Startbit
-			if (ir_bitcount == 0) {
-				if ((sample == 1) && (ir_bittimer > IR_PAUSE_SAMPLES)) {
+			/* Startbit */
+			if (data->ir_bitcount == 0) {
+				if ((sample == 1) && (data->ir_bittimer > pause_samples)) {
 					// Startbit speichern
-					ir_data_tmp = 1;
-					ir_bitcount++;
+					data->ir_data_tmp = 1;
+					data->ir_bitcount++;
 				} else {
-					// error
-					ir_data_tmp = 0;
+					// Error
+					data->ir_data_tmp = 0;
 				}
 
-				// bittimer-reset
-				ir_bittimer = 0;
+				data->ir_bittimer = 0; // Bittimer-Reset
 
-			// Bits 2..14: nur Flanken innerhalb des Bits beruecksichtigen
+			/* Bits 2..14: nur Flanken innerhalb des Bits beruecksichtigen */
 			} else {
-				if (ir_bittimer >= IR_SAMPLES_PER_BIT_EARLY) {
-					if (ir_bittimer <= IR_SAMPLES_PER_BIT_LATE) {
+				if (data->ir_bittimer >= samples_per_bit_early) {
+					if (data->ir_bittimer <= samples_per_bit_late) {
 						// Bit speichern
-						ir_data_tmp = (ir_data_tmp << 1) | sample;
-						ir_bitcount++;
+						data->ir_data_tmp = (data->ir_data_tmp << 1) | sample;
+						data->ir_bitcount++;
 					} else {
-						// zu spaet: paket verwerfen
-						ir_bitcount = 0;
+						data->ir_bitcount = 0; // zu spaet: Paket verwerfen
+						//data->ir_data = data->no_data;
 					}
 
-					// bittimer-reset
-					ir_bittimer = 0;
+					data->ir_bittimer = 0; // Bittimer-Reset
 				}
 			}
 		}
-
 	} else {
-		// keine Flanke innerhalb bitzeit?
-		if (ir_bittimer > IR_SAMPLES_PER_BIT_LATE) {
-			// 14 bits gelesen?
-			if (ir_bitcount == 14) {
-				ir_data = ir_data_tmp;
+		/* keine Flanke innerhalb Bitzeit? */
+		if (data->ir_bittimer > samples_per_bit_late) {
+			/* alle Bits gelesen? */
+			if (data->ir_bitcount == bits) {
+				data->ir_data = data->ir_data_tmp;
+			} else {
+				/* Paket verwerfen */
+				//data->ir_data = data->no_data;
 			}
-			// paket verwerfen
-			ir_bitcount = 0;
+			data->ir_bitcount = 0;
 		}
 	}
 
-	// sample im samplepuffer ablegen
-	ir_lastsample = sample;
+	data->ir_lastsample = sample; // Sample im Samplepuffer ablegen
 }
-
 
 /*!
  * IR-Daten lesen
+ * @param *data Zeiger auf Arbeitsdaten
  * @return Wert von ir_data, loescht anschliessend ir_data
  */
-uint16_t ir_read(void) {
-	uint16_t retvalue = ir_data;
-	ir_data = 0;
+uint16_t ir_read(ir_data_t * data) {
+	uint16_t retvalue = data->ir_data;
+	data->ir_data = data->no_data;
 	return retvalue;
 }
 
-/*!
- * Init IR-System
- */
-void ir_init(void) {
-	IR_DDR  &= ~IR_PIN; 	// Pin auf Input
-	IR_PORT |= IR_PIN;		// Pullup an
-}
 #endif	// IR_AVAILABLE
 #endif	// MCU

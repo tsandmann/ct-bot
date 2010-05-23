@@ -34,12 +34,16 @@
 
 typedef union {
 	struct {
-		uint8_t spr0:1;		/*!< SPR0 Bit in SPCR */
-		uint8_t spr1:1;		/*!< SPR1 Bit in SPCR */
-		uint8_t spi2x:1;	/*!< SPI 2x-Mode in SPSR */
-	} __attribute__((packed));
-	uint8_t raw;	/*!< Alle Bits als Rawdaten */
-} spi_speed_t;	/*!< Speed-Einstellung fuer SPI */
+		unsigned spr0:1;	/*!< SPR0 Bit in SPCR */
+		unsigned spr1:1;	/*!< SPR1 Bit in SPCR */
+		unsigned spi2x:1;	/*!< SPI 2x-Mode in SPSR */
+	}
+#ifndef DOXYGEN
+	__attribute__((packed))
+#endif
+	data; /*!< Bits der einzelnen Register */
+	uint8_t raw; /*!< alle Bits als Rawdaten */
+} spi_speed_t; /*!< Speed-Einstellung fuer SPI */
 
 #define SPI_SPEED_MAX		{{0, 0, 1}}	// !SPR0, !SPR1,  SPI2X -> F_CPU / 2 Hz
 #define SPI_SPEED_4MHZ		{{0, 0, 0}}	// !SPR0, !SPR1, !SPI2X

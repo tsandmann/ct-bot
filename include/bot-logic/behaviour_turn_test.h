@@ -31,17 +31,17 @@
 #include "bot-logic/bot-logik.h"
 
 /*!
- * @brief		Das eigentliche Verhalten
+ * Das eigentliche Verhalten
  * @param data	Zeiger auf den Verhaltensdatensatz
  * @see			bot_turn_test()
  */
-void bot_turn_test_behaviour(Behaviour_t *data);
+void bot_turn_test_behaviour(Behaviour_t * data);
 
 /*!
- * @brief			Testet das bot_turn-Verhalten und gibt Informationen ueber die Drehgenauigkeit aus
+ * Testet das bot_turn-Verhalten und gibt Informationen ueber die Drehgenauigkeit aus
  * @param caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
  */
-void bot_turn_test(Behaviour_t* caller);
+void bot_turn_test(Behaviour_t * caller);
 
 #endif	// BEHAVIOUR_TURN_TEST_AVAILABLE
 #endif	// BEHAVIOUR_TURN_TEST_H_

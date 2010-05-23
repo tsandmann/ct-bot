@@ -43,7 +43,7 @@ void bot_servo_behaviour(Behaviour_t * data) {
 
 	return_from_behaviour(data); 	// Verhalten aus
 	servo_set(servo_nr, SERVO_OFF);	// Servo aus
-	servo_active &= ~servo_nr;
+	servo_active &= (uint8_t) (~servo_nr);
 }
 
 /*!

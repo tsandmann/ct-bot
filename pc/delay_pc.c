@@ -26,6 +26,7 @@
 #include "ct-Bot.h"
 
 #ifdef PC
+#include "delay.h"
 
 #ifdef WIN32
 

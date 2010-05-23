@@ -28,6 +28,7 @@
  * @date 	12.02.2007
  */
 
+#include "rc5.h"
 #include "bot-logic/bot-logik.h"
 #include "map.h"
 #include "ir-rc5.h"
@@ -49,19 +50,25 @@
 uint16_t RC5_Code = 0;	/*!< Letzter empfangener RC5-Code */
 
 /*!
- * @brief			Setzt das Display auf eine andere Ausgabe.
- * @param screen	Parameter mit dem zu setzenden Screen.
+ * Setzt das Display auf eine andere Ausgabe.
+ * @param screen Parameter mit dem zu setzenden Screen.
  */
-static void rc5_screen_set(uint8_t screen) {
+static void
+#ifndef DOXYGEN
+__attribute__((noinline))
+#endif
+rc5_screen_set(uint8_t screen) {
 #ifdef DISPLAY_AVAILABLE
-	if (screen == DISPLAY_SCREEN_TOGGLE)
-		display_screen++;			// zappen
-	else
-		display_screen = screen;	// Direktwahl
+	if (screen == DISPLAY_SCREEN_TOGGLE) {
+		display_screen++; // zappen
+	} else {
+		display_screen = screen; // Direktwahl
+	}
 
-	if (display_screen >= max_screens)
-		display_screen = 0;			// endliche Screenanzahl
-	display_clear();				// alten Screen loeschen, das Zeichnen uerbernimmt GUI-Handler
+	if (display_screen >= max_screens) {
+		display_screen = 0; // endliche Screenanzahl
+	}
+	display_clear(); // alten Screen loeschen, das Zeichnen uerbernimmt GUI-Handler
 #endif	// DISPLAY_AVAILABLE
 }
 
@@ -191,7 +198,7 @@ static void rc5_number(uint8_t key) {
 		#elif defined BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 			case 8: bot_drive_distance(NULL, 0, BOT_SPEED_NORMAL, 10); break;
 		#elif defined BEHAVIOUR_GOTO_POS_AVAILABLE
-			case 8: bot_goto_dist(NULL, 100, 0); break;
+			case 8: bot_goto_dist(NULL, 100, 1); break;
 		#endif	// BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 	}
 }
@@ -270,12 +277,12 @@ void default_key_handler(void) {
  */
 void rc5_control(void) {
 	static uint16_t RC5_Last_Toggle = 1; /*!< Toggle-Wert des zuletzt empfangenen RC5-Codes */
-	uint16_t rc5 = ir_read(); // empfangenes RC5-Kommando
+	uint16_t rc5 = ir_read(&rc5_ir_data); // empfangenes RC5-Kommando
 
 	if (rc5 != 0) {
 		/* Toggle kommt nicht im Simulator, immer gewechseltes Toggle-Bit sicherstellen */
 #ifdef PC
-		RC5_Last_Toggle = !(rc5 & RC5_TOGGLE);
+		RC5_Last_Toggle = (uint16_t) (!(rc5 & RC5_TOGGLE));
 #endif
 		/* Bei Aenderung des Toggle-Bits, entspricht neuem Tastendruck, gehts nur weiter */
 		if ((rc5 & RC5_TOGGLE) != RC5_Last_Toggle) { // Nur Toggle-Bit abfragen, bei Ungleichheit weiter

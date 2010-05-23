@@ -18,10 +18,11 @@
 //#define BEHAVIOUR_HANG_ON_AVAILABLE	/*!< Erkennen des Haengenbleibens als Notfallverhalten? */
 //#define BEHAVIOUR_GOTO_AVAILABLE	/*!< goto vorhanden? */
 //#define BEHAVIOUR_GOTOXY_AVAILABLE	/*!< gotoxy vorhanden? */
-//#define BEHAVIOUR_GOTO_POS_AVAILABLE	/*!< goto_pos vorhanden? */
+#define BEHAVIOUR_GOTO_POS_AVAILABLE	/*!< goto_pos vorhanden? */
 //#define BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE	/*!< goto_obstacle vorhanden? */
 #define BEHAVIOUR_TURN_AVAILABLE	/*!< turn vorhanden? */
 //#define BEHAVIOUR_TURN_TEST_AVAILABLE	/*!< turn_test vorhanden? */
+//#define BEHAVIOUR_TEST_ENCODER_AVAILABLE /*!< Encoder-Test Verhalten vorhanden? */
 
 #define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE	/*!< Strecke fahren vorhanden ?*/
 
@@ -60,7 +61,11 @@
 
 //#define BEHAVIOUR_DRIVE_AREA_AVAILABLE /*!< flaechendeckendes Fahren mit Map */
 
+//#define BEHAVIOUR_DRIVE_CHESS_AVAILABLE /*!< Schach fuer den Bot */
+
 //#define BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE /*!< Linienfolger ueber Kreuzungen zum Ziel */
+
+//#define BEHAVIOUR_SCAN_BEACONS_AVAILABLE	/*!< Suchen von Landmarken zur Lokalisierung */
 
 /* Aufgrund einer ganzen reihe von Abhaengigkeiten sollte man beim Versuch Speicher
  * zu sparen, zuerst mal bei den Hauptverhalten ausmisten, sonst kommen die
@@ -84,6 +89,10 @@
 	#warning "bot_line_shortest_way geht nur, wenn POS_STORE_AVAILABLE"
 	#undef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
 #endif
+#endif
+
+#ifdef BEHAVIOUR_DRIVE_CHESS_AVAILABLE
+	#define BEHAVIOUR_GOTO_POS_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
@@ -205,20 +214,30 @@
 	#undef BEHAVIOUR_GET_UTILIZATION_AVAILABLE
 #endif
 
+#ifndef BPS_AVAILABLE
+	#undef BEHAVIOUR_SCAN_BEACONS_AVAILABLE
+#endif
+
 #ifdef MCU
 #ifndef SPEED_CONTROL_AVAILABLE
 	// goto_pos geht nur, wenn wir uns auf die eingestellte Geschwindigkeit verlassen koennen
-	#ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
-		#warning "GotoPos geht nur, wenn SPEED_CONTROL_AVAILABLE"
-	#endif
-	#undef BEHAVIOUR_GOTO_POS_AVAILABLE
-	#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-		#warning "DriveStack geht nur, wenn SPEED_CONTROL_AVAILABLE"
-	#endif
-	#undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-	#undef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
+#ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
+#warning "GotoPos geht nur, wenn SPEED_CONTROL_AVAILABLE"
+#endif
+#undef BEHAVIOUR_GOTO_POS_AVAILABLE
+#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+#warning "DriveStack geht nur, wenn SPEED_CONTROL_AVAILABLE"
+#endif
+#undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+#undef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
 #endif	// SPEED_CONTROL_AVAILABLE
 #endif	// MCU
+
+#ifndef BEHAVIOUR_GOTO_POS_AVAILABLE
+#undef BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
+#undef BEHAVIOUR_DRIVE_AREA_AVAILABLE
+#undef BEHAVIOUR_PATHPLANING_AVAILABLE
+#endif // BEHAVIOUR_GOTO_POS_AVAILABLE
 
 #include "bot-logic/behaviour_simple.h"
 #include "bot-logic/behaviour_drive_square.h"
@@ -270,9 +289,15 @@
 
 #include "bot-logic/behaviour_drive_area.h"
 
+#include "bot-logic/behaviour_drive_chess.h"
+
 #include "bot-logic/behaviour_pathplaning.h"
 
 #include "bot-logic/behaviour_line_shortest_way.h"
+
+#include "bot-logic/behaviour_scan_beacons.h"
+
+#include "bot-logic/behaviour_test_encoder.h"
 
 #endif	// BEHAVIOUR_AVAILABLE
 #endif	/*AVAILABLE_BEHAVIOURS_H_*/

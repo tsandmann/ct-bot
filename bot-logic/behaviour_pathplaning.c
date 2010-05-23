@@ -54,6 +54,13 @@
 //#define DEBUG_PATHPLANING	// Schalter fuer Debugausgaben
 //#define DEBUG_PATHPLANING_VERBOSE	// zeichnet Zellen in die Map-Anzeige des Sim ein, rot: Hindernis, gruen: frei
 
+#define QUEUE_SIZE 32 /*!< Groesse des verwendeten Positionsspeichers */
+
+#if QUEUE_SIZE > POS_STORE_SIZE
+#undef QUEUE_SIZE
+#define QUEUE_SIZE POS_STORE_SIZE
+#endif
+
 #ifdef MCU
 #undef DEBUG_PATHPLANING
 #endif
@@ -62,28 +69,28 @@
 #endif
 #ifndef DEBUG_PATHPLANING
 #undef LOG_DEBUG
-#define LOG_DEBUG(a, ...) {}
+#define LOG_DEBUG(...) {}
 #endif
 
 
 /****** fuer geringaufloesende Map zur Pfadplanung ******/
 
 #ifdef MCU
-#ifndef MCU_ATMEGA644X
-#error "behaviour_pathplaning derzeit nur mit ATmega644(P) moeglich!"
+#if ! (defined MCU_ATMEGA644X || __AVR_ATmega1284P__)
+#error "behaviour_pathplaning derzeit nur mit ATmega644(P) oder ATmega1284P moeglich!"
 #endif
 #endif	// MCU
 #ifdef PC
 #define MAP_SIZE_LOWRES			12.288	/*!< Breite / Hoehe der Karte [m] */
 #else
-//TODO:	Groessere Karte auch fuer MCU waere wuenschenswert
+/*! @todo Groessere Karte auch fuer MCU waere wuenschenswert */
 #define MAP_SIZE_LOWRES			4.096	/*!< Breite / Hoehe der Karte [m] */
 #endif	// PC
 
 #define MAP_SECTION_POINTS_LOWRES 32 	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
 #define MAP_RESOLUTION_LOWRES 	7.8125	/*!< Aufloesung der Karte in Punkte pro Meter */
-#define MAP_CELL_SIZE_LOWRES	((uint16_t)(1000 / MAP_RESOLUTION_LOWRES))	/*!< Breite eines Map-Feldes in mm */
-#define MAP_LENGTH_LOWRES		((uint16_t)(MAP_SIZE_LOWRES * MAP_RESOLUTION_LOWRES))	/*!< Kantenlaenge der gesamten Karte in Map-Punkten */
+#define MAP_CELL_SIZE_LOWRES	((int16_t)(1000 / MAP_RESOLUTION_LOWRES))	/*!< Breite eines Map-Feldes in mm */
+#define MAP_LENGTH_LOWRES		((int16_t)(MAP_SIZE_LOWRES * MAP_RESOLUTION_LOWRES))	/*!< Kantenlaenge der gesamten Karte in Map-Punkten */
 #define RATIO_THRESHOLD			(MAP_RATIO_FULL - 5)	/*!< Schwellwert, unterhalb dem das Ergebnis von map_get_ratio() als Hindernis gilt */
 #define RATIO_THRESHOLD_DRIVEN  110     /*!< bei Pfadsuche auf befahrener Strecke gilt dieser Schwellwert. Einfach auskommentieren, um einheitlich RATIO_THRESHOLD zu verwenden */
 
@@ -92,7 +99,7 @@
 #endif
 
 /*! Anzahl der Sections in der Lowres-Map */
-#define MAP_SECTIONS_LOWRES (((uint16_t)(MAP_SIZE_LOWRES * MAP_RESOLUTION_LOWRES) / MAP_SECTION_POINTS_LOWRES))
+#define MAP_SECTIONS_LOWRES (((int16_t)(MAP_SIZE_LOWRES * MAP_RESOLUTION_LOWRES) / MAP_SECTION_POINTS_LOWRES))
 
 typedef struct {
 	int8_t section[MAP_SECTION_POINTS_LOWRES][MAP_SECTION_POINTS_LOWRES]; /*!< Einzelne Punkte */
@@ -101,7 +108,7 @@ typedef struct {
 map_section_lowres_t * map_lowres[MAP_SECTIONS_LOWRES][MAP_SECTIONS_LOWRES]; /*!< Array mit den Zeigern auf die Elemente */
 
 static pos_store_t * planning_pos_store = NULL;		/*!< Positionsspeicher */
-static position_t pos_store_data[POS_STORE_SIZE];	/*!< Stack-Speicher fuer Positionsspeicher */
+static position_t pos_store_data[QUEUE_SIZE];	/*!< Stack-Speicher fuer Positionsspeicher */
 
 static position_t startwave = {MAP_LENGTH_LOWRES / 2, MAP_LENGTH_LOWRES / 2};	/*!< Ausgangspunkt der Welle (eigentlicher Zielpunkt), in Mapkoordinaten */
 static position_t destination = {0, 0};	/*!< Zielpunkt in Weltkoordinaten */
@@ -139,7 +146,7 @@ static int8_t map_compare_haz = 0; /*!< Vergleichswert unterhalb dem Hinderniswe
  * @param map_koord	Kartenkoordinate
  * @return 			Weltkoordiante
  */
-static int16_t map_to_world_lowres(uint16_t map_koord) {
+static int16_t map_to_world_lowres(int16_t map_koord) {
 	return (map_koord - MAP_LENGTH_LOWRES / 2) * MAP_CELL_SIZE_LOWRES;
 }
 
@@ -148,7 +155,7 @@ static int16_t map_to_world_lowres(uint16_t map_koord) {
  * @param koord	Weltkoordiante
  * @return		Kartenkoordinate
  */
-static uint16_t world_to_map_lowres(int16_t koord) {
+static int16_t world_to_map_lowres(int16_t koord) {
 	return (koord + MAP_LENGTH_LOWRES * (MAP_CELL_SIZE_LOWRES / 2))
 			/ MAP_CELL_SIZE_LOWRES;
 }
@@ -161,9 +168,9 @@ static uint16_t world_to_map_lowres(int16_t koord) {
  * @return      Mapwert
  */
 static int8_t access_field_lowres(position_t field, int8_t value, uint8_t set) {
-	uint16_t section_x, section_y, index_x, index_y;
+	int16_t section_x, section_y, index_x, index_y;
 
-//TODO: Sectiongroesse von 512 Byte waere besser, um auf MMC auslagern zu koennen.
+/*! @todo Sectiongroesse von 512 Byte waere besser, um auf MMC auslagern zu koennen. */
 
 	// Berechne in welcher Sektion sich der Punkt befindet
 	section_x = field.x / MAP_SECTION_POINTS_LOWRES;
@@ -176,8 +183,8 @@ static int8_t access_field_lowres(position_t field, int8_t value, uint8_t set) {
 	}
 
 	// Berechne den Index innerhalb der Section
-	index_x = (uint16_t)field.x % MAP_SECTION_POINTS_LOWRES;
-	index_y = (uint16_t)field.y % MAP_SECTION_POINTS_LOWRES;
+	index_x = field.x % MAP_SECTION_POINTS_LOWRES;
+	index_y = field.y % MAP_SECTION_POINTS_LOWRES;
 
 	if (set) { // Schreibzugriff
 		// Eventuell existiert die Section noch nicht
@@ -397,7 +404,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 	case START:
 		LOG_DEBUG("Loeschen der Lowres-Karte");
 		delete_lowres();
-		planning_pos_store = pos_store_create(data, pos_store_data); // Stack / Queue anlegen / und leeren
+		planning_pos_store = pos_store_create_size(data, pos_store_data, QUEUE_SIZE); // Stack / Queue anlegen / und leeren
 		wavecounter = 2; // geht ab Wert 2 los; d.h. Wert Wellenzentrum - Zielpunkt bekommt diesen Wert
 		access_field_lowres(startwave, 2, 1);
 
@@ -449,7 +456,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 							position_t tmp = pos;
 							tmp.x += i;
 							tmp.y += j;
-							endreached = get_neighbour(tmp, wavecounter, endreached, &neighbour_found);
+							endreached = get_neighbour(tmp, (int8_t) wavecounter, endreached, &neighbour_found);
 						}
 					}
 				}
@@ -462,7 +469,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 		pos_store_clear(planning_pos_store);
 
 		// Wellenpfad zurueckverfolgen oder gleich Ende wenn nichts gefunden
-		wave_state = (endreached) ? SEARCH_STACKPATH_AND_QUEUE : END;
+		wave_state = (uint8_t) (endreached ? SEARCH_STACKPATH_AND_QUEUE : END);
 
 		if (endreached) {
 			LOG_DEBUG("Welle hat Botpos erreicht")
@@ -484,7 +491,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 		// Ausgehend vom Wellen-Ausgangspunkt, dem Zielpunkt, wird jeweils der Nachbar genommen mit dem kleinsten Wert
 		pos = endkoord;
 
-		int8_t mapval_min = wavecounter + 1; // auf erhoehten Wellenwert setzen, weil in Schleife der Wellenwert immer kleiner dem letzten Wellewert ist
+		int8_t mapval_min = (int8_t) (wavecounter + 1); // auf erhoehten Wellenwert setzen, weil in Schleife der Wellenwert immer kleiner dem letzten Wellewert ist
 		endreached = False; // Schleifenabbruchvar init.
 		wavecounter = 0; // Wellenzaehler init.
 		skip_count = 0;
@@ -548,8 +555,8 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 
 				position_t pos_1, pos_2;
 				if (pos_store_top(planning_pos_store, &pos_1, 1) == True && pos_store_top(planning_pos_store, &pos_2, 2) == True) {
-					int8_t m_1 = pos_1.x == pos_2.x ? 100 : (pos_1.y - pos_2.y) / (pos_1.x - pos_2.x);
-					int8_t m = pos.x == pos_1.x ? 100 : (pos.y - pos_1.y) / (pos.x - pos_1.x);
+					int8_t m_1 = (int8_t) (pos_1.x == pos_2.x ? 100 : (pos_1.y - pos_2.y) / (pos_1.x - pos_2.x));
+					int8_t m = (int8_t) (pos.x == pos_1.x ? 100 : (pos.y - pos_1.y) / (pos.x - pos_1.x));
 #ifdef DEBUG_PATHPLANING_VERBOSE
 					LOG_DEBUG(" pos_2=(%d|%d)", pos_2.x, pos_2.y);
 					LOG_DEBUG(" pos_1=(%d|%d)", pos_1.x, pos_1.y);
@@ -602,7 +609,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 		}
 
 		// Wenn erfolgreich Pfad gefunden wurde, dann abfahren sonst Ende
-		wave_state = (endreached) ? START_BOT_GO_STACK_BEHAVIOUR : END;
+		wave_state = (uint8_t) (endreached ? START_BOT_GO_STACK_BEHAVIOUR : END);
 		if (endreached) {
 			LOG_DEBUG("Pfad rueckwaerts gefunden->Stackgo")
 		} else {
@@ -628,7 +635,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 		LOG_DEBUG("Waveverhalten beendet. Wavecounter %1d", wavecounter);
 		pos_store_release(planning_pos_store);
 		planning_pos_store = NULL;
-		exit_behaviour(data, endreached ? SUBSUCCESS : SUBFAIL);
+		exit_behaviour(data, (uint8_t) (endreached ? SUBSUCCESS : SUBFAIL));
 		break;
 	}
 }

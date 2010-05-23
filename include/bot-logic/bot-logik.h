@@ -52,23 +52,22 @@
 #define NORECURSIVE 0	/*!< Konstante, die anzeigt, dass die Aufrufer eines Verhaltens nicht mit deaktiviert werden */
 
 
-/*! Verwaltungsstruktur fuer die Verhaltensroutinen */
 typedef struct _Behaviour_t {
    void (* work) (struct _Behaviour_t * data); 	/*!< Zeiger auf die Funktion, die das Verhalten bearbeitet */
    uint8_t priority;							/*!< Prioritaet */
    struct _Behaviour_t * caller;				/*!< aufrufendes Verhalten */
-   uint8_t active:1;							/*!< Ist das Verhalten aktiv */
-   uint8_t subResult:3;							/*!< War das aufgerufene unterverhalten erfolgreich (==1)? */
+   unsigned active:1;							/*!< Ist das Verhalten aktiv */
+   unsigned subResult:3;						/*!< War das aufgerufene unterverhalten erfolgreich (==1)? */
    struct _Behaviour_t * next;					/*!< Naechster Eintrag in der Liste */
-} __attribute__ ((packed)) Behaviour_t;
+} PACKED Behaviour_t; /*!< Verwaltungsstruktur fuer die Verhaltensroutinen */
 
 /*! Dieser Typ definiert eine Funktion die das eigentliche Verhalten ausfuehrt */
 typedef void (* BehaviourFunc)(Behaviour_t * data);
 
 typedef struct {
-	uint8_t override:1;		/*!< 0 wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen; 1 sonst */
-	uint8_t background:1;	/*!< 0 wenn Verhalten im Vordergrund laufen sollen (default), also z.B. die Motoren beeinflussen; 1 sonst */
-} __attribute__ ((packed)) behaviour_mode_t;
+	unsigned override:1;	/*!< 0 wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen; 1 sonst */
+	unsigned background:1;	/*!< 0 wenn Verhalten im Vordergrund laufen sollen (default), also z.B. die Motoren beeinflussen; 1 sonst */
+} PACKED behaviour_mode_t;
 
 extern int16_t speedWishLeft;		/*!< Puffervariablen fuer die Verhaltensfunktionen absolut Geschwindigkeit links */
 extern int16_t speedWishRight;	/*!< Puffervariablen fuer die Verhaltensfunktionen absolut Geschwindigkeit rechts */
@@ -178,6 +177,12 @@ static inline void return_from_behaviour(Behaviour_t * data) {
  */
 void start_registered_emergency_procs(void);
 
+/*!
+ * Gibt das naechste Verhalten der Liste zurueck
+ * @param *beh	Zeiger auf Verhalten, dessen Nachfolger gewuenscht ist, NULL fuer Listenanfang
+ * @return		Zeiger auf Nachfolger von beh
+ */
+Behaviour_t * get_next_behaviour(Behaviour_t * beh);
 
 /* Includes aller verfuegbaren Verhalten */
 #include "bot-logic/available_behaviours.h"

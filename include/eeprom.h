@@ -32,7 +32,7 @@
 
 /*! Aufteilung eines Words in zwei Bytes */
 typedef union {
-	uint32_t word;
+	uint16_t word;
 	struct {
 		uint8_t byte_0;
 		uint8_t byte_1;
@@ -60,10 +60,10 @@ typedef union {
  * prueft, ob das EEPROM bereit ist
  * @return	1, falls EEPROM bereit, 0 sonst
  */
-#ifdef MCU_ATMEGA644X
+#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
 #define EEWE	EEPE
 #define EEMWE	EEMPE
-#endif	// MCU_ATMEGA644X
+#endif	// MCU_ATMEGA644X || ATmega1284P
 
 #define eeprom_is_ready() bit_is_clear(EECR, EEWE)
 
@@ -78,7 +78,7 @@ typedef union {
  * @return			Das zu lesende Byte
  */
 static inline uint8_t ctbot_eeprom_read_byte(const uint8_t * address) {
-    do {} while (!eeprom_is_ready ());
+	eeprom_busy_wait();
 #if E2END <= 0xFF
     EEARL = (uint8_t)address;
 #else
@@ -103,7 +103,7 @@ static inline uint8_t ctbot_eeprom_read_byte(const uint8_t * address) {
  * @param *address	Adresse des Bytes im EEPROM
  * @param value		Das zu schreibende Byte
  */
-static inline void ctbot_eeprom_write_byte(uint8_t * address, uint8_t value) {
+static inline void ctbot_eeprom_write_byte(uint8_t * address, const uint8_t value) {
 	eeprom_busy_wait();
 
 #if	defined(EEPM0) && defined(EEPM1)
@@ -163,7 +163,7 @@ uint8_t ctbot_eeprom_read_byte(const uint8_t * address);
  * @param *address	Adresse des Bytes im EEPROM
  * @param value		Das zu schreibende Byte
  */
-void ctbot_eeprom_write_byte(uint8_t * address, uint8_t value);
+void ctbot_eeprom_write_byte(uint8_t * address, const uint8_t value);
 
 /*!
  * Diese Funktion initialisiert die EEPROM-Emulation. Sie sorgt fuer die Erstellung der
@@ -214,8 +214,10 @@ static inline uint32_t ctbot_eeprom_read_dword(const uint32_t * address) {
  * @param size	Anzahl der zu lesenden Bytes
  */
 static inline void ctbot_eeprom_read_block(void * dst, const void * src, size_t size) {
+	uint8_t * p_dst = dst;
+	const uint8_t * p_src = src;
     while (size--) {
-    	*(char *)dst++ = ctbot_eeprom_read_byte(src++);
+    	*p_dst++ = ctbot_eeprom_read_byte(p_src++);
     }
 }
 
@@ -225,7 +227,7 @@ static inline void ctbot_eeprom_read_block(void * dst, const void * src, size_t 
  * @param *address	Adresse des Words im EEPROM
  * @param value		Neuer Wert des Words
  */
-static inline void ctbot_eeprom_write_word(uint16_t * address, uint16_t value) {
+static inline void ctbot_eeprom_write_word(uint16_t * address, const uint16_t value) {
 	eeprom_word_t data;
 	data.word = value;
 	size_t eeprom_addr = (size_t)address;
@@ -239,7 +241,7 @@ static inline void ctbot_eeprom_write_word(uint16_t * address, uint16_t value) {
  * @param *address	Adresse des DWords im EEPROM
  * @param value		Neuer Wert des DWords
  */
-static inline void ctbot_eeprom_write_dword(uint32_t * address, uint32_t value) {
+static inline void ctbot_eeprom_write_dword(uint32_t * address, const uint32_t value) {
 	eeprom_dword_t data;
 	data.dword = value;
 	size_t eeprom_addr = (size_t)address;
@@ -257,8 +259,10 @@ static inline void ctbot_eeprom_write_dword(uint32_t * address, uint32_t value) 
  * @param size	Anzahl der zu schreibenden Bytes
  */
 static inline void ctbot_eeprom_write_block(void * dst, const void * src, size_t size) {
+	uint8_t * p_dst = dst;
+	const uint8_t * p_src = src;
     while (size--) {
-    	ctbot_eeprom_write_byte(dst++, *(uint8_t *)src++);
+    	ctbot_eeprom_write_byte(p_dst++, *p_src++);
     }
 }
 

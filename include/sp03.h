@@ -106,7 +106,7 @@ extern void sp03_flash_speakf(const char* format, ...);
  * @param sp03_pitch Geschwindigkeit
  * @param sp03_speed Stimmlage
  */
-extern void sp03_set_voice(uint8 sp03_volume, uint8 sp03_pitch, uint8 sp03_speed);
+extern void sp03_set_voice(uint8_t sp03_volume, uint8_t sp03_pitch, uint8_t sp03_speed);
 
 /*!
  * SP03 Steuercode fuer Sprechen senden
@@ -117,7 +117,7 @@ extern void sp03_cmd_speak(void);
  * SP03 Vordefinierte Saetze abrufen 1-30 oder 0x01-0x1E
  * @param sp03_pre_id Vordefinierte Satz-ID-Nr
  */
-extern void sp03_speak_phrase(uint8 sp03_pre_id);
+extern void sp03_speak_phrase(uint8_t sp03_pre_id);
 
 /*!
  * SP03 Firmwareversion auslesen
@@ -139,13 +139,13 @@ extern void sp03_get_version(void);
  * @param sp03_pitch Stimmlage
  * @param *sp03_text Der zu sprechende Text
  */
-extern void sp03_speak_string(uint8 sp03_volume, uint8 sp03_pitch, uint8 sp03_speed, char *sp03_text);
+extern void sp03_speak_string(uint8_t sp03_volume, uint8_t sp03_pitch, uint8_t sp03_speed, char * sp03_text);
 
 /*!
  * OBSOLET: SP03 Text in den Buffer laden, max. 81 ASCII Zeichen
  * @param *sp03_textb Textbuffer
  */
-extern void sp03_set_buffer(const char *sp03_textb);
+extern void sp03_set_buffer(const char * sp03_textb);
 #endif	// SP03_V1
 
 #endif	// SP03_AVAILABLE

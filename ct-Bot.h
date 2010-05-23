@@ -31,10 +31,12 @@
 ************************************************************/
 //#define LOG_CTSIM_AVAILABLE		/*!< Logging zum ct-Sim (PC und MCU) */
 //#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display (PC und MCU) */
-//#define LOG_UART_AVAILABLE		/*!< Logging ueber UART (NUR fuer MCU) */
-#define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (NUR fuer PC) */
+//#define LOG_UART_AVAILABLE		/*!< Logging ueber UART (nur fuer MCU) */
+#define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (nur fuer PC) */
 //#define LOG_MMC_AVAILABLE			/*!< Logging in eine txt-Datei auf MMC */
 #define USE_MINILOG					/*!< schaltet fuer MCU auf schlankes Logging um (nur in Verbindung mit Log2Sim) */
+
+//#define CREATE_TRACEFILE_AVAILABLE	/*!< Aktiviert das Schreiben einer Trace-Datei (nur PC) */
 
 
 #define LED_AVAILABLE		/*!< LEDs aktiv */
@@ -54,6 +56,7 @@
 
 #define MEASURE_MOUSE_AVAILABLE			/*!< Geschwindigkeiten werden aus den Maussensordaten berechnet */
 //#define MEASURE_COUPLED_AVAILABLE		/*!< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
+//#define MEASURE_POSITION_ERRORS_AVAILABLE	/*!< Fehlerberechnungen bei der Positionsbestimmung */
 
 //#define WELCOME_AVAILABLE	/*!< kleiner Willkommensgruss */
 
@@ -63,6 +66,8 @@
 
 #define ENA_AVAILABLE		/*!< Enable-Leitungen */
 #define SHIFT_AVAILABLE		/*!< Shift Register */
+
+//#define BPS_AVAILABLE		/*!< Bot Positioning System */
 
 //#define TEST_AVAILABLE_ANALOG		/*!< Sollen die LEDs die analoge Sensorwerte anzeigen */
 //#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
@@ -129,6 +134,7 @@
 		#undef SRF10_AVAILABLE
 		#undef TWI_AVAILABLE
 		#undef SPEED_CONTROL_AVAILABLE
+		#undef SPEED_LOG_AVAILABLE
 		#undef MMC_AVAILABLE
 		#undef I2C_AVAILABLE
 		#undef CMPS03_AVAILABLE
@@ -155,6 +161,7 @@
 		#undef MAP_2_SIM_AVAILABLE
 	#endif
 	#undef EEPROM_EMU_AVAILABLE
+	#undef CREATE_TRACEFILE_AVAILABLE
 #endif	// MCU
 
 
@@ -174,7 +181,6 @@
 
 #ifndef SPEED_CONTROL_AVAILABLE
 	#undef ADJUST_PID_PARAMS
-	#undef SPEED_LOG_AVAILABLE
 #endif
 
 #ifdef LOG_UART_AVAILABLE
@@ -194,21 +200,20 @@
 #endif
 
 #ifndef MMC_AVAILABLE
-	#ifdef MCU
-		#undef MMC_VM_AVAILABLE
-	#endif
-#endif
-
-#ifndef MMC_AVAILABLE
 	#undef SPEED_LOG_AVAILABLE
-
 	#ifdef MCU
 		#undef MAP_AVAILABLE // Map geht auf dem MCU nur mit MMC
+		#undef MMC_VM_AVAILABLE
 	#endif
 #endif
 
 #ifndef BEHAVIOUR_AVAILABLE
 	#undef MAP_AVAILABLE
+#endif
+
+#if defined SPEED_LOG_AVAILABLE && defined MAP_AVAILABLE
+	#undef MAP_AVAILABLE
+	#warning "Speed-Log und Map schliessen sich aus, deaktiviere Map"
 #endif
 
 #ifdef MAP_AVAILABLE

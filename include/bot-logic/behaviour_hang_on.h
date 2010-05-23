@@ -31,7 +31,8 @@
 #ifdef BEHAVIOUR_HANG_ON_AVAILABLE
 
 /*!
- * Notfallhandler, ausgefuehrt nach Haengenbleiben zum rueckwaertsfahren; muss registriert werden
+ * Notfallhandler, ausgefuehrt nach Haengenbleiben zum Rueckwaertsfahren; muss registriert werden zum
+ * Rueckwaertsfahren
  */
 void hang_on_handler(void); 
 

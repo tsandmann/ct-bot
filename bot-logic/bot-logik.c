@@ -54,7 +54,7 @@
 
 #ifndef DEBUG_BOT_LOGIC
 #undef LOG_DEBUG
-#define LOG_DEBUG(a, ...) {}
+#define LOG_DEBUG(...) {}
 #endif
 
 int16_t speedWishLeft;				/*!< Puffervariablen fuer die Verhaltensfunktionen absolut Geschwindigkeit links */
@@ -84,7 +84,7 @@ static void (* emerg_functions[MAX_PROCS])(void) = {NULL};
  * @param *fkt	Die zu registrierende Routine, welche aufzurufen ist
  * @return 		Index, den die Routine im Array einnimmt, bei -1 ist alles voll
  */
-static inline int8_t register_emergency_proc(void * fkt) {
+static inline int8_t register_emergency_proc(void (* fkt)(void)) {
 	if (count_arr_emerg == MAX_PROCS) {
 		return -1;	// sorry, aber fuer dich ist kein Platz mehr da :(
 	}
@@ -111,9 +111,10 @@ void start_registered_emergency_procs(void) {
  * @param *data der Verhaltensdatensatz
  */
 static void bot_base_behaviour(Behaviour_t * data) {
+	data = data; // kein warning
 	speedWishLeft = target_speed_l;
 	speedWishRight = target_speed_r;
-//	LOG_DEBUG("\tMaus:\t%d\tSpeed:\t%d", (int16)x_pos, target_speed_r);
+//	LOG_DEBUG("\tMaus:\t%d\tSpeed:\t%d", x_pos, target_speed_r);
 //	LOG_DEBUG("\tDistL:\t%u\tDistR:\t%u", sensDistL, sensDistR);
 //	LOG_DEBUG("\tTime:\t%lu", TIMER_GET_TICKCOUNT_32);
 }
@@ -124,14 +125,17 @@ static void bot_base_behaviour(Behaviour_t * data) {
  * @param *work 	Die Funktion, die sich drum kuemmert
  * @param active	Boolean, ob das Verhalten aktiv oder inaktiv erstellt wird
  */
-static Behaviour_t * new_behaviour(uint8_t priority, void (* work) (struct _Behaviour_t * data), int8_t active) {
+static Behaviour_t * new_behaviour(uint8_t priority, void (* work) (struct _Behaviour_t * data), uint8_t active) {
 	Behaviour_t * newbehaviour = (Behaviour_t *) malloc(sizeof(Behaviour_t));
 	if (newbehaviour == NULL) {
 		return NULL;
 	}
 
 	newbehaviour->priority = priority;
-	newbehaviour->active = active;
+
+	bit_t tmp = {active};
+	newbehaviour->active = tmp.bit;
+
 	newbehaviour->next = NULL;
 	newbehaviour->work = work;
 	newbehaviour->caller = NULL;
@@ -231,7 +235,7 @@ void bot_behave_init(void) {
 	#endif
 
 	#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-		insert_behaviour_to_list(&behaviour, new_behaviour(190, bot_save_waypositions_behaviour, INACTIVE));
+		insert_behaviour_to_list(&behaviour, new_behaviour(190, bot_save_waypos_behaviour, INACTIVE));
 	#endif
 
 	#ifdef BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
@@ -290,7 +294,7 @@ void bot_behave_init(void) {
 
 	#ifdef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
 	  	// erweiterter Linienfolge, der mit Unterbrechungen und Hindernissen klarkommt
-		insert_behaviour_to_list(&behaviour, new_behaviour(71, bot_follow_line_enh_behaviour, INACTIVE));	  
+		insert_behaviour_to_list(&behaviour, new_behaviour(71, bot_follow_line_enh_behaviour, INACTIVE));
 	#endif
 
 	#ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
@@ -342,8 +346,16 @@ void bot_behave_init(void) {
 		insert_behaviour_to_list(&behaviour, new_behaviour(40, bot_follow_object_behaviour, INACTIVE));
 	#endif
 
+	#ifdef BEHAVIOUR_DRIVE_CHESS_AVAILABLE
+		insert_behaviour_to_list(&behaviour, new_behaviour(39, bot_drive_chess_behaviour, INACTIVE));
+	#endif
+
 	#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(33, bot_drive_stack_behaviour, INACTIVE));
+	#endif
+
+	#ifdef BEHAVIOUR_SCAN_BEACONS_AVAILABLE
+		insert_behaviour_to_list(&behaviour, new_behaviour(32, bot_scan_beacons_behaviour, INACTIVE));
 	#endif
 
 	#ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
@@ -356,6 +368,10 @@ void bot_behave_init(void) {
 
 	#ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
 		insert_behaviour_to_list(&behaviour, new_behaviour(28, bot_turn_test_behaviour, INACTIVE));
+	#endif
+
+	#ifdef BEHAVIOUR_TEST_ENCODER_AVAILABLE
+		insert_behaviour_to_list(&behaviour, new_behaviour(20, bot_test_encoder_behaviour, INACTIVE));
 	#endif
 
 	// Grundverhalten, setzt aeltere FB-Befehle um, aktiv
@@ -540,7 +556,13 @@ void switch_to_behaviour(Behaviour_t * from, void (*to)(Behaviour_t *), uint8_t 
 		}
 		return;
 	}
-	behaviour_mode_t beh_mode = {mode & 1, (mode & 2) >> 1};
+
+	bit_t tmp;
+	behaviour_mode_t beh_mode;
+	tmp.byte = (uint8_t) (mode & 1);
+	beh_mode.override = tmp.bit;
+	tmp.byte = (uint8_t) ((mode & 2) >> 1);
+	beh_mode.background = tmp.bit;
 
 	if (job->caller) {		// Ist das auzurufende Verhalten noch beschaeftigt?
 		if (beh_mode.override == NOOVERRIDE) {	// nicht ueberschreiben, sofortige Rueckkehr
@@ -592,7 +614,13 @@ void exit_behaviour(Behaviour_t * data, uint8_t state) {
 	LOG_DEBUG("Verhalten %u wurde beendet", data->priority);
 	if (data->caller) {
 		data->caller->active = ACTIVE; 		// aufrufendes Verhalten aktivieren
-		data->caller->subResult = state;	// Status beim Aufrufer speichern
+
+		union {
+			uint8_t byte;
+			unsigned bits:3;
+		} tmp = {state};
+		data->caller->subResult = tmp.bits;	// Status beim Aufrufer speichern
+
 		LOG_DEBUG("Caller %u wurde wieder aktiviert", data->caller->priority);
 	}
 	data->caller = NULL;	// Job erledigt, Verweis loeschen
@@ -658,9 +686,9 @@ void bot_behave(void) {
 			if ((speedWishLeft != BOT_SPEED_IGNORE) || (speedWishRight != BOT_SPEED_IGNORE)) {
 #ifdef BEHAVIOUR_FACTOR_WISH_AVAILABLE
 				if (speedWishLeft != BOT_SPEED_IGNORE)
-					speedWishLeft *= factorLeft;
+					speedWishLeft = (int16_t) (speedWishLeft * factorLeft);
 				if (speedWishRight != BOT_SPEED_IGNORE)
-					speedWishRight *= factorRight;
+					speedWishRight = (int16_t) (speedWishRight * factorRight);
 #endif
 
 				motor_set(speedWishLeft, speedWishRight);
@@ -671,6 +699,19 @@ void bot_behave(void) {
 		if (job->next == NULL) {
 			motor_set(BOT_SPEED_IGNORE, BOT_SPEED_IGNORE);
 		}
+	}
+}
+
+/*!
+ * Gibt das naechste Verhalten der Liste zurueck
+ * @param *beh	Zeiger auf Verhalten, dessen Nachfolger gewuenscht ist, NULL fuer Listenanfang
+ * @return		Zeiger auf Nachfolger von beh
+ */
+Behaviour_t * get_next_behaviour(Behaviour_t * beh) {
+	if (beh == NULL) {
+		return behaviour;
+	} else {
+		return beh->next;
 	}
 }
 
@@ -697,7 +738,10 @@ static void beh_disp_key_handler(Behaviour_t ** data){
 	/* Verhaltensstatus toggeln */
 	if (callee != NULL) {
 		RC5_Code = 0;
-		callee->active ^= 1;
+		bit_t tmp;
+		tmp.bit = callee->active;
+		tmp.byte = (uint8_t) (~ tmp.byte);
+		callee->active = tmp.bit;
 	}
 }
 
@@ -712,7 +756,7 @@ static void beh_disp_key_handler(Behaviour_t ** data){
  * Den Keyhandler dazu stellt beh_disp_key_handler() dar.
  */
 void behaviour_display(void) {
-	static uint8 behaviour_page = 0;	/*!< zuletzt angezeigte Verhaltensseite */
+	static uint8_t behaviour_page = 0;	/*!< zuletzt angezeigte Verhaltensseite */
 	if (RC5_Code == RC5_CODE_DOWN) {
 		/* naechste Seite */
 		behaviour_page++;
@@ -725,8 +769,8 @@ void behaviour_display(void) {
 		RC5_Code = 0;
 	}
 	Behaviour_t* behaviours[8] = {NULL};	/*!< speichert Zeiger auf die Verhalten fuer den Keyhandler zwischen */
-	uint8 i,j,k=0;
-	Behaviour_t* ptr = behaviour;
+	uint8_t i, j, k = 0;
+	Behaviour_t * ptr = behaviour;
 	while (ptr != NULL && ptr->priority > PRIO_VISIBLE_MAX)
 		ptr = ptr->next;	// alles ausserhalb der Sichtbarkeit ueberspringen
 	/* Verhalten auf vorherigen Seiten ueberspringen */
@@ -743,7 +787,7 @@ void behaviour_display(void) {
 	}
 	char status[2] = "IA";	// I: inactive, A: active
 	/* max. 4 Zeilen mit jeweils 2 Verhalten (= 8 Verhalten) anzeigbar */
-	for (i=1; i<=20; i+=11) {	// Spalten
+	for (i = 1; i <= 20; i = (uint8_t) (i + 11)) { // Spalten
 		for (j=1; j<=4; j++) {	// Zeilen
 			while (ptr != NULL && ptr->priority > PRIO_VISIBLE_MAX)
 				ptr = ptr->next;	// alles ausserhalb der Sichtbarkeit ueberspringen
@@ -754,7 +798,7 @@ void behaviour_display(void) {
 			}
 			/* Ausgabe */
 			display_cursor(j, i);
-			display_printf("%u: %3d=%c ", k+1, ptr->priority, status[ptr->active]);
+			display_printf("%u: %3d=%c ", k + 1, ptr->priority, status[ptr->active]);
 			behaviours[k++] = ptr;	// speichern fuer Tastenhandler
 			ptr = ptr->next;
 		}

@@ -37,7 +37,7 @@
  * Transport-Pillarverhalten  
  * @param *data	Der Verhaltensdatensatz
  */
-void bot_transport_pillar_behaviour(Behaviour_t *data);
+void bot_transport_pillar_behaviour(Behaviour_t * data);
 
 /*!
  * Ruft das Pillarverhalten auf 

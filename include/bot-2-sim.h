@@ -27,6 +27,12 @@
 #define BOT2SIM_H_
 
 #include "ct-Bot.h"
+#include <stdio.h>
+
+#ifdef CREATE_TRACEFILE_AVAILABLE
+extern FILE * tracefile;	/*!< Trace-Datei zum Debugging */
+#endif	// CREATE_TRACEFILE_AVAILABLE
+
 #ifdef BOT_2_SIM_AVAILABLE
 /*!
  * Ein wenig Initilisierung kann nicht schaden
@@ -61,8 +67,8 @@ static inline void bot_2_sim_inform(void) {
  */
 int8_t receive_until_Frame(uint8_t frame);
 
-#ifdef WIN32
 #include <sys/time.h>
+#ifdef WIN32
 /*!
  * Hilfsfunktion, die es nur auf dem PC gibt
  */

@@ -29,11 +29,10 @@
 
 #include "ct-Bot.h"
 
+#ifdef UART_AVAILABLE
 #include <avr/io.h>
 #include "uart.h"
 #include "os_thread.h"
-
-#ifdef UART_AVAILABLE
 
 uint8_t inbuf[BUFSIZE_IN];	/*!< Eingangspuffer */
 fifo_t uart_infifo;			/*!< Eingangs-FIFO */
@@ -42,16 +41,20 @@ uint8_t outbuf[BUFSIZE_OUT];	/*!< Ausgangspuffer */
 fifo_t uart_outfifo;			/*!< Ausgangs-FIFO */
 
 /*!
- * @brief	Initialisiert den UART und aktiviert Receiver und Transmitter sowie den Receive-Interrupt.
+ * Initialisiert den UART und aktiviert Receiver und Transmitter sowie die Interrupts.
  * Die Ein- und Ausgebe-FIFO werden initialisiert. Das globale Interrupt-Enable-Flag (I-Bit in SREG) wird nicht veraendert.
  */
 void uart_init(void) {
-    uint8_t sreg = SREG;
-    UBRRH = (UART_CALC_BAUDRATE(BAUDRATE) >> 8) & 0xFF;
-    UBRRL = (UART_CALC_BAUDRATE(BAUDRATE) & 0xFF);
+    /* FIFOs fuer Ein- und Ausgabe initialisieren */
+    fifo_init(&uart_infifo, inbuf, BUFSIZE_IN);
+    fifo_init(&uart_outfifo, outbuf, BUFSIZE_OUT);
 
 	/* Interrupts kurz deaktivieren */
-	cli();
+    uint8_t sreg = SREG;
+    __builtin_avr_cli();
+
+    UBRRH = UBRRH_VALUE;
+    UBRRL = UBRRL_VALUE;
 
 	/* UART Receiver und Transmitter anschalten, Receive-Interrupt aktivieren */
 	UCSRB = (1 << RXEN) | (1 << TXEN) | (1 << RXCIE);
@@ -69,59 +72,56 @@ void uart_init(void) {
 
     /* Ruecksetzen von Receive und Transmit Complete-Flags */
     UCSRA = (1 << RXC) | (1 << TXC)
-#ifdef UART_DOUBLESPEED
-    		| (1<<U2X)
+#if USE_2X
+    		| (1 << U2X)
 #endif
     		;
 
     /* Global Interrupt-Flag wiederherstellen */
     SREG = sreg;
-
-    /* FIFOs für Ein- und Ausgabe initialisieren */
-    fifo_init(&uart_infifo, inbuf, BUFSIZE_IN);
-    fifo_init(&uart_outfifo, outbuf, BUFSIZE_OUT);
 }
 
 /*!
- * @brief	Interrupthandler fuer eingehende Daten
+ * Interrupthandler fuer eingehende Daten
  * Empfangene Zeichen werden in die Eingabgs-FIFO gespeichert und warten dort.
  */
-#ifdef MCU_ATMEGA644X
+#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
 	ISR(USART0_RX_vect) {
 #else
-	ISR(SIG_UART_RECV) {
-#endif	// MCU_ATMEGA644X
-	_inline_fifo_put(&uart_infifo, UDR);
+	ISR(USART_RXC_vect) {
+#endif // MCU_ATMEGA644X || ATmega1284P
+	_inline_fifo_put(&uart_infifo, UDR, True);
 }
 
 /*!
- * @brief	Interrupthandler fuer ausgehende Daten
+ * Interrupthandler fuer ausgehende Daten
  * Ein Zeichen aus der Ausgabe-FIFO lesen und ausgeben.
  * Ist das Zeichen fertig ausgegeben, wird ein neuer SIG_UART_DATA-IRQ getriggert.
  * Ist die FIFO leer, deaktiviert die ISR ihren eigenen IRQ.
  */
-#ifdef MCU_ATMEGA644X
+#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
 	ISR(USART0_UDRE_vect) {
 #else
-	ISR(SIG_UART_DATA) {
-#endif	// MCU_ATMEGA644X
+	ISR(USART_UDRE_vect) {
+#endif // MCU_ATMEGA644X || ATmega1284P
 	if (uart_outfifo.count > 0) {
-		UDR = _inline_fifo_get(&uart_outfifo);
+		UDR = _inline_fifo_get(&uart_outfifo, True);
 	} else {
-		UCSRB &= ~(1 << UDRIE);	// diesen Interrupt aus
+		UCSRB = (uint8_t) (UCSRB & ~(1 << UDRIE)); // diesen Interrupt aus
 	}
 }
 
 /*!
- * @brief			Sendet Daten per UART im Little Endian
+ * Sendet Daten per UART im Little Endian
  * @param data		Datenpuffer
  * @param length	Groesse des Datenpuffers in Bytes
  */
 void uart_write(void * data, uint8_t length) {
+	uint8_t * ptr = data;
 	if (length > BUFSIZE_OUT) {
 		/* das ist zu viel auf einmal => teile und herrsche */
 		uart_write(data, length / 2);
-		uart_write(data + length / 2, length - length / 2);
+		uart_write(ptr + length / 2, (uint8_t)(length - length / 2));
 		return;
 	}
 	/* falls Sendepuffer zu voll, warten bis genug Platz vorhanden ist */

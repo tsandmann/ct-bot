@@ -1,8 +1,6 @@
 /*****************************************************************************
 *
 * AVRPROG compatible boot-loader
-* Version  : 0.80beta3 (May 2006)
-* Compiler : avr-gcc 3.4.6 / avr-libc 1.4.4
 * size     : depends on features and startup (minmal features < 512 words)
 * by       : Martin Thomas, Kaiserslautern, Germany
 *            eversmith@heizung-thomas.de
@@ -16,7 +14,7 @@
 *            owners in source-code and documentation of derived
 *            work. No warranty!
 *
-* Tested with ATmega8, ATmega16, ATmega32, ATmega128, AT90CAN128
+* Tested with ATmega8, ATmega16, ATmega32, ATmega128, AT90CAN128, ATmega644(P), ATmega1284P
 *
 * - Initial versions have been based on the Butterfly bootloader-code
 *   by Atmel Corporation (Authors: BBrandal, PKastnes, ARodland, LHM)
@@ -54,10 +52,6 @@
 #ifdef MCU
 #ifdef BOOTLOADER_AVAILABLE
 
-/* UART Baudrate */
-#include "uart.h"	// Die Baudrate wird zentral fuer den Bot in uart.h festgelegt!!
-
-
 /* Device-Type:
    For AVRProg the BOOT-option is prefered
    which is the "correct" value for a bootloader.
@@ -66,12 +60,15 @@
 #define DEVTYPE     DEVTYPE_ISP		/*!< Device-Typ des emulierten Programmers */
 
 /* Boot Size in Words */
-#if defined(__AVR_ATmega32__)	// => Fuse Bits: low: 0xFF, high: 0xDC
+#if defined __AVR_ATmega32__ // => Fuse Bits: low: 0xFF, high: 0xDC
 #define BOOTSIZE 512		// => Linker-Settings: -Wl,--section-start=.bootloader=0x7C00
-#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0x7C00 startet "
-#elif defined(MCU_ATMEGA644X)// => Fuse Bits: low: 0xFF, high: 0xDC, Ext'd: 0xFF
+//#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0x7C00 startet "
+#elif defined MCU_ATMEGA644X // => Fuse Bits: low: 0xFF, high: 0xDC, Ext'd: 0xFF
 #define BOOTSIZE 1024		// => Linker-Settings: -Wl,--section-start=.bootloader=0xF800
-#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0xF800 startet "
+//#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0xF800 startet"
+#elif defined __AVR_ATmega1284P__ // => Fuse Bits: low: 0xFF, high: 0xDC, Ext'd: 0xFF
+#define BOOTSIZE 1024		// => Linker-Settings: -Wl,--section-start=.bootloader=0x1F800
+//#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0x1F800 startet"
 #endif
 
 /*! Startup-Timeout */
@@ -91,31 +88,14 @@
 //#define ENABLEREADFUSELOCK
 
 #define VERSION_HIGH '0'	/*!< Versionsnummer */
-#define VERSION_LOW  '8'	/*!< Versionsnummer */
+#define VERSION_LOW  '9'	/*!< Versionsnummer */
 
+#include "uart.h" // UART Baudrate
 #include <stdint.h>
 #include <avr/io.h>
 #include <avr/boot.h>
 #include <avr/pgmspace.h>
-#ifdef NEW_AVR_LIB
 #include <util/delay.h>
-#else
-#include <avr/delay.h>
-#endif
-
-/* Fusebit-Defs, since avr-libc 1.2.5 in boot.h */
-#ifndef GET_LOCK_BITS
-#define GET_LOCK_BITS			0x0001	/*!< Lock-Bits */
-#endif
-#ifndef GET_LOW_FUSE_BITS
-#define GET_LOW_FUSE_BITS		0x0000	/*!< Low-Fuse-Bits */
-#endif
-#ifndef GET_HIGH_FUSE_BITS
-#define GET_HIGH_FUSE_BITS      0x0003	/*!< High-Fuse-Bits */
-#endif
-#ifndef GET_EXTENDED_FUSE_BITS
-#define GET_EXTENDED_FUSE_BITS  0x0002	/*!< Extended-Fuse-Bits */
-#endif
 
 /* Chipdefs */
 #if defined (SPMCSR)
@@ -202,25 +182,48 @@ typedef uint8_t pagebuf_t; /*!< Seitengroesse */
 #define UART_CTRL2_DATA 0x86	// just 8N1
 #define UART_DATA	UDR0
 
+#elif defined __AVR_ATmega1284P__
+/* Part-Code ISP */
+#define DEVTYPE_ISP     0x74
+/* Part-Code Boot */
+#define DEVTYPE_BOOT    0x73
+
+#define SIG_BYTE1	0x1E
+#define SIG_BYTE2	0x97
+#define SIG_BYTE3	0x05
+
+#define UART_BAUD_HIGH	UBRR0H
+#define UART_BAUD_LOW	UBRR0L
+#define UART_STATUS	UCSR0A
+#define UART_TXREADY	UDRE0
+#define UART_RXREADY	RXC0
+#define UART_DOUBLE	U2X0
+#define UART_CTRL	UCSR0B
+#define UART_CTRL_DATA	((1<<TXEN0) | (1<<RXEN0))
+#define UART_CTRL2	UCSR0C
+//#define UART_CTRL2_DATA	((1<<URSEL) | (1<<UCSZ1) | (1<<UCSZ0))
+#define UART_CTRL2_DATA 0x86 // just 8N1
+#define UART_DATA	UDR0
+
 #else
 #error "no definition for MCU available"
 #endif
 // end Chipdefs
 
-uint8_t gBuffer[SPM_PAGESIZE];	/*!< Puffer */
+static uint8_t gBuffer[SPM_PAGESIZE];	/*!< Puffer */
 
 /* all inline! Sonst stimmt die Startadresse der bl_main nicht */
-static void __attribute__ ((always_inline)) sendchar(uint8_t data){
+static void __attribute__ ((always_inline)) sendchar(uint8_t data) {
 	while (!(UART_STATUS & (1<<UART_TXREADY)));
 	UART_DATA = data;
 }
 
-static uint8_t __attribute__ ((always_inline)) recvchar(void){
+static uint8_t __attribute__ ((always_inline)) recvchar(void) {
 	while (!(UART_STATUS & (1<<UART_RXREADY)));
 	return UART_DATA;
 }
 
-static void __attribute__ ((always_inline)) eraseFlash(void){
+static void __attribute__ ((always_inline)) eraseFlash(void) {
 	// erase only main section (bootloader protection)
 	uint32_t addr = 0;
 	while (APP_END > addr) {
@@ -231,15 +234,15 @@ static void __attribute__ ((always_inline)) eraseFlash(void){
 	boot_rww_enable();
 }
 
-static void __attribute__ ((always_inline)) recvBuffer(pagebuf_t size){
+static void __attribute__ ((always_inline)) recvBuffer(pagebuf_t size) {
 	pagebuf_t cnt;
 	uint8_t *tmp = gBuffer;
 
 	for (cnt = 0; cnt < sizeof(gBuffer); cnt++)
-		*tmp++ = (cnt < size) ? recvchar() : 0xFF;
+		*tmp++ = (uint8_t) ((cnt < size) ? recvchar() : 0xff);
 }
 
-static uint16_t __attribute__ ((always_inline)) writeFlashPage(uint16_t waddr, pagebuf_t size){
+static uint16_t __attribute__ ((always_inline)) writeFlashPage(uint16_t waddr, pagebuf_t size) {
 	uint32_t pagestart = (uint32_t)waddr<<1;
 	uint32_t baddr = pagestart;
 	uint16_t data;
@@ -258,19 +261,19 @@ static uint16_t __attribute__ ((always_inline)) writeFlashPage(uint16_t waddr, p
 	boot_spm_busy_wait();
 	boot_rww_enable();			// Re-enable the RWW section
 
-	return baddr>>1;
+	return (uint16_t) (baddr >> 1);
 }
 
-static uint16_t __attribute__ ((always_inline)) writeEEpromPage(uint16_t address, pagebuf_t size){
+static uint16_t __attribute__ ((always_inline)) writeEEpromPage(uint16_t address, pagebuf_t size) {
 	uint8_t *tmp = gBuffer;
 
 	do {
-		EEARL = address;		// Setup EEPROM address
-		EEARH = (address >> 8);
+		EEARL = (uint8_t) address; // Setup EEPROM address
+		EEARH = (uint8_t) (address >> 8);
 		EEDR = *tmp++;
 		address++; // Select next byte
 
-#ifdef MCU_ATMEGA644X
+#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
 		EECR |= (1<<EEMPE); // Write data into EEPROM
 		EECR |= (1<<EEPE);
 #else
@@ -280,12 +283,12 @@ static uint16_t __attribute__ ((always_inline)) writeEEpromPage(uint16_t address
 		eeprom_busy_wait();
 
 		size--;				// Decreas number of bytes to write
-	} while (size);				// Loop until all bytes written
+	} while (size);			// Loop until all bytes written
 
 	return address;
 }
 
-static uint16_t __attribute__ ((always_inline)) readFlashPage(uint16_t waddr, pagebuf_t size){
+static uint16_t __attribute__ ((always_inline)) readFlashPage(uint16_t waddr, pagebuf_t size) {
 	uint32_t baddr = (uint32_t)waddr<<1;
 	uint16_t data;
 
@@ -295,19 +298,19 @@ static uint16_t __attribute__ ((always_inline)) readFlashPage(uint16_t waddr, pa
 #else
 		data = pgm_read_word_near(baddr);
 #endif
-		sendchar(data);			// send LSB
-		sendchar((data >> 8));		// send MSB
+		sendchar((uint8_t) data); // send LSB
+		sendchar((uint8_t) (data >> 8)); // send MSB
 		baddr += 2;			// Select next word in memory
 		size -= 2;			// Subtract two bytes from number of bytes to read
-	} while (size);				// Repeat until all block has been read
+	} while (size);			// Repeat until all block has been read
 
-	return baddr>>1;
+	return (uint16_t) (baddr >> 1);
 }
 
-static uint16_t __attribute__ ((always_inline)) readEEpromPage(uint16_t address, pagebuf_t size){
+static uint16_t __attribute__ ((always_inline)) readEEpromPage(uint16_t address, pagebuf_t size) {
 	do {
-		EEARL = address;		// Setup EEPROM address
-		EEARH = (address >> 8);
+		EEARL = (uint8_t) address; // Setup EEPROM address
+		EEARH = (uint8_t) (address >> 8);
 		EECR |= (1<<EERE);		// Read EEPROM
 		address++;			// Select next EEPROM byte
 
@@ -340,7 +343,7 @@ static uint8_t __attribute__ ((always_inline)) read_fuse_lock(uint16_t addr) {
 }
 #endif
 
-static void __attribute__ ((always_inline)) send_boot(void){
+static void __attribute__ ((always_inline)) send_boot(void) {
 	sendchar('A');
 	sendchar('V');
 	sendchar('R');
@@ -352,19 +355,21 @@ static void __attribute__ ((always_inline)) send_boot(void){
 
 static void (*jump_to_app)(void) = 0x0000;
 
+void bootloader_main(void) __attribute__ ((section (".bootloader")));
+
 /* Der eigentliche Bootloader. Die Section "bootloader" muss dort beginnen,
  * wohin die MCU beim Booten springt (=> Fuse Bits). Deshalb die Linkereinstellungen
  * anpassen, wie oben beschrieben!
  */
-void __attribute__ ((section (".bootloader"))) bootloader_main(void) {
+void bootloader_main(void) {
 	uint16_t address = 0;
 	uint8_t device = 0, val;
 
 	// Set baud rate
-	UART_BAUD_HIGH = (UART_CALC_BAUDRATE(BAUDRATE) >> 8) & 0xFF;
-	UART_BAUD_LOW = (UART_CALC_BAUDRATE(BAUDRATE) & 0xFF);
+	UART_BAUD_HIGH = UBRRH_VALUE;
+	UART_BAUD_LOW = UBRRL_VALUE;
 
-#ifdef UART_DOUBLESPEED
+#if USE_2X
 	UART_STATUS = (1 << UART_DOUBLE);
 #endif
 
@@ -374,7 +379,7 @@ void __attribute__ ((section (".bootloader"))) bootloader_main(void) {
 	uint16_t cnt = 0;
 
 	while (1) {
-		if (UART_STATUS & (1<<UART_RXREADY))
+		if (UART_STATUS & (1 << UART_RXREADY))
 			if (UART_DATA == START_WAIT_UARTCHAR)
 				break;
 
@@ -392,9 +397,9 @@ void __attribute__ ((section (".bootloader"))) bootloader_main(void) {
 		if (val == 'a') {
 			sendchar('Y');			// Autoincrement is quicker
 
-		//write address
-        	} else if (val == 'A') {
-			address = recvchar();		//read address 8 MSB
+		// write address
+        } else if (val == 'A') {
+			address = recvchar();		// read address 8 MSB
 			address = (address<<8) | recvchar();
 			sendchar('\r');
 
@@ -407,7 +412,7 @@ void __attribute__ ((section (".bootloader"))) bootloader_main(void) {
 		// Start buffer load
 		} else if (val == 'B') {
 			pagebuf_t size;
-			size = recvchar() << 8;				// Load high byte of buffersize
+			size = (pagebuf_t) (recvchar() << 8); // Load high byte of buffersize
 			size |= recvchar();				// Load low byte of buffersize
 			val = recvchar();				// Load memory type ('E' or 'F')
 			recvBuffer(size);
@@ -428,7 +433,7 @@ void __attribute__ ((section (".bootloader"))) bootloader_main(void) {
 		// Block read
 		} else if (val == 'g') {
 			pagebuf_t size;
-			size = recvchar() << 8;				// Load high byte of buffersize
+			size = (pagebuf_t) (recvchar() << 8); // Load high byte of buffersize
 			size |= recvchar();				// Load low byte of buffersize
 			val = recvchar();				// Get memtype
 

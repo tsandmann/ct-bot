@@ -24,9 +24,9 @@
  * @author 	Timo Sandmann (mail@timosandmann.de) Version 2
  * @author 	Frank Menzel (Menzelfr@gmx.de) Version 3
  * @date 	21.09.2007
+ *
+ * @todo	Version 3 funktioniert auf dem echten Bot nicht sehr zuverlaessig (Probleme bei Winkeln < 120 Grad)
  */
-
-//TODO:	- Version 3 funktioniert auf dem echten Bot nicht sehr zuverlaessig (Probleme bei Winkeln < 120 Grad)
 
 #include "bot-logic/bot-logik.h"
 
@@ -58,15 +58,15 @@
 #define RETREAT_AND_STOP			6	/* !< Zurueckfahren mit voller Geschwindigkeit, dann Stop und Verhalten verlassen */
 
 /* Status- und Hilfsvariablen */
-static int8 lineState=CHECK_LINE;
-static int8 cornerDetected=False;
+static int8_t lineState=CHECK_LINE;
+static int8_t cornerDetected=False;
 
 /*!
  * Folgt einer Linie, sobald beide Liniensensoren ausloesen
  * Die Linie sollte in etwa die Breite beider CNY70 haben
  * @param *data	Verhaltensdatensatz
  */
-void bot_follow_line_behaviour(Behaviour_t *data) {
+void bot_follow_line_behaviour(Behaviour_t * data) {
 	switch (lineState) {
 	case CHECK_LINE: /* sind beide Sensoren ueber einer Linie? */
 		if (sensLineL>=LINE_SENSE&& sensLineR>=LINE_SENSE) {
@@ -188,7 +188,7 @@ void bot_follow_line_behaviour(Behaviour_t *data) {
  * Die Linie sollte in etwa die Breite beider CNY70 haben
  * @param	*caller Verhaltensdatensatz des Aufrufers
  */
-void bot_follow_line(Behaviour_t *caller) {
+void bot_follow_line(Behaviour_t * caller) {
 	switch_to_behaviour(caller, bot_follow_line_behaviour, NOOVERRIDE);
 	lineState=CHECK_LINE;
 	cornerDetected=False;
@@ -210,6 +210,7 @@ void bot_follow_line(Behaviour_t *caller) {
  * @param *data	Verhaltensdatensatz
  */
 void bot_follow_line_behaviour(Behaviour_t * data) {
+	data = data; // kein warning
 	static int16_t lastLeft = 0;
 	static int16_t lastRight = 0;
 	static uint8_t lastCorrection = 0;
@@ -300,7 +301,7 @@ static int16_t lastpos_y = 0;
  */
 static uint8_t distance_reached(int16_t * last_xpoint, int16_t * last_ypoint) {
 	// Abstand seit letztem Observerlauf ermitteln
-	uint16_t diff = get_dist(x_pos, y_pos, *last_xpoint, *last_ypoint);
+	uint16_t diff = (uint16_t) get_dist(x_pos, y_pos, *last_xpoint, *last_ypoint);
 
 	//erst nach gewissem Abstand oder gleich bei noch initialem Wert Mappruefung
 	if (diff >= CHECK_DISTANCE_QUAD) {

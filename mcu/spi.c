@@ -39,14 +39,14 @@ void SPI_MasterInit(spi_speed_t speed) {
 	/* Set MOSI and SCK output, MISO input */
 	uint8_t ddrb = DDRB;
 	ddrb |=  (1<<DDB5) | (1<<DDB7) | (1<<DDB4);
-	ddrb &= ~(1<<DDB6);
+	ddrb = (uint8_t) (ddrb & ~(1<<DDB6));
 	DDRB = ddrb;
 	/* Enable SPI, Master, set clock rate */
 	uint8_t spcr = (1<<SPE) | (1<<MSTR);
-	uint8_t tmp = speed.raw & 0x3;
+	uint8_t tmp = (uint8_t) (speed.raw & 0x3);
 	spcr |= tmp;
 	SPCR = spcr;
-	SPSR = speed.spi2x; // SPI2X
+	SPSR = speed.data.spi2x; // SPI2X
 }
 
 /*!

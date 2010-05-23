@@ -32,7 +32,7 @@
 #ifdef OS_AVAILABLE
 
 #include <avr/io.h>
-#include <avr/interrupt.h>
+#include <avr/builtins.h>
 #include <stdint.h>
 
 /*!
@@ -44,7 +44,7 @@
  */
 static inline uint8_t test_and_set(uint8_t * var, uint8_t x) {
 	uint8_t sreg = SREG;
-	__asm__ __volatile__("cli":::"memory");
+	__builtin_avr_cli();
 	uint8_t old = *var;
 	*var = x;
 	__asm__ __volatile__("":::"memory");

@@ -71,39 +71,39 @@
 /*!
  * SRF10 initialsieren
  */
-extern void	srf10_init(void);
+void srf10_init(void);
 
 /*!
  * Verstaerkungsfaktor setzen
  * @param gain Verstaerkungsfaktor
  */
-extern void	srf10_set_gain(uint8_t gain);
+void srf10_set_gain(uint8_t gain);
 
 /*!
  * Reichweite setzen, hat auch Einfluss auf die Messdauer
  * @param millimeters Reichweite in mm
  */
-extern void	srf10_set_range(uint16_t millimeters);
+void srf10_set_range(uint16_t millimeters);
 
 /*!
  * Messung ausloesen
  * @param metric_unit 0x50 in Zoll, 0x51 in cm, 0x52 ms
  * @return Resultat der Aktion
  */
-extern uint8 srf10_ping(uint8_t metric_unit);
+uint8_t srf10_ping(uint8_t metric_unit);
 
 /*!
  * Register auslesen
  * @param SRF10_register welches Register soll ausgelsen werden
  * @return Inhalt des Registers
  */
-extern uint8 srf10_read_register(uint8_t SRF10_register);
+uint8_t srf10_read_register(uint8_t SRF10_register);
 
 /*!
  * Messung starten Ergebniss aufbereiten und zurueckgeben
  * @return Messergebniss
  */
-extern uint16 srf10_get_measure(void);
+uint16_t srf10_get_measure(void);
 
 #endif	// SRF10_AVAILABLE
 #endif  /* SRF10_H_ */

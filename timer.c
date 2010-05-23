@@ -31,9 +31,9 @@
 
 #ifdef MCU
 volatile tickCount_t tickCount;		/*!< ein Tick alle 176 us */
-#else
+#else // PC
 volatile float tickCount = 0;		/*!< ein Tick alle 176 us */
-#endif	// MCU
+#endif // MCU
 
 #ifdef PC
 /*!
@@ -53,7 +53,7 @@ uint32_t timer_get_tickCount32(void) {
 	temp = tickCount;
 	return temp;
 }
-#endif	// PC
+#endif // PC
 
 #ifdef TIME_AVAILABLE
 /*!
@@ -61,7 +61,7 @@ uint32_t timer_get_tickCount32(void) {
  * @return Millisekunden der Systemzeit
  */
 uint16_t timer_get_ms(void) {
-	return ((TIMER_GET_TICKCOUNT_32 * (TIMER_STEPS/8))/(1000/8)) % 1000;
+	return (uint16_t) (((TIMER_GET_TICKCOUNT_32 * (TIMER_STEPS / 8)) / (1000 / 8)) % 1000);
 }
 
 /*!
@@ -69,7 +69,7 @@ uint16_t timer_get_ms(void) {
  * @return Sekunden der Systemzeit
  */
 uint16_t timer_get_s(void) {
-	return TIMER_GET_TICKCOUNT_32 * (TIMER_STEPS/16)/(1000000/16);
+	return (uint16_t) (TIMER_GET_TICKCOUNT_32 * (TIMER_STEPS / 16) / (1000000 / 16));
 }
 
 /*!
@@ -81,25 +81,3 @@ uint16_t timer_get_ms_since(uint16_t old_s, uint16_t old_ms) {
 	return (timer_get_s() - old_s) * 1000 + timer_get_ms() - old_ms;
 }
 #endif // TIME_AVAILABLE
-
-#ifdef PC
-/*!
- * Funktion, die die TickCounts um die vergangene Simulzeit erhoeht
- */
-void system_time_isr(void) {
-//	LOG_DEBUG("simultime=%d", simultime);
-	/* TickCounter [176 us] erhoehen */
-	static int last_simultime = -11;	// kommt vom Sim zuerst als -1, warum auch immer!?!
-	int tmp = simultime - last_simultime;
-	if (tmp < 0) tmp += 10000;	// der Sim setzt simultime alle 10s zurueck auf 0
-	tickCount += MS_TO_TICKS((float)tmp);
-	last_simultime = simultime;
-}
-
-/*
- * Setzt die Systemzeit zurueck auf 0
- */
-void timer_reset(void) {
-	tickCount = 0;
-}
-#endif	// PC

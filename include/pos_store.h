@@ -31,44 +31,80 @@
 #include "ct-Bot.h"
 #include "global.h"
 #include "bot-logic/bot-logik.h"
+#include "bot-2-bot.h"
 #include <stdlib.h>
 
 #ifdef POS_STORE_AVAILABLE
 
-#define POS_STORE_SIZE	32  /*!< Groesse (pro Platz) */
+#define POS_STORE_SIZE	64  /*!< (maximale) Groesse (pro Platz) */
 
-#if POS_STORE_SIZE & (POS_STORE_SIZE-1)
+#if POS_STORE_SIZE & (POS_STORE_SIZE - 1)
 #error "POS_STORE_SIZE ist keine 2er-Potenz!"
 #endif
-#if POS_STORE_SIZE > 127
-#error "POS_STORE_SIZE ist zu gross!"
-#endif
+
+#if POS_STORE_SIZE < 256
+typedef uint8_t pos_store_size_t;
+#else
+typedef uint16_t pos_store_size_t;
+#endif // POS_STORE_SIZE
+
+#if POS_STORE_SIZE <= 256
+typedef uint8_t pos_store_pointer_t;
+#else
+typedef uint16_t pos_store_pointer_t;
+#endif // POS_STORE_SIZE
 
 /*! Positionsspeicher-Datentyp */
 typedef struct {
 	Behaviour_t * owner;	/*!< Besitzer dieses Speicher (ein Verhalten) */
 	position_t * data;		/*!< Speicher fuer die Daten */
-	uint8_t count;			/*!< Anzahl der Elemente im Speicher */
 	uint8_t stat_data;		/*!< 1: Statischer Speicher; 0: Heap-Speicher */
-	uint8_t sp;				/*!< Stackpointer */
-	uint8_t fp;				/*!< FIFO-Pointer */
+	pos_store_pointer_t sp;	/*!< Stackpointer */
+	pos_store_pointer_t fp;	/*!< FIFO-Pointer */
+	pos_store_size_t count;	/*!< Anzahl der Elemente im Speicher */
+	pos_store_size_t mask;	/*!< Groesse des Speichers - 1 (Anzahl der Eintraege - 1) */
 } pos_store_t;
 
+
+
 /*!
- * Erzeugt einen neuen Positionsspeicher
+ * Erzeugt einen neuen Positionsspeicher angegebener Groesse
+ * @param *owner	Zeiger Verhaltensdatensatz
+ * @param *data		NULL oder Zeiger auf Speicher fuer size * sizeof(position_t) Bytes
+ * @param size		Groesse des Speichers, <= POS_STORE_SIZE
+ * @return			Zeiger auf neuen Positionsspeicher oder NULL
+ */
+pos_store_t * pos_store_create_size(Behaviour_t * owner, void * data, pos_store_size_t size);
+
+/*!
+ * Erzeugt einen neuen Positionsspeicher maximaler Groesse
  * @param *owner	Zeiger Verhaltensdatensatz
  * @param *data		NULL oder Zeiger auf Speicher fuer POS_STORE_SIZE * sizeof(position_t) Bytes
  * @return			Zeiger auf neuen Positionsspeicher oder NULL
+ * @see pos_store_create_size()
  */
-pos_store_t * pos_store_create(Behaviour_t * owner, void * data);
+static inline pos_store_t * pos_store_create(Behaviour_t * owner, void * data) {
+	return pos_store_create_size(owner, data, POS_STORE_SIZE);
+}
 
 /*!
- * Erzeugt einen neuen Positionsspeicher
+ * Erzeugt einen neuen Positionsspeicher angegebener Groesse
  * @param *owner	Zeiger Verhaltensdatensatz
+ * @param size		Groesse des Speichers, <= POS_STORE_SIZE
  * @return			Zeiger auf neuen Positionsspeicher oder NULL
  */
+static inline pos_store_t * pos_store_new_size(Behaviour_t * owner, pos_store_size_t size) {
+	return pos_store_create_size(owner, NULL, size);
+}
+
+/*!
+ * Erzeugt einen neuen Positionsspeicher maximaler Groesse
+ * @param *owner	Zeiger Verhaltensdatensatz
+ * @return			Zeiger auf neuen Positionsspeicher oder NULL
+ * @see pos_store_new_size()
+ */
 static inline pos_store_t * pos_store_new(Behaviour_t * owner) {
-	return pos_store_create(owner, NULL);
+	return pos_store_create_size(owner, NULL, POS_STORE_SIZE);
 }
 
 /*!
@@ -161,7 +197,33 @@ uint8_t pos_store_dequeue(pos_store_t * store, position_t * pos);
  */
 uint8_t pos_store_top(pos_store_t * store, position_t * pos, uint8_t index);
 
+#ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
+/*!
+ * Uebertraegt einen Positionsspeicher an einen anderen Bot
+ * @param *store	Zeiger auf den zu uebertragenden Positionsspeicher
+ * @param bot		Adresse des Zielbots
+ * @return			Fehlercode (0: alles ok)
+ */
+int8_t pos_store_send_to_bot(pos_store_t * store, uint8_t bot);
+
+/*!
+ * Verarbeitet eine Positionsspeicher-Empfang-Anfrage
+ */
+void bot_2_bot_handle_pos_store(command_t * cmd);
+
+/*!
+ * Verarbeitet einen Positionsspeicher-Empfang
+ */
+void bot_2_bot_handle_pos_store_data(void);
+#endif // BOT_2_BOT_PAYLOAD_AVAILABLE
+
 #ifdef PC
+/*!
+ * Gibt alle Eintraege auf stdout aus
+ * @param *store Zeiger auf Positionsspeicher
+ */
+void pos_store_dump(pos_store_t * store);
+
 /*!
  * Testet push(), pop() und dequeue()
  */

@@ -24,7 +24,7 @@
  * Diese Datei sollte der Einstiegspunkt fuer eigene Experimente sein, 
  * den Roboter zu steuern.
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	03.11.06
+ * @date 	03.11.2006
  */
 
 #ifndef BEHAVIOUR_SIMPLE_H_
@@ -55,14 +55,14 @@
  * 
  * @param *data der Verhaltensdatensatz
  */
-void bot_simple2_behaviour(Behaviour_t *data);
+void bot_simple2_behaviour(Behaviour_t * data);
 
 /*!
  * Rufe das Simple2-Verhalten auf und uebergebe light
- * @param caller Der obligatorische Verhaltensdatensatz des Aufrufers
+ * @param *caller Der obligatorische Verhaltensdatensatz des Aufrufers
  * @param light Uebergabeparameter
  */
-void bot_simple2(Behaviour_t * caller, int16 light);
+void bot_simple2(Behaviour_t * caller, int16_t light);
 
 /*! 
  * Ein ganz einfaches Verhalten, es hat maximale Prioritaet
@@ -77,7 +77,7 @@ void bot_simple2(Behaviour_t * caller, int16 light);
  * 
  * @param *data der Verhaltensdatensatz
  */
-void bot_simple_behaviour(Behaviour_t *data);
+void bot_simple_behaviour(Behaviour_t * data);
 
 /*!
  * Rufe das Simple-Verhalten auf 

@@ -42,13 +42,13 @@
  * Setzt die Shift-Register wieder zurueck
  */ 
 static void shift_clear(void) {
-	SHIFT_PORT &= ~SHIFT_OUT;		// und wieder clear	
+	SHIFT_PORT = (uint8_t) (SHIFT_PORT & ~SHIFT_OUT); // clear
 }
 
 /*!
  * Initialisert die Shift-Register
  */
-void shift_init(void){
+void shift_init(void) {
 	SHIFT_DDR |= SHIFT_OUT;		// Ausgaenge Schalten
 	shift_clear();				// Und auf Null
 }
@@ -60,18 +60,18 @@ void shift_init(void){
  * @param latch_data 	Der Pin an dem der Daten-latch-Pin des Registers (PIN 11) haengt
  * @param latch_store 	Der Pin an dem der latch-Pin zum transfer des Registers (PIN 12) haengt
  */
-void shift_data_out(uint8 data, uint8 latch_data, uint8 latch_store) {
+void shift_data_out(uint8_t data, uint8_t latch_data, uint8_t latch_store) {
 #ifdef I2C_AVAILABLE
 	i2c_wait();		// I2C-Transfer muss beendet sein (benutzt PC0 und PC1)
 #endif
 	
-	SHIFT_PORT &= ~SHIFT_OUT;		// und wieder clear	
-	int8 i;
+	SHIFT_PORT = (uint8_t) (SHIFT_PORT & ~SHIFT_OUT); // und wieder clear
+	int8_t i;
 	for (i=8; i>0; i--){
-		SHIFT_PORT |= ((data >> 7)& 0x01);      // Das oberste Bit von data auf PC0.0 (Datenleitung Schieberegister)
-		SHIFT_PORT |= latch_data ;	    		// und ins jeweilige Storageregister latchen
-		data= data << 1;		      	// data links schieben
-		SHIFT_PORT &= ~SHIFT_OUT;		// und wieder clear
+		SHIFT_PORT |= ((data >> 7) & 0x01);	// Das oberste Bit von data auf PC0.0 (Datenleitung Schieberegister)
+		SHIFT_PORT |= latch_data ;			// und ins jeweilige Storageregister latchen
+		data = (uint8_t) (data << 1);		// data links schieben
+		shift_clear();						// und wieder clear
 	}
 	
 	SHIFT_PORT |= latch_store;			// alles vom Storage ins Output register latchen
@@ -84,7 +84,7 @@ void shift_data_out(uint8 data, uint8 latch_data, uint8 latch_store) {
  * @param data			Das Datenbyte
  * @param latch_data 	Der Pin an dem der Daten-latch-Pin des Registers (PIN 11) haengt
  */
-void shift_data(uint8 data, uint8 latch_data) {
+void shift_data(uint8_t data, uint8_t latch_data) {
 	shift_data_out(data, latch_data, SHIFT_LATCH);
 	shift_clear();
 }

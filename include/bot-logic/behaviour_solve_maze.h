@@ -37,7 +37,7 @@
  * stehender Pfeiler im Labyrinth um den der Bot dann immer wieder herum fahren wuerde.
  * @param *caller	Verhaltensdatensatz des Aufrufers
  */
-void bot_solve_maze(Behaviour_t *caller);
+void bot_solve_maze(Behaviour_t * caller);
 
 /*!
  * Das Verhalten findet seinen Weg durch ein Labyrinth, das nach gewissen Grundregeln gebaut ist
@@ -46,7 +46,7 @@ void bot_solve_maze(Behaviour_t *caller);
  * stehender Pfeiler im Labyrinth um den der Bot dann immer wieder herum fahren wuerde.
  * @param *data	Verhaltensdatensatz
  */
-void bot_solve_maze_behaviour(Behaviour_t *data);
+void bot_solve_maze_behaviour(Behaviour_t * data);
 
 /*!
  * Das Verhalten dreht den Bot in die angegebene Richtung bis ein Hindernis

@@ -32,7 +32,7 @@
 // * Liest einen analogen Kanal aus
 // * @param channel Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
 // */
-//uint16 adc_read(uint8 channel);
+//uint16_t adc_read(uint8_t channel);
 
 /*!
  * @brief			Fuegt einen analogen Kanal in die ADC-Konvertierungsliste ein und wertet ihn per Interrupt aus

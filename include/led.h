@@ -21,7 +21,7 @@
  * @file 	led.h 
  * @brief 	Routinen zur LED-Steuerung
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+ * @date 	26.12.2005
  */
 
 #ifndef led_H_
@@ -29,8 +29,8 @@
 
 #include "ct-Bot.h"
 
-#define LED_RECHTS	(1<<0)		/*!< LED in Fahrichtung rechts*/
-#define LED_LINKS	(1<<1)		/*!< LED in Fahrichtung links*/
+#define LED_RECHTS	(1<<0)		/*!< LED in Fahrichtung rechts */
+#define LED_LINKS	(1<<1)		/*!< LED in Fahrichtung links */
 #define LED_ROT     (1<<2)		/*!< LED Rot */
 #define LED_ORANGE  (1<<3)		/*!< LED Orange */
 #define LED_GELB    (1<<4)		/*!< LED Gelb */
@@ -43,24 +43,17 @@
 #ifndef __ASSEMBLER__
 /*! Datenfeld fuer den Zugriff auf die LEDs */
 typedef struct {
-   uint8 rechts:1;		/*!< LED in Fahrichtung rechts*/
-   uint8 links:1; 		/*!< LED in Fahrichtung links*/
- 
-   uint8 rot:1;   		/*!< LED Rot */
-   uint8 orange:1;   	/*!< LED Orange */
- 
-   uint8 gelb:1;   	/*!< LED Gelb */
-   uint8 gruen:1;  	/*!< LED Gruen */
-    
-   uint8 tuerkis:1;   	/*!< LED Tuerkis */
-   uint8 weiss:1;   	/*!< LED Weiss */
-#ifndef DOXYGEN
-	} __attribute__ ((packed)) led_t;
-#else
-	} led_t;
-#endif
+	unsigned rechts:1;	/*!< LED in Fahrichtung rechts */
+	unsigned links:1;	/*!< LED in Fahrichtung links */
+	unsigned rot:1;		/*!< LED Rot */
+	unsigned orange:1;	/*!< LED Orange */
+	unsigned gelb:1;	/*!< LED Gelb */
+	unsigned gruen:1;	/*!< LED Gruen */
+	unsigned tuerkis:1;	/*!< LED Tuerkis */
+	unsigned weiss:1;	/*!< LED Weiss */
+} PACKED led_t;
 
-extern uint8 led;	/*!< Zustand der LEDs */
+extern uint8_t led;	/*!< Zustand der LEDs */
 
 /*!
  * Initialisiert die LEDs
@@ -71,21 +64,21 @@ void LED_init(void);
  * Zeigt eine 8-Bit Variable mit den LEDs an
  * @param LED Wert der gezeigt werden soll
  */
-void LED_set(uint8 LED);
+void LED_set(uint8_t LED);
 
 /*! 
  * Schaltet einzelne LEDs aus
  * andere werden nicht beeinflusst
  * @param LED Bitmaske der anzuschaltenden LEDs
  */
-void LED_off(uint8 LED);
+void LED_off(uint8_t LED);
 
 /*! 
  * Schaltet einzelne LEDs an
  * andere werden nicht beeinflusst
  * @param LED Bitmaske der anzuschaltenden LEDs
  */
-void LED_on(uint8 LED);
+void LED_on(uint8_t LED);
 
 #endif	// __ASSEMBLER__
 #endif	// led_H_

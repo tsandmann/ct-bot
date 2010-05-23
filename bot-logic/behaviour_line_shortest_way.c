@@ -27,10 +27,9 @@
  *          manuell an den Start gestellt werden und das Ziel auf kuerzestem Weg angefahren werden.
  * @author 	Frank Menzel (Menzelfr@gmx.de)
  * @date 	21.12.2008
+ *
+ * @todo	Unterstuetzung fuer Linienlabyrinthe mit Zyklen
  */
-
-//TODO:	Unterstuetzung fuer Linienlabyrinthe mit Zyklen
-
 #include "bot-logic/bot-logik.h"
 
 #ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
@@ -39,14 +38,21 @@
 #include "rc5-codes.h"
 #include "math_utils.h"
 
-#define DEBUG_BEHAVIOUR_LINE_SHORTEST_WAY // Schalter fuer Debug-Code
+//#define DEBUG_BEHAVIOUR_LINE_SHORTEST_WAY // Schalter fuer Debug-Code
+
+#define STACK_SIZE 32 /*!< Groesse des verwendeten Positionsspeichers */
+
+#if STACK_SIZE > POS_STORE_SIZE
+#undef STACK_SIZE
+#define STACK_SIZE POS_STORE_SIZE
+#endif
 
 #ifndef LOG_AVAILABLE
 #undef DEBUG_BEHAVIOUR_LINE_SHORTEST_WAY
 #endif
 #ifndef DEBUG_BEHAVIOUR_LINE_SHORTEST_WAY
 #undef LOG_DEBUG
-#define LOG_DEBUG(a, ...) {}
+#define LOG_DEBUG(...) {}
 #endif
 
 /*! Version des Linefolgers, die optimal fuer dieses Verhalten ist */
@@ -77,7 +83,7 @@ static int8_t lineState = 0;
 static pos_store_t * pos_store = NULL;
 
 /*! Statischer Speicher fuer pos_store */
-static position_t pos_store_data[POS_STORE_SIZE];
+static position_t pos_store_data[STACK_SIZE];
 
 /*! Kennung links, welcher der Bordersensoren zugeschlagen hat zur Erkennung der Kreuzungen, notwendig
  *  weil sicht nicht immer beide gleichzeitig ueber Kreuzungslinie befinden */
@@ -157,7 +163,7 @@ static int16_t lastpos_y = 0;
 static uint8_t distance_reached(int16_t * last_xpoint,int16_t * last_ypoint) {
 
 	// Abstand seit letztem Observerlauf ermitteln
-	uint16_t diff = get_dist(x_pos, y_pos, *last_xpoint, *last_ypoint);
+	uint16_t diff = (uint16_t) get_dist(x_pos, y_pos, *last_xpoint, *last_ypoint);
 
 	//erst nach gewissem Abstand oder gleich bei noch initialem Wert Mappruefung
 	if (diff >= CHECK_DISTANCE_QUAD) {
@@ -189,7 +195,7 @@ int16_t angle_t=0;
 void bot_check_reverse_direction_behaviour(Behaviour_t * data) {
 	switch (reverse_state) {
 	case 0:
-		last_heading = heading;
+		last_heading = heading_int;
 		reverse_state = 1;
 		bot_reverse = False;
 		//LOG_DEBUG("-Start Check reverse mit ang %1d", last_heading);
@@ -201,7 +207,7 @@ void bot_check_reverse_direction_behaviour(Behaviour_t * data) {
 			angle_t = 360 - angle_t;
 
 		if (angle_t > CHECK_ANGLE_REV) {
-			last_heading = heading;
+			last_heading = heading_int;
 			LOG_DEBUG("-um Winkel gedreht %1d", angle_t);
 			bot_reverse = True; // Kennung muss vom Auswerteverhalten nach Erkennung rueckgesetzt werden
 			return_from_behaviour(data); // gleich Deaktivierung nach Erkennung entgegengesetzte Richtung
@@ -220,7 +226,7 @@ void bot_check_reverse_direction_behaviour(Behaviour_t * data) {
  * Botenfunktion: Verhalten zum Checken der Botrichtung auf Einnehmen der entgegengesetzten Richtung (Linienende)
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  */
-void bot_check_reverse_direction(Behaviour_t * caller) {
+static void bot_check_reverse_direction(Behaviour_t * caller) {
 	// via Override umschalten; Aufruf erfolgt aller x mm gefahrene Strecke, falls Kurve gefahren wurde zum Setzen des neuen Pruefwinkels
 	switch_to_behaviour(caller, bot_check_reverse_direction_behaviour, OVERRIDE);
 	reverse_state = 0;
@@ -256,10 +262,11 @@ static void push_stack_crossing(int8_t crosstype, int8_t direction) {
  */
 static uint8_t pop_stack_crossing(int8_t * crosstype, int8_t * direction) {
 	position_t p_temp; // Stack erlaubt nur Speicherung von Positionstypen
-	if (!pos_store_pop(pos_store, &p_temp))
+	if (!pos_store_pop(pos_store, &p_temp)) {
 		return False;
-	*crosstype = p_temp.x;
-	*direction = p_temp.y;
+	}
+	*crosstype = (int8_t) p_temp.x;
+	*direction = (int8_t) p_temp.y;
 
 	return True;
 }
@@ -272,10 +279,11 @@ static uint8_t pop_stack_crossing(int8_t * crosstype, int8_t * direction) {
  */
 static uint8_t dequeue_stack_crossing(int8_t * crosstype, int8_t * direction) {
 	position_t p_temp; // Stack erlaubt nur Speicherung von Positionstypen
-	if (!pos_store_dequeue(pos_store, &p_temp))
+	if (!pos_store_dequeue(pos_store, &p_temp)) {
 		return False;
-	*crosstype = p_temp.x;
-	*direction = p_temp.y;
+	}
+	*crosstype = (int8_t) p_temp.x;
+	*direction = (int8_t) p_temp.y;
 
 	return True;
 }
@@ -289,7 +297,7 @@ static uint8_t dequeue_stack_crossing(int8_t * crosstype, int8_t * direction) {
  * @param goalcheck True falls Aufruf von Zielerkennung kam, False sonst fuer Pruefung auf Umkehrfeld
  * @return True falls Bot sich auf dem Farbfeld befindet sonst False
  */
-uint8_t green_field(uint8_t goalcheck) {
+static uint8_t green_field(uint8_t goalcheck) {
 	if (crossing_reached && ((sensLineL > GROUND_GOAL_DEF - 5 && sensLineL
 			< GROUND_GOAL_DEF + 5) || (sensLineR > GROUND_GOAL_DEF - 5
 			&& sensLineR < GROUND_GOAL_DEF + 5))) {
@@ -318,7 +326,7 @@ uint8_t green_field(uint8_t goalcheck) {
  * Prueft ob der Bot sich auf dem Ziel befindet, also wenn er auf dem definierten Farbfeld steht und Hindernis dahinter
  * @return True falls bot sich auf dem Zielfarbfeld befindet sonst False
  */
-uint8_t goal_reached(void) {
+static uint8_t goal_reached(void) {
 	if (green_field(True) && sensDistL < 300 && sensDistR < 300)
 		return True;
 
@@ -404,7 +412,7 @@ uint8_t check_crossing(void) {
  * Prueft ob der Bot sich auf Umkehr- oder Zielfeld befindet; hier wurde der optimal Linienfolger gestartet, der sich beendet bei Kreuzungen oder Abgruenden
  * @return True falls bot sich auf Ziel- oder Umkehrfeld befindet sonst False
  */
-uint8_t check_crossing(void) {
+static uint8_t check_crossing(void) {
 	if (goal_reached()) {
 		LOG_DEBUG("Ziel erreicht und Ende");
 		lineState = 99; // Verhalten Ende
@@ -506,7 +514,7 @@ void bot_line_shortest_way_behaviour(Behaviour_t * data) {
 		break;
 
 	case GO_FORWARD: // Erkennung ob Abgrund und Ende, falls nicht weiter bis Liniensensoren auf Krezung
-//TODO:	schlaegt auch bei Kreuzungen zu, muss ueberarbeitet werden!
+/*! @todo schlaegt auch bei Kreuzungen zu, muss ueberarbeitet werden! */
 //		if (sensBorderL > BORDER_DANGEROUS || sensBorderR > BORDER_DANGEROUS) {
 //			LOG_DEBUG("Abgrund und Ende %1d %1d", sensBorderL, sensBorderR);
 //			lineState = GOAL_FOUND; // Verhalten Ende
@@ -566,26 +574,26 @@ void bot_line_shortest_way_behaviour(Behaviour_t * data) {
 				}
 
 				// je nach Start-Ausgangs-Richtungswahl Richtungswert interpretieren
-				if (START_SIDEWISH == 1) { // links bevorzugt
-					if (direction_counter == 1) {
-						LOG_DEBUG("nach rechts");
-						sidewish = -1;
-					}
-					if (direction_counter == 3) {
-						LOG_DEBUG("nach links");
-						sidewish = 1;
-					}
-				} else { // rechts bevorzugt
-					LOG_DEBUG("neg wg. rechts zuerst");
-					if (direction_counter == 1) {
-						LOG_DEBUG("nach links");
-						sidewish = 1;
-					}
-					if (direction_counter == 3) {
-						LOG_DEBUG("nach rechts");
-						sidewish = -1;
-					}
+#if START_SIDEWISH == 1 // links bevorzugt
+				if (direction_counter == 1) {
+					LOG_DEBUG("nach rechts");
+					sidewish = -1;
 				}
+				if (direction_counter == 3) {
+					LOG_DEBUG("nach links");
+					sidewish = 1;
+				}
+#else // rechts bevorzugt
+				LOG_DEBUG("neg wg. rechts zuerst");
+				if (direction_counter == 1) {
+					LOG_DEBUG("nach links");
+					sidewish = 1;
+				}
+				if (direction_counter == 3) {
+					LOG_DEBUG("nach rechts");
+					sidewish = -1;
+				}}
+#endif // START_SIDEWISH == 1
 
 			} // Ende zurueck vom Ziel
 			else {
@@ -598,27 +606,26 @@ void bot_line_shortest_way_behaviour(Behaviour_t * data) {
 				}
 
 				// auch hier je nach Wunsch-Start-Richtungswahl die Richtung interpretieren
-				if (START_SIDEWISH == 1) {
-					if (direction_counter == 1) { // links bevorzugt
-						LOG_DEBUG("nach links");
-						sidewish = 1;
-					}
-					if (direction_counter == 3) {
-						LOG_DEBUG("nach rechts");
-						sidewish = -1;
-					}
-				} else { // rechts bevorzugt
-					LOG_DEBUG("neg wegen rechts zuerst");
-					if (direction_counter == 1) {
-						LOG_DEBUG("nach rechts");
-						sidewish = -1;
-					}
-					if (direction_counter == 3) {
-						LOG_DEBUG("nach links");
-						sidewish = 1;
-					}
+#if START_SIDEWISH == 1 // links bevorzugt
+				if (direction_counter == 1) { // links bevorzugt
+					LOG_DEBUG("nach links");
+					sidewish = 1;
 				}
-
+				if (direction_counter == 3) {
+					LOG_DEBUG("nach rechts");
+					sidewish = -1;
+				}
+#else // rechts bevorzugt
+				LOG_DEBUG("neg wegen rechts zuerst");
+				if (direction_counter == 1) {
+					LOG_DEBUG("nach rechts");
+					sidewish = -1;
+				}
+				if (direction_counter == 3) {
+					LOG_DEBUG("nach links");
+					sidewish = 1;
+				}
+#endif // START_SIDEWISH
 			}
 
 			LOG_DEBUG("X Richtg. %1d", direction_counter);
@@ -686,8 +693,8 @@ void bot_line_shortest_way(Behaviour_t * caller) {
 	sidewish = START_SIDEWISH;
 	way_back = False;
 	go_stack_way = False;
-	pos_store = pos_store_create(get_behaviour(bot_line_shortest_way_behaviour),
-			pos_store_data);
+	pos_store = pos_store_create_size(get_behaviour(bot_line_shortest_way_behaviour),
+			pos_store_data, STACK_SIZE);
 
 	/* stoerende Notfallverhalten aus */
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE

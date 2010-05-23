@@ -21,7 +21,7 @@
  * @file 	sensor.h
  * @brief 	Architekturunabhaengiger Teil der Sensorsteuerung
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	15.01.05
+ * @date 	15.01.2005
  */
 
 #ifndef SENSOR_H_
@@ -49,8 +49,8 @@ extern distSens_t sensDistDataR[];	/*!< kalibrierte Referenzdaten fuer rechten I
 extern uint8_t sensDistOffset;		/*!< Spannungs-Offset IR-Sensoren */
 
 
-extern int16_t sensLDRL;		/*!< Lichtsensor links [0-1023];  1023 = dunkel*/
-extern int16_t sensLDRR;		/*!< Lichtsensor rechts [0-1023];  1023 = dunkel*/
+extern int16_t sensLDRL;	/*!< Lichtsensor links [0-1023];  1023 = dunkel*/
+extern int16_t sensLDRR;	/*!< Lichtsensor rechts [0-1023];  1023 = dunkel*/
 
 extern int16_t sensBorderL;	/*!< Abgrundsensor links [0-1023];  1023 = dunkel*/
 extern int16_t sensBorderR;	/*!<  Abgrundsensor rechts [0-1023];  1023 = dunkel*/
@@ -59,23 +59,28 @@ extern int16_t sensLineL;	/*!<  Lininensensor links [0-1023];  1023 = dunkel*/
 extern int16_t sensLineR;	/*!<  Lininensensor rechts [0-1023];  1023 = dunkel*/
 
 /* digitale Sensoren */
-extern int16_t sensEncL;		/*!< Encoder linker Motor [-32768 bis 32767] */
-extern int16_t sensEncR;		/*!< Encoder rechter Motor [-32768 bis 32767] */
+extern int16_t sensEncL;	/*!< Encoder linker Motor [-32768 bis 32767] */
+extern int16_t sensEncR;	/*!< Encoder rechter Motor [-32768 bis 32767] */
 
-extern uint8_t sensTrans;		/*!< Sensor Ueberwachung Transportfach [0/1]*/
-extern uint8_t sensDoor;		/*!< Sensor Ueberwachung Klappe [0/1] */
-extern uint8_t sensError;		/*!< Ueberwachung Motor oder Batteriefehler [0/1]  1= alles ok */
+extern uint8_t sensTrans;	/*!< Sensor Ueberwachung Transportfach [0/1]*/
+extern uint8_t sensDoor;	/*!< Sensor Ueberwachung Klappe [0/1] */
+extern uint8_t sensError;	/*!< Ueberwachung Motor oder Batteriefehler [0/1]  1= alles ok */
 
-extern uint16_t RC5_Code;        /*!< Letzter empfangener RC5-Code */
+extern uint16_t RC5_Code;	/*!< Letzter empfangener RC5-Code */
+
+#ifdef BPS_AVAILABLE
+extern uint16_t sensBPS;	/*!< Bot Positioning System */
+#endif	// BPS_AVAILABLE
+
 
 #ifdef MOUSE_AVAILABLE
-extern int8_t sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-extern int8_t sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
-extern int16_t sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-extern int16_t sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
+extern int8_t sensMouseDX;	/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+extern int8_t sensMouseDY;	/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
+extern int16_t sensMouseX;	/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+extern int16_t sensMouseY;	/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
 #endif	// MOUSE_AVAILABLE
 
-extern float heading_enc;		/*!< Blickrichtung aus Encodern */
+extern float heading_enc;	/*!< Blickrichtung aus Encodern */
 extern float x_enc;			/*!< X-Koordinate aus Encodern [mm] */
 extern float y_enc;			/*!< Y-Koordinate aus Encodern [mm] */
 extern int16_t v_enc_left;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
@@ -96,11 +101,19 @@ extern int16_t v_mou_right;		/*!< ...aufgeteilt auf rechtes Rad */
 #endif	// MEASURE_MOUSE_AVAILABLE
 
 extern float heading;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
+extern int16_t heading_int;		/*!< (int16_t) heading */
+extern int16_t heading_10_int;	/*!< = (int16_t) (heading * 10.0f) */
+extern float heading_sin;		/*!< = sin(rad(heading)) */
+extern float heading_cos;		/*!< = cos(rad(heading)) */
 extern int16_t x_pos;			/*!< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
 extern int16_t y_pos;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
 extern int16_t v_left;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
 extern int16_t v_right;			/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
-extern int16_t v_center;			/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
+extern int16_t v_center;		/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
+
+#ifdef MEASURE_POSITION_ERRORS_AVAILABLE
+extern int16_t pos_error_radius;	/*!< Aktueller Fehlerradius der Position */
+#endif
 
 #ifdef SRF10_AVAILABLE
 extern uint16_t sensSRF10;	/*!< Messergebniss Ultraschallsensor */
@@ -121,13 +134,11 @@ void sensor_update(void);
 void sensor_reset(void);
 
 /*!
- * @brief			Errechnet aus den rohren Distanzsensordaten die zugehoerige Entfernung
+ * Errechnet aus den rohren Distanzsensordaten die zugehoerige Entfernung
  * @param p_sens	Zeiger auf den (Ziel-)Sensorwert
  * @param p_toggle	Zeiger auf die Toggle-Variable des Zielsensors
  * @param ptr		Zeiger auf auf Sensorrohdaten im EEPROM fuer p_sens
  * @param volt_16	Spannungs-Ist-Wert, zu dem die Distanz gesucht wird (in 16 Bit)
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			21.04.2007
  */
 void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t volt_16);
 

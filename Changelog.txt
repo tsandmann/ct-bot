@@ -1,6 +1,50 @@
 CHANGELOG fuer c't-Bot
 ======================
-2010-05-04 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Projekteinstellungen (Dateizuordnungen) 
+2010-05-23 Timo Sandmann [mail@timosandmann.de]: Release 17
+
+2010-05-21 Timo Sandmann [mail@timosandmann.de]: Code-Cleanup
+
+2010-05-18 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Map
+
+2010-03-23 Timo Sandmann [mail@timosandmann.de]: Lokalisierungsverhalten verbessert, Init-Code fuer MCU und PC getrennt
+
+2010-03-04 Timo Sandmann [mail@timosandmann.de]: Support fuer ATmega1284P, Projekteinstellungen aufgeraeumt, Anpassungen fuer EEPROM-Emulation
+
+2010-02-18 Timo Sandmann [mail@timosandmann.de]: asm-Code in delay-Funktion entfernt, hardwareabhaengige Parameter in delay-Aufrufen entfernt
+
+2010-02-16 Timo Sandmann [mail@timosandmann.de]: Anpassungen fuer avr-libc 1.6.8 / WinAVR-20100110, Test-Verhalten bot_test_encoder(), um die Positionierungsgenauigkeit aus den Radencoder-Daten testen zu koennen. 
+
+2010-02-08 Timo Sandmann [mail@timosandmann.de]: Aufraeumarbeiten, Warnings im Schach-Verhalten beseitigt
+
+2010-02-06 Timo Sandmann [mail@timosandmann.de]: Speed-Log und Mini-FAT verbessert, Verhaltenscode aufgeraeumt, Init-Code vereinheitlicht, Warnings beseitigt
+
+2010-01-31 Timo Sandmann [mail@timosandmann.de]: Map-Update beruecksichtigt Positionsunsicherheit, wenn MEASURE_POSITION_ERRORS_AVAILABLE an ist
+
+2010-01-29 Timo Sandmann [mail@timosandmann.de]: Positionsbestimmung um Fehlerabschaetzung erweitert (MEASURE_POSITION_ERRORS_AVAILABLE), verfuegbar ueber globale Variable pos_error_radius, Anzeige der Positionsunsicherheit in der Map-Anzeige des Sim, got_pos() optimiert, Funktionen rad() und deg() zur Umrechnung von Grad in Bogenmass und umgekehrt, calc_angle_diff_rad() liefert Winkeldifferenz wie calc_angle_diff() aber im Bogenmass.  
+
+2010-01-13 Timo Sandmann [mail@timosandmann.de]: Positionsberechnungen und Map-Code optimiert
+
+2009-12-02 Timo Sandmann [mail@timosandmann.de]: Inhaltsverzeichnis der pdf-Doku korrigiert
+
+2009-11-16 Frank Menzel [Menzelfr@gmx.de]: Der Bot spielt Schach! Neues Schachverhalten behaviour_drive_chess()
+
+2009-10-18 Timo Sandmann [mail@timosandmann.de]: Positionsspeicher koennen per Bot-2-Bot-Kommunikation uebertragen werden; bot_save_waypos() kann mit zwei Optimierungsstufen gestartet werden, 1 entfernt Positionen, die auf einer Linie liegen und somit redundant sind, 2 entfernt auch Schleifen, so dass der Weg durch ein Labyrinth optimiert wird 
+
+2009-10-17 Timo Sandmann [mail@timosandmann.de]: Positionsspeicher koennen nun mit individueller Groesse angelegt werden
+
+2009-10-04 Timo Sandmann [mail@timosandmann.de]: Schoenheitskorrekturen fuer Doxygen
+
+2009-10-02 Timo Sandmann [mail@timosandmann.de]: Projekteinstellungen korrigiert und Warnings unter Windows beseitigt 
+
+2009-09-24 Timo Sandmann [mail@timosandmann.de]: BPS-Sensordaten des echten Bots werden zum Sim uebertragen
+
+2009-09-23 Timo Sandmann [mail@timosandmann.de]: Bugfix im Command-Code, keine Uebertragung der Lichtsensordaten, falls keine Lichtsensoren aktiv sind
+
+2009-09-19 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Projekteinstellungen
+
+2009-09-16 Timo Sandmann [mail@timosandmann.de]: Bot-Lokalisierung: BPS-Sensor (BPS_AVAILABLE) und neues Verhalten bot_scan_beacons (BEHAVIOUR_SCAN_BEACONS_AVAILABLE); Trace-File Erzeugung um alle Sensor- und Aktuator-Daten zu loggen (CREATE_TRACEFILE_AVAILABLE); Code aufgraeumt / Warnings entfernt 
+
+2009-08-25 Timo Sandmann [mail@timosandmann.de]: RemoteCall-Steuerung per Commandline 
 
 2009-08-10 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Mauscode, falls BOT_2_SIM_AVAILABLE aus ist
 

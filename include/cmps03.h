@@ -35,11 +35,11 @@
 
 /*! Kompass-Datentyp fuer Lage */
 typedef union {
+	int16_t bearing;
 	struct {
 		uint8_t hi8;
 		uint8_t lo8;
 	};
-	int16_t bearing;
 } cmps03_t;
 
 /*!

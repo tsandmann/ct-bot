@@ -37,5 +37,10 @@
  */
 void hand_cmd_args(int argc, char * argv[]);
 
-#endif	// PC
-#endif	// CMD_TOOLS_H_
+/*!
+ * Initialisiert die Eingabekonsole fuer RemoteCalls
+ */
+void cmd_init(void);
+
+#endif // PC
+#endif // CMD_TOOLS_H_

@@ -19,13 +19,13 @@
 
 /*!
  * @file 	log.c
- * @brief 	Routinen zum Loggen von Informationen. Es sollten ausschliesslich nur
+ * Routinen zum Loggen von Informationen. Es sollten ausschliesslich nur
  * die Log-Makros: LOG_DEBUG(), LOG_INFO(), LOG_WARN(), LOG_ERROR() und LOG_FATAL()
  * verwendet werden.
  * Eine Ausgabe kann wie folgt erzeugt werden:
  * LOG_DEBUG("Hallo Welt!");
  * LOG_INFO("Wert x=%d", x);
- * Bei den Ausgaben kann auf ein Line Feed '\n' am Ende des Strings verzichtet werden,
+ * Bei den Ausgaben kann auf ein Line Feed am Ende des Strings verzichtet werden,
  * da dies automatisch angehaengt hinzugefuegt wird.
  * Die frueher noetigen Doppelklammern sind nicht mehr noetig, einfach normale Klammern
  * verwenden, siehe Bsp. oben.
@@ -33,11 +33,13 @@
  * nun fuer MCU alle Strings im Flash belassen werden sollen, das spart viel RAM :-) )
  *
  * @author 	Andreas Merkle (mail@blue-andi.de)
- * @date 	27.02.06
+ * @date 	27.02.2006
+ *
+ * @todo Umblaetterfunktion fuer mehr als 4 Logausgaben bei LOG_DISPLAY_AVAILABLE => Keyhandler aehnlich wie bei der Verhaltensanzeige
  */
 
-//TODO: Umblaetterfunktion fuer mehr als 4 Logausgaben bei LOG_DISPLAY_AVAILABLE => Keyhandler aehnlich wie bei der Verhaltensanzeige
 
+#include "global.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -78,8 +80,8 @@
 #endif	/* PC */
 
 #ifdef LOG_MMC_AVAILABLE
-	static uint32 log_file;
-	static uint32 log_file_end=0;
+	static uint32_t log_file;
+	static uint32_t log_file_end = 0;
 	#define LOG_FILENAME "log.txt"
 #endif	/* LOG_MMC_AVAILABLE */
 
@@ -95,242 +97,239 @@ static const char fatal_str[] PROGMEM = "- FATAL -";
  * @param log_type Log-Typ
  * @return char*
  */
-static const char* log_get_type_str(LOG_TYPE log_type);
+static const char * log_get_type_str(LOG_TYPE log_type);
 
 /*! Puffer fuer das Zusammenstellen einer Logausgabe */
 static char log_buffer[LOG_BUFFER_SIZE];
 
 #ifdef PC
-	/*! Schuetzt den Ausgabepuffer */
-	static pthread_mutex_t log_buffer_mutex = PTHREAD_MUTEX_INITIALIZER;
-#endif	/* PC */
+/*! Schuetzt den Ausgabepuffer */
+static pthread_mutex_t log_buffer_mutex = PTHREAD_MUTEX_INITIALIZER;
+#endif // PC
 
 #ifdef LOG_DISPLAY_AVAILABLE
 	/*! Zeile in der die naechste Logausgabe erfolgt. */
-	static uint16 log_line = 1;
-	static char screen_output[4][LOG_BUFFER_SIZE];	// Puffer, damit mehr als eine Zeile pro Hauptschleifendurchlauf geloggt werden kann
-#endif	/* LOG_DISPLAY_AVAILABLE */
+	static uint16_t log_line = 1;
+	static char screen_output[4][LOG_BUFFER_SIZE];	/*!< Puffer, damit mehr als eine Zeile pro Hauptschleifendurchlauf geloggt werden kann */
+#endif // LOG_DISPLAY_AVAILABLE
 
 #ifdef PC
-	/*!
-	 * Schreibt Angaben ueber Datei, Zeilennummer und den Log-Typ in den Puffer.
-	 * Achtung, Mutex wird gelockt und muss explizit durch log_end() wieder
-	 * freigegeben werden!
-	 * @param filename Dateiname
-	 * @param line Zeilennummer
-	 * @param log_type Log-Typ
+/*!
+ * Schreibt Angaben ueber Datei, Zeilennummer und den Log-Typ in den Puffer.
+ * Achtung, Mutex wird gelockt und muss explizit durch log_end() wieder
+ * freigegeben werden!
+ * @param filename Dateiname
+ * @param line Zeilennummer
+ * @param log_type Log-Typ
+ */
+void log_begin(const char * filename, unsigned int line, LOG_TYPE log_type) {
+
+	/* Ausgaben ueber das LCD-Display werden ohne Dateiname und Zeilennumer
+	 * gemacht. Der Log-Typ versteckt sich im ersten Buchstaben. Durch eine
+	 * die Markierung mit '>' erkennt man das letzte Logging.
+	 * Nur bei Ausgaben ueber UART und an ct-Sim werden Dateiname, Zeilennummer
+	 * und der Log-Typ vollstaendig ausgegeben.
 	 */
-	void log_begin(const char *filename, unsigned int line, LOG_TYPE log_type) {
-
-		/* Ausgaben ueber das LCD-Display werden ohne Dateiname und Zeilennumer
-		 * gemacht. Der Log-Typ versteckt sich im ersten Buchstaben. Durch eine
-		 * die Markierung mit '>' erkennt man das letzte Logging.
-		 * Nur bei Ausgaben ueber UART und an ct-Sim werden Dateiname, Zeilennummer
-		 * und der Log-Typ vollstaendig ausgegeben.
-		 */
-
-		#ifdef LOG_DISPLAY_AVAILABLE
-			LOCK();
-			/* Alte Markierung loeschen */
-			if (log_line == 1){
-				screen_output[3][0] = ' ';
-			}
-			else{
-				screen_output[log_line-2][0] = ' ';
-			}
-			snprintf(log_buffer, LOG_BUFFER_SIZE, ">%c:", *(log_get_type_str(log_type)+2));
-		#else
-
-			const char *ptr = NULL;
-
-			/* Nur den Dateinamen loggen, ohne Verzeichnisangabe */
-			ptr = strrchr(filename, '/');
-
-			if (ptr == NULL)
-				ptr = filename;
-			else
-				ptr++;
-
-			LOCK();
-
-			snprintf(log_buffer, LOG_BUFFER_SIZE, "%s(%d)\t%s\t",
-				ptr, line, log_get_type_str(log_type));
-
-		#endif
-
-		return;
+#ifdef LOG_DISPLAY_AVAILABLE
+	LOCK();
+	/* Alte Markierung loeschen */
+	if (log_line == 1){
+		screen_output[3][0] = ' ';
 	}
+	else{
+		screen_output[log_line-2][0] = ' ';
+	}
+	snprintf(log_buffer, LOG_BUFFER_SIZE, ">%c:", *(log_get_type_str(log_type)+2));
 #else
-	/*!
-	 * @brief	Kopiert einen String wortweise vom Flash ins Ram
-	 * @param flash	Zeiger auf einen String im FLASH
-	 * @param ram	Zeiger auf den Zielpuffer im RAM
-	 * @param n		Anzahl der zu kopierenden WORTE
-	 * Es werden maximal n Worte kopiert, ist der String schon zuvor nullterminiert,
-	 * wird bei Auftreten von 0 abgebrochen.
-	 */
-	static void get_str_from_flash(const char* flash, char* ram, uint8 n) {
-		uint8 i;
-		/* Zeichen des Strings wortweise aus dem Flash holen */
-		uint16* p_ram  = (uint16*)ram;
-		uint16* p_flash = (uint16*)flash;
-		for (i=0; i<n; i++){
-			uint16 tmp = pgm_read_word(p_flash++);
-			*(p_ram++) = tmp;
-			if ((uint8)tmp == 0 || (tmp & 0xFF00) == 0) break;	// Stringende erreicht
-		}
-		*((char*)p_ram) = 0;	// evtl. haben wir ein Byte zu viel gelesen, das korrigieren wir hier
+
+	const char * ptr = NULL;
+
+	/* Nur den Dateinamen loggen, ohne Verzeichnisangabe */
+	ptr = strrchr(filename, '/');
+
+	if (ptr == NULL)
+		ptr = filename;
+	else
+		ptr++;
+
+	LOCK();
+
+	snprintf(log_buffer, LOG_BUFFER_SIZE, "%s(%d)\t%s\t", ptr, line, log_get_type_str(log_type));
+
+#endif // LOG_DISPLAY_AVAILABLE
+
+	return;
+}
+#else
+/*!
+ * @brief	Kopiert einen String wortweise vom Flash ins Ram
+ * @param *flash Zeiger auf einen String im FLASH
+ * @param *ram	Zeiger auf den Zielpuffer im RAM
+ * @param n		Anzahl der zu kopierenden WORTE
+ * Es werden maximal n Worte kopiert, ist der String schon zuvor nullterminiert,
+ * wird bei Auftreten von 0 abgebrochen.
+ */
+static void get_str_from_flash(const char * flash, char * ram, uint8_t n) {
+	uint8_t i;
+	/* Zeichen des Strings wortweise aus dem Flash holen */
+	uint16_t * p_ram  = (uint16_t *) ram;
+	uint16_t * p_flash = (uint16_t *) flash;
+	for (i=0; i<n; i++){
+		uint16_t tmp = pgm_read_word(p_flash++);
+		*(p_ram++) = tmp;
+		if ((uint8_t)tmp == 0 || (tmp & 0xFF00) == 0) break;	// Stringende erreicht
 	}
+	*((char *)p_ram) = 0;	// evtl. haben wir ein Byte zu viel gelesen, das korrigieren wir hier
+}
 
-	/*!
-	 * Schreibt Angaben ueber Datei, Zeilennummer und den Log-Typ in den Puffer.
-	 * Achtung, Mutex wird gelockt und muss explizit durch log_end() wieder
-	 * freigegeben werden!
-	 * @param filename Dateiname
-	 * @param line Zeilennummer
-	 * @param log_type Log-Typ
+/*!
+ * Schreibt Angaben ueber Datei, Zeilennummer und den Log-Typ in den Puffer.
+ * Achtung, Mutex wird gelockt und muss explizit durch log_end() wieder
+ * freigegeben werden!
+ * @param *filename Dateiname
+ * @param line Zeilennummer
+ * @param log_type Log-Typ
+ */
+void log_flash_begin(const char * filename, unsigned int line, LOG_TYPE log_type) {
+
+	/* Ausgaben ueber das LCD-Display werden ohne Dateiname und Zeilennumer
+	 * gemacht. Der Log-Typ versteckt sich im ersten Buchstaben. Durch eine
+	 * die Markierung mit '>' erkennt man das letzte Logging.
+	 * Nur bei Ausgaben ueber UART und an ct-Sim werden Dateiname, Zeilennummer
+	 * und der Log-Typ vollstaendig ausgegeben.
 	 */
-	void log_flash_begin(const char *filename, unsigned int line, LOG_TYPE log_type) {
-
-		/* Ausgaben ueber das LCD-Display werden ohne Dateiname und Zeilennumer
-		 * gemacht. Der Log-Typ versteckt sich im ersten Buchstaben. Durch eine
-		 * die Markierung mit '>' erkennt man das letzte Logging.
-		 * Nur bei Ausgaben ueber UART und an ct-Sim werden Dateiname, Zeilennummer
-		 * und der Log-Typ vollstaendig ausgegeben.
-		 */
-		#ifdef LOG_DISPLAY_AVAILABLE
-			LOCK();
-			/* Alte Markierung loeschen */
-			if (log_line == 1){
-				screen_output[3][0] = ' ';
-			}
-			else{
-				screen_output[log_line-2][0] = ' ';
-			}
-			log_buffer[0] = '>';
-			log_buffer[1] = pgm_read_byte(log_get_type_str(log_type)+2);
-			log_buffer[2] = ':';
-			log_buffer[3] = '\0';
-		#else
-			/* Zeichen des Strings fuer Dateiname wortweise aus dem Flash holen */
-			char flash_filen[80];
-			get_str_from_flash(filename, flash_filen, 40/2);
-
-			/* Zeichen des Strings fuer Typ wortweise aus dem Flash holen */
-			char flash_type[12];
-			get_str_from_flash(log_get_type_str(log_type), flash_type, 12/2);
-			const char *ptr = NULL;
-
-			/* Nur den Dateinamen loggen, ohne Verzeichnisangabe */
-			ptr = strrchr(flash_filen, '/');
-
-			if (ptr == NULL)
-				ptr = flash_filen;
-			else
-				ptr++;
-
-			LOCK();
-
-			snprintf(log_buffer, LOG_BUFFER_SIZE, "%s(%d)\t%s\t",
-				ptr, line, flash_type);
-
-		#endif
-
-		return;
+#ifdef LOG_DISPLAY_AVAILABLE
+	line = line;
+	filename = filename;
+	LOCK();
+	/* Alte Markierung loeschen */
+	if (log_line == 1) {
+		screen_output[3][0] = ' ';
+	} else {
+		screen_output[log_line-2][0] = ' ';
 	}
+	log_buffer[0] = '>';
+	log_buffer[1] = (char) pgm_read_byte(log_get_type_str(log_type)+2);
+	log_buffer[2] = ':';
+	log_buffer[3] = '\0';
+#else
+	/* Zeichen des Strings fuer Dateiname wortweise aus dem Flash holen */
+	char flash_filen[80];
+	get_str_from_flash(filename, flash_filen, 40/2);
+
+	/* Zeichen des Strings fuer Typ wortweise aus dem Flash holen */
+	char flash_type[12];
+	get_str_from_flash(log_get_type_str(log_type), flash_type, 12/2);
+	const char *ptr = NULL;
+
+	/* Nur den Dateinamen loggen, ohne Verzeichnisangabe */
+	ptr = strrchr(flash_filen, '/');
+
+	if (ptr == NULL)
+		ptr = flash_filen;
+	else
+		ptr++;
+
+	LOCK();
+
+	snprintf(log_buffer, LOG_BUFFER_SIZE, "%s(%d)\t%s\t", ptr, line, flash_type);
+
+#endif // LOG_DISPLAY_AVAILABLE
+
+	return;
+}
 #endif	// PC
 
 #ifdef PC
-	/*!
-	 * Schreibt die eigentliche Ausgabeinformation in den Puffer.
-	 * @param format Format
-	 */
-	void log_printf(const char *format, ...) {
+/*!
+ * Schreibt die eigentliche Ausgabeinformation in den Puffer.
+ * @param format Format
+ */
+void log_printf(const char * format, ...) {
 
-		va_list	args;
-		unsigned int len = strlen(log_buffer);
+	va_list	args;
+	unsigned int len = strlen(log_buffer);
 
-		va_start(args, format);
-		vsnprintf(&log_buffer[len], LOG_BUFFER_SIZE - len, format, args);
-		va_end(args);
+	va_start(args, format);
+	vsnprintf(&log_buffer[len], LOG_BUFFER_SIZE - len, format, args);
+	va_end(args);
 
-		return;
-	}
+	return;
+}
 #else
-	/*!
-	 * Schreibt die eigentliche Ausgabeinformation (aus dem Flash) in den Puffer.
-	 * @param format Format
-	 */
-	void log_flash_printf(const char *format, ...) {
-		char flash_str[LOG_BUFFER_SIZE+4];	// bissel groesser, weil die % ja noch mit drin sind
-		get_str_from_flash(format, flash_str, LOG_BUFFER_SIZE/2+2);	// String aus dem Flash holen
+/*!
+ * Schreibt die eigentliche Ausgabeinformation (aus dem Flash) in den Puffer.
+ * @param format Format
+ */
+void log_flash_printf(const char * format, ...) {
+	char flash_str[LOG_BUFFER_SIZE+4];	// bissel groesser, weil die % ja noch mit drin sind
+	get_str_from_flash(format, flash_str, LOG_BUFFER_SIZE/2+2);	// String aus dem Flash holen
 
-		va_list	args;
-		unsigned int len = strlen(log_buffer);
+	va_list	args;
+	unsigned int len = strlen(log_buffer);
 
-		va_start(args, format);
-		vsnprintf(&log_buffer[len], LOG_BUFFER_SIZE - len, flash_str, args);
-		va_end(args);
+	va_start(args, format);
+	vsnprintf(&log_buffer[len], LOG_BUFFER_SIZE - len, flash_str, args);
+	va_end(args);
 
-		return;
-	}
-#endif	// PC
+	return;
+}
+#endif // PC
 
 /*!
  * Gibt den Puffer entsprechend aus.
  */
 void log_end(void) {
+#ifdef LOG_UART_AVAILABLE
+	/* String ueber UART senden, ohne '\0'-Terminierung */
+	uart_write((uint8_t *) log_buffer, (uint8_t) strlen(log_buffer));
+	/* Line feed senden */
+	uart_write((uint8_t *) LINE_FEED, strlen(LINE_FEED));
+#endif // LOG_UART_AVAILABLE
 
-	#ifdef LOG_UART_AVAILABLE
-		/* String ueber UART senden, ohne '\0'-Terminierung */
-		uart_write((uint8*)log_buffer, strlen(log_buffer));
-		/* Line feed senden */
-		uart_write((uint8*)LINE_FEED,strlen(LINE_FEED));
-	#endif	/* LOG_UART_AVAILABLE */
+#ifdef LOG_CTSIM_AVAILABLE
+	/* Kommando an ct-Sim senden, ohne Line feed am Ende. */
+	command_write_data(CMD_LOG, SUB_CMD_NORM, 0, 0, log_buffer);
+#endif // LOG_CTSIM_AVAILABLE
 
-	#ifdef LOG_CTSIM_AVAILABLE
-		/* Kommando an ct-Sim senden, ohne Line feed am Ende. */
-		command_write_data(CMD_LOG, SUB_CMD_NORM, 0, 0, log_buffer);
-	#endif	/* LOG_CTSIM_AVAILABLE */
+#ifdef LOG_DISPLAY_AVAILABLE
+	/* aktuelle Log-Zeile in Ausgabepuffer kopieren */
+	memcpy(screen_output[log_line-1], log_buffer, strlen(log_buffer));
+	/* Zeile weiterschalten */
+	log_line++;
+	if (log_line > 4) log_line = 1;
+#endif // LOG_DISPLAY_AVAILABLE
 
-	#ifdef LOG_DISPLAY_AVAILABLE
-		/* aktuelle Log-Zeile in Ausgabepuffer kopieren */
-		memcpy(screen_output[log_line-1], log_buffer, strlen(log_buffer));
-		/* Zeile weiterschalten */
-		log_line++;
-		if (log_line > 4) log_line = 1;
-	#endif	/* LOG_DISPLAY_AVAILABLE */
+/* Wenn das Logging aktiviert und keine Ausgabeschnittstelle
+ * definiert ist, dann wird auf dem PC auf die Konsole geschrieben.
+ */
+#ifdef LOG_STDOUT_AVAILABLE
+	printf("%s\n", log_buffer);
+#endif // LOG_STDOUT_AVAILABLE
 
-	/* Wenn das Logging aktiviert und keine Ausgabeschnittstelle
-	 * definiert ist, dann wird auf dem PC auf die Konsole geschrieben.
-	 */
-	#ifdef LOG_STDOUT_AVAILABLE
-		printf("%s\n", log_buffer);
-	#endif	/* LOG_STDOUT_AVAILABLE */
-
-	#ifdef LOG_MMC_AVAILABLE
-		static uint16 f_offset = 512;	// Init erzwingt Ueberlauf im ersten Aufruf, damit p_file geholt wird
-		static uint8* p_file;
-		uint8 len = strlen(log_buffer);	// |log_buffer| < 256
-		if (f_offset + len > 512){
-			/* der Log-Puffer passt nicht mehr komplett in den aktuellen Block */
-			f_offset = 0;
-			log_file += 512;	// naechster Block
-			if (log_file > log_file_end){
-				/* Dateiende wurde erreicht */
-				p_file = NULL;
-				mmc_flush_cache();	// Logging ist "am Ende" => es ist an der Zeit alle Daten auf die Karte zurueckzuschreiben
-				return;
-			}
-			p_file = mmc_get_data(log_file);
+#ifdef LOG_MMC_AVAILABLE
+	static uint16_t f_offset = 512;	// Init erzwingt Ueberlauf im ersten Aufruf, damit p_file geholt wird
+	static uint8_t * p_file;
+	uint8_t len = (uint8_t) strlen(log_buffer);	// |log_buffer| < 256
+	if (f_offset + len > 512){
+		/* der Log-Puffer passt nicht mehr komplett in den aktuellen Block */
+		f_offset = 0;
+		log_file += 512;	// naechster Block
+		if (log_file > log_file_end){
+			/* Dateiende wurde erreicht */
+			p_file = NULL;
+			mmc_flush_cache();	// Logging ist "am Ende" => es ist an der Zeit alle Daten auf die Karte zurueckzuschreiben
+			return;
 		}
-		if (p_file == NULL) return;
-		*p_file++ = '\n';	// neue Zeile fuer jeden Log-Aufruf
-		/* Log-Puffer uebertragen und Dateizeiger fortschreiben */
-		memcpy(p_file, log_buffer, len);
-		p_file += len;
-		f_offset += len + 1;
-	#endif	/* LOG_MMC_AVAILABLE */
+		p_file = mmc_get_data(log_file);
+	}
+	if (p_file == NULL) return;
+	*p_file++ = '\n';	// neue Zeile fuer jeden Log-Aufruf
+	/* Log-Puffer uebertragen und Dateizeiger fortschreiben */
+	memcpy(p_file, log_buffer, len);
+	p_file += len;
+	f_offset = (uint16_t) (f_offset + len + 1);
+#endif // LOG_MMC_AVAILABLE
 
 	UNLOCK();
 
@@ -338,40 +337,40 @@ void log_end(void) {
 }
 
 #ifdef LOG_MMC_AVAILABLE
-	/*!
-	 * @brief	Initialisierung fuer MMC-Logging
-	 */
-	uint8 log_mmc_init(void) {
-		/* Log-Datei oeffnen und Dateiende merken */
-		log_file = mmc_fopen(LOG_FILENAME);
-		if (log_file == 0) return 1;	// Fehler :(
-		log_file_end = log_file + mmc_get_filesize(log_file);
-		log_file -= 512;	// denn beim ersten Logging springen wir in den Block-Ueberlauf-Fall
-		return 0;
-	}
-#endif	/* LOG_MMC_AVAILABLE */
+/*!
+ * Initialisierung fuer MMC-Logging
+ * @return Fehlercode
+ */
+uint8_t log_mmc_init(void) {
+	/* Log-Datei oeffnen und Dateiende merken */
+	log_file = mmc_fopen(LOG_FILENAME);
+	if (log_file == 0) return 1;	// Fehler :(
+	log_file_end = log_file + mmc_get_filesize(log_file);
+	log_file -= 512;	// denn beim ersten Logging springen wir in den Block-Ueberlauf-Fall
+	return 0;
+}
+#endif // LOG_MMC_AVAILABLE
 
 #ifdef LOG_DISPLAY_AVAILABLE
-	/*!
-	 * @brief	Display-Handler fuer das Logging
-	 */
-	void log_display(void){
-		/* Strings aufs LCD-Display schreiben */
-		uint8 i;
-		for (i=0; i<4; i++){	// Das Display hat 4 Zeilen
-			display_cursor(i+1,1);
-			display_printf("%s", screen_output[i]);
-		}
+/*!
+ * Display-Handler fuer das Logging
+ */
+void log_display(void) {
+	/* Strings aufs LCD-Display schreiben */
+	uint8_t i;
+	for (i=0; i<4; i++) {	// Das Display hat 4 Zeilen
+		display_cursor((uint8_t) (i + 1), 1);
+		display_printf("%s", screen_output[i]);
 	}
-#endif	// LOG_DISPLAY_AVAILABLE
+}
+#endif // LOG_DISPLAY_AVAILABLE
 
 /*!
  * Liefert einen Zeiger auf den Log-Typ als String.
  * @param log_type Log-Typ
- * @return char*
+ * @return char* Log-Typ als String
  */
-static const char* log_get_type_str(LOG_TYPE log_type) {
-
+static const char * log_get_type_str(LOG_TYPE log_type) {
 	switch(log_type) {
 		case LOG_TYPE_DEBUG:
 			return debug_str;
@@ -390,5 +389,5 @@ static const char* log_get_type_str(LOG_TYPE log_type) {
 	}
 	return debug_str;
 }
-#endif	// USE_MINILOG
-#endif	/* LOG_AVAILABLE */
+#endif // USE_MINILOG
+#endif // LOG_AVAILABLE
