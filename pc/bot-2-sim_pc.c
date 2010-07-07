@@ -111,7 +111,7 @@ int8_t receive_until_Frame(uint8_t frame) {
  * Empfaengt alle Kommondos vom Sim
  */
 void bot_2_sim_listen(void) {
-	receive_until_Frame(CMD_DONE);
+	while (receive_until_Frame(CMD_DONE) != 0) {}
 }
 
 /*!

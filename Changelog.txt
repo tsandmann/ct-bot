@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2010-07-07 Timo Sandmann [mail@timosandmann.de]: bot-2-sim_pc::bot_2_sim_listen() wartet nun, bis auch wirklich ein DONE empfangen wurde
+
 2010-05-23 Timo Sandmann [mail@timosandmann.de]: Release 17
 
 2010-05-21 Timo Sandmann [mail@timosandmann.de]: Code-Cleanup
