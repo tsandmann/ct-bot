@@ -103,18 +103,18 @@
 	#define RC5_CODE_7			(0x1187 & RC5_MASK)		/*!< Taste 7 */
 	#define RC5_CODE_8			(0x1188 & RC5_MASK)		/*!< Taste 8 */
 	#define RC5_CODE_9			(0x1189 & RC5_MASK)		/*!< Taste 9 */
-	#define RC5_CODE_11		(0x118A & RC5_MASK)		/*!< Taste 11 /1-*/
-	#define RC5_CODE_12		(0x11A3 & RC5_MASK)		/*!< Taste 12 /2-*/
+	#define RC5_CODE_11			(0x118A & RC5_MASK)		/*!< Taste 11 /1-*/
+	#define RC5_CODE_12			(0x11A3 & RC5_MASK)		/*!< Taste 12 /2-*/
 
 	#define RC5_CODE_GREEN		(0x01BA & RC5_MASK)		/*!< Gruene Taste */
 	#define RC5_CODE_RED		(0x01BD & RC5_MASK)		/*!< Rote Taste */
-	#define RC5_CODE_YELLOW	(0x01B1 & RC5_MASK)		/*!< Gelbe Taste */
+	#define RC5_CODE_YELLOW		(0x01B1 & RC5_MASK)		/*!< Gelbe Taste */
 	#define RC5_CODE_BLUE		(0x01B0 & RC5_MASK)		/*!< Blaue Taste */
 
 	#define RC5_CODE_I_II		(0x11AB & RC5_MASK)		/*!< I/II-Taste */
-	#define RC5_CODE_TV_VCR	(0x11B8 & RC5_MASK)		/*!< TV/VCR-Taste */
+	#define RC5_CODE_TV_VCR		(0x11B8 & RC5_MASK)		/*!< TV/VCR-Taste */
 
-	#define RC5_CODE_DOT		(0x11AB & RC5_MASK)		/*!< Taste mit rundem Punkt */
+	#define RC5_CODE_DOT		(0x11B7 & RC5_MASK)		/*!< Taste mit rundem Punkt */
 
 	#define RC5_CODE_PLAY		(0x11B5 & RC5_MASK)		/*!< PLAY-Taste */
 	#define RC5_CODE_STILL		(0x11A9 & RC5_MASK)		/*!< Pause Taste */
@@ -128,11 +128,11 @@
 	#define RC5_VOL_PLUS		(0x1190 & RC5_MASK)		/*!< Vol + Taste */
 	#define RC5_VOL_MINUS		(0x1191 & RC5_MASK)		/*!< Vol - Taste */
 
-	#define RC5_CH_PLUS		(0x11A0 & RC5_MASK)		/*!< Ch + Taste */
+	#define RC5_CH_PLUS			(0x11A0 & RC5_MASK)		/*!< Ch + Taste */
 	#define RC5_CH_MINUS		(0x11A1 & RC5_MASK)		/*!< Ch - Taste */
 
 
-	#define RC5_CODE_UP		RC5_CODE_STILL			/*!< Taste Hoch */
+	#define RC5_CODE_UP			RC5_CODE_STILL			/*!< Taste Hoch */
 	#define RC5_CODE_DOWN		RC5_CODE_STOP			/*!< Taste Runter */
 	#define RC5_CODE_LEFT		RC5_CODE_BWD				/*!< Taste Links */
 	#define RC5_CODE_RIGHT		RC5_CODE_FWD				/*!< Taste Rechts */
