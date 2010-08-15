@@ -208,6 +208,23 @@ void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const 
 }
 
 /*!
+ * Gibt die Eingabedaten des Distanzsensors 1:1 zur Ausgabe
+ * @param p_sens	Zeiger auf Ausgabewert
+ * @param p_toggle	Zeiger auf die Toggle-Variable des Zielsensors
+ * @param ptr		wird nicht ausgewertet
+ * @param input		Eingabewert
+ */
+void sensor_dist_straight(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t input) {
+	(void) ptr;
+
+	/* Ausgabe = Eingabe */
+	*p_sens = input;
+
+	/* Sensorupdate-Info toggeln */
+	*p_toggle = (uint8_t) (~*p_toggle);
+}
+
+/*!
  * Kuemmert sich um die Weiterverarbeitung der rohen Sensordaten
  */
 void sensor_update(void) {

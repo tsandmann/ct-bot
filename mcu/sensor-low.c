@@ -154,6 +154,10 @@ void bot_sens_init(void) {
 		memset(buffer, 0, sizeof(slog));
 	}
 #endif // SPEED_LOG_AVAILABLE
+
+#ifdef TEST_AVAILABLE_ANALOG
+	sensor_update_distance = sensor_dist_straight; // Distanzsensordaten 1:1 weiterreichen
+#endif
 }
 
 /*!
@@ -285,9 +289,7 @@ void bot_sens(void) {
 		volt = sensDistL;
 #endif
 		(*sensor_update_distance)(&sensDistL, &sensDistLToggle, sensDistDataL, volt);
-#ifdef TEST_AVAILABLE_ANALOG
-		sensDistL = volt;
-#endif
+
 		/* Dist-Sensor rechts */
 		while (adc_get_active_channel() < 2) {}
 #ifdef DISTSENS_AVERAGE
@@ -296,9 +298,6 @@ void bot_sens(void) {
 		volt = sensDistR;
 #endif
 		(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, volt);
-#ifdef TEST_AVAILABLE_ANALOG
-		sensDistR = volt;
-#endif
 	}
 
 #ifdef CMPS03_AVAILABLE

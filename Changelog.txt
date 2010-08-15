@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2010-08-15 Timo Sandmann [mail@timosandmann.de]: sensor_dist_straight() als Alternative zu sensor_dist_lookup() - reicht die Sensordaten 1:1 weiter
+
 2010-07-07 Timo Sandmann [mail@timosandmann.de]: bot-2-sim_pc::bot_2_sim_listen() wartet nun, bis auch wirklich ein DONE empfangen wurde
 
 2010-05-23 Timo Sandmann [mail@timosandmann.de]: Release 17

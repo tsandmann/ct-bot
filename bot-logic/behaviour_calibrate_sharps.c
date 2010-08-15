@@ -196,19 +196,6 @@ static void goto_next_pos(void) {
 }
 
 /*!
- * Ersetzt die Sensorauswertungsfunktion, damit wir hier die Rohdaten bekommen
- * @param p_sens	Zeiger auf den (Ziel-)Sensorwert
- * @param p_toggle	Zeiger auf die Toggle-Variable des Zielsensors
- * @param ptr		Zeiger auf auf Sensorrohdaten im EEPROM fuer p_sens
- * @param volt		Spannungs-Ist-Wert, zu dem die Distanz gesucht wird
- */
-static void sensor_dist_direct(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t volt) {
-	ptr = ptr; // kein warning
-	*p_sens = volt;
-	*p_toggle = (uint8_t) ~*p_toggle;
-}
-
-/*!
  * Das eigentliche Verhalten
  * @param data	Zeiger auf den Verhaltensdatensatz des Aufrufers
  * @see			bot_calibrate_sharps()
@@ -220,7 +207,7 @@ void bot_calibrate_sharps_behaviour(Behaviour_t * data) {
 	else {
 		/* fertig! */
 		display_clear();
-		sensor_update_distance = sensor_dist_lookup;	// Sensorauswertung wieder aktivieren
+		sensor_update_distance = sensor_dist_lookup; // Sensorauswertung wieder aktivieren
 		/* Puffer ins EEPROM schreiben */
 		ctbot_eeprom_write_byte((uint8_t *)&sensDistOffset, volt_offset);
 		ctbot_eeprom_write_block(sensDistDataL, buffer[0], max_steps * sizeof(distSens_t));
@@ -275,7 +262,7 @@ void bot_calibrate_sharps(Behaviour_t * caller) {
 	count = 0;
 	userinput_done = 0;
 
-	sensor_update_distance = sensor_dist_direct;	// Sensorauswertung deaktivieren
+	sensor_update_distance = sensor_dist_straight; // Sensorauswertung deaktivieren
 
 	uint8_t i;
 	for (i=0; i<sizeof(screen_functions)/sizeof(screen_functions[0]); i++) {
@@ -323,4 +310,4 @@ void bot_calibrate_sharps_display(void) {
 	}
 }
 
-#endif	// BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
+#endif // BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE

@@ -142,6 +142,16 @@ void sensor_reset(void);
  */
 void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t volt_16);
 
+
+/*!
+ * Gibt die Eingabedaten des Distanzsensors 1:1 zur Ausgabe
+ * @param p_sens	Zeiger auf Ausgabewert
+ * @param p_toggle	Zeiger auf die Toggle-Variable des Zielsensors
+ * @param ptr		wird nicht ausgewertet
+ * @param input		Eingabewert
+ */
+void sensor_dist_straight(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t input);
+
 /*!
  * Die Funktion gibt aus, ob sich innerhalb einer gewissen Entfernung ein Objekt-Hindernis befindet.
  * @param distance	Entfernung in mm, bis zu welcher ein Objekt gesichtet wird.
