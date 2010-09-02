@@ -79,10 +79,6 @@ int main(int argc, char * argv[]) {
 		/* Sensordaten aktualisieren / auswerten */
 		bot_sens();
 
-#ifdef CREATE_TRACEFILE_AVAILABLE
-		trace_add_sensors();
-#endif // CREATE_TRACEFILE_AVAILABLE
-
 #if defined PC && defined DEBUG_TIMES
 		/* Zum Debuggen der Zeiten */
 		struct timeval start, stop;
@@ -110,6 +106,10 @@ int main(int argc, char * argv[]) {
 			bot_behave();
 #endif // BEHAVIOUR_AVAILABLE
 		}
+
+#ifdef CREATE_TRACEFILE_AVAILABLE
+		trace_add_sensors();
+#endif // CREATE_TRACEFILE_AVAILABLE
 
 		/* jeweils alle 100 ms kommunizieren Bot, User und Sim */
 		if (timer_ms_passed_16(&comm_ticks, 50) || RC5_Code != 0) {

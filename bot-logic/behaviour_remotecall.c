@@ -36,6 +36,7 @@
 #include "log.h"
 #include "global.h"
 #include "bot-2-bot.h"
+#include "trace.h"
 
 #include "bot-logic/remote_calls.h"
 
@@ -408,6 +409,11 @@ int8_t bot_remotecall(Behaviour_t * caller, char * func, remote_call_data_t * da
 #endif
 
 	running_behaviour = REMOTE_CALL_SCHEDULED;
+
+#ifdef CREATE_TRACEFILE_AVAILABLE
+	trace_add_remotecall(func, parameter_count, (remote_call_data_t *) parameter_data);
+#endif // CREATE_TRACEFILE_AVAILABLE
+
 	return 0;
 }
 

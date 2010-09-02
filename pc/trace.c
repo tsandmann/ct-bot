@@ -34,9 +34,10 @@
 #include <string.h>
 #include <pthread.h>
 
+#define TRACEBUFFER_SIZE	255
 static fifo_t trace_fifo;
-static uint8_t trace_entries[255];
-static char trace_buffer[sizeof(trace_entries)][255];
+static uint8_t trace_entries[TRACEBUFFER_SIZE];
+static char trace_buffer[sizeof(trace_entries)][TRACEBUFFER_SIZE];
 static uint8_t buf_index;
 static long time_overflow;
 static pthread_t trace_thread;
@@ -80,8 +81,15 @@ void trace_add_sensors(void) {
 		time_overflow++;
 	}
 	long time = simultime + time_overflow * 10000;
-	int n = snprintf(trace_buffer[buf_index], sizeof(trace_buffer[0]), "time=\t%ld\tencL=\t%+d\tencR=\t%+d\tsensDistL=\t%+d\tsensDistR=\t%+d", time, sensEncL, sensEncR, sensDistL, sensDistR);
-	n += snprintf(&trace_buffer[buf_index][n], sizeof(trace_buffer[0]) - n, "\theading=\t%+.12f\tx_enc=\t%+.12f\ty_enc=\t%+.12f\n", heading, x_enc, y_enc);
+	int n = snprintf(trace_buffer[buf_index], TRACEBUFFER_SIZE, "time=\t%ld\tencL=\t%+d\tencR=\t%+d\tsensDistL=\t%+d\tsensDistR=\t%+d\tRC5_Code=\t0x%04x", time, sensEncL, sensEncR, sensDistL, sensDistR, RC5_Code);
+#ifdef BPS_AVAILABLE
+	if (n < TRACEBUFFER_SIZE) {
+		n += snprintf(&trace_buffer[buf_index][n], TRACEBUFFER_SIZE - n, "\tsensBPS=\t%u", sensBPS);
+	}
+#endif // BPS_AVAILABLE
+	if (n < TRACEBUFFER_SIZE) {
+		n += snprintf(&trace_buffer[buf_index][n], TRACEBUFFER_SIZE - n, "\theading=\t%+.12f\tx_enc=\t%+.12f\ty_enc=\t%+.12f\tx_pos=\t%+d\ty_pos=\t%+d\n", heading, x_enc, y_enc, x_pos, y_pos);
+	}
 
 	fifo_put_data(&trace_fifo, &buf_index, sizeof(buf_index));
 	buf_index++;
@@ -93,20 +101,46 @@ void trace_add_sensors(void) {
  */
 void trace_add_actuators(void) {
 	long time = simultime + time_overflow * 10000;
-	int n = snprintf(trace_buffer[buf_index], sizeof(trace_buffer[0]), "time=\t%ld\tmotorL=\t%+d\tmotorR=\t%+d", time, motor_left, motor_right);
+	int n = snprintf(trace_buffer[buf_index], TRACEBUFFER_SIZE, "time=\t%ld\tmotorL=\t%+d\tmotorR=\t%+d", time, motor_left, motor_right);
 
 	Behaviour_t * ptr = get_next_behaviour(NULL);
 	do {
-		if (ptr->active == ACTIVE) {
-			n += snprintf(&trace_buffer[buf_index][n], sizeof(trace_buffer[0]) - n, "\tbeh=\t%u", ptr->priority);
+		if (ptr->active == ACTIVE && n < TRACEBUFFER_SIZE) {
+			n += snprintf(&trace_buffer[buf_index][n], TRACEBUFFER_SIZE - n, "\tbeh=\t%u", ptr->priority);
 		}
 	} while ((ptr = get_next_behaviour(ptr)) != NULL);
 
-	snprintf(&trace_buffer[buf_index][n], sizeof(trace_buffer[0]) - n, "\n");
+	if (n < TRACEBUFFER_SIZE) {
+		snprintf(&trace_buffer[buf_index][n], TRACEBUFFER_SIZE - n, "\n");
+	}
 
 	fifo_put_data(&trace_fifo, &buf_index, sizeof(buf_index));
 	buf_index++;
 	buf_index %= sizeof(trace_entries);
 }
 
-#endif	// CREATE_TRACEFILE_AVAILABLE
+/*!
+ * Fueht dem Trace-Puffer einen RemoteCall-Aufruf hinzu
+ * @param *fkt_name		Funktionsname des RemoteCalls
+ * @param param_count	Anzahl der RemoteCall-Parameter
+ * @param *params		Zeiger auf RemoteCall-Parameterdaten
+ */
+void trace_add_remotecall(const char * fkt_name, uint8_t param_count, remote_call_data_t * params) {
+	long time = simultime + time_overflow * 10000;
+
+	int n = snprintf(trace_buffer[buf_index], TRACEBUFFER_SIZE, "time=\t%ld\tRemoteCall=\t%s(", time, fkt_name);
+	uint8_t i;
+	for (i = 0; i < param_count; ++i) {
+		if (n < TRACEBUFFER_SIZE) {
+			n += snprintf(&trace_buffer[buf_index][n], TRACEBUFFER_SIZE - n, "%d, ", params[i].s16);
+		}
+	}
+	trace_buffer[buf_index][n - 2] = ')';
+	trace_buffer[buf_index][n - 1] = '\n';
+
+	fifo_put_data(&trace_fifo, &buf_index, sizeof(buf_index));
+	buf_index++;
+	buf_index %= sizeof(trace_entries);
+}
+
+#endif // CREATE_TRACEFILE_AVAILABLE

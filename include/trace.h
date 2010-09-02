@@ -29,7 +29,7 @@
 #include "ct-Bot.h"
 
 #ifdef CREATE_TRACEFILE_AVAILABLE
-
+#include "bot-logic/remote_calls.h"
 
 /*!
  * Initialisiert das Trace-System
@@ -46,5 +46,13 @@ void trace_add_sensors(void);
  */
 void trace_add_actuators(void);
 
-#endif	// CREATE_TRACEFILE_AVAILABLE
+/*!
+ * Fueht dem Trace-Puffer einen RemoteCall-Aufruf hinzu
+ * @param *fkt_name		Funktionsname des RemoteCalls
+ * @param param_count	Anzahl der RemoteCall-Parameter
+ * @param *params		Zeiger auf RemoteCall-Parameterdaten
+ */
+void trace_add_remotecall(const char * fkt_name, uint8_t param_count, remote_call_data_t * params);
+
+#endif // CREATE_TRACEFILE_AVAILABLE
 #endif /* TRACE_H_ */
