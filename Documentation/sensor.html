@@ -1,0 +1,118 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="description" content="Uebersicht der Sensorauswertung des c't-Bots" />
+<meta name="author" content="Timo Sandmann" />
+<meta name="keywords" content="c't-Bot,Sensor" />
+<meta name="date" content="2007-05-19" />
+<title>c't-Bot - Sensorauswertung</title>
+<link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+<body>
+<h1>Dokumentation zur Sensorauswertung</h1>
+<br />
+
+<a class="menu" href="#uebersicht">Eine allgemeine &Uuml;bersicht</a><br />
+<a class="menu" href="#details">Die Sensorauswertung im Detail</a>
+<ul>
+    <li><a class="menu" href="#dist">Distanzsensoren</a></li>
+    <li><a class="menu" href="#line">Liniensensoren</a></li>
+    <li><a class="menu" href="#ldr">Helligkeitssensoren</a></li>
+    <li><a class="menu" href="#border">Abgrundsensoren</a></li>
+    <li><a class="menu" href="#mouse">Maussensor</a></li>
+    <li><a class="menu" href="#digital">Digitale Sensoren</a></li>
+    <li><a class="menu" href="#encoder">Radencoder</a></li>
+	<li><a class="menu" href="#odometrie">Odometrie-Auswertung</a></li>
+</ul>
+<a class="menu" href="#adc">Analog-Digital-Wandlung</a>
+
+<a name="uebersicht"></a><h2>Eine allgemeine &Uuml;bersicht</h2>
+<p>Die Sensoren des Bots werden in <a href="../mcu/sensor-low.c">mcu/sensor-low.c</a> ausgewertet und ihre Daten in globalen
+Variablen gespeichert. F&uuml;r einige Sensoren gibt es eine Weiterverarbeitung der Daten auf h&ouml;herer Ebene, sie erfolgt in
+<a href="../sensor.c">sensor.c</a><br />
+Im Falle eines simulierten Bots bekommt dieser die Sensordaten vom Sim und der sensol-low-Part entf&auml;llt.<br />
+Zu den Linien-, Helligkeits- und Abgrundsensoren gibt es noch nicht viel Dokumentation.
+</p>
+
+<a name="details"></a><h2>Die Sensorauswertung im Detail</h2>
+<a name="dist"></a><h3>Distanzsensoren</h3>
+<p>Die Distanzsensoren werden alle 50 ms (denn &ouml;fter liefern sie keine neuen Messwerte) per ADC ausgewertet. Dabei werden die letzten
+vier Messwerte in einem Array gepuffert, aus dem Mittelwert berechnet<span class="function"> sensor_dist_lookup()</span> (sensor.c) dann
+die aktuelle Entfernung in mm.<br />
+Die Umrechnung in die Entfernung erfolgt mit Hilfe von 15 St&uuml;tzwerten aus dem EEPROM, die Funktion<span class="function"> lin_interpolate()</span>
+ermittelt aus zwei St&uuml;tzwerten und dem aktuellen Sensorrohwert die exakte Entfernung durch linearer Interpolation.<br />
+Kalibrieren lassen sich die Sensoren halbautomatisch (Bot auf angezeigte Entfernung stellen, Taste dr&uuml;cken, Bot auf die n&auml;chste Entfernung
+stellen, Taste dr&uuml;cken usw.) mit dem Verhalten<span class="function"> behaviour_calibrate_sharps</span>, das die erforderlichen St&uuml;tzwerte 
+dann anschlie&szlig;end auch ins EEPROM schreibt. Die St&uuml;tzwerte und die minimale sowie maximale Entfernung lassen sich in <a href="../include/sensor_correction.h">
+include/sensor_correction.h</a> einstellen. <br />
+Am besten l&auml;sst man sich das Ergebnis der automatischen Kalibrierung per LOG ausgeben
+und tr&auml;gt es in sensor_correction.h ein. Dann erzeugt der Build-Vorgang neben der ct-Bot.hex auch eine ct-Bot.eep Datei, die die Sensorkalibrierung
+bereits enth&auml;lt. Diese l&auml;sst sich per Programmer ins EEPROM schreiben. Flasht man den Programm-Code per Bootloader, bleibt das EEPROM 
+unangetastet erhalten und die Distanzsensoren funktionieren wie gewohnt. Falls man den Programm-Code per ISP-Programmer flasht, kann man entweder 
+einstellen, dass das EEPROM erhalten bleiben soll, oder die o.g. eep-Datei ebenfalls &uuml;bertragen, um die Kalibrierungswerte f&uuml;r die Distanzseneoren
+(wieder) im EEPROM zu haben. <br /> 
+Die Datenablage im EEPROM wird nicht nur f&uuml;r die Distanzsensoren, sondern auch f&uuml;r das Verhalten bot_turn(), die 
+Motorregelung und den Mini-FAT-Treiber der MMC genutzt, die genannten Punkte zum Flashen gelten dort nat&uuml;rlich analog.
+</p>
+
+<a name="line"></a><h3>Liniensensoren</h3>
+<p>Die Liniensensoren werden bei jedem Aufruf von<span class="function"> bot_sens_isr()</span> ausgewertet und ihre Werte direkt in<span class="function"> sensLineL</span>
+und <span class="function"> sensLineR</span> gespeichert (Wertebereich von 0 bis 1023).</p>
+<p>Zur Kalibrierung der Liniensensoren stellt man den Bot zun&auml;chst auf die Fl&auml;che, 
+auf der er normalerweise fahren soll (also keine Linie) und notiert sich die Werte der 
+Liniensensoren aus dem Sensor-Display (L=...). Nun stellt man den Bot auf eine Linie und notiert sich
+ebenfalls die angezeigten Werte der Liniensensoren. Je dunkler die Linie ist, desto
+gr&ouml;&szlig;er ist der gelieferte Sensorwert. Aus den beiden Messungen f&uuml;r Linie und
+keine Linie ermittelt man nun einen Wert, der gr&ouml;&szlig;er als der f&uuml;r normale Fl&auml;chen
+und kleiner als der f&uuml;r eine Linie ist, und benutzt diesen als Schwellwert zur 
+Linienerkennung. Dazu tr&auml;gt man ihn in  <a href="../include/bot-local.h">include/bot-local.h</a> als <span class="function"> LINE_SENSE</span>
+ein.</p>
+
+<a name="border"></a><h3>Abgrundsensoren</h3>
+<p>Die Abgrundsensoren werden bei jedem Aufruf von<span class="function"> bot_sens_isr()</span> ausgewertet und ihre Werte direkt in<span class="function"> sensBorderL</span>
+und <span class="function"> sensBorderR</span> gespeichert (Wertebereich von 0 bis 1023).</p>
+<p>Zur Kalibrierung der Abgrundsensoren stellt man den Bot zun&auml;chst auf die Fl&auml;che, 
+auf der er normalerweise fahren soll (also kein Abgrund) und notiert sich die Werte der 
+Abgrundsensoren aus dem Sensor-Display (B=...). Nun h&auml;lt man den Bot &uuml;ber einen Abgrund
+oder stellt ihn auf eine Fl&auml;che, die als Abgrund erkannt werden soll und notiert sich
+ebenfalls die angezeigten Werte der Abgrundsensoren. Je dunkler die Fl&auml;che ist, desto
+gr&ouml;&szlig;er ist der gelieferte Sensorwert. Aus den beiden Messungen f&uuml;r Abgrund und
+kein Abgrund ermittelt man nun einen Wert, der gr&ouml;&szlig;er als der f&uuml;r normale Fl&auml;chen
+und kleiner als der f&uuml;r einen Abrgund ist, und benutzt diesen als Schwellwert zur 
+Abgrunderkennung. Dazu tr&auml;gt man ihn in  <a href="../include/bot-local.h">include/bot-local.h</a> als <span class="function"> BORDER_DANGEROUS</span>
+ein.</p>
+
+<a name="ldr"></a><h3>Helligkeitssensoren</h3>
+<p>Die Helligkeitssensoren werden bei jedem Aufruf von<span class="function"> bot_sens_isr()</span> ausgewertet und ihre Werte direkt in<span class="function"> sensLDRL</span>
+und <span class="function"> sensLDRR</span> gespeichert (Wertebereich von 0 bis 1023).</p>
+
+<a name="mouse"></a><h3>Maussensor</h3>
+<p>Der Maussensor wird bei jedem Aufruf von<span class="function"> bot_sens_isr()</span> ausgewertet und dX und dY in<span class="function"> sensMouseDX</span>
+und <span class="function"> sensMouseDY</span> gespeichert.<br />
+Die Daten werden in<span class="function"> sensor_update()</span> (sensor.c) weiter verarbeitet, siehe <a href="#odometrie">Odometrie-Auswertung</a>.</p>
+
+<a name="digital"></a><h3>Digitale Sensoren</h3>
+<p>Die digitalen Sensoren werden bei jedem Aufruf von<span class="function"> bot_sens_isr()</span> ausgewertet. Die Werte von <i>Transportfachklappe</i>, <i>Transportfach belegt</i> und
+<i>Stromversorgung okay</i> werden direk in<span class="function"> sensDoor</span>, <span class="function"> sensTrans</span> und<span class="function"> sensError</span> gespeichert. sensError == 1 
+bedeutet <b>kein</b> Fehler.</p>
+
+<a name="encoder"></a><h3>Radencoder</h3>
+<p>Die Radencoder werden in<span class="function"> bot_encoder_isr()</span> ausgewertet, der Aufruf erfolgt im Gegensatz zu allen anderen Sensoren timergesteuert, damit die Encoderflanken 
+rechtzeitig registriert werden k&ouml;nnen. Neben dem Z&auml;hlen der Encoderst&auml;nde werden f&uuml;r die Motorregelung Zeitstempel der Flanken gespeichert, die eine genauere Berechnung der
+Ist-Geschwindigkeit erm&ouml;glichen (siehe <a href="speedcontrol.html">Motorregelung</a>).</p>
+
+<a name="odometrie"></a><h3>Odometrie-Auswertung</h3>
+<p>Die Daten von Radencodern und Maussensor werden in einer Reihe von Berechnungen f&uuml;r Position, Richtung und Geschwindigkeit des Bots verwendet (<span class="function">sensor_update()</span> 
+in sensor.c). N&auml;heres dazu ist in <a href="http://www.heise.de/ct/06/13/226/" target="_blank">diesem c't-Artikel</a> ausf&uuml;hrlich beschrieben.</p>
+
+<a name="adc"></a><h2>Analog-Digital-Wandlung</h2>
+<p>Die Umwandlung der Spannungswerte der analogen Sensoren in digitale Werte erfolgt mit dem ADC des ATMegas. In<span class="function"> bot_sens_isr()</span> werden gleich zu Beginn die ADC-Umwandlungen 
+angesto&szlig;en, w&auml;hrend diese ablaufen, werden die digitalen Sensoren ausgewertet, anschlie&szlig;end erst der linke und dann der rechte Distanzsensor, so dass m&ouml;glichst viel Zeit
+nicht mit Warten auf den ADC sondern mit sinnvollen Berechnungen verbracht wird.</p>
+
+<br /><br />
+<p><a href="http://validator.w3.org/check?uri=referer"><img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Transitional" height="31" width="88" /></a></p>  
+</body>
+</html>
