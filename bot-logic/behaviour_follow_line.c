@@ -28,7 +28,7 @@
  * @todo	Version 3 funktioniert auf dem echten Bot nicht sehr zuverlaessig (Probleme bei Winkeln < 120 Grad)
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 
@@ -426,4 +426,4 @@ void bot_follow_line(Behaviour_t * caller) {
 }
 
 #endif	// VERSION
-#endif	// BEHAVIOUR_FOLLOW_LINE_AVAILABLE
+#endif // BEHAVIOUR_FOLLOW_LINE_AVAILABLE

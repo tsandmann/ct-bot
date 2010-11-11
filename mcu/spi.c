@@ -24,11 +24,11 @@
  * @date 	01.08.2007
  */
 
-#include "ct-Bot.h"
-#include "spi.h"
-
 #ifdef MCU
+#include "ct-Bot.h"
+
 #ifdef SPI_AVAILABLE
+#include "spi.h"
 
 /*!
  * Initialisiert und aktiviert das SPI-Modul
@@ -70,5 +70,5 @@ uint8_t SPI_MasterReceive(void) {
 	return SPDR;
 }
 
-#endif	// SPI_AVAILABLE
-#endif	// MCU
+#endif // SPI_AVAILABLE
+#endif // MCU

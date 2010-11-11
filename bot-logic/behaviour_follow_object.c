@@ -44,7 +44,7 @@
  */
 
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
 #include <stdlib.h>
@@ -169,4 +169,4 @@ void bot_follow_object(Behaviour_t * caller) {
 	speedRight	= BOT_SPEED_STOP;
 }
 
-#endif	// BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
+#endif // BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE

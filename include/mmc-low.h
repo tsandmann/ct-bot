@@ -40,4 +40,4 @@
 
 #define MMC_TIMEOUT		1000	/*!< Wartezyklen auf MMC-Antwort */
 
-#endif	// MMC_LOW_H
+#endif // MMC_LOW_H

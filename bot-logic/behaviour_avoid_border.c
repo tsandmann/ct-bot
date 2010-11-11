@@ -24,7 +24,7 @@
  * @date 	03.11.2006
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE
 /*!

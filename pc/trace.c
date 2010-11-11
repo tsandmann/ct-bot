@@ -24,12 +24,13 @@
  * @date 	01.06.2009
  */
 
+#ifdef PC
 #include "trace.h"
 
 #ifdef CREATE_TRACEFILE_AVAILABLE
 #include "fifo.h"
 #include "sensor.h"
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
@@ -144,3 +145,4 @@ void trace_add_remotecall(const char * fkt_name, uint8_t param_count, remote_cal
 }
 
 #endif // CREATE_TRACEFILE_AVAILABLE
+#endif // PC

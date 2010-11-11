@@ -17,46 +17,54 @@
  * 
  */
 
-/*! 
- * @file 	behaviour_follow_wall.h
- * @brief 	Wandfolger, der sich an Wand gewisse Zeit dreht; solange bis kein Hindernis mehr sichtbar ist
- * @author 	Frank Menzel(Menzelfr@gmx.net)
- * @date 	30.08.2007
+/*!
+ * \file 	behaviour_follow_wall.h
+ * \brief 	Wandfolger Explorer
+ *
+ * Faehrt solange vorwaerts, bis er an eine Wand kommt, an die er sich gewisse Zeit wegdreht;
+ * nach links dreht er sich, wenn rechts eine Wand als naeher erkannt wird sonst nach rechts; es erfolgt
+ * hier auch eine Abgrundauswertung; wird erkannt dass entweder
+ * beide Abgrundsensoren den Abgrund detektieren oder der bot senkrecht zur Wand steht, so wird via Zeitzaehler
+ * ein Pseudo-Zufallswert bis 255 ausgewertet und danach die neue Drehrichtung links/ rechts ermittelt;
+ * zur Mindestdrehzeit wird ebenfalls immer dieser Zufallswert zuaddiert
+ * sehr sinnvoll mit diesem Explorer-Verhalten ist das hang_on-Verhalten, welches durch Vergleich mit Mausdaten
+ * ein Haengenbleiben erkennt, rueckwaerts faehrt und das hier registrierte Notverhalten startet. Dieses wiederum
+ * sorgt dafuer, dass der bot sich wegdreht und weiterfaehrt wie an einer Wand. Gleiches gilt fuer das Abgrundverhalten.
+ *
+ * \author 	Frank Menzel (Menzelfr@gmx.net)
+ * \date 	30.08.2007
  */
-
-#include "bot-logic/bot-logik.h"
 
 #ifndef BEHAVIOUR_FOLLOW_WALL_H_
 #define BEHAVIOUR_FOLLOW_WALL_H_
 
 #ifdef BEHAVIOUR_FOLLOW_WALL_AVAILABLE
 
-
 void border_follow_wall_handler(void);
 
 /*!
  * Faehrt vorwaerts bis zu einer Wand, von die er sich wegdreht
- * @param *data Verhaltensdatensatz
+ * \param *data Verhaltensdatensatz
  */
 void bot_follow_wall_behaviour(Behaviour_t * data);
 
 /*! 
  * Botenfunktion
  * Faehrt vorwaerts bis zu einer Wand, von die er sich wegdreht
- * @param *caller 	Verhaltensdatensatz
- * @param *check 	Abbruchfunktion; wenn diese True liefert wird das Verhalten beendet sonst endlos
+ * \param *caller 	Verhaltensdatensatz
+ * \param *check 	Abbruchfunktion; wenn diese True liefert wird das Verhalten beendet sonst endlos
  * 			        einfach NULL uebergeben, wenn keine definiert ist 
  */
-void bot_follow_wall(Behaviour_t * caller, uint8_t (*check)(void));
+void bot_follow_wall(Behaviour_t * caller, uint8_t (* check)(void));
 
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 /*! 
  * Botenverhalten zum Aufruf via Remotecall ohne weitere params, d.h. da kein Abbruchverhalten
  * uebergeben wird, ist dies dann ein Endlos-Explorerverhalten 
- * @param *caller Verhaltensdatensatz
+ * \param *caller Verhaltensdatensatz
  */
 void bot_do_wall_explore(Behaviour_t * caller);
-#endif	// BEHAVIOUR_REMOTECALL_AVAILABLE
+#endif // BEHAVIOUR_REMOTECALL_AVAILABLE
 
-#endif	// BEHAVIOUR_FOLLOW_WALL_AVAILABLE
-#endif	/*BEHAVIOUR_FOLLOW_WALL_H_*/
+#endif // BEHAVIOUR_FOLLOW_WALL_AVAILABLE
+#endif // BEHAVIOUR_FOLLOW_WALL_H_

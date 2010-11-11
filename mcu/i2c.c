@@ -24,6 +24,7 @@
  * @date 	05.09.2007
  */
 
+#ifdef MCU
 #include "ct-Bot.h"
 
 #ifdef I2C_AVAILABLE
@@ -195,4 +196,5 @@ uint8_t i2c_wait(void) {
 	TWCR = 0;	// I2C aus
 	return i2c_error;
 }
-#endif	// I2C_AVAILABLE
+#endif // I2C_AVAILABLE
+#endif // MCU

@@ -37,23 +37,21 @@
 #ifndef BEHAVIOUR_GOTOXY_H_
 #define BEHAVIOUR_GOTOXY_H_
 
-#include "bot-logic/bot-logik.h"
+#ifdef BEHAVIOUR_GOTOXY_AVAILABLE
 
 #define USE_GOTO_POS_XY	/*!< Ersetzt alle goto_xy()-Aufrufe mit dem goto_pos-Verhalten, falls vorhanden */
-
 
 #ifndef BEHAVIOUR_GOTO_POS_AVAILABLE
 #undef USE_GOTO_POS_XY
 #endif
 
-#ifdef BEHAVIOUR_GOTOXY_AVAILABLE
 #ifndef USE_GOTO_POS_XY
 /*!
  * Das Verhalten faehrt von der aktuellen Position zur angegebenen Position (x/y)
  * @param *data der Verhaltensdatensatz
  * Verbessert von Thomas Noll, Jens Schoemann, Ben Horst (Philipps-Universitaet Marburg)
  */
-void bot_gotoxy_behaviour(Behaviour_t *data);
+void bot_gotoxy_behaviour(Behaviour_t * data);
 
 /*!
  * Botenfunktion: Das Verhalten faehrt von der aktuellen Position zur angegebenen Position (x/y)
@@ -63,11 +61,11 @@ void bot_gotoxy_behaviour(Behaviour_t *data);
  */
 void bot_gotoxy(Behaviour_t * caller, int16_t x, int16_t y);
 
-#else	// USE_GOTO_POS_XY
+#else // USE_GOTO_POS_XY
 /* wenn goto_pos() vorhanden und USE_GOTO_POS_XY an ist, leiten wir alle goto_xy()-Aufrufe dorthin um */
 #undef BEHAVIOUR_GOTOXY_AVAILABLE
 #define bot_gotoxy(caller, x, y)	bot_goto_pos(caller, x, y, 999)
-#endif	// USE_GOTO_POS_XY
+#endif // USE_GOTO_POS_XY
 
-#endif	// BEHAVIOUR_GOTOXY_AVAILABLE
-#endif	/*BEHAVIOUR_GOTOXY_H_*/
+#endif // BEHAVIOUR_GOTOXY_AVAILABLE
+#endif // BEHAVIOUR_GOTOXY_H_

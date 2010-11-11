@@ -25,7 +25,7 @@
  */
 
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 #ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
 
 #define STATE_FORWARD		0
@@ -71,4 +71,4 @@ void bot_drive_square(Behaviour_t * caller) {
 	state = STATE_FORWARD;
 }
 
-#endif	// BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
+#endif // BEHAVIOUR_DRIVE_SQUARE_AVAILABLE

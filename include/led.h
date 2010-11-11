@@ -24,19 +24,19 @@
  * @date 	26.12.2005
  */
 
-#ifndef led_H_
-#define led_H_
+#ifndef LED_H_
+#define LED_H_
 
 #include "ct-Bot.h"
 
-#define LED_RECHTS	(1<<0)		/*!< LED in Fahrichtung rechts */
-#define LED_LINKS	(1<<1)		/*!< LED in Fahrichtung links */
-#define LED_ROT     (1<<2)		/*!< LED Rot */
-#define LED_ORANGE  (1<<3)		/*!< LED Orange */
-#define LED_GELB    (1<<4)		/*!< LED Gelb */
-#define LED_GRUEN   (1<<5)		/*!< LED Gruen */
-#define LED_TUERKIS (1<<6)		/*!< LED Tuerkis */
-#define LED_WEISS   (1<<7)		/*!< LED Weiss */
+#define LED_RECHTS	(1<<0)		/*!< LED (blau) in Fahrichtung rechts */
+#define LED_LINKS	(1<<1)		/*!< LED (blau) in Fahrichtung links */
+#define LED_ROT     (1<<2)		/*!< LED rot */
+#define LED_ORANGE  (1<<3)		/*!< LED orange */
+#define LED_GELB    (1<<4)		/*!< LED gelb */
+#define LED_GRUEN   (1<<5)		/*!< LED gruen */
+#define LED_TUERKIS (1<<6)		/*!< LED tuerkis (blau) */
+#define LED_WEISS   (1<<7)		/*!< LED weiss */
 
 #define LED_ALL    0xFF		/*!< LED Alle */
 
@@ -80,5 +80,5 @@ void LED_off(uint8_t LED);
  */
 void LED_on(uint8_t LED);
 
-#endif	// __ASSEMBLER__
-#endif	// led_H_
+#endif // __ASSEMBLER__
+#endif // LED_H_

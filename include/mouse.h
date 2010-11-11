@@ -107,4 +107,4 @@ void mouse_transmit_picture(void);
  */
 uint8_t mouse_get_squal(void);
 
-#endif	// MOUSE_H_
+#endif // MOUSE_H_

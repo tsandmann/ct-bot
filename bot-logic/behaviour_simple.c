@@ -28,7 +28,7 @@
  */
 
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 #ifdef BEHAVIOUR_SIMPLE_AVAILABLE
 
 static uint8_t simple_state = 0;	/*!< Status des simple-Verhaltens */

@@ -27,24 +27,24 @@
  */
 
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 #include "eeprom.h"
 
 #ifdef MCU
 #ifdef SPEED_CONTROL_AVAILABLE
-	#define TURN_ERR		{45, 35, 20}	/*!< Fehler bei Drehungen im EEPROM */
-	#define TUNR_ERR_BIG	90				/*!< Schwellwert in Grad, ab dem turn_err[1] benutzt wird */
-	#define TUNR_ERR_SMALL	20				/*!< Schwellwert in Grad, ab dem turn_err[0] benutzt wird */
+#define TURN_ERR		{45, 35, 20}	/*!< Fehler bei Drehungen im EEPROM */
+#define TUNR_ERR_BIG	90				/*!< Schwellwert in Grad, ab dem turn_err[1] benutzt wird */
+#define TUNR_ERR_SMALL	20				/*!< Schwellwert in Grad, ab dem turn_err[0] benutzt wird */
 #else
-	#define TURN_ERR		{0, 25, 45}		/*!< Fehler bei Drehungen im EEPROM */
-	#define TUNR_ERR_BIG	90				/*!< Schwellwert in Grad, ab dem turn_err[1] benutzt wird */
-	#define TUNR_ERR_SMALL	35				/*!< Schwellwert in Grad, ab dem turn_err[0] benutzt wird */
-#endif	// SPEED_CONTROAL_AVAILABLE
+#define TURN_ERR		{0, 25, 45}		/*!< Fehler bei Drehungen im EEPROM */
+#define TUNR_ERR_BIG	90				/*!< Schwellwert in Grad, ab dem turn_err[1] benutzt wird */
+#define TUNR_ERR_SMALL	35				/*!< Schwellwert in Grad, ab dem turn_err[0] benutzt wird */
+#endif // SPEED_CONTROAL_AVAILABLE
 #else
-	#define TURN_ERR		{0, 0, 0} 		/*!< Fehler bei Drehungen im EEPROM */
-	#define TUNR_ERR_BIG	90				/*!< Schwellwert in Grad, ab dem turn_err[1] benutzt wird */
-	#define TUNR_ERR_SMALL	35				/*!< Schwellwert in Grad, ab dem turn_err[0] benutzt wird */
-#endif	// MCU
+#define TURN_ERR		{0, 0, 0} 		/*!< Fehler bei Drehungen im EEPROM */
+#define TUNR_ERR_BIG	90				/*!< Schwellwert in Grad, ab dem turn_err[1] benutzt wird */
+#define TUNR_ERR_SMALL	35				/*!< Schwellwert in Grad, ab dem turn_err[0] benutzt wird */
+#endif // MCU
 
 uint8_t EEPROM turn_err[3] = TURN_ERR;		/*!< Fehler bei Drehungen im EEPROM */
 
@@ -209,4 +209,4 @@ void bot_turn(Behaviour_t * caller, int16_t degrees) {
 	bot_turn_speed(caller, degrees, 150);
 }
 
-#endif	// BEHAVIOUR_TURN_AVAILABLE
+#endif // BEHAVIOUR_TURN_AVAILABLE

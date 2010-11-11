@@ -27,14 +27,11 @@
 #ifndef BEHAVIOUR_AVOID_BORDER_H_
 #define BEHAVIOUR_AVOID_BORDER_H_
 
-#include "bot-logic/bot-logik.h"
-
 #ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE
 /*!
  * Verhindert, dass der Bot in Graeben faellt
  * @param *data	Der Verhaltensdatensatz
  */
 void bot_avoid_border_behaviour(Behaviour_t * data);
-#endif	// BEHAVIOUR_AVOID_BORDER_AVAILABLE
-
-#endif	/*BEHAVIOUR_AVOID_BORDER_H_*/
+#endif // BEHAVIOUR_AVOID_BORDER_AVAILABLE
+#endif // BEHAVIOUR_AVOID_BORDER_H_

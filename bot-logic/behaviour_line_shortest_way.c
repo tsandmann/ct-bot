@@ -18,22 +18,25 @@
  */
 
 /*!
- * @file 	behaviour_line_shortest_way.c
- * @brief 	Linienverfolger, der an Kreuzungen eine bestimmte Vorzugsrichtung einschlaegt (links) und diesen Weg weiterverfolgt, bis das Ziel
- *          (gruenes Feld an Wand) gefunden ist; Linien muessen immer an einem gruenen Feld ohne Hindernis enden, damit der Bot ein Ende erkennt und
- *          umdrehen kann.
- *          Die Kreuzungen und der eingeschlagene Weg werden auf dem Stack vermerkt, Wege die nicht zum Ziel fuehren vergessen; Am Ziel angekommen
- *          steht im Stack der kuerzeste Weg; Es kann nun via Display auf dem kuezesten Weg zum Ausgangspunkt zurueckgefahren werden oder der Bot wieder
- *          manuell an den Start gestellt werden und das Ziel auf kuerzestem Weg angefahren werden.
- * @author 	Frank Menzel (Menzelfr@gmx.de)
- * @date 	21.12.2008
+ * \file 	behaviour_line_shortest_way.c
+ * \brief 	Linienverfolger, der an Kreuzungen eine bestimmte Vorzugsrichtung einschlaegt (links) und diesen Weg weiterverfolgt,
+ * 			bis das Ziel (gruenes Feld an Wand) gefunden ist.
  *
- * @todo	Unterstuetzung fuer Linienlabyrinthe mit Zyklen
+ * Linien muessen immer an einem gruenen Feld ohne Hindernis enden, damit der Bot ein Ende erkennt und umdrehen kann.
+ * Die Kreuzungen und der eingeschlagene Weg werden auf dem Stack vermerkt, Wege die nicht zum Ziel fuehren vergessen; Am Ziel angekommen
+ * steht im Stack der kuerzeste Weg; Es kann nun via Display auf dem kuezesten Weg zum Ausgangspunkt zurueckgefahren werden oder der Bot wieder
+ * manuell an den Start gestellt werden und das Ziel auf kuerzestem Weg angefahren werden.
+ *
+ * \author 	Frank Menzel (Menzelfr@gmx.de)
+ * \date 	21.12.2008
+ *
+ * \todo	Unterstuetzung fuer Linienlabyrinthe mit Zyklen
  */
-#include "bot-logic/bot-logik.h"
+
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
-
+#include "ui/available_screens.h"
 #include "pos_store.h"
 #include "rc5-codes.h"
 #include "math_utils.h"
@@ -148,17 +151,16 @@ static int16_t lastpos_y = 0;
 
 
 
-/*     *************************************************************************
- *     ** Verhalten zum Erkennung einer 180 Grad Drehung **
- *     *************************************************************************
-*/
+/**************************************************************************
+ *** Verhalten zum Erkennung einer 180 Grad Drehung ***
+ **************************************************************************/
 
 #ifdef DISTCHECK_NEEDED
 
 /*! Prueft ob der Bot schon eine bestimmte Strecke gefahren ist seit dem letzten Durchgang
- * @param  *last_xpoint   letzte gemerkte X-Koordinate
- * @param  *last_ypoint   letzte gemerkte Y-Koordinate
- * @return True, wenn Bot schon gewisse Strecke gefahren ist und Map zu checken ist sonst False
+ * \param  *last_xpoint   letzte gemerkte X-Koordinate
+ * \param  *last_ypoint   letzte gemerkte Y-Koordinate
+ * \return True, wenn Bot schon gewisse Strecke gefahren ist und Map zu checken ist sonst False
  */
 static uint8_t distance_reached(int16_t * last_xpoint,int16_t * last_ypoint) {
 
@@ -175,7 +177,7 @@ static uint8_t distance_reached(int16_t * last_xpoint,int16_t * last_ypoint) {
 	return False;
 }
 
-#endif  // nur wenn gefordert
+#endif // nur wenn gefordert
 
 
 #ifdef CHECK_REVERSE_BEHAVIOUR  // nur wenn Verhalten anstatt Gruenfeld verwendet werden soll
@@ -190,7 +192,7 @@ int16_t angle_t=0;
 
 /*!
  * Verhalten zum Checken auf Einnehmen der entgegengesetzten Richtung (Linienende)
- * @param *data	eigener Verhaltensdatensatz
+ * \param *data	eigener Verhaltensdatensatz
  */
 void bot_check_reverse_direction_behaviour(Behaviour_t * data) {
 	switch (reverse_state) {
@@ -224,7 +226,7 @@ void bot_check_reverse_direction_behaviour(Behaviour_t * data) {
 
 /*!
  * Botenfunktion: Verhalten zum Checken der Botrichtung auf Einnehmen der entgegengesetzten Richtung (Linienende)
- * @param *caller	Der Verhaltensdatensatz des Aufrufers
+ * \param *caller	Der Verhaltensdatensatz des Aufrufers
  */
 static void bot_check_reverse_direction(Behaviour_t * caller) {
 	// via Override umschalten; Aufruf erfolgt aller x mm gefahrene Strecke, falls Kurve gefahren wurde zum Setzen des neuen Pruefwinkels
@@ -234,16 +236,16 @@ static void bot_check_reverse_direction(Behaviour_t * caller) {
 #else
 /*!
  * Dummy fuer bot-logic.c
- * @param *data	Der Verhaltensdatensatz des Aufrufers
+ * \param *data	Der Verhaltensdatensatz des Aufrufers
  */
 void bot_check_reverse_direction_behaviour(Behaviour_t * data) {
 }
-#endif	// CHECK_REVERSE_BEHAVIOUR
+#endif // CHECK_REVERSE_BEHAVIOUR
 
 /*!
  * Push der Kreuzungsinformationen, etwas tricky dazu der eigentliche Positionsspeicher benutzt
- * @param crosstype	Typ der Kreuzung (jetzt nur 1 Typ, gedacht fuer spaetere Erweiterungen und weil Postyp sowieso 2 Params hat)
- * @param direction	eingeschlagener Weg an der Kreuzung
+ * \param crosstype	Typ der Kreuzung (jetzt nur 1 Typ, gedacht fuer spaetere Erweiterungen und weil Postyp sowieso 2 Params hat)
+ * \param direction	eingeschlagener Weg an der Kreuzung
  */
 static void push_stack_crossing(int8_t crosstype, int8_t direction) {
 	position_t p_temp; // Stack erlaubt nur Speicherung von Positionstypen
@@ -256,9 +258,9 @@ static void push_stack_crossing(int8_t crosstype, int8_t direction) {
 
 /*!
  * Holt eine Kreuzungsinformation vom Stack (Bot auf Rueckweg an Kreuzung oder Stackabfahren vom Ziel zum Start)
- * @param *crosstype Kreuzungstyp
- * @param *direction zuletzt eingeschlagene Richtung
- * @return True wenn erfolgreich, False falls Stack leer ist
+ * \param *crosstype Kreuzungstyp
+ * \param *direction zuletzt eingeschlagene Richtung
+ * \return True wenn erfolgreich, False falls Stack leer ist
  */
 static uint8_t pop_stack_crossing(int8_t * crosstype, int8_t * direction) {
 	position_t p_temp; // Stack erlaubt nur Speicherung von Positionstypen
@@ -273,9 +275,9 @@ static uint8_t pop_stack_crossing(int8_t * crosstype, int8_t * direction) {
 
 /*!
  * Holt eine Kreuzung von vorn aus dem Stack (in dem Fall Queue) zum Abfahren von Start- zum Zielpunkt
- * @param *crosstype Kreuzungstyp
- * @param *direction zuletzt eingeschlagene Richtung
- * @return True wenn erfolgreich, False falls Stack leer ist
+ * \param *crosstype Kreuzungstyp
+ * \param *direction zuletzt eingeschlagene Richtung
+ * \return True wenn erfolgreich, False falls Stack leer ist
  */
 static uint8_t dequeue_stack_crossing(int8_t * crosstype, int8_t * direction) {
 	position_t p_temp; // Stack erlaubt nur Speicherung von Positionstypen
@@ -288,14 +290,10 @@ static uint8_t dequeue_stack_crossing(int8_t * crosstype, int8_t * direction) {
 	return True;
 }
 
-
-
-
-
 /*!
  * Prueft ob sich der Bot auf dem definierten Umkehr- Zielfeld befindet (via Default gruen; gut im Simulator verwendbar)
- * @param goalcheck True falls Aufruf von Zielerkennung kam, False sonst fuer Pruefung auf Umkehrfeld
- * @return True falls Bot sich auf dem Farbfeld befindet sonst False
+ * \param goalcheck True falls Aufruf von Zielerkennung kam, False sonst fuer Pruefung auf Umkehrfeld
+ * \return True falls Bot sich auf dem Farbfeld befindet sonst False
  */
 static uint8_t green_field(uint8_t goalcheck) {
 	if (crossing_reached && ((sensLineL > GROUND_GOAL_DEF - 5 && sensLineL
@@ -324,7 +322,7 @@ static uint8_t green_field(uint8_t goalcheck) {
 
 /*!
  * Prueft ob der Bot sich auf dem Ziel befindet, also wenn er auf dem definierten Farbfeld steht und Hindernis dahinter
- * @return True falls bot sich auf dem Zielfarbfeld befindet sonst False
+ * \return True falls bot sich auf dem Zielfarbfeld befindet sonst False
  */
 static uint8_t goal_reached(void) {
 	if (green_field(True) && sensDistL < 300 && sensDistR < 300)
@@ -339,7 +337,7 @@ static uint8_t goal_reached(void) {
 /*!
  * Prueft ob der Bot sich auf einer Kreuzung befindet; weil Abgrundsensoren nicht gleichzeitig ueber Kreuzungslinie erscheinen, werden hier Kennungen fuer
  * die beiden Abgrundsensoren verwendet falls Linie erkannt wurde;Wird innerhalb der naechsten 3cm die andere Seite auch erkannt, so steht Bot auf Kreuzung
- * @return True falls bot sich auf Kreuzung befindet sonst False
+ * \return True falls bot sich auf Kreuzung befindet sonst False
  */
 uint8_t check_crossing(void) {
 	if (goal_reached()) {
@@ -406,11 +404,11 @@ uint8_t check_crossing(void) {
 
 	return False;
 }
-#else	// optimale Version
+#else // optimale Version
 
 /*!
  * Prueft ob der Bot sich auf Umkehr- oder Zielfeld befindet; hier wurde der optimal Linienfolger gestartet, der sich beendet bei Kreuzungen oder Abgruenden
- * @return True falls bot sich auf Ziel- oder Umkehrfeld befindet sonst False
+ * \return True falls bot sich auf Ziel- oder Umkehrfeld befindet sonst False
  */
 static uint8_t check_crossing(void) {
 	if (goal_reached()) {
@@ -445,10 +443,11 @@ static uint8_t check_crossing(void) {
 
 	return False;
 }
-#endif	// OPTIMAL_VERSION
+#endif // OPTIMAL_VERSION
 
-/* Check-Routine zum Erkennen ob sich bot schon auf der Linie befindet
- * @return True wenn mindestens ein Liniensensor die Linie erkennt
+/*!
+ * Check-Routine zum Erkennen ob sich bot schon auf der Linie befindet
+ * \return True wenn mindestens ein Liniensensor die Linie erkennt
  */
 static uint8_t check_line_sensors(void) {
 	if (sensLineL >= LINE_SENSE || sensLineR >= LINE_SENSE)
@@ -463,7 +462,7 @@ static uint8_t check_line_sensors(void) {
  * Kreuzungen werden enweder neu im Stack angelegt oder von dort geholt und die Wegeinfos dort wieder vermerkt; eine Kreuzung
  * wird vergessen, wenn kein Weg von dort zum Ziel gefuehrt hatte; Verhalten laesst den bot ebenefalls den bereits gemerkten Weg
  * zum Ziel oder von dort rueckwaerts direkt auf kuerzestem Weg zum Ausgangspunkt fahren
- * @param *data	Verhaltensdatensatz
+ * \param *data	Verhaltensdatensatz
  */
 void bot_line_shortest_way_behaviour(Behaviour_t * data) {
 	switch (lineState) {
@@ -514,7 +513,7 @@ void bot_line_shortest_way_behaviour(Behaviour_t * data) {
 		break;
 
 	case GO_FORWARD: // Erkennung ob Abgrund und Ende, falls nicht weiter bis Liniensensoren auf Krezung
-/*! @todo schlaegt auch bei Kreuzungen zu, muss ueberarbeitet werden! */
+/*! \todo schlaegt auch bei Kreuzungen zu, muss ueberarbeitet werden! */
 //		if (sensBorderL > BORDER_DANGEROUS || sensBorderR > BORDER_DANGEROUS) {
 //			LOG_DEBUG("Abgrund und Ende %1d %1d", sensBorderL, sensBorderR);
 //			lineState = GOAL_FOUND; // Verhalten Ende
@@ -680,7 +679,7 @@ void bot_line_shortest_way_behaviour(Behaviour_t * data) {
 
 /*!
  * Startet das Verhalten
- * @param	*caller Verhaltensdatensatz des Aufrufers
+ * \param	*caller Verhaltensdatensatz des Aufrufers
  */
 void bot_line_shortest_way(Behaviour_t * caller) {
 	switch_to_behaviour(caller, bot_line_shortest_way_behaviour, NOOVERRIDE);
@@ -707,7 +706,7 @@ void bot_line_shortest_way(Behaviour_t * caller) {
 
 /*!
  * Falls Linienfolger Linie nicht findet kann hier weitergefuehrt werden nach manuellem richtigen wiederausrichten
- * @param	*caller Verhaltensdatensatz des Aufrufers
+ * \param	*caller Verhaltensdatensatz des Aufrufers
  */
 void bot_line_shortest_way_continue(Behaviour_t * caller) {
 	switch_to_behaviour(caller, bot_line_shortest_way_behaviour, NOOVERRIDE);
@@ -718,7 +717,7 @@ void bot_line_shortest_way_continue(Behaviour_t * caller) {
 
 /*!
  * Abfahren des gefundenen Weges vorwaerts
- * @param	*caller Verhaltensdatensatz des Aufrufers
+ * \param	*caller Verhaltensdatensatz des Aufrufers
  */
 void bot_line_shortest_way_forward(Behaviour_t * caller) {
 	switch_to_behaviour(caller, bot_line_shortest_way_behaviour, NOOVERRIDE);
@@ -732,7 +731,7 @@ void bot_line_shortest_way_forward(Behaviour_t * caller) {
 
 /*!
  * Abfahren des gefundenen Weges rueckwaerts
- * @param	*caller Verhaltensdatensatz des Aufrufers
+ * \param	*caller Verhaltensdatensatz des Aufrufers
  */
 void bot_line_shortest_way_backward(Behaviour_t * caller) {
 	switch_to_behaviour(caller, bot_line_shortest_way_behaviour, NOOVERRIDE);
@@ -784,14 +783,14 @@ static void driveline_disp_key_handler(void) {
  */
 void bot_line_shortest_way_display(void) {
 	display_cursor(1, 1);
-	display_printf("DRIVE_LINE_S_WAY");
+	display_puts("DRIVE_LINE_S_WAY");
 	display_cursor(2, 1);
-	display_printf("GoLine/Continue:5/6");
+	display_puts("GoLine/Continue:5/6");
 	display_cursor(4, 1);
-	display_printf("GoWayForw/Back:8/9");
+	display_puts("GoWayForw/Back:8/9");
 
 	driveline_disp_key_handler(); // aufrufen des Key-Handlers
 }
-#endif	// DISPLAY_LINE_SHORTEST_WAY_AVAILABLE
+#endif // DISPLAY_LINE_SHORTEST_WAY_AVAILABLE
 
-#endif	// BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
+#endif // BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE

@@ -27,15 +27,13 @@
 #ifndef BEHAVIOUR_TURN_H_
 #define BEHAVIOUR_TURN_H_
 
-#include "bot-logic/bot-logik.h"
-
 #ifdef BEHAVIOUR_TURN_AVAILABLE
 #ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
- 	float turn_last_err;	/*!< letzter Drehfehler in Grad */
+extern float turn_last_err; /*!< letzter Drehfehler in Grad */
 #endif
 
 /*!
- * @brief			Das Verhalten laesst den Bot eine Punktdrehung durchfuehren. 
+ * Das Verhalten laesst den Bot eine Punktdrehung durchfuehren.
  * @param *data 	Der Verhaltensdatensatz
  * @see bot_turn()
  * Das Drehen findet in mehreren Schritten statt. Die Drehung wird dabei
@@ -45,7 +43,7 @@
 void bot_turn_behaviour(Behaviour_t * data);
 
 /*!
- * @brief			Dreht den Bot im mathematischen Drehsinn.
+ * Dreht den Bot im mathematischen Drehsinn.
  * @param *caller	Der Aufrufer
  * @param degrees 	Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
  * 					zwischen -360 und +360
@@ -53,7 +51,7 @@ void bot_turn_behaviour(Behaviour_t * data);
 void bot_turn(Behaviour_t * caller, int16_t degrees);
 
 /*!
- * @brief			Dreht den Bot im mathematischen Drehsinn.
+ * Dreht den Bot im mathematischen Drehsinn.
  * @param *caller	Der Aufrufer
  * @param degrees 	Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
  * 					zwischen -360 und +360
@@ -61,5 +59,5 @@ void bot_turn(Behaviour_t * caller, int16_t degrees);
  */
 void bot_turn_speed(Behaviour_t * caller, int16_t degrees, uint16_t speed);
 
-#endif	// BEHAVIOUR_TURN_AVAILABLE
-#endif	/* BEHAVIOUR_TURN_H_ */
+#endif // BEHAVIOUR_TURN_AVAILABLE
+#endif // BEHAVIOUR_TURN_H_

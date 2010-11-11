@@ -18,36 +18,36 @@
  */
 
 
-/*! 
- * @file 	behaviour_classify_objects.h
- * @brief 	Teilt Objekte nach ihrer Farbe in Klassen ein und
- * 			transportiert sie ins Lager der Klasse.
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	15.06.2008
+/*!
+ * \file 	behaviour_classify_objects.c
+ * \brief 	Teilt Objekte nach ihrer Farbe in Klassen ein und transportiert sie ins Lager der Klasse.
+ *
+ * Damit die Objekte erkannt werden koennen, muessen eine farbige Grundflaeche haben, die bis unter die Liniensensoren
+ * reicht (z.B. runde Pappscheibe unter einer Dose).
+ * Den Schwellwert fuer die Klasseneinteilung muss man derzeit im Array targets fest einstellen, ebenso die Zielpositionen.
+ * Objekte gleicher Klasse werden mit einem Abstand von 10 cm in positiver Y-Richtung nebeneinander gestellt.
+ * Funktioniert derzeit nur mit Catch-Pillar-Version 3.
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	15.06.2008
  */
-
 
 #ifndef BEHAVIOUR_CLASSIFY_OBJECTS_H_
 #define BEHAVIOUR_CLASSIFY_OBJECTS_H_
 
-#include "ct-Bot.h"
-#include "bot-logic/bot-logik.h"
-
 #ifdef BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE
-
 /*!
  * Teilt Objekte nach ihrer Farbe in Klassen ein und
  * transportiert sie ins Lager der Klasse.
- * @param *data	Der Verhaltensdatensatz
+ * \param *data	Der Verhaltensdatensatz
  */
 void bot_classify_objects_behaviour(Behaviour_t * data);
 
 /*!
  * Teilt Objekte nach ihrer Farbe in Klassen ein und
  * transportiert sie ins Lager der Klasse.
- * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * \param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_classify_objects(Behaviour_t * caller);
 
-#endif	// BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE
-#endif	/*BEHAVIOUR_CLASSIFY_OBJECTS_H_*/
+#endif // BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE
+#endif // BEHAVIOUR_CLASSIFY_OBJECTS_H_

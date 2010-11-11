@@ -28,6 +28,8 @@
 #define COMMAND_H_
 
 #include "ct-Bot.h"
+
+#ifdef COMMAND_AVAILABLE
 #include "eeprom.h"
 #include "uart.h"
 #include <stdio.h>
@@ -38,13 +40,13 @@
 #define low_read tcp_read			/*!< Which function to use to read data */
 #define low_write tcp_send_cmd		/*!< Which function to use to write data */
 #define low_write_data tcp_write	/*!< Which function to use to write data */
-#endif	// PC
+#endif // PC
 
 #ifdef MCU
 #define low_read uart_read 			/*!< Which function to use to read data */
 #define low_write uart_send_cmd		/*!< Which function to use to write data */
 #define low_write_data uart_write	/*!< Which function to use to write data */
-#endif	// MCU
+#endif // MCU
 
 
 /*! Request Teil eines Kommandos */
@@ -123,7 +125,7 @@ typedef struct {
 #define SUB_WELCOME_BOTS 'B'	/*!< Subkommando zu bekanntmachen der eigenen ID bei anderen Bots */
 
 // Kommandos fuer die Remote-Calls
-#define CMD_REMOTE_CALL			'r'		/*!< Kommado fuer Remote-Calls */
+#define CMD_REMOTE_CALL			'r'		/*!< Kommando fuer Remote-Calls */
 #define SUB_REMOTE_CALL_LIST	'L'		/*!< Anforderung an den Bot alle verfuegbaren Kommandos zu listen */
 #define SUB_REMOTE_CALL_ENTRY	'E'		/*!< Hiermit liefert der Bot ein erfuegbares Kommandos an den PC */
 #define SUB_REMOTE_CALL_ORDER	'O'		/*!< Hiermit gibt der PC einen Remote-Call in Auftrag */
@@ -142,6 +144,14 @@ typedef struct {
 #define SUB_MAP_CLEAR_LINES	'X'	/*!< Linien loeschen */
 #define SUB_MAP_CLEAR_CIRCLES	'Y' /*!< Kreise loeschen */
 
+#define CMD_SHUTDOWN		'q' /*!< Kommando zum Herunterfahren */
+
+// Kommandos fuer Programmtransfer
+#define CMD_PROGRAM			'p' /**< Programmdaten (Basic oder ABL) */
+#define SUB_PROGRAM_PREPARE	'P' /**< Bereitet den Programm-Versand vor */
+#define SUB_PROGRAM_DATA	'D' /**< Schickt ein Skript-Programm an den Bot */
+#define SUB_PROGRAM_START	'S' /**< Startet ein uebertragenes Programm auf dem Bot */
+#define SUB_PROGRAM_STOP	'Q' /**< Bricht ein laufendes Programm ab */
 
 #define DIR_REQUEST	0			/*!< Richtung fuer Anfragen */
 #define DIR_ANSWER	1			/*!< Richtung fuer Antworten */
@@ -162,6 +172,17 @@ void command_init(void);
  * @see low_read()
  */
 int8_t command_read(void);
+
+/*!
+ * Uebertraegt ein Kommando und wartet nicht auf eine Antwort. Interne Version, nicht threadsicher!
+ * @param command		Kennung zum Command
+ * @param subcommand	Kennung des Subcommand
+ * @param to			Adresse des Empfaengers
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r 		Daten fuer den rechten Kanal
+ * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
+ */
+void command_write_to_internal(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload);
 
 /*!
  * Uebertraegt ein Kommando und wartet nicht auf eine Antwort
@@ -204,7 +225,8 @@ void command_write_data(uint8_t command, uint8_t subcommand, int16_t data_l, int
  * @param payload 		Anzahl der Bytes im Anhang
  * @param *data 		Datenanhang an das eigentliche Command
  */
-void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload, void * data);
+void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r,
+	uint8_t payload, const void * data);
 
 /*!
  * Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort
@@ -215,7 +237,8 @@ void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, i
  * @param payload 		Anzahl der Bytes im Anhang
  * @param *data 		Datenanhang an das eigentliche Command
  */
-void command_write_rawdata(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload, void * data);
+void command_write_rawdata(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload,
+	const void * data);
 
 /*!
  * Wertet das Kommando im Puffer aus
@@ -247,4 +270,5 @@ static inline void set_bot_address(uint8_t bot_addr) {
 	ctbot_eeprom_write_byte(&bot_address, bot_addr);
 }
 
-#endif	/* COMMAND_H_ */
+#endif // COMMAND_AVAILABLE
+#endif // COMMAND_H_

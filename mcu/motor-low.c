@@ -26,16 +26,14 @@
 #ifdef MCU
 
 #include "ct-Bot.h"
-
-#include <avr/io.h>
-#include <stdlib.h>
-
-#include "global.h"
 #include "motor.h"
 #include "timer.h"
 #include "sensor.h"
 #include "display.h"
 #include "motor-low.h"
+
+#include <avr/io.h>
+#include <stdlib.h>
 
 /* Drehrichtung der Motoren */
 #define BOT_DIR_L_PIN 	(1<<6)	// PC7
@@ -207,4 +205,4 @@ void servo_low(uint8_t servo, uint8_t pos) {
 	}
 }
 
-#endif	// MCU
+#endif // MCU

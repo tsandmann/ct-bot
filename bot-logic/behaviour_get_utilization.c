@@ -24,15 +24,15 @@
  * @date 	14.12.2008
  */
 
-#include "bot-logic/bot-logik.h"
-#include <stdlib.h>
-#include <string.h>
-#include "log.h"
-#include "os_thread.h"
-#include "map.h"
-
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_GET_UTILIZATION_AVAILABLE
+#include <stdlib.h>
+#include <string.h>
+#include "os_scheduler.h"
+#include "os_thread.h"
+#include "log.h"
+#include "map.h"
 
 static uint8_t state = 0;
 static Behaviour_t * beh = NULL;
@@ -100,4 +100,4 @@ void bot_get_utilization(Behaviour_t * caller, uint8_t behaviour) {
 	state = 0;
 }
 
-#endif	// BEHAVIOUR_GET_UTILIZATION_AVAILABLE
+#endif // BEHAVIOUR_GET_UTILIZATION_AVAILABLE

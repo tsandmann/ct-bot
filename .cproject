@@ -28,7 +28,6 @@
 								<option id="gnu.c.compiler.option.include.paths.1966160619" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:/Programme/MinGW/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Programme\pthreads\pthreads.2&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1735546581" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
@@ -67,7 +66,6 @@
 								</option>
 								<option id="gnu.c.link.option.paths.591522332" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="stringList">
 									<listOptionValue builtIn="false" value="&quot;C:\Programme\pthreads\Pre-built.2\lib&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Programme\MinGW\lib&quot;"/>
 								</option>
 								<option id="gnu.c.link.option.noshared.1988456399" name="No shared libraries (-static)" superClass="gnu.c.link.option.noshared" value="true" valueType="boolean"/>
 								<option id="gnu.c.link.option.nostart.1813288142" name="Do not use standard start files (-nostartfiles)" superClass="gnu.c.link.option.nostart"/>

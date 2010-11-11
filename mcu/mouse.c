@@ -23,18 +23,16 @@
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
  */
-#include "global.h"
 
 #ifdef MCU
-
-#include <avr/io.h>
 #include "ct-Bot.h"
+
+#ifdef MOUSE_AVAILABLE
+#include <avr/io.h>
 #include "mouse.h"
 #include "delay.h"
 #include "ena.h"
 #include "command.h"
-
-#ifdef MOUSE_AVAILABLE
 
 #define MOUSE_DDR 		DDRB	/*!< DDR fuer Maus-SCLK */
 #define MOUSE_PORT 		PORTB	/*!< PORT fuer Maus-SCLK */
@@ -186,5 +184,5 @@ uint8_t mouse_get_squal(void) {
 	return mouse_sens_read(MOUSE_SQUAL_REG);
 }
 
-#endif	// MOUSE_AVAILABLE
-#endif	// MCU
+#endif // MOUSE_AVAILABLE
+#endif // MCU

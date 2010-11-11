@@ -25,8 +25,6 @@
  */
 
 #include "ct-Bot.h"
-#include <stdio.h>
-#include <float.h>
 #include "timer.h"
 #include "bot-local.h"
 #include "math.h"
@@ -41,6 +39,9 @@
 #include "motor.h"
 #include "math_utils.h"
 #include "ir-rc5.h"
+#include "uart.h"
+#include <stdio.h>
+#include <float.h>
 
 #define HEADING_START		0	/*!< Blickrichtung, mit der sich der Bot initialisiert */
 #define HEADING_SIN_START	0	/*!< sin(HEADING_START) */
@@ -72,10 +73,14 @@ uint8_t sensTrans = 0;	/*!< Sensor Ueberwachung Transportfach */
 
 uint8_t sensDoor = 0;	/*!< Sensor Ueberwachung Klappe */
 
-uint8_t sensError = 0;	/*!< Ueberwachung Motor oder Batteriefehler */
+uint8_t sensError = 0;	/*!< Ueberwachung Servo oder Batteriefehler [0/1]  1= alles ok */
 
 #ifdef BPS_AVAILABLE
 uint16_t sensBPS = BPS_NO_DATA; /*!< Bot Positioning System */
+/*! RC5-Konfiguration fuer BPS-Sensor */
+ir_data_t bps_ir_data = {
+	0, 0, 0, 0, 0, BPS_NO_DATA
+};
 #endif // BPS_AVAILABLE
 
 #ifdef MOUSE_AVAILABLE
@@ -83,7 +88,7 @@ int8_t sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der F
 int8_t sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
 int16_t sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
 int16_t sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
-#endif	// MOUSE_AVAILABLE
+#endif // MOUSE_AVAILABLE
 
 int16_t sensEncL = 0;	/*!< Encoder linkes Rad */
 int16_t sensEncR = 0;	/*!< Encoder rechtes Rad */
@@ -106,7 +111,7 @@ float y_mou = 0;			/*!< Aktuelle Y-Koordinate in mm relativ zur Startposition au
 int16_t v_mou_center = 0;	/*!< Geschwindigkeit in mm/s ausschliesslich aus den Maussensorwerten berechnet */
 int16_t v_mou_left = 0;		/*!< ...aufgeteilt auf linkes Rad */
 int16_t v_mou_right = 0;	/*!< ...aufgeteilt auf rechtes Rad */
-#endif	// MEASURE_MOUSE_AVAILABLE
+#endif // MEASURE_MOUSE_AVAILABLE
 
 float heading = HEADING_START;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
 int16_t heading_int = HEADING_START;	/*!< (int16_t) heading */
@@ -249,7 +254,7 @@ void sensor_update(void) {
 	float yd = 0;					/*!< Y-Koordinate Drehpunkt */
 	float right_radius = 0;			/*!< Radius des Drehkreises des rechten Rads */
 	float left_radius = 0;			/*!< Radius des Drehkreises des linken Rads */
-#endif	// MEASURE_MOUSE_AVAILABLE
+#endif // MEASURE_MOUSE_AVAILABLE
 	static int16_t lastEncL = 0;	/* letzter Encoderwert links fuer Positionsberechnung */
 	static int16_t lastEncR = 0;	/* letzter Encoderwert rechts fuer Positionsberechnung */
 	static int16_t lastEncL1 = 0;	/* letzter Encoderwert links fuer Geschwindigkeitsberechnung */
@@ -275,7 +280,7 @@ void sensor_update(void) {
 
 	sensMouseY += sensMouseDY;		/*!< Mausdelta Y aufaddieren */
 	sensMouseX += sensMouseDX;		/*!< Mausdelta X aufaddieren */
-#endif	// MEASURE_MOUSE_AVAILABLE
+#endif // MEASURE_MOUSE_AVAILABLE
 
 #ifndef OS_AVAILABLE
 	if (timer_ms_passed_8(&old_pos, 10))
@@ -411,7 +416,7 @@ void sensor_update(void) {
 			lastMouseY = sensMouseY;
 		}
 		lastMouseX = sensMouseX;
-#endif	// MEASURE_MOUSE_AVAILABLE
+#endif // MEASURE_MOUSE_AVAILABLE
 #ifdef MEASURE_COUPLED_AVAILABLE
 		/* Werte der Encoder und der Maus mit dem Faktor G_POS verrechnen */
 		x_pos = (int16_t) (G_POS * x_mou + (1 - G_POS) * x_enc);
@@ -441,8 +446,8 @@ void sensor_update(void) {
 		/* Mauswerte als Standardwerte benutzen */
 		x_pos = (int16_t) x_mou;
 		y_pos = (int16_t) y_mou;
-#endif	// MEASURE_MOUSE_AVAILABLE
-#endif	// MEASURE_COUPLED_AVAILABLE
+#endif // MEASURE_MOUSE_AVAILABLE
+#endif // MEASURE_COUPLED_AVAILABLE
 
 		if (timer_ms_passed_16(&old_speed, SPEED_UPDATE_TIME)) {
 			const int16_t diffEncL1 = sensEncL_tmp - lastEncL1;
@@ -533,7 +538,7 @@ void sensor_update(void) {
 			old_x = x_mou;
 			old_y = y_mou;
 			oldHead = heading_mou;
-#endif	// MEASURE_MOUSE_AVAILABLE
+#endif // MEASURE_MOUSE_AVAILABLE
 #ifdef MEASURE_COUPLED_AVAILABLE
 			v_left = (int16_t) (G_SPEED * v_mou_left + (1 - G_SPEED) * v_enc_left);
 			v_right = (int16_t) (G_SPEED * v_mou_right + (1 - G_SPEED) * v_enc_left);
@@ -544,27 +549,33 @@ void sensor_update(void) {
 			v_left = v_mou_left;
 			v_right = v_mou_right;
 			v_center = v_mou_center;
-#endif	// MEASURE_MOUSE_AVAILABLE
-#endif	// MEASURE_COUPLED_AVAILABLE
+#endif // MEASURE_MOUSE_AVAILABLE
+#endif // MEASURE_COUPLED_AVAILABLE
 		}
 	}
 }
 
 /*!
- * Setzt die Auswertungen der Sensorendaten zurueck
+ * Setzt die Auswertungen der Sensordaten zurueck
  */
 void sensor_reset(void) {
 	/* Radencoder */
 	heading_enc = HEADING_START;
-	x_enc = 0;
-	y_enc = 0;
+	x_enc = 0.0f;
+	y_enc = 0.0f;
 
 #ifdef MEASURE_MOUSE_AVAILABLE
 	/* Maussensor */
 	heading_mou = HEADING_START;
-	x_mou = 0;
-	y_mou = 0;
-#endif	// MEASURE_MOUSE_AVAILABLE
+	x_mou = 0.0f;
+	y_mou = 0.0f;
+#endif // MEASURE_MOUSE_AVAILABLE
+
+	heading = 0.0f;
+	heading_int = 0;
+	heading_10_int = 0;
+	x_pos = 0;
+	y_pos = 0;
 
 #ifdef MEASURE_POSITION_ERRORS_AVAILABLE
 	direction.raw = (uint8_t) ((~direction.raw) & 0x3);
@@ -596,16 +607,33 @@ int16_t is_obstacle_ahead(int16_t distance) {
 void led_update(void) {
 #ifdef LED_AVAILABLE
 #ifndef TEST_AVAILABLE
-	if (sensTrans != 0) LED_on(LED_GELB);
-	else LED_off(LED_GELB);
-	if (sensError != 0) LED_on(LED_ORANGE);
-	else LED_off(LED_ORANGE);
+	if (sensTrans != 0) {
+		LED_on(LED_GELB);
+	} else {
+		LED_off(LED_GELB);
+	}
+	if (sensError != 0) {
+		LED_on(LED_ORANGE);
+	} else {
+		LED_off(LED_ORANGE);
+	}
 
-	if (sensDistL < 500) LED_on(LED_LINKS);
-	else LED_off(LED_LINKS);
-	if (sensDistR < 500) LED_on(LED_RECHTS);
-	else LED_off(LED_RECHTS);
-#else	// TEST_AVAILABLE
+	if (sensDistL < 500) {
+		LED_on(LED_LINKS);
+	} else {
+		LED_off(LED_LINKS);
+	}
+	if (sensDistR < 500) {
+		LED_on(LED_RECHTS);
+	} else {
+		LED_off(LED_RECHTS);
+	}
+#if defined MCU && defined UART_AVAILABLE
+	if (uart_infifo.overflow == 1) {
+		LED_on(LED_TUERKIS);
+	}
+#endif // MCU && UART_AVAILABLE
+#else // TEST_AVAILABLE
 	static volatile uint8_t led_status = 0x00;
 	led_t * status = (led_t *) &led_status;
 	bit_t tmp;
@@ -626,7 +654,7 @@ void led_update(void) {
 	(*status).tuerkis = tmp.bit;
 	tmp.byte = (uint8_t) (sensBorderR >> 9);
 	(*status).weiss = tmp.bit;
-#endif	// TEST_AVAILABLE_ANALOG
+#endif // TEST_AVAILABLE_ANALOG
 #ifdef TEST_AVAILABLE_DIGITAL
 	tmp.byte = (uint8_t) sensEncR;
 	(*status).rechts = tmp.bit;
@@ -648,14 +676,14 @@ void led_update(void) {
 	tmp.byte = (uint8_t) rc5_ir_data.ir_data;
 	(*status).weiss = tmp.bit;
 #endif
-#endif	// TEST_AVAILABLE_DIGITAL
+#endif // TEST_AVAILABLE_DIGITAL
 
 	LED_set(led_status);
-#endif	// !TEST_AVAILABLE
-#endif	// LED_AVAILABLE
+#endif // !TEST_AVAILABLE
+#endif // LED_AVAILABLE
 }
 
-#ifdef SENSOR_DISPLAY_AVAILABLE
+#ifdef DISPLAY_SENSOR_AVAILABLE
 /*!
  * Displayhandler fuer Sensoranzeige
  */
@@ -677,14 +705,14 @@ void sensor_display(void) {
 	display_printf("I=%04X M=%05d %05d", RC5_old, sensMouseX, sensMouseY);
 #else
 	display_printf("I=%04X", RC5_old);
-#endif	// MOUSE_AVAILABLE
+#endif // MOUSE_AVAILABLE
 #else
 #ifdef MOUSE_AVAILABLE
 	display_printf("M=%05d %05d", sensMouseX, sensMouseY);
-#endif	// MOUSE_AVAILABLE
-#endif	// RC5_AVAILABLE
+#endif // MOUSE_AVAILABLE
+#endif // RC5_AVAILABLE
 }
-#endif	// SENSOR_DISPLAY_AVAILABLE
+#endif // DISPLAY_SENSOR_AVAILABLE
 
 #ifdef DISPLAY_ODOMETRIC_INFO
 /*!
@@ -719,6 +747,6 @@ void odometric_display(void) {
 #else
 	display_printf("v_c: %3d", v_center);
 #endif // MEASURE_POSITION_ERRORS_AVAILABLE
-#endif	// BPS_AVAILABLE
+#endif // BPS_AVAILABLE
 }
-#endif	// DISPLAY_ODOMETRIC_INFO
+#endif // DISPLAY_ODOMETRIC_INFO

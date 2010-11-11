@@ -53,5 +53,5 @@ void cmps03_get_bearing(cmps03_t * pValue);
  * @param *pValue	Zeiger auf Datenablage
  */
 void cmps03_finish(cmps03_t * pValue);
-#endif	// CMPS03_AVAILABLE
-#endif	// CMPS03_H_
+#endif // CMPS03_AVAILABLE
+#endif // CMPS03_H_

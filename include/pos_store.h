@@ -29,12 +29,11 @@
 #define POS_STORE_H_
 
 #include "ct-Bot.h"
-#include "global.h"
-#include "bot-logic/bot-logik.h"
-#include "bot-2-bot.h"
-#include <stdlib.h>
 
 #ifdef POS_STORE_AVAILABLE
+#include "bot-logic/bot-logic.h"
+#include "bot-2-bot.h"
+#include <stdlib.h>
 
 #define POS_STORE_SIZE	64  /*!< (maximale) Groesse (pro Platz) */
 
@@ -64,7 +63,6 @@ typedef struct {
 	pos_store_size_t count;	/*!< Anzahl der Elemente im Speicher */
 	pos_store_size_t mask;	/*!< Groesse des Speichers - 1 (Anzahl der Eintraege - 1) */
 } pos_store_t;
-
 
 
 /*!
@@ -228,9 +226,9 @@ void pos_store_dump(pos_store_t * store);
  * Testet push(), pop() und dequeue()
  */
 void pos_store_test(void);
-#else	// MCU
+#else // MCU
 #define pos_store_test();	// NOP
-#endif	// PC
+#endif // PC
 
-#endif	// POS_STORE_AVAILABLE
-#endif	/*POS_STORE_H_*/
+#endif // POS_STORE_AVAILABLE
+#endif // POS_STORE_H_

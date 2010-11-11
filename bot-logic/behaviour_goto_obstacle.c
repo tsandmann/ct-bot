@@ -27,7 +27,9 @@
 //#define OLD_VERSION	/*!< Zu Testzwecken alte Version (1465) mit diesem define anschaltbar */
 
 #ifdef OLD_VERSION
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
+
+#ifdef BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
 #include <stdlib.h>
 #include <math.h>
 #include "math_utils.h"
@@ -36,11 +38,9 @@
 //#define DEBUG_GOTO_POS		// Schalter um recht viel Debug-Code anzumachen
 
 #ifndef DEBUG_GOTO_POS
-	#undef LOG_DEBUG
-	#define LOG_DEBUG(a, ...) {}
+#undef LOG_DEBUG
+#define LOG_DEBUG(a, ...) {}
 #endif
-
-#ifdef BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
 
 #ifdef MCU
 #ifndef SPEED_CONTROL_AVAILABLE
@@ -126,11 +126,13 @@ void bot_goto_obstacle(Behaviour_t * caller, int16_t distance, uint8_t parallel)
 	obst_state = 0;
 }
 
-#endif	// BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
+#endif // BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
 
-#else	// neue Version
+#else // neue Version
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
+
+#ifdef BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
 #include <stdlib.h>
 #include <math.h>
 #include "math_utils.h"
@@ -139,11 +141,10 @@ void bot_goto_obstacle(Behaviour_t * caller, int16_t distance, uint8_t parallel)
 //#define DEBUG_GOTO_OBSTACLE		// Schalter um recht viel Debug-Code anzumachen
 
 #ifndef DEBUG_GOTO_OBSTACLE
-	#undef LOG_DEBUG
-	#define LOG_DEBUG(a, ...) {}
+#undef LOG_DEBUG
+#define LOG_DEBUG(a, ...) {}
 #endif
 
-#ifdef BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
 
 #ifdef MCU
 #ifndef SPEED_CONTROL_AVAILABLE
@@ -253,7 +254,7 @@ void bot_goto_obstacle(Behaviour_t * caller, int16_t distance, uint8_t parallel)
 	obst_state = GOTO_DIST_STATE;
 }
 
-#endif	// BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
+#endif // BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
 
 
-#endif	// OLD_VERSION
+#endif // OLD_VERSION

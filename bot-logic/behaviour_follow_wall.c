@@ -18,27 +18,28 @@
  */
 
 /*!
- * @file 	behaviour_follow_wall.c
- * @brief 	Wandfolger Explorer; faehrt solange vorwaerts, bis er an eine Wand kommt, an die er sich gewisse Zeit wegdreht;
- *          nach links dreht er sich, wenn rechts eine Wand als naeher erkannt wird sonst nach rechts; es erfolgt
- *          hier auch eine Abgrundauswertung; wird erkannt dass entweder
- *          beide Abgrundsensoren den Abgrund detektieren oder der bot senkrecht zur Wand steht, so wird via Zeitzaehler
- *          ein Pseudo-Zufallswert bis 255 ausgewertet und danach die neue Drehrichtung links/ rechts ermittelt;
- *          zur Mindestdrehzeit wird ebenfalls immer dieser Zufallswert zuaddiert
- *          sehr sinnvoll mit diesem Explorer-Verhalten ist das hang_on-Verhalten, welches durch Vergleich mit Mausdaten
- *          ein Haengenbleiben erkennt, rueckwaerts faehrt und das hier registrierte Notverhalten startet. Dieses wiederum
- *          sorgt dafuer, dass der bot sich wegdreht und weiterfaehrt wie an einer Wand. Gleiches gilt fuer das Abgrundverhalten.
+ * \file 	behaviour_follow_wall.c
+ * \brief 	Wandfolger Explorer
  *
- * @author 	Frank Menzel (Menzelfr@gmx.net)
- * @date 	30.08.2007
+ * Faehrt solange vorwaerts, bis er an eine Wand kommt, an die er sich gewisse Zeit wegdreht;
+ * nach links dreht er sich, wenn rechts eine Wand als naeher erkannt wird sonst nach rechts; es erfolgt
+ * hier auch eine Abgrundauswertung; wird erkannt dass entweder
+ * beide Abgrundsensoren den Abgrund detektieren oder der bot senkrecht zur Wand steht, so wird via Zeitzaehler
+ * ein Pseudo-Zufallswert bis 255 ausgewertet und danach die neue Drehrichtung links/ rechts ermittelt;
+ * zur Mindestdrehzeit wird ebenfalls immer dieser Zufallswert zuaddiert
+ * sehr sinnvoll mit diesem Explorer-Verhalten ist das hang_on-Verhalten, welches durch Vergleich mit Mausdaten
+ * ein Haengenbleiben erkennt, rueckwaerts faehrt und das hier registrierte Notverhalten startet. Dieses wiederum
+ * sorgt dafuer, dass der bot sich wegdreht und weiterfaehrt wie an einer Wand. Gleiches gilt fuer das Abgrundverhalten.
+ *
+ * \author 	Frank Menzel (Menzelfr@gmx.net)
+ * \date 	30.08.2007
  */
 
-#include "bot-logic/bot-logik.h"
-
-#include "timer.h"
-#include <stdlib.h>
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_FOLLOW_WALL_AVAILABLE
+#include "timer.h"
+#include <stdlib.h>
 
 /* Zustaende fuer check_wall_behaviour-Verhalten */
 #define CHECK_FOR_BACK		        1
@@ -60,11 +61,11 @@ static int8_t border_follow_wall_fired = False;
  * TIMER_GET_TICKCOUNT_8 raufaddiert, kann also bis 255 mehr sein */
 #define DELAY_NORMAL     100       // normale Wartezeit
 #ifdef PC
-	#define DELAY_AFTER_HOLE 300       // Wartezeit nach Abgrund
-	#define DELAY_AFTER_HOLE_VERT 400
+#define DELAY_AFTER_HOLE 300       // Wartezeit nach Abgrund
+#define DELAY_AFTER_HOLE_VERT 400
 #else
-	#define DELAY_AFTER_HOLE 150       // Wartezeit nach Abgrund
-	#define DELAY_AFTER_HOLE_VERT 200
+#define DELAY_AFTER_HOLE 150       // Wartezeit nach Abgrund
+#define DELAY_AFTER_HOLE_VERT 200
 #endif	// PC
 /* Delay-Time, solange wird mindestens gedreht, gesetzt im Prog */
 static uint16_t delay_time_turn = 0;
@@ -81,8 +82,8 @@ static int16_t wall_side = 0; // <0 Hindernis links, sonst rechts
 
 /*!
  * ermittelt Zufallswert je nach Zeitzaehler
- * @param compval	Zeit-Vergleichswert
- * @return  		liefert 1 oder -1 in Abhaengigkeit der abgelaufenen Zeit als Zufallskomponente
+ * \param compval	Zeit-Vergleichswert
+ * \return  		liefert 1 oder -1 in Abhaengigkeit der abgelaufenen Zeit als Zufallskomponente
  */
 static int8_t get_randomside(uint8_t compval) {
 	return (int8_t) (TIMER_GET_TICKCOUNT_8 > compval ? -1 : 1);
@@ -119,7 +120,7 @@ void border_follow_wall_handler(void) {
  * Das eigentliche Wandfolgerverhalten; Bot faehrt gerade voraus bis zu einer Wand und dreht sich gewisse Zeit solange,
  * bis keine Wand mehr in geringem Abstand gefunden wird; trifft er senkrecht auf eine Wand, wird per Zufall die Seite
  * ermittelt, wohin sich der Bot wegdreht (gilt auch fuer Abgrund); das Speiel geht wieder von vorn los
- * @param *data  der Verhaltensdatensatz
+ * \param *data  der Verhaltensdatensatz
  */
 void bot_follow_wall_behaviour(Behaviour_t * data) {
 	int16_t sensor = 0; // Merker fuer Abstandssensor je nach Wand links oder rechts
@@ -229,9 +230,9 @@ void bot_follow_wall_behaviour(Behaviour_t * data) {
 
 /*!
  * Faehrt vorwaerts bis zu einer Wand, von die er sich wegdreht
- * @param *check	Abbruchfunktion; wenn diese True liefert wird das Verhalten beendet sonst endlos
+ * \param *check	Abbruchfunktion; wenn diese True liefert wird das Verhalten beendet sonst endlos
  * 					einfach NULL uebergeben, wenn keine definiert ist
- * @param *caller	Verhaltensdatensatz
+ * \param *caller	Verhaltensdatensatz
  */
 void bot_follow_wall(Behaviour_t * caller, uint8_t (*check)(void)) {
 	// Umschalten zum eigentlichen Verhalten
@@ -260,12 +261,12 @@ void bot_follow_wall(Behaviour_t * caller, uint8_t (*check)(void)) {
 /*!
  * Botenverhalten zum Aufruf via Remotecall ohne weitere params, d.h. da kein Abbruchverhalten
  * uebergeben wird, ist dies dann ein Endlos-Explorerverhalten
- * @param *caller Verhaltensdatensatz
+ * \param *caller Verhaltensdatensatz
  */
 void bot_do_wall_explore(Behaviour_t * caller) {
 	bot_follow_wall(caller, NULL);
 }
-#endif	// BEHAVIOUR_REMOTECALL_AVAILABLE
-#endif	// BEHAVIOUR_FOLLOW_WALL_AVAILABLE
+#endif // BEHAVIOUR_REMOTECALL_AVAILABLE
+#endif // BEHAVIOUR_FOLLOW_WALL_AVAILABLE
 
 

@@ -19,27 +19,23 @@
 
 
 /*!
- * @file 	behaviour_classify_objects.c
- * @brief 	Teilt Objekte nach ihrer Farbe in Klassen ein und
- * 			transportiert sie ins Lager der Klasse.
- * 			Damit die Objekte erkannt werden koennen, muessen eine
- * 			farbige Grundflaeche haben, die bis unter die Liniensensoren
- * 			reicht (z.B. runde Pappscheibe unter einer Dose).
- * 			Den Schwellwert fuer die Klasseneinteilung muss man derzeit im
- * 			Array targets fest einstellen, ebenso die Zielpositionen.
- * 			Objekte gleicher Klasse werden mit einem Abstand von 10 cm in
- * 			positiver Y-Richtung nebeneinander gestellt.
- * 			Funktioniert derzeit nur mit Catch-Pillar-Version 3.
+ * \file 	behaviour_classify_objects.c
+ * \brief 	Teilt Objekte nach ihrer Farbe in Klassen ein und transportiert sie ins Lager der Klasse.
  *
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	15.06.2008
+ * Damit die Objekte erkannt werden koennen, muessen eine farbige Grundflaeche haben, die bis unter die Liniensensoren
+ * reicht (z.B. runde Pappscheibe unter einer Dose).
+ * Den Schwellwert fuer die Klasseneinteilung muss man derzeit im Array targets fest einstellen, ebenso die Zielpositionen.
+ * Objekte gleicher Klasse werden mit einem Abstand von 10 cm in positiver Y-Richtung nebeneinander gestellt.
+ * Funktioniert derzeit nur mit Catch-Pillar-Version 3.
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	15.06.2008
  */
 
-#include "bot-logic/bot-logik.h"
-#include <stdlib.h>
-#include "log.h"
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE
+#include <stdlib.h>
+#include "log.h"
 
 #define CO_SEARCH	0
 #define CO_CATCH	1
@@ -55,15 +51,15 @@ static struct {
 	const int16_t treshold; /*!< maximale Helligkeit des Objekts fuer diese Klasse */
 	int16_t x;				/*!< X-Koordinate [mm] fuer Objekte dieser Klasse */
 	int16_t y;				/*!< Y-Kooridnate [mm] fuer Objekte dieser Klasse, wird inkrementiert */
-} targets[] = {
-		{0x200, 0, -400}, 	// blau
-		{0x3FF, 200, -400}	// schwarz
+} PACKED targets[] = {
+		{0x200, 0, -400}, // blau
+		{0x3FF, 200, -400} // schwarz
 };
 
 /*!
  * Teilt Objekte nach ihrer Farbe in Klassen ein und
  * transportiert sie ins Lager der Klasse.
- * @param *data	Der Verhaltensdatensatz
+ * \param *data	Der Verhaltensdatensatz
  */
 void bot_classify_objects_behaviour(Behaviour_t * data) {
 	static uint8_t measure_count;
@@ -134,11 +130,11 @@ void bot_classify_objects_behaviour(Behaviour_t * data) {
 /*!
  * Teilt Objekte nach ihrer Farbe in Klassen ein und
  * transportiert sie ins Lager der Klasse.
- * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * \param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_classify_objects(Behaviour_t * caller) {
 	switch_to_behaviour(caller, bot_classify_objects_behaviour, OVERRIDE);
 	state = CO_SEARCH;
 }
 
-#endif	// BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE
+#endif // BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE

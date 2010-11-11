@@ -25,7 +25,7 @@
  */
 
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
 #include <math.h>
@@ -89,4 +89,4 @@ void bot_turn_test(Behaviour_t * caller) {
 	turn_count = 0;
 }
 
-#endif	// BEHAVIOUR_TURN_TEST_AVAILABLE
+#endif // BEHAVIOUR_TURN_TEST_AVAILABLE

@@ -23,10 +23,11 @@
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	26.12.05
  */
-#include "ct-Bot.h"
 
 #ifdef PC
+#include "ct-Bot.h"
 
+#ifdef MOUSE_AVAILABLE
 #include "mouse.h"
 
 /*!
@@ -51,4 +52,5 @@ uint8_t mouse_get_squal(void) {
 	return 70;
 }
 
-#endif	// PC
+#endif // MOUSE_AVAILABLE
+#endif // PC

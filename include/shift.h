@@ -57,4 +57,4 @@ void shift_data_out(uint8_t data, uint8_t latch_data, uint8_t latch_store);
  */
 void shift_data(uint8_t data, uint8_t latch_data);
 
-#endif	// SHIFT_H_
+#endif // SHIFT_H_

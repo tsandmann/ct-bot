@@ -26,8 +26,6 @@
  * @date 	03.11.2006
  */
 
-#include "bot-logic/bot-logik.h"
-
 #ifndef BEHAVIOUR_FOLLOW_LINE_H_
 #define BEHAVIOUR_FOLLOW_LINE_H_
 
@@ -51,5 +49,5 @@ void bot_follow_line_behaviour(Behaviour_t * data);
  * @param *caller Verhaltensdatensatz des Aufrufers
  */
 void bot_follow_line(Behaviour_t * caller);
-#endif	// BEHAVIOUR_FOLLOW_LINE_AVAILABLE
-#endif	/*BEHAVIOUR_FOLLOW_LINE_H_*/
+#endif // BEHAVIOUR_FOLLOW_LINE_AVAILABLE
+#endif // BEHAVIOUR_FOLLOW_LINE_H_

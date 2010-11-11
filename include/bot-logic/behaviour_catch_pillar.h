@@ -29,9 +29,6 @@
 #ifndef BEHAVIOUR_CATCH_PILLAR_H_
 #define BEHAVIOUR_CATCH_PILLAR_H_
 
-#include "ct-Bot.h"
-#include "bot-logic/bot-logik.h"
-
 #ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 /*! 
  * Fange eine Dose ein 
@@ -64,5 +61,5 @@ void bot_unload_pillar_behaviour(Behaviour_t * data);
  */
 void bot_unload_pillar(Behaviour_t * caller);
 
-#endif	// BEHAVIOUR_CATCH_PILLAR_AVAILABLE
-#endif	/*BEHAVIOUR_CATCH_PILLAR_H_*/
+#endif // BEHAVIOUR_CATCH_PILLAR_AVAILABLE
+#endif // BEHAVIOUR_CATCH_PILLAR_H_

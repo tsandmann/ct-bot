@@ -19,44 +19,45 @@
 
 
 /*!
- * @file 	behaviour_drive_chess.c
- * @brief 	Der Bot spielt Schach! Das Schachverhalten ermoeglicht die manuelle Eingabe 
- *          eines Schachzuges des Spielers 1 (weiss) ueber das Screeninterface. Nach Betaetigen 
- *          der GO-Taste zieht der Bot-Spieler und der Bot faehrt auf dem Schachbrett diesen
- *          Zug nach. Nun ist der menschliche Spieler wieder am Zug via Screeneingabe bzw. drueckt sofort GO,
- *          um fuer sich den Zug machen zu lassen. Am besten ist es (weil ja die Schachfiguren nicht visualisiert werden), 
- *          sich parallel dazu ein echtes Schachbrett aufzubauen und manuell die Zuege nachzuvollziehen. In meinem ersten Test 
- *          musste ich eine Niederlage gegen den Bot einstecken:-)
- *          Fuer das Verhalten ist das Chess-Layout zu laden, damit wenigstens die Schachfelder visualisiert werden und damit die
- *          Botfahrten der gegnerischen Schachzuege. Die gruenen Felder stehen hierbei stellvertretend fuer die weissen Felder.
- *          Inspiriert zu diesem Verhalten wurde ich durch folgende Seiten:
- *          http://bralug.de/wiki/BLIT2008-Board_spielt_Schach
- *          Detailliertes zu dem Micro-Max Schach ist hier zu finden: 
- *          http://home.hccnet.nl/h.g.muller/max-src2.html
- * 
- *          Brainstorming fuer moegliche Erweiterungen:
- *          Der Bot koennte gegen den anderen spielen ohne Mensch, d.h. Bot 1 ist Spieler 1 und der andere der Gegenspieler.
- *          Jeder bot macht jeweils einen Zug und faehrt diesen ab. Danach ist der andere dran. Dies muesste/koennte dann ueber die
- *          bot_2_bot-Kommunikation laufen. Noch schoener waere es natuerlich, echte Spielfiguren auf dem Java3D-Schachbrett zu haben 
- *          (oder zuerst auch einfache Objekte), wobei der Bot sich jeweils die Figur greift (bot_catch_pillar) und an der Zielposition
- *          ablaedt (bot_unload_pillar)...
+ * \file 	behaviour_drive_chess.c
+ * \brief	Der Bot spielt Schach
  *
- * @author 	Frank Menzel (Menzelfr@gmx.de), H.G. Muller (Micro-Max Schach)
- * @date 	15.09.2009
+ * Das Schachverhalten ermoeglicht die manuelle Eingabe
+ * eines Schachzuges des Spielers 1 (weiss) ueber das Screeninterface. Nach Betaetigen
+ * der GO-Taste zieht der Bot-Spieler und der Bot faehrt auf dem Schachbrett diesen
+ * Zug nach. Nun ist der menschliche Spieler wieder am Zug via Screeneingabe bzw. drueckt sofort GO,
+ * um fuer sich den Zug machen zu lassen. Am besten ist es (weil ja die Schachfiguren nicht visualisiert werden),
+ * sich parallel dazu ein echtes Schachbrett aufzubauen und manuell die Zuege nachzuvollziehen. In meinem ersten Test
+ * musste ich eine Niederlage gegen den Bot einstecken:-)
+ * Fuer das Verhalten ist das Chess-Layout zu laden, damit wenigstens die Schachfelder visualisiert werden und damit die
+ * Botfahrten der gegnerischen Schachzuege. Die gruenen Felder stehen hierbei stellvertretend fuer die weissen Felder.
+ * Inspiriert zu diesem Verhalten wurde ich durch folgende Seiten:
+ * http://bralug.de/wiki/BLIT2008-Board_spielt_Schach
+ * Detailliertes zu dem Micro-Max Schach ist hier zu finden:
+ * http://home.hccnet.nl/h.g.muller/max-src2.html
+ * 
+ * Brainstorming fuer moegliche Erweiterungen:
+ * Der Bot koennte gegen den anderen spielen ohne Mensch, d.h. Bot 1 ist Spieler 1 und der andere der Gegenspieler.
+ * Jeder bot macht jeweils einen Zug und faehrt diesen ab. Danach ist der andere dran. Dies muesste/koennte dann ueber die
+ * bot_2_bot-Kommunikation laufen. Noch schoener waere es natuerlich, echte Spielfiguren auf dem Java3D-Schachbrett zu haben
+ * (oder zuerst auch einfache Objekte), wobei der Bot sich jeweils die Figur greift (bot_catch_pillar) und an der Zielposition
+ * ablaedt (bot_unload_pillar)...
+ *
+ * \author 	Frank Menzel (Menzelfr@gmx.de), H.G. Muller (Micro-Max Schach)
+ * \date 	15.09.2009
  */
 
-#include "bot-logic/available_behaviours.h"
+#include "bot-logic/bot-logic.h"
+
+#ifdef BEHAVIOUR_DRIVE_CHESS_AVAILABLE
 #include "ui/available_screens.h"
-#include "bot-logic/bot-logik.h"
-#include <stdlib.h>
 #include "log.h"
 #include "rc5-codes.h"
 #include "display.h"
+#include <stdlib.h>
 #ifdef MCU
 #include <avr/pgmspace.h>
 #endif // MCU
-
-#ifdef BEHAVIOUR_DRIVE_CHESS_AVAILABLE
 
 //#define DEBUG_CHESS	// Schalter fuer Debugausgaben
 
@@ -797,12 +798,12 @@ void drive_chess_display(void) {
 	display_cursor(2, 1);
 	display_printf("Zug : %c%c   %c%c",d_0,d_1,d_2,d_3);
 	display_cursor(3, 1);
-	display_printf("CL BLUE/Lv CH+-");
+	display_puts("CL BLUE/Lv CH+-");
 	display_cursor(4, 1);
-	display_printf("Go PLAY/New STOP");
+	display_puts("Go PLAY/New STOP");
 
 	drivechess_disp_key_handler(); // aufrufen des Key-Handlers
 }
 #endif	// DISPLAY_DRIVE_CHESS_AVAILABLE
 
-#endif	// BEHAVIOUR_DRIVE_CHESS_AVAILABLE
+#endif // BEHAVIOUR_DRIVE_CHESS_AVAILABLE

@@ -10,27 +10,27 @@
  * @brief 	globale Schalter fuer die einzelnen Verhalten
  */
 
-//#define BEHAVIOUR_SIMPLE_AVAILABLE	/*!< sind die Beispielverhalten vorhanden? */
-//#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE	/*!< Demoverhalten im Quadrat fahren vorhanden? */
+//#define BEHAVIOUR_SIMPLE_AVAILABLE /*!< sind die Beispielverhalten vorhanden? */
+//#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE /*!< Demoverhalten im Quadrat fahren vorhanden? */
 
-#define BEHAVIOUR_AVOID_BORDER_AVAILABLE	/*!< Abgruenden ausweichen vorhanden? */
-#define BEHAVIOUR_AVOID_COL_AVAILABLE	/*!< Hindernis ausweichen vorhanden? */
-//#define BEHAVIOUR_HANG_ON_AVAILABLE	/*!< Erkennen des Haengenbleibens als Notfallverhalten? */
-//#define BEHAVIOUR_GOTO_AVAILABLE	/*!< goto vorhanden? */
-//#define BEHAVIOUR_GOTOXY_AVAILABLE	/*!< gotoxy vorhanden? */
-#define BEHAVIOUR_GOTO_POS_AVAILABLE	/*!< goto_pos vorhanden? */
-//#define BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE	/*!< goto_obstacle vorhanden? */
-#define BEHAVIOUR_TURN_AVAILABLE	/*!< turn vorhanden? */
-//#define BEHAVIOUR_TURN_TEST_AVAILABLE	/*!< turn_test vorhanden? */
+#define BEHAVIOUR_AVOID_BORDER_AVAILABLE /*!< Abgruenden ausweichen vorhanden? */
+#define BEHAVIOUR_AVOID_COL_AVAILABLE /*!< Hindernis ausweichen vorhanden? */
+//#define BEHAVIOUR_HANG_ON_AVAILABLE /*!< Erkennen des Haengenbleibens als Notfallverhalten? */
+//#define BEHAVIOUR_GOTO_AVAILABLE /*!< goto vorhanden? */
+//#define BEHAVIOUR_GOTOXY_AVAILABLE /*!< gotoxy vorhanden? */
+#define BEHAVIOUR_GOTO_POS_AVAILABLE /*!< goto_pos vorhanden? */
+//#define BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE /*!< goto_obstacle vorhanden? */
+#define BEHAVIOUR_TURN_AVAILABLE /*!< turn vorhanden? */
+//#define BEHAVIOUR_TURN_TEST_AVAILABLE /*!< turn_test vorhanden? */
 //#define BEHAVIOUR_TEST_ENCODER_AVAILABLE /*!< Encoder-Test Verhalten vorhanden? */
 
-#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE	/*!< Strecke fahren vorhanden ?*/
+#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE /*!< Strecke fahren vorhanden ?*/
 
-//#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE	/*!< Distanzesensorasuwertung vorhanden? */
+//#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE /*!< Distanzesensorasuwertung vorhanden? */
 
-#define BEHAVIOUR_SCAN_AVAILABLE	/*!< Gegend scannen vorhanden? */
-#define BEHAVIOUR_SOLVE_MAZE_AVAILABLE	/*!< Wandfolger vorhanden? */
-#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE	/*!< Linienfolger vorhanden? */
+#define BEHAVIOUR_SCAN_AVAILABLE /*!< Gegend scannen vorhanden? */
+#define BEHAVIOUR_SOLVE_MAZE_AVAILABLE /*!< Wandfolger vorhanden? */
+//#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE	/*!< Linienfolger vorhanden? */
 //#define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE /*!< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernissen klarkommt */
 
 #define BEHAVIOUR_SERVO_AVAILABLE 	/*!< Kontrollverhalten fuer die Servos */
@@ -41,21 +41,21 @@
 //#define BEHAVIOUR_OLYMPIC_AVAILABLE	/*!< Olympiadenverhalten vorhanden? */
 
 #define BEHAVIOUR_CATCH_PILLAR_AVAILABLE /*!< Suche eine Dose und fange sie ein */
-//#define BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE	/*!< Trennt zwei Arten von Dosen (hell / dunkel) */
+//#define BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE /*!< Trennt zwei Arten von Dosen (hell / dunkel) */
 
-//#define BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE	/*!< verfolge ein (bewegliches) Objekt */
+//#define BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE /*!< verfolge ein (bewegliches) Objekt */
 
 //#define BEHAVIOUR_FOLLOW_WALL_AVAILABLE /*!< Follow Wall Explorer Verhalten */
 
 //#define BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE /*!< Transport-Pillar Verhalten */
 
 #define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-Kommandos entgegen? */
-//#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE	/*!< Deaktivieren eines Verhaltens wenn Abbruchbedingung erfuellt */
+//#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE /*!< Deaktivieren eines Verhaltens wenn Abbruchbedingung erfuellt */
 
 //#define BEHAVIOUR_GET_UTILIZATION_AVAILABLE	/*!< CPU-Auslastung eines Verhaltens messen */
 
-//#define BEHAVIOUR_CALIBRATE_PID_AVAILABLE	/*!< Kalibrierungsverhalten fuer Motorregelung vorhanden? */
-//#define BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE	/*!< Kalibrierungsverhalten fuer Distanzsensoren vorhanden? */
+//#define BEHAVIOUR_CALIBRATE_PID_AVAILABLE /*!< Kalibrierungsverhalten fuer Motorregelung vorhanden? */
+//#define BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE /*!< Kalibrierungsverhalten fuer Distanzsensoren vorhanden? */
 
 #define BEHAVIOUR_DELAY_AVAILABLE /*!< Delay-Routinen als Verhalten */
 
@@ -65,162 +65,173 @@
 
 //#define BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE /*!< Linienfolger ueber Kreuzungen zum Ziel */
 
-//#define BEHAVIOUR_SCAN_BEACONS_AVAILABLE	/*!< Suchen von Landmarken zur Lokalisierung */
+//#define BEHAVIOUR_SCAN_BEACONS_AVAILABLE /*!< Suchen von Landmarken zur Lokalisierung */
 
-/* Aufgrund einer ganzen reihe von Abhaengigkeiten sollte man beim Versuch Speicher
+//#define BEHAVIOUR_UBASIC_AVAILABLE /*!< uBasic Verhalten */
+
+/* Aufgrund einer ganzen Reihe von Abhaengigkeiten sollte man beim Versuch Speicher
  * zu sparen, zuerst mal bei den Hauptverhalten ausmisten, sonst kommen die
  * Unterverhalten durch die Hintertuer wieder rein */
 #ifndef MAP_AVAILABLE
-	#undef BEHAVIOUR_SCAN_AVAILABLE
-	#undef BEHAVIOUR_DRIVE_AREA_AVAILABLE
-	#undef BEHAVIOUR_PATHPLANING_AVAILABLE
-#endif
+#undef BEHAVIOUR_SCAN_AVAILABLE
+#undef BEHAVIOUR_DRIVE_AREA_AVAILABLE
+#undef BEHAVIOUR_PATHPLANING_AVAILABLE
+#endif // MAP_AVAILABLE
+
+#ifdef BEHAVIOUR_UBASIC_AVAILABLE
+#ifndef BOT_FS_AVAILABLE
+#warning "uBasic-Verhalten geht nur, wenn BOT_FS_AVAILABLE"
+#undef BEHAVIOUR_UBASIC_AVAILABLE
+#endif // BOT_FS_AVAILABLE
+#endif // BEHAVIOUR_UBASIC_AVAILABLE
 
 #ifndef POS_STORE_AVAILABLE
 #ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
-	#warning "drive_area() geht nur, wenn POS_STORE_AVAILABLE"
-	#undef BEHAVIOUR_DRIVE_AREA_AVAILABLE
-#endif
+#warning "drive_area() geht nur, wenn POS_STORE_AVAILABLE"
+#undef BEHAVIOUR_DRIVE_AREA_AVAILABLE
+#endif // !POS_STORE_AVAILABLE
+
 #ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
-	#warning "Pfadplanung geht nur, wenn POS_STORE_AVAILABLE"
-	#undef BEHAVIOUR_PATHPLANING_AVAILABLE
-#endif
+#warning "Pfadplanung geht nur, wenn POS_STORE_AVAILABLE"
+#undef BEHAVIOUR_PATHPLANING_AVAILABLE
+#endif // BEHAVIOUR_PATHPLANING_AVAILABLE
+
 #ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
-	#warning "bot_line_shortest_way geht nur, wenn POS_STORE_AVAILABLE"
-	#undef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
+#warning "bot_line_shortest_way geht nur, wenn POS_STORE_AVAILABLE"
+#undef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
 #endif
-#endif
+#endif // BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
 
 #ifdef BEHAVIOUR_DRIVE_CHESS_AVAILABLE
-	#define BEHAVIOUR_GOTO_POS_AVAILABLE
+#define BEHAVIOUR_GOTO_POS_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
-	#define BEHAVIOUR_GOTO_POS_AVAILABLE
-	#define BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
-	#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
-#endif
+#define BEHAVIOUR_GOTO_POS_AVAILABLE
+#define BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
+#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
+#endif // BEHAVIOUR_DRIVE_AREA_AVAILABLE
 
 #ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
-    #define BEHAVIOUR_DRIVE_STACK_AVAILABLE
+#define BEHAVIOUR_DRIVE_STACK_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_GOTOXY_AVAILABLE
-	#define BEHAVIOUR_TURN_AVAILABLE
+#define BEHAVIOUR_TURN_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-	#define BEHAVIOUR_GOTO_POS_AVAILABLE
+#define BEHAVIOUR_GOTO_POS_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
-	#define BEHAVIOUR_GOTO_POS_AVAILABLE
-	#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
-	#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE
-#endif
+#define BEHAVIOUR_GOTO_POS_AVAILABLE
+#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
+#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE
+#endif // BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
 
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
-	#define BEHAVIOUR_TURN_AVAILABLE
-	#define BEHAVIOUR_FACTOR_WISH_AVAILABLE
-#endif
+#define BEHAVIOUR_TURN_AVAILABLE
+#define BEHAVIOUR_FACTOR_WISH_AVAILABLE
+#endif // BEHAVIOUR_AVOID_COL_AVAILABLE
 
 #ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
-	#define BEHAVIOUR_TURN_AVAILABLE
+#define BEHAVIOUR_TURN_AVAILABLE
 #endif
 
 #ifndef POS_STORE_AVAILABLE
-	#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-		#warning "DriveStack geht nur, wenn POS_STORE_AVAILABLE"
-	#endif
-	#undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+#warning "DriveStack geht nur, wenn POS_STORE_AVAILABLE"
 #endif
+#undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
+#endif // !POS_STORE_AVAILABLE
 
 #ifdef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
-  #define BEHAVIOUR_FOLLOW_LINE_AVAILABLE
-  #define BEHAVIOUR_GOTO_POS_AVAILABLE
-  #define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
-  #define BEHAVIOUR_SOLVE_MAZE_AVAILABLE
-#endif
+#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE
+#define BEHAVIOUR_GOTO_POS_AVAILABLE
+#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
+#define BEHAVIOUR_SOLVE_MAZE_AVAILABLE
+#endif // BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
 
 #ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
-	#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
-	#define BEHAVIOUR_TURN_AVAILABLE
-#endif
+#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+#define BEHAVIOUR_TURN_AVAILABLE
+#endif // BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 
 #ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
-	#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
-	#define BEHAVIOUR_TURN_AVAILABLE
-#endif
+#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+#define BEHAVIOUR_TURN_AVAILABLE
+#endif // BEHAVIOUR_OLYMPIC_AVAILABLE
 
 #ifdef BEHAVIOUR_SIMPLE_AVAILABLE
-	#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
-	#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
-	#define BEHAVIOUR_DELAY_AVAILABLE
-#endif
+#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+#define BEHAVIOUR_DELAY_AVAILABLE
+#endif // BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 
 #ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
-	#define BEHAVIOUR_TURN_AVAILABLE
-	#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
-#endif
+#define BEHAVIOUR_TURN_AVAILABLE
+#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+#endif // BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
 
 #ifdef BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE
-	#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE
+#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
-	#define BEHAVIOUR_SERVO_AVAILABLE
-	#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
-#endif
+#define BEHAVIOUR_SERVO_AVAILABLE
+#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
+#endif // BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 
 #ifdef BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE
-	#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
-	#define BEHAVIOUR_FOLLOW_WALL_AVAILABLE
-#endif
+#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
+#define BEHAVIOUR_FOLLOW_WALL_AVAILABLE
+#endif // BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE
 
 #ifndef MCU
-	#undef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
-	#undef BEHAVIOUR_GET_UTILIZATION_AVAILABLE
-#endif
+#undef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+#undef BEHAVIOUR_GET_UTILIZATION_AVAILABLE
+#endif // MCU
 
 #ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
-	#define SPEED_CONTROL_AVAILABLE			// Wenn die Regelung kalibriert werden soll, muss sie auch an sein!
-	#define DISPLAY_REGELUNG_AVAILABLE		// speichert Ist-Speed global
-	#define ADJUST_PID_PARAMS				// ja also die Parameter muessen schon einstellbar sein...
-#endif
+#define SPEED_CONTROL_AVAILABLE		// Wenn die Regelung kalibriert werden soll, muss sie auch an sein!
+#define DISPLAY_REGELUNG_AVAILABLE	// speichert Ist-Speed global
+#define ADJUST_PID_PARAMS			// ja also die Parameter muessen schon einstellbar sein...
+#endif // BEHAVIOUR_CALIBRATE_PID_AVAILABLE
 
 #ifdef BEHAVIOUR_SERVO_AVAILABLE
-	#define BEHAVIOUR_DELAY_AVAILABLE
+#define BEHAVIOUR_DELAY_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
-	#define BEHAVIOUR_GOTO_POS_AVAILABLE
+#define BEHAVIOUR_GOTO_POS_AVAILABLE
 #endif
 #ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
-	#define BEHAVIOUR_TURN_AVAILABLE
+#define BEHAVIOUR_TURN_AVAILABLE
 #endif
 
 #ifdef BEHAVIOUR_TURN_AVAILABLE
-	#define BEHAVIOUR_DELAY_AVAILABLE
+#define BEHAVIOUR_DELAY_AVAILABLE
 #endif
 
 #ifndef MEASURE_MOUSE_AVAILABLE
-	#undef BEHAVIOUR_HANG_ON_AVAILABLE
+#undef BEHAVIOUR_HANG_ON_AVAILABLE
 #endif
 
 #ifndef OS_AVAILABLE
-	#undef BEHAVIOUR_GET_UTILIZATION_AVAILABLE
+#undef BEHAVIOUR_GET_UTILIZATION_AVAILABLE
 #endif
 
 #ifndef BPS_AVAILABLE
-	#undef BEHAVIOUR_SCAN_BEACONS_AVAILABLE
+#undef BEHAVIOUR_SCAN_BEACONS_AVAILABLE
 #endif
 
 #ifdef MCU
 #ifndef SPEED_CONTROL_AVAILABLE
-	// goto_pos geht nur, wenn wir uns auf die eingestellte Geschwindigkeit verlassen koennen
+// goto_pos geht nur, wenn wir uns auf die eingestellte Geschwindigkeit verlassen koennen
 #ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
 #warning "GotoPos geht nur, wenn SPEED_CONTROL_AVAILABLE"
 #endif
@@ -230,8 +241,8 @@
 #endif
 #undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 #undef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
-#endif	// SPEED_CONTROL_AVAILABLE
-#endif	// MCU
+#endif // SPEED_CONTROL_AVAILABLE
+#endif // MCU
 
 #ifndef BEHAVIOUR_GOTO_POS_AVAILABLE
 #undef BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
@@ -271,7 +282,7 @@
 
 #include "bot-logic/behaviour_follow_object.h"
 
-#include "bot-logic/remote_calls.h"
+#include "bot-logic/behaviour_remotecall.h"
 
 #include "bot-logic/behaviour_follow_wall.h"
 
@@ -299,5 +310,7 @@
 
 #include "bot-logic/behaviour_test_encoder.h"
 
-#endif	// BEHAVIOUR_AVAILABLE
-#endif	/*AVAILABLE_BEHAVIOURS_H_*/
+#include "bot-logic/behaviour_ubasic.h"
+
+#endif // BEHAVIOUR_AVAILABLE
+#endif // AVAILABLE_BEHAVIOURS_H_

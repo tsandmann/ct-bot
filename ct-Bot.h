@@ -18,13 +18,13 @@
  */
 
 /*!
- * @file 	ct-Bot.h
- * @brief 	globale Schalter fuer die einzelnen Bot-Funktionalitaeten
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.2005
+ * \file 	ct-Bot.h
+ * \brief 	globale Schalter fuer die einzelnen Bot-Funktionalitaeten
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	26.12.2005
  */
-#ifndef CT_BOT_H_DEF
-#define CT_BOT_H_DEF
+#ifndef CT_BOT_H_
+#define CT_BOT_H_
 
 /************************************************************
 * Module switches, to make code smaller if features are not needed
@@ -38,12 +38,11 @@
 
 //#define CREATE_TRACEFILE_AVAILABLE	/*!< Aktiviert das Schreiben einer Trace-Datei (nur PC) */
 
-
 #define LED_AVAILABLE		/*!< LEDs aktiv */
 
 #define IR_AVAILABLE		/*!< Infrarot Fernbedienung aktiv */
 #define RC5_AVAILABLE		/*!< Key-Mapping fuer IR-RC aktiv */
-//#define KEYPAD_AVAILABLE	/*!< Keypad-Eingabe vorhanden? */
+#define KEYPAD_AVAILABLE	/*!< Keypad-Eingabe vorhanden? */
 
 #define BOT_2_SIM_AVAILABLE	/*!< Soll der Bot mit dem Sim kommunizieren? */
 //#define BOT_2_BOT_AVAILABLE	/*!< Sollen Bots untereinander kommunizieren? */
@@ -51,8 +50,8 @@
 
 //#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit im s und ms? */
 
-#define DISPLAY_AVAILABLE	/*!< Display aktiv */
-#define DISPLAY_REMOTE_AVAILABLE /*!< Sende LCD Anzeigedaten an den Simulator */
+#define DISPLAY_AVAILABLE			/*!< Display aktiv */
+#define DISPLAY_REMOTE_AVAILABLE	/*!< Sende LCD Anzeigedaten an den Simulator */
 
 #define MEASURE_MOUSE_AVAILABLE			/*!< Geschwindigkeiten werden aus den Maussensordaten berechnet */
 //#define MEASURE_COUPLED_AVAILABLE		/*!< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
@@ -78,7 +77,7 @@
 #define POS_STORE_AVAILABLE		/*!< Positionsspeicher vorhanden */
 
 //#define MAP_AVAILABLE			/*!< Aktiviert die Kartographie */
-//#define MAP_2_SIM_AVAILABLE	/*!< Sendet die Map zur Anzeige an den Sim */
+#define MAP_2_SIM_AVAILABLE	/*!< Sendet die Map zur Anzeige an den Sim */
 
 //#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
 //#define ADJUST_PID_PARAMS		/*!< macht PID-Paramter zur Laufzeit per FB einstellbar */
@@ -91,11 +90,12 @@
 //#define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung */
 //#define SPI_AVAILABLE			/*!< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 //#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
+//#define BOT_FS_AVAILABLE		/*!< Aktiviert das Dateisystem BotFS */
 #define OS_AVAILABLE			/*!< Aktiviert BotOS fuer Threads und Scheduling */
 
 //#define EEPROM_EMU_AVAILABLE	/*!< Aktiviert die EEPROM-Emulation fuer PC */
 
-// Achtung, Linkereinstellungen anpassen !!!!! (siehe Documentation/Bootloader.html)!
+// Achtung, Linkereinstellungen anpassen! (siehe Documentation/Bootloader.html)
 //#define BOOTLOADER_AVAILABLE	/*!< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders. Achtung, Linkereinstellungen anpassen (siehe mcu/bootloader.c)! */
 
 /************************************************************
@@ -156,10 +156,10 @@
 	#ifdef BOT_2_SIM_AVAILABLE
 		#define UART_AVAILABLE		/*!< Serielle Kommunikation */
 		#define COMMAND_AVAILABLE	/*!< High-Level Communication */
-	#else
+	#else // ! BOT_2_SIM_AVAILABLE
 		#undef DISPLAY_REMOTE_AVAILABLE
 		#undef MAP_2_SIM_AVAILABLE
-	#endif
+	#endif // BOT_2_SIM_AVAILABLE
 	#undef EEPROM_EMU_AVAILABLE
 	#undef CREATE_TRACEFILE_AVAILABLE
 #endif	// MCU
@@ -204,6 +204,7 @@
 	#ifdef MCU
 		#undef MAP_AVAILABLE // Map geht auf dem MCU nur mit MMC
 		#undef MMC_VM_AVAILABLE
+		#undef BOT_FS_AVAILABLE
 	#endif
 #endif
 
@@ -292,7 +293,7 @@
 		#endif
 	#endif
 
-#endif	// LOG_AVAILABLE
+#endif // LOG_AVAILABLE
 
 
 #ifdef SRF10_AVAILABLE
@@ -314,4 +315,4 @@
 #include "global.h"
 #include "bot-local.h"
 
-#endif	// CT_BOT_H_DEF
+#endif // CT_BOT_H_

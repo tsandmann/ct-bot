@@ -18,26 +18,27 @@
  */
 
 /*!
- * @file 	behaviour_cancel_behaviour.c
- * @brief 	Deaktiviert ein anderes Verhalten in Abhaengigkeit einer Check-Funktion;
- *          So kann z.B. der Wandfolger (bot_solve_maze) beendet werden, falls dieser auf
- *          eine Linie faehrt und der Linienfolger uebernehmen.
- * @author 	Frank Menzel (Menzelfr@gmx.net)
- * @date 	19.10.2007
+ * \file 	behaviour_cancel_behaviour.c
+ * \brief 	Deaktiviert ein anderes Verhalten in Abhaengigkeit einer Check-Funktion
+ *
+ * So kann z.B. der Wandfolger (bot_solve_maze) beendet werden, falls dieser auf
+ * eine Linie faehrt und der Linienfolger uebernehmen.
+ * \author 	Frank Menzel (Menzelfr@gmx.net)
+ * \date 	19.10.2007
  */
 
-#include "bot-logic/available_behaviours.h"
+#include "bot-logic/bot-logic.h"
+
+#ifdef BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
 #include "log.h"
 #include <stdlib.h>
 
 //#define DEBUG_CANCEL	// Debug-Code an
 
 #ifndef DEBUG_CANCEL
-	#undef LOG_DEBUG
-	#define LOG_DEBUG(a, ...) {}
+#undef LOG_DEBUG
+#define LOG_DEBUG(a, ...) {}
 #endif
-
-#ifdef BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
 
 /*!
  * Zeiger auf Abbruchfunktion des Verhaltens.
@@ -52,7 +53,7 @@ static BehaviourFunc behaviourFuncCancel = NULL;
 
 /*!
  * Verhalten zum bedingten Deaktivieren eines anderen Verhaltens
- * @param *data	Verhaltensdatensatz
+ * \param *data	Verhaltensdatensatz
  */
 void bot_cancel_behaviour_behaviour(Behaviour_t * data) {
 	if (check_function != NULL && check_function() != 0) {
@@ -67,9 +68,9 @@ void bot_cancel_behaviour_behaviour(Behaviour_t * data) {
 
 /*!
  * Botenfunktion zum Deaktivieren eines Verhaltens, wenn die Abbruchbedingung erfuellt ist
- * @param *caller	Verhaltensdatensatz des Aufrufers
- * @param behaviour	abzubrechendes Verhalten
- * @param *check 	Zeiger auf die Abbruchfunktion; liefert diese True, wird das Verhalten beendet
+ * \param *caller	Verhaltensdatensatz des Aufrufers
+ * \param behaviour	abzubrechendes Verhalten
+ * \param *check 	Zeiger auf die Abbruchfunktion; liefert diese True, wird das Verhalten beendet
  */
 void bot_cancel_behaviour(Behaviour_t * caller, BehaviourFunc behaviour, uint8_t (* check)(void)) {
 	LOG_DEBUG("cancel(0x%x, 0x%x, 0x%x)", caller, behaviour, check);
@@ -78,4 +79,4 @@ void bot_cancel_behaviour(Behaviour_t * caller, BehaviourFunc behaviour, uint8_t
 	activateBehaviour(caller, bot_cancel_behaviour_behaviour);
 }
 
-#endif	// BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
+#endif // BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE

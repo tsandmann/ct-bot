@@ -66,6 +66,6 @@ void SPI_MasterTransmit(uint8_t data);
  */
 uint8_t SPI_MasterReceive(void);
 
-#endif	// SPI_AVAILABLE
-#endif	// MCU
-#endif	// SPI_H_
+#endif // SPI_AVAILABLE
+#endif // MCU
+#endif // SPI_H_

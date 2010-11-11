@@ -33,7 +33,7 @@
 #include "sensor-low.h"
 #include "trace.h"
 #include "motor.h"
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 #include "sensor.h"
 #include "gui.h"
 #include "command.h"
@@ -55,7 +55,7 @@ int main(int argc, char * argv[]) {
 
 #ifdef WELCOME_AVAILABLE
 	display_cursor(1, 1);
-	display_printf("c't-Roboter");
+	display_puts("c't-Roboter");
 
 #ifdef LOG_AVAILABLE
 	LOG_INFO("Hallo Welt!");

@@ -24,11 +24,10 @@
  * @date 	27.04.2007
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
 #include <stdlib.h>
-
 #include "sensor.h"
 #include "log.h"
 
@@ -121,4 +120,4 @@ void bot_check_distance(Behaviour_t * caller, int16_t max_dist, uint8_t diff) {
 	max_diff = diff;
 }
 
-#endif	// BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
+#endif // BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE

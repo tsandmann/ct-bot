@@ -25,11 +25,11 @@
  * @date 	12.07.07
  */
 
-#include "bot-logic/bot-logik.h"
-#include "timer.h"
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_DELAY_AVAILABLE
-static uint32_t delay_ticks = 0;	/*!< Timestamp fuer Wartezeit Ende  */
+#include "timer.h"
+static uint32_t delay_ticks = 0; /*!< Timestamp fuer Wartezeit Ende  */
 
 /*!
  * Verhalten fuer Delays
@@ -57,4 +57,4 @@ int8_t bot_delay_ticks(Behaviour_t * caller, uint16_t ticks) {
 		return -1;
 	}
 }
-#endif	// BEHAVIOUR_DELAY_AVAILABLE
+#endif // BEHAVIOUR_DELAY_AVAILABLE

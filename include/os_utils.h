@@ -24,8 +24,8 @@
  * @date 	02.10.2007
  */
 
-#ifndef _OS_UTILS_H
-#define _OS_UTILS_H
+#ifndef _OS_UTILS_H_
+#define _OS_UTILS_H_
 
 #include "ct-Bot.h"
 #ifdef MCU
@@ -52,6 +52,6 @@ static inline uint8_t test_and_set(uint8_t * var, uint8_t x) {
 	return old;
 }
 
-#endif	// OS_AVAILABLE
-#endif	// MCU
-#endif	// _OS_UITLS_H
+#endif // OS_AVAILABLE
+#endif // MCU
+#endif // _OS_UITLS_H_

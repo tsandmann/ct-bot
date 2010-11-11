@@ -48,4 +48,4 @@ void tcp_test_client_init(void);
  * @param runs	Anzahl der Durchlaeufe, 0 fuer unendlich
  */
 void tcp_test_client_run(int runs);
-#endif	// TCP_SERVER_H_
+#endif // TCP_SERVER_H_

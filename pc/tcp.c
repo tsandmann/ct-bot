@@ -24,6 +24,7 @@
  * @date 	26.12.05
  */
 
+#ifdef PC
 #include "ct-Bot.h"
 #include "log.h"
 
@@ -38,7 +39,6 @@
 #define LOG_DEBUG(...) {}	/*!< Log-Dummy */
 #endif
 
-#ifdef PC
 #ifndef WIN32
 #define _REENTRANT		/*!< to grab thread-safe libraries */
 //#define _POSIX_SOURCE	/*!< to get POSIX semantics */
@@ -61,7 +61,7 @@
 #include <netinet/in.h>
 #include <netdb.h>		// for gethostbyname()
 #include <netinet/tcp.h>
-#endif	// WIN32
+#endif // WIN32
 
 
 #include <stdio.h>      // for printf() and fprintf()
@@ -181,7 +181,7 @@ int tcp_send_cmd(command_t * cmd) {
  * @param length	Anzahl der Bytes
  * @return 			Anzahl der kopierten Bytes, -1 wenn Puffer zu klein
  */
-static int copy2Buffer(void * data, unsigned length) {
+static int copy2Buffer(const void * data, unsigned length) {
 	if ((sendBufferPtr + length) > sizeof(sendBuffer)) {
 		LOG_DEBUG("Sendbuffer filled with %u/%u bytes, another %d bytes pending.", sendBufferPtr, (unsigned int)sizeof(sendBuffer), length);
 		LOG_DEBUG("  ==> Trying to recover by calling flushSendBuffer()...");
@@ -208,7 +208,7 @@ static int copy2Buffer(void * data, unsigned length) {
  * @param length	Anzahl der Bytes
  * @return 			Anzahl der gesendeten Byte, -1 wenn Fehler
  */
-int tcp_write(void * data, int length) {
+int tcp_write(const void * data, int length) {
 	int bytes_sent;
 #ifdef USE_SEND_BUFFER
 	bytes_sent = copy2Buffer(data, length);
@@ -230,7 +230,7 @@ int tcp_write(void * data, int length) {
  * @return 			Anzahl der uebertragenen Bytes
  */
 int tcp_read(void * data, int length) {
-	if (length == 0) return 0;	// NOP, aber auch kein Programmabbruch noetig
+	if (length == 0) return 0; // NOP, aber auch kein Programmabbruch noetig
 	int bytesReceived = 0;
 
 	if ((bytesReceived = recv(tcp_sock, data, length, 0)) <= 0) {
@@ -282,8 +282,8 @@ int flushSendBuffer(void) {
 		printf("send() sent a different number of bytes than expected\n");
 		length = -1;
 	}
-#endif	// USE_SEND_BUFFER
+#endif // USE_SEND_BUFFER
 	return length;
 }
 
-#endif	// PC
+#endif // PC

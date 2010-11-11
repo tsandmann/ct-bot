@@ -24,7 +24,9 @@
  * @date 	03.11.2006
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
+
+#ifdef BEHAVIOUR_SCAN_AVAILABLE
 #include <math.h>
 #include <stdlib.h>
 #include "map.h"
@@ -37,8 +39,6 @@
 #include "mmc.h"
 #include "fifo.h"
 #include "math_utils.h"
-
-#ifdef BEHAVIOUR_SCAN_AVAILABLE
 
 #ifndef MAP_AVAILABLE
 #error "MAP_AVAILABLE muss an sein, damit behaviour_scan.c etwas sinnvolles tun kann"
@@ -197,4 +197,4 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 	}
 }
 
-#endif	// BEHAVIOUR_SCAN_AVAILABLE
+#endif // BEHAVIOUR_SCAN_AVAILABLE

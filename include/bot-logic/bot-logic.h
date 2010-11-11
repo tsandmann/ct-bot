@@ -18,21 +18,20 @@
  */
 
 /*!
- * @file 	bot-logik.h
- * @brief 	High-Level-Routinen fuer die Steuerung des c't-Bots
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	01.12.05
+ * \file 	bot-logic.h
+ * \brief 	High-Level-Routinen fuer die Steuerung des c't-Bots
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	01.12.2005
  */
 
-#ifndef bot_logik_H_
-#define bot_logik_H_
+#ifndef BOT_LOGIC_H_
+#define BOT_LOGIC_H_
 
-#include "global.h"
 #include "ct-Bot.h"
+
+#ifdef BEHAVIOUR_AVAILABLE
 #include "motor.h"
 #include "sensor.h"
-#include "bot-local.h"
-
 
 #define INACTIVE	0	/*!< Verhalten ist aus */
 #define ACTIVE		1	/*!< Verhalten ist an */
@@ -90,28 +89,28 @@ void bot_behave_init(void);
 
 /*!
  * Liefert das Verhalten zurueck, welches durch function implementiert ist
- * @param function	Die Funktion, die das Verhalten realisiert
- * @return			Zeiger auf Verhaltensdatensatz oder NULL
+ * \param function	Die Funktion, die das Verhalten realisiert
+ * \return			Zeiger auf Verhaltensdatensatz oder NULL
  */
 Behaviour_t * get_behaviour(BehaviourFunc function);
 
 /*!
  * Zu ein Verhalten mit der gegebenen Prioritaet
- * @param prio	Prioritaet des gesuchten Verhaltens
- * @return		Zeiger auf Verhaltensdatensatz oder NULL
+ * \param prio	Prioritaet des gesuchten Verhaltens
+ * \return		Zeiger auf Verhaltensdatensatz oder NULL
  */
 Behaviour_t * get_behaviour_from_prio(uint8_t prio);
 
 /*!
  * Deaktiviert eine Regel mit gegebener Funktion
- * @param function Die Funktion, die das Verhalten realisiert.
+ * \param function Die Funktion, die das Verhalten realisiert.
  */
 void deactivateBehaviour(BehaviourFunc function);
 
 /*!
  * Rueckgabe von True, wenn das Verhalten gerade laeuft (aktiv ist) sonst False
- * @param function Die Funktion, die das Verhalten realisiert.
- * @return True wenn Verhalten aktiv sonst False
+ * \param function Die Funktion, die das Verhalten realisiert.
+ * \return True wenn Verhalten aktiv sonst False
  */
 uint8_t behaviour_is_activated(BehaviourFunc function);
 
@@ -124,16 +123,16 @@ void deactivateAllBehaviours(void);
 /*!
  * Deaktiviert alle von diesem Verhalten aufgerufenen Verhalten.
  * Das Verhalten selbst bleibt aktiv und bekommt ein SUBCANCEL in seine Datanestruktur eingetragen.
- * @param function	Die Funktion, die das Verhalten realisiert.
+ * \param function	Die Funktion, die das Verhalten realisiert.
  */
 void deactivateCalledBehaviours(BehaviourFunc function);
 
 /*!
  * Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung
  * return_from_behaviour() kehrt dann spaeter wieder zum aufrufenden Verhalten zurueck
- * @param *from		aufrufendes Verhalten
- * @param *to		aufgerufenes Verhalten
- * @param mode		Hier sind vier Werte moeglich:
+ * \param *from		aufrufendes Verhalten
+ * \param *to		aufgerufenes Verhalten
+ * \param mode		Hier sind vier Werte moeglich:
  * 		1. OVERRIDE:	Das Zielverhalten to wird aktiviert, auch wenn es noch aktiv ist.
  *						Das Verhalten, das es zuletzt aufgerufen hat wird dadurch automatisch
  *						wieder aktiv und muss selbst sein eigenes Feld subResult auswerten, um zu pruefen, ob das
@@ -144,28 +143,28 @@ void deactivateCalledBehaviours(BehaviourFunc function);
  *		3. FOREGROUND	Das Verhalten laeuft im Fordergrund (Aufrufer wird solange deaktiviert)
  *		4. BACKGROUND	Das Verhalten laeuft im Hintergrund (Aufrufer bleibt aktiv)
  */
-void switch_to_behaviour(Behaviour_t * from, void (*to)(Behaviour_t *), uint8_t mode);
+void switch_to_behaviour(Behaviour_t * from, void (* to)(Behaviour_t *), uint8_t mode);
 
 /*!
  * Aktiviert eine Regel mit gegebener Funktion, impliziert NOOVERRIDE.
  * Im Gegensatz zu switch_to_behaviour() wird der Aufrufer jedoch nicht deaktiviert (Hintergrundausfuehrung).
- * @param *from		aufrufendes Verhalten
- * @param *to		aufgerufendes Verhalten
+ * \param *from		aufrufendes Verhalten
+ * \param *to		aufgerufendes Verhalten
  */
-static inline void activateBehaviour(Behaviour_t * from, void (*to)(Behaviour_t *)) {
+static inline void activateBehaviour(Behaviour_t * from, void (* to)(Behaviour_t *)) {
 	switch_to_behaviour(from, to, NOOVERRIDE | BACKGROUND);
 }
 
 /*!
  * Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg
- * @param *data	laufendes Verhalten
- * @param state	Abschlussstatus des Verhaltens (SUBSUCCESS oder SUBFAIL)
+ * \param *data	laufendes Verhalten
+ * \param state	Abschlussstatus des Verhaltens (SUBSUCCESS oder SUBFAIL)
  */
 void exit_behaviour(Behaviour_t * data, uint8_t state);
 
 /*!
  * Kehrt zum aufrufenden Verhalten zurueck
- * @param *data laufendes Verhalten
+ * \param *data laufendes Verhalten
  */
 static inline void return_from_behaviour(Behaviour_t * data) {
 	exit_behaviour(data, SUBSUCCESS);
@@ -179,20 +178,16 @@ void start_registered_emergency_procs(void);
 
 /*!
  * Gibt das naechste Verhalten der Liste zurueck
- * @param *beh	Zeiger auf Verhalten, dessen Nachfolger gewuenscht ist, NULL fuer Listenanfang
- * @return		Zeiger auf Nachfolger von beh
+ * \param *beh	Zeiger auf Verhalten, dessen Nachfolger gewuenscht ist, NULL fuer Listenanfang
+ * \return		Zeiger auf Nachfolger von beh
  */
 Behaviour_t * get_next_behaviour(Behaviour_t * beh);
 
 /* Includes aller verfuegbaren Verhalten */
 #include "bot-logic/available_behaviours.h"
 
-
-#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
 /*!
- * @brief	Zeigt Informationen ueber Verhalten an, 'A' fuer Verhalten aktiv, 'I' fuer Verhalten inaktiv.
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	12.02.2007
+ * Zeigt Informationen ueber Verhalten an, 'A' fuer Verhalten aktiv, 'I' fuer Verhalten inaktiv.
  * Es werden zwei Spalten mit jeweils 4 Verhalten angezeigt. Gibt es mehr Verhalten in der Liste, kommt man
  * mit der Taste DOWN auf eine weitere Seite (die aber kein extra Screen ist). Mit der Taste UP geht's bei Bedarf
  * wieder zurueck. Vor den Prioritaeten steht eine Nummer von 1 bis 8, drueckt man die entsprechende Zifferntaste
@@ -200,6 +195,6 @@ Behaviour_t * get_next_behaviour(Behaviour_t * beh);
  * Den Keyhandler dazu stellt beh_disp_key_handler() dar.
  */
 void behaviour_display(void);
-#endif	// DISPLAY_BEHAVIOUR_AVAILABLE
 
-#endif	// bot_logik_H_
+#endif // BEHAVIOUR_AVAILABLE
+#endif // BOT_LOGIC_H_

@@ -24,26 +24,26 @@
  * @date 	01.09.2007
  */
 
+#ifdef MCU
 #include "ct-Bot.h"
+
+#ifdef LOG_AVAILABLE
+#ifdef USE_MINILOG
 #include "log.h"
 #include "command.h"
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-#ifdef LOG_AVAILABLE
-#ifdef USE_MINILOG
+#define LOG_BUFFER_SIZE	50 /*!< Groesse des Log-Buffers */
 
-#define LOG_BUFFER_SIZE	50		/*!< Groesse des Log-Buffers */
-
-static const char line_str[]	PROGMEM = "[%5u] ";		/*!< Format-String fuer Zeilennummer */
-static const char debug_str[]	PROGMEM	= "DEBUG\t";	/*!< Log-Typ DEBUG */
-static const char info_str[]	PROGMEM	= "INFO \t";	/*!< Log-Typ INFO */
-static const char error_str[]	PROGMEM	= "ERROR\t";	/*!< Log-Typ ERROR */
-static PGM_P p_log_type;								/*!< Zeiger auf Log-Types im Flash */
-static PGM_P log_types[] PROGMEM = {debug_str, info_str, error_str};	/*!< Log-Typ-Array im Flash */
-static char minilog_buffer[LOG_BUFFER_SIZE];			/*!< Log-Puffer */
+static const char line_str[]	PROGMEM = "[%5u] "; /*!< Format-String fuer Zeilennummer */
+static const char debug_str[]	PROGMEM	= "DEBUG "; /*!< Log-Typ DEBUG */
+static const char info_str[]	PROGMEM	= "INFO  "; /*!< Log-Typ INFO */
+static const char error_str[]	PROGMEM	= "ERROR "; /*!< Log-Typ ERROR */
+static PGM_P p_log_type;							/*!< Zeiger auf Log-Types im Flash */
+static PGM_P log_types[] PROGMEM = {debug_str, info_str, error_str}; /*!< Log-Typ-Array im Flash */
+static char minilog_buffer[LOG_BUFFER_SIZE]; /*!< Log-Puffer */
 
 /*!
  * Schreibt die Zeilennummer und den Log-Typ in den Puffer
@@ -72,5 +72,6 @@ void minilog_printf(const char * format, ...) {
 	va_end(args);
 	command_write_data(CMD_LOG, SUB_CMD_NORM, 0, 0, minilog_buffer);
 }
-#endif	// USE_MINILOG
-#endif	// LOG_AVAILABLE
+#endif // USE_MINILOG
+#endif // LOG_AVAILABLE
+#endif // MCU

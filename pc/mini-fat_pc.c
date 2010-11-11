@@ -24,17 +24,16 @@
  * @date 	04.01.2007
  */
 
-#include "ct-Bot.h"
-#include "mini-fat.h"
-
 #ifdef PC
+#include "ct-Bot.h"
+
+#include "mini-fat.h"
+#include "mmc-vm.h"
+#include "mmc-emu.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
-#include "mmc-vm.h"
-#include "mmc-emu.h"
 
 /*!
  * Erzeugt eine Datei, die an den ersten Bytes die ID enthaelt. Dann folgen 512 - sizeof(id) nullen
@@ -53,7 +52,7 @@ void create_mini_fat_file(const char * filename, const char * id_string, uint32_
 
 	/* Dateiparameter vorbereiten */
 	mini_fat_header_t header = {"", {0}, {0}};
-	strncpy((char * ) header.filename, id_string, MMC_FILENAME_MAX - 1);
+	strncpy((char * ) header.filename, id_string, MMC_FILENAME_MAX);
 	header.length.u32 = size * 1024 - 512; // im ersten Block stehen interne Daten
 
 	printf("Schreibe ID: \"%s\"\n", header.filename);
@@ -130,7 +129,7 @@ void create_emu_mini_fat_file(uint32_t addr, const char * id_string, uint32_t si
 
 	printf("done.\n");
 
-#endif	// MMC_VM_AVAILABLE
+#endif // MMC_VM_AVAILABLE
 }
 
 /*!
@@ -168,7 +167,7 @@ void delete_emu_mini_fat_file(const char * id_string) {
 
 	printf("done.\n");
 
-#endif	// MMC_VM_AVAILABLE
+#endif // MMC_VM_AVAILABLE
 }
 
 #define SLOG_WITH_SPEED_CONTROL	1
@@ -286,7 +285,7 @@ void convert_slog_file(const char * input_file) {
 
 	fclose(fp_input);
 	fclose(fp_output);
-	printf("done.\n");	// fertig :)
+	printf("done.\n"); // fertig :)
 }
 
-#endif	 // PC
+#endif // PC

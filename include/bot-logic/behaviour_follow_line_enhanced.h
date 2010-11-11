@@ -24,13 +24,10 @@
  * @date 	25.02.2009
  */
 
-#include "bot-logic/bot-logik.h"
-
 #ifndef BEHAVIOUR_FOLLOW_LINE_ENHANCED_H_
 #define BEHAVIOUR_FOLLOW_LINE_ENHANCED_H_
 
 #ifdef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
-
 /*!
  * erweiterter Linienfolger, der auch Linienunterbrechungen und Hindernisse handhabt, waehrend der Bot die Linie verfolgt;
  * die Linienunterbrechung darf nur relativ klein sein (~3cm), so dass sich beim Drehen am Ende der Linie der rechte Abgrundsensor
@@ -45,6 +42,6 @@ void bot_follow_line_enh_behaviour(Behaviour_t * data);
  */
 void bot_follow_line_enh(Behaviour_t * caller);
 
-#endif	// BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
-#endif	/*BEHAVIOUR_FOLLOW_LINE_ENHANCED_H_*/
+#endif // BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
+#endif // BEHAVIOUR_FOLLOW_LINE_ENHANCED_H_
 

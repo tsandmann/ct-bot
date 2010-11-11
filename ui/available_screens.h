@@ -18,73 +18,34 @@
  */
 
 /*!
- * @file 	available_screens.h
- * @brief 	Die Schalter fuer sichtbare Screens finden sich hier
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	12.02.2007
+ * \file 	available_screens.h
+ * \brief 	Die Schalter fuer sichtbare Screens finden sich hier
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	12.02.2007
  */
 
 #ifndef AVAILABLE_SCREENS_H_
 #define AVAILABLE_SCREENS_H_
 
-#include "ct-Bot.h"
+#define DISPLAY_SCREENS 10 /*!< max. Anzahl an Screens */
 
-#ifdef DISPLAY_AVAILABLE
-
-#define DISPLAY_SCREENS 10				/*!< Anzahl der Screens */
-
-#define SENSOR_DISPLAY_AVAILABLE		/*!< zeigt die Sensordaten an */
+#define DISPLAY_SENSOR_AVAILABLE			/*!< zeigt die Sensordaten an */
+#define DISPLAY_REMOTECALL_AVAILABLE		/*!< Steuerung der Verhalten inkl. Parametereingabe */
+//#define DISPLAY_BEHAVIOUR_AVAILABLE		/*!< zeigt den Status aller Verhalten an */
+#define DISPLAY_ODOMETRIC_INFO				/*!< zeigt Positions- und Geschwindigkeitsdaten an */
 //#define DISPLAY_REGELUNG_AVAILABLE		/*!< Gibt Debug-Infos der Motorregelung aus */
-//#define DISPLAY_BEHAVIOUR_AVAILABLE		/*!< zeigt Verhalten an */
-//#define MISC_DISPLAY_AVAILABLE			/*!< aehm ja, der Rest irgendwie... */
-#define DISPLAY_ODOMETRIC_INFO			/*!< zeigt Positions- und Geschwindigkeitsdaten an */
-//#define DISPLAY_MMC_INFO				/*!< Zeigt die Daten der MMC-Karte an */
-//#define DISPLAY_MINIFAT_INFO			/*!< Zeigt Ausgaben des MiniFAT-Treibers an */
-//#define RESET_INFO_DISPLAY_AVAILABLE	/*!< Zeigt Informationen ueber Resets an */
-#define DISPLAY_OS_AVAILABLE			/*!< Zeigt die CPU-Auslastung an und bietet Debugging-Funktionen */
-#define RAM_DISPLAY_AVAILABLE			/*!< Ausgabe des freien RAMs */
-#define DISPLAY_MAP_AVAILABLE			/*!< Zeigt Map-Display an */
-#define DISPLAY_TRANSPORT_PILLAR        /*!< Steuerung Transport-Pillar-Verhalten auf diesem Screen */
-#define DISPLAY_DRIVE_STACK_AVAILABLE	/*!< Steuerung Stack-Verhalten auf diesem Screen */
-#define PATHPLANING_DISPLAY				/*!< Display zur Pfadplanung */
+//#define DISPLAY_MISC_AVAILABLE			/*!< aehm ja, der Rest irgendwie... */
+//#define DISPLAY_MMC_INFO					/*!< Zeigt die Daten der MMC-Karte an */
+//#define DISPLAY_MINIFAT_INFO				/*!< Zeigt Ausgaben des MiniFAT-Treibers an */
+//#define DISPLAY_RESET_INFO_AVAILABLE		/*!< Zeigt Informationen ueber Resets an */
+#define DISPLAY_OS_AVAILABLE				/*!< Zeigt die CPU-Auslastung an und bietet Debugging-Funktionen */
+#define DISPLAY_RAM_AVAILABLE				/*!< Ausgabe des freien RAMs */
+#define DISPLAY_MAP_AVAILABLE				/*!< Zeigt Map-Display an */
+#define DISPLAY_TRANSPORT_PILLAR        	/*!< Steuerung Transport-Pillar-Verhalten auf diesem Screen */
+#define DISPLAY_DRIVE_STACK_AVAILABLE		/*!< Steuerung Stack-Verhalten auf diesem Screen */
+#define DISPLAY_PATHPLANING_AVAILABLE		/*!< Display zur Pfadplanung */
 #define DISPLAY_LINE_SHORTEST_WAY_AVAILABLE	/*!< Steuerung des Verhaltens auf diesem Screen */
-#define DISPLAY_DRIVE_CHESS_AVAILABLE	/*!< Steuerung des Schach-Verhaltens */
+#define DISPLAY_DRIVE_CHESS_AVAILABLE		/*!< Steuerung des Schach-Verhaltens */
+#define DISPLAY_UBASIC_AVAILABLE	    	/*!< Steuerung des uBasic-Verhaltens */
 
-#ifndef SPEED_CONTROL_AVAILABLE
-	#undef DISPLAY_REGELUNG_AVAILABLE
-#endif
-#ifndef MCU
-	#undef RESET_INFO_DISPLAY_AVAILABLE
-	#undef RAM_DISPLAY_AVAILABLE
-	#undef DISPLAY_OS_AVAILABLE
-#endif
-#ifndef MMC_AVAILABLE
-	#undef DISPLAY_MMC_INFO
-	#undef DISPLAY_MINIFAT_INFO
-	#ifdef PC
-		#ifndef MMC_VM_AVAILABLE
-			#undef DISPLAY_MINIFAT_INFO
-		#endif
-	#endif	// PC
-#endif	// MMC_AVAILABLE
-#ifndef MAP_AVAILABLE
-	#undef DISPLAY_MAP_AVAILABLE
-#else
-	// MMC-Zugriff geht nur, wenn gerade kein Map-Update laueft
-	#undef DISPLAY_MMC_INFO
-#endif
-#ifndef BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE
-	#undef DISPLAY_TRANSPORT_PILLAR
-#endif
-#ifndef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-	#undef DISPLAY_DRIVE_STACK_AVAILABLE
-#endif
-#ifndef BEHAVIOUR_DRIVE_CHESS_AVAILABLE
-#undef DISPLAY_DRIVE_CHESS_AVAILABLE
-#endif
-#ifndef OS_AVAILABLE
-	#undef DISPLAY_OS_AVAILABLE
-#endif
-
-#endif	// DISPLAY_AVAILABLE
-#endif	// AVAILABLE_SCREENS_H_
+#endif // AVAILABLE_SCREENS_H_

@@ -27,15 +27,13 @@
 #include "ct-Bot.h"
 #ifdef SRF10_AVAILABLE
 
-#include "global.h"
-
 #ifndef SRF10_H_
 #define SRF10_H_
 
 /*!
  * Es sind alle moeglichen Adressen eingetragen. In de Regel reicht aber die erste              
  * Der Code geht nur von SRF10_UNIT_0 aus, daher sind die anderen auskommentiert                
-*/
+ */
 
 #define SRF10_UNIT_0   0xE0  /* the SRF10 MODULE I2C address */
 //#define SRF10_UNIT_1   0xE2  /* the SRF10 MODULE I2C address */
@@ -105,5 +103,5 @@ uint8_t srf10_read_register(uint8_t SRF10_register);
  */
 uint16_t srf10_get_measure(void);
 
-#endif	// SRF10_AVAILABLE
-#endif  /* SRF10_H_ */
+#endif // SRF10_AVAILABLE
+#endif // SRF10_H_

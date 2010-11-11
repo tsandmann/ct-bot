@@ -24,23 +24,29 @@
  * @date 	09.03.2010
  */
 
-#include "init.h"
+#include "eeprom.h"
 
 uint8_t EEPROM resetsEEPROM = 0; /*!< Reset-Counter im EEPROM */
 
 #ifdef MCU
+#include "init.h"
+#include "ui/available_screens.h"
+#include "os_thread.h"
+#include "led.h"
+#include "ena.h"
+#include "uart.h"
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/wdt.h>
+#include <avr/sleep.h>
 #include <stdlib.h>
-#include "os_thread.h"
 
 /*! Kopie des MCU(C)SR Registers */
 uint8_t mcucsr __attribute__((section(".noinit")));
 
-#ifdef RESET_INFO_DISPLAY_AVAILABLE
+#ifdef DISPLAY_RESET_INFO_AVAILABLE
 uint8_t soft_resets __attribute__((section(".noinit"))); /*!< Reset-Counter im RAM */
-#endif // RESET_INFO_DISPLAY_AVAILABLE
+#endif // DISPLAY_RESET_INFO_AVAILABLE
 
 void init_before_main(void) __attribute__((section(".init3"))) __attribute__((naked));
 
@@ -102,12 +108,12 @@ void init_before_main(void) {
 #error "Nicht unterstuetzter MCU-Typ"
 #endif // MCU-Typ
 
-#ifdef RESET_INFO_DISPLAY_AVAILABLE
+#ifdef DISPLAY_RESET_INFO_AVAILABLE
 	if ((mcucsr & _BV(PORF)) == _BV(PORF)) {
 		soft_resets = 0;
 	}
 	soft_resets++;
-#endif // RESET_INFO_DISPLAY_AVAILABLE
+#endif // DISPLAY_RESET_INFO_AVAILABLE
 }
 
 /*!
@@ -122,10 +128,10 @@ void ctbot_init_low_1st(int argc, char * argv[]) {
 
 	_delay_ms(100);
 
-#ifdef RESET_INFO_DISPLAY_AVAILABLE
+#ifdef DISPLAY_RESET_INFO_AVAILABLE
 	uint8_t resets = (uint8_t) (ctbot_eeprom_read_byte(&resetsEEPROM) + 1);
 	ctbot_eeprom_write_byte(&resetsEEPROM, resets);
-#endif // RESET_INFO_DISPLAY_AVAILABLE
+#endif // DISPLAY_RESET_INFO_AVAILABLE
 
 #ifdef OS_AVAILABLE
 	os_create_thread((void *) SP, NULL); // Hauptthread anlegen
@@ -152,5 +158,23 @@ void ctbot_init_low_last(void) {
 #endif
 	os_create_thread(&os_idle_stack[OS_IDLE_STACKSIZE - 1], os_idle);
 #endif // OS_AVAILABLE
+}
+
+/*!
+ * Faehrt den low-level Code des Bots sauber herunter
+ */
+void ctbot_shutdown_low() {
+	while (uart_outfifo.count > 0) {} // Commands flushen
+	cli();
+	UCSRB = 0; // UART aus
+	LED_off(0xff);
+	ENA_off(0xff);
+	do {
+		_SLEEP_CONTROL_REG = (uint8_t) (((_SLEEP_CONTROL_REG & ~(_BV(SM0) | _BV(SM1) | _BV(SM2))) | (SLEEP_MODE_PWR_DOWN)));
+	} while (0);
+	sleep_enable();
+	sleep_cpu();
+
+	/* kehrt nie zurueck */
 }
 #endif // MCU

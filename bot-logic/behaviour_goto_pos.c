@@ -24,7 +24,7 @@
  * @date 	15.10.2007
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 #include "eeprom.h"
 
 //#define DEBUG_GOTO_POS // Schalter um recht viel Debug-Code anzumachen
@@ -355,4 +355,4 @@ void bot_goto_dist(Behaviour_t * caller, int16_t distance, int8_t dir) {
 	bot_goto_pos(caller, target_x, target_y, heading_int);
 }
 
-#endif	// BEHAVIOUR_GOTO_POS_AVAILABLE
+#endif // BEHAVIOUR_GOTO_POS_AVAILABLE

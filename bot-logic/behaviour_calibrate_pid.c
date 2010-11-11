@@ -24,7 +24,7 @@
  * @date 	14.04.2007
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
 #include <math.h>

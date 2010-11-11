@@ -27,15 +27,14 @@
 #ifdef MCU
 
 #include "ct-Bot.h"
-
-#include <avr/io.h>
 #include "timer.h"
-#include "ir-rc5.h"
+#include "rc5.h"
 #include "sensor-low.h"
 #include "bot-local.h"
 #include "os_scheduler.h"
 #include "os_thread.h"
 #include "uart.h"
+#include <avr/io.h>
 
 #ifdef OS_AVAILABLE
 static uint8_t scheduler_ticks = 0;
@@ -59,9 +58,9 @@ ISR(TIMER2_COMP_vect) {
 #ifdef OS_AVAILABLE
 	/* ab hier Kernel-Stack verwenden */
 	void * user_stack;
-	user_stack = (void *)SP;
-	SP = (unsigned)&os_kernel_stack[OS_KERNEL_STACKSIZE - 1];
-#endif	// OS_AVAILABLE
+	user_stack = (void *) SP;
+	SP = (unsigned) &os_kernel_stack[OS_KERNEL_STACKSIZE - 1];
+#endif // OS_AVAILABLE
 
 	__builtin_avr_sei(); // Interrupts wieder an, z.B. UART-Kommunikation kann parallel zu RC5 und Encoderauswertung laufen
 
@@ -82,19 +81,19 @@ ISR(TIMER2_COMP_vect) {
 #ifdef OS_AVAILABLE
 	/* zurueck zum User-Stack */
 	__builtin_avr_cli();
-	SP = (unsigned)user_stack;
+	SP = (unsigned) user_stack;
 
 	/* Scheduling-Frequenz betraegt ca. 1 kHz */
-	if ((uint8_t)((uint8_t)ticks - scheduler_ticks) > MS_TO_TICKS(1)) {
+	if ((uint8_t) ((uint8_t) ticks - scheduler_ticks) > MS_TO_TICKS(1)) {
 #if defined DISPLAY_OS_AVAILABLE && defined UART_AVAILABLE
 		if (uart_outfifo.count != 0) {
 			uart_log++;	// zaehlt die ms, in denen UART inaktiv
 		}
-#endif	// MEASURE_UTILIZATION && UART_AVAILABLE
-		scheduler_ticks = (uint8_t)ticks;
+#endif // MEASURE_UTILIZATION && UART_AVAILABLE
+		scheduler_ticks = (uint8_t) ticks;
 		os_schedule(ticks);
 	}
-#endif	// OS_AVAILABLE
+#endif // OS_AVAILABLE
 	/* Achtung, hier darf (falls OS_AVAILABLE) kein Code mehr folgen, der bei jedem Aufruf
 	 * dieser ISR ausgefuehrt werden muss! Nach dem Scheduler-Aufruf kommen wir u.U. nicht
 	 * (sofort) wieder hieher zurueck, sondern es koennte auch ein Thread weiterlaufen, der
@@ -105,7 +104,7 @@ ISR(TIMER2_COMP_vect) {
  * initialisiert Timer 2 und startet ihn
  */
 void timer_2_init(void) {
-	TCNT2 = 0x00;            // TIMER vorladen
+	TCNT2 = 0x00; // TIMER vorladen
 
 	// aendert man den Prescaler muss man die Formel fuer OCR2 anpassen !!!
 	// Compare Register nur 8-Bit breit --> evtl. Teiler anpassen

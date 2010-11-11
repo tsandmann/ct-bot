@@ -456,4 +456,4 @@ void mmc_clear_file(uint32_t file_start) {
 	}
 }
 
-#endif	// MMC_VM_AVAILABLE
+#endif // MMC_VM_AVAILABLE

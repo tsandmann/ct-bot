@@ -23,15 +23,13 @@
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
  */
-#include "global.h"
-#include "ct-Bot.h"
-
-#include "shift.h"
-#include "i2c.h"
 
 #ifdef MCU
-#ifdef SHIFT_AVAILABLE
+#include "ct-Bot.h"
 
+#ifdef SHIFT_AVAILABLE
+#include "shift.h"
+#include "i2c.h"
 #include <avr/io.h>
 
 #define SHIFT_OUT				0x1F			/*!< Alle Pins die Ausgaenge sind */
@@ -88,5 +86,5 @@ void shift_data(uint8_t data, uint8_t latch_data) {
 	shift_data_out(data, latch_data, SHIFT_LATCH);
 	shift_clear();
 }
-#endif	// SHIFT_AVAILABLE
-#endif	// MCU
+#endif // SHIFT_AVAILABLE
+#endif // MCU

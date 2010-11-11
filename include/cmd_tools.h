@@ -27,9 +27,7 @@
 #ifndef CMD_TOOLS_H_
 #define CMD_TOOLS_H_
 
-#include "ct-Bot.h"
 #ifdef PC
-
 /*!
  * Behandelt die Kommandozeilen-Argumente
  * @param argc	Anzahl der Argumente

@@ -25,7 +25,7 @@
  * @date 	08.12.06
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 #ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 #include "math_utils.h"
 #include <math.h>

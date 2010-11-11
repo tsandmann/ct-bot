@@ -27,9 +27,7 @@
 #ifndef BEHAVIOUR_MEASURE_DISTANCE_H_
 #define BEHAVIOUR_MEASURE_DISTANCE_H_
 
-#include "bot-logic/bot-logik.h"
 #ifdef BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
-
 /*!
  * Das eigentliche Verhalten
  * @param *data	Zeiger auf den Verhaltensdatensatz des Aufrufers
@@ -63,5 +61,5 @@ void bot_check_distance_behaviour(Behaviour_t * data);
  */
 void bot_check_distance(Behaviour_t * caller, int16_t max_dist, uint8_t diff);
 
-#endif	// BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
-#endif	// BEHAVIOUR_MEASURE_DISTANCE_H_
+#endif // BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
+#endif // BEHAVIOUR_MEASURE_DISTANCE_H_

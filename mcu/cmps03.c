@@ -24,12 +24,14 @@
  * @date 	05.09.2007
  */
 
+#ifdef MCU
+
 #include "ct-Bot.h"
+#ifdef CMPS03_AVAILABLE
 #include "i2c.h"
 #include "cmps03.h"
 #include <stdlib.h>
 
-#ifdef CMPS03_AVAILABLE
 
 /*!
  * Startet das Auslesen der aktuellen Lage per I2C
@@ -58,4 +60,5 @@ void cmps03_finish(cmps03_t * pValue) {
 	}
 }
 
-#endif	// CMPS03_AVAILABLE
+#endif // CMPS03_AVAILABLE
+#endif // MCU

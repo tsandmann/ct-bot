@@ -27,10 +27,7 @@
 #define MOTOR_H_
 
 
-#include "global.h"
 #include "ct-Bot.h"
-#include "ui/available_screens.h"
-#include "bot-logic/bot-logik.h"
 
 #define BOT_SPEED_IGNORE	1000	/*!< Wert ausserhalb von -BOT_SPEED_MAX und BOT_SPEED_MAX wird verwendet um einen Eintrag zu ignorieren */
 #define BOT_SPEED_STOP		0		/*!< Motor aus */
@@ -105,7 +102,6 @@ void servo_set(uint8_t servo, uint8_t pos);
  */
 void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_time, uint8_t enc);
 
-#ifdef DISPLAY_REGELUNG_AVAILABLE
 /*!
  * Zeigt Debug-Informationen der Motorregelung an.
  * Dargestellt werden pro Moto Ist- / Sollgeschwindigkeit, die Differenz davon, der PWM-Stellwert und die
@@ -113,6 +109,5 @@ void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_
  * Die Tasten 1 und 4 veraendern Kp, 2 und 5 veraendern Ki, 3 und 6 veraendern Kd, wenn ADJUST_PID_PARAMS an ist.
  */
 void speedcontrol_display(void);
-#endif	// DISPLAY_REGELUNG_AVAILABLE
-#endif	// SPEED_CONTROL_AVAILABLE
-#endif	// MOTOR_H_
+#endif // SPEED_CONTROL_AVAILABLE
+#endif // MOTOR_H_

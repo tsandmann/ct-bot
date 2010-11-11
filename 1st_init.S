@@ -90,5 +90,5 @@ __eeprom_start2__:
 
 .text
 
-#endif	// EEPROM_EMU_AVAILABLE
-#endif	// PC
+#endif // EEPROM_EMU_AVAILABLE
+#endif // PC

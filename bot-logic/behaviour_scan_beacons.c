@@ -25,13 +25,13 @@
  * @date 	01.05.2009
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
+
+#ifdef BEHAVIOUR_SCAN_BEACONS_AVAILABLE
 #include <stdlib.h>
 #include <math.h>
 #include "log.h"
 #include "math_utils.h"
-
-#ifdef BEHAVIOUR_SCAN_BEACONS_AVAILABLE
 
 static uint8_t state;		/*!< Status des Verhaltens */
 static uint8_t pos_update;	/*!< Update der Positionsdaten gewuenscht? */
@@ -314,4 +314,4 @@ void bot_scan_beacons(Behaviour_t * caller, uint8_t position_update, uint8_t mod
 	LOG_DEBUG("Suche 1. Landmarke...");
 }
 
-#endif	// BEHAVIOUR_SCAN_BEACONS_AVAILABLE
+#endif // BEHAVIOUR_SCAN_BEACONS_AVAILABLE

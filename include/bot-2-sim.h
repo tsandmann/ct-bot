@@ -27,13 +27,14 @@
 #define BOT2SIM_H_
 
 #include "ct-Bot.h"
+
+#ifdef BOT_2_SIM_AVAILABLE
 #include <stdio.h>
 
 #ifdef CREATE_TRACEFILE_AVAILABLE
 extern FILE * tracefile;	/*!< Trace-Datei zum Debugging */
-#endif	// CREATE_TRACEFILE_AVAILABLE
+#endif // CREATE_TRACEFILE_AVAILABLE
 
-#ifdef BOT_2_SIM_AVAILABLE
 /*!
  * Ein wenig Initilisierung kann nicht schaden
  */
@@ -76,8 +77,8 @@ void gettimeofday_win(struct timeval * p, void * tz /* IGNORED */);
 #define GETTIMEOFDAY gettimeofday_win	/*!< nur fuer Windows implementierte Funktion */
 #else
 #define GETTIMEOFDAY gettimeofday	/*!< unter nicht-Win benutzen wir die Systemfunktion fuer gettimeofday */
-#endif	// WIN32
-#endif	// MCU
+#endif // WIN32
+#endif // MCU
 
-#endif	// BOT_2_SIM_AVAILABLE
-#endif	// BOT2SIM_H_
+#endif // BOT_2_SIM_AVAILABLE
+#endif // BOT2SIM_H_

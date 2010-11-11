@@ -25,13 +25,12 @@
  */
 
 #ifdef MCU 
-
-#include <avr/io.h>
-#include "led.h"
 #include "ct-Bot.h"
-#include "shift.h"
 
 #ifdef LED_AVAILABLE
+#include <avr/io.h>
+#include "led.h"
+#include "shift.h"
 
 uint8_t led = 0; /*!< Zustand der LEDs */
 
@@ -70,5 +69,5 @@ void LED_set(uint8_t LED) {
 	shift_data(led, SHIFT_REGISTER_LED);
 }
 
-#endif	// LED_AVAILABLE
-#endif	// MCU
+#endif // LED_AVAILABLE
+#endif // MCU

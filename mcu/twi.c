@@ -26,9 +26,9 @@
 
 #ifdef MCU
 #include "ct-Bot.h"
+
 #ifdef TWI_AVAILABLE
 #include "twi.h"
-#include "global.h"
 
 //#define OLD_VERSION
 
@@ -212,7 +212,7 @@ uint8_t Send_to_TWI(tx_type_t * pData) {
 	uint8_t result = i2c_wait();
 	return (uint8_t) (result == TW_NO_INFO ? SUCCESS : result);
 }
-#endif	// OLD_VERSION
+#endif // OLD_VERSION
 
-#endif	// TWI_AVAILABLE
-#endif	// MCU
+#endif // TWI_AVAILABLE
+#endif // MCU

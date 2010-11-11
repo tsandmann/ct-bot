@@ -19,15 +19,12 @@
 
 /*! 
  * @file 	behaviour_goto.c
- * @brief 	Bot faehrt einen punkt an
+ * @brief 	Bot faehrt einen Punkt an
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
  */
 
-
-
-#include "bot-logic/bot-logik.h"
-
+#include "bot-logic/bot-logic.h"
 #ifdef BEHAVIOUR_GOTO_AVAILABLE
 #warning "bot_goto_behaviour ist veraltet, besser bot_gotoxy oder drive_distance benutzen!"
 
@@ -148,4 +145,4 @@ void bot_goto(Behaviour_t * caller, int16_t left, int16_t right) {
 	mot_goto_r=0;
 	switch_to_behaviour(caller, bot_goto_behaviour, OVERRIDE);
 }
-#endif	// BEHAVIOUR_GOTO_AVAILABLE
+#endif // BEHAVIOUR_GOTO_AVAILABLE

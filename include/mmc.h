@@ -29,9 +29,9 @@
 #define MMC_H_
 
 #include "ct-Bot.h"
-#include "ui/available_screens.h"
 
 #ifdef MMC_AVAILABLE
+#include "ui/available_screens.h"
 
 #define MMC_AGGRESSIVE_OPTIMIZATION	/*!< Aktiviert explizites Timing im SPI-Code (ca. 13 % schneller) */
 
@@ -46,7 +46,7 @@
 #define mmc_read_sector(addr, buffer)		mmc_read_sector_spi(0x51, addr, buffer)
 #define mmc_read_block(cmd, buffer, length)	mmc_read_sector_spi(cmd[0], 0, buffer)
 #define mmc_write_sector(addr, buffer)		mmc_write_sector_spi(addr, buffer)
-#endif	// SPI_AVAILABLE
+#endif // SPI_AVAILABLE
 
 /*!
  * Checkt Initialisierung der Karte
@@ -83,7 +83,7 @@ uint8_t mmc_read_sector(uint32_t addr, void * buffer);
  */
 uint8_t mmc_write_sector(uint32_t addr, void * buffer);
 
-#else
+#else // !SPI_AVAILABLE
 /*!
  * Liest einen Block von der Karte
  * @param cmd		Kommando zum Lesen (0x51 fuer 512-Byte Block)
@@ -100,7 +100,7 @@ uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, void * buffer);
  * @return 			0 wenn alles ok ist, 1 wenn prepare_transfer_spi() Fehler meldet, 3 wenn Timeout bis zur Bestaetigung
  */
 uint8_t mmc_write_sector_spi(uint32_t addr, void * buffer);
-#endif	// SPI_AVAILABLE
+#endif // SPI_AVAILABLE
 
 /*!
  * Initialisiere die MMC/SD-Karte
@@ -121,14 +121,14 @@ uint8_t mmc_read_csd(void * buffer);
  * @return	Groesse der Karte in Byte. Bei einer 4 GByte-Karte kommt 0xFFFFFFFF zurueck
  */
 uint32_t mmc_get_size(void);
-#endif	// MMC_INFO_AVAILABLE
+#endif // MMC_INFO_AVAILABLE
 
 #ifdef DISPLAY_MMC_INFO
 /*!
  * Zeigt die Daten der MMC-Karte an
  */
 void mmc_display(void);
-#endif	// DISPLAY_MMC_INFO
+#endif // DISPLAY_MMC_INFO
 
 #ifdef MMC_WRITE_TEST_AVAILABLE
 /*! Testet die MMC-Karte. Schreibt nacheinander 2 Sektoren a 512 Byte mit Testdaten voll und liest sie wieder aus
@@ -137,7 +137,7 @@ void mmc_display(void);
  * @return 			0, wenn alles ok
  */
 uint8_t mmc_test(uint8_t * buffer);
-#endif	// MMC_WRITE_TEST_AVAILABLE
+#endif // MMC_WRITE_TEST_AVAILABLE
 
-#endif	// MMC_AVAILABLE
-#endif	// MMC_H_
+#endif // MMC_AVAILABLE
+#endif // MMC_H_

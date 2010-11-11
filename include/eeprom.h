@@ -266,4 +266,4 @@ static inline void ctbot_eeprom_write_block(void * dst, const void * src, size_t
     }
 }
 
-#endif	/* EEPROM_H_ */
+#endif // EEPROM_H_

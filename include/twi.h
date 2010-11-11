@@ -24,12 +24,12 @@
  * @date 	11.04.2006
  */
 
-#ifndef TWI_driver_H
-#define TWI_driver_H
+#ifndef TWI_DRIVER_H
+#define TWI_DRIVER_H
 
 #include "ct-Bot.h"
+
 #ifdef TWI_AVAILABLE 
-#include "global.h"
 #include "i2c.h"
 
 /*!
@@ -82,5 +82,5 @@ uint8_t Send_to_TWI(tx_type_t * pData);
 #define	MRX_DATA_ACK	0x50				/*!< Datenbyte wurde empfangen und ACK gesendet */
 #define	MRX_DATA_NACK	0x58				/*!< Datenbyte wurde empfangen und NACK gesendet */
 
-#endif	// TWI_AVAILABLE
-#endif	// TWI_driver_H
+#endif // TWI_AVAILABLE
+#endif // TWI_DRIVER_H

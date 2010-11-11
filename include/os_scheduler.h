@@ -24,13 +24,14 @@
  * @date 	02.10.2007
  */
 
-#ifndef OS_SCHEDULER_H_
-#define OS_SCHEDULER_H_
-#include "ct-Bot.h"
-#include "bot-logic/available_behaviours.h"
+#ifndef _OS_SCHEDULER_H_
+#define _OS_SCHEDULER_H_
 
 #ifdef MCU
+#include "ct-Bot.h"
+
 #ifdef OS_AVAILABLE
+#include "bot-logic/bot-logic.h"
 
 #define OS_TIME_SLICE	10	/*!< Dauer einer Zeitscheibe in ms */
 
@@ -64,17 +65,15 @@ void os_clear_utilization(void);
  * Gibt die gesammelten Statistikdaten zur CPU-Auslastung per LOG aus
  */
 void os_print_utilization(void);
-#endif	// MEASURE_UTILIZATION
+#endif // MEASURE_UTILIZATION
 
-#ifdef DISPLAY_OS_AVAILABLE
 extern uint8_t uart_log;	/*!< Zaehler fuer UART-Auslastung */
 
 /*!
  * Handler fuer OS-Display
  */
 void os_display(void);
-#endif	// DISPLAY_OS_AVAILABLE
 
-#endif	// OS_AVAILABLE
-#endif	// MCU
-#endif	// OS_SCHEDULER_H_
+#endif // OS_AVAILABLE
+#endif // MCU
+#endif // _OS_SCHEDULER_H_

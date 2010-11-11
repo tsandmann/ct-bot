@@ -25,16 +25,16 @@
  */
 
 #ifdef PC
-
-#include "ena.h"
 #include "ct-Bot.h"
 
 #ifdef ENA_AVAILABLE
+#include "ena.h"
+
 /*!
  * Initialisiert die Enable-Leitungen
  */
 void ENA_init() {
 	// Dummy
 }
-#endif	// ENA_AVAILABLE
-#endif	// PC
+#endif // ENA_AVAILABLE
+#endif // PC

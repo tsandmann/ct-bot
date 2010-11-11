@@ -277,4 +277,4 @@ static inline uint16_t mul8(uint8_t a, uint8_t b) {
 position_t calc_resection(position_t a, position_t m, position_t b, float angle_am, float angle_mb);
 #endif // BPS_AVAILABLE
 
-#endif	/*MATH_UTILS_H_*/
+#endif // MATH_UTILS_H_

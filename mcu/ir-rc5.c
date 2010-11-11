@@ -30,10 +30,11 @@
 // ========================================================================
 // RC5 Infrarot-Empfaenger
 // ========================================================================
-#include "ct-Bot.h"
 #ifdef MCU
-#ifdef IR_AVAILABLE
 
+#include "ct-Bot.h"
+
+#ifdef IR_AVAILABLE
 #include <avr/io.h>
 #include "ir-rc5.h"
 #include "timer.h"
@@ -42,18 +43,6 @@
 // Timing
 // -----------------------------------------------------------------------------
 #define IR_SAMPLES_PER_BIT_MIN		2	/*!< Flanke vor 3 Samples -> Paket verwerfen */
-
-/*! @todo Das gehoert eigentlich nicht hierhin */
-#ifdef RC5_AVAILABLE
-ir_data_t rc5_ir_data = {
-	0, 0, 0, 0, 0, 0
-};
-#endif
-#ifdef BPS_AVAILABLE
-ir_data_t bps_ir_data = {
-	0, 0, 0, 0, 0, BPS_NO_DATA
-};
-#endif
 
 /*!
  * Interrupt Serviceroutine,
@@ -145,5 +134,5 @@ uint16_t ir_read(ir_data_t * data) {
 	return retvalue;
 }
 
-#endif	// IR_AVAILABLE
-#endif	// MCU
+#endif // IR_AVAILABLE
+#endif // MCU

@@ -24,16 +24,14 @@
  * @date 	01.12.05
  */
 
-#include "ct-Bot.h"
-
 #ifdef PC
 
+#include "ct-Bot.h"
 #include <stdlib.h>
 #include "command.h"
 #include "bot-2-sim.h"
 #include "motor-low.h"
 #include "motor.h"
-
 
 volatile int16_t motor_left;	/*!< zuletzt gestellter Wert linker Motor */
 volatile int16_t motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
@@ -79,4 +77,4 @@ void servo_low(uint8_t servo, uint8_t pos) {
 	command_write(CMD_AKT_SERVO, SUB_CMD_NORM, servo, pos, 0);
 }
 
-#endif	// PC
+#endif // PC

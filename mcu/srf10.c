@@ -26,6 +26,7 @@
 
 #ifdef MCU 
 #include "ct-Bot.h"
+
 #ifdef SRF10_AVAILABLE 
 #include <avr/io.h>
 #include "twi.h"
@@ -167,5 +168,5 @@ uint16_t srf10_get_measure() {
 	return (uint16_t) (hib * 256 + lob);
 }
 
-#endif	// SRF10_AVAILABLE 
-#endif	// MCU
+#endif // SRF10_AVAILABLE
+#endif // MCU

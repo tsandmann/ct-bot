@@ -24,13 +24,13 @@
  * @date 	01.12.2005
  */
 
+#ifdef PC
 #include "ct-Bot.h"
 #include "sensor-low.h"
 #include "bot-2-sim.h"
 #include "command.h"
 #include "sensor.h"
 
-#ifdef PC
 /*!
  * Initialisiere alle Sensoren.
  * Dummy fuer PC-Code
@@ -46,4 +46,4 @@ void bot_sens(void) {
 	sensor_update(); // Weiterverarbeitung der rohen Sensordaten
 	led_update(); // LEDs updaten
 }
-#endif	// PC
+#endif // PC

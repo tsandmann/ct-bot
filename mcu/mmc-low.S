@@ -31,11 +31,11 @@
  * @date 	14.11.2006
  */
 
-#include "mmc-low.h"
 #include "ct-Bot.h"
+#ifdef MMC_AVAILABLE
+#include "mmc-low.h"
 #include "ena.h"
 #include "led.h"
-#ifdef MMC_AVAILABLE
 #ifndef SPI_AVAILABLE
 #include <avr/io.h> 
 
@@ -207,8 +207,8 @@ mmc_write_sector:
 	ori r24, LED_ROT
 	sts led, r24
 	call LED_set				; rote LED an
-#endif	// TEST_AVAILABLE
-#endif	// LED_AVAILABLE 	
+#endif // TEST_AVAILABLE
+#endif // LED_AVAILABLE
 	call mmc_enable				; Karte aktiv schalten
 	tst r24
 	breq 1f
@@ -331,8 +331,8 @@ mmc_write_sector:
 	andi r24, ~LED_ROT
 	sts led, r24
 	call LED_set				; rote LED aus
-#endif	// TEST_AVAILABLE
-#endif	// LED_AVAILABLE
+#endif // TEST_AVAILABLE
+#endif // LED_AVAILABLE
 #ifdef OS_AVAILABLE
 	call os_exitCS 				; os_exitCS()
 #endif
@@ -374,8 +374,8 @@ mmc_read_sector:
 	ori r24, LED_GRUEN
 	sts led, r24
 	call LED_set				; gruene LED an
-#endif	// TEST_AVAILABLE
-#endif	// LED_AVAILABLE
+#endif // TEST_AVAILABLE
+#endif // LED_AVAILABLE
 	call mmc_enable				; Karte aktiv schalten
 	tst r24
 	breq 1f
@@ -491,8 +491,8 @@ mmc_read_sector:
 	andi r24, ~LED_GRUEN
 	sts led, r24
 	call LED_set				; gruene LED aus
-#endif	// TEST_AVAILABLE
-#endif	// LED_AVAILABLE
+#endif // TEST_AVAILABLE
+#endif // LED_AVAILABLE
 #ifdef OS_AVAILABLE
 	call os_exitCS				; os_exitCS();
 #endif
@@ -504,6 +504,6 @@ mmc_read_sector:
 	pop r15
 	pop r14
 	ret
-#endif	// SPI_AVAILABLE
-#endif	// MMC_AVAILABLE
-#endif	// MCU
+#endif // SPI_AVAILABLE
+#endif // MMC_AVAILABLE
+#endif // MCU

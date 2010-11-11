@@ -27,7 +27,6 @@
 
 #include "ct-Bot.h"
 #include "delay.h"
-
 #include "timer.h"
 
 /*!
@@ -43,4 +42,4 @@ void delay(uint16_t ms) {
 	} while (now - start < ticksToWait);
 
 }
-#endif	// MCU
+#endif // MCU

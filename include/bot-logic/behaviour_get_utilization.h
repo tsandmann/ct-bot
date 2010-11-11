@@ -27,9 +27,7 @@
 #ifndef BEHAVIOUR_GET_UTILIZATION_H_
 #define BEHAVIOUR_GET_UTILIZATION_H_
 
-#include "bot-logic/bot-logik.h"
 #ifdef BEHAVIOUR_GET_UTILIZATION_AVAILABLE
-
 /*!
  * Verhalten, das die CPU-Auslastung eines anderen Verhaltens misst
  * @param *data	Der Verhaltensdatensatz
@@ -43,5 +41,5 @@ void bot_get_utilization_behaviour(Behaviour_t * data);
  */
 void bot_get_utilization(Behaviour_t * caller, uint8_t behaviour);
 
-#endif	// BEHAVIOUR_GET_UTILIZATION_AVAILABLE
-#endif	/* BEHAVIOUR_GET_UTILIZATION_H_ */
+#endif // BEHAVIOUR_GET_UTILIZATION_AVAILABLE
+#endif // BEHAVIOUR_GET_UTILIZATION_H_

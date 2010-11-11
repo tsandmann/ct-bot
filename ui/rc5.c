@@ -18,40 +18,48 @@
  */
 
 /*!
- * @file 	rc5.c
- * @brief 	RC5-Fernbedienung / Basic-Tasten-Handler
+ * \file 	rc5.c
+ * \brief 	RC5-Fernbedienung / Basic-Tasten-Handler
+ *
  * Um RC5-Codes fuer eine eigene Fernbedienung anzupassen, reicht es diese
  * in eine Header-Datei auszulagern und anstatt der rc5code.h einzubinden.
  * Die Maskierung fuer die Auswertung der Codes nicht vergessen!
- * @author 	Benjamin Benz (bbe@heise.de)
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	12.02.2007
+ *
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	12.02.2007
  */
 
+#include "ct-Bot.h"
+#ifdef RC5_AVAILABLE
+
 #include "rc5.h"
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
+#include "ui/available_screens.h"
 #include "map.h"
-#include "ir-rc5.h"
 #include "display.h"
 #include "motor-low.h"
 #include "rc5-codes.h"
 #include "gui.h"
-#include "ui/available_screens.h"
-
 #include "mmc.h"
 #include "mmc-vm.h"
 #include "pos_store.h"
 #include "timer.h"
 #include "bot-2-bot.h"
+#include "init.h"
+#include "command.h"
 #include <stdlib.h>
 
-#ifdef RC5_AVAILABLE
 
 uint16_t RC5_Code = 0;	/*!< Letzter empfangener RC5-Code */
+/*! RC5-Konfiguration fuer Fernbedienung */
+ir_data_t rc5_ir_data = {
+	0, 0, 0, 0, 0, 0
+};
 
 /*!
  * Setzt das Display auf eine andere Ausgabe.
- * @param screen Parameter mit dem zu setzenden Screen.
+ * \param screen Parameter mit dem zu setzenden Screen.
  */
 static void
 #ifndef DOXYGEN
@@ -69,25 +77,31 @@ rc5_screen_set(uint8_t screen) {
 		display_screen = 0; // endliche Screenanzahl
 	}
 	display_clear(); // alten Screen loeschen, das Zeichnen uerbernimmt GUI-Handler
-#endif	// DISPLAY_AVAILABLE
+#endif // DISPLAY_AVAILABLE
 }
 
 /*!
- * @brief	Stellt die Not-Aus-Funktion dar.
+ * Stellt die Not-Aus-Funktion dar.
  * Sie laesst den Bot anhalten und setzt alle Verhalten zurueck mit Sicherung der vorherigen Aktivitaeten.
  */
 static void rc5_emergency_stop(void) {
 #ifdef BEHAVIOUR_AVAILABLE
-	target_speed_l = 0;	// Geschwindigkeit nullsetzen
+	/* Geschwindigkeiten nullsetzen */
+	target_speed_l = 0;
 	target_speed_r = 0;
-	deactivateAllBehaviours();  // alle Verhalten deaktivieren mit vorheriger Sicherung
-#endif
+#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
+	/* RemoteCalls abbrechen */
+	bot_remotecall_cancel();
+#endif // BEHAVIOUR_REMOTECALL_AVAILABLE
+	/* alle normalen Verhalten deaktivieren */
+	deactivateAllBehaviours();
+#endif // BEHAVIOUR_AVAILABLE
 }
 
 /*!
- * @brief		Aendert die Geschwindigkeit um den angegebenen Wert.
- * @param left	linke, relative Geschwindigkeitsaenderung
- * @param right	rechte, relative Geschwindigkeitsaenderung
+ * Aendert die Geschwindigkeit um den angegebenen Wert.
+ * \param left	linke, relative Geschwindigkeitsaenderung
+ * \param right	rechte, relative Geschwindigkeitsaenderung
  */
 static void rc5_bot_change_speed(int16_t left, int16_t right) {
 #ifdef BEHAVIOUR_AVAILABLE
@@ -118,10 +132,6 @@ static void rc5_bot_change_speed(int16_t left, int16_t right) {
 static void bot_reset(void) {
 	/* Motoren aus */
 	motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
-#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
-	/* laufende RemoteCalls abbrechen */
-	deactivateCalledBehaviours(bot_remotecall_behaviour);
-#endif
 	/* alle Verhalten aus */
 	rc5_emergency_stop();
 	/* Sensorauswertungen zuruecksetzen */
@@ -132,13 +142,13 @@ static void bot_reset(void) {
 #endif
 	/* Display-Reset */
 	rc5_screen_set(0);
-	/* Timer loeschen */
-	timer_reset();
+//	/* Timer loeschen */
+//	timer_reset();
 }
 
 /*!
- * @brief		Verarbeitet die Zifferntasten.
- * @param key	Parameter mit der betaetigten Zifferntaste
+ * Verarbeitet die Zifferntasten.
+ * \param key Parameter mit der betaetigten Zifferntaste
  */
 static void rc5_number(uint8_t key) {
 	switch (key) {	// richtige Aktion heraussuchen
@@ -204,9 +214,7 @@ static void rc5_number(uint8_t key) {
 }
 
 /*!
- * @brief	Ordnet den Tasten eine Aktion zu und fuehrt diese aus.
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	12.02.2007
+ * Ordnet den Tasten eine Aktion zu und fuehrt diese aus.
  * Hier gehoeren nur die absoluten Basics an Tastenzuordnungen rein, nicht Spezielles! Sonderwuensche
  * evtl. nach rc5_number(), ab besten aber eigenen Screenhandler anlegen und mit GUI/register_screen()
  * einhaengen.
@@ -217,29 +225,34 @@ void default_key_handler(void) {
 		/* Not-Aus */
 		case RC5_CODE_PWR:		rc5_emergency_stop(); break;
 
-		/* Karte Drucken */
-		#ifdef MAP_AVAILABLE
-		case RC5_CODE_DOT:		map_print(); break;
-		#endif
-
 		/* Reset */
-		#ifdef RC5_CODE_CH_PC
+#ifdef RC5_CODE_CH_PC
 		case RC5_CODE_CH_PC:	bot_reset(); break;
-		#endif
+#endif
+
+		/* Shutdown */
+#ifdef RC5_CODE_I_II
+		case RC5_CODE_I_II:
+			command_write(CMD_SHUTDOWN, SUB_CMD_NORM, 0, 0, 0);
+#ifdef MCU
+			ctbot_shutdown();
+#endif // MCU
+			break;
+#endif
 
 		/* Screenwechsel */
-		#ifdef RC5_CODE_GREEN
+#ifdef RC5_CODE_GREEN
 		case RC5_CODE_GREEN:	rc5_screen_set(0); break;
-		#endif
-		#ifdef RC5_CODE_RED
+#endif
+#ifdef RC5_CODE_RED
 		case RC5_CODE_RED:		rc5_screen_set(1); break;
-		#endif
-		#ifdef RC5_CODE_YELLOW
+#endif
+#ifdef RC5_CODE_YELLOW
 		case RC5_CODE_YELLOW:	rc5_screen_set(2); break;
-		#endif
-		#ifdef RC5_CODE_BLUE
+#endif
+#ifdef RC5_CODE_BLUE
 		case RC5_CODE_BLUE:		rc5_screen_set(3); break;
-		#endif
+#endif
 		case RC5_CODE_TV_VCR:	rc5_screen_set(DISPLAY_SCREEN_TOGGLE); break;
 
 		/* Geschwindigkeitsaenderung */
@@ -249,14 +262,14 @@ void default_key_handler(void) {
 		case RC5_CODE_RIGHT:	rc5_bot_change_speed( 10, -10); break;
 
 		/* Servoaktivitaet */
-		#ifdef BEHAVIOUR_SERVO_AVAILABLE
-		#ifdef RC5_CH_PLUS
+#ifdef BEHAVIOUR_SERVO_AVAILABLE
+#ifdef RC5_CH_PLUS
 		case RC5_CH_PLUS:		bot_servo(NULL, SERVO1, DOOR_CLOSE); break;
-		#endif
-		#ifdef RC5_CH_MINUS
-		case RC5_CH_MINUS:		bot_servo(NULL, SERVO1, DOOR_OPEN);  break;
-		#endif
-		#endif	// BEHAVIOUR_SERVO_AVAILABLE
+#endif
+#ifdef RC5_CH_MINUS
+		case RC5_CH_MINUS:		bot_servo(NULL, SERVO1, DOOR_OPEN); break;
+#endif
+#endif // BEHAVIOUR_SERVO_AVAILABLE
 
 		/* numerische Tasten */
 		case RC5_CODE_0:		rc5_number(0); break;
@@ -273,7 +286,7 @@ void default_key_handler(void) {
 }
 
 /*!
- * @brief	Liest ein RC5-Codeword und wertet es aus
+ * Liest ein RC5-Codeword und wertet es aus
  */
 void rc5_control(void) {
 	static uint16_t RC5_Last_Toggle = 1; /*!< Toggle-Wert des zuletzt empfangenen RC5-Codes */
@@ -295,4 +308,4 @@ void rc5_control(void) {
 #endif
 }
 
-#endif	// RC5_AVAILABLE
+#endif // RC5_AVAILABLE

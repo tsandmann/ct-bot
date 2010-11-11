@@ -25,7 +25,7 @@
  * @date 	08.02.2010
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 #ifdef BEHAVIOUR_TEST_ENCODER_AVAILABLE
 
 #include <stdlib.h>

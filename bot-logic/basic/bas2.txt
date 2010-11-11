@@ -1,0 +1,23 @@
+10 rem Wandfolger
+20 call("bot_speed", 450, 450) 
+30 rem Abstand zur Wand voraus
+70 r=vpeek("sensDistR")
+75 l=vpeek("sensDistL")
+80 rem Erkennung Hindernis
+90 if l<400 then gosub 1000
+100 if r<400 then gosub 1000
+500 rem und in loop wieder zurueck
+601 REM Leerzeile, um die Datei zu vergroessern
+602 REM Leerzeile, um die Datei zu vergroessern
+603 REM Leerzeile, um die Datei zu vergroessern
+604 REM Leerzeile, um die Datei zu vergroessern
+605 REM Leerzeile, um die Datei zu vergroessern
+910 goto 20
+999 end
+1000 rem subroutine Hindernis
+1010 REM wait 100
+1015 rem Wegdrehen je nach Wandseite
+1020 if l<400 then call("bot_speed", 0, -300) else call("bot_speed", -300, 0)
+1030 wait 150
+1040 rem Drehzeit ist nun um
+1250 return

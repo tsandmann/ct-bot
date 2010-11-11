@@ -25,20 +25,24 @@
  */
 
 #include "ct-Bot.h"
-#include "global.h"
 #include "ui/available_screens.h"
+#if defined DISPLAY_MISC_AVAILABLE || defined DISPLAY_RESET_INFO_AVAILABLE || defined DISPLAY_RAM_AVAILABLE
+#include <stddef.h>
 #include "display.h"
-#include "bot-logic/bot-logik.h"
-#include "timer.h"
-#include "log.h"
+#include "gui.h"
 #include "rc5-codes.h"
+#include "sensor.h"
+#include "log.h"
+#include "init.h"
+
+#ifdef DISPLAY_MISC_AVAILABLE
+#include "bot-logic/bot-logic.h"
+#include "timer.h"
 #include "command.h"
 #include "gui.h"
-#include "init.h"
 #include "eeprom.h"
 #include <stdlib.h>
 
-#ifdef MISC_DISPLAY_AVAILABLE
 #ifdef KEYPAD_AVAILABLE
 static uint8_t new_address = 0;	/*!< True, falls neue Adresse eingegeben wird */
 
@@ -67,15 +71,15 @@ void misc_display(void) {
 #else
 	/* Anzeige der Bot-Adresse (aenderbar) */
 	display_cursor(1, 1);
-	display_printf("bot_addr=");
+	display_puts("bot_addr=");
 
 #ifdef KEYPAD_AVAILABLE
 	if (RC5_Code == RC5_CODE_MUTE) {
-		gui_keypad_request(change_bot_addr_callback, 1, 10);
+		gui_keypad_request(change_bot_addr_callback, 1, 1, 10);
 #ifdef PC
 		display_cursor(1, 10);
 #endif
-		display_printf("          ");	// clean
+		display_puts("          "); // clean
 		new_address = 1;
 		RC5_Code = 0;
 	}
@@ -105,9 +109,10 @@ void misc_display(void) {
 	display_cursor(4, 1);
 	display_printf("Speed= %04d", (int16_t) v_center);
 }
-#endif // MISC_DISPLAY_AVAILABLE
+#endif // DISPLAY_MISC_AVAILABLE
 
-#ifdef RESET_INFO_DISPLAY_AVAILABLE
+#ifdef MCU
+#ifdef DISPLAY_RESET_INFO_AVAILABLE
 /*!
  * Zeigt Informationen ueber Resets an
  */
@@ -124,9 +129,9 @@ void reset_info_display(void) {
 	display_cursor(4, 1);
 	display_printf("BORF :%d #SResets:%3u", binary(mcucsr, 2), soft_resets);
 }
-#endif // RESET_INFO_DISPLAY_AVAILABLE
+#endif // DISPLAY_RESET_INFO_AVAILABLE
 
-#ifdef RAM_DISPLAY_AVAILABLE
+#ifdef DISPLAY_RAM_AVAILABLE
 /*
  * 	*** AVR Data Memory Map ***
  *
@@ -173,12 +178,12 @@ void ram_display(void) {
 	display_cursor(1, 1);
 	display_printf("bss/data:%4u/%4u B", bss_size, data_size);
 	display_cursor(2, 1);
-	display_printf("heap:");
+	display_puts("heap:");
 	display_cursor(2, 15);
 	size_t heap_size = (size_t) (__brkval - &__heap_start);
 	display_printf("%4u B", heap_size);
 	display_cursor(3, 1);
-	display_printf("stack:");
+	display_puts("stack:");
 	display_cursor(3, 15);
 	size_t stack_size = (size_t) ((unsigned char *) RAMEND - sp);
 	display_printf("%4u B", stack_size);
@@ -187,4 +192,6 @@ void ram_display(void) {
 	size_t frei = ram_size - (data_size + bss_size + heap_size + stack_size);
 	display_printf("free/all:%5u/%5u", frei, ram_size);
 }
-#endif // RAM_DISPLAY_AVAILABLE
+#endif // DISPLAY_RAM_AVAILABLE
+#endif // MCU
+#endif // DISPLAY-Schalter

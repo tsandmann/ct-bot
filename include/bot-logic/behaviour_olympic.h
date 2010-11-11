@@ -27,9 +27,7 @@
 #ifndef BEHAVIOUR_OLYMPIC_H_
 #define BEHAVIOUR_OLYMPIC_H_
 
-#include "bot-logic/bot-logik.h"
 #ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
-
 /*!
  * Das Verhalten setzt sich aus 3 Teilverhalten zusammen:
  * Nach Licht suchen, auf das Licht zufahren, im Licht Slalom fahren.
@@ -89,5 +87,5 @@ void bot_do_slalom_behaviour(Behaviour_t * data);
  */
 void bot_do_slalom(Behaviour_t * caller);
 
-#endif	// BEHAVIOUR_OLYMPIC_AVAILABLE
-#endif	/*BEHAVIOUR_OLYMPIC_H_*/
+#endif // BEHAVIOUR_OLYMPIC_AVAILABLE
+#endif // BEHAVIOUR_OLYMPIC_H_

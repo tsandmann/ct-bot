@@ -21,145 +21,83 @@
  * @file 	display_pc.c
  * @brief 	Routinen zur Displaysteuerung
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	20.12.05
+ * @date 	20.12.2005
  */
 
+#ifdef PC
 #include "ct-Bot.h"
 
-#ifdef PC
-
+#ifdef DISPLAY_AVAILABLE
 #include "display.h"
-#include <stdarg.h>
-#include <stdio.h>
-
-/* definiere DISPLAY_REMOTE_AVAILABLE, wenn die Display-Daten per TCP an das
- * Simulationsprogramm gesendet werden sollen.  Wenn es nicht gesetzt ist,
- * dann erscheint die LCD Ausgabe auf der Startkonsole */
-
-
-#ifdef DISPLAY_REMOTE_AVAILABLE
 #include "command.h"
 #include "bot-2-sim.h"
-#else
-#ifdef WIN32
-#include <windows.h>
-#endif	// WIN32
-#endif	// DISPLAY_REMOTE_AVAILABLE
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
 
-#ifdef DISPLAY_AVAILABLE
+uint8_t display_screen = 0; /*!< zurzeit aktiver Displayscreen */
 
-/*! Puffergroesse fuer eine Zeile in bytes */
-#define DISPLAY_BUFFER_SIZE	(DISPLAY_LENGTH + 1)
-
-uint8_t display_screen = 0;	/*!< zurzeit aktiver Displayscreen */
-
-char display_buf[DISPLAY_BUFFER_SIZE];	/*!< Pufferstring fuer Displayausgaben */
-
-#ifdef DISPLAY_REMOTE_AVAILABLE
-#define CLEAR              command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, 0, 0, 0)	/*!< Display loeschen */
-#define POSITION(Ze, Sp)   {Ze--; Sp--; command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, (int16_t)(Sp), (int16_t) (Ze), 0);}	/*!< Cursor positionieren */
-#define printf(data)       {command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, 0, 0, (data));}	/*!< Daten ausgeben */
-#else
-#ifdef WIN32
-static void clrscr(void);									/*!< Befehl um das Display zu loeschen */
-static void gotoxy(int x, int y);							/*!< Befehl um eine Position anzuspringen */
-#define POSITION(Ze, Sp)   gotoxy(Sp, Ze)					/*!< Befehl um eine Position anzuspringen */
-#define CLEAR              clrscr()							/*!< Befehl um das Display zu loeschen */
-#else
-#define POSITION(Ze, Sp)   printf("\033[%d;%dH",Ze,Sp)		/*!< Befehl um eine Position anzuspringen */
-#define CLEAR              printf("\033[2J")				/*!< Befehl um das Display zu loeschen */
-#endif	// WIN32
-#endif	// DISPLAY_REMOTE_AVAILABLE
-
+static char display_buf[DISPLAY_BUFFER_SIZE]; /*!< Pufferstring fuer Displayausgaben */
+static int16_t last_row = 0;
+static int16_t last_column = 0;
 
 /*!
  * Loescht das ganze Display
  */
 void display_clear(void) {
-	CLEAR;
+	command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, 0, 0, 0);
 }
 
 /*!
-** LCD_Cursor: Positioniert den LCD-Cursor bei "row", "column".
-*/
-void display_cursor(uint8_t row, uint8_t column) {
-	int16_t r = row, c = column;	// Cast auf int16
-	POSITION(r, c);
+ * Positioniert den Cursor
+ * @param row		Zeile
+ * @param column	Spalte
+ */
+void display_cursor(int16_t row, int16_t column) {
+	last_row = row - 1;
+	last_column = column - 1;
+//	command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, last_column, last_row, 0);
 }
 
 /*!
- * Init Display
+ * Initialisiert das Display
  */
 void display_init(void) {
-	CLEAR;
+	display_clear();
 }
 
 /*!
  * Schreibt einen String auf das Display.
- * @param format	Format, wie beim printf
+ * @param *format	Format, wie beim printf
  * @param ... 		Variable Argumentenliste, wie beim printf
  * @return			Anzahl der geschriebenen Zeichen
  */
 uint8_t display_printf(const char * format, ...) {
-
 	va_list	args;
 
-	/* Sicher gehen, das der zur Verfuegung stehende Puffer nicht
-	 * ueberschrieben wird.
-	 */
 	va_start(args, format);
-	uint8_t len = vsnprintf(display_buf, DISPLAY_BUFFER_SIZE, format, args);
+	const uint8_t len = vsnprintf(display_buf, DISPLAY_BUFFER_SIZE, format, args);
 	va_end(args);
 
-	printf(display_buf);
+	command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, last_column, last_row, display_buf);
+	last_column += len;
+//	command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, last_column, last_row, 0);
 
 	return len;
 }
 
-#ifndef DISPLAY_REMOTE_AVAILABLE
-#ifdef WIN32
-
 /*!
- * Loescht die Konsole.
+ * Gibt einen String auf dem Display aus
+ * @param *text	Zeiger auf den auszugebenden String
+ * @return		Anzahl der geschriebenen Zeichen
  */
-static void clrscr(void) {
-	COORD coordScreen = { 0, 0 };
-	DWORD cCharsWritten;
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	DWORD dwConSize;
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+uint8_t display_puts(const char * text) {
+	const uint8_t len = strlen(text);
+	command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, last_column, last_row, text);
+	last_column += len;
+//	command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, last_column, last_row, 0);
 
-	GetConsoleScreenBufferInfo(hConsole, &csbi);
-	dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
-	FillConsoleOutputCharacter(	hConsole,
-								TEXT(' '),
-								dwConSize,
-								coordScreen,
-								&cCharsWritten);
-	GetConsoleScreenBufferInfo(hConsole, &csbi);
-	FillConsoleOutputAttribute(	hConsole,
-                             	csbi.wAttributes,
-                             	dwConSize,
-                             	coordScreen,
-                             	&cCharsWritten);
-	SetConsoleCursorPosition(hConsole, coordScreen);
-	return;
+	return len;
 }
-
-/*!
- * Springt an die angegebenen Koordinaten in der Konsole.
- * @param x Spalte
- * @param y Zeile
- */
-static void gotoxy(int x, int y) {
-	COORD point;
-	point.X = x-1; point.Y = y-1;
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), point);
-	return;
-}
-
-#endif	// WIN32
-#endif 	// !DISPLAY_REMOTE_AVAILABLE
-
-#endif	// DISPLAY_AVAILABLE
-#endif	// PC
+#endif // DISPLAY_AVAILABLE
+#endif // PC

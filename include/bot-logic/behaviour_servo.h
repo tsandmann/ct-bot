@@ -29,11 +29,7 @@
 #ifndef BEHAVIOUR_SERVO_H_
 #define BEHAVIOUR_SERVO_H_
 
-#include "ct-Bot.h"
-#include "bot-logic/bot-logik.h"
-
 #ifdef BEHAVIOUR_SERVO_AVAILABLE
-
 extern uint8_t servo_active;	/*!< 0, wenn kein Servo aktiv, sonst Bit der gerade aktiven Servos gesetzt */
 
 /*!
@@ -50,5 +46,5 @@ void bot_servo_behaviour(Behaviour_t * data);
  */
 void bot_servo(Behaviour_t * caller, uint8_t servo, uint8_t pos);
 
-#endif	// BEHAVIOUR_SERVO_AVAILABLE
-#endif	/*BEHAVIOUR_SIMPLE_H_*/
+#endif // BEHAVIOUR_SERVO_AVAILABLE
+#endif // BEHAVIOUR_SIMPLE_H_

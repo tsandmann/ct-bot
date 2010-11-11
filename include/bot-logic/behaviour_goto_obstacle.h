@@ -27,9 +27,7 @@
 #ifndef BEHAVIOUR_GOTO_OBSTACLE_H_
 #define BEHAVIOUR_GOTO_OBSTACLE_H_
 
-#include "bot-logic/bot-logik.h"
 #ifdef BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
-
 /*!
  * Hilfsverhalten von bot_goto_pos(), das den Bot auf eine gewuenschte Entfernung
  * an ein Hindernis heranfaehrt.
@@ -46,5 +44,5 @@ void bot_goto_obstacle_behaviour(Behaviour_t * data);
  */
 void bot_goto_obstacle(Behaviour_t * caller, int16_t distance, uint8_t parallel);
 
-#endif	// BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
-#endif	/* BEHAVIOUR_GOTO_OBSTACLE_H_ */
+#endif // BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
+#endif // BEHAVIOUR_GOTO_OBSTACLE_H_

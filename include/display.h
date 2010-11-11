@@ -24,55 +24,61 @@
  * @date 	20.12.2005
  */
 
-#ifndef display_H_
-#define display_H_
+#ifndef DISPLAY_H_
+#define DISPLAY_H_
 
 #ifdef MCU
 #include <avr/pgmspace.h>
-#else
-#define PROGMEM	/*!< Alibideklaration hat keine Funktion, verhindert aber eine Warning */
-#endif	// MCU
+#endif
 
-#define DISPLAY_LENGTH	20	/*!< Wieviele Zeichen passen in eine Zeile */
+#define DISPLAY_LENGTH 20 /*!< Wieviele Zeichen passen in eine Zeile */
+#define DISPLAY_BUFFER_SIZE	(DISPLAY_LENGTH + 1) /*!< Puffergroesse fuer eine Zeile [Byte] */
 
-#define DISPLAY_SCREEN_TOGGLE	42	/*!< Screen-Nummer, die zum wechseln verwendet wird */
-extern uint8_t display_screen;		/*!< Welcher Screen soll gezeigt werden? */
+#define DISPLAY_SCREEN_TOGGLE 42 /*!< Screen-Nummer, die zum Wechseln verwendet wird */
+extern uint8_t display_screen;   /*!< Welcher Screen soll gezeigt werden? */
 
 /*!
- * @brief	Initialisiert das Display
+ * Initialisiert das Display
  */
 void display_init(void);
 
 /*!
- * @brief	Loescht das ganze Display
+ * Loescht das ganze Display
  */
 void display_clear(void);
 
 /*!
- * @brief			Positioniert den Cursor
+ * Positioniert den Cursor
  * @param row		Zeile
  * @param column	Spalte
  */
-void display_cursor (uint8_t row, uint8_t column);
+void display_cursor(int16_t row, int16_t column);
 
 /*!
- * @brief 		Schreibt ein Zeichen auf das Display
+ * Schreibt ein Zeichen auf das Display
  * @param data 	Das Zeichen
  */
-void display_data(char data);
+void display_data(const char data);
 
 #ifdef PC
 /*!
- * @brief			Schreibt einen String auf das Display.
- * @param format 	Format, wie beim printf
+ * Schreibt einen String auf das Display.
+ * @param *format 	Format, wie beim printf
  * @param ... 		Variable Argumentenliste, wie beim printf
  * @return			Anzahl der geschriebenen Zeichen
  */
 uint8_t display_printf(const char * format, ...);
-#else
+
 /*!
- * @brief			Schreibt einen String auf das Display, der im Flash gespeichert ist
- * @param format 	Format, wie beim printf
+ * Gibt einen String auf dem Display aus
+ * @param *text	Zeiger auf den auszugebenden String
+ * @return		Anzahl der geschriebenen Zeichen
+ */
+uint8_t display_puts(const char * text);
+#else // MCU
+/*!
+ * Schreibt einen String auf das Display, der im Flash gespeichert ist
+ * @param *format 	Format, wie beim printf, Zeiger aber auf String im Flash
  * @param ... 		Variable Argumentenliste, wie beim printf
  * @return			Anzahl der geschriebenen Zeichen
  * Ganz genauso wie das "alte" display_printf(...) zu benutzen, das Makro
@@ -82,11 +88,26 @@ uint8_t display_printf(const char * format, ...);
 uint8_t display_flash_printf(const char * format, ...);
 
 /*!
- * @brief			Schreibt einen String auf das Display, der String verbleibt im Flash
- * @param format	Format, wie beim printf
- * @param args 		Variable Argumentenliste, wie beim printf
+ * Schreibt einen String auf das Display, der String verbleibt im Flash
+ * @param _format	Format, wie beim printf
+ * @param ... 		Variable Argumentenliste, wie beim printf
+ * @return			Anzahl der geschriebenen Zeichen
  */
-#define display_printf(format, ...)	display_flash_printf(PSTR(format), ## __VA_ARGS__)
-#endif	// PC
+#define display_printf(_format, ...) display_flash_printf(PSTR(_format), ## __VA_ARGS__)
 
-#endif	// display_H_
+/*!
+ * Gibt einen String (im Flash) auf dem Display aus
+ * @param *text	Zeiger auf den auszugebenden String
+ * @return 		Anzahl der geschriebenen Zeichen
+ */
+uint8_t display_flash_puts(const char * text);
+
+/*!
+ * Gibt einen String auf dem Display aus, der String verbleibt im Flash
+ * @param *text	Zeiger auf den auszugebenden String
+ * @return		Anzahl der geschriebenen Zeichen
+ */
+#define display_puts(_text) display_flash_puts(PSTR(_text))
+#endif // PC
+
+#endif // DISPLAY_H_

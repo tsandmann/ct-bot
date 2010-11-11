@@ -24,7 +24,7 @@
  * @date 	03.11.2006
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
 #include <stdlib.h>
@@ -184,7 +184,7 @@ void bot_explore_behaviour(Behaviour_t * data) {
 		}
 		break;
 		// Nach links drehen, bis der Bot parallel zum Hindernis auf der rechten Seite steht.
-/*! @todo	Entwickle ein Verhalten, dass auch bei Loechern funktioniert.
+/*! @todo	Entwickle ein Verhalten, das auch bei Loechern funktioniert.
  * 			Tipp dazu: Drehe den Roboter auf das Loch zu, bis beide Bodensensoren das Loch 'sehen'. Anschliessend drehe den Bot um 90 Grad.
  * 			Es ist noetig, neue Zustaende zu definieren, die diese Zwischenschritte beschreiben.
  * 			Drehung mit dem Maussensor ueberwachen. */
@@ -434,4 +434,4 @@ void bot_olympic_behaviour(Behaviour_t * data) {
 		bot_explore(data, check_for_light);
 }
 
-#endif	// BEHAVIOUR_OLYMPIC_AVAILABLE
+#endif // BEHAVIOUR_OLYMPIC_AVAILABLE

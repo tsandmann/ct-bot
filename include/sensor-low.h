@@ -23,32 +23,32 @@
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	01.12.05
  */
-#ifndef sens_low_H_
-#define sens_low_H_
+#ifndef SENSOR_LOW_H_
+#define SENSOR_LOW_H_
 
 /*!
  * Initialisiere alle Sensoren
  */
-extern void bot_sens_init(void);
+void bot_sens_init(void);
 
 /*!
  * Alle Sensoren aktualisieren
  */
-extern void bot_sens(void);
+void bot_sens(void);
 
 /*!
  * Kuemmert sich um die Radencoder
  * Das muss schneller gehen als die anderen Sensoren,
  * daher Update per ISR
  */
-extern void bot_encoder_isr(void);
+void bot_encoder_isr(void);
 
 #ifdef SPEED_CONTROL_AVAILABLE
 extern uint16_t encTimeL[8];	/*!< Timestamps linker Encoder */
 extern uint16_t encTimeR[8];	/*!< Timestamps rechter Encoder */
 extern uint8_t i_encTimeL;		/*!< Array-Index auf letzten Timestampeintrag links */
 extern uint8_t i_encTimeR;		/*!< Array-Index auf letzten Timestampeintrag rechts */
-#endif	// SPEED_CONTROL_AVAILABLE
+#endif // SPEED_CONTROL_AVAILABLE
 
 #ifdef SPEED_LOG_AVAILABLE
 /*! Datenstruktur fuer Speedlog-Eintraege */
@@ -71,5 +71,5 @@ typedef union {
 extern slog_t slog; /*!< Speed-Log */
 extern volatile uint8_t slog_i[2];		/*!< Array-Index */
 extern uint32_t slog_sector;			/*!< Sektor auf der MMC fuer die Daten */
-#endif	// SPEED_LOG_AVAILABLE
-#endif	// sens_low_H_
+#endif // SPEED_LOG_AVAILABLE
+#endif // SENSOR_LOW_H_

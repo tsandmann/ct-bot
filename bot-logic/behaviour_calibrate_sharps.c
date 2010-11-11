@@ -29,7 +29,7 @@
  * @date 	21.04.2007
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
 #include <math.h>
@@ -291,9 +291,9 @@ void bot_calibrate_sharps_display(void) {
 		display_cursor(2,1);
 		display_printf("Bot bitte auf %2u cm", distance);
 		display_cursor(3,1);
-		display_printf("stellen und mit");
+		display_puts("stellen und mit");
 		display_cursor(4,1);
-		display_printf("\"Mute\" bestaetigen");
+		display_puts("\"Mute\" bestaetigen");
 
 		/* Keyhandler */
 		if (RC5_Code == RC5_CODE_MUTE) {
@@ -302,11 +302,11 @@ void bot_calibrate_sharps_display(void) {
 		}
 	} else if (pNextJob != NULL) {
 		display_cursor(2,1);
-		display_printf("thinking...         ");
+		display_puts("thinking...         ");
 	} else if (count == max_steps) {
-		display_printf("fertig :-)");
+		display_puts("fertig :-)");
 	} else {
-		display_printf("run calibrate_sharps");
+		display_puts("run calibrate_sharps");
 	}
 }
 

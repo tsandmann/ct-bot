@@ -24,32 +24,32 @@
  * @date 	20.12.2005
  */
 #include "command.h"
-#include "tcp.h"
-#include "led.h"
-#include "log.h"
-#include "adc.h"
-#include "timer.h"
-#include "mouse.h"
-#include "display.h"
-#include "sensor.h"
-#include "motor.h"
-#include "rc5.h"
-#include "ir-rc5.h"
-#include "rc5-codes.h"
-#include "bot-logic/bot-logik.h"
-#include "bot-2-sim.h"
-#include "delay.h"
-#include "bot-2-bot.h"
-#include "os_thread.h"
-#include "map.h"
-#include <string.h>
-#define COMMAND_TIMEOUT 	10				/*!< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
+#include "eeprom.h"
+
 EEPROM uint8_t bot_address = CMD_BROADCAST; /*!< Kommunikations-Adresse des Bots (EEPROM) */
 
 #ifdef COMMAND_AVAILABLE
+#include "tcp.h"
+#include "led.h"
+#include "log.h"
+#include "timer.h"
+#include "mouse.h"
+#include "sensor.h"
+#include "rc5.h"
+#include "rc5-codes.h"
+#include "bot-logic/bot-logic.h"
+#include "bot-2-sim.h"
+#include "bot-2-bot.h"
+#include "os_thread.h"
+#include "map.h"
+#include "botfs.h"
+#include "init.h"
+#include "bot-logic/ubasic.h"
+#include <string.h>
 
-#define CHECK_CMD_ADDRESS /*!< soll die Zieladresse der Kommandos ueberprueft werden? */
-#define RCVBUFSIZE (sizeof(command_t) * 2) /*!< Groesse des Empfangspuffers */
+#define CHECK_CMD_ADDRESS					/*!< soll die Zieladresse der Kommandos ueberprueft werden? */
+#define RCVBUFSIZE (sizeof(command_t) * 2)	/*!< Groesse des Empfangspuffers */
+#define COMMAND_TIMEOUT 15					/*!< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
 
 command_t received_command; /*!< Puffer fuer Kommandos */
 static uint8_t count = 1;	/*!< Zaehler fuer Paket-Sequenznummer */
@@ -224,7 +224,7 @@ int8_t command_read(void) {
  * @param data_r 		Daten fuer den rechten Kanal
  * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
-static void command_write_to_internal(uint8_t command, uint8_t subcommand,
+void command_write_to_internal(uint8_t command, uint8_t subcommand,
 		uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload) {
 	request_t request;
 	request.command = command;
@@ -298,7 +298,7 @@ void command_write(uint8_t command, uint8_t subcommand, int16_t data_l,
  * @param *data 		Datenanhang an das eigentliche Command
  */
 void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to,
-		int16_t data_l, int16_t data_r, uint8_t payload, void * data) {
+		int16_t data_l, int16_t data_r, uint8_t payload, const void * data) {
 	os_enterCS();
 	command_write_to_internal(command, subcommand, to, data_l, data_r, payload);
 	low_write_data(data, payload);
@@ -315,7 +315,7 @@ void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to,
  * @param *data 		Datenanhang an das eigentliche Command
  */
 void command_write_rawdata(uint8_t command, uint8_t subcommand,
-		int16_t data_l, int16_t data_r, uint8_t payload, void * data) {
+		int16_t data_l, int16_t data_r, uint8_t payload, const void * data) {
 	command_write_rawdata_to(command, subcommand, CMD_SIM_ADDR, data_l, data_r,
 			payload, data);
 }
@@ -357,11 +357,15 @@ void command_write_data(uint8_t command, uint8_t subcommand, int16_t data_l,
  */
 int8_t command_evaluate(void) {
 	static uint16_t RC5_Last_Toggle = 0xffff;
+#ifdef BEHAVIOUR_UBASIC_AVAILABLE
+	static botfs_file_descr_t prog_file;
+	static uint16_t prog_size = 0;
+#endif // BEHAVIOUR_UBASIC_AVAILABLE
 	int8_t analyzed = 1;
 
 #ifdef LOG_AVAILABLE
 	if (received_command.from != CMD_SIM_ADDR) {
-		LOG_DEBUG("Achtung: weitergeleitetes Kommando:");
+		LOG_DEBUG("Weitergeleitetes Kommando:");
 	}
 #ifdef DEBUG_COMMAND_NOISY
 		command_display(&received_command);
@@ -402,7 +406,7 @@ int8_t command_evaluate(void) {
 		case CMD_ID:
 			if (received_command.request.subcommand == SUB_ID_OFFER) {
 #ifdef LOG_AVAILABLE
-				LOG_DEBUG("Bekomme eine Adresse angeboten: %u", (uint8_t)received_command.data_l);
+				LOG_DEBUG("Bekomme eine Adresse angeboten: %u", (uint8_t) received_command.data_l);
 #endif // LOG_AVAILABLE
 				set_bot_address((uint8_t) received_command.data_l); // Setze Adresse
 				command_write(CMD_ID, SUB_ID_SET, received_command.data_l, 0, 0); // Und bestaetige dem Sim das ganze
@@ -421,22 +425,22 @@ int8_t command_evaluate(void) {
 
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 		case CMD_REMOTE_CALL:
-			LOG_DEBUG("RemoteCall-cmd ...");
+			LOG_DEBUG("RemoteCall-CMD:");
 			switch (received_command.request.subcommand) {
 			case SUB_REMOTE_CALL_LIST:
-				LOG_DEBUG("... auflisten ");
-				remote_call_list();
+				LOG_DEBUG(" Liste");
+				bot_remotecall_list();
 				break;
 			case SUB_REMOTE_CALL_ORDER: {
-				LOG_DEBUG("RemoteCall-Wunsch empfangen. Data= %d Bytes", received_command.payload);
+				LOG_DEBUG("RemoteCall empfangen. Data=%u Bytes", received_command.payload);
 				uint8_t buffer[REMOTE_CALL_BUFFER_SIZE];
 				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
 #ifdef MCU
 				while (uart_data_available() < received_command.payload &&
-					(uint16_t)(TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
+					(uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
 #endif
 				low_read(buffer, received_command.payload);
-				if ((uint16_t)(TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)) {
+				if ((uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)) {
 					bot_remotecall_from_command((char *) &buffer);
 				} else {
 					int16_t result = SUBFAIL;
@@ -446,7 +450,7 @@ int8_t command_evaluate(void) {
 			}
 			case SUB_REMOTE_CALL_ABORT: {
 				LOG_DEBUG("RemoteCalls werden abgebrochen");
-				deactivateCalledBehaviours(bot_remotecall_behaviour);
+				bot_remotecall_cancel();
 				break;
 			}
 
@@ -456,6 +460,7 @@ int8_t command_evaluate(void) {
 			}
 			break;
 #endif // BEHAVIOUR_REMOTECALL_AVAILABLE
+
 #ifdef MAP_2_SIM_AVAILABLE
 		case CMD_MAP:
 			switch (received_command.request.subcommand) {
@@ -465,6 +470,144 @@ int8_t command_evaluate(void) {
 			}
 			break;
 #endif // MAP_2_SIM_AVAILABLE
+
+		case CMD_SHUTDOWN:
+			ctbot_shutdown();
+			break;
+
+#ifdef BEHAVIOUR_UBASIC_AVAILABLE
+		case CMD_PROGRAM: {
+			LOG_DEBUG("Programm-Empfang:");
+			switch (received_command.request.subcommand) {
+			case SUB_PROGRAM_PREPARE: {
+				/* Vorbereitung auf neues Programm */
+				prog_size = (uint16_t) received_command.data_r;
+				LOG_DEBUG(" Typ=%u Laenge=%u", (uint8_t) received_command.data_l, prog_size);
+				const uint8_t len = received_command.payload;
+				LOG_DEBUG(" len=%u", len);
+				char filename[len + 1];
+				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
+#ifdef MCU
+				while (uart_data_available() < len &&
+					(uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
+#endif
+				low_read(filename, len);
+				if ((uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)) {
+					/* OK */
+					filename[len] = 0;
+					LOG_DEBUG(" Datei:\"%s\"", filename);
+					void * buffer = GET_MMC_BUFFER(ubasic_buffer);
+					/* Datei loeschen, falls vorhanden */
+					botfs_unlink(filename, buffer);
+					/* Datei anlegen */
+					const uint16_t size = prog_size / BOTFS_BLOCK_SIZE + (uint16_t) (prog_size % BOTFS_BLOCK_SIZE != 0 ? 1 : 0);
+					LOG_DEBUG(" size=%u", size);
+					if (botfs_create(filename, size, buffer) != 0 || botfs_open(filename, &prog_file, BOTFS_MODE_W, buffer) != 0) {
+						LOG_ERROR("Fehler beim Dateizugriff");
+						prog_size = 0;
+						break;
+					}
+					memset(buffer, 0, BOTFS_BLOCK_SIZE);
+					/* falls uBasic laeuft, abbrechen */
+					deactivateCalledBehaviours(bot_ubasic_behaviour);
+					deactivateBehaviour(bot_ubasic_behaviour);
+					/* evtl. hatte uBasic einen RemoteCall gestartet, daher dort aufraeumen */
+					activateBehaviour(NULL, bot_remotecall_behaviour);
+				} else {
+					/* Fehler */
+					prog_size = 0;
+				}
+				break;
+			}
+
+			case SUB_PROGRAM_DATA: {
+				/* Datenteil eines Programms */
+				if (prog_size == 0) {
+					LOG_DEBUG(" Datenempfang fehlerhaft");
+					break;
+				}
+				const uint8_t type = (uint8_t) received_command.data_l;
+				const uint16_t done = (uint16_t) received_command.data_r;
+				LOG_DEBUG(" type=%u %u Bytes (%u Bytes insgesamt)", type, received_command.payload,
+					received_command.payload + done);
+				void * buffer = GET_MMC_BUFFER(ubasic_buffer);
+				const uint16_t index = (uint16_t) done % BOTFS_BLOCK_SIZE;
+				buffer += index;
+				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
+#ifdef MCU
+				while (uart_data_available() < received_command.payload &&
+					(uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
+#endif
+				const uint8_t n = low_read(buffer, received_command.payload);
+				if (n != received_command.payload) {
+					LOG_DEBUG(" Datenempfang fehlerhaft");
+					prog_size = 0;
+					break;
+				}
+				prog_size -= n;
+				LOG_DEBUG(" prog_size=%u", prog_size);
+				if ((uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)) {
+					/* OK */
+//					puts(buffer);
+					if (index + n == BOTFS_BLOCK_SIZE || prog_size == 0) {
+						/* Puffer in Datei schreiben */
+						LOG_DEBUG(" Puffer rausschreiben...");
+						if (botfs_write(&prog_file, GET_MMC_BUFFER(ubasic_buffer)) != 0) {
+							/* Fehler */
+							LOG_ERROR("Fehler beim Dateizugriff");
+							prog_size = 0;
+							break;
+						}
+						memset(GET_MMC_BUFFER(ubasic_buffer), 0, BOTFS_BLOCK_SIZE);
+						if (prog_size == 0) {
+							/* Progamm vollstaendig empfangen */
+							botfs_flush_used_blocks(&prog_file, GET_MMC_BUFFER(ubasic_buffer));
+							LOG_DEBUG("->fertig");
+							/* nun laden */
+							switch (type) {
+							case 0:
+								/* uBasic */
+								ubasic_load_file(&prog_file);
+								break;
+							}
+						}
+					}
+				} else {
+					/* Fehler */
+					LOG_ERROR("Fehler beim Datenempfang");
+					prog_size = 0;
+				}
+				break;
+			}
+
+			case SUB_PROGRAM_START:
+				/* Programm starten */
+				switch ((uint8_t) received_command.data_l) {
+				case 0:
+					/* uBasic */
+					bot_ubasic(NULL);
+					break;
+				}
+				break;
+
+			case SUB_PROGRAM_STOP:
+				/* Programm abbrechen */
+				switch ((uint8_t) received_command.data_l) {
+				case 0:
+					/* uBasic */
+					ubasic_break();
+					break;
+				}
+				break;
+
+			default:
+				LOG_DEBUG("unbekanntes Subkommando: %c", received_command.request.subcommand);
+				break;
+			}
+			break;
+		}
+#endif // BEHAVIOUR_UBASIC_AVAILABLE
+
 #ifdef PC
 		/* Einige Kommandos ergeben nur fuer simulierte Bots Sinn */
 		case CMD_SENS_IR: {

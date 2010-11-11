@@ -24,10 +24,10 @@
  * @date 	15.04.2008
  */
 
-#include "ct-Bot.h"
 #ifdef PC
-#ifdef OS_AVAILABLE
+#include "ct-Bot.h"
 
+#ifdef OS_AVAILABLE
 #include "os_thread.h"
 #include "os_utils.h"
 #include "log.h"
@@ -176,5 +176,5 @@ void os_signal_unlock(os_signal_t * signal) {
 	}
 }
 
-#endif	// OS_AVAILABLE
-#endif	// PC
+#endif // OS_AVAILABLE
+#endif // PC

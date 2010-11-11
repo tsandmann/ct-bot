@@ -17,15 +17,15 @@
  *
  */
 
-/*!
- * @file 	global.h
- * @brief 	Allgemeine Definitionen und Datentypen
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	20.12.2005
+/**
+ * \file 	global.h
+ * \brief 	Allgemeine Definitionen und Datentypen
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	20.12.2005
  */
 
-#ifndef global_H
-#define global_H
+#ifndef GLOBAL_H_
+#define GLOBAL_H_
 
 #ifndef __ASSEMBLER__
 #ifdef __WIN32__
@@ -62,22 +62,22 @@ int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 
 #ifndef MCU
 #ifndef PC
-#define PC		/*!< Zielplattform PC */
+#define PC
 #endif
 #endif
 
-#ifdef DOXYGEN		/*!< Nur zum Generieren von Doku!!!! */
-#define PC			/*!< Zielplattform PC */
-#define MCU			/*!< Zielplattform MCU */
-#define WIN32		/*!< System Windows */
-#define __linux__	/*!< System Linux */
-#endif	// DOXYGEN
+#ifdef DOXYGEN
+#define PC
+#define MCU
+#define WIN32
+#define __linux__
+#endif // DOXYGEN
 
-#define True	1			/*!< Wahr */
-#define False	0			/*!< Falsch */
+#define True	1			/**< wahr */
+#define False	0			/**< falsch */
 
-#define On		1			/*!< An */
-#define Off		0			/*!< Aus */
+#define On		1			/**< an */
+#define Off		0			/**< aus */
 
 #ifdef PC
 #if defined WIN32
@@ -88,62 +88,58 @@ int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 #include <endian.h>
 #else
 #include <machine/endian.h>
-#endif	// WIN32
-#endif	// PC
+#endif // WIN32
+#endif // PC
 
-#define binary(var, bit) ((var >> bit) & 1)	/*!< gibt das Bit "bit" von "var" zurueck */
+#define binary(var, bit) ((var >> bit) & 1)	/**< gibt das Bit "bit" von "var" zurueck */
 
 #ifdef WIN32
-#define LINE_FEED "\n\r"	/*!< Linefeed fuer Windows */
+#define LINE_FEED "\r\n"	/**< Linefeed fuer Windows */
 #else
-#define LINE_FEED "\n"		/*!< Linefeed fuer nicht Windows */
+#define LINE_FEED "\n"		/**< Linefeed fuer nicht Windows */
 #endif
 
 #ifdef MCU
 #include <avr/interrupt.h>
 #ifdef SIGNAL
-#define NEW_AVR_LIB	/*!< neuere AVR_LIB-Version */
+#define NEW_AVR_LIB	/**< neuere AVR_LIB-Version */
 #else
 #include <avr/signal.h>
 #endif
 
 #if defined __AVR_ATmega644__ || defined __AVR_ATmega644P__
-#define MCU_ATMEGA644X	/*!< ATmega644-Familie (ATmega644 oder ATmega644P) */
+#define MCU_ATMEGA644X	/**< ATmega644-Familie (ATmega644 oder ATmega644P) */
 #endif
 #endif	// MCU
 
-#ifndef DOXYGEN
-#define PACKED __attribute__ ((packed)) /*!< packed-Attribut fuer Strukturen */
-#else
-#define PACKED /*!< Dummy, falls Doxygen aktiv */
-#endif
+#define PACKED __attribute__ ((packed)) /**< packed-Attribut fuer Strukturen */
 
-/*!2D-Position. Ist effizienter, als Zeiger auf X- und Y-Anteil */
+/** 2D-Position. Ist effizienter, als Zeiger auf X- und Y-Anteil */
 typedef struct {
-	int16_t x; /*!< X-Anteil der Position */
-	int16_t y; /*!< Y-Anteil der Position */
+	int16_t x; /**< X-Anteil der Position */
+	int16_t y; /**< Y-Anteil der Position */
 } PACKED position_t;
 
-/*! Repraesentation eines Bits, dem ein Byte-Wert zugewiesen werden kann */
+/** Repraesentation eines Bits, dem ein Byte-Wert zugewiesen werden kann */
 typedef union {
 	uint8_t byte;
 	unsigned bit:1;
 } PACKED bit_t;
 
 #ifndef M_PI
-#define M_PI 3.14159265358979323846
+#define M_PI 3.14159265358979323846 /** pi */
 #endif
 #ifndef M_PI_2
-#define M_PI_2	(M_PI / 2.0)	/*!< pi/2 */
+#define M_PI_2	(M_PI / 2.0) /**< pi / 2 */
 #endif
 
-#else	// __ASSEMBLER__
+#else // __ASSEMBLER__
 
 #if defined __APPLE__ || defined __linux__ || defined __WIN32__
 #ifndef PC
 #define PC
-#endif	// PC
-#endif	// Plattform
+#endif // PC
+#endif // Plattform
 
-#endif	// __ASSEMBLER__
-#endif	// global_H
+#endif // __ASSEMBLER__
+#endif // GLOBAL_H_

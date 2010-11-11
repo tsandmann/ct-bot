@@ -29,9 +29,9 @@
 #define I2C_H_
 
 #include "ct-Bot.h"
-#include <stdlib.h>
 
 #ifdef I2C_AVAILABLE
+#include <stdlib.h>
 #include <util/twi.h>
 
 /*!
@@ -75,5 +75,5 @@ static inline void i2c_write(uint8_t sla, void * pTx, uint8_t nTx) {
  */
 uint8_t i2c_wait(void);
 
-#endif	// I2C_AVAILABLE
-#endif	// I2C_H_
+#endif // I2C_AVAILABLE
+#endif // I2C_H_

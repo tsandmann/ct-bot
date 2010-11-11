@@ -37,9 +37,6 @@
 #ifndef BEHAVIOUR_DRIVE_DISTANCE_H_
 #define BEHAVIOUR_DRIVE_DISTANCE_H_
 
-#include "bot-logic/bot-logik.h"
-#include "math_utils.h"
-
 #define USE_GOTO_POS_DIST	/*!< Ersetzt alle drive_distance()-Aufrufe mit dem goto_pos-Verhalten, falls vorhanden */
 
 #ifndef BEHAVIOUR_GOTO_POS_AVAILABLE
@@ -66,12 +63,15 @@ void bot_drive_distance(Behaviour_t * caller, int8_t curve, int16_t speed, int16
 #else // USE_GOTO_POS_DIST
 /* wenn goto_pos() vorhanden ist und USE_GOTO_POS_DIST an, leiten wir alle drive_distance()-Aufurfe dorthin um */
 #undef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+#include "math_utils.h"
+void bot_goto_dist(Behaviour_t *, int16_t, int8_t);
+
 static inline void bot_drive_distance(Behaviour_t * caller, int8_t curve, const int16_t speed, const int16_t cm) {
 	curve = curve;
 	bot_goto_dist(caller, cm * 10, sign16(speed));
 }
-#endif	// USE_GOTO_POS_DIST
-#endif	// BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+#endif // USE_GOTO_POS_DIST
+#endif // BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 
 #if defined BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE || defined BEHAVIOUR_OLYMPIC_AVAILABLE
 /*!
@@ -80,6 +80,6 @@ static inline void bot_drive_distance(Behaviour_t * caller, int8_t curve, const 
  * @param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
  * @param speed Gibt an, wie schnell der Bot fahren soll. */
 void bot_drive(int8_t curve, int16_t speed);
-#endif	// BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE || BEHAVIOUR_OLYMPIC_AVAILABLE
-#endif	/*BEHAVIOUR_DRIVE_DISTANCE_H_*/
+#endif // BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE || BEHAVIOUR_OLYMPIC_AVAILABLE
+#endif // BEHAVIOUR_DRIVE_DISTANCE_H_
 

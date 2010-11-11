@@ -28,7 +28,6 @@
 #define BEHAVIOUR_CALIBRATE_PID_H_
 
 #ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
-#include "bot-logic/bot-logik.h"
 
 uint16_t cal_pid_ete; /*!< verbleibende Zeit bis zum Ende der Kalibrierung in Sekunden */
 
@@ -49,5 +48,5 @@ void bot_calibrate_pid_behaviour(Behaviour_t * data);
  */
 void bot_calibrate_pid(Behaviour_t * caller, int16_t speed);
 
-#endif	// BEHAVIOUR_CALIBRATE_PID_AVAILABLE
-#endif	// BEHAVIOUR_CALIBRATE_PID_H_
+#endif // BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+#endif // BEHAVIOUR_CALIBRATE_PID_H_

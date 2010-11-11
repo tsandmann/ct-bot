@@ -24,13 +24,14 @@
  * @date 	03.11.06
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
+
+#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 #include <math.h>
 #include <stdlib.h>
 #include "log.h"
 #include "timer.h"
 #include "math_utils.h"
-#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 
 /* Parameter fuer das check_wall_behaviour() */
 static int8_t wall_detected = 0;	/*!< enthaelt True oder False, je nach Ergebnis des Verhaltens */
@@ -657,4 +658,4 @@ void bot_solve_maze(Behaviour_t * caller) {
 	switch_to_behaviour(caller, bot_solve_maze_behaviour, NOOVERRIDE);
 	mazeState = CHECK_FOR_STARTPAD;
 }
-#endif	// BEHAVIOUR_SOLVE_MAZE_AVAILABLE
+#endif // BEHAVIOUR_SOLVE_MAZE_AVAILABLE
