@@ -49,13 +49,12 @@ static uint8_t behaviour_is_active(Behaviour_t * behaviour) {
 }
 
 // Funktionspointertabelle
-/** \todo: ins Flash */
-static callfunct_t callfunct[] = {
+static callfunct_t callfunct[] PROGMEM = {
 	{ "bot_speed", .funct_ptr.VoidFuncInt2 = bot_ubasic_speed, VOID_FUNC_INT2 },
 	{ "beh_active", .funct_ptr.BoolFunctBehavActive = behaviour_is_active, BOOL_FUNCT_BEHAVIOUR_ACTIVE },
 //	{ "bot_delay", .funct_ptr.IntFuncBehavDel = bot_delay_ticks, INT_FUNCT_BEHAVIOUR_UINT },
 	{ "RC", .funct_ptr.VoidFuncRemoteCall = bot_remotecall, VOID_FUNCT_REMOTE_CALL },
-	{ NULL, { NULL }, 255 }
+	{ "", { NULL }, 255 }
 };
 
 int ubasic_call_statement(void) {
@@ -74,10 +73,13 @@ int ubasic_call_statement(void) {
 	}
 	// Funktionsname in Tabelle suchen
 	/** ct-Bot Anpassung (Bugfix) */
-	while (callfunct[idx].funct_name != NULL && strcasecmp(callfunct[idx].funct_name, funct_name)) {
+	unsigned char typ;
+	while ((typ = (unsigned char) pgm_read_byte(&callfunct[idx].typ)) != 255
+		&& strcasecmp_P(funct_name, callfunct[idx].funct_name)) {
 		idx++;
 	}
-	if (callfunct[idx].funct_name == NULL) {
+
+	if (typ == 255) {
 		/* keinen Tabelleneintrag gefunden! */
 		DEBUG_PRINTF("funct_name: %s nicht gefunden!", funct_name);
 		tokenizer_error_print(current_linenum, UNKNOWN_CALL_FUNCT);
@@ -86,14 +88,15 @@ int ubasic_call_statement(void) {
 		DEBUG_PRINTF("funct_name: %s hat Index: %i", funct_name, idx);
 		// je nach Funktionstyp (3.Spalte in Funktionspointertabelle) 
 		// Parameterliste aufbauen und Funktion aufrufen
-		switch (callfunct[idx].typ) {
+		switch (typ) {
 		case VOID_FUNC_INT2: {
 			// zwei Integer und kein Rueckgabewert
 			accept(TOKENIZER_COMMA);
 			const int16_t p1 = expr();
 			accept(TOKENIZER_COMMA);
 			const int16_t p2 = expr();
-			callfunct[idx].funct_ptr.VoidFuncInt2(p1, p2);
+			void (* func)(int16_t, int16_t) = (void (*)(int16_t, int16_t)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFuncInt2);
+			func(p1, p2);
 			break;
 		}
 
@@ -135,7 +138,8 @@ int ubasic_call_statement(void) {
 
 		case BOOL_FUNCT_BEHAVIOUR_ACTIVE: {
 			// ein Integer und Rueckgabewert
-			r = callfunct[idx].funct_ptr.BoolFunctBehavActive(ubasic_behaviour_data);
+			uint8_t (* func)(Behaviour_t *) = (uint8_t (*)(Behaviour_t *)) pgm_read_word(&callfunct[idx].funct_ptr.BoolFunctBehavActive);
+			r = func(ubasic_behaviour_data);
 			break;
 		}
 
@@ -156,23 +160,25 @@ int ubasic_call_statement(void) {
 				params[i].s16 = expr();
 				DEBUG_PRINTF("p%u=%d", i + 1, params[i].s16);
 			}
-			callfunct[idx].funct_ptr.VoidFuncRemoteCall(ubasic_behaviour_data, func, params);
+			int8_t (* rc)(Behaviour_t *, const char *, const remote_call_data_t *) =
+				(int8_t (*)(Behaviour_t *, const char *, const remote_call_data_t *)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFuncRemoteCall);
+			rc(ubasic_behaviour_data, func, params);
 			break;
 		}
 
 		default:
-			DEBUG_PRINTF("Funktionspointertyp %i nicht gefunden", callfunct[idx].typ);
+			DEBUG_PRINTF("Funktionspointertyp %i nicht gefunden", typ);
 			tokenizer_error_print(current_linenum, UNKNOWN_CALL_FUNCT_TYP);
 			ubasic_break();
 		}
-	}
-	// abschliessende rechte Klammer
-	accept(TOKENIZER_RIGHTPAREN);
-	// bei Funktionspointertypen ohne Rueckgabewert ein Token weiterlesen...
-	if ((callfunct[idx].typ == VOID_FUNC_VOID) || (callfunct[idx].typ == VOID_FUNC_INT) || (callfunct[idx].typ == VOID_FUNC_INT2)
-		/*|| (callfunct[idx].typ == VOID_FUNCT_BEHAVIOUR_INT) || (callfunct[idx].typ == VOID_FUNCT_BEHAVIOUR_INT3) */
-		|| (callfunct[idx].typ == VOID_FUNCT_REMOTE_CALL)) {
-		tokenizer_next();
+		// abschliessende rechte Klammer
+		accept(TOKENIZER_RIGHTPAREN);
+		// bei Funktionspointertypen ohne Rueckgabewert ein Token weiterlesen...
+		if ((typ == VOID_FUNC_VOID) || (typ == VOID_FUNC_INT) || (typ == VOID_FUNC_INT2)
+			/*|| (typ == VOID_FUNCT_BEHAVIOUR_INT) || (typ == VOID_FUNCT_BEHAVIOUR_INT3) */
+			|| (typ == VOID_FUNCT_REMOTE_CALL)) {
+			tokenizer_next();
+		}
 	}
 	return r;
 }

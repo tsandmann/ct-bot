@@ -19,8 +19,9 @@
 #ifndef __UBASIC_CONFIG_H__
 #define __UBASIC_CONFIG_H__
 
+#include "bot-logic/bot-logic.h"
+
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
-#include "log.h"
 
 // regulaere Standardausgabe
 #define PRINTF(...) LOG_INFO(__VA_ARGS__)

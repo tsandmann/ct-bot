@@ -44,7 +44,7 @@ typedef struct _iobuf {
 	int _bufsiz;
 	char * _tmpfname;
 } FILE;
-#endif	/* Not _FILE_DEFINED */
+#endif // ! _FILE_DEFINED
 FILE * fopen64(const char *, const char *);
 long long ftello64 (FILE *);
 int getc (FILE *);
@@ -103,16 +103,31 @@ int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 #include <avr/interrupt.h>
 #ifdef SIGNAL
 #define NEW_AVR_LIB	/**< neuere AVR_LIB-Version */
-#else
+#else // ! SIGNAL
 #include <avr/signal.h>
-#endif
+#endif // SIGNAL
 
 #if defined __AVR_ATmega644__ || defined __AVR_ATmega644P__
-#define MCU_ATMEGA644X	/**< ATmega644-Familie (ATmega644 oder ATmega644P) */
+#define MCU_ATMEGA644X /**< ATmega644-Familie (ATmega644 oder ATmega644P) */
 #endif
-#endif	// MCU
+#endif // MCU
 
 #define PACKED __attribute__ ((packed)) /**< packed-Attribut fuer Strukturen */
+
+#ifdef MCU
+#include <avr/pgmspace.h>
+#else // PC
+#define PROGMEM /**< Attribut fuer Programmspeicher, fuer PC nicht noetig */
+#define strcmp_P strcmp /**< strcmp fuer PROGMEM-Daten, fuer PC Weiterleitung auf strcmp() */
+#define strcasecmp_P strcasecmp /**< strcasemp fuer PROGMEM-Daten, fuer PC Weiterleitung auf strcasecmp() */
+#define strncasecmp_P strncasecmp /**< strncasemp fuer PROGMEM-Daten, fuer PC Weiterleitung auf strncasecmp() */
+#define strchr_P strchr /**< strchr fuer PROGMEM-Daten, fuer PC Weiterleitung auf strchr() */
+#define strlen_P strlen /**< strlen fuer PROGMEM-Daten, fuer PC Weiterleitung auf strlen() */
+#define memcpy_P memcpy /**< memcpy fuer PROGMEM-Daten, fuer PC Weiterleitung auf memcpy() */
+#define pgm_read_byte(_addr) *(_addr) /**< liest ein Byte aus dem Programmspeicher (PROGMEM), fuer PC nicht noetig */
+#define pgm_read_word(_addr) *(_addr) /**< liest ein Word aus dem Programmspeicher (PROGMEM), fuer PC nicht noetig */
+#define display_flash_puts display_puts /**< Ausgabe eines Strings aus PROGMEM auf dem Display, fuer PC einfach display_puts() */
+#endif // MCU
 
 /** 2D-Position. Ist effizienter, als Zeiger auf X- und Y-Anteil */
 typedef struct {
@@ -141,5 +156,5 @@ typedef union {
 #endif // PC
 #endif // Plattform
 
-#endif // __ASSEMBLER__
+#endif // ! __ASSEMBLER__
 #endif // GLOBAL_H_

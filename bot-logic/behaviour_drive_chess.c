@@ -18,7 +18,7 @@
  */
 
 
-/*!
+/**
  * \file 	behaviour_drive_chess.c
  * \brief	Der Bot spielt Schach
  *
@@ -55,9 +55,6 @@
 #include "rc5-codes.h"
 #include "display.h"
 #include <stdlib.h>
-#ifdef MCU
-#include <avr/pgmspace.h>
-#endif // MCU
 
 //#define DEBUG_CHESS	// Schalter fuer Debugausgaben
 

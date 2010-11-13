@@ -41,8 +41,7 @@
 //--------------------------------------------
 
 // Variablenpointertabelle
-/** \todo: ins Flash */
-cvars_t cvars[] = {
+static const cvars_t cvars[] PROGMEM = {
 	{ "sensDistL", &sensDistL }, // Abstandssensoren
 	{ "sensDistR", &sensDistR },
 	{ "sensBorderL", &sensBorderL }, // Abgrundsensoren
@@ -55,26 +54,26 @@ cvars_t cvars[] = {
 	{ "sensLineR", &sensLineR },
 	{ "sensDoor", (int16_t *) &sensDoor }, // Klappensensor
 	{ "sensTrans", (int16_t *) &sensTrans }, // Transportfach
-	{ NULL, NULL } };
+	{ "", NULL } };
 
-static int16_t search_cvars(const char * var_name) {
-	int idx = 0;
+/** ct-Bot Anpassung */
+static int16_t * search_cvars(const char * var_name) {
+	uint8_t idx = 0;
 	// Variablenname in Tabelle suchen
-	/** ct-Bot Anpassung (Bugfix) */
-	while (cvars[idx].var_name != NULL && strncasecmp(cvars[idx].var_name, var_name, MAX_NAME_LEN)) {
+	int16_t * ptr;
+	while ((ptr = (int16_t *) pgm_read_word(&cvars[idx].pvar)) != NULL && strcasecmp_P(var_name, cvars[idx].var_name)) {
 		idx++;
 	}
-	if (cvars[idx].var_name == NULL) {
+	if (ptr == NULL) {
 		/* keinen Tabelleneintrag gefunden! */
 		tokenizer_error_print(current_linenum, UNKNOWN_CVAR_NAME);
 		ubasic_break();
 	}
-	return idx;
+	return ptr;
 }
 
 void ubasic_vpoke_statement(void) {
 	static char var_name[MAX_NAME_LEN + 1];
-	int idx = 0;
 
 	accept(TOKENIZER_VPOKE);
 	accept(TOKENIZER_LEFTPAREN);
@@ -84,16 +83,18 @@ void ubasic_vpoke_statement(void) {
 		DEBUG_PRINTF("funct_name: %s", var_name);
 		tokenizer_next();
 	}
-	idx = search_cvars(var_name);
+	/** ct-Bot Anpassung */
+	int16_t * pvar = search_cvars(var_name);
 	accept(TOKENIZER_RIGHTPAREN);
 	accept(TOKENIZER_EQ);
-	*cvars[idx].pvar = expr();
+	if (pvar != NULL) {
+		*pvar = expr();
+	}
 	tokenizer_next();
 }
 
 int ubasic_vpeek_expression(void) {
 	static char var_name[MAX_NAME_LEN + 1];
-	int idx = 0;
 	int r = 0;
 
 	accept(TOKENIZER_VPEEK);
@@ -105,8 +106,11 @@ int ubasic_vpeek_expression(void) {
 		DEBUG_PRINTF("funct_name: %s", var_name);
 		tokenizer_next();
 	}
-	idx = search_cvars(var_name);
-	r = *cvars[idx].pvar;
+	/** ct-Bot Anpassung */
+	int16_t * pvar = search_cvars(var_name);
+	if (pvar != NULL) {
+		r = *pvar;
+	}
 	accept(TOKENIZER_RIGHTPAREN);
 	return r;
 }

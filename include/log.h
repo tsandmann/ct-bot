@@ -69,11 +69,6 @@
 #define LOG_H_
 
 #include "ct-Bot.h"
-#ifdef MCU
-#include <avr/pgmspace.h>
-#else
-#define PROGMEM /*!< Alibideklaration hat keine Funktion, verhindert aber eine Warning */
-#endif
 
 #ifdef LOG_AVAILABLE
 #include <stdlib.h>

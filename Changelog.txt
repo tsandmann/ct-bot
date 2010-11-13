@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2010-11-13 Timo Sandmann [mail@timosandmann.de]: RAM-Bedarf von uBasic verringert
+
 2010-11-11 Frank Menzel  [menzelfr@gmx.de]:      Basic-Interpreter uBasic eingebaut mit entsprechendem Verhalten
 
 2010-11-11 Timo Sandmann [mail@timosandmann.de]: Dateisystem BotFS (BOT_FS_AVAILABLE), RemoteCall-Display zur Verhaltenssteuerung (DISPLAY_REMOTECALL_AVAILABLE; #168), Bots werden beim Beenden sauber heruntergefahren, Anpassungen fuer Skript-Programme wie uBasic, Code aufgeraeumt, Compilezeit etwas verringert

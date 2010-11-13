@@ -32,14 +32,7 @@
 
 //#define SP03_V1	// schaltet alten Code an oder aus
 
-#ifdef MCU
-#include <avr/pgmspace.h>
-#else
-#define PROGMEM			/*!< Alibideklaration hat keine Funktion, verhindert aber ein Warning */
-#endif
-
-//I2C bzw. TWI Adresse und konstante Parameter fuer das SP03 Sprachmodul              
-
+// I2C bzw. TWI Adresse und konstante Parameter fuer das SP03 Sprachmodul
 #define SP03_TWI_ADDRESS	0xC4    /*!< Die SP03 MODUL I2C Adresse */
 #define SP03_COMMAND_REG	0x00    /*!< Das SP03 MODUL COMMAND Register */
 #define SP03_VERSION_REG	0x01    /*!< Das SP03 MODUL VERSION Register */

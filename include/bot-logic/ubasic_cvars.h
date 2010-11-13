@@ -22,7 +22,7 @@
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 // Strukturdefinition fuer Variablenpointertabelle
 typedef struct {
-	const char * var_name;
+	const char var_name[12];
 	int16_t * pvar;
 } PACKED cvars_t;
 

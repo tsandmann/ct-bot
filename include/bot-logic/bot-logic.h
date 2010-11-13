@@ -17,7 +17,7 @@
  *
  */
 
-/*!
+/**
  * \file 	bot-logic.h
  * \brief 	High-Level-Routinen fuer die Steuerung des c't-Bots
  * \author 	Benjamin Benz (bbe@heise.de)

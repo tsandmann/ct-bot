@@ -17,16 +17,20 @@
  * 
  */
 
-/*! 
- * @file 	1st_init.S
- * @brief 	Init-Stuff, der als erstes uebersetzt und gelinkt werden muss
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	04.07.2007
+/**
+ * \file 	1st_init.S
+ * \brief 	Init-Stuff, der als erstes uebersetzt und gelinkt werden muss
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	04.07.2007
+ *
+ * Hinweis:
+ * Sollte der Build-Prozess an dieser Datei scheitern, sind vermutlich die
+ * Projekteinstellungen falsch oder die Eclipse- / CDT-Version ist zu alt.
  */
 
+#ifdef PC
 #include "ct-Bot.h"
 
-#ifdef PC
 #ifdef EEPROM_EMU_AVAILABLE
 #if defined (__APPLE__)
 
@@ -72,7 +76,7 @@ _eeprom_start2__:
 		.size		_eeprom_start2__, 1
 	_eeprom_start2__:
 		.zero	1	
-#endif	/* __arm__ */
+#endif /* __arm__ */
 #elif defined (__WIN32__)
 
 /* Windows */

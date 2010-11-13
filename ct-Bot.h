@@ -17,7 +17,7 @@
  *
  */
 
-/*!
+/**
  * \file 	ct-Bot.h
  * \brief 	globale Schalter fuer die einzelnen Bot-Funktionalitaeten
  * \author 	Benjamin Benz (bbe@heise.de)
@@ -99,8 +99,8 @@
 //#define BOOTLOADER_AVAILABLE	/*!< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders. Achtung, Linkereinstellungen anpassen (siehe mcu/bootloader.c)! */
 
 /************************************************************
-* Some Dependencies!!!
-************************************************************/
+ * Some Dependencies!!!
+ ************************************************************/
 
 #ifdef DOXYGEN
 	/* Beim Generieren der Doku alles anschalten */

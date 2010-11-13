@@ -36,7 +36,7 @@
 
 // Strukturdefinition fuer Funktionspointertabelle
 typedef struct {
-	const char * funct_name;
+	const char funct_name[11];
 	union ftp {
 		void (* VoidFuncVoid)(void);
 		void (* VoidFuncInt)(int);

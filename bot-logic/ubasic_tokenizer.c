@@ -67,17 +67,16 @@ static void (* next_line_hook)(const char * * p_prog) = NULL;
 static void (* init_hook)(const char * * p_prog) = NULL;
 
 
-#define MAX_NUMLEN 5
+#define MAX_NUMLEN 5 /**< max. Anzahl an Ziffern */
 
 struct keyword_token {
-	const char * keyword;
+	const char keyword[7];
 	int token;
 } PACKED;
 
 static int current_token = TOKENIZER_ERROR;
 
-/** \todo: ins Flash */
-static const struct keyword_token keywords[] = {
+static const struct keyword_token keywords[] PROGMEM = {
 	{ "let", TOKENIZER_LET },
 	{ "print", TOKENIZER_PRINT },
 	{ "if", TOKENIZER_IF },
@@ -136,7 +135,7 @@ static const struct keyword_token keywords[] = {
 #if AVR_ADC
 	{ "adc", TOKENIZER_ADC},
 #endif
-	{ NULL, TOKENIZER_ERROR }
+	{ "", TOKENIZER_ERROR }
 };
 
 /*---------------------------------------------------------------------------*/
@@ -212,10 +211,11 @@ static int get_next_token(void) {
 		++nextptr;
 		return TOKENIZER_STRING;
 	} else {
-		for (kt = keywords; kt->keyword != NULL; ++kt) {
-			if (strncasecmp(ptr, kt->keyword, strlen(kt->keyword)) == 0) {
-				nextptr = ptr + strlen(kt->keyword);
-				return kt->token;
+		for (kt = keywords; pgm_read_word(&kt->token) != TOKENIZER_ERROR; ++kt) {
+			const size_t len = strlen_P(kt->keyword);
+			if (strncasecmp_P(ptr, kt->keyword, len) == 0) {
+				nextptr = ptr + len;
+				return (int) pgm_read_word(&kt->token);
 			}
 		}
 	}

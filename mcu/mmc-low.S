@@ -17,26 +17,24 @@
  * 
  */
 
-#ifdef MCU
-; Hinweis:
-; Sollte der Build-Prozess an dieser Datei scheitern, bitte auch die 
-; Datei ".settings/org.eclipse.core.runtime.prefs" aus dem SVN laden, oder
-; selbst veranlassen, dass .S-Dateien ebenfalls vom gcc verarbeitet werden
-; (und nicht direkt vom Assembler).
-
-/*! 
- * @file 	mmc-low.S
- * @brief 	Low-Level-Routinen zum Lesen/Schreiben einer MMC / SD-Card
- * @author	Timo Sandmann (mail@timosandmann.de)
- * @date 	14.11.2006
+/**
+ * \file 	mmc-low.S
+ * \brief 	Low-Level-Routinen zum Lesen/Schreiben einer MMC / SD-Card
+ * \author	Timo Sandmann (mail@timosandmann.de)
+ * \date 	14.11.2006
+ *
+ * Hinweis:
+ * Sollte der Build-Prozess an dieser Datei scheitern, sind vermutlich die
+ * Projekteinstellungen falsch oder die Eclipse- / CDT-Version ist zu alt.
  */
 
+#ifdef MCU
 #include "ct-Bot.h"
-#ifdef MMC_AVAILABLE
+
+#if defined MMC_AVAILABLE && ! defined SPI_AVAILABLE
 #include "mmc-low.h"
 #include "ena.h"
 #include "led.h"
-#ifndef SPI_AVAILABLE
 #include <avr/io.h> 
 
 ; Portkonfiguration umrechnen
@@ -45,11 +43,9 @@
 .equ DDR, _SFR_IO_ADDR(MMC_DDR)
 .equ SPI_CLK_MASK, _BV(SPI_CLK)				; 1<<SPI_CLK
 
-/*! 
+/**
  * Schreibt ein Byte an die Karte
- * @param data	Das zu sendende Byte
- * @author 		Timo Sandmann (mail@timosandmann.de)
- * @date 		14.11.2006
+ * \param data	Das zu sendende Byte
  */
 .global	mmc_write_byte
 	.type mmc_write_byte, @function
@@ -91,11 +87,9 @@ mmc_write_byte:
 	sbi PORT_OUT, SPI_DO		; DO auf high
 	ret
 
-/*!
+/**
  * Liest ein Byte von der Karte
- * @return	Das gelesene Byte
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	14.11.2006
+ * \return Das gelesene Byte
  */
 .global	mmc_read_byte
 	.type mmc_read_byte, @function
@@ -147,11 +141,9 @@ mmc_read_byte:
 	clr r25						; return ist in 8 Bit und wir sind ordentlich ;)
 	ret
 
-/*!
+/**
  * Schaltet die Karte aktiv und checkt dabei die Initialisierung
- * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			09.12.2006
+ * \return 0 wenn alles ok ist, 1 wenn Init nicht moeglich
  */
 .global mmc_enable
 	.type mmc_enable, @function
@@ -177,14 +169,12 @@ mmc_enable:
 	ldi r24, 0	
 	ret							; alles ok
 
-/*!
+/**
  * Schreibt einen 512-Byte Sektor auf die Karte
- * @param addr 		Nummer des 512-Byte Blocks
- * @param Buffer 	Zeiger auf den Puffer
- * @param async		0: synchroner, 1: asynchroner Aufruf, siehe MMC_ASYNC_WRITE in mmc-low.h  
- * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 24, 2 wenn Timeout bei busy 
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			16.11.2006
+ * \param addr 		Nummer des 512-Byte Blocks
+ * \param Buffer 	Zeiger auf den Puffer
+ * \param async		0: synchroner, 1: asynchroner Aufruf, siehe MMC_ASYNC_WRITE in mmc-low.h
+ * \return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 24, 2 wenn Timeout bei busy
  */
 .global	mmc_write_sector
 	.type mmc_write_sector, @function
@@ -201,14 +191,12 @@ mmc_write_sector:
 #ifdef OS_AVAILABLE
 	sts os_scheduling_allowed, r1	; os_enterCS()
 #endif
-#ifdef LED_AVAILABLE
-#ifndef TEST_AVAILABLE
+#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
 	lds r24, led
 	ori r24, LED_ROT
 	sts led, r24
 	call LED_set				; rote LED an
-#endif // TEST_AVAILABLE
-#endif // LED_AVAILABLE
+#endif // LED_AVAILABLE && ! TEST_AVAILABLE
 	call mmc_enable				; Karte aktiv schalten
 	tst r24
 	breq 1f
@@ -325,14 +313,12 @@ mmc_write_sector:
 	6:
 	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
 	call ENA_off
-#ifdef LED_AVAILABLE
-#ifndef TEST_AVAILABLE
+#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
 	lds r24, led
 	andi r24, ~LED_ROT
 	sts led, r24
 	call LED_set				; rote LED aus
-#endif // TEST_AVAILABLE
-#endif // LED_AVAILABLE
+#endif // LED_AVAILABLE && ! TEST_AVAILABLE
 #ifdef OS_AVAILABLE
 	call os_exitCS 				; os_exitCS()
 #endif
@@ -346,13 +332,11 @@ mmc_write_sector:
 	pop r13
 	ret 
 
-/*!
+/**
  * Liest einen Block von der Karte
- * @param addr 		Nummer des 512-Byte Blocks
- * @param Buffer 	Puffer von mindestens 512 Byte
- * @return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 17
- * @author 			Timo Sandmann (mail@timosandmann.de)
- * @date 			17.11.2006
+ * \param addr 		Nummer des 512-Byte Blocks
+ * \param Buffer 	Puffer von mindestens 512 Byte
+ * \return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 17
  */	
 .global	mmc_read_sector
 	.type mmc_read_sector, @function
@@ -368,14 +352,12 @@ mmc_read_sector:
 #ifdef OS_AVAILABLE
 	sts os_scheduling_allowed, r1	; os_enterCS()
 #endif
-#ifdef LED_AVAILABLE
-#ifndef TEST_AVAILABLE
+#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
 	lds r24, led
 	ori r24, LED_GRUEN
 	sts led, r24
 	call LED_set				; gruene LED an
-#endif // TEST_AVAILABLE
-#endif // LED_AVAILABLE
+#endif // LED_AVAILABLE && ! TEST_AVAILABLE
 	call mmc_enable				; Karte aktiv schalten
 	tst r24
 	breq 1f
@@ -485,14 +467,12 @@ mmc_read_sector:
 	6:
 	ldi r24, lo8(ENA_MMC)		; Karte inaktiv schalten
 	call ENA_off
-#ifdef LED_AVAILABLE
-#ifndef TEST_AVAILABLE
+#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
 	lds r24, led
 	andi r24, ~LED_GRUEN
 	sts led, r24
 	call LED_set				; gruene LED aus
-#endif // TEST_AVAILABLE
-#endif // LED_AVAILABLE
+#endif // LED_AVAILABLE && ! TEST_AVAILABLE
 #ifdef OS_AVAILABLE
 	call os_exitCS				; os_exitCS();
 #endif
@@ -504,6 +484,5 @@ mmc_read_sector:
 	pop r15
 	pop r14
 	ret
-#endif // SPI_AVAILABLE
-#endif // MMC_AVAILABLE
+#endif // MMC_AVAILABLE && ! SPI_AVAILABLE
 #endif // MCU

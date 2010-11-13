@@ -34,7 +34,6 @@
 #include <string.h>
 #include "command.h"
 #include "log.h"
-#include "global.h"
 #include "bot-2-bot.h"
 #include "trace.h"
 #include "display.h"
@@ -62,18 +61,6 @@ static const uint8_t * parameter_length = NULL; /**< Hier speichern wir die Laen
 #if REMOTE_CALL_MAX_PARAM > 3
 #error "Mehr als 3 Parameter werden vom Remote-Call-Code derzeit nicht unterstuetzt! Codeanpassung noetig!"
 #endif
-
-#ifdef MCU
-#include <avr/pgmspace.h>
-#else // PC
-#define PROGMEM			// Alibideklaration hat keine Funktion, verhindert aber eine Warning
-#define strcmp_P strcmp // Auf dem PC gibt es keinen Flash, also auch kein eigenes Compare
-#define strchr_P strchr // dito
-#define memcpy_P memcpy // dito
-#define pgm_read_byte(_addr) *(_addr) // dito
-#define display_flash_puts display_puts // dito
-#endif // MCU
-
 
 //#define DEBUG_REMOTE_CALLS /**< Schalter um recht viel Debug-Code anzumachen */
 
