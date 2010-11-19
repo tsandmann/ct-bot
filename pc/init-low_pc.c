@@ -32,6 +32,7 @@
 #include "eeprom.h"
 #include "command.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 /*!
  * Hardwareabhaengige Initialisierungen, die zuerst ausgefuehrt werden sollen
