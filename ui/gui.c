@@ -354,6 +354,9 @@ void gui_init(void) {
 #ifdef LOG_DISPLAY_AVAILABLE
 	register_screen(&log_display);
 #endif
+#if defined LOG_MMC_AVAILABLE && defined USE_MINILOG
+	register_screen(&log_mmc_display);
+#endif
 #ifdef DISPLAY_MMC_INFO
 	register_screen(&mmc_display);
 #endif

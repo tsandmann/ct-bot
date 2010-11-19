@@ -17,7 +17,7 @@
  *
  */
 
-/*!
+/**
  * \file 	log.h
  * \brief 	Routinen zum Loggen von Informationen.
  *
@@ -147,7 +147,7 @@ void log_printf(const char * format, ...);
  * Gibt den Puffer entsprechend aus.
  */
 void log_end(void);
-#else // !PC
+#else // ! PC
 /*!
  * Allgemeines Debugging (Methode DiesUndDas wurde mit Parameter SoUndSo
  * aufgerufen ...)
@@ -220,13 +220,6 @@ void log_flash_printf(const char * format, ...);
 void log_end(void);
 #endif // PC
 
-#ifdef LOG_MMC_AVAILABLE
-/*!
- * Initialisierung fuer MMC-Logging
- */
-uint8_t log_mmc_init(void);
-#endif // LOG_MMC_AVAILABLE
-
 #ifdef LOG_DISPLAY_AVAILABLE
 /*!
  * Display-Handler fuer das Logging
@@ -292,7 +285,25 @@ void minilog_begin(uint16_t line, LOG_TYPE log_type);
  */
 void minilog_printf(const char * format, ...);
 #endif // USE_MINILOG
-#else // LOG_AVAILABLE
+
+#ifdef LOG_MMC_AVAILABLE
+/**
+ * Initialisierung fuer MMC-Logging
+ */
+void log_mmc_init(void);
+
+/**
+ * Schreibt den aktuellen Inhalt des Log-Puffers auf die MMC
+ */
+void log_flush(void);
+
+/**
+ * Display-Handler fuer MMC-LOG
+ */
+void log_mmc_display(void);
+#endif // LOG_MMC_AVAILABLE
+
+#else // ! LOG_AVAILABLE
 
 #define LOG_DEBUG(a, ...)
 #define LOG_INFO(a, ...)

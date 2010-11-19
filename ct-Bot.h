@@ -26,15 +26,15 @@
 #ifndef CT_BOT_H_
 #define CT_BOT_H_
 
-/************************************************************
-* Module switches, to make code smaller if features are not needed
-************************************************************/
+/********************************************************************
+ * Module switches, to make code smaller if features are not needed *
+ ********************************************************************/
 //#define LOG_CTSIM_AVAILABLE		/*!< Logging zum ct-Sim (PC und MCU) */
 //#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display (PC und MCU) */
 //#define LOG_UART_AVAILABLE		/*!< Logging ueber UART (nur fuer MCU) */
 #define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (nur fuer PC) */
 //#define LOG_MMC_AVAILABLE			/*!< Logging in eine txt-Datei auf MMC */
-#define USE_MINILOG					/*!< schaltet fuer MCU auf schlankes Logging um (nur in Verbindung mit Log2Sim) */
+#define USE_MINILOG					/*!< schaltet auf schlankes Logging um */
 
 //#define CREATE_TRACEFILE_AVAILABLE	/*!< Aktiviert das Schreiben einer Trace-Datei (nur PC) */
 
@@ -90,7 +90,7 @@
 //#define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung */
 //#define SPI_AVAILABLE			/*!< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 //#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
-//#define BOT_FS_AVAILABLE		/*!< Aktiviert das Dateisystem BotFS */
+#define BOT_FS_AVAILABLE		/*!< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC moeglich) */
 #define OS_AVAILABLE			/*!< Aktiviert BotOS fuer Threads und Scheduling */
 
 //#define EEPROM_EMU_AVAILABLE	/*!< Aktiviert die EEPROM-Emulation fuer PC */
@@ -103,216 +103,218 @@
  ************************************************************/
 
 #ifdef DOXYGEN
-	/* Beim Generieren der Doku alles anschalten */
-	#define PC
-	#define MCU
-	#define TEST_AVAILABLE_MOTOR
-#endif
+/* Beim Generieren der Doku alles anschalten */
+#define PC
+#define MCU
+#define TEST_AVAILABLE_MOTOR
+#endif // DOXYGEN
 
 #ifndef DISPLAY_AVAILABLE
-	#undef WELCOME_AVAILABLE
-	#undef DISPLAY_REMOTE_AVAILABLE
+#undef WELCOME_AVAILABLE
+#undef DISPLAY_REMOTE_AVAILABLE
 #endif
 
 #ifndef IR_AVAILABLE
-	#undef RC5_AVAILABLE
+#undef RC5_AVAILABLE
 #endif
 
 #ifndef MOUSE_AVAILABLE
-	#undef MEASURE_MOUSE_AVAILABLE
-	#undef MEASURE_COUPLED_AVAILABLE
+#undef MEASURE_MOUSE_AVAILABLE
+#undef MEASURE_COUPLED_AVAILABLE
 #endif
 
 #ifdef BOT_2_BOT_AVAILABLE
-	#define BOT_2_SIM_AVAILABLE
+#define BOT_2_SIM_AVAILABLE
 #endif
 
 #ifdef PC
-	#ifndef DOXYGEN
-		/* Folgende Optionen deaktivieren, es gibt sie nicht fuer PC */
-		#undef UART_AVAILABLE
-		#undef SRF10_AVAILABLE
-		#undef TWI_AVAILABLE
-		#undef SPEED_CONTROL_AVAILABLE
-		#undef SPEED_LOG_AVAILABLE
-		#undef MMC_AVAILABLE
-		#undef I2C_AVAILABLE
-		#undef CMPS03_AVAILABLE
-		#undef SP03_AVAILABLE
-	#endif
+#ifndef DOXYGEN
+/* Folgende Optionen deaktivieren, es gibt sie nicht fuer PC */
+#undef UART_AVAILABLE
+#undef SRF10_AVAILABLE
+#undef TWI_AVAILABLE
+#undef SPEED_CONTROL_AVAILABLE
+#undef SPEED_LOG_AVAILABLE
+#undef MMC_AVAILABLE
+#undef I2C_AVAILABLE
+#undef CMPS03_AVAILABLE
+#undef SP03_AVAILABLE
+#endif
 
-	#ifndef BOT_2_SIM_AVAILABLE
-		#define BOT_2_SIM_AVAILABLE // simulierte Bots brauchen immer Kommunikation zum Sim
-	#endif
+#ifndef BOT_2_SIM_AVAILABLE
+#define BOT_2_SIM_AVAILABLE // simulierte Bots brauchen immer Kommunikation zum Sim
+#endif
 
-	#define COMMAND_AVAILABLE		/*!< High-Level Kommunikation */
-	#undef USE_MINILOG
-#endif	// PC
+#define COMMAND_AVAILABLE /**< High-Level Kommunikation */
+#endif // PC
 
 #ifdef MCU
-	#ifdef LOG_CTSIM_AVAILABLE
-		#define BOT_2_SIM_AVAILABLE
-	#endif
-	#ifdef BOT_2_SIM_AVAILABLE
-		#define UART_AVAILABLE		/*!< Serielle Kommunikation */
-		#define COMMAND_AVAILABLE	/*!< High-Level Communication */
-	#else // ! BOT_2_SIM_AVAILABLE
-		#undef DISPLAY_REMOTE_AVAILABLE
-		#undef MAP_2_SIM_AVAILABLE
-	#endif // BOT_2_SIM_AVAILABLE
-	#undef EEPROM_EMU_AVAILABLE
-	#undef CREATE_TRACEFILE_AVAILABLE
-#endif	// MCU
+#ifdef LOG_CTSIM_AVAILABLE
+#define BOT_2_SIM_AVAILABLE
+#endif
+
+#ifdef BOT_2_SIM_AVAILABLE
+#define UART_AVAILABLE		/**< Serielle Kommunikation */
+#define COMMAND_AVAILABLE	/**< High-Level Communication */
+#else // ! BOT_2_SIM_AVAILABLE
+#undef DISPLAY_REMOTE_AVAILABLE
+#undef MAP_2_SIM_AVAILABLE
+#endif // BOT_2_SIM_AVAILABLE
+
+#undef EEPROM_EMU_AVAILABLE
+#undef CREATE_TRACEFILE_AVAILABLE
+#endif // MCU
 
 
 #ifdef TEST_AVAILABLE_MOTOR
-	#define TEST_AVAILABLE			/*!< brauchen wir den Testkrams? */
-	#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die digitale Sensorwerte anzeigen? */
+#define TEST_AVAILABLE			/**< brauchen wir den Testkrams? */
+#define TEST_AVAILABLE_DIGITAL	/**< Sollen die LEDs die digitale Sensorwerte anzeigen? */
 #endif
 
 #ifdef TEST_AVAILABLE_DIGITAL
-	#define TEST_AVAILABLE			/*!< brauchen wir den Testkrams? */
-	#undef TEST_AVAILABLE_ANALOG
+#define TEST_AVAILABLE /**< brauchen wir den Testkrams? */
+#undef TEST_AVAILABLE_ANALOG
 #endif
 
 #ifdef TEST_AVAILABLE_ANALOG
-	#define TEST_AVAILABLE			/*!< brauchen wir den Testkrams? */
+#define TEST_AVAILABLE /**< brauchen wir den Testkrams? */
 #endif
 
 #ifndef SPEED_CONTROL_AVAILABLE
-	#undef ADJUST_PID_PARAMS
-#endif
-
-#ifdef LOG_UART_AVAILABLE
-	#define LOG_AVAILABLE	/*!< LOG aktiv? */
-#endif
-#ifdef LOG_CTSIM_AVAILABLE
-	#define LOG_AVAILABLE	/*!< LOG aktiv? */
-#endif
-#ifdef LOG_DISPLAY_AVAILABLE
-	#define LOG_AVAILABLE	/*!< LOG aktiv? */
-#endif
-#ifdef LOG_STDOUT_AVAILABLE
-	#define LOG_AVAILABLE	/*!< LOG aktiv? */
-#endif
-#ifdef LOG_MMC_AVAILABLE
-	#define LOG_AVAILABLE	/*!< LOG aktiv? */
+#undef ADJUST_PID_PARAMS
 #endif
 
 #ifndef MMC_AVAILABLE
-	#undef SPEED_LOG_AVAILABLE
-	#ifdef MCU
-		#undef MAP_AVAILABLE // Map geht auf dem MCU nur mit MMC
-		#undef MMC_VM_AVAILABLE
-		#undef BOT_FS_AVAILABLE
-	#endif
+#undef SPEED_LOG_AVAILABLE
+#ifdef MCU
+#undef MAP_AVAILABLE // Map geht auf dem MCU nur mit MMC
+#undef MMC_VM_AVAILABLE
+#undef BOT_FS_AVAILABLE
+#endif // MCU
+#endif // ! MMC_AVAILABLE
+
+#if ! defined BOT_FS_AVAILABLE && defined USE_MINILOG
+#undef LOG_MMC_AVAILABLE
+#endif // BOT_FS_AVAILABLE && USE_MINILOG
+
+#ifdef LOG_UART_AVAILABLE
+#undef USE_MINILOG
+#define LOG_AVAILABLE /**< LOG aktiv? */
+#endif
+
+#ifdef LOG_CTSIM_AVAILABLE
+#define LOG_AVAILABLE /**< LOG aktiv? */
+#endif
+
+#ifdef LOG_DISPLAY_AVAILABLE
+#undef USE_MINILOG
+#define LOG_AVAILABLE /**< LOG aktiv? */
+#endif
+
+#ifdef LOG_STDOUT_AVAILABLE
+#undef USE_MINILOG
+#define LOG_AVAILABLE /**< LOG aktiv? */
+#endif
+
+#ifdef LOG_MMC_AVAILABLE
+#define LOG_AVAILABLE /**< LOG aktiv? */
 #endif
 
 #ifndef BEHAVIOUR_AVAILABLE
-	#undef MAP_AVAILABLE
+#undef MAP_AVAILABLE
 #endif
 
 #if defined SPEED_LOG_AVAILABLE && defined MAP_AVAILABLE
-	#undef MAP_AVAILABLE
-	#warning "Speed-Log und Map schliessen sich aus, deaktiviere Map"
+/** \todo: geht mit BotFS */
+#undef MAP_AVAILABLE
+#warning "Speed-Log und Map schliessen sich aus, deaktiviere Map"
 #endif
 
 #ifdef MAP_AVAILABLE
-	#define OS_AVAILABLE // Map braucht BotOS
-#else
-	#undef MAP_2_SIM_AVAILABLE
-#endif
+#define OS_AVAILABLE // Map braucht BotOS
+#else // ! MAP_AVAILABLE
+#undef MAP_2_SIM_AVAILABLE
+#endif // MAP_AVAILABLE
 
 #ifndef BOT_2_BOT_AVAILABLE
-	#undef BOT_2_BOT_PAYLOAD_AVAILABLE
+#undef BOT_2_BOT_PAYLOAD_AVAILABLE
 #endif
 
 #ifdef LOG_AVAILABLE
-	#ifndef LOG_CTSIM_AVAILABLE
-		#undef USE_MINILOG
-	#endif
-	#ifdef PC
-		/* Auf dem PC gibts kein Logging ueber UART. */
-		#undef LOG_UART_AVAILABLE
-	#endif
+#ifdef PC
+#undef LOG_UART_AVAILABLE // Auf dem PC gibts kein Logging ueber UART
+#endif // PC
 
-	#ifdef MCU
-		/* Mit Bot zu Sim Kommunikation auf dem MCU gibts kein Logging ueber UART.
-		 * Ohne gibts keine Kommunikation ueber ct-Sim. */
-		#undef LOG_STDOUT_AVAILABLE		/*!< MCU hat kein LOG_STDOUT */
-		#ifdef BOT_2_SIM_AVAILABLE
-			#undef LOG_UART_AVAILABLE
-		#else
-			#undef LOG_CTSIM_AVAILABLE
-		#endif
-	#endif	// MCU
+#ifdef MCU
+/* Mit Bot zu Sim Kommunikation auf dem MCU gibts kein Logging ueber UART.
+ * Ohne gibts keine Kommunikation ueber ct-Sim. */
+#undef LOG_STDOUT_AVAILABLE // MCU hat kein LOG_STDOUT
+#ifdef BOT_2_SIM_AVAILABLE
+#undef LOG_UART_AVAILABLE
+#else // ! BOT_2_SIM_AVAILABLE
+#undef LOG_CTSIM_AVAILABLE
+#endif // BOT_2_SIM_AVAILABLE
+#endif // MCU
 
 	/* Ohne Display gibts auch keine Ausgaben auf diesem. */
-	#ifndef DISPLAY_AVAILABLE
-		#undef LOG_DISPLAY_AVAILABLE
-	#endif
+#ifndef DISPLAY_AVAILABLE
+#undef LOG_DISPLAY_AVAILABLE
+#endif
 
 	/* Es kann immer nur ueber eine Schnittstelle geloggt werden. */
-	#ifdef LOG_UART_AVAILABLE
-		#define UART_AVAILABLE			/*!< Serielle Kommunikation */
-		#undef LOG_CTSIM_AVAILABLE
-		#undef LOG_DISPLAY_AVAILABLE
-		#undef LOG_STDOUT_AVAILABLE
-		#undef LOG_MMC_AVAILABLE
-	#endif
+#ifdef LOG_UART_AVAILABLE
+#define UART_AVAILABLE /**< Serielle Kommunikation */
+#undef LOG_CTSIM_AVAILABLE
+#undef LOG_DISPLAY_AVAILABLE
+#undef LOG_STDOUT_AVAILABLE
+#undef LOG_MMC_AVAILABLE
+#endif
 
-	#ifdef LOG_CTSIM_AVAILABLE
-		#undef LOG_DISPLAY_AVAILABLE
-		#undef LOG_STDOUT_AVAILABLE
-		#undef LOG_MMC_AVAILABLE
-	#endif
+#ifdef LOG_CTSIM_AVAILABLE
+#undef LOG_DISPLAY_AVAILABLE
+#undef LOG_STDOUT_AVAILABLE
+#undef LOG_MMC_AVAILABLE
+#endif
 
-	#ifdef LOG_DISPLAY_AVAILABLE
-		#undef LOG_STDOUT_AVAILABLE
-		#undef LOG_MMC_AVAILABLE
-	#endif
+#ifdef LOG_DISPLAY_AVAILABLE
+#undef LOG_STDOUT_AVAILABLE
+#undef LOG_MMC_AVAILABLE
+#endif
 
-	#ifdef LOG_STDOUT_AVAILABLE
-		#undef LOG_MMC_AVAILABLE
-	#endif
+#ifdef LOG_STDOUT_AVAILABLE
+#undef LOG_MMC_AVAILABLE
+#endif
 
-	#ifndef MMC_VM_AVAILABLE
-		#undef LOG_MMC_AVAILABLE
-	#endif
+#ifndef BOT_FS_AVAILABLE
+#undef LOG_MMC_AVAILABLE
+#endif
 
+#if ! defined LOG_CTSIM_AVAILABLE && ! defined LOG_DISPLAY_AVAILABLE && ! defined LOG_UART_AVAILABLE && \
+	! defined LOG_STDOUT_AVAILABLE && ! defined LOG_MMC_AVAILABLE
 	// Wenn keine sinnvolle Log-Option mehr uebrig, loggen wir auch nicht
-	#ifndef LOG_CTSIM_AVAILABLE
-		#ifndef LOG_DISPLAY_AVAILABLE
-			#ifndef LOG_UART_AVAILABLE
-				#ifndef LOG_STDOUT_AVAILABLE
-					#ifndef LOG_MMC_AVAILABLE
-						#undef LOG_AVAILABLE
-					#endif
-				#endif
-			#endif
-		#endif
-	#endif
+#undef LOG_AVAILABLE
+#endif
 
 #endif // LOG_AVAILABLE
 
 
 #ifdef SRF10_AVAILABLE
-	#define TWI_AVAILABLE	/*!< TWI-Schnittstelle (I2C) nutzen */
+#define TWI_AVAILABLE /**< TWI-Schnittstelle (I2C) */
 #endif
 
 #ifdef CMPS03_AVAILABLE
-	#define I2C_AVAILABLE	/*!< I2C-Treiber verfuegbar fuer Kompassmodul */
+#define I2C_AVAILABLE /**< I2C-Treiber */
 #endif
 
 #ifdef SP03_AVAILABLE
-	#define I2C_AVAILABLE	/*!< I2C-Treiber verfuegbar fuer Sprachmodul */
+#define I2C_AVAILABLE /**< I2C-Treiber */
 #endif
 
 #ifdef TWI_AVAILABLE
-	#define I2C_AVAILABLE	/*!< I2C-Treiber statt TWI-Implementierung benutzen */
+#define I2C_AVAILABLE /**< I2C-Treiber statt TWI-Implementierung benutzen */
 #endif
 
-#include "global.h"
-#include "bot-local.h"
+#include "global.h" // ct-Bot Datentypen
+#include "bot-local.h" // Konfig-Optionen die bei den Bots verschieden sein koennen
 
 #endif // CT_BOT_H_

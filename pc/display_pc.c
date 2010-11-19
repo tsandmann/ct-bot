@@ -76,12 +76,14 @@ uint8_t display_printf(const char * format, ...) {
 	va_list	args;
 
 	va_start(args, format);
-	const uint8_t len = vsnprintf(display_buf, DISPLAY_BUFFER_SIZE, format, args);
+	uint8_t len = vsnprintf(display_buf, DISPLAY_BUFFER_SIZE, format, args);
 	va_end(args);
+	if (len > DISPLAY_LENGTH) {
+		len = DISPLAY_LENGTH;
+	}
 
-	command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, last_column, last_row, display_buf);
+	command_write_rawdata(CMD_AKT_LCD, SUB_LCD_DATA, last_column, last_row, len, display_buf);
 	last_column += len;
-//	command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, last_column, last_row, 0);
 
 	return len;
 }
@@ -92,7 +94,10 @@ uint8_t display_printf(const char * format, ...) {
  * @return		Anzahl der geschriebenen Zeichen
  */
 uint8_t display_puts(const char * text) {
-	const uint8_t len = strlen(text);
+	uint8_t len = strlen(text);
+	if (len > DISPLAY_LENGTH) {
+		len = DISPLAY_LENGTH;
+	}
 	command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, last_column, last_row, text);
 	last_column += len;
 //	command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, last_column, last_row, 0);

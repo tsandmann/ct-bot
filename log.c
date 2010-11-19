@@ -17,7 +17,7 @@
  *
  */
 
-/*!
+/**
  * \file 	log.c
  * \brief 	Routinen zum Loggen von Informationen.
  *
@@ -363,17 +363,17 @@ void log_end(void) {
 }
 
 #ifdef LOG_MMC_AVAILABLE
-/*!
+/**
  * Initialisierung fuer MMC-Logging
- * @return Fehlercode
  */
-uint8_t log_mmc_init(void) {
+void log_mmc_init(void) {
 	/* Log-Datei oeffnen und Dateiende merken */
 	log_file = mmc_fopen(LOG_FILENAME);
-	if (log_file == 0) return 1;	// Fehler :(
+	if (log_file == 0) {
+		return;	// Fehler :(
+	}
 	log_file_end = log_file + mmc_get_filesize(log_file);
-	log_file -= 512;	// denn beim ersten Logging springen wir in den Block-Ueberlauf-Fall
-	return 0;
+	log_file -= 512; // denn beim ersten Logging springen wir in den Block-Ueberlauf-Fall
 }
 #endif // LOG_MMC_AVAILABLE
 

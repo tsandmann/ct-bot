@@ -77,6 +77,8 @@ rc5_screen_set(uint8_t screen) {
 		display_screen = 0; // endliche Screenanzahl
 	}
 	display_clear(); // alten Screen loeschen, das Zeichnen uerbernimmt GUI-Handler
+#else
+	(void) screen;
 #endif // DISPLAY_AVAILABLE
 }
 

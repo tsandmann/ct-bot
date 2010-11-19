@@ -135,6 +135,10 @@ void ctbot_shutdown(void) {
 	map_flush_cache();
 #endif
 
+#ifdef LOG_MMC_AVAILABLE
+	log_flush();
+#endif
+
 #ifdef BOT_FS_AVAILABLE
 	botfs_close_volume();
 #endif

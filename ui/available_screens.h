@@ -17,7 +17,7 @@
  *
  */
 
-/*!
+/**
  * \file 	available_screens.h
  * \brief 	Die Schalter fuer sichtbare Screens finden sich hier
  * \author 	Timo Sandmann (mail@timosandmann.de)
@@ -26,6 +26,8 @@
 
 #ifndef AVAILABLE_SCREENS_H_
 #define AVAILABLE_SCREENS_H_
+
+#ifdef DISPLAY_AVAILABLE
 
 #define DISPLAY_SCREENS 10 /*!< max. Anzahl an Screens */
 
@@ -48,4 +50,5 @@
 #define DISPLAY_DRIVE_CHESS_AVAILABLE		/*!< Steuerung des Schach-Verhaltens */
 #define DISPLAY_UBASIC_AVAILABLE	    	/*!< Steuerung des uBasic-Verhaltens */
 
+#endif // DISPLAY_AVAILABLE
 #endif // AVAILABLE_SCREENS_H_
