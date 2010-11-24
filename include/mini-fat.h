@@ -17,7 +17,7 @@
  * 
  */
 
-/*!
+/**
  * \file 	mini-fat.h
  * \brief 	Routinen zum Auffinden von markierten Files auf einer MMC-Karte.
  *
@@ -169,13 +169,6 @@ void create_emu_mini_fat_file(uint32_t addr, const char * id_string, uint32_t si
  * \param id_string 	Die ID der Datei, wie sie zu Beginn in der Datei steht
  */
 void delete_emu_mini_fat_file(const char * id_string);
-
-/*! 
- * Konvertiert eine (binaere) mini-fat-Datei ("AVR-Endian") mit Speed-Log-Daten in eine Textdatei.
- * \param filename 	Der Dateiname der mini-fat-Datei
- */
-void convert_slog_file(const char * input_file);
-
 #endif // MCU
 
 #ifdef DISPLAY_MINIFAT_INFO

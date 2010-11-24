@@ -17,29 +17,31 @@
  * 
  */
 
-/*! 
- * @file 	sensor-low.h  
- * @brief 	Low-Level Routinen fuer die Sensor-Steuerung des c't-Bots
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	01.12.05
+/**
+ * \file 	sensor-low.h
+ * \brief 	Low-Level Routinen fuer die Sensor-Steuerung des c't-Bots
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	01.12.2005
  */
 #ifndef SENSOR_LOW_H_
 #define SENSOR_LOW_H_
 
-/*!
+/**
  * Initialisiere alle Sensoren
  */
 void bot_sens_init(void);
 
-/*!
+/**
  * Alle Sensoren aktualisieren
  */
 void bot_sens(void);
 
-/*!
- * Kuemmert sich um die Radencoder
+/**
+ * \brief Kuemmert sich um die Radencoder
+ *
  * Das muss schneller gehen als die anderen Sensoren,
- * daher Update per ISR
+ * daher Update per Timer-Interrupt und nicht ueber sensor_update() und
+ * die Bot-Hauptschleife.
  */
 void bot_encoder_isr(void);
 
@@ -51,25 +53,34 @@ extern uint8_t i_encTimeR;		/*!< Array-Index auf letzten Timestampeintrag rechts
 #endif // SPEED_CONTROL_AVAILABLE
 
 #ifdef SPEED_LOG_AVAILABLE
-/*! Datenstruktur fuer Speedlog-Eintraege */
+/** Datenstruktur fuer Speedlog-Eintraege */
 typedef struct {
 #ifdef SPEED_CONTROL_AVAILABLE
-	uint8_t encRate;	/*!< Ist-Geschwindigkeit (halbiert) */
-	uint8_t targetRate;	/*!< Soll-Geschwindigkeit (halbiert) */
-	int16_t err;		/*!< Regelfehler */
+	uint8_t encRate;	/**< Ist-Geschwindigkeit (halbiert) */
+	uint8_t targetRate;	/**< Soll-Geschwindigkeit (halbiert) */
+	int16_t err;		/**< Regelfehler */
 #endif // SPEED_CONTROL_AVAILABLE
-	int16_t pwm;		/*!< aktueller PWM-Wert */
-	uint32_t time;		/*!< Timestamp */
+	int16_t pwm;		/**< aktueller PWM-Wert */
+	uint32_t time;		/**< Timestamp */
 } PACKED slog_data_t;
+
 #define SLOG_WITH_SPEED_CONTROL	1
 #define SLOG_WITHOUT_SPEED_CONTROL 0
 
 typedef union {
-	slog_data_t data[2][25];	/*!< Speed-Log Daten */
-	uint8_t raw[512];			/*!< Platzfueller auf MMC-Block-Groesse */
-} slog_t; /*!< Speed-Log Datentyp */
-extern slog_t slog; /*!< Speed-Log */
-extern volatile uint8_t slog_i[2];		/*!< Array-Index */
-extern uint32_t slog_sector;			/*!< Sektor auf der MMC fuer die Daten */
+	slog_data_t data[2][25]; /**< Speed-Log Daten */
+	uint8_t raw[512]; /**< Platzfueller auf Block-Groesse */
+} slog_t; /**< Speed-Log Datentyp */
+extern volatile uint8_t slog_i[2]; /**< Array-Index */
+extern slog_t * const slog; /**< Puffer fuer Speed-Log Daten */
 #endif // SPEED_LOG_AVAILABLE
+
+#ifdef PC
+/**
+ * Konvertiert eine (binaere) Speedlog-Datei ("AVR-Endian") in eine Textdatei.
+ * \param input_file Der Dateiname der BotFS-Image-Datei
+ */
+void convert_slog_file(char * input_file);
+#endif // PC
+#define SPEEDLOG_FILE_NAME "speedlog" /**< Dateiname der Speedlog-Datei */
 #endif // SENSOR_LOW_H_

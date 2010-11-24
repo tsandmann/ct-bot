@@ -17,25 +17,25 @@
  * 
  */
 
-/*! 
- * @file 	cmd_tools.h
- * @brief 	Funktionen, die per Commandline-Switch aufgerufen werden koennen
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	19.02.2008
+/**
+ * \file 	cmd_tools.h
+ * \brief 	Funktionen, die per Commandline-Switch aufgerufen werden koennen
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	19.02.2008
  */
 
 #ifndef CMD_TOOLS_H_
 #define CMD_TOOLS_H_
 
 #ifdef PC
-/*!
+/**
  * Behandelt die Kommandozeilen-Argumente
- * @param argc	Anzahl der Argumente
- * @param *argv	Zeiger auf String-Array der Argumente
+ * \param argc	Anzahl der Argumente
+ * \param *argv	Zeiger auf String-Array der Argumente
  */
 void hand_cmd_args(int argc, char * argv[]);
 
-/*!
+/**
  * Initialisiert die Eingabekonsole fuer RemoteCalls
  */
 void cmd_init(void);

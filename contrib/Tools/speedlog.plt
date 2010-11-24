@@ -24,10 +24,11 @@
 #     Datum: 3. November 2007
 #     Autor: Harald W. Leschner (hari@h9l.net)
 #
-#Dieser Schalter aktieviert die Ausgabe der EPS Dateien, wenn man z.B. mit LaTeX die
-#Bilder drucken moechte.     
+# Dieser Schalter aktieviert die Ausgabe der EPS Dateien, wenn man z.B. mit LaTeX die
+# Bilder drucken moechte.     
 #    
 #set terminal postscript eps enhanced color
+set terminal pdf enhanced color
 
 GNUTERM = "win"
 
@@ -62,7 +63,8 @@ set grid xtics nomxtics ytics nomytics noztics nomztics \
 nox2tics nomx2tics noy2tics nomy2tics nocbtics nomcbtics
 set grid layerdefault   linetype 0 linewidth 1.000,  linetype 0 linewidth 1.000
 
-unset key
+#unset key
+set key outside
 
 unset label
 unset arrow
@@ -111,14 +113,16 @@ set mx2tics default
 set my2tics default
 set mcbtics default
 
-set xtics border in scale 1,0.5 mirror rotate by 90  offset character 0, 0, 0
+#set xtics border in scale 1,0.5 mirror rotate by 90  offset character 0, 0, 0
 set xtics autofreq 
 set ytics border in scale 1,0.5 mirror norotate  offset character 0, 0, 0
 set ytics autofreq 
 set ztics border in scale 1,0.5 nomirror norotate  offset character 0, 0, 0
 set ztics autofreq 
 set nox2tics
-set noy2tics
+#set noy2tics
+set y2tics border in scale 1,0.5 mirror norotate  offset character 0, 0, 0
+set y2tics autofreq 
 set cbtics border in scale 1,0.5 mirror norotate  offset character 0, 0, 0
 set cbtics autofreq
 
@@ -131,15 +135,15 @@ set xlabel "Zeit [ms]"
 set xlabel  offset character 0, 0, 0 font "" textcolor lt -1 norotate
 set x2label "" 
 set x2label  offset character 0, 0, 0 font "" textcolor lt -1 norotate
-set xrange [ 217.801 : 1776.58 ] noreverse nowriteback
-set x2range [ 204.422 : 1667.45 ] noreverse nowriteback
+#set xrange [ 217.801 : 1776.58 ] noreverse nowriteback
+#set x2range [ 204.422 : 1667.45 ] noreverse nowriteback
 
-set ylabel "Wert [PWM]" 
+set ylabel "[mm/s]" 
 set ylabel  offset character 0, 0, 0 font "" textcolor lt -1 rotate by 90
-set y2label "" 
+set y2label "Wert [PWM]" 
 set y2label  offset character 0, 0, 0 font "" textcolor lt -1 rotate by 90
-set yrange [ -76.4141 : 516.211 ] noreverse nowriteback
-set y2range [ -55.3430 : 440.846 ] noreverse nowriteback
+set yrange [ * : 800 ] noreverse nowriteback
+set y2range [ -1000 : * ] noreverse nowriteback
 
 set zlabel "" 
 set zlabel  offset character 0, 0, 0 font "" textcolor lt -1 norotate
@@ -166,16 +170,19 @@ set loadpath
 set fontpath 
 set fit noerrorvariables
 
-set output "plots.eps"
+#set output "plots.eps"
+set output "plots.pdf"
 set multiplot layout 2,1
 
 set style data lines
 set title "Regelung Motor LINKS" 
-plot 'slog.txt' index 0 using 0:1 title 1, 'slog.txt' index 0 using 0:2 title 2 , 'slog.txt' index 0 using 0:3 title 3 , 'slog.txt' index 0 using 0:4 title 4 smooth frequency
+plot 'slog.txt' index 0 using ($5*0.176):1 title column(1) smooth frequency, 'slog.txt' index 0 using ($5*0.176):2 title column(2) smooth frequency, 'slog.txt' index 0 using ($5*0.176):3 title column(3) smooth frequency, 'slog.txt' index 0 using ($5*0.176):4 axes x1y2 title column(4) smooth frequency
 
 
 set title "Regelung Motor RECHTS" 
-plot 'slog.txt' index 1 using 0:1 title 1, 'slog.txt' index 1 using 0:2 title 2 , 'slog.txt' index 1 using 0:3 title 3 , 'slog.txt' index 1 using 0:4 title 4 smooth frequency
+plot 'slog.txt' index 1 using ($5*0.176):1 title column(1) smooth frequency, 'slog.txt' index 1 using ($5*0.176):2 title column(2) smooth frequency, 'slog.txt' index 1 using ($5*0.176):3 title column(3) smooth frequency, 'slog.txt' index 1 using ($5*0.176):4 axes x1y2 title column(4) smooth frequency
+
+exit
 
 unset multiplot
 
@@ -184,17 +191,19 @@ set timestamp "Erstellt am %d.%m.%y um %H:%M:%S"
 
 pause -1 "Speedlog Plots finished"
 
-set output "links.eps"
+#set output "links.eps"
+set output "links.pdf"
 set style data lines
 set title "Regelung Motor LINKS" 
-plot 'slog.txt' index 0 using 0:1 title 1, 'slog.txt' index 0 using 0:2 title 2 , 'slog.txt' index 0 using 0:3 title 3 , 'slog.txt' index 0 using 0:4 title 4 smooth frequency
+plot 'slog.txt' index 0 using 0:1 title column(1), 'slog.txt' index 0 using 0:2 title column(2), 'slog.txt' index 0 using 0:3 title column(3), 'slog.txt' index 0 using 0:4 title column(4) smooth frequency
 
 pause -1 "Speedlog Plots finished"
 
-set output "rechts.eps"
+#set output "rechts.eps"
+set output "rechts.pdf"
 set style data lines
 set title "Regelung Motor RECHTS" 
-plot 'slog.txt' index 1 using 0:1 title 1, 'slog.txt' index 1 using 0:2 title 2 , 'slog.txt' index 1 using 0:3 title 3 , 'slog.txt' index 1 using 0:4 title 4 smooth frequency
+plot 'slog.txt' index 1 using 0:1 title column(1), 'slog.txt' index 1 using 0:2 title column(2), 'slog.txt' index 1 using 0:3 title column(3), 'slog.txt' index 1 using 0:4 title column(4) smooth frequency
 
 pause -1 "Speedlog Plots finished"
 

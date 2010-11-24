@@ -17,21 +17,21 @@
  *
  */
 
-/*!
- * @file 	sensor-low.c
- * @brief 	Low-Level Routinen fuer die Sensor Steuerung des c't-Bots
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	01.12.2005
+/**
+ * \file 	sensor-low.c
+ * \brief 	Low-Level Routinen fuer die Sensor Steuerung des c't-Bots
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	01.12.2005
  */
 
 #ifdef MCU
+
+#include "ct-Bot.h"
 
 #include <avr/io.h>
 #include <string.h>
 #include <math.h>
 #include "adc.h"
-#include "global.h"
-
 #include "ena.h"
 #include "sensor.h"
 #include "mouse.h"
@@ -41,14 +41,14 @@
 #include "bot-local.h"
 #include "bot-logic/bot-logic.h"
 #include "display.h"
-#include "mmc.h"
-#include "mini-fat.h"
 #include "led.h"
 #include "sensor-low.h"
 #include "i2c.h"
 #include "ir-rc5.h"
 #include "math_utils.h"
 #include "srf10.h"
+#include "botfs.h"
+#include "init.h"
 
 // ADC-PINS
 #define SENS_ABST_L		0		/*!< ADC-PIN Abstandssensor Links */
@@ -104,12 +104,13 @@ uint8_t timeCorrectR = 0;	/*!< markiert, ob der Encoder-Timestamp des rechten Ra
 
 #ifdef SPEED_LOG_AVAILABLE
 /* Debug-Loggings */
-slog_t slog; /*!< Speed-Log */
-volatile uint8_t slog_i[2] = {0,0};		/*!< Array-Index */
-uint32_t slog_sector = 0;				/*!< Sektor auf der MMC fuer die Daten */
+volatile uint8_t slog_i[2] = {0,0}; /**< Array-Index */
+slog_t * const slog = &GET_MMC_BUFFER(speedlog); /**< Puffer fuer Speed-Log Daten */
+static botfs_file_descr_t speedlog_file; /**< BotFS-Datei fuer das Speed-Log */
+#define SPEEDLOG_FILE_SIZE (1024 * (1024 / BOTFS_BLOCK_SIZE)) /**< Groesse der Speed-Log-Datei in Bloecken */
 #endif // SPEED_LOG_AVAILABLE
 
-/*!
+/**
  * Initialisiere alle Sensoren
  */
 void bot_sens_init(void) {
@@ -135,31 +136,38 @@ void bot_sens_init(void) {
 	sensEncL = 0;
 	sensEncR = 0;
 
-#ifdef SPEED_LOG_AVAILABLE
-	void * buffer = &slog;
-	slog_sector = mini_fat_find_block("slog", buffer);
+#ifdef TEST_AVAILABLE_ANALOG
+	sensor_update_distance = sensor_dist_straight; // Distanzsensordaten 1:1 weiterreichen
+#endif
 
-	if (slog_sector != 0xffffffff) {
-		/* Datei leeren */
-		mini_fat_clear_file(slog_sector, buffer);
-		/* Typ in den Header schreiben (mit oder ohne Motorregelung) */
-		uint8_t * header = mini_fat_read_header_data(slog_sector, buffer);
+#ifdef SPEED_LOG_AVAILABLE
+	void * const buffer = slog;
+	/* Datei oeffnen / anlegen */
+	int8_t res;
+	if ((res = botfs_open(SPEEDLOG_FILE_NAME, &speedlog_file, BOTFS_MODE_W, buffer)) != 0) {
+		if (res == -1) {
+			botfs_create(SPEEDLOG_FILE_NAME, SPEEDLOG_FILE_SIZE, buffer);
+			if (botfs_open(SPEEDLOG_FILE_NAME, &speedlog_file, BOTFS_MODE_W, buffer) != 0) {
+				return;
+			}
+		}
+	}
+
+	/* Typ in den Header schreiben (mit oder ohne Motorregelung) */
+	uint8_t * header;
+	if (botfs_read_header_data(&speedlog_file, &header, buffer) == 0) {
 #ifdef SPEED_CONTROL_AVAILABLE
 		*header = SLOG_WITH_SPEED_CONTROL;
 #else // ! SPEED_CONTROL_AVAILABLE
 		*header = SLOG_WITHOUT_SPEED_CONTROL;
 #endif // SPEED_CONTROL_AVAILABLE
-		mini_fat_write_header_data(slog_sector, header, buffer);
-		memset(buffer, 0, sizeof(slog));
+		botfs_write_header_data(&speedlog_file, buffer);
 	}
+	memset(buffer, 0, sizeof(slog));
 #endif // SPEED_LOG_AVAILABLE
-
-#ifdef TEST_AVAILABLE_ANALOG
-	sensor_update_distance = sensor_dist_straight; // Distanzsensordaten 1:1 weiterreichen
-#endif
 }
 
-/*!
+/**
  * Alle Sensoren aktualisieren
  */
 void bot_sens(void) {
@@ -256,16 +264,16 @@ void bot_sens(void) {
 
 #ifdef SPEED_LOG_AVAILABLE
 	/* Speed-Log-Daten auf MMC schreiben, falls Puffer voll */
-	if (slog_sector != 0xffffffff && (slog_i[0] > 20 || slog_i[1] > 20)) { // etwas Luft lassen, denn die Daten kommen per ISR
-		const size_t n = sizeof(slog.data[0]) / sizeof(slog.data[0][0]);
+	if (slog_i[0] > 20 || slog_i[1] > 20) { // etwas Luft lassen, denn die Daten kommen per ISR
+		const size_t n = sizeof(slog->data[0]) / sizeof(slog->data[0][0]);
 		uint8_t j;
-		for (j=0; j<2; ++j) {
+		for (j = 0; j < 2; ++j) {
 			const uint8_t i = (uint8_t) (slog_i[j] + 1);
 			slog_i[j] = 0; // Index-Reset
 			const uint16_t length = mul8(sizeof(slog_data_t), (uint8_t) (n - i));
-			memset((uint8_t *) &slog.data[j][i], 0, length);
+			memset((uint8_t *) &slog->data[j][i], 0, length);
 		}
-		mmc_write_sector(slog_sector++, (uint8_t *) slog.data);	// swap-out
+		botfs_write(&speedlog_file, slog->data);
 	}
 #endif // SPEED_LOG_AVAILABLE
 
@@ -336,10 +344,12 @@ void bot_sens(void) {
 #endif // LED_AVAILABLE
 }
 
-/*!
- * Kuemmert sich um die Radencoder
+/**
+ * \brief Kuemmert sich um die Radencoder
+ *
  * Das muss schneller gehen als die anderen Sensoren,
- * daher Update per Timer-Interrupt und nicht per Polling
+ * daher Update per Timer-Interrupt und nicht ueber sensor_update() und
+ * die Bot-Hauptschleife.
  */
 void bot_encoder_isr(void) {
 	static uint8_t enc_l = 0; // Puffer fuer die letzte Encoder-Staende

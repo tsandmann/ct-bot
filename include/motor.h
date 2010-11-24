@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	motor.h
- * @brief 	High-Level Routinen fuer die Motorsteuerung des c't-Bots
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	15.01.05
+/**
+ * \file 	motor.h
+ * \brief 	High-Level Routinen fuer die Motorsteuerung des c't-Bots
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	15.01.2005
  */
 #ifndef MOTOR_H_
 #define MOTOR_H_
@@ -66,44 +66,48 @@ typedef union {
 
 extern direction_t direction;		/*!< Drehrichtung der Motoren, auch wenn die Speed-Variablen bereits wieder auf Null sind */
 
-/*!
+/**
  * Initialisiere den Motorkrams
  */
 void motor_init(void);
 
-/*!
- * Direkter Zugriff auf den Motor
- * @param left	Geschwindigkeit fuer den linken Motor
- * @param right	Geschwindigkeit fuer den linken Motor
+/**
+ * \brief Direkter Zugriff auf den Motor
+ * \param left	Geschwindigkeit fuer den linken Motor
+ * \param right	Geschwindigkeit fuer den rechten Motor
+ *
  * Geschwindigkeit liegt zwischen -450 und +450. 0 bedeutet Stillstand, 450 volle Kraft voraus, -450 volle Kraft zurueck.
  * Sinnvoll ist die Verwendung der Konstanten: BOT_SPEED_XXX, also z.B. motor_set(BOT_SPEED_SLOW,-BOT_SPEED_SLOW) fuer eine langsame Drehung
  */
 void motor_set(int16_t left, int16_t right);
 
-/*!
- * Stellt die Servos
- * @param servo	Nummer des Servos
- * @param pos	Zielwert
- * Sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus
+/**
+ * \brief Stellt die Servos
+ * \param servo	Nummer des Servos
+ * \param pos	Zielwert
+ *
+ * Sinnvolle Werte liegen zwischen DOOR_CLOSE und DOOR_OPEN, oder SERVO_OFF fuer Servo aus
  */
 void servo_set(uint8_t servo, uint8_t pos);
 
 #ifdef SPEED_CONTROL_AVAILABLE
-/*!
- * Drehzahlregelung fuer die Motoren des c't-Bots
- * @param dev		0: linker Motor, 1: rechter Motor
- * @param actVar	Zeiger auf Stellgroesse (nicht volatile, da Aufruf aus ISR heraus)
- * @param encTime	Zeiger auf Encodertimestamps, mit denen gerechnet werden soll
- * @param i_time	Index des aktuellen Timestamps in encTime
- * @param enc		Encoder-Pegel (binaer) von dev
+/**
+ * \brief Drehzahlregelung fuer die Motoren des c't-Bots
+ * \param dev		0: linker Motor, 1: rechter Motor
+ * \param actVar	Zeiger auf Stellgroesse (nicht volatile, da Aufruf aus ISR heraus)
+ * \param encTime	Zeiger auf Encodertimestamps, mit denen gerechnet werden soll
+ * \param i_time	Index des aktuellen Timestamps in encTime
+ * \param enc		Encoder-Pegel (binaer) von dev
+ *
  * Drehzahlregelung sorgt fuer konstante Drehzahl und somit annaehernd Geradeauslauf.
  * Feintuning von PID_Kp bis PID_SPEED_THRESHOLD (bot-local.h) verbessert die Genauigkeit und Schnelligkeit der Regelung.
  * Mit PWMMIN, PWMSTART_L und PWMSTART_R laesst sich der Minimal- bzw. Startwert fuer die Motoren anpassen.
  */
 void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_time, uint8_t enc);
 
-/*!
- * Zeigt Debug-Informationen der Motorregelung an.
+/**
+ * \brief Zeigt Debug-Informationen der Motorregelung an.
+ *
  * Dargestellt werden pro Moto Ist- / Sollgeschwindigkeit, die Differenz davon, der PWM-Stellwert und die
  * Reglerparameter Kp, Ki und Kd.
  * Die Tasten 1 und 4 veraendern Kp, 2 und 5 veraendern Ki, 3 und 6 veraendern Kd, wenn ADJUST_PID_PARAMS an ist.

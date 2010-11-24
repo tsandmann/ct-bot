@@ -33,6 +33,7 @@
 #include "display.h"
 #include "sensor.h"
 #include "rc5-codes.h"
+#include "init.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -53,11 +54,12 @@ static char * p_buffer = minilog_buffer; /**< Zeiger auf Puffer */
 
 #ifdef LOG_MMC_AVAILABLE
 #define FILE_NAME "/log.txt"
+#define FILE_SIZE (1024 * (1024 / BOTFS_BLOCK_SIZE)) /**< Groesse der Log-Datei in Bloecken */
 static botfs_file_descr_t log_file; /**< Log-Datei */
-static char file_buffer[BOTFS_BLOCK_SIZE]; /**< Puffer fuer BotFS */
 static uint16_t next_line; /**< naechste Zeilennummer */
 static uint16_t line_displayed; /**< aktuell auf dem Display angezeigte Zeile */
-static char * p_buffer = file_buffer; /**< Zeiger auf Puffer */
+static char * const file_buffer = GET_MMC_BUFFER(minilog_buffer); /**< Puffer fuer BotFS */
+static char * p_buffer = GET_MMC_BUFFER(minilog_buffer); /**< Zeiger auf Puffer */
 
 #ifndef BOT_FS_AVAILABLE
 #error "LOG_MMC mit MINILOG geht nur mit BOT_FS_AVAILABLE"
@@ -125,7 +127,7 @@ void log_mmc_init(void) {
 	int8_t res;
 	if ((res = botfs_open(FILE_NAME, &log_file, BOTFS_MODE_W, file_buffer)) != 0) {
 		if (res == -1) {
-			botfs_create(FILE_NAME, 1024 * (1024 / BOTFS_BLOCK_SIZE), file_buffer);
+			botfs_create(FILE_NAME, FILE_SIZE, file_buffer);
 			if (botfs_open(FILE_NAME, &log_file, BOTFS_MODE_W, file_buffer) != 0) {
 				return;
 			}

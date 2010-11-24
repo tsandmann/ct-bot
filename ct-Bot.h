@@ -224,10 +224,9 @@
 #undef MAP_AVAILABLE
 #endif
 
-#if defined SPEED_LOG_AVAILABLE && defined MAP_AVAILABLE
-/** \todo: geht mit BotFS */
-#undef MAP_AVAILABLE
-#warning "Speed-Log und Map schliessen sich aus, deaktiviere Map"
+#if defined SPEED_LOG_AVAILABLE && ! defined BOT_FS_AVAILABLE
+#warning "Speed-Log braucht BOT_FS_AVAILABLE. Schalte Speed-Log aus"
+#undef SPEED_LOG_AVAILABLE
 #endif
 
 #ifdef MAP_AVAILABLE

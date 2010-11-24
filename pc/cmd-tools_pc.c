@@ -17,22 +17,16 @@
  *
  */
 
-/*!
- * @file 	cmd-tools_pc.c
- * @brief 	Funktionen, die per Commandline-Switch aufgerufen werden koennen
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	19.02.2008
+/**
+ * \file 	cmd-tools_pc.c
+ * \brief 	Funktionen, die per Commandline-Switch aufgerufen werden koennen
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	19.02.2008
  */
 
 #ifdef PC
 #include "ct-Bot.h"
 #include "cmd_tools.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <getopt.h>
-#include <string.h>
-#include <pthread.h>
 #include "tcp-server.h"
 #include "mini-fat.h"
 #include "map.h"
@@ -41,12 +35,20 @@
 #include "command.h"
 #include "bot-logic/bot-logic.h"
 #include "botfs.h"
+#include "sensor-low.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <getopt.h>
+#include <string.h>
+#include <pthread.h>
 
 //#define DEBUG
 
-static pthread_t cmd_thread; /*!< Thread fuer die RemoteCall-Auswertung per Kommandozeile */
+static pthread_t cmd_thread; /**< Thread fuer die RemoteCall-Auswertung per Kommandozeile */
 
-/*!
+/**
  * Zeigt Informationen zu den moeglichen Kommandozeilenargumenten an.
  */
 static void usage(void) {
@@ -75,7 +77,7 @@ static void usage(void) {
 	puts("\t-d \tLoescht eine Mini-Fat-Datei fuer den Sim (emulierte MMC).");
 	puts("\t   ID  \tDie ID aus ASCII-Zeichen");
 	puts("\t-l \tKonvertiert eine SpeedLog-Datei in eine txt-Datei");
-	puts("\t   FILE\tEingabedatei");
+	puts("\t   FILE\tBotFS-Image-Datei");
 	puts("\t-E \tInitialisiert das EEPROM mit den Daten der EEP-Datei");
 #ifdef BOT_FS_AVAILABLE
 	puts("\t-i FILE\tverwendet FILE als Volume-Image fuer BotFS");
@@ -95,10 +97,10 @@ static void usage(void) {
 	puts("\t-h\tZeigt diese Hilfe an");
 }
 
-/*!
+/**
  * Behandelt die Kommandozeilen-Argumente
- * @param argc	Anzahl der Argumente
- * @param *argv	Zeiger auf String-Array der Argumente
+ * \param argc	Anzahl der Argumente
+ * \param *argv	Zeiger auf String-Array der Argumente
  */
 void hand_cmd_args(int argc, char * argv[]) {
 	/* Der Zielhost wird per default durch das Macro IP definiert und
@@ -367,6 +369,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 		}
 
 		case 'l': {
+#ifdef BOT_FS_AVAILABLE
 			/* Speedlog-Datei soll in txt konvertiert werden */
 			const size_t len = strlen(optarg) + 1;
 			if (len > 1024) {
@@ -375,6 +378,10 @@ void hand_cmd_args(int argc, char * argv[]) {
 			}
 			convert_slog_file(optarg);
 			exit(0);
+#else
+			puts("Fehler, Binary wurde ohne BOT_FS_AVAILABLE compiliert!");
+			exit(1);
+#endif // BOT_FS_AVAILABLE
 		}
 
 		case 'E': {
@@ -397,7 +404,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 	}
 }
 
-/*!
+/**
  * Liest RemoteCall-Commands von stdin ein
  */
 static void read_command_thread(void) {
@@ -464,7 +471,7 @@ static void read_command_thread(void) {
 	}
 }
 
-/*!
+/**
  * Initialisiert die Eingabekonsole fuer RemoteCalls
  */
 void cmd_init(void) {

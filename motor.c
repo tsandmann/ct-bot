@@ -17,12 +17,12 @@
  *
  */
 
-/*!
- * @file 	motor.c
- * @brief 	High-Level-Routinen fuer die Motorsteuerung des c't-Bot
- * @author 	Benjamin Benz (bbe@heise.de)
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	17.10.2006
+/**
+ * \file 	motor.c
+ * \brief 	High-Level-Routinen fuer die Motorsteuerung des c't-Bot
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	17.10.2006
  */
 
 #include <stdlib.h>
@@ -75,7 +75,7 @@ static volatile pwmMap_t pwm_values[4] = {{0,255},{0,255},{0,255},{0,255}};		/*!
 uint8_t encoderRateInfo[2];		/*!< Puffer fuer Displayausgabe der Ist-Geschwindigkeit */
 #endif
 
-#endif	// SPEED_CONTROL_AVAILABLE
+#endif // SPEED_CONTROL_AVAILABLE
 
 /* EEPROM-Variable immer deklarieren, damit die Adresse sich nicht veraendert je nach #define */
 uint8_t EEPROM pwmSlow[4] = {255, 255, 255, 255};	/*!< EEPROM-Kopie von pwm_values */
@@ -83,13 +83,14 @@ uint8_t EEPROM pwmSlow[4] = {255, 255, 255, 255};	/*!< EEPROM-Kopie von pwm_valu
 direction_t direction;		/*!< Drehrichtung der Motoren */
 
 #ifdef SPEED_CONTROL_AVAILABLE
-/*!
- * Drehzahlregelung fuer die Motoren des c't-Bots
- * @param dev		0: linker Motor, 1: rechter Motor
- * @param actVar	Zeiger auf Stellgroesse (nicht volatile, da Aufruf aus ISR heraus)
- * @param encTime	Zeiger auf Encodertimestamps, mit denen gerechnet werden soll
- * @param i_time	Index des aktuellen Timestamps in encTime
- * @param enc		Encoder-Pegel (binaer) von dev
+/**
+ * \brief Drehzahlregelung fuer die Motoren des c't-Bots
+ * \param dev		0: linker Motor, 1: rechter Motor
+ * \param actVar	Zeiger auf Stellgroesse (nicht volatile, da Aufruf aus ISR heraus)
+ * \param encTime	Zeiger auf Encodertimestamps, mit denen gerechnet werden soll
+ * \param i_time	Index des aktuellen Timestamps in encTime
+ * \param enc		Encoder-Pegel (binaer) von dev
+ *
  * Drehzahlregelung sorgt fuer konstante Drehzahl und somit annaehernd Geradeauslauf.
  * Feintuning von PID_Kp bis PID_SPEED_THRESHOLD (bot-local.h) verbessert die Genauigkeit und Schnelligkeit der Regelung.
  * Mit PWMMIN, PWMSTART_L und PWMSTART_R laesst sich der Minimal- bzw. Startwert fuer die Motoren anpassen.
@@ -121,14 +122,14 @@ void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_
 			/* Daten loggen */
 			register uint8_t index = slog_i[dev];
 			if (index < 24) {
-				slog.data[dev][index].encRate = 1; // Regelgroesse
-				slog.data[dev][index].err = encoderTargetRate[dev]; // Regeldifferenz
-				slog.data[dev][index].pwm = *actVar; // Stellgroesse
-				slog.data[dev][index].targetRate = encoderTargetRate[dev]; // Fuehrungsgroesse
-				slog.data[dev][index++].time = tickCount.u32; // Timestamp
+				slog->data[dev][index].encRate = 1; // Regelgroesse
+				slog->data[dev][index].err = encoderTargetRate[dev]; // Regeldifferenz
+				slog->data[dev][index].pwm = *actVar; // Stellgroesse
+				slog->data[dev][index].targetRate = encoderTargetRate[dev]; // Fuehrungsgroesse
+				slog->data[dev][index++].time = tickCount.u32; // Timestamp
 				slog_i[dev] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
 			}
-#endif	// SPEED_LOG_AVAILABLE
+#endif // SPEED_LOG_AVAILABLE
 
 		} else { // 1. Aufruf => es gibt noch keinen korrekten Timestamp in der Vergangenheit => bis zum 2. Aufruf nix tun
 			if (encoderTargetRate[dev] >= PID_SPEED_THRESHOLD) {
@@ -198,14 +199,14 @@ void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_
 			/* Daten loggen */
 			register uint8_t index = slog_i[dev];
 			if (index < 24) {
-				slog.data[dev][index].encRate = encoderRate; // Regelgroesse
-				slog.data[dev][index].err = err; // Regeldifferenz
-				slog.data[dev][index].pwm = *actVar; // Stellgroesse
-				slog.data[dev][index].targetRate = encoderTargetRate[dev]; // Fuehrungsgroesse
-				slog.data[dev][index++].time = tickCount.u32; // Timestamp
+				slog->data[dev][index].encRate = encoderRate; // Regelgroesse
+				slog->data[dev][index].err = err; // Regeldifferenz
+				slog->data[dev][index].pwm = *actVar; // Stellgroesse
+				slog->data[dev][index].targetRate = encoderTargetRate[dev]; // Fuehrungsgroesse
+				slog->data[dev][index++].time = tickCount.u32; // Timestamp
 				slog_i[dev] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
 			}
-#endif	// SPEED_LOG_AVAILABLE
+#endif // SPEED_LOG_AVAILABLE
 		}
 
 		if (start_signal[dev] > 0) {
@@ -228,8 +229,9 @@ void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_
 }
 
 #ifdef DISPLAY_REGELUNG_AVAILABLE
-/*!
- * Zeigt Debug-Informationen der Motorregelung an.
+/**
+ * \brief Zeigt Debug-Informationen der Motorregelung an.
+ *
  * Dargestellt werden pro Moto Ist- / Sollgeschwindigkeit, die Differenz davon, der PWM-Stellwert und die
  * Reglerparameter Kp, Ki und Kd.
  * Die Tasten 1 und 4 veraendern Kp, 2 und 5 veraendern Ki, 3 und 6 veraendern Kd, wenn ADJUST_PID_PARAMS an ist.
@@ -264,7 +266,7 @@ void speedcontrol_display(void) {
 	display_printf("Kp=%3d Ki=%3d Kd=%3d", Kp, Ki, Kd);
 #else
 	display_printf("Kp=%3d Ki=%3d Kd=%3d", PID_Kp, PID_Ki, PID_Kd);
-#endif	// ADJUST_PID_PARAMS
+#endif // ADJUST_PID_PARAMS
 
 	/* Keyhandler */
 	switch (RC5_Code) {
@@ -276,7 +278,7 @@ void speedcontrol_display(void) {
 		case RC5_CODE_5: Ki--; RC5_Code = 0; break;
 		case RC5_CODE_3: Kd++; RC5_Code = 0; break;
 		case RC5_CODE_6: Kd--; RC5_Code = 0; break;
-#endif	// ADJUST_PID_PARAMS
+#endif // ADJUST_PID_PARAMS
 
 		case RC5_CODE_7:
 			target_speed_l = BOT_SPEED_FOLLOW; target_speed_r = BOT_SPEED_FOLLOW; RC5_Code = 0; break;
@@ -286,13 +288,14 @@ void speedcontrol_display(void) {
 			target_speed_l = BOT_SPEED_FAST; target_speed_r = BOT_SPEED_FAST; RC5_Code = 0; break;
 	}
 }
-#endif	// DISPLAY_REGELUNG_AVAILABLE
-#endif	// SPEED_CONTROL_AVAILABLE
+#endif // DISPLAY_REGELUNG_AVAILABLE
+#endif // SPEED_CONTROL_AVAILABLE
 
-/*!
- * Direkter Zugriff auf den Motor
- * @param left	Geschwindigkeit fuer den linken Motor
- * @param right	Geschwindigkeit fuer den rechten Motor
+/**
+ * \brief Direkter Zugriff auf den Motor
+ * \param left	Geschwindigkeit fuer den linken Motor
+ * \param right	Geschwindigkeit fuer den rechten Motor
+ *
  * Geschwindigkeit liegt zwischen -450 und +450. 0 bedeutet Stillstand, 450 volle Kraft voraus, -450 volle Kraft zurueck.
  * Sinnvoll ist die Verwendung der Konstanten: BOT_SPEED_XXX, also z.B. motor_set(BOT_SPEED_SLOW,-BOT_SPEED_SLOW) fuer eine langsame Drehung
  */
@@ -354,14 +357,14 @@ void motor_set(int16_t left, int16_t right) {
 		/* Daten loggen */
 		register uint8_t index = slog_i[0];
 		if (index < 24) {
-			slog.data[0][index].encRate = 1; // Regelgroesse
-			slog.data[0][index].err = 0; // Regeldifferenz
-			slog.data[0][index].pwm = 0; // Stellgroesse
-			slog.data[0][index].targetRate = encoderTargetRate[0]; // Fuehrungsgroesse
-			slog.data[0][index++].time = tickCount.u32; // Timestamp
+			slog->data[0][index].encRate = 1; // Regelgroesse
+			slog->data[0][index].err = 0; // Regeldifferenz
+			slog->data[0][index].pwm = 0; // Stellgroesse
+			slog->data[0][index].targetRate = encoderTargetRate[0]; // Fuehrungsgroesse
+			slog->data[0][index++].time = tickCount.u32; // Timestamp
 			slog_i[0] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
 		}
-#endif	// SPEED_LOG_AVAILABLE
+#endif // SPEED_LOG_AVAILABLE
 	}
 	/* Neue Fuehrungsgroesse rechts setzen */
 	if (speed_r != right * speedSignRight && (start_signal[1] == 0 || right == 0 || sign16(speed_r) != speedSignRight)) {
@@ -397,14 +400,14 @@ void motor_set(int16_t left, int16_t right) {
 		/* Daten loggen */
 		register uint8_t index = slog_i[1];
 		if (index < 24) {
-			slog.data[1][index].encRate = 1; // Regelgroesse
-			slog.data[1][index].err = 0; // Regeldifferenz
-			slog.data[1][index].pwm = 0; // Stellgroesse
-			slog.data[1][index].targetRate = encoderTargetRate[1]; // Fuehrungsgroesse
-			slog.data[1][index++].time = tickCount.u32; // Timestamp
+			slog->data[1][index].encRate = 1; // Regelgroesse
+			slog->data[1][index].err = 0; // Regeldifferenz
+			slog->data[1][index].pwm = 0; // Stellgroesse
+			slog->data[1][index].targetRate = encoderTargetRate[1]; // Fuehrungsgroesse
+			slog->data[1][index++].time = tickCount.u32; // Timestamp
 			slog_i[1] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
 		}
-#endif	// SPEED_LOG_AVAILABLE
+#endif // SPEED_LOG_AVAILABLE
 	}
 
 	/* PWM-Lookup im EEPROM updaten */
@@ -460,7 +463,7 @@ void motor_set(int16_t left, int16_t right) {
 #endif // SPEED_CONTROL_AVAILABLE
 }
 
-/*!
+/**
  * Initialisiere den Motorkrams
  */
 void motor_init(void) {
@@ -484,11 +487,12 @@ void motor_init(void) {
 	motor_low_init();
 }
 
-/*!
- * Stellt die Servos
- * @param servo	Nummer des Servos
- * @param pos	Zielwert
- * Sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus
+/**
+ * \brief Stellt die Servos
+ * \param servo	Nummer des Servos
+ * \param pos	Zielwert
+ *
+ * Sinnvolle Werte liegen zwischen DOOR_CLOSE und DOOR_OPEN, oder SERVO_OFF fuer Servo aus
  */
 void servo_set(uint8_t servo, uint8_t pos) {
 	if ((servo == SERVO1) && (pos != SERVO_OFF)) {
@@ -539,4 +543,4 @@ void servo_set(uint8_t servo, uint8_t pos) {
 	#if PWMSTART_R*3/2 > PWMMAX || PWMSTART_R < PWMMIN
 		#error PWMSTART_R out of range [PWMMIN; PWMMAX/1.5]!
 	#endif
-#endif	// SPEED_CONTROL_AVAILABLE
+#endif // SPEED_CONTROL_AVAILABLE

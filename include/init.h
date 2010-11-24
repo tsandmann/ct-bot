@@ -31,6 +31,7 @@
 #include "eeprom.h"
 #include "bot-logic/bot-logic.h"
 #include "botfs.h"
+#include "sensor-low.h"
 
 extern uint8_t EEPROM resetsEEPROM;	/*!< Reset-Counter im EEPROM */
 
@@ -46,6 +47,12 @@ typedef union {
 #endif // MAP_AVAILABLE
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 		uint8_t ubasic_buffer[BOTFS_BLOCK_SIZE]; /*!< uBasic-MMC-Puffer */
+#endif
+#if defined LOG_MMC_AVAILABLE && defined USE_MINILOG
+		char minilog_buffer[BOTFS_BLOCK_SIZE]; /**< Puffer fuer LOG_MMC */
+#endif
+#ifdef SPEED_LOG_AVAILABLE
+		slog_t speedlog; /**< Speed-Log Puffer */
 #endif
 		uint8_t end[0];
 	} PACKED data;
