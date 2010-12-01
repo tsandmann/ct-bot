@@ -311,13 +311,14 @@ void botfs_print_freelist(void * buffer) {
 	for (i = 0; i < BOTFS_FREEL_BL_CNT; ++i) {
 		if (botfs_read(&botfs_vol_data.freelist, buffer) != 0) {
 			botfs_release_lock_low(&botfs_mutex);
+			printf("Fehler beim Lesen der Freelist\n");
 			return;
 		}
 		botfs_freelist_entry_t * pFree = freelist->freeblocks;
 		uint8_t j;
 		for (j = 0; j < BOTFS_FREEL_BL_SIZE; ++j) {
 			if (pFree->size != 0) {
-				PRINT_MSG("Block %u, Eintrag %u: start: 0x%04x\tsize: 0x%04x", i, j, pFree->block, pFree->size);
+				printf("Block %u, Eintrag %u: start: 0x%04x\tsize: 0x%04x\n", i, j, pFree->block, pFree->size);
 			}
 			pFree++;
 		}

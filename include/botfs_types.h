@@ -105,7 +105,7 @@ typedef struct {
 	uint16_t end;			/**< Blockadresse des letzten Blocks der Datei */
 	uint16_t pos;			/**< Blockadresse der aktuellen Position */
 	uint8_t mode;			/**< Modus, in dem die Datei geoeffnet wurde */
-	botfs_file_used_t used;	/**< Benutzt Bloecke dieser Datei */
+	botfs_file_used_t used;	/**< Benutzte Bloecke dieser Datei */
 } PACKED botfs_file_descr_t;
 
 /** Datei-Header */

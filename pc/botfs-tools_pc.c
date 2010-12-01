@@ -627,6 +627,7 @@ static void (* handler[])(void) = {
  * Management-Tools fuer BotFS
  */
 void botfs_management(char * volume_file) {
+	static const char * title = "BotFS-Verwaltung 0.2";
 	const size_t n_commands = sizeof(commands) / sizeof(commands[0]);
 	const size_t n_handlers = sizeof(handler) / sizeof(handler[0]);
 	if (n_commands != n_handlers) {
@@ -638,7 +639,7 @@ void botfs_management(char * volume_file) {
 		load_volume(volume_file);
 	}
 	char in_buffer[32];
-	printf("\nBotFS-Verwaltung 0.1\n");
+	printf("\n%s\n", title);
 	printf("\nHilfe mit Kommando \"help\"\n> ");
 
 	/* Hauptschleife */
@@ -658,7 +659,7 @@ void botfs_management(char * volume_file) {
 		if (i == sizeof(handler) / sizeof(void *)) {
 			printf("invalid command\n");
 		}
-		printf("\nBotFS-Verwaltung 0.1\n> ");
+		printf("\n%s\n> ", title);
 	}
 }
 
