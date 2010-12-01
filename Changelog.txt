@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2010-12-01 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer botfs_rename()
+
 2010-11-20 Timo Sandmann [mail@timosandmann.de]: Speed-Log auf BotFS umgestellt
 
 2010-11-19 Timo Sandmann [mail@timosandmann.de]: LOG_MMC_AVAILABLE kann jetzt mit USE_MINILOG und BOT_FS_AVAILABLE verwendet werden, dadurch auch parallel mit MAP_AVAILABLE. Ausserdem gibt es jetzt ein Display, das alle Log-Eintraege anzeigen kann (scrollen ueber Fernbedienung) 

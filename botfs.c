@@ -469,18 +469,28 @@ int8_t botfs_unlink(const char * filename, void * buffer) {
  * \param *new_name	Neuer Dateiname
  * \param *buffer	Puffer fuer mindestens BOTFS_BLOCK_SIZE Byte
  * \return			0, falls kein Fehler
+ *
+ * Datei new_name wird geloescht, falls sie bereits existiert.
  */
 int8_t botfs_rename(const char * filename, const char * new_name, void * buffer) {
 	botfs_acquire_lock_low(&botfs_mutex);
 	/* Datei suchen */
 	botfs_file_t * ptr = search_file(filename, buffer);
+	botfs_release_lock_low(&botfs_mutex);
 	if (ptr == NULL) {
-		botfs_release_lock_low(&botfs_mutex);
 		PRINT_MSG("Datei nicht vorhanden");
 		return -1;
 	}
 
+	/* Ziel loeschen, falls vorhanden */
+	if (botfs_unlink(new_name, buffer) < -1) {
+		PRINT_MSG("Fehler beim Loeschen der vorhandenen Zieldatei");
+		return -2;
+	}
+
 	/* Root-Dir Eintrag updaten */
+	botfs_acquire_lock_low(&botfs_mutex);
+	ptr = search_file(filename, buffer);
 	char * pName = ptr->name;
 	if (new_name[0] != '/') {
 		/* fehlenden fuehrenden / ergaenzen */
@@ -493,7 +503,7 @@ int8_t botfs_rename(const char * filename, const char * new_name, void * buffer)
 	if (botfs_write(&botfs_vol_data.rootdir, buffer) != 0) {
 		botfs_release_lock_low(&botfs_mutex);
 		PRINT_MSG("Fehler beim Schreiben des Root-Blocks");
-		return -2;
+		return -3;
 	}
 	botfs_release_lock_low(&botfs_mutex);
 	return 0;
