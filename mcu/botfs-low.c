@@ -168,6 +168,22 @@ int8_t botfs_init_low(char * image, void * buffer, uint8_t create) {
 }
 
 /**
+ * Ueberprueft ein geladenes Volume
+ * \param *image	Dateiname des Images, wird fuer MCU ignoriert
+ * \param *buffer	Puffer fuer mindestens BOTFS_BLOCK_SIZE Bytes
+ * \return 0, falls kein Fehler, sonst Fehlercode (< 0)
+ */
+int8_t botfs_check_volume_low(char * image, void * buffer) {
+	(void) image;
+	/* Version pruefen */
+	botfs_volume_t * volume = buffer;
+	if (volume->data.version < BOTFS_MIN_VERSION) {
+		return -1;
+	}
+	return 0;
+}
+
+/**
  * Wartet, bis ein Mutex verfuegbar ist und sperrt es dann
  * \param *p_mutex Zeiger auf das gewuenschte Mutex
  */

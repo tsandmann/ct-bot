@@ -93,8 +93,9 @@ typedef struct {
 
 /** Benutzte Bloecke einer Datei */
 typedef struct {
-	uint16_t start;		/**< Adresse des ersten belegten Blocks */
-	uint16_t end;		/**< Adresse des letzten belegten Blocks */
+	uint16_t start;				/**< Adresse des ersten belegten Blocks (auf Volume, nicht relativ zur Datei) */
+	uint16_t end;				/**< Adresse des letzten belegten Blocks (auf Volume, nicht relativ */
+	uint16_t bytes_last_block;	/**< Anzahl der Bytes in Block end */
 } PACKED botfs_file_used_t;
 
 /**
@@ -119,16 +120,17 @@ typedef	struct {
 typedef struct {
 	botfs_file_descr_t rootdir;		/**< Datei-Deskriptor des Root-Verzeichnisses */
 	botfs_file_descr_t freelist;	/**< Datei-Deskriptor der Freelist */
-	uint16_t blocks_free;			/**< Anzahl der freien Bloecke */
 } PACKED botfs_volume_data_t;
 
 /** Volume-Header */
 typedef union {
 	struct {
-		char name[BOTFS_MAX_FILENAME + 1];	/**< Name des Volumes */
-		uint32_t size;						/**< Groesse des Volumes in Byte */
-		botfs_volume_data_t ctrldata;		/**< Interne Daten des Volumes */
-		uint16_t first_data;				/**< Blockadresse des ersten Datenblocks */
+		uint8_t reserved[32];			/**< unbenutzt */
+		uint16_t version;				/**< BotFS-Version */
+		uint32_t size;					/**< Groesse des Volumes in Byte */
+		botfs_volume_data_t ctrldata;	/**< Interne Daten des Volumes */
+		uint16_t first_data;			/**< Blockadresse des ersten Datenblocks */
+		char name[BOTFS_VOL_NAME_SIZE];	/**< Name des Volumes */
 	} PACKED data;
 	uint8_t raw[BOTFS_BLOCK_SIZE];			/**< Raw-Daten (erweitern Header auf Blockgroesse) */
 } botfs_volume_t;

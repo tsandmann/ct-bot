@@ -104,8 +104,8 @@ static void create_volume(void) {
 	strcpy(vol_file, in_buffer);
 
 	/* Volume-Name einlesen */
-	printf("Volume-Name (< %lu Zeichen): ", BOTFS_MAX_FILENAME);
-	fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
+	printf("Volume-Name (< %u Zeichen): ", BOTFS_VOL_NAME_SIZE);
+	fgets(in_buffer, BOTFS_VOL_NAME_SIZE + 2, stdin);
 	in_buffer[strlen(in_buffer) - 1] = 0; // \n weg
 	char vol_name[strlen(in_buffer) + 1];
 	strcpy(vol_name, in_buffer);
@@ -558,14 +558,19 @@ static void ls(void) {
 		char filename[BOTFS_MAX_FILENAME + 1];
 		strncpy(filename, name, BOTFS_MAX_FILENAME);
 		if (botfs_open(filename, &file, BOTFS_MODE_r, buffer) != 0) {
+			printf("Fehler, konnte Datei \"%s\" nicht oeffnen!\n", filename);
 			return;
 		}
-		uint16_t size = file.end - file.start + 1;
+		const uint16_t size = file.end - file.start + 1;
 		if (size >= 2) {
-			printf("Eintrag %3u:%15s\tstart:0x%04x\tend:0x%04x\tsize:%5u KByte\n", i, filename, file.start, file.end, size / 2);
+			printf("Eintrag %3u:%15s\tstart:0x%04x\tend:0x%04x\n\t\t\t\tsize: %u KByte\t\t", i, filename,
+				file.start, file.end, size / 2);
 		} else {
-			printf("Eintrag %3u:%15s\tstart:0x%04x\tend:0x%04x\tsize:%5u  Byte\n", i, filename, file.start, file.end, size * BOTFS_BLOCK_SIZE);
+			printf("Eintrag %3u:%15s\tstart:0x%04x\tend:0x%04x\n\t\t\t\tsize: %u  Byte\t\t", i, filename,
+				file.start, file.end, size * BOTFS_BLOCK_SIZE);
 		}
+		const uint32_t used_size = (file.used.end - file.start) * BOTFS_BLOCK_SIZE + file.used.bytes_last_block;
+		printf("used-size: %u Byte\n", used_size);
 	}
 }
 
@@ -627,7 +632,7 @@ static void (* handler[])(void) = {
  * Management-Tools fuer BotFS
  */
 void botfs_management(char * volume_file) {
-	static const char * title = "BotFS-Verwaltung 0.2";
+	static const char * title = "BotFS-Verwaltung ";
 	const size_t n_commands = sizeof(commands) / sizeof(commands[0]);
 	const size_t n_handlers = sizeof(handler) / sizeof(handler[0]);
 	if (n_commands != n_handlers) {
@@ -639,7 +644,7 @@ void botfs_management(char * volume_file) {
 		load_volume(volume_file);
 	}
 	char in_buffer[32];
-	printf("\n%s\n", title);
+	printf("\n%s%u.%u\n", title, BOTFS_VERSION / 10, BOTFS_VERSION % 10);
 	printf("\nHilfe mit Kommando \"help\"\n> ");
 
 	/* Hauptschleife */
@@ -659,7 +664,7 @@ void botfs_management(char * volume_file) {
 		if (i == sizeof(handler) / sizeof(void *)) {
 			printf("invalid command\n");
 		}
-		printf("\n%s\n> ", title);
+		printf("\n%s%u.%u\n> ", title, BOTFS_VERSION / 10, BOTFS_VERSION % 10);
 	}
 }
 

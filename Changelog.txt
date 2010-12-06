@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2010-12-04 Timo Sandmann [mail@timosandmann.de]: BotFS-Volume robuster gemacht fuer zukuenftige Aenderungen. Image-Datei muss geloescht und neu angelegt werden, sorry (anlegen auf PC automatisch) 
+
 2010-12-01 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer botfs_rename()
 
 2010-11-20 Timo Sandmann [mail@timosandmann.de]: Speed-Log auf BotFS umgestellt

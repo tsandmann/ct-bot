@@ -61,7 +61,9 @@ int8_t botfs_create_volume(const char * image, const char * name, uint32_t size)
 	botfs_volume_t volume;
 	memset(&volume, 0, sizeof(botfs_volume_t));
 	/* Volume-Name */
-	strncpy(volume.data.name, name, BOTFS_MAX_FILENAME);
+	strncpy(volume.data.name, name, BOTFS_VOL_NAME_SIZE);
+	/* Version */
+	volume.data.version = BOTFS_VERSION;
 	/* Volume-Groesse */
 	volume.data.size = size;
 	printf("volume.size=%u KB\n", size / 1024);
@@ -72,19 +74,21 @@ int8_t botfs_create_volume(const char * image, const char * name, uint32_t size)
 	printf("rootdir.start=0x%x\n", volume_data->rootdir.start * BOTFS_BLOCK_SIZE);
 	volume_data->rootdir.end = volume_data->rootdir.start + BOTFS_DIR_BLOCK_CNT;
 	volume_data->rootdir.used.end = volume_data->rootdir.end;
+	volume_data->rootdir.used.bytes_last_block = BOTFS_BLOCK_SIZE;
 	printf("rootdir.end=0x%x\n", volume_data->rootdir.end * BOTFS_BLOCK_SIZE);
 	volume_data->freelist.start = volume_data->rootdir.end + 1;
 	volume_data->freelist.used.start = volume_data->freelist.start;
 	printf("freelist.start=0x%x\n", volume_data->freelist.start * BOTFS_BLOCK_SIZE);
 	volume_data->freelist.end = volume_data->freelist.start + BOTFS_FREEL_BL_CNT;
 	volume_data->freelist.used.end = volume_data->freelist.end;
+	volume_data->freelist.used.bytes_last_block = BOTFS_BLOCK_SIZE;
 	printf("freelist.end=0x%x\n", volume_data->freelist.end * BOTFS_BLOCK_SIZE);
 	volume.data.first_data = volume_data->freelist.end + 1;
 	printf("first_data=0x%x\n", volume.data.first_data * BOTFS_BLOCK_SIZE);
-	volume_data->blocks_free = (volume.data.size / BOTFS_BLOCK_SIZE)
+	const uint16_t blocks_free = (volume.data.size / BOTFS_BLOCK_SIZE)
 		- (BOTFS_HEADER_POS + (sizeof(botfs_volume_t) / BOTFS_BLOCK_SIZE) + BOTFS_DIR_BLOCK_CNT
 		+ BOTFS_FREEL_BL_CNT);
-	printf("blocks_free=0x%x\n", volume_data->blocks_free);
+	printf("blocks_free=0x%x\n", blocks_free);
 	if (botfs_write_low(BOTFS_HEADER_POS, volume.raw) != 0) {
 		return -4;
 	}
@@ -125,8 +129,8 @@ int8_t botfs_create_volume(const char * image, const char * name, uint32_t size)
 	printf("1. Freelist-Eintrag:\n");
 	pFreeL->freeblocks->block = volume.data.first_data;
 	printf("freeblocks->block=0x%x\n", pFreeL->freeblocks->block * BOTFS_BLOCK_SIZE);
-	pFreeL->freeblocks->size = volume_data->blocks_free;
-	printf("freeblocks->size=%u KB\n", pFreeL->freeblocks->size / 2);
+	pFreeL->freeblocks->size = blocks_free;
+	printf("freeblocks->size=%u KB\n", pFreeL->freeblocks->size / (1024 / BOTFS_BLOCK_SIZE));
 	/* Alle Freelist-Blocke schreiben */
 	block = volume_data->freelist.start + 1; // erster Block = "Datei-Header" der Freelist
 	for (i = BOTFS_FREEL_BL_CNT; i > 0; --i) {
@@ -209,6 +213,7 @@ int8_t botfs_copy_file(const char * to, const char * from, void * buffer) {
 	}
 
 	printf("%u Daten-Bloecke kopiert\n", (uint16_t) file_size);
+	file.used.bytes_last_block = (uint16_t) (size_rem * BOTFS_BLOCK_SIZE);
 
 	fclose(source);
 	botfs_close(&file, buffer);
@@ -278,8 +283,10 @@ char * botfs_readdir(uint8_t offset, void * buffer) {
 	botfs_rewind(&botfs_vol_data.rootdir);
 	for (i = 0; i < BOTFS_DIR_BLOCK_CNT; ++i) {
 		/* alle Root-Dir-Bloecke durchgehen */
-		if (botfs_read(&botfs_vol_data.rootdir, buffer) != 0) {
+		int8_t res;
+		if ((res = botfs_read(&botfs_vol_data.rootdir, buffer)) != 0) {
 			botfs_release_lock_low(&botfs_mutex);
+			printf("Fehler beim Lesen des Root-Dirs: %d\n", res);
 			return NULL;
 		}
 		botfs_file_t * ptr = root_block->files;

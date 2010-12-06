@@ -52,6 +52,14 @@ typedef pthread_mutex_t botfs_mutex_t;
 int8_t botfs_init_low(char * image, void * buffer, uint8_t create);
 
 /**
+ * Ueberprueft ein geladenes Volume
+ * \param *image	Dateiname des Images
+ * \param *buffer	Puffer fuer mindestens BOTFS_BLOCK_SIZE Bytes
+ * \return 0, falls kein Fehler, sonst Fehlercode (< 0)
+ */
+int8_t botfs_check_volume_low(char * image, void * buffer);
+
+/**
  * Schliesst das BotFS-Volume (beendet BotFS sauber)
  */
 void botfs_close_volume_low(void);

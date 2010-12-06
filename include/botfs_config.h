@@ -47,8 +47,11 @@
 #define BOTFS_FREEL_BL_SIZE	(BOTFS_BLOCK_SIZE / sizeof(botfs_freelist_entry_t))	/**< Anzahl der Freelisteintraege pro Block */
 #define BOTFS_FREEL_BL_CNT	(BOTFS_FREEL_SIZE / BOTFS_FREEL_BL_SIZE)			/**< Anzahl der Freelist-Bloecke */
 #define BOTFS_HEADER_SIZE	(sizeof(botfs_file_header_t) / BOTFS_BLOCK_SIZE)	/**< Groesse des Datei-Headers in Bloecken */
-#define BOTFS_HEADER_DATA_SIZE	(BOTFS_BLOCK_SIZE - (sizeof(uint8_t) + sizeof(botfs_file_used_t)))	/**< Groesse des Datei-Header-Datenfelds in Byte */
+#define BOTFS_HEADER_DATA_SIZE	(BOTFS_BLOCK_SIZE - (sizeof(uint8_t) + sizeof(botfs_file_used_t))) /**< Groesse des Datei-Header-Datenfelds in Byte */
 #define BOTFS_VOLUME_DATA		"/volumedata"	/**< "Dateiname" der Root-Verzeichnis-Daten */
+#define BOTFS_VERSION			3				/**< BotFS-Version */
+#define BOTFS_MIN_VERSION		3				/**< BotFS-Version eines Volumes, die dieser Code mindestens braucht */
+#define BOTFS_VOL_NAME_SIZE		32				/**< Maximale Laenge des Volume-Namens */
 #define BOTFS_DEFAULT_VOL_NAME	"BotFS-Volume"	/**< Volume-Name, falls es automatisch angelegt wird */
 #define BOTFS_DEFAULT_VOL_SIZE	(8 * (1 << 20))	/**< Volume-Groesse, falls es automatisch angelegt wird in Byte */
 #define BOTFS_IMAGE_FILENAME	"botfs.img"		/**< Dateiname des BotFS-Volume-Images */

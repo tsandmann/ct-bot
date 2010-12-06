@@ -95,6 +95,36 @@ int8_t botfs_init_low(char * image, void * buffer, uint8_t create) {
 }
 
 /**
+ * Ueberprueft ein geladenes Volume
+ * \param *image	Dateiname des Images
+ * \param *buffer	Puffer fuer mindestens BOTFS_BLOCK_SIZE Bytes
+ * \return 0, falls kein Fehler, sonst Fehlercode (< 0)
+ */
+int8_t botfs_check_volume_low(char * image, void * buffer) {
+	/* Version pruefen */
+	botfs_volume_t * volume = buffer;
+	if (volume->data.version < BOTFS_MIN_VERSION) {
+		printf("Das Volume hat eine zu alte Version!\n");
+		printf(" Volume-Version: %u, min. gefordert: %u\n", volume->data.version, BOTFS_MIN_VERSION);
+		printf("Bitte Datei \"%s\" loeschen und neu anlegen (lassen).\n", image);
+		return -1;
+	}
+
+	/* Root-Dir pruefen */
+	const char * first_file = botfs_readdir(0, buffer);
+	if (first_file == NULL) {
+		printf("Fehlerhaftes Volume\n");
+		return -2;
+	}
+	if (strncmp(first_file, "/volumedata", BOTFS_MAX_FILENAME) != 0) {
+		printf("Fehler, Volume enhaelt kein Rootverzeichnis\n");
+		return -3;
+	}
+
+	return 0;
+}
+
+/**
  * Erzeugt eine neue Image-Datei fuer ein Volume
  * \param *image	Name der Image-Datei
  * \param size		Groesse der Datei in Byte

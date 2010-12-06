@@ -106,6 +106,13 @@ int8_t botfs_init(char * image, void * buffer, uint8_t create) {
 	botfs_volume_t * volume = buffer;
 	botfs_vol_data = volume->data.ctrldata;
 	init_state = 1;
+
+	if (botfs_check_volume_low(image, buffer) != 0) {
+		PRINT_MSG("Volume fehlerhaft");
+		init_state = 0;
+		return -3;
+	}
+
 	PRINT_MSG("botfs_init() erfolgreich");
 	return 0;
 }
@@ -141,6 +148,7 @@ static int8_t clear_file(botfs_file_descr_t * file, void * buffer) {
 	/* Used-Blocks zuruecksetzen */
 	file->used.start = UINT16_MAX;
 	file->used.end = 0;
+	file->used.bytes_last_block = 0;
 	return botfs_flush_used_blocks(file, buffer);
 }
 
@@ -320,6 +328,7 @@ int8_t botfs_create(const char * filename, uint16_t size, void * buffer) {
 	/* Datei als komplett belegt kennzeichnen */
 	pHeader->used_blocks.start = start + BOTFS_HEADER_SIZE;
 	pHeader->used_blocks.end = end;
+	pHeader->used_blocks.bytes_last_block = BOTFS_BLOCK_SIZE;
 	PRINT_MSG("writing file-header...");
 	if (botfs_write_low(start, buffer) != 0) {
 		botfs_release_lock_low(&botfs_mutex);
@@ -582,6 +591,7 @@ int8_t botfs_write(botfs_file_descr_t * file, void * buffer) {
 	}
 	if (file->pos > file->used.end) {
 		file->used.end = file->pos;
+		file->used.bytes_last_block = BOTFS_BLOCK_SIZE;
 		PRINT_MSG("Bloecke 0x%x bis 0x%x als benutzt vermerkt", file->used.start, file->used.end);
 	}
 
@@ -612,7 +622,7 @@ int8_t botfs_flush_used_blocks(botfs_file_descr_t * file, void * buffer) {
 		return -5;
 	}
 	PRINT_MSG("Benutzte Bloecke im Header gespeichert");
-	PRINT_MSG(" start=0x%x end=0x%x", file->used.start, file->used.end);
+	PRINT_MSG(" start=0x%x end=0x%x bytes_last_block=%u", file->used.start, file->used.end, file->used.bytes_last_block);
 
 	return 0;
 }
