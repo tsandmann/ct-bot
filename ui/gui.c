@@ -309,8 +309,8 @@ void gui_display(uint8_t screen) {
 	if (RC5_Code != 0) {
 		/* falls rc5-Code noch nicht abgearbeitet, Standardbehandlung ausfuehren */
 		default_key_handler();
+		RC5_Code = 0; // fertig, RC5-Puffer loeschen
 	}
-	RC5_Code = 0; // fertig, RC5-Puffer loeschen
 
 #if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
 	LED_off(LED_WEISS);

@@ -203,12 +203,15 @@ int8_t botfs_copy_file(const char * to, const char * from, void * buffer) {
 		memset(buffer, 0, BOTFS_BLOCK_SIZE);
 
 		/* Datei in Puffer lesen */
-		fread(buffer, BOTFS_BLOCK_SIZE, 1, source);
+		if (fread(buffer, BOTFS_BLOCK_SIZE, 1, source) != 1) {
+			printf("Fehler beim Lesen der Daten\n");
+			return -8;
+		}
 
 		/* Treiber-Aufruf */
 		if (botfs_write(&file, buffer) != 0) {
 			printf("Fehler beim Schreiben der Daten\n");
-			return -8;
+			return -9;
 		}
 	}
 
