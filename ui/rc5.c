@@ -291,8 +291,12 @@ void rc5_control(void) {
 		}
 	}
 #ifndef DISPLAY_AVAILABLE
-	default_key_handler(); // Falls Display aus ist, ist auch GUI aus => Tastenbehandlung hier abarbeiten
-#endif
+	/* Falls Display aus ist, ist auch GUI aus => Tastenbehandlung hier abarbeiten */
+	if (RC5_Code != 0) {
+		default_key_handler();
+		RC5_Code = 0; // fertig, RC5-Puffer loeschen
+	}
+#endif // ! DISPLAY_AVAILABLE
 }
 
 #endif	// RC5_AVAILABLE
