@@ -467,6 +467,9 @@ uint8_t init_eeprom_man(uint8_t init) {
  * Schreibt den kompletten Inhalt des EEPROM-Caches in die Datei zurueck
  */
 static inline void flush_eeprom_cache(void) {
+	if (ee_file == NULL) {
+		return;
+	}
 	fseek(ee_file, 0, SEEK_SET);
 	fwrite(eeprom, 1, EE_SIZE, ee_file);
 	fflush(ee_file);
