@@ -36,11 +36,11 @@
 //	Post-Build Windows:
 //	objcopy -j .eeprom --change-section-lma .eeprom=0 -O binary ct-Bot.exe ct-Bot.eep;objdump -t ct-Bot.exe | grep "(sec  5)" | grep "(nx 0)" > eeprom_pc.map
 
-
-#include "ct-Bot.h"
-
 #ifdef PC
+#include "ct-Bot.h"
+#include "eeprom.h"
 
+#ifdef EEPROM_EMU_AVAILABLE
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -56,7 +56,6 @@
 #define LOG_INFO(...) {}
 #endif
 
-#ifdef EEPROM_EMU_AVAILABLE
 extern uint8_t __attribute__ ((section (".s1eeprom"), aligned(1))) _eeprom_start1__;
 extern uint8_t __attribute__ ((section (".s2eeprom"), aligned(1))) _eeprom_start2__;
 
@@ -468,6 +467,9 @@ uint8_t init_eeprom_man(uint8_t init) {
  * Schreibt den kompletten Inhalt des EEPROM-Caches in die Datei zurueck
  */
 static inline void flush_eeprom_cache(void) {
+	if (ee_file == NULL) {
+		return;
+	}
 	fseek(ee_file, 0, SEEK_SET);
 	fwrite(eeprom, 1, EE_SIZE, ee_file);
 	fflush(ee_file);
@@ -498,7 +500,7 @@ void ctbot_eeprom_write_byte(uint8_t * address, uint8_t value) {
 	flush_eeprom_cache();
 }
 
-#else	// EEPROM-Emulation deaktiviert
+#else // EEPROM-Emulation deaktiviert
 /*!
  * Diese Funktion initialisiert die eeprom-emulation. Sie sorgt fuer die Erstellung der
  * eeprom.bin, falls nicht vorhanden und erstellt ueber eine Hilfsfunktion eine Adress-
@@ -508,7 +510,7 @@ void ctbot_eeprom_write_byte(uint8_t * address, uint8_t value) {
  * @return		0: alles ok, 1: Fehler
  */
 uint8_t init_eeprom_man(uint8_t init) {
-	init = init; // kein warning
+	(void) init;
 	return 0;
 }
 
@@ -530,5 +532,5 @@ uint8_t ctbot_eeprom_read_byte(const uint8_t * address) {
 	return *address;
 }
 
-#endif	// EEPROM_EMU_AVAILABLE
-#endif	// PC
+#endif // EEPROM_EMU_AVAILABLE
+#endif // PC
