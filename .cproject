@@ -86,7 +86,7 @@
 							</tool>
 							<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1580994877" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
 							<tool command="gcc" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1227070174" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
-								<option id="gnu.both.asm.option.flags.1775070524" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c" valueType="string"/>
+								<option id="gnu.both.asm.option.flags.1775070524" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -DPC" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.713181909" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -3150,7 +3150,7 @@
 							</tool>
 							<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1883163242" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
 							<tool command="gcc" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1816835863" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
-								<option id="gnu.both.asm.option.flags.131722941" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c" valueType="string"/>
+								<option id="gnu.both.asm.option.flags.131722941" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -pipe -DPC" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.828003147" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -6202,7 +6202,7 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base.165359080" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base"/>
 							<tool command="gcc" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.macosx.base.480343457" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.base">
-								<option id="gnu.both.asm.option.flags.393292857" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c " valueType="string"/>
+								<option id="gnu.both.asm.option.flags.393292857" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -pipe -DPC" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.1172841850" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -33894,7 +33894,7 @@
 							</tool>
 							<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.2079691793" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
 							<tool command="arm-cortex_a8-linux-gnueabi-gcc" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.2049476073" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
-								<option id="gnu.both.asm.option.flags.272178743" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c" valueType="string"/>
+								<option id="gnu.both.asm.option.flags.272178743" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -pipe -DPC" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.288928516" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -36986,7 +36986,7 @@
 							</tool>
 							<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1087470564" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
 							<tool command="i386-mingw32-gcc" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1756385304" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
-								<option id="gnu.both.asm.option.flags.1792707158" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c" valueType="string"/>
+								<option id="gnu.both.asm.option.flags.1792707158" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -pipe -DPC" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.1589158477" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -40049,7 +40049,7 @@
 							</tool>
 							<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.332535240" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
 							<tool command="/Users/ts/x86_64-linux-4.2.4/bin/x86_64-linux-gcc" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1328603275" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
-								<option id="gnu.both.asm.option.flags.697913224" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c" valueType="string"/>
+								<option id="gnu.both.asm.option.flags.697913224" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -pipe -DPC" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.67674972" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -43101,7 +43101,7 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base.85269488" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base"/>
 							<tool command="gcc" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.macosx.base.847590942" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.base">
-								<option id="gnu.both.asm.option.flags.1428915015" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c" valueType="string"/>
+								<option id="gnu.both.asm.option.flags.1428915015" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-x assembler-with-cpp -c -pipe -DPC" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.173245774" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>

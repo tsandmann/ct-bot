@@ -29,9 +29,7 @@
  */
 
 #ifdef PC
-#include "ct-Bot.h"
 
-#ifdef EEPROM_EMU_AVAILABLE
 #if defined (__APPLE__)
 
 /* OS X */
@@ -94,5 +92,4 @@ __eeprom_start2__:
 
 .text
 
-#endif // EEPROM_EMU_AVAILABLE
 #endif // PC
