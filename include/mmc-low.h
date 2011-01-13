@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	mmc-low.h
- * @brief 	Low-Level-Routinen zum Lesen/Schreiben einer MMC / SD-Card
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	14.11.2006
+/**
+ * \file 	mmc-low.h
+ * \brief 	Low-Level-Routinen zum Lesen/Schreiben einer MMC / SD-Card
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	14.11.2006
  */
 
 #ifndef MMC_LOW_H_

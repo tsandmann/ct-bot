@@ -48,7 +48,7 @@ DEVICE = MCU
 MSG_DEVICE = Target device is $(DEVICE)
 
 # List C source files here. (C dependencies are automatically generated.)
-SRCMCU = mcu/adc.c mcu/bootloader.c mcu/bot-2-sim.c mcu/botfs-low.c mcu/cmps03.c mcu/delay.c mcu/display.c mcu/ena.c mcu/i2c.c mcu/init-low.c mcu/ir-rc5.c mcu/led.c mcu/mini-fat.c mcu/mmc.c mcu/motor-low.c mcu/mouse.c mcu/os_scheduler.c mcu/os_thread.c mcu/sensor-low.c mcu/shift.c mcu/sp03.c mcu/spi.c mcu/srf10.c mcu/timer-low.c mcu/twi.c mcu/uart.c 
+SRCMCU = mcu/adc.c mcu/bootloader.c mcu/bot-2-sim.c mcu/botfs-low.c mcu/cmps03.c mcu/delay.c mcu/display.c mcu/ena.c mcu/i2c.c mcu/init-low.c mcu/ir-rc5.c mcu/led.c mcu/mini-fat.c mcu/mmc.c mcu/mmc-low.c mcu/motor-low.c mcu/mouse.c mcu/os_scheduler.c mcu/os_thread.c mcu/sensor-low.c mcu/shift.c mcu/sp03.c mcu/spi.c mcu/srf10.c mcu/timer-low.c mcu/twi.c mcu/uart.c 
 
 SRCPC = pc/bot-2-sim_pc.c pc/botfs_pc.c pc/botfs-low_pc.c pc/botfs-tools_pc.c pc/cmd-tools_pc.c pc/delay_pc.c pc/display_pc.c pc/eeprom_pc.c pc/ena_pc.c pc/init-low_pc.c pc/ir-rc5_pc.c pc/led_pc.c pc/mini-fat_pc.c pc/mmc-emu_pc.c pc/motor-low_pc.c pc/mouse_pc.c pc/os_thread_pc.c pc/sensor-low_pc.c pc/tcp-server.c pc/tcp.c pc/timer-low_pc.c pc/trace.c
 
@@ -76,7 +76,7 @@ SRC =$(SRCCOM) $(SRCUI) $(SRCPC) $(SRCMCU) $(SRCLOGIC)
 # it will preserve the spelling of the filenames, and gcc itself does
 # care about how the name is spelled on its command-line.
 ifeq ($(DEVICE),MCU)
-    ASRC = 1st_init.S mcu/mmc-low.S
+    ASRC = 1st_init.S
 else
     ASRC = 1st_init.S
 endif	
@@ -298,7 +298,7 @@ ifeq ($(DEVICE),MCU)
 	ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS) $(GENDEPFLAGS) -D$(DEVICE)
 	ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS) -D$(DEVICE)
 else
-	ALL_CFLAGS = -I. $(CFLAGS) $(GENDEPFLAGS)  -D$(DEVICE)
+	ALL_CFLAGS = -I. $(CFLAGS) $(GENDEPFLAGS) -D$(DEVICE)
 	ALL_ASFLAGS = -I. -x assembler-with-cpp $(ASFLAGS) -D$(DEVICE)
 endif
 

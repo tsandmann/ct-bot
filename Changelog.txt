@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-01-13 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Buildproblem des MMC-Codes
+
 2011-01-12 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer EEPROM-Emulation
 
 2010-12-04 Timo Sandmann [mail@timosandmann.de]: BotFS-Volume robuster gemacht fuer zukuenftige Aenderungen. Image-Datei muss geloescht und neu angelegt werden, sorry (anlegen auf PC automatisch) 

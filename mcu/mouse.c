@@ -34,8 +34,8 @@
 #include "ena.h"
 #include "command.h"
 
-#define MOUSE_DDR 		DDRB	/*!< DDR fuer Maus-SCLK */
-#define MOUSE_PORT 		PORTB	/*!< PORT fuer Maus-SCLK */
+#define MOUSE_DDR 		DDRB	/*!< DDR fuer Maus */
+#define MOUSE_PORT 		PORTB	/*!< PORT fuer Maus */
 #define MOUSE_SCK_PIN	(1<<7)	/*!< PIN fuer Maus-SCLK */
 
 #define MOUSE_SDA_NR	6		/*!< Pin an dem die SDA-Leitung haengt */

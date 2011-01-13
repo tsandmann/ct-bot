@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	include/spi.h
- * @brief 	(Hardware-) SPI-Treiber
- * @author	Timo Sandmann (mail@timosandmann.de)
- * @date 	01.08.2007
+/**
+ * \file 	spi.h
+ * \brief 	(Hardware-) SPI-Treiber
+ * \author	Timo Sandmann (mail@timosandmann.de)
+ * \date 	01.08.2007
  */
 
 #ifndef SPI_H_
@@ -34,13 +34,10 @@
 
 typedef union {
 	struct {
-		unsigned spr0:1;	/*!< SPR0 Bit in SPCR */
-		unsigned spr1:1;	/*!< SPR1 Bit in SPCR */
-		unsigned spi2x:1;	/*!< SPI 2x-Mode in SPSR */
-	}
-#ifndef DOXYGEN
-	__attribute__((packed))
-#endif
+		unsigned spr0:1; /*!< SPR0 Bit in SPCR */
+		unsigned spr1:1; /*!< SPR1 Bit in SPCR */
+		unsigned spi2x:1; /*!< SPI 2x-Mode in SPSR */
+	} PACKED
 	data; /*!< Bits der einzelnen Register */
 	uint8_t raw; /*!< alle Bits als Rawdaten */
 } spi_speed_t; /*!< Speed-Einstellung fuer SPI */
@@ -49,20 +46,22 @@ typedef union {
 #define SPI_SPEED_4MHZ		{{0, 0, 0}}	// !SPR0, !SPR1, !SPI2X
 #define SPI_SPEED_250KHZ	{{0, 1, 0}}	// !SPR0,  SPR1, !SPI2X -> F_CPU / 64 Hz
 
-/*!
+/**
  * Initialisiert und aktiviert das SPI-Modul
  * MCU = Master, Taktgeschwindigkeit F_CPU/2 (Maximum)
- * @param speed	Konstante, die die Uebertragungsgeschwindigkeit bestimmt
+ * \param speed	Konstante, die die Uebertragungsgeschwindigkeit bestimmt
  */
 void SPI_MasterInit(spi_speed_t speed);
 
-/*!
+/**
  * Uebertraegt ein Byte per SPI vom Master zum Slave
+ * \param data Das zu uebertragene Byte
  */
 void SPI_MasterTransmit(uint8_t data);
 
-/*!
+/**
  * Uebertraegt ein Byte per SPI vom Slave zum Master
+ * \return Das empfangene Byte
  */
 uint8_t SPI_MasterReceive(void);
 
