@@ -38,6 +38,19 @@
  *       des verwendeten Partitionstools nicht die 32 MByte-Grenze zu ueberschreiten, empfiehlt es sich, eine Partition von
  *       30 MByte anzulegen - wichtig ist, dass die Groesse der erzeugten Partition 32 MByte, also \f$ 32 * 2^{20} \f$ Byte,
  *       nicht ueberschreitet.\n
+ *       Auf der angelegten Partition muessen unbedingt alle Dateien (auch evtl. Versteckte) geloescht werden, so dass die
+ *       gesamte Partitionsgroesse als freier Speicher verfuegbar ist.\n
+ *       Anschliessend ruft man das Hilfsprogramm aus contrib/BotFS wie folgt auf:
+ *        Linux:   "./ct-Bot-botfshelper ABSOLUTER_PFAD_ZUR_SD-KARTE" also z.B. "./ct-Bot-botfshelper /media/SD"\n
+ *        Mac:     "./ct-Bot-botfshelper ABSOLUTER_PFAD_ZUR_SD-KARTE" also z.B. "./ct-Bot-botfshelper /Volumes/SD"\n
+ *        Windows: "ct-Bot-botfshelper ABSOLUTER_PFAD_ZUR_SD-KARTE"   also z.B. "ct-Bot-botfshelper e:\"\n
+ *
+ *       Es bietet sich an, auf der SD-Karte auch eine zweite Partition (Groesse und Typ beliebig) anzulegen und dort eine Kopie
+ *       der Datei botfs.img zu speichern. Moechte man einmal das komplette Dateisystem fuer den Bot leeren oder wurde es durch
+ *       einen Fehler beschaedigt, kopiert man einfach dieses Backup zurueck auf die erste Partition und muss die obigen Schritte
+ *       nicht wiederholen.
+ *
+ *       Alternativ die manuelle Variante:
  *       Anschliessend ermittelt man die exakte Groesse der Partition (je nach Betriebssystem findet sich diese in den
  *       Eigenschaften / Informationen des Laufwerks) in Byte und notiert sie. Auf der angelegten Partition muessen unbedingt
  *       alle Dateien (auch evtl. Versteckte) geloescht werden, so dass die gesamte Partitionsgroesse als freier Speicher
@@ -49,10 +62,6 @@
  *       Als Volume-Name gibt man dann einen beliebigen ein, wie z.B. "BotFS-Volume", als Groesse danach die eben Ermittelte (in
  *       KByte). Jetzt kann die Verwaltung mit dem Kommando 'q' beendet werden und die erzeugte Datei als "botfs.img" (wichtig -
  *       auf der SD-Karte muss die Datei unbedingt "botfs.img" heissen!) auf die SD-Karte (erste Partition) kopiert werden.\n
- *       Es bietet sich an, auf der SD-Karte auch eine zweite Partition (Groesse und Typ beliebig) anzulegen und dort eine Kopie
- *       dieser Datei zu speichern. Moechte man einmal das komplette Dateisystem fuer den Bot leeren oder wurde es durch einen
- *       Fehler beschaedigt, kopiert man einfach dieses Backup zurueck auf die erste Partition und muss die obigen Schritte nicht
- *       wiederholen.
  *
  * - Benutzung:
  *   - Der Map-Code ist jetzt (mit BOT_FS_AVAILABLE) nicht mehr darauf angewiesen, dass eine Map-Datei (MiniFAT) auf der SD-Karte
