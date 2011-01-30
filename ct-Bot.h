@@ -192,6 +192,11 @@
 #endif // MCU
 #endif // ! MMC_AVAILABLE
 
+#if defined MMC_VM_AVAILABLE && defined BOT_FS_AVAILABLE
+#warning "MMC_VM_AVAILABLE und BOT_FS_AVAILABLE nicht gleichzeitig moeglich! MMC_VM_AVAILABLE wird deaktiviert. Wenn benoetigt, BOT_FS_AVAILABLE ausschalten"
+#undef MMC_VM_AVAILABLE
+#endif
+
 #if ! defined BOT_FS_AVAILABLE && defined USE_MINILOG
 #undef LOG_MMC_AVAILABLE
 #endif // BOT_FS_AVAILABLE && USE_MINILOG
