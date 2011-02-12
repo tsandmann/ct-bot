@@ -379,9 +379,10 @@ int8_t command_evaluate(void) {
 		switch (received_command.request.command) {
 #ifdef IR_AVAILABLE
 		case CMD_SENS_RC5:
-			rc5_ir_data.ir_data = received_command.data_l | (RC5_Last_Toggle & RC5_TOGGLE);
-			if (received_command.data_l != 0)
+			rc5_ir_data.ir_data = (uint16_t) received_command.data_l | (RC5_Last_Toggle & RC5_TOGGLE);
+			if (received_command.data_l != 0) {
 				RC5_Last_Toggle = 0xffff ^ (RC5_Last_Toggle & RC5_TOGGLE);
+			}
 			break;
 #endif // IR_AVAILABLE
 

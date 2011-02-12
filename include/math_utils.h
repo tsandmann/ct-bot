@@ -178,7 +178,7 @@ static inline int8_t sign8(int8_t z) {
  * @return	1, falls z >= 0, -1 sonst
  */
 static inline int8_t sign16(int16_t z) {
-	return (int8_t) ((z & 0x8000) ? -1 : 1);
+	return (int8_t) ((z & (int16_t) 0x8000) ? -1 : 1);
 }
 
 /*!
@@ -187,7 +187,7 @@ static inline int8_t sign16(int16_t z) {
  * @return	1, falls z >= 0, -1 sonst
  */
 static inline int8_t sign32(int32_t z) {
-	return (int8_t) ((z & 0x80000000) ? -1 : 1);
+	return (int8_t) ((z & (int16_t) 0x80000000) ? -1 : 1);
 }
 
 /*!

@@ -48,7 +48,7 @@
 //#define BOT_2_BOT_AVAILABLE	/*!< Sollen Bots untereinander kommunizieren? */
 //#define BOT_2_BOT_PAYLOAD_AVAILABLE		/*!< Aktiviert Payload-Versand per Bot-2-Bot Kommunikation */
 
-//#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit im s und ms? */
+//#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit in s und ms? */
 
 #define DISPLAY_AVAILABLE			/*!< Display aktiv */
 #define DISPLAY_REMOTE_AVAILABLE	/*!< Sende LCD Anzeigedaten an den Simulator */

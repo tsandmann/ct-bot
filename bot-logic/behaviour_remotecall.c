@@ -610,7 +610,7 @@ void remotecall_display(void) {
 			int16_t tmp = ptr[(sizeof(parameter_data) / sizeof(int16_t) - 1) - i];
 			if ((tmp & 0x80) && pgm_read_byte(&ptr_call->param_len[i]) == 1) {
 				/* Vorzeichenerweiterung */
-				tmp = (int16_t) (tmp | 0xff00);
+				tmp = (int16_t) (tmp | (int16_t) 0xff00);
 			}
 #else // PC
 			remote_call_data_t * ptr = (remote_call_data_t * ) parameter_data;

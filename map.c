@@ -487,7 +487,7 @@ static map_section_t * get_section(int16_t x, int16_t y) {
 	block = block >> 1; // es passen immer 2 Sections in einen Block
 
 	/* Makroblock berechnen */
-	uint16_t macroblock = x / MACRO_BLOCK_LENGTH + (y / MACRO_BLOCK_LENGTH) * MAP_LENGTH_IN_MACRO_BLOCKS;
+	uint16_t macroblock = (uint16_t) x / MACRO_BLOCK_LENGTH + ((uint16_t) y / MACRO_BLOCK_LENGTH) * MAP_LENGTH_IN_MACRO_BLOCKS;
 
 #ifdef DEBUG_STORAGE
 	LOG_DEBUG("Macroblock= %u", macroblock);

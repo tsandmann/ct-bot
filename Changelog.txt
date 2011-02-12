@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-02-12 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer gcc 4.4
+
 2011-01-21 Timo Sandmann [mail@timosandmann.de]: BotFS Hilfsprogramm hinzugefuegt
 
 2011-01-13 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Buildproblem des MMC-Codes
