@@ -36,11 +36,11 @@ void delay(uint16_t ms);
 #include <avr/builtins.h>
 
 /*!
- * Verzoegert um us Millisekunden
+ * Verzoegert um us Mikrosekunden
  * @param us Anzahl der Mikrosekunden
  */
-static inline void delay_us(uint32_t us) {
-	const uint32_t cycles = F_CPU / 1000000L * us;
+__attribute__((always_inline)) static inline void delay_us(const uint32_t us) {
+	const uint32_t cycles = F_CPU / 1000000UL * us;
 	__builtin_avr_delay_cycles(cycles);
 }
 #endif // MCU
