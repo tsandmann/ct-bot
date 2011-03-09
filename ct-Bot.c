@@ -112,8 +112,16 @@ int main(int argc, char * argv[]) {
 #endif // CREATE_TRACEFILE_AVAILABLE
 
 		/* jeweils alle 100 ms kommunizieren Bot, User und Sim */
-		if (timer_ms_passed_16(&comm_ticks, 50) || RC5_Code != 0) {
-			if (uart_gui == 0 || RC5_Code != 0) {
+		if (timer_ms_passed_16(&comm_ticks, 50) 
+#ifdef RC5_AVAILABLE
+			|| RC5_Code != 0
+#endif
+		) {
+			if (uart_gui == 0 
+#ifdef RC5_AVAILABLE
+				|| RC5_Code != 0
+#endif
+			) {
 #ifdef DISPLAY_AVAILABLE
 				/* GUI-Behandlung starten */
 				gui_display(display_screen);

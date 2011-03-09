@@ -200,7 +200,9 @@ void gui_display(uint8_t screen) {
 	/* Gueltigkeit der Screen-Nr. pruefen und Anzeigefunktion aufrufen, falls Screen belegt ist */
 #ifdef LED_AVAILABLE
 #ifndef TEST_AVAILABLE
+#ifdef RC5_AVAILABLE
 	if (RC5_Code != 0) LED_on(LED_WEISS);
+#endif // RC5_AVAILABLE
 #endif // TEST_AVAILABLE
 #endif // LED_AVAILABLE
 	if (screen < max_screens && screen_functions[screen] != NULL) screen_functions[screen]();
@@ -222,11 +224,15 @@ void gui_display(uint8_t screen) {
 	}
 #endif // KEYPAD_AVAILABLE
 
+#ifdef RC5_AVAILABLE
 	if (RC5_Code != 0) default_key_handler(); // falls rc5-Code noch nicht abgearbeitet, Standardbehandlung ausfuehren
 	RC5_Code = 0; // fertig, RC5-Puffer loeschen
+#endif // RC5_AVAILABLE
 #ifdef LED_AVAILABLE
 #ifndef TEST_AVAILABLE
+#ifdef RC5_AVAILABLE
 	LED_off(LED_WEISS);
+#endif // RC5_AVAILABLE
 #endif // TEST_AVAILABLE
 #endif // LED_AVAILABLE
 }

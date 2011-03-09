@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-03-02 Simon Siemens: Bugfix fuer Konfiguration ohne RC5 oder RemoteCall-Verhalten
+
 2011-02-12 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer gcc 4.4
 
 2011-01-12 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer EEPROM-Emulation
