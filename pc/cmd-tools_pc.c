@@ -46,7 +46,9 @@
 
 //#define DEBUG
 
+#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 static pthread_t cmd_thread; /**< Thread fuer die RemoteCall-Auswertung per Kommandozeile */
+#endif // BEHAVIOUR_REMOTECALL_AVAILABLE
 
 /**
  * Zeigt Informationen zu den moeglichen Kommandozeilenargumenten an.
@@ -404,6 +406,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 	}
 }
 
+#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 /**
  * Liest RemoteCall-Commands von stdin ein
  */
@@ -470,12 +473,15 @@ static void read_command_thread(void) {
 		}
 	}
 }
+#endif // BEHAVIOUR_REMOTECALL_AVAILABLE
 
 /**
  * Initialisiert die Eingabekonsole fuer RemoteCalls
  */
 void cmd_init(void) {
+#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 	pthread_create(&cmd_thread, NULL, (void * (*)(void *)) read_command_thread, NULL);
+#endif // BEHAVIOUR_REMOTECALL_AVAILABLE
 }
 
 #endif // PC

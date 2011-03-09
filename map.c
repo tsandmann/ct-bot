@@ -1986,6 +1986,7 @@ void map_display(void) {
 	display_puts("4: map_info");
 #endif
 
+#ifdef RC5_AVAILABLE
 	/* Keyhandler */
 	switch (RC5_Code) {
 		case RC5_CODE_1:
@@ -2012,6 +2013,7 @@ void map_display(void) {
 		case RC5_CODE_7:
 		map_clean(); RC5_Code = 0; break;
 	}
+#endif // RC5_AVAILABLE
 }
 #endif // DISPLAY_MAP_AVAILABLE
 

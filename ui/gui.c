@@ -71,10 +71,12 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 #undef DISPLAY_OS_AVAILABLE
 #endif // !MCU
 
-#ifndef KEYPAD_AVAILABLE
+#if ! defined KEYPAD_AVAILABLE || ! defined BEHAVIOUR_REMOTECALL_AVAILABLE
 #undef DISPLAY_REMOTECALL_AVAILABLE
+#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 #warning "RemoteCall-Display geht nur mit aktivem Keypad, Display wurde daher deaktiviert"
-#endif // KEYPAD_AVAILABLE
+#endif // BEHAVIOUR_REMOTECALL_AVAILABLE
+#endif // ! KEYPAD_AVAILABLE || ! BEHAVIOUR_REMOTECALL_AVAILABLE
 
 #ifndef MMC_AVAILABLE
 #undef DISPLAY_MMC_INFO
@@ -276,11 +278,11 @@ void gui_display(uint8_t screen) {
 #endif
 
 	/* weisse LED zeigt Tastendruck an */
-#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
+#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE && defined RC5_AVAILABLE
 	if (RC5_Code != 0) {
 		LED_on(LED_WEISS);
 	}
-#endif // LED_AVAILABLE && ! TEST_AVAILABLE
+#endif // LED_AVAILABLE && ! TEST_AVAILABLE && RC5_AVAILABLE
 
 	/* Gueltigkeit der Screen-Nr. pruefen und Anzeigefunktion aufrufen, falls Screen belegt ist */
 	if (screen < max_screens && screen_functions[screen] != NULL) {
@@ -306,15 +308,17 @@ void gui_display(uint8_t screen) {
 	}
 #endif // KEYPAD_AVAILABLE
 
+#ifdef RC5_AVAILABLE
 	if (RC5_Code != 0) {
 		/* falls rc5-Code noch nicht abgearbeitet, Standardbehandlung ausfuehren */
 		default_key_handler();
 		RC5_Code = 0; // fertig, RC5-Puffer loeschen
 	}
+#endif // RC5_AVAILABLE
 
-#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
+#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE && defined RC5_AVAILABLE
 	LED_off(LED_WEISS);
-#endif // LED_AVAILABLE && ! TEST_AVAILABLE
+#endif // LED_AVAILABLE && ! TEST_AVAILABLE && RC5_AVAILABLE
 }
 
 /*!
