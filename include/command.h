@@ -267,7 +267,7 @@ static inline uint8_t get_bot_address(void) {
  * @param bot_addr	neue Bot-Adresse
  */
 static inline void set_bot_address(uint8_t bot_addr) {
-	ctbot_eeprom_write_byte(&bot_address, bot_addr);
+	ctbot_eeprom_update_byte(&bot_address, bot_addr);
 }
 
 #endif // COMMAND_AVAILABLE

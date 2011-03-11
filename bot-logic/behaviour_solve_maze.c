@@ -229,7 +229,7 @@ static void bot_check_wall(Behaviour_t * caller, int8_t direction) {
 	check_direction = direction;
 	wall_detected = False;
 	checkState = CHECK_WALL_TURN;
-	switch_to_behaviour(caller, bot_check_wall_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_check_wall_behaviour, BEHAVIOUR_NOOVERRIDE);
 }
 
 static int8_t measureState = 0;	/*!< Zustand des measure_angle-Verhaltens*/
@@ -345,7 +345,7 @@ static void bot_measure_angle(Behaviour_t * caller, int8_t direction, int16_t di
 	start_heading = (int16_t) heading_mou;
 	measureState = MEASURE_TURN;
 	measureCount = 0;
-	switch_to_behaviour(caller, bot_measure_angle_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_measure_angle_behaviour, BEHAVIOUR_NOOVERRIDE);
 }
 #else
 /*!
@@ -475,7 +475,7 @@ static void bot_measure_angle(Behaviour_t * caller, int8_t direction, int16_t di
 	startEncL = sensEncL;
 	startEncR = sensEncR;
 	measureState = MEASURE_TURN;
-	switch_to_behaviour(caller, bot_measure_angle_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_measure_angle_behaviour, BEHAVIOUR_NOOVERRIDE);
 }
 #endif	// MEASURE_MOUSE_AVAILABLE
 
@@ -655,7 +655,7 @@ void bot_solve_maze_behaviour(Behaviour_t * data) {
  * @param *caller	Verhaltensdatensatz des Aufrufers
  */
 void bot_solve_maze(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_solve_maze_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_solve_maze_behaviour, BEHAVIOUR_NOOVERRIDE);
 	mazeState = CHECK_FOR_STARTPAD;
 }
 #endif // BEHAVIOUR_SOLVE_MAZE_AVAILABLE

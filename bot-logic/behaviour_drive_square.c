@@ -67,7 +67,7 @@ void bot_drive_square_behaviour(Behaviour_t * data) {
  * @param caller Der obligatorische Verhaltensdatensatz des aufrufers
  */
 void bot_drive_square(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_drive_square_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_drive_square_behaviour, BEHAVIOUR_OVERRIDE);
 	state = STATE_FORWARD;
 }
 

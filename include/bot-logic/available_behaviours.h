@@ -1,14 +1,33 @@
+/*
+ * c't-Bot
+ *
+ * This program is free software; you can redistribute it
+ * and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your
+ * option) any later version.
+ * This program is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ * PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307, USA.
+ *
+ */
+
+/**
+ * \file 	available_behaviours.h
+ * \brief 	globale Schalter fuer die einzelnen Verhalten
+ */
+
 #ifndef AVAILABLE_BEHAVIOURS_H_
 #define AVAILABLE_BEHAVIOURS_H_
 
 #include "ct-Bot.h"
 
 #ifdef BEHAVIOUR_AVAILABLE
-
-/*!
- * @file 	available_behaviours.h
- * @brief 	globale Schalter fuer die einzelnen Verhalten
- */
 
 //#define BEHAVIOUR_SIMPLE_AVAILABLE /*!< sind die Beispielverhalten vorhanden? */
 //#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE /*!< Demoverhalten im Quadrat fahren vorhanden? */
@@ -50,7 +69,7 @@
 //#define BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE /*!< Transport-Pillar Verhalten */
 
 #define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-Kommandos entgegen? */
-//#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE /*!< Deaktivieren eines Verhaltens wenn Abbruchbedingung erfuellt */
+//#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE /*!< Deaktivieren von Verhalten wenn eine Abbruchbedingung erfuellt ist */
 
 //#define BEHAVIOUR_GET_UTILIZATION_AVAILABLE	/*!< CPU-Auslastung eines Verhaltens messen */
 

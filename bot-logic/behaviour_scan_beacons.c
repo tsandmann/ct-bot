@@ -263,7 +263,7 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 			x_mou = n.x;
 			y_mou = n.y;
 			heading_mou = fmodf(heading_mou + head_diff, 360.0f);
-#endif	// MEASURE_MOUSE_AVAILABLE
+#endif // MEASURE_MOUSE_AVAILABLE
 		}
 
 		state = END;
@@ -297,11 +297,11 @@ void bot_scan_beacons(Behaviour_t * caller, uint8_t position_update, uint8_t mod
 	turn_mode = mode;
 	if (mode > 1) {
 		if (caller != NULL) {
-			caller->subResult = SUBFAIL;
+			caller->subResult = BEHAVIOUR_SUBFAIL;
 		}
 		return;
 	}
-	switch_to_behaviour(caller, bot_scan_beacons_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_scan_beacons_behaviour, BEHAVIOUR_OVERRIDE);
 	state = SEARCH_APPEARANCE;
 	index = 0;
 	turned = 0.0f;

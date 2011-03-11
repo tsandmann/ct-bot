@@ -277,7 +277,7 @@ void bot_calibrate_sharps(Behaviour_t * caller) {
 	wait_for_userinput();
 
 	/* Verhalten an */
-	switch_to_behaviour(caller, bot_calibrate_sharps_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_calibrate_sharps_behaviour, BEHAVIOUR_OVERRIDE);
 }
 
 /*!

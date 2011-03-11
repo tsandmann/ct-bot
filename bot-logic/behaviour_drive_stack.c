@@ -114,7 +114,7 @@ void bot_drive_stack_behaviour(Behaviour_t * data) {
 void bot_drive_stack_x(Behaviour_t * caller, uint8_t stack, uint8_t mode) {
 	pos_store_t * store = pos_store_from_index(stack);
 	if (store == NULL) {
-		caller->subResult = SUBFAIL;
+		caller->subResult = BEHAVIOUR_SUBFAIL;
 		LOG_DEBUG("Fehler, Positionsspeicher %u ungueltig", stack);
 		return;
 	}
@@ -127,7 +127,7 @@ void bot_drive_stack_x(Behaviour_t * caller, uint8_t stack, uint8_t mode) {
 	}
 
 	pos_store = store;
-	switch_to_behaviour(caller, bot_drive_stack_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_drive_stack_behaviour, BEHAVIOUR_OVERRIDE);
 	drivestack_state = 0;
 	go_fifo = mode;
 }
@@ -170,12 +170,12 @@ void bot_drive_fifo(Behaviour_t * caller) {
 void bot_send_stack_b2b(Behaviour_t * caller, uint8_t bot) {
 	struct {
 		unsigned subresult:3;
-	} result = {SUBFAIL};
+	} result = {BEHAVIOUR_SUBFAIL};
 	LOG_DEBUG("pos_store_send_to_bot(0x%x, %u)", pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot);
 	if (pos_store_send_to_bot(pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot) == 0) {
 		if (bot_2_bot_start_remotecall(bot, "bot_drive_fifo", (remote_call_data_t) 0, (remote_call_data_t) 0,
 			(remote_call_data_t) 0) == 0) {
-			result.subresult = SUBSUCCESS;
+			result.subresult = BEHAVIOUR_SUBSUCCESS;
 		} else {
 			LOG_DEBUG("Fehler, konnte bot_drive_fifo() nicht starten");
 		}
@@ -184,7 +184,7 @@ void bot_send_stack_b2b(Behaviour_t * caller, uint8_t bot) {
 	}
 	if (caller) {
 		caller->subResult = result.subresult;
-		caller->active = ACTIVE;
+		caller->active = BEHAVIOUR_ACTIVE;
 	}
 }
 #endif // BOT_2_BOT_PAYLOAD_AVAILABLE
@@ -201,7 +201,7 @@ void bot_push_actpos(Behaviour_t * caller, uint8_t stack) {
 	// sichern der aktuellen Botposition auf den Stack
 	pos_store_push(pos_store_from_index(stack), pos);
 	if (caller) {
-		caller->subResult = SUBSUCCESS;
+		caller->subResult = BEHAVIOUR_SUBSUCCESS;
 	}
 }
 
@@ -247,7 +247,7 @@ void bot_save_waypos_behaviour(Behaviour_t * data) {
 	case 0:
 		pos_store = pos_store_new_size(data, STACK_SIZE);
 		if (pos_store == NULL) {
-			exit_behaviour(data, SUBFAIL);
+			exit_behaviour(data, BEHAVIOUR_SUBFAIL);
 			return;
 		}
 		set_pos_to_last(); // aktuelle Botposition wird zum ersten Stackeintrag und merken der Position

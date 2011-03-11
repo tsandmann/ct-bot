@@ -106,7 +106,7 @@ void trace_add_actuators(void) {
 
 	Behaviour_t * ptr = get_next_behaviour(NULL);
 	do {
-		if (ptr->active == ACTIVE && n < TRACEBUFFER_SIZE) {
+		if (ptr->active == BEHAVIOUR_ACTIVE && n < TRACEBUFFER_SIZE) {
 			n += snprintf(&trace_buffer[buf_index][n], TRACEBUFFER_SIZE - n, "\tbeh=\t%u", ptr->priority);
 		}
 	} while ((ptr = get_next_behaviour(ptr)) != NULL);

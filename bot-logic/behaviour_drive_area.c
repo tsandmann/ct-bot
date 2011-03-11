@@ -697,7 +697,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 	position_t pos;
 	int8_t mapval;
 
-	deactivateBehaviour(bot_cancel_behaviour_behaviour); // Cancel-Verhalten abbrechen, damit es nicht ewig weiterlaeuft
+//	deactivateBehaviour(bot_behaviour_cancel_behaviour); // Cancel-Verhalten abbrechen, damit es nicht ewig weiterlaeuft
 
 	switch (track_state) {
 
@@ -1196,7 +1196,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 void bot_drive_area(Behaviour_t * caller) {
 	/* ein paar Initialisierungen sind notwendig */
 	lastCorrectionTime = 0;
-	switch_to_behaviour(caller, bot_drive_area_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_drive_area_behaviour, BEHAVIOUR_OVERRIDE);
 	track_state = CHECK_TRACKSIDE;
 	border_fired = False;
 	pos_store = pos_store_create_size(get_behaviour(bot_drive_area_behaviour), pos_store_data, STACK_SIZE);

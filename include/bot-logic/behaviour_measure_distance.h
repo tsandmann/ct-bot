@@ -53,8 +53,8 @@ void bot_check_distance_behaviour(Behaviour_t * data);
 
 /*!
  * Prueft, ob in Entfernung max_dist [mm] ein Hindernis zu sehen ist.
- * Der Aufrufer bekommt SUBSUCCESS in seinen Verhaltensdatensatz, falls ja,
- * sonst SUBFAIL.
+ * Der Aufrufer bekommt BEHAVIOUR_SUBSUCCESS in seinen Verhaltensdatensatz, falls ja,
+ * sonst BEHAVIOUR_SUBFAIL.
  * @param *caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
  * @param max_dist	Entfernung in mm, bis zu der geprueft werden soll
  * @param diff		Maximal zulaessige Differenz zwischen den Messungen

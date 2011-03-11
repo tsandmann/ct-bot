@@ -444,7 +444,7 @@ int8_t command_evaluate(void) {
 				if ((uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)) {
 					bot_remotecall_from_command((char *) &buffer);
 				} else {
-					int16_t result = SUBFAIL;
+					int16_t result = BEHAVIOUR_SUBFAIL;
 					command_write(CMD_REMOTE_CALL, SUB_REMOTE_CALL_DONE, result, result, 0);
 				}
 				break;
@@ -510,8 +510,9 @@ int8_t command_evaluate(void) {
 					}
 					memset(buffer, 0, BOTFS_BLOCK_SIZE);
 					/* falls uBasic laeuft, abbrechen */
-					deactivateCalledBehaviours(bot_ubasic_behaviour);
-					deactivateBehaviour(bot_ubasic_behaviour);
+					Behaviour_t * const beh = get_behaviour(bot_ubasic_behaviour);
+					deactivate_called_behaviours(beh);
+					deactivate_behaviour(beh);
 					/* evtl. hatte uBasic einen RemoteCall gestartet, daher dort aufraeumen */
 					activateBehaviour(NULL, bot_remotecall_behaviour);
 				} else {

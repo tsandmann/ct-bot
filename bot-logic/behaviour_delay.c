@@ -49,8 +49,8 @@ void bot_delay_behaviour(Behaviour_t * data) {
  * @return			-1 wenn was schief gelaufen ist, sonst 0
  */
 int8_t bot_delay_ticks(Behaviour_t * caller, uint16_t ticks) {
-	switch_to_behaviour(caller, bot_delay_behaviour, NOOVERRIDE);
-	if (caller->subResult != SUBFAIL) {
+	switch_to_behaviour(caller, bot_delay_behaviour, BEHAVIOUR_NOOVERRIDE);
+	if (caller->subResult != BEHAVIOUR_SUBFAIL) {
 		delay_ticks = TIMER_GET_TICKCOUNT_32 + ticks;
 		return 0;
 	} else {

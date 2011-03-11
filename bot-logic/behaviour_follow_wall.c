@@ -236,7 +236,7 @@ void bot_follow_wall_behaviour(Behaviour_t * data) {
  */
 void bot_follow_wall(Behaviour_t * caller, uint8_t (*check)(void)) {
 	// Umschalten zum eigentlichen Verhalten
-	switch_to_behaviour(caller, bot_follow_wall_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_follow_wall_behaviour, BEHAVIOUR_NOOVERRIDE);
 
 	// bei Aufruf von anderem Verhalten aus ist dies die Abbruchfunktion, d.h. es wird
 	// wieder zum aufrufenden Verhalten zurueckgekehrt

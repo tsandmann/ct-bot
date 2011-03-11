@@ -75,6 +75,17 @@ static const uint8_t * parameter_length = NULL; /**< Hier speichern wir die Laen
 
 
 /**
+ * Dieses Makro bereitet eine Botenfunktion als Remote-Call-Funktion vor.
+ *  - Der erste Parameter ist der Funktionsname selbst
+ *  - Der zweite Parameter ist die Anzahl Parametern, die die Fkt erwartet.
+ *  - Der dritte Parameter ist ein String, der die Parameter der Fkt beschreibt.
+ *  - Danach folgen fuer jeden Parameter im String die Anzahl der Bytes, die der
+ *    jeweilige Parameter benoetigt: Will man also einen uint16_t uebergeben steht da 2,
+ *    will man einen float uebergeben 4.
+ */
+#define PREPARE_REMOTE_CALL(func, count, param, ...)  {count, {__VA_ARGS__}, #func, param, (Behaviour_t * (*) (Behaviour_t *, ...)) func}
+
+/**
  * \brief Hier muessen alle Boten-Funktionen rein, die remote aufgerufen werden sollen.
  *
  * Diese stossen dann das zugehoerige Verhalten an.
@@ -96,9 +107,9 @@ static const uint8_t * parameter_length = NULL; /**< Hier speichern wir die Laen
  * \endverbatim
  *
  * Zur Info:
- * - Byte brauchen: uint8,  int8,  char
- * - Byte brauchen: uint16, int16
- * - Byte brauchen: uint32, int32, float
+ * - 1 Byte brauchen: uint8,  int8,  char
+ * - 2 Byte brauchen: uint16, int16
+ * - 4 Byte brauchen: uint32, int32, float
  */
 const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 	/* Demo-Verhalten fuer Einsteiger */
@@ -157,7 +168,7 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 	/* Fahr- und Positionierungs-Verhalten */
 #ifdef BEHAVIOUR_TURN_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_turn, 1, "int16 degrees", 2),
-	PREPARE_REMOTE_CALL(bot_turn_speed, 2, "int16 degrees, uint16 speed", 2, 2),
+	PREPARE_REMOTE_CALL(bot_turn_speed, 3, "int16 degrees, uint16 min, uint16 max", 2, 2, 2),
 #endif
 #ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_goto_dist, 2, "int16 distance, int8 dir", 2, 1),
@@ -312,7 +323,7 @@ void bot_remotecall_behaviour(Behaviour_t * data) {
 			if (function_id >= STORED_CALLS) {
 				LOG_DEBUG("keine Funktion gefunden. Exit");
 				running_behaviour = REMOTE_CALL_IDLE;
-				exit_behaviour(data, SUBFAIL);
+				exit_behaviour(data, BEHAVIOUR_SUBFAIL);
 				return;
 			}
 
@@ -393,7 +404,7 @@ static int8_t bot_remotecall_from_id(Behaviour_t * caller, const uint8_t id, con
 		return -2;
 	}
 
-	switch_to_behaviour(caller, bot_remotecall_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_remotecall_behaviour, BEHAVIOUR_NOOVERRIDE);
 
 	function_id = id;
 	parameter_count = pgm_read_byte(&remotecall_beh_list[function_id].param_count);
@@ -457,10 +468,11 @@ void bot_remotecall_from_command(const char * data) {
  * Bricht einen laufenden RemoteCall ab
  */
 void bot_remotecall_cancel(void) {
+	Behaviour_t * const beh = get_behaviour(bot_remotecall_behaviour);
 	/* gestartete Verhalten abbrechen */
-	deactivateCalledBehaviours(bot_remotecall_behaviour);
+	deactivate_called_behaviours(beh);
 	/* RemoteCall-Verhalten korrekt beenden, um Antwort zu senden */
-	bot_remotecall_behaviour(get_behaviour(bot_remotecall_behaviour));
+	bot_remotecall_behaviour(beh);
 }
 
 /**

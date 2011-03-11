@@ -627,7 +627,7 @@ void bot_drive_chess_behaviour(Behaviour_t * data) {
 		break;
 
 	default:
-		exit_behaviour(data, SUBFAIL);
+		exit_behaviour(data, BEHAVIOUR_SUBFAIL);
 		return;
 	}
 }
@@ -639,7 +639,7 @@ void bot_drive_chess_behaviour(Behaviour_t * data) {
  * @param *caller	Der Verhaltensdatensatz
  */
 void bot_drive_chess(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_drive_chess_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_drive_chess_behaviour, BEHAVIOUR_OVERRIDE);
 	state = NEWGAME_STATE;
 }
 
@@ -648,7 +648,7 @@ void bot_drive_chess(Behaviour_t * caller) {
  * @param *caller	Der Verhaltensdatensatz
  */
 void bot_drive_chess_go(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_drive_chess_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_drive_chess_behaviour, BEHAVIOUR_OVERRIDE);
 	state = GO_STATE;
 }
 

@@ -17,11 +17,11 @@
  * 
  */
 
-/*!
- * @file 	behaviour_turn.h
- * @brief 	Drehe den Bot
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	03.11.06
+/**
+ * \file 	behaviour_turn.h
+ * \brief 	Drehe den Bot
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	03.11.2006
  */
 
 #ifndef BEHAVIOUR_TURN_H_
@@ -32,32 +32,49 @@
 extern float turn_last_err; /*!< letzter Drehfehler in Grad */
 #endif
 
-/*!
+#include "motor.h"
+
+/**
  * Das Verhalten laesst den Bot eine Punktdrehung durchfuehren.
- * @param *data 	Der Verhaltensdatensatz
- * @see bot_turn()
+ * \param *data 	Der Verhaltensdatensatz
+ * \see bot_turn()
  * Das Drehen findet in mehreren Schritten statt. Die Drehung wird dabei
  * zunaechst mit hoeherer Geschwindigkeit ausgefuehrt. Bei kleineren
  * Winkeln dann nur noch mit geringer Geschwindigkeit.
  */
 void bot_turn_behaviour(Behaviour_t * data);
 
-/*!
+/**
  * Dreht den Bot im mathematischen Drehsinn.
- * @param *caller	Der Aufrufer
- * @param degrees 	Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
+ * \param *caller	Der Aufrufer
+ * \param degrees 	Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
  * 					zwischen -360 und +360
+ * \return			Zeiger auf Verhaltensdatensatz
  */
-void bot_turn(Behaviour_t * caller, int16_t degrees);
+Behaviour_t * bot_turn(Behaviour_t * caller, int16_t degrees);
 
-/*!
- * Dreht den Bot im mathematischen Drehsinn.
- * @param *caller	Der Aufrufer
- * @param degrees 	Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
+/**
+ * Dreht den Bot im mathematischen Drehsinn im Rahmen der angegebenen Geschwindigkeiten.
+ * \param *caller	Der Aufrufer
+ * \param degrees 	Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
  * 					zwischen -360 und +360
- * @param speed		maximale Drehgeschwindigkeit [mm/s]
+ * \param minspeed	minimale Drehgeschwindigkeit [mm/s]
+ * \param maxspeed	maximale Drehgeschwindigkeit [mm/s]
+ * \return			Zeiger auf Verhaltensdatensatz
  */
-void bot_turn_speed(Behaviour_t * caller, int16_t degrees, uint16_t speed);
+Behaviour_t * bot_turn_speed(Behaviour_t * caller, int16_t degrees, int16_t minspeed, int16_t maxspeed);
+
+/**
+ * Dreht den Bot im mathematischen Drehsinn hoechstens mit der angegebenen Geschwindigkeit.
+ * \param *caller	Der Aufrufer
+ * \param degrees 	Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn.
+ * 					zwischen -360 und +360
+ * \param speed		maximale Drehgeschwindigkeit [mm/s]
+ * \return			Zeiger auf Verhaltensdatensatz
+ */
+static inline Behaviour_t * bot_turn_maxspeed(Behaviour_t * caller, int16_t degrees, int16_t speed) {
+	return bot_turn_speed(caller, degrees, BOT_SPEED_MIN, speed);
+}
 
 #endif // BEHAVIOUR_TURN_AVAILABLE
 #endif // BEHAVIOUR_TURN_H_

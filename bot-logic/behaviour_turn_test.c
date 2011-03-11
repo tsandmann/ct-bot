@@ -84,7 +84,7 @@ void bot_turn_test_behaviour(Behaviour_t * data) {
  * @param caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
  */
 void bot_turn_test(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_turn_test_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_turn_test_behaviour, BEHAVIOUR_NOOVERRIDE);
 	degrees = 360;
 	turn_count = 0;
 }

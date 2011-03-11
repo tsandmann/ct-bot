@@ -56,7 +56,7 @@ void bot_servo(Behaviour_t * caller, uint8_t servo, uint8_t pos) {
 	if (pos == DOOR_CLOSE && sensDoor == 0) {
 		return;	// Klappe ist bereits geschlossen
 	}
-	switch_to_behaviour(caller, bot_servo_behaviour, OVERRIDE);	// Warte-Verhalten an
+	switch_to_behaviour(caller, bot_servo_behaviour, BEHAVIOUR_OVERRIDE);	// Warte-Verhalten an
 
 	servo_active |= servo;
 	servo_set(servo, pos);	// Servo-PWM einstellen

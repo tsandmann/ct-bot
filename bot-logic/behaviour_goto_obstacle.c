@@ -122,7 +122,7 @@ void bot_goto_obstacle_behaviour(Behaviour_t * data) {
 void bot_goto_obstacle(Behaviour_t * caller, int16_t distance, uint8_t parallel) {
 	obst_distance = distance;
 	obst_parallel = parallel;
-	switch_to_behaviour(caller, bot_goto_obstacle_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_goto_obstacle_behaviour, BEHAVIOUR_OVERRIDE);
 	obst_state = 0;
 }
 
@@ -250,7 +250,7 @@ void bot_goto_obstacle_behaviour(Behaviour_t * data) {
 void bot_goto_obstacle(Behaviour_t * caller, int16_t distance, uint8_t parallel) {
 	obst_distance = distance;
 	obst_parallel = parallel;
-	switch_to_behaviour(caller, bot_goto_obstacle_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_goto_obstacle_behaviour, BEHAVIOUR_OVERRIDE);
 	obst_state = GOTO_DIST_STATE;
 }
 

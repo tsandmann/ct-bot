@@ -106,6 +106,6 @@ void bot_gotoxy(Behaviour_t * caller, int16_t x, int16_t y) {
 	initialDiffX=x-x_pos;
 	initialDiffY=y-y_pos;
 	gotoState=INITIAL_TURN;
-	switch_to_behaviour(caller, bot_gotoxy_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_gotoxy_behaviour, BEHAVIOUR_NOOVERRIDE);
 }
 #endif // BEHAVIOUR_GOTOXY_AVAILABLE

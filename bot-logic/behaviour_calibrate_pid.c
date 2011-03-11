@@ -330,7 +330,7 @@ void bot_calibrate_pid(Behaviour_t * caller, int16_t speed) {
 	pNextJob = find_Kp_region;
 
 	/* Verhalten an */
-	switch_to_behaviour(caller, bot_calibrate_pid_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_calibrate_pid_behaviour, BEHAVIOUR_OVERRIDE);
 }
 
 #endif	// BEHAVIOUR_CALIBRATE_PID_AVAILABLE

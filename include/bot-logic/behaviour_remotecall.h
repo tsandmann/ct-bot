@@ -42,7 +42,7 @@ typedef struct {
    uint8_t param_len[REMOTE_CALL_MAX_PARAM];			/**< Angaben ueber die Anzahl an Bytes, die jeder einzelne Parameter belegt */
    const char name[REMOTE_CALL_FUNCTION_NAME_LEN + 1];	/**< Text, maximal TEXT_LEN Zeichen lang +  1 Zeichen Terminierung */
    const char param_info[PARAM_TEXT_LEN + 1];			/**< String, der Angibt, welche und was fuer Parameter die Fkt erwartet */
-   void (* func) (Behaviour_t *, ...);					/**< Zeiger auf die auszufuehrende Funktion */
+   Behaviour_t * (* func) (Behaviour_t *, ...);			/**< Zeiger auf die auszufuehrende (Boten-)Funktion */
 } PACKED remotecall_entry_t;
 
 /** Union fuer Remotecall-Daten */
@@ -55,15 +55,6 @@ typedef union {
 	uint8_t u8;		/**<  8 Bit unsigned integer */
 	int8_t s8;		/**<  8 Bit signed integer */
 } remote_call_data_t;
-
-/**
- * Dieses Makro bereitet eine Botenfunktion als Remote-Call-Funktion vor.
- * Der erste parameter ist der Funktionsname selbst
- * Der zweite Parameter ist die Anzahl an Bytes, die die Fkt erwartet.
- * Und zwar unabhaengig vom Datentyp. will man also einen uin16 uebergeben steht da 2
- * Will man einen Float uebergeben eine 4. Fuer zwei Floats eine 8, usw.
- */
-#define PREPARE_REMOTE_CALL(func, count, param, ...)  {count, {__VA_ARGS__}, #func, param, (void (*) (Behaviour_t *, ...)) func}
 
 /** Liste aller Botenfunktionen von Verhalten, die remote aufgerufen werden koennen */
 extern const remotecall_entry_t remotecall_beh_list[];

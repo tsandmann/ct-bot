@@ -82,7 +82,7 @@ void bot_classify_objects_behaviour(Behaviour_t * data) {
 
 	case CO_IDENTIFY:
 		/* Objekterkennung */
-		if (data->subResult == SUBFAIL) {
+		if (data->subResult == BEHAVIOUR_SUBFAIL) {
 			state = CO_END;
 			bot_turn(data, -180);
 			break;
@@ -122,7 +122,7 @@ void bot_classify_objects_behaviour(Behaviour_t * data) {
 		break;
 
 	default:
-		exit_behaviour(data, SUBFAIL);
+		exit_behaviour(data, BEHAVIOUR_SUBFAIL);
 		return;
 	}
 }
@@ -133,7 +133,7 @@ void bot_classify_objects_behaviour(Behaviour_t * data) {
  * \param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_classify_objects(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_classify_objects_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_classify_objects_behaviour, BEHAVIOUR_OVERRIDE);
 	state = CO_SEARCH;
 }
 

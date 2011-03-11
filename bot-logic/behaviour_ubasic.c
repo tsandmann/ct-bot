@@ -159,7 +159,7 @@ void bot_ubasic(Behaviour_t * caller) {
 		LOG_ERROR("Kein Programm geladen");
 		return;
 	}
-	switch_to_behaviour(caller, bot_ubasic_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_ubasic_behaviour, BEHAVIOUR_OVERRIDE);
 	ubasic_behaviour_data = get_behaviour(bot_ubasic_behaviour);
 	bot_ubasic_speed(BOT_SPEED_IGNORE, BOT_SPEED_IGNORE); // alte Speed-Wuensche neutralisieren
 	tokenizer_set_init_hook(ubasic_buffer_init);

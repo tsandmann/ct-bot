@@ -117,6 +117,6 @@ void bot_drive_distance(Behaviour_t * caller, int8_t curve, int16_t speed, int16
 	} else {
 		drive_distance_target = *encoder + marks_to_drive;
 	}
-	switch_to_behaviour(caller, bot_drive_distance_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_drive_distance_behaviour, BEHAVIOUR_NOOVERRIDE);
 }
 #endif // BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE

@@ -168,7 +168,7 @@ void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_
 			diff = (q0 * err + q1 * lastErr[dev] + q2 * last2Err[dev]) >> PID_SHIFT;
 #else
 			diff = (Q0 * err + Q1 * lastErr[dev] + Q2 * last2Err[dev]) >> PID_SHIFT;
-#endif	// ADJUST_PID_PARAMS
+#endif // ADJUST_PID_PARAMS
 			*actVar += diff;
 
 			/* berechnete Stellgroesse auf zulaessige Werte begrenzen */
@@ -415,9 +415,7 @@ void motor_set(int16_t left, int16_t right) {
 	static uint8_t i = 0;	// nachdem wir 1 Byte geschrieben haben, muessten wir 3.3 ms warten,
 	if (i != 0 || timer_ms_passed_16(&old_pwm_ticks, 10000)) {	// alle 10 s
 		uint8_t tmp = pwm_values[i].pwm;	// darum schreiben wir erst im naechsten Aufruf das 2. Byte ins EEPROM usw. :-)
-		if (ctbot_eeprom_read_byte(&pwmSlow[i]) != tmp) {
-			ctbot_eeprom_write_byte(&pwmSlow[i], tmp);
-		}
+		ctbot_eeprom_update_byte(&pwmSlow[i], tmp);
 		if (++i == 4) {	// alle Daten gesichert => 10 s schlafen
 			i = 0;
 		}
@@ -482,7 +480,7 @@ void motor_init(void) {
 	tmp = ctbot_eeprom_read_byte(&pwmSlow[3]);
 	if (tmp < (511 - PWMSTART_R) / 2) pwm_values[3].pwm = tmp;
 	else pwm_values[3].pwm = 0;
-#endif	// SPEED_CONTROL_AVAILABLE
+#endif // SPEED_CONTROL_AVAILABLE
 
 	motor_low_init();
 }

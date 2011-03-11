@@ -89,6 +89,6 @@ void bot_test_encoder_behaviour(Behaviour_t * data) {
  */
 void bot_test_encoder(Behaviour_t * caller) {
 	state = 0;
-	switch_to_behaviour(caller, bot_test_encoder_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_test_encoder_behaviour, BEHAVIOUR_OVERRIDE);
 }
 #endif // BEHAVIOUR_TEST_ENCODER_AVAILABLE

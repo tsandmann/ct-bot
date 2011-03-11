@@ -368,7 +368,7 @@ void bot_transport_pillar_behaviour(Behaviour_t * data) {
 		break;
 
 	case BOT_ROLL:
-		deactivateBehaviour(bot_cancel_behaviour_behaviour); // deaktivieren falls noch aktiv
+//		deactivateBehaviour(bot_behaviour_cancel_behaviour); // deaktivieren falls noch aktiv
 		// Bot erst mal ausrollen lassen
 #ifndef SHOW_CLAPS_ON_DEST
 		// nicht warten wenn kurz Klappe auf und zu geht; ist bereits genug Verzoegerung
@@ -489,7 +489,7 @@ void bot_transport_pillar(Behaviour_t * caller) {
 	startpad_bcol_1 = 0;
 	startpad_bcol_2 = 0;
 #endif
-	switch_to_behaviour(caller, bot_transport_pillar_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_transport_pillar_behaviour, BEHAVIOUR_OVERRIDE);
 }
 
 /*!

@@ -86,7 +86,7 @@ void bot_measure_distance(Behaviour_t * caller, int16_t * p_sensL, int16_t * p_s
 	measure_count = 0;
 
 	/* Verhalten an */
-	switch_to_behaviour(caller, bot_measure_distance_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_measure_distance_behaviour, BEHAVIOUR_OVERRIDE);
 }
 
 static int16_t range = 0;	/*!< Entfernung [mm] fuer bot_check_distance() */
@@ -108,14 +108,14 @@ void bot_check_distance_behaviour(Behaviour_t * data) {
 
 /*!
  * Prueft, ob in Entfernung max_dist [mm] ein Hindernis zu sehen ist.
- * Der Aufrufer bekommt SUBSUCCESS in seinen Verhaltensdatensatz, falls ja,
- * sonst SUBFAIL.
+ * Der Aufrufer bekommt BEHAVIOUR_SUBSUCCESS in seinen Verhaltensdatensatz, falls ja,
+ * sonst BEHAVIOUR_SUBFAIL.
  * @param *caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
  * @param max_dist	Entfernung in mm, bis zu der geprueft werden soll
  * @param diff		Maximal zulaessige Differenz zwischen den Messungen
  */
 void bot_check_distance(Behaviour_t * caller, int16_t max_dist, uint8_t diff) {
-	switch_to_behaviour(caller, bot_check_distance_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_check_distance_behaviour, BEHAVIOUR_OVERRIDE);
 	range = max_dist;
 	max_diff = diff;
 }

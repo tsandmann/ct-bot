@@ -633,7 +633,7 @@ void bot_calc_wave_behaviour(Behaviour_t * data) {
 		LOG_DEBUG("Waveverhalten beendet. Wavecounter %1d", wavecounter);
 		pos_store_release(planning_pos_store);
 		planning_pos_store = NULL;
-		exit_behaviour(data, (uint8_t) (endreached ? SUBSUCCESS : SUBFAIL));
+		exit_behaviour(data, (uint8_t) (endreached ? BEHAVIOUR_SUBSUCCESS : BEHAVIOUR_SUBFAIL));
 		break;
 	}
 }
@@ -659,7 +659,7 @@ static void bot_set_destination(int16_t x, int16_t y) {
  * \param map_compare Map-Vergleichswert; Mapwerte kleiner dem Wert werden als Hindernisse eingetragen
  */
 void bot_do_calc_wave(Behaviour_t * caller, int8_t map_compare) {
-	switch_to_behaviour(caller, bot_calc_wave_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_calc_wave_behaviour, BEHAVIOUR_OVERRIDE);
 	wave_state = 0;
     map_compare_haz = map_compare; // Wert setzen, unterhalb dessen Hindernis gesetzt wird
 

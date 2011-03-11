@@ -202,7 +202,7 @@ void bot_follow_line_enh_behaviour(Behaviour_t * data) {
  * @param *caller Verhaltensdatensatz des Aufrufers
  */
 void bot_follow_line_enh(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_follow_line_enh_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_follow_line_enh_behaviour, BEHAVIOUR_NOOVERRIDE);
 	line_state_enh = 0;
 	pos_on_line.x = 0;
 	pos_on_line.y = 0;

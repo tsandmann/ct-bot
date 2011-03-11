@@ -602,7 +602,7 @@ int8_t bot_2_bot_pl_test(Behaviour_t * caller, uint8_t to) {
 	LOG_DEBUG("bot_2_bot_payload_test(%u) abgeschlossen mit %d", to, result);
 	memset(payload_test_buffer, 0, sizeof(payload_test_buffer));
 	if (caller != NULL) {
-		caller->subResult = result == 0 ? SUBSUCCESS : SUBFAIL;
+		caller->subResult = result == 0 ? BEHAVIOUR_SUBSUCCESS : BEHAVIOUR_SUBFAIL;
 	}
 	return result;
 }

@@ -138,7 +138,7 @@ static void mini_fat_store_adr(uint32_t block) {
 			break;	// fertig
 		}
 	}
-	ctbot_eeprom_write_dword(p_eefat, block); // Adresse speichern
+	ctbot_eeprom_update_dword(p_eefat, block); // Adresse speichern
 }
 
 #ifdef MINI_FAT_CHECK_FRAGMENTATION

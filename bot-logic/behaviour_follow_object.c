@@ -158,7 +158,7 @@ void bot_follow_object_behaviour(Behaviour_t * data) {
  */
 void bot_follow_object(Behaviour_t * caller) {
 	/* Verhalten starten */
-	switch_to_behaviour(caller, bot_follow_object_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_follow_object_behaviour, BEHAVIOUR_OVERRIDE);
 
 	/* Inits */
 #ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE

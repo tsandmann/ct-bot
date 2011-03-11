@@ -143,6 +143,6 @@ void bot_goto(Behaviour_t * caller, int16_t left, int16_t right) {
 	mot_r_goto=right;
 	mot_goto_l=0;
 	mot_goto_r=0;
-	switch_to_behaviour(caller, bot_goto_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_goto_behaviour, BEHAVIOUR_OVERRIDE);
 }
 #endif // BEHAVIOUR_GOTO_AVAILABLE

@@ -26,8 +26,6 @@
 
 #include "ct-Bot.h"
 
-//#undef BOT_FS_AVAILABLE
-
 #ifdef MAP_AVAILABLE
 #include "ui/available_screens.h"
 #include <stdio.h>

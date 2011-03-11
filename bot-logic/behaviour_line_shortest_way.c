@@ -230,7 +230,7 @@ void bot_check_reverse_direction_behaviour(Behaviour_t * data) {
  */
 static void bot_check_reverse_direction(Behaviour_t * caller) {
 	// via Override umschalten; Aufruf erfolgt aller x mm gefahrene Strecke, falls Kurve gefahren wurde zum Setzen des neuen Pruefwinkels
-	switch_to_behaviour(caller, bot_check_reverse_direction_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_check_reverse_direction_behaviour, BEHAVIOUR_OVERRIDE);
 	reverse_state = 0;
 }
 #else
@@ -508,7 +508,7 @@ void bot_line_shortest_way_behaviour(Behaviour_t * data) {
 	case CHECK_BORDER: // kleines Stueck vorfahren fuer Abgrundcheck
 		lineState = GO_FORWARD; // naechster Verhaltenszustand
 		bot_goto_dist(data, 20, 1); // 2cm vorfahren, Liniensensoren sind dann runter von Linie, falls nicht Abgrund
-		deactivateBehaviour(bot_cancel_behaviour_behaviour); // Cancelverhalten fuer Linienfolger beenden
+//		deactivateBehaviour(bot_behaviour_cancel_behaviour); // Cancelverhalten fuer Linienfolger beenden
 		crossing_reached = True; // Kennung setzen, ab jetzt auch Gruenfelder fuer Umkehr ausgewertet
 		break;
 
@@ -651,7 +651,7 @@ void bot_line_shortest_way_behaviour(Behaviour_t * data) {
 		break;
 
 	case TURN_ON_GREEN: // hierher nach Erkennung des Gruenfeldes mit Richtungsumkehr
-		deactivateBehaviour(bot_cancel_behaviour_behaviour); // Cancelverhalten fuer Linienfolger beenden
+//		deactivateBehaviour(bot_behaviour_cancel_behaviour); // Cancelverhalten fuer Linienfolger beenden
 		BLOCK_BEHAVIOUR(data, 500); // evtl. etwas warten
 		lineState = CHECK_LINE;
 #ifndef CHECK_REVERSE_BEHAVIOUR		// hat ja bereits die entgegengesetzte Richtung eingenommen und damit wieder in Ausgangs-Zielrichtung
@@ -682,7 +682,7 @@ void bot_line_shortest_way_behaviour(Behaviour_t * data) {
  * \param	*caller Verhaltensdatensatz des Aufrufers
  */
 void bot_line_shortest_way(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_line_shortest_way_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_line_shortest_way_behaviour, BEHAVIOUR_NOOVERRIDE);
 	lineState = 0;
 	border_side_l_fired = 0;
 	border_side_r_fired = 0;
@@ -709,7 +709,7 @@ void bot_line_shortest_way(Behaviour_t * caller) {
  * \param	*caller Verhaltensdatensatz des Aufrufers
  */
 void bot_line_shortest_way_continue(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_line_shortest_way_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_line_shortest_way_behaviour, BEHAVIOUR_NOOVERRIDE);
 	lineState = 0;
 	border_side_l_fired = 0;
 	border_side_r_fired = 0;
@@ -720,7 +720,7 @@ void bot_line_shortest_way_continue(Behaviour_t * caller) {
  * \param	*caller Verhaltensdatensatz des Aufrufers
  */
 void bot_line_shortest_way_forward(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_line_shortest_way_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_line_shortest_way_behaviour, BEHAVIOUR_NOOVERRIDE);
 	lineState = 0;
 	border_side_l_fired = 0;
 	border_side_r_fired = 0;
@@ -734,7 +734,7 @@ void bot_line_shortest_way_forward(Behaviour_t * caller) {
  * \param	*caller Verhaltensdatensatz des Aufrufers
  */
 void bot_line_shortest_way_backward(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_line_shortest_way_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_line_shortest_way_behaviour, BEHAVIOUR_NOOVERRIDE);
 	lineState = 0;
 	border_side_l_fired = 0;
 	border_side_r_fired = 0;
