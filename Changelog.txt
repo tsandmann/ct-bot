@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-03-13 Timo Sandmann [mail@timosandmann.de]: Support fuer aeltere avr-libc Versionen (ab 1.6.7)
+
 2011-03-11 Timo Sandmann [mail@timosandmann.de]: Behaviour-Code aufgeraeumt: globale Konstanten mit dem Prefix BEHAVIOUR_ versehen, Dateinamen auf einheitliches Schema umgestellt, Cancel-Verhalten erweitert - es koennen auch mehrere Verhalten ueberwacht und beendet werden. Turn-Verhalten ueberarbeitet, Angabe der Drehgeschwindigkeit hinzugefuegt. EEPROM-Schreibzugriffe verringert. 
 
 2011-03-02 Simon Siemens: Bugfix fuer Konfiguration ohne RC5 oder RemoteCall-Verhalten

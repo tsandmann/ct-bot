@@ -32,10 +32,6 @@
 #include "log.h"
 #include "display.h"
 
-#ifdef MCU
-#include <avr/builtins.h>
-#endif
-
 /*!
  * Makro zur Umrechnung von Ticks in ms
  * (ms / ticks evtl. nach uint32_t casten, fuer grosse Werte)

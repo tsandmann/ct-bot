@@ -32,7 +32,6 @@
 #ifdef OS_AVAILABLE
 
 #include <avr/io.h>
-#include <avr/builtins.h>
 #include <stdint.h>
 
 /*!

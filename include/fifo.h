@@ -31,13 +31,8 @@
 //#define DEBUG_FIFO		/*!< Schalter fuer Debug-Ausgaben */
 
 #include "ct-Bot.h"
-#include "global.h"
 #include "os_thread.h"
 #include "log.h"
-
-#ifdef MCU
-#include <avr/builtins.h>
-#endif
 
 #ifndef LOG_AVAILABLE
 #undef DEBUG_FIFO

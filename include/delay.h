@@ -33,7 +33,7 @@
 void delay(uint16_t ms);
 
 #ifdef MCU
-#include <avr/builtins.h>
+#include "builtins.h"
 
 /**
  * Verzoegert um us Mikrosekunden

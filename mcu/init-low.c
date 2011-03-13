@@ -165,7 +165,7 @@ void ctbot_init_low_last(void) {
  */
 void ctbot_shutdown_low() {
 	while (uart_outfifo.count > 0) {} // Commands flushen
-	cli();
+	__builtin_avr_cli();
 	UCSRB = 0; // UART aus
 	LED_off(0xff);
 	ENA_off(0xff);
