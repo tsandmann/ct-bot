@@ -33,7 +33,7 @@
 
 
 # MCU name
-MCU = atmega32
+MCU ?= atmega32
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
@@ -42,8 +42,8 @@ FORMAT = ihex
 TARGET = ct-Bot
 
 # Target Device, either pc or mcu, usually defined on commandline
-DEVICE = MCU
-#DEVICE = PC
+DEVICE ?= MCU
+#DEVICE ?= PC
 
 MSG_DEVICE = Target device is $(DEVICE)
 
@@ -86,7 +86,7 @@ MATH_LIB = -lm
 ifeq ($(DEVICE),MCU)
 	# List any extra directories to look for include files here.
 	#     Each directory must be seperated by a space.
-	EXTRAINCDIRS = /usr/local/avr/include include
+	EXTRAINCDIRS = include
 
 	
 	
@@ -245,14 +245,13 @@ CINCS =
 #  -Wall...:     warning level
 #  -Wa,...:      tell GCC to pass this to the assembler.
 #    -adhlns...: create assembler listing
-CFLAGS = -g
+CFLAGS = -g3
 CFLAGS += $(CDEFS) $(CINCS)
 CFLAGS += -O0 -O$(OPT)
-#CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 CFLAGS += -fmessage-length=0
 CFLAGS += -Wall -Wstrict-prototypes
+CFLAGS += -Wextra -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2
 CFLAGS += -MMD
-#CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
 
@@ -289,7 +288,8 @@ LST = $(ASRC:.S=.lst) $(SRC:.c=.lst)
 
 
 # Compiler flags to generate dependency files.
-GENDEPFLAGS = -Wp,-M,-MP,-MT,$(*F).o,-MF,.dep/$(@F).d
+#GENDEPFLAGS = -Wp,-M,-MP,-MT,$(*F).o,-MF,.dep/$(@F).d
+GENDEPFLAGS = -M,-MP,-MT,$(*F).o,-MF,.dep/$(@F).d
 
 
 # Combine all necessary flags and optional flags.

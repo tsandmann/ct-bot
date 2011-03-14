@@ -3120,7 +3120,6 @@
 								<option id="gnu.c.compiler.option.include.paths.857160226" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="${ProjDirPath}"/>
 									<listOptionValue builtIn="false" value="${ProjDirPath}/include"/>
-									<listOptionValue builtIn="false" value="/usr/include"/>
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1659071247" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="PC"/>
