@@ -54,6 +54,7 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 #include "led.h"
 #include "mini-fat.h"
 #include "map.h"
+#include "command.h"
 #include "pos_store.h"
 #include "rc5-codes.h"
 #include "os_scheduler.h"

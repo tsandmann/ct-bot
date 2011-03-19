@@ -25,12 +25,13 @@
  */
 
 #ifdef PC
-#include "trace.h"
+#include "ct-Bot.h"
 
 #ifdef CREATE_TRACEFILE_AVAILABLE
+#include "bot-logic/bot-logic.h"
+#include "trace.h"
 #include "fifo.h"
 #include "sensor.h"
-#include "bot-logic/bot-logic.h"
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>

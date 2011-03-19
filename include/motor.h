@@ -27,8 +27,6 @@
 #define MOTOR_H_
 
 
-#include "ct-Bot.h"
-
 #define BOT_SPEED_IGNORE	1000	/*!< Wert ausserhalb von -BOT_SPEED_MAX und BOT_SPEED_MAX wird verwendet um einen Eintrag zu ignorieren */
 #define BOT_SPEED_STOP		0		/*!< Motor aus */
 

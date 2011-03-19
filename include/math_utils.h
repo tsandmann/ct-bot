@@ -27,8 +27,6 @@
 #ifndef MATH_UTILS_H_
 #define MATH_UTILS_H_
 
-#include "global.h"
-
 #define DEG2RAD (M_PI / 180.0)	/**< Umrechnungsfaktor von Grad nach Bogenmass */
 
 /**

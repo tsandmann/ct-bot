@@ -23,9 +23,10 @@
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.2005
  */
-#include "command.h"
-#include "eeprom.h"
 
+#include "ct-Bot.h"
+
+#include "command.h"
 EEPROM uint8_t bot_address = CMD_BROADCAST; /*!< Kommunikations-Adresse des Bots (EEPROM) */
 
 #ifdef COMMAND_AVAILABLE
@@ -44,7 +45,6 @@ EEPROM uint8_t bot_address = CMD_BROADCAST; /*!< Kommunikations-Adresse des Bots
 #include "map.h"
 #include "botfs.h"
 #include "init.h"
-#include "bot-logic/ubasic.h"
 #include <string.h>
 
 #define CHECK_CMD_ADDRESS					/*!< soll die Zieladresse der Kommandos ueberprueft werden? */
@@ -482,8 +482,9 @@ int8_t command_evaluate(void) {
 			switch (received_command.request.subcommand) {
 			case SUB_PROGRAM_PREPARE: {
 				/* Vorbereitung auf neues Programm */
+				const uint8_t type = (uint8_t) received_command.data_l;
 				prog_size = (uint16_t) received_command.data_r;
-				LOG_DEBUG(" Typ=%u Laenge=%u", (uint8_t) received_command.data_l, prog_size);
+				LOG_DEBUG(" Typ=%u Laenge=%u", type, prog_size);
 				const uint8_t len = received_command.payload;
 				LOG_DEBUG(" len=%u", len);
 				char filename[len + 1];
@@ -515,6 +516,13 @@ int8_t command_evaluate(void) {
 					deactivate_behaviour(beh);
 					/* evtl. hatte uBasic einen RemoteCall gestartet, daher dort aufraeumen */
 					activateBehaviour(NULL, bot_remotecall_behaviour);
+					/* Datei laden */
+					switch (type) {
+					case 0:
+						/* uBasic */
+						bot_ubasic_load_file(filename, &prog_file);
+						break;
+					}
 				} else {
 					/* Fehler */
 					prog_size = 0;
@@ -528,9 +536,8 @@ int8_t command_evaluate(void) {
 					LOG_DEBUG(" Datenempfang fehlerhaft");
 					break;
 				}
-				const uint8_t type = (uint8_t) received_command.data_l;
 				const uint16_t done = (uint16_t) received_command.data_r;
-				LOG_DEBUG(" type=%u %u Bytes (%u Bytes insgesamt)", type, received_command.payload,
+				LOG_DEBUG(" type=%u %u Bytes (%u Bytes insgesamt)", (uint8_t) received_command.data_l, received_command.payload,
 					received_command.payload + done);
 				void * buffer = GET_MMC_BUFFER(ubasic_buffer);
 				const uint16_t index = (uint16_t) done % BOTFS_BLOCK_SIZE;
@@ -565,13 +572,6 @@ int8_t command_evaluate(void) {
 							/* Progamm vollstaendig empfangen */
 							botfs_flush_used_blocks(&prog_file, GET_MMC_BUFFER(ubasic_buffer));
 							LOG_DEBUG("->fertig");
-							/* nun laden */
-							switch (type) {
-							case 0:
-								/* uBasic */
-								ubasic_load_file(&prog_file);
-								break;
-							}
 						}
 					}
 				} else {
@@ -597,7 +597,7 @@ int8_t command_evaluate(void) {
 				switch ((uint8_t) received_command.data_l) {
 				case 0:
 					/* uBasic */
-					ubasic_break();
+					bot_ubasic_break();
 					break;
 				}
 				break;

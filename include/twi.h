@@ -27,8 +27,6 @@
 #ifndef TWI_DRIVER_H
 #define TWI_DRIVER_H
 
-#include "ct-Bot.h"
-
 #ifdef TWI_AVAILABLE 
 #include "i2c.h"
 

@@ -31,8 +31,6 @@
 #ifndef MINIFAT_H_
 #define MINIFAT_H_
 
-#include "ct-Bot.h"
-
 #define MMC_FILENAME_MAX	255 /*!< Maximale Dateienamenlaenge in Zeichen [1;255] */
 #define MMC_HEADER_DATA_SIZE (512 - sizeof(file_len_t) - (MMC_FILENAME_MAX + 1)) /*!< Header-Daten-Groesse [Byte] */
 

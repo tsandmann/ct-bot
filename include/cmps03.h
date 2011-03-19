@@ -27,8 +27,6 @@
 #ifndef CMPS03_H_
 #define CMPS03_H_
 
-#include "ct-Bot.h"
-
 #ifdef CMPS03_AVAILABLE
 
 #define CMPS03_ADDR	0xc0	/*!< I2C-Adresse des Kompass */

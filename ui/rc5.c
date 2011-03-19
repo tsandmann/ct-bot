@@ -31,8 +31,8 @@
  */
 
 #include "ct-Bot.h"
-#ifdef RC5_AVAILABLE
 
+#ifdef RC5_AVAILABLE
 #include "rc5.h"
 #include "bot-logic/bot-logic.h"
 #include "ui/available_screens.h"
@@ -43,11 +43,11 @@
 #include "gui.h"
 #include "mmc.h"
 #include "mmc-vm.h"
+#include "command.h"
 #include "pos_store.h"
 #include "timer.h"
 #include "bot-2-bot.h"
 #include "init.h"
-#include "command.h"
 #include <stdlib.h>
 
 

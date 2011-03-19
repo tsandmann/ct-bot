@@ -27,10 +27,7 @@
 #ifndef BOTFSLOW_H_
 #define BOTFSLOW_H_
 
-#include "ct-Bot.h"
-
 #ifdef BOT_FS_AVAILABLE
-#include "os_thread.h"
 
 extern uint32_t first_block; /**< Adresse des ersten Blocks des Volumes */
 

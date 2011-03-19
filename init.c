@@ -24,6 +24,8 @@
  * @date 	09.03.2010
  */
 
+#include "ct-Bot.h"
+
 #include "init.h"
 #include "timer.h"
 #include "uart.h"

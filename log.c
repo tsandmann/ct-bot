@@ -65,6 +65,10 @@
  * \date 	27.02.2006
  */
 
+#include "ct-Bot.h"
+
+#ifdef LOG_AVAILABLE
+#ifndef USE_MINILOG
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -76,9 +80,6 @@
 #include "command.h"
 #include "uart.h"
 #include "mmc-vm.h"
-
-#ifdef LOG_AVAILABLE
-#ifndef USE_MINILOG
 
 #ifdef PC
 #include <pthread.h>

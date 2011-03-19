@@ -29,6 +29,7 @@
 uint8_t EEPROM resetsEEPROM = 0; /*!< Reset-Counter im EEPROM */
 
 #ifdef MCU
+#include "ct-Bot.h"
 #include "init.h"
 #include "ui/available_screens.h"
 #include "os_thread.h"

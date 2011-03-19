@@ -27,12 +27,9 @@
 #ifndef _OS_THREAD_H_
 #define _OS_THREAD_H_
 
-#include "ct-Bot.h"
-
 #ifdef OS_AVAILABLE
 #include "timer.h"
 #include "os_scheduler.h"
-#include <stdlib.h>
 
 #ifdef PC
 #undef OS_DEBUG
@@ -179,7 +176,6 @@ static inline void os_signal_unlock(os_signal_t * signal) {
 }
 
 #else // PC
-#include <pthread.h>
 
 #define OS_TASK_ATTR /*!< Attribut fuer main-Funktion eines Threads (Dummy fuer PC) */
 

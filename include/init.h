@@ -30,7 +30,6 @@
 #include "ct-Bot.h"
 #include "eeprom.h"
 #include "bot-logic/bot-logic.h"
-#include "botfs.h"
 #include "sensor-low.h"
 
 extern uint8_t EEPROM resetsEEPROM;	/*!< Reset-Counter im EEPROM */

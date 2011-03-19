@@ -27,11 +27,6 @@
 #ifndef TIMER_H_
 #define TIMER_H_
 
-#include "ct-Bot.h"
-#include <stdint.h>
-#include "log.h"
-#include "display.h"
-
 /*!
  * Makro zur Umrechnung von Ticks in ms
  * (ms / ticks evtl. nach uint32_t casten, fuer grosse Werte)

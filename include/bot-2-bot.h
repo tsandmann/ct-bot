@@ -27,11 +27,7 @@
 #ifndef BOT2BOT_H_
 #define BOT2BOT_H_
 
-#include "ct-Bot.h"
 #ifdef BOT_2_BOT_AVAILABLE
-#include "command.h"
-#include "bot-logic/bot-logic.h"
-#include <stdlib.h>
 
 //#define DELETE_BOTS		/*!< wollen wir Bots aus der Liste loeschen koennen? */
 //#define BOT_2_BOT_PAYLOAD_TEST_AVAILABLE	/*!< Aktiviert Test-Code fuer Bot-2-Bot Kommunikation mit Payload */

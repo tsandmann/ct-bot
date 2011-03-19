@@ -37,7 +37,6 @@
 #define ENA_MOUSE_SENSOR	(1<<7)		/*!< Enable-Leitung Reserve 2 */
 
 #ifndef __ASSEMBLER__
-#include "global.h"
 
 /*!
  * Initialisiert die Enable-Leitungen

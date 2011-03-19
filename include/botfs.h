@@ -27,8 +27,6 @@
 #ifndef BOTFS_H_
 #define BOTFS_H_
 
-#include "ct-Bot.h"
-
 //#define DEBUG_BOTFS /**< schaltet Debug-Ausgaben an */
 //#define DEBUG_BOTFS_LOGFILE /**< schaltet Debug-Ausgaben in botfs.log an */
 

@@ -90,7 +90,10 @@ void minilog_begin(uint16_t line, LOG_TYPE log_type) {
 void minilog_printf(const char * format, ...) {
 	va_list	args;
 	va_start(args, format);
-	p_buffer += vsnprintf_P(p_buffer, LOG_BUFFER_SIZE - 15, format, args);
+#ifdef LOG_MMC_AVAILABLE
+	p_buffer +=
+#endif
+	vsnprintf_P(p_buffer, LOG_BUFFER_SIZE - 15, format, args);
 	va_end(args);
 
 #ifdef LOG_CTSIM_AVAILABLE
@@ -116,6 +119,8 @@ void minilog_printf(const char * format, ...) {
 	}
 
 	++next_line;
+#else
+	p_buffer = minilog_buffer;
 #endif // LOG_MMC_AVAILABLE
 }
 

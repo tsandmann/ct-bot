@@ -30,21 +30,11 @@
  * Source modified by Uwe Berger (bergeruw@gmx.net); 2010
  * ------------------------------------------------------
  */
-
-/**
- * \file 	ubasic.h
- * \brief 	uBasic-Interpreter
- * \author	Adam Dunkels
- * \author 	Uwe Berger (bergeruw@gmx.net)
- * \date 	10.06.2010
- */
-
 #ifndef __UBASIC_H__
 #define __UBASIC_H__
 
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 
-// Error-Nummern
 #define SYNTAX_ERROR			1
 #define UNKNOWN_ADC_CHANNEL		2
 #define UNKNOWN_IO_PORT			3
@@ -53,20 +43,30 @@
 #define UNKNOWN_CALL_FUNCT		6
 #define UNKNOWN_CALL_FUNCT_TYP	7
 #define UNKNOWN_CVAR_NAME		8
+#define SHORT_IF_WITH_ELSE		9
+#define GOSUB_STACK_DETH		10
+#define FOR_STACK_DETH			11
+#define GOSUB_STACK_INVALID		12
+#define UNKNOWN_SUBPROC			13
+#define GOSUB_NO_EXT_SUBPROC    14	
+#define ARRAY_OUT_OF_RANGE		15
+#define OUT_OF_MEMORY           16
+#define NOT_ENOUGH_DATA			17
+#define UNKNOWN_LINENUMBER		18
 
-int current_linenum;
+extern int current_linenum;
 
-void ubasic_init(const char * program);
+void ubasic_init(PTR_TYPE program);
 void ubasic_run(void);
 int ubasic_finished(void);
 
 int ubasic_get_variable(int varnum);
-void ubasic_set_variable(int varum, int value);
+void ubasic_set_variable(int varum, int value, unsigned int);
 
 void accept(int token);
 int expr(void);
 void ubasic_break(void);
-void line_statement(void);
 
 #endif // BEHAVIOUR_UBASIC_AVAILABLE
-#endif // __UBASIC_H__
+
+#endif /* __UBASIC_H__ */

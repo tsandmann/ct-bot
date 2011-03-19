@@ -27,12 +27,9 @@
 #ifndef COMMAND_H_
 #define COMMAND_H_
 
-#include "ct-Bot.h"
-
 #ifdef COMMAND_AVAILABLE
 #include "eeprom.h"
 #include "uart.h"
-#include <stdio.h>
 
 #define MAX_PAYLOAD 255  /*!< Max. Anzahl Bytes, die an ein Command angehaengt werden koennen */
 

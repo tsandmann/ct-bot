@@ -21,8 +21,8 @@
  * \file 	log.h
  * \brief 	Routinen zum Loggen von Informationen.
  *
- * Es sollten ausschliesslich nur die Log-Makros: LOG_DEBUG(), LOG_INFO(), LOG_WARN(), LOG_ERROR() und
- * LOG_FATAL() verwendet werden.
+ * Es sollten ausschliesslich nur die Log-Makros: LOG_DEBUG(), LOG_INFO(), LOG_WARN(), LOG_ERROR(),
+ * LOG_FATAL() und LOG_RAW() verwendet werden.
  * Eine Ausgabe kann wie folgt erzeugt werden:
  * LOG_DEBUG("Hallo Welt!");
  * LOG_INFO("Wert x=%d", x);
@@ -55,10 +55,10 @@
  * 2. Logging ueber ct-Sim:		LOG_CTSIM_AVAILABLE muss definiert sein.
  * 								BOT_2_SIM_AVAILABLE muss zusaetzlich definiert sein.
  * 3. Logging ueber Display:	LOG_DISPLAY_AVAILABLE muss definiert sein, sowie DISPLAY_AVAILABLE.
- * 4. Logging in txt auf MMC:	MMC_AVAILABLE und MMC_VM_AVAILABLE muessen an sein.
+ * 4. Logging in txt auf MMC:	MMC_AVAILABLE und BOT_FS_AVAILABLE muessen an sein.
  * </pre>
  *
- * Alternativ schlankere Variante fuer MCU und CTSIM, indem man USE_MINILOG aktiviert.
+ * Alternativ schlankere Variante fuer LOG_CTSIM_AVAILABLE oder LOG_MMC_AVAILABLE, indem man USE_MINILOG aktiviert.
  * Das spart viel Platz in Flash und RAM.
  *
  * \author 	Andreas Merkle (mail@blue-andi.de)
@@ -68,11 +68,7 @@
 #ifndef LOG_H_
 #define LOG_H_
 
-#include "ct-Bot.h"
-
 #ifdef LOG_AVAILABLE
-#include <stdlib.h>
-
 
 #ifndef USE_MINILOG
 /*! Dieser Typ definiert die Typen der Log-Ausgaben. */
@@ -83,6 +79,8 @@ typedef enum {
 	LOG_TYPE_ERROR,		/*!< Fehler aufgetreten */
 	LOG_TYPE_FATAL		/*!< Kritischer Fehler */
 } LOG_TYPE;
+
+#define LOG_RAW LOG_INFO
 
 #ifdef PC
 /*!

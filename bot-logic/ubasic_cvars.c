@@ -1,47 +1,56 @@
 /*--------------------------------------------------------
- *    Implementierung Basic-Befehl "vpoke" und "vpeek"
- *    =====================================
- *     Uwe Berger (bergeruw@gmx.net); 2010
- *
- *
- *
- * Have fun!
- * ---------
- *
- ----------------------------------------------------------*/
-
-/**
- * \file 	ubasic_cvars.c
- * \brief 	Implementierung Basic-Befehl "vpoke" und "vpeek"
- * \author 	Uwe Berger (bergeruw@gmx.net)
- * \date 	10.06.2010
- */
+*    Implementierung Basic-Befehl "call()"
+*    =====================================
+*     Uwe Berger (bergeruw@gmx.net); 2010
+* 
+*
+* 
+* Have fun!
+* ---------
+*
+----------------------------------------------------------*/
 
 #include "bot-logic/bot-logic.h"
-
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
+
+#include "bot-logic/tokenizer_access.h"
 #include "bot-logic/ubasic.h"
-#include "bot-logic/ubasic_tokenizer.h"
+#include "bot-logic/tokenizer.h"
 #include "bot-logic/ubasic_config.h"
 #include "bot-logic/ubasic_cvars.h"
-#include "bot-logic/ubasic_call.h"
-#include "log.h"
 #include "sensor.h"
+#include <stddef.h>
+
+#if USE_AVR
+//	#include "../uart/usart.h"
+#else
+	#include <string.h>
+	#include <stdio.h>
+#endif
 
 #if UBASIC_CVARS
-#include <string.h>
 
-//#define DEBUG_CVARS 1
-#if DEBUG_CVARS
-#define DEBUG_PRINTF(...)  LOG_DEBUG(__VA_ARGS__)
+#define DEBUG 0
+#if DEBUG
+	#define DEBUG_PRINTF(...)  usart_write(__VA_ARGS__)
 #else
-#define DEBUG_PRINTF(...)
+	#define DEBUG_PRINTF(...)
 #endif
+
+//------------------------------------------
+// eine Testvariable in C...
+//int va = 123;
+//int vb = 456;
+
 
 //--------------------------------------------
 
 // Variablenpointertabelle
-static const cvars_t cvars[] PROGMEM = {
+#if USE_PROGMEM
+cvars_t cvars[] PROGMEM = {
+#else
+cvars_t cvars[] = {
+#endif
 	{ "sensDistL", &sensDistL }, // Abstandssensoren
 	{ "sensDistR", &sensDistR },
 	{ "sensBorderL", &sensBorderL }, // Abgrundsensoren
@@ -54,65 +63,86 @@ static const cvars_t cvars[] PROGMEM = {
 	{ "sensLineR", &sensLineR },
 	{ "sensDoor", (int16_t *) &sensDoor }, // Klappensensor
 	{ "sensTrans", (int16_t *) &sensTrans }, // Transportfach
-	{ "", NULL } };
+    {"", NULL}
+};
 
-/** ct-Bot Anpassung */
-static int16_t * search_cvars(const char * var_name) {
-	uint8_t idx = 0;
+static int search_cvars(const char *var_name) {
+	int idx=0;
 	// Variablenname in Tabelle suchen
-	int16_t * ptr;
-	while ((ptr = (int16_t *) pgm_read_word(&cvars[idx].pvar)) != NULL && strcasecmp_P(var_name, cvars[idx].var_name)) {
-		idx++;
-	}
-	if (ptr == NULL) {
-		/* keinen Tabelleneintrag gefunden! */
-		tokenizer_error_print(current_linenum, UNKNOWN_CVAR_NAME);
+#if USE_PROGMEM
+	while((int *)pgm_read_word(&cvars[idx].pvar) != NULL &&
+	      strncasecmp_P(var_name, cvars[idx].var_name, MAX_NAME_LEN)) {
+    	idx++;
+    }
+#else	
+	while(cvars[idx].pvar != NULL &&
+	      strncasecmp(cvars[idx].var_name, var_name, MAX_NAME_LEN)) {
+    	idx++;
+    }
+#endif
+    // keinen Tabelleneintrag gefunden!
+#if USE_PROGMEM
+    if ((int *)pgm_read_word(&cvars[idx].pvar) == NULL) {
+#else    
+    if (cvars[idx].pvar == NULL) {
+#endif
+    	tokenizer_error_print(current_linenum, UNKNOWN_CVAR_NAME);
 		ubasic_break();
-	}
-	return ptr;
+    }
+	return idx;
 }
 
-void ubasic_vpoke_statement(void) {
-	static char var_name[MAX_NAME_LEN + 1];
-
+void vpoke_statement(void) {
+	int idx=0;
+#if USE_PROGMEM	
+	int *var_temp;
+#endif
+	
 	accept(TOKENIZER_VPOKE);
-	accept(TOKENIZER_LEFTPAREN);
-	// Funktionsname ermitteln
-	if (tokenizer_token() == TOKENIZER_STRING) {
-		tokenizer_string(var_name, sizeof(var_name));
-		DEBUG_PRINTF("funct_name: %s", var_name);
+    accept(TOKENIZER_LEFTPAREN);
+	// Variablennamen ermitteln
+	if(tokenizer_token() == TOKENIZER_STRING) {
+		DEBUG_PRINTF("var_name: %s", tokenizer_last_string_ptr());
 		tokenizer_next();
 	}
-	/** ct-Bot Anpassung */
-	int16_t * pvar = search_cvars(var_name);
+	idx=search_cvars(tokenizer_last_string_ptr());
 	accept(TOKENIZER_RIGHTPAREN);
 	accept(TOKENIZER_EQ);
-	if (pvar != NULL) {
-		*pvar = expr();
-	}
+#if USE_PROGMEM
+	var_temp=(int *)pgm_read_word(&cvars[idx].pvar);
+	*var_temp=expr();
+#else	
+	*cvars[idx].pvar = expr();
+#endif
 	tokenizer_next();
 }
 
-int ubasic_vpeek_expression(void) {
-	static char var_name[MAX_NAME_LEN + 1];
-	int r = 0;
+int vpeek_expression(void) {
+	int idx=0;
+	int r=0;
+#if USE_PROGMEM	
+	int16_t * var_temp;
+#endif
 
 	accept(TOKENIZER_VPEEK);
 	// Parameterliste wird durch linke Klammer eingeleitet
-	accept(TOKENIZER_LEFTPAREN);
-	// Funktionsname ermitteln
-	if (tokenizer_token() == TOKENIZER_STRING) {
-		tokenizer_string(var_name, sizeof(var_name));
-		DEBUG_PRINTF("funct_name: %s", var_name);
+    accept(TOKENIZER_LEFTPAREN);
+	// Variablennamen ermitteln
+	if(tokenizer_token() == TOKENIZER_STRING) {
+		DEBUG_PRINTF("var_name: %s", tokenizer_last_string_ptr());
 		tokenizer_next();
 	}
-	/** ct-Bot Anpassung */
-	int16_t * pvar = search_cvars(var_name);
-	if (pvar != NULL) {
-		r = *pvar;
-	}
-	accept(TOKENIZER_RIGHTPAREN);
+	idx=search_cvars(tokenizer_last_string_ptr());
+#if USE_PROGMEM
+	var_temp=(int16_t *) pgm_read_word(&cvars[idx].pvar);
+	r=*var_temp;
+#else	
+	r = *cvars[idx].pvar;
+#endif
+    accept(TOKENIZER_RIGHTPAREN);
+    DEBUG_PRINTF("r=%d", r);
 	return r;
 }
-#endif // UBASIC_CVARS
+#endif
+
 #endif // BEHAVIOUR_UBASIC_AVAILABLE

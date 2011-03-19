@@ -28,14 +28,12 @@
 #ifndef MMC_VM_H_
 #define MMC_VM_H_
 
-#include "ct-Bot.h"  
-
 #ifdef MMC_VM_AVAILABLE
 #ifdef MCU
 #include <avr/pgmspace.h>
 #else
 #define PSTR(x)	x
-#endif	// MCU
+#endif // MCU
 
 //#define VM_STATS_AVAILABLE		/*!< Schaltet die Leistungsdatensammlung ein und ermoeglicht die Ausgabe einer Statistik */
 

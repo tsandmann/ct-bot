@@ -28,11 +28,8 @@
 #ifndef I2C_H_
 #define I2C_H_
 
-#include "ct-Bot.h"
-
 #ifdef I2C_AVAILABLE
-#include <stdlib.h>
-#include <util/twi.h>
+#include <stddef.h>
 
 /*!
  * Initialisiert das I2C-Modul

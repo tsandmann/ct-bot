@@ -26,10 +26,8 @@
 
 #ifndef TRACE_H_
 #define TRACE_H_
-#include "ct-Bot.h"
 
 #ifdef CREATE_TRACEFILE_AVAILABLE
-#include "bot-logic/bot-logic.h"
 
 /*!
  * Initialisiert das Trace-System

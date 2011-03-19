@@ -250,7 +250,7 @@ static uint16_t __attribute__ ((always_inline)) writeFlashPage(uint16_t waddr, p
 
 	do {
 		data = *tmp++;
-		data |= *tmp++ << 8;
+		data |= (uint16_t) (*tmp++ << 8);
 		boot_page_fill(baddr, data);	// call asm routine.
 
 		baddr += 2;			// Select next word in memory

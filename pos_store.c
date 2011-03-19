@@ -28,9 +28,13 @@
 #include "ct-Bot.h"
 
 #ifdef POS_STORE_AVAILABLE
+#include "bot-logic/bot-logic.h"
+#include "command.h"
+#include "bot-2-bot.h"
 #include "pos_store.h"
 #include "log.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 #define DEBUG_POS_STORE		// Schalter fuer Debug-Ausgaben
 

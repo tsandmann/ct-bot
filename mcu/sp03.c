@@ -90,6 +90,7 @@
 
 #ifdef SP03_AVAILABLE 
 #include <avr/io.h>
+#include <util/twi.h>
 #include <stdio.h>
 #include <string.h>
 #include "i2c.h"

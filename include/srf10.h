@@ -23,12 +23,10 @@
  * @author 	Chris efstathiou (hendrix@otenet.gr) & Carsten Giesen (info@cnau.de)
  * @date 	08.04.06
  */
-
-#include "ct-Bot.h"
-#ifdef SRF10_AVAILABLE
-
 #ifndef SRF10_H_
 #define SRF10_H_
+
+#ifdef SRF10_AVAILABLE
 
 /*!
  * Es sind alle moeglichen Adressen eingetragen. In de Regel reicht aber die erste              

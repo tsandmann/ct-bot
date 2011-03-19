@@ -25,6 +25,7 @@
  */
 
 #ifdef PC
+#include "ct-Bot.h"
 #include "init.h"
 #include "log.h"
 #include "cmd_tools.h"

@@ -33,8 +33,6 @@
 #ifndef RC5_H_
 #define RC5_H_
 
-#include "ct-Bot.h"
-
 #ifdef RC5_AVAILABLE
 #include "ir-rc5.h"
 

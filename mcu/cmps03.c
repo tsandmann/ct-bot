@@ -31,6 +31,7 @@
 #include "i2c.h"
 #include "cmps03.h"
 #include <stdlib.h>
+#include <util/twi.h>
 
 
 /*!
@@ -39,7 +40,7 @@
  */
 void cmps03_get_bearing(cmps03_t * pValue) {
 	/* 2 Bytes aus Register 2 lesen */
-	i2c_read(CMPS03_ADDR, 2, (uint8_t *)pValue, 2);
+	i2c_read(CMPS03_ADDR, 2, (uint8_t *) pValue, 2);
 }
 
 /*!

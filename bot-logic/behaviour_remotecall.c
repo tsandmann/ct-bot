@@ -417,7 +417,7 @@ static int8_t bot_remotecall_from_id(Behaviour_t * caller, const uint8_t id, con
 	memcpy_P(parameter_length, &remotecall_beh_list[function_id].param_len, parameter_count);
 #endif // PC
 
-	LOG_DEBUG("func=%s param_count=%u Len= %u %u %u", func, parameter_count, parameter_length[0], parameter_length[1],
+	LOG_DEBUG("func=%u param_count=%u Len= %u %u %u", remotecall_beh_list[function_id].name, parameter_count, parameter_length[0], parameter_length[1],
 		parameter_length[2]);
 
 	remotecall_convert_params(parameter_data, parameter_count, parameter_length, data);
@@ -431,7 +431,7 @@ static int8_t bot_remotecall_from_id(Behaviour_t * caller, const uint8_t id, con
 	running_behaviour = REMOTE_CALL_SCHEDULED;
 
 #ifdef CREATE_TRACEFILE_AVAILABLE
-	trace_add_remotecall(func, parameter_count, (remote_call_data_t *) parameter_data);
+	trace_add_remotecall(remotecall_beh_list[function_id].name, parameter_count, (remote_call_data_t *) parameter_data);
 #endif // CREATE_TRACEFILE_AVAILABLE
 
 	return 0;

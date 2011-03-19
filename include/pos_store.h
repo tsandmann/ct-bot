@@ -28,12 +28,7 @@
 #ifndef POS_STORE_H_
 #define POS_STORE_H_
 
-#include "ct-Bot.h"
-
 #ifdef POS_STORE_AVAILABLE
-#include "bot-logic/bot-logic.h"
-#include "bot-2-bot.h"
-#include <stdlib.h>
 
 #define POS_STORE_SIZE	64  /*!< (maximale) Groesse (pro Platz) */
 

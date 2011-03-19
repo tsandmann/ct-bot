@@ -25,7 +25,9 @@
  * Thread-Safe, abgesichert gegen Interrupts, solange sich Producer bzw. Consumer jeweils auf der gleichen Interrupt-Ebene befinden.
  */
 
+#include "ct-Bot.h"
 #include "fifo.h"
+#include "log.h"
 
 /*!
  * Initialisiert die FIFO, setzt Lese- und Schreibzeiger, etc.

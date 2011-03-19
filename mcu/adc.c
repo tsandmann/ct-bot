@@ -26,11 +26,13 @@
 
 #ifdef MCU
 
+#include "ct-Bot.h"
+#include "adc.h"
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdio.h>
 
-#include "adc.h"
 
 typedef struct {
 	uint8_t channel;

@@ -28,12 +28,16 @@
 #include "ct-Bot.h"
 
 #ifdef OS_AVAILABLE
+#include "bot-logic/bot-logic.h"
 #include "os_scheduler.h"
 #include "ui/available_screens.h"
 #include "os_utils.h"
 #include "os_thread.h"
+#include "sensor.h"
 #include "rc5-codes.h"
 #include "map.h"
+#include "display.h"
+#include "log.h"
 #include <stdlib.h>
 #include <string.h>
 

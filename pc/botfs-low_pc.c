@@ -28,6 +28,7 @@
 #include "ct-Bot.h"
 
 #ifdef BOT_FS_AVAILABLE
+#include "os_thread.h"
 #include "botfs.h"
 #include "botfs-low.h"
 #include "log.h"

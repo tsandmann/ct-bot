@@ -27,11 +27,9 @@
 #ifndef MOTOR_LOW_H_
 #define MOTOR_LOW_H_
 
-#include "global.h"
-
 /*!
-*  Initialisiert alles fuer die Motosteuerung
-*/
+ *  Initialisiert alles fuer die Motosteuerung
+ */
 void motor_low_init(void);
 
 #ifdef PC

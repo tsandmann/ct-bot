@@ -29,6 +29,7 @@
 
 #ifdef TWI_AVAILABLE
 #include "twi.h"
+#include <util/twi.h>
 
 //#define OLD_VERSION
 

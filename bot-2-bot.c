@@ -27,13 +27,19 @@
 #define DEBUG_BOT2BOT /*!< Schaltet LOG-Ausgaben (z.B. Bot-Liste) ein oder aus */
 
 #include "ct-Bot.h"
+
 #ifdef BOT_2_BOT_AVAILABLE
+#include "bot-logic/bot-logic.h"
+#include "command.h"
 #include "bot-2-bot.h"
+#include "bot-2-sim.h"
 #include "log.h"
 #include "tcp.h"
 #include "sensor.h"
 #include "pos_store.h"
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifndef DEBUG_BOT2BOT
 #undef LOG_AVAILABLE

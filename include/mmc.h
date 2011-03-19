@@ -28,8 +28,6 @@
 #ifndef MMC_H_
 #define MMC_H_
 
-#include "ct-Bot.h"
-
 #ifdef MMC_AVAILABLE
 #include "ui/available_screens.h"
 

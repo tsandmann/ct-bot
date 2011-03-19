@@ -27,8 +27,6 @@
 #ifndef LED_H_
 #define LED_H_
 
-#include "ct-Bot.h"
-
 #define LED_RECHTS	(1<<0)		/*!< LED (blau) in Fahrichtung rechts */
 #define LED_LINKS	(1<<1)		/*!< LED (blau) in Fahrichtung links */
 #define LED_ROT     (1<<2)		/*!< LED rot */

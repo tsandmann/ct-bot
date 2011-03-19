@@ -28,10 +28,8 @@
 #define _OS_SCHEDULER_H_
 
 #ifdef MCU
-#include "ct-Bot.h"
 
 #ifdef OS_AVAILABLE
-#include "bot-logic/bot-logic.h"
 
 #define OS_TIME_SLICE	10	/*!< Dauer einer Zeitscheibe in ms */
 

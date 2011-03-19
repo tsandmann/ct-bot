@@ -405,7 +405,7 @@ static void read_file(void) {
 
 	/* Inhalt ausgeben */
 	while (botfs_read(&file, buffer) == 0) {
-		int i;
+		unsigned i;
 		for (i = 0; i < BOTFS_BLOCK_SIZE; ++i) {
 			printf("%c", buffer[i]);
 		}

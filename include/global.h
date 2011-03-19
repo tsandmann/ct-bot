@@ -119,6 +119,7 @@ int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 #ifdef MCU
 #include <avr/pgmspace.h>
 #else // PC
+#include <string.h>
 #define PROGMEM /**< Attribut fuer Programmspeicher, fuer PC nicht noetig */
 #define PGM_P const char * /**< Zeiger auf Programmspeicher, auf PC Zeiger auf const char */
 #define strcmp_P strcmp /**< strcmp fuer PROGMEM-Daten, fuer PC Weiterleitung auf strcmp() */
@@ -130,8 +131,8 @@ int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 #define strncpy_P strncpy /**< strncpy fuer PROGMEM-Daten, fuer PC Weiterleitung auf strncpy() */
 #define snprintf_P snprintf /**< snprintf fuer PROGMEM-Daten, fuer PC Weiterleitung auf snprintf() */
 #define vsnprintf_P vsnprintf /**< vsnprintf fuer PROGMEM-Daten, fuer PC Weiterleitung auf vsnprintf() */
-#define pgm_read_byte(_addr) *(_addr) /**< liest ein Byte aus dem Programmspeicher (PROGMEM), fuer PC nicht noetig */
-#define pgm_read_word(_addr) *(_addr) /**< liest ein Word aus dem Programmspeicher (PROGMEM), fuer PC nicht noetig */
+#define pgm_read_byte(_addr) (*(_addr)) /**< liest ein Byte aus dem Programmspeicher (PROGMEM), fuer PC nicht noetig */
+#define pgm_read_word(_addr) (*(_addr)) /**< liest ein Word aus dem Programmspeicher (PROGMEM), fuer PC nicht noetig */
 #define display_flash_puts display_puts /**< Ausgabe eines Strings aus PROGMEM auf dem Display, fuer PC einfach display_puts() */
 #endif // MCU
 

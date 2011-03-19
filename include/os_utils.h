@@ -17,29 +17,25 @@
  *
  */
 
-/*!
- * @file 	os_utils.h
- * @brief 	Hilfsfunktionen fuer BotOS
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	02.10.2007
+/**
+ * \file 	os_utils.h
+ * \brief 	Hilfsfunktionen fuer BotOS
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	02.10.2007
  */
 
 #ifndef _OS_UTILS_H_
 #define _OS_UTILS_H_
 
-#include "ct-Bot.h"
 #ifdef MCU
 #ifdef OS_AVAILABLE
 
-#include <avr/io.h>
-#include <stdint.h>
-
-/*!
+/**
  * Setzt die Variable var auf den Wert x und gibt den alten Wert von var zurueck.
  * Die Operation ist atomar also interrupt- und threadsicher
- * @param *var	Zeiger auf die Variable (8 Bit)
- * @param x		Wert, der anschliessend in var stehen soll
- * @return		alter Wert von var
+ * \param *var	Zeiger auf die Variable (8 Bit)
+ * \param x		Wert, der anschliessend in var stehen soll
+ * \return		alter Wert von var
  */
 static inline uint8_t test_and_set(uint8_t * var, uint8_t x) {
 	uint8_t sreg = SREG;

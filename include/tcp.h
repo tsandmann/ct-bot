@@ -28,10 +28,6 @@
 #define TCP_H_
 
 #ifdef PC
-#include "global.h"
-#include "bot-2-sim.h"
-#include "command.h"
-
 
 #define IP "localhost"		/*!<  IP, mit der verbunden werden soll (normalerweise localhost) */
 #define PORT 10001			/*!<  Port, mit dem verbunden werden soll  */

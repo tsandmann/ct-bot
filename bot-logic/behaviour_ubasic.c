@@ -17,7 +17,7 @@
  *
  */
 
-/*!
+/**
  * \file 	behaviour_ubasic.c
  * \brief 	Basic-Interpreter als Verhalten
  * \author 	Frank Menzel (menzelfr@gmx.de)
@@ -28,21 +28,26 @@
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 
 #include "ui/available_screens.h"
-#include "bot-logic/ubasic.h"
-#include "bot-logic/ubasic_call.h"
-#include "bot-logic/ubasic_tokenizer.h"
 #include "bot-logic/ubasic_config.h"
+#include "bot-logic/tokenizer_access.h"
+#include "bot-logic/ubasic.h"
+#include "bot-logic/ubasic_avr.h"
+#include "bot-logic/ubasic_call.h"
+#include "bot-logic/tokenizer.h"
+#include "bot-logic/ubasic_ext_proc.h"
 #include "botfs.h"
 #include "init.h"
 #include "log.h"
 #include "rc5-codes.h"
+#include "display.h"
 
 #include <stdio.h>
 #include <string.h>
 
-//#define DEBUG_UBASIC_BEHAV /*!< Debug-Schalter fuer das uBasic-Verhalten */
-#define PROG_FILE_NAME	"/basic/basX.txt" /*!< Name der Programmdateien, X wird durch 1 bis 9 ersetzt */
-#define PROG_FILE_EXT	".txt" /*!< Dateinamenerweiterung (PROG_FILE_NAME muss hierauf enden) */
+//#define DEBUG_UBASIC_BEHAV /**< Debug-Schalter fuer das uBasic-Verhalten */
+
+#define PROG_FILE_NAME	"/basic/basX.txt" /**< Name der Programmdateien, X wird durch 1 bis 9 ersetzt */
+#define PROG_FILE_EXT	".txt" /**< Dateinamenerweiterung (PROG_FILE_NAME muss hierauf enden) */
 
 #ifndef LOG_AVAILABLE
 #undef DEBUG_UBASIC_BEHAV
@@ -53,50 +58,43 @@
 #define LOG_DEBUG(...)
 #endif // DEBUG_UBASIC_BEHAV
 
-static botfs_file_descr_t prog_file; /*!< Bsaic-Programmdatei */
-static botfs_stream_t prog_stream = BOTFS_STREAM_INITIALIZER; /*!< Stream des Basic-Programms */
-static char prog_buffer[UBASIC_BEH_ZEILENLAENGE + 1]; /*!< Puffer fuer aktuelle Programmzeile */
+botfs_file_descr_t ubasic_prog_file = { 0, 0, 0, 0, { 0, 0, 0 } }; /**< Basic-Programmdatei */
 
 // wenn Speedvariablen direkt angesprochen werden, dann muessen sie im Verhalten selbst nach jeder Zeile direkt in die echten
 // speedWish-vars geschrieben werden, damit eine fluessige Bewegung erfolgt, denn sonst sind diese in den anderen Steps 0
-static int16_t speedWishLeftBas = 0; /*!< vom Basic-Prog gewuenschte Geschwindigkeit links */
-static int16_t speedWishRightBas = 0; /*!< vom Basic-Prog gewuenschste Geschwindigkeit rechts */
-Behaviour_t * ubasic_behaviour_data; /*!< Verhaltensdatensatz des ubasis-Verhaltens */
-uint32_t ubasic_wait_until = 0; /*!< Systemzeit, bis zu der gewartet werden soll (WAIT in Basic) */
+static int16_t speedWishLeftBas = 0; /**< vom Basic-Prog gewuenschte Geschwindigkeit links */
+static int16_t speedWishRightBas = 0; /**< vom Basic-Prog gewuenschste Geschwindigkeit rechts */
+static uint32_t wait_until = 0; /**< Systemzeit, bis zu der gewartet werden soll (WAIT in Basic) */
+Behaviour_t * ubasic_behaviour_data; /**< Verhaltensdatensatz des ubasis-Verhaltens */
+char ubasic_content = 0; /**< aktuelles Zeichen des Basic-Programms */
+uint16_t ubasic_ptr = 0; /**< aktuelle Position im Basic-Programm */
 
-/*!
+/**
+ * Rueckgabe ob das zuletzt aufgerufene Verhalten noch aktiv ist oder nicht; festgestellt anhand der Verhaltens-Data-Struktur des ubasic-Verhaltens
+ * \param *behaviour	Zeiger auf Verhaltensdatensatz zum abzufragenden Verhalten
+ * \return 				!= 0 wenn das zuletzt aufgerufene Verhalten noch laeuft; 0 wenn es nicht mehr laeuft (Achtung: wait ist auch ein Verhalten)
+ */
+uint8_t behaviour_is_active(Behaviour_t * behaviour) {
+	return (uint8_t) (behaviour->caller != NULL);
+}
+
+/**
  * Laedt ein uBasic-Programm aus deiner BotFS-Datei
+ * \param *filename Dateiname des Programms
  * \param *file Zeiger auf Dateideskriptor der Programmdatei
  */
-void ubasic_load_file(botfs_file_descr_t * file) {
-	prog_file = *file;
-	botfs_stream_open(&prog_stream, &prog_file, GET_MMC_BUFFER(ubasic_buffer));
+void bot_ubasic_load_file(char * filename, botfs_file_descr_t * file) {
+	(void) filename;
+	LOG_DEBUG("f=\"%s\"", filename);
+	ubasic_prog_file = *file;
+	botfs_rewind(file);
+	ubasic_ptr = 0xffff;
+#if UBASIC_EXT_PROC
+	strncpy(current_proc, filename, MAX_PROG_NAME_LEN);
+#endif
 }
 
-/*!
- * Initialisiert den Zeilenpuffer und laedt die erste Zeile aus der Programm-Datei
- * \param **p_prog Zeiger auf einen Zeiger zum Zeilenpuffer
- */
-void ubasic_buffer_init(const char * * p_prog) {
-	ubasic_load_file(&prog_file);
-	ubasic_load_next_line(p_prog);
-}
-
-/*!
- * Laedt die naechste Zeile aus der Programm-Datei
- * \param **p_prog Zeiger auf einen Zeiger zum Zeilenpuffer
- */
-void ubasic_load_next_line(const char * * p_prog) {
-	botfs_stream_readline(&prog_stream, prog_buffer, UBASIC_BEH_ZEILENLAENGE);
-	*p_prog = prog_buffer;
-	LOG_DEBUG("line loaded:");
-#if defined DEBUG_UBASIC_BEHAV && defined PC
-	printf(" \"%s\"", prog_buffer);
-	printf("\n");
-#endif // DEBUG_UBASIC_BEHAV && PC
-}
-
-/*!
+/**
  * Liest eine uBasic-Programmdatei ein
  * \param keynum	Ziffer im Basic-Dateinamen
  * \return			0, falls Datei korrekt geladen
@@ -107,17 +105,18 @@ static int8_t read_ubasic_src(const char keynum) {
 	fname[num] = keynum;
 	LOG_DEBUG("zu ladende Datei: \"%s\"", fname);
 
-	if (botfs_open(fname, &prog_file, BOTFS_MODE_r, GET_MMC_BUFFER(ubasic_buffer)) != 0) {
+	ubasic_prog_file.start = 0;
+	if (botfs_open(fname, &ubasic_prog_file, BOTFS_MODE_r, GET_MMC_BUFFER(ubasic_buffer)) != 0) {
 		LOG_ERROR("Konnte Basic-Programm nicht laden:");
 		LOG_ERROR(" Datei \"%s\" nicht vorhanden", fname);
 		return -1;
 	}
 
-	ubasic_load_file(&prog_file);
+	bot_ubasic_load_file(fname, &ubasic_prog_file);
 	return 0;
 }
 
-/*!
+/**
  * Hilfsroutine, um in Basic innerhalb eines Steps beide Variablen mit der Bot-Geschwindigkeit belegen zu koennen
  * \param speedLeft	 Geschwindigkeitswert fuer links
  * \param speedRight Geschwindigkeitswert fuer rechts
@@ -127,13 +126,27 @@ void bot_ubasic_speed(int16_t speedLeft, int16_t speedRight) {
 	speedWishRightBas = speedRight;
 }
 
-/*!
+/**
+ * Implementierung des Basic-Wait-Statements fuer ct-Bot.
+ * Das eigentliche Warten erfolgt dabei ueber das Verhalten.
+ */
+void wait_statement(void) {
+	accept(TOKENIZER_WAIT);
+
+	const uint32_t delay = (uint32_t) expr();
+	/* Wartezeit speichern, wird in bot_ubasic_behaviour() ausgewertet */
+	wait_until = TIMER_GET_TICKCOUNT_32 + MS_TO_TICKS(delay);
+
+	tokenizer_next();
+}
+
+/**
  * uBasic als ct-Bot Verhalten
  * \param *data Zeiger auf den Datensatz des Verhaltens
  */
 void bot_ubasic_behaviour(Behaviour_t * data) {
-	/* keine neue Zeile ausfuehren, falls nach letzem WAIT noch gewartet werden soll */
-	if (ubasic_wait_until <= TIMER_GET_TICKCOUNT_32) {
+	/* keine neue Zeile ausfuehren, falls nach letztem WAIT noch gewartet werden soll */
+	if (wait_until <= TIMER_GET_TICKCOUNT_32) {
 		LOG_DEBUG("neue Zeile von uBasic verarbeiten");
 		ubasic_run();
 		if (ubasic_finished()) {
@@ -150,24 +163,30 @@ void bot_ubasic_behaviour(Behaviour_t * data) {
 	speedWishRight = speedWishRightBas;
 }
 
-/*!
+/**
  * Startet das uBasic-Verhalten
  * \param *caller Zeiger auf den Verhaltensdatensatz des Aufrufers
  */
 void bot_ubasic(Behaviour_t * caller) {
-	if (botfs_stream_valid(&prog_stream) != True) {
+	if (ubasic_prog_file.start == 0) {
 		LOG_ERROR("Kein Programm geladen");
 		return;
 	}
 	switch_to_behaviour(caller, bot_ubasic_behaviour, BEHAVIOUR_OVERRIDE);
 	ubasic_behaviour_data = get_behaviour(bot_ubasic_behaviour);
 	bot_ubasic_speed(BOT_SPEED_IGNORE, BOT_SPEED_IGNORE); // alte Speed-Wuensche neutralisieren
-	tokenizer_set_init_hook(ubasic_buffer_init);
-	tokenizer_set_next_line_hook(ubasic_load_next_line);
-	ubasic_init(prog_buffer);
+
+	ubasic_init(0);
 }
 
-/*!
+/**
+ * bricht das aktuelle Basic-Programm ab
+ */
+void bot_ubasic_break(void) {
+	ubasic_break();
+}
+
+/**
  * Keyhandler fuer das Basic-Verhalten; laedt nach druecken einer Taste 1-9
  * das Basic-Prog /basic/bas[1-9].txt
  */
@@ -201,7 +220,7 @@ static void ubasic_disp_key_handler(void) {
 	}
 }
 
-/*!
+/**
  * Display fuer das uBasic-Verhalten
  */
 void ubasic_display(void) {

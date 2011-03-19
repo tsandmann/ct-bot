@@ -27,8 +27,6 @@
 #ifndef MAP_H_
 #define MAP_H_
 
-#include "ct-Bot.h"
-
 #ifdef MAP_AVAILABLE
 #include "bot-logic/bot-logic.h"
 #include "fifo.h"

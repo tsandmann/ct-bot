@@ -17,7 +17,7 @@
  *
  */
 
-/*!
+/**
  * \file 	behaviour_ubasic.h
  * \brief 	Basic-Interpreter als Verhalten
  * \author 	Frank Menzel (menzelfr@gmx.de)
@@ -31,50 +31,50 @@
 #include "botfs_config.h"
 #include "botfs_types.h"
 
-#define UBASIC_BEH_ZEILENLAENGE 80 /*!< max. Laenge der einzelnen Zeilen */
+extern botfs_file_descr_t ubasic_prog_file; /**< Basic-Programmdatei */
+extern Behaviour_t * ubasic_behaviour_data; /**< Verhaltensdatensatz des ubasis-Verhaltens */
+extern char ubasic_content; /**< aktuelles Zeichen des Basic-Programms */
+extern uint16_t ubasic_ptr; /**< aktuelle Position im Basic-Programm */
 
-extern Behaviour_t * ubasic_behaviour_data; /*!< Verhaltensdatensatz des ubasis-Verhaltens */
-extern uint32_t ubasic_wait_until; /*!< Systemzeit, bis zu der gewartet werden soll (WAIT in Basic) */
+/**
+ * Rueckgabe ob das zuletzt aufgerufene Verhalten noch aktiv ist oder nicht; festgestellt anhand der Verhaltens-Data-Struktur des ubasic-Verhaltens
+ * \param *behaviour	Zeiger auf Verhaltensdatensatz zum abzufragenden Verhalten
+ * \return 				!= 0 wenn das zuletzt aufgerufene Verhalten noch laeuft; 0 wenn es nicht mehr laeuft (Achtung: wait ist auch ein Verhalten)
+ */
+uint8_t behaviour_is_active(Behaviour_t * behaviour);
 
-/*!
+/**
  * Startet das uBasic-Verhalten
  * \param *caller Zeiger auf den Verhaltensdatensatz des Aufrufers
  */
 void bot_ubasic(Behaviour_t * caller);
 
-/*!
+/**
  * uBasic als ct-Bot Verhalten
  * \param *data Zeiger auf den Datensatz des Verhaltens
  */
 void bot_ubasic_behaviour(Behaviour_t * data);
 
-/*!
+/**
+ * bricht das aktuelle Basic-Programm ab
+ */
+void bot_ubasic_break(void);
+
+/**
  * Hilfsroutine, um in Basic innerhalb eines Steps beide Variablen mit der Bot-Geschwindigkeit belegen zu koennen
  * \param speedLeft	 Geschwindigkeitswert fuer links
  * \param speedRight Geschwindigkeitswert fuer rechts
  */
 void bot_ubasic_speed(int16_t speedLeft, int16_t speedRight);
 
-/*!
- * Initialisiert den Zeilenpuffer und laedt die erste Zeile
- * aus der Programm-Datei
- * \param **p_prog Zeiger auf einen Zeiger zum Zeilenpuffer
- */
-void ubasic_buffer_init(const char * * p_prog);
-
-/*!
+/**
  * Laedt ein uBasic-Programm aus deiner BotFS-Datei
+ * \param *filename Dateiname des Programms
  * \param *file Zeiger auf Dateideskriptor der Programmdatei
  */
-void ubasic_load_file(botfs_file_descr_t * file);
+void bot_ubasic_load_file(char * filename, botfs_file_descr_t * file);
 
-/*!
- * Laedt die naechste Zeile aus der Programm-Datei
- * \param **p_prog Zeiger auf einen Zeiger zum Zeilenpuffer
- */
-void ubasic_load_next_line(const char * * p_prog);
-
-/*!
+/**
  * Display fuer das uBasic-Verhalten
  */
 void ubasic_display(void);

@@ -31,7 +31,6 @@
 #include "os_thread.h"
 #include "os_utils.h"
 #include "log.h"
-#include <pthread.h>
 
 //#define DEBUG_THREADING	/*!< Schalter fuer Debug-Ausgaben */
 #define DEBUG_THREAD_N	-1	/*!< Thread, dessen Vorgaenge debuggt werden sollen (0-based), -1 fuer alle */

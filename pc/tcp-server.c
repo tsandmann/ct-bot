@@ -27,11 +27,11 @@
 #ifdef PC
 
 #include "ct-Bot.h"
-#include "tcp-server.h"
+#include "command.h"
 #include "bot-2-sim.h"
 #include "tcp.h"
+#include "tcp-server.h"
 #include "display.h"
-#include "command.h"
 
 #include <time.h>
 #include <sys/time.h>

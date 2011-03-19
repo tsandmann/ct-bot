@@ -1,34 +1,30 @@
 /*--------------------------------------------------------
- *    Implementierung Basic-Befehl "vpeek" und "vpoke"
- *    =====================================
- *     Uwe Berger (bergeruw@gmx.net); 2010
- *
- *
- * Have fun!
- * ---------
- *
- ----------------------------------------------------------*/
-
-/**
- * \file 	ubasic_cvars.h
- * \brief 	Implementierung Basic-Befehl "vpoke" und "vpeek"
- * \author 	Uwe Berger (bergeruw@gmx.net)
- * \date 	10.06.2010
- */
-
+*    Implementierung Basic-Befehl "vpeek" und "vpoke"
+*    =====================================
+*     Uwe Berger (bergeruw@gmx.net); 2010
+* 
+* 
+* Have fun!
+* ---------
+*
+----------------------------------------------------------*/
 #ifndef __UBASIC_CVARS_H__
 #define __UBASIC_CVARS_H__
 
-#ifdef BEHAVIOUR_UBASIC_AVAILABLE
+
 // Strukturdefinition fuer Variablenpointertabelle
 typedef struct {
-	const char var_name[12];
-	int16_t * pvar;
-} PACKED cvars_t;
+#if USE_PROGMEM
+	char var_name[MAX_NAME_LEN+1];
+#else	
+	char *var_name;
+#endif
+	int16_t *pvar;
+} cvars_t;
+
 
 // exportierbare Prototypen
-void ubasic_vpoke_statement(void); // setzen
-int ubasic_vpeek_expression(void); // lesen
+void vpoke_statement(void);		//setzen
+int vpeek_expression(void);		//lesen
 
-#endif // BEHAVIOUR_UBASIC_AVAILABLE
-#endif // __UBASIC_CVARS_H__
+#endif /* __UBASIC_CVARS_H__ */

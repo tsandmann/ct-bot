@@ -27,9 +27,6 @@
 #ifndef GUI_H_
 #define GUI_H_
 
-#include "ct-Bot.h"
-#include "eeprom.h"
-
 #ifdef DISPLAY_AVAILABLE
 #include "ui/available_screens.h"
 

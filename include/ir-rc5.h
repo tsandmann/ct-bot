@@ -26,8 +26,6 @@
 #ifndef IR_RC5_H_
 #define IR_RC5_H_
 
-#include "ct-Bot.h"
-
 #ifdef MCU
 #define RC5_PORT	PORTB	/*!< Port B fuer RC5-Fernbedienung */
 #define BPS_PORT	PORTA	/*!< Port A fuer BPS-Sensor */

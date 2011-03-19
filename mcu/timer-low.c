@@ -34,6 +34,7 @@
 #include "os_scheduler.h"
 #include "os_thread.h"
 #include "uart.h"
+#include "sensor.h"
 #include <avr/io.h>
 
 #ifdef OS_AVAILABLE

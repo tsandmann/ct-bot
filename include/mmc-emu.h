@@ -27,12 +27,10 @@
 #ifndef MMC_EMU_H_
 #define MMC_EMU_H_
 
-#include "ct-Bot.h"  
+#ifdef PC
 
 #define MMC_EMU_SIZE	0x2000000		/*!< Groesse der emulierten Karte in Byte */
 #define MMC_EMU_FILE	"mmc_emu.dat"	/*!< Name / Pfad der Datei fuer die Emulation */
-
-#ifdef PC
 
 /*!
  * Checkt Initialisierung der emulierten Karte

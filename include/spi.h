@@ -27,8 +27,6 @@
 #ifndef SPI_H_
 #define SPI_H_
 
-#include "ct-Bot.h"
-
 #ifdef MCU
 #ifdef SPI_AVAILABLE
 

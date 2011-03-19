@@ -27,8 +27,8 @@
 #ifndef EEPROM_H_
 #define EEPROM_H_
 
+#include <stdint.h>
 #include <stddef.h>
-#include "ct-Bot.h"
 
 /*! Aufteilung eines Words in zwei Bytes */
 typedef union {

@@ -23,12 +23,10 @@
  * @author 	Harald W. Leschner (hari@h9l.net)
  * @date 	12.10.07
  */
-
-#include "ct-Bot.h"
-#ifdef SP03_AVAILABLE
-
 #ifndef SP03_H_
 #define SP03_H_
+
+#ifdef SP03_AVAILABLE
 
 //#define SP03_V1	// schaltet alten Code an oder aus
 

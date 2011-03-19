@@ -39,7 +39,6 @@
 #include "bot-logic/bot-logic.h"
 #include "timer.h"
 #include "command.h"
-#include "gui.h"
 #include "eeprom.h"
 #include <stdlib.h>
 

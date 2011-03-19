@@ -27,7 +27,6 @@
 #ifndef SENSOR_H_
 #define SENSOR_H_
 
-#include "ct-Bot.h"
 #include "rc5.h"
 #include "cmps03.h"
 

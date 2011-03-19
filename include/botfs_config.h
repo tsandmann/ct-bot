@@ -36,8 +36,8 @@
 #define BOTFS_CONFIG_H_
 
 #define BOTFS_HEADER_POS	1			/**< Blockadresse des Volume-Headers (erster Block ist Header der Volume-Header-Datei) */
-#define BOTFS_BLOCK_SIZE	512			/**< Groesse eines Blocks (kleinste adressierbare Einheit) in Byte */
-#define BOTFS_ROOT_SIZE		32768		/**< Groesse des Root-Verzeichnisses in Byte */
+#define BOTFS_BLOCK_SIZE	512U		/**< Groesse eines Blocks (kleinste adressierbare Einheit) in Byte */
+#define BOTFS_ROOT_SIZE		32768U		/**< Groesse des Root-Verzeichnisses in Byte */
 #define BOTFS_MAX_FILENAME	(128 - (sizeof(botfs_file_descr_t) + 1))	/**< max. Dateinamenlaenge in Zeichen (116 Zeichen + 0-Byte + 11 Byte Dateidescr. = 128 Byte Daten pro Datei) */
 #define BOTFS_MAX_VOLUME_SIZE	(65536 * BOTFS_BLOCK_SIZE)				/**< max. Groesse des Volumes in Byte */
 #define BOTFS_DIR_BLOCK_CNT	(BOTFS_ROOT_SIZE / BOTFS_BLOCK_SIZE)		/**< Anzahl der Root-Dir-Bloecke */
@@ -63,6 +63,6 @@
 #define BOTFS_DEBUG_LOGFILE	"botfs_log.txt" /**< Logfile, falls DEBUG_BOTFS_LOGFILE */
 
 
-#define BOTFS_STREAM_AVAILABLE /**< Stream-Funktionen aktivieren */
+//#define BOTFS_STREAM_AVAILABLE /**< Stream-Funktionen aktivieren */
 
 #endif // BOTFS_CONFIG_H_

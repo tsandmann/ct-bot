@@ -35,13 +35,13 @@
 #include <time.h>
 
 #include "bot-2-sim.h"
-#include "tcp.h"
+#include "eeprom.h"
 #include "command.h"
+#include "tcp.h"
 #include "display.h"
 #include "sensor.h"
 #include "bot-logic/bot-logic.h"
 #include "motor.h"
-#include "command.h"
 #include "bot-2-bot.h"
 
 
