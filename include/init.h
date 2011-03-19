@@ -31,6 +31,7 @@
 #include "eeprom.h"
 #include "bot-logic/bot-logic.h"
 #include "sensor-low.h"
+#include "botfs.h"
 
 extern uint8_t EEPROM resetsEEPROM;	/*!< Reset-Counter im EEPROM */
 
