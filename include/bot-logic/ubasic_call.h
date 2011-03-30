@@ -14,12 +14,12 @@
 #define __UBASIC_CALL_H__
 
 // Funktionspointertypen
-#define VOID_FUNC_VOID		0
-#define VOID_FUNC_INT		1
-#define INT_FUNC_INT		2
-#define VOID_FUNC_2INT		3
-#define VOID_FUNC_4INT		4
-#define VOID_FUNC_2INT_CHAR	5
+//#define VOID_FUNC_VOID		0
+//#define VOID_FUNC_INT		1
+//#define INT_FUNC_INT		2
+//#define VOID_FUNC_2INT		3
+//#define VOID_FUNC_4INT		4
+//#define VOID_FUNC_2INT_CHAR	5
 #define VOID_FUNC_2INT16	6
 #define BOOL_FUNC_BEH		7
 #define VOID_FUNC_RC		8

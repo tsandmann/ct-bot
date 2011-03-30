@@ -1,37 +1,38 @@
-10 rem simple Verhalten
-15 rem Quadrat fahren
-20 call("RC", "bot_goto_dist", 300, 1)
-50 REM Leerzeile, um die Datei zu vergroessern
-51 REM Leerzeile, um die Datei zu vergroessern
-52 REM Leerzeile, um die Datei zu vergroessern
-53 REM Leerzeile, um die Datei zu vergroessern
-54 REM Leerzeile, um die Datei zu vergroessern
-55 REM Leerzeile, um die Datei zu vergroessern
-56 REM Leerzeile, um die Datei zu vergroessern
-57 REM Leerzeile, um die Datei zu vergroessern
-58 REM Leerzeile, um die Datei zu vergroessern
-59 REM Leerzeile, um die Datei zu vergroessern
-60 REM Leerzeile, um die Datei zu vergroessern
-61 REM Leerzeile, um die Datei zu vergroessern
-62 REM Leerzeile, um die Datei zu vergroessern
-63 REM Leerzeile, um die Datei zu vergroessern
-64 REM Leerzeile, um die Datei zu vergroessern
-65 REM Leerzeile, um die Datei zu vergroessern
-66 REM Leerzeile, um die Datei zu vergroessern
-67 REM Leerzeile, um die Datei zu vergroessern
-68 REM Leerzeile, um die Datei zu vergroessern
-69 REM Leerzeile, um die Datei zu vergroessern
-130 rem drehen
-145 call("RC", "bot_turn", 90)
-150 REM Leerzeile, um die Datei zu vergroessern
-151 REM Leerzeile, um die Datei zu vergroessern
-152 REM Leerzeile, um die Datei zu vergroessern
-153 REM Leerzeile, um die Datei zu vergroessern
-154 REM Leerzeile, um die Datei zu vergroessern
-155 REM Leerzeile, um die Datei zu vergroessern
-156 REM Leerzeile, um die Datei zu vergroessern
-157 REM Leerzeile, um die Datei zu vergroessern
-158 REM Leerzeile, um die Datei zu vergroessern
-159 REM Leerzeile, um die Datei zu vergroessern
-200 goto 20
-300 end
+rem simple Verhalten
+rem Quadrat fahren
+10:
+call("RC", "bot_goto_dist", 300, 1)
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+rem drehen
+call("RC", "bot_turn", 90)
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+goto 10
+end

@@ -1,7 +1,8 @@
-10 rem simple Verhalten
-15 rem Quadrat fahren
-20 call("RC", "bot_goto_dist", 300, 1)
-30 rem drehen
-45 call("RC", "bot_turn", 90)
-50 goto 20
-60 end
+rem simple Verhalten
+rem Quadrat fahren
+10:
+call("RC", "bot_goto_dist", 300, 1)
+rem drehen
+call("RC", "bot_turn", 90)
+goto 10
+end

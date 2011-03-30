@@ -425,7 +425,6 @@ jump_linenum(int linenum)
 	unsigned char i;
 	// zuerst die Zeilennummer im Cache suchen
 	for (i=0; i<linenum_cache_ptr; i++){
-		//PRINTF("DEBUG (jump_linenum): l=%i, n=%s\n\r", linenum_cache[i].linenum, linenum_cache[i].p_name);
 		if (linenum_cache[i].linenum == linenum
 			#if UBASIC_EXT_PROC
 				&& strncmp(current_proc, linenum_cache[i].p_name, MAX_PROG_NAME_LEN) == 0
@@ -600,16 +599,16 @@ gosub_statement(void)
 		strncpy(p_name, tokenizer_last_string_ptr(), MAX_PROG_NAME_LEN);
 		jump_to_next_linenum();
 	} else
-#else
+#else	
 	if (tokenizer_token() == TOKENIZER_STRING) {
 	    tokenizer_error_print(current_linenum, GOSUB_NO_EXT_SUBPROC);
     	ubasic_break();		
-	}
+	} else
 #endif
-	// es muss bis zum Zeilenende gelesen werden, um die Rueck-
-	// sprungzeile fuer return zu ermitteln
 	{
 		linenum = expr();
+		// es muss bis zum Zeilenende gelesen werden, um die Rueck-
+		// sprungzeile fuer return zu ermitteln
 		if (tokenizer_token() != TOKENIZER_CR) jump_to_next_linenum();
 		else  tokenizer_next();
 		tokenizer_next();
@@ -892,8 +891,20 @@ statement(void)
 static void
 line_statement(void)
 {
-	current_linenum = tokenizer_num();
-	accept(TOKENIZER_NUMBER);
+	if (tokenizer_token() != TOKENIZER_NUMBER && UBASIC_NO_LINENUM_ALLOWED) {
+		//....
+	} else {
+		current_linenum = tokenizer_num();
+		accept(TOKENIZER_NUMBER);
+#if UBASIC_NO_LINENUM_ALLOWED
+		if (tokenizer_token() == TOKENIZER_COLON) tokenizer_next();
+#endif
+	}
+	// Zeilennummer/Label allein auf einer Zeile? 
+	if (tokenizer_token() == TOKENIZER_CR) {
+		skip_all_whitespaces();
+		tokenizer_next();
+	}
 	statement();
 	return;
 }
@@ -908,6 +919,11 @@ ubasic_run(void)
 		return;
 	}
 	line_statement();
+	// wenn "Leerzeile(n)", dann diese schon mal ueberlesen 
+	if (tokenizer_token() == TOKENIZER_CR) {
+		skip_all_whitespaces();
+		tokenizer_next();
+	}
 #if UBASIC_ARRAY
 	// Speicher ggf. wieder zurueckgeben (Arrays), wenn Programmende
 	if (ended || tokenizer_finished()) {

@@ -1,7 +1,7 @@
-diff -r 43608ac5d0aa contrib/avrbasic/tokenizer.c
---- a/contrib/avrbasic/tokenizer.c	Sat Mar 19 18:32:31 2011 +0100
-+++ b/contrib/avrbasic/tokenizer.c	Sat Mar 19 18:39:06 2011 +0100
-@@ -31,6 +31,9 @@
+diff -r 4fba135c4ed6 contrib/avrbasic/tokenizer.c
+--- a/contrib/avrbasic/tokenizer.c	Wed Mar 30 18:36:58 2011 +0200
++++ b/contrib/avrbasic/tokenizer.c	Wed Mar 30 18:37:41 2011 +0200
+@@ -31,27 +31,32 @@
   * ------------------------------------------------------
   */
  
@@ -11,7 +11,13 @@ diff -r 43608ac5d0aa contrib/avrbasic/tokenizer.c
  #define DEBUG 0
  
  #if DEBUG
-@@ -42,14 +45,16 @@
+-//	#define DEBUG_PRINTF(...)  usart_write(__VA_ARGS__)
+-	#define DEBUG_PRINTF(...)  printf(__VA_ARGS__)
++	#define DEBUG_PRINTF(...)  usart_write(__VA_ARGS__)
++//	#define DEBUG_PRINTF(...)  printf(__VA_ARGS__)
+ 
+ #else
+ 	#define DEBUG_PRINTF(...)
  #endif
  
  #define __TOKENIZER_C__
@@ -20,10 +26,13 @@ diff -r 43608ac5d0aa contrib/avrbasic/tokenizer.c
  #undef __TOKENIZER_C__
 -#include "tokenizer.h"
 -#include "ubasic_config.h"
+-#include "ubasic_ext_proc.h"
 +#include "bot-logic/tokenizer.h"
 +#include "bot-logic/ubasic_config.h"
++#include "bot-logic/ubasic_ext_proc.h"
 +#include "botfs.h"
 +#include <ctype.h>
+ 
  
  
  #if USE_AVR
@@ -32,7 +41,7 @@ diff -r 43608ac5d0aa contrib/avrbasic/tokenizer.c
  #else
  	#include <string.h>
  	#include <ctype.h>
-@@ -57,9 +62,9 @@
+@@ -59,9 +64,9 @@
  	#include <stdio.h>
  #endif
  
@@ -44,8 +53,17 @@ diff -r 43608ac5d0aa contrib/avrbasic/tokenizer.c
 +//#endif
  
  
- static PTR_TYPE last_num_ptr;
-@@ -227,11 +232,11 @@
+ static PTR_TYPE line_begin_ptr;
+@@ -182,7 +187,7 @@
+ 	return line_begin_ptr;
+ }
+ /*---------------------------------------------------------------------------*/
+-void skip_whitespaces(void){
++static void skip_whitespaces(void){
+ 	while(	GET_CONTENT_PROG_PTR == ' '  || 
+ 			GET_CONTENT_PROG_PTR == '\r' ||
+ 			GET_CONTENT_PROG_PTR == '\t'
+@@ -253,11 +258,11 @@
  
  #if UBASIC_HEX_BIN
  /*---------------------------------------------------------------------------*/
@@ -59,7 +77,7 @@ diff -r 43608ac5d0aa contrib/avrbasic/tokenizer.c
  	if ((c=='0') || (c=='1')) return 1; else return 0;
  }
  #endif
-@@ -266,7 +271,7 @@
+@@ -292,7 +297,7 @@
  						if(!isxdigit(GET_CONTENT_PROG_PTR)) {
  							if(i > 0) return TOKENIZER_NUMBER; else return TOKENIZER_ERROR;
  						}
@@ -68,26 +86,38 @@ diff -r 43608ac5d0aa contrib/avrbasic/tokenizer.c
  						INCR_PROG_PTR;
  					}
  					return TOKENIZER_ERROR;
-@@ -380,7 +385,9 @@
+@@ -410,6 +415,8 @@
  }
  /*---------------------------------------------------------------------------*/
  void tokenizer_error_print(int linenum, int error_nr) {
--	PRINTF("error %i at line: '%i'\r\n", error_nr, linenum);
 +	(void) linenum;
 +	(void) error_nr;
-+	PRINTF("error %i at line: '%i'", error_nr, linenum);
+ 	PTR_TYPE current_prog_ptr;
+ 	unsigned int source_linenum;
+ 	// alten Textpointer retten
+@@ -422,11 +429,11 @@
+ 		INCR_PROG_PTR;
+ 	}
+ 	// Fehlertextausgabe
+-	PRINTF("\n\rerror %i at sourceline: %i (%i?) ", error_nr, source_linenum, linenum);
++	PRINTF("error %i at sourceline: %i (%i?) ", error_nr, source_linenum, linenum);
+ #if UBASIC_EXT_PROC
+ 	PRINTF("in program %s", current_proc);
+ #endif
+-	PRINTF("\n\r");
++//	PRINTF("\n\r");
+ 	// Textpointer wieder auf alten Wert
+ 	SET_PROG_PTR_ABSOLUT(current_prog_ptr);
  }
- /*---------------------------------------------------------------------------*/
- int tokenizer_finished(void) {
-@@ -390,3 +397,5 @@
+@@ -438,3 +445,5 @@
  int tokenizer_variable_num(void) {
  	return last_var_num;
  }
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
-diff -r 43608ac5d0aa contrib/avrbasic/tokenizer.h
---- a/contrib/avrbasic/tokenizer.h	Sat Mar 19 18:32:31 2011 +0100
-+++ b/contrib/avrbasic/tokenizer.h	Sat Mar 19 18:39:06 2011 +0100
+diff -r 4fba135c4ed6 contrib/avrbasic/tokenizer.h
+--- a/contrib/avrbasic/tokenizer.h	Wed Mar 30 18:36:58 2011 +0200
++++ b/contrib/avrbasic/tokenizer.h	Wed Mar 30 18:37:41 2011 +0200
 @@ -33,7 +33,7 @@
  #ifndef __TOKENIZER_H__
  #define __TOKENIZER_H__
@@ -97,9 +127,9 @@ diff -r 43608ac5d0aa contrib/avrbasic/tokenizer.h
  
  enum {
    TOKENIZER_ERROR,				// 0
-diff -r 43608ac5d0aa contrib/avrbasic/tokenizer_access.h
---- a/contrib/avrbasic/tokenizer_access.h	Sat Mar 19 18:32:31 2011 +0100
-+++ b/contrib/avrbasic/tokenizer_access.h	Sat Mar 19 18:39:06 2011 +0100
+diff -r 4fba135c4ed6 contrib/avrbasic/tokenizer_access.h
+--- a/contrib/avrbasic/tokenizer_access.h	Wed Mar 30 18:36:58 2011 +0200
++++ b/contrib/avrbasic/tokenizer_access.h	Wed Mar 30 18:37:41 2011 +0200
 @@ -34,6 +34,10 @@
  #ifndef __TOKENIZER_ACCESS_H__
  #define __TOKENIZER_ACCESS_H__
@@ -186,9 +216,9 @@ diff -r 43608ac5d0aa contrib/avrbasic/tokenizer_access.h
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
 +
  #endif /* __TOKENIZER_ACCESS_H__ */
-diff -r 43608ac5d0aa contrib/avrbasic/ubasic.c
---- a/contrib/avrbasic/ubasic.c	Sat Mar 19 18:32:31 2011 +0100
-+++ b/contrib/avrbasic/ubasic.c	Sat Mar 19 18:39:06 2011 +0100
+diff -r 4fba135c4ed6 contrib/avrbasic/ubasic.c
+--- a/contrib/avrbasic/ubasic.c	Wed Mar 30 18:36:58 2011 +0200
++++ b/contrib/avrbasic/ubasic.c	Wed Mar 30 18:37:41 2011 +0200
 @@ -31,14 +31,20 @@
   * ------------------------------------------------------
   */
@@ -274,7 +304,7 @@ diff -r 43608ac5d0aa contrib/avrbasic/ubasic.c
  	#else
  		r = rand() % (b+1);
  	#endif
-@@ -515,7 +522,9 @@
+@@ -514,7 +521,9 @@
  	} while(tokenizer_token() != TOKENIZER_CR &&
  			tokenizer_token() != TOKENIZER_ENDOFINPUT);
  	// wenn "," oder ";" am Zeilenende, dann kein Zeilenvorschub
@@ -285,7 +315,7 @@ diff -r 43608ac5d0aa contrib/avrbasic/ubasic.c
  	tokenizer_next();
  }
  #endif
-@@ -570,7 +579,7 @@
+@@ -569,7 +578,7 @@
  	// wenn Variable ein Array, dann noch Index ermitteln
  	if (variables[var].adr) {
  		accept(TOKENIZER_LEFTPAREN);
@@ -294,33 +324,7 @@ diff -r 43608ac5d0aa contrib/avrbasic/ubasic.c
  		accept(TOKENIZER_RIGHTPAREN);	
  	}
  #endif	
-@@ -591,17 +600,20 @@
- 		strncpy(p_name, tokenizer_last_string_ptr(), MAX_PROG_NAME_LEN);
- 		jump_to_next_linenum();
- 	} else
--#endif	
-+#else
- 	if (tokenizer_token() == TOKENIZER_STRING) {
- 	    tokenizer_error_print(current_linenum, GOSUB_NO_EXT_SUBPROC);
-     	ubasic_break();		
- 	}
--	linenum = expr();
-+#endif
- 	// es muss bis zum Zeilenende gelesen werden, um die Rueck-
- 	// sprungzeile fuer return zu ermitteln
--	if (tokenizer_token() != TOKENIZER_CR) jump_to_next_linenum();
--	else  tokenizer_next();
--	tokenizer_next();
-+	{
-+		linenum = expr();
-+		if (tokenizer_token() != TOKENIZER_CR) jump_to_next_linenum();
-+		else  tokenizer_next();
-+		tokenizer_next();
-+	}
- 	if(gosub_stack_ptr < MAX_GOSUB_STACK_DEPTH) {
- 		gosub_stack[gosub_stack_ptr].p_ptr = get_prog_text_pointer();
- 		#if UBASIC_EXT_PROC
-@@ -746,13 +758,14 @@
+@@ -748,13 +757,14 @@
  /*---------------------------------------------------------------------------*/
  #if UBASIC_ARRAY
  static void dim_statement(void) {
@@ -337,7 +341,7 @@ diff -r 43608ac5d0aa contrib/avrbasic/ubasic.c
  	variables[var].dim=dim;
  	// Speicher reservieren
  	variables[var].adr=malloc(dim * sizeof(int));
-@@ -916,6 +929,7 @@
+@@ -935,6 +945,7 @@
  void
  ubasic_set_variable(int varnum, int value, unsigned int idx)
  {
@@ -345,7 +349,7 @@ diff -r 43608ac5d0aa contrib/avrbasic/ubasic.c
  	if(varnum >= 0 && varnum < MAX_VARNUM) {
  #if UBASIC_ARRAY
  		// handelt es sich um ein Array?
-@@ -946,7 +960,7 @@
+@@ -965,7 +976,7 @@
  		if (variables[varnum].adr) {
  			// * Index in den Klammern ermitteln
  			accept(TOKENIZER_LEFTPAREN);
@@ -354,15 +358,15 @@ diff -r 43608ac5d0aa contrib/avrbasic/ubasic.c
  			// * damit die Dimension abpruefen
  			if (idx<variables[varnum].dim) {
  				accept(TOKENIZER_RIGHTPAREN);
-@@ -978,3 +992,5 @@
+@@ -997,3 +1008,5 @@
  }
  #endif
  /*---------------------------------------------------------------------------*/
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
-diff -r 43608ac5d0aa contrib/avrbasic/ubasic.h
---- a/contrib/avrbasic/ubasic.h	Sat Mar 19 18:32:31 2011 +0100
-+++ b/contrib/avrbasic/ubasic.h	Sat Mar 19 18:39:06 2011 +0100
+diff -r 4fba135c4ed6 contrib/avrbasic/ubasic.h
+--- a/contrib/avrbasic/ubasic.h	Wed Mar 30 18:36:58 2011 +0200
++++ b/contrib/avrbasic/ubasic.h	Wed Mar 30 18:37:41 2011 +0200
 @@ -33,7 +33,7 @@
  #ifndef __UBASIC_H__
  #define __UBASIC_H__
@@ -388,9 +392,9 @@ diff -r 43608ac5d0aa contrib/avrbasic/ubasic.h
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
 +
  #endif /* __UBASIC_H__ */
-diff -r 43608ac5d0aa contrib/avrbasic/ubasic_call.c
---- a/contrib/avrbasic/ubasic_call.c	Sat Mar 19 18:32:31 2011 +0100
-+++ b/contrib/avrbasic/ubasic_call.c	Sat Mar 19 18:39:06 2011 +0100
+diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_call.c
+--- a/contrib/avrbasic/ubasic_call.c	Wed Mar 30 18:36:58 2011 +0200
++++ b/contrib/avrbasic/ubasic_call.c	Wed Mar 30 18:37:41 2011 +0200
 @@ -10,18 +10,23 @@
  * ---------
  *
@@ -446,105 +450,89 @@ diff -r 43608ac5d0aa contrib/avrbasic/ubasic_call.c
      {"",		{NULL},									255}
  };
  
-@@ -55,10 +71,10 @@
+@@ -55,10 +71,13 @@
  	unsigned char f_typ_temp;
  	uint8_t idx=0;
  
--	int p1=0;
--	int p2=0;
--	int p3=0;
--	int p4=0;
-+//	int p1=0;
-+//	int p2=0;
-+//	int p3=0;
-+//	int p4=0;
++#if defined VOID_FUNC_INT || defined INT_FUNC_INT || defined VOID_FUNC_2INT || defined VOID_FUNC_4INT \
++	|| defined VOID_FUNC_2INT_CHAR
+ 	int p1=0;
+ 	int p2=0;
+ 	int p3=0;
+ 	int p4=0;
++#endif
  	int r=0;
  	
  	accept(TOKENIZER_CALL);
-@@ -90,77 +106,120 @@
+@@ -90,6 +109,7 @@
  		// je nach Funktionstyp (3.Spalte in Funktionspointertabelle) 
  		// Parameterliste aufbauen und Funktion aufrufen
  		switch (f_typ_temp){
--			case VOID_FUNC_VOID:
--						;
--						#if USE_PROGMEM
--							void (* f0)(void) = (void (*)(void)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFuncVoid);
--							f0();
--						#else
--							callfunct[idx].funct_ptr.VoidFuncVoid();
--						#endif
-+//			case VOID_FUNC_VOID:
-+//						;
-+//						#if USE_PROGMEM
-+//							void (* f0)(void) = (void (*)(void)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFuncVoid);
-+//							f0();
-+//						#else
-+//							callfunct[idx].funct_ptr.VoidFuncVoid();
-+//						#endif
-+//						break;
-+//			case VOID_FUNC_INT:
-+//						accept(TOKENIZER_COMMA);
-+//						p1=expr();
-+//						#if USE_PROGMEM
-+//							void (* f1)(int) = (void (*)(int)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFuncInt);
-+//							f1(p1);
-+//						#else
-+//							callfunct[idx].funct_ptr.VoidFuncInt(p1);
-+//						#endif
-+//						break;
-+//			case VOID_FUNC_2INT:
-+//						accept(TOKENIZER_COMMA);
-+//						p1=expr();
-+//						accept(TOKENIZER_COMMA);
-+//						p2=expr();
-+//						#if USE_PROGMEM
-+//							void (* f2)(int, int) = (void (*)(int, int)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFunc2Int);
-+//							f2(p1, p2);
-+//						#else
-+//							callfunct[idx].funct_ptr.VoidFunc2Int(p1, p2);
-+//						#endif
-+//						break;
-+//			case VOID_FUNC_4INT:
-+//						accept(TOKENIZER_COMMA);
-+//						p1=expr();
-+//						accept(TOKENIZER_COMMA);
-+//						p2=expr();
-+//						accept(TOKENIZER_COMMA);
-+//						p3=expr();
-+//						accept(TOKENIZER_COMMA);
-+//						p4=expr();
-+//						#if USE_PROGMEM
-+//							void (* f3)(int, int, int, int) = (void (*)(int, int, int, int)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFunc4Int);
-+//							f3(p1, p2, p3, p4);
-+//						#else
-+//							callfunct[idx].funct_ptr.VoidFunc4Int(p1, p2, p3, p4);
-+//						#endif
-+//						break;
-+//			case VOID_FUNC_2INT_CHAR:
-+//						accept(TOKENIZER_COMMA);
-+//						p1=expr();
-+//						accept(TOKENIZER_COMMA);
-+//						p2=expr();
-+//						accept(TOKENIZER_COMMA);
-+//						accept(TOKENIZER_STRING);
-+//						#if USE_PROGMEM
-+//							void (* f4)(int, int, char*) = (void (*)(int, int, char*)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFunc2IntChar);
-+//							f4(p1, p2, (char*)tokenizer_last_string_ptr());
-+//						#else
-+//							callfunct[idx].funct_ptr.VoidFunc2IntChar(p1, p2, (char*)tokenizer_last_string_ptr());
-+//						#endif
-+//						break;
-+//			case INT_FUNC_INT:
-+//						accept(TOKENIZER_COMMA);
-+//						p1=expr();
-+//						#if USE_PROGMEM
-+//							int (* f5)(int) = (int (*)(int)) pgm_read_word(&callfunct[idx].funct_ptr.IntFuncInt);
-+//							r=f5(p1);
-+//						#else
-+//							r=callfunct[idx].funct_ptr.IntFuncInt(p1);
-+//						#endif
-+//						break;
-+
++#ifdef VOID_FUNC_VOID
+ 			case VOID_FUNC_VOID:
+ 						;
+ 						#if USE_PROGMEM
+@@ -99,7 +119,9 @@
+ 							callfunct[idx].funct_ptr.VoidFuncVoid();
+ 						#endif
+ 						break;
+-			case VOID_FUNC_INT:	
++#endif // VOID_FUNC_VOID
++#ifdef VOID_FUNC_INT
++			case VOID_FUNC_INT:
+ 						accept(TOKENIZER_COMMA);
+ 						p1=expr();
+ 						#if USE_PROGMEM
+@@ -109,7 +131,9 @@
+ 							callfunct[idx].funct_ptr.VoidFuncInt(p1);
+ 						#endif
+ 						break;
+-			case VOID_FUNC_2INT:	
++#endif // VOID_FUNC_INT
++#ifdef VOID_FUNC_2INT
++			case VOID_FUNC_2INT:
+ 						accept(TOKENIZER_COMMA);
+ 						p1=expr();
+ 						accept(TOKENIZER_COMMA);
+@@ -121,7 +145,9 @@
+ 							callfunct[idx].funct_ptr.VoidFunc2Int(p1, p2);
+ 						#endif
+ 						break;
+-			case VOID_FUNC_4INT:	
++#endif // VOID_FUNC_2INT
++#ifdef VOID_FUNC_4INT
++			case VOID_FUNC_4INT:
+ 						accept(TOKENIZER_COMMA);
+ 						p1=expr();
+ 						accept(TOKENIZER_COMMA);
+@@ -137,7 +163,9 @@
+ 							callfunct[idx].funct_ptr.VoidFunc4Int(p1, p2, p3, p4);
+ 						#endif
+ 						break;
+-			case VOID_FUNC_2INT_CHAR:	
++#endif // VOID_FUNC_4INT
++#ifdef VOID_FUNC_2INT_CHAR
++			case VOID_FUNC_2INT_CHAR:
+ 						accept(TOKENIZER_COMMA);
+ 						p1=expr();
+ 						accept(TOKENIZER_COMMA);
+@@ -151,7 +179,9 @@
+ 							callfunct[idx].funct_ptr.VoidFunc2IntChar(p1, p2, (char*)tokenizer_last_string_ptr());
+ 						#endif
+ 						break;
+-			case INT_FUNC_INT: 
++#endif // VOID_FUNC_2INT_CHAR
++#ifdef INT_FUNC_INT
++			case INT_FUNC_INT:
+ 						accept(TOKENIZER_COMMA);
+ 						p1=expr();
+ 						#if USE_PROGMEM
+@@ -161,6 +191,53 @@
+ 							r=callfunct[idx].funct_ptr.IntFuncInt(p1);
+ 						#endif
+ 						break;
++#endif // INT_FUNC_INT
++#ifdef VOID_FUNC_2INT16
 +			case VOID_FUNC_2INT16: {
 +				DEBUG_PRINTF("VOID_FUNC_2INT16:");
 +				// zwei Integer und kein Rueckgabewert
@@ -558,13 +546,15 @@ diff -r 43608ac5d0aa contrib/avrbasic/ubasic_call.c
 +				func(p1, p2);
 +				break;
 +			}
-+
++#endif // VOID_FUNC_2INT16
++#ifdef BOOL_FUNC_BEH
 +			case BOOL_FUNC_BEH: {
 +				uint8_t (* func)(Behaviour_t *) = (uint8_t (*)(Behaviour_t *)) pgm_read_word(&callfunct[idx].funct_ptr.BoolFuncBeh);
 +				r = func(ubasic_behaviour_data);
 +				break;
 +			}
-+
++#endif // BOOL_FUNC_BEH
++#ifdef VOID_FUNC_RC
 +			case VOID_FUNC_RC: {
 +				// Remotecall
 +				accept(TOKENIZER_COMMA);
@@ -575,69 +565,7 @@ diff -r 43608ac5d0aa contrib/avrbasic/ubasic_call.c
 +				uint8_t i;
 +				for (i = 0; i < REMOTE_CALL_MAX_PARAM; ++i) {
 +					if (tokenizer_token() == TOKENIZER_RIGHTPAREN) {
- 						break;
--			case VOID_FUNC_INT:	
--						accept(TOKENIZER_COMMA);
--						p1=expr();
--						#if USE_PROGMEM
--							void (* f1)(int) = (void (*)(int)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFuncInt);
--							f1(p1);
--						#else
--							callfunct[idx].funct_ptr.VoidFuncInt(p1);
--						#endif
--						break;
--			case VOID_FUNC_2INT:	
--						accept(TOKENIZER_COMMA);
--						p1=expr();
--						accept(TOKENIZER_COMMA);
--						p2=expr();
--						#if USE_PROGMEM
--							void (* f2)(int, int) = (void (*)(int, int)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFunc2Int);
--							f2(p1, p2);
--						#else
--							callfunct[idx].funct_ptr.VoidFunc2Int(p1, p2);
--						#endif
--						break;
--			case VOID_FUNC_4INT:	
--						accept(TOKENIZER_COMMA);
--						p1=expr();
--						accept(TOKENIZER_COMMA);
--						p2=expr();
--						accept(TOKENIZER_COMMA);
--						p3=expr();
--						accept(TOKENIZER_COMMA);
--						p4=expr();
--						#if USE_PROGMEM
--							void (* f3)(int, int, int, int) = (void (*)(int, int, int, int)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFunc4Int);
--							f3(p1, p2, p3, p4);
--						#else
--							callfunct[idx].funct_ptr.VoidFunc4Int(p1, p2, p3, p4);
--						#endif
--						break;
--			case VOID_FUNC_2INT_CHAR:	
--						accept(TOKENIZER_COMMA);
--						p1=expr();
--						accept(TOKENIZER_COMMA);
--						p2=expr();
--						accept(TOKENIZER_COMMA);
--						accept(TOKENIZER_STRING);
--						#if USE_PROGMEM
--							void (* f4)(int, int, char*) = (void (*)(int, int, char*)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFunc2IntChar);
--							f4(p1, p2, (char*)tokenizer_last_string_ptr());
--						#else
--							callfunct[idx].funct_ptr.VoidFunc2IntChar(p1, p2, (char*)tokenizer_last_string_ptr());
--						#endif
--						break;
--			case INT_FUNC_INT: 
--						accept(TOKENIZER_COMMA);
--						p1=expr();
--						#if USE_PROGMEM
--							int (* f5)(int) = (int (*)(int)) pgm_read_word(&callfunct[idx].funct_ptr.IntFuncInt);
--							r=f5(p1);
--						#else
--							r=callfunct[idx].funct_ptr.IntFuncInt(p1);
--						#endif
--						break;
++						break;
 +					}
 +					accept(TOKENIZER_COMMA);
 +					params[i].s16 = expr();
@@ -648,31 +576,64 @@ diff -r 43608ac5d0aa contrib/avrbasic/ubasic_call.c
 +				rc(ubasic_behaviour_data, func, params);
 +				break;
 +			}
++#endif // VOID_FUNC_RC
 +
  			default:	tokenizer_error_print(current_linenum, UNKNOWN_CALL_FUNCT_TYP);
  						ubasic_break();
  		}
-@@ -172,8 +231,12 @@
+@@ -168,12 +245,31 @@
+ 	// abschliessende rechte Klammer
+     accept(TOKENIZER_RIGHTPAREN);
+     // bei Funktionspointertypen ohne Rueckgabewert ein Token weitergelesen...
+-    if ((f_typ_temp == VOID_FUNC_VOID)		||
++    if (
++#ifdef VOID_FUNC_VOID
++    	(f_typ_temp == VOID_FUNC_VOID)		||
++#endif
++#ifdef VOID_FUNC_VOID
      	(f_typ_temp == VOID_FUNC_INT)		||
++#endif
++#ifdef VOID_FUNC_2INT
      	(f_typ_temp == VOID_FUNC_2INT)		||
++#endif
++#ifdef VOID_FUNC_2INT_CHAR
      	(f_typ_temp == VOID_FUNC_2INT_CHAR)	||
 -    	(f_typ_temp == VOID_FUNC_4INT) 
++#endif
++#ifdef VOID_FUNC_4INT
 +    	(f_typ_temp == VOID_FUNC_4INT)		||
++#endif
++#ifdef VOID_FUNC_2INT16
 +    	(f_typ_temp == VOID_FUNC_2INT16)	||
++#endif
++#ifdef VOID_FUNC_RC
 +    	(f_typ_temp == VOID_FUNC_RC)
++#endif
      	) tokenizer_next();
  	return r;
  }
  #endif
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
-diff -r 43608ac5d0aa contrib/avrbasic/ubasic_call.h
---- a/contrib/avrbasic/ubasic_call.h	Sat Mar 19 18:32:31 2011 +0100
-+++ b/contrib/avrbasic/ubasic_call.h	Sat Mar 19 18:39:06 2011 +0100
-@@ -20,6 +20,9 @@
- #define VOID_FUNC_2INT		3
- #define VOID_FUNC_4INT		4
- #define VOID_FUNC_2INT_CHAR	5
+diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_call.h
+--- a/contrib/avrbasic/ubasic_call.h	Wed Mar 30 18:36:58 2011 +0200
++++ b/contrib/avrbasic/ubasic_call.h	Wed Mar 30 18:37:41 2011 +0200
+@@ -14,12 +14,15 @@
+ #define __UBASIC_CALL_H__
+ 
+ // Funktionspointertypen
+-#define VOID_FUNC_VOID		0
+-#define VOID_FUNC_INT		1
+-#define INT_FUNC_INT		2
+-#define VOID_FUNC_2INT		3
+-#define VOID_FUNC_4INT		4
+-#define VOID_FUNC_2INT_CHAR	5
++//#define VOID_FUNC_VOID		0
++//#define VOID_FUNC_INT		1
++//#define INT_FUNC_INT		2
++//#define VOID_FUNC_2INT		3
++//#define VOID_FUNC_4INT		4
++//#define VOID_FUNC_2INT_CHAR	5
 +#define VOID_FUNC_2INT16	6
 +#define BOOL_FUNC_BEH		7
 +#define VOID_FUNC_RC		8
@@ -689,9 +650,9 @@ diff -r 43608ac5d0aa contrib/avrbasic/ubasic_call.h
        } funct_ptr;
        unsigned char typ;
  } callfunct_t;
-diff -r 43608ac5d0aa contrib/avrbasic/ubasic_config.h
---- a/contrib/avrbasic/ubasic_config.h	Sat Mar 19 18:32:31 2011 +0100
-+++ b/contrib/avrbasic/ubasic_config.h	Sat Mar 19 18:39:06 2011 +0100
+diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_config.h
+--- a/contrib/avrbasic/ubasic_config.h	Wed Mar 30 18:36:58 2011 +0200
++++ b/contrib/avrbasic/ubasic_config.h	Wed Mar 30 18:37:41 2011 +0200
 @@ -14,6 +14,15 @@
  #ifndef __UBASIC_CONFIG_H__
  #define __UBASIC_CONFIG_H__
@@ -742,9 +703,9 @@ diff -r 43608ac5d0aa contrib/avrbasic/ubasic_config.h
 -#define UBASIC_ARRAY	1
 +#define UBASIC_ARRAY	0
  
- // exit(1) in Fehlersituationen macht sich bei AVRs etwas schlecht...
- #ifndef BREAK_NOT_EXIT
-@@ -95,19 +104,21 @@
+ // BASIC-Programmzeile ohne Zeilenummer erlaubt
+ #define UBASIC_NO_LINENUM_ALLOWED	1
+@@ -98,19 +107,21 @@
  	#define USE_PROGMEM		1
  	// AVR-spezifischen Befehle an-/abwaehlen
  	#define AVR_WAIT		1
@@ -775,9 +736,9 @@ diff -r 43608ac5d0aa contrib/avrbasic/ubasic_config.h
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
 +
  #endif /* __UBASIC_CONFIG_H__ */
-diff -r 43608ac5d0aa contrib/avrbasic/ubasic_cvars.c
---- a/contrib/avrbasic/ubasic_cvars.c	Sat Mar 19 18:32:31 2011 +0100
-+++ b/contrib/avrbasic/ubasic_cvars.c	Sat Mar 19 18:39:06 2011 +0100
+diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_cvars.c
+--- a/contrib/avrbasic/ubasic_cvars.c	Wed Mar 30 18:36:58 2011 +0200
++++ b/contrib/avrbasic/ubasic_cvars.c	Wed Mar 30 18:37:41 2011 +0200
 @@ -9,15 +9,20 @@
  * ---------
  *
@@ -887,9 +848,9 @@ diff -r 43608ac5d0aa contrib/avrbasic/ubasic_cvars.c
  #endif
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
-diff -r 43608ac5d0aa contrib/avrbasic/ubasic_cvars.h
---- a/contrib/avrbasic/ubasic_cvars.h	Sat Mar 19 18:32:31 2011 +0100
-+++ b/contrib/avrbasic/ubasic_cvars.h	Sat Mar 19 18:39:06 2011 +0100
+diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_cvars.h
+--- a/contrib/avrbasic/ubasic_cvars.h	Wed Mar 30 18:36:58 2011 +0200
++++ b/contrib/avrbasic/ubasic_cvars.h	Wed Mar 30 18:37:41 2011 +0200
 @@ -19,7 +19,7 @@
  #else	
  	char *var_name;
@@ -899,9 +860,9 @@ diff -r 43608ac5d0aa contrib/avrbasic/ubasic_cvars.h
  } cvars_t;
  
  
-diff -r 43608ac5d0aa contrib/avrbasic/ubasic_ext_proc.c
---- a/contrib/avrbasic/ubasic_ext_proc.c	Sat Mar 19 18:32:31 2011 +0100
-+++ b/contrib/avrbasic/ubasic_ext_proc.c	Sat Mar 19 18:39:06 2011 +0100
+diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_ext_proc.c
+--- a/contrib/avrbasic/ubasic_ext_proc.c	Wed Mar 30 18:36:58 2011 +0200
++++ b/contrib/avrbasic/ubasic_ext_proc.c	Wed Mar 30 18:37:41 2011 +0200
 @@ -23,20 +23,23 @@
  *
  ----------------------------------------------------------*/
@@ -959,9 +920,9 @@ diff -r 43608ac5d0aa contrib/avrbasic/ubasic_ext_proc.c
 +#endif // UBASIC_EXT_PROC
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
-diff -r 43608ac5d0aa contrib/avrbasic/ubasic_ext_proc.h
---- a/contrib/avrbasic/ubasic_ext_proc.h	Sat Mar 19 18:32:31 2011 +0100
-+++ b/contrib/avrbasic/ubasic_ext_proc.h	Sat Mar 19 18:39:06 2011 +0100
+diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_ext_proc.h
+--- a/contrib/avrbasic/ubasic_ext_proc.h	Wed Mar 30 18:36:58 2011 +0200
++++ b/contrib/avrbasic/ubasic_ext_proc.h	Wed Mar 30 18:37:41 2011 +0200
 @@ -15,12 +15,15 @@
  #ifndef __UBASIC_EXT_PROC_H__
  #define __UBASIC_EXT_PROC_H__

@@ -37,8 +37,8 @@
 #define DEBUG 0
 
 #if DEBUG
-//	#define DEBUG_PRINTF(...)  usart_write(__VA_ARGS__)
-	#define DEBUG_PRINTF(...)  printf(__VA_ARGS__)
+	#define DEBUG_PRINTF(...)  usart_write(__VA_ARGS__)
+//	#define DEBUG_PRINTF(...)  printf(__VA_ARGS__)
 
 #else
 	#define DEBUG_PRINTF(...)
@@ -49,8 +49,10 @@
 #undef __TOKENIZER_C__
 #include "bot-logic/tokenizer.h"
 #include "bot-logic/ubasic_config.h"
+#include "bot-logic/ubasic_ext_proc.h"
 #include "botfs.h"
 #include <ctype.h>
+
 
 
 #if USE_AVR
@@ -67,7 +69,7 @@
 //#endif
 
 
-static PTR_TYPE last_num_ptr;
+static PTR_TYPE line_begin_ptr;
 static char last_string[MAX_STRINGLEN+1];
 static int  last_value;
 static int  last_var_num;
@@ -87,6 +89,12 @@ struct keyword_token {
 };
 
 static int current_token = TOKENIZER_ERROR;
+
+extern PTR_TYPE program_ptr;
+
+#if UBASIC_EXT_PROC
+	extern char current_proc[MAX_PROG_NAME_LEN];
+#endif
 
 #if USE_PROGMEM
 static const struct keyword_token keywords[] PROGMEM = {
@@ -176,12 +184,27 @@ static int get_next_token(void);
 
 /*---------------------------------------------------------------------------*/
 PTR_TYPE get_prog_text_pointer(void) {
-	return last_num_ptr;
+	return line_begin_ptr;
 }
-
+/*---------------------------------------------------------------------------*/
+static void skip_whitespaces(void){
+	while(	GET_CONTENT_PROG_PTR == ' '  || 
+			GET_CONTENT_PROG_PTR == '\r' ||
+			GET_CONTENT_PROG_PTR == '\t'
+		 ) INCR_PROG_PTR;
+}
+/*---------------------------------------------------------------------------*/
+void skip_all_whitespaces(void){
+	while(	GET_CONTENT_PROG_PTR == ' '  || 
+			GET_CONTENT_PROG_PTR == '\n' ||
+			GET_CONTENT_PROG_PTR == '\r' ||
+			GET_CONTENT_PROG_PTR == '\t'
+		 ) INCR_PROG_PTR;
+}
 /*---------------------------------------------------------------------------*/
 void jump_to_prog_text_pointer(PTR_TYPE jump_ptr) {
 	SET_PROG_PTR_ABSOLUT(jump_ptr);
+	skip_whitespaces();
 	current_token = get_next_token();
 }
 
@@ -190,7 +213,8 @@ void jump_to_next_linenum(void) {
 	while(GET_CONTENT_PROG_PTR != '\n' && GET_CONTENT_PROG_PTR != 0) {
 		INCR_PROG_PTR;  
 	}
-	if(GET_CONTENT_PROG_PTR == '\n') INCR_PROG_PTR;
+	skip_all_whitespaces();
+	line_begin_ptr = PROG_PTR;
 	current_token = get_next_token();
 }
 
@@ -200,6 +224,8 @@ static int singlechar(void) {
 		return TOKENIZER_CR;
 	} else if(GET_CONTENT_PROG_PTR == ',') {
 		return TOKENIZER_COMMA;
+	} else if(GET_CONTENT_PROG_PTR == ':') {
+		return TOKENIZER_COLON;
 	} else if(GET_CONTENT_PROG_PTR == ';') {
 		return TOKENIZER_SEMICOLON;
 	} else if(GET_CONTENT_PROG_PTR == '+') {
@@ -249,7 +275,7 @@ static int get_next_token(void) {
 	uint8_t i;
 	int temp_token;
 	char k_temp[MAX_KEYWORD_LEN+1];
-  
+
 	if(END_OF_PROG_TEXT) {
 		return TOKENIZER_ENDOFINPUT;
 	}
@@ -297,7 +323,6 @@ static int get_next_token(void) {
 		for(i = 0; i <= MAX_NUMLEN; ++i) {
 			if(!isdigit(GET_CONTENT_PROG_PTR)) {
 				if(i > 0) {
-					last_num_ptr = PROG_PTR - i;
 					return TOKENIZER_NUMBER;
 				} else {
 					return TOKENIZER_ERROR;
@@ -362,6 +387,10 @@ static int get_next_token(void) {
 /*---------------------------------------------------------------------------*/
 void tokenizer_init(PTR_TYPE program) {
 	SET_PROG_PTR_ABSOLUT(program);
+#if UBASIC_NO_LINENUM_ALLOWED
+	last_value = -1;
+#endif
+	skip_all_whitespaces();
 	current_token = get_next_token();
 }
 /*---------------------------------------------------------------------------*/
@@ -371,7 +400,8 @@ int tokenizer_token(void) {
 /*---------------------------------------------------------------------------*/
 void tokenizer_next(void) {
 	if(tokenizer_finished()) return;
-	while(GET_CONTENT_PROG_PTR == ' ') INCR_PROG_PTR;
+	if (tokenizer_token() == TOKENIZER_CR) line_begin_ptr = PROG_PTR;
+	skip_whitespaces();
 	current_token = get_next_token();
 	return;
 }
@@ -387,7 +417,25 @@ char const *tokenizer_last_string_ptr(void) {
 void tokenizer_error_print(int linenum, int error_nr) {
 	(void) linenum;
 	(void) error_nr;
-	PRINTF("error %i at line: '%i'", error_nr, linenum);
+	PTR_TYPE current_prog_ptr;
+	unsigned int source_linenum;
+	// alten Textpointer retten
+	current_prog_ptr=PROG_PTR;
+	// Quelltextzeilennummer suchen
+	SET_PROG_PTR_ABSOLUT(program_ptr);
+	source_linenum=1;
+	while (!END_OF_PROG_TEXT && (PROG_PTR < current_prog_ptr)) {
+		if (GET_CONTENT_PROG_PTR=='\n') source_linenum++;
+		INCR_PROG_PTR;
+	}
+	// Fehlertextausgabe
+	PRINTF("error %i at sourceline: %i (%i?) ", error_nr, source_linenum, linenum);
+#if UBASIC_EXT_PROC
+	PRINTF("in program %s", current_proc);
+#endif
+//	PRINTF("\n\r");
+	// Textpointer wieder auf alten Wert
+	SET_PROG_PTR_ABSOLUT(current_prog_ptr);
 }
 /*---------------------------------------------------------------------------*/
 int tokenizer_finished(void) {

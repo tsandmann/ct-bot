@@ -129,7 +129,8 @@ enum {
   TOKENIZER_GE,
   TOKENIZER_LE,
   TOKENIZER_NE,
-  TOKENIZER_CR					// 54
+  TOKENIZER_COLON,
+  TOKENIZER_CR					// 55
 };
 
 
@@ -145,5 +146,6 @@ void tokenizer_error_print(int linenum, int error_nr);
 PTR_TYPE get_prog_text_pointer(void);
 void jump_to_prog_text_pointer(PTR_TYPE jump_ptr);
 void jump_to_next_linenum(void);
+void skip_all_whitespaces(void);
 
 #endif /* __TOKENIZER_H__ */
