@@ -96,6 +96,9 @@
 // BASIC-Programmzeile ohne Zeilenummer erlaubt
 #define UBASIC_NO_LINENUM_ALLOWED	1
 
+// DATA/READ/RESTORE
+#define UBASIC_DATA		0
+
 // exit(1) in Fehlersituationen macht sich bei AVRs etwas schlecht...
 #ifndef BREAK_NOT_EXIT
 	#define BREAK_NOT_EXIT	1

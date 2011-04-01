@@ -37,13 +37,6 @@ extern char ubasic_content; /**< aktuelles Zeichen des Basic-Programms */
 extern uint16_t ubasic_ptr; /**< aktuelle Position im Basic-Programm */
 
 /**
- * Rueckgabe ob das zuletzt aufgerufene Verhalten noch aktiv ist oder nicht; festgestellt anhand der Verhaltens-Data-Struktur des ubasic-Verhaltens
- * \param *behaviour	Zeiger auf Verhaltensdatensatz zum abzufragenden Verhalten
- * \return 				!= 0 wenn das zuletzt aufgerufene Verhalten noch laeuft; 0 wenn es nicht mehr laeuft (Achtung: wait ist auch ein Verhalten)
- */
-uint8_t behaviour_is_active(Behaviour_t * behaviour);
-
-/**
  * Startet das uBasic-Verhalten
  * \param *caller Zeiger auf den Verhaltensdatensatz des Aufrufers
  */
@@ -66,6 +59,13 @@ void bot_ubasic_break(void);
  * \param speedRight Geschwindigkeitswert fuer rechts
  */
 void bot_ubasic_speed(int16_t speedLeft, int16_t speedRight);
+
+/**
+ * Rueckgabe ob das zuletzt aufgerufene Verhalten noch aktiv ist oder nicht; festgestellt anhand der Verhaltens-Data-Struktur des ubasic-Verhaltens
+ * \param *behaviour	Zeiger auf Verhaltensdatensatz zum abzufragenden Verhalten
+ * \return 				!= 0 wenn das zuletzt aufgerufene Verhalten noch laeuft; 0 wenn es nicht mehr laeuft (Achtung: wait ist auch ein Verhalten)
+ */
+uint8_t behaviour_is_active(Behaviour_t * behaviour);
 
 /**
  * Laedt ein uBasic-Programm aus deiner BotFS-Datei

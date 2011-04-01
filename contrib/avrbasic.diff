@@ -1,6 +1,6 @@
-diff -r 4fba135c4ed6 contrib/avrbasic/tokenizer.c
---- a/contrib/avrbasic/tokenizer.c	Wed Mar 30 18:36:58 2011 +0200
-+++ b/contrib/avrbasic/tokenizer.c	Wed Mar 30 18:37:41 2011 +0200
+diff -r 267c26178af4 contrib/avrbasic/tokenizer.c
+--- a/contrib/avrbasic/tokenizer.c	Fri Apr 01 13:42:15 2011 +0200
++++ b/contrib/avrbasic/tokenizer.c	Fri Apr 01 13:43:05 2011 +0200
 @@ -31,27 +31,32 @@
   * ------------------------------------------------------
   */
@@ -54,7 +54,18 @@ diff -r 4fba135c4ed6 contrib/avrbasic/tokenizer.c
  
  
  static PTR_TYPE line_begin_ptr;
-@@ -182,7 +187,7 @@
+@@ -87,10 +92,6 @@
+ 
+ extern PTR_TYPE program_ptr;
+ 
+-#if UBASIC_EXT_PROC
+-	extern char current_proc[MAX_PROG_NAME_LEN];
+-#endif
+-
+ #if USE_PROGMEM
+ static const struct keyword_token keywords[] PROGMEM = {
+ #else
+@@ -187,7 +188,7 @@
  	return line_begin_ptr;
  }
  /*---------------------------------------------------------------------------*/
@@ -63,7 +74,7 @@ diff -r 4fba135c4ed6 contrib/avrbasic/tokenizer.c
  	while(	GET_CONTENT_PROG_PTR == ' '  || 
  			GET_CONTENT_PROG_PTR == '\r' ||
  			GET_CONTENT_PROG_PTR == '\t'
-@@ -253,11 +258,11 @@
+@@ -258,11 +259,11 @@
  
  #if UBASIC_HEX_BIN
  /*---------------------------------------------------------------------------*/
@@ -77,7 +88,7 @@ diff -r 4fba135c4ed6 contrib/avrbasic/tokenizer.c
  	if ((c=='0') || (c=='1')) return 1; else return 0;
  }
  #endif
-@@ -292,7 +297,7 @@
+@@ -297,7 +298,7 @@
  						if(!isxdigit(GET_CONTENT_PROG_PTR)) {
  							if(i > 0) return TOKENIZER_NUMBER; else return TOKENIZER_ERROR;
  						}
@@ -86,7 +97,7 @@ diff -r 4fba135c4ed6 contrib/avrbasic/tokenizer.c
  						INCR_PROG_PTR;
  					}
  					return TOKENIZER_ERROR;
-@@ -410,6 +415,8 @@
+@@ -415,6 +416,8 @@
  }
  /*---------------------------------------------------------------------------*/
  void tokenizer_error_print(int linenum, int error_nr) {
@@ -95,7 +106,7 @@ diff -r 4fba135c4ed6 contrib/avrbasic/tokenizer.c
  	PTR_TYPE current_prog_ptr;
  	unsigned int source_linenum;
  	// alten Textpointer retten
-@@ -422,11 +429,11 @@
+@@ -427,11 +430,11 @@
  		INCR_PROG_PTR;
  	}
  	// Fehlertextausgabe
@@ -109,15 +120,15 @@ diff -r 4fba135c4ed6 contrib/avrbasic/tokenizer.c
  	// Textpointer wieder auf alten Wert
  	SET_PROG_PTR_ABSOLUT(current_prog_ptr);
  }
-@@ -438,3 +445,5 @@
+@@ -443,3 +446,5 @@
  int tokenizer_variable_num(void) {
  	return last_var_num;
  }
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
-diff -r 4fba135c4ed6 contrib/avrbasic/tokenizer.h
---- a/contrib/avrbasic/tokenizer.h	Wed Mar 30 18:36:58 2011 +0200
-+++ b/contrib/avrbasic/tokenizer.h	Wed Mar 30 18:37:41 2011 +0200
+diff -r 267c26178af4 contrib/avrbasic/tokenizer.h
+--- a/contrib/avrbasic/tokenizer.h	Fri Apr 01 13:42:15 2011 +0200
++++ b/contrib/avrbasic/tokenizer.h	Fri Apr 01 13:43:05 2011 +0200
 @@ -33,7 +33,7 @@
  #ifndef __TOKENIZER_H__
  #define __TOKENIZER_H__
@@ -127,9 +138,9 @@ diff -r 4fba135c4ed6 contrib/avrbasic/tokenizer.h
  
  enum {
    TOKENIZER_ERROR,				// 0
-diff -r 4fba135c4ed6 contrib/avrbasic/tokenizer_access.h
---- a/contrib/avrbasic/tokenizer_access.h	Wed Mar 30 18:36:58 2011 +0200
-+++ b/contrib/avrbasic/tokenizer_access.h	Wed Mar 30 18:37:41 2011 +0200
+diff -r 267c26178af4 contrib/avrbasic/tokenizer_access.h
+--- a/contrib/avrbasic/tokenizer_access.h	Fri Apr 01 13:42:15 2011 +0200
++++ b/contrib/avrbasic/tokenizer_access.h	Fri Apr 01 13:43:05 2011 +0200
 @@ -34,6 +34,10 @@
  #ifndef __TOKENIZER_ACCESS_H__
  #define __TOKENIZER_ACCESS_H__
@@ -216,9 +227,9 @@ diff -r 4fba135c4ed6 contrib/avrbasic/tokenizer_access.h
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
 +
  #endif /* __TOKENIZER_ACCESS_H__ */
-diff -r 4fba135c4ed6 contrib/avrbasic/ubasic.c
---- a/contrib/avrbasic/ubasic.c	Wed Mar 30 18:36:58 2011 +0200
-+++ b/contrib/avrbasic/ubasic.c	Wed Mar 30 18:37:41 2011 +0200
+diff -r 267c26178af4 contrib/avrbasic/ubasic.c
+--- a/contrib/avrbasic/ubasic.c	Fri Apr 01 13:42:15 2011 +0200
++++ b/contrib/avrbasic/ubasic.c	Fri Apr 01 13:43:05 2011 +0200
 @@ -31,14 +31,20 @@
   * ------------------------------------------------------
   */
@@ -245,7 +256,7 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic.c
  
  #if !USE_AVR
  	#include <stdio.h>
-@@ -49,18 +55,18 @@
+@@ -49,22 +55,18 @@
  #endif
  
  #if UBASIC_CALL
@@ -263,13 +274,17 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic.c
 -	#include "../uart/usart.h"
 -	#include <avr/io.h>
 -	#include "ubasic_avr.h"
+-#endif
+-
+-#if UBASIC_EXT_PROC
+-	extern char current_proc[MAX_PROG_NAME_LEN];
 +//	#include "../uart/usart.h"
 +//	#include <avr/io.h>
 +	#include "bot-logic/ubasic_avr.h"
  #endif
  
- #if UBASIC_EXT_PROC
-@@ -72,6 +78,7 @@
+ #if !BREAK_NOT_EXIT
+@@ -72,6 +74,7 @@
  #endif
  
  PTR_TYPE program_ptr;
@@ -277,7 +292,7 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic.c
  
  struct gosub_stack_t {
  #if UBASIC_EXT_PROC
-@@ -88,7 +95,7 @@
+@@ -88,7 +91,7 @@
    int for_variable;
    int to;
    int step;
@@ -286,7 +301,7 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic.c
  };
  
  static struct for_state for_stack[MAX_FOR_STACK_DEPTH];
-@@ -111,7 +118,7 @@
+@@ -111,7 +114,7 @@
  	int val;
  #if UBASIC_ARRAY
  	int* adr;
@@ -295,7 +310,7 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic.c
  #endif		
  };
  
-@@ -218,7 +225,7 @@
+@@ -218,7 +221,7 @@
      accept(TOKENIZER_LEFTPAREN);
     	b = expr();
      #if USE_AVR
@@ -304,7 +319,7 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic.c
  	#else
  		r = rand() % (b+1);
  	#endif
-@@ -514,7 +521,9 @@
+@@ -514,7 +517,9 @@
  	} while(tokenizer_token() != TOKENIZER_CR &&
  			tokenizer_token() != TOKENIZER_ENDOFINPUT);
  	// wenn "," oder ";" am Zeilenende, dann kein Zeilenvorschub
@@ -312,10 +327,10 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic.c
 +	if (nl) {
 +		PRINTF(LINE_FEED);
 +	}
- 	tokenizer_next();
+ 	//tokenizer_next();
  }
  #endif
-@@ -569,7 +578,7 @@
+@@ -570,7 +575,7 @@
  	// wenn Variable ein Array, dann noch Index ermitteln
  	if (variables[var].adr) {
  		accept(TOKENIZER_LEFTPAREN);
@@ -324,7 +339,7 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic.c
  		accept(TOKENIZER_RIGHTPAREN);	
  	}
  #endif	
-@@ -748,13 +757,14 @@
+@@ -749,13 +754,14 @@
  /*---------------------------------------------------------------------------*/
  #if UBASIC_ARRAY
  static void dim_statement(void) {
@@ -339,9 +354,9 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic.c
 -	dim=expr();
 +	dim= (unsigned int) expr();
  	variables[var].dim=dim;
- 	// Speicher reservieren
- 	variables[var].adr=malloc(dim * sizeof(int));
-@@ -935,6 +945,7 @@
+ 	// wenn Speicher schon mal reserviert war, zuerst freigeben
+ 	if (!(variables[var].adr == NULL)) free(variables[var].adr);
+@@ -968,6 +974,7 @@
  void
  ubasic_set_variable(int varnum, int value, unsigned int idx)
  {
@@ -349,7 +364,7 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic.c
  	if(varnum >= 0 && varnum < MAX_VARNUM) {
  #if UBASIC_ARRAY
  		// handelt es sich um ein Array?
-@@ -965,7 +976,7 @@
+@@ -998,7 +1005,7 @@
  		if (variables[varnum].adr) {
  			// * Index in den Klammern ermitteln
  			accept(TOKENIZER_LEFTPAREN);
@@ -358,15 +373,15 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic.c
  			// * damit die Dimension abpruefen
  			if (idx<variables[varnum].dim) {
  				accept(TOKENIZER_RIGHTPAREN);
-@@ -997,3 +1008,5 @@
+@@ -1030,3 +1037,5 @@
  }
  #endif
  /*---------------------------------------------------------------------------*/
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
-diff -r 4fba135c4ed6 contrib/avrbasic/ubasic.h
---- a/contrib/avrbasic/ubasic.h	Wed Mar 30 18:36:58 2011 +0200
-+++ b/contrib/avrbasic/ubasic.h	Wed Mar 30 18:37:41 2011 +0200
+diff -r 267c26178af4 contrib/avrbasic/ubasic.h
+--- a/contrib/avrbasic/ubasic.h	Fri Apr 01 13:42:15 2011 +0200
++++ b/contrib/avrbasic/ubasic.h	Fri Apr 01 13:43:05 2011 +0200
 @@ -33,7 +33,7 @@
  #ifndef __UBASIC_H__
  #define __UBASIC_H__
@@ -392,9 +407,9 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic.h
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
 +
  #endif /* __UBASIC_H__ */
-diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_call.c
---- a/contrib/avrbasic/ubasic_call.c	Wed Mar 30 18:36:58 2011 +0200
-+++ b/contrib/avrbasic/ubasic_call.c	Wed Mar 30 18:37:41 2011 +0200
+diff -r 267c26178af4 contrib/avrbasic/ubasic_call.c
+--- a/contrib/avrbasic/ubasic_call.c	Fri Apr 01 13:42:15 2011 +0200
++++ b/contrib/avrbasic/ubasic_call.c	Fri Apr 01 13:43:05 2011 +0200
 @@ -10,18 +10,23 @@
  * ---------
  *
@@ -581,43 +596,21 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_call.c
  			default:	tokenizer_error_print(current_linenum, UNKNOWN_CALL_FUNCT_TYP);
  						ubasic_break();
  		}
-@@ -168,12 +245,31 @@
- 	// abschliessende rechte Klammer
-     accept(TOKENIZER_RIGHTPAREN);
-     // bei Funktionspointertypen ohne Rueckgabewert ein Token weitergelesen...
--    if ((f_typ_temp == VOID_FUNC_VOID)		||
-+    if (
-+#ifdef VOID_FUNC_VOID
-+    	(f_typ_temp == VOID_FUNC_VOID)		||
-+#endif
-+#ifdef VOID_FUNC_VOID
-     	(f_typ_temp == VOID_FUNC_INT)		||
-+#endif
-+#ifdef VOID_FUNC_2INT
-     	(f_typ_temp == VOID_FUNC_2INT)		||
-+#endif
-+#ifdef VOID_FUNC_2INT_CHAR
-     	(f_typ_temp == VOID_FUNC_2INT_CHAR)	||
--    	(f_typ_temp == VOID_FUNC_4INT) 
-+#endif
-+#ifdef VOID_FUNC_4INT
-+    	(f_typ_temp == VOID_FUNC_4INT)		||
-+#endif
-+#ifdef VOID_FUNC_2INT16
-+    	(f_typ_temp == VOID_FUNC_2INT16)	||
-+#endif
-+#ifdef VOID_FUNC_RC
-+    	(f_typ_temp == VOID_FUNC_RC)
-+#endif
-     	) tokenizer_next();
+@@ -172,8 +249,10 @@
+     //	(f_typ_temp == VOID_FUNC_INT)		||
+     //	(f_typ_temp == VOID_FUNC_2INT)		||
+     //	(f_typ_temp == VOID_FUNC_2INT_CHAR)	||
+-    //	(f_typ_temp == VOID_FUNC_4INT) 
++    //	(f_typ_temp == VOID_FUNC_4INT)
+     //	) tokenizer_next();
  	return r;
  }
  #endif
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
-diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_call.h
---- a/contrib/avrbasic/ubasic_call.h	Wed Mar 30 18:36:58 2011 +0200
-+++ b/contrib/avrbasic/ubasic_call.h	Wed Mar 30 18:37:41 2011 +0200
+diff -r 267c26178af4 contrib/avrbasic/ubasic_call.h
+--- a/contrib/avrbasic/ubasic_call.h	Fri Apr 01 13:42:15 2011 +0200
++++ b/contrib/avrbasic/ubasic_call.h	Fri Apr 01 13:43:05 2011 +0200
 @@ -14,12 +14,15 @@
  #define __UBASIC_CALL_H__
  
@@ -650,9 +643,9 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_call.h
        } funct_ptr;
        unsigned char typ;
  } callfunct_t;
-diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_config.h
---- a/contrib/avrbasic/ubasic_config.h	Wed Mar 30 18:36:58 2011 +0200
-+++ b/contrib/avrbasic/ubasic_config.h	Wed Mar 30 18:37:41 2011 +0200
+diff -r 267c26178af4 contrib/avrbasic/ubasic_config.h
+--- a/contrib/avrbasic/ubasic_config.h	Fri Apr 01 13:42:15 2011 +0200
++++ b/contrib/avrbasic/ubasic_config.h	Fri Apr 01 13:43:05 2011 +0200
 @@ -14,6 +14,15 @@
  #ifndef __UBASIC_CONFIG_H__
  #define __UBASIC_CONFIG_H__
@@ -696,7 +689,7 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_config.h
  #define UBASIC_HEX_BIN	1
  
  // externe Unterprogramme (via gosub)
-@@ -82,7 +91,7 @@
+@@ -82,13 +91,13 @@
  // Hinweis: in dem entsprechenden Code werden malloc()/free() verwendet,
  // was, in Kombination mit anderen Routinen ausserhalb des Basic-
  // Interpreters zur Zerstueckelung des Speichers fuehren koennte
@@ -705,7 +698,14 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_config.h
  
  // BASIC-Programmzeile ohne Zeilenummer erlaubt
  #define UBASIC_NO_LINENUM_ALLOWED	1
-@@ -98,19 +107,21 @@
+ 
+ // DATA/READ/RESTORE
+-#define UBASIC_DATA		1
++#define UBASIC_DATA		0
+ 
+ // exit(1) in Fehlersituationen macht sich bei AVRs etwas schlecht...
+ #ifndef BREAK_NOT_EXIT
+@@ -101,19 +110,21 @@
  	#define USE_PROGMEM		1
  	// AVR-spezifischen Befehle an-/abwaehlen
  	#define AVR_WAIT		1
@@ -736,9 +736,9 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_config.h
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
 +
  #endif /* __UBASIC_CONFIG_H__ */
-diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_cvars.c
---- a/contrib/avrbasic/ubasic_cvars.c	Wed Mar 30 18:36:58 2011 +0200
-+++ b/contrib/avrbasic/ubasic_cvars.c	Wed Mar 30 18:37:41 2011 +0200
+diff -r 267c26178af4 contrib/avrbasic/ubasic_cvars.c
+--- a/contrib/avrbasic/ubasic_cvars.c	Fri Apr 01 13:42:15 2011 +0200
++++ b/contrib/avrbasic/ubasic_cvars.c	Fri Apr 01 13:43:05 2011 +0200
 @@ -9,15 +9,20 @@
  * ---------
  *
@@ -766,18 +766,20 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_cvars.c
  #else
  	#include <string.h>
  	#include <stdio.h>
-@@ -34,8 +39,8 @@
+@@ -32,12 +37,6 @@
+ 	#define DEBUG_PRINTF(...)
+ #endif
  
- //------------------------------------------
- // eine Testvariable in C...
+-//------------------------------------------
+-// eine Testvariable in C...
 -int va = 123;
 -int vb = 456;
-+//int va = 123;
-+//int vb = 456;
- 
- 
+-
+-
  //--------------------------------------------
-@@ -46,12 +51,22 @@
+ 
+ // Variablenpointertabelle
+@@ -46,12 +45,22 @@
  #else
  cvars_t cvars[] = {
  #endif
@@ -803,7 +805,7 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_cvars.c
  	int idx=0;
  	// Variablenname in Tabelle suchen
  #if USE_PROGMEM
-@@ -85,9 +100,9 @@
+@@ -85,9 +94,9 @@
  	
  	accept(TOKENIZER_VPOKE);
      accept(TOKENIZER_LEFTPAREN);
@@ -815,7 +817,7 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_cvars.c
  		tokenizer_next();
  	}
  	idx=search_cvars(tokenizer_last_string_ptr());
-@@ -106,25 +121,28 @@
+@@ -106,25 +115,28 @@
  	int idx=0;
  	int r=0;
  #if USE_PROGMEM	
@@ -848,9 +850,9 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_cvars.c
  #endif
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
-diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_cvars.h
---- a/contrib/avrbasic/ubasic_cvars.h	Wed Mar 30 18:36:58 2011 +0200
-+++ b/contrib/avrbasic/ubasic_cvars.h	Wed Mar 30 18:37:41 2011 +0200
+diff -r 267c26178af4 contrib/avrbasic/ubasic_cvars.h
+--- a/contrib/avrbasic/ubasic_cvars.h	Fri Apr 01 13:42:15 2011 +0200
++++ b/contrib/avrbasic/ubasic_cvars.h	Fri Apr 01 13:43:05 2011 +0200
 @@ -19,7 +19,7 @@
  #else	
  	char *var_name;
@@ -860,9 +862,9 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_cvars.h
  } cvars_t;
  
  
-diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_ext_proc.c
---- a/contrib/avrbasic/ubasic_ext_proc.c	Wed Mar 30 18:36:58 2011 +0200
-+++ b/contrib/avrbasic/ubasic_ext_proc.c	Wed Mar 30 18:37:41 2011 +0200
+diff -r 267c26178af4 contrib/avrbasic/ubasic_ext_proc.c
+--- a/contrib/avrbasic/ubasic_ext_proc.c	Fri Apr 01 13:42:15 2011 +0200
++++ b/contrib/avrbasic/ubasic_ext_proc.c	Fri Apr 01 13:43:05 2011 +0200
 @@ -23,20 +23,23 @@
  *
  ----------------------------------------------------------*/
@@ -920,9 +922,9 @@ diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_ext_proc.c
 +#endif // UBASIC_EXT_PROC
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
-diff -r 4fba135c4ed6 contrib/avrbasic/ubasic_ext_proc.h
---- a/contrib/avrbasic/ubasic_ext_proc.h	Wed Mar 30 18:36:58 2011 +0200
-+++ b/contrib/avrbasic/ubasic_ext_proc.h	Wed Mar 30 18:37:41 2011 +0200
+diff -r 267c26178af4 contrib/avrbasic/ubasic_ext_proc.h
+--- a/contrib/avrbasic/ubasic_ext_proc.h	Fri Apr 01 13:42:15 2011 +0200
++++ b/contrib/avrbasic/ubasic_ext_proc.h	Fri Apr 01 13:43:05 2011 +0200
 @@ -15,12 +15,15 @@
  #ifndef __UBASIC_EXT_PROC_H__
  #define __UBASIC_EXT_PROC_H__

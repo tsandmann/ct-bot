@@ -37,12 +37,6 @@
 	#define DEBUG_PRINTF(...)
 #endif
 
-//------------------------------------------
-// eine Testvariable in C...
-//int va = 123;
-//int vb = 456;
-
-
 //--------------------------------------------
 
 // Variablenpointertabelle
@@ -114,7 +108,7 @@ void vpoke_statement(void) {
 #else	
 	*cvars[idx].pvar = expr();
 #endif
-	tokenizer_next();
+	//tokenizer_next();
 }
 
 int vpeek_expression(void) {

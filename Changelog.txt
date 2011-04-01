@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-04-01 Timo Sandmann [mail@timosandmann.de]: uBasic auf Revision 45 aktualisiert
+
 2011-03-19 Timo Sandmann [mail@timosandmann.de]: uBasic aktualisiert, Bugfix fuer Minilog-2-Sim, angefangen Header-Dateien aufzuraeumen
 
 2011-03-13 Timo Sandmann [mail@timosandmann.de]: Support fuer aeltere avr-libc Versionen (ab 1.6.7)

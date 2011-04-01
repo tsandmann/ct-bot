@@ -92,10 +92,6 @@ static int current_token = TOKENIZER_ERROR;
 
 extern PTR_TYPE program_ptr;
 
-#if UBASIC_EXT_PROC
-	extern char current_proc[MAX_PROG_NAME_LEN];
-#endif
-
 #if USE_PROGMEM
 static const struct keyword_token keywords[] PROGMEM = {
 #else
@@ -169,6 +165,11 @@ static const struct keyword_token keywords[] = {
 	#endif
 	#if UBASIC_ARRAY
 	{"dim", TOKENIZER_DIM},
+	#endif
+	#if UBASIC_DATA
+	{"data", TOKENIZER_DATA},
+	{"read", TOKENIZER_READ},
+	{"restore", TOKENIZER_RESTORE},
 	#endif
 	{"or", TOKENIZER_OR},
 	{"and", TOKENIZER_AND},
