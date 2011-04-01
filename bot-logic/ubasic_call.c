@@ -59,8 +59,8 @@ callfunct_t callfunct[] = {
     {"pclear",	.funct_ptr.VoidFunc2Int=lcd_pclear,		VOID_FUNC_2INT},
     {"puts",	.funct_ptr.VoidFunc2IntChar=lcd_puts,	VOID_FUNC_2INT_CHAR},
 #endif
-	{ "bot_speed", .funct_ptr.VoidFunc2Int16 = bot_ubasic_speed, VOID_FUNC_2INT16 },
-	{ "beh_active", .funct_ptr.BoolFuncBeh = behaviour_is_active, BOOL_FUNC_BEH },
+	{ "bot_speed", .funct_ptr.VoidFunc2Int16 = ubasic_set_speed, VOID_FUNC_2INT16 },
+	{ "beh_active", .funct_ptr.BoolFuncBeh = ubasic_behaviour_is_active, BOOL_FUNC_BEH },
 	{ "RC", .funct_ptr.VoidFuncRC = bot_remotecall, VOID_FUNC_RC },
     {"",		{NULL},									255}
 };

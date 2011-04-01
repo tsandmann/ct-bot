@@ -112,7 +112,7 @@ static int8_t read_ubasic_src(const char keynum) {
  * \param speedLeft	 Geschwindigkeitswert fuer links
  * \param speedRight Geschwindigkeitswert fuer rechts
  */
-void bot_ubasic_speed(int16_t speedLeft, int16_t speedRight) {
+void ubasic_set_speed(int16_t speedLeft, int16_t speedRight) {
 	speedWishLeftBas = speedLeft;
 	speedWishRightBas = speedRight;
 }
@@ -122,7 +122,7 @@ void bot_ubasic_speed(int16_t speedLeft, int16_t speedRight) {
  * \param *behaviour	Zeiger auf Verhaltensdatensatz zum abzufragenden Verhalten
  * \return 				!= 0 wenn das zuletzt aufgerufene Verhalten noch laeuft; 0 wenn es nicht mehr laeuft (Achtung: wait ist auch ein Verhalten)
  */
-uint8_t behaviour_is_active(Behaviour_t * behaviour) {
+uint8_t ubasic_behaviour_is_active(Behaviour_t * behaviour) {
 	return (uint8_t) (behaviour->subResult == BEHAVIOUR_SUBBACKGR);
 }
 
@@ -172,7 +172,7 @@ void bot_ubasic(Behaviour_t * caller) {
 	}
 	switch_to_behaviour(caller, bot_ubasic_behaviour, BEHAVIOUR_OVERRIDE);
 	ubasic_behaviour_data = get_behaviour(bot_ubasic_behaviour);
-	bot_ubasic_speed(BOT_SPEED_IGNORE, BOT_SPEED_IGNORE); // alte Speed-Wuensche neutralisieren
+	ubasic_set_speed(BOT_SPEED_IGNORE, BOT_SPEED_IGNORE); // alte Speed-Wuensche neutralisieren
 
 	ubasic_init(0);
 }

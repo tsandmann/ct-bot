@@ -1,6 +1,6 @@
-diff -r 267c26178af4 contrib/avrbasic/tokenizer.c
---- a/contrib/avrbasic/tokenizer.c	Fri Apr 01 13:42:15 2011 +0200
-+++ b/contrib/avrbasic/tokenizer.c	Fri Apr 01 13:43:05 2011 +0200
+diff -r 7a4b2fdaf98a contrib/avrbasic/tokenizer.c
+--- a/contrib/avrbasic/tokenizer.c	Fri Apr 01 14:02:28 2011 +0200
++++ b/contrib/avrbasic/tokenizer.c	Fri Apr 01 14:03:29 2011 +0200
 @@ -31,27 +31,32 @@
   * ------------------------------------------------------
   */
@@ -126,9 +126,9 @@ diff -r 267c26178af4 contrib/avrbasic/tokenizer.c
  }
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
-diff -r 267c26178af4 contrib/avrbasic/tokenizer.h
---- a/contrib/avrbasic/tokenizer.h	Fri Apr 01 13:42:15 2011 +0200
-+++ b/contrib/avrbasic/tokenizer.h	Fri Apr 01 13:43:05 2011 +0200
+diff -r 7a4b2fdaf98a contrib/avrbasic/tokenizer.h
+--- a/contrib/avrbasic/tokenizer.h	Fri Apr 01 14:02:28 2011 +0200
++++ b/contrib/avrbasic/tokenizer.h	Fri Apr 01 14:03:29 2011 +0200
 @@ -33,7 +33,7 @@
  #ifndef __TOKENIZER_H__
  #define __TOKENIZER_H__
@@ -138,9 +138,9 @@ diff -r 267c26178af4 contrib/avrbasic/tokenizer.h
  
  enum {
    TOKENIZER_ERROR,				// 0
-diff -r 267c26178af4 contrib/avrbasic/tokenizer_access.h
---- a/contrib/avrbasic/tokenizer_access.h	Fri Apr 01 13:42:15 2011 +0200
-+++ b/contrib/avrbasic/tokenizer_access.h	Fri Apr 01 13:43:05 2011 +0200
+diff -r 7a4b2fdaf98a contrib/avrbasic/tokenizer_access.h
+--- a/contrib/avrbasic/tokenizer_access.h	Fri Apr 01 14:02:28 2011 +0200
++++ b/contrib/avrbasic/tokenizer_access.h	Fri Apr 01 14:03:29 2011 +0200
 @@ -34,6 +34,10 @@
  #ifndef __TOKENIZER_ACCESS_H__
  #define __TOKENIZER_ACCESS_H__
@@ -227,9 +227,9 @@ diff -r 267c26178af4 contrib/avrbasic/tokenizer_access.h
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
 +
  #endif /* __TOKENIZER_ACCESS_H__ */
-diff -r 267c26178af4 contrib/avrbasic/ubasic.c
---- a/contrib/avrbasic/ubasic.c	Fri Apr 01 13:42:15 2011 +0200
-+++ b/contrib/avrbasic/ubasic.c	Fri Apr 01 13:43:05 2011 +0200
+diff -r 7a4b2fdaf98a contrib/avrbasic/ubasic.c
+--- a/contrib/avrbasic/ubasic.c	Fri Apr 01 14:02:28 2011 +0200
++++ b/contrib/avrbasic/ubasic.c	Fri Apr 01 14:03:29 2011 +0200
 @@ -31,14 +31,20 @@
   * ------------------------------------------------------
   */
@@ -379,9 +379,9 @@ diff -r 267c26178af4 contrib/avrbasic/ubasic.c
  /*---------------------------------------------------------------------------*/
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
-diff -r 267c26178af4 contrib/avrbasic/ubasic.h
---- a/contrib/avrbasic/ubasic.h	Fri Apr 01 13:42:15 2011 +0200
-+++ b/contrib/avrbasic/ubasic.h	Fri Apr 01 13:43:05 2011 +0200
+diff -r 7a4b2fdaf98a contrib/avrbasic/ubasic.h
+--- a/contrib/avrbasic/ubasic.h	Fri Apr 01 14:02:28 2011 +0200
++++ b/contrib/avrbasic/ubasic.h	Fri Apr 01 14:03:29 2011 +0200
 @@ -33,7 +33,7 @@
  #ifndef __UBASIC_H__
  #define __UBASIC_H__
@@ -407,9 +407,9 @@ diff -r 267c26178af4 contrib/avrbasic/ubasic.h
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
 +
  #endif /* __UBASIC_H__ */
-diff -r 267c26178af4 contrib/avrbasic/ubasic_call.c
---- a/contrib/avrbasic/ubasic_call.c	Fri Apr 01 13:42:15 2011 +0200
-+++ b/contrib/avrbasic/ubasic_call.c	Fri Apr 01 13:43:05 2011 +0200
+diff -r 7a4b2fdaf98a contrib/avrbasic/ubasic_call.c
+--- a/contrib/avrbasic/ubasic_call.c	Fri Apr 01 14:02:28 2011 +0200
++++ b/contrib/avrbasic/ubasic_call.c	Fri Apr 01 14:03:29 2011 +0200
 @@ -10,18 +10,23 @@
  * ---------
  *
@@ -459,8 +459,8 @@ diff -r 267c26178af4 contrib/avrbasic/ubasic_call.c
      {"pclear",	.funct_ptr.VoidFunc2Int=lcd_pclear,		VOID_FUNC_2INT},
      {"puts",	.funct_ptr.VoidFunc2IntChar=lcd_puts,	VOID_FUNC_2INT_CHAR},
  #endif
-+	{ "bot_speed", .funct_ptr.VoidFunc2Int16 = bot_ubasic_speed, VOID_FUNC_2INT16 },
-+	{ "beh_active", .funct_ptr.BoolFuncBeh = behaviour_is_active, BOOL_FUNC_BEH },
++	{ "bot_speed", .funct_ptr.VoidFunc2Int16 = ubasic_set_speed, VOID_FUNC_2INT16 },
++	{ "beh_active", .funct_ptr.BoolFuncBeh = ubasic_behaviour_is_active, BOOL_FUNC_BEH },
 +	{ "RC", .funct_ptr.VoidFuncRC = bot_remotecall, VOID_FUNC_RC },
      {"",		{NULL},									255}
  };
@@ -608,9 +608,9 @@ diff -r 267c26178af4 contrib/avrbasic/ubasic_call.c
  #endif
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
-diff -r 267c26178af4 contrib/avrbasic/ubasic_call.h
---- a/contrib/avrbasic/ubasic_call.h	Fri Apr 01 13:42:15 2011 +0200
-+++ b/contrib/avrbasic/ubasic_call.h	Fri Apr 01 13:43:05 2011 +0200
+diff -r 7a4b2fdaf98a contrib/avrbasic/ubasic_call.h
+--- a/contrib/avrbasic/ubasic_call.h	Fri Apr 01 14:02:28 2011 +0200
++++ b/contrib/avrbasic/ubasic_call.h	Fri Apr 01 14:03:29 2011 +0200
 @@ -14,12 +14,15 @@
  #define __UBASIC_CALL_H__
  
@@ -643,9 +643,9 @@ diff -r 267c26178af4 contrib/avrbasic/ubasic_call.h
        } funct_ptr;
        unsigned char typ;
  } callfunct_t;
-diff -r 267c26178af4 contrib/avrbasic/ubasic_config.h
---- a/contrib/avrbasic/ubasic_config.h	Fri Apr 01 13:42:15 2011 +0200
-+++ b/contrib/avrbasic/ubasic_config.h	Fri Apr 01 13:43:05 2011 +0200
+diff -r 7a4b2fdaf98a contrib/avrbasic/ubasic_config.h
+--- a/contrib/avrbasic/ubasic_config.h	Fri Apr 01 14:02:28 2011 +0200
++++ b/contrib/avrbasic/ubasic_config.h	Fri Apr 01 14:03:29 2011 +0200
 @@ -14,6 +14,15 @@
  #ifndef __UBASIC_CONFIG_H__
  #define __UBASIC_CONFIG_H__
@@ -736,9 +736,9 @@ diff -r 267c26178af4 contrib/avrbasic/ubasic_config.h
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
 +
  #endif /* __UBASIC_CONFIG_H__ */
-diff -r 267c26178af4 contrib/avrbasic/ubasic_cvars.c
---- a/contrib/avrbasic/ubasic_cvars.c	Fri Apr 01 13:42:15 2011 +0200
-+++ b/contrib/avrbasic/ubasic_cvars.c	Fri Apr 01 13:43:05 2011 +0200
+diff -r 7a4b2fdaf98a contrib/avrbasic/ubasic_cvars.c
+--- a/contrib/avrbasic/ubasic_cvars.c	Fri Apr 01 14:02:28 2011 +0200
++++ b/contrib/avrbasic/ubasic_cvars.c	Fri Apr 01 14:03:29 2011 +0200
 @@ -9,15 +9,20 @@
  * ---------
  *
@@ -850,9 +850,9 @@ diff -r 267c26178af4 contrib/avrbasic/ubasic_cvars.c
  #endif
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
-diff -r 267c26178af4 contrib/avrbasic/ubasic_cvars.h
---- a/contrib/avrbasic/ubasic_cvars.h	Fri Apr 01 13:42:15 2011 +0200
-+++ b/contrib/avrbasic/ubasic_cvars.h	Fri Apr 01 13:43:05 2011 +0200
+diff -r 7a4b2fdaf98a contrib/avrbasic/ubasic_cvars.h
+--- a/contrib/avrbasic/ubasic_cvars.h	Fri Apr 01 14:02:28 2011 +0200
++++ b/contrib/avrbasic/ubasic_cvars.h	Fri Apr 01 14:03:29 2011 +0200
 @@ -19,7 +19,7 @@
  #else	
  	char *var_name;
@@ -862,9 +862,9 @@ diff -r 267c26178af4 contrib/avrbasic/ubasic_cvars.h
  } cvars_t;
  
  
-diff -r 267c26178af4 contrib/avrbasic/ubasic_ext_proc.c
---- a/contrib/avrbasic/ubasic_ext_proc.c	Fri Apr 01 13:42:15 2011 +0200
-+++ b/contrib/avrbasic/ubasic_ext_proc.c	Fri Apr 01 13:43:05 2011 +0200
+diff -r 7a4b2fdaf98a contrib/avrbasic/ubasic_ext_proc.c
+--- a/contrib/avrbasic/ubasic_ext_proc.c	Fri Apr 01 14:02:28 2011 +0200
++++ b/contrib/avrbasic/ubasic_ext_proc.c	Fri Apr 01 14:03:29 2011 +0200
 @@ -23,20 +23,23 @@
  *
  ----------------------------------------------------------*/
@@ -922,9 +922,9 @@ diff -r 267c26178af4 contrib/avrbasic/ubasic_ext_proc.c
 +#endif // UBASIC_EXT_PROC
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
-diff -r 267c26178af4 contrib/avrbasic/ubasic_ext_proc.h
---- a/contrib/avrbasic/ubasic_ext_proc.h	Fri Apr 01 13:42:15 2011 +0200
-+++ b/contrib/avrbasic/ubasic_ext_proc.h	Fri Apr 01 13:43:05 2011 +0200
+diff -r 7a4b2fdaf98a contrib/avrbasic/ubasic_ext_proc.h
+--- a/contrib/avrbasic/ubasic_ext_proc.h	Fri Apr 01 14:02:28 2011 +0200
++++ b/contrib/avrbasic/ubasic_ext_proc.h	Fri Apr 01 14:03:29 2011 +0200
 @@ -15,12 +15,15 @@
  #ifndef __UBASIC_EXT_PROC_H__
  #define __UBASIC_EXT_PROC_H__
