@@ -17,12 +17,12 @@
  *
  */
 
-/*!
- * @file 	bot-local.h
- * @brief 	Konstanten, die den Bot an reale Umgebungen anpassen
- * @author 	Benjamin Benz (bbe@heise.de)
- * @author  Christoph Grimmer (c.grimmer@futurio.de)
- * @date 	28.02.2006
+/**
+ * \file 	bot-local.h
+ * \brief 	Konstanten, die den Bot an reale Umgebungen anpassen
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \author  Christoph Grimmer (c.grimmer@futurio.de)
+ * \date 	28.02.2006
  */
 
 #ifndef BOTLOCAL_H_
@@ -64,12 +64,8 @@
 #define PWMSTART_L			100				/*!< Basis-PWM-Wert linker Motor (falls keine dauerhaft gespeicherte PWM-LT vorhanden ist) */
 #define PWMSTART_R			100				/*!< Basis-PWM-Wert rechter Motor (falls keine dauerhaft gespeicherte PWM-LT vorhanden ist) */
 #define PID_START_DELAY		20				/*!< Dauer der Anfahrverzoegerung */
-#define ENC_CORRECT_L		5				/*!< Korrekturoffset fuer linken Radencoder */
-#define ENC_CORRECT_R		5				/*!< Korrekturoffset fuer rechten Radencoder */
-
-/* Servo-Parameter */
-#define DOOR_CLOSE 	7			/*!< Rechter Anschlag des Servos */
-#define DOOR_OPEN	14			/*!< Linker Anschlag des Servos */
+#define ENC_CORRECT_L		5				/*!< Korrekturoffset fuer linken Radencoder (falls nicht kalibriert, sonst 0) */
+#define ENC_CORRECT_R		5				/*!< Korrekturoffset fuer rechten Radencoder (falls nicht kalibriert, sonst 0) */
 
 /* Odometrie-Konstanten */
 #ifdef PC
@@ -92,7 +88,21 @@
 //#define F_CPU	20000000L	/*!< CPU-Frequenz [Hz] */
 #define XTAL	F_CPU		/*!< CPU-Frequenz [Hz] */
 
+//#define UART_BAUD	57600	/**< Baudrate  57600 fuer UART-Kommunikation */
+#define UART_BAUD	115200	/**< Baudrate 115200 fuer UART-Kommunikation */
+//#define UART_BAUD	500000	/**< Baudrate 500000 fuer UART-Kommunikation */
+
 #define EXPANSION_BOARD_AVAILABLE /*!< Erweiterungsmodul (MMC / WiPort) installiert */
+
+/* Servo-Parameter */
+#if F_CPU == 16000000L
+#define DOOR_CLOSE 	7			/**< Rechter Anschlag des Servos */
+#define DOOR_OPEN	14			/**< Linker Anschlag des Servos */
+#else
+#define DOOR_CLOSE 	10			/**< Rechter Anschlag des Servos */
+#define DOOR_OPEN	18			/**< Linker Anschlag des Servos */
+#endif
+
 
 /*** Einstellungen fuer die Verhaltensregeln ***/
 
@@ -108,17 +118,17 @@
 #define OPTIMAL_DISTANCE	(int16_t)(BOT_DIAMETER * 1.2f)	/*!< Optimale Distanz zur Wand [mm]. Etwas mehr als Bot-Durchmesser ist ideal (vergroessert aufgrund der Kennlinien der Sharps) */
 #define ADJUST_DISTANCE		10		/*!< Toleranzbereich [mm] */
 #define IGNORE_DISTANCE		240		/*!< Entfernung, ab der eine Wand ignoriert wird [mm] */
-#define GROUND_GOAL			0x221	/*!< Farbe des Ziels */
+#define GROUND_GOAL			0x221	/*!< Farbe des Zielpads */
 #define STARTPAD1			0x2B2	/*!< Farbe des Startpads1 */
-#define STARTPAD2			0x332	/*!< Fareb des Starpads2 */
+#define STARTPAD2			0x332	/*!< Farbe des Startpads2 */
 
 /* bot_follow_line_behaviour() */
 #ifdef PC
 /*! Konstante fuer das bot_follow_line_behaviour-Verhalten im Sim */
-#define LINE_SENSE		0x350	// Linie im Sim = 0x350
+#define LINE_SENSE		0x350	/**< Linie im Sim = 0x350 */
 #else
 /*! Konstante fuer das bot_follow_line_behaviour-Verhalten auf dem echten Bot*/
-#define LINE_SENSE		0x200	// Ab wann ist es eine Linie? (schwarz ca. 0x300, helle Tischflaeche 0x50)
+#define LINE_SENSE		0x200	/**< Ab wann ist es eine Linie? (schwarz ca. 0x300, helle Tischflaeche 0x50) */
 #endif // PC
 
 /* Konstanten fuer bot_catch_pillar_behaviour() */

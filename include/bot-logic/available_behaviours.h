@@ -25,8 +25,6 @@
 #ifndef AVAILABLE_BEHAVIOURS_H_
 #define AVAILABLE_BEHAVIOURS_H_
 
-#include "ct-Bot.h"
-
 #ifdef BEHAVIOUR_AVAILABLE
 
 //#define BEHAVIOUR_SIMPLE_AVAILABLE /*!< sind die Beispielverhalten vorhanden? */
@@ -99,24 +97,24 @@
 
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 #ifndef BOT_FS_AVAILABLE
-#warning "uBasic-Verhalten geht nur, wenn BOT_FS_AVAILABLE"
+#warning "uBasic-Verhalten benoetigt BOT_FS_AVAILABLE (siehe ct-Bot.h)"
 #undef BEHAVIOUR_UBASIC_AVAILABLE
 #endif // BOT_FS_AVAILABLE
 #endif // BEHAVIOUR_UBASIC_AVAILABLE
 
 #ifndef POS_STORE_AVAILABLE
 #ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
-#warning "drive_area() geht nur, wenn POS_STORE_AVAILABLE"
+#warning "drive_area-Verhalten benoetigt POS_STORE_AVAILABLE (siehe ct-Bot.h)"
 #undef BEHAVIOUR_DRIVE_AREA_AVAILABLE
 #endif // !POS_STORE_AVAILABLE
 
 #ifdef BEHAVIOUR_PATHPLANING_AVAILABLE
-#warning "Pfadplanung geht nur, wenn POS_STORE_AVAILABLE"
+#warning "Pfadplanungs-Verhalten benoetigt POS_STORE_AVAILABLE (siehe ct-Bot.h)"
 #undef BEHAVIOUR_PATHPLANING_AVAILABLE
 #endif // BEHAVIOUR_PATHPLANING_AVAILABLE
 
 #ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
-#warning "bot_line_shortest_way geht nur, wenn POS_STORE_AVAILABLE"
+#warning "bot_line_shortest_way-Verhalten benoetigt POS_STORE_AVAILABLE (siehe ct-Bot.h)"
 #undef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
 #endif
 #endif // BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
@@ -160,7 +158,7 @@
 
 #ifndef POS_STORE_AVAILABLE
 #ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-#warning "DriveStack geht nur, wenn POS_STORE_AVAILABLE"
+#warning "DriveStack-Verhalten benoetigt POS_STORE_AVAILABLE (siehe ct-Bot.h)"
 #endif
 #undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 #endif // !POS_STORE_AVAILABLE
@@ -252,11 +250,11 @@
 #ifndef SPEED_CONTROL_AVAILABLE
 // goto_pos geht nur, wenn wir uns auf die eingestellte Geschwindigkeit verlassen koennen
 #ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
-#warning "GotoPos geht nur, wenn SPEED_CONTROL_AVAILABLE"
+#warning "GotoPos-Verhalten benoetigt SPEED_CONTROL_AVAILABLE (siehe ct-Bot.h)"
 #endif
 #undef BEHAVIOUR_GOTO_POS_AVAILABLE
 #ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-#warning "DriveStack geht nur, wenn SPEED_CONTROL_AVAILABLE"
+#warning "DriveStack-Verhalten benoetigt SPEED_CONTROL_AVAILABLE (siehe ct-Bot.h)"
 #endif
 #undef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 #undef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE

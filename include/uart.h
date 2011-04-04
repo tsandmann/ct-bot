@@ -31,9 +31,7 @@
 #include <avr/io.h>
 #include "fifo.h"
 
-//#define BAUD	57600	/*!< Baudrate  57600 fuer UART-Kommunikation */
-#define BAUD	115200	/*!< Baudrate 115200 fuer UART-Kommunikation */
-//#define BAUD	500000	/*!< Baudrate 500000 fuer UART-Kommunikation */
+#define BAUD UART_BAUD // wird in bot-local.h definiert
 
 #define BAUD_TOL 3
 #include <util/setbaud.h>
