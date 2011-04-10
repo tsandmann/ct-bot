@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-04-10 Timo Sandmann [mail@timosandmann.de]: Einrichtung einer SD-Karte fuer BotFS dokumentiert, siehe contrib/BotFS/readme.txt oder botfs.c
+
 2011-04-01 Timo Sandmann [mail@timosandmann.de]: uBasic auf Revision 45 aktualisiert
 
 2011-03-19 Timo Sandmann [mail@timosandmann.de]: uBasic aktualisiert, Bugfix fuer Minilog-2-Sim, angefangen Header-Dateien aufzuraeumen

@@ -39,7 +39,7 @@ void delay(uint16_t ms);
  * Verzoegert um us Mikrosekunden
  * \param us Anzahl der Mikrosekunden
  */
-__attribute__((always_inline)) static inline void delay_us(const uint32_t us) {
+static inline void delay_us(const uint32_t us) __attribute__((always_inline)) {
 	const uint32_t cycles = F_CPU / 1000000UL * us;
 	__builtin_avr_delay_cycles(cycles);
 }
