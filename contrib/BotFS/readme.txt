@@ -39,9 +39,10 @@ unter Linux:
 
 unter Mac OS X:
  1. Disk-Nummer des Kartenlesers ausfinden machen (Festplatten-Dienstprogramm -> Info oder diskutil list), im Folgenden Beispiel disk3
- 2. sudo gunzip -c sd.img.zip | dd of=/dev/rdisk3 bs=4k
+ 2. sudo diskutil unmountDisk /dev/rdisk3
+ 3. sudo gunzip -c sd.img.zip | dd of=/dev/rdisk3 bs=4k
     (Achtung, /dev/rdisk3 entsprechend anpassen!)
- 3. sync
+ 4. sync
 
 unter Windows:
  0. physdiskwrite + PhysGUI von http://m0n0.ch/wall/physdiskwrite.php herunterladen und entpacken

@@ -237,7 +237,9 @@ int8_t map_init(void) {
 		/* Update-Thread initialisieren */
 #ifdef OS_DEBUG
 		os_mask_stack(map_update_stack, MAP_UPDATE_STACK_SIZE);
+#ifdef MAP_2_SIM_AVAILABLE
 		os_mask_stack(map_2_sim_worker_stack, MAP_2_SIM_STACK_SIZE);
+#endif
 #endif // OS_DEBUG
 		fifo_init(&map_update_fifo, map_update_fifo_buffer, (uint8_t) sizeof(map_update_fifo_buffer));
 #ifdef MAP_2_SIM_AVAILABLE

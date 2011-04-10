@@ -56,9 +56,10 @@
  *         3. \code sync \endcode\n
  *       - unter Mac OS X:\n
  *         1. Disk-Nummer des Kartenlesers ausfinden machen (Festplatten-Dienstprogramm -> Info oder diskutil list), im Folgenden Beispiel disk3\n
- *         2. \code sudo gunzip -c sd.img.zip | dd of=/dev/rdisk3 bs=4k \endcode
+ *         2. \code sudo diskutil unmountDisk /dev/rdisk3 \endcode
+ *         3. \code sudo gunzip -c sd.img.zip | dd of=/dev/rdisk3 bs=4k \endcode
  *            (Achtung, /dev/rdisk3 entsprechend anpassen!)\n
- *         3. \code sync \endcode\n
+ *         4. \code sync \endcode\n
  *       - unter Windows:\n
  *         0. physdiskwrite + PhysGUI von http://m0n0.ch/wall/physdiskwrite.php herunterladen und entpacken\n
  *         1. sd.img.zip entpacken, erzeugt die Datei sd.img\n

@@ -117,6 +117,7 @@ static uint32_t botfs_get_image_sector(char * imagename, void * buffer) {
 				PRINT_MSG(" Cluster: 0x%04x", next_cluster);
 				uint16_t last_fat_block = 0;
 				while (42) {
+/** \todo support fuer unsortierte Clusterkette */
 					/* FAT-Eintraege der Datei einlesen, auf Fragmentierung checken */
 					const uint16_t fat_block = fat_offset + next_cluster / (512 / sizeof(uint16_t));
 //					PRINT_MSG("fat_block=0x%04x", fat_block);

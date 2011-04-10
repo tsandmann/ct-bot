@@ -46,7 +46,7 @@ typedef struct {
 } os_signal_t;
 
 #define OS_MAX_THREADS		4	/*!< maximale Anzahl an Threads im System */
-#define OS_KERNEL_STACKSIZE	32	/*!< Groesse des Kernel-Stacks (fuer Timer-ISR) [Byte] */
+#define OS_KERNEL_STACKSIZE	36	/*!< Groesse des Kernel-Stacks (fuer Timer-ISR) [Byte] */
 #define OS_IDLE_STACKSIZE	64	/*!< Groesse des Idle-Stacks [Byte] */
 #define OS_CONTEXT_SIZE		17	/*!< Groesse des Kontextes eines Threads [Byte], muss zum Code in os_switch_thread() passen! */
 
