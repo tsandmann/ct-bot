@@ -115,7 +115,7 @@
 #define COL_FAR				400		/*!< Fernbereich [mm] */
 
 /* Zustaende und Konstanten fuer das bot_solve_maze_behaviour-Verhalten */
-#define OPTIMAL_DISTANCE	(int16_t)(BOT_DIAMETER * 1.2f)	/*!< Optimale Distanz zur Wand [mm]. Etwas mehr als Bot-Durchmesser ist ideal (vergroessert aufgrund der Kennlinien der Sharps) */
+#define OPTIMAL_DISTANCE	(int16_t)(BOT_DIAMETER * 1.3f)	/*!< Optimale Distanz zur Wand [mm]. Etwas mehr als Bot-Durchmesser ist ideal (vergroessert aufgrund der Kennlinien der Sharps) */
 #define ADJUST_DISTANCE		10		/*!< Toleranzbereich [mm] */
 #define IGNORE_DISTANCE		240		/*!< Entfernung, ab der eine Wand ignoriert wird [mm] */
 #define GROUND_GOAL			0x221	/*!< Farbe des Zielpads */
