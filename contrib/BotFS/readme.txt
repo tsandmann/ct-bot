@@ -33,9 +33,10 @@ Durchfuehrung Variante 1:
 Uebertragen des vorgefertigten Disk-Images:
 unter Linux:
  1. Device-Node des Kartenlesers ausfindig machen, z.B /dev/sdb wie im Folgenden
- 2. sudo gunzip -c sd.img.zip | dd of=/dev/sdb bs=4k
+ 2. Evtl. vorhandene Partitionen auf der SD-Karten unmounten
+ 3. sudo gunzip -c sd.img.zip | dd of=/dev/sdb bs=4k
     (Achtung, /dev/sdb entsprechend anpassen!)
- 3. sync
+ 4. sync
 
 unter Mac OS X:
  1. Disk-Nummer des Kartenlesers ausfinden machen (Festplatten-Dienstprogramm -> Info oder diskutil list), im Folgenden Beispiel disk3

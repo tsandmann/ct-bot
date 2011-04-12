@@ -235,7 +235,9 @@ void default_key_handler(void) {
 		/* Shutdown */
 #ifdef RC5_CODE_I_II
 		case RC5_CODE_I_II:
+#ifdef COMMAND_AVAILABLE
 			command_write(CMD_SHUTDOWN, SUB_CMD_NORM, 0, 0, 0);
+#endif
 #ifdef MCU
 			ctbot_shutdown();
 #endif // MCU

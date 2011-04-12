@@ -51,9 +51,10 @@
  *       Uebertragen des vorgefertigten Disk-Images (befindet sich in contrib/BotFS/sd.img.zip):
  *       - unter Linux:\n
  *         1. Device-Node des Kartenlesers ausfindig machen, z.B /dev/sdb wie im Folgenden\n
- *         2. \code sudo gunzip -c sd.img.zip | dd of=/dev/sdb bs=4k \endcode
+ *         2. Evtl. vorhandene Partitionen auf der SD-Karten unmounten\n
+ *         3. \code sudo gunzip -c sd.img.zip | dd of=/dev/sdb bs=4k \endcode
  *            (Achtung, /dev/sdb entsprechend anpassen!)\n
- *         3. \code sync \endcode\n
+ *         4. \code sync \endcode\n
  *       - unter Mac OS X:\n
  *         1. Disk-Nummer des Kartenlesers ausfinden machen (Festplatten-Dienstprogramm -> Info oder diskutil list), im Folgenden Beispiel disk3\n
  *         2. \code sudo diskutil unmountDisk /dev/rdisk3 \endcode

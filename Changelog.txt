@@ -1,5 +1,9 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-04-12 Timo Sandmann [mail@timosandmann.de]: Bugfixes fuer Map-Code, Threading-Code und #define-Abhaengigkeiten
+
+2011-04-11 Benjamin Benz [bbe@heise.de]: solve_maze rennt nun im Demo-Labyrinth nicht mehr gegen die Wand
+
 2011-04-10 Timo Sandmann [mail@timosandmann.de]: Einrichtung einer SD-Karte fuer BotFS dokumentiert, siehe contrib/BotFS/readme.txt oder botfs.c
 
 2011-04-01 Timo Sandmann [mail@timosandmann.de]: uBasic auf Revision 45 aktualisiert

@@ -27,7 +27,6 @@
 #ifndef COMMAND_H_
 #define COMMAND_H_
 
-#ifdef COMMAND_AVAILABLE
 #include "eeprom.h"
 #include "uart.h"
 
@@ -44,35 +43,6 @@
 #define low_write uart_send_cmd		/*!< Which function to use to write data */
 #define low_write_data uart_write	/*!< Which function to use to write data */
 #endif // MCU
-
-
-/*! Request Teil eines Kommandos */
-typedef struct {
-#if (defined PC) && (BYTE_ORDER == BIG_ENDIAN)
-	/* Bitfeld im big-endian-Fall umdrehen */
-	uint8_t command;		/*!< Kommando */
-	unsigned direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
-	unsigned subcommand:7;	/*!< Subkommando */
-#else
-	uint8_t command;		/*!< Kommando */
-	unsigned subcommand:7;	/*!< Subkommando */
-	unsigned direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
-#endif
-} PACKED request_t;
-
-
-/*! Kommando */
-typedef struct {
-	uint8_t startCode;	/*!< Markiert den Beginn eines Commands */
-	request_t request; 	/*!< Command-ID */
-	uint8_t  payload;	/*!< Bytes, die dem Kommando noch folgen */
-	int16_t data_l;		/*!< Daten zum Kommando link s*/
-	int16_t data_r;		/*!< Daten zum Kommando rechts */
-	uint8_t seq;		/*!< Paket-Sequenznummer */
-	uint8_t from;		/*!< Absender-Adresse */
-	uint8_t to;			/*!< Empfaenger-Adresse */
-	uint8_t CRC;		/*!< Markiert das Ende des Commands */
-} PACKED command_t;
 
 #define CMD_STARTCODE	'>'		/*!< Anfang eines Kommandos */
 #define CMD_STOPCODE	'<'		/*!< Ende eines Kommandos */
@@ -155,6 +125,34 @@ typedef struct {
 
 #define CMD_BROADCAST	0xFF	/*!< Broadcast-Adresse, Daten gehen an alle Bot */
 #define CMD_SIM_ADDR	0xFE	/*!< "Bot"-Adresse des Sim */
+
+#ifdef COMMAND_AVAILABLE
+/*! Request Teil eines Kommandos */
+typedef struct {
+#if (defined PC) && (BYTE_ORDER == BIG_ENDIAN)
+	/* Bitfeld im big-endian-Fall umdrehen */
+	uint8_t command;		/*!< Kommando */
+	unsigned direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
+	unsigned subcommand:7;	/*!< Subkommando */
+#else
+	uint8_t command;		/*!< Kommando */
+	unsigned subcommand:7;	/*!< Subkommando */
+	unsigned direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
+#endif
+} PACKED request_t;
+
+/*! Kommando */
+typedef struct {
+	uint8_t startCode;	/*!< Markiert den Beginn eines Commands */
+	request_t request; 	/*!< Command-ID */
+	uint8_t  payload;	/*!< Bytes, die dem Kommando noch folgen */
+	int16_t data_l;		/*!< Daten zum Kommando link s*/
+	int16_t data_r;		/*!< Daten zum Kommando rechts */
+	uint8_t seq;		/*!< Paket-Sequenznummer */
+	uint8_t from;		/*!< Absender-Adresse */
+	uint8_t to;			/*!< Empfaenger-Adresse */
+	uint8_t CRC;		/*!< Markiert das Ende des Commands */
+} PACKED command_t;
 
 extern command_t received_command;	/*!< Puffer fuer Kommandos */
 

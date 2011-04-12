@@ -90,7 +90,7 @@ Tcb_t * os_create_thread(void * pStack, void (* pIp)(void)) {
 				*(sp - 3) = tmp.bytes.hi8;
 				*(sp - 4) = SREG; // beim ersten Wechsel auf diesen Thread wird das Statusregister vom Stack geholt, darum hier auf den Stack schreiben
 				uint8_t * p = pStack;
-				ptr->stack = p - (4 + OS_CONTEXT_SIZE); // 4x push und 17 Bytes fuer Kontext => Stack-Pointer - (4 + 17)
+				ptr->stack = p - (4 + OS_CONTEXT_SIZE); // 4x push und OS_CONTEXT_SIZE Bytes fuer Kontext => Stack-Pointer - (4 + OS_CONTEXT_SIZE)
 			}
 			os_scheduling_allowed = 1; // Scheduling wieder erlaubt
 			/* TCB zurueckgeben */
@@ -192,6 +192,8 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to) {
 		"push r15									\n\t"
 		"push r16									\n\t"
 		"push r17									\n\t"
+		"push r28									\n\t"
+		"push r29									\n\t"
 	//-- hier ist noch "from" (Z) der aktive Thread 	--//
 		"in r16, __SP_L__	; switch Stacks			\n\t"
 		"st Z+, r16									\n\t"
@@ -203,7 +205,9 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to) {
 		"ld r16, X 									\n\t"
 		"out __SP_H__, r16							\n\t"
 	//-- jetzt ist schon "to" (X) der aktive Thread 	--//
-		"pop r17				; restore registers	\n\t"
+		"pop r29			; restore registers		\n\t"
+		"pop r28									\n\t"
+		"pop r17									\n\t"
 		"pop r16									\n\t"
 		"pop r15									\n\t"
 		"pop r14									\n\t"

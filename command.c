@@ -525,6 +525,7 @@ int8_t command_evaluate(void) {
 					}
 				} else {
 					/* Fehler */
+					LOG_ERROR("Timeout beim Programmempfang");
 					prog_size = 0;
 				}
 				break;
@@ -576,7 +577,7 @@ int8_t command_evaluate(void) {
 					}
 				} else {
 					/* Fehler */
-					LOG_ERROR("Fehler beim Datenempfang");
+					LOG_ERROR("Timeout beim Programmempfang");
 					prog_size = 0;
 				}
 				break;

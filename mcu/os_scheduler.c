@@ -204,7 +204,7 @@ void os_idle(void) {
 		if (kernel_log_fifo.count > 0) {
 			kernel_log_t data;
 			fifo_get_data(&kernel_log_fifo, &data, sizeof(data));
-			LOG_RAW("%u\t%u>%u", data.time, data.from, data.to);
+			LOG_RAW("%u\t%u>%u\n", data.time, data.from, data.to);
 		}
 #endif // OS_KERNEL_LOG_AVAILABLE
 	}

@@ -132,7 +132,7 @@
 
 #define MACRO_BLOCK_LENGTH	512U			/*!< Kantenlaenge eines Makroblocks in Punkten/Byte */
 #define MAP_LENGTH_IN_MACRO_BLOCKS ((uint8_t) (MAP_SIZE_MM * MAP_RESOLUTION / 1000 / MACRO_BLOCK_LENGTH)) /*!< Kantenlaenge der Karte in Makrobloecken */
-#define MAP_ALIGNMENT_MASK	(2 * MACRO_BLOCK_LENGTH * MACRO_BLOCK_LENGTH / BOTFS_BLOCK_SIZE - 1) /*!< fuer die Ausrichtung der Karte an einer Sektorgrenze zu Optimierungszwecken */
+#define MAP_ALIGNMENT_MASK	(2UL * MACRO_BLOCK_LENGTH * MACRO_BLOCK_LENGTH / BOTFS_BLOCK_SIZE - 1) /*!< fuer die Ausrichtung der Karte an einer Sektorgrenze zu Optimierungszwecken */
 
 #ifdef BOT_FS_AVAILABLE
 #define MAP_FILENAME	"/map" /*!< Dateiname der Karte */

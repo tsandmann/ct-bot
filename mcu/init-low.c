@@ -165,7 +165,9 @@ void ctbot_init_low_last(void) {
  * Faehrt den low-level Code des Bots sauber herunter
  */
 void ctbot_shutdown_low() {
+#ifdef UART_AVAILABLE
 	while (uart_outfifo.count > 0) {} // Commands flushen
+#endif
 	__builtin_avr_cli();
 	UCSRB = 0; // UART aus
 	LED_off(0xff);
