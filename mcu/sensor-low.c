@@ -393,8 +393,8 @@ void bot_encoder_isr(void) {
 #else // ! SPEED_CONTROL_AVAILABLE
 #ifdef SPEED_LOG_AVAILABLE
 			uint8_t index = slog_i[0];
-			slog.data[0][index].pwm = motor_left;
-			slog.data[0][index].time = tickCount.u32;
+			slog->data[0][index].pwm = motor_left;
+			slog->data[0][index].time = tickCount.u32;
 			index++;
 			slog_i[0] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
 #endif // SPEED_LOG_AVAILABLE
@@ -431,8 +431,8 @@ void bot_encoder_isr(void) {
 #else // ! SPEED_CONTROL_AVAILABLE
 #ifdef SPEED_LOG_AVAILABLE
 			uint8_t index = slog_i[1];
-			slog.data[1][index].pwm = motor_right;
-			slog.data[1][index].time = tickCount.u32;
+			slog->data[1][index].pwm = motor_right;
+			slog->data[1][index].time = tickCount.u32;
 			index++;
 			slog_i[1] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
 #endif // SPEED_LOG_AVAILABLE

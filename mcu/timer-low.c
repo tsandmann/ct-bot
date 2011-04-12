@@ -66,7 +66,7 @@ ISR(TIMER2_COMP_vect) {
 	__builtin_avr_sei(); // Interrupts wieder an, z.B. UART-Kommunikation kann parallel zu RC5 und Encoderauswertung laufen
 
 	/* - FERNBEDIENUNG - */
-#ifdef IR_AVAILABLE
+#ifdef RC5_AVAILABLE
 	ir_isr(&rc5_ir_data, &RC5_PINR, RC5_PIN, RC5_PAUSE_SAMPLES, RC5_SAMPLES_PER_BIT, RC5_BITS);
 #endif
 

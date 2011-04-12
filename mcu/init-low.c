@@ -170,7 +170,9 @@ void ctbot_shutdown_low() {
 #endif
 	__builtin_avr_cli();
 	UCSRB = 0; // UART aus
+#ifdef LED_AVAILABLE
 	LED_off(0xff);
+#endif
 	ENA_off(0xff);
 	do {
 		_SLEEP_CONTROL_REG = (uint8_t) (((_SLEEP_CONTROL_REG & ~(_BV(SM0) | _BV(SM1) | _BV(SM2))) | (SLEEP_MODE_PWR_DOWN)));

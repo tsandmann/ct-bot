@@ -338,6 +338,7 @@ void os_display(void) {
 	}
 #endif // OS_DEBUG
 
+#ifdef RC5_AVAILABLE
 	/* Keyhandler */
 	switch (RC5_Code) {
 	case RC5_CODE_1:
@@ -370,8 +371,9 @@ void os_display(void) {
 		break;
 #endif // OS_KERNEL_LOG_AVAILABLE
 	}
+#endif // RC5_AVAILABLE
 }
-#endif // DISPLAY_MAP_AVAILABLE
+#endif // DISPLAY_OS_AVAILABLE
 
 #endif // OS_AVAILABLE
 #endif // MCU
