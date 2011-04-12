@@ -26,11 +26,15 @@
  */
 
 #include "ct-Bot.h"
+
+#ifdef POS_STORE_AVAILABLE
+#include "bot-logic/bot-logic.h"
+#include "command.h"
+#include "bot-2-bot.h"
 #include "pos_store.h"
 #include "log.h"
 #include <stdio.h>
-
-#ifdef POS_STORE_AVAILABLE
+#include <stdlib.h>
 
 #define DEBUG_POS_STORE		// Schalter fuer Debug-Ausgaben
 
@@ -586,5 +590,5 @@ void pos_store_test(void) {
 	pos_store_release(store);
 	printf("Test PASSED\n\n");
 }
-#endif	// PC
-#endif	// POS_STORE_AVAILABLE
+#endif // PC
+#endif // POS_STORE_AVAILABLE

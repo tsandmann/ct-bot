@@ -18,7 +18,7 @@
  */
 
 /*! @file 	behaviour_goto.h
- * @brief 	Fahre ein stueck
+ * @brief 	Bot faehrt einen Punkt an
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.06
 */
@@ -26,7 +26,6 @@
 #ifndef BEHAVIOUR_GOTO_H_
 #define BEHAVIOUR_GOTO_H_
 
-#include "bot-logic/bot-logik.h"
 #ifdef BEHAVIOUR_GOTO_AVAILABLE
 /*!
  * Kuemmert sich intern um die Ausfuehrung der goto-Kommandos,
@@ -42,5 +41,5 @@ void bot_goto_behaviour(Behaviour_t  *data);
  * @param right Schritte rechts
  */
 void bot_goto(Behaviour_t * caller, int16_t left, int16_t right);
-#endif
-#endif /*BEHAVIOUR_GOTO_H_*/
+#endif // BEHAVIOUR_GOTO_AVAILABLE
+#endif // BEHAVIOUR_GOTO_H_

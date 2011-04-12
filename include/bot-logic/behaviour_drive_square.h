@@ -28,7 +28,6 @@
 #ifndef BEHAVIOUR_DRIVE_SQUARE_H_
 #define BEHAVIOUR_DRIVE_SQUARE_H_
 
-#include "bot-logic/bot-logik.h"
 #ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
 /*!
  * Laesst den Roboter ein Quadrat abfahren.
@@ -45,5 +44,5 @@ void bot_drive_square_behaviour(Behaviour_t * data);
  */
 void bot_drive_square(Behaviour_t * caller);
 
-#endif	// BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
-#endif /*BEHAVIOUR_DRIVE_SQUARE_H_*/
+#endif // BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
+#endif // BEHAVIOUR_DRIVE_SQUARE_H_

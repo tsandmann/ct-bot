@@ -22,25 +22,29 @@
  * @brief 	Bot-2-Bot-Kommunikation
  * @author 	Timo Sandmann (mail@timosandmann.de)
  * @date 	19.03.2008
- *
- * @todo regelmaessig Pings senden, um inaktive Bots aus der Liste entfernen zu koennen?
  */
 
-#define DEBUG_BOT2BOT		/*!< Schaltet LOG-Ausgaben (z.B. Bot-Liste) ein oder aus */
+#define DEBUG_BOT2BOT /*!< Schaltet LOG-Ausgaben (z.B. Bot-Liste) ein oder aus */
 
 #include "ct-Bot.h"
+
 #ifdef BOT_2_BOT_AVAILABLE
+#include "bot-logic/bot-logic.h"
+#include "command.h"
 #include "bot-2-bot.h"
+#include "bot-2-sim.h"
 #include "log.h"
 #include "tcp.h"
 #include "sensor.h"
 #include "pos_store.h"
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifndef DEBUG_BOT2BOT
 #undef LOG_AVAILABLE
 #undef LOG_DEBUG
-#define LOG_DEBUG(a, ...) {}	/*!< Log-Dummy */
+#define LOG_DEBUG(a, ...) {} /*!< Log-Dummy */
 #endif
 
 bot_list_entry_t * bot_list = NULL; /*!< Liste aller bekannten Bots */
@@ -53,13 +57,13 @@ static uint8_t * bot_2_bot_data = NULL;				/*!< Zeiger auf die zu sendenden oder
 static void (* bot_2_bot_callback)(void) = NULL;	/*!< Callback-Funktion, die nach Abschluss des Empfangs ausgefuehrt wird */
 
 #ifdef BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
-static uint8_t payload_test_buffer[255];	/*!< Datenpuffer fuer Bot-2-Bot-Payload-Test */
-#endif	// BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
+static uint8_t payload_test_buffer[255]; /*!< Datenpuffer fuer Bot-2-Bot-Payload-Test */
+#endif // BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
 
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
-static char remotecall_buffer[REMOTE_CALL_BUFFER_SIZE];	/*!< Puffer fuer RemoteCall-Empfang von anderem Bot */
+static char remotecall_buffer[REMOTE_CALL_BUFFER_SIZE]; /*!< Puffer fuer RemoteCall-Empfang von anderem Bot */
 #endif
-#endif	// BOT_2_BOT_PAYLOAD_AVAILABLE
+#endif // BOT_2_BOT_PAYLOAD_AVAILABLE
 
 void default_cmd(command_t * cmd);
 
@@ -100,7 +104,7 @@ void (* cmd_functions[])(command_t * cmd) = {
 		BOT_2_BOT_DUMMY,
 		BOT_2_BOT_DUMMY,
 		BOT_2_BOT_DUMMY,
-#endif	// BOT_2_BOT_PAYLOAD_AVAILABLE
+#endif // BOT_2_BOT_PAYLOAD_AVAILABLE
 	};
 
 #ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
@@ -121,19 +125,19 @@ bot_2_bot_payload_mappings_t bot_2_bot_payload_mappings[] = {
 	{ bot_2_bot_payload_test_verify, payload_test_buffer, sizeof(payload_test_buffer) },
 #else
 	BOT_2_BOT_PAYLOAD_DUMMY,
-#endif	// BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
+#endif // BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 	{ bot_2_bot_handle_remotecall, remotecall_buffer, sizeof(remotecall_buffer) },
 #else
 	BOT_2_BOT_PAYLOAD_DUMMY,
-#endif	// BEHAVIOUR_REMOTECALL_AVAILABLE
+#endif // BEHAVIOUR_REMOTECALL_AVAILABLE
 #ifdef POS_STORE_AVAILABLE
 	{ bot_2_bot_handle_pos_store_data, NULL, 0 },
 #else
 	BOT_2_BOT_PAYLOAD_DUMMY,
 #endif // POS_STORE_AVAILABLE
 };
-#endif	// BOT_2_BOT_PAYLOAD_AVAILABLE
+#endif // BOT_2_BOT_PAYLOAD_AVAILABLE
 
 /*!
  * Gibt die Anzahl der Kommando-Funktionen zurueck
@@ -150,7 +154,7 @@ uint8_t get_bot2bot_cmds(void) {
  */
 uint8_t get_command_of_function(void(* func)(command_t * cmd)) {
 	uint8_t i;
-	for (i = 0; i < sizeof(cmd_functions) / sizeof(void *); i++) {
+	for (i = 0; i < sizeof(cmd_functions) / sizeof(void *); ++i) {
 		if (cmd_functions[i] == func)
 			return i;
 	}
@@ -245,7 +249,7 @@ void delete_bot_from_list(uint8_t address) {
 		ptr = ptr->next;
 	}
 }
-#endif	// DELETE_BOTS
+#endif // DELETE_BOTS
 /*!
  * Sucht den naechsten verfuegbaren Bot in der Botliste
  * @param *ptr	Zeiger auf letzten Eintrag oder NULL (=Anfang)
@@ -298,7 +302,7 @@ void publish_bot_state(int16_t state) {
  */
 uint8_t get_type_of_payload_function(void(* func)(void)) {
 	uint8_t i;
-	for (i = 0; i < sizeof(bot_2_bot_payload_mappings) / sizeof(bot_2_bot_payload_mappings[0]); i++) {
+	for (i = 0; i < sizeof(bot_2_bot_payload_mappings) / sizeof(bot_2_bot_payload_mappings[0]); ++i) {
 		if (bot_2_bot_payload_mappings[i].function == func)
 			return i;
 	}
@@ -352,7 +356,7 @@ int8_t bot_2_bot_send_payload_request(uint8_t to, uint8_t type,
 			bot_2_bot_payload_size = 0;
 			return -3;
 		}
-#endif	// MCU
+#endif // MCU
 	}
 	if (bot_2_bot_payload_size == -2) {
 		LOG_DEBUG(" Alle Daten fehlerfrei zu Bot %u uebertragen", to);
@@ -423,7 +427,7 @@ void bot_2_bot_handle_payload_request(command_t * cmd) {
 				}
 			}
 		}
-#endif	// MCU
+#endif // MCU
 	}
 }
 
@@ -497,7 +501,7 @@ void bot_2_bot_handle_payload_data(command_t * cmd) {
 /*! @todo Timeout */
 	/* warten, bis Payload-Daten im Empfangspuffer */
 	while (uart_data_available() < size) {}
-#endif	// MCU
+#endif // MCU
 	uint8_t n = low_read(bot_2_bot_data, size);
 	LOG_DEBUG(" %u Bytes der Payload gelesen", n);
 	if (size != n) {
@@ -554,11 +558,11 @@ void bot_2_bot_print_recv_data(void) {
 		}
 	}
 	printf("\n");
-#endif	// DEBUG_BOT2BOT
+#endif // DEBUG_BOT2BOT
 }
 
 #ifdef BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
-static const char * test_string = "Hey Bot!";	/*!< Testdaten fuer Payload-Test */
+static const char * test_string = "Hey Bot!"; /*!< Testdaten fuer Payload-Test */
 
 /*!
  * Testet den Payload-Empfang
@@ -604,11 +608,11 @@ int8_t bot_2_bot_pl_test(Behaviour_t * caller, uint8_t to) {
 	LOG_DEBUG("bot_2_bot_payload_test(%u) abgeschlossen mit %d", to, result);
 	memset(payload_test_buffer, 0, sizeof(payload_test_buffer));
 	if (caller != NULL) {
-		caller->subResult = result == 0 ? SUBSUCCESS : SUBFAIL;
+		caller->subResult = result == 0 ? BEHAVIOUR_SUBSUCCESS : BEHAVIOUR_SUBFAIL;
 	}
 	return result;
 }
-#endif	// BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
+#endif // BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
 
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 /*!
@@ -657,8 +661,8 @@ int8_t bot_2_bot_start_remotecall(uint8_t bot_addr, char * function, remote_call
 	/* Payloaduebertragung starten */
 	return bot_2_bot_send_payload_request(bot_addr, BOT_2_BOT_REMOTECALL, remotecall_buffer, REMOTE_CALL_BUFFER_SIZE);
 }
-#endif	// BEHAVIOUR_REMOTECALL_AVAILABLE
-#endif	// BOT_2_BOT_PAYLOAD_AVAILABLE
+#endif // BEHAVIOUR_REMOTECALL_AVAILABLE
+#endif // BOT_2_BOT_PAYLOAD_AVAILABLE
 
 #ifdef LOG_AVAILABLE
 /*!
@@ -683,5 +687,5 @@ void print_bot_list(void) {
 		}
 	}
 }
-#endif	// LOG_AVAILABLE
-#endif	// BOT_2_BOT_AVAILABLE
+#endif // LOG_AVAILABLE
+#endif // BOT_2_BOT_AVAILABLE

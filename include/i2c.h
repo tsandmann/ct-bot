@@ -28,11 +28,8 @@
 #ifndef I2C_H_
 #define I2C_H_
 
-#include "ct-Bot.h"
-#include <stdlib.h>
-
 #ifdef I2C_AVAILABLE
-#include <util/twi.h>
+#include <stddef.h>
 
 /*!
  * Initialisiert das I2C-Modul
@@ -75,5 +72,5 @@ static inline void i2c_write(uint8_t sla, void * pTx, uint8_t nTx) {
  */
 uint8_t i2c_wait(void);
 
-#endif	// I2C_AVAILABLE
-#endif	// I2C_H_
+#endif // I2C_AVAILABLE
+#endif // I2C_H_

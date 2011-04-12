@@ -1,0 +1,38 @@
+rem simple Verhalten
+rem Quadrat fahren
+10:
+call("RC", "bot_goto_dist", 300, 1)
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+rem drehen
+call("RC", "bot_turn", 90)
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+REM Leerzeile, um die Datei zu vergroessern
+goto 10
+end

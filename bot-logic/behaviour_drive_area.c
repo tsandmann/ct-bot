@@ -19,20 +19,22 @@
 
 
 /*!
- * @file 	behaviour_drive_area.c
- * @brief 	Flaechendeckendes Fahren als Verhalten (Staubsauger)
- *          Der Bot faehrt geradeaus bis zu einem Hindernis, dort dreht er sich zu einer Seite und faehrt auf der Nebenspur wieder zurueck. Der
- *          andere moegliche Weg wird als Alternative auf den Stack gespeichert. Falls es irgendwo nicht weitergeht, so wird eine solche Strecke
- *          vom Stack geholt und angefahren. Leider gibt es noch kein Map-Planungsverhalten, welches einen anderen Punkt unter Umgehung von
- *          Hindernissen anfaehrt. In dieser Version wird etwas tricky gefahren und versucht, diese Strecke anzufahren. Im Falle
- *          aber des nicht moeglichen Anfahrens wird eben diese Strecke verworfen. Ein Planungsverhalten, welches moeglichst auch
- *          nur ueber befahrene Abschnitte plant, wuerde entscheidend helfen.
+ * \file 	behaviour_drive_area.c
+ * \brief 	Flaechendeckendes Fahren als Verhalten (Staubsauger)
  *
- * @author 	Frank Menzel (Menzelfr@gmx.net)
- * @date 	16.07.2008
+ * Der Bot faehrt geradeaus bis zu einem Hindernis, dort dreht er sich zu einer Seite und faehrt auf der Nebenspur wieder zurueck.
+ * Der andere moegliche Weg wird als Alternative auf den Stack gespeichert. Falls es irgendwo nicht weitergeht, so wird eine
+ * solche Strecke vom Stack geholt und angefahren. Leider gibt es noch kein Map-Planungsverhalten, welches einen anderen Punkt
+ * unter Umgehung von Hindernissen anfaehrt. In dieser Version wird etwas tricky gefahren und versucht, diese Strecke anzufahren.
+ * Im Falle aber des nicht moeglichen Anfahrens wird eben diese Strecke verworfen. Ein Planungsverhalten, welches moeglichst auch
+ * nur ueber befahrene Abschnitte plant, wuerde entscheidend helfen.
+ * \author 	Frank Menzel (Menzelfr@gmx.net)
+ * \date 	16.07.2008
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
+
+#ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
 #include "bot-logic/behaviour_drive_area.h"
 #include "map.h"
 #include "timer.h"
@@ -42,8 +44,6 @@
 #include "command.h"
 #include <math.h>
 #include <stdlib.h>
-
-#ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
 
 #define GO_WITH_PATHPLANING  		// auskommentieren, falls ohne Pfadplanung
 
@@ -122,7 +122,7 @@ static uint32_t lastCorrectionTime = 0;
 typedef struct {
 	position_t point1;
 	position_t point2;
-} trackpoint_t;
+} PACKED trackpoint_t;
 
 /*! Nachbarbahnen links und rechts */
 static trackpoint_t observe_trackleft;
@@ -146,15 +146,15 @@ static position_t pos_store_data[STACK_SIZE];	/*!< Statischer Speicher fuer pos_
 /*!
  * Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein;
  * dient zur Visualisierung der Arbeitsweise des Verhaltens
- * @param from	Koordinaten des ersten Punktes der Linie
- * @param to	Koordinaten des zweiten Punktes der Linie
- * @param color Farbe der Linie: 0=gruen, 1=rot, sonst schwarz
+ * \param from	Koordinaten des ersten Punktes der Linie
+ * \param to	Koordinaten des zweiten Punktes der Linie
+ * \param color Farbe der Linie: 0=gruen, 1=rot, sonst schwarz
  */
 static void draw_line_world(position_t from, position_t to, uint8_t color) {
 	command_write(CMD_MAP, SUB_MAP_CLEAR_LINES, 2, 0, 0);
 	map_draw_line_world(from, to, color);
 }
-#endif	// MAP_2_SIM_AVAILABLE
+#endif // MAP_2_SIM_AVAILABLE
 
 /*!
  * Notfallhandler, ausgefuehrt bei Abgrunderkennung und muss registriert werden
@@ -166,8 +166,8 @@ void border_drive_area_handler(void) {
 
 /*!
  * liefert den Wert eines Feldes als Durchschnittwert laut Map in bestimmtem Umkreis
- * @param point	XY-Weltkoordinate
- * @return	Durchschnittswert des Feldes (>0 heisst frei, <0 heisst belegt)
+ * \param point	XY-Weltkoordinate
+ * \return	Durchschnittswert des Feldes (>0 heisst frei, <0 heisst belegt)
  */
 static int8_t map_get_field(position_t point) {
 #ifdef DEBUG_DRIVE_AREA_TIMES
@@ -175,14 +175,14 @@ static int8_t map_get_field(position_t point) {
 	TIMER_MEASURE_TIME(result = map_get_average(point.x, point.y, 50));
 	return result;
 #else
-	return map_get_average(point.x, point.y, 50);  // Mapwert Durchschnitt
+	return map_get_average(point.x, point.y, 50); // Mapwert Durchschnitt
 #endif
 }
 
 /*!
  * Speichert eine Line auf dem Stack, d.h. den Start- und Endpunkt der Linie
- * @param point1	Koordinaten des ersten Punktes der Linie
- * @param point2	Koordinaten des zweiten Punktes der Linie
+ * \param point1	Koordinaten des ersten Punktes der Linie
+ * \param point2	Koordinaten des zweiten Punktes der Linie
  */
 static void push_stack_pos_line(position_t point1, position_t point2) {
 	if ((point1.x == 0 && point1.y == 0) || (point2.x == 0 && point2.y == 0))
@@ -201,9 +201,9 @@ static void push_stack_pos_line(position_t point1, position_t point2) {
 
 /*!
  * Holt eine Line vom Stack, d.h. die beiden Punkte der Linie werden zurueckgegeben
- * @param *point1	Koordinaten des ersten Punktes der Linie
- * @param *point2	Koordinaten des zweiten Punktes der Linie
- * @return True wenn erfolgreich, False falls Stack leer ist
+ * \param *point1	Koordinaten des ersten Punktes der Linie
+ * \param *point2	Koordinaten des zweiten Punktes der Linie
+ * \return True wenn erfolgreich, False falls Stack leer ist
  */
 static uint8_t pop_stack_pos_line(position_t *point1, position_t *point2) {
 
@@ -218,9 +218,9 @@ static uint8_t pop_stack_pos_line(position_t *point1, position_t *point2) {
 
 /*!
  * Hilfsroutine, um 2 Punkte in die Merkvariable zu speichern
- * @param *lastpoint XY-Merkvariable
- * @param mapx zu merkender X-Wert
- * @param mapy zu merkender Y-Wert
+ * \param *lastpoint XY-Merkvariable
+ * \param mapx zu merkender X-Wert
+ * \param mapy zu merkender Y-Wert
  */
 static void set_point_to_lastpoint(position_t * lastpoint,int16_t mapx, int16_t mapy) {
 	lastpoint->x = mapx;
@@ -229,9 +229,9 @@ static void set_point_to_lastpoint(position_t * lastpoint,int16_t mapx, int16_t 
 
 /*!
  * Liefert True, wenn der Abstand zwischen den beiden Punkten gueltig ist, d.h. erreicht oder ueberschritten wurde
- * @param point_s World-XY-Koordinate des zu untersuchenden Punktes
- * @param point_d World-XY-Koordinate des Zielpunktes
- * @return True bei Erreichen des Abstandes zwischen den beiden Punkten sonst False
+ * \param point_s World-XY-Koordinate des zu untersuchenden Punktes
+ * \param point_d World-XY-Koordinate des Zielpunktes
+ * \return True bei Erreichen des Abstandes zwischen den beiden Punkten sonst False
  */
 static uint8_t dist_valid(position_t point_s, position_t point_d) {
 	// falls ein Punktepaar noch 0 hat, so ist dies ungueltig
@@ -244,11 +244,11 @@ static uint8_t dist_valid(position_t point_s, position_t point_d) {
 
 /*!
  * Berechnung des Seitenpunktes der Nebenbahn mit Rueckgabe des Punktes und des Map-Durchschnittswertes
- * @param sidedist	seitlicher Abstand vom Botmittelpunkt
- * @param dist 		Punkt im Abstand voraus
- * @param side 		Trackleft (-1) oder Trackright (+1) fuer links oder rechts vom bot gesehen
- * @param *point 	berechnete Map-Weltkoordinate
- * @return 			Mapwert an dem ermittelten Punkt in Blickrichtung zum Abstand dist
+ * \param sidedist	seitlicher Abstand vom Botmittelpunkt
+ * \param dist 		Punkt im Abstand voraus
+ * \param side 		Trackleft (-1) oder Trackright (+1) fuer links oder rechts vom bot gesehen
+ * \param *point 	berechnete Map-Weltkoordinate
+ * \return 			Mapwert an dem ermittelten Punkt in Blickrichtung zum Abstand dist
  */
 static int8_t getpoint_side_dist(int16_t sidedist, int16_t dist, int8_t side, position_t * point) {
 	// Berechnung je nach zu blickender Seite des Bots
@@ -273,10 +273,11 @@ static int8_t getpoint_side_dist(int16_t sidedist, int16_t dist, int8_t side, po
  * =========================================================================================*/
 
 
-/*! Prueft ob der Bot schon eine bestimmte Strecke gefahren ist seit dem letzten Observerdurchgang
- * @param  *last_xpoint   letzte gemerkte X-Koordinate
- * @param  *last_ypoint   letzte gemerkte Y-Koordinate
- * @return True, wenn Bot schon gewisse Strecke gefahren ist und Map zu checken ist sonst False
+/*!
+ * Prueft ob der Bot schon eine bestimmte Strecke gefahren ist seit dem letzten Observerdurchgang
+ * \param  *last_xpoint   letzte gemerkte X-Koordinate
+ * \param  *last_ypoint   letzte gemerkte Y-Koordinate
+ * \return True, wenn Bot schon gewisse Strecke gefahren ist und Map zu checken ist sonst False
  */
 static uint8_t check_map_after_distance(int16_t * last_xpoint,
 		int16_t * last_ypoint) {
@@ -294,18 +295,20 @@ static uint8_t check_map_after_distance(int16_t * last_xpoint,
 	return False;
 }
 
-/*!  Kennung, dass die Observer-Verhalten beendet werden sollen; bei True soll Verhalten sofort beendet werden mit
- *   vorherigem Gueltigkeitscheck des Endpunktes
+/*!
+ * Kennung, dass die Observer-Verhalten beendet werden sollen; bei True soll Verhalten sofort beendet werden mit
+ * vorherigem Gueltigkeitscheck des Endpunktes
  */
 static uint8_t endrequest = False;
 
-/*! Verhaltensroutine fuer beide Observer zur Ermittlung des Startpunktes der Nebenspur
+/*!
+ * Verhaltensroutine fuer beide Observer zur Ermittlung des Startpunktes der Nebenspur
  * Je nach zu checkender Botseite wird der Punkt in der Nachbarspur auf Anfahrbarkeit gecheckt
  * und hier der Startpunkt der nebenbahn ermittelt
- * @param checkside		zu checkende Seite (TRACKLEFT TRACKRIGHT)
- * @param *observe		Zeiger auf die Koordinaten der Bahn, hier Startpunkt zurueckgegeben
- * @param *behavstate	Zeiger auf Status
- * @return 				True falls Startpunkt anfahrbar ist und zurueckgegeben wurde sonst False
+ * \param checkside		zu checkende Seite (TRACKLEFT TRACKRIGHT)
+ * \param *observe		Zeiger auf die Koordinaten der Bahn, hier Startpunkt zurueckgegeben
+ * \param *behavstate	Zeiger auf Status
+ * \return 				True falls Startpunkt anfahrbar ist und zurueckgegeben wurde sonst False
  */
 static uint8_t observe_get_startpoint(int8_t checkside, trackpoint_t * observe, uint8_t * behavstate) {
 	position_t map_pos;
@@ -352,11 +355,11 @@ static uint8_t observe_get_startpoint(int8_t checkside, trackpoint_t * observe, 
 /*!
  * Verhaltensroutine fuer beide Observer zur Endepunktermittlung; liefert True wenn der Endepunkt gueltig ist und damit ermittelt werden konnte
  * bei einem Teilhindernis auf der Nebenbahn wird eine gueltige befahrbare Strecke automatisch auf den Stack gelegt zum spaeteren Anfahren
- * @param checkside			Seite der zu beobachtenden Nebenbahn (TRACKLEFT TRACKRIGHT)
- * @param *behavstate		Neuer Zustand des Obserververhalten
- * @param *observer			Zeiger auf Punkte der Nebenbahn, gueltiger Endepunkt wird hier vermerkt
- * @param *lastpoint		Zeiger auf letzten gueltigen Wert der Nebenbahn, verwendeter Wert bei Erkennung Hindernis
- * @return True falls Endpunkt auf der Seite ermittelt werden konnte sonst False
+ * \param checkside			Seite der zu beobachtenden Nebenbahn (TRACKLEFT TRACKRIGHT)
+ * \param *behavstate		Neuer Zustand des Obserververhalten
+ * \param *observer			Zeiger auf Punkte der Nebenbahn, gueltiger Endepunkt wird hier vermerkt
+ * \param *lastpoint		Zeiger auf letzten gueltigen Wert der Nebenbahn, verwendeter Wert bei Erkennung Hindernis
+ * \return True falls Endpunkt auf der Seite ermittelt werden konnte sonst False
  */
 static uint8_t observe_get_endpoint(int8_t checkside, uint8_t * behavstate,
 		trackpoint_t * observer, position_t * lastpoint) {
@@ -469,7 +472,7 @@ static position_t lastpointleft = { 0, 0 };
  * Observer links; jeweils ein selbstaendiges Verhalten, welches die Nachbarbahn beobachtet und eine befahrbare Strecke bis zu einem Hindernis
  * auf den Stack legt fuer spaeteres Anfahren; ebenfalls wird eine Alternativroute auf dem Stack gemerkt
  * Verhalten wurde so geschrieben, dass es zwar 2 Verhalten sind, der Code jedoch identisch ist und daher in Subroutinen ausgelagert ist
- * @param *data	Verhaltensdatensatz
+ * \param *data	Verhaltensdatensatz
  */
 void bot_observe_left_behaviour(Behaviour_t * data) {
 	// je zu beobachtende Seite gibt es einen codeidentischen Observer; hier die Seite festgelegt
@@ -507,7 +510,7 @@ void bot_observe_left_behaviour(Behaviour_t * data) {
 
 /*!
  * Rufe das Observer-Verhalten links auf
- * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * \param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 static void bot_observe_left(Behaviour_t * caller) {
 	if (!behaviour_is_activated(bot_observe_left_behaviour)) {
@@ -528,7 +531,7 @@ static position_t lastpointright = { 0, 0 };
  * Observer rechts; jeweils ein selbstaendiges Verhalten, welches die Nachbarbahn beobachtet und eine befahrbare Strecke bis zu einem Hindernis
  * auf den Stack legt fuer spaeteres Anfahren; ebenfalls wird eine Alternativroute auf dem Stack gemerkt
  * Verhalten wurde so geschrieben, dass es zwar 2 Verhalten sind, der Code jedoch identisch ist und daher in Subroutinen ausgelagert ist
- * @param *data Verhaltensdatensatz
+ * \param *data Verhaltensdatensatz
  */
 void bot_observe_right_behaviour(Behaviour_t * data) {
 	// je zu beobachtende Seite gibt es einen codeidentischen Observer; hier die Seite festgelegt
@@ -567,7 +570,7 @@ void bot_observe_right_behaviour(Behaviour_t * data) {
 
 /*!
  * Rufe das Rechts-Observer-Verhalten auf
- * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * \param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 static void bot_observe_right(Behaviour_t * caller) {
 	if (!behaviour_is_activated(bot_observe_right_behaviour)) {
@@ -607,15 +610,17 @@ static void bot_stop_observe(void) {
  * ===== Hier alles fuer das flaechendeckende Fahrverhalten  ========================
  * ==================================================================================*/
 
-/* Check-Bedingung zum Triggern des cancel-Verhaltens
- * @return True bei Abgrund sonst False
+/*!
+ * Check-Bedingung zum Triggern des cancel-Verhaltens
+ * \return True bei Abgrund sonst False
  */
 static uint8_t check_border_fired(void) {
 	return border_fired;
 }
 
-/* Check-Routine zum Erkennen eines Hindernisses nach den Abgrund- als auch Abstandssensoren
- * @return True wenn Hindernis voraus sonst False
+/*!
+ * Check-Routine zum Erkennen eines Hindernisses nach den Abgrund- als auch Abstandssensoren
+ * \return True wenn Hindernis voraus sonst False
  */
 static uint8_t check_haz_sensDist(void) {
 	if (border_fired) {
@@ -634,9 +639,9 @@ static uint8_t check_haz_sensDist(void) {
 /*!
  * Hilfsroutine, welche den Fahrtrack nextline mit den Koordinaten belegt; die Koordinaten
  * koennen hierbei vertauscht werden oder in point1x/y die zum Bot nahesten Werte gespeichert
- * @param point1 Koordinaten des Punktes 1
- * @param point2 Koordinaten des Punktes 2
- * @param change_points Punkte1 und 2 in nextline werden bei True vertauscht sonst belegt mit den Koordinaten
+ * \param point1 Koordinaten des Punktes 1
+ * \param point2 Koordinaten des Punktes 2
+ * \param change_points Punkte1 und 2 in nextline werden bei True vertauscht sonst belegt mit den Koordinaten
  */
 static void set_nextline(position_t point1, position_t point2, uint8_t change_points) {
 	if (change_points) {
@@ -681,7 +686,7 @@ static void set_nextline(position_t point1, position_t point2, uint8_t change_po
 /*!
  * Das Fahrverhalten selbst; Fahren bis zu einem Hindernis, drehen zu einer Seite und merken des anderen Weges auf den Stack; waehrend der
  * Fahrt werden die Nebenspuren beobachtet und bei Hindernissen in der Nebenspur automatisch Teilstrecken auf den Stack gelegt
- * @param *data der Verhaltensdatensatz
+ * \param *data der Verhaltensdatensatz
  */
 void bot_drive_area_behaviour(Behaviour_t * data) {
 	static uint8_t go_long_distance = 0; // Kennung ob nach Stackholen weit gefahren wurde
@@ -692,7 +697,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 	position_t pos;
 	int8_t mapval;
 
-	deactivateBehaviour(bot_cancel_behaviour_behaviour); // Cancel-Verhalten abbrechen, damit es nicht ewig weiterlaeuft
+//	deactivateBehaviour(bot_behaviour_cancel_behaviour); // Cancel-Verhalten abbrechen, damit es nicht ewig weiterlaeuft
 
 	switch (track_state) {
 
@@ -708,7 +713,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 			if (nextline.point2.x != 0 || nextline.point2.y != 0) {
 				draw_line_world(nextline.point1, nextline.point2, 1); // Strecke wird verworfen, nicht anfahrbar und rot darstellen
 			}
-#endif	// MAP_2_SIM_AVAILABLE
+#endif // MAP_2_SIM_AVAILABLE
 
 			break;
 		}
@@ -771,7 +776,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 
 		// ist der Weg voraus nicht frei laut Map, dann gar nicht erst fahren und verwerfen
 		if (!free1) {
-/*! @todo	Diese Strecke nicht gleich verwerfen sondern evtl untersuchen und Teilstrecken bilden; evtl. mit Pfadplanung andere Teilstrecke anfahren
+/*! \todo	Diese Strecke nicht gleich verwerfen sondern evtl untersuchen und Teilstrecken bilden; evtl. mit Pfadplanung andere Teilstrecke anfahren
 			oder erst einmal mit anderem Weg tauschen, der gerade frei ist.
 			da jetzt auch eigener Linienstack verwendet wird, koennte man einen Zaehler mitfuehren wie oft eine Strecke schon zurueckgestellt wurde und erst ab
 			einem Schwellwert wirklich verwerfen */
@@ -782,7 +787,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 		    aktpos.x=x_pos;
 		    aktpos.y=y_pos;
 		    draw_line_world(aktpos, pos, 1); // Linie wird rot, so weit voraus ist Weg nicht frei
-#endif	// MAP_2_SIM_AVAILABLE
+#endif // MAP_2_SIM_AVAILABLE
 
 			break;
 		}
@@ -947,7 +952,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 				akt_pos.x = x_pos;
 				akt_pos.y = y_pos;
 				draw_line_world(akt_pos, nextline.point1, 1);//Linie von Botpos zu P1 wird rot
-#endif	// MAP_2_SIM_AVAILABLE
+#endif // MAP_2_SIM_AVAILABLE
 			}
 
 			// evtl erst den Punkt 2 anfahren wenn P1 nicht anfahrbar war, d.h. Punkte vertauschen
@@ -975,7 +980,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 				aktpos.x = x_pos;
 				aktpos.y = y_pos;
 				draw_line_world(nextline.point1, nextline.point2, 1); // eigentliche Fahrspur wird verworfen und auch Rot einfaerben
-#endif	// MAP_2_SIM_AVAILABLE
+#endif // MAP_2_SIM_AVAILABLE
 				break;
 			}
 		}
@@ -1140,8 +1145,8 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 						LOG_DEBUG("Weg nicht frei, >> Pfadplanung zu P2 nach Tausch wg. zu geringem Abstand << %1d %1d",
 							nextline.point1.x, nextline.point1.y);
 					}
-					bot_calc_wave(data, nextline.point1.x, nextline.point1.y, /*MAP_DRIVEN_THRESHOLD*/0);
-/*! todo Pfadplanung ueber befahrenes Gebiet wehnn es denn mal geht */
+/*! \todo Pfadplanung ueber befahrenes Gebiet */
+					bot_calc_wave(data, nextline.point1.x, nextline.point1.y, /*MAP_DRIVEN_THRESHOLD*/ 0);
 					track_state = TURN_TO_DESTINATION; // muss sich hiernach zum Zielpunkt ausrichten
 					break;
 				} else {
@@ -1168,7 +1173,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 					LOG_DEBUG("Weg mit Folgeweg getauscht");
 					break;
 				}
-#endif	// GO_WITH_PATHPLANING
+#endif // GO_WITH_PATHPLANING
 			}
 		}
 
@@ -1186,12 +1191,12 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 
 /*!
  * Startet das Verhalten bot_drive_area_behaviour
- * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * \param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_drive_area(Behaviour_t * caller) {
 	/* ein paar Initialisierungen sind notwendig */
 	lastCorrectionTime = 0;
-	switch_to_behaviour(caller, bot_drive_area_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_drive_area_behaviour, BEHAVIOUR_OVERRIDE);
 	track_state = CHECK_TRACKSIDE;
 	border_fired = False;
 	pos_store = pos_store_create_size(get_behaviour(bot_drive_area_behaviour), pos_store_data, STACK_SIZE);
@@ -1207,4 +1212,4 @@ void bot_drive_area(Behaviour_t * caller) {
 #endif
 }
 
-#endif	// BEHAVIOUR_DRIVE_AREA_AVAILABLE
+#endif // BEHAVIOUR_DRIVE_AREA_AVAILABLE

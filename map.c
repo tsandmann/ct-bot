@@ -25,15 +25,16 @@
  */
 
 #include "ct-Bot.h"
+
+#ifdef MAP_AVAILABLE
+#include "ui/available_screens.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "bot-local.h"
 #include "sensor_correction.h"
 #include "map.h"
 #include "mmc.h"
 #include "mini-fat.h"
-#include "ui/available_screens.h"
 #include "rc5-codes.h"
 #include "sensor.h"
 #include "display.h"
@@ -44,8 +45,7 @@
 #include "math_utils.h"
 #include "command.h"
 #include "motor.h"
-
-#ifdef MAP_AVAILABLE
+#include "init.h"
 
 #ifndef MMC_AVAILABLE
 #ifdef MCU
@@ -56,7 +56,7 @@
 
 //#define DEBUG_MAP			// Schalter um recht viel Debug-Code anzumachen
 //#define DEBUG_MAP_TIMES	// Schalter um Performance-Messungen fuer MMC anzumachen
-//#define DEBUG_STORAGE		// Noch mehr Ausgaben zum Thema organisation der Kartenstruktur, Macroblocks, Sections
+//#define DEBUG_STORAGE		// Noch mehr Ausgaben zum Thema Organisation der Kartenstruktur, Macroblocks, Sections
 //#define DEBUG_SCAN_OTF	// Debug-Infos des Update-Threads an
 //#define DEBUG_GET_RATIO	// zeichnet Debug-Infos in die Map-Anzeige des Sim, gruen: Bereich komplett innerhalb des gewuenschten Intervalls, rot: Bereich nicht (komplett) innerhalb des gewuenschten Intervalls
 //#define DEBUG_GET_RATIO_VERBOSE	// zeichnet detaillierte Infos in die Map-Anzeige, gruen: Felder innerhalb des gewuenschten Intervalls, rot: Felder ausserhalb des gewuenschten Intervalls
@@ -116,7 +116,7 @@
  */
 
 /*! Anzahl der Sections in der Map */
-#define MAP_SECTIONS (((uint16_t) (MAP_SIZE * MAP_RESOLUTION) / MAP_SECTION_POINTS))
+#define MAP_SECTIONS	(MAP_SIZE_MM * MAP_RESOLUTION / 1000 / MAP_SECTION_POINTS)
 
 #define MAP_STEP_FREE_SENSOR		2	/*!< Um diesen Wert wird ein Feld inkrementiert, wenn es vom Sensor als frei erkannt wird */
 #define MAP_STEP_FREE_LOCATION		20	/*!< Um diesen Wert wird ein Feld inkrementiert, wenn der Bot drueber faehrt */
@@ -130,21 +130,35 @@
 #define MAP_PRINT_SCALE						/*!< Soll das PGM eine Skala erhalten */
 #define MAP_SCALE	(MAP_RESOLUTION / 2)	/*!< Alle wieviel Punkte kommt ein Skalen-Strich */
 
-#define MACRO_BLOCK_LENGTH		512U		/*!< Kantenlaenge eines Macroblocks in Punkten/Byte */
-#define MAP_LENGTH_IN_MACRO_BLOCKS (int16_t) ((uint16_t) (MAP_SIZE * MAP_RESOLUTION) / MACRO_BLOCK_LENGTH)
+#define MACRO_BLOCK_LENGTH	512U			/*!< Kantenlaenge eines Makroblocks in Punkten/Byte */
+#define MAP_LENGTH_IN_MACRO_BLOCKS ((uint8_t) (MAP_SIZE_MM * MAP_RESOLUTION / 1000 / MACRO_BLOCK_LENGTH)) /*!< Kantenlaenge der Karte in Makrobloecken */
+#define MAP_ALIGNMENT_MASK	(2UL * MACRO_BLOCK_LENGTH * MACRO_BLOCK_LENGTH / BOTFS_BLOCK_SIZE - 1) /*!< fuer die Ausrichtung der Karte an einer Sektorgrenze zu Optimierungszwecken */
+
+#ifdef BOT_FS_AVAILABLE
+#define MAP_FILENAME	"/map" /*!< Dateiname der Karte */
+#define MAP_FILE_SIZE	((uint16_t) ((uint32_t) (MAP_SECTION_POINTS * MAP_SECTION_POINTS) * MAP_SECTIONS * MAP_SECTIONS \
+						/ BOTFS_BLOCK_SIZE) + MAP_ALIGNMENT_MASK)
+#endif // BOT_FS_AVAILABLE
 
 int16_t map_min_x = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
 int16_t map_max_x = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
 int16_t map_min_y = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
 int16_t map_max_y = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate */
-/*! @todo min/max-Werte auch in der Map-Datei speichern (fuer Ex- / Import) */
+#ifdef BOT_FS_AVAILABLE
+static uint8_t min_max_updated = False; /*!< wurden die Min- / Max-Werte veraendert? */
+#endif
 
 /*! Datentyp fuer die Elementarfelder einer Gruppe */
 typedef struct {
 	int8_t section[MAP_SECTION_POINTS][MAP_SECTION_POINTS]; /*!< Einzelne Punkte */
-} map_section_t;
+} PACKED map_section_t;
 
-static uint32_t map_start_block = 0;	/*!< Block, bei dem die Karte auf der MMC-Karte beginnt */
+#ifdef BOT_FS_AVAILABLE
+static botfs_file_descr_t map_botfs_file;	/*!< Datei-Deskriptor der Map */
+static uint16_t alignment_offset;			/*!< Offset der Map-Daten in Bloecken (Makroblockalignment) */
+#else
+static uint32_t map_start_block = 0; /*!< Block, bei dem die Karte auf der MMC-Karte beginnt */
+#endif // BOT_FS_AVAILABLE
 
 static uint8_t map_update_fifo_buffer[MAP_UPDATE_CACHE_SIZE];	/*!< Puffer fuer Map-Cache-Indizes / FiFo */
 fifo_t map_update_fifo;											/*!< Fifo fuer Map-Cache */
@@ -157,50 +171,54 @@ os_signal_t map_buffer_signal;						/*!< Signal das anzeigt, ob Daten im Map-Puf
 
 void map_update_main(void) OS_TASK_ATTR;
 
-// Es passen immer 2 Sektionen in den Puffer
-static uint8_t map_buffer[sizeof(map_section_t) * 2];	/*!< statischer Puffer */
-static map_section_t * map[2];							/*!< Array mit den Zeigern auf die Elemente */
+#define map_buffer GET_MMC_BUFFER(map_buffer)	/*!< Map-Puffer */
+static map_section_t * map[2];					/*!< Array mit den Zeigern auf die Elemente,  es passen immer 2 Sektionen in den Puffer */
 
 static struct {
 	uint16_t block;		/*!< Block, der aktuell im Puffer steht. Nur bis 32 MByte adressierbar */
 	uint8_t updated;	/*!< markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde */
 	int16_t x;			/*!< X-Koordinate des Blocks */
 	int16_t y;			/*!< Y-Koordinate des Blocks */
-} map_current_block = { 0, False, 0, 0 };	/*!< Daten des aktuellen Blocks */
+} map_current_block = { 0, False, 0, 0 }; /*!< Daten des aktuellen Blocks */
 
-static uint8_t init_state = 0;	/*!< Status der Initialisierung (1, falls init OK) */
+static uint8_t init_state = 0; /*!< Status der Initialisierung (0 (Fehler), 1 (alles OK) oder 2 (Threads angelegt)) */
 
 #ifdef MAP_2_SIM_AVAILABLE
 void map_2_sim_main(void) OS_TASK_ATTR;
 
-static fifo_t map_2_sim_fifo;	/*!< Fifo fuer Map-2-Sim-Daten */
-static uint16_t map_2_sim_cache[MAP_2_SIM_BUFFER_SIZE];	/*!< Speicher fuer Map-2-Sim-Daten (Adressen der geaenderten Bloecke) */
+static fifo_t map_2_sim_fifo; /*!< Fifo fuer Map-2-Sim-Daten */
+static uint16_t map_2_sim_cache[MAP_2_SIM_BUFFER_SIZE]; /*!< Speicher fuer Map-2-Sim-Daten (Adressen der geaenderten Bloecke) */
 static struct {
-	position_t pos;		/*!< letzte Bot-Position */
-	int16_t heading;	/*!< letzte Bot-Ausrichtung */
+	position_t pos; /*!< letzte Bot-Position */
+	int16_t heading; /*!< letzte Bot-Ausrichtung */
 #ifdef MEASURE_POSITION_ERRORS_AVAILABLE
 	int16_t error;		/*!< letzter Fehlerradius */
 #endif
 } map_2_sim_data;
-static Tcb_t * map_2_sim_worker;	/*!< Worker-Thread fuer die Map-2-Sim-Anzeige */
-uint8_t map_2_sim_worker_stack[MAP_2_SIM_STACK_SIZE];	/*!< Stack des Map-2-Sim-Threads */
-static uint8_t map_2_sim_buffer[512];	/*!< Puffer fuer Map-Block (von der MMC) zur Map-2-Sim-Kommunikation */
-static os_signal_t map_2_sim_signal;	/*!< Signal, um gleichzeitges Senden von Map-Daten zu verhindern */
-#endif	// MAP_2_SIM_AVAILABLE
+static Tcb_t * map_2_sim_worker; /*!< Worker-Thread fuer die Map-2-Sim-Anzeige */
+uint8_t map_2_sim_worker_stack[MAP_2_SIM_STACK_SIZE]; /*!< Stack des Map-2-Sim-Threads */
+#ifdef BOT_FS_AVAILABLE
+static botfs_file_descr_t map_2_sim_botfs_file; /*!< File-Deskriptor fuer Map-2-Sim */
+#endif
+#define map_2_sim_buffer GET_MMC_BUFFER(map_2_sim_buffer) /*!< Puffer fuer Map-Block (von der MMC) zur Map-2-Sim-Kommunikation */
+static os_signal_t map_2_sim_signal; /*!< Signal, um gleichzeitges Senden von Map-Daten zu verhindern */
+#endif // MAP_2_SIM_AVAILABLE
 
 #ifdef PC
+#ifndef BOT_FS_AVAILABLE
 typedef struct {
 	map_section_t sections[2];
-} mmc_container_t;
+} PACKED mmc_container_t;
 
-static mmc_container_t map_storage[MAP_SECTIONS * MAP_SECTIONS / 2];	/*!< Statischer Speicherplatz fuer die Karte */
+static mmc_container_t map_storage[MAP_SECTIONS * MAP_SECTIONS / 2]; /*!< Statischer Speicherplatz fuer die Karte */
 
 // MMC-Zugriffe emuliert der PC
 #define mmc_read_sector(block, buffer)		memcpy(&buffer, &(map_storage[block]), sizeof(mmc_container_t));
 #define mmc_write_sector(block, buffer)		memcpy(&(map_storage[block]), &buffer, sizeof(mmc_container_t));
+#endif // ! BOT_FS_AVAILABLE
 
 char * map_file = "sim.map";	/*!< Dateiname fuer Ex- / Import */
-#endif	// PC
+#endif // PC
 
 static inline void delete(void);
 
@@ -219,8 +237,10 @@ int8_t map_init(void) {
 		/* Update-Thread initialisieren */
 #ifdef OS_DEBUG
 		os_mask_stack(map_update_stack, MAP_UPDATE_STACK_SIZE);
+#ifdef MAP_2_SIM_AVAILABLE
 		os_mask_stack(map_2_sim_worker_stack, MAP_2_SIM_STACK_SIZE);
 #endif
+#endif // OS_DEBUG
 		fifo_init(&map_update_fifo, map_update_fifo_buffer, (uint8_t) sizeof(map_update_fifo_buffer));
 #ifdef MAP_2_SIM_AVAILABLE
 		fifo_init(&map_2_sim_fifo, map_2_sim_cache, sizeof(map_2_sim_cache));
@@ -228,7 +248,7 @@ int8_t map_init(void) {
 #ifdef PC
 		pthread_mutex_init(&lock_signal.mutex, NULL);
 		pthread_cond_init(&lock_signal.cond, NULL);
-#endif	// PC
+#endif // PC
 		map_update_thread = os_create_thread(&map_update_stack[MAP_UPDATE_STACK_SIZE - 1], map_update_main);
 
 #ifdef MAP_2_SIM_AVAILABLE
@@ -236,8 +256,8 @@ int8_t map_init(void) {
 #ifdef PC
 		pthread_mutex_init(&map_2_sim_signal.mutex, NULL);
 		pthread_cond_init(&map_2_sim_signal.cond, NULL);
-#endif
-#endif	// MAP_2_SIM_AVAILABLE
+#endif // PC
+#endif // MAP_2_SIM_AVAILABLE
 		init_state = 2;
 	}
 #ifdef BEHAVIOUR_SCAN_AVAILABLE
@@ -246,20 +266,115 @@ int8_t map_init(void) {
 	scan_otf_modes.data.distance = 1;
 	scan_otf_modes.data.border   = 1;
 	scan_otf_modes.data.map_mode = 1;
-#endif	// BEHAVIOUR_SCAN_AVAILABLE
+#endif // BEHAVIOUR_SCAN_AVAILABLE
 
 	// Die Karte auf den Puffer biegen
 	map[0] = (map_section_t *) map_buffer;
 	map[1] = (map_section_t *) (map_buffer + sizeof(map_section_t));
 
-#ifdef MCU
 	map_current_block.updated = 0xFF; // Die MMC-Karte ist erstmal nicht verfuegbar
+#if defined MCU && ! defined BOT_FS_AVAILABLE
 	if (mmc_get_init_state() != 0) {
 		return 1;
 	}
+#endif // MCU && ! BOT_FS_AVAILABLE
+
+#ifdef BOT_FS_AVAILABLE
+	const uint8_t mode =
+#ifdef CLEAR_MAP_ON_INIT
+		BOTFS_MODE_W;
+#else
+		BOTFS_MODE_R;
+#endif
+	int8_t res = botfs_open(MAP_FILENAME, &map_botfs_file, mode, map_buffer);
+	if (res == 0 && botfs_get_filesize(&map_botfs_file) < MAP_FILE_SIZE) {
+		/* Map-Datei ist zu klein, also loeschen und neu anlegen */
+		if (botfs_unlink(MAP_FILENAME, map_buffer) != 0) {
+			return 2;
+		}
+		res = -1;
+	}
+	if (res != 0) {
+		if (res != -1) {
+			/* nicht behbarer Fehler */
+			return 3;
+		}
+		/* Map-Datei nicht vorhanden, also anlegen */
+		if (botfs_create(MAP_FILENAME, MAP_FILE_SIZE, map_buffer) != 0) {
+			return 4;
+		}
+		if (botfs_open(MAP_FILENAME, &map_botfs_file, mode, map_buffer) != 0) {
+			return 5;
+		}
+#ifndef CLEAR_MAP_ON_INIT
+		uint8_t * p_head_data = NULL;
+		if (botfs_read_header_data(&map_botfs_file, &p_head_data, map_buffer) != 0) {
+			return 6;
+		}
+		map_header_t * ptr = (map_header_t *) p_head_data;
+		/* Min- / Max-Werte auf Default setzen */
+		ptr->data.map_min_x = MAP_SIZE * MAP_RESOLUTION / 2;
+		ptr->data.map_max_x = MAP_SIZE * MAP_RESOLUTION / 2;
+		ptr->data.map_min_y = MAP_SIZE * MAP_RESOLUTION / 2;
+		ptr->data.map_max_y = MAP_SIZE * MAP_RESOLUTION / 2;
+		if (botfs_write_header_data(&map_botfs_file, map_buffer) != 0) {
+			return 7;
+		}
+#endif // ! CLEAR_MAP_ON_INIT
+	}
+	/* Makroblock-Alignment */
+	const uint32_t start_sector = botfs_get_startsector(&map_botfs_file);
+#ifdef DEBUG_STORAGE
+	LOG_DEBUG("start_sector=%u", start_sector);
+#endif
+	uint32_t map_start = start_sector + MAP_ALIGNMENT_MASK;
+	map_start &= ~MAP_ALIGNMENT_MASK;
+#ifdef DEBUG_STORAGE
+	LOG_DEBUG("map_start=%u", map_start);
+#endif
+	alignment_offset = (uint16_t) (map_start - start_sector);
+#ifdef DEBUG_STORAGE
+	LOG_DEBUG("alignment_offset=%u", alignment_offset);
+#endif
+	uint8_t * p_head_data;
+	if (botfs_read_header_data(&map_botfs_file, &p_head_data, map_buffer) != 0) {
+		return 7;
+	}
+	map_header_t * ptr = (map_header_t *) p_head_data;
+	ptr->data.alignment_offset = alignment_offset;
+#ifdef CLEAR_MAP_ON_INIT
+	/* Min- / Max-Werte auf Default setzen, da Map geleert wurde */
+	ptr->data.map_min_x = MAP_SIZE * MAP_RESOLUTION / 2;
+	ptr->data.map_max_x = MAP_SIZE * MAP_RESOLUTION / 2;
+	ptr->data.map_min_y = MAP_SIZE * MAP_RESOLUTION / 2;
+	ptr->data.map_max_y = MAP_SIZE * MAP_RESOLUTION / 2;
+#endif // CLEAR_MAP_ON_INIT
+	if (botfs_write_header_data(&map_botfs_file, map_buffer) != 0) {
+		return 8;
+	}
+
+	/* Min- / Max-Werte laden */
+	map_min_x = ptr->data.map_min_x;
+	map_max_x = ptr->data.map_max_x;
+	map_min_y = ptr->data.map_min_y;
+	map_max_y = ptr->data.map_max_y;
+
+#ifdef MAP_2_SIM_AVAILABLE
+	if (botfs_open(MAP_FILENAME, &map_2_sim_botfs_file, BOTFS_MODE_r, map_2_sim_buffer) != 0) {
+		return 9;
+	}
+#endif // MAP_2_SIM_AVAILABLE
+
+	/* Block 0 laden */
+	if (botfs_read(&map_botfs_file, map_buffer) != 0) {
+		return 9;
+	}
+
+#else // ! BOT_FS_AVAILABLE
+#ifdef MCU
 	map_start_block = mini_fat_find_block("MAP", map_buffer);
 	if (map_start_block == 0xFFFFFFFF) {
-		return 1;
+		return 2;
 	}
 	// Makroblock-Alignment auf ihre Groesse
 	uint32_t file_block = map_start_block;
@@ -269,16 +384,26 @@ int8_t map_init(void) {
 	// Map-Offset im Datei-Header (0x120-0x123) speichern
 	*((uint32_t *) &map_buffer[0x120]) = map_start_block - file_block;
 	if (mmc_write_sector(file_block - 1, map_buffer) != 0) {
-		return 1;
+		return 3;
 	}
+#endif // MCU
+#endif // BOT_FS_AVAILABLE
 
 	map_current_block.updated = False;
 	map_current_block.block = 0;
-#endif	// MCU
 
 #ifdef CLEAR_MAP_ON_INIT
+#ifndef BOT_FS_AVAILABLE
 	delete();
 #endif
+#else // ! CLEAR_MAP_ON_INIT
+	/* Block 0 laden */
+#ifdef BOT_FS_AVAILABLE
+	botfs_read(&map_botfs_file, map_buffer);
+#else
+	mmc_read_sector(map_start_block, map_buffer);
+#endif
+#endif // CLEAR_MAP_ON_INIT
 
 	init_state = 1;
 	activateBehaviour(NULL, bot_scan_onthefly_behaviour);
@@ -293,7 +418,7 @@ void map_flush_cache(void) {
 	if (map_locked() == 1) {
 		motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
 	}
-#endif	// MCU
+#endif // MCU
 	/* Warten, bis Update fertig */
 	os_signal_set(&lock_signal);
 	/* Sperre sofort wieder freigeben */
@@ -362,13 +487,21 @@ static map_section_t * get_section(int16_t x, int16_t y) {
 	block = block >> 1; // es passen immer 2 Sections in einen Block
 
 	/* Makroblock berechnen */
-	uint16_t macroblock = x / MACRO_BLOCK_LENGTH + (y / MACRO_BLOCK_LENGTH) * MAP_LENGTH_IN_MACRO_BLOCKS;
+	uint16_t macroblock = (uint16_t) x / MACRO_BLOCK_LENGTH + ((uint16_t) y / MACRO_BLOCK_LENGTH) * MAP_LENGTH_IN_MACRO_BLOCKS;
 
 #ifdef DEBUG_STORAGE
 	LOG_DEBUG("Macroblock= %u", macroblock);
 #endif
 
 	block += macroblock * MACRO_BLOCK_LENGTH * (MACRO_BLOCK_LENGTH / 512); // noch in den richtigen Makroblock springen
+
+#ifdef BOT_FS_AVAILABLE
+	block += alignment_offset; // Offset fuer Makroblock-Alignment (hier innerhalb der Datei) addieren
+#endif // BOT_FS_AVAILABLE
+
+#ifdef DEBUG_STORAGE
+	LOG_DEBUG("block= %u", block);
+#endif
 
 	/* Ist der Block schon geladen? */
 	if (map_current_block.block == block) {
@@ -388,16 +521,32 @@ static map_section_t * get_section(int16_t x, int16_t y) {
 		/* Shrinking */
 		if (map_current_block.x < map_min_x) {
 			map_min_x = map_current_block.x;
+#ifdef BOT_FS_AVAILABLE
+			min_max_updated = True;
+#endif
 		} else if (map_current_block.x > map_max_x) {
 			map_max_x = map_current_block.x + ((MAP_SECTION_POINTS * 2) - 1);
+#ifdef BOT_FS_AVAILABLE
+			min_max_updated = True;
+#endif
 		}
 		if (map_current_block.y < map_min_y) {
 			map_min_y = map_current_block.y;
+#ifdef BOT_FS_AVAILABLE
+			min_max_updated = True;
+#endif
 		} else if (map_current_block.y > map_max_y) {
 			map_max_y = map_current_block.y + (MAP_SECTION_POINTS - 1);
+#ifdef BOT_FS_AVAILABLE
+			min_max_updated = True;
+#endif
 		}
 
 		/* Dann erstmal sichern */
+#ifdef BOT_FS_AVAILABLE
+		botfs_seek(&map_botfs_file, (int16_t) map_current_block.block, SEEK_SET);
+		botfs_write(&map_botfs_file, map_buffer);
+#else
 		uint32_t mmc_block = map_start_block + map_current_block.block;	// Offset fuer die Lage der Karte drauf
 #ifdef DEBUG_MAP_TIMES
 		LOG_INFO("writing block 0x%04x%04x", (uint16_t) (mmc_block >> 16), (uint16_t) mmc_block);
@@ -405,6 +554,7 @@ static map_section_t * get_section(int16_t x, int16_t y) {
 #endif
 
 		mmc_write_sector(mmc_block, map_buffer);
+#endif // BOT_FS_AVAILABLE
 
 #ifdef MAP_2_SIM_AVAILABLE
 		map_2_sim_data.pos.x = world_to_map(x_pos);
@@ -414,7 +564,7 @@ static map_section_t * get_section(int16_t x, int16_t y) {
 		map_2_sim_data.error = pos_error_radius / (1000 / MAP_RESOLUTION) + (BOT_DIAMETER / 2 / (1000 / MAP_RESOLUTION));
 #endif
 		fifo_put_data(&map_2_sim_fifo, &map_current_block.block, sizeof(map_current_block.block));
-#endif	// MAP_2_SIM_AVAILABLE
+#endif // MAP_2_SIM_AVAILABLE
 
 #ifdef DEBUG_MAP_TIMES
 		uint16_t end_ticks = TIMER_GET_TICKCOUNT_16;
@@ -429,6 +579,10 @@ static map_section_t * get_section(int16_t x, int16_t y) {
 	map_current_block.updated = False;
 
 	/* Lade den neuen Block */
+#ifdef BOT_FS_AVAILABLE
+	botfs_seek(&map_botfs_file, (int16_t) block, SEEK_SET);
+	botfs_read(&map_botfs_file, map_buffer);
+#else
 	// Auf der MMC beginnt die Karte nicht bei 0, sondern irgendwo, auf dem PC schadet es nix
 	uint32_t mmc_block = block + map_start_block;	// Offset fuer die Lage der Karte drauf
 #ifdef DEBUG_MAP_TIMES
@@ -441,6 +595,7 @@ static map_section_t * get_section(int16_t x, int16_t y) {
 	uint16_t end_ticks = TIMER_GET_TICKCOUNT_16;
 	LOG_INFO("swapin took %u ms", (end_ticks - start_ticks) * 176 / 1000);
 #endif
+#endif // BOT_FS_AVAILABLE
 
 	return map[index];
 }
@@ -506,7 +661,7 @@ static int8_t get_average_fields(int16_t x, int16_t y, int8_t radius) {
 				pos.x = x + dX;
 				pos.y = y + dY;
 				map_draw_line(pos, pos, color);
-#endif	// DEBUG_MAP_GET_AVERAGE
+#endif // DEBUG_MAP_GET_AVERAGE
 			}
 		}
 	}
@@ -524,7 +679,7 @@ static int8_t get_average_fields(int16_t x, int16_t y, int8_t radius) {
 			}
 		}
 	}
-#endif	// DEBUG_MAP_GET_AVERAGE
+#endif // DEBUG_MAP_GET_AVERAGE
 	return result;
 }
 
@@ -906,7 +1061,7 @@ static uint8_t get_ratio(int16_t x1, int16_t y1, int16_t x2,
 
 #ifdef DEBUG_GET_RATIO_VERBOSE
 	command_write(CMD_MAP, SUB_MAP_CLEAR_LINES, 4, 0, 0);
-#endif	// DEBUG_GET_RATIO_VERBOSE
+#endif // DEBUG_GET_RATIO_VERBOSE
 
 	/* Hangle Dich an der laengeren Achse entlang */
 	if (dX >= dY) {
@@ -926,7 +1081,7 @@ static uint8_t get_ratio(int16_t x1, int16_t y1, int16_t x2,
 					tmp.x = lX + i * sX;
 					tmp.y = lY + w;
 					map_draw_line(tmp, tmp, 1);
-#endif	// DEBUG_GET_RATIO_VERBOSE
+#endif // DEBUG_GET_RATIO_VERBOSE
 				}
 			}
 
@@ -953,7 +1108,7 @@ static uint8_t get_ratio(int16_t x1, int16_t y1, int16_t x2,
 					tmp.x = lX + w;
 					tmp.y = lY + i * sY;
 					map_draw_line(tmp, tmp, 1);
-#endif	// DEBUG_GET_RATIO_VERBOSE
+#endif // DEBUG_GET_RATIO_VERBOSE
 				}
 			}
 
@@ -982,7 +1137,7 @@ static uint8_t get_ratio(int16_t x1, int16_t y1, int16_t x2,
 	to.x = x2;
 	to.y = y2;
 	map_draw_rect(from, to, (uint8_t) (width * 2), (uint8_t) (result == MAP_RATIO_FULL ? 0 : 1));
-#endif	// DEBUG_GET_RATIO
+#endif // DEBUG_GET_RATIO
 
 	return result;
 }
@@ -1121,7 +1276,7 @@ void map_draw_circle(position_t center, int16_t radius, uint8_t color) {
 	const int16_t c = color;
 	command_write_rawdata(CMD_MAP, SUB_MAP_CIRCLE, c, radius, sizeof(data), data);
 }
-#endif	// MAP_2_SIM_AVAILABLE
+#endif // MAP_2_SIM_AVAILABLE
 
 
 /*!
@@ -1185,8 +1340,35 @@ void map_update_main(void) {
 				cache_tmp->dataR * 5, location_prob);
 		}
 
-		/* Falls Fifo leer, Sperre aufheben */
+		/* Falls Fifo leer, used-blocks zurueckschreiben und Sperre aufheben */
 		if (map_update_fifo.count == 0) {
+#ifdef BOT_FS_AVAILABLE
+			if (min_max_updated == True) {
+				if (map_current_block.updated == True) {
+					/* letzten Block sichern */
+					botfs_seek(&map_botfs_file, (int16_t) map_current_block.block, SEEK_SET);
+					botfs_write(&map_botfs_file, map_buffer);
+					map_current_block.updated = False;
+				}
+				/* Used-Blocks im Datei-Header updaten */
+				botfs_flush_used_blocks(&map_botfs_file, map_buffer);
+				min_max_updated = False;
+
+				uint8_t * p_head_data;
+				botfs_read_header_data(&map_botfs_file, &p_head_data, map_buffer);
+				map_header_t * ptr = (map_header_t *) p_head_data;
+				/* Min- / Max-Werte speichern */
+				ptr->data.map_min_x = map_min_x;
+				ptr->data.map_max_x = map_max_x;
+				ptr->data.map_min_y = map_min_y;
+				ptr->data.map_max_y = map_max_y;
+				botfs_write_header_data(&map_botfs_file, map_buffer);
+
+				/* letzen Block wieder laden */
+				botfs_seek(&map_botfs_file, (int16_t) map_current_block.block, SEEK_SET);
+				botfs_read(&map_botfs_file, map_buffer);
+			}
+#endif // BOT_FS_AVAILABLE
 			os_signal_unlock(&lock_signal);	// Zugriff auf Map wieder freigeben
 		}
 	}
@@ -1213,16 +1395,16 @@ void map_2_sim_main(void) {
 		os_signal_set(&map_2_sim_signal);
 		uint8_t i;
 		int8_t j;
-		int8_t count = (int8_t)(size / sizeof(cache_copy[0])); // Anzahl der Eintraege
+		int8_t count = (int8_t) (size / sizeof(cache_copy[0])); // Anzahl der Eintraege
 #ifdef MAP_2_SIM_DEBUG
 		if (count > max_entries) {
 			max_entries = count;
 			LOG_INFO("max_entries=%d", max_entries);
 		}
-#endif	// MAP_2_SIM_DEBUG
-		for (i=0; i<count; i++) {
+#endif // MAP_2_SIM_DEBUG
+		for (i = 0; i < count; ++i) {
 			/* eingetragenen Block in der Liste der bereits Gesendeten suchen */
-			for (j=count; j>i; j--) {
+			for (j = count; j > i; --j) {
 				if (cache_copy[i] == cache_copy[j]) {
 //					printf("ueberspringe Block %u\n", cache_copy[i]);
 					cache_copy[i] = 0;
@@ -1230,17 +1412,29 @@ void map_2_sim_main(void) {
 				}
 			}
 			if (j == i) {
-				if (cache_copy[i] > MAP_SECTIONS * MAP_SECTIONS / 2) {
+				const uint16_t max_block = (uint16_t) (MAP_SECTIONS * MAP_SECTIONS / 2)
+#ifdef BOT_FS_AVAILABLE
+					+ alignment_offset
+#endif
+					;
+				if (cache_copy[i] > max_block) {
 					LOG_ERROR("Block %u ausserhalb der Karte!", cache_copy[i]);
 					continue;
 				}
 				/* Block nicht gefunden -> wurde noch nicht gesendet, also jetzt senden */
 //				printf("sende Block %u\n", cache_copy[i]);
+#ifdef BOT_FS_AVAILABLE
+				botfs_seek(&map_2_sim_botfs_file, (int16_t) cache_copy[i], SEEK_SET);
+				botfs_read(&map_2_sim_botfs_file, map_2_sim_buffer);
+				const int16_t block = (int16_t) (cache_copy[i] - alignment_offset);
+#else // ! BOT_FS_AVAILABLE
 				mmc_read_sector(map_start_block + cache_copy[i], map_2_sim_buffer);
-				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, (int16_t)cache_copy[i], map_2_sim_data.pos.x, 128, map_2_sim_buffer);
-				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, (int16_t)cache_copy[i], map_2_sim_data.pos.y, 128, &map_2_sim_buffer[128]);
-				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, (int16_t)cache_copy[i], map_2_sim_data.heading, 128, &map_2_sim_buffer[256]);
-				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_4, (int16_t)cache_copy[i], 0, 128, &map_2_sim_buffer[384]);
+				const int16_t block = (int16_t) cache_copy[i];
+#endif // BOT_FS_AVAILABLE
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, block, map_2_sim_data.pos.x, 128, map_2_sim_buffer);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, block, map_2_sim_data.pos.y, 128, &map_2_sim_buffer[128]);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, block, map_2_sim_data.heading, 128, &map_2_sim_buffer[256]);
+				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_4, block, 0, 128, &map_2_sim_buffer[384]);
 				cache_copy[i] = 0;
 			}
 		}
@@ -1264,13 +1458,18 @@ void map_2_sim_send(void) {
 
 	/* Alle Bloecke uebertragen */
 	int16_t x, y;
+#ifdef BOT_FS_AVAILABLE
+	const int16_t block = (int16_t) (map_current_block.block - alignment_offset);
+#else
+	const int16_t block = (int16_t) map_current_block.block;
+#endif // BOT_FS_AVAILABLE
 	for (x=map_min_x; x<=map_max_x+MAP_SECTION_POINTS; x+=MAP_SECTION_POINTS*2) { // in einem Block liegen 2 Sections in x-Richtung aneinander
 		for (y=map_min_y; y<=map_max_y; y+=MAP_SECTION_POINTS) {
 			access_field(x, y, 0, 0); // Block in Puffer laden
-			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, (int16_t)map_current_block.block, MAP_SIZE * MAP_RESOLUTION / 2, 128, map_buffer);
-			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, (int16_t)map_current_block.block, MAP_SIZE * MAP_RESOLUTION / 2, 128, &map_buffer[128]);
-			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, (int16_t)map_current_block.block, 0, 128, &map_buffer[256]);
-			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_4, (int16_t)map_current_block.block, 0, 128, &map_buffer[384]);
+			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, block, MAP_SIZE * MAP_RESOLUTION / 2, 128, map_buffer);
+			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, block, MAP_SIZE * MAP_RESOLUTION / 2, 128, &map_buffer[128]);
+			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, block, 0, 128, &map_buffer[256]);
+			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_4, block, 0, 128, &map_buffer[384]);
 		}
 	}
 
@@ -1278,7 +1477,7 @@ void map_2_sim_send(void) {
 	os_signal_unlock(&map_2_sim_signal);
 	os_signal_unlock(&lock_signal);
 }
-#endif	// MAP_2_SIM_AVAILABLE
+#endif // MAP_2_SIM_AVAILABLE
 
 /*!
  * Zeigt die Karte an
@@ -1286,7 +1485,7 @@ void map_2_sim_send(void) {
 void map_print(void) {
 #ifdef PC
 	map_to_pgm("map.pgm");
-#endif	// PC
+#endif
 }
 
 /*!
@@ -1296,12 +1495,21 @@ static inline void delete(void) {
 	/* warten bis Karte frei ist */
 	map_flush_cache();
 	os_signal_lock(&lock_signal);
+#ifdef BOT_FS_AVAILABLE
+	/* Datei als komplett benutzt markieren */
+	map_botfs_file.used.start = map_botfs_file.start + BOTFS_HEADER_SIZE;
+	map_botfs_file.used.end = map_botfs_file.end;
+	botfs_flush_used_blocks(&map_botfs_file, map_buffer);
+	/* Datei leeren */
+	botfs_open(MAP_FILENAME, &map_botfs_file, BOTFS_MODE_W, map_buffer);
+#else
 #ifdef MCU
 	uint32_t map_filestart = mini_fat_find_block("MAP", map_buffer);
 	mini_fat_clear_file(map_filestart, map_buffer);
-#else
+#else // PC
 	memset(map_storage, 0, sizeof(map_storage));
-#endif	// MCU
+#endif // MCU
+#endif // BOT_FS_AVAILABLE
 	map_current_block.updated = False;
 	map_current_block.block = 0;
 	memset(map_buffer, 0, sizeof(map_buffer));
@@ -1325,8 +1533,8 @@ void map_clean(void) {
 
 	/* Alle positiven Werte auf 0 setzen */
 	int16_t x, y;
-	for (x=map_min_x; x<map_max_x; x++) {
-		for (y=map_min_y; y<map_max_y; y++) {
+	for (x=map_min_x; x<map_max_x; ++x) {
+		for (y=map_min_y; y<map_max_y; ++y) {
 			int8_t tmp = access_field(x, y, 0, 0);
 			if (tmp > 0) {
 				access_field(x, y, 0, 1);
@@ -1348,27 +1556,38 @@ static inline void draw_test_scheme(void) {
 	map_flush_cache();
 	os_signal_lock(&lock_signal);
 
+	LOG_INFO("Linie:");
+
 	// Erstmal eine ganz simple Linie
-	for (x=0; x < MAP_SECTION_POINTS * MAP_SECTIONS; x++) {
+	for (x = 0; x < MAP_SECTION_POINTS * MAP_SECTIONS; ++x) {
 		access_field(x, x, -120, 1);
+//		printf("x=%d ", x);
 		access_field(MAP_SECTION_POINTS * MAP_SECTIONS - x - 1, x, -120, 1);
 	}
 
+//	return;
+
+	LOG_INFO("Section Grenzen:");
+
 	// Grenzen der Sections Zeichnen
-	for (x=0; x < MAP_SECTION_POINTS * MAP_SECTIONS; x++) {
-		for (y=0; y < MAP_SECTIONS; y++) {
+	for (x = 0; x < MAP_SECTION_POINTS * MAP_SECTIONS; ++x) {
+		for (y = 0; y < MAP_SECTIONS; ++y) {
 			access_field(x, y * MAP_SECTION_POINTS, -10, 1);
 			access_field(y * MAP_SECTION_POINTS, x, -10, 1);
 		}
 	}
 
+	LOG_INFO("Makroblock Grenzen:");
+
 	// Grenzen der Macroblocks einzeichnen
-	for (x=0; x < MAP_SECTION_POINTS * MAP_SECTIONS; x++) {
-		for (y=0; y < MAP_LENGTH_IN_MACRO_BLOCKS; y++) {
+	for (x = 0; x < MAP_SECTION_POINTS * MAP_SECTIONS; ++x) {
+		for (y = 0; y < MAP_LENGTH_IN_MACRO_BLOCKS; ++y) {
 			access_field(x, y * MACRO_BLOCK_LENGTH, -60, 1);
 			access_field(y * MACRO_BLOCK_LENGTH, x, -60, 1);
 		}
 	}
+
+	LOG_INFO("fertig.");
 	os_signal_unlock(&lock_signal);
 }
 
@@ -1444,9 +1663,13 @@ static inline void shrink(int16_t * min_x, int16_t * max_x, int16_t * min_y,
  * Schreibt eine Karte in eine PGM-Datei
  * @param filename	Zieldatei
  */
-void map_to_pgm(char * filename) {
+void map_to_pgm(const char * filename) {
 	printf("Speichere Karte nach %s\n", filename);
 	FILE * fp = fopen(filename, "wb");
+	if (fp == NULL) {
+		printf("Konnte Datei nicht oeffnen, Abbruch\n");
+		return;
+	}
 
 	int16_t x, y;
 
@@ -1462,7 +1685,7 @@ void map_to_pgm(char * filename) {
 	fprintf(fp, "P5 %d %d 255 ", map_size_x + 10, map_size_y + 10);
 #else
 	fprintf(fp,"P5 %d %d 255 ", map_size_x, map_size_y);
-#endif	// MAP_PRINT_SCALE
+#endif // MAP_PRINT_SCALE
 	printf(
 			"Karte beginnt bei X=%d,Y=%d und geht bis X=%d,Y=%d (%d * %d Punkte)\n",
 			min_x, min_y, max_x, max_y, map_size_x, map_size_y);
@@ -1488,7 +1711,7 @@ void map_to_pgm(char * filename) {
 			}
 			fwrite(&tmp, 1, 1, fp);
 		}
-#endif	// MAP_PRINT_SCALE
+#endif // MAP_PRINT_SCALE
 	}
 	os_signal_unlock(&lock_signal);
 
@@ -1503,16 +1726,17 @@ void map_to_pgm(char * filename) {
 			fwrite(&tmp, 1, 1, fp);
 		}
 	}
-#endif	// MAP_PRINT_SCALE
+#endif // MAP_PRINT_SCALE
 	fclose(fp);
 }
 
+#ifndef BOT_FS_AVAILABLE
 /*!
  * Speichert eine Map in eine (MiniFAT-)Datei, die mit map_read() wieder eingelesen werden kann
  * @param *filename	Zieldatei
  * @return			Fehlercode, 0 falls alles ok
  */
-int map_export(const char * filename) {
+static int map_export(const char * filename) {
 	if (filename == NULL || strlen(filename) < 1) {
 		return 1;
 	}
@@ -1530,10 +1754,12 @@ int map_export(const char * filename) {
 	if (fwrite(map_storage, sizeof(map_storage), 1, fd) != 1) {
 		return 1;
 	}
+
 	printf("Map wurde nach \"%s\" exportiert.\n", filename);
 	fclose(fd);
 	return 0;
 }
+#endif // BOT_FS_AVAILABLE
 
 /*!
  * Liest eine Map wieder ein
@@ -1554,13 +1780,13 @@ int map_read(const char * filename) {
 	if (fread(buffer, 1, 512, fp) != 512) {
 		printf("Konnte Datei-Header nicht einlesen!\n");
 		fclose(fp);
-		return 1;
+		return 2;
 	}
 
 	if (buffer[0] != 'M' || buffer[1] != 'A' || buffer[2] != 'P') {
 		printf("Datei \"%s\" enthaelt keine Karte\n", filename);
 		fclose(fp);
-		return 1;
+		return 3;
 	}
 
 	/* um Makroblock-Offset vorspulen */
@@ -1569,15 +1795,33 @@ int map_read(const char * filename) {
 	if (fseek(fp, offset * 512, SEEK_CUR) != 0) {
 		printf("Fehler beim Dateizugriff!\n");
 		fclose(fp);
-		return 1;
+		return 4;
 	}
 
+#ifdef BOT_FS_AVAILABLE
+	botfs_seek(&map_botfs_file, 0, SEEK_SET);
+	uint8_t file_buffer[BOTFS_BLOCK_SIZE];
+	uint32_t i;
+	for (i = 0; i < (uint32_t) ((MAP_SIZE * MAP_RESOLUTION) * (MAP_SIZE * MAP_RESOLUTION)); ++i) {
+		if (fread(file_buffer, 1, BOTFS_BLOCK_SIZE, fp) != 1) {
+			fclose(fp);
+			printf("Fehler beim Lesen\n");
+			return 5;
+		}
+		if (botfs_write(&map_botfs_file, file_buffer) != 0) {
+			printf("Fehler beim Schreiben\n");
+			fclose(fp);
+			return 6;
+		}
+	}
+#else
 	/* Karte liegt auf der MMC genau wie im PC-RAM */
 	uint32_t cnt = fread(&map_storage, 1, sizeof(map_storage), fp);
 	if (cnt != (uint32_t) ((MAP_SIZE * MAP_RESOLUTION) * (MAP_SIZE * MAP_RESOLUTION))) {
 		printf("Konnte nur %u Bytes lesen, Karte ist aber %u Bytes gross!\n",
 			cnt, (uint32_t) ((MAP_SIZE * MAP_RESOLUTION) * (MAP_SIZE* MAP_RESOLUTION)));
 	}
+#endif // BOT_FS_AVAILABLE
 
 	fclose(fp);
 
@@ -1589,6 +1833,8 @@ int map_read(const char * filename) {
 
 	/* und Karte verkleinern */
 	shrink(&map_min_x, &map_max_x, &map_min_y, &map_max_y);
+
+	printf("Map wurde aus \"%s\" importiert.\n", filename);
 
 	return 0;
 }
@@ -1684,7 +1930,7 @@ static inline int map_test_get_ratio(void) {
 		return 1;
 	}
 }
-#endif	// PC
+#endif // PC
 
 
 // Gui-Code
@@ -1717,7 +1963,7 @@ static inline void info(void) {
 			"%u\t Anzahl der Macroblocks in einer Zeile (MAP_LENGTH_IN_MACRO_BLOCKS)",
 			MAP_LENGTH_IN_MACRO_BLOCKS);
 }
-#endif	// MAP_INFO_AVAILABLE
+#endif // MAP_INFO_AVAILABLE
 
 #ifdef DISPLAY_MAP_AVAILABLE
 /*!
@@ -1725,21 +1971,22 @@ static inline void info(void) {
  */
 void map_display(void) {
 	display_cursor(1, 1);
-	display_printf("1: print 2: delete");
+	display_puts("1: print 2: delete");
 #ifdef PC
 	display_cursor(2, 1);
-	display_printf("3: draw_scheme");
+	display_puts("3: draw_scheme");
 	display_cursor(3, 1);
-	display_printf("6: export 7: clean");
-#else	// MCU
+	display_puts("6: export 7: clean");
+#else // MCU
 	display_cursor(2, 1);
-	display_printf("7: clean");
-#endif	// PC
+	display_puts("7: clean");
+#endif // PC
 #ifdef MAP_INFO_AVAILABLE
 	display_cursor(4, 1);
-	display_printf("4: map_info");
+	display_puts("4: map_info");
 #endif
 
+#ifdef RC5_AVAILABLE
 	/* Keyhandler */
 	switch (RC5_Code) {
 		case RC5_CODE_1:
@@ -1758,13 +2005,16 @@ void map_display(void) {
 		case RC5_CODE_5:
 		map_test_get_ratio(); RC5_Code = 0; break;
 
+#ifndef BOT_FS_AVAILABLE
 		case RC5_CODE_6:
 		map_export(map_file); RC5_Code = 0; break;
-#endif
+#endif // BOT_FS_AVAILABLE
+#endif // PC
 		case RC5_CODE_7:
 		map_clean(); RC5_Code = 0; break;
 	}
+#endif // RC5_AVAILABLE
 }
-#endif	// DISPLAY_MAP_AVAILABLE
+#endif // DISPLAY_MAP_AVAILABLE
 
-#endif	// MAP_AVAILABLE
+#endif // MAP_AVAILABLE

@@ -1,0 +1,8 @@
+rem simple Verhalten
+rem Quadrat fahren
+10:
+call("RC", "bot_goto_dist", 300, 1)
+rem drehen
+call("RC", "bot_turn", 90)
+goto 10
+end

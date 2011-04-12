@@ -24,13 +24,14 @@
  * @date 	03.11.06
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
+
+#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 #include <math.h>
 #include <stdlib.h>
 #include "log.h"
 #include "timer.h"
 #include "math_utils.h"
-#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 
 /* Parameter fuer das check_wall_behaviour() */
 static int8_t wall_detected = 0;	/*!< enthaelt True oder False, je nach Ergebnis des Verhaltens */
@@ -228,7 +229,7 @@ static void bot_check_wall(Behaviour_t * caller, int8_t direction) {
 	check_direction = direction;
 	wall_detected = False;
 	checkState = CHECK_WALL_TURN;
-	switch_to_behaviour(caller, bot_check_wall_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_check_wall_behaviour, BEHAVIOUR_NOOVERRIDE);
 }
 
 static int8_t measureState = 0;	/*!< Zustand des measure_angle-Verhaltens*/
@@ -344,7 +345,7 @@ static void bot_measure_angle(Behaviour_t * caller, int8_t direction, int16_t di
 	start_heading = (int16_t) heading_mou;
 	measureState = MEASURE_TURN;
 	measureCount = 0;
-	switch_to_behaviour(caller, bot_measure_angle_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_measure_angle_behaviour, BEHAVIOUR_NOOVERRIDE);
 }
 #else
 /*!
@@ -474,7 +475,7 @@ static void bot_measure_angle(Behaviour_t * caller, int8_t direction, int16_t di
 	startEncL = sensEncL;
 	startEncR = sensEncR;
 	measureState = MEASURE_TURN;
-	switch_to_behaviour(caller, bot_measure_angle_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_measure_angle_behaviour, BEHAVIOUR_NOOVERRIDE);
 }
 #endif	// MEASURE_MOUSE_AVAILABLE
 
@@ -654,7 +655,7 @@ void bot_solve_maze_behaviour(Behaviour_t * data) {
  * @param *caller	Verhaltensdatensatz des Aufrufers
  */
 void bot_solve_maze(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_solve_maze_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_solve_maze_behaviour, BEHAVIOUR_NOOVERRIDE);
 	mazeState = CHECK_FOR_STARTPAD;
 }
-#endif	// BEHAVIOUR_SOLVE_MAZE_AVAILABLE
+#endif // BEHAVIOUR_SOLVE_MAZE_AVAILABLE

@@ -24,7 +24,7 @@
  * @date 	15.10.2007
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 #include "eeprom.h"
 
 //#define DEBUG_GOTO_POS // Schalter um recht viel Debug-Code anzumachen
@@ -224,10 +224,10 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		LOG_DEBUG("Nachlauf abwarten...");
 		speedWishLeft = BOT_SPEED_STOP;
 		speedWishRight = BOT_SPEED_STOP;
-#ifdef MCU
-		// Sim hat derzeit keinen Nachlauf
-		BLOCK_BEHAVIOUR(data, 1200);
-#endif
+		if (v_enc_left != 0 || v_enc_right != 0) {
+			return;
+		}
+
 		int16_t diff = (int16_t) diff_to_target;
 		int16_t last_diff = (int16_t) last_diff_to_target;
 		if (last_diff < (int16_t) driven || (int16_t) driven < 0) {
@@ -246,7 +246,7 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 			new_error = MAX_TARGET_MARGIN;
 		}
 		if (new_error != error) {
-			ctbot_eeprom_write_word(p_goto_pos_err, (uint16_t) new_error);
+			ctbot_eeprom_update_word(p_goto_pos_err, (uint16_t) new_error);
 			LOG_DEBUG("EEPROM: new_error=%d", new_error);
 		}
 		/* fast fertig, evtl. noch drehen */
@@ -285,7 +285,7 @@ void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
 	dest_head = head;
 
 	/* Verhalten starten */
-	switch_to_behaviour(caller, bot_goto_pos_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_goto_pos_behaviour, BEHAVIOUR_OVERRIDE);
 
 	/* Inits */
 	if (state != END) {
@@ -355,4 +355,4 @@ void bot_goto_dist(Behaviour_t * caller, int16_t distance, int8_t dir) {
 	bot_goto_pos(caller, target_x, target_y, heading_int);
 }
 
-#endif	// BEHAVIOUR_GOTO_POS_AVAILABLE
+#endif // BEHAVIOUR_GOTO_POS_AVAILABLE

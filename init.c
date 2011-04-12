@@ -24,6 +24,8 @@
  * @date 	09.03.2010
  */
 
+#include "ct-Bot.h"
+
 #include "init.h"
 #include "timer.h"
 #include "uart.h"
@@ -33,6 +35,7 @@
 #include "motor.h"
 #include "ena.h"
 #include "mmc.h"
+#include "botfs.h"
 #include "sensor-low.h"
 #include "ir-rc5.h"
 #include "mouse.h"
@@ -41,6 +44,8 @@
 #include "i2c.h"
 #include "twi.h"
 #include "gui.h"
+
+mmc_buffers_t mmc_buffers; /*!< Puffer fuer alle MMC-Transfers */
 
 /*!
  * Initialisierung
@@ -67,8 +72,22 @@ void ctbot_init(int argc, char * argv[]) {
 	ENA_init();
 #endif
 #ifdef MMC_AVAILABLE
-	mmc_init();
+	{
+		const uint8_t res = mmc_init();
+		if (res != 0) {
+			LOG_ERROR("mmc_init()=%u", res);
+		}
+	}
 #endif
+#ifdef BOT_FS_AVAILABLE
+	{
+		void * buf = &mmc_buffers;
+		const int8_t res = botfs_init(botfs_volume_image_file, buf, True);
+		if (res != 0) {
+			LOG_ERROR("botfs_init()=%d", res);
+		}
+	}
+#endif // BOT_FS_AVAILABLE
 	bot_sens_init();
 #ifdef BEHAVIOUR_AVAILABLE
 	bot_behave_init();
@@ -83,7 +102,12 @@ void ctbot_init(int argc, char * argv[]) {
 	mouse_sens_init();
 #endif
 #ifdef MAP_AVAILABLE
-	map_init();
+	{
+		const int8_t res = map_init();
+		if (res != 0) {
+			LOG_ERROR("map_init()=%d", res);
+		}
+	}
 #endif
 #ifdef LOG_MMC_AVAILABLE
 	log_mmc_init();
@@ -99,4 +123,33 @@ void ctbot_init(int argc, char * argv[]) {
 #endif
 
 	ctbot_init_low_last();
+}
+
+/*!
+ * Faehrt den Bot sauber herunter
+ */
+void ctbot_shutdown(void) {
+	LOG_INFO("Shutting down...");
+
+	motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
+
+#ifdef MAP_AVAILABLE
+	map_flush_cache();
+#endif
+
+#ifdef LOG_MMC_AVAILABLE
+	log_flush();
+#endif
+
+#ifdef BOT_FS_AVAILABLE
+	botfs_close_volume();
+#endif
+
+#ifdef DISPLAY_AVAILABLE
+	display_clear();
+	display_cursor(1, 1);
+	display_puts("SYSTEM HALTED.");
+#endif // DISPLAY_AVAILABLE
+
+	ctbot_shutdown_low();
 }

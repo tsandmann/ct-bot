@@ -29,9 +29,6 @@
 #ifndef BEHAVIOUR_DELAY_H_
 #define BEHAVIOUR_DELAY_H_
 
-#include "ct-Bot.h"
-#include "bot-logic/bot-logik.h"
-
 #ifdef BEHAVIOUR_DELAY_AVAILABLE
 #include "timer.h"
 
@@ -66,7 +63,7 @@
  * @param ms		Die Verzoegerungszeit in ms
  * @return			-1 wenn was schief gelaufen ist, sonst 0
  */
-#define bot_delay(caller, ms)	bot_delay_ticks(caller, MS_TO_TICKS((uint32_t)ms))
+#define bot_delay(caller, ms)	bot_delay_ticks(caller, (uint16_t) MS_TO_TICKS((uint32_t) ms))
 
 /*!
  * Rufe das Delay-Verhalten auf
@@ -82,5 +79,5 @@ int8_t bot_delay_ticks(Behaviour_t * caller, uint16_t ticks);
  */
 void bot_delay_behaviour(Behaviour_t * data);
 
-#endif	// BEHAVIOUR_DELAY_AVAILABLE
-#endif	/*BEHAVIOUR_DELAY_H_*/
+#endif // BEHAVIOUR_DELAY_AVAILABLE
+#endif // BEHAVIOUR_DELAY_H_

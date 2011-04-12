@@ -24,14 +24,13 @@
  * @date 	15.04.2008
  */
 
-#include "ct-Bot.h"
 #ifdef PC
-#ifdef OS_AVAILABLE
+#include "ct-Bot.h"
 
+#ifdef OS_AVAILABLE
 #include "os_thread.h"
 #include "os_utils.h"
 #include "log.h"
-#include <pthread.h>
 
 //#define DEBUG_THREADING	/*!< Schalter fuer Debug-Ausgaben */
 #define DEBUG_THREAD_N	-1	/*!< Thread, dessen Vorgaenge debuggt werden sollen (0-based), -1 fuer alle */
@@ -176,5 +175,5 @@ void os_signal_unlock(os_signal_t * signal) {
 	}
 }
 
-#endif	// OS_AVAILABLE
-#endif	// PC
+#endif // OS_AVAILABLE
+#endif // PC

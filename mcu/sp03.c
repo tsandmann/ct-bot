@@ -78,17 +78,19 @@
  * @date 	29.03.08
  */
 
-/*! @todo
- *  - Abfragen von STATUS bevor neues Sprechen
- * 	- Ein eigenes Behaviour, LOG_SAY und RemoteCall anlegen ...
- *  - Fehler abfangen und evtl. sprachlich ausgeben
- *  - testen wirklich langer und komplizierter Texte ...
+/*!
+ * @todo: Abfragen von STATUS bevor neues Sprechen
+ * @todo: Ein eigenes Behaviour, LOG_SAY und RemoteCall anlegen ...
+ * @todo: Fehler abfangen und evtl. sprachlich ausgeben
+ * @todo: testen wirklich langer und komplizierter Texte ...
  */
 
 #ifdef MCU 
 #include "ct-Bot.h"
+
 #ifdef SP03_AVAILABLE 
 #include <avr/io.h>
+#include <util/twi.h>
 #include <stdio.h>
 #include <string.h>
 #include "i2c.h"
@@ -275,6 +277,6 @@ void sp03_set_buffer(const char * sp03_textb) {
 	state = i2c_wait();
 	//LOG_DEBUG("Status buffer:%x",state);
 }
-#endif	// SP03_V1
-#endif	// SP03_AVAILABLE 
-#endif	// MCU
+#endif // SP03_V1
+#endif // SP03_AVAILABLE
+#endif // MCU

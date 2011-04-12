@@ -44,7 +44,7 @@
  */
 
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
 #include <stdlib.h>
@@ -158,7 +158,7 @@ void bot_follow_object_behaviour(Behaviour_t * data) {
  */
 void bot_follow_object(Behaviour_t * caller) {
 	/* Verhalten starten */
-	switch_to_behaviour(caller, bot_follow_object_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_follow_object_behaviour, BEHAVIOUR_OVERRIDE);
 
 	/* Inits */
 #ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
@@ -169,4 +169,4 @@ void bot_follow_object(Behaviour_t * caller) {
 	speedRight	= BOT_SPEED_STOP;
 }
 
-#endif	// BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
+#endif // BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE

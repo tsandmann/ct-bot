@@ -25,7 +25,7 @@
  * @date 	08.12.06
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 #ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE
 #include "math_utils.h"
 #include <math.h>
@@ -155,7 +155,7 @@ void bot_catch_pillar(Behaviour_t * caller) {
 	catch_pillar_state=START;
 	unload_pillar_state=END;		// Sicherheitshalber das Unloade-Verhalten auf Ende setzen
 	// Zielwerte speichern
-	switch_to_behaviour(caller,bot_catch_pillar_behaviour,OVERRIDE);
+	switch_to_behaviour(caller, bot_catch_pillar_behaviour, BEHAVIOUR_OVERRIDE);
 }
 
 #elif CATCH_PILLAR_VERSION == 2
@@ -229,7 +229,7 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 
 	switch (catch_pillar_state) {
 	case START:
-		bot_turn_speed(data, 360, BOT_SPEED_SLOW);
+		bot_turn_maxspeed(data, 360, BOT_SPEED_SLOW);
 		bot_cancel_behaviour(data, bot_turn_behaviour, turn_cancel_check);
 		state_after_cancel = OBJECT_FOUND_AFTER_CANCEL;
 		catch_pillar_state = END;
@@ -257,7 +257,7 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 			catch_pillar_state = MEASURE_DIST;
 			break;
 		}
-		bot_turn_speed(data, -20, BOT_SPEED_SLOW);
+		bot_turn_maxspeed(data, -20, BOT_SPEED_SLOW);
 		bot_cancel_behaviour(data, bot_turn_behaviour, turn_cancel_check);
 		state_after_cancel = OBJECT_FOUND_AFTER_CANCEL;
 		catch_pillar_state = OBJECT_INVALID;
@@ -267,7 +267,7 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 		LOG_DEBUG("OBJECT_INVALID");
 		int16_t turned = (int16_t)heading - start_heading;
 		if (turned < 0) turned += 360;
-		bot_turn_speed(data, 360 - turned, BOT_SPEED_SLOW);
+		bot_turn_maxspeed(data, 360 - turned, BOT_SPEED_SLOW);
 		bot_cancel_behaviour(data, bot_turn_behaviour, turn_cancel_check);
 		state_after_cancel = OBJECT_FOUND_AFTER_CANCEL;
 		catch_pillar_state = END;
@@ -322,8 +322,7 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 		break;
 
 	default:
-		deactivateBehaviour(bot_cancel_behaviour_behaviour);
-		exit_behaviour(data, sensTrans); // == SUBSUCCESS, falls Objekt eingefangen
+		exit_behaviour(data, sensTrans); // == BEHAVIOUR_SUBSUCCESS, falls Objekt eingefangen
 		break;
 	}
 }
@@ -333,7 +332,7 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
  * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_catch_pillar(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_catch_pillar_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_catch_pillar_behaviour, BEHAVIOUR_OVERRIDE);
 	catch_pillar_state = START;
 	check_sensorside = -1; // linker Sensor ergibt Abbruchbedingung
 	start_heading = heading;
@@ -409,7 +408,7 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 	/* Auf los geht's los */
 	case START:
 		/* Drehen mit Abbruch bei Objekterkennung */
-		bot_turn_speed(data, max_turn, BOT_SPEED_SLOW);
+		bot_turn_maxspeed(data, max_turn, BOT_SPEED_SLOW);
 		bot_cancel_behaviour(data, bot_turn_behaviour, turn_cancel_check);
 		side = 0;
 		headingL = -1;
@@ -461,8 +460,7 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 
 		/* Ende */
 	default:
-		deactivateBehaviour(bot_cancel_behaviour_behaviour);
-		exit_behaviour(data, sensTrans); // == SUBSUCCESS, falls Objekt eingefangen
+		exit_behaviour(data, sensTrans); // == BEHAVIOUR_SUBSUCCESS, falls Objekt eingefangen
 		break;
 	}
 }
@@ -473,7 +471,7 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
  * @param degrees	Wie weit [Grad] soll maximal gedreht werden?
  */
 void bot_catch_pillar_turn(Behaviour_t * caller, int16_t degrees) {
-	switch_to_behaviour(caller, bot_catch_pillar_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_catch_pillar_behaviour, BEHAVIOUR_OVERRIDE);
 	catch_pillar_state = START;
 	max_turn = degrees;
 	/* Kollisions-Verhalten ausschalten */
@@ -517,7 +515,7 @@ void bot_unload_pillar_behaviour(Behaviour_t * data) {
 		unload_pillar_state = END;
 		break;
 	default:
-		unload_pillar_state = START;	// bei Umschaltung via Verhaltensscreen ist dies notwendig
+		unload_pillar_state = START; // bei Umschaltung via Verhaltensscreen ist dies notwendig
 		return_from_behaviour(data);
 		break;
 	}
@@ -530,7 +528,7 @@ void bot_unload_pillar_behaviour(Behaviour_t * data) {
 void bot_unload_pillar(Behaviour_t * caller) {
 	unload_pillar_state = START;
 	catch_pillar_state = END; // Sicherheitshalber das catch-Verhalten auf Ende setzen
-	switch_to_behaviour(caller, bot_unload_pillar_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_unload_pillar_behaviour, BEHAVIOUR_OVERRIDE);
 }
 
 #endif	// BEHAVIOUR_CATCH_PILLAR_AVAILABLE

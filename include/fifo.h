@@ -30,14 +30,7 @@
 
 //#define DEBUG_FIFO		/*!< Schalter fuer Debug-Ausgaben */
 
-#include "ct-Bot.h"
-#include "global.h"
 #include "os_thread.h"
-#include "log.h"
-
-#ifdef MCU
-#include <avr/builtins.h>
-#endif
 
 #ifndef LOG_AVAILABLE
 #undef DEBUG_FIFO
@@ -50,13 +43,16 @@
 
 /*! FIFO-Datentyp */
 typedef struct {
-	uint8_t volatile count;	/*!< # Zeichen im Puffer */
-	uint8_t size;			/*!< Puffer-Grosse */
-	uint8_t * pread;		/*!< Lesezeiger */
-	uint8_t * pwrite;		/*!< Schreibzeiger */
-	uint8_t read2end;		/*!< # Zeichen bis zum Ueberlauf Lesezeiger */
-	uint8_t write2end;		/*!< # Zeichen bis zum Ueberlauf Schreibzeiger */
-	os_signal_t signal;		/*!< Signal das den Fifo-Status meldet */
+	uint8_t volatile count;		/*!< # Zeichen im Puffer */
+	uint8_t size;				/*!< Puffer-Grosse */
+	uint8_t * pread;			/*!< Lesezeiger */
+	uint8_t * pwrite;			/*!< Schreibzeiger */
+	uint8_t read2end;			/*!< # Zeichen bis zum Ueberlauf Lesezeiger */
+	uint8_t write2end;			/*!< # Zeichen bis zum Ueberlauf Schreibzeiger */
+	uint8_t volatile overflow;	/*!< 1, falls die Fifo mal uebergelaufen ist */
+#ifdef OS_AVAILABLE
+	os_signal_t signal;			/*!< Signal das den Fifo-Status meldet */
+#endif
 } fifo_t;
 
 /*!
@@ -75,7 +71,7 @@ void fifo_init(fifo_t * f, void * buffer, const uint8_t size);
  * @param *data		Zeiger auf Quelldaten
  * @param length	Anzahl der zu kopierenden Bytes
  */
-void fifo_put_data(fifo_t * f, void * data, uint8_t length);
+void fifo_put_data(fifo_t * f, const void * data, uint8_t length);
 
 /*!
  * Liefert length Bytes aus der FIFO, blockierend, falls Fifo leer!
@@ -93,6 +89,11 @@ uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length);
  * @param isr	wird die Funktion von einer ISR aus aufgerufen?
  */
 static inline void _inline_fifo_put(fifo_t * f, const uint8_t data, uint8_t isr) {
+	if (f->count == f->size) {
+		f->overflow = 1;
+		/* voll */
+		return;
+	}
 	uint8_t * pwrite = f->pwrite;
 	*(pwrite++) = data;
 
@@ -122,7 +123,7 @@ static inline void _inline_fifo_put(fifo_t * f, const uint8_t data, uint8_t isr)
 #ifdef OS_AVAILABLE
 		/* Consumer aufwecken */
 		os_signal_unlock(&f->signal);
-#endif	// OS_AVAILABLE
+#endif // OS_AVAILABLE
 	}
 }
 
@@ -145,7 +146,7 @@ static inline uint8_t _inline_fifo_get(fifo_t * f, uint8_t isr) {
 			os_signal_release(&f->signal);
 		}
 	}
-#endif	// OS_AVAILABLE
+#endif // OS_AVAILABLE
 
 	uint8_t * pread = f->pread;
 	uint8_t data = *(pread++);
@@ -178,4 +179,4 @@ static inline uint8_t _inline_fifo_get(fifo_t * f, uint8_t isr) {
 	return data;
 }
 
-#endif	// _FIFO_H_
+#endif // _FIFO_H_

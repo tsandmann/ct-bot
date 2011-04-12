@@ -24,11 +24,11 @@
  * @date 	31.07.2007
  */
 
-#include "bot-logic/bot-logik.h"
-#include <stdlib.h>
-#include <math.h>
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_HANG_ON_AVAILABLE
+#include <stdlib.h>
+#include <math.h>
 
 /*!
  * Notfallhandler, ausgefuehrt nach Haengenbleiben zum Rueckwaertsfahren; muss registriert werden zum
@@ -61,4 +61,4 @@ void bot_hang_on_behaviour(Behaviour_t * data) {
 		start_registered_emergency_procs();
 	}
 }
-#endif	// BEHAVIOUR_HANG_ON_AVAILABLE
+#endif // BEHAVIOUR_HANG_ON_AVAILABLE

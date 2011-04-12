@@ -24,18 +24,17 @@
  * @date 	02.10.2007
  */
 
-#ifndef _THREAD_H
-#define _THREAD_H
+#ifndef _OS_THREAD_H_
+#define _OS_THREAD_H_
 
-#include "ct-Bot.h"
+#ifdef OS_AVAILABLE
 #include "timer.h"
 #include "os_scheduler.h"
-#include <stdlib.h>
 
 #ifdef PC
 #undef OS_DEBUG
 #include <pthread.h>
-#endif	// PC
+#endif // PC
 
 /*! Signal-Typ zur Threadsynchronisation */
 typedef struct {
@@ -46,12 +45,11 @@ typedef struct {
 #endif
 } os_signal_t;
 
-#ifdef OS_AVAILABLE
-
 #define OS_MAX_THREADS		4	/*!< maximale Anzahl an Threads im System */
-#define OS_KERNEL_STACKSIZE	32	/*!< Groesse des Kernel-Stacks (fuer Timer-ISR) [Byte] */
+#define OS_KERNEL_STACKSIZE	36	/*!< Groesse des Kernel-Stacks (fuer Timer-ISR) [Byte] */
 #define OS_IDLE_STACKSIZE	64	/*!< Groesse des Idle-Stacks [Byte] */
-#define OS_CONTEXT_SIZE		17	/*!< Groesse des Kontextes eines Threads [Byte], muss zum Code in os_switch_thread() passen! */
+#define OS_CONTEXT_SIZE		19	/*!< Groesse des Kontextes eines Threads [Byte], muss zum Code in os_switch_thread() passen! */
+
 //#define OS_DEBUG				/*!< Schalter fuer Debug-Code */
 //#define OS_KERNEL_LOG_AVAILABLE	/*!< Aktiviert das Kernel-LOG mit laufenden Debug-Ausgaben */
 
@@ -78,7 +76,7 @@ typedef struct {
 
 #ifdef MCU
 
-#define OS_TASK_ATTR	__attribute__((OS_task)) /*!< Attribut fuer main-Funktion eines Threads */
+#define OS_TASK_ATTR __attribute__((OS_task)) /*!< Attribut fuer main-Funktion eines Threads */
 
 /*! TCB eines Threads */
 typedef struct {
@@ -104,7 +102,7 @@ extern os_signal_t dummy_signal; 			/*!< Signal, das referenziert wird, wenn son
  * Initialisiert das Kernel-LOG
  */
 void os_kernel_log_init(void);
-#endif	// OS_KERNEL_LOG_AVAILABLE
+#endif // OS_KERNEL_LOG_AVAILABLE
 
 /*!
  * Idle-Thread
@@ -142,7 +140,7 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to);
  * Blockiert den aktuellten Thread fuer die angegebene Zeit und schaltet
  * auf einen anderen Thread um
  * => coorporative threadswitch
- * @param ms	Zeit in ms, die der aktuelle Thread blockiert wird
+ * @param ms	Zeit in ms, die der aktuelle Thread (mindestens) blockiert wird
  */
 static inline void os_thread_sleep(uint32_t ms) {
 	uint32_t sleep_ticks = MS_TO_TICKS(ms); // Zeitspanne in Timer-Ticks umrechnen
@@ -177,27 +175,26 @@ static inline void os_signal_unlock(os_signal_t * signal) {
 	os_schedule(TIMER_GET_TICKCOUNT_32);
 }
 
-#else	// PC
-#include <pthread.h>
+#else // PC
 
 #define OS_TASK_ATTR /*!< Attribut fuer main-Funktion eines Threads (Dummy fuer PC) */
 
 typedef pthread_t Tcb_t;
 
-extern Tcb_t os_threads[OS_MAX_THREADS];	/*!< Thread-Pool (ist gleichzeitig running- und waiting-queue) */
-extern pthread_mutex_t os_enterCS_mutex;	/*!< Mutex fuer os_enterCS() / os_exitCS() auf PC */
+extern Tcb_t os_threads[OS_MAX_THREADS]; /*!< Thread-Pool (ist gleichzeitig running- und waiting-queue) */
+extern pthread_mutex_t os_enterCS_mutex; /*!< Mutex fuer os_enterCS() / os_exitCS() auf PC */
 
 /*!
  * Schuetzt den folgenden Block (bis exitCS()) vor konkurrierenden Zugriffen
  * verschiedener Threads.
  * Ermoeglicht einfaches Locking zum exklusiven Ressourcen-Zugriff.
  */
-#define os_enterCS()	pthread_mutex_lock(&os_enterCS_mutex);
+#define os_enterCS() pthread_mutex_lock(&os_enterCS_mutex);
 
 /*!
  * Beendet den kritischen Abschnitt wieder, der mit enterCS began.
  */
-#define os_exitCS()		pthread_mutex_unlock(&os_enterCS_mutex);
+#define os_exitCS() pthread_mutex_unlock(&os_enterCS_mutex);
 
 /*!
  * Blockiert den aktuellten Thread fuer die angegebene Zeit und schaltet
@@ -223,7 +220,7 @@ void os_signal_lock(os_signal_t * signal);
  * @param *signal	Freizugebendes Signal
  */
 void os_signal_unlock(os_signal_t * signal);
-#endif	// MCU
+#endif // MCU
 
 /*!
  * Legt einen neuen Thread an und setzt ihn auf runnable.
@@ -269,12 +266,12 @@ void os_print_stackusage(void);
  * @param size		Groesse des Stacks in Byte
  */
 void os_stack_dump(Tcb_t * thread, void * stack, uint16_t size);
-#endif	// OS_DEBUG
+#endif // OS_DEBUG
 
-#else 	// OS_AVAILABLE
+#else // OS_AVAILABLE
 
-#define os_enterCS()	// NOP
-#define os_exitCS()		// NOP
+#define os_enterCS() // NOP
+#define os_exitCS() // NOP
 
-#endif	// OS_AVAILABLE
-#endif	// _THREAD_H
+#endif // OS_AVAILABLE
+#endif // _OS_THREAD_H_

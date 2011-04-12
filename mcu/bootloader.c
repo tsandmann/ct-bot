@@ -48,8 +48,8 @@
  * @date 	17.01.2007
  */
 
-#include "ct-Bot.h"
 #ifdef MCU
+#include "ct-Bot.h"
 #ifdef BOOTLOADER_AVAILABLE
 
 /* Device-Type:
@@ -250,7 +250,7 @@ static uint16_t __attribute__ ((always_inline)) writeFlashPage(uint16_t waddr, p
 
 	do {
 		data = *tmp++;
-		data |= *tmp++ << 8;
+		data |= (uint16_t) (*tmp++ << 8);
 		boot_page_fill(baddr, data);	// call asm routine.
 
 		baddr += 2;			// Select next word in memory
@@ -525,5 +525,5 @@ void bootloader_main(void) {
 		}
 	}
 }
-#endif	// BOOTLOADER_AVAILABLE
-#endif	// MCU
+#endif // BOOTLOADER_AVAILABLE
+#endif // MCU

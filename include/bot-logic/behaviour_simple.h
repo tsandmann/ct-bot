@@ -30,9 +30,6 @@
 #ifndef BEHAVIOUR_SIMPLE_H_
 #define BEHAVIOUR_SIMPLE_H_
 
-#include "ct-Bot.h"
-#include "bot-logic/bot-logik.h"
-
 #ifdef BEHAVIOUR_SIMPLE_AVAILABLE
 /*! 
  * Ein ganz einfaches Beispiel fuer ein Hilfsverhalten, 
@@ -85,5 +82,5 @@ void bot_simple_behaviour(Behaviour_t * data);
  */
 void bot_simple(Behaviour_t * caller);
 
-#endif	// BEHAVIOUR_SIMPLE_AVAILABLE
-#endif /*BEHAVIOUR_SIMPLE_H_*/
+#endif // BEHAVIOUR_SIMPLE_AVAILABLE
+#endif // BEHAVIOUR_SIMPLE_H_

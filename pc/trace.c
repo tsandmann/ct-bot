@@ -24,12 +24,14 @@
  * @date 	01.06.2009
  */
 
-#include "trace.h"
+#ifdef PC
+#include "ct-Bot.h"
 
 #ifdef CREATE_TRACEFILE_AVAILABLE
+#include "bot-logic/bot-logic.h"
+#include "trace.h"
 #include "fifo.h"
 #include "sensor.h"
-#include "bot-logic/bot-logik.h"
 #include <stdio.h>
 #include <string.h>
 #include <pthread.h>
@@ -105,7 +107,7 @@ void trace_add_actuators(void) {
 
 	Behaviour_t * ptr = get_next_behaviour(NULL);
 	do {
-		if (ptr->active == ACTIVE && n < TRACEBUFFER_SIZE) {
+		if (ptr->active == BEHAVIOUR_ACTIVE && n < TRACEBUFFER_SIZE) {
 			n += snprintf(&trace_buffer[buf_index][n], TRACEBUFFER_SIZE - n, "\tbeh=\t%u", ptr->priority);
 		}
 	} while ((ptr = get_next_behaviour(ptr)) != NULL);
@@ -144,3 +146,4 @@ void trace_add_remotecall(const char * fkt_name, uint8_t param_count, remote_cal
 }
 
 #endif // CREATE_TRACEFILE_AVAILABLE
+#endif // PC

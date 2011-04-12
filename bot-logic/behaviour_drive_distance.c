@@ -24,7 +24,7 @@
  * @date 	03.11.2006
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 
 #if defined BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE || defined BEHAVIOUR_OLYMPIC_AVAILABLE
 /*!
@@ -46,7 +46,7 @@ void bot_drive(int8_t curve, int16_t speed) {
 		speedWishRight = speed;
 	}
 }
-#endif	// BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE || defined BEHAVIOUR_OLYMPIC_AVAILABLE
+#endif // BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE || defined BEHAVIOUR_OLYMPIC_AVAILABLE
 
 #ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 
@@ -117,6 +117,6 @@ void bot_drive_distance(Behaviour_t * caller, int8_t curve, int16_t speed, int16
 	} else {
 		drive_distance_target = *encoder + marks_to_drive;
 	}
-	switch_to_behaviour(caller, bot_drive_distance_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_drive_distance_behaviour, BEHAVIOUR_NOOVERRIDE);
 }
-#endif	// BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+#endif // BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE

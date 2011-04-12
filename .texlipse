@@ -1,0 +1,13 @@
+#TeXlipse project settings
+#Mon Nov 08 17:17:08 CET 2010
+builderNum=2
+outputDir=doc/
+makeIndSty=
+bibrefDir=
+outputFormat=pdf
+tempDir=doc/latex
+mainTexFile=refman.tex
+outputFile=ct-Bot-Doku.pdf
+langSpell=
+markDer=true
+srcDir=doc/latex/

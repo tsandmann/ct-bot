@@ -27,8 +27,6 @@
 #ifndef CMPS03_H_
 #define CMPS03_H_
 
-#include "ct-Bot.h"
-
 #ifdef CMPS03_AVAILABLE
 
 #define CMPS03_ADDR	0xc0	/*!< I2C-Adresse des Kompass */
@@ -53,5 +51,5 @@ void cmps03_get_bearing(cmps03_t * pValue);
  * @param *pValue	Zeiger auf Datenablage
  */
 void cmps03_finish(cmps03_t * pValue);
-#endif	// CMPS03_AVAILABLE
-#endif	// CMPS03_H_
+#endif // CMPS03_AVAILABLE
+#endif // CMPS03_H_

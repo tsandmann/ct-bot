@@ -28,10 +28,10 @@
  * Dokumentation: siehe Documentation/BotOS.html
  */
 
-#include "ct-Bot.h"
 #ifdef MCU
-#ifdef OS_AVAILABLE
+#include "ct-Bot.h"
 
+#ifdef OS_AVAILABLE
 #include "os_thread.h"
 #include "os_utils.h"
 #include "log.h"
@@ -63,13 +63,13 @@ os_signal_t dummy_signal;						/*!< Signal, das referenziert wird, wenn sonst ke
  * @return			Zeiger auf den TCB des angelegten Threads
  */
 Tcb_t * os_create_thread(void * pStack, void (* pIp)(void)) {
-	os_enterCS();	// Scheduler deaktivieren
+	os_enterCS(); // Scheduler deaktivieren
 	uint8_t i;
 	Tcb_t * ptr = os_threads;
 	// os_scheduling_allowed == 0 wegen os_enterCS()
-	for (i=os_scheduling_allowed; i<OS_MAX_THREADS; i++, ptr++) {
+	for (i = os_scheduling_allowed; i < OS_MAX_THREADS; ++i, ++ptr) {
 		if (ptr->stack == NULL) {
-			ptr->wait_for = &dummy_signal;	// wait_for belegen
+			ptr->wait_for = &dummy_signal; // wait_for belegen
 			if (os_thread_running == NULL) {
 				/* Main-Thread anlegen (laeuft bereits) */
 				os_thread_running = ptr;
@@ -84,21 +84,21 @@ Tcb_t * os_create_thread(void * pStack, void (* pIp)(void)) {
 				/* Stack so aufbauen, als waere der Thread bereits einmal unterbrochen worden */
 				uint8_t * sp = pStack; // Entry-Point des Threads
 				*sp = tmp.bytes.lo8; // Return-Adresse liegt in Big-Endian auf dem Stack!
-				*(sp-1) = tmp.bytes.hi8;
+				*(sp - 1) = tmp.bytes.hi8;
 				tmp.ip = &os_exitCS; // setzt os_scheduling_allowed auf 1, nachdem der Thread das erste Mal geschedult wurde
-				*(sp-2) = tmp.bytes.lo8;
-				*(sp-3) = tmp.bytes.hi8;
-				*(sp-4) = SREG; // beim ersten Wechsel auf diesen Thread wird das Statusregister vom Stack geholt, darum hier auf den Stack schreiben
+				*(sp - 2) = tmp.bytes.lo8;
+				*(sp - 3) = tmp.bytes.hi8;
+				*(sp - 4) = SREG; // beim ersten Wechsel auf diesen Thread wird das Statusregister vom Stack geholt, darum hier auf den Stack schreiben
 				uint8_t * p = pStack;
-				ptr->stack = p - (4 + OS_CONTEXT_SIZE); // 4x push und 17 Bytes fuer Kontext => Stack-Pointer - (4 + 17)
+				ptr->stack = p - (4 + OS_CONTEXT_SIZE); // 4x push und OS_CONTEXT_SIZE Bytes fuer Kontext => Stack-Pointer - (4 + OS_CONTEXT_SIZE)
 			}
-			os_scheduling_allowed = 1;	// Scheduling wieder erlaubt
+			os_scheduling_allowed = 1; // Scheduling wieder erlaubt
 			/* TCB zurueckgeben */
 			return ptr;
 		}
 	}
-	os_scheduling_allowed = 1;	// Scheduling wieder erlaubt
-	return NULL;	// Fehler :(
+	os_scheduling_allowed = 1; // Scheduling wieder erlaubt
+	return NULL; // Fehler :(
 }
 
 /*!
@@ -106,7 +106,7 @@ Tcb_t * os_create_thread(void * pStack, void (* pIp)(void)) {
  * Falls ein Scheduler-Aufruf ansteht, wird er nun ausgefuehrt.
  */
 void os_exitCS(void) {
-	if (test_and_set((uint8_t *)&os_scheduling_allowed, 1) == 2) {
+	if (test_and_set((uint8_t *) &os_scheduling_allowed, 1) == 2) {
 		os_schedule(TIMER_GET_TICKCOUNT_32);
 	}
 	__asm__ __volatile__("":::"memory");
@@ -121,27 +121,27 @@ void os_thread_yield(void) {
 	uint32_t now = TIMER_GET_TICKCOUNT_32;
 	/* Zeitpunkt der letzten Ausfuehrung nur in 16 Bit, da yield() nur Sinn macht, wenn es
 	 * regelmaessig aufgerufen wird, sonst sleep() benutzen. */
-	uint16_t runtime = (uint16_t)now - (uint16_t)os_thread_running->lastSchedule;
+	uint16_t runtime = (uint16_t) now - (uint16_t) os_thread_running->lastSchedule;
 	if (runtime > MS_TO_TICKS(OS_TIME_SLICE)) {
 		/* Zeitscheibe wurde bereits ueberschritten ==> kein Threadwechsel */
 #ifdef OS_KERNEL_LOG_AVAILABLE
 		LOG_DEBUG("%u missed dl\t%5uus", os_thread_running - os_threads, runtime * TIMER_STEPS);
-#endif	// OS_KERNEL_LOG_AVAILABLE
+#endif // OS_KERNEL_LOG_AVAILABLE
 #ifdef MEASURE_UTILIZATION
 		os_thread_running->statistics.runtime += runtime;
 		/* Zaehler fuer verpasste Deadlines erhoehen */
 		os_thread_running->statistics.missed_deadlines++;
-#endif
+#endif // MEASURE_UTILIZATION
 		/* Timestamp zuruecksetzen */
 		os_thread_running->lastSchedule = (uint16_t) now;
 	} else {
 		/* Wir haben noch Zeit frei, die wir dem naechsten Thread schenken koennen */
-		os_thread_running->nextSchedule = now + (uint16_t)(MS_TO_TICKS(OS_TIME_SLICE) - runtime);
+		os_thread_running->nextSchedule = now + (uint16_t) (MS_TO_TICKS(OS_TIME_SLICE) - runtime);
 		/* Scheduler wechselt die Threads, Aufruf am Ende der Funktion */
 		os_scheduling_allowed = 2;
 	}
 	/* os_exitCS() */
-	if (test_and_set((uint8_t *)&os_scheduling_allowed, 1) == 2) {
+	if (test_and_set((uint8_t *) &os_scheduling_allowed, 1) == 2) {
 		os_schedule(now);
 	}
 }
@@ -192,6 +192,8 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to) {
 		"push r15									\n\t"
 		"push r16									\n\t"
 		"push r17									\n\t"
+		"push r28									\n\t"
+		"push r29									\n\t"
 	//-- hier ist noch "from" (Z) der aktive Thread 	--//
 		"in r16, __SP_L__	; switch Stacks			\n\t"
 		"st Z+, r16									\n\t"
@@ -203,7 +205,9 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to) {
 		"ld r16, X 									\n\t"
 		"out __SP_H__, r16							\n\t"
 	//-- jetzt ist schon "to" (X) der aktive Thread 	--//
-		"pop r17				; restore registers	\n\t"
+		"pop r29			; restore registers		\n\t"
+		"pop r28									\n\t"
+		"pop r17									\n\t"
 		"pop r16									\n\t"
 		"pop r15									\n\t"
 		"pop r14									\n\t"
@@ -222,7 +226,7 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to) {
 		"pop r1					; load SREG			\n\t"
 		"out __SREG__, r1		; restore SREG		\n\t"
 		"clr r1					; cleanup r1			"
-		::	"x" (&to->stack), "z" (&from->stack)	// Stackpointer
+		::	"x" (&to->stack), "z" (&from->stack) // Stackpointer
 		:	"memory"
 	);
 }
@@ -274,8 +278,8 @@ void os_print_stackusage(void) {
 		map_2_sim_stack_free = tmp;
 		LOG_INFO("Map-2-Sim-Stack unused=%u", tmp);
 	}
-#endif	// MAP_2_SIM_AVAILABLE
-#endif	// MAP_AVAILABLE
+#endif // MAP_2_SIM_AVAILABLE
+#endif // MAP_AVAILABLE
 	static uint16_t kernel_stack_free = UINT16_MAX;
 	tmp = os_stack_unused(os_kernel_stack);
 	if (tmp < kernel_stack_free) {
@@ -317,7 +321,7 @@ void os_stack_dump(Tcb_t * thread, void * stack, uint16_t size) {
 		ptr--;
 	}
 }
-#endif	// OS_DEBUG
+#endif // OS_DEBUG
 
-#endif	// OS_AVAILABLE
-#endif	// MCU
+#endif // OS_AVAILABLE
+#endif // MCU

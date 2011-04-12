@@ -23,28 +23,28 @@
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
  */
-#include "ct-Bot.h"
 
 #ifdef PC
+#include "ct-Bot.h"
 #include "delay.h"
 
 #ifdef WIN32
 
-	/* Windows */
-	#include <windows.h>
-	
-	/*! Sleep Funktion */
-	#define SLEEP(__value)	Sleep(__value)
+/* Windows */
+#include <windows.h>
+
+/*! Sleep Funktion */
+#define SLEEP(__value)	Sleep(__value)
 	
 #else
 
-	/* Linux */
-	#include <unistd.h>
-	
-	/*! Sleep Funktion */
-	#define SLEEP(__value)	usleep((__value)*1000)
+/* Linux */
+#include <unistd.h>
 
-#endif	// WIN32
+/*! Sleep Funktion */
+#define SLEEP(__value)	usleep((__value)*1000)
+
+#endif // WIN32
 
 /*!
  * Verzoegert um ms Millisekunden
@@ -61,4 +61,4 @@ void delay(uint16_t ms) {
 	/* Rest warten */
 	SLEEP(wait - i*999);
 }
-#endif	// PC
+#endif // PC

@@ -24,13 +24,13 @@
  * @date 	03.11.06
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
+
+#ifdef BEHAVIOUR_GOTOXY_AVAILABLE
 #include <math.h>
 #include <stdlib.h>
 #include "math_utils.h"
 #include "log.h"
-
-#ifdef BEHAVIOUR_GOTOXY_AVAILABLE
 
 #define INITIAL_TURN 	0
 #define GOTO_LOOP 		1
@@ -106,6 +106,6 @@ void bot_gotoxy(Behaviour_t * caller, int16_t x, int16_t y) {
 	initialDiffX=x-x_pos;
 	initialDiffY=y-y_pos;
 	gotoState=INITIAL_TURN;
-	switch_to_behaviour(caller, bot_gotoxy_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_gotoxy_behaviour, BEHAVIOUR_NOOVERRIDE);
 }
-#endif	// BEHAVIOUR_GOTOXY_AVAILABLE
+#endif // BEHAVIOUR_GOTOXY_AVAILABLE

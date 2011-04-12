@@ -24,7 +24,10 @@
  * @date 	28.02.2006
  */
 
+#ifdef MCU
 #include "ct-Bot.h"
+
+#ifdef BOT_2_SIM_AVAILABLE
 #include "command.h"
 #include "bot-2-sim.h"
 #include "bot-2-bot.h"
@@ -38,8 +41,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef MCU
-#ifdef BOT_2_SIM_AVAILABLE
 
 /*!
  * Diese Funktion nimmt die Daten vom PC entgegen
@@ -94,6 +95,5 @@ void bot_2_sim_init(void) {
 	command_init();
 }
 
-#endif	// BOT_2_SIM_AVAILABLE
-#endif	// MCU
-
+#endif // BOT_2_SIM_AVAILABLE
+#endif // MCU

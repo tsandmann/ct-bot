@@ -27,9 +27,7 @@
 #ifndef BEHAVIOUR_SOLVE_MAZE_H_
 #define BEHAVIOUR_SOLVE_MAZE_H_
 
-#include "bot-logic/bot-logik.h"
 #ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
-
 /*!
  * Das Verhalten findet seinen Weg durch ein Labyrinth, das nach gewissen Grundregeln gebaut ist
  * in nicht immer optimaler Weise aber in jedem Fall. Es arbeitet nach dem Hoehlenforscher-Algorithmus.
@@ -65,5 +63,5 @@ void bot_measure_angle_behaviour(Behaviour_t * data);
  */
 void bot_check_wall_behaviour(Behaviour_t * data);
 
-#endif	// BEHAVIOUR_SOLVE_MAZE_AVAILABLE
-#endif	/*BEHAVIOUR_SOLVE_MAZE_H_*/
+#endif // BEHAVIOUR_SOLVE_MAZE_AVAILABLE
+#endif // BEHAVIOUR_SOLVE_MAZE_H_

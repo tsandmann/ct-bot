@@ -24,12 +24,15 @@
  * @date 	05.09.2007
  */
 
+#ifdef MCU
+
 #include "ct-Bot.h"
+#ifdef CMPS03_AVAILABLE
 #include "i2c.h"
 #include "cmps03.h"
 #include <stdlib.h>
+#include <util/twi.h>
 
-#ifdef CMPS03_AVAILABLE
 
 /*!
  * Startet das Auslesen der aktuellen Lage per I2C
@@ -37,7 +40,7 @@
  */
 void cmps03_get_bearing(cmps03_t * pValue) {
 	/* 2 Bytes aus Register 2 lesen */
-	i2c_read(CMPS03_ADDR, 2, (uint8_t *)pValue, 2);
+	i2c_read(CMPS03_ADDR, 2, (uint8_t *) pValue, 2);
 }
 
 /*!
@@ -58,4 +61,5 @@ void cmps03_finish(cmps03_t * pValue) {
 	}
 }
 
-#endif	// CMPS03_AVAILABLE
+#endif // CMPS03_AVAILABLE
+#endif // MCU

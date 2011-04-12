@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	mmc-low.h
- * @brief 	Low-Level-Routinen zum Lesen/Schreiben einer MMC / SD-Card
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	14.11.2006
+/**
+ * \file 	mmc-low.h
+ * \brief 	Low-Level-Routinen zum Lesen/Schreiben einer MMC / SD-Card
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	14.11.2006
  */
 
 #ifndef MMC_LOW_H_
@@ -40,4 +40,4 @@
 
 #define MMC_TIMEOUT		1000	/*!< Wartezyklen auf MMC-Antwort */
 
-#endif	// MMC_LOW_H
+#endif // MMC_LOW_H

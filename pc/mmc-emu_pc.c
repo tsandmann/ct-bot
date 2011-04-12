@@ -41,7 +41,10 @@
  * Die Code der Emulation ist voellig symmetrisch zum Code fuer eine echte MMC / SD-Card aufgebaut.  
  */
  
+#ifdef PC
 #include "ct-Bot.h"
+
+#ifdef MMC_VM_AVAILABLE
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -51,9 +54,6 @@
 #include "display.h"
 #include "ui/available_screens.h"
 #include "delay.h"
-
-#ifdef PC
-#ifdef MMC_VM_AVAILABLE
 
 volatile uint8_t mmc_emu_init_state = 1;	/*!< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
 static FILE * mmc_emu_file;					/*!< Der Inhalt der emulierten Karte wird einfach in eine Datei geschrieben */
@@ -77,7 +77,7 @@ static void display_block(uint32_t addr) {
  */
 void mini_fat_display(void) {
 	display_cursor(1,1);
-	display_printf("MiniFAT:");
+	display_puts("MiniFAT:");
 }
 #endif	// DISPLAY_MINIFAT_INFO
 
@@ -203,9 +203,9 @@ uint32_t mmc_emu_fat_lookup_adr(const char * filename, uint8_t * buffer) {
 	// absichtlich leer
 #ifdef DISPLAY_MINIFAT_INFO
 	display_cursor(2, 1);
-	display_printf("no EEPROM:");
+	display_puts("no EEPROM:");
 	display_block(0);
-#endif	// DISPLAY_MINIFAT_INFO
+#endif // DISPLAY_MINIFAT_INFO
 	return 0;
 }
 
@@ -219,10 +219,10 @@ void mmc_emu_fat_store_adr(uint32_t block) {
 	// absichtlich leer
 #ifdef DISPLAY_MINIFAT_INFO
 	display_cursor(3, 1);
-	display_printf("no EEPROM:");
+	display_puts("no EEPROM:");
 	display_cursor(3, 13);
 	display_block(0);
-#endif	// DISPLAY_MINIFAT_INFO	
+#endif // DISPLAY_MINIFAT_INFO
 }
 
 /*!
@@ -258,15 +258,15 @@ uint32_t mmc_emu_find_block(const char * filename, uint8_t * buffer, uint32_t en
 			mmc_emu_fat_store_adr(block);
 #ifdef DISPLAY_MINIFAT_INFO
 			display_cursor(4,1);
-			display_printf("Found:");
+			display_puts("Found:");
 			display_cursor(4,7);
 			display_block(block);
-#endif	// DISPLAY_MINIFAT_INFO
+#endif // DISPLAY_MINIFAT_INFO
 			return block;
 		}
 	}
 	display_cursor(4,1);
-	display_printf("Not found :(");
+	display_puts("Not found :(");
 	return 0xffffffff;	
 }
 
@@ -329,5 +329,5 @@ uint8_t mmc_emu_test(void) {
 	return 0;
 }
 
-#endif	// MMC_VM_AVAILABLE
-#endif	// PC
+#endif // MMC_VM_AVAILABLE
+#endif // PC

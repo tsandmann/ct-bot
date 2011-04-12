@@ -28,7 +28,7 @@
  * @todo	Version 3 funktioniert auf dem echten Bot nicht sehr zuverlaessig (Probleme bei Winkeln < 120 Grad)
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 
@@ -189,7 +189,7 @@ void bot_follow_line_behaviour(Behaviour_t * data) {
  * @param	*caller Verhaltensdatensatz des Aufrufers
  */
 void bot_follow_line(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_follow_line_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_follow_line_behaviour, BEHAVIOUR_NOOVERRIDE);
 	lineState=CHECK_LINE;
 	cornerDetected=False;
 }
@@ -254,7 +254,7 @@ void bot_follow_line_behaviour(Behaviour_t * data) {
  * @param	*caller Verhaltensdatensatz des Aufrufers
  */
 void bot_follow_line(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_follow_line_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_follow_line_behaviour, BEHAVIOUR_NOOVERRIDE);
 	/* stoerende Notfallverhalten aus */
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
 	deactivateBehaviour(bot_avoid_col_behaviour);
@@ -408,7 +408,7 @@ void bot_follow_line_behaviour(Behaviour_t * data) {
  * @param *caller Verhaltensdatensatz des Aufrufers
  */
 void bot_follow_line(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_follow_line_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_follow_line_behaviour, BEHAVIOUR_NOOVERRIDE);
 
 	// Kennungen init.
 	border_side_l_fired = False;
@@ -426,4 +426,4 @@ void bot_follow_line(Behaviour_t * caller) {
 }
 
 #endif	// VERSION
-#endif	// BEHAVIOUR_FOLLOW_LINE_AVAILABLE
+#endif // BEHAVIOUR_FOLLOW_LINE_AVAILABLE

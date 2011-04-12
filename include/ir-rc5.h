@@ -23,11 +23,8 @@
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	20.12.05
  */
-#ifndef ir_rc5_H_
-#define ir_rc5_H_
-
-#include "ct-Bot.h"
-#include "global.h"
+#ifndef IR_RC5_H_
+#define IR_RC5_H_
 
 #ifdef MCU
 #define RC5_PORT	PORTB	/*!< Port B fuer RC5-Fernbedienung */
@@ -68,14 +65,6 @@ typedef struct {
 	uint16_t no_data;			/*!< RC5-Code, der gesetzt wird, falls nichts empfangen wurde */
 } ir_data_t;	/*!< Daten fuer RC-Decoder */
 
-/*! @todo Das gehoert eigentlich nicht hierhin */
-#ifdef RC5_AVAILABLE
-extern ir_data_t rc5_ir_data;
-#endif
-#ifdef BPS_AVAILABLE
-extern ir_data_t bps_ir_data;
-#endif
-
 /*!
  * Init IR-System
  * @param *port Port fuer RC5-Sensor
@@ -113,4 +102,5 @@ uint16_t ir_read(ir_data_t * data);
  */
 void ir_isr(ir_data_t * data, volatile uint8_t * pin_r, const uint8_t pin, const uint8_t pause_samples,
 		const uint8_t samples_per_bit, const uint8_t bits);
-#endif	/*ir_rc5_H_*/
+
+#endif // IR_RC5_H_

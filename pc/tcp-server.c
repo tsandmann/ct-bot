@@ -24,14 +24,14 @@
  * @date 	26.12.05
  */
 
-#include "ct-Bot.h"
-
 #ifdef PC
-#include "tcp-server.h"
+
+#include "ct-Bot.h"
+#include "command.h"
 #include "bot-2-sim.h"
 #include "tcp.h"
+#include "tcp-server.h"
 #include "display.h"
-#include "command.h"
 
 #include <time.h>
 #include <sys/time.h>
@@ -257,4 +257,4 @@ void tcp_test_client_run(int runs) {
 	exit(0);
 }
 
-#endif	// PC
+#endif // PC

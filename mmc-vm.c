@@ -26,10 +26,9 @@
  */
 
 
-#include "ct-Bot.h"  
+#include "ct-Bot.h"
 
 #ifdef MMC_VM_AVAILABLE
-
 #include "mmc-vm.h"
 #include "mmc.h"
 #include "mmc-low.h"
@@ -43,25 +42,25 @@
 #include <string.h>
 
 #ifdef MCU
-	#define MMC_START_ADDRESS 0x2000000		/*!< Startadresse des virtuellen Speichers [512;2^32-1] in Byte - Sinnvoll ist z.B. Haelfte der MMC / SD-Card Groesse, der Speicherplatz davor kann dann fuer ein Dateisystem verwendet werden. */
-	#define MAX_SPACE_IN_SRAM 1				/*!< Anzahl der Seiten, die maximal im SRAM gehalten werden [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald diese verwendet wird. */
-	#define swap_out	mmc_write_sector	/*!< Funktion zum Schreiben auf die MMC */
-	#define swap_in		mmc_read_sector		/*!< Funktion zum Lesen von der MMC */
-	#define swap_space	mmc_get_size()		/*!< Funktion zur Groessenermittlung der MMC */
-	#define fat_lookup	mini_fat_lookup_adr	/*!< Funktion zum FS-Cache auslesen */
-	#define fat_store	mini_fat_store_adr	/*!< Funktion zum FS-Cache aktualisieren */
-#else
-	#define MMC_START_ADDRESS 0x1000000			/*!< Startadresse des virtuellen Speichers [512;2^32-1] in Byte - Sinnvoll ist z.B. Haelfte der MMC / SD-Card Groesse, der Speicherplatz davor kann dann fuer ein Dateisystem verwendet werden. */
-	#define MAX_SPACE_IN_SRAM 5					/*!< Anzahl der Seiten, die maximal im RAM gehalten werden [1;127] - Pro Page werden 512 Byte im RAM belegt, sobald diese verwendet wird. */
-	#define swap_out	mmc_emu_write_sector	/*!< Funktion zum Schreiben auf die emulierte MMC */
-	#define swap_in		mmc_emu_read_sector		/*!< Funktion zum Lsen von der emulierte MMC */
-	#define swap_space	mmc_emu_get_size()		/*!< Funktion zur Groessenermittlung der emulierten MMC */
-	#define fat_lookup	mmc_emu_fat_lookup_adr	/*!< Funktion zum FS-Cache auslesen */
-	#define fat_store	mmc_emu_fat_store_adr	/*!< Funktion zum FS-Cache aktualisieren */
-	#define mini_fat_find_block_P	mmc_emu_find_block	/*!< Funktion um Mini-FAT-Datei zu oeffnen */
-	#define mini_fat_get_filesize(addr, buffer) mmc_emu_get_filesize(addr)	/*!< Funktion um Groesse einer Mini-FAT-Datei auszulesen */
-	#define mini_fat_clear_file(addr, buffer) mmc_emu_clear_file(addr)	/*!< Funktion um eine Mini-FAT-Datei zu loeschen */
-#endif	
+#define MMC_START_ADDRESS 0x2000000		/*!< Startadresse des virtuellen Speichers [512;2^32-1] in Byte - Sinnvoll ist z.B. Haelfte der MMC / SD-Card Groesse, der Speicherplatz davor kann dann fuer ein Dateisystem verwendet werden. */
+#define MAX_SPACE_IN_SRAM 1				/*!< Anzahl der Seiten, die maximal im SRAM gehalten werden [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald diese verwendet wird. */
+#define swap_out	mmc_write_sector	/*!< Funktion zum Schreiben auf die MMC */
+#define swap_in		mmc_read_sector		/*!< Funktion zum Lesen von der MMC */
+#define swap_space	mmc_get_size()		/*!< Funktion zur Groessenermittlung der MMC */
+#define fat_lookup	mini_fat_lookup_adr	/*!< Funktion zum FS-Cache auslesen */
+#define fat_store	mini_fat_store_adr	/*!< Funktion zum FS-Cache aktualisieren */
+#else // PC
+#define MMC_START_ADDRESS 0x1000000			/*!< Startadresse des virtuellen Speichers [512;2^32-1] in Byte - Sinnvoll ist z.B. Haelfte der MMC / SD-Card Groesse, der Speicherplatz davor kann dann fuer ein Dateisystem verwendet werden. */
+#define MAX_SPACE_IN_SRAM 5					/*!< Anzahl der Seiten, die maximal im RAM gehalten werden [1;127] - Pro Page werden 512 Byte im RAM belegt, sobald diese verwendet wird. */
+#define swap_out	mmc_emu_write_sector	/*!< Funktion zum Schreiben auf die emulierte MMC */
+#define swap_in		mmc_emu_read_sector		/*!< Funktion zum Lsen von der emulierte MMC */
+#define swap_space	mmc_emu_get_size()		/*!< Funktion zur Groessenermittlung der emulierten MMC */
+#define fat_lookup	mmc_emu_fat_lookup_adr	/*!< Funktion zum FS-Cache auslesen */
+#define fat_store	mmc_emu_fat_store_adr	/*!< Funktion zum FS-Cache aktualisieren */
+#define mini_fat_find_block_P	mmc_emu_find_block	/*!< Funktion um Mini-FAT-Datei zu oeffnen */
+#define mini_fat_get_filesize(addr, buffer) mmc_emu_get_filesize(addr)	/*!< Funktion um Groesse einer Mini-FAT-Datei auszulesen */
+#define mini_fat_clear_file(addr, buffer) mmc_emu_clear_file(addr)	/*!< Funktion um eine Mini-FAT-Datei zu loeschen */
+#endif // MCU
 
 #define MAX_PAGES_IN_SRAM MAX_SPACE_IN_SRAM		/*!< Anzahl der Cache-Seiten, die maximal im SRAM gehalten werden */
 
@@ -456,4 +455,4 @@ void mmc_clear_file(uint32_t file_start) {
 	}
 }
 
-#endif	// MMC_VM_AVAILABLE
+#endif // MMC_VM_AVAILABLE

@@ -25,9 +25,10 @@
  * @date 	13.12.2007
  */
 
-#include "bot-logic/available_behaviours.h"
+#include "bot-logic/bot-logic.h"
+
+#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 #include "ui/available_screens.h"
-#include "bot-logic/bot-logik.h"
 #include "display.h"
 #include "rc5.h"
 #include "rc5-codes.h"
@@ -37,8 +38,6 @@
 #include "map.h"
 #include "command.h"
 #include <stdlib.h>
-
-#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 
 #define DEBUG
 
@@ -115,7 +114,7 @@ void bot_drive_stack_behaviour(Behaviour_t * data) {
 void bot_drive_stack_x(Behaviour_t * caller, uint8_t stack, uint8_t mode) {
 	pos_store_t * store = pos_store_from_index(stack);
 	if (store == NULL) {
-		caller->subResult = SUBFAIL;
+		caller->subResult = BEHAVIOUR_SUBFAIL;
 		LOG_DEBUG("Fehler, Positionsspeicher %u ungueltig", stack);
 		return;
 	}
@@ -128,7 +127,7 @@ void bot_drive_stack_x(Behaviour_t * caller, uint8_t stack, uint8_t mode) {
 	}
 
 	pos_store = store;
-	switch_to_behaviour(caller, bot_drive_stack_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_drive_stack_behaviour, BEHAVIOUR_OVERRIDE);
 	drivestack_state = 0;
 	go_fifo = mode;
 }
@@ -171,12 +170,12 @@ void bot_drive_fifo(Behaviour_t * caller) {
 void bot_send_stack_b2b(Behaviour_t * caller, uint8_t bot) {
 	struct {
 		unsigned subresult:3;
-	} result = {SUBFAIL};
+	} result = {BEHAVIOUR_SUBFAIL};
 	LOG_DEBUG("pos_store_send_to_bot(0x%x, %u)", pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot);
 	if (pos_store_send_to_bot(pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot) == 0) {
 		if (bot_2_bot_start_remotecall(bot, "bot_drive_fifo", (remote_call_data_t) 0, (remote_call_data_t) 0,
 			(remote_call_data_t) 0) == 0) {
-			result.subresult = SUBSUCCESS;
+			result.subresult = BEHAVIOUR_SUBSUCCESS;
 		} else {
 			LOG_DEBUG("Fehler, konnte bot_drive_fifo() nicht starten");
 		}
@@ -185,7 +184,7 @@ void bot_send_stack_b2b(Behaviour_t * caller, uint8_t bot) {
 	}
 	if (caller) {
 		caller->subResult = result.subresult;
-		caller->active = ACTIVE;
+		caller->active = BEHAVIOUR_ACTIVE;
 	}
 }
 #endif // BOT_2_BOT_PAYLOAD_AVAILABLE
@@ -202,7 +201,7 @@ void bot_push_actpos(Behaviour_t * caller, uint8_t stack) {
 	// sichern der aktuellen Botposition auf den Stack
 	pos_store_push(pos_store_from_index(stack), pos);
 	if (caller) {
-		caller->subResult = SUBSUCCESS;
+		caller->subResult = BEHAVIOUR_SUBSUCCESS;
 	}
 }
 
@@ -248,7 +247,7 @@ void bot_save_waypos_behaviour(Behaviour_t * data) {
 	case 0:
 		pos_store = pos_store_new_size(data, STACK_SIZE);
 		if (pos_store == NULL) {
-			exit_behaviour(data, SUBFAIL);
+			exit_behaviour(data, BEHAVIOUR_SUBFAIL);
 			return;
 		}
 		set_pos_to_last(); // aktuelle Botposition wird zum ersten Stackeintrag und merken der Position
@@ -348,7 +347,7 @@ void bot_save_waypos_behaviour(Behaviour_t * data) {
 			position_t pos_1, pos_2;
 			pos_store_top(pos_store, &pos_0, 1);
 			uint16_t i;
-			for (i=2; pos_store_top(pos_store, &pos_1, i); ++i) {
+			for (i = 2; pos_store_top(pos_store, &pos_1, (uint8_t) i); ++i) {
 				map_draw_line_world(pos_0, pos_1, 0);
 				pos_0 = pos_1;
 				pos_1.x = pos_0.x - 16;
@@ -437,13 +436,13 @@ void drive_stack_display(void) {
 	display_cursor(1, 1);
 	display_printf("Stack   %5d %5d", pos.x, pos.y);
 	display_cursor(2, 1);
-	display_printf("Save/Del      : 3/8");
+	display_puts("Save/Del      : 3/8");
 	display_cursor(3, 1);
-	display_printf("GoBack/Forward: 4/7");
+	display_puts("GoBack/Forward: 4/7");
 	display_cursor(4, 1);
-	display_printf("Start WayPushPos: 5");
+	display_puts("Start WayPushPos: 5");
 
 	drivestack_disp_key_handler(); // aufrufen des Key-Handlers
 }
 #endif	// DISPLAY_DRIVE_STACK_AVAILABLE
-#endif	// BEHAVIOUR_DRIVE_STACK_AVAILABLE
+#endif // BEHAVIOUR_DRIVE_STACK_AVAILABLE

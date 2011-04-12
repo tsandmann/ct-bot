@@ -27,12 +27,10 @@
 #ifndef MMC_EMU_H_
 #define MMC_EMU_H_
 
-#include "ct-Bot.h"  
+#ifdef PC
 
 #define MMC_EMU_SIZE	0x2000000		/*!< Groesse der emulierten Karte in Byte */
 #define MMC_EMU_FILE	"mmc_emu.dat"	/*!< Name / Pfad der Datei fuer die Emulation */
-
-#ifdef PC
 
 /*!
  * Checkt Initialisierung der emulierten Karte
@@ -86,7 +84,7 @@ uint32_t mmc_emu_get_filesize(uint32_t file_start);
 void mmc_emu_clear_file(uint32_t file_start);
 
 /*!
- * @brief			Sucht die Adresse einer Mini-FAT-Datei im EERROM
+ * Sucht die Adresse einer Mini-FAT-Datei im EERROM
  * @param filename	Datei-ID
  * @param buffer	Zeiger auf 512 Byte grossen Speicherbereich (wird ueberschrieben)
  * @return			(Byte-)Adresse des ersten Nutzdatenblock der gesuchten Datei oder 0, falls nicht im EEPROM
@@ -95,14 +93,14 @@ void mmc_emu_clear_file(uint32_t file_start);
 uint32_t mmc_emu_fat_lookup_adr(const char* filename, uint8_t * buffer);
 
 /*!
- * @brief			Speichert die Adresse einer Mini-FAT-Datei in einem EERROM-Slab
+ * Speichert die Adresse einer Mini-FAT-Datei in einem EERROM-Slab
  * @param block		(Block-)Adresse der Datei, die gespeichert werden soll
  * Nur DUMMY fuer MMC-Emulation am PC. Wenn es mal eine EEPROM-Emulation fuer PC gibt, kann man diese Funktion implementieren.
  */
 void mmc_emu_fat_store_adr(uint32_t block);
 
 /*!
- * @brief			Sucht einen Block auf der MMC-Karte, dessen erste Bytes dem Dateinamen entsprechen
+ * Sucht einen Block auf der MMC-Karte, dessen erste Bytes dem Dateinamen entsprechen
  * @param filename 	String im Flash zur Identifikation
  * @param buffer 	Zeiger auf 512 Byte Puffer im SRAM
  * @param end_addr	Byte-Adresse, bis zu der gesucht werden soll
@@ -116,5 +114,5 @@ uint32_t mmc_emu_find_block(const char * filename, uint8_t * buffer, uint32_t en
  */
 uint8_t mmc_emu_test(void);
 
-#endif	// PC
-#endif /*MMC_H_*/
+#endif // PC
+#endif // MMC_H_

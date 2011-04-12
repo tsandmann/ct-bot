@@ -17,36 +17,45 @@
  *
  */
 
-/*!
- * @file 	behaviour_cancel_behaviour.h
- * @brief 	Deaktiviert ein anderes Verhalten in Abhaengigkeit einer Check-Funktion;
- *          So kann z.B. der Wandfolger (bot_solve_maze) beendet werden, falls dieser auf
- *          eine Linie faehrt und der Linienfolger uebernehmen.
- * @author 	Frank Menzel (Menzelfr@gmx.net)
- * @date 	19.10.2007
+/**
+ * \file 	behaviour_cancel_behaviour.h
+ * \brief 	Deaktiviert ein anderes Verhalten in Abhaengigkeit einer Check-Funktion
+ *
+ * So kann z.B. der Wandfolger (bot_solve_maze) beendet werden, falls dieser auf
+ * eine Linie faehrt und der Linienfolger uebernehmen.
+ * \author 	Frank Menzel (Menzelfr@gmx.net)
+ * \date 	19.10.2007
  */
 
 #ifndef BEHAVIOUR_CANCEL_H_
 #define BEHAVIOUR_CANCEL_H_
 
-#include "ct-Bot.h"
-#include "bot-logic/bot-logik.h"
-
 #ifdef BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
 
-/*!
+/**
  * Verhalten zum bedingten Deaktivieren eines anderen Verhaltens
- * @param *data	Verhaltensdatensatz
+ * \param *data	Verhaltensdatensatz
  */
-void bot_cancel_behaviour_behaviour(Behaviour_t * data);
+void bot_behaviour_cancel_behaviour(Behaviour_t * data);
 
-/*!
- * Botenfunktion zum Deaktivieren eines Verhaltens, wenn die Abbruchbedingung erfuellt ist
- * @param *caller	Verhaltensdatensatz des Aufrufers
- * @param behaviour	abzubrechendes Verhalten
- * @param *check 	Zeiger auf die Abbruchfunktion; liefert diese True, wird das Verhalten beendet
+/**
+ * Botenfunktion zum Deaktivieren eines Verhaltens, wenn eine Abbruchbedingung erfuellt ist
+ * \param *caller		Verhaltensdatensatz des Aufrufers
+ * \param *behaviour	Verhaltensdatensatz des abzubrechenden Verhaltens
+ * \param *check 		Zeiger auf die Abbruchfunktion; liefert diese True, wird das Verhalten beendet
+ * \return				Zeiger auf den eigenen Verhaltensdatensatz oder NULL im Fehlerfall
  */
-void bot_cancel_behaviour(Behaviour_t * caller, BehaviourFunc behaviour, uint8_t (*check)(void));
+Behaviour_t * bot_add_behaviour_to_cancel(Behaviour_t * caller, Behaviour_t * behaviour, uint8_t (* check)(void));
 
-#endif	// BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
-#endif	/*BEHAVIOUR_CANCEL_H_*/
+/**
+ * Botenfunktion zum Deaktivieren eines Verhaltens, wenn die Abbruchbedingung erfuellt ist.
+ * Alte Version, um Abwaertskompatibilitaet zu erhalten
+ * \param *caller	Verhaltensdatensatz des Aufrufers
+ * \param behaviour	abzubrechendes Verhalten
+ * \param *check 	Zeiger auf die Abbruchfunktion; liefert diese True, wird das Verhalten beendet
+ * \return			Zeiger auf den eigenen Verhaltensdatensatz oder NULL im Fehlerfall
+ */
+Behaviour_t * bot_cancel_behaviour(Behaviour_t * caller, BehaviourFunc_t behaviour, uint8_t (*check)(void));
+
+#endif // BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE
+#endif // BEHAVIOUR_CANCEL_H_

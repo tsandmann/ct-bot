@@ -24,15 +24,15 @@
  * @date 	26.12.05
  */
 
+#ifdef PC
 #include "ct-Bot.h"
+
+#ifdef LED_AVAILABLE
 #include "bot-2-sim.h"
 #include "command.h"
 #include "led.h"
 #include "log.h"
 
-#ifdef PC
-
-#ifdef LED_AVAILABLE
 uint8_t led = 0;	/*!< Status der LEDs */
 
 /*!
@@ -70,5 +70,5 @@ void LED_set(uint8_t LED) {
 	command_write(CMD_AKT_LED, SUB_CMD_NORM, led, led, 0);
 }
 
-#endif	// LED_AVAILABLE
-#endif	// PC
+#endif // LED_AVAILABLE
+#endif // PC

@@ -33,7 +33,7 @@
 #include "sensor-low.h"
 #include "trace.h"
 #include "motor.h"
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 #include "sensor.h"
 #include "gui.h"
 #include "command.h"
@@ -55,7 +55,7 @@ int main(int argc, char * argv[]) {
 
 #ifdef WELCOME_AVAILABLE
 	display_cursor(1, 1);
-	display_printf("c't-Roboter");
+	display_puts("c't-Roboter");
 
 #ifdef LOG_AVAILABLE
 	LOG_INFO("Hallo Welt!");
@@ -112,12 +112,12 @@ int main(int argc, char * argv[]) {
 #endif // CREATE_TRACEFILE_AVAILABLE
 
 		/* jeweils alle 100 ms kommunizieren Bot, User und Sim */
-		if (timer_ms_passed_16(&comm_ticks, 50) 
+		if (timer_ms_passed_16(&comm_ticks, 50)
 #ifdef RC5_AVAILABLE
 			|| RC5_Code != 0
 #endif
 		) {
-			if (uart_gui == 0 
+			if (uart_gui == 0
 #ifdef RC5_AVAILABLE
 				|| RC5_Code != 0
 #endif

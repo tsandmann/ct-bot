@@ -27,8 +27,6 @@
 #ifndef BEHAVIOUR_SCAN_H_
 #define BEHAVIOUR_SCAN_H_
 
-#include "bot-logic/bot-logik.h"
-
 #define SCAN_OTF_RESOLUTION_DISTANCE_LOCATION	60	/*!< Nach welcher gefahrenen Strecke [mm] soll die Standflaeche aktualisiert werden */
 
 #define SCAN_OTF_RESOLUTION_DISTANCE_BORDER		10	/*!< Nach welcher gefahrenen Strecke [mm] sollen die Abgrundsensoren fuer die Karte ausgewertet werden */
@@ -102,5 +100,5 @@ static inline void set_scan_otf_mapmode(uint8_t value) {
  */
 void bot_scan_onthefly_behaviour(Behaviour_t * data);
 
-#endif	// BEHAVIOUR_SCAN_AVAILABLE
-#endif	/*BEHAVIOUR_SCAN_H_*/
+#endif // BEHAVIOUR_SCAN_AVAILABLE
+#endif // BEHAVIOUR_SCAN_H_

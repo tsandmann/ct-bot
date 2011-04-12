@@ -26,18 +26,14 @@
 
 #ifndef TCP_H_
 #define TCP_H_
+
 #ifdef PC
-
-#include "global.h"
-#include "bot-2-sim.h"
-#include "command.h"
-
 
 #define IP "localhost"		/*!<  IP, mit der verbunden werden soll (normalerweise localhost) */
 #define PORT 10001			/*!<  Port, mit dem verbunden werden soll  */
 
 extern int tcp_sock;		/*!< Unser TCP-Socket */
-extern char *tcp_hostname;	/*!< Hostname, auf dem ct-Sim laeuft */
+extern char * tcp_hostname;	/*!< Hostname, auf dem ct-Sim laeuft */
 
 /*!
  * Sende Kommando per TCP/IP im Little Endian
@@ -53,7 +49,7 @@ int tcp_send_cmd(command_t * cmd);
  * @param length	Anzahl der Bytes
  * @return 			Anzahl der gesendeten Byte, -1 wenn Fehler
  */
-int tcp_write(void * data, int length);
+int tcp_write(const void * data, int length);
 
 /*!
  * Lese Daten von TCP/IP-Verbindung.
@@ -87,5 +83,5 @@ int flushSendBuffer(void);
  * @param sock Der Socket
  */
 void tcp_closeConnection(int sock);
-#endif	// PC
-#endif	/* TCP_H_ */
+#endif // PC
+#endif // TCP_H_

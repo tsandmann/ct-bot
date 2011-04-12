@@ -28,11 +28,7 @@
 #ifndef BEHAVIOUR_TEST_ENCODER_H_
 #define BEHAVIOUR_TEST_ENCODER_H_
 
-#include "ct-Bot.h"
-#include "bot-logic/bot-logik.h"
-
 #ifdef BEHAVIOUR_TEST_ENCODER_AVAILABLE
-
 /*!
  * Encoder-Test-Verhalten
  * @param *data der Verhaltensdatensatz
@@ -46,4 +42,4 @@ void bot_test_encoder_behaviour(Behaviour_t * data);
 void bot_test_encoder(Behaviour_t * caller);
 
 #endif // BEHAVIOUR_TEST_ENCODER_AVAILABLE
-#endif /* BEHAVIOUR_TEST_ENCODER_H_ */
+#endif // BEHAVIOUR_TEST_ENCODER_H_

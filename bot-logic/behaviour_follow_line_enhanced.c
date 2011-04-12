@@ -25,10 +25,10 @@
  */
 
 
-#include "bot-logic/bot-logik.h"
-#include "math_utils.h"
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
+#include "math_utils.h"
 
 // Merkposition nach Umrunden Hindernis; erst wieder gewisse Strecke fahren bis Linienfolger abgebrochen werden kann fuer Hindernis
 static position_t pos_on_line;
@@ -202,10 +202,10 @@ void bot_follow_line_enh_behaviour(Behaviour_t * data) {
  * @param *caller Verhaltensdatensatz des Aufrufers
  */
 void bot_follow_line_enh(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_follow_line_enh_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_follow_line_enh_behaviour, BEHAVIOUR_NOOVERRIDE);
 	line_state_enh = 0;
 	pos_on_line.x = 0;
 	pos_on_line.y = 0;
 }
 
-#endif	// BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
+#endif // BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE

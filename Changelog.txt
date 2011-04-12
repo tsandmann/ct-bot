@@ -1,10 +1,44 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-04-12 Timo Sandmann [mail@timosandmann.de]: Release 19
+
+2011-04-12 Timo Sandmann [mail@timosandmann.de]: Bugfixes fuer Map-Code, Threading-Code und #define-Abhaengigkeiten
+
+2011-04-11 Benjamin Benz [bbe@heise.de]: solve_maze rennt nun im Demo-Labyrinth nicht mehr gegen die Wand
+
+2011-04-10 Timo Sandmann [mail@timosandmann.de]: Einrichtung einer SD-Karte fuer BotFS dokumentiert, siehe contrib/BotFS/readme.txt oder botfs.c
+
+2011-04-01 Timo Sandmann [mail@timosandmann.de]: uBasic auf Revision 45 aktualisiert
+
+2011-03-19 Timo Sandmann [mail@timosandmann.de]: uBasic aktualisiert, Bugfix fuer Minilog-2-Sim, angefangen Header-Dateien aufzuraeumen
+
+2011-03-13 Timo Sandmann [mail@timosandmann.de]: Support fuer aeltere avr-libc Versionen (ab 1.6.7)
+
+2011-03-11 Timo Sandmann [mail@timosandmann.de]: Behaviour-Code aufgeraeumt: globale Konstanten mit dem Prefix BEHAVIOUR_ versehen, Dateinamen auf einheitliches Schema umgestellt, Cancel-Verhalten erweitert - es koennen auch mehrere Verhalten ueberwacht und beendet werden. Turn-Verhalten ueberarbeitet, Angabe der Drehgeschwindigkeit hinzugefuegt. EEPROM-Schreibzugriffe verringert. 
+
 2011-03-02 Simon Siemens: Bugfix fuer Konfiguration ohne RC5 oder RemoteCall-Verhalten
 
 2011-02-12 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer gcc 4.4
 
+2011-01-21 Timo Sandmann [mail@timosandmann.de]: BotFS Hilfsprogramm hinzugefuegt
+
+2011-01-13 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Buildproblem des MMC-Codes
+
 2011-01-12 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer EEPROM-Emulation
+
+2010-12-04 Timo Sandmann [mail@timosandmann.de]: BotFS-Volume robuster gemacht fuer zukuenftige Aenderungen. Image-Datei muss geloescht und neu angelegt werden, sorry (anlegen auf PC automatisch) 
+
+2010-12-01 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer botfs_rename()
+
+2010-11-20 Timo Sandmann [mail@timosandmann.de]: Speed-Log auf BotFS umgestellt
+
+2010-11-19 Timo Sandmann [mail@timosandmann.de]: LOG_MMC_AVAILABLE kann jetzt mit USE_MINILOG und BOT_FS_AVAILABLE verwendet werden, dadurch auch parallel mit MAP_AVAILABLE. Ausserdem gibt es jetzt ein Display, das alle Log-Eintraege anzeigen kann (scrollen ueber Fernbedienung) 
+
+2010-11-13 Timo Sandmann [mail@timosandmann.de]: RAM-Bedarf von uBasic verringert
+
+2010-11-11 Frank Menzel  [menzelfr@gmx.de]:      Basic-Interpreter uBasic eingebaut mit entsprechendem Verhalten
+
+2010-11-11 Timo Sandmann [mail@timosandmann.de]: Dateisystem BotFS (BOT_FS_AVAILABLE), RemoteCall-Display zur Verhaltenssteuerung (DISPLAY_REMOTECALL_AVAILABLE; #168), Bots werden beim Beenden sauber heruntergefahren, Anpassungen fuer Skript-Programme wie uBasic, Code aufgeraeumt, Compilezeit etwas verringert
 
 2010-10-16 Timo Sandmann [mail@timosandmann.de]: Release 18
 

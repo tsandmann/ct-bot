@@ -24,9 +24,9 @@
  * @date 	26.12.2005
  */
 
-#include "ct-Bot.h"
-
 #ifdef PC
+
+#include "ct-Bot.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,13 +35,13 @@
 #include <time.h>
 
 #include "bot-2-sim.h"
-#include "tcp.h"
+#include "eeprom.h"
 #include "command.h"
+#include "tcp.h"
 #include "display.h"
 #include "sensor.h"
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 #include "motor.h"
-#include "command.h"
 #include "bot-2-bot.h"
 
 

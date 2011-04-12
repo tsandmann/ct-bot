@@ -28,9 +28,7 @@
 #ifndef BEHAVIOUR_SCAN_BEACONS_H_
 #define BEHAVIOUR_SCAN_BEACONS_H_
 
-#include "bot-logic/bot-logik.h"
 #ifdef BEHAVIOUR_SCAN_BEACONS_AVAILABLE
-
 /*!
  * Verhalten, das Landmarken im Umkreis des Bots sucht und die Bot-Position
  * aktualisiert, falls drei oder mehr Landmarken gefunden wurden.
@@ -47,5 +45,5 @@ void bot_scan_beacons_behaviour(Behaviour_t * data);
  */
 void bot_scan_beacons(Behaviour_t * caller, uint8_t position_update, uint8_t mode);
 
-#endif	// BEHAVIOUR_SCAN_BEACONS_AVAILABLE
-#endif	/* BEHAVIOUR_SCAN_BEACONS_H_ */
+#endif // BEHAVIOUR_SCAN_BEACONS_AVAILABLE
+#endif // BEHAVIOUR_SCAN_BEACONS_H_

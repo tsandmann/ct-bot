@@ -24,7 +24,7 @@
  * @date 	03.11.2006
  */
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
 #include <stdlib.h>
@@ -184,7 +184,7 @@ void bot_explore_behaviour(Behaviour_t * data) {
 		}
 		break;
 		// Nach links drehen, bis der Bot parallel zum Hindernis auf der rechten Seite steht.
-/*! @todo	Entwickle ein Verhalten, dass auch bei Loechern funktioniert.
+/*! @todo	Entwickle ein Verhalten, das auch bei Loechern funktioniert.
  * 			Tipp dazu: Drehe den Roboter auf das Loch zu, bis beide Bodensensoren das Loch 'sehen'. Anschliessend drehe den Bot um 90 Grad.
  * 			Es ist noetig, neue Zustaende zu definieren, die diese Zwischenschritte beschreiben.
  * 			Drehung mit dem Maussensor ueberwachen. */
@@ -286,7 +286,7 @@ void bot_explore_behaviour(Behaviour_t * data) {
  * @param *check	Bewertungsfunktion fuer Suche
  */
 static void bot_explore(Behaviour_t * caller, int8_t (* check)(void)) {
-	switch_to_behaviour(caller, bot_explore_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_explore_behaviour, BEHAVIOUR_NOOVERRIDE);
 	exploration_check_function = check;
 	explore_state = EXPLORATION_STATE_GOTO_WALL;
 	explore_curve = 0;
@@ -409,7 +409,7 @@ void bot_do_slalom_behaviour(Behaviour_t * data) {
  * @param *caller	Verhaltensdatensatz des Aufrufers
  */
 void bot_do_slalom(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_do_slalom_behaviour, NOOVERRIDE);
+	switch_to_behaviour(caller, bot_do_slalom_behaviour, BEHAVIOUR_NOOVERRIDE);
 	slalom_state = SLALOM_STATE_CHECK_PILLAR;
 	slalom_orientation = SLALOM_ORIENTATION_RIGHT;
 	slalom_sweep_state = 0;
@@ -434,4 +434,4 @@ void bot_olympic_behaviour(Behaviour_t * data) {
 		bot_explore(data, check_for_light);
 }
 
-#endif	// BEHAVIOUR_OLYMPIC_AVAILABLE
+#endif // BEHAVIOUR_OLYMPIC_AVAILABLE

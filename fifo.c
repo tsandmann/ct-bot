@@ -25,7 +25,9 @@
  * Thread-Safe, abgesichert gegen Interrupts, solange sich Producer bzw. Consumer jeweils auf der gleichen Interrupt-Ebene befinden.
  */
 
+#include "ct-Bot.h"
 #include "fifo.h"
+#include "log.h"
 
 /*!
  * Initialisiert die FIFO, setzt Lese- und Schreibzeiger, etc.
@@ -37,11 +39,12 @@ void fifo_init(fifo_t * f, void * buffer, const uint8_t size) {
 	f->count = 0;
 	f->pread = f->pwrite = buffer;
 	f->read2end = f->write2end = f->size = size;
-	f->signal.value = 0;	// Fifo leer
+	f->signal.value = 0; // Fifo leer
+	f->overflow = 0;
 #ifdef PC
 	pthread_mutex_init(&f->signal.mutex, NULL);
 	pthread_cond_init(&f->signal.cond, NULL);
-#endif	// PC
+#endif // PC
 	LOG_DEBUG_FIFO("Fifo 0x%08x initialisiert", f);
 }
 
@@ -53,13 +56,14 @@ void fifo_init(fifo_t * f, void * buffer, const uint8_t size) {
  * @param *data		Zeiger auf Quelldaten
  * @param length	Anzahl der zu kopierenden Bytes
  */
-void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
+void fifo_put_data(fifo_t * f, const void * data, uint8_t length) {
 	if (length == 0) {
 		return;
 	}
 	uint8_t space;
 	if (length > (space = (uint8_t) (f->size - f->count))) {
 		/* nicht genug Platz -> alte Daten rauswerfen */
+		f->overflow = 1;
 		uint8_t to_discard = (uint8_t) (length - space);
 		LOG_DEBUG_FIFO("verwerfe %u Bytes in Fifo 0x%08x", to_discard, f);
 		LOG_DEBUG_FIFO(" size=%u, count=%u, length=%u", f->size, f->count, length);
@@ -88,13 +92,13 @@ void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
 		pthread_mutex_unlock(&f->signal.mutex);
 #endif
 	}
-	uint8_t * src = data;
+	const uint8_t * src = data;
 	uint8_t * pwrite = f->pwrite;
 	uint8_t write2end = f->write2end;
 	uint8_t n = length > write2end ? write2end : length;
 	uint8_t i, j;
-	for (j=0; j<2; j++) {
-		for (i=0; i<n; i++) {
+	for (j = 0; j < 2; ++j) {
+		for (i = 0; i < n; ++i) {
 			*(pwrite++) = *(src++);
 		}
 
@@ -124,7 +128,7 @@ void fifo_put_data(fifo_t * f, void * data, uint8_t length) {
 #ifdef OS_AVAILABLE
 	/* Consumer aufwecken */
 	os_signal_unlock(&f->signal);
-#endif	// OS_AVAILABLE
+#endif // OS_AVAILABLE
 }
 
 /*!
@@ -149,15 +153,15 @@ uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length) {
 		os_signal_release(&f->signal);
 		count = f->count;
 	}
-#endif	// OS_AVAILABLE
+#endif // OS_AVAILABLE
 	if (count < length) length = count;
 	uint8_t * pread = f->pread;
 	uint8_t read2end = f->read2end;
 	uint8_t n = length > read2end ? read2end : length;
 	uint8_t * dest = data;
 	uint8_t i,j;
-	for (j=0; j<2; j++) {
-		for (i=0; i<n; i++) {
+	for (j = 0; j < 2; ++j) {
+		for (i = 0; i < n; ++i) {
 			*(dest++) = *(pread++);
 		}
 		read2end = (uint8_t) (read2end - n);

@@ -27,16 +27,14 @@
 #ifndef BEHAVIOUR_AVOID_COL_H_
 #define BEHAVIOUR_AVOID_COL_H_
 
-#include "bot-logic/bot-logik.h"
-
 #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE
 /*!
  * Passt auf, dass keine Kollision mit Hindernissen an der Front des Roboters
  * geschieht.
- * @todo Diese Funktion ist nur ein Dummy-Beispiel, wie eine Kollisionsvermeidung aussehen
+ * Diese Funktion ist nur ein Dummy-Beispiel, wie eine Kollisionsvermeidung aussehen
  * koennte. Hier ist ein guter Einstiegspunkt fuer eigene Experimente und Algorithmen!
  * @param *data	Der Verhaltensdatensatz
  */
 void bot_avoid_col_behaviour(Behaviour_t * data);
-#endif	// BEHAVIOUR_AVOID_COL_AVAILABLE
-#endif	/*BEHAVIOUR_AVOID_COL_H_*/
+#endif // BEHAVIOUR_AVOID_COL_AVAILABLE
+#endif // BEHAVIOUR_AVOID_COL_H_

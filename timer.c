@@ -28,7 +28,6 @@
 #include "timer.h"
 #include "sensor.h"
 
-
 #ifdef MCU
 volatile tickCount_t tickCount;		/*!< ein Tick alle 176 us */
 #else // PC

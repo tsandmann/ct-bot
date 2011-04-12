@@ -24,15 +24,15 @@
  * @date 	14.12.2008
  */
 
-#include "bot-logic/bot-logik.h"
-#include <stdlib.h>
-#include <string.h>
-#include "log.h"
-#include "os_thread.h"
-#include "map.h"
-
+#include "bot-logic/bot-logic.h"
 
 #ifdef BEHAVIOUR_GET_UTILIZATION_AVAILABLE
+#include <stdlib.h>
+#include <string.h>
+#include "os_scheduler.h"
+#include "os_thread.h"
+#include "log.h"
+#include "map.h"
 
 static uint8_t state = 0;
 static Behaviour_t * beh = NULL;
@@ -45,7 +45,7 @@ void bot_get_utilization_behaviour(Behaviour_t * data) {
 	switch (state) {
 	case 0:
 		/* Warten bis Verhaten aktiv wird */
-		if (beh->active == ACTIVE) {
+		if (beh->active == BEHAVIOUR_ACTIVE) {
 			os_clear_utilization();
 			state = 1;
 			/* no break */
@@ -55,7 +55,7 @@ void bot_get_utilization_behaviour(Behaviour_t * data) {
 	case 1:
 		/* Daten speichern */
 		os_calc_utilization();
-		if (beh->active != ACTIVE /*&& beh->subResult != SUBRUNNING*/) {
+		if (beh->active != BEHAVIOUR_ACTIVE /*&& beh->subResult != BEHAVIOUR_SUBRUNNING*/) {
 			state = 2;
 		}
 		break;
@@ -92,12 +92,12 @@ void bot_get_utilization(Behaviour_t * caller, uint8_t behaviour) {
 	beh = get_behaviour_from_prio(behaviour);
 	if (beh == NULL) {
 		if (caller) {
-			caller->subResult = SUBFAIL;
+			caller->subResult = BEHAVIOUR_SUBFAIL;
 		}
 		return;
 	}
-	switch_to_behaviour(caller, bot_get_utilization_behaviour, OVERRIDE | BACKGROUND);
+	switch_to_behaviour(caller, bot_get_utilization_behaviour, BEHAVIOUR_OVERRIDE | BEHAVIOUR_BACKGROUND);
 	state = 0;
 }
 
-#endif	// BEHAVIOUR_GET_UTILIZATION_AVAILABLE
+#endif // BEHAVIOUR_GET_UTILIZATION_AVAILABLE

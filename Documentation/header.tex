@@ -1,19 +1,22 @@
-\documentclass[a4paper]{scrbook}
+\documentclass[a4paper]{scrreprt}
+\usepackage{a4wide}
+\usepackage{geometry}
+\geometry{a4paper, left=20mm, right=15mm, top=20mm, bottom=25mm} 
 \usepackage{lmodern}
 \usepackage{microtype}
 \usepackage[T1]{fontenc}
 \usepackage[utf8x]{inputenc}
-\usepackage[ngerman]{babel}
-\usepackage{a4wide}
+\usepackage[ngerman, english]{babel}
 \usepackage{makeidx}
 \usepackage{graphicx}
 \usepackage{multicol}
 \usepackage{float}
 \usepackage{listings}
 \usepackage{color}
+\usepackage{ifthen}
+\usepackage[table]{xcolor}
 \usepackage{textcomp}
 \usepackage{alltt}
-%\usepackage{times}
 \usepackage{ifpdf}
 \ifpdf
 \usepackage[pdftex,
@@ -35,6 +38,9 @@
            ]{hyperref}
 \usepackage{pspicture}
 \fi
+\usepackage{mathptmx}
+\usepackage[scaled=.90]{helvet}
+\usepackage{courier}
 \usepackage{doxygen}
 \lstset{language=C++,inputencoding=utf8,basicstyle=\footnotesize,breaklines=true,breakatwhitespace=true,tabsize=4,numbers=left}
 \makeindex

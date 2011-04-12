@@ -24,14 +24,12 @@
  * @date 	01.12.05
  */
 
-#ifndef motor_low_H_
-#define motor_low_H_
-
-#include "global.h"
+#ifndef MOTOR_LOW_H_
+#define MOTOR_LOW_H_
 
 /*!
-*  Initialisiert alles fuer die Motosteuerung
-*/
+ *  Initialisiert alles fuer die Motosteuerung
+ */
 void motor_low_init(void);
 
 #ifdef PC
@@ -42,7 +40,7 @@ void motor_low_init(void);
  * @param right PWM rechts
  */
 void bot_motor(int16_t left, int16_t right);
-#endif	// PC
+#endif // PC
 
 /*!
  * Stellt einen PWM-Wert fuer einen Motor ein
@@ -59,4 +57,4 @@ void motor_update(uint8_t dev);
  */
 void servo_low(uint8_t servo, uint8_t pos);
 
-#endif	/*motor_low_H_*/
+#endif // MOTOR_LOW_H_

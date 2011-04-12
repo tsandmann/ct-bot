@@ -23,26 +23,15 @@
  * @author 	Harald W. Leschner (hari@h9l.net)
  * @date 	12.10.07
  */
-
-#include "ct-Bot.h"
-#ifdef SP03_AVAILABLE
-
-#include "global.h"
-
 #ifndef SP03_H_
 #define SP03_H_
 
+#ifdef SP03_AVAILABLE
+
 //#define SP03_V1	// schaltet alten Code an oder aus
 
-#ifdef MCU
-	#include <avr/pgmspace.h>
-#else
-	#define PROGMEM			/*!< Alibideklaration hat keine Funktion, verhindert aber ein Warning */
-#endif
-
-//I2C bzw. TWI Adresse und konstante Parameter fuer das SP03 Sprachmodul              
-
-#define SP03_TWI_ADDRESS	0xC4    /*!< Die SP03 MODUL I2C Addresse */
+// I2C bzw. TWI Adresse und konstante Parameter fuer das SP03 Sprachmodul
+#define SP03_TWI_ADDRESS	0xC4    /*!< Die SP03 MODUL I2C Adresse */
 #define SP03_COMMAND_REG	0x00    /*!< Das SP03 MODUL COMMAND Register */
 #define SP03_VERSION_REG	0x01    /*!< Das SP03 MODUL VERSION Register */
 
@@ -63,7 +52,7 @@
 #define SP03_DEFAULT_SPEED	0x01	/*!< Standard Geschwindigkeit  */
 
 /*!
- * @brief			Laden eines Strings in den SP03, der im Flash gespeichert ist.
+ * Laden eines Strings in den SP03, der im Flash gespeichert ist.
  * Schreibt die formatierte Ausgabe der zu sprechenden Zeichen in einen Puffer und
  * uebertraegt sie per I2C an das Sprachmodul. Die eigentliche Aussprache des
  * Textes erfolgt im Macro sp03_say() oder sp03_speakf().
@@ -74,7 +63,7 @@
 extern void sp03_flash_speakf(const char* format, ...);
 	
 /*!
- * @brief			Endanwender-Makro fuer die Sprachausgabe mit default Stimmparameter.
+ * Endanwender-Makro fuer die Sprachausgabe mit default Stimmparameter.
  * @param format	Format, wie beim speakf
  * @param args 		Variable Argumentenliste, wie beim printf
  */
@@ -86,7 +75,7 @@ extern void sp03_flash_speakf(const char* format, ...);
 }	 
 
 /*!
- * @brief			Spricht einen String auf dem SP03, der String verbleibt im Flash
+ * Spricht einen String auf dem SP03, der String verbleibt im Flash
  * Makrofunktion zum Sprechen von Texten, die wie mit printf() erzeugt werden. Es sollte unbedingt
  * vor Aufruf immer ein sp03_set_voice() gesetzt werden, damit sich das Sprachmodul nicht durch
  * aeltere I2C Uebertragungen verschluckt.
@@ -106,24 +95,23 @@ extern void sp03_flash_speakf(const char* format, ...);
  * @param sp03_pitch Geschwindigkeit
  * @param sp03_speed Stimmlage
  */
-extern void sp03_set_voice(uint8_t sp03_volume, uint8_t sp03_pitch, uint8_t sp03_speed);
+void sp03_set_voice(uint8_t sp03_volume, uint8_t sp03_pitch, uint8_t sp03_speed);
 
 /*!
  * SP03 Steuercode fuer Sprechen senden
  */ 
-extern void sp03_cmd_speak(void);
+void sp03_cmd_speak(void);
 
 /*!
  * SP03 Vordefinierte Saetze abrufen 1-30 oder 0x01-0x1E
  * @param sp03_pre_id Vordefinierte Satz-ID-Nr
  */
-extern void sp03_speak_phrase(uint8_t sp03_pre_id);
+void sp03_speak_phrase(uint8_t sp03_pre_id);
 
 /*!
  * SP03 Firmwareversion auslesen
  */
-extern void sp03_get_version(void);
-
+void sp03_get_version(void);
 
 
 // VERSION 1.0
@@ -139,14 +127,14 @@ extern void sp03_get_version(void);
  * @param sp03_pitch Stimmlage
  * @param *sp03_text Der zu sprechende Text
  */
-extern void sp03_speak_string(uint8_t sp03_volume, uint8_t sp03_pitch, uint8_t sp03_speed, char * sp03_text);
+void sp03_speak_string(uint8_t sp03_volume, uint8_t sp03_pitch, uint8_t sp03_speed, char * sp03_text);
 
 /*!
  * OBSOLET: SP03 Text in den Buffer laden, max. 81 ASCII Zeichen
  * @param *sp03_textb Textbuffer
  */
-extern void sp03_set_buffer(const char * sp03_textb);
-#endif	// SP03_V1
+void sp03_set_buffer(const char * sp03_textb);
+#endif // SP03_V1
 
-#endif	// SP03_AVAILABLE
-#endif  /* SP03_H_ */
+#endif // SP03_AVAILABLE
+#endif // SP03_H_

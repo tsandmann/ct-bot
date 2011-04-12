@@ -1,0 +1,20 @@
+rem Wandfolger
+10:
+call("bot_speed", 450, 450) 
+rem Abstand zur Wand voraus
+r=vpeek("sensDistR")
+l=vpeek("sensDistL")
+rem Erkennung Hindernis
+if l<400 then gosub 1000
+if r<400 then gosub 1000
+rem und in loop wieder zurueck
+goto 10
+end
+
+1000:
+rem subroutine Hindernis
+rem Wegdrehen je nach Wandseite
+if l<400 then call("bot_speed", 0, -300) else call("bot_speed", -300, 0)
+wait 150
+rem Drehzeit ist nun um
+return

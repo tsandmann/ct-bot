@@ -24,28 +24,13 @@
  * @date 	20.12.05
  */
 
+#ifdef PC
 #include "ct-Bot.h"
 
-#ifdef PC
-
+#ifdef IR_AVAILABLE
 #include "ir-rc5.h"
 #include "command.h"
 #include "bot-2-sim.h"
-
-#ifdef IR_AVAILABLE
-
-/*! @todo Das gehoert eigentlich nicht hierhin */
-#ifdef RC5_AVAILABLE
-ir_data_t rc5_ir_data = {
-	0, 0, 0, 0, 0, 0
-};
-#endif
-
-#ifdef BPS_AVAILABLE
-ir_data_t bps_ir_data = {
-	0, 0, 0, 0, 0, 1023
-};
-#endif
 
 /*!
  * IR-Daten lesen

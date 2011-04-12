@@ -29,11 +29,9 @@
 #define BEHAVIOUR_CALIBRATE_SHARPS_H_
 
 #ifdef BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
-#include "bot-logic/bot-logik.h"
-
 
 /*!
- * @brief		Das eigentliche Verhalten
+ * Das eigentliche Verhalten
  * @param data	Zeiger auf den Verhaltensdatensatz des Aufrufers
  * @see			bot_calibrate_sharps()
  * Die Funktionalitaet des Verhaltens ist aufgeteilt in: 
@@ -42,15 +40,15 @@
 void bot_calibrate_sharps_behaviour(Behaviour_t *data);
 
 /*!
- * @brief			Kalibriert die Distanzsensoren des Bots
+ * Kalibriert die Distanzsensoren des Bots
  * @param caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
  */
 void bot_calibrate_sharps(Behaviour_t *caller);
 
 /*!
- * @brief	Displayhandler fuer bot_calibrate_sharps-Verhalten
+ * Displayhandler fuer bot_calibrate_sharps-Verhalten
  */
 void bot_calibrate_sharps_display(void);
 
-#endif	// BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
-#endif	// BEHAVIOUR_CALIBRATE_SHARPS_H_
+#endif // BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
+#endif // BEHAVIOUR_CALIBRATE_SHARPS_H_

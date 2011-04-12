@@ -27,20 +27,18 @@
 #ifndef BEHAVIOUR_FOLLOW_OBJECT_H_
 #define BEHAVIOUR_FOLLOW_OBJECT_H_
 
-#include "bot-logic/bot-logik.h"
 #ifdef BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
-
 /*!
- * @brief		Das Objektverfolgungsverhalten
+ * Das Objektverfolgungsverhalten
  * @param data	Der Verhaltensdatensatz
  */
 void bot_follow_object_behaviour(Behaviour_t * data);
 
 /*!
- * @brief			Botenfunktion des Objektverfolgungsverhaltens
+ * Botenfunktion des Objektverfolgungsverhaltens
  * @param *caller	Der Verhaltensdatensatz des Aufrufers
  */
 void bot_follow_object(Behaviour_t * caller);
 
-#endif	// BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
-#endif	// BEHAVIOUR_FOLLOW_OBJECT_H_
+#endif // BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
+#endif // BEHAVIOUR_FOLLOW_OBJECT_H_

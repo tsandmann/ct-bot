@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	math_utils.c
- * @brief 	Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	17.10.2007
+/**
+ * \file 	math_utils.c
+ * \brief 	Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	17.10.2007
  */
 #include "ct-Bot.h"
 #include "math_utils.h"
@@ -31,11 +31,11 @@
 #include "sensor.h"
 #include "log.h"
 
-/*!
+/**
  * Berechnung einer Winkeldifferenz zwischen dem aktuellen Standpunkt und einem anderen Ort
- * @param xDiff	x-Differenz
- * @param yDiff	y-Differenz
- * @return 		Berechnete Winkeldifferenz [Bogenmass]
+ * \param xDiff	x-Differenz
+ * \param yDiff	y-Differenz
+ * \return 		Berechnete Winkeldifferenz [Bogenmass]
  */
 float calc_angle_diff_rad(int16_t xDiff, int16_t yDiff) {
 	const float newHeading = atan2((float) yDiff, (float) xDiff);
@@ -47,10 +47,10 @@ float calc_angle_diff_rad(int16_t xDiff, int16_t yDiff) {
 	return toTurn;
 }
 
-/*!
+/**
  * Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung
- * @param angle		Winkel [Grad] zum Vergleich mit heading
- * @return			Winkeldifferenz [Grad] in Richtung der derzeitigen Botdrehung.
+ * \param angle		Winkel [Grad] zum Vergleich mit heading
+ * \return			Winkeldifferenz [Grad] in Richtung der derzeitigen Botdrehung.
  * 					-1, falls Bot geradeaus faehrt oder steht
  */
 int16_t turned_angle(int16_t angle) {
@@ -73,13 +73,13 @@ int16_t turned_angle(int16_t angle) {
 	return diff;
 }
 
-/*!
+/**
  * Ermittlung des Quadrat-Abstands zwischen zwei Punkten
- * @param x1	X-Koordinate des ersten Punktes
- * @param y1	y-Koordinate des ersten Punktes
- * @param x2	X-Koordinate des zweiten Punktes
- * @param y2	Y-Koordiante des zweiten Punktes
- * @return		liefert Quadrat-Abstand zwischen den zwei Punkten
+ * \param x1	X-Koordinate des ersten Punktes
+ * \param y1	y-Koordinate des ersten Punktes
+ * \param x2	X-Koordinate des zweiten Punktes
+ * \param y2	Y-Koordiante des zweiten Punktes
+ * \return		liefert Quadrat-Abstand zwischen den zwei Punkten
  */
 int32_t get_dist(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
 	int16_t xt = x2 - x1;
@@ -89,13 +89,13 @@ int32_t get_dist(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
 	return (int32_t) ((int32_t) xt * (int32_t) xt) + (int32_t) ((int32_t) yt * (int32_t) yt);
 }
 
-/*!
+/**
  * Ermittelt die Koordinaten eines Punktes, der um dx mm in x- und
  * dy mm in y-Richtung gegenueber der aktuellen Bot-Position verschoben ist.
- * @param alpha	Winkel zum Punkt [Grad]
- * @param dx	x-Komponente des Verschiebungsvektors [mm]
- * @param dy	y-Komponente des Verschiebungsvektors [mm]
- * @return		Gesuchter Punkt
+ * \param alpha	Winkel zum Punkt [Grad]
+ * \param dx	x-Komponente des Verschiebungsvektors [mm]
+ * \param dy	y-Komponente des Verschiebungsvektors [mm]
+ * \return		Gesuchter Punkt
  */
 position_t calc_point_in_distance(float alpha, int16_t dx, int16_t dy) {
 	float h = rad(alpha);
@@ -109,14 +109,14 @@ position_t calc_point_in_distance(float alpha, int16_t dx, int16_t dy) {
 }
 
 #ifdef BPS_AVAILABLE
-/*!
+/**
  * Berechnet den Standort via Rueckwaertseinschnitt nach Cassini, wenn drei angepeilte Positionen bekannt sind.
- * @param a			Koordinaten von Bake A [mm]
- * @param m			Koordinaten von Bake M [mm]
- * @param b			Koordinaten von Bake B [mm]
- * @param angle_am	Winkel zwischen A und M [Grad] aus Peilung, > 0
- * @param angle_mb	Winkel zwischen M und B [Grad] aus Peilung, > 0
- * @return			Koordinaten des berechneten Standorts [mm], oder {INT16_MAX, INT16_MAX} falls Fehler
+ * \param a			Koordinaten von Bake A [mm]
+ * \param m			Koordinaten von Bake M [mm]
+ * \param b			Koordinaten von Bake B [mm]
+ * \param angle_am	Winkel zwischen A und M [Grad] aus Peilung, > 0
+ * \param angle_mb	Winkel zwischen M und B [Grad] aus Peilung, > 0
+ * \return			Koordinaten des berechneten Standorts [mm], oder {INT16_MAX, INT16_MAX} falls Fehler
  */
 position_t calc_resection(position_t a, position_t m, position_t b, float angle_am, float angle_mb) {
 	// Bezeichner wie im pdf
@@ -199,7 +199,7 @@ position_t calc_resection(position_t a, position_t m, position_t b, float angle_
 #ifdef PC
 void test_calc_resection(void);
 
-/*!
+/**
  * Testet calc_resection()
  */
 void test_calc_resection(void) {
@@ -315,5 +315,5 @@ void test_calc_resection(void) {
 //
 //	printf("alpha=%f\tbeta=%f\n", alpha, beta);
 }
-#endif	// PC
+#endif // PC
 #endif // BPS_AVAILABLE

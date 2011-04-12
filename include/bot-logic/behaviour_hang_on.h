@@ -27,9 +27,7 @@
 #ifndef BEHAVIOUR_HANG_ON_H_
 #define BEHAVIOUR_HANG_ON_H_
 
-#include "bot-logic/bot-logik.h"
 #ifdef BEHAVIOUR_HANG_ON_AVAILABLE
-
 /*!
  * Notfallhandler, ausgefuehrt nach Haengenbleiben zum Rueckwaertsfahren; muss registriert werden zum
  * Rueckwaertsfahren
@@ -44,5 +42,5 @@ void hang_on_handler(void);
 void bot_hang_on_behaviour(Behaviour_t * data);
 
 
-#endif	// BEHAVIOUR_HANG_ON_AVAILABLE
-#endif /*BEHAVIOUR_HANG_ON_H_*/
+#endif // BEHAVIOUR_HANG_ON_AVAILABLE
+#endif // BEHAVIOUR_HANG_ON_H_

@@ -25,7 +25,7 @@
  */
 
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 #ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
 
 #define STATE_FORWARD		0
@@ -67,8 +67,8 @@ void bot_drive_square_behaviour(Behaviour_t * data) {
  * @param caller Der obligatorische Verhaltensdatensatz des aufrufers
  */
 void bot_drive_square(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_drive_square_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_drive_square_behaviour, BEHAVIOUR_OVERRIDE);
 	state = STATE_FORWARD;
 }
 
-#endif	// BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
+#endif // BEHAVIOUR_DRIVE_SQUARE_AVAILABLE

@@ -17,11 +17,12 @@
  *
  */
 
-/*!
- * @file 	log.h
- * @brief 	Routinen zum Loggen von Informationen. Es sollten ausschliesslich nur
- * die Log-Makros: LOG_DEBUG(), LOG_INFO(), LOG_WARN(), LOG_ERROR() und LOG_FATAL()
- * verwendet werden.
+/**
+ * \file 	log.h
+ * \brief 	Routinen zum Loggen von Informationen.
+ *
+ * Es sollten ausschliesslich nur die Log-Makros: LOG_DEBUG(), LOG_INFO(), LOG_WARN(), LOG_ERROR(),
+ * LOG_FATAL() und LOG_RAW() verwendet werden.
  * Eine Ausgabe kann wie folgt erzeugt werden:
  * LOG_DEBUG("Hallo Welt!");
  * LOG_INFO("Wert x=%d", x);
@@ -54,29 +55,20 @@
  * 2. Logging ueber ct-Sim:		LOG_CTSIM_AVAILABLE muss definiert sein.
  * 								BOT_2_SIM_AVAILABLE muss zusaetzlich definiert sein.
  * 3. Logging ueber Display:	LOG_DISPLAY_AVAILABLE muss definiert sein, sowie DISPLAY_AVAILABLE.
- * 4. Logging in txt auf MMC:	MMC_AVAILABLE und MMC_VM_AVAILABLE muessen an sein.
+ * 4. Logging in txt auf MMC:	MMC_AVAILABLE und BOT_FS_AVAILABLE muessen an sein.
  * </pre>
  *
- * Alternativ schlankere Variante fuer MCU und CTSIM, indem man USE_MINILOG aktiviert.
+ * Alternativ schlankere Variante fuer LOG_CTSIM_AVAILABLE oder LOG_MMC_AVAILABLE, indem man USE_MINILOG aktiviert.
  * Das spart viel Platz in Flash und RAM.
  *
- * @author 	Andreas Merkle (mail@blue-andi.de)
- * @date 	27.02.2006
+ * \author 	Andreas Merkle (mail@blue-andi.de)
+ * \date 	27.02.2006
  */
 
 #ifndef LOG_H_
 #define LOG_H_
 
-#include "ct-Bot.h"
-#ifdef MCU
-#include <avr/pgmspace.h>
-#else
-#define PROGMEM			/*!< Alibideklaration hat keine Funktion, verhindert aber eine Warning */
-#endif
-
 #ifdef LOG_AVAILABLE
-#include <stdlib.h>
-
 
 #ifndef USE_MINILOG
 /*! Dieser Typ definiert die Typen der Log-Ausgaben. */
@@ -87,6 +79,8 @@ typedef enum {
 	LOG_TYPE_ERROR,		/*!< Fehler aufgetreten */
 	LOG_TYPE_FATAL		/*!< Kritischer Fehler */
 } LOG_TYPE;
+
+#define LOG_RAW LOG_INFO
 
 #ifdef PC
 /*!
@@ -151,13 +145,13 @@ void log_printf(const char * format, ...);
  * Gibt den Puffer entsprechend aus.
  */
 void log_end(void);
-#else	// PC
+#else // ! PC
 /*!
  * Allgemeines Debugging (Methode DiesUndDas wurde mit Parameter SoUndSo
  * aufgerufen ...)
  */
-#define LOG_DEBUG(format, ...) {	static const char file[] PROGMEM = __FILE__;		\
-									log_flash_begin(file, __LINE__, LOG_TYPE_DEBUG);	\
+#define LOG_DEBUG(format, ...) {	static const char _file[] PROGMEM = __FILE__;		\
+									log_flash_begin(_file, __LINE__, LOG_TYPE_DEBUG);	\
 									static const char data[] PROGMEM = format;			\
 									log_flash_printf(data, ## __VA_ARGS__);				\
 									log_end();											\
@@ -167,8 +161,8 @@ void log_end(void);
  * Allgemeine Informationen (Programm gestartet, Programm beendet, Verbindung
  * zu Host Foo aufgebaut, Verarbeitung dauerte SoUndSoviel Sekunden ...)
  */
-#define LOG_INFO(format, ...) {		static const char file[] PROGMEM = __FILE__;	\
-									log_flash_begin(file, __LINE__, LOG_TYPE_INFO);	\
+#define LOG_INFO(format, ...) {		static const char _file[] PROGMEM = __FILE__;	\
+									log_flash_begin(_file, __LINE__, LOG_TYPE_INFO);	\
 									static const char data[] PROGMEM = format;		\
 									log_flash_printf(data, ## __VA_ARGS__);			\
 									log_end();										\
@@ -177,8 +171,8 @@ void log_end(void);
 /*!
  * Auftreten einer unerwarteten Situation.
  */
-#define LOG_WARN(format, ...) {	static const char file[] PROGMEM = __FILE__;		\
-									log_flash_begin(file, __LINE__, LOG_TYPE_WARN); \
+#define LOG_WARN(format, ...) {	static const char _file[] PROGMEM = __FILE__;		\
+									log_flash_begin(_file, __LINE__, LOG_TYPE_WARN); \
 									log_flash_printf(data, ## __VA_ARGS__);			\
 									static const char data[] PROGMEM = format;		\
 									log_end();										\
@@ -187,8 +181,8 @@ void log_end(void);
 /*!
  * Fehler aufgetreten, Bearbeitung wurde alternativ fortgesetzt.
  */
-#define LOG_ERROR(format, ...) {	static const char file[] PROGMEM = __FILE__;		\
-									log_flash_begin(file, __LINE__, LOG_TYPE_ERROR); 	\
+#define LOG_ERROR(format, ...) {	static const char _file[] PROGMEM = __FILE__;		\
+									log_flash_begin(_file, __LINE__, LOG_TYPE_ERROR); 	\
 									static const char data[] PROGMEM = format;			\
 									log_flash_printf(data, ## __VA_ARGS__);				\
 									log_end();											\
@@ -197,8 +191,8 @@ void log_end(void);
 /*!
  * Kritischer Fehler, Programmabbruch.
  */
-#define LOG_FATAL(format, ...) { 	static const char file[] PROGMEM = __FILE__;		\
-									log_flash_begin(file, __LINE__, LOG_TYPE_FATAL); 	\
+#define LOG_FATAL(format, ...) { 	static const char _file[] PROGMEM = __FILE__;		\
+									log_flash_begin(_file, __LINE__, LOG_TYPE_FATAL); 	\
 									static const char data[] PROGMEM = format;			\
 									log_flash_printf(data, ## __VA_ARGS__);				\
 									log_end();											\
@@ -222,23 +216,16 @@ void log_flash_printf(const char * format, ...);
  * Gibt den Puffer entsprechend aus.
  */
 void log_end(void);
-#endif	// PC
-
-#ifdef LOG_MMC_AVAILABLE
-/*!
- * @brief	Initialisierung fuer MMC-Logging
- */
-uint8_t log_mmc_init(void);
-#endif	// LOG_MMC_AVAILABLE
+#endif // PC
 
 #ifdef LOG_DISPLAY_AVAILABLE
 /*!
- * @brief	Display-Handler fuer das Logging
+ * Display-Handler fuer das Logging
  */
 void log_display(void);
-#endif	// LOG_DISPLAY_AVAILABLE
+#endif // LOG_DISPLAY_AVAILABLE
 
-#else	// USE_MINILOG
+#else // USE_MINILOG
 /*! Dieser Typ definiert die Typen der Log-Ausgaben. */
 typedef enum {
 	LOG_TYPE_DEBUG = 0,	/*!< Allgemeines Debugging */
@@ -295,8 +282,26 @@ void minilog_begin(uint16_t line, LOG_TYPE log_type);
  * @param ... 		Variable Argumentenliste, wie bei printf
  */
 void minilog_printf(const char * format, ...);
-#endif	// USE_MINILOG
-#else	// LOG_AVAILABLE
+#endif // USE_MINILOG
+
+#ifdef LOG_MMC_AVAILABLE
+/**
+ * Initialisierung fuer MMC-Logging
+ */
+void log_mmc_init(void);
+
+/**
+ * Schreibt den aktuellen Inhalt des Log-Puffers auf die MMC
+ */
+void log_flush(void);
+
+/**
+ * Display-Handler fuer MMC-LOG
+ */
+void log_mmc_display(void);
+#endif // LOG_MMC_AVAILABLE
+
+#else // ! LOG_AVAILABLE
 
 #define LOG_DEBUG(a, ...)
 #define LOG_INFO(a, ...)
@@ -304,5 +309,5 @@ void minilog_printf(const char * format, ...);
 #define LOG_ERROR(a, ...)
 #define LOG_FATAL(a, ...)
 #define LOG_RAW(a, ...)
-#endif	// LOG_AVAILABLE
-#endif	// LOG_H_
+#endif // LOG_AVAILABLE
+#endif // LOG_H_

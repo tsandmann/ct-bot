@@ -28,7 +28,7 @@
  */
 
 
-#include "bot-logic/bot-logik.h"
+#include "bot-logic/bot-logic.h"
 #ifdef BEHAVIOUR_SIMPLE_AVAILABLE
 
 static uint8_t simple_state = 0;	/*!< Status des simple-Verhaltens */
@@ -70,7 +70,7 @@ void bot_simple_behaviour(Behaviour_t * data) {
  * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_simple(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_simple_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_simple_behaviour, BEHAVIOUR_OVERRIDE);
 	simple_state = 0;
 }
 
@@ -132,7 +132,7 @@ void bot_simple2_behaviour(Behaviour_t * data) {
  * @param light Uebergabeparameter
  */
 void bot_simple2(Behaviour_t * caller, int16_t light) {
-	switch_to_behaviour(caller, bot_simple2_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_simple2_behaviour, BEHAVIOUR_OVERRIDE);
 	simple2_light = light;
 	simple2_state = 0;
 }

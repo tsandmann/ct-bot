@@ -28,12 +28,7 @@
 #ifndef BEHAVIOUR_DRIVESTACK_H_
 #define BEHAVIOUR_DRIVESTACK_H_
 
-#include "ct-Bot.h"
-#include "bot-logic/bot-logik.h"
-
-
 #ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-
 /*!
  * Verhalten zum Anfahren aller auf dem Stack befindlichen Punkte, wobei das Fahr-Unterverhalten bot_goto_pos benutzt wird
  * @param *data	Der Verhaltensdatensatz
@@ -96,5 +91,5 @@ void bot_save_waypos(Behaviour_t * caller, uint8_t optimize);
  */
 void drive_stack_display(void);
 
-#endif	// BEHAVIOUR_DRIVE_STACK_AVAILABLE
-#endif /*BEHAVIOUR_DRIVESTACK_H_*/
+#endif // BEHAVIOUR_DRIVE_STACK_AVAILABLE
+#endif // BEHAVIOUR_DRIVESTACK_H_

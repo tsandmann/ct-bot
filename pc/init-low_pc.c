@@ -25,12 +25,15 @@
  */
 
 #ifdef PC
+#include "ct-Bot.h"
 #include "init.h"
 #include "log.h"
 #include "cmd_tools.h"
 #include "trace.h"
 #include "eeprom.h"
+#include "command.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 /*!
  * Hardwareabhaengige Initialisierungen, die zuerst ausgefuehrt werden sollen
@@ -59,5 +62,13 @@ void ctbot_init_low_1st(int argc, char * argv[]) {
  */
 void ctbot_init_low_last(void) {
 	cmd_init();
+}
+
+/*!
+ * Beendet die Bot-Instanz
+ */
+void ctbot_shutdown_low(void) {
+	puts("c't-Bot shutdown.");
+	exit(0);
 }
 #endif // PC

@@ -27,8 +27,7 @@
 #ifndef SENSOR_H_
 #define SENSOR_H_
 
-#include "global.h"
-#include "ct-Bot.h"
+#include "rc5.h"
 #include "cmps03.h"
 
 /*! Datenstruktur zur Ablage eines IR-Sensor-Wertepaares (Spannung | Distanz) */
@@ -64,12 +63,13 @@ extern int16_t sensEncR;	/*!< Encoder rechter Motor [-32768 bis 32767] */
 
 extern uint8_t sensTrans;	/*!< Sensor Ueberwachung Transportfach [0/1]*/
 extern uint8_t sensDoor;	/*!< Sensor Ueberwachung Klappe [0/1] */
-extern uint8_t sensError;	/*!< Ueberwachung Motor oder Batteriefehler [0/1]  1= alles ok */
+extern uint8_t sensError;	/*!< Ueberwachung Servo oder Batteriefehler [0/1]  1= alles ok */
 
 extern uint16_t RC5_Code;	/*!< Letzter empfangener RC5-Code */
 
 #ifdef BPS_AVAILABLE
 extern uint16_t sensBPS;	/*!< Bot Positioning System */
+extern ir_data_t bps_ir_data; /*!< RC5-Konfiguration fuer BPS-Sensor */
 #endif	// BPS_AVAILABLE
 
 
@@ -129,7 +129,7 @@ cmps03_t sensCmps03;		/*!< Lage laut CMPS03-Kompass */
 void sensor_update(void);
 
 /*!
- * Setzt die Auswertungen der Sensorendaten zurueck
+ * Setzt die Auswertungen der Sensordaten zurueck
  */
 void sensor_reset(void);
 
@@ -177,6 +177,6 @@ void sensor_display(void);
  * Displayhandler fuer Odometrieanzeige
  */
 void odometric_display(void);
-#endif	// DISPLAY_AVAILABLE
+#endif // DISPLAY_AVAILABLE
 
-#endif	/*SENSOR_H_*/
+#endif // SENSOR_H_

@@ -19,33 +19,28 @@
 
 
 /*!
- * @file 	behaviour_drive_area.h
- * @brief 	Flaechendeckendes Fahren als Verhalten (Staubsauger)
- *          Der Bot faehrt geradeaus bis zu einem Hindernis, dort dreht er sich zu einer Seite und faehrt auf der Nebenspur wieder zurueck. Der
- *          andere moegliche Weg wird als Alternative auf den Stack gespeichert. Falls es irgendwo nicht weitergeht, so wird eine solche Strecke
- *          vom Stack geholt und angefahren. Leider gibt es noch kein Map-Planungsverhalten, welches einen anderen Punkt unter Umgehung von
- *          Hindernissen anfaehrt. In dieser Version wird etwas tricky gefahren und versucht, diese Strecke anzufahren. Im Falle
- *          aber des nicht moeglichen Anfahrens wird eben diese Strecke verworfen. Ein Planungsverhalten, welches moeglichst auch
- *          nur ueber befahrene Abschnitte plant, wuerde entscheidend helfen.
+ * \file 	behaviour_drive_area.h
+ * \brief 	Flaechendeckendes Fahren als Verhalten (Staubsauger)
  *
- * @author 	Frank Menzel (Menzelfr@gmx.net)
- * @date 	16.07.2008
-*/
-
+ * Der Bot faehrt geradeaus bis zu einem Hindernis, dort dreht er sich zu einer Seite und faehrt auf der Nebenspur wieder zurueck.
+ * Der andere moegliche Weg wird als Alternative auf den Stack gespeichert. Falls es irgendwo nicht weitergeht, so wird eine
+ * solche Strecke vom Stack geholt und angefahren. Leider gibt es noch kein Map-Planungsverhalten, welches einen anderen Punkt
+ * unter Umgehung von Hindernissen anfaehrt. In dieser Version wird etwas tricky gefahren und versucht, diese Strecke anzufahren.
+ * Im Falle aber des nicht moeglichen Anfahrens wird eben diese Strecke verworfen. Ein Planungsverhalten, welches moeglichst auch
+ * nur ueber befahrene Abschnitte plant, wuerde entscheidend helfen.
+ * \author 	Frank Menzel (Menzelfr@gmx.net)
+ * \date 	16.07.2008
+ */
 
 #ifndef BEHAVIOUR_DRIVE_AREA_H_
 #define BEHAVIOUR_DRIVE_AREA_H_
 
-#include "ct-Bot.h"
-#include "bot-logic/bot-logik.h"
-
 #ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
-
 /*!
  * Observer links; jeweils ein selbstaendiges Verhalten, welches die Nachbarbahn beobachtet und eine befahrbare Strecke bis zu einem Hindernis
  * auf den Stack legt fuer spaeteres Anfahren; ebenfalls wird eine Alternativroute auf dem Stack gemerkt
  * Verhalten wurde so geschrieben, dass es zwar 2 Verhalten sind, der Code jedoch identisch ist und daher in Subroutinen ausgelagert ist
- * @param *data	Verhaltensdatensatz
+ * \param *data	Verhaltensdatensatz
  */
 void bot_observe_left_behaviour(Behaviour_t * data);
 
@@ -53,20 +48,20 @@ void bot_observe_left_behaviour(Behaviour_t * data);
  * Observer rechts; jeweils ein selbstaendiges Verhalten, welches die Nachbarbahn beobachtet und eine befahrbare Strecke bis zu einem Hindernis
  * auf den Stack legt fuer spaeteres Anfahren; ebenfalls wird eine Alternativroute auf dem Stack gemerkt
  * Verhalten wurde so geschrieben, dass es zwar 2 Verhalten sind, der Code jedoch identisch ist und daher in Subroutinen ausgelagert ist
- * @param *data	Verhaltensdatensatz
+ * \param *data	Verhaltensdatensatz
  */
 void bot_observe_right_behaviour(Behaviour_t * data);
 
 /*!
  * Das Fahrverhalten selbst; Fahren bis zu einem Hindernis, drehen zu einer Seite und merken des anderen Weges auf den Stack; waehrend der
  * Fahrt werden die Nebenspuren beobachtet und bei Hindernissen in der Nebenspur automatisch Teilstrecken auf den Stack gelegt
- * @param *data	Der Verhaltensdatensatz
+ * \param *data	Der Verhaltensdatensatz
  */
 void bot_drive_area_behaviour(Behaviour_t * data);
 
 /*!
  * Startet das Verhalten bot_drive_area_behaviour
- * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * \param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_drive_area(Behaviour_t * caller);
 
@@ -75,5 +70,5 @@ void bot_drive_area(Behaviour_t * caller);
  */
 void border_drive_area_handler(void);
 
-#endif	// BEHAVIOUR_DRIVE_AREA_AVAILABLE
-#endif	/* BEHAVIOUR_DRIVE_AREA_H_ */
+#endif // BEHAVIOUR_DRIVE_AREA_AVAILABLE
+#endif // BEHAVIOUR_DRIVE_AREA_H_

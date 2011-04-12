@@ -17,11 +17,12 @@
  *
  */
 
-/*!
- * @file 	log.c
- * Routinen zum Loggen von Informationen. Es sollten ausschliesslich nur
- * die Log-Makros: LOG_DEBUG(), LOG_INFO(), LOG_WARN(), LOG_ERROR() und LOG_FATAL()
- * verwendet werden.
+/**
+ * \file 	log.c
+ * \brief 	Routinen zum Loggen von Informationen.
+ *
+ * Es sollten ausschliesslich nur die Log-Makros: LOG_DEBUG(), LOG_INFO(), LOG_WARN(), LOG_ERROR() und
+ * LOG_FATAL() verwendet werden.
  * Eine Ausgabe kann wie folgt erzeugt werden:
  * LOG_DEBUG("Hallo Welt!");
  * LOG_INFO("Wert x=%d", x);
@@ -32,14 +33,43 @@
  * (Die Doppelklammern funktionieren nicht mit Var-Arg-Makros, die wir aber brauchen, da
  * nun fuer MCU alle Strings im Flash belassen werden sollen, das spart viel RAM :-) )
  *
- * @author 	Andreas Merkle (mail@blue-andi.de)
- * @date 	27.02.2006
+ * <pre>
+ * Die Logausgaben werden generell mit der Definition von LOG_AVAILABLE eingeschaltet
+ * und sind ansonsten nicht aktiv.
  *
- * @todo Umblaetterfunktion fuer mehr als 4 Logausgaben bei LOG_DISPLAY_AVAILABLE => Keyhandler aehnlich wie bei der Verhaltensanzeige
+ * Loggings auf dem PC:
+ * --------------------
+ * Hier stehen drei Arten der Ausgabeschnittstellen zur Verfuegung.
+ * 1. Logging ueber ct-Sim:		LOG_CTSIM_AVAILABLE muss definiert sein.
+ * 2. Logging ueber Display:	LOG_DISPLAY_AVAILABLE muss definiert sein, sowie DISPLAY_AVAILABLE.
+ * 3. Logging ueber Konsole:  	Es muss LOG_STDOUT_AVAILABLE definiert sein.
+ *
+ * LOG_UART_AVAILABLE steht auf dem PC nicht zur Verfuegung.
+ *
+ * Loggings auf dem MCU:
+ * ---------------------
+ * Hier stehen drei Arten der Ausgabeschnittstellen zur Verfuegung.
+ * 1. Logging ueber UART:		LOG_UART_AVAILABLE muss definiert sein.
+ * 								Es darf BOT_2_SIM_AVAILABLE nicht definiert sein, da ansonsten
+ * 								diese Kommunikation ueber den UART laeuft.
+ * 2. Logging ueber ct-Sim:		LOG_CTSIM_AVAILABLE muss definiert sein.
+ * 								BOT_2_SIM_AVAILABLE muss zusaetzlich definiert sein.
+ * 3. Logging ueber Display:	LOG_DISPLAY_AVAILABLE muss definiert sein, sowie DISPLAY_AVAILABLE.
+ * 4. Logging in txt auf MMC:	MMC_AVAILABLE und MMC_VM_AVAILABLE muessen an sein.
+ * </pre>
+ *
+ * Alternativ schlankere Variante fuer MCU und CTSIM, indem man USE_MINILOG aktiviert.
+ * Das spart viel Platz in Flash und RAM.
+ *
+ * \author 	Andreas Merkle (mail@blue-andi.de)
+ * \date 	27.02.2006
  */
 
+#include "ct-Bot.h"
 
-#include "global.h"
+#ifdef LOG_AVAILABLE
+#ifndef USE_MINILOG
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -51,39 +81,36 @@
 #include "uart.h"
 #include "mmc-vm.h"
 
-#ifdef LOG_AVAILABLE
-#ifndef USE_MINILOG
-
 #ifdef PC
-	#include <pthread.h>
+#include <pthread.h>
 #endif
 
 #ifdef LOG_DISPLAY_AVAILABLE
-	/*! Groesse des Puffers fuer die Logausgaben bei Verwendung des LCD-Displays. */
-	#define LOG_BUFFER_SIZE		(DISPLAY_LENGTH + 1)
+/*! Groesse des Puffers fuer die Logausgaben bei Verwendung des LCD-Displays. */
+#define LOG_BUFFER_SIZE		(DISPLAY_LENGTH + 1)
 #else
-	/*! Groesse des Puffers fuer die Logausgaben ueber UART und ueber TCP/IP. */
-	#define LOG_BUFFER_SIZE		200
-#endif	/* LOG_DISPLAY_AVAILABLE */
+/*! Groesse des Puffers fuer die Logausgaben ueber UART und ueber TCP/IP. */
+#define LOG_BUFFER_SIZE		200
+#endif // LOG_DISPLAY_AVAILABLE
 
 
 #ifdef PC
-	/*! Schuetzt den Ausgabepuffer */
-	#define LOCK()		pthread_mutex_lock(&log_buffer_mutex);
-	/*! Hebt den Schutz fuer den Ausgabepuffer wieder auf */
-	#define UNLOCK()	pthread_mutex_unlock(&log_buffer_mutex);
+/*! Schuetzt den Ausgabepuffer */
+#define LOCK()		pthread_mutex_lock(&log_buffer_mutex);
+/*! Hebt den Schutz fuer den Ausgabepuffer wieder auf */
+#define UNLOCK()	pthread_mutex_unlock(&log_buffer_mutex);
 #else
-	/*! Schuetzt den Ausgabepuffer */
-	#define LOCK()
-	/*! Hebt den Schutz fuer den Ausgabepuffer wieder auf */
-	#define UNLOCK()
+/*! Schuetzt den Ausgabepuffer */
+#define LOCK()
+/*! Hebt den Schutz fuer den Ausgabepuffer wieder auf */
+#define UNLOCK()
 #endif	/* PC */
 
 #ifdef LOG_MMC_AVAILABLE
-	static uint32_t log_file;
-	static uint32_t log_file_end = 0;
-	#define LOG_FILENAME "log.txt"
-#endif	/* LOG_MMC_AVAILABLE */
+static uint32_t log_file;
+static uint32_t log_file_end = 0;
+#define LOG_FILENAME "log.txt"
+#endif // LOG_MMC_AVAILABLE
 
 /* Log-Typen als String, auf MCU im Flash */
 static const char debug_str[] PROGMEM = "- DEBUG -";
@@ -108,9 +135,9 @@ static pthread_mutex_t log_buffer_mutex = PTHREAD_MUTEX_INITIALIZER;
 #endif // PC
 
 #ifdef LOG_DISPLAY_AVAILABLE
-	/*! Zeile in der die naechste Logausgabe erfolgt. */
-	static uint16_t log_line = 1;
-	static char screen_output[4][LOG_BUFFER_SIZE];	/*!< Puffer, damit mehr als eine Zeile pro Hauptschleifendurchlauf geloggt werden kann */
+/*! Zeile in der die naechste Logausgabe erfolgt. */
+static uint16_t log_line = 1;
+static char screen_output[4][LOG_BUFFER_SIZE];	/*!< Puffer, damit mehr als eine Zeile pro Hauptschleifendurchlauf geloggt werden kann */
 #endif // LOG_DISPLAY_AVAILABLE
 
 #ifdef PC
@@ -140,7 +167,7 @@ void log_begin(const char * filename, unsigned int line, LOG_TYPE log_type) {
 		screen_output[log_line-2][0] = ' ';
 	}
 	snprintf(log_buffer, LOG_BUFFER_SIZE, ">%c:", *(log_get_type_str(log_type)+2));
-#else
+#else // !LOG_DISPLAY_AVAILABLE
 
 	const char * ptr = NULL;
 
@@ -154,13 +181,13 @@ void log_begin(const char * filename, unsigned int line, LOG_TYPE log_type) {
 
 	LOCK();
 
-	snprintf(log_buffer, LOG_BUFFER_SIZE, "%s(%d)\t%s\t", ptr, line, log_get_type_str(log_type));
+	snprintf(log_buffer, LOG_BUFFER_SIZE, "%s(%d) %s ", ptr, line, log_get_type_str(log_type));
 
 #endif // LOG_DISPLAY_AVAILABLE
 
 	return;
 }
-#else
+#else // MCU
 /*!
  * @brief	Kopiert einen String wortweise vom Flash ins Ram
  * @param *flash Zeiger auf einen String im FLASH
@@ -212,7 +239,7 @@ void log_flash_begin(const char * filename, unsigned int line, LOG_TYPE log_type
 	log_buffer[1] = (char) pgm_read_byte(log_get_type_str(log_type)+2);
 	log_buffer[2] = ':';
 	log_buffer[3] = '\0';
-#else
+#else // !LOG_DISPLAY_AVAILABLE
 	/* Zeichen des Strings fuer Dateiname wortweise aus dem Flash holen */
 	char flash_filen[80];
 	get_str_from_flash(filename, flash_filen, 40/2);
@@ -232,13 +259,13 @@ void log_flash_begin(const char * filename, unsigned int line, LOG_TYPE log_type
 
 	LOCK();
 
-	snprintf(log_buffer, LOG_BUFFER_SIZE, "%s(%d)\t%s\t", ptr, line, flash_type);
+	snprintf(log_buffer, LOG_BUFFER_SIZE, "%s(%d) %s ", ptr, line, flash_type);
 
 #endif // LOG_DISPLAY_AVAILABLE
 
 	return;
 }
-#endif	// PC
+#endif // PC
 
 #ifdef PC
 /*!
@@ -246,7 +273,6 @@ void log_flash_begin(const char * filename, unsigned int line, LOG_TYPE log_type
  * @param format Format
  */
 void log_printf(const char * format, ...) {
-
 	va_list	args;
 	unsigned int len = strlen(log_buffer);
 
@@ -256,7 +282,7 @@ void log_printf(const char * format, ...) {
 
 	return;
 }
-#else
+#else // MCU
 /*!
  * Schreibt die eigentliche Ausgabeinformation (aus dem Flash) in den Puffer.
  * @param format Format
@@ -304,7 +330,8 @@ void log_end(void) {
  * definiert ist, dann wird auf dem PC auf die Konsole geschrieben.
  */
 #ifdef LOG_STDOUT_AVAILABLE
-	printf("%s\n", log_buffer);
+//	printf("%s\n", log_buffer);
+	puts(log_buffer);
 #endif // LOG_STDOUT_AVAILABLE
 
 #ifdef LOG_MMC_AVAILABLE
@@ -337,17 +364,17 @@ void log_end(void) {
 }
 
 #ifdef LOG_MMC_AVAILABLE
-/*!
+/**
  * Initialisierung fuer MMC-Logging
- * @return Fehlercode
  */
-uint8_t log_mmc_init(void) {
+void log_mmc_init(void) {
 	/* Log-Datei oeffnen und Dateiende merken */
 	log_file = mmc_fopen(LOG_FILENAME);
-	if (log_file == 0) return 1;	// Fehler :(
+	if (log_file == 0) {
+		return;	// Fehler :(
+	}
 	log_file_end = log_file + mmc_get_filesize(log_file);
-	log_file -= 512;	// denn beim ersten Logging springen wir in den Block-Ueberlauf-Fall
-	return 0;
+	log_file -= 512; // denn beim ersten Logging springen wir in den Block-Ueberlauf-Fall
 }
 #endif // LOG_MMC_AVAILABLE
 

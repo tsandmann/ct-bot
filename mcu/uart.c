@@ -30,15 +30,15 @@
 #include "ct-Bot.h"
 
 #ifdef UART_AVAILABLE
-#include <avr/io.h>
 #include "uart.h"
 #include "os_thread.h"
+#include <avr/io.h>
 
-uint8_t inbuf[BUFSIZE_IN];	/*!< Eingangspuffer */
-fifo_t uart_infifo;			/*!< Eingangs-FIFO */
+uint8_t inbuf[UART_BUFSIZE_IN]; /*!< Eingangspuffer */
+fifo_t uart_infifo; /*!< Eingangs-FIFO */
 
-uint8_t outbuf[BUFSIZE_OUT];	/*!< Ausgangspuffer */
-fifo_t uart_outfifo;			/*!< Ausgangs-FIFO */
+uint8_t outbuf[UART_BUFSIZE_OUT]; /*!< Ausgangspuffer */
+fifo_t uart_outfifo; /*!< Ausgangs-FIFO */
 
 /*!
  * Initialisiert den UART und aktiviert Receiver und Transmitter sowie die Interrupts.
@@ -46,8 +46,8 @@ fifo_t uart_outfifo;			/*!< Ausgangs-FIFO */
  */
 void uart_init(void) {
     /* FIFOs fuer Ein- und Ausgabe initialisieren */
-    fifo_init(&uart_infifo, inbuf, BUFSIZE_IN);
-    fifo_init(&uart_outfifo, outbuf, BUFSIZE_OUT);
+    fifo_init(&uart_infifo, inbuf, UART_BUFSIZE_IN);
+    fifo_init(&uart_outfifo, outbuf, UART_BUFSIZE_OUT);
 
 	/* Interrupts kurz deaktivieren */
     uint8_t sreg = SREG;
@@ -67,7 +67,7 @@ void uart_init(void) {
 
     /* Flush Receive-Buffer (entfernen evtl. vorhandener ungueltiger Werte) */
     do {
-		UDR;	// UDR auslesen (Wert wird nicht verwendet)
+		UDR; // UDR auslesen (Wert wird nicht verwendet)
     } while (UCSRA & (1 << RXC));
 
     /* Ruecksetzen von Receive und Transmit Complete-Flags */
@@ -113,19 +113,18 @@ void uart_init(void) {
 
 /*!
  * Sendet Daten per UART im Little Endian
- * @param data		Datenpuffer
+ * @param *data		Zeiger auf Datenpuffer
  * @param length	Groesse des Datenpuffers in Bytes
  */
-void uart_write(void * data, uint8_t length) {
-	uint8_t * ptr = data;
-	if (length > BUFSIZE_OUT) {
+void uart_write(const void * data, uint8_t length) {
+	if (length > UART_BUFSIZE_OUT) {
 		/* das ist zu viel auf einmal => teile und herrsche */
 		uart_write(data, length / 2);
-		uart_write(ptr + length / 2, (uint8_t)(length - length / 2));
+		uart_write(data + length / 2, (uint8_t) (length - length / 2));
 		return;
 	}
 	/* falls Sendepuffer zu voll, warten bis genug Platz vorhanden ist */
-	while (BUFSIZE_OUT - uart_outfifo.count < length) {
+	while (UART_BUFSIZE_OUT - uart_outfifo.count < length) {
 	}
 	/* Daten in Ausgangs-FIFO kopieren */
 	fifo_put_data(&uart_outfifo, data, length);
@@ -133,5 +132,5 @@ void uart_write(void * data, uint8_t length) {
 	UCSRB |= (1 << UDRIE);
 }
 
-#endif	// UART_AVAILABLE
-#endif	// MCU
+#endif // UART_AVAILABLE
+#endif // MCU

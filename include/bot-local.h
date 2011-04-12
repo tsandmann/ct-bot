@@ -17,18 +17,16 @@
  *
  */
 
-/*!
- * @file 	bot-local.h
- * @brief 	Konstanten, die den Bot an reale Umgebungen anpassen
- * @author 	Benjamin Benz (bbe@heise.de)
- * @author  Christoph Grimmer (c.grimmer@futurio.de)
- * @date 	28.02.2006
+/**
+ * \file 	bot-local.h
+ * \brief 	Konstanten, die den Bot an reale Umgebungen anpassen
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \author  Christoph Grimmer (c.grimmer@futurio.de)
+ * \date 	28.02.2006
  */
 
 #ifndef BOTLOCAL_H_
 #define BOTLOCAL_H_
-
-#include "ct-Bot.h"
 
 
 /*** Bot-Geometrie ***/
@@ -38,12 +36,12 @@
 #define WHEEL_DIAMETER			56.7		/*!< Durchmesser eines Rades (Sim) [mm] */
 #define WHEEL_PERIMETER			178.1283 	/*!< Umfang eines Rades (Sim) [mm] */
 #define WHEEL_TO_WHEEL_DIAMETER 97.2 		/*!< Abstand der beiden Raeder (Sim) [mm] */
-#else	// MCU
+#else // MCU
 /* hier kann man die genauen Werte fuer den eigenen Bot eintragen */
 #define WHEEL_DIAMETER			56.7		/*!< Durchmesser eines Rades [mm] */
 #define WHEEL_PERIMETER			178.1283 	/*!< Umfang eines Rades [mm] */
 #define WHEEL_TO_WHEEL_DIAMETER 97.2 		/*!< Abstand der beiden Raeder [mm] */
-#endif	// PC
+#endif // PC
 
 #define DISTSENSOR_POS_FW		47			/*!< Abstand der Distanzsensoren von der Radachse (in Fahrtrichtung) [mm] */
 #define DISTSENSOR_POS_SW		32			/*!< Abstand der Distanzsensoren von der Mittelachse (in Querrichtung) [mm] */
@@ -66,21 +64,17 @@
 #define PWMSTART_L			100				/*!< Basis-PWM-Wert linker Motor (falls keine dauerhaft gespeicherte PWM-LT vorhanden ist) */
 #define PWMSTART_R			100				/*!< Basis-PWM-Wert rechter Motor (falls keine dauerhaft gespeicherte PWM-LT vorhanden ist) */
 #define PID_START_DELAY		20				/*!< Dauer der Anfahrverzoegerung */
-#define ENC_CORRECT_L		5				/*!< Korrekturoffset fuer linken Radencoder */
-#define ENC_CORRECT_R		5				/*!< Korrekturoffset fuer rechten Radencoder */
-
-/* Servo-Parameter */
-#define DOOR_CLOSE 	7			/*!< Rechter Anschlag des Servos */
-#define DOOR_OPEN	14			/*!< Linker Anschlag des Servos */
+#define ENC_CORRECT_L		5				/*!< Korrekturoffset fuer linken Radencoder (falls nicht kalibriert, sonst 0) */
+#define ENC_CORRECT_R		5				/*!< Korrekturoffset fuer rechten Radencoder (falls nicht kalibriert, sonst 0) */
 
 /* Odometrie-Konstanten */
 #ifdef PC
 #define MOUSE_CPI		400		/*!< CPI-Wert aus Kalibrierung (Wert fuer den Sim) */
 #define MOUSE_FULL_TURN	1484	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis (Wert fuer den Sim) */
-#else	// MCU
+#else // MCU
 #define MOUSE_CPI		415		/*!< CPI-Wert aus Kalibrierung */
 #define MOUSE_FULL_TURN	1600	/*!< Mausaenderung in X-Richtung fuer einen vollen Kreis */
-#endif	// PC
+#endif // PC
 
 #define WHEEL_DISTANCE		(WHEEL_TO_WHEEL_DIAMETER / 2.0f)	/*!< Abstand eines Rades zur Mitte des Bots [mm] */
 #define STUCK_DIFF			100		/*!< ab welcher Differenz haben wir durchdrehende Raeder? */
@@ -94,6 +88,22 @@
 //#define F_CPU	20000000L	/*!< CPU-Frequenz [Hz] */
 #define XTAL	F_CPU		/*!< CPU-Frequenz [Hz] */
 
+//#define UART_BAUD	57600	/**< Baudrate  57600 fuer UART-Kommunikation */
+#define UART_BAUD	115200	/**< Baudrate 115200 fuer UART-Kommunikation */
+//#define UART_BAUD	500000	/**< Baudrate 500000 fuer UART-Kommunikation */
+
+#define EXPANSION_BOARD_AVAILABLE /*!< Erweiterungsmodul (MMC / WiPort) installiert */
+
+/* Servo-Parameter */
+#if F_CPU == 16000000L
+#define DOOR_CLOSE 	7			/**< Rechter Anschlag des Servos */
+#define DOOR_OPEN	14			/**< Linker Anschlag des Servos */
+#else
+#define DOOR_CLOSE 	10			/**< Rechter Anschlag des Servos */
+#define DOOR_OPEN	18			/**< Linker Anschlag des Servos */
+#endif
+
+
 /*** Einstellungen fuer die Verhaltensregeln ***/
 
 /* bot_avoid_border_behaviour() */
@@ -105,21 +115,21 @@
 #define COL_FAR				400		/*!< Fernbereich [mm] */
 
 /* Zustaende und Konstanten fuer das bot_solve_maze_behaviour-Verhalten */
-#define OPTIMAL_DISTANCE	(int16_t)(BOT_DIAMETER * 1.2f)	/*!< Optimale Distanz zur Wand [mm]. Etwas mehr als Bot-Durchmesser ist ideal (vergroessert aufgrund der Kennlinien der Sharps) */
+#define OPTIMAL_DISTANCE	(int16_t)(BOT_DIAMETER * 1.3f)	/*!< Optimale Distanz zur Wand [mm]. Etwas mehr als Bot-Durchmesser ist ideal (vergroessert aufgrund der Kennlinien der Sharps) */
 #define ADJUST_DISTANCE		10		/*!< Toleranzbereich [mm] */
 #define IGNORE_DISTANCE		240		/*!< Entfernung, ab der eine Wand ignoriert wird [mm] */
-#define GROUND_GOAL			0x221	/*!< Farbe des Ziels */
+#define GROUND_GOAL			0x221	/*!< Farbe des Zielpads */
 #define STARTPAD1			0x2B2	/*!< Farbe des Startpads1 */
-#define STARTPAD2			0x332	/*!< Fareb des Starpads2 */
+#define STARTPAD2			0x332	/*!< Farbe des Startpads2 */
 
 /* bot_follow_line_behaviour() */
 #ifdef PC
 /*! Konstante fuer das bot_follow_line_behaviour-Verhalten im Sim */
-#define LINE_SENSE		0x350	// Linie im Sim = 0x350
+#define LINE_SENSE		0x350	/**< Linie im Sim = 0x350 */
 #else
 /*! Konstante fuer das bot_follow_line_behaviour-Verhalten auf dem echten Bot*/
-#define LINE_SENSE		0x200	// Ab wann ist es eine Linie? (schwarz ca. 0x300, helle Tischflaeche 0x50)
-#endif	// PC
+#define LINE_SENSE		0x200	/**< Ab wann ist es eine Linie? (schwarz ca. 0x300, helle Tischflaeche 0x50) */
+#endif // PC
 
 /* Konstanten fuer bot_catch_pillar_behaviour() */
 #define MAX_PILLAR_DISTANCE	500 /*!< max. Entfernung zum Objekt [mm] */
@@ -128,4 +138,4 @@
 #define PRIO_VISIBLE_MIN	3	/*!< Prioritaet, die ein Verhalten mindestens haben muss, um angezeigt zu werden */
 #define PRIO_VISIBLE_MAX	200	/*!< Prioritaet, die ein Verhalten hoechstens haben darf, um angezeigt zu werden */
 
-#endif /*BOTLOCAL_H_*/
+#endif // BOTLOCAL_H_

@@ -79,7 +79,7 @@ Finden und Einstellen der richtigen Parameter</a> lesen, um die Regelung korrekt
     kleiner als PID_SPEED_THRESHOLD ist. Da das Messverhalten der Radencoder nicht symmetrisch ist, kommt es zu falschen Geschwindigkeitsdaten, 
     wenn die Zeit zwischen zwei direkt aufeinander folgenden Flanken gemessen wird. Um den hier angegebenen Wert wird die errechnete Geschwindigkeit
     korrigiert, falls der Encoderpegel der letzten Flanke HIGH war, anderfalls wird um das Inverse korrigiert. Sinvoll sind Werte zwischen
-    -15 und +15.</li>   
+    -15 und +15. Wenn der Radencoder kalibriert wurde (Vorwiderstand angepasst) und symmetrisch arbeitet, auf 0 setzen!</li>   
     <li><span class="function"> ENC_CORRECT_R</span> Korrektur der vom rechten Encoder gemessenen Geschwindigkeit in mm/s.</li>
 </ul>
 
@@ -121,14 +121,16 @@ ist, um Ungenauigkeiten zu vermeiden, wenn das Zeitintervall zwischen zwei Flank
 langsame Geschwindigkeiten erweist sich das Verfahren allerdings als zu tr&auml;ge, deshalb wird bei Geschwindigkeiten unterhalb von<span class="function"> 
 PID_SPEED_THRESHOLD</span> mit jeder Encoderflanke gerechnet und die gemessene Geschwindigkeit um den Betrag<span class="function"> ENC_CORRECT_L</span>
 bzw.<span class="function"> ENC_CORRECT_R</span> korrigiert.<br />
-Eine (noch) genauere Messung der Geschwindigkeiten ist mit einem kleinen Hardwareumbau zu erreichen: Dreht man die Radencoder um 90 Grad, so
-wird das Symmetrieverhalten wesentlich besser und die Zeitspanne zwischen zwei direkt aufeinander folgenden Flanken ist bei konstanter 
-Geschwindigkeit immer nahezu gleich. Dadurch kann auch eine Geschwindigkeit von nur 30 mm/s noch ausreichend gut eingeregelt werden (<span class="function"> BOT_SPEED_MIN</span>
-in <a href="../include/motor.h">include/motor.h</a> anpassen!). Wer den Umbau der Radencoder nicht scheut, kann dann<span class="function"> ENC_CORRECT_L</span> und<span class="function"> 
-ENC_CORRECT_R</span> auf Null setzen, da die Rohdaten der Encoder bereits eine genaue Geschwindigkeitsmessung erm&ouml;glichen.
+Eine genauere Messung der Geschwindigkeiten ist mit einer Kalibrierung der Radencoder zu erreichen: Dazu passt man den Vorwiderstand so an, dass die 
+Zeitspanne zwischen zwei direkt aufeinander folgenden Flanken bei konstanter Geschwindigkeit immer nahezu gleich ist. Dadurch kann auch eine 
+Geschwindigkeit von nur 30 mm/s noch ausreichend gut eingeregelt werden (<span class="function">BOT_SPEED_MIN</span> in 
+<a href="../include/motor.h">include/motor.h</a> anpassen!). Anschliessend muss man<span class="function"> ENC_CORRECT_L</span> und<span class="function"> 
+ENC_CORRECT_R</span> auf 0 setzen, da die Rohdaten der Encoder bereits eine genaue Geschwindigkeitsmessung ergeben. Insgesamt erreicht man so eine deutliche 
+Verbesserung der Motorregelung.
 </p>
 
 <a name="adjust"></a><h3>Finden und Einstellen der richtigen Parameter</h3>
+<p>Empfehlung: Zun&auml;chst die Radencoder kalibrieren, siehe voherigen Abschnitt.</p>
 <p>Das Wichtigste f&uuml;r eine gut funktionierende Regelung sind die passenden Parameter Kp, Ki und Kd. Allerdings ist das Berechnen nicht
 ganz einfach. Deshalb gibt es ein kleines Verhalten, das automatisch versucht die besten Parameter zu finden. Um es zu benutzen, sind folgende
 Schritte n&ouml;tig:<br />

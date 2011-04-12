@@ -28,8 +28,6 @@
 #define BEHAVIOUR_TURN_TEST_H_
 
 #ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
-#include "bot-logic/bot-logik.h"
-
 /*!
  * Das eigentliche Verhalten
  * @param data	Zeiger auf den Verhaltensdatensatz
@@ -43,6 +41,5 @@ void bot_turn_test_behaviour(Behaviour_t * data);
  */
 void bot_turn_test(Behaviour_t * caller);
 
-#endif	// BEHAVIOUR_TURN_TEST_AVAILABLE
-#endif	// BEHAVIOUR_TURN_TEST_H_
-
+#endif // BEHAVIOUR_TURN_TEST_AVAILABLE
+#endif // BEHAVIOUR_TURN_TEST_H_

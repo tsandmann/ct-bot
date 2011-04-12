@@ -21,21 +21,13 @@
  * @file 	adc.h
  * @brief 	Routinen zum Einlesen der Analogeingaenge
  * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+ * @date 	26.12.2005
  */
 #ifndef ADC_H_
 #define ADC_H_
 
-#include "global.h"
-
-///*!
-// * Liest einen analogen Kanal aus
-// * @param channel Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
-// */
-//uint16_t adc_read(uint8_t channel);
-
 /*!
- * @brief			Fuegt einen analogen Kanal in die ADC-Konvertierungsliste ein und wertet ihn per Interrupt aus
+ * Fuegt einen analogen Kanal in die ADC-Konvertierungsliste ein und wertet ihn per Interrupt aus
  * @param channel 	Kanal - hex-Wertigkeit des Pins (0x01 fuer PA0; 0x02 fuer PA1, ..)
  * @param p_sens	Zeiger auf den Sensorwert, der das Ergebnis enthalten soll
  */
@@ -55,4 +47,4 @@ uint8_t adc_get_active_channel(void);
  * Bit0 = Kanal 0 usw.
  */
 void adc_init(uint8_t channel);
-#endif	// ADC_H_
+#endif // ADC_H_

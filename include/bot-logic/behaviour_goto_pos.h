@@ -27,9 +27,7 @@
 #ifndef BEHAVIOUR_GOTO_POS_H_
 #define BEHAVIOUR_GOTO_POS_H_
 
-#include "bot-logic/bot-logik.h"
 #ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
-
 /*!
  * Das Positionierungsverhalten
  * @param data	Der Verhaltensdatensatz
@@ -65,5 +63,5 @@ void bot_goto_pos_rel(Behaviour_t * caller, int16_t x, int16_t y, int16_t head);
  */
 void bot_goto_dist(Behaviour_t * caller, int16_t distance, int8_t dir);
 
-#endif	// BEHAVIOUR_GOTO_POS_AVAILABLE
-#endif	/*BEHAVIOUR_GOTO_POS_H_*/
+#endif // BEHAVIOUR_GOTO_POS_AVAILABLE
+#endif // BEHAVIOUR_GOTO_POS_H_

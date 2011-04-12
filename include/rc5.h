@@ -18,24 +18,35 @@
  */
 
 /*!
- * @file 	rc5.h
- * @brief 	RC5-Fernbedienung
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+ * \file 	rc5.h
+ * \brief 	RC5-Fernbedienung / Basic-Tasten-Handler
+ *
+ * Um RC5-Codes fuer eine eigene Fernbedienung anzupassen, reicht es diese
+ * in eine Header-Datei auszulagern und anstatt der rc5code.h einzubinden.
+ * Die Maskierung fuer die Auswertung der Codes nicht vergessen!
+ *
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	12.02.2007
  */
 
-#ifndef rc5_H_
-#define rc5_H_
+#ifndef RC5_H_
+#define RC5_H_
+
+#ifdef RC5_AVAILABLE
+#include "ir-rc5.h"
+
+extern ir_data_t rc5_ir_data; /*!< RC5-Konfiguration fuer Fernbedienung */
 
 /*!
- * @brief	Liest ein RC5-Codeword und wertet es aus
+ * Liest ein RC5-Codeword und wertet es aus
  */
 void rc5_control(void);
 
 /*!
- * @brief	Ordnet den Tasten eine Aktion zu und fuehrt diese aus.
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	12.02.2007	  
+ * Ordnet den Tasten eine Aktion zu und fuehrt diese aus
  */
 void default_key_handler(void);
-#endif	// rc5_H_
+
+#endif // RC5_AVAILABLE
+#endif // RC5_H_

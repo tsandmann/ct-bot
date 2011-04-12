@@ -18,38 +18,38 @@
  */
 
 /*!
- * @file 	behaviour_transport_pillar.c
- * @brief 	Bot startet von einem Farb-Startpad und entdeckt die Welt, bis er auf ein anderes
- *          Farbpad stoesst. Er faehrt nun zwischen den beiden Farbpads hin und her, sammelt bei
- *          Ankunft auf einem Farbpad ein in der Naehe befindliches Hindernis in sein Transportfach ein
- *          und bringt dieses zum anderen Farbpad. Auf seinem Weg zur Abladestelle oder waehrend des
- *          Entdeckens der Welt zur Farbpadsuche weicht er Hindernissen geschickt aus.
- *          Es kann mittels des Wand-Explore Verhaltens nur mittels der Farbpads gefahren werden ohne sich
- *          Koordinaten zu merken, womit er nicht unbedingt zielgerichtet von einem zum anderen Farbpad
- *          fahren kann. Mittels Zuschalten der Verwendung der MAP-Koordinaten werden die Koords der Pads
- *          gemerkt und sich dorthin ausgerichtet. Es kann nun mit einem Fahrverhalten zwischen beiden hin- und
- *          hergefahren werden, wobei entweder der Wandfolger dient oder auch andere Fahrverhalten
- *          Anwendung finden (Auswahl jeweils per Define).
- *          Der Verhaltensstart erfolgt entweder via Remotecall oder Taste 9. Befindet sich der Bot auf einem Farbpad, so kann
- *          via Taste 7 dieses als Zielpad definiert werden (Simfarben werden automatisch erkannt; Real ist dies schwierig, daher
- *          manuell definierbar)
- *          Zur Steuerung mit Tasten und der Positionsanzeigen wurde ein eigener Screen definiert
+ * \file 	behaviour_transport_pillar.c
+ * \brief 	Bot startet von einem Farb-Startpad und entdeckt die Welt, bis er auf ein anderes Farbpad stoesst.
  *
- * @author 	Frank Menzel (menzelfr@gmx.net)
- * @date 	23.10.2007
+ * Er faehrt nun zwischen den beiden Farbpads hin und her, sammelt bei
+ * Ankunft auf einem Farbpad ein in der Naehe befindliches Hindernis in sein Transportfach ein
+ * und bringt dieses zum anderen Farbpad. Auf seinem Weg zur Abladestelle oder waehrend des
+ * Entdeckens der Welt zur Farbpadsuche weicht er Hindernissen geschickt aus.
+ * Es kann mittels des Wand-Explore Verhaltens nur mittels der Farbpads gefahren werden ohne sich
+ * Koordinaten zu merken, womit er nicht unbedingt zielgerichtet von einem zum anderen Farbpad
+ * fahren kann. Mittels Zuschalten der Verwendung der MAP-Koordinaten werden die Koords der Pads
+ * gemerkt und sich dorthin ausgerichtet. Es kann nun mit einem Fahrverhalten zwischen beiden hin- und
+ * hergefahren werden, wobei entweder der Wandfolger dient oder auch andere Fahrverhalten
+ * Anwendung finden (Auswahl jeweils per Define).
+ * Der Verhaltensstart erfolgt entweder via Remotecall oder Taste 9. Befindet sich der Bot auf einem Farbpad, so kann
+ * via Taste 7 dieses als Zielpad definiert werden (Simfarben werden automatisch erkannt; Real ist dies schwierig, daher
+ * manuell definierbar)
+ * Zur Steuerung mit Tasten und der Positionsanzeigen wurde ein eigener Screen definiert
+ *
+ * \author 	Frank Menzel (menzelfr@gmx.net)
+ * \date 	23.10.2007
  */
 
-#include "bot-logic/available_behaviours.h"
+#include "bot-logic/bot-logic.h"
+
+#ifdef BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE
 #include "ui/available_screens.h"
-#include "bot-logic/bot-logik.h"
 #include <math.h>
 #include <stdlib.h>
 #include "math_utils.h"
 #include "map.h"
 #include "display.h"
 #include "rc5-codes.h"
-
-#ifdef BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE
 
 // auskommentieren wenn mit Farbpads und ohne Koordinaten gefahren werden soll trotz vorhandener Map
 // Weltkoordinaten trotzdem mitgefuehrt zum Drehen genau zur anderen Position
@@ -115,11 +115,11 @@ static float target_y = 0; /*!< Zwischenzielkoordinaten Y des xy-Fahrverhaltens 
 /*!
  * Check, ob die Koordinate xy innerhalb eines Radius-Umkreises befindet; verwendet um das
  * Zielfahren mit gewisser Toleranz zu versehen
- * @param x x-Ordinate
- * @param y y-Ordinate
- * @param destx Ziel-x-Ordinate
- * @param desty Ziel-y-Ordinate
- * @return True wenn xy im Umkreis liegt6
+ * \param x x-Ordinate
+ * \param y y-Ordinate
+ * \param destx Ziel-x-Ordinate
+ * \param desty Ziel-y-Ordinate
+ * \return True wenn xy im Umkreis liegt6
  */
 static uint8_t koord_in_circle_world (float x, float y, float destx, float desty) {
 	// Punktdifferenzen
@@ -173,8 +173,8 @@ static const int16_t PAD_MYCOL = 0;
 
 /*!
  * Liefert True wenn sich Bot auf Pad mit dem Wert value_pad befindet
- * @param value_pad   zu checkender Farbwert der Liniensensoren
- * @param value_bpad  zu checkender farbwert der Bordersensoren
+ * \param value_pad   zu checkender Farbwert der Liniensensoren
+ * \param value_bpad  zu checkender farbwert der Bordersensoren
  */
 static uint8_t check_pad(int16_t value_pad, int16_t value_bpad) {
 #define COL_TOL 5
@@ -266,7 +266,7 @@ static uint8_t destpad_found(void) {
 
 /*!
  * Endebedingung des Explorerverhaltens
- * @return True wenn Endebedingung erfuellt
+ * \return True wenn Endebedingung erfuellt
  */
 static uint8_t check_end_exploring(void) {
 	if (key_pressed) {
@@ -278,7 +278,7 @@ static uint8_t check_end_exploring(void) {
 
 /*!
  * Das Transport_Pillar-Verhalten
- * @param *data	Verhaltensdatensatz
+ * \param *data	Verhaltensdatensatz
  */
 void bot_transport_pillar_behaviour(Behaviour_t * data) {
 #define BOT_CHECK_STARTPAD 0
@@ -368,7 +368,7 @@ void bot_transport_pillar_behaviour(Behaviour_t * data) {
 		break;
 
 	case BOT_ROLL:
-		deactivateBehaviour(bot_cancel_behaviour_behaviour); // deaktivieren falls noch aktiv
+//		deactivateBehaviour(bot_behaviour_cancel_behaviour); // deaktivieren falls noch aktiv
 		// Bot erst mal ausrollen lassen
 #ifndef SHOW_CLAPS_ON_DEST
 		// nicht warten wenn kurz Klappe auf und zu geht; ist bereits genug Verzoegerung
@@ -472,7 +472,7 @@ void bot_transport_pillar_behaviour(Behaviour_t * data) {
 
 /*!
  * Ruft das Pillarverhalten auf
- * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * \param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_transport_pillar(Behaviour_t * caller) {
 	state = 0;
@@ -489,13 +489,13 @@ void bot_transport_pillar(Behaviour_t * caller) {
 	startpad_bcol_1 = 0;
 	startpad_bcol_2 = 0;
 #endif
-	switch_to_behaviour(caller, bot_transport_pillar_behaviour, OVERRIDE);
+	switch_to_behaviour(caller, bot_transport_pillar_behaviour, BEHAVIOUR_OVERRIDE);
 }
 
 /*!
  * Routine zum Setzen der Zielkoordinaten auf der Zielposition/ Zielpad
- * @param x X-World-Zielkoordinate
- * @param y Y-World-Zielkoordinate
+ * \param x X-World-Zielkoordinate
+ * \param y Y-World-Zielkoordinate
  */
 void bot_set_destkoords(float x, float y) {
 
@@ -552,9 +552,9 @@ void transportpillar_display(void) {
 	display_cursor(3, 1);
 	display_printf("akt.Pos: %1d %1d", (int16_t)x_pos, (int16_t)y_pos);
 	display_cursor(4, 1);
-	display_printf("Go: 9/SetPos: 7");
+	display_puts("Go: 9/SetPos: 7");
 
 	trpill_disp_key_handler(); // aufrufen des Key-Handlers
 }
-#endif	// DISPLAY_TRANSPORT_PILLAR
-#endif	// BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE
+#endif // DISPLAY_TRANSPORT_PILLAR
+#endif // BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE

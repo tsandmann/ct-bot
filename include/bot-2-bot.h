@@ -27,17 +27,12 @@
 #ifndef BOT2BOT_H_
 #define BOT2BOT_H_
 
-#include "ct-Bot.h"
 #ifdef BOT_2_BOT_AVAILABLE
-#include "command.h"
-#include "bot-logic/bot-logik.h"
-#include <stdlib.h>
 
 //#define DELETE_BOTS		/*!< wollen wir Bots aus der Liste loeschen koennen? */
 //#define BOT_2_BOT_PAYLOAD_TEST_AVAILABLE	/*!< Aktiviert Test-Code fuer Bot-2-Bot Kommunikation mit Payload */
 
-/*! Datentyp fuer Bot-Liste
- * @todo Vielleicht noch weitere Infos pro Bot speichern? */
+/*! Datentyp fuer Bot-Liste */
 typedef struct _bot_list_entry_t {
 	uint8_t address;					/*!< Bot-Adresse */
 	uint8_t state;						/*!< letzter Status des Bots */
@@ -62,7 +57,7 @@ typedef struct _bot_list_entry_t {
 
 #define BOT_2_BOT_PAYLOAD_WINDOW_SIZE	32
 
-#if defined MCU && BOT_2_BOT_PAYLOAD_WINDOW_SIZE > BUFSIZE_IN
+#if defined MCU && BOT_2_BOT_PAYLOAD_WINDOW_SIZE > UART_BUFSIZE_IN
 #error "BOT_2_BOT_PAYLOAD_WINDOW_SIZE zu gross"
 #endif
 #endif	// BOT_2_BOT_PAYLOAD_AVAILABLE
@@ -222,5 +217,5 @@ int8_t bot_2_bot_start_remotecall(uint8_t bot_addr, char * function, remote_call
 void print_bot_list(void);
 #endif	// LOG_AVAILABLE
 
-#endif	// BOT_2_BOT_AVAILABLE
-#endif	// BOT2BOT_H_
+#endif // BOT_2_BOT_AVAILABLE
+#endif // BOT2BOT_H_
