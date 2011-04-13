@@ -30,7 +30,7 @@
 #define BEHAVIOUR_PROTOTYPE_AVAILABLE /*!< sind die Beispielverhalten vorhanden? */
 
 
-#define BEHAVIOUR_SIMPLE_AVAILABLE /*!< sind die Beispielverhalten vorhanden? */
+//#define BEHAVIOUR_SIMPLE_AVAILABLE /*!< sind die Beispielverhalten vorhanden? */
 #define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE /*!< Demoverhalten im Quadrat fahren vorhanden? */
 
 #define BEHAVIOUR_AVOID_BORDER_AVAILABLE /*!< Abgruenden ausweichen vorhanden? */
