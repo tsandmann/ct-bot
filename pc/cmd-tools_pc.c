@@ -183,7 +183,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 		case 'M': {
 			/* Dateiname fuer die Map wurde uebergeben. Der String wird in from gesichert. */
 #ifndef MAP_AVAILABLE
-			puts("ACHTUNG, das Programm wurde ohne MAP_AVAILABLE übersetzt, die Option -M steht derzeit also NICHT zur Verfuegung.");
+			puts("ACHTUNG, das Programm wurde ohne MAP_AVAILABLE uebersetzt, die Option -M steht derzeit also NICHT zur Verfuegung.");
 			puts("um dennoch Karten zu konvertieren, bitte im Quelltext in der Datei ct-Bot.h die Kommentarzeichen vor MAP_AVAILABLE entfernen");
 			puts("und neu compilieren.");
 			exit(1);

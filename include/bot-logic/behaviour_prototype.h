@@ -20,7 +20,7 @@
 
 /*! 
  * @file 	behaviour_prototype.h
- * @brief 	Rohling für eigene Verhalten
+ * @brief 	Rohling fuer eigene Verhalten
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	13.04.2011
  */
@@ -30,7 +30,7 @@
 
 #ifdef BEHAVIOUR_PROTOTYPE_AVAILABLE
 /*! 
- * Prototyp für ein Verhalten
+ * Prototyp fuer ein Verhalten
  *
  * Bitte umbenennen.
  * Siehe auch include/bot-logik/available_behaviours

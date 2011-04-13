@@ -20,7 +20,7 @@
 
 /*! 
  * @file 	behaviour_prototype.c
- * @brief 	Rohling für eigene Verhalten
+ * @brief 	Rohling fuer eigene Verhalten
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	13.04.2011
  */
@@ -39,7 +39,7 @@ static uint8_t prototype_state = 0;	/*!< Status des Prototype-Verhaltens */
 #define STATE_PROTOTYPE_DONE 3
 
 /*! 
- * Prototyp für ein Verhalten
+ * Prototyp fuer ein Verhalten
  *
  * Bitte umbenennen.
  * Siehe auch include/bot-logik/available_behaviours

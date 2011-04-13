@@ -43,7 +43,7 @@ static int16_t simple2_light = 0;	/*!< Uebergabevariable fuer SIMPLE2 */
  * und findet dann in bot_behave_init() und bot_behave() weitere Hinweise fuer elegante Bot-Programmierung....
  * 
  * Das Verhalten wird per Default nicht mitkompiliert. Sobald sie aber in include/bot-logik/available_behaviours die Kommentarzeichen vor BEHAVIOUR_SIMPLE_AVAILABLE entfernen
- * startet es automatisch und läuft endlos.
+ * startet es automatisch und laeuft endlos.
  * Achtung, da bot_simple_behaviour() maximale Prioritaet hat, kommt es vor den anderen Regeln, wie dem Schutz vor Abgruenden, etc. zum Zuge
  * Das sollte am Anfang nicht stoeren, spaeter sollte man jedoch die Prioritaet herabsetzen.
  * 
@@ -134,7 +134,7 @@ void bot_simple2_behaviour(Behaviour_t * data) {
 				else
 					bot_turn(data, max_dir-180);	// vom Licht wegdrehen
 
-				simple2_state=STATE_SIMPLE2_DRIVE;		// Nächster Zustand
+				simple2_state=STATE_SIMPLE2_DRIVE;		// Naechster Zustand
 			}
 
 			break;
