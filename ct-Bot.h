@@ -29,7 +29,7 @@
 /********************************************************************
  * Module switches, to make code smaller if features are not needed *
  ********************************************************************/
-#define LOG_CTSIM_AVAILABLE		/*!< Logging zum ct-Sim (PC und MCU) */
+//#define LOG_CTSIM_AVAILABLE		/*!< Logging zum ct-Sim (PC und MCU) */
 //#define LOG_DISPLAY_AVAILABLE		/*!< Logging ueber das LCD-Display (PC und MCU) */
 //#define LOG_UART_AVAILABLE		/*!< Logging ueber UART (nur fuer MCU) */
 #define LOG_STDOUT_AVAILABLE 		/*!< Logging auf die Konsole (nur fuer PC) */
@@ -76,8 +76,8 @@
 
 #define POS_STORE_AVAILABLE		/*!< Positionsspeicher vorhanden */
 
-#define MAP_AVAILABLE			/*!< Aktiviert die Kartographie */
-#define MAP_2_SIM_AVAILABLE		/*!< Sendet die Map zur Anzeige an den Sim */
+//#define MAP_AVAILABLE			/*!< Aktiviert die Kartographie */
+#define MAP_2_SIM_AVAILABLE	/*!< Sendet die Map zur Anzeige an den Sim */
 
 //#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
 //#define ADJUST_PID_PARAMS		/*!< macht PID-Paramter zur Laufzeit per FB einstellbar */
