@@ -77,6 +77,12 @@ static void bot_base_behaviour(Behaviour_t * data);
  * Initialisiert alle Verhalten
  */
 void bot_behave_init(void) {
+
+#ifdef BEHAVIOUR_PROTOTYPE_AVAILABLE
+	insert_behaviour_to_list(&behaviour, new_behaviour(102, bot_prototype_behaviour, BEHAVIOUR_ACTIVE));
+#endif
+
+
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 	// Dieses Verhalten kann andere starten
 	insert_behaviour_to_list(&behaviour, new_behaviour(254, bot_remotecall_behaviour, BEHAVIOUR_INACTIVE));
@@ -86,14 +92,14 @@ void bot_behave_init(void) {
 	insert_behaviour_to_list(&behaviour, new_behaviour(253, bot_servo_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 
+
 #ifdef BEHAVIOUR_SIMPLE_AVAILABLE
 	// Demo-Verhalten, ganz einfach, bot_simple wird unten sofort aktiv geschaltet.
 	// Achtung, im Moment hat es eine hoehere Prioritaet als die Gefahrenerkenner!
-	insert_behaviour_to_list(&behaviour, new_behaviour(252, bot_simple_behaviour, BEHAVIOUR_INACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(252, bot_simple_behaviour, BEHAVIOUR_ACTIVE));
 	insert_behaviour_to_list(&behaviour, new_behaviour(251, bot_simple2_behaviour, BEHAVIOUR_INACTIVE));
 
 	// Um das Simple2-Behaviour zu nutzen, die Kommentarzeichen der folgenden beiden Zeilen tauschen
-	activateBehaviour(NULL, bot_simple_behaviour);
 	//activateBehaviour(NULL, bot_simple2_behaviour);
 #endif
 

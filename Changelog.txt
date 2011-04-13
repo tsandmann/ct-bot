@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-04-13 Benjamin Benz [bbe@heise.de]: Prototype-Verhalten eingefuegt, bot_simple ueberarbeitet, Sensor-Defines umgezogen
+
 2011-04-13 Timo Sandmann [mail@timosandmann.de]: Build-Settings fuer Windows angepasst. Debug-W32 fuer aktuelle MinGW-Toolchain (msys und pthreads nicht mehr noetig), Debug-W32-old fuer alte Toolchain
 
 2011-04-12 Timo Sandmann [mail@timosandmann.de]: Release 19

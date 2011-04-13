@@ -30,6 +30,7 @@
 #include "rc5.h"
 #include "cmps03.h"
 
+
 /*! Datenstruktur zur Ablage eines IR-Sensor-Wertepaares (Spannung | Distanz) */
 typedef struct {
 	uint8_t voltage;	/*!< Spannung des jeweiligen Eintrags (halbiert) */
@@ -110,6 +111,13 @@ extern int16_t y_pos;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekopp
 extern int16_t v_left;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
 extern int16_t v_right;			/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
 extern int16_t v_center;		/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
+
+
+/* Grenzwerte fuer die IR-Sensoren */
+#define SENS_IR_MIN_DIST	100		/*!< Untergrenze des Erfassungsbereichs */
+#define SENS_IR_MAX_DIST	690		/*!< Obergrenze des Erfassungsbereichs */
+#define SENS_IR_INFINITE	995		/*!< Kennzeichnung fuer "kein Objekt im Erfassungsbereich" */
+#define SENS_IR_SAFE_DIST	120		/*!< kleinste Sichere Distanz innerhalb des Erfassungsbereichs */
 
 #ifdef MEASURE_POSITION_ERRORS_AVAILABLE
 extern int16_t pos_error_radius;	/*!< Aktueller Fehlerradius der Position */

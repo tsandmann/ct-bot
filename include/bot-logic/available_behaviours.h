@@ -27,8 +27,11 @@
 
 #ifdef BEHAVIOUR_AVAILABLE
 
-//#define BEHAVIOUR_SIMPLE_AVAILABLE /*!< sind die Beispielverhalten vorhanden? */
-//#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE /*!< Demoverhalten im Quadrat fahren vorhanden? */
+#define BEHAVIOUR_PROTOTYPE_AVAILABLE /*!< sind die Beispielverhalten vorhanden? */
+
+
+#define BEHAVIOUR_SIMPLE_AVAILABLE /*!< sind die Beispielverhalten vorhanden? */
+#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE /*!< Demoverhalten im Quadrat fahren vorhanden? */
 
 #define BEHAVIOUR_AVOID_BORDER_AVAILABLE /*!< Abgruenden ausweichen vorhanden? */
 #define BEHAVIOUR_AVOID_COL_AVAILABLE /*!< Hindernis ausweichen vorhanden? */
@@ -41,23 +44,23 @@
 //#define BEHAVIOUR_TURN_TEST_AVAILABLE /*!< turn_test vorhanden? */
 //#define BEHAVIOUR_TEST_ENCODER_AVAILABLE /*!< Encoder-Test Verhalten vorhanden? */
 
-#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE /*!< Strecke fahren vorhanden ?*/
+//#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE /*!< Strecke fahren vorhanden ?*/
 
-//#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE /*!< Distanzesensorasuwertung vorhanden? */
+#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE /*!< Distanzesensorasuwertung vorhanden? */
 
 #define BEHAVIOUR_SCAN_AVAILABLE /*!< Gegend scannen vorhanden? */
 #define BEHAVIOUR_SOLVE_MAZE_AVAILABLE /*!< Wandfolger vorhanden? */
-//#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE	/*!< Linienfolger vorhanden? */
-//#define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE /*!< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernissen klarkommt */
+#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE	/*!< Linienfolger vorhanden? */
+#define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE /*!< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernissen klarkommt */
 
-#define BEHAVIOUR_SERVO_AVAILABLE 	/*!< Kontrollverhalten fuer die Servos */
+//#define BEHAVIOUR_SERVO_AVAILABLE 	/*!< Kontrollverhalten fuer die Servos */
 
 //#define BEHAVIOUR_PATHPLANING_AVAILABLE /*!< Pfadplanungsverhalten  */
 //#define BEHAVIOUR_DRIVE_STACK_AVAILABLE /*!< Abfahren der auf dem Stack gesicherten Koordinaten */
 
 //#define BEHAVIOUR_OLYMPIC_AVAILABLE	/*!< Olympiadenverhalten vorhanden? */
 
-#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE /*!< Suche eine Dose und fange sie ein */
+//#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE /*!< Suche eine Dose und fange sie ein */
 //#define BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE /*!< Trennt zwei Arten von Dosen (hell / dunkel) */
 
 //#define BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE /*!< verfolge ein (bewegliches) Objekt */
@@ -266,6 +269,8 @@
 #undef BEHAVIOUR_DRIVE_AREA_AVAILABLE
 #undef BEHAVIOUR_PATHPLANING_AVAILABLE
 #endif // BEHAVIOUR_GOTO_POS_AVAILABLE
+
+#include "bot-logic/behaviour_prototype.h"
 
 #include "bot-logic/behaviour_simple.h"
 #include "bot-logic/behaviour_drive_square.h"
