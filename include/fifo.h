@@ -21,6 +21,7 @@
  * @file 	fifo.h
  * @brief 	Implementierung einer FIFO
  * @author 	http://www.roboternetz.de/wissen/index.php/FIFO_mit_avr-gcc
+ * @author	Timo Sandmann
  * @date 	28.02.2007
  * Thread-Safe, abgesichert gegen Interrupts, solange sich Producer bzw. Consumer jeweils auf der gleichen Interrupt-Ebene befinden.
  */
@@ -52,7 +53,13 @@ typedef struct {
 	uint8_t volatile overflow;	/*!< 1, falls die Fifo mal uebergelaufen ist */
 #ifdef OS_AVAILABLE
 	os_signal_t signal;			/*!< Signal das den Fifo-Status meldet */
-#endif
+#else
+#ifdef PC
+	struct {
+		pthread_mutex_t mutex;	/**< Mutex zur Synchronisation */
+	} signal;
+#endif // PC
+#endif // OS_AVAILABLE
 } fifo_t;
 
 /*!
@@ -73,8 +80,9 @@ void fifo_init(fifo_t * f, void * buffer, const uint8_t size);
  */
 void fifo_put_data(fifo_t * f, const void * data, uint8_t length);
 
-/*!
- * Liefert length Bytes aus der FIFO, blockierend, falls Fifo leer!
+/**
+ * Liefert length Bytes aus der FIFO.
+ * Wenn OS_AVAILABLE, blockierend, falls Fifo leer.
  * @param *f		Zeiger auf FIFO-Datenstruktur
  * @param *data		Zeiger auf Speicherbereich fuer Zieldaten
  * @param length	Anzahl der zu kopierenden Bytes
@@ -127,8 +135,9 @@ static inline void _inline_fifo_put(fifo_t * f, const uint8_t data, uint8_t isr)
 	}
 }
 
-/*!
+/**
  * Liefert das naechste Byte aus der FIFO.
+ * Wenn OS_AVAILABLE, blockierend, falls Fifo leer.
  * @param *f	Zeiger auf FIFO-Datenstruktur
  * @param isr	wird die Funktion von einer ISR aus aufgerufen?
  * @return		Das Byte aus der FIFO

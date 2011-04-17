@@ -47,10 +47,12 @@
 #include "motor.h"
 #include "init.h"
 
-#ifndef MMC_AVAILABLE
-#ifdef MCU
+#if !defined MMC_AVAILABLE && defined MCU
 #error "Map geht auf dem MCU nicht ohne MMC"
 #endif
+
+#ifndef OS_AVAILABLE
+#error "Map braucht OS_AVAILABLE"
 #endif
 
 

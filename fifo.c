@@ -21,13 +21,14 @@
  * @file 	fifo.c
  * @brief 	Implementierung einer FIFO
  * @author 	http://www.roboternetz.de/wissen/index.php/FIFO_mit_avr-gcc
+ * @author	Timo Sandmann
  * @date 	28.02.2007
  * Thread-Safe, abgesichert gegen Interrupts, solange sich Producer bzw. Consumer jeweils auf der gleichen Interrupt-Ebene befinden.
  */
 
 #include "ct-Bot.h"
-#include "fifo.h"
 #include "log.h"
+#include "fifo.h"
 
 /*!
  * Initialisiert die FIFO, setzt Lese- und Schreibzeiger, etc.
@@ -39,11 +40,15 @@ void fifo_init(fifo_t * f, void * buffer, const uint8_t size) {
 	f->count = 0;
 	f->pread = f->pwrite = buffer;
 	f->read2end = f->write2end = f->size = size;
+#ifdef OS_AVAILABLE
 	f->signal.value = 0; // Fifo leer
+#endif
 	f->overflow = 0;
 #ifdef PC
 	pthread_mutex_init(&f->signal.mutex, NULL);
+#ifdef OS_AVAILABLE
 	pthread_cond_init(&f->signal.cond, NULL);
+#endif
 #endif // PC
 	LOG_DEBUG_FIFO("Fifo 0x%08x initialisiert", f);
 }
@@ -131,8 +136,9 @@ void fifo_put_data(fifo_t * f, const void * data, uint8_t length) {
 #endif // OS_AVAILABLE
 }
 
-/*!
- * Liefert length Bytes aus der FIFO, blockierend, falls Fifo leer!
+/**
+ * Liefert length Bytes aus der FIFO.
+ * Wenn OS_AVAILABLE, blockierend, falls Fifo leer.
  * @param *f		Zeiger auf FIFO-Datenstruktur
  * @param *data		Zeiger auf Speicherbereich fuer Zieldaten
  * @param length	Anzahl der zu kopierenden Bytes

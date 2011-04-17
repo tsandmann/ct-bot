@@ -27,14 +27,14 @@
 #ifndef _OS_THREAD_H_
 #define _OS_THREAD_H_
 
-#ifdef OS_AVAILABLE
-#include "timer.h"
-#include "os_scheduler.h"
-
 #ifdef PC
 #undef OS_DEBUG
 #include <pthread.h>
 #endif // PC
+
+#ifdef OS_AVAILABLE
+#include "timer.h"
+#include "os_scheduler.h"
 
 /*! Signal-Typ zur Threadsynchronisation */
 typedef struct {
