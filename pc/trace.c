@@ -28,13 +28,17 @@
 #include "ct-Bot.h"
 
 #ifdef CREATE_TRACEFILE_AVAILABLE
+#ifndef OS_AVAILABLE
+#error "CREATE_TRACEFILE_AVAILABLE braucht OS_AVAILABLE!"
+#endif
+
 #include "bot-logic/bot-logic.h"
 #include "trace.h"
 #include "fifo.h"
 #include "sensor.h"
+#include "os_thread.h"
 #include <stdio.h>
 #include <string.h>
-#include <pthread.h>
 
 #define TRACEBUFFER_SIZE	255
 static fifo_t trace_fifo;
@@ -53,7 +57,7 @@ void * trace_main(void * data);
  * @return		NULL (macht pthread_create() gluecklich)
  */
 void * trace_main(void * data) {
-	data = data; // kein warning
+	(void) data; // kein warning
 	uint8_t index = 0;
 	while (42) {
 		fifo_get_data(&trace_fifo, &index, sizeof(index)); // blockierend

@@ -321,6 +321,10 @@
 #define I2C_AVAILABLE /**< I2C-Treiber statt TWI-Implementierung benutzen */
 #endif
 
+#if defined CREATE_TRACEFILE_AVAILABLE && ! defined OS_AVAILABLE
+#define OS_AVAILABLE
+#endif
+
 #include "global.h" // ct-Bot Datentypen
 #include "bot-local.h" // Konfig-Optionen die bei den Bots verschieden sein koennen
 

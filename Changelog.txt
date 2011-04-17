@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-04-17 Timo Sandmann [mail@timosandmann.de]: Bugfix Fifo-Code
+
 2011-04-12 Timo Sandmann [mail@timosandmann.de]: Release 19
 
 2011-04-12 Timo Sandmann [mail@timosandmann.de]: Bugfixes fuer Map-Code, Threading-Code und #define-Abhaengigkeiten
