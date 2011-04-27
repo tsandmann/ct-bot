@@ -22,7 +22,7 @@
 #define USE_AVR    1
 #define USE_LC7981 0
 #define usart_write LOG_RAW
-
+#define usart_read_line(buf, len) // nicht implementiert
 
 // AVR-spezifischen einschalten
 #ifndef USE_AVR
@@ -34,9 +34,11 @@
 
 // regulaere Standardausgabe
 #if USE_AVR
-	#define PRINTF(...)  usart_write(__VA_ARGS__)
+	#define PRINTF(...)			usart_write(__VA_ARGS__)
+	#define GETLINE(buf, len)	usart_read_line(buf, len)
 #else
-	#define PRINTF(...)  printf(__VA_ARGS__);fflush(stdout);
+	#define PRINTF(...)			printf(__VA_ARGS__);fflush(stdout);
+	#define GETLINE(buf, len)	fgets(buf, len, stdin)
 #endif
 
 // grml..., sollte man besser loesen!
@@ -47,6 +49,11 @@
 // max. Stringlaenge (Basic)
 #ifndef MAX_STRINGLEN
 	#define MAX_STRINGLEN 40
+#endif
+
+// max. Laenge der Eingabe beim INPUT-Befehl
+#ifndef MAX_INPUT_LEN
+	#define MAX_INPUT_LEN 11
 #endif
 
 // max. Schachtelungstiefe fuer GOSUB (Basic)
@@ -83,6 +90,7 @@
 #define UBASIC_PRINT	1
 #define UBASIC_RND		0
 #define UBASIC_HEX_BIN	1
+#define UBASIC_INPUT	0
 
 // externe Unterprogramme (via gosub)
 #define UBASIC_EXT_PROC	1

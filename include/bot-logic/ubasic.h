@@ -53,6 +53,8 @@
 #define OUT_OF_MEMORY           16
 #define NOT_ENOUGH_DATA			17
 #define UNKNOWN_LINENUMBER		18
+#define INPUT_IS_NOT_NUMBER     19
+#define UNKNOWN_VARIABLE        20
 
 extern int current_linenum;
 
@@ -60,8 +62,9 @@ void ubasic_init(PTR_TYPE program);
 void ubasic_run(void);
 int ubasic_finished(void);
 
-int ubasic_get_variable(int varnum);
-void ubasic_set_variable(int varum, int value, unsigned int);
+struct varinfo_t ubasic_get_varinfo(void);
+int ubasic_get_variable(struct varinfo_t var);
+void ubasic_set_variable(struct varinfo_t varum, int value);
 
 void accept(int token);
 int expr(void);

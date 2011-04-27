@@ -126,8 +126,11 @@ enum {
   #if UBASIC_ARRAY
   TOKENIZER_DIM,
   #endif
+  #if UBASIC_INPUT
+  TOKENIZER_INPUT,
+  #endif
   #if UBASIC_DATA
-  TOKENIZER_DATA,
+  TOKENIZER_DATA,			// 46
   TOKENIZER_READ,
   TOKENIZER_RESTORE,
   #endif
@@ -136,6 +139,11 @@ enum {
   TOKENIZER_NE,
   TOKENIZER_COLON,
   TOKENIZER_CR					// 55
+};
+
+struct tokenizer_pos_t {
+	PTR_TYPE prog_ptr;
+	int token;
 };
 
 
@@ -149,6 +157,8 @@ const char * tokenizer_last_string_ptr(void);
 int tokenizer_finished(void);
 void tokenizer_error_print(int linenum, int error_nr);
 PTR_TYPE get_prog_text_pointer(void);
+struct tokenizer_pos_t tokenizer_get_position(void);
+void tokenizer_set_position(struct tokenizer_pos_t);
 void jump_to_prog_text_pointer(PTR_TYPE jump_ptr);
 void jump_to_next_linenum(void);
 void skip_all_whitespaces(void);

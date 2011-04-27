@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-04-27 Timo Sandmann [mail@timosandmann.de]: uBasic auf Revision 49 aktualisiert
+
 2011-04-17 Timo Sandmann [mail@timosandmann.de]: Bugfix Fifo-Code
 
 2011-04-13 Benjamin Benz [bbe@heise.de]: Prototype-Verhalten eingefuegt, bot_simple ueberarbeitet, Sensor-Defines umgezogen
