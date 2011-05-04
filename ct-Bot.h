@@ -196,6 +196,16 @@
 #endif // MCU
 #endif // ! MMC_AVAILABLE
 
+#if !defined BEHAVIOUR_AVAILABLE && defined POS_STORE_AVAILABLE
+#undef POS_STORE_AVAILABLE
+#warning "POS_STORE_AVAILABLE benoetigt BEHAVIOUR_AVAILABLE"
+#endif
+
+#if !defined OS_AVAILABLE && defined BOT_FS_AVAILABLE
+#undef BOT_FS_AVAILABLE
+#warning "BOT_FS_AVAILABLE benoetigt OS_AVAILABLE"
+#endif
+
 #if defined MMC_VM_AVAILABLE && defined BOT_FS_AVAILABLE
 #warning "MMC_VM_AVAILABLE und BOT_FS_AVAILABLE nicht gleichzeitig moeglich! MMC_VM_AVAILABLE wird deaktiviert. Wenn benoetigt, BOT_FS_AVAILABLE ausschalten"
 #undef MMC_VM_AVAILABLE

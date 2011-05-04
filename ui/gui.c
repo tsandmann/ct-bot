@@ -58,6 +58,7 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 #include "pos_store.h"
 #include "rc5-codes.h"
 #include "os_scheduler.h"
+#include "timer.h"
 #include <stdlib.h>
 #include <string.h>
 
