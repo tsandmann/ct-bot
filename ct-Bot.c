@@ -38,6 +38,7 @@
 #include "gui.h"
 #include "command.h"
 #include "os_thread.h"
+#include "timer.h"
 
 
 //#define DEBUG_TIMES	/*!< Gibt Debug-Infos zum Timing aus (PC) */

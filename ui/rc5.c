@@ -48,6 +48,8 @@
 #include "timer.h"
 #include "bot-2-bot.h"
 #include "init.h"
+#include "motor.h"
+#include "sensor.h"
 #include <stdlib.h>
 
 
@@ -125,7 +127,10 @@ static void rc5_bot_change_speed(int16_t left, int16_t right) {
 		target_speed_r = BOT_SPEED_MIN;
 	else if (target_speed_r > -BOT_SPEED_MIN && target_speed_r < 0)
 		target_speed_r = -BOT_SPEED_MIN;
-#endif	// BEHAVIOUR_AVAILABLE
+#else
+	(void) left;
+	(void) right;
+#endif // BEHAVIOUR_AVAILABLE
 }
 
 /*!
