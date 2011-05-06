@@ -356,7 +356,9 @@ void command_write_data(uint8_t command, uint8_t subcommand, int16_t data_l,
  * return 1, wenn Kommando schon bearbeitet wurde, 0 sonst
  */
 int8_t command_evaluate(void) {
+#ifdef RC5_AVAILABLE
 	static uint16_t RC5_Last_Toggle = 0xffff;
+#endif
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 	static botfs_file_descr_t prog_file;
 	static uint16_t prog_size = 0;

@@ -157,6 +157,7 @@ void ram_display(void) {
 	extern unsigned char __bss_start;
 	extern unsigned char __heap_start;
 	extern unsigned char * __brkval;
+#ifdef RC5_AVAILABLE
 #ifdef LOG_AVAILABLE
 	extern unsigned char __data_end;
 	extern unsigned char __bss_end;
@@ -171,6 +172,7 @@ void ram_display(void) {
 		LOG_DEBUG("RAMEND = 0x%04x", RAMEND);
 		RC5_Code = 0;
 	}
+#endif // RC5_AVAILABLE
 #endif // LOG_AVAILABLE
 	size_t data_size = (size_t) (&__bss_start - &__data_start);
 	size_t bss_size = (size_t) (&__heap_start - &__bss_start);
