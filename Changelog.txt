@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-05-06 Timo Sandmann [mail@timosandmann.de]: Bugfix falls RC5_AVAILABLE aus ist
+
 2011-05-04 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer #include-Abhaengigkeiten
 
 2011-04-17 Timo Sandmann [mail@timosandmann.de]: Bugfix Fifo-Code
