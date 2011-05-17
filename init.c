@@ -26,6 +26,7 @@
 
 #include "ct-Bot.h"
 
+#include "command.h"
 #include "init.h"
 #include "timer.h"
 #include "uart.h"
@@ -36,16 +37,25 @@
 #include "ena.h"
 #include "mmc.h"
 #include "botfs.h"
+#include "sensor.h"
 #include "sensor-low.h"
 #include "ir-rc5.h"
 #include "mouse.h"
 #include "map.h"
+#include "os_thread.h"
 #include "log.h"
 #include "i2c.h"
+#include "timer.h"
 #include "twi.h"
 #include "gui.h"
 
 mmc_buffers_t mmc_buffers; /*!< Puffer fuer alle MMC-Transfers */
+
+//#define DEBUG_TIMES /*!< Gibt Debug-Infos zum Timing aus (PC) */
+
+#if defined PC && defined DEBUG_TIMES
+struct timeval init_start, init_stop; /*!< Zeit von Beginn und Ende des Verhaltensdurchlaufs */
+#endif // PC && DEBUG_TIMES
 
 /*!
  * Initialisierung
@@ -123,6 +133,101 @@ void ctbot_init(int argc, char * argv[]) {
 #endif
 
 	ctbot_init_low_last();
+
+#ifdef WELCOME_AVAILABLE
+	display_cursor(1, 1);
+	display_puts("c't-Roboter");
+
+#ifdef LOG_AVAILABLE
+	LOG_INFO("Hallo Welt!");
+#endif
+#ifdef SP03_AVAILABLE
+	sp03_say("I am Robi %d", sensError);
+#endif
+#endif // WELCOME_AVAILABLE
+}
+
+/*!
+ * Fuehrt die Verarbeitung in der Hauptschlaufe vor dem 
+ * Verhaltenscode durch. Dazu gehoert beispielsweise, die Sensoren 
+ * abzufragen und auf Pakete des Simulators zu reagieren.
+ */
+void pre_behaviour(void) {
+#ifdef BOT_2_SIM_AVAILABLE
+	/* Daten vom Sim empfangen */
+	bot_2_sim_listen();
+#endif // BOT_2_SIM_AVAILABLE
+
+	/* Sensordaten aktualisieren / auswerten */
+	bot_sens();
+
+#if defined PC && defined DEBUG_TIMES
+	/* Zum Debuggen der Zeiten */
+	GETTIMEOFDAY(&init_start, NULL);
+	int t1 = (init_start.tv_sec - init_stop.tv_sec) * 1000000 + init_start.tv_usec - init_stop.tv_usec;
+	printf("Done-Token (%d) in nach %d usec\n", received_command.data_l, t1);
+#endif // PC && DEBUG_TIMES
+}
+
+/*!
+ * Fuehrt die Verarbeitung in der Hauptschleife nach dem 
+ * Verhaltenscode durch. Dazu gehoert beispielsweise, die 
+ * Bildschirmanzeige zu steuern und den Simulator √ºber den aktuellen 
+ * Zustand zu informieren.
+ */
+void post_behaviour(void) {
+	static uint16_t comm_ticks = 0;
+	static uint8_t uart_gui = 0;
+
+#ifdef CREATE_TRACEFILE_AVAILABLE
+	trace_add_sensors();
+#endif // CREATE_TRACEFILE_AVAILABLE
+
+	/* jeweils alle 100 ms kommunizieren Bot, User und Sim */
+	if (timer_ms_passed_16(&comm_ticks, 50)
+#ifdef RC5_AVAILABLE
+		|| RC5_Code != 0
+#endif
+	) {
+		if (uart_gui == 0
+#ifdef RC5_AVAILABLE
+			|| RC5_Code != 0
+#endif
+		) {
+#ifdef DISPLAY_AVAILABLE
+			/* GUI-Behandlung starten */
+			gui_display(display_screen);
+#endif // DISPLAY_AVAILABLE
+			uart_gui = 1; // bot-2-sim ist erst beim naechsten Mal dran
+		} else {
+#ifdef BOT_2_SIM_AVAILABLE
+			/* Den Sim ueber Sensoren und Aktuatoren informieren */
+			bot_2_sim_inform(); // NOP auf PC
+#endif // BOT_2_SIM_AVAILABLE
+			uart_gui = 0; // naechstes Mal wieder mit GUI anfangen
+		}
+	}
+
+#ifdef PC
+#ifdef CREATE_TRACEFILE_AVAILABLE
+	trace_add_actuators();
+#endif // CREATE_TRACEFILE_AVAILABLE
+
+	/* Sim ueber naechsten Schleifendurchlauf / Bot-Zyklus informieren */
+	command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0); // flusht auch den Sendepuffer
+
+#ifdef DEBUG_TIMES
+	/* Zum Debuggen der Zeiten */
+	GETTIMEOFDAY(&init_stop, NULL);
+	int t2 = (init_stop.tv_sec - init_start.tv_sec) * 1000000 + init_stop.tv_usec - init_start.tv_usec;
+	printf("Done-Token (%d) out after %d usec\n", simultime, t2);
+#endif // DEBUG_TIMES
+#endif // PC
+
+#ifdef OS_AVAILABLE
+	/* Rest der Zeitscheibe (OS_TIME_SLICE ms) schlafen legen */
+	os_thread_yield();
+#endif // OS_AVAILABLE
 }
 
 /*!

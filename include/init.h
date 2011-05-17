@@ -94,6 +94,21 @@ void ctbot_init_low_1st(int argc, char * argv[]);
 void ctbot_init_low_last(void);
 
 /*!
+ * Fuehrt die Verarbeitung in der Hauptschlaufe vor dem 
+ * Verhaltenscode durch. Dazu gehoert beispielsweise, die Sensoren 
+ * abzufragen und auf Pakete des Simulators zu reagieren.
+ */
+void pre_behaviour(void);
+
+/*!
+ * Fuehrt die Verarbeitung in der Hauptschleife nach dem 
+ * Verhaltenscode durch. Dazu gehoert beispielsweise, die 
+ * Bildschirmanzeige zu steuern und den Simulator √ºber den aktuellen 
+ * Zustand zu informieren.
+ */
+void post_behaviour(void);
+
+/*!
  * Faehrt den Bot sauber herunter
  */
 void ctbot_shutdown(void);
