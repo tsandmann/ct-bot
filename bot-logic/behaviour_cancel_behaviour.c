@@ -58,7 +58,8 @@ void bot_behaviour_cancel_behaviour(Behaviour_t * data) {
 	uint8_t i;
 	for (i = 0; i < sizeof(jobs) / sizeof(jobs[0]); ++i) {
 		if (jobs[i].beh != NULL) {
-			if (jobs[i].beh->active != BEHAVIOUR_ACTIVE || jobs[i].cond == NULL) {
+			if ((jobs[i].beh->active != BEHAVIOUR_ACTIVE && jobs[i].beh->subResult != BEHAVIOUR_SUBRUNNING )
+				|| jobs[i].cond == NULL) {
 				LOG_DEBUG("erledigten Auftrag gefunden, wird entfernt");
 				jobs[i].beh = NULL;
 				continue;

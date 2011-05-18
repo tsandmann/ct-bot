@@ -31,7 +31,7 @@
 
 
 //#define BEHAVIOUR_SIMPLE_AVAILABLE /*!< sind die Beispielverhalten vorhanden? */
-#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE /*!< Demoverhalten im Quadrat fahren vorhanden? */
+//#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE /*!< Demoverhalten im Quadrat fahren vorhanden? */
 
 #define BEHAVIOUR_AVOID_BORDER_AVAILABLE /*!< Abgruenden ausweichen vorhanden? */
 #define BEHAVIOUR_AVOID_COL_AVAILABLE /*!< Hindernis ausweichen vorhanden? */
@@ -50,10 +50,10 @@
 
 #define BEHAVIOUR_SCAN_AVAILABLE /*!< Gegend scannen vorhanden? */
 #define BEHAVIOUR_SOLVE_MAZE_AVAILABLE /*!< Wandfolger vorhanden? */
-#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE	/*!< Linienfolger vorhanden? */
-#define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE /*!< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernissen klarkommt */
+//#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE	/*!< Linienfolger vorhanden? */
+//#define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE /*!< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernissen klarkommt */
 
-//#define BEHAVIOUR_SERVO_AVAILABLE 	/*!< Kontrollverhalten fuer die Servos */
+#define BEHAVIOUR_SERVO_AVAILABLE 	/*!< Kontrollverhalten fuer die Servos */
 
 //#define BEHAVIOUR_PATHPLANING_AVAILABLE /*!< Pfadplanungsverhalten  */
 //#define BEHAVIOUR_DRIVE_STACK_AVAILABLE /*!< Abfahren der auf dem Stack gesicherten Koordinaten */
@@ -70,7 +70,7 @@
 //#define BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE /*!< Transport-Pillar Verhalten */
 
 #define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-Kommandos entgegen? */
-//#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE /*!< Deaktivieren von Verhalten wenn eine Abbruchbedingung erfuellt ist */
+#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE /*!< Deaktivieren von Verhalten wenn eine Abbruchbedingung erfuellt ist */
 
 //#define BEHAVIOUR_GET_UTILIZATION_AVAILABLE	/*!< CPU-Auslastung eines Verhaltens messen */
 
