@@ -44,7 +44,7 @@ EEPROM uint8_t bot_address = CMD_BROADCAST; /*!< Kommunikations-Adresse des Bots
 #include "os_thread.h"
 #include "map.h"
 #include "botfs.h"
-#include "init.h"
+#include "botcontrol.h"
 #include <string.h>
 
 #define CHECK_CMD_ADDRESS					/*!< soll die Zieladresse der Kommandos ueberprueft werden? */

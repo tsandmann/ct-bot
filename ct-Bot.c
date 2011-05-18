@@ -25,8 +25,8 @@
  */
 
 #include "ct-Bot.h"
-#include "global.h"
 #include "init.h"
+#include "botcontrol.h"
 #include "motor.h"
 #include "bot-logic/bot-logic.h"
 

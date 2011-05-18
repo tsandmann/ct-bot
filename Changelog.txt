@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-05-18 Timo Sandmann [mail@timosandmann.de]: allgemeine Funktionen aus init.c in neue Datei botcontrol.c verschoben
+
 2011-05-18 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Cancel-Verhalten
 
 2011-05-12 Simon Siemens [simon.siemens@arcor.de]: Vereinfachung der main-Funktion. Verhaltensunabhaengigen Code dazu in init.c ausgelagert. In main verbleibt nur ein generisches Grundgeruest. Damit sind keine Aenderungen an main bei Updates mehr noetig und jeder kann sich sehr einfach eine eigene main-Funktion schreiben.

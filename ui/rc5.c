@@ -47,7 +47,7 @@
 #include "pos_store.h"
 #include "timer.h"
 #include "bot-2-bot.h"
-#include "init.h"
+#include "botcontrol.h"
 #include "motor.h"
 #include "sensor.h"
 #include <stdlib.h>
@@ -247,7 +247,7 @@ void default_key_handler(void) {
 			ctbot_shutdown();
 #endif // MCU
 			break;
-#endif
+#endif // RC5_CODE_I_II
 
 		/* Screenwechsel */
 #ifdef RC5_CODE_GREEN

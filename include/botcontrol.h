@@ -18,40 +18,33 @@
  */
 
 /**
- * \file 	trace.h
- * \brief 	Trace-Modul
+ * \file 	botcontrol.h
+ * \brief 	High-level Steuerungsroutinen, z.B. Funktionen fuer die Bot-Hauptschleife
  * \author 	Timo Sandmann (mail@timosandmann.de)
- * \date 	01.06.2009
+ * \date 	18.05.2011
  */
 
-#ifndef TRACE_H_
-#define TRACE_H_
-
-#ifdef CREATE_TRACEFILE_AVAILABLE
-#include "bot-logic/bot-logic.h"
+#ifndef BOTCONTROL_H_
+#define BOTCONTROL_H_
 
 /**
- * Initialisiert das Trace-System
+ * Fuehrt die Verarbeitung in der Hauptschlaufe vor dem
+ * Verhaltenscode durch. Dazu gehoert beispielsweise, die Sensoren
+ * abzufragen und auf Pakete des Simulators zu reagieren.
  */
-void trace_init(void);
+void pre_behaviour(void);
 
 /**
- * Fuegt dem Trace-Puffer die aktuellen Sensordaten hinzu
+ * Fuehrt die Verarbeitung in der Hauptschleife nach dem
+ * Verhaltenscode durch. Dazu gehoert beispielsweise, die
+ * Bildschirmanzeige zu steuern und den Simulator √ºber den aktuellen
+ * Zustand zu informieren.
  */
-void trace_add_sensors(void);
+void post_behaviour(void);
 
 /**
- * Fuegt dem Tace-Puffer die aktuellen Aktuatordaten hinzu
+ * Faehrt den Bot sauber herunter
  */
-void trace_add_actuators(void);
+void ctbot_shutdown(void);
 
-/**
- * Fueht dem Trace-Puffer einen RemoteCall-Aufruf hinzu
- * \param *fkt_name		Funktionsname des RemoteCalls
- * \param param_count	Anzahl der RemoteCall-Parameter
- * \param *params		Zeiger auf RemoteCall-Parameterdaten
- */
-void trace_add_remotecall(const char * fkt_name, uint8_t param_count, remote_call_data_t * params);
-
-#endif // CREATE_TRACEFILE_AVAILABLE
-#endif // TRACE_H_
+#endif // BOTCONTROL_H_
