@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	ct-Bot.c
- * @brief 	Bot-Hauptprogramm
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.2005
+/**
+ * \file 	ct-Bot.c
+ * \brief 	Bot-Hauptprogramm
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	26.12.2005
  */
 
 #include "ct-Bot.h"
@@ -31,14 +31,14 @@
 #include "bot-logic/bot-logic.h"
 
 
-/*!
+/**
  * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
  */
 int main(int argc, char * argv[]) {
 	/* Alles initialisieren */
 	ctbot_init(argc, argv);
 
-#ifdef  TEST_AVAILABLE_MOTOR
+#ifdef TEST_AVAILABLE_MOTOR
 	uint16_t calls = 0;	// Im Testfall zaehle die Durchlaeufe
 #endif
 
@@ -47,6 +47,7 @@ int main(int argc, char * argv[]) {
 		pre_behaviour();
 
 #ifdef TEST_AVAILABLE_MOTOR
+/** \todo: Testcode in ein Verhalten verschieben */
 		/* Testprogramm, das den Bot erst links-, dann rechtsrum dreht */
 		if (calls < 1001) {
 			calls++;
