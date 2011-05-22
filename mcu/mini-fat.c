@@ -167,9 +167,7 @@ static uint32_t check_fragmentation(uint32_t block, void * buffer) {
 #endif
 		LOG_ERROR("Keine FAT16-Partition");
 #ifdef LED_AVAILABLE
-#ifndef TEST_AVAILABLE
-			LED_on(LED_TUERKIS);
-#endif	// TEST_AVAILABLE
+		LED_on(LED_TUERKIS);
 #endif	// LED_AVAILABLE
 		return 0xffffffff;
 	}
@@ -206,9 +204,7 @@ static uint32_t check_fragmentation(uint32_t block, void * buffer) {
 #endif
 		LOG_ERROR("Datei ist fragmentiert!");
 #ifdef LED_AVAILABLE
-#ifndef TEST_AVAILABLE
-			LED_on(LED_TUERKIS);
-#endif	// TEST_AVAILABLE
+		LED_on(LED_TUERKIS);
 #endif	// LED_AVAILABLE
 		return 0xffffffff;
 	}
@@ -272,9 +268,7 @@ uint32_t mini_fat_find_block_P(const char * filename, void * buffer, uint32_t en
 			display_printf("Fehler %u", result);
 #endif // DISPLAY_MINIFAT_INFO
 #ifdef LED_AVAILABLE
-#ifndef TEST_AVAILABLE
-			LED_on(LED_TUERKIS);
-#endif // TEST_AVAILABLE
+		LED_on(LED_TUERKIS);
 #endif // LED_AVAILABLE
 			return 0xffffffff;
 		}
@@ -333,9 +327,7 @@ void mini_fat_clear_file(uint32_t file_start, void * buffer) {
 			display_printf("Fehler %u", result);
 #endif // DISPLAY_MINIFAT_INFO
 #ifdef LED_AVAILABLE
-#ifndef TEST_AVAILABLE
-			LED_on(LED_TUERKIS);
-#endif // TEST_AVAILABLE
+		LED_on(LED_TUERKIS);
 #endif // LED_AVAILABLE
 			return;
 		}

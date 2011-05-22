@@ -18,36 +18,28 @@
  */
 
 /**
- * \file 	ct-Bot.c
- * \brief 	Bot-Hauptprogramm
- * \author 	Benjamin Benz (bbe@heise.de)
- * \date 	26.12.2005
+ * \file 	behaviour_hw_test.h
+ * \brief 	Testcode fuer die Bot-Hardware (ehemals TEST_AVAILABLE_ANALOG, _DIGITAL, _MOTOR)
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	22.05.2011
  */
 
-#include "ct-Bot.h"
-#include "init.h"
-#include "botcontrol.h"
-#include "bot-logic/bot-logic.h"
+#ifndef BEHAVIOUR_HW_TEST_H_
+#define BEHAVIOUR_HW_TEST_H_
 
+#ifdef BEHAVIOUR_HW_TEST_AVAILABLE
+/**
+ * Das Testverhalten
+ * \param data	Der Verhaltensdatensatz
+ */
+void bot_hw_test_behaviour(Behaviour_t * data);
 
 /**
- * Hauptprogramm des Bots. Diese Schleife kuemmert sich um seine Steuerung.
- * \param argc Anzahl der Kommandozeilenparameter
- * \param *argv Array aller Kommandozeilenparameter
- * \return Exit-Code
+ * Veraendert den Testmode
+ * \param *caller Zeiger auf Verhaltensdatensatz des Aufrufers
+ * \param mode neuer Mode (0: analog, 1: digital, 2: motor)
  */
-int main(int argc, char * argv[]) {
-	/* Alles initialisieren */
-	ctbot_init(argc, argv);
+void bot_hw_test(Behaviour_t * caller, uint8_t mode);
 
-	/* Hauptschleife des Bots */
-	for (;;) {
-		pre_behaviour();
-
-#ifdef BEHAVIOUR_AVAILABLE
-		bot_behave(); // hier drin steckt der Verhaltenscode, siehe bot-logic/bot-logic.c
-#endif
-
-		post_behaviour();
-	}
-}
+#endif // BEHAVIOUR_HW_TEST_AVAILABLE
+#endif // BEHAVIOUR_HW_TEST_H_

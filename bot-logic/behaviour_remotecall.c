@@ -125,6 +125,10 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 	PREPARE_REMOTE_CALL(bot_drive_square, 0, "", 0),
 #endif
 
+	/* Hardware-Test Verhalten */
+#ifdef BEHAVIOUR_HW_TEST_AVAILABLE
+	PREPARE_REMOTE_CALL(bot_hw_test, 1, "uint8 mode", 1),
+#endif
 	/* Kalibrierungs-Verhalten fuer Bot-Setup */
 #ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_calibrate_pid, 1, "int16 speed", 2),

@@ -601,12 +601,11 @@ int16_t is_obstacle_ahead(int16_t distance) {
 	return sensDistL - sensDistR;
 }
 
-/*!
+/**
  * Updatet die LEDs je nach Sensorwert
  */
 void led_update(void) {
 #ifdef LED_AVAILABLE
-#ifndef TEST_AVAILABLE
 	if (sensTrans != 0) {
 		LED_on(LED_GELB);
 	} else {
@@ -633,53 +632,6 @@ void led_update(void) {
 		LED_on(LED_TUERKIS);
 	}
 #endif // MCU && UART_AVAILABLE
-#else // TEST_AVAILABLE
-	static volatile uint8_t led_status = 0x00;
-	led_t * status = (led_t *) &led_status;
-	bit_t tmp;
-#ifdef TEST_AVAILABLE_ANALOG
-	tmp.byte = (uint8_t) (sensDistR >> 8);
-	(*status).rechts = tmp.bit;
-	tmp.byte = (uint8_t) (sensDistL >> 8);
-	(*status).links = tmp.bit;
-	tmp.byte = (uint8_t) (sensLineL >> 9);
-	(*status).rot = tmp.bit;
-	tmp.byte = (uint8_t) (sensLineR >> 9);
-	(*status).orange =  tmp.bit;
-	tmp.byte = (uint8_t) (sensLDRL >> 8);
-	(*status).gelb = tmp.bit;
-	tmp.byte = (uint8_t) (sensLDRR >> 8);
-	(*status).gruen = tmp.bit;
-	tmp.byte = (uint8_t) (sensBorderL >> 9);
-	(*status).tuerkis = tmp.bit;
-	tmp.byte = (uint8_t) (sensBorderR >> 9);
-	(*status).weiss = tmp.bit;
-#endif // TEST_AVAILABLE_ANALOG
-#ifdef TEST_AVAILABLE_DIGITAL
-	tmp.byte = (uint8_t) sensEncR;
-	(*status).rechts = tmp.bit;
-	tmp.byte = (uint8_t) sensEncL;
-	(*status).links = tmp.bit;
-	tmp.byte = sensTrans;
-	(*status).rot = tmp.bit;
-	tmp.byte = sensError;
-	(*status).orange = tmp.bit;
-	tmp.byte = sensDoor;
-	(*status).gelb = tmp.bit;
-#ifdef MOUSE_AVAILABLE
-	tmp.byte = (uint8_t) (sensMouseDX >> 1);
-	(*status).gruen = tmp.bit;
-	tmp.byte = (uint8_t) (sensMouseDY >> 1);
-	(*status).tuerkis = tmp.bit;
-#endif
-#ifdef RC5_AVAILABLE
-	tmp.byte = (uint8_t) rc5_ir_data.ir_data;
-	(*status).weiss = tmp.bit;
-#endif
-#endif // TEST_AVAILABLE_DIGITAL
-
-	LED_set(led_status);
-#endif // !TEST_AVAILABLE
 #endif // LED_AVAILABLE
 }
 

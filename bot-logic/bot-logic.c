@@ -82,7 +82,6 @@ void bot_behave_init(void) {
 	insert_behaviour_to_list(&behaviour, new_behaviour(102, bot_prototype_behaviour, BEHAVIOUR_ACTIVE));
 #endif
 
-
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 	// Dieses Verhalten kann andere starten
 	insert_behaviour_to_list(&behaviour, new_behaviour(254, bot_remotecall_behaviour, BEHAVIOUR_INACTIVE));
@@ -274,6 +273,10 @@ void bot_behave_init(void) {
 
 #ifdef BEHAVIOUR_TEST_ENCODER_AVAILABLE
 	insert_behaviour_to_list(&behaviour, new_behaviour(20, bot_test_encoder_behaviour, BEHAVIOUR_INACTIVE));
+#endif
+
+#ifdef BEHAVIOUR_HW_TEST_AVAILABLE
+	insert_behaviour_to_list(&behaviour, new_behaviour(10, bot_hw_test_behaviour, BEHAVIOUR_ACTIVE));
 #endif
 
 	// Grundverhalten, setzt aeltere FB-Befehle um, aktiv

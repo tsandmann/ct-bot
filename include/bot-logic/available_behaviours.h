@@ -27,9 +27,9 @@
 
 #ifdef BEHAVIOUR_AVAILABLE
 
-#define BEHAVIOUR_PROTOTYPE_AVAILABLE /*!< sind die Beispielverhalten vorhanden? */
+//#define BEHAVIOUR_PROTOTYPE_AVAILABLE /**< Prototyp fuer neue Verhalten */
 
-
+//#define BEHAVIOUR_HW_TEST_AVAILABLE /**< Testverhalten vorhanden? (ehemals TEST_AVAILABLE_ANALOG, _DIGITAL, _MOTOR) */
 //#define BEHAVIOUR_SIMPLE_AVAILABLE /*!< sind die Beispielverhalten vorhanden? */
 //#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE /*!< Demoverhalten im Quadrat fahren vorhanden? */
 
@@ -272,6 +272,7 @@
 
 #include "bot-logic/behaviour_prototype.h"
 
+#include "bot-logic/behaviour_hw_test.h"
 #include "bot-logic/behaviour_simple.h"
 #include "bot-logic/behaviour_drive_square.h"
 
