@@ -29,6 +29,7 @@
 #define POS_STORE_H_
 
 #ifdef POS_STORE_AVAILABLE
+#include "command.h"
 
 #define POS_STORE_SIZE	64  /*!< (maximale) Groesse (pro Platz) */
 

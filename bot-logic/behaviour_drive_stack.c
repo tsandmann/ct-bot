@@ -37,6 +37,8 @@
 #include "rc5-codes.h"
 #include "map.h"
 #include "command.h"
+#include "log.h"
+#include "bot-2-bot.h"
 #include <stdlib.h>
 
 #define DEBUG

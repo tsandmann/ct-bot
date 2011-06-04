@@ -71,6 +71,7 @@ static Behaviour_t * behaviour = NULL;
 static void insert_behaviour_to_list(Behaviour_t * * list, Behaviour_t * behave);
 static Behaviour_t * new_behaviour(uint8_t priority, void (* work) (struct _Behaviour_t * data), uint8_t active);
 static void bot_base_behaviour(Behaviour_t * data);
+static inline int8_t register_emergency_proc(void (* fkt)(void));
 
 
 /**

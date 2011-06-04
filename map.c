@@ -233,7 +233,9 @@ int8_t map_init(void) {
 		return 0;
 	}
 
+#ifdef BEHAVIOUR_SCAN_AVAILABLE
 	deactivateBehaviour(bot_scan_onthefly_behaviour);
+#endif
 
 	if (init_state == 0) {
 		/* Update-Thread initialisieren */
@@ -408,7 +410,9 @@ int8_t map_init(void) {
 #endif // CLEAR_MAP_ON_INIT
 
 	init_state = 1;
+#ifdef BEHAVIOUR_SCAN_AVAILABLE
 	activateBehaviour(NULL, bot_scan_onthefly_behaviour);
+#endif
 	return 0;
 }
 

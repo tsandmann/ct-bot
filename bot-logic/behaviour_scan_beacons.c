@@ -36,7 +36,7 @@
 static uint8_t state;		/*!< Status des Verhaltens */
 static uint8_t pos_update;	/*!< Update der Positionsdaten gewuenscht? */
 static uint8_t turn_mode;	/*!< 0: Auf der Stelle drehen, 1: Kreis um das linke Rad fahren */
-static uint8_t index;		/*!< Index fuer naechste Baken-Daten */
+static uint8_t beacon_index;/*!< Index fuer naechste Baken-Daten */
 static struct {
 	uint16_t id;					/*!< Landmarken-ID */
 	float heading;					/*!< Bot-Ausrichtung, unter der die Landmarke gesehen wurde */
@@ -113,20 +113,20 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 			LOG_DEBUG(" BPS-Sensor meldet Landmarke:");
 			LOG_DEBUG("  ID=0x%x", sensBPS);
 			uint8_t i;
-			for (i=0; i<index; i++) {
+			for (i=0; i<beacon_index; i++) {
 				if (recognized_beacons[i].id == sensBPS) {
 					/* Diese Landmarke wurde bereits gesehen */
 					break;
 				}
 			}
-			if (i == index) {
+			if (i == beacon_index) {
 				/* Neue Landmarke gefunden */
-				recognized_beacons[index].id = sensBPS;
+				recognized_beacons[beacon_index].id = sensBPS;
 				lastb_id = sensBPS;
 				appearance_heading = heading;
 				disappeared_counter = 0;
 				state = SEARCH_DISAPPEARANCE;
-				LOG_DEBUG(" %u.Landmarke %d sichtbar ab %dG.", index + 1, sensBPS, heading_int);
+				LOG_DEBUG(" %u.Landmarke %d sichtbar ab %dG.", beacon_index + 1, sensBPS, heading_int);
 			}
 		}
 		break;
@@ -147,11 +147,11 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 				if (last_beacon_heading < 0.0f) {
 					last_beacon_heading += 360.0f;
 				}
-				LOG_DEBUG(" %u.Landmarke sichtbar bis %dG.", index + 1, heading_int);
-				recognized_beacons[index].heading = last_beacon_heading;
-				index++;
+				LOG_DEBUG(" %u.Landmarke sichtbar bis %dG.", beacon_index + 1, heading_int);
+				recognized_beacons[beacon_index].heading = last_beacon_heading;
+				beacon_index++;
 				LOG_DEBUG("  Nehme %dG. als Richtung d. Landmarke", (int16_t) last_beacon_heading);
-				if (index == MAX_BEACONS) {
+				if (beacon_index == MAX_BEACONS) {
 					/* maximale Anzahl an Landmarken erkannt */
 					state = CALC_POSITION;
 					LOG_DEBUG(" Berechne Position aus Landmarken");
@@ -161,7 +161,7 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 				} else {
 					/* naechste Landmarke suchen */
 					state = SEARCH_APPEARANCE;
-					LOG_DEBUG("Suche %u. Landmarke...", index + 1);
+					LOG_DEBUG("Suche %u. Landmarke...", beacon_index + 1);
 				}
 			}
 		} else {
@@ -303,7 +303,7 @@ void bot_scan_beacons(Behaviour_t * caller, uint8_t position_update, uint8_t mod
 	}
 	switch_to_behaviour(caller, bot_scan_beacons_behaviour, BEHAVIOUR_OVERRIDE);
 	state = SEARCH_APPEARANCE;
-	index = 0;
+	beacon_index = 0;
 	turned = 0.0f;
 	last_heading = heading;
 	int8_t i;
