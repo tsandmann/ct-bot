@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-06-04 Timo Sandmann [mail@timosandmann.de]: Bugfixes fuer Abhaengigkeiten, clang Compiler Support
+
 2011-05-22 Timo Sandmann [mail@timosandmann.de]: Testcode in neues Verhalten bot_hw_test_behaviour() ausgelagert, Makefile etwas aufgeraeumt und fehlendes Verhalten BEHAVIOUR_PROTOTYPE ergaenzt 
 
 2011-05-19 Simon Siemens [simon.siemens@arcor.de]: Neues make-Target library fuer eine Bibliothek der Infrastrukturkomponenten (Hardwareabstraktion, OS, ...).

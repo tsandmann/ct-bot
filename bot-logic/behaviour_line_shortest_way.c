@@ -40,6 +40,7 @@
 #include "pos_store.h"
 #include "rc5-codes.h"
 #include "math_utils.h"
+#include "display.h"
 
 //#define DEBUG_BEHAVIOUR_LINE_SHORTEST_WAY // Schalter fuer Debug-Code
 
