@@ -216,6 +216,7 @@ else
 
 	AR = ar
 	CC = gcc
+	#CC = clang
 	RANLIB = ranlib
 	SIZE = size
 	
