@@ -50,6 +50,8 @@ LIBRARY = libctbot.a
 DEVICE ?= MCU
 #DEVICE ?= PC
 
+SAVE_TEMPS ?=
+
 MSG_DEVICE = Target device is $(DEVICE)
 
 # List C source files here. (C dependencies are automatically generated.)
@@ -262,6 +264,9 @@ CFLAGS += $(CSTANDARD)
 ifeq ($(DEVICE),MCU)
 	CFLAGS += -Wconversion --param inline-call-cost=2
 endif
+ifdef SAVE_TEMPS
+CFLAGS += -save-temps -fverbose-asm -dA
+endif
 
 ASFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 
@@ -473,11 +478,16 @@ clean_list :
 	$(REMOVE) $(SRCMCU:.c=.o)
 	$(REMOVE) $(SRCPC:.c=.o)
 	$(REMOVE) $(LST)
-	$(REMOVE) $(SRCBEHAVIOUR:.c=.s)
-	$(REMOVE) $(SRCHIGHLEVEL:.c=.s)
-	$(REMOVE) $(SRCUI:.c=.s)
-	$(REMOVE) $(SRCMCU:.c=.s)
-	$(REMOVE) $(SRCPC:.c=.s)
+	$(REMOVE) $(notdir $(SRCBEHAVIOUR:.c=.s))
+	$(REMOVE) $(notdir $(SRCHIGHLEVEL:.c=.s))
+	$(REMOVE) $(notdir $(SRCUI:.c=.s))
+	$(REMOVE) $(notdir $(SRCMCU:.c=.s))
+	$(REMOVE) $(notdir $(SRCPC:.c=.s))
+	$(REMOVE) $(notdir $(SRCBEHAVIOUR:.c=.i))
+	$(REMOVE) $(notdir $(SRCHIGHLEVEL:.c=.i))
+	$(REMOVE) $(notdir $(SRCUI:.c=.i))
+	$(REMOVE) $(notdir $(SRCMCU:.c=.i))
+	$(REMOVE) $(notdir $(SRCPC:.c=.i))
 	$(REMOVE) $(SRCBEHAVIOUR:.c=.d)
 	$(REMOVE) $(SRCHIGHLEVEL:.c=.d)
 	$(REMOVE) $(SRCUI:.c=.d)
