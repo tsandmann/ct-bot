@@ -71,7 +71,12 @@ static Behaviour_t * behaviour = NULL;
 static void insert_behaviour_to_list(Behaviour_t * * list, Behaviour_t * behave);
 static Behaviour_t * new_behaviour(uint8_t priority, void (* work) (struct _Behaviour_t * data), uint8_t active);
 static void bot_base_behaviour(Behaviour_t * data);
+#if \
+	   defined BEHAVIOUR_HANG_ON_AVAILABLE \
+	|| defined BEHAVIOUR_DRIVE_AREA_AVAILABLE \
+	|| defined BEHAVIOUR_FOLLOW_WALL_AVAILABLE
 static inline int8_t register_emergency_proc(void (* fkt)(void));
+#endif
 
 
 /**
@@ -697,10 +702,14 @@ Behaviour_t * get_next_behaviour(Behaviour_t * beh) {
 }
 
 
+#if \
+	   defined BEHAVIOUR_HANG_ON_AVAILABLE \
+	|| defined BEHAVIOUR_DRIVE_AREA_AVAILABLE \
+	|| defined BEHAVIOUR_FOLLOW_WALL_AVAILABLE
 #define MAX_EMERG_PROCS 3			/**< Maximale Anzahl der registrierbaren Funktionen */
 static int8_t count_arr_emerg = 0;	/**< Anzahl der zurzeit registrierten Notfallfunktionen */
 /** hier liegen die Zeiger auf die auszufuehrenden Notfall-Funktionen */
-static void (* emerg_functions[MAX_EMERG_PROCS])(void) = { NULL };
+void (* bot_logic_emerg_functions[MAX_EMERG_PROCS])(void) = { NULL };
 
 /**
  * Routine zum Registrieren einer Notfallfunktion, die beim Ausloesen eines Abgrundsensors
@@ -714,7 +723,7 @@ static inline int8_t register_emergency_proc(void (* fkt)(void)) {
 		return -1; // sorry, aber fuer dich ist kein Platz mehr da :(
 	}
 	int8_t proc_nr = count_arr_emerg++;	// neue Routine hinten anfuegen
-	emerg_functions[proc_nr] = fkt;	// Pointer im Array speichern
+	bot_logic_emerg_functions[proc_nr] = fkt;	// Pointer im Array speichern
 	return proc_nr;
 }
 
@@ -725,11 +734,12 @@ static inline int8_t register_emergency_proc(void (* fkt)(void)) {
 void start_registered_emergency_procs(void) {
 	uint8_t i;
 	for (i = 0; i < MAX_EMERG_PROCS; ++i) {
-		if (emerg_functions[i] != NULL) {
-			emerg_functions[i]();
+		if (bot_logic_emerg_functions[i] != NULL) {
+			bot_logic_emerg_functions[i]();
 		}
 	}
 }
+#endif // EMERG_PROCS
 
 
 #ifdef DISPLAY_BEHAVIOUR_AVAILABLE

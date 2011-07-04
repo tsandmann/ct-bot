@@ -125,12 +125,14 @@ void hand_cmd_args(int argc, char * argv[]) {
 			printf("ARGV[0]= %s\n", argv[0]);
 			tcp_server_init();
 			tcp_server_run(1000); // beendet per exit()
+			break;
 		}
 
 		case 'T': {
 			/* Testclient starten */
 			tcp_test_client_init();
 			tcp_test_client_run(1000); // beendet per exit()
+			break;
 		}
 
 		case 't': {
@@ -251,6 +253,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 			puts("Fehler, Binary wurde ohne BOT_FS_AVAILABLE compiliert!");
 			exit(1);
 #endif // BOT_FS_AVAILABLE
+			break;
 		}
 
 		case 'k' : {
@@ -415,7 +418,9 @@ static void read_command_thread(void) {
 
 	while (42) {
 		putc('>', stdout);
-		fgets(input, sizeof(input) - 1, stdin);
+		if (fgets(input, sizeof(input) - 1, stdin) == NULL) {
+			continue;
+		}
 		if (*input == '\n' || strncmp(input, "list", strlen("list")) == 0) {
 			int i = 0;
 			while (remotecall_beh_list[i].func != NULL) {

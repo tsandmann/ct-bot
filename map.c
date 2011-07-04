@@ -807,7 +807,7 @@ static void update_occupied(int16_t x, int16_t y, uint8_t location_prob) {
 #ifdef MEASURE_POSITION_ERRORS_AVAILABLE
 	const uint8_t prob = location_prob;
 #else
-	location_prob = location_prob;
+	(void) location_prob;
 	const uint8_t prob = 255;
 #endif
 	const int8_t r = MAP_RADIUS_FIELDS;

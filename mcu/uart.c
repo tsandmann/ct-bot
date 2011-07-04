@@ -67,7 +67,7 @@ void uart_init(void) {
 
     /* Flush Receive-Buffer (entfernen evtl. vorhandener ungueltiger Werte) */
     do {
-		UDR; // UDR auslesen (Wert wird nicht verwendet)
+		(void) UDR; // UDR auslesen (Wert wird nicht verwendet)
     } while (UCSRA & (1 << RXC));
 
     /* Ruecksetzen von Receive und Transmit Complete-Flags */

@@ -133,9 +133,8 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 			LOG_DEBUG("bot_turn(%d)", to_turn);
 			break;
 		}
-
-		/* no break */
 	}
+	/* no break */
 	case CALC_WAY: {
 		/* Kreisbogenfahrt zum Ziel berechnen */
 		LOG_DEBUG("calc way...");
@@ -204,8 +203,8 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 		/* Statusupdate */
 		done = 0;
 		state = RUNNING;
-		/* no break */
 	}
+	/* no break */
 	case RUNNING: {
 		/* Berechnete Geschwindigkeiten setzen */
 		LOG_DEBUG("v_l=%d; v_r=%d", v_l, v_r);

@@ -61,7 +61,7 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 	static int16_t last_border_x, last_border_y, last_border_head;
 	static uint8_t index = 0;
 
-	data = data; // kein warning
+	(void) data; // kein warning
 
 	/* Verhalten je nach Cache-Fuellstand */
 	uint8_t cache_free = (uint8_t) (map_update_fifo.size - map_update_fifo.count);

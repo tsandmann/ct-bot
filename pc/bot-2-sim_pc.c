@@ -105,6 +105,8 @@ int8_t receive_until_Frame(uint8_t frame) {
 			return 0;
 		}
 	}
+
+	return 0;
 }
 
 /*!

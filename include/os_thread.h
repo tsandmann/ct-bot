@@ -154,7 +154,7 @@ static inline void os_thread_sleep(uint32_t ms) {
  * @param *signal	Signal, das entfernt werden soll
  */
 static inline void os_signal_release(os_signal_t * signal) {
-	signal = signal; // kein warning
+	(void) signal; // kein warning
 	os_thread_running->wait_for = &dummy_signal;
 }
 

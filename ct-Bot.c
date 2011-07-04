@@ -50,4 +50,6 @@ int main(int argc, char * argv[]) {
 
 		post_behaviour();
 	}
+
+	return 0;
 }

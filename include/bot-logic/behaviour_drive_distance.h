@@ -67,7 +67,7 @@ void bot_drive_distance(Behaviour_t * caller, int8_t curve, int16_t speed, int16
 void bot_goto_dist(Behaviour_t *, int16_t, int8_t);
 
 static inline void bot_drive_distance(Behaviour_t * caller, int8_t curve, const int16_t speed, const int16_t cm) {
-	curve = curve;
+	(void) curve;
 	bot_goto_dist(caller, cm * 10, sign16(speed));
 }
 #endif // USE_GOTO_POS_DIST

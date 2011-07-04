@@ -124,8 +124,8 @@ void init_before_main(void) {
  */
 void ctbot_init_low_1st(int argc, char * argv[]) {
 	/* keine warnings */
-	argc = argc;
-	argv = argv;
+	(void) argc;
+	(void) argv;
 
 	_delay_ms(100);
 

@@ -96,23 +96,24 @@ static void load_volume(char * file) {
  */
 static void create_volume(void) {
 	char in_buffer[BOTFS_MAX_FILENAME + 2];
+	char * rv;
 	/* Dateiname der Volume-Images einlesen */
 	printf("Volume-Datei (< %lu Zeichen): ", BOTFS_MAX_FILENAME);
-	fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
+	rv = fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
 	in_buffer[strlen(in_buffer) - 1] = 0; // \n weg
 	char vol_file[strlen(in_buffer) + 1];
 	strcpy(vol_file, in_buffer);
 
 	/* Volume-Name einlesen */
 	printf("Volume-Name (< %u Zeichen): ", BOTFS_VOL_NAME_SIZE);
-	fgets(in_buffer, BOTFS_VOL_NAME_SIZE + 2, stdin);
+	rv = fgets(in_buffer, BOTFS_VOL_NAME_SIZE + 2, stdin);
 	in_buffer[strlen(in_buffer) - 1] = 0; // \n weg
 	char vol_name[strlen(in_buffer) + 1];
 	strcpy(vol_name, in_buffer);
 
 	/* Volume-Groesse einlesen */
 	printf("Groesse in KB: ");
-	fgets(in_buffer, 7, stdin);
+	rv = fgets(in_buffer, 7, stdin);
 	in_buffer[strlen(in_buffer) - 1] = 0; // \n weg
 	char tmp[strlen(in_buffer) + 1];
 	strcpy(tmp, in_buffer);
@@ -138,8 +139,9 @@ static void open_volume(void) {
 
 	/* Name der Volume-Image-Datei einlesen */
 	char in_buffer[BOTFS_MAX_FILENAME + 2];
+	char * rv;
 	printf("Volume-Datei (< %lu Zeichen): ", BOTFS_MAX_FILENAME);
-	fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
+	rv = fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
 	in_buffer[strlen(in_buffer) - 1] = 0; // \n weg
 
 	/* Dateiname globel speichern */
@@ -161,8 +163,9 @@ static void create_file(void) {
 
 	/* Dateiname einlesen */
 	char in_buffer[BOTFS_MAX_FILENAME + 2];
+	char * rv;
 	printf("Dateiname (<= %lu Zeichen): ", BOTFS_MAX_FILENAME);
-	fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
+	rv = fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
 	in_buffer[strlen(in_buffer) - 1] = 0; // \n weg
 	char name[strlen(in_buffer) + 2];
 	char * ptr = name;
@@ -174,7 +177,7 @@ static void create_file(void) {
 
 	/* Groesse einlesen */
 	printf("Groesse in KB: ");
-	fgets(in_buffer, 7, stdin);
+	rv = fgets(in_buffer, 7, stdin);
 	in_buffer[strlen(in_buffer) - 1] = 0; // \n weg
 	char tmp[strlen(in_buffer) + 1];
 	strcpy(tmp, in_buffer);
@@ -215,8 +218,9 @@ static void delete_file(void) {
 
 	/* Dateiname einlesen */
 	char in_buffer[BOTFS_MAX_FILENAME + 2];
+	char * rv;
 	printf("Dateiname (< %lu Zeichen): ", BOTFS_MAX_FILENAME);
-	fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
+	rv = fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
 	in_buffer[strlen(in_buffer) - 1] = 0; // \n weg
 	char name[strlen(in_buffer) + 2];
 	char * ptr = name;
@@ -249,8 +253,9 @@ static void move_file(void) {
 
 	/* alten Dateiname einlesen */
 	char in_buffer[BOTFS_MAX_FILENAME + 2];
+	char * rv;
 	printf("bisheriger Dateiname (< %lu Zeichen): ", BOTFS_MAX_FILENAME);
-	fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
+	rv = fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
 	in_buffer[strlen(in_buffer) - 1] = 0; // \n weg
 	char old_name[strlen(in_buffer) + 2];
 	char * ptr = old_name;
@@ -267,7 +272,7 @@ static void move_file(void) {
 	/* neuen Dateinamen einlesen */
 	char out_buffer[BOTFS_MAX_FILENAME + 2];
 	printf("neuer Dateiname (< %lu Zeichen): ", BOTFS_MAX_FILENAME);
-	fgets(out_buffer, BOTFS_MAX_FILENAME, stdin);
+	rv = fgets(out_buffer, BOTFS_MAX_FILENAME, stdin);
 	out_buffer[strlen(out_buffer) - 1] = 0; // \n weg
 	char new_name[strlen(out_buffer) + 2];
 	ptr = new_name;
@@ -294,10 +299,11 @@ static void write_file(void) {
 		return;
 	}
 	char in_buffer[BOTFS_MAX_FILENAME + 2];
+	char * rv;
 
 	/* Dateiname einlesen */
 	printf("Dateiname (<= %lu Zeichen): ", BOTFS_MAX_FILENAME);
-	fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
+	rv = fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
 	in_buffer[strlen(in_buffer) - 1] = 0; // \n weg
 	char name[strlen(in_buffer) + 2];
 	char * ptr = name;
@@ -323,7 +329,7 @@ static void write_file(void) {
 	memset(buffer, 0, BOTFS_BLOCK_SIZE);
 
 	/* Daten einlesen */
-	fgets(buffer, BOTFS_BLOCK_SIZE - 2, stdin);
+	rv = fgets(buffer, BOTFS_BLOCK_SIZE - 2, stdin);
 
 	/* Treiber-Aufruf */
 	if (botfs_write(&file, buffer) == 0) {
@@ -343,15 +349,16 @@ static void copy_file(void) {
 	}
 
 	char file_path[256];
+	char * rv;
 	/* Quell-Dateiname einlesen */
 	printf("Dateiname Quelle: ");
-	fgets(file_path, sizeof(file_path), stdin);
+	rv = fgets(file_path, sizeof(file_path), stdin);
 	file_path[strlen(file_path) - 1] = 0; // \n weg
 
 	char in_buffer[BOTFS_MAX_FILENAME + 2];
 	/* Ziel-Dateiname einlesen */
 	printf("Dateiname (<= %lu Zeichen): ", BOTFS_MAX_FILENAME);
-	fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
+	rv = fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
 	in_buffer[strlen(in_buffer) - 1] = 0; // \n weg
 	char name[strlen(in_buffer) + 2];
 	char * ptr = name;
@@ -378,10 +385,11 @@ static void read_file(void) {
 		return;
 	}
 	char in_buffer[BOTFS_MAX_FILENAME + 2];
+	char * rv;
 
 	/* Dateiname einlesen */
 	printf("Dateiname (<= %lu Zeichen): ", BOTFS_MAX_FILENAME);
-	fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
+	rv = fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
 	in_buffer[strlen(in_buffer) - 1] = 0; // \n weg
 	char name[strlen(in_buffer) + 2];
 	char * ptr = name;
@@ -422,10 +430,11 @@ static void extract_file(void) {
 		return;
 	}
 	char in_buffer[BOTFS_MAX_FILENAME + 2];
+	char * rv;
 
 	/* Dateiname einlesen */
 	printf("BottFS-Dateiname (<= %lu Zeichen): ", BOTFS_MAX_FILENAME);
-	fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
+	rv = fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
 	in_buffer[strlen(in_buffer) - 1] = 0; // \n weg
 	char from[strlen(in_buffer) + 2];
 	char * ptr = from;
@@ -444,7 +453,7 @@ static void extract_file(void) {
 	/* Ziel-Dateiname einlesen */
 	char file_path[256];
 	printf("Dateiname Ziel: ");
-	fgets(file_path, sizeof(file_path), stdin);
+	rv = fgets(file_path, sizeof(file_path), stdin);
 	file_path[strlen(file_path) - 1] = 0; // \n weg
 
 	if (botfs_extract_file(file_path, from, buffer) == 0) {
@@ -521,10 +530,11 @@ static void clear_file(void) {
 		return;
 	}
 	char in_buffer[BOTFS_MAX_FILENAME + 2];
+	char * rv;
 
 	/* Dateiname einlesen */
 	printf("Dateiname (<= %lu Zeichen): ", BOTFS_MAX_FILENAME);
-	fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
+	rv = fgets(in_buffer, BOTFS_MAX_FILENAME, stdin);
 	in_buffer[strlen(in_buffer) - 1] = 0; // \n weg
 	char name[strlen(in_buffer) + 1];
 	strcpy(name, in_buffer);
@@ -650,7 +660,9 @@ void botfs_management(char * volume_file) {
 	/* Hauptschleife */
 	while(1) {
 		/* Kommando einlesen */
-		fgets(in_buffer, 30, stdin);
+		if (fgets(in_buffer, 30, stdin) == NULL) {
+			continue;
+		}
 		printf("\n");
 
 		/* Schluesselwort suchen */
