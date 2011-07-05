@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-07-05 Fred Ammann: Fernbedienung "Total Control" hinzugefuegt
+
 2011-07-04 Timo Sandmann [mail@timosandmann.de]: Warnings beseitigt, Anpassungen fuer Eclipse 3.7
 
 2011-06-04 Timo Sandmann [mail@timosandmann.de]: Bugfixes fuer Abhaengigkeiten, clang Compiler Support
