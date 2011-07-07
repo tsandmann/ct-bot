@@ -1,22 +1,22 @@
 /*--------------------------------------------------------
 *    Plattformabhaengige Zugriffsroutinen fuer externe
-*                    Unterprogramme 
+*                    Unterprogramme
 *    =================================================
 *          Uwe Berger (bergeruw@gmx.net); 2010
-* 
-* Folgendes ist je nach Zugriffsmethode auf den Basic-Programm-Text 
+*
+* Folgendes ist je nach Zugriffsmethode auf den Basic-Programm-Text
 * anzupassen:
 *
 * current_proc  --> Definition des aktuellen Programms; diese Variable
 *                   muss auch initial fuer das erste Hauptprogramm ge-
 *                   setzt werden
-* 
+*
 * switch_proc() --> - Schliessen des derzeitigen Programms;
 *                   - Oeffnen des Programms aus Parameter;
 *                   - Setzen von PROG_PTR auf Anfang des Programms;
 *                   - tokenizer_init() mit neuen Programm;
 *                   - Setzen von current_proc auf Programm aus Parameter
-* 
+*
 *
 * ---------
 * Have fun!
@@ -42,7 +42,7 @@
 //	#include "../uart/usart.h"
 #else
 	#include <string.h>
-	#include <stdio.h> 
+	#include <stdio.h>
 #endif
 
 
@@ -59,7 +59,7 @@ char current_proc[MAX_PROG_NAME_LEN];
 	// Umschalten des Programm-Kontextes
 	void switch_proc(char *p_name) {
 		unsigned char i=0;
-		i=get_program_pgm_idx(p_name);	
+		i=get_program_pgm_idx(p_name);
 		//Fehlerpruefung (Programm nicht vorhanden)
 		if (i<0) {
 			tokenizer_error_print(current_linenum, UNKNOWN_SUBPROC);
@@ -107,7 +107,7 @@ char current_proc[MAX_PROG_NAME_LEN];
 	// Umschalten des Programm-Kontextes
 	void switch_proc(char *p_name) {
 		fclose(f);
-		f = fopen(p_name, "r");
+		f = fopen(p_name, "rb");
 		if (!f) {
 			tokenizer_error_print(current_linenum, UNKNOWN_SUBPROC);
 			ubasic_break();

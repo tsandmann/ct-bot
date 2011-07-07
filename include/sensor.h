@@ -71,7 +71,7 @@ extern uint16_t RC5_Code;	/*!< Letzter empfangener RC5-Code */
 #ifdef BPS_AVAILABLE
 extern uint16_t sensBPS;	/*!< Bot Positioning System */
 extern ir_data_t bps_ir_data; /*!< RC5-Konfiguration fuer BPS-Sensor */
-#endif	// BPS_AVAILABLE
+#endif // BPS_AVAILABLE
 
 
 #ifdef MOUSE_AVAILABLE
@@ -79,7 +79,7 @@ extern int8_t sensMouseDX;	/*!< Maussensor Delta X, positive Werte zeigen querab
 extern int8_t sensMouseDY;	/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
 extern int16_t sensMouseX;	/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
 extern int16_t sensMouseY;	/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
-#endif	// MOUSE_AVAILABLE
+#endif // MOUSE_AVAILABLE
 
 extern float heading_enc;	/*!< Blickrichtung aus Encodern */
 extern float x_enc;			/*!< X-Koordinate aus Encodern [mm] */
@@ -99,7 +99,7 @@ extern float y_mou;			/*!< Aktuelle Y-Koordinate in mm relativ zur Startposition
 extern int16_t v_mou_center;	/*!< Geschwindigkeit in mm/s ausschliesslich aus den Maussensorwerten berechnet */
 extern int16_t v_mou_left;		/*!< ...aufgeteilt auf linkes Rad */
 extern int16_t v_mou_right;		/*!< ...aufgeteilt auf rechtes Rad */
-#endif	// MEASURE_MOUSE_AVAILABLE
+#endif // MEASURE_MOUSE_AVAILABLE
 
 extern float heading;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
 extern int16_t heading_int;		/*!< (int16_t) heading */

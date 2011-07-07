@@ -2,10 +2,10 @@
 *    Implementierung Basic-Befehl "call()"
 *    =====================================
 *     Uwe Berger (bergeruw@gmx.net); 2010
-* 
+*
 * Dokumentation call_referenz.txt...!
 *
-* 
+*
 * Have fun!
 * ---------
 *
@@ -25,11 +25,15 @@
 	#include "../lc7981/lc7981.h"
 #endif
 
+#if USE_AVR && RTC_DS1307
+	#include "../ds1307/ds1307.h"
+#endif
+
 #if USE_AVR
 //	#include "../uart/usart.h"
 #else
 	#include <string.h>
-	#include <stdio.h> 
+	#include <stdio.h>
 #endif
 
 #if UBASIC_CALL
@@ -59,9 +63,15 @@ callfunct_t callfunct[] = {
     {"pclear",	.funct_ptr.VoidFunc2Int=lcd_pclear,		VOID_FUNC_2INT},
     {"puts",	.funct_ptr.VoidFunc2IntChar=lcd_puts,	VOID_FUNC_2INT_CHAR},
 #endif
+#if USE_AVR && RTC_DS1307
+	// Auslesen RTC DS1307
+    {"get_rtc",	.funct_ptr.IntFuncInt=get_DS1307,		INT_FUNC_INT},
+#endif
+
 	{ "bot_speed", .funct_ptr.VoidFunc2Int16 = ubasic_set_speed, VOID_FUNC_2INT16 },
 	{ "beh_active", .funct_ptr.BoolFuncBeh = ubasic_behaviour_is_active, BOOL_FUNC_BEH },
 	{ "RC", .funct_ptr.VoidFuncRC = bot_remotecall, VOID_FUNC_RC },
+
     {"",		{NULL},									255}
 };
 
@@ -79,7 +89,7 @@ int call_statement(void) {
 	int p4=0;
 #endif
 	int r=0;
-	
+
 	accept(TOKENIZER_CALL);
 	// Parameterliste wird durch linke Klammer eingeleitet
     accept(TOKENIZER_LEFTPAREN);
@@ -94,7 +104,7 @@ int call_statement(void) {
     	idx++;
     }
     f_typ_temp = pgm_read_byte(&callfunct[idx].typ);
-#else	
+#else
 	while(callfunct[idx].typ != 255 &&
 	      strncasecmp(callfunct[idx].funct_name, tokenizer_last_string_ptr(), MAX_NAME_LEN)) {
     	idx++;
@@ -106,7 +116,7 @@ int call_statement(void) {
     	tokenizer_error_print(current_linenum, UNKNOWN_CALL_FUNCT);
 		ubasic_break();
     } else {
-		// je nach Funktionstyp (3.Spalte in Funktionspointertabelle) 
+		// je nach Funktionstyp (3.Spalte in Funktionspointertabelle)
 		// Parameterliste aufbauen und Funktion aufrufen
 		switch (f_typ_temp){
 #ifdef VOID_FUNC_VOID
@@ -240,6 +250,7 @@ int call_statement(void) {
 
 			default:	tokenizer_error_print(current_linenum, UNKNOWN_CALL_FUNCT_TYP);
 						ubasic_break();
+						break;
 		}
 	}
 	// abschliessende rechte Klammer

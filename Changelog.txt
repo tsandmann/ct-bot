@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-07-07 Timo Sandmann [mail@timosandmann.de]: uBasic auf rev. 60 aktualisiert
+
 2011-07-05 Fred Ammann: Fernbedienung "Total Control" hinzugefuegt
 
 2011-07-04 Timo Sandmann [mail@timosandmann.de]: Warnings beseitigt, Anpassungen fuer Eclipse 3.7

@@ -2,10 +2,10 @@
 *    Definition fuer Zugriff auf externe Unterprogramme
 *    ==================================================
 *           Uwe Berger (bergeruw@gmx.net); 2010
-* 
-* 
+*
+*
 * Anpassungen erfolgen in ubasic_ext_proc.c
-* 
+*
 *
 * ---------
 * Have fun!
@@ -16,9 +16,6 @@
 #define __UBASIC_EXT_PROC_H__
 
 #if UBASIC_EXT_PROC
-// maximale Laenge Programmname
-#define MAX_PROG_NAME_LEN	16
-
 extern char current_proc[]; /**< aktueller Programmname */
 
 // Prototypen

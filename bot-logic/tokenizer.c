@@ -27,33 +27,27 @@
  * SUCH DAMAGE.
  *
  * ------------------------------------------------------
- * Source modified by Uwe Berger (bergeruw@gmx.net); 2010
+ * Source modified by Uwe Berger (bergeruw@gmx.net); 2010, 2011
+ * FastParser created by Rene Boellhoff; 2011
  * ------------------------------------------------------
  */
 
 #include "bot-logic/bot-logic.h"
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 
-#define DEBUG 0
+#include "bot-logic/ubasic_config.h"
 
-#if DEBUG
-	#define DEBUG_PRINTF(...)  usart_write(__VA_ARGS__)
-//	#define DEBUG_PRINTF(...)  printf(__VA_ARGS__)
-
-#else
-	#define DEBUG_PRINTF(...)
-#endif
+//#if USE_PROGMEM
+//	#include <avr/pgmspace.h>
+//#endif
 
 #define __TOKENIZER_C__
 	#include "bot-logic/tokenizer_access.h"
+	#include "bot-logic/tokenizer.h"
 #undef __TOKENIZER_C__
-#include "bot-logic/tokenizer.h"
-#include "bot-logic/ubasic_config.h"
 #include "bot-logic/ubasic_ext_proc.h"
 #include "botfs.h"
 #include <ctype.h>
-
-
 
 #if USE_AVR
 //	#include "../uart/usart.h"
@@ -64,34 +58,22 @@
 	#include <stdio.h>
 #endif
 
-//#if USE_PROGMEM
-//	#include <avr/pgmspace.h>
-//#endif
-
 
 static PTR_TYPE line_begin_ptr;
 static char last_string[MAX_STRINGLEN+1];
 static int  last_value;
 static int  last_var_num;
 
-#define MAX_NUMLEN 5
-#define MAX_HEXLEN 4
-#define MAX_BINLEN 16
-
-struct keyword_token {
-#if USE_PROGMEM
-	// um via strxxx_P zugreifen zu koennen, muss eine feste Laenge vorgegeben werden
-	char keyword[MAX_KEYWORD_LEN+1];
-#else	
-	char *keyword;
-#endif
-  int token;
-};
-
 static int current_token = TOKENIZER_ERROR;
 
 extern PTR_TYPE program_ptr;
 
+//#if UBASIC_EXT_PROC
+//	extern char current_proc[MAX_PROG_NAME_LEN];
+//#endif
+
+
+#if TOKENIZER_STANDARD
 #if USE_PROGMEM
 static const struct keyword_token keywords[] PROGMEM = {
 #else
@@ -145,6 +127,28 @@ static const struct keyword_token keywords[] = {
 	#if UBASIC_INPUT
 	{"input", TOKENIZER_INPUT},
 	#endif
+	#if UBASIC_ARRAY
+	{"dim", TOKENIZER_DIM},
+	#endif
+	#if UBASIC_DATA
+	{"data", TOKENIZER_DATA},
+	{"read", TOKENIZER_READ},
+	{"restore", TOKENIZER_RESTORE},
+	#endif
+	#if UBASIC_STRING
+	{"left$", TOKENIZER_LEFT},
+	{"right$", TOKENIZER_RIGHT},
+	{"mid$", TOKENIZER_MID},
+	{"chr$", TOKENIZER_CHR},
+	{"str$", TOKENIZER_STR},
+	{"len", TOKENIZER_LEN},
+	{"val", TOKENIZER_VAL},
+	{"asc", TOKENIZER_ASC},
+	{"m_strlen", TOKENIZER_MAXSTRLEN},
+	{"upper$", TOKENIZER_UPPER},
+	{"lower$", TOKENIZER_LOWER},
+	{"instr$", TOKENIZER_INSTR},
+	#endif
 	#if AVR_EPOKE
 	{"epoke", TOKENIZER_EPOKE},
 	#endif
@@ -166,24 +170,22 @@ static const struct keyword_token keywords[] = {
 	#if AVR_ADC
 	{"adc", TOKENIZER_ADC},
 	#endif
-	#if UBASIC_ARRAY
-	{"dim", TOKENIZER_DIM},
-	#endif
-	#if UBASIC_DATA
-	{"data", TOKENIZER_DATA},
-	{"read", TOKENIZER_READ},
-	{"restore", TOKENIZER_RESTORE},
-	#endif
-	{"or", TOKENIZER_OR},
-	{"and", TOKENIZER_AND},
+	{"or", TOKENIZER_LOGOR},
+	{"and", TOKENIZER_LOGAND},
 	{"mod", TOKENIZER_MOD},
 	{"<=", TOKENIZER_LE},
 	{">=", TOKENIZER_GE},
 	{"<>", TOKENIZER_NE},
+	{"tab", TOKENIZER_TAB},
 	{"", TOKENIZER_ERROR}
 };
+#endif
+
 // Prototypen
 static int get_next_token(void);
+#ifdef TOKENIZER_FASTPARSER
+int iFastParserGetKeyWord (void);
+#endif
 
 
 /*---------------------------------------------------------------------------*/
@@ -192,17 +194,19 @@ PTR_TYPE get_prog_text_pointer(void) {
 }
 /*---------------------------------------------------------------------------*/
 static void skip_whitespaces(void){
-	while(	GET_CONTENT_PROG_PTR == ' '  || 
-			GET_CONTENT_PROG_PTR == '\r' ||
-			GET_CONTENT_PROG_PTR == '\t'
+	while((GET_CONTENT_PROG_PTR == ' '  ||
+		   GET_CONTENT_PROG_PTR == '\r' ||
+		   GET_CONTENT_PROG_PTR == '\t'    ) &&
+		  !END_OF_PROG_TEXT
 		 ) INCR_PROG_PTR;
 }
 /*---------------------------------------------------------------------------*/
 void skip_all_whitespaces(void){
-	while(	GET_CONTENT_PROG_PTR == ' '  || 
-			GET_CONTENT_PROG_PTR == '\n' ||
-			GET_CONTENT_PROG_PTR == '\r' ||
-			GET_CONTENT_PROG_PTR == '\t'
+	while((GET_CONTENT_PROG_PTR == ' '  ||
+		   GET_CONTENT_PROG_PTR == '\n' ||
+		   GET_CONTENT_PROG_PTR == '\r' ||
+		   GET_CONTENT_PROG_PTR == '\t'    ) &&
+		  !END_OF_PROG_TEXT
 		 ) INCR_PROG_PTR;
 }
 /*---------------------------------------------------------------------------*/
@@ -215,7 +219,7 @@ void jump_to_prog_text_pointer(PTR_TYPE jump_ptr) {
 /*---------------------------------------------------------------------------*/
 void jump_to_next_linenum(void) {
 	while(GET_CONTENT_PROG_PTR != '\n' && GET_CONTENT_PROG_PTR != 0) {
-		INCR_PROG_PTR;  
+		INCR_PROG_PTR;
 	}
 	skip_all_whitespaces();
 	line_begin_ptr = PROG_PTR;
@@ -223,6 +227,7 @@ void jump_to_next_linenum(void) {
 }
 
 /*---------------------------------------------------------------------------*/
+#ifdef TOKENIZER_STANDARD
 static int singlechar(void) {
 	if(GET_CONTENT_PROG_PTR == '\n') {
 		return TOKENIZER_CR;
@@ -245,7 +250,7 @@ static int singlechar(void) {
 	} else if(GET_CONTENT_PROG_PTR == '/') {
 		return TOKENIZER_SLASH;
 	} else if(GET_CONTENT_PROG_PTR == '%') {
-		return TOKENIZER_MOD;
+		return TOKENIZER_MOD2;
 	} else if(GET_CONTENT_PROG_PTR == '(') {
 		return TOKENIZER_LEFTPAREN;
 	} else if(GET_CONTENT_PROG_PTR == ')') {
@@ -257,8 +262,14 @@ static int singlechar(void) {
 	} else if(GET_CONTENT_PROG_PTR == '=') {
 		return TOKENIZER_EQ;
   	}
+  	#if UBASIC_STRING
+  	else if(GET_CONTENT_PROG_PTR == '$') {
+		return TOKENIZER_DOLLAR;
+	}
+  	#endif
 	return 0;
 }
+#endif
 
 #if UBASIC_HEX_BIN
 /*---------------------------------------------------------------------------*/
@@ -273,19 +284,21 @@ static char isbdigit(char c) {
 
 /*---------------------------------------------------------------------------*/
 static int get_next_token(void) {
-#if !USE_PROGMEM
+#if !USE_PROGMEM && TOKENIZER_STANDARD
 	struct keyword_token const *kt;
 #endif
 	uint8_t i;
 	int temp_token;
+#if TOKENIZER_STANDARD
 	char k_temp[MAX_KEYWORD_LEN+1];
+#endif
 
 	if(END_OF_PROG_TEXT) {
 		return TOKENIZER_ENDOFINPUT;
 	}
 	if(isdigit(GET_CONTENT_PROG_PTR)) {
 		last_value=0;
-		
+
 		#if UBASIC_HEX_BIN
 		// Zeiger sichern, falls doch nicht Hex oder Bin
 		PTR_TYPE temp_ptr = PROG_PTR;
@@ -339,18 +352,22 @@ static int get_next_token(void) {
 	} else if(GET_CONTENT_PROG_PTR == '"') {
 						INCR_PROG_PTR;
 						i=0;
-						do {
+
+						while (GET_CONTENT_PROG_PTR != '"') {
 							last_string[i] = GET_CONTENT_PROG_PTR;
 							INCR_PROG_PTR;
 							i++;
 							// max. zulaessige Stringlaenge?
 							if (i >= MAX_STRINGLEN) return TOKENIZER_ERROR;
-						} while(GET_CONTENT_PROG_PTR != '"');
+						}
+
 						// String null-terminieren
 						last_string[i]=0;
 						INCR_PROG_PTR;
 						return TOKENIZER_STRING;
 				} else {
+#if TOKENIZER_STANDARD
+
 					// Textabschnitt aus Quelltext auf Zwischenvariable
 					for (i=0; i < MAX_KEYWORD_LEN; i++) {
 						k_temp[i] = GET_CONTENT_PROG_PTR;
@@ -359,31 +376,45 @@ static int get_next_token(void) {
 					// PTR wieder an Ursprungstelle setzen
 					SET_PROG_PTR_ABSOLUT(PROG_PTR - i);
 					k_temp[i]=0;
-#if USE_PROGMEM  	
+		#if USE_PROGMEM
 					for (i=0; i < sizeof(keywords)/sizeof(keywords[0])-1; i++) {
 						if (strncasecmp_P(k_temp, keywords[i].keyword, strlen_P(keywords[i].keyword)) == 0) {
 							SET_PROG_PTR_ABSOLUT(PROG_PTR + strlen_P(keywords[i].keyword));
 							return pgm_read_word(&keywords[i].token);
 						}
 					}
-#else  	
+		#else
 					for(kt = keywords; kt->token != TOKENIZER_ERROR; ++kt) {
 						if(strncasecmp(k_temp, kt->keyword, strlen(kt->keyword)) == 0) {
 							SET_PROG_PTR_ABSOLUT(PROG_PTR + strlen(kt->keyword));
 							return kt->token;
 						}
 					}
-#endif
-				} 
-				
+		#endif
+				}
+
 	temp_token = singlechar();
 	if (temp_token) {
 		INCR_PROG_PTR;
 		return temp_token;
 	}
+
+#else
+	}
+	// FastParser...
+	temp_token = iFastParserGetKeyWord ();
+	if (temp_token != -1) return temp_token;
+#endif
+
 	if(toupper(GET_CONTENT_PROG_PTR) >= 'A' && toupper(GET_CONTENT_PROG_PTR) <= 'Z') {
 		last_var_num=toupper(GET_CONTENT_PROG_PTR)-'A';
 		INCR_PROG_PTR;
+#if UBASIC_STRING
+		if (GET_CONTENT_PROG_PTR == '$') {
+			INCR_PROG_PTR;
+			return TOKENIZER_STRINGVAR;
+		} else
+#endif
 		return TOKENIZER_VARIABLE;
 	}
 	return TOKENIZER_ERROR;
@@ -391,6 +422,7 @@ static int get_next_token(void) {
 /*---------------------------------------------------------------------------*/
 void tokenizer_init(PTR_TYPE program) {
 	SET_PROG_PTR_ABSOLUT(program);
+	line_begin_ptr=program;
 #if UBASIC_NO_LINENUM_ALLOWED
 	last_value = -1;
 #endif
@@ -408,6 +440,10 @@ void tokenizer_next(void) {
 	skip_whitespaces();
 	current_token = get_next_token();
 	return;
+}
+/*---------------------------------------------------------------------------*/
+void tokenizer_set_num(int val) {
+	last_value=val;
 }
 /*---------------------------------------------------------------------------*/
 int tokenizer_num(void) {
@@ -463,5 +499,146 @@ void tokenizer_set_position(struct tokenizer_pos_t pos) {
 	SET_PROG_PTR_ABSOLUT(pos.prog_ptr);
 	current_token = pos.token;
 }
+
+/*---------------------------------------------------------------------------*/
+/*----------------------- FASTPARSER... -------------------------------------*/
+/*---------------------------------------------------------------------------*/
+#if TOKENIZER_FASTPARSER
+int iFastParserGetKeyWord (void)  {
+	unsigned char ucCh, ucRC, ucS, ucE;
+	unsigned char  *pucPT = aucAVRBasic, *pucTable;
+
+#ifndef SFP_USES_16BIT
+	unsigned char uiN;
+#else
+	unsigned short uiN;
+#endif
+
+	PTR_TYPE ptr_bak = PROG_PTR;
+
+#if USE_PROGMEM
+	ucS = pgm_read_byte (&(pucPT [0]));
+	ucE = pgm_read_byte (&(pucPT [1]));
+#else
+	ucS = pucPT [0];
+	ucE = pucPT [1];
+#endif
+
+	pucTable  = &(pucPT [2 + ucE - ucS]);
+	ucCh      = GET_CONTENT_PROG_PTR;
+
+	if ((ucCh >= 'A') && (ucCh <= 'Z')) {
+		ucCh ^= 0x20;
+	}
+
+	if ((ucCh < ucS) || (ucCh > ucE)) {
+		SET_PROG_PTR_ABSOLUT (ptr_bak);
+		return -1;
+	}
+
+	INCR_PROG_PTR;
+
+	ucCh -= ucS;
+#ifndef SFP_USES_16BIT
+	#if USE_PROGMEM
+	uiN   = pgm_read_byte (&(pucPT [2 + ucCh]));
+	#else
+	uiN   = pucPT [2 + ucCh];
+	#endif
+#else
+	#if USE_PROGMEM
+	uiN    = ((unsigned short) (pgm_read_byte (&(pucPT [2 + (ucCh * 2)])) << 0);
+	uiN   |= ((unsigned short) (pgm_read_byte (&(pucPT [3 + (ucCh * 2)])) << 8);
+	#else
+	uiN    = ((unsigned short) (&(pucPT [2 + (ucCh * 2)]) << 0);
+	uiN   |= ((unsigned short) (&(pucPT [3 + (ucCh * 2)]) << 8);
+	#endif
+#endif
+
+	if (uiN == 0xff) {
+		SET_PROG_PTR_ABSOLUT (ptr_bak);
+		return -1;
+	}
+
+	pucPT = &(pucTable  [uiN * 2]);
+
+	do
+	{
+		ucCh  = GET_CONTENT_PROG_PTR;
+		#if USE_PROGMEM
+		ucRC  = pgm_read_byte (pucPT);
+		#else
+		ucRC  = *pucPT; // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#endif
+		pucPT++;
+		#if USE_PROGMEM
+		uiN   = ((unsigned short) (pgm_read_byte (pucPT) << 0));
+		#else
+		uiN   = ((unsigned short) (*pucPT << 0)); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#endif
+		pucPT++;
+
+#ifdef SFP_USES_16BIT
+		#if USE_PROGMEM
+		uiN  |= ((unsigned short) (pgm_read_byte (pucPT) << 8));
+		#else
+		uiN  |= ((unsigned short) (*pucPT << 8)); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#endif
+		pucPT++;
+#endif
+		if (ucRC) {
+        // multiple space / filter
+			if ((ucRC & 0x7f) == 0x20) {
+				while ((GET_CONTENT_PROG_PTR == 0x20) || (GET_CONTENT_PROG_PTR == 0x09) ||
+					   (GET_CONTENT_PROG_PTR == 0x0a) || (GET_CONTENT_PROG_PTR == 0x0d)) {
+					INCR_PROG_PTR;
+				}
+				pucPT = pucTable;
+#ifdef SFP_USES_16BIT
+				pucPT = &(pucPT [uiN + (uiN << 1)]);  // 16 bit addressierung -> pro blatt 3 bytes
+#else
+				pucPT = &(pucPT [uiN << 1]);  // 8 bit addressierung -> pro blatt 2 bytes
+#endif
+			} else 	if ((ucRC & 0x7f) == 0x01) {
+						// bei 0x01 -> Schlüsselwort gefunden, weitere Zeichen irrelevant (hoffentlich)
+						#if USE_PROGMEM
+						ucRC  = pgm_read_byte (pucPT);
+						#else
+						ucRC  = *pucPT; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+						#endif
+						pucPT++;
+						#if USE_PROGMEM
+						uiN   = ((unsigned short) (pgm_read_byte (pucPT) << 0));
+						#else
+						uiN   = (unsigned short) (*pucPT << 0); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+						#endif
+						pucPT++;
+#ifdef SFP_USES_16BIT
+						#if USE_PROGMEM
+						uiN  |= ((unsigned short) (pgm_read_byte (pucPT) << 8));
+						#else
+						uiN  |= (unsigned short) (*pucPT << 8);
+						#endif
+						pucPT++;
+#endif
+					} else 	if (toupper (ucCh) == toupper ((ucRC & 0x7f))) {
+								INCR_PROG_PTR;
+								pucPT = pucTable;
+#ifdef SFP_USES_16BIT
+								pucPT = &(pucPT [uiN + (uiN << 1)]);  // 16 bit addressierung -> pro blatt 3 bytes
+#else
+								pucPT = &(pucPT [uiN << 1]);  // 8 bit addressierung -> pro blatt 2 bytes
+#endif
+							} else {
+								if (ucRC & 0x80) { // wenn letzter in der liste -> ende (no match)
+									SET_PROG_PTR_ABSOLUT (ptr_bak);
+									return -1;
+								}
+							}
+		}
+	} while (ucRC);
+    return uiN;
+}
+#endif
 
 #endif // BEHAVIOUR_UBASIC_AVAILABLE

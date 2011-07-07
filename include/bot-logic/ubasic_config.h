@@ -1,15 +1,15 @@
 /*----------------------------------------------------------------------
- * 
- *           Uwe Berger (bergeruw@gmx.net); 2010
- *           ===================================
- * 
- * Einige Defines, die hauptsaechlich den uBasic-Sprachumfang und die 
+ *
+ *           Uwe Berger (bergeruw@gmx.net); 2010, 2011
+ *           =========================================
+ *
+ * Einige Defines, die hauptsaechlich den uBasic-Sprachumfang und die
  * Zielplattform steuern.
  *
  *
  * ---------
  * Have fun!
- * 
+ *
  ----------------------------------------------------------------------*/
 #ifndef __UBASIC_CONFIG_H__
 #define __UBASIC_CONFIG_H__
@@ -41,10 +41,20 @@
 	#define GETLINE(buf, len)	fgets(buf, len, stdin)
 #endif
 
+// Tokenizer-Typ
+#define TOKENIZER_STANDARD			1
+//#define TOKENIZER_FASTPARSER			1
+
+
 // grml..., sollte man besser loesen!
 #if !USE_AVR
 	#define uint8_t unsigned char
 #endif
+
+#define MAX_NUMLEN 5
+#define MAX_HEXLEN 4
+#define MAX_BINLEN 16
+
 
 // max. Stringlaenge (Basic)
 #ifndef MAX_STRINGLEN
@@ -73,6 +83,10 @@
 
 // max. Laenge von Funktions- und Variablennamen in call(), vpeek() und vpoke()
 #define MAX_NAME_LEN	15
+
+// maximale Laenge Programmname (gosub)
+#define MAX_PROG_NAME_LEN	16
+
 
 // bei Verwendung des PROGMEM muess die Laenge des Schluesselwordfeldes
 // fest vorgegeben werden (Tabelle keywords in tokenenizer.c)
@@ -106,6 +120,9 @@
 
 // DATA/READ/RESTORE
 #define UBASIC_DATA		0
+
+// String-Support
+#define UBASIC_STRING	0
 
 // exit(1) in Fehlersituationen macht sich bei AVRs etwas schlecht...
 #ifndef BREAK_NOT_EXIT

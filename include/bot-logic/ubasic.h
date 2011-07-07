@@ -27,13 +27,17 @@
  * SUCH DAMAGE.
  *
  * ------------------------------------------------------
- * Source modified by Uwe Berger (bergeruw@gmx.net); 2010
+ * Source modified by Uwe Berger (bergeruw@gmx.net); 2010, 2011
  * ------------------------------------------------------
  */
 #ifndef __UBASIC_H__
 #define __UBASIC_H__
 
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
+
+#include "bot-logic/ubasic_config.h"
+#include "bot-logic/tokenizer.h"
+#include "bot-logic/tokenizer_access.h"
 
 #define SYNTAX_ERROR			1
 #define UNKNOWN_ADC_CHANNEL		2
@@ -48,13 +52,82 @@
 #define FOR_STACK_DETH			11
 #define GOSUB_STACK_INVALID		12
 #define UNKNOWN_SUBPROC			13
-#define GOSUB_NO_EXT_SUBPROC    14	
+#define GOSUB_NO_EXT_SUBPROC    14
 #define ARRAY_OUT_OF_RANGE		15
 #define OUT_OF_MEMORY           16
 #define NOT_ENOUGH_DATA			17
 #define UNKNOWN_LINENUMBER		18
 #define INPUT_IS_NOT_NUMBER     19
 #define UNKNOWN_VARIABLE        20
+#define STRING_TO_LARGE         21
+#define DATA_READ_TYPE_DIFF		22
+#define STRINGVAR_NOT_INIT		23
+
+
+// Typ-Definition gosub-Stack
+struct gosub_stack_t {
+#if UBASIC_EXT_PROC
+	char p_name[MAX_PROG_NAME_LEN];
+#endif
+	PTR_TYPE p_ptr;
+};
+
+// Typ-Definition for-next-Stack
+struct for_state_t {
+  PTR_TYPE next_line_ptr;
+  int for_variable;
+  int to;
+  int step;
+  unsigned char downto;
+};
+
+// Type-Definition Zeilennummern-Cache
+#if USE_LINENUM_CACHE
+struct linenum_cache_t {
+#if UBASIC_EXT_PROC
+	char p_name[MAX_PROG_NAME_LEN];
+#endif
+	int linenum;
+	PTR_TYPE next_line_ptr;
+};
+#endif
+
+// Typ-Definition Variablen-Information
+struct varinfo_t {
+	int varnum;
+#if UBASIC_ARRAY
+	int idx;
+#endif
+};
+
+// Typ-Definition BASIC-Integer-Variable
+struct variables_t {
+	int val;
+#if UBASIC_ARRAY
+	int* adr;
+	int dim;
+#endif
+};
+
+// Typ-Definition BASIC-String-Variable
+#if UBASIC_STRING
+struct strvariables_t {
+	char* val_adr;
+#if UBASIC_ARRAY
+	char *adr;
+	int dim;
+#endif
+};
+#endif
+
+// Typ-Definition DATA-Pointer (data/read/restore)
+#if UBASIC_DATA
+struct data_ptr_t {
+	struct tokenizer_pos_t first;
+	struct tokenizer_pos_t current;
+};
+#endif
+
 
 extern int current_linenum;
 
@@ -65,6 +138,11 @@ int ubasic_finished(void);
 struct varinfo_t ubasic_get_varinfo(void);
 int ubasic_get_variable(struct varinfo_t var);
 void ubasic_set_variable(struct varinfo_t varum, int value);
+
+#if UBASIC_STRING
+char* strexpr(void);
+void ubasic_set_strvariable(struct varinfo_t var, char *str);
+#endif
 
 void accept(int token);
 int expr(void);
