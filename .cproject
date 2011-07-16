@@ -321,7 +321,7 @@
 									<listOptionValue builtIn="false" value="MCU"/>
 									<listOptionValue builtIn="false" value="__AVR_ATmega32__"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.1985050324" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega32 -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.1985050324" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega32 -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion" valueType="string"/>
 								<option id="gnu.c.compiler.option.optimization.flags.948283465" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.1848093226" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.375805742" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
@@ -399,7 +399,7 @@
 									<listOptionValue builtIn="false" value="MCU"/>
 									<listOptionValue builtIn="false" value="__AVR_ATmega644__"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.75040466" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega644 -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.75040466" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega644 -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion" valueType="string"/>
 								<option id="gnu.c.compiler.option.optimization.flags.1789994414" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.1055724072" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.2026430558" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
@@ -477,7 +477,7 @@
 									<listOptionValue builtIn="false" value="MCU"/>
 									<listOptionValue builtIn="false" value="__AVR_ATmega644P__"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.1688299600" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega644p -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.1688299600" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega644p -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion" valueType="string"/>
 								<option id="gnu.c.compiler.option.optimization.flags.1850668998" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.1889611736" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.683507831" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
@@ -555,7 +555,7 @@
 									<listOptionValue builtIn="false" value="MCU"/>
 									<listOptionValue builtIn="false" value="__AVR_ATmega1284P__"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.2048280713" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega1284p -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.2048280713" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -mmcu=atmega1284p -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion" valueType="string"/>
 								<option id="gnu.c.compiler.option.optimization.flags.325588476" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.1382617929" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.338591530" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
@@ -633,7 +633,7 @@
 									<listOptionValue builtIn="false" value="MCU"/>
 									<listOptionValue builtIn="false" value="__AVR_ATmega32__"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.2010898031" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -pipe -mmcu=atmega32 -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.2010898031" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -pipe -mmcu=atmega32 -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion" valueType="string"/>
 								<option id="gnu.c.compiler.option.debugging.gprof.1565982861" name="Generate gprof information (-pg)" superClass="gnu.c.compiler.option.debugging.gprof" value="false" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.debugging.prof.2139850098" name="Generate prof information (-p)" superClass="gnu.c.compiler.option.debugging.prof" value="false" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.optimization.flags.1221995117" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
@@ -733,7 +733,7 @@
 									<listOptionValue builtIn="false" value="MCU"/>
 									<listOptionValue builtIn="false" value="__AVR_ATmega644__"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.1707230278" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -pipe -mmcu=atmega644 -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.1707230278" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -pipe -mmcu=atmega644 -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion" valueType="string"/>
 								<option id="gnu.c.compiler.option.debugging.gprof.1133689586" name="Generate gprof information (-pg)" superClass="gnu.c.compiler.option.debugging.gprof" value="false" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.debugging.prof.953679095" name="Generate prof information (-p)" superClass="gnu.c.compiler.option.debugging.prof" value="false" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.optimization.flags.433888631" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
@@ -833,7 +833,7 @@
 									<listOptionValue builtIn="false" value="MCU"/>
 									<listOptionValue builtIn="false" value="__AVR_ATmega644P__"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.2045816591" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -pipe -mmcu=atmega644p -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.2045816591" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -pipe -mmcu=atmega644p -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion" valueType="string"/>
 								<option id="gnu.c.compiler.option.debugging.gprof.1383056871" name="Generate gprof information (-pg)" superClass="gnu.c.compiler.option.debugging.gprof" value="false" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.debugging.prof.1104926001" name="Generate prof information (-p)" superClass="gnu.c.compiler.option.debugging.prof" value="false" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.optimization.flags.1553500058" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
@@ -933,7 +933,7 @@
 									<listOptionValue builtIn="false" value="MCU"/>
 									<listOptionValue builtIn="false" value="__AVR_ATmega1284P__"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.670643860" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -pipe -mmcu=atmega1284p -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.670643860" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -pipe -mmcu=atmega1284p -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wconversion" valueType="string"/>
 								<option id="gnu.c.compiler.option.debugging.gprof.627091778" name="Generate gprof information (-pg)" superClass="gnu.c.compiler.option.debugging.gprof" value="false" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.debugging.prof.1485545327" name="Generate prof information (-p)" superClass="gnu.c.compiler.option.debugging.prof" value="false" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.optimization.flags.2121663714" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>

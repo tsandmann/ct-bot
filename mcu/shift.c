@@ -1,23 +1,23 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
-/*! 
+/*!
  * @file 	shift.c
  * @brief 	Routinen zur Ansteuerung der Shift-Register
  * @author 	Benjamin Benz (bbe@heise.de)
@@ -38,7 +38,7 @@
 
 /*!
  * Setzt die Shift-Register wieder zurueck
- */ 
+ */
 static void shift_clear(void) {
 	SHIFT_PORT = (uint8_t) (SHIFT_PORT & ~SHIFT_OUT); // clear
 }
@@ -47,8 +47,8 @@ static void shift_clear(void) {
  * Initialisert die Shift-Register
  */
 void shift_init(void) {
-	SHIFT_DDR |= SHIFT_OUT;		// Ausgaenge Schalten
-	shift_clear();				// Und auf Null
+	SHIFT_DDR |= SHIFT_OUT; // Ausgaenge Schalten
+	shift_clear(); // Und auf Null
 }
 
 /*!
@@ -60,19 +60,19 @@ void shift_init(void) {
  */
 void shift_data_out(uint8_t data, uint8_t latch_data, uint8_t latch_store) {
 #ifdef I2C_AVAILABLE
-	i2c_wait();		// I2C-Transfer muss beendet sein (benutzt PC0 und PC1)
+	i2c_wait(); // I2C-Transfer muss beendet sein (benutzt PC0 und PC1)
 #endif
-	
+
 	SHIFT_PORT = (uint8_t) (SHIFT_PORT & ~SHIFT_OUT); // und wieder clear
 	int8_t i;
-	for (i=8; i>0; i--){
-		SHIFT_PORT |= ((data >> 7) & 0x01);	// Das oberste Bit von data auf PC0.0 (Datenleitung Schieberegister)
-		SHIFT_PORT |= latch_data ;			// und ins jeweilige Storageregister latchen
-		data = (uint8_t) (data << 1);		// data links schieben
-		shift_clear();						// und wieder clear
+	for (i = 8; i > 0; i--) {
+		SHIFT_PORT |= (uint8_t) ((data >> 7) & 0x01); // Das oberste Bit von data auf PC0.0 (Datenleitung Schieberegister)
+		SHIFT_PORT |= latch_data; // und ins jeweilige Storageregister latchen
+		data = (uint8_t) (data << 1); // data links schieben
+		shift_clear(); // und wieder clear
 	}
-	
-	SHIFT_PORT |= latch_store;			// alles vom Storage ins Output register latchen
+
+	SHIFT_PORT |= latch_store; // alles vom Storage ins Output register latchen
 }
 
 /*!

@@ -262,7 +262,7 @@ CFLAGS += -MMD
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
 ifeq ($(DEVICE),MCU)
-	CFLAGS += -Wconversion --param inline-call-cost=2
+	CFLAGS += -Wconversion
 endif
 ifdef SAVE_TEMPS
 CFLAGS += -save-temps -fverbose-asm -dA
