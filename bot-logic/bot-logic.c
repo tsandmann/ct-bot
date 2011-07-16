@@ -74,7 +74,8 @@ static void bot_base_behaviour(Behaviour_t * data);
 #if \
 	   defined BEHAVIOUR_HANG_ON_AVAILABLE \
 	|| defined BEHAVIOUR_DRIVE_AREA_AVAILABLE \
-	|| defined BEHAVIOUR_FOLLOW_WALL_AVAILABLE
+	|| defined BEHAVIOUR_FOLLOW_WALL_AVAILABLE \
+	|| defined BEHAVIOUR_AVOID_BORDER_AVAILABLE
 static inline int8_t register_emergency_proc(void (* fkt)(void));
 #endif
 
@@ -705,7 +706,8 @@ Behaviour_t * get_next_behaviour(Behaviour_t * beh) {
 #if \
 	   defined BEHAVIOUR_HANG_ON_AVAILABLE \
 	|| defined BEHAVIOUR_DRIVE_AREA_AVAILABLE \
-	|| defined BEHAVIOUR_FOLLOW_WALL_AVAILABLE
+	|| defined BEHAVIOUR_FOLLOW_WALL_AVAILABLE \
+	|| defined BEHAVIOUR_AVOID_BORDER_AVAILABLE
 #define MAX_EMERG_PROCS 3			/**< Maximale Anzahl der registrierbaren Funktionen */
 static int8_t count_arr_emerg = 0;	/**< Anzahl der zurzeit registrierten Notfallfunktionen */
 /** hier liegen die Zeiger auf die auszufuehrenden Notfall-Funktionen */
@@ -718,7 +720,7 @@ void (* bot_logic_emerg_functions[MAX_EMERG_PROCS])(void) = { NULL };
  * \param *fkt	Die zu registrierende Routine, welche aufzurufen ist
  * \return 		Index, den die Routine im Array einnimmt, bei -1 ist alles voll
  */
-static inline int8_t register_emergency_proc(void (* fkt)(void)) {
+inline int8_t register_emergency_proc(void (* fkt)(void)) {
 	if (count_arr_emerg == MAX_EMERG_PROCS) {
 		return -1; // sorry, aber fuer dich ist kein Platz mehr da :(
 	}
