@@ -2,7 +2,7 @@
 *    Definition der Zugriffsroutinen auf Speichermedium
 *    ==================================================
 *          Uwe Berger (bergeruw@gmx.net); 2010
-* 
+*
 * Folgende Defines sind je nach Zugriffsmethode auf den Basic-Programm-
 * Text anzupassen:
 *
@@ -10,7 +10,7 @@
 *
 * PROG_PTR                   : Variable des Programm-Zeigers
 *
-* GET_CONTENT_PROG_PTR       : Inhalt der Speicherzelle, auf die der 
+* GET_CONTENT_PROG_PTR       : Inhalt der Speicherzelle, auf die der
 *                              Programm-Zeiger verweist
 *
 * SET_PROG_PTR_ABSOLUT(param): Programm-Zeiger auf den Wert von param
@@ -18,13 +18,13 @@
 *
 * INCR_PROG_PTR              : Programm-Zeiger um eins weiter
 *
-* END_OF_PROG_TEXT           : Bedingung zur Erkennung des (phys.) 
+* END_OF_PROG_TEXT           : Bedingung zur Erkennung des (phys.)
 *                              Endes des Programmtextes
 *
 * Desweiteren sind teilweise weitere Deklarationen notwendig. Man sollte
 * dabei aber mit Modifikationen dieser und der dazugehoerigen .c-Datei
 * auskommen...!
-* 
+*
 *
 * Have fun!
 * ---------
@@ -62,7 +62,7 @@
 	#ifdef __TOKENIZER_ACCESS_C__
 		PTR_TYPE ptr;
 	#endif
-	#ifdef __TOKENIZER_C__	
+	#ifdef __TOKENIZER_C__
 		extern PTR_TYPE ptr;
 	#endif
 	#ifdef __UBASIC_EXT_PROC_C__
@@ -87,7 +87,7 @@
 	#ifdef __TOKENIZER_ACCESS_C__
 		PTR_TYPE ptr;
 	#endif
-	#ifdef __TOKENIZER_C__	
+	#ifdef __TOKENIZER_C__
 		extern PTR_TYPE ptr;
 	#endif
 	#ifdef __UBASIC_EXT_PROC_C__

@@ -65,7 +65,7 @@ callfunct_t callfunct[] = {
 #endif
 #if USE_AVR && RTC_DS1307
 	// Auslesen RTC DS1307
-    {"get_rtc",	.funct_ptr.IntFuncInt=get_DS1307,		INT_FUNC_INT},
+    {"get_rtc",	.funct_ptr.UCharFuncUChar=get_DS1307,	UCHAR_FUNC_UCHAR},
 #endif
 
 	{ "bot_speed", .funct_ptr.VoidFunc2Int16 = ubasic_set_speed, VOID_FUNC_2INT16 },
@@ -191,6 +191,7 @@ int call_statement(void) {
 						break;
 #endif // VOID_FUNC_2INT_CHAR
 #ifdef INT_FUNC_INT
+			case UCHAR_FUNC_UCHAR: // <-- naja, koennte ins Auge gehen...
 			case INT_FUNC_INT:
 						accept(TOKENIZER_COMMA);
 						p1=expr();

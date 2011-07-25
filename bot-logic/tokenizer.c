@@ -227,7 +227,7 @@ void jump_to_next_linenum(void) {
 }
 
 /*---------------------------------------------------------------------------*/
-#ifdef TOKENIZER_STANDARD
+#if TOKENIZER_STANDARD
 static int singlechar(void) {
 	if(GET_CONTENT_PROG_PTR == '\n') {
 		return TOKENIZER_CR;
@@ -525,7 +525,7 @@ int iFastParserGetKeyWord (void)  {
 #endif
 
 	pucTable  = &(pucPT [2 + ucE - ucS]);
-	ucCh      = GET_CONTENT_PROG_PTR;
+	ucCh      = (unsigned char) GET_CONTENT_PROG_PTR;
 
 	if ((ucCh >= 'A') && (ucCh <= 'Z')) {
 		ucCh ^= 0x20;
@@ -564,7 +564,7 @@ int iFastParserGetKeyWord (void)  {
 
 	do
 	{
-		ucCh  = GET_CONTENT_PROG_PTR;
+		ucCh  = (unsigned char) GET_CONTENT_PROG_PTR;
 		#if USE_PROGMEM
 		ucRC  = pgm_read_byte (pucPT);
 		#else

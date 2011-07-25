@@ -2,9 +2,9 @@
 *    Implementierung Basic-Befehl "call()"
 *    =====================================
 *     Uwe Berger (bergeruw@gmx.net); 2010
-* 
 *
-* 
+*
+*
 * Have fun!
 * ---------
 *
@@ -68,7 +68,7 @@ static int search_cvars(const char *var_name) {
 	      strncasecmp_P(var_name, cvars[idx].var_name, MAX_NAME_LEN)) {
     	idx++;
     }
-#else	
+#else
 	while(cvars[idx].pvar != NULL &&
 	      strncasecmp(cvars[idx].var_name, var_name, MAX_NAME_LEN)) {
     	idx++;
@@ -77,7 +77,7 @@ static int search_cvars(const char *var_name) {
     // keinen Tabelleneintrag gefunden!
 #if USE_PROGMEM
     if ((int *)pgm_read_word(&cvars[idx].pvar) == NULL) {
-#else    
+#else
     if (cvars[idx].pvar == NULL) {
 #endif
     	tokenizer_error_print(current_linenum, UNKNOWN_CVAR_NAME);
@@ -88,10 +88,10 @@ static int search_cvars(const char *var_name) {
 
 void vpoke_statement(void) {
 	int idx=0;
-#if USE_PROGMEM	
+#if USE_PROGMEM
 	int *var_temp;
 #endif
-	
+
 	accept(TOKENIZER_VPOKE);
     accept(TOKENIZER_LEFTPAREN);
 	// Variablennamen ermitteln
@@ -105,7 +105,7 @@ void vpoke_statement(void) {
 #if USE_PROGMEM
 	var_temp=(int *)pgm_read_word(&cvars[idx].pvar);
 	*var_temp=expr();
-#else	
+#else
 	*cvars[idx].pvar = expr();
 #endif
 	//tokenizer_next();
@@ -114,7 +114,7 @@ void vpoke_statement(void) {
 int vpeek_expression(void) {
 	int idx=0;
 	int r=0;
-#if USE_PROGMEM	
+#if USE_PROGMEM
 	int16_t * var_temp;
 #endif
 
@@ -130,7 +130,7 @@ int vpeek_expression(void) {
 #if USE_PROGMEM
 	var_temp=(int16_t *) pgm_read_word(&cvars[idx].pvar);
 	r=*var_temp;
-#else	
+#else
 	r = *cvars[idx].pvar;
 #endif
     accept(TOKENIZER_RIGHTPAREN);

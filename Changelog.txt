@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-07-26 Timo Sandmann [mail@timosandmann.de]: uBasic auf rev. 61 aktualisiert
+
 2011-07-16 Timo Sandmann [mail@timosandmann.de]: Support fuer avr-gcc 4.5.1 / AVR Toolchain 3.2.3
 
 2011-07-07 Timo Sandmann [mail@timosandmann.de]: uBasic auf rev. 60 aktualisiert

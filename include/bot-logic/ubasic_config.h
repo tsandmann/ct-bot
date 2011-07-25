@@ -42,9 +42,12 @@
 #endif
 
 // Tokenizer-Typ
-#define TOKENIZER_STANDARD			1
-//#define TOKENIZER_FASTPARSER			1
-
+#define TOKENIZER_FASTPARSER			1
+#if TOKENIZER_FASTPARSER == 1
+	#define TOKENIZER_STANDARD			0
+#else
+	#define TOKENIZER_STANDARD			1
+#endif
 
 // grml..., sollte man besser loesen!
 #if !USE_AVR

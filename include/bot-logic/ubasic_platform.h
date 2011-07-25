@@ -2,7 +2,7 @@
 * Definition der plattformabhaengigen Implementierung von BASIC-Befehlen
 * ======================================================================
 *                Uwe Berger (bergeruw@gmx.net); 2011
-* 
+*
 *
 * Have fun!
 * ---------
