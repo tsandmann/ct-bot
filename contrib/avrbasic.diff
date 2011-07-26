@@ -1,5 +1,5 @@
 diff --git a/contrib/avrbasic/tokenizer.c b/contrib/avrbasic/tokenizer.c
-index 875b6f8..c46c400 100755
+index 875b6f8..3d52d2c 100644
 --- a/contrib/avrbasic/tokenizer.c
 +++ b/contrib/avrbasic/tokenizer.c
 @@ -32,21 +32,25 @@
@@ -116,13 +116,31 @@ index 875b6f8..c46c400 100755
  	// Textpointer wieder auf alten Wert
  	SET_PROG_PTR_ABSOLUT(current_prog_ptr);
  }
+@@ -519,7 +525,7 @@ int iFastParserGetKeyWord (void)  {
+ #endif
+ 	
+ 	pucTable  = &(pucPT [2 + ucE - ucS]);
+-	ucCh      = GET_CONTENT_PROG_PTR;
++	ucCh      = (unsigned char) GET_CONTENT_PROG_PTR;
+ 
+ 	if ((ucCh >= 'A') && (ucCh <= 'Z')) { 
+ 		ucCh ^= 0x20; 
+@@ -558,7 +564,7 @@ int iFastParserGetKeyWord (void)  {
+ 
+ 	do
+ 	{
+-		ucCh  = GET_CONTENT_PROG_PTR;
++		ucCh  = (unsigned char) GET_CONTENT_PROG_PTR;
+ 		#if USE_PROGMEM
+ 		ucRC  = pgm_read_byte (pucPT); 
+ 		#else
 @@ -635,3 +641,4 @@ int iFastParserGetKeyWord (void)  {
  }
  #endif
  
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
 diff --git a/contrib/avrbasic/tokenizer.h b/contrib/avrbasic/tokenizer.h
-index 4d1659a..fb210e6 100755
+index 4d1659a..fb210e6 100644
 --- a/contrib/avrbasic/tokenizer.h
 +++ b/contrib/avrbasic/tokenizer.h
 @@ -33,8 +33,8 @@
@@ -137,7 +155,7 @@ index 4d1659a..fb210e6 100755
  // Typ-Definition Token-Tabelle (Standard-Parser)
  struct keyword_token {
 diff --git a/contrib/avrbasic/tokenizer_access.h b/contrib/avrbasic/tokenizer_access.h
-index aa8c8c0..98f6620 100755
+index aa8c8c0..98f6620 100644
 --- a/contrib/avrbasic/tokenizer_access.h
 +++ b/contrib/avrbasic/tokenizer_access.h
 @@ -34,6 +34,10 @@
@@ -227,7 +245,7 @@ index aa8c8c0..98f6620 100755
 +
  #endif /* __TOKENIZER_ACCESS_H__ */
 diff --git a/contrib/avrbasic/ubasic.c b/contrib/avrbasic/ubasic.c
-index 362d8e1..da37e36 100755
+index 362d8e1..da37e36 100644
 --- a/contrib/avrbasic/ubasic.c
 +++ b/contrib/avrbasic/ubasic.c
 @@ -31,11 +31,18 @@
@@ -538,7 +556,7 @@ index 362d8e1..da37e36 100755
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
 diff --git a/contrib/avrbasic/ubasic.h b/contrib/avrbasic/ubasic.h
-index 11ffc8a..757d5c0 100755
+index 11ffc8a..757d5c0 100644
 --- a/contrib/avrbasic/ubasic.h
 +++ b/contrib/avrbasic/ubasic.h
 @@ -33,8 +33,11 @@
@@ -582,7 +600,7 @@ index 11ffc8a..757d5c0 100755
 +
  #endif /* __UBASIC_H__ */
 diff --git a/contrib/avrbasic/ubasic_call.c b/contrib/avrbasic/ubasic_call.c
-index e1aa547..9d43b8e 100755
+index e1aa547..9d43b8e 100644
 --- a/contrib/avrbasic/ubasic_call.c
 +++ b/contrib/avrbasic/ubasic_call.c
 @@ -10,11 +10,16 @@
@@ -773,7 +791,7 @@ index e1aa547..9d43b8e 100755
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
 diff --git a/contrib/avrbasic/ubasic_call.h b/contrib/avrbasic/ubasic_call.h
-index 3f4cfda..80ba891 100755
+index 3f4cfda..80ba891 100644
 --- a/contrib/avrbasic/ubasic_call.h
 +++ b/contrib/avrbasic/ubasic_call.h
 @@ -14,13 +14,16 @@
@@ -811,7 +829,7 @@ index 3f4cfda..80ba891 100755
        unsigned char typ;
  } callfunct_t;
 diff --git a/contrib/avrbasic/ubasic_config.h b/contrib/avrbasic/ubasic_config.h
-index c5d2d78..37c0ed7 100755
+index c5d2d78..37c0ed7 100644
 --- a/contrib/avrbasic/ubasic_config.h
 +++ b/contrib/avrbasic/ubasic_config.h
 @@ -14,6 +14,15 @@
@@ -916,7 +934,7 @@ index c5d2d78..37c0ed7 100755
 +
  #endif /* __UBASIC_CONFIG_H__ */
 diff --git a/contrib/avrbasic/ubasic_cvars.c b/contrib/avrbasic/ubasic_cvars.c
-index b96b361..a155d2b 100755
+index b96b361..a155d2b 100644
 --- a/contrib/avrbasic/ubasic_cvars.c
 +++ b/contrib/avrbasic/ubasic_cvars.c
 @@ -9,15 +9,20 @@
@@ -1031,7 +1049,7 @@ index b96b361..a155d2b 100755
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
 diff --git a/contrib/avrbasic/ubasic_cvars.h b/contrib/avrbasic/ubasic_cvars.h
-index e8bf41b..5114eba 100755
+index e8bf41b..5114eba 100644
 --- a/contrib/avrbasic/ubasic_cvars.h
 +++ b/contrib/avrbasic/ubasic_cvars.h
 @@ -19,7 +19,7 @@ typedef struct {
@@ -1044,7 +1062,7 @@ index e8bf41b..5114eba 100755
  
  
 diff --git a/contrib/avrbasic/ubasic_ext_proc.c b/contrib/avrbasic/ubasic_ext_proc.c
-index ae8d1ab..91cc122 100755
+index ae8d1ab..91cc122 100644
 --- a/contrib/avrbasic/ubasic_ext_proc.c
 +++ b/contrib/avrbasic/ubasic_ext_proc.c
 @@ -23,20 +23,23 @@
@@ -1105,7 +1123,7 @@ index ae8d1ab..91cc122 100755
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
 diff --git a/contrib/avrbasic/ubasic_ext_proc.h b/contrib/avrbasic/ubasic_ext_proc.h
-index c959b41..acc722e 100755
+index c959b41..acc722e 100644
 --- a/contrib/avrbasic/ubasic_ext_proc.h
 +++ b/contrib/avrbasic/ubasic_ext_proc.h
 @@ -15,10 +15,12 @@
