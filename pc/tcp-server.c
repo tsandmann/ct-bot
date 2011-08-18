@@ -70,7 +70,7 @@ static int server;                    /*!< Server-Socket */
 
 static struct sockaddr_in serverAddr; /*!< Lokale Adresse  */
 static struct sockaddr_in clientAddr; /*!< Client-Adresse  */
-static int clntLen;          /*!< Laenge der Datenstruktur der Client-Adresse */
+static socklen_t clntLen;          /*!< Laenge der Datenstruktur der Client-Adresse */
 
 /*!
  * Init TCP-Server
