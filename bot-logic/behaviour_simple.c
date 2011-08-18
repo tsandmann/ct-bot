@@ -42,8 +42,8 @@ static int16_t simple2_light = 0;	/*!< Uebergabevariable fuer SIMPLE2 */
  * Wer die Moeglichkeiten des ganzen Verhaltensframeworks ausschoepfen will, kann diese Funktion getrost auskommentieren
  * und findet dann in bot_behave_init() und bot_behave() weitere Hinweise fuer elegante Bot-Programmierung....
  * 
- * Das Verhalten ist per default abgeschaltet. 
- * Damit es laeuft, muss man in include/bot-logik/available_behaviours die Kommentarzeichen vor BEHAVIOUR_SIMPLE_AVAILABLE entfernen.
+ * Das Verhalten wird per Default nicht mitkompiliert. Sobald sie aber in include/bot-logik/available_behaviours die Kommentarzeichen vor BEHAVIOUR_SIMPLE_AVAILABLE entfernen
+ * startet es automatisch und laeuft endlos.
  * Achtung, da bot_simple_behaviour() maximale Prioritaet hat, kommt es vor den anderen Regeln, wie dem Schutz vor Abgruenden, etc. zum Zuge
  * Das sollte am Anfang nicht stoeren, spaeter sollte man jedoch die Prioritaet herabsetzen.
  * 
@@ -63,6 +63,7 @@ void bot_simple_behaviour(Behaviour_t * data) {
 		return_from_behaviour(data);
 		break;
 	}
+
 }
 
 /*!
@@ -76,10 +77,8 @@ void bot_simple(Behaviour_t * caller) {
 
 /*! 
  * Ein ganz einfaches Beispiel fuer ein Hilfsverhalten, 
- * das selbst SpeedWishes aussert und 
- * nach getaner Arbeit die aufrufende Funktion wieder aktiviert
- * Zudem prueft es, ob eine Uebergabebedingung erfuellt ist.
- * 
+ * das Sensoren auswertet und einen Uebergabeparameter nutzt
+ *
  * Zu diesem Verhalten gehoert die Botenfunktion bot_simple2()
  * 
  * Hier kann man auf ganz einfache Weise die ersten Schritte wagen. 
@@ -96,33 +95,63 @@ void bot_simple(Behaviour_t * caller) {
  * Achtung, da bot_simple2_behaviour() maximale Prioritaet hat, kommt es vor den anderen Regeln, wie dem Schutz vor Abgruenden, etc. zum Zuge
  * Das sollte am Anfang nicht stoeren, spaeter sollte man jedoch die Prioritaet herabsetzen.
  * 
- * bot_simple2_behaviour faehrt den Bot solange geradeaus, bis es dunkler als im Uebergabeparameter spezifiziert ist wird
+ * bot_simple2_behaviour faehrt je nach Uebergabeparamerter entweder zum Licht (Parameter=0) oder davon weg (Parameter != 0)
  * 
  * @param *data der Verhaltensdatensatz
  */
 void bot_simple2_behaviour(Behaviour_t * data) {
-#define STATE_SIMPLE2_INIT 0
-#define STATE_SIMPLE2_WORK 1
-#define STATE_SIMPLE2_DONE 2
+	#define STATE_SIMPLE2_INIT 0
+	#define STATE_SIMPLE2_SEARCH 1
+	#define STATE_SIMPLE2_DRIVE 2
+	#define STATE_SIMPLE2_DONE 3
+
+	static int16_t max_light;
+	static uint16_t max_dir;
+	static uint16_t dir;
+
+	uint16_t light=(sensLDRL+sensLDRR)/2;
+	uint16_t free;
 
 	switch (simple2_state) {
-	case STATE_SIMPLE2_INIT:
-		// Nichts zu tun
-		simple2_state = STATE_SIMPLE2_WORK;
-		break;
-	case STATE_SIMPLE2_WORK:
-		/* Fahre ganz schnell */
-		speedWishLeft = BOT_SPEED_FAST;
-		speedWishRight = BOT_SPEED_FAST;
-		if (sensLDRL < simple2_light) // Beispielbedingung
-			// Wenn es dunkler als angegeben wird, dann haben wir unserd Ziel erreicht
-			simple2_state = STATE_SIMPLE2_DONE;
-		break;
+		case STATE_SIMPLE2_INIT:	// Initialisieren
+			max_light = INT16_MAX;
+			max_dir=0;
+			dir=0;
+			simple2_state=STATE_SIMPLE2_SEARCH;
+			break;
+		case STATE_SIMPLE2_SEARCH:	// Einmal drehen und maximum suchen
+			if (light<max_light){
+				max_dir=dir;
+				max_light=light;
+			}
 
-	case STATE_SIMPLE2_DONE: 
-		/* Sind wir fertig, dann Kontrolle zurueck an Aufrufer */
-		return_from_behaviour(data);
-		break;
+			if (dir < 360) {	// Noch nicht ganz rum?
+				bot_turn(data, 10);	// drehen
+				dir+=10;		// neue Position sichern
+			} else {				// wir sind ganz rum
+				if (simple2_light ==0)
+					bot_turn(data, max_dir);	// zum Licht drehen
+				else
+					bot_turn(data, max_dir-180);	// vom Licht wegdrehen
+
+				simple2_state=STATE_SIMPLE2_DRIVE;		// Naechster Zustand
+			}
+
+			break;
+		case STATE_SIMPLE2_DRIVE:	// vorwaerts fahren, bis Hinderniss
+			free = (sensDistL < sensDistR) ? sensDistL : sensDistR;
+			free = (free > SENS_IR_MAX_DIST) ? SENS_IR_MAX_DIST : free;
+
+			if (free > SENS_IR_SAFE_DIST) {
+				bot_goto_dist(data,free - SENS_IR_SAFE_DIST,1);	// nach vorne
+				simple2_state = STATE_SIMPLE2_INIT;
+			}else
+				simple2_state=STATE_SIMPLE2_DONE;	// beenden
+			break;
+
+		default:
+			return_from_behaviour(data);
+			break;
 	}
 }
 

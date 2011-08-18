@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	trace.c
- * @brief 	Trace-Modul
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	01.06.2009
+/**
+ * \file 	trace.c
+ * \brief 	Trace-Modul
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	01.06.2009
  */
 
 #ifdef PC
@@ -51,10 +51,10 @@ static FILE * trace_file = NULL;
 
 void * trace_main(void * data);
 
-/*!
+/**
  * Trace-Thread, der die Daten des Puffers in eine Datei schreibt
- * @param *data	Dummy fuer pthraed_create()
- * @return		NULL (macht pthread_create() gluecklich)
+ * \param *data	Dummy fuer pthraed_create()
+ * \return		NULL (macht pthread_create() gluecklich)
  */
 void * trace_main(void * data) {
 	(void) data; // kein warning
@@ -66,7 +66,7 @@ void * trace_main(void * data) {
 	}
 }
 
-/*!
+/**
  * Initialisiert das Trace-System
  */
 void trace_init(void) {
@@ -79,7 +79,7 @@ void trace_init(void) {
 	}
 }
 
-/*!
+/**
  * Fuegt dem Trace-Puffer die aktuellen Sensordaten hinzu
  */
 void trace_add_sensors(void) {
@@ -102,7 +102,7 @@ void trace_add_sensors(void) {
 	buf_index %= sizeof(trace_entries);
 }
 
-/*!
+/**
  * Fuegt dem Tace-Puffer die aktuellen Aktuatordaten hinzu
  */
 void trace_add_actuators(void) {
@@ -125,11 +125,11 @@ void trace_add_actuators(void) {
 	buf_index %= sizeof(trace_entries);
 }
 
-/*!
+/**
  * Fueht dem Trace-Puffer einen RemoteCall-Aufruf hinzu
- * @param *fkt_name		Funktionsname des RemoteCalls
- * @param param_count	Anzahl der RemoteCall-Parameter
- * @param *params		Zeiger auf RemoteCall-Parameterdaten
+ * \param *fkt_name		Funktionsname des RemoteCalls
+ * \param param_count	Anzahl der RemoteCall-Parameter
+ * \param *params		Zeiger auf RemoteCall-Parameterdaten
  */
 void trace_add_remotecall(const char * fkt_name, uint8_t param_count, remote_call_data_t * params) {
 	long time = simultime + time_overflow * 10000;

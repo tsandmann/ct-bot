@@ -2,8 +2,8 @@
 *    Implementierung Basic-Befehl fuer AVR
 *    =====================================
 *     Uwe Berger (bergeruw@gmx.net); 2010
-* 
-* 
+*
+*
 * Have fun!
 * ---------
 *

@@ -1,0 +1,316 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: uart.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_621229fa04310f844660a72d92a68ebe.html">mcu</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#func-members">Funktionen</a> &#124;
+<a href="#var-members">Variablen</a>  </div>
+  <div class="headertitle">
+<div class="title">uart.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Routinen zur seriellen Kommunikation.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="ct-Bot_8h_source.html">ct-Bot.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="uart_8h_source.html">uart.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="os__thread_8h_source.html">os_thread.h</a>&quot;</code><br/>
+<code>#include &lt;avr/io.h&gt;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für uart.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="uart_8c__incl.png" border="0" usemap="#uart_8c" alt=""/></div>
+<map name="uart_8c" id="uart_8c">
+</map>
+</div>
+</div>
+<p><a href="uart_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8c.html#a0c0ca72359ddf28dcd15900dfba19343">uart_init</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8c.html#a68f52df99eb21e6ef4cf3dbcf0527f97">ISR</a> (USART_RXC_vect)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8c.html#ad878deb12efde50ce23b8afa0cd310d1">ISR</a> (USART_UDRE_vect)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8c.html#a93ed6233a355276a4a21cf2792afe93d">uart_write</a> (const void *data, uint8_t length)</td></tr>
+<tr><td colspan="2"><h2><a name="var-members"></a>
+Variablen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8c.html#a8d7dbe0015a58118987fea87addff68b">inbuf</a> [UART_BUFSIZE_IN]</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="structfifo__t.html">fifo_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8c.html#aefe90366730ea641733e8427d2428723">uart_infifo</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8c.html#a20c5ab58d510131f1b1c94f5a39d782f">outbuf</a> [UART_BUFSIZE_OUT]</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="structfifo__t.html">fifo_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="uart_8c.html#ad697bde2abdac2b6f63fcd6efeabf9d4">uart_outfifo</a></td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Routinen zur seriellen Kommunikation. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Benjamin Benz (<a href="mailto:bbe@heise.de">bbe@heise.de</a>) </dd>
+<dd>
+Timo Sandmann (<a href="mailto:mail@timosandmann.de">mail@timosandmann.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>26.12.2005 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+</div><hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="a68f52df99eb21e6ef4cf3dbcf0527f97"></a><!-- doxytag: member="uart.c::ISR" ref="a68f52df99eb21e6ef4cf3dbcf0527f97" args="(USART_RXC_vect)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ISR </td>
+          <td>(</td>
+          <td class="paramtype">USART_RXC_vect&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Interrupthandler fuer eingehende Daten Empfangene Zeichen werden in die Eingabgs-FIFO gespeichert und warten dort. </p>
+
+<p>Definiert in Zeile <a class="el" href="uart_8c_source.html#l00091">91</a> der Datei <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+<p>Benutzt <a class="el" href="global_8h_source.html#l00076">True</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad878deb12efde50ce23b8afa0cd310d1"></a><!-- doxytag: member="uart.c::ISR" ref="ad878deb12efde50ce23b8afa0cd310d1" args="(USART_UDRE_vect)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ISR </td>
+          <td>(</td>
+          <td class="paramtype">USART_UDRE_vect&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Interrupthandler fuer ausgehende Daten Ein Zeichen aus der Ausgabe-FIFO lesen und ausgeben. Ist das Zeichen fertig ausgegeben, wird ein neuer SIG_UART_DATA-IRQ getriggert. Ist die FIFO leer, deaktiviert die ISR ihren eigenen IRQ. </p>
+
+<p>Definiert in Zeile <a class="el" href="uart_8c_source.html#l00105">105</a> der Datei <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+<p>Benutzt <a class="el" href="fifo_8h_source.html#l00047">fifo_t::count</a> und <a class="el" href="global_8h_source.html#l00076">True</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0c0ca72359ddf28dcd15900dfba19343"></a><!-- doxytag: member="uart.c::uart_init" ref="a0c0ca72359ddf28dcd15900dfba19343" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void uart_init </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Initialisiert den UART und aktiviert Receiver und Transmitter sowie die Interrupts. Die Ein- und Ausgebe-FIFO werden initialisiert. Das globale Interrupt-Enable-Flag (I-Bit in SREG) wird nicht veraendert. </p>
+
+<p>Definiert in Zeile <a class="el" href="uart_8c_source.html#l00047">47</a> der Datei <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+<p>Benutzt <a class="el" href="fifo_8c_source.html#l00039">fifo_init()</a>, <a class="el" href="uart_8c_source.html#l00037">inbuf</a>, <a class="el" href="uart_8h_source.html#l00044">UART_BUFSIZE_IN</a>, <a class="el" href="uart_8c_source.html#l00040">outbuf</a>, <a class="el" href="uart_8h_source.html#l00047">UART_BUFSIZE_OUT</a> und <a class="el" href="builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2">__builtin_avr_cli()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="init_8c_source.html#l00046">ctbot_init()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="uart_8c_a0c0ca72359ddf28dcd15900dfba19343_cgraph.png" border="0" usemap="#uart_8c_a0c0ca72359ddf28dcd15900dfba19343_cgraph" alt=""/></div>
+<map name="uart_8c_a0c0ca72359ddf28dcd15900dfba19343_cgraph" id="uart_8c_a0c0ca72359ddf28dcd15900dfba19343_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a93ed6233a355276a4a21cf2792afe93d"></a><!-- doxytag: member="uart.c::uart_write" ref="a93ed6233a355276a4a21cf2792afe93d" args="(const void *data, uint8_t length)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void uart_write </td>
+          <td>(</td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Sendet Daten per UART im Little Endian </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*data</td><td>Zeiger auf Datenpuffer </td></tr>
+    <tr><td class="paramname">length</td><td>Groesse des Datenpuffers in Bytes </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="uart_8c_source.html#l00119">119</a> der Datei <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+<p>Benutzt <a class="el" href="uart_8h_source.html#l00047">UART_BUFSIZE_OUT</a>, <a class="el" href="uart_8c_source.html#l00119">uart_write()</a>, <a class="el" href="fifo_8h_source.html#l00047">fifo_t::count</a> und <a class="el" href="fifo_8c_source.html#l00064">fifo_put_data()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="log_8c_source.html#l00308">log_end()</a> und <a class="el" href="uart_8c_source.html#l00119">uart_write()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="uart_8c_a93ed6233a355276a4a21cf2792afe93d_cgraph.png" border="0" usemap="#uart_8c_a93ed6233a355276a4a21cf2792afe93d_cgraph" alt=""/></div>
+<map name="uart_8c_a93ed6233a355276a4a21cf2792afe93d_cgraph" id="uart_8c_a93ed6233a355276a4a21cf2792afe93d_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<hr/><h2>Variablen-Dokumentation</h2>
+<a class="anchor" id="a8d7dbe0015a58118987fea87addff68b"></a><!-- doxytag: member="uart.c::inbuf" ref="a8d7dbe0015a58118987fea87addff68b" args="[UART_BUFSIZE_IN]" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t <a class="el" href="uart_8c.html#a8d7dbe0015a58118987fea87addff68b">inbuf</a>[UART_BUFSIZE_IN]</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Eingangspuffer </p>
+
+<p>Definiert in Zeile <a class="el" href="uart_8c_source.html#l00037">37</a> der Datei <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="uart_8c_source.html#l00047">uart_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a20c5ab58d510131f1b1c94f5a39d782f"></a><!-- doxytag: member="uart.c::outbuf" ref="a20c5ab58d510131f1b1c94f5a39d782f" args="[UART_BUFSIZE_OUT]" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t <a class="el" href="uart_8c.html#a20c5ab58d510131f1b1c94f5a39d782f">outbuf</a>[UART_BUFSIZE_OUT]</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Ausgangspuffer </p>
+
+<p>Definiert in Zeile <a class="el" href="uart_8c_source.html#l00040">40</a> der Datei <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="uart_8c_source.html#l00047">uart_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aefe90366730ea641733e8427d2428723"></a><!-- doxytag: member="uart.c::uart_infifo" ref="aefe90366730ea641733e8427d2428723" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structfifo__t.html">fifo_t</a> <a class="el" href="uart_8c.html#aefe90366730ea641733e8427d2428723">uart_infifo</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Eingangs-FIFO </p>
+
+<p>Definiert in Zeile <a class="el" href="uart_8c_source.html#l00038">38</a> der Datei <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="sensor_8c_source.html#l00607">led_update()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad697bde2abdac2b6f63fcd6efeabf9d4"></a><!-- doxytag: member="uart.c::uart_outfifo" ref="ad697bde2abdac2b6f63fcd6efeabf9d4" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structfifo__t.html">fifo_t</a> <a class="el" href="uart_8c.html#ad697bde2abdac2b6f63fcd6efeabf9d4">uart_outfifo</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Ausgangs-FIFO </p>
+
+<p>Definiert in Zeile <a class="el" href="uart_8c_source.html#l00041">41</a> der Datei <a class="el" href="uart_8c_source.html">uart.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="init-low_8c_source.html#l00167">ctbot_shutdown_low()</a> und <a class="el" href="timer-low_8c_source.html#l00052">ISR()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:06 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

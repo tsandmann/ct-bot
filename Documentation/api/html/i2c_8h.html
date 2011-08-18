@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: i2c.h-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_a0fca93e65e0dd30a74a1e6addb2ee0e.html">include</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#func-members">Funktionen</a>  </div>
+  <div class="headertitle">
+<div class="title">i2c.h-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>I2C-Treiber, derzeit nur Master, interruptbasiert.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &lt;stddef.h&gt;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für i2c.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="i2c_8h__incl.png" border="0" usemap="#i2c_8h" alt=""/></div>
+<map name="i2c_8h" id="i2c_8h">
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+Dieser Graph zeigt, welche Datei direkt oder indirekt diese Datei enthält:</div>
+<div class="dyncontent">
+<div class="center"><img src="i2c_8h__dep__incl.png" border="0" usemap="#i2c_8hdep" alt=""/></div>
+<map name="i2c_8hdep" id="i2c_8hdep">
+</map>
+</div>
+</div>
+<p><a href="i2c_8h_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="i2c_8h.html#a2d24c7e78bed2e2c8a99e19b49219ec6">i2c_init</a> (uint8_t bitrate)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="i2c_8h.html#a390db7ff461cfff9cdd522dfb90fe23e">i2c_write_read</a> (uint8_t sla, void *pTx, uint8_t nTx, void *pRx, uint8_t nRx)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="i2c_8h.html#aa8c7a19630bc70ad9779e6c4b760d896">i2c_read</a> (uint8_t sla, uint8_t txData, void *pRx, uint8_t nRx)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="i2c_8h.html#a8d0292580689dd8b7e0b441cf0e6c383">i2c_wait</a> (void)</td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>I2C-Treiber, derzeit nur Master, interruptbasiert. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Timo Sandmann (<a href="mailto:mail@timosandmann.de">mail@timosandmann.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>05.09.2007 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="i2c_8h_source.html">i2c.h</a>.</p>
+</div><hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="a2d24c7e78bed2e2c8a99e19b49219ec6"></a><!-- doxytag: member="i2c.h::i2c_init" ref="a2d24c7e78bed2e2c8a99e19b49219ec6" args="(uint8_t bitrate)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void i2c_init </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>bitrate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Initialisiert das I2C-Modul </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bitrate</td><td>Init-Wert fuer Bit Rate Register (TWBR) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="i2c_8c_source.html#l00142">142</a> der Datei <a class="el" href="i2c_8c_source.html">i2c.c</a>.</p>
+
+<p>Benutzt <a class="el" href="i2c_8c_source.html#l00037">I2C_PRESCALER</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="init_8c_source.html#l00046">ctbot_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa8c7a19630bc70ad9779e6c4b760d896"></a><!-- doxytag: member="i2c.h::i2c_read" ref="aa8c7a19630bc70ad9779e6c4b760d896" args="(uint8_t sla, uint8_t txData, void *pRx, uint8_t nRx)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void i2c_read </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>sla</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>txData</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>pRx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>nRx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Sendet ein Byte an einen I2C-Slave und liest anschliessend nRx Bytes </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sla</td><td>Slave-Adresse </td></tr>
+    <tr><td class="paramname">txData</td><td>Byte, das zunaechst an den Slave gesendet wird </td></tr>
+    <tr><td class="paramname">*pRx</td><td>Zeiger auf Puffer fuer zu lesende Daten </td></tr>
+    <tr><td class="paramname">nRx</td><td>Anzahl der zu lesenden Bytes </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="i2c_8c_source.html#l00176">176</a> der Datei <a class="el" href="i2c_8c_source.html">i2c.c</a>.</p>
+
+<p>Benutzt <a class="el" href="i2c_8c_source.html#l00156">i2c_write_read()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="cmps03_8c_source.html#l00041">cmps03_get_bearing()</a> und <a class="el" href="sp03_8c_source.html#l00205">sp03_get_version()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="i2c_8h_aa8c7a19630bc70ad9779e6c4b760d896_cgraph.png" border="0" usemap="#i2c_8h_aa8c7a19630bc70ad9779e6c4b760d896_cgraph" alt=""/></div>
+<map name="i2c_8h_aa8c7a19630bc70ad9779e6c4b760d896_cgraph" id="i2c_8h_aa8c7a19630bc70ad9779e6c4b760d896_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a8d0292580689dd8b7e0b441cf0e6c383"></a><!-- doxytag: member="i2c.h::i2c_wait" ref="a8d0292580689dd8b7e0b441cf0e6c383" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t i2c_wait </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Wartet, bis der aktuelle I2C-Transfer beendet ist </p>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>TW_NO_INFO (0xf8) falls alles ok, sonst Fehlercode </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="i2c_8c_source.html#l00186">186</a> der Datei <a class="el" href="i2c_8c_source.html">i2c.c</a>.</p>
+
+<p>Benutzt <a class="el" href="timer_8h_source.html#l00086">TIMER_GET_TICKCOUNT_8</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="cmps03_8c_source.html#l00050">cmps03_finish()</a>, <a class="el" href="shift_8c_source.html#l00061">shift_data_out()</a>, <a class="el" href="sp03_8c_source.html#l00113">sp03_flash_speakf()</a>, <a class="el" href="sp03_8c_source.html#l00143">sp03_set_voice()</a>, <a class="el" href="sp03_8c_source.html#l00163">sp03_cmd_speak()</a>, <a class="el" href="sp03_8c_source.html#l00181">sp03_speak_phrase()</a>, <a class="el" href="sp03_8c_source.html#l00205">sp03_get_version()</a> und <a class="el" href="twi_8c_source.html#l00190">Send_to_TWI()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a390db7ff461cfff9cdd522dfb90fe23e"></a><!-- doxytag: member="i2c.h::i2c_write_read" ref="a390db7ff461cfff9cdd522dfb90fe23e" args="(uint8_t sla, void *pTx, uint8_t nTx, void *pRx, uint8_t nRx)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void i2c_write_read </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>sla</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>pTx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>nTx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>pRx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>nRx</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Sendet nTx Bytes an einen I2C-Slave und liest anschliessend nRx Bytes </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sla</td><td>Slave-Adresse </td></tr>
+    <tr><td class="paramname">*pTx</td><td>Zeiger auf Puffer fuer zu sendende Daten </td></tr>
+    <tr><td class="paramname">nTx</td><td>Anzahl der zu sendenden Bytes </td></tr>
+    <tr><td class="paramname">*pRx</td><td>Zeiger auf Puffer fuer zu lesende Daten </td></tr>
+    <tr><td class="paramname">nRx</td><td>Anzahl der zu lesenden Bytes</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Sendet nTx Bytes an einen I2C-Slave und liest anschliessend nRx Bytes </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sla</td><td>Slave-Adresse </td></tr>
+    <tr><td class="paramname">*pTx</td><td>Zeiger auf Puffer fuer zu sendende Daten </td></tr>
+    <tr><td class="paramname">nTx</td><td>Anzahl der zu sendenden Bytes, [1; 255] </td></tr>
+    <tr><td class="paramname">*pRx</td><td>Zeiger auf Puffer fuer zu lesende Daten </td></tr>
+    <tr><td class="paramname">nRx</td><td>Anzahl der zu lesenden Bytes, [0; 255] </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="i2c_8c_source.html#l00156">156</a> der Datei <a class="el" href="i2c_8c_source.html">i2c.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="i2c_8c_source.html#l00176">i2c_read()</a> und <a class="el" href="twi_8c_source.html#l00190">Send_to_TWI()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:05 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

@@ -75,9 +75,9 @@ void create_mini_fat_file(const char * filename, const char * id_string, uint32_
 void create_emu_mini_fat_file(uint32_t addr, const char * id_string, uint32_t size) {
 #ifndef MMC_VM_AVAILABLE
 	/* keine warnings */
-	addr = addr;
-	id_string = id_string;
-	size = size;
+	(void) addr;
+	(void) id_string;
+	(void) size;
 
 	printf("Bitte mit MMC_VM_AVAILABLE compilieren, Abbruch!\n");
 	return;
@@ -137,7 +137,7 @@ void create_emu_mini_fat_file(uint32_t addr, const char * id_string, uint32_t si
  */
 void delete_emu_mini_fat_file(const char * id_string) {
 #ifndef MMC_VM_AVAILABLE
-	id_string = id_string; // kein warning
+	(void) id_string; // kein warning
 	printf("Bitte mit MMC_VM_AVAILABLE compilieren, Abbruch!\n");
 	return;
 #else

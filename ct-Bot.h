@@ -68,10 +68,6 @@
 
 //#define BPS_AVAILABLE		/*!< Bot Positioning System */
 
-//#define TEST_AVAILABLE_ANALOG		/*!< Sollen die LEDs die analoge Sensorwerte anzeigen */
-//#define TEST_AVAILABLE_DIGITAL	/*!< Sollen die LEDs die digitale Sensorwerte anzeigen */
-//#define TEST_AVAILABLE_MOTOR		/*!< Sollen die Motoren ein wenig drehen */
-
 #define BEHAVIOUR_AVAILABLE		/*!< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 
 #define POS_STORE_AVAILABLE		/*!< Positionsspeicher vorhanden */
@@ -105,7 +101,6 @@
 /* Beim Generieren der Doku alles anschalten */
 #define PC
 #define MCU
-#define TEST_AVAILABLE_MOTOR
 #endif // DOXYGEN
 
 #ifndef DISPLAY_AVAILABLE
@@ -167,21 +162,6 @@
 #undef EEPROM_EMU_AVAILABLE
 #undef CREATE_TRACEFILE_AVAILABLE
 #endif // MCU
-
-
-#ifdef TEST_AVAILABLE_MOTOR
-#define TEST_AVAILABLE			/**< brauchen wir den Testkrams? */
-#define TEST_AVAILABLE_DIGITAL	/**< Sollen die LEDs die digitale Sensorwerte anzeigen? */
-#endif
-
-#ifdef TEST_AVAILABLE_DIGITAL
-#define TEST_AVAILABLE /**< brauchen wir den Testkrams? */
-#undef TEST_AVAILABLE_ANALOG
-#endif
-
-#ifdef TEST_AVAILABLE_ANALOG
-#define TEST_AVAILABLE /**< brauchen wir den Testkrams? */
-#endif
 
 #ifndef SPEED_CONTROL_AVAILABLE
 #undef ADJUST_PID_PARAMS

@@ -1,0 +1,10 @@
+digraph G
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{Tcb_t\n|+ stack\l+ nextSchedule\l+ lastSchedule\l+ wait_for\l+ statistics\l|}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node2 -> Node1 [color="grey25",fontsize="10",style="solid",label=" wait_for" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node2 [label="{os_signal_t\n|+ value\l+ mutex\l+ cond\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structos__signal__t.html"];
+  Node3 -> Node1 [color="grey25",fontsize="10",style="solid",label=" statistics" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node3 [label="{os_stat_data_t\n|+ runtime\l+ missed_deadlines\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$structos__stat__data__t.html"];
+}

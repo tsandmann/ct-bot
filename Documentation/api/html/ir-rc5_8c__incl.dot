@@ -1,0 +1,32 @@
+digraph G
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="ir-rc5.c",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node1 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="ct-Bot.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$ct-Bot_8h.html",tooltip="globale Schalter fuer die einzelnen Bot-Funktionalitaeten"];
+  Node2 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="global.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$global_8h.html",tooltip="Allgemeine Definitionen und Datentypen."];
+  Node3 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="stdint.h",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node3 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="math.h",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node3 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="builtins.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$builtins_8h.html",tooltip="Compiler-Builtins mit Fallback fuer aeltere avr-libc Versionen."];
+  Node6 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="avr/version.h",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node3 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="avr/interrupt.h",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node3 -> Node9 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="avr/signal.h",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node3 -> Node10 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="avr/pgmspace.h",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node2 -> Node11 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="bot-local.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$bot-local_8h.html",tooltip="Konstanten, die den Bot an reale Umgebungen anpassen."];
+  Node1 -> Node12 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="avr/io.h",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node1 -> Node13 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="ir-rc5.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$ir-rc5_8h.html",tooltip="Routinen fuer die Dekodierung von RC5-Fernbedienungs-Codes."];
+  Node1 -> Node14 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node14 [label="timer.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$timer_8h.html",tooltip="Timer und Zaehler."];
+}

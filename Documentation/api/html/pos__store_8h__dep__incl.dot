@@ -1,0 +1,22 @@
+digraph G
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="pos_store.h",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="bot-2-bot.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$bot-2-bot_8c.html",tooltip="Bot-2-Bot-Kommunikation."];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="pos_store.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$pos__store_8c.html",tooltip="Implementierung eines Positionsspeichers mit den ueblichen Stackbefehlen push(), pop() und FIFO-Befeh..."];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="behaviour_drive_area.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$behaviour__drive__area_8c.html",tooltip="Flaechendeckendes Fahren als Verhalten (Staubsauger)"];
+  Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="behaviour_drive_stack.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$behaviour__drive__stack_8c.html",tooltip="Anfahren aller auf dem Stack befindlichen Punkte."];
+  Node1 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="behaviour_line_shortest_way.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$behaviour__line__shortest__way_8c.html",tooltip="Linienverfolger, der an Kreuzungen eine bestimmte Vorzugsrichtung einschlaegt (links) und diesen Weg ..."];
+  Node1 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="behaviour_pathplaning.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$behaviour__pathplaning_8c.html",tooltip="Wave-Pfadplanungsverhalten."];
+  Node1 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="gui.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$gui_8c.html",tooltip="Display-GUI des Bots."];
+  Node1 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="rc5.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rc5_8c.html",tooltip="RC5-Fernbedienung / Basic-Tasten-Handler."];
+}

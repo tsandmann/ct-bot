@@ -1,14 +1,42 @@
 CHANGELOG fuer c't-Bot
 ======================
-2011-06-04 Timo Sandmann [mail@timosandmann.de]: Bugfixes fuer Abhaengigkeiten
+2011-08-18 Timo Sandmann [mail@timosandmann.de]: Release 20
+
+2011-08-18 Timo Sandmann [mail@timosandmann.de]: Warning in pc/tcp-server.c beseitigt
+
+2011-07-26 Timo Sandmann [mail@timosandmann.de]: uBasic auf rev. 63 aktualisiert
+
+2011-07-16 Timo Sandmann [mail@timosandmann.de]: Support fuer avr-gcc 4.5.1 / AVR Toolchain 3.2.3
+
+2011-07-07 Timo Sandmann [mail@timosandmann.de]: uBasic auf rev. 60 aktualisiert
+
+2011-07-05 Fred Ammann: Fernbedienung "Total Control" hinzugefuegt
+
+2011-07-04 Timo Sandmann [mail@timosandmann.de]: Warnings beseitigt, Anpassungen fuer Eclipse 3.7
+
+2011-06-04 Timo Sandmann [mail@timosandmann.de]: Bugfixes fuer Abhaengigkeiten, clang Compiler Support
+
+2011-05-22 Timo Sandmann [mail@timosandmann.de]: Testcode in neues Verhalten bot_hw_test_behaviour() ausgelagert, Makefile etwas aufgeraeumt und fehlendes Verhalten BEHAVIOUR_PROTOTYPE ergaenzt 
+
+2011-05-19 Simon Siemens [simon.siemens@arcor.de]: Neues make-Target library fuer eine Bibliothek der Infrastrukturkomponenten (Hardwareabstraktion, OS, ...).
+
+2011-05-18 Timo Sandmann [mail@timosandmann.de]: allgemeine Funktionen aus init.c in neue Datei botcontrol.c verschoben
 
 2011-05-18 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Cancel-Verhalten
+
+2011-05-12 Simon Siemens [simon.siemens@arcor.de]: Vereinfachung der main-Funktion. Verhaltensunabhaengigen Code dazu in init.c ausgelagert. In main verbleibt nur ein generisches Grundgeruest. Damit sind keine Aenderungen an main bei Updates mehr noetig und jeder kann sich sehr einfach eine eigene main-Funktion schreiben.
 
 2011-05-06 Timo Sandmann [mail@timosandmann.de]: Bugfix falls RC5_AVAILABLE aus ist
 
 2011-05-04 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer #include-Abhaengigkeiten
 
+2011-04-27 Timo Sandmann [mail@timosandmann.de]: uBasic auf Revision 49 aktualisiert
+
 2011-04-17 Timo Sandmann [mail@timosandmann.de]: Bugfix Fifo-Code
+
+2011-04-13 Benjamin Benz [bbe@heise.de]: Prototype-Verhalten eingefuegt, bot_simple ueberarbeitet, Sensor-Defines umgezogen
+
+2011-04-13 Timo Sandmann [mail@timosandmann.de]: Build-Settings fuer Windows angepasst. Debug-W32 fuer aktuelle MinGW-Toolchain (msys und pthreads nicht mehr noetig), Debug-W32-old fuer alte Toolchain
 
 2011-04-12 Timo Sandmann [mail@timosandmann.de]: Release 19
 

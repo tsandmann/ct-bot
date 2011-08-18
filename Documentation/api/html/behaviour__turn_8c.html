@@ -1,0 +1,482 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: behaviour_turn.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#define-members">Makrodefinitionen</a> &#124;
+<a href="#func-members">Funktionen</a> &#124;
+<a href="#var-members">Variablen</a>  </div>
+  <div class="headertitle">
+<div class="title">behaviour_turn.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Drehe den Bot.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="bot-logic_8h_source.html">bot-logic/bot-logic.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="eeprom_8h_source.html">eeprom.h</a>&quot;</code><br/>
+<code>#include &lt;stdlib.h&gt;</code><br/>
+<code>#include &lt;math.h&gt;</code><br/>
+<code>#include &quot;<a class="el" href="log_8h_source.html">log.h</a>&quot;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für behaviour_turn.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__turn_8c__incl.png" border="0" usemap="#behaviour__turn_8c" alt=""/></div>
+<map name="behaviour__turn_8c" id="behaviour__turn_8c">
+</map>
+</div>
+</div>
+<p><a href="behaviour__turn_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="define-members"></a>
+Makrodefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__turn_8c.html#a2c7750334ead1f46de8d3c6775e340bb">TURN_ERR</a>&#160;&#160;&#160;{30, 110, 220, 380, 550, 800}</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__turn_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(...)&#160;&#160;&#160;{}</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__turn_8c.html#ae5dd05692b16e269acbfea5f4eb118a5">ERR_SPEED_1</a>&#160;&#160;&#160;60</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__turn_8c.html#a1c9b14ba61d3becb6f9f1d316d393974">ERR_SPEED_2</a>&#160;&#160;&#160;120</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__turn_8c.html#a7920147c05fcbd8a6d80b97d2e59ef05">ERR_SPEED_3</a>&#160;&#160;&#160;180</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__turn_8c.html#a1edd64d9338e374ae41df12810c0ad02">ERR_SPEED_4</a>&#160;&#160;&#160;250</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__turn_8c.html#aa6a567eb0a5fb9cff1492995ee2f74e2">ERR_SPEED_5</a>&#160;&#160;&#160;280</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__turn_8c.html#acc1fa199d0da13d91d58787c17f91a71">STATE_RUNNNING</a>&#160;&#160;&#160;0</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__turn_8c.html#a80b7b5acb75742b70a017b8c90f876a7">STATE_WAIT_FOR_STOP</a>&#160;&#160;&#160;1</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__turn_8c.html#a623b894367fec3555df0e62aacfe8279">STATE_END</a>&#160;&#160;&#160;99</td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__turn_8c.html#aa49007295687228b4083f8f84208def4">bot_turn_behaviour</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *data)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Das Verhalten laesst den Bot eine Punktdrehung durchfuehren.  <a href="#aa49007295687228b4083f8f84208def4"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__turn_8c.html#a7b75d957ab1dbf1a79d5403011a0b952">bot_turn_speed</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *caller, int16_t degrees, int16_t minspeed, int16_t maxspeed)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Dreht den Bot im mathematischen Drehsinn im Rahmen der angegebenen Geschwindigkeiten.  <a href="#a7b75d957ab1dbf1a79d5403011a0b952"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb">bot_turn</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *caller, int16_t degrees)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Dreht den Bot im mathematischen Drehsinn.  <a href="#af8e1b5de92fa7f8f465615dff50b81fb"></a><br/></td></tr>
+<tr><td colspan="2"><h2><a name="var-members"></a>
+Variablen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint16_t EEPROM&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__turn_8c.html#a42321097cef01a35cd137a14fe712685">turn_err</a> [6] = TURN_ERR</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__turn_8c.html#a4abea5a355de12b104a2a6eeb3cffb62">turn_last_err</a> = 0.0f</td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Drehe den Bot. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Benjamin Benz (<a href="mailto:bbe@heise.de">bbe@heise.de</a>) </dd>
+<dd>
+Torsten Evers (<a href="mailto:tevers@onlinehome.de">tevers@onlinehome.de</a>) </dd>
+<dd>
+Timo Sandmann (<a href="mailto:mail@timosandmann.de">mail@timosandmann.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>03.11.2006 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="behaviour__turn_8c_source.html">behaviour_turn.c</a>.</p>
+</div><hr/><h2>Makro-Dokumentation</h2>
+<a class="anchor" id="ae5dd05692b16e269acbfea5f4eb118a5"></a><!-- doxytag: member="behaviour_turn.c::ERR_SPEED_1" ref="ae5dd05692b16e269acbfea5f4eb118a5" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ERR_SPEED_1&#160;&#160;&#160;60</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__turn_8c_source.html#l00065">65</a> der Datei <a class="el" href="behaviour__turn_8c_source.html">behaviour_turn.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1c9b14ba61d3becb6f9f1d316d393974"></a><!-- doxytag: member="behaviour_turn.c::ERR_SPEED_2" ref="a1c9b14ba61d3becb6f9f1d316d393974" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ERR_SPEED_2&#160;&#160;&#160;120</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__turn_8c_source.html#l00066">66</a> der Datei <a class="el" href="behaviour__turn_8c_source.html">behaviour_turn.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7920147c05fcbd8a6d80b97d2e59ef05"></a><!-- doxytag: member="behaviour_turn.c::ERR_SPEED_3" ref="a7920147c05fcbd8a6d80b97d2e59ef05" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ERR_SPEED_3&#160;&#160;&#160;180</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__turn_8c_source.html#l00067">67</a> der Datei <a class="el" href="behaviour__turn_8c_source.html">behaviour_turn.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1edd64d9338e374ae41df12810c0ad02"></a><!-- doxytag: member="behaviour_turn.c::ERR_SPEED_4" ref="a1edd64d9338e374ae41df12810c0ad02" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ERR_SPEED_4&#160;&#160;&#160;250</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__turn_8c_source.html#l00068">68</a> der Datei <a class="el" href="behaviour__turn_8c_source.html">behaviour_turn.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa6a567eb0a5fb9cff1492995ee2f74e2"></a><!-- doxytag: member="behaviour_turn.c::ERR_SPEED_5" ref="aa6a567eb0a5fb9cff1492995ee2f74e2" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ERR_SPEED_5&#160;&#160;&#160;280</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__turn_8c_source.html#l00069">69</a> der Datei <a class="el" href="behaviour__turn_8c_source.html">behaviour_turn.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a754b3d074e0af4ad3c7b918dd77ecb2d"></a><!-- doxytag: member="behaviour_turn.c::LOG_DEBUG" ref="a754b3d074e0af4ad3c7b918dd77ecb2d" args="(...)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define LOG_DEBUG</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em></td><td>)</td>
+          <td>&#160;&#160;&#160;{}</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__turn_8c_source.html#l00050">50</a> der Datei <a class="el" href="behaviour__turn_8c_source.html">behaviour_turn.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__turn_8c_source.html#l00199">bot_turn_speed()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a623b894367fec3555df0e62aacfe8279"></a><!-- doxytag: member="behaviour_turn.c::STATE_END" ref="a623b894367fec3555df0e62aacfe8279" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define STATE_END&#160;&#160;&#160;99</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Verhalten fertig </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__turn_8c_source.html#l00073">73</a> der Datei <a class="el" href="behaviour__turn_8c_source.html">behaviour_turn.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="acc1fa199d0da13d91d58787c17f91a71"></a><!-- doxytag: member="behaviour_turn.c::STATE_RUNNNING" ref="acc1fa199d0da13d91d58787c17f91a71" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define STATE_RUNNNING&#160;&#160;&#160;0</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Drehen aktiv </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__turn_8c_source.html#l00071">71</a> der Datei <a class="el" href="behaviour__turn_8c_source.html">behaviour_turn.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__turn_8c_source.html#l00199">bot_turn_speed()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a80b7b5acb75742b70a017b8c90f876a7"></a><!-- doxytag: member="behaviour_turn.c::STATE_WAIT_FOR_STOP" ref="a80b7b5acb75742b70a017b8c90f876a7" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define STATE_WAIT_FOR_STOP&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Warten bis Bot stillsteht </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__turn_8c_source.html#l00072">72</a> der Datei <a class="el" href="behaviour__turn_8c_source.html">behaviour_turn.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2c7750334ead1f46de8d3c6775e340bb"></a><!-- doxytag: member="behaviour_turn.c::TURN_ERR" ref="a2c7750334ead1f46de8d3c6775e340bb" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TURN_ERR&#160;&#160;&#160;{30, 110, 220, 380, 550, 800}</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Fehler bei Drehungen im EEPROM </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__turn_8c_source.html#l00036">36</a> der Datei <a class="el" href="behaviour__turn_8c_source.html">behaviour_turn.c</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="af8e1b5de92fa7f8f465615dff50b81fb"></a><!-- doxytag: member="behaviour_turn.c::bot_turn" ref="af8e1b5de92fa7f8f465615dff50b81fb" args="(Behaviour_t *caller, int16_t degrees)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a>* bot_turn </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>caller</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>degrees</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Dreht den Bot im mathematischen Drehsinn. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*caller</td><td>Der Aufrufer </td></tr>
+    <tr><td class="paramname">degrees</td><td>Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn. zwischen -360 und +360 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Zeiger auf Verhaltensdatensatz </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__turn_8c_source.html#l00233">233</a> der Datei <a class="el" href="behaviour__turn_8c_source.html">behaviour_turn.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__turn_8c_source.html#l00199">bot_turn_speed()</a>, <a class="el" href="motor_8h_source.html#l00033">BOT_SPEED_MIN</a> und <a class="el" href="motor_8h_source.html#l00037">BOT_SPEED_NORMAL</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__avoid__col_8c_source.html#l00052">bot_avoid_col_behaviour()</a>, <a class="el" href="behaviour__classify__objects_8c_source.html#l00064">bot_classify_objects_behaviour()</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>, <a class="el" href="behaviour__drive__square_8c_source.html#l00044">bot_drive_square_behaviour()</a>, <a class="el" href="behaviour__follow__line__enhanced_8c_source.html#l00115">bot_follow_line_enh_behaviour()</a>, <a class="el" href="behaviour__goto__obstacle_8c_source.html#l00186">bot_goto_obstacle_behaviour()</a>, <a class="el" href="behaviour__gotoxy_8c_source.html#l00050">bot_gotoxy_behaviour()</a>, <a class="el" href="behaviour__line__shortest__way_8c_source.html#l00468">bot_line_shortest_way_behaviour()</a>, <a class="el" href="behaviour__olympic_8c_source.html#l00162">bot_explore_behaviour()</a>, <a class="el" href="behaviour__olympic_8c_source.html#l00306">bot_do_slalom_behaviour()</a>, <a class="el" href="behaviour__simple_8c_source.html#l00052">bot_simple_behaviour()</a>, <a class="el" href="behaviour__simple_8c_source.html#l00102">bot_simple2_behaviour()</a>, <a class="el" href="behaviour__solve__maze_8c_source.html#l00069">bot_check_wall_behaviour()</a>, <a class="el" href="behaviour__solve__maze_8c_source.html#l00246">bot_measure_angle_behaviour()</a>, <a class="el" href="behaviour__solve__maze_8c_source.html#l00504">bot_solve_maze_behaviour()</a>, <a class="el" href="behaviour__transport__pillar_8c_source.html#l00283">bot_transport_pillar_behaviour()</a> und <a class="el" href="behaviour__turn__test_8c_source.html#l00047">bot_turn_test_behaviour()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__turn_8c_af8e1b5de92fa7f8f465615dff50b81fb_cgraph.png" border="0" usemap="#behaviour__turn_8c_af8e1b5de92fa7f8f465615dff50b81fb_cgraph" alt=""/></div>
+<map name="behaviour__turn_8c_af8e1b5de92fa7f8f465615dff50b81fb_cgraph" id="behaviour__turn_8c_af8e1b5de92fa7f8f465615dff50b81fb_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="aa49007295687228b4083f8f84208def4"></a><!-- doxytag: member="behaviour_turn.c::bot_turn_behaviour" ref="aa49007295687228b4083f8f84208def4" args="(Behaviour_t *data)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_turn_behaviour </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Das Verhalten laesst den Bot eine Punktdrehung durchfuehren. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*data</td><td>Der Verhaltensdatensatz </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="see"><dt><b>Siehe auch:</b></dt><dd><a class="el" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn()</a> Das Drehen findet in mehreren Schritten statt. Die Drehung wird dabei zunaechst mit hoeherer Geschwindigkeit ausgefuehrt. Bei kleineren Winkeln dann nur noch mit geringer Geschwindigkeit. </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__turn_8c_source.html#l00083">83</a> der Datei <a class="el" href="behaviour__turn_8c_source.html">behaviour_turn.c</a>.</p>
+
+<p>Benutzt <a class="el" href="sensor_8c_source.html#l00118">heading_10_int</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__catch__pillar_8c_source.html#l00404">bot_catch_pillar_behaviour()</a>, <a class="el" href="behaviour__follow__line__enhanced_8c_source.html#l00115">bot_follow_line_enh_behaviour()</a>, <a class="el" href="behaviour__turn_8c_source.html#l00199">bot_turn_speed()</a> und <a class="el" href="bot-logic_8c_source.html#l00086">bot_behave_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7b75d957ab1dbf1a79d5403011a0b952"></a><!-- doxytag: member="behaviour_turn.c::bot_turn_speed" ref="a7b75d957ab1dbf1a79d5403011a0b952" args="(Behaviour_t *caller, int16_t degrees, int16_t minspeed, int16_t maxspeed)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a>* bot_turn_speed </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>caller</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>degrees</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>minspeed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>maxspeed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Dreht den Bot im mathematischen Drehsinn im Rahmen der angegebenen Geschwindigkeiten. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*caller</td><td>Der Aufrufer </td></tr>
+    <tr><td class="paramname">degrees</td><td>Grad, um die der Bot gedreht wird. Negative Zahlen drehen im (mathematisch negativen) Uhrzeigersinn. zwischen -360 und +360 </td></tr>
+    <tr><td class="paramname">minspeed</td><td>minimale Drehgeschwindigkeit [mm/s] </td></tr>
+    <tr><td class="paramname">maxspeed</td><td>maximale Drehgeschwindigkeit [mm/s] </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Zeiger auf Verhaltensdatensatz </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__turn_8c_source.html#l00199">199</a> der Datei <a class="el" href="behaviour__turn_8c_source.html">behaviour_turn.c</a>.</p>
+
+<p>Benutzt <a class="el" href="motor_8h_source.html#l00038">BOT_SPEED_FAST</a>, <a class="el" href="motor_8h_source.html#l00033">BOT_SPEED_MIN</a>, <a class="el" href="behaviour__turn_8c_source.html#l00050">LOG_DEBUG</a>, <a class="el" href="sensor_8c_source.html#l00116">heading</a>, <a class="el" href="sensor_8c_source.html#l00118">heading_10_int</a>, <a class="el" href="behaviour__turn_8c_source.html#l00071">STATE_RUNNNING</a>, <a class="el" href="bot-logic_8c_source.html#l00532">switch_to_behaviour()</a>, <a class="el" href="behaviour__turn_8c_source.html#l00083">bot_turn_behaviour()</a> und <a class="el" href="bot-logic_8h_source.html#l00040">BEHAVIOUR_OVERRIDE</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__turn_8c_source.html#l00233">bot_turn()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__turn_8c_a7b75d957ab1dbf1a79d5403011a0b952_cgraph.png" border="0" usemap="#behaviour__turn_8c_a7b75d957ab1dbf1a79d5403011a0b952_cgraph" alt=""/></div>
+<map name="behaviour__turn_8c_a7b75d957ab1dbf1a79d5403011a0b952_cgraph" id="behaviour__turn_8c_a7b75d957ab1dbf1a79d5403011a0b952_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<hr/><h2>Variablen-Dokumentation</h2>
+<a class="anchor" id="a42321097cef01a35cd137a14fe712685"></a><!-- doxytag: member="behaviour_turn.c::turn_err" ref="a42321097cef01a35cd137a14fe712685" args="[6]" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t EEPROM <a class="el" href="behaviour__turn__test_8c.html#a186b7a43803350a189bca7a4acf6ff49">turn_err</a>[6] = TURN_ERR</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Fehler bei Drehungen (im EEPROM gespeichert) </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__turn_8c_source.html#l00041">41</a> der Datei <a class="el" href="behaviour__turn_8c_source.html">behaviour_turn.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__turn__test_8c_source.html#l00047">bot_turn_test_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4abea5a355de12b104a2a6eeb3cffb62"></a><!-- doxytag: member="behaviour_turn.c::turn_last_err" ref="a4abea5a355de12b104a2a6eeb3cffb62" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float <a class="el" href="behaviour__turn_8h.html#a4abea5a355de12b104a2a6eeb3cffb62">turn_last_err</a> = 0.0f</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>letzter Drehfehler in Grad </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__turn_8c_source.html#l00062">62</a> der Datei <a class="el" href="behaviour__turn_8c_source.html">behaviour_turn.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__turn__test_8c_source.html#l00047">bot_turn_test_behaviour()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:05 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

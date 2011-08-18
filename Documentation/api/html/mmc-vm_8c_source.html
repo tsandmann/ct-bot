@@ -1,0 +1,446 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: mmc-vm.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">mmc-vm.c</div>  </div>
+</div>
+<div class="contents">
+<a href="mmc-vm_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> * </span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version. </span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be </span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR </span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public </span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free </span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> * </span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00029"></a>00029 <span class="preprocessor">#include &quot;<a class="code" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot-Funktionalitaeten">ct-Bot.h</a>&quot;</span>
+<a name="l00030"></a>00030 
+<a name="l00031"></a>00031 <span class="preprocessor">#ifdef MMC_VM_AVAILABLE</span>
+<a name="l00032"></a>00032 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="mmc-vm_8h.html" title="Virtual Memory Management mit MMC / SD-Card.">mmc-vm.h</a>&quot;</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#include &quot;<a class="code" href="mmc_8h.html" title="Routinen zum Auslesen / Schreiben einer MMC-Karte.">mmc.h</a>&quot;</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include &quot;<a class="code" href="mmc-low_8h.html" title="Low-Level-Routinen zum Lesen/Schreiben einer MMC / SD-Card.">mmc-low.h</a>&quot;</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include &quot;<a class="code" href="mmc-emu_8h.html" title="MMC / SD-Card Emulation fuer PC.">mmc-emu.h</a>&quot;</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include &quot;<a class="code" href="display_8h.html" title="Routinen zur Displaysteuerung.">display.h</a>&quot;</span>
+<a name="l00037"></a>00037 <span class="preprocessor">#include &quot;<a class="code" href="timer_8h.html" title="Timer und Zaehler.">timer.h</a>&quot;</span>
+<a name="l00038"></a>00038 <span class="preprocessor">#include &quot;<a class="code" href="mini-fat_8h.html" title="Routinen zum Auffinden von markierten Files auf einer MMC-Karte.">mini-fat.h</a>&quot;</span>
+<a name="l00039"></a>00039 <span class="preprocessor">#include &quot;<a class="code" href="log_8h.html" title="Routinen zum Loggen von Informationen.">log.h</a>&quot;</span>
+<a name="l00040"></a>00040 <span class="preprocessor">#include &lt;stdlib.h&gt;</span>
+<a name="l00041"></a>00041 <span class="preprocessor">#include &lt;stdio.h&gt;</span>
+<a name="l00042"></a>00042 <span class="preprocessor">#include &lt;string.h&gt;</span>
+<a name="l00043"></a>00043 
+<a name="l00044"></a>00044 <span class="preprocessor">#ifdef MCU</span>
+<a name="l00045"></a><a class="code" href="mmc-vm_8c.html#a962a20096b575285ee3a00262b36f669">00045</a> <span class="preprocessor"></span><span class="preprocessor">#define MMC_START_ADDRESS 0x2000000     </span>
+<a name="l00046"></a><a class="code" href="mmc-vm_8c.html#a56505f14247981580490d0be1384ad3c">00046</a> <span class="preprocessor">#define MAX_SPACE_IN_SRAM 1             </span>
+<a name="l00047"></a><a class="code" href="mmc-vm_8c.html#a733442e7f1433071b65e448e6b799eb6">00047</a> <span class="preprocessor">#define swap_out    mmc_write_sector    </span>
+<a name="l00048"></a><a class="code" href="mmc-vm_8c.html#ade50f9d1cad5b40125fe8ea7723c5a4b">00048</a> <span class="preprocessor">#define swap_in     mmc_read_sector     </span>
+<a name="l00049"></a><a class="code" href="mmc-vm_8c.html#a27b47974c3e9d9a4fe6977e926bb0efa">00049</a> <span class="preprocessor">#define swap_space  mmc_get_size()      </span>
+<a name="l00050"></a><a class="code" href="mmc-vm_8c.html#abb665bd583cd5eb93ec03d5fa4c50bc1">00050</a> <span class="preprocessor">#define fat_lookup  mini_fat_lookup_adr </span>
+<a name="l00051"></a><a class="code" href="mmc-vm_8c.html#a1d0373153cf3986bffb9f205a9ef94c1">00051</a> <span class="preprocessor">#define fat_store   mini_fat_store_adr  </span>
+<a name="l00052"></a>00052 <span class="preprocessor">#else // PC</span>
+<a name="l00053"></a>00053 <span class="preprocessor"></span><span class="preprocessor">#define MMC_START_ADDRESS 0x1000000         </span>
+<a name="l00054"></a>00054 <span class="preprocessor">#define MAX_SPACE_IN_SRAM 5                 </span>
+<a name="l00055"></a>00055 <span class="preprocessor">#define swap_out    mmc_emu_write_sector    </span>
+<a name="l00056"></a>00056 <span class="preprocessor">#define swap_in     mmc_emu_read_sector     </span>
+<a name="l00057"></a>00057 <span class="preprocessor">#define swap_space  mmc_emu_get_size()      </span>
+<a name="l00058"></a>00058 <span class="preprocessor">#define fat_lookup  mmc_emu_fat_lookup_adr  </span>
+<a name="l00059"></a>00059 <span class="preprocessor">#define fat_store   mmc_emu_fat_store_adr   </span>
+<a name="l00060"></a>00060 <span class="preprocessor">#define mini_fat_find_block_P   mmc_emu_find_block  </span>
+<a name="l00061"></a>00061 <span class="preprocessor">#define mini_fat_get_filesize(addr, buffer) mmc_emu_get_filesize(addr)  </span>
+<a name="l00062"></a>00062 <span class="preprocessor">#define mini_fat_clear_file(addr, buffer) mmc_emu_clear_file(addr)  </span>
+<a name="l00063"></a>00063 <span class="preprocessor">#endif // MCU</span>
+<a name="l00064"></a>00064 <span class="preprocessor"></span>
+<a name="l00065"></a><a class="code" href="mmc-vm_8c.html#a08c951b555552d239a1e3599840d1f7d">00065</a> <span class="preprocessor">#define MAX_PAGES_IN_SRAM MAX_SPACE_IN_SRAM     </span>
+<a name="l00068"></a>00068 <span class="preprocessor">typedef struct {</span>
+<a name="l00069"></a><a class="code" href="structvm__cache__t.html#af7e2e8eaa313967519b0b955cd25b86e">00069</a> <span class="preprocessor"></span>    uint32_t <a class="code" href="structvm__cache__t.html#af7e2e8eaa313967519b0b955cd25b86e">addr</a>;      
+<a name="l00070"></a><a class="code" href="structvm__cache__t.html#a08191e4b62e675e8f4643dbf3404b41f">00070</a>     uint8_t * <a class="code" href="structvm__cache__t.html#a08191e4b62e675e8f4643dbf3404b41f">p_data</a>;   
+<a name="l00071"></a>00071 <span class="preprocessor">#if MAX_PAGES_IN_SRAM &gt; 2</span>
+<a name="l00072"></a>00072 <span class="preprocessor"></span>    uint8_t succ;       
+<a name="l00073"></a>00073     uint8_t prec;       
+<a name="l00074"></a>00074 <span class="preprocessor">#endif</span>
+<a name="l00075"></a><a class="code" href="structvm__cache__t.html#a103c3020693719a6b7dd5062e4ff42de">00075</a> <span class="preprocessor"></span>    uint8_t <a class="code" href="structvm__cache__t.html#a103c3020693719a6b7dd5062e4ff42de">dirty</a>;      
+<a name="l00076"></a>00076 } <a class="code" href="structvm__cache__t.html">vm_cache_t</a>;
+<a name="l00077"></a>00077 
+<a name="l00078"></a>00078 <span class="preprocessor">#ifdef VM_STATS_AVAILABLE</span>
+<a name="l00079"></a>00079 <span class="preprocessor"></span><span class="keyword">typedef</span> <span class="keyword">struct</span>{
+<a name="l00080"></a>00080     uint32_t page_access;       
+<a name="l00081"></a>00081     uint32_t swap_ins;      
+<a name="l00082"></a>00082     uint32_t swap_outs;     
+<a name="l00083"></a>00083     uint32_t vm_used_bytes; 
+<a name="l00084"></a>00084     uint32_t time;          
+<a name="l00085"></a>00085 } vm_stats_t;
+<a name="l00086"></a>00086 
+<a name="l00087"></a>00087 vm_stats_t stats_data = {0};
+<a name="l00088"></a>00088 <span class="preprocessor">#endif // VM_STATS_AVAILABLE</span>
+<a name="l00089"></a>00089 <span class="preprocessor"></span>
+<a name="l00090"></a>00090 <span class="keyword">static</span> uint32_t mmc_start_address = <a class="code" href="mmc-vm_8c.html#a962a20096b575285ee3a00262b36f669">MMC_START_ADDRESS</a>;  
+<a name="l00091"></a>00091 <span class="keyword">static</span> uint32_t next_mmc_address = <a class="code" href="mmc-vm_8c.html#a962a20096b575285ee3a00262b36f669">MMC_START_ADDRESS</a>;       
+<a name="l00092"></a>00092 <span class="keyword">static</span> uint8_t pages_in_sram = <a class="code" href="mmc-vm_8c.html#a08c951b555552d239a1e3599840d1f7d">MAX_PAGES_IN_SRAM</a>;           
+<a name="l00093"></a>00093 <span class="keyword">static</span> int8_t allocated_pages = 0;                      
+<a name="l00094"></a>00094 <span class="keyword">static</span> uint8_t oldest_cacheblock = 0;                       
+<a name="l00095"></a>00095 <span class="keyword">static</span> uint8_t recent_cacheblock = 0;                       
+<a name="l00097"></a>00097 <span class="keyword">static</span> <a class="code" href="structvm__cache__t.html">vm_cache_t</a> page_cache[<a class="code" href="mmc-vm_8c.html#a08c951b555552d239a1e3599840d1f7d">MAX_PAGES_IN_SRAM</a>];                
+<a name="l00099"></a>00099 <span class="preprocessor">#ifdef VM_STATS_AVAILABLE</span>
+<a name="l00100"></a>00100 <span class="preprocessor"></span>
+<a name="l00104"></a>00104 uint32_t mmc_get_pagefaults(<span class="keywordtype">void</span>) {
+<a name="l00105"></a>00105     <span class="keywordflow">return</span> stats_data.swap_ins;
+<a name="l00106"></a>00106 }
+<a name="l00107"></a>00107 
+<a name="l00112"></a>00112 vm_extern_stats_t * mmc_get_vm_stats(<span class="keywordtype">void</span>) {
+<a name="l00113"></a>00113     <span class="keyword">static</span> vm_extern_stats_t extern_stats = {0};
+<a name="l00114"></a>00114     memcpy(&amp;extern_stats, &amp;stats_data, <span class="keyword">sizeof</span>(vm_stats_t)); <span class="comment">// .time wird spaeter ueberschrieben</span>
+<a name="l00115"></a>00115     uint16_t delta_t = <a class="code" href="timer_8h.html#a76b2b7d3f9f2c0f931fbbb854c96986e">TICKS_TO_MS</a>(<a class="code" href="timer_8h.html#ae992a808717a64e585cbc308a1d5950d">TIMER_GET_TICKCOUNT_32</a> - stats_data.time) / 1000;
+<a name="l00116"></a>00116     <span class="keywordflow">if</span> (delta_t == 0) delta_t = 1;
+<a name="l00117"></a>00117     extern_stats.page_access_s = extern_stats.page_access / delta_t;
+<a name="l00118"></a>00118     extern_stats.swap_ins_s = extern_stats.swap_ins / delta_t;
+<a name="l00119"></a>00119     extern_stats.swap_outs_s = extern_stats.swap_outs / delta_t;
+<a name="l00120"></a>00120     extern_stats.device_size = <a class="code" href="mmc-vm_8c.html#a27b47974c3e9d9a4fe6977e926bb0efa">swap_space</a>;
+<a name="l00121"></a>00121     extern_stats.vm_size = <a class="code" href="mmc-vm_8c.html#a27b47974c3e9d9a4fe6977e926bb0efa">swap_space</a> - mmc_start_address;
+<a name="l00122"></a>00122     extern_stats.cache_size = pages_in_sram;
+<a name="l00123"></a>00123     extern_stats.cache_load = allocated_pages;
+<a name="l00124"></a>00124     extern_stats.delta_t = delta_t;
+<a name="l00125"></a>00125     <span class="keywordflow">return</span> &amp;extern_stats;
+<a name="l00126"></a>00126 }
+<a name="l00127"></a>00127 
+<a name="l00131"></a>00131 <span class="keywordtype">void</span> mmc_print_statistic(<span class="keywordtype">void</span>) {
+<a name="l00132"></a>00132 <span class="preprocessor">#ifdef PC</span>
+<a name="l00133"></a>00133 <span class="preprocessor"></span>    vm_extern_stats_t* vm_stats = mmc_get_vm_stats();
+<a name="l00134"></a>00134     printf(<span class="stringliteral">&quot;\n\r*** VM-Statistik *** \n\r&quot;</span>);
+<a name="l00135"></a>00135     printf(<span class="stringliteral">&quot;Groesse des Volumes: \t\t%lu MByte \n\r&quot;</span>, vm_stats-&gt;device_size&gt;&gt;20);
+<a name="l00136"></a>00136     printf(<span class="stringliteral">&quot;Groesse des VM: \t\t%lu MByte \n\r&quot;</span>, vm_stats-&gt;vm_size&gt;&gt;20);
+<a name="l00137"></a>00137     printf(<span class="stringliteral">&quot;Belegter virt. Speicher: \t%lu KByte \n\r&quot;</span>, vm_stats-&gt;vm_used_bytes&gt;&gt;10);
+<a name="l00138"></a>00138     printf(<span class="stringliteral">&quot;Groesse des Caches: \t\t%u Byte \n\r&quot;</span>, (uint16_t) vm_stats-&gt;cache_size&lt;&lt;9);
+<a name="l00139"></a>00139     printf(<span class="stringliteral">&quot;Auslastung des Caches: \t\t%u %% \n\r&quot;</span>, ((uint16_t )vm_stats-&gt;cache_load&lt;&lt;9)/((uint16_t) vm_stats-&gt;cache_size&lt;&lt;9)*100);
+<a name="l00140"></a>00140     printf(<span class="stringliteral">&quot;Seitenzugriffe: \t\t%lu \n\r&quot;</span>, vm_stats-&gt;page_access);
+<a name="l00141"></a>00141     printf(<span class="stringliteral">&quot;Seiteneinlagerungen: \t\t%lu \n\r&quot;</span>, vm_stats-&gt;swap_ins);
+<a name="l00142"></a>00142     printf(<span class="stringliteral">&quot;Seitenauslagerungen: \t\t%lu \n\r&quot;</span>, vm_stats-&gt;swap_outs);
+<a name="l00143"></a>00143     printf(<span class="stringliteral">&quot;Seitenzugriffe / s: \t\t%u \n\r&quot;</span>, vm_stats-&gt;page_access_s);
+<a name="l00144"></a>00144     printf(<span class="stringliteral">&quot;Seiteneinlagerungen / s: \t%u \n\r&quot;</span>, vm_stats-&gt;swap_ins_s);
+<a name="l00145"></a>00145     printf(<span class="stringliteral">&quot;Seitenauslagerungen / s: \t%u \n\r&quot;</span>, vm_stats-&gt;swap_outs_s);
+<a name="l00146"></a>00146     printf(<span class="stringliteral">&quot;Cache-Hit-Rate: \t\t%f %% \n\r&quot;</span>, (100.0-((<span class="keywordtype">float</span>)vm_stats-&gt;swap_ins/(<span class="keywordtype">float</span>)vm_stats-&gt;page_access)*100.0));
+<a name="l00147"></a>00147     printf(<span class="stringliteral">&quot;Messdauer: \t\t\t%u s \n\r&quot;</span>, vm_stats-&gt;delta_t);
+<a name="l00148"></a>00148 <span class="preprocessor">#else // MCU</span>
+<a name="l00149"></a>00149 <span class="preprocessor"></span>    <span class="comment">/* Ausgabe fuer MCU derzeit nur ueber Logging */</span>
+<a name="l00150"></a>00150 <span class="preprocessor">#ifdef LOG_AVAILABLE</span>
+<a name="l00151"></a>00151 <span class="preprocessor"></span>    vm_extern_stats_t * vm_stats = mmc_get_vm_stats();
+<a name="l00152"></a>00152     <span class="comment">/* Texte wie oben */</span>
+<a name="l00153"></a>00153     <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%lu&quot;</span>, vm_stats-&gt;device_size&gt;&gt;20);
+<a name="l00154"></a>00154     <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%lu&quot;</span>, vm_stats-&gt;vm_size&gt;&gt;20);
+<a name="l00155"></a>00155     <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%lu&quot;</span>, vm_stats-&gt;vm_used_bytes&gt;&gt;10);
+<a name="l00156"></a>00156     <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%u&quot;</span>, (uint16_t) vm_stats-&gt;cache_size&lt;&lt;9);
+<a name="l00157"></a>00157     <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%u&quot;</span>, ((uint16_t) vm_stats-&gt;cache_load&lt;&lt;9)/((uint16_t) vm_stats-&gt;cache_size&lt;&lt;9)*100);
+<a name="l00158"></a>00158     <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%lu&quot;</span>, vm_stats-&gt;page_access);
+<a name="l00159"></a>00159     <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%lu&quot;</span>, vm_stats-&gt;swap_ins);
+<a name="l00160"></a>00160     <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%lu&quot;</span>, vm_stats-&gt;swap_outs);
+<a name="l00161"></a>00161     <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%u&quot;</span>, vm_stats-&gt;page_access_s);
+<a name="l00162"></a>00162     <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%u&quot;</span>, vm_stats-&gt;swap_ins_s);
+<a name="l00163"></a>00163     <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%u&quot;</span>, vm_stats-&gt;swap_outs_s);
+<a name="l00164"></a>00164     <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%u&quot;</span>, (uint8_t)(100.0-((<span class="keywordtype">float</span>)vm_stats-&gt;swap_ins/(<span class="keywordtype">float</span>)vm_stats-&gt;page_access)*100.0));
+<a name="l00165"></a>00165     <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%u&quot;</span>, vm_stats-&gt;delta_t);
+<a name="l00166"></a>00166 <span class="preprocessor">#endif // LOG_AVAILABLE</span>
+<a name="l00167"></a>00167 <span class="preprocessor"></span><span class="preprocessor">#endif // PC</span>
+<a name="l00168"></a>00168 <span class="preprocessor"></span>}
+<a name="l00169"></a>00169 <span class="preprocessor">#endif // VM_STATS_AVAILABLE</span>
+<a name="l00170"></a>00170 <span class="preprocessor"></span>
+<a name="l00176"></a>00176 <span class="keyword">static</span> <span class="keyword">inline</span> uint32_t mmc_get_mmcblock_of_page(uint32_t addr) {
+<a name="l00177"></a>00177 <span class="preprocessor">#ifdef MCU</span>
+<a name="l00178"></a>00178 <span class="preprocessor"></span>    <span class="comment">/* Eine effizientere Variante von addr &gt;&gt; 9 */</span>
+<a name="l00179"></a>00179     <span class="keyword">asm</span> <span class="keyword">volatile</span>(
+<a name="l00180"></a>00180         <span class="stringliteral">&quot;mov %A0, %B0   \n\t&quot;</span>
+<a name="l00181"></a>00181         <span class="stringliteral">&quot;mov %B0, %C0   \n\t&quot;</span>
+<a name="l00182"></a>00182         <span class="stringliteral">&quot;mov %C0, %D0   \n\t&quot;</span>
+<a name="l00183"></a>00183         <span class="stringliteral">&quot;lsr %C0        \n\t&quot;</span>
+<a name="l00184"></a>00184         <span class="stringliteral">&quot;ror %B0        \n\t&quot;</span>
+<a name="l00185"></a>00185         <span class="stringliteral">&quot;ror %A0        \n\t&quot;</span>
+<a name="l00186"></a>00186         <span class="stringliteral">&quot;clr %D0            &quot;</span>
+<a name="l00187"></a>00187         :   <span class="stringliteral">&quot;=r&quot;</span>    (addr)
+<a name="l00188"></a>00188         :   <span class="stringliteral">&quot;0&quot;</span>     (addr)
+<a name="l00189"></a>00189     );
+<a name="l00190"></a>00190     <span class="keywordflow">return</span> addr;
+<a name="l00191"></a>00191 <span class="preprocessor">#else</span>
+<a name="l00192"></a>00192 <span class="preprocessor"></span>    <span class="keywordflow">return</span> addr &gt;&gt; 9;
+<a name="l00193"></a>00193 <span class="preprocessor">#endif // MCU</span>
+<a name="l00194"></a>00194 <span class="preprocessor"></span>}   
+<a name="l00195"></a>00195     
+<a name="l00201"></a>00201 <span class="keyword">static</span> <span class="keyword">inline</span> uint32_t mmc_get_end_of_page(uint32_t addr) {
+<a name="l00202"></a>00202     <span class="keywordflow">return</span> addr | 0x1ff;    <span class="comment">// die unteren 9 Bit sind gesetzt, da Blockgroesse = 512 Byte</span>
+<a name="l00203"></a>00203 }
+<a name="l00204"></a>00204 
+<a name="l00210"></a>00210 <span class="keyword">static</span> int8_t mmc_get_cacheblock_of_page(uint32_t addr) {
+<a name="l00211"></a>00211     uint32_t page_addr = mmc_get_mmcblock_of_page(addr);
+<a name="l00212"></a>00212     int8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00213"></a>00213     <span class="keywordflow">for</span> (i=0; i&lt;allocated_pages; i++) { <span class="comment">// O(n)</span>
+<a name="l00214"></a>00214         <span class="keywordflow">if</span> (page_cache[i].addr == page_addr) <span class="keywordflow">return</span> <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;  <span class="comment">// Seite gefunden :)</span>
+<a name="l00215"></a>00215     }
+<a name="l00216"></a>00216     <span class="keywordflow">return</span> -1;  <span class="comment">// Seite nicht im Cache</span>
+<a name="l00217"></a>00217 }
+<a name="l00218"></a>00218 
+<a name="l00224"></a>00224 <span class="keyword">static</span> uint8_t mmc_load_page(uint32_t addr) {
+<a name="l00225"></a>00225     <span class="keywordflow">if</span> (addr &gt;= next_mmc_address) <span class="keywordflow">return</span> 1; <span class="comment">// ungueltige virtuelle Adresse :(</span>
+<a name="l00226"></a>00226 <span class="preprocessor">#ifdef VM_STATS_AVAILABLE</span>
+<a name="l00227"></a>00227 <span class="preprocessor"></span>    stats_data.page_access++;
+<a name="l00228"></a>00228 <span class="preprocessor">#endif</span>
+<a name="l00229"></a>00229 <span class="preprocessor"></span>    int8_t cacheblock = mmc_get_cacheblock_of_page(addr); 
+<a name="l00230"></a>00230     <span class="keywordflow">if</span> (cacheblock &gt;= 0){   <span class="comment">// Cache-Hit, Seite ist bereits geladen :)</span>
+<a name="l00231"></a>00231         <span class="comment">/* LRU */</span>   
+<a name="l00232"></a>00232 <span class="comment">//      printf(&quot;hit: cacheblock: %d\t&quot;, cacheblock);</span>
+<a name="l00233"></a>00233 <span class="preprocessor">#if MAX_PAGES_IN_SRAM &gt; 2</span>
+<a name="l00234"></a>00234 <span class="preprocessor"></span>        <span class="keywordflow">if</span> (recent_cacheblock == cacheblock) {
+<a name="l00235"></a>00235             page_cache[cacheblock].succ = cacheblock;   <span class="comment">// Nachfolger des neuesten Eintrags ist die Identitaet</span>
+<a name="l00236"></a>00236 <span class="comment">//          printf(&quot;3) %d.succ: %d\t&quot;, recent_cacheblock, cacheblock);</span>
+<a name="l00237"></a>00237         }
+<a name="l00238"></a>00238         <span class="keywordflow">if</span> (oldest_cacheblock == cacheblock) {
+<a name="l00239"></a>00239             oldest_cacheblock = page_cache[cacheblock].succ;    <span class="comment">// Nachfolger ist neuer aeltester Eintrag</span>
+<a name="l00240"></a>00240             page_cache[page_cache[cacheblock].succ].prec = oldest_cacheblock;   <span class="comment">// Vorgaenger der Nachfolgers ist seine Identitaet</span>
+<a name="l00241"></a>00241         }
+<a name="l00242"></a>00242         <span class="keywordflow">else</span> {
+<a name="l00243"></a>00243             page_cache[page_cache[cacheblock].prec].succ = page_cache[cacheblock].succ; <span class="comment">// Nachfolger des Vorgaengers ist eigener Nachfolger</span>
+<a name="l00244"></a>00244 <span class="comment">//          printf(&quot;1) %d.succ: %d\t&quot;, page_cache[cacheblock].prec, page_cache[cacheblock].succ);</span>
+<a name="l00245"></a>00245             page_cache[page_cache[cacheblock].succ].prec = page_cache[cacheblock].prec; <span class="comment">// Vorganeger des Nachfolgers ist eigener Vorgaenger</span>
+<a name="l00246"></a>00246 <span class="comment">//          printf(&quot;2) %d.prec: %d\t&quot;, page_cache[cacheblock].succ, page_cache[cacheblock].prec);</span>
+<a name="l00247"></a>00247         }
+<a name="l00248"></a>00248         <span class="keywordflow">if</span> (recent_cacheblock != cacheblock) {
+<a name="l00249"></a>00249             page_cache[recent_cacheblock].succ = cacheblock;
+<a name="l00250"></a>00250 <span class="comment">//          printf(&quot;3) %d.succ: %d\t&quot;, recent_cacheblock, cacheblock);</span>
+<a name="l00251"></a>00251             page_cache[cacheblock].prec = recent_cacheblock;    <span class="comment">// alter neuester Eintrag ist neuer Vorgaenger</span>
+<a name="l00252"></a>00252 <span class="comment">//          printf(&quot;4) %d.prec: %d\t&quot;, cacheblock, page_cache[cacheblock].prec);</span>
+<a name="l00253"></a>00253         }
+<a name="l00254"></a>00254 <span class="preprocessor">#else</span>
+<a name="l00255"></a>00255 <span class="preprocessor"></span>        oldest_cacheblock = (uint8_t) ((pages_in_sram - 1) - cacheblock); <span class="comment">// aeltester Eintrag ist nun der andere Cacheblock (wenn verfuegbar)</span>
+<a name="l00256"></a>00256 <span class="preprocessor">#endif</span>
+<a name="l00257"></a>00257 <span class="preprocessor"></span>        recent_cacheblock = (uint8_t) cacheblock; <span class="comment">// neuester Eintrag ist nun die Identitaet</span>
+<a name="l00258"></a>00258 <span class="comment">//      printf(&quot;recent: %d\t&quot;, recent_cacheblock);</span>
+<a name="l00259"></a>00259 <span class="comment">//      printf(&quot;oldest: %d\n&quot;, oldest_cacheblock);</span>
+<a name="l00260"></a>00260         <span class="keywordflow">return</span> 0;
+<a name="l00261"></a>00261     }
+<a name="l00262"></a>00262     <span class="comment">/* Cache-Miss =&gt; neue Seite einlagern, LRU Policy */</span>
+<a name="l00263"></a>00263     int8_t next_cacheblock = (int8_t) oldest_cacheblock;
+<a name="l00264"></a>00264     <span class="keywordflow">if</span> (allocated_pages &lt; pages_in_sram) {
+<a name="l00265"></a>00265         <span class="comment">/* Es ist noch Platz im Cache */</span>
+<a name="l00266"></a>00266         next_cacheblock = allocated_pages;
+<a name="l00267"></a>00267         page_cache[next_cacheblock].<a class="code" href="structvm__cache__t.html#a08191e4b62e675e8f4643dbf3404b41f">p_data</a> = malloc(512);   <span class="comment">// Speicher anfordern</span>
+<a name="l00268"></a>00268         <span class="keywordflow">if</span> (page_cache[next_cacheblock].p_data == NULL) {   <span class="comment">// Da will uns jemand keinen Speicher mehr geben :(</span>
+<a name="l00269"></a>00269             <span class="keywordflow">if</span> (pages_in_sram == 1) <span class="keywordflow">return</span> 1;   <span class="comment">// Hier ging was schief, das wir so nicht loesen koennen</span>
+<a name="l00270"></a>00270             <span class="comment">/* Nicht mehr genug Speicher im RAM frei =&gt; neuer Versuch mit verkleinertem Cache */</span>
+<a name="l00271"></a>00271             pages_in_sram--;
+<a name="l00272"></a>00272             <span class="keywordflow">return</span> mmc_load_page(addr);
+<a name="l00273"></a>00273         }
+<a name="l00274"></a>00274         allocated_pages++;  <span class="comment">// Cache-Fuellstand aktualisieren       </span>
+<a name="l00275"></a>00275     }
+<a name="l00276"></a>00276     <span class="comment">/* Pager muss nun aktiv werden */</span>
+<a name="l00277"></a>00277 <span class="preprocessor">#ifdef VM_STATS_AVAILABLE</span>
+<a name="l00278"></a>00278 <span class="preprocessor"></span>    stats_data.swap_ins++;
+<a name="l00279"></a>00279 <span class="preprocessor">#endif</span>
+<a name="l00280"></a>00280 <span class="preprocessor"></span>    <span class="keywordflow">if</span> (page_cache[next_cacheblock].dirty == 1) {   <span class="comment">// Seite zurueckschreiben, falls Daten veraendert wurden</span>
+<a name="l00281"></a>00281 <span class="preprocessor">#ifdef VM_STATS_AVAILABLE</span>
+<a name="l00282"></a>00282 <span class="preprocessor"></span>        stats_data.swap_outs++;
+<a name="l00283"></a>00283 <span class="preprocessor">#endif</span>
+<a name="l00284"></a>00284 <span class="preprocessor"></span>        <span class="keywordflow">if</span> (<a class="code" href="mmc-vm_8c.html#a733442e7f1433071b65e448e6b799eb6">swap_out</a>(page_cache[next_cacheblock].addr, page_cache[next_cacheblock].p_data) != 0) <span class="keywordflow">return</span> 2;
+<a name="l00285"></a>00285     }
+<a name="l00286"></a>00286     <span class="keywordflow">if</span> (<a class="code" href="mmc-vm_8c.html#ade50f9d1cad5b40125fe8ea7723c5a4b">swap_in</a>(mmc_get_mmcblock_of_page(addr), page_cache[next_cacheblock].p_data) != 0) <span class="keywordflow">return</span> 3;
+<a name="l00287"></a>00287 <span class="comment">//  printf(&quot;miss: cacheblock: %d\t&quot;, next_cacheblock);</span>
+<a name="l00288"></a>00288 <span class="preprocessor">#if MAX_PAGES_IN_SRAM &gt; 2</span>
+<a name="l00289"></a>00289 <span class="preprocessor"></span>    <span class="keywordflow">if</span> (oldest_cacheblock == next_cacheblock) {
+<a name="l00290"></a>00290         oldest_cacheblock = page_cache[next_cacheblock].succ;   <span class="comment">// Nachfolger ist neuer aeltester Eintrag</span>
+<a name="l00291"></a>00291 <span class="comment">//      printf(&quot;1) %d.succ: %d\t&quot;, next_cacheblock, page_cache[next_cacheblock].succ);</span>
+<a name="l00292"></a>00292     }
+<a name="l00293"></a>00293 <span class="preprocessor">#else</span>
+<a name="l00294"></a>00294 <span class="preprocessor"></span>    oldest_cacheblock = (uint8_t) ((pages_in_sram - 1) - next_cacheblock); <span class="comment">// neuer aeltester Eintrag ist nun der andere Cacheblock (wenn verfuegbar)</span>
+<a name="l00295"></a>00295 <span class="preprocessor">#endif</span>
+<a name="l00296"></a>00296 <span class="preprocessor"></span>    page_cache[next_cacheblock].<a class="code" href="structvm__cache__t.html#af7e2e8eaa313967519b0b955cd25b86e">addr</a> = mmc_get_mmcblock_of_page(addr); <span class="comment">// Cache-Tag aktualisieren</span>
+<a name="l00297"></a>00297     <span class="comment">/* LRU */</span>
+<a name="l00298"></a>00298 <span class="preprocessor">    #if MAX_PAGES_IN_SRAM &gt; 2</span>
+<a name="l00299"></a>00299 <span class="preprocessor"></span>        page_cache[next_cacheblock].prec = recent_cacheblock;   <span class="comment">// Vorgaenger dieses Cacheblocks ist der bisher neueste Eintrag</span>
+<a name="l00300"></a>00300 <span class="comment">//      printf(&quot;2) %d.prec: %d\t&quot;, next_cacheblock, page_cache[next_cacheblock].prec);</span>
+<a name="l00301"></a>00301         page_cache[recent_cacheblock].succ = next_cacheblock;   <span class="comment">// Nachfolger des bisher neuesten Eintrags ist dieser Cacheblock</span>
+<a name="l00302"></a>00302 <span class="comment">//      printf(&quot;3) %d.succ: %d\t&quot;, recent_cacheblock, page_cache[recent_cacheblock].succ);</span>
+<a name="l00303"></a>00303 <span class="preprocessor">    #endif</span>
+<a name="l00304"></a>00304 <span class="preprocessor"></span>    recent_cacheblock = (uint8_t) next_cacheblock; <span class="comment">// Dieser Cacheblock ist der neueste Eintrag</span>
+<a name="l00305"></a>00305 <span class="comment">//  printf(&quot;recent: %d\t&quot;, recent_cacheblock);</span>
+<a name="l00306"></a>00306 <span class="comment">//  printf(&quot;oldest: %d\n&quot;, oldest_cacheblock);  </span>
+<a name="l00307"></a>00307     <span class="keywordflow">return</span> 0;
+<a name="l00308"></a>00308 }
+<a name="l00309"></a>00309 
+<a name="l00316"></a><a class="code" href="mmc-vm_8h.html#a451514920748291271c1ee5f671f5503">00316</a> uint32_t <a class="code" href="mmc-vm_8c.html#a451514920748291271c1ee5f671f5503">mmcalloc</a>(uint32_t size, uint8_t aligned) {
+<a name="l00317"></a>00317     aligned = aligned;
+<a name="l00318"></a>00318     <span class="keywordflow">if</span> (next_mmc_address == mmc_start_address) {
+<a name="l00319"></a>00319         <span class="comment">/* Inits */</span>
+<a name="l00320"></a>00320         <span class="keywordflow">if</span> (mmc_start_address &gt; <a class="code" href="mmc-vm_8c.html#a27b47974c3e9d9a4fe6977e926bb0efa">swap_space</a>) {
+<a name="l00321"></a>00321             mmc_start_address = <a class="code" href="mmc-vm_8c.html#a27b47974c3e9d9a4fe6977e926bb0efa">swap_space</a>-512;
+<a name="l00322"></a>00322             next_mmc_address = mmc_start_address;
+<a name="l00323"></a>00323         }
+<a name="l00324"></a>00324     }
+<a name="l00325"></a>00325     uint32_t start_addr;
+<a name="l00326"></a>00326     <span class="keywordflow">if</span> (<span class="comment">/*aligned == 0 || */</span>mmc_get_end_of_page(next_mmc_address) == mmc_get_end_of_page(next_mmc_address+size-1)) {
+<a name="l00327"></a>00327         <span class="comment">/* Daten einfach an der naechsten freien virtuellen Adresse speichern */</span>
+<a name="l00328"></a>00328         start_addr = next_mmc_address;
+<a name="l00329"></a>00329     } <span class="keywordflow">else</span> {
+<a name="l00330"></a>00330         <span class="comment">/* Rest der letzten Seite ueberspringen und Daten in neuem Block speichern */</span>
+<a name="l00331"></a>00331         start_addr = mmc_get_end_of_page(next_mmc_address) + 1;
+<a name="l00332"></a>00332     }   
+<a name="l00333"></a>00333     <span class="keywordflow">if</span> (start_addr+size &gt; <a class="code" href="mmc-vm_8c.html#a27b47974c3e9d9a4fe6977e926bb0efa">swap_space</a>) <span class="keywordflow">return</span> 0; <span class="comment">// wir haben nicht mehr virtuellen Speicher als Platz auf dem Swap-Device</span>
+<a name="l00334"></a>00334     <span class="comment">/* interne Daten aktualisieren */</span>
+<a name="l00335"></a>00335     next_mmc_address = start_addr + size;
+<a name="l00336"></a>00336 <span class="preprocessor">#ifdef VM_STATS_AVAILABLE</span>
+<a name="l00337"></a>00337 <span class="preprocessor"></span>    stats_data.vm_used_bytes = next_mmc_address - mmc_start_address;
+<a name="l00338"></a>00338 <span class="preprocessor">#endif</span>
+<a name="l00339"></a>00339 <span class="preprocessor"></span>    <span class="keywordflow">return</span> start_addr;
+<a name="l00340"></a>00340 }
+<a name="l00341"></a>00341 
+<a name="l00347"></a><a class="code" href="mmc-vm_8h.html#a25aa2c381c261acbae31715c03056db9">00347</a> uint8_t * <a class="code" href="mmc-vm_8c.html#a25aa2c381c261acbae31715c03056db9">mmc_get_data</a>(uint32_t addr) {
+<a name="l00348"></a>00348     <span class="comment">/* Seite der gewuenschten Adresse laden */</span>
+<a name="l00349"></a>00349     <span class="keywordflow">if</span> (mmc_load_page(addr) != 0) <span class="keywordflow">return</span> NULL;
+<a name="l00350"></a>00350     int8_t cacheblock = mmc_get_cacheblock_of_page(addr);
+<a name="l00351"></a>00351     page_cache[cacheblock].<a class="code" href="structvm__cache__t.html#a103c3020693719a6b7dd5062e4ff42de">dirty</a> = 1;   <span class="comment">// Daten sind veraendert</span>
+<a name="l00352"></a>00352     <span class="comment">/* Zeiger auf Adresse in gecacheter Seite laden / berechnen und zurueckgeben */</span>
+<a name="l00353"></a>00353     uint16_t offset = (uint16_t) (addr &amp; 0x1ff);
+<a name="l00354"></a>00354     <span class="comment">//return page_cache[cacheblock].p_data + (addr - (mmc_get_mmcblock_of_page(addr)&lt;&lt;9));</span>
+<a name="l00355"></a>00355     <span class="keywordflow">return</span> page_cache[cacheblock].<a class="code" href="structvm__cache__t.html#a08191e4b62e675e8f4643dbf3404b41f">p_data</a> + offset;
+<a name="l00356"></a>00356 }
+<a name="l00357"></a>00357 
+<a name="l00363"></a><a class="code" href="mmc-vm_8h.html#ad887d55b9fc46765a33062d0b9844672">00363</a> uint8_t <a class="code" href="mmc-vm_8c.html#ad887d55b9fc46765a33062d0b9844672">mmc_page_write_back</a>(uint32_t addr) {
+<a name="l00364"></a>00364     int8_t cacheblock = mmc_get_cacheblock_of_page(addr);
+<a name="l00365"></a>00365     <span class="keywordflow">if</span> (cacheblock &lt; 0) <span class="keywordflow">return</span> 1;   <span class="comment">// Seite nicht eingelagert</span>
+<a name="l00366"></a>00366     <span class="keywordflow">if</span> (<a class="code" href="mmc-vm_8c.html#a733442e7f1433071b65e448e6b799eb6">swap_out</a>(page_cache[cacheblock].addr, page_cache[cacheblock].p_data) != 0) <span class="keywordflow">return</span> 2;    <span class="comment">// Seite (evtl. asynchron) zurueckschreiben</span>
+<a name="l00367"></a>00367     page_cache[cacheblock].<a class="code" href="structvm__cache__t.html#a103c3020693719a6b7dd5062e4ff42de">dirty</a> = 0;   <span class="comment">// Dirty-Bit zuruecksetzen</span>
+<a name="l00368"></a>00368     <span class="keywordflow">return</span> 0;
+<a name="l00369"></a>00369 }
+<a name="l00370"></a>00370 
+<a name="l00375"></a><a class="code" href="mmc-vm_8h.html#a4faad3b4a9ed02fd2ebde88068cd4028">00375</a> uint8_t <a class="code" href="mmc-vm_8c.html#a4faad3b4a9ed02fd2ebde88068cd4028">mmc_flush_cache</a>(<span class="keywordtype">void</span>) {
+<a name="l00376"></a>00376     uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00377"></a>00377     uint8_t result=0;
+<a name="l00378"></a>00378     <span class="keywordflow">for</span> (i=0; i&lt;allocated_pages; i++) {
+<a name="l00379"></a>00379         <span class="keywordflow">if</span> (page_cache[i].dirty == 1) {
+<a name="l00380"></a>00380             <span class="keywordflow">if</span> (page_cache[i].addr &lt; mmc_get_mmcblock_of_page(<a class="code" href="mmc-vm_8c.html#a27b47974c3e9d9a4fe6977e926bb0efa">swap_space</a>))
+<a name="l00381"></a>00381                 result = (uint8_t) (result + <a class="code" href="mmc-vm_8c.html#a733442e7f1433071b65e448e6b799eb6">swap_out</a>(page_cache[i].addr, page_cache[i].p_data)); <span class="comment">// synchrones Zurueckschreiben</span>
+<a name="l00382"></a>00382             page_cache[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structvm__cache__t.html#a103c3020693719a6b7dd5062e4ff42de">dirty</a> = 0;
+<a name="l00383"></a>00383         }
+<a name="l00384"></a>00384     }
+<a name="l00385"></a>00385     <span class="keywordflow">return</span> result;  
+<a name="l00386"></a>00386 }
+<a name="l00387"></a>00387 
+<a name="l00396"></a><a class="code" href="mmc-vm_8h.html#ae81b117f7248886fb2cc74029301ea93">00396</a> uint32_t <a class="code" href="mmc-vm_8c.html#ae81b117f7248886fb2cc74029301ea93">mmc_fopen_P</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * filename) {
+<a name="l00397"></a>00397     <span class="comment">/* Pufferspeicher organisieren */</span>
+<a name="l00398"></a>00398     uint32_t v_addr = <a class="code" href="mmc-vm_8c.html#a451514920748291271c1ee5f671f5503">mmcalloc</a>(512, 0);
+<a name="l00399"></a>00399     uint8_t * p_data = <a class="code" href="mmc-vm_8c.html#a25aa2c381c261acbae31715c03056db9">mmc_get_data</a>(v_addr);    <span class="comment">// hier speichern wir im Folgenden den ersten Block der gesuchten Datei</span>
+<a name="l00400"></a>00400     <span class="keywordflow">if</span> (p_data == NULL) <span class="keywordflow">return</span> 0;
+<a name="l00401"></a>00401     <span class="comment">/* Die Dateiadressen liegen ausserhalb des Bereichs fuer den VM, also interne Datenanpassungen hier rueckgaengig machen */</span>
+<a name="l00402"></a>00402     next_mmc_address -= 512;
+<a name="l00403"></a>00403 <span class="preprocessor">#ifdef VM_STATS_AVAILABLE</span>
+<a name="l00404"></a>00404 <span class="preprocessor"></span>    stats_data.vm_used_bytes -= 512;
+<a name="l00405"></a>00405 <span class="preprocessor">#endif</span>
+<a name="l00406"></a>00406 <span class="preprocessor"></span>        
+<a name="l00407"></a>00407     uint32_t block = mini_fat_find_block_P(filename, p_data, mmc_start_address);
+<a name="l00408"></a>00408     uint8_t idx = (uint8_t) mmc_get_cacheblock_of_page(v_addr);
+<a name="l00409"></a>00409     <span class="keywordflow">if</span> (block != 0xffffffff) {
+<a name="l00410"></a>00410         page_cache[idx].<a class="code" href="structvm__cache__t.html#af7e2e8eaa313967519b0b955cd25b86e">addr</a> = 0;
+<a name="l00411"></a>00411         page_cache[idx].<a class="code" href="structvm__cache__t.html#a103c3020693719a6b7dd5062e4ff42de">dirty</a> = 0;
+<a name="l00412"></a>00412         block &lt;&lt;= 9;
+<a name="l00413"></a>00413         <a class="code" href="mmc-vm_8c.html#a25aa2c381c261acbae31715c03056db9">mmc_get_data</a>(block);
+<a name="l00414"></a>00414         <span class="keywordflow">return</span> block;
+<a name="l00415"></a>00415     }
+<a name="l00416"></a>00416     <span class="comment">/* Suche erfolglos, aber der Cache soll konsistent bleiben */</span>
+<a name="l00417"></a>00417     page_cache[idx].<a class="code" href="structvm__cache__t.html#af7e2e8eaa313967519b0b955cd25b86e">addr</a> = 0x800000;    <span class="comment">// Diesen Sektor gibt es auf keiner Karte &lt;= 4 GB </span>
+<a name="l00418"></a>00418     page_cache[idx].<a class="code" href="structvm__cache__t.html#a103c3020693719a6b7dd5062e4ff42de">dirty</a> = 0;  <span class="comment">// HackHack, aber so wird der ungueltige Inhalt beim Pagefault niemals versucht auf die Karte zu schreiben</span>
+<a name="l00419"></a>00419     <span class="keywordflow">return</span> 0;
+<a name="l00420"></a>00420 }
+<a name="l00421"></a>00421 
+<a name="l00428"></a><a class="code" href="mmc-vm_8h.html#a010ae1c4ffa8d25d8ee752c656c29504">00428</a> uint32_t <a class="code" href="mmc-vm_8c.html#a010ae1c4ffa8d25d8ee752c656c29504">mmc_get_filesize</a>(uint32_t file_start) {
+<a name="l00429"></a>00429     <span class="comment">/* Puffer erzeugen */</span>
+<a name="l00430"></a>00430     uint8_t * buffer = <a class="code" href="mmc-vm_8c.html#a25aa2c381c261acbae31715c03056db9">mmc_get_data</a>(file_start-512);
+<a name="l00431"></a>00431     <span class="keywordflow">if</span> (buffer != NULL) {
+<a name="l00432"></a>00432         <span class="comment">/* Groesse mit Mini-FAT-Treiber auslesen lassen */</span>
+<a name="l00433"></a>00433         <span class="keywordflow">return</span> mini_fat_get_filesize(mmc_get_mmcblock_of_page(file_start), buffer);
+<a name="l00434"></a>00434     }
+<a name="l00435"></a>00435     <span class="keywordflow">return</span> 0;
+<a name="l00436"></a>00436 }
+<a name="l00437"></a>00437 
+<a name="l00442"></a><a class="code" href="mmc-vm_8h.html#a8908f63f68b42f875acc159be8f97160">00442</a> <span class="keywordtype">void</span> <a class="code" href="mmc-vm_8c.html#a8908f63f68b42f875acc159be8f97160">mmc_clear_file</a>(uint32_t file_start) {
+<a name="l00443"></a>00443     <span class="comment">/* Cache sichern */</span>
+<a name="l00444"></a>00444     <a class="code" href="mmc-vm_8c.html#a4faad3b4a9ed02fd2ebde88068cd4028">mmc_flush_cache</a>();
+<a name="l00445"></a>00445     <span class="comment">/* Puffer erzeugen */</span>
+<a name="l00446"></a>00446     uint8_t * buffer = <a class="code" href="mmc-vm_8c.html#a25aa2c381c261acbae31715c03056db9">mmc_get_data</a>(file_start);
+<a name="l00447"></a>00447     <span class="keywordflow">if</span> (buffer != NULL) {
+<a name="l00448"></a>00448         mini_fat_clear_file(mmc_get_mmcblock_of_page(file_start), buffer);
+<a name="l00449"></a>00449     }
+<a name="l00450"></a>00450     <span class="comment">/* Cache loeschen */</span>
+<a name="l00451"></a>00451     uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00452"></a>00452     <span class="keywordflow">for</span> (i=0; i&lt;allocated_pages; i++) {
+<a name="l00453"></a>00453         page_cache[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structvm__cache__t.html#af7e2e8eaa313967519b0b955cd25b86e">addr</a> = 0x800000;  <span class="comment">// Diesen Sektor gibt es auf keiner Karte &lt;= 4 GB </span>
+<a name="l00454"></a>00454         page_cache[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structvm__cache__t.html#a103c3020693719a6b7dd5062e4ff42de">dirty</a> = 0;    <span class="comment">// so wird der ungueltige Inhalt beim Pagefault niemals versucht auf die Karte zu schreiben     </span>
+<a name="l00455"></a>00455     }
+<a name="l00456"></a>00456 }
+<a name="l00457"></a>00457 
+<a name="l00458"></a>00458 <span class="preprocessor">#endif // MMC_VM_AVAILABLE</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:04 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

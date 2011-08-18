@@ -16,6 +16,8 @@
 #
 # make all = Make software.
 #
+# make library = Build a library (libctbot.a) of the infrastructure components
+#
 # make clean = Clean out built project files.
 #
 # make coff = Convert ELF to AVR COFF (for use with AVR Studio 3.x or VMLAB).
@@ -41,31 +43,63 @@ FORMAT = ihex
 # Target file name (without extension).
 TARGET = ct-Bot
 
+# Name of the library that contains the hardware abstraction layer
+LIBRARY = libctbot.a
+
 # Target Device, either pc or mcu, usually defined on commandline
 DEVICE ?= MCU
 #DEVICE ?= PC
 
+SAVE_TEMPS ?=
+
 MSG_DEVICE = Target device is $(DEVICE)
 
 # List C source files here. (C dependencies are automatically generated.)
-SRCMCU = mcu/adc.c mcu/bootloader.c mcu/bot-2-sim.c mcu/botfs-low.c mcu/cmps03.c mcu/delay.c mcu/display.c mcu/ena.c mcu/i2c.c mcu/init-low.c mcu/ir-rc5.c mcu/led.c mcu/mini-fat.c mcu/mmc.c mcu/mmc-low.c mcu/motor-low.c mcu/mouse.c mcu/os_scheduler.c mcu/os_thread.c mcu/sensor-low.c mcu/shift.c mcu/sp03.c mcu/spi.c mcu/srf10.c mcu/timer-low.c mcu/twi.c mcu/uart.c 
+define SRCMCU
+	mcu/adc.c mcu/bootloader.c mcu/bot-2-sim.c mcu/botfs-low.c mcu/cmps03.c mcu/delay.c mcu/display.c mcu/ena.c \
+	mcu/i2c.c mcu/init-low.c mcu/ir-rc5.c mcu/led.c mcu/mini-fat.c mcu/mmc.c mcu/mmc-low.c mcu/motor-low.c mcu/mouse.c \
+	mcu/os_scheduler.c mcu/os_thread.c mcu/sensor-low.c mcu/shift.c mcu/sp03.c mcu/spi.c mcu/srf10.c mcu/timer-low.c \
+	mcu/twi.c mcu/uart.c
+endef 
 
-SRCPC = pc/bot-2-sim_pc.c pc/botfs_pc.c pc/botfs-low_pc.c pc/botfs-tools_pc.c pc/cmd-tools_pc.c pc/delay_pc.c pc/display_pc.c pc/eeprom_pc.c pc/ena_pc.c pc/init-low_pc.c pc/ir-rc5_pc.c pc/led_pc.c pc/mini-fat_pc.c pc/mmc-emu_pc.c pc/motor-low_pc.c pc/mouse_pc.c pc/os_thread_pc.c pc/sensor-low_pc.c pc/tcp-server.c pc/tcp.c pc/timer-low_pc.c pc/trace.c
+define SRCPC
+	pc/bot-2-sim_pc.c pc/botfs_pc.c pc/botfs-low_pc.c pc/botfs-tools_pc.c pc/cmd-tools_pc.c pc/delay_pc.c pc/display_pc.c \
+	pc/eeprom_pc.c pc/ena_pc.c pc/init-low_pc.c pc/ir-rc5_pc.c pc/led_pc.c pc/mini-fat_pc.c pc/mmc-emu_pc.c pc/motor-low_pc.c \
+	pc/mouse_pc.c pc/os_thread_pc.c pc/sensor-low_pc.c pc/tcp-server.c pc/tcp.c pc/timer-low_pc.c pc/trace.c 
+endef
 
-SRCCOM = bot-2-bot.c botfs.c command.c $(TARGET).c fifo.c init.c log.c map.c math_utils.c minilog.c mmc-vm.c motor.c pos_store.c sensor.c timer.c 
+define SRCHIGHLEVEL
+	bot-2-bot.c botcontrol.c botfs.c command.c fifo.c init.c log.c map.c math_utils.c minilog.c mmc-vm.c motor.c pos_store.c  \
+	sensor.c timer.c
+endef 
+
+define SRCLOGIC
+	bot-logic/behaviour_avoid_border.c bot-logic/behaviour_avoid_col.c bot-logic/behaviour_calibrate_pid.c bot-logic/behaviour_calibrate_sharps.c \
+	bot-logic/behaviour_cancel_behaviour.c bot-logic/behaviour_catch_pillar.c bot-logic/behaviour_classify_objects.c bot-logic/behaviour_delay.c \
+	bot-logic/behaviour_drive_area.c bot-logic/behaviour_drive_chess.c bot-logic/behaviour_drive_distance.c bot-logic/behaviour_drive_square.c \
+	bot-logic/behaviour_drive_stack.c bot-logic/behaviour_follow_line_enhanced.c bot-logic/behaviour_follow_line.c bot-logic/behaviour_follow_object.c \
+	bot-logic/behaviour_follow_wall.c bot-logic/behaviour_get_utilization.c bot-logic/behaviour_goto_obstacle.c bot-logic/behaviour_goto_pos.c \
+	bot-logic/behaviour_goto.c bot-logic/behaviour_gotoxy.c bot-logic/behaviour_hang_on.c bot-logic/behaviour_hw_test.c \
+	bot-logic/behaviour_line_shortest_way.c bot-logic/behaviour_measure_distance.c bot-logic/behaviour_olympic.c bot-logic/behaviour_pathplaning.c \
+	bot-logic/behaviour_prototype.c bot-logic/behaviour_remotecall.c bot-logic/behaviour_scan.c bot-logic/behaviour_scan_beacons.c \
+	bot-logic/behaviour_servo.c bot-logic/behaviour_simple.c bot-logic/behaviour_solve_maze.c bot-logic/behaviour_transport_pillar.c \
+	bot-logic/behaviour_turn.c bot-logic/behaviour_ubasic.c bot-logic/bot-logic.c bot-logic/tokenizer.c bot-logic/ubasic_call.c bot-logic/ubasic_cvars.c \
+	bot-logic/ubasic_ext_proc.c bot-logic/ubasic.c 
+endef
+   
+SRCMAIN = ct-Bot.c
+
 SRCUI = ui/gui.c ui/misc.c ui/rc5.c
 
-SRCLOGIC = bot-logic/behaviour_avoid_border.c bot-logic/behaviour_avoid_col.c bot-logic/behaviour_calibrate_pid.c bot-logic/behaviour_calibrate_sharps.c bot-logic/behaviour_cancel_behaviour.c bot-logic/behaviour_catch_pillar.c bot-logic/behaviour_classify_objects.c bot-logic/behaviour_delay.c bot-logic/behaviour_drive_area.c bot-logic/behaviour_drive_chess.c bot-logic/behaviour_drive_distance.c bot-logic/behaviour_drive_square.c bot-logic/behaviour_drive_stack.c bot-logic/behaviour_follow_line_enhanced.c bot-logic/behaviour_follow_line.c bot-logic/behaviour_follow_object.c bot-logic/behaviour_follow_wall.c bot-logic/behaviour_get_utilization.c bot-logic/behaviour_goto_obstacle.c bot-logic/behaviour_goto_pos.c bot-logic/behaviour_goto.c bot-logic/behaviour_gotoxy.c bot-logic/behaviour_hang_on.c bot-logic/behaviour_line_shortest_way.c bot-logic/behaviour_measure_distance.c bot-logic/behaviour_olympic.c bot-logic/behaviour_pathplaning.c bot-logic/behaviour_remotecall.c bot-logic/behaviour_scan.c bot-logic/behaviour_scan_beacons.c bot-logic/behaviour_servo.c bot-logic/behaviour_simple.c bot-logic/behaviour_solve_maze.c bot-logic/behaviour_transport_pillar.c bot-logic/behaviour_turn.c bot-logic/behaviour_ubasic.c bot-logic/bot-logic.c bot-logic/tokenizer.c bot-logic/ubasic_call.c bot-logic/ubasic_cvars.c bot-logic/ubasic_ext_proc.c bot-logic/ubasic.c
 
-   
+SRCLIBRARY = $(SRCHIGHLEVEL) $(SRCUI)
+ifeq ($(DEVICE),MCU)
+SRCLIBRARY += $(SRCMCU)
+else
+SRCLIBRARY += $(SRCPC)
+endif
 
-
-#ifeq ($(DEVICE),MCU)
-#	SRC = $(TARGET).c $(SRCCOM) $(SRCMCU)
-#else
-#	SRC = $(TARGET).c $(SRCCOM) $(SRCPC)
-#endif
-SRC =$(SRCCOM) $(SRCUI) $(SRCPC) $(SRCMCU) $(SRCLOGIC)
+SRCBEHAVIOUR = $(SRCMAIN) $(SRCLOGIC)
 
 
 # List Assembler source files here.
@@ -75,22 +109,14 @@ SRC =$(SRCCOM) $(SRCUI) $(SRCPC) $(SRCMCU) $(SRCLOGIC)
 # Even though the DOS/Win* filesystem matches both .s and .S the same,
 # it will preserve the spelling of the filenames, and gcc itself does
 # care about how the name is spelled on its command-line.
-ifeq ($(DEVICE),MCU)
-    ASRC = 1st_init.S
-else
-    ASRC = 1st_init.S
-endif	
+ASRC = 1st_init.S
 
 MATH_LIB = -lm
-	
-ifeq ($(DEVICE),MCU)
-	# List any extra directories to look for include files here.
-	#     Each directory must be seperated by a space.
-	EXTRAINCDIRS = include
 
-	
-	
-	
+# List any extra directories to look for include files here.
+#     Each directory must be seperated by a space.
+EXTRAINCDIRS = . ./include
+ifeq ($(DEVICE),MCU)
 	# Assembler flags.
 	#  -Wa,...:   tell GCC to pass this to the assembler.
 	#  -ahlms:    create listing
@@ -119,30 +145,16 @@ ifeq ($(DEVICE),MCU)
 	SCANF_LIB_FLOAT = -Wl,-u,vfscanf -lscanf_flt
 	
 	SCANF_LIB = 
-		
-	# External memory options
-	
-	# 64 KB of external RAM, starting after internal RAM (ATmega128!),
-	# used for variables (.data/.bss) and heap (malloc()).
-	#EXTMEMOPTS = -Wl,-Tdata=0x801100,--defsym=__heap_end=0x80ffff
-	
-	# 64 KB of external RAM, starting after internal RAM (ATmega128!),
-	# only used for heap (malloc()).
-	#EXTMEMOPTS = -Wl,--defsym=__heap_start=0x801100,--defsym=__heap_end=0x80ffff
-	
-	EXTMEMOPTS =
+
 	
 	# Linker flags.
 	#  -Wl,...:     tell GCC to pass this to linker.
-	#    -Map:      create map file
-	#    --cref:    add cross reference to  map file
-#	LDFLAGS = -Wl,-Map=$(TARGET).map,--cref
 	LDFLAGS = -mmcu=$(MCU)
 	LDFLAGS += -Wl,--section-start=.bootloader=0x7C00
-	LDFLAGS += $(EXTMEMOPTS)
-	LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB)
-	LDFLAGS += -L $(DIRAVR)
+	LDFLAGS += -Wl,--whole-archive
 	
+	LIBS = -Wl,--no-whole-archive 
+	LIBS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 	
 	
 	# Programming support using avrdude. Settings and variables.
@@ -184,30 +196,38 @@ ifeq ($(DEVICE),MCU)
 	
 	
 	# ---------------------------------------------------------------------------
-	
-	# Define directories, if needed.
-	DIRAVR = /usr/local/avr
-	DIRAVRBIN = $(DIRAVR)/bin
-	DIRAVRUTILS = $(DIRAVR)/utils/bin
-	DIRINC = $(DIRAVR)/include
-	DIRLIB = $(DIRAVR)/lib/avr5
-	
+
+	AR = avr-ar
+	AVRDUDE = avrdude
 	CC = avr-gcc
+	NM = avr-nm
 	OBJCOPY = avr-objcopy
 	OBJDUMP = avr-objdump
+	RANLIB = avr-ranlib
 	SIZE = avr-size
-	NM = avr-nm
-	AVRDUDE = avrdude
-
+	
+	# Optimization level, can be [0, 1, 2, 3, s]. 
+	# 0 = turn off optimization. s = optimize for size.
+	# (Note: 3 is not always the best optimization level. See avr-libc FAQ.)
+	OPT = s	
+	
+	OUTPUT = $(TARGET).elf
 else
-	# List any extra directories to look for include files here.
-	#     Each directory must be seperated by a space.
-	EXTRAINCDIRS = include
-
-	CC = gcc 
 	PTHREAD_LIB = -lpthread
-	LDFLAGS += $(PTHREAD_LIB)  $(MATH_LIB)
+	LIBS = $(PTHREAD_LIB) $(MATH_LIB)
+
+	AR = ar
+	CC = gcc
+	#CC = clang
+	RANLIB = ranlib
 	SIZE = size
+	
+	# Optimization level, can be [0, 1, 2, 3, s]. 
+	# 0 = turn off optimization. s = optimize for size.
+	# (Note: 3 is not always the best optimization level. See avr-libc FAQ.)
+	OPT = 2
+	
+	OUTPUT = $(TARGET)
 endif
 
 
@@ -217,25 +237,12 @@ SHELL = sh
 REMOVE = rm -f
 COPY = cp
 
-
-# Optimization level, can be [0, 1, 2, 3, s]. 
-# 0 = turn off optimization. s = optimize for size.
-# (Note: 3 is not always the best optimization level. See avr-libc FAQ.)
-OPT = s	
-
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
 # gnu89 - c89 plus GCC extensions
 # c99   - ISO C99 standard (not yet fully implemented)
 # gnu99 - c99 plus GCC extensions
 CSTANDARD = 
-#CSTANDARD = -std=gnu99
-
-# Place -D or -U options here
-CDEFS =
-
-# Place -I options here
-CINCS =
 
 
 # Compiler flags.
@@ -246,17 +253,25 @@ CINCS =
 #  -Wa,...:      tell GCC to pass this to the assembler.
 #    -adhlns...: create assembler listing
 CFLAGS = -g3
-CFLAGS += $(CDEFS) $(CINCS)
-CFLAGS += -O0 -O$(OPT)
+CFLAGS += -O$(OPT)
+CFLAGS += -pipe
 CFLAGS += -fmessage-length=0
 CFLAGS += -Wall -Wstrict-prototypes
-CFLAGS += -Wextra -Wmissing-prototypes -Wmissing-declarations -Wconversion --param inline-call-cost=2
+CFLAGS += -Wextra -Wmissing-prototypes -Wmissing-declarations
 CFLAGS += -MMD
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
-
+ifeq ($(DEVICE),MCU)
+	CFLAGS += -Wconversion
+endif
+ifdef SAVE_TEMPS
+CFLAGS += -save-temps -fverbose-asm -dA
+endif
 
 ASFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
+
+# Flags for the library archiver (ar)
+ARFLAGS = r
 
 
 # Define Messages
@@ -264,8 +279,7 @@ ASFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 MSG_ERRORS_NONE = Errors: none
 MSG_BEGIN = -------- begin --------
 MSG_END = --------  end  --------
-MSG_SIZE_BEFORE = Size before: 
-MSG_SIZE_AFTER = Size after:
+MSG_SIZE = Size:
 MSG_COFF = Converting to AVR COFF:
 MSG_EXTENDED_COFF = Converting to AVR Extended COFF:
 MSG_FLASH = Creating load file for Flash:
@@ -276,49 +290,51 @@ MSG_LINKING = Linking:
 MSG_COMPILING = Compiling:
 MSG_ASSEMBLING = Assembling:
 MSG_CLEANING = Cleaning project:
+MSG_CREATING_LIBRARY = Creating library:
 
 
 
 
 # Define all object files.
-OBJ = $(ASRC:.S=.o) $(SRC:.c=.o)
+OBJLIBRARY = $(ASRC:.S=.o) $(SRCLIBRARY:.c=.o)
+OBJBEHAVIOUR = $(SRCBEHAVIOUR:.c=.o)
 
 # Define all listing files.
 LST = $(ASRC:.S=.lst) $(SRC:.c=.lst)
 
 
 # Compiler flags to generate dependency files.
-#GENDEPFLAGS = -Wp,-M,-MP,-MT,$(*F).o,-MF,.dep/$(@F).d
-GENDEPFLAGS = -M,-MP,-MT,$(*F).o,-MF,.dep/$(@F).d
+GENDEPFLAGS = -MP -MT"$(*F).o" -MF".dep/$(@F).d"
 
 
 # Combine all necessary flags and optional flags.
 # Add target processor to flags.
 ifeq ($(DEVICE),MCU)
-	ALL_CFLAGS = -mmcu=$(MCU) -I. $(CFLAGS) $(GENDEPFLAGS) -D$(DEVICE)
-	ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS) -D$(DEVICE)
+	ALL_CFLAGS = -mmcu=$(MCU) $(CFLAGS) $(GENDEPFLAGS) -D$(DEVICE)
+	ALL_ASFLAGS = -mmcu=$(MCU) -x assembler-with-cpp $(ASFLAGS) -D$(DEVICE)
 else
-	ALL_CFLAGS = -I. $(CFLAGS) $(GENDEPFLAGS) -D$(DEVICE)
-	ALL_ASFLAGS = -I. -x assembler-with-cpp $(ASFLAGS) -D$(DEVICE)
+	ALL_CFLAGS = $(CFLAGS) $(GENDEPFLAGS) -D$(DEVICE)
+	ALL_ASFLAGS = -x assembler-with-cpp $(ASFLAGS) -D$(DEVICE)
 endif
 
 
 
 # Default target.
-all: begin gccversion sizebefore build sizeafter finished end
+all: begin gccversion build finished end
 
 ifeq ($(DEVICE),MCU)
-build: elf hex eep lss sym
+build: elf hex eep lss sym size
 else
 build: elf
 endif
 
-elf: $(TARGET).elf
+elf: $(OUTPUT)
 hex: $(TARGET).hex
 eep: $(TARGET).eep
 lss: $(TARGET).lss 
 sym: $(TARGET).sym
 
+library: $(LIBRARY)
 
 # Eye candy.
 # AVR Studio 3.x does not check make's exit code but relies on
@@ -339,13 +355,9 @@ end:
 
 # Display size of file.
 HEXSIZE = $(SIZE) --target=$(FORMAT) $(TARGET).hex
-ELFSIZE = $(SIZE) -A $(TARGET).elf
-sizebefore:
-	@if [ -f $(TARGET).elf ]; then echo; echo $(MSG_SIZE_BEFORE); $(ELFSIZE); echo; fi
-
-sizeafter:
-	@if [ -f $(TARGET).elf ]; then echo; echo $(MSG_SIZE_AFTER); $(ELFSIZE); echo; fi
-
+ELFSIZE = $(SIZE) -C --mcu=$(MCU) $(TARGET).elf | grep "bytes"
+size:
+	@if [ -f $(TARGET).elf ]; then echo; echo $(MSG_SIZE); $(ELFSIZE); echo; fi
 
 
 # Display compiler version information.
@@ -353,11 +365,9 @@ gccversion :
 	@$(CC) --version
 
 
-
 # Program the device.  
 program: $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
-
 
 
 
@@ -381,6 +391,11 @@ extcoff: $(TARGET).elf
 	$(COFFCONVERT) -O coff-ext-avr $< $(TARGET).cof
 
 
+$(LIBRARY): $(OBJLIBRARY)
+	@echo
+	@echo $(MSG_CREATING_LIBRARY) $@
+	$(AR) $(ARFLAGS) $@ $^
+	$(RANLIB) $@
 
 # Create final output files (.hex, .eep) from ELF output file.
 %.hex: %.elf
@@ -409,12 +424,12 @@ extcoff: $(TARGET).elf
 
 
 # Link: create ELF output file from object files.
-.SECONDARY : $(TARGET).elf
-.PRECIOUS : $(OBJ)
-%.elf: $(OBJ)
+.SECONDARY : $(OUTPUT)
+.PRECIOUS : $(OBJBEHAVIOUR)
+$(OUTPUT): $(OBJBEHAVIOUR) $(LIBRARY)
 	@echo
 	@echo $(MSG_LINKING) $@
-	$(CC) --output $@ $(LDFLAGS) $(OBJ) $(MATH_LIB)
+	$(CC) --output $@ $(LDFLAGS) $^ $(LIBS)
 
 
 # Compile: create object files from C source files.
@@ -443,23 +458,42 @@ clean: begin clean_list finished end
 clean_list :
 	@echo
 	@echo $(MSG_CLEANING)
+	$(REMOVE) $(TARGET)
+	$(REMOVE) $(TARGET).elf
 	$(REMOVE) $(TARGET).hex
 	$(REMOVE) $(TARGET).eep
 	$(REMOVE) $(TARGET).obj
 	$(REMOVE) $(TARGET).cof
-	$(REMOVE) $(TARGET).elf
 	$(REMOVE) $(TARGET).map
 	$(REMOVE) $(TARGET).obj
 	$(REMOVE) $(TARGET).a90
 	$(REMOVE) $(TARGET).sym
 	$(REMOVE) $(TARGET).lnk
 	$(REMOVE) $(TARGET).lss
-	$(REMOVE) $(OBJ)
+	$(REMOVE) $(LIBRARY)
+	$(REMOVE) $(OBJBEHAVIOUR)
+	$(REMOVE) $(ASRC:.S=.o)
+	$(REMOVE) $(SRCHIGHLEVEL:.c=.o)
+	$(REMOVE) $(SRCUI:.c=.o)
+	$(REMOVE) $(SRCMCU:.c=.o)
+	$(REMOVE) $(SRCPC:.c=.o)
 	$(REMOVE) $(LST)
-	$(REMOVE) $(SRC:.c=.s)
-	$(REMOVE) $(SRC:.c=.d)
+	$(REMOVE) $(notdir $(SRCBEHAVIOUR:.c=.s))
+	$(REMOVE) $(notdir $(SRCHIGHLEVEL:.c=.s))
+	$(REMOVE) $(notdir $(SRCUI:.c=.s))
+	$(REMOVE) $(notdir $(SRCMCU:.c=.s))
+	$(REMOVE) $(notdir $(SRCPC:.c=.s))
+	$(REMOVE) $(notdir $(SRCBEHAVIOUR:.c=.i))
+	$(REMOVE) $(notdir $(SRCHIGHLEVEL:.c=.i))
+	$(REMOVE) $(notdir $(SRCUI:.c=.i))
+	$(REMOVE) $(notdir $(SRCMCU:.c=.i))
+	$(REMOVE) $(notdir $(SRCPC:.c=.i))
+	$(REMOVE) $(SRCBEHAVIOUR:.c=.d)
+	$(REMOVE) $(SRCHIGHLEVEL:.c=.d)
+	$(REMOVE) $(SRCUI:.c=.d)
+	$(REMOVE) $(SRCMCU:.c=.d)
+	$(REMOVE) $(SRCPC:.c=.d)
 	$(REMOVE) .dep/*
-
 
 
 # Include the dependency files.
@@ -467,7 +501,7 @@ clean_list :
 
 
 # Listing of phony targets.
-.PHONY : all begin finish end sizebefore sizeafter gccversion \
+.PHONY : all begin finish end size gccversion \
 build elf hex eep lss sym coff extcoff \
 clean clean_list program
 

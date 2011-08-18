@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: behaviour_hw_test.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#define-members">Makrodefinitionen</a> &#124;
+<a href="#func-members">Funktionen</a>  </div>
+  <div class="headertitle">
+<div class="title">behaviour_hw_test.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Testcode fuer die Bot-Hardware (ehemals TEST_AVAILABLE_ANALOG, _DIGITAL, _MOTOR)  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="bot-logic_8h_source.html">bot-logic/bot-logic.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="led_8h_source.html">led.h</a>&quot;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für behaviour_hw_test.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__hw__test_8c__incl.png" border="0" usemap="#behaviour__hw__test_8c" alt=""/></div>
+<map name="behaviour__hw__test_8c" id="behaviour__hw__test_8c">
+</map>
+</div>
+</div>
+<p><a href="behaviour__hw__test_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="define-members"></a>
+Makrodefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__hw__test_8c.html#afd55e418feefec6ecedc8fb980bb9768">TEST_ANALOG</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sollen die LEDs die analoge Sensorwerte anzeigen?  <a href="#afd55e418feefec6ecedc8fb980bb9768"></a><br/></td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__hw__test_8c.html#a02eda846819c9cce56c8f38839d0a5f4">bot_hw_test_behaviour</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *data)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Das Testverhalten.  <a href="#a02eda846819c9cce56c8f38839d0a5f4"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__hw__test_8c.html#acf48df607e34246a0ea074a44047d844">bot_hw_test</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *caller, uint8_t mode)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Veraendert den Testmode.  <a href="#acf48df607e34246a0ea074a44047d844"></a><br/></td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Testcode fuer die Bot-Hardware (ehemals TEST_AVAILABLE_ANALOG, _DIGITAL, _MOTOR) </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Timo Sandmann (<a href="mailto:mail@timosandmann.de">mail@timosandmann.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>22.05.2011 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="behaviour__hw__test_8c_source.html">behaviour_hw_test.c</a>.</p>
+</div><hr/><h2>Makro-Dokumentation</h2>
+<a class="anchor" id="afd55e418feefec6ecedc8fb980bb9768"></a><!-- doxytag: member="behaviour_hw_test.c::TEST_ANALOG" ref="afd55e418feefec6ecedc8fb980bb9768" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TEST_ANALOG</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Sollen die LEDs die analoge Sensorwerte anzeigen? </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__hw__test_8c_source.html#l00032">32</a> der Datei <a class="el" href="behaviour__hw__test_8c_source.html">behaviour_hw_test.c</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="acf48df607e34246a0ea074a44047d844"></a><!-- doxytag: member="behaviour_hw_test.c::bot_hw_test" ref="acf48df607e34246a0ea074a44047d844" args="(Behaviour_t *caller, uint8_t mode)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_hw_test </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>caller</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Veraendert den Testmode. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*caller</td><td>Zeiger auf Verhaltensdatensatz des Aufrufers </td></tr>
+    <tr><td class="paramname">mode</td><td>neuer Mode (0: analog, 1: digital, 2: motor) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__hw__test_8c_source.html#l00135">135</a> der Datei <a class="el" href="behaviour__hw__test_8c_source.html">behaviour_hw_test.c</a>.</p>
+
+<p>Benutzt <a class="el" href="bot-logic_8c_source.html#l00532">switch_to_behaviour()</a>, <a class="el" href="behaviour__hw__test_8c_source.html#l00053">bot_hw_test_behaviour()</a>, <a class="el" href="bot-logic_8h_source.html#l00040">BEHAVIOUR_OVERRIDE</a> und <a class="el" href="bot-logic_8h_source.html#l00042">BEHAVIOUR_BACKGROUND</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__hw__test_8c_acf48df607e34246a0ea074a44047d844_cgraph.png" border="0" usemap="#behaviour__hw__test_8c_acf48df607e34246a0ea074a44047d844_cgraph" alt=""/></div>
+<map name="behaviour__hw__test_8c_acf48df607e34246a0ea074a44047d844_cgraph" id="behaviour__hw__test_8c_acf48df607e34246a0ea074a44047d844_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a02eda846819c9cce56c8f38839d0a5f4"></a><!-- doxytag: member="behaviour_hw_test.c::bot_hw_test_behaviour" ref="a02eda846819c9cce56c8f38839d0a5f4" args="(Behaviour_t *data)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_hw_test_behaviour </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Das Testverhalten. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>Der Verhaltensdatensatz </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__hw__test_8c_source.html#l00053">53</a> der Datei <a class="el" href="behaviour__hw__test_8c_source.html">behaviour_hw_test.c</a>.</p>
+
+<p>Benutzt <a class="el" href="sensor_8c_source.html#l00056">sensDistR</a>, <a class="el" href="sensor_8c_source.html#l00055">sensDistL</a>, <a class="el" href="sensor_8c_source.html#l00069">sensLineL</a>, <a class="el" href="sensor_8c_source.html#l00070">sensLineR</a>, <a class="el" href="sensor_8c_source.html#l00052">sensLDRL</a>, <a class="el" href="sensor_8c_source.html#l00053">sensLDRR</a>, <a class="el" href="sensor_8c_source.html#l00066">sensBorderL</a>, <a class="el" href="sensor_8c_source.html#l00067">sensBorderR</a>, <a class="el" href="led_8c_source.html#l00067">LED_set()</a>, <a class="el" href="sensor_8c_source.html#l00060">sensor_update_distance</a>, <a class="el" href="sensor_8c_source.html#l00222">sensor_dist_straight()</a>, <a class="el" href="sensor_8c_source.html#l00094">sensEncR</a>, <a class="el" href="sensor_8c_source.html#l00093">sensEncL</a>, <a class="el" href="sensor_8c_source.html#l00072">sensTrans</a>, <a class="el" href="sensor_8c_source.html#l00076">sensError</a>, <a class="el" href="sensor_8c_source.html#l00074">sensDoor</a>, <a class="el" href="sensor_8c_source.html#l00087">sensMouseDX</a>, <a class="el" href="sensor_8c_source.html#l00088">sensMouseDY</a>, <a class="el" href="rc5_8c_source.html#l00058">rc5_ir_data</a>, <a class="el" href="ir-rc5_8h_source.html#l00064">ir_data_t::ir_data</a>, <a class="el" href="bot-logic_8c_source.html#l00056">speedWishLeft</a>, <a class="el" href="motor_8h_source.html#l00034">BOT_SPEED_SLOW</a>, <a class="el" href="bot-logic_8c_source.html#l00057">speedWishRight</a> und <a class="el" href="motor_8h_source.html#l00031">BOT_SPEED_STOP</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__hw__test_8c_source.html#l00135">bot_hw_test()</a> und <a class="el" href="bot-logic_8c_source.html#l00086">bot_behave_init()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__hw__test_8c_a02eda846819c9cce56c8f38839d0a5f4_cgraph.png" border="0" usemap="#behaviour__hw__test_8c_a02eda846819c9cce56c8f38839d0a5f4_cgraph" alt=""/></div>
+<map name="behaviour__hw__test_8c_a02eda846819c9cce56c8f38839d0a5f4_cgraph" id="behaviour__hw__test_8c_a02eda846819c9cce56c8f38839d0a5f4_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:04 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

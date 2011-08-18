@@ -55,6 +55,7 @@
 
 #ifdef WIN32
 #include <winsock.h>
+typedef int socklen_t;
 #else
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -70,7 +71,7 @@ static int server;                    /*!< Server-Socket */
 
 static struct sockaddr_in serverAddr; /*!< Lokale Adresse  */
 static struct sockaddr_in clientAddr; /*!< Client-Adresse  */
-static unsigned int clntLen;          /*!< Laenge der Datenstruktur der Client-Adresse */
+static socklen_t clntLen;          /*!< Laenge der Datenstruktur der Client-Adresse */
 
 /*!
  * Init TCP-Server

@@ -112,6 +112,10 @@ static const uint8_t * parameter_length = NULL; /**< Hier speichern wir die Laen
  * - 4 Byte brauchen: uint32, int32, float
  */
 const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
+#ifdef BEHAVIOUR_PROTOTYPE_AVAILABLE
+	PREPARE_REMOTE_CALL(bot_prototype, 0, "", 0),
+//	PREPARE_REMOTE_CALL(bot_prototype, 1, "int16 param", 2),
+#endif
 	/* Demo-Verhalten fuer Einsteiger */
 #ifdef BEHAVIOUR_SIMPLE_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_simple, 0, "", 0),
@@ -121,6 +125,10 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 	PREPARE_REMOTE_CALL(bot_drive_square, 0, "", 0),
 #endif
 
+	/* Hardware-Test Verhalten */
+#ifdef BEHAVIOUR_HW_TEST_AVAILABLE
+	PREPARE_REMOTE_CALL(bot_hw_test, 1, "uint8 mode", 1),
+#endif
 	/* Kalibrierungs-Verhalten fuer Bot-Setup */
 #ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_calibrate_pid, 1, "int16 speed", 2),
@@ -376,8 +384,8 @@ void bot_remotecall_behaviour(Behaviour_t * data) {
 
 			// Aufrauemen
 			function_id = 255;
-			/* no break */
 		}
+		/* no break */
 		default:
 			running_behaviour = REMOTE_CALL_IDLE;
 			return_from_behaviour(data); // und Verhalten auch aus

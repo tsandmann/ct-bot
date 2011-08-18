@@ -1,0 +1,10 @@
+digraph G
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="cmd_tools.h",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="cmd-tools_pc.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$cmd-tools__pc_8c.html",tooltip="Funktionen, die per Commandline-Switch aufgerufen werden koennen."];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="init-low_pc.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init-low__pc_8c.html",tooltip="Initialisierungsroutinen fuer PC."];
+}

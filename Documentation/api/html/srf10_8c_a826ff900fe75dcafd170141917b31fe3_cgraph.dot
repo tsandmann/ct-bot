@@ -1,0 +1,20 @@
+digraph G
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="srf10_get_measure",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node1 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="srf10_ping",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$srf10_8c.html#a3166dd323e51c8796807baf8c004c13f"];
+  Node2 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="Send_to_TWI",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$twi_8c.html#a6abb3fb5269ea88940402079231142c5"];
+  Node3 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="i2c_write_read",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$i2c_8h.html#a390db7ff461cfff9cdd522dfb90fe23e"];
+  Node3 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="i2c_wait",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$i2c_8h.html#a8d0292580689dd8b7e0b441cf0e6c383"];
+  Node1 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="delay",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$delay_8h.html#adb7db4d9ef946dcfb58bcfc667ee674a",tooltip="Verzoegert um ms Millisekunden."];
+  Node1 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="srf10_read_register",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$srf10_8c.html#ab6f2f46a5a60ea85e2dc0bb12d5f86ff"];
+  Node7 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

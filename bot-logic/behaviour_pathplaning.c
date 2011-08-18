@@ -81,16 +81,16 @@
 #endif
 #endif // MCU
 #ifdef PC
-#define MAP_SIZE_LOWRES			12.288	/*!< Breite / Hoehe der Karte [m] */
+#define MAP_SIZE_LOWRES			12288LL	/*!< Breite / Hoehe der Karte [mm] */
 #else
 /*! \todo Groessere Karte auch fuer MCU waere wuenschenswert */
-#define MAP_SIZE_LOWRES			4.096	/*!< Breite / Hoehe der Karte [m] */
+#define MAP_SIZE_LOWRES			4096LL	/*!< Breite / Hoehe der Karte [mm] */
 #endif // PC
 
 #define MAP_SECTION_POINTS_LOWRES 32 	/*!< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS*MAP_SECTION_POINTS Bytes  */
-#define MAP_RESOLUTION_LOWRES 	7.8125	/*!< Aufloesung der Karte in Punkte pro Meter */
-#define MAP_CELL_SIZE_LOWRES	((int16_t)(1000 / MAP_RESOLUTION_LOWRES))	/*!< Breite eines Map-Feldes in mm */
-#define MAP_LENGTH_LOWRES		((int16_t)(MAP_SIZE_LOWRES * MAP_RESOLUTION_LOWRES))	/*!< Kantenlaenge der gesamten Karte in Map-Punkten */
+#define MAP_RESOLUTION_LOWRES 	78125LL	/*!< Aufloesung der Karte in Punkte pro 10000 Meter */
+#define MAP_CELL_SIZE_LOWRES	((int16_t)(10000000LL / MAP_RESOLUTION_LOWRES))	/*!< Breite eines Map-Feldes in mm */
+#define MAP_LENGTH_LOWRES		((int16_t)(MAP_SIZE_LOWRES * MAP_RESOLUTION_LOWRES / 10000000LL))	/*!< Kantenlaenge der gesamten Karte in Map-Punkten */
 #define RATIO_THRESHOLD			(MAP_RATIO_FULL - 5)	/*!< Schwellwert, unterhalb dem das Ergebnis von map_get_ratio() als Hindernis gilt */
 #define RATIO_THRESHOLD_DRIVEN  110     /*!< bei Pfadsuche auf befahrener Strecke gilt dieser Schwellwert. Einfach auskommentieren, um einheitlich RATIO_THRESHOLD zu verwenden */
 
@@ -99,7 +99,7 @@
 #endif
 
 /*! Anzahl der Sections in der Lowres-Map */
-#define MAP_SECTIONS_LOWRES (((int16_t)(MAP_SIZE_LOWRES * MAP_RESOLUTION_LOWRES) / MAP_SECTION_POINTS_LOWRES))
+#define MAP_SECTIONS_LOWRES (MAP_LENGTH_LOWRES / MAP_SECTION_POINTS_LOWRES)
 
 typedef struct {
 	int8_t section[MAP_SECTION_POINTS_LOWRES][MAP_SECTION_POINTS_LOWRES]; /*!< Einzelne Punkte */

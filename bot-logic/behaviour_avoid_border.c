@@ -32,7 +32,7 @@
  * @param *data	Der Verhaltensdatensatz
  */
 void bot_avoid_border_behaviour(Behaviour_t * data) {
-	data = data; // kein warning
+	(void) data; // kein warning
 	uint8_t flag = 0;
 	if (sensBorderL > BORDER_DANGEROUS) {
 		speedWishLeft = -BOT_SPEED_FAST;

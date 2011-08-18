@@ -1,0 +1,602 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: mmc-emu_pc.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_b1beec98a6d8202f7d2e9ed7dd898c89.html">pc</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#func-members">Funktionen</a> &#124;
+<a href="#var-members">Variablen</a>  </div>
+  <div class="headertitle">
+<div class="title">mmc-emu_pc.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>MMC / SD-Card Emulation fuer PC.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="ct-Bot_8h_source.html">ct-Bot.h</a>&quot;</code><br/>
+<code>#include &lt;stdlib.h&gt;</code><br/>
+<code>#include &lt;stdio.h&gt;</code><br/>
+<code>#include &lt;string.h&gt;</code><br/>
+<code>#include &quot;<a class="el" href="mmc-emu_8h_source.html">mmc-emu.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="mmc-vm_8h_source.html">mmc-vm.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="mini-fat_8h_source.html">mini-fat.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="display_8h_source.html">display.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="available__screens_8h_source.html">ui/available_screens.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="delay_8h_source.html">delay.h</a>&quot;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für mmc-emu_pc.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc-emu__pc_8c__incl.png" border="0" usemap="#mmc-emu__pc_8c" alt=""/></div>
+<map name="mmc-emu__pc_8c" id="mmc-emu__pc_8c">
+</map>
+</div>
+</div>
+<p><a href="mmc-emu__pc_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-emu__pc_8c.html#a9713f38ad215f9fa39949a6f068f2b7d">mmc_emu_get_init_state</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-emu__pc_8c.html#ab4fc9f8caf4c79352cb259ef70b06d38">mmc_emu_init</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-emu__pc_8c.html#a9d15df2f3ea11d22f9c8a316e1fad965">mmc_emu_read_sector</a> (uint32_t addr, uint8_t *buffer)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-emu__pc_8c.html#aed8e37da5218bc86881ddc1474ac7c43">mmc_emu_write_sector</a> (uint32_t addr, uint8_t *buffer)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-emu__pc_8c.html#a4210b74e60ef7cd34612dadb6a197090">mmc_emu_get_size</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-emu__pc_8c.html#af67c266cc616cbff8381b363cad2e274">mmc_emu_get_filesize</a> (uint32_t file_start)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-emu__pc_8c.html#a1cb4a8beb48e85068786723d821f8a8d">mmc_emu_clear_file</a> (uint32_t file_start)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-emu__pc_8c.html#a9e1400303640660e0dc43168f69a546c">mmc_emu_fat_lookup_adr</a> (const char *filename, uint8_t *buffer)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sucht die Adresse einer Mini-FAT-Datei im EERROM.  <a href="#a9e1400303640660e0dc43168f69a546c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-emu__pc_8c.html#acbf3809c6c51fc3b88ddfc2729c8e940">mmc_emu_fat_store_adr</a> (uint32_t block)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Speichert die Adresse einer Mini-FAT-Datei in einem EERROM-Slab.  <a href="#acbf3809c6c51fc3b88ddfc2729c8e940"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-emu__pc_8c.html#ac11977dec606467bd12a40a76bd67666">mmc_emu_find_block</a> (const char *filename, uint8_t *buffer, uint32_t end_addr)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Sucht einen Block auf der MMC-Karte, dessen erste Bytes dem Dateinamen entsprechen.  <a href="#ac11977dec606467bd12a40a76bd67666"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-emu__pc_8c.html#a45b6d2d38a37d8d929ed6b9233e18fe7">mmc_emu_test</a> (void)</td></tr>
+<tr><td colspan="2"><h2><a name="var-members"></a>
+Variablen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">volatile uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-emu__pc_8c.html#ab556732257bac022d7b12ab5b88b296b">mmc_emu_init_state</a> = 1</td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>MMC / SD-Card Emulation fuer PC. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Timo Sandmann (<a href="mailto:mail@timosandmann.de">mail@timosandmann.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>10.12.2006 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="mmc-emu__pc_8c_source.html">mmc-emu_pc.c</a>.</p>
+</div><hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="a1cb4a8beb48e85068786723d821f8a8d"></a><!-- doxytag: member="mmc&#45;emu_pc.c::mmc_emu_clear_file" ref="a1cb4a8beb48e85068786723d821f8a8d" args="(uint32_t file_start)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mmc_emu_clear_file </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>file_start</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Leert eine Datei im MiniFAT-Dateisystem </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">file_start</td><td>Anfangsblock der Datei </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc-emu__pc_8c_source.html#l00181">181</a> der Datei <a class="el" href="mmc-emu__pc_8c_source.html">mmc-emu_pc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mmc-emu__pc_8c_source.html#l00165">mmc_emu_get_filesize()</a> und <a class="el" href="mmc-emu__pc_8c_source.html#l00142">mmc_emu_write_sector()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc-emu__pc_8c_a1cb4a8beb48e85068786723d821f8a8d_cgraph.png" border="0" usemap="#mmc-emu__pc_8c_a1cb4a8beb48e85068786723d821f8a8d_cgraph" alt=""/></div>
+<map name="mmc-emu__pc_8c_a1cb4a8beb48e85068786723d821f8a8d_cgraph" id="mmc-emu__pc_8c_a1cb4a8beb48e85068786723d821f8a8d_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a9e1400303640660e0dc43168f69a546c"></a><!-- doxytag: member="mmc&#45;emu_pc.c::mmc_emu_fat_lookup_adr" ref="a9e1400303640660e0dc43168f69a546c" args="(const char *filename, uint8_t *buffer)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t mmc_emu_fat_lookup_adr </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Sucht die Adresse einer Mini-FAT-Datei im EERROM. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>Datei-ID </td></tr>
+    <tr><td class="paramname">buffer</td><td>Zeiger auf 512 Byte grossen Speicherbereich (wird ueberschrieben) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>(Byte-)Adresse des ersten Nutzdatenblock der gesuchten Datei oder 0, falls nicht im EEPROM Nur DUMMY fuer MMC-Emulation am PC. Wenn es mal eine EEPROM-Emulation fuer PC gibt, kann man diese Funktion implementieren. </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc-emu__pc_8c_source.html#l00199">199</a> der Datei <a class="el" href="mmc-emu__pc_8c_source.html">mmc-emu_pc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="display_8c_source.html#l00141">display_cursor()</a> und <a class="el" href="display__pc_8c_source.html#l00096">display_puts()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mmc-emu__pc_8c_source.html#l00236">mmc_emu_find_block()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc-emu__pc_8c_a9e1400303640660e0dc43168f69a546c_cgraph.png" border="0" usemap="#mmc-emu__pc_8c_a9e1400303640660e0dc43168f69a546c_cgraph" alt=""/></div>
+<map name="mmc-emu__pc_8c_a9e1400303640660e0dc43168f69a546c_cgraph" id="mmc-emu__pc_8c_a9e1400303640660e0dc43168f69a546c_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="acbf3809c6c51fc3b88ddfc2729c8e940"></a><!-- doxytag: member="mmc&#45;emu_pc.c::mmc_emu_fat_store_adr" ref="acbf3809c6c51fc3b88ddfc2729c8e940" args="(uint32_t block)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mmc_emu_fat_store_adr </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>block</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Speichert die Adresse einer Mini-FAT-Datei in einem EERROM-Slab. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">block</td><td>(Block-)Adresse der Datei, die gespeichert werden soll Nur DUMMY fuer MMC-Emulation am PC. Wenn es mal eine EEPROM-Emulation fuer PC gibt, kann man diese Funktion implementieren. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc-emu__pc_8c_source.html#l00217">217</a> der Datei <a class="el" href="mmc-emu__pc_8c_source.html">mmc-emu_pc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="display_8c_source.html#l00141">display_cursor()</a> und <a class="el" href="display__pc_8c_source.html#l00096">display_puts()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mmc-emu__pc_8c_source.html#l00236">mmc_emu_find_block()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc-emu__pc_8c_acbf3809c6c51fc3b88ddfc2729c8e940_cgraph.png" border="0" usemap="#mmc-emu__pc_8c_acbf3809c6c51fc3b88ddfc2729c8e940_cgraph" alt=""/></div>
+<map name="mmc-emu__pc_8c_acbf3809c6c51fc3b88ddfc2729c8e940_cgraph" id="mmc-emu__pc_8c_acbf3809c6c51fc3b88ddfc2729c8e940_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ac11977dec606467bd12a40a76bd67666"></a><!-- doxytag: member="mmc&#45;emu_pc.c::mmc_emu_find_block" ref="ac11977dec606467bd12a40a76bd67666" args="(const char *filename, uint8_t *buffer, uint32_t end_addr)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t mmc_emu_find_block </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>end_addr</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Sucht einen Block auf der MMC-Karte, dessen erste Bytes dem Dateinamen entsprechen. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>String im Flash zur Identifikation </td></tr>
+    <tr><td class="paramname">buffer</td><td>Zeiger auf 512 Byte Puffer im SRAM </td></tr>
+    <tr><td class="paramname">end_addr</td><td>Byte-Adresse, bis zu der gesucht werden soll </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Anfangsblock der Nutzdaten der Datei Achtung das Prinzip geht nur, wenn die Dateien nicht fragmentiert sind </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc-emu__pc_8c_source.html#l00236">236</a> der Datei <a class="el" href="mmc-emu__pc_8c_source.html">mmc-emu_pc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mmc-emu__pc_8c_source.html#l00199">mmc_emu_fat_lookup_adr()</a>, <a class="el" href="display_8c_source.html#l00141">display_cursor()</a>, <a class="el" href="display__pc_8c_source.html#l00075">display_printf()</a>, <a class="el" href="mmc-emu__pc_8c_source.html#l00128">mmc_emu_read_sector()</a>, <a class="el" href="mmc-emu__pc_8c_source.html#l00217">mmc_emu_fat_store_adr()</a> und <a class="el" href="display__pc_8c_source.html#l00096">display_puts()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc-emu__pc_8c_ac11977dec606467bd12a40a76bd67666_cgraph.png" border="0" usemap="#mmc-emu__pc_8c_ac11977dec606467bd12a40a76bd67666_cgraph" alt=""/></div>
+<map name="mmc-emu__pc_8c_ac11977dec606467bd12a40a76bd67666_cgraph" id="mmc-emu__pc_8c_ac11977dec606467bd12a40a76bd67666_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="af67c266cc616cbff8381b363cad2e274"></a><!-- doxytag: member="mmc&#45;emu_pc.c::mmc_emu_get_filesize" ref="af67c266cc616cbff8381b363cad2e274" args="(uint32_t file_start)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t mmc_emu_get_filesize </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>file_start</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Liest die Groesse einer Datei im MiniFAT-Dateisystem aus </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">file_start</td><td>Anfangsblock der Datei (Nutzdaten, nicht Header) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Groesse der Datei in Byte, 0 falls Fehler </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc-emu__pc_8c_source.html#l00165">165</a> der Datei <a class="el" href="mmc-emu__pc_8c_source.html">mmc-emu_pc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mmc-emu__pc_8c_source.html#l00128">mmc_emu_read_sector()</a> und <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mmc-emu__pc_8c_source.html#l00181">mmc_emu_clear_file()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc-emu__pc_8c_af67c266cc616cbff8381b363cad2e274_cgraph.png" border="0" usemap="#mmc-emu__pc_8c_af67c266cc616cbff8381b363cad2e274_cgraph" alt=""/></div>
+<map name="mmc-emu__pc_8c_af67c266cc616cbff8381b363cad2e274_cgraph" id="mmc-emu__pc_8c_af67c266cc616cbff8381b363cad2e274_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a9713f38ad215f9fa39949a6f068f2b7d"></a><!-- doxytag: member="mmc&#45;emu_pc.c::mmc_emu_get_init_state" ref="a9713f38ad215f9fa39949a6f068f2b7d" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mmc_emu_get_init_state </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Checkt Initialisierung der emulierten Karte </p>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>0, wenn initialisiert </dd></dl>
+<dl class="see"><dt><b>Siehe auch:</b></dt><dd>mcu/mmc.c </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc-emu__pc_8c_source.html#l00089">89</a> der Datei <a class="el" href="mmc-emu__pc_8c_source.html">mmc-emu_pc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mmc-emu__pc_8c_source.html#l00058">mmc_emu_init_state</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mini-fat__pc_8c_source.html#l00075">create_emu_mini_fat_file()</a>, <a class="el" href="mini-fat__pc_8c_source.html#l00138">delete_emu_mini_fat_file()</a>, <a class="el" href="mmc-emu__pc_8c_source.html#l00128">mmc_emu_read_sector()</a>, <a class="el" href="mmc-emu__pc_8c_source.html#l00142">mmc_emu_write_sector()</a> und <a class="el" href="mmc-emu__pc_8c_source.html#l00154">mmc_emu_get_size()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4210b74e60ef7cd34612dadb6a197090"></a><!-- doxytag: member="mmc&#45;emu_pc.c::mmc_emu_get_size" ref="a4210b74e60ef7cd34612dadb6a197090" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t mmc_emu_get_size </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Liefert die Groesse der Karte zurueck </p>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Groesse der emulierten Karte in Byte. </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc-emu__pc_8c_source.html#l00154">154</a> der Datei <a class="el" href="mmc-emu__pc_8c_source.html">mmc-emu_pc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mmc-emu__pc_8c_source.html#l00089">mmc_emu_get_init_state()</a> und <a class="el" href="mmc-emu__pc_8c_source.html#l00098">mmc_emu_init()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mini-fat__pc_8c_source.html#l00075">create_emu_mini_fat_file()</a> und <a class="el" href="mmc-emu__pc_8c_source.html#l00098">mmc_emu_init()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc-emu__pc_8c_a4210b74e60ef7cd34612dadb6a197090_cgraph.png" border="0" usemap="#mmc-emu__pc_8c_a4210b74e60ef7cd34612dadb6a197090_cgraph" alt=""/></div>
+<map name="mmc-emu__pc_8c_a4210b74e60ef7cd34612dadb6a197090_cgraph" id="mmc-emu__pc_8c_a4210b74e60ef7cd34612dadb6a197090_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ab4fc9f8caf4c79352cb259ef70b06d38"></a><!-- doxytag: member="mmc&#45;emu_pc.c::mmc_emu_init" ref="ab4fc9f8caf4c79352cb259ef70b06d38" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mmc_emu_init </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Initialisiere die emulierte SD/MMC-Karte </p>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>0 wenn allles ok, sonst 1 </dd></dl>
+<dl class="see"><dt><b>Siehe auch:</b></dt><dd>mcu/mmc.c </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc-emu__pc_8c_source.html#l00098">98</a> der Datei <a class="el" href="mmc-emu__pc_8c_source.html">mmc-emu_pc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mmc-emu__pc_8c_source.html#l00058">mmc_emu_init_state</a>, <a class="el" href="mmc-emu_8h_source.html#l00033">MMC_EMU_FILE</a>, <a class="el" href="mmc-emu__pc_8c_source.html#l00154">mmc_emu_get_size()</a> und <a class="el" href="mmc-emu_8h_source.html#l00032">MMC_EMU_SIZE</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mini-fat__pc_8c_source.html#l00075">create_emu_mini_fat_file()</a>, <a class="el" href="mini-fat__pc_8c_source.html#l00138">delete_emu_mini_fat_file()</a>, <a class="el" href="mmc-emu__pc_8c_source.html#l00128">mmc_emu_read_sector()</a>, <a class="el" href="mmc-emu__pc_8c_source.html#l00142">mmc_emu_write_sector()</a>, <a class="el" href="mmc-emu__pc_8c_source.html#l00154">mmc_emu_get_size()</a> und <a class="el" href="mmc-emu__pc_8c_source.html#l00276">mmc_emu_test()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc-emu__pc_8c_ab4fc9f8caf4c79352cb259ef70b06d38_cgraph.png" border="0" usemap="#mmc-emu__pc_8c_ab4fc9f8caf4c79352cb259ef70b06d38_cgraph" alt=""/></div>
+<map name="mmc-emu__pc_8c_ab4fc9f8caf4c79352cb259ef70b06d38_cgraph" id="mmc-emu__pc_8c_ab4fc9f8caf4c79352cb259ef70b06d38_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a9d15df2f3ea11d22f9c8a316e1fad965"></a><!-- doxytag: member="mmc&#45;emu_pc.c::mmc_emu_read_sector" ref="a9d15df2f3ea11d22f9c8a316e1fad965" args="(uint32_t addr, uint8_t *buffer)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mmc_emu_read_sector </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>addr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Liest einen Block von der emulierten Karte </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">addr</td><td>Nummer des 512-Byte Blocks </td></tr>
+    <tr><td class="paramname">buffer</td><td>Puffer von mindestens 512 Byte </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>0 wenn alles ok ist </dd></dl>
+<dl class="see"><dt><b>Siehe auch:</b></dt><dd>mcu/mmc.c </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc-emu__pc_8c_source.html#l00128">128</a> der Datei <a class="el" href="mmc-emu__pc_8c_source.html">mmc-emu_pc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mmc-emu__pc_8c_source.html#l00089">mmc_emu_get_init_state()</a> und <a class="el" href="mmc-emu__pc_8c_source.html#l00098">mmc_emu_init()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mmc-emu__pc_8c_source.html#l00165">mmc_emu_get_filesize()</a> und <a class="el" href="mmc-emu__pc_8c_source.html#l00236">mmc_emu_find_block()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc-emu__pc_8c_a9d15df2f3ea11d22f9c8a316e1fad965_cgraph.png" border="0" usemap="#mmc-emu__pc_8c_a9d15df2f3ea11d22f9c8a316e1fad965_cgraph" alt=""/></div>
+<map name="mmc-emu__pc_8c_a9d15df2f3ea11d22f9c8a316e1fad965_cgraph" id="mmc-emu__pc_8c_a9d15df2f3ea11d22f9c8a316e1fad965_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a45b6d2d38a37d8d929ed6b9233e18fe7"></a><!-- doxytag: member="mmc&#45;emu_pc.c::mmc_emu_test" ref="a45b6d2d38a37d8d929ed6b9233e18fe7" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mmc_emu_test </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Testet VM und MMC / SD-Card Emulation am PC </p>
+
+<p>Definiert in Zeile <a class="el" href="mmc-emu__pc_8c_source.html#l00276">276</a> der Datei <a class="el" href="mmc-emu__pc_8c_source.html">mmc-emu_pc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mmc-emu__pc_8c_source.html#l00058">mmc_emu_init_state</a>, <a class="el" href="mmc-emu__pc_8c_source.html#l00098">mmc_emu_init()</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="mmc-vm_8c_source.html#l00316">mmcalloc()</a>, <a class="el" href="mmc-vm_8c_source.html#l00347">mmc_get_data()</a>, <a class="el" href="display_8c_source.html#l00141">display_cursor()</a> und <a class="el" href="display__pc_8c_source.html#l00075">display_printf()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc-emu__pc_8c_a45b6d2d38a37d8d929ed6b9233e18fe7_cgraph.png" border="0" usemap="#mmc-emu__pc_8c_a45b6d2d38a37d8d929ed6b9233e18fe7_cgraph" alt=""/></div>
+<map name="mmc-emu__pc_8c_a45b6d2d38a37d8d929ed6b9233e18fe7_cgraph" id="mmc-emu__pc_8c_a45b6d2d38a37d8d929ed6b9233e18fe7_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="aed8e37da5218bc86881ddc1474ac7c43"></a><!-- doxytag: member="mmc&#45;emu_pc.c::mmc_emu_write_sector" ref="aed8e37da5218bc86881ddc1474ac7c43" args="(uint32_t addr, uint8_t *buffer)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mmc_emu_write_sector </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>addr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Schreibt einen 512-Byte Sektor auf die emulierte Karte </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">addr</td><td>Nummer des 512-Byte Blocks </td></tr>
+    <tr><td class="paramname">buffer</td><td>Zeiger auf den Puffer </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>0 wenn alles ok ist </dd></dl>
+<dl class="see"><dt><b>Siehe auch:</b></dt><dd>mcu/mmc.c </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc-emu__pc_8c_source.html#l00142">142</a> der Datei <a class="el" href="mmc-emu__pc_8c_source.html">mmc-emu_pc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mmc-emu__pc_8c_source.html#l00089">mmc_emu_get_init_state()</a> und <a class="el" href="mmc-emu__pc_8c_source.html#l00098">mmc_emu_init()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mini-fat__pc_8c_source.html#l00075">create_emu_mini_fat_file()</a>, <a class="el" href="mini-fat__pc_8c_source.html#l00138">delete_emu_mini_fat_file()</a> und <a class="el" href="mmc-emu__pc_8c_source.html#l00181">mmc_emu_clear_file()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc-emu__pc_8c_aed8e37da5218bc86881ddc1474ac7c43_cgraph.png" border="0" usemap="#mmc-emu__pc_8c_aed8e37da5218bc86881ddc1474ac7c43_cgraph" alt=""/></div>
+<map name="mmc-emu__pc_8c_aed8e37da5218bc86881ddc1474ac7c43_cgraph" id="mmc-emu__pc_8c_aed8e37da5218bc86881ddc1474ac7c43_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<hr/><h2>Variablen-Dokumentation</h2>
+<a class="anchor" id="ab556732257bac022d7b12ab5b88b296b"></a><!-- doxytag: member="mmc&#45;emu_pc.c::mmc_emu_init_state" ref="ab556732257bac022d7b12ab5b88b296b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">volatile uint8_t <a class="el" href="mmc-emu__pc_8c.html#ab556732257bac022d7b12ab5b88b296b">mmc_emu_init_state</a> = 1</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Initialierungsstatus der Karte, 0: ok, 1: Fehler </p>
+
+<p>Definiert in Zeile <a class="el" href="mmc-emu__pc_8c_source.html#l00058">58</a> der Datei <a class="el" href="mmc-emu__pc_8c_source.html">mmc-emu_pc.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mmc-emu__pc_8c_source.html#l00089">mmc_emu_get_init_state()</a>, <a class="el" href="mmc-emu__pc_8c_source.html#l00098">mmc_emu_init()</a> und <a class="el" href="mmc-emu__pc_8c_source.html#l00276">mmc_emu_test()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:06 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

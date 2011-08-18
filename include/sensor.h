@@ -30,6 +30,7 @@
 #include "rc5.h"
 #include "cmps03.h"
 
+
 /*! Datenstruktur zur Ablage eines IR-Sensor-Wertepaares (Spannung | Distanz) */
 typedef struct {
 	uint8_t voltage;	/*!< Spannung des jeweiligen Eintrags (halbiert) */
@@ -70,7 +71,7 @@ extern uint16_t RC5_Code;	/*!< Letzter empfangener RC5-Code */
 #ifdef BPS_AVAILABLE
 extern uint16_t sensBPS;	/*!< Bot Positioning System */
 extern ir_data_t bps_ir_data; /*!< RC5-Konfiguration fuer BPS-Sensor */
-#endif	// BPS_AVAILABLE
+#endif // BPS_AVAILABLE
 
 
 #ifdef MOUSE_AVAILABLE
@@ -78,7 +79,7 @@ extern int8_t sensMouseDX;	/*!< Maussensor Delta X, positive Werte zeigen querab
 extern int8_t sensMouseDY;	/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
 extern int16_t sensMouseX;	/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
 extern int16_t sensMouseY;	/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
-#endif	// MOUSE_AVAILABLE
+#endif // MOUSE_AVAILABLE
 
 extern float heading_enc;	/*!< Blickrichtung aus Encodern */
 extern float x_enc;			/*!< X-Koordinate aus Encodern [mm] */
@@ -98,7 +99,7 @@ extern float y_mou;			/*!< Aktuelle Y-Koordinate in mm relativ zur Startposition
 extern int16_t v_mou_center;	/*!< Geschwindigkeit in mm/s ausschliesslich aus den Maussensorwerten berechnet */
 extern int16_t v_mou_left;		/*!< ...aufgeteilt auf linkes Rad */
 extern int16_t v_mou_right;		/*!< ...aufgeteilt auf rechtes Rad */
-#endif	// MEASURE_MOUSE_AVAILABLE
+#endif // MEASURE_MOUSE_AVAILABLE
 
 extern float heading;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
 extern int16_t heading_int;		/*!< (int16_t) heading */
@@ -110,6 +111,13 @@ extern int16_t y_pos;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekopp
 extern int16_t v_left;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
 extern int16_t v_right;			/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
 extern int16_t v_center;		/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
+
+
+/* Grenzwerte fuer die IR-Sensoren */
+#define SENS_IR_MIN_DIST	100		/*!< Untergrenze des Erfassungsbereichs */
+#define SENS_IR_MAX_DIST	690		/*!< Obergrenze des Erfassungsbereichs */
+#define SENS_IR_INFINITE	995		/*!< Kennzeichnung fuer "kein Objekt im Erfassungsbereich" */
+#define SENS_IR_SAFE_DIST	120		/*!< kleinste Sichere Distanz innerhalb des Erfassungsbereichs */
 
 #ifdef MEASURE_POSITION_ERRORS_AVAILABLE
 extern int16_t pos_error_radius;	/*!< Aktueller Fehlerradius der Position */

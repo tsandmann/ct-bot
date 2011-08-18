@@ -71,13 +71,24 @@ static Behaviour_t * behaviour = NULL;
 static void insert_behaviour_to_list(Behaviour_t * * list, Behaviour_t * behave);
 static Behaviour_t * new_behaviour(uint8_t priority, void (* work) (struct _Behaviour_t * data), uint8_t active);
 static void bot_base_behaviour(Behaviour_t * data);
+#if \
+	   defined BEHAVIOUR_HANG_ON_AVAILABLE \
+	|| defined BEHAVIOUR_DRIVE_AREA_AVAILABLE \
+	|| defined BEHAVIOUR_FOLLOW_WALL_AVAILABLE \
+	|| defined BEHAVIOUR_AVOID_BORDER_AVAILABLE
 static inline int8_t register_emergency_proc(void (* fkt)(void));
+#endif
 
 
 /**
  * Initialisiert alle Verhalten
  */
 void bot_behave_init(void) {
+
+#ifdef BEHAVIOUR_PROTOTYPE_AVAILABLE
+	insert_behaviour_to_list(&behaviour, new_behaviour(102, bot_prototype_behaviour, BEHAVIOUR_ACTIVE));
+#endif
+
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 	// Dieses Verhalten kann andere starten
 	insert_behaviour_to_list(&behaviour, new_behaviour(254, bot_remotecall_behaviour, BEHAVIOUR_INACTIVE));
@@ -87,14 +98,14 @@ void bot_behave_init(void) {
 	insert_behaviour_to_list(&behaviour, new_behaviour(253, bot_servo_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 
+
 #ifdef BEHAVIOUR_SIMPLE_AVAILABLE
 	// Demo-Verhalten, ganz einfach, bot_simple wird unten sofort aktiv geschaltet.
 	// Achtung, im Moment hat es eine hoehere Prioritaet als die Gefahrenerkenner!
-	insert_behaviour_to_list(&behaviour, new_behaviour(252, bot_simple_behaviour, BEHAVIOUR_INACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(252, bot_simple_behaviour, BEHAVIOUR_ACTIVE));
 	insert_behaviour_to_list(&behaviour, new_behaviour(251, bot_simple2_behaviour, BEHAVIOUR_INACTIVE));
 
 	// Um das Simple2-Behaviour zu nutzen, die Kommentarzeichen der folgenden beiden Zeilen tauschen
-	activateBehaviour(NULL, bot_simple_behaviour);
 	//activateBehaviour(NULL, bot_simple2_behaviour);
 #endif
 
@@ -269,6 +280,10 @@ void bot_behave_init(void) {
 
 #ifdef BEHAVIOUR_TEST_ENCODER_AVAILABLE
 	insert_behaviour_to_list(&behaviour, new_behaviour(20, bot_test_encoder_behaviour, BEHAVIOUR_INACTIVE));
+#endif
+
+#ifdef BEHAVIOUR_HW_TEST_AVAILABLE
+	insert_behaviour_to_list(&behaviour, new_behaviour(10, bot_hw_test_behaviour, BEHAVIOUR_ACTIVE));
 #endif
 
 	// Grundverhalten, setzt aeltere FB-Befehle um, aktiv
@@ -688,10 +703,15 @@ Behaviour_t * get_next_behaviour(Behaviour_t * beh) {
 }
 
 
+#if \
+	   defined BEHAVIOUR_HANG_ON_AVAILABLE \
+	|| defined BEHAVIOUR_DRIVE_AREA_AVAILABLE \
+	|| defined BEHAVIOUR_FOLLOW_WALL_AVAILABLE \
+	|| defined BEHAVIOUR_AVOID_BORDER_AVAILABLE
 #define MAX_EMERG_PROCS 3			/**< Maximale Anzahl der registrierbaren Funktionen */
 static int8_t count_arr_emerg = 0;	/**< Anzahl der zurzeit registrierten Notfallfunktionen */
 /** hier liegen die Zeiger auf die auszufuehrenden Notfall-Funktionen */
-static void (* emerg_functions[MAX_EMERG_PROCS])(void) = { NULL };
+void (* bot_logic_emerg_functions[MAX_EMERG_PROCS])(void) = { NULL };
 
 /**
  * Routine zum Registrieren einer Notfallfunktion, die beim Ausloesen eines Abgrundsensors
@@ -700,12 +720,12 @@ static void (* emerg_functions[MAX_EMERG_PROCS])(void) = { NULL };
  * \param *fkt	Die zu registrierende Routine, welche aufzurufen ist
  * \return 		Index, den die Routine im Array einnimmt, bei -1 ist alles voll
  */
-static inline int8_t register_emergency_proc(void (* fkt)(void)) {
+inline int8_t register_emergency_proc(void (* fkt)(void)) {
 	if (count_arr_emerg == MAX_EMERG_PROCS) {
 		return -1; // sorry, aber fuer dich ist kein Platz mehr da :(
 	}
 	int8_t proc_nr = count_arr_emerg++;	// neue Routine hinten anfuegen
-	emerg_functions[proc_nr] = fkt;	// Pointer im Array speichern
+	bot_logic_emerg_functions[proc_nr] = fkt;	// Pointer im Array speichern
 	return proc_nr;
 }
 
@@ -716,11 +736,12 @@ static inline int8_t register_emergency_proc(void (* fkt)(void)) {
 void start_registered_emergency_procs(void) {
 	uint8_t i;
 	for (i = 0; i < MAX_EMERG_PROCS; ++i) {
-		if (emerg_functions[i] != NULL) {
-			emerg_functions[i]();
+		if (bot_logic_emerg_functions[i] != NULL) {
+			bot_logic_emerg_functions[i]();
 		}
 	}
 }
+#endif // EMERG_PROCS
 
 
 #ifdef DISPLAY_BEHAVIOUR_AVAILABLE

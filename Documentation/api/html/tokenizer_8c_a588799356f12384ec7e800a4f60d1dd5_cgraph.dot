@@ -1,0 +1,9 @@
+digraph G
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="jump_to_next_linenum",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node1 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="skip_all_whitespaces",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$tokenizer_8c.html#a0ac73043946f7efab0d3a25fcbb53e58"];
+}

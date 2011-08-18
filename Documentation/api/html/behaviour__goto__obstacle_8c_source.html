@@ -1,0 +1,296 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: behaviour_goto_obstacle.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">behaviour_goto_obstacle.c</div>  </div>
+</div>
+<div class="contents">
+<a href="behaviour__goto__obstacle_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00027"></a>00027 <span class="comment">//#define OLD_VERSION   /*!&lt; Zu Testzwecken alte Version (1465) mit diesem define anschaltbar */</span>
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 <span class="preprocessor">#ifdef OLD_VERSION</span>
+<a name="l00030"></a>00030 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="bot-logic_8h.html" title="High-Level-Routinen fuer die Steuerung des c&#39;t-Bots.">bot-logic/bot-logic.h</a>&quot;</span>
+<a name="l00031"></a>00031 
+<a name="l00032"></a>00032 <span class="preprocessor">#ifdef BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE</span>
+<a name="l00033"></a>00033 <span class="preprocessor"></span><span class="preprocessor">#include &lt;stdlib.h&gt;</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include &lt;math.h&gt;</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include &quot;<a class="code" href="math__utils_8h.html" title="Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig.">math_utils.h</a>&quot;</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include &quot;<a class="code" href="log_8h.html" title="Routinen zum Loggen von Informationen.">log.h</a>&quot;</span>
+<a name="l00037"></a>00037 
+<a name="l00038"></a>00038 <span class="comment">//#define DEBUG_GOTO_POS        // Schalter um recht viel Debug-Code anzumachen</span>
+<a name="l00039"></a>00039 
+<a name="l00040"></a>00040 <span class="preprocessor">#ifndef DEBUG_GOTO_POS</span>
+<a name="l00041"></a>00041 <span class="preprocessor"></span><span class="preprocessor">#undef LOG_DEBUG</span>
+<a name="l00042"></a>00042 <span class="preprocessor"></span><span class="preprocessor">#define LOG_DEBUG(a, ...) {}</span>
+<a name="l00043"></a>00043 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00044"></a>00044 <span class="preprocessor"></span>
+<a name="l00045"></a>00045 <span class="preprocessor">#ifdef MCU</span>
+<a name="l00046"></a>00046 <span class="preprocessor"></span><span class="preprocessor">#ifndef SPEED_CONTROL_AVAILABLE</span>
+<a name="l00047"></a>00047 <span class="preprocessor"></span><span class="preprocessor">#error &quot;Das goto_pos-Verhalten geht nur mit Motorregelung!&quot;</span>
+<a name="l00048"></a>00048 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00049"></a>00049 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00050"></a>00050 <span class="preprocessor"></span>
+<a name="l00051"></a>00051 <span class="preprocessor">#define TARGET_MARGIN   20                  </span>
+<a name="l00052"></a>00052 <span class="preprocessor">static const int16_t max_par_diff   = 30;   </span>
+<a name="l00054"></a>00054 <span class="preprocessor">static int16_t obst_distance = 0;           </span>
+<a name="l00055"></a>00055 <span class="preprocessor">static uint8_t obst_parallel = 0;           </span>
+<a name="l00056"></a>00056 <span class="preprocessor">static uint8_t obst_state = 0;              </span>
+<a name="l00063"></a>00063 <span class="preprocessor">void bot_goto_obstacle_behaviour(Behaviour_t * data) {</span>
+<a name="l00064"></a>00064 <span class="preprocessor"></span>    <span class="keyword">static</span> int16_t distLeft, distRight;
+<a name="l00065"></a>00065     <span class="keywordflow">switch</span> (obst_state) {
+<a name="l00066"></a>00066     <span class="keywordflow">case</span> 0:
+<a name="l00067"></a>00067         <span class="comment">/* Entfernung zum Hindernis messen */</span>
+<a name="l00068"></a>00068         bot_measure_distance(data, &amp;distLeft, &amp;distRight, 15);
+<a name="l00069"></a>00069         <a class="code" href="behaviour__goto__obstacle_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;Hindernis ist %d|%d mm entfernt&quot;</span>, distLeft, distRight);
+<a name="l00070"></a>00070         obst_state = 1;
+<a name="l00071"></a>00071         <span class="keywordflow">break</span>;
+<a name="l00072"></a>00072     <span class="keywordflow">case</span> 1: {
+<a name="l00073"></a>00073         <span class="comment">/* kleinere Distanz als Richtwert benutzen */</span>
+<a name="l00074"></a>00074         int16_t dist = distLeft &lt; distRight ? distLeft : distRight;
+<a name="l00075"></a>00075         <span class="keywordflow">if</span> (dist &lt;= 600) {
+<a name="l00076"></a>00076             <span class="comment">/* Entfernung - gewuenschte Entfernung fahren */</span>
+<a name="l00077"></a>00077             int16_t to_drive = dist - obst_distance;
+<a name="l00078"></a>00078             <a class="code" href="behaviour__goto__obstacle_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;to_drive=%d&quot;</span>, to_drive);
+<a name="l00079"></a>00079             <span class="keywordflow">if</span> (abs(to_drive) &gt; <a class="code" href="behaviour__goto__obstacle_8c.html#a48f2854cf80499edfd804328b8defc26">TARGET_MARGIN</a>) {
+<a name="l00080"></a>00080                 <a class="code" href="behaviour__goto__pos_8c.html#af3cd84671054daefcec8c370feaf0c1c">bot_goto_dist</a>(data, abs(to_drive), sign16(to_drive));
+<a name="l00081"></a>00081                 obst_state = 0;
+<a name="l00082"></a>00082             } <span class="keywordflow">else</span> {
+<a name="l00083"></a>00083                 obst_state = 2;
+<a name="l00084"></a>00084             }
+<a name="l00085"></a>00085         } <span class="keywordflow">else</span> {
+<a name="l00086"></a>00086             <span class="comment">/* kein Hindernis in Sichtweite, also erstmal vorfahren */</span>
+<a name="l00087"></a>00087             <a class="code" href="behaviour__goto__obstacle_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;Noch kein Hindernis in Sichtweite&quot;</span>);
+<a name="l00088"></a>00088             <a class="code" href="behaviour__goto__pos_8c.html#af3cd84671054daefcec8c370feaf0c1c">bot_goto_dist</a>(data, 400, 1);
+<a name="l00089"></a>00089             obst_state = 0;
+<a name="l00090"></a>00090         }
+<a name="l00091"></a>00091         <span class="keywordflow">break</span>;
+<a name="l00092"></a>00092     }
+<a name="l00093"></a>00093     <span class="keywordflow">case</span> 2:
+<a name="l00094"></a>00094         <span class="keywordflow">if</span> (obst_parallel == 1) {
+<a name="l00095"></a>00095             <span class="comment">/* heading korrigieren, so dass Bot parallel zum Hindernis steht */</span>
+<a name="l00096"></a>00096             int16_t diff = distRight - distLeft;
+<a name="l00097"></a>00097             <span class="keywordflow">if</span> (abs(diff) &lt; max_par_diff) {
+<a name="l00098"></a>00098                 <span class="comment">/* unsinnig bei zu grosser Differenz */</span>
+<a name="l00099"></a>00099                 <a class="code" href="behaviour__goto__obstacle_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;diff=%d&quot;</span>, diff);
+<a name="l00100"></a>00100                 <span class="keywordtype">float</span> alpha = (float)diff / (<span class="keywordtype">float</span>)(<a class="code" href="bot-local_8h.html#aa042863925c33a1048da443273e2e67c">DISTSENSOR_POS_SW</a>*2);
+<a name="l00101"></a>00101                 alpha /= 2.0*<a class="code" href="global_8h.html#ae71449b1cc6e6250b91f539153a7a0d3">M_PI</a>/360.0;
+<a name="l00102"></a>00102                 <a class="code" href="behaviour__goto__obstacle_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;alpha=%f&quot;</span>, alpha);
+<a name="l00103"></a>00103                 <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, (int16_t)alpha);
+<a name="l00104"></a>00104             }
+<a name="l00105"></a>00105         }
+<a name="l00106"></a>00106         obst_state = 3;
+<a name="l00107"></a>00107         <span class="keywordflow">break</span>;
+<a name="l00108"></a>00108     <span class="keywordflow">case</span> 3:
+<a name="l00109"></a>00109         <span class="comment">/* fertig :-) */</span>
+<a name="l00110"></a>00110         return_from_behaviour(data);
+<a name="l00111"></a>00111         <span class="keywordflow">break</span>;
+<a name="l00112"></a>00112     }
+<a name="l00113"></a>00113 }
+<a name="l00114"></a>00114 
+<a name="l00122"></a>00122 <span class="keywordtype">void</span> <a class="code" href="behaviour__goto__obstacle_8c.html#a06f1d6f09a3440a7d063ba902d147b48">bot_goto_obstacle</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller, int16_t distance, uint8_t parallel) {
+<a name="l00123"></a>00123     obst_distance = distance;
+<a name="l00124"></a>00124     obst_parallel = parallel;
+<a name="l00125"></a>00125     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__goto__obstacle_8c.html#a9786fc9e477889bcc2ead463a5ccd067">bot_goto_obstacle_behaviour</a>, <a class="code" href="bot-logic_8h.html#ac3101d6686d35c952f2a5c8177b3f262" title="Konstante, wenn Verhalten beim Aufruf alte Wuensche ueberschreiben sollen.">BEHAVIOUR_OVERRIDE</a>);
+<a name="l00126"></a>00126     obst_state = 0;
+<a name="l00127"></a>00127 }
+<a name="l00128"></a>00128 
+<a name="l00129"></a>00129 <span class="preprocessor">#endif // BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE</span>
+<a name="l00130"></a>00130 <span class="preprocessor"></span>
+<a name="l00131"></a>00131 <span class="preprocessor">#else // neue Version</span>
+<a name="l00132"></a>00132 <span class="preprocessor"></span>
+<a name="l00133"></a>00133 <span class="preprocessor">#include &quot;<a class="code" href="bot-logic_8h.html" title="High-Level-Routinen fuer die Steuerung des c&#39;t-Bots.">bot-logic/bot-logic.h</a>&quot;</span>
+<a name="l00134"></a>00134 
+<a name="l00135"></a>00135 <span class="preprocessor">#ifdef BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE</span>
+<a name="l00136"></a>00136 <span class="preprocessor"></span><span class="preprocessor">#include &lt;stdlib.h&gt;</span>
+<a name="l00137"></a>00137 <span class="preprocessor">#include &lt;math.h&gt;</span>
+<a name="l00138"></a>00138 <span class="preprocessor">#include &quot;<a class="code" href="math__utils_8h.html" title="Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig.">math_utils.h</a>&quot;</span>
+<a name="l00139"></a>00139 <span class="preprocessor">#include &quot;<a class="code" href="log_8h.html" title="Routinen zum Loggen von Informationen.">log.h</a>&quot;</span>
+<a name="l00140"></a>00140 
+<a name="l00141"></a>00141 <span class="comment">//#define DEBUG_GOTO_OBSTACLE       // Schalter um recht viel Debug-Code anzumachen</span>
+<a name="l00142"></a>00142 
+<a name="l00143"></a>00143 <span class="preprocessor">#ifndef DEBUG_GOTO_OBSTACLE</span>
+<a name="l00144"></a>00144 <span class="preprocessor"></span><span class="preprocessor">#undef LOG_DEBUG</span>
+<a name="l00145"></a><a class="code" href="behaviour__goto__obstacle_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">00145</a> <span class="preprocessor"></span><span class="preprocessor">#define LOG_DEBUG(a, ...) {}</span>
+<a name="l00146"></a>00146 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00147"></a>00147 <span class="preprocessor"></span>
+<a name="l00148"></a>00148 
+<a name="l00149"></a>00149 <span class="preprocessor">#ifdef MCU</span>
+<a name="l00150"></a>00150 <span class="preprocessor"></span><span class="preprocessor">#ifndef SPEED_CONTROL_AVAILABLE</span>
+<a name="l00151"></a>00151 <span class="preprocessor"></span><span class="preprocessor">#error &quot;Das goto_obstacle-Verhalten geht nur mit Motorregelung!&quot;</span>
+<a name="l00152"></a>00152 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00153"></a>00153 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00154"></a>00154 <span class="preprocessor"></span>
+<a name="l00155"></a><a class="code" href="behaviour__goto__obstacle_8c.html#a48f2854cf80499edfd804328b8defc26">00155</a> <span class="preprocessor">#define TARGET_MARGIN   10                  </span>
+<a name="l00156"></a>00156 <span class="preprocessor">static const int16_t max_par_diff = 30;     </span>
+<a name="l00157"></a>00157 <span class="preprocessor">//static const uint8_t max_measure_diff = 15;   </span>
+<a name="l00159"></a>00159 <span class="preprocessor">static int16_t obst_distance = 0;           </span>
+<a name="l00160"></a>00160 <span class="preprocessor">static uint8_t obst_parallel = 0;           </span>
+<a name="l00161"></a>00161 <span class="preprocessor">static uint8_t obst_state = 0;              </span>
+<a name="l00163"></a><a class="code" href="behaviour__goto__obstacle_8c.html#a057fcd1508a6976a3af2b2fb21e9ffce">00163</a> <span class="preprocessor">#define MEASURE_DIST_STATE  0</span>
+<a name="l00164"></a><a class="code" href="behaviour__goto__obstacle_8c.html#aebd465a57406710f9f14b89ad1072d6e">00164</a> <span class="preprocessor"></span><span class="preprocessor">#define GOTO_DIST_STATE     1</span>
+<a name="l00165"></a><a class="code" href="behaviour__goto__obstacle_8c.html#aed0bceb1457e90161ff4d7f2bbdc84d0">00165</a> <span class="preprocessor"></span><span class="preprocessor">#define ALIGN_STATE         2</span>
+<a name="l00166"></a><a class="code" href="behaviour__goto__obstacle_8c.html#a29fd18bed01c4d836c7ebfe73a125c3f">00166</a> <span class="preprocessor"></span><span class="preprocessor">#define END                 99</span>
+<a name="l00167"></a>00167 <span class="preprocessor"></span>
+<a name="l00169"></a>00169 <span class="comment">// * Prueft, ob ein Hindernis in Sichtweite ist</span>
+<a name="l00170"></a>00170 <span class="comment">// * @result    True, falls ein Hindernis naeher als 60 cm ist</span>
+<a name="l00171"></a>00171 <span class="comment">// */</span>
+<a name="l00172"></a>00172 <span class="comment">//static uint8_t check_distance(void) {</span>
+<a name="l00173"></a>00173 <span class="comment">//  int16_t dist = sensDistL &lt; sensDistR ? sensDistL : sensDistR;</span>
+<a name="l00174"></a>00174 <span class="comment">//  if (dist &lt;= 600) {</span>
+<a name="l00175"></a>00175 <span class="comment">//      LOG_DEBUG(&quot;Hindernis in Sichtweite (%d mm)&quot;, dist);</span>
+<a name="l00176"></a>00176 <span class="comment">//      return True;</span>
+<a name="l00177"></a>00177 <span class="comment">//  }</span>
+<a name="l00178"></a>00178 <span class="comment">//  return False;</span>
+<a name="l00179"></a>00179 <span class="comment">//}</span>
+<a name="l00180"></a>00180 
+<a name="l00186"></a><a class="code" href="behaviour__goto__obstacle_8h.html#a9786fc9e477889bcc2ead463a5ccd067">00186</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__goto__obstacle_8c.html#a9786fc9e477889bcc2ead463a5ccd067">bot_goto_obstacle_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00187"></a>00187     <span class="keyword">static</span> int16_t distLeft, distRight;
+<a name="l00188"></a>00188     <span class="keywordflow">switch</span> (obst_state) {
+<a name="l00189"></a>00189 <span class="comment">//  case MEASURE_DIST_STATE:</span>
+<a name="l00190"></a>00190 <span class="comment">//      /* Entfernung zum Hindernis messen */</span>
+<a name="l00191"></a>00191 <span class="comment">//      bot_measure_distance(data, &amp;distLeft, &amp;distRight, max_measure_diff);</span>
+<a name="l00192"></a>00192 <span class="comment">//      LOG_DEBUG(&quot;Hindernis ist %d|%d mm entfernt&quot;, distLeft, distRight);</span>
+<a name="l00193"></a>00193 <span class="comment">//      obst_state = GOTO_DIST_STATE;</span>
+<a name="l00194"></a>00194 <span class="comment">//      break;</span>
+<a name="l00195"></a>00195     <span class="keywordflow">case</span> <a class="code" href="behaviour__goto__obstacle_8c.html#aebd465a57406710f9f14b89ad1072d6e">GOTO_DIST_STATE</a>: {
+<a name="l00196"></a>00196         <span class="comment">/* kleinere Distanz als Richtwert benutzen */</span>
+<a name="l00197"></a>00197         int16_t dist = <a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> &lt; <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a> ? <a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> : <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a>;
+<a name="l00198"></a>00198         <a class="code" href="behaviour__goto__obstacle_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;Hindernis ist %d|%d mm entfernt&quot;</span>, <a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a>, <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a>);
+<a name="l00199"></a>00199         <span class="keywordflow">if</span> (dist &lt;= 600) {
+<a name="l00200"></a>00200             <span class="comment">/* Entfernung - gewuenschte Entfernung fahren */</span>
+<a name="l00201"></a>00201             int16_t to_drive = dist - obst_distance;
+<a name="l00202"></a>00202             <a class="code" href="behaviour__goto__obstacle_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;to_drive=%d&quot;</span>, to_drive);
+<a name="l00203"></a>00203             <span class="keywordflow">if</span> (abs(to_drive) &gt; <a class="code" href="behaviour__goto__obstacle_8c.html#a48f2854cf80499edfd804328b8defc26">TARGET_MARGIN</a>) {
+<a name="l00204"></a>00204                 <a class="code" href="behaviour__goto__pos_8c.html#af3cd84671054daefcec8c370feaf0c1c">bot_goto_dist</a>(data, abs(to_drive), sign16(to_drive));
+<a name="l00205"></a>00205             } <span class="keywordflow">else</span> {
+<a name="l00206"></a>00206                 obst_state = <a class="code" href="behaviour__goto__obstacle_8c.html#aed0bceb1457e90161ff4d7f2bbdc84d0">ALIGN_STATE</a>;
+<a name="l00207"></a>00207             }
+<a name="l00208"></a>00208         } <span class="keywordflow">else</span> {
+<a name="l00209"></a>00209             <span class="comment">/* kein Hindernis in Sichtweite, also erstmal vorfahren */</span>
+<a name="l00210"></a>00210             <a class="code" href="behaviour__goto__obstacle_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;Noch kein Hindernis in Sichtweite&quot;</span>);
+<a name="l00211"></a>00211             <a class="code" href="behaviour__goto__pos_8c.html#af3cd84671054daefcec8c370feaf0c1c">bot_goto_dist</a>(data, 400, 1);
+<a name="l00215"></a>00215     <span class="comment">//      bot_goto_dist(data, 4000, 1);</span>
+<a name="l00216"></a>00216     <span class="comment">//      bot_cancel_behaviour(data, bot_goto_pos_behaviour, check_distance);</span>
+<a name="l00217"></a>00217 <span class="comment">//          obst_state = MEASURE_DIST_STATE;</span>
+<a name="l00218"></a>00218         }
+<a name="l00219"></a>00219         <span class="keywordflow">break</span>;
+<a name="l00220"></a>00220     }
+<a name="l00221"></a>00221     <span class="keywordflow">case</span> <a class="code" href="behaviour__goto__obstacle_8c.html#aed0bceb1457e90161ff4d7f2bbdc84d0">ALIGN_STATE</a>:
+<a name="l00222"></a>00222         <span class="keywordflow">if</span> (obst_parallel == 1) {
+<a name="l00223"></a>00223             <span class="comment">/* heading korrigieren, so dass Bot parallel zum Hindernis steht */</span>
+<a name="l00224"></a>00224             int16_t diff = distRight - distLeft;
+<a name="l00225"></a>00225             <span class="keywordflow">if</span> (abs(diff) &lt; max_par_diff) {
+<a name="l00226"></a>00226                 <span class="comment">/* unsinnig bei zu grosser Differenz */</span>
+<a name="l00227"></a>00227                 <a class="code" href="behaviour__goto__obstacle_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;diff=%d&quot;</span>, diff);
+<a name="l00228"></a>00228                 <span class="keywordtype">float</span> alpha = (float)diff / (<span class="keywordtype">float</span>)(<a class="code" href="bot-local_8h.html#aa042863925c33a1048da443273e2e67c">DISTSENSOR_POS_SW</a>*2);
+<a name="l00229"></a>00229                 alpha /= 2.0*<a class="code" href="global_8h.html#ae71449b1cc6e6250b91f539153a7a0d3">M_PI</a>/360.0;
+<a name="l00230"></a>00230                 <a class="code" href="behaviour__goto__obstacle_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;alpha=%f&quot;</span>, alpha);
+<a name="l00231"></a>00231                 <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, (int16_t)alpha);
+<a name="l00232"></a>00232             }
+<a name="l00233"></a>00233         }
+<a name="l00234"></a>00234         obst_state = <a class="code" href="behaviour__goto__obstacle_8c.html#a29fd18bed01c4d836c7ebfe73a125c3f">END</a>;
+<a name="l00235"></a>00235         <span class="keywordflow">break</span>;
+<a name="l00236"></a>00236     <span class="keywordflow">default</span>:
+<a name="l00237"></a>00237         <span class="comment">/* fertig :-) */</span>
+<a name="l00238"></a>00238         return_from_behaviour(data);
+<a name="l00239"></a>00239         <span class="keywordflow">break</span>;
+<a name="l00240"></a>00240     }
+<a name="l00241"></a>00241 }
+<a name="l00242"></a>00242 
+<a name="l00250"></a><a class="code" href="behaviour__goto__obstacle_8h.html#a06f1d6f09a3440a7d063ba902d147b48">00250</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__goto__obstacle_8c.html#a06f1d6f09a3440a7d063ba902d147b48">bot_goto_obstacle</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller, int16_t distance, uint8_t parallel) {
+<a name="l00251"></a>00251     obst_distance = distance;
+<a name="l00252"></a>00252     obst_parallel = parallel;
+<a name="l00253"></a>00253     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__goto__obstacle_8c.html#a9786fc9e477889bcc2ead463a5ccd067">bot_goto_obstacle_behaviour</a>, <a class="code" href="bot-logic_8h.html#ac3101d6686d35c952f2a5c8177b3f262" title="Konstante, wenn Verhalten beim Aufruf alte Wuensche ueberschreiben sollen.">BEHAVIOUR_OVERRIDE</a>);
+<a name="l00254"></a>00254     obst_state = <a class="code" href="behaviour__goto__obstacle_8c.html#aebd465a57406710f9f14b89ad1072d6e">GOTO_DIST_STATE</a>;
+<a name="l00255"></a>00255 }
+<a name="l00256"></a>00256 
+<a name="l00257"></a>00257 <span class="preprocessor">#endif // BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE</span>
+<a name="l00258"></a>00258 <span class="preprocessor"></span>
+<a name="l00259"></a>00259 
+<a name="l00260"></a>00260 <span class="preprocessor">#endif // OLD_VERSION</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

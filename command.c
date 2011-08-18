@@ -44,6 +44,7 @@ EEPROM uint8_t bot_address = CMD_BROADCAST; /*!< Kommunikations-Adresse des Bots
 #include "os_thread.h"
 #include "map.h"
 #include "botfs.h"
+#include "botcontrol.h"
 #include "init.h"
 #include <string.h>
 

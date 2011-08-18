@@ -1,0 +1,296 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: botfs-low_pc.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_b1beec98a6d8202f7d2e9ed7dd898c89.html">pc</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">botfs-low_pc.c</div>  </div>
+</div>
+<div class="contents">
+<a href="botfs-low__pc_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00027"></a>00027 <span class="preprocessor">#ifdef PC</span>
+<a name="l00028"></a>00028 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot-Funktionalitaeten">ct-Bot.h</a>&quot;</span>
+<a name="l00029"></a>00029 
+<a name="l00030"></a>00030 <span class="preprocessor">#ifdef BOT_FS_AVAILABLE</span>
+<a name="l00031"></a>00031 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="os__thread_8h.html" title="Threadmanagement fuer BotOS.">os_thread.h</a>&quot;</span>
+<a name="l00032"></a>00032 <span class="preprocessor">#include &quot;<a class="code" href="botfs_8h.html" title="Dateisystem BotFS.">botfs.h</a>&quot;</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#include &quot;<a class="code" href="botfs-low_8h.html" title="Low-Level-Funktionen des Dateisystems BotFS.">botfs-low.h</a>&quot;</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include &quot;<a class="code" href="log_8h.html" title="Routinen zum Loggen von Informationen.">log.h</a>&quot;</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include &lt;stdio.h&gt;</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include &lt;string.h&gt;</span>
+<a name="l00037"></a>00037 <span class="preprocessor">#include &lt;stdarg.h&gt;</span>
+<a name="l00038"></a>00038 <span class="preprocessor">#include &lt;time.h&gt;</span>
+<a name="l00039"></a>00039 
+<a name="l00040"></a><a class="code" href="botfs-low__pc_8c.html#a531fbfcee904203b5c4b391338120dbf">00040</a> <span class="preprocessor">#define BOTFS_FLUSH_LOG</span>
+<a name="l00041"></a>00041 <span class="preprocessor"></span><span class="comment">//#define BOTFS_DEBUG_LOW</span>
+<a name="l00042"></a>00042 
+<a name="l00043"></a>00043 <span class="preprocessor">#ifndef BOTFS_DEBUG_LOW</span>
+<a name="l00044"></a>00044 <span class="preprocessor"></span><span class="preprocessor">#undef PRINT_MSG</span>
+<a name="l00045"></a><a class="code" href="botfs-low__pc_8c.html#a68ab689cb2a7e8e3bc9fa2d734277378">00045</a> <span class="preprocessor"></span><span class="preprocessor">#define PRINT_MSG(format, _args...)</span>
+<a name="l00046"></a>00046 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00047"></a>00047 <span class="preprocessor"></span>
+<a name="l00048"></a>00048 <span class="keyword">static</span> FILE * image_file; 
+<a name="l00049"></a>00049 <span class="keyword">static</span> <a class="code" href="botfs-low_8h.html#a1acc1c3282ce989c2fc6f71ae2ba8d99">botfs_mutex_t</a> file_mutex = PTHREAD_MUTEX_INITIALIZER; 
+<a name="l00050"></a>00050 <span class="preprocessor">#if defined DEBUG_BOTFS || defined DEBUG_BOTFS_LOGFILE</span>
+<a name="l00051"></a>00051 <span class="preprocessor"></span><span class="keyword">static</span> <a class="code" href="botfs-low_8h.html#a1acc1c3282ce989c2fc6f71ae2ba8d99">botfs_mutex_t</a> log_mutex = PTHREAD_MUTEX_INITIALIZER; 
+<a name="l00052"></a>00052 FILE * botfs_log_fd; 
+<a name="l00053"></a>00053 <span class="preprocessor">#endif // defined DEBUG_BOTFS || defined DEBUG_BOTFS_LOGFILE</span>
+<a name="l00054"></a>00054 <span class="preprocessor"></span>
+<a name="l00055"></a><a class="code" href="botfs-low__pc_8c.html#a67ae038bb34d9c559a50ebb8ac413fa8">00055</a> uint32_t <a class="code" href="botfs-low_8h.html#a67ae038bb34d9c559a50ebb8ac413fa8" title="Adresse des ersten Blocks des Volumes.">first_block</a> = 0; 
+<a name="l00064"></a><a class="code" href="botfs-low__pc_8c.html#a04a8d2f38bf2c9d01e787da13cb73dc8">00064</a> int8_t <a class="code" href="botfs-low_8h.html#a04a8d2f38bf2c9d01e787da13cb73dc8" title="Laedt das Volume.">botfs_init_low</a>(<span class="keywordtype">char</span> * image, <span class="keywordtype">void</span> * buffer, uint8_t create) {
+<a name="l00065"></a>00065     (void) buffer; <span class="comment">// kein warning</span>
+<a name="l00066"></a>00066 <span class="preprocessor">#ifdef DEBUG_BOTFS_LOGFILE</span>
+<a name="l00067"></a>00067 <span class="preprocessor"></span>    <a class="code" href="botfs-low_8h.html#aed0ed8d94dc7c058a4cb0ae26d0f59ff" title="Wartet, bis ein Mutex verfuegbar ist und sperrt es dann.">botfs_acquire_lock_low</a>(&amp;log_mutex);
+<a name="l00068"></a>00068     botfs_log_fd = fopen(<a class="code" href="botfs__config_8h.html#ae694484eeb4cd59e333ce3f5a4e8e50b" title="Logfile, falls DEBUG_BOTFS_LOGFILE.">BOTFS_DEBUG_LOGFILE</a>, <span class="stringliteral">&quot;wb&quot;</span>);
+<a name="l00069"></a>00069     botfs_release_lock_low(&amp;log_mutex);
+<a name="l00070"></a>00070 <span class="preprocessor">#endif // DEBUG_BOTFS_LOGFILE</span>
+<a name="l00071"></a>00071 <span class="preprocessor"></span>
+<a name="l00072"></a>00072     <a class="code" href="botfs-low_8h.html#aed0ed8d94dc7c058a4cb0ae26d0f59ff" title="Wartet, bis ein Mutex verfuegbar ist und sperrt es dann.">botfs_acquire_lock_low</a>(&amp;file_mutex);
+<a name="l00073"></a>00073     image_file = fopen(image, <span class="stringliteral">&quot;r+b&quot;</span>);
+<a name="l00074"></a>00074     botfs_release_lock_low(&amp;file_mutex);
+<a name="l00075"></a>00075     <span class="keywordflow">if</span> (image_file == NULL) {
+<a name="l00076"></a>00076         <a class="code" href="botfs-low__pc_8c.html#a68ab689cb2a7e8e3bc9fa2d734277378">PRINT_MSG</a>(<span class="stringliteral">&quot;Image-Datei \&quot;%s\&quot; konnte nicht geoeffnet werden&quot;</span>, image);
+<a name="l00077"></a>00077         <span class="keywordflow">if</span> (create != 1) {
+<a name="l00078"></a>00078             <span class="keywordflow">return</span> -1;
+<a name="l00079"></a>00079         }
+<a name="l00080"></a>00080         <a class="code" href="botfs-low__pc_8c.html#a68ab689cb2a7e8e3bc9fa2d734277378">PRINT_MSG</a>(<span class="stringliteral">&quot;Lege neues Images \&quot;%s\&quot; an...&quot;</span>, image);
+<a name="l00081"></a>00081         <span class="keywordflow">if</span> (<a class="code" href="botfs_8h.html#a75f8a777d322f7bf7133a87c492d0d9f" title="Erzeugt ein neues Volume.">botfs_create_volume</a>(image, <a class="code" href="botfs__config_8h.html#ac4b2c1117078163b2cb6dd191da29b9f" title="Volume-Name, falls es automatisch angelegt wird.">BOTFS_DEFAULT_VOL_NAME</a>, <a class="code" href="botfs__config_8h.html#aca2639b2e4625e44a535548e8ddea24c" title="Volume-Groesse, falls es automatisch angelegt wird in Byte.">BOTFS_DEFAULT_VOL_SIZE</a>) != 0) {
+<a name="l00082"></a>00082             <a class="code" href="botfs-low__pc_8c.html#a68ab689cb2a7e8e3bc9fa2d734277378">PRINT_MSG</a>(<span class="stringliteral">&quot;botfs_create_volume(\&quot;%s\&quot;) schlug fehl&quot;</span>, image);
+<a name="l00083"></a>00083             <span class="keywordflow">return</span> -2;
+<a name="l00084"></a>00084         }
+<a name="l00085"></a>00085         <a class="code" href="botfs-low_8h.html#aed0ed8d94dc7c058a4cb0ae26d0f59ff" title="Wartet, bis ein Mutex verfuegbar ist und sperrt es dann.">botfs_acquire_lock_low</a>(&amp;file_mutex);
+<a name="l00086"></a>00086         image_file = fopen(image, <span class="stringliteral">&quot;r+b&quot;</span>);
+<a name="l00087"></a>00087         botfs_release_lock_low(&amp;file_mutex);
+<a name="l00088"></a>00088         <span class="keywordflow">if</span> (image_file == NULL) {
+<a name="l00089"></a>00089             <a class="code" href="botfs-low__pc_8c.html#a68ab689cb2a7e8e3bc9fa2d734277378">PRINT_MSG</a>(<span class="stringliteral">&quot;angelegte Image-Datei \&quot;%s\&quot; konnte nicht geoeffnet werden&quot;</span>, image);
+<a name="l00090"></a>00090             <span class="keywordflow">return</span> -3;
+<a name="l00091"></a>00091         }
+<a name="l00092"></a>00092     }
+<a name="l00093"></a>00093 
+<a name="l00094"></a>00094     <a class="code" href="botfs-low__pc_8c.html#a68ab689cb2a7e8e3bc9fa2d734277378">PRINT_MSG</a>(<span class="stringliteral">&quot;botfs_init_low() erfolgreich&quot;</span>);
+<a name="l00095"></a>00095     <span class="keywordflow">return</span> 0;
+<a name="l00096"></a>00096 }
+<a name="l00097"></a>00097 
+<a name="l00104"></a><a class="code" href="botfs-low__pc_8c.html#a2c8ce5783b030602ef6b682f7c67202a">00104</a> int8_t <a class="code" href="botfs-low_8h.html#a2c8ce5783b030602ef6b682f7c67202a" title="Ueberprueft ein geladenes Volume.">botfs_check_volume_low</a>(<span class="keywordtype">char</span> * image, <span class="keywordtype">void</span> * buffer) {
+<a name="l00105"></a>00105     <span class="comment">/* Version pruefen */</span>
+<a name="l00106"></a>00106     <a class="code" href="unionbotfs__volume__t.html" title="Volume-Header.">botfs_volume_t</a> * volume = buffer;
+<a name="l00107"></a>00107     <span class="keywordflow">if</span> (volume-&gt;<a class="code" href="unionbotfs__volume__t.html#a9ddf9bc9b65152f5f1afd15b4c8aa967">data</a>.<a class="code" href="unionbotfs__volume__t.html#ad6990bfddabaa0d225ba3475cceba995" title="BotFS-Version.">version</a> &lt; <a class="code" href="botfs__config_8h.html#afc148395819b4a2651719ebef168b3c3" title="BotFS-Version eines Volumes, die dieser Code mindestens braucht.">BOTFS_MIN_VERSION</a>) {
+<a name="l00108"></a>00108         printf(<span class="stringliteral">&quot;Das Volume hat eine zu alte Version!\n&quot;</span>);
+<a name="l00109"></a>00109         printf(<span class="stringliteral">&quot; Volume-Version: %u, min. gefordert: %u\n&quot;</span>, volume-&gt;<a class="code" href="unionbotfs__volume__t.html#a9ddf9bc9b65152f5f1afd15b4c8aa967">data</a>.<a class="code" href="unionbotfs__volume__t.html#ad6990bfddabaa0d225ba3475cceba995" title="BotFS-Version.">version</a>, <a class="code" href="botfs__config_8h.html#afc148395819b4a2651719ebef168b3c3" title="BotFS-Version eines Volumes, die dieser Code mindestens braucht.">BOTFS_MIN_VERSION</a>);
+<a name="l00110"></a>00110         printf(<span class="stringliteral">&quot;Bitte Datei \&quot;%s\&quot; loeschen und neu anlegen (lassen).\n&quot;</span>, image);
+<a name="l00111"></a>00111         <span class="keywordflow">return</span> -1;
+<a name="l00112"></a>00112     }
+<a name="l00113"></a>00113 
+<a name="l00114"></a>00114     <span class="comment">/* Root-Dir pruefen */</span>
+<a name="l00115"></a>00115     <span class="keyword">const</span> <span class="keywordtype">char</span> * first_file = <a class="code" href="botfs_8h.html#a58bec3b262a075120ddd374e1438aaed" title="Gibt Root-Dir-Eintraege zurueck.">botfs_readdir</a>(0, buffer);
+<a name="l00116"></a>00116     <span class="keywordflow">if</span> (first_file == NULL) {
+<a name="l00117"></a>00117         printf(<span class="stringliteral">&quot;Fehlerhaftes Volume\n&quot;</span>);
+<a name="l00118"></a>00118         <span class="keywordflow">return</span> -2;
+<a name="l00119"></a>00119     }
+<a name="l00120"></a>00120     <span class="keywordflow">if</span> (strncmp(first_file, <span class="stringliteral">&quot;/volumedata&quot;</span>, <a class="code" href="botfs__config_8h.html#acb62e6bcc59931ccb9c949b6a66e3a4e" title="max.">BOTFS_MAX_FILENAME</a>) != 0) {
+<a name="l00121"></a>00121         printf(<span class="stringliteral">&quot;Fehler, Volume enhaelt kein Rootverzeichnis\n&quot;</span>);
+<a name="l00122"></a>00122         <span class="keywordflow">return</span> -3;
+<a name="l00123"></a>00123     }
+<a name="l00124"></a>00124 
+<a name="l00125"></a>00125     <span class="keywordflow">return</span> 0;
+<a name="l00126"></a>00126 }
+<a name="l00127"></a>00127 
+<a name="l00134"></a><a class="code" href="botfs-low__pc_8c.html#a2a3584e02ef98f12d6e3e6cdd08adc18">00134</a> int8_t <a class="code" href="botfs-low_8h.html#a2a3584e02ef98f12d6e3e6cdd08adc18" title="Erzeugt eine neue Image-Datei fuer ein Volume.">botfs_create_volume_low</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * image, uint32_t size) {
+<a name="l00135"></a>00135     <span class="comment">/* Datei erzeugen */</span>
+<a name="l00136"></a>00136     <a class="code" href="botfs-low_8h.html#aed0ed8d94dc7c058a4cb0ae26d0f59ff" title="Wartet, bis ein Mutex verfuegbar ist und sperrt es dann.">botfs_acquire_lock_low</a>(&amp;file_mutex);
+<a name="l00137"></a>00137     image_file = fopen(image, <span class="stringliteral">&quot;w+b&quot;</span>);
+<a name="l00138"></a>00138     <span class="keywordflow">if</span> (image_file == NULL) {
+<a name="l00139"></a>00139         botfs_release_lock_low(&amp;file_mutex);
+<a name="l00140"></a>00140         <span class="keywordflow">return</span> -1;
+<a name="l00141"></a>00141     }
+<a name="l00142"></a>00142 
+<a name="l00143"></a>00143     <span class="comment">/* Dateigroesse anpassen */</span>
+<a name="l00144"></a>00144     <span class="keywordflow">if</span> (fseek(image_file, size - 1, SEEK_SET) != 0) {
+<a name="l00145"></a>00145         botfs_release_lock_low(&amp;file_mutex);
+<a name="l00146"></a>00146         <span class="keywordflow">return</span> -2;
+<a name="l00147"></a>00147     }
+<a name="l00148"></a>00148     <span class="keywordflow">if</span> (putc(0, image_file) != 0) {
+<a name="l00149"></a>00149         botfs_release_lock_low(&amp;file_mutex);
+<a name="l00150"></a>00150         <span class="keywordflow">return</span> -3;
+<a name="l00151"></a>00151     }
+<a name="l00152"></a>00152     <span class="keywordflow">if</span> (fflush(image_file) != 0) {
+<a name="l00153"></a>00153         botfs_release_lock_low(&amp;file_mutex);
+<a name="l00154"></a>00154         <span class="keywordflow">return</span> -4;
+<a name="l00155"></a>00155     }
+<a name="l00156"></a>00156     botfs_release_lock_low(&amp;file_mutex);
+<a name="l00157"></a>00157     <span class="keywordflow">return</span> 0;
+<a name="l00158"></a>00158 }
+<a name="l00159"></a>00159 
+<a name="l00166"></a><a class="code" href="botfs-low__pc_8c.html#a101814b726ddc94da8dab1c999314e17">00166</a> int8_t <a class="code" href="botfs-low_8h.html#ad79b36f6afd1740d03f6551a2418e733" title="Liest einen BOTFS_BLOCK_SIZE Byte grossen Block.">botfs_read_low</a>(uint16_t block, <span class="keywordtype">void</span> * buffer) {
+<a name="l00167"></a>00167     <a class="code" href="botfs-low__pc_8c.html#a68ab689cb2a7e8e3bc9fa2d734277378">PRINT_MSG</a>(<span class="stringliteral">&quot;botfs_read_low with block=%d, &amp;buffer=0x%lx&quot;</span>, block, (<span class="keywordtype">size_t</span>) buffer);
+<a name="l00168"></a>00168     <a class="code" href="botfs-low_8h.html#aed0ed8d94dc7c058a4cb0ae26d0f59ff" title="Wartet, bis ein Mutex verfuegbar ist und sperrt es dann.">botfs_acquire_lock_low</a>(&amp;file_mutex);
+<a name="l00169"></a>00169     <span class="keywordflow">if</span> (fseek(image_file, block * <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>, SEEK_SET) != 0) {
+<a name="l00170"></a>00170         botfs_release_lock_low(&amp;file_mutex);
+<a name="l00171"></a>00171         <span class="keywordflow">return</span> -1;
+<a name="l00172"></a>00172     }
+<a name="l00173"></a>00173     <span class="keywordflow">if</span> (fread(buffer, BOTFS_BLOCK_SIZE, 1, image_file) != 1) {
+<a name="l00174"></a>00174         botfs_release_lock_low(&amp;file_mutex);
+<a name="l00175"></a>00175         <span class="keywordflow">return</span> -2;
+<a name="l00176"></a>00176     }
+<a name="l00177"></a>00177     botfs_release_lock_low(&amp;file_mutex);
+<a name="l00178"></a>00178     <span class="keywordflow">return</span> 0;
+<a name="l00179"></a>00179 }
+<a name="l00180"></a>00180 
+<a name="l00187"></a><a class="code" href="botfs-low__pc_8c.html#a1ceccafcf7cee72be9575174dc46be94">00187</a> int8_t <a class="code" href="botfs-low_8h.html#a9a7b80bf15c3207b2facd474d23a7f96" title="Schreibt einen BOTFS_BLOCK_SIZE Byte grossen Block.">botfs_write_low</a>(uint16_t block, <span class="keywordtype">void</span> * buffer) {
+<a name="l00188"></a>00188     <a class="code" href="botfs-low__pc_8c.html#a68ab689cb2a7e8e3bc9fa2d734277378">PRINT_MSG</a>(<span class="stringliteral">&quot;botfs_write_low with block=%d, &amp;buffer=0x%lx&quot;</span>, block, (<span class="keywordtype">size_t</span>) buffer);
+<a name="l00189"></a>00189     <a class="code" href="botfs-low_8h.html#aed0ed8d94dc7c058a4cb0ae26d0f59ff" title="Wartet, bis ein Mutex verfuegbar ist und sperrt es dann.">botfs_acquire_lock_low</a>(&amp;file_mutex);
+<a name="l00190"></a>00190     <span class="keywordflow">if</span> (fseek(image_file, block * <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>, SEEK_SET) != 0) {
+<a name="l00191"></a>00191         botfs_release_lock_low(&amp;file_mutex);
+<a name="l00192"></a>00192         <span class="keywordflow">return</span> -1;
+<a name="l00193"></a>00193     }
+<a name="l00194"></a>00194     <span class="keywordflow">if</span> (fwrite(buffer, BOTFS_BLOCK_SIZE, 1, image_file) != 1) {
+<a name="l00195"></a>00195         botfs_release_lock_low(&amp;file_mutex);
+<a name="l00196"></a>00196         <span class="keywordflow">return</span> -2;
+<a name="l00197"></a>00197     }
+<a name="l00198"></a>00198     <span class="keywordflow">if</span> (fflush(image_file) != 0) {
+<a name="l00199"></a>00199         botfs_release_lock_low(&amp;file_mutex);
+<a name="l00200"></a>00200         <span class="keywordflow">return</span> -3;
+<a name="l00201"></a>00201     }
+<a name="l00202"></a>00202     botfs_release_lock_low(&amp;file_mutex);
+<a name="l00203"></a>00203     <span class="keywordflow">return</span> 0;
+<a name="l00204"></a>00204 }
+<a name="l00205"></a>00205 
+<a name="l00209"></a><a class="code" href="botfs-low__pc_8c.html#acdfb3639408d19fe95a0e45020373371">00209</a> <span class="keywordtype">void</span> <a class="code" href="botfs-low_8h.html#acdfb3639408d19fe95a0e45020373371" title="Schliesst das BotFS-Volume (beendet BotFS sauber)">botfs_close_volume_low</a>(<span class="keywordtype">void</span>) {
+<a name="l00210"></a>00210     <a class="code" href="botfs-low_8h.html#aed0ed8d94dc7c058a4cb0ae26d0f59ff" title="Wartet, bis ein Mutex verfuegbar ist und sperrt es dann.">botfs_acquire_lock_low</a>(&amp;file_mutex);
+<a name="l00211"></a>00211     fclose(image_file);
+<a name="l00212"></a>00212     botfs_release_lock_low(&amp;file_mutex);
+<a name="l00213"></a>00213 }
+<a name="l00214"></a>00214 
+<a name="l00215"></a>00215 <span class="preprocessor">#if defined DEBUG_BOTFS || defined DEBUG_BOTFS_LOGFILE</span>
+<a name="l00216"></a>00216 <span class="preprocessor"></span><span class="keyword">static</span> <span class="keywordtype">char</span> log_buf[1024 * 1024]; 
+<a name="l00217"></a>00217 <span class="keyword">static</span> <span class="keywordtype">char</span> * ptr = log_buf; 
+<a name="l00223"></a>00223 <span class="keywordtype">void</span> botfs_flush_log(FILE * fd) {
+<a name="l00224"></a>00224     <span class="keywordflow">if</span> (fd == NULL) {
+<a name="l00225"></a>00225         <span class="keywordflow">return</span>;
+<a name="l00226"></a>00226     }
+<a name="l00227"></a>00227     <span class="comment">/* write buffer back to file */</span>
+<a name="l00228"></a>00228     <a class="code" href="botfs-low_8h.html#aed0ed8d94dc7c058a4cb0ae26d0f59ff" title="Wartet, bis ein Mutex verfuegbar ist und sperrt es dann.">botfs_acquire_lock_low</a>(&amp;log_mutex);
+<a name="l00229"></a>00229     fwrite(log_buf, ptr - log_buf, 1, fd);
+<a name="l00230"></a>00230     fflush(fd);
+<a name="l00231"></a>00231     ptr = log_buf;
+<a name="l00232"></a>00232     botfs_release_lock_low(&amp;log_mutex);
+<a name="l00233"></a>00233 }
+<a name="l00234"></a>00234 
+<a name="l00240"></a>00240 <span class="keywordtype">void</span> botfs_log_low(FILE * fd, <span class="keyword">const</span> <span class="keywordtype">char</span> * format, ...) {
+<a name="l00241"></a>00241     <span class="keywordflow">if</span> (ptr &gt; log_buf + 2 * <span class="keyword">sizeof</span>(log_buf) / 3) {
+<a name="l00242"></a>00242         botfs_flush_log(fd);
+<a name="l00243"></a>00243     }
+<a name="l00244"></a>00244     va_list args;
+<a name="l00245"></a>00245     va_start(args, format);
+<a name="l00246"></a>00246 
+<a name="l00247"></a>00247     <span class="comment">/* log time */</span>
+<a name="l00248"></a>00248     time_t rawtime;
+<a name="l00249"></a>00249     <span class="keyword">struct </span>tm * timeinfo;
+<a name="l00250"></a>00250     time(&amp;rawtime);
+<a name="l00251"></a>00251     timeinfo = localtime(&amp;rawtime);
+<a name="l00252"></a>00252 
+<a name="l00253"></a>00253     <a class="code" href="botfs-low_8h.html#aed0ed8d94dc7c058a4cb0ae26d0f59ff" title="Wartet, bis ein Mutex verfuegbar ist und sperrt es dann.">botfs_acquire_lock_low</a>(&amp;log_mutex);
+<a name="l00254"></a>00254     ptr += strftime(ptr, 30, <span class="stringliteral">&quot;%Y-%m-%d %H:%M:%S &quot;</span>, timeinfo);
+<a name="l00255"></a>00255 
+<a name="l00256"></a>00256     <span class="comment">/* write message */</span>
+<a name="l00257"></a>00257     ptr += vsnprintf(ptr, 512, format, args);
+<a name="l00258"></a>00258 
+<a name="l00259"></a>00259     <span class="comment">/* new line */</span>
+<a name="l00260"></a>00260     *ptr = <span class="charliteral">&#39;\n&#39;</span>;
+<a name="l00261"></a>00261     ptr++;
+<a name="l00262"></a>00262 
+<a name="l00263"></a>00263     botfs_release_lock_low(&amp;log_mutex);
+<a name="l00264"></a>00264     va_end(args);
+<a name="l00265"></a>00265 
+<a name="l00266"></a>00266 <span class="preprocessor">#ifdef BOTFS_FLUSH_LOG</span>
+<a name="l00267"></a>00267 <span class="preprocessor"></span>    botfs_flush_log(fd);
+<a name="l00268"></a>00268 <span class="preprocessor">#endif</span>
+<a name="l00269"></a>00269 <span class="preprocessor"></span>}
+<a name="l00270"></a>00270 <span class="preprocessor">#endif // defined DEBUG_BOTFS || defined DEBUG_BOTFS_LOGFILE</span>
+<a name="l00271"></a>00271 <span class="preprocessor"></span>
+<a name="l00272"></a>00272 <span class="preprocessor">#endif // BOT_FS_AVAILABLE</span>
+<a name="l00273"></a>00273 <span class="preprocessor"></span><span class="preprocessor">#endif // PC</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

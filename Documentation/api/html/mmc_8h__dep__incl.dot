@@ -1,0 +1,22 @@
+digraph G
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="mmc.h",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="init.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$init_8c.html",tooltip="Initialisierungsroutinen."];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="map.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$map_8c.html",tooltip="Karte."];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="mmc-vm.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$mmc-vm_8c.html",tooltip="Virtual Memory Management mit MMC / SD-Card."];
+  Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="behaviour_scan.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$behaviour__scan_8c.html",tooltip="Scannt die Umgebung und traegt sie in die Karte ein."];
+  Node1 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="botfs-low.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$botfs-low_8c.html",tooltip="Low-Level-Funktionen des Dateisystems BotFS fuer MCU."];
+  Node1 -> Node7 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="mmc.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$mmc_8c.html",tooltip="Routinen zum Auslesen/Schreiben einer MMC-Karte."];
+  Node1 -> Node8 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="gui.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$gui_8c.html",tooltip="Display-GUI des Bots."];
+  Node1 -> Node9 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="rc5.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$rc5_8c.html",tooltip="RC5-Fernbedienung / Basic-Tasten-Handler."];
+}

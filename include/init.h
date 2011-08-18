@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	init.h
- * @brief 	Initialisierungsroutinen
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	09.03.2010
+/**
+ * \file 	init.h
+ * \brief 	Initialisierungsroutinen
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	09.03.2010
  */
 
 #ifndef INIT_H_
@@ -33,20 +33,20 @@
 #include "sensor-low.h"
 #include "botfs.h"
 
-extern uint8_t EEPROM resetsEEPROM;	/*!< Reset-Counter im EEPROM */
+extern uint8_t EEPROM resetsEEPROM;	/**< Reset-Counter im EEPROM */
 
-#define GET_MMC_BUFFER(name)	mmc_buffers.data.name /*!< Zugriff auf einzelne MMC-Puffer */
+#define GET_MMC_BUFFER(name)	mmc_buffers.data.name /**< Zugriff auf einzelne MMC-Puffer */
 
 typedef union {
 	struct {
 #ifdef MAP_AVAILABLE
-		uint8_t map_buffer[512]; /*!< Map-Puffer */
+		uint8_t map_buffer[512]; /**< Map-Puffer */
 #ifdef MAP_2_SIM_AVAILABLE
-		uint8_t map_2_sim_buffer[512]; /*!< Map-2-Sim-Puffer */
+		uint8_t map_2_sim_buffer[512]; /**< Map-2-Sim-Puffer */
 #endif // MAP_2_SIM_AVAILABLE
 #endif // MAP_AVAILABLE
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
-		uint8_t ubasic_buffer[BOTFS_BLOCK_SIZE]; /*!< uBasic-MMC-Puffer */
+		uint8_t ubasic_buffer[BOTFS_BLOCK_SIZE]; /**< uBasic-MMC-Puffer */
 #endif
 #if defined LOG_MMC_AVAILABLE && defined USE_MINILOG
 		char minilog_buffer[BOTFS_BLOCK_SIZE]; /**< Puffer fuer LOG_MMC */
@@ -57,48 +57,43 @@ typedef union {
 		uint8_t end[0];
 	} PACKED data;
 #ifdef BOT_FS_AVAILABLE
-	uint8_t dummy_botfs[BOTFS_BLOCK_SIZE]; /*!< Mindestgroesse auf 512 Byte setzen, falls BOT_FS aktiv */
+	uint8_t dummy_botfs[BOTFS_BLOCK_SIZE]; /**< Mindestgroesse auf 512 Byte setzen, falls BOT_FS aktiv */
 #endif
 	uint8_t dummy[0];
-} mmc_buffers_t; /*!< Puffer-Struktur fuer alle MMC-Puffer */
+} mmc_buffers_t; /**< Puffer-Struktur fuer alle MMC-Puffer */
 
-extern mmc_buffers_t mmc_buffers; /*!< Puffer fuer alle MMC-Transfers */
+extern mmc_buffers_t mmc_buffers; /**< Puffer fuer alle MMC-Transfers */
 
 #ifdef MCU
-/*! Kopie des MCU(C)SR Registers */
+/** Kopie des MCU(C)SR Registers */
 extern uint8_t mcucsr __attribute__((section(".noinit")));
 
 int main(int argc, char * argv[]) __attribute__((OS_main)); // kein Caller, Interrupts disabled
 
-extern uint8_t soft_resets __attribute__((section(".noinit"))); /*!< Reset-Counter im RAM */
+extern uint8_t soft_resets __attribute__((section(".noinit"))); /**< Reset-Counter im RAM */
 #endif // MCU
 
-/*!
+/**
  * Initialisierung
- * @param argc Anzahl der Kommandozeilenparameter
- * @param *argv Zeiger auf Kommandozeilenparameter
+ * \param argc Anzahl der Kommandozeilenparameter
+ * \param *argv Zeiger auf Kommandozeilenparameter
  */
 void ctbot_init(int argc, char * argv[]);
 
-/*!
+/**
  * Hardwareabhaengige Initialisierungen, die zuerst ausgefuehrt werden sollen
- * @param argc Anzahl der Kommandozeilenparameter
- * @param *argv Zeiger auf Kommandozeilenparameter
+ * \param argc Anzahl der Kommandozeilenparameter
+ * \param *argv Zeiger auf Kommandozeilenparameter
  */
 void ctbot_init_low_1st(int argc, char * argv[]);
 
-/*!
+/**
  * Hardwareabhaengige Initialisierungen, die _nach_ der allgemeinen Initialisierung
  * ausgefuehrt werden sollen
  */
 void ctbot_init_low_last(void);
 
-/*!
- * Faehrt den Bot sauber herunter
- */
-void ctbot_shutdown(void);
-
-/*!
+/**
  * Faehrt den low-level Code des Bots sauber herunter
  */
 void ctbot_shutdown_low(void);

@@ -65,8 +65,8 @@
  *         0. physdiskwrite + PhysGUI von http://m0n0.ch/wall/physdiskwrite.php herunterladen und entpacken\n
  *         1. sd.img.zip entpacken, erzeugt die Datei sd.img\n
  *         2. PhysGUI.exe (als Administrator) starten\n
- *         3. Rechtsklick auf den Eintrag des Kartenlesers -> Image laden -> Öffnen -> sd.img auswählen -> OK -> Ja\n
- *         4. Hardawre sicher entfernen -> auswerfen ausführen\n
+ *         3. Rechtsklick auf den Eintrag des Kartenlesers -> Image laden -> Oeffnen -> sd.img auswaehlen -> OK -> Ja\n
+ *         4. Hardawre sicher entfernen -> auswerfen ausfuehren\n
  * \n
  *     - Durchfuehrung Variante 2:\n
  *       - Einrichtung mit Hilfsprogramm BotFS Helper.

@@ -98,9 +98,9 @@ static uint8_t mmc_read_block(uint8_t * cmd, void * buffer, uint16_t count) {
 		return 1;
 	}
 
-#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
+#ifdef LED_AVAILABLE
 	LED_on(LED_GRUEN);
-#endif // LED_AVAILABLE && ! TEST_AVAILABLE
+#endif // LED_AVAILABLE
 	os_exitCS();
 	/* Warten auf Start Byte von der MMC/SD-Karte (FEh/Start Byte) */
 	uint8_t timeout = 0;
@@ -126,9 +126,9 @@ static uint8_t mmc_read_block(uint8_t * cmd, void * buffer, uint16_t count) {
 
 	/* MMC/SD-Karte inaktiv schalten */
 	ENA_off(ENA_MMC);
-#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
+#ifdef LED_AVAILABLE
 	LED_off(LED_GRUEN);
-#endif // LED_AVAILABLE && ! TEST_AVAILABLE
+#endif // LED_AVAILABLE
 	os_exitCS();
 	if (timeout == 0) {
 		mmc_init_state = 1;
@@ -214,16 +214,16 @@ uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, void * buffer) {
 		return 1;
 	}
 
-#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
+#ifdef LED_AVAILABLE
 	LED_on(LED_GRUEN);
-#endif // LED_AVAILABLE && ! TEST_AVAILABLE
+#endif // LED_AVAILABLE
 
 	/* Warten auf Start-Byte von der MMC/SD-Karte (0xfe == Start-Byte) */
 	if (wait_for_byte(0xfe) == 0) {
 		mmc_init_state = 1;
-#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
+#ifdef LED_AVAILABLE
 		LED_off(LED_GRUEN);
-#endif // LED_AVAILABLE && ! TEST_AVAILABLE
+#endif // LED_AVAILABLE
 		os_exitCS();
 		return 3; // Abbruch durch Timeout
 	}
@@ -276,9 +276,9 @@ uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, void * buffer) {
 	SPI_MasterReceive(); // CRC-Byte wird nicht ausgewertet
 	SPI_MasterReceive(); // CRC-Byte wird nicht ausgewertet
 
-#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
+#ifdef LED_AVAILABLE
 	LED_off(LED_GRUEN);
-#endif // LED_AVAILABLE && ! TEST_AVAILABLE
+#endif // LED_AVAILABLE
 	os_exitCS();
 	return 0;
 }
@@ -297,9 +297,9 @@ uint8_t mmc_write_sector_spi(uint32_t addr, void * buffer) {
 		return 1;
 	}
 
-#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
+#ifdef LED_AVAILABLE
 	LED_on(LED_ROT);
-#endif // LED_AVAILABLE && ! TEST_AVAILABLE
+#endif // LED_AVAILABLE
 
 	/* Startbyte an MMC/SD-Karte senden */
 	SPI_MasterTransmit(0xfe);
@@ -386,9 +386,9 @@ uint8_t mmc_write_sector_spi(uint32_t addr, void * buffer) {
 #endif // MMC_AMMC_AGGRESSIVE_OPTIMIZATION
 
 	os_enterCS();
-#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
+#ifdef LED_AVAILABLE
 	LED_off(LED_ROT);
-#endif // LED_AVAILABLE && ! TEST_AVAILABLE
+#endif // LED_AVAILABLE
 	os_exitCS();
 
 	if (timeout == 0 && timeout_high == 0) {
@@ -484,9 +484,9 @@ uint8_t mmc_init(void) {
 		if (timeout++ > MMC_TIMEOUT) {
 			ENA_off(ENA_MMC);
 			mmc_init_state = 1;
-#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
+#ifdef LED_AVAILABLE
 			LED_on(LED_TUERKIS);
-#endif // LED_AVAILABLE && ! TEST_AVAILABLE
+#endif // LED_AVAILABLE
 			os_exitCS();
 			return 1; // Abbruch bei Kommando 1 (Return Code 1)
 		}
@@ -500,9 +500,9 @@ uint8_t mmc_init(void) {
 		if (timeout++ > 6 * MMC_TIMEOUT) {
 			ENA_off(ENA_MMC);
 			mmc_init_state = 1;
-#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
+#ifdef LED_AVAILABLE
 			LED_on(LED_TUERKIS);
-#endif // LED_AVAILABLE && ! TEST_AVAILABLE
+#endif // LED_AVAILABLE
 			os_exitCS();
 			return 2; // Abbruch bei Kommando 2 (Return Code 2)
 		}
@@ -513,9 +513,9 @@ uint8_t mmc_init(void) {
 	SPI_MasterInit(speed_high);
 #endif // SPI_AVAILABLE
 
-#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
+#ifdef LED_AVAILABLE
 	LED_off(LED_TUERKIS);
-#endif // LED_AVAILABLE && ! TEST_AVAILABLE
+#endif // LED_AVAILABLE
 	os_exitCS();
 	return 0;
 }

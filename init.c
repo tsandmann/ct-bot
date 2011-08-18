@@ -17,37 +17,30 @@
  *
  */
 
-/*!
- * @file 	init.c
- * @brief 	Initialisierungsroutinen
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	09.03.2010
+/**
+ * \file 	init.c
+ * \brief 	Initialisierungsroutinen
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	09.03.2010
  */
 
-#include "ct-Bot.h"
-
 #include "init.h"
-#include "timer.h"
 #include "uart.h"
 #include "bot-2-sim.h"
 #include "display.h"
 #include "led.h"
-#include "motor.h"
 #include "ena.h"
 #include "mmc.h"
-#include "botfs.h"
-#include "sensor-low.h"
-#include "ir-rc5.h"
+#include "log.h"
 #include "mouse.h"
 #include "map.h"
-#include "log.h"
 #include "i2c.h"
 #include "twi.h"
 #include "gui.h"
 
-mmc_buffers_t mmc_buffers; /*!< Puffer fuer alle MMC-Transfers */
+mmc_buffers_t mmc_buffers; /**< Puffer fuer alle MMC-Transfers */
 
-/*!
+/**
  * Initialisierung
  */
 void ctbot_init(int argc, char * argv[]) {
@@ -123,33 +116,18 @@ void ctbot_init(int argc, char * argv[]) {
 #endif
 
 	ctbot_init_low_last();
-}
 
-/*!
- * Faehrt den Bot sauber herunter
- */
-void ctbot_shutdown(void) {
-	LOG_INFO("Shutting down...");
-
-	motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
-
-#ifdef MAP_AVAILABLE
-	map_flush_cache();
-#endif
-
-#ifdef LOG_MMC_AVAILABLE
-	log_flush();
-#endif
-
-#ifdef BOT_FS_AVAILABLE
-	botfs_close_volume();
-#endif
-
-#ifdef DISPLAY_AVAILABLE
-	display_clear();
+#ifdef WELCOME_AVAILABLE
 	display_cursor(1, 1);
-	display_puts("SYSTEM HALTED.");
-#endif // DISPLAY_AVAILABLE
+	display_puts("c't-Roboter");
 
-	ctbot_shutdown_low();
+#ifdef LOG_AVAILABLE
+	LOG_INFO("Hallo Welt!");
+#endif
+#ifdef SP03_AVAILABLE
+	sp03_say("I am Robi %d", sensError);
+#endif
+#endif // WELCOME_AVAILABLE
 }
+
+

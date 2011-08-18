@@ -75,7 +75,7 @@ static Tcb_t * get_this_thread(void) {
  */
 Tcb_t * os_create_thread(void * pStack, void (* pIp)(void)) {
 	static uint8_t thread_count = 0;
-	pStack = pStack; // kein warning
+	(void) pStack; // kein warning
 	if (thread_count == OS_MAX_THREADS - 1) {	// Main-Thread existiert fuer PC nicht im Array
 		/* kein Thread mehr moeglich */
 		LOG_ERROR("Thread konnte nicht angelegt werden");
@@ -105,7 +105,7 @@ void os_thread_yield(void) {
  * @param ms	Zeit in ms, die der aktuelle Thread blockiert wird
  */
 void os_thread_sleep(uint32_t ms) {
-	ms = ms; // kein warning
+	(void) ms; // kein warning
 	// NOP
 	Tcb_t * thread = get_this_thread();
 	if (DEBUG_THREAD_N == -1 || thread == &os_threads[DEBUG_THREAD_N]) {

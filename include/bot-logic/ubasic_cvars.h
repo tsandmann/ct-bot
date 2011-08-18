@@ -2,8 +2,8 @@
 *    Implementierung Basic-Befehl "vpeek" und "vpoke"
 *    =====================================
 *     Uwe Berger (bergeruw@gmx.net); 2010
-* 
-* 
+*
+*
 * Have fun!
 * ---------
 *
@@ -16,7 +16,7 @@
 typedef struct {
 #if USE_PROGMEM
 	char var_name[MAX_NAME_LEN+1];
-#else	
+#else
 	char *var_name;
 #endif
 	int16_t *pvar;

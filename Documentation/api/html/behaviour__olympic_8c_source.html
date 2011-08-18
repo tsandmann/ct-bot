@@ -1,0 +1,418 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: behaviour_olympic.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">behaviour_olympic.c</div>  </div>
+</div>
+<div class="contents">
+<a href="behaviour__olympic_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00027"></a>00027 <span class="preprocessor">#include &quot;<a class="code" href="bot-logic_8h.html" title="High-Level-Routinen fuer die Steuerung des c&#39;t-Bots.">bot-logic/bot-logic.h</a>&quot;</span>
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 <span class="preprocessor">#ifdef BEHAVIOUR_OLYMPIC_AVAILABLE</span>
+<a name="l00030"></a>00030 <span class="preprocessor"></span><span class="preprocessor">#include &lt;stdlib.h&gt;</span>
+<a name="l00031"></a>00031 
+<a name="l00032"></a>00032 <span class="comment">/* Zustaende des bot_explore-Verhaltens */</span>
+<a name="l00033"></a>00033 
+<a name="l00034"></a><a class="code" href="behaviour__olympic_8c.html#a69113b120092e0c204af03e464f38d3b">00034</a> <span class="preprocessor">#define EXPLORATION_STATE_GOTO_WALL             1   </span>
+<a name="l00035"></a><a class="code" href="behaviour__olympic_8c.html#a757b3dd102232bc430e650051c7d2e83">00035</a> <span class="preprocessor">#define EXPLORATION_STATE_TURN_PARALLEL_LEFT    2   </span>
+<a name="l00036"></a><a class="code" href="behaviour__olympic_8c.html#aba34f6fa994ceaf7d3d93982bc70651f">00036</a> <span class="preprocessor">#define EXPLORATION_STATE_TURN_PARALLEL_RIGHT   3   </span>
+<a name="l00037"></a><a class="code" href="behaviour__olympic_8c.html#a6709ce8e9b3a3cd030dcadec34267eb0">00037</a> <span class="preprocessor">#define EXPLORATION_STATE_DRIVE_PARALLEL_LEFT   4   </span>
+<a name="l00038"></a><a class="code" href="behaviour__olympic_8c.html#a57fba7623f16eb62e3b8521220fcdfd9">00038</a> <span class="preprocessor">#define EXPLORATION_STATE_DRIVE_PARALLEL_RIGHT  5   </span>
+<a name="l00039"></a><a class="code" href="behaviour__olympic_8c.html#ab2eeafcee9848af701da9c1b10c2a26d">00039</a> <span class="preprocessor">#define EXPLORATION_STATE_TURN_ORTHOGONAL_LEFT  6   </span>
+<a name="l00040"></a><a class="code" href="behaviour__olympic_8c.html#a8a766bc558ebdc7d5f622042f2a5c5b5">00040</a> <span class="preprocessor">#define EXPLORATION_STATE_TURN_ORTHOGONAL_RIGHT 7   </span>
+<a name="l00041"></a><a class="code" href="behaviour__olympic_8c.html#a42dc1306761f74026e2174e019fb6d6d">00041</a> <span class="preprocessor">#define EXPLORATION_STATE_DRIVE_ARC             8   </span>
+<a name="l00044"></a>00044 <span class="preprocessor"></span><span class="comment">/* Zustaende des bot_olympic_behaviour-Verhaltens */</span>
+<a name="l00045"></a>00045 
+<a name="l00046"></a><a class="code" href="behaviour__olympic_8c.html#a7ee95743146e7196736e32de6ff6946d">00046</a> <span class="preprocessor">#define CB_STATE_EXPLORATION        0   </span>
+<a name="l00047"></a><a class="code" href="behaviour__olympic_8c.html#ae9ffa9dafa40147ada5333b296a60e7f">00047</a> <span class="preprocessor">#define CB_STATE_DOING_SLALOM       1   </span>
+<a name="l00049"></a>00049 <span class="preprocessor"></span><span class="comment">/* Zustaende des bot_do_slalom-Verhaltens */</span>
+<a name="l00050"></a>00050 
+<a name="l00051"></a><a class="code" href="behaviour__olympic_8c.html#a1d6749b6de21ab2d9011426f56f4b6f6">00051</a> <span class="preprocessor">#define SLALOM_STATE_START          0   </span>
+<a name="l00052"></a><a class="code" href="behaviour__olympic_8c.html#a9a1244f0aab8cd1da0a9b39b6c8dc982">00052</a> <span class="preprocessor">#define SLALOM_STATE_TURN_1         1   </span>
+<a name="l00053"></a><a class="code" href="behaviour__olympic_8c.html#ae7deec2426366dc65442b625353f7014">00053</a> <span class="preprocessor">#define SLALOM_STATE_DRIVE_ARC      2   </span>
+<a name="l00054"></a><a class="code" href="behaviour__olympic_8c.html#ac0724be673dc3d766bf875c04e7f0940">00054</a> <span class="preprocessor">#define SLALOM_STATE_TURN_2         3   </span>
+<a name="l00055"></a><a class="code" href="behaviour__olympic_8c.html#a877cfcbea289a90ea986a02149c3cb8d">00055</a> <span class="preprocessor">#define SLALOM_STATE_SWEEP_RUNNING  4   </span>
+<a name="l00056"></a><a class="code" href="behaviour__olympic_8c.html#abee130efdc6b112a3b87229c81727f9a">00056</a> <span class="preprocessor">#define SLALOM_STATE_SWEEP_DONE     5   </span>
+<a name="l00057"></a><a class="code" href="behaviour__olympic_8c.html#a78c8bc315db45360f82de15a8f31be4b">00057</a> <span class="preprocessor">#define SLALOM_STATE_CHECK_PILLAR   6   </span>
+<a name="l00059"></a><a class="code" href="behaviour__olympic_8c.html#a7a70916a4b01a1cb843bb08f38d894bc">00059</a> <span class="preprocessor">#define SLALOM_ORIENTATION_LEFT     0</span>
+<a name="l00060"></a><a class="code" href="behaviour__olympic_8c.html#af0cab71910e224eb34a50b17ec0c88ee">00060</a> <span class="preprocessor"></span><span class="preprocessor">#define SLALOM_ORIENTATION_RIGHT    1</span>
+<a name="l00061"></a>00061 <span class="preprocessor"></span>
+<a name="l00062"></a><a class="code" href="behaviour__olympic_8c.html#a76ca7ab309289db37313567c02209258">00062</a> <span class="preprocessor">#define SWEEP_STATE_TURN            0   </span>
+<a name="l00063"></a><a class="code" href="behaviour__olympic_8c.html#a744c85b05f0aab7cc83897912c4525f0">00063</a> <span class="preprocessor">#define SWEEP_STATE_CHECK           1   </span>
+<a name="l00065"></a>00065 <span class="preprocessor"></span><span class="comment">/* Parameter fuer das bot_explore_behaviour() */</span>
+<a name="l00066"></a>00066 <span class="keyword">static</span> int8_t (* exploration_check_function)(void); 
+<a name="l00075"></a>00075 <span class="keyword">static</span> <span class="keywordtype">void</span> bot_goto_light(<span class="keywordtype">void</span>) {
+<a name="l00076"></a>00076     int16_t speed, curve = (int16_t) ((<a class="code" href="sensor_8c.html#a6d0a5c233b4eb9e698d9f78c8a628bb7">sensLDRL</a> - <a class="code" href="sensor_8c.html#a69a539530f625ee30aa24c42a763aa99">sensLDRR</a>) / 1.5f);
+<a name="l00077"></a>00077 
+<a name="l00078"></a>00078     <span class="keywordflow">if</span> (curve &lt; -127)
+<a name="l00079"></a>00079         curve = -127;
+<a name="l00080"></a>00080     <span class="keywordflow">if</span> (curve &gt; 127)
+<a name="l00081"></a>00081         curve = 127;
+<a name="l00082"></a>00082 
+<a name="l00083"></a>00083     <span class="keywordflow">if</span> (abs(<a class="code" href="sensor_8c.html#a6d0a5c233b4eb9e698d9f78c8a628bb7">sensLDRL</a> - <a class="code" href="sensor_8c.html#a69a539530f625ee30aa24c42a763aa99">sensLDRR</a>) &lt; 20) {
+<a name="l00084"></a>00084         speed = <a class="code" href="motor_8h.html#a24b4914e3c0de6232220a8c79d4be7b2" title="maximale Fahrt in mm/s">BOT_SPEED_MAX</a>;
+<a name="l00085"></a>00085     } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (abs(<a class="code" href="sensor_8c.html#a6d0a5c233b4eb9e698d9f78c8a628bb7">sensLDRL</a> - <a class="code" href="sensor_8c.html#a69a539530f625ee30aa24c42a763aa99">sensLDRR</a>) &lt; 150) {
+<a name="l00086"></a>00086         speed = <a class="code" href="motor_8h.html#af213ef81539186eb5dff47f959119241" title="schnelle Fahrt in mm/s">BOT_SPEED_FAST</a>;
+<a name="l00087"></a>00087     } <span class="keywordflow">else</span> {
+<a name="l00088"></a>00088         speed = <a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>;
+<a name="l00089"></a>00089     }
+<a name="l00090"></a>00090 
+<a name="l00091"></a>00091     <a class="code" href="behaviour__drive__distance_8c.html#a3326d2bd0b9ba5fe13e7a0fae98a1c8b">bot_drive</a>((int8_t) curve, speed);
+<a name="l00092"></a>00092 }
+<a name="l00093"></a>00093 
+<a name="l00098"></a>00098 <span class="keyword">static</span> int8_t check_for_light(<span class="keywordtype">void</span>) {
+<a name="l00099"></a>00099     <span class="comment">// Im Simulator kann man den Bot gut auf den kleinsten Lichtschein</span>
+<a name="l00100"></a>00100     <span class="comment">// reagieren lassen, in der Realitaet gibt es immer Streulicht, so dass</span>
+<a name="l00101"></a>00101     <span class="comment">// hier ein hoeherer Schwellwert besser erscheint.</span>
+<a name="l00102"></a>00102     <span class="comment">// Simulator:</span>
+<a name="l00103"></a>00103     <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a6d0a5c233b4eb9e698d9f78c8a628bb7">sensLDRL</a> &gt;= 1023 &amp;&amp; <a class="code" href="sensor_8c.html#a69a539530f625ee30aa24c42a763aa99">sensLDRR</a> &gt;= 1023)
+<a name="l00104"></a>00104         <span class="keywordflow">return</span> <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00105"></a>00105     <span class="comment">// Beim echten Bot eher:</span>
+<a name="l00106"></a>00106     <span class="comment">// if(sensLDRL &gt;= 100 &amp;&amp; sensLDRR &gt;= 100) return False;</span>
+<a name="l00107"></a>00107 
+<a name="l00108"></a>00108     <span class="keywordflow">else</span>
+<a name="l00109"></a>00109         <span class="keywordflow">return</span> <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00110"></a>00110 }
+<a name="l00111"></a>00111 
+<a name="l00112"></a>00112 
+<a name="l00117"></a>00117 <span class="keyword">static</span> int8_t is_good_pillar_ahead(<span class="keywordtype">void</span>) {
+<a name="l00118"></a>00118     <span class="keywordflow">if</span>(<a class="code" href="sensor_8c.html#a3f1ca5e28021ba1fccba5d739f3b11be">is_obstacle_ahead</a>(<a class="code" href="bot-local_8h.html#a43005cd3c449e4cd248e6eeb2cce2276">COL_NEAR</a>) != <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a> &amp;&amp; <a class="code" href="sensor_8c.html#a6d0a5c233b4eb9e698d9f78c8a628bb7">sensLDRL</a> &lt; 600 &amp;&amp; <a class="code" href="sensor_8c.html#a69a539530f625ee30aa24c42a763aa99">sensLDRR</a> &lt; 600) <span class="keywordflow">return</span> <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00119"></a>00119     <span class="keywordflow">else</span> <span class="keywordflow">return</span> <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00120"></a>00120 }
+<a name="l00121"></a>00121 
+<a name="l00127"></a>00127 <span class="keyword">static</span> int8_t bot_avoid_harm(<span class="keywordtype">void</span>) {
+<a name="l00128"></a>00128     <span class="keywordflow">if</span>(<a class="code" href="sensor_8c.html#a3f1ca5e28021ba1fccba5d739f3b11be">is_obstacle_ahead</a>(<a class="code" href="bot-local_8h.html#adbe925635e0894c00e07f4eb042b0483">COL_CLOSEST</a>) != <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a> || <a class="code" href="sensor_8c.html#a84def4d45c65c50a87cd4882f9462b2e">sensBorderL</a> &gt; <a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a> || <a class="code" href="sensor_8c.html#a0fdaee88ee679ed4c544707de739ee9a">sensBorderR</a> &gt; <a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a>) {
+<a name="l00129"></a>00129         <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = -<a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>;
+<a name="l00130"></a>00130         <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = -<a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>;
+<a name="l00131"></a>00131         <span class="keywordflow">return</span> <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00132"></a>00132     } <span class="keywordflow">else</span> <span class="keywordflow">return</span> <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00133"></a>00133 }
+<a name="l00134"></a>00134 
+<a name="l00135"></a>00135 <span class="keyword">static</span> int8_t explore_curve = 0;    
+<a name="l00136"></a>00136 <span class="keyword">static</span> int8_t explore_state = 0;    
+<a name="l00137"></a>00137 <span class="keyword">static</span> int8_t explore_running_curve = 0;    
+<a name="l00162"></a><a class="code" href="behaviour__olympic_8h.html#a2c062ffa3773a8a4bdd919307136550a">00162</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__olympic_8c.html#a2c062ffa3773a8a4bdd919307136550a">bot_explore_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00163"></a>00163 
+<a name="l00164"></a>00164     <span class="keywordflow">if</span> ((*exploration_check_function)())
+<a name="l00165"></a>00165         return_from_behaviour(data);
+<a name="l00166"></a>00166 
+<a name="l00167"></a>00167     <span class="keywordflow">switch</span> (explore_state) {
+<a name="l00168"></a>00168     <span class="comment">// Volle Fahrt voraus, bis ein Hindernis erreicht ist.</span>
+<a name="l00169"></a>00169     <span class="keywordflow">case</span> <a class="code" href="behaviour__olympic_8c.html#a69113b120092e0c204af03e464f38d3b">EXPLORATION_STATE_GOTO_WALL</a>:
+<a name="l00170"></a>00170         <span class="comment">// Der Bot steht jetzt vor einem Hindernis und soll sich nach rechts drehen</span>
+<a name="l00171"></a>00171         <span class="keywordflow">if</span> (bot_avoid_harm()) {
+<a name="l00172"></a>00172             explore_state = <a class="code" href="behaviour__olympic_8c.html#aba34f6fa994ceaf7d3d93982bc70651f">EXPLORATION_STATE_TURN_PARALLEL_RIGHT</a>;
+<a name="l00173"></a>00173 <span class="preprocessor">#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE</span>
+<a name="l00174"></a>00174 <span class="preprocessor"></span>            deactivateBehaviour(<a class="code" href="behaviour__avoid__col_8c.html#af537d5e45f3f8339619d9dccf7d86e5d">bot_avoid_col_behaviour</a>);
+<a name="l00175"></a>00175 <span class="preprocessor">#endif</span>
+<a name="l00176"></a>00176 <span class="preprocessor"></span>        }
+<a name="l00177"></a>00177         <span class="comment">// Es befindet sich kein Hindernis direkt vor dem Bot.</span>
+<a name="l00178"></a>00178         <span class="keywordflow">else</span> {
+<a name="l00179"></a>00179             <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> &lt; <a class="code" href="bot-local_8h.html#a43005cd3c449e4cd248e6eeb2cce2276">COL_NEAR</a> || <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a> &lt; <a class="code" href="bot-local_8h.html#a43005cd3c449e4cd248e6eeb2cce2276">COL_NEAR</a>) {
+<a name="l00180"></a>00180                 <a class="code" href="behaviour__drive__distance_8c.html#a3326d2bd0b9ba5fe13e7a0fae98a1c8b">bot_drive</a>(0, <a class="code" href="motor_8h.html#af213ef81539186eb5dff47f959119241" title="schnelle Fahrt in mm/s">BOT_SPEED_FAST</a>);
+<a name="l00181"></a>00181             } <span class="keywordflow">else</span> {
+<a name="l00182"></a>00182                 <a class="code" href="behaviour__drive__distance_8c.html#a3326d2bd0b9ba5fe13e7a0fae98a1c8b">bot_drive</a>(0, <a class="code" href="motor_8h.html#a24b4914e3c0de6232220a8c79d4be7b2" title="maximale Fahrt in mm/s">BOT_SPEED_MAX</a>);
+<a name="l00183"></a>00183             }
+<a name="l00184"></a>00184         }
+<a name="l00185"></a>00185         <span class="keywordflow">break</span>;
+<a name="l00186"></a>00186         <span class="comment">// Nach links drehen, bis der Bot parallel zum Hindernis auf der rechten Seite steht.</span>
+<a name="l00191"></a>00191 <span class="comment"></span>    <span class="keywordflow">case</span> <a class="code" href="behaviour__olympic_8c.html#a757b3dd102232bc430e650051c7d2e83">EXPLORATION_STATE_TURN_PARALLEL_LEFT</a>:
+<a name="l00192"></a>00192         <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a> &lt; <a class="code" href="bot-local_8h.html#ae67fffeeabe2d4d2cd96dedec718b944">COL_FAR</a>) {
+<a name="l00193"></a>00193             <span class="comment">// Volle Drehung nach links mit ca. 3Grad/10ms</span>
+<a name="l00194"></a>00194             <a class="code" href="behaviour__drive__distance_8c.html#a3326d2bd0b9ba5fe13e7a0fae98a1c8b">bot_drive</a>(-127, <a class="code" href="motor_8h.html#af213ef81539186eb5dff47f959119241" title="schnelle Fahrt in mm/s">BOT_SPEED_FAST</a>);
+<a name="l00195"></a>00195         } <span class="keywordflow">else</span> {
+<a name="l00196"></a>00196             <span class="comment">// Nachdem das Hindernis nicht mehr in Sicht ist, dreht der Bot noch ca. 3 Grad weiter.</span>
+<a name="l00197"></a>00197             <span class="comment">// Im Zweifelsfall dreht das den Bot zu weit, aber das ist besser, als ihn zu kurz zu drehen.</span>
+<a name="l00198"></a>00198             <a class="code" href="behaviour__drive__distance_8c.html#a3326d2bd0b9ba5fe13e7a0fae98a1c8b">bot_drive</a>(-127, <a class="code" href="motor_8h.html#af213ef81539186eb5dff47f959119241" title="schnelle Fahrt in mm/s">BOT_SPEED_FAST</a>);
+<a name="l00199"></a>00199             explore_state = <a class="code" href="behaviour__olympic_8c.html#a57fba7623f16eb62e3b8521220fcdfd9">EXPLORATION_STATE_DRIVE_PARALLEL_RIGHT</a>;
+<a name="l00200"></a>00200         }
+<a name="l00201"></a>00201         <span class="keywordflow">break</span>;
+<a name="l00202"></a>00202         <span class="comment">// Nach rechts drehen, bis der Bot parallel zum Hindernis auf der linken Seite steht.</span>
+<a name="l00204"></a>00204 <span class="comment"></span>    <span class="keywordflow">case</span> <a class="code" href="behaviour__olympic_8c.html#aba34f6fa994ceaf7d3d93982bc70651f">EXPLORATION_STATE_TURN_PARALLEL_RIGHT</a>:
+<a name="l00205"></a>00205         <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> &lt; <a class="code" href="bot-local_8h.html#ae67fffeeabe2d4d2cd96dedec718b944">COL_FAR</a>) {
+<a name="l00206"></a>00206             <span class="comment">// Volle Drehung nach rechts mit ca. 3Grad/10ms</span>
+<a name="l00207"></a>00207             <a class="code" href="behaviour__drive__distance_8c.html#a3326d2bd0b9ba5fe13e7a0fae98a1c8b">bot_drive</a>(127, <a class="code" href="motor_8h.html#af213ef81539186eb5dff47f959119241" title="schnelle Fahrt in mm/s">BOT_SPEED_FAST</a>);
+<a name="l00208"></a>00208         } <span class="keywordflow">else</span> {
+<a name="l00209"></a>00209             <span class="comment">/* Nachdem das Hindernis nicht mehr in Sicht ist, dreht der Bot noch ca. 3 Grad weiter.</span>
+<a name="l00210"></a>00210 <span class="comment">             * Im Zweifelsfall dreht das den Bot zu weit, aber das ist besser, als ihn zu kurz zu drehen. */</span>
+<a name="l00211"></a>00211             <a class="code" href="behaviour__drive__distance_8c.html#a3326d2bd0b9ba5fe13e7a0fae98a1c8b">bot_drive</a>(127, <a class="code" href="motor_8h.html#af213ef81539186eb5dff47f959119241" title="schnelle Fahrt in mm/s">BOT_SPEED_FAST</a>);
+<a name="l00212"></a>00212             explore_state = <a class="code" href="behaviour__olympic_8c.html#a6709ce8e9b3a3cd030dcadec34267eb0">EXPLORATION_STATE_DRIVE_PARALLEL_LEFT</a>;
+<a name="l00213"></a>00213         }
+<a name="l00214"></a>00214         <span class="keywordflow">break</span>;
+<a name="l00215"></a>00215     <span class="keywordflow">case</span> <a class="code" href="behaviour__olympic_8c.html#a6709ce8e9b3a3cd030dcadec34267eb0">EXPLORATION_STATE_DRIVE_PARALLEL_LEFT</a>:
+<a name="l00216"></a>00216         <a class="code" href="behaviour__drive__distance_8c.html#ae7b188b6785c5e337c51509282ca790e">bot_drive_distance</a>(data,0,<a class="code" href="motor_8h.html#af213ef81539186eb5dff47f959119241" title="schnelle Fahrt in mm/s">BOT_SPEED_FAST</a>,15);
+<a name="l00217"></a>00217         explore_state = <a class="code" href="behaviour__olympic_8c.html#a8a766bc558ebdc7d5f622042f2a5c5b5">EXPLORATION_STATE_TURN_ORTHOGONAL_RIGHT</a>;
+<a name="l00218"></a>00218         <span class="keywordflow">break</span>;
+<a name="l00219"></a>00219     <span class="keywordflow">case</span> <a class="code" href="behaviour__olympic_8c.html#a57fba7623f16eb62e3b8521220fcdfd9">EXPLORATION_STATE_DRIVE_PARALLEL_RIGHT</a>:
+<a name="l00220"></a>00220         <a class="code" href="behaviour__drive__distance_8c.html#ae7b188b6785c5e337c51509282ca790e">bot_drive_distance</a>(data,0,<a class="code" href="motor_8h.html#af213ef81539186eb5dff47f959119241" title="schnelle Fahrt in mm/s">BOT_SPEED_FAST</a>,15);
+<a name="l00221"></a>00221         explore_state = <a class="code" href="behaviour__olympic_8c.html#ab2eeafcee9848af701da9c1b10c2a26d">EXPLORATION_STATE_TURN_ORTHOGONAL_LEFT</a>;
+<a name="l00222"></a>00222         <span class="keywordflow">break</span>;
+<a name="l00223"></a>00223     <span class="keywordflow">case</span> <a class="code" href="behaviour__olympic_8c.html#ab2eeafcee9848af701da9c1b10c2a26d">EXPLORATION_STATE_TURN_ORTHOGONAL_LEFT</a>:
+<a name="l00224"></a>00224         <span class="comment">// Drehe den Bot um 90 Grad nach links.</span>
+<a name="l00225"></a>00225         <span class="comment">/* Da der Bot sich immer ein bisschen zu weit von der Wand weg dreht, soll er sich</span>
+<a name="l00226"></a>00226 <span class="comment">         * hier nur um 85 Grad drehen. Nicht schoen, aber klappt.*/</span>
+<a name="l00227"></a>00227         <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, 85);
+<a name="l00228"></a>00228         explore_state = <a class="code" href="behaviour__olympic_8c.html#a42dc1306761f74026e2174e019fb6d6d">EXPLORATION_STATE_DRIVE_ARC</a>;
+<a name="l00229"></a>00229 <span class="preprocessor">#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE</span>
+<a name="l00230"></a>00230 <span class="preprocessor"></span>        activateBehaviour(NULL, <a class="code" href="behaviour__avoid__col_8c.html#af537d5e45f3f8339619d9dccf7d86e5d">bot_avoid_col_behaviour</a>);
+<a name="l00231"></a>00231 <span class="preprocessor">#endif</span>
+<a name="l00232"></a>00232 <span class="preprocessor"></span>        <span class="keywordflow">break</span>;
+<a name="l00233"></a>00233     <span class="keywordflow">case</span> <a class="code" href="behaviour__olympic_8c.html#a8a766bc558ebdc7d5f622042f2a5c5b5">EXPLORATION_STATE_TURN_ORTHOGONAL_RIGHT</a>:
+<a name="l00234"></a>00234         <span class="comment">// Drehe den Bot um 90 Grad nach rechts.</span>
+<a name="l00235"></a>00235         <span class="comment">/* Da der Bot sich immer ein bisschen zu weit von der Wand weg dreht, soll er sich</span>
+<a name="l00236"></a>00236 <span class="comment">         * hier nur um 85 Grad drehen. Nicht schoen, aber klappt.*/</span>
+<a name="l00237"></a>00237         <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, -85);
+<a name="l00238"></a>00238         explore_state = <a class="code" href="behaviour__olympic_8c.html#a42dc1306761f74026e2174e019fb6d6d">EXPLORATION_STATE_DRIVE_ARC</a>;
+<a name="l00239"></a>00239 <span class="preprocessor">#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE</span>
+<a name="l00240"></a>00240 <span class="preprocessor"></span>        activateBehaviour(NULL, <a class="code" href="behaviour__avoid__col_8c.html#af537d5e45f3f8339619d9dccf7d86e5d">bot_avoid_col_behaviour</a>);
+<a name="l00241"></a>00241 <span class="preprocessor">#endif</span>
+<a name="l00242"></a>00242 <span class="preprocessor"></span>        <span class="keywordflow">break</span>;
+<a name="l00243"></a>00243     <span class="keywordflow">case</span> <a class="code" href="behaviour__olympic_8c.html#a42dc1306761f74026e2174e019fb6d6d">EXPLORATION_STATE_DRIVE_ARC</a>:
+<a name="l00244"></a>00244         <span class="comment">/* Fahre einen Bogen.</span>
+<a name="l00245"></a>00245 <span class="comment">         * Der Bot soll im Wechsel Links- und Rechtsboegen fahren. Daher muss das Vorzeichen von curve wechseln.</span>
+<a name="l00246"></a>00246 <span class="comment">         * Ausserdem soll der Bogen zunehmend weiter werden, so dass der absolute Wert von curve abnehmen muss.</span>
+<a name="l00247"></a>00247 <span class="comment">         * Ist der Wert 0, wird er auf den engsten Bogen initialisiert. Da der Bot am Anfang nach rechts abbiegt,</span>
+<a name="l00248"></a>00248 <span class="comment">         * muss der Wert positiv sein.</span>
+<a name="l00249"></a>00249 <span class="comment">         * Aufgabe: Manchmal kann es passieren, dass der Bot bei einer kleinen Kurve zu weit weg von der Wand</span>
+<a name="l00250"></a>00250 <span class="comment">         * startet und dann nur noch im Kreis faehrt. Unterbinde dieses Verhalten.</span>
+<a name="l00251"></a>00251 <span class="comment">         */</span>
+<a name="l00252"></a>00252         <span class="keywordflow">if</span> (explore_curve == 0) {
+<a name="l00253"></a>00253             explore_curve = 25;
+<a name="l00254"></a>00254             explore_running_curve = <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00255"></a>00255         } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (explore_running_curve == <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>) {
+<a name="l00256"></a>00256             explore_curve = (int8_t) (explore_curve * -0.9f);
+<a name="l00257"></a>00257             explore_running_curve = <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00258"></a>00258         }
+<a name="l00259"></a>00259         <span class="comment">/* Sobald der Bot auf ein Hindernis stoesst, wird der naechste Zyklus eingeleitet.</span>
+<a name="l00260"></a>00260 <span class="comment">         * Auf einen Rechtsbogen (curve &gt; 0) folgt eine Linksdrehung und auf einen Linksbogen eine Rechtsdrehung.</span>
+<a name="l00261"></a>00261 <span class="comment">         * Wenn der Wert von curve (durch Rundungsfehler bei int) auf 0 faellt, beginnt das Suchverhalten erneut.*/</span>
+<a name="l00262"></a>00262         <span class="keywordflow">if</span> (bot_avoid_harm()) {
+<a name="l00263"></a>00263             explore_state
+<a name="l00264"></a>00264                     = (int8_t) (explore_curve &gt; 0 ? <a class="code" href="behaviour__olympic_8c.html#a757b3dd102232bc430e650051c7d2e83">EXPLORATION_STATE_TURN_PARALLEL_LEFT</a>
+<a name="l00265"></a>00265                             : <a class="code" href="behaviour__olympic_8c.html#aba34f6fa994ceaf7d3d93982bc70651f">EXPLORATION_STATE_TURN_PARALLEL_RIGHT</a>);
+<a name="l00266"></a>00266             explore_running_curve = <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00267"></a>00267 <span class="preprocessor">#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE</span>
+<a name="l00268"></a>00268 <span class="preprocessor"></span>            deactivateBehaviour(<a class="code" href="behaviour__avoid__col_8c.html#af537d5e45f3f8339619d9dccf7d86e5d">bot_avoid_col_behaviour</a>);
+<a name="l00269"></a>00269 <span class="preprocessor">#endif</span>
+<a name="l00270"></a>00270 <span class="preprocessor"></span>        } <span class="keywordflow">else</span> {
+<a name="l00271"></a>00271             <a class="code" href="behaviour__drive__distance_8c.html#a3326d2bd0b9ba5fe13e7a0fae98a1c8b">bot_drive</a>(explore_curve, <a class="code" href="motor_8h.html#a24b4914e3c0de6232220a8c79d4be7b2" title="maximale Fahrt in mm/s">BOT_SPEED_MAX</a>);
+<a name="l00272"></a>00272         }
+<a name="l00273"></a>00273         <span class="keywordflow">break</span>;
+<a name="l00274"></a>00274     <span class="keywordflow">default</span>:
+<a name="l00275"></a>00275         explore_state = <a class="code" href="behaviour__olympic_8c.html#a69113b120092e0c204af03e464f38d3b">EXPLORATION_STATE_GOTO_WALL</a>;
+<a name="l00276"></a>00276         explore_curve = 0;
+<a name="l00277"></a>00277 <span class="preprocessor">#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE</span>
+<a name="l00278"></a>00278 <span class="preprocessor"></span>        activateBehaviour(NULL, <a class="code" href="behaviour__avoid__col_8c.html#af537d5e45f3f8339619d9dccf7d86e5d">bot_avoid_col_behaviour</a>);
+<a name="l00279"></a>00279 <span class="preprocessor">#endif</span>
+<a name="l00280"></a>00280 <span class="preprocessor"></span>    }
+<a name="l00281"></a>00281 }
+<a name="l00282"></a>00282 
+<a name="l00288"></a>00288 <span class="keyword">static</span> <span class="keywordtype">void</span> bot_explore(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller, int8_t (* check)(<span class="keywordtype">void</span>)) {
+<a name="l00289"></a>00289     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__olympic_8c.html#a2c062ffa3773a8a4bdd919307136550a">bot_explore_behaviour</a>, <a class="code" href="bot-logic_8h.html#a59191cd512c3376a23c8a7d259a1e111" title="Konstanten, wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen.">BEHAVIOUR_NOOVERRIDE</a>);
+<a name="l00290"></a>00290     exploration_check_function = check;
+<a name="l00291"></a>00291     explore_state = <a class="code" href="behaviour__olympic_8c.html#a69113b120092e0c204af03e464f38d3b">EXPLORATION_STATE_GOTO_WALL</a>;
+<a name="l00292"></a>00292     explore_curve = 0;
+<a name="l00293"></a>00293     explore_running_curve = <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00294"></a>00294 }
+<a name="l00295"></a>00295 
+<a name="l00296"></a>00296 <span class="keyword">static</span> int8_t slalom_state = 0;
+<a name="l00297"></a>00297 <span class="keyword">static</span> int8_t slalom_orientation = 0;
+<a name="l00298"></a>00298 <span class="keyword">static</span> int8_t slalom_sweep_state = 0;
+<a name="l00299"></a>00299 <span class="keyword">static</span> int8_t slalom_sweep_steps = 0;
+<a name="l00300"></a>00300 
+<a name="l00306"></a><a class="code" href="behaviour__olympic_8h.html#a9a0be2533f0d86e712f88ae2ce84051b">00306</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__olympic_8c.html#a9a0be2533f0d86e712f88ae2ce84051b">bot_do_slalom_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00307"></a>00307     int16_t turn;
+<a name="l00308"></a>00308     int8_t curve;
+<a name="l00309"></a>00309 
+<a name="l00310"></a>00310     <span class="keywordflow">switch</span> (slalom_state) {
+<a name="l00311"></a>00311     <span class="keywordflow">case</span> <a class="code" href="behaviour__olympic_8c.html#a78c8bc315db45360f82de15a8f31be4b">SLALOM_STATE_CHECK_PILLAR</a>:
+<a name="l00312"></a>00312         <span class="comment">// Der Bot sollte jetzt Licht sehen koennen...</span>
+<a name="l00313"></a>00313         <span class="keywordflow">if</span> (check_for_light()) {
+<a name="l00314"></a>00314             <span class="comment">// Wenn der Bot direkt vor der Saeule steht, kann der Slalom anfangen, sonst zum Licht fahren</span>
+<a name="l00315"></a>00315             <span class="keywordflow">if</span> (bot_avoid_harm()) {
+<a name="l00316"></a>00316                 slalom_state = <a class="code" href="behaviour__olympic_8c.html#a1d6749b6de21ab2d9011426f56f4b6f6">SLALOM_STATE_START</a>;
+<a name="l00317"></a>00317             } <span class="keywordflow">else</span>
+<a name="l00318"></a>00318                 bot_goto_light();
+<a name="l00319"></a>00319         } <span class="keywordflow">else</span> {<span class="comment">// ... sonst muss er den Slalom-Kurs neu suchen.</span>
+<a name="l00320"></a>00320 <span class="preprocessor">#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE</span>
+<a name="l00321"></a>00321 <span class="preprocessor"></span>            activateBehaviour(NULL, <a class="code" href="behaviour__avoid__col_8c.html#af537d5e45f3f8339619d9dccf7d86e5d">bot_avoid_col_behaviour</a>);
+<a name="l00322"></a>00322 <span class="preprocessor">#endif</span>
+<a name="l00323"></a>00323 <span class="preprocessor"></span>            return_from_behaviour(data);
+<a name="l00324"></a>00324         }
+<a name="l00325"></a>00325         <span class="keywordflow">break</span>;
+<a name="l00326"></a>00326     <span class="keywordflow">case</span> <a class="code" href="behaviour__olympic_8c.html#a1d6749b6de21ab2d9011426f56f4b6f6">SLALOM_STATE_START</a>:
+<a name="l00327"></a>00327         <span class="comment">// Hier ist Platz fuer weitere Vorbereitungen, falls noetig.</span>
+<a name="l00328"></a>00328 <span class="preprocessor">#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE</span>
+<a name="l00329"></a>00329 <span class="preprocessor"></span>        deactivateBehaviour(<a class="code" href="behaviour__avoid__col_8c.html#af537d5e45f3f8339619d9dccf7d86e5d">bot_avoid_col_behaviour</a>);
+<a name="l00330"></a>00330 <span class="preprocessor">#endif</span>
+<a name="l00331"></a>00331 <span class="preprocessor"></span>        slalom_state = <a class="code" href="behaviour__olympic_8c.html#a9a1244f0aab8cd1da0a9b39b6c8dc982">SLALOM_STATE_TURN_1</a>;
+<a name="l00332"></a>00332         <span class="comment">// break;</span>
+<a name="l00333"></a>00333     <span class="keywordflow">case</span> <a class="code" href="behaviour__olympic_8c.html#a9a1244f0aab8cd1da0a9b39b6c8dc982">SLALOM_STATE_TURN_1</a>:
+<a name="l00334"></a>00334         turn = (slalom_orientation == <a class="code" href="behaviour__olympic_8c.html#a7a70916a4b01a1cb843bb08f38d894bc">SLALOM_ORIENTATION_LEFT</a>) ? 90 : -90;
+<a name="l00335"></a>00335         <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, turn);
+<a name="l00336"></a>00336         slalom_state = <a class="code" href="behaviour__olympic_8c.html#ae7deec2426366dc65442b625353f7014">SLALOM_STATE_DRIVE_ARC</a>;
+<a name="l00337"></a>00337         <span class="keywordflow">break</span>;
+<a name="l00338"></a>00338     <span class="keywordflow">case</span> <a class="code" href="behaviour__olympic_8c.html#ae7deec2426366dc65442b625353f7014">SLALOM_STATE_DRIVE_ARC</a>:
+<a name="l00339"></a>00339         <span class="comment">// Nicht wundern: Bei einem Links-Slalom faehrt der Bot eine Rechtskurve.</span>
+<a name="l00340"></a>00340         curve = (int8_t) (slalom_orientation == <a class="code" href="behaviour__olympic_8c.html#a7a70916a4b01a1cb843bb08f38d894bc">SLALOM_ORIENTATION_LEFT</a> ? 25 : -25);
+<a name="l00341"></a>00341         <a class="code" href="behaviour__drive__distance_8c.html#ae7b188b6785c5e337c51509282ca790e">bot_drive_distance</a>(data,curve,<a class="code" href="motor_8h.html#af213ef81539186eb5dff47f959119241" title="schnelle Fahrt in mm/s">BOT_SPEED_FAST</a>,20);
+<a name="l00342"></a>00342         slalom_state = <a class="code" href="behaviour__olympic_8c.html#ac0724be673dc3d766bf875c04e7f0940">SLALOM_STATE_TURN_2</a>;
+<a name="l00343"></a>00343         <span class="keywordflow">break</span>;
+<a name="l00344"></a>00344     <span class="keywordflow">case</span> <a class="code" href="behaviour__olympic_8c.html#ac0724be673dc3d766bf875c04e7f0940">SLALOM_STATE_TURN_2</a>:
+<a name="l00345"></a>00345         turn = (slalom_orientation == <a class="code" href="behaviour__olympic_8c.html#a7a70916a4b01a1cb843bb08f38d894bc">SLALOM_ORIENTATION_LEFT</a>) ? 45 : -45;
+<a name="l00346"></a>00346         <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, turn);
+<a name="l00347"></a>00347         slalom_state = <a class="code" href="behaviour__olympic_8c.html#a877cfcbea289a90ea986a02149c3cb8d">SLALOM_STATE_SWEEP_RUNNING</a>;
+<a name="l00348"></a>00348         <span class="keywordflow">break</span>;
+<a name="l00349"></a>00349     <span class="keywordflow">case</span> <a class="code" href="behaviour__olympic_8c.html#a877cfcbea289a90ea986a02149c3cb8d">SLALOM_STATE_SWEEP_RUNNING</a>:
+<a name="l00350"></a>00350         <span class="keywordflow">if</span> (slalom_sweep_steps == 0) {
+<a name="l00351"></a>00351             slalom_sweep_state = <a class="code" href="behaviour__olympic_8c.html#a744c85b05f0aab7cc83897912c4525f0">SWEEP_STATE_CHECK</a>;
+<a name="l00352"></a>00352         }
+<a name="l00353"></a>00353         <span class="comment">// Insgesamt 6 Schritte drehen</span>
+<a name="l00354"></a>00354         <span class="keywordflow">if</span> (slalom_sweep_steps &lt; 6) {
+<a name="l00355"></a>00355             <span class="keywordflow">if</span> (slalom_sweep_state == <a class="code" href="behaviour__olympic_8c.html#a744c85b05f0aab7cc83897912c4525f0">SWEEP_STATE_CHECK</a>) {
+<a name="l00356"></a>00356                 <span class="comment">// Phase 1: Pruefen, ob vor dem Bot eine gute Saeule ist</span>
+<a name="l00357"></a>00357                 <span class="keywordflow">if</span> (is_good_pillar_ahead() == <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>) {
+<a name="l00358"></a>00358                     <span class="comment">// Wenn die Saeule gut ist, drauf zu und Slalom anders rum fahren.</span>
+<a name="l00359"></a>00359                     slalom_state = <a class="code" href="behaviour__olympic_8c.html#a78c8bc315db45360f82de15a8f31be4b">SLALOM_STATE_CHECK_PILLAR</a>;
+<a name="l00360"></a>00360                     slalom_orientation
+<a name="l00361"></a>00361                             = (int8_t) (slalom_orientation == <a class="code" href="behaviour__olympic_8c.html#a7a70916a4b01a1cb843bb08f38d894bc">SLALOM_ORIENTATION_LEFT</a> ? <a class="code" href="behaviour__olympic_8c.html#af0cab71910e224eb34a50b17ec0c88ee">SLALOM_ORIENTATION_RIGHT</a>
+<a name="l00362"></a>00362                                     : <a class="code" href="behaviour__olympic_8c.html#a7a70916a4b01a1cb843bb08f38d894bc">SLALOM_ORIENTATION_LEFT</a>);
+<a name="l00363"></a>00363                     slalom_sweep_steps = 0;
+<a name="l00364"></a>00364                 } <span class="keywordflow">else</span> {
+<a name="l00365"></a>00365                     <span class="comment">// Sonst drehen.</span>
+<a name="l00366"></a>00366                     slalom_sweep_state = <a class="code" href="behaviour__olympic_8c.html#a76ca7ab309289db37313567c02209258">SWEEP_STATE_TURN</a>;
+<a name="l00367"></a>00367                 }
+<a name="l00368"></a>00368             }
+<a name="l00369"></a>00369             <span class="keywordflow">if</span> (slalom_sweep_state == <a class="code" href="behaviour__olympic_8c.html#a76ca7ab309289db37313567c02209258">SWEEP_STATE_TURN</a>) {
+<a name="l00370"></a>00370                 <span class="comment">// Phase 2: Bot um 15 Grad drehen</span>
+<a name="l00371"></a>00371                 turn = (slalom_orientation == <a class="code" href="behaviour__olympic_8c.html#a7a70916a4b01a1cb843bb08f38d894bc">SLALOM_ORIENTATION_LEFT</a>) ? 15
+<a name="l00372"></a>00372                         : -15;
+<a name="l00373"></a>00373                 <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, turn);
+<a name="l00374"></a>00374                 slalom_sweep_state = <a class="code" href="behaviour__olympic_8c.html#a744c85b05f0aab7cc83897912c4525f0">SWEEP_STATE_CHECK</a>;
+<a name="l00375"></a>00375                 slalom_sweep_steps++;
+<a name="l00376"></a>00376             }
+<a name="l00377"></a>00377         } <span class="keywordflow">else</span> {
+<a name="l00378"></a>00378             turn = (slalom_orientation == <a class="code" href="behaviour__olympic_8c.html#a7a70916a4b01a1cb843bb08f38d894bc">SLALOM_ORIENTATION_LEFT</a>) ? -90 : 90;
+<a name="l00379"></a>00379             <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, turn);
+<a name="l00380"></a>00380             slalom_state = <a class="code" href="behaviour__olympic_8c.html#abee130efdc6b112a3b87229c81727f9a">SLALOM_STATE_SWEEP_DONE</a>;
+<a name="l00381"></a>00381             slalom_sweep_steps = 0;
+<a name="l00382"></a>00382         }
+<a name="l00383"></a>00383         <span class="keywordflow">break</span>;
+<a name="l00384"></a>00384     <span class="keywordflow">case</span> <a class="code" href="behaviour__olympic_8c.html#abee130efdc6b112a3b87229c81727f9a">SLALOM_STATE_SWEEP_DONE</a>:
+<a name="l00385"></a>00385         turn = (slalom_orientation == <a class="code" href="behaviour__olympic_8c.html#a7a70916a4b01a1cb843bb08f38d894bc">SLALOM_ORIENTATION_LEFT</a>) ? -135 : 135;
+<a name="l00386"></a>00386         <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, turn);
+<a name="l00387"></a>00387         slalom_state = <a class="code" href="behaviour__olympic_8c.html#a78c8bc315db45360f82de15a8f31be4b">SLALOM_STATE_CHECK_PILLAR</a>;
+<a name="l00388"></a>00388         <span class="keywordflow">break</span>;
+<a name="l00389"></a>00389     <span class="keywordflow">default</span>:
+<a name="l00390"></a>00390         slalom_state = <a class="code" href="behaviour__olympic_8c.html#a78c8bc315db45360f82de15a8f31be4b">SLALOM_STATE_CHECK_PILLAR</a>;
+<a name="l00391"></a>00391     }
+<a name="l00392"></a>00392 }
+<a name="l00393"></a>00393 
+<a name="l00411"></a><a class="code" href="behaviour__olympic_8h.html#a7ecdb9986257583f840e1ebfe289664f">00411</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__olympic_8c.html#a7ecdb9986257583f840e1ebfe289664f">bot_do_slalom</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller) {
+<a name="l00412"></a>00412     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__olympic_8c.html#a9a0be2533f0d86e712f88ae2ce84051b">bot_do_slalom_behaviour</a>, <a class="code" href="bot-logic_8h.html#a59191cd512c3376a23c8a7d259a1e111" title="Konstanten, wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen.">BEHAVIOUR_NOOVERRIDE</a>);
+<a name="l00413"></a>00413     slalom_state = <a class="code" href="behaviour__olympic_8c.html#a78c8bc315db45360f82de15a8f31be4b">SLALOM_STATE_CHECK_PILLAR</a>;
+<a name="l00414"></a>00414     slalom_orientation = <a class="code" href="behaviour__olympic_8c.html#af0cab71910e224eb34a50b17ec0c88ee">SLALOM_ORIENTATION_RIGHT</a>;
+<a name="l00415"></a>00415     slalom_sweep_state = 0;
+<a name="l00416"></a>00416     slalom_sweep_steps = 0;
+<a name="l00417"></a>00417 }
+<a name="l00418"></a>00418 
+<a name="l00424"></a><a class="code" href="behaviour__olympic_8h.html#a235e23fa84b5b35022becc3343573954">00424</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__olympic_8c.html#a235e23fa84b5b35022becc3343573954">bot_olympic_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00425"></a>00425     <span class="keywordflow">if</span> (check_for_light()) {
+<a name="l00426"></a>00426         <span class="comment">/* Sobald der Bot auf ein Objekt-Hinderniss stoesst, versucht er, Slalom zu fahren.</span>
+<a name="l00427"></a>00427 <span class="comment">         * Aufgabe: Wenn der Bot vor einem Loch steht, hinter welchem sich die Lichtquelle</span>
+<a name="l00428"></a>00428 <span class="comment">         * befindet, wird er daran haengen bleiben. Schreibe ein Verhalten, dass das verhindert. */</span>
+<a name="l00429"></a>00429         <span class="keywordflow">if</span> (bot_avoid_harm() &amp;&amp; <a class="code" href="sensor_8c.html#a3f1ca5e28021ba1fccba5d739f3b11be">is_obstacle_ahead</a>(<a class="code" href="bot-local_8h.html#a43005cd3c449e4cd248e6eeb2cce2276">COL_NEAR</a>)) {
+<a name="l00430"></a>00430             <a class="code" href="behaviour__olympic_8c.html#a7ecdb9986257583f840e1ebfe289664f">bot_do_slalom</a>(data);
+<a name="l00431"></a>00431         } <span class="keywordflow">else</span>
+<a name="l00432"></a>00432             bot_goto_light();
+<a name="l00433"></a>00433     } <span class="keywordflow">else</span>
+<a name="l00434"></a>00434         bot_explore(data, check_for_light);
+<a name="l00435"></a>00435 }
+<a name="l00436"></a>00436 
+<a name="l00437"></a>00437 <span class="preprocessor">#endif // BEHAVIOUR_OLYMPIC_AVAILABLE</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

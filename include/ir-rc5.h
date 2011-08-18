@@ -77,9 +77,9 @@ static inline void ir_init(volatile uint8_t * port, volatile uint8_t * ddr, uint
 	*port |= pin; // Pullup an
 #else // PC
 	/* keine warnings */
-	port = port;
-	ddr = ddr;
-	pin = pin;
+	(void) port;
+	(void) ddr;
+	(void) pin;
 #endif // MCU
 }
 

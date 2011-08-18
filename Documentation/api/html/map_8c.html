@@ -1,0 +1,1516 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: map.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Datenstrukturen</a> &#124;
+<a href="#define-members">Makrodefinitionen</a> &#124;
+<a href="#func-members">Funktionen</a> &#124;
+<a href="#var-members">Variablen</a>  </div>
+  <div class="headertitle">
+<div class="title">map.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Karte.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="ct-Bot_8h_source.html">ct-Bot.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="available__screens_8h_source.html">ui/available_screens.h</a>&quot;</code><br/>
+<code>#include &lt;stdio.h&gt;</code><br/>
+<code>#include &lt;stdlib.h&gt;</code><br/>
+<code>#include &lt;string.h&gt;</code><br/>
+<code>#include &quot;<a class="el" href="sensor__correction_8h_source.html">sensor_correction.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="map_8h_source.html">map.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="mmc_8h_source.html">mmc.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="mini-fat_8h_source.html">mini-fat.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="rc5-codes_8h_source.html">rc5-codes.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="sensor_8h_source.html">sensor.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="display_8h_source.html">display.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="log_8h_source.html">log.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="timer_8h_source.html">timer.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="fifo_8h_source.html">fifo.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="os__thread_8h_source.html">os_thread.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="math__utils_8h_source.html">math_utils.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="command_8h_source.html">command.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="motor_8h_source.html">motor.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="init_8h_source.html">init.h</a>&quot;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für map.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="map_8c__incl.png" border="0" usemap="#map_8c" alt=""/></div>
+<map name="map_8c" id="map_8c">
+</map>
+</div>
+</div>
+<p><a href="map_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="nested-classes"></a>
+Datenstrukturen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html">PACKED</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">FAT.  <a href="structPACKED.html#details">Mehr ...</a><br/></td></tr>
+<tr><td colspan="2"><h2><a name="define-members"></a>
+Makrodefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#ac48ac5782821e9e132073c0eb01b2540">MAP_INFO_AVAILABLE</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<a class="el" href="behaviour__drive__chess_8c.html#a24420a9beaac7cee08b5e255a4c29db1">a</a>,...)&#160;&#160;&#160;{}</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#acc42a959fecabdcea9c85df75c8ec1e7">MAP_SECTIONS</a>&#160;&#160;&#160;(MAP_SIZE_MM * MAP_RESOLUTION / 1000 / MAP_SECTION_POINTS)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#aee551e31ca471830f1fc02813fd8557c">MAP_STEP_FREE_SENSOR</a>&#160;&#160;&#160;2</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#aa2152ced4f17169826216535e3fb3961">MAP_STEP_FREE_LOCATION</a>&#160;&#160;&#160;20</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#acdb31ff70f79e196743d5b5888fbffdd">MAP_STEP_OCCUPIED</a>&#160;&#160;&#160;5</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#aa0c586c6c5d9c1bd53eb6058602ac354">MAP_RADIUS</a>&#160;&#160;&#160;50</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a0dcd11d56282a1cd59e7fbf058da8b77">MAP_RADIUS_FIELDS</a>&#160;&#160;&#160;(MAP_RESOLUTION * MAP_RADIUS / 1000)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#ac17cc3cc492d270bb5fb535a6fa34942">MAP_PRINT_SCALE</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a3556d1687a98523bda1a30405c486c77">MAP_SCALE</a>&#160;&#160;&#160;(MAP_RESOLUTION / 2)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a4b976c7768e393b707c3c576348a9c58">MACRO_BLOCK_LENGTH</a>&#160;&#160;&#160;512U</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#acc5d6708113ed529761820f8ccb998c4">MAP_LENGTH_IN_MACRO_BLOCKS</a>&#160;&#160;&#160;((uint8_t) (MAP_SIZE_MM * MAP_RESOLUTION / 1000 / MACRO_BLOCK_LENGTH))</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#ac167c2691db71eec92db78befc180561">MAP_ALIGNMENT_MASK</a>&#160;&#160;&#160;(2UL * MACRO_BLOCK_LENGTH * MACRO_BLOCK_LENGTH / BOTFS_BLOCK_SIZE - 1)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a7101dbaa75937832b87d524547d7e814">MAP_FILENAME</a>&#160;&#160;&#160;&quot;/map&quot;</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a4bb9f46211250c3f5f3a45ce38e32fbc">MAP_FILE_SIZE</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#ae8fd74da18f8e9ed7d1bc2947910c1a9">map_buffer</a>&#160;&#160;&#160;GET_MMC_BUFFER(map_buffer)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#aa6259129b06e185b7203e0896ae6c870">map_2_sim_buffer</a>&#160;&#160;&#160;GET_MMC_BUFFER(map_2_sim_buffer)</td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#abf9428d5d42d86411f2b54a8f37a4bf1">map_update_main</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#afb01cbd50e58cb1dcb1681886ad8f29c">map_2_sim_main</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#aa0e2581b7a7a791c8a20d4e3320ada4d">map_init</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a5c151bce0e665ee98fac1465d692fef0">map_flush_cache</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a302393a08814c05999d4be4c75467bc3">world_to_map</a> (int16_t koord)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#aee723500f07bef9ecc88712b8deb792a">map_locked</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#ab7670d0692f0e9c53420abbd463c1518">map_get_average</a> (int16_t <a class="el" href="behaviour__drive__chess_8c.html#ac1d1eed6a8bbca26af335b9682a6475e">x</a>, int16_t <a class="el" href="behaviour__drive__chess_8c.html#ac553850cf16d4c4f5812f7411e2b2b5a">y</a>, int16_t radius)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a4cf69880c2dc15adb544bb4f602b2829">map_get_ratio</a> (int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t width, int8_t min_val, int8_t max_val)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041">map_way_free</a> (int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y, uint8_t margin)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#ac2cc78e9d8a4f1aacb8e60a1a9d32440">map_draw_line</a> (position_t from, position_t to, uint8_t color)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df">map_draw_line_world</a> (position_t from, position_t to, uint8_t color)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#af260338d7eec0f25c8110086c5a7d886">map_draw_rect</a> (position_t from, position_t to, uint8_t width, uint8_t color)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a6107742a7ebd05ba94049c073bc81499">map_draw_circle</a> (position_t center, int16_t radius, uint8_t color)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#aece4d0dc94340ae683c9837c9895270f">map_2_sim_send</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a657695282031daa9b92a874b3c0cba75">map_print</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a9fcb3e8cab2c303938256be366401bca">map_clean</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#ac439afb4a034a8a0c4cfc7421a6000db">map_to_pgm</a> (const char *filename)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a11f527d97dcbb43f9ae363ac36e1feea">map_read</a> (const char *filename)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a859def335d6017223cf7854493aab8c8">map_display</a> (void)</td></tr>
+<tr><td colspan="2"><h2><a name="var-members"></a>
+Variablen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#aa1b05a579f9ccdbdb62278e23a0a0796">map_min_x</a> = MAP_SIZE * MAP_RESOLUTION / 2</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a7aef5f18d29ba5e9bf20a6715d2288c1">map_max_x</a> = MAP_SIZE * MAP_RESOLUTION / 2</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a591a6eb8d147d87df12d333890b46820">map_min_y</a> = MAP_SIZE * MAP_RESOLUTION / 2</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a8c481d4f650f3205cf4f12f1f1f5e60b">map_max_y</a> = MAP_SIZE * MAP_RESOLUTION / 2</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="structfifo__t.html">fifo_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#ada848a524986d75cfeb512f6f6e58115">map_update_fifo</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">map_cache_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a04a94929973886472ea38f5fbd7238e0">map_update_cache</a> [MAP_UPDATE_CACHE_SIZE]</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#ae2473394585d550bf87236464d4ba651">map_update_stack</a> [MAP_UPDATE_STACK_SIZE]</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="structos__signal__t.html">os_signal_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#aad95d597cc403aa16bc3aa943573506b">map_buffer_signal</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#af12ac4891a972b87ae08a02f6aaf0382">map_current_block</a> = { 0, False, 0, 0 }</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#a3c6adb8ba84fea0685423d2c0bed40a1">map_2_sim_data</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#abdfbfc8da70d3db0a40f6580963596b1">map_2_sim_worker_stack</a> [MAP_2_SIM_STACK_SIZE]</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="map_8c.html#af31b8470f92b2d234cf0d05300859ba1">map_file</a> = &quot;sim.map&quot;</td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Karte. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Benjamin Benz (<a href="mailto:bbe@heise.de">bbe@heise.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>19.09.06 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+</div><hr/><h2>Makro-Dokumentation</h2>
+<a class="anchor" id="a0627c1d436d2fe5125e0ef6e7a8b40a7"></a><!-- doxytag: member="map.c::LOG_DEBUG" ref="a0627c1d436d2fe5125e0ef6e7a8b40a7" args="(a,...)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define LOG_DEBUG</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><a class="el" href="behaviour__drive__chess_8c.html#a24420a9beaac7cee08b5e255a4c29db1">a</a>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;{}</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00086">86</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00231">map_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4b976c7768e393b707c3c576348a9c58"></a><!-- doxytag: member="map.c::MACRO_BLOCK_LENGTH" ref="a4b976c7768e393b707c3c576348a9c58" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MACRO_BLOCK_LENGTH&#160;&#160;&#160;512U</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Kantenlaenge eines Makroblocks in Punkten/Byte </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00135">135</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00231">map_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa6259129b06e185b7203e0896ae6c870"></a><!-- doxytag: member="map.c::map_2_sim_buffer" ref="aa6259129b06e185b7203e0896ae6c870" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define map_2_sim_buffer&#160;&#160;&#160;GET_MMC_BUFFER(map_2_sim_buffer)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Puffer fuer Map-Block (von der MMC) zur Map-2-Sim-Kommunikation </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00205">205</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00231">map_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac167c2691db71eec92db78befc180561"></a><!-- doxytag: member="map.c::MAP_ALIGNMENT_MASK" ref="ac167c2691db71eec92db78befc180561" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAP_ALIGNMENT_MASK&#160;&#160;&#160;(2UL * MACRO_BLOCK_LENGTH * MACRO_BLOCK_LENGTH / BOTFS_BLOCK_SIZE - 1)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>fuer die Ausrichtung der Karte an einer Sektorgrenze zu Optimierungszwecken </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00137">137</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00231">map_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae8fd74da18f8e9ed7d1bc2947910c1a9"></a><!-- doxytag: member="map.c::map_buffer" ref="ae8fd74da18f8e9ed7d1bc2947910c1a9" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define map_buffer&#160;&#160;&#160;GET_MMC_BUFFER(map_buffer)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00231">map_init()</a> und <a class="el" href="map_8c_source.html#l01459">map_2_sim_send()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4bb9f46211250c3f5f3a45ce38e32fbc"></a><!-- doxytag: member="map.c::MAP_FILE_SIZE" ref="a4bb9f46211250c3f5f3a45ce38e32fbc" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAP_FILE_SIZE</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<b>Wert:</b><div class="fragment"><pre class="fragment">((uint16_t) ((uint32_t) (<a class="code" href="map_8h.html#a3f0e25212e4f40cdcf24cd70cab2f6db">MAP_SECTION_POINTS</a> * <a class="code" href="map_8h.html#a3f0e25212e4f40cdcf24cd70cab2f6db">MAP_SECTION_POINTS</a>) * <a class="code" href="map_8c.html#acc42a959fecabdcea9c85df75c8ec1e7">MAP_SECTIONS</a> * <a class="code" href="map_8c.html#acc42a959fecabdcea9c85df75c8ec1e7">MAP_SECTIONS</a> \
+                        / <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>) + <a class="code" href="map_8c.html#ac167c2691db71eec92db78befc180561">MAP_ALIGNMENT_MASK</a>)
+</pre></div>
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00141">141</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00231">map_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7101dbaa75937832b87d524547d7e814"></a><!-- doxytag: member="map.c::MAP_FILENAME" ref="a7101dbaa75937832b87d524547d7e814" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAP_FILENAME&#160;&#160;&#160;&quot;/map&quot;</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Dateiname der Karte </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00140">140</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00231">map_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac48ac5782821e9e132073c0eb01b2540"></a><!-- doxytag: member="map.c::MAP_INFO_AVAILABLE" ref="ac48ac5782821e9e132073c0eb01b2540" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAP_INFO_AVAILABLE</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00068">68</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="acc5d6708113ed529761820f8ccb998c4"></a><!-- doxytag: member="map.c::MAP_LENGTH_IN_MACRO_BLOCKS" ref="acc5d6708113ed529761820f8ccb998c4" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAP_LENGTH_IN_MACRO_BLOCKS&#160;&#160;&#160;((uint8_t) (MAP_SIZE_MM * MAP_RESOLUTION / 1000 / MACRO_BLOCK_LENGTH))</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Kantenlaenge der Karte in Makrobloecken </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00136">136</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac17cc3cc492d270bb5fb535a6fa34942"></a><!-- doxytag: member="map.c::MAP_PRINT_SCALE" ref="ac17cc3cc492d270bb5fb535a6fa34942" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAP_PRINT_SCALE</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Soll das PGM eine Skala erhalten </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00132">132</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa0c586c6c5d9c1bd53eb6058602ac354"></a><!-- doxytag: member="map.c::MAP_RADIUS" ref="aa0c586c6c5d9c1bd53eb6058602ac354" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAP_RADIUS&#160;&#160;&#160;50</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Umkreis eines Messpunktes, der als besetzt aktualisiert wird (Streukreis) [mm] </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00128">128</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0dcd11d56282a1cd59e7fbf058da8b77"></a><!-- doxytag: member="map.c::MAP_RADIUS_FIELDS" ref="a0dcd11d56282a1cd59e7fbf058da8b77" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAP_RADIUS_FIELDS&#160;&#160;&#160;(MAP_RESOLUTION * MAP_RADIUS / 1000)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Umkreis einen Messpunkt, der als besetzt aktualisiert wird (Streukreis) [Felder] </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00130">130</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3556d1687a98523bda1a30405c486c77"></a><!-- doxytag: member="map.c::MAP_SCALE" ref="a3556d1687a98523bda1a30405c486c77" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAP_SCALE&#160;&#160;&#160;(MAP_RESOLUTION / 2)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Alle wieviel Punkte kommt ein Skalen-Strich </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00133">133</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l01672">map_to_pgm()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="acc42a959fecabdcea9c85df75c8ec1e7"></a><!-- doxytag: member="map.c::MAP_SECTIONS" ref="acc42a959fecabdcea9c85df75c8ec1e7" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAP_SECTIONS&#160;&#160;&#160;(MAP_SIZE_MM * MAP_RESOLUTION / 1000 / MAP_SECTION_POINTS)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Anzahl der Sections in der Map </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00121">121</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa2152ced4f17169826216535e3fb3961"></a><!-- doxytag: member="map.c::MAP_STEP_FREE_LOCATION" ref="aa2152ced4f17169826216535e3fb3961" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAP_STEP_FREE_LOCATION&#160;&#160;&#160;20</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Um diesen Wert wird ein Feld inkrementiert, wenn der Bot drueber faehrt </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00124">124</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aee551e31ca471830f1fc02813fd8557c"></a><!-- doxytag: member="map.c::MAP_STEP_FREE_SENSOR" ref="aee551e31ca471830f1fc02813fd8557c" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAP_STEP_FREE_SENSOR&#160;&#160;&#160;2</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Um diesen Wert wird ein Feld inkrementiert, wenn es vom Sensor als frei erkannt wird </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00123">123</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="acdb31ff70f79e196743d5b5888fbffdd"></a><!-- doxytag: member="map.c::MAP_STEP_OCCUPIED" ref="acdb31ff70f79e196743d5b5888fbffdd" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAP_STEP_OCCUPIED&#160;&#160;&#160;5</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Um diesen Wert wird ein Feld dekrementiert, wenn es als belegt erkannt wird </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00126">126</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="afb01cbd50e58cb1dcb1681886ad8f29c"></a><!-- doxytag: member="map.c::map_2_sim_main" ref="afb01cbd50e58cb1dcb1681886ad8f29c" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void map_2_sim_main </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Main-Funktion des Map-2-Sim-Threads </p>
+<p>&lt; letzte Bot-Position</p>
+<p>&lt; letzte Bot-Ausrichtung</p>
+<p>&lt; letzter Fehlerradius </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00189">189</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Benutzt <a class="el" href="sensor_8c_source.html#l00116">heading</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00231">map_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aece4d0dc94340ae683c9837c9895270f"></a><!-- doxytag: member="map.c::map_2_sim_send" ref="aece4d0dc94340ae683c9837c9895270f" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void map_2_sim_send </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Uebertraegt die komplette Karte an den Sim </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l01459">1459</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Benutzt <a class="el" href="map_8c_source.html#l00422">map_flush_cache()</a>, <a class="el" href="os__thread__pc_8c_source.html#l00153">os_signal_lock()</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00245">x</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00246">y</a>, <a class="el" href="map_8c_source.html#l00184">map_current_block</a>, <a class="el" href="map_8c_source.html#l00145">map_min_x</a>, <a class="el" href="map_8c_source.html#l00146">map_max_x</a>, <a class="el" href="map_8h_source.html#l00043">MAP_SECTION_POINTS</a>, <a class="el" href="map_8c_source.html#l00147">map_min_y</a>, <a class="el" href="map_8c_source.html#l00148">map_max_y</a>, <a class="el" href="command_8c_source.html#l00318">command_write_rawdata()</a>, <a class="el" href="command_8h_source.html#l00103">CMD_MAP</a>, <a class="el" href="command_8h_source.html#l00104">SUB_MAP_DATA_1</a>, <a class="el" href="map_8h_source.html#l00041">MAP_SIZE</a>, <a class="el" href="map_8c.html#ae8fd74da18f8e9ed7d1bc2947910c1a9">map_buffer</a>, <a class="el" href="command_8h_source.html#l00105">SUB_MAP_DATA_2</a>, <a class="el" href="command_8h_source.html#l00106">SUB_MAP_DATA_3</a>, <a class="el" href="command_8h_source.html#l00107">SUB_MAP_DATA_4</a> und <a class="el" href="os__thread__pc_8c_source.html#l00167">os_signal_unlock()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="command_8c_source.html#l00359">command_evaluate()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="map_8c_aece4d0dc94340ae683c9837c9895270f_cgraph.png" border="0" usemap="#map_8c_aece4d0dc94340ae683c9837c9895270f_cgraph" alt=""/></div>
+<map name="map_8c_aece4d0dc94340ae683c9837c9895270f_cgraph" id="map_8c_aece4d0dc94340ae683c9837c9895270f_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a9fcb3e8cab2c303938256be366401bca"></a><!-- doxytag: member="map.c::map_clean" ref="a9fcb3e8cab2c303938256be366401bca" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void map_clean </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Entfernt alle frei-Informationen aus der Karte, so dass nur die Hindernisse uebrig bleiben. </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l01536">1536</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Benutzt <a class="el" href="map_8c_source.html#l00422">map_flush_cache()</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00245">x</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00246">y</a>, <a class="el" href="map_8c_source.html#l00145">map_min_x</a>, <a class="el" href="map_8c_source.html#l00146">map_max_x</a>, <a class="el" href="map_8c_source.html#l00147">map_min_y</a> und <a class="el" href="map_8c_source.html#l00148">map_max_y</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l01978">map_display()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="map_8c_a9fcb3e8cab2c303938256be366401bca_cgraph.png" border="0" usemap="#map_8c_a9fcb3e8cab2c303938256be366401bca_cgraph" alt=""/></div>
+<map name="map_8c_a9fcb3e8cab2c303938256be366401bca_cgraph" id="map_8c_a9fcb3e8cab2c303938256be366401bca_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a859def335d6017223cf7854493aab8c8"></a><!-- doxytag: member="map.c::map_display" ref="a859def335d6017223cf7854493aab8c8" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void map_display </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Handler fuer Map-Display </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l01978">1978</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Benutzt <a class="el" href="display_8c_source.html#l00141">display_cursor()</a>, <a class="el" href="display__pc_8c_source.html#l00096">display_puts()</a>, <a class="el" href="rc5_8c_source.html#l00056">RC5_Code</a>, <a class="el" href="rc5-codes_8h_source.html#l00092">RC5_CODE_1</a>, <a class="el" href="map_8c_source.html#l01491">map_print()</a>, <a class="el" href="rc5-codes_8h_source.html#l00093">RC5_CODE_2</a>, <a class="el" href="rc5-codes_8h_source.html#l00094">RC5_CODE_3</a>, <a class="el" href="rc5-codes_8h_source.html#l00095">RC5_CODE_4</a>, <a class="el" href="rc5-codes_8h_source.html#l00096">RC5_CODE_5</a>, <a class="el" href="rc5-codes_8h_source.html#l00097">RC5_CODE_6</a>, <a class="el" href="map_8c_source.html#l00222">map_file</a>, <a class="el" href="rc5-codes_8h_source.html#l00098">RC5_CODE_7</a> und <a class="el" href="map_8c_source.html#l01536">map_clean()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="gui_8c_source.html#l00330">gui_init()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="map_8c_a859def335d6017223cf7854493aab8c8_cgraph.png" border="0" usemap="#map_8c_a859def335d6017223cf7854493aab8c8_cgraph" alt=""/></div>
+<map name="map_8c_a859def335d6017223cf7854493aab8c8_cgraph" id="map_8c_a859def335d6017223cf7854493aab8c8_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a6107742a7ebd05ba94049c073bc81499"></a><!-- doxytag: member="map.c::map_draw_circle" ref="a6107742a7ebd05ba94049c073bc81499" args="(position_t center, int16_t radius, uint8_t color)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void map_draw_circle </td>
+          <td>(</td>
+          <td class="paramtype">position_t&#160;</td>
+          <td class="paramname"><em>center</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>color</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Zeichnet einen Kreis in die Map-Anzeige des Sim </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">center</td><td>Korrdinaten des Kreismittelpunkts (Map-Koordinaten) </td></tr>
+    <tr><td class="paramname">radius</td><td>Radius des Kreies (in Map-Aufloesung) </td></tr>
+    <tr><td class="paramname">color</td><td>Farbe der Linien: 0=gruen, 1=rot, sonst schwarz </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l01275">1275</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">c</a>, <a class="el" href="command_8c_source.html#l00318">command_write_rawdata()</a>, <a class="el" href="command_8h_source.html#l00103">CMD_MAP</a> und <a class="el" href="command_8h_source.html#l00110">SUB_MAP_CIRCLE</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="map_8c_a6107742a7ebd05ba94049c073bc81499_cgraph.png" border="0" usemap="#map_8c_a6107742a7ebd05ba94049c073bc81499_cgraph" alt=""/></div>
+<map name="map_8c_a6107742a7ebd05ba94049c073bc81499_cgraph" id="map_8c_a6107742a7ebd05ba94049c073bc81499_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ac2cc78e9d8a4f1aacb8e60a1a9d32440"></a><!-- doxytag: member="map.c::map_draw_line" ref="ac2cc78e9d8a4f1aacb8e60a1a9d32440" args="(position_t from, position_t to, uint8_t color)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void map_draw_line </td>
+          <td>(</td>
+          <td class="paramtype">position_t&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">position_t&#160;</td>
+          <td class="paramname"><em>to</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>color</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Zeichnet eine Linie in die Map-Anzeige des Sim </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">from</td><td>Startpunkt der Linie (Map-Koordinate) </td></tr>
+    <tr><td class="paramname">to</td><td>Endpunkt der Linie (Map-Koordinate) </td></tr>
+    <tr><td class="paramname">color</td><td>Farbe der Linie: 0=gruen, 1=rot, sonst schwarz </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l01205">1205</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">c</a>, <a class="el" href="command_8c_source.html#l00318">command_write_rawdata()</a>, <a class="el" href="command_8h_source.html#l00103">CMD_MAP</a> und <a class="el" href="command_8h_source.html#l00109">SUB_MAP_LINE</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__pathplaning_8c_source.html#l00384">bot_calc_wave_behaviour()</a>, <a class="el" href="map_8c_source.html#l01227">map_draw_line_world()</a> und <a class="el" href="map_8c_source.html#l01242">map_draw_rect()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="map_8c_ac2cc78e9d8a4f1aacb8e60a1a9d32440_cgraph.png" border="0" usemap="#map_8c_ac2cc78e9d8a4f1aacb8e60a1a9d32440_cgraph" alt=""/></div>
+<map name="map_8c_ac2cc78e9d8a4f1aacb8e60a1a9d32440_cgraph" id="map_8c_ac2cc78e9d8a4f1aacb8e60a1a9d32440_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a273efe11a8336c9363ce325fb161e4df"></a><!-- doxytag: member="map.c::map_draw_line_world" ref="a273efe11a8336c9363ce325fb161e4df" args="(position_t from, position_t to, uint8_t color)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void map_draw_line_world </td>
+          <td>(</td>
+          <td class="paramtype">position_t&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">position_t&#160;</td>
+          <td class="paramname"><em>to</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>color</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein; dient zur Visualisierung der Arbeitsweise des Verhaltens </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">from</td><td>Koordinaten des ersten Punktes der Linie (Welt) </td></tr>
+    <tr><td class="paramname">to</td><td>Koordinaten des zweiten Punktes der Linie (Welt) </td></tr>
+    <tr><td class="paramname">color</td><td>Farbe der Linie: 0=gruen, 1=rot, sonst schwarz </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l01227">1227</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Benutzt <a class="el" href="map_8c_source.html#l00439">world_to_map()</a> und <a class="el" href="map_8c_source.html#l01205">map_draw_line()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a> und <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="map_8c_a273efe11a8336c9363ce325fb161e4df_cgraph.png" border="0" usemap="#map_8c_a273efe11a8336c9363ce325fb161e4df_cgraph" alt=""/></div>
+<map name="map_8c_a273efe11a8336c9363ce325fb161e4df_cgraph" id="map_8c_a273efe11a8336c9363ce325fb161e4df_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="af260338d7eec0f25c8110086c5a7d886"></a><!-- doxytag: member="map.c::map_draw_rect" ref="af260338d7eec0f25c8110086c5a7d886" args="(position_t from, position_t to, uint8_t width, uint8_t color)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void map_draw_rect </td>
+          <td>(</td>
+          <td class="paramtype">position_t&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">position_t&#160;</td>
+          <td class="paramname"><em>to</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>color</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Zeichnet ein Rechteck in die Map-Anzeige des Sim </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">from</td><td>Startpunkt der Geraden mittig durch das Rechteck (Map-Koordinate) </td></tr>
+    <tr><td class="paramname">to</td><td>Endpunkt der Geraden mittig durch das Rechteck (Map-Koordinate) </td></tr>
+    <tr><td class="paramname">width</td><td>Breite des Rechtecks (jeweils width/2 links und rechts der Gerade; in Map-Aufloesung) </td></tr>
+    <tr><td class="paramname">color</td><td>Farbe der Linien: 0=gruen, 1=rot, sonst schwarz </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l01242">1242</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Benutzt <a class="el" href="map_8c_source.html#l01205">map_draw_line()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="map_8c_af260338d7eec0f25c8110086c5a7d886_cgraph.png" border="0" usemap="#map_8c_af260338d7eec0f25c8110086c5a7d886_cgraph" alt=""/></div>
+<map name="map_8c_af260338d7eec0f25c8110086c5a7d886_cgraph" id="map_8c_af260338d7eec0f25c8110086c5a7d886_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a5c151bce0e665ee98fac1465d692fef0"></a><!-- doxytag: member="map.c::map_flush_cache" ref="a5c151bce0e665ee98fac1465d692fef0" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void map_flush_cache </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Haelt den Bot an und schreibt den Map-Update-Cache komplett zurueck </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00422">422</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Benutzt <a class="el" href="map_8c_source.html#l00613">map_locked()</a>, <a class="el" href="motor_8c_source.html#l00302">motor_set()</a>, <a class="el" href="motor_8h_source.html#l00031">BOT_SPEED_STOP</a>, <a class="el" href="os__thread_8c_source.html#l00153">os_signal_set()</a> und <a class="el" href="os__thread__pc_8c_source.html#l00141">os_signal_release()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botcontrol_8c_source.html#l00138">ctbot_shutdown()</a>, <a class="el" href="map_8c_source.html#l00699">map_get_average()</a>, <a class="el" href="map_8c_source.html#l01171">map_get_ratio()</a>, <a class="el" href="map_8c_source.html#l01459">map_2_sim_send()</a>, <a class="el" href="map_8c_source.html#l01536">map_clean()</a> und <a class="el" href="map_8c_source.html#l01672">map_to_pgm()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="map_8c_a5c151bce0e665ee98fac1465d692fef0_cgraph.png" border="0" usemap="#map_8c_a5c151bce0e665ee98fac1465d692fef0_cgraph" alt=""/></div>
+<map name="map_8c_a5c151bce0e665ee98fac1465d692fef0_cgraph" id="map_8c_a5c151bce0e665ee98fac1465d692fef0_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ab7670d0692f0e9c53420abbd463c1518"></a><!-- doxytag: member="map.c::map_get_average" ref="ab7670d0692f0e9c53420abbd463c1518" args="(int16_t x, int16_t y, int16_t radius)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int8_t map_get_average </td>
+          <td>(</td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>liefert den Durschnittswert um einen Ort herum </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x</td><td>x-Ordinate der Welt </td></tr>
+    <tr><td class="paramname">y</td><td>y-Ordinate der Welt </td></tr>
+    <tr><td class="paramname">radius</td><td>Radius der Umgebung, die beruecksichtigt wird [mm]; 0 fuer ein Map-Feld (Punkt) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Durchschnitsswert im Umkreis um den Ort (&gt;0 heisst frei, &lt;0 heisst belegt) </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00699">699</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">X</a>, <a class="el" href="map_8c_source.html#l00439">world_to_map()</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">Y</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">R</a> und <a class="el" href="map_8c_source.html#l00422">map_flush_cache()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="map_8c_ab7670d0692f0e9c53420abbd463c1518_cgraph.png" border="0" usemap="#map_8c_ab7670d0692f0e9c53420abbd463c1518_cgraph" alt=""/></div>
+<map name="map_8c_ab7670d0692f0e9c53420abbd463c1518_cgraph" id="map_8c_ab7670d0692f0e9c53420abbd463c1518_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a4cf69880c2dc15adb544bb4f602b2829"></a><!-- doxytag: member="map.c::map_get_ratio" ref="a4cf69880c2dc15adb544bb4f602b2829" args="(int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t width, int8_t min_val, int8_t max_val)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t map_get_ratio </td>
+          <td>(</td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>x1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>y1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>x2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>y2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramname"><em>min_val</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramname"><em>max_val</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Berechnet das Verhaeltnis der Felder einer Region R die ausschliesslich mit Werten zwischen min und max belegt sind und allen Feldern von R. Die Region R wird als Gerade von (x1|y1) bis (x2|y2) und eine Breite width angegeben. Die Gerade verlaeuft in der Mitte von R. Beispiel: Steht der Bot an (0|0) und man moechte den Weg 50 cm voraus pruefen, gibt man x1 = y1 = y2 = 0, x2 = 500 und width = BOT_DIAMETER an. Am besten bewertet man das Ergebnis mit Hilfe der defines MAP_RATIO_FULL und MAP_RATIO_NONE (s.u.) </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x1</td><td>Startpunkt der Region R, X-Anteil; Weltkoordinaten [mm] </td></tr>
+    <tr><td class="paramname">y1</td><td>Startpunkt der Region R, Y-Anteil; Weltkoordinaten [mm] </td></tr>
+    <tr><td class="paramname">x2</td><td>Endpunkt der Region R, X-Anteil; Weltkoordinaten [mm] </td></tr>
+    <tr><td class="paramname">y2</td><td>Endpunkt der Region R, Y-Anteil; Weltkoordinaten [mm] </td></tr>
+    <tr><td class="paramname">width</td><td>Breite der Region R (jeweils width/2 links und rechts der Geraden) [mm] </td></tr>
+    <tr><td class="paramname">min_val</td><td>minimaler Feldwert, der vorkommen darf </td></tr>
+    <tr><td class="paramname">max_val</td><td>maximaler Feldwert, der vorkommen darf </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Verhaeltnis von Anzahl der Felder, die zwischen min_val und max_val liegen, zu Anzahl aller Felder der Region * MAP_RATIO_FULL; MAP_RATIO_NONE -&gt; kein Feld liegt im gewuenschten Bereich; MAP_RATIO_FULL -&gt; alle Felder liegen im gewuenschten Bereich </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l01171">1171</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Benutzt <a class="el" href="map_8c_source.html#l00422">map_flush_cache()</a> und <a class="el" href="map_8c_source.html#l00439">world_to_map()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l01193">map_way_free()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="map_8c_a4cf69880c2dc15adb544bb4f602b2829_cgraph.png" border="0" usemap="#map_8c_a4cf69880c2dc15adb544bb4f602b2829_cgraph" alt=""/></div>
+<map name="map_8c_a4cf69880c2dc15adb544bb4f602b2829_cgraph" id="map_8c_a4cf69880c2dc15adb544bb4f602b2829_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="aa0e2581b7a7a791c8a20d4e3320ada4d"></a><!-- doxytag: member="map.c::map_init" ref="aa0e2581b7a7a791c8a20d4e3320ada4d" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int8_t map_init </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>initialisiere die Karte </p>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>0 wenn alles ok ist </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00231">231</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__scan_8c_source.html#l00058">bot_scan_onthefly_behaviour()</a>, <a class="el" href="os__thread_8c_source.html#l00241">os_mask_stack()</a>, <a class="el" href="map_8c_source.html#l00169">map_update_stack</a>, <a class="el" href="map_8h_source.html#l00045">MAP_UPDATE_STACK_SIZE</a>, <a class="el" href="map_8c_source.html#l00201">map_2_sim_worker_stack</a>, <a class="el" href="map_8h_source.html#l00051">MAP_2_SIM_STACK_SIZE</a>, <a class="el" href="fifo_8c_source.html#l00039">fifo_init()</a>, <a class="el" href="os__thread_8h_source.html#l00043">os_signal_t::mutex</a>, <a class="el" href="os__thread_8h_source.html#l00044">os_signal_t::cond</a>, <a class="el" href="os__thread_8c_source.html#l00065">os_create_thread()</a>, <a class="el" href="map_8c_source.html#l00174">map_update_main()</a>, <a class="el" href="map_8c_source.html#l00189">map_2_sim_main()</a>, <a class="el" href="behaviour__scan_8c_source.html#l00052">scan_otf_modes</a>, <a class="el" href="unionscan__mode__t.html#ab05353cb5873f09587e198a544383319">scan_mode_t::data</a>, <a class="el" href="behaviour__scan_8h_source.html#l00047">scan_mode_t::location</a>, <a class="el" href="behaviour__scan_8h_source.html#l00048">scan_mode_t::distance</a>, <a class="el" href="behaviour__scan_8h_source.html#l00049">scan_mode_t::border</a>, <a class="el" href="behaviour__scan_8h_source.html#l00050">scan_mode_t::map_mode</a>, <a class="el" href="map_8c.html#ae8fd74da18f8e9ed7d1bc2947910c1a9">map_buffer</a>, <a class="el" href="map_8c_source.html#l00184">map_current_block</a>, <a class="el" href="botfs__config_8h_source.html#l00061">BOTFS_MODE_W</a>, <a class="el" href="botfs__config_8h_source.html#l00060">BOTFS_MODE_R</a>, <a class="el" href="botfs_8c_source.html#l00400">botfs_open()</a>, <a class="el" href="map_8c_source.html#l00140">MAP_FILENAME</a>, <a class="el" href="map_8c_source.html#l00141">MAP_FILE_SIZE</a>, <a class="el" href="botfs_8c_source.html#l00442">botfs_unlink()</a>, <a class="el" href="botfs_8c_source.html#l00318">botfs_create()</a>, <a class="el" href="botfs_8c_source.html#l00687">botfs_read_header_data()</a>, <a class="el" href="unionmap__header__t.html#abc5febf46df9c42cf05ba58118291dcc">map_header_t::data</a>, <a class="el" href="map_8h_source.html#l00091">map_header_t::map_min_x</a>, <a class="el" href="map_8h_source.html#l00041">MAP_SIZE</a>, <a class="el" href="map_8h_source.html#l00042">MAP_RESOLUTION</a>, <a class="el" href="map_8h_source.html#l00092">map_header_t::map_max_x</a>, <a class="el" href="map_8h_source.html#l00093">map_header_t::map_min_y</a>, <a class="el" href="map_8h_source.html#l00094">map_header_t::map_max_y</a>, <a class="el" href="botfs_8c_source.html#l00710">botfs_write_header_data()</a>, <a class="el" href="botfs_8c_source.html#l00722">botfs_get_startsector()</a>, <a class="el" href="map_8c_source.html#l00086">LOG_DEBUG</a>, <a class="el" href="map_8c_source.html#l00137">MAP_ALIGNMENT_MASK</a>, <a class="el" href="map_8h_source.html#l00090">map_header_t::alignment_offset</a>, <a class="el" href="map_8c_source.html#l00145">map_min_x</a>, <a class="el" href="map_8c_source.html#l00146">map_max_x</a>, <a class="el" href="map_8c_source.html#l00147">map_min_y</a>, <a class="el" href="map_8c_source.html#l00148">map_max_y</a>, <a class="el" href="botfs__config_8h_source.html#l00059">BOTFS_MODE_r</a>, <a class="el" href="map_8c_source.html#l00205">map_2_sim_buffer</a>, <a class="el" href="botfs_8c_source.html#l00590">botfs_read()</a>, <a class="el" href="map_8c_source.html#l00135">MACRO_BLOCK_LENGTH</a>, <a class="el" href="mmc_8h_source.html#l00050">mmc_write_sector</a>, <a class="el" href="global_8h_source.html#l00077">False</a> und <a class="el" href="mmc_8h_source.html#l00048">mmc_read_sector</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="cmd-tools__pc_8c_source.html#l00107">hand_cmd_args()</a>, <a class="el" href="init_8c_source.html#l00046">ctbot_init()</a> und <a class="el" href="map_8c_source.html#l01775">map_read()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="map_8c_aa0e2581b7a7a791c8a20d4e3320ada4d_cgraph.png" border="0" usemap="#map_8c_aa0e2581b7a7a791c8a20d4e3320ada4d_cgraph" alt=""/></div>
+<map name="map_8c_aa0e2581b7a7a791c8a20d4e3320ada4d_cgraph" id="map_8c_aa0e2581b7a7a791c8a20d4e3320ada4d_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="aee723500f07bef9ecc88712b8deb792a"></a><!-- doxytag: member="map.c::map_locked" ref="aee723500f07bef9ecc88712b8deb792a" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t map_locked </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Prueft, ob die Karte zurzeit gesperrt ist. </p>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>1, falls Karte gesperrt, 0 sonst </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00613">613</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Benutzt <a class="el" href="os__thread_8h_source.html#l00041">os_signal_t::value</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__get__utilization_8c_source.html#l00044">bot_get_utilization_behaviour()</a> und <a class="el" href="map_8c_source.html#l00422">map_flush_cache()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a657695282031daa9b92a874b3c0cba75"></a><!-- doxytag: member="map.c::map_print" ref="a657695282031daa9b92a874b3c0cba75" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void map_print </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Zeigt die Karte an </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l01491">1491</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Benutzt <a class="el" href="map_8c_source.html#l01672">map_to_pgm()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l01978">map_display()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="map_8c_a657695282031daa9b92a874b3c0cba75_cgraph.png" border="0" usemap="#map_8c_a657695282031daa9b92a874b3c0cba75_cgraph" alt=""/></div>
+<map name="map_8c_a657695282031daa9b92a874b3c0cba75_cgraph" id="map_8c_a657695282031daa9b92a874b3c0cba75_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a11f527d97dcbb43f9ae363ac36e1feea"></a><!-- doxytag: member="map.c::map_read" ref="a11f527d97dcbb43f9ae363ac36e1feea" args="(const char *filename)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int map_read </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Liest eine Map wieder ein </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>Quelldatei </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Fehlercode, 0 falls alles ok </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l01775">1775</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Benutzt <a class="el" href="map_8c_source.html#l00231">map_init()</a>, <a class="el" href="botfs__config_8h_source.html#l00039">BOTFS_BLOCK_SIZE</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="map_8h_source.html#l00041">MAP_SIZE</a>, <a class="el" href="botfs_8c_source.html#l00615">botfs_write()</a>, <a class="el" href="map_8c_source.html#l00145">map_min_x</a>, <a class="el" href="map_8c_source.html#l00146">map_max_x</a>, <a class="el" href="map_8h_source.html#l00042">MAP_RESOLUTION</a>, <a class="el" href="map_8c_source.html#l00147">map_min_y</a> und <a class="el" href="map_8c_source.html#l00148">map_max_y</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="cmd-tools__pc_8c_source.html#l00107">hand_cmd_args()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="map_8c_a11f527d97dcbb43f9ae363ac36e1feea_cgraph.png" border="0" usemap="#map_8c_a11f527d97dcbb43f9ae363ac36e1feea_cgraph" alt=""/></div>
+<map name="map_8c_a11f527d97dcbb43f9ae363ac36e1feea_cgraph" id="map_8c_a11f527d97dcbb43f9ae363ac36e1feea_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ac439afb4a034a8a0c4cfc7421a6000db"></a><!-- doxytag: member="map.c::map_to_pgm" ref="ac439afb4a034a8a0c4cfc7421a6000db" args="(const char *filename)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void map_to_pgm </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Schreibt eine Karte in eine PGM-Datei </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>Zieldatei </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l01672">1672</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00245">x</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00246">y</a>, <a class="el" href="map_8c_source.html#l00145">map_min_x</a>, <a class="el" href="map_8c_source.html#l00146">map_max_x</a>, <a class="el" href="map_8c_source.html#l00147">map_min_y</a>, <a class="el" href="map_8c_source.html#l00148">map_max_y</a>, <a class="el" href="map_8c_source.html#l00422">map_flush_cache()</a>, <a class="el" href="os__thread__pc_8c_source.html#l00153">os_signal_lock()</a>, <a class="el" href="map_8c_source.html#l00133">MAP_SCALE</a> und <a class="el" href="os__thread__pc_8c_source.html#l00167">os_signal_unlock()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="cmd-tools__pc_8c_source.html#l00107">hand_cmd_args()</a> und <a class="el" href="map_8c_source.html#l01491">map_print()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="map_8c_ac439afb4a034a8a0c4cfc7421a6000db_cgraph.png" border="0" usemap="#map_8c_ac439afb4a034a8a0c4cfc7421a6000db_cgraph" alt=""/></div>
+<map name="map_8c_ac439afb4a034a8a0c4cfc7421a6000db_cgraph" id="map_8c_ac439afb4a034a8a0c4cfc7421a6000db_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="abf9428d5d42d86411f2b54a8f37a4bf1"></a><!-- doxytag: member="map.c::map_update_main" ref="abf9428d5d42d86411f2b54a8f37a4bf1" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void map_update_main </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Main-Funktion des Map-Update-Threads </p>
+<p>&lt; Block, der aktuell im Puffer steht. Nur bis 32 MByte adressierbar</p>
+<p>&lt; markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde</p>
+<p>&lt; X-Koordinate des Blocks</p>
+<p>&lt; Y-Koordinate des Blocks </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00174">174</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00231">map_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4e5eff4836b0757a967e8ce984cfc041"></a><!-- doxytag: member="map.c::map_way_free" ref="a4e5eff4836b0757a967e8ce984cfc041" args="(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y, uint8_t margin)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t map_way_free </td>
+          <td>(</td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>from_x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>from_y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>to_x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>to_y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>margin</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Prueft ob eine direkte Passage frei von Hindernissen ist </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">from_x</td><td>Startort x Weltkoordinaten [mm] </td></tr>
+    <tr><td class="paramname">from_y</td><td>Startort y Weltkoordinaten [mm] </td></tr>
+    <tr><td class="paramname">to_x</td><td>Zielort x Weltkoordinaten [mm] </td></tr>
+    <tr><td class="paramname">to_y</td><td>Zielort y Weltkoordinaten [mm] </td></tr>
+    <tr><td class="paramname">margin</td><td>Breite eines Toleranzbereichs links und rechts der Fahrspur, der ebenfalls frei sein muss [mm] </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>1, wenn alles frei ist </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l01193">1193</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Benutzt <a class="el" href="map_8c_source.html#l01171">map_get_ratio()</a>, <a class="el" href="bot-local_8h_source.html#l00033">BOT_DIAMETER</a>, <a class="el" href="map_8h_source.html#l00055">MAP_OBSTACLE_THRESHOLD</a> und <a class="el" href="map_8h_source.html#l00059">MAP_RATIO_FULL</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="map_8c_a4e5eff4836b0757a967e8ce984cfc041_cgraph.png" border="0" usemap="#map_8c_a4e5eff4836b0757a967e8ce984cfc041_cgraph" alt=""/></div>
+<map name="map_8c_a4e5eff4836b0757a967e8ce984cfc041_cgraph" id="map_8c_a4e5eff4836b0757a967e8ce984cfc041_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a302393a08814c05999d4be4c75467bc3"></a><!-- doxytag: member="map.c::world_to_map" ref="a302393a08814c05999d4be4c75467bc3" args="(int16_t koord)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t world_to_map </td>
+          <td>(</td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>koord</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Konvertiert eine Weltkoordinate in eine Kartenkoordinate </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">koord</td><td>Weltkoordiante </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Kartenkoordinate </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00439">439</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Benutzt <a class="el" href="map_8h_source.html#l00041">MAP_SIZE</a> und <a class="el" href="map_8h_source.html#l00042">MAP_RESOLUTION</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__pathplaning_8c_source.html#l00384">bot_calc_wave_behaviour()</a>, <a class="el" href="map_8c_source.html#l00699">map_get_average()</a>, <a class="el" href="map_8c_source.html#l01171">map_get_ratio()</a> und <a class="el" href="map_8c_source.html#l01227">map_draw_line_world()</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Variablen-Dokumentation</h2>
+<a class="anchor" id="a3c6adb8ba84fea0685423d2c0bed40a1"></a><!-- doxytag: member="map.c::map_2_sim_data" ref="a3c6adb8ba84fea0685423d2c0bed40a1" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="map_8c.html#a3c6adb8ba84fea0685423d2c0bed40a1">map_2_sim_data</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00199">199</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="abdfbfc8da70d3db0a40f6580963596b1"></a><!-- doxytag: member="map.c::map_2_sim_worker_stack" ref="abdfbfc8da70d3db0a40f6580963596b1" args="[MAP_2_SIM_STACK_SIZE]" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t <a class="el" href="map_8h.html#abc4407e080e24c023a578df3ad762c08">map_2_sim_worker_stack</a>[MAP_2_SIM_STACK_SIZE]</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Stack des Map-2-Sim-Threads </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00201">201</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00231">map_init()</a> und <a class="el" href="os__thread_8c_source.html#l00265">os_print_stackusage()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aad95d597cc403aa16bc3aa943573506b"></a><!-- doxytag: member="map.c::map_buffer_signal" ref="aad95d597cc403aa16bc3aa943573506b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structos__signal__t.html">os_signal_t</a> <a class="el" href="map_8h.html#aad95d597cc403aa16bc3aa943573506b">map_buffer_signal</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Signal das anzeigt, ob Daten im Map-Puffer sind </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00172">172</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af12ac4891a972b87ae08a02f6aaf0382"></a><!-- doxytag: member="map.c::map_current_block" ref="af12ac4891a972b87ae08a02f6aaf0382" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="map_8c.html#af12ac4891a972b87ae08a02f6aaf0382">map_current_block</a> = { 0, False, 0, 0 }</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Daten des aktuellen Blocks </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00184">184</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00231">map_init()</a> und <a class="el" href="map_8c_source.html#l01459">map_2_sim_send()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af31b8470f92b2d234cf0d05300859ba1"></a><!-- doxytag: member="map.c::map_file" ref="af31b8470f92b2d234cf0d05300859ba1" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char* <a class="el" href="map_8h.html#af31b8470f92b2d234cf0d05300859ba1">map_file</a> = &quot;sim.map&quot;</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Dateiname fuer Ex- / Import </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00222">222</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l01978">map_display()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7aef5f18d29ba5e9bf20a6715d2288c1"></a><!-- doxytag: member="map.c::map_max_x" ref="a7aef5f18d29ba5e9bf20a6715d2288c1" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t <a class="el" href="map_8h.html#a7aef5f18d29ba5e9bf20a6715d2288c1">map_max_x</a> = MAP_SIZE * MAP_RESOLUTION / 2</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00146">146</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00231">map_init()</a>, <a class="el" href="map_8c_source.html#l01459">map_2_sim_send()</a>, <a class="el" href="map_8c_source.html#l01536">map_clean()</a>, <a class="el" href="map_8c_source.html#l01672">map_to_pgm()</a> und <a class="el" href="map_8c_source.html#l01775">map_read()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8c481d4f650f3205cf4f12f1f1f5e60b"></a><!-- doxytag: member="map.c::map_max_y" ref="a8c481d4f650f3205cf4f12f1f1f5e60b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t <a class="el" href="map_8h.html#a8c481d4f650f3205cf4f12f1f1f5e60b">map_max_y</a> = MAP_SIZE * MAP_RESOLUTION / 2</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00148">148</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00231">map_init()</a>, <a class="el" href="map_8c_source.html#l01459">map_2_sim_send()</a>, <a class="el" href="map_8c_source.html#l01536">map_clean()</a>, <a class="el" href="map_8c_source.html#l01672">map_to_pgm()</a> und <a class="el" href="map_8c_source.html#l01775">map_read()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa1b05a579f9ccdbdb62278e23a0a0796"></a><!-- doxytag: member="map.c::map_min_x" ref="aa1b05a579f9ccdbdb62278e23a0a0796" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t <a class="el" href="map_8h.html#aa1b05a579f9ccdbdb62278e23a0a0796">map_min_x</a> = MAP_SIZE * MAP_RESOLUTION / 2</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00145">145</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00231">map_init()</a>, <a class="el" href="map_8c_source.html#l01459">map_2_sim_send()</a>, <a class="el" href="map_8c_source.html#l01536">map_clean()</a>, <a class="el" href="map_8c_source.html#l01672">map_to_pgm()</a> und <a class="el" href="map_8c_source.html#l01775">map_read()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a591a6eb8d147d87df12d333890b46820"></a><!-- doxytag: member="map.c::map_min_y" ref="a591a6eb8d147d87df12d333890b46820" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t <a class="el" href="map_8h.html#a591a6eb8d147d87df12d333890b46820">map_min_y</a> = MAP_SIZE * MAP_RESOLUTION / 2</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00147">147</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00231">map_init()</a>, <a class="el" href="map_8c_source.html#l01459">map_2_sim_send()</a>, <a class="el" href="map_8c_source.html#l01536">map_clean()</a>, <a class="el" href="map_8c_source.html#l01672">map_to_pgm()</a> und <a class="el" href="map_8c_source.html#l01775">map_read()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a04a94929973886472ea38f5fbd7238e0"></a><!-- doxytag: member="map.c::map_update_cache" ref="a04a94929973886472ea38f5fbd7238e0" args="[MAP_UPDATE_CACHE_SIZE]" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">map_cache_t <a class="el" href="map_8h.html#a4ad0094c3d598468dd621681e4159185">map_update_cache</a>[MAP_UPDATE_CACHE_SIZE]</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Map-Cache </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00167">167</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__scan_8c_source.html#l00058">bot_scan_onthefly_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ada848a524986d75cfeb512f6f6e58115"></a><!-- doxytag: member="map.c::map_update_fifo" ref="ada848a524986d75cfeb512f6f6e58115" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structfifo__t.html">fifo_t</a> <a class="el" href="map_8h.html#ada848a524986d75cfeb512f6f6e58115">map_update_fifo</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Fifo fuer Map-Cache </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00166">166</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__get__utilization_8c_source.html#l00044">bot_get_utilization_behaviour()</a> und <a class="el" href="behaviour__scan_8c_source.html#l00058">bot_scan_onthefly_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae2473394585d550bf87236464d4ba651"></a><!-- doxytag: member="map.c::map_update_stack" ref="ae2473394585d550bf87236464d4ba651" args="[MAP_UPDATE_STACK_SIZE]" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t <a class="el" href="map_8h.html#abc4799e68cbc325f5d3210ae20fb685b">map_update_stack</a>[MAP_UPDATE_STACK_SIZE]</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Stack des Update-Threads </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00169">169</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00231">map_init()</a>, <a class="el" href="os__scheduler_8c_source.html#l00274">os_display()</a> und <a class="el" href="os__thread_8c_source.html#l00265">os_print_stackusage()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:05 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

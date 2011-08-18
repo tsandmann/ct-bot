@@ -173,12 +173,12 @@ uint8_t mmc_write_sector(uint32_t addr, void * buffer) {
 #ifdef OS_AVAILABLE
 		"sts os_scheduling_allowed, r1	; os_enterCS()							\n\t"
 #endif
-#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
+#ifdef LED_AVAILABLE
 		"lds r24, led															\n\t"
 		"ori r24, %0															\n\t"
 		"sts led, r24															\n\t"
 		"call LED_set				; rote LED an								\n\t"
-#endif // LED_AVAILABLE && ! TEST_AVAILABLE
+#endif // LED_AVAILABLE
 		"call mmc_enable			; Karte aktiv schalten						\n\t"
 		"tst r24																\n\t"
 		"breq 1f																\n\t"
@@ -295,12 +295,12 @@ uint8_t mmc_write_sector(uint32_t addr, void * buffer) {
 		"6:																\n\t"
 		"ldi r24, lo8(%5)				; Karte inaktiv schalten	\n\t"
 		"call ENA_off												\n\t"
-#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
+#ifdef LED_AVAILABLE
 		"lds r24, led									\n\t"
 		"andi r24, ~%0									\n\t"
 		"sts led, r24									\n\t"
 		"call LED_set					; rote LED aus	\n\t"
-#endif // LED_AVAILABLE && ! TEST_AVAILABLE
+#endif // LED_AVAILABLE
 #ifdef OS_AVAILABLE
 		"call os_exitCS 				; os_exitCS()		\n\t"
 #endif
@@ -344,12 +344,12 @@ uint8_t mmc_read_sector(uint32_t addr, void * buffer) {
 	#ifdef OS_AVAILABLE
 		"sts os_scheduling_allowed, r1	; os_enterCS()	\n\t"
 	#endif
-	#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
+	#ifdef LED_AVAILABLE
 		"lds r24, led									\n\t"
 		"ori r24, %0									\n\t"
 		"sts led, r24									\n\t"
 		"call LED_set				; gruene LED an		\n\t"
-	#endif // LED_AVAILABLE && ! TEST_AVAILABLE
+	#endif // LED_AVAILABLE
 		"call mmc_enable			; Karte aktiv schalten	\n\t"
 		"tst r24											\n\t"
 		"breq 1f											\n\t"
@@ -459,12 +459,12 @@ uint8_t mmc_read_sector(uint32_t addr, void * buffer) {
 		"6:																	\n\t"
 		"ldi r24, lo8(%5)			; Karte inaktiv schalten				\n\t"
 		"call ENA_off														\n\t"
-	#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE
+	#ifdef LED_AVAILABLE
 		"lds r24, led			\n\t"
 		"andi r24, ~%0			\n\t"
 		"sts led, r24			\n\t"
 		"call LED_set				; gruene LED aus	\n\t"
-	#endif // LED_AVAILABLE && ! TEST_AVAILABLE
+	#endif // LED_AVAILABLE
 	#ifdef OS_AVAILABLE
 		"call os_exitCS				; os_exitCS();		\n\t"
 	#endif

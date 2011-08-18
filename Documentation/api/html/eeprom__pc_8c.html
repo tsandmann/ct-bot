@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: eeprom_pc.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_b1beec98a6d8202f7d2e9ed7dd898c89.html">pc</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#func-members">Funktionen</a>  </div>
+  <div class="headertitle">
+<div class="title">eeprom_pc.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Low-Level Routinen fuer den Zugriff auf das emulierte EEPROM des Sim-c't-Bots.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="ct-Bot_8h_source.html">ct-Bot.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="eeprom_8h_source.html">eeprom.h</a>&quot;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für eeprom_pc.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="eeprom__pc_8c__incl.png" border="0" usemap="#eeprom__pc_8c" alt=""/></div>
+<map name="eeprom__pc_8c" id="eeprom__pc_8c">
+</map>
+</div>
+</div>
+<p><a href="eeprom__pc_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eeprom__pc_8c.html#a336de810ea7306c784aa421048de9626">init_eeprom_man</a> (uint8_t init)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eeprom__pc_8c.html#ae1460a09ea2078c972a8f8e420773123">ctbot_eeprom_write_byte</a> (uint8_t *address, uint8_t value)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a> (const uint8_t *address)</td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Low-Level Routinen fuer den Zugriff auf das emulierte EEPROM des Sim-c't-Bots. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Achim Pankalla (<a href="mailto:achim.pankalla@gmx.de">achim.pankalla@gmx.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>07.06.2007 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="eeprom__pc_8c_source.html">eeprom_pc.c</a>.</p>
+</div><hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="a77ca3a10517b6fb65f814edb8fc109bd"></a><!-- doxytag: member="eeprom_pc.c::ctbot_eeprom_read_byte" ref="a77ca3a10517b6fb65f814edb8fc109bd" args="(const uint8_t *address)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ctbot_eeprom_read_byte </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>address</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Liest ein Byte aus dem EEPROM </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*address</td><td>Adresse des zu lesenden Bytes im EEPROM </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Das zu lesende Byte </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="eeprom__pc_8c_source.html#l00531">531</a> der Datei <a class="el" href="eeprom__pc_8c_source.html">eeprom_pc.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__turn__test_8c_source.html#l00047">bot_turn_test_behaviour()</a>, <a class="el" href="init-low_8c_source.html#l00125">ctbot_init_low_1st()</a>, <a class="el" href="motor_8c_source.html#l00467">motor_init()</a> und <a class="el" href="sensor_8c_source.html#l00167">sensor_dist_lookup()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae1460a09ea2078c972a8f8e420773123"></a><!-- doxytag: member="eeprom_pc.c::ctbot_eeprom_write_byte" ref="ae1460a09ea2078c972a8f8e420773123" args="(uint8_t *address, uint8_t value)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ctbot_eeprom_write_byte </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>address</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Schreibt ein Byte in das EEPROM </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*address</td><td>Adresse des Bytes im EEPROM </td></tr>
+    <tr><td class="paramname">value</td><td>Das zu schreibende Byte </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="eeprom__pc_8c_source.html#l00522">522</a> der Datei <a class="el" href="eeprom__pc_8c_source.html">eeprom_pc.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__calibrate__sharps_8c_source.html#l00205">bot_calibrate_sharps_behaviour()</a> und <a class="el" href="init-low_8c_source.html#l00125">ctbot_init_low_1st()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a336de810ea7306c784aa421048de9626"></a><!-- doxytag: member="eeprom_pc.c::init_eeprom_man" ref="a336de810ea7306c784aa421048de9626" args="(uint8_t init)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t init_eeprom_man </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>init</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Diese Funktion initialisiert die eeprom-emulation. Sie sorgt fuer die Erstellung der eeprom.bin, falls nicht vorhanden und erstellt ueber eine Hilfsfunktion eine Adress- konvertierungstabelle fuer die EEPROM-Adressen, wenn die benoetigten Daten vorliegen. Statusinformationen werden ueber DEBUG_INFO angezeigt. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">init</td><td>gibt an, ob das EEPROM mit Hilfer einer eep-Datei initialisiert werden soll (0 nein, 1 ja) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>0: alles ok, 1: Fehler </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="eeprom__pc_8c_source.html#l00512">512</a> der Datei <a class="el" href="eeprom__pc_8c_source.html">eeprom_pc.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="cmd-tools__pc_8c_source.html#l00107">hand_cmd_args()</a> und <a class="el" href="init-low__pc_8c_source.html#l00043">ctbot_init_low_1st()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:05 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

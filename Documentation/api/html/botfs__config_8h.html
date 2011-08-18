@@ -1,0 +1,598 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: botfs_config.h-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_a0fca93e65e0dd30a74a1e6addb2ee0e.html">include</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#define-members">Makrodefinitionen</a>  </div>
+  <div class="headertitle">
+<div class="title">botfs_config.h-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Konfig-Optionen fuer Dateisystem BotFS.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><div class="dynheader">
+Dieser Graph zeigt, welche Datei direkt oder indirekt diese Datei enthält:</div>
+<div class="dyncontent">
+<div class="center"><img src="botfs__config_8h__dep__incl.png" border="0" usemap="#botfs__config_8hdep" alt=""/></div>
+<map name="botfs__config_8hdep" id="botfs__config_8hdep">
+</map>
+</div>
+</div>
+<p><a href="botfs__config_8h_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="define-members"></a>
+Makrodefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#a0b59cf6e639d96b9ae864e7b40524dd2">BOTFS_HEADER_POS</a>&#160;&#160;&#160;1</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Blockadresse des Volume-Headers (erster Block ist Header der Volume-Header-Datei)  <a href="#a0b59cf6e639d96b9ae864e7b40524dd2"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b">BOTFS_BLOCK_SIZE</a>&#160;&#160;&#160;512U</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.  <a href="#a10ae5b06679abd56612d994889002e4b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#ae2a1921717a04e9cad3bc499f68cdd2d">BOTFS_ROOT_SIZE</a>&#160;&#160;&#160;32768U</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Groesse des Root-Verzeichnisses in Byte.  <a href="#ae2a1921717a04e9cad3bc499f68cdd2d"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#acb62e6bcc59931ccb9c949b6a66e3a4e">BOTFS_MAX_FILENAME</a>&#160;&#160;&#160;(128 - (sizeof(botfs_file_descr_t) + 1))</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">max.  <a href="#acb62e6bcc59931ccb9c949b6a66e3a4e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#a9d50efcbd0dacb8c68cc6318ad453733">BOTFS_MAX_VOLUME_SIZE</a>&#160;&#160;&#160;(65536 * BOTFS_BLOCK_SIZE)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">max.  <a href="#a9d50efcbd0dacb8c68cc6318ad453733"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#abfc5e4690b5514dfcd9b0ceaad4a6f22">BOTFS_DIR_BLOCK_CNT</a>&#160;&#160;&#160;(BOTFS_ROOT_SIZE / BOTFS_BLOCK_SIZE)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Anzahl der Root-Dir-Bloecke.  <a href="#abfc5e4690b5514dfcd9b0ceaad4a6f22"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#a734b691e4f7f1a52cb33d91f8248b310">BOTFS_FILE_DESC_CNT</a>&#160;&#160;&#160;(BOTFS_BLOCK_SIZE / sizeof(botfs_file_t))</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Anzahl der Datei-Deskriptoren pro Block.  <a href="#a734b691e4f7f1a52cb33d91f8248b310"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#a1f0bfc932e4be8070487c5453dfb0619">BOTFS_MAX_FILE_CNT</a>&#160;&#160;&#160;((BOTFS_ROOT_SIZE / BOTFS_BLOCK_SIZE) * BOTFS_FILE_DESC_CNT)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">max.  <a href="#a1f0bfc932e4be8070487c5453dfb0619"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#aac4a2e5f0225682f73a0baf929715214">BOTFS_FREEL_SIZE</a>&#160;&#160;&#160;BOTFS_MAX_FILE_CNT</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Groesse der Freelist in Eintraegen.  <a href="#aac4a2e5f0225682f73a0baf929715214"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#a64bd3991ed679c9c53eeb46c9bd58cdb">BOTFS_FREEL_BL_SIZE</a>&#160;&#160;&#160;(BOTFS_BLOCK_SIZE / sizeof(botfs_freelist_entry_t))</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Anzahl der Freelisteintraege pro Block.  <a href="#a64bd3991ed679c9c53eeb46c9bd58cdb"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#aa71c70928c59fc836ac2cd548cbe2a40">BOTFS_FREEL_BL_CNT</a>&#160;&#160;&#160;(BOTFS_FREEL_SIZE / BOTFS_FREEL_BL_SIZE)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Anzahl der Freelist-Bloecke.  <a href="#aa71c70928c59fc836ac2cd548cbe2a40"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#a13df0af88884d010c24591ac1c78e4df">BOTFS_HEADER_SIZE</a>&#160;&#160;&#160;(sizeof(botfs_file_header_t) / BOTFS_BLOCK_SIZE)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Groesse des Datei-Headers in Bloecken.  <a href="#a13df0af88884d010c24591ac1c78e4df"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#aae294ba3fbe5e7862c2a95f935c4b560">BOTFS_HEADER_DATA_SIZE</a>&#160;&#160;&#160;(BOTFS_BLOCK_SIZE - (sizeof(uint8_t) + sizeof(botfs_file_used_t)))</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Groesse des Datei-Header-Datenfelds in Byte.  <a href="#aae294ba3fbe5e7862c2a95f935c4b560"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#a59e4c4dc86bf847ef6dbf90491b3a40b">BOTFS_VOLUME_DATA</a>&#160;&#160;&#160;&quot;/volumedata&quot;</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">"Dateiname" der Root-Verzeichnis-Daten  <a href="#a59e4c4dc86bf847ef6dbf90491b3a40b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#aa09ebb8e46e014f3464a42416be33547">BOTFS_VERSION</a>&#160;&#160;&#160;3</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">BotFS-Version.  <a href="#aa09ebb8e46e014f3464a42416be33547"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#afc148395819b4a2651719ebef168b3c3">BOTFS_MIN_VERSION</a>&#160;&#160;&#160;3</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">BotFS-Version eines Volumes, die dieser Code mindestens braucht.  <a href="#afc148395819b4a2651719ebef168b3c3"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#aaf7624301adbc3d3af5e12379e29b1ff">BOTFS_VOL_NAME_SIZE</a>&#160;&#160;&#160;32</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximale Laenge des Volume-Namens.  <a href="#aaf7624301adbc3d3af5e12379e29b1ff"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#ac4b2c1117078163b2cb6dd191da29b9f">BOTFS_DEFAULT_VOL_NAME</a>&#160;&#160;&#160;&quot;BotFS-Volume&quot;</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Volume-Name, falls es automatisch angelegt wird.  <a href="#ac4b2c1117078163b2cb6dd191da29b9f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#aca2639b2e4625e44a535548e8ddea24c">BOTFS_DEFAULT_VOL_SIZE</a>&#160;&#160;&#160;(8 * (1 &lt;&lt; 20))</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Volume-Groesse, falls es automatisch angelegt wird in Byte.  <a href="#aca2639b2e4625e44a535548e8ddea24c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#a43ce9601424fa8af31ece8b56b6b1746">BOTFS_IMAGE_FILENAME</a>&#160;&#160;&#160;&quot;botfs.img&quot;</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Dateiname des BotFS-Volume-Images.  <a href="#a43ce9601424fa8af31ece8b56b6b1746"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#aafbba18ae3af70abfb9fc89eb44128e9">BOTFS_MODE_r</a>&#160;&#160;&#160;'<a class="el" href="behaviour__drive__chess_8c.html#ac72f3887834ac55a457ccb5d6c381989">r</a>'</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">nur lesen  <a href="#aafbba18ae3af70abfb9fc89eb44128e9"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#a6c1484fed9db6538b4aadde372aff79a">BOTFS_MODE_R</a>&#160;&#160;&#160;'<a class="el" href="behaviour__drive__chess_8c.html#a99b994edd82192c4fe92f1699f3c1085">R</a>'</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">lesen und schreiben  <a href="#a6c1484fed9db6538b4aadde372aff79a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#add8cfeb97a2a3b41a11fd612fb849dda">BOTFS_MODE_W</a>&#160;&#160;&#160;'<a class="el" href="behaviour__drive__chess_8c.html#adc146ab81c4a725f00da850bca691f7e">W</a>'</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">lesen und schreiben, Datei wird aber beim Oeffnen geleert  <a href="#add8cfeb97a2a3b41a11fd612fb849dda"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__config_8h.html#ae694484eeb4cd59e333ce3f5a4e8e50b">BOTFS_DEBUG_LOGFILE</a>&#160;&#160;&#160;&quot;botfs_log.txt&quot;</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Logfile, falls DEBUG_BOTFS_LOGFILE.  <a href="#ae694484eeb4cd59e333ce3f5a4e8e50b"></a><br/></td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Konfig-Optionen fuer Dateisystem BotFS. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Timo Sandmann (<a href="mailto:mail@timosandmann.de">mail@timosandmann.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>17.10.2010</dd></dl>
+<p>Konfiguration derzeit: max. Groesse des Volumes: 32 MByte max. Anzahl an Dateien: 256 max. Dateinamenlaenge: 116 Zeichen max. Dateigroesse: 16 MByte</p>
+<p>moechte man da etwas aendern, muss man die Groesse der Datentypen beachten / anpassen! </p>
+
+<p>Definiert in Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+</div><hr/><h2>Makro-Dokumentation</h2>
+<a class="anchor" id="a10ae5b06679abd56612d994889002e4b"></a><!-- doxytag: member="botfs_config.h::BOTFS_BLOCK_SIZE" ref="a10ae5b06679abd56612d994889002e4b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_BLOCK_SIZE&#160;&#160;&#160;512U</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Groesse eines Blocks (kleinste adressierbare Einheit) in Byte. </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00039">39</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs-low__pc_8c_source.html#l00166">botfs_read_low()</a>, <a class="el" href="botfs-low__pc_8c_source.html#l00187">botfs_write_low()</a>, <a class="el" href="botfs-tools__pc_8c_source.html#l00700">botfs_read_fat16()</a>, <a class="el" href="botfs_8c_source.html#l00318">botfs_create()</a>, <a class="el" href="botfs_8c_source.html#l00615">botfs_write()</a>, <a class="el" href="botfs__pc_8c_source.html#l00047">botfs_create_volume()</a>, <a class="el" href="botfs__pc_8c_source.html#l00154">botfs_copy_file()</a>, <a class="el" href="botfs__pc_8c_source.html#l00235">botfs_extract_file()</a>, <a class="el" href="cmd-tools__pc_8c_source.html#l00107">hand_cmd_args()</a>, <a class="el" href="command_8c_source.html#l00359">command_evaluate()</a>, <a class="el" href="map_8c_source.html#l01775">map_read()</a> und <a class="el" href="sensor-low__pc_8c_source.html#l00060">convert_slog_file()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae694484eeb4cd59e333ce3f5a4e8e50b"></a><!-- doxytag: member="botfs_config.h::BOTFS_DEBUG_LOGFILE" ref="ae694484eeb4cd59e333ce3f5a4e8e50b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_DEBUG_LOGFILE&#160;&#160;&#160;&quot;botfs_log.txt&quot;</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Logfile, falls DEBUG_BOTFS_LOGFILE. </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00063">63</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs-low__pc_8c_source.html#l00064">botfs_init_low()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac4b2c1117078163b2cb6dd191da29b9f"></a><!-- doxytag: member="botfs_config.h::BOTFS_DEFAULT_VOL_NAME" ref="ac4b2c1117078163b2cb6dd191da29b9f" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_DEFAULT_VOL_NAME&#160;&#160;&#160;&quot;BotFS-Volume&quot;</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Volume-Name, falls es automatisch angelegt wird. </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00055">55</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs-low__pc_8c_source.html#l00064">botfs_init_low()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aca2639b2e4625e44a535548e8ddea24c"></a><!-- doxytag: member="botfs_config.h::BOTFS_DEFAULT_VOL_SIZE" ref="aca2639b2e4625e44a535548e8ddea24c" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_DEFAULT_VOL_SIZE&#160;&#160;&#160;(8 * (1 &lt;&lt; 20))</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Volume-Groesse, falls es automatisch angelegt wird in Byte. </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00056">56</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs-low__pc_8c_source.html#l00064">botfs_init_low()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="abfc5e4690b5514dfcd9b0ceaad4a6f22"></a><!-- doxytag: member="botfs_config.h::BOTFS_DIR_BLOCK_CNT" ref="abfc5e4690b5514dfcd9b0ceaad4a6f22" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_DIR_BLOCK_CNT&#160;&#160;&#160;(BOTFS_ROOT_SIZE / BOTFS_BLOCK_SIZE)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Anzahl der Root-Dir-Bloecke. </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00043">43</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs__pc_8c_source.html#l00047">botfs_create_volume()</a> und <a class="el" href="botfs__pc_8c_source.html#l00282">botfs_readdir()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a734b691e4f7f1a52cb33d91f8248b310"></a><!-- doxytag: member="botfs_config.h::BOTFS_FILE_DESC_CNT" ref="a734b691e4f7f1a52cb33d91f8248b310" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_FILE_DESC_CNT&#160;&#160;&#160;(BOTFS_BLOCK_SIZE / sizeof(botfs_file_t))</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Anzahl der Datei-Deskriptoren pro Block. </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00044">44</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs__pc_8c_source.html#l00282">botfs_readdir()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa71c70928c59fc836ac2cd548cbe2a40"></a><!-- doxytag: member="botfs_config.h::BOTFS_FREEL_BL_CNT" ref="aa71c70928c59fc836ac2cd548cbe2a40" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_FREEL_BL_CNT&#160;&#160;&#160;(BOTFS_FREEL_SIZE / BOTFS_FREEL_BL_SIZE)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Anzahl der Freelist-Bloecke. </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00048">48</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs__pc_8c_source.html#l00047">botfs_create_volume()</a> und <a class="el" href="botfs__pc_8c_source.html#l00317">botfs_print_freelist()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a64bd3991ed679c9c53eeb46c9bd58cdb"></a><!-- doxytag: member="botfs_config.h::BOTFS_FREEL_BL_SIZE" ref="a64bd3991ed679c9c53eeb46c9bd58cdb" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_FREEL_BL_SIZE&#160;&#160;&#160;(BOTFS_BLOCK_SIZE / sizeof(botfs_freelist_entry_t))</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Anzahl der Freelisteintraege pro Block. </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00047">47</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs__pc_8c_source.html#l00317">botfs_print_freelist()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aac4a2e5f0225682f73a0baf929715214"></a><!-- doxytag: member="botfs_config.h::BOTFS_FREEL_SIZE" ref="aac4a2e5f0225682f73a0baf929715214" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_FREEL_SIZE&#160;&#160;&#160;BOTFS_MAX_FILE_CNT</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Groesse der Freelist in Eintraegen. </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00046">46</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aae294ba3fbe5e7862c2a95f935c4b560"></a><!-- doxytag: member="botfs_config.h::BOTFS_HEADER_DATA_SIZE" ref="aae294ba3fbe5e7862c2a95f935c4b560" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_HEADER_DATA_SIZE&#160;&#160;&#160;(BOTFS_BLOCK_SIZE - (sizeof(uint8_t) + sizeof(botfs_file_used_t)))</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Groesse des Datei-Header-Datenfelds in Byte. </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00050">50</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0b59cf6e639d96b9ae864e7b40524dd2"></a><!-- doxytag: member="botfs_config.h::BOTFS_HEADER_POS" ref="a0b59cf6e639d96b9ae864e7b40524dd2" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_HEADER_POS&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Blockadresse des Volume-Headers (erster Block ist Header der Volume-Header-Datei) </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00038">38</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs_8c_source.html#l00140">botfs_init()</a> und <a class="el" href="botfs__pc_8c_source.html#l00047">botfs_create_volume()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a13df0af88884d010c24591ac1c78e4df"></a><!-- doxytag: member="botfs_config.h::BOTFS_HEADER_SIZE" ref="a13df0af88884d010c24591ac1c78e4df" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_HEADER_SIZE&#160;&#160;&#160;(sizeof(botfs_file_header_t) / BOTFS_BLOCK_SIZE)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Groesse des Datei-Headers in Bloecken. </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00049">49</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs_8c_source.html#l00318">botfs_create()</a> und <a class="el" href="botfs_8c_source.html#l00400">botfs_open()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a43ce9601424fa8af31ece8b56b6b1746"></a><!-- doxytag: member="botfs_config.h::BOTFS_IMAGE_FILENAME" ref="a43ce9601424fa8af31ece8b56b6b1746" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_IMAGE_FILENAME&#160;&#160;&#160;&quot;botfs.img&quot;</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Dateiname des BotFS-Volume-Images. </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00057">57</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1f0bfc932e4be8070487c5453dfb0619"></a><!-- doxytag: member="botfs_config.h::BOTFS_MAX_FILE_CNT" ref="a1f0bfc932e4be8070487c5453dfb0619" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_MAX_FILE_CNT&#160;&#160;&#160;((BOTFS_ROOT_SIZE / BOTFS_BLOCK_SIZE) * BOTFS_FILE_DESC_CNT)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>max. </p>
+<p>Anzahl an Dateien </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00045">45</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="acb62e6bcc59931ccb9c949b6a66e3a4e"></a><!-- doxytag: member="botfs_config.h::BOTFS_MAX_FILENAME" ref="acb62e6bcc59931ccb9c949b6a66e3a4e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_MAX_FILENAME&#160;&#160;&#160;(128 - (sizeof(botfs_file_descr_t) + 1))</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>max. </p>
+<p>Dateinamenlaenge in Zeichen (116 Zeichen + 0-Byte + 11 Byte Dateidescr. = 128 Byte Daten pro Datei) </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00041">41</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs-low__pc_8c_source.html#l00104">botfs_check_volume_low()</a>, <a class="el" href="botfs_8c_source.html#l00318">botfs_create()</a>, <a class="el" href="botfs_8c_source.html#l00534">botfs_rename()</a> und <a class="el" href="botfs__pc_8c_source.html#l00047">botfs_create_volume()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9d50efcbd0dacb8c68cc6318ad453733"></a><!-- doxytag: member="botfs_config.h::BOTFS_MAX_VOLUME_SIZE" ref="a9d50efcbd0dacb8c68cc6318ad453733" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_MAX_VOLUME_SIZE&#160;&#160;&#160;(65536 * BOTFS_BLOCK_SIZE)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>max. </p>
+<p>Groesse des Volumes in Byte </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00042">42</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs__pc_8c_source.html#l00047">botfs_create_volume()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="afc148395819b4a2651719ebef168b3c3"></a><!-- doxytag: member="botfs_config.h::BOTFS_MIN_VERSION" ref="afc148395819b4a2651719ebef168b3c3" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_MIN_VERSION&#160;&#160;&#160;3</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>BotFS-Version eines Volumes, die dieser Code mindestens braucht. </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00053">53</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs-low_8c_source.html#l00177">botfs_check_volume_low()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aafbba18ae3af70abfb9fc89eb44128e9"></a><!-- doxytag: member="botfs_config.h::BOTFS_MODE_r" ref="aafbba18ae3af70abfb9fc89eb44128e9" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_MODE_r&#160;&#160;&#160;'<a class="el" href="behaviour__drive__chess_8c.html#ac72f3887834ac55a457ccb5d6c381989">r</a>'</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>nur lesen </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00059">59</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs_8c_source.html#l00615">botfs_write()</a>, <a class="el" href="botfs__pc_8c_source.html#l00154">botfs_copy_file()</a>, <a class="el" href="botfs__pc_8c_source.html#l00235">botfs_extract_file()</a>, <a class="el" href="map_8c_source.html#l00231">map_init()</a> und <a class="el" href="sensor-low__pc_8c_source.html#l00060">convert_slog_file()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6c1484fed9db6538b4aadde372aff79a"></a><!-- doxytag: member="botfs_config.h::BOTFS_MODE_R" ref="a6c1484fed9db6538b4aadde372aff79a" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_MODE_R&#160;&#160;&#160;'<a class="el" href="behaviour__drive__chess_8c.html#a99b994edd82192c4fe92f1699f3c1085">R</a>'</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>lesen und schreiben </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00060">60</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00231">map_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="add8cfeb97a2a3b41a11fd612fb849dda"></a><!-- doxytag: member="botfs_config.h::BOTFS_MODE_W" ref="add8cfeb97a2a3b41a11fd612fb849dda" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_MODE_W&#160;&#160;&#160;'<a class="el" href="behaviour__drive__chess_8c.html#adc146ab81c4a725f00da850bca691f7e">W</a>'</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>lesen und schreiben, Datei wird aber beim Oeffnen geleert </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00061">61</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs_8c_source.html#l00400">botfs_open()</a>, <a class="el" href="botfs__pc_8c_source.html#l00154">botfs_copy_file()</a>, <a class="el" href="command_8c_source.html#l00359">command_evaluate()</a>, <a class="el" href="map_8c_source.html#l00231">map_init()</a> und <a class="el" href="sensor-low_8c_source.html#l00116">bot_sens_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae2a1921717a04e9cad3bc499f68cdd2d"></a><!-- doxytag: member="botfs_config.h::BOTFS_ROOT_SIZE" ref="ae2a1921717a04e9cad3bc499f68cdd2d" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_ROOT_SIZE&#160;&#160;&#160;32768U</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Groesse des Root-Verzeichnisses in Byte. </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00040">40</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa09ebb8e46e014f3464a42416be33547"></a><!-- doxytag: member="botfs_config.h::BOTFS_VERSION" ref="aa09ebb8e46e014f3464a42416be33547" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_VERSION&#160;&#160;&#160;3</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>BotFS-Version. </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00052">52</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs-tools__pc_8c_source.html#l00644">botfs_management()</a> und <a class="el" href="botfs__pc_8c_source.html#l00047">botfs_create_volume()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aaf7624301adbc3d3af5e12379e29b1ff"></a><!-- doxytag: member="botfs_config.h::BOTFS_VOL_NAME_SIZE" ref="aaf7624301adbc3d3af5e12379e29b1ff" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_VOL_NAME_SIZE&#160;&#160;&#160;32</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Maximale Laenge des Volume-Namens. </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00054">54</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs__pc_8c_source.html#l00047">botfs_create_volume()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a59e4c4dc86bf847ef6dbf90491b3a40b"></a><!-- doxytag: member="botfs_config.h::BOTFS_VOLUME_DATA" ref="a59e4c4dc86bf847ef6dbf90491b3a40b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOTFS_VOLUME_DATA&#160;&#160;&#160;&quot;/volumedata&quot;</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>"Dateiname" der Root-Verzeichnis-Daten </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs__config_8h_source.html#l00051">51</a> der Datei <a class="el" href="botfs__config_8h_source.html">botfs_config.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs__pc_8c_source.html#l00047">botfs_create_volume()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:05 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

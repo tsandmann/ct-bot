@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: behaviour_simple.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">behaviour_simple.c</div>  </div>
+</div>
+<div class="contents">
+<a href="behaviour__simple_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> * </span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version. </span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be </span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR </span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public </span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free </span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> * </span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00020"></a>00020 
+<a name="l00031"></a>00031 <span class="preprocessor">#include &quot;<a class="code" href="bot-logic_8h.html" title="High-Level-Routinen fuer die Steuerung des c&#39;t-Bots.">bot-logic/bot-logic.h</a>&quot;</span>
+<a name="l00032"></a>00032 <span class="preprocessor">#ifdef BEHAVIOUR_SIMPLE_AVAILABLE</span>
+<a name="l00033"></a>00033 <span class="preprocessor"></span>
+<a name="l00034"></a>00034 <span class="keyword">static</span> uint8_t simple_state = 0;    
+<a name="l00035"></a>00035 <span class="keyword">static</span> uint8_t simple2_state = 0;   
+<a name="l00036"></a>00036 <span class="keyword">static</span> int16_t simple2_light = 0;   
+<a name="l00052"></a><a class="code" href="behaviour__simple_8h.html#a90076bf17d21b6921f4209bf947e521b">00052</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__simple_8c.html#a90076bf17d21b6921f4209bf947e521b">bot_simple_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00053"></a>00053     <span class="keywordflow">switch</span> (simple_state) {
+<a name="l00054"></a>00054     <span class="keywordflow">case</span> 0:
+<a name="l00055"></a>00055         <a class="code" href="behaviour__drive__distance_8c.html#ae7b188b6785c5e337c51509282ca790e">bot_drive_distance</a>(data, 0, <a class="code" href="motor_8h.html#a24b4914e3c0de6232220a8c79d4be7b2" title="maximale Fahrt in mm/s">BOT_SPEED_MAX</a>, 14);
+<a name="l00056"></a>00056         simple_state = 1;
+<a name="l00057"></a>00057         <span class="keywordflow">break</span>;
+<a name="l00058"></a>00058     <span class="keywordflow">case</span> 1:
+<a name="l00059"></a>00059         <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, 90);
+<a name="l00060"></a>00060         simple_state = 0;
+<a name="l00061"></a>00061         <span class="keywordflow">break</span>;
+<a name="l00062"></a>00062     <span class="keywordflow">default</span>:
+<a name="l00063"></a>00063         return_from_behaviour(data);
+<a name="l00064"></a>00064         <span class="keywordflow">break</span>;
+<a name="l00065"></a>00065     }
+<a name="l00066"></a>00066 
+<a name="l00067"></a>00067 }
+<a name="l00068"></a>00068 
+<a name="l00073"></a><a class="code" href="behaviour__simple_8h.html#ab54357bbed4aadb7e3e0bbce4e6e00d1">00073</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__simple_8c.html#ab54357bbed4aadb7e3e0bbce4e6e00d1">bot_simple</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller) {
+<a name="l00074"></a>00074     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__simple_8c.html#a90076bf17d21b6921f4209bf947e521b">bot_simple_behaviour</a>, <a class="code" href="bot-logic_8h.html#ac3101d6686d35c952f2a5c8177b3f262" title="Konstante, wenn Verhalten beim Aufruf alte Wuensche ueberschreiben sollen.">BEHAVIOUR_OVERRIDE</a>);
+<a name="l00075"></a>00075     simple_state = 0;
+<a name="l00076"></a>00076 }
+<a name="l00077"></a>00077 
+<a name="l00102"></a><a class="code" href="behaviour__simple_8h.html#ae7062e384d0e57677524484b3d51b9b1">00102</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__simple_8c.html#ae7062e384d0e57677524484b3d51b9b1">bot_simple2_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00103"></a>00103 <span class="preprocessor">    #define STATE_SIMPLE2_INIT 0</span>
+<a name="l00104"></a>00104 <span class="preprocessor"></span><span class="preprocessor">    #define STATE_SIMPLE2_SEARCH 1</span>
+<a name="l00105"></a>00105 <span class="preprocessor"></span><span class="preprocessor">    #define STATE_SIMPLE2_DRIVE 2</span>
+<a name="l00106"></a>00106 <span class="preprocessor"></span><span class="preprocessor">    #define STATE_SIMPLE2_DONE 3</span>
+<a name="l00107"></a>00107 <span class="preprocessor"></span>
+<a name="l00108"></a>00108     <span class="keyword">static</span> int16_t max_light;
+<a name="l00109"></a>00109     <span class="keyword">static</span> uint16_t max_dir;
+<a name="l00110"></a>00110     <span class="keyword">static</span> uint16_t dir;
+<a name="l00111"></a>00111 
+<a name="l00112"></a>00112     uint16_t light=(<a class="code" href="sensor_8c.html#a6d0a5c233b4eb9e698d9f78c8a628bb7">sensLDRL</a>+<a class="code" href="sensor_8c.html#a69a539530f625ee30aa24c42a763aa99">sensLDRR</a>)/2;
+<a name="l00113"></a>00113     uint16_t free;
+<a name="l00114"></a>00114 
+<a name="l00115"></a>00115     <span class="keywordflow">switch</span> (simple2_state) {
+<a name="l00116"></a>00116         <span class="keywordflow">case</span> <a class="code" href="behaviour__simple_8c.html#acd94aca04c6435ab2890442596ac9074">STATE_SIMPLE2_INIT</a>:    <span class="comment">// Initialisieren</span>
+<a name="l00117"></a>00117             max_light = INT16_MAX;
+<a name="l00118"></a>00118             max_dir=0;
+<a name="l00119"></a>00119             dir=0;
+<a name="l00120"></a>00120             simple2_state=<a class="code" href="behaviour__simple_8c.html#a43476209530371fb347752d72b74efd1">STATE_SIMPLE2_SEARCH</a>;
+<a name="l00121"></a>00121             <span class="keywordflow">break</span>;
+<a name="l00122"></a>00122         <span class="keywordflow">case</span> <a class="code" href="behaviour__simple_8c.html#a43476209530371fb347752d72b74efd1">STATE_SIMPLE2_SEARCH</a>:  <span class="comment">// Einmal drehen und maximum suchen</span>
+<a name="l00123"></a>00123             <span class="keywordflow">if</span> (light&lt;max_light){
+<a name="l00124"></a>00124                 max_dir=dir;
+<a name="l00125"></a>00125                 max_light=light;
+<a name="l00126"></a>00126             }
+<a name="l00127"></a>00127 
+<a name="l00128"></a>00128             <span class="keywordflow">if</span> (dir &lt; 360) {    <span class="comment">// Noch nicht ganz rum?</span>
+<a name="l00129"></a>00129                 <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, 10); <span class="comment">// drehen</span>
+<a name="l00130"></a>00130                 dir+=10;        <span class="comment">// neue Position sichern</span>
+<a name="l00131"></a>00131             } <span class="keywordflow">else</span> {                <span class="comment">// wir sind ganz rum</span>
+<a name="l00132"></a>00132                 <span class="keywordflow">if</span> (simple2_light ==0)
+<a name="l00133"></a>00133                     <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, max_dir);    <span class="comment">// zum Licht drehen</span>
+<a name="l00134"></a>00134                 <span class="keywordflow">else</span>
+<a name="l00135"></a>00135                     <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, max_dir-180);    <span class="comment">// vom Licht wegdrehen</span>
+<a name="l00136"></a>00136 
+<a name="l00137"></a>00137                 simple2_state=<a class="code" href="behaviour__simple_8c.html#a959b66f64e84c1434a9544fc1e49a59b">STATE_SIMPLE2_DRIVE</a>;      <span class="comment">// Naechster Zustand</span>
+<a name="l00138"></a>00138             }
+<a name="l00139"></a>00139 
+<a name="l00140"></a>00140             <span class="keywordflow">break</span>;
+<a name="l00141"></a>00141         <span class="keywordflow">case</span> <a class="code" href="behaviour__simple_8c.html#a959b66f64e84c1434a9544fc1e49a59b">STATE_SIMPLE2_DRIVE</a>:   <span class="comment">// vorwaerts fahren, bis Hinderniss</span>
+<a name="l00142"></a>00142             free = (<a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> &lt; <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a>) ? <a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> : <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a>;
+<a name="l00143"></a>00143             free = (free &gt; <a class="code" href="sensor_8h.html#ab34ff5659ba12e54a744b44b66521341">SENS_IR_MAX_DIST</a>) ? <a class="code" href="sensor_8h.html#ab34ff5659ba12e54a744b44b66521341">SENS_IR_MAX_DIST</a> : free;
+<a name="l00144"></a>00144 
+<a name="l00145"></a>00145             <span class="keywordflow">if</span> (free &gt; <a class="code" href="sensor_8h.html#ae71711144d7ff74377d7cf133cd5dd5b">SENS_IR_SAFE_DIST</a>) {
+<a name="l00146"></a>00146                 <a class="code" href="behaviour__goto__pos_8c.html#af3cd84671054daefcec8c370feaf0c1c">bot_goto_dist</a>(data,free - <a class="code" href="sensor_8h.html#ae71711144d7ff74377d7cf133cd5dd5b">SENS_IR_SAFE_DIST</a>,1); <span class="comment">// nach vorne</span>
+<a name="l00147"></a>00147                 simple2_state = <a class="code" href="behaviour__simple_8c.html#acd94aca04c6435ab2890442596ac9074">STATE_SIMPLE2_INIT</a>;
+<a name="l00148"></a>00148             }<span class="keywordflow">else</span>
+<a name="l00149"></a>00149                 simple2_state=<a class="code" href="behaviour__simple_8c.html#a99a397b6a1c2343c5dbfb1cc979966b4">STATE_SIMPLE2_DONE</a>;   <span class="comment">// beenden</span>
+<a name="l00150"></a>00150             <span class="keywordflow">break</span>;
+<a name="l00151"></a>00151 
+<a name="l00152"></a>00152         <span class="keywordflow">default</span>:
+<a name="l00153"></a>00153             return_from_behaviour(data);
+<a name="l00154"></a>00154             <span class="keywordflow">break</span>;
+<a name="l00155"></a>00155     }
+<a name="l00156"></a>00156 }
+<a name="l00157"></a>00157 
+<a name="l00163"></a><a class="code" href="behaviour__simple_8h.html#abcd08185c2bfd4bfbaeffec9c39ec8d8">00163</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__simple_8c.html#abcd08185c2bfd4bfbaeffec9c39ec8d8">bot_simple2</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller, int16_t light) {
+<a name="l00164"></a>00164     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__simple_8c.html#ae7062e384d0e57677524484b3d51b9b1">bot_simple2_behaviour</a>, <a class="code" href="bot-logic_8h.html#ac3101d6686d35c952f2a5c8177b3f262" title="Konstante, wenn Verhalten beim Aufruf alte Wuensche ueberschreiben sollen.">BEHAVIOUR_OVERRIDE</a>);
+<a name="l00165"></a>00165     simple2_light = light;
+<a name="l00166"></a>00166     simple2_state = 0;
+<a name="l00167"></a>00167 }
+<a name="l00168"></a>00168 <span class="preprocessor">#endif // BEHAVIOUR_SIMPLE_AVAILABLE</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

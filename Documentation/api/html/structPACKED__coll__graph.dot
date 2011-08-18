@@ -1,0 +1,11 @@
+digraph G
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="{PACKED\n|+ section\l+ point1\l+ point2\l+ dirblocks\l+ state\l+ begin_head\l+ begin_sect\l+ type\l+ end_head\l+ end_sect\l+ first_sect_offset\l+ sectors\l+ bootcode\l+ part0\l+ part1\l+ part2\l+ part3\l+ executable_mark\l+ jump_code\l+ oem_name\l+ bytes_per_sect\l+ sect_per_cluster\l+ reserved_sect\l+ fat_copies\l+ root_dir_entries\l+ sectors_smaller_32m\l+ media_descr\l+ sect_per_fat\l+ sect_per_track\l+ num_heads\l+ num_hidden_sect\l+ num_sect\l+ logic_drive_num\l+ ext_signature\l+ serial\l+ volume_name\l+ fat_name\l+ exec_code\l+ name\l+ extension\l+ attributes\l+ unused\l+ time\l+ date\l+ first_cluster\l+ size\l+ start\l+ end\l+ bytes_last_block\l+ pos\l+ mode\l+ used\l+ used_blocks\l+ headerdata\l+ rootdir\l+ freelist\l+ descr\l+ files\l+ block\l+ size\l+ freeblocks\l+ freelistblocks\l+ x\l+ y\l+ byte\l+ bit\l+ rechts\l+ links\l+ rot\l+ orange\l+ gelb\l+ gruen\l+ tuerkis\l+ weiss\l+ x_pos\l+ y_pos\l+ sin\l+ cos\l+ dataL\l+ dataR\l+ mode\l+ loc_prob\l+ u32\l+ u8\l+ filename\l+ length\l+ data\l+ param_count\l+ param_len\l+ name\l+ param_info\l+ func\l+ override\l+ background\l|}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node2 -> Node1 [color="grey25",fontsize="10",style="solid",label=" func" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node2 [label="{_Behaviour_t\n|+ work\l+ priority\l+ caller\l+ active\l+ subResult\l+ next\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$struct__Behaviour__t.html",tooltip="Verwaltungsstruktur fuer die Verhaltensroutinen."];
+  Node2 -> Node2 [color="grey25",fontsize="10",style="solid",label=" next\ncaller" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node3 -> Node1 [color="grey25",fontsize="10",style="solid",label=" mode" ,arrowhead="odiamond",fontname="Helvetica"];
+  Node3 [label="{scan_mode_t\n|+ location\l+ distance\l+ border\l+ map_mode\l+ data\l+ raw\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$unionscan__mode__t.html"];
+}

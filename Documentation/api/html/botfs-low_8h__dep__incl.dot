@@ -1,0 +1,14 @@
+digraph G
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="botfs-low.h",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="botfs.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$botfs_8c.html",tooltip="Dateisystem BotFS."];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="botfs-low.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$botfs-low_8c.html",tooltip="Low-Level-Funktionen des Dateisystems BotFS fuer MCU."];
+  Node1 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="botfs-low_pc.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$botfs-low__pc_8c.html",tooltip="Low-Level-Funktionen des Dateisystems BotFS fuer PC."];
+  Node1 -> Node5 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="botfs_pc.c",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$botfs__pc_8c.html",tooltip="PC-only Teile des Dateisystems BotFS."];
+}

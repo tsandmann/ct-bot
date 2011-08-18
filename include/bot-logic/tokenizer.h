@@ -27,115 +27,30 @@
  * SUCH DAMAGE.
  *
  * ------------------------------------------------------
- * Source modified by Uwe Berger (bergeruw@gmx.net); 2010
+ * Source modified by Uwe Berger (bergeruw@gmx.net); 2010, 2011
  * ------------------------------------------------------
  */
 #ifndef __TOKENIZER_H__
 #define __TOKENIZER_H__
 
 #include "bot-logic/ubasic_config.h"
+#include "bot-logic/parser.h"
 
-enum {
-  TOKENIZER_ERROR,				// 0
-  TOKENIZER_ENDOFINPUT,
-  TOKENIZER_NUMBER,
-  TOKENIZER_STRING,
-  TOKENIZER_VARIABLE,
-  TOKENIZER_LET,
-  TOKENIZER_PRINT,
-  TOKENIZER_IF,
-  TOKENIZER_THEN,
-  TOKENIZER_ELSE,
-  TOKENIZER_FOR,				// 10
-  TOKENIZER_TO,
-  TOKENIZER_DOWNTO,
-  TOKENIZER_STEP,
-  TOKENIZER_NEXT,
-  TOKENIZER_GOTO,
-  TOKENIZER_GOSUB,
-  TOKENIZER_RETURN,
-  TOKENIZER_END,
-  TOKENIZER_COMMA,
-  TOKENIZER_SEMICOLON,			// 20
-  TOKENIZER_PLUS,
-  TOKENIZER_MINUS,
-  TOKENIZER_AND,
-  TOKENIZER_OR,
-  TOKENIZER_ASTR,
-  TOKENIZER_SLASH,
-  TOKENIZER_MOD,
-  TOKENIZER_LEFTPAREN,
-  TOKENIZER_RIGHTPAREN,
-  TOKENIZER_LT,					// 30
-  TOKENIZER_GT,
-  TOKENIZER_EQ,
-  
-  #if UBASIC_ABS
-  TOKENIZER_ABS,
-  #endif
-  #if UBASIC_NOT
-  TOKENIZER_NOT,
-  #endif
-  #if UBASIC_REM
-  TOKENIZER_REM,				// 35
-  #endif
-  #if UBASIC_CALL
-  TOKENIZER_CALL,
-  #endif
+// Typ-Definition Token-Tabelle (Standard-Parser)
+struct keyword_token {
+#if USE_PROGMEM
+	// um via strxxx_P zugreifen zu koennen, muss eine feste Laenge vorgegeben werden
+	char keyword[MAX_KEYWORD_LEN+1];
+#else
+	char *keyword;
+#endif
+  int token;
+};
 
-  #if UBASIC_RND
-  TOKENIZER_SRND,
-  TOKENIZER_RND,
-  #endif
-  #if AVR_EPOKE
-  TOKENIZER_EPOKE,
-  #endif
-  #if AVR_EPEEK
-  TOKENIZER_EPEEK,				// 40
-  #endif
-  #if AVR_WAIT
-  TOKENIZER_WAIT,
-  #endif
-  #if AVR_DIR
-  TOKENIZER_DIR,
-  #endif
-  #if AVR_IN
-  TOKENIZER_IN,
-  #endif
-  #if AVR_OUT
-  TOKENIZER_OUT,
-  #endif
-  #if AVR_ADC
-  TOKENIZER_ADC,
-  #endif
-  
-  #if UBASIC_CVARS
-  TOKENIZER_VPOKE,
-  TOKENIZER_VPEEK,
-  #endif
-  
-  #if UBASIC_XOR
-  TOKENIZER_XOR,
-  #endif
-  #if UBASIC_SHL
-  TOKENIZER_SHL,
-  #endif
-  #if UBASIC_SHR
-  TOKENIZER_SHR,				// 50
-  #endif
-  #if UBASIC_ARRAY
-  TOKENIZER_DIM,
-  #endif
-  #if UBASIC_DATA
-  TOKENIZER_DATA,
-  TOKENIZER_READ,
-  TOKENIZER_RESTORE,
-  #endif
-  TOKENIZER_GE,
-  TOKENIZER_LE,
-  TOKENIZER_NE,
-  TOKENIZER_COLON,
-  TOKENIZER_CR					// 55
+// Typ-Definition Tokenizer-Position
+struct tokenizer_pos_t {
+	PTR_TYPE prog_ptr;
+	int token;
 };
 
 
@@ -145,10 +60,12 @@ int tokenizer_token(void);
 int tokenizer_num(void);
 int tokenizer_variable_num(void);
 const char * tokenizer_last_string_ptr(void);
-
+void tokenizer_set_num(int val);
 int tokenizer_finished(void);
 void tokenizer_error_print(int linenum, int error_nr);
 PTR_TYPE get_prog_text_pointer(void);
+struct tokenizer_pos_t tokenizer_get_position(void);
+void tokenizer_set_position(struct tokenizer_pos_t);
 void jump_to_prog_text_pointer(PTR_TYPE jump_ptr);
 void jump_to_next_linenum(void);
 void skip_all_whitespaces(void);

@@ -136,10 +136,6 @@ void bot_sens_init(void) {
 	sensEncL = 0;
 	sensEncR = 0;
 
-#ifdef TEST_AVAILABLE_ANALOG
-	sensor_update_distance = sensor_dist_straight; // Distanzsensordaten 1:1 weiterreichen
-#endif
-
 #ifdef SPEED_LOG_AVAILABLE
 	void * const buffer = slog;
 	/* Datei oeffnen / anlegen */
@@ -327,8 +323,8 @@ void bot_sens(void) {
 	/* alle anderen analogen Sensoren */
 	while (adc_get_active_channel() != 255) {}	// restliche Zeit verbrauchen
 	// in den Testmodi bleibt immer alles an.
-#ifndef TEST_AVAILABLE
-  	ENA_off(ENA_KANTLED|ENA_LINE|ENA_SCHRANKE|ENA_KLAPPLED);	// Kanten (ENA_KANTLED), Liniensensoren (ENA_LINE), Transportfach-LED und Klappensensor aus
+#ifndef BEHAVIOUR_HW_TEST_AVAILABLE
+  	ENA_off(ENA_KANTLED|ENA_LINE|ENA_SCHRANKE|ENA_KLAPPLED); // Kanten (ENA_KANTLED), Liniensensoren (ENA_LINE), Transportfach-LED und Klappensensor aus
 #endif
 
 	/* LEDs updaten */

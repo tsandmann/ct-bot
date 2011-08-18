@@ -27,6 +27,9 @@
 
 #ifdef BEHAVIOUR_AVAILABLE
 
+//#define BEHAVIOUR_PROTOTYPE_AVAILABLE /**< Prototyp fuer neue Verhalten */
+
+//#define BEHAVIOUR_HW_TEST_AVAILABLE /**< Testverhalten vorhanden? (ehemals TEST_AVAILABLE_ANALOG, _DIGITAL, _MOTOR) */
 //#define BEHAVIOUR_SIMPLE_AVAILABLE /*!< sind die Beispielverhalten vorhanden? */
 //#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE /*!< Demoverhalten im Quadrat fahren vorhanden? */
 
@@ -41,9 +44,9 @@
 //#define BEHAVIOUR_TURN_TEST_AVAILABLE /*!< turn_test vorhanden? */
 //#define BEHAVIOUR_TEST_ENCODER_AVAILABLE /*!< Encoder-Test Verhalten vorhanden? */
 
-#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE /*!< Strecke fahren vorhanden ?*/
+//#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE /*!< Strecke fahren vorhanden ?*/
 
-//#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE /*!< Distanzesensorasuwertung vorhanden? */
+#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE /*!< Distanzesensorasuwertung vorhanden? */
 
 #define BEHAVIOUR_SCAN_AVAILABLE /*!< Gegend scannen vorhanden? */
 #define BEHAVIOUR_SOLVE_MAZE_AVAILABLE /*!< Wandfolger vorhanden? */
@@ -57,7 +60,7 @@
 
 //#define BEHAVIOUR_OLYMPIC_AVAILABLE	/*!< Olympiadenverhalten vorhanden? */
 
-#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE /*!< Suche eine Dose und fange sie ein */
+//#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE /*!< Suche eine Dose und fange sie ein */
 //#define BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE /*!< Trennt zwei Arten von Dosen (hell / dunkel) */
 
 //#define BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE /*!< verfolge ein (bewegliches) Objekt */
@@ -67,7 +70,7 @@
 //#define BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE /*!< Transport-Pillar Verhalten */
 
 #define BEHAVIOUR_REMOTECALL_AVAILABLE /*!< Nehmen wir Remote-Kommandos entgegen? */
-//#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE /*!< Deaktivieren von Verhalten wenn eine Abbruchbedingung erfuellt ist */
+#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE /*!< Deaktivieren von Verhalten wenn eine Abbruchbedingung erfuellt ist */
 
 //#define BEHAVIOUR_GET_UTILIZATION_AVAILABLE	/*!< CPU-Auslastung eines Verhaltens messen */
 
@@ -267,6 +270,9 @@
 #undef BEHAVIOUR_PATHPLANING_AVAILABLE
 #endif // BEHAVIOUR_GOTO_POS_AVAILABLE
 
+#include "bot-logic/behaviour_prototype.h"
+
+#include "bot-logic/behaviour_hw_test.h"
 #include "bot-logic/behaviour_simple.h"
 #include "bot-logic/behaviour_drive_square.h"
 

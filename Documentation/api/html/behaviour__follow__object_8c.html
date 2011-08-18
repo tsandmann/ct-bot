@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: behaviour_follow_object.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#func-members">Funktionen</a>  </div>
+  <div class="headertitle">
+<div class="title">behaviour_follow_object.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Verfolgung beweglicher Objekte.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="bot-logic_8h_source.html">bot-logic/bot-logic.h</a>&quot;</code><br/>
+<code>#include &lt;stdlib.h&gt;</code><br/>
+<code>#include &quot;<a class="el" href="sensor__correction_8h_source.html">sensor_correction.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="timer_8h_source.html">timer.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="log_8h_source.html">log.h</a>&quot;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für behaviour_follow_object.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__follow__object_8c__incl.png" border="0" usemap="#behaviour__follow__object_8c" alt=""/></div>
+<map name="behaviour__follow__object_8c" id="behaviour__follow__object_8c">
+</map>
+</div>
+</div>
+<p><a href="behaviour__follow__object_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__follow__object_8c.html#a128f36d527420e6aa3c901602751f4d0">bot_follow_object_behaviour</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *data)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Das Objektverfolgungsverhalten.  <a href="#a128f36d527420e6aa3c901602751f4d0"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__follow__object_8c.html#a48363707a2fbaea8c177fc6cb4f4a692">bot_follow_object</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *caller)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Botenfunktion des Objektverfolgungsverhaltens.  <a href="#a48363707a2fbaea8c177fc6cb4f4a692"></a><br/></td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Verfolgung beweglicher Objekte. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Timo Sandmann (<a href="mailto:mail@timosandmann.de">mail@timosandmann.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>03.08.2007 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="behaviour__follow__object_8c_source.html">behaviour_follow_object.c</a>.</p>
+</div><hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="a48363707a2fbaea8c177fc6cb4f4a692"></a><!-- doxytag: member="behaviour_follow_object.c::bot_follow_object" ref="a48363707a2fbaea8c177fc6cb4f4a692" args="(Behaviour_t *caller)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_follow_object </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>caller</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Botenfunktion des Objektverfolgungsverhaltens. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*caller</td><td>Der Verhaltensdatensatz des Aufrufers </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__follow__object_8c_source.html#l00159">159</a> der Datei <a class="el" href="behaviour__follow__object_8c_source.html">behaviour_follow_object.c</a>.</p>
+
+<p>Benutzt <a class="el" href="bot-logic_8c_source.html#l00532">switch_to_behaviour()</a>, <a class="el" href="behaviour__follow__object_8c_source.html#l00099">bot_follow_object_behaviour()</a>, <a class="el" href="bot-logic_8h_source.html#l00040">BEHAVIOUR_OVERRIDE</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00380">bot_save_waypos()</a>, <a class="el" href="bot-logic_8c_source.html#l00376">get_behaviour()</a> und <a class="el" href="motor_8h_source.html#l00031">BOT_SPEED_STOP</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__follow__object_8c_a48363707a2fbaea8c177fc6cb4f4a692_cgraph.png" border="0" usemap="#behaviour__follow__object_8c_a48363707a2fbaea8c177fc6cb4f4a692_cgraph" alt=""/></div>
+<map name="behaviour__follow__object_8c_a48363707a2fbaea8c177fc6cb4f4a692_cgraph" id="behaviour__follow__object_8c_a48363707a2fbaea8c177fc6cb4f4a692_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a128f36d527420e6aa3c901602751f4d0"></a><!-- doxytag: member="behaviour_follow_object.c::bot_follow_object_behaviour" ref="a128f36d527420e6aa3c901602751f4d0" args="(Behaviour_t *data)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_follow_object_behaviour </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Das Objektverfolgungsverhalten. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*data</td><td>Der Verhaltensdatensatz </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__follow__object_8c_source.html#l00099">99</a> der Datei <a class="el" href="behaviour__follow__object_8c_source.html">behaviour_follow_object.c</a>.</p>
+
+<p>Benutzt <a class="el" href="sensor_8c_source.html#l00057">sensDistLToggle</a>, <a class="el" href="sensor_8c_source.html#l00055">sensDistL</a>, <a class="el" href="sensor_8c_source.html#l00056">sensDistR</a>, <a class="el" href="sensor_8h_source.html#l00119">SENS_IR_INFINITE</a>, <a class="el" href="timer_8h_source.html#l00088">TIMER_GET_TICKCOUNT_32</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00154">bot_drive_stack()</a>, <a class="el" href="motor_8h_source.html#l00031">BOT_SPEED_STOP</a>, <a class="el" href="bot-logic_8c_source.html#l00056">speedWishLeft</a> und <a class="el" href="bot-logic_8c_source.html#l00057">speedWishRight</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__follow__object_8c_source.html#l00159">bot_follow_object()</a> und <a class="el" href="bot-logic_8c_source.html#l00086">bot_behave_init()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__follow__object_8c_a128f36d527420e6aa3c901602751f4d0_cgraph.png" border="0" usemap="#behaviour__follow__object_8c_a128f36d527420e6aa3c901602751f4d0_cgraph" alt=""/></div>
+<map name="behaviour__follow__object_8c_a128f36d527420e6aa3c901602751f4d0_cgraph" id="behaviour__follow__object_8c_a128f36d527420e6aa3c901602751f4d0_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:04 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

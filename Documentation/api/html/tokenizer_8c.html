@@ -1,0 +1,513 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: tokenizer.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#define-members">Makrodefinitionen</a> &#124;
+<a href="#func-members">Funktionen</a> &#124;
+<a href="#var-members">Variablen</a>  </div>
+  <div class="headertitle">
+<div class="title">tokenizer.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="bot-logic_8h_source.html">bot-logic/bot-logic.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="ubasic__config_8h_source.html">bot-logic/ubasic_config.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="tokenizer__access_8h_source.html">bot-logic/tokenizer_access.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="tokenizer_8h_source.html">bot-logic/tokenizer.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="ubasic__ext__proc_8h_source.html">bot-logic/ubasic_ext_proc.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="botfs_8h_source.html">botfs.h</a>&quot;</code><br/>
+<code>#include &lt;ctype.h&gt;</code><br/>
+<code>#include &lt;string.h&gt;</code><br/>
+<code>#include &lt;stdlib.h&gt;</code><br/>
+<code>#include &lt;stdio.h&gt;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für tokenizer.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="tokenizer_8c__incl.png" border="0" usemap="#tokenizer_8c" alt=""/></div>
+<map name="tokenizer_8c" id="tokenizer_8c">
+</map>
+</div>
+</div>
+<p><a href="tokenizer_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="define-members"></a>
+Makrodefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokenizer_8c.html#a66e71a3d0ab6516e58f3755cf573daf6">__TOKENIZER_C__</a></td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="tokenizer__access_8h.html#a324b52750ec7d50b5f1e36518c5cf5af">PTR_TYPE</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokenizer_8c.html#a13cc244a0414675c6d035494a8abca2f">get_prog_text_pointer</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokenizer_8c.html#a0ac73043946f7efab0d3a25fcbb53e58">skip_all_whitespaces</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokenizer_8c.html#a01b9a759b18008bbb4f4d165df5ec933">jump_to_prog_text_pointer</a> (<a class="el" href="tokenizer__access_8h.html#a324b52750ec7d50b5f1e36518c5cf5af">PTR_TYPE</a> jump_ptr)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokenizer_8c.html#a588799356f12384ec7e800a4f60d1dd5">jump_to_next_linenum</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokenizer_8c.html#ade2d47ca3371da8059f1bc33cbebc331">tokenizer_init</a> (<a class="el" href="tokenizer__access_8h.html#a324b52750ec7d50b5f1e36518c5cf5af">PTR_TYPE</a> program)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokenizer_8c.html#aa49af21826f177d115a28db11be99c1d">tokenizer_token</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokenizer_8c.html#ae29a59cfbda31bd3b52e609fef5889b2">tokenizer_next</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokenizer_8c.html#a95d2c691c07c6ab37cfd1b051f398cab">tokenizer_set_num</a> (int val)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokenizer_8c.html#a5dcc94a1dbb45df42612c038682aac6f">tokenizer_num</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">char const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokenizer_8c.html#ab501252b994dd91f0dd211978483b596">tokenizer_last_string_ptr</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokenizer_8c.html#a092f2feab0db8090bceeb54fe94436a1">tokenizer_error_print</a> (int linenum, int error_nr)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokenizer_8c.html#a5c2310421eeccd03f6aee214ded8159b">tokenizer_finished</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokenizer_8c.html#a7908e25261c71c8a3457bf494cf68496">tokenizer_variable_num</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structtokenizer__pos__t.html">tokenizer_pos_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokenizer_8c.html#af9fa3fa2487099dd1b8d7be23f0bf746">tokenizer_get_position</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokenizer_8c.html#aa4869532ed3ae66ee1d814035bf682a9">tokenizer_set_position</a> (struct <a class="el" href="structtokenizer__pos__t.html">tokenizer_pos_t</a> pos)</td></tr>
+<tr><td colspan="2"><h2><a name="var-members"></a>
+Variablen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="tokenizer__access_8h.html#a324b52750ec7d50b5f1e36518c5cf5af">PTR_TYPE</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tokenizer_8c.html#a7d36b5e844f9ed6802dba28ae91b19d5">program_ptr</a></td></tr>
+</table>
+<hr/><h2>Makro-Dokumentation</h2>
+<a class="anchor" id="a66e71a3d0ab6516e58f3755cf573daf6"></a><!-- doxytag: member="tokenizer.c::__TOKENIZER_C__" ref="a66e71a3d0ab6516e58f3755cf573daf6" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define __TOKENIZER_C__</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="tokenizer_8c_source.html#l00044">44</a> der Datei <a class="el" href="tokenizer_8c_source.html">tokenizer.c</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="a13cc244a0414675c6d035494a8abca2f"></a><!-- doxytag: member="tokenizer.c::get_prog_text_pointer" ref="a13cc244a0414675c6d035494a8abca2f" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="tokenizer__access_8h.html#a324b52750ec7d50b5f1e36518c5cf5af">PTR_TYPE</a> get_prog_text_pointer </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="tokenizer_8c_source.html#l00192">192</a> der Datei <a class="el" href="tokenizer_8c_source.html">tokenizer.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a588799356f12384ec7e800a4f60d1dd5"></a><!-- doxytag: member="tokenizer.c::jump_to_next_linenum" ref="a588799356f12384ec7e800a4f60d1dd5" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void jump_to_next_linenum </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="tokenizer_8c_source.html#l00220">220</a> der Datei <a class="el" href="tokenizer_8c_source.html">tokenizer.c</a>.</p>
+
+<p>Benutzt <a class="el" href="tokenizer__access_8h_source.html#l00115">GET_CONTENT_PROG_PTR</a>, <a class="el" href="tokenizer__access_8h_source.html#l00117">INCR_PROG_PTR</a>, <a class="el" href="tokenizer_8c_source.html#l00204">skip_all_whitespaces()</a> und <a class="el" href="tokenizer__access_8h_source.html#l00114">PROG_PTR</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="ubasic_8c_source.html#l00133">ubasic_break()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="tokenizer_8c_a588799356f12384ec7e800a4f60d1dd5_cgraph.png" border="0" usemap="#tokenizer_8c_a588799356f12384ec7e800a4f60d1dd5_cgraph" alt=""/></div>
+<map name="tokenizer_8c_a588799356f12384ec7e800a4f60d1dd5_cgraph" id="tokenizer_8c_a588799356f12384ec7e800a4f60d1dd5_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a01b9a759b18008bbb4f4d165df5ec933"></a><!-- doxytag: member="tokenizer.c::jump_to_prog_text_pointer" ref="a01b9a759b18008bbb4f4d165df5ec933" args="(PTR_TYPE jump_ptr)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void jump_to_prog_text_pointer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="tokenizer__access_8h.html#a324b52750ec7d50b5f1e36518c5cf5af">PTR_TYPE</a>&#160;</td>
+          <td class="paramname"><em>jump_ptr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="tokenizer_8c_source.html#l00213">213</a> der Datei <a class="el" href="tokenizer_8c_source.html">tokenizer.c</a>.</p>
+
+<p>Benutzt <a class="el" href="tokenizer__access_8h_source.html#l00116">SET_PROG_PTR_ABSOLUT</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0ac73043946f7efab0d3a25fcbb53e58"></a><!-- doxytag: member="tokenizer.c::skip_all_whitespaces" ref="a0ac73043946f7efab0d3a25fcbb53e58" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void skip_all_whitespaces </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="tokenizer_8c_source.html#l00204">204</a> der Datei <a class="el" href="tokenizer_8c_source.html">tokenizer.c</a>.</p>
+
+<p>Benutzt <a class="el" href="tokenizer__access_8h_source.html#l00115">GET_CONTENT_PROG_PTR</a>, <a class="el" href="tokenizer__access_8h_source.html#l00118">END_OF_PROG_TEXT</a> und <a class="el" href="tokenizer__access_8h_source.html#l00117">INCR_PROG_PTR</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="tokenizer_8c_source.html#l00220">jump_to_next_linenum()</a>, <a class="el" href="tokenizer_8c_source.html#l00423">tokenizer_init()</a> und <a class="el" href="ubasic_8c_source.html#l01262">ubasic_run()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a092f2feab0db8090bceeb54fe94436a1"></a><!-- doxytag: member="tokenizer.c::tokenizer_error_print" ref="a092f2feab0db8090bceeb54fe94436a1" args="(int linenum, int error_nr)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tokenizer_error_print </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>linenum</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>error_nr</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="tokenizer_8c_source.html#l00457">457</a> der Datei <a class="el" href="tokenizer_8c_source.html">tokenizer.c</a>.</p>
+
+<p>Benutzt <a class="el" href="tokenizer__access_8h_source.html#l00114">PROG_PTR</a>, <a class="el" href="tokenizer__access_8h_source.html#l00116">SET_PROG_PTR_ABSOLUT</a>, <a class="el" href="ubasic_8c_source.html#l00073">program_ptr</a>, <a class="el" href="tokenizer__access_8h_source.html#l00118">END_OF_PROG_TEXT</a>, <a class="el" href="tokenizer__access_8h_source.html#l00115">GET_CONTENT_PROG_PTR</a>, <a class="el" href="tokenizer__access_8h_source.html#l00117">INCR_PROG_PTR</a> und <a class="el" href="ubasic__config_8h_source.html#l00037">PRINTF</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="ubasic_8c_source.html#l00146">accept()</a> und <a class="el" href="ubasic_8c_source.html#l01293">ubasic_get_varinfo()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a5c2310421eeccd03f6aee214ded8159b"></a><!-- doxytag: member="tokenizer.c::tokenizer_finished" ref="a5c2310421eeccd03f6aee214ded8159b" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int tokenizer_finished </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="tokenizer_8c_source.html#l00481">481</a> der Datei <a class="el" href="tokenizer_8c_source.html">tokenizer.c</a>.</p>
+
+<p>Benutzt <a class="el" href="tokenizer__access_8h_source.html#l00118">END_OF_PROG_TEXT</a> und <a class="el" href="parser_8h_source.html#l00003">TOKENIZER_ENDOFINPUT</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="tokenizer_8c_source.html#l00437">tokenizer_next()</a>, <a class="el" href="ubasic_8c_source.html#l01262">ubasic_run()</a> und <a class="el" href="ubasic_8c_source.html#l01278">ubasic_finished()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af9fa3fa2487099dd1b8d7be23f0bf746"></a><!-- doxytag: member="tokenizer.c::tokenizer_get_position" ref="af9fa3fa2487099dd1b8d7be23f0bf746" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structtokenizer__pos__t.html">tokenizer_pos_t</a> tokenizer_get_position </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td><code> [read]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="tokenizer_8c_source.html#l00490">490</a> der Datei <a class="el" href="tokenizer_8c_source.html">tokenizer.c</a>.</p>
+
+<p>Benutzt <a class="el" href="tokenizer_8h_source.html#l00052">tokenizer_pos_t::prog_ptr</a>, <a class="el" href="tokenizer__access_8h_source.html#l00114">PROG_PTR</a> und <a class="el" href="tokenizer_8h_source.html#l00053">tokenizer_pos_t::token</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ade2d47ca3371da8059f1bc33cbebc331"></a><!-- doxytag: member="tokenizer.c::tokenizer_init" ref="ade2d47ca3371da8059f1bc33cbebc331" args="(PTR_TYPE program)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tokenizer_init </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="tokenizer__access_8h.html#a324b52750ec7d50b5f1e36518c5cf5af">PTR_TYPE</a>&#160;</td>
+          <td class="paramname"><em>program</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="tokenizer_8c_source.html#l00423">423</a> der Datei <a class="el" href="tokenizer_8c_source.html">tokenizer.c</a>.</p>
+
+<p>Benutzt <a class="el" href="tokenizer__access_8h_source.html#l00116">SET_PROG_PTR_ABSOLUT</a> und <a class="el" href="tokenizer_8c_source.html#l00204">skip_all_whitespaces()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="ubasic_8c_source.html#l00118">ubasic_init()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="tokenizer_8c_ade2d47ca3371da8059f1bc33cbebc331_cgraph.png" border="0" usemap="#tokenizer_8c_ade2d47ca3371da8059f1bc33cbebc331_cgraph" alt=""/></div>
+<map name="tokenizer_8c_ade2d47ca3371da8059f1bc33cbebc331_cgraph" id="tokenizer_8c_ade2d47ca3371da8059f1bc33cbebc331_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ab501252b994dd91f0dd211978483b596"></a><!-- doxytag: member="tokenizer.c::tokenizer_last_string_ptr" ref="ab501252b994dd91f0dd211978483b596" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char const* tokenizer_last_string_ptr </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="tokenizer_8c_source.html#l00453">453</a> der Datei <a class="el" href="tokenizer_8c_source.html">tokenizer.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae29a59cfbda31bd3b52e609fef5889b2"></a><!-- doxytag: member="tokenizer.c::tokenizer_next" ref="ae29a59cfbda31bd3b52e609fef5889b2" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tokenizer_next </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="tokenizer_8c_source.html#l00437">437</a> der Datei <a class="el" href="tokenizer_8c_source.html">tokenizer.c</a>.</p>
+
+<p>Benutzt <a class="el" href="tokenizer_8c_source.html#l00481">tokenizer_finished()</a>, <a class="el" href="tokenizer_8c_source.html#l00433">tokenizer_token()</a>, <a class="el" href="parser_8h_source.html#l00064">TOKENIZER_CR</a> und <a class="el" href="tokenizer__access_8h_source.html#l00114">PROG_PTR</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="ubasic_8c_source.html#l00146">accept()</a>, <a class="el" href="ubasic_8c_source.html#l00340">expr()</a> und <a class="el" href="ubasic_8c_source.html#l01262">ubasic_run()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="tokenizer_8c_ae29a59cfbda31bd3b52e609fef5889b2_cgraph.png" border="0" usemap="#tokenizer_8c_ae29a59cfbda31bd3b52e609fef5889b2_cgraph" alt=""/></div>
+<map name="tokenizer_8c_ae29a59cfbda31bd3b52e609fef5889b2_cgraph" id="tokenizer_8c_ae29a59cfbda31bd3b52e609fef5889b2_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a5dcc94a1dbb45df42612c038682aac6f"></a><!-- doxytag: member="tokenizer.c::tokenizer_num" ref="a5dcc94a1dbb45df42612c038682aac6f" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int tokenizer_num </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="tokenizer_8c_source.html#l00449">449</a> der Datei <a class="el" href="tokenizer_8c_source.html">tokenizer.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a95d2c691c07c6ab37cfd1b051f398cab"></a><!-- doxytag: member="tokenizer.c::tokenizer_set_num" ref="a95d2c691c07c6ab37cfd1b051f398cab" args="(int val)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tokenizer_set_num </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="tokenizer_8c_source.html#l00445">445</a> der Datei <a class="el" href="tokenizer_8c_source.html">tokenizer.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa4869532ed3ae66ee1d814035bf682a9"></a><!-- doxytag: member="tokenizer.c::tokenizer_set_position" ref="aa4869532ed3ae66ee1d814035bf682a9" args="(struct tokenizer_pos_t pos)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tokenizer_set_position </td>
+          <td>(</td>
+          <td class="paramtype">struct <a class="el" href="structtokenizer__pos__t.html">tokenizer_pos_t</a>&#160;</td>
+          <td class="paramname"><em>pos</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="tokenizer_8c_source.html#l00498">498</a> der Datei <a class="el" href="tokenizer_8c_source.html">tokenizer.c</a>.</p>
+
+<p>Benutzt <a class="el" href="tokenizer__access_8h_source.html#l00116">SET_PROG_PTR_ABSOLUT</a>, <a class="el" href="tokenizer_8h_source.html#l00052">tokenizer_pos_t::prog_ptr</a> und <a class="el" href="tokenizer_8h_source.html#l00053">tokenizer_pos_t::token</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa49af21826f177d115a28db11be99c1d"></a><!-- doxytag: member="tokenizer.c::tokenizer_token" ref="aa49af21826f177d115a28db11be99c1d" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int tokenizer_token </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="tokenizer_8c_source.html#l00433">433</a> der Datei <a class="el" href="tokenizer_8c_source.html">tokenizer.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="tokenizer_8c_source.html#l00437">tokenizer_next()</a>, <a class="el" href="ubasic_8c_source.html#l00146">accept()</a>, <a class="el" href="ubasic_8c_source.html#l00340">expr()</a> und <a class="el" href="ubasic_8c_source.html#l01262">ubasic_run()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7908e25261c71c8a3457bf494cf68496"></a><!-- doxytag: member="tokenizer.c::tokenizer_variable_num" ref="a7908e25261c71c8a3457bf494cf68496" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int tokenizer_variable_num </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="tokenizer_8c_source.html#l00485">485</a> der Datei <a class="el" href="tokenizer_8c_source.html">tokenizer.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="ubasic_8c_source.html#l01293">ubasic_get_varinfo()</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Variablen-Dokumentation</h2>
+<a class="anchor" id="a7d36b5e844f9ed6802dba28ae91b19d5"></a><!-- doxytag: member="tokenizer.c::program_ptr" ref="a7d36b5e844f9ed6802dba28ae91b19d5" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="tokenizer__access_8h.html#a324b52750ec7d50b5f1e36518c5cf5af">PTR_TYPE</a> <a class="el" href="ubasic_8c.html#a7d36b5e844f9ed6802dba28ae91b19d5">program_ptr</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="ubasic_8c_source.html#l00073">73</a> der Datei <a class="el" href="ubasic_8c_source.html">ubasic.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="tokenizer_8c_source.html#l00457">tokenizer_error_print()</a> und <a class="el" href="ubasic_8c_source.html#l00118">ubasic_init()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:06 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

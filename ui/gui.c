@@ -197,7 +197,7 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
 		keypad_callback(keypad_buffer);
 		keypad_callback = NULL;
 		memset(keypad_buffer, 0, 21);
-		// no break;
+		/* no break */
 	case 0:
 		/* keine neue Eingabe */
 		return 0;
@@ -280,11 +280,11 @@ void gui_display(uint8_t screen) {
 #endif
 
 	/* weisse LED zeigt Tastendruck an */
-#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE && defined RC5_AVAILABLE
+#if defined LED_AVAILABLE && defined RC5_AVAILABLE
 	if (RC5_Code != 0) {
 		LED_on(LED_WEISS);
 	}
-#endif // LED_AVAILABLE && ! TEST_AVAILABLE && RC5_AVAILABLE
+#endif // LED_AVAILABLE && RC5_AVAILABLE
 
 	/* Gueltigkeit der Screen-Nr. pruefen und Anzeigefunktion aufrufen, falls Screen belegt ist */
 	if (screen < max_screens && screen_functions[screen] != NULL) {
@@ -318,9 +318,9 @@ void gui_display(uint8_t screen) {
 	}
 #endif // RC5_AVAILABLE
 
-#if defined LED_AVAILABLE && ! defined TEST_AVAILABLE && defined RC5_AVAILABLE
+#if defined LED_AVAILABLE && defined RC5_AVAILABLE
 	LED_off(LED_WEISS);
-#endif // LED_AVAILABLE && ! TEST_AVAILABLE && RC5_AVAILABLE
+#endif // LED_AVAILABLE && RC5_AVAILABLE
 }
 
 /*!

@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: global.h Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_a0fca93e65e0dd30a74a1e6addb2ee0e.html">include</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">global.h</div>  </div>
+</div>
+<div class="contents">
+<a href="global_8h.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00027"></a>00027 <span class="preprocessor">#ifndef GLOBAL_H_</span>
+<a name="l00028"></a>00028 <span class="preprocessor"></span><span class="preprocessor">#define GLOBAL_H_</span>
+<a name="l00029"></a>00029 <span class="preprocessor"></span>
+<a name="l00030"></a>00030 <span class="preprocessor">#ifndef __ASSEMBLER__</span>
+<a name="l00031"></a>00031 <span class="preprocessor"></span><span class="preprocessor">#ifdef __WIN32__</span>
+<a name="l00032"></a>00032 <span class="preprocessor"></span><span class="comment">/* Prototypes, die in den MinGW-Includes fehlen -&gt; keine Warnings */</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#include &lt;stddef.h&gt;</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include &lt;stdarg.h&gt;</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#ifndef _FILE_DEFINED</span>
+<a name="l00036"></a>00036 <span class="preprocessor"></span><span class="preprocessor">#define _FILE_DEFINED</span>
+<a name="l00037"></a>00037 <span class="preprocessor"></span><span class="keyword">typedef</span> <span class="keyword">struct </span>_iobuf {
+<a name="l00038"></a>00038     <span class="keywordtype">char</span> * _ptr;
+<a name="l00039"></a>00039     <span class="keywordtype">int</span> _cnt;
+<a name="l00040"></a>00040     <span class="keywordtype">char</span> * _base;
+<a name="l00041"></a>00041     <span class="keywordtype">int</span> _flag;
+<a name="l00042"></a>00042     <span class="keywordtype">int</span> _file;
+<a name="l00043"></a>00043     <span class="keywordtype">int</span> _charbuf;
+<a name="l00044"></a>00044     <span class="keywordtype">int</span> _bufsiz;
+<a name="l00045"></a>00045     <span class="keywordtype">char</span> * _tmpfname;
+<a name="l00046"></a>00046 } FILE;
+<a name="l00047"></a>00047 <span class="preprocessor">#endif // ! _FILE_DEFINED</span>
+<a name="l00048"></a>00048 <span class="preprocessor"></span>FILE * fopen64(<span class="keyword">const</span> <span class="keywordtype">char</span> *, <span class="keyword">const</span> <span class="keywordtype">char</span> *);
+<a name="l00049"></a>00049 <span class="keywordtype">long</span> <span class="keywordtype">long</span> ftello64 (FILE *);
+<a name="l00050"></a>00050 <span class="keywordtype">int</span> getc (FILE *);
+<a name="l00051"></a>00051 <span class="keywordtype">int</span> getchar (<span class="keywordtype">void</span>);
+<a name="l00052"></a>00052 <span class="keywordtype">int</span> putc (<span class="keywordtype">int</span>, FILE *);
+<a name="l00053"></a>00053 <span class="keywordtype">int</span> putchar(<span class="keywordtype">int</span>);
+<a name="l00054"></a>00054 <span class="preprocessor">#ifndef __VALIST</span>
+<a name="l00055"></a>00055 <span class="preprocessor"></span><span class="preprocessor">#define __VALIST __gnuc_va_list</span>
+<a name="l00056"></a>00056 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00057"></a>00057 <span class="preprocessor"></span><span class="keywordtype">int</span> vsnwprintf (<span class="keywordtype">wchar_t</span> *, <span class="keywordtype">size_t</span>, <span class="keyword">const</span> <span class="keywordtype">wchar_t</span> *, __VALIST);
+<a name="l00058"></a>00058 <span class="preprocessor">#endif // __WIN32__</span>
+<a name="l00059"></a>00059 <span class="preprocessor"></span>
+<a name="l00060"></a>00060 <span class="preprocessor">#include &lt;stdint.h&gt;</span>
+<a name="l00061"></a>00061 <span class="preprocessor">#include &lt;math.h&gt;</span>
+<a name="l00062"></a>00062 
+<a name="l00063"></a>00063 <span class="preprocessor">#ifndef MCU</span>
+<a name="l00064"></a>00064 <span class="preprocessor"></span><span class="preprocessor">#ifndef PC</span>
+<a name="l00065"></a>00065 <span class="preprocessor"></span><span class="preprocessor">#define PC</span>
+<a name="l00066"></a>00066 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00067"></a>00067 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00068"></a>00068 <span class="preprocessor"></span>
+<a name="l00069"></a>00069 <span class="preprocessor">#ifdef DOXYGEN</span>
+<a name="l00070"></a><a class="code" href="global_8h.html#a600721f0222b857dc8a3ae59e5077347">00070</a> <span class="preprocessor"></span><span class="preprocessor">#define PC</span>
+<a name="l00071"></a><a class="code" href="global_8h.html#abc4b095ebbdda642ee350f8e4ec0a994">00071</a> <span class="preprocessor"></span><span class="preprocessor">#define MCU</span>
+<a name="l00072"></a><a class="code" href="global_8h.html#a6402e8b8594280624585b8fd643bfb65">00072</a> <span class="preprocessor"></span><span class="preprocessor">#define WIN32</span>
+<a name="l00073"></a><a class="code" href="global_8h.html#a1b27e3508a4c1e97875297882a95f503">00073</a> <span class="preprocessor"></span><span class="preprocessor">#define __linux__</span>
+<a name="l00074"></a>00074 <span class="preprocessor"></span><span class="preprocessor">#endif // DOXYGEN</span>
+<a name="l00075"></a>00075 <span class="preprocessor"></span>
+<a name="l00076"></a><a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579">00076</a> <span class="preprocessor">#define True    1           </span>
+<a name="l00077"></a><a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8">00077</a> <span class="preprocessor">#define False   0           </span>
+<a name="l00079"></a><a class="code" href="global_8h.html#a880eb002423e7a6ef9b123386313d2b8">00079</a> <span class="preprocessor">#define On      1           </span>
+<a name="l00080"></a><a class="code" href="global_8h.html#adcf43c7a0c40bed25771dcd055a2e565">00080</a> <span class="preprocessor">#define Off     0           </span>
+<a name="l00082"></a>00082 <span class="preprocessor">#ifdef PC</span>
+<a name="l00083"></a>00083 <span class="preprocessor"></span><span class="preprocessor">#if defined WIN32</span>
+<a name="l00084"></a><a class="code" href="global_8h.html#a8782a401fbf55261460863fc2f8df1ce">00084</a> <span class="preprocessor"></span><span class="preprocessor">#define LITTLE_ENDIAN   1234</span>
+<a name="l00085"></a><a class="code" href="global_8h.html#a23eb5e058a210efdde3d64e69679fafa">00085</a> <span class="preprocessor"></span><span class="preprocessor">#define BIG_ENDIAN  4321</span>
+<a name="l00086"></a><a class="code" href="global_8h.html#a1771b7fb65ee640524d0052f229768c3">00086</a> <span class="preprocessor"></span><span class="preprocessor">#define BYTE_ORDER  LITTLE_ENDIAN</span>
+<a name="l00087"></a>00087 <span class="preprocessor"></span><span class="preprocessor">#elif defined __linux__</span>
+<a name="l00088"></a>00088 <span class="preprocessor"></span><span class="preprocessor">#include &lt;endian.h&gt;</span>
+<a name="l00089"></a>00089 <span class="preprocessor">#else</span>
+<a name="l00090"></a>00090 <span class="preprocessor"></span><span class="preprocessor">#include &lt;machine/endian.h&gt;</span>
+<a name="l00091"></a>00091 <span class="preprocessor">#endif // WIN32</span>
+<a name="l00092"></a>00092 <span class="preprocessor"></span><span class="preprocessor">#endif // PC</span>
+<a name="l00093"></a>00093 <span class="preprocessor"></span>
+<a name="l00094"></a><a class="code" href="global_8h.html#a086eb0a879435e3749b313894e1845b8">00094</a> <span class="preprocessor">#define binary(var, bit) ((var &gt;&gt; bit) &amp; 1) </span>
+<a name="l00096"></a>00096 <span class="preprocessor">#ifdef WIN32</span>
+<a name="l00097"></a><a class="code" href="global_8h.html#a3c2cad5489953de23c5733e6e696a93e">00097</a> <span class="preprocessor"></span><span class="preprocessor">#define LINE_FEED &quot;\r\n&quot;    </span>
+<a name="l00098"></a>00098 <span class="preprocessor">#else</span>
+<a name="l00099"></a>00099 <span class="preprocessor"></span><span class="preprocessor">#define LINE_FEED &quot;\n&quot;      </span>
+<a name="l00100"></a>00100 <span class="preprocessor">#endif</span>
+<a name="l00101"></a>00101 <span class="preprocessor"></span>
+<a name="l00102"></a>00102 <span class="preprocessor">#ifdef MCU</span>
+<a name="l00103"></a>00103 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="builtins_8h.html" title="Compiler-Builtins mit Fallback fuer aeltere avr-libc Versionen.">builtins.h</a>&quot;</span>
+<a name="l00104"></a>00104 
+<a name="l00105"></a>00105 <span class="preprocessor">#include &lt;avr/interrupt.h&gt;</span>
+<a name="l00106"></a>00106 <span class="preprocessor">#ifdef SIGNAL</span>
+<a name="l00107"></a>00107 <span class="preprocessor"></span><span class="preprocessor">#define NEW_AVR_LIB </span>
+<a name="l00108"></a>00108 <span class="preprocessor">#else // ! SIGNAL</span>
+<a name="l00109"></a>00109 <span class="preprocessor"></span><span class="preprocessor">#include &lt;avr/signal.h&gt;</span>
+<a name="l00110"></a>00110 <span class="preprocessor">#endif // SIGNAL</span>
+<a name="l00111"></a>00111 <span class="preprocessor"></span>
+<a name="l00112"></a>00112 <span class="preprocessor">#if defined __AVR_ATmega644__ || defined __AVR_ATmega644P__</span>
+<a name="l00113"></a>00113 <span class="preprocessor"></span><span class="preprocessor">#define MCU_ATMEGA644X </span>
+<a name="l00114"></a>00114 <span class="preprocessor">#endif</span>
+<a name="l00115"></a>00115 <span class="preprocessor"></span><span class="preprocessor">#endif // MCU</span>
+<a name="l00116"></a>00116 <span class="preprocessor"></span>
+<a name="l00117"></a>00117 <span class="preprocessor">#ifndef DOXYGEN</span>
+<a name="l00118"></a>00118 <span class="preprocessor"></span><span class="preprocessor">#define PACKED __attribute__ ((packed)) </span>
+<a name="l00119"></a>00119 <span class="preprocessor">#else</span>
+<a name="l00120"></a><a class="code" href="global_8h.html#a36d525cf4d116b2fe4ecc00222b256f1">00120</a> <span class="preprocessor"></span><span class="preprocessor">#define PACKED</span>
+<a name="l00121"></a>00121 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00122"></a>00122 <span class="preprocessor"></span>
+<a name="l00123"></a>00123 <span class="preprocessor">#ifdef MCU</span>
+<a name="l00124"></a>00124 <span class="preprocessor"></span><span class="preprocessor">#include &lt;avr/pgmspace.h&gt;</span>
+<a name="l00125"></a>00125 <span class="preprocessor">#else // PC</span>
+<a name="l00126"></a>00126 <span class="preprocessor"></span><span class="preprocessor">#include &lt;string.h&gt;</span>
+<a name="l00127"></a>00127 <span class="preprocessor">#define PROGMEM </span>
+<a name="l00128"></a>00128 <span class="preprocessor">#define PGM_P const char * </span>
+<a name="l00129"></a>00129 <span class="preprocessor">#define strcmp_P strcmp </span>
+<a name="l00130"></a>00130 <span class="preprocessor">#define strcasecmp_P strcasecmp </span>
+<a name="l00131"></a>00131 <span class="preprocessor">#define strncasecmp_P strncasecmp </span>
+<a name="l00132"></a>00132 <span class="preprocessor">#define strchr_P strchr </span>
+<a name="l00133"></a>00133 <span class="preprocessor">#define strlen_P strlen </span>
+<a name="l00134"></a>00134 <span class="preprocessor">#define memcpy_P memcpy </span>
+<a name="l00135"></a>00135 <span class="preprocessor">#define strncpy_P strncpy </span>
+<a name="l00136"></a>00136 <span class="preprocessor">#define snprintf_P snprintf </span>
+<a name="l00137"></a>00137 <span class="preprocessor">#define vsnprintf_P vsnprintf </span>
+<a name="l00138"></a>00138 <span class="preprocessor">#define pgm_read_byte(_addr) (*(_addr)) </span>
+<a name="l00139"></a>00139 <span class="preprocessor">#define pgm_read_word(_addr) (*(_addr)) </span>
+<a name="l00140"></a>00140 <span class="preprocessor">#define display_flash_puts display_puts </span>
+<a name="l00141"></a>00141 <span class="preprocessor">#endif // MCU</span>
+<a name="l00142"></a>00142 <span class="preprocessor"></span>
+<a name="l00144"></a>00144 <span class="keyword">typedef</span> <span class="keyword">struct </span>{
+<a name="l00145"></a><a class="code" href="structPACKED.html#ac8974db6586ef932cdb70333e63f0d90">00145</a>     int16_t <a class="code" href="structPACKED.html#ac8974db6586ef932cdb70333e63f0d90" title="X-Anteil der Position.">x</a>; 
+<a name="l00146"></a><a class="code" href="structPACKED.html#a4c375797112f9520d770e1df55a45c41">00146</a>     int16_t <a class="code" href="structPACKED.html#a4c375797112f9520d770e1df55a45c41" title="Y-Anteil der Position.">y</a>; 
+<a name="l00147"></a>00147 } <a class="code" href="structPACKED.html" title="FAT.">PACKED</a> position_t;
+<a name="l00148"></a>00148 
+<a name="l00150"></a>00150 <span class="keyword">typedef</span> <span class="keyword">union </span>{
+<a name="l00151"></a><a class="code" href="structPACKED.html#adbdd4ad151b25d7eab6fb7b269eb5577">00151</a>     uint8_t <a class="code" href="structPACKED.html#adbdd4ad151b25d7eab6fb7b269eb5577">byte</a>;
+<a name="l00152"></a><a class="code" href="structPACKED.html#a833f444ac80ddbe25173e345d26d86e5">00152</a>     <span class="keywordtype">unsigned</span> bit:1;
+<a name="l00153"></a>00153 } <a class="code" href="structPACKED.html" title="FAT.">PACKED</a> bit_t;
+<a name="l00154"></a>00154 
+<a name="l00155"></a>00155 <span class="preprocessor">#ifndef M_PI</span>
+<a name="l00156"></a><a class="code" href="global_8h.html#ae71449b1cc6e6250b91f539153a7a0d3">00156</a> <span class="preprocessor"></span><span class="preprocessor">#define M_PI 3.14159265358979323846 </span>
+<a name="l00157"></a>00157 <span class="preprocessor">#endif</span>
+<a name="l00158"></a>00158 <span class="preprocessor"></span><span class="preprocessor">#ifndef M_PI_2</span>
+<a name="l00159"></a><a class="code" href="global_8h.html#a958e4508ed28ee5cc04249144312c15f">00159</a> <span class="preprocessor"></span><span class="preprocessor">#define M_PI_2  (M_PI / 2.0) </span>
+<a name="l00160"></a>00160 <span class="preprocessor">#endif</span>
+<a name="l00161"></a>00161 <span class="preprocessor"></span>
+<a name="l00162"></a>00162 <span class="preprocessor">#else // __ASSEMBLER__</span>
+<a name="l00163"></a>00163 <span class="preprocessor"></span>
+<a name="l00164"></a>00164 <span class="preprocessor">#if defined __APPLE__ || defined __linux__ || defined __WIN32__</span>
+<a name="l00165"></a>00165 <span class="preprocessor"></span><span class="preprocessor">#ifndef PC</span>
+<a name="l00166"></a>00166 <span class="preprocessor"></span><span class="preprocessor">#define PC</span>
+<a name="l00167"></a>00167 <span class="preprocessor"></span><span class="preprocessor">#endif // PC</span>
+<a name="l00168"></a>00168 <span class="preprocessor"></span><span class="preprocessor">#endif // Plattform</span>
+<a name="l00169"></a>00169 <span class="preprocessor"></span>
+<a name="l00170"></a>00170 <span class="preprocessor">#endif // ! __ASSEMBLER__</span>
+<a name="l00171"></a>00171 <span class="preprocessor"></span><span class="preprocessor">#endif // GLOBAL_H_</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:04 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>
