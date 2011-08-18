@@ -1186,9 +1186,7 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="ct-Bot.cdt.managedbuild.target.gnu.exe.449611534" name="Executable (Gnu)" projectType="cdt.managedbuild.target.gnu.exe"/>
 	</storageModule>
-	<storageModule moduleId="refreshScope" versionNumber="1">
-		<resource resourceType="PROJECT" workspacePath="/ct-Bot-ts"/>
-	</storageModule>
+	<storageModule moduleId="refreshScope" versionNumber="1"/>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings">
 		<doc-comment-owner id="org.eclipse.cdt.ui.doxygen">
 			<path value=""/>
