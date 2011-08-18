@@ -1,0 +1,666 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: behaviour_solve_maze.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">behaviour_solve_maze.c</div>  </div>
+</div>
+<div class="contents">
+<a href="behaviour__solve__maze_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00027"></a>00027 <span class="preprocessor">#include &quot;<a class="code" href="bot-logic_8h.html" title="High-Level-Routinen fuer die Steuerung des c&#39;t-Bots.">bot-logic/bot-logic.h</a>&quot;</span>
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 <span class="preprocessor">#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE</span>
+<a name="l00030"></a>00030 <span class="preprocessor"></span><span class="preprocessor">#include &lt;math.h&gt;</span>
+<a name="l00031"></a>00031 <span class="preprocessor">#include &lt;stdlib.h&gt;</span>
+<a name="l00032"></a>00032 <span class="preprocessor">#include &quot;<a class="code" href="log_8h.html" title="Routinen zum Loggen von Informationen.">log.h</a>&quot;</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#include &quot;<a class="code" href="timer_8h.html" title="Timer und Zaehler.">timer.h</a>&quot;</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include &quot;<a class="code" href="math__utils_8h.html" title="Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig.">math_utils.h</a>&quot;</span>
+<a name="l00035"></a>00035 
+<a name="l00036"></a>00036 <span class="comment">/* Parameter fuer das check_wall_behaviour() */</span>
+<a name="l00037"></a>00037 <span class="keyword">static</span> int8_t wall_detected = 0;    
+<a name="l00038"></a>00038 <span class="keyword">static</span> int8_t check_direction = 0;  
+<a name="l00039"></a>00039 <span class="keyword">static</span> int16_t wall_distance = 0;   
+<a name="l00040"></a>00040 <span class="keyword">static</span> int8_t checkState = 0;       
+<a name="l00043"></a>00043 <span class="comment">/* Konstanten fuer check_wall_behaviour-Verhalten */</span>
+<a name="l00044"></a><a class="code" href="behaviour__solve__maze_8c.html#a9662aac30a48bd2b39089505c35dfa03">00044</a> <span class="preprocessor">#define CHECK_WALL_RIGHT            0</span>
+<a name="l00045"></a><a class="code" href="behaviour__solve__maze_8c.html#a7401760d24e78bcb24c838406f0eeab6">00045</a> <span class="preprocessor"></span><span class="preprocessor">#define CHECK_WALL_LEFT             1</span>
+<a name="l00046"></a>00046 <span class="preprocessor"></span>
+<a name="l00047"></a>00047 <span class="comment">/* Parameter fuer das measure_angle_behaviour() */</span>
+<a name="l00048"></a>00048 <span class="keyword">static</span> int8_t measure_direction;        
+<a name="l00049"></a>00049 <span class="keyword">static</span> int16_t measure_distance;        
+<a name="l00050"></a>00050 <span class="keyword">static</span> int16_t measured_angle;          
+<a name="l00051"></a>00051 <span class="preprocessor">#ifdef MEASURE_MOUSE_AVAILABLE</span>
+<a name="l00052"></a>00052 <span class="preprocessor"></span><span class="keyword">static</span> int16_t start_heading;       
+<a name="l00053"></a>00053 <span class="preprocessor">#else</span>
+<a name="l00054"></a>00054 <span class="preprocessor"></span><span class="keyword">static</span> int16_t startEncL;           
+<a name="l00055"></a>00055 <span class="keyword">static</span> int16_t startEncR;           
+<a name="l00056"></a>00056 <span class="preprocessor">#endif</span>
+<a name="l00057"></a>00057 <span class="preprocessor"></span><span class="comment">/* Konstanten fuer measure_angle_behaviour-Verhalten */</span>
+<a name="l00058"></a><a class="code" href="behaviour__solve__maze_8c.html#a3c50fa7db5eaaf424bd933f177693dea">00058</a> <span class="preprocessor">#define MEASURE_LEFT                1</span>
+<a name="l00059"></a><a class="code" href="behaviour__solve__maze_8c.html#a3eb09f2f54d67b857bfb79ae4ecb2864">00059</a> <span class="preprocessor"></span><span class="preprocessor">#define MEASURE_RIGHT               -1</span>
+<a name="l00060"></a>00060 <span class="preprocessor"></span>
+<a name="l00061"></a>00061 
+<a name="l00069"></a><a class="code" href="behaviour__solve__maze_8h.html#a01d88ed92b0fa7e500fb764dc7cf6351">00069</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__solve__maze_8c.html#a01d88ed92b0fa7e500fb764dc7cf6351">bot_check_wall_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00070"></a>00070     <span class="comment">/* Konstantenfuer check_wall_behaviour-Verhalten */</span>
+<a name="l00071"></a>00071 <span class="preprocessor">    #define CORRECT_NEAR                0</span>
+<a name="l00072"></a>00072 <span class="preprocessor"></span><span class="preprocessor">    #define CORRECT_NONE                1</span>
+<a name="l00073"></a>00073 <span class="preprocessor"></span><span class="preprocessor">    #define CORRECT_FAR                 2</span>
+<a name="l00074"></a>00074 <span class="preprocessor"></span>    <span class="comment">/* Zustaende fuer check_wall_behaviour-Verhalten */</span>
+<a name="l00075"></a>00075 <span class="preprocessor">    #define CHECK_WALL_TURN             0</span>
+<a name="l00076"></a>00076 <span class="preprocessor"></span><span class="preprocessor">    #define CHECK_WALL_SENS             1</span>
+<a name="l00077"></a>00077 <span class="preprocessor"></span><span class="preprocessor">    #define CHECK_WALL_TURN_BACK        2</span>
+<a name="l00078"></a>00078 <span class="preprocessor"></span><span class="preprocessor">    #define CHECK_WALL_FINISHED         3</span>
+<a name="l00079"></a>00079 <span class="preprocessor"></span><span class="preprocessor">    #define CHECK_WALL_CORRECT          4</span>
+<a name="l00080"></a>00080 <span class="preprocessor"></span>
+<a name="l00081"></a>00081     <span class="keyword">static</span> int8_t correctDistance = <a class="code" href="behaviour__solve__maze_8c.html#a18cfa134a0dda0cce6090df75c9ad495">CORRECT_NONE</a>;
+<a name="l00082"></a>00082     <span class="comment">/* letzte, gueltige Distanz fuer Abweichungsberechnung */</span>
+<a name="l00083"></a>00083     <span class="keyword">static</span> int16_t lastDistance = 0;
+<a name="l00084"></a>00084     <span class="comment">/* enthaelt anzahl der +/-5 identischen Messungen */</span>
+<a name="l00085"></a>00085     <span class="keyword">static</span> int8_t measureCount = 0;
+<a name="l00086"></a>00086     <span class="comment">/* letzter Messwert */</span>
+<a name="l00087"></a>00087     <span class="keyword">static</span> int16_t lastSensor = 0;
+<a name="l00088"></a>00088 
+<a name="l00089"></a>00089     int16_t sensor; 
+<a name="l00091"></a>00091     <span class="keywordflow">switch</span>(checkState) {
+<a name="l00092"></a>00092         <span class="keywordflow">case</span> <a class="code" href="behaviour__follow__wall_8c.html#a2377ddeab07c7bfd3e616a6b90129add">CHECK_WALL_TURN</a>:
+<a name="l00093"></a>00093             <span class="comment">/* haben wir links oder rechts eine Wand? */</span>
+<a name="l00094"></a>00094             <span class="keywordflow">if</span> (check_direction == <a class="code" href="behaviour__solve__maze_8c.html#a7401760d24e78bcb24c838406f0eeab6">CHECK_WALL_LEFT</a>) {
+<a name="l00095"></a>00095                 checkState = <a class="code" href="behaviour__solve__maze_8c.html#af097a8cccbf4ed400593e6c40372c15e">CHECK_WALL_SENS</a>;
+<a name="l00096"></a>00096                 <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data,45);
+<a name="l00097"></a>00097                 <span class="keywordflow">break</span>;
+<a name="l00098"></a>00098             } <span class="keywordflow">else</span> {
+<a name="l00099"></a>00099                 checkState = <a class="code" href="behaviour__solve__maze_8c.html#af097a8cccbf4ed400593e6c40372c15e">CHECK_WALL_SENS</a>;
+<a name="l00100"></a>00100                 <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data,-45);
+<a name="l00101"></a>00101                 <span class="keywordflow">break</span>;
+<a name="l00102"></a>00102             }
+<a name="l00103"></a>00103 
+<a name="l00104"></a>00104         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#af097a8cccbf4ed400593e6c40372c15e">CHECK_WALL_SENS</a>:
+<a name="l00105"></a>00105             <span class="keywordflow">if</span> (check_direction == <a class="code" href="behaviour__solve__maze_8c.html#a7401760d24e78bcb24c838406f0eeab6">CHECK_WALL_LEFT</a>) {
+<a name="l00106"></a>00106                 sensor = <a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a>;
+<a name="l00107"></a>00107             } <span class="keywordflow">else</span> {
+<a name="l00108"></a>00108                 sensor = <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a>;
+<a name="l00109"></a>00109             }
+<a name="l00110"></a>00110             <span class="comment">/* dafuer sorgen, dass wir nur verlaessliche Werte haben</span>
+<a name="l00111"></a>00111 <span class="comment">             * dazu muss der wert dreimal nacheinander max. um +/- 5</span>
+<a name="l00112"></a>00112 <span class="comment">             * unterschiedlich sein */</span>
+<a name="l00113"></a>00113              <span class="keywordflow">if</span> (measureCount == 0) {
+<a name="l00114"></a>00114             <span class="comment">//  old_ms=TIMER_GET_TICKCOUNT_16;</span>
+<a name="l00115"></a>00115                 lastSensor = sensor;
+<a name="l00116"></a>00116                 measureCount++;
+<a name="l00117"></a>00117                 <a class="code" href="behaviour__delay_8h.html#aa36f8d6a5e673163f7f8dfcb5a984ced">bot_delay</a>(data, 50);    <span class="comment">// 50 ms nix tun</span>
+<a name="l00118"></a>00118                 <span class="keywordflow">break</span>;
+<a name="l00119"></a>00119              }
+<a name="l00120"></a>00120              <span class="comment">//if (!timer_ms_passed_16(&amp;old_ms, 50)) break; // 50 ms nix tun</span>
+<a name="l00121"></a>00121 
+<a name="l00122"></a>00122              <span class="keywordflow">if</span> (sensor &gt;= lastSensor - 5 &amp;&amp; sensor &lt;= lastSensor + 5 &amp;&amp; measureCount &lt; 4) {
+<a name="l00123"></a>00123                 <span class="comment">/* Messwert ist ok */</span>
+<a name="l00124"></a>00124                 measureCount++;
+<a name="l00125"></a>00125                 <a class="code" href="behaviour__delay_8h.html#aa36f8d6a5e673163f7f8dfcb5a984ced">bot_delay</a>(data, 50);    <span class="comment">// 50 ms nix tun</span>
+<a name="l00126"></a>00126                 <span class="keywordflow">break</span>;
+<a name="l00127"></a>00127              } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (measureCount &lt; 4) {
+<a name="l00128"></a>00128                 <span class="comment">/* Messwert weicht zu doll ab -&gt; von Neuem messen */</span>
+<a name="l00129"></a>00129                 measureCount = 0;
+<a name="l00130"></a>00130                 <a class="code" href="behaviour__delay_8h.html#aa36f8d6a5e673163f7f8dfcb5a984ced">bot_delay</a>(data, 50);    <span class="comment">// 50 ms nix tun</span>
+<a name="l00131"></a>00131                 <span class="keywordflow">break</span>;
+<a name="l00132"></a>00132              }
+<a name="l00133"></a>00133              <span class="comment">//old_ms=TIMER_GET_TICKCOUNT_16;</span>
+<a name="l00134"></a>00134              measureCount = 0;
+<a name="l00135"></a>00135              <span class="comment">/* ok, wir hatten drei Messungen mit nahezu identischen Werten */</span>
+<a name="l00136"></a>00136             <span class="comment">/* keine wand in eingestellter Maximalentfernung? */</span>
+<a name="l00137"></a>00137             <span class="keywordflow">if</span> (sensor &gt; <a class="code" href="bot-local_8h.html#a47c55c5285044abc8ea183cb1c6c3cda">IGNORE_DISTANCE</a>) {
+<a name="l00138"></a>00138                 correctDistance = <a class="code" href="behaviour__solve__maze_8c.html#a18cfa134a0dda0cce6090df75c9ad495">CORRECT_NONE</a>; <span class="comment">/* dann auch keine Korrektur */</span>
+<a name="l00139"></a>00139                 lastDistance = 0;                 <span class="comment">/* auch kein Vergleichswert */</span>
+<a name="l00140"></a>00140                 wall_detected = <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;        <span class="comment">/* keine Wand da */</span>
+<a name="l00141"></a>00141             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (sensor &lt; <a class="code" href="bot-local_8h.html#a39087ac25e2bcfaa5fd5abdfab91bd25">OPTIMAL_DISTANCE</a> - <a class="code" href="bot-local_8h.html#a59009a8e6441510ac95e93b4e246ede9">ADJUST_DISTANCE</a>) {
+<a name="l00142"></a>00142                 <span class="comment">/* bot hat den falschen Abstand zur Wand, zu nah dran */</span>
+<a name="l00143"></a>00143                 wall_detected = <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00144"></a>00144                 correctDistance = <a class="code" href="behaviour__solve__maze_8c.html#a3e2a14017c6df5f0244127c54cdff065">CORRECT_NEAR</a>;
+<a name="l00145"></a>00145             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (sensor &gt; <a class="code" href="bot-local_8h.html#a39087ac25e2bcfaa5fd5abdfab91bd25">OPTIMAL_DISTANCE</a> + <a class="code" href="bot-local_8h.html#a59009a8e6441510ac95e93b4e246ede9">ADJUST_DISTANCE</a>) {
+<a name="l00146"></a>00146                 <span class="comment">/* bot hat den falschen Abstand zur Wand, zu weit weg */</span>
+<a name="l00147"></a>00147                 wall_detected = <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00148"></a>00148                 correctDistance = <a class="code" href="behaviour__solve__maze_8c.html#a9581913415636c33c78a4bed8f5702b7">CORRECT_FAR</a>;
+<a name="l00149"></a>00149             } <span class="keywordflow">else</span> {
+<a name="l00150"></a>00150                 <span class="comment">/* perfekter Abstand */</span>
+<a name="l00151"></a>00151                 correctDistance = <a class="code" href="behaviour__solve__maze_8c.html#a18cfa134a0dda0cce6090df75c9ad495">CORRECT_NONE</a>;
+<a name="l00152"></a>00152                 wall_detected = <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00153"></a>00153             }
+<a name="l00154"></a>00154             wall_distance = sensor;
+<a name="l00155"></a>00155             <span class="comment">/* Wenn Korrektur noetig, dann durchfuehren, sonst gleich zurueckdrehen */</span>
+<a name="l00156"></a>00156             <span class="keywordflow">if</span> (correctDistance == <a class="code" href="behaviour__solve__maze_8c.html#a18cfa134a0dda0cce6090df75c9ad495">CORRECT_NONE</a>) checkState = <a class="code" href="behaviour__solve__maze_8c.html#a50c35fbe480d603eb24bfd31e5af5e45">CHECK_WALL_TURN_BACK</a>;
+<a name="l00157"></a>00157             <span class="keywordflow">else</span> checkState = <a class="code" href="behaviour__solve__maze_8c.html#acaaf94bce57f8b45c9b78544d4266c5a">CHECK_WALL_CORRECT</a>;
+<a name="l00158"></a>00158             <span class="keywordflow">break</span>;
+<a name="l00159"></a>00159 
+<a name="l00160"></a>00160 
+<a name="l00161"></a>00161         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#a50c35fbe480d603eb24bfd31e5af5e45">CHECK_WALL_TURN_BACK</a>:
+<a name="l00162"></a>00162             checkState = <a class="code" href="behaviour__solve__maze_8c.html#a53d5dccc7d6dbaa63a31c66d1e243313">CHECK_WALL_FINISHED</a>;
+<a name="l00163"></a>00163             int16_t turnAngle = 45;
+<a name="l00164"></a>00164 
+<a name="l00165"></a>00165             <span class="comment">/* welcher Sensorwert wird gebraucht? */</span>
+<a name="l00166"></a>00166             <span class="keywordflow">if</span> (check_direction == <a class="code" href="behaviour__solve__maze_8c.html#a7401760d24e78bcb24c838406f0eeab6">CHECK_WALL_LEFT</a>) {
+<a name="l00167"></a>00167                 sensor = <a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a>;
+<a name="l00168"></a>00168             } <span class="keywordflow">else</span> {
+<a name="l00169"></a>00169                 sensor = <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a>;
+<a name="l00170"></a>00170             }
+<a name="l00171"></a>00171             <span class="comment">/* wenn vorhanden, aus letztem Abstand und aktuellem Abstand</span>
+<a name="l00172"></a>00172 <span class="comment">             * Korrekturwinkel berechnen, falls vorheriger Abstand da.</span>
+<a name="l00173"></a>00173 <span class="comment">             * wird durch Abstand&gt;IGNORE_DISTANCE zurueckgesetzt */</span>
+<a name="l00174"></a>00174             <span class="keywordflow">if</span> (lastDistance != 0) {
+<a name="l00175"></a>00175                 turnAngle = turnAngle + (lastDistance - wall_distance) / 10;
+<a name="l00176"></a>00176             }
+<a name="l00177"></a>00177             <span class="keywordflow">if</span> (sensor &lt; <a class="code" href="bot-local_8h.html#a47c55c5285044abc8ea183cb1c6c3cda">IGNORE_DISTANCE</a>) lastDistance=sensor;
+<a name="l00178"></a>00178             <span class="keywordflow">if</span> (check_direction == <a class="code" href="behaviour__solve__maze_8c.html#a7401760d24e78bcb24c838406f0eeab6">CHECK_WALL_LEFT</a>) {
+<a name="l00179"></a>00179                 <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, -turnAngle);
+<a name="l00180"></a>00180             } <span class="keywordflow">else</span> {
+<a name="l00181"></a>00181                 <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, turnAngle);
+<a name="l00182"></a>00182             }
+<a name="l00183"></a>00183             <span class="keywordflow">break</span>;
+<a name="l00184"></a>00184 
+<a name="l00185"></a>00185         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#a53d5dccc7d6dbaa63a31c66d1e243313">CHECK_WALL_FINISHED</a>:
+<a name="l00186"></a>00186             <span class="comment">/* ok, Check beendet -&gt; Verhalten verlassen */</span>
+<a name="l00187"></a>00187             checkState = <a class="code" href="behaviour__follow__wall_8c.html#a2377ddeab07c7bfd3e616a6b90129add">CHECK_WALL_TURN</a>;
+<a name="l00188"></a>00188             return_from_behaviour(data);
+<a name="l00189"></a>00189             <span class="keywordflow">break</span>;
+<a name="l00190"></a>00190 
+<a name="l00191"></a>00191         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#acaaf94bce57f8b45c9b78544d4266c5a">CHECK_WALL_CORRECT</a>:
+<a name="l00192"></a>00192             <span class="comment">/* Abhaengig von der Seite, auf der die Wand ist, Entfernung korrigieren */</span>
+<a name="l00193"></a>00193             <span class="keywordflow">if</span> (check_direction == <a class="code" href="behaviour__solve__maze_8c.html#a7401760d24e78bcb24c838406f0eeab6">CHECK_WALL_LEFT</a>) {
+<a name="l00194"></a>00194                 sensor = <a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a>;
+<a name="l00195"></a>00195             } <span class="keywordflow">else</span> {
+<a name="l00196"></a>00196                 sensor = <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a>;
+<a name="l00197"></a>00197             }
+<a name="l00198"></a>00198             <span class="keywordflow">if</span> (sensor - <a class="code" href="bot-local_8h.html#a39087ac25e2bcfaa5fd5abdfab91bd25">OPTIMAL_DISTANCE</a> + <a class="code" href="bot-local_8h.html#a59009a8e6441510ac95e93b4e246ede9">ADJUST_DISTANCE</a> &lt; 0) {
+<a name="l00199"></a>00199                 <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = -<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00200"></a>00200                 <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = -<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00201"></a>00201             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (sensor - <a class="code" href="bot-local_8h.html#a39087ac25e2bcfaa5fd5abdfab91bd25">OPTIMAL_DISTANCE</a> - <a class="code" href="bot-local_8h.html#a59009a8e6441510ac95e93b4e246ede9">ADJUST_DISTANCE</a> &gt; 0) {
+<a name="l00202"></a>00202                 <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00203"></a>00203                 <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00204"></a>00204             }
+<a name="l00205"></a>00205             <span class="keywordflow">else</span> {
+<a name="l00206"></a>00206                 checkState = <a class="code" href="behaviour__solve__maze_8c.html#a50c35fbe480d603eb24bfd31e5af5e45">CHECK_WALL_TURN_BACK</a>;
+<a name="l00207"></a>00207                 <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00208"></a>00208                 <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00209"></a>00209             }
+<a name="l00210"></a>00210             <span class="keywordflow">break</span>;
+<a name="l00211"></a>00211 
+<a name="l00212"></a>00212         <span class="keywordflow">default</span>:
+<a name="l00213"></a>00213             checkState = <a class="code" href="behaviour__follow__wall_8c.html#a2377ddeab07c7bfd3e616a6b90129add">CHECK_WALL_TURN</a>;
+<a name="l00214"></a>00214             return_from_behaviour(data);
+<a name="l00215"></a>00215             <span class="keywordflow">break</span>;
+<a name="l00216"></a>00216     }
+<a name="l00217"></a>00217 }
+<a name="l00218"></a>00218 
+<a name="l00219"></a>00219 
+<a name="l00228"></a>00228 <span class="keyword">static</span> <span class="keywordtype">void</span> bot_check_wall(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller, int8_t <a class="code" href="motor_8c.html#a96703dcd865ea4cfb315cab528b061d8" title="Drehrichtung der Motoren, auch wenn die Speed-Variablen bereits wieder auf Null sind.">direction</a>) {
+<a name="l00229"></a>00229     check_direction = <a class="code" href="motor_8c.html#a96703dcd865ea4cfb315cab528b061d8" title="Drehrichtung der Motoren, auch wenn die Speed-Variablen bereits wieder auf Null sind.">direction</a>;
+<a name="l00230"></a>00230     wall_detected = <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00231"></a>00231     checkState = <a class="code" href="behaviour__follow__wall_8c.html#a2377ddeab07c7bfd3e616a6b90129add">CHECK_WALL_TURN</a>;
+<a name="l00232"></a>00232     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__solve__maze_8c.html#a01d88ed92b0fa7e500fb764dc7cf6351">bot_check_wall_behaviour</a>, <a class="code" href="bot-logic_8h.html#a59191cd512c3376a23c8a7d259a1e111" title="Konstanten, wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen.">BEHAVIOUR_NOOVERRIDE</a>);
+<a name="l00233"></a>00233 }
+<a name="l00234"></a>00234 
+<a name="l00235"></a>00235 <span class="keyword">static</span> int8_t measureState = 0; 
+<a name="l00237"></a>00237 <span class="preprocessor">#ifdef MEASURE_MOUSE_AVAILABLE</span>
+<a name="l00238"></a>00238 <span class="preprocessor"></span><span class="keyword">static</span> int8_t measureCount = 0; 
+<a name="l00246"></a><a class="code" href="behaviour__solve__maze_8h.html#a5c8d6fcdce721e07cbe185890522a395">00246</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__solve__maze_8c.html#a5c8d6fcdce721e07cbe185890522a395">bot_measure_angle_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00247"></a>00247     <span class="comment">/* Zustaende measure_angle_behaviour-Verhalten */</span>
+<a name="l00248"></a>00248 <span class="preprocessor">    #define MEASURE_TURN                0</span>
+<a name="l00249"></a>00249 <span class="preprocessor"></span><span class="preprocessor">    #define FOUND_OBSTACLE              1</span>
+<a name="l00250"></a>00250 <span class="preprocessor"></span><span class="preprocessor">    #define MEASUREMENT_DONE            2</span>
+<a name="l00251"></a>00251 <span class="preprocessor"></span>
+<a name="l00252"></a>00252     <span class="comment">/* letzter Messwert */</span>
+<a name="l00253"></a>00253     <span class="keyword">static</span> int16_t lastSensor=0;
+<a name="l00254"></a>00254 
+<a name="l00255"></a>00255     <span class="comment">/* bereits gedrehten Winkel */</span>
+<a name="l00256"></a>00256     int16_t <a class="code" href="math__utils_8c.html#a9c14e14c49d54828861673702c30eeed" title="Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung.">turned_angle</a> = 0;
+<a name="l00257"></a>00257     <span class="keywordflow">if</span> (measure_direction &gt; 0) {
+<a name="l00258"></a>00258         <span class="keywordflow">if</span> ((int16_t) <a class="code" href="sensor_8c.html#afe11ed1b60135e873bb810ab6d513f98">heading_mou</a> &lt; start_heading) {
+<a name="l00259"></a>00259             <span class="comment">/* war ein Ueberlauf */</span>
+<a name="l00260"></a>00260             turned_angle  =360 - start_heading + (int16_t) <a class="code" href="sensor_8c.html#afe11ed1b60135e873bb810ab6d513f98">heading_mou</a>;
+<a name="l00261"></a>00261         } <span class="keywordflow">else</span> {
+<a name="l00262"></a>00262             <span class="comment">/* sonst normale Differenz berechnen */</span>
+<a name="l00263"></a>00263             turned_angle = (int16_t) <a class="code" href="sensor_8c.html#afe11ed1b60135e873bb810ab6d513f98">heading_mou</a> - start_heading;
+<a name="l00264"></a>00264         }
+<a name="l00265"></a>00265     } <span class="keywordflow">else</span> {
+<a name="l00266"></a>00266         <span class="keywordflow">if</span> ((int16_t) <a class="code" href="sensor_8c.html#afe11ed1b60135e873bb810ab6d513f98">heading_mou</a> &gt; start_heading) {
+<a name="l00267"></a>00267             <span class="comment">/* war ein Ueberlauf */</span>
+<a name="l00268"></a>00268             turned_angle = 360 - (int16_t) <a class="code" href="sensor_8c.html#afe11ed1b60135e873bb810ab6d513f98">heading_mou</a> + start_heading;
+<a name="l00269"></a>00269         } <span class="keywordflow">else</span> {
+<a name="l00270"></a>00270             turned_angle = start_heading - (int16_t) <a class="code" href="sensor_8c.html#afe11ed1b60135e873bb810ab6d513f98">heading_mou</a>;
+<a name="l00271"></a>00271         }
+<a name="l00272"></a>00272     }
+<a name="l00273"></a>00273 
+<a name="l00274"></a>00274     <span class="comment">/* Sensorwert abhaengig von der Drehrichtung abnehmen */</span>
+<a name="l00275"></a>00275     int16_t sensor = (measure_direction == <a class="code" href="behaviour__solve__maze_8c.html#a3c50fa7db5eaaf424bd933f177693dea">MEASURE_LEFT</a>) ? <a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> : <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a>;
+<a name="l00276"></a>00276     <span class="comment">/* solange drehen, bis Hindernis innerhalb Messstrecke oder 360 Grad komplett */</span>
+<a name="l00277"></a>00277     <span class="keywordflow">switch</span>(measureState) {
+<a name="l00278"></a>00278         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#aa8f3b6916339962a10c2c2cd77127dc7">MEASURE_TURN</a>:
+<a name="l00279"></a>00279             <span class="comment">/* nicht mehr als eine komplette Drehung machen! */</span>
+<a name="l00280"></a>00280             <span class="keywordflow">if</span> (turned_angle &gt;= 360) {
+<a name="l00281"></a>00281                 measure_direction = (int8_t) (-measure_direction);
+<a name="l00282"></a>00282                 measureState = <a class="code" href="behaviour__solve__maze_8c.html#a1f2794ae2cb480906dfca72dfc665756">MEASUREMENT_DONE</a>;
+<a name="l00283"></a>00283                 <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, measure_direction * turned_angle);
+<a name="l00284"></a>00284                 measured_angle = 0; <span class="comment">// kein Hindernis gefunden</span>
+<a name="l00285"></a>00285                 <span class="keywordflow">break</span>;
+<a name="l00286"></a>00286             }
+<a name="l00287"></a>00287             <span class="comment">/* Ist ein Objekt in Reichweite? */</span>
+<a name="l00288"></a>00288             <span class="keywordflow">if</span> (sensor &lt;= measure_distance) {
+<a name="l00289"></a>00289                 <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00290"></a>00290                 <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00291"></a>00291                 measureState = <a class="code" href="behaviour__solve__maze_8c.html#ad03e097c8a3276c0840512d8c3b25e3a">FOUND_OBSTACLE</a>;
+<a name="l00292"></a>00292                 <span class="keywordflow">break</span>;
+<a name="l00293"></a>00293             }
+<a name="l00294"></a>00294             <span class="comment">/* Beginnen, zurueckzudrehen */</span>
+<a name="l00295"></a>00295             <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = (measure_direction &gt; 0) ? -<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a> : <a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00296"></a>00296             <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = (measure_direction &gt; 0) ? <a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a> : -<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00297"></a>00297             <span class="keywordflow">break</span>;
+<a name="l00298"></a>00298 
+<a name="l00299"></a>00299         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#ad03e097c8a3276c0840512d8c3b25e3a">FOUND_OBSTACLE</a>:
+<a name="l00300"></a>00300              <span class="comment">/* dafuer sorgen, dass wir nur verlaessliche Werte haben</span>
+<a name="l00301"></a>00301 <span class="comment">             * dazu muss der wert dreimal nacheinander max. um +/- 5</span>
+<a name="l00302"></a>00302 <span class="comment">             * unterschiedlich sein */</span>
+<a name="l00303"></a>00303              <span class="keywordflow">if</span> (measureCount == 0) {
+<a name="l00304"></a>00304                 lastSensor = sensor;
+<a name="l00305"></a>00305                 measureCount++;
+<a name="l00306"></a>00306                 <span class="keywordflow">break</span>;
+<a name="l00307"></a>00307              }
+<a name="l00308"></a>00308              <span class="keywordflow">if</span> (sensor &gt;= lastSensor - 5 &amp;&amp; sensor &lt;= lastSensor + 5 &amp;&amp; measureCount &lt; 4) {
+<a name="l00309"></a>00309                 <span class="comment">/* Messwert ist ok */</span>
+<a name="l00310"></a>00310                 measureCount++;
+<a name="l00311"></a>00311                 <span class="keywordflow">break</span>;
+<a name="l00312"></a>00312              } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (measureCount &lt; 4) {
+<a name="l00313"></a>00313                 <span class="comment">/* Messwert weicht zu doll ab -&gt; von Neuem messen */</span>
+<a name="l00314"></a>00314                 measureCount = 0;
+<a name="l00315"></a>00315                 <span class="keywordflow">break</span>;
+<a name="l00316"></a>00316              }
+<a name="l00317"></a>00317              <span class="comment">/* ok, wir hatten drei Messungen mit nahezu identischen Werten */</span>
+<a name="l00318"></a>00318             measure_distance = sensor;
+<a name="l00319"></a>00319             <span class="comment">/* Hindernis gefunden, nun Bot wieder in Ausgangsstellung drehen */</span>
+<a name="l00320"></a>00320             measure_direction = (int8_t) (-measure_direction);
+<a name="l00321"></a>00321             measured_angle = <a class="code" href="math__utils_8c.html#a9c14e14c49d54828861673702c30eeed" title="Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung.">turned_angle</a>;
+<a name="l00322"></a>00322             measureState = <a class="code" href="behaviour__solve__maze_8c.html#a1f2794ae2cb480906dfca72dfc665756">MEASUREMENT_DONE</a>;
+<a name="l00323"></a>00323             <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, measure_direction * turned_angle);
+<a name="l00324"></a>00324             <span class="keywordflow">break</span>;
+<a name="l00325"></a>00325 
+<a name="l00326"></a>00326         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#a1f2794ae2cb480906dfca72dfc665756">MEASUREMENT_DONE</a>:
+<a name="l00327"></a>00327             return_from_behaviour(data);
+<a name="l00328"></a>00328             <span class="keywordflow">break</span>;
+<a name="l00329"></a>00329     }
+<a name="l00330"></a>00330 }
+<a name="l00331"></a>00331 
+<a name="l00340"></a>00340 <span class="keyword">static</span> <span class="keywordtype">void</span> bot_measure_angle(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller, int8_t <a class="code" href="motor_8c.html#a96703dcd865ea4cfb315cab528b061d8" title="Drehrichtung der Motoren, auch wenn die Speed-Variablen bereits wieder auf Null sind.">direction</a>, int16_t distance) {
+<a name="l00341"></a>00341     <span class="comment">/* maximale Messentfernung und Richtung setzen */</span>
+<a name="l00342"></a>00342     measure_direction = <a class="code" href="motor_8c.html#a96703dcd865ea4cfb315cab528b061d8" title="Drehrichtung der Motoren, auch wenn die Speed-Variablen bereits wieder auf Null sind.">direction</a>;
+<a name="l00343"></a>00343     measure_distance = distance;
+<a name="l00344"></a>00344     <span class="comment">/* Heading zu Anfang des Verhaltens merken */</span>
+<a name="l00345"></a>00345     start_heading = (int16_t) <a class="code" href="sensor_8c.html#afe11ed1b60135e873bb810ab6d513f98">heading_mou</a>;
+<a name="l00346"></a>00346     measureState = <a class="code" href="behaviour__solve__maze_8c.html#aa8f3b6916339962a10c2c2cd77127dc7">MEASURE_TURN</a>;
+<a name="l00347"></a>00347     measureCount = 0;
+<a name="l00348"></a>00348     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__solve__maze_8c.html#a5c8d6fcdce721e07cbe185890522a395">bot_measure_angle_behaviour</a>, <a class="code" href="bot-logic_8h.html#a59191cd512c3376a23c8a7d259a1e111" title="Konstanten, wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen.">BEHAVIOUR_NOOVERRIDE</a>);
+<a name="l00349"></a>00349 }
+<a name="l00350"></a>00350 <span class="preprocessor">#else</span>
+<a name="l00351"></a>00351 <span class="preprocessor"></span>
+<a name="l00357"></a>00357 <span class="keywordtype">void</span> <a class="code" href="behaviour__solve__maze_8c.html#a5c8d6fcdce721e07cbe185890522a395">bot_measure_angle_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00358"></a>00358     <span class="comment">/* Zustaende measure_angle_behaviour-Verhalten */</span>
+<a name="l00359"></a>00359 <span class="preprocessor">    #define MEASURE_TURN                0</span>
+<a name="l00360"></a>00360 <span class="preprocessor"></span><span class="preprocessor">    #define FOUND_OBSTACLE              1</span>
+<a name="l00361"></a>00361 <span class="preprocessor"></span><span class="preprocessor">    #define TURN_COMPLETED              2</span>
+<a name="l00362"></a>00362 <span class="preprocessor"></span><span class="preprocessor">    #define TURN_BACK                   3</span>
+<a name="l00363"></a>00363 <span class="preprocessor"></span><span class="preprocessor">    #define CORRECT_ANGLE               4</span>
+<a name="l00364"></a>00364 <span class="preprocessor"></span><span class="preprocessor">    #define MEASUREMENT_DONE            5</span>
+<a name="l00365"></a>00365 <span class="preprocessor"></span>
+<a name="l00367"></a>00367 <span class="preprocessor">    #define ANGLE_CONSTANT      (WHEEL_TO_WHEEL_DIAMETER * ENCODER_MARKS / WHEEL_DIAMETER)</span>
+<a name="l00368"></a>00368 <span class="preprocessor"></span>
+<a name="l00369"></a>00369     <span class="comment">/* bereits gedrehte Strecke errechnen */</span>
+<a name="l00370"></a>00370     int16_t turnedLeft = (measure_direction &gt; 0) ? -(<a class="code" href="sensor_8c.html#a2ed6effbb05581a060bd26f2af436741">sensEncL</a> - startEncL) : (<a class="code" href="sensor_8c.html#a2ed6effbb05581a060bd26f2af436741">sensEncL</a> - startEncL);
+<a name="l00371"></a>00371     int16_t turnedRight = (measure_direction &gt; 0) ? (<a class="code" href="sensor_8c.html#a31470eb8eed6ffed8e0aeb435581efcf">sensEncR</a> - startEncR) : -(<a class="code" href="sensor_8c.html#a31470eb8eed6ffed8e0aeb435581efcf">sensEncR</a> - startEncR);
+<a name="l00372"></a>00372     int16_t turnedSteps = (abs(turnedLeft) + abs(turnedRight)) / 2;
+<a name="l00373"></a>00373 
+<a name="l00374"></a>00374     <span class="comment">/* Sensorwert abhaengig von der Drehrichtung abnehmen */</span>
+<a name="l00375"></a>00375     int16_t sensor = (measure_direction == <a class="code" href="behaviour__solve__maze_8c.html#a3c50fa7db5eaaf424bd933f177693dea">MEASURE_LEFT</a>) ? <a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> : <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a>;
+<a name="l00376"></a>00376     <span class="comment">/* solange drehen, bis Hindernis innerhalb Messstrecke oder 360 Grad komplett */</span>
+<a name="l00377"></a>00377     <span class="keywordflow">switch</span>(measureState) {
+<a name="l00378"></a>00378         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#aa8f3b6916339962a10c2c2cd77127dc7">MEASURE_TURN</a>:
+<a name="l00379"></a>00379             <span class="comment">/* nicht mehr als eine komplette Drehung machen! */</span>
+<a name="l00380"></a>00380             <span class="keywordflow">if</span> (turnedSteps &gt;= ANGLE_CONSTANT) {
+<a name="l00381"></a>00381                 <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00382"></a>00382                 <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00383"></a>00383                 measureState = TURN_COMPLETED;
+<a name="l00384"></a>00384                 measured_angle = 0; <span class="comment">// kein Hindernis gefunden</span>
+<a name="l00385"></a>00385                 <span class="keywordflow">break</span>;
+<a name="l00386"></a>00386             }
+<a name="l00387"></a>00387             <span class="comment">/* Ist ein Objekt in Reichweite? */</span>
+<a name="l00388"></a>00388             <span class="keywordflow">if</span> (sensor &lt;= measure_distance) {
+<a name="l00389"></a>00389                 measure_distance=sensor;
+<a name="l00390"></a>00390                 <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00391"></a>00391                 <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00392"></a>00392                 measureState = <a class="code" href="behaviour__solve__maze_8c.html#ad03e097c8a3276c0840512d8c3b25e3a">FOUND_OBSTACLE</a>;
+<a name="l00393"></a>00393                 <span class="keywordflow">break</span>;
+<a name="l00394"></a>00394             }
+<a name="l00395"></a>00395             <span class="comment">/* Beginnen, zurueckzudrehen */</span>
+<a name="l00396"></a>00396             <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = (measure_direction &gt; 0) ? -<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a> : <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00397"></a>00397             <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = (measure_direction &gt; 0) ? <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a> : -<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00398"></a>00398             <span class="keywordflow">break</span>;
+<a name="l00399"></a>00399 
+<a name="l00400"></a>00400         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#ad03e097c8a3276c0840512d8c3b25e3a">FOUND_OBSTACLE</a>:
+<a name="l00401"></a>00401             <span class="comment">/* Hindernis gefunden, nun Bot wieder in Ausgangsstellung drehen */</span>
+<a name="l00402"></a>00402             measure_direction = (int8_t) -measure_direction;
+<a name="l00403"></a>00403             measured_angle = (int16_t) ((<span class="keywordtype">float</span>)(int32_t)(turnedSteps * 360) / ANGLE_CONSTANT);
+<a name="l00404"></a>00404             measureState = TURN_BACK;
+<a name="l00405"></a>00405             <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = (measure_direction &gt; 0) ? -<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a> : <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00406"></a>00406             <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = (measure_direction &gt; 0) ? <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a> : -<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00407"></a>00407             <span class="keywordflow">break</span>;
+<a name="l00408"></a>00408 
+<a name="l00409"></a>00409         <span class="keywordflow">case</span> TURN_COMPLETED:
+<a name="l00410"></a>00410             <span class="comment">/* Bot steht wieder in Ausgangsrichtung, Verhalten beenden */</span>
+<a name="l00411"></a>00411             <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00412"></a>00412             <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00413"></a>00413             measureState = CORRECT_ANGLE;
+<a name="l00414"></a>00414             <span class="keywordflow">break</span>;
+<a name="l00415"></a>00415 
+<a name="l00416"></a>00416         <span class="keywordflow">case</span> TURN_BACK:
+<a name="l00417"></a>00417             <span class="comment">/* Bot in Ausgangsposition drehen */</span>
+<a name="l00418"></a>00418             <span class="keywordflow">if</span> ((turnedLeft + turnedRight) / 2 &gt;= 0) {
+<a name="l00419"></a>00419                 <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00420"></a>00420                 <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00421"></a>00421                 measureState = TURN_COMPLETED;
+<a name="l00422"></a>00422                 <span class="keywordflow">break</span>;
+<a name="l00423"></a>00423             }
+<a name="l00424"></a>00424             <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = (measure_direction &gt; 0) ? -<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a> : <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00425"></a>00425             <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = (measure_direction &gt; 0) ? <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a> : -<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00426"></a>00426             <span class="keywordflow">break</span>;
+<a name="l00427"></a>00427 
+<a name="l00428"></a>00428         <span class="keywordflow">case</span> CORRECT_ANGLE:
+<a name="l00429"></a>00429             <span class="comment">/* Evtl. etwas zuruecksetzen, falls wir zu weit gefahren sind */</span>
+<a name="l00430"></a>00430             <span class="keywordflow">if</span> (turnedRight &gt; 0) {
+<a name="l00431"></a>00431                 <span class="comment">/* rechts zu weit gefahren..langsam zurueck */</span>
+<a name="l00432"></a>00432                 <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = (measure_direction &gt; 0) ? -<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a> : <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00433"></a>00433             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (turnedRight &lt; 0) {
+<a name="l00434"></a>00434                 <span class="comment">/* rechts noch nicht weit genug...langsam vor */</span>
+<a name="l00435"></a>00435                 <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = (measure_direction &gt; 0) ? <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a> : -<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00436"></a>00436             } <span class="keywordflow">else</span> {
+<a name="l00437"></a>00437                 <span class="comment">/* Endposition erreicht, rechtes Rad anhalten */</span>
+<a name="l00438"></a>00438                 <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00439"></a>00439             }
+<a name="l00440"></a>00440             <span class="keywordflow">if</span> (turnedLeft &lt; 0) {
+<a name="l00441"></a>00441                 <span class="comment">/* links zu weit gefahren..langsam zurueck */</span>
+<a name="l00442"></a>00442                 <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = (measure_direction &gt; 0) ? -<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a> : <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00443"></a>00443             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (turnedLeft &gt; 0) {
+<a name="l00444"></a>00444                 <span class="comment">/* links noch nicht weit genug...langsam vor */</span>
+<a name="l00445"></a>00445                 <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = (measure_direction &gt; 0) ? <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a> : -<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00446"></a>00446             } <span class="keywordflow">else</span> {
+<a name="l00447"></a>00447                 <span class="comment">/* Endposition erreicht, linkes Rad anhalten */</span>
+<a name="l00448"></a>00448                 <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00449"></a>00449             }
+<a name="l00450"></a>00450             <span class="keywordflow">if</span> (<a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> == <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a> &amp;&amp; <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> == <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>) {
+<a name="l00451"></a>00451                 <span class="comment">/* beide Raeder haben nun wirklich die Endposition erreicht, daher anhalten */</span>
+<a name="l00452"></a>00452                 measureState = <a class="code" href="behaviour__solve__maze_8c.html#a1f2794ae2cb480906dfca72dfc665756">MEASUREMENT_DONE</a>;
+<a name="l00453"></a>00453             }
+<a name="l00454"></a>00454             <span class="keywordflow">break</span>;
+<a name="l00455"></a>00455 
+<a name="l00456"></a>00456         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#a1f2794ae2cb480906dfca72dfc665756">MEASUREMENT_DONE</a>:
+<a name="l00457"></a>00457             return_from_behaviour(data);
+<a name="l00458"></a>00458             <span class="keywordflow">break</span>;
+<a name="l00459"></a>00459     }
+<a name="l00460"></a>00460 }
+<a name="l00461"></a>00461 
+<a name="l00470"></a>00470 <span class="keyword">static</span> <span class="keywordtype">void</span> bot_measure_angle(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller, int8_t <a class="code" href="motor_8c.html#a96703dcd865ea4cfb315cab528b061d8" title="Drehrichtung der Motoren, auch wenn die Speed-Variablen bereits wieder auf Null sind.">direction</a>, int16_t distance) {
+<a name="l00471"></a>00471     <span class="comment">/* maximale Messentfernung und Richtung setzen */</span>
+<a name="l00472"></a>00472     measure_direction = <a class="code" href="motor_8c.html#a96703dcd865ea4cfb315cab528b061d8" title="Drehrichtung der Motoren, auch wenn die Speed-Variablen bereits wieder auf Null sind.">direction</a>;
+<a name="l00473"></a>00473     measure_distance = distance;
+<a name="l00474"></a>00474     <span class="comment">/* Encoderwerte zu Anfang des Verhaltens merken */</span>
+<a name="l00475"></a>00475     startEncL = <a class="code" href="sensor_8c.html#a2ed6effbb05581a060bd26f2af436741">sensEncL</a>;
+<a name="l00476"></a>00476     startEncR = <a class="code" href="sensor_8c.html#a31470eb8eed6ffed8e0aeb435581efcf">sensEncR</a>;
+<a name="l00477"></a>00477     measureState = <a class="code" href="behaviour__solve__maze_8c.html#aa8f3b6916339962a10c2c2cd77127dc7">MEASURE_TURN</a>;
+<a name="l00478"></a>00478     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__solve__maze_8c.html#a5c8d6fcdce721e07cbe185890522a395">bot_measure_angle_behaviour</a>, <a class="code" href="bot-logic_8h.html#a59191cd512c3376a23c8a7d259a1e111" title="Konstanten, wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen.">BEHAVIOUR_NOOVERRIDE</a>);
+<a name="l00479"></a>00479 }
+<a name="l00480"></a>00480 <span class="preprocessor">#endif  // MEASURE_MOUSE_AVAILABLE</span>
+<a name="l00481"></a>00481 <span class="preprocessor"></span>
+<a name="l00482"></a>00482 <span class="comment">/* Zustaende fuer das bot_solve_maze_behaviour-Verhalten */</span>
+<a name="l00483"></a><a class="code" href="behaviour__solve__maze_8c.html#a8d7b85c5e508d1d103cec0c5c12759ac">00483</a> <span class="preprocessor">#define CHECK_FOR_STARTPAD          0</span>
+<a name="l00484"></a><a class="code" href="behaviour__solve__maze_8c.html#a11ec1db0316d4634199883773d49dfab">00484</a> <span class="preprocessor"></span><span class="preprocessor">#define CHECK_FOR_WALL_RIGHT        1</span>
+<a name="l00485"></a><a class="code" href="behaviour__solve__maze_8c.html#aaabfe3c5edf4fcd705392d11c00694ed">00485</a> <span class="preprocessor"></span><span class="preprocessor">#define CHECK_FOR_WALL_LEFT         2</span>
+<a name="l00486"></a><a class="code" href="behaviour__solve__maze_8c.html#ad89116ff2bf1876f1ad56fb661279a15">00486</a> <span class="preprocessor"></span><span class="preprocessor">#define CHECK_WALL_PRESENT          3</span>
+<a name="l00487"></a><a class="code" href="behaviour__solve__maze_8c.html#a027994149d387105741dc9fb86ad5546">00487</a> <span class="preprocessor"></span><span class="preprocessor">#define SOLVE_MAZE_LOOP             4</span>
+<a name="l00488"></a><a class="code" href="behaviour__solve__maze_8c.html#ae3e22b9c3de628495e2234dcac8db3fe">00488</a> <span class="preprocessor"></span><span class="preprocessor">#define SOLVE_TURN_WALL             5</span>
+<a name="l00489"></a><a class="code" href="behaviour__solve__maze_8c.html#a0d5a077f4672fb175444c27cf24ce0cc">00489</a> <span class="preprocessor"></span><span class="preprocessor">#define CHECK_CONDITION             6</span>
+<a name="l00490"></a><a class="code" href="behaviour__solve__maze_8c.html#a6b7a60f65cf0b4bc31af227bd2f61bd9">00490</a> <span class="preprocessor"></span><span class="preprocessor">#define TURN_TO_BRANCH              7</span>
+<a name="l00491"></a><a class="code" href="behaviour__solve__maze_8c.html#ac7a00dfc8c916c00824ef74021a5f20f">00491</a> <span class="preprocessor"></span><span class="preprocessor">#define DETECTED_CROSS_BRANCH       8</span>
+<a name="l00492"></a><a class="code" href="behaviour__solve__maze_8c.html#a36417430b5cf89d2fe64216b415a22f9">00492</a> <span class="preprocessor"></span><span class="preprocessor">#define APPROACH_CORNER             9</span>
+<a name="l00493"></a><a class="code" href="behaviour__solve__maze_8c.html#a37e72f8700d7ea8975e6699f19fba63e">00493</a> <span class="preprocessor"></span><span class="preprocessor">#define AVOID_ABYSS                 10</span>
+<a name="l00494"></a><a class="code" href="behaviour__solve__maze_8c.html#ab5dedf31b9e3170510dbb9b9ac5db00c">00494</a> <span class="preprocessor"></span><span class="preprocessor">#define REACHED_GOAL                11</span>
+<a name="l00495"></a>00495 <span class="preprocessor"></span><span class="keyword">static</span> int8_t mazeState = 0;    
+<a name="l00504"></a><a class="code" href="behaviour__solve__maze_8h.html#affbbddf73be1adc7ccc66fa0b1c30e9e">00504</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__solve__maze_8c.html#affbbddf73be1adc7ccc66fa0b1c30e9e">bot_solve_maze_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00505"></a>00505     <span class="keyword">static</span> int8_t followWall = -1;
+<a name="l00506"></a>00506     <span class="keyword">static</span> int8_t checkedWalls = 0;
+<a name="l00507"></a>00507 
+<a name="l00508"></a>00508     int16_t distance;
+<a name="l00509"></a>00509     <span class="keywordtype">float</span> <a class="code" href="behaviour__drive__chess_8c.html#a6c4b361d72eb3767ba424ac9a6ecf52b">x</a>;
+<a name="l00510"></a>00510     <span class="keywordflow">switch</span>(mazeState) {
+<a name="l00511"></a>00511         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#a8d7b85c5e508d1d103cec0c5c12759ac">CHECK_FOR_STARTPAD</a>:
+<a name="l00512"></a>00512             <span class="comment">/* Wo beginnen wir, nach einer Wand zu suchen?</span>
+<a name="l00513"></a>00513 <span class="comment">             * Abgrund- und Kollisions-Verhalten ausschalten */</span>
+<a name="l00514"></a>00514 <span class="preprocessor">            #ifdef BEHAVIOUR_AVOID_COL_AVAILABLE</span>
+<a name="l00515"></a>00515 <span class="preprocessor"></span>                deactivateBehaviour(<a class="code" href="behaviour__avoid__col_8c.html#af537d5e45f3f8339619d9dccf7d86e5d">bot_avoid_col_behaviour</a>);
+<a name="l00516"></a>00516 <span class="preprocessor">            #endif</span>
+<a name="l00517"></a>00517 <span class="preprocessor"></span><span class="preprocessor">            #ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE</span>
+<a name="l00518"></a>00518 <span class="preprocessor"></span>                deactivateBehaviour(<a class="code" href="behaviour__avoid__border_8c.html#a2941d3177f415a75eee81902f17b4357">bot_avoid_border_behaviour</a>);
+<a name="l00519"></a>00519 <span class="preprocessor">            #endif</span>
+<a name="l00520"></a>00520 <span class="preprocessor"></span>            <span class="comment">/* sieht nach, ob der Bot auf einem definierten Startpad steht und</span>
+<a name="l00521"></a>00521 <span class="comment">             * beginnt dann mit der Suche gleich an der richtigen Wand */</span>
+<a name="l00522"></a>00522             <span class="comment">/* Zuserst bei nach Startpad1 gucken */</span>
+<a name="l00523"></a>00523             checkedWalls = 0;
+<a name="l00524"></a>00524             <span class="keywordflow">if</span> ((<a class="code" href="sensor_8c.html#a56a020f1eb08fbff3d7fa669335921ed">sensLineL</a> &gt;= <a class="code" href="bot-local_8h.html#ac8068f19aa0d3bfdcdd6b9582b952d59">STARTPAD1</a> - 10 &amp;&amp; <a class="code" href="sensor_8c.html#a56a020f1eb08fbff3d7fa669335921ed">sensLineL</a> &lt;= <a class="code" href="bot-local_8h.html#ac8068f19aa0d3bfdcdd6b9582b952d59">STARTPAD1</a> + 10) ||
+<a name="l00525"></a>00525                 (<a class="code" href="sensor_8c.html#ae286bb8f86cced317801e378247dcb18">sensLineR</a> &gt;= <a class="code" href="bot-local_8h.html#ac8068f19aa0d3bfdcdd6b9582b952d59">STARTPAD1</a> - 10 &amp;&amp; <a class="code" href="sensor_8c.html#ae286bb8f86cced317801e378247dcb18">sensLineR</a> &lt;= <a class="code" href="bot-local_8h.html#ac8068f19aa0d3bfdcdd6b9582b952d59">STARTPAD1</a> + 10)) {
+<a name="l00526"></a>00526                 mazeState=<a class="code" href="behaviour__solve__maze_8c.html#aaabfe3c5edf4fcd705392d11c00694ed">CHECK_FOR_WALL_LEFT</a>;
+<a name="l00527"></a>00527                 <span class="keywordflow">break</span>;
+<a name="l00528"></a>00528             }
+<a name="l00529"></a>00529             mazeState = <a class="code" href="behaviour__solve__maze_8c.html#a11ec1db0316d4634199883773d49dfab">CHECK_FOR_WALL_RIGHT</a>;
+<a name="l00530"></a>00530             <span class="keywordflow">break</span>;
+<a name="l00531"></a>00531 
+<a name="l00532"></a>00532         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#a11ec1db0316d4634199883773d49dfab">CHECK_FOR_WALL_RIGHT</a>:
+<a name="l00533"></a>00533             mazeState = <a class="code" href="behaviour__solve__maze_8c.html#ad89116ff2bf1876f1ad56fb661279a15">CHECK_WALL_PRESENT</a>;
+<a name="l00534"></a>00534             followWall = <a class="code" href="behaviour__solve__maze_8c.html#a9662aac30a48bd2b39089505c35dfa03">CHECK_WALL_RIGHT</a>;
+<a name="l00535"></a>00535             bot_check_wall(data, followWall);
+<a name="l00536"></a>00536             <span class="keywordflow">break</span>;
+<a name="l00537"></a>00537 
+<a name="l00538"></a>00538         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#aaabfe3c5edf4fcd705392d11c00694ed">CHECK_FOR_WALL_LEFT</a>:
+<a name="l00539"></a>00539             followWall = <a class="code" href="behaviour__solve__maze_8c.html#a7401760d24e78bcb24c838406f0eeab6">CHECK_WALL_LEFT</a>;
+<a name="l00540"></a>00540             bot_check_wall(data, followWall);
+<a name="l00541"></a>00541             mazeState = <a class="code" href="behaviour__solve__maze_8c.html#ad89116ff2bf1876f1ad56fb661279a15">CHECK_WALL_PRESENT</a>;
+<a name="l00542"></a>00542             <span class="keywordflow">break</span>;
+<a name="l00543"></a>00543 
+<a name="l00544"></a>00544         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#ad89116ff2bf1876f1ad56fb661279a15">CHECK_WALL_PRESENT</a>:
+<a name="l00545"></a>00545             <span class="comment">/* wenn keine Wand gefunden aber links noch nicht nachgesehen, andere</span>
+<a name="l00546"></a>00546 <span class="comment">             * Richtung checken, sonst vorfahren */</span>
+<a name="l00547"></a>00547             checkedWalls++;
+<a name="l00548"></a>00548             <span class="keywordflow">if</span> (wall_detected == <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>){
+<a name="l00549"></a>00549                 <span class="comment">/* Wand noch nicht entdeckt...haben wir schon beide gecheckt? */</span>
+<a name="l00550"></a>00550                 <span class="keywordflow">if</span> (checkedWalls &lt; 2) {
+<a name="l00551"></a>00551                     <span class="keywordflow">if</span> (followWall == <a class="code" href="behaviour__solve__maze_8c.html#a9662aac30a48bd2b39089505c35dfa03">CHECK_WALL_RIGHT</a>) {
+<a name="l00552"></a>00552                         mazeState = <a class="code" href="behaviour__solve__maze_8c.html#aaabfe3c5edf4fcd705392d11c00694ed">CHECK_FOR_WALL_LEFT</a>;
+<a name="l00553"></a>00553                         <span class="keywordflow">break</span>;
+<a name="l00554"></a>00554                     } <span class="keywordflow">else</span> {
+<a name="l00555"></a>00555                         mazeState = <a class="code" href="behaviour__solve__maze_8c.html#a11ec1db0316d4634199883773d49dfab">CHECK_FOR_WALL_RIGHT</a>;
+<a name="l00556"></a>00556                         <span class="keywordflow">break</span>;
+<a name="l00557"></a>00557                     }
+<a name="l00558"></a>00558                 } <span class="keywordflow">else</span> {
+<a name="l00559"></a>00559                     <span class="comment">/* keine Wand? Dann vorfahren und selbes Prozedere nochmal */</span>
+<a name="l00560"></a>00560                     <a class="code" href="behaviour__drive__distance_8c.html#ae7b188b6785c5e337c51509282ca790e">bot_drive_distance</a>(data, 0, <a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>, <a class="code" href="bot-local_8h.html#a6355f0c11aa0eec346ad3695529ee291">BOT_DIAMETER</a> / 10);
+<a name="l00561"></a>00561                     mazeState = <a class="code" href="behaviour__solve__maze_8c.html#a11ec1db0316d4634199883773d49dfab">CHECK_FOR_WALL_RIGHT</a>;
+<a name="l00562"></a>00562                     checkedWalls = 0;
+<a name="l00563"></a>00563                     <span class="keywordflow">break</span>;
+<a name="l00564"></a>00564                 }
+<a name="l00565"></a>00565             }
+<a name="l00566"></a>00566             <span class="comment">/* ok, wir haben unsere Richtung im Labyrinth gefunden jetzt dieser</span>
+<a name="l00567"></a>00567 <span class="comment">             * nur noch folgen bis Ziel, Abzweig oder Abgrund */</span>
+<a name="l00568"></a>00568             mazeState = <a class="code" href="behaviour__solve__maze_8c.html#a027994149d387105741dc9fb86ad5546">SOLVE_MAZE_LOOP</a>;
+<a name="l00569"></a>00569             <span class="keywordflow">break</span>;
+<a name="l00570"></a>00570 
+<a name="l00571"></a>00571         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#a027994149d387105741dc9fb86ad5546">SOLVE_MAZE_LOOP</a>:
+<a name="l00572"></a>00572             <span class="comment">/* Einen Schritt (=halbe Bot-Groesse) vorwaerts */</span>
+<a name="l00573"></a>00573             mazeState = <a class="code" href="behaviour__solve__maze_8c.html#ae3e22b9c3de628495e2234dcac8db3fe">SOLVE_TURN_WALL</a>;
+<a name="l00574"></a>00574             <a class="code" href="behaviour__drive__distance_8c.html#ae7b188b6785c5e337c51509282ca790e">bot_drive_distance</a>(data, 0, <a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>, <a class="code" href="bot-local_8h.html#a6355f0c11aa0eec346ad3695529ee291">BOT_DIAMETER</a> / 10);
+<a name="l00575"></a>00575             <span class="keywordflow">break</span>;
+<a name="l00576"></a>00576 
+<a name="l00577"></a>00577         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#ae3e22b9c3de628495e2234dcac8db3fe">SOLVE_TURN_WALL</a>:
+<a name="l00578"></a>00578             <span class="comment">/* Ziel erreicht? */</span>
+<a name="l00579"></a>00579             <span class="keywordflow">if</span> ((<a class="code" href="sensor_8c.html#a56a020f1eb08fbff3d7fa669335921ed">sensLineL</a> &gt; <a class="code" href="bot-local_8h.html#a2ed361b4bfe6caec57c51ef8488f3531">GROUND_GOAL</a> - 20 &amp;&amp; <a class="code" href="sensor_8c.html#a56a020f1eb08fbff3d7fa669335921ed">sensLineL</a> &lt; <a class="code" href="bot-local_8h.html#a2ed361b4bfe6caec57c51ef8488f3531">GROUND_GOAL</a> + 20) ||
+<a name="l00580"></a>00580                 (<a class="code" href="sensor_8c.html#ae286bb8f86cced317801e378247dcb18">sensLineR</a> &gt; <a class="code" href="bot-local_8h.html#a2ed361b4bfe6caec57c51ef8488f3531">GROUND_GOAL</a> - 20 &amp;&amp; <a class="code" href="sensor_8c.html#ae286bb8f86cced317801e378247dcb18">sensLineR</a> &lt; <a class="code" href="bot-local_8h.html#a2ed361b4bfe6caec57c51ef8488f3531">GROUND_GOAL</a> + 20)) {
+<a name="l00581"></a>00581                 <span class="comment">/* Bot hat Ziel erreicht...aus Freude einmal um die Achse drehen */</span>
+<a name="l00582"></a>00582                 <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, 360);
+<a name="l00583"></a>00583                 mazeState = <a class="code" href="behaviour__solve__maze_8c.html#ab5dedf31b9e3170510dbb9b9ac5db00c">REACHED_GOAL</a>;
+<a name="l00584"></a>00584                 <span class="keywordflow">break</span>;
+<a name="l00585"></a>00585             }
+<a name="l00586"></a>00586             <span class="comment">/* checken, ob wand vor uns (Abstand 2.5*Bot-Durchmesser in mm) */</span>
+<a name="l00587"></a>00587             distance = (<a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> + <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a>) / 2;
+<a name="l00588"></a>00588             <span class="keywordflow">if</span> (distance &lt;= (int16_t) (2.5 * <a class="code" href="bot-local_8h.html#a6355f0c11aa0eec346ad3695529ee291">BOT_DIAMETER</a>)) {
+<a name="l00589"></a>00589                 <span class="comment">/* berechnete Entfernung zur Wand abzueglich optimale Distanz fahren */</span>
+<a name="l00590"></a>00590                 mazeState = <a class="code" href="behaviour__solve__maze_8c.html#ac7a00dfc8c916c00824ef74021a5f20f">DETECTED_CROSS_BRANCH</a>;
+<a name="l00591"></a>00591                 <a class="code" href="behaviour__drive__distance_8c.html#ae7b188b6785c5e337c51509282ca790e">bot_drive_distance</a>(data, 0, <a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>, (distance - <a class="code" href="bot-local_8h.html#a39087ac25e2bcfaa5fd5abdfab91bd25">OPTIMAL_DISTANCE</a>) / 10);
+<a name="l00592"></a>00592                 <span class="keywordflow">break</span>;
+<a name="l00593"></a>00593             }
+<a name="l00594"></a>00594             <span class="comment">/* Zur Wand drehen....ist die Wand noch da? */</span>
+<a name="l00595"></a>00595             mazeState = <a class="code" href="behaviour__solve__maze_8c.html#a0d5a077f4672fb175444c27cf24ce0cc">CHECK_CONDITION</a>;
+<a name="l00596"></a>00596             bot_check_wall(data, followWall);
+<a name="l00597"></a>00597             <span class="keywordflow">break</span>;
+<a name="l00598"></a>00598 
+<a name="l00599"></a>00599         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#a0d5a077f4672fb175444c27cf24ce0cc">CHECK_CONDITION</a>:
+<a name="l00600"></a>00600             <span class="comment">/* Solange weiter, wie die Wand zu sehen ist */</span>
+<a name="l00601"></a>00601             <span class="keywordflow">if</span> (wall_detected == <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>) {
+<a name="l00602"></a>00602                 mazeState = <a class="code" href="behaviour__solve__maze_8c.html#a027994149d387105741dc9fb86ad5546">SOLVE_MAZE_LOOP</a>;
+<a name="l00603"></a>00603                 <span class="keywordflow">break</span>;
+<a name="l00604"></a>00604             }
+<a name="l00605"></a>00605             <span class="comment">/* messen, wo genau die Ecke ist */</span>
+<a name="l00606"></a>00606             mazeState = <a class="code" href="behaviour__solve__maze_8c.html#a36417430b5cf89d2fe64216b415a22f9">APPROACH_CORNER</a>;
+<a name="l00607"></a>00607             <span class="keywordflow">if</span> (followWall == <a class="code" href="behaviour__solve__maze_8c.html#a7401760d24e78bcb24c838406f0eeab6">CHECK_WALL_LEFT</a>){
+<a name="l00608"></a>00608                 bot_measure_angle(data, <a class="code" href="behaviour__solve__maze_8c.html#a3c50fa7db5eaaf424bd933f177693dea">MEASURE_LEFT</a>, 300);
+<a name="l00609"></a>00609             } <span class="keywordflow">else</span> {
+<a name="l00610"></a>00610                 bot_measure_angle(data, <a class="code" href="behaviour__solve__maze_8c.html#a3eb09f2f54d67b857bfb79ae4ecb2864">MEASURE_RIGHT</a>, 300);
+<a name="l00611"></a>00611             }
+<a name="l00612"></a>00612             <span class="keywordflow">break</span>;
+<a name="l00613"></a>00613 
+<a name="l00614"></a>00614         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#a6b7a60f65cf0b4bc31af227bd2f61bd9">TURN_TO_BRANCH</a>:
+<a name="l00615"></a>00615             <span class="comment">/* nun in Richtung Abzweig drehen , dann mit Hauptschleife weiter */</span>
+<a name="l00616"></a>00616             mazeState = <a class="code" href="behaviour__solve__maze_8c.html#a027994149d387105741dc9fb86ad5546">SOLVE_MAZE_LOOP</a>;
+<a name="l00617"></a>00617             <span class="keywordflow">if</span> (followWall == <a class="code" href="behaviour__solve__maze_8c.html#a9662aac30a48bd2b39089505c35dfa03">CHECK_WALL_RIGHT</a>) {
+<a name="l00618"></a>00618                 <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, -90);
+<a name="l00619"></a>00619             } <span class="keywordflow">else</span> {
+<a name="l00620"></a>00620                 <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, 90);
+<a name="l00621"></a>00621             }
+<a name="l00622"></a>00622             <span class="keywordflow">break</span>;
+<a name="l00623"></a>00623 
+<a name="l00624"></a>00624         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#ac7a00dfc8c916c00824ef74021a5f20f">DETECTED_CROSS_BRANCH</a>:
+<a name="l00625"></a>00625             <span class="comment">/* Bot faehrt auf eine Ecke zu, in Richtung Gang drehen */</span>
+<a name="l00626"></a>00626             <span class="keywordflow">if</span> (followWall == <a class="code" href="behaviour__solve__maze_8c.html#a7401760d24e78bcb24c838406f0eeab6">CHECK_WALL_LEFT</a>) {
+<a name="l00627"></a>00627                 mazeState = <a class="code" href="behaviour__solve__maze_8c.html#a027994149d387105741dc9fb86ad5546">SOLVE_MAZE_LOOP</a>;
+<a name="l00628"></a>00628                 <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, -90);
+<a name="l00629"></a>00629             } <span class="keywordflow">else</span> {
+<a name="l00630"></a>00630                 mazeState = <a class="code" href="behaviour__solve__maze_8c.html#a027994149d387105741dc9fb86ad5546">SOLVE_MAZE_LOOP</a>;
+<a name="l00631"></a>00631                 <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, 90);
+<a name="l00632"></a>00632             }
+<a name="l00633"></a>00633             <span class="keywordflow">break</span>;
+<a name="l00634"></a>00634 
+<a name="l00635"></a>00635         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#a36417430b5cf89d2fe64216b415a22f9">APPROACH_CORNER</a>:
+<a name="l00636"></a>00636             <span class="comment">/* ok, nun Strecke bis zur Kante berechnen */</span>
+<a name="l00637"></a>00637             x = measure_distance * cosf(rad(measured_angle)) / 10.0f + (<a class="code" href="bot-local_8h.html#a6355f0c11aa0eec346ad3695529ee291">BOT_DIAMETER</a> * 0.15f);
+<a name="l00638"></a>00638             mazeState = <a class="code" href="behaviour__solve__maze_8c.html#a6b7a60f65cf0b4bc31af227bd2f61bd9">TURN_TO_BRANCH</a>;
+<a name="l00639"></a>00639             <a class="code" href="behaviour__drive__distance_8c.html#ae7b188b6785c5e337c51509282ca790e">bot_drive_distance</a>(data, 0, <a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>, (int16_t) x);
+<a name="l00640"></a>00640             <span class="keywordflow">break</span>;
+<a name="l00641"></a>00641 
+<a name="l00642"></a>00642         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#ab5dedf31b9e3170510dbb9b9ac5db00c">REACHED_GOAL</a>:
+<a name="l00643"></a>00643             <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00644"></a>00644             <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00645"></a>00645             return_from_behaviour(data);
+<a name="l00646"></a>00646             <span class="keywordflow">break</span>;
+<a name="l00647"></a>00647     }
+<a name="l00648"></a>00648 }
+<a name="l00649"></a>00649 
+<a name="l00657"></a><a class="code" href="behaviour__solve__maze_8h.html#a4df4c969b0f99a253af4f1cc83053f59">00657</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__solve__maze_8c.html#a4df4c969b0f99a253af4f1cc83053f59">bot_solve_maze</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller) {
+<a name="l00658"></a>00658     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__solve__maze_8c.html#affbbddf73be1adc7ccc66fa0b1c30e9e">bot_solve_maze_behaviour</a>, <a class="code" href="bot-logic_8h.html#a59191cd512c3376a23c8a7d259a1e111" title="Konstanten, wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen.">BEHAVIOUR_NOOVERRIDE</a>);
+<a name="l00659"></a>00659     mazeState = <a class="code" href="behaviour__solve__maze_8c.html#a8d7b85c5e508d1d103cec0c5c12759ac">CHECK_FOR_STARTPAD</a>;
+<a name="l00660"></a>00660 }
+<a name="l00661"></a>00661 <span class="preprocessor">#endif // BEHAVIOUR_SOLVE_MAZE_AVAILABLE</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

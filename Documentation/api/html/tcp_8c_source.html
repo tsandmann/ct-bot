@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: tcp.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_b1beec98a6d8202f7d2e9ed7dd898c89.html">pc</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">tcp.c</div>  </div>
+</div>
+<div class="contents">
+<a href="tcp_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00027"></a>00027 <span class="preprocessor">#ifdef PC</span>
+<a name="l00028"></a>00028 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot-Funktionalitaeten">ct-Bot.h</a>&quot;</span>
+<a name="l00029"></a>00029 <span class="preprocessor">#include &quot;<a class="code" href="log_8h.html" title="Routinen zum Loggen von Informationen.">log.h</a>&quot;</span>
+<a name="l00030"></a>00030 <span class="preprocessor">#include &quot;<a class="code" href="command_8h.html" title="Kommando-Management.">command.h</a>&quot;</span>
+<a name="l00031"></a>00031 
+<a name="l00032"></a><a class="code" href="tcp_8c.html#a8e1742d1fbbc30f03a12cd343a62173f">00032</a> <span class="preprocessor">#define USE_SEND_BUFFER             </span>
+<a name="l00033"></a><a class="code" href="tcp_8c.html#a54530fe325a296c2ace7566382630911">00033</a> <span class="preprocessor">#define TCP_SEND_BUFFER_SIZE 4096   </span>
+<a name="l00035"></a>00035 <span class="preprocessor">//#define DEBUG_TCP </span>
+<a name="l00037"></a>00037 <span class="preprocessor">#ifndef DEBUG_TCP</span>
+<a name="l00038"></a>00038 <span class="preprocessor"></span><span class="preprocessor">#undef LOG_AVAILABLE</span>
+<a name="l00039"></a>00039 <span class="preprocessor"></span><span class="preprocessor">#undef LOG_DEBUG</span>
+<a name="l00040"></a><a class="code" href="tcp_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">00040</a> <span class="preprocessor"></span><span class="preprocessor">#define LOG_DEBUG(...) {}   </span>
+<a name="l00041"></a>00041 <span class="preprocessor">#endif</span>
+<a name="l00042"></a>00042 <span class="preprocessor"></span>
+<a name="l00043"></a>00043 <span class="preprocessor">#ifndef WIN32</span>
+<a name="l00044"></a>00044 <span class="preprocessor"></span><span class="preprocessor">#define _REENTRANT      </span>
+<a name="l00045"></a>00045 <span class="preprocessor">//#define _POSIX_SOURCE </span>
+<a name="l00046"></a>00046 <span class="preprocessor">#else</span>
+<a name="l00047"></a>00047 <span class="preprocessor"></span><span class="comment">//#define WIN32</span>
+<a name="l00048"></a>00048 <span class="preprocessor">#endif</span>
+<a name="l00049"></a>00049 <span class="preprocessor"></span>
+<a name="l00050"></a>00050 <span class="comment">/* Hack for LinuxThreads */</span>
+<a name="l00051"></a>00051 <span class="preprocessor">#ifdef __linux__</span>
+<a name="l00052"></a><a class="code" href="tcp_8c.html#a1bf6c868670adced4756500721b9d6ae">00052</a> <span class="preprocessor"></span><span class="preprocessor">#define _P __P</span>
+<a name="l00053"></a>00053 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00054"></a>00054 <span class="preprocessor"></span>
+<a name="l00055"></a>00055 <span class="preprocessor">#include &lt;pthread.h&gt;</span>
+<a name="l00056"></a>00056 
+<a name="l00057"></a>00057 <span class="preprocessor">#ifdef WIN32</span>
+<a name="l00058"></a>00058 <span class="preprocessor"></span><span class="preprocessor">#include &lt;winsock.h&gt;</span>
+<a name="l00059"></a>00059 <span class="preprocessor">#else</span>
+<a name="l00060"></a>00060 <span class="preprocessor"></span><span class="preprocessor">#include &lt;arpa/inet.h&gt;</span>
+<a name="l00061"></a>00061 <span class="preprocessor">#include &lt;sys/socket.h&gt;</span>
+<a name="l00062"></a>00062 <span class="preprocessor">#include &lt;netinet/in.h&gt;</span>
+<a name="l00063"></a>00063 <span class="preprocessor">#include &lt;netdb.h&gt;</span>      <span class="comment">// for gethostbyname()</span>
+<a name="l00064"></a>00064 <span class="preprocessor">#include &lt;netinet/tcp.h&gt;</span>
+<a name="l00065"></a>00065 <span class="preprocessor">#endif // WIN32</span>
+<a name="l00066"></a>00066 <span class="preprocessor"></span>
+<a name="l00067"></a>00067 
+<a name="l00068"></a>00068 <span class="preprocessor">#include &lt;stdio.h&gt;</span>      <span class="comment">// for printf() and fprintf()</span>
+<a name="l00069"></a>00069 <span class="preprocessor">#include &lt;stdlib.h&gt;</span>     <span class="comment">// for atoi() and exit()</span>
+<a name="l00070"></a>00070 <span class="preprocessor">#include &lt;string.h&gt;</span>     <span class="comment">// for memset()</span>
+<a name="l00071"></a>00071 <span class="preprocessor">#include &lt;unistd.h&gt;</span>     <span class="comment">// for close()</span>
+<a name="l00072"></a>00072 
+<a name="l00073"></a>00073 <span class="preprocessor">#include &quot;<a class="code" href="tcp_8h.html" title="TCP/IP-Kommunikation.">tcp.h</a>&quot;</span>
+<a name="l00074"></a>00074 <span class="preprocessor">#include &quot;<a class="code" href="display_8h.html" title="Routinen zur Displaysteuerung.">display.h</a>&quot;</span>
+<a name="l00075"></a>00075 
+<a name="l00076"></a><a class="code" href="tcp_8c.html#a16829ea6c4b65cc928ce596bd036fa9b">00076</a> <span class="keywordtype">int</span> <a class="code" href="tcp_8h.html#a16829ea6c4b65cc928ce596bd036fa9b">tcp_sock</a> = 0;           
+<a name="l00077"></a><a class="code" href="tcp_8c.html#a5d2fc42a7b026cbdfc141449f37b3775">00077</a> <span class="keywordtype">char</span> * <a class="code" href="tcp_8h.html#a5d2fc42a7b026cbdfc141449f37b3775">tcp_hostname</a> = NULL; 
+<a name="l00079"></a>00079 <span class="keyword">static</span> uint8_t sendBuffer[<a class="code" href="tcp_8c.html#a54530fe325a296c2ace7566382630911">TCP_SEND_BUFFER_SIZE</a>];    
+<a name="l00080"></a>00080 <span class="keyword">static</span> <span class="keywordtype">int</span> sendBufferPtr = 0;                       
+<a name="l00088"></a><a class="code" href="tcp_8c.html#a47c4716c70b318746951554467eb3357">00088</a> <span class="keywordtype">int</span> <a class="code" href="tcp_8h.html#a47c4716c70b318746951554467eb3357">tcp_openConnection</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * hostname) {
+<a name="l00089"></a>00089     <span class="keyword">struct </span>sockaddr_in servAddr;    <span class="comment">// server address</span>
+<a name="l00090"></a>00090     <span class="keywordtype">int</span> sock = 0;   <span class="comment">// Socket descriptor</span>
+<a name="l00091"></a>00091     <span class="keyword">struct </span>hostent * he = gethostbyname(hostname);
+<a name="l00092"></a>00092 
+<a name="l00093"></a>00093     <span class="comment">// Ueberpruefen, ob der Hostname aufgeloest werden konnte</span>
+<a name="l00094"></a>00094     <span class="keywordflow">if</span> (NULL == he) {
+<a name="l00095"></a>00095         printf(<span class="stringliteral">&quot;gethostbyname() failed\n&quot;</span>);
+<a name="l00096"></a>00096         exit(1);
+<a name="l00097"></a>00097     }
+<a name="l00098"></a>00098 
+<a name="l00099"></a>00099     <span class="comment">// Create a stream socket for TCP</span>
+<a name="l00100"></a>00100     <span class="keywordflow">if</span> ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) &lt; 0) {
+<a name="l00101"></a>00101         printf(<span class="stringliteral">&quot;socket() failed\n&quot;</span>);
+<a name="l00102"></a>00102         exit(1);
+<a name="l00103"></a>00103     }
+<a name="l00104"></a>00104 
+<a name="l00105"></a>00105     <span class="keywordtype">int</span> flag = 1;
+<a name="l00106"></a>00106     setsockopt(sock,        <span class="comment">/* socket affected */</span>
+<a name="l00107"></a>00107             IPPROTO_TCP,    <span class="comment">/* set option at TCP level */</span>
+<a name="l00108"></a>00108             TCP_NODELAY,    <span class="comment">/* name of option */</span>
+<a name="l00109"></a>00109             (<span class="keywordtype">char</span> *) &amp;flag, <span class="comment">/* the cast is historical cruft */</span>
+<a name="l00110"></a>00110             <span class="keyword">sizeof</span>(<span class="keywordtype">int</span>)     <span class="comment">/* length of option value */</span>
+<a name="l00111"></a>00111     );
+<a name="l00112"></a>00112 
+<a name="l00113"></a>00113     <span class="comment">// Prepare server address structure</span>
+<a name="l00114"></a>00114     memset(&amp;servAddr, 0, <span class="keyword">sizeof</span>(servAddr)); <span class="comment">// Zero out structure</span>
+<a name="l00115"></a>00115     servAddr.sin_family = AF_INET;  <span class="comment">// Internet address</span>
+<a name="l00116"></a>00116     servAddr.sin_port = htons(<a class="code" href="tcp_8h.html#a614217d263be1fb1a5f76e2ff7be19a2">PORT</a>);    <span class="comment">// Port</span>
+<a name="l00117"></a>00117 
+<a name="l00118"></a>00118     <span class="comment">// Die erste Adresse aus der Liste uebernehmen</span>
+<a name="l00119"></a>00119     memcpy(&amp;servAddr.sin_addr, *(he-&gt;h_addr_list), <span class="keyword">sizeof</span>(servAddr.sin_addr));
+<a name="l00120"></a>00120 
+<a name="l00121"></a>00121     <span class="comment">// Open Connection to the server</span>
+<a name="l00122"></a>00122     <span class="keywordflow">if</span> (connect(sock, (<span class="keyword">struct</span> sockaddr *) &amp;servAddr, <span class="keyword">sizeof</span>(servAddr)) &lt; 0) {
+<a name="l00123"></a>00123         printf(<span class="stringliteral">&quot;tcp_openConnection() to %s failed\n&quot;</span>, inet_ntoa(servAddr.sin_addr));
+<a name="l00124"></a>00124         exit(1);
+<a name="l00125"></a>00125     }
+<a name="l00126"></a>00126 
+<a name="l00127"></a>00127     <span class="keywordflow">return</span> sock;
+<a name="l00128"></a>00128 }
+<a name="l00129"></a>00129 
+<a name="l00134"></a><a class="code" href="tcp_8c.html#a533156f7515b0fac54217758ded89cec">00134</a> <span class="keywordtype">void</span> <a class="code" href="tcp_8h.html#a533156f7515b0fac54217758ded89cec">tcp_closeConnection</a>(<span class="keywordtype">int</span> sock) {
+<a name="l00135"></a>00135     close(sock);
+<a name="l00136"></a>00136 <span class="preprocessor">#ifdef WIN32</span>
+<a name="l00137"></a>00137 <span class="preprocessor"></span>    WSACleanup();
+<a name="l00138"></a>00138 <span class="preprocessor">#endif</span>
+<a name="l00139"></a>00139 <span class="preprocessor"></span>}
+<a name="l00140"></a>00140 
+<a name="l00158"></a><a class="code" href="tcp_8c.html#a19a6689c757ff036910a2475fb40099d">00158</a> <span class="keywordtype">int</span> <a class="code" href="tcp_8h.html#a19a6689c757ff036910a2475fb40099d">tcp_send_cmd</a>(command_t * cmd) {
+<a name="l00159"></a>00159 <span class="preprocessor">#if BYTE_ORDER == BIG_ENDIAN</span>
+<a name="l00160"></a>00160 <span class="preprocessor"></span>    command_t le_cmd;
+<a name="l00161"></a>00161 
+<a name="l00162"></a>00162     <span class="comment">/* Kopieren des Kommandos und auf Little Endian wandeln */</span>
+<a name="l00163"></a>00163     memcpy(&amp;le_cmd, cmd, <span class="keyword">sizeof</span>(command_t));
+<a name="l00164"></a>00164 
+<a name="l00165"></a>00165     <span class="comment">/* Alle 16 Bit Werte in Little Endian wandeln */</span>
+<a name="l00166"></a>00166     le_cmd.data_l = cmd-&gt;data_l &lt;&lt; 8;
+<a name="l00167"></a>00167     le_cmd.data_l |= (cmd-&gt;data_l &gt;&gt; 8) &amp; 0xff;
+<a name="l00168"></a>00168     le_cmd.data_r = cmd-&gt;data_r &lt;&lt; 8;
+<a name="l00169"></a>00169     le_cmd.data_r |= (cmd-&gt;data_r &gt;&gt; 8) &amp; 0xff;
+<a name="l00170"></a>00170     le_cmd.seq = cmd-&gt;seq &lt;&lt; 8;
+<a name="l00171"></a>00171     le_cmd.seq |= (cmd-&gt;seq &gt;&gt; 8) &amp; 0xff;
+<a name="l00172"></a>00172 
+<a name="l00173"></a>00173     <span class="keywordflow">return</span> <a class="code" href="tcp_8h.html#abf5327c9ea7eb20615c07b4ffd833abb">tcp_write</a>(&amp;le_cmd, <span class="keyword">sizeof</span>(command_t));
+<a name="l00174"></a>00174 <span class="preprocessor">#else   // LITTLE_ENDIAN</span>
+<a name="l00175"></a>00175 <span class="preprocessor"></span>    <span class="keywordflow">return</span> <a class="code" href="tcp_8h.html#abf5327c9ea7eb20615c07b4ffd833abb">tcp_write</a>(cmd, <span class="keyword">sizeof</span>(command_t));
+<a name="l00176"></a>00176 <span class="preprocessor">#endif  // BIG_ENDIAN</span>
+<a name="l00177"></a>00177 <span class="preprocessor"></span>}
+<a name="l00178"></a>00178 
+<a name="l00185"></a>00185 <span class="keyword">static</span> <span class="keywordtype">int</span> copy2Buffer(<span class="keyword">const</span> <span class="keywordtype">void</span> * data, <span class="keywordtype">unsigned</span> length) {
+<a name="l00186"></a>00186     <span class="keywordflow">if</span> ((sendBufferPtr + length) &gt; <span class="keyword">sizeof</span>(sendBuffer)) {
+<a name="l00187"></a>00187         <a class="code" href="tcp_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Sendbuffer filled with %u/%u bytes, another %d bytes pending.&quot;</span>, sendBufferPtr, (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span>)<span class="keyword">sizeof</span>(sendBuffer), length);
+<a name="l00188"></a>00188         <a class="code" href="tcp_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;  ==&gt; Trying to recover by calling flushSendBuffer()...&quot;</span>);
+<a name="l00189"></a>00189         <a class="code" href="tcp_8h.html#aae71e1682727310afab282923a80c968">flushSendBuffer</a>();
+<a name="l00190"></a>00190         <span class="keywordflow">if</span> ((sendBufferPtr + length) &gt; <span class="keyword">sizeof</span>(sendBuffer)) {
+<a name="l00191"></a>00191             printf(<span class="stringliteral">&quot;ERROR - Not enough space in sendbuffer!\n&quot;</span>);
+<a name="l00192"></a>00192             <a class="code" href="tcp_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;  ==&gt; Failed, Aborting&quot;</span>);
+<a name="l00193"></a>00193             <span class="keywordflow">return</span> -1;
+<a name="l00194"></a>00194         } <span class="keywordflow">else</span> {
+<a name="l00195"></a>00195             <a class="code" href="tcp_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;  ==&gt; Succeeded, data copied&quot;</span>);
+<a name="l00196"></a>00196         }
+<a name="l00197"></a>00197     }
+<a name="l00198"></a>00198 <span class="comment">//  printf(&quot;Store %d bytes&quot;, length);</span>
+<a name="l00199"></a>00199     <span class="comment">// Auf dem PC kopieren wir nur alles in den Ausgangspuffer</span>
+<a name="l00200"></a>00200     memcpy(&amp;sendBuffer[sendBufferPtr], data, length);
+<a name="l00201"></a>00201     sendBufferPtr += length;
+<a name="l00202"></a>00202 <span class="comment">//  printf(&quot; %d bytes now in buffer\n&quot;, sendBufferPtr);</span>
+<a name="l00203"></a>00203     <span class="keywordflow">return</span> length;
+<a name="l00204"></a>00204 }
+<a name="l00205"></a>00205 
+<a name="l00212"></a><a class="code" href="tcp_8c.html#abf5327c9ea7eb20615c07b4ffd833abb">00212</a> <span class="keywordtype">int</span> <a class="code" href="tcp_8h.html#abf5327c9ea7eb20615c07b4ffd833abb">tcp_write</a>(<span class="keyword">const</span> <span class="keywordtype">void</span> * data, <span class="keywordtype">int</span> length) {
+<a name="l00213"></a>00213     <span class="keywordtype">int</span> bytes_sent;
+<a name="l00214"></a>00214 <span class="preprocessor">#ifdef USE_SEND_BUFFER</span>
+<a name="l00215"></a>00215 <span class="preprocessor"></span>    bytes_sent = copy2Buffer(data, length);
+<a name="l00216"></a>00216 <span class="preprocessor">#else</span>
+<a name="l00217"></a>00217 <span class="preprocessor"></span>    bytes_sent = length;
+<a name="l00218"></a>00218     <span class="keywordflow">if</span> (send(<a class="code" href="tcp_8h.html#a16829ea6c4b65cc928ce596bd036fa9b">tcp_sock</a>, data, length, 0) != length) {
+<a name="l00219"></a>00219         printf(<span class="stringliteral">&quot;send() sent a different number of bytes than expected\n&quot;</span>);
+<a name="l00220"></a>00220         bytes_sent = -1;
+<a name="l00221"></a>00221     }
+<a name="l00222"></a>00222 <span class="preprocessor">#endif  // USE_SEND_BUFFER</span>
+<a name="l00223"></a>00223 <span class="preprocessor"></span>    <span class="keywordflow">return</span> bytes_sent;
+<a name="l00224"></a>00224 }
+<a name="l00225"></a>00225 
+<a name="l00233"></a><a class="code" href="tcp_8c.html#a294129207dee66dc263765f8dd00351b">00233</a> <span class="keywordtype">int</span> <a class="code" href="tcp_8h.html#a294129207dee66dc263765f8dd00351b">tcp_read</a>(<span class="keywordtype">void</span> * data, <span class="keywordtype">int</span> length) {
+<a name="l00234"></a>00234     <span class="keywordflow">if</span> (length == 0) <span class="keywordflow">return</span> 0; <span class="comment">// NOP, aber auch kein Programmabbruch noetig</span>
+<a name="l00235"></a>00235     <span class="keywordtype">int</span> bytesReceived = 0;
+<a name="l00236"></a>00236 
+<a name="l00237"></a>00237     <span class="keywordflow">if</span> ((bytesReceived = recv(<a class="code" href="tcp_8h.html#a16829ea6c4b65cc928ce596bd036fa9b">tcp_sock</a>, data, length, 0)) &lt;= 0) {
+<a name="l00238"></a>00238         printf(<span class="stringliteral">&quot;recv() failed or connection closed prematurely\n&quot;</span>);
+<a name="l00239"></a>00239         exit(1);
+<a name="l00240"></a>00240     }
+<a name="l00241"></a>00241 
+<a name="l00242"></a>00242     <span class="keywordflow">return</span> bytesReceived;
+<a name="l00243"></a>00243 }
+<a name="l00244"></a>00244 
+<a name="l00248"></a><a class="code" href="tcp_8c.html#a51de4ded7d342456d31722493c92c969">00248</a> <span class="keywordtype">void</span> <a class="code" href="tcp_8h.html#a51de4ded7d342456d31722493c92c969">tcp_init</a>(<span class="keywordtype">void</span>) {
+<a name="l00249"></a>00249 <span class="preprocessor">#ifdef WIN32</span>
+<a name="l00250"></a>00250 <span class="preprocessor"></span>    WSADATA wsaData;
+<a name="l00251"></a>00251     WORD wVersionRequested;
+<a name="l00252"></a>00252     <span class="keywordtype">int</span> err;
+<a name="l00253"></a>00253 
+<a name="l00254"></a>00254     wVersionRequested = MAKEWORD(2, 0); <span class="comment">// 2.0 and above version of WinSock</span>
+<a name="l00255"></a>00255     err = WSAStartup(wVersionRequested, &amp;wsaData);
+<a name="l00256"></a>00256     <span class="keywordflow">if</span> (err != 0) {
+<a name="l00257"></a>00257         printf(<span class="stringliteral">&quot;Couldn&#39;t not find a usable WinSock DLL.\n&quot;</span>);
+<a name="l00258"></a>00258         exit(1);
+<a name="l00259"></a>00259     }
+<a name="l00260"></a>00260 <span class="preprocessor">#endif  // WIN32</span>
+<a name="l00261"></a>00261 <span class="preprocessor"></span>
+<a name="l00262"></a>00262     <span class="keywordflow">if</span> ((<a class="code" href="tcp_8h.html#a16829ea6c4b65cc928ce596bd036fa9b">tcp_sock</a> = <a class="code" href="tcp_8h.html#a47c4716c70b318746951554467eb3357">tcp_openConnection</a>(<a class="code" href="tcp_8h.html#a5d2fc42a7b026cbdfc141449f37b3775">tcp_hostname</a>)) != -1) {
+<a name="l00263"></a>00263         printf(<span class="stringliteral">&quot;Connection to %s established on Port: %u\n&quot;</span>, <a class="code" href="tcp_8h.html#a5d2fc42a7b026cbdfc141449f37b3775">tcp_hostname</a>, <a class="code" href="tcp_8h.html#a614217d263be1fb1a5f76e2ff7be19a2">PORT</a>);
+<a name="l00264"></a>00264     } <span class="keywordflow">else</span> {
+<a name="l00265"></a>00265         printf(<span class="stringliteral">&quot;Connection to %s failed on Port: %u\n&quot;</span>, <a class="code" href="tcp_8h.html#a5d2fc42a7b026cbdfc141449f37b3775">tcp_hostname</a>, <a class="code" href="tcp_8h.html#a614217d263be1fb1a5f76e2ff7be19a2">PORT</a>);
+<a name="l00266"></a>00266         exit(1);
+<a name="l00267"></a>00267     }
+<a name="l00268"></a>00268 
+<a name="l00269"></a>00269 }
+<a name="l00270"></a>00270 
+<a name="l00275"></a><a class="code" href="tcp_8c.html#aae71e1682727310afab282923a80c968">00275</a> <span class="keywordtype">int</span> <a class="code" href="tcp_8h.html#aae71e1682727310afab282923a80c968">flushSendBuffer</a>(<span class="keywordtype">void</span>) {
+<a name="l00276"></a>00276     <span class="keywordtype">int</span> length = 0;
+<a name="l00277"></a>00277 <span class="preprocessor">#ifdef USE_SEND_BUFFER</span>
+<a name="l00278"></a>00278 <span class="preprocessor"></span><span class="comment">//  printf(&quot;Flushing Buffer with %d bytes\n&quot;,sendBufferPtr);</span>
+<a name="l00279"></a>00279 
+<a name="l00280"></a>00280     length = sendBufferPtr;
+<a name="l00281"></a>00281     sendBufferPtr = 0; <span class="comment">// Puffer auf jedenfall leeren</span>
+<a name="l00282"></a>00282     <span class="keywordflow">if</span> (send(<a class="code" href="tcp_8h.html#a16829ea6c4b65cc928ce596bd036fa9b">tcp_sock</a>, (<span class="keywordtype">char</span> *)&amp;sendBuffer, length, 0) != length) {
+<a name="l00283"></a>00283         printf(<span class="stringliteral">&quot;send() sent a different number of bytes than expected\n&quot;</span>);
+<a name="l00284"></a>00284         length = -1;
+<a name="l00285"></a>00285     }
+<a name="l00286"></a>00286 <span class="preprocessor">#endif // USE_SEND_BUFFER</span>
+<a name="l00287"></a>00287 <span class="preprocessor"></span>    <span class="keywordflow">return</span> length;
+<a name="l00288"></a>00288 }
+<a name="l00289"></a>00289 
+<a name="l00290"></a>00290 <span class="preprocessor">#endif // PC</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:04 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

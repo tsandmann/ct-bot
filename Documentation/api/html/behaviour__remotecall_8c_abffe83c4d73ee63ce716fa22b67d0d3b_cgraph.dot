@@ -1,0 +1,34 @@
+digraph G
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="bot_remotecall_cancel",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node1 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="get_behaviour",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$bot-logic_8c.html#a11e7a95fd56f9703bd2bd9c61300df6c",tooltip="Liefert das Verhalten zurueck, welches durch function implementiert ist."];
+  Node1 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="bot_remotecall_behaviour",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$behaviour__remotecall_8c.html#a471b777ece29bb0d0149ef4ac6241945",tooltip="Dieses Verhalten kuemmert sich darum die Verhalten, die von aussen angefragt wurden zu starten und li..."];
+  Node3 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="exit_behaviour",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$bot-logic_8c.html#ae957e610d7a3b2034084f87277a319de",tooltip="Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg."];
+  Node3 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="bot_remotecall_fl_dummy",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$behaviour__remotecall_8c.html#a2b049dee846b1e153ad54fdadb62175a",tooltip="Dummy-Funktion, die nur dafuer sorgt, dass die Parameterdaten auch in den Floating-Point Registern st..."];
+  Node3 -> Node6 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node6 [label="command_write_data",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$command_8c.html#aef266284aebb772b9592228ed9019469"];
+  Node6 -> Node7 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="command_write_to_internal",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$command_8c.html#a428cf92e37fc9bbc0ffc48912c3022ac"];
+  Node6 -> Node8 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node8 [label="os_exitCS",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1"];
+  Node8 -> Node9 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node9 [label="os_schedule",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$os__scheduler_8h.html#aaf0ea29568109bcdfb1d527f223accad"];
+  Node9 -> Node10 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node10 [label="fifo_put_data",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$fifo_8c.html#a7b3f9ad457273c9717bff49113c84250"];
+  Node10 -> Node11 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node11 [label="__builtin_avr_cli",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2",tooltip="Disables all interrupts by clearing the global interrupt mask."];
+  Node10 -> Node12 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node12 [label="os_signal_unlock",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$os__thread__pc_8c.html#aa0b166109be9754de9b8b863b8d197c7"];
+  Node9 -> Node13 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node13 [label="os_switch_thread",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$os__thread_8h.html#afa82438e9832609bc5ffbddad166e1b7"];
+  Node1 -> Node14 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node14 [label="deactivate_called_behaviours",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$bot-logic_8c.html#a7f318ddb329eb66eb8ac6053e65b415f",tooltip="Deaktiviert alle von diesem Verhalten aufgerufenen Verhalten."];
+  Node14 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+}

@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: mouse_pc.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_b1beec98a6d8202f7d2e9ed7dd898c89.html">pc</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#func-members">Funktionen</a>  </div>
+  <div class="headertitle">
+<div class="title">mouse_pc.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Routinen fuer die Ansteuerung eines opt. Maussensors.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="ct-Bot_8h_source.html">ct-Bot.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="mouse_8h_source.html">mouse.h</a>&quot;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für mouse_pc.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="mouse__pc_8c__incl.png" border="0" usemap="#mouse__pc_8c" alt=""/></div>
+<map name="mouse__pc_8c" id="mouse__pc_8c">
+</map>
+</div>
+</div>
+<p><a href="mouse__pc_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mouse__pc_8c.html#afa9f6222385b98b8bab5e7acf606b69a">mouse_sens_init</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mouse__pc_8c.html#a75e23740c984cb8bfcdd97275c01a69a">mouse_transmit_picture</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mouse__pc_8c.html#af36f291b20658b28859795dca3ada035">mouse_get_squal</a> (void)</td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Routinen fuer die Ansteuerung eines opt. Maussensors. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Benjamin Benz (<a href="mailto:bbe@heise.de">bbe@heise.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>26.12.05 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="mouse__pc_8c_source.html">mouse_pc.c</a>.</p>
+</div><hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="af36f291b20658b28859795dca3ada035"></a><!-- doxytag: member="mouse_pc.c::mouse_get_squal" ref="af36f291b20658b28859795dca3ada035" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mouse_get_squal </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Gibt den SQUAL-Wert zurueck. Dieser gibt an, wieviele Merkmale der Sensor im aktuell aufgenommenen Bild des Untergrunds wahrnimmt. Fuer simulierten Bot zur Zeit mit einem fixen Wert belegt, da fuer den Boden im Sim keine Texturen verwendet werden </p>
+
+<p>Definiert in Zeile <a class="el" href="mouse__pc_8c_source.html#l00051">51</a> der Datei <a class="el" href="mouse__pc_8c_source.html">mouse_pc.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="sensor_8c_source.html#l00673">odometric_display()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="afa9f6222385b98b8bab5e7acf606b69a"></a><!-- doxytag: member="mouse_pc.c::mouse_sens_init" ref="afa9f6222385b98b8bab5e7acf606b69a" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mouse_sens_init </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Initialisiere Maussensor </p>
+
+<p>Definiert in Zeile <a class="el" href="mouse__pc_8c_source.html#l00036">36</a> der Datei <a class="el" href="mouse__pc_8c_source.html">mouse_pc.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="init_8c_source.html#l00046">ctbot_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a75e23740c984cb8bfcdd97275c01a69a"></a><!-- doxytag: member="mouse_pc.c::mouse_transmit_picture" ref="a75e23740c984cb8bfcdd97275c01a69a" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mouse_transmit_picture </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Uebertraegt ein Bild vom Maussensor an den PC </p>
+
+<p>Definiert in Zeile <a class="el" href="mouse__pc_8c_source.html#l00042">42</a> der Datei <a class="el" href="mouse__pc_8c_source.html">mouse_pc.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="command_8c_source.html#l00359">command_evaluate()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:06 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

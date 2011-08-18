@@ -1,0 +1,428 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: botfs_pc.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_b1beec98a6d8202f7d2e9ed7dd898c89.html">pc</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#func-members">Funktionen</a> &#124;
+<a href="#var-members">Variablen</a>  </div>
+  <div class="headertitle">
+<div class="title">botfs_pc.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>PC-only Teile des Dateisystems BotFS.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="ct-Bot_8h_source.html">ct-Bot.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="os__thread_8h_source.html">os_thread.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="botfs_8h_source.html">botfs.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="botfs-low_8h_source.html">botfs-low.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="log_8h_source.html">log.h</a>&quot;</code><br/>
+<code>#include &lt;string.h&gt;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für botfs_pc.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="botfs__pc_8c__incl.png" border="0" usemap="#botfs__pc_8c" alt=""/></div>
+<map name="botfs__pc_8c" id="botfs__pc_8c">
+</map>
+</div>
+</div>
+<p><a href="botfs__pc_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__pc_8c.html#a75f8a777d322f7bf7133a87c492d0d9f">botfs_create_volume</a> (const char *image, const char *name, uint32_t size)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Erzeugt ein neues Volume.  <a href="#a75f8a777d322f7bf7133a87c492d0d9f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__pc_8c.html#a855fac9127fb0e3076b60da2f9a1650f">botfs_copy_file</a> (const char *to, const char *from, void *buffer)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Kopiert eine Datei vom PC-Dateisystem auf das BotFS-Volume.  <a href="#a855fac9127fb0e3076b60da2f9a1650f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__pc_8c.html#aaf7266e0becb9ea37380a0c6486db40b">botfs_extract_file</a> (const char *to, const char *from, void *buffer)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Kopiert eine Datei vom BotfS-Volume ins PC-Dateisystem.  <a href="#aaf7266e0becb9ea37380a0c6486db40b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__pc_8c.html#a58bec3b262a075120ddd374e1438aaed">botfs_readdir</a> (uint8_t offset, void *buffer)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Gibt Root-Dir-Eintraege zurueck.  <a href="#a58bec3b262a075120ddd374e1438aaed"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__pc_8c.html#ae5161e6b535fcf21c029e7890f1d00a1">botfs_print_freelist</a> (void *buffer)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Gibt alle Freelist-Eintraege aus.  <a href="#ae5161e6b535fcf21c029e7890f1d00a1"></a><br/></td></tr>
+<tr><td colspan="2"><h2><a name="var-members"></a>
+Variablen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">botfs_volume_data_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__pc_8c.html#a2690205b7105228f95fd5a6ecae93641">botfs_vol_data</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Root-Dir- und Freelist-Adresse.  <a href="#a2690205b7105228f95fd5a6ecae93641"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="botfs-low_8h.html#a1acc1c3282ce989c2fc6f71ae2ba8d99">botfs_mutex_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="botfs__pc_8c.html#a279d0b6ca2d1b5303e53bb54fc378ebc">botfs_mutex</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">sperrt den Zugriff auf nicht threadsichere Funktionen  <a href="#a279d0b6ca2d1b5303e53bb54fc378ebc"></a><br/></td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>PC-only Teile des Dateisystems BotFS. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Timo Sandmann (<a href="mailto:mail@timosandmann.de">mail@timosandmann.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>17.10.2010 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="botfs__pc_8c_source.html">botfs_pc.c</a>.</p>
+</div><hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="a855fac9127fb0e3076b60da2f9a1650f"></a><!-- doxytag: member="botfs_pc.c::botfs_copy_file" ref="a855fac9127fb0e3076b60da2f9a1650f" args="(const char *to, const char *from, void *buffer)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int8_t botfs_copy_file </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>to</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Kopiert eine Datei vom PC-Dateisystem auf das BotFS-Volume. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*to</td><td>Dateiname der Zieldatei auf dem Volume </td></tr>
+    <tr><td class="paramname">*from</td><td>Pfadname der Quelldatei </td></tr>
+    <tr><td class="paramname">*buffer</td><td>Puffer fuer mindestens BOTFS_BLOCK_SIZE Bytes </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>0, falls kein Fehler </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="botfs__pc_8c_source.html#l00154">154</a> der Datei <a class="el" href="botfs__pc_8c_source.html">botfs_pc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="botfs__config_8h_source.html#l00039">BOTFS_BLOCK_SIZE</a>, <a class="el" href="botfs_8c_source.html#l00400">botfs_open()</a>, <a class="el" href="botfs__config_8h_source.html#l00059">BOTFS_MODE_r</a>, <a class="el" href="botfs_8c_source.html#l00442">botfs_unlink()</a>, <a class="el" href="botfs_8c_source.html#l00318">botfs_create()</a>, <a class="el" href="botfs__config_8h_source.html#l00061">BOTFS_MODE_W</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a> und <a class="el" href="botfs_8c_source.html#l00615">botfs_write()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="cmd-tools__pc_8c_source.html#l00107">hand_cmd_args()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="botfs__pc_8c_a855fac9127fb0e3076b60da2f9a1650f_cgraph.png" border="0" usemap="#botfs__pc_8c_a855fac9127fb0e3076b60da2f9a1650f_cgraph" alt=""/></div>
+<map name="botfs__pc_8c_a855fac9127fb0e3076b60da2f9a1650f_cgraph" id="botfs__pc_8c_a855fac9127fb0e3076b60da2f9a1650f_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a75f8a777d322f7bf7133a87c492d0d9f"></a><!-- doxytag: member="botfs_pc.c::botfs_create_volume" ref="a75f8a777d322f7bf7133a87c492d0d9f" args="(const char *image, const char *name, uint32_t size)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int8_t botfs_create_volume </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>image</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Erzeugt ein neues Volume. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*image</td><td>Dateiname fuer das Volume-Image </td></tr>
+    <tr><td class="paramname">*name</td><td>Name des Volumes </td></tr>
+    <tr><td class="paramname">size</td><td>Groesse des Volumes in Byte </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>0, falls kein Fehler </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="botfs__pc_8c_source.html#l00047">47</a> der Datei <a class="el" href="botfs__pc_8c_source.html">botfs_pc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="botfs__config_8h_source.html#l00042">BOTFS_MAX_VOLUME_SIZE</a>, <a class="el" href="botfs__config_8h_source.html#l00041">BOTFS_MAX_FILENAME</a>, <a class="el" href="botfs-low__pc_8c_source.html#l00134">botfs_create_volume_low()</a>, <a class="el" href="unionbotfs__volume__t.html#a9ddf9bc9b65152f5f1afd15b4c8aa967">botfs_volume_t::data</a>, <a class="el" href="botfs__types_8h_source.html#l00133">botfs_volume_t::name</a>, <a class="el" href="botfs__config_8h_source.html#l00054">BOTFS_VOL_NAME_SIZE</a>, <a class="el" href="botfs__types_8h_source.html#l00129">botfs_volume_t::version</a>, <a class="el" href="botfs__config_8h_source.html#l00052">BOTFS_VERSION</a>, <a class="el" href="botfs__types_8h_source.html#l00130">botfs_volume_t::size</a>, <a class="el" href="botfs__types_8h_source.html#l00131">botfs_volume_t::ctrldata</a>, <a class="el" href="botfs__config_8h_source.html#l00038">BOTFS_HEADER_POS</a>, <a class="el" href="botfs__config_8h_source.html#l00039">BOTFS_BLOCK_SIZE</a>, <a class="el" href="botfs__config_8h_source.html#l00043">BOTFS_DIR_BLOCK_CNT</a>, <a class="el" href="botfs__config_8h_source.html#l00048">BOTFS_FREEL_BL_CNT</a>, <a class="el" href="botfs__types_8h_source.html#l00132">botfs_volume_t::first_data</a>, <a class="el" href="botfs-low_8c_source.html#l00225">botfs_write_low()</a>, <a class="el" href="botfs__types_8h_source.html#l00135">botfs_volume_t::raw</a>, <a class="el" href="botfs__config_8h_source.html#l00051">BOTFS_VOLUME_DATA</a> und <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs-low__pc_8c_source.html#l00064">botfs_init_low()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="botfs__pc_8c_a75f8a777d322f7bf7133a87c492d0d9f_cgraph.png" border="0" usemap="#botfs__pc_8c_a75f8a777d322f7bf7133a87c492d0d9f_cgraph" alt=""/></div>
+<map name="botfs__pc_8c_a75f8a777d322f7bf7133a87c492d0d9f_cgraph" id="botfs__pc_8c_a75f8a777d322f7bf7133a87c492d0d9f_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="aaf7266e0becb9ea37380a0c6486db40b"></a><!-- doxytag: member="botfs_pc.c::botfs_extract_file" ref="aaf7266e0becb9ea37380a0c6486db40b" args="(const char *to, const char *from, void *buffer)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int8_t botfs_extract_file </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>to</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Kopiert eine Datei vom BotfS-Volume ins PC-Dateisystem. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*to</td><td>Pfadname der Zieldatei </td></tr>
+    <tr><td class="paramname">*from</td><td>Dateiname der Quelldatei auf dem Volume </td></tr>
+    <tr><td class="paramname">*buffer</td><td>Puffer fuer mindestens BOTFS_BLOCK_SIZE Bytes </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>0, falls kein Fehler </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="botfs__pc_8c_source.html#l00235">235</a> der Datei <a class="el" href="botfs__pc_8c_source.html">botfs_pc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="botfs_8c_source.html#l00400">botfs_open()</a>, <a class="el" href="botfs__config_8h_source.html#l00059">BOTFS_MODE_r</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="botfs_8c_source.html#l00590">botfs_read()</a> und <a class="el" href="botfs__config_8h_source.html#l00039">BOTFS_BLOCK_SIZE</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="cmd-tools__pc_8c_source.html#l00107">hand_cmd_args()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="botfs__pc_8c_aaf7266e0becb9ea37380a0c6486db40b_cgraph.png" border="0" usemap="#botfs__pc_8c_aaf7266e0becb9ea37380a0c6486db40b_cgraph" alt=""/></div>
+<map name="botfs__pc_8c_aaf7266e0becb9ea37380a0c6486db40b_cgraph" id="botfs__pc_8c_aaf7266e0becb9ea37380a0c6486db40b_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ae5161e6b535fcf21c029e7890f1d00a1"></a><!-- doxytag: member="botfs_pc.c::botfs_print_freelist" ref="ae5161e6b535fcf21c029e7890f1d00a1" args="(void *buffer)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void botfs_print_freelist </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>buffer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Gibt alle Freelist-Eintraege aus. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*buffer</td><td>Puffer mit mindestens BOTFS_BLOCK_SIZE Byte </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="botfs__pc_8c_source.html#l00317">317</a> der Datei <a class="el" href="botfs__pc_8c_source.html">botfs_pc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="botfs-low_8c_source.html#l00191">botfs_acquire_lock_low()</a>, <a class="el" href="botfs_8c_source.html#l00130">botfs_mutex</a>, <a class="el" href="botfs_8c_source.html#l00129">botfs_vol_data</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="botfs__config_8h_source.html#l00048">BOTFS_FREEL_BL_CNT</a>, <a class="el" href="botfs_8c_source.html#l00590">botfs_read()</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">j</a> und <a class="el" href="botfs__config_8h_source.html#l00047">BOTFS_FREEL_BL_SIZE</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="botfs__pc_8c_ae5161e6b535fcf21c029e7890f1d00a1_cgraph.png" border="0" usemap="#botfs__pc_8c_ae5161e6b535fcf21c029e7890f1d00a1_cgraph" alt=""/></div>
+<map name="botfs__pc_8c_ae5161e6b535fcf21c029e7890f1d00a1_cgraph" id="botfs__pc_8c_ae5161e6b535fcf21c029e7890f1d00a1_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a58bec3b262a075120ddd374e1438aaed"></a><!-- doxytag: member="botfs_pc.c::botfs_readdir" ref="a58bec3b262a075120ddd374e1438aaed" args="(uint8_t offset, void *buffer)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char* botfs_readdir </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Gibt Root-Dir-Eintraege zurueck. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">offset</td><td>Nummer des Eintrags </td></tr>
+    <tr><td class="paramname">*buffer</td><td>Puffer mit mindestens BOTFS_BLOCK_SIZE Byte </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Zeiger auf Dateiname (aus buffer) </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="botfs__pc_8c_source.html#l00282">282</a> der Datei <a class="el" href="botfs__pc_8c_source.html">botfs_pc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="botfs-low_8c_source.html#l00191">botfs_acquire_lock_low()</a>, <a class="el" href="botfs_8c_source.html#l00130">botfs_mutex</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="botfs_8c_source.html#l00129">botfs_vol_data</a>, <a class="el" href="botfs__config_8h_source.html#l00043">BOTFS_DIR_BLOCK_CNT</a>, <a class="el" href="botfs_8c_source.html#l00590">botfs_read()</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">j</a> und <a class="el" href="botfs__config_8h_source.html#l00044">BOTFS_FILE_DESC_CNT</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs-low__pc_8c_source.html#l00104">botfs_check_volume_low()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="botfs__pc_8c_a58bec3b262a075120ddd374e1438aaed_cgraph.png" border="0" usemap="#botfs__pc_8c_a58bec3b262a075120ddd374e1438aaed_cgraph" alt=""/></div>
+<map name="botfs__pc_8c_a58bec3b262a075120ddd374e1438aaed_cgraph" id="botfs__pc_8c_a58bec3b262a075120ddd374e1438aaed_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<hr/><h2>Variablen-Dokumentation</h2>
+<a class="anchor" id="a279d0b6ca2d1b5303e53bb54fc378ebc"></a><!-- doxytag: member="botfs_pc.c::botfs_mutex" ref="a279d0b6ca2d1b5303e53bb54fc378ebc" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="botfs-low_8h.html#a1acc1c3282ce989c2fc6f71ae2ba8d99">botfs_mutex_t</a> <a class="el" href="botfs__pc_8c.html#a279d0b6ca2d1b5303e53bb54fc378ebc">botfs_mutex</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>sperrt den Zugriff auf nicht threadsichere Funktionen </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs_8c_source.html#l00130">130</a> der Datei <a class="el" href="botfs_8c_source.html">botfs.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs-low_8c_source.html#l00209">botfs_read_low()</a>, <a class="el" href="botfs-low_8c_source.html#l00225">botfs_write_low()</a>, <a class="el" href="botfs_8c_source.html#l00318">botfs_create()</a>, <a class="el" href="botfs_8c_source.html#l00400">botfs_open()</a>, <a class="el" href="botfs_8c_source.html#l00442">botfs_unlink()</a>, <a class="el" href="botfs_8c_source.html#l00534">botfs_rename()</a>, <a class="el" href="botfs__pc_8c_source.html#l00282">botfs_readdir()</a> und <a class="el" href="botfs__pc_8c_source.html#l00317">botfs_print_freelist()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2690205b7105228f95fd5a6ecae93641"></a><!-- doxytag: member="botfs_pc.c::botfs_vol_data" ref="a2690205b7105228f95fd5a6ecae93641" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">botfs_volume_data_t <a class="el" href="botfs__pc_8c.html#a2690205b7105228f95fd5a6ecae93641">botfs_vol_data</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Root-Dir- und Freelist-Adresse. </p>
+
+<p>Definiert in Zeile <a class="el" href="botfs_8c_source.html#l00129">129</a> der Datei <a class="el" href="botfs_8c_source.html">botfs.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs_8c_source.html#l00140">botfs_init()</a>, <a class="el" href="botfs_8c_source.html#l00318">botfs_create()</a>, <a class="el" href="botfs_8c_source.html#l00442">botfs_unlink()</a>, <a class="el" href="botfs_8c_source.html#l00534">botfs_rename()</a>, <a class="el" href="botfs__pc_8c_source.html#l00282">botfs_readdir()</a> und <a class="el" href="botfs__pc_8c_source.html#l00317">botfs_print_freelist()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:05 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

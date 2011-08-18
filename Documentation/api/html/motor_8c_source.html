@@ -1,0 +1,564 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: motor.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">motor.c</div>  </div>
+</div>
+<div class="contents">
+<a href="motor_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00028"></a>00028 <span class="preprocessor">#include &lt;stdlib.h&gt;</span>
+<a name="l00029"></a>00029 <span class="preprocessor">#include &lt;string.h&gt;</span>
+<a name="l00030"></a>00030 <span class="preprocessor">#include &quot;<a class="code" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot-Funktionalitaeten">ct-Bot.h</a>&quot;</span>
+<a name="l00031"></a>00031 <span class="preprocessor">#include &quot;<a class="code" href="motor_8h.html" title="High-Level Routinen fuer die Motorsteuerung des c&#39;t-Bots.">motor.h</a>&quot;</span>
+<a name="l00032"></a>00032 <span class="preprocessor">#include &quot;<a class="code" href="bot-local_8h.html" title="Konstanten, die den Bot an reale Umgebungen anpassen.">bot-local.h</a>&quot;</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#include &quot;<a class="code" href="motor-low_8h.html" title="Low-Level Routinen fuer die Motorsteuerung des c&#39;t-Bots.">motor-low.h</a>&quot;</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include &quot;<a class="code" href="timer_8h.html" title="Timer und Zaehler.">timer.h</a>&quot;</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include &quot;<a class="code" href="sensor_8h.html" title="Architekturunabhaengiger Teil der Sensorsteuerung.">sensor.h</a>&quot;</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include &quot;<a class="code" href="sensor-low_8h.html" title="Low-Level Routinen fuer die Sensor-Steuerung des c&#39;t-Bots.">sensor-low.h</a>&quot;</span>
+<a name="l00037"></a>00037 <span class="preprocessor">#include &quot;<a class="code" href="display_8h.html" title="Routinen zur Displaysteuerung.">display.h</a>&quot;</span>
+<a name="l00038"></a>00038 <span class="preprocessor">#include &quot;<a class="code" href="bot-logic_8h.html" title="High-Level-Routinen fuer die Steuerung des c&#39;t-Bots.">bot-logic/bot-logic.h</a>&quot;</span>
+<a name="l00039"></a>00039 <span class="preprocessor">#include &quot;<a class="code" href="rc5-codes_8h.html" title="RC5-Fernbedienungscodes.">rc5-codes.h</a>&quot;</span>
+<a name="l00040"></a>00040 <span class="preprocessor">#include &quot;<a class="code" href="eeprom_8h.html" title="EEPROM-Zugriff.">eeprom.h</a>&quot;</span>
+<a name="l00041"></a>00041 <span class="preprocessor">#include &quot;<a class="code" href="math__utils_8h.html" title="Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig.">math_utils.h</a>&quot;</span>
+<a name="l00042"></a>00042 
+<a name="l00043"></a><a class="code" href="motor_8h.html#aab6d42e1ec6fd5779d9b3f8a8207cc3d">00043</a> int16_t <a class="code" href="motor_8c.html#aab6d42e1ec6fd5779d9b3f8a8207cc3d" title="Sollgeschwindigkeit des linken Motors.">speed_l</a> = 0;    
+<a name="l00044"></a><a class="code" href="motor_8h.html#a1377e46d27eda737fb816e8fa9c9594a">00044</a> int16_t <a class="code" href="motor_8c.html#a1377e46d27eda737fb816e8fa9c9594a" title="Sollgeschwindigkeit des rechten Motors.">speed_r</a> = 0;    
+<a name="l00046"></a>00046 <span class="preprocessor">#ifdef SPEED_CONTROL_AVAILABLE</span>
+<a name="l00047"></a>00047 <span class="preprocessor"></span><span class="preprocessor">#ifdef ADJUST_PID_PARAMS</span>
+<a name="l00048"></a>00048 <span class="preprocessor"></span><span class="comment">/* PID-Parameter variabel */</span>
+<a name="l00049"></a><a class="code" href="behaviour__calibrate__pid_8c.html#a05010e946b4ed8af5902d87bcf245a9f">00049</a> int8_t <a class="code" href="motor_8c.html#a05010e946b4ed8af5902d87bcf245a9f">Kp</a> = <a class="code" href="bot-local_8h.html#a6024e0bc7a5cf18791d0f43187872899">PID_Kp</a>; 
+<a name="l00050"></a><a class="code" href="behaviour__calibrate__pid_8c.html#ad51c6683c08f946f8646d2fc5eba9ed8">00050</a> int8_t <a class="code" href="motor_8c.html#ad51c6683c08f946f8646d2fc5eba9ed8">Ki</a> = <a class="code" href="bot-local_8h.html#a143b9cdc295c814b393a04c7f85727c8">PID_Ki</a>; 
+<a name="l00051"></a><a class="code" href="behaviour__calibrate__pid_8c.html#ade61f163f62153c4b3b40ce1ff04a0ec">00051</a> int8_t <a class="code" href="motor_8c.html#ade61f163f62153c4b3b40ce1ff04a0ec">Kd</a> = <a class="code" href="bot-local_8h.html#a2052fae867467b23d3439a913a4c7374">PID_Kd</a>; 
+<a name="l00052"></a>00052 <span class="preprocessor">#else</span>
+<a name="l00053"></a>00053 <span class="preprocessor"></span><span class="comment">/* PID-Koeffizienten aus Parametern berechnen */</span>
+<a name="l00054"></a>00054 <span class="preprocessor">#define Q0 ( PID_Kp + PID_Kd/PID_Ta)                    </span>
+<a name="l00055"></a>00055 <span class="preprocessor">#define Q1 (-PID_Kp - 2*PID_Kd/PID_Ta + PID_Ki*PID_Ta)  </span>
+<a name="l00056"></a>00056 <span class="preprocessor">#define Q2 ( PID_Kd/PID_Ta)                             </span>
+<a name="l00057"></a>00057 <span class="preprocessor">#endif  // ADJUST_PID_PARAMS</span>
+<a name="l00058"></a>00058 <span class="preprocessor"></span>
+<a name="l00060"></a><a class="code" href="motor_8c.html#a9da66715bfbb119ead99e3cb803a6dad">00060</a> <span class="preprocessor">#define TICKS_TO_SPEED      (uint16_t)((float)WHEEL_PERIMETER/ENCODER_MARKS*1000000/TIMER_STEPS)    // = 8475*2</span>
+<a name="l00061"></a><a class="code" href="motor_8c.html#ae5cc4ef2a9b174ac1e0b7c8fb332e0e3">00061</a> <span class="preprocessor"></span><span class="preprocessor">#define TICKS_TO_SPEED_0    (TICKS_TO_SPEED / 2)        </span>
+<a name="l00062"></a><a class="code" href="motor_8c.html#a1c6bb751aba91d14e38cef571151a740">00062</a> <span class="preprocessor">#define TICKS_TO_SPEED_1    (TICKS_TO_SPEED / 2 * 2)    </span>
+<a name="l00063"></a><a class="code" href="motor_8c.html#a1835121f37043250305b2921e7266409">00063</a> <span class="preprocessor">#define TICKS_TO_SPEED_2    (TICKS_TO_SPEED / 2 * 4)    </span>
+<a name="l00066"></a>00066 <span class="preprocessor">typedef struct {</span>
+<a name="l00067"></a><a class="code" href="structpwmMap__t.html#af5c88db34704c2c5996d14a406b8cf03">00067</a> <span class="preprocessor"></span>    uint8_t <a class="code" href="structpwmMap__t.html#af5c88db34704c2c5996d14a406b8cf03">pwm</a>;    
+<a name="l00068"></a><a class="code" href="structpwmMap__t.html#a0564a1ed6c0b03560b716619772a37cc">00068</a>     uint8_t <a class="code" href="structpwmMap__t.html#a0564a1ed6c0b03560b716619772a37cc">rating</a>; 
+<a name="l00069"></a>00069 } <a class="code" href="structpwmMap__t.html">pwmMap_t</a>;
+<a name="l00070"></a>00070 
+<a name="l00071"></a>00071 <span class="keyword">static</span> uint8_t encoderTargetRate[2] = {0,0};    
+<a name="l00072"></a>00072 <span class="keyword">static</span> uint8_t start_signal[2] = {0,0};
+<a name="l00073"></a>00073 <span class="keyword">static</span> <span class="keyword">volatile</span> <a class="code" href="structpwmMap__t.html">pwmMap_t</a> pwm_values[4] = {{0,255},{0,255},{0,255},{0,255}};     
+<a name="l00074"></a>00074 <span class="preprocessor">#ifdef DISPLAY_REGELUNG_AVAILABLE</span>
+<a name="l00075"></a>00075 <span class="preprocessor"></span>uint8_t <a class="code" href="behaviour__calibrate__pid_8c.html#ac648b6b975acc5fc8eab32ac83ddf7c6">encoderRateInfo</a>[2];     
+<a name="l00076"></a>00076 <span class="preprocessor">#endif</span>
+<a name="l00077"></a>00077 <span class="preprocessor"></span>
+<a name="l00078"></a>00078 <span class="preprocessor">#endif // SPEED_CONTROL_AVAILABLE</span>
+<a name="l00079"></a>00079 <span class="preprocessor"></span>
+<a name="l00080"></a>00080 <span class="comment">/* EEPROM-Variable immer deklarieren, damit die Adresse sich nicht veraendert je nach #define */</span>
+<a name="l00081"></a><a class="code" href="motor_8c.html#ade38f7eb947fe4111c543992d766bb46">00081</a> uint8_t <a class="code" href="eeprom_8h.html#a3f5ebf97c07a164113b82053ed2b5ebe">EEPROM</a> <a class="code" href="motor_8c.html#ade38f7eb947fe4111c543992d766bb46">pwmSlow</a>[4] = {255, 255, 255, 255};   
+<a name="l00083"></a><a class="code" href="motor_8h.html#a96703dcd865ea4cfb315cab528b061d8">00083</a> <a class="code" href="uniondirection__t.html">direction_t</a> <a class="code" href="motor_8c.html#a96703dcd865ea4cfb315cab528b061d8" title="Drehrichtung der Motoren, auch wenn die Speed-Variablen bereits wieder auf Null sind.">direction</a>;      
+<a name="l00085"></a>00085 <span class="preprocessor">#ifdef SPEED_CONTROL_AVAILABLE</span>
+<a name="l00086"></a>00086 <span class="preprocessor"></span>
+<a name="l00098"></a><a class="code" href="motor_8h.html#abfe2160ced04338d7f24aab6291c7f19">00098</a> <span class="keywordtype">void</span> <a class="code" href="motor_8c.html#abfe2160ced04338d7f24aab6291c7f19" title="Drehzahlregelung fuer die Motoren des c&#39;t-Bots.">speed_control</a>(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_time, uint8_t enc) {
+<a name="l00099"></a>00099     <span class="comment">/* Speicher fuer alte Regeldifferenzen */</span>
+<a name="l00100"></a>00100     <span class="keyword">static</span> int16_t lastErr[2] = {0,0};
+<a name="l00101"></a>00101     <span class="keyword">static</span> int16_t last2Err[2] = {0,0};
+<a name="l00102"></a>00102     <span class="keyword">static</span> uint8_t orignalTargetRate[2] = {0,0};
+<a name="l00103"></a>00103 
+<a name="l00104"></a>00104     <span class="keywordflow">if</span> (encoderTargetRate[dev] == 0) {
+<a name="l00105"></a>00105         <span class="comment">/* Fuer Stopp einfach alles nullsetzen */</span>
+<a name="l00106"></a>00106         *actVar = 0;
+<a name="l00107"></a>00107         lastErr[dev] = 0;
+<a name="l00108"></a>00108         last2Err[dev] = 0;
+<a name="l00109"></a>00109     } <span class="keywordflow">else</span> {
+<a name="l00110"></a>00110         <span class="comment">/* Zeitdifferenz zwischen aktueller und ([vor- | 4.-])letzter Encoderflanke berechnen [176 us] */</span>
+<a name="l00111"></a>00111         <span class="keyword">register</span> uint8_t * p_time = (uint8_t *) encTime;
+<a name="l00112"></a>00112         uint16_t ticks_to_speed;
+<a name="l00113"></a>00113         uint16_t dt = *(uint16_t *) (p_time + i_time);  <span class="comment">// aktueller Timestamp</span>
+<a name="l00114"></a>00114         int8_t enc_correct = 0;
+<a name="l00115"></a>00115 
+<a name="l00116"></a>00116         <span class="comment">/* Beim ersten Aufruf mit neuem Speed beruecksichtigen wir die Beschleunigung */</span>
+<a name="l00117"></a>00117         <span class="keywordflow">if</span> (start_signal[dev] == <a class="code" href="bot-local_8h.html#ab3f6286575d277c914e924a7474e3b55">PID_START_DELAY</a>) {
+<a name="l00118"></a>00118             orignalTargetRate[dev] = encoderTargetRate[dev];    <span class="comment">// Zielgeschwindigkeit merken</span>
+<a name="l00119"></a>00119             encoderTargetRate[dev] = <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a> / 2;    <span class="comment">// laaaangsam anfahren</span>
+<a name="l00120"></a>00120 
+<a name="l00121"></a>00121 <span class="preprocessor">#ifdef SPEED_LOG_AVAILABLE</span>
+<a name="l00122"></a>00122 <span class="preprocessor"></span>            <span class="comment">/* Daten loggen */</span>
+<a name="l00123"></a>00123             <span class="keyword">register</span> uint8_t index = <a class="code" href="sensor-low_8c.html#aa1751ce640b258d3264fc109c9f7ebc0" title="Array-Index.">slog_i</a>[dev];
+<a name="l00124"></a>00124             <span class="keywordflow">if</span> (index &lt; 24) {
+<a name="l00125"></a>00125                 <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[dev][index].encRate = 1; <span class="comment">// Regelgroesse</span>
+<a name="l00126"></a>00126                 <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[dev][index].err = encoderTargetRate[dev]; <span class="comment">// Regeldifferenz</span>
+<a name="l00127"></a>00127                 <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[dev][index].pwm = *actVar; <span class="comment">// Stellgroesse</span>
+<a name="l00128"></a>00128                 <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[dev][index].targetRate = encoderTargetRate[dev]; <span class="comment">// Fuehrungsgroesse</span>
+<a name="l00129"></a>00129                 <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[dev][index++].time = <a class="code" href="timer_8c.html#a29a6ea2becd6491e8b8aaa86156623a3">tickCount</a>.u32; <span class="comment">// Timestamp</span>
+<a name="l00130"></a>00130                 <a class="code" href="sensor-low_8c.html#aa1751ce640b258d3264fc109c9f7ebc0" title="Array-Index.">slog_i</a>[dev] = (uint8_t) (index &gt; 24 ? 0 : index); <span class="comment">// Z/25Z</span>
+<a name="l00131"></a>00131             }
+<a name="l00132"></a>00132 <span class="preprocessor">#endif // SPEED_LOG_AVAILABLE</span>
+<a name="l00133"></a>00133 <span class="preprocessor"></span>
+<a name="l00134"></a>00134         } <span class="keywordflow">else</span> { <span class="comment">// 1. Aufruf =&gt; es gibt noch keinen korrekten Timestamp in der Vergangenheit =&gt; bis zum 2. Aufruf nix tun</span>
+<a name="l00135"></a>00135             <span class="keywordflow">if</span> (encoderTargetRate[dev] &gt;= <a class="code" href="bot-local_8h.html#ae68cbc679b322395a1bbc74b1c63acc6">PID_SPEED_THRESHOLD</a>) {
+<a name="l00136"></a>00136                 i_time = (uint8_t) (i_time - 4 * <span class="keyword">sizeof</span>(encTime[0])); <span class="comment">// Index 4.letzter Timestamp</span>
+<a name="l00137"></a>00137                 ticks_to_speed = <a class="code" href="motor_8c.html#a1835121f37043250305b2921e7266409">TICKS_TO_SPEED_2</a>;
+<a name="l00138"></a>00138             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (encoderTargetRate[dev] &lt; <a class="code" href="bot-local_8h.html#ae68cbc679b322395a1bbc74b1c63acc6">PID_SPEED_THRESHOLD</a> / 2) {
+<a name="l00139"></a>00139                 i_time = (uint8_t) (i_time - <span class="keyword">sizeof</span>(encTime[0])); <span class="comment">// Index letzter Timestamp</span>
+<a name="l00140"></a>00140                 ticks_to_speed = <a class="code" href="motor_8c.html#ae5cc4ef2a9b174ac1e0b7c8fb332e0e3">TICKS_TO_SPEED_0</a>;
+<a name="l00141"></a>00141                 <span class="comment">/* Regelgroesse korrigieren, wenn mit jeder Encoderflanke gerechnet wurde */</span>
+<a name="l00142"></a>00142                 enc_correct = dev == 0 ? <a class="code" href="bot-local_8h.html#a3e9d3d8835e4e19a5e20b9cf566a2ba9">ENC_CORRECT_L</a> : <a class="code" href="bot-local_8h.html#a91337a53d3e7bb5e3222267c7133a2d6">ENC_CORRECT_R</a>;
+<a name="l00143"></a>00143                 <span class="keywordflow">if</span> (enc == 1)  {
+<a name="l00144"></a>00144                     enc_correct = (int8_t) -enc_correct;
+<a name="l00145"></a>00145                 }
+<a name="l00146"></a>00146             } <span class="keywordflow">else</span> {
+<a name="l00147"></a>00147                 i_time = (uint8_t) (i_time - 2 * <span class="keyword">sizeof</span>(encTime[0])); <span class="comment">// Index vorletzter Timestamp</span>
+<a name="l00148"></a>00148                 ticks_to_speed = <a class="code" href="motor_8c.html#a1c6bb751aba91d14e38cef571151a740">TICKS_TO_SPEED_1</a>;
+<a name="l00149"></a>00149             }
+<a name="l00150"></a>00150             i_time = (uint8_t) (i_time &amp; 0xf);                      <span class="comment">// Index auf 4 Bit begrenzen</span>
+<a name="l00151"></a>00151             dt -=  *(uint16_t *) (p_time + i_time); <span class="comment">// gewaehlten Timestamp subtrahieren</span>
+<a name="l00152"></a>00152 
+<a name="l00153"></a>00153             <span class="comment">/* Bei Fahrt Regelgroesse berechnen */</span>
+<a name="l00154"></a>00154             uint8_t encoderRate = (uint8_t) (ticks_to_speed / dt); <span class="comment">// &lt;dt&gt; = [37; 800] -&gt; &lt;encoderRate&gt; = [229; 10]</span>
+<a name="l00155"></a>00155             <span class="keywordflow">if</span> (encoderRate &gt; 6) {
+<a name="l00156"></a>00156                 encoderRate = (uint8_t) (encoderRate + enc_correct);
+<a name="l00157"></a>00157             }
+<a name="l00158"></a>00158             <span class="comment">/* Regeldifferenz berechnen */</span>
+<a name="l00159"></a>00159             int16_t err = (encoderTargetRate[dev] - encoderRate);
+<a name="l00160"></a>00160             int16_t diff;
+<a name="l00161"></a>00161 <span class="preprocessor">#ifdef ADJUST_PID_PARAMS</span>
+<a name="l00162"></a>00162 <span class="preprocessor"></span>            <span class="comment">/* PID-Koeffizienten berechnen, falls PID-Parameter variabel */</span>
+<a name="l00163"></a>00163             int16_t q0 = <a class="code" href="motor_8c.html#a05010e946b4ed8af5902d87bcf245a9f">Kp</a> + <a class="code" href="motor_8c.html#ade61f163f62153c4b3b40ce1ff04a0ec">Kd</a> / <a class="code" href="bot-local_8h.html#ade79a641d454bf3adfbae8b6390c8e3a">PID_Ta</a>;
+<a name="l00164"></a>00164             int16_t q1 = -<a class="code" href="motor_8c.html#a05010e946b4ed8af5902d87bcf245a9f">Kp</a> - 2 * <a class="code" href="motor_8c.html#ade61f163f62153c4b3b40ce1ff04a0ec">Kd</a> / <a class="code" href="bot-local_8h.html#ade79a641d454bf3adfbae8b6390c8e3a">PID_Ta</a> + <a class="code" href="motor_8c.html#ad51c6683c08f946f8646d2fc5eba9ed8">Ki</a> * <a class="code" href="bot-local_8h.html#ade79a641d454bf3adfbae8b6390c8e3a">PID_Ta</a>;
+<a name="l00165"></a>00165             int16_t q2 = <a class="code" href="motor_8c.html#ade61f163f62153c4b3b40ce1ff04a0ec">Kd</a> / <a class="code" href="bot-local_8h.html#ade79a641d454bf3adfbae8b6390c8e3a">PID_Ta</a>;
+<a name="l00166"></a>00166 
+<a name="l00167"></a>00167         <span class="comment">/* Stellgroesse mit PID-Reglergleichung berechnen */</span>
+<a name="l00168"></a>00168             diff = (q0 * err + q1 * lastErr[dev] + q2 * last2Err[dev]) &gt;&gt; <a class="code" href="bot-local_8h.html#aeb4f6a4a895ee8a686e0c6bee7331c38">PID_SHIFT</a>;
+<a name="l00169"></a>00169 <span class="preprocessor">#else</span>
+<a name="l00170"></a>00170 <span class="preprocessor"></span>            diff = (Q0 * err + Q1 * lastErr[dev] + Q2 * last2Err[dev]) &gt;&gt; <a class="code" href="bot-local_8h.html#aeb4f6a4a895ee8a686e0c6bee7331c38">PID_SHIFT</a>;
+<a name="l00171"></a>00171 <span class="preprocessor">#endif // ADJUST_PID_PARAMS</span>
+<a name="l00172"></a>00172 <span class="preprocessor"></span>            *actVar += diff;
+<a name="l00173"></a>00173 
+<a name="l00174"></a>00174             <span class="comment">/* berechnete Stellgroesse auf zulaessige Werte begrenzen */</span>
+<a name="l00175"></a>00175             <span class="keywordflow">if</span> (*actVar &gt; <a class="code" href="bot-local_8h.html#a29eaa7ea340aed6c94c8208f548c4ac8">PWMMAX</a>) *actVar = <a class="code" href="bot-local_8h.html#a29eaa7ea340aed6c94c8208f548c4ac8">PWMMAX</a>;
+<a name="l00176"></a>00176             <span class="keywordflow">else</span> <span class="keywordflow">if</span> (*actVar &lt; <a class="code" href="bot-local_8h.html#a6f330c196a65bb05fd5b7fff59d6f62f">PWMMIN</a>) *actVar = <a class="code" href="bot-local_8h.html#a6f330c196a65bb05fd5b7fff59d6f62f">PWMMIN</a>;
+<a name="l00177"></a>00177 
+<a name="l00178"></a>00178             <span class="comment">/* PWM-Lookup updaten */</span>
+<a name="l00179"></a>00179             <span class="keywordflow">if</span> (diff != 0 &amp;&amp; encoderTargetRate[dev] == <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>/2 &amp;&amp; start_signal[dev] == 0) {
+<a name="l00180"></a>00180                 uint8_t lastErrors = (uint8_t) (abs(last2Err[dev]) + abs(lastErr[dev]) + abs(err));
+<a name="l00181"></a>00181                 uint8_t turn = 0;
+<a name="l00182"></a>00182                 <span class="keywordflow">if</span> (direction.<a class="code" href="uniondirection__t.html#a1e736d494e0c299e1c37454d8f3cc90d" title="linksrum">left</a> != direction.<a class="code" href="uniondirection__t.html#ab7c127986c19770ae168d8b24b4b14bb" title="rechtsrum">right</a>) turn = 2;
+<a name="l00183"></a>00183                 <span class="keywordflow">if</span> (pwm_values[dev + turn].rating &gt;= lastErrors) {
+<a name="l00184"></a>00184                     pwm_values[dev + turn].<a class="code" href="structpwmMap__t.html#af5c88db34704c2c5996d14a406b8cf03">pwm</a> = (uint8_t) (*actVar &gt;&gt; 1);
+<a name="l00185"></a>00185                     pwm_values[dev + turn].<a class="code" href="structpwmMap__t.html#a0564a1ed6c0b03560b716619772a37cc">rating</a> = lastErrors;
+<a name="l00186"></a>00186                 }
+<a name="l00187"></a>00187             }
+<a name="l00188"></a>00188 
+<a name="l00189"></a>00189             <span class="comment">/* Regeldifferenzen speichern */</span>
+<a name="l00190"></a>00190             last2Err[dev] = lastErr[dev];
+<a name="l00191"></a>00191             lastErr[dev]  = err;
+<a name="l00192"></a>00192 
+<a name="l00193"></a>00193             <span class="comment">/* Regelgroesse speichern, falls Displayausgabe gewuenscht */</span>
+<a name="l00194"></a>00194 <span class="preprocessor">#ifdef DISPLAY_REGELUNG_AVAILABLE</span>
+<a name="l00195"></a>00195 <span class="preprocessor"></span>            <a class="code" href="behaviour__calibrate__pid_8c.html#ac648b6b975acc5fc8eab32ac83ddf7c6">encoderRateInfo</a>[dev] = encoderRate;
+<a name="l00196"></a>00196 <span class="preprocessor">#endif</span>
+<a name="l00197"></a>00197 <span class="preprocessor"></span>
+<a name="l00198"></a>00198 <span class="preprocessor">#ifdef SPEED_LOG_AVAILABLE</span>
+<a name="l00199"></a>00199 <span class="preprocessor"></span>            <span class="comment">/* Daten loggen */</span>
+<a name="l00200"></a>00200             <span class="keyword">register</span> uint8_t index = <a class="code" href="sensor-low_8c.html#aa1751ce640b258d3264fc109c9f7ebc0" title="Array-Index.">slog_i</a>[dev];
+<a name="l00201"></a>00201             <span class="keywordflow">if</span> (index &lt; 24) {
+<a name="l00202"></a>00202                 <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[dev][index].encRate = encoderRate; <span class="comment">// Regelgroesse</span>
+<a name="l00203"></a>00203                 <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[dev][index].err = err; <span class="comment">// Regeldifferenz</span>
+<a name="l00204"></a>00204                 <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[dev][index].pwm = *actVar; <span class="comment">// Stellgroesse</span>
+<a name="l00205"></a>00205                 <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[dev][index].targetRate = encoderTargetRate[dev]; <span class="comment">// Fuehrungsgroesse</span>
+<a name="l00206"></a>00206                 <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[dev][index++].time = <a class="code" href="timer_8c.html#a29a6ea2becd6491e8b8aaa86156623a3">tickCount</a>.u32; <span class="comment">// Timestamp</span>
+<a name="l00207"></a>00207                 <a class="code" href="sensor-low_8c.html#aa1751ce640b258d3264fc109c9f7ebc0" title="Array-Index.">slog_i</a>[dev] = (uint8_t) (index &gt; 24 ? 0 : index); <span class="comment">// Z/25Z</span>
+<a name="l00208"></a>00208             }
+<a name="l00209"></a>00209 <span class="preprocessor">#endif // SPEED_LOG_AVAILABLE</span>
+<a name="l00210"></a>00210 <span class="preprocessor"></span>        }
+<a name="l00211"></a>00211 
+<a name="l00212"></a>00212         <span class="keywordflow">if</span> (start_signal[dev] &gt; 0) {
+<a name="l00213"></a>00213             start_signal[dev]--;
+<a name="l00214"></a>00214             <span class="comment">/* langsam beschleunigen - eigentlich muesste man das sinusartig tun, aber das ist zu aufwendig</span>
+<a name="l00215"></a>00215 <span class="comment">             * Verbesserungsmoeglichkeit: Faktoren bei START_DELAY optimieren (=&gt; Sinus) */</span>
+<a name="l00216"></a>00216             <span class="keywordflow">if</span> (start_signal[dev] == (uint8_t) (<a class="code" href="bot-local_8h.html#ab3f6286575d277c914e924a7474e3b55">PID_START_DELAY</a> * 0.75f)) {
+<a name="l00217"></a>00217                 encoderTargetRate[dev] = (uint8_t) (encoderTargetRate[dev] + ((orignalTargetRate[dev] - <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a> / 2) &gt;&gt; 2)); <span class="comment">// +1/4</span>
+<a name="l00218"></a>00218             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (start_signal[dev] == (uint8_t) (<a class="code" href="bot-local_8h.html#ab3f6286575d277c914e924a7474e3b55">PID_START_DELAY</a> * 0.5f)) {
+<a name="l00219"></a>00219                 encoderTargetRate[dev] = (uint8_t) (encoderTargetRate[dev] + ((orignalTargetRate[dev] - <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a> / 2) &gt;&gt; 2)); <span class="comment">// +2/4</span>
+<a name="l00220"></a>00220             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (start_signal[dev] == (uint8_t) (<a class="code" href="bot-local_8h.html#ab3f6286575d277c914e924a7474e3b55">PID_START_DELAY</a> * 0.25f)) {
+<a name="l00221"></a>00221                 encoderTargetRate[dev] = (uint8_t) (encoderTargetRate[dev] + ((orignalTargetRate[dev] - <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a> / 2) &gt;&gt; 2)); <span class="comment">// +3/4</span>
+<a name="l00222"></a>00222             } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (start_signal[dev] == 0) {
+<a name="l00223"></a>00223                 encoderTargetRate[dev] = orignalTargetRate[dev];
+<a name="l00224"></a>00224             }
+<a name="l00225"></a>00225         }
+<a name="l00226"></a>00226     }
+<a name="l00227"></a>00227     <span class="comment">/* PWM-Wert aktualisieren */</span>
+<a name="l00228"></a>00228     <a class="code" href="motor-low_8h.html#af288dee5f55b67d9eaf1d6e180bfd121">motor_update</a>(dev);
+<a name="l00229"></a>00229 }
+<a name="l00230"></a>00230 
+<a name="l00231"></a>00231 <span class="preprocessor">#ifdef DISPLAY_REGELUNG_AVAILABLE</span>
+<a name="l00232"></a>00232 <span class="preprocessor"></span>
+<a name="l00239"></a>00239 <span class="keywordtype">void</span> <a class="code" href="motor_8h.html#ae2999835e804b8ed7bb2a68063476641" title="Zeigt Debug-Informationen der Motorregelung an.">speedcontrol_display</a>(<span class="keywordtype">void</span>) {
+<a name="l00240"></a>00240     <span class="keywordflow">if</span> (<a class="code" href="motor_8c.html#aab6d42e1ec6fd5779d9b3f8a8207cc3d" title="Sollgeschwindigkeit des linken Motors.">speed_l</a> != 0) {
+<a name="l00241"></a>00241         <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(1, 2);
+<a name="l00242"></a>00242         <a class="code" href="display_8h.html#a3b34665813cc31ce81d141e4f67162d2">display_printf</a>(<span class="stringliteral">&quot;%3u/%3u&quot;</span>, encoderRateInfo[0] &lt;&lt; 1, abs(<a class="code" href="motor_8c.html#aab6d42e1ec6fd5779d9b3f8a8207cc3d" title="Sollgeschwindigkeit des linken Motors.">speed_l</a>));
+<a name="l00243"></a>00243 <span class="preprocessor">#ifndef BEHAVIOUR_CALIBRATE_PID_AVAILABLE</span>
+<a name="l00244"></a>00244 <span class="preprocessor"></span>        <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(2, 1);
+<a name="l00245"></a>00245         <a class="code" href="display_8h.html#a3b34665813cc31ce81d141e4f67162d2">display_printf</a>(<span class="stringliteral">&quot;e = %4d&quot;</span>, abs(<a class="code" href="motor_8c.html#aab6d42e1ec6fd5779d9b3f8a8207cc3d" title="Sollgeschwindigkeit des linken Motors.">speed_l</a>) - (encoderRateInfo[0] &lt;&lt; 1));
+<a name="l00246"></a>00246 <span class="preprocessor">#endif</span>
+<a name="l00247"></a>00247 <span class="preprocessor"></span>        <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(3, 1);
+<a name="l00248"></a>00248         <a class="code" href="display_8h.html#a3b34665813cc31ce81d141e4f67162d2">display_printf</a>(<span class="stringliteral">&quot;L = %4d&quot;</span>, <a class="code" href="motor_8h.html#a878e16240740a521fd0224f33c5570e6" title="zuletzt gestellter Wert linker Motor">motor_left</a>);
+<a name="l00249"></a>00249     }
+<a name="l00250"></a>00250     <span class="keywordflow">if</span> (<a class="code" href="motor_8c.html#a1377e46d27eda737fb816e8fa9c9594a" title="Sollgeschwindigkeit des rechten Motors.">speed_r</a> != 0) {
+<a name="l00251"></a>00251         <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(1, 12);
+<a name="l00252"></a>00252         <a class="code" href="display_8h.html#a3b34665813cc31ce81d141e4f67162d2">display_printf</a>(<span class="stringliteral">&quot;%3d/%3d&quot;</span>, encoderRateInfo[1] &lt;&lt; 1, abs(<a class="code" href="motor_8c.html#a1377e46d27eda737fb816e8fa9c9594a" title="Sollgeschwindigkeit des rechten Motors.">speed_r</a>));
+<a name="l00253"></a>00253 <span class="preprocessor">#ifndef BEHAVIOUR_CALIBRATE_PID_AVAILABLE</span>
+<a name="l00254"></a>00254 <span class="preprocessor"></span>        <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(2, 11);
+<a name="l00255"></a>00255         <a class="code" href="display_8h.html#a3b34665813cc31ce81d141e4f67162d2">display_printf</a>(<span class="stringliteral">&quot;e = %4d&quot;</span>, abs(<a class="code" href="motor_8c.html#a1377e46d27eda737fb816e8fa9c9594a" title="Sollgeschwindigkeit des rechten Motors.">speed_r</a>) - (encoderRateInfo[1] &lt;&lt; 1));
+<a name="l00256"></a>00256 <span class="preprocessor">#endif</span>
+<a name="l00257"></a>00257 <span class="preprocessor"></span>        <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(3, 11);
+<a name="l00258"></a>00258         <a class="code" href="display_8h.html#a3b34665813cc31ce81d141e4f67162d2">display_printf</a>(<span class="stringliteral">&quot;R = %4d&quot;</span>, <a class="code" href="motor_8h.html#a18ee6f467af5eddad0fb19b3dd274917" title="zuletzt gestellter Wert rechter Motor">motor_right</a>);
+<a name="l00259"></a>00259     }
+<a name="l00260"></a>00260 <span class="preprocessor">#ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE</span>
+<a name="l00261"></a>00261 <span class="preprocessor"></span>    <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(2, 1);
+<a name="l00262"></a>00262     <a class="code" href="display_8h.html#a3b34665813cc31ce81d141e4f67162d2">display_printf</a>(<span class="stringliteral">&quot;ETE = %3u Minuten&quot;</span>, <a class="code" href="behaviour__calibrate__pid_8c.html#aa0cdd4f68b7e0997702fcb955973782c">cal_pid_ete</a> / 60);
+<a name="l00263"></a>00263 <span class="preprocessor">#endif</span>
+<a name="l00264"></a>00264 <span class="preprocessor"></span>    <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(4, 1);
+<a name="l00265"></a>00265 <span class="preprocessor">#ifdef ADJUST_PID_PARAMS</span>
+<a name="l00266"></a>00266 <span class="preprocessor"></span>    <a class="code" href="display_8h.html#a3b34665813cc31ce81d141e4f67162d2">display_printf</a>(<span class="stringliteral">&quot;Kp=%3d Ki=%3d Kd=%3d&quot;</span>, <a class="code" href="motor_8c.html#a05010e946b4ed8af5902d87bcf245a9f">Kp</a>, <a class="code" href="motor_8c.html#ad51c6683c08f946f8646d2fc5eba9ed8">Ki</a>, <a class="code" href="motor_8c.html#ade61f163f62153c4b3b40ce1ff04a0ec">Kd</a>);
+<a name="l00267"></a>00267 <span class="preprocessor">#else</span>
+<a name="l00268"></a>00268 <span class="preprocessor"></span>    <a class="code" href="display_8h.html#a3b34665813cc31ce81d141e4f67162d2">display_printf</a>(<span class="stringliteral">&quot;Kp=%3d Ki=%3d Kd=%3d&quot;</span>, <a class="code" href="bot-local_8h.html#a6024e0bc7a5cf18791d0f43187872899">PID_Kp</a>, <a class="code" href="bot-local_8h.html#a143b9cdc295c814b393a04c7f85727c8">PID_Ki</a>, <a class="code" href="bot-local_8h.html#a2052fae867467b23d3439a913a4c7374">PID_Kd</a>);
+<a name="l00269"></a>00269 <span class="preprocessor">#endif // ADJUST_PID_PARAMS</span>
+<a name="l00270"></a>00270 <span class="preprocessor"></span>
+<a name="l00271"></a>00271     <span class="comment">/* Keyhandler */</span>
+<a name="l00272"></a>00272     <span class="keywordflow">switch</span> (<a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a>) {
+<a name="l00273"></a>00273         <span class="comment">/* PWM-Parameter einstellbar */</span>
+<a name="l00274"></a>00274 <span class="preprocessor">#ifdef ADJUST_PID_PARAMS</span>
+<a name="l00275"></a>00275 <span class="preprocessor"></span>        <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a962b5d2df2417b8e1e8462ddbeedf945">RC5_CODE_1</a>: <a class="code" href="motor_8c.html#a05010e946b4ed8af5902d87bcf245a9f">Kp</a>++; <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0; <span class="keywordflow">break</span>;
+<a name="l00276"></a>00276         <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a2460f2e913d9283be23d11ca84fe6c2e">RC5_CODE_4</a>: <a class="code" href="motor_8c.html#a05010e946b4ed8af5902d87bcf245a9f">Kp</a>--; <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0; <span class="keywordflow">break</span>;
+<a name="l00277"></a>00277         <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a0f01a76145d0c1340231733d7721a7f9">RC5_CODE_2</a>: <a class="code" href="motor_8c.html#ad51c6683c08f946f8646d2fc5eba9ed8">Ki</a>++; <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0; <span class="keywordflow">break</span>;
+<a name="l00278"></a>00278         <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a08e80ef6f5925e8ac3cebbe430bde53d">RC5_CODE_5</a>: <a class="code" href="motor_8c.html#ad51c6683c08f946f8646d2fc5eba9ed8">Ki</a>--; <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0; <span class="keywordflow">break</span>;
+<a name="l00279"></a>00279         <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#aab39f90ee1e4df0d5b0a02959ccc3420">RC5_CODE_3</a>: <a class="code" href="motor_8c.html#ade61f163f62153c4b3b40ce1ff04a0ec">Kd</a>++; <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0; <span class="keywordflow">break</span>;
+<a name="l00280"></a>00280         <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#ae3025f4d13a70931802f28f3581fdc26">RC5_CODE_6</a>: <a class="code" href="motor_8c.html#ade61f163f62153c4b3b40ce1ff04a0ec">Kd</a>--; <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0; <span class="keywordflow">break</span>;
+<a name="l00281"></a>00281 <span class="preprocessor">#endif // ADJUST_PID_PARAMS</span>
+<a name="l00282"></a>00282 <span class="preprocessor"></span>
+<a name="l00283"></a>00283         <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a860c980bfa7814ed4ac3ec783abe3b6c">RC5_CODE_7</a>:
+<a name="l00284"></a>00284             <a class="code" href="bot-logic_8c.html#a88b3cf22c92402d5c9a41e1b11b16379" title="Sollgeschwindigkeit linker Motor - darum kuemmert sich bot_base()">target_speed_l</a> = <a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>; <a class="code" href="bot-logic_8c.html#a673fae0e60f95ac9538a01fb14c49aba" title="Sollgeschwindigkeit rechter Motor - darum kuemmert sich bot_base()">target_speed_r</a> = <a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>; <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0; <span class="keywordflow">break</span>;
+<a name="l00285"></a>00285         <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a547b2175b4a50b2c9bd458f64f85dd49">RC5_CODE_8</a>:
+<a name="l00286"></a>00286             <a class="code" href="bot-logic_8c.html#a88b3cf22c92402d5c9a41e1b11b16379" title="Sollgeschwindigkeit linker Motor - darum kuemmert sich bot_base()">target_speed_l</a> = <a class="code" href="motor_8h.html#a5da16f9cfc604ae461dc981cae7ed0cb" title="mittlere Fahrt in mm/s">BOT_SPEED_MEDIUM</a>; <a class="code" href="bot-logic_8c.html#a673fae0e60f95ac9538a01fb14c49aba" title="Sollgeschwindigkeit rechter Motor - darum kuemmert sich bot_base()">target_speed_r</a> = <a class="code" href="motor_8h.html#a5da16f9cfc604ae461dc981cae7ed0cb" title="mittlere Fahrt in mm/s">BOT_SPEED_MEDIUM</a>; <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0; <span class="keywordflow">break</span>;
+<a name="l00287"></a>00287         <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#ae7019e2cc3b9e1bf615f6f23440d3b46">RC5_CODE_9</a>:
+<a name="l00288"></a>00288             <a class="code" href="bot-logic_8c.html#a88b3cf22c92402d5c9a41e1b11b16379" title="Sollgeschwindigkeit linker Motor - darum kuemmert sich bot_base()">target_speed_l</a> = <a class="code" href="motor_8h.html#af213ef81539186eb5dff47f959119241" title="schnelle Fahrt in mm/s">BOT_SPEED_FAST</a>; <a class="code" href="bot-logic_8c.html#a673fae0e60f95ac9538a01fb14c49aba" title="Sollgeschwindigkeit rechter Motor - darum kuemmert sich bot_base()">target_speed_r</a> = <a class="code" href="motor_8h.html#af213ef81539186eb5dff47f959119241" title="schnelle Fahrt in mm/s">BOT_SPEED_FAST</a>; <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0; <span class="keywordflow">break</span>;
+<a name="l00289"></a>00289     }
+<a name="l00290"></a>00290 }
+<a name="l00291"></a>00291 <span class="preprocessor">#endif // DISPLAY_REGELUNG_AVAILABLE</span>
+<a name="l00292"></a>00292 <span class="preprocessor"></span><span class="preprocessor">#endif // SPEED_CONTROL_AVAILABLE</span>
+<a name="l00293"></a>00293 <span class="preprocessor"></span>
+<a name="l00302"></a><a class="code" href="motor_8h.html#a7d55b2e4a37c91e150513b2c87577750">00302</a> <span class="keywordtype">void</span> <a class="code" href="motor_8c.html#a7d55b2e4a37c91e150513b2c87577750" title="Direkter Zugriff auf den Motor.">motor_set</a>(int16_t left, int16_t right) {
+<a name="l00303"></a>00303     <span class="comment">/* Drehrichtung fuer beide Motoren ermitteln */</span>
+<a name="l00304"></a>00304     int8_t speedSignLeft = 1; <span class="comment">// 1: vor; -1: zurueck</span>
+<a name="l00305"></a>00305     <span class="keywordflow">if</span> (left &lt; 0) {
+<a name="l00306"></a>00306         speedSignLeft = -1;
+<a name="l00307"></a>00307         left = -left;   <span class="comment">// Richtung zum Rechnen zunaechst verwerfen</span>
+<a name="l00308"></a>00308     }
+<a name="l00309"></a>00309     int8_t speedSignRight = 1;
+<a name="l00310"></a>00310     <span class="keywordflow">if</span> (right &lt; 0) {
+<a name="l00311"></a>00311         speedSignRight = -1;
+<a name="l00312"></a>00312         right = -right;
+<a name="l00313"></a>00313     }
+<a name="l00314"></a>00314     <span class="comment">/* Geschwindigkeiten pruefen und begrenzen */</span>
+<a name="l00315"></a>00315     <span class="keywordflow">if</span> (left == <a class="code" href="motor_8h.html#a4ed8301d63668c0ded1a0d36c6b7484f" title="Wert ausserhalb von -BOT_SPEED_MAX und BOT_SPEED_MAX wird verwendet um einen Eintrag zu ignorieren...">BOT_SPEED_IGNORE</a>) left = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00316"></a>00316     <span class="keywordflow">else</span> <span class="keywordflow">if</span> (left &gt; <a class="code" href="motor_8h.html#a24b4914e3c0de6232220a8c79d4be7b2" title="maximale Fahrt in mm/s">BOT_SPEED_MAX</a>) left = <a class="code" href="motor_8h.html#a24b4914e3c0de6232220a8c79d4be7b2" title="maximale Fahrt in mm/s">BOT_SPEED_MAX</a>;
+<a name="l00317"></a>00317     <span class="keywordflow">else</span> <span class="keywordflow">if</span> (left != 0 &amp;&amp; left &lt; <a class="code" href="motor_8h.html#a9bad693d07105ebfddf9d9b0e5da9f97" title="langsamste Fahrt in mm/s">BOT_SPEED_MIN</a>) left = <a class="code" href="motor_8h.html#a9bad693d07105ebfddf9d9b0e5da9f97" title="langsamste Fahrt in mm/s">BOT_SPEED_MIN</a>;
+<a name="l00318"></a>00318 
+<a name="l00319"></a>00319     <span class="keywordflow">if</span> (right == <a class="code" href="motor_8h.html#a4ed8301d63668c0ded1a0d36c6b7484f" title="Wert ausserhalb von -BOT_SPEED_MAX und BOT_SPEED_MAX wird verwendet um einen Eintrag zu ignorieren...">BOT_SPEED_IGNORE</a>) right = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00320"></a>00320     <span class="keywordflow">else</span> <span class="keywordflow">if</span> (right &gt; <a class="code" href="motor_8h.html#a24b4914e3c0de6232220a8c79d4be7b2" title="maximale Fahrt in mm/s">BOT_SPEED_MAX</a>) right = <a class="code" href="motor_8h.html#a24b4914e3c0de6232220a8c79d4be7b2" title="maximale Fahrt in mm/s">BOT_SPEED_MAX</a>;
+<a name="l00321"></a>00321     <span class="keywordflow">else</span> <span class="keywordflow">if</span> (right != 0 &amp;&amp; right &lt; <a class="code" href="motor_8h.html#a9bad693d07105ebfddf9d9b0e5da9f97" title="langsamste Fahrt in mm/s">BOT_SPEED_MIN</a>) right = <a class="code" href="motor_8h.html#a9bad693d07105ebfddf9d9b0e5da9f97" title="langsamste Fahrt in mm/s">BOT_SPEED_MIN</a>;
+<a name="l00322"></a>00322 
+<a name="l00323"></a>00323     <span class="comment">/* Stellwerte und Zielgeschwindigkeit setzen */</span>
+<a name="l00324"></a>00324 <span class="preprocessor">#ifdef SPEED_CONTROL_AVAILABLE</span>
+<a name="l00325"></a>00325 <span class="preprocessor"></span>    <span class="comment">/* Bei aktivierter Motorregelung neue Fuehrungsgroesse links setzen */</span>
+<a name="l00326"></a>00326     <span class="keywordflow">if</span> (<a class="code" href="motor_8c.html#aab6d42e1ec6fd5779d9b3f8a8207cc3d" title="Sollgeschwindigkeit des linken Motors.">speed_l</a> != left * speedSignLeft &amp;&amp; (start_signal[0] == 0 || left == 0 || sign16(<a class="code" href="motor_8c.html#aab6d42e1ec6fd5779d9b3f8a8207cc3d" title="Sollgeschwindigkeit des linken Motors.">speed_l</a>) != speedSignLeft)) {
+<a name="l00327"></a>00327         <span class="keywordflow">if</span> (encoderTargetRate[0] == 0) {
+<a name="l00328"></a>00328             start_signal[0] = <a class="code" href="bot-local_8h.html#ab3f6286575d277c914e924a7474e3b55">PID_START_DELAY</a>;
+<a name="l00329"></a>00329             <span class="keywordflow">if</span> (speedSignLeft == speedSignRight) {
+<a name="l00330"></a>00330                 <a class="code" href="motor_8h.html#a878e16240740a521fd0224f33c5570e6" title="zuletzt gestellter Wert linker Motor">motor_left</a> = (pwm_values[0].<a class="code" href="structpwmMap__t.html#af5c88db34704c2c5996d14a406b8cf03">pwm</a> &lt;&lt; 1) + (int16_t)(<a class="code" href="bot-local_8h.html#addc0090b75503727bd52d20abefc21e4">PWMSTART_L</a> * 1.5f); <span class="comment">// [0; 511]</span>
+<a name="l00331"></a>00331             } <span class="keywordflow">else</span> {
+<a name="l00332"></a>00332                 <a class="code" href="motor_8h.html#a878e16240740a521fd0224f33c5570e6" title="zuletzt gestellter Wert linker Motor">motor_left</a> = (pwm_values[2].<a class="code" href="structpwmMap__t.html#af5c88db34704c2c5996d14a406b8cf03">pwm</a> &lt;&lt; 1) + <a class="code" href="bot-local_8h.html#addc0090b75503727bd52d20abefc21e4">PWMSTART_L</a>;
+<a name="l00333"></a>00333             }
+<a name="l00334"></a>00334         }
+<a name="l00335"></a>00335         encoderTargetRate[0] = (uint8_t) (left &gt;&gt; 1); <span class="comment">// [0; 225]</span>
+<a name="l00336"></a>00336         <span class="keywordflow">if</span> ((left &gt;&gt; 1) == 0) {
+<a name="l00337"></a>00337             <a class="code" href="motor_8h.html#a878e16240740a521fd0224f33c5570e6" title="zuletzt gestellter Wert linker Motor">motor_left</a> = 0;
+<a name="l00338"></a>00338             start_signal[0] = 0;
+<a name="l00339"></a>00339         }
+<a name="l00340"></a>00340 
+<a name="l00341"></a>00341         <span class="comment">/* Geschwindigkeit und Richtung links speichern */</span>
+<a name="l00342"></a>00342         <span class="keywordflow">if</span> (left != 0) {
+<a name="l00343"></a>00343             <span class="keywordflow">if</span> (speedSignLeft &gt; 0) {
+<a name="l00344"></a>00344                 direction.<a class="code" href="uniondirection__t.html#a1e736d494e0c299e1c37454d8f3cc90d" title="linksrum">left</a> = <a class="code" href="motor_8h.html#a219f8a888533b454e1891464cd48f68d" title="Drehrichtung vorwaerts.">DIRECTION_FORWARD</a>;
+<a name="l00345"></a>00345                 <a class="code" href="motor_8c.html#aab6d42e1ec6fd5779d9b3f8a8207cc3d" title="Sollgeschwindigkeit des linken Motors.">speed_l</a> = left;
+<a name="l00346"></a>00346             } <span class="keywordflow">else</span> {
+<a name="l00347"></a>00347                 direction.<a class="code" href="uniondirection__t.html#a1e736d494e0c299e1c37454d8f3cc90d" title="linksrum">left</a> = <a class="code" href="motor_8h.html#a20ac1695bc73475874f6304425755f7e" title="Drehrichtung rueckwaerts.">DIRECTION_BACKWARD</a>;
+<a name="l00348"></a>00348                 <a class="code" href="motor_8c.html#aab6d42e1ec6fd5779d9b3f8a8207cc3d" title="Sollgeschwindigkeit des linken Motors.">speed_l</a> = -left;
+<a name="l00349"></a>00349             }
+<a name="l00350"></a>00350         } <span class="keywordflow">else</span> {
+<a name="l00351"></a>00351             <a class="code" href="motor_8c.html#aab6d42e1ec6fd5779d9b3f8a8207cc3d" title="Sollgeschwindigkeit des linken Motors.">speed_l</a> = 0;
+<a name="l00352"></a>00352         }
+<a name="l00353"></a>00353         <span class="comment">/* PWM-Wert setzen */</span>
+<a name="l00354"></a>00354         <a class="code" href="motor-low_8h.html#af288dee5f55b67d9eaf1d6e180bfd121">motor_update</a>(0);
+<a name="l00355"></a>00355 
+<a name="l00356"></a>00356 <span class="preprocessor">#ifdef SPEED_LOG_AVAILABLE</span>
+<a name="l00357"></a>00357 <span class="preprocessor"></span>        <span class="comment">/* Daten loggen */</span>
+<a name="l00358"></a>00358         <span class="keyword">register</span> uint8_t index = <a class="code" href="sensor-low_8c.html#aa1751ce640b258d3264fc109c9f7ebc0" title="Array-Index.">slog_i</a>[0];
+<a name="l00359"></a>00359         <span class="keywordflow">if</span> (index &lt; 24) {
+<a name="l00360"></a>00360             <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[0][index].encRate = 1; <span class="comment">// Regelgroesse</span>
+<a name="l00361"></a>00361             <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[0][index].err = 0; <span class="comment">// Regeldifferenz</span>
+<a name="l00362"></a>00362             <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[0][index].pwm = 0; <span class="comment">// Stellgroesse</span>
+<a name="l00363"></a>00363             <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[0][index].targetRate = encoderTargetRate[0]; <span class="comment">// Fuehrungsgroesse</span>
+<a name="l00364"></a>00364             <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[0][index++].time = <a class="code" href="timer_8c.html#a29a6ea2becd6491e8b8aaa86156623a3">tickCount</a>.u32; <span class="comment">// Timestamp</span>
+<a name="l00365"></a>00365             <a class="code" href="sensor-low_8c.html#aa1751ce640b258d3264fc109c9f7ebc0" title="Array-Index.">slog_i</a>[0] = (uint8_t) (index &gt; 24 ? 0 : index); <span class="comment">// Z/25Z</span>
+<a name="l00366"></a>00366         }
+<a name="l00367"></a>00367 <span class="preprocessor">#endif // SPEED_LOG_AVAILABLE</span>
+<a name="l00368"></a>00368 <span class="preprocessor"></span>    }
+<a name="l00369"></a>00369     <span class="comment">/* Neue Fuehrungsgroesse rechts setzen */</span>
+<a name="l00370"></a>00370     <span class="keywordflow">if</span> (<a class="code" href="motor_8c.html#a1377e46d27eda737fb816e8fa9c9594a" title="Sollgeschwindigkeit des rechten Motors.">speed_r</a> != right * speedSignRight &amp;&amp; (start_signal[1] == 0 || right == 0 || sign16(<a class="code" href="motor_8c.html#a1377e46d27eda737fb816e8fa9c9594a" title="Sollgeschwindigkeit des rechten Motors.">speed_r</a>) != speedSignRight)) {
+<a name="l00371"></a>00371         <span class="keywordflow">if</span> (encoderTargetRate[1] == 0) {
+<a name="l00372"></a>00372             start_signal[1] = <a class="code" href="bot-local_8h.html#ab3f6286575d277c914e924a7474e3b55">PID_START_DELAY</a>;
+<a name="l00373"></a>00373             <span class="keywordflow">if</span> (speedSignLeft == speedSignRight) {
+<a name="l00374"></a>00374                 <a class="code" href="motor_8h.html#a18ee6f467af5eddad0fb19b3dd274917" title="zuletzt gestellter Wert rechter Motor">motor_right</a> = (pwm_values[1].<a class="code" href="structpwmMap__t.html#af5c88db34704c2c5996d14a406b8cf03">pwm</a> &lt;&lt; 1) + (int16_t)(<a class="code" href="bot-local_8h.html#a669e140dad249afa8905424ae11699cd">PWMSTART_R</a> * 1.5f); <span class="comment">// [0; 511]</span>
+<a name="l00375"></a>00375             } <span class="keywordflow">else</span> {
+<a name="l00376"></a>00376                 <a class="code" href="motor_8h.html#a18ee6f467af5eddad0fb19b3dd274917" title="zuletzt gestellter Wert rechter Motor">motor_right</a> = (pwm_values[3].<a class="code" href="structpwmMap__t.html#af5c88db34704c2c5996d14a406b8cf03">pwm</a> &lt;&lt; 1) + <a class="code" href="bot-local_8h.html#a669e140dad249afa8905424ae11699cd">PWMSTART_R</a>;
+<a name="l00377"></a>00377             }
+<a name="l00378"></a>00378         }
+<a name="l00379"></a>00379         encoderTargetRate[1] = (uint8_t) (right &gt;&gt; 1); <span class="comment">// [0; 225]</span>
+<a name="l00380"></a>00380         <span class="keywordflow">if</span> ((right &gt;&gt; 1) == 0) {
+<a name="l00381"></a>00381             <a class="code" href="motor_8h.html#a18ee6f467af5eddad0fb19b3dd274917" title="zuletzt gestellter Wert rechter Motor">motor_right</a> = 0;
+<a name="l00382"></a>00382             start_signal[1] = 0;
+<a name="l00383"></a>00383         }
+<a name="l00384"></a>00384 
+<a name="l00385"></a>00385         <span class="comment">/* Geschwindigkeit und Richtung rechts speichern */</span>
+<a name="l00386"></a>00386         <span class="keywordflow">if</span> (right != 0) {
+<a name="l00387"></a>00387             <span class="keywordflow">if</span> (speedSignRight &gt; 0) {
+<a name="l00388"></a>00388                 direction.<a class="code" href="uniondirection__t.html#ab7c127986c19770ae168d8b24b4b14bb" title="rechtsrum">right</a> = <a class="code" href="motor_8h.html#a219f8a888533b454e1891464cd48f68d" title="Drehrichtung vorwaerts.">DIRECTION_FORWARD</a>;
+<a name="l00389"></a>00389                 <a class="code" href="motor_8c.html#a1377e46d27eda737fb816e8fa9c9594a" title="Sollgeschwindigkeit des rechten Motors.">speed_r</a> = right;
+<a name="l00390"></a>00390             } <span class="keywordflow">else</span> {
+<a name="l00391"></a>00391                 direction.<a class="code" href="uniondirection__t.html#ab7c127986c19770ae168d8b24b4b14bb" title="rechtsrum">right</a> = <a class="code" href="motor_8h.html#a20ac1695bc73475874f6304425755f7e" title="Drehrichtung rueckwaerts.">DIRECTION_BACKWARD</a>;
+<a name="l00392"></a>00392                 <a class="code" href="motor_8c.html#a1377e46d27eda737fb816e8fa9c9594a" title="Sollgeschwindigkeit des rechten Motors.">speed_r</a> = -right;
+<a name="l00393"></a>00393             }
+<a name="l00394"></a>00394         } <span class="keywordflow">else</span> {
+<a name="l00395"></a>00395             <a class="code" href="motor_8c.html#a1377e46d27eda737fb816e8fa9c9594a" title="Sollgeschwindigkeit des rechten Motors.">speed_r</a> = 0;
+<a name="l00396"></a>00396         }
+<a name="l00397"></a>00397         <a class="code" href="motor-low_8h.html#af288dee5f55b67d9eaf1d6e180bfd121">motor_update</a>(1);
+<a name="l00398"></a>00398 
+<a name="l00399"></a>00399 <span class="preprocessor">#ifdef SPEED_LOG_AVAILABLE</span>
+<a name="l00400"></a>00400 <span class="preprocessor"></span>        <span class="comment">/* Daten loggen */</span>
+<a name="l00401"></a>00401         <span class="keyword">register</span> uint8_t index = <a class="code" href="sensor-low_8c.html#aa1751ce640b258d3264fc109c9f7ebc0" title="Array-Index.">slog_i</a>[1];
+<a name="l00402"></a>00402         <span class="keywordflow">if</span> (index &lt; 24) {
+<a name="l00403"></a>00403             <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[1][index].encRate = 1; <span class="comment">// Regelgroesse</span>
+<a name="l00404"></a>00404             <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[1][index].err = 0; <span class="comment">// Regeldifferenz</span>
+<a name="l00405"></a>00405             <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[1][index].pwm = 0; <span class="comment">// Stellgroesse</span>
+<a name="l00406"></a>00406             <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[1][index].targetRate = encoderTargetRate[1]; <span class="comment">// Fuehrungsgroesse</span>
+<a name="l00407"></a>00407             <a class="code" href="sensor-low_8c.html#aa634f15c3df4b03009bfe848033d5c3b" title="Puffer fuer Speed-Log Daten.">slog</a>-&gt;data[1][index++].time = <a class="code" href="timer_8c.html#a29a6ea2becd6491e8b8aaa86156623a3">tickCount</a>.u32; <span class="comment">// Timestamp</span>
+<a name="l00408"></a>00408             <a class="code" href="sensor-low_8c.html#aa1751ce640b258d3264fc109c9f7ebc0" title="Array-Index.">slog_i</a>[1] = (uint8_t) (index &gt; 24 ? 0 : index); <span class="comment">// Z/25Z</span>
+<a name="l00409"></a>00409         }
+<a name="l00410"></a>00410 <span class="preprocessor">#endif // SPEED_LOG_AVAILABLE</span>
+<a name="l00411"></a>00411 <span class="preprocessor"></span>    }
+<a name="l00412"></a>00412 
+<a name="l00413"></a>00413     <span class="comment">/* PWM-Lookup im EEPROM updaten */</span>
+<a name="l00414"></a>00414     <span class="keyword">static</span> uint16_t old_pwm_ticks = 0;
+<a name="l00415"></a>00415     <span class="keyword">static</span> uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a> = 0;   <span class="comment">// nachdem wir 1 Byte geschrieben haben, muessten wir 3.3 ms warten,</span>
+<a name="l00416"></a>00416     <span class="keywordflow">if</span> (i != 0 || timer_ms_passed_16(&amp;old_pwm_ticks, 10000)) {  <span class="comment">// alle 10 s</span>
+<a name="l00417"></a>00417         uint8_t tmp = pwm_values[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structpwmMap__t.html#af5c88db34704c2c5996d14a406b8cf03">pwm</a>;    <span class="comment">// darum schreiben wir erst im naechsten Aufruf das 2. Byte ins EEPROM usw. :-)</span>
+<a name="l00418"></a>00418         ctbot_eeprom_update_byte(&amp;<a class="code" href="motor_8c.html#ade38f7eb947fe4111c543992d766bb46">pwmSlow</a>[i], tmp);
+<a name="l00419"></a>00419         <span class="keywordflow">if</span> (++i == 4) { <span class="comment">// alle Daten gesichert =&gt; 10 s schlafen</span>
+<a name="l00420"></a>00420             i = 0;
+<a name="l00421"></a>00421         }
+<a name="l00422"></a>00422     }
+<a name="l00423"></a>00423 <span class="preprocessor">#else // ! SPEED_CONTROL_AVAILABLE</span>
+<a name="l00424"></a>00424 <span class="preprocessor"></span><span class="preprocessor">#ifdef MCU</span>
+<a name="l00425"></a>00425 <span class="preprocessor"></span>    <span class="comment">/* Geschwindigkeit als PWM-Wert an die Motoren weitergeben */</span>
+<a name="l00426"></a>00426     <span class="keywordflow">if</span> (speedSignLeft &gt; 0) {
+<a name="l00427"></a>00427         direction.<a class="code" href="uniondirection__t.html#a1e736d494e0c299e1c37454d8f3cc90d" title="linksrum">left</a> = <a class="code" href="motor_8h.html#a219f8a888533b454e1891464cd48f68d" title="Drehrichtung vorwaerts.">DIRECTION_FORWARD</a>;
+<a name="l00428"></a>00428         <a class="code" href="motor_8c.html#aab6d42e1ec6fd5779d9b3f8a8207cc3d" title="Sollgeschwindigkeit des linken Motors.">speed_l</a> = left;
+<a name="l00429"></a>00429     } <span class="keywordflow">else</span>{
+<a name="l00430"></a>00430         direction.<a class="code" href="uniondirection__t.html#a1e736d494e0c299e1c37454d8f3cc90d" title="linksrum">left</a> = <a class="code" href="motor_8h.html#a20ac1695bc73475874f6304425755f7e" title="Drehrichtung rueckwaerts.">DIRECTION_BACKWARD</a>;
+<a name="l00431"></a>00431         <a class="code" href="motor_8c.html#aab6d42e1ec6fd5779d9b3f8a8207cc3d" title="Sollgeschwindigkeit des linken Motors.">speed_l</a> = -left;
+<a name="l00432"></a>00432     }
+<a name="l00433"></a>00433     int16_t pwm;
+<a name="l00434"></a>00434     <span class="keywordflow">if</span> (left &lt;= <a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>) {
+<a name="l00435"></a>00435         pwm = (int16_t)(((<span class="keywordtype">float</span>)<a class="code" href="bot-local_8h.html#a29eaa7ea340aed6c94c8208f548c4ac8">PWMMAX</a> / (<a class="code" href="motor_8h.html#a24b4914e3c0de6232220a8c79d4be7b2" title="maximale Fahrt in mm/s">BOT_SPEED_MAX</a> * 4.0f)) * left) + 50;
+<a name="l00436"></a>00436     } <span class="keywordflow">else</span> {
+<a name="l00437"></a>00437         pwm = (int16_t)(((<span class="keywordtype">float</span>)<a class="code" href="bot-local_8h.html#a29eaa7ea340aed6c94c8208f548c4ac8">PWMMAX</a> / (<a class="code" href="motor_8h.html#a24b4914e3c0de6232220a8c79d4be7b2" title="maximale Fahrt in mm/s">BOT_SPEED_MAX</a> * 1.1f)) * left) - 30;
+<a name="l00438"></a>00438     }
+<a name="l00439"></a>00439     <a class="code" href="motor_8h.html#a878e16240740a521fd0224f33c5570e6" title="zuletzt gestellter Wert linker Motor">motor_left</a> = left == 0 ? 0 : pwm;
+<a name="l00440"></a>00440     <span class="keywordflow">if</span> (speedSignRight &gt; 0) {
+<a name="l00441"></a>00441         direction.<a class="code" href="uniondirection__t.html#ab7c127986c19770ae168d8b24b4b14bb" title="rechtsrum">right</a> = <a class="code" href="motor_8h.html#a219f8a888533b454e1891464cd48f68d" title="Drehrichtung vorwaerts.">DIRECTION_FORWARD</a>;
+<a name="l00442"></a>00442         <a class="code" href="motor_8c.html#a1377e46d27eda737fb816e8fa9c9594a" title="Sollgeschwindigkeit des rechten Motors.">speed_r</a> = right;
+<a name="l00443"></a>00443     } <span class="keywordflow">else</span>{
+<a name="l00444"></a>00444         direction.<a class="code" href="uniondirection__t.html#ab7c127986c19770ae168d8b24b4b14bb" title="rechtsrum">right</a> = <a class="code" href="motor_8h.html#a20ac1695bc73475874f6304425755f7e" title="Drehrichtung rueckwaerts.">DIRECTION_BACKWARD</a>;
+<a name="l00445"></a>00445         <a class="code" href="motor_8c.html#a1377e46d27eda737fb816e8fa9c9594a" title="Sollgeschwindigkeit des rechten Motors.">speed_r</a> = -right;
+<a name="l00446"></a>00446     }
+<a name="l00447"></a>00447     <span class="keywordflow">if</span> (right &lt;= <a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>) {
+<a name="l00448"></a>00448         pwm = (int16_t)(((<span class="keywordtype">float</span>)<a class="code" href="bot-local_8h.html#a29eaa7ea340aed6c94c8208f548c4ac8">PWMMAX</a> / (<a class="code" href="motor_8h.html#a24b4914e3c0de6232220a8c79d4be7b2" title="maximale Fahrt in mm/s">BOT_SPEED_MAX</a> * 4.0f)) * right) + 50;
+<a name="l00449"></a>00449     } <span class="keywordflow">else</span> {
+<a name="l00450"></a>00450         pwm = (int16_t)(((<span class="keywordtype">float</span>)<a class="code" href="bot-local_8h.html#a29eaa7ea340aed6c94c8208f548c4ac8">PWMMAX</a> / (<a class="code" href="motor_8h.html#a24b4914e3c0de6232220a8c79d4be7b2" title="maximale Fahrt in mm/s">BOT_SPEED_MAX</a> * 1.1f)) * right) - 30;
+<a name="l00451"></a>00451     }
+<a name="l00452"></a>00452     <a class="code" href="motor_8h.html#a18ee6f467af5eddad0fb19b3dd274917" title="zuletzt gestellter Wert rechter Motor">motor_right</a> = right == 0 ? 0 : pwm;
+<a name="l00453"></a>00453     <a class="code" href="motor-low_8h.html#af288dee5f55b67d9eaf1d6e180bfd121">motor_update</a>(0);
+<a name="l00454"></a>00454     <a class="code" href="motor-low_8h.html#af288dee5f55b67d9eaf1d6e180bfd121">motor_update</a>(1);
+<a name="l00455"></a>00455 <span class="preprocessor">#else</span>
+<a name="l00456"></a>00456 <span class="preprocessor"></span>    <span class="comment">/* PC-Version */</span>
+<a name="l00457"></a>00457     <a class="code" href="motor_8c.html#aab6d42e1ec6fd5779d9b3f8a8207cc3d" title="Sollgeschwindigkeit des linken Motors.">speed_l</a> = left * speedSignLeft / 2;
+<a name="l00458"></a>00458     <a class="code" href="motor_8c.html#a1377e46d27eda737fb816e8fa9c9594a" title="Sollgeschwindigkeit des rechten Motors.">speed_r</a> = right * speedSignRight / 2;
+<a name="l00459"></a>00459     <a class="code" href="motor-low_8h.html#a51396f3f8b7c919099a65c94cd95f34f">bot_motor</a>(<a class="code" href="motor_8c.html#aab6d42e1ec6fd5779d9b3f8a8207cc3d" title="Sollgeschwindigkeit des linken Motors.">speed_l</a>, <a class="code" href="motor_8c.html#a1377e46d27eda737fb816e8fa9c9594a" title="Sollgeschwindigkeit des rechten Motors.">speed_r</a>);
+<a name="l00460"></a>00460 <span class="preprocessor">#endif // MCU</span>
+<a name="l00461"></a>00461 <span class="preprocessor"></span><span class="preprocessor">#endif // SPEED_CONTROL_AVAILABLE</span>
+<a name="l00462"></a>00462 <span class="preprocessor"></span>}
+<a name="l00463"></a>00463 
+<a name="l00467"></a><a class="code" href="motor_8h.html#aa2a5af0fb9c1fa2047a5ca0af110f806">00467</a> <span class="keywordtype">void</span> <a class="code" href="motor_8c.html#aa2a5af0fb9c1fa2047a5ca0af110f806" title="Initialisiere den Motorkrams.">motor_init</a>(<span class="keywordtype">void</span>) {
+<a name="l00468"></a>00468 <span class="preprocessor">#ifdef SPEED_CONTROL_AVAILABLE</span>
+<a name="l00469"></a>00469 <span class="preprocessor"></span>    <span class="comment">/* links */</span>
+<a name="l00470"></a>00470     uint8_t tmp = <a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>(&amp;<a class="code" href="motor_8c.html#ade38f7eb947fe4111c543992d766bb46">pwmSlow</a>[0]);
+<a name="l00471"></a>00471     <span class="keywordflow">if</span> (tmp &lt; (511 - (uint16_t) (<a class="code" href="bot-local_8h.html#addc0090b75503727bd52d20abefc21e4">PWMSTART_L</a> * 1.5f)) / 2) pwm_values[0].<a class="code" href="structpwmMap__t.html#af5c88db34704c2c5996d14a406b8cf03">pwm</a> = tmp;
+<a name="l00472"></a>00472     <span class="keywordflow">else</span> pwm_values[0].<a class="code" href="structpwmMap__t.html#af5c88db34704c2c5996d14a406b8cf03">pwm</a> = 0;
+<a name="l00473"></a>00473     tmp = <a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>(&amp;<a class="code" href="motor_8c.html#ade38f7eb947fe4111c543992d766bb46">pwmSlow</a>[2]);
+<a name="l00474"></a>00474     <span class="keywordflow">if</span> (tmp &lt; (511 - <a class="code" href="bot-local_8h.html#addc0090b75503727bd52d20abefc21e4">PWMSTART_L</a>) / 2) pwm_values[2].<a class="code" href="structpwmMap__t.html#af5c88db34704c2c5996d14a406b8cf03">pwm</a> = tmp;
+<a name="l00475"></a>00475     <span class="keywordflow">else</span> pwm_values[2].<a class="code" href="structpwmMap__t.html#af5c88db34704c2c5996d14a406b8cf03">pwm</a> = 0;
+<a name="l00476"></a>00476     <span class="comment">/* rechts */</span>
+<a name="l00477"></a>00477     tmp = <a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>(&amp;<a class="code" href="motor_8c.html#ade38f7eb947fe4111c543992d766bb46">pwmSlow</a>[1]);
+<a name="l00478"></a>00478     <span class="keywordflow">if</span> (tmp &lt; (511 - (uint16_t) (<a class="code" href="bot-local_8h.html#a669e140dad249afa8905424ae11699cd">PWMSTART_R</a> * 1.5f))/2) pwm_values[1].<a class="code" href="structpwmMap__t.html#af5c88db34704c2c5996d14a406b8cf03">pwm</a> = tmp;
+<a name="l00479"></a>00479     <span class="keywordflow">else</span> pwm_values[1].<a class="code" href="structpwmMap__t.html#af5c88db34704c2c5996d14a406b8cf03">pwm</a> = 0;
+<a name="l00480"></a>00480     tmp = <a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>(&amp;<a class="code" href="motor_8c.html#ade38f7eb947fe4111c543992d766bb46">pwmSlow</a>[3]);
+<a name="l00481"></a>00481     <span class="keywordflow">if</span> (tmp &lt; (511 - <a class="code" href="bot-local_8h.html#a669e140dad249afa8905424ae11699cd">PWMSTART_R</a>) / 2) pwm_values[3].<a class="code" href="structpwmMap__t.html#af5c88db34704c2c5996d14a406b8cf03">pwm</a> = tmp;
+<a name="l00482"></a>00482     <span class="keywordflow">else</span> pwm_values[3].<a class="code" href="structpwmMap__t.html#af5c88db34704c2c5996d14a406b8cf03">pwm</a> = 0;
+<a name="l00483"></a>00483 <span class="preprocessor">#endif // SPEED_CONTROL_AVAILABLE</span>
+<a name="l00484"></a>00484 <span class="preprocessor"></span>
+<a name="l00485"></a>00485     <a class="code" href="motor-low_8h.html#aa757a45f2c6ae11e9fab13010d9ac432">motor_low_init</a>();
+<a name="l00486"></a>00486 }
+<a name="l00487"></a>00487 
+<a name="l00495"></a><a class="code" href="motor_8h.html#a71bb8302cc262e57dfd2897d5fe6121e">00495</a> <span class="keywordtype">void</span> <a class="code" href="motor_8c.html#a71bb8302cc262e57dfd2897d5fe6121e" title="Stellt die Servos.">servo_set</a>(uint8_t servo, uint8_t pos) {
+<a name="l00496"></a>00496     <span class="keywordflow">if</span> ((servo == <a class="code" href="motor_8h.html#a8f2a5c30e29a7191cff398b144850d51" title="Servo 1.">SERVO1</a>) &amp;&amp; (pos != <a class="code" href="motor_8h.html#afbcd07451f69fc6a4e89f4b0f312e765" title="Servo wird zum Stromsparen deaktiviert.">SERVO_OFF</a>)) {
+<a name="l00497"></a>00497         <span class="keywordflow">if</span> (pos &lt; <a class="code" href="bot-local_8h.html#a4ef8b71b5650632bd07a37296c4a5f89" title="Rechter Anschlag des Servos.">DOOR_CLOSE</a>) pos = <a class="code" href="bot-local_8h.html#a4ef8b71b5650632bd07a37296c4a5f89" title="Rechter Anschlag des Servos.">DOOR_CLOSE</a>;
+<a name="l00498"></a>00498         <span class="keywordflow">if</span> (pos &gt; <a class="code" href="bot-local_8h.html#aa2f39ed7eb7927d5aa4f01c52a15431b" title="Linker Anschlag des Servos.">DOOR_OPEN</a>) pos = <a class="code" href="bot-local_8h.html#aa2f39ed7eb7927d5aa4f01c52a15431b" title="Linker Anschlag des Servos.">DOOR_OPEN</a>;
+<a name="l00499"></a>00499     }
+<a name="l00500"></a>00500     <a class="code" href="motor-low_8h.html#a0de2d9390f32772c86a439f63e65d78c" title="Stellt die Servos.">servo_low</a>(servo, pos);
+<a name="l00501"></a>00501 }
+<a name="l00502"></a>00502 
+<a name="l00503"></a>00503 <span class="preprocessor">#ifdef SPEED_CONTROL_AVAILABLE</span>
+<a name="l00504"></a>00504 <span class="preprocessor"></span>    <span class="comment">/* Parameter-Wertebereiche pruefen */</span>
+<a name="l00505"></a>00505 <span class="preprocessor">    #if PID_Kp &gt; 127 || PID_Kp &lt; 0</span>
+<a name="l00506"></a>00506 <span class="preprocessor"></span><span class="preprocessor">        #error PID_Kp out of range [0; 127]!</span>
+<a name="l00507"></a>00507 <span class="preprocessor"></span><span class="preprocessor">    #endif</span>
+<a name="l00508"></a>00508 <span class="preprocessor"></span><span class="preprocessor">    #if PID_Ki &gt; 127 || PID_Ki &lt; 0</span>
+<a name="l00509"></a>00509 <span class="preprocessor"></span><span class="preprocessor">        #error PID_Ki out of range [0; 127]!</span>
+<a name="l00510"></a>00510 <span class="preprocessor"></span><span class="preprocessor">    #endif</span>
+<a name="l00511"></a>00511 <span class="preprocessor"></span><span class="preprocessor">    #if PID_Kd &gt; 127 || PID_Kd &lt; 0</span>
+<a name="l00512"></a>00512 <span class="preprocessor"></span><span class="preprocessor">        #error PID_Kd out of range [0; 127]!</span>
+<a name="l00513"></a>00513 <span class="preprocessor"></span><span class="preprocessor">    #endif</span>
+<a name="l00514"></a>00514 <span class="preprocessor"></span><span class="preprocessor">    #if PID_Ta &gt; 127 || PID_Ta &lt; 1</span>
+<a name="l00515"></a>00515 <span class="preprocessor"></span><span class="preprocessor">        #error PID_Ta out of range [1; 127]!</span>
+<a name="l00516"></a>00516 <span class="preprocessor"></span><span class="preprocessor">    #endif</span>
+<a name="l00517"></a>00517 <span class="preprocessor"></span><span class="preprocessor">    #if PID_SHIFT &gt; 127 || PID_SHIFT &lt; 0</span>
+<a name="l00518"></a>00518 <span class="preprocessor"></span><span class="preprocessor">        #error PID_SHIFT out of range [0; 127]!</span>
+<a name="l00519"></a>00519 <span class="preprocessor"></span><span class="preprocessor">    #endif</span>
+<a name="l00520"></a>00520 <span class="preprocessor"></span><span class="preprocessor">    #if PID_TIME &gt; 655 || PID_TIME &lt; 0</span>
+<a name="l00521"></a>00521 <span class="preprocessor"></span><span class="preprocessor">        #error PID_TIME out of range [0; 655]!</span>
+<a name="l00522"></a>00522 <span class="preprocessor"></span><span class="preprocessor">    #endif</span>
+<a name="l00523"></a>00523 <span class="preprocessor"></span><span class="preprocessor">    #if PID_SPEED_THRESHOLD &gt; (BOT_SPEED_MAX/2) || PID_SPEED_THRESHOLD &lt; BOT_SPEED_SLOW</span>
+<a name="l00524"></a>00524 <span class="preprocessor"></span><span class="preprocessor">        #error PID_SPEED_THRESHOLD out of range [BOT_SPEED_SLOW; BOT_SPEED_MAX/2]!</span>
+<a name="l00525"></a>00525 <span class="preprocessor"></span><span class="preprocessor">    #endif</span>
+<a name="l00526"></a>00526 <span class="preprocessor"></span><span class="preprocessor">    #if PID_START_DELAY &gt; 255 || PID_START_DELAY &lt; 0</span>
+<a name="l00527"></a>00527 <span class="preprocessor"></span><span class="preprocessor">        #error PID_START_DELAY out of range [0; 255]!</span>
+<a name="l00528"></a>00528 <span class="preprocessor"></span><span class="preprocessor">    #endif</span>
+<a name="l00529"></a>00529 <span class="preprocessor"></span><span class="preprocessor">    #if PWMMAX &gt; 511</span>
+<a name="l00530"></a>00530 <span class="preprocessor"></span><span class="preprocessor">        #error PWMMAX out of range [PWMMIN; 511]!</span>
+<a name="l00531"></a>00531 <span class="preprocessor"></span><span class="preprocessor">    #endif</span>
+<a name="l00532"></a>00532 <span class="preprocessor"></span><span class="preprocessor">    #if PWMMIN &gt;= PWMMAX || PWMMIN &lt; 0</span>
+<a name="l00533"></a>00533 <span class="preprocessor"></span><span class="preprocessor">        #error PWMMIN out of range [0; PWMMAX)!</span>
+<a name="l00534"></a>00534 <span class="preprocessor"></span><span class="preprocessor">    #endif</span>
+<a name="l00535"></a>00535 <span class="preprocessor"></span><span class="preprocessor">    #if PWMMAX &lt;= PWMMIN</span>
+<a name="l00536"></a>00536 <span class="preprocessor"></span><span class="preprocessor">        #error PWMMAX out of range (PWMMIN; 511]!</span>
+<a name="l00537"></a>00537 <span class="preprocessor"></span><span class="preprocessor">    #endif</span>
+<a name="l00538"></a>00538 <span class="preprocessor"></span><span class="preprocessor">    #if PWMSTART_L*3/2 &gt; PWMMAX || PWMSTART_L &lt; PWMMIN</span>
+<a name="l00539"></a>00539 <span class="preprocessor"></span><span class="preprocessor">        #error PWMSTART_L out of range [PWMMIN; PWMMAX/1.5]!</span>
+<a name="l00540"></a>00540 <span class="preprocessor"></span><span class="preprocessor">    #endif</span>
+<a name="l00541"></a>00541 <span class="preprocessor"></span><span class="preprocessor">    #if PWMSTART_R*3/2 &gt; PWMMAX || PWMSTART_R &lt; PWMMIN</span>
+<a name="l00542"></a>00542 <span class="preprocessor"></span><span class="preprocessor">        #error PWMSTART_R out of range [PWMMIN; PWMMAX/1.5]!</span>
+<a name="l00543"></a>00543 <span class="preprocessor"></span><span class="preprocessor">    #endif</span>
+<a name="l00544"></a>00544 <span class="preprocessor"></span><span class="preprocessor">#endif // SPEED_CONTROL_AVAILABLE</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:04 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: behaviour_follow_object.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">behaviour_follow_object.c</div>  </div>
+</div>
+<div class="contents">
+<a href="behaviour__follow__object_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00027"></a>00027 <span class="comment">/* Das bot_follow_object-Verhalten laesst den Bot ein (bewegliches) Objekt verfolgen. Kommt umgekehrt das</span>
+<a name="l00028"></a>00028 <span class="comment"> * Objekt dichter als 20 cm an den Bot heran, &quot;flieht&quot; er vor ihm und faehrt rueckwaerts.</span>
+<a name="l00029"></a>00029 <span class="comment"> * Die Ausrichtung der Bot-Front ist immer (moeglichst) parallel zur Front des anderen</span>
+<a name="l00030"></a>00030 <span class="comment"> * Objekts. Ist dieses z.B. ein Fahrzeug, dann faehrt der Bot durch diese Winkelanpassung</span>
+<a name="l00031"></a>00031 <span class="comment"> * dem anderen Fahrzeug hinterher (oder rueckwaerts vor ihm weg).</span>
+<a name="l00032"></a>00032 <span class="comment"> * Das Objekt muss breiter sein, als der Abstand der beiden Distanzsensoren, damit es</span>
+<a name="l00033"></a>00033 <span class="comment"> * korrekt erkannt wird.</span>
+<a name="l00034"></a>00034 <span class="comment"> * Sieht der Bot kein Objekt im Erfassungsbereich der Distanzsensoren, bleibt er stehen.</span>
+<a name="l00035"></a>00035 <span class="comment"> *</span>
+<a name="l00036"></a>00036 <span class="comment"> * Das Verhalten bietet noch sehr viel Spielraum fuer Anpassungen und eigene Experimente!</span>
+<a name="l00037"></a>00037 <span class="comment"> * Insbesondere ist es bisher nicht sehr robust gegenueber grossen Entfernungsaenderungen</span>
+<a name="l00038"></a>00038 <span class="comment"> * in kurzer Zeit. Die besten Ergebnisse werden erzielt, wenn sich das andere Objekt</span>
+<a name="l00039"></a>00039 <span class="comment"> * langsam und kontinuierlich bewegt.</span>
+<a name="l00040"></a>00040 <span class="comment"> * Obwohl der Verfolgungsalgorithmus ziemlich simpel gestrickt ist, bekommt der Kleine mit</span>
+<a name="l00041"></a>00041 <span class="comment"> * ihm eine Art &quot;Eigenleben&quot; und es ist recht unterhaltsam, damit zu spielen ;-)</span>
+<a name="l00042"></a>00042 <span class="comment"> * Sinnvolle Erweiterungen waeren ein Suchalgorithmus, falls kein Objekt im Erfassungsbereich</span>
+<a name="l00043"></a>00043 <span class="comment"> * ist, oder ein Filter fuer die Werte der Distanzsensoren.</span>
+<a name="l00044"></a>00044 <span class="comment"> */</span>
+<a name="l00045"></a>00045 
+<a name="l00046"></a>00046 
+<a name="l00047"></a>00047 <span class="preprocessor">#include &quot;<a class="code" href="bot-logic_8h.html" title="High-Level-Routinen fuer die Steuerung des c&#39;t-Bots.">bot-logic/bot-logic.h</a>&quot;</span>
+<a name="l00048"></a>00048 
+<a name="l00049"></a>00049 <span class="preprocessor">#ifdef BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE</span>
+<a name="l00050"></a>00050 <span class="preprocessor"></span><span class="preprocessor">#include &lt;stdlib.h&gt;</span>
+<a name="l00051"></a>00051 <span class="preprocessor">#include &quot;<a class="code" href="sensor__correction_8h.html" title="Kalibrierungsdaten fuer die IR-Sensoren.">sensor_correction.h</a>&quot;</span>
+<a name="l00052"></a>00052 <span class="preprocessor">#include &quot;<a class="code" href="timer_8h.html" title="Timer und Zaehler.">timer.h</a>&quot;</span>
+<a name="l00053"></a>00053 <span class="preprocessor">#include &quot;<a class="code" href="log_8h.html" title="Routinen zum Loggen von Informationen.">log.h</a>&quot;</span>
+<a name="l00054"></a>00054 
+<a name="l00055"></a>00055 <span class="comment">/* globale Variablen */</span>
+<a name="l00056"></a>00056 <span class="keyword">static</span> int16_t speedLeft    = 0;    
+<a name="l00057"></a>00057 <span class="keyword">static</span> int16_t speedRight   = 0;    
+<a name="l00058"></a>00058 <span class="keyword">static</span> uint8_t state        = 0;    
+<a name="l00059"></a>00059 <span class="preprocessor">#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE</span>
+<a name="l00060"></a>00060 <span class="preprocessor"></span><span class="keyword">static</span> uint32_t lastMove    = 0;    
+<a name="l00061"></a>00061 <span class="preprocessor">#endif</span>
+<a name="l00062"></a>00062 <span class="preprocessor"></span>
+<a name="l00063"></a>00063 <span class="comment">/* Konfig-Parameter */</span>
+<a name="l00064"></a>00064 <span class="keyword">static</span> <span class="keyword">const</span> uint8_t FOLLOW_DISTANCE    = 200;  
+<a name="l00065"></a>00065 <span class="keyword">static</span> <span class="keyword">const</span> uint8_t MAX_SPEED          = 200;  
+<a name="l00073"></a>00073 <span class="keyword">static</span> <span class="keywordtype">void</span> update_speed(int16_t * pSensDist, int16_t * pSpeed) {
+<a name="l00074"></a>00074     <span class="comment">/* Entfernung zu gross -&gt; hinterher! */</span>
+<a name="l00075"></a>00075     <span class="keywordflow">if</span> (*pSensDist &gt; FOLLOW_DISTANCE) *pSpeed += (*pSensDist - FOLLOW_DISTANCE) / (FOLLOW_DISTANCE / 10);
+<a name="l00076"></a>00076 
+<a name="l00077"></a>00077     <span class="comment">/* Entfernung zu klein -&gt; bitte Abstand halten! */</span>
+<a name="l00078"></a>00078     <span class="keywordflow">if</span> (*pSensDist &lt; (FOLLOW_DISTANCE - 20)) *pSpeed -= ((int16_t) (FOLLOW_DISTANCE * 1.5f) - *pSensDist)
+<a name="l00079"></a>00079         / ((int16_t) (FOLLOW_DISTANCE * 1.5f) / 10);
+<a name="l00080"></a>00080 
+<a name="l00081"></a>00081     <span class="comment">/* Objekt wid nur noch halb erfasst -&gt; abbiegen! */</span>
+<a name="l00082"></a>00082     <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> - *pSensDist &gt; FOLLOW_DISTANCE || <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a> - *pSensDist &gt; FOLLOW_DISTANCE) {
+<a name="l00083"></a>00083         <span class="comment">// Drehungen teilweise zu stark =&gt; besser neu suchen in diesem Fall</span>
+<a name="l00084"></a>00084 <span class="comment">//      *pSpeed -= 1;</span>
+<a name="l00085"></a>00085     }
+<a name="l00086"></a>00086 
+<a name="l00087"></a>00087     <span class="comment">/* anti wind-up */</span>
+<a name="l00088"></a>00088     <span class="keywordflow">if</span> (*pSpeed &gt; MAX_SPEED) *pSpeed = MAX_SPEED;
+<a name="l00089"></a>00089     <span class="keywordflow">else</span> <span class="keywordflow">if</span> (*pSpeed &lt; -MAX_SPEED) *pSpeed = -MAX_SPEED;
+<a name="l00090"></a>00090 
+<a name="l00091"></a>00091     <span class="comment">/* Abstand ok -&gt; Pause einlegen */</span>
+<a name="l00092"></a>00092     <span class="keywordflow">if</span> (abs(*pSensDist - FOLLOW_DISTANCE) &lt;= 10) *pSpeed = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00093"></a>00093 }
+<a name="l00094"></a>00094 
+<a name="l00099"></a><a class="code" href="behaviour__follow__object_8h.html#a128f36d527420e6aa3c901602751f4d0">00099</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__follow__object_8c.html#a128f36d527420e6aa3c901602751f4d0" title="Das Objektverfolgungsverhalten.">bot_follow_object_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00100"></a>00100     <span class="keyword">static</span> uint8_t distToggle = 0;
+<a name="l00101"></a>00101 <span class="preprocessor">#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE</span>
+<a name="l00102"></a>00102 <span class="preprocessor"></span>    <span class="keyword">static</span> uint8_t movedState = 0;
+<a name="l00103"></a>00103 <span class="preprocessor">#endif</span>
+<a name="l00104"></a>00104 <span class="preprocessor"></span>    <span class="keywordflow">switch</span> (state) {
+<a name="l00105"></a>00105     <span class="keywordflow">case</span> 0:
+<a name="l00106"></a>00106         <span class="comment">/* auf neue Messwerte der Distanzsensoren warten */</span>
+<a name="l00107"></a>00107         <span class="keywordflow">if</span> (distToggle != <a class="code" href="sensor_8c.html#aab4f26c26726bc36314faf79f5f51dcb">sensDistLToggle</a>) {
+<a name="l00108"></a>00108             distToggle = <a class="code" href="sensor_8c.html#aab4f26c26726bc36314faf79f5f51dcb">sensDistLToggle</a>;
+<a name="l00109"></a>00109             state = 1;
+<a name="l00110"></a>00110         }
+<a name="l00111"></a>00111         <span class="keywordflow">break</span>;
+<a name="l00112"></a>00112 
+<a name="l00113"></a>00113     <span class="keywordflow">case</span> 1:
+<a name="l00114"></a>00114         <span class="comment">/* go! */</span>
+<a name="l00115"></a>00115         update_speed(&amp;<a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a>, &amp;speedLeft);   <span class="comment">// links</span>
+<a name="l00116"></a>00116         update_speed(&amp;<a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a>, &amp;speedRight);  <span class="comment">// rechts</span>
+<a name="l00117"></a>00117 
+<a name="l00118"></a>00118         <span class="comment">/* ganz allein :( -&gt; anhalten */</span>
+<a name="l00119"></a>00119         <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> == <a class="code" href="sensor_8h.html#ac967ed2e195d18cf9819c4796cc7b60a">SENS_IR_INFINITE</a> &amp;&amp; <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a> == <a class="code" href="sensor_8h.html#ac967ed2e195d18cf9819c4796cc7b60a">SENS_IR_INFINITE</a>) {
+<a name="l00120"></a>00120 <span class="preprocessor">#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE</span>
+<a name="l00121"></a>00121 <span class="preprocessor"></span>            <span class="comment">/* zurueck zum Startpunkt mit bot_drive_stack(), falls</span>
+<a name="l00122"></a>00122 <span class="comment">             * mindestens 8 Sekunden kein Objekt in Sichtweite */</span>
+<a name="l00123"></a>00123             <span class="keywordflow">if</span> (movedState == 0) {
+<a name="l00124"></a>00124                 lastMove = <a class="code" href="timer_8h.html#ae992a808717a64e585cbc308a1d5950d">TIMER_GET_TICKCOUNT_32</a>;
+<a name="l00125"></a>00125                 movedState = 1;
+<a name="l00126"></a>00126             } <span class="keywordflow">else</span> {
+<a name="l00127"></a>00127                 <span class="keywordflow">if</span> (timer_ms_passed_32(&amp;lastMove, 10000)) {
+<a name="l00128"></a>00128                     <a class="code" href="behaviour__drive__stack_8c.html#a27dc4bb2ea3f3057c5a4d5510182b5a8">bot_drive_stack</a>(data);
+<a name="l00129"></a>00129                     movedState = 0;
+<a name="l00130"></a>00130                 }
+<a name="l00131"></a>00131             }
+<a name="l00132"></a>00132 <span class="preprocessor">#endif  // BEHAVIOUR_DRIVE_STACK_AVAILABLE</span>
+<a name="l00133"></a>00133 <span class="preprocessor"></span>
+<a name="l00134"></a>00134             speedLeft   = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00135"></a>00135             speedRight  = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00136"></a>00136             <span class="keywordflow">break</span>;
+<a name="l00137"></a>00137         }
+<a name="l00138"></a>00138         state = 0;
+<a name="l00139"></a>00139         <span class="keywordflow">break</span>;
+<a name="l00140"></a>00140 
+<a name="l00141"></a>00141     <span class="keywordflow">case</span> 2:
+<a name="l00142"></a>00142         <span class="comment">/* hier koennte man abbrechen, wenn man denn wollte...</span>
+<a name="l00143"></a>00143 <span class="comment">         * Eigentlich gibt es aber keinen Zeitpunkt, an dem</span>
+<a name="l00144"></a>00144 <span class="comment">         * sich das Verhalten selbst beenden sollte.</span>
+<a name="l00145"></a>00145 <span class="comment">         */</span>
+<a name="l00146"></a>00146 <span class="comment">//      return_from_behaviour(data);</span>
+<a name="l00147"></a>00147         <span class="keywordflow">break</span>;
+<a name="l00148"></a>00148     }
+<a name="l00149"></a>00149 
+<a name="l00150"></a>00150     <span class="comment">/* Geschwindigkeiten setzen */</span>
+<a name="l00151"></a>00151     <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a>   = speedLeft;
+<a name="l00152"></a>00152     <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a>  = speedRight;
+<a name="l00153"></a>00153 }
+<a name="l00154"></a>00154 
+<a name="l00159"></a><a class="code" href="behaviour__follow__object_8h.html#a48363707a2fbaea8c177fc6cb4f4a692">00159</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__follow__object_8c.html#a48363707a2fbaea8c177fc6cb4f4a692" title="Botenfunktion des Objektverfolgungsverhaltens.">bot_follow_object</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller) {
+<a name="l00160"></a>00160     <span class="comment">/* Verhalten starten */</span>
+<a name="l00161"></a>00161     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__follow__object_8c.html#a128f36d527420e6aa3c901602751f4d0" title="Das Objektverfolgungsverhalten.">bot_follow_object_behaviour</a>, <a class="code" href="bot-logic_8h.html#ac3101d6686d35c952f2a5c8177b3f262" title="Konstante, wenn Verhalten beim Aufruf alte Wuensche ueberschreiben sollen.">BEHAVIOUR_OVERRIDE</a>);
+<a name="l00162"></a>00162 
+<a name="l00163"></a>00163     <span class="comment">/* Inits */</span>
+<a name="l00164"></a>00164 <span class="preprocessor">#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE</span>
+<a name="l00165"></a>00165 <span class="preprocessor"></span>    <a class="code" href="behaviour__drive__stack_8c.html#a48b7a3665b51ae2cbde5d9b7a97b9adb">bot_save_waypos</a>(<a class="code" href="bot-logic_8c.html#a11e7a95fd56f9703bd2bd9c61300df6c" title="Liefert das Verhalten zurueck, welches durch function implementiert ist.">get_behaviour</a>(<a class="code" href="behaviour__follow__object_8c.html#a128f36d527420e6aa3c901602751f4d0" title="Das Objektverfolgungsverhalten.">bot_follow_object_behaviour</a>), 1);
+<a name="l00166"></a>00166 <span class="preprocessor">#endif</span>
+<a name="l00167"></a>00167 <span class="preprocessor"></span>    state       = 0;
+<a name="l00168"></a>00168     speedLeft   = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00169"></a>00169     speedRight  = <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00170"></a>00170 }
+<a name="l00171"></a>00171 
+<a name="l00172"></a>00172 <span class="preprocessor">#endif // BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

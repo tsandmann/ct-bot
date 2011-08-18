@@ -1,0 +1,787 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: command.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#define-members">Makrodefinitionen</a> &#124;
+<a href="#func-members">Funktionen</a> &#124;
+<a href="#var-members">Variablen</a>  </div>
+  <div class="headertitle">
+<div class="title">command.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Kommando-Management.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="ct-Bot_8h_source.html">ct-Bot.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="command_8h_source.html">command.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="tcp_8h_source.html">tcp.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="led_8h_source.html">led.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="log_8h_source.html">log.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="timer_8h_source.html">timer.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="mouse_8h_source.html">mouse.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="sensor_8h_source.html">sensor.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="rc5_8h_source.html">rc5.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="rc5-codes_8h_source.html">rc5-codes.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="bot-logic_8h_source.html">bot-logic/bot-logic.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="bot-2-sim_8h_source.html">bot-2-sim.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="bot-2-bot_8h_source.html">bot-2-bot.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="os__thread_8h_source.html">os_thread.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="map_8h_source.html">map.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="botfs_8h_source.html">botfs.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="botcontrol_8h_source.html">botcontrol.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="init_8h_source.html">init.h</a>&quot;</code><br/>
+<code>#include &lt;string.h&gt;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für command.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="command_8c__incl.png" border="0" usemap="#command_8c" alt=""/></div>
+<map name="command_8c" id="command_8c">
+</map>
+</div>
+</div>
+<p><a href="command_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="define-members"></a>
+Makrodefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="command_8c.html#aca5c51e6d540584a41a26af40b7d3790">CHECK_CMD_ADDRESS</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="command_8c.html#a757e6521ee579cf97718d37b81972cd5">RCVBUFSIZE</a>&#160;&#160;&#160;(sizeof(command_t) * 2)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="command_8c.html#a4ec5f68b5fd7b11e202f1f2f508a3fee">COMMAND_TIMEOUT</a>&#160;&#160;&#160;15</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(...)&#160;&#160;&#160;{}</td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="command_8c.html#aa2fcb6356b44efb0f80d437a819a4e2c">command_init</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="command_8c.html#a710f03c0bca16a1965fc97647f41ee06">command_read</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="command_8c.html#a428cf92e37fc9bbc0ffc48912c3022ac">command_write_to_internal</a> (uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="command_8c.html#a895fa93386026b4934625541b4faf2a0">command_write_to</a> (uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="command_8c.html#a419b75ed34551408822d9caee3cd5206">command_write</a> (uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="command_8c.html#ad1ce17d9fe0aaf21a33d52de4e10af0f">command_write_rawdata_to</a> (uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload, const void *data)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="command_8c.html#a1497433f9f7384b363203b7bfd3bfe28">command_write_rawdata</a> (uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload, const void *data)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="command_8c.html#aef266284aebb772b9592228ed9019469">command_write_data</a> (uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, const char *data)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="command_8c.html#a368e349402920fcd2cafc0eeaea97041">command_evaluate</a> (void)</td></tr>
+<tr><td colspan="2"><h2><a name="var-members"></a>
+Variablen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">EEPROM uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="command_8c.html#a69bc0692f1e9828d49fff1f3f841aef0">bot_address</a> = CMD_BROADCAST</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">command_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="command_8c.html#ac0048910da59c3a22177b20c8ce0b3b6">received_command</a></td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Kommando-Management. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Benjamin Benz (<a href="mailto:bbe@heise.de">bbe@heise.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>20.12.2005 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="command_8c_source.html">command.c</a>.</p>
+</div><hr/><h2>Makro-Dokumentation</h2>
+<a class="anchor" id="aca5c51e6d540584a41a26af40b7d3790"></a><!-- doxytag: member="command.c::CHECK_CMD_ADDRESS" ref="aca5c51e6d540584a41a26af40b7d3790" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CHECK_CMD_ADDRESS</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>soll die Zieladresse der Kommandos ueberprueft werden? </p>
+
+<p>Definiert in Zeile <a class="el" href="command_8c_source.html#l00051">51</a> der Datei <a class="el" href="command_8c_source.html">command.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4ec5f68b5fd7b11e202f1f2f508a3fee"></a><!-- doxytag: member="command.c::COMMAND_TIMEOUT" ref="a4ec5f68b5fd7b11e202f1f2f508a3fee" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define COMMAND_TIMEOUT&#160;&#160;&#160;15</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Anzahl an ms, die maximal auf fehlende Daten gewartet wird </p>
+
+<p>Definiert in Zeile <a class="el" href="command_8c_source.html#l00053">53</a> der Datei <a class="el" href="command_8c_source.html">command.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="command_8c_source.html#l00101">command_read()</a> und <a class="el" href="command_8c_source.html#l00359">command_evaluate()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a754b3d074e0af4ad3c7b918dd77ecb2d"></a><!-- doxytag: member="command.c::LOG_DEBUG" ref="a754b3d074e0af4ad3c7b918dd77ecb2d" args="(...)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define LOG_DEBUG</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em></td><td>)</td>
+          <td>&#160;&#160;&#160;{}</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Log-Dummy </p>
+
+<p>Definiert in Zeile <a class="el" href="command_8c_source.html#l00071">71</a> der Datei <a class="el" href="command_8c_source.html">command.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__classify__objects_8c_source.html#l00064">bot_classify_objects_behaviour()</a>, <a class="el" href="behaviour__scan_8c_source.html#l00058">bot_scan_onthefly_behaviour()</a>, <a class="el" href="behaviour__scan__beacons_8c_source.html#l00094">bot_scan_beacons_behaviour()</a>, <a class="el" href="behaviour__scan__beacons_8c_source.html#l00295">bot_scan_beacons()</a>, <a class="el" href="behaviour__turn__test_8c_source.html#l00047">bot_turn_test_behaviour()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00322">bot_2_bot_send_payload_request()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00373">bot_2_bot_handle_payload_request()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00438">bot_2_bot_handle_payload_ack()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00497">bot_2_bot_handle_payload_data()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00570">bot_2_bot_payload_test_verify()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00596">bot_2_bot_pl_test()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00635">bot_2_bot_start_remotecall()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00671">print_bot_list()</a>, <a class="el" href="command_8c_source.html#l00101">command_read()</a>, <a class="el" href="command_8c_source.html#l00359">command_evaluate()</a>, <a class="el" href="misc_8c_source.html#l00154">ram_display()</a>, <a class="el" href="os__thread_8c_source.html#l00119">os_thread_yield()</a>, <a class="el" href="pos__store_8c_source.html#l00119">pos_store_release()</a>, <a class="el" href="pos__store_8c_source.html#l00189">pos_store_clear()</a>, <a class="el" href="pos__store_8c_source.html#l00230">pos_store_insert()</a>, <a class="el" href="pos__store_8c_source.html#l00251">pos_store_push()</a>, <a class="el" href="pos__store_8c_source.html#l00343">bot_2_bot_handle_pos_store()</a> und <a class="el" href="pos__store_8c_source.html#l00375">bot_2_bot_handle_pos_store_data()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a757e6521ee579cf97718d37b81972cd5"></a><!-- doxytag: member="command.c::RCVBUFSIZE" ref="a757e6521ee579cf97718d37b81972cd5" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define RCVBUFSIZE&#160;&#160;&#160;(sizeof(command_t) * 2)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Groesse des Empfangspuffers </p>
+
+<p>Definiert in Zeile <a class="el" href="command_8c_source.html#l00052">52</a> der Datei <a class="el" href="command_8c_source.html">command.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="command_8c_source.html#l00101">command_read()</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="a368e349402920fcd2cafc0eeaea97041"></a><!-- doxytag: member="command.c::command_evaluate" ref="a368e349402920fcd2cafc0eeaea97041" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int8_t command_evaluate </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Wertet das Kommando im Puffer aus return 1, wenn Kommando schon bearbeitet wurde, 0 sonst </p>
+
+<p>Definiert in Zeile <a class="el" href="command_8c_source.html#l00359">359</a> der Datei <a class="el" href="command_8c_source.html">command.c</a>.</p>
+
+<p>Benutzt <a class="el" href="command_8c_source.html#l00055">received_command</a>, <a class="el" href="command_8h_source.html#l00127">CMD_SIM_ADDR</a>, <a class="el" href="command_8c_source.html#l00071">LOG_DEBUG</a>, <a class="el" href="command_8h_source.html#l00062">CMD_SENS_RC5</a>, <a class="el" href="rc5_8c_source.html#l00058">rc5_ir_data</a>, <a class="el" href="ir-rc5_8h_source.html#l00064">ir_data_t::ir_data</a>, <a class="el" href="rc5-codes_8h_source.html#l00030">RC5_TOGGLE</a>, <a class="el" href="command_8h_source.html#l00089">CMD_WELCOME</a>, <a class="el" href="command_8c_source.html#l00278">command_write()</a>, <a class="el" href="command_8h_source.html#l00090">SUB_WELCOME_REAL</a>, <a class="el" href="command_8h_source.html#l00091">SUB_WELCOME_SIM</a>, <a class="el" href="command_8h_source.html#l00126">CMD_BROADCAST</a>, <a class="el" href="command_8h_source.html#l00075">CMD_ID</a>, <a class="el" href="command_8h_source.html#l00076">SUB_ID_REQUEST</a>, <a class="el" href="command_8c_source.html#l00263">command_write_to()</a>, <a class="el" href="bot-2-bot_8h_source.html#l00046">BOT_CMD_WELCOME</a>, <a class="el" href="command_8h_source.html#l00050">SUB_CMD_NORM</a>, <a class="el" href="command_8h_source.html#l00077">SUB_ID_OFFER</a>, <a class="el" href="command_8h_source.html#l00078">SUB_ID_SET</a>, <a class="el" href="command_8h_source.html#l00065">CMD_SENS_MOUSE_PICTURE</a>, <a class="el" href="mouse_8c_source.html#l00162">mouse_transmit_picture()</a>, <a class="el" href="command_8h_source.html#l00095">CMD_REMOTE_CALL</a>, <a class="el" href="command_8h_source.html#l00096">SUB_REMOTE_CALL_LIST</a>, <a class="el" href="behaviour__remotecall_8c_source.html#l00489">bot_remotecall_list()</a>, <a class="el" href="command_8h_source.html#l00098">SUB_REMOTE_CALL_ORDER</a>, <a class="el" href="behaviour__remotecall_8h_source.html#l00037">REMOTE_CALL_BUFFER_SIZE</a>, <a class="el" href="timer_8h_source.html#l00087">TIMER_GET_TICKCOUNT_16</a>, <a class="el" href="uart_8h_source.html#l00111">uart_data_available</a>, <a class="el" href="timer_8h_source.html#l00040">MS_TO_TICKS</a>, <a class="el" href="command_8c_source.html#l00053">COMMAND_TIMEOUT</a>, <a class="el" href="command_8h_source.html#l00042">low_read</a>, <a class="el" href="behaviour__remotecall_8c_source.html#l00469">bot_remotecall_from_command()</a>, <a class="el" href="bot-logic_8h_source.html#l00044">BEHAVIOUR_SUBFAIL</a>, <a class="el" href="command_8h_source.html#l00099">SUB_REMOTE_CALL_DONE</a>, <a class="el" href="command_8h_source.html#l00100">SUB_REMOTE_CALL_ABORT</a>, <a class="el" href="behaviour__remotecall_8c_source.html#l00478">bot_remotecall_cancel()</a>, <a class="el" href="command_8h_source.html#l00103">CMD_MAP</a>, <a class="el" href="command_8h_source.html#l00108">SUB_MAP_REQUEST</a>, <a class="el" href="map_8c_source.html#l01459">map_2_sim_send()</a>, <a class="el" href="command_8h_source.html#l00114">CMD_SHUTDOWN</a>, <a class="el" href="botcontrol_8c_source.html#l00138">ctbot_shutdown()</a>, <a class="el" href="command_8h_source.html#l00117">CMD_PROGRAM</a>, <a class="el" href="command_8h_source.html#l00118">SUB_PROGRAM_PREPARE</a>, <a class="el" href="init_8h_source.html#l00038">GET_MMC_BUFFER</a>, <a class="el" href="botfs_8c_source.html#l00442">botfs_unlink()</a>, <a class="el" href="botfs__config_8h_source.html#l00039">BOTFS_BLOCK_SIZE</a>, <a class="el" href="botfs_8c_source.html#l00318">botfs_create()</a>, <a class="el" href="botfs_8c_source.html#l00400">botfs_open()</a>, <a class="el" href="botfs__config_8h_source.html#l00061">BOTFS_MODE_W</a>, <a class="el" href="log_8h_source.html#l00309">LOG_ERROR</a>, <a class="el" href="behaviour__cancel__behaviour_8c_source.html#l00047">beh</a>, <a class="el" href="bot-logic_8c_source.html#l00376">get_behaviour()</a>, <a class="el" href="behaviour__ubasic_8c_source.html#l00145">bot_ubasic_behaviour()</a>, <a class="el" href="bot-logic_8c_source.html#l00466">deactivate_called_behaviours()</a>, <a class="el" href="bot-logic_8c_source.html#l00409">deactivate_behaviour()</a>, <a class="el" href="behaviour__remotecall_8c_source.html#l00324">bot_remotecall_behaviour()</a>, <a class="el" href="behaviour__ubasic_8c_source.html#l00077">bot_ubasic_load_file()</a>, <a class="el" href="command_8h_source.html#l00119">SUB_PROGRAM_DATA</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00161">n</a>, <a class="el" href="botfs_8c_source.html#l00615">botfs_write()</a>, <a class="el" href="botfs_8c_source.html#l00658">botfs_flush_used_blocks()</a>, <a class="el" href="command_8h_source.html#l00120">SUB_PROGRAM_START</a>, <a class="el" href="behaviour__ubasic_8c_source.html#l00168">bot_ubasic()</a>, <a class="el" href="command_8h_source.html#l00121">SUB_PROGRAM_STOP</a>, <a class="el" href="behaviour__ubasic_8c_source.html#l00183">bot_ubasic_break()</a>, <a class="el" href="command_8h_source.html#l00053">CMD_SENS_IR</a>, <a class="el" href="sensor_8c_source.html#l00055">sensDistL</a>, <a class="el" href="sensor_8c_source.html#l00057">sensDistLToggle</a>, <a class="el" href="sensor_8c_source.html#l00062">sensDistDataL</a>, <a class="el" href="sensor_8c_source.html#l00056">sensDistR</a>, <a class="el" href="sensor_8c_source.html#l00058">sensDistRToggle</a>, <a class="el" href="sensor_8c_source.html#l00063">sensDistDataR</a>, <a class="el" href="command_8h_source.html#l00054">CMD_SENS_ENC</a>, <a class="el" href="sensor_8c_source.html#l00093">sensEncL</a>, <a class="el" href="sensor_8c_source.html#l00094">sensEncR</a>, <a class="el" href="command_8h_source.html#l00055">CMD_SENS_BORDER</a>, <a class="el" href="sensor_8c_source.html#l00066">sensBorderL</a>, <a class="el" href="sensor_8c_source.html#l00067">sensBorderR</a>, <a class="el" href="command_8h_source.html#l00056">CMD_SENS_LINE</a>, <a class="el" href="sensor_8c_source.html#l00069">sensLineL</a>, <a class="el" href="sensor_8c_source.html#l00070">sensLineR</a>, <a class="el" href="command_8h_source.html#l00057">CMD_SENS_LDR</a>, <a class="el" href="sensor_8c_source.html#l00052">sensLDRL</a>, <a class="el" href="sensor_8c_source.html#l00053">sensLDRR</a>, <a class="el" href="command_8h_source.html#l00058">CMD_SENS_TRANS</a>, <a class="el" href="sensor_8c_source.html#l00072">sensTrans</a>, <a class="el" href="ct-Bot_8h_source.html#l00064">MOUSE_AVAILABLE</a>, <a class="el" href="command_8h_source.html#l00060">CMD_SENS_MOUSE</a>, <a class="el" href="sensor_8c_source.html#l00087">sensMouseDX</a>, <a class="el" href="sensor_8c_source.html#l00088">sensMouseDY</a>, <a class="el" href="command_8h_source.html#l00061">CMD_SENS_ERROR</a>, <a class="el" href="sensor_8c_source.html#l00076">sensError</a>, <a class="el" href="command_8h_source.html#l00063">CMD_SENS_BPS</a>, <a class="el" href="sensor_8c_source.html#l00079">sensBPS</a>, <a class="el" href="command_8h_source.html#l00073">CMD_DONE</a>, <a class="el" href="sensor_8c_source.html#l00104">simultime</a>, <a class="el" href="timer-low__pc_8c_source.html#l00043">system_time_isr()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00146">get_bot2bot_cmds()</a> und <a class="el" href="bot-2-bot_8c_source.html#l00090">cmd_functions</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-2-bot_8c_source.html#l00322">bot_2_bot_send_payload_request()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00373">bot_2_bot_handle_payload_request()</a>, <a class="el" href="bot-2-sim_8c_source.html#l00049">bot_2_sim_listen()</a> und <a class="el" href="bot-2-sim__pc_8c_source.html#l00092">receive_until_Frame()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="command_8c_a368e349402920fcd2cafc0eeaea97041_cgraph.png" border="0" usemap="#command_8c_a368e349402920fcd2cafc0eeaea97041_cgraph" alt=""/></div>
+<map name="command_8c_a368e349402920fcd2cafc0eeaea97041_cgraph" id="command_8c_a368e349402920fcd2cafc0eeaea97041_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="aa2fcb6356b44efb0f80d437a819a4e2c"></a><!-- doxytag: member="command.c::command_init" ref="aa2fcb6356b44efb0f80d437a819a4e2c" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void command_init </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Initialisiert die (High-Level-)Kommunikation </p>
+
+<p>Definiert in Zeile <a class="el" href="command_8c_source.html#l00077">77</a> der Datei <a class="el" href="command_8c_source.html">command.c</a>.</p>
+
+<p>Benutzt <a class="el" href="command_8h_source.html#l00126">CMD_BROADCAST</a>, <a class="el" href="command_8c_source.html#l00278">command_write()</a>, <a class="el" href="command_8h_source.html#l00089">CMD_WELCOME</a>, <a class="el" href="command_8h_source.html#l00090">SUB_WELCOME_REAL</a> und <a class="el" href="command_8h_source.html#l00091">SUB_WELCOME_SIM</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-2-sim_8c_source.html#l00094">bot_2_sim_init()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="command_8c_aa2fcb6356b44efb0f80d437a819a4e2c_cgraph.png" border="0" usemap="#command_8c_aa2fcb6356b44efb0f80d437a819a4e2c_cgraph" alt=""/></div>
+<map name="command_8c_aa2fcb6356b44efb0f80d437a819a4e2c_cgraph" id="command_8c_aa2fcb6356b44efb0f80d437a819a4e2c_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a710f03c0bca16a1965fc97647f41ee06"></a><!-- doxytag: member="command.c::command_read" ref="a710f03c0bca16a1965fc97647f41ee06" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int8_t command_read </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Liest ein Kommando ein, ist blockierend! Greift auf <a class="el" href="command_8h.html#a7b73b86c514a68c1d7598f9bc98bbfea">low_read()</a> zurueck Achtung, die Payload wird nicht mitgelesen!!! </p>
+<dl class="see"><dt><b>Siehe auch:</b></dt><dd><a class="el" href="command_8h.html#a7b73b86c514a68c1d7598f9bc98bbfea">low_read()</a> </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="command_8c_source.html#l00101">101</a> der Datei <a class="el" href="command_8c_source.html">command.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="command_8c_source.html#l00052">RCVBUFSIZE</a>, <a class="el" href="command_8h_source.html#l00042">low_read</a>, <a class="el" href="command_8c_source.html#l00071">LOG_DEBUG</a>, <a class="el" href="command_8h_source.html#l00047">CMD_STARTCODE</a>, <a class="el" href="timer_8h_source.html#l00087">TIMER_GET_TICKCOUNT_16</a>, <a class="el" href="command_8c_source.html#l00053">COMMAND_TIMEOUT</a>, <a class="el" href="command_8h_source.html#l00048">CMD_STOPCODE</a>, <a class="el" href="command_8h_source.html#l00126">CMD_BROADCAST</a>, <a class="el" href="command_8h_source.html#l00089">CMD_WELCOME</a>, <a class="el" href="command_8c_source.html#l00055">received_command</a> und <a class="el" href="log_8h_source.html#l00309">LOG_ERROR</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-2-bot_8c_source.html#l00322">bot_2_bot_send_payload_request()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00373">bot_2_bot_handle_payload_request()</a>, <a class="el" href="bot-2-sim_8c_source.html#l00049">bot_2_sim_listen()</a>, <a class="el" href="bot-2-sim__pc_8c_source.html#l00092">receive_until_Frame()</a> und <a class="el" href="tcp-server_8c_source.html#l00127">tcp_server_run()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a419b75ed34551408822d9caee3cd5206"></a><!-- doxytag: member="command.c::command_write" ref="a419b75ed34551408822d9caee3cd5206" args="(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void command_write </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>command</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>subcommand</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>data_l</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>data_r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>payload</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Uebertraegt ein Kommando an den ct-Sim und wartet nicht auf eine Antwort </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">command</td><td>Kennung zum Command </td></tr>
+    <tr><td class="paramname">subcommand</td><td>Kennung des Subcommand </td></tr>
+    <tr><td class="paramname">data_l</td><td>Daten fuer den linken Kanal </td></tr>
+    <tr><td class="paramname">data_r</td><td>Daten fuer den rechten Kanal </td></tr>
+    <tr><td class="paramname">payload</td><td>Anzahl der Bytes, die diesem Kommando als Payload folgen </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="command_8c_source.html#l00278">278</a> der Datei <a class="el" href="command_8c_source.html">command.c</a>.</p>
+
+<p>Benutzt <a class="el" href="os__thread_8h_source.html#l00118">os_enterCS</a>, <a class="el" href="command_8c_source.html#l00228">command_write_to_internal()</a>, <a class="el" href="command_8h_source.html#l00127">CMD_SIM_ADDR</a>, <a class="el" href="command_8h_source.html#l00073">CMD_DONE</a>, <a class="el" href="tcp_8c_source.html#l00275">flushSendBuffer()</a> und <a class="el" href="os__thread_8c_source.html#l00108">os_exitCS()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00322">bot_2_bot_send_payload_request()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00438">bot_2_bot_handle_payload_ack()</a>, <a class="el" href="bot-2-sim_8c_source.html#l00065">bot_2_sim_inform()</a>, <a class="el" href="bot-2-sim__pc_8c_source.html#l00122">bot_2_sim_init()</a>, <a class="el" href="botcontrol_8c_source.html#l00080">post_behaviour()</a>, <a class="el" href="command_8c_source.html#l00077">command_init()</a>, <a class="el" href="command_8c_source.html#l00359">command_evaluate()</a>, <a class="el" href="display_8c_source.html#l00129">display_clear()</a>, <a class="el" href="led__pc_8c_source.html#l00068">LED_set()</a>, <a class="el" href="motor-low__pc_8c_source.html#l00051">bot_motor()</a>, <a class="el" href="motor-low__pc_8c_source.html#l00076">servo_low()</a>, <a class="el" href="mouse_8c_source.html#l00162">mouse_transmit_picture()</a>, <a class="el" href="rc5_8c_source.html#l00230">default_key_handler()</a> und <a class="el" href="tcp-server_8c_source.html#l00127">tcp_server_run()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="command_8c_a419b75ed34551408822d9caee3cd5206_cgraph.png" border="0" usemap="#command_8c_a419b75ed34551408822d9caee3cd5206_cgraph" alt=""/></div>
+<map name="command_8c_a419b75ed34551408822d9caee3cd5206_cgraph" id="command_8c_a419b75ed34551408822d9caee3cd5206_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="aef266284aebb772b9592228ed9019469"></a><!-- doxytag: member="command.c::command_write_data" ref="aef266284aebb772b9592228ed9019469" args="(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, const char *data)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void command_write_data </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>command</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>subcommand</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>data_l</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>data_r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Gibt dem Simulator Daten mit String-Anhang und wartet nicht auf Antwort </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">command</td><td>Kennung zum Command </td></tr>
+    <tr><td class="paramname">subcommand</td><td>Kennung des Subcommand </td></tr>
+    <tr><td class="paramname">data_l</td><td>Daten fuer den linken Kanal </td></tr>
+    <tr><td class="paramname">data_r</td><td>Daten fuer den rechten Kanal </td></tr>
+    <tr><td class="paramname">*data</td><td>Datenanhang an das eigentliche Command, null-terminiert </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="command_8c_source.html#l00332">332</a> der Datei <a class="el" href="command_8c_source.html">command.c</a>.</p>
+
+<p>Benutzt <a class="el" href="command_8h_source.html#l00033">MAX_PAYLOAD</a>, <a class="el" href="os__thread_8h_source.html#l00118">os_enterCS</a>, <a class="el" href="command_8c_source.html#l00228">command_write_to_internal()</a>, <a class="el" href="command_8h_source.html#l00127">CMD_SIM_ADDR</a>, <a class="el" href="command_8h_source.html#l00044">low_write_data</a> und <a class="el" href="os__thread_8c_source.html#l00108">os_exitCS()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__remotecall_8c_source.html#l00324">bot_remotecall_behaviour()</a>, <a class="el" href="display_8c_source.html#l00200">display_flash_printf()</a>, <a class="el" href="display__pc_8c_source.html#l00096">display_puts()</a> und <a class="el" href="log_8c_source.html#l00308">log_end()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="command_8c_aef266284aebb772b9592228ed9019469_cgraph.png" border="0" usemap="#command_8c_aef266284aebb772b9592228ed9019469_cgraph" alt=""/></div>
+<map name="command_8c_aef266284aebb772b9592228ed9019469_cgraph" id="command_8c_aef266284aebb772b9592228ed9019469_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a1497433f9f7384b363203b7bfd3bfe28"></a><!-- doxytag: member="command.c::command_write_rawdata" ref="a1497433f9f7384b363203b7bfd3bfe28" args="(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload, const void *data)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void command_write_rawdata </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>command</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>subcommand</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>data_l</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>data_r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>payload</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">command</td><td>Kennung zum Command </td></tr>
+    <tr><td class="paramname">subcommand</td><td>Kennung des Subcommand </td></tr>
+    <tr><td class="paramname">data_l</td><td>Daten fuer den linken Kanal </td></tr>
+    <tr><td class="paramname">data_r</td><td>Daten fuer den rechten Kanal </td></tr>
+    <tr><td class="paramname">payload</td><td>Anzahl der Bytes im Anhang </td></tr>
+    <tr><td class="paramname">*data</td><td>Datenanhang an das eigentliche Command </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="command_8c_source.html#l00318">318</a> der Datei <a class="el" href="command_8c_source.html">command.c</a>.</p>
+
+<p>Benutzt <a class="el" href="command_8c_source.html#l00301">command_write_rawdata_to()</a> und <a class="el" href="command_8h_source.html#l00127">CMD_SIM_ADDR</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__remotecall_8c_source.html#l00489">bot_remotecall_list()</a>, <a class="el" href="display__pc_8c_source.html#l00075">display_printf()</a>, <a class="el" href="map_8c_source.html#l01205">map_draw_line()</a>, <a class="el" href="map_8c_source.html#l01275">map_draw_circle()</a> und <a class="el" href="map_8c_source.html#l01459">map_2_sim_send()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="command_8c_a1497433f9f7384b363203b7bfd3bfe28_cgraph.png" border="0" usemap="#command_8c_a1497433f9f7384b363203b7bfd3bfe28_cgraph" alt=""/></div>
+<map name="command_8c_a1497433f9f7384b363203b7bfd3bfe28_cgraph" id="command_8c_a1497433f9f7384b363203b7bfd3bfe28_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ad1ce17d9fe0aaf21a33d52de4e10af0f"></a><!-- doxytag: member="command.c::command_write_rawdata_to" ref="ad1ce17d9fe0aaf21a33d52de4e10af0f" args="(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload, const void *data)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void command_write_rawdata_to </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>command</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>subcommand</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>to</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>data_l</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>data_r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>payload</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const void *&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Versendet Daten mit Anhang und wartet nicht auf Antwort </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">command</td><td>Kennung zum Command </td></tr>
+    <tr><td class="paramname">subcommand</td><td>Kennung des Subcommand </td></tr>
+    <tr><td class="paramname">to</td><td>Adresse, an die die Daten gesendet werden sollen </td></tr>
+    <tr><td class="paramname">data_l</td><td>Daten fuer den linken Kanal </td></tr>
+    <tr><td class="paramname">data_r</td><td>Daten fuer den rechten Kanal </td></tr>
+    <tr><td class="paramname">payload</td><td>Anzahl der Bytes im Anhang </td></tr>
+    <tr><td class="paramname">*data</td><td>Datenanhang an das eigentliche Command </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="command_8c_source.html#l00301">301</a> der Datei <a class="el" href="command_8c_source.html">command.c</a>.</p>
+
+<p>Benutzt <a class="el" href="os__thread_8h_source.html#l00118">os_enterCS</a>, <a class="el" href="command_8c_source.html#l00228">command_write_to_internal()</a>, <a class="el" href="command_8h_source.html#l00044">low_write_data</a> und <a class="el" href="os__thread_8c_source.html#l00108">os_exitCS()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-2-bot_8c_source.html#l00438">bot_2_bot_handle_payload_ack()</a> und <a class="el" href="command_8c_source.html#l00318">command_write_rawdata()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="command_8c_ad1ce17d9fe0aaf21a33d52de4e10af0f_cgraph.png" border="0" usemap="#command_8c_ad1ce17d9fe0aaf21a33d52de4e10af0f_cgraph" alt=""/></div>
+<map name="command_8c_ad1ce17d9fe0aaf21a33d52de4e10af0f_cgraph" id="command_8c_ad1ce17d9fe0aaf21a33d52de4e10af0f_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a895fa93386026b4934625541b4faf2a0"></a><!-- doxytag: member="command.c::command_write_to" ref="a895fa93386026b4934625541b4faf2a0" args="(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void command_write_to </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>command</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>subcommand</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>to</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>data_l</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>data_r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>payload</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Uebertraegt ein Kommando und wartet nicht auf eine Antwort </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">command</td><td>Kennung zum Command </td></tr>
+    <tr><td class="paramname">subcommand</td><td>Kennung des Subcommand </td></tr>
+    <tr><td class="paramname">to</td><td>Adresse des Empfaengers </td></tr>
+    <tr><td class="paramname">data_l</td><td>Daten fuer den linken Kanal </td></tr>
+    <tr><td class="paramname">data_r</td><td>Daten fuer den rechten Kanal </td></tr>
+    <tr><td class="paramname">payload</td><td>Anzahl der Bytes, die diesem Kommando als Payload folgen </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="command_8c_source.html#l00263">263</a> der Datei <a class="el" href="command_8c_source.html">command.c</a>.</p>
+
+<p>Benutzt <a class="el" href="os__thread_8h_source.html#l00118">os_enterCS</a>, <a class="el" href="command_8c_source.html#l00228">command_write_to_internal()</a> und <a class="el" href="os__thread_8c_source.html#l00108">os_exitCS()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-2-bot_8c_source.html#l00169">add_bot_to_list()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00292">publish_bot_state()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00322">bot_2_bot_send_payload_request()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00373">bot_2_bot_handle_payload_request()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00497">bot_2_bot_handle_payload_data()</a>, <a class="el" href="bot-2-sim__pc_8c_source.html#l00122">bot_2_sim_init()</a>, <a class="el" href="command_8c_source.html#l00359">command_evaluate()</a> und <a class="el" href="pos__store_8c_source.html#l00330">pos_store_send_to_bot()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="command_8c_a895fa93386026b4934625541b4faf2a0_cgraph.png" border="0" usemap="#command_8c_a895fa93386026b4934625541b4faf2a0_cgraph" alt=""/></div>
+<map name="command_8c_a895fa93386026b4934625541b4faf2a0_cgraph" id="command_8c_a895fa93386026b4934625541b4faf2a0_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a428cf92e37fc9bbc0ffc48912c3022ac"></a><!-- doxytag: member="command.c::command_write_to_internal" ref="a428cf92e37fc9bbc0ffc48912c3022ac" args="(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void command_write_to_internal </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>command</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>subcommand</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>to</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>data_l</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>data_r</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>payload</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Uebertraegt ein Kommando und wartet nicht auf eine Antwort. Interne Version, nicht threadsicher! </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">command</td><td>Kennung zum Command </td></tr>
+    <tr><td class="paramname">subcommand</td><td>Kennung des Subcommand </td></tr>
+    <tr><td class="paramname">to</td><td>Adresse des Empfaengers </td></tr>
+    <tr><td class="paramname">data_l</td><td>Daten fuer den linken Kanal </td></tr>
+    <tr><td class="paramname">data_r</td><td>Daten fuer den rechten Kanal </td></tr>
+    <tr><td class="paramname">payload</td><td>Anzahl der Bytes, die diesem Kommando als Payload folgen </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="command_8c_source.html#l00228">228</a> der Datei <a class="el" href="command_8c_source.html">command.c</a>.</p>
+
+<p>Benutzt <a class="el" href="command_8h_source.html#l00123">DIR_REQUEST</a> und <a class="el" href="command_8h_source.html#l00043">low_write</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="command_8c_source.html#l00263">command_write_to()</a>, <a class="el" href="command_8c_source.html#l00278">command_write()</a>, <a class="el" href="command_8c_source.html#l00301">command_write_rawdata_to()</a>, <a class="el" href="command_8c_source.html#l00332">command_write_data()</a> und <a class="el" href="display_8c_source.html#l00231">display_flash_puts()</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Variablen-Dokumentation</h2>
+<a class="anchor" id="a69bc0692f1e9828d49fff1f3f841aef0"></a><!-- doxytag: member="command.c::bot_address" ref="a69bc0692f1e9828d49fff1f3f841aef0" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">EEPROM uint8_t <a class="el" href="command_8c.html#a69bc0692f1e9828d49fff1f3f841aef0">bot_address</a> = CMD_BROADCAST</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Kommunikations-Adresse des Bots (EEPROM) </p>
+
+<p>Definiert in Zeile <a class="el" href="command_8c_source.html#l00030">30</a> der Datei <a class="el" href="command_8c_source.html">command.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac0048910da59c3a22177b20c8ce0b3b6"></a><!-- doxytag: member="command.c::received_command" ref="ac0048910da59c3a22177b20c8ce0b3b6" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">command_t <a class="el" href="command_8c.html#ac0048910da59c3a22177b20c8ce0b3b6">received_command</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Puffer fuer Kommandos </p>
+
+<p>Definiert in Zeile <a class="el" href="command_8c_source.html#l00055">55</a> der Datei <a class="el" href="command_8c_source.html">command.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-2-bot_8c_source.html#l00373">bot_2_bot_handle_payload_request()</a>, <a class="el" href="bot-2-sim__pc_8c_source.html#l00092">receive_until_Frame()</a>, <a class="el" href="botcontrol_8c_source.html#l00057">pre_behaviour()</a>, <a class="el" href="command_8c_source.html#l00101">command_read()</a>, <a class="el" href="command_8c_source.html#l00359">command_evaluate()</a> und <a class="el" href="tcp-server_8c_source.html#l00127">tcp_server_run()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:05 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

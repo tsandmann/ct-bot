@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: init-low.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_621229fa04310f844660a72d92a68ebe.html">mcu</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">init-low.c</div>  </div>
+</div>
+<div class="contents">
+<a href="init-low_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00027"></a>00027 <span class="preprocessor">#include &quot;<a class="code" href="eeprom_8h.html" title="EEPROM-Zugriff.">eeprom.h</a>&quot;</span>
+<a name="l00028"></a>00028 
+<a name="l00029"></a><a class="code" href="init-low_8c.html#a7c38441495993ecbf7ca29dcbde9eb42">00029</a> uint8_t <a class="code" href="eeprom_8h.html#a3f5ebf97c07a164113b82053ed2b5ebe">EEPROM</a> <a class="code" href="init_8h.html#a7c38441495993ecbf7ca29dcbde9eb42" title="Reset-Counter im EEPROM.">resetsEEPROM</a> = 0; 
+<a name="l00031"></a>00031 <span class="preprocessor">#ifdef MCU</span>
+<a name="l00032"></a>00032 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot-Funktionalitaeten">ct-Bot.h</a>&quot;</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#include &quot;<a class="code" href="init_8h.html" title="Initialisierungsroutinen.">init.h</a>&quot;</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include &quot;<a class="code" href="available__screens_8h.html" title="Die Schalter fuer sichtbare Screens finden sich hier.">ui/available_screens.h</a>&quot;</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include &quot;<a class="code" href="os__thread_8h.html" title="Threadmanagement fuer BotOS.">os_thread.h</a>&quot;</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include &quot;<a class="code" href="led_8h.html" title="Routinen zur LED-Steuerung.">led.h</a>&quot;</span>
+<a name="l00037"></a>00037 <span class="preprocessor">#include &quot;<a class="code" href="ena_8h.html" title="Routinen zur Steuerung der Enable-Leitungen.">ena.h</a>&quot;</span>
+<a name="l00038"></a>00038 <span class="preprocessor">#include &quot;<a class="code" href="uart_8h.html" title="Routinen zur seriellen Kommunikation.">uart.h</a>&quot;</span>
+<a name="l00039"></a>00039 <span class="preprocessor">#include &lt;avr/io.h&gt;</span>
+<a name="l00040"></a>00040 <span class="preprocessor">#include &lt;util/delay.h&gt;</span>
+<a name="l00041"></a>00041 <span class="preprocessor">#include &lt;avr/wdt.h&gt;</span>
+<a name="l00042"></a>00042 <span class="preprocessor">#include &lt;avr/sleep.h&gt;</span>
+<a name="l00043"></a>00043 <span class="preprocessor">#include &lt;stdlib.h&gt;</span>
+<a name="l00044"></a>00044 
+<a name="l00046"></a>00046 uint8_t mcucsr <a class="code" href="init_8h.html#a87df7e6560f87322f737157d976f8e6f" title="Kopie des MCU(C)SR Registers.">__attribute__</a>((section(<span class="stringliteral">&quot;.noinit&quot;</span>)));
+<a name="l00047"></a>00047 
+<a name="l00048"></a>00048 <span class="preprocessor">#ifdef DISPLAY_RESET_INFO_AVAILABLE</span>
+<a name="l00049"></a>00049 <span class="preprocessor"></span>uint8_t soft_resets <a class="code" href="init_8h.html#a87df7e6560f87322f737157d976f8e6f" title="Kopie des MCU(C)SR Registers.">__attribute__</a>((section(<span class="stringliteral">&quot;.noinit&quot;</span>))); 
+<a name="l00050"></a>00050 <span class="preprocessor">#endif // DISPLAY_RESET_INFO_AVAILABLE</span>
+<a name="l00051"></a>00051 <span class="preprocessor"></span>
+<a name="l00052"></a><a class="code" href="init-low_8c.html#aad7a52dd1aa7f69cfc3987d00a716c13">00052</a> <span class="keywordtype">void</span> <a class="code" href="init-low_8c.html#aad7a52dd1aa7f69cfc3987d00a716c13">init_before_main</a>(<span class="keywordtype">void</span>) <a class="code" href="init_8h.html#a87df7e6560f87322f737157d976f8e6f" title="Kopie des MCU(C)SR Registers.">__attribute__</a>((section(&quot;.init3&quot;))) <a class="code" href="init_8h.html#a87df7e6560f87322f737157d976f8e6f" title="Kopie des MCU(C)SR Registers.">__attribute__</a>((naked));
+<a name="l00053"></a>00053 
+<a name="l00057"></a>00057 <span class="keywordtype">void</span> <a class="code" href="init-low_8c.html#aad7a52dd1aa7f69cfc3987d00a716c13">init_before_main</a>(<span class="keywordtype">void</span>) {
+<a name="l00058"></a>00058     PORTA = 0;
+<a name="l00059"></a>00059     DDRA  = 0; <span class="comment">// Alles Eingang -&gt; alles 0</span>
+<a name="l00060"></a>00060     PORTB = 0;
+<a name="l00061"></a>00061     DDRB  = 0;
+<a name="l00062"></a>00062     PORTC = 0;
+<a name="l00063"></a>00063     DDRC  = 0;
+<a name="l00064"></a>00064     PORTD = 0;
+<a name="l00065"></a>00065     DDRD  = 0;
+<a name="l00066"></a>00066 
+<a name="l00067"></a>00067     <span class="comment">/* unbenoetigte Module abschalten */</span>
+<a name="l00068"></a>00068 <span class="preprocessor">#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__</span>
+<a name="l00069"></a>00069 <span class="preprocessor"></span>    PRR0 =
+<a name="l00070"></a>00070 <span class="preprocessor">#ifdef __AVR_ATmega644__</span>
+<a name="l00071"></a>00071 <span class="preprocessor"></span>            0 <span class="comment">// ATmega644 hat nur 1 UART</span>
+<a name="l00072"></a>00072 <span class="preprocessor">#else</span>
+<a name="l00073"></a>00073 <span class="preprocessor"></span>            _BV(PRUSART1)
+<a name="l00074"></a>00074 <span class="preprocessor">#endif // ATmega644</span>
+<a name="l00075"></a>00075 <span class="preprocessor"></span><span class="preprocessor">#ifndef I2C_AVAILABLE</span>
+<a name="l00076"></a>00076 <span class="preprocessor"></span>            | _BV(PRTWI)
+<a name="l00077"></a>00077 <span class="preprocessor">#endif // !I2C_AVAILABLE</span>
+<a name="l00078"></a>00078 <span class="preprocessor"></span><span class="preprocessor">#ifndef UART_AVAILABLE</span>
+<a name="l00079"></a>00079 <span class="preprocessor"></span>            | _BV(PRUSART0)
+<a name="l00080"></a>00080 <span class="preprocessor">#endif // !UART_AVAILABLE</span>
+<a name="l00081"></a>00081 <span class="preprocessor"></span><span class="preprocessor">#ifndef SPI_AVAILABLE</span>
+<a name="l00082"></a>00082 <span class="preprocessor"></span>            | _BV(PRSPI)
+<a name="l00083"></a>00083 <span class="preprocessor">#endif // !SPI_AVAILABLE</span>
+<a name="l00084"></a>00084 <span class="preprocessor"></span><span class="preprocessor">#ifndef ADC_AVAILABLE</span>
+<a name="l00085"></a>00085 <span class="preprocessor"></span>            | _BV(PRADC)
+<a name="l00086"></a>00086 <span class="preprocessor">#endif // !ADC_AVAILABLE</span>
+<a name="l00087"></a>00087 <span class="preprocessor"></span>        ;
+<a name="l00088"></a>00088 <span class="preprocessor">#endif // MCU_ATMEGA644X || ATmega1284P</span>
+<a name="l00089"></a>00089 <span class="preprocessor"></span>
+<a name="l00090"></a>00090     <span class="comment">/* Watchdog aus */</span>
+<a name="l00091"></a>00091     wdt_reset();
+<a name="l00092"></a>00092 <span class="preprocessor">#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__</span>
+<a name="l00093"></a>00093 <span class="preprocessor"></span>    MCUSR = (uint8_t) (MCUSR &amp; ~_BV(WDRF));
+<a name="l00094"></a>00094     WDTCSR |= _BV(WDCE) | _BV(WDE);
+<a name="l00095"></a>00095     WDTCSR = 0;
+<a name="l00096"></a>00096 
+<a name="l00097"></a>00097     <span class="comment">/* Statusregister sichern */</span>
+<a name="l00098"></a>00098     mcucsr = MCUSR;
+<a name="l00099"></a>00099     MCUSR = 0;
+<a name="l00100"></a>00100 <span class="preprocessor">#elif defined __AVR_ATmega32__</span>
+<a name="l00101"></a>00101 <span class="preprocessor"></span>    MCUCSR = (uint8_t) (MCUCSR &amp; ~_BV(WDRF));
+<a name="l00102"></a>00102     WDTCR |= _BV(WDTOE) | _BV(WDE);
+<a name="l00103"></a>00103     WDTCR = 0;
+<a name="l00104"></a>00104 
+<a name="l00105"></a>00105     <span class="comment">/* Statusregister sichern */</span>
+<a name="l00106"></a>00106     mcucsr = MCUCSR;
+<a name="l00107"></a>00107     MCUCSR = 0;
+<a name="l00108"></a>00108 <span class="preprocessor">#else</span>
+<a name="l00109"></a>00109 <span class="preprocessor"></span><span class="preprocessor">#error &quot;Nicht unterstuetzter MCU-Typ&quot;</span>
+<a name="l00110"></a>00110 <span class="preprocessor"></span><span class="preprocessor">#endif // MCU-Typ</span>
+<a name="l00111"></a>00111 <span class="preprocessor"></span>
+<a name="l00112"></a>00112 <span class="preprocessor">#ifdef DISPLAY_RESET_INFO_AVAILABLE</span>
+<a name="l00113"></a>00113 <span class="preprocessor"></span>    <span class="keywordflow">if</span> ((mcucsr &amp; _BV(PORF)) == _BV(PORF)) {
+<a name="l00114"></a>00114         soft_resets = 0;
+<a name="l00115"></a>00115     }
+<a name="l00116"></a>00116     soft_resets++;
+<a name="l00117"></a>00117 <span class="preprocessor">#endif // DISPLAY_RESET_INFO_AVAILABLE</span>
+<a name="l00118"></a>00118 <span class="preprocessor"></span>}
+<a name="l00119"></a>00119 
+<a name="l00125"></a><a class="code" href="init-low_8c.html#afe3d8d4da4364107838233aad49fd830">00125</a> <span class="keywordtype">void</span> <a class="code" href="init_8h.html#afe3d8d4da4364107838233aad49fd830" title="Hardwareabhaengige Initialisierungen, die zuerst ausgefuehrt werden sollen.">ctbot_init_low_1st</a>(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> * argv[]) {
+<a name="l00126"></a>00126     <span class="comment">/* keine warnings */</span>
+<a name="l00127"></a>00127     (void) argc;
+<a name="l00128"></a>00128     (void) argv;
+<a name="l00129"></a>00129 
+<a name="l00130"></a>00130     _delay_ms(100);
+<a name="l00131"></a>00131 
+<a name="l00132"></a>00132 <span class="preprocessor">#ifdef DISPLAY_RESET_INFO_AVAILABLE</span>
+<a name="l00133"></a>00133 <span class="preprocessor"></span>    uint8_t resets = (uint8_t) (<a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>(&amp;<a class="code" href="init_8h.html#a7c38441495993ecbf7ca29dcbde9eb42" title="Reset-Counter im EEPROM.">resetsEEPROM</a>) + 1);
+<a name="l00134"></a>00134     <a class="code" href="eeprom__pc_8c.html#ae1460a09ea2078c972a8f8e420773123">ctbot_eeprom_write_byte</a>(&amp;<a class="code" href="init_8h.html#a7c38441495993ecbf7ca29dcbde9eb42" title="Reset-Counter im EEPROM.">resetsEEPROM</a>, resets);
+<a name="l00135"></a>00135 <span class="preprocessor">#endif // DISPLAY_RESET_INFO_AVAILABLE</span>
+<a name="l00136"></a>00136 <span class="preprocessor"></span>
+<a name="l00137"></a>00137 <span class="preprocessor">#ifdef OS_AVAILABLE</span>
+<a name="l00138"></a>00138 <span class="preprocessor"></span>    <a class="code" href="os__thread_8h.html#a2225be2eb34882c09ae7ad31a8b07207">os_create_thread</a>((<span class="keywordtype">void</span> *) SP, NULL); <span class="comment">// Hauptthread anlegen</span>
+<a name="l00139"></a>00139 <span class="preprocessor">#ifdef OS_DEBUG</span>
+<a name="l00140"></a>00140 <span class="preprocessor"></span>    <span class="keyword">extern</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> * __brkval;
+<a name="l00141"></a>00141     <span class="keyword">extern</span> <span class="keywordtype">size_t</span> __malloc_margin;
+<a name="l00142"></a>00142     malloc(0); <span class="comment">// initialisiert __brkval</span>
+<a name="l00143"></a>00143     <a class="code" href="os__thread_8c.html#ac0440fe078802d66f53552e2eaec35fb">os_mask_stack</a>(__brkval, (<span class="keywordtype">size_t</span>) ((<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *) SP - __brkval) - __malloc_margin);
+<a name="l00144"></a>00144 <span class="preprocessor">#endif // OS_DEBUG</span>
+<a name="l00145"></a>00145 <span class="preprocessor"></span><span class="preprocessor">#ifdef OS_KERNEL_LOG_AVAILABLE</span>
+<a name="l00146"></a>00146 <span class="preprocessor"></span>    <a class="code" href="os__thread_8h.html#a8dc4e2317522bc6d58ac8a66dc236745">os_kernel_log_init</a>();
+<a name="l00147"></a>00147 <span class="preprocessor">#endif // OS_KERNEL_LOG_AVAILABLE</span>
+<a name="l00148"></a>00148 <span class="preprocessor"></span><span class="preprocessor">#endif // OS_AVAILABLE</span>
+<a name="l00149"></a>00149 <span class="preprocessor"></span>}
+<a name="l00150"></a>00150 
+<a name="l00155"></a><a class="code" href="init-low_8c.html#a9f0e5e1762bc49dae8746404b841547e">00155</a> <span class="keywordtype">void</span> <a class="code" href="init_8h.html#a9f0e5e1762bc49dae8746404b841547e" title="Hardwareabhaengige Initialisierungen, die _nach_ der allgemeinen Initialisierung ausgefuehrt werden s...">ctbot_init_low_last</a>(<span class="keywordtype">void</span>) {
+<a name="l00156"></a>00156 <span class="preprocessor">#ifdef OS_AVAILABLE</span>
+<a name="l00157"></a>00157 <span class="preprocessor"></span><span class="preprocessor">#ifdef OS_DEBUG</span>
+<a name="l00158"></a>00158 <span class="preprocessor"></span>    <a class="code" href="os__thread_8c.html#ac0440fe078802d66f53552e2eaec35fb">os_mask_stack</a>(<a class="code" href="os__thread_8h.html#a577438ea72f5dcbdff5b1cc72d231440">os_idle_stack</a>, <a class="code" href="os__thread_8h.html#aa6afdd19d3022d101b8fc9942bb8422b">OS_IDLE_STACKSIZE</a>);
+<a name="l00159"></a>00159 <span class="preprocessor">#endif</span>
+<a name="l00160"></a>00160 <span class="preprocessor"></span>    <a class="code" href="os__thread_8h.html#a2225be2eb34882c09ae7ad31a8b07207">os_create_thread</a>(&amp;<a class="code" href="os__thread_8h.html#a577438ea72f5dcbdff5b1cc72d231440">os_idle_stack</a>[<a class="code" href="os__thread_8h.html#aa6afdd19d3022d101b8fc9942bb8422b">OS_IDLE_STACKSIZE</a> - 1], <a class="code" href="os__thread_8h.html#a011a849badc985823e31fee406aa910a">os_idle</a>);
+<a name="l00161"></a>00161 <span class="preprocessor">#endif // OS_AVAILABLE</span>
+<a name="l00162"></a>00162 <span class="preprocessor"></span>}
+<a name="l00163"></a>00163 
+<a name="l00167"></a><a class="code" href="init-low_8c.html#a953fda2fa0f98b5653a5c7ed19c019c4">00167</a> <span class="keywordtype">void</span> <a class="code" href="init_8h.html#a803271a98fc0cdc3654f4875407f8508" title="Faehrt den low-level Code des Bots sauber herunter.">ctbot_shutdown_low</a>() {
+<a name="l00168"></a>00168 <span class="preprocessor">#ifdef UART_AVAILABLE</span>
+<a name="l00169"></a>00169 <span class="preprocessor"></span>    <span class="keywordflow">while</span> (<a class="code" href="uart_8h.html#ad697bde2abdac2b6f63fcd6efeabf9d4">uart_outfifo</a>.<a class="code" href="structfifo__t.html#aac8f651266b8b08e968553fbb95307c1">count</a> &gt; 0) {} <span class="comment">// Commands flushen</span>
+<a name="l00170"></a>00170 <span class="preprocessor">#endif</span>
+<a name="l00171"></a>00171 <span class="preprocessor"></span>    <a class="code" href="builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2" title="Disables all interrupts by clearing the global interrupt mask.">__builtin_avr_cli</a>();
+<a name="l00172"></a>00172     UCSRB = 0; <span class="comment">// UART aus</span>
+<a name="l00173"></a>00173 <span class="preprocessor">#ifdef LED_AVAILABLE</span>
+<a name="l00174"></a>00174 <span class="preprocessor"></span>    <a class="code" href="led_8h.html#abd7b28be86683943e4f3cea44ec0de76">LED_off</a>(0xff);
+<a name="l00175"></a>00175 <span class="preprocessor">#endif</span>
+<a name="l00176"></a>00176 <span class="preprocessor"></span>    <a class="code" href="ena_8h.html#ac992908542eebed9776522f8eafc0ff9">ENA_off</a>(0xff);
+<a name="l00177"></a>00177     <span class="keywordflow">do</span> {
+<a name="l00178"></a>00178         _SLEEP_CONTROL_REG = (uint8_t) (((_SLEEP_CONTROL_REG &amp; ~(_BV(SM0) | _BV(SM1) | _BV(SM2))) | (SLEEP_MODE_PWR_DOWN)));
+<a name="l00179"></a>00179     } <span class="keywordflow">while</span> (0);
+<a name="l00180"></a>00180     sleep_enable();
+<a name="l00181"></a>00181     sleep_cpu();
+<a name="l00182"></a>00182 
+<a name="l00183"></a>00183     <span class="comment">/* kehrt nie zurueck */</span>
+<a name="l00184"></a>00184 }
+<a name="l00185"></a>00185 <span class="preprocessor">#endif // MCU</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:04 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

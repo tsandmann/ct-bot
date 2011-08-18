@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: bot-logic.h Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_a0fca93e65e0dd30a74a1e6addb2ee0e.html">include</a>      </li>
+      <li class="navelem"><a class="el" href="dir_5c55cd21629be826c7b7fde3f3ac88dc.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">bot-logic.h</div>  </div>
+</div>
+<div class="contents">
+<a href="bot-logic_8h.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00027"></a>00027 <span class="preprocessor">#ifndef BOT_LOGIC_H_</span>
+<a name="l00028"></a>00028 <span class="preprocessor"></span><span class="preprocessor">#define BOT_LOGIC_H_</span>
+<a name="l00029"></a>00029 <span class="preprocessor"></span>
+<a name="l00030"></a>00030 <span class="preprocessor">#include &quot;<a class="code" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot-Funktionalitaeten">ct-Bot.h</a>&quot;</span>
+<a name="l00031"></a>00031 
+<a name="l00032"></a>00032 <span class="preprocessor">#ifdef BEHAVIOUR_AVAILABLE</span>
+<a name="l00033"></a>00033 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="motor_8h.html" title="High-Level Routinen fuer die Motorsteuerung des c&#39;t-Bots.">motor.h</a>&quot;</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include &quot;<a class="code" href="sensor_8h.html" title="Architekturunabhaengiger Teil der Sensorsteuerung.">sensor.h</a>&quot;</span>
+<a name="l00035"></a>00035 
+<a name="l00036"></a><a class="code" href="bot-logic_8h.html#a1f78213eecb06910c1fb7c289e7039fc">00036</a> <span class="preprocessor">#define BEHAVIOUR_INACTIVE  0   </span>
+<a name="l00037"></a><a class="code" href="bot-logic_8h.html#a046a089cc8b10c406c031394f10693fc">00037</a> <span class="preprocessor">#define BEHAVIOUR_ACTIVE    1   </span>
+<a name="l00039"></a><a class="code" href="bot-logic_8h.html#a59191cd512c3376a23c8a7d259a1e111">00039</a> <span class="preprocessor">#define BEHAVIOUR_NOOVERRIDE    (0 &lt;&lt; 0) </span>
+<a name="l00040"></a><a class="code" href="bot-logic_8h.html#ac3101d6686d35c952f2a5c8177b3f262">00040</a> <span class="preprocessor">#define BEHAVIOUR_OVERRIDE      (1 &lt;&lt; 0) </span>
+<a name="l00041"></a><a class="code" href="bot-logic_8h.html#a1d6e2ca0ede871e3679481598e5ffa31">00041</a> <span class="preprocessor">#define BEHAVIOUR_FOREGROUND    (0 &lt;&lt; 1) </span>
+<a name="l00042"></a><a class="code" href="bot-logic_8h.html#aea70d27d51debf9a8f9de5c803b60a60">00042</a> <span class="preprocessor">#define BEHAVIOUR_BACKGROUND    (1 &lt;&lt; 1) </span>
+<a name="l00044"></a><a class="code" href="bot-logic_8h.html#a78d9ef1511522ee147d2d386a584a5d7">00044</a> <span class="preprocessor">#define BEHAVIOUR_SUBFAIL       0 </span>
+<a name="l00045"></a><a class="code" href="bot-logic_8h.html#ad4c73f16ad7978b0bf7c18b73fcfc0a6">00045</a> <span class="preprocessor">#define BEHAVIOUR_SUBSUCCESS    1 </span>
+<a name="l00046"></a><a class="code" href="bot-logic_8h.html#a851de57d2887e4395708b8cbab3ae589">00046</a> <span class="preprocessor">#define BEHAVIOUR_SUBRUNNING    2 </span>
+<a name="l00047"></a><a class="code" href="bot-logic_8h.html#ac56287400a9847be09528c709cd3bfb1">00047</a> <span class="preprocessor">#define BEHAVIOUR_SUBCANCEL     3 </span>
+<a name="l00048"></a><a class="code" href="bot-logic_8h.html#a8a203f9b141bbfb0d5f5a2ab6502ff16">00048</a> <span class="preprocessor">#define BEHAVIOUR_SUBBACKGR     4 </span>
+<a name="l00052"></a>00052 <span class="preprocessor">typedef struct _Behaviour_t {</span>
+<a name="l00053"></a><a class="code" href="struct__Behaviour__t.html#ab3aadc76880ff7d39596a1735bf6f905">00053</a> <span class="preprocessor"></span>   void (* work) (<span class="keyword">struct </span><a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">_Behaviour_t</a> * data);  
+<a name="l00054"></a><a class="code" href="struct__Behaviour__t.html#ad2ee8571cc3e4a76bab5094f091bf08a">00054</a>    uint8_t <a class="code" href="struct__Behaviour__t.html#ad2ee8571cc3e4a76bab5094f091bf08a" title="Prioritaet.">priority</a>;                            
+<a name="l00055"></a><a class="code" href="struct__Behaviour__t.html#ac13150f4159865130a32bdee24dea847">00055</a>    <span class="keyword">struct </span><a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">_Behaviour_t</a> * <a class="code" href="struct__Behaviour__t.html#ac13150f4159865130a32bdee24dea847" title="aufrufendes Verhalten">caller</a>;                
+<a name="l00056"></a><a class="code" href="struct__Behaviour__t.html#a0760e3cdeae6171471a2e2db6846307b">00056</a>    <span class="keywordtype">unsigned</span> <a class="code" href="struct__Behaviour__t.html#a0760e3cdeae6171471a2e2db6846307b" title="Ist das Verhalten aktiv.">active</a>:1;                           
+<a name="l00057"></a><a class="code" href="struct__Behaviour__t.html#ac854c181b7e05da0fdc40a5c70547054">00057</a>    <span class="keywordtype">unsigned</span> <a class="code" href="struct__Behaviour__t.html#ac854c181b7e05da0fdc40a5c70547054" title="War das aufgerufene Unterverhalten erfolgreich (==1)?">subResult</a>:3;                        
+<a name="l00058"></a><a class="code" href="struct__Behaviour__t.html#a7d06850b488666450e215598e6b0b1fe">00058</a>    <span class="keyword">struct </span><a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">_Behaviour_t</a> * <a class="code" href="struct__Behaviour__t.html#a7d06850b488666450e215598e6b0b1fe" title="Naechster Eintrag in der Liste.">next</a>;                  
+<a name="l00059"></a>00059 } <a class="code" href="structPACKED.html" title="FAT.">PACKED</a> <a class="code" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a>;
+<a name="l00060"></a>00060 
+<a name="l00062"></a><a class="code" href="bot-logic_8h.html#a94529d57f2b0642fe916539df629b4f1">00062</a> <span class="keyword">typedef</span> void (* <a class="code" href="bot-logic_8h.html#a94529d57f2b0642fe916539df629b4f1" title="Dieser Typ definiert eine Funktion die das eigentliche Verhalten ausfuehrt.">BehaviourFunc_t</a>)(Behaviour_t * data);
+<a name="l00063"></a>00063 
+<a name="l00064"></a>00064 <span class="keyword">typedef</span> <span class="keyword">struct </span>{
+<a name="l00065"></a><a class="code" href="structPACKED.html#a3ff07447d9894969bbaef87630745dd5">00065</a>     <span class="keywordtype">unsigned</span> <span class="keyword">override</span>:1;    
+<a name="l00066"></a><a class="code" href="structPACKED.html#a81ab3c25e48bdae88bfd0a7792c33e06">00066</a>     <span class="keywordtype">unsigned</span> background:1;  
+<a name="l00067"></a>00067 } <a class="code" href="structPACKED.html" title="FAT.">PACKED</a> behaviour_mode_t;
+<a name="l00068"></a>00068 
+<a name="l00069"></a>00069 <span class="keyword">extern</span> int16_t <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a>;   
+<a name="l00070"></a>00070 <span class="keyword">extern</span> int16_t <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a>;  
+<a name="l00072"></a>00072 <span class="keyword">extern</span> <span class="keywordtype">float</span> <a class="code" href="bot-logic_8h.html#aa5aaffa740f4e0ada3ccf7553e4d9e0e" title="Puffervariable fuer die Verhaltensfunktionen Modifikationsfaktor links.">factorWishLeft</a>;    
+<a name="l00073"></a>00073 <span class="keyword">extern</span> <span class="keywordtype">float</span> <a class="code" href="bot-logic_8h.html#aed6f1f86df19f4d73a2fd16aa84ca62a" title="Puffervariable fuer die Verhaltensfunktionen Modifikationsfaktor rechts.">factorWishRight</a>;   
+<a name="l00075"></a>00075 <span class="keyword">extern</span> int16_t <a class="code" href="bot-logic_8c.html#a88b3cf22c92402d5c9a41e1b11b16379" title="Sollgeschwindigkeit linker Motor - darum kuemmert sich bot_base()">target_speed_l</a>;  
+<a name="l00076"></a>00076 <span class="keyword">extern</span> int16_t <a class="code" href="bot-logic_8c.html#a673fae0e60f95ac9538a01fb14c49aba" title="Sollgeschwindigkeit rechter Motor - darum kuemmert sich bot_base()">target_speed_r</a>;  
+<a name="l00081"></a>00081 <span class="keywordtype">void</span> <a class="code" href="bot-logic_8c.html#aa4df8978f0f499c194137f6b2bbbfa2c" title="Zentrale Verhaltens-Routine, wird regelmaessig aufgerufen.">bot_behave</a>(<span class="keywordtype">void</span>);
+<a name="l00082"></a>00082 
+<a name="l00086"></a>00086 <span class="keywordtype">void</span> <a class="code" href="bot-logic_8c.html#a8aa692028862cf5bf4387705feb9cc1b" title="Initialisiert alle Verhalten.">bot_behave_init</a>(<span class="keywordtype">void</span>);
+<a name="l00087"></a>00087 
+<a name="l00093"></a>00093 Behaviour_t * <a class="code" href="bot-logic_8c.html#a11e7a95fd56f9703bd2bd9c61300df6c" title="Liefert das Verhalten zurueck, welches durch function implementiert ist.">get_behaviour</a>(<a class="code" href="bot-logic_8h.html#a94529d57f2b0642fe916539df629b4f1" title="Dieser Typ definiert eine Funktion die das eigentliche Verhalten ausfuehrt.">BehaviourFunc_t</a> <span class="keyword">function</span>);
+<a name="l00094"></a>00094 
+<a name="l00100"></a>00100 Behaviour_t * <a class="code" href="bot-logic_8c.html#a9c7bb32bf6fd8dd2f7680f4de3ae538a" title="Zu ein Verhalten mit der gegebenen Prioritaet.">get_behaviour_from_prio</a>(uint8_t prio);
+<a name="l00101"></a>00101 
+<a name="l00106"></a>00106 <span class="keywordtype">void</span> <a class="code" href="bot-logic_8c.html#a03b8247dc4df0a3b5fd29d42a5cdc88e" title="Deaktiviert ein Verhalten.">deactivate_behaviour</a>(Behaviour_t * <a class="code" href="behaviour__cancel__behaviour_8c.html#a14c3dff38972ba103adb11d085586597" title="Zeiger auf Verhaltensdatensatz des zu ueberwachenden Verhaltens.">beh</a>);
+<a name="l00107"></a>00107 
+<a name="l00112"></a>00112 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> deactivateBehaviour(<a class="code" href="bot-logic_8h.html#a94529d57f2b0642fe916539df629b4f1" title="Dieser Typ definiert eine Funktion die das eigentliche Verhalten ausfuehrt.">BehaviourFunc_t</a> <span class="keyword">function</span>) {
+<a name="l00113"></a>00113     <a class="code" href="bot-logic_8c.html#a03b8247dc4df0a3b5fd29d42a5cdc88e" title="Deaktiviert ein Verhalten.">deactivate_behaviour</a>(<a class="code" href="bot-logic_8c.html#a11e7a95fd56f9703bd2bd9c61300df6c" title="Liefert das Verhalten zurueck, welches durch function implementiert ist.">get_behaviour</a>(<span class="keyword">function</span>));
+<a name="l00114"></a>00114 }
+<a name="l00115"></a>00115 
+<a name="l00121"></a>00121 uint8_t <a class="code" href="bot-logic_8c.html#a406a628ec04bfa715f5881a84f12e2e4" title="Rueckgabe von True, wenn das Verhalten gerade laeuft (aktiv ist), sonst False.">behaviour_is_activated</a>(<a class="code" href="bot-logic_8h.html#a94529d57f2b0642fe916539df629b4f1" title="Dieser Typ definiert eine Funktion die das eigentliche Verhalten ausfuehrt.">BehaviourFunc_t</a> <span class="keyword">function</span>);
+<a name="l00122"></a>00122 
+<a name="l00127"></a>00127 <span class="keywordtype">void</span> <a class="code" href="bot-logic_8c.html#a1ed6103edf637f32e8c087d3de94a74e" title="Deaktiviert alle Verhalten bis auf Grundverhalten.">deactivateAllBehaviours</a>(<span class="keywordtype">void</span>);
+<a name="l00128"></a>00128 
+<a name="l00134"></a>00134 <span class="keywordtype">void</span> <a class="code" href="bot-logic_8c.html#a7f318ddb329eb66eb8ac6053e65b415f" title="Deaktiviert alle von diesem Verhalten aufgerufenen Verhalten.">deactivate_called_behaviours</a>(Behaviour_t * caller);
+<a name="l00135"></a>00135 
+<a name="l00153"></a>00153 Behaviour_t * <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(Behaviour_t * from, <span class="keywordtype">void</span> (* to)(Behaviour_t *), uint8_t mode);
+<a name="l00154"></a>00154 
+<a name="l00162"></a>00162 <span class="keyword">static</span> <span class="keyword">inline</span> Behaviour_t * activateBehaviour(Behaviour_t * from, <span class="keywordtype">void</span> (* to)(Behaviour_t *)) {
+<a name="l00163"></a>00163     <span class="keywordflow">return</span> <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(from, to, <a class="code" href="bot-logic_8h.html#a59191cd512c3376a23c8a7d259a1e111" title="Konstanten, wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen.">BEHAVIOUR_NOOVERRIDE</a> | <a class="code" href="bot-logic_8h.html#aea70d27d51debf9a8f9de5c803b60a60" title="Konstante, wenn Verhalten im Hintergrund laufen sollen.">BEHAVIOUR_BACKGROUND</a>);
+<a name="l00164"></a>00164 }
+<a name="l00165"></a>00165 
+<a name="l00171"></a>00171 <span class="keywordtype">void</span> <a class="code" href="bot-logic_8c.html#ae957e610d7a3b2034084f87277a319de" title="Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg.">exit_behaviour</a>(Behaviour_t * data, uint8_t state);
+<a name="l00172"></a>00172 
+<a name="l00177"></a>00177 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> return_from_behaviour(Behaviour_t * data) {
+<a name="l00178"></a>00178     <a class="code" href="bot-logic_8c.html#ae957e610d7a3b2034084f87277a319de" title="Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg.">exit_behaviour</a>(data, <a class="code" href="bot-logic_8h.html#ad4c73f16ad7978b0bf7c18b73fcfc0a6" title="Konstante fuer Behaviour_t-&gt;subResult: Aufgabe erfolgreich abgeschlossen.">BEHAVIOUR_SUBSUCCESS</a>);
+<a name="l00179"></a>00179 }
+<a name="l00180"></a>00180 
+<a name="l00185"></a>00185 <span class="keywordtype">void</span> <a class="code" href="bot-logic_8c.html#a7a99d860f2e55d72ad544e4d6331760e" title="Beim Ausloesen eines Notfalls wird diese Routine angesprungen und ruft alle registrierten Prozeduren ...">start_registered_emergency_procs</a>(<span class="keywordtype">void</span>);
+<a name="l00186"></a>00186 
+<a name="l00192"></a>00192 Behaviour_t * <a class="code" href="bot-logic_8c.html#aa18821fc2deab1db567c26b1a5a52ce6" title="Gibt das naechste Verhalten der Liste zurueck.">get_next_behaviour</a>(Behaviour_t * <a class="code" href="behaviour__cancel__behaviour_8c.html#a14c3dff38972ba103adb11d085586597" title="Zeiger auf Verhaltensdatensatz des zu ueberwachenden Verhaltens.">beh</a>);
+<a name="l00193"></a>00193 
+<a name="l00194"></a>00194 <span class="comment">/* Includes aller verfuegbaren Verhalten */</span>
+<a name="l00195"></a>00195 <span class="preprocessor">#include &quot;<a class="code" href="available__behaviours_8h.html" title="globale Schalter fuer die einzelnen Verhalten">bot-logic/available_behaviours.h</a>&quot;</span>
+<a name="l00196"></a>00196 
+<a name="l00205"></a>00205 <span class="keywordtype">void</span> <a class="code" href="bot-logic_8h.html#a35c8a913b2aea52b80ac8c998b1355b4" title="Zeigt Informationen ueber Verhalten an, &#39;A&#39; fuer Verhalten aktiv, &#39;I&#39; fuer Verhalten inaktiv...">behaviour_display</a>(<span class="keywordtype">void</span>);
+<a name="l00206"></a>00206 
+<a name="l00207"></a>00207 <span class="preprocessor">#endif // BEHAVIOUR_AVAILABLE</span>
+<a name="l00208"></a>00208 <span class="preprocessor"></span><span class="preprocessor">#endif // BOT_LOGIC_H_</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

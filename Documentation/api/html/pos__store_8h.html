@@ -1,0 +1,798 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: pos_store.h-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_a0fca93e65e0dd30a74a1e6addb2ee0e.html">include</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Datenstrukturen</a> &#124;
+<a href="#define-members">Makrodefinitionen</a> &#124;
+<a href="#typedef-members">Typdefinitionen</a> &#124;
+<a href="#func-members">Funktionen</a>  </div>
+  <div class="headertitle">
+<div class="title">pos_store.h-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Implementierung eines Positionsspeichers mit den ueblichen Stackbefehlen push(), pop() und FIFO-Befehlen queue(), dequeue()  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="command_8h_source.html">command.h</a>&quot;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für pos_store.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="pos__store_8h__incl.png" border="0" usemap="#pos__store_8h" alt=""/></div>
+<map name="pos__store_8h" id="pos__store_8h">
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+Dieser Graph zeigt, welche Datei direkt oder indirekt diese Datei enthält:</div>
+<div class="dyncontent">
+<div class="center"><img src="pos__store_8h__dep__incl.png" border="0" usemap="#pos__store_8hdep" alt=""/></div>
+<map name="pos__store_8hdep" id="pos__store_8hdep">
+</map>
+</div>
+</div>
+<p><a href="pos__store_8h_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="nested-classes"></a>
+Datenstrukturen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpos__store__t.html">pos_store_t</a></td></tr>
+<tr><td colspan="2"><h2><a name="define-members"></a>
+Makrodefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#a9ce6c5ca535d57bcd4b4bbcd1496840b">POS_STORE_SIZE</a>&#160;&#160;&#160;64</td></tr>
+<tr><td colspan="2"><h2><a name="typedef-members"></a>
+Typdefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">typedef uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#ab9be00bae7afb5f77457190c0455a8bb">pos_store_size_t</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">typedef uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#a0e839617a9c50474fcbae596ff1bf981">pos_store_pointer_t</a></td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpos__store__t.html">pos_store_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#a0905da2b2d85fab632f239804dacec4d">pos_store_create_size</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *owner, void *data, <a class="el" href="pos__store_8h.html#ab9be00bae7afb5f77457190c0455a8bb">pos_store_size_t</a> size)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpos__store__t.html">pos_store_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#a64b9646424ab22ab1ca5e903d6930e49">pos_store_from_beh</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *owner)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpos__store__t.html">pos_store_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#adad22546e13c2c737f4bb62242b3bb92">pos_store_from_index</a> (uint8_t index)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#a04378a6e68ec291278e92cf26d8b7152">pos_store_get_index</a> (<a class="el" href="structpos__store__t.html">pos_store_t</a> *store)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#a1263f1a52fd21a79a48809a761a382d9">pos_store_clear</a> (<a class="el" href="structpos__store__t.html">pos_store_t</a> *store)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#a4bb0829554b41be5bf51dd0a942211f9">pos_store_release</a> (<a class="el" href="structpos__store__t.html">pos_store_t</a> *store)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#a9447e13b2059a788aa3752c3d7120aed">pos_store_release_all</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#af507859ead3d3e4775cf01c6d2b800fc">pos_store_pop</a> (<a class="el" href="structpos__store__t.html">pos_store_t</a> *store, position_t *pos)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#af3e7fd00b517ae25c4f944a8e92c252e">pos_store_insert</a> (<a class="el" href="structpos__store__t.html">pos_store_t</a> *store, position_t pos)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#a036874299445af76339d8d4d5a75e1dc">pos_store_push</a> (<a class="el" href="structpos__store__t.html">pos_store_t</a> *store, position_t pos)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#ab38bb7f7ff5a9c4f0d356e7f07a3397d">pos_store_dequeue</a> (<a class="el" href="structpos__store__t.html">pos_store_t</a> *store, position_t *pos)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#a5b3b46e55200fee1bfa208eae4a69f69">pos_store_top</a> (<a class="el" href="structpos__store__t.html">pos_store_t</a> *store, position_t *pos, uint8_t index)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#a0ea4c6da4fddf088e82b58d8b88ea4e4">pos_store_send_to_bot</a> (<a class="el" href="structpos__store__t.html">pos_store_t</a> *store, uint8_t bot)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#ac644f5e4876a22ae70ebfe28a2547dc5">bot_2_bot_handle_pos_store</a> (command_t *cmd)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#ad0703bbe6249872ab796b2c37493a98d">bot_2_bot_handle_pos_store_data</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#a20ee87405517aba06c9fca997b106131">pos_store_dump</a> (<a class="el" href="structpos__store__t.html">pos_store_t</a> *store)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="pos__store_8h.html#aae762c7ffc6cdf508ec72bffbd143c43">pos_store_test</a> (void)</td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Implementierung eines Positionsspeichers mit den ueblichen Stackbefehlen push(), pop() und FIFO-Befehlen queue(), dequeue() </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Frank Menzel (<a href="mailto:Menzelfr@gmx.net">Menzelfr@gmx.net</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>13.12.2007 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="pos__store_8h_source.html">pos_store.h</a>.</p>
+</div><hr/><h2>Makro-Dokumentation</h2>
+<a class="anchor" id="a9ce6c5ca535d57bcd4b4bbcd1496840b"></a><!-- doxytag: member="pos_store.h::POS_STORE_SIZE" ref="a9ce6c5ca535d57bcd4b4bbcd1496840b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define POS_STORE_SIZE&#160;&#160;&#160;64</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>(maximale) Groesse (pro Platz) </p>
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8h_source.html#l00034">34</a> der Datei <a class="el" href="pos__store_8h_source.html">pos_store.h</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Dokumentation der benutzerdefinierten Typen</h2>
+<a class="anchor" id="a0e839617a9c50474fcbae596ff1bf981"></a><!-- doxytag: member="pos_store.h::pos_store_pointer_t" ref="a0e839617a9c50474fcbae596ff1bf981" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef uint8_t <a class="el" href="pos__store_8h.html#a0e839617a9c50474fcbae596ff1bf981">pos_store_pointer_t</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8h_source.html#l00047">47</a> der Datei <a class="el" href="pos__store_8h_source.html">pos_store.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab9be00bae7afb5f77457190c0455a8bb"></a><!-- doxytag: member="pos_store.h::pos_store_size_t" ref="ab9be00bae7afb5f77457190c0455a8bb" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef uint8_t <a class="el" href="pos__store_8h.html#ab9be00bae7afb5f77457190c0455a8bb">pos_store_size_t</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8h_source.html#l00041">41</a> der Datei <a class="el" href="pos__store_8h_source.html">pos_store.h</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="ac644f5e4876a22ae70ebfe28a2547dc5"></a><!-- doxytag: member="pos_store.h::bot_2_bot_handle_pos_store" ref="ac644f5e4876a22ae70ebfe28a2547dc5" args="(command_t *cmd)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_2_bot_handle_pos_store </td>
+          <td>(</td>
+          <td class="paramtype">command_t *&#160;</td>
+          <td class="paramname"><em>cmd</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Verarbeitet eine Positionsspeicher-Empfang-Anfrage </p>
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8c_source.html#l00343">343</a> der Datei <a class="el" href="pos__store_8c_source.html">pos_store.c</a>.</p>
+
+<p>Benutzt <a class="el" href="bot-logic_8c_source.html#l00393">get_behaviour_from_prio()</a>, <a class="el" href="pos__store_8h_source.html#l00054">pos_store_t::owner</a>, <a class="el" href="pos__store_8h_source.html#l00059">pos_store_t::count</a>, <a class="el" href="pos__store_8h_source.html#l00058">pos_store_t::fp</a>, <a class="el" href="pos__store_8h_source.html#l00057">pos_store_t::sp</a>, <a class="el" href="pos__store_8h_source.html#l00055">pos_store_t::data</a>, <a class="el" href="bot-2-bot_8h_source.html#l00056">BOT_2_BOT_POS_STORE</a>, <a class="el" href="bot-2-bot_8c_source.html#l00123">bot_2_bot_payload_mappings</a>, <a class="el" href="bot-2-bot_8h_source.html#l00071">bot_2_bot_payload_mappings_t::size</a>, <a class="el" href="pos__store_8h_source.html#l00060">pos_store_t::mask</a>, <a class="el" href="bot-2-bot_8h_source.html#l00070">bot_2_bot_payload_mappings_t::data</a>, <a class="el" href="pos__store_8c_source.html#l00119">pos_store_release()</a> und <a class="el" href="command_8c_source.html#l00071">LOG_DEBUG</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="pos__store_8h_ac644f5e4876a22ae70ebfe28a2547dc5_cgraph.png" border="0" usemap="#pos__store_8h_ac644f5e4876a22ae70ebfe28a2547dc5_cgraph" alt=""/></div>
+<map name="pos__store_8h_ac644f5e4876a22ae70ebfe28a2547dc5_cgraph" id="pos__store_8h_ac644f5e4876a22ae70ebfe28a2547dc5_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ad0703bbe6249872ab796b2c37493a98d"></a><!-- doxytag: member="pos_store.h::bot_2_bot_handle_pos_store_data" ref="ad0703bbe6249872ab796b2c37493a98d" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_2_bot_handle_pos_store_data </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Verarbeitet einen Positionsspeicher-Empfang </p>
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8c_source.html#l00375">375</a> der Datei <a class="el" href="pos__store_8c_source.html">pos_store.c</a>.</p>
+
+<p>Benutzt <a class="el" href="pos__store_8h_source.html#l00054">pos_store_t::owner</a>, <a class="el" href="command_8c_source.html#l00071">LOG_DEBUG</a>, <a class="el" href="bot-logic_8h_source.html#l00054">_Behaviour_t::priority</a>, <a class="el" href="pos__store_8h_source.html#l00060">pos_store_t::mask</a>, <a class="el" href="pos__store_8h_source.html#l00058">pos_store_t::fp</a>, <a class="el" href="pos__store_8h_source.html#l00057">pos_store_t::sp</a>, <a class="el" href="pos__store_8h_source.html#l00059">pos_store_t::count</a>, <a class="el" href="pos__store_8h_source.html#l00055">pos_store_t::data</a>, <a class="el" href="pos__store_8c_source.html#l00396">pos_store_dump()</a>, <a class="el" href="bot-2-bot_8h_source.html#l00056">BOT_2_BOT_POS_STORE</a>, <a class="el" href="bot-2-bot_8c_source.html#l00123">bot_2_bot_payload_mappings</a>, <a class="el" href="bot-2-bot_8h_source.html#l00071">bot_2_bot_payload_mappings_t::size</a> und <a class="el" href="bot-2-bot_8h_source.html#l00070">bot_2_bot_payload_mappings_t::data</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="pos__store_8h_ad0703bbe6249872ab796b2c37493a98d_cgraph.png" border="0" usemap="#pos__store_8h_ad0703bbe6249872ab796b2c37493a98d_cgraph" alt=""/></div>
+<map name="pos__store_8h_ad0703bbe6249872ab796b2c37493a98d_cgraph" id="pos__store_8h_ad0703bbe6249872ab796b2c37493a98d_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a1263f1a52fd21a79a48809a761a382d9"></a><!-- doxytag: member="pos_store.h::pos_store_clear" ref="a1263f1a52fd21a79a48809a761a382d9" args="(pos_store_t *store)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pos_store_clear </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structpos__store__t.html">pos_store_t</a> *&#160;</td>
+          <td class="paramname"><em>store</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Leert den Positionsspeicher </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*store</td><td>Zeiger auf Positionsspeicher </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8c_source.html#l00189">189</a> der Datei <a class="el" href="pos__store_8c_source.html">pos_store.c</a>.</p>
+
+<p>Benutzt <a class="el" href="command_8c_source.html#l00071">LOG_DEBUG</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__pathplaning_8c_source.html#l00384">bot_calc_wave_behaviour()</a> und <a class="el" href="pos__store_8c_source.html#l00409">pos_store_test()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0905da2b2d85fab632f239804dacec4d"></a><!-- doxytag: member="pos_store.h::pos_store_create_size" ref="a0905da2b2d85fab632f239804dacec4d" args="(Behaviour_t *owner, void *data, pos_store_size_t size)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structpos__store__t.html">pos_store_t</a>* pos_store_create_size </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>owner</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="pos__store_8h.html#ab9be00bae7afb5f77457190c0455a8bb">pos_store_size_t</a>&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Erzeugt einen neuen Positionsspeicher angegebener Groesse </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*owner</td><td>Zeiger Verhaltensdatensatz </td></tr>
+    <tr><td class="paramname">*data</td><td>NULL oder Zeiger auf Speicher fuer size * sizeof(position_t) Bytes </td></tr>
+    <tr><td class="paramname">size</td><td>Groesse des Speichers, &lt;= POS_STORE_SIZE </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Zeiger auf neuen Positionsspeicher oder NULL </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8c_source.html#l00060">60</a> der Datei <a class="el" href="pos__store_8c_source.html">pos_store.c</a>.</p>
+
+<p>Benutzt <a class="el" href="log_8h_source.html#l00309">LOG_ERROR</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l01196">bot_drive_area()</a>, <a class="el" href="behaviour__line__shortest__way_8c_source.html#l00685">bot_line_shortest_way()</a> und <a class="el" href="behaviour__pathplaning_8c_source.html#l00384">bot_calc_wave_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab38bb7f7ff5a9c4f0d356e7f07a3397d"></a><!-- doxytag: member="pos_store.h::pos_store_dequeue" ref="ab38bb7f7ff5a9c4f0d356e7f07a3397d" args="(pos_store_t *store, position_t *pos)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t pos_store_dequeue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structpos__store__t.html">pos_store_t</a> *&#160;</td>
+          <td class="paramname"><em>store</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">position_t *&#160;</td>
+          <td class="paramname"><em>pos</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Erweiterung des Stacks zur Queue; Element wird vorn entnommen </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*store</td><td>Zeiger auf Positionsspeicher </td></tr>
+    <tr><td class="paramname">*pos</td><td>Zeiger auf Rueckgabe-Speicher der Position </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>True wenn Element erfolgreich entnommen werden konnte sonst False falls kein Element mehr enthalten ist </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8c_source.html#l00289">289</a> der Datei <a class="el" href="pos__store_8c_source.html">pos_store.c</a>.</p>
+
+<p>Benutzt <a class="el" href="global_8h_source.html#l00077">False</a>, <a class="el" href="pos__store_8h_source.html#l00059">pos_store_t::count</a>, <a class="el" href="pos__store_8h_source.html#l00055">pos_store_t::data</a>, <a class="el" href="pos__store_8h_source.html#l00058">pos_store_t::fp</a>, <a class="el" href="pos__store_8h_source.html#l00060">pos_store_t::mask</a> und <a class="el" href="global_8h_source.html#l00076">True</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__stack_8c_source.html#l00077">bot_drive_stack_behaviour()</a>, <a class="el" href="behaviour__pathplaning_8c_source.html#l00384">bot_calc_wave_behaviour()</a> und <a class="el" href="pos__store_8c_source.html#l00409">pos_store_test()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a20ee87405517aba06c9fca997b106131"></a><!-- doxytag: member="pos_store.h::pos_store_dump" ref="a20ee87405517aba06c9fca997b106131" args="(pos_store_t *store)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pos_store_dump </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structpos__store__t.html">pos_store_t</a> *&#160;</td>
+          <td class="paramname"><em>store</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Gibt alle Eintraege auf stdout aus </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*store</td><td>Zeiger auf Positionsspeicher </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8c_source.html#l00396">396</a> der Datei <a class="el" href="pos__store_8c_source.html">pos_store.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="pos__store_8h_source.html#l00059">pos_store_t::count</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00245">x</a>, <a class="el" href="pos__store_8h_source.html#l00055">pos_store_t::data</a>, <a class="el" href="pos__store_8h_source.html#l00058">pos_store_t::fp</a>, <a class="el" href="pos__store_8h_source.html#l00060">pos_store_t::mask</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00246">y</a> und <a class="el" href="pos__store_8h_source.html#l00057">pos_store_t::sp</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a>, <a class="el" href="pos__store_8c_source.html#l00375">bot_2_bot_handle_pos_store_data()</a> und <a class="el" href="pos__store_8c_source.html#l00409">pos_store_test()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a64b9646424ab22ab1ca5e903d6930e49"></a><!-- doxytag: member="pos_store.h::pos_store_from_beh" ref="a64b9646424ab22ab1ca5e903d6930e49" args="(Behaviour_t *owner)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structpos__store__t.html">pos_store_t</a>* pos_store_from_beh </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>owner</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Ermittelt den Positionsspeicher, der zu einem Verhalten gehoert </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*owner</td><td>Zeiger auf Verhaltensdatensatz </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Zeiger auf Positionsspeicher oder NULL </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8c_source.html#l00152">152</a> der Datei <a class="el" href="pos__store_8c_source.html">pos_store.c</a>.</p>
+
+<p>Benutzt <a class="el" href="pos__store_8c_source.html#l00049">SLOT_COUNT</a> und <a class="el" href="pos__store_8h_source.html#l00054">pos_store_t::owner</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__stack_8c_source.html#l00172">bot_send_stack_b2b()</a> und <a class="el" href="pos__store_8c_source.html#l00409">pos_store_test()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="adad22546e13c2c737f4bb62242b3bb92"></a><!-- doxytag: member="pos_store.h::pos_store_from_index" ref="adad22546e13c2c737f4bb62242b3bb92" args="(uint8_t index)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structpos__store__t.html">pos_store_t</a>* pos_store_from_index </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Ermittelt den Positionsspeicher, der den gegebenen Index im Array hat </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Index des Positionsspeichers im Array </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Zeiger auf Positionsspeicher oder NULL </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8c_source.html#l00178">178</a> der Datei <a class="el" href="pos__store_8c_source.html">pos_store.c</a>.</p>
+
+<p>Benutzt <a class="el" href="pos__store_8c_source.html#l00049">SLOT_COUNT</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__stack_8c_source.html#l00116">bot_drive_stack_x()</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00199">bot_push_actpos()</a> und <a class="el" href="pos__store_8c_source.html#l00409">pos_store_test()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a04378a6e68ec291278e92cf26d8b7152"></a><!-- doxytag: member="pos_store.h::pos_store_get_index" ref="a04378a6e68ec291278e92cf26d8b7152" args="(pos_store_t *store)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t pos_store_get_index </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structpos__store__t.html">pos_store_t</a> *&#160;</td>
+          <td class="paramname"><em>store</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Ermittelt den Index eines Positionsspeichers </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*store</td><td>Zeiger auf Positionsspeicher </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Index des Positionsspeichers im Array </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8c_source.html#l00167">167</a> der Datei <a class="el" href="pos__store_8c_source.html">pos_store.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__pathplaning_8c_source.html#l00384">bot_calc_wave_behaviour()</a> und <a class="el" href="pos__store_8c_source.html#l00409">pos_store_test()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af3e7fd00b517ae25c4f944a8e92c252e"></a><!-- doxytag: member="pos_store.h::pos_store_insert" ref="af3e7fd00b517ae25c4f944a8e92c252e" args="(pos_store_t *store, position_t pos)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t pos_store_insert </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structpos__store__t.html">pos_store_t</a> *&#160;</td>
+          <td class="paramname"><em>store</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">position_t&#160;</td>
+          <td class="paramname"><em>pos</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Speichern einer Koordinate vorne im Speicher </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*store</td><td>Zeiger auf Positionsspeicher </td></tr>
+    <tr><td class="paramname">pos</td><td>X/Y-Koordinaten des zu sichernden Punktes </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>True wenn erfolgreich sonst False wenn Array voll ist </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8c_source.html#l00230">230</a> der Datei <a class="el" href="pos__store_8c_source.html">pos_store.c</a>.</p>
+
+<p>Benutzt <a class="el" href="log_8h_source.html#l00307">LOG_INFO</a>, <a class="el" href="command_8c_source.html#l00071">LOG_DEBUG</a>, <a class="el" href="global_8h_source.html#l00077">False</a>, <a class="el" href="pos__store_8h_source.html#l00058">pos_store_t::fp</a>, <a class="el" href="pos__store_8h_source.html#l00060">pos_store_t::mask</a>, <a class="el" href="pos__store_8h_source.html#l00055">pos_store_t::data</a>, <a class="el" href="pos__store_8h_source.html#l00059">pos_store_t::count</a> und <a class="el" href="global_8h_source.html#l00076">True</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="pos__store_8c_source.html#l00409">pos_store_test()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af507859ead3d3e4775cf01c6d2b800fc"></a><!-- doxytag: member="pos_store.h::pos_store_pop" ref="af507859ead3d3e4775cf01c6d2b800fc" args="(pos_store_t *store, position_t *pos)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t pos_store_pop </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structpos__store__t.html">pos_store_t</a> *&#160;</td>
+          <td class="paramname"><em>store</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">position_t *&#160;</td>
+          <td class="paramname"><em>pos</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Pop-Routine zur Rueckgabe des letzten auf dem Stack gepushten Punktes </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*store</td><td>Zeiger auf Positionsspeicher </td></tr>
+    <tr><td class="paramname">*pos</td><td>Zeiger auf Rueckgabe-Speicher der Position </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>False falls Pop nicht erfolgreich, d.h. kein Punkt mehr auf dem Stack, sonst True nach erfolgreichem Pop </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8c_source.html#l00272">272</a> der Datei <a class="el" href="pos__store_8c_source.html">pos_store.c</a>.</p>
+
+<p>Benutzt <a class="el" href="global_8h_source.html#l00077">False</a>, <a class="el" href="pos__store_8h_source.html#l00059">pos_store_t::count</a>, <a class="el" href="pos__store_8h_source.html#l00057">pos_store_t::sp</a>, <a class="el" href="pos__store_8h_source.html#l00060">pos_store_t::mask</a>, <a class="el" href="pos__store_8h_source.html#l00055">pos_store_t::data</a> und <a class="el" href="global_8h_source.html#l00076">True</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__stack_8c_source.html#l00077">bot_drive_stack_behaviour()</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a>, <a class="el" href="behaviour__pathplaning_8c_source.html#l00384">bot_calc_wave_behaviour()</a> und <a class="el" href="pos__store_8c_source.html#l00409">pos_store_test()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a036874299445af76339d8d4d5a75e1dc"></a><!-- doxytag: member="pos_store.h::pos_store_push" ref="a036874299445af76339d8d4d5a75e1dc" args="(pos_store_t *store, position_t pos)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t pos_store_push </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structpos__store__t.html">pos_store_t</a> *&#160;</td>
+          <td class="paramname"><em>store</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">position_t&#160;</td>
+          <td class="paramname"><em>pos</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Speichern einer Koordinate auf dem Stack </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*store</td><td>Zeiger auf Positionsspeicher </td></tr>
+    <tr><td class="paramname">pos</td><td>X/Y-Koordinaten des zu sichernden Punktes </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>True wenn erfolgreich sonst False wenn Array voll ist </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8c_source.html#l00251">251</a> der Datei <a class="el" href="pos__store_8c_source.html">pos_store.c</a>.</p>
+
+<p>Benutzt <a class="el" href="log_8h_source.html#l00307">LOG_INFO</a>, <a class="el" href="command_8c_source.html#l00071">LOG_DEBUG</a>, <a class="el" href="global_8h_source.html#l00077">False</a>, <a class="el" href="pos__store_8h_source.html#l00057">pos_store_t::sp</a>, <a class="el" href="pos__store_8h_source.html#l00055">pos_store_t::data</a>, <a class="el" href="pos__store_8h_source.html#l00060">pos_store_t::mask</a>, <a class="el" href="pos__store_8h_source.html#l00059">pos_store_t::count</a> und <a class="el" href="global_8h_source.html#l00076">True</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__stack_8c_source.html#l00199">bot_push_actpos()</a> und <a class="el" href="pos__store_8c_source.html#l00409">pos_store_test()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4bb0829554b41be5bf51dd0a942211f9"></a><!-- doxytag: member="pos_store.h::pos_store_release" ref="a4bb0829554b41be5bf51dd0a942211f9" args="(pos_store_t *store)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pos_store_release </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structpos__store__t.html">pos_store_t</a> *&#160;</td>
+          <td class="paramname"><em>store</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Loescht einen Positionsspeicher </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*store</td><td>Zeiger auf Positionsspeicher </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8c_source.html#l00119">119</a> der Datei <a class="el" href="pos__store_8c_source.html">pos_store.c</a>.</p>
+
+<p>Benutzt <a class="el" href="command_8c_source.html#l00071">LOG_DEBUG</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__pathplaning_8c_source.html#l00384">bot_calc_wave_behaviour()</a>, <a class="el" href="pos__store_8c_source.html#l00343">bot_2_bot_handle_pos_store()</a> und <a class="el" href="pos__store_8c_source.html#l00409">pos_store_test()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9447e13b2059a788aa3752c3d7120aed"></a><!-- doxytag: member="pos_store.h::pos_store_release_all" ref="a9447e13b2059a788aa3752c3d7120aed" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pos_store_release_all </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Loescht alle Positionsspeicher </p>
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8c_source.html#l00136">136</a> der Datei <a class="el" href="pos__store_8c_source.html">pos_store.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="pos__store_8c_source.html#l00049">SLOT_COUNT</a>, <a class="el" href="pos__store_8h_source.html#l00054">pos_store_t::owner</a> und <a class="el" href="pos__store_8h_source.html#l00055">pos_store_t::data</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0ea4c6da4fddf088e82b58d8b88ea4e4"></a><!-- doxytag: member="pos_store.h::pos_store_send_to_bot" ref="a0ea4c6da4fddf088e82b58d8b88ea4e4" args="(pos_store_t *store, uint8_t bot)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int8_t pos_store_send_to_bot </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structpos__store__t.html">pos_store_t</a> *&#160;</td>
+          <td class="paramname"><em>store</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>bot</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Uebertraegt einen Positionsspeicher an einen anderen Bot </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*store</td><td>Zeiger auf den zu uebertragenden Positionsspeicher </td></tr>
+    <tr><td class="paramname">bot</td><td>Adresse des Zielbots </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Fehlercode (0: alles ok) </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8c_source.html#l00330">330</a> der Datei <a class="el" href="pos__store_8c_source.html">pos_store.c</a>.</p>
+
+<p>Benutzt <a class="el" href="pos__store_8h_source.html#l00054">pos_store_t::owner</a>, <a class="el" href="command_8c_source.html#l00263">command_write_to()</a>, <a class="el" href="bot-2-bot_8h_source.html#l00051">BOT_CMD_POS_STORE</a>, <a class="el" href="bot-logic_8h_source.html#l00054">_Behaviour_t::priority</a>, <a class="el" href="pos__store_8h_source.html#l00060">pos_store_t::mask</a>, <a class="el" href="pos__store_8h_source.html#l00059">pos_store_t::count</a>, <a class="el" href="pos__store_8h_source.html#l00058">pos_store_t::fp</a>, <a class="el" href="pos__store_8h_source.html#l00057">pos_store_t::sp</a>, <a class="el" href="bot-2-bot_8c_source.html#l00322">bot_2_bot_send_payload_request()</a>, <a class="el" href="bot-2-bot_8h_source.html#l00056">BOT_2_BOT_POS_STORE</a> und <a class="el" href="pos__store_8h_source.html#l00055">pos_store_t::data</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__stack_8c_source.html#l00172">bot_send_stack_b2b()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="pos__store_8h_a0ea4c6da4fddf088e82b58d8b88ea4e4_cgraph.png" border="0" usemap="#pos__store_8h_a0ea4c6da4fddf088e82b58d8b88ea4e4_cgraph" alt=""/></div>
+<map name="pos__store_8h_a0ea4c6da4fddf088e82b58d8b88ea4e4_cgraph" id="pos__store_8h_a0ea4c6da4fddf088e82b58d8b88ea4e4_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="aae762c7ffc6cdf508ec72bffbd143c43"></a><!-- doxytag: member="pos_store.h::pos_store_test" ref="aae762c7ffc6cdf508ec72bffbd143c43" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void pos_store_test </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Testet push(), pop() und dequeue() </p>
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8c_source.html#l00409">409</a> der Datei <a class="el" href="pos__store_8c_source.html">pos_store.c</a>.</p>
+
+<p>Benutzt <a class="el" href="pos__store_8c_source.html#l00152">pos_store_from_beh()</a>, <a class="el" href="pos__store_8c_source.html#l00167">pos_store_get_index()</a>, <a class="el" href="pos__store_8c_source.html#l00178">pos_store_from_index()</a>, <a class="el" href="pos__store_8c_source.html#l00119">pos_store_release()</a>, <a class="el" href="pos__store_8h_source.html#l00054">pos_store_t::owner</a>, <a class="el" href="pos__store_8h_source.html#l00055">pos_store_t::data</a>, <a class="el" href="pos__store_8c_source.html#l00396">pos_store_dump()</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="pos__store_8h_source.html#l00060">pos_store_t::mask</a>, <a class="el" href="pos__store_8c_source.html#l00251">pos_store_push()</a>, <a class="el" href="pos__store_8c_source.html#l00272">pos_store_pop()</a>, <a class="el" href="pos__store_8c_source.html#l00289">pos_store_dequeue()</a>, <a class="el" href="pos__store_8c_source.html#l00189">pos_store_clear()</a> und <a class="el" href="pos__store_8c_source.html#l00230">pos_store_insert()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="pos__store_8h_aae762c7ffc6cdf508ec72bffbd143c43_cgraph.png" border="0" usemap="#pos__store_8h_aae762c7ffc6cdf508ec72bffbd143c43_cgraph" alt=""/></div>
+<map name="pos__store_8h_aae762c7ffc6cdf508ec72bffbd143c43_cgraph" id="pos__store_8h_aae762c7ffc6cdf508ec72bffbd143c43_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a5b3b46e55200fee1bfa208eae4a69f69"></a><!-- doxytag: member="pos_store.h::pos_store_top" ref="a5b3b46e55200fee1bfa208eae4a69f69" args="(pos_store_t *store, position_t *pos, uint8_t index)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t pos_store_top </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structpos__store__t.html">pos_store_t</a> *&#160;</td>
+          <td class="paramname"><em>store</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">position_t *&#160;</td>
+          <td class="paramname"><em>pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Gibt das n-letzte Element des Stacks / der Queue zurueck, entfernt es aber nicht. pos_store_top(&amp;store,  &amp;pos, 2) gibt z.B. das vorletzte Element zurueck </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*store</td><td>Zeiger auf Positionsspeicher </td></tr>
+    <tr><td class="paramname">*pos</td><td>Zeiger auf Rueckgabe-Speicher der Position </td></tr>
+    <tr><td class="paramname">index</td><td>Index des gewuenschten Elements vom Ende aus gezaehlt, 1-based </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>True, wenn ein Element im Speicher ist, sonst False </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="pos__store_8c_source.html#l00308">308</a> der Datei <a class="el" href="pos__store_8c_source.html">pos_store.c</a>.</p>
+
+<p>Benutzt <a class="el" href="global_8h_source.html#l00077">False</a>, <a class="el" href="pos__store_8h_source.html#l00059">pos_store_t::count</a>, <a class="el" href="pos__store_8h_source.html#l00057">pos_store_t::sp</a>, <a class="el" href="pos__store_8h_source.html#l00060">pos_store_t::mask</a>, <a class="el" href="pos__store_8h_source.html#l00055">pos_store_t::data</a> und <a class="el" href="global_8h_source.html#l00076">True</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a> und <a class="el" href="behaviour__pathplaning_8c_source.html#l00384">bot_calc_wave_behaviour()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:06 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: behaviour_follow_line.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">behaviour_follow_line.c</div>  </div>
+</div>
+<div class="contents">
+<a href="behaviour__follow__line_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00031"></a>00031 <span class="preprocessor">#include &quot;<a class="code" href="bot-logic_8h.html" title="High-Level-Routinen fuer die Steuerung des c&#39;t-Bots.">bot-logic/bot-logic.h</a>&quot;</span>
+<a name="l00032"></a>00032 
+<a name="l00033"></a>00033 <span class="preprocessor">#ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE</span>
+<a name="l00034"></a>00034 <span class="preprocessor"></span>
+<a name="l00035"></a>00035 <span class="comment">//#define DEBUG_BEHAVIOUR_FOLLOW_LINE // Schalter fuer Debug-Code</span>
+<a name="l00036"></a>00036 
+<a name="l00037"></a>00037 <span class="preprocessor">#ifndef LOG_AVAILABLE</span>
+<a name="l00038"></a>00038 <span class="preprocessor"></span><span class="preprocessor">#undef DEBUG_BEHAVIOUR_FOLLOW_LINE</span>
+<a name="l00039"></a>00039 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00040"></a>00040 <span class="preprocessor"></span><span class="preprocessor">#ifndef DEBUG_BEHAVIOUR_FOLLOW_LINE</span>
+<a name="l00041"></a>00041 <span class="preprocessor"></span><span class="preprocessor">#undef LOG_DEBUG</span>
+<a name="l00042"></a><a class="code" href="behaviour__follow__line_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">00042</a> <span class="preprocessor"></span><span class="preprocessor">#define LOG_DEBUG(a, ...) {}</span>
+<a name="l00043"></a>00043 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00044"></a>00044 <span class="preprocessor"></span>
+<a name="l00045"></a>00045 
+<a name="l00046"></a>00046 <span class="preprocessor">#if FOLLOW_LINE_VERSION == 1  // urspruenglich altes Linienverhalten</span>
+<a name="l00047"></a>00047 <span class="preprocessor"></span>
+<a name="l00048"></a>00048 <span class="comment">/* Konstanten fuer das Verhalten */</span>
+<a name="l00049"></a>00049 <span class="preprocessor">#define CORNER_LEFT                 1</span>
+<a name="l00050"></a>00050 <span class="preprocessor"></span><span class="preprocessor">#define CORNER_RIGHT                2</span>
+<a name="l00051"></a>00051 <span class="preprocessor"></span><span class="comment">/* Zustaende fuer das Verhalten */</span>
+<a name="l00052"></a>00052 <span class="preprocessor">#define CHECK_LINE                  0   </span><span class="comment">/* !&lt; Feststellen ob wir ueber einer Linie sind */</span>
+<a name="l00053"></a>00053 <span class="preprocessor">#define FOLLOW_LINE                 1   </span><span class="comment">/* !&lt; Folgen einer geraden oder leicht gekruemmten Linie */</span>
+<a name="l00054"></a>00054 <span class="preprocessor">#define CHECK_BORDER                2   </span><span class="comment">/* !&lt; Abgrundsensoren haben Alarm geschlagen. Feststellen ob wirklich Abgrund oder Ecke */</span>
+<a name="l00055"></a>00055 <span class="preprocessor">#define CORNER_TURN                 3   </span><span class="comment">/* !&lt; Drehung in Richtun detektiertem Abgrund */</span>
+<a name="l00056"></a>00056 <span class="preprocessor">#define CORRECT_POS                 4   </span><span class="comment">/* !&lt; Nach der Drehung 1cm vorfahren zum Ausgleichen */</span>
+<a name="l00057"></a>00057 <span class="preprocessor">#define ADVANCE_CORNER              5   </span><span class="comment">/* !&lt; Auf die Ecke zufahren, bis die Linie verschwindet */</span>
+<a name="l00058"></a>00058 <span class="preprocessor">#define RETREAT_AND_STOP            6   </span><span class="comment">/* !&lt; Zurueckfahren mit voller Geschwindigkeit, dann Stop und Verhalten verlassen */</span>
+<a name="l00059"></a>00059 
+<a name="l00060"></a>00060 <span class="comment">/* Status- und Hilfsvariablen */</span>
+<a name="l00061"></a>00061 <span class="keyword">static</span> int8_t lineState=<a class="code" href="behaviour__line__shortest__way_8c.html#ade558e02ab2cc8b95d2d04016f8b624f">CHECK_LINE</a>;
+<a name="l00062"></a>00062 <span class="keyword">static</span> int8_t cornerDetected=<a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00063"></a>00063 
+<a name="l00069"></a>00069 <span class="keywordtype">void</span> <a class="code" href="behaviour__follow__line_8h.html#afc60ceec962790640af859b4cdf30113">bot_follow_line_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00070"></a>00070     <span class="keywordflow">switch</span> (lineState) {
+<a name="l00071"></a>00071     <span class="keywordflow">case</span> <a class="code" href="behaviour__line__shortest__way_8c.html#ade558e02ab2cc8b95d2d04016f8b624f">CHECK_LINE</a>: <span class="comment">/* sind beide Sensoren ueber einer Linie? */</span>
+<a name="l00072"></a>00072         <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a56a020f1eb08fbff3d7fa669335921ed">sensLineL</a>&gt;=<a class="code" href="bot-local_8h.html#a0749b819b7222e5cb2e8788fa520c00b" title="Linie im Sim = 0x350.">LINE_SENSE</a>&amp;&amp; <a class="code" href="sensor_8c.html#ae286bb8f86cced317801e378247dcb18">sensLineR</a>&gt;=<a class="code" href="bot-local_8h.html#a0749b819b7222e5cb2e8788fa520c00b" title="Linie im Sim = 0x350.">LINE_SENSE</a>) {
+<a name="l00073"></a>00073             <span class="comment">/* zunaechst alle Hilfsverhalten ausschalten, die den Algorithmus stoeren */</span>
+<a name="l00074"></a>00074             <span class="comment">/* Abgrund- und Kollisions-Verhalten ausschalten */</span>
+<a name="l00075"></a>00075 <span class="preprocessor">#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE</span>
+<a name="l00076"></a>00076 <span class="preprocessor"></span>            deactivateBehaviour(<a class="code" href="behaviour__avoid__col_8c.html#af537d5e45f3f8339619d9dccf7d86e5d">bot_avoid_col_behaviour</a>);
+<a name="l00077"></a>00077 <span class="preprocessor">#endif</span>
+<a name="l00078"></a>00078 <span class="preprocessor"></span><span class="preprocessor">#ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE</span>
+<a name="l00079"></a>00079 <span class="preprocessor"></span>            deactivateBehaviour(<a class="code" href="behaviour__avoid__border_8c.html#a2941d3177f415a75eee81902f17b4357">bot_avoid_border_behaviour</a>);
+<a name="l00080"></a>00080 <span class="preprocessor">#endif</span>
+<a name="l00081"></a>00081 <span class="preprocessor"></span>            <span class="comment">/* bot_glance() stoert bot_turn() */</span>
+<a name="l00082"></a>00082             <span class="comment">//deactivateBehaviour(bot_glance_behaviour);</span>
+<a name="l00083"></a>00083             <span class="comment">/* losfahren und nach FOLLOW_LINE wechseln */</span>
+<a name="l00084"></a>00084             <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a>=<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00085"></a>00085             <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a>=<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00086"></a>00086             lineState=FOLLOW_LINE;
+<a name="l00087"></a>00087         }
+<a name="l00088"></a>00088         <span class="keywordflow">break</span>;
+<a name="l00089"></a>00089 
+<a name="l00090"></a>00090     <span class="keywordflow">case</span> FOLLOW_LINE:
+<a name="l00091"></a>00091         <span class="comment">/* Pruefen, ob die Abgrundsensoren einen Abgrund sehen */</span>
+<a name="l00092"></a>00092         <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a84def4d45c65c50a87cd4882f9462b2e">sensBorderL</a>&gt;<a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a>|| <a class="code" href="sensor_8c.html#a0fdaee88ee679ed4c544707de739ee9a">sensBorderR</a>&gt;<a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a>) {
+<a name="l00093"></a>00093             <span class="comment">/* Abgrund erkannt, das kann jetzt eine Linie sein oder ein richtiger Abgrund.*/</span>
+<a name="l00094"></a>00094             <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a84def4d45c65c50a87cd4882f9462b2e">sensBorderL</a>&gt;<a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a>&amp;&amp; <a class="code" href="sensor_8c.html#a0fdaee88ee679ed4c544707de739ee9a">sensBorderR</a>&gt;<a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a>) {
+<a name="l00095"></a>00095                 <span class="comment">/* Wenn beidseitig erkannt, koennen wir damit nicht umgehen -&gt;</span>
+<a name="l00096"></a>00096 <span class="comment">                 * Ende des Verhaltens */</span>
+<a name="l00097"></a>00097                 <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a>=<a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00098"></a>00098                 <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a>=<a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00099"></a>00099                 <span class="comment">//LOG_INFO(&quot;Stopp in FOLLOW_LINE&quot;);</span>
+<a name="l00100"></a>00100                 return_from_behaviour(data);
+<a name="l00101"></a>00101                 <span class="keywordflow">break</span>;
+<a name="l00102"></a>00102             }
+<a name="l00103"></a>00103             <span class="comment">/* nachsehen, ob der linke oder rechte Liniensensor ohne Kontakt zur Linie ist</span>
+<a name="l00104"></a>00104 <span class="comment">             * und ggfs. gegensteuern */</span>
+<a name="l00105"></a>00105             <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a84def4d45c65c50a87cd4882f9462b2e">sensBorderL</a>&gt;<a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a>) {
+<a name="l00106"></a>00106                 cornerDetected=CORNER_LEFT;
+<a name="l00107"></a>00107             } <span class="keywordflow">else</span> {
+<a name="l00108"></a>00108                 cornerDetected=CORNER_RIGHT;
+<a name="l00109"></a>00109             }
+<a name="l00110"></a>00110             <span class="comment">/* nun zur vermuteten Ecke vorfahren */</span>
+<a name="l00111"></a>00111             lineState=<a class="code" href="behaviour__line__shortest__way_8c.html#af95fbf1c704d0465a9cef50721ebb221">CHECK_BORDER</a>;
+<a name="l00112"></a>00112             <a class="code" href="behaviour__drive__distance_8c.html#ae7b188b6785c5e337c51509282ca790e">bot_drive_distance</a>(data, 0, <a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>, 3);
+<a name="l00113"></a>00113             <span class="keywordflow">break</span>;
+<a name="l00114"></a>00114         }
+<a name="l00115"></a>00115         <span class="keywordflow">if</span> (sensLineL&lt;LINE_SENSE&amp;&amp; sensLineR&gt;<a class="code" href="bot-local_8h.html#a0749b819b7222e5cb2e8788fa520c00b" title="Linie im Sim = 0x350.">LINE_SENSE</a>) {
+<a name="l00116"></a>00116             <span class="comment">/* links von der Linie abgekommen, daher nach rechts drehen */</span>
+<a name="l00117"></a>00117             <span class="comment">//LOG_DEBUG(&quot;Drehe rechts&quot;);</span>
+<a name="l00118"></a>00118             <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a>=<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00119"></a>00119             <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a>=-<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00120"></a>00120         } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a56a020f1eb08fbff3d7fa669335921ed">sensLineL</a>&gt;LINE_SENSE&amp;&amp; <a class="code" href="sensor_8c.html#ae286bb8f86cced317801e378247dcb18">sensLineR</a>&lt;LINE_SENSE) {
+<a name="l00121"></a>00121             <span class="comment">/* andersrum, also links drehen */</span>
+<a name="l00122"></a>00122             <span class="comment">//LOG_DEBUG(&quot;Drehe links&quot;);</span>
+<a name="l00123"></a>00123             <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a>=-<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00124"></a>00124             <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a>=<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00125"></a>00125         } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a56a020f1eb08fbff3d7fa669335921ed">sensLineL</a>&gt;LINE_SENSE&amp;&amp; <a class="code" href="sensor_8c.html#ae286bb8f86cced317801e378247dcb18">sensLineR</a>&gt;LINE_SENSE) {
+<a name="l00126"></a>00126             <span class="comment">/* noch ueber der Linie, also einfach geradeaus weiter */</span>
+<a name="l00127"></a>00127             <span class="comment">//LOG_DEBUG(&quot;Fahre geradeaus&quot;);</span>
+<a name="l00128"></a>00128             <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a>=<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00129"></a>00129             <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a>=<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00130"></a>00130         }
+<a name="l00131"></a>00131         <span class="keywordflow">break</span>;
+<a name="l00132"></a>00132 
+<a name="l00133"></a>00133     <span class="keywordflow">case</span> <a class="code" href="behaviour__line__shortest__way_8c.html#af95fbf1c704d0465a9cef50721ebb221">CHECK_BORDER</a>:
+<a name="l00134"></a>00134         <span class="comment">/* wir sollten jetzt direkt an der Kante zum Abgrund stehen, wenn es</span>
+<a name="l00135"></a>00135 <span class="comment">         * denn wirklich eine ist. In dem Fall fahren wir ein Stueck zurueck.</span>
+<a name="l00136"></a>00136 <span class="comment">         * sonst gehen wir von einer Linie aus, drehen uns in die Richtung,</span>
+<a name="l00137"></a>00137 <span class="comment">         * in der wir den &quot;Abgrund&quot; entdeckt haben und machen dann weiter mit</span>
+<a name="l00138"></a>00138 <span class="comment">         * der Linienverfolgung */</span>
+<a name="l00139"></a>00139         <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a84def4d45c65c50a87cd4882f9462b2e">sensBorderL</a>&gt;<a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a>|| <a class="code" href="sensor_8c.html#a0fdaee88ee679ed4c544707de739ee9a">sensBorderR</a>&gt;<a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a>) {
+<a name="l00140"></a>00140             <span class="comment">/* scheint wirklich ein Abgrund zu sein */</span>
+<a name="l00141"></a>00141             lineState=RETREAT_AND_STOP;
+<a name="l00142"></a>00142             <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a>=-<a class="code" href="motor_8h.html#a24b4914e3c0de6232220a8c79d4be7b2" title="maximale Fahrt in mm/s">BOT_SPEED_MAX</a>;
+<a name="l00143"></a>00143             <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a>=-<a class="code" href="motor_8h.html#a24b4914e3c0de6232220a8c79d4be7b2" title="maximale Fahrt in mm/s">BOT_SPEED_MAX</a>;
+<a name="l00144"></a>00144             <span class="keywordflow">break</span>;
+<a name="l00145"></a>00145         }
+<a name="l00146"></a>00146         <span class="comment">/* war nur eine Ecke, noch weiter darauf zu bis kein Kontakt mehr zur Linie */</span>
+<a name="l00147"></a>00147         lineState=ADVANCE_CORNER;
+<a name="l00148"></a>00148         <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a>=<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00149"></a>00149         <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a>=<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00150"></a>00150         <span class="keywordflow">break</span>;
+<a name="l00151"></a>00151 
+<a name="l00152"></a>00152     <span class="keywordflow">case</span> ADVANCE_CORNER:
+<a name="l00153"></a>00153         <span class="comment">/* auf die Ecke zufahren, bis die Linie verschwindet */</span>
+<a name="l00154"></a>00154         <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a56a020f1eb08fbff3d7fa669335921ed">sensLineL</a>&lt;LINE_SENSE&amp;&amp; <a class="code" href="sensor_8c.html#ae286bb8f86cced317801e378247dcb18">sensLineR</a>&lt;LINE_SENSE) {
+<a name="l00155"></a>00155             <span class="comment">/* Linie weg, also Stop, kurz zurueck und drehen */</span>
+<a name="l00156"></a>00156             lineState=CORNER_TURN;
+<a name="l00157"></a>00157             <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a>=-<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00158"></a>00158             <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a>=-<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00159"></a>00159             <span class="keywordflow">break</span>;
+<a name="l00160"></a>00160         }
+<a name="l00161"></a>00161         <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a>=<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00162"></a>00162         <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a>=<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00163"></a>00163         <span class="keywordflow">break</span>;
+<a name="l00164"></a>00164 
+<a name="l00165"></a>00165     <span class="keywordflow">case</span> CORNER_TURN:
+<a name="l00166"></a>00166         <span class="comment">/* 90 Grad in Richtung des detektierten Abgrunds drehen */</span>
+<a name="l00167"></a>00167         lineState=CORRECT_POS;
+<a name="l00168"></a>00168         <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, (cornerDetected==CORNER_LEFT) ? 90 : -90);
+<a name="l00169"></a>00169         cornerDetected=<a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00170"></a>00170         <span class="keywordflow">break</span>;
+<a name="l00171"></a>00171 
+<a name="l00172"></a>00172     <span class="keywordflow">case</span> CORRECT_POS:
+<a name="l00173"></a>00173         lineState=FOLLOW_LINE;
+<a name="l00174"></a>00174         <a class="code" href="behaviour__drive__distance_8c.html#ae7b188b6785c5e337c51509282ca790e">bot_drive_distance</a>(data, 0, <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>, 2);
+<a name="l00175"></a>00175         <span class="keywordflow">break</span>;
+<a name="l00176"></a>00176 
+<a name="l00177"></a>00177     <span class="keywordflow">case</span> RETREAT_AND_STOP:
+<a name="l00178"></a>00178         <span class="comment">/* wir sind an einem Abgrund, Stop und Ende des Verhaltens */</span>
+<a name="l00179"></a>00179         <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a>=<a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00180"></a>00180         <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a>=<a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>;
+<a name="l00181"></a>00181         return_from_behaviour(data);
+<a name="l00182"></a>00182         <span class="keywordflow">break</span>;
+<a name="l00183"></a>00183     }
+<a name="l00184"></a>00184 }
+<a name="l00185"></a>00185 
+<a name="l00191"></a>00191 <span class="keywordtype">void</span> <a class="code" href="behaviour__follow__line_8h.html#a697f0c554ed200340351641b5dbb091d">bot_follow_line</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller) {
+<a name="l00192"></a>00192     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__follow__line_8h.html#afc60ceec962790640af859b4cdf30113">bot_follow_line_behaviour</a>, <a class="code" href="bot-logic_8h.html#a59191cd512c3376a23c8a7d259a1e111" title="Konstanten, wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen.">BEHAVIOUR_NOOVERRIDE</a>);
+<a name="l00193"></a>00193     lineState=<a class="code" href="behaviour__line__shortest__way_8c.html#ade558e02ab2cc8b95d2d04016f8b624f">CHECK_LINE</a>;
+<a name="l00194"></a>00194     cornerDetected=<a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00195"></a>00195 }
+<a name="l00196"></a>00196 
+<a name="l00197"></a>00197 <span class="preprocessor">#elif FOLLOW_LINE_VERSION == 2    // neuere Version des Linienfolgers</span>
+<a name="l00198"></a>00198 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="timer_8h.html" title="Timer und Zaehler.">timer.h</a>&quot;</span>
+<a name="l00199"></a>00199 
+<a name="l00204"></a>00204 <span class="preprocessor">#define CORRECTION_DELAY    150</span>
+<a name="l00205"></a>00205 <span class="preprocessor"></span>
+<a name="l00212"></a>00212 <span class="keywordtype">void</span> <a class="code" href="behaviour__follow__line_8h.html#afc60ceec962790640af859b4cdf30113">bot_follow_line_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00213"></a>00213     data = data; <span class="comment">// kein warning</span>
+<a name="l00214"></a>00214     <span class="keyword">static</span> int16_t lastLeft = 0;
+<a name="l00215"></a>00215     <span class="keyword">static</span> int16_t lastRight = 0;
+<a name="l00216"></a>00216     <span class="keyword">static</span> uint8_t lastCorrection = 0;
+<a name="l00217"></a>00217     <span class="keyword">static</span> uint32_t lastCorrectionTime = 0;
+<a name="l00218"></a>00218     uint8_t correction = 0;
+<a name="l00219"></a>00219 
+<a name="l00220"></a>00220     <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a56a020f1eb08fbff3d7fa669335921ed">sensLineL</a> &gt;= <a class="code" href="bot-local_8h.html#a0749b819b7222e5cb2e8788fa520c00b" title="Linie im Sim = 0x350.">LINE_SENSE</a> &amp;&amp; <a class="code" href="sensor_8c.html#ae286bb8f86cced317801e378247dcb18">sensLineR</a> &lt; <a class="code" href="bot-local_8h.html#a0749b819b7222e5cb2e8788fa520c00b" title="Linie im Sim = 0x350.">LINE_SENSE</a>) {
+<a name="l00221"></a>00221         <span class="comment">/* Bot faehrt auf rechter Linienkante */</span>
+<a name="l00222"></a>00222         <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00223"></a>00223         <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00224"></a>00224     } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a56a020f1eb08fbff3d7fa669335921ed">sensLineL</a> &lt; <a class="code" href="bot-local_8h.html#a0749b819b7222e5cb2e8788fa520c00b" title="Linie im Sim = 0x350.">LINE_SENSE</a>) {
+<a name="l00225"></a>00225         <span class="comment">/* Bot fahert rechts neben der Linie */</span>
+<a name="l00226"></a>00226         <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = -<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00227"></a>00227         <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = <a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00228"></a>00228         correction = 1;
+<a name="l00229"></a>00229     } <span class="keywordflow">else</span> {
+<a name="l00230"></a>00230         <span class="comment">/* Bot faehrt auf der Linie */</span>
+<a name="l00231"></a>00231         <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = <a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00232"></a>00232         <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = -<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00233"></a>00233         correction = 2;
+<a name="l00234"></a>00234     }
+<a name="l00235"></a>00235 
+<a name="l00236"></a>00236     <span class="keywordflow">if</span> (lastCorrection != correction &amp;&amp; !timer_ms_passed_32(
+<a name="l00237"></a>00237             &amp;lastCorrectionTime, <a class="code" href="behaviour__drive__area_8c.html#a69d3a0fbf54f1c17b672883ddd06375b">CORRECTION_DELAY</a>)) {
+<a name="l00238"></a>00238         <span class="comment">/* Falls die letzte Korrektur gerade erst war, reagieren wir (noch) nicht */</span>
+<a name="l00239"></a>00239         <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = lastLeft;
+<a name="l00240"></a>00240         <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = lastRight;
+<a name="l00241"></a>00241         <span class="keywordflow">return</span>;
+<a name="l00242"></a>00242     }
+<a name="l00243"></a>00243 
+<a name="l00244"></a>00244     <span class="comment">/* neue Werte merken */</span>
+<a name="l00245"></a>00245     lastCorrection = correction;
+<a name="l00246"></a>00246     lastLeft = <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a>;
+<a name="l00247"></a>00247     lastRight = <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a>;
+<a name="l00248"></a>00248 }
+<a name="l00249"></a>00249 
+<a name="l00256"></a>00256 <span class="keywordtype">void</span> <a class="code" href="behaviour__follow__line_8h.html#a697f0c554ed200340351641b5dbb091d">bot_follow_line</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller) {
+<a name="l00257"></a>00257     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__follow__line_8h.html#afc60ceec962790640af859b4cdf30113">bot_follow_line_behaviour</a>, <a class="code" href="bot-logic_8h.html#a59191cd512c3376a23c8a7d259a1e111" title="Konstanten, wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen.">BEHAVIOUR_NOOVERRIDE</a>);
+<a name="l00258"></a>00258     <span class="comment">/* stoerende Notfallverhalten aus */</span>
+<a name="l00259"></a>00259 <span class="preprocessor">#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE</span>
+<a name="l00260"></a>00260 <span class="preprocessor"></span>    deactivateBehaviour(<a class="code" href="behaviour__avoid__col_8c.html#af537d5e45f3f8339619d9dccf7d86e5d">bot_avoid_col_behaviour</a>);
+<a name="l00261"></a>00261 <span class="preprocessor">#endif</span>
+<a name="l00262"></a>00262 <span class="preprocessor"></span><span class="preprocessor">#ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE</span>
+<a name="l00263"></a>00263 <span class="preprocessor"></span>    deactivateBehaviour(<a class="code" href="behaviour__avoid__border_8c.html#a2941d3177f415a75eee81902f17b4357">bot_avoid_border_behaviour</a>);
+<a name="l00264"></a>00264 <span class="preprocessor">#endif</span>
+<a name="l00265"></a>00265 <span class="preprocessor"></span><span class="preprocessor">#ifdef BEHAVIOUR_SCAN_AVAILABLE</span>
+<a name="l00266"></a>00266 <span class="preprocessor"></span>    set_scan_otf_border(0); <span class="comment">// keine Abgruende (die Linie) in die Map eintragen</span>
+<a name="l00267"></a>00267     set_scan_otf_mapmode(0); <span class="comment">// Kartographiemodus aus</span>
+<a name="l00268"></a>00268 <span class="preprocessor">#endif</span>
+<a name="l00269"></a>00269 <span class="preprocessor"></span>}
+<a name="l00270"></a>00270 
+<a name="l00271"></a>00271 <span class="preprocessor">#elif FOLLOW_LINE_VERSION == 3  // neueste Version des Linienfolgers, die mit drive_line_shortest_way entstanden ist</span>
+<a name="l00272"></a>00272 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="math__utils_8h.html" title="Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig.">math_utils.h</a>&quot;</span>
+<a name="l00273"></a>00273 
+<a name="l00278"></a>00278 <span class="preprocessor">#define CORRECTION_DELAY    100</span>
+<a name="l00279"></a>00279 <span class="preprocessor"></span>
+<a name="l00282"></a>00282 <span class="keyword">static</span> uint8_t border_side_l_fired = 0;
+<a name="l00283"></a>00283 
+<a name="l00286"></a>00286 <span class="keyword">static</span> uint8_t border_side_r_fired = 0;
+<a name="l00287"></a>00287 
+<a name="l00288"></a>00288 <span class="keyword">static</span> int16_t lastpos_x = 0;
+<a name="l00289"></a>00289 <span class="keyword">static</span> int16_t lastpos_y = 0;
+<a name="l00290"></a>00290 
+<a name="l00292"></a>00292 <span class="preprocessor">#define CHECK_DISTANCE 100</span>
+<a name="l00293"></a>00293 <span class="preprocessor"></span><span class="preprocessor">#define CHECK_DISTANCE_QUAD (CHECK_DISTANCE * CHECK_DISTANCE)  </span>
+<a name="l00302"></a>00302 <span class="preprocessor">static uint8_t distance_reached(int16_t * last_xpoint, int16_t * last_ypoint) {</span>
+<a name="l00303"></a>00303 <span class="preprocessor"></span>    <span class="comment">// Abstand seit letztem Observerlauf ermitteln</span>
+<a name="l00304"></a>00304     uint16_t diff = (uint16_t) <a class="code" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat-Abstands zwischen zwei Punkten.">get_dist</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, *last_xpoint, *last_ypoint);
+<a name="l00305"></a>00305 
+<a name="l00306"></a>00306     <span class="comment">//erst nach gewissem Abstand oder gleich bei noch initialem Wert Mappruefung</span>
+<a name="l00307"></a>00307     <span class="keywordflow">if</span> (diff &gt;= <a class="code" href="behaviour__line__shortest__way_8c.html#ad083db6023a54557da0db3b81d4d148a">CHECK_DISTANCE_QUAD</a>) {
+<a name="l00308"></a>00308         *last_xpoint = <a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>;
+<a name="l00309"></a>00309         *last_ypoint = <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>;
+<a name="l00310"></a>00310         <span class="keywordflow">return</span> <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00311"></a>00311     }
+<a name="l00312"></a>00312     <span class="keywordflow">return</span> <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00313"></a>00313 }
+<a name="l00314"></a>00314 
+<a name="l00320"></a>00320 <span class="keywordtype">void</span> <a class="code" href="behaviour__follow__line_8h.html#afc60ceec962790640af859b4cdf30113">bot_follow_line_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00321"></a>00321     <span class="keyword">static</span> int16_t lastLeft = 0;
+<a name="l00322"></a>00322     <span class="keyword">static</span> int16_t lastRight = 0;
+<a name="l00323"></a>00323     <span class="keyword">static</span> uint8_t lastCorrection = 0;
+<a name="l00324"></a>00324     <span class="keyword">static</span> uint32_t lastCorrectionTime = 0;
+<a name="l00325"></a>00325     uint8_t correction = 0;
+<a name="l00326"></a>00326 
+<a name="l00327"></a>00327     <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a56a020f1eb08fbff3d7fa669335921ed">sensLineL</a> &gt;= <a class="code" href="bot-local_8h.html#a0749b819b7222e5cb2e8788fa520c00b" title="Linie im Sim = 0x350.">LINE_SENSE</a>) {
+<a name="l00328"></a>00328         <span class="comment">/* Bot faehrt auf linker Linienkante oder beide Sensoren auf Linie */</span>
+<a name="l00329"></a>00329         <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00330"></a>00330         <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00331"></a>00331         lastCorrection = 0;
+<a name="l00332"></a>00332 
+<a name="l00333"></a>00333         <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a84def4d45c65c50a87cd4882f9462b2e">sensBorderL</a> &gt; <a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a> || <a class="code" href="sensor_8c.html#a0fdaee88ee679ed4c544707de739ee9a">sensBorderR</a> &gt; <a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a>) {
+<a name="l00334"></a>00334 
+<a name="l00335"></a>00335             <span class="comment">// Kennungen setzen auf Querlinie erkannt links oder rechts voraus, also wenn Abgrundsensor Linie (vorausgesetzt Abgrund gibt es nicht) erkennt</span>
+<a name="l00336"></a>00336             <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a0fdaee88ee679ed4c544707de739ee9a">sensBorderR</a> &gt; <a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a>) {
+<a name="l00337"></a>00337                 border_side_r_fired = <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00338"></a>00338             } <span class="keywordflow">else</span> {
+<a name="l00339"></a>00339                 border_side_l_fired = <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00340"></a>00340             }
+<a name="l00341"></a>00341 
+<a name="l00342"></a>00342             <a class="code" href="behaviour__follow__line_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;Border l/r: %1d %1d&quot;</span>, border_side_l_fired, border_side_r_fired);
+<a name="l00343"></a>00343 
+<a name="l00344"></a>00344             <span class="comment">// Beide erkennen Querlinie, ist Abgrund oder auch moeglicherweise X-Kreuzung</span>
+<a name="l00345"></a>00345             <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a84def4d45c65c50a87cd4882f9462b2e">sensBorderL</a> &gt; <a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a> &amp;&amp; <a class="code" href="sensor_8c.html#a0fdaee88ee679ed4c544707de739ee9a">sensBorderR</a>
+<a name="l00346"></a>00346                     &gt; <a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a>) {
+<a name="l00347"></a>00347                 border_side_l_fired = <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00348"></a>00348                 border_side_r_fired = <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00349"></a>00349             }
+<a name="l00350"></a>00350 
+<a name="l00351"></a>00351             <span class="keywordflow">if</span> (border_side_l_fired &amp;&amp; border_side_r_fired) {
+<a name="l00352"></a>00352                 <a class="code" href="behaviour__follow__line_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;beide zugeschlagen =&gt; Ende&quot;</span>);
+<a name="l00353"></a>00353                 return_from_behaviour(data);
+<a name="l00354"></a>00354             }
+<a name="l00355"></a>00355 
+<a name="l00356"></a>00356         } <span class="keywordflow">else</span> {
+<a name="l00357"></a>00357 
+<a name="l00358"></a>00358             <span class="keywordflow">if</span> (lastLeft &lt; 0 || lastRight &lt; 0) {
+<a name="l00359"></a>00359                 <span class="comment">// bei Wechsel zu geradeaus Abgrundsensorkennungen ruecksetzen</span>
+<a name="l00360"></a>00360                 <span class="keywordflow">if</span> (distance_reached(&amp;lastpos_x, &amp;lastpos_y)) {
+<a name="l00361"></a>00361                     <a class="code" href="behaviour__follow__line_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;Abstand gefahren und false l/r %1d %1d&quot;</span>, <a class="code" href="sensor_8c.html#a84def4d45c65c50a87cd4882f9462b2e">sensBorderL</a>, <a class="code" href="sensor_8c.html#a0fdaee88ee679ed4c544707de739ee9a">sensBorderR</a>);
+<a name="l00362"></a>00362                     border_side_l_fired = <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00363"></a>00363                     border_side_r_fired = <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00364"></a>00364                 }
+<a name="l00365"></a>00365             }
+<a name="l00366"></a>00366         }
+<a name="l00367"></a>00367 
+<a name="l00368"></a>00368     <span class="comment">// Naechstes klappt prima im Sim, beim echten Bot jedoch nicht und dreht dort links, scheinbar wird die Var zu frueh rueckgesetzt</span>
+<a name="l00369"></a>00369     } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a56a020f1eb08fbff3d7fa669335921ed">sensLineL</a> &lt; <a class="code" href="bot-local_8h.html#a0749b819b7222e5cb2e8788fa520c00b" title="Linie im Sim = 0x350.">LINE_SENSE</a> &amp;&amp; <a class="code" href="sensor_8c.html#ae286bb8f86cced317801e378247dcb18">sensLineR</a> &lt; <a class="code" href="bot-local_8h.html#a0749b819b7222e5cb2e8788fa520c00b" title="Linie im Sim = 0x350.">LINE_SENSE</a>
+<a name="l00370"></a>00370             &amp;&amp; !border_side_r_fired) {
+<a name="l00371"></a>00371         <span class="comment">/* Linker Sensor und rechter nicht auf Linie, dann rechts daneben und links drehen */</span>
+<a name="l00372"></a>00372         <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = -<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00373"></a>00373         <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = <a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00374"></a>00374         correction = 1;
+<a name="l00375"></a>00375     } <span class="keywordflow">else</span> {
+<a name="l00376"></a>00376         <span class="comment">/* Bot befindet sich links von der Linie und rechts drehen */</span>
+<a name="l00377"></a>00377         <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = <a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00378"></a>00378         <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = -<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>;
+<a name="l00379"></a>00379         correction = 2;
+<a name="l00380"></a>00380     }
+<a name="l00381"></a>00381 
+<a name="l00382"></a>00382     <span class="keywordflow">if</span> (lastCorrection != correction &amp;&amp; !timer_ms_passed_32(
+<a name="l00383"></a>00383             &amp;lastCorrectionTime, <a class="code" href="behaviour__drive__area_8c.html#a69d3a0fbf54f1c17b672883ddd06375b">CORRECTION_DELAY</a>)) {
+<a name="l00384"></a>00384         <span class="comment">/* Falls die letzte Korrektur gerade erst war, reagieren wir (noch) nicht */</span>
+<a name="l00385"></a>00385         <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = lastLeft;
+<a name="l00386"></a>00386         <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = lastRight;
+<a name="l00387"></a>00387 <span class="comment">//      LOG_DEBUG(&quot;correction %u delayed&quot;, correction);</span>
+<a name="l00388"></a>00388 <span class="comment">//      LOG_DEBUG(&quot;lastLeft=%d\tlastRight=%d&quot;, lastLeft, lastRight);</span>
+<a name="l00389"></a>00389 <span class="comment">//      LOG_DEBUG(&quot;lastCorrectionTime=%lu&quot;, lastCorrectionTime);</span>
+<a name="l00390"></a>00390 <span class="comment">//      LOG_DEBUG(&quot;time=%lu&quot;, TIMER_GET_TICKCOUNT_32);</span>
+<a name="l00391"></a>00391 <span class="comment">//      if (TIMER_GET_TICKCOUNT_32 &gt; lastCorrectionTime + MS_TO_TICKS(CORRECTION_DELAY)) {</span>
+<a name="l00392"></a>00392 <span class="comment">//          LOG_ERROR(&quot;*** TIMER-BUG! ***&quot;);</span>
+<a name="l00393"></a>00393 <span class="comment">//      }</span>
+<a name="l00394"></a>00394         <span class="keywordflow">return</span>;
+<a name="l00395"></a>00395     }
+<a name="l00396"></a>00396 
+<a name="l00397"></a>00397     <span class="comment">/* neue Werte merken */</span>
+<a name="l00398"></a>00398     lastCorrection = correction;
+<a name="l00399"></a>00399     lastLeft = <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a>;
+<a name="l00400"></a>00400     lastRight = <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a>;
+<a name="l00401"></a>00401 }
+<a name="l00402"></a>00402 
+<a name="l00410"></a>00410 <span class="keywordtype">void</span> <a class="code" href="behaviour__follow__line_8h.html#a697f0c554ed200340351641b5dbb091d">bot_follow_line</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller) {
+<a name="l00411"></a>00411     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__follow__line_8h.html#afc60ceec962790640af859b4cdf30113">bot_follow_line_behaviour</a>, <a class="code" href="bot-logic_8h.html#a59191cd512c3376a23c8a7d259a1e111" title="Konstanten, wenn Verhalten beim Aufruf alte Wuensche nicht ueberschreiben sollen.">BEHAVIOUR_NOOVERRIDE</a>);
+<a name="l00412"></a>00412 
+<a name="l00413"></a>00413     <span class="comment">// Kennungen init.</span>
+<a name="l00414"></a>00414     border_side_l_fired = <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00415"></a>00415     border_side_r_fired = <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00416"></a>00416     lastpos_x = <a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>;
+<a name="l00417"></a>00417     lastpos_y = <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>;
+<a name="l00418"></a>00418 
+<a name="l00419"></a>00419     <span class="comment">/* stoerende Notfallverhalten aus */</span>
+<a name="l00420"></a>00420 <span class="preprocessor">#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE</span>
+<a name="l00421"></a>00421 <span class="preprocessor"></span>    deactivateBehaviour(<a class="code" href="behaviour__avoid__col_8c.html#af537d5e45f3f8339619d9dccf7d86e5d">bot_avoid_col_behaviour</a>);
+<a name="l00422"></a>00422 <span class="preprocessor">#endif</span>
+<a name="l00423"></a>00423 <span class="preprocessor"></span><span class="preprocessor">#ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE</span>
+<a name="l00424"></a>00424 <span class="preprocessor"></span>    deactivateBehaviour(<a class="code" href="behaviour__avoid__border_8c.html#a2941d3177f415a75eee81902f17b4357">bot_avoid_border_behaviour</a>);
+<a name="l00425"></a>00425 <span class="preprocessor">#endif</span>
+<a name="l00426"></a>00426 <span class="preprocessor"></span>}
+<a name="l00427"></a>00427 
+<a name="l00428"></a>00428 <span class="preprocessor">#endif  // VERSION</span>
+<a name="l00429"></a>00429 <span class="preprocessor"></span><span class="preprocessor">#endif // BEHAVIOUR_FOLLOW_LINE_AVAILABLE</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

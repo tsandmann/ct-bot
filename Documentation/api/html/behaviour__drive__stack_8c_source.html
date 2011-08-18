@@ -1,0 +1,456 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: behaviour_drive_stack.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">behaviour_drive_stack.c</div>  </div>
+</div>
+<div class="contents">
+<a href="behaviour__drive__stack_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00020"></a>00020 
+<a name="l00028"></a>00028 <span class="preprocessor">#include &quot;<a class="code" href="bot-logic_8h.html" title="High-Level-Routinen fuer die Steuerung des c&#39;t-Bots.">bot-logic/bot-logic.h</a>&quot;</span>
+<a name="l00029"></a>00029 
+<a name="l00030"></a>00030 <span class="preprocessor">#ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE</span>
+<a name="l00031"></a>00031 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="available__screens_8h.html" title="Die Schalter fuer sichtbare Screens finden sich hier.">ui/available_screens.h</a>&quot;</span>
+<a name="l00032"></a>00032 <span class="preprocessor">#include &quot;<a class="code" href="display_8h.html" title="Routinen zur Displaysteuerung.">display.h</a>&quot;</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#include &quot;<a class="code" href="rc5_8h.html" title="RC5-Fernbedienung / Basic-Tasten-Handler.">rc5.h</a>&quot;</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include &quot;<a class="code" href="rc5-codes_8h.html" title="RC5-Fernbedienungscodes.">rc5-codes.h</a>&quot;</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include &quot;<a class="code" href="pos__store_8h.html" title="Implementierung eines Positionsspeichers mit den ueblichen Stackbefehlen push(), pop() und FIFO-Befeh...">pos_store.h</a>&quot;</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include &quot;<a class="code" href="math__utils_8h.html" title="Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig.">math_utils.h</a>&quot;</span>
+<a name="l00037"></a>00037 <span class="preprocessor">#include &quot;<a class="code" href="rc5-codes_8h.html" title="RC5-Fernbedienungscodes.">rc5-codes.h</a>&quot;</span>
+<a name="l00038"></a>00038 <span class="preprocessor">#include &quot;<a class="code" href="map_8h.html" title="Karte.">map.h</a>&quot;</span>
+<a name="l00039"></a>00039 <span class="preprocessor">#include &quot;<a class="code" href="command_8h.html" title="Kommando-Management.">command.h</a>&quot;</span>
+<a name="l00040"></a>00040 <span class="preprocessor">#include &quot;<a class="code" href="log_8h.html" title="Routinen zum Loggen von Informationen.">log.h</a>&quot;</span>
+<a name="l00041"></a>00041 <span class="preprocessor">#include &quot;<a class="code" href="bot-2-bot_8h.html" title="Bot-2-Bot-Kommunikation.">bot-2-bot.h</a>&quot;</span>
+<a name="l00042"></a>00042 <span class="preprocessor">#include &lt;stdlib.h&gt;</span>
+<a name="l00043"></a>00043 
+<a name="l00044"></a><a class="code" href="behaviour__drive__stack_8c.html#ad72dbcf6d0153db1b8d8a58001feed83">00044</a> <span class="preprocessor">#define DEBUG</span>
+<a name="l00045"></a>00045 <span class="preprocessor"></span>
+<a name="l00046"></a>00046 <span class="comment">/* bot_save_waypos()-Parameter */</span>
+<a name="l00047"></a>00047 <span class="preprocessor">#define STACK_SIZE      64  </span>
+<a name="l00048"></a><a class="code" href="behaviour__drive__stack_8c.html#ac8299b112f9f3dd050ea12ac21f89abb">00048</a> <span class="preprocessor">#define MAX_GRADIENT    10  </span>
+<a name="l00049"></a><a class="code" href="behaviour__drive__stack_8c.html#a2dbe3fefce9be749e923959da5ff48d5">00049</a> <span class="preprocessor">#define MAX_POS_DIFF    (200L * 200L)   </span>
+<a name="l00051"></a>00051 <span class="preprocessor">#if STACK_SIZE &gt; POS_STORE_SIZE</span>
+<a name="l00052"></a>00052 <span class="preprocessor"></span><span class="preprocessor">#undef STACK_SIZE</span>
+<a name="l00053"></a><a class="code" href="behaviour__drive__stack_8c.html#a6423a880df59733d2d9b509c7718d3a9">00053</a> <span class="preprocessor"></span><span class="preprocessor">#define STACK_SIZE POS_STORE_SIZE</span>
+<a name="l00054"></a>00054 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00055"></a>00055 <span class="preprocessor"></span>
+<a name="l00056"></a>00056 <span class="preprocessor">#ifndef LOG_AVAILABLE</span>
+<a name="l00057"></a>00057 <span class="preprocessor"></span><span class="preprocessor">#undef DEBUG</span>
+<a name="l00058"></a>00058 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00059"></a>00059 <span class="preprocessor"></span><span class="preprocessor">#ifndef DEBUG</span>
+<a name="l00060"></a>00060 <span class="preprocessor"></span><span class="preprocessor">#undef LOG_DEBUG</span>
+<a name="l00061"></a><a class="code" href="behaviour__drive__stack_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">00061</a> <span class="preprocessor"></span><span class="preprocessor">#define LOG_DEBUG(...) {}</span>
+<a name="l00062"></a>00062 <span class="preprocessor"></span><span class="preprocessor">#endif // DEBUG</span>
+<a name="l00063"></a>00063 <span class="preprocessor"></span>
+<a name="l00064"></a>00064 <span class="keyword">static</span> uint8_t drivestack_state = 0; 
+<a name="l00065"></a>00065 <span class="keyword">static</span> uint8_t put_stack_active = 0; 
+<a name="l00068"></a>00068 <span class="keyword">static</span> position_t pos = { 0, 0 };
+<a name="l00069"></a>00069 <span class="keyword">static</span> uint8_t go_fifo = 0;             
+<a name="l00070"></a>00070 <span class="keyword">static</span> uint8_t optimized_push = 0;      
+<a name="l00071"></a>00071 <span class="keyword">static</span> <a class="code" href="structpos__store__t.html">pos_store_t</a> * pos_store = NULL;  
+<a name="l00077"></a><a class="code" href="behaviour__drive__stack_8h.html#a85b17654e751d3785680460b53e12b6a">00077</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__drive__stack_8c.html#a85b17654e751d3785680460b53e12b6a">bot_drive_stack_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00078"></a>00078     uint8_t get_pos;
+<a name="l00079"></a>00079 
+<a name="l00080"></a>00080     <span class="keywordflow">switch</span> (drivestack_state) {
+<a name="l00081"></a>00081     <span class="keywordflow">case</span> 0:
+<a name="l00082"></a>00082         <span class="comment">// Koordinaten werden vom Stack geholt und angefahren; Ende nach nicht mehr erfolgreichem Pop</span>
+<a name="l00083"></a>00083 
+<a name="l00084"></a>00084         <span class="comment">/* wenn Fifo-Queue definiert, kann sowohl nach LIFO (Stack) oder FIFO (Queue) gefahren werden */</span>
+<a name="l00085"></a>00085         <span class="keywordflow">if</span> (go_fifo) {
+<a name="l00086"></a>00086             get_pos = <a class="code" href="pos__store_8c.html#ab38bb7f7ff5a9c4f0d356e7f07a3397d">pos_store_dequeue</a>(pos_store, &amp;pos);
+<a name="l00087"></a>00087         } <span class="keywordflow">else</span> {
+<a name="l00088"></a>00088             get_pos = <a class="code" href="pos__store_8c.html#af507859ead3d3e4775cf01c6d2b800fc">pos_store_pop</a>(pos_store, &amp;pos);
+<a name="l00089"></a>00089         }
+<a name="l00090"></a>00090 
+<a name="l00091"></a>00091         <span class="keywordflow">if</span> (!get_pos) {
+<a name="l00092"></a>00092             drivestack_state = 1;
+<a name="l00093"></a>00093         } <span class="keywordflow">else</span> {
+<a name="l00094"></a>00094             <a class="code" href="behaviour__goto__pos_8c.html#ab5ed29ca0a737f151df82f8babc00170">bot_goto_pos</a>(data, pos.x, pos.y, 999);
+<a name="l00095"></a>00095         }
+<a name="l00096"></a>00096         <span class="keywordflow">break</span>;
+<a name="l00097"></a>00097 
+<a name="l00098"></a>00098     <span class="keywordflow">default</span>:
+<a name="l00099"></a>00099 <span class="comment">//      pos_store_release(pos_store); // Speicher freigeben</span>
+<a name="l00100"></a>00100         pos_store = NULL;
+<a name="l00101"></a>00101         return_from_behaviour(data);
+<a name="l00102"></a>00102         <span class="keywordflow">if</span> (put_stack_active == 1) {
+<a name="l00103"></a>00103             <span class="comment">/* put_stack_waypos wieder an */</span>
+<a name="l00104"></a>00104             <a class="code" href="behaviour__drive__stack_8c.html#a48b7a3665b51ae2cbde5d9b7a97b9adb">bot_save_waypos</a>(NULL, optimized_push);
+<a name="l00105"></a>00105         }
+<a name="l00106"></a>00106         <span class="keywordflow">break</span>;
+<a name="l00107"></a>00107     }
+<a name="l00108"></a>00108 }
+<a name="l00109"></a>00109 
+<a name="l00116"></a><a class="code" href="behaviour__drive__stack_8h.html#a6b879a7ecac5368a68850300fe947cc9">00116</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__drive__stack_8c.html#a6b879a7ecac5368a68850300fe947cc9">bot_drive_stack_x</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller, uint8_t stack, uint8_t mode) {
+<a name="l00117"></a>00117     <a class="code" href="structpos__store__t.html">pos_store_t</a> * store = <a class="code" href="pos__store_8c.html#adad22546e13c2c737f4bb62242b3bb92">pos_store_from_index</a>(stack);
+<a name="l00118"></a>00118     <span class="keywordflow">if</span> (store == NULL) {
+<a name="l00119"></a>00119         caller-&gt;<a class="code" href="struct__Behaviour__t.html#ac854c181b7e05da0fdc40a5c70547054" title="War das aufgerufene Unterverhalten erfolgreich (==1)?">subResult</a> = <a class="code" href="bot-logic_8h.html#a78d9ef1511522ee147d2d386a584a5d7" title="Konstante fuer Behaviour_t-&gt;subResult: Aufgabe nicht abgeschlossen.">BEHAVIOUR_SUBFAIL</a>;
+<a name="l00120"></a>00120         <a class="code" href="behaviour__drive__stack_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Fehler, Positionsspeicher %u ungueltig&quot;</span>, stack);
+<a name="l00121"></a>00121         <span class="keywordflow">return</span>;
+<a name="l00122"></a>00122     }
+<a name="l00123"></a>00123     <span class="keywordflow">if</span> (<a class="code" href="bot-logic_8c.html#a406a628ec04bfa715f5881a84f12e2e4" title="Rueckgabe von True, wenn das Verhalten gerade laeuft (aktiv ist), sonst False.">behaviour_is_activated</a>(<a class="code" href="behaviour__drive__stack_8c.html#a7d6d596506f029155fc86e68fb11bed9">bot_save_waypos_behaviour</a>)) {
+<a name="l00124"></a>00124         <span class="comment">/* falls put_stack_waypos an ist, temporaer deaktivieren */</span>
+<a name="l00125"></a>00125         deactivateBehaviour(<a class="code" href="behaviour__drive__stack_8c.html#a7d6d596506f029155fc86e68fb11bed9">bot_save_waypos_behaviour</a>);
+<a name="l00126"></a>00126         put_stack_active = 1;
+<a name="l00127"></a>00127     } <span class="keywordflow">else</span> {
+<a name="l00128"></a>00128         put_stack_active = 0;
+<a name="l00129"></a>00129     }
+<a name="l00130"></a>00130 
+<a name="l00131"></a>00131     pos_store = store;
+<a name="l00132"></a>00132     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__drive__stack_8c.html#a85b17654e751d3785680460b53e12b6a">bot_drive_stack_behaviour</a>, <a class="code" href="bot-logic_8h.html#ac3101d6686d35c952f2a5c8177b3f262" title="Konstante, wenn Verhalten beim Aufruf alte Wuensche ueberschreiben sollen.">BEHAVIOUR_OVERRIDE</a>);
+<a name="l00133"></a>00133     drivestack_state = 0;
+<a name="l00134"></a>00134     go_fifo = mode;
+<a name="l00135"></a>00135 }
+<a name="l00136"></a>00136 
+<a name="l00141"></a>00141 <span class="keyword">static</span> uint8_t get_waypos_index(<span class="keywordtype">void</span>) {
+<a name="l00142"></a>00142     <a class="code" href="structpos__store__t.html">pos_store_t</a> * store = <a class="code" href="pos__store_8c.html#a64b9646424ab22ab1ca5e903d6930e49">pos_store_from_beh</a>(<a class="code" href="bot-logic_8c.html#a11e7a95fd56f9703bd2bd9c61300df6c" title="Liefert das Verhalten zurueck, welches durch function implementiert ist.">get_behaviour</a>(<a class="code" href="behaviour__drive__stack_8c.html#a7d6d596506f029155fc86e68fb11bed9">bot_save_waypos_behaviour</a>));
+<a name="l00143"></a>00143     <span class="keywordflow">if</span> (store != NULL) {
+<a name="l00144"></a>00144         <span class="keywordflow">return</span> <a class="code" href="pos__store_8c.html#a04378a6e68ec291278e92cf26d8b7152">pos_store_get_index</a>(store);
+<a name="l00145"></a>00145     } <span class="keywordflow">else</span> {
+<a name="l00146"></a>00146         <span class="keywordflow">return</span> 255;
+<a name="l00147"></a>00147     }
+<a name="l00148"></a>00148 }
+<a name="l00149"></a>00149 
+<a name="l00154"></a><a class="code" href="behaviour__drive__stack_8h.html#a27dc4bb2ea3f3057c5a4d5510182b5a8">00154</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__drive__stack_8c.html#a27dc4bb2ea3f3057c5a4d5510182b5a8">bot_drive_stack</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller) {
+<a name="l00155"></a>00155     <a class="code" href="behaviour__drive__stack_8c.html#a6b879a7ecac5368a68850300fe947cc9">bot_drive_stack_x</a>(caller, get_waypos_index(), 0);
+<a name="l00156"></a>00156 }
+<a name="l00157"></a>00157 
+<a name="l00162"></a><a class="code" href="behaviour__drive__stack_8h.html#ab2ed76576e93a2a07d1373453a758b7f">00162</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__drive__stack_8c.html#ab2ed76576e93a2a07d1373453a758b7f">bot_drive_fifo</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller) {
+<a name="l00163"></a>00163     <a class="code" href="behaviour__drive__stack_8c.html#a6b879a7ecac5368a68850300fe947cc9">bot_drive_stack_x</a>(caller, get_waypos_index(), 1);
+<a name="l00164"></a>00164 }
+<a name="l00165"></a>00165 
+<a name="l00166"></a>00166 <span class="preprocessor">#ifdef BOT_2_BOT_PAYLOAD_AVAILABLE</span>
+<a name="l00167"></a>00167 <span class="preprocessor"></span>
+<a name="l00172"></a><a class="code" href="behaviour__drive__stack_8h.html#a384bcf47313698101cf73a5f1083abc3">00172</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__drive__stack_8c.html#a384bcf47313698101cf73a5f1083abc3">bot_send_stack_b2b</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller, uint8_t bot) {
+<a name="l00173"></a>00173     <span class="keyword">struct </span>{
+<a name="l00174"></a>00174         <span class="keywordtype">unsigned</span> subresult:3;
+<a name="l00175"></a>00175     } result = {<a class="code" href="bot-logic_8h.html#a78d9ef1511522ee147d2d386a584a5d7" title="Konstante fuer Behaviour_t-&gt;subResult: Aufgabe nicht abgeschlossen.">BEHAVIOUR_SUBFAIL</a>};
+<a name="l00176"></a>00176     <a class="code" href="behaviour__drive__stack_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;pos_store_send_to_bot(0x%x, %u)&quot;</span>, <a class="code" href="pos__store_8c.html#a64b9646424ab22ab1ca5e903d6930e49">pos_store_from_beh</a>(<a class="code" href="bot-logic_8c.html#a11e7a95fd56f9703bd2bd9c61300df6c" title="Liefert das Verhalten zurueck, welches durch function implementiert ist.">get_behaviour</a>(<a class="code" href="behaviour__drive__stack_8c.html#a7d6d596506f029155fc86e68fb11bed9">bot_save_waypos_behaviour</a>)), bot);
+<a name="l00177"></a>00177     <span class="keywordflow">if</span> (<a class="code" href="pos__store_8c.html#a0ea4c6da4fddf088e82b58d8b88ea4e4">pos_store_send_to_bot</a>(<a class="code" href="pos__store_8c.html#a64b9646424ab22ab1ca5e903d6930e49">pos_store_from_beh</a>(<a class="code" href="bot-logic_8c.html#a11e7a95fd56f9703bd2bd9c61300df6c" title="Liefert das Verhalten zurueck, welches durch function implementiert ist.">get_behaviour</a>(<a class="code" href="behaviour__drive__stack_8c.html#a7d6d596506f029155fc86e68fb11bed9">bot_save_waypos_behaviour</a>)), bot) == 0) {
+<a name="l00178"></a>00178         <span class="keywordflow">if</span> (<a class="code" href="bot-2-bot_8c.html#a59effc4fe651a7f3fc6d46ccdeb6c293">bot_2_bot_start_remotecall</a>(bot, <span class="stringliteral">&quot;bot_drive_fifo&quot;</span>, (<a class="code" href="unionremote__call__data__t.html" title="Union fuer Remotecall-Daten.">remote_call_data_t</a>) 0, (<a class="code" href="unionremote__call__data__t.html" title="Union fuer Remotecall-Daten.">remote_call_data_t</a>) 0,
+<a name="l00179"></a>00179             (<a class="code" href="unionremote__call__data__t.html" title="Union fuer Remotecall-Daten.">remote_call_data_t</a>) 0) == 0) {
+<a name="l00180"></a>00180             result.subresult = <a class="code" href="bot-logic_8h.html#ad4c73f16ad7978b0bf7c18b73fcfc0a6" title="Konstante fuer Behaviour_t-&gt;subResult: Aufgabe erfolgreich abgeschlossen.">BEHAVIOUR_SUBSUCCESS</a>;
+<a name="l00181"></a>00181         } <span class="keywordflow">else</span> {
+<a name="l00182"></a>00182             <a class="code" href="behaviour__drive__stack_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Fehler, konnte bot_drive_fifo() nicht starten&quot;</span>);
+<a name="l00183"></a>00183         }
+<a name="l00184"></a>00184     } <span class="keywordflow">else</span> {
+<a name="l00185"></a>00185         <a class="code" href="behaviour__drive__stack_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Fehler, konnte Positionsspeicher nicht uebertragen&quot;</span>);
+<a name="l00186"></a>00186     }
+<a name="l00187"></a>00187     <span class="keywordflow">if</span> (caller) {
+<a name="l00188"></a>00188         caller-&gt;<a class="code" href="struct__Behaviour__t.html#ac854c181b7e05da0fdc40a5c70547054" title="War das aufgerufene Unterverhalten erfolgreich (==1)?">subResult</a> = result.subresult;
+<a name="l00189"></a>00189         caller-&gt;<a class="code" href="struct__Behaviour__t.html#a0760e3cdeae6171471a2e2db6846307b" title="Ist das Verhalten aktiv.">active</a> = <a class="code" href="bot-logic_8h.html#a046a089cc8b10c406c031394f10693fc" title="Verhalten ist an.">BEHAVIOUR_ACTIVE</a>;
+<a name="l00190"></a>00190     }
+<a name="l00191"></a>00191 }
+<a name="l00192"></a>00192 <span class="preprocessor">#endif // BOT_2_BOT_PAYLOAD_AVAILABLE</span>
+<a name="l00193"></a>00193 <span class="preprocessor"></span>
+<a name="l00199"></a><a class="code" href="behaviour__drive__stack_8h.html#a3865aa3b69babb7a6ca8042241c118e4">00199</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__drive__stack_8c.html#aaea026b5beefd884c7bbd42cce8df942">bot_push_actpos</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller, uint8_t stack) {
+<a name="l00200"></a>00200     position_t pos;
+<a name="l00201"></a>00201     pos.x = <a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>;
+<a name="l00202"></a>00202     pos.y = <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>;
+<a name="l00203"></a>00203     <span class="comment">// sichern der aktuellen Botposition auf den Stack</span>
+<a name="l00204"></a>00204     <a class="code" href="pos__store_8c.html#a036874299445af76339d8d4d5a75e1dc">pos_store_push</a>(<a class="code" href="pos__store_8c.html#adad22546e13c2c737f4bb62242b3bb92">pos_store_from_index</a>(stack), pos);
+<a name="l00205"></a>00205     <span class="keywordflow">if</span> (caller) {
+<a name="l00206"></a>00206         caller-&gt;<a class="code" href="struct__Behaviour__t.html#ac854c181b7e05da0fdc40a5c70547054" title="War das aufgerufene Unterverhalten erfolgreich (==1)?">subResult</a> = <a class="code" href="bot-logic_8h.html#ad4c73f16ad7978b0bf7c18b73fcfc0a6" title="Konstante fuer Behaviour_t-&gt;subResult: Aufgabe erfolgreich abgeschlossen.">BEHAVIOUR_SUBSUCCESS</a>;
+<a name="l00207"></a>00207     }
+<a name="l00208"></a>00208 }
+<a name="l00209"></a>00209 
+<a name="l00210"></a>00210 <span class="keyword">static</span> uint8_t waypos_state = 0;        
+<a name="l00211"></a>00211 <span class="keyword">static</span> position_t last_pos = { 0, 0 };  
+<a name="l00212"></a>00212 <span class="keyword">static</span> int16_t last_heading = 0;        
+<a name="l00214"></a><a class="code" href="behaviour__drive__stack_8c.html#aedfa09855d9988ef90d8e519c6d022ea">00214</a> <span class="preprocessor">#define DIST_FOR_PUSH 14400         </span>
+<a name="l00215"></a><a class="code" href="behaviour__drive__stack_8c.html#afffe468403b216fe9ff17dd6574ef39c">00215</a> <span class="preprocessor">#define DIST_FOR_PUSH_TURN 3600     </span>
+<a name="l00216"></a><a class="code" href="behaviour__drive__stack_8c.html#a75370a92bff9e5390f8124b4c361e338">00216</a> <span class="preprocessor">#define ANGLE_FOR_PUSH 20           </span>
+<a name="l00221"></a>00221 <span class="preprocessor">static void set_pos_to_last(void) {</span>
+<a name="l00222"></a>00222 <span class="preprocessor"></span>    last_pos.x = <a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>;
+<a name="l00223"></a>00223     last_pos.y = <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>;
+<a name="l00224"></a>00224     last_heading = (int16_t) <a class="code" href="sensor_8c.html#ac5682e48513a771560df50e3b213e61a">heading</a>;
+<a name="l00225"></a>00225 }
+<a name="l00226"></a>00226 
+<a name="l00232"></a>00232 <span class="keyword">static</span> <span class="keywordtype">void</span> bot_push_pos(int16_t pos_x, int16_t pos_y) {
+<a name="l00233"></a>00233     <span class="comment">// sichern der Koordinaten in den Stack</span>
+<a name="l00234"></a>00234     position_t pos;
+<a name="l00235"></a>00235     pos.x = pos_x;
+<a name="l00236"></a>00236     pos.y = pos_y;
+<a name="l00237"></a>00237     <a class="code" href="pos__store_8c.html#a036874299445af76339d8d4d5a75e1dc">pos_store_push</a>(pos_store, pos);
+<a name="l00238"></a>00238 }
+<a name="l00239"></a>00239 
+<a name="l00246"></a><a class="code" href="behaviour__drive__stack_8h.html#a7d6d596506f029155fc86e68fb11bed9">00246</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__drive__stack_8c.html#a7d6d596506f029155fc86e68fb11bed9">bot_save_waypos_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00247"></a>00247     <span class="keyword">static</span> uint8_t skip_count = 0;
+<a name="l00248"></a>00248     <span class="keywordflow">switch</span> (waypos_state) {
+<a name="l00249"></a>00249     <span class="keywordflow">case</span> 0:
+<a name="l00250"></a>00250         pos_store = pos_store_new_size(data, <a class="code" href="behaviour__drive__area_8c.html#a6423a880df59733d2d9b509c7718d3a9">STACK_SIZE</a>);
+<a name="l00251"></a>00251         <span class="keywordflow">if</span> (pos_store == NULL) {
+<a name="l00252"></a>00252             <a class="code" href="bot-logic_8c.html#ae957e610d7a3b2034084f87277a319de" title="Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg.">exit_behaviour</a>(data, <a class="code" href="bot-logic_8h.html#a78d9ef1511522ee147d2d386a584a5d7" title="Konstante fuer Behaviour_t-&gt;subResult: Aufgabe nicht abgeschlossen.">BEHAVIOUR_SUBFAIL</a>);
+<a name="l00253"></a>00253             <span class="keywordflow">return</span>;
+<a name="l00254"></a>00254         }
+<a name="l00255"></a>00255         set_pos_to_last(); <span class="comment">// aktuelle Botposition wird zum ersten Stackeintrag und merken der Position</span>
+<a name="l00256"></a>00256         bot_push_pos(last_pos.x, last_pos.y);
+<a name="l00257"></a>00257         waypos_state = 1;
+<a name="l00258"></a>00258         <span class="keywordflow">break</span>;
+<a name="l00259"></a>00259     <span class="keywordflow">case</span> 1: {
+<a name="l00260"></a>00260         <span class="comment">// Botpos wird in den Stack geschrieben zum Startzeitpunkt des Verhaltens (Stack noch leer) oder</span>
+<a name="l00261"></a>00261         <span class="comment">// wenn die Entfernung zur zuletzt gemerkten Koordinate gewissen Abstand ueberschreitet oder</span>
+<a name="l00262"></a>00262         <span class="comment">// wenn Entfernung noch nicht erreicht ist aber ein gewisser Drehwinkel erreicht wurde</span>
+<a name="l00263"></a>00263 
+<a name="l00264"></a>00264         uint8_t update = <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00265"></a>00265         <span class="comment">// Abstand zur letzten Position ueberschritten</span>
+<a name="l00266"></a>00266         <span class="keywordflow">if</span> (<a class="code" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat-Abstands zwischen zwei Punkten.">get_dist</a>(last_pos.x, last_pos.y, <a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>) &gt; <a class="code" href="behaviour__drive__stack_8c.html#aedfa09855d9988ef90d8e519c6d022ea">DIST_FOR_PUSH</a>) {
+<a name="l00267"></a>00267             <span class="comment">// kein Push notwendig bei gerader Fahrt voraus zum Sparen des Stack-Speicherplatzes</span>
+<a name="l00268"></a>00268             <span class="keywordflow">if</span> ((int16_t) <a class="code" href="sensor_8c.html#ac5682e48513a771560df50e3b213e61a">heading</a> != last_heading) {
+<a name="l00269"></a>00269                 update = <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00270"></a>00270             }
+<a name="l00271"></a>00271 
+<a name="l00272"></a>00272             set_pos_to_last(); <span class="comment">// Position jedenfalls merken</span>
+<a name="l00273"></a>00273         }
+<a name="l00274"></a>00274 
+<a name="l00275"></a>00275         <span class="comment">// bei Drehwinkelaenderung und Uberschreitung einer gewissen Groesse mit geringer Abstandsentfernung zum letzten Punkt kommt er in den Stack</span>
+<a name="l00276"></a>00276         <span class="keywordflow">if</span> (<a class="code" href="math__utils_8c.html#a9c14e14c49d54828861673702c30eeed" title="Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung.">turned_angle</a>(last_heading) &gt; <a class="code" href="behaviour__drive__stack_8c.html#a75370a92bff9e5390f8124b4c361e338">ANGLE_FOR_PUSH</a> &amp;&amp; <a class="code" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat-Abstands zwischen zwei Punkten.">get_dist</a>(last_pos.x,
+<a name="l00277"></a>00277                 last_pos.y, <a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>) &gt; <a class="code" href="behaviour__drive__stack_8c.html#afffe468403b216fe9ff17dd6574ef39c">DIST_FOR_PUSH_TURN</a>) {
+<a name="l00278"></a>00278             set_pos_to_last();
+<a name="l00279"></a>00279             update = <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00280"></a>00280         }
+<a name="l00281"></a>00281 
+<a name="l00282"></a>00282         <span class="keywordflow">if</span> (update) {
+<a name="l00283"></a>00283             <a class="code" href="behaviour__drive__stack_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Position (%d|%d) kommt in den Stack&quot;</span>, <a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>);
+<a name="l00284"></a>00284             position_t pos_0;
+<a name="l00285"></a>00285             pos_0.x = <a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a> / 16;
+<a name="l00286"></a>00286             pos_0.y = <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a> / 16;
+<a name="l00287"></a>00287             <span class="keywordflow">if</span> (optimized_push &gt;= 1) {
+<a name="l00288"></a>00288                 <span class="comment">/* Positionen entfernen, die auf einer Linie liegen */</span>
+<a name="l00289"></a>00289                 position_t pos_1, pos_2;
+<a name="l00290"></a>00290                 <span class="keywordflow">if</span> (<a class="code" href="pos__store_8c.html#a5b3b46e55200fee1bfa208eae4a69f69">pos_store_top</a>(pos_store, &amp;pos_1, 1) == <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a> &amp;&amp; <a class="code" href="pos__store_8c.html#a5b3b46e55200fee1bfa208eae4a69f69">pos_store_top</a>(pos_store, &amp;pos_2, 2) == <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>) {
+<a name="l00291"></a>00291                     pos_1.x /= 16;
+<a name="l00292"></a>00292                     pos_1.y /= 16;
+<a name="l00293"></a>00293                     <span class="keywordflow">if</span> (abs(pos_1.x - pos_0.x) &lt;= 1) {
+<a name="l00294"></a>00294                         pos_0.x = pos_1.x;
+<a name="l00295"></a>00295                     }
+<a name="l00296"></a>00296                     pos_2.x /= 16;
+<a name="l00297"></a>00297                     pos_2.y /= 16;
+<a name="l00298"></a>00298                     <span class="keywordflow">if</span> (abs(pos_2.x - pos_1.x) &lt;= 1) {
+<a name="l00299"></a>00299                         pos_2.x = pos_1.x;
+<a name="l00300"></a>00300                     }
+<a name="l00301"></a>00301                     int8_t m_1 = (int8_t) (pos_1.x == pos_2.x ? 100 : abs((pos_1.y - pos_2.y) / (pos_1.x - pos_2.x)));
+<a name="l00302"></a>00302                     int8_t <a class="code" href="behaviour__drive__chess_8c.html#a7e6900841a67dbc908a8e0891b1f037f">m</a> = (int8_t) (pos_0.x == pos_1.x ? 100 : abs((pos_0.y - pos_1.y) / (pos_0.x - pos_1.x)));
+<a name="l00303"></a>00303                     <a class="code" href="behaviour__drive__stack_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; pos_2=(%d|%d)&quot;</span>, pos_2.x, pos_2.y);
+<a name="l00304"></a>00304                     <a class="code" href="behaviour__drive__stack_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; pos_1=(%d|%d)&quot;</span>, pos_1.x, pos_1.y);
+<a name="l00305"></a>00305                     <a class="code" href="behaviour__drive__stack_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; pos  =(%d|%d)&quot;</span>, pos_0.x, pos_0.y);
+<a name="l00306"></a>00306                     <a class="code" href="behaviour__drive__stack_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;  m_1=%3d\tm=%3d&quot;</span>, m_1, m);
+<a name="l00307"></a>00307                     <a class="code" href="behaviour__drive__stack_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;  skip_count=%u&quot;</span>, skip_count);
+<a name="l00308"></a>00308                     <span class="keywordflow">if</span> (abs(m_1 - m) &lt; <a class="code" href="behaviour__drive__stack_8c.html#ac8299b112f9f3dd050ea12ac21f89abb">MAX_GRADIENT</a>) {
+<a name="l00309"></a>00309                         <a class="code" href="behaviour__drive__stack_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Neue Position auf einer Linie mit beiden Letzten&quot;</span>);
+<a name="l00310"></a>00310                         <span class="keywordflow">if</span> (skip_count &lt; 3) {
+<a name="l00311"></a>00311                             <a class="code" href="behaviour__drive__stack_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; Verwerfe letzten Eintrag (%d|%d)&quot;</span>, pos_1.x, pos_1.y);
+<a name="l00312"></a>00312                             <a class="code" href="pos__store_8c.html#af507859ead3d3e4775cf01c6d2b800fc">pos_store_pop</a>(pos_store, &amp;pos_1);
+<a name="l00313"></a>00313                             skip_count++;
+<a name="l00314"></a>00314                         } <span class="keywordflow">else</span> {
+<a name="l00315"></a>00315                             <a class="code" href="behaviour__drive__stack_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; Verwerfe Eintrag NICHT, skip_count=%u&quot;</span>, skip_count);
+<a name="l00316"></a>00316                             skip_count = 0;
+<a name="l00317"></a>00317                         }
+<a name="l00318"></a>00318                     } <span class="keywordflow">else</span> {
+<a name="l00319"></a>00319                         skip_count = 0;
+<a name="l00320"></a>00320                     }
+<a name="l00321"></a>00321                 }
+<a name="l00322"></a>00322                 <span class="keywordflow">if</span> (optimized_push &gt;= 2) {
+<a name="l00323"></a>00323                     <span class="comment">/* Schleifen entfernen */</span>
+<a name="l00324"></a>00324                     uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00325"></a>00325                     <span class="keywordflow">for</span> (i=2; <a class="code" href="pos__store_8c.html#a5b3b46e55200fee1bfa208eae4a69f69">pos_store_top</a>(pos_store, &amp;pos_1, i); ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00326"></a>00326                         int32_t diff = <a class="code" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat-Abstands zwischen zwei Punkten.">get_dist</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, pos_1.x, pos_1.y);
+<a name="l00327"></a>00327                         <a class="code" href="behaviour__drive__stack_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; diff=%d&quot;</span>, diff);
+<a name="l00328"></a>00328                         <span class="keywordflow">if</span> (diff &lt; <a class="code" href="behaviour__drive__stack_8c.html#a2dbe3fefce9be749e923959da5ff48d5">MAX_POS_DIFF</a>) {
+<a name="l00329"></a>00329                             <a class="code" href="behaviour__drive__stack_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; Position (%d|%d)@%u liegt in der Naehe&quot;</span>, pos_1.x, pos_1.y, i);
+<a name="l00330"></a>00330                             uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a43ed7e3846304dce8b14d9bc81f63fef">k</a>;
+<a name="l00331"></a>00331                             <span class="keywordflow">for</span> (k=i; k&gt;1; --<a class="code" href="behaviour__drive__chess_8c.html#a43ed7e3846304dce8b14d9bc81f63fef">k</a>) {
+<a name="l00332"></a>00332                                 <a class="code" href="pos__store_8c.html#af507859ead3d3e4775cf01c6d2b800fc">pos_store_pop</a>(pos_store, &amp;pos_1); <span class="comment">// die Positionen bis zur i-ten zurueck loeschen</span>
+<a name="l00333"></a>00333                                 <a class="code" href="behaviour__drive__stack_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; Loesche (%d|%d) vom Stack&quot;</span>, pos_1.x, pos_1.y);
+<a name="l00334"></a>00334                             }
+<a name="l00335"></a>00335                             i = 2;
+<a name="l00336"></a>00336                         }
+<a name="l00337"></a>00337                     }
+<a name="l00338"></a>00338                 }
+<a name="l00339"></a>00339             }
+<a name="l00340"></a>00340 
+<a name="l00341"></a>00341             bot_push_pos(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>);
+<a name="l00342"></a>00342 <span class="preprocessor">#if defined PC &amp;&amp; defined DEBUG</span>
+<a name="l00343"></a>00343 <span class="preprocessor"></span>            <a class="code" href="pos__store_8c.html#a20ee87405517aba06c9fca997b106131">pos_store_dump</a>(pos_store);
+<a name="l00344"></a>00344 <span class="preprocessor">#endif</span>
+<a name="l00345"></a>00345 <span class="preprocessor"></span>
+<a name="l00346"></a>00346 <span class="preprocessor">#ifdef DEBUG</span>
+<a name="l00347"></a>00347 <span class="preprocessor"></span><span class="preprocessor">#ifdef MAP_2_SIM_AVAILABLE</span>
+<a name="l00348"></a>00348 <span class="preprocessor"></span>            <a class="code" href="command_8c.html#a419b75ed34551408822d9caee3cd5206">command_write</a>(<a class="code" href="command_8h.html#a039fd10853c7f1560f1a6cc2c009fef5">CMD_MAP</a>, <a class="code" href="command_8h.html#a64bb59ec345c05bd28f9863ce1a77fbe">SUB_MAP_CLEAR_LINES</a>, 0, 0, 0);
+<a name="l00349"></a>00349             position_t pos_1, pos_2;
+<a name="l00350"></a>00350             <a class="code" href="pos__store_8c.html#a5b3b46e55200fee1bfa208eae4a69f69">pos_store_top</a>(pos_store, &amp;pos_0, 1);
+<a name="l00351"></a>00351             uint16_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00352"></a>00352             <span class="keywordflow">for</span> (i = 2; <a class="code" href="pos__store_8c.html#a5b3b46e55200fee1bfa208eae4a69f69">pos_store_top</a>(pos_store, &amp;pos_1, (uint8_t) i); ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00353"></a>00353                 <a class="code" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df">map_draw_line_world</a>(pos_0, pos_1, 0);
+<a name="l00354"></a>00354                 pos_0 = pos_1;
+<a name="l00355"></a>00355                 pos_1.x = pos_0.x - 16;
+<a name="l00356"></a>00356                 pos_1.y = pos_0.y;
+<a name="l00357"></a>00357                 pos_2.x = pos_0.x + 16;
+<a name="l00358"></a>00358                 pos_2.y = pos_0.y;
+<a name="l00359"></a>00359                 <a class="code" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df">map_draw_line_world</a>(pos_1, pos_2, 1);
+<a name="l00360"></a>00360                 pos_1.x = pos_0.x;
+<a name="l00361"></a>00361                 pos_1.y = pos_0.y - 16;
+<a name="l00362"></a>00362                 pos_2.x = pos_0.x;
+<a name="l00363"></a>00363                 pos_2.y = pos_0.y + 16;
+<a name="l00364"></a>00364                 <a class="code" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df">map_draw_line_world</a>(pos_1, pos_2, 1);
+<a name="l00365"></a>00365             }
+<a name="l00366"></a>00366 <span class="preprocessor">#endif // MAP_2_SIM_AVAILABLE</span>
+<a name="l00367"></a>00367 <span class="preprocessor"></span><span class="preprocessor">#endif // DEBUG</span>
+<a name="l00368"></a>00368 <span class="preprocessor"></span>        }
+<a name="l00369"></a>00369 
+<a name="l00370"></a>00370         <span class="keywordflow">break</span>;
+<a name="l00371"></a>00371     } <span class="comment">// case 1</span>
+<a name="l00372"></a>00372     } <span class="comment">// switch</span>
+<a name="l00373"></a>00373 }
+<a name="l00374"></a>00374 
+<a name="l00380"></a><a class="code" href="behaviour__drive__stack_8h.html#a48b7a3665b51ae2cbde5d9b7a97b9adb">00380</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__drive__stack_8c.html#a48b7a3665b51ae2cbde5d9b7a97b9adb">bot_save_waypos</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller, uint8_t optimize) {
+<a name="l00381"></a>00381     optimized_push = optimize;
+<a name="l00382"></a>00382     activateBehaviour(caller, <a class="code" href="behaviour__drive__stack_8c.html#a7d6d596506f029155fc86e68fb11bed9">bot_save_waypos_behaviour</a>);
+<a name="l00383"></a>00383     drivestack_state = 0;
+<a name="l00384"></a>00384     waypos_state = 0;
+<a name="l00385"></a>00385     last_pos.x = 0;
+<a name="l00386"></a>00386     last_pos.y = 0;
+<a name="l00387"></a>00387     last_heading = 0;
+<a name="l00388"></a>00388 }
+<a name="l00389"></a>00389 
+<a name="l00393"></a>00393 <span class="preprocessor">#ifdef DISPLAY_DRIVE_STACK_AVAILABLE</span>
+<a name="l00394"></a>00394 <span class="preprocessor"></span><span class="keyword">static</span> <span class="keywordtype">void</span> drivestack_disp_key_handler(<span class="keywordtype">void</span>) {
+<a name="l00395"></a>00395     <span class="keywordflow">switch</span> (<a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a>) {
+<a name="l00396"></a>00396         <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#aab39f90ee1e4df0d5b0a02959ccc3420">RC5_CODE_3</a>:
+<a name="l00397"></a>00397         <span class="comment">/* Speichern der aktuellen Botposition */</span>
+<a name="l00398"></a>00398         <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0;
+<a name="l00399"></a>00399         <span class="keywordflow">if</span> (get_waypos_index() != 255) {
+<a name="l00400"></a>00400             <a class="code" href="behaviour__drive__stack_8c.html#aaea026b5beefd884c7bbd42cce8df942">bot_push_actpos</a>(NULL, get_waypos_index());
+<a name="l00401"></a>00401         }
+<a name="l00402"></a>00402         <span class="keywordflow">break</span>;
+<a name="l00403"></a>00403 
+<a name="l00404"></a>00404         <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a2460f2e913d9283be23d11ca84fe6c2e">RC5_CODE_4</a>:
+<a name="l00405"></a>00405         <span class="comment">/* Verhalten starten zum Anfahren der Stackpunkte */</span>
+<a name="l00406"></a>00406         <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0;
+<a name="l00407"></a>00407         <a class="code" href="behaviour__drive__stack_8c.html#a27dc4bb2ea3f3057c5a4d5510182b5a8">bot_drive_stack</a>(NULL);
+<a name="l00408"></a>00408         <span class="keywordflow">break</span>;
+<a name="l00409"></a>00409 
+<a name="l00410"></a>00410         <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a08e80ef6f5925e8ac3cebbe430bde53d">RC5_CODE_5</a>:
+<a name="l00411"></a>00411         <span class="comment">/* Verhalten zum Speichern relevanter Wegepopsitionen zum spaeteren Zurueckfahren */</span>
+<a name="l00412"></a>00412         <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0;
+<a name="l00413"></a>00413         <a class="code" href="behaviour__drive__stack_8c.html#a48b7a3665b51ae2cbde5d9b7a97b9adb">bot_save_waypos</a>(NULL, <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>);
+<a name="l00414"></a>00414         <span class="keywordflow">break</span>;
+<a name="l00415"></a>00415 
+<a name="l00416"></a>00416         <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a860c980bfa7814ed4ac3ec783abe3b6c">RC5_CODE_7</a>:
+<a name="l00417"></a>00417         <span class="comment">/* Verhalten starten zum Anfahren der Stackpunkte vom Startpunkt an vorwaerts */</span>
+<a name="l00418"></a>00418         <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0;
+<a name="l00419"></a>00419         <a class="code" href="behaviour__drive__stack_8c.html#ab2ed76576e93a2a07d1373453a758b7f">bot_drive_fifo</a>(NULL);
+<a name="l00420"></a>00420         <span class="keywordflow">break</span>;
+<a name="l00421"></a>00421 
+<a name="l00422"></a>00422         <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a547b2175b4a50b2c9bd458f64f85dd49">RC5_CODE_8</a>:
+<a name="l00423"></a>00423         <span class="comment">/* Loeschen des Positionsstacks */</span>
+<a name="l00424"></a>00424         <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0;
+<a name="l00425"></a>00425         <span class="keywordflow">if</span> (get_waypos_index() != 255) {
+<a name="l00426"></a>00426             <a class="code" href="pos__store_8c.html#a1263f1a52fd21a79a48809a761a382d9">pos_store_clear</a>(pos_store);
+<a name="l00427"></a>00427         }
+<a name="l00428"></a>00428         <span class="keywordflow">break</span>;
+<a name="l00429"></a>00429 
+<a name="l00430"></a>00430     } <span class="comment">// switch</span>
+<a name="l00431"></a>00431 } <span class="comment">// Ende Keyhandler</span>
+<a name="l00432"></a>00432 
+<a name="l00433"></a>00433 
+<a name="l00437"></a><a class="code" href="behaviour__drive__stack_8h.html#ae39b00373b75911145e456c9da8a1b6b">00437</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__drive__stack_8c.html#ae39b00373b75911145e456c9da8a1b6b">drive_stack_display</a>(<span class="keywordtype">void</span>) {
+<a name="l00438"></a>00438     <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(1, 1);
+<a name="l00439"></a>00439     <a class="code" href="display_8h.html#a3b34665813cc31ce81d141e4f67162d2">display_printf</a>(<span class="stringliteral">&quot;Stack   %5d %5d&quot;</span>, pos.x, pos.y);
+<a name="l00440"></a>00440     <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(2, 1);
+<a name="l00441"></a>00441     <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;Save/Del      : 3/8&quot;</span>);
+<a name="l00442"></a>00442     <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(3, 1);
+<a name="l00443"></a>00443     <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;GoBack/Forward: 4/7&quot;</span>);
+<a name="l00444"></a>00444     <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(4, 1);
+<a name="l00445"></a>00445     <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;Start WayPushPos: 5&quot;</span>);
+<a name="l00446"></a>00446 
+<a name="l00447"></a>00447     drivestack_disp_key_handler(); <span class="comment">// aufrufen des Key-Handlers</span>
+<a name="l00448"></a>00448 }
+<a name="l00449"></a>00449 <span class="preprocessor">#endif  // DISPLAY_DRIVE_STACK_AVAILABLE</span>
+<a name="l00450"></a>00450 <span class="preprocessor"></span><span class="preprocessor">#endif // BEHAVIOUR_DRIVE_STACK_AVAILABLE</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: init.h Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_a0fca93e65e0dd30a74a1e6addb2ee0e.html">include</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">init.h</div>  </div>
+</div>
+<div class="contents">
+<a href="init_8h.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00027"></a>00027 <span class="preprocessor">#ifndef INIT_H_</span>
+<a name="l00028"></a>00028 <span class="preprocessor"></span><span class="preprocessor">#define INIT_H_</span>
+<a name="l00029"></a>00029 <span class="preprocessor"></span>
+<a name="l00030"></a>00030 <span class="preprocessor">#include &quot;<a class="code" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot-Funktionalitaeten">ct-Bot.h</a>&quot;</span>
+<a name="l00031"></a>00031 <span class="preprocessor">#include &quot;<a class="code" href="eeprom_8h.html" title="EEPROM-Zugriff.">eeprom.h</a>&quot;</span>
+<a name="l00032"></a>00032 <span class="preprocessor">#include &quot;<a class="code" href="bot-logic_8h.html" title="High-Level-Routinen fuer die Steuerung des c&#39;t-Bots.">bot-logic/bot-logic.h</a>&quot;</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#include &quot;<a class="code" href="sensor-low_8h.html" title="Low-Level Routinen fuer die Sensor-Steuerung des c&#39;t-Bots.">sensor-low.h</a>&quot;</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include &quot;<a class="code" href="botfs_8h.html" title="Dateisystem BotFS.">botfs.h</a>&quot;</span>
+<a name="l00035"></a>00035 
+<a name="l00036"></a>00036 <span class="keyword">extern</span> uint8_t <a class="code" href="eeprom_8h.html#a3f5ebf97c07a164113b82053ed2b5ebe">EEPROM</a> <a class="code" href="init_8h.html#a7c38441495993ecbf7ca29dcbde9eb42" title="Reset-Counter im EEPROM.">resetsEEPROM</a>; 
+<a name="l00038"></a><a class="code" href="init_8h.html#a4fe62e026b012a16a6980db83a55c8bf">00038</a> <span class="preprocessor">#define GET_MMC_BUFFER(name)    mmc_buffers.data.name </span>
+<a name="l00040"></a>00040 <span class="preprocessor">typedef union {</span>
+<a name="l00041"></a>00041 <span class="preprocessor"></span>    <span class="keyword">struct </span>{
+<a name="l00042"></a>00042 <span class="preprocessor">#ifdef MAP_AVAILABLE</span>
+<a name="l00043"></a><a class="code" href="unionmmc__buffers__t.html#a40ab4b3e6913ef22ee9a57ca9eeb20b7">00043</a> <span class="preprocessor"></span>        uint8_t <a class="code" href="map_8c.html#ae8fd74da18f8e9ed7d1bc2947910c1a9">map_buffer</a>[512]; 
+<a name="l00044"></a>00044 <span class="preprocessor">#ifdef MAP_2_SIM_AVAILABLE</span>
+<a name="l00045"></a><a class="code" href="unionmmc__buffers__t.html#a4a41205828cf3bdcf05a98d6d5c284ea">00045</a> <span class="preprocessor"></span>        uint8_t <a class="code" href="map_8c.html#aa6259129b06e185b7203e0896ae6c870">map_2_sim_buffer</a>[512]; 
+<a name="l00046"></a>00046 <span class="preprocessor">#endif // MAP_2_SIM_AVAILABLE</span>
+<a name="l00047"></a>00047 <span class="preprocessor"></span><span class="preprocessor">#endif // MAP_AVAILABLE</span>
+<a name="l00048"></a>00048 <span class="preprocessor"></span><span class="preprocessor">#ifdef BEHAVIOUR_UBASIC_AVAILABLE</span>
+<a name="l00049"></a><a class="code" href="unionmmc__buffers__t.html#a15af43e661a676787bfe0e643290d9e3">00049</a> <span class="preprocessor"></span>        uint8_t ubasic_buffer[<a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>]; 
+<a name="l00050"></a>00050 <span class="preprocessor">#endif</span>
+<a name="l00051"></a>00051 <span class="preprocessor"></span><span class="preprocessor">#if defined LOG_MMC_AVAILABLE &amp;&amp; defined USE_MINILOG</span>
+<a name="l00052"></a>00052 <span class="preprocessor"></span>        <span class="keywordtype">char</span> minilog_buffer[<a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>]; 
+<a name="l00053"></a>00053 <span class="preprocessor">#endif</span>
+<a name="l00054"></a>00054 <span class="preprocessor"></span><span class="preprocessor">#ifdef SPEED_LOG_AVAILABLE</span>
+<a name="l00055"></a><a class="code" href="unionmmc__buffers__t.html#afc2dea40f2c3d2f879d6147f23b180dd">00055</a> <span class="preprocessor"></span>        slog_t <a class="code" href="unionmmc__buffers__t.html#afc2dea40f2c3d2f879d6147f23b180dd" title="Speed-Log Puffer.">speedlog</a>; 
+<a name="l00056"></a>00056 <span class="preprocessor">#endif</span>
+<a name="l00057"></a><a class="code" href="unionmmc__buffers__t.html#af690c2c61ab955cf84f451a34206acb4">00057</a> <span class="preprocessor"></span>        uint8_t end[0];
+<a name="l00058"></a>00058     } <a class="code" href="structPACKED.html" title="FAT.">PACKED</a> data;
+<a name="l00059"></a>00059 <span class="preprocessor">#ifdef BOT_FS_AVAILABLE</span>
+<a name="l00060"></a><a class="code" href="unionmmc__buffers__t.html#a2b5d873eb61e272f1fa4cfca10da2ffa">00060</a> <span class="preprocessor"></span>    uint8_t dummy_botfs[<a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>]; 
+<a name="l00061"></a>00061 <span class="preprocessor">#endif</span>
+<a name="l00062"></a><a class="code" href="unionmmc__buffers__t.html#a7e6f6f145d9dd1e355e672f304ffc989">00062</a> <span class="preprocessor"></span>    uint8_t dummy[0];
+<a name="l00063"></a>00063 } <a class="code" href="unionmmc__buffers__t.html">mmc_buffers_t</a>; 
+<a name="l00065"></a>00065 <span class="keyword">extern</span> <a class="code" href="unionmmc__buffers__t.html">mmc_buffers_t</a> <a class="code" href="init_8c.html#ad6a7fd4acfb7e1e62b187dcf91ac0ef8" title="Puffer fuer alle MMC-Transfers.">mmc_buffers</a>; 
+<a name="l00067"></a>00067 <span class="preprocessor">#ifdef MCU</span>
+<a name="l00068"></a>00068 <span class="preprocessor"></span>
+<a name="l00069"></a>00069 <span class="keyword">extern</span> uint8_t mcucsr <a class="code" href="init_8h.html#a87df7e6560f87322f737157d976f8e6f" title="Kopie des MCU(C)SR Registers.">__attribute__</a>((section(<span class="stringliteral">&quot;.noinit&quot;</span>)));
+<a name="l00070"></a>00070 
+<a name="l00071"></a>00071 <span class="keywordtype">int</span> <a class="code" href="ct-Bot_8c.html#a0ddf1224851353fc92bfbff6f499fa97" title="Hauptprogramm des Bots.">main</a>(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> * argv[]) <a class="code" href="init_8h.html#a87df7e6560f87322f737157d976f8e6f" title="Kopie des MCU(C)SR Registers.">__attribute__</a>((OS_main)); <span class="comment">// kein Caller, Interrupts disabled</span>
+<a name="l00072"></a>00072 
+<a name="l00073"></a>00073 <span class="keyword">extern</span> uint8_t soft_resets <a class="code" href="init_8h.html#a87df7e6560f87322f737157d976f8e6f" title="Kopie des MCU(C)SR Registers.">__attribute__</a>((section(<span class="stringliteral">&quot;.noinit&quot;</span>))); 
+<a name="l00074"></a>00074 <span class="preprocessor">#endif // MCU</span>
+<a name="l00075"></a>00075 <span class="preprocessor"></span>
+<a name="l00081"></a>00081 <span class="keywordtype">void</span> <a class="code" href="init_8c.html#ae84f6927eb59fbca5eb5ad6fc6ae40b0" title="Initialisierung.">ctbot_init</a>(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> * argv[]);
+<a name="l00082"></a>00082 
+<a name="l00088"></a>00088 <span class="keywordtype">void</span> <a class="code" href="init_8h.html#afe3d8d4da4364107838233aad49fd830" title="Hardwareabhaengige Initialisierungen, die zuerst ausgefuehrt werden sollen.">ctbot_init_low_1st</a>(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> * argv[]);
+<a name="l00089"></a>00089 
+<a name="l00094"></a>00094 <span class="keywordtype">void</span> <a class="code" href="init_8h.html#a9f0e5e1762bc49dae8746404b841547e" title="Hardwareabhaengige Initialisierungen, die _nach_ der allgemeinen Initialisierung ausgefuehrt werden s...">ctbot_init_low_last</a>(<span class="keywordtype">void</span>);
+<a name="l00095"></a>00095 
+<a name="l00099"></a>00099 <span class="keywordtype">void</span> <a class="code" href="init_8h.html#a803271a98fc0cdc3654f4875407f8508" title="Faehrt den low-level Code des Bots sauber herunter.">ctbot_shutdown_low</a>(<span class="keywordtype">void</span>);
+<a name="l00100"></a>00100 <span class="preprocessor">#endif // INIT_H_</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:04 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

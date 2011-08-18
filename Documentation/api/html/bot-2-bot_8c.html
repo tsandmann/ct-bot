@@ -1,0 +1,961 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: bot-2-bot.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#define-members">Makrodefinitionen</a> &#124;
+<a href="#func-members">Funktionen</a> &#124;
+<a href="#var-members">Variablen</a>  </div>
+  <div class="headertitle">
+<div class="title">bot-2-bot.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Bot-2-Bot-Kommunikation.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="ct-Bot_8h_source.html">ct-Bot.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="bot-logic_8h_source.html">bot-logic/bot-logic.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="command_8h_source.html">command.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="bot-2-bot_8h_source.html">bot-2-bot.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="bot-2-sim_8h_source.html">bot-2-sim.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="log_8h_source.html">log.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="tcp_8h_source.html">tcp.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="sensor_8h_source.html">sensor.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="pos__store_8h_source.html">pos_store.h</a>&quot;</code><br/>
+<code>#include &lt;string.h&gt;</code><br/>
+<code>#include &lt;stdio.h&gt;</code><br/>
+<code>#include &lt;stdlib.h&gt;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für bot-2-bot.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="bot-2-bot_8c__incl.png" border="0" usemap="#bot-2-bot_8c" alt=""/></div>
+<map name="bot-2-bot_8c" id="bot-2-bot_8c">
+</map>
+</div>
+</div>
+<p><a href="bot-2-bot_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="define-members"></a>
+Makrodefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#a8ebde54a1dd5e08920830795d57b1742">DEBUG_BOT2BOT</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#abc4b84ecdf5ed0ac645e34cd664b7ea7">BOT_2_BOT_DUMMY</a>&#160;&#160;&#160;default_cmd</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#a5d907087132fac0609e68bba0574440d">BOT_2_BOT_PAYLOAD_DUMMY</a>&#160;&#160;&#160;{ (void (*)(void)) default_cmd, NULL, 0 }</td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#ad4bd97e66b98bef0463bbd450a81919c">default_cmd</a> (command_t *cmd)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#a095321a598cc4dbfa87bafd2384ed3e0">get_bot2bot_cmds</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#ac925342c85a2e64eff8e48fe693d3b6c">get_command_of_function</a> (void(*func)(command_t *cmd))</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#aafa57dba4f56d7ed3bf136040b45562f">add_bot_to_list</a> (command_t *cmd)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="bot-2-bot_8h.html#af589e6ddaaddd05a0deb4c1a59b3c178">bot_list_entry_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#aed3ae54d0d65060a86e1e8b3e373ea40">get_next_available_bot</a> (<a class="el" href="bot-2-bot_8h.html#af589e6ddaaddd05a0deb4c1a59b3c178">bot_list_entry_t</a> *ptr)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#ada1a88e21595aed0cfe5c4ddea754d3c">set_received_bot_state</a> (command_t *cmd)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#a9929ac1e13328ae47c0d95ad0b1ac98d">publish_bot_state</a> (int16_t state)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#ae82b9363dccc9355b4f75c06613bd818">get_type_of_payload_function</a> (void(*func)(void))</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#a19ce1cb74c8146d9439806ba4f0b0d19">bot_2_bot_send_payload_request</a> (uint8_t to, uint8_t type, void *data, int16_t size)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#a509ac73dd744cfab3e48e8abbdfd34e2">bot_2_bot_handle_payload_request</a> (command_t *cmd)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#a846982fe8cbd35704c5661c927471925">bot_2_bot_handle_payload_ack</a> (command_t *cmd)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#af6c7be93a3cf3ffb3fb501e8a85514f2">bot_2_bot_handle_payload_data</a> (command_t *cmd)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#ae7cfc43aaef3a916fd1e262f4b0ce8f0">bot_2_bot_print_recv_data</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#a4c831e1a5453560a522368dbe715b781">bot_2_bot_payload_test_verify</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#a7238aec612fed1eff070a8b59d8b75ab">bot_2_bot_pl_test</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *caller, uint8_t to)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#a38d18857ba727377737da60811043341">bot_2_bot_handle_remotecall</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#a59effc4fe651a7f3fc6d46ccdeb6c293">bot_2_bot_start_remotecall</a> (uint8_t bot_addr, char *function, <a class="el" href="unionremote__call__data__t.html">remote_call_data_t</a> par1, <a class="el" href="unionremote__call__data__t.html">remote_call_data_t</a> par2, <a class="el" href="unionremote__call__data__t.html">remote_call_data_t</a> par3)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#af88a29966e453489af465240ac2e7a26">print_bot_list</a> (void)</td></tr>
+<tr><td colspan="2"><h2><a name="var-members"></a>
+Variablen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="bot-2-bot_8h.html#af589e6ddaaddd05a0deb4c1a59b3c178">bot_list_entry_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#af5be706fef214e5c167c38ef783ed2c3">bot_list</a> = NULL</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#aa4580b469d9d63c4c364aac4d69f7f20">my_state</a> = BOT_STATE_AVAILABLE</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#a1da7c463a703cc299463eaa612afaf8f">cmd_functions</a> [])(command_t *cmd)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="structbot__2__bot__payload__mappings__t.html">bot_2_bot_payload_mappings_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="bot-2-bot_8c.html#ac6d4756f7a0a84b54fffdb17c0656aee">bot_2_bot_payload_mappings</a> []</td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Bot-2-Bot-Kommunikation. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Timo Sandmann (<a href="mailto:mail@timosandmann.de">mail@timosandmann.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>19.03.2008 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+</div><hr/><h2>Makro-Dokumentation</h2>
+<a class="anchor" id="abc4b84ecdf5ed0ac645e34cd664b7ea7"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::BOT_2_BOT_DUMMY" ref="abc4b84ecdf5ed0ac645e34cd664b7ea7" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOT_2_BOT_DUMMY&#160;&#160;&#160;default_cmd</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Dummy-Eintrag fuer Funktionsliste, falls entsprechender Code inaktiv </p>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00080">80</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a5d907087132fac0609e68bba0574440d"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::BOT_2_BOT_PAYLOAD_DUMMY" ref="a5d907087132fac0609e68bba0574440d" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BOT_2_BOT_PAYLOAD_DUMMY&#160;&#160;&#160;{ (void (*)(void)) default_cmd, NULL, 0 }</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Dummy-Eintrag fuer Payload-Mappings, falls entsprechender Code inaktiv </p>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00112">112</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8ebde54a1dd5e08920830795d57b1742"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::DEBUG_BOT2BOT" ref="a8ebde54a1dd5e08920830795d57b1742" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DEBUG_BOT2BOT</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Schaltet LOG-Ausgaben (z.B. Bot-Liste) ein oder aus </p>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00027">27</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="aafa57dba4f56d7ed3bf136040b45562f"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::add_bot_to_list" ref="aafa57dba4f56d7ed3bf136040b45562f" args="(command_t *cmd)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void add_bot_to_list </td>
+          <td>(</td>
+          <td class="paramtype">command_t *&#160;</td>
+          <td class="paramname"><em>cmd</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Fuegt der Bot-Liste einen Bot hinzu. Neue Bots sind per Definition erstmal AVAILABLE </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*cmd</td><td>Zeiger auf empfangenes Kommando </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00169">169</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Benutzt <a class="el" href="command_8c_source.html#l00263">command_write_to()</a>, <a class="el" href="bot-2-bot_8h_source.html#l00047">BOT_CMD_STATE</a>, <a class="el" href="bot-2-bot_8c_source.html#l00052">my_state</a>, <a class="el" href="bot-2-bot_8c_source.html#l00050">bot_list</a>, <a class="el" href="bot-2-bot_8h_source.html#l00037">_bot_list_entry_t::address</a>, <a class="el" href="bot-2-bot_8h_source.html#l00038">_bot_list_entry_t::state</a>, <a class="el" href="bot-2-bot_8h_source.html#l00042">BOT_STATE_AVAILABLE</a>, <a class="el" href="bot-2-bot_8h_source.html#l00039">_bot_list_entry_t::next</a>, <a class="el" href="bot-2-bot_8c_source.html#l00671">print_bot_list()</a> und <a class="el" href="bot-2-bot_8h_source.html#l00044">BOT_STATE_GONE</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-2-bot_8c_source.html#l00270">set_received_bot_state()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="bot-2-bot_8c_aafa57dba4f56d7ed3bf136040b45562f_cgraph.png" border="0" usemap="#bot-2-bot_8c_aafa57dba4f56d7ed3bf136040b45562f_cgraph" alt=""/></div>
+<map name="bot-2-bot_8c_aafa57dba4f56d7ed3bf136040b45562f_cgraph" id="bot-2-bot_8c_aafa57dba4f56d7ed3bf136040b45562f_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a846982fe8cbd35704c5661c927471925"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::bot_2_bot_handle_payload_ack" ref="a846982fe8cbd35704c5661c927471925" args="(command_t *cmd)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_2_bot_handle_payload_ack </td>
+          <td>(</td>
+          <td class="paramtype">command_t *&#160;</td>
+          <td class="paramname"><em>cmd</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Behandelt eine Payload-Sende-Bestaetigung </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*cmd</td><td>Zeiger auf das empfangene Kommando </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000007">Noch zu erledigen:</a></b></dt><dd>etwas unschoene Loesung </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00438">438</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Benutzt <a class="el" href="command_8c_source.html#l00071">LOG_DEBUG</a>, <a class="el" href="command_8c_source.html#l00301">command_write_rawdata_to()</a>, <a class="el" href="bot-2-bot_8h_source.html#l00050">BOT_CMD_PAYLOAD</a>, <a class="el" href="command_8c_source.html#l00278">command_write()</a>, <a class="el" href="command_8h_source.html#l00073">CMD_DONE</a>, <a class="el" href="command_8h_source.html#l00050">SUB_CMD_NORM</a> und <a class="el" href="sensor_8c_source.html#l00104">simultime</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="bot-2-bot_8c_a846982fe8cbd35704c5661c927471925_cgraph.png" border="0" usemap="#bot-2-bot_8c_a846982fe8cbd35704c5661c927471925_cgraph" alt=""/></div>
+<map name="bot-2-bot_8c_a846982fe8cbd35704c5661c927471925_cgraph" id="bot-2-bot_8c_a846982fe8cbd35704c5661c927471925_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="af6c7be93a3cf3ffb3fb501e8a85514f2"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::bot_2_bot_handle_payload_data" ref="af6c7be93a3cf3ffb3fb501e8a85514f2" args="(command_t *cmd)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_2_bot_handle_payload_data </td>
+          <td>(</td>
+          <td class="paramtype">command_t *&#160;</td>
+          <td class="paramname"><em>cmd</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Behandelt eingehende Payload-Daten, die von einem anderen Bot kommen </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*cmd</td><td>Zeiger auf das empfangene Kommando </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000008">Noch zu erledigen:</a></b></dt><dd>Timeout </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00497">497</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Benutzt <a class="el" href="command_8c_source.html#l00071">LOG_DEBUG</a>, <a class="el" href="uart_8h_source.html#l00111">uart_data_available</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00161">n</a>, <a class="el" href="command_8h_source.html#l00042">low_read</a>, <a class="el" href="command_8c_source.html#l00263">command_write_to()</a>, <a class="el" href="bot-2-bot_8h_source.html#l00049">BOT_CMD_ACK</a> und <a class="el" href="bot-2-bot_8h_source.html#l00058">BOT_2_BOT_PAYLOAD_WINDOW_SIZE</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="bot-2-bot_8c_af6c7be93a3cf3ffb3fb501e8a85514f2_cgraph.png" border="0" usemap="#bot-2-bot_8c_af6c7be93a3cf3ffb3fb501e8a85514f2_cgraph" alt=""/></div>
+<map name="bot-2-bot_8c_af6c7be93a3cf3ffb3fb501e8a85514f2_cgraph" id="bot-2-bot_8c_af6c7be93a3cf3ffb3fb501e8a85514f2_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a509ac73dd744cfab3e48e8abbdfd34e2"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::bot_2_bot_handle_payload_request" ref="a509ac73dd744cfab3e48e8abbdfd34e2" args="(command_t *cmd)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_2_bot_handle_payload_request </td>
+          <td>(</td>
+          <td class="paramtype">command_t *&#160;</td>
+          <td class="paramname"><em>cmd</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Behandelt eine Payload-Sende-Anfrage </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*cmd</td><td>Zeiger auf das empfangene Kommando </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000005">Noch zu erledigen:</a></b></dt><dd>Nur wenn Bot steht? </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000006">Noch zu erledigen:</a></b></dt><dd>Timeout </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00373">373</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Benutzt <a class="el" href="command_8c_source.html#l00071">LOG_DEBUG</a>, <a class="el" href="command_8c_source.html#l00263">command_write_to()</a>, <a class="el" href="bot-2-bot_8h_source.html#l00049">BOT_CMD_ACK</a>, <a class="el" href="bot-2-bot_8h_source.html#l00058">BOT_2_BOT_PAYLOAD_WINDOW_SIZE</a>, <a class="el" href="bot-2-bot_8h_source.html#l00069">bot_2_bot_payload_mappings_t::function</a>, <a class="el" href="bot-2-bot_8h_source.html#l00070">bot_2_bot_payload_mappings_t::data</a>, <a class="el" href="uart_8h_source.html#l00111">uart_data_available</a>, <a class="el" href="command_8c_source.html#l00101">command_read()</a>, <a class="el" href="command_8c_source.html#l00359">command_evaluate()</a>, <a class="el" href="command_8c_source.html#l00055">received_command</a> und <a class="el" href="bot-2-bot_8h_source.html#l00050">BOT_CMD_PAYLOAD</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="bot-2-bot_8c_a509ac73dd744cfab3e48e8abbdfd34e2_cgraph.png" border="0" usemap="#bot-2-bot_8c_a509ac73dd744cfab3e48e8abbdfd34e2_cgraph" alt=""/></div>
+<map name="bot-2-bot_8c_a509ac73dd744cfab3e48e8abbdfd34e2_cgraph" id="bot-2-bot_8c_a509ac73dd744cfab3e48e8abbdfd34e2_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a38d18857ba727377737da60811043341"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::bot_2_bot_handle_remotecall" ref="a38d18857ba727377737da60811043341" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_2_bot_handle_remotecall </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Fuehrt einen RemoteCall aus, der von einem anderen Bot kam </p>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00622">622</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__remotecall_8c_source.html#l00469">bot_remotecall_from_command()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="bot-2-bot_8c_a38d18857ba727377737da60811043341_cgraph.png" border="0" usemap="#bot-2-bot_8c_a38d18857ba727377737da60811043341_cgraph" alt=""/></div>
+<map name="bot-2-bot_8c_a38d18857ba727377737da60811043341_cgraph" id="bot-2-bot_8c_a38d18857ba727377737da60811043341_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a4c831e1a5453560a522368dbe715b781"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::bot_2_bot_payload_test_verify" ref="a4c831e1a5453560a522368dbe715b781" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_2_bot_payload_test_verify </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Testet den Payload-Empfang </p>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00570">570</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="command_8c_source.html#l00071">LOG_DEBUG</a> und <a class="el" href="bot-2-bot_8c_source.html#l00541">bot_2_bot_print_recv_data()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="bot-2-bot_8c_a4c831e1a5453560a522368dbe715b781_cgraph.png" border="0" usemap="#bot-2-bot_8c_a4c831e1a5453560a522368dbe715b781_cgraph" alt=""/></div>
+<map name="bot-2-bot_8c_a4c831e1a5453560a522368dbe715b781_cgraph" id="bot-2-bot_8c_a4c831e1a5453560a522368dbe715b781_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a7238aec612fed1eff070a8b59d8b75ab"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::bot_2_bot_pl_test" ref="a7238aec612fed1eff070a8b59d8b75ab" args="(Behaviour_t *caller, uint8_t to)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int8_t bot_2_bot_pl_test </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>caller</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>to</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Testet den Payload-Versand </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*caller</td><td>Dummy-Zeiger, damit per RemoteCall verwendbar </td></tr>
+    <tr><td class="paramname">to</td><td>Adresse des Empfangsbots </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>0, falls kein Fehler, sonst Fehlercode </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00596">596</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="bot-2-bot_8c_source.html#l00322">bot_2_bot_send_payload_request()</a>, <a class="el" href="bot-2-bot_8h_source.html#l00054">BOT_2_BOT_PAYLOAD_TEST</a>, <a class="el" href="command_8c_source.html#l00071">LOG_DEBUG</a>, <a class="el" href="bot-logic_8h_source.html#l00057">_Behaviour_t::subResult</a>, <a class="el" href="bot-logic_8h_source.html#l00045">BEHAVIOUR_SUBSUCCESS</a> und <a class="el" href="bot-logic_8h_source.html#l00044">BEHAVIOUR_SUBFAIL</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="bot-2-bot_8c_a7238aec612fed1eff070a8b59d8b75ab_cgraph.png" border="0" usemap="#bot-2-bot_8c_a7238aec612fed1eff070a8b59d8b75ab_cgraph" alt=""/></div>
+<map name="bot-2-bot_8c_a7238aec612fed1eff070a8b59d8b75ab_cgraph" id="bot-2-bot_8c_a7238aec612fed1eff070a8b59d8b75ab_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ae7cfc43aaef3a916fd1e262f4b0ce8f0"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::bot_2_bot_print_recv_data" ref="ae7cfc43aaef3a916fd1e262f4b0ce8f0" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_2_bot_print_recv_data </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Gibt die empfangenen Daten auf stdout aus (nur PC) </p>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00541">541</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-2-bot_8c_source.html#l00570">bot_2_bot_payload_test_verify()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a19ce1cb74c8146d9439806ba4f0b0d19"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::bot_2_bot_send_payload_request" ref="a19ce1cb74c8146d9439806ba4f0b0d19" args="(uint8_t to, uint8_t type, void *data, int16_t size)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int8_t bot_2_bot_send_payload_request </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>to</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Noch zu erledigen:</a></b></dt><dd>Bot-Adressen ueberpruefen </dd></dl>
+<p>Sendet eine Payload-Transferanfrage an einen anderen Bot </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">to</td><td>Empfaengeradresse </td></tr>
+    <tr><td class="paramname">type</td><td>Typ der Daten fuer den anderen Bot </td></tr>
+    <tr><td class="paramname">*data</td><td>Zeiger auf zu sendende Daten </td></tr>
+    <tr><td class="paramname">size</td><td>Anzahl der Bytes, die zum anderen Bot uebertragen werden sollen </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>0, falls die Daten korrekt uebertragen wurden, sonst Fehlercode </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Noch zu erledigen:</a></b></dt><dd>etwas unschoene Loesung </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000003">Noch zu erledigen:</a></b></dt><dd>Timeout </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000004">Noch zu erledigen:</a></b></dt><dd><a class="el" href="bot-2-sim__pc_8c.html#a9526ad76a1b84a59797e5391c3cadea1">receive_until_Frame()</a> fuer MCU =&gt; einheitlicher Code hier fuer MCU und PC </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00322">322</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Benutzt <a class="el" href="command_8c_source.html#l00071">LOG_DEBUG</a>, <a class="el" href="bot-2-bot_8h_source.html#l00048">BOT_CMD_REQ</a>, <a class="el" href="command_8c_source.html#l00263">command_write_to()</a>, <a class="el" href="command_8c_source.html#l00278">command_write()</a>, <a class="el" href="command_8h_source.html#l00073">CMD_DONE</a>, <a class="el" href="command_8h_source.html#l00050">SUB_CMD_NORM</a>, <a class="el" href="sensor_8c_source.html#l00104">simultime</a>, <a class="el" href="uart_8h_source.html#l00111">uart_data_available</a>, <a class="el" href="command_8c_source.html#l00101">command_read()</a>, <a class="el" href="command_8c_source.html#l00359">command_evaluate()</a>, <a class="el" href="bot-2-sim__pc_8c_source.html#l00092">receive_until_Frame()</a> und <a class="el" href="bot-2-bot_8h_source.html#l00049">BOT_CMD_ACK</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-2-bot_8c_source.html#l00596">bot_2_bot_pl_test()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00635">bot_2_bot_start_remotecall()</a> und <a class="el" href="pos__store_8c_source.html#l00330">pos_store_send_to_bot()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="bot-2-bot_8c_a19ce1cb74c8146d9439806ba4f0b0d19_cgraph.png" border="0" usemap="#bot-2-bot_8c_a19ce1cb74c8146d9439806ba4f0b0d19_cgraph" alt=""/></div>
+<map name="bot-2-bot_8c_a19ce1cb74c8146d9439806ba4f0b0d19_cgraph" id="bot-2-bot_8c_a19ce1cb74c8146d9439806ba4f0b0d19_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a59effc4fe651a7f3fc6d46ccdeb6c293"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::bot_2_bot_start_remotecall" ref="a59effc4fe651a7f3fc6d46ccdeb6c293" args="(uint8_t bot_addr, char *function, remote_call_data_t par1, remote_call_data_t par2, remote_call_data_t par3)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int8_t bot_2_bot_start_remotecall </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>bot_addr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>function</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="unionremote__call__data__t.html">remote_call_data_t</a>&#160;</td>
+          <td class="paramname"><em>par1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="unionremote__call__data__t.html">remote_call_data_t</a>&#160;</td>
+          <td class="paramname"><em>par2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="unionremote__call__data__t.html">remote_call_data_t</a>&#160;</td>
+          <td class="paramname"><em>par3</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Startet einen RemoteCall auf einem anderen Bot </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bot_addr</td><td>Adresse des anderen Bots </td></tr>
+    <tr><td class="paramname">*function</td><td>Name der Botenfunktion des zu startenden Verhaltens </td></tr>
+    <tr><td class="paramname">par1</td><td>Erster Parameter des zu startenden Verhaltens </td></tr>
+    <tr><td class="paramname">par2</td><td>Zweiter Parameter des zu startenden Verhaltens </td></tr>
+    <tr><td class="paramname">par3</td><td>Dritter Parameter des zu startenden Verhaltens </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Fehlercode (0, falls alles OK) </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00635">635</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__remotecall_8h_source.html#l00032">REMOTE_CALL_FUNCTION_NAME_LEN</a>, <a class="el" href="command_8c_source.html#l00071">LOG_DEBUG</a>, <a class="el" href="behaviour__remotecall_8h_source.html#l00050">remote_call_data_t::u32</a>, <a class="el" href="bot-2-bot_8c_source.html#l00322">bot_2_bot_send_payload_request()</a>, <a class="el" href="bot-2-bot_8h_source.html#l00055">BOT_2_BOT_REMOTECALL</a> und <a class="el" href="behaviour__remotecall_8h_source.html#l00037">REMOTE_CALL_BUFFER_SIZE</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__stack_8c_source.html#l00172">bot_send_stack_b2b()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="bot-2-bot_8c_a59effc4fe651a7f3fc6d46ccdeb6c293_cgraph.png" border="0" usemap="#bot-2-bot_8c_a59effc4fe651a7f3fc6d46ccdeb6c293_cgraph" alt=""/></div>
+<map name="bot-2-bot_8c_a59effc4fe651a7f3fc6d46ccdeb6c293_cgraph" id="bot-2-bot_8c_a59effc4fe651a7f3fc6d46ccdeb6c293_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ad4bd97e66b98bef0463bbd450a81919c"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::default_cmd" ref="ad4bd97e66b98bef0463bbd450a81919c" args="(command_t *cmd)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void default_cmd </td>
+          <td>(</td>
+          <td class="paramtype">command_t *&#160;</td>
+          <td class="paramname"><em>cmd</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Dummy, fuer Kommandos, die nicht bearbeitet werden sollen </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*cmd</td><td>Zeiger auf ein Kommando </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00074">74</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a095321a598cc4dbfa87bafd2384ed3e0"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::get_bot2bot_cmds" ref="a095321a598cc4dbfa87bafd2384ed3e0" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t get_bot2bot_cmds </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Gibt die Anzahl der Kommando-Funktionen zurueck </p>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Anzahl der Funktionen in cmd_functions </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00146">146</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Benutzt <a class="el" href="bot-2-bot_8c_source.html#l00090">cmd_functions</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="command_8c_source.html#l00359">command_evaluate()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac925342c85a2e64eff8e48fe693d3b6c"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::get_command_of_function" ref="ac925342c85a2e64eff8e48fe693d3b6c" args="(void(*func)(command_t *cmd))" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t get_command_of_function </td>
+          <td>(</td>
+          <td class="paramtype">void(*)(command_t *cmd)&#160;</td>
+          <td class="paramname"><em>func</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Liefert die Kommando-Nummer zu einer Kommando-Funktion </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*func</td><td>Name der auswertenden Funktion </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Kommando-ID, oder 255, falls Funktion nicht vorhanden </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00155">155</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a> und <a class="el" href="bot-2-bot_8c_source.html#l00090">cmd_functions</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aed3ae54d0d65060a86e1e8b3e373ea40"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::get_next_available_bot" ref="aed3ae54d0d65060a86e1e8b3e373ea40" args="(bot_list_entry_t *ptr)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="bot-2-bot_8h.html#af589e6ddaaddd05a0deb4c1a59b3c178">bot_list_entry_t</a>* get_next_available_bot </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-2-bot_8h.html#af589e6ddaaddd05a0deb4c1a59b3c178">bot_list_entry_t</a> *&#160;</td>
+          <td class="paramname"><em>ptr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Sucht den naechsten verfuegbaren Bot in der Botliste </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*ptr</td><td>Zeiger auf letzten Eintrag oder NULL (=Anfang) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Zeiger auf verfuegbaren Bot oder NULL (=alle busy) </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00258">258</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Benutzt <a class="el" href="bot-2-bot_8h_source.html#l00038">_bot_list_entry_t::state</a> und <a class="el" href="bot-2-bot_8h_source.html#l00042">BOT_STATE_AVAILABLE</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae82b9363dccc9355b4f75c06613bd818"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::get_type_of_payload_function" ref="ae82b9363dccc9355b4f75c06613bd818" args="(void(*func)(void))" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t get_type_of_payload_function </td>
+          <td>(</td>
+          <td class="paramtype">void(*)(void)&#160;</td>
+          <td class="paramname"><em>func</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Liefert den Payload-Typ (Subkommando) zu einer Auswertungsfunktion </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*func</td><td>Name der auswertenden Funktion </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Subcommand oder 255, falls Funktion nicht vorhanden </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00303">303</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a> und <a class="el" href="bot-2-bot_8c_source.html#l00123">bot_2_bot_payload_mappings</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af88a29966e453489af465240ac2e7a26"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::print_bot_list" ref="af88a29966e453489af465240ac2e7a26" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void print_bot_list </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Gibt die Liste der Bots inkl. Adresse und Status aus </p>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00671">671</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Benutzt <a class="el" href="command_8c_source.html#l00071">LOG_DEBUG</a>, <a class="el" href="bot-2-bot_8h_source.html#l00037">_bot_list_entry_t::address</a>, <a class="el" href="bot-2-bot_8h_source.html#l00038">_bot_list_entry_t::state</a>, <a class="el" href="bot-2-bot_8h_source.html#l00042">BOT_STATE_AVAILABLE</a>, <a class="el" href="bot-2-bot_8h_source.html#l00043">BOT_STATE_BUSY</a> und <a class="el" href="bot-2-bot_8h_source.html#l00044">BOT_STATE_GONE</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-2-bot_8c_source.html#l00169">add_bot_to_list()</a> und <a class="el" href="bot-2-bot_8c_source.html#l00270">set_received_bot_state()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9929ac1e13328ae47c0d95ad0b1ac98d"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::publish_bot_state" ref="a9929ac1e13328ae47c0d95ad0b1ac98d" args="(int16_t state)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void publish_bot_state </td>
+          <td>(</td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>state</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Setzt den eigenen Status auf einen neuen Wert und schickt ihn an alle Bots </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">state</td><td>Neuer Status </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00292">292</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Benutzt <a class="el" href="bot-2-bot_8c_source.html#l00052">my_state</a>, <a class="el" href="command_8c_source.html#l00263">command_write_to()</a>, <a class="el" href="bot-2-bot_8h_source.html#l00047">BOT_CMD_STATE</a> und <a class="el" href="command_8h_source.html#l00126">CMD_BROADCAST</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="bot-2-bot_8c_a9929ac1e13328ae47c0d95ad0b1ac98d_cgraph.png" border="0" usemap="#bot-2-bot_8c_a9929ac1e13328ae47c0d95ad0b1ac98d_cgraph" alt=""/></div>
+<map name="bot-2-bot_8c_a9929ac1e13328ae47c0d95ad0b1ac98d_cgraph" id="bot-2-bot_8c_a9929ac1e13328ae47c0d95ad0b1ac98d_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ada1a88e21595aed0cfe5c4ddea754d3c"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::set_received_bot_state" ref="ada1a88e21595aed0cfe5c4ddea754d3c" args="(command_t *cmd)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void set_received_bot_state </td>
+          <td>(</td>
+          <td class="paramtype">command_t *&#160;</td>
+          <td class="paramname"><em>cmd</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Setzt einen empfangenen Status eines Bots </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*cmd</td><td>Zeiger auf Kommando mit Daten </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00270">270</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Benutzt <a class="el" href="bot-2-bot_8h_source.html#l00037">_bot_list_entry_t::address</a>, <a class="el" href="bot-2-bot_8h_source.html#l00038">_bot_list_entry_t::state</a>, <a class="el" href="ct-Bot_8h_source.html#l00220">LOG_AVAILABLE</a>, <a class="el" href="bot-2-bot_8c_source.html#l00671">print_bot_list()</a> und <a class="el" href="bot-2-bot_8c_source.html#l00169">add_bot_to_list()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="bot-2-bot_8c_ada1a88e21595aed0cfe5c4ddea754d3c_cgraph.png" border="0" usemap="#bot-2-bot_8c_ada1a88e21595aed0cfe5c4ddea754d3c_cgraph" alt=""/></div>
+<map name="bot-2-bot_8c_ada1a88e21595aed0cfe5c4ddea754d3c_cgraph" id="bot-2-bot_8c_ada1a88e21595aed0cfe5c4ddea754d3c_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<hr/><h2>Variablen-Dokumentation</h2>
+<a class="anchor" id="ac6d4756f7a0a84b54fffdb17c0656aee"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::bot_2_bot_payload_mappings" ref="ac6d4756f7a0a84b54fffdb17c0656aee" args="[]" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structbot__2__bot__payload__mappings__t.html">bot_2_bot_payload_mappings_t</a> <a class="el" href="bot-2-bot_8h.html#ac6d4756f7a0a84b54fffdb17c0656aee">bot_2_bot_payload_mappings</a>[]</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<b>Initialisierung:</b><div class="fragment"><pre class="fragment"> {
+
+    { <a class="code" href="bot-2-bot_8c.html#a4c831e1a5453560a522368dbe715b781">bot_2_bot_payload_test_verify</a>, payload_test_buffer, <span class="keyword">sizeof</span>(payload_test_buffer) },
+
+
+ 
+
+    { <a class="code" href="bot-2-bot_8c.html#a38d18857ba727377737da60811043341">bot_2_bot_handle_remotecall</a>, remotecall_buffer, <span class="keyword">sizeof</span>(remotecall_buffer) },
+
+
+ 
+
+    { <a class="code" href="pos__store_8c.html#ad0703bbe6249872ab796b2c37493a98d">bot_2_bot_handle_pos_store_data</a>, NULL, 0 },
+
+
+ 
+}
+</pre></div><p>Tabelle fuer alle Bot-2-Bot-Payload-Zuordnungen. Hier muss man die Callback-Funktionen und Datenpuffer eintragen, wenn man die Bot-2-Bot-Kommunikation mit Payload-Versand fuer weitere Zwecke benutzen moechte. Abschaltbare Teile muessen den Dummy "BOT_2_BOT_PAYLOAD_DUMMY" per ifdef aktivieren, damit sich in der Liste keine Positionen verschieben, falls bestimmte Code-Teile inaktiv sind! </p>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00123">123</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-2-bot_8c_source.html#l00303">get_type_of_payload_function()</a>, <a class="el" href="pos__store_8c_source.html#l00343">bot_2_bot_handle_pos_store()</a> und <a class="el" href="pos__store_8c_source.html#l00375">bot_2_bot_handle_pos_store_data()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af5be706fef214e5c167c38ef783ed2c3"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::bot_list" ref="af5be706fef214e5c167c38ef783ed2c3" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="bot-2-bot_8h.html#af589e6ddaaddd05a0deb4c1a59b3c178">bot_list_entry_t</a>* <a class="el" href="bot-2-bot_8h.html#af5be706fef214e5c167c38ef783ed2c3">bot_list</a> = NULL</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Liste aller bekannten Bots </p>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00050">50</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-2-bot_8c_source.html#l00169">add_bot_to_list()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1da7c463a703cc299463eaa612afaf8f"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::cmd_functions" ref="a1da7c463a703cc299463eaa612afaf8f" args="[])(command_t *cmd)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void(*  <a class="el" href="bot-2-bot_8h.html#a1da7c463a703cc299463eaa612afaf8f">cmd_functions</a>[])(command_t *cmd)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<b>Initialisierung:</b><div class="fragment"><pre class="fragment"> {
+        <a class="code" href="bot-2-bot_8c.html#aafa57dba4f56d7ed3bf136040b45562f">add_bot_to_list</a>,
+        <a class="code" href="bot-2-bot_8c.html#ada1a88e21595aed0cfe5c4ddea754d3c">set_received_bot_state</a>,
+
+        <a class="code" href="bot-2-bot_8c.html#a509ac73dd744cfab3e48e8abbdfd34e2">bot_2_bot_handle_payload_request</a>,
+        <a class="code" href="bot-2-bot_8c.html#a846982fe8cbd35704c5661c927471925">bot_2_bot_handle_payload_ack</a>,
+        <a class="code" href="bot-2-bot_8c.html#af6c7be93a3cf3ffb3fb501e8a85514f2">bot_2_bot_handle_payload_data</a>,
+
+        <a class="code" href="pos__store_8c.html#ac644f5e4876a22ae70ebfe28a2547dc5">bot_2_bot_handle_pos_store</a>,
+
+
+ 
+
+
+
+
+
+ 
+    }
+</pre></div><p>Funktionstabelle fuer alle Bot-2-Bot-Kommandos. Hier muss man die Auswertungs-Funktionen eintragen, wenn man die Bot-2-Bot-Kommunikation fuer weitere Zwecke benutzen moechte. Abschaltbare Teile muessen den Dummy "BOT_2_BOT_DUMMY" per ifdef aktivieren, damit sich in der Liste keine Positionen verschieben, falls bestimmte Code-Teile inaktiv sind! </p>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00090">90</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-2-bot_8c_source.html#l00146">get_bot2bot_cmds()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00155">get_command_of_function()</a> und <a class="el" href="command_8c_source.html#l00359">command_evaluate()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa4580b469d9d63c4c364aac4d69f7f20"></a><!-- doxytag: member="bot&#45;2&#45;bot.c::my_state" ref="aa4580b469d9d63c4c364aac4d69f7f20" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t <a class="el" href="bot-2-bot_8c.html#aa4580b469d9d63c4c364aac4d69f7f20">my_state</a> = BOT_STATE_AVAILABLE</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Der eigene Status </p>
+
+<p>Definiert in Zeile <a class="el" href="bot-2-bot_8c_source.html#l00052">52</a> der Datei <a class="el" href="bot-2-bot_8c_source.html">bot-2-bot.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-2-bot_8c_source.html#l00169">add_bot_to_list()</a> und <a class="el" href="bot-2-bot_8c_source.html#l00292">publish_bot_state()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:05 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

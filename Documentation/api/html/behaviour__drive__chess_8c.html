@@ -1,0 +1,1727 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: behaviour_drive_chess.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#define-members">Makrodefinitionen</a> &#124;
+<a href="#func-members">Funktionen</a> &#124;
+<a href="#var-members">Variablen</a>  </div>
+  <div class="headertitle">
+<div class="title">behaviour_drive_chess.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Der Bot spielt Schach.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="bot-logic_8h_source.html">bot-logic/bot-logic.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="available__screens_8h_source.html">ui/available_screens.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="log_8h_source.html">log.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="rc5-codes_8h_source.html">rc5-codes.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="display_8h_source.html">display.h</a>&quot;</code><br/>
+<code>#include &lt;stdlib.h&gt;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für behaviour_drive_chess.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__drive__chess_8c__incl.png" border="0" usemap="#behaviour__drive__chess_8c" alt=""/></div>
+<map name="behaviour__drive__chess_8c" id="behaviour__drive__chess_8c">
+</map>
+</div>
+</div>
+<p><a href="behaviour__drive__chess_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="define-members"></a>
+Makrodefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(...)&#160;&#160;&#160;{}</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a52037c938e3c1b126c6277da5ca689d0">M</a>&#160;&#160;&#160;0x88</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#af933676109efed7ab34cea71d748a517">S</a>&#160;&#160;&#160;128</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a60ef6e1bcfabb95cfeb300e1d03ce470">I</a>&#160;&#160;&#160;8000</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#affc9cbf86b78292bdb405361761c47f5">U</a>&#160;&#160;&#160;18</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a51f72bd26d11e6debe7f2037f75805ff">F_NEWGAME</a>&#160;&#160;&#160;'3'</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#abe069da818f0b9557f8c6678da9c8dec">F_LEVEL</a>&#160;&#160;&#160;'.'</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a5db50f6a73e906ab12e71158c3d3b4d2">F_FAVORIT</a>&#160;&#160;&#160;'?'</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a8f4ea5fa21d42f950b5f95a91e9ff227">CL</a>&#160;&#160;&#160;'9'</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a277a950c725b69e43a1dae2993119fd4">GO</a>&#160;&#160;&#160;':'</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a63434bcaca50ed59c58aca2bcfdf45d9">o</a>(ndx)&#160;&#160;&#160;(signed char)o[ndx]</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#aca728bb0a5455c4919203b41fb2387f4">w</a>(ndx)&#160;&#160;&#160;(signed char)w[ndx]</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a3d866bcc3e6368bb95201907177c539b">q</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a4075efb56971c5cb1b9456640837f082">_.q</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a1cb503ddd20ff3cf9588d2b5abd202d8">l</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a3c52ff76ec0ffc82b29eb21259342a10">_.l</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a270b1ecf56619755ce62f6970dfabc91">e</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#ab2fb078810bdd1f2b5c03d1ceb465787">_.e</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a07484107e6d9fdf38b53edf631d6511d">E</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a92ded4d32355c916aec04938e4569808">_.E</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#afb573e69f3b198fe9ca91079c4a402a9">z</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a14d53a97b6cb067f27a6a3f683f0bd21">_.z</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#ad5228cd48403ef9d8b632f5c7c124720">n</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#aa94ff7ddd304b9beb2f209b6174e180e">_.n</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a00626facb4f86efb8618a4c5f5c3c5f8">m</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a7e6900841a67dbc908a8e0891b1f037f">_.m</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a38bf1e5e0427bdeba2b469eea9befc23">v</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a434546605ff56214f4851c99700d07a7">_.v</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#af40a326b23c68a27cebe60f16634a2cb">V</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a00f620df3803830a02e957d28e3a09de">_.V</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a2748566f4c443ee77aa831e63dbb5ebe">P</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#aeba73d700e8abd297558a88a0081d85c">_.P</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a62969232668331297e2dca1ae2ddd10d">r</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#ac72f3887834ac55a457ccb5d6c381989">_.r</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#aa8c84707b22bdc99b810d3c7d3ec5d52">j</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#aac1217779551b743f5645c17740178e3">_.j</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a111da81ae5883147168bbb8366377b10">B</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a8c81a457ae49e23c5e69f9d79bbd1131">_.B</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a2530554172d8629149ec56816eeaa947">d</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#aef7bd9bb1f716afb151a4b4206d468f3">_.d</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a56dee7158d9de89b23535bf5ad318261">h</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#aac430e94ef6f27edf759bc1bdcdab16e">_.h</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#ac4cf4b2ab929bd23951a8676eeac086b">C</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a6eaa9f3369a790193e432a8fdb7154b4">_.C</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a1f9aca42e2010bb82488684dee1a66ea">u</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#ae3afa435fd55697ac387e072ab765f0e">_.u</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#ade66e4ccafbc33b117610bbc0d85feb0">p</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a37ed7f02c58c0c771e7e76b4c1e594e6">_.p</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a6c4b361d72eb3767ba424ac9a6ecf52b">x</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#ac1d1eed6a8bbca26af335b9682a6475e">_.x</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a0ed6a908288e0cd87f79c1b5ab56d07c">y</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#ac553850cf16d4c4f5812f7411e2b2b5a">_.y</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a42257a545daf5b7933d6e8f96adc74f2">F</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#aeedda2a2ef163ef258b9a65cf9eae87e">_.F</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#aed9ea78689ecce0b7264c02c7f8a9a54">G</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a9ceb27cca5e312d4e16505213eb76661">_.G</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#abec92cc72a096640b821b8cd56a02495">H</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a4d320cbfb03bfee549d07e0b27ed8ac2">_.H</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a1f0cf49f22a9b271d1d9e6e14609faed">t</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a652c1b1eb7ca53b7a24162760b2e2c59">_.t</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a207fd5507206d307cd63f95374fcd00d">X</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a3764f9a13deec1760b9b204b4fe8ab7b">_.X</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a798e4073d613ca5ba9618e1b3253df14">Y</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#ae2a7535e0685d7635d3b8876e5ed376e">_.Y</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a8d3c3518d793541417a4845125da1ae1">a</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a24420a9beaac7cee08b5e255a4c29db1">_.a</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a21005f9f4e2ce7597c5eb4351816d7e2">OFFSET</a>&#160;&#160;&#160;240;</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#ab068577b3c3e29f69b56c2447b8332bb">NEWGAME_STATE</a>&#160;&#160;&#160;0</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a569a052d37b05c5146415eea74dcc295">GO_STATE</a>&#160;&#160;&#160;1</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#aeae039b27ada1bacead6dc493f2b398f">GO_STATE_NEXT</a>&#160;&#160;&#160;2</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#ab3c6091e5ca003357c81288dca748ec5">CO_END</a>&#160;&#160;&#160;99</td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#ad37110be4ffdffe8cd761cdf25d940dc">bot_drive_chess_behaviour</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *data)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a69df06c32b0c69027ae0461d3c0c3008">bot_drive_chess</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *caller)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a3ecf1c28a24331a1e6701c36262a3a04">bot_drive_chess_go</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *caller)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#ac2fce52e910a7591250c900c30322ee9">drive_chess_display</a> (void)</td></tr>
+<tr><td colspan="2"><h2><a name="var-members"></a>
+Variablen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a7b814227e6cf919c1f7ad4067bfe000e">K</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#aa25c5d099bd84076503010eb40a805d4">s</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a4f46eaccf4b0efbe82faa35c74aa0171">Dq</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a72e107213ac8cdb5df696a9ce015b6dd">Dl</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#aeac72202629bd493a057fe597ba48416">De</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static short&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a80a19e4b8cdc24c9919f94af64a68e50">DD</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">const signed char w[]&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a3b6187c96c81802864d44e77df6e60da">PROGMEM</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#aea7fd00d09b3b311e2e48d7ee976c50e">b</a> [129]</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a3b00ce5034bade2e39bbba24553a8045">c</a> [5]</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a43ed7e3846304dce8b14d9bc81f63fef">k</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a372544885b009a81c89914edaa5aa94a">O</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a99b994edd82192c4fe92f1699f3c1085">R</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a9b84bded76cb18a66d9413fc2f72a8f5">DE</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a04a2b0674e53962b19312e77c7441b38">Dz</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#ab39b415f6dc41a568fd8d864175a20b0">Dn</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#a0e682a14cb1b251116e3c22287740838">Da</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__chess_8c.html#adc146ab81c4a725f00da850bca691f7e">W</a> = 99</td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Der Bot spielt Schach. </p>
+<p>Das Schachverhalten ermoeglicht die manuelle Eingabe eines Schachzuges des Spielers 1 (weiss) ueber das Screeninterface. Nach Betaetigen der GO-Taste zieht der Bot-Spieler und der Bot faehrt auf dem Schachbrett diesen Zug nach. Nun ist der menschliche Spieler wieder am Zug via Screeneingabe bzw. drueckt sofort GO, um fuer sich den Zug machen zu lassen. Am besten ist es (weil ja die Schachfiguren nicht visualisiert werden), sich parallel dazu ein echtes Schachbrett aufzubauen und manuell die Zuege nachzuvollziehen. In meinem ersten Test musste ich eine Niederlage gegen den Bot einstecken:-) Fuer das Verhalten ist das Chess-Layout zu laden, damit wenigstens die Schachfelder visualisiert werden und damit die Botfahrten der gegnerischen Schachzuege. Die gruenen Felder stehen hierbei stellvertretend fuer die weissen Felder. Inspiriert zu diesem Verhalten wurde ich durch folgende Seiten: <a href="http://bralug.de/wiki/BLIT2008-Board_spielt_Schach">http://bralug.de/wiki/BLIT2008-Board_spielt_Schach</a> Detailliertes zu dem Micro-Max Schach ist hier zu finden: <a href="http://home.hccnet.nl/h.g.muller/max-src2.html">http://home.hccnet.nl/h.g.muller/max-src2.html</a></p>
+<p>Brainstorming fuer moegliche Erweiterungen: Der Bot koennte gegen den anderen spielen ohne Mensch, d.h. Bot 1 ist Spieler 1 und der andere der Gegenspieler. Jeder bot macht jeweils einen Zug und faehrt diesen ab. Danach ist der andere dran. Dies muesste/koennte dann ueber die bot_2_bot-Kommunikation laufen. Noch schoener waere es natuerlich, echte Spielfiguren auf dem Java3D-Schachbrett zu haben (oder zuerst auch einfache Objekte), wobei der Bot sich jeweils die Figur greift (bot_catch_pillar) und an der Zielposition ablaedt (bot_unload_pillar)...</p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Frank Menzel (<a href="mailto:Menzelfr@gmx.de">Menzelfr@gmx.de</a>), H.G. Muller (Micro-Max Schach) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>15.09.2009 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+</div><hr/><h2>Makro-Dokumentation</h2>
+<a class="anchor" id="a8d3c3518d793541417a4845125da1ae1"></a><!-- doxytag: member="behaviour_drive_chess.c::a" ref="a8d3c3518d793541417a4845125da1ae1" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#a24420a9beaac7cee08b5e255a4c29db1">a</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a24420a9beaac7cee08b5e255a4c29db1">_.a</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00253">253</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a111da81ae5883147168bbb8366377b10"></a><!-- doxytag: member="behaviour_drive_chess.c::B" ref="a111da81ae5883147168bbb8366377b10" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#a8c81a457ae49e23c5e69f9d79bbd1131">B</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a8c81a457ae49e23c5e69f9d79bbd1131">_.B</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00239">239</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac4cf4b2ab929bd23951a8676eeac086b"></a><!-- doxytag: member="behaviour_drive_chess.c::C" ref="ac4cf4b2ab929bd23951a8676eeac086b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#a6eaa9f3369a790193e432a8fdb7154b4">C</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a6eaa9f3369a790193e432a8fdb7154b4">_.C</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00242">242</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8f4ea5fa21d42f950b5f95a91e9ff227"></a><!-- doxytag: member="behaviour_drive_chess.c::CL" ref="a8f4ea5fa21d42f950b5f95a91e9ff227" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CL&#160;&#160;&#160;'9'</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00214">214</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab3c6091e5ca003357c81288dca748ec5"></a><!-- doxytag: member="behaviour_drive_chess.c::CO_END" ref="ab3c6091e5ca003357c81288dca748ec5" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CO_END&#160;&#160;&#160;99</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00565">565</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__chess_8c_source.html#l00574">bot_drive_chess_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2530554172d8629149ec56816eeaa947"></a><!-- doxytag: member="behaviour_drive_chess.c::d" ref="a2530554172d8629149ec56816eeaa947" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#aef7bd9bb1f716afb151a4b4206d468f3">d</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#aef7bd9bb1f716afb151a4b4206d468f3">_.d</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00240">240</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a270b1ecf56619755ce62f6970dfabc91"></a><!-- doxytag: member="behaviour_drive_chess.c::e" ref="a270b1ecf56619755ce62f6970dfabc91" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#ab2fb078810bdd1f2b5c03d1ceb465787">e</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#ab2fb078810bdd1f2b5c03d1ceb465787">_.e</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00229">229</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a07484107e6d9fdf38b53edf631d6511d"></a><!-- doxytag: member="behaviour_drive_chess.c::E" ref="a07484107e6d9fdf38b53edf631d6511d" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#a92ded4d32355c916aec04938e4569808">E</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a92ded4d32355c916aec04938e4569808">_.E</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00230">230</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a42257a545daf5b7933d6e8f96adc74f2"></a><!-- doxytag: member="behaviour_drive_chess.c::F" ref="a42257a545daf5b7933d6e8f96adc74f2" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#aeedda2a2ef163ef258b9a65cf9eae87e">F</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#aeedda2a2ef163ef258b9a65cf9eae87e">_.F</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00247">247</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a5db50f6a73e906ab12e71158c3d3b4d2"></a><!-- doxytag: member="behaviour_drive_chess.c::F_FAVORIT" ref="a5db50f6a73e906ab12e71158c3d3b4d2" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define F_FAVORIT&#160;&#160;&#160;'?'</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00213">213</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="abe069da818f0b9557f8c6678da9c8dec"></a><!-- doxytag: member="behaviour_drive_chess.c::F_LEVEL" ref="abe069da818f0b9557f8c6678da9c8dec" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define F_LEVEL&#160;&#160;&#160;'.'</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00212">212</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a51f72bd26d11e6debe7f2037f75805ff"></a><!-- doxytag: member="behaviour_drive_chess.c::F_NEWGAME" ref="a51f72bd26d11e6debe7f2037f75805ff" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define F_NEWGAME&#160;&#160;&#160;'3'</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00211">211</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aed9ea78689ecce0b7264c02c7f8a9a54"></a><!-- doxytag: member="behaviour_drive_chess.c::G" ref="aed9ea78689ecce0b7264c02c7f8a9a54" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#a9ceb27cca5e312d4e16505213eb76661">G</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a9ceb27cca5e312d4e16505213eb76661">_.G</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00248">248</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a277a950c725b69e43a1dae2993119fd4"></a><!-- doxytag: member="behaviour_drive_chess.c::GO" ref="a277a950c725b69e43a1dae2993119fd4" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define GO&#160;&#160;&#160;':'</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00215">215</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a569a052d37b05c5146415eea74dcc295"></a><!-- doxytag: member="behaviour_drive_chess.c::GO_STATE" ref="a569a052d37b05c5146415eea74dcc295" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define GO_STATE&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00563">563</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__chess_8c_source.html#l00574">bot_drive_chess_behaviour()</a> und <a class="el" href="behaviour__drive__chess_8c_source.html#l00650">bot_drive_chess_go()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aeae039b27ada1bacead6dc493f2b398f"></a><!-- doxytag: member="behaviour_drive_chess.c::GO_STATE_NEXT" ref="aeae039b27ada1bacead6dc493f2b398f" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define GO_STATE_NEXT&#160;&#160;&#160;2</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00564">564</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__chess_8c_source.html#l00574">bot_drive_chess_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a56dee7158d9de89b23535bf5ad318261"></a><!-- doxytag: member="behaviour_drive_chess.c::h" ref="a56dee7158d9de89b23535bf5ad318261" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#aac430e94ef6f27edf759bc1bdcdab16e">h</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#aac430e94ef6f27edf759bc1bdcdab16e">_.h</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00241">241</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="abec92cc72a096640b821b8cd56a02495"></a><!-- doxytag: member="behaviour_drive_chess.c::H" ref="abec92cc72a096640b821b8cd56a02495" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#a4d320cbfb03bfee549d07e0b27ed8ac2">H</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a4d320cbfb03bfee549d07e0b27ed8ac2">_.H</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00249">249</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a60ef6e1bcfabb95cfeb300e1d03ce470"></a><!-- doxytag: member="behaviour_drive_chess.c::I" ref="a60ef6e1bcfabb95cfeb300e1d03ce470" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define I&#160;&#160;&#160;8000</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00154">154</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa8c84707b22bdc99b810d3c7d3ec5d52"></a><!-- doxytag: member="behaviour_drive_chess.c::j" ref="aa8c84707b22bdc99b810d3c7d3ec5d52" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#aac1217779551b743f5645c17740178e3">j</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#aac1217779551b743f5645c17740178e3">_.j</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00238">238</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1cb503ddd20ff3cf9588d2b5abd202d8"></a><!-- doxytag: member="behaviour_drive_chess.c::l" ref="a1cb503ddd20ff3cf9588d2b5abd202d8" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#a3c52ff76ec0ffc82b29eb21259342a10">l</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a3c52ff76ec0ffc82b29eb21259342a10">_.l</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00228">228</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a754b3d074e0af4ad3c7b918dd77ecb2d"></a><!-- doxytag: member="behaviour_drive_chess.c::LOG_DEBUG" ref="a754b3d074e0af4ad3c7b918dd77ecb2d" args="(...)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define LOG_DEBUG</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em></td><td>)</td>
+          <td>&#160;&#160;&#160;{}</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00066">66</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__chess_8c_source.html#l00574">bot_drive_chess_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a52037c938e3c1b126c6277da5ca689d0"></a><!-- doxytag: member="behaviour_drive_chess.c::M" ref="a52037c938e3c1b126c6277da5ca689d0" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define M&#160;&#160;&#160;0x88</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00152">152</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a00626facb4f86efb8618a4c5f5c3c5f8"></a><!-- doxytag: member="behaviour_drive_chess.c::m" ref="a00626facb4f86efb8618a4c5f5c3c5f8" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#a7e6900841a67dbc908a8e0891b1f037f">m</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a7e6900841a67dbc908a8e0891b1f037f">_.m</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00233">233</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad5228cd48403ef9d8b632f5c7c124720"></a><!-- doxytag: member="behaviour_drive_chess.c::n" ref="ad5228cd48403ef9d8b632f5c7c124720" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#aa94ff7ddd304b9beb2f209b6174e180e">n</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#aa94ff7ddd304b9beb2f209b6174e180e">_.n</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00232">232</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab068577b3c3e29f69b56c2447b8332bb"></a><!-- doxytag: member="behaviour_drive_chess.c::NEWGAME_STATE" ref="ab068577b3c3e29f69b56c2447b8332bb" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define NEWGAME_STATE&#160;&#160;&#160;0</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00562">562</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__chess_8c_source.html#l00574">bot_drive_chess_behaviour()</a> und <a class="el" href="behaviour__drive__chess_8c_source.html#l00641">bot_drive_chess()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a63434bcaca50ed59c58aca2bcfdf45d9"></a><!-- doxytag: member="behaviour_drive_chess.c::o" ref="a63434bcaca50ed59c58aca2bcfdf45d9" args="(ndx)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define o</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">ndx</td><td>)</td>
+          <td>&#160;&#160;&#160;(signed char)o[ndx]</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00218">218</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a21005f9f4e2ce7597c5eb4351816d7e2"></a><!-- doxytag: member="behaviour_drive_chess.c::OFFSET" ref="a21005f9f4e2ce7597c5eb4351816d7e2" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define OFFSET&#160;&#160;&#160;240;</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Offsetwert, um genau von einer Sim-Schachfeld-Position zur naechsten zu kommen </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00441">441</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2748566f4c443ee77aa831e63dbb5ebe"></a><!-- doxytag: member="behaviour_drive_chess.c::P" ref="a2748566f4c443ee77aa831e63dbb5ebe" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#aeba73d700e8abd297558a88a0081d85c">P</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#aeba73d700e8abd297558a88a0081d85c">_.P</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00236">236</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ade66e4ccafbc33b117610bbc0d85feb0"></a><!-- doxytag: member="behaviour_drive_chess.c::p" ref="ade66e4ccafbc33b117610bbc0d85feb0" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#a37ed7f02c58c0c771e7e76b4c1e594e6">p</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a37ed7f02c58c0c771e7e76b4c1e594e6">_.p</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00244">244</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3d866bcc3e6368bb95201907177c539b"></a><!-- doxytag: member="behaviour_drive_chess.c::q" ref="a3d866bcc3e6368bb95201907177c539b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#a4075efb56971c5cb1b9456640837f082">q</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a4075efb56971c5cb1b9456640837f082">_.q</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00227">227</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a62969232668331297e2dca1ae2ddd10d"></a><!-- doxytag: member="behaviour_drive_chess.c::r" ref="a62969232668331297e2dca1ae2ddd10d" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#ac72f3887834ac55a457ccb5d6c381989">r</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#ac72f3887834ac55a457ccb5d6c381989">_.r</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00237">237</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af933676109efed7ab34cea71d748a517"></a><!-- doxytag: member="behaviour_drive_chess.c::S" ref="af933676109efed7ab34cea71d748a517" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define S&#160;&#160;&#160;128</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00153">153</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1f0cf49f22a9b271d1d9e6e14609faed"></a><!-- doxytag: member="behaviour_drive_chess.c::t" ref="a1f0cf49f22a9b271d1d9e6e14609faed" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#a652c1b1eb7ca53b7a24162760b2e2c59">t</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a652c1b1eb7ca53b7a24162760b2e2c59">_.t</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00250">250</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="affc9cbf86b78292bdb405361761c47f5"></a><!-- doxytag: member="behaviour_drive_chess.c::U" ref="affc9cbf86b78292bdb405361761c47f5" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define U&#160;&#160;&#160;18</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00155">155</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1f9aca42e2010bb82488684dee1a66ea"></a><!-- doxytag: member="behaviour_drive_chess.c::u" ref="a1f9aca42e2010bb82488684dee1a66ea" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#ae3afa435fd55697ac387e072ab765f0e">u</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#ae3afa435fd55697ac387e072ab765f0e">_.u</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00243">243</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a38bf1e5e0427bdeba2b469eea9befc23"></a><!-- doxytag: member="behaviour_drive_chess.c::v" ref="a38bf1e5e0427bdeba2b469eea9befc23" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#a434546605ff56214f4851c99700d07a7">v</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a434546605ff56214f4851c99700d07a7">_.v</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00234">234</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af40a326b23c68a27cebe60f16634a2cb"></a><!-- doxytag: member="behaviour_drive_chess.c::V" ref="af40a326b23c68a27cebe60f16634a2cb" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#a00f620df3803830a02e957d28e3a09de">V</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a00f620df3803830a02e957d28e3a09de">_.V</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00235">235</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aca728bb0a5455c4919203b41fb2387f4"></a><!-- doxytag: member="behaviour_drive_chess.c::w" ref="aca728bb0a5455c4919203b41fb2387f4" args="(ndx)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define w</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">ndx</td><td>)</td>
+          <td>&#160;&#160;&#160;(signed char)w[ndx]</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00219">219</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6c4b361d72eb3767ba424ac9a6ecf52b"></a><!-- doxytag: member="behaviour_drive_chess.c::x" ref="a6c4b361d72eb3767ba424ac9a6ecf52b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#ac1d1eed6a8bbca26af335b9682a6475e">x</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#ac1d1eed6a8bbca26af335b9682a6475e">_.x</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00245">245</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__classify__objects_8c_source.html#l00064">bot_classify_objects_behaviour()</a>, <a class="el" href="behaviour__goto__pos_8c_source.html#l00281">bot_goto_pos()</a>, <a class="el" href="behaviour__gotoxy_8c_source.html#l00103">bot_gotoxy()</a>, <a class="el" href="behaviour__solve__maze_8c_source.html#l00504">bot_solve_maze_behaviour()</a>, <a class="el" href="behaviour__transport__pillar_8c_source.html#l00500">bot_set_destkoords()</a>, <a class="el" href="map_8c_source.html#l01459">map_2_sim_send()</a>, <a class="el" href="map_8c_source.html#l01536">map_clean()</a>, <a class="el" href="map_8c_source.html#l01672">map_to_pgm()</a> und <a class="el" href="pos__store_8c_source.html#l00396">pos_store_dump()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a207fd5507206d307cd63f95374fcd00d"></a><!-- doxytag: member="behaviour_drive_chess.c::X" ref="a207fd5507206d307cd63f95374fcd00d" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#a3764f9a13deec1760b9b204b4fe8ab7b">X</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a3764f9a13deec1760b9b204b4fe8ab7b">_.X</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00251">251</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0ed6a908288e0cd87f79c1b5ab56d07c"></a><!-- doxytag: member="behaviour_drive_chess.c::y" ref="a0ed6a908288e0cd87f79c1b5ab56d07c" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#ac553850cf16d4c4f5812f7411e2b2b5a">y</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#ac553850cf16d4c4f5812f7411e2b2b5a">_.y</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00246">246</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__classify__objects_8c_source.html#l00064">bot_classify_objects_behaviour()</a>, <a class="el" href="behaviour__goto__pos_8c_source.html#l00281">bot_goto_pos()</a>, <a class="el" href="behaviour__gotoxy_8c_source.html#l00103">bot_gotoxy()</a>, <a class="el" href="behaviour__transport__pillar_8c_source.html#l00500">bot_set_destkoords()</a>, <a class="el" href="map_8c_source.html#l01459">map_2_sim_send()</a>, <a class="el" href="map_8c_source.html#l01536">map_clean()</a>, <a class="el" href="map_8c_source.html#l01672">map_to_pgm()</a> und <a class="el" href="pos__store_8c_source.html#l00396">pos_store_dump()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a798e4073d613ca5ba9618e1b3253df14"></a><!-- doxytag: member="behaviour_drive_chess.c::Y" ref="a798e4073d613ca5ba9618e1b3253df14" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#ae2a7535e0685d7635d3b8876e5ed376e">Y</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#ae2a7535e0685d7635d3b8876e5ed376e">_.Y</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00252">252</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="afb573e69f3b198fe9ca91079c4a402a9"></a><!-- doxytag: member="behaviour_drive_chess.c::z" ref="afb573e69f3b198fe9ca91079c4a402a9" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define <a class="el" href="behaviour__drive__chess_8c.html#a14d53a97b6cb067f27a6a3f683f0bd21">z</a>&#160;&#160;&#160;<a class="el" href="behaviour__drive__chess_8c.html#a14d53a97b6cb067f27a6a3f683f0bd21">_.z</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00231">231</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="a69df06c32b0c69027ae0461d3c0c3008"></a><!-- doxytag: member="behaviour_drive_chess.c::bot_drive_chess" ref="a69df06c32b0c69027ae0461d3c0c3008" args="(Behaviour_t *caller)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_drive_chess </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>caller</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Neustart des eigentlichen Schach-Fahrverhalten Fuer den Bot-Spieler schwarz wird nach dessen Zugberechnung der Zug vom Bot nachgefahren, faehrt also von der Zug-Startposition zur Zug-Endposition. Das Verhalten ist dann damit abgeschlossen </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*caller</td><td>Der Verhaltensdatensatz </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00641">641</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Benutzt <a class="el" href="bot-logic_8c_source.html#l00532">switch_to_behaviour()</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00574">bot_drive_chess_behaviour()</a>, <a class="el" href="bot-logic_8h_source.html#l00040">BEHAVIOUR_OVERRIDE</a> und <a class="el" href="behaviour__drive__chess_8c_source.html#l00562">NEWGAME_STATE</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__drive__chess_8c_a69df06c32b0c69027ae0461d3c0c3008_cgraph.png" border="0" usemap="#behaviour__drive__chess_8c_a69df06c32b0c69027ae0461d3c0c3008_cgraph" alt=""/></div>
+<map name="behaviour__drive__chess_8c_a69df06c32b0c69027ae0461d3c0c3008_cgraph" id="behaviour__drive__chess_8c_a69df06c32b0c69027ae0461d3c0c3008_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ad37110be4ffdffe8cd761cdf25d940dc"></a><!-- doxytag: member="behaviour_drive_chess.c::bot_drive_chess_behaviour" ref="ad37110be4ffdffe8cd761cdf25d940dc" args="(Behaviour_t *data)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_drive_chess_behaviour </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Das eigentliche Schach-Fahrverhalten Fuer den Bot-Spieler Schwarz wird nach dessen Zugberechnung der Zug vom Bot nachgefahren, faehrt also von der Zug-Startposition zur Zug-Endposition. Das Verhalten ist dann damit abgeschlossen </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*data</td><td>Der Verhaltensdatensatz </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00574">574</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00562">NEWGAME_STATE</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00066">LOG_DEBUG</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00563">GO_STATE</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00565">CO_END</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">K</a>, <a class="el" href="behaviour__goto__pos_8c_source.html#l00281">bot_goto_pos()</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00564">GO_STATE_NEXT</a>, <a class="el" href="bot-logic_8c_source.html#l00596">exit_behaviour()</a> und <a class="el" href="bot-logic_8h_source.html#l00044">BEHAVIOUR_SUBFAIL</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__chess_8c_source.html#l00641">bot_drive_chess()</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00650">bot_drive_chess_go()</a> und <a class="el" href="bot-logic_8c_source.html#l00086">bot_behave_init()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__drive__chess_8c_ad37110be4ffdffe8cd761cdf25d940dc_cgraph.png" border="0" usemap="#behaviour__drive__chess_8c_ad37110be4ffdffe8cd761cdf25d940dc_cgraph" alt=""/></div>
+<map name="behaviour__drive__chess_8c_ad37110be4ffdffe8cd761cdf25d940dc_cgraph" id="behaviour__drive__chess_8c_ad37110be4ffdffe8cd761cdf25d940dc_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a3ecf1c28a24331a1e6701c36262a3a04"></a><!-- doxytag: member="behaviour_drive_chess.c::bot_drive_chess_go" ref="a3ecf1c28a24331a1e6701c36262a3a04" args="(Behaviour_t *caller)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_drive_chess_go </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>caller</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Start des Schach-Fahrverhalten nach GO-Betaetigung, d.h. nach Eingabe des Zuges wurde GO betaetigt </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*caller</td><td>Der Verhaltensdatensatz </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00650">650</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Benutzt <a class="el" href="bot-logic_8c_source.html#l00532">switch_to_behaviour()</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00574">bot_drive_chess_behaviour()</a>, <a class="el" href="bot-logic_8h_source.html#l00040">BEHAVIOUR_OVERRIDE</a> und <a class="el" href="behaviour__drive__chess_8c_source.html#l00563">GO_STATE</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__drive__chess_8c_a3ecf1c28a24331a1e6701c36262a3a04_cgraph.png" border="0" usemap="#behaviour__drive__chess_8c_a3ecf1c28a24331a1e6701c36262a3a04_cgraph" alt=""/></div>
+<map name="behaviour__drive__chess_8c_a3ecf1c28a24331a1e6701c36262a3a04_cgraph" id="behaviour__drive__chess_8c_a3ecf1c28a24331a1e6701c36262a3a04_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ac2fce52e910a7591250c900c30322ee9"></a><!-- doxytag: member="behaviour_drive_chess.c::drive_chess_display" ref="ac2fce52e910a7591250c900c30322ee9" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void drive_chess_display </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Display zum Steuern des Schachverhaltens </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00792">792</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Benutzt <a class="el" href="display_8c_source.html#l00141">display_cursor()</a>, <a class="el" href="display__pc_8c_source.html#l00075">display_printf()</a> und <a class="el" href="display__pc_8c_source.html#l00096">display_puts()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="gui_8c_source.html#l00330">gui_init()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__drive__chess_8c_ac2fce52e910a7591250c900c30322ee9_cgraph.png" border="0" usemap="#behaviour__drive__chess_8c_ac2fce52e910a7591250c900c30322ee9_cgraph" alt=""/></div>
+<map name="behaviour__drive__chess_8c_ac2fce52e910a7591250c900c30322ee9_cgraph" id="behaviour__drive__chess_8c_ac2fce52e910a7591250c900c30322ee9_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<hr/><h2>Variablen-Dokumentation</h2>
+<a class="anchor" id="a24420a9beaac7cee08b5e255a4c29db1"></a><!-- doxytag: member="behaviour_drive_chess.c::a" ref="a24420a9beaac7cee08b5e255a4c29db1" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#a24420a9beaac7cee08b5e255a4c29db1">a</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">163</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__scan__beacons_8c_source.html#l00094">bot_scan_beacons_behaviour()</a> und <a class="el" href="math__utils_8c_source.html#l00205">test_calc_resection()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8c81a457ae49e23c5e69f9d79bbd1131"></a><!-- doxytag: member="behaviour_drive_chess.c::B" ref="a8c81a457ae49e23c5e69f9d79bbd1131" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#a8c81a457ae49e23c5e69f9d79bbd1131">B</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">163</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aea7fd00d09b3b311e2e48d7ee976c50e"></a><!-- doxytag: member="behaviour_drive_chess.c::b" ref="aea7fd00d09b3b311e2e48d7ee976c50e" args="[129]" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#aea7fd00d09b3b311e2e48d7ee976c50e">b</a>[129]</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">191</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__scan__beacons_8c_source.html#l00094">bot_scan_beacons_behaviour()</a> und <a class="el" href="math__utils_8c_source.html#l00205">test_calc_resection()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6eaa9f3369a790193e432a8fdb7154b4"></a><!-- doxytag: member="behaviour_drive_chess.c::C" ref="a6eaa9f3369a790193e432a8fdb7154b4" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#a6eaa9f3369a790193e432a8fdb7154b4">C</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">163</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3b00ce5034bade2e39bbba24553a8045"></a><!-- doxytag: member="behaviour_drive_chess.c::c" ref="a3b00ce5034bade2e39bbba24553a8045" args="[5]" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#a3b00ce5034bade2e39bbba24553a8045">c</a>[5]</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">191</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="display_8c_source.html#l00141">display_cursor()</a>, <a class="el" href="display_8c_source.html#l00200">display_flash_printf()</a>, <a class="el" href="display_8c_source.html#l00231">display_flash_puts()</a>, <a class="el" href="map_8c_source.html#l01205">map_draw_line()</a> und <a class="el" href="map_8c_source.html#l01275">map_draw_circle()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aef7bd9bb1f716afb151a4b4206d468f3"></a><!-- doxytag: member="behaviour_drive_chess.c::d" ref="aef7bd9bb1f716afb151a4b4206d468f3" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#aef7bd9bb1f716afb151a4b4206d468f3">d</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">163</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0e682a14cb1b251116e3c22287740838"></a><!-- doxytag: member="behaviour_drive_chess.c::Da" ref="a0e682a14cb1b251116e3c22287740838" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#a0e682a14cb1b251116e3c22287740838">Da</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">191</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a80a19e4b8cdc24c9919f94af64a68e50"></a><!-- doxytag: member="behaviour_drive_chess.c::DD" ref="a80a19e4b8cdc24c9919f94af64a68e50" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">short <a class="el" href="behaviour__drive__chess_8c.html#a80a19e4b8cdc24c9919f94af64a68e50">DD</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">175</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aeac72202629bd493a057fe597ba48416"></a><!-- doxytag: member="behaviour_drive_chess.c::De" ref="aeac72202629bd493a057fe597ba48416" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">short <a class="el" href="behaviour__drive__chess_8c.html#aeac72202629bd493a057fe597ba48416">De</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">175</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9b84bded76cb18a66d9413fc2f72a8f5"></a><!-- doxytag: member="behaviour_drive_chess.c::DE" ref="a9b84bded76cb18a66d9413fc2f72a8f5" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#a9b84bded76cb18a66d9413fc2f72a8f5">DE</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">191</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a72e107213ac8cdb5df696a9ce015b6dd"></a><!-- doxytag: member="behaviour_drive_chess.c::Dl" ref="a72e107213ac8cdb5df696a9ce015b6dd" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">short <a class="el" href="behaviour__drive__chess_8c.html#a72e107213ac8cdb5df696a9ce015b6dd">Dl</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">175</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab39b415f6dc41a568fd8d864175a20b0"></a><!-- doxytag: member="behaviour_drive_chess.c::Dn" ref="ab39b415f6dc41a568fd8d864175a20b0" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#ab39b415f6dc41a568fd8d864175a20b0">Dn</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">191</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4f46eaccf4b0efbe82faa35c74aa0171"></a><!-- doxytag: member="behaviour_drive_chess.c::Dq" ref="a4f46eaccf4b0efbe82faa35c74aa0171" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">short <a class="el" href="behaviour__drive__chess_8c.html#a4f46eaccf4b0efbe82faa35c74aa0171">Dq</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">175</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a04a2b0674e53962b19312e77c7441b38"></a><!-- doxytag: member="behaviour_drive_chess.c::Dz" ref="a04a2b0674e53962b19312e77c7441b38" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#a04a2b0674e53962b19312e77c7441b38">Dz</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">191</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab2fb078810bdd1f2b5c03d1ceb465787"></a><!-- doxytag: member="behaviour_drive_chess.c::e" ref="ab2fb078810bdd1f2b5c03d1ceb465787" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">short <a class="el" href="behaviour__drive__chess_8c.html#ab2fb078810bdd1f2b5c03d1ceb465787">e</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00158">158</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a92ded4d32355c916aec04938e4569808"></a><!-- doxytag: member="behaviour_drive_chess.c::E" ref="a92ded4d32355c916aec04938e4569808" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#a92ded4d32355c916aec04938e4569808">E</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00161">161</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aeedda2a2ef163ef258b9a65cf9eae87e"></a><!-- doxytag: member="behaviour_drive_chess.c::F" ref="aeedda2a2ef163ef258b9a65cf9eae87e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#aeedda2a2ef163ef258b9a65cf9eae87e">F</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">163</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9ceb27cca5e312d4e16505213eb76661"></a><!-- doxytag: member="behaviour_drive_chess.c::G" ref="a9ceb27cca5e312d4e16505213eb76661" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#a9ceb27cca5e312d4e16505213eb76661">G</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">163</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aac430e94ef6f27edf759bc1bdcdab16e"></a><!-- doxytag: member="behaviour_drive_chess.c::h" ref="aac430e94ef6f27edf759bc1bdcdab16e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#aac430e94ef6f27edf759bc1bdcdab16e">h</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">163</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="math__utils_8c_source.html#l00100">calc_point_in_distance()</a>, <a class="el" href="sensor-low_8c_source.html#l00169">bot_sens()</a> und <a class="el" href="sensor_8c_source.html#l00235">sensor_update()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4d320cbfb03bfee549d07e0b27ed8ac2"></a><!-- doxytag: member="behaviour_drive_chess.c::H" ref="a4d320cbfb03bfee549d07e0b27ed8ac2" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#a4d320cbfb03bfee549d07e0b27ed8ac2">H</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">163</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9aa40e637eff435d9abc0f4dc467b6bb"></a><!-- doxytag: member="behaviour_drive_chess.c::i" ref="a9aa40e637eff435d9abc0f4dc467b6bb" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">short <a class="el" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">175</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__calibrate__sharps_8c_source.html#l00205">bot_calibrate_sharps_behaviour()</a>, <a class="el" href="behaviour__calibrate__sharps_8c_source.html#l00250">bot_calibrate_sharps()</a>, <a class="el" href="behaviour__cancel__behaviour_8c_source.html#l00056">bot_behaviour_cancel_behaviour()</a>, <a class="el" href="behaviour__cancel__behaviour_8c_source.html#l00093">bot_add_behaviour_to_cancel()</a>, <a class="el" href="behaviour__classify__objects_8c_source.html#l00064">bot_classify_objects_behaviour()</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a>, <a class="el" href="behaviour__pathplaning_8c_source.html#l00384">bot_calc_wave_behaviour()</a>, <a class="el" href="behaviour__remotecall_8c_source.html#l00489">bot_remotecall_list()</a>, <a class="el" href="behaviour__remotecall_8c_source.html#l00544">remotecall_display()</a>, <a class="el" href="behaviour__scan__beacons_8c_source.html#l00094">bot_scan_beacons_behaviour()</a>, <a class="el" href="behaviour__scan__beacons_8c_source.html#l00295">bot_scan_beacons()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00155">get_command_of_function()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00303">get_type_of_payload_function()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00541">bot_2_bot_print_recv_data()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00570">bot_2_bot_payload_test_verify()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00596">bot_2_bot_pl_test()</a>, <a class="el" href="bot-logic_8c_source.html#l00466">deactivate_called_behaviours()</a>, <a class="el" href="bot-logic_8c_source.html#l00736">start_registered_emergency_procs()</a>, <a class="el" href="botfs-tools__pc_8c_source.html#l00644">botfs_management()</a>, <a class="el" href="botfs-tools__pc_8c_source.html#l00700">botfs_read_fat16()</a>, <a class="el" href="botfs__pc_8c_source.html#l00047">botfs_create_volume()</a>, <a class="el" href="botfs__pc_8c_source.html#l00154">botfs_copy_file()</a>, <a class="el" href="botfs__pc_8c_source.html#l00235">botfs_extract_file()</a>, <a class="el" href="botfs__pc_8c_source.html#l00282">botfs_readdir()</a>, <a class="el" href="botfs__pc_8c_source.html#l00317">botfs_print_freelist()</a>, <a class="el" href="command_8c_source.html#l00101">command_read()</a>, <a class="el" href="delay__pc_8c_source.html#l00053">delay()</a>, <a class="el" href="display_8c_source.html#l00170">display_init()</a>, <a class="el" href="display_8c_source.html#l00200">display_flash_printf()</a>, <a class="el" href="fifo_8c_source.html#l00064">fifo_put_data()</a>, <a class="el" href="fifo_8c_source.html#l00147">fifo_get_data()</a>, <a class="el" href="map_8c_source.html#l01775">map_read()</a>, <a class="el" href="mmc-emu__pc_8c_source.html#l00165">mmc_emu_get_filesize()</a>, <a class="el" href="mmc-emu__pc_8c_source.html#l00276">mmc_emu_test()</a>, <a class="el" href="mmc-vm_8c_source.html#l00375">mmc_flush_cache()</a>, <a class="el" href="mmc-vm_8c_source.html#l00442">mmc_clear_file()</a>, <a class="el" href="mmc_8c_source.html#l00209">mmc_read_sector_spi()</a>, <a class="el" href="mmc_8c_source.html#l00292">mmc_write_sector_spi()</a>, <a class="el" href="mmc_8c_source.html#l00458">mmc_init()</a>, <a class="el" href="motor_8c_source.html#l00302">motor_set()</a>, <a class="el" href="mouse_8c_source.html#l00162">mouse_transmit_picture()</a>, <a class="el" href="os__scheduler_8c_source.html#l00093">os_calc_utilization()</a>, <a class="el" href="os__scheduler_8c_source.html#l00129">os_clear_utilization()</a>, <a class="el" href="os__scheduler_8c_source.html#l00146">os_print_utilization()</a>, <a class="el" href="os__scheduler_8c_source.html#l00217">os_schedule()</a>, <a class="el" href="os__scheduler_8c_source.html#l00274">os_display()</a>, <a class="el" href="os__thread_8c_source.html#l00065">os_create_thread()</a>, <a class="el" href="os__thread_8c_source.html#l00303">os_stack_dump()</a>, <a class="el" href="pos__store_8c_source.html#l00136">pos_store_release_all()</a>, <a class="el" href="pos__store_8c_source.html#l00396">pos_store_dump()</a>, <a class="el" href="pos__store_8c_source.html#l00409">pos_store_test()</a>, <a class="el" href="sensor-low_8c_source.html#l00169">bot_sens()</a>, <a class="el" href="sensor-low__pc_8c_source.html#l00060">convert_slog_file()</a>, <a class="el" href="sensor_8c_source.html#l00167">sensor_dist_lookup()</a>, <a class="el" href="shift_8c_source.html#l00061">shift_data_out()</a>, <a class="el" href="tcp-server_8c_source.html#l00078">tcp_server_init()</a>, <a class="el" href="tcp-server_8c_source.html#l00127">tcp_server_run()</a>, <a class="el" href="tcp-server_8c_source.html#l00232">tcp_test_client_run()</a>, <a class="el" href="trace_8c_source.html#l00134">trace_add_remotecall()</a>, <a class="el" href="ubasic_8c_source.html#l00118">ubasic_init()</a> und <a class="el" href="ubasic_8c_source.html#l01238">ubasic_free_all_mem()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aac1217779551b743f5645c17740178e3"></a><!-- doxytag: member="behaviour_drive_chess.c::j" ref="aac1217779551b743f5645c17740178e3" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#aac1217779551b743f5645c17740178e3">j</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">163</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__calibrate__sharps_8c_source.html#l00205">bot_calibrate_sharps_behaviour()</a>, <a class="el" href="behaviour__pathplaning_8c_source.html#l00384">bot_calc_wave_behaviour()</a>, <a class="el" href="botfs-tools__pc_8c_source.html#l00700">botfs_read_fat16()</a>, <a class="el" href="botfs__pc_8c_source.html#l00282">botfs_readdir()</a>, <a class="el" href="botfs__pc_8c_source.html#l00317">botfs_print_freelist()</a>, <a class="el" href="fifo_8c_source.html#l00064">fifo_put_data()</a>, <a class="el" href="fifo_8c_source.html#l00147">fifo_get_data()</a>, <a class="el" href="mmc_8c_source.html#l00209">mmc_read_sector_spi()</a>, <a class="el" href="mmc_8c_source.html#l00292">mmc_write_sector_spi()</a>, <a class="el" href="sensor-low_8c_source.html#l00169">bot_sens()</a>, <a class="el" href="sensor-low__pc_8c_source.html#l00060">convert_slog_file()</a> und <a class="el" href="tcp-server_8c_source.html#l00232">tcp_test_client_run()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7b814227e6cf919c1f7ad4067bfe000e"></a><!-- doxytag: member="behaviour_drive_chess.c::K" ref="a7b814227e6cf919c1f7ad4067bfe000e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">short <a class="el" href="behaviour__drive__chess_8c.html#a7b814227e6cf919c1f7ad4067bfe000e">K</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">175</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__chess_8c_source.html#l00574">bot_drive_chess_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a43ed7e3846304dce8b14d9bc81f63fef"></a><!-- doxytag: member="behaviour_drive_chess.c::k" ref="a43ed7e3846304dce8b14d9bc81f63fef" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#a43ed7e3846304dce8b14d9bc81f63fef">k</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">191</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__calibrate__sharps_8c_source.html#l00205">bot_calibrate_sharps_behaviour()</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a>, <a class="el" href="botfs-tools__pc_8c_source.html#l00700">botfs_read_fat16()</a>, <a class="el" href="mmc_8c_source.html#l00209">mmc_read_sector_spi()</a> und <a class="el" href="sensor-low__pc_8c_source.html#l00060">convert_slog_file()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3c52ff76ec0ffc82b29eb21259342a10"></a><!-- doxytag: member="behaviour_drive_chess.c::l" ref="a3c52ff76ec0ffc82b29eb21259342a10" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">short <a class="el" href="behaviour__drive__chess_8c.html#a3c52ff76ec0ffc82b29eb21259342a10">l</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00158">158</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7e6900841a67dbc908a8e0891b1f037f"></a><!-- doxytag: member="behaviour_drive_chess.c::m" ref="a7e6900841a67dbc908a8e0891b1f037f" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">short <a class="el" href="behaviour__drive__chess_8c.html#a7e6900841a67dbc908a8e0891b1f037f">m</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00159">159</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a>, <a class="el" href="behaviour__pathplaning_8c_source.html#l00384">bot_calc_wave_behaviour()</a>, <a class="el" href="behaviour__scan__beacons_8c_source.html#l00094">bot_scan_beacons_behaviour()</a> und <a class="el" href="math__utils_8c_source.html#l00205">test_calc_resection()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa94ff7ddd304b9beb2f209b6174e180e"></a><!-- doxytag: member="behaviour_drive_chess.c::n" ref="aa94ff7ddd304b9beb2f209b6174e180e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#aa94ff7ddd304b9beb2f209b6174e180e">n</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00161">161</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__remotecall_8c_source.html#l00544">remotecall_display()</a>, <a class="el" href="behaviour__scan__beacons_8c_source.html#l00094">bot_scan_beacons_behaviour()</a>, <a class="el" href="bot-2-bot_8c_source.html#l00497">bot_2_bot_handle_payload_data()</a>, <a class="el" href="command_8c_source.html#l00359">command_evaluate()</a>, <a class="el" href="fifo_8c_source.html#l00064">fifo_put_data()</a>, <a class="el" href="fifo_8c_source.html#l00147">fifo_get_data()</a>, <a class="el" href="math__utils_8c_source.html#l00121">calc_resection()</a>, <a class="el" href="math__utils_8c_source.html#l00205">test_calc_resection()</a>, <a class="el" href="os__thread_8c_source.html#l00303">os_stack_dump()</a>, <a class="el" href="sensor-low_8c_source.html#l00169">bot_sens()</a>, <a class="el" href="sensor-low__pc_8c_source.html#l00060">convert_slog_file()</a>, <a class="el" href="sensor_8c_source.html#l00167">sensor_dist_lookup()</a>, <a class="el" href="trace_8c_source.html#l00085">trace_add_sensors()</a>, <a class="el" href="trace_8c_source.html#l00108">trace_add_actuators()</a> und <a class="el" href="trace_8c_source.html#l00134">trace_add_remotecall()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a372544885b009a81c89914edaa5aa94a"></a><!-- doxytag: member="behaviour_drive_chess.c::O" ref="a372544885b009a81c89914edaa5aa94a" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#a372544885b009a81c89914edaa5aa94a">O</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">191</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aeba73d700e8abd297558a88a0081d85c"></a><!-- doxytag: member="behaviour_drive_chess.c::P" ref="aeba73d700e8abd297558a88a0081d85c" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">short <a class="el" href="behaviour__drive__chess_8c.html#aeba73d700e8abd297558a88a0081d85c">P</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00159">159</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a37ed7f02c58c0c771e7e76b4c1e594e6"></a><!-- doxytag: member="behaviour_drive_chess.c::p" ref="a37ed7f02c58c0c771e7e76b4c1e594e6" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#a37ed7f02c58c0c771e7e76b4c1e594e6">p</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">163</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="os__thread_8c_source.html#l00065">os_create_thread()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3b6187c96c81802864d44e77df6e60da"></a><!-- doxytag: member="behaviour_drive_chess.c::PROGMEM" ref="a3b6187c96c81802864d44e77df6e60da" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const signed char o [] <a class="el" href="behaviour__remotecall_8c.html#a6a9dc8a32e3b3827db9f446a2d4074f1">PROGMEM</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<b>Initialisierung:</b><div class="fragment"><pre class="fragment"> {
+    0, 2, 2, 7, -1, 8, 12, 23
+}
+</pre></div><p>relative piece values </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00181">181</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4075efb56971c5cb1b9456640837f082"></a><!-- doxytag: member="behaviour_drive_chess.c::q" ref="a4075efb56971c5cb1b9456640837f082" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">short <a class="el" href="behaviour__drive__chess_8c.html#a4075efb56971c5cb1b9456640837f082">q</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00158">158</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac72f3887834ac55a457ccb5d6c381989"></a><!-- doxytag: member="behaviour_drive_chess.c::r" ref="ac72f3887834ac55a457ccb5d6c381989" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">signed char <a class="el" href="behaviour__drive__chess_8c.html#ac72f3887834ac55a457ccb5d6c381989">r</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00162">162</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="display_8c_source.html#l00141">display_cursor()</a>, <a class="el" href="display_8c_source.html#l00200">display_flash_printf()</a> und <a class="el" href="display_8c_source.html#l00231">display_flash_puts()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a99b994edd82192c4fe92f1699f3c1085"></a><!-- doxytag: member="behaviour_drive_chess.c::R" ref="a99b994edd82192c4fe92f1699f3c1085" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#a99b994edd82192c4fe92f1699f3c1085">R</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">191</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00699">map_get_average()</a> und <a class="el" href="srf10_8c_source.html#l00127">srf10_read_register()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa25c5d099bd84076503010eb40a805d4"></a><!-- doxytag: member="behaviour_drive_chess.c::s" ref="aa25c5d099bd84076503010eb40a805d4" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">short <a class="el" href="behaviour__drive__chess_8c.html#aa25c5d099bd84076503010eb40a805d4">s</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">175</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a652c1b1eb7ca53b7a24162760b2e2c59"></a><!-- doxytag: member="behaviour_drive_chess.c::t" ref="a652c1b1eb7ca53b7a24162760b2e2c59" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#a652c1b1eb7ca53b7a24162760b2e2c59">t</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">163</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="tcp-server_8c_source.html#l00127">tcp_server_run()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae3afa435fd55697ac387e072ab765f0e"></a><!-- doxytag: member="behaviour_drive_chess.c::u" ref="ae3afa435fd55697ac387e072ab765f0e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#ae3afa435fd55697ac387e072ab765f0e">u</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">163</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a434546605ff56214f4851c99700d07a7"></a><!-- doxytag: member="behaviour_drive_chess.c::v" ref="a434546605ff56214f4851c99700d07a7" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">short <a class="el" href="behaviour__drive__chess_8c.html#a434546605ff56214f4851c99700d07a7">v</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00159">159</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a00f620df3803830a02e957d28e3a09de"></a><!-- doxytag: member="behaviour_drive_chess.c::V" ref="a00f620df3803830a02e957d28e3a09de" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">short <a class="el" href="behaviour__drive__chess_8c.html#a00f620df3803830a02e957d28e3a09de">V</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00159">159</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="adc146ab81c4a725f00da850bca691f7e"></a><!-- doxytag: member="behaviour_drive_chess.c::W" ref="adc146ab81c4a725f00da850bca691f7e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#adc146ab81c4a725f00da850bca691f7e">W</a> = 99</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00199">199</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="srf10_8c_source.html#l00051">srf10_set_gain()</a>, <a class="el" href="srf10_8c_source.html#l00077">srf10_set_range()</a>, <a class="el" href="srf10_8c_source.html#l00102">srf10_ping()</a> und <a class="el" href="srf10_8c_source.html#l00127">srf10_read_register()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac1d1eed6a8bbca26af335b9682a6475e"></a><!-- doxytag: member="behaviour_drive_chess.c::x" ref="ac1d1eed6a8bbca26af335b9682a6475e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#ac1d1eed6a8bbca26af335b9682a6475e">x</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">163</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3764f9a13deec1760b9b204b4fe8ab7b"></a><!-- doxytag: member="behaviour_drive_chess.c::X" ref="a3764f9a13deec1760b9b204b4fe8ab7b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#a3764f9a13deec1760b9b204b4fe8ab7b">X</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">163</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00699">map_get_average()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac553850cf16d4c4f5812f7411e2b2b5a"></a><!-- doxytag: member="behaviour_drive_chess.c::y" ref="ac553850cf16d4c4f5812f7411e2b2b5a" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#ac553850cf16d4c4f5812f7411e2b2b5a">y</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">163</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae2a7535e0685d7635d3b8876e5ed376e"></a><!-- doxytag: member="behaviour_drive_chess.c::Y" ref="ae2a7535e0685d7635d3b8876e5ed376e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#ae2a7535e0685d7635d3b8876e5ed376e">Y</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">163</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="map_8c_source.html#l00699">map_get_average()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a14d53a97b6cb067f27a6a3f683f0bd21"></a><!-- doxytag: member="behaviour_drive_chess.c::z" ref="a14d53a97b6cb067f27a6a3f683f0bd21" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned char <a class="el" href="behaviour__drive__chess_8c.html#a14d53a97b6cb067f27a6a3f683f0bd21">z</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__chess_8c_source.html#l00161">161</a> der Datei <a class="el" href="behaviour__drive__chess_8c_source.html">behaviour_drive_chess.c</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:04 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

@@ -1,0 +1,503 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: mmc.h-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_a0fca93e65e0dd30a74a1e6addb2ee0e.html">include</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#define-members">Makrodefinitionen</a> &#124;
+<a href="#func-members">Funktionen</a> &#124;
+<a href="#var-members">Variablen</a>  </div>
+  <div class="headertitle">
+<div class="title">mmc.h-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Routinen zum Auslesen / Schreiben einer MMC-Karte.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="available__screens_8h_source.html">ui/available_screens.h</a>&quot;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für mmc.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc_8h__incl.png" border="0" usemap="#mmc_8h" alt=""/></div>
+<map name="mmc_8h" id="mmc_8h">
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+Dieser Graph zeigt, welche Datei direkt oder indirekt diese Datei enthält:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc_8h__dep__incl.png" border="0" usemap="#mmc_8hdep" alt=""/></div>
+<map name="mmc_8hdep" id="mmc_8hdep">
+</map>
+</div>
+</div>
+<p><a href="mmc_8h_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="define-members"></a>
+Makrodefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc_8h.html#ac99ae94be86e1333365b591928caa0c0">MMC_AGGRESSIVE_OPTIMIZATION</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc_8h.html#a6e831aacb57c75ce0f89cbb1cadbb386">MMC_INFO_AVAILABLE</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc_8h.html#a7ebc2ededd906eb69ecc1d14e2caae45">mmc_read_sector</a>(addr, buffer)&#160;&#160;&#160;mmc_read_sector_spi(0x51, addr, buffer)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc_8h.html#a032097eb5e379d13ad27671730c01a80">mmc_read_block</a>(cmd, buffer, length)&#160;&#160;&#160;mmc_read_sector_spi(cmd[0], 0, buffer)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc_8h.html#a8b7742b9c060af7db1aa56e1d9676918">mmc_write_sector</a>(addr, buffer)&#160;&#160;&#160;mmc_write_sector_spi(addr, buffer)</td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc_8h.html#aa4589b4a3e427f3b807234a46b682fcb">mmc_enable</a> (void)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Schaltet die Karte aktiv und checkt dabei die Initialisierung.  <a href="#aa4589b4a3e427f3b807234a46b682fcb"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc_8h.html#a48e9899af9e06dd1091575c2654c9afc">mmc_read_sector_spi</a> (uint8_t cmd, uint32_t addr, void *buffer)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Liest einen Block von der Karte.  <a href="#a48e9899af9e06dd1091575c2654c9afc"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc_8h.html#a4cc054aa8ca060c526f00bf179d9db38">mmc_write_sector_spi</a> (uint32_t addr, void *buffer)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Schreibt einen 512-Byte Sektor auf die Karte.  <a href="#a4cc054aa8ca060c526f00bf179d9db38"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc_8h.html#ae5fdd633809bced672d377c8504af7b6">mmc_init</a> (void)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialisiere die MMC/SD-Karte.  <a href="#ae5fdd633809bced672d377c8504af7b6"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc_8h.html#aed36fbfaed816aaed3fcdec79797c8aa">mmc_read_csd</a> (void *buffer)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Liest das CSD-Register (16 Byte) von der Karte.  <a href="#aed36fbfaed816aaed3fcdec79797c8aa"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc_8h.html#a9077f2369429106ec7271b08a39c33ee">mmc_get_size</a> (void)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Liefert die Groesse der Karte zurueck.  <a href="#a9077f2369429106ec7271b08a39c33ee"></a><br/></td></tr>
+<tr><td colspan="2"><h2><a name="var-members"></a>
+Variablen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc_8h.html#affe9a50ec46df6b49325669ec060789e">mmc_init_state</a></td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Routinen zum Auslesen / Schreiben einer MMC-Karte. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Benjamin Benz (<a href="mailto:bbe@heise.de">bbe@heise.de</a>) </dd>
+<dd>
+Ulrich Radig (<a href="mailto:mail@ulrichradig.de">mail@ulrichradig.de</a>) www.ulrichradig.de </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>07.11.2006 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="mmc_8h_source.html">mmc.h</a>.</p>
+</div><hr/><h2>Makro-Dokumentation</h2>
+<a class="anchor" id="ac99ae94be86e1333365b591928caa0c0"></a><!-- doxytag: member="mmc.h::MMC_AGGRESSIVE_OPTIMIZATION" ref="ac99ae94be86e1333365b591928caa0c0" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MMC_AGGRESSIVE_OPTIMIZATION</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Aktiviert explizites Timing im SPI-Code (ca. 13 % schneller) </p>
+
+<p>Definiert in Zeile <a class="el" href="mmc_8h_source.html#l00034">34</a> der Datei <a class="el" href="mmc_8h_source.html">mmc.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6e831aacb57c75ce0f89cbb1cadbb386"></a><!-- doxytag: member="mmc.h::MMC_INFO_AVAILABLE" ref="a6e831aacb57c75ce0f89cbb1cadbb386" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MMC_INFO_AVAILABLE</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Die Karte kann uns einiges ueber sich verrraten, wenn wir sie danach fragen. Aber es kostet halt Platz im Flash </p>
+
+<p>Definiert in Zeile <a class="el" href="mmc_8h_source.html#l00036">36</a> der Datei <a class="el" href="mmc_8h_source.html">mmc.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a032097eb5e379d13ad27671730c01a80"></a><!-- doxytag: member="mmc.h::mmc_read_block" ref="a032097eb5e379d13ad27671730c01a80" args="(cmd, buffer, length)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define mmc_read_block</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">cmd, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">buffer, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">length&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;mmc_read_sector_spi(cmd[0], 0, buffer)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="mmc_8h_source.html#l00049">49</a> der Datei <a class="el" href="mmc_8h_source.html">mmc.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7ebc2ededd906eb69ecc1d14e2caae45"></a><!-- doxytag: member="mmc.h::mmc_read_sector" ref="a7ebc2ededd906eb69ecc1d14e2caae45" args="(addr, buffer)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define mmc_read_sector</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">addr, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">buffer&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;mmc_read_sector_spi(0x51, addr, buffer)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="mmc_8h_source.html#l00048">48</a> der Datei <a class="el" href="mmc_8h_source.html">mmc.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs-low_8c_source.html#l00209">botfs_read_low()</a> und <a class="el" href="map_8c_source.html#l00231">map_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8b7742b9c060af7db1aa56e1d9676918"></a><!-- doxytag: member="mmc.h::mmc_write_sector" ref="a8b7742b9c060af7db1aa56e1d9676918" args="(addr, buffer)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define mmc_write_sector</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">addr, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">buffer&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;mmc_write_sector_spi(addr, buffer)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="mmc_8h_source.html#l00050">50</a> der Datei <a class="el" href="mmc_8h_source.html">mmc.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botfs-low_8c_source.html#l00225">botfs_write_low()</a> und <a class="el" href="map_8c_source.html#l00231">map_init()</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="aa4589b4a3e427f3b807234a46b682fcb"></a><!-- doxytag: member="mmc.h::mmc_enable" ref="aa4589b4a3e427f3b807234a46b682fcb" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mmc_enable </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Schaltet die Karte aktiv und checkt dabei die Initialisierung. </p>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>0 wenn alles ok ist, 1 wenn Init nicht moeglich </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc_8c_source.html#l00406">406</a> der Datei <a class="el" href="mmc_8c_source.html">mmc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mmc_8c_source.html#l00069">mmc_init_state</a>, <a class="el" href="mmc_8c_source.html#l00458">mmc_init()</a>, <a class="el" href="ena_8c_source.html#l00060">ENA_on()</a>, <a class="el" href="ena_8h_source.html#l00036">ENA_MMC</a>, <a class="el" href="ena_8c_source.html#l00117">ENA_off()</a> und <a class="el" href="mmc_8c_source.html#l00143">mmc_write_byte</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc_8h_aa4589b4a3e427f3b807234a46b682fcb_cgraph.png" border="0" usemap="#mmc_8h_aa4589b4a3e427f3b807234a46b682fcb_cgraph" alt=""/></div>
+<map name="mmc_8h_aa4589b4a3e427f3b807234a46b682fcb_cgraph" id="mmc_8h_aa4589b4a3e427f3b807234a46b682fcb_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a9077f2369429106ec7271b08a39c33ee"></a><!-- doxytag: member="mmc.h::mmc_get_size" ref="a9077f2369429106ec7271b08a39c33ee" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t mmc_get_size </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Liefert die Groesse der Karte zurueck. </p>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Groesse der Karte in Byte. Bei einer 4 GByte-Karte kommt 0xFFFFFFFF zurueck </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ae5fdd633809bced672d377c8504af7b6"></a><!-- doxytag: member="mmc.h::mmc_init" ref="ae5fdd633809bced672d377c8504af7b6" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mmc_init </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Initialisiere die MMC/SD-Karte. </p>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>0 wenn allles ok, sonst Nummer des Kommandos bei dem abgebrochen wurde </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc_8c_source.html#l00458">458</a> der Datei <a class="el" href="mmc_8c_source.html">mmc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="os__thread_8h_source.html#l00118">os_enterCS</a>, <a class="el" href="mmc_8c_source.html#l00069">mmc_init_state</a>, <a class="el" href="spi_8h_source.html#l00045">SPI_SPEED_250KHZ</a>, <a class="el" href="spi_8c_source.html#l00038">SPI_MasterInit()</a>, <a class="el" href="mmc-low_8h_source.html#l00037">MMC_CLK_DDR</a>, <a class="el" href="mmc-low_8h_source.html#l00039">SPI_CLK</a>, <a class="el" href="mmc-low_8h_source.html#l00033">MMC_DDR</a>, <a class="el" href="mmc-low_8h_source.html#l00034">SPI_DI</a>, <a class="el" href="mmc-low_8h_source.html#l00035">SPI_DO</a>, <a class="el" href="ena_8c_source.html#l00060">ENA_on()</a>, <a class="el" href="ena_8h_source.html#l00036">ENA_MMC</a>, <a class="el" href="ena_8c_source.html#l00117">ENA_off()</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="mmc_8c_source.html#l00143">mmc_write_byte</a>, <a class="el" href="mmc-low_8h_source.html#l00041">MMC_TIMEOUT</a>, <a class="el" href="led_8c_source.html#l00050">LED_on()</a>, <a class="el" href="led_8h_source.html#l00036">LED_TUERKIS</a>, <a class="el" href="os__thread_8c_source.html#l00108">os_exitCS()</a>, <a class="el" href="spi_8h_source.html#l00043">SPI_SPEED_MAX</a> und <a class="el" href="led_8c_source.html#l00059">LED_off()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="init_8c_source.html#l00046">ctbot_init()</a> und <a class="el" href="mmc_8c_source.html#l00406">mmc_enable()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc_8h_ae5fdd633809bced672d377c8504af7b6_cgraph.png" border="0" usemap="#mmc_8h_ae5fdd633809bced672d377c8504af7b6_cgraph" alt=""/></div>
+<map name="mmc_8h_ae5fdd633809bced672d377c8504af7b6_cgraph" id="mmc_8h_ae5fdd633809bced672d377c8504af7b6_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="aed36fbfaed816aaed3fcdec79797c8aa"></a><!-- doxytag: member="mmc.h::mmc_read_csd" ref="aed36fbfaed816aaed3fcdec79797c8aa" args="(void *buffer)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mmc_read_csd </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>buffer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Liest das CSD-Register (16 Byte) von der Karte. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*buffer</td><td>Zeiger auf Puffer von mindestens 16 Byte </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>0, falls alles OK </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a48e9899af9e06dd1091575c2654c9afc"></a><!-- doxytag: member="mmc.h::mmc_read_sector_spi" ref="a48e9899af9e06dd1091575c2654c9afc" args="(uint8_t cmd, uint32_t addr, void *buffer)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mmc_read_sector_spi </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>cmd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>addr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Liest einen Block von der Karte. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmd</td><td>Kommando zum Lesen (0x51 fuer 512-Byte Block) </td></tr>
+    <tr><td class="paramname">addr</td><td>Adresse des Blocks </td></tr>
+    <tr><td class="paramname">*buffer</td><td>Zeiger auf Puffer fuer die Daten </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>0 wenn alles ok ist, 1 wenn prepare_transfer_spi() Fehler meldet, 3 bei Timeout </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc_8c_source.html#l00209">209</a> der Datei <a class="el" href="mmc_8c_source.html">mmc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="os__thread_8h_source.html#l00118">os_enterCS</a>, <a class="el" href="os__thread_8c_source.html#l00108">os_exitCS()</a>, <a class="el" href="led_8c_source.html#l00050">LED_on()</a>, <a class="el" href="led_8h_source.html#l00035">LED_GRUEN</a>, <a class="el" href="mmc_8c_source.html#l00069">mmc_init_state</a>, <a class="el" href="led_8c_source.html#l00059">LED_off()</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">j</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">k</a> und <a class="el" href="spi_8c_source.html#l00067">SPI_MasterReceive()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc_8h_a48e9899af9e06dd1091575c2654c9afc_cgraph.png" border="0" usemap="#mmc_8h_a48e9899af9e06dd1091575c2654c9afc_cgraph" alt=""/></div>
+<map name="mmc_8h_a48e9899af9e06dd1091575c2654c9afc_cgraph" id="mmc_8h_a48e9899af9e06dd1091575c2654c9afc_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a4cc054aa8ca060c526f00bf179d9db38"></a><!-- doxytag: member="mmc.h::mmc_write_sector_spi" ref="a4cc054aa8ca060c526f00bf179d9db38" args="(uint32_t addr, void *buffer)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mmc_write_sector_spi </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>addr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Schreibt einen 512-Byte Sektor auf die Karte. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">addr</td><td>Adresse des 512-Byte Blocks </td></tr>
+    <tr><td class="paramname">*buffer</td><td>Zeiger auf den Puffer </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>0 wenn alles ok ist, 1 wenn prepare_transfer_spi() Fehler meldet, 3 wenn Timeout bis zur Bestaetigung </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc_8c_source.html#l00292">292</a> der Datei <a class="el" href="mmc_8c_source.html">mmc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="os__thread_8h_source.html#l00118">os_enterCS</a>, <a class="el" href="os__thread_8c_source.html#l00108">os_exitCS()</a>, <a class="el" href="led_8c_source.html#l00050">LED_on()</a>, <a class="el" href="led_8h_source.html#l00032">LED_ROT</a>, <a class="el" href="spi_8c_source.html#l00056">SPI_MasterTransmit()</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">j</a>, <a class="el" href="led_8c_source.html#l00059">LED_off()</a> und <a class="el" href="mmc_8c_source.html#l00069">mmc_init_state</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc_8h_a4cc054aa8ca060c526f00bf179d9db38_cgraph.png" border="0" usemap="#mmc_8h_a4cc054aa8ca060c526f00bf179d9db38_cgraph" alt=""/></div>
+<map name="mmc_8h_a4cc054aa8ca060c526f00bf179d9db38_cgraph" id="mmc_8h_a4cc054aa8ca060c526f00bf179d9db38_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<hr/><h2>Variablen-Dokumentation</h2>
+<a class="anchor" id="affe9a50ec46df6b49325669ec060789e"></a><!-- doxytag: member="mmc.h::mmc_init_state" ref="affe9a50ec46df6b49325669ec060789e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t <a class="el" href="mmc_8c.html#affe9a50ec46df6b49325669ec060789e">mmc_init_state</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Initialierungsstatus der Karte, 0: ok, 1: Fehler </p>
+
+<p>Definiert in Zeile <a class="el" href="mmc_8c_source.html#l00069">69</a> der Datei <a class="el" href="mmc_8c_source.html">mmc.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mmc_8c_source.html#l00209">mmc_read_sector_spi()</a>, <a class="el" href="mmc_8c_source.html#l00292">mmc_write_sector_spi()</a>, <a class="el" href="mmc_8c_source.html#l00406">mmc_enable()</a> und <a class="el" href="mmc_8c_source.html#l00458">mmc_init()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:06 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

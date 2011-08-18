@@ -1,0 +1,572 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: behaviour_ubasic.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#define-members">Makrodefinitionen</a> &#124;
+<a href="#func-members">Funktionen</a> &#124;
+<a href="#var-members">Variablen</a>  </div>
+  <div class="headertitle">
+<div class="title">behaviour_ubasic.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Basic-Interpreter als Verhalten.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="bot-logic_8h_source.html">bot-logic/bot-logic.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="available__screens_8h_source.html">ui/available_screens.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="ubasic__config_8h_source.html">bot-logic/ubasic_config.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="tokenizer__access_8h_source.html">bot-logic/tokenizer_access.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="ubasic_8h_source.html">bot-logic/ubasic.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="ubasic__avr_8h_source.html">bot-logic/ubasic_avr.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="ubasic__call_8h_source.html">bot-logic/ubasic_call.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="tokenizer_8h_source.html">bot-logic/tokenizer.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="ubasic__ext__proc_8h_source.html">bot-logic/ubasic_ext_proc.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="botfs_8h_source.html">botfs.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="init_8h_source.html">init.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="log_8h_source.html">log.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="rc5-codes_8h_source.html">rc5-codes.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="display_8h_source.html">display.h</a>&quot;</code><br/>
+<code>#include &lt;stdio.h&gt;</code><br/>
+<code>#include &lt;string.h&gt;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für behaviour_ubasic.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__ubasic_8c__incl.png" border="0" usemap="#behaviour__ubasic_8c" alt=""/></div>
+<map name="behaviour__ubasic_8c" id="behaviour__ubasic_8c">
+</map>
+</div>
+</div>
+<p><a href="behaviour__ubasic_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="define-members"></a>
+Makrodefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__ubasic_8c.html#af5e0f640de74fb1f64d9d8d0b10dc006">PROG_FILE_NAME</a>&#160;&#160;&#160;&quot;/basic/basX.txt&quot;</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Name der Programmdateien, X wird durch 1 bis 9 ersetzt.  <a href="#af5e0f640de74fb1f64d9d8d0b10dc006"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__ubasic_8c.html#a8e50796e96bda57594631c23e8995215">PROG_FILE_EXT</a>&#160;&#160;&#160;&quot;.txt&quot;</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Dateinamenerweiterung (PROG_FILE_NAME muss hierauf enden)  <a href="#a8e50796e96bda57594631c23e8995215"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__ubasic_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(...)</td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__ubasic_8c.html#a7edc7f1641039d97224645cf4282bdb3">bot_ubasic_load_file</a> (char *filename, botfs_file_descr_t *file)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Laedt ein uBasic-Programm aus deiner BotFS-Datei.  <a href="#a7edc7f1641039d97224645cf4282bdb3"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__ubasic_8c.html#a69b89a3fea91b09215c043edcca231c2">ubasic_set_speed</a> (int16_t speedLeft, int16_t speedRight)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Hilfsroutine, um in Basic innerhalb eines Steps beide Variablen mit der Bot-Geschwindigkeit belegen zu koennen.  <a href="#a69b89a3fea91b09215c043edcca231c2"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__ubasic_8c.html#a40c7476c1c5fd3a789bfa4f6fde4ff1a">ubasic_behaviour_is_active</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *behaviour)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Rueckgabe ob das zuletzt aufgerufene Verhalten noch aktiv ist oder nicht; festgestellt anhand der Verhaltens-Data-Struktur des ubasic-Verhaltens.  <a href="#a40c7476c1c5fd3a789bfa4f6fde4ff1a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__ubasic_8c.html#a4bb8139a7231b6e02e1a112a0e51dfe3">wait_statement</a> (void)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementierung des Basic-Wait-Statements fuer ct-Bot.  <a href="#a4bb8139a7231b6e02e1a112a0e51dfe3"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__ubasic_8c.html#a027e9064dff19f31ba6e62721032147f">bot_ubasic_behaviour</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *data)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">uBasic als ct-Bot Verhalten  <a href="#a027e9064dff19f31ba6e62721032147f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__ubasic_8c.html#ae7fbc68b2c593466925c26ad8538f71f">bot_ubasic</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *caller)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Startet das uBasic-Verhalten.  <a href="#ae7fbc68b2c593466925c26ad8538f71f"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__ubasic_8c.html#a9101526687481802c56146ccc7e5aae8">bot_ubasic_break</a> (void)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">bricht das aktuelle Basic-Programm ab  <a href="#a9101526687481802c56146ccc7e5aae8"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__ubasic_8c.html#aad825ed95fc49d0eb0a8fee3c324b0ec">ubasic_display</a> (void)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Display fuer das uBasic-Verhalten.  <a href="#aad825ed95fc49d0eb0a8fee3c324b0ec"></a><br/></td></tr>
+<tr><td colspan="2"><h2><a name="var-members"></a>
+Variablen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">botfs_file_descr_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__ubasic_8c.html#a0a321a94c10cb85a2a8cebc49d5b9c70">ubasic_prog_file</a> = { 0, 0, 0, 0, { 0, 0, 0 } }</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Basic-Programmdatei.  <a href="#a0a321a94c10cb85a2a8cebc49d5b9c70"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__ubasic_8c.html#a9766017d25959b78c91ed980a6aedf80">ubasic_behaviour_data</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Verhaltensdatensatz des ubasis-Verhaltens.  <a href="#a9766017d25959b78c91ed980a6aedf80"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__ubasic_8c.html#aaf32207cc1bc33f8cc05bbed419bed81">ubasic_content</a> = 0</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">aktuelles Zeichen des Basic-Programms  <a href="#aaf32207cc1bc33f8cc05bbed419bed81"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__ubasic_8c.html#a03829509db74275da714b7aa65f70ad0">ubasic_ptr</a> = 0</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">aktuelle Position im Basic-Programm  <a href="#a03829509db74275da714b7aa65f70ad0"></a><br/></td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Basic-Interpreter als Verhalten. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Frank Menzel (<a href="mailto:menzelfr@gmx.de">menzelfr@gmx.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>10.06.2010 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="behaviour__ubasic_8c_source.html">behaviour_ubasic.c</a>.</p>
+</div><hr/><h2>Makro-Dokumentation</h2>
+<a class="anchor" id="a754b3d074e0af4ad3c7b918dd77ecb2d"></a><!-- doxytag: member="behaviour_ubasic.c::LOG_DEBUG" ref="a754b3d074e0af4ad3c7b918dd77ecb2d" args="(...)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define LOG_DEBUG</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__ubasic_8c_source.html#l00058">58</a> der Datei <a class="el" href="behaviour__ubasic_8c_source.html">behaviour_ubasic.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__ubasic_8c_source.html#l00077">bot_ubasic_load_file()</a> und <a class="el" href="behaviour__ubasic_8c_source.html#l00145">bot_ubasic_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8e50796e96bda57594631c23e8995215"></a><!-- doxytag: member="behaviour_ubasic.c::PROG_FILE_EXT" ref="a8e50796e96bda57594631c23e8995215" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define PROG_FILE_EXT&#160;&#160;&#160;&quot;.txt&quot;</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Dateinamenerweiterung (PROG_FILE_NAME muss hierauf enden) </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__ubasic_8c_source.html#l00050">50</a> der Datei <a class="el" href="behaviour__ubasic_8c_source.html">behaviour_ubasic.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af5e0f640de74fb1f64d9d8d0b10dc006"></a><!-- doxytag: member="behaviour_ubasic.c::PROG_FILE_NAME" ref="af5e0f640de74fb1f64d9d8d0b10dc006" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define PROG_FILE_NAME&#160;&#160;&#160;&quot;/basic/basX.txt&quot;</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Name der Programmdateien, X wird durch 1 bis 9 ersetzt. </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__ubasic_8c_source.html#l00049">49</a> der Datei <a class="el" href="behaviour__ubasic_8c_source.html">behaviour_ubasic.c</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="ae7fbc68b2c593466925c26ad8538f71f"></a><!-- doxytag: member="behaviour_ubasic.c::bot_ubasic" ref="ae7fbc68b2c593466925c26ad8538f71f" args="(Behaviour_t *caller)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_ubasic </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>caller</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Startet das uBasic-Verhalten. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*caller</td><td>Zeiger auf den Verhaltensdatensatz des Aufrufers </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__ubasic_8c_source.html#l00168">168</a> der Datei <a class="el" href="behaviour__ubasic_8c_source.html">behaviour_ubasic.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__ubasic_8c_source.html#l00061">ubasic_prog_file</a>, <a class="el" href="log_8h_source.html#l00309">LOG_ERROR</a>, <a class="el" href="bot-logic_8c_source.html#l00532">switch_to_behaviour()</a>, <a class="el" href="behaviour__ubasic_8c_source.html#l00145">bot_ubasic_behaviour()</a>, <a class="el" href="bot-logic_8h_source.html#l00040">BEHAVIOUR_OVERRIDE</a>, <a class="el" href="bot-logic_8c_source.html#l00376">get_behaviour()</a>, <a class="el" href="behaviour__ubasic_8c_source.html#l00115">ubasic_set_speed()</a>, <a class="el" href="motor_8h_source.html#l00030">BOT_SPEED_IGNORE</a> und <a class="el" href="ubasic_8c_source.html#l00118">ubasic_init()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="command_8c_source.html#l00359">command_evaluate()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__ubasic_8c_ae7fbc68b2c593466925c26ad8538f71f_cgraph.png" border="0" usemap="#behaviour__ubasic_8c_ae7fbc68b2c593466925c26ad8538f71f_cgraph" alt=""/></div>
+<map name="behaviour__ubasic_8c_ae7fbc68b2c593466925c26ad8538f71f_cgraph" id="behaviour__ubasic_8c_ae7fbc68b2c593466925c26ad8538f71f_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a027e9064dff19f31ba6e62721032147f"></a><!-- doxytag: member="behaviour_ubasic.c::bot_ubasic_behaviour" ref="a027e9064dff19f31ba6e62721032147f" args="(Behaviour_t *data)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_ubasic_behaviour </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>uBasic als ct-Bot Verhalten </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*data</td><td>Zeiger auf den Datensatz des Verhaltens </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__ubasic_8c_source.html#l00145">145</a> der Datei <a class="el" href="behaviour__ubasic_8c_source.html">behaviour_ubasic.c</a>.</p>
+
+<p>Benutzt <a class="el" href="timer_8h_source.html#l00088">TIMER_GET_TICKCOUNT_32</a>, <a class="el" href="behaviour__ubasic_8c_source.html#l00058">LOG_DEBUG</a>, <a class="el" href="ubasic_8c_source.html#l01262">ubasic_run()</a>, <a class="el" href="ubasic_8c_source.html#l01278">ubasic_finished()</a>, <a class="el" href="bot-logic_8c_source.html#l00056">speedWishLeft</a> und <a class="el" href="bot-logic_8c_source.html#l00057">speedWishRight</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__ubasic_8c_source.html#l00168">bot_ubasic()</a>, <a class="el" href="bot-logic_8c_source.html#l00086">bot_behave_init()</a> und <a class="el" href="command_8c_source.html#l00359">command_evaluate()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__ubasic_8c_a027e9064dff19f31ba6e62721032147f_cgraph.png" border="0" usemap="#behaviour__ubasic_8c_a027e9064dff19f31ba6e62721032147f_cgraph" alt=""/></div>
+<map name="behaviour__ubasic_8c_a027e9064dff19f31ba6e62721032147f_cgraph" id="behaviour__ubasic_8c_a027e9064dff19f31ba6e62721032147f_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a9101526687481802c56146ccc7e5aae8"></a><!-- doxytag: member="behaviour_ubasic.c::bot_ubasic_break" ref="a9101526687481802c56146ccc7e5aae8" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_ubasic_break </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>bricht das aktuelle Basic-Programm ab </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__ubasic_8c_source.html#l00183">183</a> der Datei <a class="el" href="behaviour__ubasic_8c_source.html">behaviour_ubasic.c</a>.</p>
+
+<p>Benutzt <a class="el" href="ubasic_8c_source.html#l00133">ubasic_break()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="command_8c_source.html#l00359">command_evaluate()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__ubasic_8c_a9101526687481802c56146ccc7e5aae8_cgraph.png" border="0" usemap="#behaviour__ubasic_8c_a9101526687481802c56146ccc7e5aae8_cgraph" alt=""/></div>
+<map name="behaviour__ubasic_8c_a9101526687481802c56146ccc7e5aae8_cgraph" id="behaviour__ubasic_8c_a9101526687481802c56146ccc7e5aae8_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a7edc7f1641039d97224645cf4282bdb3"></a><!-- doxytag: member="behaviour_ubasic.c::bot_ubasic_load_file" ref="a7edc7f1641039d97224645cf4282bdb3" args="(char *filename, botfs_file_descr_t *file)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_ubasic_load_file </td>
+          <td>(</td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">botfs_file_descr_t *&#160;</td>
+          <td class="paramname"><em>file</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Laedt ein uBasic-Programm aus deiner BotFS-Datei. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*filename</td><td>Dateiname des Programms </td></tr>
+    <tr><td class="paramname">*file</td><td>Zeiger auf Dateideskriptor der Programmdatei </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__ubasic_8c_source.html#l00077">77</a> der Datei <a class="el" href="behaviour__ubasic_8c_source.html">behaviour_ubasic.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__ubasic_8c_source.html#l00058">LOG_DEBUG</a>, <a class="el" href="behaviour__ubasic_8c_source.html#l00061">ubasic_prog_file</a>, <a class="el" href="behaviour__ubasic_8c_source.html#l00070">ubasic_ptr</a> und <a class="el" href="ubasic__config_8h_source.html#l00091">MAX_PROG_NAME_LEN</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="command_8c_source.html#l00359">command_evaluate()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a40c7476c1c5fd3a789bfa4f6fde4ff1a"></a><!-- doxytag: member="behaviour_ubasic.c::ubasic_behaviour_is_active" ref="a40c7476c1c5fd3a789bfa4f6fde4ff1a" args="(Behaviour_t *behaviour)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t ubasic_behaviour_is_active </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>behaviour</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Rueckgabe ob das zuletzt aufgerufene Verhalten noch aktiv ist oder nicht; festgestellt anhand der Verhaltens-Data-Struktur des ubasic-Verhaltens. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*behaviour</td><td>Zeiger auf Verhaltensdatensatz zum abzufragenden Verhalten </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>!= 0 wenn das zuletzt aufgerufene Verhalten noch laeuft; 0 wenn es nicht mehr laeuft (Achtung: wait ist auch ein Verhalten) </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__ubasic_8c_source.html#l00125">125</a> der Datei <a class="el" href="behaviour__ubasic_8c_source.html">behaviour_ubasic.c</a>.</p>
+
+<p>Benutzt <a class="el" href="bot-logic_8h_source.html#l00057">_Behaviour_t::subResult</a> und <a class="el" href="bot-logic_8h_source.html#l00048">BEHAVIOUR_SUBBACKGR</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aad825ed95fc49d0eb0a8fee3c324b0ec"></a><!-- doxytag: member="behaviour_ubasic.c::ubasic_display" ref="aad825ed95fc49d0eb0a8fee3c324b0ec" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ubasic_display </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Display fuer das uBasic-Verhalten. </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__ubasic_8c_source.html#l00224">224</a> der Datei <a class="el" href="behaviour__ubasic_8c_source.html">behaviour_ubasic.c</a>.</p>
+
+<p>Benutzt <a class="el" href="display_8c_source.html#l00141">display_cursor()</a> und <a class="el" href="display__pc_8c_source.html#l00096">display_puts()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="gui_8c_source.html#l00330">gui_init()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__ubasic_8c_aad825ed95fc49d0eb0a8fee3c324b0ec_cgraph.png" border="0" usemap="#behaviour__ubasic_8c_aad825ed95fc49d0eb0a8fee3c324b0ec_cgraph" alt=""/></div>
+<map name="behaviour__ubasic_8c_aad825ed95fc49d0eb0a8fee3c324b0ec_cgraph" id="behaviour__ubasic_8c_aad825ed95fc49d0eb0a8fee3c324b0ec_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a69b89a3fea91b09215c043edcca231c2"></a><!-- doxytag: member="behaviour_ubasic.c::ubasic_set_speed" ref="a69b89a3fea91b09215c043edcca231c2" args="(int16_t speedLeft, int16_t speedRight)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ubasic_set_speed </td>
+          <td>(</td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>speedLeft</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>speedRight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Hilfsroutine, um in Basic innerhalb eines Steps beide Variablen mit der Bot-Geschwindigkeit belegen zu koennen. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">speedLeft</td><td>Geschwindigkeitswert fuer links </td></tr>
+    <tr><td class="paramname">speedRight</td><td>Geschwindigkeitswert fuer rechts </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__ubasic_8c_source.html#l00115">115</a> der Datei <a class="el" href="behaviour__ubasic_8c_source.html">behaviour_ubasic.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__ubasic_8c_source.html#l00168">bot_ubasic()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4bb8139a7231b6e02e1a112a0e51dfe3"></a><!-- doxytag: member="behaviour_ubasic.c::wait_statement" ref="a4bb8139a7231b6e02e1a112a0e51dfe3" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void wait_statement </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Implementierung des Basic-Wait-Statements fuer ct-Bot. </p>
+<p>Das eigentliche Warten erfolgt dabei ueber das Verhalten. </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__ubasic_8c_source.html#l00133">133</a> der Datei <a class="el" href="behaviour__ubasic_8c_source.html">behaviour_ubasic.c</a>.</p>
+
+<p>Benutzt <a class="el" href="ubasic_8c_source.html#l00146">accept()</a>, <a class="el" href="parser_8h_source.html#l00037">TOKENIZER_WAIT</a>, <a class="el" href="delay_8c_source.html#l00036">delay()</a>, <a class="el" href="ubasic_8c_source.html#l00340">expr()</a>, <a class="el" href="timer_8h_source.html#l00088">TIMER_GET_TICKCOUNT_32</a> und <a class="el" href="timer_8h_source.html#l00040">MS_TO_TICKS</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__ubasic_8c_a4bb8139a7231b6e02e1a112a0e51dfe3_cgraph.png" border="0" usemap="#behaviour__ubasic_8c_a4bb8139a7231b6e02e1a112a0e51dfe3_cgraph" alt=""/></div>
+<map name="behaviour__ubasic_8c_a4bb8139a7231b6e02e1a112a0e51dfe3_cgraph" id="behaviour__ubasic_8c_a4bb8139a7231b6e02e1a112a0e51dfe3_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+<hr/><h2>Variablen-Dokumentation</h2>
+<a class="anchor" id="a9766017d25959b78c91ed980a6aedf80"></a><!-- doxytag: member="behaviour_ubasic.c::ubasic_behaviour_data" ref="a9766017d25959b78c91ed980a6aedf80" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a>* <a class="el" href="behaviour__ubasic_8h.html#a9766017d25959b78c91ed980a6aedf80">ubasic_behaviour_data</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Verhaltensdatensatz des ubasis-Verhaltens. </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__ubasic_8c_source.html#l00068">68</a> der Datei <a class="el" href="behaviour__ubasic_8c_source.html">behaviour_ubasic.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aaf32207cc1bc33f8cc05bbed419bed81"></a><!-- doxytag: member="behaviour_ubasic.c::ubasic_content" ref="aaf32207cc1bc33f8cc05bbed419bed81" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char <a class="el" href="behaviour__ubasic_8h.html#aaf32207cc1bc33f8cc05bbed419bed81">ubasic_content</a> = 0</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>aktuelles Zeichen des Basic-Programms </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__ubasic_8c_source.html#l00069">69</a> der Datei <a class="el" href="behaviour__ubasic_8c_source.html">behaviour_ubasic.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0a321a94c10cb85a2a8cebc49d5b9c70"></a><!-- doxytag: member="behaviour_ubasic.c::ubasic_prog_file" ref="a0a321a94c10cb85a2a8cebc49d5b9c70" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">botfs_file_descr_t <a class="el" href="behaviour__ubasic_8h.html#a0a321a94c10cb85a2a8cebc49d5b9c70">ubasic_prog_file</a> = { 0, 0, 0, 0, { 0, 0, 0 } }</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Basic-Programmdatei. </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__ubasic_8c_source.html#l00061">61</a> der Datei <a class="el" href="behaviour__ubasic_8c_source.html">behaviour_ubasic.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__ubasic_8c_source.html#l00077">bot_ubasic_load_file()</a> und <a class="el" href="behaviour__ubasic_8c_source.html#l00168">bot_ubasic()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a03829509db74275da714b7aa65f70ad0"></a><!-- doxytag: member="behaviour_ubasic.c::ubasic_ptr" ref="a03829509db74275da714b7aa65f70ad0" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t <a class="el" href="behaviour__ubasic_8h.html#a03829509db74275da714b7aa65f70ad0">ubasic_ptr</a> = 0</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>aktuelle Position im Basic-Programm </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__ubasic_8c_source.html#l00070">70</a> der Datei <a class="el" href="behaviour__ubasic_8c_source.html">behaviour_ubasic.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__ubasic_8c_source.html#l00077">bot_ubasic_load_file()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:05 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

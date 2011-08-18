@@ -1,0 +1,15 @@
+digraph G
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="bot_scan_beacons",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node1 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="switch_to_behaviour",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9",tooltip="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae..."];
+  Node2 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="get_behaviour",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$bot-logic_8c.html#a11e7a95fd56f9703bd2bd9c61300df6c",tooltip="Liefert das Verhalten zurueck, welches durch function implementiert ist."];
+  Node1 -> Node4 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="bot_scan_beacons_behaviour",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$behaviour__scan__beacons_8c.html#ae0a6878672d5f846fd832ccf760cb2a6"];
+  Node4 -> Node5 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node5 [label="calc_resection",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$math__utils_8c.html#a8b0e0e0cb5958042f543a326a68a0a40",tooltip="Berechnet den Standort via Rueckwaertseinschnitt nach Cassini, wenn drei angepeilte Positionen bekann..."];
+}

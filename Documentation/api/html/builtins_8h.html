@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: builtins.h-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_a0fca93e65e0dd30a74a1e6addb2ee0e.html">include</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#define-members">Makrodefinitionen</a> &#124;
+<a href="#func-members">Funktionen</a>  </div>
+  <div class="headertitle">
+<div class="title">builtins.h-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Compiler-Builtins mit Fallback fuer aeltere avr-libc Versionen.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &lt;avr/version.h&gt;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für builtins.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="builtins_8h__incl.png" border="0" usemap="#builtins_8h" alt=""/></div>
+<map name="builtins_8h" id="builtins_8h">
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+Dieser Graph zeigt, welche Datei direkt oder indirekt diese Datei enthält:</div>
+<div class="dyncontent">
+<div class="center"><img src="builtins_8h__dep__incl.png" border="0" usemap="#builtins_8hdep" alt=""/></div>
+<map name="builtins_8hdep" id="builtins_8hdep">
+</map>
+</div>
+</div>
+<p><a href="builtins_8h_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="define-members"></a>
+Makrodefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="builtins_8h.html#a42d3e0acc97b2f959cd31522ca6ccbd1">_AVR_BUILTINS_H_</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="builtins_8h.html#a156b78d0b88697e8ff6cf05c5202b0d7">__HAS_DELAY_CYCLES</a>&#160;&#160;&#160;1</td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="builtins_8h.html#aa9fc5c6054d97fa1b7901789a7f69636">__builtin_avr_sei</a> (void)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables interrupts by setting the global interrupt mask.  <a href="#aa9fc5c6054d97fa1b7901789a7f69636"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2">__builtin_avr_cli</a> (void)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Disables all interrupts by clearing the global interrupt mask.  <a href="#a41590bd57be6a89c1b9bcafe523207f2"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="builtins_8h.html#a1b92d0227413dde09288ce1adae44824">__builtin_avr_delay_cycles</a> (unsigned long __n)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Emits a sequence of instructions causing the CPU to spend <code>__n</code> cycles on it.  <a href="#a1b92d0227413dde09288ce1adae44824"></a><br/></td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Compiler-Builtins mit Fallback fuer aeltere avr-libc Versionen. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Timo Sandmann (<a href="mailto:mail@timosandmann.de">mail@timosandmann.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>13.03.2011 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="builtins_8h_source.html">builtins.h</a>.</p>
+</div><hr/><h2>Makro-Dokumentation</h2>
+<a class="anchor" id="a156b78d0b88697e8ff6cf05c5202b0d7"></a><!-- doxytag: member="builtins.h::__HAS_DELAY_CYCLES" ref="a156b78d0b88697e8ff6cf05c5202b0d7" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define __HAS_DELAY_CYCLES&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="builtins_8h_source.html#l00043">43</a> der Datei <a class="el" href="builtins_8h_source.html">builtins.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a42d3e0acc97b2f959cd31522ca6ccbd1"></a><!-- doxytag: member="builtins.h::_AVR_BUILTINS_H_" ref="a42d3e0acc97b2f959cd31522ca6ccbd1" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define _AVR_BUILTINS_H_</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="builtins_8h_source.html#l00040">40</a> der Datei <a class="el" href="builtins_8h_source.html">builtins.h</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="a41590bd57be6a89c1b9bcafe523207f2"></a><!-- doxytag: member="builtins.h::__builtin_avr_cli" ref="a41590bd57be6a89c1b9bcafe523207f2" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void __builtin_avr_cli </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Disables all interrupts by clearing the global interrupt mask. </p>
+
+<p>Wird benutzt von <a class="el" href="fifo_8c_source.html#l00064">fifo_put_data()</a>, <a class="el" href="fifo_8c_source.html#l00147">fifo_get_data()</a>, <a class="el" href="init-low_8c_source.html#l00167">ctbot_shutdown_low()</a>, <a class="el" href="sensor_8c_source.html#l00235">sensor_update()</a>, <a class="el" href="timer-low_8c_source.html#l00052">ISR()</a> und <a class="el" href="uart_8c_source.html#l00047">uart_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1b92d0227413dde09288ce1adae44824"></a><!-- doxytag: member="builtins.h::__builtin_avr_delay_cycles" ref="a1b92d0227413dde09288ce1adae44824" args="(unsigned long __n)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void __builtin_avr_delay_cycles </td>
+          <td>(</td>
+          <td class="paramtype">unsigned long&#160;</td>
+          <td class="paramname"><em>__n</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Emits a sequence of instructions causing the CPU to spend <code>__n</code> cycles on it. </p>
+
+</div>
+</div>
+<a class="anchor" id="aa9fc5c6054d97fa1b7901789a7f69636"></a><!-- doxytag: member="builtins.h::__builtin_avr_sei" ref="aa9fc5c6054d97fa1b7901789a7f69636" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void __builtin_avr_sei </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Enables interrupts by setting the global interrupt mask. </p>
+
+<p>Wird benutzt von <a class="el" href="timer-low_8c_source.html#l00052">ISR()</a> und <a class="el" href="timer-low_8c_source.html#l00107">timer_2_init()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:05 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>

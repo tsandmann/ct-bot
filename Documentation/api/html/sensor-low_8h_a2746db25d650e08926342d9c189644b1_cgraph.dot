@@ -1,0 +1,11 @@
+digraph G
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  rankdir="LR";
+  Node1 [label="bot_encoder_isr",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node1 -> Node2 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="speed_control",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$motor_8c.html#abfe2160ced04338d7f24aab6291c7f19",tooltip="Drehzahlregelung fuer die Motoren des c&#39;t-Bots."];
+  Node2 -> Node3 [color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="motor_update",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$motor-low_8h.html#af288dee5f55b67d9eaf1d6e180bfd121"];
+}

@@ -1,0 +1,284 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c't-Bot: behaviour_delay.h-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c't-Bot
+   &#160;<span id="projectnumber">1818</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_a0fca93e65e0dd30a74a1e6addb2ee0e.html">include</a>      </li>
+      <li class="navelem"><a class="el" href="dir_5c55cd21629be826c7b7fde3f3ac88dc.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#define-members">Makrodefinitionen</a> &#124;
+<a href="#func-members">Funktionen</a>  </div>
+  <div class="headertitle">
+<div class="title">behaviour_delay.h-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Delay-Routinen als Verhalten.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="timer_8h_source.html">timer.h</a>&quot;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für behaviour_delay.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__delay_8h__incl.png" border="0" usemap="#behaviour__delay_8h" alt=""/></div>
+<map name="behaviour__delay_8h" id="behaviour__delay_8h">
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+Dieser Graph zeigt, welche Datei direkt oder indirekt diese Datei enthält:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__delay_8h__dep__incl.png" border="0" usemap="#behaviour__delay_8hdep" alt=""/></div>
+<map name="behaviour__delay_8hdep" id="behaviour__delay_8hdep">
+</map>
+</div>
+</div>
+<p><a href="behaviour__delay_8h_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="define-members"></a>
+Makrodefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__delay_8h.html#a055af26c844a6277d16f00f3a5de3458">BLOCK_BEHAVIOUR</a>(_caller, _ms)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__delay_8h.html#aa36f8d6a5e673163f7f8dfcb5a984ced">bot_delay</a>(caller, ms)&#160;&#160;&#160;bot_delay_ticks(caller, (uint16_t) MS_TO_TICKS((uint32_t) ms))</td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__delay_8h.html#a53be8a797915c30a36a4258e0fcb6c5b">bot_delay_ticks</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *caller, uint16_t ticks)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__delay_8h.html#a283660577dc3d0d20f114e69d52ba8a2">bot_delay_behaviour</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *data)</td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Delay-Routinen als Verhalten. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Benjamin Benz (<a href="mailto:bbe@heise.de">bbe@heise.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>12.07.07 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="behaviour__delay_8h_source.html">behaviour_delay.h</a>.</p>
+</div><hr/><h2>Makro-Dokumentation</h2>
+<a class="anchor" id="a055af26c844a6277d16f00f3a5de3458"></a><!-- doxytag: member="behaviour_delay.h::BLOCK_BEHAVIOUR" ref="a055af26c844a6277d16f00f3a5de3458" args="(_caller, _ms)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define BLOCK_BEHAVIOUR</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">_caller, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">_ms&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<b>Wert:</b><div class="fragment"><pre class="fragment">{   \
+    static uint8_t _delay_state = 0;        \
+    if (_delay_state == 0) {                \
+        if (<a class="code" href="behaviour__delay_8h.html#aa36f8d6a5e673163f7f8dfcb5a984ced">bot_delay</a>(_caller, _ms) == 0) { \
+            _delay_state = 1;               \
+        }                                   \
+        return;                             \
+    }                                       \
+    _delay_state = 0;                       \
+}
+</pre></div><p>Unterbreche das aktuelle Verhalten fuer mindestens X ms Das Makro vereinfacht den Aufruf des Delay-Verhaltens, das funktioniert aber nur von anderen Verhalten aus! Die Verhaltensfunktion wird an der Stelle, wo BLOCK_BEHAVIOUR aufgerufen wird, verlassen und erst nach Ablauf der Wartezeit wieder aufgerufen, diesmal wird der BLOCK_BEHAVIOUR-Aufruf jedoch nicht ausgefuehrt. Sollte das Delay-Verhalten bereits aktiv sein, wird gewartet, bis es fertig ist und anschliessend gewartet. Ein einfaches Beispiel fuer die Verwendung findet sich in <a class="el" href="behaviour__servo_8c.html#a981bb06031ccc0f1536ec6d194e60da3">bot_servo_behaviour()</a>.</p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*_caller</td><td>Der obligatorische Verhaltensdatensatz des Aufrufers </td></tr>
+    <tr><td class="paramname">_ms</td><td>Die Verzoegerungszeit in ms </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__delay_8h_source.html#l00049">49</a> der Datei <a class="el" href="behaviour__delay_8h_source.html">behaviour_delay.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>, <a class="el" href="behaviour__get__utilization_8c_source.html#l00044">bot_get_utilization_behaviour()</a>, <a class="el" href="behaviour__line__shortest__way_8c_source.html#l00468">bot_line_shortest_way_behaviour()</a> und <a class="el" href="behaviour__servo_8c_source.html#l00041">bot_servo_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa36f8d6a5e673163f7f8dfcb5a984ced"></a><!-- doxytag: member="behaviour_delay.h::bot_delay" ref="aa36f8d6a5e673163f7f8dfcb5a984ced" args="(caller, ms)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define bot_delay</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">caller, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">ms&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;bot_delay_ticks(caller, (uint16_t) MS_TO_TICKS((uint32_t) ms))</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Rufe das Delay-Verhalten auf </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*caller</td><td>Der obligatorische Verhaltensdatensatz des Aufrufers </td></tr>
+    <tr><td class="paramname">ms</td><td>Die Verzoegerungszeit in ms </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>-1 wenn was schief gelaufen ist, sonst 0 </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__delay_8h_source.html#l00066">66</a> der Datei <a class="el" href="behaviour__delay_8h_source.html">behaviour_delay.h</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__solve__maze_8c_source.html#l00069">bot_check_wall_behaviour()</a> und <a class="el" href="behaviour__transport__pillar_8c_source.html#l00283">bot_transport_pillar_behaviour()</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="a283660577dc3d0d20f114e69d52ba8a2"></a><!-- doxytag: member="behaviour_delay.h::bot_delay_behaviour" ref="a283660577dc3d0d20f114e69d52ba8a2" args="(Behaviour_t *data)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_delay_behaviour </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Verhalten fuer Delays </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*data</td><td>Der Verhaltensdatensatz </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__delay_8c_source.html#l00038">38</a> der Datei <a class="el" href="behaviour__delay_8c_source.html">behaviour_delay.c</a>.</p>
+
+<p>Benutzt <a class="el" href="timer_8h_source.html#l00088">TIMER_GET_TICKCOUNT_32</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__delay_8c_source.html#l00051">bot_delay_ticks()</a> und <a class="el" href="bot-logic_8c_source.html#l00086">bot_behave_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a53be8a797915c30a36a4258e0fcb6c5b"></a><!-- doxytag: member="behaviour_delay.h::bot_delay_ticks" ref="a53be8a797915c30a36a4258e0fcb6c5b" args="(Behaviour_t *caller, uint16_t ticks)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int8_t bot_delay_ticks </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>caller</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>ticks</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Rufe das Delay-Verhalten auf </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*caller</td><td>Der obligatorische Verhaltensdatensatz des Aufrufers </td></tr>
+    <tr><td class="paramname">ticks</td><td>Die Verzoegerungszeit in ticks </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>-1 wenn was schief gelaufen ist, sonst 0 </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__delay_8c_source.html#l00051">51</a> der Datei <a class="el" href="behaviour__delay_8c_source.html">behaviour_delay.c</a>.</p>
+
+<p>Benutzt <a class="el" href="bot-logic_8c_source.html#l00532">switch_to_behaviour()</a>, <a class="el" href="behaviour__delay_8c_source.html#l00038">bot_delay_behaviour()</a>, <a class="el" href="bot-logic_8h_source.html#l00039">BEHAVIOUR_NOOVERRIDE</a>, <a class="el" href="bot-logic_8h_source.html#l00057">_Behaviour_t::subResult</a>, <a class="el" href="bot-logic_8h_source.html#l00044">BEHAVIOUR_SUBFAIL</a> und <a class="el" href="timer_8h_source.html#l00088">TIMER_GET_TICKCOUNT_32</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__delay_8h_a53be8a797915c30a36a4258e0fcb6c5b_cgraph.png" border="0" usemap="#behaviour__delay_8h_a53be8a797915c30a36a4258e0fcb6c5b_cgraph" alt=""/></div>
+<map name="behaviour__delay_8h_a53be8a797915c30a36a4258e0fcb6c5b_cgraph" id="behaviour__delay_8h_a53be8a797915c30a36a4258e0fcb6c5b_cgraph">
+</map>
+</div>
+</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Don Aug 18 2011 12:13:04 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5
+</small></address>
+
+</body>
+</html>
