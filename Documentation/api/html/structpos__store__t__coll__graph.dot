@@ -1,9 +1,0 @@
-digraph G
-{
-  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
-  node [fontname="Helvetica",fontsize="10",shape=record];
-  Node1 [label="{pos_store_t\n|+ owner\l+ data\l+ stat_data\l+ sp\l+ fp\l+ count\l+ mask\l|}",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
-  Node2 -> Node1 [color="grey25",fontsize="10",style="solid",label=" owner" ,arrowhead="odiamond",fontname="Helvetica"];
-  Node2 [label="{_Behaviour_t\n|+ work\l+ priority\l+ caller\l+ active\l+ subResult\l+ next\l|}",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$struct__Behaviour__t.html",tooltip="Verwaltungsstruktur fuer die Verhaltensroutinen."];
-  Node2 -> Node2 [color="grey25",fontsize="10",style="solid",label=" next\ncaller" ,arrowhead="odiamond",fontname="Helvetica"];
-}
