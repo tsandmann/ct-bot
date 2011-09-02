@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-09-02 Timo Sandmann [mail@timosandmann.de]: Projekteinstellungen und Warnings fuer Konfiguration ARM-Linux korrigiert
+
 2011-08-18 Timo Sandmann [mail@timosandmann.de]: Release 20
 
 2011-08-18 Timo Sandmann [mail@timosandmann.de]: Warning in pc/tcp-server.c beseitigt

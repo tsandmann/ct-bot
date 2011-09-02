@@ -36,6 +36,11 @@
 static char * volume = NULL; /**< Volume-Image */
 static int volume_loaded = 0; /**< Volume geladen? */
 
+#if __GNUC__ >= 4 && __GNUC_MINOR__ >= 6
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#endif
+
 /**
  * Zeigt die Hilfe an
  */
@@ -889,6 +894,10 @@ void botfs_read_fat16(const char * path) {
 	}
 	fclose(fp);
  }
+
+#if __GNUC__ >= 4 && __GNUC_MINOR__ >= 6
+#pragma GCC diagnostic pop
+#endif
 
 #endif // BOT_FS_AVAILABLE
 #endif // PC
