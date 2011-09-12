@@ -24,17 +24,17 @@
  * \date 	10.06.2010
  */
 
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 
 #include "ui/available_screens.h"
-#include "bot-logic/ubasic_config.h"
-#include "bot-logic/tokenizer_access.h"
-#include "bot-logic/ubasic.h"
-#include "bot-logic/ubasic_avr.h"
-#include "bot-logic/ubasic_call.h"
-#include "bot-logic/tokenizer.h"
-#include "bot-logic/ubasic_ext_proc.h"
+#include "ubasic_config.h"
+#include "tokenizer_access.h"
+#include "ubasic.h"
+#include "ubasic_avr.h"
+#include "ubasic_call.h"
+#include "tokenizer.h"
+#include "ubasic_ext_proc.h"
 #include "botfs.h"
 #include "init.h"
 #include "log.h"
@@ -68,6 +68,7 @@ static uint32_t wait_until = 0; /**< Systemzeit, bis zu der gewartet werden soll
 Behaviour_t * ubasic_behaviour_data; /**< Verhaltensdatensatz des ubasis-Verhaltens */
 char ubasic_content = 0; /**< aktuelles Zeichen des Basic-Programms */
 uint16_t ubasic_ptr = 0; /**< aktuelle Position im Basic-Programm */
+char current_proc[MAX_PROG_NAME_LEN]; /**< aktueller Programmname */
 
 /**
  * Laedt ein uBasic-Programm aus deiner BotFS-Datei
@@ -236,6 +237,23 @@ void ubasic_display(void) {
 #endif
 
 	ubasic_disp_key_handler(); // Aufruf des Key-Handlers
+}
+
+
+/**
+ * Umschalten des Programm-Kontextes
+ * \param p_name Programmname
+ */
+void switch_proc(char * p_name) {
+	botfs_file_descr_t new_prog;
+	if (botfs_open(p_name, &new_prog, BOTFS_MODE_r, GET_MMC_BUFFER(ubasic_buffer)) != 0) {
+		tokenizer_error_print(current_linenum, UNKNOWN_SUBPROC);
+		ubasic_break();
+	} else {
+		bot_ubasic_load_file(p_name, &new_prog);
+		program_ptr = 0;
+		tokenizer_init(program_ptr);
+	}
 }
 #endif // DISPLAY_UBASIC_AVAILABLE
 #endif // BEHAVIOUR_UBASIC_AVAILABLE

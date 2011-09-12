@@ -64,13 +64,13 @@ _eeprom_start2__:
 /* ARM-Linux */
 	.globl _eeprom_start1__
 		.section	.s1eeprom,"aw"
-/*		.type		_eeprom_start1__,object*/
+		.type		_eeprom_start1__,object
 		.size		_eeprom_start1__, 1
 	_eeprom_start1__:
 		.zero	1
 	.globl _eeprom_start2__
 		.section	.s2eeprom,"aw"
-/*		.type		_eeprom_start2__,object*/
+		.type		_eeprom_start2__,object
 		.size		_eeprom_start2__, 1
 	_eeprom_start2__:
 		.zero	1

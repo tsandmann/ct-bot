@@ -84,7 +84,7 @@ define SRCLOGIC
 	bot-logic/behaviour_prototype.c bot-logic/behaviour_remotecall.c bot-logic/behaviour_scan.c bot-logic/behaviour_scan_beacons.c \
 	bot-logic/behaviour_servo.c bot-logic/behaviour_simple.c bot-logic/behaviour_solve_maze.c bot-logic/behaviour_transport_pillar.c \
 	bot-logic/behaviour_turn.c bot-logic/behaviour_ubasic.c bot-logic/bot-logic.c bot-logic/tokenizer.c bot-logic/ubasic_call.c bot-logic/ubasic_cvars.c \
-	bot-logic/ubasic_ext_proc.c bot-logic/ubasic.c 
+	bot-logic/ubasic.c 
 endef
    
 SRCMAIN = ct-Bot.c
@@ -115,7 +115,7 @@ MATH_LIB = -lm
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
-EXTRAINCDIRS = . ./include
+EXTRAINCDIRS = . ./include ./include/bot-logic
 ifeq ($(DEVICE),MCU)
 	# Assembler flags.
 	#  -Wa,...:   tell GCC to pass this to the assembler.

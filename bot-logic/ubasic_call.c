@@ -11,15 +11,14 @@
 *
 ----------------------------------------------------------*/
 
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 
-#include "bot-logic/tokenizer_access.h"
-#include "bot-logic/ubasic.h"
-#include "bot-logic/tokenizer.h"
-#include "bot-logic/ubasic_config.h"
-#include "bot-logic/ubasic_call.h"
-#include <stddef.h>
+#include "tokenizer_access.h"
+#include "ubasic.h"
+#include "tokenizer.h"
+#include "ubasic_config.h"
+#include "ubasic_call.h"
 
 #if USE_AVR && USE_LC7981
 	#include "../lc7981/lc7981.h"
@@ -37,14 +36,6 @@
 #endif
 
 #if UBASIC_CALL
-
-#define DEBUG 0
-#if DEBUG
-#include "log.h"
-#define DEBUG_PRINTF(...)  LOG_DEBUG(__VA_ARGS__)
-#else
-#define DEBUG_PRINTF(...)
-#endif
 
 //--------------------------------------------
 
@@ -81,8 +72,7 @@ int call_statement(void) {
 	unsigned char f_typ_temp;
 	uint8_t idx=0;
 
-#if defined VOID_FUNC_INT || defined INT_FUNC_INT || defined VOID_FUNC_2INT || defined VOID_FUNC_4INT \
-	|| defined VOID_FUNC_2INT_CHAR
+#if defined VOID_FUNC_INT || defined INT_FUNC_INT || defined VOID_FUNC_2INT || defined VOID_FUNC_4INT || defined VOID_FUNC_2INT_CHAR
 	int p1=0;
 	int p2=0;
 	int p3=0;
@@ -129,7 +119,7 @@ int call_statement(void) {
 							callfunct[idx].funct_ptr.VoidFuncVoid();
 						#endif
 						break;
-#endif // VOID_FUNC_VOID
+#endif
 #ifdef VOID_FUNC_INT
 			case VOID_FUNC_INT:
 						accept(TOKENIZER_COMMA);
@@ -141,7 +131,7 @@ int call_statement(void) {
 							callfunct[idx].funct_ptr.VoidFuncInt(p1);
 						#endif
 						break;
-#endif // VOID_FUNC_INT
+#endif
 #ifdef VOID_FUNC_2INT
 			case VOID_FUNC_2INT:
 						accept(TOKENIZER_COMMA);
@@ -155,7 +145,7 @@ int call_statement(void) {
 							callfunct[idx].funct_ptr.VoidFunc2Int(p1, p2);
 						#endif
 						break;
-#endif // VOID_FUNC_2INT
+#endif
 #ifdef VOID_FUNC_4INT
 			case VOID_FUNC_4INT:
 						accept(TOKENIZER_COMMA);
@@ -173,7 +163,7 @@ int call_statement(void) {
 							callfunct[idx].funct_ptr.VoidFunc4Int(p1, p2, p3, p4);
 						#endif
 						break;
-#endif // VOID_FUNC_4INT
+#endif
 #ifdef VOID_FUNC_2INT_CHAR
 			case VOID_FUNC_2INT_CHAR:
 						accept(TOKENIZER_COMMA);
@@ -189,9 +179,11 @@ int call_statement(void) {
 							callfunct[idx].funct_ptr.VoidFunc2IntChar(p1, p2, (char*)tokenizer_last_string_ptr());
 						#endif
 						break;
-#endif // VOID_FUNC_2INT_CHAR
-#ifdef INT_FUNC_INT
+#endif
+#ifdef UCHAR_FUNC_UCHAR
 			case UCHAR_FUNC_UCHAR: // <-- naja, koennte ins Auge gehen...
+#endif
+#ifdef INT_FUNC_INT
 			case INT_FUNC_INT:
 						accept(TOKENIZER_COMMA);
 						p1=expr();
@@ -202,17 +194,14 @@ int call_statement(void) {
 							r=callfunct[idx].funct_ptr.IntFuncInt(p1);
 						#endif
 						break;
-#endif // INT_FUNC_INT
+#endif
 #ifdef VOID_FUNC_2INT16
 			case VOID_FUNC_2INT16: {
-				DEBUG_PRINTF("VOID_FUNC_2INT16:");
 				// zwei Integer und kein Rueckgabewert
 				accept(TOKENIZER_COMMA);
 				const int16_t p1 = expr();
-				DEBUG_PRINTF("p1=%d", p1);
 				accept(TOKENIZER_COMMA);
 				const int16_t p2 = expr();
-				DEBUG_PRINTF("p2=%d", p2);
 				void (* func)(int16_t, int16_t) = (void (*)(int16_t, int16_t)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFunc2Int16);
 				func(p1, p2);
 				break;
@@ -230,7 +219,6 @@ int call_statement(void) {
 				// Remotecall
 				accept(TOKENIZER_COMMA);
 				const char * const func = tokenizer_last_string_ptr();
-				DEBUG_PRINTF("func=\"%s\"", func);
 				accept(TOKENIZER_STRING);
 				remote_call_data_t params[REMOTE_CALL_MAX_PARAM] = { {0} };
 				uint8_t i;
@@ -240,7 +228,6 @@ int call_statement(void) {
 					}
 					accept(TOKENIZER_COMMA);
 					params[i].s16 = expr();
-					DEBUG_PRINTF("p%u=%d", i + 1, params[i].s16);
 				}
 				int8_t (* rc)(Behaviour_t *, const char *, const remote_call_data_t *) =
 					(int8_t (*)(Behaviour_t *, const char *, const remote_call_data_t *)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFuncRC);
@@ -256,13 +243,6 @@ int call_statement(void) {
 	}
 	// abschliessende rechte Klammer
     accept(TOKENIZER_RIGHTPAREN);
-    // bei Funktionspointertypen ohne Rueckgabewert ein Token weitergelesen...
-    //if ((f_typ_temp == VOID_FUNC_VOID)		||
-    //	(f_typ_temp == VOID_FUNC_INT)		||
-    //	(f_typ_temp == VOID_FUNC_2INT)		||
-    //	(f_typ_temp == VOID_FUNC_2INT_CHAR)	||
-    //	(f_typ_temp == VOID_FUNC_4INT)
-    //	) tokenizer_next();
 	return r;
 }
 #endif
