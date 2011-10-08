@@ -227,41 +227,53 @@ int8_t botfs_copy_file(const char * to, const char * from, void * buffer) {
 
 /**
  * Kopiert eine Datei vom BotfS-Volume ins PC-Dateisystem
- * \param *to		Pfadname der Zieldatei
- * \param *from		Dateiname der Quelldatei auf dem Volume
- * \param *buffer	Puffer fuer mindestens BOTFS_BLOCK_SIZE Bytes
- * \return			0, falls kein Fehler
+ * \param *to			Pfadname der Zieldatei
+ * \param *from			Dateiname der Quelldatei auf dem Volume
+ * \param src_offset	Offset / Bloecken, ab dem aus der Quelldatei kopiert werden soll (im Normalfall 0)
+ * \param dest_offset	Offset / Bloecken, ab dem in der Zieldatei der Inhalt beginnen soll (im Normalfall 0)
+ * \param *buffer		Puffer fuer mindestens BOTFS_BLOCK_SIZE Bytes
+ * \return				0, falls kein Fehler
  */
-int8_t botfs_extract_file(const char * to, const char * from, void * buffer) {
+int8_t botfs_extract_file(const char * to, const char * from, uint32_t src_offset, uint32_t dest_offset, void * buffer) {
 	FILE * dest = fopen(to, "wb");
 	if (dest == NULL) {
 		printf("Zeildatei \"%s\" konnte nicht angelegt werden!\n", to);
 		return -1;
 	}
+	if (fseek(dest, dest_offset * BOTFS_BLOCK_SIZE, SEEK_SET) != 0) {
+		puts("Fehler beim Anlegen der Zieldatei");
+		fclose(dest);
+		return -2;
+	}
 
 	/* Quelldatei oeffnen */
 	botfs_file_descr_t file;
 	if (botfs_open(from, &file, BOTFS_MODE_r, buffer) != 0) {
-		printf("Fehler, Quelldatei konnte nicht geoeffnet werden\n");
-		return -2;
+		puts("Fehler, Quelldatei konnte nicht geoeffnet werden");
+		fclose(dest);
+		return -3;
 	}
 
 	/* Dateigroesse bestimmen */
-	const uint16_t file_size = botfs_get_filesize(&file);
+	const uint16_t file_size = botfs_get_filesize(&file) - src_offset;
 	printf("Datei ist %u Bloecke gross\n", file_size);
+
+	botfs_seek(&file, src_offset, SEEK_SET);
 
 	size_t i;
 	for (i = 0; i < file_size; ++i) {
 		/* Datei in Puffer lesen */
 		if (botfs_read(&file, buffer) != 0) {
-			printf("Fehler beim Lesen aus der Quelldatei\n");
-			return -3;
+			puts("Fehler beim Lesen aus der Quelldatei");
+			fclose(dest);
+			return -4;
 		}
 
 		/* Dateibloecke in Zieldatei schreiben */
 		if (fwrite(buffer, BOTFS_BLOCK_SIZE, 1, dest) != 1) {
-			printf("Fehler beim Schreiben in die Zieldatei\n");
-			return -4;
+			puts("Fehler beim Schreiben in die Zieldatei");
+			fclose(dest);
+			return -5;
 		}
 	}
 

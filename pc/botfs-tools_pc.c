@@ -456,7 +456,7 @@ static void extract_file(void) {
 	rv = fgets(file_path, sizeof(file_path), stdin);
 	file_path[strlen(file_path) - 1] = 0; // \n weg
 
-	if (botfs_extract_file(file_path, from, buffer) == 0) {
+	if (botfs_extract_file(file_path, from, 0, 0, buffer) == 0) {
 		printf("BotFS-Datei \"%s\" erfolgreich nach \"%s\" kopiert\n", from, file_path);
 	} else {
 		printf("Fehler beim Kopieren\n");

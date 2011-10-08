@@ -328,12 +328,14 @@ int8_t botfs_copy_file(const char * to, const char * from, void * buffer);
 
 /**
  * Kopiert eine Datei vom BotfS-Volume ins PC-Dateisystem
- * \param *to		Pfadname der Zieldatei
- * \param *from		Dateiname der Quelldatei auf dem Volume
- * \param *buffer	Puffer fuer mindestens BOTFS_BLOCK_SIZE Bytes
- * \return			0, falls kein Fehler
+ * \param *to			Pfadname der Zieldatei
+ * \param *from			Dateiname der Quelldatei auf dem Volume
+ * \param src_offset	Offset / Bloecken, ab dem aus der Quelldatei kopiert werden soll (im Normalfall 0)
+ * \param dest_offset	Offset / Bloecken, ab dem in der Zieldatei der Inhalt beginnen soll (im Normalfall 0)
+ * \param *buffer		Puffer fuer mindestens BOTFS_BLOCK_SIZE Bytes
+ * \return				0, falls kein Fehler
  */
-int8_t botfs_extract_file(const char * to, const char * from, void * buffer);
+int8_t botfs_extract_file(const char * to, const char * from, uint32_t src_offset, uint32_t dest_offset, void * buffer);
 
 /**
  * Management-Tools fuer BotFS

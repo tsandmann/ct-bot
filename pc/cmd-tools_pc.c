@@ -239,6 +239,13 @@ void hand_cmd_args(int argc, char * argv[]) {
 				exit(1);
 			}
 			printf("Lese Karte von \"%s\" ein\n", optarg);
+#ifdef BOT_FS_AVAILABLE
+			uint8_t buffer[BOTFS_BLOCK_SIZE];
+			if (botfs_init(botfs_volume_image_file, buffer, False) != 0) {
+				puts("BotFS konnte nicht initialisiert werden");
+				exit(1);
+			}
+#endif // BOT_FS_AVAILABLE
 			map_read(optarg);
 #endif // MAP_AVAILABLE
 			break;
@@ -299,7 +306,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 			}
 			const char * source_file = argv[0];
 			const char * dest_file = argv[1];
-			if (botfs_extract_file(dest_file, source_file, buffer) == 0) {
+			if (botfs_extract_file(dest_file, source_file, 0, 0, buffer) == 0) {
 				puts("Datei erfolgreich kopiert");
 				exit(0);
 			} else {
