@@ -101,6 +101,9 @@ void ctbot_init(int argc, char * argv[]) {
 			LOG_ERROR("map_init()=%d", res);
 		}
 	}
+#if defined PC && defined MAP_2_SIM_AVAILABLE
+	map_2_sim_send();
+#endif
 #endif
 #ifdef LOG_MMC_AVAILABLE
 	log_mmc_init();

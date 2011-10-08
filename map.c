@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	map.c
- * @brief 	Karte
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	19.09.06
+/**
+ * \file 	map.c
+ * \brief 	Karte
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	19.09.2006
  */
 
 #include "ct-Bot.h"
@@ -68,7 +68,7 @@
 #define MAP_INFO_AVAILABLE
 #ifdef MCU
 // Soll auch der echte Bot Infos ausgeben, kommentiert man die folgende Zeile aus
-#undef MAP_INFO_AVAILABLE	// spart Flash
+#undef MAP_INFO_AVAILABLE // spart Flash
 #endif
 
 #ifndef MAP_2_SIM_AVAILABLE
@@ -117,93 +117,95 @@
  * Wird ein Feld als Loch erkannt, setzen wir den Wert fest auf -128.
  */
 
-/*! Anzahl der Sections in der Map */
+/** \todo: map_load_from_file() / map_save_to_file() fuer MCU und PC */
+
+/** Anzahl der Sections in der Map */
 #define MAP_SECTIONS	(MAP_SIZE_MM * MAP_RESOLUTION / 1000 / MAP_SECTION_POINTS)
 
-#define MAP_STEP_FREE_SENSOR		2	/*!< Um diesen Wert wird ein Feld inkrementiert, wenn es vom Sensor als frei erkannt wird */
-#define MAP_STEP_FREE_LOCATION		20	/*!< Um diesen Wert wird ein Feld inkrementiert, wenn der Bot drueber faehrt */
+#define MAP_STEP_FREE_SENSOR		2	/**< Um diesen Wert wird ein Feld inkrementiert, wenn es vom Sensor als frei erkannt wird */
+#define MAP_STEP_FREE_LOCATION		20	/**< Um diesen Wert wird ein Feld inkrementiert, wenn der Bot drueber faehrt */
 
-#define MAP_STEP_OCCUPIED			5	/*!< Um diesen Wert wird ein Feld dekrementiert, wenn es als belegt erkannt wird */
+#define MAP_STEP_OCCUPIED			5	/**< Um diesen Wert wird ein Feld dekrementiert, wenn es als belegt erkannt wird */
 
-#define MAP_RADIUS					50	/*!< Umkreis eines Messpunktes, der als besetzt aktualisiert wird (Streukreis) [mm] */
+#define MAP_RADIUS					50	/**< Umkreis eines Messpunktes, der als besetzt aktualisiert wird (Streukreis) [mm] */
 /*! Umkreis einen Messpunkt, der als besetzt aktualisiert wird (Streukreis) [Felder] */
 #define MAP_RADIUS_FIELDS			(MAP_RESOLUTION * MAP_RADIUS / 1000)
 
-#define MAP_PRINT_SCALE						/*!< Soll das PGM eine Skala erhalten */
-#define MAP_SCALE	(MAP_RESOLUTION / 2)	/*!< Alle wieviel Punkte kommt ein Skalen-Strich */
+#define MAP_PRINT_SCALE						/**< Soll das PGM eine Skala erhalten */
+#define MAP_SCALE	(MAP_RESOLUTION / 2)	/**< Alle wieviel Punkte kommt ein Skalen-Strich */
 
-#define MACRO_BLOCK_LENGTH	512U			/*!< Kantenlaenge eines Makroblocks in Punkten/Byte */
-#define MAP_LENGTH_IN_MACRO_BLOCKS ((uint8_t) (MAP_SIZE_MM * MAP_RESOLUTION / 1000 / MACRO_BLOCK_LENGTH)) /*!< Kantenlaenge der Karte in Makrobloecken */
-#define MAP_ALIGNMENT_MASK	(2UL * MACRO_BLOCK_LENGTH * MACRO_BLOCK_LENGTH / BOTFS_BLOCK_SIZE - 1) /*!< fuer die Ausrichtung der Karte an einer Sektorgrenze zu Optimierungszwecken */
+#define MACRO_BLOCK_LENGTH	512U			/**< Kantenlaenge eines Makroblocks in Punkten/Byte */
+#define MAP_LENGTH_IN_MACRO_BLOCKS ((uint8_t) (MAP_SIZE_MM * MAP_RESOLUTION / 1000 / MACRO_BLOCK_LENGTH)) /**< Kantenlaenge der Karte in Makrobloecken */
+#define MAP_ALIGNMENT_MASK	(2UL * MACRO_BLOCK_LENGTH * MACRO_BLOCK_LENGTH / BOTFS_BLOCK_SIZE - 1) /**< fuer die Ausrichtung der Karte an einer Sektorgrenze zu Optimierungszwecken */
 
 #ifdef BOT_FS_AVAILABLE
-#define MAP_FILENAME	"/map" /*!< Dateiname der Karte */
+#define MAP_FILENAME	"/map" /**< Dateiname der Karte */
 #define MAP_FILE_SIZE	((uint16_t) ((uint32_t) (MAP_SECTION_POINTS * MAP_SECTION_POINTS) * MAP_SECTIONS * MAP_SECTIONS \
 						/ BOTFS_BLOCK_SIZE) + MAP_ALIGNMENT_MASK)
 #endif // BOT_FS_AVAILABLE
 
-int16_t map_min_x = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
-int16_t map_max_x = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
-int16_t map_min_y = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
-int16_t map_max_y = MAP_SIZE * MAP_RESOLUTION / 2; /*!< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate */
+int16_t map_min_x = MAP_SIZE * MAP_RESOLUTION / 2; /**< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
+int16_t map_max_x = MAP_SIZE * MAP_RESOLUTION / 2; /**< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
+int16_t map_min_y = MAP_SIZE * MAP_RESOLUTION / 2; /**< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
+int16_t map_max_y = MAP_SIZE * MAP_RESOLUTION / 2; /**< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate */
 #ifdef BOT_FS_AVAILABLE
-static uint8_t min_max_updated = False; /*!< wurden die Min- / Max-Werte veraendert? */
+static uint8_t min_max_updated = False; /**< wurden die Min- / Max-Werte veraendert? */
 #endif
 
 /*! Datentyp fuer die Elementarfelder einer Gruppe */
 typedef struct {
-	int8_t section[MAP_SECTION_POINTS][MAP_SECTION_POINTS]; /*!< Einzelne Punkte */
+	int8_t section[MAP_SECTION_POINTS][MAP_SECTION_POINTS]; /**< Einzelne Punkte */
 } PACKED map_section_t;
 
 #ifdef BOT_FS_AVAILABLE
-static botfs_file_descr_t map_botfs_file;	/*!< Datei-Deskriptor der Map */
-static uint16_t alignment_offset;			/*!< Offset der Map-Daten in Bloecken (Makroblockalignment) */
+static botfs_file_descr_t map_botfs_file;	/**< Datei-Deskriptor der Map */
+static uint16_t alignment_offset;			/**< Offset der Map-Daten in Bloecken (Makroblockalignment) */
 #else
-static uint32_t map_start_block = 0; /*!< Block, bei dem die Karte auf der MMC-Karte beginnt */
+static uint32_t map_start_block = 0; /**< Block, bei dem die Karte auf der MMC-Karte beginnt */
 #endif // BOT_FS_AVAILABLE
 
-static uint8_t map_update_fifo_buffer[MAP_UPDATE_CACHE_SIZE];	/*!< Puffer fuer Map-Cache-Indizes / FiFo */
-fifo_t map_update_fifo;											/*!< Fifo fuer Map-Cache */
-map_cache_t map_update_cache[MAP_UPDATE_CACHE_SIZE];			/*!< Map-Cache */
+static uint8_t map_update_fifo_buffer[MAP_UPDATE_CACHE_SIZE];	/**< Puffer fuer Map-Cache-Indizes / FiFo */
+fifo_t map_update_fifo;											/**< Fifo fuer Map-Cache */
+map_cache_t map_update_cache[MAP_UPDATE_CACHE_SIZE];			/**< Map-Cache */
 
-uint8_t map_update_stack[MAP_UPDATE_STACK_SIZE];	/*!< Stack des Update-Threads */
-static Tcb_t * map_update_thread;					/*!< Thread fuer Map-Update */
-static os_signal_t lock_signal;						/*!< Signal zur Synchronisation von Kartenzugriffen */
-os_signal_t map_buffer_signal;						/*!< Signal das anzeigt, ob Daten im Map-Puffer sind */
+uint8_t map_update_stack[MAP_UPDATE_STACK_SIZE];	/**< Stack des Update-Threads */
+static Tcb_t * map_update_thread;					/**< Thread fuer Map-Update */
+static os_signal_t lock_signal;						/**< Signal zur Synchronisation von Kartenzugriffen */
+os_signal_t map_buffer_signal;						/**< Signal das anzeigt, ob Daten im Map-Puffer sind */
 
 void map_update_main(void) OS_TASK_ATTR;
 
-#define map_buffer GET_MMC_BUFFER(map_buffer)	/*!< Map-Puffer */
-static map_section_t * map[2];					/*!< Array mit den Zeigern auf die Elemente,  es passen immer 2 Sektionen in den Puffer */
+#define map_buffer GET_MMC_BUFFER(map_buffer)	/**< Map-Puffer */
+static map_section_t * map[2];					/**< Array mit den Zeigern auf die Elemente,  es passen immer 2 Sektionen in den Puffer */
 
 static struct {
-	uint16_t block;		/*!< Block, der aktuell im Puffer steht. Nur bis 32 MByte adressierbar */
-	uint8_t updated;	/*!< markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde */
-	int16_t x;			/*!< X-Koordinate des Blocks */
-	int16_t y;			/*!< Y-Koordinate des Blocks */
-} map_current_block = { 0, False, 0, 0 }; /*!< Daten des aktuellen Blocks */
+	uint16_t block;		/**< Block, der aktuell im Puffer steht. Nur bis 32 MByte adressierbar */
+	uint8_t updated;	/**< markiert, ob der aktuelle Block gegenueber der MMC-Karte veraendert wurde */
+	int16_t x;			/**< X-Koordinate des Blocks */
+	int16_t y;			/**< Y-Koordinate des Blocks */
+} map_current_block = { 0, False, 0, 0 }; /**< Daten des aktuellen Blocks */
 
-static uint8_t init_state = 0; /*!< Status der Initialisierung (0 (Fehler), 1 (alles OK) oder 2 (Threads angelegt)) */
+static uint8_t init_state = 0; /**< Status der Initialisierung (0 (Fehler), 1 (alles OK) oder 2 (Threads angelegt)) */
 
 #ifdef MAP_2_SIM_AVAILABLE
 void map_2_sim_main(void) OS_TASK_ATTR;
 
-static fifo_t map_2_sim_fifo; /*!< Fifo fuer Map-2-Sim-Daten */
-static uint16_t map_2_sim_cache[MAP_2_SIM_BUFFER_SIZE]; /*!< Speicher fuer Map-2-Sim-Daten (Adressen der geaenderten Bloecke) */
+static fifo_t map_2_sim_fifo; /**< Fifo fuer Map-2-Sim-Daten */
+static uint16_t map_2_sim_cache[MAP_2_SIM_BUFFER_SIZE]; /**< Speicher fuer Map-2-Sim-Daten (Adressen der geaenderten Bloecke) */
 static struct {
-	position_t pos; /*!< letzte Bot-Position */
-	int16_t heading; /*!< letzte Bot-Ausrichtung */
+	position_t pos; /**< letzte Bot-Position */
+	int16_t heading; /**< letzte Bot-Ausrichtung */
 #ifdef MEASURE_POSITION_ERRORS_AVAILABLE
-	int16_t error;		/*!< letzter Fehlerradius */
+	int16_t error; /**< letzter Fehlerradius */
 #endif
 } map_2_sim_data;
-static Tcb_t * map_2_sim_worker; /*!< Worker-Thread fuer die Map-2-Sim-Anzeige */
-uint8_t map_2_sim_worker_stack[MAP_2_SIM_STACK_SIZE]; /*!< Stack des Map-2-Sim-Threads */
+static Tcb_t * map_2_sim_worker; /**< Worker-Thread fuer die Map-2-Sim-Anzeige */
+uint8_t map_2_sim_worker_stack[MAP_2_SIM_STACK_SIZE]; /**< Stack des Map-2-Sim-Threads */
 #ifdef BOT_FS_AVAILABLE
-static botfs_file_descr_t map_2_sim_botfs_file; /*!< File-Deskriptor fuer Map-2-Sim */
+static botfs_file_descr_t map_2_sim_botfs_file; /**< File-Deskriptor fuer Map-2-Sim */
 #endif
-#define map_2_sim_buffer GET_MMC_BUFFER(map_2_sim_buffer) /*!< Puffer fuer Map-Block (von der MMC) zur Map-2-Sim-Kommunikation */
-static os_signal_t map_2_sim_signal; /*!< Signal, um gleichzeitges Senden von Map-Daten zu verhindern */
+#define map_2_sim_buffer GET_MMC_BUFFER(map_2_sim_buffer) /**< Puffer fuer Map-Block (von der MMC) zur Map-2-Sim-Kommunikation */
+static os_signal_t map_2_sim_signal; /**< Signal, um gleichzeitges Senden von Map-Daten zu verhindern */
 #endif // MAP_2_SIM_AVAILABLE
 
 #ifdef PC
@@ -212,21 +214,21 @@ typedef struct {
 	map_section_t sections[2];
 } PACKED mmc_container_t;
 
-static mmc_container_t map_storage[MAP_SECTIONS * MAP_SECTIONS / 2]; /*!< Statischer Speicherplatz fuer die Karte */
+static mmc_container_t map_storage[MAP_SECTIONS * MAP_SECTIONS / 2]; /**< Statischer Speicherplatz fuer die Karte */
 
 // MMC-Zugriffe emuliert der PC
 #define mmc_read_sector(block, buffer)		memcpy(&buffer, &(map_storage[block]), sizeof(mmc_container_t));
 #define mmc_write_sector(block, buffer)		memcpy(&(map_storage[block]), &buffer, sizeof(mmc_container_t));
 #endif // ! BOT_FS_AVAILABLE
 
-char * map_file = "sim.map";	/*!< Dateiname fuer Ex- / Import */
+char * map_file = "sim.map"; /**< Dateiname fuer Ex- / Import */
 #endif // PC
 
 static inline void delete(void);
 
-/*!
- * initialisiere die Karte
- * @return	0 wenn alles ok ist
+/**
+ * Initialisiert die Karte
+ * \return	0 wenn alles ok ist
  */
 int8_t map_init(void) {
 	if (init_state == 1) {
@@ -416,7 +418,7 @@ int8_t map_init(void) {
 	return 0;
 }
 
-/*!
+/**
  * Haelt den Bot an und schreibt den Map-Update-Cache komplett zurueck
  */
 void map_flush_cache(void) {
@@ -431,10 +433,10 @@ void map_flush_cache(void) {
 	os_signal_release(&lock_signal);
 }
 
-/*!
+/**
  * Konvertiert eine Weltkoordinate in eine Kartenkoordinate
- * @param koord	Weltkoordiante
- * @return		Kartenkoordinate
+ * \param koord	Weltkoordiante
+ * \return		Kartenkoordinate
  */
 int16_t world_to_map(int16_t koord) {
 #if (1000 / MAP_RESOLUTION) * MAP_RESOLUTION != 1000
@@ -461,12 +463,12 @@ int16_t world_to_map(int16_t koord) {
 #endif
 }
 
-/*!
- * liefert einen Zeiger auf die Section zurueck, in der der Punkt liegt.
+/**
+ * Liefert einen Zeiger auf die Section zurueck, in der der Punkt liegt.
  * Auf dem MCU kuemmert sie sich darum, die entsprechende Karte aus der MMC-Karte zu laden
- * @param x	X-Ordinate der Karte (nicht der Welt!!!)
- * @param y	Y-Ordinate der Karte (nicht der Welt!!!)
- * @return	Zeiger auf die Section
+ * \param x	X-Ordinate der Karte (nicht der Welt!!!)
+ * \param y	Y-Ordinate der Karte (nicht der Welt!!!)
+ * \return	Zeiger auf die Section
  */
 static map_section_t * get_section(int16_t x, int16_t y) {
 	// Da immer 2 Sections in einem Block stehen: richtige der beiden Sections raussuchen
@@ -606,21 +608,21 @@ static map_section_t * get_section(int16_t x, int16_t y) {
 	return map[index];
 }
 
-/*!
+/**
  * Prueft, ob die Karte zurzeit gesperrt ist.
- * @return	1, falls Karte gesperrt, 0 sonst
+ * \return	1, falls Karte gesperrt, 0 sonst
  */
 uint8_t map_locked(void) {
 	return lock_signal.value;
 }
 
-/*!
+/**
  * Zugriff auf ein Feld der Karte. Kann lesend oder schreibend sein.
- * @param x		X-Ordinate der Karte
- * @param y		Y-Ordinate der Karte
- * @param value	Neuer Wert des Feldes (> 0 heisst frei, <0 heisst belegt)
- * @param set	0 zum Lesen, 1 zum Schreiben
- * @return		Wert, der jetzt an (x|y) steht
+ * \param x		X-Ordinate der Karte
+ * \param y		Y-Ordinate der Karte
+ * \param value	Neuer Wert des Feldes (> 0 heisst frei, <0 heisst belegt)
+ * \param set	0 zum Lesen, 1 zum Schreiben
+ * \return		Wert, der jetzt an (x|y) steht
  */
 static int8_t access_field(int16_t x, int16_t y, int8_t value, uint8_t set) {
 	uint16_t index_x, index_y;
@@ -641,12 +643,12 @@ static int8_t access_field(int16_t x, int16_t y, int8_t value, uint8_t set) {
 	return *data;
 }
 
-/*!
+/**
  * liefert den Durschnittswert um einen Punkt der Karte herum
- * @param x 		x-Ordinate der Karte
- * @param y 		y-Ordinate der Karte
- * @param radius	gewuenschter Radius
- * @return 			Wert des Durchschnitts um das Feld (>0 heisst frei, <0 heisst belegt)
+ * \param x 		x-Ordinate der Karte
+ * \param y 		y-Ordinate der Karte
+ * \param radius	gewuenschter Radius
+ * \return 			Wert des Durchschnitts um das Feld (>0 heisst frei, <0 heisst belegt)
  */
 static int8_t get_average_fields(int16_t x, int16_t y, int8_t radius) {
 	int32_t avg = 0;
@@ -689,12 +691,12 @@ static int8_t get_average_fields(int16_t x, int16_t y, int8_t radius) {
 	return result;
 }
 
-/*!
+/**
  * liefert den Durschnittswert um einen Ort herum
- * @param x			x-Ordinate der Welt
- * @param y			y-Ordinate der Welt
- * @param radius	Radius der Umgebung, die beruecksichtigt wird [mm]; 0 fuer ein Map-Feld (Punkt)
- * @return 			Durchschnitsswert im Umkreis um den Ort (>0 heisst frei, <0 heisst belegt)
+ * \param x			x-Ordinate der Welt
+ * \param y			y-Ordinate der Welt
+ * \param radius	Radius der Umgebung, die beruecksichtigt wird [mm]; 0 fuer ein Map-Feld (Punkt)
+ * \return 			Durchschnitsswert im Umkreis um den Ort (>0 heisst frei, <0 heisst belegt)
  */
 int8_t map_get_average(int16_t x, int16_t y, int16_t radius) {
 	// Ort in Kartenkoordinaten
@@ -710,11 +712,11 @@ int8_t map_get_average(int16_t x, int16_t y, int16_t radius) {
 	return result;
 }
 
-/*!
+/**
  * Aendert den Wert eines Feldes um den angegebenen Betrag
- * @param x		x-Ordinate der Karte (nicht der Welt!!!)
- * @param y		y-Ordinate der Karte (nicht der Welt!!!)
- * @param value	Betrag um den das Feld veraendert wird (>0 heisst freier, <0 heisst belegter)
+ * \param x		x-Ordinate der Karte (nicht der Welt!!!)
+ * \param y		y-Ordinate der Karte (nicht der Welt!!!)
+ * \param value	Betrag um den das Feld veraendert wird (>0 heisst freier, <0 heisst belegter)
  */
 static void update_field(int16_t x, int16_t y, int8_t value) {
 	int8_t tmp = access_field(x, y, 0, 0);
@@ -738,12 +740,12 @@ static void update_field(int16_t x, int16_t y, int8_t value) {
 	access_field(x, y, new_value, 1);
 }
 
-/*!
+/**
  * Aendert den Wert eines Kreises um den angegebenen Betrag
- * @param x			x-Ordinate der Karte (nicht der Welt!!!)
- * @param y			y-Ordinate der Karte (nicht der Welt!!!)
- * @param radius	Radius in Kartenpunkten
- * @param value		Betrag um den das Feld veraendert wird (>0 heisst freier, <0 heisst belegter)
+ * \param x			x-Ordinate der Karte (nicht der Welt!!!)
+ * \param y			y-Ordinate der Karte (nicht der Welt!!!)
+ * \param radius	Radius in Kartenpunkten
+ * \param value		Betrag um den das Feld veraendert wird (>0 heisst freier, <0 heisst belegter)
  */
 static void update_field_circle(int16_t x, int16_t y, int8_t radius, int8_t value) {
 	const int16_t square = muls8(radius, radius);
@@ -797,11 +799,11 @@ static void update_field_circle(int16_t x, int16_t y, int8_t radius, int8_t valu
 	}
 }
 
-/*!
+/**
  * Markiert ein Feld als belegt -- drueckt den Feldwert etwas mehr in Richtung "belegt"
- * @param x	x-Ordinate der Karte (nicht der Welt!!!)
- * @param y	y-Ordinate der Karte (nicht der Welt!!!)
- * @param location_prob Gibt an, wie sicher wir ueber die Position sind [0; 255]
+ * \param x	x-Ordinate der Karte (nicht der Welt!!!)
+ * \param y	y-Ordinate der Karte (nicht der Welt!!!)
+ * \param location_prob Gibt an, wie sicher wir ueber die Position sind [0; 255]
  */
 static void update_occupied(int16_t x, int16_t y, uint8_t location_prob) {
 #ifdef MEASURE_POSITION_ERRORS_AVAILABLE
@@ -830,12 +832,12 @@ static void update_occupied(int16_t x, int16_t y, uint8_t location_prob) {
 	}
 }
 
-/*!
+/**
  * Map-Umfeldaktualisierung mit einem bestimmten Wert ab einer Position xy mit Radius r bei
- * @param x			Map-Koordinate
- * @param y			Map-Koordinate
- * @param radius	Radius des Umfeldes
- * @param value 	Mapwert; nur eingetragen wenn aktueller Mapwert groesser value ist
+ * \param x			Map-Koordinate
+ * \param y			Map-Koordinate
+ * \param radius	Radius des Umfeldes
+ * \param value 	Mapwert; nur eingetragen wenn aktueller Mapwert groesser value ist
  */
 static void set_value_field_circle(int16_t x, int16_t y, int8_t radius, int8_t value) {
 	int8_t dX, dY;
@@ -856,12 +858,12 @@ static void set_value_field_circle(int16_t x, int16_t y, int8_t radius, int8_t v
 	}
 }
 
-/*!
+/**
  * setzt ein Map-Feld auf einen Wert mit Umfeldaktualisierung;
  * Hindernis wird mit MAP_RADIUS_FIELDS eingetragen
- * @param x		Map-Koordinate
- * @param y		Map-Koordinate
- * @param val	im Umkreis einzutragender Wert
+ * \param x		Map-Koordinate
+ * \param y		Map-Koordinate
+ * \param val	im Umkreis einzutragender Wert
  */
 static void set_value_occupied(int16_t x, int16_t y, int8_t val) {
 	int8_t r;
@@ -871,14 +873,14 @@ static void set_value_occupied(int16_t x, int16_t y, int8_t val) {
 	}
 }
 
-/*!
+/**
  * Aktualisiert die Karte mit den Daten eines Distanz-Sensors
- * @param x		X-Achse der Position des Sensors
- * @param y 	Y-Achse der Position des Sensors
- * @param h_sin sin(Blickrichtung)
- * @param h_cos	cos(Blickrichtung)
- * @param dist 	Sensorwert
- * @param location_prob Gibt an, wie sicher wir ueber die Position sind [0; 255]
+ * \param x		X-Achse der Position des Sensors
+ * \param y 	Y-Achse der Position des Sensors
+ * \param h_sin sin(Blickrichtung)
+ * \param h_cos	cos(Blickrichtung)
+ * \param dist 	Sensorwert
+ * \param location_prob Gibt an, wie sicher wir ueber die Position sind [0; 255]
  */
 static void update_sensor_distance(int16_t x, int16_t y, float h_sin, float h_cos, int16_t dist, uint8_t location_prob) {
 	// Ort des Sensors in Kartenkoordinaten
@@ -946,15 +948,15 @@ static void update_sensor_distance(int16_t x, int16_t y, float h_sin, float h_co
 	}
 }
 
-/*!
+/**
  * Aktualisiert die interne Karte anhand der Sensordaten
- * @param x			X-Achse der Position in Weltkoordinaten
- * @param y			Y-Achse der Position in Weltkoordinaten
- * @param sin_head	sin(Blickrichtung)
- * @param cos_head	cos(Blickrichtung)
- * @param distL		Sensorwert links
- * @param distR		Sensorwert rechts
- * @param location_prob Gibt an, wie sicher wir ueber die Position sind [0; 255]
+ * \param x			X-Achse der Position in Weltkoordinaten
+ * \param y			Y-Achse der Position in Weltkoordinaten
+ * \param sin_head	sin(Blickrichtung)
+ * \param cos_head	cos(Blickrichtung)
+ * \param distL		Sensorwert links
+ * \param distR		Sensorwert rechts
+ * \param location_prob Gibt an, wie sicher wir ueber die Position sind [0; 255]
  */
 static void update_distance(int16_t x, int16_t y, float sin_head, float cos_head, int16_t distL,
 		int16_t distR, uint8_t location_prob) {
@@ -975,11 +977,11 @@ static void update_distance(int16_t x, int16_t y, float sin_head, float cos_head
 	update_sensor_distance(Pr_x, Pr_y, sin_head, cos_head, distR, location_prob);
 }
 
-/*!
+/**
  * Aktualisiert den Standkreis der internen Karte
- * @param x X-Achse der Position in Weltkoordinaten
- * @param y Y-Achse der Position in Weltkoordinaten
- * @param location_prob Gibt an, wie sicher wir ueber die Position sind [0; 255]
+ * \param x X-Achse der Position in Weltkoordinaten
+ * \param y Y-Achse der Position in Weltkoordinaten
+ * \param location_prob Gibt an, wie sicher wir ueber die Position sind [0; 255]
  */
 static void update_location(int16_t x, int16_t y, uint8_t location_prob) {
 	int16_t x_map = world_to_map(x);
@@ -990,14 +992,14 @@ static void update_location(int16_t x, int16_t y, uint8_t location_prob) {
 			(int8_t) ((MAP_STEP_FREE_LOCATION - 1) * location_prob / 255 + 1));
 }
 
-/*!
+/**
  * Aktualisiert die interne Karte anhand der Abgrund-Sensordaten
- * @param x			X-Achse der Position in Weltkoordinaten
- * @param y			Y-Achse der Position in Weltkoordinaten
- * @param sin_head	sin(Blickrichtung [Grad])
- * @param cos_head	cos(Blickrichtung [Grad])
- * @param borderL	Sensor links 1= abgrund 0 = frei
- * @param borderR	Sensor rechts 1= abgrund 0 = frei
+ * \param x			X-Achse der Position in Weltkoordinaten
+ * \param y			Y-Achse der Position in Weltkoordinaten
+ * \param sin_head	sin(Blickrichtung [Grad])
+ * \param cos_head	cos(Blickrichtung [Grad])
+ * \param borderL	Sensor links 1= abgrund 0 = frei
+ * \param borderR	Sensor rechts 1= abgrund 0 = frei
  */
 static void update_border(int16_t x, int16_t y, float sin_head, float cos_head,
 		uint8_t borderL, uint8_t borderR) {
@@ -1025,19 +1027,19 @@ static void update_border(int16_t x, int16_t y, float sin_head, float cos_head,
 	}
 }
 
-/*!
+/**
  * Berechnet das Verhaeltnis der Felder einer Region R die ausschliesslich mit Werten zwischen
  * min und max belegt sind und allen Feldern von R.
  * Die Region R wird als Gerade von (x1|y1) bis (x2|y2) und eine Breite width angegeben. Die Gerade
  * verlaeuft in der Mitte von R.
- * @param x1		Startpunkt der Region R, X-Anteil; Kartenkoordinaten
- * @param y1		Startpunkt der Region R, Y-Anteil; Kartenkoordinaten
- * @param x2		Endpunkt der Region R, X-Anteil; Kartenkoordinaten
- * @param y2		Endpunkt der Region R, Y-Anteil; Kartenkoordinaten
- * @param width		Breite der Region R (jeweils width/2 links und rechts der Gerade)
- * @param min_val	minimaler Feldwert, der vorkommen darf
- * @param max_val	maximaler Feldwert, der vorkommen darf
- * @return			Verhaeltnis von Anzahl der Felder, die zwischen min_val und max_val liegen, zu
+ * \param x1		Startpunkt der Region R, X-Anteil; Kartenkoordinaten
+ * \param y1		Startpunkt der Region R, Y-Anteil; Kartenkoordinaten
+ * \param x2		Endpunkt der Region R, X-Anteil; Kartenkoordinaten
+ * \param y2		Endpunkt der Region R, Y-Anteil; Kartenkoordinaten
+ * \param width		Breite der Region R (jeweils width/2 links und rechts der Gerade)
+ * \param min_val	minimaler Feldwert, der vorkommen darf
+ * \param max_val	maximaler Feldwert, der vorkommen darf
+ * \return			Verhaeltnis von Anzahl der Felder, die zwischen min_val und max_val liegen, zu
  * 					Anzahl aller Felder der Region * MAP_RATIO_FULL;
  * 					MAP_RATIO_NONE 	-> kein Feld liegt im gewuenschten Bereich;
  * 					MAP_RATIO_FULL	-> alle Felder liegen im gewuenschten Bereich
@@ -1148,7 +1150,7 @@ static uint8_t get_ratio(int16_t x1, int16_t y1, int16_t x2,
 	return result;
 }
 
-/*!
+/**
  * Berechnet das Verhaeltnis der Felder einer Region R die ausschliesslich mit Werten zwischen
  * min und max belegt sind und allen Feldern von R.
  * Die Region R wird als Gerade von (x1|y1) bis (x2|y2) und eine Breite width angegeben. Die Gerade
@@ -1156,14 +1158,14 @@ static uint8_t get_ratio(int16_t x1, int16_t y1, int16_t x2,
  * Beispiel: Steht der Bot an (0|0) und man moechte den Weg 50 cm voraus pruefen, gibt man x1 = y1 = y2 = 0,
  * x2 = 500 und width = BOT_DIAMETER an.
  * Am besten bewertet man das Ergebnis mit Hilfe der defines MAP_RATIO_FULL und MAP_RATIO_NONE (s.u.)
- * @param x1		Startpunkt der Region R, X-Anteil; Weltkoordinaten [mm]
- * @param y1		Startpunkt der Region R, Y-Anteil; Weltkoordinaten [mm]
- * @param x2		Endpunkt der Region R, X-Anteil; Weltkoordinaten [mm]
- * @param y2		Endpunkt der Region R, Y-Anteil; Weltkoordinaten [mm]
- * @param width		Breite der Region R (jeweils width/2 links und rechts der Geraden) [mm]
- * @param min_val	minimaler Feldwert, der vorkommen darf
- * @param max_val	maximaler Feldwert, der vorkommen darf
- * @return			Verhaeltnis von Anzahl der Felder, die zwischen min_val und max_val liegen, zu
+ * \param x1		Startpunkt der Region R, X-Anteil; Weltkoordinaten [mm]
+ * \param y1		Startpunkt der Region R, Y-Anteil; Weltkoordinaten [mm]
+ * \param x2		Endpunkt der Region R, X-Anteil; Weltkoordinaten [mm]
+ * \param y2		Endpunkt der Region R, Y-Anteil; Weltkoordinaten [mm]
+ * \param width		Breite der Region R (jeweils width/2 links und rechts der Geraden) [mm]
+ * \param min_val	minimaler Feldwert, der vorkommen darf
+ * \param max_val	maximaler Feldwert, der vorkommen darf
+ * \return			Verhaeltnis von Anzahl der Felder, die zwischen min_val und max_val liegen, zu
  * 					Anzahl aller Felder der Region * MAP_RATIO_FULL;
  * 					MAP_RATIO_NONE 	-> kein Feld liegt im gewuenschten Bereich;
  * 					MAP_RATIO_FULL	-> alle Felder liegen im gewuenschten Bereich
@@ -1181,14 +1183,14 @@ uint8_t map_get_ratio(int16_t x1, int16_t y1, int16_t x2, int16_t y2,
 	return result;
 }
 
-/*!
+/**
  * Prueft ob eine direkte Passage frei von Hindernissen ist
- * @param from_x	Startort x Weltkoordinaten [mm]
- * @param from_y	Startort y Weltkoordinaten [mm]
- * @param to_x		Zielort x Weltkoordinaten [mm]
- * @param to_y		Zielort y Weltkoordinaten [mm]
- * @param margin	Breite eines Toleranzbereichs links und rechts der Fahrspur, der ebenfalls frei sein muss [mm]
- * @return			1, wenn alles frei ist
+ * \param from_x	Startort x Weltkoordinaten [mm]
+ * \param from_y	Startort y Weltkoordinaten [mm]
+ * \param to_x		Zielort x Weltkoordinaten [mm]
+ * \param to_y		Zielort y Weltkoordinaten [mm]
+ * \param margin	Breite eines Toleranzbereichs links und rechts der Fahrspur, der ebenfalls frei sein muss [mm]
+ * \return			1, wenn alles frei ist
  */
 uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y, uint8_t margin) {
 	uint8_t result = map_get_ratio(from_x, from_y, to_x, to_y, BOT_DIAMETER + 2 * margin, MAP_OBSTACLE_THRESHOLD, 127);
@@ -1196,11 +1198,11 @@ uint8_t map_way_free(int16_t from_x, int16_t from_y, int16_t to_x, int16_t to_y,
 }
 
 #ifdef MAP_2_SIM_AVAILABLE
-/*!
+/**
  * Zeichnet eine Linie in die Map-Anzeige des Sim
- * @param from	Startpunkt der Linie (Map-Koordinate)
- * @param to	Endpunkt der Linie (Map-Koordinate)
- * @param color	Farbe der Linie: 0=gruen, 1=rot, sonst schwarz
+ * \param from	Startpunkt der Linie (Map-Koordinate)
+ * \param to	Endpunkt der Linie (Map-Koordinate)
+ * \param color	Farbe der Linie: 0=gruen, 1=rot, sonst schwarz
  */
 void map_draw_line(position_t from, position_t to, uint8_t color) {
 	// Datenformat: {from.x, from.y, to.x, to.y} als payload, color in data_l, 0 in data_r
@@ -1217,12 +1219,12 @@ void map_draw_line(position_t from, position_t to, uint8_t color) {
 	command_write_rawdata(CMD_MAP, SUB_MAP_LINE, c, 0, sizeof(data), data);
 }
 
-/*!
+/**
  * Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein;
  * dient zur Visualisierung der Arbeitsweise des Verhaltens
- * @param from	Koordinaten des ersten Punktes der Linie (Welt)
- * @param to	Koordinaten des zweiten Punktes der Linie (Welt)
- * @param color Farbe der Linie: 0=gruen, 1=rot, sonst schwarz
+ * \param from	Koordinaten des ersten Punktes der Linie (Welt)
+ * \param to	Koordinaten des zweiten Punktes der Linie (Welt)
+ * \param color Farbe der Linie: 0=gruen, 1=rot, sonst schwarz
  */
 void map_draw_line_world(position_t from, position_t to, uint8_t color) {
 	from.x = world_to_map(from.x);
@@ -1232,12 +1234,12 @@ void map_draw_line_world(position_t from, position_t to, uint8_t color) {
 	map_draw_line(from, to, color);
 }
 
-/*!
+/**
  * Zeichnet ein Rechteck in die Map-Anzeige des Sim
- * @param from	Startpunkt der Geraden mittig durch das Rechteck (Map-Koordinate)
- * @param to	Endpunkt der Geraden mittig durch das Rechteck (Map-Koordinate)
- * @param width	Breite des Rechtecks (jeweils width/2 links und rechts der Gerade; in Map-Aufloesung)
- * @param color	Farbe der Linien: 0=gruen, 1=rot, sonst schwarz
+ * \param from	Startpunkt der Geraden mittig durch das Rechteck (Map-Koordinate)
+ * \param to	Endpunkt der Geraden mittig durch das Rechteck (Map-Koordinate)
+ * \param width	Breite des Rechtecks (jeweils width/2 links und rechts der Gerade; in Map-Aufloesung)
+ * \param color	Farbe der Linien: 0=gruen, 1=rot, sonst schwarz
  */
 void map_draw_rect(position_t from, position_t to, uint8_t width, uint8_t color) {
 	/* Eckpunkte des Rechtecks berechnen */
@@ -1266,11 +1268,11 @@ void map_draw_rect(position_t from, position_t to, uint8_t width, uint8_t color)
 	map_draw_line(to1, to2, color);
 }
 
-/*!
+/**
  * Zeichnet einen Kreis in die Map-Anzeige des Sim
- * @param center Korrdinaten des Kreismittelpunkts (Map-Koordinaten)
- * @param radius Radius des Kreies (in Map-Aufloesung)
- * @param color	Farbe der Linien: 0=gruen, 1=rot, sonst schwarz
+ * \param center Korrdinaten des Kreismittelpunkts (Map-Koordinaten)
+ * \param radius Radius des Kreies (in Map-Aufloesung)
+ * \param color	Farbe der Linien: 0=gruen, 1=rot, sonst schwarz
  */
 void map_draw_circle(position_t center, int16_t radius, uint8_t color) {
 	// Datenformat: {center.x, center.y} als payload, color in data_l, radius in data_r
@@ -1285,7 +1287,7 @@ void map_draw_circle(position_t center, int16_t radius, uint8_t color) {
 #endif // MAP_2_SIM_AVAILABLE
 
 
-/*!
+/**
  * Main-Funktion des Map-Update-Threads
  */
 void map_update_main(void) {
@@ -1297,7 +1299,7 @@ void map_update_main(void) {
 		uint8_t index = _inline_fifo_get(&map_update_fifo, False);
 		map_cache_t * cache_tmp = &map_update_cache[index];
 
-		os_signal_lock(&lock_signal);	// Zugriff auf die Map sperren
+		os_signal_lock(&lock_signal); // Zugriff auf die Map sperren
 #ifdef DEBUG_SCAN_OTF
 		LOG_DEBUG("lese Cache: x= %d y= %d head= %f distance= %d loaction=%d border=%d", cache_tmp->x_pos, cache_tmp->y_pos, cache_tmp->heading / 10.0f, cache_tmp->mode.data.distance, cache_tmp->mode.data.location, cache_tmp->mode.data.border);
 
@@ -1382,7 +1384,7 @@ void map_update_main(void) {
 
 //#define MAP_2_SIM_DEBUG
 #ifdef MAP_2_SIM_AVAILABLE
-/*!
+/**
  * Main-Funktion des Map-2-Sim-Threads
  */
 void map_2_sim_main(void) {
@@ -1390,6 +1392,8 @@ void map_2_sim_main(void) {
 #ifdef MAP_2_SIM_DEBUG
 	static int8_t max_entries = 0;
 #endif
+
+	map_2_sim_send();
 
 	/* Endlosschleife -> Thread wird vom OS blockiert / gibt die Kontrolle ab,
 	 * wenn der Puffer leer ist */
@@ -1453,7 +1457,7 @@ void map_2_sim_main(void) {
 	}
 }
 
-/*!
+/**
  * Uebertraegt die komplette Karte an den Sim
  */
 void map_2_sim_send(void) {
@@ -1464,14 +1468,14 @@ void map_2_sim_send(void) {
 
 	/* Alle Bloecke uebertragen */
 	int16_t x, y;
-#ifdef BOT_FS_AVAILABLE
-	const int16_t block = (int16_t) (map_current_block.block - alignment_offset);
-#else
-	const int16_t block = (int16_t) map_current_block.block;
-#endif // BOT_FS_AVAILABLE
-	for (x=map_min_x; x<=map_max_x+MAP_SECTION_POINTS; x+=MAP_SECTION_POINTS*2) { // in einem Block liegen 2 Sections in x-Richtung aneinander
-		for (y=map_min_y; y<=map_max_y; y+=MAP_SECTION_POINTS) {
+	for (x = map_min_x; x <= map_max_x + MAP_SECTION_POINTS; x += MAP_SECTION_POINTS * 2) { // in einem Block liegen 2 Sections in x-Richtung aneinander
+		for (y = map_min_y; y <= map_max_y; y += MAP_SECTION_POINTS) {
 			access_field(x, y, 0, 0); // Block in Puffer laden
+#ifdef BOT_FS_AVAILABLE
+			const int16_t block = (int16_t) (map_current_block.block - alignment_offset);
+#else
+			const int16_t block = (int16_t) map_current_block.block;
+#endif // BOT_FS_AVAILABLE
 			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, block, MAP_SIZE * MAP_RESOLUTION / 2, 128, map_buffer);
 			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, block, MAP_SIZE * MAP_RESOLUTION / 2, 128, &map_buffer[128]);
 			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, block, 0, 128, &map_buffer[256]);
@@ -1485,7 +1489,7 @@ void map_2_sim_send(void) {
 }
 #endif // MAP_2_SIM_AVAILABLE
 
-/*!
+/**
  * Zeigt die Karte an
  */
 void map_print(void) {
@@ -1494,7 +1498,7 @@ void map_print(void) {
 #endif
 }
 
-/*!
+/**
  * Loescht die komplette Karte
  */
 static inline void delete(void) {
@@ -1529,7 +1533,7 @@ static inline void delete(void) {
 	map_max_y = (int16_t)(MAP_SIZE * MAP_RESOLUTION / 2);
 }
 
-/*!
+/**
  * Entfernt alle frei-Informationen aus der Karte, so dass nur die
  * Hindernisse uebrig bleiben.
  */
@@ -1552,7 +1556,7 @@ void map_clean(void) {
 // PC-only Code
 
 #ifdef PC
-/*!
+/**
  * zeichnet ein Testmuster in die Karte
  */
 static inline void draw_test_scheme(void) {
@@ -1597,13 +1601,13 @@ static inline void draw_test_scheme(void) {
 	os_signal_unlock(&lock_signal);
 }
 
-/*!
+/**
  * Verkleinert die Karte vom uebergebenen auf den benutzten Bereich. Achtung,
  * unter Umstaenden muss man vorher die Puffervariablen sinnvoll initialisieren!!!
- * @param min_x Zeiger auf einen uint16, der den miniamlen X-Wert puffert
- * @param max_x Zeiger auf einen uint16, der den maxinmalen X-Wert puffert
- * @param min_y Zeiger auf einen uint16, der den miniamlen Y-Wert puffert
- * @param max_y Zeiger auf einen uint16, der den maxinmalen Y-Wert puffert
+ * \param min_x Zeiger auf einen uint16_t, der den minimalen X-Wert puffert
+ * \param max_x Zeiger auf einen uint16_t, der den maximalen X-Wert puffert
+ * \param min_y Zeiger auf einen uint16_t, der den minimalen Y-Wert puffert
+ * \param max_y Zeiger auf einen uint16_t, der den maximalen Y-Wert puffert
  */
 static inline void shrink(int16_t * min_x, int16_t * max_x, int16_t * min_y,
 		int16_t * max_y) {
@@ -1665,9 +1669,9 @@ static inline void shrink(int16_t * min_x, int16_t * max_x, int16_t * min_y,
 	os_signal_unlock(&lock_signal);
 }
 
-/*!
+/**
  * Schreibt eine Karte in eine PGM-Datei
- * @param filename	Zieldatei
+ * \param filename	Zieldatei
  */
 void map_to_pgm(const char * filename) {
 	printf("Speichere Karte nach %s\n", filename);
@@ -1736,13 +1740,13 @@ void map_to_pgm(const char * filename) {
 	fclose(fp);
 }
 
-#ifndef BOT_FS_AVAILABLE
-/*!
+/**
  * Speichert eine Map in eine (MiniFAT-)Datei, die mit map_read() wieder eingelesen werden kann
- * @param *filename	Zieldatei
- * @return			Fehlercode, 0 falls alles ok
+ * \param *filename	Zieldatei
+ * \return			Fehlercode, 0 falls alles ok
  */
 static int map_export(const char * filename) {
+#ifndef BOT_FS_AVAILABLE
 	if (filename == NULL || strlen(filename) < 1) {
 		return 1;
 	}
@@ -1764,13 +1768,41 @@ static int map_export(const char * filename) {
 	printf("Map wurde nach \"%s\" exportiert.\n", filename);
 	fclose(fd);
 	return 0;
-}
-#endif // BOT_FS_AVAILABLE
+#else // BOT_FS_AVAILABLE
+	uint8_t buffer[BOTFS_BLOCK_SIZE];
+	if (botfs_extract_file(filename, MAP_FILENAME, alignment_offset, 1, buffer) == 0) {
+		FILE * dest = fopen(filename, "r+b");
+		if (dest == NULL) {
+			printf("Zeildatei \"%s\" konnte nicht korrekt angelegt werden!\n", filename);
+			return 2;
+		}
 
-/*!
+		memset(buffer, 0, BOTFS_BLOCK_SIZE);
+		buffer[0] = 'M';
+		buffer[1] = 'A';
+		buffer[2] = 'P';
+
+		if (fwrite(buffer, BOTFS_BLOCK_SIZE, 1, dest) != 1) {
+			puts("Fehler beim Schreiben in die Zieldatei");
+			fclose(dest);
+			return 3;
+		}
+
+		fclose(dest);
+
+		printf("Karte \"%s\" erfolgreich nach \"%s\" exportiert\n", MAP_FILENAME, filename);
+		return 0;
+	} else {
+		printf("Fehler beim Exportieren der Karte \"%s\" nach \"%s\"\n", MAP_FILENAME, filename);
+		return 1;
+	}
+#endif // ! BOT_FS_AVAILABLE
+}
+
+/**
  * Liest eine Map wieder ein
- * @param filename	Quelldatei
- * @return			Fehlercode, 0 falls alles ok
+ * \param filename	Quelldatei
+ * \return			Fehlercode, 0 falls alles ok
  */
 int map_read(const char * filename) {
 	map_init();
@@ -1796,7 +1828,7 @@ int map_read(const char * filename) {
 	}
 
 	/* um Makroblock-Offset vorspulen */
-	uint32_t offset = (uint32_t)buffer[0x120] | (uint32_t)buffer[0x121]<<8;
+	uint32_t offset = (uint32_t) buffer[0x120] | (uint32_t) buffer[0x121] << 8;
 	printf("Makroblock-Offset=0x%04x\n", offset);
 	if (fseek(fp, offset * 512, SEEK_CUR) != 0) {
 		printf("Fehler beim Dateizugriff!\n");
@@ -1805,22 +1837,22 @@ int map_read(const char * filename) {
 	}
 
 #ifdef BOT_FS_AVAILABLE
-	botfs_seek(&map_botfs_file, 0, SEEK_SET);
+	botfs_seek(&map_botfs_file, alignment_offset, SEEK_SET);
 	uint8_t file_buffer[BOTFS_BLOCK_SIZE];
 	uint32_t i;
-	for (i = 0; i < (uint32_t) ((MAP_SIZE * MAP_RESOLUTION) * (MAP_SIZE * MAP_RESOLUTION)); ++i) {
-		if (fread(file_buffer, 1, BOTFS_BLOCK_SIZE, fp) != 1) {
+	for (i = 0; i < (uint32_t) ((uint32_t) (MAP_SIZE * MAP_RESOLUTION) * (uint32_t)  (MAP_SIZE * MAP_RESOLUTION)) / BOTFS_BLOCK_SIZE; ++i) {
+		if (fread(file_buffer, BOTFS_BLOCK_SIZE, 1, fp) != 1) {
 			fclose(fp);
-			printf("Fehler beim Lesen\n");
+			printf("Fehler beim Lesen, i=%u\n", i);
 			return 5;
 		}
 		if (botfs_write(&map_botfs_file, file_buffer) != 0) {
-			printf("Fehler beim Schreiben\n");
+			printf("Fehler beim Schreiben, i=%u\n", i);
 			fclose(fp);
 			return 6;
 		}
 	}
-#else
+#else // ! BOT_FS_AVAILABLE
 	/* Karte liegt auf der MMC genau wie im PC-RAM */
 	uint32_t cnt = fread(&map_storage, 1, sizeof(map_storage), fp);
 	if (cnt != (uint32_t) ((MAP_SIZE * MAP_RESOLUTION) * (MAP_SIZE * MAP_RESOLUTION))) {
@@ -1840,14 +1872,30 @@ int map_read(const char * filename) {
 	/* und Karte verkleinern */
 	shrink(&map_min_x, &map_max_x, &map_min_y, &map_max_y);
 
+#ifdef BOT_FS_AVAILABLE
+	/* Used-Blocks im Datei-Header updaten */
+	botfs_flush_used_blocks(&map_botfs_file, file_buffer);
+	min_max_updated = False;
+
+	uint8_t * p_head_data;
+	botfs_read_header_data(&map_botfs_file, &p_head_data, file_buffer);
+	map_header_t * ptr = (map_header_t *) p_head_data;
+	/* Min- / Max-Werte speichern */
+	ptr->data.map_min_x = map_min_x;
+	ptr->data.map_max_x = map_max_x;
+	ptr->data.map_min_y = map_min_y;
+	ptr->data.map_max_y = map_max_y;
+	botfs_write_header_data(&map_botfs_file, file_buffer);
+#endif // BOT_FS_AVAILABLE
+
 	printf("Map wurde aus \"%s\" importiert.\n", filename);
 
 	return 0;
 }
 
-/*!
+/**
  * Testet die Funktion map_get_ratio()
- * @return	0 falls alles OK, 1 falls Fehler
+ * \return 0 falls alles OK, 1 falls Fehler
  */
 static inline int map_test_get_ratio(void) {
 	delete();
@@ -1942,7 +1990,7 @@ static inline int map_test_get_ratio(void) {
 // Gui-Code
 
 #ifdef MAP_INFO_AVAILABLE
-/*!
+/**
  * Zeigt ein paar Infos ueber die Karte an
  */
 static inline void info(void) {
@@ -1972,7 +2020,7 @@ static inline void info(void) {
 #endif // MAP_INFO_AVAILABLE
 
 #ifdef DISPLAY_MAP_AVAILABLE
-/*!
+/**
  * Handler fuer Map-Display
  */
 void map_display(void) {
@@ -2011,10 +2059,8 @@ void map_display(void) {
 		case RC5_CODE_5:
 		map_test_get_ratio(); RC5_Code = 0; break;
 
-#ifndef BOT_FS_AVAILABLE
 		case RC5_CODE_6:
 		map_export(map_file); RC5_Code = 0; break;
-#endif // BOT_FS_AVAILABLE
 #endif // PC
 		case RC5_CODE_7:
 		map_clean(); RC5_Code = 0; break;
