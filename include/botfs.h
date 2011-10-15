@@ -302,6 +302,20 @@ static inline int16_t botfs_stream_readline(botfs_stream_t * stream, char * to, 
 }
 #endif // BOTFS_STREAM_AVAILABLE
 
+#ifdef BOTFS_COPY_AVAILABLE
+/**
+ * Kopiert eine bestehende BotFS-Datei in eine neue BotFS-Datei
+ * \param *src			Zeiger auf Dateideskriptor der Quelldatei
+ * \param *dest			Name der Zieldatei
+ * \param src_offset	Block-Offset, ab dem aus der Quelldatei kopiert werden soll (normalerweise 0)
+ * \param dest_offset	Block-Offest, an dem der kopierte Inhalt in der Zieldatei beginnen soll (normalerweise 0)
+ * \param dest_tail		Freier Speicherplatz, der am Ende der Zieldatei reserviert wird in Bloecken (normalerweise 0)
+ * \param *buffer		Puffer mit mindestens BOTFS_BLOCK_SIZE Byte
+ * \return				0, falls kein Fehler
+ */
+int8_t botfs_copy(botfs_file_descr_t * src, const char * dest, uint16_t src_offset, uint16_t dest_offset, uint16_t dest_tail, void * buffer);
+#endif // BOTFS_COPY_AVAILABLE
+
 #ifdef PC
 /** FAT */
 typedef struct {

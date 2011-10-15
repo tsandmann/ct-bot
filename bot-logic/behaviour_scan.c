@@ -47,9 +47,9 @@
 #error "OS_AVAILABLE muss an sein fuer behaviour_scan"
 #endif
 
-//#define DEBUG_SCAN_OTF	// Debug-Infos an
+//#define DEBUG_SCAN_OTF // Debug-Infos an
 
-scan_mode_t scan_otf_modes;	/*!< Modi des Verhaltens */
+scan_mode_t scan_otf_modes = {{1, 1, 1, 1}}; /**< Modi des Verhaltens */
 
 /*!
  * Der Roboter aktualisiert kontinuierlich seine Karte

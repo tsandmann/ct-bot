@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-10-15 Timo Sandmann [mail@timosandmann.de]: Map-Code erweitert: map_save_to_file() speichert die aktuelle Map in eine neue Datei, map_load_from_file() liest eine Karte aus einer Datei wieder in die aktuelle Map ein. Im Gegensatz zur Import-Funktion (Parameter -m) funktioniert das zur Laufzeit und auf PC und MCU. Bugfix fuer BotFS.
+
 2011-10-08 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Map Ex- / Import und Map-2-Sim
 
 2011-09-12 Timo Sandmann [mail@timosandmann.de]: uBasic auf rev. 64 aktualisiert, "./include/bot-logic" in Include-Pfad aufgenommen

@@ -27,7 +27,7 @@
  * max. Groesse des Volumes:	32 MByte
  * max. Anzahl an Dateien:		256
  * max. Dateinamenlaenge:		116 Zeichen
- * max. Dateigroesse:			16 MByte
+ * max. Dateigroesse:			~16 MByte (2^15 - 1 * 512 Byte)
  *
  * moechte man da etwas aendern, muss man die Groesse der Datentypen beachten / anpassen!
  */
@@ -37,11 +37,12 @@
 
 #define BOTFS_HEADER_POS	1			/**< Blockadresse des Volume-Headers (erster Block ist Header der Volume-Header-Datei) */
 #define BOTFS_BLOCK_SIZE	512U		/**< Groesse eines Blocks (kleinste adressierbare Einheit) in Byte */
-#define BOTFS_ROOT_SIZE		32768U		/**< Groesse des Root-Verzeichnisses in Byte */
-#define BOTFS_MAX_FILENAME	(128UL - (sizeof(botfs_file_descr_t) + 1))	/**< max. Dateinamenlaenge in Zeichen (116 Zeichen + 0-Byte + 11 Byte Dateidescr. = 128 Byte Daten pro Datei) */
-#define BOTFS_MAX_VOLUME_SIZE	(65536 * BOTFS_BLOCK_SIZE)				/**< max. Groesse des Volumes in Byte */
-#define BOTFS_DIR_BLOCK_CNT	(BOTFS_ROOT_SIZE / BOTFS_BLOCK_SIZE)		/**< Anzahl der Root-Dir-Bloecke */
-#define BOTFS_FILE_DESC_CNT	(BOTFS_BLOCK_SIZE / sizeof(botfs_file_t))	/**< Anzahl der Datei-Deskriptoren pro Block */
+#define BOTFS_ROOT_SIZE		UINT16_MAX	/**< Groesse des Root-Verzeichnisses in Byte */
+#define BOTFS_MAX_FILENAME	(128UL - (sizeof(botfs_file_descr_t) + 1))		/**< max. Dateinamenlaenge in Zeichen (116 Zeichen + 0-Byte + 11 Byte Dateidescr. = 128 Byte Daten pro Datei) */
+#define BOTFS_MAX_VOLUME_SIZE ((uint32_t) UINT16_MAX * BOTFS_BLOCK_SIZE)	/**< max. Groesse des Volumes in Byte */
+#define BOTFS_MAX_FILE_SIZE	((uint32_t) INT16_MAX * BOTFS_BLOCK_SIZE)		/**< max. Groesse einer Datei in Byte */
+#define BOTFS_DIR_BLOCK_CNT	(BOTFS_ROOT_SIZE / BOTFS_BLOCK_SIZE)			/**< Anzahl der Root-Dir-Bloecke */
+#define BOTFS_FILE_DESC_CNT	(BOTFS_BLOCK_SIZE / sizeof(botfs_file_t))		/**< Anzahl der Datei-Deskriptoren pro Block */
 #define BOTFS_MAX_FILE_CNT	((BOTFS_ROOT_SIZE / BOTFS_BLOCK_SIZE) * BOTFS_FILE_DESC_CNT) /**< max. Anzahl an Dateien */
 #define BOTFS_FREEL_SIZE	BOTFS_MAX_FILE_CNT									/**< Groesse der Freelist in Eintraegen */
 #define BOTFS_FREEL_BL_SIZE	(BOTFS_BLOCK_SIZE / sizeof(botfs_freelist_entry_t))	/**< Anzahl der Freelisteintraege pro Block */
@@ -64,5 +65,6 @@
 
 
 //#define BOTFS_STREAM_AVAILABLE /**< Stream-Funktionen aktivieren */
+#define BOTFS_COPY_AVAILABLE /**< Kopieren von Dateien aktivieren */
 
 #endif // BOTFS_CONFIG_H_
