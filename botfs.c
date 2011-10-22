@@ -177,8 +177,8 @@ static int8_t clear_file(botfs_file_descr_t * file, void * buffer) {
 	/* Puffer leeren */
 	memset(buffer, 0, BOTFS_BLOCK_SIZE);
 
-	/* Alle Dateibloecke nullen, Header nicht */
-	uint16_t block = file->used.start != UINT16_MAX ? file->used.start : file->start + BOTFS_HEADER_SIZE;
+	/* Alle belegten Dateibloecke nullen, Header nicht */
+	uint16_t block = file->used.start <= file->start ? file->start + BOTFS_HEADER_SIZE : file->used.start;
 	for (; block <= file->used.end; ++block) {
 		if (botfs_write_low(block, buffer) != 0) {
 			return -3;
