@@ -104,19 +104,10 @@ const char * PC_EEPROM_FN = "./pc_eeprom.bin"; 		/*!< Name und Pfad der EEPROM D
 const char * EEMAP_PC = "./eeprom_pc.map";	/*!< Pfad fuer PC-MAP Datei */
 const char * EEP_PC = "./ct-Bot.eep";		/*!< Pfad fuer PC-EEP Datei */
 const char * EEMAP_MCU[4] = {
-#ifdef WIN32
-/* Windows */
-	"../Debug-MCU-m32-W32/eeprom_mcu.map",
-	"../Debug-MCU-m644-W32/eeprom_mcu.map",
-	"../Debug-MCU-m644p-W32/eeprom_mcu.map",
-	"../Debug-MCU-m1284p-W32/eeprom_mcu.map"
-#else
-/* Linux und Mac OS X */
-	"../Debug-MCU-m32-Linux/eeprom_mcu.map",
-	"../Debug-MCU-m644-Linux/eeprom_mcu.map",
-	"../Debug-MCU-m644p-Linux/eeprom_mcu.map",
-	"../Debug-MCU-m1284p-Linux/eeprom_mcu.map"
-#endif // WIN32
+	"../Debug-MCU-m32/eeprom_mcu.map",
+	"../Debug-MCU-m644/eeprom_mcu.map",
+	"../Debug-MCU-m644p/eeprom_mcu.map",
+	"../Debug-MCU-m1284p/eeprom_mcu.map"
 }; /*!< Pfad fuer MCU MAP Datei */
 
 typedef struct addrtab {
