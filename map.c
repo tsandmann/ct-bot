@@ -119,8 +119,6 @@
  * Wird ein Feld als Loch erkannt, setzen wir den Wert fest auf -128.
  */
 
-/** \todo: Alignment auf Makroblockgroesse verallgemeinern / fuer kopierte Dateien */
-
 /** Anzahl der Sections in der Map */
 #define MAP_SECTIONS	(MAP_SIZE_MM * MAP_RESOLUTION / 1000 / MAP_SECTION_POINTS)
 
@@ -138,13 +136,14 @@
 
 #define MACRO_BLOCK_LENGTH	512U			/**< Kantenlaenge eines Makroblocks in Punkten/Byte */
 #define MAP_LENGTH_IN_MACRO_BLOCKS ((uint8_t) (MAP_SIZE_MM * MAP_RESOLUTION / 1000 / MACRO_BLOCK_LENGTH)) /**< Kantenlaenge der Karte in Makrobloecken */
-#define MAP_ALIGNMENT_MASK	(2UL * MACRO_BLOCK_LENGTH * MACRO_BLOCK_LENGTH / 512 - 1) /**< fuer die Ausrichtung der Karte an einer Sektorgrenze zu Optimierungszwecken */
+#define MAP_FILE_SIZE	((uint16_t) ((uint32_t) (MAP_SECTION_POINTS * MAP_SECTION_POINTS) * MAP_SECTIONS * MAP_SECTIONS \
+						/ BOTFS_BLOCK_SIZE)) /**< Dateigroesse der Map in Bloecken */
+#define MAP_ALIGNMENT_MASK	(2UL * MACRO_BLOCK_LENGTH * MACRO_BLOCK_LENGTH / BOTFS_BLOCK_SIZE - 1) /**< fuer die Ausrichtung der Karte an einer Sektorgrenze zu Optimierungszwecken */
 
 #ifdef BOT_FS_AVAILABLE
 #define MAP_FILENAME	"/map" /**< Dateiname der Karte */
-#endif
-#define MAP_FILE_SIZE	((uint16_t) ((uint32_t) (MAP_SECTION_POINTS * MAP_SECTION_POINTS) * MAP_SECTIONS * MAP_SECTIONS \
-						/ 512) + MAP_ALIGNMENT_MASK) /**< Dateigroesse der Map in 512 Byte Bloecken */
+#define MAP_FILE_ALIGNMENT	(512UL * 1024UL / BOTFS_BLOCK_SIZE) /**< Alingment der Map-BotFS-Datei (512 KB) */
+#endif // BOT_FS_AVAILABLE
 
 int16_t map_min_x = MAP_SIZE * MAP_RESOLUTION / 2; /**< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
 int16_t map_max_x = MAP_SIZE * MAP_RESOLUTION / 2; /**< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
@@ -161,7 +160,6 @@ typedef struct {
 
 #ifdef BOT_FS_AVAILABLE
 static botfs_file_descr_t map_botfs_file;	/**< Datei-Deskriptor der Map */
-static uint16_t alignment_offset;			/**< Offset der Map-Daten in Bloecken (Makroblockalignment) */
 #else
 static uint32_t map_start_block = 0; /**< Block, bei dem die Karte auf der MMC-Karte beginnt */
 #endif // BOT_FS_AVAILABLE
@@ -247,14 +245,6 @@ static int8_t init(uint8_t clean_map) {
 	deactivateBehaviour(bot_scan_onthefly_behaviour);
 #endif
 
-//#ifdef BEHAVIOUR_SCAN_AVAILABLE
-//	/* Modi des Update-Verhaltens. Default: location, distance, border an, Kartographie-Modus */
-//	scan_otf_modes.data.location = 1;
-//	scan_otf_modes.data.distance = 1;
-//	scan_otf_modes.data.border   = 1;
-//	scan_otf_modes.data.map_mode = 1;
-//#endif // BEHAVIOUR_SCAN_AVAILABLE
-
 	// Die Karte auf den Puffer biegen
 	map[0] = (map_section_t *) map_buffer;
 	map[1] = (map_section_t *) (map_buffer + sizeof(map_section_t));
@@ -288,7 +278,7 @@ static int8_t init(uint8_t clean_map) {
 		}
 		/* Map-Datei nicht vorhanden, also anlegen */
 		LOG_DEBUG("map::init(): keine Mapdatei vorhanden, lege sie neu an");
-		if (botfs_create(MAP_FILENAME, MAP_FILE_SIZE, map_buffer) != 0) {
+		if (botfs_create(MAP_FILENAME, MAP_FILE_SIZE, MAP_FILE_ALIGNMENT, map_buffer) != 0) {
 			LOG_DEBUG("map::init(): Anlegen schlug fehl");
 			return 4;
 		}
@@ -309,21 +299,7 @@ static int8_t init(uint8_t clean_map) {
 		ptr->data.map_min_y = MAP_SIZE * MAP_RESOLUTION / 2;
 		ptr->data.map_max_y = MAP_SIZE * MAP_RESOLUTION / 2;
 
-		/* Makroblock-Alignment */
-		const uint32_t start_sector = botfs_get_startsector(&map_botfs_file);
-#ifdef DEBUG_STORAGE
-		LOG_DEBUG("start_sector=%u", start_sector);
-#endif
-		uint32_t map_start = start_sector + MAP_ALIGNMENT_MASK;
-		map_start &= ~MAP_ALIGNMENT_MASK;
-#ifdef DEBUG_STORAGE
-		LOG_DEBUG("map_start=%u", map_start);
-#endif
-		alignment_offset = (uint16_t) (map_start - start_sector);
-#ifdef DEBUG_STORAGE
-		LOG_DEBUG("alignment_offset=%u", alignment_offset);
-#endif
-		ptr->data.alignment_offset = alignment_offset;
+		ptr->data.alignment_offset = 0; // Alignment wird von BotFS erledigt
 
 		if (botfs_write_header_data(&map_botfs_file, map_buffer) != 0) {
 			LOG_DEBUG("map::init(): Headerdaten konnten nicht geschrieben werden");
@@ -337,10 +313,6 @@ static int8_t init(uint8_t clean_map) {
 		return 7;
 	}
 	map_header_t * ptr = (map_header_t *) p_head_data;
-	alignment_offset = ptr->data.alignment_offset;
-#ifdef DEBUG_STORAGE
-	LOG_DEBUG("map::init(): alignment_offset=0x%x\n", alignment_offset);
-#endif
 
 	if (clean_map) {
 		/* Min- / Max-Werte auf Default setzen, da Map geleert wurde */
@@ -551,10 +523,6 @@ static map_section_t * get_section(int16_t x, int16_t y) {
 
 	block += macroblock * MACRO_BLOCK_LENGTH * (MACRO_BLOCK_LENGTH / 512); // noch in den richtigen Makroblock springen
 
-#ifdef BOT_FS_AVAILABLE
-	block += alignment_offset; // Offset fuer Makroblock-Alignment (hier innerhalb der Datei) addieren
-#endif // BOT_FS_AVAILABLE
-
 #ifdef DEBUG_STORAGE
 	LOG_DEBUG("block= %u", block);
 #endif
@@ -602,7 +570,7 @@ static map_section_t * get_section(int16_t x, int16_t y) {
 #ifdef BOT_FS_AVAILABLE
 		botfs_seek(&map_botfs_file, (int16_t) map_current_block.block, SEEK_SET);
 		botfs_write(&map_botfs_file, map_buffer);
-#else
+#else // ! BOT_FS_AVAILABLE
 		uint32_t mmc_block = map_start_block + map_current_block.block;	// Offset fuer die Lage der Karte drauf
 #ifdef DEBUG_MAP_TIMES
 		LOG_INFO("writing block 0x%04x%04x", (uint16_t) (mmc_block >> 16), (uint16_t) mmc_block);
@@ -638,7 +606,7 @@ static map_section_t * get_section(int16_t x, int16_t y) {
 #ifdef BOT_FS_AVAILABLE
 	botfs_seek(&map_botfs_file, (int16_t) block, SEEK_SET);
 	botfs_read(&map_botfs_file, map_buffer);
-#else
+#else // ! BOT_FS_AVAILABLE
 	// Auf der MMC beginnt die Karte nicht bei 0, sondern irgendwo, auf dem PC schadet es nix
 	uint32_t mmc_block = block + map_start_block;	// Offset fuer die Lage der Karte drauf
 #ifdef DEBUG_MAP_TIMES
@@ -1470,11 +1438,7 @@ void map_2_sim_main(void) {
 				}
 			}
 			if (j == i) {
-				const uint16_t max_block = (uint16_t) (MAP_SECTIONS * MAP_SECTIONS / 2)
-#ifdef BOT_FS_AVAILABLE
-					+ alignment_offset
-#endif
-					;
+				const uint16_t max_block = (uint16_t) (MAP_SECTIONS * MAP_SECTIONS / 2);
 				if (cache_copy[i] > max_block) {
 					LOG_ERROR("Block %u ausserhalb der Karte!", cache_copy[i]);
 					continue;
@@ -1484,7 +1448,7 @@ void map_2_sim_main(void) {
 #ifdef BOT_FS_AVAILABLE
 				botfs_seek(&map_2_sim_botfs_file, (int16_t) cache_copy[i], SEEK_SET);
 				botfs_read(&map_2_sim_botfs_file, map_2_sim_buffer);
-				const int16_t block = (int16_t) (cache_copy[i] - alignment_offset);
+				const int16_t block = (int16_t) (cache_copy[i]);
 #else // ! BOT_FS_AVAILABLE
 				mmc_read_sector(map_start_block + cache_copy[i], map_2_sim_buffer);
 				const int16_t block = (int16_t) cache_copy[i];
@@ -1520,11 +1484,7 @@ void map_2_sim_send(void) {
 //	for (x = 0; x < map_min_x; x += MAP_SECTION_POINTS * 2) { // in einem Block liegen 2 Sections in x-Richtung aneinander
 //		for (y = 0; y < map_min_y; y += MAP_SECTION_POINTS) {
 //			access_field(x, y, 0, 0); // Block in Puffer laden
-//#ifdef BOT_FS_AVAILABLE
-//			const int16_t block = (int16_t) (map_current_block.block - alignment_offset);
-//#else
 //			const int16_t block = (int16_t) map_current_block.block;
-//#endif // BOT_FS_AVAILABLE
 //			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, block, MAP_SIZE * MAP_RESOLUTION / 2, 128, map_buffer);
 //			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, block, MAP_SIZE * MAP_RESOLUTION / 2, 128, &map_buffer[128]);
 //			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, block, 0, 128, &map_buffer[256]);
@@ -1537,11 +1497,7 @@ void map_2_sim_send(void) {
 	for (x = map_min_x; x <= map_max_x + MAP_SECTION_POINTS; x += MAP_SECTION_POINTS * 2) { // in einem Block liegen 2 Sections in x-Richtung aneinander
 		for (y = map_min_y; y <= map_max_y; y += MAP_SECTION_POINTS) {
 			access_field(x, y, 0, 0); // Block in Puffer laden
-#ifdef BOT_FS_AVAILABLE
-			const int16_t block = (int16_t) (map_current_block.block - alignment_offset);
-#else
 			const int16_t block = (int16_t) map_current_block.block;
-#endif // BOT_FS_AVAILABLE
 			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, block, map_2_sim_data.pos.x, 128, map_buffer);
 			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, block, map_2_sim_data.pos.y, 128, &map_buffer[128]);
 			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, block, map_2_sim_data.heading, 128, &map_buffer[256]);
@@ -1554,11 +1510,7 @@ void map_2_sim_send(void) {
 //	for (; x < (int16_t) (MAP_SIZE * MAP_RESOLUTION); x += MAP_SECTION_POINTS * 2) { // in einem Block liegen 2 Sections in x-Richtung aneinander
 //		for (; y < (int16_t) (MAP_SIZE * MAP_RESOLUTION); y += MAP_SECTION_POINTS) {
 //			access_field(x, y, 0, 0); // Block in Puffer laden
-//#ifdef BOT_FS_AVAILABLE
-//			const int16_t block = (int16_t) (map_current_block.block - alignment_offset);
-//#else
 //			const int16_t block = (int16_t) map_current_block.block;
-//#endif // BOT_FS_AVAILABLE
 //			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, block, MAP_SIZE * MAP_RESOLUTION / 2, 128, map_buffer);
 //			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, block, MAP_SIZE * MAP_RESOLUTION / 2, 128, &map_buffer[128]);
 //			command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, block, 0, 128, &map_buffer[256]);
@@ -1665,7 +1617,7 @@ int8_t map_save_to_file(const char * file) {
 	botfs_unlink(file, map_buffer);
 
 	/* Map-Datei auf Zieldatei kopieren */
-	int8_t res = botfs_copy(&map_botfs_file, file, /*alignment_offset*/ 0, 0, /*alignment_offset*/ 0, map_buffer);
+	int8_t res = botfs_copy(&map_botfs_file, file, 0, 0, 0, MAP_FILE_ALIGNMENT, map_buffer);
 	LOG_DEBUG(" res=%d", res);
 
 	/* letzen Block wieder in den (veraenderten) Puffer laden */
@@ -1701,7 +1653,7 @@ int8_t map_load_from_file(const char * file) {
 	botfs_unlink(MAP_FILENAME, map_buffer);
 
 	/* Quelldatei nach Map-Datei kopieren */
-	const int8_t res = botfs_copy(&src_file, MAP_FILENAME, 0, 0, 0, map_buffer);
+	const int8_t res = botfs_copy(&src_file, MAP_FILENAME, 0, 0, 0, MAP_FILE_ALIGNMENT, map_buffer);
 	LOG_DEBUG(" filesize=0x%x blocks", botfs_get_filesize(&src_file));
 	botfs_close(&src_file, map_buffer);
 	LOG_DEBUG(" res=%d", res);
@@ -1913,7 +1865,7 @@ static int map_export(const char * filename) {
 		return 1;
 	}
 	// MiniFAT-Datei anlegen / ueberschreiben
-	create_mini_fat_file(filename, "MAP", MAP_FILE_SIZE / 2);
+	create_mini_fat_file(filename, "MAP", (MAP_FILE_SIZE + MAP_ALIGNMENT_MASK) / 2);
 	FILE * fd = fopen(filename, "r+b");
 	if (fd == NULL) {
 		return 1;
@@ -1932,7 +1884,7 @@ static int map_export(const char * filename) {
 	return 0;
 #else // BOT_FS_AVAILABLE
 	uint8_t buffer[BOTFS_BLOCK_SIZE];
-	if (botfs_extract_file(filename, MAP_FILENAME, alignment_offset, 1, buffer) == 0) {
+	if (botfs_extract_file(filename, MAP_FILENAME, 0, 1, buffer) == 0) {
 		FILE * dest = fopen(filename, "r+b");
 		if (dest == NULL) {
 			printf("Zeildatei \"%s\" konnte nicht korrekt angelegt werden!\n", filename);
@@ -2005,7 +1957,7 @@ int map_read(const char * filename) {
 	}
 
 #ifdef BOT_FS_AVAILABLE
-	botfs_seek(&map_botfs_file, alignment_offset, SEEK_SET);
+	botfs_rewind(&map_botfs_file);
 	uint8_t file_buffer[BOTFS_BLOCK_SIZE];
 	uint32_t i;
 	for (i = 0; i < (uint32_t) ((uint32_t) (MAP_SIZE * MAP_RESOLUTION) * (uint32_t)  (MAP_SIZE * MAP_RESOLUTION)) / BOTFS_BLOCK_SIZE; ++i) {
@@ -2239,23 +2191,23 @@ void map_display(void) {
 		case RC5_CODE_7:
 		map_clean(); RC5_Code = 0; break;
 
-//#if defined BOT_FS_AVAILABLE && defined BOTFS_COPY_AVAILABLE
-//		case RC5_CODE_8: {
-//			int8_t res = map_save_to_file("/map_export");
-//			if (res != 0) {
-//				LOG_ERROR("map_save_to_file() schlug fehl: %d", res);
-//			}
-//			RC5_Code = 0; break;
-//		}
-//
-//		case RC5_CODE_9: {
-//			int8_t res = map_load_from_file("/map_export");
-//			if (res !=0) {
-//				LOG_ERROR("map_load_from_file() schlug fehl: %d", res);
-//			}
-//			RC5_Code = 0; break;
-//		}
-//#endif // BOT_FS_AVAILABLE && BOTFS_COPY_AVAILABLE
+#if 0 && defined BOT_FS_AVAILABLE && defined BOTFS_COPY_AVAILABLE
+		case RC5_CODE_8: {
+			int8_t res = map_save_to_file("/map_export");
+			if (res != 0) {
+				LOG_ERROR("map_save_to_file() schlug fehl: %d", res);
+			}
+			RC5_Code = 0; break;
+		}
+
+		case RC5_CODE_9: {
+			int8_t res = map_load_from_file("/map_export");
+			if (res !=0) {
+				LOG_ERROR("map_load_from_file() schlug fehl: %d", res);
+			}
+			RC5_Code = 0; break;
+		}
+#endif // BOT_FS_AVAILABLE && BOTFS_COPY_AVAILABLE
 	}
 #endif // RC5_AVAILABLE
 }

@@ -30,8 +30,8 @@
 //#define DEBUG_BOTFS /**< schaltet Debug-Ausgaben an */
 //#define DEBUG_BOTFS_LOGFILE /**< schaltet Debug-Ausgaben in botfs.log an */
 
-#ifdef BOT_FS_AVAILABLE
 #include "botfs_config.h"
+#ifdef BOT_FS_AVAILABLE
 #include "botfs_types.h"
 #include <stdio.h>
 
@@ -129,10 +129,11 @@ int8_t botfs_write(botfs_file_descr_t * file, void * buffer);
  * Legt eine neue Datei an
  * \param *filename	Dateiname
  * \param size		Groesse der Datei in Bloecken
+ * \param alignment	Ausrichtung des Dateianfangs an einer X-Blockgrenze (normalerweise 0)
  * \param *buffer	Puffer fuer mindestens BOTFS_BLOCK_SIZE Byte
  * \return			0, falls kein Fehler
  */
-int8_t botfs_create(const char * filename, uint16_t size, void * buffer);
+int8_t botfs_create(const char * filename, uint16_t size, uint16_t alignment, void * buffer);
 
 /**
  * Entfernt eine Datei
@@ -187,13 +188,6 @@ int8_t botfs_read_header_data(botfs_file_descr_t * file, uint8_t ** headerdata, 
  * Header-Daten gefuellt worden sein!
  */
 int8_t botfs_write_header_data(botfs_file_descr_t * file, void * buffer);
-
-/**
- * Gibt die physische Blockadresse des Dateianfangs zurueck
- * \param *file	Zeiger auf Datei-Deskriptor
- * \return		Blockadresse des Dateianfangs (Nutzdaten, nicht Header)
- */
-uint32_t botfs_get_startsector(botfs_file_descr_t * file);
 
 /**
  * Gibt die Groesse einer Datei zurueck
@@ -310,10 +304,12 @@ static inline int16_t botfs_stream_readline(botfs_stream_t * stream, char * to, 
  * \param src_offset	Block-Offset, ab dem aus der Quelldatei kopiert werden soll (normalerweise 0)
  * \param dest_offset	Block-Offest, an dem der kopierte Inhalt in der Zieldatei beginnen soll (normalerweise 0)
  * \param dest_tail		Freier Speicherplatz, der am Ende der Zieldatei reserviert wird in Bloecken (normalerweise 0)
+ * \param dest_align	Ausrichtung der neuen Zieldatei an einer X-Blockgrenze (normalerweise 0)
  * \param *buffer		Puffer mit mindestens BOTFS_BLOCK_SIZE Byte
  * \return				0, falls kein Fehler
  */
-int8_t botfs_copy(botfs_file_descr_t * src, const char * dest, uint16_t src_offset, uint16_t dest_offset, uint16_t dest_tail, void * buffer);
+int8_t botfs_copy(botfs_file_descr_t * src, const char * dest, uint16_t src_offset, uint16_t dest_offset, uint16_t dest_tail, uint16_t dest_align,
+	void * buffer);
 #endif // BOTFS_COPY_AVAILABLE
 
 #ifdef PC

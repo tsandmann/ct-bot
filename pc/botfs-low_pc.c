@@ -47,12 +47,13 @@
 
 static FILE * image_file; /**< Image-Datei des Volumes */
 static botfs_mutex_t file_mutex = PTHREAD_MUTEX_INITIALIZER; /**< Mutex, um den Dateizugriff zu schuetzen */
+
 #if defined DEBUG_BOTFS || defined DEBUG_BOTFS_LOGFILE
 static botfs_mutex_t log_mutex = PTHREAD_MUTEX_INITIALIZER; /**< Mutes, um das Log zu schuetzen */
 FILE * botfs_log_fd; /**< File-Handle fuer Log-Datei */
 #endif // defined DEBUG_BOTFS || defined DEBUG_BOTFS_LOGFILE
 
-uint32_t first_block = 0; /**< Adresse des ersten Blocks des Volumes */
+uint32_t first_block = 0x1C400; /**< Adresse des ersten Blocks des Volumes (entspricht erstem Datensektor einer FAT16-Partition bei 512 Byte Sektoren) */
 
 /**
  * Laedt das Volume
@@ -73,20 +74,20 @@ int8_t botfs_init_low(char * image, void * buffer, uint8_t create) {
 	image_file = fopen(image, "r+b");
 	botfs_release_lock_low(&file_mutex);
 	if (image_file == NULL) {
-		PRINT_MSG("Image-Datei \"%s\" konnte nicht geoeffnet werden", image);
+		PRINT_MSG("botfs_init_low(): Image-Datei \"%s\" konnte nicht geoeffnet werden", image);
 		if (create != 1) {
 			return -1;
 		}
-		PRINT_MSG("Lege neues Images \"%s\" an...", image);
+		PRINT_MSG("botfs_init_low(): Lege neues Images \"%s\" an...", image);
 		if (botfs_create_volume(image, BOTFS_DEFAULT_VOL_NAME, BOTFS_DEFAULT_VOL_SIZE) != 0) {
-			PRINT_MSG("botfs_create_volume(\"%s\") schlug fehl", image);
+			PRINT_MSG("botfs_init_low(): botfs_create_volume(\"%s\") schlug fehl", image);
 			return -2;
 		}
 		botfs_acquire_lock_low(&file_mutex);
 		image_file = fopen(image, "r+b");
 		botfs_release_lock_low(&file_mutex);
 		if (image_file == NULL) {
-			PRINT_MSG("angelegte Image-Datei \"%s\" konnte nicht geoeffnet werden", image);
+			PRINT_MSG("botfs_init_low(): angelegte Image-Datei \"%s\" konnte nicht geoeffnet werden", image);
 			return -3;
 		}
 	}
@@ -105,20 +106,20 @@ int8_t botfs_check_volume_low(char * image, void * buffer) {
 	/* Version pruefen */
 	botfs_volume_t * volume = buffer;
 	if (volume->data.version < BOTFS_MIN_VERSION) {
-		printf("Das Volume hat eine zu alte Version!\n");
-		printf(" Volume-Version: %u, min. gefordert: %u\n", volume->data.version, BOTFS_MIN_VERSION);
-		printf("Bitte Datei \"%s\" loeschen und neu anlegen (lassen).\n", image);
+		printf("botfs_check_volume_low(): Das Volume hat eine zu alte Version!\n");
+		printf("botfs_check_volume_low():  Volume-Version: %u, min. gefordert: %u\n", volume->data.version, BOTFS_MIN_VERSION);
+		printf("botfs_check_volume_low(): Bitte Datei \"%s\" loeschen und neu anlegen (lassen).\n", image);
 		return -1;
 	}
 
 	/* Root-Dir pruefen */
 	const char * first_file = botfs_readdir(0, buffer);
 	if (first_file == NULL) {
-		printf("Fehlerhaftes Volume\n");
+		printf("botfs_check_volume_low(): Fehlerhaftes Volume\n");
 		return -2;
 	}
 	if (strncmp(first_file, "/volumedata", BOTFS_MAX_FILENAME) != 0) {
-		printf("Fehler, Volume enhaelt kein Rootverzeichnis\n");
+		printf("botfs_check_volume_low(): Fehler, Volume enhaelt kein Rootverzeichnis\n");
 		return -3;
 	}
 
@@ -164,7 +165,7 @@ int8_t botfs_create_volume_low(const char * image, uint32_t size) {
  * \return			0, falls kein Fehler
  */
 int8_t botfs_read_low(uint16_t block, void * buffer) {
-	PRINT_MSG("botfs_read_low with block=%d, &buffer=0x%lx", block, (size_t) buffer);
+	PRINT_MSG("botfs_read_low(): block=%d, &buffer=0x%lx", block, (size_t) buffer);
 	botfs_acquire_lock_low(&file_mutex);
 	if (fseek(image_file, block * BOTFS_BLOCK_SIZE, SEEK_SET) != 0) {
 		botfs_release_lock_low(&file_mutex);
@@ -185,7 +186,7 @@ int8_t botfs_read_low(uint16_t block, void * buffer) {
  * \return			0, falls kein Fehler
  */
 int8_t botfs_write_low(uint16_t block, void * buffer) {
-	PRINT_MSG("botfs_write_low with block=%d, &buffer=0x%lx", block, (size_t) buffer);
+	PRINT_MSG("botfs_write_low(): block=%d, &buffer=0x%lx", block, (size_t) buffer);
 	botfs_acquire_lock_low(&file_mutex);
 	if (fseek(image_file, block * BOTFS_BLOCK_SIZE, SEEK_SET) != 0) {
 		botfs_release_lock_low(&file_mutex);
