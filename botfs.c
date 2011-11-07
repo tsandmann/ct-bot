@@ -43,9 +43,11 @@
  *        + Partions- und Imagegroesse anpassbar (max. 32 MB)\n
  *        -- mehrere Arbeitsschritte noetig\n
  *        -- Partionierung unter Windows evtl. umstaendlich\n
+ *        -- Wert von first_block in pc/botfs-low_pc.c muss angepasst werden, wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte\n
  *     - Variante 3: vollstaendig manuelle Einrichtung\n
  *        + volle Kontrolle ueber alle Schritte\n
  *        -- recht umstaendlich\n
+ *        -- Wert von first_block in pc/botfs-low_pc.c muss angepasst werden, wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte\n
  * \n
  *     - Durchfuehrung Variante 1:\n
  *       Uebertragen des vorgefertigten Disk-Images (befindet sich in contrib/BotFS/sd.img.zip):
@@ -87,7 +89,10 @@
  *         Es bietet sich an, auf der SD-Karte auch eine zweite Partition (Groesse und Typ beliebig) anzulegen und dort eine Kopie
  *         der Datei botfs.img zu speichern. Moechte man einmal das komplette Dateisystem fuer den Bot leeren oder wurde es durch
  *         einen Fehler beschaedigt, kopiert man einfach dieses Backup zurueck auf die erste Partition und muss die obigen Schritte
- *         nicht wiederholen.
+ *         nicht wiederholen.\n
+ *         Wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte, sollte man den Wert von first_block in
+ *         pc/botfs-low_pc.c anpassen, damit das Alignment von Dateien (zur Performanzsteigerung z.B. fuer die Map) stimmt.
+ *         first_block muss dazu auf den ersten Datensektor der FAT16-Partition gesetzt werden.
  * \n
  *     - Durchfuehrung Variante 3:\n
  *       Anlegen der Partition wie unter Variante 2.\n
@@ -102,6 +107,9 @@
  *       Als Volume-Name gibt man dann einen beliebigen ein, wie z.B. "BotFS-Volume", als Groesse danach die eben Ermittelte (in
  *       KByte). Jetzt kann die Verwaltung mit dem Kommando 'q' beendet werden und die erzeugte Datei als "botfs.img" (wichtig:
  *       auf der SD-Karte muss die Datei unbedingt "botfs.img" heissen!) auf die SD-Karte (erste Partition) kopiert werden.\n
+ *       Wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte, sollte man den Wert von first_block in
+ *       pc/botfs-low_pc.c anpassen, damit das Alignment von Dateien (zur Performanzsteigerung z.B. fuer die Map) stimmt.
+ *       first_block muss dazu auf den ersten Datensektor der FAT16-Partition gesetzt werden.\n
  * \n
  * - Benutzung:\n
  *   - Der Map-Code ist jetzt (mit BOT_FS_AVAILABLE) nicht mehr darauf angewiesen, dass eine Map-Datei (MiniFAT) auf der SD-Karte

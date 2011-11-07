@@ -17,12 +17,14 @@ Variante 2: Manuelle Partionierung, anschliessende Einrichtung mit Hilfsprogramm
  
  - mehrere Arbeitsschritte noetig
  - Partionierung unter Windows evtl. umstaendlich
+ - Wert von first_block in pc/botfs-low_pc.c muss angepasst werden, wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte
 
 
 Variante 3: vollstaendig manuelle Einrichtung
  + volle Kontrolle ueber alle Schritte
  
  - recht umstaendlich
+ - Wert von first_block in pc/botfs-low_pc.c muss angepasst werden, wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte
  
  
 =================================================
@@ -79,6 +81,10 @@ der Datei botfs.img zu speichern. Moechte man einmal das komplette Dateisystem f
 einen Fehler beschaedigt, kopiert man einfach dieses Backup zurueck auf die erste Partition und muss die obigen Schritte
 nicht wiederholen.
 
+Wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte, sollte man den Wert von first_block in
+pc/botfs-low_pc.c anpassen, damit das Alignment von Dateien (zur Performanzsteigerung z.B. fuer die Map) stimmt.
+first_block muss dazu auf den ersten Datensektor der FAT16-Partition gesetzt werden.
+
 
 -------------------------------------------------
 
@@ -97,4 +103,8 @@ Eine komplette Pfadangabe ist auch moeglich, ansonsten wird die Datei im aktuell
 Als Volume-Name gibt man dann einen beliebigen ein, wie z.B. "BotFS-Volume", als Groesse danach die eben Ermittelte (in
 KByte). Jetzt kann die Verwaltung mit dem Kommando 'q' beendet werden und die erzeugte Datei als "botfs.img" (wichtig -
 auf der SD-Karte muss die Datei unbedingt "botfs.img" heissen!) auf die SD-Karte (erste Partition) kopiert werden.
+
+Wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte, sollte man den Wert von first_block in
+pc/botfs-low_pc.c anpassen, damit das Alignment von Dateien (zur Performanzsteigerung z.B. fuer die Map) stimmt.
+first_block muss dazu auf den ersten Datensektor der FAT16-Partition gesetzt werden.
 

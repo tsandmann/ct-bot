@@ -53,7 +53,7 @@ static botfs_mutex_t log_mutex = PTHREAD_MUTEX_INITIALIZER; /**< Mutes, um das L
 FILE * botfs_log_fd; /**< File-Handle fuer Log-Datei */
 #endif // defined DEBUG_BOTFS || defined DEBUG_BOTFS_LOGFILE
 
-uint32_t first_block = 0x1C400; /**< Adresse des ersten Blocks des Volumes (entspricht erstem Datensektor einer FAT16-Partition bei 512 Byte Sektoren) */
+uint32_t first_block = 0xe2; /**< Adresse des ersten Blocks des Volumes (entspricht 1. Datensektor der FAT16-Partition des SD-Images aus contrib/BotFS) */
 
 /**
  * Laedt das Volume
