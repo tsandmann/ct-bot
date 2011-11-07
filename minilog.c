@@ -132,7 +132,7 @@ void log_mmc_init(void) {
 	int8_t res;
 	if ((res = botfs_open(FILE_NAME, &log_file, BOTFS_MODE_W, file_buffer)) != 0) {
 		if (res == -1) {
-			botfs_create(FILE_NAME, FILE_SIZE, file_buffer);
+			botfs_create(FILE_NAME, FILE_SIZE, 0, file_buffer);
 			if (botfs_open(FILE_NAME, &log_file, BOTFS_MODE_W, file_buffer) != 0) {
 				return;
 			}

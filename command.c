@@ -507,7 +507,7 @@ int8_t command_evaluate(void) {
 					/* Datei anlegen */
 					const uint16_t size = prog_size / BOTFS_BLOCK_SIZE + (uint16_t) (prog_size % BOTFS_BLOCK_SIZE != 0 ? 1 : 0);
 					LOG_DEBUG(" size=%u", size);
-					if (botfs_create(filename, size, buffer) != 0 || botfs_open(filename, &prog_file, BOTFS_MODE_W, buffer) != 0) {
+					if (botfs_create(filename, size, 0, buffer) != 0 || botfs_open(filename, &prog_file, BOTFS_MODE_W, buffer) != 0) {
 						LOG_ERROR("Fehler beim Dateizugriff");
 						prog_size = 0;
 						break;

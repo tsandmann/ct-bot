@@ -142,7 +142,7 @@ void bot_sens_init(void) {
 	int8_t res;
 	if ((res = botfs_open(SPEEDLOG_FILE_NAME, &speedlog_file, BOTFS_MODE_W, buffer)) != 0) {
 		if (res == -1) {
-			botfs_create(SPEEDLOG_FILE_NAME, SPEEDLOG_FILE_SIZE, buffer);
+			botfs_create(SPEEDLOG_FILE_NAME, SPEEDLOG_FILE_SIZE, 0, buffer);
 			if (botfs_open(SPEEDLOG_FILE_NAME, &speedlog_file, BOTFS_MODE_W, buffer) != 0) {
 				return;
 			}
