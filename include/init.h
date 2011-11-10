@@ -47,6 +47,13 @@ typedef union {
 #endif // MAP_AVAILABLE
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 		uint8_t ubasic_buffer[BOTFS_BLOCK_SIZE]; /**< uBasic-MMC-Puffer */
+#else
+		uint8_t ubasic_buffer[0]; /**< uBasic-MMC-Puffer inaktiv */
+#endif
+#ifdef BEHAVIOUR_ABL_AVAILABLE
+		uint8_t abl_buffer[BOTFS_BLOCK_SIZE]; /**< ABL-MMC-Puffer */
+#else
+		uint8_t abl_buffer[0]; /**< ABL-MMC-Puffer inaktiv */
 #endif
 #if defined LOG_MMC_AVAILABLE && defined USE_MINILOG
 		char minilog_buffer[BOTFS_BLOCK_SIZE]; /**< Puffer fuer LOG_MMC */

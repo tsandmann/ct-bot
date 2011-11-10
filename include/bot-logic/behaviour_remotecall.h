@@ -93,6 +93,13 @@ void bot_remotecall_cancel(void);
 void bot_remotecall_list(void);
 
 /**
+ * Sucht den Index des Remote-Calls heraus
+ * \param *call	String mit dem Namen der gesuchten fkt
+ * \return 		Index in das remotecall_beh_list-Array. Wenn nicht gefunden, dann 255
+ */
+uint8_t get_remotecall_id(const char * call);
+
+/**
  * Displayhandler fuer RemoteCall-Display
  */
 void remotecall_display(void);

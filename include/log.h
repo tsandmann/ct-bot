@@ -78,7 +78,7 @@ typedef enum {
 	LOG_TYPE_WARN,		/*!< Auftreten einer unerwarteten Situation */
 	LOG_TYPE_ERROR,		/*!< Fehler aufgetreten */
 	LOG_TYPE_FATAL		/*!< Kritischer Fehler */
-} LOG_TYPE;
+} PACKED LOG_TYPE;
 
 #define LOG_RAW LOG_INFO
 
@@ -232,7 +232,7 @@ typedef enum {
 	LOG_TYPE_INFO,		/*!< Allgemeine Informationen */
 	LOG_TYPE_ERROR,		/*!< Fehler aufgetreten */
 	LOG_TYPE_RAW,		/*!< Nur Datenausgabe */
-} LOG_TYPE;
+} PACKED LOG_TYPE;
 
 #define LOG_WARN	LOG_INFO
 #define LOG_FATAL	LOG_ERROR

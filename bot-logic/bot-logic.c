@@ -254,6 +254,11 @@ void bot_behave_init(void) {
 	insert_behaviour_to_list(&behaviour, new_behaviour(39, bot_drive_chess_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 
+#ifdef BEHAVIOUR_ABL_AVAILABLE
+	// Verhalten, das ABL interpretiert und per Remote-Call andere Verhalten starten kann
+	insert_behaviour_to_list(&behaviour, new_behaviour(35, bot_abl_behaviour, BEHAVIOUR_INACTIVE));
+#endif
+
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 	insert_behaviour_to_list(&behaviour, new_behaviour(34, bot_ubasic_behaviour, BEHAVIOUR_INACTIVE));
 #endif

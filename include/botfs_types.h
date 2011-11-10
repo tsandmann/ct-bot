@@ -108,6 +108,7 @@ typedef struct {
 	uint8_t mode;			/**< Modus, in dem die Datei geoeffnet wurde */
 	botfs_file_used_t used;	/**< Benutzte Bloecke dieser Datei */
 } PACKED botfs_file_descr_t;
+#define BOTFS_FD_INITIALIZER { 0, 0, 0, 0, { 0, 0, 0 } } /**< Initialisiert einen botfs_file_descr_t Typ */
 
 /** Datei-Header */
 typedef	struct {

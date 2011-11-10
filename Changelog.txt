@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-11-09 Timo Sandmann [mail@timosandmann.de]: Verhalten bot_abl_behaviour() zur Steuerung des Bots ueber eine Scriptsprache. Doku folgt. Siehe auch bot-logic/behaviour_abl.c
+
 2011-11-06 Timo Sandmann [mail@timosandmann.de]: Makroblock-Alignment fuer Map optimiert
 
 2011-10-29 Timo Sandmann [mail@timosandmann.de]: Eclipse Build-Konfiguration fuer MCU vereinfacht

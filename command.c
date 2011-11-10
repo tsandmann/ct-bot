@@ -360,10 +360,12 @@ int8_t command_evaluate(void) {
 #ifdef RC5_AVAILABLE
 	static uint16_t RC5_Last_Toggle = 0xffff;
 #endif
-#ifdef BEHAVIOUR_UBASIC_AVAILABLE
+#if defined BEHAVIOUR_UBASIC_AVAILABLE || defined BEHAVIOUR_ABL_AVAILABLE
+#ifdef BOT_FS_AVAILABLE
 	static botfs_file_descr_t prog_file;
+#endif
 	static uint16_t prog_size = 0;
-#endif // BEHAVIOUR_UBASIC_AVAILABLE
+#endif // BEHAVIOUR_UBASIC_AVAILABLE || BEHAVIOUR_ABL_AVAILABLE
 	int8_t analyzed = 1;
 
 #ifdef LOG_AVAILABLE
@@ -479,7 +481,7 @@ int8_t command_evaluate(void) {
 			ctbot_shutdown();
 			break;
 
-#ifdef BEHAVIOUR_UBASIC_AVAILABLE
+#if defined BEHAVIOUR_UBASIC_AVAILABLE || defined BEHAVIOUR_ABL_AVAILABLE
 		case CMD_PROGRAM: {
 			LOG_DEBUG("Programm-Empfang:");
 			switch (received_command.request.subcommand) {
@@ -501,7 +503,8 @@ int8_t command_evaluate(void) {
 					/* OK */
 					filename[len] = 0;
 					LOG_DEBUG(" Datei:\"%s\"", filename);
-					void * buffer = GET_MMC_BUFFER(ubasic_buffer);
+					void * buffer = type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer);
+#ifdef BOT_FS_AVAILABLE
 					/* Datei loeschen, falls vorhanden */
 					botfs_unlink(filename, buffer);
 					/* Datei anlegen */
@@ -512,19 +515,34 @@ int8_t command_evaluate(void) {
 						prog_size = 0;
 						break;
 					}
+#endif //BOT_FS_AVAILABLE
 					memset(buffer, 0, BOTFS_BLOCK_SIZE);
-					/* falls uBasic laeuft, abbrechen */
-					Behaviour_t * const beh = get_behaviour(bot_ubasic_behaviour);
+					/* falls uBasic / ABL laeuft, abbrechen */
+#if defined BEHAVIOUR_UBASIC_AVAILABLE && defined BEHAVIOUR_ABL_AVAILABLE
+					Behaviour_t * const beh = type == 0 ? get_behaviour(bot_ubasic_behaviour) : get_behaviour(bot_abl_behaviour);
+#elif defined BEHAVIOUR_UBASIC_AVAILABLE
+					Behaviour_t * const beh = type == 0 ? get_behaviour(bot_ubasic_behaviour) : NULL;
+#elif defined BEHAVIOUR_ABL_AVAILABLE
+					Behaviour_t * const beh = type == 0 ? NULL : get_behaviour(bot_abl_behaviour);
+#endif
 					deactivate_called_behaviours(beh);
 					deactivate_behaviour(beh);
-					/* evtl. hatte uBasic einen RemoteCall gestartet, daher dort aufraeumen */
+					/* evtl. hatte uBasic / ABL einen RemoteCall gestartet, daher dort aufraeumen */
 					activateBehaviour(NULL, bot_remotecall_behaviour);
 					/* Datei laden */
 					switch (type) {
+#ifdef BEHAVIOUR_UBASIC_AVAILABLE
 					case 0:
 						/* uBasic */
 						bot_ubasic_load_file(filename, &prog_file);
 						break;
+#endif // BEHAVIOUR_UBASIC_AVAILABLE
+#ifdef BEHAVIOUR_ABL_AVAILABLE
+					case 1:
+						/* ABL */
+						abl_load(filename);
+						break;
+#endif // BEHAVIOUR_ABL_AVAILABLE
 					}
 				} else {
 					/* Fehler */
@@ -541,9 +559,10 @@ int8_t command_evaluate(void) {
 					break;
 				}
 				const uint16_t done = (uint16_t) received_command.data_r;
-				LOG_DEBUG(" type=%u %u Bytes (%u Bytes insgesamt)", (uint8_t) received_command.data_l, received_command.payload,
+				const uint8_t type = (uint8_t) received_command.data_l;
+				LOG_DEBUG(" type=%u %u Bytes (%u Bytes insgesamt)", type, received_command.payload,
 					received_command.payload + done);
-				void * buffer = GET_MMC_BUFFER(ubasic_buffer);
+				void * buffer = type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer);
 				const uint16_t index = (uint16_t) done % BOTFS_BLOCK_SIZE;
 				buffer += index;
 				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
@@ -565,16 +584,36 @@ int8_t command_evaluate(void) {
 					if (index + n == BOTFS_BLOCK_SIZE || prog_size == 0) {
 						/* Puffer in Datei schreiben */
 						LOG_DEBUG(" Puffer rausschreiben...");
-						if (botfs_write(&prog_file, GET_MMC_BUFFER(ubasic_buffer)) != 0) {
+#ifdef BOT_FS_AVAILABLE
+						if (botfs_write(&prog_file, type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer)) != 0) {
 							/* Fehler */
 							LOG_ERROR("Fehler beim Dateizugriff");
 							prog_size = 0;
 							break;
 						}
-						memset(GET_MMC_BUFFER(ubasic_buffer), 0, BOTFS_BLOCK_SIZE);
+#else // EEPROM
+						const uint16_t block = (uint16_t) done / BOTFS_BLOCK_SIZE;
+#if defined __AVR_ATmega1284P__ || defined MCU_ATMEGA644X || defined PC
+						if (block > 2) {
+#else // ATmega32
+						if (block > 0) {
+#endif
+							break;
+						}
+#ifdef LED_AVAILABLE
+						LED_on(LED_ROT);
+#endif
+						ctbot_eeprom_write_block(&abl_eeprom_data[block << 9], GET_MMC_BUFFER(abl_buffer), 512);
+#ifdef LED_AVAILABLE
+						LED_off(LED_ROT);
+#endif
+#endif // BOT_FS_AVAILABLE
+						memset(type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer), 0, BOTFS_BLOCK_SIZE);
 						if (prog_size == 0) {
 							/* Progamm vollstaendig empfangen */
-							botfs_flush_used_blocks(&prog_file, GET_MMC_BUFFER(ubasic_buffer));
+#ifdef BOT_FS_AVAILABLE
+							botfs_flush_used_blocks(&prog_file, type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer));
+#endif
 							LOG_DEBUG("->fertig");
 						}
 					}
@@ -589,20 +628,41 @@ int8_t command_evaluate(void) {
 			case SUB_PROGRAM_START:
 				/* Programm starten */
 				switch ((uint8_t) received_command.data_l) {
+#ifdef BEHAVIOUR_UBASIC_AVAILABLE
 				case 0:
 					/* uBasic */
 					bot_ubasic(NULL);
 					break;
+#endif // BEHAVIOUR_UBASIC_AVAILABLE
+#ifdef BEHAVIOUR_ABL_AVAILABLE
+				case 1:
+					/* ABL */
+					bot_abl(NULL, NULL);
+					break;
+#endif // BEHAVIOUR_ABL_AVAILABLE
 				}
 				break;
 
 			case SUB_PROGRAM_STOP:
 				/* Programm abbrechen */
 				switch ((uint8_t) received_command.data_l) {
+#ifdef BEHAVIOUR_UBASIC_AVAILABLE
 				case 0:
 					/* uBasic */
 					bot_ubasic_break();
 					break;
+#endif // BEHAVIOUR_UBASIC_AVAILABLE
+#ifdef BEHAVIOUR_ABL_AVAILABLE
+				case 1: {
+					/* ABL */
+					Behaviour_t * const beh = get_behaviour(bot_abl_behaviour);
+					deactivate_called_behaviours(beh);
+					deactivate_behaviour(beh);
+					/* evtl. hatte ABL einen RemoteCall gestartet, daher dort aufraeumen */
+					activateBehaviour(NULL, bot_remotecall_behaviour);
+					break;
+				}
+#endif // BEHAVIOUR_ABL_AVAILABLE
 				}
 				break;
 
@@ -612,7 +672,7 @@ int8_t command_evaluate(void) {
 			}
 			break;
 		}
-#endif // BEHAVIOUR_UBASIC_AVAILABLE
+#endif // BEHAVIOUR_UBASIC_AVAILABLE || BEHAVIOUR_ABL_AVAILABLE
 
 #ifdef PC
 		/* Einige Kommandos ergeben nur fuer simulierte Bots Sinn */

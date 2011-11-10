@@ -90,12 +90,16 @@ extern uint8_t __attribute__ ((section (".s2eeprom"), aligned(1))) _eeprom_start
 #define BSIZE_POS 28	/*!< Pos. der Variablengroesse in MCU Map */
 #endif
 
+#if 1
+#define EE_SIZE 2048
+#else
 #ifdef MCU_ATMEGA644X
 #define EE_SIZE 2048
 #elif defined __AVR_ATmega1284P__
 #define EE_SIZE 4096
 #else // ATmega32
 #define EE_SIZE 1024
+#endif // MCU-Typ
 #endif
 
 const char * MCU_EEPROM_FN = "./mcu_eeprom.bin";	/*!< Name und Pfad der EEPROM Datei fuer MCU-Modus*/

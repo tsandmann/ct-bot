@@ -153,7 +153,7 @@ void bot_goto_obstacle(Behaviour_t * caller, int16_t distance, uint8_t parallel)
 #endif
 
 #define TARGET_MARGIN	10					/*!< Entfernung zum Ziel [mm], ab der das Ziel als erreicht gilt */
-static const int16_t max_par_diff = 30;		/*!< Differenz [mm] der Distanzsensorwerte, bis zu der eine parallele Ausrichtung moeglich ist */
+static const int16_t max_par_diff = 40;		/*!< Differenz [mm] der Distanzsensorwerte, bis zu der eine parallele Ausrichtung moeglich ist */
 //static const uint8_t max_measure_diff = 15;	/*!< Maximale Differenz [mm] der Distanzsensormessungen fuer bot_measure_distance() */
 
 static int16_t obst_distance = 0;			/*!< gewuenschte Entfernung zum Hindernis */
@@ -225,10 +225,10 @@ void bot_goto_obstacle_behaviour(Behaviour_t * data) {
 			if (abs(diff) < max_par_diff) {
 				/* unsinnig bei zu grosser Differenz */
 				LOG_DEBUG("diff=%d", diff);
-				float alpha = (float)diff / (float)(DISTSENSOR_POS_SW*2);
-				alpha /= 2.0*M_PI/360.0;
+				float alpha = (float) diff / (float)(DISTSENSOR_POS_SW * 2);
+				alpha /= 2.0 * M_PI / 360.0;
 				LOG_DEBUG("alpha=%f", alpha);
-				bot_turn(data, (int16_t)alpha);
+				bot_turn(data, (int16_t) alpha);
 			}
 		}
 		obst_state = END;

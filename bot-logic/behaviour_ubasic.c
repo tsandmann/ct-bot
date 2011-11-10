@@ -58,7 +58,7 @@
 #define LOG_DEBUG(...)
 #endif // DEBUG_UBASIC_BEHAV
 
-botfs_file_descr_t ubasic_prog_file = { 0, 0, 0, 0, { 0, 0, 0 } }; /**< Basic-Programmdatei */
+botfs_file_descr_t ubasic_prog_file = BOTFS_FD_INITIALIZER; /**< Basic-Programmdatei */
 
 // wenn Speedvariablen direkt angesprochen werden, dann muessen sie im Verhalten selbst nach jeder Zeile direkt in die echten
 // speedWish-vars geschrieben werden, damit eine fluessige Bewegung erfolgt, denn sonst sind diese in den anderen Steps 0
@@ -179,7 +179,7 @@ void bot_ubasic(Behaviour_t * caller) {
 }
 
 /**
- * bricht das aktuelle Basic-Programm ab
+ * Bricht das aktuelle Basic-Programm ab
  */
 void bot_ubasic_break(void) {
 	ubasic_break();
