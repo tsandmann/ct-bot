@@ -31,7 +31,7 @@
 //	objcopy -j .eeprom --change-section-lma .eeprom=0 -O binary ct-Bot.elf ct-Bot.eep; objdump -t -j .eeprom -C ct-Bot.elf | grep "g" > eeprom_pc.map
 
 //	Post-Build Mac OS X:
-//	objcopy -j __eeprom.__data --change-section-lma __eeprom.__data=0 -O binary ct-Bot ct-Bot.eep 2> /dev/null; objdump -t -j __eeprom.__data -C ct-Bot 2> /dev/null | grep "g" > eeprom_pc.map
+//	objcopy -j __eeprom.__data --change-section-lma __eeprom.__data=0 -O binary ct-Bot ct-Bot.eep 2> /dev/null; objdump -t -j __eeprom.__data -C ct-Bot 2> /dev/null | grep "g " > eeprom_pc.map
 
 //	Post-Build Windows:
 //	objcopy -j .eeprom --change-section-lma .eeprom=0 -O binary ct-Bot.exe ct-Bot.eep;objdump -t ct-Bot.exe | grep "(sec  5)" | grep "(nx 0)" > eeprom_pc.map
@@ -54,6 +54,10 @@
 #ifndef DEBUG_EEPROM
 #undef LOG_INFO
 #define LOG_INFO(...) {}
+#endif
+
+#if defined __APPLE__  && __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 1060
+#warning "EEPROM Emulation unter Mac OS X nicht unterstuetzt"
 #endif
 
 extern uint8_t __attribute__ ((section (".s1eeprom"), aligned(1))) _eeprom_start1__;
