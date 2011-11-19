@@ -100,7 +100,6 @@ typedef union {
 extern fifo_t map_update_fifo;			/**< Fifo fuer Cache */
 extern map_cache_t map_update_cache[];	/**< Map-Cache */
 extern uint8_t map_update_stack[];		/**< Stack des Update-Threads */
-extern os_signal_t map_buffer_signal;	/**< Signal das anzeigt, ob Daten im Map-Puffer sind */
 
 #ifdef MAP_2_SIM_AVAILABLE
 extern uint8_t map_2_sim_worker_stack[];	/**< Stack des Map-2-Sim-Threads */

@@ -170,8 +170,7 @@ map_cache_t map_update_cache[MAP_UPDATE_CACHE_SIZE];			/**< Map-Cache */
 
 uint8_t map_update_stack[MAP_UPDATE_STACK_SIZE];	/**< Stack des Update-Threads */
 static Tcb_t * map_update_thread;					/**< Thread fuer Map-Update */
-static os_signal_t lock_signal;						/**< Signal zur Synchronisation von Kartenzugriffen */
-os_signal_t map_buffer_signal;						/**< Signal das anzeigt, ob Daten im Map-Puffer sind */
+static os_signal_t lock_signal = OS_SIGNAL_INITIALIZER; /**< Signal zur Synchronisation von Kartenzugriffen */
 
 void map_update_main(void) OS_TASK_ATTR;
 
@@ -210,7 +209,7 @@ uint8_t map_2_sim_worker_stack[MAP_2_SIM_STACK_SIZE]; /**< Stack des Map-2-Sim-T
 static botfs_file_descr_t map_2_sim_botfs_file; /**< File-Deskriptor fuer Map-2-Sim */
 #endif
 #define map_2_sim_buffer GET_MMC_BUFFER(map_2_sim_buffer) /**< Puffer fuer Map-Block (von der MMC) zur Map-2-Sim-Kommunikation */
-static os_signal_t map_2_sim_signal; /**< Signal, um gleichzeitges Senden von Map-Daten zu verhindern */
+static os_signal_t map_2_sim_signal = OS_SIGNAL_INITIALIZER; /**< Signal, um gleichzeitiges Senden von Map-Daten zu verhindern */
 #endif // MAP_2_SIM_AVAILABLE
 
 #ifdef PC
@@ -397,18 +396,11 @@ static int8_t init(uint8_t clean_map) {
 #ifdef MAP_2_SIM_AVAILABLE
 		fifo_init(&map_2_sim_fifo, map_2_sim_cache, sizeof(map_2_sim_cache));
 #endif
-#ifdef PC
-		pthread_mutex_init(&lock_signal.mutex, NULL);
-		pthread_cond_init(&lock_signal.cond, NULL);
-#endif // PC
+
 		map_update_thread = os_create_thread(&map_update_stack[MAP_UPDATE_STACK_SIZE - 1], map_update_main);
 
 #ifdef MAP_2_SIM_AVAILABLE
 		map_2_sim_worker = os_create_thread(&map_2_sim_worker_stack[MAP_2_SIM_STACK_SIZE] - 1, map_2_sim_main);
-#ifdef PC
-		pthread_mutex_init(&map_2_sim_signal.mutex, NULL);
-		pthread_cond_init(&map_2_sim_signal.cond, NULL);
-#endif // PC
 #endif // MAP_2_SIM_AVAILABLE
 		init_state = 2;
 	}
