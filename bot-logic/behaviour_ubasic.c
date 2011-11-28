@@ -69,6 +69,7 @@ Behaviour_t * ubasic_behaviour_data; /**< Verhaltensdatensatz des ubasis-Verhalt
 char ubasic_content = 0; /**< aktuelles Zeichen des Basic-Programms */
 uint16_t ubasic_ptr = 0; /**< aktuelle Position im Basic-Programm */
 char current_proc[MAX_PROG_NAME_LEN]; /**< aktueller Programmname */
+static uint8_t result_behav; /**< Puffer fuer Verhaltens-Ergebnis */
 
 /**
  * Laedt ein uBasic-Programm aus deiner BotFS-Datei
@@ -133,14 +134,14 @@ uint8_t ubasic_behaviour_is_active(Behaviour_t * behaviour) {
  * \return 	True falls das Verhalten erfolgreich war sonst nicht, je nach Kontext des Verhaltens
  */
 uint8_t behaviour_result(Behaviour_t * behaviour) {
-	behaviour=0;//diese Var ist eigentlich nicht notwendig, so wird aber bestehender Aufrufttyp benutzt und hier die Var verwendet sonst Warning
+	(void) behaviour;
 	return result_behav;
 
 }
 
 void ubasic_push_value(uint16_t value) {
-	result_behav = value;
-	LOG_DEBUG("Var behav_res gesetzt auf: %1d", result_behav);
+	result_behav = (uint8_t) value;
+	LOG_DEBUG("Var behav_res gesetzt auf: %u", result_behav);
 
 }
 

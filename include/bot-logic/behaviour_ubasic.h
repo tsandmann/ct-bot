@@ -36,8 +36,6 @@ extern Behaviour_t * ubasic_behaviour_data; /**< Verhaltensdatensatz des ubasis-
 extern char ubasic_content; /**< aktuelles Zeichen des Basic-Programms */
 extern uint16_t ubasic_ptr; /**< aktuelle Position im Basic-Programm */
 
-uint8_t result_behav;
-
 void ubasic_push_value(uint16_t value);
 
 /**
