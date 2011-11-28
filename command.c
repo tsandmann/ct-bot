@@ -699,6 +699,9 @@ int8_t command_evaluate(void) {
 			sensLDRL = received_command.data_l;
 			sensLDRR = received_command.data_r;
 			break;
+		case CMD_SENS_DOOR:
+			sensDoor = (uint8_t) received_command.data_l;
+			break;
 		case CMD_SENS_TRANS:
 			sensTrans = (uint8_t) received_command.data_l;
 			break;

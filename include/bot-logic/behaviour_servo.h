@@ -19,30 +19,30 @@
 
 
 
-/*!
- * @file 	behaviour_servo.h
- * @brief 	kontrolliert die Servos
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	07.12.06
+/**
+ * \file 	behaviour_servo.h
+ * \brief 	kontrolliert die Servos
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	07.12.2006
  */
 
 #ifndef BEHAVIOUR_SERVO_H_
 #define BEHAVIOUR_SERVO_H_
 
 #ifdef BEHAVIOUR_SERVO_AVAILABLE
-extern uint8_t servo_active;	/*!< 0, wenn kein Servo aktiv, sonst Bit der gerade aktiven Servos gesetzt */
+extern uint8_t servo_active;	/**< 0, wenn kein Servo aktiv, sonst Bit der gerade aktiven Servos gesetzt */
 
-/*!
+/**
  * Dieses Verhalten fuehrt ein Servo-Kommando aus und schaltet danach den Servo wieder ab
- * @param *data der Verhaltensdatensatz
+ * \param *data der Verhaltensdatensatz
  */
 void bot_servo_behaviour(Behaviour_t * data);
 
-/*!
+/**
  * Fahre den Servo an eine Position
- * @param *caller	Der Aufrufer
- * @param servo 	Nummer des Servos
- * @param pos 		Zielposition des Servos
+ * \param *caller	Der Aufrufer
+ * \param servo 	Nummer des Servos
+ * \param pos 		Zielposition des Servos
  */
 void bot_servo(Behaviour_t * caller, uint8_t servo, uint8_t pos);
 

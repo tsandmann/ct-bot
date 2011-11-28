@@ -36,6 +36,17 @@ extern Behaviour_t * ubasic_behaviour_data; /**< Verhaltensdatensatz des ubasis-
 extern char ubasic_content; /**< aktuelles Zeichen des Basic-Programms */
 extern uint16_t ubasic_ptr; /**< aktuelle Position im Basic-Programm */
 
+uint8_t result_behav;
+
+void ubasic_push_value(uint16_t value);
+
+/**
+ * Rueckgabe ob das zuletzt aufgerufene Verhalten erfolgreich war oder nicht; in Remotecall wird dazu via ubasic_push_value aufgerufen und das Ergebnis
+ * nach result_behav gebracht; in Ubasic selbst kann mit dieser Routine das Ergebnis ermittelt werden
+ * \return 	True falls das Verhalten erfolgreich war sonst nicht, je nach Kontext des Verhaltens
+ */
+uint8_t behaviour_result(Behaviour_t * behaviour);
+
 /**
  * Startet das uBasic-Verhalten
  * \param *caller Zeiger auf den Verhaltensdatensatz des Aufrufers

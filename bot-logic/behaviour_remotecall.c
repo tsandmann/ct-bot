@@ -382,6 +382,9 @@ void bot_remotecall_behaviour(Behaviour_t * data) {
 #ifdef BEHAVIOUR_ABL_AVAILABLE
 				abl_push_value((uint16_t) result);
 #endif
+#ifdef BEHAVIOUR_UBASIC_AVAILABLE
+				ubasic_push_value((uint16_t) result);
+#endif
 			}
 #ifdef COMMAND_AVAILABLE
 			else {

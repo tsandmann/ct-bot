@@ -1,5 +1,9 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-11-26 Frank Menzel [Menzelfr@gmx.de]: Anpassungen fuer uBasic: neue Routine beh_result zur Ermittlung des Ergebnisses eines Verhaltens (Messverhalten wie im ABL Script verwendet)
+
+2011-11-25 Timo Sandmann [mail@timosandmann.de]: Servos und Klappen-Sensor auch fuer simulierte Bots
+
 2011-11-09 Timo Sandmann [mail@timosandmann.de]: Verhalten bot_abl_behaviour() zur Steuerung des Bots ueber eine Scriptsprache. Doku folgt. Siehe auch bot-logic/behaviour_abl.c
 
 2011-11-06 Timo Sandmann [mail@timosandmann.de]: Makroblock-Alignment fuer Map optimiert

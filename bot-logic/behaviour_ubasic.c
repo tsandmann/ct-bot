@@ -128,6 +128,23 @@ uint8_t ubasic_behaviour_is_active(Behaviour_t * behaviour) {
 }
 
 /**
+ * Rueckgabe ob das zuletzt aufgerufene Verhalten erfolgreich war oder nicht; in Remotecall wird dazu via ubasic_push_value aufgerufen und das Ergebnis
+ * nach result_behav gebracht; in Ubasic selbst kann mit dieser Routine das Ergebnis ermittelt werden
+ * \return 	True falls das Verhalten erfolgreich war sonst nicht, je nach Kontext des Verhaltens
+ */
+uint8_t behaviour_result(Behaviour_t * behaviour) {
+	behaviour=0;//diese Var ist eigentlich nicht notwendig, so wird aber bestehender Aufrufttyp benutzt und hier die Var verwendet sonst Warning
+	return result_behav;
+
+}
+
+void ubasic_push_value(uint16_t value) {
+	result_behav = value;
+	LOG_DEBUG("Var behav_res gesetzt auf: %1d", result_behav);
+
+}
+
+/**
  * Implementierung des Basic-Wait-Statements fuer ct-Bot.
  * Das eigentliche Warten erfolgt dabei ueber das Verhalten.
  */

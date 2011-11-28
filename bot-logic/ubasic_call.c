@@ -62,6 +62,7 @@ callfunct_t callfunct[] = {
 	{ "bot_speed", .funct_ptr.VoidFunc2Int16 = ubasic_set_speed, VOID_FUNC_2INT16 },
 	{ "beh_active", .funct_ptr.BoolFuncBeh = ubasic_behaviour_is_active, BOOL_FUNC_BEH },
 	{ "RC", .funct_ptr.VoidFuncRC = bot_remotecall, VOID_FUNC_RC },
+	{ "beh_result", .funct_ptr.BoolFuncBeh = behaviour_result, BOOL_FUNC_BEH },
 
     {"",		{NULL},									255}
 };

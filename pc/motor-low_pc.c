@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	motor-low_pc.c
- * @brief 	Low-Level Routinen fuer die Motorsteuerung des c't-Bots
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	01.12.05
+/**
+ * \file 	motor-low_pc.c
+ * \brief 	Low-Level Routinen fuer die Motorsteuerung des c't-Bots
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	01.12.2005
  */
 
 #ifdef PC
@@ -32,21 +32,22 @@
 #include "bot-2-sim.h"
 #include "motor-low.h"
 #include "motor.h"
+#include "log.h"
 
-volatile int16_t motor_left;	/*!< zuletzt gestellter Wert linker Motor */
-volatile int16_t motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
+volatile int16_t motor_left; /**< zuletzt gestellter Wert linker Motor */
+volatile int16_t motor_right; /**< zuletzt gestellter Wert rechter Motor */
 
-/*!
+/**
  *  Initilisiert alles fuer die Motosteuerung
  */
 void motor_low_init() {
 }
 
-/*!
+/**
  * Unmittelbarer Zugriff auf die beiden Motoren,
  * normalerweise NICHT verwenden!
- * @param left PWM links
- * @param right PWM rechts
+ * \param left PWM links
+ * \param right PWM rechts
 */
 void bot_motor(int16_t left, int16_t right){
 	command_write(CMD_AKT_MOT, SUB_CMD_NORM, left, right, 0);
@@ -67,14 +68,21 @@ void bot_motor(int16_t left, int16_t right){
 
 }
 
-/*!
- * @brief		Stellt die Servos
- * @param servo	Nummer des Servos
- * @param pos	Zielwert
- * Sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus
+/**
+ * Stellt die Servos
+ * \param servo Nummer des Servos (1 oder 2)
+ * \param pos Zielwert, sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus
  */
 void servo_low(uint8_t servo, uint8_t pos) {
-	command_write(CMD_AKT_SERVO, SUB_CMD_NORM, servo, pos, 0);
+	static uint8_t values[2] = {0, 0};
+
+	if (servo == 0 || servo > sizeof(values) / sizeof(values[0])) {
+		LOG_ERROR("invalid servo addressed!");
+		return;
+	}
+
+	values[servo - 1] = pos;
+	command_write(CMD_AKT_SERVO, SUB_CMD_NORM, values[0], values[1], 0);
 }
 
 #endif // PC
