@@ -158,12 +158,14 @@ void log_begin(const char * filename, unsigned int line, LOG_TYPE log_type) {
 	 * und der Log-Typ vollstaendig ausgegeben.
 	 */
 #ifdef LOG_DISPLAY_AVAILABLE
+	(void) line;
+	(void) filename;
 	LOCK();
 	/* Alte Markierung loeschen */
-	if (log_line == 1){
+	if (log_line == 1) {
 		screen_output[3][0] = ' ';
 	}
-	else{
+	else {
 		screen_output[log_line-2][0] = ' ';
 	}
 	snprintf(log_buffer, LOG_BUFFER_SIZE, ">%c:", *(log_get_type_str(log_type)+2));
@@ -204,9 +206,9 @@ static void get_str_from_flash(const char * flash, char * ram, uint8_t n) {
 	for (i=0; i<n; i++){
 		uint16_t tmp = pgm_read_word(p_flash++);
 		*(p_ram++) = tmp;
-		if ((uint8_t)tmp == 0 || (tmp & 0xFF00) == 0) break;	// Stringende erreicht
+		if ((uint8_t) tmp == 0 || (tmp & 0xFF00) == 0) break; // Stringende erreicht
 	}
-	*((char *)p_ram) = 0;	// evtl. haben wir ein Byte zu viel gelesen, das korrigieren wir hier
+	*((char *) p_ram) = 0; // evtl. haben wir ein Byte zu viel gelesen, das korrigieren wir hier
 }
 
 /*!
