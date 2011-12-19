@@ -17,17 +17,17 @@
  *
  */
 
-/*!
- * @file 	command.c
- * @brief 	Kommando-Management
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	20.12.2005
+/**
+ * \file 	command.c
+ * \brief 	Kommando-Management
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	20.12.2005
  */
 
 #include "ct-Bot.h"
 
 #include "command.h"
-EEPROM uint8_t bot_address = CMD_BROADCAST; /*!< Kommunikations-Adresse des Bots (EEPROM) */
+EEPROM uint8_t bot_address = CMD_BROADCAST; /**< Kommunikations-Adresse des Bots (EEPROM) */
 
 #ifdef COMMAND_AVAILABLE
 #include "tcp.h"
@@ -48,13 +48,13 @@ EEPROM uint8_t bot_address = CMD_BROADCAST; /*!< Kommunikations-Adresse des Bots
 #include "init.h"
 #include <string.h>
 
-#define CHECK_CMD_ADDRESS					/*!< soll die Zieladresse der Kommandos ueberprueft werden? */
-#define RCVBUFSIZE (sizeof(command_t) * 2)	/*!< Groesse des Empfangspuffers */
-#define COMMAND_TIMEOUT 15					/*!< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
+#define CHECK_CMD_ADDRESS					/**< soll die Zieladresse der Kommandos ueberprueft werden? */
+#define RCVBUFSIZE (sizeof(command_t) * 2)	/**< Groesse des Empfangspuffers */
+#define COMMAND_TIMEOUT 15					/**< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
 
-command_t received_command; /*!< Puffer fuer Kommandos */
-static uint8_t count = 1;	/*!< Zaehler fuer Paket-Sequenznummer */
-/*! Puffer fuer zu sendendes Kommando */
+command_t received_command; /**< Puffer fuer Kommandos */
+static uint8_t count = 1;	/**< Zaehler fuer Paket-Sequenznummer */
+/** Puffer fuer zu sendendes Kommando */
 static command_t cmd_to_send = {
 	CMD_STARTCODE,
 	{0, 0, 0},
@@ -68,10 +68,10 @@ static command_t cmd_to_send = {
 #ifndef DEBUG_COMMAND
 #undef LOG_AVAILABLE
 #undef LOG_DEBUG
-#define LOG_DEBUG(...) {} /*!< Log-Dummy */
+#define LOG_DEBUG(...) {} /**< Log-Dummy */
 #endif
 
-/*!
+/**
  * Initialisiert die (High-Level-)Kommunikation
  */
 void command_init(void) {
@@ -84,11 +84,51 @@ void command_init(void) {
 		set_bot_address(addr);
 	}
 
+	/* aktivierte Komponenten als Integer codieren */
+	union {
+		struct { // siehe ctSim.model.bots.components.WelcomeReceiver
+			unsigned log:1;
+			unsigned rc5:1;
+			unsigned program:1;
+			unsigned map:1;
+			unsigned remotecall:1;
+		} data;
+		int16_t raw;
+	} features = {
+		{
+#ifdef LOG_CTSIM_AVAILABLE
+			1,
+#else
+			0,
+#endif
+#ifdef RC5_AVAILABLE
+			1,
+#else
+			0,
+#endif
+#if defined BEHAVIOUR_ABL_AVAILABLE || defined BEHAVIOUR_UBASIC_AVAILABLE
+			1,
+#else
+			0,
+#endif
+#if defined MAP_AVAILABLE && defined MAP_2_SIM_AVAILABLE
+			1,
+#else
+			0,
+#endif
+#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
+			1,
+#else
+			0,
+#endif
+		}
+	};
+
 	/* Bot beim Sim anmelden */
 #ifdef MCU
-	command_write(CMD_WELCOME, SUB_WELCOME_REAL, 0, 0, 0);
+	command_write(CMD_WELCOME, SUB_WELCOME_REAL, features.raw, 0, 0);
 #else
-	command_write(CMD_WELCOME, SUB_WELCOME_SIM, 0, 0, 0);
+	command_write(CMD_WELCOME, SUB_WELCOME_SIM, features.raw, 0, 0);
 #endif
 }
 
