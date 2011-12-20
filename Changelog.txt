@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-12-20 Timo Sandmann [mail@timosandmann.de]: Kompatibilitaet mit Sim 2.10 hergestellt
+
 2011-10-15 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer BotFS
 
 2011-10-08 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Map Ex- / Import und Map-2-Sim

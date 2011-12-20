@@ -86,9 +86,9 @@ void command_init(void) {
 
 	/* Bot beim Sim anmelden */
 #ifdef MCU
-	command_write(CMD_WELCOME, SUB_WELCOME_REAL, 0, 0, 0);
+	command_write(CMD_WELCOME, SUB_WELCOME_REAL, -1, 0, 0);
 #else
-	command_write(CMD_WELCOME, SUB_WELCOME_SIM, 0, 0, 0);
+	command_write(CMD_WELCOME, SUB_WELCOME_SIM, -1, 0, 0);
 #endif
 }
 
