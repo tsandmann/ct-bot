@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2012-01-15 Timo Sandmann [mail@timosandmann.de]: HW-Test-Verhalten leicht ueberarbeitet
+
 2011-12-19 Timo Sandmann [mail@timosandmann.de]: Bot meldet aktivierte Komponenten an den Sim
 
 2011-11-26 Frank Menzel [Menzelfr@gmx.de]: Anpassungen fuer uBasic: neue Routine beh_result zur Ermittlung des Ergebnisses eines Verhaltens (Messverhalten wie im ABL Script verwendet)
