@@ -98,11 +98,4 @@ void abl_stack_trace(void);
 
 #endif // BEHAVIOUR_ABL_AVAILABLE
 
-/**
- * Kleines Testprogramm, das im EEPROM-Abbild landet
- */
-#define ABL_PROG { \
-	"bot_turn(360)\n" \
-}
-
 #endif // BEHAVIOUR_ABL_H_

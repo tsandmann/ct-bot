@@ -89,7 +89,8 @@ void command_init(void) {
 		struct { // siehe ctSim.model.bots.components.WelcomeReceiver
 			unsigned log:1;
 			unsigned rc5:1;
-			unsigned program:1;
+			unsigned abl:1;
+			unsigned basic:1;
 			unsigned map:1;
 			unsigned remotecall:1;
 		} data;
@@ -106,7 +107,12 @@ void command_init(void) {
 #else
 			0,
 #endif
-#if defined BEHAVIOUR_ABL_AVAILABLE || defined BEHAVIOUR_UBASIC_AVAILABLE
+#if defined BEHAVIOUR_ABL_AVAILABLE
+			1,
+#else
+			0,
+#endif
+#if defined BEHAVIOUR_UBASIC_AVAILABLE
 			1,
 #else
 			0,
@@ -633,11 +639,13 @@ int8_t command_evaluate(void) {
 						}
 #else // EEPROM
 						const uint16_t block = (uint16_t) done / BOTFS_BLOCK_SIZE;
-#if defined __AVR_ATmega1284P__ || defined MCU_ATMEGA644X || defined PC
+#if defined __AVR_ATmega1284P__ || defined PC
+						if (block > 6) {
+#elif defined MCU_ATMEGA644X
 						if (block > 2) {
 #else // ATmega32
 						if (block > 0) {
-#endif
+#endif // MCU-Typ
 							break;
 						}
 #ifdef LED_AVAILABLE

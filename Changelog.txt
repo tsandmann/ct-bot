@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2012-01-28 Timo Sandmann [mail@timosandmann.de]: EEPROM-Bereich fuer ABL-Skripte auf ATmega1284P und PC vergroessert (3.5 KByte), Auswertung aktiver Bot-Komponenten fuer ABL und Basic getrennt
+
 2012-01-15 Timo Sandmann [mail@timosandmann.de]: HW-Test-Verhalten leicht ueberarbeitet
 
 2011-12-19 Timo Sandmann [mail@timosandmann.de]: Bot meldet aktivierte Komponenten an den Sim
