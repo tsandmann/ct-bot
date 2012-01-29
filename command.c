@@ -703,11 +703,7 @@ int8_t command_evaluate(void) {
 #ifdef BEHAVIOUR_ABL_AVAILABLE
 				case 1: {
 					/* ABL */
-					Behaviour_t * const beh = get_behaviour(bot_abl_behaviour);
-					deactivate_called_behaviours(beh);
-					deactivate_behaviour(beh);
-					/* evtl. hatte ABL einen RemoteCall gestartet, daher dort aufraeumen */
-					activateBehaviour(NULL, bot_remotecall_behaviour);
+					abl_cancel();
 					break;
 				}
 #endif // BEHAVIOUR_ABL_AVAILABLE

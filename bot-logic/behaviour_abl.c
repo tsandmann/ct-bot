@@ -140,6 +140,8 @@ static uint8_t * pForState = for_state - 1;	/**< Zustandsspeicher fuer offene fo
 #ifdef BOT_FS_AVAILABLE
 static botfs_file_descr_t abl_file = BOTFS_FD_INITIALIZER; /**< ABL-Programmdatei */
 static char last_file[ABL_PATHNAME_LENGTH + 1];	/**< letzte geladene Programmdatei */
+#define ABL_FILE_NAME	"/abl/ablX.txt" 	/**< Name der Programmdateien, X wird durch 1 bis 9 ersetzt */
+#define ABL_FILE_EXT	".txt"				/**< Dateinamenerweiterung (PROG_FILE_NAME muss hierauf enden) */
 #else
 static uint16_t addr = 0;					/**< Adresse (Offset) des aktuellen Instruktionsblocks (EEPROM) */
 #endif // BOT_FS_AVAILABLE
@@ -686,7 +688,16 @@ void bot_abl_behaviour(Behaviour_t * data) {
 		keyword_handler[i_type]();
 	} else if (i_type == I_CALL) {
 		LOG_DEBUG("bot_abl_behaviour(): calling decoded function...");
-		bot_remotecall(data, abl_i_cache, abl_params);
+		if (bot_remotecall(data, abl_i_cache, abl_params) != 0) {
+#ifdef ERROR_CHECKS
+			LOG_ERROR("RemoteCall %s not found", abl_i_cache);
+#ifdef BOT_FS_AVAILABLE
+			botfs_close(&abl_file, abl_prg_data);
+#endif
+			return_from_behaviour(data);
+			return;
+#endif // ERROR_CHECKS
+		}
 	}
 
 	/* check for errors */
@@ -805,6 +816,17 @@ void bot_abl_check(Behaviour_t * caller, uint16_t line) {
 	caller->subResult = tmp.bits; // save check-result at caller's data
 }
 
+/**
+ * Bricht ein laufendes ABL-Programm ab
+ */
+void abl_cancel(void) {
+	Behaviour_t * const beh = get_behaviour(bot_abl_behaviour);
+	deactivate_called_behaviours(beh);
+	deactivate_behaviour(beh);
+	/* evtl. hatte ABL einen RemoteCall gestartet, daher dort aufraeumen */
+	activateBehaviour(NULL, bot_remotecall_behaviour);
+}
+
 #ifdef DISPLAY_ABL_STACK_AVAILABLE
 /**
  * Displayhandler fuer ABL-Stack Ausgabe
@@ -834,11 +856,38 @@ void abl_stack_trace(void) {
 
 #ifdef RC5_AVAILABLE
 	/* Keyhandler */
+	if (RC5_Code >= RC5_CODE_1 && RC5_Code <= RC5_CODE_9) {
+#ifdef BOT_FS_AVAILABLE
+		/* Programm abl1.txt bis abl9.txt laden */
+		const char key = (char) (RC5_Code - RC5_CODE_1 + '1');
+		static char fname[] = ABL_FILE_NAME;
+		const size_t num = strlen(ABL_FILE_NAME) - strlen(ABL_FILE_EXT) - 1;
+		fname[num] = key;
+		LOG_DEBUG("zu ladende Datei: \"%s\"", fname);
+
+		bot_abl(NULL, fname);
+#else // EEPROM
+		bot_abl(NULL, NULL);
+#endif // BOT_FS_AVAILABLE
+
+		RC5_Code = 0;
+		return;
+	}
+
 	switch (RC5_Code) {
+#ifdef RC5_CODE_PLAY
 	case RC5_CODE_PLAY:
 		bot_abl(NULL, NULL);
 		RC5_Code = 0;
 		break;
+#endif // PLAY
+
+#ifdef RC5_CODE_STOP
+	case RC5_CODE_STOP:
+		abl_cancel();
+		RC5_Code = 0;
+		break;
+#endif // STOP
 	}
 #endif // RC5_AVAILABLE
 }

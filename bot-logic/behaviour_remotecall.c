@@ -467,7 +467,7 @@ static int8_t bot_remotecall_from_id(Behaviour_t * caller, const uint8_t id, con
 int8_t bot_remotecall(Behaviour_t * caller, const char * func, const remote_call_data_t * data) {
 	const uint8_t id = get_remotecall_id(func);
 	if (id >= STORED_CALLS - 1) {
-		LOG_DEBUG("Funktion \"%s\" nicht gefunden.", func);
+		LOG_ERROR("Verhalten \"%s\" nicht gefunden.", func);
 	}
 
 	return bot_remotecall_from_id(caller, id, data);

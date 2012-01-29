@@ -72,6 +72,11 @@ int8_t abl_load(const char * filename);
 void bot_abl_check(Behaviour_t * caller, uint16_t line);
 
 /**
+ * Bricht ein laufendes ABL-Programm ab
+ */
+void abl_cancel(void);
+
+/**
  * Pusht den Parameter Nr. 0 auf den ABL-Stack
  * \see abl_push_value(uint16_t value)
  */
