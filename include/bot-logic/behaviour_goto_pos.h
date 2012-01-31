@@ -63,5 +63,23 @@ void bot_goto_pos_rel(Behaviour_t * caller, int16_t x, int16_t y, int16_t head);
  */
 void bot_goto_dist(Behaviour_t * caller, int16_t distance, int8_t dir);
 
+#else // BEHAVIOUR_GOTO_POS_AVAILABLE
+#ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+void bot_drive_distance(Behaviour_t * caller, int8_t curve, int16_t speed, int16_t cm);
+
+/**
+ * Botenfunktion des Distanz-Positionierungsverhaltens als Wrapper, falls das goto_pos-Verhalten nicht aktiv ist.
+ * Bewegt den Bot um distance mm in aktueller Blickrichtung ("drive_distance(...)")
+ * \param *caller	Der Verhaltensdatensatz des Aufrufers
+ * \param distance	Distanz in mm, die der Bot fahren soll
+ * \param dir		Fahrtrichtung: >=0: vorwaerts, <0 rueckwaerts
+ */
+static inline void bot_goto_dist(Behaviour_t * caller, int16_t distance, int8_t dir) {
+	if (dir == 0) {
+		dir = 1;
+	}
+	bot_drive_distance(caller, 0, BOT_SPEED_NORMAL * dir, distance / 10);
+}
+#endif //BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 #endif // BEHAVIOUR_GOTO_POS_AVAILABLE
 #endif // BEHAVIOUR_GOTO_POS_H_

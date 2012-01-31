@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2012-01-31 Timo Sandmann [mail@timosandmann.de]: bot_goto_dist(): Fallback auf bot_drive_distance(), falls bot_goto_pos() nicht aktiv ist (z.B. wegen deaktivierter Motorregelung), Warnings in simple2 beseitigt
+
 2012-01-29 Timo Sandmann [mail@timosandmann.de]: Starten von ABL-Programmen per Fernbedienung (abl1.txt bis abl9.txt auf SD-Karte oder aktuelles Programm im EEPROM; analog zu uBasic), Fehlerpruefung beim RemoteCall-Aufruf
 
 2012-01-28 Timo Sandmann [mail@timosandmann.de]: EEPROM-Bereich fuer ABL-Skripte auf ATmega1284P und PC vergroessert (3.5 KByte), Auswertung aktiver Bot-Komponenten fuer ABL und Basic getrennt

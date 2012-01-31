@@ -1,28 +1,28 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
 
-/*! 
+/*!
  * @file 	behaviour_simple.c
  * @brief 	ganz einfache Beispielverhalten
- * Diese Datei sollte der Einstiegspunkt fuer eigene Experimente sein, 
- * den Roboter zu steuern. 
+ * Diese Datei sollte der Einstiegspunkt fuer eigene Experimente sein,
+ * den Roboter zu steuern.
  * @author 	Benjamin Benz (bbe@heise.de)
  * @date 	03.11.2006
  */
@@ -36,17 +36,17 @@ static uint8_t simple2_state = 0;	/*!< Status des simple2-Verhaltens */
 static int16_t simple2_light = 0;	/*!< Uebergabevariable fuer SIMPLE2 */
 
 
-/*! 
+/*!
  * Ein ganz einfaches Verhalten, es hat maximale Prioritaet
- * Hier kann man auf ganz einfache Weise die ersten Schritte wagen. 
+ * Hier kann man auf ganz einfache Weise die ersten Schritte wagen.
  * Wer die Moeglichkeiten des ganzen Verhaltensframeworks ausschoepfen will, kann diese Funktion getrost auskommentieren
  * und findet dann in bot_behave_init() und bot_behave() weitere Hinweise fuer elegante Bot-Programmierung....
- * 
+ *
  * Das Verhalten wird per Default nicht mitkompiliert. Sobald sie aber in include/bot-logik/available_behaviours die Kommentarzeichen vor BEHAVIOUR_SIMPLE_AVAILABLE entfernen
  * startet es automatisch und laeuft endlos.
  * Achtung, da bot_simple_behaviour() maximale Prioritaet hat, kommt es vor den anderen Regeln, wie dem Schutz vor Abgruenden, etc. zum Zuge
  * Das sollte am Anfang nicht stoeren, spaeter sollte man jedoch die Prioritaet herabsetzen.
- * 
+ *
  * @param *data der Verhaltensdatensatz
  */
 void bot_simple_behaviour(Behaviour_t * data) {
@@ -67,7 +67,7 @@ void bot_simple_behaviour(Behaviour_t * data) {
 }
 
 /*!
- * Rufe das Simple-Verhalten auf 
+ * Rufe das Simple-Verhalten auf
  * @param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
  */
 void bot_simple(Behaviour_t * caller) {
@@ -75,28 +75,28 @@ void bot_simple(Behaviour_t * caller) {
 	simple_state = 0;
 }
 
-/*! 
- * Ein ganz einfaches Beispiel fuer ein Hilfsverhalten, 
+/*!
+ * Ein ganz einfaches Beispiel fuer ein Hilfsverhalten,
  * das Sensoren auswertet und einen Uebergabeparameter nutzt
  *
  * Zu diesem Verhalten gehoert die Botenfunktion bot_simple2()
- * 
- * Hier kann man auf ganz einfache Weise die ersten Schritte wagen. 
+ *
+ * Hier kann man auf ganz einfache Weise die ersten Schritte wagen.
  * Wer die Moeglichkeiten des ganzen Verhaltensframeworks ausschoepfen will, kann diese Funktion getrost auskommentieren
  * und findet dann in bot_behave_init() und bot_behave() weitere Hinweise fuer elegante Bot-Programmierung....
- * 
- * Das Verhalten ist per default abgeschaltet. 
+ *
+ * Das Verhalten ist per default abgeschaltet.
  * Damit es laeuft, muss man in include/bot-logik/available_behaviours die Kommentarzeichen vor BEHAVIOUR_SIMPLE_AVAILABLE entfernen.
  * UND in bot-logic/bot-logic.c in der Funktion bot_behave_init(void) die Kommentare vor:
  *  	activateBehaviour(bot_simple_behaviour);
  * 	und
  * //	activateBehaviour(bot_simple2_behaviour);
- * bearbeiten, so dass simple2 drankommt und simple aus ist. 
+ * bearbeiten, so dass simple2 drankommt und simple aus ist.
  * Achtung, da bot_simple2_behaviour() maximale Prioritaet hat, kommt es vor den anderen Regeln, wie dem Schutz vor Abgruenden, etc. zum Zuge
  * Das sollte am Anfang nicht stoeren, spaeter sollte man jedoch die Prioritaet herabsetzen.
- * 
+ *
  * bot_simple2_behaviour faehrt je nach Uebergabeparamerter entweder zum Licht (Parameter=0) oder davon weg (Parameter != 0)
- * 
+ *
  * @param *data der Verhaltensdatensatz
  */
 void bot_simple2_behaviour(Behaviour_t * data) {
@@ -106,11 +106,11 @@ void bot_simple2_behaviour(Behaviour_t * data) {
 	#define STATE_SIMPLE2_DONE 3
 
 	static int16_t max_light;
-	static uint16_t max_dir;
-	static uint16_t dir;
+	static int16_t max_dir;
+	static int16_t dir;
 
-	uint16_t light=(sensLDRL+sensLDRR)/2;
-	uint16_t free;
+	int16_t light=(sensLDRL+sensLDRR)/2;
+	int16_t free;
 
 	switch (simple2_state) {
 		case STATE_SIMPLE2_INIT:	// Initialisieren
