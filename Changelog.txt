@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2011-02-01 Timo Sandmann [mail@timosandmann.de]: Workaround fuer Simple2-Verhalten, wenn SPEED_CONTROL_AVAILABLE aus ist
+
 2011-12-20 Timo Sandmann [mail@timosandmann.de]: Kompatibilitaet mit Sim 2.10 hergestellt
 
 2011-10-15 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer BotFS
