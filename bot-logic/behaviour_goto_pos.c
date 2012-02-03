@@ -138,7 +138,7 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 	case CALC_WAY: {
 		/* Kreisbogenfahrt zum Ziel berechnen */
 		LOG_DEBUG("calc way...");
-		/* Winkel- und Streckenbezeichnungen wie in -> Documentation/images/bot_pos.png */
+		/* Winkel- und Streckenbezeichnungen wie in -> Documentation/images/bot_goto_pos.png */
 		int16_t diff_x = dest_x - x_pos;
 		int16_t diff_y = dest_y - y_pos;
 		float sin_alpha = heading_sin;
