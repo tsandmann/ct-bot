@@ -72,18 +72,10 @@ static command_t cmd_to_send = {
 #endif
 
 /**
- * Initialisiert die (High-Level-)Kommunikation
+ * Registriert den Bot beim Sim und teilt diesem dabei mit, welche
+ * Features aktiviert sind
  */
-void command_init(void) {
-	/* eigene Adresse checken */
-	uint8_t addr = get_bot_address();
-	if (addr != CMD_BROADCAST && addr > 127) {
-		/* gespeicherte Adresse ist eine vom Sim Vergebene,
-		 * schalte auf Adressevergabemodus um */
-		addr = CMD_BROADCAST;
-		set_bot_address(addr);
-	}
-
+static void register_bot(void) {
 	/* aktivierte Komponenten als Integer codieren */
 	union {
 		struct { // siehe ctSim.model.bots.components.WelcomeReceiver
@@ -136,6 +128,23 @@ void command_init(void) {
 #else
 	command_write(CMD_WELCOME, SUB_WELCOME_SIM, features.raw, 0, 0);
 #endif
+}
+
+/**
+ * Initialisiert die (High-Level-)Kommunikation
+ */
+void command_init(void) {
+	/* eigene Adresse checken */
+	uint8_t addr = get_bot_address();
+	if (addr != CMD_BROADCAST && addr > 127) {
+		/* gespeicherte Adresse ist eine vom Sim Vergebene,
+		 * schalte auf Adressevergabemodus um */
+		addr = CMD_BROADCAST;
+		set_bot_address(addr);
+	}
+
+	/* Bot beim Sim anmelden */
+	register_bot();
 }
 
 /*!
@@ -439,11 +448,8 @@ int8_t command_evaluate(void) {
 
 		case CMD_WELCOME:
 			/* Bot beim Sim anmelden */
-#ifdef MCU
-			command_write(CMD_WELCOME, SUB_WELCOME_REAL, 0, 0, 0);
-#else
-			command_write(CMD_WELCOME, SUB_WELCOME_SIM, 0, 0, 0);
-#endif // MCU
+			register_bot();
+
 			if (get_bot_address() == CMD_BROADCAST) {
 				/* Adresse anfordern */
 				command_write(CMD_ID, SUB_ID_REQUEST, 0, 0, 0);
