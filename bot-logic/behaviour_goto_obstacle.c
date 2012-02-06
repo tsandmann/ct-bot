@@ -184,7 +184,7 @@ static uint8_t obst_state = 0;				/*!< Status von bot_goto_obstacle */
  * @param *data	Der Verhaltensdatensatz
  */
 void bot_goto_obstacle_behaviour(Behaviour_t * data) {
-	static int16_t distLeft, distRight;
+//	static int16_t distLeft, distRight;
 	switch (obst_state) {
 //	case MEASURE_DIST_STATE:
 //		/* Entfernung zum Hindernis messen */
@@ -221,7 +221,7 @@ void bot_goto_obstacle_behaviour(Behaviour_t * data) {
 	case ALIGN_STATE:
 		if (obst_parallel == 1) {
 			/* heading korrigieren, so dass Bot parallel zum Hindernis steht */
-			int16_t diff = distRight - distLeft;
+			int16_t diff = sensDistR - sensDistL;
 			if (abs(diff) < max_par_diff) {
 				/* unsinnig bei zu grosser Differenz */
 				LOG_DEBUG("diff=%d", diff);
