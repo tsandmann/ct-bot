@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2012-02-06 Timo Sandmann [mail@timosandmann.de]: bot_goto_obstacle() ueberarbeitet
+
 2012-02-04 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer die Anmeldung realer Bots beim Sim
 
 2012-01-31 Timo Sandmann [mail@timosandmann.de]: bot_goto_dist(): Fallback auf bot_drive_distance(), falls bot_goto_pos() nicht aktiv ist (z.B. wegen deaktivierter Motorregelung), Warnings in simple2 beseitigt

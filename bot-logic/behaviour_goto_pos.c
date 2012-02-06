@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	behaviour_goto_pos.c
- * @brief 	Anfahren einer Position
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	15.10.2007
+/**
+ * \file 	behaviour_goto_pos.c
+ * \brief 	Anfahren einer Position
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	15.10.2007
  */
 
 #include "bot-logic/bot-logic.h"
@@ -80,9 +80,9 @@ static const int16_t v_min			= 50;	/*!< Minimale Geschwindigkeit [mm/s] */
 static const int16_t v_max			= 350;	/*!< Maximale Geschwindigkeit [mm/s] */
 static const int32_t recalc_dist	= 30 * 30;	/*!< Entfernung^2 [mm^2], nach der die Kreisbahn neu berechnet wird */
 
-/*!
+/**
  * Das Positionierungsverhalten
- * @param *data	Der Verhaltensdatensatz
+ * \param *data	Der Verhaltensdatensatz
  */
 void bot_goto_pos_behaviour(Behaviour_t * data) {
 	static int32_t done;
@@ -270,21 +270,22 @@ void bot_goto_pos_behaviour(Behaviour_t * data) {
 	}
 }
 
-/*!
+/**
  * Botenfunktion des Positionierungsverhaltens.
  * Faehrt einen absoluten angegebenen Punkt an und dreht den Bot in die gewuenschte Blickrichtung.
- * @param *caller	Der Verhaltensdatensatz des Aufrufers
- * @param x			x-Komponente des Ziels
- * @param y			y-Komponente des Ziels
- * @param head		neue Blickrichtung am Zielpunkt oder 999, falls egal
+ * \param *caller	Der Verhaltensdatensatz des Aufrufers
+ * \param x			x-Komponente des Ziels
+ * \param y			y-Komponente des Ziels
+ * \param head		neue Blickrichtung am Zielpunkt oder 999, falls egal
+ * \return			Zeiger auf Verhaltensdatensatz
  */
-void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
+Behaviour_t * bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
 	dest_x = x;
 	dest_y = y;
 	dest_head = head;
 
 	/* Verhalten starten */
-	switch_to_behaviour(caller, bot_goto_pos_behaviour, BEHAVIOUR_OVERRIDE);
+	Behaviour_t * beh = switch_to_behaviour(caller, bot_goto_pos_behaviour, BEHAVIOUR_OVERRIDE);
 
 	/* Inits */
 	if (state != END) {
@@ -312,29 +313,33 @@ void bot_goto_pos(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
 	} else {
 		LOG_DEBUG("rueckwaerts");
 	}
+
+	return beh;
 }
 
-/*!
+/**
  * Botenfunktion des relativen Positionierungsverhaltens.
  * Faehrt einen als Verschiebungsvektor angegebenen Punkt an und dreht den Bot in die gewuenschte Blickrichtung.
- * @param *caller	Der Verhaltensdatensatz des Aufrufers
- * @param x			x-Komponente des Vektors vom Standort zum Ziel
- * @param y			y-Komponente des Vektors vom Standort zum Ziel
- * @param head		neue Blickrichtung am Zielpunkt oder 999, falls egal
+ * \param *caller	Der Verhaltensdatensatz des Aufrufers
+ * \param x			x-Komponente des Vektors vom Standort zum Ziel
+ * \param y			y-Komponente des Vektors vom Standort zum Ziel
+ * \param head		neue Blickrichtung am Zielpunkt oder 999, falls egal
+ * \return			Zeiger auf Verhaltensdatensatz
  */
-void bot_goto_pos_rel(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
+Behaviour_t * bot_goto_pos_rel(Behaviour_t * caller, int16_t x, int16_t y, int16_t head) {
 	/* Zielposition aus Verschiebung berechnen und bot_goto_pos() aufrufen */
-	bot_goto_pos(caller, x_pos + x, y_pos + y, head);
+	return bot_goto_pos(caller, x_pos + x, y_pos + y, head);
 }
 
-/*!
+/**
  * Botenfunktion des Distanz-Positionierungsverhaltens.
  * Bewegt den Bot um distance mm in aktueller Blickrichtung ("drive_distance(...)")
- * @param *caller	Der Verhaltensdatensatz des Aufrufers
- * @param distance	Distanz in mm, die der Bot fahren soll
- * @param dir		Fahrtrichtung: >=0: vorwaerts, <0 rueckwaerts
+ * \param *caller	Der Verhaltensdatensatz des Aufrufers
+ * \param distance	Distanz in mm, die der Bot fahren soll
+ * \param dir		Fahrtrichtung: >=0: vorwaerts, <0 rueckwaerts
+ * \return			Zeiger auf Verhaltensdatensatz
  */
-void bot_goto_dist(Behaviour_t * caller, int16_t distance, int8_t dir) {
+Behaviour_t * bot_goto_dist(Behaviour_t * caller, int16_t distance, int8_t dir) {
 	drive_dir = dir;
 
 	/* Zielpunkt aus Blickrichtung und Distanz berechnen */
@@ -351,7 +356,7 @@ void bot_goto_dist(Behaviour_t * caller, int16_t distance, int8_t dir) {
 	LOG_DEBUG("Richtung=%d", drive_dir);
 	state = END;
 	/* Verhalten starten */
-	bot_goto_pos(caller, target_x, target_y, heading_int);
+	return bot_goto_pos(caller, target_x, target_y, heading_int);
 }
 
 #endif // BEHAVIOUR_GOTO_POS_AVAILABLE

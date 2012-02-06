@@ -17,15 +17,15 @@
  *
  */
 
-/*!
- * @file 	behaviour_drive_distance.h
- * @brief 	Bot faehrt ein Stueck
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	03.11.2006
+/**
+ * \file 	behaviour_drive_distance.h
+ * \brief 	Bot faehrt ein Stueck
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	03.11.2006
  */
 
 
-/*!
+/**
  * bot_drive_distance() beruecksichtig keine waehrend der Fahrt aufgetretenen Fehler, daher ist die
  * Endposition nicht unbedingt auch die gewuenschte Position des Bots. Das komplexere Verhalten
  * bot_goto_pos() arbeitet hier deutlich genauer, darum werden jetzt alle bot_drive_distance()-Aufrufe
@@ -37,7 +37,7 @@
 #ifndef BEHAVIOUR_DRIVE_DISTANCE_H_
 #define BEHAVIOUR_DRIVE_DISTANCE_H_
 
-#define USE_GOTO_POS_DIST	/*!< Ersetzt alle drive_distance()-Aufrufe mit dem goto_pos-Verhalten, falls vorhanden */
+#define USE_GOTO_POS_DIST	/**< Ersetzt alle drive_distance()-Aufrufe mit dem goto_pos-Verhalten, falls vorhanden */
 
 #ifndef BEHAVIOUR_GOTO_POS_AVAILABLE
 #undef USE_GOTO_POS_DIST
@@ -45,40 +45,41 @@
 
 #ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 #ifndef USE_GOTO_POS_DIST
-/*!
+/**
  * Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren.
- * @param *data der Verhaltensdatensatz
- * @see bot_drive_distance()
+ * \param *data der Verhaltensdatensatz
+ * \see bot_drive_distance()
  */
 void bot_drive_distance_behaviour(Behaviour_t * data);
 
-/*!
+/**
  * Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren. Dabei legt die Geschwindigkeit fest, ob der Bot vorwaerts oder rueckwaerts fahren soll.
- * @param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
- * @param speed Gibt an, wie schnell der Bot fahren soll. Negative Werte lassen den Bot rueckwaerts fahren.
- * @param cm Gibt an, wie weit der Bot fahren soll. In cm :-) Die Strecke muss positiv sein, die Fahrtrichtung wird ueber speed geregelt.
+ * \param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
+ * \param speed Gibt an, wie schnell der Bot fahren soll. Negative Werte lassen den Bot rueckwaerts fahren.
+ * \param cm Gibt an, wie weit der Bot fahren soll. In cm :-) Die Strecke muss positiv sein, die Fahrtrichtung wird ueber speed geregelt.
+ * \return Zeiger auf Verhaltensdatensatz
  */
-void bot_drive_distance(Behaviour_t * caller, int8_t curve, int16_t speed, int16_t cm);
+Behaviour_t * bot_drive_distance(Behaviour_t * caller, int8_t curve, int16_t speed, int16_t cm);
 
 #else // USE_GOTO_POS_DIST
 /* wenn goto_pos() vorhanden ist und USE_GOTO_POS_DIST an, leiten wir alle drive_distance()-Aufurfe dorthin um */
 #undef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 #include "math_utils.h"
-void bot_goto_dist(Behaviour_t *, int16_t, int8_t);
+Behaviour_t * bot_goto_dist(Behaviour_t *, int16_t, int8_t);
 
-static inline void bot_drive_distance(Behaviour_t * caller, int8_t curve, const int16_t speed, const int16_t cm) {
+static inline Behaviour_t * bot_drive_distance(Behaviour_t * caller, int8_t curve, const int16_t speed, const int16_t cm) {
 	(void) curve;
-	bot_goto_dist(caller, cm * 10, sign16(speed));
+	return bot_goto_dist(caller, cm * 10, sign16(speed));
 }
 #endif // USE_GOTO_POS_DIST
 #endif // BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 
 #if defined BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE || defined BEHAVIOUR_OLYMPIC_AVAILABLE
-/*!
+/**
  * laesst den Bot in eine Richtung fahren.
  * Es handelt sich hierbei nicht im eigentlichen Sinn um ein Verhalten, sondern ist nur eine Abstraktion der Motorkontrollen.
- * @param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
- * @param speed Gibt an, wie schnell der Bot fahren soll. */
+ * \param curve Gibt an, ob der Bot eine Kurve fahren soll. Werte von -127 (So scharf wie moeglich links) ueber 0 (gerade aus) bis 127 (so scharf wie moeglich rechts)
+ * \param speed Gibt an, wie schnell der Bot fahren soll. */
 void bot_drive(int8_t curve, int16_t speed);
 #endif // BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE || BEHAVIOUR_OLYMPIC_AVAILABLE
 #endif // BEHAVIOUR_DRIVE_DISTANCE_H_
