@@ -39,6 +39,7 @@
 #include "rc5-codes.h"
 #include "eeprom.h"
 #include "math_utils.h"
+#include "ui/available_screens.h"
 
 int16_t speed_l = 0;	/*!< Sollgeschwindigkeit linker Motor */
 int16_t speed_r = 0;	/*!< Sollgeschwindigkeit rechter Motor */

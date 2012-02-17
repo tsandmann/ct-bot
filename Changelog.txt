@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2012-02-17 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer DISPLAY_REGELUNG_AVAILABLE
+
 2011-02-06 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer bot_goto_obstacle()
 
 2011-02-04 Timo Sandmann [mail@timosandmann.de]: Kompatibilitaet mit Sim 2.10 fuer reale Bots hergestellt
