@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: behaviour_drive_stack.c Quellcode</title>
+<title>c&#39;t-Bot: behaviour_drive_stack.c Quellcode</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -52,7 +52,7 @@
   </div>
   <div id="nav-path" class="navpath">
     <ul>
-      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+      <li class="navelem"><a class="el" href="dir_14c9cc1c75a92f359ad94591d62973a1.html">bot-logic</a>      </li>
     </ul>
   </div>
 </div>
@@ -139,7 +139,7 @@
 <a name="l00091"></a>00091         <span class="keywordflow">if</span> (!get_pos) {
 <a name="l00092"></a>00092             drivestack_state = 1;
 <a name="l00093"></a>00093         } <span class="keywordflow">else</span> {
-<a name="l00094"></a>00094             <a class="code" href="behaviour__goto__pos_8c.html#ab5ed29ca0a737f151df82f8babc00170">bot_goto_pos</a>(data, pos.x, pos.y, 999);
+<a name="l00094"></a>00094             <a class="code" href="behaviour__goto__pos_8c.html#a88ddbedd618e291f1181ca34433fcd93" title="Botenfunktion des Positionierungsverhaltens.">bot_goto_pos</a>(data, pos.x, pos.y, 999);
 <a name="l00095"></a>00095         }
 <a name="l00096"></a>00096         <span class="keywordflow">break</span>;
 <a name="l00097"></a>00097 
@@ -355,18 +355,18 @@
 <a name="l00350"></a>00350             <a class="code" href="pos__store_8c.html#a5b3b46e55200fee1bfa208eae4a69f69">pos_store_top</a>(pos_store, &amp;pos_0, 1);
 <a name="l00351"></a>00351             uint16_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
 <a name="l00352"></a>00352             <span class="keywordflow">for</span> (i = 2; <a class="code" href="pos__store_8c.html#a5b3b46e55200fee1bfa208eae4a69f69">pos_store_top</a>(pos_store, &amp;pos_1, (uint8_t) i); ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
-<a name="l00353"></a>00353                 <a class="code" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df">map_draw_line_world</a>(pos_0, pos_1, 0);
+<a name="l00353"></a>00353                 <a class="code" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df" title="Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein; dient zur Visualis...">map_draw_line_world</a>(pos_0, pos_1, 0);
 <a name="l00354"></a>00354                 pos_0 = pos_1;
 <a name="l00355"></a>00355                 pos_1.x = pos_0.x - 16;
 <a name="l00356"></a>00356                 pos_1.y = pos_0.y;
 <a name="l00357"></a>00357                 pos_2.x = pos_0.x + 16;
 <a name="l00358"></a>00358                 pos_2.y = pos_0.y;
-<a name="l00359"></a>00359                 <a class="code" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df">map_draw_line_world</a>(pos_1, pos_2, 1);
+<a name="l00359"></a>00359                 <a class="code" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df" title="Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein; dient zur Visualis...">map_draw_line_world</a>(pos_1, pos_2, 1);
 <a name="l00360"></a>00360                 pos_1.x = pos_0.x;
 <a name="l00361"></a>00361                 pos_1.y = pos_0.y - 16;
 <a name="l00362"></a>00362                 pos_2.x = pos_0.x;
 <a name="l00363"></a>00363                 pos_2.y = pos_0.y + 16;
-<a name="l00364"></a>00364                 <a class="code" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df">map_draw_line_world</a>(pos_1, pos_2, 1);
+<a name="l00364"></a>00364                 <a class="code" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df" title="Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein; dient zur Visualis...">map_draw_line_world</a>(pos_1, pos_2, 1);
 <a name="l00365"></a>00365             }
 <a name="l00366"></a>00366 <span class="preprocessor">#endif // MAP_2_SIM_AVAILABLE</span>
 <a name="l00367"></a>00367 <span class="preprocessor"></span><span class="preprocessor">#endif // DEBUG</span>
@@ -447,9 +447,9 @@
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:08 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

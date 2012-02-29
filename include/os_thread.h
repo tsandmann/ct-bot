@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	os_thread.h
- * @brief 	Threadmanagement fuer BotOS
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	02.10.2007
+/**
+ * \file 	os_thread.h
+ * \brief 	Threadmanagement fuer BotOS
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	02.10.2007
  */
 
 #ifndef _OS_THREAD_H_
@@ -36,22 +36,22 @@
 #include "timer.h"
 #include "os_scheduler.h"
 
-/*! Signal-Typ zur Threadsynchronisation */
+/** Signal-Typ zur Threadsynchronisation */
 typedef struct {
-	volatile uint8_t value;	/*!< Signal-Wert */
+	volatile uint8_t value;	/**< Signal-Wert */
 #ifdef PC
-	pthread_mutex_t mutex;	/*!< Mutex zur Synchronisation */
-	pthread_cond_t cond;	/*!< Signal zur Synchronisation */
+	pthread_mutex_t mutex;	/**< Mutex zur Synchronisation */
+	pthread_cond_t cond;	/**< Signal zur Synchronisation */
 #endif
 } os_signal_t;
 
-#define OS_MAX_THREADS		4	/*!< maximale Anzahl an Threads im System */
-#define OS_KERNEL_STACKSIZE	36	/*!< Groesse des Kernel-Stacks (fuer Timer-ISR) [Byte] */
-#define OS_IDLE_STACKSIZE	64	/*!< Groesse des Idle-Stacks [Byte] */
-#define OS_CONTEXT_SIZE		19	/*!< Groesse des Kontextes eines Threads [Byte], muss zum Code in os_switch_thread() passen! */
+#define OS_MAX_THREADS		4	/**< maximale Anzahl an Threads im System */
+#define OS_KERNEL_STACKSIZE	36	/**< Groesse des Kernel-Stacks (fuer Timer-ISR) [Byte] */
+#define OS_IDLE_STACKSIZE	64	/**< Groesse des Idle-Stacks [Byte] */
+#define OS_CONTEXT_SIZE		19	/**< Groesse des Kontextes eines Threads [Byte], muss zum Code in os_switch_thread() passen! */
 
-//#define OS_DEBUG				/*!< Schalter fuer Debug-Code */
-//#define OS_KERNEL_LOG_AVAILABLE	/*!< Aktiviert das Kernel-LOG mit laufenden Debug-Ausgaben */
+//#define OS_DEBUG				/**< Schalter fuer Debug-Code */
+//#define OS_KERNEL_LOG_AVAILABLE	/**< Aktiviert das Kernel-LOG mit laufenden Debug-Ausgaben */
 
 #ifdef OS_KERNEL_LOG_AVAILABLE
 #undef OS_IDLE_STACKSIZE
@@ -68,48 +68,49 @@ typedef struct {
 #endif
 #endif
 
-/*! Statistikdaten wie Laufzeit und Anzahl der ueberschrittenen Deadlines */
+/** Statistikdaten wie Laufzeit und Anzahl der ueberschrittenen Deadlines */
 typedef struct {
-	uint16_t runtime;			/*!< Zeit, die der Thread gelaufen ist [176 us] */
-	uint16_t missed_deadlines;	/*!< Anzahl der Deadlines, die der Thread ueberschritten hat */
+	uint16_t runtime;			/**< Zeit, die der Thread gelaufen ist [176 us] */
+	uint16_t missed_deadlines;	/**< Anzahl der Deadlines, die der Thread ueberschritten hat */
 } os_stat_data_t;
 
 #ifdef MCU
 
-#define OS_TASK_ATTR __attribute__((OS_task)) /*!< Attribut fuer main-Funktion eines Threads */
+#define OS_TASK_ATTR __attribute__((OS_task)) /**< Attribut fuer main-Funktion eines Threads */
+#define OS_SIGNAL_INITIALIZER {0}  /**< Initialisierungsdaten fuer os_signal_t */
 
-/*! TCB eines Threads */
+/** TCB eines Threads */
 typedef struct {
-	void * stack;				/*!< Stack-Pointer */
-	uint32_t nextSchedule;		/*!< Zeitpunkt der naechsten Ausfuehrung. Ergibt im Zusammenhang mit der aktuellen Zeit den Status eines Threads. */
-	uint16_t lastSchedule;		/*!< Zeitpunkt der letzten Ausfuehrung, untere 16 Bit */
-	os_signal_t * wait_for;		/*!< Zeiger auf Signal, bis zu dessen Freigabe blockiert wird */
+	void * stack;				/**< Stack-Pointer */
+	uint32_t nextSchedule;		/**< Zeitpunkt der naechsten Ausfuehrung. Ergibt im Zusammenhang mit der aktuellen Zeit den Status eines Threads. */
+	uint16_t lastSchedule;		/**< Zeitpunkt der letzten Ausfuehrung, untere 16 Bit */
+	os_signal_t * wait_for;		/**< Zeiger auf Signal, bis zu dessen Freigabe blockiert wird */
 #ifdef MEASURE_UTILIZATION
-	os_stat_data_t statistics;	/*!< Statistikdaten des Threads */
+	os_stat_data_t statistics;	/**< Statistikdaten des Threads */
 #endif
 } Tcb_t;
 
-extern Tcb_t os_threads[OS_MAX_THREADS];	/*!< Thread-Pool (ist gleichzeitig running- und waiting-queue) */
-extern Tcb_t * os_thread_running;			/*!< Zeiger auf den Thread, der zurzeit laeuft */
-extern uint8_t os_kernel_stack[];			/*!< Kernel-Stack */
-extern uint8_t os_idle_stack[];				/*!< Stack des Idle-Threads */
-extern os_signal_t dummy_signal; 			/*!< Signal, das referenziert wird, wenn sonst keins gesetzt ist */
+extern Tcb_t os_threads[OS_MAX_THREADS];	/**< Thread-Pool (ist gleichzeitig running- und waiting-queue) */
+extern Tcb_t * os_thread_running;			/**< Zeiger auf den Thread, der zurzeit laeuft */
+extern uint8_t os_kernel_stack[];			/**< Kernel-Stack */
+extern uint8_t os_idle_stack[];				/**< Stack des Idle-Threads */
+extern os_signal_t dummy_signal; 			/**< Signal, das referenziert wird, wenn sonst keins gesetzt ist */
 
 #ifdef OS_KERNEL_LOG_AVAILABLE
-#define OS_KERNEL_LOG_SIZE	32	/*!< Anzahl der Datensaetze, die im Kernel-LOG gepuffert werden koennen */
+#define OS_KERNEL_LOG_SIZE	32	/**< Anzahl der Datensaetze, die im Kernel-LOG gepuffert werden koennen */
 
-/*!
+/**
  * Initialisiert das Kernel-LOG
  */
 void os_kernel_log_init(void);
 #endif // OS_KERNEL_LOG_AVAILABLE
 
-/*!
+/**
  * Idle-Thread
  */
 void os_idle(void) OS_TASK_ATTR;
 
-/*!
+/**
  * Schuetzt den folgenden Block (bis os_exitCS()) vor Threadswitches.
  * Ermoeglicht einfaches Locking zum exklusiven Ressourcen-Zugriff.
  * Es ist allerdings keine Verschachtelung moeglich! Zwischen os_enterCS()
@@ -120,27 +121,27 @@ void os_idle(void) OS_TASK_ATTR;
 	__asm__ __volatile__("":::"memory"); \
 }
 
-/*!
+/**
  * Beendet den kritischen Abschnitt wieder, der mit os_enterCS began.
  * Falls ein Scheduler-Aufruf ansteht, wird er nun ausgefuehrt.
  */
 void os_exitCS(void);
 
-/*!
+/**
  * Schaltet "von aussen" auf einen neuen Thread um.
  * => kernel threadswitch
  * Achtung, es wird erwartet, dass Interrupts an sind.
  * Sollte eigentlich nur vom Scheduler aus aufgerufen werden!
- * @param *from	Zeiger auf TCB des aktuell laufenden Threads
- * @param *to	Zeiger auf TCB des Threads, der nun laufen soll
+ * \param *from	Zeiger auf TCB des aktuell laufenden Threads
+ * \param *to	Zeiger auf TCB des Threads, der nun laufen soll
  */
 void os_switch_thread(Tcb_t * from, Tcb_t * to);
 
-/*!
+/**
  * Blockiert den aktuellten Thread fuer die angegebene Zeit und schaltet
  * auf einen anderen Thread um
  * => coorporative threadswitch
- * @param ms	Zeit in ms, die der aktuelle Thread (mindestens) blockiert wird
+ * \param ms	Zeit in ms, die der aktuelle Thread (mindestens) blockiert wird
  */
 static inline void os_thread_sleep(uint32_t ms) {
 	uint32_t sleep_ticks = MS_TO_TICKS(ms); // Zeitspanne in Timer-Ticks umrechnen
@@ -149,26 +150,26 @@ static inline void os_thread_sleep(uint32_t ms) {
 	os_schedule(now); // Aufruf des Schedulers
 }
 
-/*!
+/**
  * Entfernt ein Signal vom aktuellen Thread
- * @param *signal	Signal, das entfernt werden soll
+ * \param *signal	Signal, das entfernt werden soll
  */
 static inline void os_signal_release(os_signal_t * signal) {
 	(void) signal; // kein warning
 	os_thread_running->wait_for = &dummy_signal;
 }
 
-/*!
+/**
  * Sperrt ein Signal
- * @param *signal	Zu sperrendes Signal
+ * \param *signal	Zu sperrendes Signal
  */
 static inline void os_signal_lock(os_signal_t * signal) {
 	signal->value = 1;
 }
 
-/*!
+/**
  * Gibt ein Signal frei
- * @param *signal	Freizugebendes Signal
+ * \param *signal	Freizugebendes Signal
  */
 static inline void os_signal_unlock(os_signal_t * signal) {
 	signal->value = 0;
@@ -177,93 +178,94 @@ static inline void os_signal_unlock(os_signal_t * signal) {
 
 #else // PC
 
-#define OS_TASK_ATTR /*!< Attribut fuer main-Funktion eines Threads (Dummy fuer PC) */
+#define OS_TASK_ATTR /**< Attribut fuer main-Funktion eines Threads (Dummy fuer PC) */
+#define OS_SIGNAL_INITIALIZER {0, PTHREAD_MUTEX_INITIALIZER, PTHREAD_COND_INITIALIZER} /**< Initialisierungsdaten fuer os_signal_t */
 
 typedef pthread_t Tcb_t;
 
-extern Tcb_t os_threads[OS_MAX_THREADS]; /*!< Thread-Pool (ist gleichzeitig running- und waiting-queue) */
-extern pthread_mutex_t os_enterCS_mutex; /*!< Mutex fuer os_enterCS() / os_exitCS() auf PC */
+extern Tcb_t os_threads[OS_MAX_THREADS]; /**< Thread-Pool (ist gleichzeitig running- und waiting-queue) */
+extern pthread_mutex_t os_enterCS_mutex; /**< Mutex fuer os_enterCS() / os_exitCS() auf PC */
 
-/*!
+/**
  * Schuetzt den folgenden Block (bis exitCS()) vor konkurrierenden Zugriffen
  * verschiedener Threads.
  * Ermoeglicht einfaches Locking zum exklusiven Ressourcen-Zugriff.
  */
 #define os_enterCS() pthread_mutex_lock(&os_enterCS_mutex);
 
-/*!
+/**
  * Beendet den kritischen Abschnitt wieder, der mit enterCS began.
  */
 #define os_exitCS() pthread_mutex_unlock(&os_enterCS_mutex);
 
-/*!
+/**
  * Blockiert den aktuellten Thread fuer die angegebene Zeit und schaltet
  * auf einen anderen Thread um
  * => coorporative threadswitch
- * @param sleep		Zeit in ms, die der aktuelle Thread blockiert wird
+ * \param sleep		Zeit in ms, die der aktuelle Thread blockiert wird
  */
 void os_thread_sleep(uint32_t sleep);
 
-/*!
+/**
  * Entfernt ein Signal vom aktuellen Thread
  */
 void os_signal_release(os_signal_t * signal);
 
-/*!
+/**
  * Sperrt ein Signal
- * @param *signal	Zu sperrendes Signal
+ * \param *signal	Zu sperrendes Signal
  */
 void os_signal_lock(os_signal_t * signal);
 
-/*!
+/**
  * Gibt ein Signal frei
- * @param *signal	Freizugebendes Signal
+ * \param *signal	Freizugebendes Signal
  */
 void os_signal_unlock(os_signal_t * signal);
 #endif // MCU
 
-/*!
+/**
  * Legt einen neuen Thread an und setzt ihn auf runnable.
  * Der zuerst angelegt Thread bekommt die hoechste Prioritaet,
  * je spaeter ein Thread erzeugt wird, desto niedriger ist seine
  * Prioritaet, das laesst sich auch nicht mehr aendern!
- * @param *pStack	Zeiger auf den Stack (Ende!) des neuen Threads
- * @param *pIp		Zeiger auf die Main-Funktion des Threads (Instruction-Pointer)
- * @return			Zeiger auf den TCB des angelegten Threads
+ * \param *pStack	Zeiger auf den Stack (Ende!) des neuen Threads
+ * \param *pIp		Zeiger auf die Main-Funktion des Threads (Instruction-Pointer)
+ * \return			Zeiger auf den TCB des angelegten Threads
  */
 Tcb_t * os_create_thread(void * pStack, void (* pIp)(void));
 
-/*!
+/**
  * Schaltet auf den Thread mit der naechst niedrigeren Prioritaet um, der lauffaehig ist,
  * indem diesem der Rest der Zeitscheibe geschenkt wird.
  */
 void os_thread_yield(void);
 
-/*!
+/**
  * Blockiert den aktuellen Thread, bis ein Signal freigegeben wird
- * @param *signal	Zeiger auf Signal
+ * \param *signal	Zeiger auf Signal
  */
 void os_signal_set(os_signal_t * signal);
 
 #ifdef OS_DEBUG
-/*!
+/**
  * Maskiert einen Stack, um spaeter ermitteln zu koennen,
  * wieviel Byte ungenutzt bleiben
- * @param *stack	Anfangsadresse des Stacks
- * @param size		Groesse des Stacks in Byte
+ * \param *stack	Anfangsadresse des Stacks
+ * \param size		Groesse des Stacks in Byte
  */
 void os_mask_stack(void * stack, size_t size);
 
-/*!
+/**
  * Gibt per LOG aus, wieviel Bytes auf den Stacks der Threads noch nie benutzt wurden
  */
 void os_print_stackusage(void);
 
-/*!
+/**
  * Gibt den Inhalt des Stacks eines Threads per LOG aus
- * @param *thread	Zeiger auf den TCB des Threads
- * @param *stack	Zeiger auf die hoechste Adresse des Stacks (Anfang)
- * @param size		Groesse des Stacks in Byte
+ * \param *thread	Zeiger auf den TCB des Threads
+ * \param *stack	Zeiger auf die hoechste Adresse des Stacks (Anfang)
+ * \param size		Groesse des Stacks in Byte
  */
 void os_stack_dump(Tcb_t * thread, void * stack, uint16_t size);
 #endif // OS_DEBUG

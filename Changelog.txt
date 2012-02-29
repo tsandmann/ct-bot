@@ -1,18 +1,40 @@
 CHANGELOG fuer c't-Bot
 ======================
+2012-02-29 Timo Sandmann [mail@timosandmann.de]: Release 21
+
 2012-02-17 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer DISPLAY_REGELUNG_AVAILABLE
 
-2011-02-06 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer bot_goto_obstacle()
+2012-02-06 Timo Sandmann [mail@timosandmann.de]: bot_goto_obstacle() ueberarbeitet
 
-2011-02-04 Timo Sandmann [mail@timosandmann.de]: Kompatibilitaet mit Sim 2.10 fuer reale Bots hergestellt
+2012-02-04 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer die Anmeldung realer Bots beim Sim
 
-2011-02-01 Timo Sandmann [mail@timosandmann.de]: Workaround fuer Simple2-Verhalten, wenn SPEED_CONTROL_AVAILABLE aus ist
+2012-01-31 Timo Sandmann [mail@timosandmann.de]: bot_goto_dist(): Fallback auf bot_drive_distance(), falls bot_goto_pos() nicht aktiv ist (z.B. wegen deaktivierter Motorregelung), Warnings in simple2 beseitigt
 
-2011-12-20 Timo Sandmann [mail@timosandmann.de]: Kompatibilitaet mit Sim 2.10 hergestellt
+2012-01-29 Timo Sandmann [mail@timosandmann.de]: Starten von ABL-Programmen per Fernbedienung (abl1.txt bis abl9.txt auf SD-Karte oder aktuelles Programm im EEPROM; analog zu uBasic), Fehlerpruefung beim RemoteCall-Aufruf
 
-2011-10-15 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer BotFS
+2012-01-28 Timo Sandmann [mail@timosandmann.de]: EEPROM-Bereich fuer ABL-Skripte auf ATmega1284P und PC vergroessert (3.5 KByte), Auswertung aktiver Bot-Komponenten fuer ABL und Basic getrennt
+
+2012-01-15 Timo Sandmann [mail@timosandmann.de]: HW-Test-Verhalten leicht ueberarbeitet
+
+2011-12-19 Timo Sandmann [mail@timosandmann.de]: Bot meldet aktivierte Komponenten an den Sim
+
+2011-11-26 Frank Menzel [Menzelfr@gmx.de]: Anpassungen fuer uBasic: neue Routine beh_result zur Ermittlung des Ergebnisses eines Verhaltens (Messverhalten wie im ABL Script verwendet)
+
+2011-11-25 Timo Sandmann [mail@timosandmann.de]: Servos und Klappen-Sensor auch fuer simulierte Bots
+
+2011-11-09 Timo Sandmann [mail@timosandmann.de]: Verhalten bot_abl_behaviour() zur Steuerung des Bots ueber eine Scriptsprache. Doku folgt. Siehe auch bot-logic/behaviour_abl.c
+
+2011-11-06 Timo Sandmann [mail@timosandmann.de]: Makroblock-Alignment fuer Map optimiert
+
+2011-10-29 Timo Sandmann [mail@timosandmann.de]: Eclipse Build-Konfiguration fuer MCU vereinfacht
+
+2011-10-15 Timo Sandmann [mail@timosandmann.de]: Map-Code erweitert: map_save_to_file() speichert die aktuelle Map in eine neue Datei, map_load_from_file() liest eine Karte aus einer Datei wieder in die aktuelle Map ein. Im Gegensatz zur Import-Funktion (Parameter -m) funktioniert das zur Laufzeit und auf PC und MCU. Bugfix fuer BotFS.
 
 2011-10-08 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Map Ex- / Import und Map-2-Sim
+
+2011-09-12 Timo Sandmann [mail@timosandmann.de]: uBasic auf rev. 64 aktualisiert, "./include/bot-logic" in Include-Pfad aufgenommen
+
+2011-09-02 Timo Sandmann [mail@timosandmann.de]: Projekteinstellungen und Warnings fuer Konfiguration ARM-Linux korrigiert
 
 2011-08-18 Timo Sandmann [mail@timosandmann.de]: Release 20
 

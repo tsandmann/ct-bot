@@ -106,11 +106,11 @@ void bot_simple2_behaviour(Behaviour_t * data) {
 	#define STATE_SIMPLE2_DONE 3
 
 	static int16_t max_light;
-	static uint16_t max_dir;
-	static uint16_t dir;
+	static int16_t max_dir;
+	static int16_t dir;
 
-	uint16_t light=(sensLDRL+sensLDRR)/2;
-	uint16_t free;
+	int16_t light=(sensLDRL+sensLDRR)/2;
+	int16_t free;
 
 	switch (simple2_state) {
 		case STATE_SIMPLE2_INIT:	// Initialisieren
@@ -143,11 +143,7 @@ void bot_simple2_behaviour(Behaviour_t * data) {
 			free = (free > SENS_IR_MAX_DIST) ? SENS_IR_MAX_DIST : free;
 
 			if (free > SENS_IR_SAFE_DIST) {
-#ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
-				bot_goto_dist(data, free - SENS_IR_SAFE_DIST, 1);	// nach vorne
-#else
-				bot_drive_distance(data, 0, BOT_SPEED_NORMAL, (int16_t) (free - SENS_IR_SAFE_DIST) / 10);	// nach vorne
-#endif // BEHAVIOUR_GOTO_POS_AVAILABLE
+				bot_goto_dist(data,free - SENS_IR_SAFE_DIST,1);	// nach vorne
 				simple2_state = STATE_SIMPLE2_INIT;
 			}else
 				simple2_state=STATE_SIMPLE2_DONE;	// beenden

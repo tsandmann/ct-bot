@@ -15,7 +15,7 @@
 #define __UBASIC_CONFIG_H__
 
 /* Konfiguration fuer ct-Bot */
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 #include "log.h"
 

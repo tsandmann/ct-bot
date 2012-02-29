@@ -234,6 +234,10 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 #ifdef BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_2_bot_pl_test, 1, "uint8 to", 1),
 #endif
+
+#ifdef BEHAVIOUR_ABL_AVAILABLE
+	PREPARE_REMOTE_CALL(bot_abl_check, 1, "uint16 line", 2),
+#endif
 	{0, {0}, "", "", NULL}
 };
 
@@ -245,7 +249,7 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
  * \param *call	String mit dem Namen der gesuchten fkt
  * \return 		Index in das remotecall_beh_list-Array. Wenn nicht gefunden, dann 255
  */
-static uint8_t get_remotecall_id(const char * call) {
+uint8_t get_remotecall_id(const char * call) {
 	LOG_DEBUG("Suche nach Funktion: \"%s\"", call);
 
 	uint8_t i;
@@ -373,14 +377,22 @@ void bot_remotecall_behaviour(Behaviour_t * data) {
 			memcpy_P(tmp, &remotecall_beh_list[function_id].name, REMOTE_CALL_FUNCTION_NAME_LEN + 1);
 			function_name = (char *) &tmp;
 
-#ifdef COMMAND_AVAILABLE
 			int16_t result = data->subResult;
-			if (data->caller == NULL) {
+			if (data->caller) {
+#ifdef BEHAVIOUR_ABL_AVAILABLE
+				abl_push_value((uint16_t) result);
+#endif
+#ifdef BEHAVIOUR_UBASIC_AVAILABLE
+				ubasic_push_value((uint16_t) result);
+#endif
+			}
+#ifdef COMMAND_AVAILABLE
+			else {
 				/* kein Caller, also kam der Aufruf wohl vom Sim */
 				command_write_data(CMD_REMOTE_CALL, SUB_REMOTE_CALL_DONE, result, result, function_name);
 			}
-			LOG_DEBUG("RemoteCall %s beendet (%u)", function_name, result);
 #endif // COMMAND_AVAILABLE
+			LOG_DEBUG("RemoteCall %s beendet (%u)", function_name, result);
 
 			// Aufrauemen
 			function_id = 255;
@@ -455,7 +467,7 @@ static int8_t bot_remotecall_from_id(Behaviour_t * caller, const uint8_t id, con
 int8_t bot_remotecall(Behaviour_t * caller, const char * func, const remote_call_data_t * data) {
 	const uint8_t id = get_remotecall_id(func);
 	if (id >= STORED_CALLS - 1) {
-		LOG_DEBUG("Funktion \"%s\" nicht gefunden.", func);
+		LOG_ERROR("Verhalten \"%s\" nicht gefunden.", func);
 	}
 
 	return bot_remotecall_from_id(caller, id, data);

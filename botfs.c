@@ -43,9 +43,11 @@
  *        + Partions- und Imagegroesse anpassbar (max. 32 MB)\n
  *        -- mehrere Arbeitsschritte noetig\n
  *        -- Partionierung unter Windows evtl. umstaendlich\n
+ *        -- Wert von first_block in pc/botfs-low_pc.c muss angepasst werden, wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte\n
  *     - Variante 3: vollstaendig manuelle Einrichtung\n
  *        + volle Kontrolle ueber alle Schritte\n
  *        -- recht umstaendlich\n
+ *        -- Wert von first_block in pc/botfs-low_pc.c muss angepasst werden, wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte\n
  * \n
  *     - Durchfuehrung Variante 1:\n
  *       Uebertragen des vorgefertigten Disk-Images (befindet sich in contrib/BotFS/sd.img.zip):
@@ -87,7 +89,10 @@
  *         Es bietet sich an, auf der SD-Karte auch eine zweite Partition (Groesse und Typ beliebig) anzulegen und dort eine Kopie
  *         der Datei botfs.img zu speichern. Moechte man einmal das komplette Dateisystem fuer den Bot leeren oder wurde es durch
  *         einen Fehler beschaedigt, kopiert man einfach dieses Backup zurueck auf die erste Partition und muss die obigen Schritte
- *         nicht wiederholen.
+ *         nicht wiederholen.\n
+ *         Wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte, sollte man den Wert von first_block in
+ *         pc/botfs-low_pc.c anpassen, damit das Alignment von Dateien (zur Performanzsteigerung z.B. fuer die Map) stimmt.
+ *         first_block muss dazu auf den ersten Datensektor der FAT16-Partition gesetzt werden.
  * \n
  *     - Durchfuehrung Variante 3:\n
  *       Anlegen der Partition wie unter Variante 2.\n
@@ -102,6 +107,9 @@
  *       Als Volume-Name gibt man dann einen beliebigen ein, wie z.B. "BotFS-Volume", als Groesse danach die eben Ermittelte (in
  *       KByte). Jetzt kann die Verwaltung mit dem Kommando 'q' beendet werden und die erzeugte Datei als "botfs.img" (wichtig:
  *       auf der SD-Karte muss die Datei unbedingt "botfs.img" heissen!) auf die SD-Karte (erste Partition) kopiert werden.\n
+ *       Wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte, sollte man den Wert von first_block in
+ *       pc/botfs-low_pc.c anpassen, damit das Alignment von Dateien (zur Performanzsteigerung z.B. fuer die Map) stimmt.
+ *       first_block muss dazu auf den ersten Datensektor der FAT16-Partition gesetzt werden.\n
  * \n
  * - Benutzung:\n
  *   - Der Map-Code ist jetzt (mit BOT_FS_AVAILABLE) nicht mehr darauf angewiesen, dass eine Map-Datei (MiniFAT) auf der SD-Karte
@@ -142,13 +150,13 @@ int8_t botfs_init(char * image, void * buffer, uint8_t create) {
 	/* Volume laden */
 	PRINT_MSG("botfs_init_low(\"%s\")...", image);
 	if (botfs_init_low(image, buffer, create) != 0) {
-		PRINT_MSG("botfs_init_low() schlug fehl");
+		PRINT_MSG("botfs_init(): botfs_init_low() schlug fehl");
 		return -1;
 	}
 
 	/* Header einlesen */
 	if (botfs_read_low(BOTFS_HEADER_POS, buffer) != 0) {
-		PRINT_MSG("botfs_read_low(BOTFS_HEADER_POS) schlug fehl");
+		PRINT_MSG("botfs_init(): botfs_read_low(BOTFS_HEADER_POS) schlug fehl");
 		return -2;
 	}
 
@@ -158,7 +166,7 @@ int8_t botfs_init(char * image, void * buffer, uint8_t create) {
 	init_state = 1;
 
 	if (botfs_check_volume_low(image, buffer) != 0) {
-		PRINT_MSG("Volume fehlerhaft");
+		PRINT_MSG("botfs_init(): Volume fehlerhaft");
 		init_state = 0;
 		return -3;
 	}
@@ -287,13 +295,13 @@ static uint8_t test_block_end(botfs_freelist_entry_t * ptr, uint16_t x) {
  * \return			Zeiger auf gefundenen Freelist-Eintrag oder NULL, falls kein Treffer
  */
 static botfs_freelist_entry_t * search_freelist(uint8_t (* test)(botfs_freelist_entry_t *, uint16_t), uint16_t value,
-	uint8_t result, void * buffer) {
+		uint8_t result, void * buffer) {
 	botfs_rewind(&botfs_vol_data.freelist);
 	botfs_freelist_block_t * freelist = buffer;
 	uint8_t i;
 	for (i = BOTFS_FREEL_BL_CNT; i > 0; --i) {
 		if (botfs_read(&botfs_vol_data.freelist, buffer) != 0) {
-			PRINT_MSG("read()-error");
+			PRINT_MSG("search_freelist(): read()-error");
 			return NULL;
 		}
 		botfs_freelist_entry_t * pFree = freelist->freeblocks;
@@ -309,50 +317,132 @@ static botfs_freelist_entry_t * search_freelist(uint8_t (* test)(botfs_freelist_
 }
 
 /**
- * Legt eine neue Datei an
- * \param *filename	Dateiname
- * \param size		Groesse der Datei in Bloecken
+ * Fuegt einen Bereich zur Freelist hinzu
+ * \param start		Erster Block der freizugebenden Daten
+ * \param end		Letzter Block der freizugebenden Daten
  * \param *buffer	Puffer fuer mindestens BOTFS_BLOCK_SIZE Byte
  * \return			0, falls kein Fehler
  */
-int8_t botfs_create(const char * filename, uint16_t size, void * buffer) {
+static int8_t add_to_freelist(uint16_t start, uint16_t end, void * buffer) {
+	/* Auf Freiblock direkt nach dieser Datei pruefen */
+	botfs_freelist_entry_t * pFree = search_freelist(test_block_start, end + 1, 1, buffer);
+	if (pFree != NULL) {
+		PRINT_MSG("add_to_freelist(): Freiblock folgt auf Datei");
+		/* Datei mit Freiblock dahinter verschmelzen */
+		end += pFree->size;
+		/* Freiblock loeschen */
+		pFree->size = 0;
+		/* Block zurueckschreiben */
+		botfs_seek(&botfs_vol_data.freelist, -1, SEEK_CUR);
+		if (botfs_write(&botfs_vol_data.freelist, buffer) != 0) {
+			PRINT_MSG("add_to_freelist(): add_to_freelist(): write()-error");
+			return -11;
+		}
+	}
+	/* Auf Freiblock direkt vor dieser Datei pruefen */
+	pFree = search_freelist(test_block_end, start, 1, buffer);
+	if (pFree != NULL) {
+		PRINT_MSG("add_to_freelist(): Datei folgt auf Freiblock");
+		/* Freiblock auf Datei ausdehnen */
+		pFree->size += end - start + 1;
+		/* Block zurueckschreiben */
+		botfs_seek(&botfs_vol_data.freelist, -1, SEEK_CUR);
+		if (botfs_write(&botfs_vol_data.freelist, buffer) != 0) {
+			PRINT_MSG("add_to_freelist(): write()-error");
+			return -12;
+		}
+		return 0;
+	}
+
+	/* Kein Freelist-Eintrag passt, Neuen erzeugen */
+	PRINT_MSG("add_to_freelist(): erzeuge neuen Freelist-Eintrag");
+	pFree = search_freelist(test_size, 1, 0, buffer);
+	if (pFree == NULL) {
+		return -13;
+	}
+	pFree->block = start;
+	pFree->size = end - start + 1;
+	PRINT_MSG("add_to_freelist(): block=0x%04x, size=0x%04x", pFree->block, pFree->size);
+	/* Block zurueckschreiben */
+	botfs_seek(&botfs_vol_data.freelist, -1, SEEK_CUR);
+	if (botfs_write(&botfs_vol_data.freelist, buffer) != 0) {
+		PRINT_MSG("add_to_freelist(): write()-error");
+		return -14;
+	}
+
+	return 0;
+}
+
+/**
+ * Legt eine neue Datei an
+ * \param *filename	Dateiname
+ * \param size		Groesse der Datei in Bloecken
+ * \param alignment	Ausrichtung des Dateianfangs an einer X-Blockgrenze (normalerweise 0)
+ * \param *buffer	Puffer fuer mindestens BOTFS_BLOCK_SIZE Byte
+ * \return			0, falls kein Fehler
+ */
+int8_t botfs_create(const char * filename, uint16_t size, uint16_t alignment, void * buffer) {
 	botfs_acquire_lock_low(&botfs_mutex);
 	/* Datei bereits vorhanden? */
 	if (search_file(filename, buffer) != NULL) {
 		botfs_release_lock_low(&botfs_mutex);
-		PRINT_MSG("file existing");
+		PRINT_MSG("botfs_create(): file existing");
 		return -1;
 	}
 	++size;	// Header braucht einen Block
-	PRINT_MSG("creating file \"%s\" with size %u blocks", filename, size);
+	PRINT_MSG("botfs_create(): creating file \"%s\" with size 0x%x blocks", filename, size);
+
+	alignment = alignment > 0 ? alignment - 1 : 0;
 
 	/* freien Speicherbereich suchen */
-	botfs_freelist_entry_t * pFree = search_freelist(test_size, size, 1, buffer);
+	botfs_freelist_entry_t * pFree = search_freelist(test_size, size + alignment, 1, buffer);
 	if (pFree == NULL) {
 		botfs_release_lock_low(&botfs_mutex);
-		PRINT_MSG("no space left");
+		PRINT_MSG("botfs_create(): no space left");
 		return -2;
 	}
 
-	/* passt */
-	pFree->size -= size;
-	uint16_t start = pFree->block;
-	pFree->block += size;
+	PRINT_MSG("botfs_create(): pFree->block=0x%x", pFree->block);
+	PRINT_MSG("botfs_create():  sector=0x%x", get_sector(pFree->block));
+
+	/* Alignment des ersten Datenblocks berechnen */
+	uint16_t offset = (uint16_t) (((get_sector(pFree->block + BOTFS_HEADER_SIZE) + alignment) & ~alignment) - get_sector(pFree->block + BOTFS_HEADER_SIZE));
+	PRINT_MSG("botfs_create(): alignment-offset=0x%x", offset);
+
+	/* Freelist aktualisieren */
+	pFree->size -= size + offset;
+	uint16_t start = pFree->block + offset;
+	PRINT_MSG("botfs_create(): start=0x%x", start);
+	PRINT_MSG("botfs_create(): first_data=0x%x", start + BOTFS_HEADER_SIZE);
+	pFree->block += size + offset;
 	uint16_t end = pFree->block - 1;
+	PRINT_MSG("botfs_create(): end=0x%x", end);
 
 	/* Freelist-Block zurueckschreiben */
 	botfs_seek(&botfs_vol_data.freelist, -1, SEEK_CUR);
-	if (botfs_write(&botfs_vol_data.freelist, buffer) !=0) {
+	if (botfs_write(&botfs_vol_data.freelist, buffer) != 0) {
 		botfs_release_lock_low(&botfs_mutex);
-		PRINT_MSG("can't write freelist");
+		PRINT_MSG("botfs_create(): can't write freelist");
 		return -3;
+	}
+
+	/* Alingment-Offset als frei markieren */
+	if (offset != 0) {
+		PRINT_MSG("botfs_create(): freeing 0x%x - 0x%x", start - offset, start - 1);
+		if (add_to_freelist(start - offset, start - 1, buffer) != 0) {
+			botfs_release_lock_low(&botfs_mutex);
+			PRINT_MSG("botfs_create(): can't update freelist");
+			// Freelist muesste man hier eigentlich wieder zuruecksetzen
+			return -4;
+		}
 	}
 
 	/* leeren Root-Dir-Eintrag suchen */
 	botfs_file_t * pFile = search_file("", buffer);
 	if (pFile == NULL) {
 		botfs_release_lock_low(&botfs_mutex);
-		PRINT_MSG("no dir-entry left");
+		PRINT_MSG("botfs_create(): no dir-entry left");
+		// Freelist muesste man hier eigentlich wieder zuruecksetzen
 		return -4;
 	}
 	char * ptr = pFile->name;
@@ -368,7 +458,8 @@ int8_t botfs_create(const char * filename, uint16_t size, void * buffer) {
 	botfs_seek(&botfs_vol_data.rootdir, -1, SEEK_CUR);
 	if (botfs_write(&botfs_vol_data.rootdir, buffer) != 0) {
 		botfs_release_lock_low(&botfs_mutex);
-		PRINT_MSG("can't write rootdir");
+		PRINT_MSG("botfs_create(): can't write rootdir");
+		// Freelist muesste man hier eigentlich wieder zuruecksetzen
 		return -5;
 	}
 
@@ -379,10 +470,11 @@ int8_t botfs_create(const char * filename, uint16_t size, void * buffer) {
 	pHeader->used_blocks.start = start + BOTFS_HEADER_SIZE;
 	pHeader->used_blocks.end = end;
 	pHeader->used_blocks.bytes_last_block = BOTFS_BLOCK_SIZE;
-	PRINT_MSG("writing file-header...");
+	PRINT_MSG("botfs_create(): writing file-header...");
 	if (botfs_write_low(start, buffer) != 0) {
 		botfs_release_lock_low(&botfs_mutex);
-		PRINT_MSG("can't write file-header");
+		PRINT_MSG("botfs_create(): can't write file-header");
+		// Freelist muesste man hier eigentlich wieder zuruecksetzen
 		return -6;
 	}
 	botfs_release_lock_low(&botfs_mutex);
@@ -403,7 +495,7 @@ int8_t botfs_open(const char * filename, botfs_file_descr_t * file, uint8_t mode
 	botfs_file_t * ptr = search_file(filename, buffer);
 	if (ptr == NULL) {
 		botfs_release_lock_low(&botfs_mutex);
-		PRINT_MSG("file not found");
+		PRINT_MSG("botfs_open(): file not found");
 		return -1;
 	}
 
@@ -415,18 +507,18 @@ int8_t botfs_open(const char * filename, botfs_file_descr_t * file, uint8_t mode
 	/* Datei-Header laden */
 	if (botfs_read_low(file->start, buffer) != 0) {
 		botfs_release_lock_low(&botfs_mutex);
-		PRINT_MSG("read_low()-error");
+		PRINT_MSG("botfs_open(): read_low()-error");
 		return -2;
 	}
 
 	/* benutzte Bloecke lt. Header in den Datei-Deskriptor uebernehmen */
 	botfs_file_header_t * ptr_head = buffer;
 	file->used = ptr_head->used_blocks;
-//	PRINT_MSG(" start=0x%x end=0x%x", file->used.start, file->used.end);
+//	PRINT_MSG("botfs_open(): start=0x%x end=0x%x", file->used.start, file->used.end);
 
 	int8_t tmp = 0;
 	if (mode == BOTFS_MODE_W) {
-		PRINT_MSG("Datei wird geleert...");
+		PRINT_MSG("botfs_open(): Datei wird geleert...");
 		tmp = clear_file(file, buffer);
 	}
 	botfs_release_lock_low(&botfs_mutex);
@@ -445,7 +537,7 @@ int8_t botfs_unlink(const char * filename, void * buffer) {
 	botfs_file_t * ptr = search_file(filename, buffer);
 	if (ptr == NULL) {
 		botfs_release_lock_low(&botfs_mutex);
-		PRINT_MSG("Datei nicht vorhanden");
+		PRINT_MSG("botfs_unlink(): Datei nicht vorhanden");
 		return -1;
 	}
 
@@ -455,71 +547,19 @@ int8_t botfs_unlink(const char * filename, void * buffer) {
 	botfs_seek(&botfs_vol_data.rootdir, -1, SEEK_CUR); // Dateizeiger stand auf naechstem Dir-Block => -1
 	if (botfs_write(&botfs_vol_data.rootdir, buffer) != 0) {
 		botfs_release_lock_low(&botfs_mutex);
-		PRINT_MSG("Fehler beim Schreiben des Root-Blocks");
+		PRINT_MSG("botfs_unlink(): Fehler beim Schreiben des Root-Blocks");
 		return -2;
 	}
-	uint16_t start = ptr->descr.start;
-	uint16_t end = ptr->descr.end;
+	const uint16_t start = ptr->descr.start;
+	const uint16_t end = ptr->descr.end;
 
-	/* Datei-Header laden */
-	if (botfs_read_low(ptr->descr.start, buffer) != 0) {
-		botfs_release_lock_low(&botfs_mutex);
-		PRINT_MSG("Datei-Header konnte nicht geladen werden");
-		return -3;
-	}
-	/* Datei loeschen */
-	PRINT_MSG("Datei wird geloescht");
-	/* Auf Freiblock direkt nach dieser Datei pruefen */
-	botfs_freelist_entry_t * pFree = search_freelist(test_block_start, end + 1, 1, buffer);
-	if (pFree != NULL) {
-		PRINT_MSG("Freiblock folgt auf Datei");
-		/* Datei mit Freiblock dahinter verschmelzen */
-		end += pFree->size;
-		/* Freiblock loeschen */
-		pFree->size = 0;
-		/* Block zurueckschreiben */
-		botfs_seek(&botfs_vol_data.freelist, -1, SEEK_CUR);
-		if (botfs_write(&botfs_vol_data.freelist, buffer) != 0) {
-			botfs_release_lock_low(&botfs_mutex);
-			PRINT_MSG("write()-error");
-			return -4;
-		}
-	}
-	/* Auf Freiblock direkt vor dieser Datei pruefen */
-	pFree = search_freelist(test_block_end, start, 1, buffer);
-	if (pFree != NULL) {
-		PRINT_MSG("Datei folgt auf Freiblock");
-		/* Freiblock auf Datei ausdehnen */
-		pFree->size += end - start + 1;
-		/* Block zurueckschreiben */
-		botfs_seek(&botfs_vol_data.freelist, -1, SEEK_CUR);
-		if (botfs_write(&botfs_vol_data.freelist, buffer) != 0) {
-			botfs_release_lock_low(&botfs_mutex);
-			PRINT_MSG("write()-error");
-			return -5;
-		}
-		botfs_release_lock_low(&botfs_mutex);
-		return 0;
-	}
-	/* Kein Freelist-Eintrag passt, Neuen erzeugen */
-	PRINT_MSG("erzeuge neuen Freelist-Eintrag");
-	pFree = search_freelist(test_size, 1, 0, buffer);
-	if (pFree == NULL) {
-		botfs_release_lock_low(&botfs_mutex);
-		return -6;
-	}
-	pFree->block = start;
-	pFree->size = end - start + 1;
-	PRINT_MSG("block=0x%04x, size=0x%04x", pFree->block, pFree->size);
-	/* Block zurueckschreiben */
-	botfs_seek(&botfs_vol_data.freelist, -1, SEEK_CUR);
-	if (botfs_write(&botfs_vol_data.freelist, buffer) != 0) {
-		botfs_release_lock_low(&botfs_mutex);
-		PRINT_MSG("write()-error");
-		return -7;
-	}
+	/* Freelist aktualisieren */
+	int8_t res = add_to_freelist(start, end, buffer);
+
 	botfs_release_lock_low(&botfs_mutex);
-	return 0;
+
+	PRINT_MSG("botfs_unlink(): Datei \"%s\" wurde geloescht", filename);
+	return res;
 }
 
 /**
@@ -537,13 +577,13 @@ int8_t botfs_rename(const char * filename, const char * new_name, void * buffer)
 	botfs_file_t * ptr = search_file(filename, buffer);
 	botfs_release_lock_low(&botfs_mutex);
 	if (ptr == NULL) {
-		PRINT_MSG("Datei nicht vorhanden");
+		PRINT_MSG("botfs_rename(): Datei nicht vorhanden");
 		return -1;
 	}
 
 	/* Ziel loeschen, falls vorhanden */
 	if (botfs_unlink(new_name, buffer) < -1) {
-		PRINT_MSG("Fehler beim Loeschen der vorhandenen Zieldatei");
+		PRINT_MSG("botfs_rename(): Fehler beim Loeschen der vorhandenen Zieldatei");
 		return -2;
 	}
 
@@ -561,7 +601,7 @@ int8_t botfs_rename(const char * filename, const char * new_name, void * buffer)
 	botfs_seek(&botfs_vol_data.rootdir, -1, SEEK_CUR); // Dateizeiger stand auf naechstem Dir-Block => -1
 	if (botfs_write(&botfs_vol_data.rootdir, buffer) != 0) {
 		botfs_release_lock_low(&botfs_mutex);
-		PRINT_MSG("Fehler beim Schreiben des Root-Blocks");
+		PRINT_MSG("botfs_rename(): Fehler beim Schreiben des Root-Blocks");
 		return -3;
 	}
 	botfs_release_lock_low(&botfs_mutex);
@@ -577,7 +617,7 @@ static int8_t check_pos(botfs_file_descr_t * file, uint16_t pos) {
 	if (pos > file->start && pos <= file->end) {
 		return 0;
 	}
-	PRINT_MSG("start=%u, end=%u, pos=%u", file->start, file->end, pos);
+	PRINT_MSG("check_pos(): start=0x%x, end=0x%x, pos=0x%x", file->start, file->end, pos);
 	return -1;
 }
 
@@ -593,13 +633,13 @@ int8_t botfs_read(botfs_file_descr_t * file, void * buffer) {
 	}
 	/* Positions-Check */
 	if (check_pos(file, file->pos) != 0) {
-		PRINT_MSG("Position %u ungueltig!", file->pos);
+		PRINT_MSG("botfs_read(): Position 0x%x ungueltig!", file->pos);
 		return -1;
 	}
 
 	/* Daten lesen und Dateizeiger anpassen */
 	if (botfs_read_low(file->pos++, buffer) != 0) {
-		PRINT_MSG("botfs_read_low() meldet Fehler");
+		PRINT_MSG("botfs_read(): botfs_read_low() meldet Fehler");
 		return -2;
 	}
 
@@ -618,31 +658,31 @@ int8_t botfs_write(botfs_file_descr_t * file, void * buffer) {
 	}
 	/* Schreibschutz pruefen */
 	if (file->mode == BOTFS_MODE_r) {
-		PRINT_MSG("Fehler, Datei ist schreibgeschuetzt geoeffnet!");
+		PRINT_MSG("botfs_write(): Fehler, Datei ist schreibgeschuetzt geoeffnet!");
 		return -1;
 	}
 
 	/* Positions-Check */
 	if (check_pos(file, file->pos) != 0) {
-		PRINT_MSG("Dateiposition unzulaessig");
+		PRINT_MSG("botfs_write(): Dateiposition unzulaessig");
 		return -2;
 	}
 
 	/* Daten schreiben und Dateizeiger anpassen */
 	if (botfs_write_low(file->pos, buffer) != 0) {
-		PRINT_MSG("write_low() schlug fehl");
+		PRINT_MSG("botfs_write(): write_low() schlug fehl");
 		return -3;
 	}
 
 	/* Info ueber benutzte Bloecke updaten */
 	if (file->pos < file->used.start) {
 		file->used.start = file->pos;
-		PRINT_MSG("Bloecke 0x%x bis 0x%x als benutzt vermerkt", file->used.start, file->used.end);
+//		PRINT_MSG("botfs_write(): Bloecke 0x%x bis 0x%x als benutzt vermerkt", file->used.start, file->used.end);
 	}
 	if (file->pos > file->used.end) {
 		file->used.end = file->pos;
 		file->used.bytes_last_block = BOTFS_BLOCK_SIZE;
-		PRINT_MSG("Bloecke 0x%x bis 0x%x als benutzt vermerkt", file->used.start, file->used.end);
+//		PRINT_MSG("botfs_write(): Bloecke 0x%x bis 0x%x als benutzt vermerkt", file->used.start, file->used.end);
 	}
 
 	file->pos++;
@@ -661,18 +701,18 @@ int8_t botfs_flush_used_blocks(botfs_file_descr_t * file, void * buffer) {
 	}
 	/* update file header */
 	if (botfs_read_low(file->start, buffer) != 0) {
-		PRINT_MSG("Datei-Header konnte nicht gelesen werden");
+		PRINT_MSG("botfs_flush_used_blocks(): Datei-Header konnte nicht gelesen werden");
 		return -4;
 	}
 	botfs_file_header_t * pHeader = buffer;
 	pHeader->used_blocks = file->used;
 	int8_t res = botfs_write_low(file->start, buffer);
 	if (res != 0) {
-		PRINT_MSG("Datei-Header konnte nicht gespeichert werden");
+		PRINT_MSG("botfs_flush_used_blocks(): Datei-Header konnte nicht gespeichert werden");
 		return -5;
 	}
-	PRINT_MSG("Benutzte Bloecke im Header gespeichert");
-	PRINT_MSG(" start=0x%x end=0x%x bytes_last_block=%u", file->used.start, file->used.end, file->used.bytes_last_block);
+//	PRINT_MSG("botfs_flush_used_blocks(): Benutzte Bloecke im Header gespeichert");
+//	PRINT_MSG("botfs_flush_used_blocks: start=0x%x end=0x%x bytes_last_block=%u", file->used.start, file->used.end, file->used.bytes_last_block);
 
 	return 0;
 }
@@ -712,15 +752,6 @@ int8_t botfs_write_header_data(botfs_file_descr_t * file, void * buffer) {
 		return -99;
 	}
 	return botfs_write_low(file->start, buffer);
-}
-
-/**
- * Gibt die physische Blockadresse des Dateianfangs zurueck
- * \param *file		Zeiger auf Datei-Deskriptor
- * \return			Blockadresse des Dateianfangs (Nutzdaten, nicht Header)
- */
-uint32_t botfs_get_startsector(botfs_file_descr_t * file) {
-	return get_sector(file->start + 1);
 }
 
 /**
@@ -766,19 +797,19 @@ int16_t botfs_stream_read_until(botfs_stream_t * stream, char * to, int16_t coun
 		if (stream->block_in_buf != stream->p_file->pos) {
 			if (stream->p_file->pos > stream->p_file->used.end) {
 				*to = 0; // EOF
-				PRINT_MSG("Dateiende erreicht");
-				PRINT_MSG("pos=0x%x, used.end=0x%x", stream->p_file->pos, stream->p_file->used.end);
+				PRINT_MSG("botfs_stream_read_until(): Dateiende erreicht");
+				PRINT_MSG("botfs_stream_read_until(): pos=0x%x, used.end=0x%x", stream->p_file->pos, stream->p_file->used.end);
 				return 0;
 			}
 			if (botfs_read(stream->p_file, stream->p_buf) != 0) {
-				PRINT_MSG("botfs_read() lieferte Fehler");
+				PRINT_MSG("botfs_stream_read_until(): botfs_read() lieferte Fehler");
 				return -2;
 			}
 			botfs_seek(stream->p_file, -1, SEEK_CUR);
 			stream->block_in_buf = stream->p_file->pos;
-			PRINT_MSG("Block 0x%x read", stream->block_in_buf);
+			PRINT_MSG("botfs_stream_read_until(): Block 0x%x read", stream->block_in_buf);
 		} else {
-			PRINT_MSG("Block cached");
+			PRINT_MSG("botfs_stream_read_until(): Block cached");
 		}
 
 		count -= i;
@@ -821,4 +852,98 @@ int16_t botfs_stream_read_until(botfs_stream_t * stream, char * to, int16_t coun
 	return n;
 }
 #endif // BOTFS_STREAM_AVAILABLE
+
+#ifdef BOTFS_COPY_AVAILABLE
+/**
+ * Kopiert eine bestehende BotFS-Datei in eine neue BotFS-Datei
+ * \param *src			Zeiger auf Dateideskriptor der Quelldatei
+ * \param *dest			Name der Zieldatei
+ * \param src_offset	Block-Offset, ab dem aus der Quelldatei kopiert werden soll (normalerweise 0)
+ * \param dest_offset	Block-Offest, an dem der kopierte Inhalt in der Zieldatei beginnen soll (normalerweise 0)
+ * \param dest_tail		Freier Speicherplatz, der am Ende der Zieldatei reserviert wird in Bloecken (normalerweise 0)
+ * \param dest_align	Ausrichtung der neuen Zieldatei an einer X-Blockgrenze (normalerweise 0)
+ * \param *buffer		Puffer mit mindestens BOTFS_BLOCK_SIZE Byte
+ * \return				0, falls kein Fehler
+ */
+int8_t botfs_copy(botfs_file_descr_t * src, const char * dest, uint16_t src_offset, uint16_t dest_offset, uint16_t dest_tail, uint16_t dest_align,
+		void * buffer) {
+	if (init_state != 1) {
+		return -99;
+	}
+	PRINT_MSG("botfs_copy(0x%x, \"%s\", 0x%x, 0x%x, 0x%x)", src->start, dest, src_offset, dest_offset, dest_tail);
+
+	uint32_t dest_size = botfs_get_filesize(src);
+	dest_size -= src_offset;
+	dest_size += dest_offset;
+	dest_size += dest_tail;
+	if (dest_size > BOTFS_MAX_FILE_SIZE) {
+		PRINT_MSG("botfs_copy(): Zieldatei zu gross");
+		return -1;
+	}
+	const uint16_t dest_size_16 = (uint16_t) dest_size;
+	PRINT_MSG("botfs_copy(): dest_size_16=0x%x", dest_size_16);
+
+	if (botfs_create(dest, dest_size_16, dest_align, buffer) != 0) {
+		PRINT_MSG("botfs_copy(): Zieldatei konnte nicht angelegt werden");
+		return -2;
+	}
+
+	botfs_file_descr_t dest_file;
+	if (botfs_open(dest, &dest_file, BOTFS_MODE_W, buffer) != 0) {
+		PRINT_MSG("botfs_copy(): Zieldatei konnte nicht geoeffnet werden");
+		return -3;
+	}
+
+	const uint16_t src_skip_end = src->used.end != 0 ? src->end - src->used.end : 0;
+	uint16_t src_skip = src->used.start == UINT16_MAX ? botfs_get_filesize(src) : src->used.start - (src->start + BOTFS_HEADER_SIZE);
+	PRINT_MSG("botfs_copy(): src_skip=0x%x", src_skip);
+	PRINT_MSG("botfs_copy(): src_offset=0x%x", src_offset);
+	if (src_offset > src_skip) {
+		src_skip = src_offset;
+		PRINT_MSG("botfs_copy(): src_skip=0x%x", src_skip);
+	}
+	PRINT_MSG("botfs_copy(): src_skip_end=0x%x", src_skip_end);
+	PRINT_MSG("botfs_copy(): dest_offset=0x%x", dest_offset);
+
+	const uint16_t to_copy = botfs_get_filesize(src) - src_skip - src_skip_end;
+	PRINT_MSG("botfs_copy(): filesize(src)=0x%x", botfs_get_filesize(src));
+	PRINT_MSG("botfs_copy(): to_copy=0x%x", to_copy);
+
+	botfs_seek(src, (int16_t) src_skip, SEEK_SET);
+	botfs_seek(&dest_file, (int16_t) (dest_offset + src_skip), SEEK_SET);
+	uint16_t i;
+	for (i = 0; i < to_copy; ++i) {
+		if (botfs_read(src, buffer) != 0) {
+			PRINT_MSG("botfs_copy(): Fehler beim Lesen aus der Quelldatei, i=0x%x", i);
+			return -4;
+		}
+		if (botfs_write(&dest_file, buffer) != 0) {
+			PRINT_MSG("botfs_copy(): Fehler beim Schreiben in die Zieldatei, i=0x%x", i);
+			return -5;
+		}
+	}
+	if (to_copy > 0) {
+		PRINT_MSG("botfs_copy(): Bloecke 0x%x bis 0x%x kopiert", src_skip, src->pos - 1 - src->start);
+	}
+
+	if (botfs_read_header_data(src, NULL, buffer) != 0) {
+		PRINT_MSG("botfs_copy(): Fehler beim Lesen der Headerdaten");
+		return -6;
+	}
+
+	if (botfs_write_header_data(&dest_file, buffer) != 0) {
+		PRINT_MSG("botfs_copy(): Fehler beim Schreiben der Headerdaten");
+		return -7;
+	}
+
+	if (dest_file.used.start != UINT16_MAX && dest_file.used.end != 0) {
+		PRINT_MSG("botfs_copy(): dest_file->used=[0x%x; 0x%x]", dest_file.used.start - (uint16_t) (dest_file.start + BOTFS_HEADER_SIZE),
+			botfs_get_filesize(&dest_file) - (dest_file.end - dest_file.used.end));
+	}
+
+	botfs_close(&dest_file, buffer);
+
+	return 0;
+}
+#endif // BOTFS_COPY_AVAILABLE
 #endif // BOT_FS_AVAILABLE

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: bot-2-bot.c Quellcode</title>
+<title>c&#39;t-Bot: bot-2-bot.c Quellcode</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -192,7 +192,7 @@
 <a name="l00182"></a>00182         ptr-&gt;<a class="code" href="struct__bot__list__entry__t.html#a6945a43ffa4461e04657a1aea5550e5e">state</a> = <a class="code" href="bot-2-bot_8h.html#ab7f4e37a0eb35fe0b80ee5fd709e6ded">BOT_STATE_AVAILABLE</a>;
 <a name="l00183"></a>00183         ptr-&gt;<a class="code" href="struct__bot__list__entry__t.html#a5d1db06b9c057a62b2a9a51dcf2acfda">next</a> = NULL;
 <a name="l00184"></a>00184 <span class="preprocessor">#ifdef LOG_AVAILABLE</span>
-<a name="l00185"></a>00185 <span class="preprocessor"></span>        <a class="code" href="bot-2-bot_8c.html#af88a29966e453489af465240ac2e7a26">print_bot_list</a>();
+<a name="l00185"></a>00185 <span class="preprocessor"></span>        print_bot_list();
 <a name="l00186"></a>00186 <span class="preprocessor">#endif</span>
 <a name="l00187"></a>00187 <span class="preprocessor"></span>        <span class="keywordflow">return</span>;
 <a name="l00188"></a>00188     }
@@ -203,7 +203,7 @@
 <a name="l00193"></a>00193             <span class="comment">/* Eintrag ist ja schon vorhanden */</span>
 <a name="l00194"></a>00194             ptr-&gt;<a class="code" href="struct__bot__list__entry__t.html#a6945a43ffa4461e04657a1aea5550e5e">state</a> = <a class="code" href="bot-2-bot_8h.html#ab7f4e37a0eb35fe0b80ee5fd709e6ded">BOT_STATE_AVAILABLE</a>;
 <a name="l00195"></a>00195 <span class="preprocessor">#ifdef LOG_AVAILABLE</span>
-<a name="l00196"></a>00196 <span class="preprocessor"></span>            <a class="code" href="bot-2-bot_8c.html#af88a29966e453489af465240ac2e7a26">print_bot_list</a>();
+<a name="l00196"></a>00196 <span class="preprocessor"></span>            print_bot_list();
 <a name="l00197"></a>00197 <span class="preprocessor">#endif</span>
 <a name="l00198"></a>00198 <span class="preprocessor"></span>            <span class="keywordflow">return</span>; <span class="comment">// fertig</span>
 <a name="l00199"></a>00199         }
@@ -220,7 +220,7 @@
 <a name="l00210"></a>00210             ptr-&gt;<a class="code" href="struct__bot__list__entry__t.html#a735858646b9b95dee52706a4f1b0a511">address</a> = addr;
 <a name="l00211"></a>00211             ptr-&gt;<a class="code" href="struct__bot__list__entry__t.html#a6945a43ffa4461e04657a1aea5550e5e">state</a> = <a class="code" href="bot-2-bot_8h.html#ab7f4e37a0eb35fe0b80ee5fd709e6ded">BOT_STATE_AVAILABLE</a>;
 <a name="l00212"></a>00212 <span class="preprocessor">#ifdef LOG_AVAILABLE</span>
-<a name="l00213"></a>00213 <span class="preprocessor"></span>            <a class="code" href="bot-2-bot_8c.html#af88a29966e453489af465240ac2e7a26">print_bot_list</a>();
+<a name="l00213"></a>00213 <span class="preprocessor"></span>            print_bot_list();
 <a name="l00214"></a>00214 <span class="preprocessor">#endif</span>
 <a name="l00215"></a>00215 <span class="preprocessor"></span>            <span class="keywordflow">return</span>;
 <a name="l00216"></a>00216         }
@@ -240,7 +240,7 @@
 <a name="l00230"></a>00230     ptr-&gt;<a class="code" href="struct__bot__list__entry__t.html#a6945a43ffa4461e04657a1aea5550e5e">state</a> = <a class="code" href="bot-2-bot_8h.html#ab7f4e37a0eb35fe0b80ee5fd709e6ded">BOT_STATE_AVAILABLE</a>;
 <a name="l00231"></a>00231     ptr-&gt;<a class="code" href="struct__bot__list__entry__t.html#a5d1db06b9c057a62b2a9a51dcf2acfda">next</a> = NULL;
 <a name="l00232"></a>00232 <span class="preprocessor">#ifdef LOG_AVAILABLE</span>
-<a name="l00233"></a>00233 <span class="preprocessor"></span>    <a class="code" href="bot-2-bot_8c.html#af88a29966e453489af465240ac2e7a26">print_bot_list</a>();
+<a name="l00233"></a>00233 <span class="preprocessor"></span>    print_bot_list();
 <a name="l00234"></a>00234 <span class="preprocessor">#endif</span>
 <a name="l00235"></a>00235 <span class="preprocessor"></span>}
 <a name="l00236"></a>00236 
@@ -275,7 +275,7 @@
 <a name="l00276"></a>00276         <span class="keywordflow">if</span> (ptr-&gt;<a class="code" href="struct__bot__list__entry__t.html#a735858646b9b95dee52706a4f1b0a511">address</a> == cmd-&gt;from) {
 <a name="l00277"></a>00277             ptr-&gt;<a class="code" href="struct__bot__list__entry__t.html#a6945a43ffa4461e04657a1aea5550e5e">state</a> = (uint8_t) cmd-&gt;data_l;
 <a name="l00278"></a>00278 #ifdef <a class="code" href="ct-Bot_8h.html#a2f7f94900ab38fd775b36e54fc492877" title="LOG aktiv?">LOG_AVAILABLE</a>
-<a name="l00279"></a>00279             <a class="code" href="bot-2-bot_8c.html#af88a29966e453489af465240ac2e7a26">print_bot_list</a>();
+<a name="l00279"></a>00279             print_bot_list();
 <a name="l00280"></a>00280 <span class="preprocessor">#endif</span>
 <a name="l00281"></a>00281 <span class="preprocessor"></span>            <span class="keywordflow">return</span>;
 <a name="l00282"></a>00282         }
@@ -309,8 +309,8 @@
 <a name="l00329"></a>00329 <span class="comment">//      /* Datenmenge zu gross */</span>
 <a name="l00330"></a>00330 <span class="comment">//      return -2;</span>
 <a name="l00331"></a>00331 <span class="comment">//  }</span>
-<a name="l00332"></a>00332     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Fordere Payload-Senderecht (%u) vom Typ %u bei Bot %u an&quot;</span>, <a class="code" href="bot-2-bot_8h.html#a65ac0ee5a8107f9c4fff9432a776255a">BOT_CMD_REQ</a>, type, to);
-<a name="l00333"></a>00333     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; zu sendende Daten umfassen %d Bytes @ 0x%lx&quot;</span>, size, (<span class="keywordtype">size_t</span>) data);
+<a name="l00332"></a>00332     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;Fordere Payload-Senderecht (%u) vom Typ %u bei Bot %u an&quot;</span>, <a class="code" href="bot-2-bot_8h.html#a65ac0ee5a8107f9c4fff9432a776255a">BOT_CMD_REQ</a>, type, to);
+<a name="l00333"></a>00333     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; zu sendende Daten umfassen %d Bytes @ 0x%lx&quot;</span>, size, (<span class="keywordtype">size_t</span>) data);
 <a name="l00334"></a>00334     <a class="code" href="command_8c.html#a895fa93386026b4934625541b4faf2a0">command_write_to</a>(<a class="code" href="bot-2-bot_8h.html#a65ac0ee5a8107f9c4fff9432a776255a">BOT_CMD_REQ</a>, 0, to, size, type, 0);
 <a name="l00335"></a>00335 <span class="preprocessor">#ifdef PC</span>
 <a name="l00336"></a>00336 <span class="preprocessor"></span>
@@ -327,9 +327,9 @@
 <a name="l00348"></a>00348             <a class="code" href="command_8c.html#a368e349402920fcd2cafc0eeaea97041">command_evaluate</a>();
 <a name="l00349"></a>00349         }
 <a name="l00350"></a>00350 <span class="preprocessor">#else   // PC</span>
-<a name="l00351"></a>00351 <span class="preprocessor"></span>        <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; Warte auf (naechstes) ACK von Bot %u&quot;</span>, to);
+<a name="l00351"></a>00351 <span class="preprocessor"></span>        <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; Warte auf (naechstes) ACK von Bot %u&quot;</span>, to);
 <a name="l00352"></a>00352         <span class="keywordflow">if</span> (<a class="code" href="bot-2-sim__pc_8c.html#a9526ad76a1b84a59797e5391c3cadea1">receive_until_Frame</a>(<a class="code" href="bot-2-bot_8h.html#ac8fd7e090cff675872b72d95850f99f9">BOT_CMD_ACK</a>) != 0) {
-<a name="l00353"></a>00353             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; receive_until_Frame() meldet Fehler, Abbruch&quot;</span>);
+<a name="l00353"></a>00353             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; receive_until_Frame() meldet Fehler, Abbruch&quot;</span>);
 <a name="l00354"></a>00354             bot_2_bot_data = NULL;
 <a name="l00355"></a>00355             bot_2_bot_callback = NULL;
 <a name="l00356"></a>00356             bot_2_bot_payload_size = 0;
@@ -338,24 +338,24 @@
 <a name="l00359"></a>00359 <span class="preprocessor">#endif // MCU</span>
 <a name="l00360"></a>00360 <span class="preprocessor"></span>    }
 <a name="l00361"></a>00361     <span class="keywordflow">if</span> (bot_2_bot_payload_size == -2) {
-<a name="l00362"></a>00362         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; Alle Daten fehlerfrei zu Bot %u uebertragen&quot;</span>, to);
+<a name="l00362"></a>00362         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; Alle Daten fehlerfrei zu Bot %u uebertragen&quot;</span>, to);
 <a name="l00363"></a>00363         <span class="keywordflow">return</span> 0;
 <a name="l00364"></a>00364     }
-<a name="l00365"></a>00365     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; Sendeversuch mit Fehler abgebrochen, bot_2_bot_payload_size=%d&quot;</span>, bot_2_bot_payload_size);
+<a name="l00365"></a>00365     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; Sendeversuch mit Fehler abgebrochen, bot_2_bot_payload_size=%d&quot;</span>, bot_2_bot_payload_size);
 <a name="l00366"></a>00366     <span class="keywordflow">return</span> -4;
 <a name="l00367"></a>00367 }
 <a name="l00368"></a>00368 
 <a name="l00373"></a><a class="code" href="bot-2-bot_8h.html#a509ac73dd744cfab3e48e8abbdfd34e2">00373</a> <span class="keywordtype">void</span> <a class="code" href="bot-2-bot_8c.html#a509ac73dd744cfab3e48e8abbdfd34e2">bot_2_bot_handle_payload_request</a>(command_t * cmd) {
-<a name="l00375"></a>00375     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Payload-Sendeanfrage von Bot %u erhalten&quot;</span>, cmd-&gt;from);
-<a name="l00376"></a>00376     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; werte Payload-Sendeanfrage aus...&quot;</span>);
+<a name="l00375"></a>00375     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;Payload-Sendeanfrage von Bot %u erhalten&quot;</span>, cmd-&gt;from);
+<a name="l00376"></a>00376     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; werte Payload-Sendeanfrage aus...&quot;</span>);
 <a name="l00377"></a>00377     int16_t size = cmd-&gt;data_l;
 <a name="l00378"></a>00378     bot_2_bot_payload_size = size;
-<a name="l00379"></a>00379     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;  Anfrage umfasst %d Bytes&quot;</span>, size);
+<a name="l00379"></a>00379     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;  Anfrage umfasst %d Bytes&quot;</span>, size);
 <a name="l00380"></a>00380     uint8_t type = (uint8_t) cmd-&gt;data_r;
-<a name="l00381"></a>00381     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;  und ist vom Typ %u&quot;</span>, type);
+<a name="l00381"></a>00381     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;  und ist vom Typ %u&quot;</span>, type);
 <a name="l00382"></a>00382     uint8_t error = 0;
 <a name="l00383"></a>00383     <span class="keywordflow">if</span> (type &gt; <span class="keyword">sizeof</span>(bot_2_bot_payload_mappings) / <span class="keyword">sizeof</span>(bot_2_bot_payload_mappings[0])) {
-<a name="l00384"></a>00384         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;  Typ %u ist ungueltig, Abbruch&quot;</span>, type);
+<a name="l00384"></a>00384         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;  Typ %u ist ungueltig, Abbruch&quot;</span>, type);
 <a name="l00385"></a>00385         error = 1;
 <a name="l00386"></a>00386     }
 <a name="l00387"></a>00387 <span class="comment">//  if (bot_2_bot_payload_mappings[type].data == NULL) {</span>
@@ -367,13 +367,13 @@
 <a name="l00393"></a>00393 <span class="comment">//      error++;</span>
 <a name="l00394"></a>00394 <span class="comment">//  }</span>
 <a name="l00395"></a>00395     <span class="keywordflow">if</span> (size &gt; bot_2_bot_payload_mappings[type].size) {
-<a name="l00396"></a>00396         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;  Datenumfang ist fuer Typ %u zu gross, max. %u Bytes&quot;</span>, type, bot_2_bot_payload_mappings[type].size);
+<a name="l00396"></a>00396         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;  Datenumfang ist fuer Typ %u zu gross, max. %u Bytes&quot;</span>, type, bot_2_bot_payload_mappings[type].size);
 <a name="l00397"></a>00397         error++;
 <a name="l00398"></a>00398     }
 <a name="l00399"></a>00399 
 <a name="l00400"></a>00400     <span class="keywordflow">if</span> (error != 0) {
 <a name="l00401"></a>00401         <span class="comment">/* Anfrage ablehnen */</span>
-<a name="l00402"></a>00402         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; Lehne Anfrage ab, error=%u&quot;</span>, error);
+<a name="l00402"></a>00402         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; Lehne Anfrage ab, error=%u&quot;</span>, error);
 <a name="l00403"></a>00403         int16_t result = 1;
 <a name="l00404"></a>00404         <a class="code" href="command_8c.html#a895fa93386026b4934625541b4faf2a0">command_write_to</a>(<a class="code" href="bot-2-bot_8h.html#ac8fd7e090cff675872b72d95850f99f9">BOT_CMD_ACK</a>, 0, cmd-&gt;from, 0, result, 0);
 <a name="l00405"></a>00405         bot_2_bot_payload_size = 0;
@@ -381,14 +381,14 @@
 <a name="l00407"></a>00407         <span class="comment">/* Anfrage ok, ACK senden */</span>
 <a name="l00408"></a>00408         int16_t window_size = <a class="code" href="bot-2-bot_8h.html#a0102b5f2c459eeab96eb77cabbc40205">BOT_2_BOT_PAYLOAD_WINDOW_SIZE</a>;
 <a name="l00409"></a>00409         int16_t result = 0;
-<a name="l00410"></a>00410         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; Anfrage akzeptiert, setze window_size auf %d&quot;</span>, window_size);
+<a name="l00410"></a>00410         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; Anfrage akzeptiert, setze window_size auf %d&quot;</span>, window_size);
 <a name="l00411"></a>00411         <a class="code" href="command_8c.html#a895fa93386026b4934625541b4faf2a0">command_write_to</a>(<a class="code" href="bot-2-bot_8h.html#ac8fd7e090cff675872b72d95850f99f9">BOT_CMD_ACK</a>, 0, cmd-&gt;from, window_size, result, 0);
 <a name="l00412"></a>00412 
 <a name="l00413"></a>00413         <span class="comment">/* Typ setzen */</span>
 <a name="l00414"></a>00414         bot_2_bot_callback = bot_2_bot_payload_mappings[type].<a class="code" href="structbot__2__bot__payload__mappings__t.html#aad451334ef0adf7f10f407589c4a6335">function</a>;
-<a name="l00415"></a>00415         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;  Callback-Funktion = 0x%lx&quot;</span>, (<span class="keywordtype">size_t</span>)bot_2_bot_callback);
+<a name="l00415"></a>00415         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;  Callback-Funktion = 0x%lx&quot;</span>, (<span class="keywordtype">size_t</span>)bot_2_bot_callback);
 <a name="l00416"></a>00416         bot_2_bot_data = bot_2_bot_payload_mappings[type].<a class="code" href="structbot__2__bot__payload__mappings__t.html#a98c2e713d465e0512f494e2a2cd1c203">data</a>;
-<a name="l00417"></a>00417         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;  Datenpuffer @ 0x%lx&quot;</span>, (<span class="keywordtype">size_t</span>)bot_2_bot_data);
+<a name="l00417"></a>00417         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;  Datenpuffer @ 0x%lx&quot;</span>, (<span class="keywordtype">size_t</span>)bot_2_bot_data);
 <a name="l00418"></a>00418 <span class="preprocessor">#ifdef MCU</span>
 <a name="l00419"></a>00419 <span class="preprocessor"></span>
 <a name="l00420"></a>00420         <span class="comment">/* warten auf Kommando, dem die Payload-Daten folgen */</span>
@@ -396,7 +396,7 @@
 <a name="l00422"></a>00422             <span class="keywordflow">while</span> (<a class="code" href="uart_8h.html#a6200a29356b7859cac721bf8e2eacd67">uart_data_available</a>() &lt; <span class="keyword">sizeof</span>(command_t)) {}
 <a name="l00423"></a>00423             <span class="keywordflow">if</span> (<a class="code" href="command_8c.html#a710f03c0bca16a1965fc97647f41ee06">command_read</a>() == 0) {
 <a name="l00424"></a>00424                 <a class="code" href="command_8c.html#a368e349402920fcd2cafc0eeaea97041">command_evaluate</a>();
-<a name="l00425"></a>00425                 <span class="keywordflow">if</span> (<a class="code" href="command_8c.html#ac0048910da59c3a22177b20c8ce0b3b6">received_command</a>.from == cmd-&gt;from &amp;&amp; <a class="code" href="command_8c.html#ac0048910da59c3a22177b20c8ce0b3b6">received_command</a>.request.command == <a class="code" href="bot-2-bot_8h.html#ab31e29017aced094cb3afd498d9e0f83">BOT_CMD_PAYLOAD</a>) {
+<a name="l00425"></a>00425                 <span class="keywordflow">if</span> (<a class="code" href="command_8c.html#ac0048910da59c3a22177b20c8ce0b3b6" title="Puffer fuer Kommandos.">received_command</a>.from == cmd-&gt;from &amp;&amp; <a class="code" href="command_8c.html#ac0048910da59c3a22177b20c8ce0b3b6" title="Puffer fuer Kommandos.">received_command</a>.request.command == <a class="code" href="bot-2-bot_8h.html#ab31e29017aced094cb3afd498d9e0f83">BOT_CMD_PAYLOAD</a>) {
 <a name="l00426"></a>00426                     <span class="keywordflow">break</span>;
 <a name="l00427"></a>00427                 }
 <a name="l00428"></a>00428             }
@@ -407,7 +407,7 @@
 <a name="l00433"></a>00433 
 <a name="l00438"></a><a class="code" href="bot-2-bot_8h.html#a846982fe8cbd35704c5661c927471925">00438</a> <span class="keywordtype">void</span> <a class="code" href="bot-2-bot_8c.html#a846982fe8cbd35704c5661c927471925">bot_2_bot_handle_payload_ack</a>(command_t * cmd) {
 <a name="l00439"></a>00439     <span class="keywordflow">if</span> (bot_2_bot_data == NULL) {
-<a name="l00440"></a>00440         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;ACK von Bot %u empfangen, aber gar kein Transfer aktiv!&quot;</span>, cmd-&gt;from);
+<a name="l00440"></a>00440         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;ACK von Bot %u empfangen, aber gar kein Transfer aktiv!&quot;</span>, cmd-&gt;from);
 <a name="l00441"></a>00441         <span class="keywordflow">return</span>;
 <a name="l00442"></a>00442     }
 <a name="l00443"></a>00443     <span class="keywordflow">switch</span> (cmd-&gt;data_r) {
@@ -415,8 +415,8 @@
 <a name="l00445"></a>00445             <span class="comment">/* Der andere Bot hat unsere Anfrage akzeptiert */</span>
 <a name="l00446"></a>00446             uint8_t window_size = (uint8_t) cmd-&gt;data_l;
 <a name="l00447"></a>00447             int16_t to_send = bot_2_bot_payload_size;
-<a name="l00448"></a>00448             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; ACK von Bot %u, habe noch %d Bytes zu senden&quot;</span>, cmd-&gt;from, to_send);
-<a name="l00449"></a>00449             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;  Bot %u hat window_size=%d festgelegt&quot;</span>, cmd-&gt;from, window_size);
+<a name="l00448"></a>00448             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; ACK von Bot %u, habe noch %d Bytes zu senden&quot;</span>, cmd-&gt;from, to_send);
+<a name="l00449"></a>00449             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;  Bot %u hat window_size=%d festgelegt&quot;</span>, cmd-&gt;from, window_size);
 <a name="l00450"></a>00450             to_send -= window_size;
 <a name="l00451"></a>00451             int16_t last_packet = 0;
 <a name="l00452"></a>00452             <span class="keywordflow">if</span> (to_send &lt; 0) {
@@ -426,7 +426,7 @@
 <a name="l00456"></a>00456                 last_packet = 1;
 <a name="l00457"></a>00457             }
 <a name="l00458"></a>00458             bot_2_bot_payload_size = to_send;
-<a name="l00459"></a>00459             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; Sende %d Bytes zu Bot %u&quot;</span>, window_size, cmd-&gt;from);
+<a name="l00459"></a>00459             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; Sende %d Bytes zu Bot %u&quot;</span>, window_size, cmd-&gt;from);
 <a name="l00460"></a>00460             <a class="code" href="command_8c.html#ad1ce17d9fe0aaf21a33d52de4e10af0f">command_write_rawdata_to</a>(<a class="code" href="bot-2-bot_8h.html#ab31e29017aced094cb3afd498d9e0f83">BOT_CMD_PAYLOAD</a>, 0, cmd-&gt;from, last_packet, 0,
 <a name="l00461"></a>00461                     window_size, bot_2_bot_data);
 <a name="l00462"></a>00462 <span class="preprocessor">#ifdef PC</span>
@@ -439,7 +439,7 @@
 <a name="l00469"></a>00469 
 <a name="l00470"></a>00470     <span class="keywordflow">case</span> 1:
 <a name="l00471"></a>00471         <span class="comment">/* Abbruch */</span>
-<a name="l00472"></a>00472         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; Bot %u hat Anfrage abgelehnt&quot;</span>, cmd-&gt;from);
+<a name="l00472"></a>00472         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; Bot %u hat Anfrage abgelehnt&quot;</span>, cmd-&gt;from);
 <a name="l00473"></a>00473         bot_2_bot_callback = NULL;
 <a name="l00474"></a>00474         bot_2_bot_data = NULL;
 <a name="l00475"></a>00475         bot_2_bot_payload_size = -1;
@@ -451,10 +451,10 @@
 <a name="l00481"></a>00481         bot_2_bot_data = NULL;
 <a name="l00482"></a>00482         <span class="keywordflow">if</span> (bot_2_bot_payload_size != 0) {
 <a name="l00483"></a>00483             bot_2_bot_payload_size = -1;
-<a name="l00484"></a>00484             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; Bot %u hat Abschluss gemeldet, habe aber noch %d Bytes zu senden&quot;</span>, cmd-&gt;from, bot_2_bot_payload_size);
+<a name="l00484"></a>00484             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; Bot %u hat Abschluss gemeldet, habe aber noch %d Bytes zu senden&quot;</span>, cmd-&gt;from, bot_2_bot_payload_size);
 <a name="l00485"></a>00485         } <span class="keywordflow">else</span> {
 <a name="l00486"></a>00486             bot_2_bot_payload_size = -2;
-<a name="l00487"></a>00487             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; Bot %u hat Abschluss gemeldet&quot;</span>, cmd-&gt;from);
+<a name="l00487"></a>00487             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; Bot %u hat Abschluss gemeldet&quot;</span>, cmd-&gt;from);
 <a name="l00488"></a>00488         }
 <a name="l00489"></a>00489         <span class="keywordflow">break</span>;
 <a name="l00490"></a>00490     }
@@ -462,41 +462,41 @@
 <a name="l00492"></a>00492 
 <a name="l00497"></a><a class="code" href="bot-2-bot_8h.html#af6c7be93a3cf3ffb3fb501e8a85514f2">00497</a> <span class="keywordtype">void</span> <a class="code" href="bot-2-bot_8c.html#af6c7be93a3cf3ffb3fb501e8a85514f2">bot_2_bot_handle_payload_data</a>(command_t * cmd) {
 <a name="l00498"></a>00498     uint8_t size = cmd-&gt;payload;
-<a name="l00499"></a>00499     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; Payload mit %u Bytes angekuendigt&quot;</span>, size);
+<a name="l00499"></a>00499     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; Payload mit %u Bytes angekuendigt&quot;</span>, size);
 <a name="l00500"></a>00500 <span class="preprocessor">#ifdef MCU</span>
 <a name="l00501"></a>00501 <span class="preprocessor"></span>
 <a name="l00502"></a>00502     <span class="comment">/* warten, bis Payload-Daten im Empfangspuffer */</span>
 <a name="l00503"></a>00503     <span class="keywordflow">while</span> (<a class="code" href="uart_8h.html#a6200a29356b7859cac721bf8e2eacd67">uart_data_available</a>() &lt; size) {}
 <a name="l00504"></a>00504 <span class="preprocessor">#endif // MCU</span>
 <a name="l00505"></a>00505 <span class="preprocessor"></span>    uint8_t <a class="code" href="behaviour__drive__chess_8c.html#aa94ff7ddd304b9beb2f209b6174e180e">n</a> = <a class="code" href="command_8h.html#a7b73b86c514a68c1d7598f9bc98bbfea">low_read</a>(bot_2_bot_data, size);
-<a name="l00506"></a>00506     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; %u Bytes der Payload gelesen&quot;</span>, n);
+<a name="l00506"></a>00506     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; %u Bytes der Payload gelesen&quot;</span>, n);
 <a name="l00507"></a>00507     <span class="keywordflow">if</span> (size != n) {
 <a name="l00508"></a>00508         int16_t result = 1;
 <a name="l00509"></a>00509         <a class="code" href="command_8c.html#a895fa93386026b4934625541b4faf2a0">command_write_to</a>(<a class="code" href="bot-2-bot_8h.html#ac8fd7e090cff675872b72d95850f99f9">BOT_CMD_ACK</a>, 0, cmd-&gt;from, 0, result, 0);
 <a name="l00510"></a>00510         bot_2_bot_data = NULL;
 <a name="l00511"></a>00511         bot_2_bot_callback = NULL;
 <a name="l00512"></a>00512         bot_2_bot_payload_size = 0;
-<a name="l00513"></a>00513         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; Fehler beim Lesen, Abbruch&quot;</span>);
+<a name="l00513"></a>00513         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; Fehler beim Lesen, Abbruch&quot;</span>);
 <a name="l00514"></a>00514         <span class="keywordflow">return</span>;
 <a name="l00515"></a>00515     }
 <a name="l00516"></a>00516     bot_2_bot_data += <a class="code" href="behaviour__drive__chess_8c.html#aa94ff7ddd304b9beb2f209b6174e180e">n</a>;
 <a name="l00517"></a>00517     <span class="keywordflow">if</span> (cmd-&gt;data_l == 1) {
 <a name="l00518"></a>00518         <span class="comment">/* fertig */</span>
-<a name="l00519"></a>00519         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; Daten komplett empfangen&quot;</span>);
-<a name="l00520"></a>00520         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; fuehre Callback 0x%lx aus&quot;</span>, (<span class="keywordtype">size_t</span>) bot_2_bot_callback);
+<a name="l00519"></a>00519         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; Daten komplett empfangen&quot;</span>);
+<a name="l00520"></a>00520         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; fuehre Callback 0x%lx aus&quot;</span>, (<span class="keywordtype">size_t</span>) bot_2_bot_callback);
 <a name="l00521"></a>00521         bot_2_bot_callback();
 <a name="l00522"></a>00522         bot_2_bot_data = NULL;
 <a name="l00523"></a>00523         bot_2_bot_callback = NULL;
 <a name="l00524"></a>00524         bot_2_bot_payload_size = 0;
 <a name="l00525"></a>00525         <span class="comment">/* letztes ACK senden */</span>
-<a name="l00526"></a>00526         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; bestaetige Bot %u den Abschluss der Uebertragung&quot;</span>, cmd-&gt;from);
+<a name="l00526"></a>00526         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; bestaetige Bot %u den Abschluss der Uebertragung&quot;</span>, cmd-&gt;from);
 <a name="l00527"></a>00527         int16_t result = 2;
 <a name="l00528"></a>00528         <a class="code" href="command_8c.html#a895fa93386026b4934625541b4faf2a0">command_write_to</a>(<a class="code" href="bot-2-bot_8h.html#ac8fd7e090cff675872b72d95850f99f9">BOT_CMD_ACK</a>, 0, cmd-&gt;from, 0, result, 0);
 <a name="l00529"></a>00529     } <span class="keywordflow">else</span> {
 <a name="l00530"></a>00530         <span class="comment">/* ACK senden */</span>
 <a name="l00531"></a>00531         int16_t window_size = <a class="code" href="bot-2-bot_8h.html#a0102b5f2c459eeab96eb77cabbc40205">BOT_2_BOT_PAYLOAD_WINDOW_SIZE</a>;
 <a name="l00532"></a>00532         int16_t result = 0;
-<a name="l00533"></a>00533         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; bestaetige Bot %u den Empfang, window_size=%d&quot;</span>, cmd-&gt;from, window_size);
+<a name="l00533"></a>00533         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot; bestaetige Bot %u den Empfang, window_size=%d&quot;</span>, cmd-&gt;from, window_size);
 <a name="l00534"></a>00534         <a class="code" href="command_8c.html#a895fa93386026b4934625541b4faf2a0">command_write_to</a>(<a class="code" href="bot-2-bot_8h.html#ac8fd7e090cff675872b72d95850f99f9">BOT_CMD_ACK</a>, 0, cmd-&gt;from, window_size, result, 0);
 <a name="l00535"></a>00535     }
 <a name="l00536"></a>00536 }
@@ -531,16 +531,16 @@
 <a name="l00572"></a>00572     uint8_t errors = 0;
 <a name="l00573"></a>00573     <span class="keywordflow">for</span> (i=strlen(test_string)+1; i&lt;<span class="keyword">sizeof</span>(payload_test_buffer); i++) {
 <a name="l00574"></a>00574         <span class="keywordflow">if</span> (payload_test_buffer[i] != i) {
-<a name="l00575"></a>00575             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;  Payload-Testdaten @ %u wurden fehlerhaft empfangen!&quot;</span>, i);
-<a name="l00576"></a>00576             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;  soll: %u\tist: %u&quot;</span>, i, payload_test_buffer[i]);
+<a name="l00575"></a>00575             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;  Payload-Testdaten @ %u wurden fehlerhaft empfangen!&quot;</span>, i);
+<a name="l00576"></a>00576             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;  soll: %u\tist: %u&quot;</span>, i, payload_test_buffer[i]);
 <a name="l00577"></a>00577             errors++;
 <a name="l00578"></a>00578         }
 <a name="l00579"></a>00579     }
 <a name="l00580"></a>00580     <span class="keywordflow">if</span> (strncmp(test_string, (<span class="keywordtype">char</span> *) payload_test_buffer, <span class="keyword">sizeof</span>(test_string)) == 0 &amp;&amp; errors == 0) {
-<a name="l00581"></a>00581         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;  Payload-Empfangstest verlief fehlerfrei! :-)&quot;</span>);
-<a name="l00582"></a>00582         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;   \&quot;%s\&quot;&quot;</span>, payload_test_buffer);
+<a name="l00581"></a>00581         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;  Payload-Empfangstest verlief fehlerfrei! :-)&quot;</span>);
+<a name="l00582"></a>00582         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;   \&quot;%s\&quot;&quot;</span>, payload_test_buffer);
 <a name="l00583"></a>00583     } <span class="keywordflow">else</span> {
-<a name="l00584"></a>00584         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;  Payload-Empfangstest verlief mit %u Fehlern!&quot;</span>, errors);
+<a name="l00584"></a>00584         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;  Payload-Empfangstest verlief mit %u Fehlern!&quot;</span>, errors);
 <a name="l00585"></a>00585     }
 <a name="l00586"></a>00586     <a class="code" href="bot-2-bot_8c.html#ae7cfc43aaef3a916fd1e262f4b0ce8f0">bot_2_bot_print_recv_data</a>();
 <a name="l00587"></a>00587     memset(payload_test_buffer, 0, <span class="keyword">sizeof</span>(payload_test_buffer));
@@ -558,7 +558,7 @@
 <a name="l00605"></a>00605     int8_t result = <a class="code" href="bot-2-bot_8c.html#a19ce1cb74c8146d9439806ba4f0b0d19">bot_2_bot_send_payload_request</a>(to,
 <a name="l00606"></a>00606             <a class="code" href="bot-2-bot_8h.html#a8edd9d0884cd4e42ddbe95a55af9ac44">BOT_2_BOT_PAYLOAD_TEST</a>, payload_test_buffer,
 <a name="l00607"></a>00607             <span class="keyword">sizeof</span>(payload_test_buffer));
-<a name="l00608"></a>00608     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;bot_2_bot_payload_test(%u) abgeschlossen mit %d&quot;</span>, to, result);
+<a name="l00608"></a>00608     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;bot_2_bot_payload_test(%u) abgeschlossen mit %d&quot;</span>, to, result);
 <a name="l00609"></a>00609     memset(payload_test_buffer, 0, <span class="keyword">sizeof</span>(payload_test_buffer));
 <a name="l00610"></a>00610     <span class="keywordflow">if</span> (caller != NULL) {
 <a name="l00611"></a>00611         caller-&gt;<a class="code" href="struct__Behaviour__t.html#ac854c181b7e05da0fdc40a5c70547054" title="War das aufgerufene Unterverhalten erfolgreich (==1)?">subResult</a> = result == 0 ? <a class="code" href="bot-logic_8h.html#ad4c73f16ad7978b0bf7c18b73fcfc0a6" title="Konstante fuer Behaviour_t-&gt;subResult: Aufgabe erfolgreich abgeschlossen.">BEHAVIOUR_SUBSUCCESS</a> : <a class="code" href="bot-logic_8h.html#a78d9ef1511522ee147d2d386a584a5d7" title="Konstante fuer Behaviour_t-&gt;subResult: Aufgabe nicht abgeschlossen.">BEHAVIOUR_SUBFAIL</a>;
@@ -582,22 +582,22 @@
 <a name="l00641"></a>00641         <span class="keywordflow">return</span> -1;
 <a name="l00642"></a>00642     }
 <a name="l00643"></a>00643 
-<a name="l00644"></a>00644     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Starte RemoteCall auf Bot mit Adresse 0x%02x (%u)&quot;</span>, bot_addr, bot_addr);
+<a name="l00644"></a>00644     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;Starte RemoteCall auf Bot mit Adresse 0x%02x (%u)&quot;</span>, bot_addr, bot_addr);
 <a name="l00645"></a>00645 
 <a name="l00646"></a>00646     <span class="comment">/* alle Parameter in den Puffer kopieren */</span>
 <a name="l00647"></a>00647     <a class="code" href="unionremote__call__data__t.html" title="Union fuer Remotecall-Daten.">remote_call_data_t</a> * pPar = (<span class="keywordtype">void</span> *)&amp;remotecall_buffer[len + 1];
 <a name="l00648"></a>00648     *pPar = par1;
-<a name="l00649"></a>00649     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Parameter 1: 0x%x&quot;</span>, pPar-&gt;<a class="code" href="unionremote__call__data__t.html#a0366901b0aa01efdb0092c161f0560fe" title="32 Bit unsigned integer">u32</a>);
+<a name="l00649"></a>00649     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;Parameter 1: 0x%x&quot;</span>, pPar-&gt;<a class="code" href="unionremote__call__data__t.html#a0366901b0aa01efdb0092c161f0560fe" title="32 Bit unsigned integer">u32</a>);
 <a name="l00650"></a>00650     pPar++;
 <a name="l00651"></a>00651     *pPar = par2;
-<a name="l00652"></a>00652     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Parameter 2: 0x%x&quot;</span>, pPar-&gt;<a class="code" href="unionremote__call__data__t.html#a0366901b0aa01efdb0092c161f0560fe" title="32 Bit unsigned integer">u32</a>);
+<a name="l00652"></a>00652     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;Parameter 2: 0x%x&quot;</span>, pPar-&gt;<a class="code" href="unionremote__call__data__t.html#a0366901b0aa01efdb0092c161f0560fe" title="32 Bit unsigned integer">u32</a>);
 <a name="l00653"></a>00653     pPar++;
 <a name="l00654"></a>00654     *pPar = par3;
-<a name="l00655"></a>00655     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Parameter 3: 0x%x&quot;</span>, pPar-&gt;<a class="code" href="unionremote__call__data__t.html#a0366901b0aa01efdb0092c161f0560fe" title="32 Bit unsigned integer">u32</a>);
+<a name="l00655"></a>00655     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;Parameter 3: 0x%x&quot;</span>, pPar-&gt;<a class="code" href="unionremote__call__data__t.html#a0366901b0aa01efdb0092c161f0560fe" title="32 Bit unsigned integer">u32</a>);
 <a name="l00656"></a>00656 
 <a name="l00657"></a>00657     <span class="comment">/* Funktionsnamen in den Puffer kopieren */</span>
 <a name="l00658"></a>00658     strcpy(remotecall_buffer, <span class="keyword">function</span>);
-<a name="l00659"></a>00659     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Funktionsname: \&quot;%s\&quot;&quot;</span>, remotecall_buffer);
+<a name="l00659"></a>00659     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;Funktionsname: \&quot;%s\&quot;&quot;</span>, remotecall_buffer);
 <a name="l00660"></a>00660 
 <a name="l00661"></a>00661     <span class="comment">/* Payloaduebertragung starten */</span>
 <a name="l00662"></a>00662     <span class="keywordflow">return</span> <a class="code" href="bot-2-bot_8c.html#a19ce1cb74c8146d9439806ba4f0b0d19">bot_2_bot_send_payload_request</a>(bot_addr, <a class="code" href="bot-2-bot_8h.html#a93a7a89f72899be8177355b8177503cf">BOT_2_BOT_REMOTECALL</a>, remotecall_buffer, <a class="code" href="behaviour__remotecall_8h.html#a817ff9775dbb66e0366ad2f64d71909e" title="Groesse des Remotecall-Buffers.">REMOTE_CALL_BUFFER_SIZE</a>);
@@ -607,21 +607,21 @@
 <a name="l00666"></a>00666 <span class="preprocessor"></span>
 <a name="l00667"></a>00667 <span class="preprocessor">#ifdef LOG_AVAILABLE</span>
 <a name="l00668"></a>00668 <span class="preprocessor"></span>
-<a name="l00671"></a><a class="code" href="bot-2-bot_8c.html#af88a29966e453489af465240ac2e7a26">00671</a> <span class="keywordtype">void</span> <a class="code" href="bot-2-bot_8c.html#af88a29966e453489af465240ac2e7a26">print_bot_list</a>(<span class="keywordtype">void</span>) {
+<a name="l00671"></a>00671 <span class="keywordtype">void</span> print_bot_list(<span class="keywordtype">void</span>) {
 <a name="l00672"></a>00672     <a class="code" href="struct__bot__list__entry__t.html">bot_list_entry_t</a> * ptr = NULL;
 <a name="l00673"></a>00673     <span class="keywordflow">while</span> (1) {
 <a name="l00674"></a>00674         ptr = get_next_bot(ptr);
 <a name="l00675"></a>00675         <span class="keywordflow">if</span> (ptr == NULL) <span class="keywordflow">return</span>;
-<a name="l00676"></a>00676         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Bot %u ist&quot;</span>, ptr-&gt;<a class="code" href="struct__bot__list__entry__t.html#a735858646b9b95dee52706a4f1b0a511">address</a>);
+<a name="l00676"></a>00676         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;Bot %u ist&quot;</span>, ptr-&gt;<a class="code" href="struct__bot__list__entry__t.html#a735858646b9b95dee52706a4f1b0a511">address</a>);
 <a name="l00677"></a>00677         <span class="keywordflow">switch</span> (ptr-&gt;<a class="code" href="struct__bot__list__entry__t.html#a6945a43ffa4461e04657a1aea5550e5e">state</a>) {
 <a name="l00678"></a>00678             <span class="keywordflow">case</span> <a class="code" href="bot-2-bot_8h.html#ab7f4e37a0eb35fe0b80ee5fd709e6ded">BOT_STATE_AVAILABLE</a>:
-<a name="l00679"></a>00679             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;\tavailable&quot;</span>);
+<a name="l00679"></a>00679             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;\tavailable&quot;</span>);
 <a name="l00680"></a>00680             <span class="keywordflow">break</span>;
 <a name="l00681"></a>00681             <span class="keywordflow">case</span> <a class="code" href="bot-2-bot_8h.html#ac05d8e2db2b63f18a73ea0753f91bb22">BOT_STATE_BUSY</a>:
-<a name="l00682"></a>00682             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;\tbusy&quot;</span>);
+<a name="l00682"></a>00682             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;\tbusy&quot;</span>);
 <a name="l00683"></a>00683             <span class="keywordflow">break</span>;
 <a name="l00684"></a>00684             <span class="keywordflow">case</span> <a class="code" href="bot-2-bot_8h.html#a99c64d37fdcd5143bf9fe50c3a40c653">BOT_STATE_GONE</a>:
-<a name="l00685"></a>00685             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;\tweg&quot;</span>);
+<a name="l00685"></a>00685             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;\tweg&quot;</span>);
 <a name="l00686"></a>00686             <span class="keywordflow">break</span>;
 <a name="l00687"></a>00687         }
 <a name="l00688"></a>00688     }
@@ -633,9 +633,9 @@
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:08 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

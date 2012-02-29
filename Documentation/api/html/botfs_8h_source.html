@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: botfs.h Quellcode</title>
+<title>c&#39;t-Bot: botfs.h Quellcode</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -52,7 +52,7 @@
   </div>
   <div id="nav-path" class="navpath">
     <ul>
-      <li class="navelem"><a class="el" href="dir_a0fca93e65e0dd30a74a1e6addb2ee0e.html">include</a>      </li>
+      <li class="navelem"><a class="el" href="dir_9d1e0dccf1391b04e9e09a3367003bd7.html">include</a>      </li>
     </ul>
   </div>
 </div>
@@ -86,9 +86,9 @@
 <a name="l00030"></a>00030 <span class="comment">//#define DEBUG_BOTFS /**&lt; schaltet Debug-Ausgaben an */</span>
 <a name="l00031"></a>00031 <span class="comment">//#define DEBUG_BOTFS_LOGFILE /**&lt; schaltet Debug-Ausgaben in botfs.log an */</span>
 <a name="l00032"></a>00032 
-<a name="l00033"></a>00033 <span class="preprocessor">#ifdef BOT_FS_AVAILABLE</span>
-<a name="l00034"></a>00034 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="botfs__config_8h.html" title="Konfig-Optionen fuer Dateisystem BotFS.">botfs_config.h</a>&quot;</span>
-<a name="l00035"></a>00035 <span class="preprocessor">#include &quot;<a class="code" href="botfs__types_8h.html" title="Datentypen fuer Dateisystem BotFS.">botfs_types.h</a>&quot;</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#include &quot;<a class="code" href="botfs__config_8h.html" title="Konfig-Optionen fuer Dateisystem BotFS.">botfs_config.h</a>&quot;</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#ifdef BOT_FS_AVAILABLE</span>
+<a name="l00035"></a>00035 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="botfs__types_8h.html" title="Datentypen fuer Dateisystem BotFS.">botfs_types.h</a>&quot;</span>
 <a name="l00036"></a>00036 <span class="preprocessor">#include &lt;stdio.h&gt;</span>
 <a name="l00037"></a>00037 
 <a name="l00038"></a>00038 <span class="preprocessor">#ifndef LOG_AVAILABLE</span>
@@ -143,111 +143,115 @@
 <a name="l00119"></a>00119 
 <a name="l00126"></a>00126 int8_t <a class="code" href="botfs_8c.html#afe7539a83c840b120ef8996557fd0e9a" title="Schreibt BOTFS_BLOCK_SIZE Bytes aus einem Puffer in eine Datei.">botfs_write</a>(botfs_file_descr_t * file, <span class="keywordtype">void</span> * buffer);
 <a name="l00127"></a>00127 
-<a name="l00135"></a>00135 int8_t <a class="code" href="botfs_8c.html#a5eab2bbbace8faac17e9a9a35719d89a" title="Legt eine neue Datei an.">botfs_create</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * filename, uint16_t size, <span class="keywordtype">void</span> * buffer);
-<a name="l00136"></a>00136 
-<a name="l00143"></a>00143 int8_t <a class="code" href="botfs_8c.html#a51db2e9a9426dc9edb351cc81edd7a70" title="Entfernt eine Datei.">botfs_unlink</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * filename, <span class="keywordtype">void</span> * buffer);
-<a name="l00144"></a>00144 
-<a name="l00152"></a>00152 int8_t <a class="code" href="botfs_8c.html#a425c8a53f498374adef8744291c8aa16" title="Benennt eine Datei um.">botfs_rename</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * filename, <span class="keyword">const</span> <span class="keywordtype">char</span> * new_name, <span class="keywordtype">void</span> * buffer);
-<a name="l00153"></a>00153 
-<a name="l00160"></a>00160 int8_t <a class="code" href="botfs_8c.html#a5964332bb5b66e2201b3a6b26935e1af" title="Schreibt die Information ueber benutzte Bloecke in den Datei-Header.">botfs_flush_used_blocks</a>(botfs_file_descr_t * file, <span class="keywordtype">void</span> * buffer);
-<a name="l00161"></a>00161 
-<a name="l00167"></a>00167 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> botfs_close(botfs_file_descr_t * file, <span class="keywordtype">void</span> * buffer) {
-<a name="l00168"></a>00168     <a class="code" href="botfs_8c.html#a5964332bb5b66e2201b3a6b26935e1af" title="Schreibt die Information ueber benutzte Bloecke in den Datei-Header.">botfs_flush_used_blocks</a>(file, buffer);
-<a name="l00169"></a>00169 }
-<a name="l00170"></a>00170 
-<a name="l00178"></a>00178 int8_t <a class="code" href="botfs_8c.html#a4f5aa83fae2a2682310842df4c8458e0" title="Liest die frei verwendbaren Header-Daten einer Datei aus.">botfs_read_header_data</a>(botfs_file_descr_t * file, uint8_t ** headerdata, <span class="keywordtype">void</span> * buffer);
-<a name="l00179"></a>00179 
-<a name="l00189"></a>00189 int8_t <a class="code" href="botfs_8c.html#a4211d1027e05944d4aff015446e01b62" title="Schreib die frei verwendbaren Header-Daten einer Datei in den Header.">botfs_write_header_data</a>(botfs_file_descr_t * file, <span class="keywordtype">void</span> * buffer);
-<a name="l00190"></a>00190 
-<a name="l00196"></a>00196 uint32_t <a class="code" href="botfs_8c.html#ab1b873903671002d1b01240d6d800f55" title="Gibt die physische Blockadresse des Dateianfangs zurueck.">botfs_get_startsector</a>(botfs_file_descr_t * file);
-<a name="l00197"></a>00197 
-<a name="l00203"></a>00203 <span class="keyword">static</span> <span class="keyword">inline</span> uint16_t botfs_get_filesize(botfs_file_descr_t * file) {
-<a name="l00204"></a>00204     <span class="keywordflow">return</span> file-&gt;end - file-&gt;start - (<a class="code" href="botfs__config_8h.html#a13df0af88884d010c24591ac1c78e4df" title="Groesse des Datei-Headers in Bloecken.">BOTFS_HEADER_SIZE</a> - 1);
-<a name="l00205"></a>00205 }
-<a name="l00206"></a>00206 
-<a name="l00210"></a>00210 <span class="keywordtype">void</span> <a class="code" href="botfs_8c.html#a186480cb74d92ebd01adbd2e2535a631" title="Beendet BotFS sauber.">botfs_close_volume</a>(<span class="keywordtype">void</span>);
-<a name="l00211"></a>00211 
-<a name="l00212"></a>00212 <span class="preprocessor">#ifdef BOTFS_STREAM_AVAILABLE</span>
-<a name="l00213"></a>00213 <span class="preprocessor"></span>
-<a name="l00219"></a>00219 <span class="keywordtype">void</span> botfs_stream_open(botfs_stream_t * stream, botfs_file_descr_t * file, <span class="keywordtype">void</span> * block_buffer);
-<a name="l00220"></a>00220 
-<a name="l00226"></a>00226 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> botfs_stream_close(botfs_stream_t * stream, <span class="keywordtype">void</span> * buffer) {
-<a name="l00227"></a>00227     botfs_close(stream-&gt;p_file, buffer);
-<a name="l00228"></a>00228     stream-&gt;p_file = NULL;
-<a name="l00229"></a>00229 }
-<a name="l00230"></a>00230 
-<a name="l00236"></a>00236 <span class="keyword">static</span> <span class="keyword">inline</span> uint8_t botfs_stream_valid(botfs_stream_t * stream) {
-<a name="l00237"></a>00237     <span class="keywordflow">return</span> (uint8_t) (stream-&gt;p_file != NULL);
-<a name="l00238"></a>00238 }
-<a name="l00239"></a>00239 
-<a name="l00245"></a>00245 <span class="keyword">static</span> <span class="keyword">inline</span> int32_t botfs_stream_tell(botfs_stream_t * stream) {
-<a name="l00246"></a>00246     <span class="keywordflow">return</span> (int32_t) stream-&gt;p_file-&gt;pos * <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a> + stream-&gt;pos;
-<a name="l00247"></a>00247 }
-<a name="l00248"></a>00248 
-<a name="l00255"></a>00255 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> botfs_stream_seek(botfs_stream_t * stream, int32_t offset, uint8_t origin) {
-<a name="l00256"></a>00256     stream-&gt;block_in_buf = (uint16_t) ~0<a class="code" href="behaviour__drive__chess_8c.html#affc9cbf86b78292bdb405361761c47f5">U</a>;
-<a name="l00257"></a>00257     int16_t blk_offset = (int16_t) (offset / <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>);
-<a name="l00258"></a>00258     botfs_seek(stream-&gt;p_file, blk_offset, origin);
-<a name="l00259"></a>00259 
-<a name="l00260"></a>00260     <span class="comment">/* Basiswert in Abhaengigkeit von origin laden */</span>
-<a name="l00261"></a>00261     <span class="keyword">const</span> int16_t offset16 = (int16_t) (offset - blk_offset * <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>);
-<a name="l00262"></a>00262     int16_t tmp;
-<a name="l00263"></a>00263     <span class="keywordflow">switch</span> (origin) {
-<a name="l00264"></a>00264     <span class="keywordflow">case</span> SEEK_SET:
-<a name="l00265"></a>00265         tmp = 0;
+<a name="l00136"></a>00136 int8_t <a class="code" href="botfs_8c.html#a1683850a15cc2ed1af27911aa134f83f" title="Legt eine neue Datei an.">botfs_create</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * filename, uint16_t size, uint16_t alignment, <span class="keywordtype">void</span> * buffer);
+<a name="l00137"></a>00137 
+<a name="l00144"></a>00144 int8_t <a class="code" href="botfs_8c.html#a51db2e9a9426dc9edb351cc81edd7a70" title="Entfernt eine Datei.">botfs_unlink</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * filename, <span class="keywordtype">void</span> * buffer);
+<a name="l00145"></a>00145 
+<a name="l00153"></a>00153 int8_t <a class="code" href="botfs_8c.html#a425c8a53f498374adef8744291c8aa16" title="Benennt eine Datei um.">botfs_rename</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * filename, <span class="keyword">const</span> <span class="keywordtype">char</span> * new_name, <span class="keywordtype">void</span> * buffer);
+<a name="l00154"></a>00154 
+<a name="l00161"></a>00161 int8_t <a class="code" href="botfs_8c.html#a5964332bb5b66e2201b3a6b26935e1af" title="Schreibt die Information ueber benutzte Bloecke in den Datei-Header.">botfs_flush_used_blocks</a>(botfs_file_descr_t * file, <span class="keywordtype">void</span> * buffer);
+<a name="l00162"></a>00162 
+<a name="l00168"></a>00168 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> botfs_close(botfs_file_descr_t * file, <span class="keywordtype">void</span> * buffer) {
+<a name="l00169"></a>00169     <a class="code" href="botfs_8c.html#a5964332bb5b66e2201b3a6b26935e1af" title="Schreibt die Information ueber benutzte Bloecke in den Datei-Header.">botfs_flush_used_blocks</a>(file, buffer);
+<a name="l00170"></a>00170 }
+<a name="l00171"></a>00171 
+<a name="l00179"></a>00179 int8_t <a class="code" href="botfs_8c.html#a4f5aa83fae2a2682310842df4c8458e0" title="Liest die frei verwendbaren Header-Daten einer Datei aus.">botfs_read_header_data</a>(botfs_file_descr_t * file, uint8_t ** headerdata, <span class="keywordtype">void</span> * buffer);
+<a name="l00180"></a>00180 
+<a name="l00190"></a>00190 int8_t <a class="code" href="botfs_8c.html#a4211d1027e05944d4aff015446e01b62" title="Schreib die frei verwendbaren Header-Daten einer Datei in den Header.">botfs_write_header_data</a>(botfs_file_descr_t * file, <span class="keywordtype">void</span> * buffer);
+<a name="l00191"></a>00191 
+<a name="l00197"></a>00197 <span class="keyword">static</span> <span class="keyword">inline</span> uint16_t botfs_get_filesize(botfs_file_descr_t * file) {
+<a name="l00198"></a>00198     <span class="keywordflow">return</span> file-&gt;end - file-&gt;start - (<a class="code" href="botfs__config_8h.html#a13df0af88884d010c24591ac1c78e4df" title="Groesse des Datei-Headers in Bloecken.">BOTFS_HEADER_SIZE</a> - 1);
+<a name="l00199"></a>00199 }
+<a name="l00200"></a>00200 
+<a name="l00204"></a>00204 <span class="keywordtype">void</span> <a class="code" href="botfs_8c.html#a186480cb74d92ebd01adbd2e2535a631" title="Beendet BotFS sauber.">botfs_close_volume</a>(<span class="keywordtype">void</span>);
+<a name="l00205"></a>00205 
+<a name="l00206"></a>00206 <span class="preprocessor">#ifdef BOTFS_STREAM_AVAILABLE</span>
+<a name="l00207"></a>00207 <span class="preprocessor"></span>
+<a name="l00213"></a>00213 <span class="keywordtype">void</span> botfs_stream_open(botfs_stream_t * stream, botfs_file_descr_t * file, <span class="keywordtype">void</span> * block_buffer);
+<a name="l00214"></a>00214 
+<a name="l00220"></a>00220 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> botfs_stream_close(botfs_stream_t * stream, <span class="keywordtype">void</span> * buffer) {
+<a name="l00221"></a>00221     botfs_close(stream-&gt;p_file, buffer);
+<a name="l00222"></a>00222     stream-&gt;p_file = NULL;
+<a name="l00223"></a>00223 }
+<a name="l00224"></a>00224 
+<a name="l00230"></a>00230 <span class="keyword">static</span> <span class="keyword">inline</span> uint8_t botfs_stream_valid(botfs_stream_t * stream) {
+<a name="l00231"></a>00231     <span class="keywordflow">return</span> (uint8_t) (stream-&gt;p_file != NULL);
+<a name="l00232"></a>00232 }
+<a name="l00233"></a>00233 
+<a name="l00239"></a>00239 <span class="keyword">static</span> <span class="keyword">inline</span> int32_t botfs_stream_tell(botfs_stream_t * stream) {
+<a name="l00240"></a>00240     <span class="keywordflow">return</span> (int32_t) stream-&gt;p_file-&gt;pos * <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a> + stream-&gt;pos;
+<a name="l00241"></a>00241 }
+<a name="l00242"></a>00242 
+<a name="l00249"></a>00249 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> botfs_stream_seek(botfs_stream_t * stream, int32_t offset, uint8_t origin) {
+<a name="l00250"></a>00250     stream-&gt;block_in_buf = (uint16_t) ~0<a class="code" href="behaviour__drive__chess_8c.html#affc9cbf86b78292bdb405361761c47f5">U</a>;
+<a name="l00251"></a>00251     int16_t blk_offset = (int16_t) (offset / <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>);
+<a name="l00252"></a>00252     botfs_seek(stream-&gt;p_file, blk_offset, origin);
+<a name="l00253"></a>00253 
+<a name="l00254"></a>00254     <span class="comment">/* Basiswert in Abhaengigkeit von origin laden */</span>
+<a name="l00255"></a>00255     <span class="keyword">const</span> int16_t offset16 = (int16_t) (offset - blk_offset * <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>);
+<a name="l00256"></a>00256     int16_t tmp;
+<a name="l00257"></a>00257     <span class="keywordflow">switch</span> (origin) {
+<a name="l00258"></a>00258     <span class="keywordflow">case</span> SEEK_SET:
+<a name="l00259"></a>00259         tmp = 0;
+<a name="l00260"></a>00260         <span class="keywordflow">break</span>;
+<a name="l00261"></a>00261     <span class="keywordflow">case</span> SEEK_CUR:
+<a name="l00262"></a>00262         tmp = (int16_t) stream-&gt;pos;
+<a name="l00263"></a>00263         <span class="keywordflow">break</span>;
+<a name="l00264"></a>00264     <span class="keywordflow">case</span> SEEK_END:
+<a name="l00265"></a>00265         tmp = BOTFS_BLOCK_SIZE - 1;
 <a name="l00266"></a>00266         <span class="keywordflow">break</span>;
-<a name="l00267"></a>00267     <span class="keywordflow">case</span> SEEK_CUR:
-<a name="l00268"></a>00268         tmp = (int16_t) stream-&gt;pos;
-<a name="l00269"></a>00269         <span class="keywordflow">break</span>;
-<a name="l00270"></a>00270     <span class="keywordflow">case</span> SEEK_END:
-<a name="l00271"></a>00271         tmp = BOTFS_BLOCK_SIZE - 1;
-<a name="l00272"></a>00272         <span class="keywordflow">break</span>;
-<a name="l00273"></a>00273     <span class="keywordflow">default</span>:
-<a name="l00274"></a>00274         <span class="keywordflow">return</span>;
-<a name="l00275"></a>00275     }
-<a name="l00276"></a>00276 
-<a name="l00277"></a>00277     <span class="comment">/* Position speichern */</span>
-<a name="l00278"></a>00278     stream-&gt;pos = tmp + offset16;
-<a name="l00279"></a>00279 }
-<a name="l00280"></a>00280 
-<a name="l00290"></a>00290 int16_t botfs_stream_read_until(botfs_stream_t * stream, <span class="keywordtype">char</span> * to, int16_t count, <span class="keyword">const</span> <span class="keywordtype">char</span> delim);
-<a name="l00291"></a>00291 
-<a name="l00300"></a>00300 <span class="keyword">static</span> <span class="keyword">inline</span> int16_t botfs_stream_readline(botfs_stream_t * stream, <span class="keywordtype">char</span> * to, int16_t count) {
-<a name="l00301"></a>00301     <span class="keywordflow">return</span> botfs_stream_read_until(stream, to, count, <span class="charliteral">&#39;\n&#39;</span>);
-<a name="l00302"></a>00302 }
-<a name="l00303"></a>00303 <span class="preprocessor">#endif // BOTFS_STREAM_AVAILABLE</span>
-<a name="l00304"></a>00304 <span class="preprocessor"></span>
-<a name="l00305"></a>00305 <span class="preprocessor">#ifdef PC</span>
-<a name="l00306"></a>00306 <span class="preprocessor"></span>
-<a name="l00307"></a>00307 <span class="keyword">typedef</span> <span class="keyword">struct </span>{
-<a name="l00308"></a><a class="code" href="structPACKED.html#a98b683dfbfe821d60b8f7d262d2e8401">00308</a>     botfs_dir_block_t dirblocks[<a class="code" href="botfs__config_8h.html#abfc5e4690b5514dfcd9b0ceaad4a6f22" title="Anzahl der Root-Dir-Bloecke.">BOTFS_DIR_BLOCK_CNT</a>]; 
-<a name="l00309"></a>00309 } <a class="code" href="structPACKED.html" title="FAT.">PACKED</a> botfs_rootdir_t;
-<a name="l00310"></a>00310 
-<a name="l00318"></a>00318 int8_t <a class="code" href="botfs_8h.html#a75f8a777d322f7bf7133a87c492d0d9f" title="Erzeugt ein neues Volume.">botfs_create_volume</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * image, <span class="keyword">const</span> <span class="keywordtype">char</span> * name, uint32_t size);
-<a name="l00319"></a>00319 
-<a name="l00327"></a>00327 int8_t <a class="code" href="botfs_8h.html#a855fac9127fb0e3076b60da2f9a1650f" title="Kopiert eine Datei vom PC-Dateisystem auf das BotFS-Volume.">botfs_copy_file</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * to, <span class="keyword">const</span> <span class="keywordtype">char</span> * from, <span class="keywordtype">void</span> * buffer);
-<a name="l00328"></a>00328 
-<a name="l00336"></a>00336 int8_t <a class="code" href="botfs_8h.html#aaf7266e0becb9ea37380a0c6486db40b" title="Kopiert eine Datei vom BotfS-Volume ins PC-Dateisystem.">botfs_extract_file</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * to, <span class="keyword">const</span> <span class="keywordtype">char</span> * from, <span class="keywordtype">void</span> * buffer);
-<a name="l00337"></a>00337 
-<a name="l00341"></a>00341 <span class="keywordtype">void</span> <a class="code" href="botfs_8h.html#a6ed6b6e4817d4435956735eedaeae3e4" title="Management-Tools fuer BotFS.">botfs_management</a>(<span class="keywordtype">char</span> * volume_file);
-<a name="l00342"></a>00342 
-<a name="l00349"></a>00349 <span class="keywordtype">char</span> * <a class="code" href="botfs_8h.html#a58bec3b262a075120ddd374e1438aaed" title="Gibt Root-Dir-Eintraege zurueck.">botfs_readdir</a>(uint8_t offset, <span class="keywordtype">void</span> * buffer);
-<a name="l00350"></a>00350 
-<a name="l00355"></a>00355 <span class="keywordtype">void</span> <a class="code" href="botfs_8h.html#ae5161e6b535fcf21c029e7890f1d00a1" title="Gibt alle Freelist-Eintraege aus.">botfs_print_freelist</a>(<span class="keywordtype">void</span> * buffer);
-<a name="l00356"></a>00356 
-<a name="l00373"></a>00373 <span class="keywordtype">void</span> <a class="code" href="botfs_8h.html#a3b1852754b9352e456042f31f5242d6c" title="Zeigt Informationen ueber jeden Eintrag des Root-Verzeichnisses einer FAT16-Partition an...">botfs_read_fat16</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * path);
-<a name="l00374"></a>00374 <span class="preprocessor">#endif // PC</span>
-<a name="l00375"></a>00375 <span class="preprocessor"></span>
-<a name="l00376"></a>00376 <span class="preprocessor">#endif // BOT_FS_AVAILABLE</span>
-<a name="l00377"></a>00377 <span class="preprocessor"></span><span class="preprocessor">#endif // BOTFS_H_</span>
+<a name="l00267"></a>00267     <span class="keywordflow">default</span>:
+<a name="l00268"></a>00268         <span class="keywordflow">return</span>;
+<a name="l00269"></a>00269     }
+<a name="l00270"></a>00270 
+<a name="l00271"></a>00271     <span class="comment">/* Position speichern */</span>
+<a name="l00272"></a>00272     stream-&gt;pos = tmp + offset16;
+<a name="l00273"></a>00273 }
+<a name="l00274"></a>00274 
+<a name="l00284"></a>00284 int16_t botfs_stream_read_until(botfs_stream_t * stream, <span class="keywordtype">char</span> * to, int16_t count, <span class="keyword">const</span> <span class="keywordtype">char</span> delim);
+<a name="l00285"></a>00285 
+<a name="l00294"></a>00294 <span class="keyword">static</span> <span class="keyword">inline</span> int16_t botfs_stream_readline(botfs_stream_t * stream, <span class="keywordtype">char</span> * to, int16_t count) {
+<a name="l00295"></a>00295     <span class="keywordflow">return</span> botfs_stream_read_until(stream, to, count, <span class="charliteral">&#39;\n&#39;</span>);
+<a name="l00296"></a>00296 }
+<a name="l00297"></a>00297 <span class="preprocessor">#endif // BOTFS_STREAM_AVAILABLE</span>
+<a name="l00298"></a>00298 <span class="preprocessor"></span>
+<a name="l00299"></a>00299 <span class="preprocessor">#ifdef BOTFS_COPY_AVAILABLE</span>
+<a name="l00300"></a>00300 <span class="preprocessor"></span>
+<a name="l00311"></a>00311 int8_t <a class="code" href="botfs_8h.html#a70135f989fbae72bdffaaed683b55417" title="Kopiert eine bestehende BotFS-Datei in eine neue BotFS-Datei.">botfs_copy</a>(botfs_file_descr_t * src, <span class="keyword">const</span> <span class="keywordtype">char</span> * dest, uint16_t src_offset, uint16_t dest_offset, uint16_t dest_tail, uint16_t dest_align,
+<a name="l00312"></a>00312     <span class="keywordtype">void</span> * buffer);
+<a name="l00313"></a>00313 <span class="preprocessor">#endif // BOTFS_COPY_AVAILABLE</span>
+<a name="l00314"></a>00314 <span class="preprocessor"></span>
+<a name="l00315"></a>00315 <span class="preprocessor">#ifdef PC</span>
+<a name="l00316"></a>00316 <span class="preprocessor"></span>
+<a name="l00317"></a>00317 <span class="keyword">typedef</span> <span class="keyword">struct </span>{
+<a name="l00318"></a><a class="code" href="structPACKED.html#a98b683dfbfe821d60b8f7d262d2e8401">00318</a>     botfs_dir_block_t dirblocks[<a class="code" href="botfs__config_8h.html#abfc5e4690b5514dfcd9b0ceaad4a6f22" title="Anzahl der Root-Dir-Bloecke.">BOTFS_DIR_BLOCK_CNT</a>]; 
+<a name="l00319"></a>00319 } <a class="code" href="structPACKED.html" title="FAT.">PACKED</a> botfs_rootdir_t;
+<a name="l00320"></a>00320 
+<a name="l00328"></a>00328 int8_t <a class="code" href="botfs_8h.html#a75f8a777d322f7bf7133a87c492d0d9f" title="Erzeugt ein neues Volume.">botfs_create_volume</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * image, <span class="keyword">const</span> <span class="keywordtype">char</span> * name, uint32_t size);
+<a name="l00329"></a>00329 
+<a name="l00337"></a>00337 int8_t <a class="code" href="botfs_8h.html#a855fac9127fb0e3076b60da2f9a1650f" title="Kopiert eine Datei vom PC-Dateisystem auf das BotFS-Volume.">botfs_copy_file</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * to, <span class="keyword">const</span> <span class="keywordtype">char</span> * from, <span class="keywordtype">void</span> * buffer);
+<a name="l00338"></a>00338 
+<a name="l00348"></a>00348 int8_t <a class="code" href="botfs_8h.html#abf871e61697e33491a47f4af7dd1c061" title="Kopiert eine Datei vom BotfS-Volume ins PC-Dateisystem.">botfs_extract_file</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * to, <span class="keyword">const</span> <span class="keywordtype">char</span> * from, uint32_t src_offset, uint32_t dest_offset, <span class="keywordtype">void</span> * buffer);
+<a name="l00349"></a>00349 
+<a name="l00353"></a>00353 <span class="keywordtype">void</span> <a class="code" href="botfs_8h.html#a6ed6b6e4817d4435956735eedaeae3e4" title="Management-Tools fuer BotFS.">botfs_management</a>(<span class="keywordtype">char</span> * volume_file);
+<a name="l00354"></a>00354 
+<a name="l00361"></a>00361 <span class="keywordtype">char</span> * <a class="code" href="botfs_8h.html#a58bec3b262a075120ddd374e1438aaed" title="Gibt Root-Dir-Eintraege zurueck.">botfs_readdir</a>(uint8_t offset, <span class="keywordtype">void</span> * buffer);
+<a name="l00362"></a>00362 
+<a name="l00367"></a>00367 <span class="keywordtype">void</span> <a class="code" href="botfs_8h.html#ae5161e6b535fcf21c029e7890f1d00a1" title="Gibt alle Freelist-Eintraege aus.">botfs_print_freelist</a>(<span class="keywordtype">void</span> * buffer);
+<a name="l00368"></a>00368 
+<a name="l00385"></a>00385 <span class="keywordtype">void</span> <a class="code" href="botfs_8h.html#a3b1852754b9352e456042f31f5242d6c" title="Zeigt Informationen ueber jeden Eintrag des Root-Verzeichnisses einer FAT16-Partition an...">botfs_read_fat16</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * path);
+<a name="l00386"></a>00386 <span class="preprocessor">#endif // PC</span>
+<a name="l00387"></a>00387 <span class="preprocessor"></span>
+<a name="l00388"></a>00388 <span class="preprocessor">#endif // BOT_FS_AVAILABLE</span>
+<a name="l00389"></a>00389 <span class="preprocessor"></span><span class="preprocessor">#endif // BOTFS_H_</span>
 </pre></div></div>
 </div>
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:08 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

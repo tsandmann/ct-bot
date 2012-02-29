@@ -36,6 +36,11 @@
 static char * volume = NULL; /**< Volume-Image */
 static int volume_loaded = 0; /**< Volume geladen? */
 
+#if (__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#endif
+
 /**
  * Zeigt die Hilfe an
  */
@@ -185,7 +190,7 @@ static void create_file(void) {
 
 	/* Treiber-Aufruf */
 	uint8_t buffer[BOTFS_BLOCK_SIZE];
-	if (botfs_create(name, size * 2, buffer) == 0) {
+	if (botfs_create(name, size * 1024 / BOTFS_BLOCK_SIZE, 0, buffer) == 0) {
 		printf("Datei \"%s\" wurde korrekt erzeugt\n", name);
 	} else {
 		printf("Fehler beim Erzeugen der Datei\n");
@@ -573,14 +578,18 @@ static void ls(void) {
 		}
 		const uint16_t size = file.end - file.start + 1;
 		if (size >= 2) {
-			printf("Eintrag %3u:%15s\tstart:0x%04x\tend:0x%04x\n\t\t\t\tsize: %u KByte\t\t", i, filename,
+			printf("Eintrag %3u:%15s\tstart:0x%04x\t\tend:0x%04x\n\t\t\t\tsize: %05u KByte\t", i, filename,
 				file.start, file.end, size / 2);
 		} else {
-			printf("Eintrag %3u:%15s\tstart:0x%04x\tend:0x%04x\n\t\t\t\tsize: %u  Byte\t\t", i, filename,
+			printf("Eintrag %3u:%15s\tstart:0x%04x\t\tend:0x%04x\n\t\t\t\tsize: %05u  Byte\t", i, filename,
 				file.start, file.end, size * BOTFS_BLOCK_SIZE);
 		}
-		const uint32_t used_size = (file.used.end - file.start) * BOTFS_BLOCK_SIZE + file.used.bytes_last_block;
-		printf("used-size: %u Byte\n", used_size);
+		const uint32_t used_size = file.used.start != UINT16_MAX ? (file.used.end - file.start) * BOTFS_BLOCK_SIZE + file.used.bytes_last_block : 0;
+		if (used_size < 1024) {
+			printf("used-size: %u Byte\n", used_size);
+		} else {
+			printf("used-size: %u KByte\n", used_size / 1024);
+		}
 	}
 }
 
@@ -889,6 +898,10 @@ void botfs_read_fat16(const char * path) {
 	}
 	fclose(fp);
  }
+
+#if (__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4
+#pragma GCC diagnostic pop
+#endif
 
 #endif // BOT_FS_AVAILABLE
 #endif // PC

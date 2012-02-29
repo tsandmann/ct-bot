@@ -182,7 +182,7 @@ int8_t botfs_copy_file(const char * to, const char * from, void * buffer) {
 		}
 	}
 
-	if (botfs_create(to, file_size, buffer) != 0) {
+	if (botfs_create(to, file_size, 0, buffer) != 0) {
 		printf("Fehler, Datei konnte nicht angelegt werden\n");
 		return -5;
 	}
@@ -341,7 +341,7 @@ void botfs_print_freelist(void * buffer) {
 		uint8_t j;
 		for (j = 0; j < BOTFS_FREEL_BL_SIZE; ++j) {
 			if (pFree->size != 0) {
-				printf("Block %u, Eintrag %u: start: 0x%04x\tsize: 0x%04x\n", i, j, pFree->block, pFree->size);
+				printf("Block %u, Eintrag %u: start: 0x%04x\tsize: 0x%04x\tend: 0x%04x\n", i, j, pFree->block, pFree->size, pFree->block + pFree->size - 1);
 			}
 			pFree++;
 		}

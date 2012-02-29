@@ -1,16 +1,16 @@
 diff --git a/contrib/avrbasic/tokenizer.c b/contrib/avrbasic/tokenizer.c
-index 875b6f8..3d52d2c 100644
+index 78cfa6a..9e005e1 100644
 --- a/contrib/avrbasic/tokenizer.c
 +++ b/contrib/avrbasic/tokenizer.c
-@@ -32,21 +32,25 @@
+@@ -32,12 +32,15 @@
   * ------------------------------------------------------
   */
  
-+#include "bot-logic/bot-logic.h"
++#include "bot-logic.h"
 +#ifdef BEHAVIOUR_UBASIC_AVAILABLE
++#include "botfs.h"
  
--#include "ubasic_config.h"
-+#include "bot-logic/ubasic_config.h"
+ #include "ubasic_config.h"
  
 -#if USE_PROGMEM
 -	#include <avr/pgmspace.h>
@@ -20,394 +20,101 @@ index 875b6f8..3d52d2c 100644
 +//#endif
  
  #define __TOKENIZER_C__
--	#include "tokenizer_access.h"
--	#include "tokenizer.h"
-+	#include "bot-logic/tokenizer_access.h"
-+	#include "bot-logic/tokenizer.h"
- #undef __TOKENIZER_C__
--#include "ubasic_ext_proc.h"
-+#include "bot-logic/ubasic_ext_proc.h"
-+#include "botfs.h"
-+#include <ctype.h>
+ 	#include "tokenizer_access.h"
+@@ -48,7 +51,7 @@
+ #include <ctype.h>
  
  #if USE_AVR
 -	#include "../uart/usart.h"
 +//	#include "../uart/usart.h"
  #else
  	#include <string.h>
- 	#include <ctype.h>
-@@ -64,9 +68,9 @@ static int current_token = TOKENIZER_ERROR;
- 
- extern PTR_TYPE program_ptr;
- 
--#if UBASIC_EXT_PROC
--	extern char current_proc[MAX_PROG_NAME_LEN];
--#endif
-+//#if UBASIC_EXT_PROC
-+//	extern char current_proc[MAX_PROG_NAME_LEN];
-+//#endif
- 
- 
- #if TOKENIZER_STANDARD
-@@ -179,9 +183,9 @@ static const struct keyword_token keywords[] = {
- 
- // Prototypen
- static int get_next_token(void);
--//#if !TOKENIZER_STANDARD 
-+#ifdef TOKENIZER_FASTPARSER
- int iFastParserGetKeyWord (void);
--//#endif
-+#endif
- 
- 
- /*---------------------------------------------------------------------------*/
-@@ -189,7 +193,7 @@ PTR_TYPE get_prog_text_pointer(void) {
- 	return line_begin_ptr;
- }
- /*---------------------------------------------------------------------------*/
--void skip_whitespaces(void){
-+static void skip_whitespaces(void){
- 	while((GET_CONTENT_PROG_PTR == ' '  || 
- 		   GET_CONTENT_PROG_PTR == '\r' ||
- 		   GET_CONTENT_PROG_PTR == '\t'    ) &&
-@@ -269,11 +273,11 @@ static int singlechar(void) {
- 
- #if UBASIC_HEX_BIN
- /*---------------------------------------------------------------------------*/
--int hex2int(char c) {
-+static int hex2int(char c) {
- 	if (c<='9') return (c-'0'); else return (c-'A'+10);
- }
- /*---------------------------------------------------------------------------*/
--char isbdigit(char c) {
-+static char isbdigit(char c) {
- 	if ((c=='0') || (c=='1')) return 1; else return 0;
- }
- #endif
-@@ -310,7 +314,7 @@ static int get_next_token(void) {
- 						if(!isxdigit(GET_CONTENT_PROG_PTR)) {
- 							if(i > 0) return TOKENIZER_NUMBER; else return TOKENIZER_ERROR;
- 						}
--						last_value = 16 * last_value + hex2int(toupper(GET_CONTENT_PROG_PTR));
-+						last_value = 16 * last_value + hex2int((char) toupper(GET_CONTENT_PROG_PTR));
- 						INCR_PROG_PTR;
- 					}
- 					return TOKENIZER_ERROR;
-@@ -451,6 +455,8 @@ char const *tokenizer_last_string_ptr(void) {
+ //	#include <ctype.h>
+@@ -453,8 +456,8 @@ char const *tokenizer_last_string_ptr(void) {
  }
  /*---------------------------------------------------------------------------*/
  void tokenizer_error_print(int linenum, int error_nr) {
+-//	void linenum;
+-//	void error_nr;
 +	(void) linenum;
 +	(void) error_nr;
  	PTR_TYPE current_prog_ptr;
  	unsigned int source_linenum;
  	// alten Textpointer retten
-@@ -463,11 +469,11 @@ void tokenizer_error_print(int linenum, int error_nr) {
- 		INCR_PROG_PTR;
- 	}
- 	// Fehlertextausgabe
--	PRINTF("\n\rerror %i at sourceline: %i (%i?) ", error_nr, source_linenum, linenum);
-+	PRINTF("error %i at sourceline: %i (%i?) ", error_nr, source_linenum, linenum);
- #if UBASIC_EXT_PROC
- 	PRINTF("in program %s", current_proc);
- #endif
--	PRINTF("\n\r");
-+//	PRINTF("\n\r");
- 	// Textpointer wieder auf alten Wert
- 	SET_PROG_PTR_ABSOLUT(current_prog_ptr);
- }
-@@ -519,7 +525,7 @@ int iFastParserGetKeyWord (void)  {
- #endif
- 	
- 	pucTable  = &(pucPT [2 + ucE - ucS]);
--	ucCh      = GET_CONTENT_PROG_PTR;
-+	ucCh      = (unsigned char) GET_CONTENT_PROG_PTR;
+@@ -503,11 +506,11 @@ void tokenizer_set_position(struct tokenizer_pos_t pos) {
+ /*---------------------------------------------------------------------------*/
+ #if TOKENIZER_FASTPARSER
  
- 	if ((ucCh >= 'A') && (ucCh <= 'Z')) { 
- 		ucCh ^= 0x20; 
-@@ -558,7 +564,7 @@ int iFastParserGetKeyWord (void)  {
+-#include "tokenizer_data.c"
++#include "tokenizer_data.inc"
  
- 	do
- 	{
--		ucCh  = GET_CONTENT_PROG_PTR;
-+		ucCh  = (unsigned char) GET_CONTENT_PROG_PTR;
- 		#if USE_PROGMEM
- 		ucRC  = pgm_read_byte (pucPT); 
- 		#else
-@@ -635,3 +641,4 @@ int iFastParserGetKeyWord (void)  {
+ int iFastParserGetKeyWord (void)  {
+-  unsigned char   ucCh,                 // Zeichen im Basic-Quell-Text
+-                  ucRC,                 // "Referenz"-Zeichen (zu vergleichendes Zeichen im Baum)
++  char            ucCh;                 // Zeichen im Basic-Quell-Text
++  unsigned char   ucRC,                 // "Referenz"-Zeichen (zu vergleichendes Zeichen im Baum)
+                   ucS,                  // Niedrigstes erstes ASCII-Zeichen im Baum
+                   ucE;                  // Höchstes erstes ASCII-Zeichen im Baum
+   unsigned char  *pucPT = aucAVRBasic,  // Arbeitszeiger (mit Zeiger auf "Gesamtstruktur")
+@@ -556,7 +559,7 @@ int iFastParserGetKeyWord (void)  {
+ 
+ 
+   // ... dann Einsprung-Punkt in Baum holen
+-  ucCh -= ucS;
++  ucCh = (char) (ucCh - ucS);
+ #ifndef SFP_USES_16BIT                        // 8 bit Addressierung
+   #if USE_PROGMEM                             // Tabelle liegt im Flash
+   uiN   = pgm_read_byte (&(pucPT [2 + ucCh]));
+@@ -691,3 +694,4 @@ int iFastParserGetKeyWord (void)  {
  }
  #endif
  
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
-diff --git a/contrib/avrbasic/tokenizer.h b/contrib/avrbasic/tokenizer.h
-index 4d1659a..fb210e6 100644
---- a/contrib/avrbasic/tokenizer.h
-+++ b/contrib/avrbasic/tokenizer.h
-@@ -33,8 +33,8 @@
- #ifndef __TOKENIZER_H__
- #define __TOKENIZER_H__
- 
--#include "ubasic_config.h"
--#include "parser.h"
-+#include "bot-logic/ubasic_config.h"
-+#include "bot-logic/parser.h"
- 
- // Typ-Definition Token-Tabelle (Standard-Parser)
- struct keyword_token {
 diff --git a/contrib/avrbasic/tokenizer_access.h b/contrib/avrbasic/tokenizer_access.h
-index aa8c8c0..98f6620 100644
+index aa8c8c0..2fba50e 100644
 --- a/contrib/avrbasic/tokenizer_access.h
 +++ b/contrib/avrbasic/tokenizer_access.h
-@@ -34,6 +34,10 @@
+@@ -34,6 +34,8 @@
  #ifndef __TOKENIZER_ACCESS_H__
  #define __TOKENIZER_ACCESS_H__
  
-+#ifdef BEHAVIOUR_UBASIC_AVAILABLE
-+
-+#define ACCESS_VIA_BOTFS 1
++#include "behaviour_ubasic_access.h"
 +
  // Basic-Quelltexte steht im Flash... (AVR)
  #if ACCESS_VIA_PGM
  	#define PTR_TYPE char const *
-@@ -101,4 +105,74 @@
- 	char is_eof(void);
- #endif
- 
-+/* Basic-Programm wird ueber ct-Bot Framework geladen */
-+#if ACCESS_VIA_BOTFS
-+#include "botfs.h"
-+#include "init.h"
-+
-+typedef uint16_t PTR_TYPE;
-+#define PROG_PTR 					ubasic_get_ptr()
-+#define GET_CONTENT_PROG_PTR		ubasic_get_content()
-+#define SET_PROG_PTR_ABSOLUT(param)	ubasic_set_ptr(param)
-+#define INCR_PROG_PTR				ubasic_incr_ptr()
-+#define END_OF_PROG_TEXT			ubasic_is_eof()
-+
-+/**
-+ * \return Offset des aktuellen Program-Pointers in der Datei
-+ */
-+static inline PTR_TYPE ubasic_get_ptr(void) {
-+	return ubasic_ptr;
-+}
-+
-+/**
-+ * \return Das Zeichen, auf das get_ptr() zeigt
-+ */
-+static inline char ubasic_get_content(void) {
-+	return ubasic_content;
-+}
-+
-+/**
-+ * Hilfsfunktion fuer set_ptr() und incr_ptr()
-+ * \param offset neuer Wert fuer ubasic_ptr
-+ */
-+static inline void _ubasic_update_ptr(uint16_t offset) __attribute__((always_inline));
-+static inline void _ubasic_update_ptr(uint16_t offset) {
-+	const uint16_t last_block = ubasic_ptr / BOTFS_BLOCK_SIZE;
-+	ubasic_ptr = offset;
-+	const uint16_t block = ubasic_ptr / BOTFS_BLOCK_SIZE;
-+	const uint16_t index = ubasic_ptr % BOTFS_BLOCK_SIZE;
-+
-+	if (block != last_block) {
-+		botfs_seek(&ubasic_prog_file, (int16_t) block, SEEK_SET);
-+		botfs_read(&ubasic_prog_file, GET_MMC_BUFFER(ubasic_buffer));
-+	}
-+
-+	ubasic_content = (char) GET_MMC_BUFFER(ubasic_buffer)[index];
-+}
-+
-+/**
-+ * Setzt den Program-Pointer auf einen neuen Wert
-+ * \param offset Neuer Wert (Offset innerhalb der Datei)
-+ */
-+static inline void ubasic_set_ptr(uint16_t offset) {
-+	_ubasic_update_ptr(offset);
-+}
-+
-+/**
-+ * Erhoeht den Wert des Program-Pointers um eins
-+ */
-+static inline void ubasic_incr_ptr(void) {
-+	_ubasic_update_ptr(ubasic_ptr + 1);
-+}
-+
-+/**
-+ * \return True, falls Programmende erreicht
-+ */
-+static inline char ubasic_is_eof(void) {
-+	return ubasic_get_content() == 0;
-+}
-+#endif // ACCESS_VIA_BOTFS
-+
-+#endif // BEHAVIOUR_UBASIC_AVAILABLE
-+
- #endif /* __TOKENIZER_ACCESS_H__ */
 diff --git a/contrib/avrbasic/ubasic.c b/contrib/avrbasic/ubasic.c
-index 362d8e1..da37e36 100644
+index fd6c635..ebb35e6 100644
 --- a/contrib/avrbasic/ubasic.c
 +++ b/contrib/avrbasic/ubasic.c
-@@ -31,11 +31,18 @@
+@@ -31,11 +31,15 @@
   * ------------------------------------------------------
   */
  
--#include "tokenizer_access.h"
--#include "ubasic.h"
--#include "tokenizer.h"
--#include "ubasic_config.h"
--#include "ubasic_ext_proc.h"
-+#include "bot-logic/bot-logic.h"
++#include "bot-logic.h"
 +#ifdef BEHAVIOUR_UBASIC_AVAILABLE
 +
-+#include "bot-logic/tokenizer_access.h"
-+#include "bot-logic/ubasic.h"
-+#include "bot-logic/tokenizer.h"
-+#include "bot-logic/ubasic_config.h"
-+#include "bot-logic/ubasic_ext_proc.h"
-+#include <stddef.h>
-+#include <stdlib.h>
+ #include "tokenizer_access.h"
+ #include "ubasic.h"
+ #include "tokenizer.h"
+ #include "ubasic_config.h"
+ #include "ubasic_ext_proc.h"
 +#include <string.h>
-+#include <ctype.h>
  
  #if !USE_AVR
  	#include <stdio.h>
-@@ -46,23 +53,17 @@
- #endif
- 
- #if UBASIC_CALL
--	#include "ubasic_call.h"
-+	#include "bot-logic/ubasic_call.h"
- #endif
- 
- #if UBASIC_CVARS
--	#include "ubasic_cvars.h"
-+	#include "bot-logic/ubasic_cvars.h"
+@@ -54,8 +58,8 @@
  #endif
  
  #if USE_AVR
 -	#include "../uart/usart.h"
 -	#include <avr/io.h>
--	#include "ubasic_avr.h"
--#else
--	#include <ctype.h>
--#endif
--
--#if UBASIC_EXT_PROC
--	extern char current_proc[MAX_PROG_NAME_LEN];
 +//	#include "../uart/usart.h"
 +//	#include <avr/io.h>
-+	#include "bot-logic/ubasic_avr.h"
- #endif
- 
- #if !BREAK_NOT_EXIT
-@@ -70,6 +71,7 @@
- #endif
- 
- PTR_TYPE program_ptr;
-+int current_linenum;
- 
- static struct gosub_stack_t gosub_stack[MAX_GOSUB_STACK_DEPTH];
- static int gosub_stack_ptr;
-@@ -82,6 +84,7 @@ static struct linenum_cache_t linenum_cache[MAX_LINENUM_CACHE_DEPTH];
- static int linenum_cache_ptr;
- #endif
- 
-+
- static struct variables_t variables[MAX_VARNUM];
- 
- #if UBASIC_STRING
-@@ -96,7 +99,6 @@ struct data_ptr_t data_ptr = {{0,0},{0,0}};
- #endif
- 
- 
--
- // Prototypen
- int expr(void);
- static void line_statement(void);
-@@ -198,7 +200,7 @@ factor(void)
-     accept(TOKENIZER_LEFTPAREN);
-    	b = expr();
-     #if USE_AVR
--		r = rand31_next() % (b+1);
-+		r = (int) (rand31_next() % ((unsigned long) b + 1));
- 	#else
- 		r = rand() % (b+1);
- 	#endif
-@@ -220,7 +222,7 @@ factor(void)
-   case TOKENIZER_LEN:
-     accept(TOKENIZER_LEN);
-     accept(TOKENIZER_LEFTPAREN);
--    r=strlen(strexpr());
-+    r=(int) strlen(strexpr());
-     accept(TOKENIZER_RIGHTPAREN);
-     break;
-     
-@@ -571,7 +573,9 @@ print_statement(void)
- 	} while(tokenizer_token() != TOKENIZER_CR &&
- 			tokenizer_token() != TOKENIZER_ENDOFINPUT);
- 	// wenn "," oder ";" am Zeilenende, dann kein Zeilenvorschub
--	if (nl) PRINTF("\n\r");
-+	if (nl) {
-+		PRINTF(LINE_FEED);
-+	}
- }
- #endif
- /*---------------------------------------------------------------------------*/
-@@ -669,7 +673,7 @@ let_statement(void)
- static void
- gosub_statement(void)
- {
--	int linenum;
-+	int linenum = 0;
- 	accept(TOKENIZER_GOSUB);
- 	
- #if UBASIC_EXT_PROC
-@@ -757,7 +761,7 @@ static void
- for_statement(void)
- {
-   int for_variable, to, step; 
--  unsigned char downto;
-+  unsigned char downto = 0;
-   struct varinfo_t var;
-   
-   accept(TOKENIZER_FOR);
-@@ -861,7 +865,7 @@ static void dim_statement(void) {
- 		strvariables[var].dim=dim;
- 		// wenn Speicher schon mal reserviert war, zuerst freigeben
- 		if (!(strvariables[var].adr == NULL)) free(strvariables[var].adr);
--		strvariables[var].adr=malloc(dim * (MAX_STRINGLEN+1));
-+		strvariables[var].adr=malloc((size_t) dim * (MAX_STRINGLEN+1));
- 		for (i=0; i<dim; i++) strvariables[var].adr[i*(MAX_STRINGLEN+1)+1]=0;
- 	} else
- #endif	
-@@ -869,7 +873,7 @@ static void dim_statement(void) {
- 		// Integerfelder anlegen/initialisieren
- 		variables[var].dim=dim;
- 		if (!(variables[var].adr == NULL)) free(variables[var].adr);
--		variables[var].adr=malloc(dim * sizeof(int));
-+		variables[var].adr=malloc((size_t) dim * sizeof(int));
- 		if (variables[var].adr == NULL	) {
- 			tokenizer_error_print(current_linenum, OUT_OF_MEMORY);
- 			ubasic_break();
-@@ -908,14 +912,14 @@ static void input_statement(void) {
- 			ubasic_set_strvariable(ubasic_get_strvarinfo(), buf_ptr);
- 		#endif	
- 		} else if (tokenizer_token()==TOKENIZER_COMMA) {
--			PRINTF("\n\r? ");
-+			PRINTF("\n? ");
- 			tokenizer_next();
- 		} else {
- 			break;
- 		}
- 	} while(tokenizer_token() != TOKENIZER_CR &&
- 			tokenizer_token() != TOKENIZER_ENDOFINPUT);
--	PRINTF("\n\r");
-+	PRINTF("\n");
- }
- #endif
- 
-@@ -1194,6 +1198,7 @@ statement(void)
+ 	#include "ubasic_avr.h"
+ #else
+ 	#include <ctype.h>
+@@ -1154,6 +1158,7 @@ static void statement(void) {
    case TOKENIZER_LET:
      accept(TOKENIZER_LET);
      /* Fall through. */
@@ -415,184 +122,26 @@ index 362d8e1..da37e36 100644
    case TOKENIZER_VARIABLE:
  #if UBASIC_STRING
    case TOKENIZER_STRINGVAR:
-@@ -1202,9 +1207,10 @@ statement(void)
-     break;
-     
-   default:
--  	PRINTF("-->%i\n\r", token);
-+  	PRINTF("-->%i\n", token);
-     tokenizer_error_print(current_linenum, UNKNOWN_STATEMENT);
-     ubasic_break();
-+    break;
-   }
- }
- /*---------------------------------------------------------------------------*/
-@@ -1230,9 +1236,9 @@ line_statement(void)
- }
- /*---------------------------------------------------------------------------*/
- void ubasic_free_all_mem(void) {
--	unsigned char i;
- 	// dynamischer RAM fuer Arrays und Zeichenketten
- #if UBASIC_ARRAY || UBASIC_STRING 
-+	unsigned char i;
- 	for (i=0; i<MAX_VARNUM; i++) {
- 	#if UBASIC_ARRAY
- 		if (variables[i].adr) free(variables[i].adr);
-@@ -1273,7 +1279,6 @@ int ubasic_finished(void)
- {
- 	return ended || tokenizer_finished();
- }
--
- /*---------------------------------------------------------------------------*/
- void ubasic_set_variable(struct varinfo_t var, int value) {
- #if UBASIC_ARRAY
-@@ -1318,7 +1323,7 @@ struct varinfo_t ubasic_get_varinfo(void) {
- 
- #if UBASIC_STRING
- /*---------------------------------------------------------------------------*/
--char* ubasic_get_strvariable(struct varinfo_t var) {
-+static char* ubasic_get_strvariable(struct varinfo_t var) {
- # if UBASIC_ARRAY
- 	if (strvariables[var.varnum].adr)  
- 		return &strvariables[var.varnum].adr[var.idx*(MAX_STRINGLEN + 1)];
-@@ -1470,9 +1475,9 @@ unsigned char ubasic_is_strexpr() {
- }
- 
- /*---------------------------------------------------------------------------*/
--char* strfactor(void) {
-+static char* strfactor(void) {
- 	char *r, *s;	
--	unsigned char c;
-+	char c;
- 	int l, i, o;
- 	struct varinfo_t var;
- 	r=0;
-@@ -1506,7 +1511,7 @@ char* strfactor(void) {
- 			s=strexpr();
- 			accept(TOKENIZER_COMMA);
- 			l=expr();
--			if (l>strlen(s)) r = s;
-+			if (l>(int)strlen(s)) r = s;
- 			else {
- 				for (i=0; i<l; i++) {
- 					str_buf[i] = s[i];
-@@ -1523,10 +1528,10 @@ char* strfactor(void) {
- 			s=strexpr();
- 			accept(TOKENIZER_COMMA);
- 			l=expr();
--			if (l>strlen(s)) r = s;
-+			if (l>(int)strlen(s)) r = s;
- 			else {
- 				for (i=0; i<l; i++) {
--					str_buf[i] = s[strlen(s)-l+i];
-+					str_buf[i] = s[(int)strlen(s)-l+i];
- 				}
- 				str_buf[i] = 0;
- 				r=(char*)&str_buf[0];
-@@ -1542,7 +1547,7 @@ char* strfactor(void) {
- 			o=expr();
- 			accept(TOKENIZER_COMMA);
- 			l=expr();
--			if (l>(strlen(s)-o)) r = s;
-+			if (l>((int)strlen(s)-o)) r = s;
- 			else {
- 				for (i=0; i<l; i++) {
- 					str_buf[i] = s[o+i];
-@@ -1574,7 +1579,7 @@ char* strfactor(void) {
- 			}
- 			str_buf[i]=0;
- 			// String umdrehen
--			l=strlen(str_buf);
-+			l=(int)strlen(str_buf);
- 			for (i=0; i<l/2; i++) {
- 				c=str_buf[i];
- 				str_buf[i]=str_buf[l-i-1];
-@@ -1589,7 +1594,7 @@ char* strfactor(void) {
- 			accept(TOKENIZER_LEFTPAREN);
- 			s=strexpr();
- 			while (*s != '\0') {
--				if (islower (*s)) *s = toupper (*s);
-+				if (islower (*s)) *s = (char) toupper (*s);
- 				++s;
- 			}
- 			r=(char*)&str_buf[0];				
-@@ -1601,7 +1606,7 @@ char* strfactor(void) {
- 			accept(TOKENIZER_LEFTPAREN);
- 			s=strexpr();
- 			while (*s != '\0') {
--				if (isupper (*s)) *s = tolower (*s);
-+				if (isupper (*s)) *s = (char) tolower (*s);
- 				++s;
- 			}
- 			r=(char*)&str_buf[0];				
-@@ -1623,12 +1628,12 @@ char* strexpr(void) {
- 	
- 	// Argument in lokalen Puffer kopieren
- 	strcpy(s1, strfactor());
--	str_len = strlen(s1);
-+	str_len = (int) strlen(s1);
- 	op = tokenizer_token();
- 	while(op == TOKENIZER_PLUS) {
- 		tokenizer_next();
- 		s2 = strfactor();
--		str_len = str_len + strlen(s2);
-+		str_len = str_len + (int) strlen(s2);
- 		if (str_len >= MAX_STRINGLEN+1) {
- 			// Stringlaenge wird zu gross
- 		    tokenizer_error_print(current_linenum, STRING_TO_LARGE);
-@@ -1673,8 +1678,6 @@ int ubasic_get_variable(struct varinfo_t var) {
- #endif
- 		return variables[var.varnum].val;
- }
--
--
- /*---------------------------------------------------------------------------*/
- // Park-Miller "minimal standard" 31Bit pseudo-random generator
- // http://www.firstpr.com.au/dsp/rand31/
-@@ -1691,3 +1694,5 @@ long unsigned int rand31_next(void)
+@@ -1648,3 +1653,5 @@ long unsigned int rand31_next(void)
  }
  #endif
  /*---------------------------------------------------------------------------*/
 +
 +#endif // BEHAVIOUR_UBASIC_AVAILABLE
 diff --git a/contrib/avrbasic/ubasic.h b/contrib/avrbasic/ubasic.h
-index 11ffc8a..757d5c0 100644
+index fb5e287..c7a0bbc 100644
 --- a/contrib/avrbasic/ubasic.h
 +++ b/contrib/avrbasic/ubasic.h
-@@ -33,8 +33,11 @@
+@@ -33,6 +33,8 @@
  #ifndef __UBASIC_H__
  #define __UBASIC_H__
  
--#include "ubasic_config.h"
--#include "tokenizer.h"
 +#ifdef BEHAVIOUR_UBASIC_AVAILABLE
 +
-+#include "bot-logic/ubasic_config.h"
-+#include "bot-logic/tokenizer.h"
-+#include "bot-logic/tokenizer_access.h"
+ #include "ubasic_config.h"
+ #include "tokenizer.h"
  
- #define SYNTAX_ERROR			1
- #define UNKNOWN_ADC_CHANNEL		2
-@@ -75,7 +78,7 @@ struct for_state_t {
-   int for_variable;
-   int to;
-   int step;
--  char downto;
-+  unsigned char downto;
- };
- 
- // Type-Definition Zeilennummern-Cache
-@@ -125,7 +128,8 @@ struct data_ptr_t {
- };
- #endif
- 
--int current_linenum;
-+
-+extern int current_linenum;
- 
- void ubasic_init(PTR_TYPE program);
- void ubasic_run(void);
-@@ -144,4 +148,6 @@ void accept(int token);
+@@ -144,4 +146,6 @@ void accept(int token);
  int expr(void);
  void ubasic_break(void);
  
@@ -600,32 +149,21 @@ index 11ffc8a..757d5c0 100644
 +
  #endif /* __UBASIC_H__ */
 diff --git a/contrib/avrbasic/ubasic_call.c b/contrib/avrbasic/ubasic_call.c
-index e1aa547..9d43b8e 100644
+index b6c1dad..917767f 100644
 --- a/contrib/avrbasic/ubasic_call.c
 +++ b/contrib/avrbasic/ubasic_call.c
-@@ -10,11 +10,16 @@
+@@ -10,6 +10,10 @@
  * ---------
  *
  ----------------------------------------------------------*/
--#include "tokenizer_access.h"
--#include "ubasic.h"
--#include "tokenizer.h"
--#include "ubasic_config.h"
--#include "ubasic_call.h"
 +
-+#include "bot-logic/bot-logic.h"
++#include "bot-logic.h"
 +#ifdef BEHAVIOUR_UBASIC_AVAILABLE
 +
-+#include "bot-logic/tokenizer_access.h"
-+#include "bot-logic/ubasic.h"
-+#include "bot-logic/tokenizer.h"
-+#include "bot-logic/ubasic_config.h"
-+#include "bot-logic/ubasic_call.h"
-+#include <stddef.h>
- 
- #if USE_AVR && USE_LC7981
- 	#include "../lc7981/lc7981.h"
-@@ -25,7 +30,7 @@
+ #include "tokenizer_access.h"
+ #include "ubasic.h"
+ #include "tokenizer.h"
+@@ -25,7 +29,7 @@
  #endif
  
  #if USE_AVR
@@ -634,22 +172,7 @@ index e1aa547..9d43b8e 100644
  #else
  	#include <string.h>
  	#include <stdio.h> 
-@@ -33,6 +38,14 @@
- 
- #if UBASIC_CALL
- 
-+#define DEBUG 0
-+#if DEBUG
-+#include "log.h"
-+#define DEBUG_PRINTF(...)  LOG_DEBUG(__VA_ARGS__)
-+#else
-+#define DEBUG_PRINTF(...)
-+#endif
-+
- //--------------------------------------------
- 
- // Funktionspointertabelle
-@@ -55,6 +68,10 @@ callfunct_t callfunct[] = {
+@@ -55,6 +59,10 @@ callfunct_t callfunct[] = {
      {"get_rtc",	.funct_ptr.UCharFuncUChar=get_DS1307,	UCHAR_FUNC_UCHAR},
  #endif
  
@@ -660,88 +183,27 @@ index e1aa547..9d43b8e 100644
      {"",		{NULL},									255}
  };
  
-@@ -64,10 +81,13 @@ int call_statement(void) {
- 	unsigned char f_typ_temp;
- 	uint8_t idx=0;
- 
-+#if defined VOID_FUNC_INT || defined INT_FUNC_INT || defined VOID_FUNC_2INT || defined VOID_FUNC_4INT \
-+	|| defined VOID_FUNC_2INT_CHAR
- 	int p1=0;
+@@ -69,8 +77,8 @@ int call_statement(void) {
  	int p2=0;
  	int p3=0;
  	int p4=0;
-+#endif
- 	int r=0;
+-	int r=0;
+ #endif 
++	int r=0;
  	
  	accept(TOKENIZER_CALL);
-@@ -99,6 +119,7 @@ int call_statement(void) {
- 		// je nach Funktionstyp (3.Spalte in Funktionspointertabelle) 
- 		// Parameterliste aufbauen und Funktion aufrufen
- 		switch (f_typ_temp){
-+#ifdef VOID_FUNC_VOID
- 			case VOID_FUNC_VOID:
- 						;
- 						#if USE_PROGMEM
-@@ -108,6 +129,8 @@ int call_statement(void) {
- 							callfunct[idx].funct_ptr.VoidFuncVoid();
+ 	// Parameterliste wird durch linke Klammer eingeleitet
+@@ -187,8 +195,50 @@ int call_statement(void) {
  						#endif
  						break;
-+#endif // VOID_FUNC_VOID
-+#ifdef VOID_FUNC_INT
- 			case VOID_FUNC_INT:	
- 						accept(TOKENIZER_COMMA);
- 						p1=expr();
-@@ -118,6 +141,8 @@ int call_statement(void) {
- 							callfunct[idx].funct_ptr.VoidFuncInt(p1);
- 						#endif
- 						break;
-+#endif // VOID_FUNC_INT
-+#ifdef VOID_FUNC_2INT
- 			case VOID_FUNC_2INT:	
- 						accept(TOKENIZER_COMMA);
- 						p1=expr();
-@@ -130,6 +155,8 @@ int call_statement(void) {
- 							callfunct[idx].funct_ptr.VoidFunc2Int(p1, p2);
- 						#endif
- 						break;
-+#endif // VOID_FUNC_2INT
-+#ifdef VOID_FUNC_4INT
- 			case VOID_FUNC_4INT:	
- 						accept(TOKENIZER_COMMA);
- 						p1=expr();
-@@ -146,6 +173,8 @@ int call_statement(void) {
- 							callfunct[idx].funct_ptr.VoidFunc4Int(p1, p2, p3, p4);
- 						#endif
- 						break;
-+#endif // VOID_FUNC_4INT
-+#ifdef VOID_FUNC_2INT_CHAR
- 			case VOID_FUNC_2INT_CHAR:	
- 						accept(TOKENIZER_COMMA);
- 						p1=expr();
-@@ -160,6 +189,8 @@ int call_statement(void) {
- 							callfunct[idx].funct_ptr.VoidFunc2IntChar(p1, p2, (char*)tokenizer_last_string_ptr());
- 						#endif
- 						break;
-+#endif // VOID_FUNC_2INT_CHAR
-+#ifdef INT_FUNC_INT
- 			case UCHAR_FUNC_UCHAR: // <-- naja, koennte ins Auge gehen...
- 			case INT_FUNC_INT: 
- 						accept(TOKENIZER_COMMA);
-@@ -171,8 +202,56 @@ int call_statement(void) {
- 							r=callfunct[idx].funct_ptr.IntFuncInt(p1);
- 						#endif
- 						break;
-+#endif // INT_FUNC_INT
+ #endif
 +#ifdef VOID_FUNC_2INT16
 +			case VOID_FUNC_2INT16: {
-+				DEBUG_PRINTF("VOID_FUNC_2INT16:");
 +				// zwei Integer und kein Rueckgabewert
 +				accept(TOKENIZER_COMMA);
 +				const int16_t p1 = expr();
-+				DEBUG_PRINTF("p1=%d", p1);
 +				accept(TOKENIZER_COMMA);
 +				const int16_t p2 = expr();
-+				DEBUG_PRINTF("p2=%d", p2);
 +				void (* func)(int16_t, int16_t) = (void (*)(int16_t, int16_t)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFunc2Int16);
 +				func(p1, p2);
 +				break;
@@ -759,7 +221,6 @@ index e1aa547..9d43b8e 100644
 +				// Remotecall
 +				accept(TOKENIZER_COMMA);
 +				const char * const func = tokenizer_last_string_ptr();
-+				DEBUG_PRINTF("func=\"%s\"", func);
 +				accept(TOKENIZER_STRING);
 +				remote_call_data_t params[REMOTE_CALL_MAX_PARAM] = { {0} };
 +				uint8_t i;
@@ -769,7 +230,6 @@ index e1aa547..9d43b8e 100644
 +					}
 +					accept(TOKENIZER_COMMA);
 +					params[i].s16 = expr();
-+					DEBUG_PRINTF("p%u=%d", i + 1, params[i].s16);
 +				}
 +				int8_t (* rc)(Behaviour_t *, const char *, const remote_call_data_t *) =
 +					(int8_t (*)(Behaviour_t *, const char *, const remote_call_data_t *)) pgm_read_word(&callfunct[idx].funct_ptr.VoidFuncRC);
@@ -784,7 +244,7 @@ index e1aa547..9d43b8e 100644
  		}
  	}
  	// abschliessende rechte Klammer
-@@ -187,3 +266,5 @@ int call_statement(void) {
+@@ -196,3 +246,5 @@ int call_statement(void) {
  	return r;
  }
  #endif
@@ -829,7 +289,7 @@ index 3f4cfda..80ba891 100644
        unsigned char typ;
  } callfunct_t;
 diff --git a/contrib/avrbasic/ubasic_config.h b/contrib/avrbasic/ubasic_config.h
-index c5d2d78..37c0ed7 100644
+index c5d2d78..a9cf03f 100644
 --- a/contrib/avrbasic/ubasic_config.h
 +++ b/contrib/avrbasic/ubasic_config.h
 @@ -14,6 +14,15 @@
@@ -837,7 +297,7 @@ index c5d2d78..37c0ed7 100644
  #define __UBASIC_CONFIG_H__
  
 +/* Konfiguration fuer ct-Bot */
-+#include "bot-logic/bot-logic.h"
++#include "bot-logic.h"
 +#ifdef BEHAVIOUR_UBASIC_AVAILABLE
 +#include "log.h"
 +
@@ -934,29 +394,23 @@ index c5d2d78..37c0ed7 100644
 +
  #endif /* __UBASIC_CONFIG_H__ */
 diff --git a/contrib/avrbasic/ubasic_cvars.c b/contrib/avrbasic/ubasic_cvars.c
-index b96b361..a155d2b 100644
+index e9707e2..bb957f5 100644
 --- a/contrib/avrbasic/ubasic_cvars.c
 +++ b/contrib/avrbasic/ubasic_cvars.c
-@@ -9,15 +9,20 @@
+@@ -9,6 +9,11 @@
  * ---------
  *
  ----------------------------------------------------------*/
--#include "tokenizer_access.h"
--#include "ubasic.h"
--#include "tokenizer.h"
--#include "ubasic_config.h"
--#include "ubasic_cvars.h"
- 
-+#include "bot-logic/bot-logic.h"
-+#ifdef BEHAVIOUR_UBASIC_AVAILABLE
 +
-+#include "bot-logic/tokenizer_access.h"
-+#include "bot-logic/ubasic.h"
-+#include "bot-logic/tokenizer.h"
-+#include "bot-logic/ubasic_config.h"
-+#include "bot-logic/ubasic_cvars.h"
++#include "bot-logic.h"
++#ifdef BEHAVIOUR_UBASIC_AVAILABLE
 +#include "sensor.h"
-+#include <stddef.h>
++
+ #include "tokenizer_access.h"
+ #include "ubasic.h"
+ #include "tokenizer.h"
+@@ -17,7 +22,7 @@
+ 
  
  #if USE_AVR
 -	#include "../uart/usart.h"
@@ -964,9 +418,9 @@ index b96b361..a155d2b 100644
  #else
  	#include <string.h>
  	#include <stdio.h>
-@@ -32,12 +37,6 @@
- 	#define DEBUG_PRINTF(...)
- #endif
+@@ -25,12 +30,6 @@
+ 
+ #if UBASIC_CVARS
  
 -//------------------------------------------
 -// eine Testvariable in C...
@@ -977,7 +431,7 @@ index b96b361..a155d2b 100644
  //--------------------------------------------
  
  // Variablenpointertabelle
-@@ -46,12 +45,22 @@ cvars_t cvars[] PROGMEM = {
+@@ -39,8 +38,18 @@ cvars_t cvars[] PROGMEM = {
  #else
  cvars_t cvars[] = {
  #endif
@@ -998,51 +452,7 @@ index b96b361..a155d2b 100644
      {"", NULL}
  };
  
--int search_cvars(const char *var_name) {
-+static int search_cvars(const char *var_name) {
- 	int idx=0;
- 	// Variablenname in Tabelle suchen
- #if USE_PROGMEM
-@@ -85,9 +94,9 @@ void vpoke_statement(void) {
- 	
- 	accept(TOKENIZER_VPOKE);
-     accept(TOKENIZER_LEFTPAREN);
--	// Funktionsname ermitteln
-+	// Variablennamen ermitteln
- 	if(tokenizer_token() == TOKENIZER_STRING) {
--		DEBUG_PRINTF("funct_name: %s\n\r", tokenizer_last_string_ptr());
-+		DEBUG_PRINTF("var_name: %s", tokenizer_last_string_ptr());
- 		tokenizer_next();
- 	}
- 	idx=search_cvars(tokenizer_last_string_ptr());
-@@ -106,25 +115,28 @@ int vpeek_expression(void) {
- 	int idx=0;
- 	int r=0;
- #if USE_PROGMEM	
--	int *var_temp;
-+	int16_t * var_temp;
- #endif
- 
- 	accept(TOKENIZER_VPEEK);
- 	// Parameterliste wird durch linke Klammer eingeleitet
-     accept(TOKENIZER_LEFTPAREN);
--	// Funktionsname ermitteln
-+	// Variablennamen ermitteln
- 	if(tokenizer_token() == TOKENIZER_STRING) {
--		DEBUG_PRINTF("funct_name: %s\n\r", tokenizer_last_string_ptr());
-+		DEBUG_PRINTF("var_name: %s", tokenizer_last_string_ptr());
- 		tokenizer_next();
- 	}
- 	idx=search_cvars(tokenizer_last_string_ptr());
- #if USE_PROGMEM
--	var_temp=(int *)pgm_read_word(&cvars[idx].pvar);
-+	var_temp=(int16_t *) pgm_read_word(&cvars[idx].pvar);
- 	r=*var_temp;
- #else	
- 	r = *cvars[idx].pvar;
- #endif
-     accept(TOKENIZER_RIGHTPAREN);
-+    DEBUG_PRINTF("r=%d", r);
+@@ -119,3 +128,5 @@ int vpeek_expression(void) {
  	return r;
  }
  #endif
@@ -1061,82 +471,3 @@ index e8bf41b..5114eba 100644
  } cvars_t;
  
  
-diff --git a/contrib/avrbasic/ubasic_ext_proc.c b/contrib/avrbasic/ubasic_ext_proc.c
-index ae8d1ab..91cc122 100644
---- a/contrib/avrbasic/ubasic_ext_proc.c
-+++ b/contrib/avrbasic/ubasic_ext_proc.c
-@@ -23,20 +23,23 @@
- *
- ----------------------------------------------------------*/
- 
--#include "ubasic_config.h"
-+#include "bot-logic/bot-logic.h"
-+#ifdef BEHAVIOUR_UBASIC_AVAILABLE
-+
-+#include "bot-logic/ubasic_config.h"
- 
- #define __UBASIC_EXT_PROC_C__
--	#include "tokenizer_access.h"
-+	#include "bot-logic/tokenizer_access.h"
- #undef __UBASIC_EXT_PROC_C__
- 
--#include "ubasic.h"
--#include "tokenizer.h"
--#include "ubasic_ext_proc.h"
--
-+#include "bot-logic/ubasic.h"
-+#include "bot-logic/tokenizer.h"
-+#include "bot-logic/ubasic_ext_proc.h"
-+#include <string.h>
- 
- 
- #if USE_AVR
--	#include "../uart/usart.h"
-+//	#include "../uart/usart.h"
- #else
- 	#include <string.h>
- 	#include <stdio.h> 
-@@ -118,5 +121,24 @@ char current_proc[MAX_PROG_NAME_LEN];
- 	}
- #endif
- 
-+#if ACCESS_VIA_BOTFS
-+	/**
-+	 * Umschalten des Programm-Kontextes
-+	 * \param p_name Programmname
-+	 */
-+	void switch_proc(char * p_name) {
-+		botfs_file_descr_t new_prog;
-+		if (botfs_open(p_name, &new_prog, BOTFS_MODE_r, GET_MMC_BUFFER(ubasic_buffer)) != 0) {
-+			tokenizer_error_print(current_linenum, UNKNOWN_SUBPROC);
-+			ubasic_break();
-+		} else {
-+			bot_ubasic_load_file(p_name, &new_prog);
-+			program_ptr = 0;
-+			tokenizer_init(program_ptr);
-+		}
-+	}
-+#endif // ACCESS_VIA_BOTFS
- 
--#endif
-+#endif // UBASIC_EXT_PROC
-+
-+#endif // BEHAVIOUR_UBASIC_AVAILABLE
-diff --git a/contrib/avrbasic/ubasic_ext_proc.h b/contrib/avrbasic/ubasic_ext_proc.h
-index c959b41..acc722e 100644
---- a/contrib/avrbasic/ubasic_ext_proc.h
-+++ b/contrib/avrbasic/ubasic_ext_proc.h
-@@ -15,10 +15,12 @@
- #ifndef __UBASIC_EXT_PROC_H__
- #define __UBASIC_EXT_PROC_H__
- 
-+#if UBASIC_EXT_PROC
-+extern char current_proc[]; /**< aktueller Programmname */
- 
- // Prototypen
- void switch_proc(char *);
- 
--
-+#endif // UBASIC_EXT_PROC
- 
- #endif /* __UBASIC_EXT_PROC_H__ */

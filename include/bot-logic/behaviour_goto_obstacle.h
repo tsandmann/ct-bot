@@ -17,32 +17,32 @@
  *
  */
 
-/*!
- * @file 	behaviour_goto_obstacle.h
- * @brief 	Anfahren eines Hindernisses
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	15.10.2007
+/**
+ * \file 	behaviour_goto_obstacle.h
+ * \brief 	Anfahren eines Hindernisses
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	15.10.2007
  */
 
 #ifndef BEHAVIOUR_GOTO_OBSTACLE_H_
 #define BEHAVIOUR_GOTO_OBSTACLE_H_
 
 #ifdef BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
-/*!
- * Hilfsverhalten von bot_goto_pos(), das den Bot auf eine gewuenschte Entfernung
- * an ein Hindernis heranfaehrt.
- * @param *data	Der Verhaltensdatensatz
+/**
+ * Faehrt den Bot auf eine gewuenschte Entfernung an ein Hindernis an
+ * \param *data	Der Verhaltensdatensatz
  */
 void bot_goto_obstacle_behaviour(Behaviour_t * data);
 
-/*!
+/**
  * Botenfunktion des goto_obstacle-Verhaltens.
  * Bewegt den Bot auf distance mm in aktueller Blickrichtung an ein Hindernis heran
- * @param *caller	Der Verhaltensdatensatz des Aufrufers
- * @param distance	Distanz in mm, in der der Bot vor dem Hindernis stehen bleiben soll
- * @param parallel	richtet die Front des Bots parallel zum Hindernis aus, falls 1
+ * \param *caller	Der Verhaltensdatensatz des Aufrufers
+ * \param distance	Distanz in mm, in der der Bot vor dem Hindernis stehen bleiben soll
+ * \param parallel	Richtet die Front des Bots parallel zum Hindernis aus, falls 1
+ * \return			Zeiger auf Verhaltensdatensatz
  */
-void bot_goto_obstacle(Behaviour_t * caller, int16_t distance, uint8_t parallel);
+Behaviour_t * bot_goto_obstacle(Behaviour_t * caller, int16_t distance, uint8_t parallel);
 
 #endif // BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
 #endif // BEHAVIOUR_GOTO_OBSTACLE_H_

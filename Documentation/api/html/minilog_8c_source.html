@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: minilog.c Quellcode</title>
+<title>c&#39;t-Bot: minilog.c Quellcode</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -97,7 +97,7 @@
 <a name="l00048"></a>00048 <span class="preprocessor">static PGM_P p_log_type;                            </span>
 <a name="l00049"></a>00049 <span class="preprocessor">static PGM_P log_types[] PROGMEM = {debug_str, info_str, error_str}; </span>
 <a name="l00050"></a>00050 <span class="preprocessor">#ifndef LOG_MMC_AVAILABLE</span>
-<a name="l00051"></a>00051 <span class="preprocessor"></span><span class="keyword">static</span> <span class="keywordtype">char</span> minilog_buffer[<a class="code" href="log_8c.html#a381c342b2b34df0b1a5b39c0d94da4e1">LOG_BUFFER_SIZE</a>]; 
+<a name="l00051"></a>00051 <span class="preprocessor"></span><span class="keyword">static</span> <span class="keywordtype">char</span> minilog_buffer[LOG_BUFFER_SIZE]; 
 <a name="l00052"></a>00052 <span class="keyword">static</span> <span class="keywordtype">char</span> * p_buffer = minilog_buffer; 
 <a name="l00053"></a>00053 <span class="preprocessor">#endif // LOG_MMC_AVAILABLE</span>
 <a name="l00054"></a>00054 <span class="preprocessor"></span>
@@ -131,7 +131,7 @@
 <a name="l00093"></a>00093 <span class="preprocessor">#ifdef LOG_MMC_AVAILABLE</span>
 <a name="l00094"></a>00094 <span class="preprocessor"></span>    p_buffer +=
 <a name="l00095"></a>00095 <span class="preprocessor">#endif</span>
-<a name="l00096"></a>00096 <span class="preprocessor"></span>    vsnprintf_P(p_buffer, <a class="code" href="log_8c.html#a381c342b2b34df0b1a5b39c0d94da4e1">LOG_BUFFER_SIZE</a> - 15, format, args);
+<a name="l00096"></a>00096 <span class="preprocessor"></span>    vsnprintf_P(p_buffer, LOG_BUFFER_SIZE - 15, format, args);
 <a name="l00097"></a>00097     va_end(args);
 <a name="l00098"></a>00098 
 <a name="l00099"></a>00099 <span class="preprocessor">#ifdef LOG_CTSIM_AVAILABLE</span>
@@ -143,7 +143,7 @@
 <a name="l00105"></a>00105     *p_buffer = <span class="charliteral">&#39;\n&#39;</span>;
 <a name="l00106"></a>00106     ++p_buffer;
 <a name="l00107"></a>00107     <span class="comment">/* Puffer-Zeiger fuer naechsten Eintrag weiter setzen */</span>
-<a name="l00108"></a>00108     <span class="keyword">const</span> <span class="keywordtype">size_t</span> to_end = (size_t) (<a class="code" href="log_8c.html#a381c342b2b34df0b1a5b39c0d94da4e1">LOG_BUFFER_SIZE</a> - ((p_buffer - file_buffer) &amp; (<a class="code" href="log_8c.html#a381c342b2b34df0b1a5b39c0d94da4e1">LOG_BUFFER_SIZE</a> - 1)));
+<a name="l00108"></a>00108     <span class="keyword">const</span> <span class="keywordtype">size_t</span> to_end = (size_t) (LOG_BUFFER_SIZE - ((p_buffer - file_buffer) &amp; (LOG_BUFFER_SIZE - 1)));
 <a name="l00109"></a>00109     memset(p_buffer, 0, to_end);
 <a name="l00110"></a>00110     p_buffer += to_end;
 <a name="l00111"></a>00111     <span class="keywordflow">if</span> (p_buffer &gt;= &amp;file_buffer[<a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>]) {
@@ -168,7 +168,7 @@
 <a name="l00132"></a>00132     int8_t res;
 <a name="l00133"></a>00133     <span class="keywordflow">if</span> ((res = <a class="code" href="botfs_8c.html#aad0605bba52a09999f158cb2e371a5de" title="Oeffnet eine Datei.">botfs_open</a>(FILE_NAME, &amp;log_file, <a class="code" href="botfs__config_8h.html#add8cfeb97a2a3b41a11fd612fb849dda" title="lesen und schreiben, Datei wird aber beim Oeffnen geleert">BOTFS_MODE_W</a>, file_buffer)) != 0) {
 <a name="l00134"></a>00134         <span class="keywordflow">if</span> (res == -1) {
-<a name="l00135"></a>00135             <a class="code" href="botfs_8c.html#a5eab2bbbace8faac17e9a9a35719d89a" title="Legt eine neue Datei an.">botfs_create</a>(FILE_NAME, FILE_SIZE, file_buffer);
+<a name="l00135"></a>00135             <a class="code" href="botfs_8c.html#a1683850a15cc2ed1af27911aa134f83f" title="Legt eine neue Datei an.">botfs_create</a>(FILE_NAME, FILE_SIZE, 0, file_buffer);
 <a name="l00136"></a>00136             <span class="keywordflow">if</span> (<a class="code" href="botfs_8c.html#aad0605bba52a09999f158cb2e371a5de" title="Oeffnet eine Datei.">botfs_open</a>(FILE_NAME, &amp;log_file, <a class="code" href="botfs__config_8h.html#add8cfeb97a2a3b41a11fd612fb849dda" title="lesen und schreiben, Datei wird aber beim Oeffnen geleert">BOTFS_MODE_W</a>, file_buffer) != 0) {
 <a name="l00137"></a>00137                 <span class="keywordflow">return</span>;
 <a name="l00138"></a>00138             }
@@ -242,13 +242,13 @@
 <a name="l00219"></a>00219 
 <a name="l00220"></a>00220     uint16_t file_pos = 0xffff;
 <a name="l00221"></a>00221     <span class="comment">/* anzuzeigende Zeile derzeit nicht im Puffer? */</span>
-<a name="l00222"></a>00222     <span class="keywordflow">if</span> ((next_line - 1) / (BOTFS_BLOCK_SIZE / <a class="code" href="log_8c.html#a381c342b2b34df0b1a5b39c0d94da4e1">LOG_BUFFER_SIZE</a>) != (line_displayed + 0) / (BOTFS_BLOCK_SIZE / <a class="code" href="log_8c.html#a381c342b2b34df0b1a5b39c0d94da4e1">LOG_BUFFER_SIZE</a>)) {
+<a name="l00222"></a>00222     <span class="keywordflow">if</span> ((next_line - 1) / (BOTFS_BLOCK_SIZE / LOG_BUFFER_SIZE) != (line_displayed + 0) / (BOTFS_BLOCK_SIZE / LOG_BUFFER_SIZE)) {
 <a name="l00223"></a>00223         <span class="comment">/* Log-Puffer zurueckschreiben */</span>
 <a name="l00224"></a>00224         log_flush();
 <a name="l00225"></a>00225         file_pos = log_file.pos;
 <a name="l00226"></a>00226 
 <a name="l00227"></a>00227         <span class="comment">/* anzuzeigende Zeile in Puffer laden */</span>
-<a name="l00228"></a>00228         botfs_seek(&amp;log_file, (int16_t) (line_displayed / (BOTFS_BLOCK_SIZE / <a class="code" href="log_8c.html#a381c342b2b34df0b1a5b39c0d94da4e1">LOG_BUFFER_SIZE</a>)), SEEK_SET);
+<a name="l00228"></a>00228         botfs_seek(&amp;log_file, (int16_t) (line_displayed / (BOTFS_BLOCK_SIZE / LOG_BUFFER_SIZE)), SEEK_SET);
 <a name="l00229"></a>00229         <span class="keywordflow">if</span> (<a class="code" href="botfs_8c.html#a71348fbe8ed02ee7b07b6ab789a400ab" title="Liest BOTFS_BLOCK_SIZE Bytes aus einer Datei in einen Puffer.">botfs_read</a>(&amp;log_file, file_buffer) != 0) {
 <a name="l00230"></a>00230             <span class="keywordflow">return</span>;
 <a name="l00231"></a>00231         }
@@ -256,7 +256,7 @@
 <a name="l00233"></a>00233     <span class="keywordtype">char</span> * ptr = file_buffer;
 <a name="l00234"></a>00234 
 <a name="l00235"></a>00235     <span class="comment">/* Offset im Puffer berechnen */</span>
-<a name="l00236"></a>00236     ptr += (line_displayed % (BOTFS_BLOCK_SIZE / <a class="code" href="log_8c.html#a381c342b2b34df0b1a5b39c0d94da4e1">LOG_BUFFER_SIZE</a>)) * <a class="code" href="log_8c.html#a381c342b2b34df0b1a5b39c0d94da4e1">LOG_BUFFER_SIZE</a>;
+<a name="l00236"></a>00236     ptr += (line_displayed % (BOTFS_BLOCK_SIZE / LOG_BUFFER_SIZE)) * LOG_BUFFER_SIZE;
 <a name="l00237"></a>00237     <span class="keyword">const</span> <span class="keywordtype">char</span> tmp = ptr[13];
 <a name="l00238"></a>00238     <span class="keywordflow">if</span> (tmp == <span class="charliteral">&#39; &#39;</span>) {
 <a name="l00239"></a>00239         <span class="comment">/* erste Zeile hinter Log-Typ abbrechen */</span>
@@ -308,9 +308,9 @@
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:04 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:09 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

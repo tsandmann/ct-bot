@@ -88,6 +88,7 @@
 //#define BEHAVIOUR_SCAN_BEACONS_AVAILABLE /*!< Suchen von Landmarken zur Lokalisierung */
 
 //#define BEHAVIOUR_UBASIC_AVAILABLE /*!< uBasic Verhalten */
+//#define BEHAVIOUR_ABL_AVAILABLE /*!< ABL-Interpreter */
 
 /* Aufgrund einer ganzen Reihe von Abhaengigkeiten sollte man beim Versuch Speicher
  * zu sparen, zuerst mal bei den Hauptverhalten ausmisten, sonst kommen die
@@ -104,6 +105,10 @@
 #undef BEHAVIOUR_UBASIC_AVAILABLE
 #endif // BOT_FS_AVAILABLE
 #endif // BEHAVIOUR_UBASIC_AVAILABLE
+
+#ifdef BEHAVIOUR_ABL_AVAILABLE
+#define BEHAVIOUR_REMOTECALL_AVAILABLE
+#endif
 
 #ifndef POS_STORE_AVAILABLE
 #ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
@@ -334,6 +339,8 @@
 #include "bot-logic/behaviour_test_encoder.h"
 
 #include "bot-logic/behaviour_ubasic.h"
+
+#include "behaviour_abl.h"
 
 #endif // BEHAVIOUR_AVAILABLE
 #endif // AVAILABLE_BEHAVIOURS_H_

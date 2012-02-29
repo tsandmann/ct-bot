@@ -35,9 +35,8 @@
 
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 
-#include "bot-logic/ubasic_config.h"
-#include "bot-logic/tokenizer.h"
-#include "bot-logic/tokenizer_access.h"
+#include "ubasic_config.h"
+#include "tokenizer.h"
 
 #define SYNTAX_ERROR			1
 #define UNKNOWN_ADC_CHANNEL		2
@@ -127,7 +126,6 @@ struct data_ptr_t {
 	struct tokenizer_pos_t current;
 };
 #endif
-
 
 extern int current_linenum;
 

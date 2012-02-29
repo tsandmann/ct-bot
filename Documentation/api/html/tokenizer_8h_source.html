@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: tokenizer.h Quellcode</title>
+<title>c&#39;t-Bot: tokenizer.h Quellcode</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -52,8 +52,8 @@
   </div>
   <div id="nav-path" class="navpath">
     <ul>
-      <li class="navelem"><a class="el" href="dir_a0fca93e65e0dd30a74a1e6addb2ee0e.html">include</a>      </li>
-      <li class="navelem"><a class="el" href="dir_5c55cd21629be826c7b7fde3f3ac88dc.html">bot-logic</a>      </li>
+      <li class="navelem"><a class="el" href="dir_9d1e0dccf1391b04e9e09a3367003bd7.html">include</a>      </li>
+      <li class="navelem"><a class="el" href="dir_12aaf46a9c52378fda4839f850437abb.html">bot-logic</a>      </li>
     </ul>
   </div>
 </div>
@@ -97,52 +97,53 @@
 <a name="l00033"></a>00033 <span class="preprocessor">#ifndef __TOKENIZER_H__</span>
 <a name="l00034"></a>00034 <span class="preprocessor"></span><span class="preprocessor">#define __TOKENIZER_H__</span>
 <a name="l00035"></a>00035 <span class="preprocessor"></span>
-<a name="l00036"></a>00036 <span class="preprocessor">#include &quot;<a class="code" href="ubasic__config_8h.html">bot-logic/ubasic_config.h</a>&quot;</span>
-<a name="l00037"></a>00037 <span class="preprocessor">#include &quot;<a class="code" href="parser_8h.html">bot-logic/parser.h</a>&quot;</span>
-<a name="l00038"></a>00038 
-<a name="l00039"></a>00039 <span class="comment">// Typ-Definition Token-Tabelle (Standard-Parser)</span>
-<a name="l00040"></a>00040 <span class="keyword">struct </span><a class="code" href="structkeyword__token.html">keyword_token</a> {
-<a name="l00041"></a>00041 <span class="preprocessor">#if USE_PROGMEM</span>
-<a name="l00042"></a>00042 <span class="preprocessor"></span>    <span class="comment">// um via strxxx_P zugreifen zu koennen, muss eine feste Laenge vorgegeben werden</span>
-<a name="l00043"></a>00043     <span class="keywordtype">char</span> <a class="code" href="structkeyword__token.html#afa9d05b2a21e587c9cc9dc2289d2190c">keyword</a>[<a class="code" href="ubasic__config_8h.html#a6d6197219ef3336eb81c6db0ae5b74a2">MAX_KEYWORD_LEN</a>+1];
-<a name="l00044"></a>00044 <span class="preprocessor">#else</span>
-<a name="l00045"></a><a class="code" href="structkeyword__token.html#afa9d05b2a21e587c9cc9dc2289d2190c">00045</a> <span class="preprocessor"></span>    <span class="keywordtype">char</span> *<a class="code" href="structkeyword__token.html#afa9d05b2a21e587c9cc9dc2289d2190c">keyword</a>;
-<a name="l00046"></a>00046 <span class="preprocessor">#endif</span>
-<a name="l00047"></a><a class="code" href="structkeyword__token.html#a3ad1fd415c8d8cb2533388d947bd2670">00047</a> <span class="preprocessor"></span>  <span class="keywordtype">int</span> <a class="code" href="structkeyword__token.html#a3ad1fd415c8d8cb2533388d947bd2670">token</a>;
-<a name="l00048"></a>00048 };
-<a name="l00049"></a>00049 
-<a name="l00050"></a>00050 <span class="comment">// Typ-Definition Tokenizer-Position</span>
-<a name="l00051"></a>00051 <span class="keyword">struct </span><a class="code" href="structtokenizer__pos__t.html">tokenizer_pos_t</a> {
-<a name="l00052"></a><a class="code" href="structtokenizer__pos__t.html#aba238b065ae9a05bb800b752176fd365">00052</a>     <a class="code" href="tokenizer__access_8h.html#a324b52750ec7d50b5f1e36518c5cf5af">PTR_TYPE</a> <a class="code" href="structtokenizer__pos__t.html#aba238b065ae9a05bb800b752176fd365">prog_ptr</a>;
-<a name="l00053"></a><a class="code" href="structtokenizer__pos__t.html#a6872dccee8cedaa8c2b6e8c09b04e14e">00053</a>     <span class="keywordtype">int</span> <a class="code" href="structtokenizer__pos__t.html#a6872dccee8cedaa8c2b6e8c09b04e14e">token</a>;
-<a name="l00054"></a>00054 };
-<a name="l00055"></a>00055 
+<a name="l00036"></a>00036 <span class="preprocessor">#include &quot;<a class="code" href="ubasic__config_8h.html">ubasic_config.h</a>&quot;</span>
+<a name="l00037"></a>00037 <span class="preprocessor">#include &quot;<a class="code" href="tokenizer__data_8h.html">tokenizer_data.h</a>&quot;</span>
+<a name="l00038"></a>00038 <span class="comment">//#include &quot;parser.h&quot;</span>
+<a name="l00039"></a>00039 
+<a name="l00040"></a>00040 <span class="comment">// Typ-Definition Token-Tabelle (Standard-Parser)</span>
+<a name="l00041"></a><a class="code" href="structkeyword__token.html">00041</a> <span class="keyword">struct </span><a class="code" href="structkeyword__token.html">keyword_token</a> {
+<a name="l00042"></a>00042 <span class="preprocessor">#if USE_PROGMEM</span>
+<a name="l00043"></a>00043 <span class="preprocessor"></span>    <span class="comment">// um via strxxx_P zugreifen zu koennen, muss eine feste Laenge vorgegeben werden</span>
+<a name="l00044"></a><a class="code" href="structkeyword__token.html#a4654119dadfade10bf607ba62251b69d">00044</a>     <span class="keywordtype">char</span> <a class="code" href="structkeyword__token.html#a4654119dadfade10bf607ba62251b69d">keyword</a>[<a class="code" href="ubasic__config_8h.html#a6d6197219ef3336eb81c6db0ae5b74a2">MAX_KEYWORD_LEN</a>+1];
+<a name="l00045"></a>00045 <span class="preprocessor">#else</span>
+<a name="l00046"></a>00046 <span class="preprocessor"></span>    <span class="keywordtype">char</span> *<a class="code" href="structkeyword__token.html#a4654119dadfade10bf607ba62251b69d">keyword</a>;
+<a name="l00047"></a>00047 <span class="preprocessor">#endif</span>
+<a name="l00048"></a><a class="code" href="structkeyword__token.html#a3ad1fd415c8d8cb2533388d947bd2670">00048</a> <span class="preprocessor"></span>  <span class="keywordtype">int</span> <a class="code" href="structkeyword__token.html#a3ad1fd415c8d8cb2533388d947bd2670">token</a>;
+<a name="l00049"></a>00049 };
+<a name="l00050"></a>00050 
+<a name="l00051"></a>00051 <span class="comment">// Typ-Definition Tokenizer-Position</span>
+<a name="l00052"></a><a class="code" href="structtokenizer__pos__t.html">00052</a> <span class="keyword">struct </span><a class="code" href="structtokenizer__pos__t.html">tokenizer_pos_t</a> {
+<a name="l00053"></a><a class="code" href="structtokenizer__pos__t.html#aba238b065ae9a05bb800b752176fd365">00053</a>     <a class="code" href="behaviour__ubasic__access_8h.html#a324b52750ec7d50b5f1e36518c5cf5af">PTR_TYPE</a> <a class="code" href="structtokenizer__pos__t.html#aba238b065ae9a05bb800b752176fd365">prog_ptr</a>;
+<a name="l00054"></a><a class="code" href="structtokenizer__pos__t.html#a6872dccee8cedaa8c2b6e8c09b04e14e">00054</a>     <span class="keywordtype">int</span> <a class="code" href="structtokenizer__pos__t.html#a6872dccee8cedaa8c2b6e8c09b04e14e">token</a>;
+<a name="l00055"></a>00055 };
 <a name="l00056"></a>00056 
-<a name="l00057"></a>00057 <span class="keywordtype">void</span> <a class="code" href="tokenizer_8c.html#ade2d47ca3371da8059f1bc33cbebc331">tokenizer_init</a>(<a class="code" href="tokenizer__access_8h.html#a324b52750ec7d50b5f1e36518c5cf5af">PTR_TYPE</a> program);
-<a name="l00058"></a>00058 <span class="keywordtype">void</span> <a class="code" href="tokenizer_8c.html#ae29a59cfbda31bd3b52e609fef5889b2">tokenizer_next</a>(<span class="keywordtype">void</span>);
-<a name="l00059"></a>00059 <span class="keywordtype">int</span> <a class="code" href="tokenizer_8c.html#aa49af21826f177d115a28db11be99c1d">tokenizer_token</a>(<span class="keywordtype">void</span>);
-<a name="l00060"></a>00060 <span class="keywordtype">int</span> <a class="code" href="tokenizer_8c.html#a5dcc94a1dbb45df42612c038682aac6f">tokenizer_num</a>(<span class="keywordtype">void</span>);
-<a name="l00061"></a>00061 <span class="keywordtype">int</span> <a class="code" href="tokenizer_8c.html#a7908e25261c71c8a3457bf494cf68496">tokenizer_variable_num</a>(<span class="keywordtype">void</span>);
-<a name="l00062"></a>00062 <span class="keyword">const</span> <span class="keywordtype">char</span> * <a class="code" href="tokenizer_8c.html#ab501252b994dd91f0dd211978483b596">tokenizer_last_string_ptr</a>(<span class="keywordtype">void</span>);
-<a name="l00063"></a>00063 <span class="keywordtype">void</span> <a class="code" href="tokenizer_8c.html#a95d2c691c07c6ab37cfd1b051f398cab">tokenizer_set_num</a>(<span class="keywordtype">int</span> val);
-<a name="l00064"></a>00064 <span class="keywordtype">int</span> <a class="code" href="tokenizer_8c.html#a5c2310421eeccd03f6aee214ded8159b">tokenizer_finished</a>(<span class="keywordtype">void</span>);
-<a name="l00065"></a>00065 <span class="keywordtype">void</span> <a class="code" href="tokenizer_8c.html#a092f2feab0db8090bceeb54fe94436a1">tokenizer_error_print</a>(<span class="keywordtype">int</span> linenum, <span class="keywordtype">int</span> error_nr);
-<a name="l00066"></a>00066 <a class="code" href="tokenizer__access_8h.html#a324b52750ec7d50b5f1e36518c5cf5af">PTR_TYPE</a> <a class="code" href="tokenizer_8c.html#a13cc244a0414675c6d035494a8abca2f">get_prog_text_pointer</a>(<span class="keywordtype">void</span>);
-<a name="l00067"></a>00067 <span class="keyword">struct </span><a class="code" href="structtokenizer__pos__t.html">tokenizer_pos_t</a> <a class="code" href="tokenizer_8c.html#af9fa3fa2487099dd1b8d7be23f0bf746">tokenizer_get_position</a>(void);
-<a name="l00068"></a>00068 <span class="keywordtype">void</span> <a class="code" href="tokenizer_8c.html#aa4869532ed3ae66ee1d814035bf682a9">tokenizer_set_position</a>(<span class="keyword">struct</span> <a class="code" href="structtokenizer__pos__t.html">tokenizer_pos_t</a>);
-<a name="l00069"></a>00069 <span class="keywordtype">void</span> <a class="code" href="tokenizer_8c.html#a01b9a759b18008bbb4f4d165df5ec933">jump_to_prog_text_pointer</a>(<a class="code" href="tokenizer__access_8h.html#a324b52750ec7d50b5f1e36518c5cf5af">PTR_TYPE</a> jump_ptr);
-<a name="l00070"></a>00070 <span class="keywordtype">void</span> <a class="code" href="tokenizer_8c.html#a588799356f12384ec7e800a4f60d1dd5">jump_to_next_linenum</a>(<span class="keywordtype">void</span>);
-<a name="l00071"></a>00071 <span class="keywordtype">void</span> <a class="code" href="tokenizer_8c.html#a0ac73043946f7efab0d3a25fcbb53e58">skip_all_whitespaces</a>(<span class="keywordtype">void</span>);
-<a name="l00072"></a>00072 
-<a name="l00073"></a>00073 <span class="preprocessor">#endif </span><span class="comment">/* __TOKENIZER_H__ */</span>
+<a name="l00057"></a>00057 
+<a name="l00058"></a>00058 <span class="keywordtype">void</span> <a class="code" href="tokenizer_8c.html#ade2d47ca3371da8059f1bc33cbebc331">tokenizer_init</a>(<a class="code" href="behaviour__ubasic__access_8h.html#a324b52750ec7d50b5f1e36518c5cf5af">PTR_TYPE</a> program);
+<a name="l00059"></a>00059 <span class="keywordtype">void</span> <a class="code" href="tokenizer_8c.html#ae29a59cfbda31bd3b52e609fef5889b2">tokenizer_next</a>(<span class="keywordtype">void</span>);
+<a name="l00060"></a>00060 <span class="keywordtype">int</span> <a class="code" href="tokenizer_8c.html#aa49af21826f177d115a28db11be99c1d">tokenizer_token</a>(<span class="keywordtype">void</span>);
+<a name="l00061"></a>00061 <span class="keywordtype">int</span> <a class="code" href="tokenizer_8c.html#a5dcc94a1dbb45df42612c038682aac6f">tokenizer_num</a>(<span class="keywordtype">void</span>);
+<a name="l00062"></a>00062 <span class="keywordtype">int</span> <a class="code" href="tokenizer_8c.html#a7908e25261c71c8a3457bf494cf68496">tokenizer_variable_num</a>(<span class="keywordtype">void</span>);
+<a name="l00063"></a>00063 <span class="keyword">const</span> <span class="keywordtype">char</span> * <a class="code" href="tokenizer_8c.html#ab501252b994dd91f0dd211978483b596">tokenizer_last_string_ptr</a>(<span class="keywordtype">void</span>);
+<a name="l00064"></a>00064 <span class="keywordtype">void</span> <a class="code" href="tokenizer_8c.html#a95d2c691c07c6ab37cfd1b051f398cab">tokenizer_set_num</a>(<span class="keywordtype">int</span> val);
+<a name="l00065"></a>00065 <span class="keywordtype">int</span> <a class="code" href="tokenizer_8c.html#a5c2310421eeccd03f6aee214ded8159b">tokenizer_finished</a>(<span class="keywordtype">void</span>);
+<a name="l00066"></a>00066 <span class="keywordtype">void</span> <a class="code" href="tokenizer_8c.html#a092f2feab0db8090bceeb54fe94436a1">tokenizer_error_print</a>(<span class="keywordtype">int</span> linenum, <span class="keywordtype">int</span> error_nr);
+<a name="l00067"></a>00067 <a class="code" href="behaviour__ubasic__access_8h.html#a324b52750ec7d50b5f1e36518c5cf5af">PTR_TYPE</a> <a class="code" href="tokenizer_8c.html#a13cc244a0414675c6d035494a8abca2f">get_prog_text_pointer</a>(<span class="keywordtype">void</span>);
+<a name="l00068"></a>00068 <span class="keyword">struct </span><a class="code" href="structtokenizer__pos__t.html">tokenizer_pos_t</a> <a class="code" href="tokenizer_8c.html#af9fa3fa2487099dd1b8d7be23f0bf746">tokenizer_get_position</a>(void);
+<a name="l00069"></a>00069 <span class="keywordtype">void</span> <a class="code" href="tokenizer_8c.html#aa4869532ed3ae66ee1d814035bf682a9">tokenizer_set_position</a>(<span class="keyword">struct</span> <a class="code" href="structtokenizer__pos__t.html">tokenizer_pos_t</a>);
+<a name="l00070"></a>00070 <span class="keywordtype">void</span> <a class="code" href="tokenizer_8c.html#a01b9a759b18008bbb4f4d165df5ec933">jump_to_prog_text_pointer</a>(<a class="code" href="behaviour__ubasic__access_8h.html#a324b52750ec7d50b5f1e36518c5cf5af">PTR_TYPE</a> jump_ptr);
+<a name="l00071"></a>00071 <span class="keywordtype">void</span> <a class="code" href="tokenizer_8c.html#a588799356f12384ec7e800a4f60d1dd5">jump_to_next_linenum</a>(<span class="keywordtype">void</span>);
+<a name="l00072"></a>00072 <span class="keywordtype">void</span> <a class="code" href="tokenizer_8c.html#a0ac73043946f7efab0d3a25fcbb53e58">skip_all_whitespaces</a>(<span class="keywordtype">void</span>);
+<a name="l00073"></a>00073 
+<a name="l00074"></a>00074 <span class="preprocessor">#endif </span><span class="comment">/* __TOKENIZER_H__ */</span>
 </pre></div></div>
 </div>
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:04 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:09 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

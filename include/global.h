@@ -115,7 +115,7 @@ int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 #endif // MCU
 
 #ifndef DOXYGEN
-#define PACKED __attribute__ ((packed)) /**< packed-Attribut fuer Strukturen */
+#define PACKED __attribute__ ((packed)) /**< packed-Attribut fuer Strukturen und Enums */
 #else
 #define PACKED
 #endif

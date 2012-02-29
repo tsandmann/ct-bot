@@ -1,0 +1,39 @@
+// Hey Bot, I'm an ABL-script!
+// solve_maze in ABL
+//  
+// for(0) = Endlosschleife
+for(0)
+	// Wand voraus?
+	bot_check_distance(120)
+	if(1)
+		// ja -> keine Drehung zur Wand
+	else()
+		// nein -> Wand links
+		bot_turn(90)
+	fi()
+	bot_check_distance(220)
+	if(1)
+		// zur Wand links
+		bot_goto_obstacle(120,1)
+		// in Fahrtrichtung drehen
+		bot_turn(-90)
+		// Wand voraus?
+		bot_check_distance(200)
+		if(1)
+			// bald Wand, nur etwas vor
+			bot_goto_dist(40)
+		else()
+			// freie Fahrt, 10 cm    vor
+			bot_goto_dist(100)
+		fi()
+	else()
+		// keine Wand mehr -> abbiegen
+		bot_turn(-90)
+		// zur Ecke vorfahren
+		bot_goto_dist(100)
+		// um die Ecke rum
+		bot_turn(90)
+		bot_goto_dist(220)
+	fi()
+endf()
+// EOF

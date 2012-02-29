@@ -51,6 +51,7 @@ static botfs_mutex_t botfs_mutex = BOTFS_MUTEX_INITIALIZER; /**< sperrt den Zugr
  * das Root-Verzeichnis und die FAT zu adressieren.
  */
 static uint32_t botfs_get_image_sector(char * imagename, void * buffer) {
+	PRINT_MSG("botfs_get_image_sector():");
 	/* Dateinamen anpassen */
 	char * pName = imagename;
 	char * pExt = &imagename[strlen(imagename)];
@@ -72,7 +73,7 @@ static uint32_t botfs_get_image_sector(char * imagename, void * buffer) {
 
 	/* Bootsektor der ersten Partition ermitteln */
 	const uint16_t first_sect = (uint16_t) p_mbr->part0.first_sect_offset; // 32
-	PRINT_MSG("first_sect=0x%x", first_sect);
+	PRINT_MSG(" first_sect=0x%x", first_sect);
 
 	/* Bootsektor lesen */
 	if (botfs_read_low(first_sect, buffer) != 0) {
@@ -82,16 +83,16 @@ static uint32_t botfs_get_image_sector(char * imagename, void * buffer) {
 
 	/* Bootsektor auswerten */
 	const uint16_t fat_offset = p_bs->reserved_sect + first_sect; // 32
-	PRINT_MSG("fat_offset=0x%x", fat_offset);
+	PRINT_MSG(" fat_offset=0x%x", fat_offset);
 	const uint16_t root_offset = fat_offset + p_bs->fat_copies * p_bs->sect_per_fat; // 32
-	PRINT_MSG("root_offset=0x%x", root_offset);
+	PRINT_MSG(" root_offset=0x%x", root_offset);
 	const uint8_t n = (uint8_t) (p_bs->root_dir_entries / (BOTFS_BLOCK_SIZE / sizeof(botfs_fat16_dir_entry_t)));
-	PRINT_MSG("Groesse des Rootverz.: %u", n);
+	PRINT_MSG(" Groesse des Rootverz.: %u", n);
 	const uint16_t data_offset = root_offset + (p_bs->root_dir_entries
 		* sizeof(botfs_fat16_dir_entry_t) + (BOTFS_BLOCK_SIZE - 1)) / BOTFS_BLOCK_SIZE;
-	PRINT_MSG("Erster Datensektor: 0x%04x", data_offset);
+	PRINT_MSG(" Erster Datensektor: 0x%04x", data_offset);
 	const uint8_t sect_per_cluster = p_bs->sect_per_cluster;
-	PRINT_MSG("sect_per_cluster=%u", sect_per_cluster);
+	PRINT_MSG(" sect_per_cluster=%u", sect_per_cluster);
 
 	/* Root-Verzeichnis durchsuchen */
 	uint16_t block = root_offset; // 32
@@ -109,15 +110,14 @@ static uint32_t botfs_get_image_sector(char * imagename, void * buffer) {
 			if (strncmp(p_dir_entry->name, pName, lenName) == 0 && strncmp(p_dir_entry->extension, pExt, strlen(pExt)) == 0) {
 				/* Treffer, Datei gefunden */
 				const uint32_t file_block = (uint32_t) (p_dir_entry->first_cluster - 2) * sect_per_cluster + data_offset;
-				PRINT_MSG("file_block=0x%x", file_block);
+				PRINT_MSG(" file_block=0x%x", file_block);
 
 				/* FAT auflisten */
 				uint16_t next_cluster = p_dir_entry->first_cluster;
 				uint16_t last_cluster = next_cluster;
-				PRINT_MSG(" Cluster: 0x%04x", next_cluster);
+				PRINT_MSG("  Cluster: 0x%04x", next_cluster);
 				uint16_t last_fat_block = 0;
 				while (42) {
-/** \todo support fuer unsortierte Clusterkette */
 					/* FAT-Eintraege der Datei einlesen, auf Fragmentierung checken */
 					const uint16_t fat_block = fat_offset + next_cluster / (512 / sizeof(uint16_t));
 //					PRINT_MSG("fat_block=0x%04x", fat_block);
@@ -137,7 +137,7 @@ static uint32_t botfs_get_image_sector(char * imagename, void * buffer) {
 							/* Dateiende */
 							break;
 						}
-						PRINT_MSG("Image-Datei fragmentiert, Abbruch");
+						PRINT_MSG(" Image-Datei fragmentiert, Abbruch");
 						return 0;
 					}
 					last_cluster = next_cluster;
@@ -163,8 +163,7 @@ int8_t botfs_init_low(char * image, void * buffer, uint8_t create) {
 	if (first_block == 0) {
 		return -1;
 	}
-	PRINT_MSG("block=0x%x", first_block);
-	PRINT_MSG("botfs_init_low() erfolgreich");
+	PRINT_MSG("botfs_init_low() done, block=0x%x", first_block);
 	return 0;
 }
 
@@ -192,7 +191,7 @@ void botfs_acquire_lock_low(uint8_t * p_mutex) {
 	os_enterCS();
 	while (*p_mutex == 1) {
 		os_exitCS();
-		PRINT_MSG("thread 0x%x waiting", os_thread_running);
+		PRINT_MSG("botfs_acquire_lock_low(): thread 0x%x waiting", os_thread_running);
 		os_thread_sleep(1);
 		os_enterCS();
 	}
@@ -237,6 +236,7 @@ int8_t botfs_write_low(uint16_t block, void * buffer) {
  */
 void botfs_close_volume_low(void) {
 	// nichts zu tun
+	PRINT_MSG("botfs_close_volume_low() done.");
 }
 #endif // BOT_FS_AVAILABLE
 #endif // MCU

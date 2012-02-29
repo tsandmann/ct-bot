@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: behaviour_pathplaning.c Quellcode</title>
+<title>c&#39;t-Bot: behaviour_pathplaning.c Quellcode</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -52,7 +52,7 @@
   </div>
   <div id="nav-path" class="navpath">
     <ul>
-      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+      <li class="navelem"><a class="el" href="dir_14c9cc1c75a92f359ad94591d62973a1.html">bot-logic</a>      </li>
     </ul>
   </div>
 </div>
@@ -144,7 +144,7 @@
 <a name="l00100"></a>00100 <span class="preprocessor"></span>
 <a name="l00102"></a><a class="code" href="behaviour__pathplaning_8c.html#acec5709964529effc17c75521b41d9f4">00102</a> <span class="preprocessor">#define MAP_SECTIONS_LOWRES (MAP_LENGTH_LOWRES / MAP_SECTION_POINTS_LOWRES)</span>
 <a name="l00103"></a>00103 <span class="preprocessor"></span>
-<a name="l00104"></a>00104 <span class="keyword">typedef</span> <span class="keyword">struct </span>{
+<a name="l00104"></a><a class="code" href="structmap__section__lowres__t.html">00104</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>{
 <a name="l00105"></a><a class="code" href="structmap__section__lowres__t.html#a73517e42b6490dbac74e60f1b89dd667">00105</a>     int8_t section[<a class="code" href="behaviour__pathplaning_8c.html#a6996f95d9389603fc4ad044746d9cd2e">MAP_SECTION_POINTS_LOWRES</a>][<a class="code" href="behaviour__pathplaning_8c.html#a6996f95d9389603fc4ad044746d9cd2e">MAP_SECTION_POINTS_LOWRES</a>]; 
 <a name="l00106"></a>00106 } <a class="code" href="structmap__section__lowres__t.html">map_section_lowres_t</a>; 
 <a name="l00108"></a><a class="code" href="behaviour__pathplaning_8c.html#a6e43fa4e9468fb96478799d94154ff9e">00108</a> <a class="code" href="structmap__section__lowres__t.html">map_section_lowres_t</a> * <a class="code" href="behaviour__pathplaning_8c.html#a6e43fa4e9468fb96478799d94154ff9e">map_lowres</a>[<a class="code" href="behaviour__pathplaning_8c.html#acec5709964529effc17c75521b41d9f4">MAP_SECTIONS_LOWRES</a>][<a class="code" href="behaviour__pathplaning_8c.html#acec5709964529effc17c75521b41d9f4">MAP_SECTIONS_LOWRES</a>]; 
@@ -242,10 +242,10 @@
 <a name="l00232"></a>00232     int16_t <a class="code" href="behaviour__drive__chess_8c.html#a6c4b361d72eb3767ba424ac9a6ecf52b">x</a>, <a class="code" href="behaviour__drive__chess_8c.html#a0ed6a908288e0cd87f79c1b5ab56d07c">y</a>;
 <a name="l00233"></a>00233 
 <a name="l00234"></a>00234     <span class="comment">// Umrechnen des die Welt umschliessenden Rechtecks in Lowres-Koordinaten</span>
-<a name="l00235"></a>00235     min_x = world_to_map_lowres(<a class="code" href="map_8h.html#aaeaae469518bdf8b37d417d055a8d783">map_get_min_x</a>()) - 1;
-<a name="l00236"></a>00236     max_x = world_to_map_lowres(<a class="code" href="map_8h.html#ad50241cfd302df65b4c443081b6fb03e">map_get_max_x</a>()) + 1;
-<a name="l00237"></a>00237     min_y = world_to_map_lowres(<a class="code" href="map_8h.html#a56fd4eeba86b9b062cc605a0b7949751">map_get_min_y</a>()) - 1;
-<a name="l00238"></a>00238     max_y = world_to_map_lowres(<a class="code" href="map_8h.html#a2ec31a1f9dc4b75a784b1e54d09969a0">map_get_max_y</a>()) + 1;
+<a name="l00235"></a>00235     min_x = world_to_map_lowres(<a class="code" href="map_8h.html#aaeaae469518bdf8b37d417d055a8d783" title="Minimum in X-Richtung.">map_get_min_x</a>()) - 1;
+<a name="l00236"></a>00236     max_x = world_to_map_lowres(<a class="code" href="map_8h.html#ad50241cfd302df65b4c443081b6fb03e" title="Maximum in X-Richtung.">map_get_max_x</a>()) + 1;
+<a name="l00237"></a>00237     min_y = world_to_map_lowres(<a class="code" href="map_8h.html#a56fd4eeba86b9b062cc605a0b7949751" title="Minimum in Y-Richtung.">map_get_min_y</a>()) - 1;
+<a name="l00238"></a>00238     max_y = world_to_map_lowres(<a class="code" href="map_8h.html#a2ec31a1f9dc4b75a784b1e54d09969a0" title="Maximum in Y-Richtung.">map_get_max_y</a>()) + 1;
 <a name="l00239"></a>00239     min_y = (min_y &gt; 0) ? min_y : 0; <span class="comment">// sicherstellen dass Grenzen positiv sind</span>
 <a name="l00240"></a>00240     min_x = (min_x &gt; 0) ? min_x : 0;
 <a name="l00241"></a>00241 
@@ -260,24 +260,24 @@
 <a name="l00250"></a>00250             int16_t x2 = xw + <a class="code" href="behaviour__pathplaning_8c.html#af03ef26f4a86841837ef3d8d20edb96f">MAP_CELL_SIZE_LOWRES</a> / 2; <span class="comment">// Punkt &quot;oben&quot;, darum Haelfte der Zellegroesse addieren</span>
 <a name="l00251"></a>00251 <span class="preprocessor">#ifdef DEBUG_PATHPLANING_VERBOSE</span>
 <a name="l00252"></a>00252 <span class="preprocessor"></span>            position_t from, to;
-<a name="l00253"></a>00253             from.x = <a class="code" href="map_8c.html#a302393a08814c05999d4be4c75467bc3">world_to_map</a>(x1);
-<a name="l00254"></a>00254             from.y = <a class="code" href="map_8c.html#a302393a08814c05999d4be4c75467bc3">world_to_map</a>(yw);
-<a name="l00255"></a>00255             to.x = <a class="code" href="map_8c.html#a302393a08814c05999d4be4c75467bc3">world_to_map</a>(x2);
+<a name="l00253"></a>00253             from.x = <a class="code" href="map_8c.html#a302393a08814c05999d4be4c75467bc3" title="Konvertiert eine Weltkoordinate in eine Kartenkoordinate.">world_to_map</a>(x1);
+<a name="l00254"></a>00254             from.y = <a class="code" href="map_8c.html#a302393a08814c05999d4be4c75467bc3" title="Konvertiert eine Weltkoordinate in eine Kartenkoordinate.">world_to_map</a>(yw);
+<a name="l00255"></a>00255             to.x = <a class="code" href="map_8c.html#a302393a08814c05999d4be4c75467bc3" title="Konvertiert eine Weltkoordinate in eine Kartenkoordinate.">world_to_map</a>(x2);
 <a name="l00256"></a>00256             to.y = from.y;
 <a name="l00257"></a>00257 <span class="preprocessor">#endif  // DEBUG_PATHPLANING_VERBOSE</span>
-<a name="l00258"></a>00258 <span class="preprocessor"></span>            uint8_t ratio = <a class="code" href="map_8c.html#a4cf69880c2dc15adb544bb4f602b2829">map_get_ratio</a>(x1, yw, x2, yw, <a class="code" href="behaviour__pathplaning_8c.html#af03ef26f4a86841837ef3d8d20edb96f">MAP_CELL_SIZE_LOWRES</a>,
+<a name="l00258"></a>00258 <span class="preprocessor"></span>            uint8_t ratio = <a class="code" href="map_8c.html#a4cf69880c2dc15adb544bb4f602b2829" title="Berechnet das Verhaeltnis der Felder einer Region R die ausschliesslich mit Werten zwischen min und m...">map_get_ratio</a>(x1, yw, x2, yw, <a class="code" href="behaviour__pathplaning_8c.html#af03ef26f4a86841837ef3d8d20edb96f">MAP_CELL_SIZE_LOWRES</a>,
 <a name="l00259"></a>00259                     map_compare_haz, 127);
 <a name="l00260"></a>00260 <span class="comment">//fuer Vergleich auf bereits befahrene Strecke gilt anderer Schwellwert als fuer Hindernis</span>
 <a name="l00261"></a>00261             <span class="keywordflow">if</span> (ratio &lt; ((map_compare_haz==0)?<a class="code" href="behaviour__pathplaning_8c.html#ad35df91aaea48f4a3fbef9ba448669f6">RATIO_THRESHOLD</a>:<a class="code" href="behaviour__pathplaning_8c.html#a121ba74533f6b91d96ceeb040fbd6a1f">RATIO_THRESHOLD_DRIVEN</a>)) {
 <a name="l00262"></a>00262                 access_field_lowres((position_t) {<a class="code" href="behaviour__drive__chess_8c.html#a6c4b361d72eb3767ba424ac9a6ecf52b">x</a>, y}, 1, 1);
 <a name="l00263"></a>00263 <span class="preprocessor">#if defined DEBUG_PATHPLANING_VERBOSE &amp;&amp; defined MAP_2_SIM_AVAILABLE</span>
 <a name="l00264"></a>00264 <span class="preprocessor"></span><span class="comment">//              LOG_DEBUG(&quot;Trage Hindernis in (%d|%d) ein, ratio=%u&quot;, x, y, ratio);</span>
-<a name="l00265"></a>00265                 <a class="code" href="map_8c.html#af260338d7eec0f25c8110086c5a7d886">map_draw_rect</a>(from, to, <a class="code" href="behaviour__pathplaning_8c.html#af03ef26f4a86841837ef3d8d20edb96f">MAP_CELL_SIZE_LOWRES</a> / (1000 / <a class="code" href="map_8h.html#a350873099e339fcc394b9eefa121ed6e">MAP_RESOLUTION</a>), 1);
+<a name="l00265"></a>00265                 <a class="code" href="map_8c.html#af260338d7eec0f25c8110086c5a7d886" title="Zeichnet ein Rechteck in die Map-Anzeige des Sim.">map_draw_rect</a>(from, to, <a class="code" href="behaviour__pathplaning_8c.html#af03ef26f4a86841837ef3d8d20edb96f">MAP_CELL_SIZE_LOWRES</a> / (1000 / <a class="code" href="map_8h.html#a350873099e339fcc394b9eefa121ed6e" title="Aufloesung der Karte in Punkte / m.">MAP_RESOLUTION</a>), 1);
 <a name="l00266"></a>00266 <span class="preprocessor">#endif  // DEBUG_PATHPLANING_VERBOSE</span>
 <a name="l00267"></a>00267 <span class="preprocessor"></span>            } <span class="keywordflow">else</span> {
 <a name="l00268"></a>00268 <span class="preprocessor">#if defined DEBUG_PATHPLANING_VERBOSE &amp;&amp; defined MAP_2_SIM_AVAILABLE</span>
 <a name="l00269"></a>00269 <span class="preprocessor"></span><span class="comment">//              LOG_DEBUG(&quot;KEIN Hindernis in (%d|%d), ratio=%u&quot;, x, y, ratio);</span>
-<a name="l00270"></a>00270                 <a class="code" href="map_8c.html#af260338d7eec0f25c8110086c5a7d886">map_draw_rect</a>(from, to, <a class="code" href="behaviour__pathplaning_8c.html#af03ef26f4a86841837ef3d8d20edb96f">MAP_CELL_SIZE_LOWRES</a> / (1000 / <a class="code" href="map_8h.html#a350873099e339fcc394b9eefa121ed6e">MAP_RESOLUTION</a>), 0);
+<a name="l00270"></a>00270                 <a class="code" href="map_8c.html#af260338d7eec0f25c8110086c5a7d886" title="Zeichnet ein Rechteck in die Map-Anzeige des Sim.">map_draw_rect</a>(from, to, <a class="code" href="behaviour__pathplaning_8c.html#af03ef26f4a86841837ef3d8d20edb96f">MAP_CELL_SIZE_LOWRES</a> / (1000 / <a class="code" href="map_8h.html#a350873099e339fcc394b9eefa121ed6e" title="Aufloesung der Karte in Punkte / m.">MAP_RESOLUTION</a>), 0);
 <a name="l00271"></a>00271 <span class="preprocessor">#endif  // DEBUG_PATHPLANING_VERBOSE</span>
 <a name="l00272"></a>00272 <span class="preprocessor"></span>            }
 <a name="l00273"></a>00273         }
@@ -579,10 +579,10 @@
 <a name="l00585"></a>00585                 }
 <a name="l00586"></a>00586 
 <a name="l00587"></a>00587 <span class="preprocessor">#ifdef MAP_2_SIM_AVAILABLE</span>
-<a name="l00588"></a>00588 <span class="preprocessor"></span>                aktpos.x = <a class="code" href="map_8c.html#a302393a08814c05999d4be4c75467bc3">world_to_map</a>(map_to_world_lowres(nextdest.x) + <a class="code" href="behaviour__pathplaning_8c.html#af03ef26f4a86841837ef3d8d20edb96f">MAP_CELL_SIZE_LOWRES</a> / 2);
-<a name="l00589"></a>00589                 aktpos.y = <a class="code" href="map_8c.html#a302393a08814c05999d4be4c75467bc3">world_to_map</a>(map_to_world_lowres(nextdest.y) + <a class="code" href="behaviour__pathplaning_8c.html#af03ef26f4a86841837ef3d8d20edb96f">MAP_CELL_SIZE_LOWRES</a> / 2);
+<a name="l00588"></a>00588 <span class="preprocessor"></span>                aktpos.x = <a class="code" href="map_8c.html#a302393a08814c05999d4be4c75467bc3" title="Konvertiert eine Weltkoordinate in eine Kartenkoordinate.">world_to_map</a>(map_to_world_lowres(nextdest.x) + <a class="code" href="behaviour__pathplaning_8c.html#af03ef26f4a86841837ef3d8d20edb96f">MAP_CELL_SIZE_LOWRES</a> / 2);
+<a name="l00589"></a>00589                 aktpos.y = <a class="code" href="map_8c.html#a302393a08814c05999d4be4c75467bc3" title="Konvertiert eine Weltkoordinate in eine Kartenkoordinate.">world_to_map</a>(map_to_world_lowres(nextdest.y) + <a class="code" href="behaviour__pathplaning_8c.html#af03ef26f4a86841837ef3d8d20edb96f">MAP_CELL_SIZE_LOWRES</a> / 2);
 <a name="l00590"></a>00590                 <span class="keywordflow">if</span> (lastpos.x != 0 &amp;&amp; lastpos.y != 0) {
-<a name="l00591"></a>00591                     <a class="code" href="map_8c.html#ac2cc78e9d8a4f1aacb8e60a1a9d32440">map_draw_line</a>(lastpos, aktpos, 2); <span class="comment">// Pfadpunkte schwarz darstellen</span>
+<a name="l00591"></a>00591                     <a class="code" href="map_8c.html#ac2cc78e9d8a4f1aacb8e60a1a9d32440" title="Zeichnet eine Linie in die Map-Anzeige des Sim.">map_draw_line</a>(lastpos, aktpos, 2); <span class="comment">// Pfadpunkte schwarz darstellen</span>
 <a name="l00592"></a>00592                 }
 <a name="l00593"></a>00593                 lastpos = aktpos;
 <a name="l00594"></a>00594 <span class="preprocessor">#endif // MAP_2_SIM_AVAILABLE</span>
@@ -619,7 +619,7 @@
 <a name="l00625"></a>00625         <span class="keywordflow">break</span>;
 <a name="l00626"></a>00626 
 <a name="l00627"></a>00627     <span class="keywordflow">case</span> <a class="code" href="behaviour__pathplaning_8c.html#af6850d64b83bc7e80727721a12afa652">CORRECT_POSITION</a>:
-<a name="l00628"></a>00628         <a class="code" href="behaviour__goto__pos_8c.html#ab5ed29ca0a737f151df82f8babc00170">bot_goto_pos</a>(data, destination.x, destination.y, 999);
+<a name="l00628"></a>00628         <a class="code" href="behaviour__goto__pos_8c.html#a88ddbedd618e291f1181ca34433fcd93" title="Botenfunktion des Positionierungsverhaltens.">bot_goto_pos</a>(data, destination.x, destination.y, 999);
 <a name="l00629"></a>00629         wave_state = <a class="code" href="behaviour__pathplaning_8c.html#a29fd18bed01c4d836c7ebfe73a125c3f">END</a>;
 <a name="l00630"></a>00630         <span class="keywordflow">break</span>;
 <a name="l00631"></a>00631 
@@ -675,7 +675,7 @@
 <a name="l00700"></a>00700     <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a2460f2e913d9283be23d11ca84fe6c2e">RC5_CODE_4</a>:
 <a name="l00701"></a>00701         <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0;
 <a name="l00702"></a>00702         <span class="comment">//delete_lowres();</span>
-<a name="l00703"></a>00703         <a class="code" href="behaviour__pathplaning_8c.html#a72089743b311ebb7ddf7dbcb396ca58e">bot_do_calc_wave</a>(NULL, <a class="code" href="map_8h.html#a3653488ae9b1d519dbc06d60f25948b4">MAP_DRIVEN_THRESHOLD</a>);  <span class="comment">// nur auf bereits befahrenem Gebiet Weg zum Ziel planen</span>
+<a name="l00703"></a>00703         <a class="code" href="behaviour__pathplaning_8c.html#a72089743b311ebb7ddf7dbcb396ca58e">bot_do_calc_wave</a>(NULL, <a class="code" href="map_8h.html#a3653488ae9b1d519dbc06d60f25948b4" title="Schwellwert, ab dem ein Feld als befahren gilt.">MAP_DRIVEN_THRESHOLD</a>);  <span class="comment">// nur auf bereits befahrenem Gebiet Weg zum Ziel planen</span>
 <a name="l00704"></a>00704         <span class="keywordflow">break</span>;
 <a name="l00705"></a>00705 
 <a name="l00706"></a>00706     <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a08e80ef6f5925e8ac3cebbe430bde53d">RC5_CODE_5</a>:
@@ -729,9 +729,9 @@
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:08 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

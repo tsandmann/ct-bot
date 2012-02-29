@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: behaviour_scan.c Quellcode</title>
+<title>c&#39;t-Bot: behaviour_scan.c Quellcode</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -52,7 +52,7 @@
   </div>
   <div id="nav-path" class="navpath">
     <ul>
-      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+      <li class="navelem"><a class="el" href="dir_14c9cc1c75a92f359ad94591d62973a1.html">bot-logic</a>      </li>
     </ul>
   </div>
 </div>
@@ -103,9 +103,9 @@
 <a name="l00047"></a>00047 <span class="preprocessor"></span><span class="preprocessor">#error &quot;OS_AVAILABLE muss an sein fuer behaviour_scan&quot;</span>
 <a name="l00048"></a>00048 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
 <a name="l00049"></a>00049 <span class="preprocessor"></span>
-<a name="l00050"></a>00050 <span class="comment">//#define DEBUG_SCAN_OTF    // Debug-Infos an</span>
+<a name="l00050"></a>00050 <span class="comment">//#define DEBUG_SCAN_OTF // Debug-Infos an</span>
 <a name="l00051"></a>00051 
-<a name="l00052"></a><a class="code" href="behaviour__scan_8h.html#acec6d2488e68858814a398511a545f70">00052</a> <a class="code" href="unionscan__mode__t.html">scan_mode_t</a> <a class="code" href="behaviour__scan_8c.html#acec6d2488e68858814a398511a545f70">scan_otf_modes</a>; 
+<a name="l00052"></a><a class="code" href="behaviour__scan_8h.html#acec6d2488e68858814a398511a545f70">00052</a> <a class="code" href="unionscan__mode__t.html">scan_mode_t</a> <a class="code" href="behaviour__scan_8c.html#acec6d2488e68858814a398511a545f70" title="Modi des Verhaltens.">scan_otf_modes</a> = {{1, 1, 1, 1}}; 
 <a name="l00058"></a><a class="code" href="behaviour__scan_8h.html#a06a99ebf4e3fe7e4d494589add4429df">00058</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__scan_8c.html#a06a99ebf4e3fe7e4d494589add4429df">bot_scan_onthefly_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
 <a name="l00059"></a>00059     <span class="keyword">static</span> int16_t last_location_x, last_location_y;
 <a name="l00060"></a>00060     <span class="keyword">static</span> int16_t last_dist_x, last_dist_y, last_dist_head;
@@ -115,7 +115,7 @@
 <a name="l00064"></a>00064     (void) data; <span class="comment">// kein warning</span>
 <a name="l00065"></a>00065 
 <a name="l00066"></a>00066     <span class="comment">/* Verhalten je nach Cache-Fuellstand */</span>
-<a name="l00067"></a>00067     uint8_t cache_free = (uint8_t) (<a class="code" href="map_8c.html#ada848a524986d75cfeb512f6f6e58115">map_update_fifo</a>.<a class="code" href="structfifo__t.html#a4a82f7fd1625c1abebf4f161120856f0">size</a> - <a class="code" href="map_8c.html#ada848a524986d75cfeb512f6f6e58115">map_update_fifo</a>.<a class="code" href="structfifo__t.html#aac8f651266b8b08e968553fbb95307c1">count</a>);
+<a name="l00067"></a>00067     uint8_t cache_free = (uint8_t) (<a class="code" href="map_8c.html#ada848a524986d75cfeb512f6f6e58115" title="Fifo fuer Map-Cache.">map_update_fifo</a>.<a class="code" href="structfifo__t.html#a4a82f7fd1625c1abebf4f161120856f0">size</a> - <a class="code" href="map_8c.html#ada848a524986d75cfeb512f6f6e58115" title="Fifo fuer Map-Cache.">map_update_fifo</a>.<a class="code" href="structfifo__t.html#aac8f651266b8b08e968553fbb95307c1">count</a>);
 <a name="l00068"></a>00068     <span class="keywordflow">if</span> (cache_free &lt; <a class="code" href="behaviour__scan_8h.html#aa8058cd8896288d639f1f1adc972c2c8">SCAN_OTF_CACHE_LEVEL_THRESHOLD</a>) {
 <a name="l00069"></a>00069         <span class="keywordflow">if</span> (cache_free == 1) {
 <a name="l00070"></a>00070             <span class="comment">/* Cache ganz voll */</span>
@@ -125,14 +125,14 @@
 <a name="l00074"></a>00074 <span class="comment">                 * aber nur, wenn kein Abgrund erkannt wurde */</span>
 <a name="l00075"></a>00075                 <a class="code" href="motor_8c.html#a7d55b2e4a37c91e150513b2c87577750" title="Direkter Zugriff auf den Motor.">motor_set</a>(<a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>, <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>);
 <a name="l00076"></a>00076 <span class="preprocessor">#ifdef DEBUG_SCAN_OTF</span>
-<a name="l00077"></a>00077 <span class="preprocessor"></span>                <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Map-Cache voll, halte Bot an&quot;</span>);
+<a name="l00077"></a>00077 <span class="preprocessor"></span>                <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;Map-Cache voll, halte Bot an&quot;</span>);
 <a name="l00078"></a>00078 <span class="preprocessor">#endif</span>
 <a name="l00079"></a>00079 <span class="preprocessor"></span>                <span class="comment">/* Halte alle Verhalten eine Weile an, weil sie ja sonst evtl. weiterfahren wuerden */</span>
 <a name="l00080"></a>00080                 <a class="code" href="os__thread__pc_8c.html#a3170fdf75fff4e971354e78a625b5afd">os_thread_sleep</a>(<a class="code" href="behaviour__scan_8h.html#a7115ede7d7f912b3e5cb2c77b12084c2">SCAN_OTF_SLEEP_TIME</a>);
 <a name="l00081"></a>00081             } <span class="keywordflow">else</span> {
 <a name="l00082"></a>00082                 <span class="comment">/* Cache voll, neuen Eintrag verwerfen */</span>
 <a name="l00083"></a>00083 <span class="preprocessor">#ifdef DEBUG_SCAN_OTF</span>
-<a name="l00084"></a>00084 <span class="preprocessor"></span>                <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Map-Cache voll, verwerfe neuen Eintrag&quot;</span>);
+<a name="l00084"></a>00084 <span class="preprocessor"></span>                <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;Map-Cache voll, verwerfe neuen Eintrag&quot;</span>);
 <a name="l00085"></a>00085 <span class="preprocessor">#endif</span>
 <a name="l00086"></a>00086 <span class="preprocessor"></span>            }
 <a name="l00087"></a>00087             <span class="keywordflow">return</span>;
@@ -147,10 +147,10 @@
 <a name="l00096"></a>00096 
 <a name="l00097"></a>00097     <span class="comment">/* Cache updaten, falls sich der Bot weit genug bewegt hat. */</span>
 <a name="l00098"></a>00098     index++;
-<a name="l00099"></a>00099     <span class="keywordflow">if</span> (index == <a class="code" href="map_8h.html#a2d7e46455421e42503343a240edf71ec">MAP_UPDATE_CACHE_SIZE</a>) {
+<a name="l00099"></a>00099     <span class="keywordflow">if</span> (index == <a class="code" href="map_8h.html#a2d7e46455421e42503343a240edf71ec" title="Groesse des Map-Caches [# Eintraege].">MAP_UPDATE_CACHE_SIZE</a>) {
 <a name="l00100"></a>00100         index = 0;
 <a name="l00101"></a>00101     }
-<a name="l00102"></a>00102     map_cache_t * cache_tmp = &amp;<a class="code" href="map_8c.html#a04a94929973886472ea38f5fbd7238e0">map_update_cache</a>[index];
+<a name="l00102"></a>00102     map_cache_t * cache_tmp = &amp;<a class="code" href="map_8c.html#a04a94929973886472ea38f5fbd7238e0" title="Map-Cache.">map_update_cache</a>[index];
 <a name="l00103"></a>00103     cache_tmp-&gt;mode.raw = 0;
 <a name="l00104"></a>00104     cache_tmp-&gt;dataL = 0;
 <a name="l00105"></a>00105     cache_tmp-&gt;dataR = 0;
@@ -241,10 +241,10 @@
 <a name="l00190"></a>00190 <span class="preprocessor">#endif // MAP_USE_TRIG_CACHE</span>
 <a name="l00191"></a>00191 <span class="preprocessor"></span>
 <a name="l00192"></a>00192 <span class="preprocessor">#ifdef DEBUG_SCAN_OTF</span>
-<a name="l00193"></a>00193 <span class="preprocessor"></span>        <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;neuer Eintrag: x=%d y=%d head=%f distance=%d loaction=%d border=%d&quot;</span>, cache_tmp-&gt;x_pos, cache_tmp-&gt;y_pos, cache_tmp-&gt;heading / 10.0f, cache_tmp-&gt;mode.distance, cache_tmp-&gt;mode.location, cache_tmp-&gt;mode.border);
+<a name="l00193"></a>00193 <span class="preprocessor"></span>        <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;neuer Eintrag: x=%d y=%d head=%f distance=%d loaction=%d border=%d&quot;</span>, cache_tmp-&gt;x_pos, cache_tmp-&gt;y_pos, cache_tmp-&gt;heading / 10.0f, cache_tmp-&gt;mode.distance, cache_tmp-&gt;mode.location, cache_tmp-&gt;mode.border);
 <a name="l00194"></a>00194 <span class="preprocessor">#endif</span>
 <a name="l00195"></a>00195 <span class="preprocessor"></span>
-<a name="l00196"></a>00196         _inline_fifo_put(&amp;<a class="code" href="map_8c.html#ada848a524986d75cfeb512f6f6e58115">map_update_fifo</a>, index, <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>);
+<a name="l00196"></a>00196         _inline_fifo_put(&amp;<a class="code" href="map_8c.html#ada848a524986d75cfeb512f6f6e58115" title="Fifo fuer Map-Cache.">map_update_fifo</a>, index, <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>);
 <a name="l00197"></a>00197     }
 <a name="l00198"></a>00198 }
 <a name="l00199"></a>00199 
@@ -254,9 +254,9 @@
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:08 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

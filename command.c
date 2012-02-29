@@ -17,17 +17,17 @@
  *
  */
 
-/*!
- * @file 	command.c
- * @brief 	Kommando-Management
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	20.12.2005
+/**
+ * \file 	command.c
+ * \brief 	Kommando-Management
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	20.12.2005
  */
 
 #include "ct-Bot.h"
 
 #include "command.h"
-EEPROM uint8_t bot_address = CMD_BROADCAST; /*!< Kommunikations-Adresse des Bots (EEPROM) */
+EEPROM uint8_t bot_address = CMD_BROADCAST; /**< Kommunikations-Adresse des Bots (EEPROM) */
 
 #ifdef COMMAND_AVAILABLE
 #include "tcp.h"
@@ -48,13 +48,13 @@ EEPROM uint8_t bot_address = CMD_BROADCAST; /*!< Kommunikations-Adresse des Bots
 #include "init.h"
 #include <string.h>
 
-#define CHECK_CMD_ADDRESS					/*!< soll die Zieladresse der Kommandos ueberprueft werden? */
-#define RCVBUFSIZE (sizeof(command_t) * 2)	/*!< Groesse des Empfangspuffers */
-#define COMMAND_TIMEOUT 15					/*!< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
+#define CHECK_CMD_ADDRESS					/**< soll die Zieladresse der Kommandos ueberprueft werden? */
+#define RCVBUFSIZE (sizeof(command_t) * 2)	/**< Groesse des Empfangspuffers */
+#define COMMAND_TIMEOUT 15					/**< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
 
-command_t received_command; /*!< Puffer fuer Kommandos */
-static uint8_t count = 1;	/*!< Zaehler fuer Paket-Sequenznummer */
-/*! Puffer fuer zu sendendes Kommando */
+command_t received_command; /**< Puffer fuer Kommandos */
+static uint8_t count = 1;	/**< Zaehler fuer Paket-Sequenznummer */
+/** Puffer fuer zu sendendes Kommando */
 static command_t cmd_to_send = {
 	CMD_STARTCODE,
 	{0, 0, 0},
@@ -68,10 +68,69 @@ static command_t cmd_to_send = {
 #ifndef DEBUG_COMMAND
 #undef LOG_AVAILABLE
 #undef LOG_DEBUG
-#define LOG_DEBUG(...) {} /*!< Log-Dummy */
+#define LOG_DEBUG(...) {} /**< Log-Dummy */
 #endif
 
-/*!
+/**
+ * Registriert den Bot beim Sim und teilt diesem dabei mit, welche
+ * Features aktiviert sind
+ */
+static void register_bot(void) {
+	/* aktivierte Komponenten als Integer codieren */
+	union {
+		struct { // siehe ctSim.model.bots.components.WelcomeReceiver
+			unsigned log:1;
+			unsigned rc5:1;
+			unsigned abl:1;
+			unsigned basic:1;
+			unsigned map:1;
+			unsigned remotecall:1;
+		} data;
+		int16_t raw;
+	} features = {
+		{
+#ifdef LOG_CTSIM_AVAILABLE
+			1,
+#else
+			0,
+#endif
+#ifdef RC5_AVAILABLE
+			1,
+#else
+			0,
+#endif
+#if defined BEHAVIOUR_ABL_AVAILABLE
+			1,
+#else
+			0,
+#endif
+#if defined BEHAVIOUR_UBASIC_AVAILABLE
+			1,
+#else
+			0,
+#endif
+#if defined MAP_AVAILABLE && defined MAP_2_SIM_AVAILABLE
+			1,
+#else
+			0,
+#endif
+#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
+			1,
+#else
+			0,
+#endif
+		}
+	};
+
+	/* Bot beim Sim anmelden */
+#ifdef MCU
+	command_write(CMD_WELCOME, SUB_WELCOME_REAL, features.raw, 0, 0);
+#else
+	command_write(CMD_WELCOME, SUB_WELCOME_SIM, features.raw, 0, 0);
+#endif
+}
+
+/**
  * Initialisiert die (High-Level-)Kommunikation
  */
 void command_init(void) {
@@ -85,11 +144,7 @@ void command_init(void) {
 	}
 
 	/* Bot beim Sim anmelden */
-#ifdef MCU
-	command_write(CMD_WELCOME, SUB_WELCOME_REAL, -1, 0, 0);
-#else
-	command_write(CMD_WELCOME, SUB_WELCOME_SIM, -1, 0, 0);
-#endif
+	register_bot();
 }
 
 /*!
@@ -360,10 +415,12 @@ int8_t command_evaluate(void) {
 #ifdef RC5_AVAILABLE
 	static uint16_t RC5_Last_Toggle = 0xffff;
 #endif
-#ifdef BEHAVIOUR_UBASIC_AVAILABLE
+#if defined BEHAVIOUR_UBASIC_AVAILABLE || defined BEHAVIOUR_ABL_AVAILABLE
+#ifdef BOT_FS_AVAILABLE
 	static botfs_file_descr_t prog_file;
+#endif
 	static uint16_t prog_size = 0;
-#endif // BEHAVIOUR_UBASIC_AVAILABLE
+#endif // BEHAVIOUR_UBASIC_AVAILABLE || BEHAVIOUR_ABL_AVAILABLE
 	int8_t analyzed = 1;
 
 #ifdef LOG_AVAILABLE
@@ -391,11 +448,8 @@ int8_t command_evaluate(void) {
 
 		case CMD_WELCOME:
 			/* Bot beim Sim anmelden */
-#ifdef MCU
-			command_write(CMD_WELCOME, SUB_WELCOME_REAL, -1, 0, 0);
-#else
-			command_write(CMD_WELCOME, SUB_WELCOME_SIM, -1, 0, 0);
-#endif // MCU
+			register_bot();
+
 			if (get_bot_address() == CMD_BROADCAST) {
 				/* Adresse anfordern */
 				command_write(CMD_ID, SUB_ID_REQUEST, 0, 0, 0);
@@ -479,7 +533,7 @@ int8_t command_evaluate(void) {
 			ctbot_shutdown();
 			break;
 
-#ifdef BEHAVIOUR_UBASIC_AVAILABLE
+#if defined BEHAVIOUR_UBASIC_AVAILABLE || defined BEHAVIOUR_ABL_AVAILABLE
 		case CMD_PROGRAM: {
 			LOG_DEBUG("Programm-Empfang:");
 			switch (received_command.request.subcommand) {
@@ -501,30 +555,46 @@ int8_t command_evaluate(void) {
 					/* OK */
 					filename[len] = 0;
 					LOG_DEBUG(" Datei:\"%s\"", filename);
-					void * buffer = GET_MMC_BUFFER(ubasic_buffer);
+					void * buffer = type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer);
+#ifdef BOT_FS_AVAILABLE
 					/* Datei loeschen, falls vorhanden */
 					botfs_unlink(filename, buffer);
 					/* Datei anlegen */
 					const uint16_t size = prog_size / BOTFS_BLOCK_SIZE + (uint16_t) (prog_size % BOTFS_BLOCK_SIZE != 0 ? 1 : 0);
 					LOG_DEBUG(" size=%u", size);
-					if (botfs_create(filename, size, buffer) != 0 || botfs_open(filename, &prog_file, BOTFS_MODE_W, buffer) != 0) {
+					if (botfs_create(filename, size, 0, buffer) != 0 || botfs_open(filename, &prog_file, BOTFS_MODE_W, buffer) != 0) {
 						LOG_ERROR("Fehler beim Dateizugriff");
 						prog_size = 0;
 						break;
 					}
+#endif //BOT_FS_AVAILABLE
 					memset(buffer, 0, BOTFS_BLOCK_SIZE);
-					/* falls uBasic laeuft, abbrechen */
-					Behaviour_t * const beh = get_behaviour(bot_ubasic_behaviour);
+					/* falls uBasic / ABL laeuft, abbrechen */
+#if defined BEHAVIOUR_UBASIC_AVAILABLE && defined BEHAVIOUR_ABL_AVAILABLE
+					Behaviour_t * const beh = type == 0 ? get_behaviour(bot_ubasic_behaviour) : get_behaviour(bot_abl_behaviour);
+#elif defined BEHAVIOUR_UBASIC_AVAILABLE
+					Behaviour_t * const beh = type == 0 ? get_behaviour(bot_ubasic_behaviour) : NULL;
+#elif defined BEHAVIOUR_ABL_AVAILABLE
+					Behaviour_t * const beh = type == 0 ? NULL : get_behaviour(bot_abl_behaviour);
+#endif
 					deactivate_called_behaviours(beh);
 					deactivate_behaviour(beh);
-					/* evtl. hatte uBasic einen RemoteCall gestartet, daher dort aufraeumen */
+					/* evtl. hatte uBasic / ABL einen RemoteCall gestartet, daher dort aufraeumen */
 					activateBehaviour(NULL, bot_remotecall_behaviour);
 					/* Datei laden */
 					switch (type) {
+#ifdef BEHAVIOUR_UBASIC_AVAILABLE
 					case 0:
 						/* uBasic */
 						bot_ubasic_load_file(filename, &prog_file);
 						break;
+#endif // BEHAVIOUR_UBASIC_AVAILABLE
+#ifdef BEHAVIOUR_ABL_AVAILABLE
+					case 1:
+						/* ABL */
+						abl_load(filename);
+						break;
+#endif // BEHAVIOUR_ABL_AVAILABLE
 					}
 				} else {
 					/* Fehler */
@@ -541,9 +611,10 @@ int8_t command_evaluate(void) {
 					break;
 				}
 				const uint16_t done = (uint16_t) received_command.data_r;
-				LOG_DEBUG(" type=%u %u Bytes (%u Bytes insgesamt)", (uint8_t) received_command.data_l, received_command.payload,
+				const uint8_t type = (uint8_t) received_command.data_l;
+				LOG_DEBUG(" type=%u %u Bytes (%u Bytes insgesamt)", type, received_command.payload,
 					received_command.payload + done);
-				void * buffer = GET_MMC_BUFFER(ubasic_buffer);
+				void * buffer = type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer);
 				const uint16_t index = (uint16_t) done % BOTFS_BLOCK_SIZE;
 				buffer += index;
 				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
@@ -565,16 +636,38 @@ int8_t command_evaluate(void) {
 					if (index + n == BOTFS_BLOCK_SIZE || prog_size == 0) {
 						/* Puffer in Datei schreiben */
 						LOG_DEBUG(" Puffer rausschreiben...");
-						if (botfs_write(&prog_file, GET_MMC_BUFFER(ubasic_buffer)) != 0) {
+#ifdef BOT_FS_AVAILABLE
+						if (botfs_write(&prog_file, type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer)) != 0) {
 							/* Fehler */
 							LOG_ERROR("Fehler beim Dateizugriff");
 							prog_size = 0;
 							break;
 						}
-						memset(GET_MMC_BUFFER(ubasic_buffer), 0, BOTFS_BLOCK_SIZE);
+#else // EEPROM
+						const uint16_t block = (uint16_t) done / BOTFS_BLOCK_SIZE;
+#if defined __AVR_ATmega1284P__ || defined PC
+						if (block > 6) {
+#elif defined MCU_ATMEGA644X
+						if (block > 2) {
+#else // ATmega32
+						if (block > 0) {
+#endif // MCU-Typ
+							break;
+						}
+#ifdef LED_AVAILABLE
+						LED_on(LED_ROT);
+#endif
+						ctbot_eeprom_write_block(&abl_eeprom_data[block << 9], GET_MMC_BUFFER(abl_buffer), 512);
+#ifdef LED_AVAILABLE
+						LED_off(LED_ROT);
+#endif
+#endif // BOT_FS_AVAILABLE
+						memset(type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer), 0, BOTFS_BLOCK_SIZE);
 						if (prog_size == 0) {
 							/* Progamm vollstaendig empfangen */
-							botfs_flush_used_blocks(&prog_file, GET_MMC_BUFFER(ubasic_buffer));
+#ifdef BOT_FS_AVAILABLE
+							botfs_flush_used_blocks(&prog_file, type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer));
+#endif
 							LOG_DEBUG("->fertig");
 						}
 					}
@@ -589,20 +682,37 @@ int8_t command_evaluate(void) {
 			case SUB_PROGRAM_START:
 				/* Programm starten */
 				switch ((uint8_t) received_command.data_l) {
+#ifdef BEHAVIOUR_UBASIC_AVAILABLE
 				case 0:
 					/* uBasic */
 					bot_ubasic(NULL);
 					break;
+#endif // BEHAVIOUR_UBASIC_AVAILABLE
+#ifdef BEHAVIOUR_ABL_AVAILABLE
+				case 1:
+					/* ABL */
+					bot_abl(NULL, NULL);
+					break;
+#endif // BEHAVIOUR_ABL_AVAILABLE
 				}
 				break;
 
 			case SUB_PROGRAM_STOP:
 				/* Programm abbrechen */
 				switch ((uint8_t) received_command.data_l) {
+#ifdef BEHAVIOUR_UBASIC_AVAILABLE
 				case 0:
 					/* uBasic */
 					bot_ubasic_break();
 					break;
+#endif // BEHAVIOUR_UBASIC_AVAILABLE
+#ifdef BEHAVIOUR_ABL_AVAILABLE
+				case 1: {
+					/* ABL */
+					abl_cancel();
+					break;
+				}
+#endif // BEHAVIOUR_ABL_AVAILABLE
 				}
 				break;
 
@@ -612,7 +722,7 @@ int8_t command_evaluate(void) {
 			}
 			break;
 		}
-#endif // BEHAVIOUR_UBASIC_AVAILABLE
+#endif // BEHAVIOUR_UBASIC_AVAILABLE || BEHAVIOUR_ABL_AVAILABLE
 
 #ifdef PC
 		/* Einige Kommandos ergeben nur fuer simulierte Bots Sinn */
@@ -638,6 +748,9 @@ int8_t command_evaluate(void) {
 		case CMD_SENS_LDR:
 			sensLDRL = received_command.data_l;
 			sensLDRR = received_command.data_r;
+			break;
+		case CMD_SENS_DOOR:
+			sensDoor = (uint8_t) received_command.data_l;
 			break;
 		case CMD_SENS_TRANS:
 			sensTrans = (uint8_t) received_command.data_l;

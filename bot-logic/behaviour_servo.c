@@ -18,48 +18,48 @@
  */
 
 
-/*!
- * @file 	behaviour_servo.c
- * @brief 	kontrolliert die Servos
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	07.12.06
+/**
+ * \file 	behaviour_servo.c
+ * \brief 	kontrolliert die Servos
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	07.12.2006
  */
 
 
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 #ifdef BEHAVIOUR_SERVO_AVAILABLE
 
 #include "motor.h"
 #include "timer.h"
-static uint8_t servo_nr;	/*!< Nr. des aktiven Servos */
-uint8_t servo_active = 0;	/*!< 0, wenn kein Servo aktiv, sonst Bit der gerade aktiven Servos gesetzt */
+static uint8_t servo_nr;	/**< Nr. des aktiven Servos */
+uint8_t servo_active = 0;	/**< 0, wenn kein Servo aktiv, sonst Bit der gerade aktiven Servos gesetzt */
 
-/*!
+/**
  * Dieses Verhalten fuehrt ein Servo-Kommando aus und schaltet danach den Servo wieder ab
- * @param *data der Verhaltensdatensatz
+ * \param *data der Verhaltensdatensatz
  */
 void bot_servo_behaviour(Behaviour_t * data) {
-	BLOCK_BEHAVIOUR(data, 1000);	// 1 s warten
+	BLOCK_BEHAVIOUR(data, 1000); // 1 s warten
 
-	return_from_behaviour(data); 	// Verhalten aus
-	servo_set(servo_nr, SERVO_OFF);	// Servo aus
+	return_from_behaviour(data); // Verhalten aus
+	servo_set(servo_nr, SERVO_OFF); // Servo aus
 	servo_active &= (uint8_t) (~servo_nr);
 }
 
-/*!
+/**
  * Fahre den Servo an eine Position
- * @param *caller	Der Aufrufer
- * @param servo		Nummer des Servos
- * @param pos		Zielposition des Servos
+ * \param *caller	Der Aufrufer
+ * \param servo		Nummer des Servos
+ * \param pos		Zielposition des Servos
  */
 void bot_servo(Behaviour_t * caller, uint8_t servo, uint8_t pos) {
 	if (pos == DOOR_CLOSE && sensDoor == 0) {
 		return;	// Klappe ist bereits geschlossen
 	}
-	switch_to_behaviour(caller, bot_servo_behaviour, BEHAVIOUR_OVERRIDE);	// Warte-Verhalten an
+	switch_to_behaviour(caller, bot_servo_behaviour, BEHAVIOUR_OVERRIDE); // Warte-Verhalten an
 
 	servo_active |= servo;
-	servo_set(servo, pos);	// Servo-PWM einstellen
-	servo_nr = servo;		// Servo-Nr speichern
+	servo_set(servo, pos); // Servo-PWM einstellen
+	servo_nr = servo; // Servo-Nr speichern
 }
 #endif // BEHAVIOUR_SERVO_AVAILABLE

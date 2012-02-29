@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: behaviour_classify_objects.c Quellcode</title>
+<title>c&#39;t-Bot: behaviour_classify_objects.c Quellcode</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -52,7 +52,7 @@
   </div>
   <div id="nav-path" class="navpath">
     <ul>
-      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+      <li class="navelem"><a class="el" href="dir_14c9cc1c75a92f359ad94591d62973a1.html">bot-logic</a>      </li>
     </ul>
   </div>
 </div>
@@ -118,7 +118,7 @@
 <a name="l00074"></a>00074 
 <a name="l00075"></a>00075     <span class="keywordflow">case</span> <a class="code" href="behaviour__classify__objects_8c.html#a947a396560bd095d11272934358c7eea">CO_CATCH</a>:
 <a name="l00076"></a>00076         <span class="comment">/* Objekt einfangen */</span>
-<a name="l00077"></a>00077         <a class="code" href="behaviour__catch__pillar_8c.html#abfd23278cfcbad35582c56335c0f936a">bot_catch_pillar_turn</a>(data, 180);
+<a name="l00077"></a>00077         <a class="code" href="behaviour__catch__pillar_8c.html#abfd23278cfcbad35582c56335c0f936a" title="Fange ein Objekt ein.">bot_catch_pillar_turn</a>(data, 180);
 <a name="l00078"></a>00078         state = <a class="code" href="behaviour__classify__objects_8c.html#a7a70d1e73c401b33b5df73626dcd1cbb">CO_IDENTIFY</a>;
 <a name="l00079"></a>00079         measure_count = 0;
 <a name="l00080"></a>00080         object_brightness = 0;
@@ -140,13 +140,13 @@
 <a name="l00096"></a>00096             object_brightness /= 20;
 <a name="l00097"></a>00097             state = <a class="code" href="behaviour__classify__objects_8c.html#a88c2375254a2a98da8a41d3648f7417c">CO_UNLOAD</a>;
 <a name="l00098"></a>00098             uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
-<a name="l00099"></a>00099             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;object_brightness=0x%x&quot;</span>, object_brightness);
+<a name="l00099"></a>00099             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;object_brightness=0x%x&quot;</span>, object_brightness);
 <a name="l00100"></a>00100             <span class="comment">/* Klasse suchen */</span>
 <a name="l00101"></a>00101             <span class="keywordflow">for</span> (i=0; i&lt;<span class="keyword">sizeof</span>(targets)/<span class="keyword">sizeof</span>(int16_t)/3; i++) {
 <a name="l00102"></a>00102                 <span class="keywordflow">if</span> (object_brightness &lt; targets[i].<a class="code" href="behaviour__classify__objects_8c.html#ac7ba98d02020939967ee5d16885cdb0e">treshold</a>) {
-<a name="l00103"></a>00103                     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;object_class=%u&quot;</span>, i);
+<a name="l00103"></a>00103                     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;object_class=%u&quot;</span>, i);
 <a name="l00104"></a>00104                     targets[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structPACKED.html#a4c375797112f9520d770e1df55a45c41" title="Y-Anteil der Position.">y</a> += 100;
-<a name="l00105"></a>00105                     <a class="code" href="behaviour__goto__pos_8c.html#ab5ed29ca0a737f151df82f8babc00170">bot_goto_pos</a>(data, targets[i].<a class="code" href="behaviour__drive__chess_8c.html#a6c4b361d72eb3767ba424ac9a6ecf52b">x</a>, targets[i].<a class="code" href="behaviour__drive__chess_8c.html#a0ed6a908288e0cd87f79c1b5ab56d07c">y</a> - 100, 270);
+<a name="l00105"></a>00105                     <a class="code" href="behaviour__goto__pos_8c.html#a88ddbedd618e291f1181ca34433fcd93" title="Botenfunktion des Positionierungsverhaltens.">bot_goto_pos</a>(data, targets[i].<a class="code" href="behaviour__drive__chess_8c.html#a6c4b361d72eb3767ba424ac9a6ecf52b">x</a>, targets[i].<a class="code" href="behaviour__drive__chess_8c.html#a0ed6a908288e0cd87f79c1b5ab56d07c">y</a> - 100, 270);
 <a name="l00106"></a>00106                     <span class="keywordflow">break</span>;
 <a name="l00107"></a>00107                 }
 <a name="l00108"></a>00108             }
@@ -155,13 +155,13 @@
 <a name="l00111"></a>00111 
 <a name="l00112"></a>00112     <span class="keywordflow">case</span> <a class="code" href="behaviour__classify__objects_8c.html#a88c2375254a2a98da8a41d3648f7417c">CO_UNLOAD</a>:
 <a name="l00113"></a>00113         <span class="comment">/* Objekt ausladen */</span>
-<a name="l00114"></a>00114         <a class="code" href="behaviour__catch__pillar_8c.html#a444e8ac4ffa6c7cf3e36d72b5f95b640">bot_unload_pillar</a>(data);
+<a name="l00114"></a>00114         <a class="code" href="behaviour__catch__pillar_8c.html#a444e8ac4ffa6c7cf3e36d72b5f95b640" title="Entlaedt das Objekt wieder.">bot_unload_pillar</a>(data);
 <a name="l00115"></a>00115         state = <a class="code" href="behaviour__classify__objects_8c.html#af14e3080226da25d6311bb6fdb94ead9">CO_HOME</a>;
 <a name="l00116"></a>00116         <span class="keywordflow">break</span>;
 <a name="l00117"></a>00117 
 <a name="l00118"></a>00118     <span class="keywordflow">case</span> <a class="code" href="behaviour__classify__objects_8c.html#af14e3080226da25d6311bb6fdb94ead9">CO_HOME</a>:
 <a name="l00119"></a>00119         <span class="comment">/* zurueck zum Startpunkt */</span>
-<a name="l00120"></a>00120         <a class="code" href="behaviour__goto__pos_8c.html#ab5ed29ca0a737f151df82f8babc00170">bot_goto_pos</a>(data, 0, 0, 0);
+<a name="l00120"></a>00120         <a class="code" href="behaviour__goto__pos_8c.html#a88ddbedd618e291f1181ca34433fcd93" title="Botenfunktion des Positionierungsverhaltens.">bot_goto_pos</a>(data, 0, 0, 0);
 <a name="l00121"></a>00121         state = <a class="code" href="behaviour__classify__objects_8c.html#a21e3c77d84e9f103babb7603b6a8c429">CO_SEARCH</a>;
 <a name="l00122"></a>00122         <span class="keywordflow">break</span>;
 <a name="l00123"></a>00123 
@@ -182,9 +182,9 @@
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:08 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

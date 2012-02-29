@@ -24,17 +24,17 @@
  * \date 	10.06.2010
  */
 
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
 
 #include "ui/available_screens.h"
-#include "bot-logic/ubasic_config.h"
-#include "bot-logic/tokenizer_access.h"
-#include "bot-logic/ubasic.h"
-#include "bot-logic/ubasic_avr.h"
-#include "bot-logic/ubasic_call.h"
-#include "bot-logic/tokenizer.h"
-#include "bot-logic/ubasic_ext_proc.h"
+#include "ubasic_config.h"
+#include "tokenizer_access.h"
+#include "ubasic.h"
+#include "ubasic_avr.h"
+#include "ubasic_call.h"
+#include "tokenizer.h"
+#include "ubasic_ext_proc.h"
 #include "botfs.h"
 #include "init.h"
 #include "log.h"
@@ -58,7 +58,7 @@
 #define LOG_DEBUG(...)
 #endif // DEBUG_UBASIC_BEHAV
 
-botfs_file_descr_t ubasic_prog_file = { 0, 0, 0, 0, { 0, 0, 0 } }; /**< Basic-Programmdatei */
+botfs_file_descr_t ubasic_prog_file = BOTFS_FD_INITIALIZER; /**< Basic-Programmdatei */
 
 // wenn Speedvariablen direkt angesprochen werden, dann muessen sie im Verhalten selbst nach jeder Zeile direkt in die echten
 // speedWish-vars geschrieben werden, damit eine fluessige Bewegung erfolgt, denn sonst sind diese in den anderen Steps 0
@@ -68,6 +68,8 @@ static uint32_t wait_until = 0; /**< Systemzeit, bis zu der gewartet werden soll
 Behaviour_t * ubasic_behaviour_data; /**< Verhaltensdatensatz des ubasis-Verhaltens */
 char ubasic_content = 0; /**< aktuelles Zeichen des Basic-Programms */
 uint16_t ubasic_ptr = 0; /**< aktuelle Position im Basic-Programm */
+char current_proc[MAX_PROG_NAME_LEN]; /**< aktueller Programmname */
+static uint8_t result_behav; /**< Puffer fuer Verhaltens-Ergebnis */
 
 /**
  * Laedt ein uBasic-Programm aus deiner BotFS-Datei
@@ -127,6 +129,23 @@ uint8_t ubasic_behaviour_is_active(Behaviour_t * behaviour) {
 }
 
 /**
+ * Rueckgabe ob das zuletzt aufgerufene Verhalten erfolgreich war oder nicht; in Remotecall wird dazu via ubasic_push_value aufgerufen und das Ergebnis
+ * nach result_behav gebracht; in Ubasic selbst kann mit dieser Routine das Ergebnis ermittelt werden
+ * \return 	True falls das Verhalten erfolgreich war sonst nicht, je nach Kontext des Verhaltens
+ */
+uint8_t behaviour_result(Behaviour_t * behaviour) {
+	(void) behaviour;
+	return result_behav;
+
+}
+
+void ubasic_push_value(uint16_t value) {
+	result_behav = (uint8_t) value;
+	LOG_DEBUG("Var behav_res gesetzt auf: %u", result_behav);
+
+}
+
+/**
  * Implementierung des Basic-Wait-Statements fuer ct-Bot.
  * Das eigentliche Warten erfolgt dabei ueber das Verhalten.
  */
@@ -178,7 +197,7 @@ void bot_ubasic(Behaviour_t * caller) {
 }
 
 /**
- * bricht das aktuelle Basic-Programm ab
+ * Bricht das aktuelle Basic-Programm ab
  */
 void bot_ubasic_break(void) {
 	ubasic_break();
@@ -236,6 +255,23 @@ void ubasic_display(void) {
 #endif
 
 	ubasic_disp_key_handler(); // Aufruf des Key-Handlers
+}
+
+
+/**
+ * Umschalten des Programm-Kontextes
+ * \param p_name Programmname
+ */
+void switch_proc(char * p_name) {
+	botfs_file_descr_t new_prog;
+	if (botfs_open(p_name, &new_prog, BOTFS_MODE_r, GET_MMC_BUFFER(ubasic_buffer)) != 0) {
+		tokenizer_error_print(current_linenum, UNKNOWN_SUBPROC);
+		ubasic_break();
+	} else {
+		bot_ubasic_load_file(p_name, &new_prog);
+		program_ptr = 0;
+		tokenizer_init(program_ptr);
+	}
 }
 #endif // DISPLAY_UBASIC_AVAILABLE
 #endif // BEHAVIOUR_UBASIC_AVAILABLE

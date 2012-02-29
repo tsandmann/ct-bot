@@ -33,8 +33,9 @@
 #ifndef __TOKENIZER_H__
 #define __TOKENIZER_H__
 
-#include "bot-logic/ubasic_config.h"
-#include "bot-logic/parser.h"
+#include "ubasic_config.h"
+#include "tokenizer_data.h"
+//#include "parser.h"
 
 // Typ-Definition Token-Tabelle (Standard-Parser)
 struct keyword_token {

@@ -33,7 +33,7 @@
 #include "os_thread.h"
 #include "botfs.h"
 
-#define CLEAR_MAP_ON_INIT	/**< Leert die Karte, wenn der Bot gebootet wird */
+#define MAP_CLEAR_ON_INIT	/**< Leert die Karte, wenn der Bot gebootet wird */
 #define MAP_USE_TRIG_CACHE	/**< Sollen sin(heading) und cos(heading) mit gecachet werden? */
 
 /* Geomtrie der Karte - Achtung, nur aendern, wenn man die Konsequenzen genau kennt! */
@@ -100,7 +100,6 @@ typedef union {
 extern fifo_t map_update_fifo;			/**< Fifo fuer Cache */
 extern map_cache_t map_update_cache[];	/**< Map-Cache */
 extern uint8_t map_update_stack[];		/**< Stack des Update-Threads */
-extern os_signal_t map_buffer_signal;	/**< Signal das anzeigt, ob Daten im Map-Puffer sind */
 
 #ifdef MAP_2_SIM_AVAILABLE
 extern uint8_t map_2_sim_worker_stack[];	/**< Stack des Map-2-Sim-Threads */
@@ -213,6 +212,22 @@ static inline int16_t map_to_world(int16_t map_koord) {
 #define map_get_max_x() map_to_world(map_max_x)		/**< Maximum in X-Richtung */
 #define map_get_max_y() map_to_world(map_max_y)		/**< Maximum in Y-Richtung */
 
+#if defined BOT_FS_AVAILABLE && defined BOTFS_COPY_AVAILABLE
+/**
+ * Kopiert die aktuelle Karte in eine BotFS-Datei
+ * \param *file Name der Zieldatei (wird geloescht, falls sie schon existiert)
+ * \return 0 falls kein Fehler, sonst Fehlercode
+ */
+int8_t map_save_to_file(const char * file);
+
+/**
+ * Laedt die Karte aus einer BotFS-Datei, aktuelle Karte wird dadurch geloescht
+ * \param *file Name der zu ladenden BotFS-Datei
+ * \return 0 falls kein Fehler, sonst Fehlercode
+ */
+int8_t map_load_from_file(const char * file);
+#endif // BOT_FS_AVAILABLE && BOTFS_COPY_AVAILABLE
+
 #ifdef MAP_2_SIM_AVAILABLE
 /**
  * Uebertraegt die komplette Karte an den Sim
@@ -258,9 +273,9 @@ void map_draw_circle(position_t center, int16_t radius, uint8_t color);
 char * map_file; /**< Dateiname fuer Ex- / Import */
 
 /**
- * Liest eine Map wieder ein
- * \param filename	Quelldatei
- * \return			Fehlercode, 0 falls alles ok
+ * Liest eine Karte aus einer Map-Datei (MiniFAT-Format) ein
+ * \param *filename Quelldatei
+ * \return Fehlercode, 0 falls alles ok
  */
 int map_read(const char * filename);
 

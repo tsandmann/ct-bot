@@ -10,16 +10,16 @@
 *
 ----------------------------------------------------------*/
 
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
-
-#include "bot-logic/tokenizer_access.h"
-#include "bot-logic/ubasic.h"
-#include "bot-logic/tokenizer.h"
-#include "bot-logic/ubasic_config.h"
-#include "bot-logic/ubasic_cvars.h"
 #include "sensor.h"
-#include <stddef.h>
+
+#include "tokenizer_access.h"
+#include "ubasic.h"
+#include "tokenizer.h"
+#include "ubasic_config.h"
+#include "ubasic_cvars.h"
+
 
 #if USE_AVR
 //	#include "../uart/usart.h"
@@ -29,13 +29,6 @@
 #endif
 
 #if UBASIC_CVARS
-
-#define DEBUG 0
-#if DEBUG
-	#define DEBUG_PRINTF(...)  usart_write(__VA_ARGS__)
-#else
-	#define DEBUG_PRINTF(...)
-#endif
 
 //--------------------------------------------
 
@@ -94,9 +87,8 @@ void vpoke_statement(void) {
 
 	accept(TOKENIZER_VPOKE);
     accept(TOKENIZER_LEFTPAREN);
-	// Variablennamen ermitteln
+	// Variablenname ermitteln
 	if(tokenizer_token() == TOKENIZER_STRING) {
-		DEBUG_PRINTF("var_name: %s", tokenizer_last_string_ptr());
 		tokenizer_next();
 	}
 	idx=search_cvars(tokenizer_last_string_ptr());
@@ -115,26 +107,24 @@ int vpeek_expression(void) {
 	int idx=0;
 	int r=0;
 #if USE_PROGMEM
-	int16_t * var_temp;
+	int16_t *var_temp;
 #endif
 
 	accept(TOKENIZER_VPEEK);
 	// Parameterliste wird durch linke Klammer eingeleitet
     accept(TOKENIZER_LEFTPAREN);
-	// Variablennamen ermitteln
+	// Variablenname ermitteln
 	if(tokenizer_token() == TOKENIZER_STRING) {
-		DEBUG_PRINTF("var_name: %s", tokenizer_last_string_ptr());
 		tokenizer_next();
 	}
 	idx=search_cvars(tokenizer_last_string_ptr());
 #if USE_PROGMEM
-	var_temp=(int16_t *) pgm_read_word(&cvars[idx].pvar);
+	var_temp=(int16_t *)pgm_read_word(&cvars[idx].pvar);
 	r=*var_temp;
 #else
 	r = *cvars[idx].pvar;
 #endif
     accept(TOKENIZER_RIGHTPAREN);
-    DEBUG_PRINTF("r=%d", r);
 	return r;
 }
 #endif

@@ -1,0 +1,45 @@
+rem solve maze
+rem Vorlage war das ABL Script
+10:
+rem Wand direkt voraus?
+call("RC", "bot_check_distance", 120, 15)
+d=call("beh_result") 
+if d=0 then call("RC", "bot_turn", 90)
+
+rem Wand etwas weiter weg
+call("RC", "bot_check_distance", 220, 15)
+d=call("beh_result") 
+if d=1 then gosub 1000 else gosub 2000
+
+rem und in loop wieder zurueck
+goto 10
+end
+
+
+1000:
+rem zur Wand links drehen
+call("RC", "bot_goto_obstacle", 120, 1)
+rem in Fahrtrichtung drehen
+call("RC", "bot_turn", -90)
+
+rem wieder Abstand bestimmen
+call("RC", "bot_check_distance", 200, 15)
+d=call("beh_result") 
+rem stueckchenweise vorfahren
+if d=1 then call("RC", "bot_goto_dist", 40, 1) else call("RC", "bot_goto_dist", 100, 1)
+return
+
+
+
+2000:
+rem keine Wand mehr und Abbiegen
+call("RC", "bot_turn", -90)
+
+rem zur Ecke vorfahren
+call("RC", "bot_goto_dist", 100, 1)
+
+rem um die Ecke rum
+call("RC", "bot_turn", 90)
+call("RC", "bot_goto_dist", 220, 1)
+
+return

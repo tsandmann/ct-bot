@@ -49,6 +49,7 @@
 #define DISPLAY_LINE_SHORTEST_WAY_AVAILABLE	/*!< Steuerung des Verhaltens auf diesem Screen */
 #define DISPLAY_DRIVE_CHESS_AVAILABLE		/*!< Steuerung des Schach-Verhaltens */
 #define DISPLAY_UBASIC_AVAILABLE	    	/*!< Steuerung des uBasic-Verhaltens */
+#define DISPLAY_ABL_STACK_AVAILABLE			/*!< Stack Trace des ABL-Interpreters */
 
 #endif // DISPLAY_AVAILABLE
 #endif // AVAILABLE_SCREENS_H_

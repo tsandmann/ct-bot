@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: behaviour_drive_area.c Quellcode</title>
+<title>c&#39;t-Bot: behaviour_drive_area.c Quellcode</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -52,7 +52,7 @@
   </div>
   <div id="nav-path" class="navpath">
     <ul>
-      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+      <li class="navelem"><a class="el" href="dir_14c9cc1c75a92f359ad94591d62973a1.html">bot-logic</a>      </li>
     </ul>
   </div>
 </div>
@@ -150,7 +150,7 @@
 <a name="l00117"></a>00117 
 <a name="l00119"></a>00119 <span class="keyword">static</span> uint32_t lastCorrectionTime = 0;
 <a name="l00120"></a>00120 
-<a name="l00122"></a><a class="code" href="structPACKED.html">00122</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>{
+<a name="l00122"></a>00122 <span class="keyword">typedef</span> <span class="keyword">struct </span>{
 <a name="l00123"></a><a class="code" href="structPACKED.html#a665b8782f9c504d3171c4cf187a7fd01">00123</a>     position_t <a class="code" href="structPACKED.html#a665b8782f9c504d3171c4cf187a7fd01">point1</a>;
 <a name="l00124"></a><a class="code" href="structPACKED.html#a245ea84a4f56f538541c2b1ab8746b27">00124</a>     position_t <a class="code" href="structPACKED.html#a245ea84a4f56f538541c2b1ab8746b27">point2</a>;
 <a name="l00125"></a>00125 } <a class="code" href="structPACKED.html" title="FAT.">PACKED</a> trackpoint_t;
@@ -173,7 +173,7 @@
 <a name="l00146"></a>00146 <span class="preprocessor"></span>
 <a name="l00153"></a>00153 <span class="keyword">static</span> <span class="keywordtype">void</span> draw_line_world(position_t from, position_t to, uint8_t color) {
 <a name="l00154"></a>00154     <a class="code" href="command_8c.html#a419b75ed34551408822d9caee3cd5206">command_write</a>(<a class="code" href="command_8h.html#a039fd10853c7f1560f1a6cc2c009fef5">CMD_MAP</a>, <a class="code" href="command_8h.html#a64bb59ec345c05bd28f9863ce1a77fbe">SUB_MAP_CLEAR_LINES</a>, 2, 0, 0);
-<a name="l00155"></a>00155     <a class="code" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df">map_draw_line_world</a>(from, to, color);
+<a name="l00155"></a>00155     <a class="code" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df" title="Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein; dient zur Visualis...">map_draw_line_world</a>(from, to, color);
 <a name="l00156"></a>00156 }
 <a name="l00157"></a>00157 <span class="preprocessor">#endif // MAP_2_SIM_AVAILABLE</span>
 <a name="l00158"></a>00158 <span class="preprocessor"></span>
@@ -185,10 +185,10 @@
 <a name="l00172"></a>00172 <span class="keyword">static</span> int8_t map_get_field(position_t point) {
 <a name="l00173"></a>00173 <span class="preprocessor">#ifdef DEBUG_DRIVE_AREA_TIMES</span>
 <a name="l00174"></a>00174 <span class="preprocessor"></span>    uint8_t result;
-<a name="l00175"></a>00175     <a class="code" href="timer_8h.html#ada93439518bbc3d5e95685cd8e8cfe96">TIMER_MEASURE_TIME</a>(result = <a class="code" href="map_8c.html#ab7670d0692f0e9c53420abbd463c1518">map_get_average</a>(point.x, point.y, 50));
+<a name="l00175"></a>00175     <a class="code" href="timer_8h.html#ada93439518bbc3d5e95685cd8e8cfe96">TIMER_MEASURE_TIME</a>(result = <a class="code" href="map_8c.html#ab7670d0692f0e9c53420abbd463c1518" title="liefert den Durschnittswert um einen Ort herum">map_get_average</a>(point.x, point.y, 50));
 <a name="l00176"></a>00176     <span class="keywordflow">return</span> result;
 <a name="l00177"></a>00177 <span class="preprocessor">#else</span>
-<a name="l00178"></a>00178 <span class="preprocessor"></span>    <span class="keywordflow">return</span> <a class="code" href="map_8c.html#ab7670d0692f0e9c53420abbd463c1518">map_get_average</a>(point.x, point.y, 50); <span class="comment">// Mapwert Durchschnitt</span>
+<a name="l00178"></a>00178 <span class="preprocessor"></span>    <span class="keywordflow">return</span> <a class="code" href="map_8c.html#ab7670d0692f0e9c53420abbd463c1518" title="liefert den Durschnittswert um einen Ort herum">map_get_average</a>(point.x, point.y, 50); <span class="comment">// Mapwert Durchschnitt</span>
 <a name="l00179"></a>00179 <span class="preprocessor">#endif</span>
 <a name="l00180"></a>00180 <span class="preprocessor"></span>}
 <a name="l00181"></a>00181 
@@ -277,7 +277,7 @@
 <a name="l00314"></a>00314     position_t map_pos;
 <a name="l00315"></a>00315     int8_t mapval;
 <a name="l00316"></a>00316 
-<a name="l00317"></a>00317     <span class="keywordflow">if</span> (<a class="code" href="map_8c.html#aee723500f07bef9ecc88712b8deb792a">map_locked</a>() == 1) {
+<a name="l00317"></a>00317     <span class="keywordflow">if</span> (<a class="code" href="map_8c.html#aee723500f07bef9ecc88712b8deb792a" title="Prueft, ob die Karte zurzeit gesperrt ist.">map_locked</a>() == 1) {
 <a name="l00318"></a>00318         <span class="keywordflow">return</span> <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
 <a name="l00319"></a>00319     }
 <a name="l00320"></a>00320 
@@ -319,7 +319,7 @@
 <a name="l00366"></a>00366     position_t map_pos;
 <a name="l00367"></a>00367     int8_t mapval = 0;
 <a name="l00368"></a>00368 
-<a name="l00369"></a>00369     <span class="keywordflow">if</span> (<a class="code" href="map_8c.html#aee723500f07bef9ecc88712b8deb792a">map_locked</a>() == 1) {
+<a name="l00369"></a>00369     <span class="keywordflow">if</span> (<a class="code" href="map_8c.html#aee723500f07bef9ecc88712b8deb792a" title="Prueft, ob die Karte zurzeit gesperrt ist.">map_locked</a>() == 1) {
 <a name="l00370"></a>00370         <span class="keywordflow">return</span> <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
 <a name="l00371"></a>00371     }
 <a name="l00372"></a>00372 
@@ -676,7 +676,7 @@
 <a name="l00771"></a>00771         }
 <a name="l00772"></a>00772 
 <a name="l00773"></a>00773         <span class="comment">// Wegfreiheit bis zum Punkt auf Strecke voraus bestimmen; manchmal kein Hind gesehen aber schon in Map</span>
-<a name="l00774"></a>00774         uint8_t free1 = <a class="code" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041">map_way_free</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, pos.x, pos.y, <a class="code" href="behaviour__drive__area_8c.html#a19be22f45c547b49222a70490266f286">MAP_WAY_FREE_MARGIN</a>);
+<a name="l00774"></a>00774         uint8_t free1 = <a class="code" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041" title="Prueft ob eine direkte Passage frei von Hindernissen ist.">map_way_free</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, pos.x, pos.y, <a class="code" href="behaviour__drive__area_8c.html#a19be22f45c547b49222a70490266f286">MAP_WAY_FREE_MARGIN</a>);
 <a name="l00775"></a>00775         <a class="code" href="behaviour__drive__area_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;Wegfreiheit fuer Mappunkt voraus: %1d&quot;</span>, free1);
 <a name="l00776"></a>00776 
 <a name="l00777"></a>00777         <span class="comment">// ist der Weg voraus nicht frei laut Map, dann gar nicht erst fahren und verwerfen</span>
@@ -713,18 +713,18 @@
 <a name="l00812"></a>00812         <span class="comment">// wenn bereits Hindernis voraus gesehen wurde, dann nur Fahren bis kurz vor dem Hindernis falls</span>
 <a name="l00813"></a>00813         <span class="comment">// naemlich Hindernis wieder aus Blick der Sensoren verschwindet und nicht daran kleben bleibt</span>
 <a name="l00814"></a>00814         <span class="keywordflow">if</span> (disttodrive &lt; 900) {
-<a name="l00815"></a>00815             <a class="code" href="behaviour__goto__pos_8c.html#af3cd84671054daefcec8c370feaf0c1c">bot_goto_dist</a>(data, disttodrive, 1); <span class="comment">// bei kleinem Abstand mit goto_dist fahren</span>
+<a name="l00815"></a>00815             <a class="code" href="behaviour__goto__pos_8c.html#a54260069e00a15a68b8c5ffdc0cc1a6d" title="Botenfunktion des Distanz-Positionierungsverhaltens.">bot_goto_dist</a>(data, disttodrive, 1); <span class="comment">// bei kleinem Abstand mit goto_dist fahren</span>
 <a name="l00816"></a>00816             <a class="code" href="behaviour__drive__area_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;fahre disttodrive %1d&quot;</span>, disttodrive);
 <a name="l00817"></a>00817             track_state = <a class="code" href="behaviour__drive__area_8c.html#aa8919000198b132cd506bc6fb7748d55">DELAY_AFTER_FORWARD</a>;  <span class="comment">// um Observer zu stoppen und Nebenbahnen zu pushen</span>
 <a name="l00818"></a>00818             next_behavstate = <a class="code" href="behaviour__drive__area_8c.html#aed45884f0563e488782926410b7153b0">CHECK_TRACKSIDE</a>;  <span class="comment">// mit voraus weiter nach AFTER_FORWARD und saemtlichen Checks voraus</span>
 <a name="l00819"></a>00819             set_point_to_lastpoint(&amp;nextline.point2, 0, 0);  <span class="comment">// Zielpunkt ist dann bereits angefahren und einfach vorwaerts weiter</span>
 <a name="l00820"></a>00820         } <span class="keywordflow">else</span> {
-<a name="l00821"></a>00821             <a class="code" href="behaviour__goto__obstacle_8c.html#a06f1d6f09a3440a7d063ba902d147b48">bot_goto_obstacle</a>(data, <a class="code" href="behaviour__drive__area_8c.html#aa8a2b43b8833806791da3297f87a3488">DIST_AWARD_HAZ</a>, 0); <span class="comment">// mit hohem Abstand voraus via obstacle</span>
+<a name="l00821"></a>00821             <a class="code" href="behaviour__goto__obstacle_8c.html#abbec3c19a018455aa4e78f1af2c04ce8" title="Botenfunktion des goto_obstacle-Verhaltens.">bot_goto_obstacle</a>(data, <a class="code" href="behaviour__drive__area_8c.html#aa8a2b43b8833806791da3297f87a3488">DIST_AWARD_HAZ</a>, 0); <span class="comment">// mit hohem Abstand voraus via obstacle</span>
 <a name="l00822"></a>00822             <a class="code" href="behaviour__drive__area_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;fahre obstacle &quot;</span>);
 <a name="l00823"></a>00823         }
 <a name="l00824"></a>00824 
 <a name="l00825"></a>00825         <span class="comment">// damit auch Abgrund erkannt wird beim Vorfahren; obige Verhalten benutzen beide goto_pos</span>
-<a name="l00826"></a>00826         <a class="code" href="behaviour__cancel__behaviour_8c.html#a9d3bf9ebf7c36f74b1c02506d88a101f" title="Botenfunktion zum Deaktivieren eines Verhaltens, wenn die Abbruchbedingung erfuellt ist...">bot_cancel_behaviour</a>(data, <a class="code" href="behaviour__goto__pos_8c.html#a438ebcd779ae602e208e9ebe3b9aee44">bot_goto_pos_behaviour</a>, check_haz_sensDist);
+<a name="l00826"></a>00826         <a class="code" href="behaviour__cancel__behaviour_8c.html#a9d3bf9ebf7c36f74b1c02506d88a101f" title="Botenfunktion zum Deaktivieren eines Verhaltens, wenn die Abbruchbedingung erfuellt ist...">bot_cancel_behaviour</a>(data, <a class="code" href="behaviour__goto__pos_8c.html#a438ebcd779ae602e208e9ebe3b9aee44" title="Das Positionierungsverhalten.">bot_goto_pos_behaviour</a>, check_haz_sensDist);
 <a name="l00827"></a>00827         <span class="keywordflow">break</span>;
 <a name="l00828"></a>00828 
 <a name="l00829"></a>00829     <span class="keywordflow">case</span> <a class="code" href="behaviour__drive__area_8c.html#aa8919000198b132cd506bc6fb7748d55">DELAY_AFTER_FORWARD</a>:
@@ -732,7 +732,7 @@
 <a name="l00831"></a>00831 
 <a name="l00832"></a>00832         <span class="comment">//bei Abgrund etwas rueckwaerts fahren</span>
 <a name="l00833"></a>00833         <span class="keywordflow">if</span> (border_fired) {
-<a name="l00834"></a>00834             <a class="code" href="behaviour__drive__distance_8c.html#ae7b188b6785c5e337c51509282ca790e">bot_drive_distance</a>(data, 0, -<a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>, <a class="code" href="bot-local_8h.html#a39087ac25e2bcfaa5fd5abdfab91bd25">OPTIMAL_DISTANCE</a> / 10); <span class="comment">// rueckwaerts bei Abgrund</span>
+<a name="l00834"></a>00834             <a class="code" href="behaviour__drive__distance_8c.html#a8d678ab6711dfaed1efa80bd2daab31c" title="Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren.">bot_drive_distance</a>(data, 0, -<a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>, <a class="code" href="bot-local_8h.html#a39087ac25e2bcfaa5fd5abdfab91bd25">OPTIMAL_DISTANCE</a> / 10); <span class="comment">// rueckwaerts bei Abgrund</span>
 <a name="l00835"></a>00835         }
 <a name="l00836"></a>00836 
 <a name="l00837"></a>00837         lastCheckTime = <a class="code" href="timer_8h.html#a18263e68cde6252d694ac588634e05bd">TIMER_GET_TICKCOUNT_16</a>; <span class="comment">// Var auf Systemzeit setzen, damit etwas zeit vergehen kann im naechsten Zustand</span>
@@ -799,7 +799,7 @@
 <a name="l00898"></a>00898         <span class="comment">// wird zur Pruefung herangezogen, da bei zu nah der andere keinen gueltigen sinnvollen Wert liefert</span>
 <a name="l00899"></a>00899         <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a> &lt;= <a class="code" href="behaviour__drive__area_8c.html#aa8a2b43b8833806791da3297f87a3488">DIST_AWARD_HAZ</a> || <a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> &lt;= <a class="code" href="behaviour__drive__area_8c.html#aa8a2b43b8833806791da3297f87a3488">DIST_AWARD_HAZ</a>) {
 <a name="l00900"></a>00900             <span class="comment">// etwas zurueck um Map zu checken</span>
-<a name="l00901"></a>00901             <a class="code" href="behaviour__drive__distance_8c.html#ae7b188b6785c5e337c51509282ca790e">bot_drive_distance</a>(data, 0, -<a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>, 2); <span class="comment">// rueckwaerts bei Abgrund</span>
+<a name="l00901"></a>00901             <a class="code" href="behaviour__drive__distance_8c.html#a8d678ab6711dfaed1efa80bd2daab31c" title="Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren.">bot_drive_distance</a>(data, 0, -<a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>, 2); <span class="comment">// rueckwaerts bei Abgrund</span>
 <a name="l00902"></a>00902             <a class="code" href="behaviour__drive__area_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;zu Nah-&gt;Back L: %1d R: %1d, ist &lt; %1d&quot;</span>, <a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a>, <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a>, <a class="code" href="behaviour__drive__area_8c.html#aa8a2b43b8833806791da3297f87a3488">DIST_AWARD_HAZ</a>);
 <a name="l00903"></a>00903             <span class="keywordflow">break</span>; <span class="comment">// in aktuellem Eingang drin bleiben</span>
 <a name="l00904"></a>00904         }
@@ -828,16 +828,16 @@
 <a name="l00927"></a>00927 
 <a name="l00928"></a>00928             track_state = <a class="code" href="behaviour__drive__area_8c.html#aa16c8b27baa496c2fdf0afffaf4485a0">CHECK_DIST</a>; <span class="comment">// Restweg ermitteln nach Zuschlagen von cancel</span>
 <a name="l00929"></a>00929 
-<a name="l00930"></a>00930             <a class="code" href="behaviour__goto__pos_8c.html#af3cd84671054daefcec8c370feaf0c1c">bot_goto_dist</a>(data, dist_to_point - 400, 1); <span class="comment">// bis 400mm vor Ziel</span>
+<a name="l00930"></a>00930             <a class="code" href="behaviour__goto__pos_8c.html#a54260069e00a15a68b8c5ffdc0cc1a6d" title="Botenfunktion des Distanz-Positionierungsverhaltens.">bot_goto_dist</a>(data, dist_to_point - 400, 1); <span class="comment">// bis 400mm vor Ziel</span>
 <a name="l00931"></a>00931 
 <a name="l00932"></a>00932             <span class="comment">// damit Bot nicht auf seinem weiten Weg zum Zielpunkt in den Abgrund faellt</span>
-<a name="l00933"></a>00933             <a class="code" href="behaviour__cancel__behaviour_8c.html#a9d3bf9ebf7c36f74b1c02506d88a101f" title="Botenfunktion zum Deaktivieren eines Verhaltens, wenn die Abbruchbedingung erfuellt ist...">bot_cancel_behaviour</a>(data, <a class="code" href="behaviour__goto__pos_8c.html#a438ebcd779ae602e208e9ebe3b9aee44">bot_goto_pos_behaviour</a>,
+<a name="l00933"></a>00933             <a class="code" href="behaviour__cancel__behaviour_8c.html#a9d3bf9ebf7c36f74b1c02506d88a101f" title="Botenfunktion zum Deaktivieren eines Verhaltens, wenn die Abbruchbedingung erfuellt ist...">bot_cancel_behaviour</a>(data, <a class="code" href="behaviour__goto__pos_8c.html#a438ebcd779ae602e208e9ebe3b9aee44" title="Das Positionierungsverhalten.">bot_goto_pos_behaviour</a>,
 <a name="l00934"></a>00934                     check_haz_sensDist);
 <a name="l00935"></a>00935         } <span class="keywordflow">else</span> {
 <a name="l00936"></a>00936             <span class="comment">// in Testparcours2 bleibt bot oft an unterer rechter Ecke haengen, weil der Weg als Frei erkannt wird obwohl auch laut</span>
 <a name="l00937"></a>00937             <span class="comment">// Map schon die Ecke Grau-Schwarz eingezeichnet ist (bei nicht uebergebener Karte mit on_the_fly Hindernis-Aktualisierung)</span>
 <a name="l00938"></a>00938             <span class="comment">// aber selbst mit uebergebener clean Karte aus sim-Export bleibt er haengen, da wap_way_free Weg frei liefert</span>
-<a name="l00939"></a>00939             uint8_t free1 = <a class="code" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041">map_way_free</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, nextline.point1.x, nextline.point1.y, <a class="code" href="behaviour__drive__area_8c.html#a19be22f45c547b49222a70490266f286">MAP_WAY_FREE_MARGIN</a>);
+<a name="l00939"></a>00939             uint8_t free1 = <a class="code" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041" title="Prueft ob eine direkte Passage frei von Hindernissen ist.">map_way_free</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, nextline.point1.x, nextline.point1.y, <a class="code" href="behaviour__drive__area_8c.html#a19be22f45c547b49222a70490266f286">MAP_WAY_FREE_MARGIN</a>);
 <a name="l00940"></a>00940             <a class="code" href="behaviour__drive__area_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;kurze Wegefreiheit zu P1: %1d, l/r: %1d %1d, Zielabstand %1d&quot;</span>, free1, <a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a>, <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a>, dist_to_point);
 <a name="l00941"></a>00941 
 <a name="l00942"></a>00942             <span class="comment">// Falls Abstand des Zielpunktes kleiner als ein gesehener Hindernisabstand ist, dann auch nicht anfahren</span>
@@ -858,7 +858,7 @@
 <a name="l00957"></a>00957 
 <a name="l00958"></a>00958             <span class="comment">// evtl erst den Punkt 2 anfahren wenn P1 nicht anfahrbar war, d.h. Punkte vertauschen</span>
 <a name="l00959"></a>00959             <span class="keywordflow">if</span> (!free1 <span class="comment">/*&amp;&amp; (get_dist(nextline.point1.x, nextline.point1.y,nextline.point2.x, nextline.point2.y)&gt;300*300)*/</span>) {
-<a name="l00960"></a>00960                 uint8_t free2 = <a class="code" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041">map_way_free</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, nextline.point2.x,
+<a name="l00960"></a>00960                 uint8_t free2 = <a class="code" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041" title="Prueft ob eine direkte Passage frei von Hindernissen ist.">map_way_free</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, nextline.point2.x,
 <a name="l00961"></a>00961                         nextline.point2.y, <a class="code" href="behaviour__drive__area_8c.html#a19be22f45c547b49222a70490266f286">MAP_WAY_FREE_MARGIN</a>);
 <a name="l00962"></a>00962                 <a class="code" href="behaviour__drive__area_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;Wegfreiheit P2: %1d, Abstand P1: %1.0f P2: %1.0f&quot;</span>, free2, sqrtf(<a class="code" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat-Abstands zwischen zwei Punkten.">get_dist</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, nextline.point1.x, nextline.point1.y)),
 <a name="l00963"></a>00963                         sqrtf(<a class="code" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat-Abstands zwischen zwei Punkten.">get_dist</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, nextline.point2.x, nextline.point2.y)));
@@ -920,23 +920,23 @@
 <a name="l01019"></a>01019         <span class="comment">// falls weit gefahren wurde und Hindernis zum naechsten Zielpunkt erkannt wird aber der andere Streckenpunkt freie Fahrt bietet, dann einfach</span>
 <a name="l01020"></a>01020         <span class="comment">// Punkte tauschen und den anderen Punkt zuerst anfahren um sich diesem von der anderen Seite zu naehern</span>
 <a name="l01021"></a>01021         <span class="keywordflow">if</span> (go_long_distance &amp;&amp; ((check_haz_sensDist()) || map_get_field(
-<a name="l01022"></a>01022                 nextline.point1) &lt; 0) &amp;&amp; <a class="code" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041">map_way_free</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>,
+<a name="l01022"></a>01022                 nextline.point1) &lt; 0) &amp;&amp; <a class="code" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041" title="Prueft ob eine direkte Passage frei von Hindernissen ist.">map_way_free</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>,
 <a name="l01023"></a>01023                 nextline.point2.x, nextline.point2.y, <a class="code" href="behaviour__drive__area_8c.html#a19be22f45c547b49222a70490266f286">MAP_WAY_FREE_MARGIN</a>)) {
 <a name="l01024"></a>01024             set_nextline(nextline.point1, nextline.point2, <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>); <span class="comment">// Werte egal da nextline nur getauscht</span>
 <a name="l01025"></a>01025         }
 <a name="l01026"></a>01026 
 <a name="l01027"></a>01027         <span class="comment">// Ersten Streckenpunkt nun anfahren</span>
-<a name="l01028"></a>01028         <a class="code" href="behaviour__goto__pos_8c.html#ab5ed29ca0a737f151df82f8babc00170">bot_goto_pos</a>(data, nextline.point1.x, nextline.point1.y, 999);
+<a name="l01028"></a>01028         <a class="code" href="behaviour__goto__pos_8c.html#a88ddbedd618e291f1181ca34433fcd93" title="Botenfunktion des Positionierungsverhaltens.">bot_goto_pos</a>(data, nextline.point1.x, nextline.point1.y, 999);
 <a name="l01029"></a>01029 
 <a name="l01030"></a>01030         lastCorrectionTime = 0; <span class="comment">// Ablaufzeit init.</span>
 <a name="l01031"></a>01031 
 <a name="l01032"></a>01032 
 <a name="l01033"></a>01033         <span class="comment">// bei kleinem Abstand nur Abgrund ueberwachen sonst ebenfalls auch Hindernisse mit Sensoren</span>
 <a name="l01034"></a>01034         <span class="keywordflow">if</span> (go_long_distance) {
-<a name="l01035"></a>01035             <a class="code" href="behaviour__cancel__behaviour_8c.html#a9d3bf9ebf7c36f74b1c02506d88a101f" title="Botenfunktion zum Deaktivieren eines Verhaltens, wenn die Abbruchbedingung erfuellt ist...">bot_cancel_behaviour</a>(data, <a class="code" href="behaviour__goto__pos_8c.html#a438ebcd779ae602e208e9ebe3b9aee44">bot_goto_pos_behaviour</a>,
+<a name="l01035"></a>01035             <a class="code" href="behaviour__cancel__behaviour_8c.html#a9d3bf9ebf7c36f74b1c02506d88a101f" title="Botenfunktion zum Deaktivieren eines Verhaltens, wenn die Abbruchbedingung erfuellt ist...">bot_cancel_behaviour</a>(data, <a class="code" href="behaviour__goto__pos_8c.html#a438ebcd779ae602e208e9ebe3b9aee44" title="Das Positionierungsverhalten.">bot_goto_pos_behaviour</a>,
 <a name="l01036"></a>01036                 check_haz_sensDist); <span class="comment">// Abgrund und Abstandsensorcheck bei langer Entfernung (nach Stackholen oder rueckwaerts wg. zu nah)</span>
 <a name="l01037"></a>01037         } <span class="keywordflow">else</span> {
-<a name="l01038"></a>01038             <a class="code" href="behaviour__cancel__behaviour_8c.html#a9d3bf9ebf7c36f74b1c02506d88a101f" title="Botenfunktion zum Deaktivieren eines Verhaltens, wenn die Abbruchbedingung erfuellt ist...">bot_cancel_behaviour</a>(data, <a class="code" href="behaviour__goto__pos_8c.html#a438ebcd779ae602e208e9ebe3b9aee44">bot_goto_pos_behaviour</a>,
+<a name="l01038"></a>01038             <a class="code" href="behaviour__cancel__behaviour_8c.html#a9d3bf9ebf7c36f74b1c02506d88a101f" title="Botenfunktion zum Deaktivieren eines Verhaltens, wenn die Abbruchbedingung erfuellt ist...">bot_cancel_behaviour</a>(data, <a class="code" href="behaviour__goto__pos_8c.html#a438ebcd779ae602e208e9ebe3b9aee44" title="Das Positionierungsverhalten.">bot_goto_pos_behaviour</a>,
 <a name="l01039"></a>01039                 check_border_fired); <span class="comment">// kurzer Abstand nur Abgrundcheck oder sehr nah</span>
 <a name="l01040"></a>01040         }
 <a name="l01041"></a>01041 
@@ -947,7 +947,7 @@
 <a name="l01046"></a>01046 
 <a name="l01047"></a>01047         <span class="comment">// nach Abgrund etwas rueckwaerts</span>
 <a name="l01048"></a>01048         <span class="keywordflow">if</span> (border_fired) {
-<a name="l01049"></a>01049             <a class="code" href="behaviour__drive__distance_8c.html#ae7b188b6785c5e337c51509282ca790e">bot_drive_distance</a>(data, 0, -<a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>, <a class="code" href="bot-local_8h.html#a39087ac25e2bcfaa5fd5abdfab91bd25">OPTIMAL_DISTANCE</a> / 10);
+<a name="l01049"></a>01049             <a class="code" href="behaviour__drive__distance_8c.html#a8d678ab6711dfaed1efa80bd2daab31c" title="Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren.">bot_drive_distance</a>(data, 0, -<a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>, <a class="code" href="bot-local_8h.html#a39087ac25e2bcfaa5fd5abdfab91bd25">OPTIMAL_DISTANCE</a> / 10);
 <a name="l01050"></a>01050             border_fired = <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
 <a name="l01051"></a>01051             <span class="keywordflow">break</span>;
 <a name="l01052"></a>01052         }
@@ -995,20 +995,20 @@
 <a name="l01094"></a>01094         <span class="keywordflow">if</span> (map_get_field(nextline.point1) &gt; <a class="code" href="behaviour__drive__area_8c.html#aa3d0cd0f79c132f0d165e7c2d010ceed">MAP_TRACKVAL</a> || map_get_field(nextline.point2) &gt; <a class="code" href="behaviour__drive__area_8c.html#aa3d0cd0f79c132f0d165e7c2d010ceed">MAP_TRACKVAL</a>) {
 <a name="l01095"></a>01095             <a class="code" href="behaviour__drive__area_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;Start- oder EndPunkt schon befahren-&gt;Track verwerfen&quot;</span>);
 <a name="l01096"></a>01096 <span class="preprocessor">#if defined MAP_2_SIM_AVAILABLE &amp;&amp; defined DEBUG_BEHAVIOUR_AREA</span>
-<a name="l01097"></a>01097 <span class="preprocessor"></span>        <a class="code" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df">map_draw_line_world</a>(nextline.point1, nextline.point2, 1); <span class="comment">// verworfene Linie rot</span>
+<a name="l01097"></a>01097 <span class="preprocessor"></span>        <a class="code" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df" title="Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein; dient zur Visualis...">map_draw_line_world</a>(nextline.point1, nextline.point2, 1); <span class="comment">// verworfene Linie rot</span>
 <a name="l01098"></a>01098 <span class="preprocessor">#endif</span>
 <a name="l01099"></a>01099 <span class="preprocessor"></span>          <span class="keywordflow">break</span>;
 <a name="l01100"></a>01100         }
 <a name="l01101"></a>01101 
 <a name="l01102"></a>01102         <span class="comment">// pruefen, ob Wege zu den Punkten frei sind und Freikennungen speichern</span>
-<a name="l01103"></a>01103         free1 = <a class="code" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041">map_way_free</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, nextline.point1.x, nextline.point1.y, <a class="code" href="behaviour__drive__area_8c.html#a19be22f45c547b49222a70490266f286">MAP_WAY_FREE_MARGIN</a>);
+<a name="l01103"></a>01103         free1 = <a class="code" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041" title="Prueft ob eine direkte Passage frei von Hindernissen ist.">map_way_free</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, nextline.point1.x, nextline.point1.y, <a class="code" href="behaviour__drive__area_8c.html#a19be22f45c547b49222a70490266f286">MAP_WAY_FREE_MARGIN</a>);
 <a name="l01104"></a>01104         <a class="code" href="behaviour__drive__area_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;Wegfreiheit zu P1: %1d, Abstand P1: %1.0f P2: %1.0f&quot;</span>, free1,
 <a name="l01105"></a>01105             sqrtf(<a class="code" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat-Abstands zwischen zwei Punkten.">get_dist</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>,<a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, nextline.point1.x, nextline.point1.y)),
 <a name="l01106"></a>01106             sqrtf(<a class="code" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat-Abstands zwischen zwei Punkten.">get_dist</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>,<a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, nextline.point2.x, nextline.point2.y)));
 <a name="l01107"></a>01107 
 <a name="l01108"></a>01108        <span class="comment">// wenn Weg zu P1 nicht frei ist aber Weg zu P2 und Abstand nicht zu kurz ist, dann zuerst P2 anfahren</span>
 <a name="l01109"></a>01109        <span class="keywordflow">if</span> (! free1) {
-<a name="l01110"></a>01110             uint8_t free2 = <a class="code" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041">map_way_free</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, nextline.point2.x,
+<a name="l01110"></a>01110             uint8_t free2 = <a class="code" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041" title="Prueft ob eine direkte Passage frei von Hindernissen ist.">map_way_free</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, nextline.point2.x,
 <a name="l01111"></a>01111                     nextline.point2.y, <a class="code" href="behaviour__drive__area_8c.html#a19be22f45c547b49222a70490266f286">MAP_WAY_FREE_MARGIN</a>);
 <a name="l01112"></a>01112             <a class="code" href="behaviour__drive__area_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;Wegfreiheit zu P2: %1d, Abstand P1: %1.0f P2: %1.0f&quot;</span>,
 <a name="l01113"></a>01113                 free2, sqrtf(<a class="code" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat-Abstands zwischen zwei Punkten.">get_dist</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, nextline.point1.x, nextline.point1.y)),
@@ -1024,7 +1024,7 @@
 <a name="l01123"></a>01123         }
 <a name="l01124"></a>01124 
 <a name="l01125"></a>01125         <span class="keywordflow">if</span> (! free1) {
-<a name="l01126"></a>01126             uint8_t free2 = <a class="code" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041">map_way_free</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, nextline.point2.x,
+<a name="l01126"></a>01126             uint8_t free2 = <a class="code" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041" title="Prueft ob eine direkte Passage frei von Hindernissen ist.">map_way_free</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, nextline.point2.x,
 <a name="l01127"></a>01127                     nextline.point2.y, <a class="code" href="behaviour__drive__area_8c.html#a19be22f45c547b49222a70490266f286">MAP_WAY_FREE_MARGIN</a>);
 <a name="l01128"></a>01128             <a class="code" href="behaviour__drive__area_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;Wegfreiheit zu P2 ohne Pfadplanung: %1d, Mapwert: %1d&quot;</span>, free2, map_get_field(nextline.point2));
 <a name="l01129"></a>01129 
@@ -1058,8 +1058,8 @@
 <a name="l01158"></a>01158 
 <a name="l01159"></a>01159                 <span class="keywordflow">if</span> (pop_stack_pos_line(&amp;pt.point1, &amp;pt.point2)) {
 <a name="l01160"></a>01160 
-<a name="l01161"></a>01161                     free1 = <a class="code" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041">map_way_free</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, pt.point1.x, pt.point1.y, <a class="code" href="behaviour__drive__area_8c.html#a19be22f45c547b49222a70490266f286">MAP_WAY_FREE_MARGIN</a>);
-<a name="l01162"></a>01162                     free2 = <a class="code" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041">map_way_free</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, pt.point2.x, pt.point2.y, <a class="code" href="behaviour__drive__area_8c.html#a19be22f45c547b49222a70490266f286">MAP_WAY_FREE_MARGIN</a>);
+<a name="l01161"></a>01161                     free1 = <a class="code" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041" title="Prueft ob eine direkte Passage frei von Hindernissen ist.">map_way_free</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, pt.point1.x, pt.point1.y, <a class="code" href="behaviour__drive__area_8c.html#a19be22f45c547b49222a70490266f286">MAP_WAY_FREE_MARGIN</a>);
+<a name="l01162"></a>01162                     free2 = <a class="code" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041" title="Prueft ob eine direkte Passage frei von Hindernissen ist.">map_way_free</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, pt.point2.x, pt.point2.y, <a class="code" href="behaviour__drive__area_8c.html#a19be22f45c547b49222a70490266f286">MAP_WAY_FREE_MARGIN</a>);
 <a name="l01163"></a>01163 
 <a name="l01164"></a>01164                     <span class="keywordflow">if</span> (!free1 &amp;&amp; !free2) {
 <a name="l01165"></a>01165                         <a class="code" href="behaviour__drive__area_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<span class="stringliteral">&quot;Folgeweg auch nicht frei&quot;</span>); <span class="comment">// Weg verworfen wenn nicht anfahrbar-&gt;naechsten Stackweg holen</span>
@@ -1114,9 +1114,9 @@
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:08 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

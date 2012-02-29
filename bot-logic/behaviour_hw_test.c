@@ -42,7 +42,7 @@ static uint8_t testmode =
 	2
 #else
 	3
-#endif
+#endif // TEST_X
 	; /**< Testmodus, 0: analog, 1: digital, 2: Motor */
 static uint16_t calls = 0; /**< Anzahl der Durchlaeufe fuer Motor-Test */
 
@@ -56,6 +56,8 @@ void bot_hw_test_behaviour(Behaviour_t * data) {
 	led_t * status = (led_t *) &led_status;
 	bit_t tmp;
 #endif // LED_AVAILABLE
+
+	sensor_update_distance = sensor_dist_straight; // Distanzsensordaten 1:1 weiterreichen
 
 	switch (testmode) {
 	case 0: // analog
@@ -79,8 +81,6 @@ void bot_hw_test_behaviour(Behaviour_t * data) {
 
 		LED_set(led_status);
 #endif // LED_AVAILABLE
-
-		sensor_update_distance = sensor_dist_straight; // Distanzsensordaten 1:1 weiterreichen
 		break;
 
 	case 1: // digital

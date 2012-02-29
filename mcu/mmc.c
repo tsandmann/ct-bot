@@ -38,8 +38,8 @@
  * Oder per Hardware-SPI-Steuerung, dafuer ist ein kleiner Hardware-Umbau noetig, man
  * muss die Verbindung zwischen PC5 und dem Display trennen (busy-Leitung wird vom Display-
  * Treiber eh nicht genutzt) und auf PC5 den linken Radencoder legen. Ausserdem ist PB4
- * vom Radencoder zu trennen. (Der PB4-Pin kann fuer andere Zwecke genutzt werden, er muss
- * jedoch immer als OUTPUT konfiguriert sein.) Schalten man nun in ct-Bot.h SPI_AVAILABLE
+ * vom Radencoder zu trennen (der PB4-Pin kann fuer andere Zwecke genutzt werden, er muss
+ * jedoch immer als OUTPUT konfiguriert sein). Schaltet man nun in ct-Bot.h SPI_AVAILABLE
  * AN, dann wird die Kommunikation mit der MMC per Hardware gesteuert - Vorteil ist eine
  * hoehere Transfer-Geschwindigkeit zur MMC (Faktor 2) und es sind ca. 430 Byte weniger im
  * Flash belegt.

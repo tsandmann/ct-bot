@@ -94,7 +94,7 @@ typedef struct {
 /** Benutzte Bloecke einer Datei */
 typedef struct {
 	uint16_t start;				/**< Adresse des ersten belegten Blocks (auf Volume, nicht relativ zur Datei) */
-	uint16_t end;				/**< Adresse des letzten belegten Blocks (auf Volume, nicht relativ */
+	uint16_t end;				/**< Adresse des letzten belegten Blocks (auf Volume, nicht relativ zur Datei) */
 	uint16_t bytes_last_block;	/**< Anzahl der Bytes in Block end */
 } PACKED botfs_file_used_t;
 
@@ -108,6 +108,7 @@ typedef struct {
 	uint8_t mode;			/**< Modus, in dem die Datei geoeffnet wurde */
 	botfs_file_used_t used;	/**< Benutzte Bloecke dieser Datei */
 } PACKED botfs_file_descr_t;
+#define BOTFS_FD_INITIALIZER { 0, 0, 0, 0, { 0, 0, 0 } } /**< Initialisiert einen botfs_file_descr_t Typ */
 
 /** Datei-Header */
 typedef	struct {

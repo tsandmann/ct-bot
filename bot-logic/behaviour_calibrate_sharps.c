@@ -117,7 +117,7 @@ static inline void wait_for_userinput(void) {
  * @return			Entfernung [mm]
  */
 static int16_t calc_distance(uint8_t sensor) {
-	sensor = sensor;
+	(void) sensor;
 //	float dHead = (start_head - heading) * 2.0f*M_PI/360.0f;
 //	float dX = start_x - x_enc;
 //	float s_m = dX / cos(dHead);

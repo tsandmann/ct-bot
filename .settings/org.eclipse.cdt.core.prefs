@@ -1,6 +1,6 @@
-#Thu Jun 23 19:01:06 CEST 2011
+#Fri Sep 02 19:50:22 CEST 2011
 eclipse.preferences.version=1
-indexer/filesToParseUpFront=cstdarg, stdarg.h, stddef.h, sys/resource.h, ctime, sys/types.h, signal.h, cstdio
+indexer/filesToParseUpFront=stdarg.h, stddef.h, sys/resource.h, sys/types.h, signal.h
 indexer/indexAllFiles=true
 indexer/indexOnOpen=true
 indexer/indexUnusedHeadersWithDefaultLang=true

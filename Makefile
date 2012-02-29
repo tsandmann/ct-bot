@@ -74,17 +74,17 @@ define SRCHIGHLEVEL
 endef 
 
 define SRCLOGIC
-	bot-logic/behaviour_avoid_border.c bot-logic/behaviour_avoid_col.c bot-logic/behaviour_calibrate_pid.c bot-logic/behaviour_calibrate_sharps.c \
-	bot-logic/behaviour_cancel_behaviour.c bot-logic/behaviour_catch_pillar.c bot-logic/behaviour_classify_objects.c bot-logic/behaviour_delay.c \
-	bot-logic/behaviour_drive_area.c bot-logic/behaviour_drive_chess.c bot-logic/behaviour_drive_distance.c bot-logic/behaviour_drive_square.c \
-	bot-logic/behaviour_drive_stack.c bot-logic/behaviour_follow_line_enhanced.c bot-logic/behaviour_follow_line.c bot-logic/behaviour_follow_object.c \
-	bot-logic/behaviour_follow_wall.c bot-logic/behaviour_get_utilization.c bot-logic/behaviour_goto_obstacle.c bot-logic/behaviour_goto_pos.c \
-	bot-logic/behaviour_goto.c bot-logic/behaviour_gotoxy.c bot-logic/behaviour_hang_on.c bot-logic/behaviour_hw_test.c \
+	bot-logic/behaviour_abl.c bot-logic/behaviour_avoid_border.c bot-logic/behaviour_avoid_col.c bot-logic/behaviour_calibrate_pid.c \
+	bot-logic/behaviour_calibrate_sharps.c bot-logic/behaviour_cancel_behaviour.c bot-logic/behaviour_catch_pillar.c bot-logic/behaviour_classify_objects.c \
+	bot-logic/behaviour_delay.c bot-logic/behaviour_drive_area.c bot-logic/behaviour_drive_chess.c bot-logic/behaviour_drive_distance.c \ 
+	bot-logic/behaviour_drive_square.c bot-logic/behaviour_drive_stack.c bot-logic/behaviour_follow_line_enhanced.c bot-logic/behaviour_follow_line.c \ 
+	bot-logic/behaviour_follow_object.c bot-logic/behaviour_follow_wall.c bot-logic/behaviour_get_utilization.c bot-logic/behaviour_goto_obstacle.c \
+	bot-logic/behaviour_goto_pos.c bot-logic/behaviour_goto.c bot-logic/behaviour_gotoxy.c bot-logic/behaviour_hang_on.c bot-logic/behaviour_hw_test.c \
 	bot-logic/behaviour_line_shortest_way.c bot-logic/behaviour_measure_distance.c bot-logic/behaviour_olympic.c bot-logic/behaviour_pathplaning.c \
 	bot-logic/behaviour_prototype.c bot-logic/behaviour_remotecall.c bot-logic/behaviour_scan.c bot-logic/behaviour_scan_beacons.c \
 	bot-logic/behaviour_servo.c bot-logic/behaviour_simple.c bot-logic/behaviour_solve_maze.c bot-logic/behaviour_transport_pillar.c \
 	bot-logic/behaviour_turn.c bot-logic/behaviour_ubasic.c bot-logic/bot-logic.c bot-logic/tokenizer.c bot-logic/ubasic_call.c bot-logic/ubasic_cvars.c \
-	bot-logic/ubasic_ext_proc.c bot-logic/ubasic.c 
+	bot-logic/ubasic.c 
 endef
    
 SRCMAIN = ct-Bot.c
@@ -115,7 +115,7 @@ MATH_LIB = -lm
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
-EXTRAINCDIRS = . ./include
+EXTRAINCDIRS = . ./include ./include/bot-logic
 ifeq ($(DEVICE),MCU)
 	# Assembler flags.
 	#  -Wa,...:   tell GCC to pass this to the assembler.
