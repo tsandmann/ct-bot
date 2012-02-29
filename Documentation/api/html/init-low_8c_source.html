@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: init-low.c Quellcode</title>
+<title>c&#39;t-Bot: init-low.c Quellcode</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -52,7 +52,7 @@
   </div>
   <div id="nav-path" class="navpath">
     <ul>
-      <li class="navelem"><a class="el" href="dir_621229fa04310f844660a72d92a68ebe.html">mcu</a>      </li>
+      <li class="navelem"><a class="el" href="dir_f02428e3da713fc394853d6cd2afbcd0.html">mcu</a>      </li>
     </ul>
   </div>
 </div>
@@ -181,7 +181,7 @@
 <a name="l00135"></a>00135 <span class="preprocessor">#endif // DISPLAY_RESET_INFO_AVAILABLE</span>
 <a name="l00136"></a>00136 <span class="preprocessor"></span>
 <a name="l00137"></a>00137 <span class="preprocessor">#ifdef OS_AVAILABLE</span>
-<a name="l00138"></a>00138 <span class="preprocessor"></span>    <a class="code" href="os__thread_8h.html#a2225be2eb34882c09ae7ad31a8b07207">os_create_thread</a>((<span class="keywordtype">void</span> *) SP, NULL); <span class="comment">// Hauptthread anlegen</span>
+<a name="l00138"></a>00138 <span class="preprocessor"></span>    <a class="code" href="os__thread_8h.html#a2225be2eb34882c09ae7ad31a8b07207" title="Legt einen neuen Thread an und setzt ihn auf runnable.">os_create_thread</a>((<span class="keywordtype">void</span> *) SP, NULL); <span class="comment">// Hauptthread anlegen</span>
 <a name="l00139"></a>00139 <span class="preprocessor">#ifdef OS_DEBUG</span>
 <a name="l00140"></a>00140 <span class="preprocessor"></span>    <span class="keyword">extern</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> * __brkval;
 <a name="l00141"></a>00141     <span class="keyword">extern</span> <span class="keywordtype">size_t</span> __malloc_margin;
@@ -189,7 +189,7 @@
 <a name="l00143"></a>00143     <a class="code" href="os__thread_8c.html#ac0440fe078802d66f53552e2eaec35fb">os_mask_stack</a>(__brkval, (<span class="keywordtype">size_t</span>) ((<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *) SP - __brkval) - __malloc_margin);
 <a name="l00144"></a>00144 <span class="preprocessor">#endif // OS_DEBUG</span>
 <a name="l00145"></a>00145 <span class="preprocessor"></span><span class="preprocessor">#ifdef OS_KERNEL_LOG_AVAILABLE</span>
-<a name="l00146"></a>00146 <span class="preprocessor"></span>    <a class="code" href="os__thread_8h.html#a8dc4e2317522bc6d58ac8a66dc236745">os_kernel_log_init</a>();
+<a name="l00146"></a>00146 <span class="preprocessor"></span>    <a class="code" href="os__thread_8h.html#a8dc4e2317522bc6d58ac8a66dc236745" title="Initialisiert das Kernel-LOG.">os_kernel_log_init</a>();
 <a name="l00147"></a>00147 <span class="preprocessor">#endif // OS_KERNEL_LOG_AVAILABLE</span>
 <a name="l00148"></a>00148 <span class="preprocessor"></span><span class="preprocessor">#endif // OS_AVAILABLE</span>
 <a name="l00149"></a>00149 <span class="preprocessor"></span>}
@@ -197,9 +197,9 @@
 <a name="l00155"></a><a class="code" href="init-low_8c.html#a9f0e5e1762bc49dae8746404b841547e">00155</a> <span class="keywordtype">void</span> <a class="code" href="init_8h.html#a9f0e5e1762bc49dae8746404b841547e" title="Hardwareabhaengige Initialisierungen, die _nach_ der allgemeinen Initialisierung ausgefuehrt werden s...">ctbot_init_low_last</a>(<span class="keywordtype">void</span>) {
 <a name="l00156"></a>00156 <span class="preprocessor">#ifdef OS_AVAILABLE</span>
 <a name="l00157"></a>00157 <span class="preprocessor"></span><span class="preprocessor">#ifdef OS_DEBUG</span>
-<a name="l00158"></a>00158 <span class="preprocessor"></span>    <a class="code" href="os__thread_8c.html#ac0440fe078802d66f53552e2eaec35fb">os_mask_stack</a>(<a class="code" href="os__thread_8h.html#a577438ea72f5dcbdff5b1cc72d231440">os_idle_stack</a>, <a class="code" href="os__thread_8h.html#aa6afdd19d3022d101b8fc9942bb8422b">OS_IDLE_STACKSIZE</a>);
+<a name="l00158"></a>00158 <span class="preprocessor"></span>    <a class="code" href="os__thread_8c.html#ac0440fe078802d66f53552e2eaec35fb">os_mask_stack</a>(<a class="code" href="os__thread_8h.html#a577438ea72f5dcbdff5b1cc72d231440" title="Stack des Idle-Threads.">os_idle_stack</a>, <a class="code" href="os__thread_8h.html#aa6afdd19d3022d101b8fc9942bb8422b" title="Groesse des Idle-Stacks [Byte].">OS_IDLE_STACKSIZE</a>);
 <a name="l00159"></a>00159 <span class="preprocessor">#endif</span>
-<a name="l00160"></a>00160 <span class="preprocessor"></span>    <a class="code" href="os__thread_8h.html#a2225be2eb34882c09ae7ad31a8b07207">os_create_thread</a>(&amp;<a class="code" href="os__thread_8h.html#a577438ea72f5dcbdff5b1cc72d231440">os_idle_stack</a>[<a class="code" href="os__thread_8h.html#aa6afdd19d3022d101b8fc9942bb8422b">OS_IDLE_STACKSIZE</a> - 1], <a class="code" href="os__thread_8h.html#a011a849badc985823e31fee406aa910a">os_idle</a>);
+<a name="l00160"></a>00160 <span class="preprocessor"></span>    <a class="code" href="os__thread_8h.html#a2225be2eb34882c09ae7ad31a8b07207" title="Legt einen neuen Thread an und setzt ihn auf runnable.">os_create_thread</a>(&amp;<a class="code" href="os__thread_8h.html#a577438ea72f5dcbdff5b1cc72d231440" title="Stack des Idle-Threads.">os_idle_stack</a>[<a class="code" href="os__thread_8h.html#aa6afdd19d3022d101b8fc9942bb8422b" title="Groesse des Idle-Stacks [Byte].">OS_IDLE_STACKSIZE</a> - 1], <a class="code" href="os__thread_8h.html#a011a849badc985823e31fee406aa910a" title="Idle-Thread.">os_idle</a>);
 <a name="l00161"></a>00161 <span class="preprocessor">#endif // OS_AVAILABLE</span>
 <a name="l00162"></a>00162 <span class="preprocessor"></span>}
 <a name="l00163"></a>00163 
@@ -227,9 +227,9 @@
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:04 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:09 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: pos_store.c Quellcode</title>
+<title>c&#39;t-Bot: pos_store.c Quellcode</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -92,7 +92,7 @@
 <a name="l00043"></a>00043 <span class="preprocessor"></span>
 <a name="l00044"></a>00044 <span class="preprocessor">#ifndef DEBUG_POS_STORE</span>
 <a name="l00045"></a>00045 <span class="preprocessor"></span><span class="preprocessor">#undef LOG_DEBUG</span>
-<a name="l00046"></a>00046 <span class="preprocessor"></span><span class="preprocessor">#define LOG_DEBUG(...) {}</span>
+<a name="l00046"></a><a class="code" href="pos__store_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">00046</a> <span class="preprocessor"></span><span class="preprocessor">#define LOG_DEBUG(...) {}</span>
 <a name="l00047"></a>00047 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
 <a name="l00048"></a>00048 <span class="preprocessor"></span>
 <a name="l00049"></a><a class="code" href="pos__store_8c.html#af18cd7007c9b643b65b48b6a44c466e6">00049</a> <span class="preprocessor">#define SLOT_COUNT  4   </span>
@@ -111,7 +111,7 @@
 <a name="l00071"></a>00071         <span class="keywordflow">return</span> NULL;
 <a name="l00072"></a>00072     }
 <a name="l00073"></a>00073 
-<a name="l00074"></a>00074     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Erzeuge Positionsspeicher (%u) fuer 0x%lx&quot;</span>, size, (<span class="keywordtype">size_t</span>) owner);
+<a name="l00074"></a>00074     <a class="code" href="pos__store_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Erzeuge Positionsspeicher (%u) fuer 0x%lx&quot;</span>, size, (<span class="keywordtype">size_t</span>) owner);
 <a name="l00075"></a>00075     <a class="code" href="structpos__store__t.html">pos_store_t</a> * store = <a class="code" href="pos__store_8c.html#a64b9646424ab22ab1ca5e903d6930e49">pos_store_from_beh</a>(owner);
 <a name="l00076"></a>00076     <span class="keywordflow">if</span> (store &amp;&amp; store-&gt;<a class="code" href="structpos__store__t.html#a2a98a5640e63fa22aacbc90172727481">mask</a> != size - 1) {
 <a name="l00077"></a>00077         <span class="comment">/* Positionsspeicher existiert bereits, aber mit anderer Groesse */</span>
@@ -127,15 +127,15 @@
 <a name="l00087"></a>00087                 store = ptr;
 <a name="l00088"></a>00088                 store-&gt;<a class="code" href="structpos__store__t.html#a18ca29ac2abafe3c4777f941b4b73bd7">owner</a> = owner;
 <a name="l00089"></a>00089                 store-&gt;<a class="code" href="structpos__store__t.html#a2a98a5640e63fa22aacbc90172727481">mask</a> = (<a class="code" href="pos__store_8h.html#ab9be00bae7afb5f77457190c0455a8bb">pos_store_size_t</a>) (size - 1);
-<a name="l00090"></a>00090                 <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;verwende Slot %u&quot;</span>, (store - pos_stores));
+<a name="l00090"></a>00090                 <a class="code" href="pos__store_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;verwende Slot %u&quot;</span>, (store - pos_stores));
 <a name="l00091"></a>00091                 <span class="keywordflow">if</span> (data == NULL) {
 <a name="l00092"></a>00092                     store-&gt;<a class="code" href="structpos__store__t.html#aabb23267948f63b2ebad619d41bb5653">data</a> = malloc(size * <span class="keyword">sizeof</span>(position_t));
 <a name="l00093"></a>00093                     store-&gt;<a class="code" href="structpos__store__t.html#a1c39217c9941e75348cda726a2357ee6">stat_data</a> = 0;
-<a name="l00094"></a>00094                     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;verwende Heap-Speicher @ 0x%lx&quot;</span>, (<span class="keywordtype">size_t</span>) store-&gt;<a class="code" href="structpos__store__t.html#aabb23267948f63b2ebad619d41bb5653">data</a>);
+<a name="l00094"></a>00094                     <a class="code" href="pos__store_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;verwende Heap-Speicher @ 0x%lx&quot;</span>, (<span class="keywordtype">size_t</span>) store-&gt;<a class="code" href="structpos__store__t.html#aabb23267948f63b2ebad619d41bb5653">data</a>);
 <a name="l00095"></a>00095                 } <span class="keywordflow">else</span> {
 <a name="l00096"></a>00096                     store-&gt;<a class="code" href="structpos__store__t.html#aabb23267948f63b2ebad619d41bb5653">data</a> = data;
 <a name="l00097"></a>00097                     store-&gt;<a class="code" href="structpos__store__t.html#a1c39217c9941e75348cda726a2357ee6">stat_data</a> = 1;
-<a name="l00098"></a>00098                     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;verwende statischen Speicher @ 0x%lx&quot;</span>, (<span class="keywordtype">size_t</span>) data);
+<a name="l00098"></a>00098                     <a class="code" href="pos__store_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;verwende statischen Speicher @ 0x%lx&quot;</span>, (<span class="keywordtype">size_t</span>) data);
 <a name="l00099"></a>00099                 }
 <a name="l00100"></a>00100                 <span class="keywordflow">if</span> (store-&gt;<a class="code" href="structpos__store__t.html#aabb23267948f63b2ebad619d41bb5653">data</a> == NULL) {
 <a name="l00101"></a>00101                     <a class="code" href="log_8h.html#af3fb0ee7384d6813437103a2c2646fb7">LOG_ERROR</a>(<span class="stringliteral">&quot;Kein Speicher zur Verfuegung, Abbruch!&quot;</span>);
@@ -148,12 +148,12 @@
 <a name="l00108"></a>00108     }
 <a name="l00109"></a>00109 
 <a name="l00110"></a>00110     <a class="code" href="pos__store_8c.html#a1263f1a52fd21a79a48809a761a382d9">pos_store_clear</a>(store);
-<a name="l00111"></a>00111     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Positionsspeicher @ 0x%lx angelegt&quot;</span>, (<span class="keywordtype">size_t</span>) store);
+<a name="l00111"></a>00111     <a class="code" href="pos__store_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Positionsspeicher @ 0x%lx angelegt&quot;</span>, (<span class="keywordtype">size_t</span>) store);
 <a name="l00112"></a>00112     <span class="keywordflow">return</span> store;
 <a name="l00113"></a>00113 }
 <a name="l00114"></a>00114 
 <a name="l00119"></a><a class="code" href="pos__store_8h.html#a4bb0829554b41be5bf51dd0a942211f9">00119</a> <span class="keywordtype">void</span> <a class="code" href="pos__store_8c.html#a4bb0829554b41be5bf51dd0a942211f9">pos_store_release</a>(<a class="code" href="structpos__store__t.html">pos_store_t</a> * store) {
-<a name="l00120"></a>00120     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Gebe Positionsspeicher 0x%lx frei&quot;</span>, (<span class="keywordtype">size_t</span>) store);
+<a name="l00120"></a>00120     <a class="code" href="pos__store_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Gebe Positionsspeicher 0x%lx frei&quot;</span>, (<span class="keywordtype">size_t</span>) store);
 <a name="l00121"></a>00121     <span class="keywordflow">if</span> (store == NULL) {
 <a name="l00122"></a>00122         <span class="keywordflow">return</span>;
 <a name="l00123"></a>00123     }
@@ -161,7 +161,7 @@
 <a name="l00125"></a>00125     <span class="keywordflow">if</span> (store-&gt;stat_data == 0 &amp;&amp; store-&gt;data != NULL) {
 <a name="l00126"></a>00126         <span class="comment">/* Datenspeicher freigeben */</span>
 <a name="l00127"></a>00127         free(store-&gt;data);
-<a name="l00128"></a>00128         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Heap-Speicher 0x%lx freigegeben&quot;</span>, (<span class="keywordtype">size_t</span>) store-&gt;data);
+<a name="l00128"></a>00128         <a class="code" href="pos__store_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Heap-Speicher 0x%lx freigegeben&quot;</span>, (<span class="keywordtype">size_t</span>) store-&gt;data);
 <a name="l00129"></a>00129         store-&gt;data = NULL;
 <a name="l00130"></a>00130     }
 <a name="l00131"></a>00131 }
@@ -201,7 +201,7 @@
 <a name="l00183"></a>00183 }
 <a name="l00184"></a>00184 
 <a name="l00189"></a><a class="code" href="pos__store_8h.html#a1263f1a52fd21a79a48809a761a382d9">00189</a> <span class="keywordtype">void</span> <a class="code" href="pos__store_8c.html#a1263f1a52fd21a79a48809a761a382d9">pos_store_clear</a>(<a class="code" href="structpos__store__t.html">pos_store_t</a> * store) {
-<a name="l00190"></a>00190     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Loesche Positionsspeicher 0x%lx&quot;</span>, (<span class="keywordtype">size_t</span>) store);
+<a name="l00190"></a>00190     <a class="code" href="pos__store_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Loesche Positionsspeicher 0x%lx&quot;</span>, (<span class="keywordtype">size_t</span>) store);
 <a name="l00191"></a>00191     <span class="keywordflow">if</span> (store == NULL) {
 <a name="l00192"></a>00192         <span class="keywordflow">return</span>;
 <a name="l00193"></a>00193     }
@@ -230,7 +230,7 @@
 <a name="l00230"></a><a class="code" href="pos__store_8h.html#af3e7fd00b517ae25c4f944a8e92c252e">00230</a> uint8_t <a class="code" href="pos__store_8c.html#af3e7fd00b517ae25c4f944a8e92c252e">pos_store_insert</a>(<a class="code" href="structpos__store__t.html">pos_store_t</a> * store, position_t pos) {
 <a name="l00231"></a>00231     <span class="keywordflow">if</span> (is_full(store)) {
 <a name="l00232"></a>00232         <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;Pos-Store 0x%lx voll, kein push moeglich&quot;</span>, (<span class="keywordtype">size_t</span>) store);
-<a name="l00233"></a>00233         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; count=%u&quot;</span>, store-&gt;count);
+<a name="l00233"></a>00233         <a class="code" href="pos__store_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; count=%u&quot;</span>, store-&gt;count);
 <a name="l00234"></a>00234         <span class="keywordflow">return</span> <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
 <a name="l00235"></a>00235     }
 <a name="l00236"></a>00236     <a class="code" href="pos__store_8h.html#a0e839617a9c50474fcbae596ff1bf981">pos_store_pointer_t</a> fp = store-&gt;<a class="code" href="structpos__store__t.html#a0d1ac1f9f93deffdd37f9a8c43a09659">fp</a>;
@@ -245,7 +245,7 @@
 <a name="l00251"></a><a class="code" href="pos__store_8h.html#a036874299445af76339d8d4d5a75e1dc">00251</a> uint8_t <a class="code" href="pos__store_8c.html#a036874299445af76339d8d4d5a75e1dc">pos_store_push</a>(<a class="code" href="structpos__store__t.html">pos_store_t</a> * store, position_t pos) {
 <a name="l00252"></a>00252     <span class="keywordflow">if</span> (is_full(store)) {
 <a name="l00253"></a>00253         <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;Pos-Store 0x%lx voll, kein push moeglich&quot;</span>, (<span class="keywordtype">size_t</span>) store);
-<a name="l00254"></a>00254         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; count=%u&quot;</span>, store-&gt;count);
+<a name="l00254"></a>00254         <a class="code" href="pos__store_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; count=%u&quot;</span>, store-&gt;count);
 <a name="l00255"></a>00255         <span class="keywordflow">return</span> <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
 <a name="l00256"></a>00256     }
 <a name="l00257"></a>00257     <a class="code" href="pos__store_8h.html#a0e839617a9c50474fcbae596ff1bf981">pos_store_pointer_t</a> sp = store-&gt;<a class="code" href="structpos__store__t.html#a9a30c93bb6ec02b27b62294cb7f2d5da">sp</a>;
@@ -327,7 +327,7 @@
 <a name="l00362"></a>00362                 <a class="code" href="bot-2-bot_8c.html#ac6d4756f7a0a84b54fffdb17c0656aee">bot_2_bot_payload_mappings</a>[index].<a class="code" href="structbot__2__bot__payload__mappings__t.html#a98c2e713d465e0512f494e2a2cd1c203">data</a> = bot_2_bot_pos_store-&gt;<a class="code" href="structpos__store__t.html#aabb23267948f63b2ebad619d41bb5653">data</a>;
 <a name="l00363"></a>00363             } <span class="keywordflow">else</span> {
 <a name="l00364"></a>00364                 <a class="code" href="pos__store_8c.html#a4bb0829554b41be5bf51dd0a942211f9">pos_store_release</a>(bot_2_bot_pos_store);
-<a name="l00365"></a>00365                 <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Fehler, Positionsspeicher hat keinen Datenpuffer zugewiesen&quot;</span>);
+<a name="l00365"></a>00365                 <a class="code" href="pos__store_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Fehler, Positionsspeicher hat keinen Datenpuffer zugewiesen&quot;</span>);
 <a name="l00366"></a>00366             }
 <a name="l00367"></a>00367         }
 <a name="l00368"></a>00368         <span class="keywordflow">break</span>;
@@ -336,10 +336,10 @@
 <a name="l00371"></a>00371 
 <a name="l00375"></a><a class="code" href="pos__store_8h.html#ad0703bbe6249872ab796b2c37493a98d">00375</a> <span class="keywordtype">void</span> <a class="code" href="pos__store_8c.html#ad0703bbe6249872ab796b2c37493a98d">bot_2_bot_handle_pos_store_data</a>(<span class="keywordtype">void</span>) {
 <a name="l00376"></a>00376     <span class="keywordflow">if</span> (bot_2_bot_pos_store &amp;&amp; bot_2_bot_pos_store-&gt;<a class="code" href="structpos__store__t.html#a18ca29ac2abafe3c4777f941b4b73bd7">owner</a>) {
-<a name="l00377"></a>00377         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Pos-Store fuer Verhalten %u empfangen&quot;</span>, bot_2_bot_pos_store-&gt;<a class="code" href="structpos__store__t.html#a18ca29ac2abafe3c4777f941b4b73bd7">owner</a>-&gt;<a class="code" href="struct__Behaviour__t.html#ad2ee8571cc3e4a76bab5094f091bf08a" title="Prioritaet.">priority</a>);
-<a name="l00378"></a>00378         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; Groesse:%u\tfp=%u\tsp=%u\tcount=%u&quot;</span>, bot_2_bot_pos_store-&gt;<a class="code" href="structpos__store__t.html#a2a98a5640e63fa22aacbc90172727481">mask</a> + 1,
+<a name="l00377"></a>00377         <a class="code" href="pos__store_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Pos-Store fuer Verhalten %u empfangen&quot;</span>, bot_2_bot_pos_store-&gt;<a class="code" href="structpos__store__t.html#a18ca29ac2abafe3c4777f941b4b73bd7">owner</a>-&gt;<a class="code" href="struct__Behaviour__t.html#ad2ee8571cc3e4a76bab5094f091bf08a" title="Prioritaet.">priority</a>);
+<a name="l00378"></a>00378         <a class="code" href="pos__store_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; Groesse:%u\tfp=%u\tsp=%u\tcount=%u&quot;</span>, bot_2_bot_pos_store-&gt;<a class="code" href="structpos__store__t.html#a2a98a5640e63fa22aacbc90172727481">mask</a> + 1,
 <a name="l00379"></a>00379             bot_2_bot_pos_store-&gt;<a class="code" href="structpos__store__t.html#a0d1ac1f9f93deffdd37f9a8c43a09659">fp</a>, bot_2_bot_pos_store-&gt;<a class="code" href="structpos__store__t.html#a9a30c93bb6ec02b27b62294cb7f2d5da">sp</a>, bot_2_bot_pos_store-&gt;<a class="code" href="structpos__store__t.html#a6ba20d7c73cf3f2bae1766202785f30a">count</a>);
-<a name="l00380"></a>00380         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; data=0x%lx&quot;</span>, bot_2_bot_pos_store-&gt;<a class="code" href="structpos__store__t.html#aabb23267948f63b2ebad619d41bb5653">data</a>);
+<a name="l00380"></a>00380         <a class="code" href="pos__store_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot; data=0x%lx&quot;</span>, bot_2_bot_pos_store-&gt;<a class="code" href="structpos__store__t.html#aabb23267948f63b2ebad619d41bb5653">data</a>);
 <a name="l00381"></a>00381 <span class="preprocessor">#ifdef PC</span>
 <a name="l00382"></a>00382 <span class="preprocessor"></span>        <a class="code" href="pos__store_8c.html#a20ee87405517aba06c9fca997b106131">pos_store_dump</a>(bot_2_bot_pos_store);
 <a name="l00383"></a>00383 <span class="preprocessor">#endif // PC</span>
@@ -552,9 +552,9 @@
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:04 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:09 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: behaviour_solve_maze.c Quellcode</title>
+<title>c&#39;t-Bot: behaviour_solve_maze.c Quellcode</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -52,7 +52,7 @@
   </div>
   <div id="nav-path" class="navpath">
     <ul>
-      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+      <li class="navelem"><a class="el" href="dir_14c9cc1c75a92f359ad94591d62973a1.html">bot-logic</a>      </li>
     </ul>
   </div>
 </div>
@@ -557,7 +557,7 @@
 <a name="l00557"></a>00557                     }
 <a name="l00558"></a>00558                 } <span class="keywordflow">else</span> {
 <a name="l00559"></a>00559                     <span class="comment">/* keine Wand? Dann vorfahren und selbes Prozedere nochmal */</span>
-<a name="l00560"></a>00560                     <a class="code" href="behaviour__drive__distance_8c.html#ae7b188b6785c5e337c51509282ca790e">bot_drive_distance</a>(data, 0, <a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>, <a class="code" href="bot-local_8h.html#a6355f0c11aa0eec346ad3695529ee291">BOT_DIAMETER</a> / 10);
+<a name="l00560"></a>00560                     <a class="code" href="behaviour__drive__distance_8c.html#a8d678ab6711dfaed1efa80bd2daab31c" title="Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren.">bot_drive_distance</a>(data, 0, <a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>, <a class="code" href="bot-local_8h.html#a6355f0c11aa0eec346ad3695529ee291">BOT_DIAMETER</a> / 10);
 <a name="l00561"></a>00561                     mazeState = <a class="code" href="behaviour__solve__maze_8c.html#a11ec1db0316d4634199883773d49dfab">CHECK_FOR_WALL_RIGHT</a>;
 <a name="l00562"></a>00562                     checkedWalls = 0;
 <a name="l00563"></a>00563                     <span class="keywordflow">break</span>;
@@ -571,7 +571,7 @@
 <a name="l00571"></a>00571         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#a027994149d387105741dc9fb86ad5546">SOLVE_MAZE_LOOP</a>:
 <a name="l00572"></a>00572             <span class="comment">/* Einen Schritt (=halbe Bot-Groesse) vorwaerts */</span>
 <a name="l00573"></a>00573             mazeState = <a class="code" href="behaviour__solve__maze_8c.html#ae3e22b9c3de628495e2234dcac8db3fe">SOLVE_TURN_WALL</a>;
-<a name="l00574"></a>00574             <a class="code" href="behaviour__drive__distance_8c.html#ae7b188b6785c5e337c51509282ca790e">bot_drive_distance</a>(data, 0, <a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>, <a class="code" href="bot-local_8h.html#a6355f0c11aa0eec346ad3695529ee291">BOT_DIAMETER</a> / 10);
+<a name="l00574"></a>00574             <a class="code" href="behaviour__drive__distance_8c.html#a8d678ab6711dfaed1efa80bd2daab31c" title="Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren.">bot_drive_distance</a>(data, 0, <a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>, <a class="code" href="bot-local_8h.html#a6355f0c11aa0eec346ad3695529ee291">BOT_DIAMETER</a> / 10);
 <a name="l00575"></a>00575             <span class="keywordflow">break</span>;
 <a name="l00576"></a>00576 
 <a name="l00577"></a>00577         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#ae3e22b9c3de628495e2234dcac8db3fe">SOLVE_TURN_WALL</a>:
@@ -588,7 +588,7 @@
 <a name="l00588"></a>00588             <span class="keywordflow">if</span> (distance &lt;= (int16_t) (2.5 * <a class="code" href="bot-local_8h.html#a6355f0c11aa0eec346ad3695529ee291">BOT_DIAMETER</a>)) {
 <a name="l00589"></a>00589                 <span class="comment">/* berechnete Entfernung zur Wand abzueglich optimale Distanz fahren */</span>
 <a name="l00590"></a>00590                 mazeState = <a class="code" href="behaviour__solve__maze_8c.html#ac7a00dfc8c916c00824ef74021a5f20f">DETECTED_CROSS_BRANCH</a>;
-<a name="l00591"></a>00591                 <a class="code" href="behaviour__drive__distance_8c.html#ae7b188b6785c5e337c51509282ca790e">bot_drive_distance</a>(data, 0, <a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>, (distance - <a class="code" href="bot-local_8h.html#a39087ac25e2bcfaa5fd5abdfab91bd25">OPTIMAL_DISTANCE</a>) / 10);
+<a name="l00591"></a>00591                 <a class="code" href="behaviour__drive__distance_8c.html#a8d678ab6711dfaed1efa80bd2daab31c" title="Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren.">bot_drive_distance</a>(data, 0, <a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>, (distance - <a class="code" href="bot-local_8h.html#a39087ac25e2bcfaa5fd5abdfab91bd25">OPTIMAL_DISTANCE</a>) / 10);
 <a name="l00592"></a>00592                 <span class="keywordflow">break</span>;
 <a name="l00593"></a>00593             }
 <a name="l00594"></a>00594             <span class="comment">/* Zur Wand drehen....ist die Wand noch da? */</span>
@@ -636,7 +636,7 @@
 <a name="l00636"></a>00636             <span class="comment">/* ok, nun Strecke bis zur Kante berechnen */</span>
 <a name="l00637"></a>00637             x = measure_distance * cosf(rad(measured_angle)) / 10.0f + (<a class="code" href="bot-local_8h.html#a6355f0c11aa0eec346ad3695529ee291">BOT_DIAMETER</a> * 0.15f);
 <a name="l00638"></a>00638             mazeState = <a class="code" href="behaviour__solve__maze_8c.html#a6b7a60f65cf0b4bc31af227bd2f61bd9">TURN_TO_BRANCH</a>;
-<a name="l00639"></a>00639             <a class="code" href="behaviour__drive__distance_8c.html#ae7b188b6785c5e337c51509282ca790e">bot_drive_distance</a>(data, 0, <a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>, (int16_t) x);
+<a name="l00639"></a>00639             <a class="code" href="behaviour__drive__distance_8c.html#a8d678ab6711dfaed1efa80bd2daab31c" title="Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren.">bot_drive_distance</a>(data, 0, <a class="code" href="motor_8h.html#a04b0c711278dce047213fb467727de5d" title="normale Fahrt in mm/s">BOT_SPEED_NORMAL</a>, (int16_t) x);
 <a name="l00640"></a>00640             <span class="keywordflow">break</span>;
 <a name="l00641"></a>00641 
 <a name="l00642"></a>00642         <span class="keywordflow">case</span> <a class="code" href="behaviour__solve__maze_8c.html#ab5dedf31b9e3170510dbb9b9ac5db00c">REACHED_GOAL</a>:
@@ -657,9 +657,9 @@
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:08 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

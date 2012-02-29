@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: PACKED Strukturreferenz</title>
+<title>c&#39;t-Bot: PACKED Strukturreferenz</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -69,12 +69,13 @@ Zusammengehörigkeiten von PACKED:</div>
 <div class="dyncontent">
 <div class="center"><img src="structPACKED__coll__graph.png" border="0" usemap="#PACKED_coll__map" alt="Collaboration graph"/></div>
 <map name="PACKED_coll__map" id="PACKED_coll__map">
-</map>
+<area shape="rect" id="node2" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen." alt="" coords="5,6,104,167"/><area shape="rect" id="node5" href="unionscan__mode__t.html" title="{scan_mode_t\n|+ location\l+ distance\l+ border\l+ map_mode\l+ data\l+ raw\l|}" alt="" coords="185,6,289,167"/></map>
 <center><span class="legend">[<a href="graph_legend.html">Legende</a>]</span></center></div>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Datenfelder</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#a8b2849a5ab837ffcee84942987090105">section</a> [MAP_SECTION_POINTS][MAP_SECTION_POINTS]</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Einzelne Punkte.  <a href="#a8b2849a5ab837ffcee84942987090105"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">position_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#a665b8782f9c504d3171c4cf187a7fd01">point1</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">position_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#a245ea84a4f56f538541c2b1ab8746b27">point2</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">botfs_dir_block_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#a98b683dfbfe821d60b8f7d262d2e8401">dirblocks</a> [BOTFS_DIR_BLOCK_CNT]</td></tr>
@@ -126,7 +127,7 @@ Datenfelder</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#ae9661733784b039c9cdbb4570772d2f8">start</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adresse des ersten belegten Blocks (auf Volume, nicht relativ zur Datei)  <a href="#ae9661733784b039c9cdbb4570772d2f8"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#a59c6f29749d3c709fe6dddaa6e2564fb">end</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adresse des letzten belegten Blocks (auf Volume, nicht relativ.  <a href="#a59c6f29749d3c709fe6dddaa6e2564fb"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Adresse des letzten belegten Blocks (auf Volume, nicht relativ zur Datei)  <a href="#a59c6f29749d3c709fe6dddaa6e2564fb"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#a1d5219a1bec76f649edb427db4646e4a">bytes_last_block</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Anzahl der Bytes in Block end.  <a href="#a1d5219a1bec76f649edb427db4646e4a"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#a3d038445bda5c6e8161a2006134a37c7">pos</a></td></tr>
@@ -170,13 +171,21 @@ Datenfelder</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#a2cff57f4dce20c7956ad85022853dd9b">tuerkis</a>:1</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#aba15001943c7dadbd66039031adaa642">weiss</a>:1</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#aaa05626c1125c74f1689f5c8dcc85ca0">x_pos</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">X-Komponente der Position [mm].  <a href="#aaa05626c1125c74f1689f5c8dcc85ca0"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#a7a0993006ceeba48f30a34a3805e72e1">y_pos</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Y-Komponente der Position [mm].  <a href="#a7a0993006ceeba48f30a34a3805e72e1"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#a1bbbcac5832a6669c0c9ad3a3a24e08f">sin</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">sin(heading)  <a href="#a1bbbcac5832a6669c0c9ad3a3a24e08f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#ad0bd8243b31b6d668884cc303ae5f839">cos</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">cos(heading)  <a href="#ad0bd8243b31b6d668884cc303ae5f839"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#ae00c8fdf617ea04daef57823d25cee7b">dataL</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Entfernung linker Distanzsensor [5 mm] aber auch BorderSensor [0/1].  <a href="#ae00c8fdf617ea04daef57823d25cee7b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#ae1b02c0c6c28aaea48933f13acff34bd">dataR</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Entfernung rechter Distanzsensor [5 mm] aber auch BorderSensor [0/1].  <a href="#ae1b02c0c6c28aaea48933f13acff34bd"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="unionscan__mode__t.html">scan_mode_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#a338d557bbd6b0d88cafbb63c5dba595b">mode</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Was soll aktualisiert werden.  <a href="#a338d557bbd6b0d88cafbb63c5dba595b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#a8b5a85e863cb807d2118cbc21218305a">loc_prob</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">gibt an, wie sicher wir ueber die Position sind [0; 255]  <a href="#a8b5a85e863cb807d2118cbc21218305a"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#a931768113aca36630a960b91661df1e1">u32</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#a4234528ba58f37ad59e32f031e4d6493">u8</a> [4]</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">const char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html#aa349a828a6252c8535b41d54038ac9ac">filename</a> [MMC_FILENAME_MAX+1]</td></tr>
@@ -200,6 +209,7 @@ Datenfelder</h2></td></tr>
 <hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
 <div class="textblock"><p>FAT. </p>
 <p>Kommandostruktur fuer Remotecalls.</p>
+<p>Map-Cache-Eintrag.</p>
 <p>Repraesentation eines Bits, dem ein Byte-Wert zugewiesen werden kann.</p>
 <p>2D-Position.</p>
 <p>Freelist.</p>
@@ -221,11 +231,10 @@ Datenfelder</h2></td></tr>
 <p>Benutzte Bloecke einer Datei</p>
 <p>Ist effizienter, als Zeiger auf X- und Y-Anteil</p>
 <p>Datenfeld fuer den Zugriff auf die LEDs</p>
-<p>Map-Cache-Eintrag</p>
 <p>Datentyp fuer Mini-Fat-Dateilaenge</p>
 <p>Datentyp fuer Mini-Fat Dateiheader </p>
 
-<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00122">122</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00157">157</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
 </div><hr/><h2>Dokumentation der Datenelemente</h2>
 <a class="anchor" id="a78445c969140162a4aa943eb0ef7046d"></a><!-- doxytag: member="PACKED::attributes" ref="a78445c969140162a4aa943eb0ef7046d" args="" -->
 <div class="memitem">
@@ -320,7 +329,7 @@ Datenfelder</h2></td></tr>
 
 <p>Blockadresse des Freibereichs. </p>
 
-<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00151">151</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
+<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00152">152</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
 
 </div>
 </div>
@@ -396,6 +405,7 @@ Datenfelder</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
 <p>cos(heading) </p>
 
 <p>Definiert in Zeile <a class="el" href="map_8h_source.html#l00074">74</a> der Datei <a class="el" href="map_8h_source.html">map.h</a>.</p>
@@ -427,7 +437,8 @@ Datenfelder</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Entfernung linker Distanzsensor [5 mm] aber auch BorderSensor [0/1] </p>
+
+<p>Entfernung linker Distanzsensor [5 mm] aber auch BorderSensor [0/1]. </p>
 
 <p>Definiert in Zeile <a class="el" href="map_8h_source.html#l00078">78</a> der Datei <a class="el" href="map_8h_source.html">map.h</a>.</p>
 
@@ -443,7 +454,8 @@ Datenfelder</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Entfernung rechter Distanzsensor [5 mm] aber auch BorderSensor [0/1] </p>
+
+<p>Entfernung rechter Distanzsensor [5 mm] aber auch BorderSensor [0/1]. </p>
 
 <p>Definiert in Zeile <a class="el" href="map_8h_source.html#l00079">79</a> der Datei <a class="el" href="map_8h_source.html">map.h</a>.</p>
 
@@ -477,7 +489,7 @@ Datenfelder</h2></td></tr>
 
 <p>Dateideskriptor. </p>
 
-<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00140">140</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
+<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00141">141</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
 
 </div>
 </div>
@@ -494,7 +506,7 @@ Datenfelder</h2></td></tr>
 
 <p>Root-Verzeichnis-Bloecke. </p>
 
-<p>Definiert in Zeile <a class="el" href="botfs_8h_source.html#l00308">308</a> der Datei <a class="el" href="botfs_8h_source.html">botfs.h</a>.</p>
+<p>Definiert in Zeile <a class="el" href="botfs_8h_source.html#l00318">318</a> der Datei <a class="el" href="botfs_8h_source.html">botfs.h</a>.</p>
 
 </div>
 </div>
@@ -509,7 +521,7 @@ Datenfelder</h2></td></tr>
 </div>
 <div class="memdoc">
 
-<p>Adresse des letzten belegten Blocks (auf Volume, nicht relativ. </p>
+<p>Adresse des letzten belegten Blocks (auf Volume, nicht relativ zur Datei) </p>
 <p>Blockadresse des letzten Blocks der Datei. </p>
 
 <p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00097">97</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
@@ -664,7 +676,7 @@ Datenfelder</h2></td></tr>
 
 <p>Dateieintraege des Root-Dir-Blocks. </p>
 
-<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00146">146</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
+<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00147">147</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
 
 </div>
 </div>
@@ -711,7 +723,7 @@ Datenfelder</h2></td></tr>
 
 <p>Freelist-Eintraege. </p>
 
-<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00157">157</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
+<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00158">158</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
 
 </div>
 </div>
@@ -728,7 +740,7 @@ Datenfelder</h2></td></tr>
 
 <p>Datei-Deskriptor der Freelist. </p>
 
-<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00122">122</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
+<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00123">123</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
 
 </div>
 </div>
@@ -745,7 +757,7 @@ Datenfelder</h2></td></tr>
 
 <p>Freelist-Bloecke. </p>
 
-<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00162">162</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
+<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00163">163</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
 
 </div>
 </div>
@@ -811,7 +823,7 @@ Datenfelder</h2></td></tr>
 
 <p>Header-Daten zur freien Verwendung. </p>
 
-<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00116">116</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
+<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00117">117</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
 
 </div>
 </div>
@@ -871,6 +883,7 @@ Datenfelder</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
 <p>gibt an, wie sicher wir ueber die Position sind [0; 255] </p>
 
 <p>Definiert in Zeile <a class="el" href="map_8h_source.html#l00082">82</a> der Datei <a class="el" href="map_8h_source.html">map.h</a>.</p>
@@ -917,7 +930,8 @@ Datenfelder</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Was soll aktualisiert werden </p>
+
+<p>Was soll aktualisiert werden. </p>
 
 <p>Definiert in Zeile <a class="el" href="map_8h_source.html#l00080">80</a> der Datei <a class="el" href="map_8h_source.html">map.h</a>.</p>
 
@@ -1284,7 +1298,7 @@ Datenfelder</h2></td></tr>
 
 <p>Datei-Deskriptor des Root-Verzeichnisses. </p>
 
-<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00121">121</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
+<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00122">122</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
 
 </div>
 </div>
@@ -1359,9 +1373,10 @@ Datenfelder</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Einzelne Punkte </p>
 
-<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00155">155</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
+<p>Einzelne Punkte. </p>
+
+<p>Definiert in Zeile <a class="el" href="map_8c_source.html#l00158">158</a> der Datei <a class="el" href="map_8c_source.html">map.c</a>.</p>
 
 </div>
 </div>
@@ -1420,6 +1435,7 @@ Datenfelder</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
 <p>sin(heading) </p>
 
 <p>Definiert in Zeile <a class="el" href="map_8h_source.html#l00073">73</a> der Datei <a class="el" href="map_8h_source.html">map.h</a>.</p>
@@ -1454,7 +1470,7 @@ Datenfelder</h2></td></tr>
 
 <p>Groesse des Freibereichs in Bloecken. </p>
 
-<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00152">152</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
+<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00153">153</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
 
 </div>
 </div>
@@ -1616,7 +1632,7 @@ Datenfelder</h2></td></tr>
 
 <p>Benutzte Bloecke einer Datei. </p>
 
-<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00115">115</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
+<p>Definiert in Zeile <a class="el" href="botfs__types_8h_source.html#l00116">116</a> der Datei <a class="el" href="botfs__types_8h_source.html">botfs_types.h</a>.</p>
 
 </div>
 </div>
@@ -1678,7 +1694,8 @@ Datenfelder</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>X-Komponente der Position [mm] </p>
+
+<p>X-Komponente der Position [mm]. </p>
 
 <p>Definiert in Zeile <a class="el" href="map_8h_source.html#l00070">70</a> der Datei <a class="el" href="map_8h_source.html">map.h</a>.</p>
 
@@ -1713,7 +1730,8 @@ Datenfelder</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Y-Komponente der Position [mm] </p>
+
+<p>Y-Komponente der Position [mm]. </p>
 
 <p>Definiert in Zeile <a class="el" href="map_8h_source.html#l00071">71</a> der Datei <a class="el" href="map_8h_source.html">map.h</a>.</p>
 
@@ -1735,9 +1753,9 @@ Datenfelder</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:06 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:13 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: srf10.c-Dateireferenz</title>
+<title>c&#39;t-Bot: srf10.c-Dateireferenz</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -52,13 +52,11 @@
   </div>
   <div id="nav-path" class="navpath">
     <ul>
-      <li class="navelem"><a class="el" href="dir_621229fa04310f844660a72d92a68ebe.html">mcu</a>      </li>
+      <li class="navelem"><a class="el" href="dir_f02428e3da713fc394853d6cd2afbcd0.html">mcu</a>      </li>
     </ul>
   </div>
 </div>
 <div class="header">
-  <div class="summary">
-<a href="#func-members">Funktionen</a>  </div>
   <div class="headertitle">
 <div class="title">srf10.c-Dateireferenz</div>  </div>
 </div>
@@ -67,263 +65,28 @@
 <p>Ansteuerung des Ultraschall Entfernungssensors SRF10.  
 <a href="#details">Mehr ...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="ct-Bot_8h_source.html">ct-Bot.h</a>&quot;</code><br/>
-<code>#include &lt;avr/io.h&gt;</code><br/>
-<code>#include &quot;<a class="el" href="twi_8h_source.html">twi.h</a>&quot;</code><br/>
-<code>#include &quot;<a class="el" href="srf10_8h_source.html">srf10.h</a>&quot;</code><br/>
-<code>#include &quot;<a class="el" href="delay_8h_source.html">delay.h</a>&quot;</code><br/>
 </div><div class="textblock"><div class="dynheader">
 Include-Abhängigkeitsdiagramm für srf10.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="srf10_8c__incl.png" border="0" usemap="#srf10_8c" alt=""/></div>
 <map name="srf10_8c" id="srf10_8c">
-</map>
+<area shape="rect" id="node3" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot&#45;Funktionalitaeten" alt="" coords="284,83,351,111"/><area shape="rect" id="node5" href="global_8h.html" title="Allgemeine Definitionen und Datentypen." alt="" coords="232,161,301,189"/><area shape="rect" id="node21" href="bot-local_8h.html" title="Konstanten, die den Bot an reale Umgebungen anpassen." alt="" coords="325,161,411,189"/><area shape="rect" id="node11" href="builtins_8h.html" title="Compiler&#45;Builtins mit Fallback fuer aeltere avr&#45;libc Versionen." alt="" coords="176,238,248,266"/></map>
 </div>
 </div>
 <p><a href="srf10_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
-<table class="memberdecls">
-<tr><td colspan="2"><h2><a name="func-members"></a>
-Funktionen</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="srf10_8c.html#a503b0a9e110989a6691802a7aa89715f">srf10_init</a> (void)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="srf10_8c.html#aea7bb41f25eb0158fa0fa79fb3185234">srf10_set_gain</a> (uint8_t gain)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="srf10_8c.html#a4a07c78ae1d0733ec869625b1b93dd2e">srf10_set_range</a> (uint16_t millimeters)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="srf10_8c.html#a3166dd323e51c8796807baf8c004c13f">srf10_ping</a> (uint8_t metric_unit)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="srf10_8c.html#ab6f2f46a5a60ea85e2dc0bb12d5f86ff">srf10_read_register</a> (uint8_t srf10_register)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="srf10_8c.html#a826ff900fe75dcafd170141917b31fe3">srf10_get_measure</a> ()</td></tr>
-</table>
 <hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
 <div class="textblock"><p>Ansteuerung des Ultraschall Entfernungssensors SRF10. </p>
 <dl class="author"><dt><b>Autor:</b></dt><dd>Carsten Giesen (<a href="mailto:info@cnau.de">info@cnau.de</a>) </dd></dl>
 <dl class="date"><dt><b>Datum:</b></dt><dd>08.04.06 </dd></dl>
 
 <p>Definiert in Datei <a class="el" href="srf10_8c_source.html">srf10.c</a>.</p>
-</div><hr/><h2>Dokumentation der Funktionen</h2>
-<a class="anchor" id="a826ff900fe75dcafd170141917b31fe3"></a><!-- doxytag: member="srf10.c::srf10_get_measure" ref="a826ff900fe75dcafd170141917b31fe3" args="()" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint16_t srf10_get_measure </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-<p>Messung starten Ergebniss aufbereiten und zurueckgeben </p>
-<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Messergebniss </dd></dl>
-
-<p>Definiert in Zeile <a class="el" href="srf10_8c_source.html#l00156">156</a> der Datei <a class="el" href="srf10_8c_source.html">srf10.c</a>.</p>
-
-<p>Benutzt <a class="el" href="srf10_8c_source.html#l00102">srf10_ping()</a>, <a class="el" href="delay_8c_source.html#l00036">delay()</a> und <a class="el" href="srf10_8c_source.html#l00127">srf10_read_register()</a>.</p>
-
-<p>Wird benutzt von <a class="el" href="sensor-low_8c_source.html#l00169">bot_sens()</a>.</p>
-
-<p><div class="dynheader">
-Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
-<div class="dyncontent">
-<div class="center"><img src="srf10_8c_a826ff900fe75dcafd170141917b31fe3_cgraph.png" border="0" usemap="#srf10_8c_a826ff900fe75dcafd170141917b31fe3_cgraph" alt=""/></div>
-<map name="srf10_8c_a826ff900fe75dcafd170141917b31fe3_cgraph" id="srf10_8c_a826ff900fe75dcafd170141917b31fe3_cgraph">
-</map>
-</div>
-</p>
-
-</div>
-</div>
-<a class="anchor" id="a503b0a9e110989a6691802a7aa89715f"></a><!-- doxytag: member="srf10.c::srf10_init" ref="a503b0a9e110989a6691802a7aa89715f" args="(void)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void srf10_init </td>
-          <td>(</td>
-          <td class="paramtype">void&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-<p>SRF10 initialsieren </p>
-
-<p>Definiert in Zeile <a class="el" href="srf10_8c_source.html#l00041">41</a> der Datei <a class="el" href="srf10_8c_source.html">srf10.c</a>.</p>
-
-<p>Benutzt <a class="el" href="srf10_8c_source.html#l00077">srf10_set_range()</a>.</p>
-
-<p><div class="dynheader">
-Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
-<div class="dyncontent">
-<div class="center"><img src="srf10_8c_a503b0a9e110989a6691802a7aa89715f_cgraph.png" border="0" usemap="#srf10_8c_a503b0a9e110989a6691802a7aa89715f_cgraph" alt=""/></div>
-<map name="srf10_8c_a503b0a9e110989a6691802a7aa89715f_cgraph" id="srf10_8c_a503b0a9e110989a6691802a7aa89715f_cgraph">
-</map>
-</div>
-</p>
-
-</div>
-</div>
-<a class="anchor" id="a3166dd323e51c8796807baf8c004c13f"></a><!-- doxytag: member="srf10.c::srf10_ping" ref="a3166dd323e51c8796807baf8c004c13f" args="(uint8_t metric_unit)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint8_t srf10_ping </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>metric_unit</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-<p>Messung ausloesen </p>
-<dl><dt><b>Parameter:</b></dt><dd>
-  <table class="params">
-    <tr><td class="paramname">metric_unit</td><td>0x50 in Zoll, 0x51 in cm, 0x52 ms </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Resultat der Aktion </dd></dl>
-
-<p>Definiert in Zeile <a class="el" href="srf10_8c_source.html#l00102">102</a> der Datei <a class="el" href="srf10_8c_source.html">srf10.c</a>.</p>
-
-<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00199">W</a> und <a class="el" href="twi_8c_source.html#l00190">Send_to_TWI()</a>.</p>
-
-<p>Wird benutzt von <a class="el" href="srf10_8c_source.html#l00156">srf10_get_measure()</a>.</p>
-
-<p><div class="dynheader">
-Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
-<div class="dyncontent">
-<div class="center"><img src="srf10_8c_a3166dd323e51c8796807baf8c004c13f_cgraph.png" border="0" usemap="#srf10_8c_a3166dd323e51c8796807baf8c004c13f_cgraph" alt=""/></div>
-<map name="srf10_8c_a3166dd323e51c8796807baf8c004c13f_cgraph" id="srf10_8c_a3166dd323e51c8796807baf8c004c13f_cgraph">
-</map>
-</div>
-</p>
-
-</div>
-</div>
-<a class="anchor" id="ab6f2f46a5a60ea85e2dc0bb12d5f86ff"></a><!-- doxytag: member="srf10.c::srf10_read_register" ref="ab6f2f46a5a60ea85e2dc0bb12d5f86ff" args="(uint8_t srf10_register)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint8_t srf10_read_register </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>srf10_register</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-<p>Register auslesen </p>
-<dl><dt><b>Parameter:</b></dt><dd>
-  <table class="params">
-    <tr><td class="paramname">srf10_register</td><td>welches Register soll ausgelsen werden </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Inhalt des Registers </dd></dl>
-
-<p>Definiert in Zeile <a class="el" href="srf10_8c_source.html#l00127">127</a> der Datei <a class="el" href="srf10_8c_source.html">srf10.c</a>.</p>
-
-<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00199">W</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">R</a> und <a class="el" href="twi_8c_source.html#l00190">Send_to_TWI()</a>.</p>
-
-<p>Wird benutzt von <a class="el" href="srf10_8c_source.html#l00156">srf10_get_measure()</a>.</p>
-
-<p><div class="dynheader">
-Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
-<div class="dyncontent">
-<div class="center"><img src="srf10_8c_ab6f2f46a5a60ea85e2dc0bb12d5f86ff_cgraph.png" border="0" usemap="#srf10_8c_ab6f2f46a5a60ea85e2dc0bb12d5f86ff_cgraph" alt=""/></div>
-<map name="srf10_8c_ab6f2f46a5a60ea85e2dc0bb12d5f86ff_cgraph" id="srf10_8c_ab6f2f46a5a60ea85e2dc0bb12d5f86ff_cgraph">
-</map>
-</div>
-</p>
-
-</div>
-</div>
-<a class="anchor" id="aea7bb41f25eb0158fa0fa79fb3185234"></a><!-- doxytag: member="srf10.c::srf10_set_gain" ref="aea7bb41f25eb0158fa0fa79fb3185234" args="(uint8_t gain)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void srf10_set_gain </td>
-          <td>(</td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>gain</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-<p>Verstaerkungsfaktor setzen </p>
-<dl><dt><b>Parameter:</b></dt><dd>
-  <table class="params">
-    <tr><td class="paramname">gain</td><td>Verstaerkungsfaktor </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Definiert in Zeile <a class="el" href="srf10_8c_source.html#l00051">51</a> der Datei <a class="el" href="srf10_8c_source.html">srf10.c</a>.</p>
-
-<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00199">W</a> und <a class="el" href="twi_8c_source.html#l00190">Send_to_TWI()</a>.</p>
-
-<p><div class="dynheader">
-Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
-<div class="dyncontent">
-<div class="center"><img src="srf10_8c_aea7bb41f25eb0158fa0fa79fb3185234_cgraph.png" border="0" usemap="#srf10_8c_aea7bb41f25eb0158fa0fa79fb3185234_cgraph" alt=""/></div>
-<map name="srf10_8c_aea7bb41f25eb0158fa0fa79fb3185234_cgraph" id="srf10_8c_aea7bb41f25eb0158fa0fa79fb3185234_cgraph">
-</map>
-</div>
-</p>
-
-</div>
-</div>
-<a class="anchor" id="a4a07c78ae1d0733ec869625b1b93dd2e"></a><!-- doxytag: member="srf10.c::srf10_set_range" ref="a4a07c78ae1d0733ec869625b1b93dd2e" args="(uint16_t millimeters)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void srf10_set_range </td>
-          <td>(</td>
-          <td class="paramtype">uint16_t&#160;</td>
-          <td class="paramname"><em>millimeters</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-<p>Reichweite setzen, hat auch Einfluss auf die Messdauer </p>
-<dl><dt><b>Parameter:</b></dt><dd>
-  <table class="params">
-    <tr><td class="paramname">millimeters</td><td>Reichweite in mm </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Definiert in Zeile <a class="el" href="srf10_8c_source.html#l00077">77</a> der Datei <a class="el" href="srf10_8c_source.html">srf10.c</a>.</p>
-
-<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00199">W</a> und <a class="el" href="twi_8c_source.html#l00190">Send_to_TWI()</a>.</p>
-
-<p>Wird benutzt von <a class="el" href="srf10_8c_source.html#l00041">srf10_init()</a>.</p>
-
-<p><div class="dynheader">
-Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
-<div class="dyncontent">
-<div class="center"><img src="srf10_8c_a4a07c78ae1d0733ec869625b1b93dd2e_cgraph.png" border="0" usemap="#srf10_8c_a4a07c78ae1d0733ec869625b1b93dd2e_cgraph" alt=""/></div>
-<map name="srf10_8c_a4a07c78ae1d0733ec869625b1b93dd2e_cgraph" id="srf10_8c_a4a07c78ae1d0733ec869625b1b93dd2e_cgraph">
-</map>
-</div>
-</p>
-
-</div>
-</div>
-</div>
+</div></div>
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:06 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:13 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

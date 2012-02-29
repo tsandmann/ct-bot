@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: os_thread_pc.c-Dateireferenz</title>
+<title>c&#39;t-Bot: os_thread_pc.c-Dateireferenz</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -52,7 +52,7 @@
   </div>
   <div id="nav-path" class="navpath">
     <ul>
-      <li class="navelem"><a class="el" href="dir_b1beec98a6d8202f7d2e9ed7dd898c89.html">pc</a>      </li>
+      <li class="navelem"><a class="el" href="dir_5e2f2d5041bf6d2345ec9cc9dd1b53a1.html">pc</a>      </li>
     </ul>
   </div>
 </div>
@@ -77,7 +77,7 @@ Include-Abhängigkeitsdiagramm für os_thread_pc.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="os__thread__pc_8c__incl.png" border="0" usemap="#os__thread__pc_8c" alt=""/></div>
 <map name="os__thread__pc_8c" id="os__thread__pc_8c">
-</map>
+<area shape="rect" id="node3" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot&#45;Funktionalitaeten" alt="" coords="335,83,401,111"/><area shape="rect" id="node23" href="os__thread_8h.html" title="Threadmanagement fuer BotOS." alt="" coords="475,83,565,111"/><area shape="rect" id="node31" href="os__utils_8h.html" title="Hilfsfunktionen fuer BotOS." alt="" coords="589,83,667,111"/><area shape="rect" id="node33" href="log_8h.html" title="Routinen zum Loggen von Informationen." alt="" coords="691,83,741,111"/><area shape="rect" id="node5" href="global_8h.html" title="Allgemeine Definitionen und Datentypen." alt="" coords="232,161,301,189"/><area shape="rect" id="node21" href="bot-local_8h.html" title="Konstanten, die den Bot an reale Umgebungen anpassen." alt="" coords="325,161,411,189"/><area shape="rect" id="node11" href="builtins_8h.html" title="Compiler&#45;Builtins mit Fallback fuer aeltere avr&#45;libc Versionen." alt="" coords="176,238,248,266"/><area shape="rect" id="node27" href="timer_8h.html" title="Timer und Zaehler." alt="" coords="536,161,597,189"/><area shape="rect" id="node29" href="os__scheduler_8h.html" title="Mini&#45;Scheduler fuer BotOS." alt="" coords="621,161,733,189"/></map>
 </div>
 </div>
 <p><a href="os__thread__pc_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
@@ -89,16 +89,21 @@ Makrodefinitionen</h2></td></tr>
 <tr><td colspan="2"><h2><a name="func-members"></a>
 Funktionen</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTcb__t.html">Tcb_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="os__thread__pc_8c.html#a2225be2eb34882c09ae7ad31a8b07207">os_create_thread</a> (void *pStack, void(*pIp)(void))</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Legt einen neuen Thread an und setzt ihn auf runnable.  <a href="#a2225be2eb34882c09ae7ad31a8b07207"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="os__thread__pc_8c.html#af29e431cbca02833132a67de16011925">os_thread_yield</a> (void)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Schaltet auf den Thread mit der naechst niedrigeren Prioritaet um, der lauffaehig ist, indem diesem der Rest der Zeitscheibe geschenkt wird.  <a href="#af29e431cbca02833132a67de16011925"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="os__thread__pc_8c.html#a3170fdf75fff4e971354e78a625b5afd">os_thread_sleep</a> (uint32_t ms)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="os__thread__pc_8c.html#aa62b6d29ae00ff288fd8969807a62b06">os_signal_set</a> (<a class="el" href="structos__signal__t.html">os_signal_t</a> *signal)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Blockiert den aktuellen Thread, bis ein Signal freigegeben wird.  <a href="#aa62b6d29ae00ff288fd8969807a62b06"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="os__thread__pc_8c.html#a6fad7ee5233ef39834eb7afc437b0105">os_signal_release</a> (<a class="el" href="structos__signal__t.html">os_signal_t</a> *signal)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="os__thread__pc_8c.html#ae59b1320daae9dc263c512b326e91c00">os_signal_lock</a> (<a class="el" href="structos__signal__t.html">os_signal_t</a> *signal)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="os__thread__pc_8c.html#aa0b166109be9754de9b8b863b8d197c7">os_signal_unlock</a> (<a class="el" href="structos__signal__t.html">os_signal_t</a> *signal)</td></tr>
 <tr><td colspan="2"><h2><a name="var-members"></a>
 Variablen</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTcb__t.html">Tcb_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="os__thread__pc_8c.html#a98e9aac6030735e7a03aa7b3681c43a2">os_threads</a> [OS_MAX_THREADS]</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Thread-Pool (ist gleichzeitig running- und waiting-queue)  <a href="#a98e9aac6030735e7a03aa7b3681c43a2"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTcb__t.html">Tcb_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="os__thread__pc_8c.html#aa7c832fad63b24918265cadcd962e5ab">os_thread_running</a> = NULL</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Zeiger auf den Thread, der zurzeit laeuft.  <a href="#aa7c832fad63b24918265cadcd962e5ab"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">pthread_mutex_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="os__thread__pc_8c.html#abbe828257e7f27048a2f0cfa7bce1077">os_enterCS_mutex</a> = PTHREAD_MUTEX_INITIALIZER</td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
@@ -122,7 +127,7 @@ Variablen</h2></td></tr>
 
 <p>Definiert in Zeile <a class="el" href="os__thread__pc_8c_source.html#l00036">36</a> der Datei <a class="el" href="os__thread__pc_8c_source.html">os_thread_pc.c</a>.</p>
 
-<p>Wird benutzt von <a class="el" href="os__thread__pc_8c_source.html#l00107">os_thread_sleep()</a>, <a class="el" href="os__thread__pc_8c_source.html#l00120">os_signal_set()</a>, <a class="el" href="os__thread__pc_8c_source.html#l00141">os_signal_release()</a>, <a class="el" href="os__thread__pc_8c_source.html#l00153">os_signal_lock()</a> und <a class="el" href="os__thread__pc_8c_source.html#l00167">os_signal_unlock()</a>.</p>
+<p>Wird benutzt von <a class="el" href="os__thread__pc_8c_source.html#l00153">os_signal_lock()</a>, <a class="el" href="os__thread__pc_8c_source.html#l00141">os_signal_release()</a>, <a class="el" href="os__thread__pc_8c_source.html#l00120">os_signal_set()</a>, <a class="el" href="os__thread__pc_8c_source.html#l00167">os_signal_unlock()</a> und <a class="el" href="os__thread__pc_8c_source.html#l00107">os_thread_sleep()</a>.</p>
 
 </div>
 </div>
@@ -143,7 +148,7 @@ Variablen</h2></td></tr>
 
 <p>Definiert in Zeile <a class="el" href="os__thread__pc_8c_source.html#l00043">43</a> der Datei <a class="el" href="os__thread__pc_8c_source.html">os_thread_pc.c</a>.</p>
 
-<p>Wird benutzt von <a class="el" href="os__thread__pc_8c_source.html#l00076">os_create_thread()</a>, <a class="el" href="os__thread__pc_8c_source.html#l00107">os_thread_sleep()</a>, <a class="el" href="os__thread__pc_8c_source.html#l00120">os_signal_set()</a>, <a class="el" href="os__thread__pc_8c_source.html#l00141">os_signal_release()</a>, <a class="el" href="os__thread__pc_8c_source.html#l00153">os_signal_lock()</a> und <a class="el" href="os__thread__pc_8c_source.html#l00167">os_signal_unlock()</a>.</p>
+<p>Wird benutzt von <a class="el" href="os__thread__pc_8c_source.html#l00076">os_create_thread()</a>, <a class="el" href="os__thread__pc_8c_source.html#l00153">os_signal_lock()</a>, <a class="el" href="os__thread__pc_8c_source.html#l00141">os_signal_release()</a>, <a class="el" href="os__thread__pc_8c_source.html#l00120">os_signal_set()</a>, <a class="el" href="os__thread__pc_8c_source.html#l00167">os_signal_unlock()</a> und <a class="el" href="os__thread__pc_8c_source.html#l00107">os_thread_sleep()</a>.</p>
 
 </div>
 </div>
@@ -172,6 +177,8 @@ Variablen</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Legt einen neuen Thread an und setzt ihn auf runnable. </p>
 <p>Legt einen neuen Thread an. Der zuerst angelegt Thread bekommt die hoechste Prioritaet, je spaeter ein Thread erzeugt wird, desto niedriger ist seine Prioritaet, das laesst sich auch nicht mehr aendern! </p>
 <dl><dt><b>Parameter:</b></dt><dd>
   <table class="params">
@@ -184,9 +191,9 @@ Variablen</h2></td></tr>
 
 <p>Definiert in Zeile <a class="el" href="os__thread__pc_8c_source.html#l00076">76</a> der Datei <a class="el" href="os__thread__pc_8c_source.html">os_thread_pc.c</a>.</p>
 
-<p>Benutzt <a class="el" href="os__thread_8h_source.html#l00048">OS_MAX_THREADS</a>, <a class="el" href="log_8h_source.html#l00309">LOG_ERROR</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a> und <a class="el" href="os__thread__pc_8c_source.html#l00043">LOG_DEBUG</a>.</p>
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="os__thread__pc_8c_source.html#l00043">LOG_DEBUG</a>, <a class="el" href="log_8h_source.html#l00309">LOG_ERROR</a> und <a class="el" href="os__thread_8h_source.html#l00048">OS_MAX_THREADS</a>.</p>
 
-<p>Wird benutzt von <a class="el" href="init-low_8c_source.html#l00125">ctbot_init_low_1st()</a>, <a class="el" href="init-low_8c_source.html#l00155">ctbot_init_low_last()</a> und <a class="el" href="map_8c_source.html#l00231">map_init()</a>.</p>
+<p>Wird benutzt von <a class="el" href="init-low_8c_source.html#l00125">ctbot_init_low_1st()</a> und <a class="el" href="init-low_8c_source.html#l00155">ctbot_init_low_last()</a>.</p>
 
 </div>
 </div>
@@ -214,9 +221,9 @@ Variablen</h2></td></tr>
 
 <p>Definiert in Zeile <a class="el" href="os__thread__pc_8c_source.html#l00153">153</a> der Datei <a class="el" href="os__thread__pc_8c_source.html">os_thread_pc.c</a>.</p>
 
-<p>Benutzt <a class="el" href="os__thread_8h_source.html#l00043">os_signal_t::mutex</a>, <a class="el" href="os__thread_8h_source.html#l00041">os_signal_t::value</a>, <a class="el" href="os__thread__pc_8c_source.html#l00036">DEBUG_THREAD_N</a> und <a class="el" href="os__thread__pc_8c_source.html#l00043">LOG_DEBUG</a>.</p>
+<p>Benutzt <a class="el" href="os__thread__pc_8c_source.html#l00036">DEBUG_THREAD_N</a>, <a class="el" href="os__thread__pc_8c_source.html#l00043">LOG_DEBUG</a>, <a class="el" href="os__thread_8h_source.html#l00043">os_signal_t::mutex</a> und <a class="el" href="os__thread_8h_source.html#l00041">os_signal_t::value</a>.</p>
 
-<p>Wird benutzt von <a class="el" href="fifo_8c_source.html#l00147">fifo_get_data()</a>, <a class="el" href="map_8c_source.html#l01459">map_2_sim_send()</a> und <a class="el" href="map_8c_source.html#l01672">map_to_pgm()</a>.</p>
+<p>Wird benutzt von <a class="el" href="fifo_8c_source.html#l00147">fifo_get_data()</a>, <a class="el" href="map_8c_source.html#l01467">map_2_sim_send()</a> und <a class="el" href="map_8c_source.html#l01784">map_to_pgm()</a>.</p>
 
 </div>
 </div>
@@ -244,9 +251,9 @@ Variablen</h2></td></tr>
 
 <p>Definiert in Zeile <a class="el" href="os__thread__pc_8c_source.html#l00141">141</a> der Datei <a class="el" href="os__thread__pc_8c_source.html">os_thread_pc.c</a>.</p>
 
-<p>Benutzt <a class="el" href="os__thread_8h_source.html#l00043">os_signal_t::mutex</a>, <a class="el" href="os__thread__pc_8c_source.html#l00036">DEBUG_THREAD_N</a> und <a class="el" href="os__thread__pc_8c_source.html#l00043">LOG_DEBUG</a>.</p>
+<p>Benutzt <a class="el" href="os__thread__pc_8c_source.html#l00036">DEBUG_THREAD_N</a>, <a class="el" href="os__thread__pc_8c_source.html#l00043">LOG_DEBUG</a> und <a class="el" href="os__thread_8h_source.html#l00043">os_signal_t::mutex</a>.</p>
 
-<p>Wird benutzt von <a class="el" href="fifo_8c_source.html#l00147">fifo_get_data()</a> und <a class="el" href="map_8c_source.html#l00422">map_flush_cache()</a>.</p>
+<p>Wird benutzt von <a class="el" href="fifo_8c_source.html#l00147">fifo_get_data()</a> und <a class="el" href="map_8c_source.html#l00430">map_flush_cache()</a>.</p>
 
 </div>
 </div>
@@ -264,6 +271,8 @@ Variablen</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Blockiert den aktuellen Thread, bis ein Signal freigegeben wird. </p>
 <p>Blockiert den aktuellen Thread, bis ein Signal freigegeben wird </p>
 <dl><dt><b>Parameter:</b></dt><dd>
   <table class="params">
@@ -274,9 +283,9 @@ Variablen</h2></td></tr>
 
 <p>Definiert in Zeile <a class="el" href="os__thread__pc_8c_source.html#l00120">120</a> der Datei <a class="el" href="os__thread__pc_8c_source.html">os_thread_pc.c</a>.</p>
 
-<p>Benutzt <a class="el" href="os__thread__pc_8c_source.html#l00036">DEBUG_THREAD_N</a>, <a class="el" href="os__thread__pc_8c_source.html#l00043">LOG_DEBUG</a>, <a class="el" href="os__thread_8h_source.html#l00043">os_signal_t::mutex</a>, <a class="el" href="os__thread_8h_source.html#l00041">os_signal_t::value</a> und <a class="el" href="os__thread_8h_source.html#l00044">os_signal_t::cond</a>.</p>
+<p>Benutzt <a class="el" href="os__thread_8h_source.html#l00044">os_signal_t::cond</a>, <a class="el" href="os__thread__pc_8c_source.html#l00036">DEBUG_THREAD_N</a>, <a class="el" href="os__thread__pc_8c_source.html#l00043">LOG_DEBUG</a>, <a class="el" href="os__thread_8h_source.html#l00043">os_signal_t::mutex</a> und <a class="el" href="os__thread_8h_source.html#l00041">os_signal_t::value</a>.</p>
 
-<p>Wird benutzt von <a class="el" href="fifo_8c_source.html#l00147">fifo_get_data()</a> und <a class="el" href="map_8c_source.html#l00422">map_flush_cache()</a>.</p>
+<p>Wird benutzt von <a class="el" href="fifo_8c_source.html#l00147">fifo_get_data()</a> und <a class="el" href="map_8c_source.html#l00430">map_flush_cache()</a>.</p>
 
 </div>
 </div>
@@ -304,9 +313,9 @@ Variablen</h2></td></tr>
 
 <p>Definiert in Zeile <a class="el" href="os__thread__pc_8c_source.html#l00167">167</a> der Datei <a class="el" href="os__thread__pc_8c_source.html">os_thread_pc.c</a>.</p>
 
-<p>Benutzt <a class="el" href="os__thread_8h_source.html#l00043">os_signal_t::mutex</a>, <a class="el" href="os__thread_8h_source.html#l00041">os_signal_t::value</a>, <a class="el" href="os__thread_8h_source.html#l00044">os_signal_t::cond</a>, <a class="el" href="os__thread__pc_8c_source.html#l00036">DEBUG_THREAD_N</a> und <a class="el" href="os__thread__pc_8c_source.html#l00043">LOG_DEBUG</a>.</p>
+<p>Benutzt <a class="el" href="os__thread_8h_source.html#l00044">os_signal_t::cond</a>, <a class="el" href="os__thread__pc_8c_source.html#l00036">DEBUG_THREAD_N</a>, <a class="el" href="os__thread__pc_8c_source.html#l00043">LOG_DEBUG</a>, <a class="el" href="os__thread_8h_source.html#l00043">os_signal_t::mutex</a> und <a class="el" href="os__thread_8h_source.html#l00041">os_signal_t::value</a>.</p>
 
-<p>Wird benutzt von <a class="el" href="fifo_8c_source.html#l00064">fifo_put_data()</a>, <a class="el" href="map_8c_source.html#l01459">map_2_sim_send()</a> und <a class="el" href="map_8c_source.html#l01672">map_to_pgm()</a>.</p>
+<p>Wird benutzt von <a class="el" href="fifo_8c_source.html#l00064">fifo_put_data()</a>, <a class="el" href="map_8c_source.html#l01467">map_2_sim_send()</a> und <a class="el" href="map_8c_source.html#l01784">map_to_pgm()</a>.</p>
 
 </div>
 </div>
@@ -336,7 +345,7 @@ Variablen</h2></td></tr>
 
 <p>Benutzt <a class="el" href="os__thread__pc_8c_source.html#l00036">DEBUG_THREAD_N</a> und <a class="el" href="os__thread__pc_8c_source.html#l00043">LOG_DEBUG</a>.</p>
 
-<p>Wird benutzt von <a class="el" href="behaviour__scan_8c_source.html#l00058">bot_scan_onthefly_behaviour()</a> und <a class="el" href="botfs-low_8c_source.html#l00191">botfs_acquire_lock_low()</a>.</p>
+<p>Wird benutzt von <a class="el" href="behaviour__scan_8c_source.html#l00058">bot_scan_onthefly_behaviour()</a> und <a class="el" href="botfs-low_8c_source.html#l00190">botfs_acquire_lock_low()</a>.</p>
 
 </div>
 </div>
@@ -354,6 +363,8 @@ Variablen</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Schaltet auf den Thread mit der naechst niedrigeren Prioritaet um, der lauffaehig ist, indem diesem der Rest der Zeitscheibe geschenkt wird. </p>
 <p>Schaltet auf den Thread mit der naechst niedrigeren Prioritaet um, der lauffaehig ist, indem diesem der Rest der Zeitscheibe geschenkt wird. Auf PC ueberlassen wir diese Aufgabe dem Scheduler </p>
 
 <p>Definiert in Zeile <a class="el" href="os__thread__pc_8c_source.html#l00097">97</a> der Datei <a class="el" href="os__thread__pc_8c_source.html">os_thread_pc.c</a>.</p>
@@ -373,7 +384,7 @@ Variablen</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Mutex fuer <a class="el" href="os__thread_8h.html#a29e5f7c4cb7a64b0d9157f2a9efdcdc5">os_enterCS()</a> / <a class="el" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1">os_exitCS()</a> auf PC </p>
+<p>Mutex fuer <a class="el" href="os__thread_8h.html#a29e5f7c4cb7a64b0d9157f2a9efdcdc5" title="Schuetzt den folgenden Block (bis os_exitCS()) vor Threadswitches.">os_enterCS()</a> / <a class="el" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1" title="Beendet den kritischen Abschnitt wieder, der mit os_enterCS began.">os_exitCS()</a> auf PC </p>
 
 <p>Definiert in Zeile <a class="el" href="os__thread__pc_8c_source.html#l00049">49</a> der Datei <a class="el" href="os__thread__pc_8c_source.html">os_thread_pc.c</a>.</p>
 
@@ -389,11 +400,13 @@ Variablen</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Zeiger auf den Thread, der zurzeit laeuft. </p>
 <p>Zeiger auf den Thread, der gerade laeuft </p>
 
 <p>Definiert in Zeile <a class="el" href="os__thread__pc_8c_source.html#l00048">48</a> der Datei <a class="el" href="os__thread__pc_8c_source.html">os_thread_pc.c</a>.</p>
 
-<p>Wird benutzt von <a class="el" href="botfs-low_8c_source.html#l00191">botfs_acquire_lock_low()</a> und <a class="el" href="os__scheduler_8c_source.html#l00217">os_schedule()</a>.</p>
+<p>Wird benutzt von <a class="el" href="botfs-low_8c_source.html#l00190">botfs_acquire_lock_low()</a> und <a class="el" href="os__scheduler_8c_source.html#l00217">os_schedule()</a>.</p>
 
 </div>
 </div>
@@ -407,11 +420,13 @@ Variablen</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Thread-Pool (ist gleichzeitig running- und waiting-queue) </p>
 <p>Array aller Threads </p>
 
 <p>Definiert in Zeile <a class="el" href="os__thread__pc_8c_source.html#l00047">47</a> der Datei <a class="el" href="os__thread__pc_8c_source.html">os_thread_pc.c</a>.</p>
 
-<p>Wird benutzt von <a class="el" href="os__scheduler_8c_source.html#l00093">os_calc_utilization()</a>, <a class="el" href="os__scheduler_8c_source.html#l00129">os_clear_utilization()</a>, <a class="el" href="os__scheduler_8c_source.html#l00217">os_schedule()</a>, <a class="el" href="os__scheduler_8c_source.html#l00274">os_display()</a> und <a class="el" href="os__thread_8c_source.html#l00065">os_create_thread()</a>.</p>
+<p>Wird benutzt von <a class="el" href="os__scheduler_8c_source.html#l00093">os_calc_utilization()</a>, <a class="el" href="os__scheduler_8c_source.html#l00129">os_clear_utilization()</a>, <a class="el" href="os__thread_8c_source.html#l00065">os_create_thread()</a>, <a class="el" href="os__scheduler_8c_source.html#l00274">os_display()</a> und <a class="el" href="os__scheduler_8c_source.html#l00217">os_schedule()</a>.</p>
 
 </div>
 </div>
@@ -419,9 +434,9 @@ Variablen</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:06 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:12 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

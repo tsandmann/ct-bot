@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: motor-low.c-Dateireferenz</title>
+<title>c&#39;t-Bot: motor-low.c-Dateireferenz</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -52,7 +52,7 @@
   </div>
   <div id="nav-path" class="navpath">
     <ul>
-      <li class="navelem"><a class="el" href="dir_621229fa04310f844660a72d92a68ebe.html">mcu</a>      </li>
+      <li class="navelem"><a class="el" href="dir_f02428e3da713fc394853d6cd2afbcd0.html">mcu</a>      </li>
     </ul>
   </div>
 </div>
@@ -81,7 +81,7 @@ Include-Abhängigkeitsdiagramm für motor-low.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="motor-low_8c__incl.png" border="0" usemap="#motor-low_8c" alt=""/></div>
 <map name="motor-low_8c" id="motor-low_8c">
-</map>
+<area shape="rect" id="node3" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot&#45;Funktionalitaeten" alt="" coords="192,83,259,111"/><area shape="rect" id="node23" href="motor_8h.html" title="High&#45;Level Routinen fuer die Motorsteuerung des c&#39;t&#45;Bots." alt="" coords="283,83,349,111"/><area shape="rect" id="node25" href="timer_8h.html" title="Timer und Zaehler." alt="" coords="373,83,435,111"/><area shape="rect" id="node27" href="sensor_8h.html" title="Architekturunabhaengiger Teil der Sensorsteuerung." alt="" coords="459,83,531,111"/><area shape="rect" id="node33" href="display_8h.html" title="Routinen zur Displaysteuerung." alt="" coords="559,161,633,189"/><area shape="rect" id="node36" href="motor-low_8h.html" title="Low&#45;Level Routinen fuer die Motorsteuerung des c&#39;t&#45;Bots." alt="" coords="605,83,696,111"/><area shape="rect" id="node5" href="global_8h.html" title="Allgemeine Definitionen und Datentypen." alt="" coords="177,161,247,189"/><area shape="rect" id="node21" href="bot-local_8h.html" title="Konstanten, die den Bot an reale Umgebungen anpassen." alt="" coords="271,161,356,189"/><area shape="rect" id="node11" href="builtins_8h.html" title="Compiler&#45;Builtins mit Fallback fuer aeltere avr&#45;libc Versionen." alt="" coords="176,238,248,266"/><area shape="rect" id="node29" href="rc5_8h.html" title="RC5&#45;Fernbedienung / Basic&#45;Tasten&#45;Handler." alt="" coords="380,161,431,189"/><area shape="rect" id="node31" href="cmps03_8h.html" title="CMPS03&#45;Treiber." alt="" coords="455,161,535,189"/></map>
 </div>
 </div>
 <p><a href="motor-low_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
@@ -100,7 +100,9 @@ Makrodefinitionen</h2></td></tr>
 <tr><td colspan="2"><h2><a name="func-members"></a>
 Funktionen</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="motor-low_8c.html#ad3746b7e96a42cf8d606c7bccb6bb260">motor_low_init</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialisiert alles fuer die Motosteuerung.  <a href="#ad3746b7e96a42cf8d606c7bccb6bb260"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="motor-low_8c.html#af288dee5f55b67d9eaf1d6e180bfd121">motor_update</a> (uint8_t dev)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Stellt einen PWM-Wert fuer einen Motor ein low-level.  <a href="#af288dee5f55b67d9eaf1d6e180bfd121"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="motor-low_8c.html#a0de2d9390f32772c86a439f63e65d78c">servo_low</a> (uint8_t servo, uint8_t pos)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Stellt die Servos.  <a href="#a0de2d9390f32772c86a439f63e65d78c"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="var-members"></a>
@@ -284,12 +286,14 @@ Variablen</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Initialisiert alles fuer die Motosteuerung. </p>
 <p>Timer 0: Kontrolliert den Servo per PWM PWM loescht bei erreichen. daher steht in OCR0 255-Speed!!! initilaisiert Timer 0 und startet ihn</p>
 <p>Initialisiert alles fuer die Motosteuerung </p>
 
 <p>Definiert in Zeile <a class="el" href="motor-low_8c_source.html#l00128">128</a> der Datei <a class="el" href="motor-low_8c_source.html">motor-low.c</a>.</p>
 
-<p>Benutzt <a class="el" href="motor-low_8c_source.html#l00041">BOT_DIR_L_DDR</a>, <a class="el" href="motor-low_8c_source.html#l00039">BOT_DIR_L_PIN</a>, <a class="el" href="motor-low_8c_source.html#l00045">BOT_DIR_R_DDR</a>, <a class="el" href="motor-low_8c_source.html#l00043">BOT_DIR_R_PIN</a>, <a class="el" href="motor-low_8c_source.html#l00053">motor_left</a>, <a class="el" href="motor-low_8c_source.html#l00054">motor_right</a>, <a class="el" href="motor-low_8c_source.html#l00047">PWM_L</a>, <a class="el" href="motor-low_8c_source.html#l00048">PWM_R</a>, <a class="el" href="motor_8c_source.html#l00083">direction</a>, <a class="el" href="motor_8h_source.html#l00059">direction_t::left</a>, <a class="el" href="motor_8h_source.html#l00042">DIRECTION_FORWARD</a> und <a class="el" href="motor_8h_source.html#l00060">direction_t::right</a>.</p>
+<p>Benutzt <a class="el" href="motor-low_8c_source.html#l00041">BOT_DIR_L_DDR</a>, <a class="el" href="motor-low_8c_source.html#l00039">BOT_DIR_L_PIN</a>, <a class="el" href="motor-low_8c_source.html#l00045">BOT_DIR_R_DDR</a>, <a class="el" href="motor-low_8c_source.html#l00043">BOT_DIR_R_PIN</a>, <a class="el" href="motor_8c_source.html#l00084">direction</a>, <a class="el" href="motor_8h_source.html#l00042">DIRECTION_FORWARD</a>, <a class="el" href="motor_8h_source.html#l00059">direction_t::left</a>, <a class="el" href="motor-low_8c_source.html#l00053">motor_left</a>, <a class="el" href="motor-low_8c_source.html#l00054">motor_right</a>, <a class="el" href="motor-low_8c_source.html#l00047">PWM_L</a>, <a class="el" href="motor-low_8c_source.html#l00048">PWM_R</a> und <a class="el" href="motor_8h_source.html#l00060">direction_t::right</a>.</p>
 
 </div>
 </div>
@@ -307,6 +311,8 @@ Variablen</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
+
+<p>Stellt einen PWM-Wert fuer einen Motor ein low-level. </p>
 <p>Stellt einen PWM-Wert fuer einen Motor ein low-level </p>
 <dl><dt><b>Parameter:</b></dt><dd>
   <table class="params">
@@ -317,9 +323,9 @@ Variablen</h2></td></tr>
 
 <p>Definiert in Zeile <a class="el" href="motor-low_8c_source.html#l00153">153</a> der Datei <a class="el" href="motor-low_8c_source.html">motor-low.c</a>.</p>
 
-<p>Benutzt <a class="el" href="motor_8c_source.html#l00083">direction</a>, <a class="el" href="motor_8h_source.html#l00059">direction_t::left</a>, <a class="el" href="motor_8h_source.html#l00042">DIRECTION_FORWARD</a>, <a class="el" href="motor-low_8c_source.html#l00040">BOT_DIR_L_PORT</a>, <a class="el" href="motor-low_8c_source.html#l00039">BOT_DIR_L_PIN</a>, <a class="el" href="motor-low_8c_source.html#l00047">PWM_L</a>, <a class="el" href="motor-low_8c_source.html#l00053">motor_left</a>, <a class="el" href="motor_8h_source.html#l00060">direction_t::right</a>, <a class="el" href="motor_8h_source.html#l00043">DIRECTION_BACKWARD</a>, <a class="el" href="motor-low_8c_source.html#l00044">BOT_DIR_R_PORT</a>, <a class="el" href="motor-low_8c_source.html#l00043">BOT_DIR_R_PIN</a>, <a class="el" href="motor-low_8c_source.html#l00048">PWM_R</a> und <a class="el" href="motor-low_8c_source.html#l00054">motor_right</a>.</p>
+<p>Benutzt <a class="el" href="motor-low_8c_source.html#l00039">BOT_DIR_L_PIN</a>, <a class="el" href="motor-low_8c_source.html#l00040">BOT_DIR_L_PORT</a>, <a class="el" href="motor-low_8c_source.html#l00043">BOT_DIR_R_PIN</a>, <a class="el" href="motor-low_8c_source.html#l00044">BOT_DIR_R_PORT</a>, <a class="el" href="motor_8c_source.html#l00084">direction</a>, <a class="el" href="motor_8h_source.html#l00043">DIRECTION_BACKWARD</a>, <a class="el" href="motor_8h_source.html#l00042">DIRECTION_FORWARD</a>, <a class="el" href="motor_8h_source.html#l00059">direction_t::left</a>, <a class="el" href="motor-low_8c_source.html#l00053">motor_left</a>, <a class="el" href="motor-low_8c_source.html#l00054">motor_right</a>, <a class="el" href="motor-low_8c_source.html#l00047">PWM_L</a>, <a class="el" href="motor-low_8c_source.html#l00048">PWM_R</a> und <a class="el" href="motor_8h_source.html#l00060">direction_t::right</a>.</p>
 
-<p>Wird benutzt von <a class="el" href="motor_8c_source.html#l00098">speed_control()</a> und <a class="el" href="motor_8c_source.html#l00302">motor_set()</a>.</p>
+<p>Wird benutzt von <a class="el" href="motor_8c_source.html#l00303">motor_set()</a> und <a class="el" href="motor_8c_source.html#l00099">speed_control()</a>.</p>
 
 </div>
 </div>
@@ -360,7 +366,7 @@ Variablen</h2></td></tr>
 
 <p>Definiert in Zeile <a class="el" href="motor-low_8c_source.html#l00188">188</a> der Datei <a class="el" href="motor-low_8c_source.html">motor-low.c</a>.</p>
 
-<p>Benutzt <a class="el" href="motor_8h_source.html#l00047">SERVO1</a>, <a class="el" href="motor_8h_source.html#l00045">SERVO_OFF</a> und <a class="el" href="motor-low_8c_source.html#l00050">PWM_CLK_0</a>.</p>
+<p>Benutzt <a class="el" href="motor-low_8c_source.html#l00050">PWM_CLK_0</a>, <a class="el" href="motor_8h_source.html#l00047">SERVO1</a> und <a class="el" href="motor_8h_source.html#l00045">SERVO_OFF</a>.</p>
 
 </div>
 </div>
@@ -401,9 +407,9 @@ Variablen</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:06 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:12 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

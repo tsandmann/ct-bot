@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: behaviour_drive_chess.c Quellcode</title>
+<title>c&#39;t-Bot: behaviour_drive_chess.c Quellcode</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -52,7 +52,7 @@
   </div>
   <div id="nav-path" class="navpath">
     <ul>
-      <li class="navelem"><a class="el" href="dir_50e348be376545f1764a2303ce570900.html">bot-logic</a>      </li>
+      <li class="navelem"><a class="el" href="dir_14c9cc1c75a92f359ad94591d62973a1.html">bot-logic</a>      </li>
     </ul>
   </div>
 </div>
@@ -592,7 +592,7 @@
 <a name="l00607"></a>00607                     <a class="code" href="behaviour__drive__chess_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Zug aus D() von %c %c nach %c %c&quot;</span>, <span class="charliteral">&#39;a&#39;</span> + (<a class="code" href="behaviour__drive__chess_8c.html#a7b814227e6cf919c1f7ad4067bfe000e">K</a> &amp; 7), <span class="charliteral">&#39;8&#39;</span> - (<a class="code" href="behaviour__drive__chess_8c.html#a7b814227e6cf919c1f7ad4067bfe000e">K</a> &gt;&gt; 4), <span class="charliteral">&#39;a&#39;</span> + ( L&amp; 7), <span class="charliteral">&#39;8&#39;</span> - (L &gt;&gt; 4 &amp; 7));
 <a name="l00608"></a>00608                     chess2worldkoords((<span class="keywordtype">char</span>) (<span class="charliteral">&#39;a&#39;</span> + (<a class="code" href="behaviour__drive__chess_8c.html#a7b814227e6cf919c1f7ad4067bfe000e">K</a> &amp; 7)), (<span class="keywordtype">char</span>) (<span class="charliteral">&#39;8&#39;</span> - (<a class="code" href="behaviour__drive__chess_8c.html#a7b814227e6cf919c1f7ad4067bfe000e">K</a> &gt;&gt; 4 &amp; 7)), &amp;wx, &amp;wy);
 <a name="l00609"></a>00609                     <a class="code" href="behaviour__drive__chess_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;gehe zu Zug-Startpos %1d,%1d,weiss %1d&quot;</span>, wy, wx, white);
-<a name="l00610"></a>00610                     <a class="code" href="behaviour__goto__pos_8c.html#ab5ed29ca0a737f151df82f8babc00170">bot_goto_pos</a>(data, wy, wx, 999);
+<a name="l00610"></a>00610                     <a class="code" href="behaviour__goto__pos_8c.html#a88ddbedd618e291f1181ca34433fcd93" title="Botenfunktion des Positionierungsverhaltens.">bot_goto_pos</a>(data, wy, wx, 999);
 <a name="l00611"></a>00611 
 <a name="l00612"></a>00612                     state = <a class="code" href="behaviour__drive__chess_8c.html#aeae039b27ada1bacead6dc493f2b398f">GO_STATE_NEXT</a>;
 <a name="l00613"></a>00613                     <span class="keywordflow">break</span>;
@@ -605,7 +605,7 @@
 <a name="l00620"></a>00620         <span class="comment">/* Bot wird zu den Zug-Zielkoordinaten gefahren */</span>
 <a name="l00621"></a>00621         chess2worldkoords((<span class="keywordtype">char</span>) (<span class="charliteral">&#39;a&#39;</span> + (L &amp; 7)), (<span class="keywordtype">char</span>) (<span class="charliteral">&#39;8&#39;</span> - (L &gt;&gt; 4 &amp; 7)), &amp;wx, &amp;wy);
 <a name="l00622"></a>00622         <a class="code" href="behaviour__drive__chess_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;gehe zu Zug-Zielpos %1d,%1d,weiss %1d&quot;</span>, wy, wx, white);
-<a name="l00623"></a>00623         <a class="code" href="behaviour__goto__pos_8c.html#ab5ed29ca0a737f151df82f8babc00170">bot_goto_pos</a>(data, wy, wx, 999);
+<a name="l00623"></a>00623         <a class="code" href="behaviour__goto__pos_8c.html#a88ddbedd618e291f1181ca34433fcd93" title="Botenfunktion des Positionierungsverhaltens.">bot_goto_pos</a>(data, wy, wx, 999);
 <a name="l00624"></a>00624 
 <a name="l00625"></a>00625         state = <a class="code" href="behaviour__drive__chess_8c.html#ab3c6091e5ca003357c81288dca748ec5">CO_END</a>; <span class="comment">// nach Abfahren Verhaltensende</span>
 <a name="l00626"></a>00626 
@@ -775,9 +775,9 @@
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:08 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: os_scheduler.c Quellcode</title>
+<title>c&#39;t-Bot: os_scheduler.c Quellcode</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -52,7 +52,7 @@
   </div>
   <div id="nav-path" class="navpath">
     <ul>
-      <li class="navelem"><a class="el" href="dir_621229fa04310f844660a72d92a68ebe.html">mcu</a>      </li>
+      <li class="navelem"><a class="el" href="dir_f02428e3da713fc394853d6cd2afbcd0.html">mcu</a>      </li>
     </ul>
   </div>
 </div>
@@ -103,7 +103,7 @@
 <a name="l00047"></a>00047 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
 <a name="l00048"></a>00048 <span class="preprocessor"></span>
 <a name="l00049"></a><a class="code" href="os__scheduler_8c.html#aedb1cbd0b22044c1a271aff9014ac8b4">00049</a> <span class="keyword">volatile</span> uint8_t <a class="code" href="os__scheduler_8h.html#aedb1cbd0b22044c1a271aff9014ac8b4">os_scheduling_allowed</a> = 1; 
-<a name="l00051"></a><a class="code" href="os__scheduler_8c.html#acb003059db99b21fa9103de9f505c216">00051</a> uint8_t <a class="code" href="os__thread_8h.html#a577438ea72f5dcbdff5b1cc72d231440">os_idle_stack</a>[<a class="code" href="os__thread_8h.html#aa6afdd19d3022d101b8fc9942bb8422b">OS_IDLE_STACKSIZE</a>];   
+<a name="l00051"></a><a class="code" href="os__scheduler_8c.html#acb003059db99b21fa9103de9f505c216">00051</a> uint8_t <a class="code" href="os__thread_8h.html#a577438ea72f5dcbdff5b1cc72d231440" title="Stack des Idle-Threads.">os_idle_stack</a>[<a class="code" href="os__thread_8h.html#aa6afdd19d3022d101b8fc9942bb8422b" title="Groesse des Idle-Stacks [Byte].">OS_IDLE_STACKSIZE</a>];   
 <a name="l00053"></a>00053 <span class="keyword">static</span> <span class="keyword">volatile</span> uint32_t idle_counter[3];   
 <a name="l00054"></a><a class="code" href="os__scheduler_8c.html#af629cffaf03c264c82fdf0e5f80507ce">00054</a> <span class="preprocessor">#define ZYCLES_PER_IDLERUN  38 </span>
 <a name="l00056"></a>00056 <span class="preprocessor">#ifdef DISPLAY_OS_AVAILABLE</span>
@@ -111,16 +111,16 @@
 <a name="l00058"></a>00058 <span class="preprocessor">#endif</span>
 <a name="l00059"></a>00059 <span class="preprocessor"></span>
 <a name="l00060"></a>00060 <span class="preprocessor">#ifdef OS_KERNEL_LOG_AVAILABLE</span>
-<a name="l00061"></a>00061 <span class="preprocessor"></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{
+<a name="l00061"></a><a class="code" href="structkernel__log__t.html">00061</a> <span class="preprocessor"></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{
 <a name="l00062"></a><a class="code" href="structkernel__log__t.html#ab514329323a36a4b3b02abf731e902ba">00062</a>     uint16_t <a class="code" href="structkernel__log__t.html#ab514329323a36a4b3b02abf731e902ba">time</a>; 
 <a name="l00063"></a><a class="code" href="structkernel__log__t.html#a440a3141ab20e6ca78bfb4003c60cf9c">00063</a>     uint8_t <a class="code" href="structkernel__log__t.html#a440a3141ab20e6ca78bfb4003c60cf9c">from</a>;  
 <a name="l00064"></a><a class="code" href="structkernel__log__t.html#a41f7f17614a0bb8596c87793cf6f28b4">00064</a>     uint8_t <a class="code" href="structkernel__log__t.html#a41f7f17614a0bb8596c87793cf6f28b4">to</a>;    
 <a name="l00065"></a>00065 } <a class="code" href="structkernel__log__t.html">kernel_log_t</a>; 
-<a name="l00066"></a>00066 <span class="keyword">static</span> <a class="code" href="structkernel__log__t.html">kernel_log_t</a> kernel_log[<a class="code" href="os__thread_8h.html#a0be74d4f0538be57711788fcfe6ee3a2">OS_KERNEL_LOG_SIZE</a>]; 
+<a name="l00066"></a>00066 <span class="keyword">static</span> <a class="code" href="structkernel__log__t.html">kernel_log_t</a> kernel_log[<a class="code" href="os__thread_8h.html#a0be74d4f0538be57711788fcfe6ee3a2" title="Anzahl der Datensaetze, die im Kernel-LOG gepuffert werden koennen.">OS_KERNEL_LOG_SIZE</a>]; 
 <a name="l00067"></a>00067 <span class="keyword">static</span> <a class="code" href="structfifo__t.html">fifo_t</a> kernel_log_fifo; 
 <a name="l00068"></a>00068 <span class="keyword">static</span> <a class="code" href="structkernel__log__t.html">kernel_log_t</a> log_entry; 
 <a name="l00069"></a>00069 <span class="keyword">static</span> uint8_t kernel_log_on = 0; 
-<a name="l00074"></a><a class="code" href="os__scheduler_8c.html#a8dc4e2317522bc6d58ac8a66dc236745">00074</a> <span class="keywordtype">void</span> <a class="code" href="os__thread_8h.html#a8dc4e2317522bc6d58ac8a66dc236745">os_kernel_log_init</a>(<span class="keywordtype">void</span>) {
+<a name="l00074"></a><a class="code" href="os__scheduler_8c.html#a8dc4e2317522bc6d58ac8a66dc236745">00074</a> <span class="keywordtype">void</span> <a class="code" href="os__thread_8h.html#a8dc4e2317522bc6d58ac8a66dc236745" title="Initialisiert das Kernel-LOG.">os_kernel_log_init</a>(<span class="keywordtype">void</span>) {
 <a name="l00075"></a>00075     memset(kernel_log, 0, <span class="keyword">sizeof</span>(kernel_log));
 <a name="l00076"></a>00076     <a class="code" href="fifo_8c.html#a125e7099a807c9ec1e62227f84723248">fifo_init</a>(&amp;kernel_log_fifo, kernel_log, <span class="keyword">sizeof</span>(kernel_log));
 <a name="l00077"></a>00077 }
@@ -136,28 +136,28 @@
 <a name="l00088"></a>00088 <span class="preprocessor">static uint32_t first_util_time = 0; </span>
 <a name="l00093"></a><a class="code" href="os__scheduler_8c.html#a04b8344229f191e96270be0ee6c47961">00093</a> <span class="preprocessor">void os_calc_utilization(void) {</span>
 <a name="l00094"></a>00094 <span class="preprocessor"></span>    <span class="keywordflow">if</span> (timer_ms_passed_16(&amp;last_util_time, <a class="code" href="os__scheduler_8c.html#a50c65b2a1d1fb8eb384460cb2f18246e">UTIL_LOG_TIME</a>)) {
-<a name="l00095"></a>00095         <a class="code" href="structos__stat__data__t.html">os_stat_data_t</a> data[<a class="code" href="os__thread_8h.html#a42d66a999c19e795c22714a54fc2b6b2">OS_MAX_THREADS</a>];
+<a name="l00095"></a>00095         <a class="code" href="structos__stat__data__t.html" title="Statistikdaten wie Laufzeit und Anzahl der ueberschrittenen Deadlines.">os_stat_data_t</a> data[<a class="code" href="os__thread_8h.html#a42d66a999c19e795c22714a54fc2b6b2" title="maximale Anzahl an Threads im System">OS_MAX_THREADS</a>];
 <a name="l00096"></a>00096         uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
 <a name="l00097"></a>00097 
 <a name="l00098"></a>00098         <span class="comment">/* Daten aus den TCBs holen */</span>
 <a name="l00099"></a>00099         uint16_t sum = 0;
-<a name="l00100"></a>00100         <a class="code" href="os__thread_8h.html#a29e5f7c4cb7a64b0d9157f2a9efdcdc5">os_enterCS</a>();
-<a name="l00101"></a>00101         <span class="keywordflow">for</span> (i = 0; i &lt; <a class="code" href="os__thread_8h.html#a42d66a999c19e795c22714a54fc2b6b2">OS_MAX_THREADS</a>; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
-<a name="l00102"></a>00102             data[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>] = <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2">os_threads</a>[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structTcb__t.html#adaa0726733fa213b0779f62c21b15421">statistics</a>;
-<a name="l00103"></a>00103             sum += data[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structos__stat__data__t.html#afe27019d2fc769ebcee29dc36c8c6f05">runtime</a>;
-<a name="l00104"></a>00104             <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2">os_threads</a>[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structTcb__t.html#adaa0726733fa213b0779f62c21b15421">statistics</a>.<a class="code" href="structos__stat__data__t.html#afe27019d2fc769ebcee29dc36c8c6f05">runtime</a> = 0;
-<a name="l00105"></a>00105             <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2">os_threads</a>[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structTcb__t.html#adaa0726733fa213b0779f62c21b15421">statistics</a>.<a class="code" href="structos__stat__data__t.html#a9e038c838ca50499ea5918b05b928a0e">missed_deadlines</a> = 0;
+<a name="l00100"></a>00100         <a class="code" href="os__thread_8h.html#a29e5f7c4cb7a64b0d9157f2a9efdcdc5" title="Schuetzt den folgenden Block (bis os_exitCS()) vor Threadswitches.">os_enterCS</a>();
+<a name="l00101"></a>00101         <span class="keywordflow">for</span> (i = 0; i &lt; <a class="code" href="os__thread_8h.html#a42d66a999c19e795c22714a54fc2b6b2" title="maximale Anzahl an Threads im System">OS_MAX_THREADS</a>; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00102"></a>00102             data[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>] = <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structTcb__t.html#adaa0726733fa213b0779f62c21b15421" title="Statistikdaten des Threads.">statistics</a>;
+<a name="l00103"></a>00103             sum += data[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structos__stat__data__t.html#afe27019d2fc769ebcee29dc36c8c6f05" title="Zeit, die der Thread gelaufen ist [176 us].">runtime</a>;
+<a name="l00104"></a>00104             <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structTcb__t.html#adaa0726733fa213b0779f62c21b15421" title="Statistikdaten des Threads.">statistics</a>.<a class="code" href="structos__stat__data__t.html#afe27019d2fc769ebcee29dc36c8c6f05" title="Zeit, die der Thread gelaufen ist [176 us].">runtime</a> = 0;
+<a name="l00105"></a>00105             <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structTcb__t.html#adaa0726733fa213b0779f62c21b15421" title="Statistikdaten des Threads.">statistics</a>.<a class="code" href="structos__stat__data__t.html#a9e038c838ca50499ea5918b05b928a0e" title="Anzahl der Deadlines, die der Thread ueberschritten hat.">missed_deadlines</a> = 0;
 <a name="l00106"></a>00106         }
-<a name="l00107"></a>00107         <a class="code" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1">os_exitCS</a>();
+<a name="l00107"></a>00107         <a class="code" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1" title="Beendet den kritischen Abschnitt wieder, der mit os_enterCS began.">os_exitCS</a>();
 <a name="l00108"></a>00108 
 <a name="l00109"></a>00109         <span class="keywordflow">if</span> (sum == 0) {
 <a name="l00110"></a>00110             <span class="keywordflow">return</span>; <span class="comment">// keine neuen Daten vorhanden</span>
 <a name="l00111"></a>00111         }
 <a name="l00112"></a>00112 
 <a name="l00113"></a>00113         <span class="comment">/* Auslastung in % berechnen */</span>
-<a name="l00114"></a>00114         <span class="keywordflow">for</span> (i = 0; i &lt; <a class="code" href="os__thread_8h.html#a42d66a999c19e795c22714a54fc2b6b2">OS_MAX_THREADS</a>; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
-<a name="l00115"></a>00115             missed_deadlines[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>] += data[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structos__stat__data__t.html#a9e038c838ca50499ea5918b05b928a0e">missed_deadlines</a>;
-<a name="l00116"></a>00116             uint32_t tmp = data[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structos__stat__data__t.html#afe27019d2fc769ebcee29dc36c8c6f05">runtime</a>;
+<a name="l00114"></a>00114         <span class="keywordflow">for</span> (i = 0; i &lt; <a class="code" href="os__thread_8h.html#a42d66a999c19e795c22714a54fc2b6b2" title="maximale Anzahl an Threads im System">OS_MAX_THREADS</a>; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00115"></a>00115             missed_deadlines[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>] += data[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structos__stat__data__t.html#a9e038c838ca50499ea5918b05b928a0e" title="Anzahl der Deadlines, die der Thread ueberschritten hat.">missed_deadlines</a>;
+<a name="l00116"></a>00116             uint32_t tmp = data[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structos__stat__data__t.html#afe27019d2fc769ebcee29dc36c8c6f05" title="Zeit, die der Thread gelaufen ist [176 us].">runtime</a>;
 <a name="l00117"></a>00117             tmp *= 100;
 <a name="l00118"></a>00118             tmp /= sum;
 <a name="l00119"></a>00119             util_data[util_count][<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>] = (uint8_t) tmp;
@@ -169,16 +169,16 @@
 <a name="l00125"></a>00125 
 <a name="l00129"></a><a class="code" href="os__scheduler_8c.html#a8709efbe5b47914a0e4c501f0b786a73">00129</a> <span class="keywordtype">void</span> <a class="code" href="os__scheduler_8h.html#a8709efbe5b47914a0e4c501f0b786a73">os_clear_utilization</a>(<span class="keywordtype">void</span>) {
 <a name="l00130"></a>00130     uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
-<a name="l00131"></a>00131     <a class="code" href="os__thread_8h.html#a29e5f7c4cb7a64b0d9157f2a9efdcdc5">os_enterCS</a>();
-<a name="l00132"></a>00132     <span class="keywordflow">for</span> (i = 0; i &lt; <a class="code" href="os__thread_8h.html#a42d66a999c19e795c22714a54fc2b6b2">OS_MAX_THREADS</a>; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
-<a name="l00133"></a>00133         <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2">os_threads</a>[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structTcb__t.html#adaa0726733fa213b0779f62c21b15421">statistics</a>.<a class="code" href="structos__stat__data__t.html#afe27019d2fc769ebcee29dc36c8c6f05">runtime</a> = 0;
-<a name="l00134"></a>00134         <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2">os_threads</a>[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structTcb__t.html#adaa0726733fa213b0779f62c21b15421">statistics</a>.<a class="code" href="structos__stat__data__t.html#a9e038c838ca50499ea5918b05b928a0e">missed_deadlines</a> = 0;
+<a name="l00131"></a>00131     <a class="code" href="os__thread_8h.html#a29e5f7c4cb7a64b0d9157f2a9efdcdc5" title="Schuetzt den folgenden Block (bis os_exitCS()) vor Threadswitches.">os_enterCS</a>();
+<a name="l00132"></a>00132     <span class="keywordflow">for</span> (i = 0; i &lt; <a class="code" href="os__thread_8h.html#a42d66a999c19e795c22714a54fc2b6b2" title="maximale Anzahl an Threads im System">OS_MAX_THREADS</a>; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00133"></a>00133         <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structTcb__t.html#adaa0726733fa213b0779f62c21b15421" title="Statistikdaten des Threads.">statistics</a>.<a class="code" href="structos__stat__data__t.html#afe27019d2fc769ebcee29dc36c8c6f05" title="Zeit, die der Thread gelaufen ist [176 us].">runtime</a> = 0;
+<a name="l00134"></a>00134         <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structTcb__t.html#adaa0726733fa213b0779f62c21b15421" title="Statistikdaten des Threads.">statistics</a>.<a class="code" href="structos__stat__data__t.html#a9e038c838ca50499ea5918b05b928a0e" title="Anzahl der Deadlines, die der Thread ueberschritten hat.">missed_deadlines</a> = 0;
 <a name="l00135"></a>00135         missed_deadlines[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>] = 0;
 <a name="l00136"></a>00136     }
 <a name="l00137"></a>00137     first_util_time = <a class="code" href="timer_8h.html#ae992a808717a64e585cbc308a1d5950d">TIMER_GET_TICKCOUNT_32</a>;
 <a name="l00138"></a>00138     memset((<span class="keywordtype">void</span> *)idle_counter, 0, <span class="keyword">sizeof</span>(idle_counter));
 <a name="l00139"></a>00139     util_count = 0;
-<a name="l00140"></a>00140     <a class="code" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1">os_exitCS</a>();
+<a name="l00140"></a>00140     <a class="code" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1" title="Beendet den kritischen Abschnitt wieder, der mit os_enterCS began.">os_exitCS</a>();
 <a name="l00141"></a>00141 }
 <a name="l00142"></a>00142 
 <a name="l00146"></a><a class="code" href="os__scheduler_8c.html#aa046ca334425d424f289a93f22df6450">00146</a> <span class="keywordtype">void</span> <a class="code" href="os__scheduler_8h.html#aa046ca334425d424f289a93f22df6450">os_print_utilization</a>(<span class="keywordtype">void</span>) {
@@ -223,7 +223,7 @@
 <a name="l00185"></a>00185 <span class="preprocessor"></span>}
 <a name="l00186"></a>00186 <span class="preprocessor">#endif // MEASURE_UTILIZATION</span>
 <a name="l00187"></a>00187 <span class="preprocessor"></span>
-<a name="l00191"></a><a class="code" href="os__scheduler_8c.html#a8dda67f607bcfb93e71845bb7f7bdfc1">00191</a> <span class="keywordtype">void</span> <a class="code" href="os__thread_8h.html#a011a849badc985823e31fee406aa910a">os_idle</a>(<span class="keywordtype">void</span>) {
+<a name="l00191"></a><a class="code" href="os__scheduler_8c.html#a8dda67f607bcfb93e71845bb7f7bdfc1">00191</a> <span class="keywordtype">void</span> <a class="code" href="os__thread_8h.html#a011a849badc985823e31fee406aa910a" title="Idle-Thread.">os_idle</a>(<span class="keywordtype">void</span>) {
 <a name="l00192"></a>00192     <span class="keywordflow">while</span>(42) {
 <a name="l00193"></a>00193 <span class="preprocessor">#ifndef OS_KERNEL_LOG_AVAILABLE</span>
 <a name="l00194"></a>00194 <span class="preprocessor"></span>        <span class="comment">/* Idle-Counter wird inkrementiert und 3-mal gespeichert.</span>
@@ -255,30 +255,30 @@
 <a name="l00224"></a>00224     <span class="comment">/* Naechsten lauffaehigen Thread mit hoechster Prioritaet suchen.</span>
 <a name="l00225"></a>00225 <span class="comment">     * Das ist zwar in O(n), aber wir haben nur eine sehr beschraenkte Anzahl an Threads! */</span>
 <a name="l00226"></a>00226     uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
-<a name="l00227"></a>00227     <a class="code" href="structTcb__t.html">Tcb_t</a> * ptr = <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2">os_threads</a>;
+<a name="l00227"></a>00227     <a class="code" href="structTcb__t.html" title="TCB eines Threads.">Tcb_t</a> * ptr = <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>;
 <a name="l00228"></a>00228     <span class="comment">// os_scheduling_allowed == 0, sonst waeren wir nicht hier</span>
-<a name="l00229"></a>00229     <span class="keywordflow">for</span> (i = os_scheduling_allowed; i &lt; <a class="code" href="os__thread_8h.html#a42d66a999c19e795c22714a54fc2b6b2">OS_MAX_THREADS</a>; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>, ++ptr) {
-<a name="l00230"></a>00230         <span class="keywordflow">if</span> (ptr-&gt;<a class="code" href="structTcb__t.html#ade8b5375f525850abde33533a020179d">stack</a> != NULL) {
+<a name="l00229"></a>00229     <span class="keywordflow">for</span> (i = os_scheduling_allowed; i &lt; <a class="code" href="os__thread_8h.html#a42d66a999c19e795c22714a54fc2b6b2" title="maximale Anzahl an Threads im System">OS_MAX_THREADS</a>; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>, ++ptr) {
+<a name="l00230"></a>00230         <span class="keywordflow">if</span> (ptr-&gt;<a class="code" href="structTcb__t.html#ade8b5375f525850abde33533a020179d" title="Stack-Pointer.">stack</a> != NULL) {
 <a name="l00231"></a>00231             <span class="comment">/* Es existiert noch ein Thread in der Liste */</span>
-<a name="l00232"></a>00232             <span class="keywordflow">if</span> (ptr-&gt;<a class="code" href="structTcb__t.html#aa17f8203a8bcb6d0037adcdbfceb12f3">wait_for</a>-&gt;<a class="code" href="structos__signal__t.html#a4a6d6e8dc6c5212e819a552b75e6ec7c">value</a> == 0 &amp;&amp; ptr-&gt;<a class="code" href="structTcb__t.html#abb8f825f6c182b894ab714617a78894b">nextSchedule</a> &lt;= tickcount) {
+<a name="l00232"></a>00232             <span class="keywordflow">if</span> (ptr-&gt;<a class="code" href="structTcb__t.html#aa17f8203a8bcb6d0037adcdbfceb12f3" title="Zeiger auf Signal, bis zu dessen Freigabe blockiert wird.">wait_for</a>-&gt;<a class="code" href="structos__signal__t.html#a4a6d6e8dc6c5212e819a552b75e6ec7c" title="Signal-Wert.">value</a> == 0 &amp;&amp; ptr-&gt;<a class="code" href="structTcb__t.html#abb8f825f6c182b894ab714617a78894b" title="Zeitpunkt der naechsten Ausfuehrung.">nextSchedule</a> &lt;= tickcount) {
 <a name="l00233"></a>00233                 <span class="comment">/* Der Thread ist nicht blockiert */</span>
-<a name="l00234"></a>00234                 <span class="keywordflow">if</span> (ptr != <a class="code" href="os__thread_8h.html#aa7c832fad63b24918265cadcd962e5ab">os_thread_running</a>) {
+<a name="l00234"></a>00234                 <span class="keywordflow">if</span> (ptr != <a class="code" href="os__thread_8h.html#aa7c832fad63b24918265cadcd962e5ab" title="Zeiger auf den Thread, der zurzeit laeuft.">os_thread_running</a>) {
 <a name="l00235"></a>00235 <span class="preprocessor">#ifdef OS_KERNEL_LOG_AVAILABLE</span>
 <a name="l00236"></a>00236 <span class="preprocessor"></span>                    <span class="keywordflow">if</span> (kernel_log_on != 0) {
 <a name="l00237"></a>00237                         log_entry.<a class="code" href="structkernel__log__t.html#ab514329323a36a4b3b02abf731e902ba">time</a> = (uint16_t) tickcount;
-<a name="l00238"></a>00238                         log_entry.<a class="code" href="structkernel__log__t.html#a440a3141ab20e6ca78bfb4003c60cf9c">from</a> = (uint8_t) (<a class="code" href="os__thread_8h.html#aa7c832fad63b24918265cadcd962e5ab">os_thread_running</a> - <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2">os_threads</a>);
-<a name="l00239"></a>00239                         log_entry.<a class="code" href="structkernel__log__t.html#a41f7f17614a0bb8596c87793cf6f28b4">to</a> = (uint8_t) (ptr - <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2">os_threads</a>);
+<a name="l00238"></a>00238                         log_entry.<a class="code" href="structkernel__log__t.html#a440a3141ab20e6ca78bfb4003c60cf9c">from</a> = (uint8_t) (<a class="code" href="os__thread_8h.html#aa7c832fad63b24918265cadcd962e5ab" title="Zeiger auf den Thread, der zurzeit laeuft.">os_thread_running</a> - <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>);
+<a name="l00239"></a>00239                         log_entry.<a class="code" href="structkernel__log__t.html#a41f7f17614a0bb8596c87793cf6f28b4">to</a> = (uint8_t) (ptr - <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>);
 <a name="l00240"></a>00240                         <a class="code" href="fifo_8c.html#a7b3f9ad457273c9717bff49113c84250">fifo_put_data</a>(&amp;kernel_log_fifo, &amp;log_entry, <span class="keyword">sizeof</span>(log_entry));
 <a name="l00241"></a>00241                     }
 <a name="l00242"></a>00242 <span class="preprocessor">#endif // OS_KERNEL_LOG_AVAILABLE</span>
 <a name="l00243"></a>00243 <span class="preprocessor"></span>
 <a name="l00244"></a>00244 <span class="preprocessor">#ifdef MEASURE_UTILIZATION</span>
-<a name="l00245"></a>00245 <span class="preprocessor"></span>                    <a class="code" href="os__thread_8h.html#aa7c832fad63b24918265cadcd962e5ab">os_thread_running</a>-&gt;<a class="code" href="structTcb__t.html#adaa0726733fa213b0779f62c21b15421">statistics</a>.<a class="code" href="structos__stat__data__t.html#afe27019d2fc769ebcee29dc36c8c6f05">runtime</a> += (uint16_t) ((uint16_t) tickcount - <a class="code" href="os__thread_8h.html#aa7c832fad63b24918265cadcd962e5ab">os_thread_running</a>-&gt;<a class="code" href="structTcb__t.html#a81c64ef7e0e27dcb5d68e5c19eef39f4">lastSchedule</a>);
+<a name="l00245"></a>00245 <span class="preprocessor"></span>                    <a class="code" href="os__thread_8h.html#aa7c832fad63b24918265cadcd962e5ab" title="Zeiger auf den Thread, der zurzeit laeuft.">os_thread_running</a>-&gt;<a class="code" href="structTcb__t.html#adaa0726733fa213b0779f62c21b15421" title="Statistikdaten des Threads.">statistics</a>.<a class="code" href="structos__stat__data__t.html#afe27019d2fc769ebcee29dc36c8c6f05" title="Zeit, die der Thread gelaufen ist [176 us].">runtime</a> += (uint16_t) ((uint16_t) tickcount - <a class="code" href="os__thread_8h.html#aa7c832fad63b24918265cadcd962e5ab" title="Zeiger auf den Thread, der zurzeit laeuft.">os_thread_running</a>-&gt;<a class="code" href="structTcb__t.html#a81c64ef7e0e27dcb5d68e5c19eef39f4" title="Zeitpunkt der letzten Ausfuehrung, untere 16 Bit.">lastSchedule</a>);
 <a name="l00246"></a>00246 <span class="preprocessor">#endif</span>
 <a name="l00247"></a>00247 <span class="preprocessor"></span>                    <span class="comment">/* switch Thread */</span>
-<a name="l00248"></a>00248                     ptr-&gt;<a class="code" href="structTcb__t.html#a81c64ef7e0e27dcb5d68e5c19eef39f4">lastSchedule</a> = (uint16_t) tickcount;
+<a name="l00248"></a>00248                     ptr-&gt;<a class="code" href="structTcb__t.html#a81c64ef7e0e27dcb5d68e5c19eef39f4" title="Zeitpunkt der letzten Ausfuehrung, untere 16 Bit.">lastSchedule</a> = (uint16_t) tickcount;
 <a name="l00249"></a>00249                     <span class="comment">//-- hier laeuft noch der alte Thread (SP zeigt auf os_thread_running&#39;s Stack) --//</span>
-<a name="l00250"></a>00250                     <a class="code" href="os__thread_8h.html#afa82438e9832609bc5ffbddad166e1b7">os_switch_thread</a>(<a class="code" href="os__thread_8h.html#aa7c832fad63b24918265cadcd962e5ab">os_thread_running</a>, ptr);
+<a name="l00250"></a>00250                     <a class="code" href="os__thread_8h.html#afa82438e9832609bc5ffbddad166e1b7" title="Schaltet &quot;von aussen&quot; auf einen neuen Thread um.">os_switch_thread</a>(<a class="code" href="os__thread_8h.html#aa7c832fad63b24918265cadcd962e5ab" title="Zeiger auf den Thread, der zurzeit laeuft.">os_thread_running</a>, ptr);
 <a name="l00251"></a>00251                     <span class="comment">//-- jetzt laeuft bereits der neue Thread (SP zeigt auf ptr&#39;s Stack) --//</span>
 <a name="l00252"></a>00252                     <span class="comment">// =&gt; return fuehrt den NEUEN Thread weiter aus -&gt; (noch) KEIN Ruecksprung zum Caller</span>
 <a name="l00253"></a>00253                     <span class="keywordflow">break</span>;
@@ -359,8 +359,8 @@
 <a name="l00330"></a>00330     <span class="keyword">extern</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> * __brkval;
 <a name="l00331"></a>00331 
 <a name="l00332"></a>00332     <span class="comment">/* Idle-Thread suchen */</span>
-<a name="l00333"></a>00333     <a class="code" href="structTcb__t.html">Tcb_t</a> * pIdle = <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2">os_threads</a>;
-<a name="l00334"></a>00334     <span class="keywordflow">for</span> (i = 0; i &lt; <a class="code" href="os__thread_8h.html#a42d66a999c19e795c22714a54fc2b6b2">OS_MAX_THREADS</a> - 1; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00333"></a>00333     <a class="code" href="structTcb__t.html" title="TCB eines Threads.">Tcb_t</a> * pIdle = <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>;
+<a name="l00334"></a>00334     <span class="keywordflow">for</span> (i = 0; i &lt; <a class="code" href="os__thread_8h.html#a42d66a999c19e795c22714a54fc2b6b2" title="maximale Anzahl an Threads im System">OS_MAX_THREADS</a> - 1; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
 <a name="l00335"></a>00335         <span class="keywordflow">if</span> ((pIdle + 1)-&gt;stack != NULL) {
 <a name="l00336"></a>00336             pIdle++;
 <a name="l00337"></a>00337         }
@@ -372,14 +372,14 @@
 <a name="l00343"></a>00343     <span class="keywordflow">switch</span> (<a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a>) {
 <a name="l00344"></a>00344     <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a962b5d2df2417b8e1e8462ddbeedf945">RC5_CODE_1</a>:
 <a name="l00345"></a>00345 <span class="preprocessor">#ifdef OS_DEBUG</span>
-<a name="l00346"></a>00346 <span class="preprocessor"></span>        <a class="code" href="os__thread_8c.html#a772b2312a1edbfeeb3e41510b5e62ef9">os_stack_dump</a>(&amp;<a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2">os_threads</a>[0], (<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *) RAMEND, (uint16_t) ((<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *) RAMEND - __brkval));
+<a name="l00346"></a>00346 <span class="preprocessor"></span>        <a class="code" href="os__thread_8c.html#a772b2312a1edbfeeb3e41510b5e62ef9">os_stack_dump</a>(&amp;<a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>[0], (<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *) RAMEND, (uint16_t) ((<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *) RAMEND - __brkval));
 <a name="l00347"></a>00347 <span class="preprocessor">#endif</span>
 <a name="l00348"></a>00348 <span class="preprocessor"></span>        <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0;
 <a name="l00349"></a>00349         <span class="keywordflow">break</span>;
 <a name="l00350"></a>00350 
 <a name="l00351"></a>00351     <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a0f01a76145d0c1340231733d7721a7f9">RC5_CODE_2</a>:
 <a name="l00352"></a>00352 <span class="preprocessor">#ifdef OS_DEBUG</span>
-<a name="l00353"></a>00353 <span class="preprocessor"></span>        <a class="code" href="os__thread_8c.html#a772b2312a1edbfeeb3e41510b5e62ef9">os_stack_dump</a>(pIdle, &amp;<a class="code" href="os__thread_8h.html#a577438ea72f5dcbdff5b1cc72d231440">os_idle_stack</a>[<a class="code" href="os__thread_8h.html#aa6afdd19d3022d101b8fc9942bb8422b">OS_IDLE_STACKSIZE</a> - 1], <a class="code" href="os__thread_8h.html#aa6afdd19d3022d101b8fc9942bb8422b">OS_IDLE_STACKSIZE</a>);
+<a name="l00353"></a>00353 <span class="preprocessor"></span>        <a class="code" href="os__thread_8c.html#a772b2312a1edbfeeb3e41510b5e62ef9">os_stack_dump</a>(pIdle, &amp;<a class="code" href="os__thread_8h.html#a577438ea72f5dcbdff5b1cc72d231440" title="Stack des Idle-Threads.">os_idle_stack</a>[<a class="code" href="os__thread_8h.html#aa6afdd19d3022d101b8fc9942bb8422b" title="Groesse des Idle-Stacks [Byte].">OS_IDLE_STACKSIZE</a> - 1], <a class="code" href="os__thread_8h.html#aa6afdd19d3022d101b8fc9942bb8422b" title="Groesse des Idle-Stacks [Byte].">OS_IDLE_STACKSIZE</a>);
 <a name="l00354"></a>00354 <span class="preprocessor">#endif</span>
 <a name="l00355"></a>00355 <span class="preprocessor"></span>        <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0;
 <a name="l00356"></a>00356         <span class="keywordflow">break</span>;
@@ -387,7 +387,7 @@
 <a name="l00358"></a>00358 <span class="preprocessor">#ifdef MAP_AVAILABLE</span>
 <a name="l00359"></a>00359 <span class="preprocessor"></span>    <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#aab39f90ee1e4df0d5b0a02959ccc3420">RC5_CODE_3</a>:
 <a name="l00360"></a>00360 <span class="preprocessor">#ifdef OS_DEBUG</span>
-<a name="l00361"></a>00361 <span class="preprocessor"></span>        <a class="code" href="os__thread_8c.html#a772b2312a1edbfeeb3e41510b5e62ef9">os_stack_dump</a>(&amp;<a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2">os_threads</a>[1], &amp;<a class="code" href="map_8c.html#ae2473394585d550bf87236464d4ba651">map_update_stack</a>[<a class="code" href="map_8h.html#a196f0c8d55fc38643b03b3ef2d763a29">MAP_UPDATE_STACK_SIZE</a> - 1], <a class="code" href="map_8h.html#a196f0c8d55fc38643b03b3ef2d763a29">MAP_UPDATE_STACK_SIZE</a>);
+<a name="l00361"></a>00361 <span class="preprocessor"></span>        <a class="code" href="os__thread_8c.html#a772b2312a1edbfeeb3e41510b5e62ef9">os_stack_dump</a>(&amp;<a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>[1], &amp;<a class="code" href="map_8c.html#ae2473394585d550bf87236464d4ba651" title="Stack des Update-Threads.">map_update_stack</a>[<a class="code" href="map_8h.html#a196f0c8d55fc38643b03b3ef2d763a29" title="Groesse des Stacks, der das Map-Update ausfuehrt [Byte].">MAP_UPDATE_STACK_SIZE</a> - 1], <a class="code" href="map_8h.html#a196f0c8d55fc38643b03b3ef2d763a29" title="Groesse des Stacks, der das Map-Update ausfuehrt [Byte].">MAP_UPDATE_STACK_SIZE</a>);
 <a name="l00362"></a>00362 <span class="preprocessor">#endif</span>
 <a name="l00363"></a>00363 <span class="preprocessor"></span>        <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0;
 <a name="l00364"></a>00364         <span class="keywordflow">break</span>;
@@ -412,9 +412,9 @@
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:04 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:09 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

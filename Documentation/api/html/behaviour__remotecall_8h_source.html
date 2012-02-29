@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: behaviour_remotecall.h Quellcode</title>
+<title>c&#39;t-Bot: behaviour_remotecall.h Quellcode</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -52,8 +52,8 @@
   </div>
   <div id="nav-path" class="navpath">
     <ul>
-      <li class="navelem"><a class="el" href="dir_a0fca93e65e0dd30a74a1e6addb2ee0e.html">include</a>      </li>
-      <li class="navelem"><a class="el" href="dir_5c55cd21629be826c7b7fde3f3ac88dc.html">bot-logic</a>      </li>
+      <li class="navelem"><a class="el" href="dir_9d1e0dccf1391b04e9e09a3367003bd7.html">include</a>      </li>
+      <li class="navelem"><a class="el" href="dir_12aaf46a9c52378fda4839f850437abb.html">bot-logic</a>      </li>
     </ul>
   </div>
 </div>
@@ -99,7 +99,7 @@
 <a name="l00045"></a><a class="code" href="structPACKED.html#a424dffa6cdb1b209b1e5428d3cc505a0">00045</a>    <a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * (* func) (<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> *, ...);         
 <a name="l00046"></a>00046 } <a class="code" href="structPACKED.html" title="FAT.">PACKED</a> remotecall_entry_t;
 <a name="l00047"></a>00047 
-<a name="l00049"></a>00049 <span class="keyword">typedef</span> <span class="keyword">union </span>{
+<a name="l00049"></a><a class="code" href="unionremote__call__data__t.html">00049</a> <span class="keyword">typedef</span> <span class="keyword">union </span>{
 <a name="l00050"></a><a class="code" href="unionremote__call__data__t.html#a0366901b0aa01efdb0092c161f0560fe">00050</a>     uint32_t <a class="code" href="unionremote__call__data__t.html#a0366901b0aa01efdb0092c161f0560fe" title="32 Bit unsigned integer">u32</a>;   
 <a name="l00051"></a><a class="code" href="unionremote__call__data__t.html#ab6b6088898fccaef13e00d97051d38ad">00051</a>     int32_t <a class="code" href="unionremote__call__data__t.html#ab6b6088898fccaef13e00d97051d38ad" title="32 Bit signed integer">s32</a>;    
 <a name="l00052"></a><a class="code" href="unionremote__call__data__t.html#aad2504577bd32ec8b3799ad00a4cd709">00052</a>     <span class="keywordtype">float</span> <a class="code" href="unionremote__call__data__t.html#aad2504577bd32ec8b3799ad00a4cd709" title="32 Bit float">fl32</a>;     
@@ -121,17 +121,19 @@
 <a name="l00089"></a>00089 
 <a name="l00093"></a>00093 <span class="keywordtype">void</span> <a class="code" href="behaviour__remotecall_8c.html#a6e58a88e7c3aaf40d4f78c9f5c14653b" title="Listet alle verfuegbaren Remote-Calls auf und verschickt sie als einzelne Kommandos.">bot_remotecall_list</a>(<span class="keywordtype">void</span>);
 <a name="l00094"></a>00094 
-<a name="l00098"></a>00098 <span class="keywordtype">void</span> <a class="code" href="behaviour__remotecall_8c.html#a87897b1c6fabd2a2eed86be52afa8948" title="Displayhandler fuer RemoteCall-Display.">remotecall_display</a>(<span class="keywordtype">void</span>);
-<a name="l00099"></a>00099 <span class="preprocessor">#endif // BEHAVIOUR_REMOTECALL_AVAILABLE</span>
-<a name="l00100"></a>00100 <span class="preprocessor"></span><span class="preprocessor">#endif // BEHAVIOUR_REMOTECALL_H_</span>
+<a name="l00100"></a>00100 uint8_t <a class="code" href="behaviour__remotecall_8c.html#a21a28f702e176f3d2bc47fd5eda02f55" title="Sucht den Index des Remote-Calls heraus.">get_remotecall_id</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * call);
+<a name="l00101"></a>00101 
+<a name="l00105"></a>00105 <span class="keywordtype">void</span> <a class="code" href="behaviour__remotecall_8c.html#a87897b1c6fabd2a2eed86be52afa8948" title="Displayhandler fuer RemoteCall-Display.">remotecall_display</a>(<span class="keywordtype">void</span>);
+<a name="l00106"></a>00106 <span class="preprocessor">#endif // BEHAVIOUR_REMOTECALL_AVAILABLE</span>
+<a name="l00107"></a>00107 <span class="preprocessor"></span><span class="preprocessor">#endif // BEHAVIOUR_REMOTECALL_H_</span>
 </pre></div></div>
 </div>
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:03 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:08 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

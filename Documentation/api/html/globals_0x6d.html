@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: Datei-Elemente</title>
+<title>c&#39;t-Bot: Datei-Elemente</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -56,6 +56,7 @@
       <li><a href="globals_func.html"><span>Funktionen</span></a></li>
       <li><a href="globals_vars.html"><span>Variablen</span></a></li>
       <li><a href="globals_type.html"><span>Typdefinitionen</span></a></li>
+      <li><a href="globals_enum.html"><span>Aufzählungen</span></a></li>
       <li><a href="globals_eval.html"><span>Aufzählungswerte</span></a></li>
       <li><a href="globals_defs.html"><span>Makrodefinitionen</span></a></li>
     </ul>
@@ -144,15 +145,8 @@
 <li>MAP_ALIGNMENT_MASK
 : <a class="el" href="map_8c.html#ac167c2691db71eec92db78befc180561">map.c</a>
 </li>
-<li>MAP_AVAILABLE
-: <a class="el" href="ct-Bot_8h.html#afe46fcf82b5569d67badef89fb33349d">ct-Bot.h</a>
-</li>
 <li>map_buffer
 : <a class="el" href="map_8c.html#ae8fd74da18f8e9ed7d1bc2947910c1a9">map.c</a>
-</li>
-<li>map_buffer_signal
-: <a class="el" href="map_8c.html#aad95d597cc403aa16bc3aa943573506b">map.c</a>
-, <a class="el" href="map_8h.html#aad95d597cc403aa16bc3aa943573506b">map.h</a>
 </li>
 <li>MAP_CELL_SIZE_LOWRES
 : <a class="el" href="behaviour__pathplaning_8c.html#af03ef26f4a86841837ef3d8d20edb96f">behaviour_pathplaning.c</a>
@@ -160,6 +154,9 @@
 <li>map_clean()
 : <a class="el" href="map_8c.html#a9fcb3e8cab2c303938256be366401bca">map.c</a>
 , <a class="el" href="map_8h.html#a9fcb3e8cab2c303938256be366401bca">map.h</a>
+</li>
+<li>MAP_CLEAR_ON_INIT
+: <a class="el" href="map_8h.html#add058c45008ab8d06a8bdea6d9fd245a">map.h</a>
 </li>
 <li>map_current_block
 : <a class="el" href="map_8c.html#af12ac4891a972b87ae08a02f6aaf0382">map.c</a>
@@ -172,12 +169,12 @@
 , <a class="el" href="map_8h.html#a6107742a7ebd05ba94049c073bc81499">map.h</a>
 </li>
 <li>map_draw_line()
-: <a class="el" href="map_8h.html#ac2cc78e9d8a4f1aacb8e60a1a9d32440">map.h</a>
-, <a class="el" href="map_8c.html#ac2cc78e9d8a4f1aacb8e60a1a9d32440">map.c</a>
+: <a class="el" href="map_8c.html#ac2cc78e9d8a4f1aacb8e60a1a9d32440">map.c</a>
+, <a class="el" href="map_8h.html#ac2cc78e9d8a4f1aacb8e60a1a9d32440">map.h</a>
 </li>
 <li>map_draw_line_world()
-: <a class="el" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df">map.c</a>
-, <a class="el" href="map_8h.html#a273efe11a8336c9363ce325fb161e4df">map.h</a>
+: <a class="el" href="map_8h.html#a273efe11a8336c9363ce325fb161e4df">map.h</a>
+, <a class="el" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df">map.c</a>
 </li>
 <li>map_draw_rect()
 : <a class="el" href="map_8c.html#af260338d7eec0f25c8110086c5a7d886">map.c</a>
@@ -189,6 +186,9 @@
 <li>map_file
 : <a class="el" href="map_8c.html#af31b8470f92b2d234cf0d05300859ba1">map.c</a>
 , <a class="el" href="map_8h.html#af31b8470f92b2d234cf0d05300859ba1">map.h</a>
+</li>
+<li>MAP_FILE_ALIGNMENT
+: <a class="el" href="map_8c.html#ae98eaa54b0c14a391b8ebdc50e3e0cdf">map.c</a>
 </li>
 <li>MAP_FILE_SIZE
 : <a class="el" href="map_8c.html#a4bb9f46211250c3f5f3a45ce38e32fbc">map.c</a>
@@ -232,6 +232,9 @@
 </li>
 <li>MAP_LENGTH_LOWRES
 : <a class="el" href="behaviour__pathplaning_8c.html#a6f1dc5bd299de24bc21a8730b35a432f">behaviour_pathplaning.c</a>
+</li>
+<li>map_load_from_file()
+: <a class="el" href="map_8h.html#a5d4f2636575a2238c52f971204fe2ba3">map.h</a>
 </li>
 <li>map_locked()
 : <a class="el" href="map_8c.html#aee723500f07bef9ecc88712b8deb792a">map.c</a>
@@ -290,6 +293,9 @@
 </li>
 <li>MAP_RESOLUTION_LOWRES
 : <a class="el" href="behaviour__pathplaning_8c.html#a49f4bdfb6721c2bbffe524b80f80ae31">behaviour_pathplaning.c</a>
+</li>
+<li>map_save_to_file()
+: <a class="el" href="map_8h.html#ad88dcd4dbae25109bd8f074f58693eba">map.h</a>
 </li>
 <li>MAP_SCALE
 : <a class="el" href="map_8c.html#a3556d1687a98523bda1a30405c486c77">map.c</a>
@@ -447,9 +453,6 @@
 : <a class="el" href="ct-Bot_8h.html#abc4b095ebbdda642ee350f8e4ec0a994">ct-Bot.h</a>
 , <a class="el" href="global_8h.html#abc4b095ebbdda642ee350f8e4ec0a994">global.h</a>
 </li>
-<li>MEASURE_COUPLED_AVAILABLE
-: <a class="el" href="ct-Bot_8h.html#a352ee1d08d09ab36ca4dce1a35c3c24c">ct-Bot.h</a>
-</li>
 <li>MEASURE_DIST_STATE
 : <a class="el" href="behaviour__goto__obstacle_8c.html#a057fcd1508a6976a3af2b2fb21e9ffce">behaviour_goto_obstacle.c</a>
 </li>
@@ -458,9 +461,6 @@
 </li>
 <li>MEASURE_MOUSE_AVAILABLE
 : <a class="el" href="ct-Bot_8h.html#ace574534518d156f7509704d0e5fedf0">ct-Bot.h</a>
-</li>
-<li>MEASURE_POSITION_ERRORS_AVAILABLE
-: <a class="el" href="ct-Bot_8h.html#a0377edd1111eb26dd98cc91751ce126c">ct-Bot.h</a>
 </li>
 <li>MEASURE_RIGHT
 : <a class="el" href="behaviour__solve__maze_8c.html#a3eb09f2f54d67b857bfb79ae4ecb2864">behaviour_solve_maze.c</a>
@@ -480,16 +480,13 @@
 <li>MMC_AGGRESSIVE_OPTIMIZATION
 : <a class="el" href="mmc_8h.html#ac99ae94be86e1333365b591928caa0c0">mmc.h</a>
 </li>
-<li>MMC_AVAILABLE
-: <a class="el" href="ct-Bot_8h.html#a4c286edc04552a5baeb89356c5457b9a">ct-Bot.h</a>
-</li>
 <li>mmc_buffers
 : <a class="el" href="init_8c.html#ad6a7fd4acfb7e1e62b187dcf91ac0ef8">init.c</a>
 , <a class="el" href="init_8h.html#ad6a7fd4acfb7e1e62b187dcf91ac0ef8">init.h</a>
 </li>
 <li>mmc_clear_file()
-: <a class="el" href="mmc-vm_8h.html#a8908f63f68b42f875acc159be8f97160">mmc-vm.h</a>
-, <a class="el" href="mmc-vm_8c.html#a8908f63f68b42f875acc159be8f97160">mmc-vm.c</a>
+: <a class="el" href="mmc-vm_8c.html#a8908f63f68b42f875acc159be8f97160">mmc-vm.c</a>
+, <a class="el" href="mmc-vm_8h.html#a8908f63f68b42f875acc159be8f97160">mmc-vm.h</a>
 </li>
 <li>MMC_CLK_DDR
 : <a class="el" href="mmc-low_8h.html#a1caca2cc22bf414cd3aec841bc7b4120">mmc-low.h</a>
@@ -524,16 +521,16 @@
 , <a class="el" href="mmc-emu__pc_8c.html#af67c266cc616cbff8381b363cad2e274">mmc-emu_pc.c</a>
 </li>
 <li>mmc_emu_get_init_state()
-: <a class="el" href="mmc-emu__pc_8c.html#a9713f38ad215f9fa39949a6f068f2b7d">mmc-emu_pc.c</a>
-, <a class="el" href="mmc-emu_8h.html#a9713f38ad215f9fa39949a6f068f2b7d">mmc-emu.h</a>
+: <a class="el" href="mmc-emu_8h.html#a9713f38ad215f9fa39949a6f068f2b7d">mmc-emu.h</a>
+, <a class="el" href="mmc-emu__pc_8c.html#a9713f38ad215f9fa39949a6f068f2b7d">mmc-emu_pc.c</a>
 </li>
 <li>mmc_emu_get_size()
-: <a class="el" href="mmc-emu_8h.html#a4210b74e60ef7cd34612dadb6a197090">mmc-emu.h</a>
-, <a class="el" href="mmc-emu__pc_8c.html#a4210b74e60ef7cd34612dadb6a197090">mmc-emu_pc.c</a>
+: <a class="el" href="mmc-emu__pc_8c.html#a4210b74e60ef7cd34612dadb6a197090">mmc-emu_pc.c</a>
+, <a class="el" href="mmc-emu_8h.html#a4210b74e60ef7cd34612dadb6a197090">mmc-emu.h</a>
 </li>
 <li>mmc_emu_init()
-: <a class="el" href="mmc-emu__pc_8c.html#ab4fc9f8caf4c79352cb259ef70b06d38">mmc-emu_pc.c</a>
-, <a class="el" href="mmc-emu_8h.html#ab4fc9f8caf4c79352cb259ef70b06d38">mmc-emu.h</a>
+: <a class="el" href="mmc-emu_8h.html#ab4fc9f8caf4c79352cb259ef70b06d38">mmc-emu.h</a>
+, <a class="el" href="mmc-emu__pc_8c.html#ab4fc9f8caf4c79352cb259ef70b06d38">mmc-emu_pc.c</a>
 </li>
 <li>mmc_emu_init_state
 : <a class="el" href="mmc-emu__pc_8c.html#ab556732257bac022d7b12ab5b88b296b">mmc-emu_pc.c</a>
@@ -546,8 +543,8 @@
 : <a class="el" href="mmc-emu_8h.html#a052f952cf4d8df3eb662c89ba4efe665">mmc-emu.h</a>
 </li>
 <li>mmc_emu_test()
-: <a class="el" href="mmc-emu_8h.html#a45b6d2d38a37d8d929ed6b9233e18fe7">mmc-emu.h</a>
-, <a class="el" href="mmc-emu__pc_8c.html#a45b6d2d38a37d8d929ed6b9233e18fe7">mmc-emu_pc.c</a>
+: <a class="el" href="mmc-emu__pc_8c.html#a45b6d2d38a37d8d929ed6b9233e18fe7">mmc-emu_pc.c</a>
+, <a class="el" href="mmc-emu_8h.html#a45b6d2d38a37d8d929ed6b9233e18fe7">mmc-emu.h</a>
 </li>
 <li>mmc_emu_write_sector()
 : <a class="el" href="mmc-emu_8h.html#aed8e37da5218bc86881ddc1474ac7c43">mmc-emu.h</a>
@@ -597,8 +594,8 @@
 , <a class="el" href="mmc_8h.html#affe9a50ec46df6b49325669ec060789e">mmc.h</a>
 </li>
 <li>mmc_page_write_back()
-: <a class="el" href="mmc-vm_8h.html#ad887d55b9fc46765a33062d0b9844672">mmc-vm.h</a>
-, <a class="el" href="mmc-vm_8c.html#ad887d55b9fc46765a33062d0b9844672">mmc-vm.c</a>
+: <a class="el" href="mmc-vm_8c.html#ad887d55b9fc46765a33062d0b9844672">mmc-vm.c</a>
+, <a class="el" href="mmc-vm_8h.html#ad887d55b9fc46765a33062d0b9844672">mmc-vm.h</a>
 </li>
 <li>MMC_PORT_IN
 : <a class="el" href="mmc-low_8h.html#acafa7d692af1e4c7664bbd906efad4a4">mmc-low.h</a>
@@ -628,9 +625,6 @@
 <li>MMC_TIMEOUT
 : <a class="el" href="mmc-low_8h.html#abecee47f83881b14725d09934ca8e49e">mmc-low.h</a>
 </li>
-<li>MMC_VM_AVAILABLE
-: <a class="el" href="ct-Bot_8h.html#ae1c19e25d4715b2ea6ff3f279f2a729d">ct-Bot.h</a>
-</li>
 <li>mmc_write_byte
 : <a class="el" href="mmc_8c.html#a33b293aa95d995d8903d5a687cb5e2a7">mmc.c</a>
 </li>
@@ -638,8 +632,8 @@
 : <a class="el" href="mmc_8h.html#a8b7742b9c060af7db1aa56e1d9676918">mmc.h</a>
 </li>
 <li>mmc_write_sector_spi()
-: <a class="el" href="mmc_8c.html#a4cc054aa8ca060c526f00bf179d9db38">mmc.c</a>
-, <a class="el" href="mmc_8h.html#a4cc054aa8ca060c526f00bf179d9db38">mmc.h</a>
+: <a class="el" href="mmc_8h.html#a4cc054aa8ca060c526f00bf179d9db38">mmc.h</a>
+, <a class="el" href="mmc_8c.html#a4cc054aa8ca060c526f00bf179d9db38">mmc.c</a>
 </li>
 <li>mmcalloc()
 : <a class="el" href="mmc-vm_8h.html#a451514920748291271c1ee5f671f5503">mmc-vm.h</a>
@@ -649,34 +643,31 @@
 : <a class="el" href="behaviour__goto_8c.html#a743cf751a90efcdddfe5f5a866eada2e">behaviour_goto.c</a>
 </li>
 <li>motor_init()
-: <a class="el" href="motor_8c.html#aa2a5af0fb9c1fa2047a5ca0af110f806">motor.c</a>
-, <a class="el" href="motor_8h.html#aa2a5af0fb9c1fa2047a5ca0af110f806">motor.h</a>
+: <a class="el" href="motor_8h.html#aa2a5af0fb9c1fa2047a5ca0af110f806">motor.h</a>
+, <a class="el" href="motor_8c.html#aa2a5af0fb9c1fa2047a5ca0af110f806">motor.c</a>
 </li>
 <li>motor_left
-: <a class="el" href="motor-low__pc_8c.html#a878e16240740a521fd0224f33c5570e6">motor-low_pc.c</a>
+: <a class="el" href="motor_8h.html#a878e16240740a521fd0224f33c5570e6">motor.h</a>
 , <a class="el" href="motor-low_8c.html#a878e16240740a521fd0224f33c5570e6">motor-low.c</a>
-, <a class="el" href="motor_8h.html#a878e16240740a521fd0224f33c5570e6">motor.h</a>
+, <a class="el" href="motor-low__pc_8c.html#a878e16240740a521fd0224f33c5570e6">motor-low_pc.c</a>
 </li>
 <li>motor_low_init()
-: <a class="el" href="motor-low__pc_8c.html#ad3746b7e96a42cf8d606c7bccb6bb260">motor-low_pc.c</a>
-, <a class="el" href="motor-low_8c.html#ad3746b7e96a42cf8d606c7bccb6bb260">motor-low.c</a>
+: <a class="el" href="motor-low_8c.html#ad3746b7e96a42cf8d606c7bccb6bb260">motor-low.c</a>
 , <a class="el" href="motor-low_8h.html#aa757a45f2c6ae11e9fab13010d9ac432">motor-low.h</a>
+, <a class="el" href="motor-low__pc_8c.html#ad3746b7e96a42cf8d606c7bccb6bb260">motor-low_pc.c</a>
 </li>
 <li>motor_right
-: <a class="el" href="motor-low__pc_8c.html#a18ee6f467af5eddad0fb19b3dd274917">motor-low_pc.c</a>
-, <a class="el" href="motor_8h.html#a18ee6f467af5eddad0fb19b3dd274917">motor.h</a>
+: <a class="el" href="motor_8h.html#a18ee6f467af5eddad0fb19b3dd274917">motor.h</a>
+, <a class="el" href="motor-low__pc_8c.html#a18ee6f467af5eddad0fb19b3dd274917">motor-low_pc.c</a>
 , <a class="el" href="motor-low_8c.html#a18ee6f467af5eddad0fb19b3dd274917">motor-low.c</a>
 </li>
 <li>motor_set()
-: <a class="el" href="motor_8c.html#a7d55b2e4a37c91e150513b2c87577750">motor.c</a>
-, <a class="el" href="motor_8h.html#a7d55b2e4a37c91e150513b2c87577750">motor.h</a>
+: <a class="el" href="motor_8h.html#a7d55b2e4a37c91e150513b2c87577750">motor.h</a>
+, <a class="el" href="motor_8c.html#a7d55b2e4a37c91e150513b2c87577750">motor.c</a>
 </li>
 <li>motor_update()
 : <a class="el" href="motor-low_8c.html#af288dee5f55b67d9eaf1d6e180bfd121">motor-low.c</a>
 , <a class="el" href="motor-low_8h.html#af288dee5f55b67d9eaf1d6e180bfd121">motor-low.h</a>
-</li>
-<li>MOUSE_AVAILABLE
-: <a class="el" href="ct-Bot_8h.html#a7fdefd60fb1f38a4b0ebe47efdf77d86">ct-Bot.h</a>
 </li>
 <li>MOUSE_CFG_FORCEAWAKE
 : <a class="el" href="mouse_8h.html#a43a75ec756d84a108cfab5a5ea7aa9c7">mouse.h</a>
@@ -709,9 +700,9 @@
 : <a class="el" href="bot-local_8h.html#abec20a794100004d6b29f92f5acf3f79">bot-local.h</a>
 </li>
 <li>mouse_get_squal()
-: <a class="el" href="mouse_8h.html#af36f291b20658b28859795dca3ada035">mouse.h</a>
+: <a class="el" href="mouse_8c.html#af36f291b20658b28859795dca3ada035">mouse.c</a>
 , <a class="el" href="mouse__pc_8c.html#af36f291b20658b28859795dca3ada035">mouse_pc.c</a>
-, <a class="el" href="mouse_8c.html#af36f291b20658b28859795dca3ada035">mouse.c</a>
+, <a class="el" href="mouse_8h.html#af36f291b20658b28859795dca3ada035">mouse.h</a>
 </li>
 <li>MOUSE_INVERSE_PRODUCT_ID_REG
 : <a class="el" href="mouse_8h.html#a40ad3e6b528cc58d96b4ceb19539cc7e">mouse.h</a>
@@ -748,8 +739,8 @@
 </li>
 <li>mouse_sens_init()
 : <a class="el" href="mouse_8h.html#afa9f6222385b98b8bab5e7acf606b69a">mouse.h</a>
-, <a class="el" href="mouse_8c.html#afa9f6222385b98b8bab5e7acf606b69a">mouse.c</a>
 , <a class="el" href="mouse__pc_8c.html#afa9f6222385b98b8bab5e7acf606b69a">mouse_pc.c</a>
+, <a class="el" href="mouse_8c.html#afa9f6222385b98b8bab5e7acf606b69a">mouse.c</a>
 </li>
 <li>mouse_sens_read()
 : <a class="el" href="mouse_8h.html#a51b8066f598e2adc8679ddd77f3d1a8b">mouse.h</a>
@@ -773,8 +764,8 @@
 </li>
 <li>mouse_transmit_picture()
 : <a class="el" href="mouse__pc_8c.html#a75e23740c984cb8bfcdd97275c01a69a">mouse_pc.c</a>
-, <a class="el" href="mouse_8h.html#a75e23740c984cb8bfcdd97275c01a69a">mouse.h</a>
 , <a class="el" href="mouse_8c.html#a75e23740c984cb8bfcdd97275c01a69a">mouse.c</a>
+, <a class="el" href="mouse_8h.html#a75e23740c984cb8bfcdd97275c01a69a">mouse.h</a>
 </li>
 <li>MS_TO_TICKS
 : <a class="el" href="timer_8h.html#a73adf9c10352865ff95b5f46e642c560">timer.h</a>
@@ -787,9 +778,9 @@
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:06 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:14 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

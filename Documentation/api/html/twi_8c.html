@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: twi.c-Dateireferenz</title>
+<title>c&#39;t-Bot: twi.c-Dateireferenz</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -52,13 +52,11 @@
   </div>
   <div id="nav-path" class="navpath">
     <ul>
-      <li class="navelem"><a class="el" href="dir_621229fa04310f844660a72d92a68ebe.html">mcu</a>      </li>
+      <li class="navelem"><a class="el" href="dir_f02428e3da713fc394853d6cd2afbcd0.html">mcu</a>      </li>
     </ul>
   </div>
 </div>
 <div class="header">
-  <div class="summary">
-<a href="#func-members">Funktionen</a>  </div>
   <div class="headertitle">
 <div class="title">twi.c-Dateireferenz</div>  </div>
 </div>
@@ -67,76 +65,28 @@
 <p>TWI-Treiber (I2C)  
 <a href="#details">Mehr ...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="ct-Bot_8h_source.html">ct-Bot.h</a>&quot;</code><br/>
-<code>#include &quot;<a class="el" href="twi_8h_source.html">twi.h</a>&quot;</code><br/>
-<code>#include &lt;util/twi.h&gt;</code><br/>
 </div><div class="textblock"><div class="dynheader">
 Include-Abhängigkeitsdiagramm für twi.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="twi_8c__incl.png" border="0" usemap="#twi_8c" alt=""/></div>
 <map name="twi_8c" id="twi_8c">
-</map>
+<area shape="rect" id="node3" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot&#45;Funktionalitaeten" alt="" coords="284,83,351,111"/><area shape="rect" id="node5" href="global_8h.html" title="Allgemeine Definitionen und Datentypen." alt="" coords="232,161,301,189"/><area shape="rect" id="node21" href="bot-local_8h.html" title="Konstanten, die den Bot an reale Umgebungen anpassen." alt="" coords="325,161,411,189"/><area shape="rect" id="node11" href="builtins_8h.html" title="Compiler&#45;Builtins mit Fallback fuer aeltere avr&#45;libc Versionen." alt="" coords="176,238,248,266"/></map>
 </div>
 </div>
 <p><a href="twi_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
-<table class="memberdecls">
-<tr><td colspan="2"><h2><a name="func-members"></a>
-Funktionen</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="twi_8c.html#a6abb3fb5269ea88940402079231142c5">Send_to_TWI</a> (tx_type_t *pData)</td></tr>
-</table>
 <hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
 <div class="textblock"><p>TWI-Treiber (I2C) </p>
 <dl class="author"><dt><b>Autor:</b></dt><dd>Chris efstathiou <a href="mailto:hendrix@otenet.gr">hendrix@otenet.gr</a> &amp; Carsten Giesen (<a href="mailto:info@cnau.de">info@cnau.de</a>) </dd></dl>
 <dl class="date"><dt><b>Datum:</b></dt><dd>08.04.2006 </dd></dl>
 
 <p>Definiert in Datei <a class="el" href="twi_8c_source.html">twi.c</a>.</p>
-</div><hr/><h2>Dokumentation der Funktionen</h2>
-<a class="anchor" id="a6abb3fb5269ea88940402079231142c5"></a><!-- doxytag: member="twi.c::Send_to_TWI" ref="a6abb3fb5269ea88940402079231142c5" args="(tx_type_t *pData)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint8_t Send_to_TWI </td>
-          <td>(</td>
-          <td class="paramtype">tx_type_t *&#160;</td>
-          <td class="paramname"><em>pData</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-<p>Datentransfer per I2C-Bus </p>
-<dl><dt><b>Parameter:</b></dt><dd>
-  <table class="params">
-    <tr><td class="paramname">*pData</td><td>Container mit den Daten fuer den Treiber </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Resultat der Aktion </dd></dl>
-
-<p>Definiert in Zeile <a class="el" href="twi_8c_source.html#l00190">190</a> der Datei <a class="el" href="twi_8c_source.html">twi.c</a>.</p>
-
-<p>Benutzt <a class="el" href="i2c_8c_source.html#l00156">i2c_write_read()</a> und <a class="el" href="i2c_8c_source.html#l00186">i2c_wait()</a>.</p>
-
-<p>Wird benutzt von <a class="el" href="srf10_8c_source.html#l00051">srf10_set_gain()</a>, <a class="el" href="srf10_8c_source.html#l00077">srf10_set_range()</a>, <a class="el" href="srf10_8c_source.html#l00102">srf10_ping()</a> und <a class="el" href="srf10_8c_source.html#l00127">srf10_read_register()</a>.</p>
-
-<p><div class="dynheader">
-Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
-<div class="dyncontent">
-<div class="center"><img src="twi_8c_a6abb3fb5269ea88940402079231142c5_cgraph.png" border="0" usemap="#twi_8c_a6abb3fb5269ea88940402079231142c5_cgraph" alt=""/></div>
-<map name="twi_8c_a6abb3fb5269ea88940402079231142c5_cgraph" id="twi_8c_a6abb3fb5269ea88940402079231142c5_cgraph">
-</map>
-</div>
-</p>
-
-</div>
-</div>
-</div>
+</div></div>
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:06 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:13 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>

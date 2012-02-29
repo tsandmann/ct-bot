@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>c't-Bot: fifo.h Quellcode</title>
+<title>c&#39;t-Bot: fifo.h Quellcode</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -21,8 +21,8 @@
   
   
   <td style="padding-left: 0.5em;">
-   <div id="projectname">c't-Bot
-   &#160;<span id="projectnumber">1818</span>
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
    </div>
    
   </td>
@@ -34,7 +34,7 @@
 </table>
 </div>
 
-<!-- Erzeugt von Doxygen 1.7.5 -->
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
   <div id="navrow1" class="tabs">
     <ul class="tablist">
       <li><a href="index.html"><span>Hauptseite</span></a></li>
@@ -52,7 +52,7 @@
   </div>
   <div id="nav-path" class="navpath">
     <ul>
-      <li class="navelem"><a class="el" href="dir_a0fca93e65e0dd30a74a1e6addb2ee0e.html">include</a>      </li>
+      <li class="navelem"><a class="el" href="dir_9d1e0dccf1391b04e9e09a3367003bd7.html">include</a>      </li>
     </ul>
   </div>
 </div>
@@ -96,7 +96,7 @@
 <a name="l00042"></a>00042 <span class="preprocessor"></span><span class="preprocessor">#define LOG_DEBUG_FIFO LOG_DEBUG</span>
 <a name="l00043"></a>00043 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
 <a name="l00044"></a>00044 <span class="preprocessor"></span>
-<a name="l00046"></a>00046 <span class="keyword">typedef</span> <span class="keyword">struct </span>{
+<a name="l00046"></a><a class="code" href="structfifo__t.html">00046</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>{
 <a name="l00047"></a><a class="code" href="structfifo__t.html#aac8f651266b8b08e968553fbb95307c1">00047</a>     uint8_t <span class="keyword">volatile</span> <a class="code" href="structfifo__t.html#aac8f651266b8b08e968553fbb95307c1">count</a>;     
 <a name="l00048"></a><a class="code" href="structfifo__t.html#a4a82f7fd1625c1abebf4f161120856f0">00048</a>     uint8_t <a class="code" href="structfifo__t.html#a4a82f7fd1625c1abebf4f161120856f0">size</a>;               
 <a name="l00049"></a><a class="code" href="structfifo__t.html#a312105eed789782596a69b57ad61c249">00049</a>     uint8_t * <a class="code" href="structfifo__t.html#a312105eed789782596a69b57ad61c249">pread</a>;            
@@ -105,7 +105,7 @@
 <a name="l00052"></a><a class="code" href="structfifo__t.html#a7dd239249b2326dcdf2850c0abe3390f">00052</a>     uint8_t <a class="code" href="structfifo__t.html#a7dd239249b2326dcdf2850c0abe3390f">write2end</a>;          
 <a name="l00053"></a><a class="code" href="structfifo__t.html#adabdd51b1de24ea1b9e49f8b2e11066f">00053</a>     uint8_t <span class="keyword">volatile</span> <a class="code" href="structfifo__t.html#adabdd51b1de24ea1b9e49f8b2e11066f">overflow</a>;  
 <a name="l00054"></a>00054 <span class="preprocessor">#ifdef OS_AVAILABLE</span>
-<a name="l00055"></a><a class="code" href="structfifo__t.html#a24871be3192a9e6336eee8697d4511b1">00055</a> <span class="preprocessor"></span>    <a class="code" href="structos__signal__t.html">os_signal_t</a> <a class="code" href="structfifo__t.html#a24871be3192a9e6336eee8697d4511b1">signal</a>;         
+<a name="l00055"></a><a class="code" href="structfifo__t.html#a24871be3192a9e6336eee8697d4511b1">00055</a> <span class="preprocessor"></span>    <a class="code" href="structos__signal__t.html" title="Signal-Typ zur Threadsynchronisation.">os_signal_t</a> <a class="code" href="structfifo__t.html#a24871be3192a9e6336eee8697d4511b1">signal</a>;         
 <a name="l00056"></a>00056 <span class="preprocessor">#else</span>
 <a name="l00057"></a>00057 <span class="preprocessor"></span><span class="preprocessor">#ifdef PC</span>
 <a name="l00058"></a>00058 <span class="preprocessor"></span>    <span class="keyword">struct </span>{
@@ -145,13 +145,13 @@
 <a name="l00120"></a>00120 <span class="preprocessor"></span>        uint8_t sreg = SREG;
 <a name="l00121"></a>00121         <a class="code" href="builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2" title="Disables all interrupts by clearing the global interrupt mask.">__builtin_avr_cli</a>();
 <a name="l00122"></a>00122 <span class="preprocessor">#else</span>
-<a name="l00123"></a>00123 <span class="preprocessor"></span>        pthread_mutex_lock(&amp;f-&gt;<a class="code" href="structfifo__t.html#a24871be3192a9e6336eee8697d4511b1">signal</a>.<a class="code" href="structos__signal__t.html#a506b48795ce28840369c6f0b7383b171">mutex</a>);
+<a name="l00123"></a>00123 <span class="preprocessor"></span>        pthread_mutex_lock(&amp;f-&gt;<a class="code" href="structfifo__t.html#a24871be3192a9e6336eee8697d4511b1">signal</a>.<a class="code" href="structos__signal__t.html#a506b48795ce28840369c6f0b7383b171" title="Mutex zur Synchronisation.">mutex</a>);
 <a name="l00124"></a>00124 <span class="preprocessor">#endif</span>
 <a name="l00125"></a>00125 <span class="preprocessor"></span>        f-&gt;<a class="code" href="structfifo__t.html#aac8f651266b8b08e968553fbb95307c1">count</a>++;
 <a name="l00126"></a>00126 <span class="preprocessor">#ifdef MCU</span>
 <a name="l00127"></a>00127 <span class="preprocessor"></span>        SREG = sreg;
 <a name="l00128"></a>00128 <span class="preprocessor">#else</span>
-<a name="l00129"></a>00129 <span class="preprocessor"></span>        pthread_mutex_unlock(&amp;f-&gt;<a class="code" href="structfifo__t.html#a24871be3192a9e6336eee8697d4511b1">signal</a>.<a class="code" href="structos__signal__t.html#a506b48795ce28840369c6f0b7383b171">mutex</a>);
+<a name="l00129"></a>00129 <span class="preprocessor"></span>        pthread_mutex_unlock(&amp;f-&gt;<a class="code" href="structfifo__t.html#a24871be3192a9e6336eee8697d4511b1">signal</a>.<a class="code" href="structos__signal__t.html#a506b48795ce28840369c6f0b7383b171" title="Mutex zur Synchronisation.">mutex</a>);
 <a name="l00130"></a>00130 <span class="preprocessor">#endif</span>
 <a name="l00131"></a>00131 <span class="preprocessor"></span><span class="preprocessor">#ifdef OS_AVAILABLE</span>
 <a name="l00132"></a>00132 <span class="preprocessor"></span>        <span class="comment">/* Consumer aufwecken */</span>
@@ -168,7 +168,7 @@
 <a name="l00150"></a>00150             <span class="comment">/* blockieren */</span>
 <a name="l00151"></a>00151             <a class="code" href="fifo_8h.html#a852f4c75288e4a43cf66e3944a6cff9e">LOG_DEBUG_FIFO</a>(<span class="stringliteral">&quot;Fifo 0x%08x ist leer, blockiere&quot;</span>, f);
 <a name="l00152"></a>00152             <a class="code" href="os__thread__pc_8c.html#ae59b1320daae9dc263c512b326e91c00">os_signal_lock</a>(&amp;f-&gt;<a class="code" href="structfifo__t.html#a24871be3192a9e6336eee8697d4511b1">signal</a>);
-<a name="l00153"></a>00153             <a class="code" href="os__thread_8h.html#aa62b6d29ae00ff288fd8969807a62b06">os_signal_set</a>(&amp;f-&gt;<a class="code" href="structfifo__t.html#a24871be3192a9e6336eee8697d4511b1">signal</a>);
+<a name="l00153"></a>00153             <a class="code" href="os__thread_8h.html#aa62b6d29ae00ff288fd8969807a62b06" title="Blockiert den aktuellen Thread, bis ein Signal freigegeben wird.">os_signal_set</a>(&amp;f-&gt;<a class="code" href="structfifo__t.html#a24871be3192a9e6336eee8697d4511b1">signal</a>);
 <a name="l00154"></a>00154             <a class="code" href="fifo_8h.html#a852f4c75288e4a43cf66e3944a6cff9e">LOG_DEBUG_FIFO</a>(<span class="stringliteral">&quot;Fifo 0x%08x enthaelt wieder Daten, weiter geht&#39;s&quot;</span>, f);
 <a name="l00155"></a>00155             <a class="code" href="os__thread__pc_8c.html#a6fad7ee5233ef39834eb7afc437b0105">os_signal_release</a>(&amp;f-&gt;<a class="code" href="structfifo__t.html#a24871be3192a9e6336eee8697d4511b1">signal</a>);
 <a name="l00156"></a>00156         }
@@ -193,13 +193,13 @@
 <a name="l00175"></a>00175 <span class="preprocessor"></span>        uint8_t sreg = SREG;
 <a name="l00176"></a>00176         <a class="code" href="builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2" title="Disables all interrupts by clearing the global interrupt mask.">__builtin_avr_cli</a>();
 <a name="l00177"></a>00177 <span class="preprocessor">#else</span>
-<a name="l00178"></a>00178 <span class="preprocessor"></span>        pthread_mutex_lock(&amp;f-&gt;<a class="code" href="structfifo__t.html#a24871be3192a9e6336eee8697d4511b1">signal</a>.<a class="code" href="structos__signal__t.html#a506b48795ce28840369c6f0b7383b171">mutex</a>);
+<a name="l00178"></a>00178 <span class="preprocessor"></span>        pthread_mutex_lock(&amp;f-&gt;<a class="code" href="structfifo__t.html#a24871be3192a9e6336eee8697d4511b1">signal</a>.<a class="code" href="structos__signal__t.html#a506b48795ce28840369c6f0b7383b171" title="Mutex zur Synchronisation.">mutex</a>);
 <a name="l00179"></a>00179 <span class="preprocessor">#endif</span>
 <a name="l00180"></a>00180 <span class="preprocessor"></span>        f-&gt;<a class="code" href="structfifo__t.html#aac8f651266b8b08e968553fbb95307c1">count</a>--;
 <a name="l00181"></a>00181 <span class="preprocessor">#ifdef MCU</span>
 <a name="l00182"></a>00182 <span class="preprocessor"></span>        SREG = sreg;
 <a name="l00183"></a>00183 <span class="preprocessor">#else</span>
-<a name="l00184"></a>00184 <span class="preprocessor"></span>        pthread_mutex_unlock(&amp;f-&gt;<a class="code" href="structfifo__t.html#a24871be3192a9e6336eee8697d4511b1">signal</a>.<a class="code" href="structos__signal__t.html#a506b48795ce28840369c6f0b7383b171">mutex</a>);
+<a name="l00184"></a>00184 <span class="preprocessor"></span>        pthread_mutex_unlock(&amp;f-&gt;<a class="code" href="structfifo__t.html#a24871be3192a9e6336eee8697d4511b1">signal</a>.<a class="code" href="structos__signal__t.html#a506b48795ce28840369c6f0b7383b171" title="Mutex zur Synchronisation.">mutex</a>);
 <a name="l00185"></a>00185 <span class="preprocessor">#endif</span>
 <a name="l00186"></a>00186 <span class="preprocessor"></span>    }
 <a name="l00187"></a>00187 
@@ -212,9 +212,9 @@
 
 
 <hr class="footer"/><address class="footer"><small>
-Erzeugt am Don Aug 18 2011 12:13:04 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+Erzeugt am Mit Feb 29 2012 14:18:09 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
-</a> 1.7.5
+</a> 1.7.5.1
 </small></address>
 
 </body>
