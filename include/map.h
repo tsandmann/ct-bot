@@ -70,8 +70,16 @@ typedef struct {
 	int16_t x_pos;		/**< X-Komponente der Position [mm] */
 	int16_t y_pos;		/**< Y-Komponente der Position [mm] */
 #ifdef MAP_USE_TRIG_CACHE
-	float sin;			/**< sin(heading) */
-	float cos;			/**< cos(heading) */
+	float sin
+#if defined __arm__ && __ARM_PCS_VFP == 1
+		__attribute__ ((aligned (4)))
+#endif
+		; /**< sin(heading) */
+	float cos
+#if defined __arm__ && __ARM_PCS_VFP == 1
+		__attribute__ ((aligned (4)))
+#endif
+		; /**< cos(heading) */
 #else
 	int16_t heading;	/**< Blickrichtung [1/10 Grad] */
 #endif // MAP_USE_TRIG_CACHE

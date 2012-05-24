@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2012-05-24 Timo Sandmann [mail@timosandmann.de]: Falsches Alignment auf ARM fuer floats in gepackten Structs korrigiert (Workaround). Target Debug-ARM-Linux fuer Ubuntu 12.04 angepasst (floating-point ABI hard, FPU vfpv3-d16)
+
 2012-02-29 Timo Sandmann [mail@timosandmann.de]: Release 21
 
 2012-02-17 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer DISPLAY_REGELUNG_AVAILABLE
