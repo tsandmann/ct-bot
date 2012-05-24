@@ -71,12 +71,12 @@ typedef struct {
 	int16_t y_pos;		/**< Y-Komponente der Position [mm] */
 #ifdef MAP_USE_TRIG_CACHE
 	float sin
-#if defined __arm__ && __ARM_PCS_VFP == 1
+#if (! defined __clang__ && defined __arm__ && defined __ARM_PCS_VFP) || (defined __clang__ && defined __arm__ && defined __VFP_FP__)
 		__attribute__ ((aligned (4)))
 #endif
 		; /**< sin(heading) */
 	float cos
-#if defined __arm__ && __ARM_PCS_VFP == 1
+#if (! defined __clang__ && defined __arm__ && defined __ARM_PCS_VFP) || (defined __clang__ && defined __arm__ && defined __VFP_FP__)
 		__attribute__ ((aligned (4)))
 #endif
 		; /**< cos(heading) */

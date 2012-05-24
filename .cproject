@@ -719,7 +719,7 @@
 						<toolChain errorParsers="" id="cdt.managedbuild.toolchain.gnu.exe.debug.342562318" name="GCC Tool Chain" resourceTypeBasedDiscovery="true" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.MachO64;org.eclipse.cdt.core.PE;org.eclipse.cdt.core.GNU_ELF" id="cdt.managedbuild.target.gnu.platform.exe.debug.1780823885" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
 							<builder autoBuildTarget="all" buildPath="${workspace_loc:/ct-Bot/Debug-Linux}" cleanBuildTarget="clean" enableAutoBuild="true" enableCleanBuild="true" enabledIncrementalBuild="true" errorParsers="org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator" id="cdt.managedbuild.target.gnu.builder.exe.debug.2125665414" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" parallelBuildOn="false" parallelizationNumber="1" superClass="cdt.managedbuild.target.gnu.builder.exe.debug"/>
-							<tool command="arm-linux-gcc" errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.621404830" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
+							<tool command="arm-linux-clang" errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.621404830" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
 								<option id="gnu.c.compiler.option.include.paths.1130676443" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -728,7 +728,7 @@
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1902512175" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="PC"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.459556433" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-c -mtune=cortex-a8 -mfloat-abi=hard -mfpu=vfpv3-d16 -fmessage-length=0 -pipe -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.459556433" name="Other flags" superClass="gnu.c.compiler.option.misc.other" value="-ccc-host-triple arm-linux-gnueabi -c -mtune=cortex-a8 -mfloat-abi=hard -mfpu=vfpv3-d16 -fmessage-length=0 -pipe -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations" valueType="string"/>
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.617600114" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" value="gnu.c.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.758877351" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1486655964" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
@@ -737,22 +737,22 @@
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.100603267" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.1827659961" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 							</tool>
-							<tool command="arm-linux-gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX} ${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GLDErrorParser" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1008199587" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug">
+							<tool command="arm-linux-clang" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX} ${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GLDErrorParser" id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1008199587" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug">
 								<option id="gnu.c.link.option.libs.384414705" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="m"/>
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
 								<option id="gnu.c.link.option.paths.328896045" name="Library search path (-L)" superClass="gnu.c.link.option.paths"/>
 								<option id="gnu.c.link.option.noshared.1200560167" name="No shared libraries (-static)" superClass="gnu.c.link.option.noshared" value="false" valueType="boolean"/>
-								<option id="gnu.c.link.option.ldflags.1570585100" name="Linker flags" superClass="gnu.c.link.option.ldflags" value="" valueType="string"/>
+								<option id="gnu.c.link.option.ldflags.1570585100" name="Linker flags" superClass="gnu.c.link.option.ldflags" value="-ccc-host-triple arm-linux-gnueabi" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.1380104584" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
 								</inputType>
 							</tool>
 							<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.2079691793" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug"/>
-							<tool command="arm-linux-gcc" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.2049476073" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
-								<option id="gnu.both.asm.option.flags.272178743" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-mtune=cortex-a8 -mfloat-abi=hard -mfpu=vfpv3-d16 -x assembler-with-cpp -c -pipe -DPC" valueType="string"/>
+							<tool command="arm-linux-clang" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.2049476073" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
+								<option id="gnu.both.asm.option.flags.272178743" name="Assembler flags" superClass="gnu.both.asm.option.flags" value="-ccc-host-triple arm-linux-gnueabi -mtune=cortex-a8 -mfloat-abi=hard -mfpu=vfpv3-d16 -x assembler-with-cpp -c -pipe -DPC" valueType="string"/>
 								<option id="gnu.both.asm.option.include.paths.288928516" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
@@ -2130,7 +2130,7 @@
 					<parser enabled="true"/>
 				</buildOutputProvider>
 				<scannerInfoProvider id="specsFile">
-					<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.c" command="arm-linux-gcc" useDefault="true"/>
+					<runAction arguments="-ccc-host-triple arm-linux-gnueabi -mtune=cortex-a8 -mfloat-abi=hard -mfpu=vfpv3-d16 -E -P -v -dD ${plugin_state_location}/specs.c" command="arm-linux-clang" useDefault="true"/>
 					<parser enabled="true"/>
 				</scannerInfoProvider>
 			</profile>
