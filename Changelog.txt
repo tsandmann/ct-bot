@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2012-05-28 Timo Sandmann [mail@timosandmann.de]: PACKED-Makro umgestaltet: PACKED setzt das packed-Attribut nur noch fuer MCU, PACKED_FORCE setzt es immer. PACKED ist zu verwenden, um Speicher auf MCU zu sparen. PACKED_FORCE falls die Member eines Structs direkt aufeinander folgen muessen (z.B. fuer Kommunikation oder HW-Treiber).
+
 2012-05-24 Timo Sandmann [mail@timosandmann.de]: Falsches Alignment auf ARM fuer floats in gepackten Structs korrigiert (Workaround). Target Debug-ARM-Linux fuer Ubuntu 12.04 angepasst (floating-point ABI hard, FPU vfpv3-d16)
 
 2012-02-29 Timo Sandmann [mail@timosandmann.de]: Release 21

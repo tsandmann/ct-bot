@@ -58,7 +58,7 @@ typedef union {
 	struct {
 		unsigned left:1;	/**< linksrum */
 		unsigned right:1;	/**< rechtsrum */
-	} PACKED;
+	} PACKED_FORCE;
 	uint8_t raw;
 } direction_t;
 

@@ -45,7 +45,7 @@ typedef union {
 	struct {
 		uint8_t lo8;	/*!< untere 8 Bit der Adresse */
 		uint8_t hi8;	/*!< obere 8 Bit der Adresse */
-	} PACKED bytes;
+	} PACKED_FORCE bytes;
 } os_ip_t;
 
 Tcb_t os_threads[OS_MAX_THREADS];				/*!< Array aller TCBs */

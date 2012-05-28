@@ -139,7 +139,7 @@ typedef struct {
 	unsigned subcommand:7;	/*!< Subkommando */
 	unsigned direction:1;	/*!< 0 ist Anfrage, 1 ist Antwort */
 #endif
-} PACKED request_t;
+} PACKED_FORCE request_t;
 
 /*! Kommando */
 typedef struct {
@@ -152,7 +152,7 @@ typedef struct {
 	uint8_t from;		/*!< Absender-Adresse */
 	uint8_t to;			/*!< Empfaenger-Adresse */
 	uint8_t CRC;		/*!< Markiert das Ende des Commands */
-} PACKED command_t;
+} PACKED_FORCE command_t;
 
 extern command_t received_command;	/*!< Puffer fuer Kommandos */
 

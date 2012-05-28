@@ -1,20 +1,20 @@
 /*
  * c't-Bot
- * 
+ *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software
  * Foundation; either version 2 of the License, or (at your
- * option) any later version. 
- * This program is distributed in the hope that it will be 
+ * option) any later version.
+ * This program is distributed in the hope that it will be
  * useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  * PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public 
- * License along with this program; if not, write to the Free 
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the Free
  * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307, USA.
- * 
+ *
  */
 
 /**
@@ -38,14 +38,14 @@
 typedef union {
 	uint32_t u32;	/*!< Laenge in 32 Bit */
 	uint8_t u8[4];	/*!< Laenge in 4 "einzelnen" Bytes */
-} PACKED file_len_t;
+} file_len_t;
 
 /*! Datentyp fuer Mini-Fat Dateiheader */
 typedef struct {
 	const char filename[MMC_FILENAME_MAX + 1];
 	file_len_t length;
 	uint8_t data[MMC_HEADER_DATA_SIZE];
-} PACKED mini_fat_header_t;
+} PACKED_FORCE mini_fat_header_t;
 
 #ifdef MCU
 #if defined MMC_AVAILABLE && ! defined BOT_FS_AVAILABLE
@@ -72,7 +72,7 @@ uint32_t mini_fat_find_block_P(const char * filename, void * buffer, uint32_t en
  */
 #define mini_fat_find_block(filename, buffer) mini_fat_find_block_P(PSTR(filename), buffer, mmc_get_size());
 
-/*! 
+/*!
  * Leert eine Datei im MiniFAT-Dateisystem auf der MMC/SD-Karte
  * \param file_start	Anfangsblock der Datei
  * \param *buffer		Zeiger auf 512 Byte Puffer im SRAM, wird geloescht!
@@ -142,7 +142,7 @@ static inline uint32_t mini_fat_get_filesize(uint32_t file_start, void * buffer)
 
 #else // ! MCU
 
-/*! 
+/*!
  * Erzeugt eine Datei, die an den ersten 3 Byte die ID- enthaelt. dann folgen 512 - sizeof(id) nullen
  * Danach kommen so viele size kByte Nullen
  * \param filename Der Dateiname der zu erzeugenden Datei
@@ -151,7 +151,7 @@ static inline uint32_t mini_fat_get_filesize(uint32_t file_start, void * buffer)
  */
 void create_mini_fat_file(const char * filename, const char * id_string, uint32_t size);
 
-/*! 
+/*!
  * Erzeugt eine Mini-Fat-Datei in einer emulierten MMC
  * \param addr			Die Adresse auf der emulierten Karte, an der die Datei beginnen soll
  * \param id_string 	Die ID der Datei, wie sie zu Beginn in der Datei steht
@@ -162,7 +162,7 @@ void create_mini_fat_file(const char * filename, const char * id_string, uint32_
  */
 void create_emu_mini_fat_file(uint32_t addr, const char * id_string, uint32_t size);
 
-/*! 
+/*!
  * Loescht eine Mini-Fat-Datei in einer emulierten MMC
  * \param id_string 	Die ID der Datei, wie sie zu Beginn in der Datei steht
  */
@@ -173,7 +173,7 @@ void delete_emu_mini_fat_file(const char * id_string);
 /*!
  * Display-Screen fuer Ausgaben des MiniFAT-Treibers, falls dieser welche erzeugt.
  * Da die MiniFat-Funktionen im Wesentlichen den aktuellen Suchstatus der MMC
- * ausgeben, erfolgt die eigentliche Ausgabe in der jeweiligen Schleife der 
+ * ausgeben, erfolgt die eigentliche Ausgabe in der jeweiligen Schleife der
  * MiniFAT-Funktion, dieser Screen ist dafuer nur ein Platzhalter
  */
 void mini_fat_display(void);

@@ -114,10 +114,16 @@ int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 #endif
 #endif // MCU
 
-#ifndef DOXYGEN
-#define PACKED __attribute__ ((packed)) /**< packed-Attribut fuer Strukturen und Enums */
-#else
+#if ! defined DOXYGEN && ! defined PC
+#define PACKED __attribute__ ((packed)) /**< packed-Attribut fuer Strukturen und Enums (nur MCU) */
+#else // PC || Doxygen
 #define PACKED
+#endif
+
+#ifndef DOXYGEN
+#define PACKED_FORCE __attribute__ ((packed)) /**< erzwungenes packed-Attribut fuer Strukturen und Enums (alle Architekturen) */
+#else // Doxygen
+#define PACKED_FORCE
 #endif
 
 #ifdef MCU
@@ -150,7 +156,7 @@ typedef struct {
 typedef union {
 	uint8_t byte;
 	unsigned bit:1;
-} PACKED bit_t;
+} bit_t;
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846 /** pi */

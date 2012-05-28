@@ -156,7 +156,7 @@ static uint8_t min_max_updated = False; /**< wurden die Min- / Max-Werte veraend
 /*! Datentyp fuer die Elementarfelder einer Gruppe */
 typedef struct {
 	int8_t section[MAP_SECTION_POINTS][MAP_SECTION_POINTS]; /**< Einzelne Punkte */
-} PACKED map_section_t;
+} map_section_t;
 
 #ifdef BOT_FS_AVAILABLE
 static botfs_file_descr_t map_botfs_file;	/**< Datei-Deskriptor der Map */
@@ -175,7 +175,7 @@ static os_signal_t lock_signal = OS_SIGNAL_INITIALIZER; /**< Signal zur Synchron
 void map_update_main(void) OS_TASK_ATTR;
 
 #define map_buffer GET_MMC_BUFFER(map_buffer)	/**< Map-Puffer */
-static map_section_t * map[2];					/**< Array mit den Zeigern auf die Elemente,  es passen immer 2 Sektionen in den Puffer */
+static map_section_t * map[2];					/**< Array mit den Zeigern auf die Elemente, es passen immer 2 Sektionen in den Puffer */
 
 static struct {
 	uint16_t block;		/**< Block, der aktuell im Puffer steht. Nur bis 32 MByte adressierbar */
@@ -216,7 +216,7 @@ static os_signal_t map_2_sim_signal = OS_SIGNAL_INITIALIZER; /**< Signal, um gle
 #ifndef BOT_FS_AVAILABLE
 typedef struct {
 	map_section_t sections[2];
-} PACKED mmc_container_t;
+} mmc_container_t;
 
 static mmc_container_t map_storage[MAP_SECTIONS * MAP_SECTIONS / 2]; /**< Statischer Speicherplatz fuer die Karte */
 

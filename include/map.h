@@ -70,16 +70,8 @@ typedef struct {
 	int16_t x_pos;		/**< X-Komponente der Position [mm] */
 	int16_t y_pos;		/**< Y-Komponente der Position [mm] */
 #ifdef MAP_USE_TRIG_CACHE
-	float sin
-#if (! defined __clang__ && defined __arm__ && defined __ARM_PCS_VFP) || (defined __clang__ && defined __arm__ && defined __VFP_FP__)
-		__attribute__ ((aligned (4)))
-#endif
-		; /**< sin(heading) */
-	float cos
-#if (! defined __clang__ && defined __arm__ && defined __ARM_PCS_VFP) || (defined __clang__ && defined __arm__ && defined __VFP_FP__)
-		__attribute__ ((aligned (4)))
-#endif
-		; /**< cos(heading) */
+	float sin;			/**< sin(heading) */
+	float cos;			/**< cos(heading) */
 #else
 	int16_t heading;	/**< Blickrichtung [1/10 Grad] */
 #endif // MAP_USE_TRIG_CACHE
@@ -100,7 +92,7 @@ typedef union {
 		int16_t map_max_x;			/**< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
 		int16_t map_min_y;			/**< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
 		int16_t map_max_y;			/**< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate */
-	} PACKED data;
+	} PACKED_FORCE data;
 	uint8_t raw[BOTFS_HEADER_DATA_SIZE];
 } map_header_t;
 #endif // BOT_FS_AVAILABLE

@@ -65,13 +65,13 @@ void convert_slog_file(char * input_file) {
 		int16_t err;
 		int16_t pwm;
 		uint32_t time;
-	} PACKED slog_speedcontrol_t;
+	} PACKED_FORCE slog_speedcontrol_t;
 
 	/** Datentyp der Logbloecke auf der MMC, falls Motorregelung aus */
 	typedef struct {
 		int16_t pwm;
 		uint32_t time;
-	} PACKED slog_data_t;
+	} PACKED_FORCE slog_data_t;
 
 	printf("Konvertiere die SpeedLog-Datei aus Image \"%s\" ins txt-Format\n", input_file);
 	char buffer[BOTFS_BLOCK_SIZE];
