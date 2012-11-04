@@ -1,5 +1,9 @@
 CHANGELOG fuer c't-Bot
 ======================
+2012-11-04 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer gcc 4.7 unter Windows nach Hinweis von palau: packed structs um Attribut "gcc_struct" ergaenzt
+
+2012-07-15 Timo Sandmann [mail@timosandmann.de]: Anzahl der parallelen make-Jobs auf Anzahl der verfuegbaren Prozessoren eingestellt (nur Eclipse 4.2)
+
 2012-05-28 Timo Sandmann [mail@timosandmann.de]: PACKED-Makro umgestaltet: PACKED setzt das packed-Attribut nur noch fuer MCU, PACKED_FORCE setzt es immer. PACKED ist zu verwenden, um Speicher auf MCU zu sparen. PACKED_FORCE falls die Member eines Structs direkt aufeinander folgen muessen (z.B. fuer Kommunikation oder HW-Treiber).
 
 2012-05-24 Timo Sandmann [mail@timosandmann.de]: Falsches Alignment auf ARM fuer floats in gepackten Structs korrigiert (Workaround). Target Debug-ARM-Linux fuer Ubuntu 12.04 angepasst (floating-point ABI hard, FPU vfpv3-d16)
