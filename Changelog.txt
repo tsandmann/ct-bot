@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2012-11-04 Timo Sandmann [mail@timosandmann.de]: Vorlaeufiger Bugfix fuer gcc 4.7 unter Windows nach Hinweis von palau
+
 2012-02-29 Timo Sandmann [mail@timosandmann.de]: Release 21
 
 2012-02-17 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer DISPLAY_REGELUNG_AVAILABLE
