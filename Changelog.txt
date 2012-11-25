@@ -1,6 +1,6 @@
 CHANGELOG fuer c't-Bot
 ======================
-2012-11-25 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Makefile 
+2012-11-25 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Makefile, danke an caramba fuer den Hinweis! Nach einem '\' (Zeilenumbruch) in der Sourcefile-Liste darf kein Leerzeichen folgen. 
 
 2012-11-04 Timo Sandmann [mail@timosandmann.de]: Vorlaeufiger Bugfix fuer gcc 4.7 unter Windows nach Hinweis von palau
 
