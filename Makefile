@@ -76,8 +76,8 @@ endef
 define SRCLOGIC
 	bot-logic/behaviour_abl.c bot-logic/behaviour_avoid_border.c bot-logic/behaviour_avoid_col.c bot-logic/behaviour_calibrate_pid.c \
 	bot-logic/behaviour_calibrate_sharps.c bot-logic/behaviour_cancel_behaviour.c bot-logic/behaviour_catch_pillar.c bot-logic/behaviour_classify_objects.c \
-	bot-logic/behaviour_delay.c bot-logic/behaviour_drive_area.c bot-logic/behaviour_drive_chess.c bot-logic/behaviour_drive_distance.c \ 
-	bot-logic/behaviour_drive_square.c bot-logic/behaviour_drive_stack.c bot-logic/behaviour_follow_line_enhanced.c bot-logic/behaviour_follow_line.c \ 
+	bot-logic/behaviour_delay.c bot-logic/behaviour_drive_area.c bot-logic/behaviour_drive_chess.c bot-logic/behaviour_drive_distance.c \
+	bot-logic/behaviour_drive_square.c bot-logic/behaviour_drive_stack.c bot-logic/behaviour_follow_line_enhanced.c bot-logic/behaviour_follow_line.c \
 	bot-logic/behaviour_follow_object.c bot-logic/behaviour_follow_wall.c bot-logic/behaviour_get_utilization.c bot-logic/behaviour_goto_obstacle.c \
 	bot-logic/behaviour_goto_pos.c bot-logic/behaviour_goto.c bot-logic/behaviour_gotoxy.c bot-logic/behaviour_hang_on.c bot-logic/behaviour_hw_test.c \
 	bot-logic/behaviour_line_shortest_way.c bot-logic/behaviour_measure_distance.c bot-logic/behaviour_olympic.c bot-logic/behaviour_pathplaning.c \
