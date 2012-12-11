@@ -121,7 +121,11 @@ int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 #endif
 
 #ifndef DOXYGEN
-#define PACKED_FORCE __attribute__ ((gcc_struct, packed)) /**< erzwungenes packed-Attribut fuer Strukturen und Enums (alle Architekturen) */
+#if defined __x86_64__ || defined __i386__
+#define PACKED_FORCE __attribute__ ((gcc_struct, packed)) /**< erzwungenes packed-Attribut fuer Strukturen und Enums (x86) */
+#else
+#define PACKED_FORCE __attribute__ ((packed)) /**< erzwungenes packed-Attribut fuer Strukturen und Enums (nicht x86) */
+#endif // __x86_64__ || __i386__
 #else // Doxygen
 #define PACKED_FORCE
 #endif
