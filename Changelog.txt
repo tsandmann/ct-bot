@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2012-12-20 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer PACKED auf MCU
+
 2012-12-11 Timo Sandmann [mail@timosandmann.de]: Compile-Settings fuer Raspberry Pi hinzugefuegt
 
 2012-11-25 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Makefile, danke an caramba fuer den Hinweis! Nach einem '\' (Zeilenumbruch) in der Sourcefile-Liste darf kein Leerzeichen folgen.

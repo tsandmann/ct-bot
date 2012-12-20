@@ -115,7 +115,7 @@ int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 #endif // MCU
 
 #if ! defined DOXYGEN && ! defined PC
-#define PACKED __attribute__ ((gcc_struct, packed)) /**< packed-Attribut fuer Strukturen und Enums (nur MCU) */
+#define PACKED __attribute__ ((packed)) /**< packed-Attribut fuer Strukturen und Enums (nur MCU) */
 #else // PC || Doxygen
 #define PACKED
 #endif
