@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2013-01-02 Timo Sandmann [mail@timosandmann.de]: Clang-Support unter Mac OS X, uBasic-Quellen umorganisiert
+
 2012-12-20 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer PACKED auf MCU
 
 2012-12-11 Timo Sandmann [mail@timosandmann.de]: Compile-Settings fuer Raspberry Pi hinzugefuegt
