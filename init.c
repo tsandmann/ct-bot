@@ -38,6 +38,10 @@
 #include "twi.h"
 #include "gui.h"
 
+#ifdef FLITE_AVAILABLE
+#include "flite.h"
+#endif
+
 mmc_buffers_t mmc_buffers; /**< Puffer fuer alle MMC-Transfers */
 
 /**
@@ -131,6 +135,13 @@ void ctbot_init(int argc, char * argv[]) {
 	sp03_say("I am Robi %d", sensError);
 #endif
 #endif // WELCOME_AVAILABLE
+
+#ifdef FLITE_AVAILABLE
+	cst_voice * v;
+	flite_init();
+	v = register_cmu_us_kal16(NULL);
+	flite_text_to_speech("I'm ready", v, "aplay");
+#endif
 }
 
 

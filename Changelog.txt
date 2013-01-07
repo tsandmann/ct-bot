@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2013-01-06 Timo Sandmann [mail@timosandmann.de]: #define ARM_LINUX_BOARD fuer High-level Bot-Code, der auf einem ARM-Linux Board (z.B. BeagleBoard oder Raspberry Pi) ausgefuehrt wird. Fuer alle anderen Targets (nicht ARM-Linux) wird der Schalter automatisch deaktiviert. 
+
 2013-01-02 Timo Sandmann [mail@timosandmann.de]: Clang-Support unter Mac OS X, uBasic-Quellen umorganisiert
 
 2012-12-20 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer PACKED auf MCU
