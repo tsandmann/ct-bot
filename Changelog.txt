@@ -1,5 +1,7 @@
-CHANGELOG fuer c't-Bot
+﻿CHANGELOG fuer c't-Bot
 ======================
+2015-03-15 Frank Menzel [Menzelfr@gmx.de]:       Implementierung eines neuronalen Netzwerkes und darauf aufbauende Verhalten behaviour_neuralnet und behaviour_drive_neuralnet 
+
 2013-01-06 Timo Sandmann [mail@timosandmann.de]: Generierte Dokumentation nach /documentation verschoben, um das Source-Verzeichnis (und seine Versionierung) nicht mit 1000 Dateien zu belasten
 
 2013-01-06 Timo Sandmann [mail@timosandmann.de]: #define ARM_LINUX_BOARD fuer High-level Bot-Code, der auf einem ARM-Linux Board (z.B. BeagleBoard oder Raspberry Pi) ausgefuehrt wird. Fuer alle anderen Targets (nicht ARM-Linux) wird der Schalter automatisch deaktiviert. 

@@ -85,7 +85,7 @@
 //#define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung? */
 //#define SPI_AVAILABLE			/*!< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 //#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
-//#define BOT_FS_AVAILABLE		/*!< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC moeglich) */
+#define BOT_FS_AVAILABLE		/*!< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC moeglich) */
 #define OS_AVAILABLE			/*!< Aktiviert BotOS fuer Threads und Scheduling */
 
 #define ARM_LINUX_BOARD			/**< Code fuer ARM-Linux Board aktivieren, wenn ein ARM-Linux-* Target ausgewaehlt wurde */

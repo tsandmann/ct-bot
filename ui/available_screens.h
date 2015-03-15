@@ -40,6 +40,8 @@
 //#define DISPLAY_MMC_INFO					/*!< Zeigt die Daten der MMC-Karte an */
 //#define DISPLAY_MINIFAT_INFO				/*!< Zeigt Ausgaben des MiniFAT-Treibers an */
 //#define DISPLAY_RESET_INFO_AVAILABLE		/*!< Zeigt Informationen ueber Resets an */
+#define DISPLAY_NEURALNET_AVAILABLE		    /*!< Screen des neuronalen Netzes */
+#define DISPLAY_DRIVE_NEURALNET_AVAILABLE	/*!< Screen des Fahrverhaltens des neuronalen Netzes */
 #define DISPLAY_OS_AVAILABLE				/*!< Zeigt die CPU-Auslastung an und bietet Debugging-Funktionen */
 #define DISPLAY_RAM_AVAILABLE				/*!< Ausgabe des freien RAMs */
 #define DISPLAY_MAP_AVAILABLE				/*!< Zeigt Map-Display an */
