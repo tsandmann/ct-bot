@@ -516,8 +516,8 @@ void sensor_update(void) {
 				/* Geschwindigkeiten berechnen */
 				right_radius = radius + WHEEL_DISTANCE;
 				left_radius = radius - WHEEL_DISTANCE;
-				v_mou_right = (int16_t) (lastHead * right_radius * (4 * 2 * M_PI / 360));
-				v_mou_left = (int16_t) (lastHead * left_radius * (4 * 2 * M_PI / 360));
+				v_mou_right = (int16_t) (lastHead * right_radius * ((1000 / SPEED_UPDATE_TIME) * 2 * M_PI / 360));
+				v_mou_left = (int16_t) (lastHead * left_radius * ((1000 / SPEED_UPDATE_TIME) * 2 * M_PI / 360));
 			}
 			/* Falls Koordinaten/Winkel angepasst wurden, nun wieder korrigieren */
 			if (modifiedAngles) {
