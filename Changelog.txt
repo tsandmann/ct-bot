@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2015-05-23 Timo Sandmann [mail@timosandmann.de]: Bugfix Positionsspeicher
+
 2015-03-21 Timo Sandmann [mail@timosandmann.de]: Bugfix Speedberechnung von Maussensor
 
 2015-03-15 Frank Menzel [Menzelfr@gmx.de]:       Implementierung eines neuronalen Netzwerkes und darauf aufbauende Verhalten behaviour_neuralnet und behaviour_drive_neuralnet 
