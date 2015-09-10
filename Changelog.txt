@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2015-09-10 Timo Sandmann [mail@timosandmann.de]: Bugfix bot_drive_area()
+
 2015-05-23 Timo Sandmann [mail@timosandmann.de]: Bugfix Positionsspeicher
 
 2015-03-21 Timo Sandmann [mail@timosandmann.de]: Bugfix Speedberechnung von Maussensor
