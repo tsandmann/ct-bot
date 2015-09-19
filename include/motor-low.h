@@ -19,7 +19,7 @@
 
 /**
  * \file 	motor-low.h
- * \brief 	Low-Level Routinen fuer die Motorsteuerung des c't-Bots
+ * \brief 	Low-Level Routinen fuer die Motor- und Servosteuerung des c't-Bots
  * \author 	Benjamin Benz (bbe@heise.de)
  * \date 	01.12.2005
  */
@@ -28,14 +28,13 @@
 #define MOTOR_LOW_H_
 
 /**
- *  Initialisiert alles fuer die Motosteuerung
+ * Initialisiert alles fuer die Motor- und Servorsteuerung
  */
 void motor_low_init(void);
 
 #ifdef PC
 /**
- * Unmittelbarer Zugriff auf die beiden Motoren,
- * normalerweise NICHT verwenden!
+ * Unmittelbarer Zugriff auf die beiden Motoren, normalerweise NICHT verwenden!
  * \param left PWM links
  * \param right PWM rechts
  */
@@ -52,7 +51,7 @@ void motor_update(uint8_t dev);
 /**
  * Stellt die Servos
  * \param servo Nummer des Servos (1 oder 2)
- * \param pos Zielwert, sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus
+ * \param pos Zielwert oder 0 fuer Servo aus
  */
 void servo_low(uint8_t servo, uint8_t pos);
 

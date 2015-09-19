@@ -95,13 +95,18 @@
 #define EXPANSION_BOARD_AVAILABLE /*!< Erweiterungsmodul (MMC / WiPort) installiert */
 
 /* Servo-Parameter */
+#ifndef __AVR_ATmega1284P__
 #if F_CPU == 16000000L
-#define DOOR_CLOSE 	7			/**< Rechter Anschlag des Servos */
-#define DOOR_OPEN	14			/**< Linker Anschlag des Servos */
+#define DOOR_CLOSE 	7  /**< Rechter Anschlag des Servos */
+#define DOOR_OPEN	14 /**< Linker Anschlag des Servos */
 #else
-#define DOOR_CLOSE 	10			/**< Rechter Anschlag des Servos */
-#define DOOR_OPEN	18			/**< Linker Anschlag des Servos */
-#endif
+#define DOOR_CLOSE 	10 /**< Rechter Anschlag des Servos */
+#define DOOR_OPEN	18 /**< Linker Anschlag des Servos */
+#endif // F_CPU
+#else // __AVR_ATmega1284P__
+#define DOOR_CLOSE 	68  /**< Rechter Anschlag des Servos */
+#define DOOR_OPEN	175 /**< Linker Anschlag des Servos */
+#endif // ! __AVR_ATmega1284P__
 
 
 /*** Einstellungen fuer die Verhaltensregeln ***/

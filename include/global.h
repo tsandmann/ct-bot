@@ -27,6 +27,10 @@
 #ifndef GLOBAL_H_
 #define GLOBAL_H_
 
+#if ! defined MCU && ! defined PC
+#define PC
+#endif
+
 #ifndef __ASSEMBLER__
 #ifdef __WIN32__
 /* Prototypes, die in den MinGW-Includes fehlen -> keine Warnings */
@@ -59,12 +63,6 @@ int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 
 #include <stdint.h>
 #include <math.h>
-
-#ifndef MCU
-#ifndef PC
-#define PC
-#endif
-#endif
 
 #ifdef DOXYGEN
 #define PC
