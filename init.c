@@ -90,10 +90,10 @@ void ctbot_init(int argc, char * argv[]) {
 	bot_behave_init();
 #endif
 #ifdef RC5_AVAILABLE
-	ir_init(&RC5_PORT, &RC5_DDR, _BV(RC5_PIN));
+	ir_init(&RC5_PORT, &RC5_DDR, 1 << RC5_PIN);
 #endif
 #ifdef BPS_AVAILABLE
-	ir_init(&BPS_PORT, &BPS_DDR, _BV(BPS_PIN));
+	ir_init(&BPS_PORT, &BPS_DDR, 1 << RC5_PIN);
 #endif
 #ifdef MOUSE_AVAILABLE
 	mouse_sens_init();
