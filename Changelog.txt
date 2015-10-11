@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2015-10-11 Timo Sandmann [mail@timosandmann.de]: Kompatibilitaet zu AVR Toolchain 3.5
+
 2015-10-11 Timo Sandmann [mail@timosandmann.de]: Build-Warnings bei deaktivierter EEPROM-Emulation (Standardeinstellung) beseitigt, siehe pc/eeprom_pc.c zur Aktivierung
 
 2015-09-29 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer BPS Initialisierung

@@ -73,7 +73,7 @@
 //#define MAP_AVAILABLE			/*!< Aktiviert die Kartographie */
 #define MAP_2_SIM_AVAILABLE	/*!< Sendet die Map zur Anzeige an den Sim */
 
-//#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
+#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
 //#define ADJUST_PID_PARAMS		/*!< macht PID-Paramter zur Laufzeit per FB einstellbar */
 //#define SPEED_LOG_AVAILABLE 	/*!< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
 
