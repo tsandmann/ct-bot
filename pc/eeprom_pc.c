@@ -17,24 +17,28 @@
  *
  */
 
-/*!
+/**
  * @file 	eeprom_pc.c
  * @brief 	Low-Level Routinen fuer den Zugriff auf das emulierte EEPROM des Sim-c't-Bots
  * @author 	Achim Pankalla (achim.pankalla@gmx.de)
  * @date 	07.06.2007
+ *
+ *
+ * Bei aktivierter EEPROM-Emulation muessen folgende Post-Build Aktionen in den Projekteinstellungeun (C/C++ Build -> Settings -> Build Steps) eingetragen werden:
+ *
+ * Post-Build AVR:
+ * avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size ct-Bot.elf; avr-objdump -t ct-Bot.elf | grep "O \.eeprom" >  eeprom_mcu.map
+ *
+ * Post-Build Linux:
+ * objcopy -j .eeprom --change-section-lma .eeprom=0 -O binary ct-Bot ct-Bot.eep && objdump -t -j .eeprom -C ct-Bot | grep "g" > eeprom_pc.map
+ *
+ * Post-Build Mac OS X:
+ * objcopy -j eeprom.data --change-section-lma eeprom.data=0 -O binary ct-Bot ct-Bot.eep; objdump -t -j_eeprom.data -C ct-Bot 2> /dev/null | grep "g " > eeprom_pc.map
+ *
+ * Post-Build Windows:
+ * objcopy -j .eeprom --change-section-lma .eeprom=0 -O binary ct-Bot.exe ct-Bot.eep && objdump -t ct-bot.exe | grep "(sec  5)" | grep "(nx 0)" > eeprom_pc.map
+ *
  */
-
-//	Post-Build AVR:
-//	avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom="alloc,load" --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size ct-Bot.elf; avr-objdump -t ct-Bot.elf | grep "O \.eeprom" >  eeprom_mcu.map
-
-//	Post-Build Linux:
-//	objcopy -j .eeprom --change-section-lma .eeprom=0 -O binary ct-Bot.elf ct-Bot.eep; objdump -t -j .eeprom -C ct-Bot.elf | grep "g" > eeprom_pc.map
-
-//	Post-Build Mac OS X:
-//	objcopy -j __eeprom.__data --change-section-lma __eeprom.__data=0 -O binary ct-Bot ct-Bot.eep 2> /dev/null; objdump -t -j __eeprom.__data -C ct-Bot 2> /dev/null | grep "g " > eeprom_pc.map
-
-//	Post-Build Windows:
-//	objcopy -j .eeprom --change-section-lma .eeprom=0 -O binary ct-Bot.exe ct-Bot.eep;objdump -t ct-Bot.exe | grep "(sec  5)" | grep "(nx 0)" > eeprom_pc.map
 
 #ifdef PC
 #include "ct-Bot.h"
@@ -258,7 +262,7 @@ static uint16_t create_ctab(const char * simfile, const char * botfile) {
 	FILE * fps, * fpb;
 	char sline[250], bline[250]; // Textzeilen aus Dateien
 	char vname_s[30], vname_b[30]; // Variablennamen
-	long addr_s, addr_b; // Adressen der Variablen
+	long addr_s, addr_b = 0; // Adressen der Variablen
 	uint16_t size; // Variablengroesse
 	int16_t vc = 0; // Variablenzaehler
 	long first_botaddr = 0xffffffff; // Erste ct-Bot EEPROM Adressse
