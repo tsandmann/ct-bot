@@ -93,7 +93,7 @@ void ctbot_init(int argc, char * argv[]) {
 	ir_init(&RC5_PORT, &RC5_DDR, 1 << RC5_PIN);
 #endif
 #ifdef BPS_AVAILABLE
-	ir_init(&BPS_PORT, &BPS_DDR, 1 << RC5_PIN);
+	ir_init(&BPS_PORT, &BPS_DDR, 1 << BPS_PIN);
 #endif
 #ifdef MOUSE_AVAILABLE
 	mouse_sens_init();
