@@ -58,7 +58,6 @@ int putchar(int);
 #ifndef __VALIST
 #define __VALIST __gnuc_va_list
 #endif
-int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 #endif // __WIN32__
 
 #include <stdint.h>
@@ -73,9 +72,6 @@ int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 
 #define True	1			/**< wahr */
 #define False	0			/**< falsch */
-
-#define On		1			/**< an */
-#define Off		0			/**< aus */
 
 #ifdef PC
 #if defined WIN32
