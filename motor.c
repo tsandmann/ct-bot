@@ -455,8 +455,13 @@ void motor_set(int16_t left, int16_t right) {
 	motor_update(1);
 #else
 	/* PC-Version */
+#ifdef ARM_LINUX_BOARD
+	speed_l = left * speedSignLeft;
+	speed_r = right * speedSignRight;
+#else
 	speed_l = left * speedSignLeft / 2;
 	speed_r = right * speedSignRight / 2;
+#endif // ARM_LINUX_BOARD
 	bot_motor(speed_l, speed_r);
 #endif // MCU
 #endif // SPEED_CONTROL_AVAILABLE

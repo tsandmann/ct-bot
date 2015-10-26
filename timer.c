@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	timer.c
- * @brief 	Zeitmanagement
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+/**
+ * \file 	timer.c
+ * \brief 	Zeitmanagement
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	26.12.2005
  */
 
 #include "ct-Bot.h"
@@ -29,54 +29,47 @@
 #include "sensor.h"
 
 #ifdef MCU
-volatile tickCount_t tickCount;		/*!< ein Tick alle 176 us */
+volatile tickCount_t tickCount; /**< ein Tick alle 176 us */
 #else // PC
-volatile float tickCount = 0;		/*!< ein Tick alle 176 us */
+#ifdef ARM_LINUX_BOARD
+uint_fast32_t tickCount = 0; /**< ein Tick alle 176 us */
+#else
+double tickCount = 0; /**< ein Tick alle 176 us */
+#endif // ARM_LINUX_BOARD
 #endif // MCU
 
 #ifdef PC
-/*!
+/**
  * liefert Ticks in 16 Bit seit Systemstart [176 us]
  */
 uint16_t timer_get_tickCount16(void) {
 	uint16_t temp;
-	temp = tickCount;
+	temp = (uint16_t) tickCount;
 	return temp;
 }
 
-/*!
+/**
  * liefert Ticks in 32 Bit seit Systemstart [176 us]
  */
 uint32_t timer_get_tickCount32(void) {
 	uint32_t temp;
-	temp = tickCount;
+	temp = (uint32_t) tickCount;
 	return temp;
 }
 #endif // PC
 
-#ifdef TIME_AVAILABLE
-/*!
+/**
  * Diese Funktion liefert den Millisekundenanteil der Systemzeit zurueck.
- * @return Millisekunden der Systemzeit
+ * \return Millisekunden der Systemzeit
  */
 uint16_t timer_get_ms(void) {
-	return (uint16_t) (((TIMER_GET_TICKCOUNT_32 * (TIMER_STEPS / 8)) / (1000 / 8)) % 1000);
+	return (uint16_t) (((float) TIMER_GET_TICKCOUNT_32 * ((float) TIMER_STEPS / 1000.0f))) % 1000;
 }
 
-/*!
+/**
  * Diese Funktion liefert den Sekundenanteil der Systemzeit zurueck.
- * @return Sekunden der Systemzeit
+ * \return Sekunden der Systemzeit
  */
 uint16_t timer_get_s(void) {
-	return (uint16_t) (TIMER_GET_TICKCOUNT_32 * (TIMER_STEPS / 16) / (1000000 / 16));
+	return (uint16_t) ((float) TIMER_GET_TICKCOUNT_32 * ((float) TIMER_STEPS / 1000000.0f));
 }
-
-/*!
- * Liefert die Millisekunden zurueck, die seit old_s, old_ms verstrichen sind
- * @param old_s		alter Sekundenstand
- * @param old_ms	alter Millisekundenstand
- */
-uint16_t timer_get_ms_since(uint16_t old_s, uint16_t old_ms) {
-	return (timer_get_s() - old_s) * 1000 + timer_get_ms() - old_ms;
-}
-#endif // TIME_AVAILABLE

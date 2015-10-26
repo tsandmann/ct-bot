@@ -1,7 +1,5 @@
 CHANGELOG fuer c't-Bot
 ======================
-2015-10-26 Timo Sandmann [mail@timosandmann.de]: Release 22
-
 2015-10-18 Timo Sandmann [mail@timosandmann.de]: Kompatibilitaet zu mingw-w64 und msys2 (u.a. fuer Windows 10) 
 
 2015-10-11 Timo Sandmann [mail@timosandmann.de]: Kompatibilitaet zu AVR Toolchain 3.5
@@ -9,6 +7,8 @@ CHANGELOG fuer c't-Bot
 2015-10-11 Timo Sandmann [mail@timosandmann.de]: Build-Warnings bei deaktivierter EEPROM-Emulation (Standardeinstellung) beseitigt, siehe pc/eeprom_pc.c zur Aktivierung
 
 2015-09-29 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer BPS Initialisierung
+
+2015-09-19 Timo Sandmann [mail@timosandmann.de]: Unterstuetzung fuer 2. Servo (nur mit ATmega1284P)
 
 2015-09-10 Timo Sandmann [mail@timosandmann.de]: Bugfix bot_drive_area()
 
@@ -20,9 +20,13 @@ CHANGELOG fuer c't-Bot
 
 2013-01-06 Timo Sandmann [mail@timosandmann.de]: Generierte Dokumentation nach /documentation verschoben, um das Source-Verzeichnis (und seine Versionierung) nicht mit 1000 Dateien zu belasten
 
+2013-01-06 Timo Sandmann [mail@timosandmann.de]: #define ARM_LINUX_BOARD fuer High-level Bot-Code, der auf einem ARM-Linux Board (z.B. BeagleBoard oder Raspberry Pi) ausgefuehrt wird. Fuer alle anderen Targets (nicht ARM-Linux) wird der Schalter automatisch deaktiviert. 
+
 2013-01-02 Timo Sandmann [mail@timosandmann.de]: Clang-Support unter Mac OS X, uBasic-Quellen umorganisiert
 
 2012-12-20 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer PACKED auf MCU
+
+2012-12-11 Timo Sandmann [mail@timosandmann.de]: Compile-Settings fuer Raspberry Pi hinzugefuegt
 
 2012-11-25 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Makefile, danke an caramba fuer den Hinweis! Nach einem '\' (Zeilenumbruch) in der Sourcefile-Liste darf kein Leerzeichen folgen.
 
@@ -33,8 +37,6 @@ CHANGELOG fuer c't-Bot
 2012-05-28 Timo Sandmann [mail@timosandmann.de]: PACKED-Makro umgestaltet: PACKED setzt das packed-Attribut nur noch fuer MCU, PACKED_FORCE setzt es immer. PACKED ist zu verwenden, um Speicher auf MCU zu sparen. PACKED_FORCE falls die Member eines Structs direkt aufeinander folgen muessen (z.B. fuer Kommunikation oder HW-Treiber).
 
 2012-05-24 Timo Sandmann [mail@timosandmann.de]: Falsches Alignment auf ARM fuer floats in gepackten Structs korrigiert (Workaround). Target Debug-ARM-Linux fuer Ubuntu 12.04 angepasst (floating-point ABI hard, FPU vfpv3-d16)
-
-2012-11-04 Timo Sandmann [mail@timosandmann.de]: Vorlaeufiger Bugfix fuer gcc 4.7 unter Windows nach Hinweis von palau
 
 2012-02-29 Timo Sandmann [mail@timosandmann.de]: Release 21
 

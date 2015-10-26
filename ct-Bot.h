@@ -48,8 +48,6 @@
 //#define BOT_2_BOT_AVAILABLE	/*!< Sollen Bots untereinander kommunizieren? */
 //#define BOT_2_BOT_PAYLOAD_AVAILABLE		/*!< Aktiviert Payload-Versand per Bot-2-Bot Kommunikation */
 
-//#define TIME_AVAILABLE		/*!< Gibt es eine Systemzeit in s und ms? */
-
 #define DISPLAY_AVAILABLE			/*!< Display aktiv */
 #define DISPLAY_REMOTE_AVAILABLE	/*!< Sende LCD Anzeigedaten an den Simulator */
 
@@ -82,12 +80,15 @@
 //#define SRF10_AVAILABLE		/*!< Ultraschallsensor SRF10 vorhanden */
 //#define CMPS03_AVAILABLE		/*!< Kompass CMPS03 vorhanden */
 //#define SP03_AVAILABLE		/*!< Sprachmodul SP03 vorhanden */
+//#define FLITE_AVAILABLE		/*!< Sprachsynthese Flite vorhanden */
 
 //#define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung? */
 //#define SPI_AVAILABLE			/*!< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 //#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
 #define BOT_FS_AVAILABLE		/*!< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC moeglich) */
 #define OS_AVAILABLE			/*!< Aktiviert BotOS fuer Threads und Scheduling */
+
+#define ARM_LINUX_BOARD			/**< Code fuer ARM-Linux Board aktivieren, wenn ein ARM-Linux-* Target ausgewaehlt wurde */
 
 //#define EEPROM_EMU_AVAILABLE	/*!< Aktiviert die EEPROM-Emulation fuer PC, siehe Hinweise in pc/eeprom_pc.c */
 
@@ -96,6 +97,10 @@
 /************************************************************
  * Some Dependencies!!!
  ************************************************************/
+
+#if ! (defined PC && defined ARM_LINUX_BOARD && defined __arm__ && defined __gnu_linux__)
+#undef ARM_LINUX_BOARD
+#endif
 
 #ifdef DOXYGEN
 /* Beim Generieren der Doku alles anschalten */
