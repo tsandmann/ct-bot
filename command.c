@@ -85,7 +85,7 @@ static void register_bot(void) {
 			unsigned basic:1;
 			unsigned map:1;
 			unsigned remotecall:1;
-		} PACKED_FORCE data;
+		} data;
 		int16_t raw;
 	} features = {
 		{
@@ -147,11 +147,11 @@ void command_init(void) {
 	register_bot();
 }
 
-/**
+/*!
  * Liest ein Kommando ein, ist blockierend!
  * Greift auf low_read() zurueck
  * Achtung, die Payload wird nicht mitgelesen!!!
- * \see low_read()
+ * @see low_read()
  */
 int8_t command_read(void) {
 	int8_t bytesRcvd;
@@ -271,16 +271,17 @@ int8_t command_read(void) {
 	}
 }
 
-/**
+/*!
  * Uebertraegt ein Kommando und wartet nicht auf eine Antwort. Interne Version, nicht threadsicher!
- * \param command		Kennung zum Command
- * \param subcommand	Kennung des Subcommand
- * \param to			Adresse des Empfaengers
- * \param data_l 		Daten fuer den linken Kanal
- * \param data_r 		Daten fuer den rechten Kanal
- * \param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
+ * @param command		Kennung zum Command
+ * @param subcommand	Kennung des Subcommand
+ * @param to			Adresse des Empfaengers
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r 		Daten fuer den rechten Kanal
+ * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
-void command_write_to_internal(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload) {
+void command_write_to_internal(uint8_t command, uint8_t subcommand,
+		uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload) {
 	request_t request;
 	request.command = command;
 
@@ -302,35 +303,32 @@ void command_write_to_internal(uint8_t command, uint8_t subcommand, uint8_t to, 
 
 	cmd_to_send.seq = count++;
 
-#ifdef DEBUG_COMMAND
-	command_display(&cmd_to_send);
-#endif
-
 	low_write(&cmd_to_send);
 }
 
-/**
+/*!
  * Uebertraegt ein Kommando und wartet nicht auf eine Antwort
- * \param command		Kennung zum Command
- * \param subcommand	Kennung des Subcommand
- * \param to			Adresse des Empfaengers
- * \param data_l 		Daten fuer den linken Kanal
- * \param data_r 		Daten fuer den rechten Kanal
- * \param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
+ * @param command		Kennung zum Command
+ * @param subcommand	Kennung des Subcommand
+ * @param to			Adresse des Empfaengers
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r 		Daten fuer den rechten Kanal
+ * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
-void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload) {
+void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to,
+		int16_t data_l, int16_t data_r, uint8_t payload) {
 	os_enterCS();
 	command_write_to_internal(command, subcommand, to, data_l, data_r, payload);
 	os_exitCS();
 }
 
-/**
+/*!
  * Uebertraegt ein Kommando an den ct-Sim und wartet nicht auf eine Antwort
- * \param command		Kennung zum Command
- * \param subcommand	Kennung des Subcommand
- * \param data_l 		Daten fuer den linken Kanal
- * \param data_r 		Daten fuer den rechten Kanal
- * \param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
+ * @param command		Kennung zum Command
+ * @param subcommand	Kennung des Subcommand
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r 		Daten fuer den rechten Kanal
+ * @param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
  */
 void command_write(uint8_t command, uint8_t subcommand, int16_t data_l,
 		int16_t data_r, uint8_t payload) {
@@ -345,17 +343,18 @@ void command_write(uint8_t command, uint8_t subcommand, int16_t data_l,
 	os_exitCS();
 }
 
-/**
+/*!
  * Versendet Daten mit Anhang und wartet nicht auf Antwort
- * \param command 		Kennung zum Command
- * \param subcommand	Kennung des Subcommand
- * \param to			Adresse, an die die Daten gesendet werden sollen
- * \param data_l 		Daten fuer den linken Kanal
- * \param data_r		Daten fuer den rechten Kanal
- * \param payload 		Anzahl der Bytes im Anhang
- * \param *data 		Datenanhang an das eigentliche Command
+ * @param command 		Kennung zum Command
+ * @param subcommand	Kennung des Subcommand
+ * @param to			Adresse, an die die Daten gesendet werden sollen
+ * @param data_l 		Daten fuer den linken Kanal
+ * @param data_r		Daten fuer den rechten Kanal
+ * @param payload 		Anzahl der Bytes im Anhang
+ * @param *data 		Datenanhang an das eigentliche Command
  */
-void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload, const void * data) {
+void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to,
+		int16_t data_l, int16_t data_r, uint8_t payload, const void * data) {
 	os_enterCS();
 	command_write_to_internal(command, subcommand, to, data_l, data_r, payload);
 	low_write_data(data, payload);
@@ -371,20 +370,22 @@ void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, i
  * @param payload 		Anzahl der Bytes im Anhang
  * @param *data 		Datenanhang an das eigentliche Command
  */
-void command_write_rawdata(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload, const void * data) {
+void command_write_rawdata(uint8_t command, uint8_t subcommand,
+		int16_t data_l, int16_t data_r, uint8_t payload, const void * data) {
 	command_write_rawdata_to(command, subcommand, CMD_SIM_ADDR, data_l, data_r,
 			payload, data);
 }
 
-/**
+/*!
  * Gibt dem Simulator Daten mit String-Anhang und wartet nicht auf Antwort
- * \param command 		Kennung zum Command
- * \param subcommand 	Kennung des Subcommand
- * \param data_l		Daten fuer den linken Kanal
- * \param data_r		Daten fuer den rechten Kanal
- * \param *data 		Datenanhang an das eigentliche Command, null-terminiert
+ * @param command 		Kennung zum Command
+ * @param subcommand 	Kennung des Subcommand
+ * @param data_l		Daten fuer den linken Kanal
+ * @param data_r		Daten fuer den rechten Kanal
+ * @param *data 		Datenanhang an das eigentliche Command, null-terminiert
  */
-void command_write_data(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, const char * data) {
+void command_write_data(uint8_t command, uint8_t subcommand, int16_t data_l,
+		int16_t data_r, const char * data) {
 	size_t len;
 	uint8_t payload;
 
@@ -406,9 +407,9 @@ void command_write_data(uint8_t command, uint8_t subcommand, int16_t data_l, int
 	os_exitCS();
 }
 
-/**
+/*!
  * Wertet das Kommando im Puffer aus
- * \return 1, wenn Kommando schon bearbeitet wurde, 0 sonst
+ * return 1, wenn Kommando schon bearbeitet wurde, 0 sonst
  */
 int8_t command_evaluate(void) {
 #ifdef RC5_AVAILABLE
@@ -797,50 +798,38 @@ int8_t command_evaluate(void) {
 	return analyzed;
 }
 
-/**
+#ifdef LOG_AVAILABLE
+/*!
  * Gibt ein Kommando auf dem Bildschirm aus
- * \param *command Zeiger auf das anzuzeigende Kommando
  */
 void command_display(command_t * command) {
-#ifdef DEBUG_COMMAND
 #ifdef PC
-	LOG_DEBUG("Start: %c (0x%x)  CMD: %c (0x%x)  Sub: %c (0x%x)  Direction: %u (0x%x)  Data_L: %d (0x%x)  Data_R: %d (0x%x)  Payload: %u  Seq: %u  From: %d  To:%d  CRC: %c (0x%x)",
-		(char) command->startCode,
-		(uint8_t) command->startCode,
-		(char) command->request.command,
-		(uint8_t) command->request.command,
-		(char) command->request.subcommand & 0x7f,
-		(uint8_t) command->request.subcommand & 0x7f,
-		(uint8_t) command->request.direction & 0x80,
-		(uint8_t) command->request.direction & 0x80,
-		command->data_l,
-		(uint16_t) command->data_l,
-		command->data_r,
-		(uint16_t) command->data_r,
-		command->payload,
-		command->seq,
-		command->from,
-		command->to,
-		command->CRC,
-		(uint8_t) command->CRC);
+//	printf("START= %d\nDIR= %d CMD= %d SUBCMD= %d\nPayload= %d\nDATA = %d %d\nSeq= %d\nCRC= %d\n",
+//		(*command).startCode,
+//		(*command).request.direction,
+//		(*command).request.command,
+//		(*command).request.subcommand,
+//		(*command).payload,
+//		(*command).data_l,
+//		(*command).data_r,
+//		(*command).seq,
+//		(*command).CRC);
+	LOG_DEBUG("CMD: %c\tSub: 0x%x\tData L: %d\tSeq: %d\t From: %d\tTo:%d\tCRC: %d\n",
+		(*command).request.command,
+		(*command).request.subcommand,
+		(*command).data_l,
+		(*command).seq,
+		(*command).from,
+		(*command).to,
+		(*command).CRC);
 #else // MCU
-	LOG_DEBUG("CMD: %c\tSub: %c\tData L: %d\tPay: %d\tSeq: %d",
+	LOG_DEBUG("CMD: %c\tSub: %c\tData L: %d\tPay: %d\tSeq: %d\n",
 		(*command).request.command,
 		(*command).request.subcommand,
 		(*command).data_l,
 		(*command).payload,
 		(*command).seq);
 #endif // PC
-#ifdef DEBUG_COMMAND_NOISY
-	LOG_RAW("raw data:");
-	uint8_t * ptr = (uint8_t *) command;
-	uint8_t i;
-	for (i = 0; i < sizeof(*command) / sizeof(*ptr); ++i) {
-		LOG_RAW("0x%02x ", *ptr++);
-	}
-#endif // DEBUG_COMMAND_NOISY
-#else // DEBUG_COMMAND
-	(void) command;
-#endif // DEBUG_COMMAND
 }
+#endif // LOG_AVAILABLE
 #endif // COMMAND_AVAILABLE

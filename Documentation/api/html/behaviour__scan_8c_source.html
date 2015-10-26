@@ -1,0 +1,263 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: behaviour_scan.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_14c9cc1c75a92f359ad94591d62973a1.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">behaviour_scan.c</div>  </div>
+</div>
+<div class="contents">
+<a href="behaviour__scan_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00027"></a>00027 <span class="preprocessor">#include &quot;<a class="code" href="bot-logic_8h.html" title="High-Level-Routinen fuer die Steuerung des c&#39;t-Bots.">bot-logic/bot-logic.h</a>&quot;</span>
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 <span class="preprocessor">#ifdef BEHAVIOUR_SCAN_AVAILABLE</span>
+<a name="l00030"></a>00030 <span class="preprocessor"></span><span class="preprocessor">#include &lt;math.h&gt;</span>
+<a name="l00031"></a>00031 <span class="preprocessor">#include &lt;stdlib.h&gt;</span>
+<a name="l00032"></a>00032 <span class="preprocessor">#include &quot;<a class="code" href="map_8h.html" title="Karte.">map.h</a>&quot;</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#include &quot;<a class="code" href="timer_8h.html" title="Timer und Zaehler.">timer.h</a>&quot;</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include &quot;<a class="code" href="display_8h.html" title="Routinen zur Displaysteuerung.">display.h</a>&quot;</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include &quot;<a class="code" href="log_8h.html" title="Routinen zum Loggen von Informationen.">log.h</a>&quot;</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include &quot;<a class="code" href="os__thread_8h.html" title="Threadmanagement fuer BotOS.">os_thread.h</a>&quot;</span>
+<a name="l00037"></a>00037 <span class="preprocessor">#include &quot;<a class="code" href="delay_8h.html" title="Hilfsroutinen fuer Wartezeiten.">delay.h</a>&quot;</span>
+<a name="l00038"></a>00038 <span class="preprocessor">#include &quot;<a class="code" href="led_8h.html" title="Routinen zur LED-Steuerung.">led.h</a>&quot;</span>
+<a name="l00039"></a>00039 <span class="preprocessor">#include &quot;<a class="code" href="mmc_8h.html" title="Routinen zum Auslesen / Schreiben einer MMC-Karte.">mmc.h</a>&quot;</span>
+<a name="l00040"></a>00040 <span class="preprocessor">#include &quot;<a class="code" href="fifo_8h.html" title="Implementierung einer FIFO.">fifo.h</a>&quot;</span>
+<a name="l00041"></a>00041 <span class="preprocessor">#include &quot;<a class="code" href="math__utils_8h.html" title="Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig.">math_utils.h</a>&quot;</span>
+<a name="l00042"></a>00042 
+<a name="l00043"></a>00043 <span class="preprocessor">#ifndef MAP_AVAILABLE</span>
+<a name="l00044"></a>00044 <span class="preprocessor"></span><span class="preprocessor">#error &quot;MAP_AVAILABLE muss an sein, damit behaviour_scan.c etwas sinnvolles tun kann&quot;</span>
+<a name="l00045"></a>00045 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00046"></a>00046 <span class="preprocessor"></span><span class="preprocessor">#ifndef OS_AVAILABLE</span>
+<a name="l00047"></a>00047 <span class="preprocessor"></span><span class="preprocessor">#error &quot;OS_AVAILABLE muss an sein fuer behaviour_scan&quot;</span>
+<a name="l00048"></a>00048 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00049"></a>00049 <span class="preprocessor"></span>
+<a name="l00050"></a>00050 <span class="comment">//#define DEBUG_SCAN_OTF // Debug-Infos an</span>
+<a name="l00051"></a>00051 
+<a name="l00052"></a><a class="code" href="behaviour__scan_8h.html#acec6d2488e68858814a398511a545f70">00052</a> <a class="code" href="unionscan__mode__t.html">scan_mode_t</a> <a class="code" href="behaviour__scan_8c.html#acec6d2488e68858814a398511a545f70" title="Modi des Verhaltens.">scan_otf_modes</a> = {{1, 1, 1, 1}}; 
+<a name="l00058"></a><a class="code" href="behaviour__scan_8h.html#a06a99ebf4e3fe7e4d494589add4429df">00058</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__scan_8c.html#a06a99ebf4e3fe7e4d494589add4429df">bot_scan_onthefly_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00059"></a>00059     <span class="keyword">static</span> int16_t last_location_x, last_location_y;
+<a name="l00060"></a>00060     <span class="keyword">static</span> int16_t last_dist_x, last_dist_y, last_dist_head;
+<a name="l00061"></a>00061     <span class="keyword">static</span> int16_t last_border_x, last_border_y, last_border_head;
+<a name="l00062"></a>00062     <span class="keyword">static</span> uint8_t index = 0;
+<a name="l00063"></a>00063 
+<a name="l00064"></a>00064     (void) data; <span class="comment">// kein warning</span>
+<a name="l00065"></a>00065 
+<a name="l00066"></a>00066     <span class="comment">/* Verhalten je nach Cache-Fuellstand */</span>
+<a name="l00067"></a>00067     uint8_t cache_free = (uint8_t) (<a class="code" href="map_8c.html#ada848a524986d75cfeb512f6f6e58115" title="Fifo fuer Map-Cache.">map_update_fifo</a>.<a class="code" href="structfifo__t.html#a4a82f7fd1625c1abebf4f161120856f0">size</a> - <a class="code" href="map_8c.html#ada848a524986d75cfeb512f6f6e58115" title="Fifo fuer Map-Cache.">map_update_fifo</a>.<a class="code" href="structfifo__t.html#aac8f651266b8b08e968553fbb95307c1">count</a>);
+<a name="l00068"></a>00068     <span class="keywordflow">if</span> (cache_free &lt; <a class="code" href="behaviour__scan_8h.html#aa8058cd8896288d639f1f1adc972c2c8">SCAN_OTF_CACHE_LEVEL_THRESHOLD</a>) {
+<a name="l00069"></a>00069         <span class="keywordflow">if</span> (cache_free == 1) {
+<a name="l00070"></a>00070             <span class="comment">/* Cache ganz voll */</span>
+<a name="l00071"></a>00071             <span class="keywordflow">if</span> (scan_otf_modes.<a class="code" href="unionscan__mode__t.html#ab05353cb5873f09587e198a544383319">data</a>.<a class="code" href="unionscan__mode__t.html#a292a7cd3984c280fbc734b59a569150a">map_mode</a> &amp;&amp;
+<a name="l00072"></a>00072                     <a class="code" href="sensor_8c.html#a84def4d45c65c50a87cd4882f9462b2e">sensBorderL</a> &lt; <a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a> &amp;&amp; <a class="code" href="sensor_8c.html#a0fdaee88ee679ed4c544707de739ee9a">sensBorderR</a> &lt; <a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a>) {
+<a name="l00073"></a>00073                 <span class="comment">/* Stoppe den Bot, damit wir Zeit haben die Karte einzutragen</span>
+<a name="l00074"></a>00074 <span class="comment">                 * aber nur, wenn kein Abgrund erkannt wurde */</span>
+<a name="l00075"></a>00075                 <a class="code" href="motor_8c.html#a7d55b2e4a37c91e150513b2c87577750" title="Direkter Zugriff auf den Motor.">motor_set</a>(<a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>, <a class="code" href="motor_8h.html#a4c6e016f4c90744285145f136fcbf0c7" title="Motor aus.">BOT_SPEED_STOP</a>);
+<a name="l00076"></a>00076 <span class="preprocessor">#ifdef DEBUG_SCAN_OTF</span>
+<a name="l00077"></a>00077 <span class="preprocessor"></span>                <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;Map-Cache voll, halte Bot an&quot;</span>);
+<a name="l00078"></a>00078 <span class="preprocessor">#endif</span>
+<a name="l00079"></a>00079 <span class="preprocessor"></span>                <span class="comment">/* Halte alle Verhalten eine Weile an, weil sie ja sonst evtl. weiterfahren wuerden */</span>
+<a name="l00080"></a>00080                 <a class="code" href="os__thread__pc_8c.html#a3170fdf75fff4e971354e78a625b5afd">os_thread_sleep</a>(<a class="code" href="behaviour__scan_8h.html#a7115ede7d7f912b3e5cb2c77b12084c2">SCAN_OTF_SLEEP_TIME</a>);
+<a name="l00081"></a>00081             } <span class="keywordflow">else</span> {
+<a name="l00082"></a>00082                 <span class="comment">/* Cache voll, neuen Eintrag verwerfen */</span>
+<a name="l00083"></a>00083 <span class="preprocessor">#ifdef DEBUG_SCAN_OTF</span>
+<a name="l00084"></a>00084 <span class="preprocessor"></span>                <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;Map-Cache voll, verwerfe neuen Eintrag&quot;</span>);
+<a name="l00085"></a>00085 <span class="preprocessor">#endif</span>
+<a name="l00086"></a>00086 <span class="preprocessor"></span>            }
+<a name="l00087"></a>00087             <span class="keywordflow">return</span>;
+<a name="l00088"></a>00088         }
+<a name="l00089"></a>00089         <span class="comment">/* Cache sehr voll */</span>
+<a name="l00090"></a>00090         <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a37dd9e1324c7d44e0d91129c43fe9ced">v_enc_left</a> == 0 &amp;&amp; <a class="code" href="sensor_8c.html#a0d65fedf55775dbbb86b81ccc8dade6a">v_enc_right</a> == 0) {
+<a name="l00091"></a>00091             <span class="comment">/* Falls Bot gerade steht, dann kleine Pause */</span>
+<a name="l00092"></a>00092             <a class="code" href="os__thread__pc_8c.html#a3170fdf75fff4e971354e78a625b5afd">os_thread_sleep</a>(<a class="code" href="behaviour__scan_8h.html#a7115ede7d7f912b3e5cb2c77b12084c2">SCAN_OTF_SLEEP_TIME</a>);
+<a name="l00093"></a>00093             <span class="keywordflow">return</span>;
+<a name="l00094"></a>00094         }
+<a name="l00095"></a>00095     }
+<a name="l00096"></a>00096 
+<a name="l00097"></a>00097     <span class="comment">/* Cache updaten, falls sich der Bot weit genug bewegt hat. */</span>
+<a name="l00098"></a>00098     index++;
+<a name="l00099"></a>00099     <span class="keywordflow">if</span> (index == <a class="code" href="map_8h.html#a2d7e46455421e42503343a240edf71ec" title="Groesse des Map-Caches [# Eintraege].">MAP_UPDATE_CACHE_SIZE</a>) {
+<a name="l00100"></a>00100         index = 0;
+<a name="l00101"></a>00101     }
+<a name="l00102"></a>00102     map_cache_t * cache_tmp = &amp;<a class="code" href="map_8c.html#a04a94929973886472ea38f5fbd7238e0" title="Map-Cache.">map_update_cache</a>[index];
+<a name="l00103"></a>00103     cache_tmp-&gt;mode.raw = 0;
+<a name="l00104"></a>00104     cache_tmp-&gt;dataL = 0;
+<a name="l00105"></a>00105     cache_tmp-&gt;dataR = 0;
+<a name="l00106"></a>00106 <span class="preprocessor">#ifdef MEASURE_POSITION_ERRORS_AVAILABLE</span>
+<a name="l00107"></a>00107 <span class="preprocessor"></span>    cache_tmp-&gt;loc_prob = (uint8_t) (<a class="code" href="sensor_8c.html#a8490fea3579cb42d8c98c10f63c93e35">pos_error_radius</a> &lt; <a class="code" href="behaviour__scan_8h.html#af939344d05f2f59c20aea0ae8c04e9c4">MAP_MAX_ERROR_RADIUS</a> ? 255 - (<a class="code" href="sensor_8c.html#a8490fea3579cb42d8c98c10f63c93e35">pos_error_radius</a> * 256
+<a name="l00108"></a>00108             / <a class="code" href="behaviour__scan_8h.html#af939344d05f2f59c20aea0ae8c04e9c4">MAP_MAX_ERROR_RADIUS</a>) : 0);
+<a name="l00109"></a>00109 <span class="preprocessor">#endif // MEASURE_POSITION_ERRORS_AVAILABLE</span>
+<a name="l00110"></a>00110 <span class="preprocessor"></span>
+<a name="l00111"></a>00111     <span class="comment">/*</span>
+<a name="l00112"></a>00112 <span class="comment">     * STANDFLAECHE</span>
+<a name="l00113"></a>00113 <span class="comment">     * Die Standflaeche tragen wir nur ein, wenn der Bot auch ein Stueck gefahren ist</span>
+<a name="l00114"></a>00114 <span class="comment">     */</span>
+<a name="l00115"></a>00115     <span class="keywordflow">if</span> (scan_otf_modes.<a class="code" href="unionscan__mode__t.html#ab05353cb5873f09587e198a544383319">data</a>.<a class="code" href="unionscan__mode__t.html#a730a88af2109980d7e6c44388901e7ce">location</a>) {
+<a name="l00116"></a>00116         <span class="comment">// ermitteln, wie weit der Bot seit dem letzten Location-Update gefahren ist</span>
+<a name="l00117"></a>00117         uint16_t diff = (uint16_t) <a class="code" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat-Abstands zwischen zwei Punkten.">get_dist</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, last_location_x, last_location_y);
+<a name="l00118"></a>00118         <span class="keywordflow">if</span> (diff &gt; (<a class="code" href="behaviour__scan_8h.html#a4098e830bee7d479652267d2703422b2">SCAN_OTF_RESOLUTION_DISTANCE_LOCATION</a> * <a class="code" href="behaviour__scan_8h.html#a4098e830bee7d479652267d2703422b2">SCAN_OTF_RESOLUTION_DISTANCE_LOCATION</a>)) {
+<a name="l00119"></a>00119             <span class="comment">// ist er weiter als SCAN_ONTHEFLY_DIST_RESOLUTION gefahren ==&gt; Standflaeche aktualisieren</span>
+<a name="l00120"></a>00120             cache_tmp-&gt;mode.data.location = 1;
+<a name="l00121"></a>00121             <span class="comment">// Letzte Location-Update-Position sichern</span>
+<a name="l00122"></a>00122             last_location_x = <a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>;
+<a name="l00123"></a>00123             last_location_y = <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>;
+<a name="l00124"></a>00124         }
+<a name="l00125"></a>00125     }
+<a name="l00126"></a>00126 
+<a name="l00127"></a>00127     <span class="comment">/*</span>
+<a name="l00128"></a>00128 <span class="comment">     * DISTANZSENSOREN</span>
+<a name="l00129"></a>00129 <span class="comment">     * Die Distanzsensoren tragen wir beim Geradeausfahren selten ein,</span>
+<a name="l00130"></a>00130 <span class="comment">     * da sie viele Map-zellen ueberstreichen und das Eintragen teuer ist</span>
+<a name="l00131"></a>00131 <span class="comment">     * und sie auf der anderen Seite (beim Vorwaertsfahren) wenig neue Infos liefern</span>
+<a name="l00132"></a>00132 <span class="comment">    */</span>
+<a name="l00133"></a>00133     <span class="keywordflow">if</span> (scan_otf_modes.<a class="code" href="unionscan__mode__t.html#ab05353cb5873f09587e198a544383319">data</a>.<a class="code" href="unionscan__mode__t.html#a490b83447318c0733fdc198ccb93e911">distance</a>) {
+<a name="l00134"></a>00134         <span class="comment">// ermitteln, wie weit der Bot gedreht hat</span>
+<a name="l00135"></a>00135         int16_t turned = <a class="code" href="math__utils_8c.html#a9c14e14c49d54828861673702c30eeed" title="Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung.">turned_angle</a>(last_dist_head);
+<a name="l00136"></a>00136         <span class="comment">// ermitteln, wie weit der Bot seit dem letzten distance-update gefahren ist</span>
+<a name="l00137"></a>00137         uint16_t diff = (uint16_t) <a class="code" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat-Abstands zwischen zwei Punkten.">get_dist</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, last_dist_x, last_dist_y);
+<a name="l00138"></a>00138         <span class="keywordflow">if</span> ((turned &gt; <a class="code" href="behaviour__scan_8h.html#a04d01d052ce1d836d6ecfb0ed8918a26">SCAN_OTF_RESOLUTION_ANGLE_DISTSENS</a>) ||
+<a name="l00139"></a>00139             (diff &gt; (<a class="code" href="behaviour__scan_8h.html#a7f5ee5225c8da549d8969cf2803a2fdc">SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS</a> * <a class="code" href="behaviour__scan_8h.html#a7f5ee5225c8da549d8969cf2803a2fdc">SCAN_OTF_RESOLUTION_DISTANCE_DISTSENS</a>))) {
+<a name="l00140"></a>00140             <span class="comment">// Hat sich der Bot mehr als SCAN_ONTHEFLY_ANGLE_RESOLUTION gedreht ==&gt; Blickstrahlen aktualisieren</span>
+<a name="l00141"></a>00141             cache_tmp-&gt;mode.data.distance = 1;
+<a name="l00142"></a>00142 
+<a name="l00143"></a>00143             cache_tmp-&gt;dataL = (uint8_t) (<a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> / 5);
+<a name="l00144"></a>00144             cache_tmp-&gt;dataR = (uint8_t) (<a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a> / 5);
+<a name="l00145"></a>00145             <span class="comment">// Letzte Distanz-Update-Position sichern</span>
+<a name="l00146"></a>00146             last_dist_x = <a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>;
+<a name="l00147"></a>00147             last_dist_y = <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>;
+<a name="l00148"></a>00148             last_dist_head = <a class="code" href="sensor_8c.html#a0bebab40bf945479d36e9190261b5a28">heading_int</a>;
+<a name="l00149"></a>00149         }
+<a name="l00150"></a>00150     }
+<a name="l00151"></a>00151 
+<a name="l00152"></a>00152     <span class="comment">/*</span>
+<a name="l00153"></a>00153 <span class="comment">     * ABGRUNDSENSOREN</span>
+<a name="l00154"></a>00154 <span class="comment">     * Wir werten diese nur aus, wenn der Bot entweder</span>
+<a name="l00155"></a>00155 <span class="comment">     * SCAN_OTF_RESOLUTION_DISTANCE_BORDER mm gefahren ist oder</span>
+<a name="l00156"></a>00156 <span class="comment">     * SCAN_OTF_RESOLUTION_ANGLE_BORDER Grad gedreht hat</span>
+<a name="l00157"></a>00157 <span class="comment">     */</span>
+<a name="l00158"></a>00158     <span class="keywordflow">if</span> (scan_otf_modes.<a class="code" href="unionscan__mode__t.html#ab05353cb5873f09587e198a544383319">data</a>.<a class="code" href="unionscan__mode__t.html#ad524d5d968e084170c9096ca51e7d0a7">border</a>) {
+<a name="l00159"></a>00159         <span class="comment">// ermitteln, wie weit der Bot seit dem letzten border-update gefahren ist</span>
+<a name="l00160"></a>00160         uint16_t diff = (uint16_t) <a class="code" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat-Abstands zwischen zwei Punkten.">get_dist</a>(<a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>, <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>, last_border_x, last_border_y);
+<a name="l00161"></a>00161         <span class="comment">// ermitteln, wie weit der Bot gedreht hat</span>
+<a name="l00162"></a>00162         int16_t turned = <a class="code" href="math__utils_8c.html#a9c14e14c49d54828861673702c30eeed" title="Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung.">turned_angle</a>(last_border_head);
+<a name="l00163"></a>00163         <span class="keywordflow">if</span> ((
+<a name="l00164"></a>00164               (diff &gt; (<a class="code" href="behaviour__scan_8h.html#ac2fe3ab775d27d3fc019efe878e242f9">SCAN_OTF_RESOLUTION_DISTANCE_BORDER</a> * <a class="code" href="behaviour__scan_8h.html#ac2fe3ab775d27d3fc019efe878e242f9">SCAN_OTF_RESOLUTION_DISTANCE_BORDER</a>)) ||
+<a name="l00165"></a>00165               (turned &gt; <a class="code" href="behaviour__scan_8h.html#abb03e9a85242e9fd1f497ed543b98ea0">SCAN_OTF_RESOLUTION_ANGLE_BORDER</a>)
+<a name="l00166"></a>00166             ) &amp;&amp; ((<a class="code" href="sensor_8c.html#a84def4d45c65c50a87cd4882f9462b2e">sensBorderL</a> &gt; <a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a>) || (<a class="code" href="sensor_8c.html#a0fdaee88ee679ed4c544707de739ee9a">sensBorderR</a> &gt; <a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a>))) {
+<a name="l00167"></a>00167                 cache_tmp-&gt;mode.data.border = 1;
+<a name="l00168"></a>00168                 cache_tmp-&gt;mode.data.distance = 0;
+<a name="l00169"></a>00169                 cache_tmp-&gt;dataL = (uint8_t) (<a class="code" href="sensor_8c.html#a84def4d45c65c50a87cd4882f9462b2e">sensBorderL</a> &gt; <a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a>);
+<a name="l00170"></a>00170                 cache_tmp-&gt;dataR = (uint8_t) (<a class="code" href="sensor_8c.html#a0fdaee88ee679ed4c544707de739ee9a">sensBorderR</a> &gt; <a class="code" href="bot-local_8h.html#a98ae709ace7eaebe8e5ad09daf5c357a">BORDER_DANGEROUS</a>);
+<a name="l00171"></a>00171 
+<a name="l00172"></a>00172                 last_border_x = <a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>;
+<a name="l00173"></a>00173                 last_border_y = <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>;
+<a name="l00174"></a>00174                 last_border_head = <a class="code" href="sensor_8c.html#a0bebab40bf945479d36e9190261b5a28">heading_int</a>;
+<a name="l00175"></a>00175         }
+<a name="l00176"></a>00176     }
+<a name="l00177"></a>00177 
+<a name="l00178"></a>00178     <span class="comment">// ist ein Update angesagt?</span>
+<a name="l00179"></a>00179     <span class="keywordflow">if</span> (cache_tmp-&gt;mode.data.distance || cache_tmp-&gt;mode.data.location || cache_tmp-&gt;mode.data.border) {
+<a name="l00180"></a>00180         cache_tmp-&gt;x_pos = <a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>;
+<a name="l00181"></a>00181         cache_tmp-&gt;y_pos = <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>;
+<a name="l00182"></a>00182 
+<a name="l00183"></a>00183 <span class="preprocessor">#ifdef MAP_USE_TRIG_CACHE</span>
+<a name="l00184"></a>00184 <span class="preprocessor"></span>        <span class="keywordflow">if</span> (cache_tmp-&gt;mode.data.distance || cache_tmp-&gt;mode.data.border) {
+<a name="l00185"></a>00185             cache_tmp-&gt;sin = <a class="code" href="sensor_8c.html#abf46f3373ce4937328a613dfae059af7">heading_sin</a>;
+<a name="l00186"></a>00186             cache_tmp-&gt;cos = <a class="code" href="sensor_8c.html#a569e0f57bd20c90661f2bb6c4b1ba750">heading_cos</a>;
+<a name="l00187"></a>00187         }
+<a name="l00188"></a>00188 <span class="preprocessor">#else</span>
+<a name="l00189"></a>00189 <span class="preprocessor"></span>        cache_tmp-&gt;heading = <a class="code" href="sensor_8c.html#acbf755fc394183b9916d8f9fc2960420">heading_10_int</a>;
+<a name="l00190"></a>00190 <span class="preprocessor">#endif // MAP_USE_TRIG_CACHE</span>
+<a name="l00191"></a>00191 <span class="preprocessor"></span>
+<a name="l00192"></a>00192 <span class="preprocessor">#ifdef DEBUG_SCAN_OTF</span>
+<a name="l00193"></a>00193 <span class="preprocessor"></span>        <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;neuer Eintrag: x=%d y=%d head=%f distance=%d loaction=%d border=%d&quot;</span>, cache_tmp-&gt;x_pos, cache_tmp-&gt;y_pos, cache_tmp-&gt;heading / 10.0f, cache_tmp-&gt;mode.distance, cache_tmp-&gt;mode.location, cache_tmp-&gt;mode.border);
+<a name="l00194"></a>00194 <span class="preprocessor">#endif</span>
+<a name="l00195"></a>00195 <span class="preprocessor"></span>
+<a name="l00196"></a>00196         _inline_fifo_put(&amp;<a class="code" href="map_8c.html#ada848a524986d75cfeb512f6f6e58115" title="Fifo fuer Map-Cache.">map_update_fifo</a>, index, <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>);
+<a name="l00197"></a>00197     }
+<a name="l00198"></a>00198 }
+<a name="l00199"></a>00199 
+<a name="l00200"></a>00200 <span class="preprocessor">#endif // BEHAVIOUR_SCAN_AVAILABLE</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:08 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

@@ -309,7 +309,7 @@ uint8_t pos_store_top(pos_store_t * store, position_t * pos, uint8_t index) {
 	if (store == NULL) {
 		return False;
 	}
-	if (index > store->count) {
+	if (store->count <= index) {
 		return False;
 	}
 	pos_store_pointer_t sp = (pos_store_pointer_t) (store->sp - index);

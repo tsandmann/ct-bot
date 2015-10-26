@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: timer-low.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_f02428e3da713fc394853d6cd2afbcd0.html">mcu</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#func-members">Funktionen</a>  </div>
+  <div class="headertitle">
+<div class="title">timer-low.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Timer und Counter fuer den Mikrocontroller.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="ct-Bot_8h_source.html">ct-Bot.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="timer_8h_source.html">timer.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="rc5_8h_source.html">rc5.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="sensor-low_8h_source.html">sensor-low.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="bot-local_8h_source.html">bot-local.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="os__scheduler_8h_source.html">os_scheduler.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="os__thread_8h_source.html">os_thread.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="uart_8h_source.html">uart.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="sensor_8h_source.html">sensor.h</a>&quot;</code><br/>
+<code>#include &lt;avr/io.h&gt;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für timer-low.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="timer-low_8c__incl.png" border="0" usemap="#timer-low_8c" alt=""/></div>
+<map name="timer-low_8c" id="timer-low_8c">
+<area shape="rect" id="node3" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot&#45;Funktionalitaeten" alt="" coords="535,83,601,111"/><area shape="rect" id="node21" href="bot-local_8h.html" title="Konstanten, die den Bot an reale Umgebungen anpassen." alt="" coords="547,161,632,189"/><area shape="rect" id="node23" href="timer_8h.html" title="Timer und Zaehler." alt="" coords="653,315,715,343"/><area shape="rect" id="node25" href="rc5_8h.html" title="RC5&#45;Fernbedienung / Basic&#45;Tasten&#45;Handler." alt="" coords="1148,161,1199,189"/><area shape="rect" id="node27" href="sensor-low_8h.html" title="Low&#45;Level Routinen fuer die Sensor&#45;Steuerung des c&#39;t&#45;Bots." alt="" coords="1227,83,1325,111"/><area shape="rect" id="node30" href="os__scheduler_8h.html" title="Mini&#45;Scheduler fuer BotOS." alt="" coords="840,315,952,343"/><area shape="rect" id="node32" href="os__thread_8h.html" title="Threadmanagement fuer BotOS." alt="" coords="727,238,817,266"/><area shape="rect" id="node38" href="uart_8h.html" title="Routinen zur seriellen Kommunikation." alt="" coords="867,83,920,111"/><area shape="rect" id="node47" href="sensor_8h.html" title="Architekturunabhaengiger Teil der Sensorsteuerung." alt="" coords="1131,83,1203,111"/><area shape="rect" id="node5" href="global_8h.html" title="Allgemeine Definitionen und Datentypen." alt="" coords="385,161,455,189"/><area shape="rect" id="node11" href="builtins_8h.html" title="Compiler&#45;Builtins mit Fallback fuer aeltere avr&#45;libc Versionen." alt="" coords="560,238,632,266"/><area shape="rect" id="node42" href="fifo_8h.html" title="Implementierung einer FIFO." alt="" coords="860,161,908,189"/><area shape="rect" id="node50" href="cmps03_8h.html" title="CMPS03&#45;Treiber." alt="" coords="1223,161,1303,189"/></map>
+</div>
+</div>
+<p><a href="timer-low_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="timer-low_8c.html#ab70da2aaa3ee7e1b1a9c37f48d85d660">ISR</a> (TIMER2_COMP_vect)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="timer-low_8c.html#a7efc647ef45d788535d90cfa4cc18d44">timer_2_init</a> (void)</td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Timer und Counter fuer den Mikrocontroller. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Benjamin Benz (<a href="mailto:bbe@heise.de">bbe@heise.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>26.12.2005 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="timer-low_8c_source.html">timer-low.c</a>.</p>
+</div><hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="ab70da2aaa3ee7e1b1a9c37f48d85d660"></a><!-- doxytag: member="timer&#45;low.c::ISR" ref="ab70da2aaa3ee7e1b1a9c37f48d85d660" args="(TIMER2_COMP_vect)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ISR </td>
+          <td>(</td>
+          <td class="paramtype">TIMER2_COMP_vect&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Interrupt Handler fuer Timer/Counter 2(A) </p>
+
+<p>Definiert in Zeile <a class="el" href="timer-low_8c_source.html#l00052">52</a> der Datei <a class="el" href="timer-low_8c_source.html">timer-low.c</a>.</p>
+
+<p>Benutzt <a class="el" href="builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2">__builtin_avr_cli()</a>, <a class="el" href="builtins_8h.html#aa9fc5c6054d97fa1b7901789a7f69636">__builtin_avr_sei()</a>, <a class="el" href="sensor-low_8c_source.html#l00350">bot_encoder_isr()</a>, <a class="el" href="ir-rc5_8h_source.html#l00057">BPS_BITS</a>, <a class="el" href="sensor_8c_source.html#l00081">bps_ir_data</a>, <a class="el" href="ir-rc5_8h_source.html#l00055">BPS_PAUSE_SAMPLES</a>, <a class="el" href="ir-rc5_8h_source.html#l00037">BPS_PIN</a>, <a class="el" href="ir-rc5_8h_source.html#l00035">BPS_PINR</a>, <a class="el" href="ir-rc5_8h_source.html#l00056">BPS_SAMPLES_PER_BIT</a>, <a class="el" href="fifo_8h_source.html#l00047">fifo_t::count</a>, <a class="el" href="ir-rc5_8c_source.html#l00057">ir_isr()</a>, <a class="el" href="timer_8h_source.html#l00040">MS_TO_TICKS</a>, <a class="el" href="os__thread_8c_source.html#l00053">os_kernel_stack</a>, <a class="el" href="os__thread_8h_source.html#l00049">OS_KERNEL_STACKSIZE</a>, <a class="el" href="os__scheduler_8c_source.html#l00217">os_schedule()</a>, <a class="el" href="ir-rc5_8h_source.html#l00053">RC5_BITS</a>, <a class="el" href="rc5_8c_source.html#l00058">rc5_ir_data</a>, <a class="el" href="ir-rc5_8h_source.html#l00049">RC5_PAUSE_SAMPLES</a>, <a class="el" href="ir-rc5_8h_source.html#l00036">RC5_PIN</a>, <a class="el" href="ir-rc5_8h_source.html#l00034">RC5_PINR</a>, <a class="el" href="ir-rc5_8h_source.html#l00052">RC5_SAMPLES_PER_BIT</a>, <a class="el" href="timer_8c_source.html#l00032">tickCount</a>, <a class="el" href="os__scheduler_8c_source.html#l00057">uart_log</a> und <a class="el" href="uart_8c_source.html#l00041">uart_outfifo</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="timer-low_8c_ab70da2aaa3ee7e1b1a9c37f48d85d660_cgraph.png" border="0" usemap="#timer-low_8c_ab70da2aaa3ee7e1b1a9c37f48d85d660_cgraph" alt=""/></div>
+<map name="timer-low_8c_ab70da2aaa3ee7e1b1a9c37f48d85d660_cgraph" id="timer-low_8c_ab70da2aaa3ee7e1b1a9c37f48d85d660_cgraph">
+<area shape="rect" id="node3" href="builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2" title="Disables all interrupts by clearing the global interrupt mask." alt="" coords="449,106,564,134"/><area shape="rect" id="node5" href="builtins_8h.html#aa9fc5c6054d97fa1b7901789a7f69636" title="Enables interrupts by setting the global interrupt mask." alt="" coords="97,55,217,83"/><area shape="rect" id="node7" href="sensor-low_8h.html#a2746db25d650e08926342d9c189644b1" title="Kuemmert sich um die Radencoder." alt="" coords="99,5,216,33"/><area shape="rect" id="node13" href="ir-rc5_8h.html#acc3ad37b7fbac4450977264edf3a7850" title="ir_isr" alt="" coords="132,157,183,185"/><area shape="rect" id="node15" href="os__scheduler_8h.html#aaf0ea29568109bcdfb1d527f223accad" title="os_schedule" alt="" coords="108,207,207,235"/><area shape="rect" id="node9" href="motor_8c.html#abfe2160ced04338d7f24aab6291c7f19" title="Drehzahlregelung fuer die Motoren des c&#39;t&#45;Bots." alt="" coords="277,5,384,33"/><area shape="rect" id="node11" href="motor-low_8h.html#af288dee5f55b67d9eaf1d6e180bfd121" title="Stellt einen PWM&#45;Wert fuer einen Motor ein low&#45;level." alt="" coords="455,5,559,33"/><area shape="rect" id="node17" href="fifo_8c.html#a7b3f9ad457273c9717bff49113c84250" title="fifo_put_data" alt="" coords="281,157,380,185"/><area shape="rect" id="node22" href="os__thread_8h.html#afa82438e9832609bc5ffbddad166e1b7" title="Schaltet &quot;von aussen&quot; auf einen neuen Thread um." alt="" coords="268,207,393,235"/><area shape="rect" id="node20" href="os__thread__pc_8c.html#aa0b166109be9754de9b8b863b8d197c7" title="os_signal_unlock" alt="" coords="444,157,569,185"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a7efc647ef45d788535d90cfa4cc18d44"></a><!-- doxytag: member="timer&#45;low.c::timer_2_init" ref="a7efc647ef45d788535d90cfa4cc18d44" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void timer_2_init </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>initialisiert Timer 2 und startet ihn </p>
+
+<p>Definiert in Zeile <a class="el" href="timer-low_8c_source.html#l00107">107</a> der Datei <a class="el" href="timer-low_8c_source.html">timer-low.c</a>.</p>
+
+<p>Benutzt <a class="el" href="builtins_8h.html#aa9fc5c6054d97fa1b7901789a7f69636">__builtin_avr_sei()</a>, <a class="el" href="timer_8h_source.html#l00151">TIMER_2_CLOCK</a> und <a class="el" href="bot-local_8h_source.html#l00089">XTAL</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="timer-low_8c_a7efc647ef45d788535d90cfa4cc18d44_cgraph.png" border="0" usemap="#timer-low_8c_a7efc647ef45d788535d90cfa4cc18d44_cgraph" alt=""/></div>
+<map name="timer-low_8c_a7efc647ef45d788535d90cfa4cc18d44_cgraph" id="timer-low_8c_a7efc647ef45d788535d90cfa4cc18d44_cgraph">
+<area shape="rect" id="node3" href="builtins_8h.html#aa9fc5c6054d97fa1b7901789a7f69636" title="Enables interrupts by setting the global interrupt mask." alt="" coords="145,5,265,33"/></map>
+</div>
+</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:13 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

@@ -1,0 +1,607 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: display.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_f02428e3da713fc394853d6cd2afbcd0.html">mcu</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#define-members">Makrodefinitionen</a> &#124;
+<a href="#func-members">Funktionen</a> &#124;
+<a href="#var-members">Variablen</a>  </div>
+  <div class="headertitle">
+<div class="title">display.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Routinen zur Displaysteuerung.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="ct-Bot_8h_source.html">ct-Bot.h</a>&quot;</code><br/>
+<code>#include &lt;avr/io.h&gt;</code><br/>
+<code>#include &lt;stdio.h&gt;</code><br/>
+<code>#include &quot;<a class="el" href="command_8h_source.html">command.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="display_8h_source.html">display.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="delay_8h_source.html">delay.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="shift_8h_source.html">shift.h</a>&quot;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für display.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="display_8c__incl.png" border="0" usemap="#display_8c" alt=""/></div>
+<map name="display_8c" id="display_8c">
+<area shape="rect" id="node3" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot&#45;Funktionalitaeten" alt="" coords="289,83,356,111"/><area shape="rect" id="node27" href="command_8h.html" title="Kommando&#45;Management." alt="" coords="603,83,693,111"/><area shape="rect" id="node50" href="display_8h.html" title="Routinen zur Displaysteuerung." alt="" coords="744,161,819,189"/><area shape="rect" id="node53" href="delay_8h.html" title="Hilfsroutinen fuer Wartezeiten." alt="" coords="360,161,427,189"/><area shape="rect" id="node56" href="shift_8h.html" title="Routinen zur Ansteuerung der Shift&#45;Register." alt="" coords="853,83,907,111"/><area shape="rect" id="node5" href="global_8h.html" title="Allgemeine Definitionen und Datentypen." alt="" coords="287,238,356,266"/><area shape="rect" id="node21" href="bot-local_8h.html" title="Konstanten, die den Bot an reale Umgebungen anpassen." alt="" coords="200,161,285,189"/><area shape="rect" id="node11" href="builtins_8h.html" title="Compiler&#45;Builtins mit Fallback fuer aeltere avr&#45;libc Versionen." alt="" coords="416,315,488,343"/><area shape="rect" id="node29" href="eeprom_8h.html" title="EEPROM&#45;Zugriff." alt="" coords="451,161,528,189"/><area shape="rect" id="node35" href="uart_8h.html" title="Routinen zur seriellen Kommunikation." alt="" coords="631,161,684,189"/><area shape="rect" id="node38" href="fifo_8h.html" title="Implementierung einer FIFO." alt="" coords="740,238,788,266"/><area shape="rect" id="node40" href="os__thread_8h.html" title="Threadmanagement fuer BotOS." alt="" coords="651,315,741,343"/><area shape="rect" id="node44" href="timer_8h.html" title="Timer und Zaehler." alt="" coords="665,393,727,421"/><area shape="rect" id="node46" href="os__scheduler_8h.html" title="Mini&#45;Scheduler fuer BotOS." alt="" coords="751,393,863,421"/></map>
+</div>
+</div>
+<p><a href="display_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="define-members"></a>
+Makrodefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#a4502380ca8d34b5839154a27dc3827a6">DISPLAY_CLEAR</a>&#160;&#160;&#160;0x01</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#a8b06a072c2c653569b4a34afa3d54330">DISPLAY_CURSORHOME</a>&#160;&#160;&#160;0x02</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#ae2b4bc72a89a7d23d1efe5b3f70b43f0">DISPLAY_MODE</a>&#160;&#160;&#160;0x0E</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#aa65679b3767855fca92da14ff34bb655">DISPLAY_OUT</a>&#160;&#160;&#160;0x07</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#a5faffcac3d4d4bb126efe7f38241c15a">DISPLAY_IN</a>&#160;&#160;&#160;(1&lt;&lt;5)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#aed00766520f9337570c118569118b2a3">DISPLAY_PORT</a>&#160;&#160;&#160;PORTC</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#a2be43e5cc435c14b790ed94804ecf61e">DISPLAY_DDR</a>&#160;&#160;&#160;DDRC</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#a6196fc20f3241b9b02cab748aa1cf031">DPC</a>&#160;&#160;&#160;(uint8_t) (DISPLAY_PORT &amp; ~DISPLAY_OUT)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#addfae2efdd9f89fc407dad5ccc57adfd">DISPLAY_READY_DDR</a>&#160;&#160;&#160;DDRC</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#abe1f1687d875efcaa790ba4c14acd53a">DISPLAY_READY_PIN</a>&#160;&#160;&#160;(1&lt;&lt;5)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#a4d4f405c22c6dbb021b4b171a178cb30">DISPLAY_RS</a>&#160;&#160;&#160;(1&lt;&lt;0)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#ad4e6d396695124ba4ec26e594107f35e">DISPLAY_RW</a>&#160;&#160;&#160;(1&lt;&lt;1)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#abe19549547512a60f486bec1089c3183">DISPLAY_EN</a>&#160;&#160;&#160;(1&lt;&lt;2)</td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#aaa4c090a882c65c5852d8383080b24b9">display_data</a> (const char data)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#a336e8b1e4fcf1785ec84e0eed492c418">display_clear</a> (void)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Loescht das ganze Display.  <a href="#a336e8b1e4fcf1785ec84e0eed492c418"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a> (int16_t row, int16_t column)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#a407d5033a6f0198221c8a9081d7e807e">display_init</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#a265faa775d823a5eb87a7a2fe1e5a549">display_flash_printf</a> (const char *format,...)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#a5aa764a681bf5ad55de2f297cfb4f1d3">display_flash_puts</a> (const char *text)</td></tr>
+<tr><td colspan="2"><h2><a name="var-members"></a>
+Variablen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="display_8c.html#a316fd24a278644f11993b3d5b507fcb6">display_screen</a> = 0</td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Routinen zur Displaysteuerung. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Benjamin Benz (<a href="mailto:bbe@heise.de">bbe@heise.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>20.12.05 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+</div><hr/><h2>Makro-Dokumentation</h2>
+<a class="anchor" id="a4502380ca8d34b5839154a27dc3827a6"></a><!-- doxytag: member="display.c::DISPLAY_CLEAR" ref="a4502380ca8d34b5839154a27dc3827a6" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DISPLAY_CLEAR&#160;&#160;&#160;0x01</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Kommando zum Loeschen </p>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00042">42</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="display_8c_source.html#l00129">display_clear()</a> und <a class="el" href="display_8c_source.html#l00170">display_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8b06a072c2c653569b4a34afa3d54330"></a><!-- doxytag: member="display.c::DISPLAY_CURSORHOME" ref="a8b06a072c2c653569b4a34afa3d54330" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DISPLAY_CURSORHOME&#160;&#160;&#160;0x02</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Kommando fuer den Cursor </p>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00043">43</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2be43e5cc435c14b790ed94804ecf61e"></a><!-- doxytag: member="display.c::DISPLAY_DDR" ref="a2be43e5cc435c14b790ed94804ecf61e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DISPLAY_DDR&#160;&#160;&#160;DDRC</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Port an dem das Display haengt </p>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00051">51</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="display_8c_source.html#l00170">display_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="abe19549547512a60f486bec1089c3183"></a><!-- doxytag: member="display.c::DISPLAY_EN" ref="abe19549547512a60f486bec1089c3183" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DISPLAY_EN&#160;&#160;&#160;(1&lt;&lt;2)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Enable Leitung schaltet das Interface ein (E=1). Nur wenn Enable auf High-Pegel liegt, laesst sich das Display ansprechen </p>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00078">78</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a5faffcac3d4d4bb126efe7f38241c15a"></a><!-- doxytag: member="display.c::DISPLAY_IN" ref="a5faffcac3d4d4bb126efe7f38241c15a" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DISPLAY_IN&#160;&#160;&#160;(1&lt;&lt;5)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Input-Pins Display </p>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00048">48</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="display_8c_source.html#l00170">display_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae2b4bc72a89a7d23d1efe5b3f70b43f0"></a><!-- doxytag: member="display.c::DISPLAY_MODE" ref="ae2b4bc72a89a7d23d1efe5b3f70b43f0" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DISPLAY_MODE&#160;&#160;&#160;0x0E</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Display on, Cursor on, Blink off </p>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00044">44</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="display_8c_source.html#l00170">display_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa65679b3767855fca92da14ff34bb655"></a><!-- doxytag: member="display.c::DISPLAY_OUT" ref="aa65679b3767855fca92da14ff34bb655" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DISPLAY_OUT&#160;&#160;&#160;0x07</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Output-Pins Display </p>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00047">47</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="display_8c_source.html#l00170">display_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aed00766520f9337570c118569118b2a3"></a><!-- doxytag: member="display.c::DISPLAY_PORT" ref="aed00766520f9337570c118569118b2a3" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DISPLAY_PORT&#160;&#160;&#160;PORTC</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Port an dem das Display haengt </p>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00050">50</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="display_8c_source.html#l00117">display_data()</a> und <a class="el" href="display_8c_source.html#l00170">display_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="addfae2efdd9f89fc407dad5ccc57adfd"></a><!-- doxytag: member="display.c::DISPLAY_READY_DDR" ref="addfae2efdd9f89fc407dad5ccc57adfd" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DISPLAY_READY_DDR&#160;&#160;&#160;DDRC</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Port an dem das Ready-Flag des Display haengt </p>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00056">56</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="abe1f1687d875efcaa790ba4c14acd53a"></a><!-- doxytag: member="display.c::DISPLAY_READY_PIN" ref="abe1f1687d875efcaa790ba4c14acd53a" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DISPLAY_READY_PIN&#160;&#160;&#160;(1&lt;&lt;5)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Pin an dem das Ready-Flag des Display haengt </p>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00057">57</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4d4f405c22c6dbb021b4b171a178cb30"></a><!-- doxytag: member="display.c::DISPLAY_RS" ref="a4d4f405c22c6dbb021b4b171a178cb30" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DISPLAY_RS&#160;&#160;&#160;(1&lt;&lt;0)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>RS-Leitung legt fest, ob die Daten an das Display in den Textpuffer (RS=1) kommen oder als Steuercode interpretiert werden (RS=0) </p>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00064">64</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="display_8c_source.html#l00117">display_data()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad4e6d396695124ba4ec26e594107f35e"></a><!-- doxytag: member="display.c::DISPLAY_RW" ref="ad4e6d396695124ba4ec26e594107f35e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DISPLAY_RW&#160;&#160;&#160;(1&lt;&lt;1)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>RW-Leitung legt fest, ob zum Display geschrieben wird (RW=0) oder davon gelesen wird (RW=1) </p>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00071">71</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6196fc20f3241b9b02cab748aa1cf031"></a><!-- doxytag: member="display.c::DPC" ref="a6196fc20f3241b9b02cab748aa1cf031" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DPC&#160;&#160;&#160;(uint8_t) (DISPLAY_PORT &amp; ~DISPLAY_OUT)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Port des Displays </p>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00052">52</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="display_8c_source.html#l00117">display_data()</a> und <a class="el" href="display_8c_source.html#l00170">display_init()</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="a336e8b1e4fcf1785ec84e0eed492c418"></a><!-- doxytag: member="display.c::display_clear" ref="a336e8b1e4fcf1785ec84e0eed492c418" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void display_clear </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Loescht das ganze Display. </p>
+<p>Loescht das ganze Display </p>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00129">129</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+<p>Benutzt <a class="el" href="command_8h_source.html#l00071">CMD_AKT_LCD</a>, <a class="el" href="command_8c_source.html#l00333">command_write()</a>, <a class="el" href="display_8c_source.html#l00042">DISPLAY_CLEAR</a> und <a class="el" href="command_8h_source.html#l00081">SUB_LCD_CLEAR</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="display_8c_a336e8b1e4fcf1785ec84e0eed492c418_cgraph.png" border="0" usemap="#display_8c_a336e8b1e4fcf1785ec84e0eed492c418_cgraph" alt=""/></div>
+<map name="display_8c_a336e8b1e4fcf1785ec84e0eed492c418_cgraph" id="display_8c_a336e8b1e4fcf1785ec84e0eed492c418_cgraph">
+<area shape="rect" id="node3" href="command_8c.html#a419b75ed34551408822d9caee3cd5206" title="command_write" alt="" coords="157,55,275,83"/><area shape="rect" id="node5" href="command_8c.html#a428cf92e37fc9bbc0ffc48912c3022ac" title="command_write_to_internal" alt="" coords="324,5,508,33"/><area shape="rect" id="node7" href="tcp_8h.html#aae71e1682727310afab282923a80c968" title="flushSendBuffer" alt="" coords="359,55,473,83"/><area shape="rect" id="node9" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1" title="Beendet den kritischen Abschnitt wieder, der mit os_enterCS began." alt="" coords="375,106,457,134"/><area shape="rect" id="node11" href="os__scheduler_8h.html#aaf0ea29568109bcdfb1d527f223accad" title="os_schedule" alt="" coords="557,106,656,134"/><area shape="rect" id="node13" href="fifo_8c.html#a7b3f9ad457273c9717bff49113c84250" title="fifo_put_data" alt="" coords="719,81,817,109"/><area shape="rect" id="node19" href="os__thread_8h.html#afa82438e9832609bc5ffbddad166e1b7" title="Schaltet &quot;von aussen&quot; auf einen neuen Thread um." alt="" coords="705,131,831,159"/><area shape="rect" id="node15" href="builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2" title="Disables all interrupts by clearing the global interrupt mask." alt="" coords="887,55,1001,83"/><area shape="rect" id="node17" href="os__thread__pc_8c.html#aa0b166109be9754de9b8b863b8d197c7" title="os_signal_unlock" alt="" coords="881,106,1007,134"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ad5109335e4419b07f4d9f73db290f2eb"></a><!-- doxytag: member="display.c::display_cursor" ref="ad5109335e4419b07f4d9f73db290f2eb" args="(int16_t row, int16_t column)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void display_cursor </td>
+          <td>(</td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>column</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Positioniert den Cursor </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">row</td><td>Zeile </td></tr>
+    <tr><td class="paramname">column</td><td>Spalte </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00141">141</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">c</a> und <a class="el" href="behaviour__drive__chess_8c_source.html#l00162">r</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aaa4c090a882c65c5852d8383080b24b9"></a><!-- doxytag: member="display.c::display_data" ref="aaa4c090a882c65c5852d8383080b24b9" args="(const char data)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void display_data </td>
+          <td>(</td>
+          <td class="paramtype">const char&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Schreibt ein Zeichen auf das Display </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>Das Zeichen </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00117">117</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+<p>Benutzt <a class="el" href="display_8c_source.html#l00050">DISPLAY_PORT</a>, <a class="el" href="display_8c_source.html#l00064">DISPLAY_RS</a>, <a class="el" href="display_8c_source.html#l00052">DPC</a>, <a class="el" href="shift_8c_source.html#l00061">shift_data_out()</a>, <a class="el" href="shift_8h_source.html#l00031">SHIFT_LATCH</a> und <a class="el" href="shift_8h_source.html#l00033">SHIFT_REGISTER_DISPLAY</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="display_8c_source.html#l00200">display_flash_printf()</a>, <a class="el" href="display_8c_source.html#l00231">display_flash_puts()</a> und <a class="el" href="os__scheduler_8c_source.html#l00274">os_display()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="display_8c_aaa4c090a882c65c5852d8383080b24b9_cgraph.png" border="0" usemap="#display_8c_aaa4c090a882c65c5852d8383080b24b9_cgraph" alt=""/></div>
+<map name="display_8c_aaa4c090a882c65c5852d8383080b24b9_cgraph" id="display_8c_aaa4c090a882c65c5852d8383080b24b9_cgraph">
+<area shape="rect" id="node3" href="shift_8h.html#ae7047fe022d960b3fd2a4ad8e8f19998" title="shift_data_out" alt="" coords="155,5,259,33"/><area shape="rect" id="node5" href="i2c_8h.html#a8d0292580689dd8b7e0b441cf0e6c383" title="i2c_wait" alt="" coords="308,5,377,33"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a265faa775d823a5eb87a7a2fe1e5a549"></a><!-- doxytag: member="display.c::display_flash_printf" ref="a265faa775d823a5eb87a7a2fe1e5a549" args="(const char *format,...)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t display_flash_printf </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>format</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Schreibt einen String auf das Display, der im Flash gespeichert ist </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*format</td><td>Format, wie beim printf, Zeiger aber auf String im Flash </td></tr>
+    <tr><td class="paramname">...</td><td>Variable Argumentenliste, wie beim printf </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Anzahl der geschriebenen Zeichen Ganz genauso wie das "alte" display_printf(...) zu benutzen, das Makro define display_printf(format, args...) erledigt alles automatisch, damit der String im Flash verbleibt und erst zur Laufzeit temporaer (jeweils nur eine Zeile) geladen wird. </dd></dl>
+<p>&lt; Pufferstring fuer Displayausgaben </p>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00200">200</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">c</a>, <a class="el" href="command_8h_source.html#l00071">CMD_AKT_LCD</a>, <a class="el" href="command_8c_source.html#l00387">command_write_data()</a>, <a class="el" href="display_8h_source.html#l00035">DISPLAY_BUFFER_SIZE</a>, <a class="el" href="display_8c_source.html#l00117">display_data()</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00162">r</a> und <a class="el" href="command_8h_source.html#l00082">SUB_LCD_DATA</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="display_8c_a265faa775d823a5eb87a7a2fe1e5a549_cgraph.png" border="0" usemap="#display_8c_a265faa775d823a5eb87a7a2fe1e5a549_cgraph" alt=""/></div>
+<map name="display_8c_a265faa775d823a5eb87a7a2fe1e5a549_cgraph" id="display_8c_a265faa775d823a5eb87a7a2fe1e5a549_cgraph">
+<area shape="rect" id="node3" href="command_8c.html#aef266284aebb772b9592228ed9019469" title="command_write_data" alt="" coords="191,55,340,83"/><area shape="rect" id="node19" href="display_8h.html#aaa4c090a882c65c5852d8383080b24b9" title="display_data" alt="" coords="216,106,315,134"/><area shape="rect" id="node5" href="command_8c.html#a428cf92e37fc9bbc0ffc48912c3022ac" title="command_write_to_internal" alt="" coords="391,5,575,33"/><area shape="rect" id="node7" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1" title="Beendet den kritischen Abschnitt wieder, der mit os_enterCS began." alt="" coords="441,55,524,83"/><area shape="rect" id="node9" href="os__scheduler_8h.html#aaf0ea29568109bcdfb1d527f223accad" title="os_schedule" alt="" coords="624,55,723,83"/><area shape="rect" id="node11" href="fifo_8c.html#a7b3f9ad457273c9717bff49113c84250" title="fifo_put_data" alt="" coords="785,30,884,58"/><area shape="rect" id="node17" href="os__thread_8h.html#afa82438e9832609bc5ffbddad166e1b7" title="Schaltet &quot;von aussen&quot; auf einen neuen Thread um." alt="" coords="772,81,897,109"/><area shape="rect" id="node13" href="builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2" title="Disables all interrupts by clearing the global interrupt mask." alt="" coords="953,5,1068,33"/><area shape="rect" id="node15" href="os__thread__pc_8c.html#aa0b166109be9754de9b8b863b8d197c7" title="os_signal_unlock" alt="" coords="948,55,1073,83"/><area shape="rect" id="node21" href="shift_8h.html#ae7047fe022d960b3fd2a4ad8e8f19998" title="shift_data_out" alt="" coords="431,106,535,134"/><area shape="rect" id="node23" href="i2c_8h.html#a8d0292580689dd8b7e0b441cf0e6c383" title="i2c_wait" alt="" coords="639,106,708,134"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a5aa764a681bf5ad55de2f297cfb4f1d3"></a><!-- doxytag: member="display.c::display_flash_puts" ref="a5aa764a681bf5ad55de2f297cfb4f1d3" args="(const char *text)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t display_flash_puts </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>text</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Gibt einen String (im Flash) auf dem Display aus </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*text</td><td>Zeiger auf den auszugebenden String </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Anzahl der geschriebenen Zeichen </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00231">231</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">c</a>, <a class="el" href="command_8h_source.html#l00071">CMD_AKT_LCD</a>, <a class="el" href="command_8h_source.html#l00127">CMD_SIM_ADDR</a>, <a class="el" href="command_8c_source.html#l00283">command_write_to_internal()</a>, <a class="el" href="display_8c_source.html#l00117">display_data()</a>, <a class="el" href="command_8h_source.html#l00044">low_write_data</a>, <a class="el" href="os__thread_8h_source.html#l00119">os_enterCS</a>, <a class="el" href="os__thread_8c_source.html#l00108">os_exitCS()</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00162">r</a> und <a class="el" href="command_8h_source.html#l00082">SUB_LCD_DATA</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__remotecall_8c_source.html#l00556">remotecall_display()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="display_8c_a5aa764a681bf5ad55de2f297cfb4f1d3_cgraph.png" border="0" usemap="#display_8c_a5aa764a681bf5ad55de2f297cfb4f1d3_cgraph" alt=""/></div>
+<map name="display_8c_a5aa764a681bf5ad55de2f297cfb4f1d3_cgraph" id="display_8c_a5aa764a681bf5ad55de2f297cfb4f1d3_cgraph">
+<area shape="rect" id="node3" href="command_8c.html#a428cf92e37fc9bbc0ffc48912c3022ac" title="command_write_to_internal" alt="" coords="188,5,372,33"/><area shape="rect" id="node5" href="display_8h.html#aaa4c090a882c65c5852d8383080b24b9" title="display_data" alt="" coords="231,55,329,83"/><area shape="rect" id="node11" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1" title="Beendet den kritischen Abschnitt wieder, der mit os_enterCS began." alt="" coords="239,106,321,134"/><area shape="rect" id="node7" href="shift_8h.html#ae7047fe022d960b3fd2a4ad8e8f19998" title="shift_data_out" alt="" coords="421,55,525,83"/><area shape="rect" id="node9" href="i2c_8h.html#a8d0292580689dd8b7e0b441cf0e6c383" title="i2c_wait" alt="" coords="603,55,672,83"/><area shape="rect" id="node13" href="os__scheduler_8h.html#aaf0ea29568109bcdfb1d527f223accad" title="os_schedule" alt="" coords="424,106,523,134"/><area shape="rect" id="node15" href="fifo_8c.html#a7b3f9ad457273c9717bff49113c84250" title="fifo_put_data" alt="" coords="588,106,687,134"/><area shape="rect" id="node21" href="os__thread_8h.html#afa82438e9832609bc5ffbddad166e1b7" title="Schaltet &quot;von aussen&quot; auf einen neuen Thread um." alt="" coords="575,157,700,185"/><area shape="rect" id="node17" href="builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2" title="Disables all interrupts by clearing the global interrupt mask." alt="" coords="756,81,871,109"/><area shape="rect" id="node19" href="os__thread__pc_8c.html#aa0b166109be9754de9b8b863b8d197c7" title="os_signal_unlock" alt="" coords="751,131,876,159"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a407d5033a6f0198221c8a9081d7e807e"></a><!-- doxytag: member="display.c::display_init" ref="a407d5033a6f0198221c8a9081d7e807e" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void display_init </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Initialisiert das Display </p>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00170">170</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+<p>Benutzt <a class="el" href="delay_8c_source.html#l00036">delay()</a>, <a class="el" href="display_8c_source.html#l00042">DISPLAY_CLEAR</a>, <a class="el" href="display_8c_source.html#l00051">DISPLAY_DDR</a>, <a class="el" href="display_8c_source.html#l00048">DISPLAY_IN</a>, <a class="el" href="display_8c_source.html#l00044">DISPLAY_MODE</a>, <a class="el" href="display_8c_source.html#l00047">DISPLAY_OUT</a>, <a class="el" href="display_8c_source.html#l00050">DISPLAY_PORT</a>, <a class="el" href="display_8c_source.html#l00052">DPC</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="shift_8c_source.html#l00061">shift_data_out()</a>, <a class="el" href="shift_8c_source.html#l00049">shift_init()</a>, <a class="el" href="shift_8h_source.html#l00031">SHIFT_LATCH</a> und <a class="el" href="shift_8h_source.html#l00033">SHIFT_REGISTER_DISPLAY</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="display_8c_a407d5033a6f0198221c8a9081d7e807e_cgraph.png" border="0" usemap="#display_8c_a407d5033a6f0198221c8a9081d7e807e_cgraph" alt=""/></div>
+<map name="display_8c_a407d5033a6f0198221c8a9081d7e807e_cgraph" id="display_8c_a407d5033a6f0198221c8a9081d7e807e_cgraph">
+<area shape="rect" id="node3" href="delay_8h.html#adb7db4d9ef946dcfb58bcfc667ee674a" title="Verzoegert um ms Millisekunden." alt="" coords="168,5,224,33"/><area shape="rect" id="node5" href="shift_8h.html#ae7047fe022d960b3fd2a4ad8e8f19998" title="shift_data_out" alt="" coords="144,55,248,83"/><area shape="rect" id="node9" href="shift_8h.html#ac7600504b8cf1ac90ce331a5ed23c3db" title="shift_init" alt="" coords="163,106,229,134"/><area shape="rect" id="node7" href="i2c_8h.html#a8d0292580689dd8b7e0b441cf0e6c383" title="i2c_wait" alt="" coords="297,55,367,83"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<hr/><h2>Variablen-Dokumentation</h2>
+<a class="anchor" id="a316fd24a278644f11993b3d5b507fcb6"></a><!-- doxytag: member="display.c::display_screen" ref="a316fd24a278644f11993b3d5b507fcb6" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t <a class="el" href="display__pc_8c.html#a316fd24a278644f11993b3d5b507fcb6">display_screen</a> = 0</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>zurzeit aktiver Displayscreen </p>
+
+<p>Definiert in Zeile <a class="el" href="display_8c_source.html#l00040">40</a> der Datei <a class="el" href="display_8c_source.html">display.c</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:12 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

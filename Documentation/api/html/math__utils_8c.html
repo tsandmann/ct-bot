@@ -1,0 +1,387 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: math_utils.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#func-members">Funktionen</a>  </div>
+  <div class="headertitle">
+<div class="title">math_utils.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="ct-Bot_8h_source.html">ct-Bot.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="math__utils_8h_source.html">math_utils.h</a>&quot;</code><br/>
+<code>#include &lt;math.h&gt;</code><br/>
+<code>#include &lt;stdlib.h&gt;</code><br/>
+<code>#include &lt;stdio.h&gt;</code><br/>
+<code>#include &quot;<a class="el" href="sensor_8h_source.html">sensor.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="log_8h_source.html">log.h</a>&quot;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für math_utils.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="math__utils_8c__incl.png" border="0" usemap="#math__utils_8c" alt=""/></div>
+<map name="math__utils_8c" id="math__utils_8c">
+<area shape="rect" id="node3" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot&#45;Funktionalitaeten" alt="" coords="441,83,508,111"/><area shape="rect" id="node23" href="math__utils_8h.html" title="Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig." alt="" coords="623,83,713,111"/><area shape="rect" id="node30" href="sensor_8h.html" title="Architekturunabhaengiger Teil der Sensorsteuerung." alt="" coords="911,83,983,111"/><area shape="rect" id="node36" href="log_8h.html" title="Routinen zum Loggen von Informationen." alt="" coords="1007,83,1057,111"/><area shape="rect" id="node5" href="global_8h.html" title="Allgemeine Definitionen und Datentypen." alt="" coords="323,161,392,189"/><area shape="rect" id="node21" href="bot-local_8h.html" title="Konstanten, die den Bot an reale Umgebungen anpassen." alt="" coords="432,161,517,189"/><area shape="rect" id="node11" href="builtins_8h.html" title="Compiler&#45;Builtins mit Fallback fuer aeltere avr&#45;libc Versionen." alt="" coords="91,238,163,266"/><area shape="rect" id="node32" href="rc5_8h.html" title="RC5&#45;Fernbedienung / Basic&#45;Tasten&#45;Handler." alt="" coords="876,161,927,189"/><area shape="rect" id="node34" href="cmps03_8h.html" title="CMPS03&#45;Treiber." alt="" coords="951,161,1031,189"/></map>
+</div>
+</div>
+<p><a href="math__utils_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="math__utils_8c.html#a9b417c9af724981da13cb7eff68ca026">calc_angle_diff_rad</a> (int16_t xDiff, int16_t yDiff)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Berechnung einer Winkeldifferenz zwischen dem aktuellen Standpunkt und einem anderen Ort.  <a href="#a9b417c9af724981da13cb7eff68ca026"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="math__utils_8c.html#a9c14e14c49d54828861673702c30eeed">turned_angle</a> (int16_t angle)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung.  <a href="#a9c14e14c49d54828861673702c30eeed"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7">get_dist</a> (int16_t x1, int16_t y1, int16_t x2, int16_t y2)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Ermittlung des Quadrat-Abstands zwischen zwei Punkten.  <a href="#a21ef181ca9f0913051fc5e75fb8ae2b7"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">position_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="math__utils_8c.html#a6596387c20201193119f1038edca2924">calc_point_in_distance</a> (float alpha, int16_t dx, int16_t dy)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Ermittelt die Koordinaten eines Punktes, der um dx mm in x- und dy mm in y-Richtung gegenueber der aktuellen Bot-Position verschoben ist.  <a href="#a6596387c20201193119f1038edca2924"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">position_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="math__utils_8c.html#a8b0e0e0cb5958042f543a326a68a0a40">calc_resection</a> (position_t <a class="el" href="behaviour__drive__chess_8c.html#a24420a9beaac7cee08b5e255a4c29db1">a</a>, position_t <a class="el" href="behaviour__drive__chess_8c.html#a7e6900841a67dbc908a8e0891b1f037f">m</a>, position_t <a class="el" href="behaviour__drive__chess_8c.html#aea7fd00d09b3b311e2e48d7ee976c50e">b</a>, float angle_am, float angle_mb)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Berechnet den Standort via Rueckwaertseinschnitt nach Cassini, wenn drei angepeilte Positionen bekannt sind.  <a href="#a8b0e0e0cb5958042f543a326a68a0a40"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="math__utils_8c.html#a469db49a6410ad3e91aca4394302470f">test_calc_resection</a> (void)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Testet <a class="el" href="math__utils_8c.html#a8b0e0e0cb5958042f543a326a68a0a40" title="Berechnet den Standort via Rueckwaertseinschnitt nach Cassini, wenn drei angepeilte Positionen bekann...">calc_resection()</a>  <a href="#a469db49a6410ad3e91aca4394302470f"></a><br/></td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Timo Sandmann (<a href="mailto:mail@timosandmann.de">mail@timosandmann.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>17.10.2007 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="math__utils_8c_source.html">math_utils.c</a>.</p>
+</div><hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="a9b417c9af724981da13cb7eff68ca026"></a><!-- doxytag: member="math_utils.c::calc_angle_diff_rad" ref="a9b417c9af724981da13cb7eff68ca026" args="(int16_t xDiff, int16_t yDiff)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float calc_angle_diff_rad </td>
+          <td>(</td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>xDiff</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>yDiff</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Berechnung einer Winkeldifferenz zwischen dem aktuellen Standpunkt und einem anderen Ort. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">xDiff</td><td>x-Differenz </td></tr>
+    <tr><td class="paramname">yDiff</td><td>y-Differenz </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Berechnete Winkeldifferenz [Bogenmass] </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="math__utils_8c_source.html#l00040">40</a> der Datei <a class="el" href="math__utils_8c_source.html">math_utils.c</a>.</p>
+
+<p>Benutzt <a class="el" href="sensor_8c_source.html#l00116">heading</a> und <a class="el" href="global_8h_source.html#l00156">M_PI</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6596387c20201193119f1038edca2924"></a><!-- doxytag: member="math_utils.c::calc_point_in_distance" ref="a6596387c20201193119f1038edca2924" args="(float alpha, int16_t dx, int16_t dy)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">position_t calc_point_in_distance </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>alpha</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>dy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Ermittelt die Koordinaten eines Punktes, der um dx mm in x- und dy mm in y-Richtung gegenueber der aktuellen Bot-Position verschoben ist. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alpha</td><td>Winkel zum Punkt [Grad] </td></tr>
+    <tr><td class="paramname">dx</td><td>x-Komponente des Verschiebungsvektors [mm] </td></tr>
+    <tr><td class="paramname">dy</td><td>y-Komponente des Verschiebungsvektors [mm] </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Gesuchter Punkt </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="math__utils_8c_source.html#l00100">100</a> der Datei <a class="el" href="math__utils_8c_source.html">math_utils.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">h</a>, <a class="el" href="sensor_8c_source.html#l00121">x_pos</a> und <a class="el" href="sensor_8c_source.html#l00122">y_pos</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__catch__pillar_8c_source.html#l00404">bot_catch_pillar_behaviour()</a> und <a class="el" href="behaviour__follow__line__enhanced_8c_source.html#l00115">bot_follow_line_enh_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8b0e0e0cb5958042f543a326a68a0a40"></a><!-- doxytag: member="math_utils.c::calc_resection" ref="a8b0e0e0cb5958042f543a326a68a0a40" args="(position_t a, position_t m, position_t b, float angle_am, float angle_mb)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">position_t calc_resection </td>
+          <td>(</td>
+          <td class="paramtype">position_t&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">position_t&#160;</td>
+          <td class="paramname"><em>m</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">position_t&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>angle_am</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>angle_mb</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Berechnet den Standort via Rueckwaertseinschnitt nach Cassini, wenn drei angepeilte Positionen bekannt sind. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a</td><td>Koordinaten von Bake A [mm] </td></tr>
+    <tr><td class="paramname">m</td><td>Koordinaten von Bake M [mm] </td></tr>
+    <tr><td class="paramname">b</td><td>Koordinaten von Bake B [mm] </td></tr>
+    <tr><td class="paramname">angle_am</td><td>Winkel zwischen A und M [Grad] aus Peilung, &gt; 0 </td></tr>
+    <tr><td class="paramname">angle_mb</td><td>Winkel zwischen M und B [Grad] aus Peilung, &gt; 0 </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Koordinaten des berechneten Standorts [mm], oder {INT16_MAX, INT16_MAX} falls Fehler </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="math__utils_8c_source.html#l00121">121</a> der Datei <a class="el" href="math__utils_8c_source.html">math_utils.c</a>.</p>
+
+<p>Benutzt <a class="el" href="global_8h_source.html#l00159">M_PI_2</a> und <a class="el" href="behaviour__drive__chess_8c_source.html#l00161">n</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__scan__beacons_8c_source.html#l00094">bot_scan_beacons_behaviour()</a> und <a class="el" href="math__utils_8c_source.html#l00205">test_calc_resection()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a21ef181ca9f0913051fc5e75fb8ae2b7"></a><!-- doxytag: member="math_utils.c::get_dist" ref="a21ef181ca9f0913051fc5e75fb8ae2b7" args="(int16_t x1, int16_t y1, int16_t x2, int16_t y2)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t get_dist </td>
+          <td>(</td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>x1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>y1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>x2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>y2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Ermittlung des Quadrat-Abstands zwischen zwei Punkten. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">x1</td><td>X-Koordinate des ersten Punktes </td></tr>
+    <tr><td class="paramname">y1</td><td>y-Koordinate des ersten Punktes </td></tr>
+    <tr><td class="paramname">x2</td><td>X-Koordinate des zweiten Punktes </td></tr>
+    <tr><td class="paramname">y2</td><td>Y-Koordiante des zweiten Punktes </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>liefert Quadrat-Abstand zwischen den zwei Punkten </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="math__utils_8c_source.html#l00084">84</a> der Datei <a class="el" href="math__utils_8c_source.html">math_utils.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>, <a class="el" href="behaviour__goto__pos_8c_source.html#l00282">bot_goto_pos()</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a>, <a class="el" href="behaviour__scan_8c_source.html#l00058">bot_scan_onthefly_behaviour()</a> und <a class="el" href="sensor_8c_source.html#l00235">sensor_update()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a469db49a6410ad3e91aca4394302470f"></a><!-- doxytag: member="math_utils.c::test_calc_resection" ref="a469db49a6410ad3e91aca4394302470f" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void test_calc_resection </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Testet <a class="el" href="math__utils_8c.html#a8b0e0e0cb5958042f543a326a68a0a40" title="Berechnet den Standort via Rueckwaertseinschnitt nach Cassini, wenn drei angepeilte Positionen bekann...">calc_resection()</a> </p>
+
+<p>Definiert in Zeile <a class="el" href="math__utils_8c_source.html#l00205">205</a> der Datei <a class="el" href="math__utils_8c_source.html">math_utils.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__chess_8c_source.html#l00163">a</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">b</a>, <a class="el" href="math__utils_8c_source.html#l00121">calc_resection()</a>, <a class="el" href="log_8h_source.html#l00309">LOG_ERROR</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00159">m</a> und <a class="el" href="behaviour__drive__chess_8c_source.html#l00161">n</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="math__utils_8c_a469db49a6410ad3e91aca4394302470f_cgraph.png" border="0" usemap="#math__utils_8c_a469db49a6410ad3e91aca4394302470f_cgraph" alt=""/></div>
+<map name="math__utils_8c_a469db49a6410ad3e91aca4394302470f_cgraph" id="math__utils_8c_a469db49a6410ad3e91aca4394302470f_cgraph">
+<area shape="rect" id="node3" href="math__utils_8c.html#a8b0e0e0cb5958042f543a326a68a0a40" title="Berechnet den Standort via Rueckwaertseinschnitt nach Cassini, wenn drei angepeilte Positionen bekann..." alt="" coords="192,5,301,33"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a9c14e14c49d54828861673702c30eeed"></a><!-- doxytag: member="math_utils.c::turned_angle" ref="a9c14e14c49d54828861673702c30eeed" args="(int16_t angle)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int16_t turned_angle </td>
+          <td>(</td>
+          <td class="paramtype">int16_t&#160;</td>
+          <td class="paramname"><em>angle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">angle</td><td>Winkel [Grad] zum Vergleich mit heading </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Winkeldifferenz [Grad] in Richtung der derzeitigen Botdrehung. -1, falls Bot geradeaus faehrt oder steht </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="math__utils_8c_source.html#l00056">56</a> der Datei <a class="el" href="math__utils_8c_source.html">math_utils.c</a>.</p>
+
+<p>Benutzt <a class="el" href="sensor_8c_source.html#l00117">heading_int</a>, <a class="el" href="sensor_8c_source.html#l00099">v_enc_left</a> und <a class="el" href="sensor_8c_source.html#l00100">v_enc_right</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__line__shortest__way_8c_source.html#l00198">bot_check_reverse_direction_behaviour()</a>, <a class="el" href="behaviour__solve__maze_8c_source.html#l00246">bot_measure_angle_behaviour()</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a> und <a class="el" href="behaviour__scan_8c_source.html#l00058">bot_scan_onthefly_behaviour()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:12 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

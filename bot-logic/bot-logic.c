@@ -71,7 +71,13 @@ static Behaviour_t * behaviour = NULL;
 static void insert_behaviour_to_list(Behaviour_t * * list, Behaviour_t * behave);
 static Behaviour_t * new_behaviour(uint8_t priority, void (* work) (struct _Behaviour_t * data), uint8_t active);
 static void bot_base_behaviour(Behaviour_t * data);
-int8_t register_emergency_proc(void (* fkt)(void));
+#if \
+	   defined BEHAVIOUR_HANG_ON_AVAILABLE \
+	|| defined BEHAVIOUR_DRIVE_AREA_AVAILABLE \
+	|| defined BEHAVIOUR_FOLLOW_WALL_AVAILABLE \
+	|| defined BEHAVIOUR_AVOID_BORDER_AVAILABLE
+static inline int8_t register_emergency_proc(void (* fkt)(void));
+#endif
 
 
 /**
@@ -167,18 +173,6 @@ void bot_behave_init(void) {
 #ifdef BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE
 	insert_behaviour_to_list(&behaviour, new_behaviour(140, bot_measure_distance_behaviour, BEHAVIOUR_INACTIVE));
 	insert_behaviour_to_list(&behaviour, new_behaviour(139, bot_check_distance_behaviour, BEHAVIOUR_INACTIVE));
-#endif
-
-#ifdef BEHAVIOUR_DRIVE_NEURALNET_AVAILABLE
-	//Fahrverhalten fuer das neuronale Netz; setzt dieses natuerlich voraus
-	insert_behaviour_to_list(&behaviour, new_behaviour(135, bot_drive_neuralnet_behaviour, BEHAVIOUR_INACTIVE));
-	// Unterverhalten zum Checken der Sektoren links Mitte und rechts vom Bot
-	insert_behaviour_to_list(&behaviour, new_behaviour(134, bot_check_sector_behaviour, BEHAVIOUR_INACTIVE));
-#endif
-
-#ifdef BEHAVIOUR_NEURALNET_AVAILABLE
-	//Training des neuronalen Netzes sofort Losstarten bei Vorhandensein, da initiale Lernpattern vorhanden sind
-	insert_behaviour_to_list(&behaviour, new_behaviour(102, bot_neuralnet_behaviour, BEHAVIOUR_ACTIVE));
 #endif
 
 #ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
@@ -714,6 +708,11 @@ Behaviour_t * get_next_behaviour(Behaviour_t * beh) {
 }
 
 
+#if \
+	   defined BEHAVIOUR_HANG_ON_AVAILABLE \
+	|| defined BEHAVIOUR_DRIVE_AREA_AVAILABLE \
+	|| defined BEHAVIOUR_FOLLOW_WALL_AVAILABLE \
+	|| defined BEHAVIOUR_AVOID_BORDER_AVAILABLE
 #define MAX_EMERG_PROCS 3			/**< Maximale Anzahl der registrierbaren Funktionen */
 static int8_t count_arr_emerg = 0;	/**< Anzahl der zurzeit registrierten Notfallfunktionen */
 /** hier liegen die Zeiger auf die auszufuehrenden Notfall-Funktionen */
@@ -726,12 +725,12 @@ void (* bot_logic_emerg_functions[MAX_EMERG_PROCS])(void) = { NULL };
  * \param *fkt	Die zu registrierende Routine, welche aufzurufen ist
  * \return 		Index, den die Routine im Array einnimmt, bei -1 ist alles voll
  */
-int8_t register_emergency_proc(void (* fkt)(void)) {
+inline int8_t register_emergency_proc(void (* fkt)(void)) {
 	if (count_arr_emerg == MAX_EMERG_PROCS) {
 		return -1; // sorry, aber fuer dich ist kein Platz mehr da :(
 	}
 	int8_t proc_nr = count_arr_emerg++;	// neue Routine hinten anfuegen
-	bot_logic_emerg_functions[proc_nr] = fkt; // Pointer im Array speichern
+	bot_logic_emerg_functions[proc_nr] = fkt;	// Pointer im Array speichern
 	return proc_nr;
 }
 
@@ -747,6 +746,7 @@ void start_registered_emergency_procs(void) {
 		}
 	}
 }
+#endif // EMERG_PROCS
 
 
 #ifdef DISPLAY_BEHAVIOUR_AVAILABLE

@@ -1,0 +1,414 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: mouse.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_f02428e3da713fc394853d6cd2afbcd0.html">mcu</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#define-members">Makrodefinitionen</a> &#124;
+<a href="#func-members">Funktionen</a>  </div>
+  <div class="headertitle">
+<div class="title">mouse.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Routinen fuer die Ansteuerung eines opt. Maussensors.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="ct-Bot_8h_source.html">ct-Bot.h</a>&quot;</code><br/>
+<code>#include &lt;avr/io.h&gt;</code><br/>
+<code>#include &quot;<a class="el" href="mouse_8h_source.html">mouse.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="delay_8h_source.html">delay.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="ena_8h_source.html">ena.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="command_8h_source.html">command.h</a>&quot;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für mouse.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="mouse_8c__incl.png" border="0" usemap="#mouse_8c" alt=""/></div>
+<map name="mouse_8c" id="mouse_8c">
+<area shape="rect" id="node3" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot&#45;Funktionalitaeten" alt="" coords="295,83,361,111"/><area shape="rect" id="node25" href="mouse_8h.html" title="Routinen fuer die Ansteuerung eines optischen Maussensors." alt="" coords="712,83,784,111"/><area shape="rect" id="node27" href="delay_8h.html" title="Hilfsroutinen fuer Wartezeiten." alt="" coords="680,161,747,189"/><area shape="rect" id="node30" href="ena_8h.html" title="Routinen zur Steuerung der Enable&#45;Leitungen." alt="" coords="808,83,861,111"/><area shape="rect" id="node32" href="command_8h.html" title="Kommando&#45;Management." alt="" coords="547,83,637,111"/><area shape="rect" id="node5" href="global_8h.html" title="Allgemeine Definitionen und Datentypen." alt="" coords="245,238,315,266"/><area shape="rect" id="node21" href="bot-local_8h.html" title="Konstanten, die den Bot an reale Umgebungen anpassen." alt="" coords="285,161,371,189"/><area shape="rect" id="node11" href="builtins_8h.html" title="Compiler&#45;Builtins mit Fallback fuer aeltere avr&#45;libc Versionen." alt="" coords="560,315,632,343"/><area shape="rect" id="node34" href="eeprom_8h.html" title="EEPROM&#45;Zugriff." alt="" coords="395,161,472,189"/><area shape="rect" id="node40" href="uart_8h.html" title="Routinen zur seriellen Kommunikation." alt="" coords="565,161,619,189"/><area shape="rect" id="node43" href="fifo_8h.html" title="Implementierung einer FIFO." alt="" coords="667,238,715,266"/><area shape="rect" id="node45" href="os__thread_8h.html" title="Threadmanagement fuer BotOS." alt="" coords="669,315,760,343"/><area shape="rect" id="node49" href="timer_8h.html" title="Timer und Zaehler." alt="" coords="727,393,788,421"/><area shape="rect" id="node51" href="os__scheduler_8h.html" title="Mini&#45;Scheduler fuer BotOS." alt="" coords="812,393,924,421"/></map>
+</div>
+</div>
+<p><a href="mouse_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="define-members"></a>
+Makrodefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mouse_8c.html#a1edb01072c1620444fff788c87d06dc5">MOUSE_DDR</a>&#160;&#160;&#160;DDRB</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mouse_8c.html#aed1969b989ae3199d5bf9aa8d896a964">MOUSE_PORT</a>&#160;&#160;&#160;PORTB</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mouse_8c.html#a35c5356dd23f1d32e4b6edcc2a966a08">MOUSE_SCK_PIN</a>&#160;&#160;&#160;(1&lt;&lt;7)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mouse_8c.html#ac2b7b1735bede3c25ce9fbf0ceed6441">MOUSE_SDA_NR</a>&#160;&#160;&#160;6</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mouse_8c.html#a874ba8dc71bacbe529532b9146607574">MOUSE_SDA_PINR</a>&#160;&#160;&#160;PINB</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mouse_8c.html#aada66cbbe8569a5fb122da99e7bd2bd4">MOUSE_SDA_PIN</a>&#160;&#160;&#160;(1&lt;&lt;MOUSE_SDA_NR)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mouse_8c.html#a2f04c1c3f62dc68cb1b5f561c3946e5d">MOUSE_Enable</a>()&#160;&#160;&#160;ENA_on(ENA_MOUSE_SENSOR)</td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mouse_8c.html#aa89f9dd6dc0633b39cf52518e904a40e">mouse_sens_write</a> (uint8_t adr, uint8_t data)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mouse_8c.html#a51b8066f598e2adc8679ddd77f3d1a8b">mouse_sens_read</a> (uint8_t adr)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mouse_8c.html#afa9f6222385b98b8bab5e7acf606b69a">mouse_sens_init</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mouse_8c.html#a75e23740c984cb8bfcdd97275c01a69a">mouse_transmit_picture</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mouse_8c.html#af36f291b20658b28859795dca3ada035">mouse_get_squal</a> (void)</td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Routinen fuer die Ansteuerung eines opt. Maussensors. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Benjamin Benz (<a href="mailto:bbe@heise.de">bbe@heise.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>26.12.05 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="mouse_8c_source.html">mouse.c</a>.</p>
+</div><hr/><h2>Makro-Dokumentation</h2>
+<a class="anchor" id="a1edb01072c1620444fff788c87d06dc5"></a><!-- doxytag: member="mouse.c::MOUSE_DDR" ref="a1edb01072c1620444fff788c87d06dc5" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MOUSE_DDR&#160;&#160;&#160;DDRB</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>DDR fuer Maus </p>
+
+<p>Definiert in Zeile <a class="el" href="mouse_8c_source.html#l00037">37</a> der Datei <a class="el" href="mouse_8c_source.html">mouse.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mouse_8c_source.html#l00137">mouse_sens_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2f04c1c3f62dc68cb1b5f561c3946e5d"></a><!-- doxytag: member="mouse.c::MOUSE_Enable" ref="a2f04c1c3f62dc68cb1b5f561c3946e5d" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MOUSE_Enable</td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td>&#160;&#160;&#160;ENA_on(ENA_MOUSE_SENSOR)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="mouse_8c_source.html#l00045">45</a> der Datei <a class="el" href="mouse_8c_source.html">mouse.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mouse_8c_source.html#l00137">mouse_sens_init()</a>, <a class="el" href="mouse_8c_source.html#l00127">mouse_sens_read()</a> und <a class="el" href="mouse_8c_source.html#l00114">mouse_sens_write()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aed1969b989ae3199d5bf9aa8d896a964"></a><!-- doxytag: member="mouse.c::MOUSE_PORT" ref="aed1969b989ae3199d5bf9aa8d896a964" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MOUSE_PORT&#160;&#160;&#160;PORTB</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>PORT fuer Maus </p>
+
+<p>Definiert in Zeile <a class="el" href="mouse_8c_source.html#l00038">38</a> der Datei <a class="el" href="mouse_8c_source.html">mouse.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mouse_8c_source.html#l00137">mouse_sens_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a35c5356dd23f1d32e4b6edcc2a966a08"></a><!-- doxytag: member="mouse.c::MOUSE_SCK_PIN" ref="a35c5356dd23f1d32e4b6edcc2a966a08" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MOUSE_SCK_PIN&#160;&#160;&#160;(1&lt;&lt;7)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>PIN fuer Maus-SCLK </p>
+
+<p>Definiert in Zeile <a class="el" href="mouse_8c_source.html#l00039">39</a> der Datei <a class="el" href="mouse_8c_source.html">mouse.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mouse_8c_source.html#l00137">mouse_sens_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac2b7b1735bede3c25ce9fbf0ceed6441"></a><!-- doxytag: member="mouse.c::MOUSE_SDA_NR" ref="ac2b7b1735bede3c25ce9fbf0ceed6441" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MOUSE_SDA_NR&#160;&#160;&#160;6</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Pin an dem die SDA-Leitung haengt </p>
+
+<p>Definiert in Zeile <a class="el" href="mouse_8c_source.html#l00041">41</a> der Datei <a class="el" href="mouse_8c_source.html">mouse.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aada66cbbe8569a5fb122da99e7bd2bd4"></a><!-- doxytag: member="mouse.c::MOUSE_SDA_PIN" ref="aada66cbbe8569a5fb122da99e7bd2bd4" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MOUSE_SDA_PIN&#160;&#160;&#160;(1&lt;&lt;MOUSE_SDA_NR)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Bit-Wert der SDA-Leitung </p>
+
+<p>Definiert in Zeile <a class="el" href="mouse_8c_source.html#l00043">43</a> der Datei <a class="el" href="mouse_8c_source.html">mouse.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a874ba8dc71bacbe529532b9146607574"></a><!-- doxytag: member="mouse.c::MOUSE_SDA_PINR" ref="a874ba8dc71bacbe529532b9146607574" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MOUSE_SDA_PINR&#160;&#160;&#160;PINB</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Leseregister </p>
+
+<p>Definiert in Zeile <a class="el" href="mouse_8c_source.html#l00042">42</a> der Datei <a class="el" href="mouse_8c_source.html">mouse.c</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="af36f291b20658b28859795dca3ada035"></a><!-- doxytag: member="mouse.c::mouse_get_squal" ref="af36f291b20658b28859795dca3ada035" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mouse_get_squal </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Gibt den SQUAL-Wert zurueck. Dieser gibt an, wieviele Merkmale der Sensor im aktuell aufgenommenen Bild des Untergrunds wahrnimmt </p>
+
+<p>Definiert in Zeile <a class="el" href="mouse_8c_source.html#l00183">183</a> der Datei <a class="el" href="mouse_8c_source.html">mouse.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mouse_8c_source.html#l00127">mouse_sens_read()</a> und <a class="el" href="mouse_8h_source.html#l00037">MOUSE_SQUAL_REG</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mouse_8c_af36f291b20658b28859795dca3ada035_cgraph.png" border="0" usemap="#mouse_8c_af36f291b20658b28859795dca3ada035_cgraph" alt=""/></div>
+<map name="mouse_8c_af36f291b20658b28859795dca3ada035_cgraph" id="mouse_8c_af36f291b20658b28859795dca3ada035_cgraph">
+<area shape="rect" id="node3" href="mouse_8h.html#a51b8066f598e2adc8679ddd77f3d1a8b" title="mouse_sens_read" alt="" coords="185,5,319,33"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="afa9f6222385b98b8bab5e7acf606b69a"></a><!-- doxytag: member="mouse.c::mouse_sens_init" ref="afa9f6222385b98b8bab5e7acf606b69a" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mouse_sens_init </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Initialisiere Maussensor </p>
+
+<p>Definiert in Zeile <a class="el" href="mouse_8c_source.html#l00137">137</a> der Datei <a class="el" href="mouse_8c_source.html">mouse.c</a>.</p>
+
+<p>Benutzt <a class="el" href="delay_8c_source.html#l00036">delay()</a>, <a class="el" href="mouse_8h_source.html#l00048">MOUSE_CFG_FORCEAWAKE</a>, <a class="el" href="mouse_8h_source.html#l00046">MOUSE_CFG_RESET</a>, <a class="el" href="mouse_8h_source.html#l00033">MOUSE_CONFIG_REG</a>, <a class="el" href="mouse_8c_source.html#l00037">MOUSE_DDR</a>, <a class="el" href="mouse_8c_source.html#l00045">MOUSE_Enable</a>, <a class="el" href="mouse_8c_source.html#l00038">MOUSE_PORT</a>, <a class="el" href="mouse_8c_source.html#l00039">MOUSE_SCK_PIN</a> und <a class="el" href="mouse_8c_source.html#l00114">mouse_sens_write()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mouse_8c_afa9f6222385b98b8bab5e7acf606b69a_cgraph.png" border="0" usemap="#mouse_8c_afa9f6222385b98b8bab5e7acf606b69a_cgraph" alt=""/></div>
+<map name="mouse_8c_afa9f6222385b98b8bab5e7acf606b69a_cgraph" id="mouse_8c_afa9f6222385b98b8bab5e7acf606b69a_cgraph">
+<area shape="rect" id="node3" href="delay_8h.html#adb7db4d9ef946dcfb58bcfc667ee674a" title="Verzoegert um ms Millisekunden." alt="" coords="216,5,272,33"/><area shape="rect" id="node5" href="mouse_8h.html#aa89f9dd6dc0633b39cf52518e904a40e" title="mouse_sens_write" alt="" coords="177,55,311,83"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a51b8066f598e2adc8679ddd77f3d1a8b"></a><!-- doxytag: member="mouse.c::mouse_sens_read" ref="a51b8066f598e2adc8679ddd77f3d1a8b" args="(uint8_t adr)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mouse_sens_read </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>adr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Schickt ein Lesekommando an den Sensor und liest ein Byte zurueck </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">adr</td><td>die Adresse </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>das Datum </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mouse_8c_source.html#l00127">127</a> der Datei <a class="el" href="mouse_8c_source.html">mouse.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mouse_8c_source.html#l00045">MOUSE_Enable</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="sensor-low_8c_source.html#l00169">bot_sens()</a>, <a class="el" href="mouse_8c_source.html#l00183">mouse_get_squal()</a> und <a class="el" href="mouse_8c_source.html#l00162">mouse_transmit_picture()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa89f9dd6dc0633b39cf52518e904a40e"></a><!-- doxytag: member="mouse.c::mouse_sens_write" ref="aa89f9dd6dc0633b39cf52518e904a40e" args="(uint8_t adr, uint8_t data)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mouse_sens_write </td>
+          <td>(</td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>adr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Uebertraegt ein write-Kommando an den Sensor </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">adr</td><td>Adresse </td></tr>
+    <tr><td class="paramname">data</td><td>Datum </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="mouse_8c_source.html#l00114">114</a> der Datei <a class="el" href="mouse_8c_source.html">mouse.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mouse_8c_source.html#l00045">MOUSE_Enable</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mouse_8c_source.html#l00137">mouse_sens_init()</a> und <a class="el" href="mouse_8c_source.html#l00162">mouse_transmit_picture()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a75e23740c984cb8bfcdd97275c01a69a"></a><!-- doxytag: member="mouse.c::mouse_transmit_picture" ref="a75e23740c984cb8bfcdd97275c01a69a" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mouse_transmit_picture </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Uebertraegt ein Bild vom Maussensor an den PC Insgesamt gibt es 324 Pixel </p>
+<pre>
+ 18 36 ... 324
+ .. .. ... ..
+  2 20 ... ..
+  1 19 ... 307
+ </pre><p> Gesendet weren: Pixeldaten (Bit 0 bis Bit 5), Pruefbit, ob Daten gueltig (Bit 6), Markierung fuer den Anfang eines Frames (Bit 7) </p>
+
+<p>Definiert in Zeile <a class="el" href="mouse_8c_source.html#l00162">162</a> der Datei <a class="el" href="mouse_8c_source.html">mouse.c</a>.</p>
+
+<p>Benutzt <a class="el" href="command_8h_source.html#l00065">CMD_SENS_MOUSE_PICTURE</a>, <a class="el" href="command_8c_source.html#l00333">command_write()</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="command_8h_source.html#l00044">low_write_data</a>, <a class="el" href="mouse_8h_source.html#l00041">MOUSE_PIXEL_DATA_REG</a>, <a class="el" href="mouse_8c_source.html#l00127">mouse_sens_read()</a>, <a class="el" href="mouse_8c_source.html#l00114">mouse_sens_write()</a> und <a class="el" href="command_8h_source.html#l00050">SUB_CMD_NORM</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mouse_8c_a75e23740c984cb8bfcdd97275c01a69a_cgraph.png" border="0" usemap="#mouse_8c_a75e23740c984cb8bfcdd97275c01a69a_cgraph" alt=""/></div>
+<map name="mouse_8c_a75e23740c984cb8bfcdd97275c01a69a_cgraph" id="mouse_8c_a75e23740c984cb8bfcdd97275c01a69a_cgraph">
+<area shape="rect" id="node3" href="command_8c.html#a419b75ed34551408822d9caee3cd5206" title="command_write" alt="" coords="225,55,343,83"/><area shape="rect" id="node21" href="mouse_8h.html#a51b8066f598e2adc8679ddd77f3d1a8b" title="mouse_sens_read" alt="" coords="217,106,351,134"/><area shape="rect" id="node23" href="mouse_8h.html#aa89f9dd6dc0633b39cf52518e904a40e" title="mouse_sens_write" alt="" coords="217,157,351,185"/><area shape="rect" id="node5" href="command_8c.html#a428cf92e37fc9bbc0ffc48912c3022ac" title="command_write_to_internal" alt="" coords="401,5,585,33"/><area shape="rect" id="node7" href="tcp_8h.html#aae71e1682727310afab282923a80c968" title="flushSendBuffer" alt="" coords="436,55,551,83"/><area shape="rect" id="node9" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1" title="Beendet den kritischen Abschnitt wieder, der mit os_enterCS began." alt="" coords="452,106,535,134"/><area shape="rect" id="node11" href="os__scheduler_8h.html#aaf0ea29568109bcdfb1d527f223accad" title="os_schedule" alt="" coords="635,106,733,134"/><area shape="rect" id="node13" href="fifo_8c.html#a7b3f9ad457273c9717bff49113c84250" title="fifo_put_data" alt="" coords="796,81,895,109"/><area shape="rect" id="node19" href="os__thread_8h.html#afa82438e9832609bc5ffbddad166e1b7" title="Schaltet &quot;von aussen&quot; auf einen neuen Thread um." alt="" coords="783,131,908,159"/><area shape="rect" id="node15" href="builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2" title="Disables all interrupts by clearing the global interrupt mask." alt="" coords="964,55,1079,83"/><area shape="rect" id="node17" href="os__thread__pc_8c.html#aa0b166109be9754de9b8b863b8d197c7" title="os_signal_unlock" alt="" coords="959,106,1084,134"/></map>
+</div>
+</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:12 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

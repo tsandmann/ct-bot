@@ -1,0 +1,537 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: behaviour_catch_pillar.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_14c9cc1c75a92f359ad94591d62973a1.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">behaviour_catch_pillar.c</div>  </div>
+</div>
+<div class="contents">
+<a href="behaviour__catch__pillar_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00020"></a>00020 
+<a name="l00028"></a>00028 <span class="preprocessor">#include &quot;<a class="code" href="bot-logic_8h.html" title="High-Level-Routinen fuer die Steuerung des c&#39;t-Bots.">bot-logic/bot-logic.h</a>&quot;</span>
+<a name="l00029"></a>00029 <span class="preprocessor">#ifdef BEHAVIOUR_CATCH_PILLAR_AVAILABLE</span>
+<a name="l00030"></a>00030 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="math__utils_8h.html" title="Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig.">math_utils.h</a>&quot;</span>
+<a name="l00031"></a>00031 <span class="preprocessor">#include &lt;math.h&gt;</span>
+<a name="l00032"></a>00032 <span class="preprocessor">#include &lt;stdlib.h&gt;</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#include &quot;<a class="code" href="log_8h.html" title="Routinen zum Loggen von Informationen.">log.h</a>&quot;</span>
+<a name="l00034"></a>00034 
+<a name="l00035"></a><a class="code" href="behaviour__catch__pillar_8c.html#adb271b4cd2d2e3524868a67330a1de43">00035</a> <span class="preprocessor">#define CATCH_PILLAR_VERSION    3   </span>
+<a name="l00037"></a><a class="code" href="behaviour__catch__pillar_8c.html#a3018c7600b7bb9866400596a56a57af7">00037</a> <span class="preprocessor">#define START       0</span>
+<a name="l00038"></a><a class="code" href="behaviour__catch__pillar_8c.html#a7d549ee66e54efd030b73b0ad7ed4171">00038</a> <span class="preprocessor"></span><span class="preprocessor">#define SEARCH_LEFT 1</span>
+<a name="l00039"></a><a class="code" href="behaviour__catch__pillar_8c.html#a9bd4dbaab56cdf0873683a5f7f0538b0">00039</a> <span class="preprocessor"></span><span class="preprocessor">#define LEFT_FOUND  2</span>
+<a name="l00040"></a><a class="code" href="behaviour__catch__pillar_8c.html#afca38d283b324547db8a9ec7d836ba48">00040</a> <span class="preprocessor"></span><span class="preprocessor">#define TURN_MIDDLE 3</span>
+<a name="l00041"></a><a class="code" href="behaviour__catch__pillar_8c.html#a277a950c725b69e43a1dae2993119fd4">00041</a> <span class="preprocessor"></span><span class="preprocessor">#define GO          4</span>
+<a name="l00042"></a><a class="code" href="behaviour__catch__pillar_8c.html#a29fd18bed01c4d836c7ebfe73a125c3f">00042</a> <span class="preprocessor"></span><span class="preprocessor">#define END         99</span>
+<a name="l00043"></a>00043 <span class="preprocessor"></span>
+<a name="l00044"></a>00044 <span class="comment">// Zustaende fuer das Ausladeverhalten START und END sind bereits weiter oben definiert</span>
+<a name="l00045"></a><a class="code" href="behaviour__catch__pillar_8c.html#a0545818b7a2fddb1d72d7ff446b97dc9">00045</a> <span class="preprocessor">#define GO_BACK     21</span>
+<a name="l00046"></a><a class="code" href="behaviour__catch__pillar_8c.html#a235be36d05e9f122bc434db71aa7f62d">00046</a> <span class="preprocessor"></span><span class="preprocessor">#define CLOSE_DOOR  22</span>
+<a name="l00047"></a>00047 <span class="preprocessor"></span>
+<a name="l00048"></a>00048 <span class="keyword">static</span> uint8_t catch_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a3018c7600b7bb9866400596a56a57af7">START</a>;      
+<a name="l00049"></a>00049 <span class="keyword">static</span> uint8_t unload_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a3018c7600b7bb9866400596a56a57af7">START</a>;     
+<a name="l00051"></a>00051 <span class="preprocessor">#ifndef BEHAVIOUR_GOTO_POS_AVAILABLE</span>
+<a name="l00052"></a>00052 <span class="preprocessor"></span><span class="preprocessor">#undef CATCH_PILLAR_VERSION</span>
+<a name="l00053"></a>00053 <span class="preprocessor"></span><span class="preprocessor">#define CATCH_PILLAR_VERSION    1</span>
+<a name="l00054"></a>00054 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00055"></a>00055 <span class="preprocessor"></span>
+<a name="l00056"></a>00056 
+<a name="l00057"></a>00057 <span class="preprocessor">#if CATCH_PILLAR_VERSION == 1</span>
+<a name="l00058"></a>00058 <span class="preprocessor"></span>
+<a name="l00059"></a>00059 <span class="keyword">static</span> int16_t startangle = 0; 
+<a name="l00064"></a>00064 <span class="keywordtype">void</span> <a class="code" href="behaviour__catch__pillar_8c.html#a4c99445c715b784c833956489be188ca" title="Fange ein Objekt ein.">bot_catch_pillar_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00065"></a>00065     <span class="keyword">static</span> uint8_t cancelcheck=<a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00066"></a>00066     <span class="keyword">static</span> <span class="keywordtype">float</span> angle;
+<a name="l00067"></a>00067 
+<a name="l00068"></a>00068     <span class="keywordflow">switch</span> (catch_pillar_state){
+<a name="l00069"></a>00069         <span class="keywordflow">case</span> <a class="code" href="behaviour__catch__pillar_8c.html#a3018c7600b7bb9866400596a56a57af7">START</a>:
+<a name="l00070"></a>00070                startangle=<a class="code" href="sensor_8c.html#a0bebab40bf945479d36e9190261b5a28">heading_int</a>;
+<a name="l00071"></a>00071                cancelcheck=<a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00072"></a>00072                catch_pillar_state=<a class="code" href="behaviour__catch__pillar_8c.html#a7d549ee66e54efd030b73b0ad7ed4171">SEARCH_LEFT</a>;
+<a name="l00073"></a>00073              <span class="keywordflow">break</span>;
+<a name="l00074"></a>00074 
+<a name="l00075"></a>00075         <span class="keywordflow">case</span> <a class="code" href="behaviour__catch__pillar_8c.html#a7d549ee66e54efd030b73b0ad7ed4171">SEARCH_LEFT</a>:
+<a name="l00076"></a>00076             <span class="comment">// Nach 1x Rundumsuche und nix gefunden ist Schluss; Dazu wird der Check zum Start</span>
+<a name="l00077"></a>00077             <span class="comment">// nach Ueberschreiten der 5Grad-Toleranz eingeschaltet und die Drehung dann beendet wenn</span>
+<a name="l00078"></a>00078             <span class="comment">// der Winkel wieder innerhalb dieser Toleranz liegt</span>
+<a name="l00079"></a>00079             <span class="keywordflow">if</span> (cancelcheck) {
+<a name="l00080"></a>00080               <span class="keywordflow">if</span> (fabs(<a class="code" href="sensor_8c.html#ac5682e48513a771560df50e3b213e61a">heading</a> - startangle) &lt; 5 )
+<a name="l00081"></a>00081                 <span class="comment">// Damit nicht endlos rundum gedreht wird Abbruch, wenn kein Gegenstand gefunden</span>
+<a name="l00082"></a>00082                 catch_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a29fd18bed01c4d836c7ebfe73a125c3f">END</a>;
+<a name="l00083"></a>00083             } <span class="keywordflow">else</span> {
+<a name="l00084"></a>00084                 <span class="keywordflow">if</span> (fabs(<a class="code" href="sensor_8c.html#ac5682e48513a771560df50e3b213e61a">heading</a> - startangle) &gt;= 5)
+<a name="l00085"></a>00085                   cancelcheck=<a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00086"></a>00086             }
+<a name="l00087"></a>00087 
+<a name="l00088"></a>00088             <span class="comment">// linker Sensor muss was sehen, der rechte aber nicht</span>
+<a name="l00089"></a>00089             <span class="keywordflow">if</span> (sensDistL &lt; MAX_PILLAR_DISTANCE &amp;&amp; sensDistR &gt; <a class="code" href="bot-local_8h.html#a4685ab7a319f0f54d0c5c136d3f03145">MAX_PILLAR_DISTANCE</a>) { <span class="comment">// sieht der linke Sensor schon was?</span>
+<a name="l00090"></a>00090                 angle=<a class="code" href="sensor_8c.html#ac5682e48513a771560df50e3b213e61a">heading</a>;
+<a name="l00091"></a>00091                 catch_pillar_state=<a class="code" href="behaviour__catch__pillar_8c.html#a9bd4dbaab56cdf0873683a5f7f0538b0">LEFT_FOUND</a>;
+<a name="l00092"></a>00092             } <span class="keywordflow">else</span>
+<a name="l00093"></a>00093                 <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a>=-<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00094"></a>00094                 <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a>=+<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00095"></a>00095                 <span class="comment">//bot_turn(data,5); // Ein Stueck drehen</span>
+<a name="l00096"></a>00096             <span class="keywordflow">break</span>;
+<a name="l00097"></a>00097 
+<a name="l00098"></a>00098         <span class="keywordflow">case</span> <a class="code" href="behaviour__catch__pillar_8c.html#a9bd4dbaab56cdf0873683a5f7f0538b0">LEFT_FOUND</a>:
+<a name="l00099"></a>00099             <span class="comment">// links und rechts darf nicht gleichzeitig was gesehen werden, sonst weiter mit drehen</span>
+<a name="l00100"></a>00100             <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> &lt; MAX_PILLAR_DISTANCE &amp;&amp; <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a> &lt; MAX_PILLAR_DISTANCE) {
+<a name="l00101"></a>00101                 catch_pillar_state=<a class="code" href="behaviour__catch__pillar_8c.html#a7d549ee66e54efd030b73b0ad7ed4171">SEARCH_LEFT</a>;
+<a name="l00102"></a>00102                 <span class="keywordflow">break</span>;
+<a name="l00103"></a>00103             }
+<a name="l00104"></a>00104 
+<a name="l00105"></a>00105             <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a> &lt; MAX_PILLAR_DISTANCE) { <span class="comment">// sieht der rechte Sensor schon was?</span>
+<a name="l00106"></a>00106                 angle= <a class="code" href="sensor_8c.html#ac5682e48513a771560df50e3b213e61a">heading</a>- angle;
+<a name="l00107"></a>00107                 <span class="keywordflow">if</span> (angle &lt; 0)
+<a name="l00108"></a>00108                     angle+=360;
+<a name="l00109"></a>00109                 angle= <a class="code" href="sensor_8c.html#ac5682e48513a771560df50e3b213e61a">heading</a> - angle/2;
+<a name="l00110"></a>00110                 catch_pillar_state=<a class="code" href="behaviour__catch__pillar_8c.html#afca38d283b324547db8a9ec7d836ba48">TURN_MIDDLE</a>;
+<a name="l00111"></a>00111 <span class="comment">//              bot_turn(data,-angle/2);</span>
+<a name="l00112"></a>00112             } <span class="keywordflow">else</span>
+<a name="l00113"></a>00113                 <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a>=-<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00114"></a>00114                 <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a>=+<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00115"></a>00115 <span class="comment">//              bot_turn(data,5); // Eins Stueck drehen</span>
+<a name="l00116"></a>00116             <span class="keywordflow">break</span>;
+<a name="l00117"></a>00117 
+<a name="l00118"></a>00118         <span class="keywordflow">case</span> <a class="code" href="behaviour__catch__pillar_8c.html#afca38d283b324547db8a9ec7d836ba48">TURN_MIDDLE</a>:
+<a name="l00119"></a>00119                 <span class="keywordflow">if</span> (fabs(<a class="code" href="sensor_8c.html#ac5682e48513a771560df50e3b213e61a">heading</a> - angle) &gt; 2) {
+<a name="l00120"></a>00120                     <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a>=+<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00121"></a>00121                     <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a>=-<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00122"></a>00122                 } <span class="keywordflow">else</span> {
+<a name="l00123"></a>00123                     <a class="code" href="behaviour__servo_8c.html#ab12411c90e13fc9e924d02212a7769c6" title="Fahre den Servo an eine Position.">bot_servo</a>(data,<a class="code" href="motor_8h.html#a8f2a5c30e29a7191cff398b144850d51" title="Servo 1.">SERVO1</a>,<a class="code" href="bot-local_8h.html#aa2f39ed7eb7927d5aa4f01c52a15431b" title="Linker Anschlag des Servos.">DOOR_OPEN</a>); <span class="comment">// Klappe auf</span>
+<a name="l00124"></a>00124                     catch_pillar_state=<a class="code" href="behaviour__catch__pillar_8c.html#a277a950c725b69e43a1dae2993119fd4">GO</a>;
+<a name="l00125"></a>00125                 }
+<a name="l00126"></a>00126             <span class="keywordflow">break</span>;
+<a name="l00127"></a>00127 
+<a name="l00128"></a>00128         <span class="keywordflow">case</span> <a class="code" href="behaviour__catch__pillar_8c.html#a277a950c725b69e43a1dae2993119fd4">GO</a>:
+<a name="l00129"></a>00129             <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a34eca1400eac2bb5383dd6f55adf0f72">sensTrans</a> ==0){
+<a name="l00130"></a>00130                 <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a>=+<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00131"></a>00131                 <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a>=+<a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>;
+<a name="l00132"></a>00132                 <span class="comment">// nicht endlos vorwaertslaufen, weiter mit Suche bis Drehende</span>
+<a name="l00133"></a>00133                 <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> &lt; MAX_PILLAR_DISTANCE &amp;&amp; <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a> &lt; MAX_PILLAR_DISTANCE)
+<a name="l00134"></a>00134                     catch_pillar_state=<a class="code" href="behaviour__catch__pillar_8c.html#a7d549ee66e54efd030b73b0ad7ed4171">SEARCH_LEFT</a>;
+<a name="l00135"></a>00135             }
+<a name="l00136"></a>00136             <span class="keywordflow">else</span> {
+<a name="l00137"></a>00137                   <a class="code" href="behaviour__servo_8c.html#ab12411c90e13fc9e924d02212a7769c6" title="Fahre den Servo an eine Position.">bot_servo</a>(data,<a class="code" href="motor_8h.html#a8f2a5c30e29a7191cff398b144850d51" title="Servo 1.">SERVO1</a>,<a class="code" href="bot-local_8h.html#a4ef8b71b5650632bd07a37296c4a5f89" title="Rechter Anschlag des Servos.">DOOR_CLOSE</a>);
+<a name="l00138"></a>00138                   catch_pillar_state=<a class="code" href="behaviour__catch__pillar_8c.html#a29fd18bed01c4d836c7ebfe73a125c3f">END</a>;
+<a name="l00139"></a>00139              }
+<a name="l00140"></a>00140 
+<a name="l00141"></a>00141             <span class="keywordflow">break</span>;
+<a name="l00142"></a>00142 
+<a name="l00143"></a>00143         <span class="keywordflow">default</span>:
+<a name="l00144"></a>00144             catch_pillar_state=<a class="code" href="behaviour__catch__pillar_8c.html#a3018c7600b7bb9866400596a56a57af7">START</a>;
+<a name="l00145"></a>00145             return_from_behaviour(data);
+<a name="l00146"></a>00146             <span class="keywordflow">break</span>;
+<a name="l00147"></a>00147     }
+<a name="l00148"></a>00148 }
+<a name="l00149"></a>00149 
+<a name="l00154"></a>00154 <span class="keywordtype">void</span> <a class="code" href="behaviour__catch__pillar_8c.html#aadefbf6c2ed52f87907dccb9ce27c58c" title="Fange ein Objekt ein.">bot_catch_pillar</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller) {
+<a name="l00155"></a>00155     catch_pillar_state=<a class="code" href="behaviour__catch__pillar_8c.html#a3018c7600b7bb9866400596a56a57af7">START</a>;
+<a name="l00156"></a>00156     unload_pillar_state=<a class="code" href="behaviour__catch__pillar_8c.html#a29fd18bed01c4d836c7ebfe73a125c3f">END</a>; <span class="comment">// Sicherheitshalber das Unloade-Verhalten auf Ende setzen</span>
+<a name="l00157"></a>00157     <span class="comment">// Zielwerte speichern</span>
+<a name="l00158"></a>00158     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__catch__pillar_8c.html#a4c99445c715b784c833956489be188ca" title="Fange ein Objekt ein.">bot_catch_pillar_behaviour</a>, <a class="code" href="bot-logic_8h.html#ac3101d6686d35c952f2a5c8177b3f262" title="Konstante, wenn Verhalten beim Aufruf alte Wuensche ueberschreiben sollen.">BEHAVIOUR_OVERRIDE</a>);
+<a name="l00159"></a>00159 }
+<a name="l00160"></a>00160 
+<a name="l00161"></a>00161 <span class="preprocessor">#elif CATCH_PILLAR_VERSION == 2</span>
+<a name="l00162"></a>00162 <span class="preprocessor"></span>
+<a name="l00163"></a>00163 <span class="keyword">static</span> int16_t start_heading;       
+<a name="l00164"></a>00164 <span class="keyword">static</span> int8_t check_sensorside;     
+<a name="l00165"></a>00165 <span class="keyword">static</span> position_t obj_posL;         
+<a name="l00166"></a>00166 <span class="keyword">static</span> position_t obj_posR;         
+<a name="l00167"></a>00167 <span class="keyword">static</span> uint8_t state_after_cancel;  
+<a name="l00169"></a>00169 <span class="preprocessor">#define MIN_DIST_SENSES     90      </span>
+<a name="l00171"></a>00171 <span class="preprocessor">#define OBJECT_FOUND_AFTER_CANCEL   3</span>
+<a name="l00172"></a>00172 <span class="preprocessor"></span><span class="preprocessor">#define MEASURE_DIST                5</span>
+<a name="l00173"></a>00173 <span class="preprocessor"></span><span class="preprocessor">#define OBJECT_FOUND_AFTER_MEASURE  6</span>
+<a name="l00174"></a>00174 <span class="preprocessor"></span><span class="preprocessor">#define TURN_BACK                   7</span>
+<a name="l00175"></a>00175 <span class="preprocessor"></span><span class="preprocessor">#define OPEN_DOOR                   8</span>
+<a name="l00176"></a>00176 <span class="preprocessor"></span><span class="preprocessor">#define GO_FORWARD                  9</span>
+<a name="l00177"></a>00177 <span class="preprocessor"></span><span class="preprocessor">#define GO_TO_POINT                 10</span>
+<a name="l00178"></a>00178 <span class="preprocessor"></span><span class="preprocessor">#define TURN_TO_RIGHT_SENSOR        11</span>
+<a name="l00179"></a>00179 <span class="preprocessor"></span><span class="preprocessor">#define GO_FOR_DROP                 12</span>
+<a name="l00180"></a>00180 <span class="preprocessor"></span><span class="preprocessor">#define OBJECT_INVALID              13</span>
+<a name="l00181"></a>00181 <span class="preprocessor"></span>
+<a name="l00186"></a>00186 <span class="keyword">static</span> uint8_t object_invalid(<span class="keywordtype">void</span>) {
+<a name="l00187"></a>00187     <span class="keywordflow">if</span> ((<a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> &lt; <a class="code" href="bot-local_8h.html#a4685ab7a319f0f54d0c5c136d3f03145">MAX_PILLAR_DISTANCE</a> &amp;&amp; <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a> &lt; <a class="code" href="bot-local_8h.html#a4685ab7a319f0f54d0c5c136d3f03145">MAX_PILLAR_DISTANCE</a>)
+<a name="l00188"></a>00188             || abs(<a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> - <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a>) &lt; MIN_DIST_SENSES) {
+<a name="l00189"></a>00189         <span class="keywordflow">return</span> <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00190"></a>00190     }
+<a name="l00191"></a>00191 
+<a name="l00192"></a>00192     <span class="keywordflow">return</span> <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00193"></a>00193 }
+<a name="l00194"></a>00194 
+<a name="l00201"></a>00201 <span class="keyword">static</span> uint8_t turn_cancel_check(<span class="keywordtype">void</span>) {
+<a name="l00202"></a>00202     <span class="keywordflow">if</span> (object_invalid()) {
+<a name="l00203"></a>00203         <span class="keywordflow">return</span> <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>; <span class="comment">// beide zu klein gilt als ungueltiges Objekt</span>
+<a name="l00204"></a>00204     }
+<a name="l00205"></a>00205 
+<a name="l00206"></a>00206     <span class="keywordflow">if</span> (check_sensorside == -1) {
+<a name="l00207"></a>00207         <span class="comment">/* links */</span>
+<a name="l00208"></a>00208         <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> &lt;= <a class="code" href="bot-local_8h.html#a4685ab7a319f0f54d0c5c136d3f03145">MAX_PILLAR_DISTANCE</a>) {
+<a name="l00209"></a>00209             catch_pillar_state = state_after_cancel;
+<a name="l00210"></a>00210             <span class="keywordflow">return</span> <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00211"></a>00211         }
+<a name="l00212"></a>00212     } <span class="keywordflow">else</span> {
+<a name="l00213"></a>00213         <span class="comment">/* rechts */</span>
+<a name="l00214"></a>00214         <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a> &lt;= <a class="code" href="bot-local_8h.html#a4685ab7a319f0f54d0c5c136d3f03145">MAX_PILLAR_DISTANCE</a>) {
+<a name="l00215"></a>00215             catch_pillar_state = state_after_cancel;
+<a name="l00216"></a>00216             <span class="keywordflow">return</span> <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00217"></a>00217         }
+<a name="l00218"></a>00218     }
+<a name="l00219"></a>00219 
+<a name="l00220"></a>00220     <span class="keywordflow">return</span> <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00221"></a>00221 }
+<a name="l00222"></a>00222 
+<a name="l00227"></a>00227 <span class="keywordtype">void</span> <a class="code" href="behaviour__catch__pillar_8c.html#a4c99445c715b784c833956489be188ca" title="Fange ein Objekt ein.">bot_catch_pillar_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00228"></a>00228     <span class="keyword">static</span> int16_t distLeft, distRight;
+<a name="l00229"></a>00229 
+<a name="l00230"></a>00230     <span class="keywordflow">switch</span> (catch_pillar_state) {
+<a name="l00231"></a>00231     <span class="keywordflow">case</span> <a class="code" href="behaviour__catch__pillar_8c.html#a3018c7600b7bb9866400596a56a57af7">START</a>:
+<a name="l00232"></a>00232         bot_turn_maxspeed(data, 360, <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>);
+<a name="l00233"></a>00233         <a class="code" href="behaviour__cancel__behaviour_8c.html#a9d3bf9ebf7c36f74b1c02506d88a101f" title="Botenfunktion zum Deaktivieren eines Verhaltens, wenn die Abbruchbedingung erfuellt ist...">bot_cancel_behaviour</a>(data, <a class="code" href="behaviour__turn_8c.html#aa49007295687228b4083f8f84208def4" title="Das Verhalten laesst den Bot eine Punktdrehung durchfuehren.">bot_turn_behaviour</a>, turn_cancel_check);
+<a name="l00234"></a>00234         state_after_cancel = OBJECT_FOUND_AFTER_CANCEL;
+<a name="l00235"></a>00235         catch_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a29fd18bed01c4d836c7ebfe73a125c3f">END</a>;
+<a name="l00236"></a>00236         <span class="keywordflow">break</span>;
+<a name="l00237"></a>00237 
+<a name="l00238"></a>00238     <span class="keywordflow">case</span> OBJECT_FOUND_AFTER_CANCEL: <span class="comment">// Objekt erkannt</span>
+<a name="l00239"></a>00239         <span class="comment">// kommt hierher weil Cancel zugeschlagen hatte und Objekt erkannt wurde</span>
+<a name="l00240"></a>00240         <span class="comment">// ist schon zu weit gedreht, wieder etwas zurueckdrehen sonst genau Abstand messen</span>
+<a name="l00241"></a>00241 
+<a name="l00242"></a>00242         <span class="comment">// sehen beide Sensoren zu kleinen Abstand, dann ist dies wohl eine Wand und es geht weiter mit Drehen</span>
+<a name="l00243"></a>00243         <span class="keywordflow">if</span> (object_invalid()) {
+<a name="l00244"></a>00244             catch_pillar_state = OBJECT_INVALID;
+<a name="l00245"></a>00245             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;OBJECT_INVALID nach OBJECT_FOUND_AFTER_CANCEL&quot;</span>);
+<a name="l00246"></a>00246             <span class="keywordflow">break</span>;
+<a name="l00247"></a>00247         }
+<a name="l00248"></a>00248 
+<a name="l00249"></a>00249         <span class="comment">// bei Gueltigkeit evtl. Korrektur notwendig</span>
+<a name="l00250"></a>00250         catch_pillar_state = TURN_BACK;
+<a name="l00251"></a>00251         <span class="keywordflow">break</span>;
+<a name="l00252"></a>00252 
+<a name="l00253"></a>00253     <span class="keywordflow">case</span> TURN_BACK:
+<a name="l00254"></a>00254         <a class="code" href="behaviour__delay_8h.html#a055af26c844a6277d16f00f3a5de3458">BLOCK_BEHAVIOUR</a>(data, 2000); <span class="comment">// Nachlauf abwarten</span>
+<a name="l00255"></a>00255         <span class="keywordflow">if</span> (turn_cancel_check()) {
+<a name="l00256"></a>00256             <span class="comment">// Falls Sensor Objekt erkennt, genauen Abstand messen</span>
+<a name="l00257"></a>00257             catch_pillar_state = MEASURE_DIST;
+<a name="l00258"></a>00258             <span class="keywordflow">break</span>;
+<a name="l00259"></a>00259         }
+<a name="l00260"></a>00260         bot_turn_maxspeed(data, -20, <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>);
+<a name="l00261"></a>00261         <a class="code" href="behaviour__cancel__behaviour_8c.html#a9d3bf9ebf7c36f74b1c02506d88a101f" title="Botenfunktion zum Deaktivieren eines Verhaltens, wenn die Abbruchbedingung erfuellt ist...">bot_cancel_behaviour</a>(data, <a class="code" href="behaviour__turn_8c.html#aa49007295687228b4083f8f84208def4" title="Das Verhalten laesst den Bot eine Punktdrehung durchfuehren.">bot_turn_behaviour</a>, turn_cancel_check);
+<a name="l00262"></a>00262         state_after_cancel = OBJECT_FOUND_AFTER_CANCEL;
+<a name="l00263"></a>00263         catch_pillar_state = OBJECT_INVALID;
+<a name="l00264"></a>00264         <span class="keywordflow">break</span>;
+<a name="l00265"></a>00265 
+<a name="l00266"></a>00266     <span class="keywordflow">case</span> OBJECT_INVALID: {
+<a name="l00267"></a>00267         <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;OBJECT_INVALID&quot;</span>);
+<a name="l00268"></a>00268         int16_t turned = (int16_t)<a class="code" href="sensor_8c.html#ac5682e48513a771560df50e3b213e61a">heading</a> - start_heading;
+<a name="l00269"></a>00269         <span class="keywordflow">if</span> (turned &lt; 0) turned += 360;
+<a name="l00270"></a>00270         bot_turn_maxspeed(data, 360 - turned, <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>);
+<a name="l00271"></a>00271         <a class="code" href="behaviour__cancel__behaviour_8c.html#a9d3bf9ebf7c36f74b1c02506d88a101f" title="Botenfunktion zum Deaktivieren eines Verhaltens, wenn die Abbruchbedingung erfuellt ist...">bot_cancel_behaviour</a>(data, <a class="code" href="behaviour__turn_8c.html#aa49007295687228b4083f8f84208def4" title="Das Verhalten laesst den Bot eine Punktdrehung durchfuehren.">bot_turn_behaviour</a>, turn_cancel_check);
+<a name="l00272"></a>00272         state_after_cancel = OBJECT_FOUND_AFTER_CANCEL;
+<a name="l00273"></a>00273         catch_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a29fd18bed01c4d836c7ebfe73a125c3f">END</a>;
+<a name="l00274"></a>00274         <span class="keywordflow">break</span>;
+<a name="l00275"></a>00275     }
+<a name="l00276"></a>00276 
+<a name="l00277"></a>00277     <span class="keywordflow">case</span> MEASURE_DIST:
+<a name="l00278"></a>00278         <span class="comment">// genaue Entfernung zum Hindernis messen</span>
+<a name="l00279"></a>00279         bot_measure_distance(data, &amp;distLeft, &amp;distRight, 15);
+<a name="l00280"></a>00280         catch_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#ab972c5b46a018dcf27daca00fce8f37d">OPEN_DOOR</a>;
+<a name="l00281"></a>00281         <span class="keywordflow">break</span>;
+<a name="l00282"></a>00282 
+<a name="l00283"></a>00283     <span class="keywordflow">case</span> <a class="code" href="behaviour__catch__pillar_8c.html#ab972c5b46a018dcf27daca00fce8f37d">OPEN_DOOR</a>:
+<a name="l00284"></a>00284         <span class="keywordflow">if</span> (distLeft &gt; <a class="code" href="bot-local_8h.html#a4685ab7a319f0f54d0c5c136d3f03145">MAX_PILLAR_DISTANCE</a> &amp;&amp; distRight &gt; <a class="code" href="bot-local_8h.html#a4685ab7a319f0f54d0c5c136d3f03145">MAX_PILLAR_DISTANCE</a>) {
+<a name="l00285"></a>00285             <span class="comment">// bei ungueltigem Abstand nach Messung Restdrehung</span>
+<a name="l00286"></a>00286             catch_pillar_state = OBJECT_INVALID;
+<a name="l00287"></a>00287             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;OBJECT_INVALID nach OPEN_DOOR&quot;</span>);
+<a name="l00288"></a>00288             <span class="keywordflow">break</span>;
+<a name="l00289"></a>00289         }
+<a name="l00290"></a>00290         catch_pillar_state = OBJECT_FOUND_AFTER_MEASURE;
+<a name="l00291"></a>00291         <span class="keywordflow">break</span>;
+<a name="l00292"></a>00292 
+<a name="l00293"></a>00293     <span class="keywordflow">case</span> OBJECT_FOUND_AFTER_MEASURE:
+<a name="l00294"></a>00294         <span class="comment">// nehme den Sensorabstand vom Sensor, welcher auch Objekt sieht</span>
+<a name="l00295"></a>00295         <span class="keywordflow">if</span> (distLeft &lt;= <a class="code" href="bot-local_8h.html#a4685ab7a319f0f54d0c5c136d3f03145">MAX_PILLAR_DISTANCE</a>) {
+<a name="l00296"></a>00296             obj_posL = <a class="code" href="math__utils_8c.html#a6596387c20201193119f1038edca2924" title="Ermittelt die Koordinaten eines Punktes, der um dx mm in x- und dy mm in y-Richtung gegenueber der ak...">calc_point_in_distance</a>(<a class="code" href="sensor_8c.html#ac5682e48513a771560df50e3b213e61a">heading</a>, <a class="code" href="bot-local_8h.html#a82df5de9fe9a52f1fe5f5d59796eaf79">DISTSENSOR_POS_FW</a> + distLeft, <a class="code" href="bot-local_8h.html#aa042863925c33a1048da443273e2e67c">DISTSENSOR_POS_SW</a>);
+<a name="l00297"></a>00297             catch_pillar_state = TURN_TO_RIGHT_SENSOR;
+<a name="l00298"></a>00298         } <span class="keywordflow">else</span> {
+<a name="l00299"></a>00299             obj_posR = <a class="code" href="math__utils_8c.html#a6596387c20201193119f1038edca2924" title="Ermittelt die Koordinaten eines Punktes, der um dx mm in x- und dy mm in y-Richtung gegenueber der ak...">calc_point_in_distance</a>(<a class="code" href="sensor_8c.html#ac5682e48513a771560df50e3b213e61a">heading</a>, <a class="code" href="bot-local_8h.html#a82df5de9fe9a52f1fe5f5d59796eaf79">DISTSENSOR_POS_FW</a> + distRight, -<a class="code" href="bot-local_8h.html#aa042863925c33a1048da443273e2e67c">DISTSENSOR_POS_SW</a>);
+<a name="l00300"></a>00300             catch_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a8383425aa6799a4203bc11bcb209f327">GO_TO_POINT</a>;
+<a name="l00301"></a>00301             <a class="code" href="behaviour__servo_8c.html#ab12411c90e13fc9e924d02212a7769c6" title="Fahre den Servo an eine Position.">bot_servo</a>(data, <a class="code" href="motor_8h.html#a8f2a5c30e29a7191cff398b144850d51" title="Servo 1.">SERVO1</a>, <a class="code" href="bot-local_8h.html#aa2f39ed7eb7927d5aa4f01c52a15431b" title="Linker Anschlag des Servos.">DOOR_OPEN</a>); <span class="comment">// Klappe auf</span>
+<a name="l00302"></a>00302         }
+<a name="l00303"></a>00303         <span class="keywordflow">break</span>;
+<a name="l00304"></a>00304 
+<a name="l00305"></a>00305     <span class="keywordflow">case</span> TURN_TO_RIGHT_SENSOR:
+<a name="l00306"></a>00306         check_sensorside = 1;
+<a name="l00307"></a>00307         catch_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a3018c7600b7bb9866400596a56a57af7">START</a>;
+<a name="l00308"></a>00308         <span class="keywordflow">break</span>;
+<a name="l00309"></a>00309 
+<a name="l00310"></a>00310     <span class="keywordflow">case</span> <a class="code" href="behaviour__catch__pillar_8c.html#a8383425aa6799a4203bc11bcb209f327">GO_TO_POINT</a>:
+<a name="l00311"></a>00311         <a class="code" href="behaviour__goto__pos_8c.html#a88ddbedd618e291f1181ca34433fcd93" title="Botenfunktion des Positionierungsverhaltens.">bot_goto_pos</a>(data, ((obj_posL.x + obj_posR.x) / 2), ((obj_posL.y
+<a name="l00312"></a>00312                 + obj_posR.y) / 2), 999);
+<a name="l00313"></a>00313         catch_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a235be36d05e9f122bc434db71aa7f62d">CLOSE_DOOR</a>;
+<a name="l00314"></a>00314         <span class="keywordflow">break</span>;
+<a name="l00315"></a>00315 
+<a name="l00316"></a>00316     <span class="keywordflow">case</span> <a class="code" href="behaviour__catch__pillar_8c.html#a235be36d05e9f122bc434db71aa7f62d">CLOSE_DOOR</a>:
+<a name="l00317"></a>00317         <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a34eca1400eac2bb5383dd6f55adf0f72">sensTrans</a> == 1) {
+<a name="l00318"></a>00318             <span class="comment">// Klappe schliessen falls Objekt eingefangen wurde</span>
+<a name="l00319"></a>00319             <a class="code" href="behaviour__servo_8c.html#ab12411c90e13fc9e924d02212a7769c6" title="Fahre den Servo an eine Position.">bot_servo</a>(data, <a class="code" href="motor_8h.html#a8f2a5c30e29a7191cff398b144850d51" title="Servo 1.">SERVO1</a>, <a class="code" href="bot-local_8h.html#a4ef8b71b5650632bd07a37296c4a5f89" title="Rechter Anschlag des Servos.">DOOR_CLOSE</a>);
+<a name="l00320"></a>00320         }
+<a name="l00321"></a>00321         catch_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a29fd18bed01c4d836c7ebfe73a125c3f">END</a>;
+<a name="l00322"></a>00322         <span class="keywordflow">break</span>;
+<a name="l00323"></a>00323 
+<a name="l00324"></a>00324     <span class="keywordflow">default</span>:
+<a name="l00325"></a>00325         <a class="code" href="bot-logic_8c.html#ae957e610d7a3b2034084f87277a319de" title="Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg.">exit_behaviour</a>(data, <a class="code" href="sensor_8c.html#a34eca1400eac2bb5383dd6f55adf0f72">sensTrans</a>); <span class="comment">// == BEHAVIOUR_SUBSUCCESS, falls Objekt eingefangen</span>
+<a name="l00326"></a>00326         <span class="keywordflow">break</span>;
+<a name="l00327"></a>00327     }
+<a name="l00328"></a>00328 }
+<a name="l00329"></a>00329 
+<a name="l00334"></a>00334 <span class="keywordtype">void</span> <a class="code" href="behaviour__catch__pillar_8c.html#aadefbf6c2ed52f87907dccb9ce27c58c" title="Fange ein Objekt ein.">bot_catch_pillar</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller) {
+<a name="l00335"></a>00335     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__catch__pillar_8c.html#a4c99445c715b784c833956489be188ca" title="Fange ein Objekt ein.">bot_catch_pillar_behaviour</a>, <a class="code" href="bot-logic_8h.html#ac3101d6686d35c952f2a5c8177b3f262" title="Konstante, wenn Verhalten beim Aufruf alte Wuensche ueberschreiben sollen.">BEHAVIOUR_OVERRIDE</a>);
+<a name="l00336"></a>00336     catch_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a3018c7600b7bb9866400596a56a57af7">START</a>;
+<a name="l00337"></a>00337     check_sensorside = -1; <span class="comment">// linker Sensor ergibt Abbruchbedingung</span>
+<a name="l00338"></a>00338     start_heading = <a class="code" href="sensor_8c.html#ac5682e48513a771560df50e3b213e61a">heading</a>;
+<a name="l00339"></a>00339     obj_posL.x = 0;
+<a name="l00340"></a>00340     obj_posL.y = 0;
+<a name="l00341"></a>00341     obj_posR.x = 0;
+<a name="l00342"></a>00342     obj_posR.y = 0;
+<a name="l00343"></a>00343     <span class="comment">/* Kollisions-Verhalten ausschalten  */</span>
+<a name="l00344"></a>00344 <span class="preprocessor">#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE</span>
+<a name="l00345"></a>00345 <span class="preprocessor"></span>    deactivateBehaviour(<a class="code" href="behaviour__avoid__col_8c.html#af537d5e45f3f8339619d9dccf7d86e5d">bot_avoid_col_behaviour</a>);
+<a name="l00346"></a>00346 <span class="preprocessor">#endif</span>
+<a name="l00347"></a>00347 <span class="preprocessor"></span>}
+<a name="l00348"></a>00348 
+<a name="l00349"></a>00349 <span class="preprocessor">#elif CATCH_PILLAR_VERSION == 3</span>
+<a name="l00350"></a>00350 <span class="preprocessor"></span>
+<a name="l00351"></a><a class="code" href="behaviour__catch__pillar_8c.html#a26e5cc98fa7c683257778bce49df7ca6">00351</a> <span class="preprocessor">#define OBJECT_FOUND    5</span>
+<a name="l00352"></a><a class="code" href="behaviour__catch__pillar_8c.html#ab972c5b46a018dcf27daca00fce8f37d">00352</a> <span class="preprocessor"></span><span class="preprocessor">#define OPEN_DOOR       6</span>
+<a name="l00353"></a><a class="code" href="behaviour__catch__pillar_8c.html#a8383425aa6799a4203bc11bcb209f327">00353</a> <span class="preprocessor"></span><span class="preprocessor">#define GO_TO_POINT     7</span>
+<a name="l00354"></a>00354 <span class="preprocessor"></span>
+<a name="l00355"></a>00355 <span class="keyword">static</span> uint8_t state_after_cancel;  
+<a name="l00356"></a>00356 <span class="keyword">static</span> uint8_t side;                
+<a name="l00357"></a>00357 <span class="keyword">static</span> int16_t headingL;            
+<a name="l00358"></a>00358 <span class="keyword">static</span> int16_t headingR;            
+<a name="l00359"></a>00359 <span class="keyword">static</span> int16_t max_turn;            
+<a name="l00369"></a>00369 <span class="keyword">static</span> uint8_t turn_cancel_check(<span class="keywordtype">void</span>) {
+<a name="l00370"></a>00370     <span class="keywordflow">switch</span> (side) {
+<a name="l00371"></a>00371     <span class="keywordflow">case</span> 0:
+<a name="l00372"></a>00372         <span class="comment">/* Check mit linkem Sensor */</span>
+<a name="l00373"></a>00373         <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a> &lt;= <a class="code" href="bot-local_8h.html#a4685ab7a319f0f54d0c5c136d3f03145">MAX_PILLAR_DISTANCE</a>) {
+<a name="l00374"></a>00374             headingL = (int16_t) <a class="code" href="sensor_8c.html#ac5682e48513a771560df50e3b213e61a">heading</a>;
+<a name="l00375"></a>00375             side = 1;
+<a name="l00376"></a>00376             <span class="keywordflow">return</span> <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00377"></a>00377         }
+<a name="l00378"></a>00378         <span class="keywordflow">break</span>;
+<a name="l00379"></a>00379     <span class="keywordflow">case</span> 1:
+<a name="l00380"></a>00380         <span class="comment">/* Check mit rechtem Sensor */</span>
+<a name="l00381"></a>00381         <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a> &lt;= <a class="code" href="bot-local_8h.html#a4685ab7a319f0f54d0c5c136d3f03145">MAX_PILLAR_DISTANCE</a>) {
+<a name="l00382"></a>00382             catch_pillar_state = state_after_cancel;
+<a name="l00383"></a>00383             headingR = (int16_t) <a class="code" href="sensor_8c.html#ac5682e48513a771560df50e3b213e61a">heading</a>;
+<a name="l00384"></a>00384             <span class="keywordflow">return</span> <a class="code" href="global_8h.html#add3ca9eefe3b5b754426f51d3043e579" title="wahr">True</a>;
+<a name="l00385"></a>00385         }
+<a name="l00386"></a>00386         <span class="keywordflow">break</span>;
+<a name="l00387"></a>00387     }
+<a name="l00388"></a>00388 
+<a name="l00389"></a>00389     <span class="keywordflow">return</span> <a class="code" href="global_8h.html#a306ebd41c0cd1303b1372c6153f0caf8" title="falsch">False</a>;
+<a name="l00390"></a>00390 }
+<a name="l00391"></a>00391 
+<a name="l00396"></a>00396 <span class="keyword">static</span> uint8_t goto_pos_cancel(<span class="keywordtype">void</span>) {
+<a name="l00397"></a>00397     <span class="keywordflow">return</span> <a class="code" href="sensor_8c.html#a34eca1400eac2bb5383dd6f55adf0f72">sensTrans</a>;
+<a name="l00398"></a>00398 }
+<a name="l00399"></a>00399 
+<a name="l00404"></a><a class="code" href="behaviour__catch__pillar_8h.html#a4c99445c715b784c833956489be188ca">00404</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__catch__pillar_8c.html#a4c99445c715b784c833956489be188ca" title="Fange ein Objekt ein.">bot_catch_pillar_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00405"></a>00405     <span class="keyword">static</span> position_t obj_pos;
+<a name="l00406"></a>00406 
+<a name="l00407"></a>00407     <span class="keywordflow">switch</span> (catch_pillar_state) {
+<a name="l00408"></a>00408     <span class="comment">/* Auf los geht&#39;s los */</span>
+<a name="l00409"></a>00409     <span class="keywordflow">case</span> <a class="code" href="behaviour__catch__pillar_8c.html#a3018c7600b7bb9866400596a56a57af7">START</a>:
+<a name="l00410"></a>00410         <span class="comment">/* Drehen mit Abbruch bei Objekterkennung */</span>
+<a name="l00411"></a>00411         bot_turn_maxspeed(data, max_turn, <a class="code" href="motor_8h.html#a9b567675663847dab60f363ba4b333c2" title="langsame Fahrt in mm/s">BOT_SPEED_SLOW</a>);
+<a name="l00412"></a>00412         <a class="code" href="behaviour__cancel__behaviour_8c.html#a9d3bf9ebf7c36f74b1c02506d88a101f" title="Botenfunktion zum Deaktivieren eines Verhaltens, wenn die Abbruchbedingung erfuellt ist...">bot_cancel_behaviour</a>(data, <a class="code" href="behaviour__turn_8c.html#aa49007295687228b4083f8f84208def4" title="Das Verhalten laesst den Bot eine Punktdrehung durchfuehren.">bot_turn_behaviour</a>, turn_cancel_check);
+<a name="l00413"></a>00413         side = 0;
+<a name="l00414"></a>00414         headingL = -1;
+<a name="l00415"></a>00415         headingR = -1;
+<a name="l00416"></a>00416         state_after_cancel = <a class="code" href="behaviour__catch__pillar_8c.html#a26e5cc98fa7c683257778bce49df7ca6">OBJECT_FOUND</a>;
+<a name="l00417"></a>00417         catch_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a29fd18bed01c4d836c7ebfe73a125c3f">END</a>;
+<a name="l00418"></a>00418         <span class="keywordflow">break</span>;
+<a name="l00419"></a>00419 
+<a name="l00420"></a>00420         <span class="comment">/* Objekt erkannt */</span>
+<a name="l00421"></a>00421     <span class="keywordflow">case</span> <a class="code" href="behaviour__catch__pillar_8c.html#a26e5cc98fa7c683257778bce49df7ca6">OBJECT_FOUND</a>:
+<a name="l00422"></a>00422         <span class="keywordflow">if</span> (headingL &lt; 0 || headingR &lt; 0) {
+<a name="l00423"></a>00423             <span class="comment">/* Erkennung fehlgeschlagen */</span>
+<a name="l00424"></a>00424             catch_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a29fd18bed01c4d836c7ebfe73a125c3f">END</a>;
+<a name="l00425"></a>00425             <span class="keywordflow">return</span>;
+<a name="l00426"></a>00426         }
+<a name="l00427"></a>00427         catch_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#ab972c5b46a018dcf27daca00fce8f37d">OPEN_DOOR</a>;
+<a name="l00428"></a>00428         <span class="comment">/* Abstand zum Objekt berechnen aus gedrehtem Winkel */</span>
+<a name="l00429"></a>00429         int16_t dHead = headingR - headingL;
+<a name="l00430"></a>00430         <span class="keywordflow">if</span> (dHead &lt; 0) {
+<a name="l00431"></a>00431             dHead += 360;
+<a name="l00432"></a>00432         }
+<a name="l00433"></a>00433         int16_t dist = (int16_t) ((<a class="code" href="bot-local_8h.html#aa042863925c33a1048da443273e2e67c">DISTSENSOR_POS_SW</a> * 2.0f) / dHead * (180.0f / <a class="code" href="global_8h.html#ae71449b1cc6e6250b91f539153a7a0d3">M_PI</a>));
+<a name="l00434"></a>00434         <span class="comment">/* Objektkoordis berechnen */</span>
+<a name="l00435"></a>00435         obj_pos = <a class="code" href="math__utils_8c.html#a6596387c20201193119f1038edca2924" title="Ermittelt die Koordinaten eines Punktes, der um dx mm in x- und dy mm in y-Richtung gegenueber der ak...">calc_point_in_distance</a>(headingR, <a class="code" href="bot-local_8h.html#a82df5de9fe9a52f1fe5f5d59796eaf79">DISTSENSOR_POS_FW</a> + dist, -<a class="code" href="bot-local_8h.html#aa042863925c33a1048da443273e2e67c">DISTSENSOR_POS_SW</a>);
+<a name="l00436"></a>00436         <span class="keywordflow">break</span>;
+<a name="l00437"></a>00437 
+<a name="l00438"></a>00438         <span class="comment">/* Klappe auf */</span>
+<a name="l00439"></a>00439     <span class="keywordflow">case</span> <a class="code" href="behaviour__catch__pillar_8c.html#ab972c5b46a018dcf27daca00fce8f37d">OPEN_DOOR</a>:
+<a name="l00440"></a>00440         catch_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a8383425aa6799a4203bc11bcb209f327">GO_TO_POINT</a>;
+<a name="l00441"></a>00441         <a class="code" href="behaviour__servo_8c.html#ab12411c90e13fc9e924d02212a7769c6" title="Fahre den Servo an eine Position.">bot_servo</a>(data, <a class="code" href="motor_8h.html#a8f2a5c30e29a7191cff398b144850d51" title="Servo 1.">SERVO1</a>, <a class="code" href="bot-local_8h.html#aa2f39ed7eb7927d5aa4f01c52a15431b" title="Linker Anschlag des Servos.">DOOR_OPEN</a>);
+<a name="l00442"></a>00442         <span class="keywordflow">break</span>;
+<a name="l00443"></a>00443 
+<a name="l00444"></a>00444         <span class="comment">/* zum Objekt fahren und Stopp, wenn das Objekt im Fach erkannt wird */</span>
+<a name="l00445"></a>00445     <span class="keywordflow">case</span> <a class="code" href="behaviour__catch__pillar_8c.html#a8383425aa6799a4203bc11bcb209f327">GO_TO_POINT</a>:
+<a name="l00446"></a>00446         <a class="code" href="behaviour__goto__pos_8c.html#a88ddbedd618e291f1181ca34433fcd93" title="Botenfunktion des Positionierungsverhaltens.">bot_goto_pos</a>(data, obj_pos.x, obj_pos.y, 999);
+<a name="l00447"></a>00447         <a class="code" href="behaviour__cancel__behaviour_8c.html#a9d3bf9ebf7c36f74b1c02506d88a101f" title="Botenfunktion zum Deaktivieren eines Verhaltens, wenn die Abbruchbedingung erfuellt ist...">bot_cancel_behaviour</a>(data, <a class="code" href="behaviour__goto__pos_8c.html#a438ebcd779ae602e208e9ebe3b9aee44" title="Das Positionierungsverhalten.">bot_goto_pos_behaviour</a>, goto_pos_cancel);
+<a name="l00448"></a>00448         catch_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a235be36d05e9f122bc434db71aa7f62d">CLOSE_DOOR</a>;
+<a name="l00449"></a>00449         <span class="keywordflow">break</span>;
+<a name="l00450"></a>00450 
+<a name="l00451"></a>00451         <span class="comment">/* Klappe zu */</span>
+<a name="l00452"></a>00452     <span class="keywordflow">case</span> <a class="code" href="behaviour__catch__pillar_8c.html#a235be36d05e9f122bc434db71aa7f62d">CLOSE_DOOR</a>:
+<a name="l00453"></a>00453         <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a34eca1400eac2bb5383dd6f55adf0f72">sensTrans</a> == 1) {
+<a name="l00454"></a>00454             <span class="comment">// Klappe schliessen falls Objekt eingefangen wurde</span>
+<a name="l00455"></a>00455             <a class="code" href="behaviour__servo_8c.html#ab12411c90e13fc9e924d02212a7769c6" title="Fahre den Servo an eine Position.">bot_servo</a>(data, <a class="code" href="motor_8h.html#a8f2a5c30e29a7191cff398b144850d51" title="Servo 1.">SERVO1</a>, <a class="code" href="bot-local_8h.html#a4ef8b71b5650632bd07a37296c4a5f89" title="Rechter Anschlag des Servos.">DOOR_CLOSE</a>);
+<a name="l00456"></a>00456         }
+<a name="l00457"></a>00457         catch_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a29fd18bed01c4d836c7ebfe73a125c3f">END</a>;
+<a name="l00458"></a>00458         <span class="keywordflow">break</span>;
+<a name="l00459"></a>00459 
+<a name="l00460"></a>00460         <span class="comment">/* Ende */</span>
+<a name="l00461"></a>00461     <span class="keywordflow">default</span>:
+<a name="l00462"></a>00462         <a class="code" href="bot-logic_8c.html#ae957e610d7a3b2034084f87277a319de" title="Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg.">exit_behaviour</a>(data, <a class="code" href="sensor_8c.html#a34eca1400eac2bb5383dd6f55adf0f72">sensTrans</a>); <span class="comment">// == BEHAVIOUR_SUBSUCCESS, falls Objekt eingefangen</span>
+<a name="l00463"></a>00463         <span class="keywordflow">break</span>;
+<a name="l00464"></a>00464     }
+<a name="l00465"></a>00465 }
+<a name="l00466"></a>00466 
+<a name="l00472"></a><a class="code" href="behaviour__catch__pillar_8h.html#abfd23278cfcbad35582c56335c0f936a">00472</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__catch__pillar_8c.html#abfd23278cfcbad35582c56335c0f936a" title="Fange ein Objekt ein.">bot_catch_pillar_turn</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller, int16_t degrees) {
+<a name="l00473"></a>00473     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__catch__pillar_8c.html#a4c99445c715b784c833956489be188ca" title="Fange ein Objekt ein.">bot_catch_pillar_behaviour</a>, <a class="code" href="bot-logic_8h.html#ac3101d6686d35c952f2a5c8177b3f262" title="Konstante, wenn Verhalten beim Aufruf alte Wuensche ueberschreiben sollen.">BEHAVIOUR_OVERRIDE</a>);
+<a name="l00474"></a>00474     catch_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a3018c7600b7bb9866400596a56a57af7">START</a>;
+<a name="l00475"></a>00475     max_turn = degrees;
+<a name="l00476"></a>00476     <span class="comment">/* Kollisions-Verhalten ausschalten */</span>
+<a name="l00477"></a>00477 <span class="preprocessor">#ifdef BEHAVIOUR_AVOID_COL_AVAILABLE</span>
+<a name="l00478"></a>00478 <span class="preprocessor"></span>    deactivateBehaviour(<a class="code" href="behaviour__avoid__col_8c.html#af537d5e45f3f8339619d9dccf7d86e5d">bot_avoid_col_behaviour</a>);
+<a name="l00479"></a>00479 <span class="preprocessor">#endif</span>
+<a name="l00480"></a>00480 <span class="preprocessor"></span>}
+<a name="l00481"></a>00481 
+<a name="l00486"></a><a class="code" href="behaviour__catch__pillar_8h.html#aadefbf6c2ed52f87907dccb9ce27c58c">00486</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__catch__pillar_8c.html#aadefbf6c2ed52f87907dccb9ce27c58c" title="Fange ein Objekt ein.">bot_catch_pillar</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller) {
+<a name="l00487"></a>00487     <a class="code" href="behaviour__catch__pillar_8c.html#abfd23278cfcbad35582c56335c0f936a" title="Fange ein Objekt ein.">bot_catch_pillar_turn</a>(caller, 360);
+<a name="l00488"></a>00488 }
+<a name="l00489"></a>00489 
+<a name="l00490"></a>00490 <span class="preprocessor">#endif // CATCH_PILLAR_VERSION</span>
+<a name="l00491"></a>00491 <span class="preprocessor"></span>
+<a name="l00496"></a><a class="code" href="behaviour__catch__pillar_8h.html#a4072478a8c0b91c796f2541a62c3c53f">00496</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__catch__pillar_8c.html#a4072478a8c0b91c796f2541a62c3c53f" title="Gibt die Dose wieder aus, Entladevorgang.">bot_unload_pillar_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00497"></a>00497     <span class="keywordflow">switch</span> (unload_pillar_state) {
+<a name="l00498"></a>00498     <span class="keywordflow">case</span> <a class="code" href="behaviour__catch__pillar_8c.html#a3018c7600b7bb9866400596a56a57af7">START</a>:
+<a name="l00499"></a>00499         <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a34eca1400eac2bb5383dd6f55adf0f72">sensTrans</a> == 1) { <span class="comment">// ist was im Bauch gehts los</span>
+<a name="l00500"></a>00500             unload_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a0545818b7a2fddb1d72d7ff446b97dc9">GO_BACK</a>;
+<a name="l00501"></a>00501             <span class="comment">// Klappe auf und danach Rueckwaerts</span>
+<a name="l00502"></a>00502             <a class="code" href="behaviour__servo_8c.html#ab12411c90e13fc9e924d02212a7769c6" title="Fahre den Servo an eine Position.">bot_servo</a>(data, <a class="code" href="motor_8h.html#a8f2a5c30e29a7191cff398b144850d51" title="Servo 1.">SERVO1</a>, <a class="code" href="bot-local_8h.html#aa2f39ed7eb7927d5aa4f01c52a15431b" title="Linker Anschlag des Servos.">DOOR_OPEN</a>);
+<a name="l00503"></a>00503         } <span class="keywordflow">else</span>
+<a name="l00504"></a>00504             <span class="comment">// nix zu tun</span>
+<a name="l00505"></a>00505             unload_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a29fd18bed01c4d836c7ebfe73a125c3f">END</a>;
+<a name="l00506"></a>00506         <span class="keywordflow">break</span>;
+<a name="l00507"></a>00507     <span class="keywordflow">case</span> <a class="code" href="behaviour__catch__pillar_8c.html#a0545818b7a2fddb1d72d7ff446b97dc9">GO_BACK</a>:
+<a name="l00508"></a>00508         <a class="code" href="behaviour__drive__distance_8c.html#a8d678ab6711dfaed1efa80bd2daab31c" title="Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren.">bot_drive_distance</a>(data, 0, -<a class="code" href="motor_8h.html#a94a0837e5e6a26250adcce9225c5139f" title="vorsichtige Fahrt, fuer Folgeverhalten in mm/s">BOT_SPEED_FOLLOW</a>, 10);
+<a name="l00509"></a>00509         <span class="comment">// 10 cm rueckwaerts nur bei Hindernis</span>
+<a name="l00510"></a>00510         unload_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a235be36d05e9f122bc434db71aa7f62d">CLOSE_DOOR</a>;
+<a name="l00511"></a>00511         <span class="keywordflow">break</span>;
+<a name="l00512"></a>00512     <span class="keywordflow">case</span> <a class="code" href="behaviour__catch__pillar_8c.html#a235be36d05e9f122bc434db71aa7f62d">CLOSE_DOOR</a>:
+<a name="l00513"></a>00513         <a class="code" href="behaviour__servo_8c.html#ab12411c90e13fc9e924d02212a7769c6" title="Fahre den Servo an eine Position.">bot_servo</a>(data, <a class="code" href="motor_8h.html#a8f2a5c30e29a7191cff398b144850d51" title="Servo 1.">SERVO1</a>, <a class="code" href="bot-local_8h.html#a4ef8b71b5650632bd07a37296c4a5f89" title="Rechter Anschlag des Servos.">DOOR_CLOSE</a>);
+<a name="l00514"></a>00514         unload_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a29fd18bed01c4d836c7ebfe73a125c3f">END</a>;
+<a name="l00515"></a>00515         <span class="keywordflow">break</span>;
+<a name="l00516"></a>00516     <span class="keywordflow">default</span>:
+<a name="l00517"></a>00517         unload_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a3018c7600b7bb9866400596a56a57af7">START</a>; <span class="comment">// bei Umschaltung via Verhaltensscreen ist dies notwendig</span>
+<a name="l00518"></a>00518         return_from_behaviour(data);
+<a name="l00519"></a>00519         <span class="keywordflow">break</span>;
+<a name="l00520"></a>00520     }
+<a name="l00521"></a>00521 }
+<a name="l00522"></a>00522 
+<a name="l00527"></a><a class="code" href="behaviour__catch__pillar_8h.html#a444e8ac4ffa6c7cf3e36d72b5f95b640">00527</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__catch__pillar_8c.html#a444e8ac4ffa6c7cf3e36d72b5f95b640" title="Entlaedt das Objekt wieder.">bot_unload_pillar</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller) {
+<a name="l00528"></a>00528     unload_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a3018c7600b7bb9866400596a56a57af7">START</a>;
+<a name="l00529"></a>00529     catch_pillar_state = <a class="code" href="behaviour__catch__pillar_8c.html#a29fd18bed01c4d836c7ebfe73a125c3f">END</a>; <span class="comment">// Sicherheitshalber das catch-Verhalten auf Ende setzen</span>
+<a name="l00530"></a>00530     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__catch__pillar_8c.html#a4072478a8c0b91c796f2541a62c3c53f" title="Gibt die Dose wieder aus, Entladevorgang.">bot_unload_pillar_behaviour</a>, <a class="code" href="bot-logic_8h.html#ac3101d6686d35c952f2a5c8177b3f262" title="Konstante, wenn Verhalten beim Aufruf alte Wuensche ueberschreiben sollen.">BEHAVIOUR_OVERRIDE</a>);
+<a name="l00531"></a>00531 }
+<a name="l00532"></a>00532 
+<a name="l00533"></a>00533 <span class="preprocessor">#endif // BEHAVIOUR_CATCH_PILLAR_AVAILABLE</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:08 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: mini-fat.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_f02428e3da713fc394853d6cd2afbcd0.html">mcu</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">mini-fat.c</div>  </div>
+</div>
+<div class="contents">
+<a href="mini-fat_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00031"></a>00031 <span class="preprocessor">#include &quot;<a class="code" href="eeprom_8h.html" title="EEPROM-Zugriff.">eeprom.h</a>&quot;</span>
+<a name="l00032"></a>00032 
+<a name="l00033"></a>00033 <span class="comment">/* EEPROM-Variable immer deklarieren, damit die Adresse sich nicht veraendert je nach #define */</span>
+<a name="l00034"></a><a class="code" href="mini-fat_8c.html#a9f50170b17cf9985305e7e5799b83f79">00034</a> uint32_t <a class="code" href="eeprom_8h.html#a3f5ebf97c07a164113b82053ed2b5ebe">EEPROM</a> <a class="code" href="mini-fat_8c.html#a9f50170b17cf9985305e7e5799b83f79">eefat</a>[10] = {0};    
+<a name="l00036"></a><a class="code" href="mini-fat_8c.html#a63936fe13ba491f96d71c80181b882e5">00036</a> <span class="preprocessor">#define MINI_FAT_CHECK_FRAGMENTATION    </span>
+<a name="l00037"></a>00037 <span class="preprocessor">//#define MINI_FAT_DEBUG                </span>
+<a name="l00040"></a>00040 <span class="preprocessor">#ifdef MCU</span>
+<a name="l00041"></a>00041 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot-Funktionalitaeten">ct-Bot.h</a>&quot;</span>
+<a name="l00042"></a>00042 
+<a name="l00043"></a>00043 <span class="preprocessor">#if defined MMC_AVAILABLE &amp;&amp; ! defined BOT_FS_AVAILABLE</span>
+<a name="l00044"></a>00044 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="mini-fat_8h.html" title="Routinen zum Auffinden von markierten Files auf einer MMC-Karte.">mini-fat.h</a>&quot;</span>
+<a name="l00045"></a>00045 <span class="preprocessor">#include &quot;<a class="code" href="botfs__types_8h.html" title="Datentypen fuer Dateisystem BotFS.">botfs_types.h</a>&quot;</span>
+<a name="l00046"></a>00046 <span class="preprocessor">#include &quot;<a class="code" href="display_8h.html" title="Routinen zur Displaysteuerung.">display.h</a>&quot;</span>
+<a name="l00047"></a>00047 <span class="preprocessor">#include &quot;<a class="code" href="available__screens_8h.html" title="Die Schalter fuer sichtbare Screens finden sich hier.">ui/available_screens.h</a>&quot;</span>
+<a name="l00048"></a>00048 <span class="preprocessor">#include &quot;<a class="code" href="gui_8h.html" title="Display-GUI des Bots.">gui.h</a>&quot;</span>
+<a name="l00049"></a>00049 <span class="preprocessor">#include &quot;<a class="code" href="log_8h.html" title="Routinen zum Loggen von Informationen.">log.h</a>&quot;</span>
+<a name="l00050"></a>00050 <span class="preprocessor">#include &quot;<a class="code" href="led_8h.html" title="Routinen zur LED-Steuerung.">led.h</a>&quot;</span>
+<a name="l00051"></a>00051 <span class="preprocessor">#include &lt;string.h&gt;</span>
+<a name="l00052"></a>00052 
+<a name="l00053"></a>00053 
+<a name="l00054"></a>00054 <span class="preprocessor">#ifndef MINI_FAT_DEBUG</span>
+<a name="l00055"></a>00055 <span class="preprocessor"></span><span class="preprocessor">#undef LOG_DEBUG</span>
+<a name="l00056"></a>00056 <span class="preprocessor"></span><span class="preprocessor">#define LOG_DEBUG(...) {}</span>
+<a name="l00057"></a>00057 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00058"></a>00058 <span class="preprocessor"></span>
+<a name="l00059"></a>00059 
+<a name="l00060"></a>00060 <span class="preprocessor">#ifdef DISPLAY_MINIFAT_INFO</span>
+<a name="l00061"></a>00061 <span class="preprocessor"></span>
+<a name="l00065"></a>00065 <span class="keyword">static</span> <span class="keywordtype">void</span> display_block(uint32_t addr) {
+<a name="l00066"></a>00066     uint16_t low  = (uint16_t) addr;
+<a name="l00067"></a>00067     uint16_t high = (uint16_t) (addr &gt;&gt; 16);
+<a name="l00068"></a>00068     <a class="code" href="display_8h.html#a3b34665813cc31ce81d141e4f67162d2">display_printf</a>(<span class="stringliteral">&quot;0x%02x%04x&quot;</span>, high, low);
+<a name="l00069"></a>00069 }
+<a name="l00070"></a>00070 
+<a name="l00077"></a>00077 <span class="keywordtype">void</span> mini_fat_display(<span class="keywordtype">void</span>) {
+<a name="l00078"></a>00078     <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(1, 1);
+<a name="l00079"></a>00079     <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;MiniFAT:&quot;</span>);
+<a name="l00080"></a>00080 }
+<a name="l00081"></a>00081 <span class="preprocessor">#endif // DISPLAY_MINIFAT_INFO</span>
+<a name="l00082"></a>00082 <span class="preprocessor"></span>
+<a name="l00093"></a>00093 <span class="keyword">static</span> uint32_t mini_fat_lookup_adr(<span class="keyword">const</span> <span class="keywordtype">char</span> * filename, <span class="keywordtype">void</span> * buffer) {
+<a name="l00094"></a>00094     uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00095"></a>00095     uint32_t * p_eefat = <a class="code" href="mini-fat_8c.html#a9f50170b17cf9985305e7e5799b83f79">eefat</a>;
+<a name="l00096"></a>00096     <span class="comment">/* EEPROM-Slabs nach gewuenschter Datei-ID durchsuchen */</span>
+<a name="l00097"></a>00097     <span class="keywordflow">for</span> (i=10; i&gt;0; i--) {
+<a name="l00098"></a>00098         uint32_t block;
+<a name="l00099"></a>00099         block = ctbot_eeprom_read_dword(p_eefat++); <span class="comment">// Adresse aus dem EEPROM laden</span>
+<a name="l00100"></a>00100         <span class="keywordflow">if</span> (<a class="code" href="mmc_8h.html#a7ebc2ededd906eb69ecc1d14e2caae45">mmc_read_sector</a>(block, buffer) != 0) <span class="keywordflow">return</span> 0;
+<a name="l00101"></a>00101         <span class="comment">/* Datei-ID vergleichen */</span>
+<a name="l00102"></a>00102         <span class="keywordflow">if</span> (strcmp_P((<span class="keywordtype">char</span> *) buffer, filename) == 0) {
+<a name="l00103"></a>00103 <span class="preprocessor">#ifdef DISPLAY_MINIFAT_INFO</span>
+<a name="l00104"></a>00104 <span class="preprocessor"></span>            <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(3, 1);
+<a name="l00105"></a>00105             <a class="code" href="display_8h.html#a3b34665813cc31ce81d141e4f67162d2">display_printf</a>(<span class="stringliteral">&quot;eefound %u:&quot;</span>, 11 - i);
+<a name="l00106"></a>00106             <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(3, 13);
+<a name="l00107"></a>00107             display_block(block);
+<a name="l00108"></a>00108 <span class="preprocessor">#endif  // DISPLAY_MINIFAT_INFO</span>
+<a name="l00109"></a>00109 <span class="preprocessor"></span>            <span class="keywordflow">return</span> ++block;
+<a name="l00110"></a>00110         }
+<a name="l00111"></a>00111     }
+<a name="l00112"></a>00112     <span class="keywordflow">return</span> 0;
+<a name="l00113"></a>00113 }
+<a name="l00114"></a>00114 
+<a name="l00123"></a>00123 <span class="keyword">static</span> <span class="keywordtype">void</span> mini_fat_store_adr(uint32_t block) {
+<a name="l00124"></a>00124     uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00125"></a>00125     uint32_t * p_eefat = <a class="code" href="mini-fat_8c.html#a9f50170b17cf9985305e7e5799b83f79">eefat</a>;
+<a name="l00126"></a>00126     block--;    <span class="comment">// Block mit der Datei-ID speichern, nicht ersten Nutzdatenblock</span>
+<a name="l00127"></a>00127     <span class="comment">/* freien Block im EEPROM suchen */</span>
+<a name="l00128"></a>00128     <span class="keywordflow">for</span> (i=9; i&gt;0; i--) {
+<a name="l00129"></a>00129         uint32_t tmp = ctbot_eeprom_read_dword(p_eefat++);
+<a name="l00130"></a>00130         <span class="keywordflow">if</span> (tmp == 0) { <span class="comment">// hier noch ist Platz :-)</span>
+<a name="l00131"></a>00131 <span class="preprocessor">#ifdef DISPLAY_MINIFAT_INFO</span>
+<a name="l00132"></a>00132 <span class="preprocessor"></span>            <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(3, 1);
+<a name="l00133"></a>00133             <a class="code" href="display_8h.html#a3b34665813cc31ce81d141e4f67162d2">display_printf</a>(<span class="stringliteral">&quot;eestore %u:&quot;</span>, 11 - i);
+<a name="l00134"></a>00134             <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(3, 13);
+<a name="l00135"></a>00135             display_block(block);
+<a name="l00136"></a>00136 <span class="preprocessor">#endif // DISPLAY_MINIFAT_INFO</span>
+<a name="l00137"></a>00137 <span class="preprocessor"></span>            p_eefat--;
+<a name="l00138"></a>00138             <span class="keywordflow">break</span>;  <span class="comment">// fertig</span>
+<a name="l00139"></a>00139         }
+<a name="l00140"></a>00140     }
+<a name="l00141"></a>00141     ctbot_eeprom_update_dword(p_eefat, block); <span class="comment">// Adresse speichern</span>
+<a name="l00142"></a>00142 }
+<a name="l00143"></a>00143 
+<a name="l00144"></a>00144 <span class="preprocessor">#ifdef MINI_FAT_CHECK_FRAGMENTATION</span>
+<a name="l00145"></a>00145 <span class="preprocessor"></span>
+<a name="l00151"></a>00151 <span class="keyword">static</span> uint32_t check_fragmentation(uint32_t block, <span class="keywordtype">void</span> * buffer) {
+<a name="l00152"></a>00152     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;block=0x%04x&quot;</span>, block - 1);
+<a name="l00153"></a>00153     <span class="comment">/* MBR lesen */</span>
+<a name="l00154"></a>00154     <a class="code" href="mmc_8h.html#a7ebc2ededd906eb69ecc1d14e2caae45">mmc_read_sector</a>(0, buffer);
+<a name="l00155"></a>00155     botfs_mbr_t * p_mbr = buffer;
+<a name="l00156"></a>00156     uint16_t first_sect = (uint16_t) p_mbr-&gt;part0.first_sect_offset;
+<a name="l00157"></a>00157     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;first_sect=0x%04x&quot;</span>, first_sect);
+<a name="l00158"></a>00158 
+<a name="l00159"></a>00159     <span class="comment">/* Bootsektor von Partition 1 lesen */</span>
+<a name="l00160"></a>00160     <a class="code" href="mmc_8h.html#a7ebc2ededd906eb69ecc1d14e2caae45">mmc_read_sector</a>(first_sect, buffer);
+<a name="l00161"></a>00161     botfs_fat16_bootsector_t * p_bs = buffer;
+<a name="l00162"></a>00162     p_bs-&gt;fat_name[7] = 0;
+<a name="l00163"></a>00163     <span class="keywordflow">if</span> (strcmp_P(p_bs-&gt;fat_name, PSTR(<span class="stringliteral">&quot;FAT16  &quot;</span>)) != 0) {
+<a name="l00164"></a>00164 <span class="preprocessor">#ifdef DISPLAY_MINIFAT_INFO</span>
+<a name="l00165"></a>00165 <span class="preprocessor"></span>        <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(2, 1);
+<a name="l00166"></a>00166         <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;Kein FAT16&quot;</span>);
+<a name="l00167"></a>00167 <span class="preprocessor">#endif</span>
+<a name="l00168"></a>00168 <span class="preprocessor"></span>        <a class="code" href="log_8h.html#af3fb0ee7384d6813437103a2c2646fb7">LOG_ERROR</a>(<span class="stringliteral">&quot;Keine FAT16-Partition&quot;</span>);
+<a name="l00169"></a>00169 <span class="preprocessor">#ifdef LED_AVAILABLE</span>
+<a name="l00170"></a>00170 <span class="preprocessor"></span>        <a class="code" href="led_8h.html#a447c990bb9e81e6e533f0ba69f97b1e9">LED_on</a>(<a class="code" href="led_8h.html#abbd15a5aa331f751fc51e289ef51a82c">LED_TUERKIS</a>);
+<a name="l00171"></a>00171 <span class="preprocessor">#endif  // LED_AVAILABLE</span>
+<a name="l00172"></a>00172 <span class="preprocessor"></span>        <span class="keywordflow">return</span> 0xffffffff;
+<a name="l00173"></a>00173     }
+<a name="l00174"></a>00174     uint16_t fat_offset = p_bs-&gt;reserved_sect + first_sect;
+<a name="l00175"></a>00175     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;fat_offset=0x%04x&quot;</span>, fat_offset);
+<a name="l00176"></a>00176     uint16_t root_offset = fat_offset + p_bs-&gt;fat_copies * p_bs-&gt;sect_per_fat;
+<a name="l00177"></a>00177     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;root_offset=0x%04x&quot;</span>, root_offset);
+<a name="l00178"></a>00178     uint16_t data_offset = root_offset + (p_bs-&gt;root_dir_entries * <span class="keyword">sizeof</span>(botfs_fat16_dir_entry_t) + 511) / 512;
+<a name="l00179"></a>00179     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;data_offset=0x%04x&quot;</span>, data_offset);
+<a name="l00180"></a>00180     uint8_t sect_per_cluster = p_bs-&gt;sect_per_cluster;
+<a name="l00181"></a>00181     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;sect_per_cluster=%u&quot;</span>, sect_per_cluster);
+<a name="l00182"></a>00182 
+<a name="l00183"></a>00183     <span class="comment">/* 1. Cluster der Datei berechnen */</span>
+<a name="l00184"></a>00184     uint16_t first_cluster = (uint16_t) ((block - 1 - data_offset) / sect_per_cluster + 2);
+<a name="l00185"></a>00185     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;first_cluster=0x%04x&quot;</span>, first_cluster);
+<a name="l00186"></a>00186 
+<a name="l00187"></a>00187     <span class="comment">/* 1. FAT-Eintrag der Datei einlesen */</span>
+<a name="l00188"></a>00188     uint16_t fat_block = fat_offset + first_cluster / (512 / <span class="keyword">sizeof</span>(uint16_t));
+<a name="l00189"></a>00189     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;fat_block=0x%04x&quot;</span>, fat_block);
+<a name="l00190"></a>00190     <a class="code" href="mmc_8h.html#a7ebc2ededd906eb69ecc1d14e2caae45">mmc_read_sector</a>(fat_block, buffer);
+<a name="l00191"></a>00191     uint16_t entry_offset = first_cluster % (512 / <span class="keyword">sizeof</span>(uint16_t));
+<a name="l00192"></a>00192     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;entry_offset=0x%04x&quot;</span>, entry_offset);
+<a name="l00193"></a>00193     uint16_t * ptr = buffer;
+<a name="l00194"></a>00194     uint16_t entry = ptr[entry_offset];
+<a name="l00195"></a>00195 
+<a name="l00196"></a>00196     <a class="code" href="mmc_8h.html#a7ebc2ededd906eb69ecc1d14e2caae45">mmc_read_sector</a>(block - 1, buffer); <span class="comment">// Dateiheader wieder in Puffer laden</span>
+<a name="l00197"></a>00197 
+<a name="l00198"></a>00198     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;Fat-Eintrag=0x%04x&quot;</span>, entry);
+<a name="l00199"></a>00199     <span class="keywordflow">if</span> (entry &lt; 0xfff8 &amp;&amp; entry != first_cluster + 1) {
+<a name="l00200"></a>00200         <span class="comment">/* Datei ist fragmentiert */</span>
+<a name="l00201"></a>00201 <span class="preprocessor">#ifdef DISPLAY_MINIFAT_INFO</span>
+<a name="l00202"></a>00202 <span class="preprocessor"></span>        <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(2, 1);
+<a name="l00203"></a>00203         <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;Datei fragmentiert  &quot;</span>);
+<a name="l00204"></a>00204 <span class="preprocessor">#endif</span>
+<a name="l00205"></a>00205 <span class="preprocessor"></span>        <a class="code" href="log_8h.html#af3fb0ee7384d6813437103a2c2646fb7">LOG_ERROR</a>(<span class="stringliteral">&quot;Datei ist fragmentiert!&quot;</span>);
+<a name="l00206"></a>00206 <span class="preprocessor">#ifdef LED_AVAILABLE</span>
+<a name="l00207"></a>00207 <span class="preprocessor"></span>        <a class="code" href="led_8h.html#a447c990bb9e81e6e533f0ba69f97b1e9">LED_on</a>(<a class="code" href="led_8h.html#abbd15a5aa331f751fc51e289ef51a82c">LED_TUERKIS</a>);
+<a name="l00208"></a>00208 <span class="preprocessor">#endif  // LED_AVAILABLE</span>
+<a name="l00209"></a>00209 <span class="preprocessor"></span>        <span class="keywordflow">return</span> 0xffffffff;
+<a name="l00210"></a>00210     }
+<a name="l00213"></a>00213     <span class="comment">/* alles gut */</span>
+<a name="l00214"></a>00214 <span class="preprocessor">#ifdef DISPLAY_MINIFAT_INFO</span>
+<a name="l00215"></a>00215 <span class="preprocessor"></span>        <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(2, 1);
+<a name="l00216"></a>00216         <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;Datei ok&quot;</span>);
+<a name="l00217"></a>00217 <span class="preprocessor">#endif</span>
+<a name="l00218"></a>00218 <span class="preprocessor"></span>    <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;Datei ist nicht fragmentiert&quot;</span>);
+<a name="l00219"></a>00219     <span class="keywordflow">return</span> block;
+<a name="l00220"></a>00220 }
+<a name="l00221"></a>00221 <span class="preprocessor">#else</span>
+<a name="l00222"></a>00222 <span class="preprocessor"></span>
+<a name="l00228"></a>00228 <span class="keyword">static</span> uint32_t check_fragmentation(uint32_t block, <span class="keywordtype">void</span> * buffer) {
+<a name="l00229"></a>00229     <span class="keywordflow">return</span> block;
+<a name="l00230"></a>00230 }
+<a name="l00231"></a>00231 <span class="preprocessor">#endif // MINI_FAT_CHECK_FRAGMENTATION</span>
+<a name="l00232"></a>00232 <span class="preprocessor"></span>
+<a name="l00242"></a>00242 uint32_t mini_fat_find_block_P(<span class="keyword">const</span> <span class="keywordtype">char</span> * filename, <span class="keywordtype">void</span> * buffer, uint32_t end_addr) {
+<a name="l00243"></a>00243     end_addr &gt;&gt;= 9; <span class="comment">// letzte Blockadresse ermitteln</span>
+<a name="l00244"></a>00244 
+<a name="l00245"></a>00245     <span class="comment">/* zunaechst im EEPROM-FAT-Cache nachschauen */</span>
+<a name="l00246"></a>00246     uint32_t block = mini_fat_lookup_adr(filename, buffer);
+<a name="l00247"></a>00247     <span class="keywordflow">if</span> (block != 0) {
+<a name="l00248"></a>00248         <span class="keywordflow">return</span> check_fragmentation(block, buffer);
+<a name="l00249"></a>00249     }
+<a name="l00250"></a>00250 
+<a name="l00251"></a>00251 <span class="preprocessor">#ifdef DISPLAY_MINIFAT_INFO</span>
+<a name="l00252"></a>00252 <span class="preprocessor"></span>    <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(2, 1);
+<a name="l00253"></a>00253     <span class="keywordtype">char</span> name[7];
+<a name="l00254"></a>00254     strncpy_P(name, filename, <span class="keyword">sizeof</span>(name) - 1);
+<a name="l00255"></a>00255     <a class="code" href="display_8h.html#a3b34665813cc31ce81d141e4f67162d2">display_printf</a>(<span class="stringliteral">&quot;Find %s: &quot;</span>, name);
+<a name="l00256"></a>00256 <span class="preprocessor">#endif // DISPLAY_MINIFAT_INFO</span>
+<a name="l00257"></a>00257 <span class="preprocessor"></span>
+<a name="l00258"></a>00258     <span class="comment">/* sequenziell die Karte durchsuchen */</span>
+<a name="l00259"></a>00259     <span class="keywordflow">for</span> (block=0; block&lt;end_addr; block++) {
+<a name="l00260"></a>00260 <span class="preprocessor">#ifdef DISPLAY_MINIFAT_INFO</span>
+<a name="l00261"></a>00261 <span class="preprocessor"></span>        <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(2, 13);
+<a name="l00262"></a>00262         display_block(block);
+<a name="l00263"></a>00263 <span class="preprocessor">#endif // DISPLAY_MINIFAT_INFO</span>
+<a name="l00264"></a>00264 <span class="preprocessor"></span>        uint8_t result = <a class="code" href="mmc_8h.html#a7ebc2ededd906eb69ecc1d14e2caae45">mmc_read_sector</a>(block, buffer);
+<a name="l00265"></a>00265         <span class="keywordflow">if</span> (result != 0) {
+<a name="l00266"></a>00266 <span class="preprocessor">#ifdef DISPLAY_MINIFAT_INFO</span>
+<a name="l00267"></a>00267 <span class="preprocessor"></span>            <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(4, 10);
+<a name="l00268"></a>00268             <a class="code" href="display_8h.html#a3b34665813cc31ce81d141e4f67162d2">display_printf</a>(<span class="stringliteral">&quot;Fehler %u&quot;</span>, result);
+<a name="l00269"></a>00269 <span class="preprocessor">#endif // DISPLAY_MINIFAT_INFO</span>
+<a name="l00270"></a>00270 <span class="preprocessor"></span><span class="preprocessor">#ifdef LED_AVAILABLE</span>
+<a name="l00271"></a>00271 <span class="preprocessor"></span>        <a class="code" href="led_8h.html#a447c990bb9e81e6e533f0ba69f97b1e9">LED_on</a>(<a class="code" href="led_8h.html#abbd15a5aa331f751fc51e289ef51a82c">LED_TUERKIS</a>);
+<a name="l00272"></a>00272 <span class="preprocessor">#endif // LED_AVAILABLE</span>
+<a name="l00273"></a>00273 <span class="preprocessor"></span>            <span class="keywordflow">return</span> 0xffffffff;
+<a name="l00274"></a>00274         }
+<a name="l00275"></a>00275         <span class="keywordflow">if</span> (strcmp_P((<span class="keywordtype">char</span> *) buffer, filename) == 0) {
+<a name="l00276"></a>00276             <span class="comment">/* gefunden, Adresse ins EEPROM schreiben */</span>
+<a name="l00277"></a>00277             mini_fat_store_adr(++block);
+<a name="l00278"></a>00278 <span class="preprocessor">#ifdef DISPLAY_MINIFAT_INFO</span>
+<a name="l00279"></a>00279 <span class="preprocessor"></span>            <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(4, 1);
+<a name="l00280"></a>00280             <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;Found:&quot;</span>);
+<a name="l00281"></a>00281             <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(4, 7);
+<a name="l00282"></a>00282             display_block(block);
+<a name="l00283"></a>00283 <span class="preprocessor">#endif // DISPLAY_MINIFAT_INFO</span>
+<a name="l00284"></a>00284 <span class="preprocessor"></span>            <span class="keywordflow">return</span> check_fragmentation(block, buffer);
+<a name="l00285"></a>00285         }
+<a name="l00286"></a>00286     }
+<a name="l00287"></a>00287     <span class="keywordflow">return</span> 0xffffffff;
+<a name="l00288"></a>00288 }
+<a name="l00289"></a>00289 
+<a name="l00295"></a>00295 <span class="keywordtype">void</span> mini_fat_clear_file(uint32_t file_start, <span class="keywordtype">void</span> * buffer) {
+<a name="l00296"></a>00296 <span class="preprocessor">#ifdef DISPLAY_MINIFAT_INFO</span>
+<a name="l00297"></a>00297 <span class="preprocessor"></span>    <span class="comment">/* Zum Mini-FAT-Screen springen */</span>
+<a name="l00298"></a>00298     uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00299"></a>00299     <span class="keywordflow">for</span> (i=0; i&lt;<span class="keyword">sizeof</span>(<a class="code" href="gui_8c.html#a0b697f2698014c2d053382884a965470">screen_functions</a>)/<span class="keyword">sizeof</span>(<a class="code" href="gui_8c.html#a0b697f2698014c2d053382884a965470">screen_functions</a>[0]); i++) {
+<a name="l00300"></a>00300         <span class="keywordflow">if</span> (<a class="code" href="gui_8c.html#a0b697f2698014c2d053382884a965470">screen_functions</a>[i] == mini_fat_display) <span class="keywordflow">break</span>;
+<a name="l00301"></a>00301     }
+<a name="l00302"></a>00302     <a class="code" href="display_8h.html#a316fd24a278644f11993b3d5b507fcb6">display_screen</a> = <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00303"></a>00303     <a class="code" href="display_8h.html#a336e8b1e4fcf1785ec84e0eed492c418" title="Loescht das ganze Display.">display_clear</a>();
+<a name="l00304"></a>00304     mini_fat_display();
+<a name="l00305"></a>00305     <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(2, 1);
+<a name="l00306"></a>00306     <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;Start:&quot;</span>);
+<a name="l00307"></a>00307     <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(2, 7);
+<a name="l00308"></a>00308     display_block(file_start);
+<a name="l00309"></a>00309 <span class="preprocessor">#endif // DISPLAY_MINIFAT_INFO</span>
+<a name="l00310"></a>00310 <span class="preprocessor"></span>    uint32_t length = mini_fat_get_filesize(file_start, buffer) &gt;&gt; 9;
+<a name="l00311"></a>00311 <span class="preprocessor">#ifdef DISPLAY_MINIFAT_INFO</span>
+<a name="l00312"></a>00312 <span class="preprocessor"></span>    <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(1, 10);
+<a name="l00313"></a>00313     display_block(length &lt;&lt; 9);
+<a name="l00314"></a>00314     <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(3, 1);
+<a name="l00315"></a>00315     <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;End:&quot;</span>);
+<a name="l00316"></a>00316     <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(3, 5);
+<a name="l00317"></a>00317     display_block(file_start + length - 1);
+<a name="l00318"></a>00318 <span class="preprocessor">#endif // DISPLAY_MINIFAT_INFO</span>
+<a name="l00319"></a>00319 <span class="preprocessor"></span>    memset(buffer, 0, 512); <span class="comment">// Puffer leeren</span>
+<a name="l00320"></a>00320     <span class="comment">/* Alle Bloecke der Datei mit dem 0-Puffer ueberschreiben */</span>
+<a name="l00321"></a>00321     uint32_t addr;
+<a name="l00322"></a>00322     <span class="keywordflow">for</span> (addr=file_start; addr&lt;file_start+length; addr++) {
+<a name="l00323"></a>00323         uint8_t result = <a class="code" href="mmc_8h.html#a8b7742b9c060af7db1aa56e1d9676918">mmc_write_sector</a>(addr, buffer);
+<a name="l00324"></a>00324         <span class="keywordflow">if</span> (result != 0) {
+<a name="l00325"></a>00325 <span class="preprocessor">#ifdef DISPLAY_MINIFAT_INFO</span>
+<a name="l00326"></a>00326 <span class="preprocessor"></span>            <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(4, 10);
+<a name="l00327"></a>00327             <a class="code" href="display_8h.html#a3b34665813cc31ce81d141e4f67162d2">display_printf</a>(<span class="stringliteral">&quot;Fehler %u&quot;</span>, result);
+<a name="l00328"></a>00328 <span class="preprocessor">#endif // DISPLAY_MINIFAT_INFO</span>
+<a name="l00329"></a>00329 <span class="preprocessor"></span><span class="preprocessor">#ifdef LED_AVAILABLE</span>
+<a name="l00330"></a>00330 <span class="preprocessor"></span>        <a class="code" href="led_8h.html#a447c990bb9e81e6e533f0ba69f97b1e9">LED_on</a>(<a class="code" href="led_8h.html#abbd15a5aa331f751fc51e289ef51a82c">LED_TUERKIS</a>);
+<a name="l00331"></a>00331 <span class="preprocessor">#endif // LED_AVAILABLE</span>
+<a name="l00332"></a>00332 <span class="preprocessor"></span>            <span class="keywordflow">return</span>;
+<a name="l00333"></a>00333         }
+<a name="l00334"></a>00334 <span class="preprocessor">#ifdef DISPLAY_MINIFAT_INFO</span>
+<a name="l00335"></a>00335 <span class="preprocessor"></span>        <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(4, 1);
+<a name="l00336"></a>00336         display_block(addr);
+<a name="l00337"></a>00337 <span class="preprocessor">#endif  // DISPLAY_MINIFAT_INFO</span>
+<a name="l00338"></a>00338 <span class="preprocessor"></span>    }
+<a name="l00339"></a>00339 }
+<a name="l00340"></a>00340 <span class="preprocessor">#endif // MMC_AVAILABLE &amp;&amp; ! BOT_FS_AVAILABLE</span>
+<a name="l00341"></a>00341 <span class="preprocessor"></span><span class="preprocessor">#endif // MCU</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:09 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

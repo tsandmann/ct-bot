@@ -92,7 +92,7 @@ typedef union {
 		int16_t map_max_x;			/**< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
 		int16_t map_min_y;			/**< belegter Bereich der Karte [Kartenindex]: kleinste Y-Koordinate */
 		int16_t map_max_y;			/**< belegter Bereich der Karte [Kartenindex]: groesste Y-Koordinate */
-	} PACKED_FORCE data;
+	} PACKED data;
 	uint8_t raw[BOTFS_HEADER_DATA_SIZE];
 } map_header_t;
 #endif // BOT_FS_AVAILABLE

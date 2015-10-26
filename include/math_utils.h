@@ -27,11 +27,6 @@
 #ifndef MATH_UTILS_H_
 #define MATH_UTILS_H_
 
-#ifdef MCU
-#include <util/crc16.h>
-#include <avr/version.h>
-#endif
-
 #define DEG2RAD (M_PI / 180.0)	/**< Umrechnungsfaktor von Grad nach Bogenmass */
 
 /**
@@ -66,7 +61,6 @@ static inline double deg(double radian) {
 }
 
 #ifdef MCU
-#if __AVR_LIBC_DATE_ < 20111229UL
 #ifndef sqrtf
 static inline float sqrtf(float x) __attribute__((__const__));
 
@@ -79,7 +73,6 @@ static inline float sqrtf(float x) {
 	return (float) sqrt((double) x);
 }
 #endif // !sqrtf
-#endif // __AVR_LIBC_DATE_
 
 #ifndef sinf
 static inline float sinf(float x) __attribute__((__const__));

@@ -1,0 +1,343 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: math_utils.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">math_utils.c</div>  </div>
+</div>
+<div class="contents">
+<a href="math__utils_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00026"></a>00026 <span class="preprocessor">#include &quot;<a class="code" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot-Funktionalitaeten">ct-Bot.h</a>&quot;</span>
+<a name="l00027"></a>00027 <span class="preprocessor">#include &quot;<a class="code" href="math__utils_8h.html" title="Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig.">math_utils.h</a>&quot;</span>
+<a name="l00028"></a>00028 <span class="preprocessor">#include &lt;math.h&gt;</span>
+<a name="l00029"></a>00029 <span class="preprocessor">#include &lt;stdlib.h&gt;</span>
+<a name="l00030"></a>00030 <span class="preprocessor">#include &lt;stdio.h&gt;</span>
+<a name="l00031"></a>00031 <span class="preprocessor">#include &quot;<a class="code" href="sensor_8h.html" title="Architekturunabhaengiger Teil der Sensorsteuerung.">sensor.h</a>&quot;</span>
+<a name="l00032"></a>00032 <span class="preprocessor">#include &quot;<a class="code" href="log_8h.html" title="Routinen zum Loggen von Informationen.">log.h</a>&quot;</span>
+<a name="l00033"></a>00033 
+<a name="l00040"></a><a class="code" href="math__utils_8h.html#a9b417c9af724981da13cb7eff68ca026">00040</a> <span class="keywordtype">float</span> <a class="code" href="math__utils_8c.html#a9b417c9af724981da13cb7eff68ca026" title="Berechnung einer Winkeldifferenz zwischen dem aktuellen Standpunkt und einem anderen Ort...">calc_angle_diff_rad</a>(int16_t xDiff, int16_t yDiff) {
+<a name="l00041"></a>00041     <span class="keyword">const</span> <span class="keywordtype">float</span> newHeading = atan2((<span class="keywordtype">float</span>) yDiff, (<span class="keywordtype">float</span>) xDiff);
+<a name="l00042"></a>00042 
+<a name="l00043"></a>00043     <span class="keywordtype">float</span> toTurn = newHeading - rad(<a class="code" href="sensor_8c.html#ac5682e48513a771560df50e3b213e61a">heading</a>);
+<a name="l00044"></a>00044     <span class="keywordflow">if</span> (toTurn &gt; <a class="code" href="global_8h.html#ae71449b1cc6e6250b91f539153a7a0d3">M_PI</a>) toTurn -= 2.0f * <a class="code" href="global_8h.html#ae71449b1cc6e6250b91f539153a7a0d3">M_PI</a>;
+<a name="l00045"></a>00045     <span class="keywordflow">if</span> (toTurn &lt; -<a class="code" href="global_8h.html#ae71449b1cc6e6250b91f539153a7a0d3">M_PI</a>) toTurn += 2.0f * <a class="code" href="global_8h.html#ae71449b1cc6e6250b91f539153a7a0d3">M_PI</a>;
+<a name="l00046"></a>00046 
+<a name="l00047"></a>00047     <span class="keywordflow">return</span> toTurn;
+<a name="l00048"></a>00048 }
+<a name="l00049"></a>00049 
+<a name="l00056"></a><a class="code" href="math__utils_8h.html#a9c14e14c49d54828861673702c30eeed">00056</a> int16_t <a class="code" href="math__utils_8c.html#a9c14e14c49d54828861673702c30eeed" title="Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung.">turned_angle</a>(int16_t angle) {
+<a name="l00057"></a>00057     int16_t diff = 0;
+<a name="l00058"></a>00058     <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a37dd9e1324c7d44e0d91129c43fe9ced">v_enc_left</a> == <a class="code" href="sensor_8c.html#a0d65fedf55775dbbb86b81ccc8dade6a">v_enc_right</a>) {
+<a name="l00059"></a>00059         <span class="comment">/* Drehrichtung nicht ermittelbar */</span>
+<a name="l00060"></a>00060         <span class="keywordflow">return</span> -1;
+<a name="l00061"></a>00061     }
+<a name="l00062"></a>00062     <span class="keywordflow">if</span> (<a class="code" href="sensor_8c.html#a0d65fedf55775dbbb86b81ccc8dade6a">v_enc_right</a> &gt; <a class="code" href="sensor_8c.html#a37dd9e1324c7d44e0d91129c43fe9ced">v_enc_left</a>) {
+<a name="l00063"></a>00063         <span class="comment">/* Drehung im positiven Sinn */</span>
+<a name="l00064"></a>00064         diff = <a class="code" href="sensor_8c.html#a0bebab40bf945479d36e9190261b5a28">heading_int</a> - angle;
+<a name="l00065"></a>00065     } <span class="keywordflow">else</span> {
+<a name="l00066"></a>00066         <span class="comment">/* Drehung im negativen Sinn */</span>
+<a name="l00067"></a>00067         diff = angle - <a class="code" href="sensor_8c.html#a0bebab40bf945479d36e9190261b5a28">heading_int</a>;
+<a name="l00068"></a>00068     }
+<a name="l00069"></a>00069     <span class="keywordflow">if</span> (diff &lt; 0) {
+<a name="l00070"></a>00070         <span class="comment">/* Ueberlauf */</span>
+<a name="l00071"></a>00071         diff += 360;
+<a name="l00072"></a>00072     }
+<a name="l00073"></a>00073     <span class="keywordflow">return</span> diff;
+<a name="l00074"></a>00074 }
+<a name="l00075"></a>00075 
+<a name="l00084"></a><a class="code" href="math__utils_8h.html#a21ef181ca9f0913051fc5e75fb8ae2b7">00084</a> int32_t <a class="code" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat-Abstands zwischen zwei Punkten.">get_dist</a>(int16_t x1, int16_t y1, int16_t x2, int16_t y2) {
+<a name="l00085"></a>00085     int16_t xt = x2 - x1;
+<a name="l00086"></a>00086     int16_t yt = y2 - y1;
+<a name="l00087"></a>00087 
+<a name="l00088"></a>00088     <span class="comment">/* Abstandsermittlung nach dem guten alten Pythagoras ohne Ziehen der Wurzel */</span>
+<a name="l00089"></a>00089     <span class="keywordflow">return</span> (int32_t) ((int32_t) xt * (int32_t) xt) + (int32_t) ((int32_t) yt * (int32_t) yt);
+<a name="l00090"></a>00090 }
+<a name="l00091"></a>00091 
+<a name="l00100"></a><a class="code" href="math__utils_8h.html#a6596387c20201193119f1038edca2924">00100</a> position_t <a class="code" href="math__utils_8c.html#a6596387c20201193119f1038edca2924" title="Ermittelt die Koordinaten eines Punktes, der um dx mm in x- und dy mm in y-Richtung gegenueber der ak...">calc_point_in_distance</a>(<span class="keywordtype">float</span> alpha, int16_t dx, int16_t dy) {
+<a name="l00101"></a>00101     <span class="keywordtype">float</span> <a class="code" href="behaviour__drive__chess_8c.html#aac430e94ef6f27edf759bc1bdcdab16e">h</a> = rad(alpha);
+<a name="l00102"></a>00102     <span class="keywordtype">float</span> cos_h = cosf(h);
+<a name="l00103"></a>00103     <span class="keywordtype">float</span> sin_h = sinf(h);
+<a name="l00104"></a>00104 
+<a name="l00105"></a>00105     position_t dest;
+<a name="l00106"></a>00106     dest.x = <a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a> + (int16_t)((dx * cos_h) - (dy * sin_h));
+<a name="l00107"></a>00107     dest.y = <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a> + (int16_t)((dy * cos_h) + (dx * sin_h));
+<a name="l00108"></a>00108     <span class="keywordflow">return</span> dest;
+<a name="l00109"></a>00109 }
+<a name="l00110"></a>00110 
+<a name="l00111"></a>00111 <span class="preprocessor">#ifdef BPS_AVAILABLE</span>
+<a name="l00112"></a>00112 <span class="preprocessor"></span>
+<a name="l00121"></a><a class="code" href="math__utils_8h.html#a8b0e0e0cb5958042f543a326a68a0a40">00121</a> position_t <a class="code" href="math__utils_8c.html#a8b0e0e0cb5958042f543a326a68a0a40" title="Berechnet den Standort via Rueckwaertseinschnitt nach Cassini, wenn drei angepeilte Positionen bekann...">calc_resection</a>(position_t <a class="code" href="behaviour__drive__chess_8c.html#a24420a9beaac7cee08b5e255a4c29db1">a</a>, position_t <a class="code" href="behaviour__drive__chess_8c.html#a7e6900841a67dbc908a8e0891b1f037f">m</a>, position_t <a class="code" href="behaviour__drive__chess_8c.html#aea7fd00d09b3b311e2e48d7ee976c50e">b</a>, <span class="keywordtype">float</span> angle_am, <span class="keywordtype">float</span> angle_mb) {
+<a name="l00122"></a>00122     <span class="comment">// Bezeichner wie im pdf</span>
+<a name="l00123"></a>00123     <span class="keywordtype">float</span> alpha = rad(angle_am); <span class="comment">// ab hier Bogenmass</span>
+<a name="l00124"></a>00124     <span class="keywordtype">float</span> beta = rad(angle_mb);
+<a name="l00125"></a>00125 
+<a name="l00126"></a>00126     <span class="comment">/* Definitionsbereich von tan() und cot() pruefen */</span>
+<a name="l00127"></a>00127     <span class="keywordflow">if</span> (fmodf(alpha, <a class="code" href="global_8h.html#a958e4508ed28ee5cc04249144312c15f" title="pi / 2">M_PI_2</a>) == 0.0f) {
+<a name="l00128"></a>00128         alpha += 0.001f;
+<a name="l00129"></a>00129     }
+<a name="l00130"></a>00130     <span class="keywordflow">if</span> (fmodf(beta, <a class="code" href="global_8h.html#a958e4508ed28ee5cc04249144312c15f" title="pi / 2">M_PI_2</a>) == 0.0f) {
+<a name="l00131"></a>00131         beta += 0.001f;
+<a name="l00132"></a>00132     }
+<a name="l00133"></a>00133 
+<a name="l00134"></a>00134     <span class="keywordtype">float</span> cot_alpha = 1.0f / tanf(alpha); <span class="comment">// cot(alpha)</span>
+<a name="l00135"></a>00135     <span class="keywordtype">float</span> cot_beta = 1.0f / tanf(beta);
+<a name="l00136"></a>00136 
+<a name="l00137"></a>00137     <span class="keywordtype">float</span> Yc = a.y + (a.x - m.x) * cot_alpha;
+<a name="l00138"></a>00138     <span class="keywordtype">float</span> Xc = a.x - (a.y - m.y) * cot_alpha;
+<a name="l00139"></a>00139 
+<a name="l00140"></a>00140     <span class="keywordtype">float</span> Yd = b.y + (m.x - b.x) * cot_beta;
+<a name="l00141"></a>00141     <span class="keywordtype">float</span> Xd = b.x - (m.y - b.y) * cot_beta;
+<a name="l00142"></a>00142 
+<a name="l00143"></a>00143     <span class="comment">/* gefaehrlichen Kreis pruefen */</span>
+<a name="l00144"></a>00144     <span class="keywordflow">if</span> (Xc == Xd &amp;&amp; Yc == Yd) {
+<a name="l00145"></a>00145         <span class="comment">// C und D liegen auf einem Kreis -&gt; Verfahren geht nicht</span>
+<a name="l00146"></a>00146         <span class="keywordflow">return</span> (position_t){INT16_MAX, INT16_MAX};
+<a name="l00147"></a>00147     }
+<a name="l00148"></a>00148 
+<a name="l00149"></a>00149     <span class="keywordtype">float</span> m1 = (Yd - Yc) / (Xd - Xc); <span class="comment">// m1 != 0</span>
+<a name="l00150"></a>00150     <span class="keywordtype">float</span> m1_rec = 1.0f / m1; <span class="comment">// m1_rec != 0</span>
+<a name="l00151"></a>00151     <span class="keywordtype">float</span> m1_sq = m1 * m1;
+<a name="l00152"></a>00152     <span class="keywordtype">float</span> b1 = Yc - m1 * Xc;
+<a name="l00153"></a>00153     <span class="keywordtype">float</span> b2 = m.y + m1_rec * m.x;
+<a name="l00154"></a>00154 
+<a name="l00155"></a>00155     <span class="keywordtype">float</span> Xn = (b2 - b1) / (m1 + m1_rec);
+<a name="l00156"></a>00156     <span class="keywordtype">float</span> Yn = (b1 + b2 * m1_sq) / (m1_sq + 1.0f);
+<a name="l00157"></a>00157 
+<a name="l00158"></a>00158 
+<a name="l00159"></a>00159 <span class="comment">//  if (a.x != Xn &amp;&amp; m.x != Xn &amp;&amp; b.x != Xn) {</span>
+<a name="l00160"></a>00160 <span class="comment">//</span>
+<a name="l00161"></a>00161 <span class="comment">//      //float n_a = atan2(a.y - Yn, a.x - Xn);</span>
+<a name="l00162"></a>00162 <span class="comment">//      float n_a = atan((a.y - Yn) / (a.x - Xn));</span>
+<a name="l00163"></a>00163 <span class="comment">//  //  printf(&quot;n_a=%f\n&quot;, n_a);</span>
+<a name="l00164"></a>00164 <span class="comment">//      //float n_m = atan2(m.y - Yn, m.x - Xn);</span>
+<a name="l00165"></a>00165 <span class="comment">//      float n_m = atan((m.y - Yn) / (m.x - Xn));</span>
+<a name="l00166"></a>00166 <span class="comment">//  //  printf(&quot;n_m=%f\n&quot;, n_m);</span>
+<a name="l00167"></a>00167 <span class="comment">//      //float n_b = atan2(b.y - Yn, b.x - Xn);</span>
+<a name="l00168"></a>00168 <span class="comment">//      float n_b = atan((b.y - Yn) / (b.x - Xn));</span>
+<a name="l00169"></a>00169 <span class="comment">//  //  printf(&quot;n_b=%f\n&quot;, n_b);</span>
+<a name="l00170"></a>00170 <span class="comment">//</span>
+<a name="l00171"></a>00171 <span class="comment">//      float alpha2 = n_a - n_m;</span>
+<a name="l00172"></a>00172 <span class="comment">//      float beta2 = n_m - n_b;</span>
+<a name="l00173"></a>00173 <span class="comment">//</span>
+<a name="l00174"></a>00174 <span class="comment">//  //  printf(&quot;alpha2=%f\tbeta2=%f\n&quot;, alpha2, beta2);</span>
+<a name="l00175"></a>00175 <span class="comment">//  //  printf(&quot;N = (%f|%f)\n&quot;, Xn, Yn);</span>
+<a name="l00176"></a>00176 <span class="comment">//</span>
+<a name="l00177"></a>00177 <span class="comment">//      if (fabs(alpha - alpha2) &gt; 0.1f &amp;&amp; fabs(fabs(alpha - alpha2) - M_PI) &gt; 0.1f) {</span>
+<a name="l00178"></a>00178 <span class="comment">//          LOG_ERROR(&quot;A=(%d|%d) M=(%d|%d) B=(%d|%d)&quot;, a.x, a.y, m.x, m.y, b.x, b.y);</span>
+<a name="l00179"></a>00179 <span class="comment">//          LOG_ERROR(&quot;alpha=%f beta=%f&quot;, alpha / DEG2RAD, beta / DEG2RAD);</span>
+<a name="l00180"></a>00180 <span class="comment">//          LOG_ERROR(&quot; Abweichung bei alpha von %f Grad&quot;, fabs(alpha - alpha2) / DEG2RAD);</span>
+<a name="l00181"></a>00181 <span class="comment">//          LOG_ERROR(&quot;  alpha2=%f alpha=%f&quot;, alpha2 / DEG2RAD, alpha / DEG2RAD);</span>
+<a name="l00182"></a>00182 <span class="comment">//          LOG_ERROR(&quot;&quot;);</span>
+<a name="l00183"></a>00183 <span class="comment">//      }</span>
+<a name="l00184"></a>00184 <span class="comment">//      if (fabs(beta - beta2) &gt; 0.1f &amp;&amp; fabs(fabs(beta - beta2) - M_PI) &gt; 0.1f) {</span>
+<a name="l00185"></a>00185 <span class="comment">//          LOG_ERROR(&quot;A=(%d|%d) M=(%d|%d) B=(%d|%d)&quot;, a.x, a.y, m.x, m.y, b.x, b.y);</span>
+<a name="l00186"></a>00186 <span class="comment">//          LOG_ERROR(&quot;alpha=%f beta=%f&quot;, alpha / DEG2RAD, beta / DEG2RAD);</span>
+<a name="l00187"></a>00187 <span class="comment">//          LOG_ERROR(&quot; Abweichung bei beta von %f Grad&quot;, fabs(beta - beta2) / DEG2RAD);</span>
+<a name="l00188"></a>00188 <span class="comment">//          LOG_ERROR(&quot;  beta2=%f beta=%f&quot;, beta2 / DEG2RAD, beta / DEG2RAD);</span>
+<a name="l00189"></a>00189 <span class="comment">//          LOG_ERROR(&quot;&quot;);</span>
+<a name="l00190"></a>00190 <span class="comment">//      }</span>
+<a name="l00191"></a>00191 <span class="comment">//  }</span>
+<a name="l00192"></a>00192 
+<a name="l00193"></a>00193     position_t <a class="code" href="behaviour__drive__chess_8c.html#aa94ff7ddd304b9beb2f209b6174e180e">n</a>;
+<a name="l00194"></a>00194     n.x = iroundf(Xn);
+<a name="l00195"></a>00195     n.y = iroundf(Yn);
+<a name="l00196"></a>00196     <span class="keywordflow">return</span> <a class="code" href="behaviour__drive__chess_8c.html#aa94ff7ddd304b9beb2f209b6174e180e">n</a>;
+<a name="l00197"></a>00197 }
+<a name="l00198"></a>00198 
+<a name="l00199"></a>00199 <span class="preprocessor">#ifdef PC</span>
+<a name="l00200"></a>00200 <span class="preprocessor"></span><span class="keywordtype">void</span> <a class="code" href="math__utils_8c.html#a469db49a6410ad3e91aca4394302470f" title="Testet calc_resection()">test_calc_resection</a>(<span class="keywordtype">void</span>);
+<a name="l00201"></a>00201 
+<a name="l00205"></a><a class="code" href="math__utils_8c.html#a469db49a6410ad3e91aca4394302470f">00205</a> <span class="keywordtype">void</span> <a class="code" href="math__utils_8c.html#a469db49a6410ad3e91aca4394302470f" title="Testet calc_resection()">test_calc_resection</a>(<span class="keywordtype">void</span>) {
+<a name="l00206"></a>00206     position_t <a class="code" href="behaviour__drive__chess_8c.html#a24420a9beaac7cee08b5e255a4c29db1">a</a> = {1147, 1131};
+<a name="l00207"></a>00207     position_t <a class="code" href="behaviour__drive__chess_8c.html#a7e6900841a67dbc908a8e0891b1f037f">m</a> = {764, 750};
+<a name="l00208"></a>00208     position_t <a class="code" href="behaviour__drive__chess_8c.html#aea7fd00d09b3b311e2e48d7ee976c50e">b</a> = {865, 224};
+<a name="l00209"></a>00209     position_t <a class="code" href="behaviour__drive__chess_8c.html#aa94ff7ddd304b9beb2f209b6174e180e">n</a>;
+<a name="l00210"></a>00210     <span class="keywordtype">float</span> am = 29;
+<a name="l00211"></a>00211     <span class="keywordtype">float</span> mb = 35;
+<a name="l00212"></a>00212 
+<a name="l00213"></a>00213     <span class="keywordflow">for</span> (a.x=5000; a.x&lt;=7000; a.x+=500) {
+<a name="l00214"></a>00214         <span class="keywordflow">for</span> (a.y=5000; a.y&lt;=7000; a.y+=500) {
+<a name="l00215"></a>00215             <span class="keywordflow">for</span> (m.x=2000; m.x&lt;=4000; m.x+=500) {
+<a name="l00216"></a>00216                 <span class="keywordflow">for</span> (m.y=2000; m.y&lt;=4000; m.y+=500) {
+<a name="l00217"></a>00217                     <span class="keywordflow">if</span> (a.x == m.x &amp;&amp; a.y == m.y) {
+<a name="l00218"></a>00218                         <span class="keywordflow">continue</span>;
+<a name="l00219"></a>00219                     }
+<a name="l00220"></a>00220                     <span class="keywordflow">if</span> (a.y &lt; m.y) {
+<a name="l00221"></a>00221                         <span class="keywordflow">break</span>;
+<a name="l00222"></a>00222                     }
+<a name="l00223"></a>00223                     <span class="keywordflow">for</span> (b.x=0; b.x&lt;=2000; b.x+=500) {
+<a name="l00224"></a>00224                         <span class="keywordflow">for</span> (b.y=0; b.y&lt;=2000; b.y+=500) {
+<a name="l00225"></a>00225                             <span class="keywordflow">if</span> ((m.x == b.x &amp;&amp; m.y == b.y) || (a.x == b.x &amp;&amp; a.y == b.y)) {
+<a name="l00226"></a>00226                                 <span class="keywordflow">continue</span>;
+<a name="l00227"></a>00227                             }
+<a name="l00228"></a>00228                             <span class="keywordflow">if</span> (m.y &lt; b.y) {
+<a name="l00229"></a>00229                                 <span class="keywordflow">break</span>;
+<a name="l00230"></a>00230                             }
+<a name="l00231"></a>00231 
+<a name="l00232"></a>00232                             <span class="keywordflow">for</span> (n.x=8000; n.x&lt;=16000; n.x++) {
+<a name="l00233"></a>00233                                 <span class="keywordflow">for</span> (n.y=8000; n.y&lt;=16000; n.y++) {
+<a name="l00234"></a>00234                                     <span class="keywordflow">if</span> ((n.x == a.x &amp;&amp; n.y == a.y) || (n.x == m.x &amp;&amp; n.y == m.y) || (n.x == b.x &amp;&amp; n.y == b.y)) {
+<a name="l00235"></a>00235                                         <span class="keywordflow">continue</span>;
+<a name="l00236"></a>00236                                     }
+<a name="l00237"></a>00237 
+<a name="l00238"></a>00238                                     <span class="keywordtype">double</span> n_a = deg(atan2(a.x - n.x, a.y - n.y));
+<a name="l00239"></a>00239                                     <span class="keywordtype">double</span> n_m = deg(atan2(m.x - n.x, m.y - n.y));
+<a name="l00240"></a>00240                                     <span class="keywordtype">double</span> n_b = deg(atan2(b.x - n.x, b.y - n.y));
+<a name="l00241"></a>00241 
+<a name="l00242"></a>00242                                     am = n_m - n_a;
+<a name="l00243"></a>00243                                     mb = n_b - n_m;
+<a name="l00244"></a>00244 
+<a name="l00245"></a>00245                                     position_t res = <a class="code" href="math__utils_8c.html#a8b0e0e0cb5958042f543a326a68a0a40" title="Berechnet den Standort via Rueckwaertseinschnitt nach Cassini, wenn drei angepeilte Positionen bekann...">calc_resection</a>(a, m, b, am, mb);
+<a name="l00246"></a>00246 
+<a name="l00247"></a>00247                                     <span class="keywordflow">if</span> (abs(res.x - n.x) &gt; 1 || abs(res.y - n.y) &gt; 1) {
+<a name="l00248"></a>00248                                         <a class="code" href="log_8h.html#af3fb0ee7384d6813437103a2c2646fb7">LOG_ERROR</a>(<span class="stringliteral">&quot;A=(%d|%d) M=(%d|%d) B=(%d|%d)&quot;</span>, a.x, a.y, m.x, m.y, b.x, b.y);
+<a name="l00249"></a>00249                                         <a class="code" href="log_8h.html#af3fb0ee7384d6813437103a2c2646fb7">LOG_ERROR</a>(<span class="stringliteral">&quot;alpha=%f beta=%f&quot;</span>, am, mb);
+<a name="l00250"></a>00250                                         <a class="code" href="log_8h.html#af3fb0ee7384d6813437103a2c2646fb7">LOG_ERROR</a>(<span class="stringliteral">&quot; Abweichung vom gesuchten Standort:&quot;</span>);
+<a name="l00251"></a>00251                                         <a class="code" href="log_8h.html#af3fb0ee7384d6813437103a2c2646fb7">LOG_ERROR</a>(<span class="stringliteral">&quot; erwartet:(%d|%d) erhalten:(%d|%d)&quot;</span>, n.x, n.y, res.x, res.y);
+<a name="l00252"></a>00252                                     }
+<a name="l00253"></a>00253                                 }
+<a name="l00254"></a>00254                             }
+<a name="l00255"></a>00255 
+<a name="l00256"></a>00256 
+<a name="l00257"></a>00257 <span class="comment">//                          for (am=10; am&lt;90; am++) {</span>
+<a name="l00258"></a>00258 <span class="comment">//                              for (mb=10; mb&lt;90; mb++) {</span>
+<a name="l00259"></a>00259 
+<a name="l00260"></a>00260 <span class="comment">//                                  calc_resection(a, m, b, am, mb);</span>
+<a name="l00261"></a>00261 
+<a name="l00262"></a>00262 <span class="comment">//                                  double n_a = atan2(a.x - n.x, a.y - n.y) / DEG2RAD;</span>
+<a name="l00263"></a>00263 <span class="comment">//      //                          printf(&quot;n_a=%f\n&quot;, n_a);</span>
+<a name="l00264"></a>00264 <span class="comment">//                                  double n_m = atan2(m.x - n.x, m.y - n.y) / DEG2RAD;</span>
+<a name="l00265"></a>00265 <span class="comment">//      //                          printf(&quot;n_m=%f\n&quot;, n_m);</span>
+<a name="l00266"></a>00266 <span class="comment">//                                  double n_b = atan2(b.x - n.x, b.y - n.y) / DEG2RAD;</span>
+<a name="l00267"></a>00267 <span class="comment">//      //                          printf(&quot;n_b=%f\n&quot;, n_b);</span>
+<a name="l00268"></a>00268 <span class="comment">//</span>
+<a name="l00269"></a>00269 <span class="comment">//                                  double alpha = n_m - n_a;</span>
+<a name="l00270"></a>00270 <span class="comment">//                                  double beta = n_b - n_m;</span>
+<a name="l00271"></a>00271 <span class="comment">//</span>
+<a name="l00272"></a>00272 <span class="comment">//                                  if (alpha &lt; 0.0f) {</span>
+<a name="l00273"></a>00273 <span class="comment">//                                      alpha = 360.0f + alpha;</span>
+<a name="l00274"></a>00274 <span class="comment">//                                  }</span>
+<a name="l00275"></a>00275 <span class="comment">//                                  if (beta &lt; 0.0f) {</span>
+<a name="l00276"></a>00276 <span class="comment">//                                      beta = 360.0f + beta;</span>
+<a name="l00277"></a>00277 <span class="comment">//                                  }</span>
+<a name="l00278"></a>00278 <span class="comment">//</span>
+<a name="l00279"></a>00279 <span class="comment">//                                  count1++;</span>
+<a name="l00280"></a>00280 <span class="comment">//                                  float diff_a = fabs(alpha - am);</span>
+<a name="l00281"></a>00281 <span class="comment">//                                  while (diff_a &gt; 173.0f) {</span>
+<a name="l00282"></a>00282 <span class="comment">//                                      diff_a = fabs(diff_a - 180.0f);</span>
+<a name="l00283"></a>00283 <span class="comment">//                                  }</span>
+<a name="l00284"></a>00284 <span class="comment">//                                  float diff_b = fabs(beta - mb);</span>
+<a name="l00285"></a>00285 <span class="comment">//                                  while (diff_b &gt; 173.0f) {</span>
+<a name="l00286"></a>00286 <span class="comment">//                                      diff_b = fabs(diff_b - 180.0f);</span>
+<a name="l00287"></a>00287 <span class="comment">//                                  }</span>
+<a name="l00288"></a>00288 <span class="comment">//                                  if (diff_a &gt; 7.0f || diff_b &gt; 7.0f) {</span>
+<a name="l00289"></a>00289 <span class="comment">//                                      count2++;</span>
+<a name="l00290"></a>00290 <span class="comment">//                                      LOG_ERROR(&quot;alpha=%f != am=%d || beta=%f != mb=%d&quot;, alpha, am, beta, mb);</span>
+<a name="l00291"></a>00291 <span class="comment">//                                      LOG_ERROR(&quot;i1=%d j1=%d i2=%d j2=%d i3=%d j3=%d&quot;, i1, j1, i2, j2, i3, j3);</span>
+<a name="l00292"></a>00292 <span class="comment">//                                  }</span>
+<a name="l00293"></a>00293 <span class="comment">//                              }</span>
+<a name="l00294"></a>00294 <span class="comment">//                          }</span>
+<a name="l00295"></a>00295                         }
+<a name="l00296"></a>00296                     }
+<a name="l00297"></a>00297                 }
+<a name="l00298"></a>00298             }
+<a name="l00299"></a>00299         }
+<a name="l00300"></a>00300     }
+<a name="l00301"></a>00301 
+<a name="l00302"></a>00302 <span class="comment">//  position_t n = calc_resection(a, m, b, am, mb);</span>
+<a name="l00303"></a>00303 <span class="comment">//</span>
+<a name="l00304"></a>00304 <span class="comment">//  printf(&quot;N = (%d|%d)\n&quot;, n.x, n.y);</span>
+<a name="l00305"></a>00305 <span class="comment">//</span>
+<a name="l00306"></a>00306 <span class="comment">//  double n_a = atan2(a.y - n.y, a.x - n.x) / DEG2RAD;</span>
+<a name="l00307"></a>00307 <span class="comment">//  printf(&quot;n_a=%f\n&quot;, n_a);</span>
+<a name="l00308"></a>00308 <span class="comment">//  double n_m = atan2(m.y - n.y, m.x - n.x) / DEG2RAD;</span>
+<a name="l00309"></a>00309 <span class="comment">//  printf(&quot;n_m=%f\n&quot;, n_m);</span>
+<a name="l00310"></a>00310 <span class="comment">//  double n_b = atan2(b.y - n.y, b.x - n.x) / DEG2RAD;</span>
+<a name="l00311"></a>00311 <span class="comment">//  printf(&quot;n_b=%f\n&quot;, n_b);</span>
+<a name="l00312"></a>00312 <span class="comment">//</span>
+<a name="l00313"></a>00313 <span class="comment">//  double alpha = fabs(n_m - n_a);</span>
+<a name="l00314"></a>00314 <span class="comment">//  double beta = fabs(n_b - n_m);</span>
+<a name="l00315"></a>00315 <span class="comment">//</span>
+<a name="l00316"></a>00316 <span class="comment">//  printf(&quot;alpha=%f\tbeta=%f\n&quot;, alpha, beta);</span>
+<a name="l00317"></a>00317 }
+<a name="l00318"></a>00318 <span class="preprocessor">#endif // PC</span>
+<a name="l00319"></a>00319 <span class="preprocessor"></span><span class="preprocessor">#endif // BPS_AVAILABLE</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:09 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

@@ -27,10 +27,6 @@
 #ifndef GLOBAL_H_
 #define GLOBAL_H_
 
-#if ! defined MCU && ! defined PC
-#define PC
-#endif
-
 #ifndef __ASSEMBLER__
 #ifdef __WIN32__
 /* Prototypes, die in den MinGW-Includes fehlen -> keine Warnings */
@@ -58,10 +54,17 @@ int putchar(int);
 #ifndef __VALIST
 #define __VALIST __gnuc_va_list
 #endif
+int vsnwprintf (wchar_t *, size_t, const wchar_t *, __VALIST);
 #endif // __WIN32__
 
 #include <stdint.h>
 #include <math.h>
+
+#ifndef MCU
+#ifndef PC
+#define PC
+#endif
+#endif
 
 #ifdef DOXYGEN
 #define PC
@@ -72,6 +75,9 @@ int putchar(int);
 
 #define True	1			/**< wahr */
 #define False	0			/**< falsch */
+
+#define On		1			/**< an */
+#define Off		0			/**< aus */
 
 #ifdef PC
 #if defined WIN32
@@ -108,20 +114,10 @@ int putchar(int);
 #endif
 #endif // MCU
 
-#if ! defined DOXYGEN && ! defined PC
-#define PACKED __attribute__ ((packed)) /**< packed-Attribut fuer Strukturen und Enums (nur MCU) */
-#else // PC || Doxygen
-#define PACKED
-#endif
-
 #ifndef DOXYGEN
-#if (defined __x86_64__ || defined __i386__) && ! defined __clang__
-#define PACKED_FORCE __attribute__ ((gcc_struct, packed)) /**< erzwungenes packed-Attribut fuer Strukturen und Enums (x86) */
+#define PACKED __attribute__ ((packed)) /**< packed-Attribut fuer Strukturen und Enums */
 #else
-#define PACKED_FORCE __attribute__ ((packed)) /**< erzwungenes packed-Attribut fuer Strukturen und Enums (nicht x86) */
-#endif // __x86_64__ || __i386__
-#else // Doxygen
-#define PACKED_FORCE
+#define PACKED
 #endif
 
 #ifdef MCU
@@ -154,7 +150,7 @@ typedef struct {
 typedef union {
 	uint8_t byte;
 	unsigned bit:1;
-} bit_t;
+} PACKED bit_t;
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846 /** pi */

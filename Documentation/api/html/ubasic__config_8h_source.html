@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: ubasic_config.h Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_9d1e0dccf1391b04e9e09a3367003bd7.html">include</a>      </li>
+      <li class="navelem"><a class="el" href="dir_12aaf46a9c52378fda4839f850437abb.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">ubasic_config.h</div>  </div>
+</div>
+<div class="contents">
+<a href="ubasic__config_8h.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*----------------------------------------------------------------------</span>
+<a name="l00002"></a>00002 <span class="comment"> *</span>
+<a name="l00003"></a>00003 <span class="comment"> *           Uwe Berger (bergeruw@gmx.net); 2010, 2011</span>
+<a name="l00004"></a>00004 <span class="comment"> *           =========================================</span>
+<a name="l00005"></a>00005 <span class="comment"> *</span>
+<a name="l00006"></a>00006 <span class="comment"> * Einige Defines, die hauptsaechlich den uBasic-Sprachumfang und die</span>
+<a name="l00007"></a>00007 <span class="comment"> * Zielplattform steuern.</span>
+<a name="l00008"></a>00008 <span class="comment"> *</span>
+<a name="l00009"></a>00009 <span class="comment"> *</span>
+<a name="l00010"></a>00010 <span class="comment"> * ---------</span>
+<a name="l00011"></a>00011 <span class="comment"> * Have fun!</span>
+<a name="l00012"></a>00012 <span class="comment"> *</span>
+<a name="l00013"></a>00013 <span class="comment"> ----------------------------------------------------------------------*/</span>
+<a name="l00014"></a>00014 <span class="preprocessor">#ifndef __UBASIC_CONFIG_H__</span>
+<a name="l00015"></a>00015 <span class="preprocessor"></span><span class="preprocessor">#define __UBASIC_CONFIG_H__</span>
+<a name="l00016"></a>00016 <span class="preprocessor"></span>
+<a name="l00017"></a>00017 <span class="comment">/* Konfiguration fuer ct-Bot */</span>
+<a name="l00018"></a>00018 <span class="preprocessor">#include &quot;<a class="code" href="bot-logic_8h.html" title="High-Level-Routinen fuer die Steuerung des c&#39;t-Bots.">bot-logic.h</a>&quot;</span>
+<a name="l00019"></a>00019 <span class="preprocessor">#ifdef BEHAVIOUR_UBASIC_AVAILABLE</span>
+<a name="l00020"></a>00020 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="log_8h.html" title="Routinen zum Loggen von Informationen.">log.h</a>&quot;</span>
+<a name="l00021"></a>00021 
+<a name="l00022"></a><a class="code" href="ubasic__config_8h.html#af01181abffdc6f3125d54cf9754462bd">00022</a> <span class="preprocessor">#define USE_AVR    1</span>
+<a name="l00023"></a><a class="code" href="ubasic__config_8h.html#a4b8e68f69b5205f245a799aad09df07f">00023</a> <span class="preprocessor"></span><span class="preprocessor">#define USE_LC7981 0</span>
+<a name="l00024"></a><a class="code" href="ubasic__config_8h.html#aa4cf19947d76119acb5a7aec7872370e">00024</a> <span class="preprocessor"></span><span class="preprocessor">#define usart_write LOG_RAW</span>
+<a name="l00025"></a><a class="code" href="ubasic__config_8h.html#ac39399496f5a9d339c24475677ecf191">00025</a> <span class="preprocessor"></span><span class="preprocessor">#define usart_read_line(buf, len) // nicht implementiert</span>
+<a name="l00026"></a>00026 <span class="preprocessor"></span>
+<a name="l00027"></a>00027 <span class="comment">// AVR-spezifischen einschalten</span>
+<a name="l00028"></a>00028 <span class="preprocessor">#ifndef USE_AVR</span>
+<a name="l00029"></a>00029 <span class="preprocessor"></span><span class="preprocessor">    #define USE_AVR     1</span>
+<a name="l00030"></a>00030 <span class="preprocessor"></span><span class="preprocessor">    #ifndef USE_LC7981</span>
+<a name="l00031"></a>00031 <span class="preprocessor"></span><span class="preprocessor">        #define USE_LC7981 1</span>
+<a name="l00032"></a>00032 <span class="preprocessor"></span><span class="preprocessor">    #endif</span>
+<a name="l00033"></a>00033 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00034"></a>00034 <span class="preprocessor"></span>
+<a name="l00035"></a>00035 <span class="comment">// regulaere Standardausgabe</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#if USE_AVR</span>
+<a name="l00037"></a><a class="code" href="ubasic__config_8h.html#a1f464e950a4fa11e8821b5c725921a15">00037</a> <span class="preprocessor"></span><span class="preprocessor">    #define PRINTF(...)         usart_write(__VA_ARGS__)</span>
+<a name="l00038"></a><a class="code" href="ubasic__config_8h.html#af5ee84b1780ba1ef7014e65a93e20b68">00038</a> <span class="preprocessor"></span><span class="preprocessor">    #define GETLINE(buf, len)   usart_read_line(buf, len)</span>
+<a name="l00039"></a>00039 <span class="preprocessor"></span><span class="preprocessor">#else</span>
+<a name="l00040"></a>00040 <span class="preprocessor"></span><span class="preprocessor">    #define PRINTF(...)         printf(__VA_ARGS__);fflush(stdout);</span>
+<a name="l00041"></a>00041 <span class="preprocessor"></span><span class="preprocessor">    #define GETLINE(buf, len)   fgets(buf, len, stdin)</span>
+<a name="l00042"></a>00042 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00043"></a>00043 <span class="preprocessor"></span>
+<a name="l00044"></a>00044 <span class="comment">// Tokenizer-Typ</span>
+<a name="l00045"></a><a class="code" href="ubasic__config_8h.html#ad11947f20d276d10c8092893a5698b64">00045</a> <span class="preprocessor">#define TOKENIZER_FASTPARSER            1</span>
+<a name="l00046"></a>00046 <span class="preprocessor"></span><span class="preprocessor">#if TOKENIZER_FASTPARSER == 1</span>
+<a name="l00047"></a><a class="code" href="ubasic__config_8h.html#a0860a9eccfa9661d3977746b55743e37">00047</a> <span class="preprocessor"></span><span class="preprocessor">    #define TOKENIZER_STANDARD          0</span>
+<a name="l00048"></a>00048 <span class="preprocessor"></span><span class="preprocessor">#else</span>
+<a name="l00049"></a>00049 <span class="preprocessor"></span><span class="preprocessor">    #define TOKENIZER_STANDARD          1</span>
+<a name="l00050"></a>00050 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00051"></a>00051 <span class="preprocessor"></span>
+<a name="l00052"></a>00052 <span class="comment">// grml..., sollte man besser loesen!</span>
+<a name="l00053"></a>00053 <span class="preprocessor">#if !USE_AVR</span>
+<a name="l00054"></a>00054 <span class="preprocessor"></span><span class="preprocessor">    #define uint8_t unsigned char</span>
+<a name="l00055"></a>00055 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00056"></a>00056 <span class="preprocessor"></span>
+<a name="l00057"></a><a class="code" href="ubasic__config_8h.html#ad5a5b7f3a87e2fa440b24bdf1c71b75a">00057</a> <span class="preprocessor">#define MAX_NUMLEN 5</span>
+<a name="l00058"></a><a class="code" href="ubasic__config_8h.html#aaf0ffb6f67583b19d7f099323e0cb0cf">00058</a> <span class="preprocessor"></span><span class="preprocessor">#define MAX_HEXLEN 4</span>
+<a name="l00059"></a><a class="code" href="ubasic__config_8h.html#af959f1b320f57514edbf844216268d3a">00059</a> <span class="preprocessor"></span><span class="preprocessor">#define MAX_BINLEN 16</span>
+<a name="l00060"></a>00060 <span class="preprocessor"></span>
+<a name="l00061"></a>00061 
+<a name="l00062"></a>00062 <span class="comment">// max. Stringlaenge (Basic)</span>
+<a name="l00063"></a>00063 <span class="preprocessor">#ifndef MAX_STRINGLEN</span>
+<a name="l00064"></a><a class="code" href="ubasic__config_8h.html#a90bf9480b781825abfeb3f500d75531c">00064</a> <span class="preprocessor"></span><span class="preprocessor">    #define MAX_STRINGLEN 40</span>
+<a name="l00065"></a>00065 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00066"></a>00066 <span class="preprocessor"></span>
+<a name="l00067"></a>00067 <span class="comment">// max. Laenge der Eingabe beim INPUT-Befehl</span>
+<a name="l00068"></a>00068 <span class="preprocessor">#ifndef MAX_INPUT_LEN</span>
+<a name="l00069"></a><a class="code" href="ubasic__config_8h.html#a0ce016067dd23b0042727970db7ec763">00069</a> <span class="preprocessor"></span><span class="preprocessor">    #define MAX_INPUT_LEN 11</span>
+<a name="l00070"></a>00070 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00071"></a>00071 <span class="preprocessor"></span>
+<a name="l00072"></a>00072 <span class="comment">// max. Schachtelungstiefe fuer GOSUB (Basic)</span>
+<a name="l00073"></a><a class="code" href="ubasic__config_8h.html#aab086f9d28e5039a26d7fa99afa82fac">00073</a> <span class="preprocessor">#define MAX_GOSUB_STACK_DEPTH 2</span>
+<a name="l00074"></a>00074 <span class="preprocessor"></span>
+<a name="l00075"></a>00075 <span class="comment">// max. Schachtelungstiefe fuer FOR-NEXT (Basic)</span>
+<a name="l00076"></a><a class="code" href="ubasic__config_8h.html#afd61ad878c267312a7dfe05d09a67850">00076</a> <span class="preprocessor">#define MAX_FOR_STACK_DEPTH 4</span>
+<a name="l00077"></a>00077 <span class="preprocessor"></span>
+<a name="l00078"></a>00078 <span class="comment">// Zeilennummern-Cache verwenden (für goto und gosub)</span>
+<a name="l00079"></a><a class="code" href="ubasic__config_8h.html#a0aa0ee4044384fd819098d695ba5e124">00079</a> <span class="preprocessor">#define USE_LINENUM_CACHE       1</span>
+<a name="l00080"></a>00080 <span class="preprocessor"></span>
+<a name="l00081"></a>00081 <span class="comment">// max. Anzahl der gebufferten Zeilennummern</span>
+<a name="l00082"></a><a class="code" href="ubasic__config_8h.html#a06ad2669cd5513d7eed146024b8b65b5">00082</a> <span class="preprocessor">#define MAX_LINENUM_CACHE_DEPTH 8</span>
+<a name="l00083"></a>00083 <span class="preprocessor"></span>
+<a name="l00084"></a>00084 <span class="comment">// max. Anzahl Variablen (Basic)</span>
+<a name="l00085"></a><a class="code" href="ubasic__config_8h.html#a81a05e578462246276bd8f847363860a">00085</a> <span class="preprocessor">#define MAX_VARNUM 26</span>
+<a name="l00086"></a>00086 <span class="preprocessor"></span>
+<a name="l00087"></a>00087 <span class="comment">// max. Laenge von Funktions- und Variablennamen in call(), vpeek() und vpoke()</span>
+<a name="l00088"></a><a class="code" href="ubasic__config_8h.html#afd709f201d7643c3909621f620ea648a">00088</a> <span class="preprocessor">#define MAX_NAME_LEN    15</span>
+<a name="l00089"></a>00089 <span class="preprocessor"></span>
+<a name="l00090"></a>00090 <span class="comment">// maximale Laenge Programmname (gosub)</span>
+<a name="l00091"></a><a class="code" href="ubasic__config_8h.html#a5e885417e9a6806fe9e6934346514f6e">00091</a> <span class="preprocessor">#define MAX_PROG_NAME_LEN   16</span>
+<a name="l00092"></a>00092 <span class="preprocessor"></span>
+<a name="l00093"></a>00093 
+<a name="l00094"></a>00094 <span class="comment">// bei Verwendung des PROGMEM muess die Laenge des Schluesselwordfeldes</span>
+<a name="l00095"></a>00095 <span class="comment">// fest vorgegeben werden (Tabelle keywords in tokenenizer.c)</span>
+<a name="l00096"></a><a class="code" href="ubasic__config_8h.html#a6d6197219ef3336eb81c6db0ae5b74a2">00096</a> <span class="preprocessor">#define MAX_KEYWORD_LEN 8</span>
+<a name="l00097"></a>00097 <span class="preprocessor"></span>
+<a name="l00098"></a>00098 <span class="comment">// einige Basic-Erweiterungen/-Befehle/-Anweisungen, die man nicht immer unbedingt benoetigt</span>
+<a name="l00099"></a><a class="code" href="ubasic__config_8h.html#a232c88fc7a51c8f2d516498cc2f1457e">00099</a> <span class="preprocessor">#define UBASIC_ABS      1</span>
+<a name="l00100"></a><a class="code" href="ubasic__config_8h.html#aeb110385a3f189cf12e3bb2089bfa2b4">00100</a> <span class="preprocessor"></span><span class="preprocessor">#define UBASIC_NOT      1</span>
+<a name="l00101"></a><a class="code" href="ubasic__config_8h.html#a9f9f549bf42ea7a0e85027c36b6628bc">00101</a> <span class="preprocessor"></span><span class="preprocessor">#define UBASIC_CALL     1</span>
+<a name="l00102"></a><a class="code" href="ubasic__config_8h.html#a739800e03bf51af23ebfeb1c562e907f">00102</a> <span class="preprocessor"></span><span class="preprocessor">#define UBASIC_CVARS    1</span>
+<a name="l00103"></a><a class="code" href="ubasic__config_8h.html#aa2f7053920318acc7d33ab2818da3794">00103</a> <span class="preprocessor"></span><span class="preprocessor">#define UBASIC_REM      1</span>
+<a name="l00104"></a><a class="code" href="ubasic__config_8h.html#aad38c000b022e3aa8a7c007996b9ddd6">00104</a> <span class="preprocessor"></span><span class="preprocessor">#define UBASIC_XOR      1</span>
+<a name="l00105"></a><a class="code" href="ubasic__config_8h.html#a8d8c7c89bdee913fc3cc02e8394b87b9">00105</a> <span class="preprocessor"></span><span class="preprocessor">#define UBASIC_SHL      1</span>
+<a name="l00106"></a><a class="code" href="ubasic__config_8h.html#ad03502881021033f9ade6f72026c645e">00106</a> <span class="preprocessor"></span><span class="preprocessor">#define UBASIC_SHR      1</span>
+<a name="l00107"></a><a class="code" href="ubasic__config_8h.html#a0407773f8c335685522e698b4783a0a9">00107</a> <span class="preprocessor"></span><span class="preprocessor">#define UBASIC_PRINT    1</span>
+<a name="l00108"></a><a class="code" href="ubasic__config_8h.html#a8aa040bc077754dd16d09db63a919170">00108</a> <span class="preprocessor"></span><span class="preprocessor">#define UBASIC_RND      0</span>
+<a name="l00109"></a><a class="code" href="ubasic__config_8h.html#a90468aae2a1df4551d7744a308d0aa30">00109</a> <span class="preprocessor"></span><span class="preprocessor">#define UBASIC_HEX_BIN  1</span>
+<a name="l00110"></a><a class="code" href="ubasic__config_8h.html#ab75f76b4a46363d02d48b32c628dc027">00110</a> <span class="preprocessor"></span><span class="preprocessor">#define UBASIC_INPUT    0</span>
+<a name="l00111"></a>00111 <span class="preprocessor"></span>
+<a name="l00112"></a>00112 <span class="comment">// externe Unterprogramme (via gosub)</span>
+<a name="l00113"></a><a class="code" href="ubasic__config_8h.html#ae935a156dd0d8bd12a77548fbf22128c">00113</a> <span class="preprocessor">#define UBASIC_EXT_PROC 1</span>
+<a name="l00114"></a>00114 <span class="preprocessor"></span>
+<a name="l00115"></a>00115 <span class="comment">// Variablen als Array definierbar (DIM) und ansprechbar</span>
+<a name="l00116"></a>00116 <span class="comment">// Hinweis: in dem entsprechenden Code werden malloc()/free() verwendet,</span>
+<a name="l00117"></a>00117 <span class="comment">// was, in Kombination mit anderen Routinen ausserhalb des Basic-</span>
+<a name="l00118"></a>00118 <span class="comment">// Interpreters zur Zerstueckelung des Speichers fuehren koennte</span>
+<a name="l00119"></a><a class="code" href="ubasic__config_8h.html#aeb6b547c48285cb82c9a39cec8933f23">00119</a> <span class="preprocessor">#define UBASIC_ARRAY    0</span>
+<a name="l00120"></a>00120 <span class="preprocessor"></span>
+<a name="l00121"></a>00121 <span class="comment">// BASIC-Programmzeile ohne Zeilenummer erlaubt</span>
+<a name="l00122"></a><a class="code" href="ubasic__config_8h.html#ad1a1e2cce976c61581f08916f26e06bd">00122</a> <span class="preprocessor">#define UBASIC_NO_LINENUM_ALLOWED   1</span>
+<a name="l00123"></a>00123 <span class="preprocessor"></span>
+<a name="l00124"></a>00124 <span class="comment">// DATA/READ/RESTORE</span>
+<a name="l00125"></a><a class="code" href="ubasic__config_8h.html#a0256a7b811cdb477898b1ad08873d0e3">00125</a> <span class="preprocessor">#define UBASIC_DATA     0</span>
+<a name="l00126"></a>00126 <span class="preprocessor"></span>
+<a name="l00127"></a>00127 <span class="comment">// String-Support</span>
+<a name="l00128"></a><a class="code" href="ubasic__config_8h.html#a62296c0db3693230595d79a0f165f297">00128</a> <span class="preprocessor">#define UBASIC_STRING   0</span>
+<a name="l00129"></a>00129 <span class="preprocessor"></span>
+<a name="l00130"></a>00130 <span class="comment">// exit(1) in Fehlersituationen macht sich bei AVRs etwas schlecht...</span>
+<a name="l00131"></a>00131 <span class="preprocessor">#ifndef BREAK_NOT_EXIT</span>
+<a name="l00132"></a><a class="code" href="ubasic__config_8h.html#a3145d5cf94d205a2f38f93c0bd63be99">00132</a> <span class="preprocessor"></span><span class="preprocessor">    #define BREAK_NOT_EXIT  1</span>
+<a name="l00133"></a>00133 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00134"></a>00134 <span class="preprocessor"></span>
+<a name="l00135"></a>00135 <span class="comment">// die folgenden Defines nur, wenn USE_AVR gesetzt ist</span>
+<a name="l00136"></a>00136 <span class="preprocessor">#if USE_AVR</span>
+<a name="l00137"></a>00137 <span class="preprocessor"></span>    <span class="comment">// Verwendung des AVR-PROGMEM fuer einige Daten</span>
+<a name="l00138"></a><a class="code" href="ubasic__config_8h.html#a6a184b4aee0942ad6c35e4a4018f8ac5">00138</a> <span class="preprocessor">    #define USE_PROGMEM     1</span>
+<a name="l00139"></a>00139 <span class="preprocessor"></span>    <span class="comment">// AVR-spezifischen Befehle an-/abwaehlen</span>
+<a name="l00140"></a><a class="code" href="ubasic__config_8h.html#a067689b45bea53b11fc6367f0c3a8d78">00140</a> <span class="preprocessor">    #define AVR_WAIT        1</span>
+<a name="l00141"></a><a class="code" href="ubasic__config_8h.html#a9cd3bbe277819c1ba92ea0898a329595">00141</a> <span class="preprocessor"></span><span class="preprocessor">    #define AVR_EPEEK       0</span>
+<a name="l00142"></a><a class="code" href="ubasic__config_8h.html#a44fd915b33b401d0ec141dbd08a00b52">00142</a> <span class="preprocessor"></span><span class="preprocessor">    #define AVR_EPOKE       0</span>
+<a name="l00143"></a><a class="code" href="ubasic__config_8h.html#a5eb40620f185abb06a66e21e544497b7">00143</a> <span class="preprocessor"></span><span class="preprocessor">    #define AVR_DIR         0</span>
+<a name="l00144"></a><a class="code" href="ubasic__config_8h.html#ad0585968a02a574e53713e42a918b805">00144</a> <span class="preprocessor"></span><span class="preprocessor">    #define AVR_IN          0</span>
+<a name="l00145"></a><a class="code" href="ubasic__config_8h.html#ad65f49a392958882bbb940ef01f64280">00145</a> <span class="preprocessor"></span><span class="preprocessor">    #define AVR_OUT         0</span>
+<a name="l00146"></a><a class="code" href="ubasic__config_8h.html#ace8f533b68c83a51a8f3b45cdca0da76">00146</a> <span class="preprocessor"></span><span class="preprocessor">    #define AVR_ADC         0</span>
+<a name="l00147"></a>00147 <span class="preprocessor"></span>    <span class="comment">// AVR-Ports fuer Basic-Befehle dir, in, out</span>
+<a name="l00148"></a><a class="code" href="ubasic__config_8h.html#afdd1a9d46a326a5e0a2d86d158d78344">00148</a> <span class="preprocessor">    #define HAVE_PORTA      0</span>
+<a name="l00149"></a><a class="code" href="ubasic__config_8h.html#a8b759d3851d84ee87c1d7817f4f4c1c0">00149</a> <span class="preprocessor"></span><span class="preprocessor">    #define HAVE_PORTB      0</span>
+<a name="l00150"></a><a class="code" href="ubasic__config_8h.html#a63a2026bc3931552fb4ef307e62ec204">00150</a> <span class="preprocessor"></span><span class="preprocessor">    #define HAVE_PORTC      0</span>
+<a name="l00151"></a><a class="code" href="ubasic__config_8h.html#a00b7c7a36c8862f7859e537e0f8bbcca">00151</a> <span class="preprocessor"></span><span class="preprocessor">    #define HAVE_PORTD      0</span>
+<a name="l00152"></a>00152 <span class="preprocessor"></span>    <span class="comment">// AVR: Anzahl der ADC-Eingaenge (0...ACD_COUNT_MAX)</span>
+<a name="l00153"></a><a class="code" href="ubasic__config_8h.html#ac142ce2eba65f8540d7a710eeb6cea19">00153</a> <span class="preprocessor">    #define ADC_COUNT_MAX   4</span>
+<a name="l00154"></a>00154 <span class="preprocessor"></span><span class="preprocessor">#endif // USE_AVR</span>
+<a name="l00155"></a>00155 <span class="preprocessor"></span>
+<a name="l00156"></a>00156 <span class="preprocessor">#endif // BEHAVIOUR_UBASIC_AVAILABLE</span>
+<a name="l00157"></a>00157 <span class="preprocessor"></span>
+<a name="l00158"></a>00158 <span class="preprocessor">#endif </span><span class="comment">/* __UBASIC_CONFIG_H__ */</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:09 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

@@ -1,0 +1,786 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: behaviour_drive_area.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_14c9cc1c75a92f359ad94591d62973a1.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Datenstrukturen</a> &#124;
+<a href="#define-members">Makrodefinitionen</a> &#124;
+<a href="#func-members">Funktionen</a>  </div>
+  <div class="headertitle">
+<div class="title">behaviour_drive_area.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Flaechendeckendes Fahren als Verhalten (Staubsauger)  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="bot-logic_8h_source.html">bot-logic/bot-logic.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="behaviour__drive__area_8h_source.html">bot-logic/behaviour_drive_area.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="map_8h_source.html">map.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="timer_8h_source.html">timer.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="math__utils_8h_source.html">math_utils.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="pos__store_8h_source.html">pos_store.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="log_8h_source.html">log.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="command_8h_source.html">command.h</a>&quot;</code><br/>
+<code>#include &lt;math.h&gt;</code><br/>
+<code>#include &lt;stdlib.h&gt;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für behaviour_drive_area.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__drive__area_8c__incl.png" border="0" usemap="#behaviour__drive__area_8c" alt=""/></div>
+<map name="behaviour__drive__area_8c" id="behaviour__drive__area_8c">
+<area shape="rect" id="node3" href="bot-logic_8h.html" title="High&#45;Level&#45;Routinen fuer die Steuerung des c&#39;t&#45;Bots." alt="" coords="509,161,651,189"/><area shape="rect" id="node52" href="math__utils_8h.html" title="Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig." alt="" coords="7064,393,7155,421"/><area shape="rect" id="node78" href="behaviour__drive__area_8h.html" title="Flaechendeckendes Fahren als Verhalten (Staubsauger)" alt="" coords="7069,315,7291,343"/><area shape="rect" id="node81" href="map_8h.html" title="Karte." alt="" coords="287,83,345,111"/><area shape="rect" id="node88" href="timer_8h.html" title="Timer und Zaehler." alt="" coords="3779,470,3840,498"/><area shape="rect" id="node95" href="pos__store_8h.html" title="Implementierung eines Positionsspeichers mit den ueblichen Stackbefehlen push(), pop() und FIFO&#45;Befeh..." alt="" coords="83,83,173,111"/><area shape="rect" id="node97" href="command_8h.html" title="Kommando&#45;Management." alt="" coords="69,161,160,189"/><area shape="rect" id="node105" href="log_8h.html" title="Routinen zum Loggen von Informationen." alt="" coords="7416,83,7467,111"/><area shape="rect" id="node5" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot&#45;Funktionalitaeten" alt="" coords="431,238,497,266"/><area shape="rect" id="node13" href="motor_8h.html" title="High&#45;Level Routinen fuer die Motorsteuerung des c&#39;t&#45;Bots." alt="" coords="1029,393,1096,421"/><area shape="rect" id="node15" href="sensor_8h.html" title="Architekturunabhaengiger Teil der Sensorsteuerung." alt="" coords="581,238,653,266"/><area shape="rect" id="node21" href="available__behaviours_8h.html" title="globale Schalter fuer die einzelnen Verhalten" alt="" coords="3835,238,4053,266"/><area shape="rect" id="node7" href="global_8h.html" title="Allgemeine Definitionen und Datentypen." alt="" coords="277,315,347,343"/><area shape="rect" id="node11" href="bot-local_8h.html" title="Konstanten, die den Bot an reale Umgebungen anpassen." alt="" coords="421,315,507,343"/><area shape="rect" id="node17" href="rc5_8h.html" title="RC5&#45;Fernbedienung / Basic&#45;Tasten&#45;Handler." alt="" coords="581,315,632,343"/><area shape="rect" id="node19" href="cmps03_8h.html" title="CMPS03&#45;Treiber." alt="" coords="656,315,736,343"/><area shape="rect" id="node23" href="behaviour__prototype_8h.html" title="Rohling fuer eigene Verhalten." alt="" coords="4707,315,4920,343"/><area shape="rect" id="node25" href="behaviour__hw__test_8h.html" title="Testcode fuer die Bot&#45;Hardware (ehemals TEST_AVAILABLE_ANALOG, _DIGITAL, _MOTOR)" alt="" coords="4944,315,5144,343"/><area shape="rect" id="node27" href="behaviour__simple_8h.html" title="ganz einfache Beispielverhalten Diese Datei sollte der Einstiegspunkt fuer eigene Experimente sein..." alt="" coords="5168,315,5363,343"/><area shape="rect" id="node29" href="behaviour__drive__square_8h.html" title="Bot faehrt im Quadrat." alt="" coords="5387,315,5621,343"/><area shape="rect" id="node31" href="behaviour__avoid__border_8h.html" title="Vermeide Abgruende." alt="" coords="5645,315,5883,343"/><area shape="rect" id="node33" href="behaviour__avoid__col_8h.html" title="Vermeide Kollisionen." alt="" coords="5907,315,6120,343"/><area shape="rect" id="node35" href="behaviour__hang__on_8h.html" title="Haengenbleiben Notfallverhalten." alt="" coords="6144,315,6352,343"/><area shape="rect" id="node37" href="behaviour__goto_8h.html" title="Bot faehrt einen Punkt an." alt="" coords="6376,315,6557,343"/><area shape="rect" id="node39" href="behaviour__gotoxy_8h.html" title="Bot faehrt eine Position an." alt="" coords="6581,315,6779,343"/><area shape="rect" id="node41" href="behaviour__goto__pos_8h.html" title="Anfahren einer Position." alt="" coords="760,315,973,343"/><area shape="rect" id="node43" href="behaviour__goto__obstacle_8h.html" title="Anfahren eines Hindernisses." alt="" coords="997,315,1240,343"/><area shape="rect" id="node45" href="behaviour__turn_8h.html" title="Drehe den Bot." alt="" coords="1493,315,1669,343"/><area shape="rect" id="node48" href="behaviour__turn__test_8h.html" title="Fuehrt mehrere Drehungen mit bot_turn() aus und misst die Fehler." alt="" coords="1264,315,1469,343"/><area shape="rect" id="node50" href="behaviour__drive__distance_8h.html" title="Bot faehrt ein Stueck." alt="" coords="6803,315,7045,343"/><area shape="rect" id="node54" href="behaviour__measure__distance_8h.html" title="Ermittelt die aktuelle Entfernung eines Hindernisses mit den Distanzsensoren." alt="" coords="1693,315,1960,343"/><area shape="rect" id="node56" href="behaviour__scan_8h.html" title="Scannt die Umgebung und traegt sie in die Karte ein." alt="" coords="1984,315,2168,343"/><area shape="rect" id="node58" href="behaviour__solve__maze_8h.html" title="Wandfolger durchs Labyrinth." alt="" coords="2192,315,2421,343"/><area shape="rect" id="node60" href="behaviour__follow__line_8h.html" title="Linienverfolger." alt="" coords="2445,315,2664,343"/><area shape="rect" id="node62" href="behaviour__follow__line__enhanced_8h.html" title="erweiterter Linienverfolger, der auch mit Unterbrechungen und Hindernissen klarkommt" alt="" coords="2688,315,2973,343"/><area shape="rect" id="node64" href="behaviour__olympic_8h.html" title="Bot sucht Saeulen und faehrt dann Slalom." alt="" coords="2997,315,3200,343"/><area shape="rect" id="node66" href="behaviour__servo_8h.html" title="kontrolliert die Servos" alt="" coords="3224,315,3413,343"/><area shape="rect" id="node68" href="behaviour__catch__pillar_8h.html" title="Sucht nach einer Dose und faengt sie ein." alt="" coords="3437,315,3661,343"/><area shape="rect" id="node70" href="behaviour__classify__objects_8h.html" title="bot&#45;logic/behaviour_classify_objects.h" alt="" coords="3685,315,3936,343"/><area shape="rect" id="node72" href="behaviour__follow__object_8h.html" title="Verfolgung beweglicher Objekte." alt="" coords="3960,315,4195,343"/><area shape="rect" id="node74" href="behaviour__remotecall_8h.html" title="Ruft auf ein Kommando hin andere Verhalten auf und bestaetigt dann ihre Ausfuehrung." alt="" coords="4219,315,4437,343"/><area shape="rect" id="node76" href="behaviour__follow__wall_8h.html" title="Wandfolger Explorer." alt="" coords="4461,315,4683,343"/><area shape="rect" id="node84" href="fifo_8h.html" title="Implementierung einer FIFO." alt="" coords="155,315,203,343"/><area shape="rect" id="node86" href="os__thread_8h.html" title="Threadmanagement fuer BotOS." alt="" coords="195,393,285,421"/><area shape="rect" id="node91" href="botfs_8h.html" title="Dateisystem BotFS." alt="" coords="285,161,347,189"/><area shape="rect" id="node99" href="eeprom_8h.html" title="EEPROM&#45;Zugriff." alt="" coords="83,238,160,266"/><area shape="rect" id="node102" href="uart_8h.html" title="Routinen zur seriellen Kommunikation." alt="" coords="5,238,59,266"/></map>
+</div>
+</div>
+<p><a href="behaviour__drive__area_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="nested-classes"></a>
+Datenstrukturen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structPACKED.html">PACKED</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">FAT.  <a href="structPACKED.html#details">Mehr ...</a><br/></td></tr>
+<tr><td colspan="2"><h2><a name="define-members"></a>
+Makrodefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a933241cbb095d44dd11bf10ee4e44f6e">GO_WITH_PATHPLANING</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a0627c1d436d2fe5125e0ef6e7a8b40a7">LOG_DEBUG</a>(<a class="el" href="behaviour__drive__chess_8c.html#a24420a9beaac7cee08b5e255a4c29db1">a</a>,...)&#160;&#160;&#160;{}</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a6423a880df59733d2d9b509c7718d3a9">STACK_SIZE</a>&#160;&#160;&#160;64</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a6423a880df59733d2d9b509c7718d3a9">STACK_SIZE</a>&#160;&#160;&#160;POS_STORE_SIZE</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a69d3a0fbf54f1c17b672883ddd06375b">CORRECTION_DELAY</a>&#160;&#160;&#160;700</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#aa3d0cd0f79c132f0d165e7c2d010ceed">MAP_TRACKVAL</a>&#160;&#160;&#160;30</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#aa8a2b43b8833806791da3297f87a3488">DIST_AWARD_HAZ</a>&#160;&#160;&#160;OPTIMAL_DISTANCE</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a19be22f45c547b49222a70490266f286">MAP_WAY_FREE_MARGIN</a>&#160;&#160;&#160;10</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#aa043b6df87ef6e1a022f6a76e546efde">DIST_VALID_QUAD</a>&#160;&#160;&#160;(int32_t)(140 * 140)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a797a05daa461d1dde6aef936eed69357">TRACKLEFT</a>&#160;&#160;&#160;-1</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a1dfac9b125ba744e4846d8cc9412dd42">TRACKRIGHT</a>&#160;&#160;&#160;1</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a6fa8784e039639632cebe395fffba330">TRACK_END</a>&#160;&#160;&#160;99</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#af8735dded56ed694e98e6f3e016446f4">SIDEDIST_MINUS</a>&#160;&#160;&#160;30</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a75d07fbb31e97673cc72f6f8365d1841">MAPACCESS_AFTER_DISTANCE</a>&#160;&#160;&#160;30</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a4c9ad1bd58b1aae73d5bfe8bf893c911">MAPACCESS_AFTER_DISTANCE_QUAD</a>&#160;&#160;&#160;(MAPACCESS_AFTER_DISTANCE * MAPACCESS_AFTER_DISTANCE)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#abc33bdf9a07d5d1d1e77ca79609f25f2">OBSERVE_SEARCH_STARTPOINT</a>&#160;&#160;&#160;0</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a25399d5ee9c9939f3f72d6bc654e6493">OBSERVE_SEARCH_ENDPOINT</a>&#160;&#160;&#160;1</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#aed45884f0563e488782926410b7153b0">CHECK_TRACKSIDE</a>&#160;&#160;&#160;0</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a2367b00bfdacd4c2791b0fda6408192c">GO_FORWARD</a>&#160;&#160;&#160;1</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a740252ed16de15ed67595526f099c84f">AFTER_FORWARD</a>&#160;&#160;&#160;2</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a61e1ab8cb806da83f540142ddc23a656">ONWALL_TO_TRACK</a>&#160;&#160;&#160;3</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#aa8919000198b132cd506bc6fb7748d55">DELAY_AFTER_FORWARD</a>&#160;&#160;&#160;4</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a5dbe4abb72c3af1d6ce4974f59607248">TURN_TO_DESTINATION</a>&#160;&#160;&#160;5</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a82dd26e1bdc1fe4e8d615a86ba00e80b">GET_LINE_FROM_STACK</a>&#160;&#160;&#160;6</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a8c484d698ddf12795b519141bbb3f739">TURN_TO_NEAREST</a>&#160;&#160;&#160;7</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#ab52774b198feb60ae223a18bf2a92597">GOTO_FIRST_DEST</a>&#160;&#160;&#160;8</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#aa16c8b27baa496c2fdf0afffaf4485a0">CHECK_DIST</a>&#160;&#160;&#160;9</td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#a33f47275836ae34e0a288a1366df3aef">border_drive_area_handler</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#ac7784f1b0f9a6e40baf5b726ca8f10a2">bot_observe_left_behaviour</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *data)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#aca15324f77c0f7d67c34068921cb1b35">bot_observe_right_behaviour</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *data)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#ad3b7ebbc4734bfa33146eca5a39de50f">bot_drive_area_behaviour</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *data)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__area_8c.html#aae766227eb7a5f661201b78d83cb57b9">bot_drive_area</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *caller)</td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Flaechendeckendes Fahren als Verhalten (Staubsauger) </p>
+<p>Der Bot faehrt geradeaus bis zu einem Hindernis, dort dreht er sich zu einer Seite und faehrt auf der Nebenspur wieder zurueck. Der andere moegliche Weg wird als Alternative auf den Stack gespeichert. Falls es irgendwo nicht weitergeht, so wird eine solche Strecke vom Stack geholt und angefahren. Leider gibt es noch kein Map-Planungsverhalten, welches einen anderen Punkt unter Umgehung von Hindernissen anfaehrt. In dieser Version wird etwas tricky gefahren und versucht, diese Strecke anzufahren. Im Falle aber des nicht moeglichen Anfahrens wird eben diese Strecke verworfen. Ein Planungsverhalten, welches moeglichst auch nur ueber befahrene Abschnitte plant, wuerde entscheidend helfen. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Frank Menzel (<a href="mailto:Menzelfr@gmx.net">Menzelfr@gmx.net</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>16.07.2008 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+</div><hr/><h2>Makro-Dokumentation</h2>
+<a class="anchor" id="a740252ed16de15ed67595526f099c84f"></a><!-- doxytag: member="behaviour_drive_area.c::AFTER_FORWARD" ref="a740252ed16de15ed67595526f099c84f" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define AFTER_FORWARD&#160;&#160;&#160;2</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00677">677</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa16c8b27baa496c2fdf0afffaf4485a0"></a><!-- doxytag: member="behaviour_drive_area.c::CHECK_DIST" ref="aa16c8b27baa496c2fdf0afffaf4485a0" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CHECK_DIST&#160;&#160;&#160;9</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00684">684</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aed45884f0563e488782926410b7153b0"></a><!-- doxytag: member="behaviour_drive_area.c::CHECK_TRACKSIDE" ref="aed45884f0563e488782926410b7153b0" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CHECK_TRACKSIDE&#160;&#160;&#160;0</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00675">675</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l01196">bot_drive_area()</a> und <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a69d3a0fbf54f1c17b672883ddd06375b"></a><!-- doxytag: member="behaviour_drive_area.c::CORRECTION_DELAY" ref="a69d3a0fbf54f1c17b672883ddd06375b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CORRECTION_DELAY&#160;&#160;&#160;700</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>nur alle X-Millisekunden Mapzugriff der Observer-Verhalten </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00075">75</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa8919000198b132cd506bc6fb7748d55"></a><!-- doxytag: member="behaviour_drive_area.c::DELAY_AFTER_FORWARD" ref="aa8919000198b132cd506bc6fb7748d55" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DELAY_AFTER_FORWARD&#160;&#160;&#160;4</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00679">679</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa8a2b43b8833806791da3297f87a3488"></a><!-- doxytag: member="behaviour_drive_area.c::DIST_AWARD_HAZ" ref="aa8a2b43b8833806791da3297f87a3488" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DIST_AWARD_HAZ&#160;&#160;&#160;OPTIMAL_DISTANCE</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>In diesem Abstand voraus [mm] ab Abstandssensoren wird auf Hindernis gecheckt </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00081">81</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa043b6df87ef6e1a022f6a76e546efde"></a><!-- doxytag: member="behaviour_drive_area.c::DIST_VALID_QUAD" ref="aa043b6df87ef6e1a022f6a76e546efde" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DIST_VALID_QUAD&#160;&#160;&#160;(int32_t)(140 * 140)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Mindestabstand der Punkte fuer eine gueltige Bahn, welche es zu befahren gilt </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00086">86</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a82dd26e1bdc1fe4e8d615a86ba00e80b"></a><!-- doxytag: member="behaviour_drive_area.c::GET_LINE_FROM_STACK" ref="a82dd26e1bdc1fe4e8d615a86ba00e80b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define GET_LINE_FROM_STACK&#160;&#160;&#160;6</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00681">681</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2367b00bfdacd4c2791b0fda6408192c"></a><!-- doxytag: member="behaviour_drive_area.c::GO_FORWARD" ref="a2367b00bfdacd4c2791b0fda6408192c" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define GO_FORWARD&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00676">676</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a933241cbb095d44dd11bf10ee4e44f6e"></a><!-- doxytag: member="behaviour_drive_area.c::GO_WITH_PATHPLANING" ref="a933241cbb095d44dd11bf10ee4e44f6e" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define GO_WITH_PATHPLANING</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00048">48</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab52774b198feb60ae223a18bf2a92597"></a><!-- doxytag: member="behaviour_drive_area.c::GOTO_FIRST_DEST" ref="ab52774b198feb60ae223a18bf2a92597" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define GOTO_FIRST_DEST&#160;&#160;&#160;8</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00683">683</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0627c1d436d2fe5125e0ef6e7a8b40a7"></a><!-- doxytag: member="behaviour_drive_area.c::LOG_DEBUG" ref="a0627c1d436d2fe5125e0ef6e7a8b40a7" args="(a,...)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define LOG_DEBUG</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><a class="el" href="behaviour__drive__chess_8c.html#a24420a9beaac7cee08b5e255a4c29db1">a</a>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;{}</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00059">59</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa3d0cd0f79c132f0d165e7c2d010ceed"></a><!-- doxytag: member="behaviour_drive_area.c::MAP_TRACKVAL" ref="aa3d0cd0f79c132f0d165e7c2d010ceed" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAP_TRACKVAL&#160;&#160;&#160;30</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Mapwert zur Erkennung einer bereits befahrenen Spur </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00078">78</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a19be22f45c547b49222a70490266f286"></a><!-- doxytag: member="behaviour_drive_area.c::MAP_WAY_FREE_MARGIN" ref="a19be22f45c547b49222a70490266f286" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAP_WAY_FREE_MARGIN&#160;&#160;&#160;10</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Toleranzbereich links und rechts vom Bot fuer <a class="el" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041" title="Prueft ob eine direkte Passage frei von Hindernissen ist.">map_way_free()</a> [mm] </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00083">83</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a75d07fbb31e97673cc72f6f8365d1841"></a><!-- doxytag: member="behaviour_drive_area.c::MAPACCESS_AFTER_DISTANCE" ref="a75d07fbb31e97673cc72f6f8365d1841" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAPACCESS_AFTER_DISTANCE&#160;&#160;&#160;30</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Mapzugriff der Observer nach dieser gefahrenen Strecke in mm </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00103">103</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a4c9ad1bd58b1aae73d5bfe8bf893c911"></a><!-- doxytag: member="behaviour_drive_area.c::MAPACCESS_AFTER_DISTANCE_QUAD" ref="a4c9ad1bd58b1aae73d5bfe8bf893c911" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAPACCESS_AFTER_DISTANCE_QUAD&#160;&#160;&#160;(MAPACCESS_AFTER_DISTANCE * MAPACCESS_AFTER_DISTANCE)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00104">104</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a25399d5ee9c9939f3f72d6bc654e6493"></a><!-- doxytag: member="behaviour_drive_area.c::OBSERVE_SEARCH_ENDPOINT" ref="a25399d5ee9c9939f3f72d6bc654e6493" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define OBSERVE_SEARCH_ENDPOINT&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00353">353</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00477">bot_observe_left_behaviour()</a> und <a class="el" href="behaviour__drive__area_8c_source.html#l00536">bot_observe_right_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="abc33bdf9a07d5d1d1e77ca79609f25f2"></a><!-- doxytag: member="behaviour_drive_area.c::OBSERVE_SEARCH_STARTPOINT" ref="abc33bdf9a07d5d1d1e77ca79609f25f2" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define OBSERVE_SEARCH_STARTPOINT&#160;&#160;&#160;0</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Statusvariable der Obserververhalten </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00352">352</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00477">bot_observe_left_behaviour()</a> und <a class="el" href="behaviour__drive__area_8c_source.html#l00536">bot_observe_right_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a61e1ab8cb806da83f540142ddc23a656"></a><!-- doxytag: member="behaviour_drive_area.c::ONWALL_TO_TRACK" ref="a61e1ab8cb806da83f540142ddc23a656" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ONWALL_TO_TRACK&#160;&#160;&#160;3</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00678">678</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af8735dded56ed694e98e6f3e016446f4"></a><!-- doxytag: member="behaviour_drive_area.c::SIDEDIST_MINUS" ref="af8735dded56ed694e98e6f3e016446f4" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SIDEDIST_MINUS&#160;&#160;&#160;30</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>zu erreichender Punkt laut Observer neben dem Bot auf Parallelbahn; Korrekturwert, um den der Seitenabstand (Botdurchmesser) subtrahiert wird </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00099">99</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6423a880df59733d2d9b509c7718d3a9"></a><!-- doxytag: member="behaviour_drive_area.c::STACK_SIZE" ref="a6423a880df59733d2d9b509c7718d3a9" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define STACK_SIZE&#160;&#160;&#160;64</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Groesse des verwendeten Positionsspeichers </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00071">71</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l01196">bot_drive_area()</a>, <a class="el" href="behaviour__line__shortest__way_8c_source.html#l00685">bot_line_shortest_way()</a> und <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6423a880df59733d2d9b509c7718d3a9"></a><!-- doxytag: member="behaviour_drive_area.c::STACK_SIZE" ref="a6423a880df59733d2d9b509c7718d3a9" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define STACK_SIZE&#160;&#160;&#160;POS_STORE_SIZE</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Groesse des verwendeten Positionsspeichers </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00071">71</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6fa8784e039639632cebe395fffba330"></a><!-- doxytag: member="behaviour_drive_area.c::TRACK_END" ref="a6fa8784e039639632cebe395fffba330" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TRACK_END&#160;&#160;&#160;99</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Verhalten-Define zum Verlassen </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00094">94</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a797a05daa461d1dde6aef936eed69357"></a><!-- doxytag: member="behaviour_drive_area.c::TRACKLEFT" ref="a797a05daa461d1dde6aef936eed69357" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TRACKLEFT&#160;&#160;&#160;-1</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Defines zum festlegen, auf welcher Seite des Bots sich die Spur befindet </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00090">90</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a> und <a class="el" href="behaviour__drive__area_8c_source.html#l00477">bot_observe_left_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1dfac9b125ba744e4846d8cc9412dd42"></a><!-- doxytag: member="behaviour_drive_area.c::TRACKRIGHT" ref="a1dfac9b125ba744e4846d8cc9412dd42" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TRACKRIGHT&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00091">91</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00536">bot_observe_right_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a5dbe4abb72c3af1d6ce4974f59607248"></a><!-- doxytag: member="behaviour_drive_area.c::TURN_TO_DESTINATION" ref="a5dbe4abb72c3af1d6ce4974f59607248" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TURN_TO_DESTINATION&#160;&#160;&#160;5</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00680">680</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8c484d698ddf12795b519141bbb3f739"></a><!-- doxytag: member="behaviour_drive_area.c::TURN_TO_NEAREST" ref="a8c484d698ddf12795b519141bbb3f739" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TURN_TO_NEAREST&#160;&#160;&#160;7</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00682">682</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="a33f47275836ae34e0a288a1366df3aef"></a><!-- doxytag: member="behaviour_drive_area.c::border_drive_area_handler" ref="a33f47275836ae34e0a288a1366df3aef" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void border_drive_area_handler </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Notfallhandler, ausgefuehrt bei Abgrunderkennung und muss registriert werden </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00162">162</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Benutzt <a class="el" href="global_8h_source.html#l00076">True</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-logic_8c_source.html#l00086">bot_behave_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aae766227eb7a5f661201b78d83cb57b9"></a><!-- doxytag: member="behaviour_drive_area.c::bot_drive_area" ref="aae766227eb7a5f661201b78d83cb57b9" args="(Behaviour_t *caller)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_drive_area </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>caller</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Startet das Verhalten bot_drive_area_behaviour </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*caller</td><td>Der obligatorische Verhaltensdatensatz des Aufrufers </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l01196">1196</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Benutzt <a class="el" href="bot-logic_8h_source.html#l00040">BEHAVIOUR_OVERRIDE</a>, <a class="el" href="behaviour__avoid__col_8c_source.html#l00052">bot_avoid_col_behaviour()</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00691">bot_drive_area_behaviour()</a>, <a class="el" href="behaviour__scan_8c_source.html#l00058">bot_scan_onthefly_behaviour()</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00675">CHECK_TRACKSIDE</a>, <a class="el" href="global_8h_source.html#l00077">False</a>, <a class="el" href="bot-logic_8c_source.html#l00381">get_behaviour()</a>, <a class="el" href="pos__store_8c_source.html#l00060">pos_store_create_size()</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00071">STACK_SIZE</a> und <a class="el" href="bot-logic_8c_source.html#l00537">switch_to_behaviour()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__drive__area_8c_aae766227eb7a5f661201b78d83cb57b9_cgraph.png" border="0" usemap="#behaviour__drive__area_8c_aae766227eb7a5f661201b78d83cb57b9_cgraph" alt=""/></div>
+<map name="behaviour__drive__area_8c_aae766227eb7a5f661201b78d83cb57b9_cgraph" id="behaviour__drive__area_8c_aae766227eb7a5f661201b78d83cb57b9_cgraph">
+<area shape="rect" id="node3" href="behaviour__avoid__col_8c.html#af537d5e45f3f8339619d9dccf7d86e5d" title="bot_avoid_col_behaviour" alt="" coords="848,194,1021,222"/><area shape="rect" id="node9" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae..." alt="" coords="1608,194,1752,222"/><area shape="rect" id="node11" href="bot-logic_8c.html#a11e7a95fd56f9703bd2bd9c61300df6c" title="Liefert das Verhalten zurueck, welches durch function implementiert ist." alt="" coords="1831,118,1937,146"/><area shape="rect" id="node15" href="behaviour__drive__area_8c.html#ad3b7ebbc4734bfa33146eca5a39de50f" title="bot_drive_area_behaviour" alt="" coords="169,574,348,602"/><area shape="rect" id="node101" href="pos__store_8c.html#a0905da2b2d85fab632f239804dacec4d" title="pos_store_create_size" alt="" coords="1117,751,1277,779"/><area shape="rect" id="node114" href="behaviour__scan_8c.html#a06a99ebf4e3fe7e4d494589add4429df" title="bot_scan_onthefly_behaviour" alt="" coords="836,1207,1033,1235"/><area shape="rect" id="node5" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn." alt="" coords="1163,143,1232,171"/><area shape="rect" id="node7" href="behaviour__turn_8c.html#a7b75d957ab1dbf1a79d5403011a0b952" title="Dreht den Bot im mathematischen Drehsinn im Rahmen der angegebenen Geschwindigkeiten." alt="" coords="1387,143,1501,171"/><area shape="rect" id="node13" href="behaviour__turn_8c.html#aa49007295687228b4083f8f84208def4" title="Das Verhalten laesst den Bot eine Punktdrehung durchfuehren." alt="" coords="1612,143,1748,171"/><area shape="rect" id="node17" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat&#45;Abstands zwischen zwei Punkten." alt="" coords="1409,1157,1479,1185"/><area shape="rect" id="node19" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041" title="Prueft ob eine direkte Passage frei von Hindernissen ist." alt="" coords="411,751,520,779"/><area shape="rect" id="node45" href="behaviour__goto__pos_8c.html#a54260069e00a15a68b8c5ffdc0cc1a6d" title="Botenfunktion des Distanz&#45;Positionierungsverhaltens." alt="" coords="884,599,985,627"/><area shape="rect" id="node47" href="behaviour__goto__pos_8c.html#a88ddbedd618e291f1181ca34433fcd93" title="Botenfunktion des Positionierungsverhaltens." alt="" coords="1145,650,1249,678"/><area shape="rect" id="node50" href="behaviour__goto__pos_8c.html#a438ebcd779ae602e208e9ebe3b9aee44" title="Das Positionierungsverhalten." alt="" coords="1359,853,1529,881"/><area shape="rect" id="node53" href="behaviour__goto__obstacle_8c.html#abbec3c19a018455aa4e78f1af2c04ce8" title="Botenfunktion des goto_obstacle&#45;Verhaltens." alt="" coords="399,549,532,577"/><area shape="rect" id="node71" href="behaviour__cancel__behaviour_8c.html#a9d3bf9ebf7c36f74b1c02506d88a101f" title="Botenfunktion zum Deaktivieren eines Verhaltens, wenn die Abbruchbedingung erfuellt ist..." alt="" coords="605,194,760,222"/><area shape="rect" id="node76" href="behaviour__drive__distance_8c.html#a8d678ab6711dfaed1efa80bd2daab31c" title="Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren." alt="" coords="397,447,533,475"/><area shape="rect" id="node85" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df" title="Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein; dient zur Visualis..." alt="" coords="857,650,1012,678"/><area shape="rect" id="node94" href="behaviour__pathplaning_8c.html#a74202693b4d8c6f79308c3c0ce708a99" title="bot_calc_wave" alt="" coords="409,358,521,386"/><area shape="rect" id="node21" href="map_8c.html#a4cf69880c2dc15adb544bb4f602b2829" title="Berechnet das Verhaeltnis der Felder einer Region R die ausschliesslich mit Werten zwischen min und m..." alt="" coords="629,751,736,779"/><area shape="rect" id="node23" href="map_8c.html#a5c151bce0e665ee98fac1465d692fef0" title="Haelt den Bot an und schreibt den Map&#45;Update&#45;Cache komplett zurueck." alt="" coords="872,979,997,1007"/><area shape="rect" id="node43" href="map_8c.html#a302393a08814c05999d4be4c75467bc3" title="Konvertiert eine Weltkoordinate in eine Kartenkoordinate." alt="" coords="1144,701,1251,729"/><area shape="rect" id="node25" href="map_8c.html#aee723500f07bef9ecc88712b8deb792a" title="Prueft, ob die Karte zurzeit gesperrt ist." alt="" coords="1149,1005,1245,1033"/><area shape="rect" id="node27" href="motor_8c.html#a7d55b2e4a37c91e150513b2c87577750" title="Direkter Zugriff auf den Motor." alt="" coords="1157,1106,1237,1134"/><area shape="rect" id="node35" href="os__thread_8h.html#aa62b6d29ae00ff288fd8969807a62b06" title="Blockiert den aktuellen Thread, bis ein Signal freigegeben wird." alt="" coords="1145,802,1249,830"/><area shape="rect" id="node37" href="os__thread__pc_8c.html#a6fad7ee5233ef39834eb7afc437b0105" title="os_signal_release" alt="" coords="1131,853,1264,881"/><area shape="rect" id="node39" href="botfs_8c.html#a5964332bb5b66e2201b3a6b26935e1af" title="Schreibt die Information ueber benutzte Bloecke in den Datei&#45;Header." alt="" coords="1113,903,1281,931"/><area shape="rect" id="node41" href="botfs_8c.html#a71348fbe8ed02ee7b07b6ab789a400ab" title="Liest BOTFS_BLOCK_SIZE Bytes aus einer Datei in einen Puffer." alt="" coords="1155,954,1240,982"/><area shape="rect" id="node29" href="motor-low_8h.html#af288dee5f55b67d9eaf1d6e180bfd121" title="Stellt einen PWM&#45;Wert fuer einen Motor ein low&#45;level." alt="" coords="1392,1106,1496,1134"/><area shape="rect" id="node31" href="motor-low_8h.html#a51396f3f8b7c919099a65c94cd95f34f" title="Unmittelbarer Zugriff auf die beiden Motoren, normalerweise NICHT verwenden!" alt="" coords="1403,1055,1485,1083"/><area shape="rect" id="node33" href="command_8c.html#a419b75ed34551408822d9caee3cd5206" title="command_write" alt="" coords="1621,1055,1739,1083"/><area shape="rect" id="node56" href="behaviour__goto__obstacle_8c.html#a9786fc9e477889bcc2ead463a5ccd067" title="Faehrt den Bot auf eine gewuenschte Entfernung an ein Hindernis an." alt="" coords="583,498,783,526"/><area shape="rect" id="node59" href="behaviour__cancel__behaviour_8c.html#a3dae76d2c27d6be88756c6c813e858b5" title="Botenfunktion zum Deaktivieren eines Verhaltens, wenn eine Abbruchbedingung erfuellt ist..." alt="" coords="833,397,1036,425"/><area shape="rect" id="node61" href="behaviour__cancel__behaviour_8c.html#ac52e3f9c89274475f9ab2e38587f277a" title="Verhalten zum bedingten Deaktivieren anderer Verhalten." alt="" coords="1087,346,1308,374"/><area shape="rect" id="node63" href="bot-logic_8c.html#a03b8247dc4df0a3b5fd29d42a5cdc88e" title="Deaktiviert ein Verhalten." alt="" coords="1368,346,1520,374"/><area shape="rect" id="node65" href="bot-logic_8c.html#a7f318ddb329eb66eb8ac6053e65b415f" title="Deaktiviert alle von diesem Verhalten aufgerufenen Verhalten." alt="" coords="1579,422,1781,450"/><area shape="rect" id="node68" href="bot-logic_8c.html#ae957e610d7a3b2034084f87277a319de" title="Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg." alt="" coords="1389,295,1499,323"/><area shape="rect" id="node79" href="behaviour__drive__distance_8c.html#ae8ac26948cf65b72d78549e85390d861" title="Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren." alt="" coords="581,447,784,475"/><area shape="rect" id="node81" href="behaviour__drive__distance_8c.html#a3326d2bd0b9ba5fe13e7a0fae98a1c8b" title="laesst den Bot in eine Richtung fahren." alt="" coords="896,498,973,526"/><area shape="rect" id="node88" href="map_8c.html#ac2cc78e9d8a4f1aacb8e60a1a9d32440" title="Zeichnet eine Linie in die Map&#45;Anzeige des Sim." alt="" coords="1140,599,1255,627"/><area shape="rect" id="node90" href="command_8c.html#a1497433f9f7384b363203b7bfd3bfe28" title="command_write_rawdata" alt="" coords="1357,650,1531,678"/><area shape="rect" id="node92" href="command_8c.html#ad1ce17d9fe0aaf21a33d52de4e10af0f" title="command_write_rawdata_to" alt="" coords="1585,650,1775,678"/><area shape="rect" id="node96" href="behaviour__pathplaning_8c.html#a72089743b311ebb7ddf7dbcb396ca58e" title="bot_do_calc_wave" alt="" coords="615,245,751,273"/><area shape="rect" id="node99" href="behaviour__pathplaning_8c.html#ae957e4430cb772c340722feb21e4506b" title="bot_calc_wave_behaviour" alt="" coords="845,447,1024,475"/><area shape="rect" id="node103" href="pos__store_8c.html#ab38bb7f7ff5a9c4f0d356e7f07a3397d" title="pos_store_dequeue" alt="" coords="1127,447,1268,475"/><area shape="rect" id="node105" href="pos__store_8c.html#a1263f1a52fd21a79a48809a761a382d9" title="pos_store_clear" alt="" coords="1139,498,1256,526"/><area shape="rect" id="node107" href="pos__store_8c.html#a5b3b46e55200fee1bfa208eae4a69f69" title="pos_store_top" alt="" coords="1144,397,1251,425"/><area shape="rect" id="node117" href="os__thread__pc_8c.html#a3170fdf75fff4e971354e78a625b5afd" title="os_thread_sleep" alt="" coords="1136,1258,1259,1286"/><area shape="rect" id="node120" href="math__utils_8c.html#a9c14e14c49d54828861673702c30eeed" title="Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung." alt="" coords="1148,1309,1247,1337"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ad3b7ebbc4734bfa33146eca5a39de50f"></a><!-- doxytag: member="behaviour_drive_area.c::bot_drive_area_behaviour" ref="ad3b7ebbc4734bfa33146eca5a39de50f" args="(Behaviour_t *data)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_drive_area_behaviour </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Das Fahrverhalten selbst; Fahren bis zu einem Hindernis, drehen zu einer Seite und merken des anderen Weges auf den Stack; waehrend der Fahrt werden die Nebenspuren beobachtet und bei Hindernissen in der Nebenspur automatisch Teilstrecken auf den Stack gelegt </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*data</td><td>der Verhaltensdatensatz </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000009">Noch zu erledigen:</a></b></dt><dd>Diese Strecke nicht gleich verwerfen sondern evtl untersuchen und Teilstrecken bilden; evtl. mit Pfadplanung andere Teilstrecke anfahren oder erst einmal mit anderem Weg tauschen, der gerade frei ist. da jetzt auch eigener Linienstack verwendet wird, koennte man einen Zaehler mitfuehren wie oft eine Strecke schon zurueckgestellt wurde und erst ab einem Schwellwert wirklich verwerfen </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000010">Noch zu erledigen:</a></b></dt><dd>Pfadplanung ueber befahrenes Gebiet </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00691">691</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__area_8c_source.html#l00677">AFTER_FORWARD</a>, <a class="el" href="behaviour__delay_8h_source.html#l00049">BLOCK_BEHAVIOUR</a>, <a class="el" href="behaviour__pathplaning_8c_source.html#l00686">bot_calc_wave()</a>, <a class="el" href="behaviour__cancel__behaviour_8c_source.html#l00127">bot_cancel_behaviour()</a>, <a class="el" href="behaviour__drive__distance_8c_source.html#l00097">bot_drive_distance()</a>, <a class="el" href="behaviour__goto__pos_8c_source.html#l00342">bot_goto_dist()</a>, <a class="el" href="behaviour__goto__obstacle_8c_source.html#l00142">bot_goto_obstacle()</a>, <a class="el" href="behaviour__goto__pos_8c_source.html#l00282">bot_goto_pos()</a>, <a class="el" href="behaviour__goto__pos_8c_source.html#l00087">bot_goto_pos_behaviour()</a>, <a class="el" href="motor_8h_source.html#l00037">BOT_SPEED_NORMAL</a>, <a class="el" href="behaviour__turn_8c_source.html#l00233">bot_turn()</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00684">CHECK_DIST</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00675">CHECK_TRACKSIDE</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00075">CORRECTION_DELAY</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00679">DELAY_AFTER_FORWARD</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00081">DIST_AWARD_HAZ</a>, <a class="el" href="global_8h_source.html#l00077">False</a>, <a class="el" href="math__utils_8c_source.html#l00084">get_dist()</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00681">GET_LINE_FROM_STACK</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00676">GO_FORWARD</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00683">GOTO_FIRST_DEST</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00059">LOG_DEBUG</a>, <a class="el" href="map_8c_source.html#l01237">map_draw_line_world()</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00078">MAP_TRACKVAL</a>, <a class="el" href="map_8c_source.html#l01203">map_way_free()</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00083">MAP_WAY_FREE_MARGIN</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00678">ONWALL_TO_TRACK</a>, <a class="el" href="bot-local_8h_source.html#l00118">OPTIMAL_DISTANCE</a>, <a class="el" href="sensor_8c_source.html#l00055">sensDistL</a>, <a class="el" href="sensor_8c_source.html#l00056">sensDistR</a>, <a class="el" href="timer_8h_source.html#l00087">TIMER_GET_TICKCOUNT_16</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00094">TRACK_END</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00090">TRACKLEFT</a>, <a class="el" href="global_8h_source.html#l00076">True</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00680">TURN_TO_DESTINATION</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00682">TURN_TO_NEAREST</a>, <a class="el" href="sensor_8c_source.html#l00121">x_pos</a> und <a class="el" href="sensor_8c_source.html#l00122">y_pos</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-logic_8c_source.html#l00086">bot_behave_init()</a> und <a class="el" href="behaviour__drive__area_8c_source.html#l01196">bot_drive_area()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__drive__area_8c_ad3b7ebbc4734bfa33146eca5a39de50f_cgraph.png" border="0" usemap="#behaviour__drive__area_8c_ad3b7ebbc4734bfa33146eca5a39de50f_cgraph" alt=""/></div>
+<map name="behaviour__drive__area_8c_ad3b7ebbc4734bfa33146eca5a39de50f_cgraph" id="behaviour__drive__area_8c_ad3b7ebbc4734bfa33146eca5a39de50f_cgraph">
+<area shape="rect" id="node3" href="behaviour__pathplaning_8c.html#a74202693b4d8c6f79308c3c0ce708a99" title="bot_calc_wave" alt="" coords="247,1043,359,1071"/><area shape="rect" id="node42" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat&#45;Abstands zwischen zwei Punkten." alt="" coords="1480,777,1549,805"/><area shape="rect" id="node46" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df" title="Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein; dient zur Visualis..." alt="" coords="1437,498,1592,526"/><area shape="rect" id="node53" href="behaviour__goto__pos_8c.html#a88ddbedd618e291f1181ca34433fcd93" title="Botenfunktion des Positionierungsverhaltens." alt="" coords="956,1233,1060,1261"/><area shape="rect" id="node56" href="behaviour__goto__pos_8c.html#a438ebcd779ae602e208e9ebe3b9aee44" title="Das Positionierungsverhalten." alt="" coords="1168,1359,1339,1387"/><area shape="rect" id="node64" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn." alt="" coords="973,1157,1043,1185"/><area shape="rect" id="node71" href="behaviour__cancel__behaviour_8c.html#a9d3bf9ebf7c36f74b1c02506d88a101f" title="Botenfunktion zum Deaktivieren eines Verhaltens, wenn die Abbruchbedingung erfuellt ist..." alt="" coords="443,954,597,982"/><area shape="rect" id="node84" href="behaviour__drive__distance_8c.html#a8d678ab6711dfaed1efa80bd2daab31c" title="Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren." alt="" coords="235,1410,371,1438"/><area shape="rect" id="node91" href="behaviour__goto__pos_8c.html#a54260069e00a15a68b8c5ffdc0cc1a6d" title="Botenfunktion des Distanz&#45;Positionierungsverhaltens." alt="" coords="721,1207,823,1235"/><area shape="rect" id="node94" href="behaviour__goto__obstacle_8c.html#abbec3c19a018455aa4e78f1af2c04ce8" title="Botenfunktion des goto_obstacle&#45;Verhaltens." alt="" coords="236,1157,369,1185"/><area shape="rect" id="node107" href="map_8c.html#a4e5eff4836b0757a967e8ce984cfc041" title="Prueft ob eine direkte Passage frei von Hindernissen ist." alt="" coords="248,233,357,261"/><area shape="rect" id="node5" href="behaviour__pathplaning_8c.html#a72089743b311ebb7ddf7dbcb396ca58e" title="bot_do_calc_wave" alt="" coords="452,1030,588,1058"/><area shape="rect" id="node7" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae..." alt="" coords="1443,1207,1587,1235"/><area shape="rect" id="node11" href="behaviour__pathplaning_8c.html#ae957e4430cb772c340722feb21e4506b" title="bot_calc_wave_behaviour" alt="" coords="683,802,861,830"/><area shape="rect" id="node62" href="behaviour__avoid__col_8c.html#af537d5e45f3f8339619d9dccf7d86e5d" title="bot_avoid_col_behaviour" alt="" coords="685,1055,859,1083"/><area shape="rect" id="node9" href="bot-logic_8c.html#a11e7a95fd56f9703bd2bd9c61300df6c" title="Liefert das Verhalten zurueck, welches durch function implementiert ist." alt="" coords="1668,979,1775,1007"/><area shape="rect" id="node13" href="pos__store_8c.html#a0905da2b2d85fab632f239804dacec4d" title="pos_store_create_size" alt="" coords="928,701,1088,729"/><area shape="rect" id="node15" href="pos__store_8c.html#ab38bb7f7ff5a9c4f0d356e7f07a3397d" title="pos_store_dequeue" alt="" coords="937,751,1079,779"/><area shape="rect" id="node17" href="pos__store_8c.html#a1263f1a52fd21a79a48809a761a382d9" title="pos_store_clear" alt="" coords="949,802,1067,830"/><area shape="rect" id="node19" href="pos__store_8c.html#a5b3b46e55200fee1bfa208eae4a69f69" title="pos_store_top" alt="" coords="1461,827,1568,855"/><area shape="rect" id="node21" href="pos__store_8c.html#af507859ead3d3e4775cf01c6d2b800fc" title="pos_store_pop" alt="" coords="1459,878,1571,906"/><area shape="rect" id="node23" href="map_8c.html#a302393a08814c05999d4be4c75467bc3" title="Konvertiert eine Weltkoordinate in eine Kartenkoordinate." alt="" coords="1668,447,1775,475"/><area shape="rect" id="node25" href="map_8c.html#ac2cc78e9d8a4f1aacb8e60a1a9d32440" title="Zeichnet eine Linie in die Map&#45;Anzeige des Sim." alt="" coords="1664,523,1779,551"/><area shape="rect" id="node31" href="behaviour__drive__stack_8c.html#a6b879a7ecac5368a68850300fe947cc9" title="bot_drive_stack_x" alt="" coords="943,903,1073,931"/><area shape="rect" id="node40" href="bot-logic_8c.html#ae957e610d7a3b2034084f87277a319de" title="Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg." alt="" coords="1460,979,1569,1007"/><area shape="rect" id="node51" href="pos__store_8c.html#a04378a6e68ec291278e92cf26d8b7152" title="pos_store_get_index" alt="" coords="935,599,1081,627"/><area shape="rect" id="node59" href="pos__store_8c.html#a4bb0829554b41be5bf51dd0a942211f9" title="pos_store_release" alt="" coords="941,650,1075,678"/><area shape="rect" id="node27" href="command_8c.html#a1497433f9f7384b363203b7bfd3bfe28" title="command_write_rawdata" alt="" coords="1827,523,2000,551"/><area shape="rect" id="node29" href="command_8c.html#ad1ce17d9fe0aaf21a33d52de4e10af0f" title="command_write_rawdata_to" alt="" coords="2049,523,2239,551"/><area shape="rect" id="node33" href="pos__store_8c.html#adad22546e13c2c737f4bb62242b3bb92" title="pos_store_from_index" alt="" coords="1176,751,1331,779"/><area shape="rect" id="node35" href="bot-logic_8c.html#a406a628ec04bfa715f5881a84f12e2e4" title="Rueckgabe von True, wenn das Verhalten gerade laeuft (aktiv ist), sonst False." alt="" coords="1173,903,1333,931"/><area shape="rect" id="node38" href="behaviour__drive__stack_8c.html#a7d6d596506f029155fc86e68fb11bed9" title="bot_save_waypos_behaviour" alt="" coords="1153,853,1353,881"/><area shape="rect" id="node66" href="behaviour__turn_8c.html#a7b75d957ab1dbf1a79d5403011a0b952" title="Dreht den Bot im mathematischen Drehsinn im Rahmen der angegebenen Geschwindigkeiten." alt="" coords="1196,1106,1311,1134"/><area shape="rect" id="node69" href="behaviour__turn_8c.html#aa49007295687228b4083f8f84208def4" title="Das Verhalten laesst den Bot eine Punktdrehung durchfuehren." alt="" coords="1447,1131,1583,1159"/><area shape="rect" id="node73" href="behaviour__cancel__behaviour_8c.html#a3dae76d2c27d6be88756c6c813e858b5" title="Botenfunktion zum Deaktivieren eines Verhaltens, wenn eine Abbruchbedingung erfuellt ist..." alt="" coords="671,954,873,982"/><area shape="rect" id="node75" href="behaviour__cancel__behaviour_8c.html#ac52e3f9c89274475f9ab2e38587f277a" title="Verhalten zum bedingten Deaktivieren anderer Verhalten." alt="" coords="1143,1055,1364,1083"/><area shape="rect" id="node77" href="bot-logic_8c.html#a03b8247dc4df0a3b5fd29d42a5cdc88e" title="Deaktiviert ein Verhalten." alt="" coords="1439,1081,1591,1109"/><area shape="rect" id="node79" href="bot-logic_8c.html#a7f318ddb329eb66eb8ac6053e65b415f" title="Deaktiviert alle von diesem Verhalten aufgerufenen Verhalten." alt="" coords="1413,1030,1616,1058"/><area shape="rect" id="node87" href="behaviour__drive__distance_8c.html#ae8ac26948cf65b72d78549e85390d861" title="Das Verhalten laesst den Bot eine vorher festgelegte Strecke fahren." alt="" coords="419,1410,621,1438"/><area shape="rect" id="node89" href="behaviour__drive__distance_8c.html#a3326d2bd0b9ba5fe13e7a0fae98a1c8b" title="laesst den Bot in eine Richtung fahren." alt="" coords="733,1410,811,1438"/><area shape="rect" id="node97" href="behaviour__goto__obstacle_8c.html#a9786fc9e477889bcc2ead463a5ccd067" title="Faehrt den Bot auf eine gewuenschte Entfernung an ein Hindernis an." alt="" coords="420,1157,620,1185"/><area shape="rect" id="node109" href="map_8c.html#a4cf69880c2dc15adb544bb4f602b2829" title="Berechnet das Verhaeltnis der Felder einer Region R die ausschliesslich mit Werten zwischen min und m..." alt="" coords="467,169,573,197"/><area shape="rect" id="node111" href="map_8c.html#a5c151bce0e665ee98fac1465d692fef0" title="Haelt den Bot an und schreibt den Map&#45;Update&#45;Cache komplett zurueck." alt="" coords="709,169,835,197"/><area shape="rect" id="node113" href="map_8c.html#aee723500f07bef9ecc88712b8deb792a" title="Prueft, ob die Karte zurzeit gesperrt ist." alt="" coords="960,194,1056,222"/><area shape="rect" id="node115" href="motor_8c.html#a7d55b2e4a37c91e150513b2c87577750" title="Direkter Zugriff auf den Motor." alt="" coords="968,245,1048,273"/><area shape="rect" id="node117" href="os__thread_8h.html#aa62b6d29ae00ff288fd8969807a62b06" title="Blockiert den aktuellen Thread, bis ein Signal freigegeben wird." alt="" coords="956,295,1060,323"/><area shape="rect" id="node119" href="os__thread__pc_8c.html#a6fad7ee5233ef39834eb7afc437b0105" title="os_signal_release" alt="" coords="941,42,1075,70"/><area shape="rect" id="node121" href="botfs_8c.html#a5964332bb5b66e2201b3a6b26935e1af" title="Schreibt die Information ueber benutzte Bloecke in den Datei&#45;Header." alt="" coords="924,93,1092,121"/><area shape="rect" id="node123" href="botfs_8c.html#a71348fbe8ed02ee7b07b6ab789a400ab" title="Liest BOTFS_BLOCK_SIZE Bytes aus einer Datei in einen Puffer." alt="" coords="965,143,1051,171"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ac7784f1b0f9a6e40baf5b726ca8f10a2"></a><!-- doxytag: member="behaviour_drive_area.c::bot_observe_left_behaviour" ref="ac7784f1b0f9a6e40baf5b726ca8f10a2" args="(Behaviour_t *data)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_observe_left_behaviour </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Observer links; jeweils ein selbstaendiges Verhalten, welches die Nachbarbahn beobachtet und eine befahrbare Strecke bis zu einem Hindernis auf den Stack legt fuer spaeteres Anfahren; ebenfalls wird eine Alternativroute auf dem Stack gemerkt Verhalten wurde so geschrieben, dass es zwar 2 Verhalten sind, der Code jedoch identisch ist und daher in Subroutinen ausgelagert ist </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*data</td><td>Verhaltensdatensatz </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00477">477</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__area_8c_source.html#l00353">OBSERVE_SEARCH_ENDPOINT</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00352">OBSERVE_SEARCH_STARTPOINT</a> und <a class="el" href="behaviour__drive__area_8c_source.html#l00090">TRACKLEFT</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-logic_8c_source.html#l00086">bot_behave_init()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aca15324f77c0f7d67c34068921cb1b35"></a><!-- doxytag: member="behaviour_drive_area.c::bot_observe_right_behaviour" ref="aca15324f77c0f7d67c34068921cb1b35" args="(Behaviour_t *data)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_observe_right_behaviour </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Observer rechts; jeweils ein selbstaendiges Verhalten, welches die Nachbarbahn beobachtet und eine befahrbare Strecke bis zu einem Hindernis auf den Stack legt fuer spaeteres Anfahren; ebenfalls wird eine Alternativroute auf dem Stack gemerkt Verhalten wurde so geschrieben, dass es zwar 2 Verhalten sind, der Code jedoch identisch ist und daher in Subroutinen ausgelagert ist </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*data</td><td>Verhaltensdatensatz </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__area_8c_source.html#l00536">536</a> der Datei <a class="el" href="behaviour__drive__area_8c_source.html">behaviour_drive_area.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__area_8c_source.html#l00353">OBSERVE_SEARCH_ENDPOINT</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00352">OBSERVE_SEARCH_STARTPOINT</a> und <a class="el" href="behaviour__drive__area_8c_source.html#l00091">TRACKRIGHT</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-logic_8c_source.html#l00086">bot_behave_init()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:10 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

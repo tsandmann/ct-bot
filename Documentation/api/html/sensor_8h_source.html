@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: sensor.h Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_9d1e0dccf1391b04e9e09a3367003bd7.html">include</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">sensor.h</div>  </div>
+</div>
+<div class="contents">
+<a href="sensor_8h.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00027"></a>00027 <span class="preprocessor">#ifndef SENSOR_H_</span>
+<a name="l00028"></a>00028 <span class="preprocessor"></span><span class="preprocessor">#define SENSOR_H_</span>
+<a name="l00029"></a>00029 <span class="preprocessor"></span>
+<a name="l00030"></a>00030 <span class="preprocessor">#include &quot;<a class="code" href="rc5_8h.html" title="RC5-Fernbedienung / Basic-Tasten-Handler.">rc5.h</a>&quot;</span>
+<a name="l00031"></a>00031 <span class="preprocessor">#include &quot;<a class="code" href="cmps03_8h.html" title="CMPS03-Treiber.">cmps03.h</a>&quot;</span>
+<a name="l00032"></a>00032 
+<a name="l00033"></a>00033 
+<a name="l00035"></a><a class="code" href="structdistSens__t.html">00035</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>{
+<a name="l00036"></a><a class="code" href="structdistSens__t.html#a71751b173211a94fbbef3c7923a73a1e">00036</a>     uint8_t <a class="code" href="structdistSens__t.html#a71751b173211a94fbbef3c7923a73a1e">voltage</a>;    
+<a name="l00037"></a><a class="code" href="structdistSens__t.html#abf4f2d2d430f6a6bd0ecf159d27af6d6">00037</a>     uint8_t <a class="code" href="structdistSens__t.html#abf4f2d2d430f6a6bd0ecf159d27af6d6">dist</a>;       
+<a name="l00038"></a>00038 } <a class="code" href="structdistSens__t.html">distSens_t</a>;
+<a name="l00039"></a>00039 
+<a name="l00040"></a>00040 <span class="comment">/* Analoge Sensoren: Der Wertebereich aller analogen Sensoren umfasst 10 Bit. Also 0 bis 1023 */</span>
+<a name="l00041"></a>00041 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a>;           
+<a name="l00042"></a>00042 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a>;           
+<a name="l00043"></a>00043 <span class="keyword">extern</span> uint8_t <a class="code" href="sensor_8c.html#aab4f26c26726bc36314faf79f5f51dcb">sensDistLToggle</a>; 
+<a name="l00044"></a>00044 <span class="keyword">extern</span> uint8_t <a class="code" href="sensor_8c.html#a45777fcdc539dde1c889356f8ad0b4ad">sensDistRToggle</a>; 
+<a name="l00046"></a>00046 <span class="keyword">extern</span> void (* <a class="code" href="sensor_8c.html#a83ba3a1ce541af71d48e9e081f454161">sensor_update_distance</a>)(int16_t * <span class="keyword">const</span> p_sens, uint8_t * <span class="keyword">const</span> p_toggle, <span class="keyword">const</span> <a class="code" href="structdistSens__t.html">distSens_t</a> * ptr, int16_t volt);
+<a name="l00047"></a>00047 <span class="keyword">extern</span> <a class="code" href="structdistSens__t.html">distSens_t</a> <a class="code" href="sensor_8c.html#a479988bc8d0996b0670e27231263d02b">sensDistDataL</a>[];  
+<a name="l00048"></a>00048 <span class="keyword">extern</span> <a class="code" href="structdistSens__t.html">distSens_t</a> <a class="code" href="sensor_8c.html#a1cbefd5363cf577b7bbbce28e7f06834">sensDistDataR</a>[];  
+<a name="l00049"></a>00049 <span class="keyword">extern</span> uint8_t <a class="code" href="sensor_8c.html#a3dabfe3eefd14bdf0c1b554540a93081">sensDistOffset</a>;      
+<a name="l00052"></a>00052 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a6d0a5c233b4eb9e698d9f78c8a628bb7">sensLDRL</a>;    
+<a name="l00053"></a>00053 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a69a539530f625ee30aa24c42a763aa99">sensLDRR</a>;    
+<a name="l00055"></a>00055 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a84def4d45c65c50a87cd4882f9462b2e">sensBorderL</a>; 
+<a name="l00056"></a>00056 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a0fdaee88ee679ed4c544707de739ee9a">sensBorderR</a>; 
+<a name="l00058"></a>00058 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a56a020f1eb08fbff3d7fa669335921ed">sensLineL</a>;   
+<a name="l00059"></a>00059 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#ae286bb8f86cced317801e378247dcb18">sensLineR</a>;   
+<a name="l00061"></a>00061 <span class="comment">/* digitale Sensoren */</span>
+<a name="l00062"></a>00062 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a2ed6effbb05581a060bd26f2af436741">sensEncL</a>;    
+<a name="l00063"></a>00063 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a31470eb8eed6ffed8e0aeb435581efcf">sensEncR</a>;    
+<a name="l00065"></a>00065 <span class="keyword">extern</span> uint8_t <a class="code" href="sensor_8c.html#a34eca1400eac2bb5383dd6f55adf0f72">sensTrans</a>;   
+<a name="l00066"></a>00066 <span class="keyword">extern</span> uint8_t <a class="code" href="sensor_8c.html#ad0b5edd09bb7a0e522ea12523ac75a81">sensDoor</a>;    
+<a name="l00067"></a>00067 <span class="keyword">extern</span> uint8_t <a class="code" href="sensor_8c.html#a7b8447203f867d67fde99f1172a460af">sensError</a>;   
+<a name="l00069"></a>00069 <span class="keyword">extern</span> uint16_t <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a>;   
+<a name="l00071"></a>00071 <span class="preprocessor">#ifdef BPS_AVAILABLE</span>
+<a name="l00072"></a>00072 <span class="preprocessor"></span><span class="keyword">extern</span> uint16_t <a class="code" href="sensor_8c.html#a34015652b96fbf2ceaca9b98b1715998">sensBPS</a>;    
+<a name="l00073"></a>00073 <span class="keyword">extern</span> <a class="code" href="structir__data__t.html">ir_data_t</a> <a class="code" href="sensor_8c.html#abecd7e3bb497c7ea63763afc3b6c4d34">bps_ir_data</a>; 
+<a name="l00074"></a>00074 <span class="preprocessor">#endif // BPS_AVAILABLE</span>
+<a name="l00075"></a>00075 <span class="preprocessor"></span>
+<a name="l00076"></a>00076 
+<a name="l00077"></a>00077 <span class="preprocessor">#ifdef MOUSE_AVAILABLE</span>
+<a name="l00078"></a>00078 <span class="preprocessor"></span><span class="keyword">extern</span> int8_t <a class="code" href="sensor_8c.html#ac3ad636ee074ea70bba8ba26e3028cf2">sensMouseDX</a>;  
+<a name="l00079"></a>00079 <span class="keyword">extern</span> int8_t <a class="code" href="sensor_8c.html#a90e9f880c4e7721dc2944429db650a44">sensMouseDY</a>;  
+<a name="l00080"></a>00080 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a02d20210e1c533407374d227c317cce1">sensMouseX</a>;  
+<a name="l00081"></a>00081 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a950f15aada0b8cde9be8b92c185bfbf8">sensMouseY</a>;  
+<a name="l00082"></a>00082 <span class="preprocessor">#endif // MOUSE_AVAILABLE</span>
+<a name="l00083"></a>00083 <span class="preprocessor"></span>
+<a name="l00084"></a>00084 <span class="keyword">extern</span> <span class="keywordtype">float</span> <a class="code" href="sensor_8c.html#a939a9b8951bd499bba3d184f3287df59">heading_enc</a>;   
+<a name="l00085"></a>00085 <span class="keyword">extern</span> <span class="keywordtype">float</span> <a class="code" href="sensor_8c.html#a73a97a07a62a59c874745743912aaf8b">x_enc</a>;         
+<a name="l00086"></a>00086 <span class="keyword">extern</span> <span class="keywordtype">float</span> <a class="code" href="sensor_8c.html#acf8b5e7623be6575742e3edf304fd010">y_enc</a>;         
+<a name="l00087"></a>00087 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a37dd9e1324c7d44e0d91129c43fe9ced">v_enc_left</a>;      
+<a name="l00088"></a>00088 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a0d65fedf55775dbbb86b81ccc8dade6a">v_enc_right</a>;     
+<a name="l00089"></a>00089 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#ac760ccfe958847422d2b0939624b6045">v_enc_center</a>;    
+<a name="l00091"></a>00091 <span class="preprocessor">#ifdef PC</span>
+<a name="l00092"></a>00092 <span class="preprocessor"></span><span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#aec3ee6f76a66fefc987aa122e1073a21">simultime</a>;   
+<a name="l00093"></a>00093 <span class="preprocessor">#endif</span>
+<a name="l00094"></a>00094 <span class="preprocessor"></span>
+<a name="l00095"></a>00095 <span class="preprocessor">#ifdef MEASURE_MOUSE_AVAILABLE</span>
+<a name="l00096"></a>00096 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="keywordtype">float</span> <a class="code" href="sensor_8c.html#afe11ed1b60135e873bb810ab6d513f98">heading_mou</a>;       
+<a name="l00097"></a>00097 <span class="keyword">extern</span> <span class="keywordtype">float</span> <a class="code" href="sensor_8c.html#a0d1b34e787bce8bf663991ecc52993f3">x_mou</a>;         
+<a name="l00098"></a>00098 <span class="keyword">extern</span> <span class="keywordtype">float</span> <a class="code" href="sensor_8c.html#a98702ab3fa708015b7f0ece9bb6e7829">y_mou</a>;         
+<a name="l00099"></a>00099 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a674105ac8378f8829d9dabc696f132e9">v_mou_center</a>;    
+<a name="l00100"></a>00100 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a5efeb24339872ad14c055f1a350e0bc3">v_mou_left</a>;      
+<a name="l00101"></a>00101 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#ac4a7a5a3570bf68e33e0d5c947460860">v_mou_right</a>;     
+<a name="l00102"></a>00102 <span class="preprocessor">#endif // MEASURE_MOUSE_AVAILABLE</span>
+<a name="l00103"></a>00103 <span class="preprocessor"></span>
+<a name="l00104"></a>00104 <span class="keyword">extern</span> <span class="keywordtype">float</span> <a class="code" href="sensor_8c.html#ac5682e48513a771560df50e3b213e61a">heading</a>;           
+<a name="l00105"></a>00105 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a0bebab40bf945479d36e9190261b5a28">heading_int</a>;     
+<a name="l00106"></a>00106 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#acbf755fc394183b9916d8f9fc2960420">heading_10_int</a>;  
+<a name="l00107"></a>00107 <span class="keyword">extern</span> <span class="keywordtype">float</span> <a class="code" href="sensor_8c.html#abf46f3373ce4937328a613dfae059af7">heading_sin</a>;       
+<a name="l00108"></a>00108 <span class="keyword">extern</span> <span class="keywordtype">float</span> <a class="code" href="sensor_8c.html#a569e0f57bd20c90661f2bb6c4b1ba750">heading_cos</a>;       
+<a name="l00109"></a>00109 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#ac5ae500a2280ad6ed571a99a11954492">x_pos</a>;           
+<a name="l00110"></a>00110 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a82663881f9567f6bf0b697b77af08d0d">y_pos</a>;           
+<a name="l00111"></a>00111 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a7036ad3600d8a938cb864b0b335d411c">v_left</a>;          
+<a name="l00112"></a>00112 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a188b844f9b027a89d45bbec2aa82d363">v_right</a>;         
+<a name="l00113"></a>00113 <span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a046ecdb934c7a213db321b6bd0a602f7">v_center</a>;        
+<a name="l00116"></a>00116 <span class="comment">/* Grenzwerte fuer die IR-Sensoren */</span>
+<a name="l00117"></a><a class="code" href="sensor_8h.html#a5599db276d9a198b802e18909949e181">00117</a> <span class="preprocessor">#define SENS_IR_MIN_DIST    100     </span>
+<a name="l00118"></a><a class="code" href="sensor_8h.html#ab34ff5659ba12e54a744b44b66521341">00118</a> <span class="preprocessor">#define SENS_IR_MAX_DIST    690     </span>
+<a name="l00119"></a><a class="code" href="sensor_8h.html#ac967ed2e195d18cf9819c4796cc7b60a">00119</a> <span class="preprocessor">#define SENS_IR_INFINITE    995     </span>
+<a name="l00120"></a><a class="code" href="sensor_8h.html#ae71711144d7ff74377d7cf133cd5dd5b">00120</a> <span class="preprocessor">#define SENS_IR_SAFE_DIST   120     </span>
+<a name="l00122"></a>00122 <span class="preprocessor">#ifdef MEASURE_POSITION_ERRORS_AVAILABLE</span>
+<a name="l00123"></a>00123 <span class="preprocessor"></span><span class="keyword">extern</span> int16_t <a class="code" href="sensor_8c.html#a8490fea3579cb42d8c98c10f63c93e35">pos_error_radius</a>;    
+<a name="l00124"></a>00124 <span class="preprocessor">#endif</span>
+<a name="l00125"></a>00125 <span class="preprocessor"></span>
+<a name="l00126"></a>00126 <span class="preprocessor">#ifdef SRF10_AVAILABLE</span>
+<a name="l00127"></a>00127 <span class="preprocessor"></span><span class="keyword">extern</span> uint16_t sensSRF10;  
+<a name="l00128"></a>00128 <span class="preprocessor">#endif</span>
+<a name="l00129"></a>00129 <span class="preprocessor"></span>
+<a name="l00130"></a>00130 <span class="preprocessor">#ifdef CMPS03_AVAILABLE</span>
+<a name="l00131"></a><a class="code" href="sensor_8h.html#a96c5db475eb263fd9db2025809a917ab">00131</a> <span class="preprocessor"></span><a class="code" href="unioncmps03__t.html">cmps03_t</a> <a class="code" href="sensor_8c.html#a96c5db475eb263fd9db2025809a917ab">sensCmps03</a>;        
+<a name="l00132"></a>00132 <span class="preprocessor">#endif</span>
+<a name="l00133"></a>00133 <span class="preprocessor"></span>
+<a name="l00137"></a>00137 <span class="keywordtype">void</span> <a class="code" href="sensor_8c.html#a3c4d624e12d5ef3ae57e4b4b4b569f4c">sensor_update</a>(<span class="keywordtype">void</span>);
+<a name="l00138"></a>00138 
+<a name="l00142"></a>00142 <span class="keywordtype">void</span> <a class="code" href="sensor_8c.html#a4dcef6e51835e1b77e36d410a0a38286">sensor_reset</a>(<span class="keywordtype">void</span>);
+<a name="l00143"></a>00143 
+<a name="l00151"></a>00151 <span class="keywordtype">void</span> <a class="code" href="sensor_8c.html#a2404eb9f8b0cf8e135876a5d6da55639">sensor_dist_lookup</a>(int16_t * <span class="keyword">const</span> p_sens, uint8_t * <span class="keyword">const</span> p_toggle, <span class="keyword">const</span> <a class="code" href="structdistSens__t.html">distSens_t</a> * ptr, int16_t volt_16);
+<a name="l00152"></a>00152 
+<a name="l00153"></a>00153 
+<a name="l00161"></a>00161 <span class="keywordtype">void</span> <a class="code" href="sensor_8c.html#a27444ab0515c8bc0e0315b766f13c127">sensor_dist_straight</a>(int16_t * <span class="keyword">const</span> p_sens, uint8_t * <span class="keyword">const</span> p_toggle, <span class="keyword">const</span> <a class="code" href="structdistSens__t.html">distSens_t</a> * ptr, int16_t input);
+<a name="l00162"></a>00162 
+<a name="l00171"></a>00171 int16_t <a class="code" href="sensor_8c.html#a3f1ca5e28021ba1fccba5d739f3b11be">is_obstacle_ahead</a>(int16_t distance);
+<a name="l00172"></a>00172 
+<a name="l00176"></a>00176 <span class="keywordtype">void</span> <a class="code" href="sensor_8c.html#a682da542ec0d880fe15e35c521dca40f" title="Updatet die LEDs je nach Sensorwert.">led_update</a>(<span class="keywordtype">void</span>);
+<a name="l00177"></a>00177 
+<a name="l00178"></a>00178 <span class="preprocessor">#ifdef DISPLAY_AVAILABLE</span>
+<a name="l00179"></a>00179 <span class="preprocessor"></span>
+<a name="l00182"></a>00182 <span class="keywordtype">void</span> <a class="code" href="sensor_8c.html#afd5820812a6058f8527ed044c91e3b2a">sensor_display</a>(<span class="keywordtype">void</span>);
+<a name="l00183"></a>00183 
+<a name="l00187"></a>00187 <span class="keywordtype">void</span> <a class="code" href="sensor_8c.html#a88b192b021d50d1524f49a6ec3393939">odometric_display</a>(<span class="keywordtype">void</span>);
+<a name="l00188"></a>00188 <span class="preprocessor">#endif // DISPLAY_AVAILABLE</span>
+<a name="l00189"></a>00189 <span class="preprocessor"></span>
+<a name="l00190"></a>00190 <span class="preprocessor">#endif // SENSOR_H_</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:09 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

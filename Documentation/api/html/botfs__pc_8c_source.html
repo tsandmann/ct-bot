@@ -1,0 +1,387 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: botfs_pc.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_5e2f2d5041bf6d2345ec9cc9dd1b53a1.html">pc</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">botfs_pc.c</div>  </div>
+</div>
+<div class="contents">
+<a href="botfs__pc_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00027"></a>00027 <span class="preprocessor">#ifdef PC</span>
+<a name="l00028"></a>00028 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot-Funktionalitaeten">ct-Bot.h</a>&quot;</span>
+<a name="l00029"></a>00029 
+<a name="l00030"></a>00030 <span class="preprocessor">#ifdef BOT_FS_AVAILABLE</span>
+<a name="l00031"></a>00031 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="os__thread_8h.html" title="Threadmanagement fuer BotOS.">os_thread.h</a>&quot;</span>
+<a name="l00032"></a>00032 <span class="preprocessor">#include &quot;<a class="code" href="botfs_8h.html" title="Dateisystem BotFS.">botfs.h</a>&quot;</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#include &quot;<a class="code" href="botfs-low_8h.html" title="Low-Level-Funktionen des Dateisystems BotFS.">botfs-low.h</a>&quot;</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include &quot;<a class="code" href="log_8h.html" title="Routinen zum Loggen von Informationen.">log.h</a>&quot;</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include &lt;string.h&gt;</span>
+<a name="l00036"></a>00036 
+<a name="l00037"></a>00037 <span class="keyword">extern</span> botfs_volume_data_t <a class="code" href="botfs_8c.html#a2690205b7105228f95fd5a6ecae93641" title="Root-Dir- und Freelist-Adresse.">botfs_vol_data</a>; 
+<a name="l00038"></a>00038 <span class="keyword">extern</span> <a class="code" href="botfs-low_8h.html#a1acc1c3282ce989c2fc6f71ae2ba8d99">botfs_mutex_t</a> <a class="code" href="botfs_8c.html#a279d0b6ca2d1b5303e53bb54fc378ebc" title="sperrt den Zugriff auf nicht threadsichere Funktionen">botfs_mutex</a>; 
+<a name="l00047"></a><a class="code" href="botfs__pc_8c.html#a75f8a777d322f7bf7133a87c492d0d9f">00047</a> int8_t <a class="code" href="botfs_8h.html#a75f8a777d322f7bf7133a87c492d0d9f" title="Erzeugt ein neues Volume.">botfs_create_volume</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * image, <span class="keyword">const</span> <span class="keywordtype">char</span> * name, uint32_t size) {
+<a name="l00048"></a>00048     <span class="comment">/* Werte pruefen */</span>
+<a name="l00049"></a>00049     <span class="keywordflow">if</span> (size &gt; <a class="code" href="botfs__config_8h.html#a9d50efcbd0dacb8c68cc6318ad453733" title="max.">BOTFS_MAX_VOLUME_SIZE</a>) {
+<a name="l00050"></a>00050         <span class="keywordflow">return</span> -1;
+<a name="l00051"></a>00051     }
+<a name="l00052"></a>00052     <span class="keywordflow">if</span> (strlen(name) &gt; <a class="code" href="botfs__config_8h.html#acb62e6bcc59931ccb9c949b6a66e3a4e" title="max.">BOTFS_MAX_FILENAME</a>) {
+<a name="l00053"></a>00053         <span class="keywordflow">return</span> -2;
+<a name="l00054"></a>00054     }
+<a name="l00055"></a>00055 
+<a name="l00056"></a>00056     <span class="comment">/* Volume erzeugen */</span>
+<a name="l00057"></a>00057     <span class="keywordflow">if</span> (<a class="code" href="botfs-low_8h.html#a2a3584e02ef98f12d6e3e6cdd08adc18" title="Erzeugt eine neue Image-Datei fuer ein Volume.">botfs_create_volume_low</a>(image, size) != 0) {
+<a name="l00058"></a>00058         <span class="keywordflow">return</span> -3;
+<a name="l00059"></a>00059     }
+<a name="l00060"></a>00060 
+<a name="l00061"></a>00061     <span class="comment">/* Volume-Daten eintragen */</span>
+<a name="l00062"></a>00062     <a class="code" href="unionbotfs__volume__t.html" title="Volume-Header.">botfs_volume_t</a> volume;
+<a name="l00063"></a>00063     memset(&amp;volume, 0, <span class="keyword">sizeof</span>(<a class="code" href="unionbotfs__volume__t.html" title="Volume-Header.">botfs_volume_t</a>));
+<a name="l00064"></a>00064     <span class="comment">/* Volume-Name */</span>
+<a name="l00065"></a>00065     strncpy(volume.<a class="code" href="unionbotfs__volume__t.html#a9ddf9bc9b65152f5f1afd15b4c8aa967">data</a>.<a class="code" href="unionbotfs__volume__t.html#a383924e7b85631a4c4e4867d0e2c802a" title="Name des Volumes.">name</a>, name, <a class="code" href="botfs__config_8h.html#aaf7624301adbc3d3af5e12379e29b1ff" title="Maximale Laenge des Volume-Namens.">BOTFS_VOL_NAME_SIZE</a>);
+<a name="l00066"></a>00066     <span class="comment">/* Version */</span>
+<a name="l00067"></a>00067     volume.<a class="code" href="unionbotfs__volume__t.html#a9ddf9bc9b65152f5f1afd15b4c8aa967">data</a>.<a class="code" href="unionbotfs__volume__t.html#ad6990bfddabaa0d225ba3475cceba995" title="BotFS-Version.">version</a> = <a class="code" href="botfs__config_8h.html#aa09ebb8e46e014f3464a42416be33547" title="BotFS-Version.">BOTFS_VERSION</a>;
+<a name="l00068"></a>00068     <span class="comment">/* Volume-Groesse */</span>
+<a name="l00069"></a>00069     volume.<a class="code" href="unionbotfs__volume__t.html#a9ddf9bc9b65152f5f1afd15b4c8aa967">data</a>.<a class="code" href="unionbotfs__volume__t.html#a72123069154a3cd9256a76f098042ccd" title="Groesse des Volumes in Byte.">size</a> = size;
+<a name="l00070"></a>00070     printf(<span class="stringliteral">&quot;volume.size=%u KB\n&quot;</span>, size / 1024);
+<a name="l00071"></a>00071     <span class="comment">/* FAT- und Freelist-Adressen */</span>
+<a name="l00072"></a>00072     botfs_volume_data_t * volume_data = &amp;volume.<a class="code" href="unionbotfs__volume__t.html#a9ddf9bc9b65152f5f1afd15b4c8aa967">data</a>.<a class="code" href="unionbotfs__volume__t.html#ae8fdc4943b0754f03089614e0696e8bd" title="Interne Daten des Volumes.">ctrldata</a>;
+<a name="l00073"></a>00073     volume_data-&gt;rootdir.start = <a class="code" href="botfs__config_8h.html#a0b59cf6e639d96b9ae864e7b40524dd2" title="Blockadresse des Volume-Headers (erster Block ist Header der Volume-Header-Datei)">BOTFS_HEADER_POS</a> + (<span class="keyword">sizeof</span>(<a class="code" href="unionbotfs__volume__t.html" title="Volume-Header.">botfs_volume_t</a>) / <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>);
+<a name="l00074"></a>00074     volume_data-&gt;rootdir.used.start = volume_data-&gt;rootdir.start;
+<a name="l00075"></a>00075     printf(<span class="stringliteral">&quot;rootdir.start=0x%x\n&quot;</span>, volume_data-&gt;rootdir.start * <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>);
+<a name="l00076"></a>00076     volume_data-&gt;rootdir.end = volume_data-&gt;rootdir.start + <a class="code" href="botfs__config_8h.html#abfc5e4690b5514dfcd9b0ceaad4a6f22" title="Anzahl der Root-Dir-Bloecke.">BOTFS_DIR_BLOCK_CNT</a>;
+<a name="l00077"></a>00077     volume_data-&gt;rootdir.used.end = volume_data-&gt;rootdir.end;
+<a name="l00078"></a>00078     volume_data-&gt;rootdir.used.bytes_last_block = <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>;
+<a name="l00079"></a>00079     printf(<span class="stringliteral">&quot;rootdir.end=0x%x\n&quot;</span>, volume_data-&gt;rootdir.end * <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>);
+<a name="l00080"></a>00080     volume_data-&gt;freelist.start = volume_data-&gt;rootdir.end + 1;
+<a name="l00081"></a>00081     volume_data-&gt;freelist.used.start = volume_data-&gt;freelist.start;
+<a name="l00082"></a>00082     printf(<span class="stringliteral">&quot;freelist.start=0x%x\n&quot;</span>, volume_data-&gt;freelist.start * <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>);
+<a name="l00083"></a>00083     volume_data-&gt;freelist.end = volume_data-&gt;freelist.start + <a class="code" href="botfs__config_8h.html#aa71c70928c59fc836ac2cd548cbe2a40" title="Anzahl der Freelist-Bloecke.">BOTFS_FREEL_BL_CNT</a>;
+<a name="l00084"></a>00084     volume_data-&gt;freelist.used.end = volume_data-&gt;freelist.end;
+<a name="l00085"></a>00085     volume_data-&gt;freelist.used.bytes_last_block = <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>;
+<a name="l00086"></a>00086     printf(<span class="stringliteral">&quot;freelist.end=0x%x\n&quot;</span>, volume_data-&gt;freelist.end * <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>);
+<a name="l00087"></a>00087     volume.<a class="code" href="unionbotfs__volume__t.html#a9ddf9bc9b65152f5f1afd15b4c8aa967">data</a>.<a class="code" href="unionbotfs__volume__t.html#aab5f344a18410a6e0881f8db85ef139e" title="Blockadresse des ersten Datenblocks.">first_data</a> = volume_data-&gt;freelist.end + 1;
+<a name="l00088"></a>00088     printf(<span class="stringliteral">&quot;first_data=0x%x\n&quot;</span>, volume.<a class="code" href="unionbotfs__volume__t.html#a9ddf9bc9b65152f5f1afd15b4c8aa967">data</a>.<a class="code" href="unionbotfs__volume__t.html#aab5f344a18410a6e0881f8db85ef139e" title="Blockadresse des ersten Datenblocks.">first_data</a> * <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>);
+<a name="l00089"></a>00089     <span class="keyword">const</span> uint16_t blocks_free = (volume.<a class="code" href="unionbotfs__volume__t.html#a9ddf9bc9b65152f5f1afd15b4c8aa967">data</a>.<a class="code" href="unionbotfs__volume__t.html#a72123069154a3cd9256a76f098042ccd" title="Groesse des Volumes in Byte.">size</a> / <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>)
+<a name="l00090"></a>00090         - (<a class="code" href="botfs__config_8h.html#a0b59cf6e639d96b9ae864e7b40524dd2" title="Blockadresse des Volume-Headers (erster Block ist Header der Volume-Header-Datei)">BOTFS_HEADER_POS</a> + (<span class="keyword">sizeof</span>(<a class="code" href="unionbotfs__volume__t.html" title="Volume-Header.">botfs_volume_t</a>) / <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>) + <a class="code" href="botfs__config_8h.html#abfc5e4690b5514dfcd9b0ceaad4a6f22" title="Anzahl der Root-Dir-Bloecke.">BOTFS_DIR_BLOCK_CNT</a>
+<a name="l00091"></a>00091         + <a class="code" href="botfs__config_8h.html#aa71c70928c59fc836ac2cd548cbe2a40" title="Anzahl der Freelist-Bloecke.">BOTFS_FREEL_BL_CNT</a>);
+<a name="l00092"></a>00092     printf(<span class="stringliteral">&quot;blocks_free=0x%x\n&quot;</span>, blocks_free);
+<a name="l00093"></a>00093     <span class="keywordflow">if</span> (<a class="code" href="botfs-low_8h.html#a9a7b80bf15c3207b2facd474d23a7f96" title="Schreibt einen BOTFS_BLOCK_SIZE Byte grossen Block.">botfs_write_low</a>(<a class="code" href="botfs__config_8h.html#a0b59cf6e639d96b9ae864e7b40524dd2" title="Blockadresse des Volume-Headers (erster Block ist Header der Volume-Header-Datei)">BOTFS_HEADER_POS</a>, volume.<a class="code" href="unionbotfs__volume__t.html#a3a6ec135686d0c33f5c0e9071691b968" title="Raw-Daten (erweitern Header auf Blockgroesse)">raw</a>) != 0) {
+<a name="l00094"></a>00094         <span class="keywordflow">return</span> -4;
+<a name="l00095"></a>00095     }
+<a name="l00096"></a>00096 
+<a name="l00097"></a>00097     <span class="comment">/* Root-Verzeichnis erzeugen */</span>
+<a name="l00098"></a>00098     botfs_file_header_t root_header;
+<a name="l00099"></a>00099     memset(&amp;root_header, 0, <span class="keyword">sizeof</span>(botfs_file_header_t));
+<a name="l00100"></a>00100     <span class="keywordflow">if</span> (<a class="code" href="botfs-low_8h.html#a9a7b80bf15c3207b2facd474d23a7f96" title="Schreibt einen BOTFS_BLOCK_SIZE Byte grossen Block.">botfs_write_low</a>(volume_data-&gt;rootdir.start, &amp;root_header) != 0) {
+<a name="l00101"></a>00101         <span class="keywordflow">return</span> -5;
+<a name="l00102"></a>00102     }
+<a name="l00103"></a>00103     botfs_rootdir_t new_dir;
+<a name="l00104"></a>00104     memset(&amp;new_dir, 0, <span class="keyword">sizeof</span>(botfs_rootdir_t));
+<a name="l00105"></a>00105     botfs_dir_block_t * pDir = new_dir.dirblocks;
+<a name="l00106"></a>00106     <span class="comment">/* erste Datei anlegen, die auf den Volume-Header zeigt */</span>
+<a name="l00107"></a>00107     pDir-&gt;files-&gt;descr.start = 0;
+<a name="l00108"></a>00108     pDir-&gt;files-&gt;descr.end = (<span class="keyword">sizeof</span>(<a class="code" href="unionbotfs__volume__t.html" title="Volume-Header.">botfs_volume_t</a>) / <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>);
+<a name="l00109"></a>00109     strcpy(pDir-&gt;files-&gt;name, <a class="code" href="botfs__config_8h.html#a59e4c4dc86bf847ef6dbf90491b3a40b" title="&quot;Dateiname&quot; der Root-Verzeichnis-Daten">BOTFS_VOLUME_DATA</a>);
+<a name="l00110"></a>00110     <span class="comment">/* alle Root-Dir-Bloecke schreiben */</span>
+<a name="l00111"></a>00111     uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00112"></a>00112     uint16_t block = volume_data-&gt;rootdir.start + 1; <span class="comment">// erster Block = &quot;Datei-Header&quot; des Root-Dirs</span>
+<a name="l00113"></a>00113     <span class="keywordflow">for</span> (i = <a class="code" href="botfs__config_8h.html#abfc5e4690b5514dfcd9b0ceaad4a6f22" title="Anzahl der Root-Dir-Bloecke.">BOTFS_DIR_BLOCK_CNT</a>; i &gt; 0; --<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00114"></a>00114         <span class="keywordflow">if</span> (<a class="code" href="botfs-low_8h.html#a9a7b80bf15c3207b2facd474d23a7f96" title="Schreibt einen BOTFS_BLOCK_SIZE Byte grossen Block.">botfs_write_low</a>(block++, pDir) != 0) {
+<a name="l00115"></a>00115             <span class="keywordflow">return</span> -6;
+<a name="l00116"></a>00116         }
+<a name="l00117"></a>00117         pDir++;
+<a name="l00118"></a>00118     }
+<a name="l00119"></a>00119 
+<a name="l00120"></a>00120     <span class="comment">/* Freelist erzeugen */</span>
+<a name="l00121"></a>00121     botfs_file_header_t freel_header;
+<a name="l00122"></a>00122     memset(&amp;freel_header, 0, <span class="keyword">sizeof</span>(botfs_file_header_t));
+<a name="l00123"></a>00123     <span class="keywordflow">if</span> (<a class="code" href="botfs-low_8h.html#a9a7b80bf15c3207b2facd474d23a7f96" title="Schreibt einen BOTFS_BLOCK_SIZE Byte grossen Block.">botfs_write_low</a>(volume_data-&gt;freelist.start, &amp;freel_header) != 0) {
+<a name="l00124"></a>00124         <span class="keywordflow">return</span> -7;
+<a name="l00125"></a>00125     }
+<a name="l00126"></a>00126     botfs_freelist_t new_freelist;
+<a name="l00127"></a>00127     memset(&amp;new_freelist, 0, <span class="keyword">sizeof</span>(botfs_freelist_t));
+<a name="l00128"></a>00128     <span class="comment">/* Ersten Frei-Eintrag bauen (umfasst kompletten Datenbereich) */</span>
+<a name="l00129"></a>00129     botfs_freelist_block_t * pFreeL = new_freelist.freelistblocks;
+<a name="l00130"></a>00130     printf(<span class="stringliteral">&quot;1. Freelist-Eintrag:\n&quot;</span>);
+<a name="l00131"></a>00131     pFreeL-&gt;freeblocks-&gt;block = volume.<a class="code" href="unionbotfs__volume__t.html#a9ddf9bc9b65152f5f1afd15b4c8aa967">data</a>.<a class="code" href="unionbotfs__volume__t.html#aab5f344a18410a6e0881f8db85ef139e" title="Blockadresse des ersten Datenblocks.">first_data</a>;
+<a name="l00132"></a>00132     printf(<span class="stringliteral">&quot;freeblocks-&gt;block=0x%x\n&quot;</span>, pFreeL-&gt;freeblocks-&gt;block * <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>);
+<a name="l00133"></a>00133     pFreeL-&gt;freeblocks-&gt;size = blocks_free;
+<a name="l00134"></a>00134     printf(<span class="stringliteral">&quot;freeblocks-&gt;size=%u KB\n&quot;</span>, pFreeL-&gt;freeblocks-&gt;size / (1024 / <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>));
+<a name="l00135"></a>00135     <span class="comment">/* Alle Freelist-Blocke schreiben */</span>
+<a name="l00136"></a>00136     block = volume_data-&gt;freelist.start + 1; <span class="comment">// erster Block = &quot;Datei-Header&quot; der Freelist</span>
+<a name="l00137"></a>00137     <span class="keywordflow">for</span> (i = <a class="code" href="botfs__config_8h.html#aa71c70928c59fc836ac2cd548cbe2a40" title="Anzahl der Freelist-Bloecke.">BOTFS_FREEL_BL_CNT</a>; i &gt; 0; --<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00138"></a>00138         <span class="keywordflow">if</span> (<a class="code" href="botfs-low_8h.html#a9a7b80bf15c3207b2facd474d23a7f96" title="Schreibt einen BOTFS_BLOCK_SIZE Byte grossen Block.">botfs_write_low</a>(block++, pFreeL) != 0) {
+<a name="l00139"></a>00139             <span class="keywordflow">return</span> -8;
+<a name="l00140"></a>00140         }
+<a name="l00141"></a>00141         pFreeL++;
+<a name="l00142"></a>00142     }
+<a name="l00143"></a>00143 
+<a name="l00144"></a>00144     <span class="keywordflow">return</span> 0;
+<a name="l00145"></a>00145 }
+<a name="l00146"></a>00146 
+<a name="l00154"></a><a class="code" href="botfs__pc_8c.html#a855fac9127fb0e3076b60da2f9a1650f">00154</a> int8_t <a class="code" href="botfs_8h.html#a855fac9127fb0e3076b60da2f9a1650f" title="Kopiert eine Datei vom PC-Dateisystem auf das BotFS-Volume.">botfs_copy_file</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * to, <span class="keyword">const</span> <span class="keywordtype">char</span> * from, <span class="keywordtype">void</span> * buffer) {
+<a name="l00155"></a>00155     FILE * source = fopen(from, <span class="stringliteral">&quot;rb&quot;</span>);
+<a name="l00156"></a>00156     <span class="keywordflow">if</span> (source == NULL) {
+<a name="l00157"></a>00157         printf(<span class="stringliteral">&quot;Datei \&quot;%s\&quot; nicht vorhanden!\n&quot;</span>, from);
+<a name="l00158"></a>00158         <span class="keywordflow">return</span> -1;
+<a name="l00159"></a>00159     }
+<a name="l00160"></a>00160     <span class="keywordflow">if</span> (fseek(source, 0, SEEK_END) != 0) {
+<a name="l00161"></a>00161         printf(<span class="stringliteral">&quot;Fehler beim Dateizugriff\n&quot;</span>);
+<a name="l00162"></a>00162         <span class="keywordflow">return</span> -2;
+<a name="l00163"></a>00163     }
+<a name="l00164"></a>00164     <span class="keyword">const</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> pos = ftell(source);
+<a name="l00165"></a>00165     <span class="keywordtype">size_t</span> file_size = (pos + 1) / <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>;
+<a name="l00166"></a>00166     <span class="keywordflow">if</span> (pos == -1) {
+<a name="l00167"></a>00167         printf(<span class="stringliteral">&quot;Fehler beim Dateizugriff\n&quot;</span>);
+<a name="l00168"></a>00168         <span class="keywordflow">return</span> -3;
+<a name="l00169"></a>00169     }
+<a name="l00170"></a>00170     <span class="keywordtype">float</span> size_rem = ((float) (pos + 1) / (float) <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>) - file_size;
+<a name="l00171"></a>00171     <span class="keywordflow">if</span> (size_rem &gt; 0.0f) {
+<a name="l00172"></a>00172         ++file_size;
+<a name="l00173"></a>00173     }
+<a name="l00174"></a>00174     printf(<span class="stringliteral">&quot;Datei wird %u Bloecke gross sein\n&quot;</span>, (uint16_t) file_size);
+<a name="l00175"></a>00175 
+<a name="l00176"></a>00176     botfs_file_descr_t file;
+<a name="l00177"></a>00177     <span class="keywordflow">if</span> (<a class="code" href="botfs_8c.html#aad0605bba52a09999f158cb2e371a5de" title="Oeffnet eine Datei.">botfs_open</a>(to, &amp;file, <a class="code" href="botfs__config_8h.html#aafbba18ae3af70abfb9fc89eb44128e9" title="nur lesen">BOTFS_MODE_r</a>, buffer) == 0) {
+<a name="l00178"></a>00178         <span class="comment">/* Datei bereits vorhanden -&gt; loeschen */</span>
+<a name="l00179"></a>00179         <span class="keywordflow">if</span> (<a class="code" href="botfs_8c.html#a51db2e9a9426dc9edb351cc81edd7a70" title="Entfernt eine Datei.">botfs_unlink</a>(to, buffer) != 0) {
+<a name="l00180"></a>00180             printf(<span class="stringliteral">&quot;Fehler, bereits existierende Datei konnte nicht geloescht werden\n&quot;</span>);
+<a name="l00181"></a>00181             <span class="keywordflow">return</span> -4;
+<a name="l00182"></a>00182         }
+<a name="l00183"></a>00183     }
+<a name="l00184"></a>00184 
+<a name="l00185"></a>00185     <span class="keywordflow">if</span> (<a class="code" href="botfs_8c.html#a1683850a15cc2ed1af27911aa134f83f" title="Legt eine neue Datei an.">botfs_create</a>(to, file_size, 0, buffer) != 0) {
+<a name="l00186"></a>00186         printf(<span class="stringliteral">&quot;Fehler, Datei konnte nicht angelegt werden\n&quot;</span>);
+<a name="l00187"></a>00187         <span class="keywordflow">return</span> -5;
+<a name="l00188"></a>00188     }
+<a name="l00189"></a>00189 
+<a name="l00190"></a>00190     <span class="comment">/* Datei zum Lesen + Schreiben oeffnen */</span>
+<a name="l00191"></a>00191     <span class="keywordflow">if</span> (<a class="code" href="botfs_8c.html#aad0605bba52a09999f158cb2e371a5de" title="Oeffnet eine Datei.">botfs_open</a>(to, &amp;file, <a class="code" href="botfs__config_8h.html#add8cfeb97a2a3b41a11fd612fb849dda" title="lesen und schreiben, Datei wird aber beim Oeffnen geleert">BOTFS_MODE_W</a>, buffer) != 0) {
+<a name="l00192"></a>00192         printf(<span class="stringliteral">&quot;Fehler beim Oeffnen der Datei\n&quot;</span>);
+<a name="l00193"></a>00193         <span class="keywordflow">return</span> -6;
+<a name="l00194"></a>00194     }
+<a name="l00195"></a>00195 
+<a name="l00196"></a>00196     <span class="keywordflow">if</span> (fseek(source, 0, SEEK_SET) != 0) {
+<a name="l00197"></a>00197         printf(<span class="stringliteral">&quot;Fehler beim Dateizugriff\n&quot;</span>);
+<a name="l00198"></a>00198         <span class="keywordflow">return</span> -7;
+<a name="l00199"></a>00199     }
+<a name="l00200"></a>00200 
+<a name="l00201"></a>00201     <span class="keywordtype">size_t</span> <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00202"></a>00202     <span class="keywordflow">for</span> (i = 0; i &lt; file_size; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00203"></a>00203         <span class="comment">/* Puffer vorbereiten */</span>
+<a name="l00204"></a>00204         memset(buffer, 0, <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>);
+<a name="l00205"></a>00205 
+<a name="l00206"></a>00206         <span class="comment">/* Datei in Puffer lesen */</span>
+<a name="l00207"></a>00207         <span class="keywordflow">if</span> (fread(buffer, <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>, 1, source) != 1) {
+<a name="l00208"></a>00208             printf(<span class="stringliteral">&quot;Fehler beim Lesen der Daten\n&quot;</span>);
+<a name="l00209"></a>00209             <span class="keywordflow">return</span> -8;
+<a name="l00210"></a>00210         }
+<a name="l00211"></a>00211 
+<a name="l00212"></a>00212         <span class="comment">/* Treiber-Aufruf */</span>
+<a name="l00213"></a>00213         <span class="keywordflow">if</span> (<a class="code" href="botfs_8c.html#afe7539a83c840b120ef8996557fd0e9a" title="Schreibt BOTFS_BLOCK_SIZE Bytes aus einem Puffer in eine Datei.">botfs_write</a>(&amp;file, buffer) != 0) {
+<a name="l00214"></a>00214             printf(<span class="stringliteral">&quot;Fehler beim Schreiben der Daten\n&quot;</span>);
+<a name="l00215"></a>00215             <span class="keywordflow">return</span> -9;
+<a name="l00216"></a>00216         }
+<a name="l00217"></a>00217     }
+<a name="l00218"></a>00218 
+<a name="l00219"></a>00219     printf(<span class="stringliteral">&quot;%u Daten-Bloecke kopiert\n&quot;</span>, (uint16_t) file_size);
+<a name="l00220"></a>00220     file.used.bytes_last_block = (uint16_t) (size_rem * <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>);
+<a name="l00221"></a>00221 
+<a name="l00222"></a>00222     fclose(source);
+<a name="l00223"></a>00223     botfs_close(&amp;file, buffer);
+<a name="l00224"></a>00224 
+<a name="l00225"></a>00225     <span class="keywordflow">return</span> 0;
+<a name="l00226"></a>00226 }
+<a name="l00227"></a>00227 
+<a name="l00237"></a><a class="code" href="botfs__pc_8c.html#abf871e61697e33491a47f4af7dd1c061">00237</a> int8_t <a class="code" href="botfs_8h.html#abf871e61697e33491a47f4af7dd1c061" title="Kopiert eine Datei vom BotfS-Volume ins PC-Dateisystem.">botfs_extract_file</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * to, <span class="keyword">const</span> <span class="keywordtype">char</span> * from, uint32_t src_offset, uint32_t dest_offset, <span class="keywordtype">void</span> * buffer) {
+<a name="l00238"></a>00238     FILE * dest = fopen(to, <span class="stringliteral">&quot;wb&quot;</span>);
+<a name="l00239"></a>00239     <span class="keywordflow">if</span> (dest == NULL) {
+<a name="l00240"></a>00240         printf(<span class="stringliteral">&quot;Zeildatei \&quot;%s\&quot; konnte nicht angelegt werden!\n&quot;</span>, to);
+<a name="l00241"></a>00241         <span class="keywordflow">return</span> -1;
+<a name="l00242"></a>00242     }
+<a name="l00243"></a>00243     <span class="keywordflow">if</span> (fseek(dest, dest_offset * <a class="code" href="botfs__config_8h.html#a10ae5b06679abd56612d994889002e4b" title="Groesse eines Blocks (kleinste adressierbare Einheit) in Byte.">BOTFS_BLOCK_SIZE</a>, SEEK_SET) != 0) {
+<a name="l00244"></a>00244         puts(<span class="stringliteral">&quot;Fehler beim Anlegen der Zieldatei&quot;</span>);
+<a name="l00245"></a>00245         fclose(dest);
+<a name="l00246"></a>00246         <span class="keywordflow">return</span> -2;
+<a name="l00247"></a>00247     }
+<a name="l00248"></a>00248 
+<a name="l00249"></a>00249     <span class="comment">/* Quelldatei oeffnen */</span>
+<a name="l00250"></a>00250     botfs_file_descr_t file;
+<a name="l00251"></a>00251     <span class="keywordflow">if</span> (<a class="code" href="botfs_8c.html#aad0605bba52a09999f158cb2e371a5de" title="Oeffnet eine Datei.">botfs_open</a>(from, &amp;file, <a class="code" href="botfs__config_8h.html#aafbba18ae3af70abfb9fc89eb44128e9" title="nur lesen">BOTFS_MODE_r</a>, buffer) != 0) {
+<a name="l00252"></a>00252         puts(<span class="stringliteral">&quot;Fehler, Quelldatei konnte nicht geoeffnet werden&quot;</span>);
+<a name="l00253"></a>00253         fclose(dest);
+<a name="l00254"></a>00254         <span class="keywordflow">return</span> -3;
+<a name="l00255"></a>00255     }
+<a name="l00256"></a>00256 
+<a name="l00257"></a>00257     <span class="comment">/* Dateigroesse bestimmen */</span>
+<a name="l00258"></a>00258     <span class="keyword">const</span> uint16_t file_size = botfs_get_filesize(&amp;file) - src_offset;
+<a name="l00259"></a>00259     printf(<span class="stringliteral">&quot;Datei ist %u Bloecke gross\n&quot;</span>, file_size);
+<a name="l00260"></a>00260 
+<a name="l00261"></a>00261     botfs_seek(&amp;file, src_offset, SEEK_SET);
+<a name="l00262"></a>00262 
+<a name="l00263"></a>00263     <span class="keywordtype">size_t</span> <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00264"></a>00264     <span class="keywordflow">for</span> (i = 0; i &lt; file_size; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00265"></a>00265         <span class="comment">/* Datei in Puffer lesen */</span>
+<a name="l00266"></a>00266         <span class="keywordflow">if</span> (<a class="code" href="botfs_8c.html#a71348fbe8ed02ee7b07b6ab789a400ab" title="Liest BOTFS_BLOCK_SIZE Bytes aus einer Datei in einen Puffer.">botfs_read</a>(&amp;file, buffer) != 0) {
+<a name="l00267"></a>00267             puts(<span class="stringliteral">&quot;Fehler beim Lesen aus der Quelldatei&quot;</span>);
+<a name="l00268"></a>00268             fclose(dest);
+<a name="l00269"></a>00269             <span class="keywordflow">return</span> -4;
+<a name="l00270"></a>00270         }
+<a name="l00271"></a>00271 
+<a name="l00272"></a>00272         <span class="comment">/* Dateibloecke in Zieldatei schreiben */</span>
+<a name="l00273"></a>00273         <span class="keywordflow">if</span> (fwrite(buffer, BOTFS_BLOCK_SIZE, 1, dest) != 1) {
+<a name="l00274"></a>00274             puts(<span class="stringliteral">&quot;Fehler beim Schreiben in die Zieldatei&quot;</span>);
+<a name="l00275"></a>00275             fclose(dest);
+<a name="l00276"></a>00276             <span class="keywordflow">return</span> -5;
+<a name="l00277"></a>00277         }
+<a name="l00278"></a>00278     }
+<a name="l00279"></a>00279 
+<a name="l00280"></a>00280     printf(<span class="stringliteral">&quot;%u Daten-Bloecke kopiert\n&quot;</span>, file_size);
+<a name="l00281"></a>00281 
+<a name="l00282"></a>00282     fclose(dest);
+<a name="l00283"></a>00283     botfs_close(&amp;file, buffer);
+<a name="l00284"></a>00284 
+<a name="l00285"></a>00285     <span class="keywordflow">return</span> 0;
+<a name="l00286"></a>00286 }
+<a name="l00287"></a>00287 
+<a name="l00294"></a><a class="code" href="botfs__pc_8c.html#a58bec3b262a075120ddd374e1438aaed">00294</a> <span class="keywordtype">char</span> * <a class="code" href="botfs_8h.html#a58bec3b262a075120ddd374e1438aaed" title="Gibt Root-Dir-Eintraege zurueck.">botfs_readdir</a>(uint8_t offset, <span class="keywordtype">void</span> * buffer) {
+<a name="l00295"></a>00295     <a class="code" href="botfs-low_8h.html#aed0ed8d94dc7c058a4cb0ae26d0f59ff" title="Wartet, bis ein Mutex verfuegbar ist und sperrt es dann.">botfs_acquire_lock_low</a>(&amp;<a class="code" href="botfs_8c.html#a279d0b6ca2d1b5303e53bb54fc378ebc" title="sperrt den Zugriff auf nicht threadsichere Funktionen">botfs_mutex</a>);
+<a name="l00296"></a>00296     botfs_dir_block_t * root_block = buffer;
+<a name="l00297"></a>00297     uint8_t count = 0;
+<a name="l00298"></a>00298     uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00299"></a>00299     botfs_rewind(&amp;<a class="code" href="botfs_8c.html#a2690205b7105228f95fd5a6ecae93641" title="Root-Dir- und Freelist-Adresse.">botfs_vol_data</a>.rootdir);
+<a name="l00300"></a>00300     <span class="keywordflow">for</span> (i = 0; i &lt; <a class="code" href="botfs__config_8h.html#abfc5e4690b5514dfcd9b0ceaad4a6f22" title="Anzahl der Root-Dir-Bloecke.">BOTFS_DIR_BLOCK_CNT</a>; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00301"></a>00301         <span class="comment">/* alle Root-Dir-Bloecke durchgehen */</span>
+<a name="l00302"></a>00302         int8_t res;
+<a name="l00303"></a>00303         <span class="keywordflow">if</span> ((res = <a class="code" href="botfs_8c.html#a71348fbe8ed02ee7b07b6ab789a400ab" title="Liest BOTFS_BLOCK_SIZE Bytes aus einer Datei in einen Puffer.">botfs_read</a>(&amp;<a class="code" href="botfs_8c.html#a2690205b7105228f95fd5a6ecae93641" title="Root-Dir- und Freelist-Adresse.">botfs_vol_data</a>.rootdir, buffer)) != 0) {
+<a name="l00304"></a>00304             botfs_release_lock_low(&amp;<a class="code" href="botfs_8c.html#a279d0b6ca2d1b5303e53bb54fc378ebc" title="sperrt den Zugriff auf nicht threadsichere Funktionen">botfs_mutex</a>);
+<a name="l00305"></a>00305             printf(<span class="stringliteral">&quot;Fehler beim Lesen des Root-Dirs: %d\n&quot;</span>, res);
+<a name="l00306"></a>00306             <span class="keywordflow">return</span> NULL;
+<a name="l00307"></a>00307         }
+<a name="l00308"></a>00308         botfs_file_t * ptr = root_block-&gt;files;
+<a name="l00309"></a>00309         uint8_t <a class="code" href="behaviour__drive__chess_8c.html#aac1217779551b743f5645c17740178e3">j</a>;
+<a name="l00310"></a>00310         <span class="keywordflow">for</span> (j = 0; j &lt; <a class="code" href="botfs__config_8h.html#a734b691e4f7f1a52cb33d91f8248b310" title="Anzahl der Datei-Deskriptoren pro Block.">BOTFS_FILE_DESC_CNT</a>; ++<a class="code" href="behaviour__drive__chess_8c.html#aac1217779551b743f5645c17740178e3">j</a>) {
+<a name="l00311"></a>00311             <span class="comment">/* alle Dateieintraege durchsuchen */</span>
+<a name="l00312"></a>00312             <span class="keywordflow">if</span> (strlen(ptr-&gt;name) &gt; 0) {
+<a name="l00313"></a>00313                 <span class="keywordflow">if</span> (count++ == offset) {
+<a name="l00314"></a>00314                     botfs_release_lock_low(&amp;<a class="code" href="botfs_8c.html#a279d0b6ca2d1b5303e53bb54fc378ebc" title="sperrt den Zugriff auf nicht threadsichere Funktionen">botfs_mutex</a>);
+<a name="l00315"></a>00315                     <span class="keywordflow">return</span> ptr-&gt;name;
+<a name="l00316"></a>00316                 }
+<a name="l00317"></a>00317             }
+<a name="l00318"></a>00318             ptr++;
+<a name="l00319"></a>00319         }
+<a name="l00320"></a>00320     }
+<a name="l00321"></a>00321     botfs_release_lock_low(&amp;<a class="code" href="botfs_8c.html#a279d0b6ca2d1b5303e53bb54fc378ebc" title="sperrt den Zugriff auf nicht threadsichere Funktionen">botfs_mutex</a>);
+<a name="l00322"></a>00322     <span class="keywordflow">return</span> NULL;
+<a name="l00323"></a>00323 }
+<a name="l00324"></a>00324 
+<a name="l00329"></a><a class="code" href="botfs__pc_8c.html#ae5161e6b535fcf21c029e7890f1d00a1">00329</a> <span class="keywordtype">void</span> <a class="code" href="botfs_8h.html#ae5161e6b535fcf21c029e7890f1d00a1" title="Gibt alle Freelist-Eintraege aus.">botfs_print_freelist</a>(<span class="keywordtype">void</span> * buffer) {
+<a name="l00330"></a>00330     <a class="code" href="botfs-low_8h.html#aed0ed8d94dc7c058a4cb0ae26d0f59ff" title="Wartet, bis ein Mutex verfuegbar ist und sperrt es dann.">botfs_acquire_lock_low</a>(&amp;<a class="code" href="botfs_8c.html#a279d0b6ca2d1b5303e53bb54fc378ebc" title="sperrt den Zugriff auf nicht threadsichere Funktionen">botfs_mutex</a>);
+<a name="l00331"></a>00331     botfs_rewind(&amp;<a class="code" href="botfs_8c.html#a2690205b7105228f95fd5a6ecae93641" title="Root-Dir- und Freelist-Adresse.">botfs_vol_data</a>.freelist);
+<a name="l00332"></a>00332     botfs_freelist_block_t * freelist = buffer;
+<a name="l00333"></a>00333     uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00334"></a>00334     <span class="keywordflow">for</span> (i = 0; i &lt; <a class="code" href="botfs__config_8h.html#aa71c70928c59fc836ac2cd548cbe2a40" title="Anzahl der Freelist-Bloecke.">BOTFS_FREEL_BL_CNT</a>; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00335"></a>00335         <span class="keywordflow">if</span> (<a class="code" href="botfs_8c.html#a71348fbe8ed02ee7b07b6ab789a400ab" title="Liest BOTFS_BLOCK_SIZE Bytes aus einer Datei in einen Puffer.">botfs_read</a>(&amp;<a class="code" href="botfs_8c.html#a2690205b7105228f95fd5a6ecae93641" title="Root-Dir- und Freelist-Adresse.">botfs_vol_data</a>.freelist, buffer) != 0) {
+<a name="l00336"></a>00336             botfs_release_lock_low(&amp;<a class="code" href="botfs_8c.html#a279d0b6ca2d1b5303e53bb54fc378ebc" title="sperrt den Zugriff auf nicht threadsichere Funktionen">botfs_mutex</a>);
+<a name="l00337"></a>00337             printf(<span class="stringliteral">&quot;Fehler beim Lesen der Freelist\n&quot;</span>);
+<a name="l00338"></a>00338             <span class="keywordflow">return</span>;
+<a name="l00339"></a>00339         }
+<a name="l00340"></a>00340         botfs_freelist_entry_t * pFree = freelist-&gt;freeblocks;
+<a name="l00341"></a>00341         uint8_t <a class="code" href="behaviour__drive__chess_8c.html#aac1217779551b743f5645c17740178e3">j</a>;
+<a name="l00342"></a>00342         <span class="keywordflow">for</span> (j = 0; j &lt; <a class="code" href="botfs__config_8h.html#a64bd3991ed679c9c53eeb46c9bd58cdb" title="Anzahl der Freelisteintraege pro Block.">BOTFS_FREEL_BL_SIZE</a>; ++<a class="code" href="behaviour__drive__chess_8c.html#aac1217779551b743f5645c17740178e3">j</a>) {
+<a name="l00343"></a>00343             <span class="keywordflow">if</span> (pFree-&gt;size != 0) {
+<a name="l00344"></a>00344                 printf(<span class="stringliteral">&quot;Block %u, Eintrag %u: start: 0x%04x\tsize: 0x%04x\tend: 0x%04x\n&quot;</span>, i, j, pFree-&gt;block, pFree-&gt;size, pFree-&gt;block + pFree-&gt;size - 1);
+<a name="l00345"></a>00345             }
+<a name="l00346"></a>00346             pFree++;
+<a name="l00347"></a>00347         }
+<a name="l00348"></a>00348     }
+<a name="l00349"></a>00349     botfs_release_lock_low(&amp;<a class="code" href="botfs_8c.html#a279d0b6ca2d1b5303e53bb54fc378ebc" title="sperrt den Zugriff auf nicht threadsichere Funktionen">botfs_mutex</a>);
+<a name="l00350"></a>00350 }
+<a name="l00351"></a>00351 
+<a name="l00352"></a>00352 <span class="preprocessor">#endif // BOT_FS_AVAILABLE</span>
+<a name="l00353"></a>00353 <span class="preprocessor"></span><span class="preprocessor">#endif // PC</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:09 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

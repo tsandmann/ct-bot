@@ -1,0 +1,326 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: ubasic_call.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_14c9cc1c75a92f359ad94591d62973a1.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">ubasic_call.c</div>  </div>
+</div>
+<div class="contents">
+<a href="ubasic__call_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*--------------------------------------------------------</span>
+<a name="l00002"></a>00002 <span class="comment">*    Implementierung Basic-Befehl &quot;call()&quot;</span>
+<a name="l00003"></a>00003 <span class="comment">*    =====================================</span>
+<a name="l00004"></a>00004 <span class="comment">*     Uwe Berger (bergeruw@gmx.net); 2010</span>
+<a name="l00005"></a>00005 <span class="comment">*</span>
+<a name="l00006"></a>00006 <span class="comment">* Dokumentation call_referenz.txt...!</span>
+<a name="l00007"></a>00007 <span class="comment">*</span>
+<a name="l00008"></a>00008 <span class="comment">*</span>
+<a name="l00009"></a>00009 <span class="comment">* Have fun!</span>
+<a name="l00010"></a>00010 <span class="comment">* ---------</span>
+<a name="l00011"></a>00011 <span class="comment">*</span>
+<a name="l00012"></a>00012 <span class="comment">----------------------------------------------------------*/</span>
+<a name="l00013"></a>00013 
+<a name="l00014"></a>00014 <span class="preprocessor">#include &quot;<a class="code" href="bot-logic_8h.html" title="High-Level-Routinen fuer die Steuerung des c&#39;t-Bots.">bot-logic.h</a>&quot;</span>
+<a name="l00015"></a>00015 <span class="preprocessor">#ifdef BEHAVIOUR_UBASIC_AVAILABLE</span>
+<a name="l00016"></a>00016 <span class="preprocessor"></span>
+<a name="l00017"></a>00017 <span class="preprocessor">#include &quot;<a class="code" href="tokenizer__access_8h.html">tokenizer_access.h</a>&quot;</span>
+<a name="l00018"></a>00018 <span class="preprocessor">#include &quot;<a class="code" href="ubasic_8h.html">ubasic.h</a>&quot;</span>
+<a name="l00019"></a>00019 <span class="preprocessor">#include &quot;<a class="code" href="tokenizer_8h.html">tokenizer.h</a>&quot;</span>
+<a name="l00020"></a>00020 <span class="preprocessor">#include &quot;<a class="code" href="ubasic__config_8h.html">ubasic_config.h</a>&quot;</span>
+<a name="l00021"></a>00021 <span class="preprocessor">#include &quot;<a class="code" href="ubasic__call_8h.html">ubasic_call.h</a>&quot;</span>
+<a name="l00022"></a>00022 
+<a name="l00023"></a>00023 <span class="preprocessor">#if USE_AVR &amp;&amp; USE_LC7981</span>
+<a name="l00024"></a>00024 <span class="preprocessor"></span><span class="preprocessor">    #include &quot;../lc7981/lc7981.h&quot;</span>
+<a name="l00025"></a>00025 <span class="preprocessor">#endif</span>
+<a name="l00026"></a>00026 <span class="preprocessor"></span>
+<a name="l00027"></a>00027 <span class="preprocessor">#if USE_AVR &amp;&amp; RTC_DS1307</span>
+<a name="l00028"></a>00028 <span class="preprocessor"></span><span class="preprocessor">    #include &quot;../ds1307/ds1307.h&quot;</span>
+<a name="l00029"></a>00029 <span class="preprocessor">#endif</span>
+<a name="l00030"></a>00030 <span class="preprocessor"></span>
+<a name="l00031"></a>00031 <span class="preprocessor">#if USE_AVR</span>
+<a name="l00032"></a>00032 <span class="preprocessor"></span><span class="comment">//  #include &quot;../uart/usart.h&quot;</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#else</span>
+<a name="l00034"></a>00034 <span class="preprocessor"></span><span class="preprocessor">    #include &lt;string.h&gt;</span>
+<a name="l00035"></a>00035 <span class="preprocessor">    #include &lt;stdio.h&gt;</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#endif</span>
+<a name="l00037"></a>00037 <span class="preprocessor"></span>
+<a name="l00038"></a>00038 <span class="preprocessor">#if UBASIC_CALL</span>
+<a name="l00039"></a>00039 <span class="preprocessor"></span>
+<a name="l00040"></a>00040 <span class="comment">//--------------------------------------------</span>
+<a name="l00041"></a>00041 
+<a name="l00042"></a>00042 <span class="comment">// Funktionspointertabelle</span>
+<a name="l00043"></a>00043 <span class="preprocessor">#if USE_PROGMEM</span>
+<a name="l00044"></a>00044 <span class="preprocessor"></span><a class="code" href="structcallfunct__t.html">callfunct_t</a> callfunct[] <a class="code" href="behaviour__drive__chess_8c.html#a3b6187c96c81802864d44e77df6e60da">PROGMEM</a> = {
+<a name="l00045"></a>00045 <span class="preprocessor">#else</span>
+<a name="l00046"></a>00046 <span class="preprocessor"></span><a class="code" href="structcallfunct__t.html">callfunct_t</a> callfunct[] = {
+<a name="l00047"></a>00047 <span class="preprocessor">#endif</span>
+<a name="l00048"></a>00048 <span class="preprocessor"></span><span class="preprocessor">#if USE_AVR &amp;&amp; USE_LC7981</span>
+<a name="l00049"></a>00049 <span class="preprocessor"></span>    <span class="comment">// lc7981-Routinen...</span>
+<a name="l00050"></a>00050     {<span class="stringliteral">&quot;clear&quot;</span>,   .<a class="code" href="structcallfunct__t.html#af50addb79feb85339953fb941401777d">funct_ptr</a>.<a class="code" href="unioncallfunct__t_1_1ftp.html#aa8da7ffe5e64eb8641fa62466d78f56d">VoidFuncVoid</a>=lcd_clear,      VOID_FUNC_VOID},
+<a name="l00051"></a>00051     {<span class="stringliteral">&quot;pset&quot;</span>,    .funct_ptr.VoidFunc2Int=lcd_pset,       VOID_FUNC_2INT},
+<a name="l00052"></a>00052     {<span class="stringliteral">&quot;line&quot;</span>,    .funct_ptr.VoidFunc4Int=line,           VOID_FUNC_4INT},
+<a name="l00053"></a>00053     {<span class="stringliteral">&quot;rclear&quot;</span>,  .funct_ptr.VoidFunc4Int=lcd_clear_rect, VOID_FUNC_4INT},
+<a name="l00054"></a>00054     {<span class="stringliteral">&quot;pclear&quot;</span>,  .funct_ptr.VoidFunc2Int=lcd_pclear,     VOID_FUNC_2INT},
+<a name="l00055"></a>00055     {<span class="stringliteral">&quot;puts&quot;</span>,    .funct_ptr.VoidFunc2IntChar=lcd_puts,   VOID_FUNC_2INT_CHAR},
+<a name="l00056"></a>00056 <span class="preprocessor">#endif</span>
+<a name="l00057"></a>00057 <span class="preprocessor"></span><span class="preprocessor">#if USE_AVR &amp;&amp; RTC_DS1307</span>
+<a name="l00058"></a>00058 <span class="preprocessor"></span>    <span class="comment">// Auslesen RTC DS1307</span>
+<a name="l00059"></a>00059     {<span class="stringliteral">&quot;get_rtc&quot;</span>, .funct_ptr.UCharFuncUChar=get_DS1307,   UCHAR_FUNC_UCHAR},
+<a name="l00060"></a>00060 <span class="preprocessor">#endif</span>
+<a name="l00061"></a>00061 <span class="preprocessor"></span>
+<a name="l00062"></a>00062     { <span class="stringliteral">&quot;bot_speed&quot;</span>, .funct_ptr.VoidFunc2Int16 = <a class="code" href="behaviour__ubasic_8c.html#a69b89a3fea91b09215c043edcca231c2" title="Hilfsroutine, um in Basic innerhalb eines Steps beide Variablen mit der Bot-Geschwindigkeit belegen z...">ubasic_set_speed</a>, <a class="code" href="ubasic__call_8h.html#ac2aafe01fee819dc2a4aa06f99710467">VOID_FUNC_2INT16</a> },
+<a name="l00063"></a>00063     { <span class="stringliteral">&quot;beh_active&quot;</span>, .funct_ptr.BoolFuncBeh = <a class="code" href="behaviour__ubasic_8c.html#a40c7476c1c5fd3a789bfa4f6fde4ff1a" title="Rueckgabe ob das zuletzt aufgerufene Verhalten noch aktiv ist oder nicht; festgestellt anhand der Ver...">ubasic_behaviour_is_active</a>, <a class="code" href="ubasic__call_8h.html#a76bd9e7c970854d887c7d15ba785092e">BOOL_FUNC_BEH</a> },
+<a name="l00064"></a>00064     { <span class="stringliteral">&quot;RC&quot;</span>, .funct_ptr.VoidFuncRC = <a class="code" href="behaviour__remotecall_8c.html#ac29918eefe5051bf14524c1d41a4be2a" title="Fuehrt einen RemoteCall aus.">bot_remotecall</a>, <a class="code" href="ubasic__call_8h.html#aa4c2c870841b055831be220a66f1ea31">VOID_FUNC_RC</a> },
+<a name="l00065"></a>00065     { <span class="stringliteral">&quot;beh_result&quot;</span>, .funct_ptr.BoolFuncBeh = <a class="code" href="behaviour__ubasic_8c.html#a902503eedbb89b518aa79663c1c11a4b" title="Rueckgabe ob das zuletzt aufgerufene Verhalten erfolgreich war oder nicht; in Remotecall wird dazu vi...">behaviour_result</a>, <a class="code" href="ubasic__call_8h.html#a76bd9e7c970854d887c7d15ba785092e">BOOL_FUNC_BEH</a> },
+<a name="l00066"></a>00066 
+<a name="l00067"></a>00067     {<span class="stringliteral">&quot;&quot;</span>,        {NULL},                                 255}
+<a name="l00068"></a>00068 };
+<a name="l00069"></a>00069 
+<a name="l00070"></a>00070 
+<a name="l00071"></a>00071 <span class="keywordtype">int</span> <a class="code" href="ubasic__call_8h.html#a359931acfe4562981f05c888d93c86db">call_statement</a>(<span class="keywordtype">void</span>) {
+<a name="l00072"></a>00072 
+<a name="l00073"></a>00073     <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> f_typ_temp;
+<a name="l00074"></a>00074     uint8_t idx=0;
+<a name="l00075"></a>00075 
+<a name="l00076"></a>00076 <span class="preprocessor">#if defined VOID_FUNC_INT || defined INT_FUNC_INT || defined VOID_FUNC_2INT || defined VOID_FUNC_4INT || defined VOID_FUNC_2INT_CHAR</span>
+<a name="l00077"></a>00077 <span class="preprocessor"></span>    <span class="keywordtype">int</span> p1=0;
+<a name="l00078"></a>00078     <span class="keywordtype">int</span> p2=0;
+<a name="l00079"></a>00079     <span class="keywordtype">int</span> p3=0;
+<a name="l00080"></a>00080     <span class="keywordtype">int</span> p4=0;
+<a name="l00081"></a>00081 <span class="preprocessor">#endif</span>
+<a name="l00082"></a>00082 <span class="preprocessor"></span>    <span class="keywordtype">int</span> <a class="code" href="behaviour__drive__chess_8c.html#ac72f3887834ac55a457ccb5d6c381989">r</a>=0;
+<a name="l00083"></a>00083 
+<a name="l00084"></a>00084     <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da2108da58e0c0c4dc858e221ed7779de7">TOKENIZER_CALL</a>);
+<a name="l00085"></a>00085     <span class="comment">// Parameterliste wird durch linke Klammer eingeleitet</span>
+<a name="l00086"></a>00086     <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4dac0a95f64ec9ff436c5a523d550bd8412">TOKENIZER_LEFTPAREN</a>);
+<a name="l00087"></a>00087     <span class="comment">// Funktionsname ermitteln</span>
+<a name="l00088"></a>00088     <span class="keywordflow">if</span>(<a class="code" href="tokenizer_8c.html#aa49af21826f177d115a28db11be99c1d">tokenizer_token</a>() == <a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4dac1b8e803f5e2cf08f07ebf39ea572d58">TOKENIZER_STRING</a>) {
+<a name="l00089"></a>00089         <a class="code" href="tokenizer_8c.html#ae29a59cfbda31bd3b52e609fef5889b2">tokenizer_next</a>();
+<a name="l00090"></a>00090     }
+<a name="l00091"></a>00091     <span class="comment">// Funktionsname in Tabelle suchen</span>
+<a name="l00092"></a>00092 <span class="preprocessor">#if USE_PROGMEM</span>
+<a name="l00093"></a>00093 <span class="preprocessor"></span>    <span class="keywordflow">while</span>(pgm_read_byte(&amp;callfunct[idx].typ) != 255 &amp;&amp;
+<a name="l00094"></a>00094           strncasecmp_P(<a class="code" href="tokenizer_8c.html#ab501252b994dd91f0dd211978483b596">tokenizer_last_string_ptr</a>(), callfunct[idx].funct_name, <a class="code" href="ubasic__config_8h.html#afd709f201d7643c3909621f620ea648a">MAX_NAME_LEN</a>)) {
+<a name="l00095"></a>00095         idx++;
+<a name="l00096"></a>00096     }
+<a name="l00097"></a>00097     f_typ_temp = pgm_read_byte(&amp;callfunct[idx].typ);
+<a name="l00098"></a>00098 <span class="preprocessor">#else</span>
+<a name="l00099"></a>00099 <span class="preprocessor"></span>    <span class="keywordflow">while</span>(callfunct[idx].typ != 255 &amp;&amp;
+<a name="l00100"></a>00100           strncasecmp(callfunct[idx].funct_name, <a class="code" href="tokenizer_8c.html#ab501252b994dd91f0dd211978483b596">tokenizer_last_string_ptr</a>(), <a class="code" href="ubasic__config_8h.html#afd709f201d7643c3909621f620ea648a">MAX_NAME_LEN</a>)) {
+<a name="l00101"></a>00101         idx++;
+<a name="l00102"></a>00102     }
+<a name="l00103"></a>00103     f_typ_temp = callfunct[idx].<a class="code" href="structcallfunct__t.html#a5e61e6078ca881e402061ed559653d81">typ</a>;
+<a name="l00104"></a>00104 <span class="preprocessor">#endif</span>
+<a name="l00105"></a>00105 <span class="preprocessor"></span>    <span class="comment">// keinen Tabelleneintrag gefunden!</span>
+<a name="l00106"></a>00106     <span class="keywordflow">if</span> (f_typ_temp == 255) {
+<a name="l00107"></a>00107         <a class="code" href="tokenizer_8c.html#a092f2feab0db8090bceeb54fe94436a1">tokenizer_error_print</a>(<a class="code" href="ubasic_8c.html#af683c8ffebc3905e0cb46c1ba77a8bce">current_linenum</a>, <a class="code" href="ubasic_8h.html#aa3b188574fd200d5fea82ce69400475f">UNKNOWN_CALL_FUNCT</a>);
+<a name="l00108"></a>00108         <a class="code" href="ubasic_8c.html#a487f412fa127eb33657af962f7498d88">ubasic_break</a>();
+<a name="l00109"></a>00109     } <span class="keywordflow">else</span> {
+<a name="l00110"></a>00110         <span class="comment">// je nach Funktionstyp (3.Spalte in Funktionspointertabelle)</span>
+<a name="l00111"></a>00111         <span class="comment">// Parameterliste aufbauen und Funktion aufrufen</span>
+<a name="l00112"></a>00112         <span class="keywordflow">switch</span> (f_typ_temp){
+<a name="l00113"></a>00113 <span class="preprocessor">#ifdef VOID_FUNC_VOID</span>
+<a name="l00114"></a>00114 <span class="preprocessor"></span>            <span class="keywordflow">case</span> VOID_FUNC_VOID:
+<a name="l00115"></a>00115                         ;
+<a name="l00116"></a>00116 <span class="preprocessor">                        #if USE_PROGMEM</span>
+<a name="l00117"></a>00117 <span class="preprocessor"></span>                            void (* f0)(void) = (<span class="keywordtype">void</span> (*)(void)) pgm_read_word(&amp;callfunct[idx].funct_ptr.VoidFuncVoid);
+<a name="l00118"></a>00118                             f0();
+<a name="l00119"></a>00119 <span class="preprocessor">                        #else</span>
+<a name="l00120"></a>00120 <span class="preprocessor"></span>                            callfunct[idx].<a class="code" href="structcallfunct__t.html#af50addb79feb85339953fb941401777d">funct_ptr</a>.<a class="code" href="unioncallfunct__t_1_1ftp.html#aa8da7ffe5e64eb8641fa62466d78f56d">VoidFuncVoid</a>();
+<a name="l00121"></a>00121 <span class="preprocessor">                        #endif</span>
+<a name="l00122"></a>00122 <span class="preprocessor"></span>                        <span class="keywordflow">break</span>;
+<a name="l00123"></a>00123 <span class="preprocessor">#endif</span>
+<a name="l00124"></a>00124 <span class="preprocessor"></span><span class="preprocessor">#ifdef VOID_FUNC_INT</span>
+<a name="l00125"></a>00125 <span class="preprocessor"></span>            <span class="keywordflow">case</span> VOID_FUNC_INT:
+<a name="l00126"></a>00126                         <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da56c795c8d210d3c1e5130ee6130ae81e">TOKENIZER_COMMA</a>);
+<a name="l00127"></a>00127                         p1=<a class="code" href="ubasic_8c.html#a35b4f5a0cea41efdbe11ddedf6997984">expr</a>();
+<a name="l00128"></a>00128 <span class="preprocessor">                        #if USE_PROGMEM</span>
+<a name="l00129"></a>00129 <span class="preprocessor"></span>                            void (* f1)(int) = (<span class="keywordtype">void</span> (*)(int)) pgm_read_word(&amp;callfunct[idx].funct_ptr.VoidFuncInt);
+<a name="l00130"></a>00130                             f1(p1);
+<a name="l00131"></a>00131 <span class="preprocessor">                        #else</span>
+<a name="l00132"></a>00132 <span class="preprocessor"></span>                            callfunct[idx].<a class="code" href="structcallfunct__t.html#af50addb79feb85339953fb941401777d">funct_ptr</a>.<a class="code" href="unioncallfunct__t_1_1ftp.html#a148e7d1d072be99b4068fb112fe8d745">VoidFuncInt</a>(p1);
+<a name="l00133"></a>00133 <span class="preprocessor">                        #endif</span>
+<a name="l00134"></a>00134 <span class="preprocessor"></span>                        <span class="keywordflow">break</span>;
+<a name="l00135"></a>00135 <span class="preprocessor">#endif</span>
+<a name="l00136"></a>00136 <span class="preprocessor"></span><span class="preprocessor">#ifdef VOID_FUNC_2INT</span>
+<a name="l00137"></a>00137 <span class="preprocessor"></span>            <span class="keywordflow">case</span> VOID_FUNC_2INT:
+<a name="l00138"></a>00138                         <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da56c795c8d210d3c1e5130ee6130ae81e">TOKENIZER_COMMA</a>);
+<a name="l00139"></a>00139                         p1=<a class="code" href="ubasic_8c.html#a35b4f5a0cea41efdbe11ddedf6997984">expr</a>();
+<a name="l00140"></a>00140                         <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da56c795c8d210d3c1e5130ee6130ae81e">TOKENIZER_COMMA</a>);
+<a name="l00141"></a>00141                         p2=<a class="code" href="ubasic_8c.html#a35b4f5a0cea41efdbe11ddedf6997984">expr</a>();
+<a name="l00142"></a>00142 <span class="preprocessor">                        #if USE_PROGMEM</span>
+<a name="l00143"></a>00143 <span class="preprocessor"></span>                            void (* f2)(int, int) = (<span class="keywordtype">void</span> (*)(int, int)) pgm_read_word(&amp;callfunct[idx].funct_ptr.VoidFunc2Int);
+<a name="l00144"></a>00144                             f2(p1, p2);
+<a name="l00145"></a>00145 <span class="preprocessor">                        #else</span>
+<a name="l00146"></a>00146 <span class="preprocessor"></span>                            callfunct[idx].<a class="code" href="structcallfunct__t.html#af50addb79feb85339953fb941401777d">funct_ptr</a>.<a class="code" href="unioncallfunct__t_1_1ftp.html#abbe58fdd115a763060f9e70536f76169">VoidFunc2Int</a>(p1, p2);
+<a name="l00147"></a>00147 <span class="preprocessor">                        #endif</span>
+<a name="l00148"></a>00148 <span class="preprocessor"></span>                        <span class="keywordflow">break</span>;
+<a name="l00149"></a>00149 <span class="preprocessor">#endif</span>
+<a name="l00150"></a>00150 <span class="preprocessor"></span><span class="preprocessor">#ifdef VOID_FUNC_4INT</span>
+<a name="l00151"></a>00151 <span class="preprocessor"></span>            <span class="keywordflow">case</span> VOID_FUNC_4INT:
+<a name="l00152"></a>00152                         <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da56c795c8d210d3c1e5130ee6130ae81e">TOKENIZER_COMMA</a>);
+<a name="l00153"></a>00153                         p1=<a class="code" href="ubasic_8c.html#a35b4f5a0cea41efdbe11ddedf6997984">expr</a>();
+<a name="l00154"></a>00154                         <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da56c795c8d210d3c1e5130ee6130ae81e">TOKENIZER_COMMA</a>);
+<a name="l00155"></a>00155                         p2=<a class="code" href="ubasic_8c.html#a35b4f5a0cea41efdbe11ddedf6997984">expr</a>();
+<a name="l00156"></a>00156                         <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da56c795c8d210d3c1e5130ee6130ae81e">TOKENIZER_COMMA</a>);
+<a name="l00157"></a>00157                         p3=<a class="code" href="ubasic_8c.html#a35b4f5a0cea41efdbe11ddedf6997984">expr</a>();
+<a name="l00158"></a>00158                         <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da56c795c8d210d3c1e5130ee6130ae81e">TOKENIZER_COMMA</a>);
+<a name="l00159"></a>00159                         p4=<a class="code" href="ubasic_8c.html#a35b4f5a0cea41efdbe11ddedf6997984">expr</a>();
+<a name="l00160"></a>00160 <span class="preprocessor">                        #if USE_PROGMEM</span>
+<a name="l00161"></a>00161 <span class="preprocessor"></span>                            void (* f3)(int, int, int, int) = (<span class="keywordtype">void</span> (*)(int, int, int, int)) pgm_read_word(&amp;callfunct[idx].funct_ptr.VoidFunc4Int);
+<a name="l00162"></a>00162                             f3(p1, p2, p3, p4);
+<a name="l00163"></a>00163 <span class="preprocessor">                        #else</span>
+<a name="l00164"></a>00164 <span class="preprocessor"></span>                            callfunct[idx].<a class="code" href="structcallfunct__t.html#af50addb79feb85339953fb941401777d">funct_ptr</a>.<a class="code" href="unioncallfunct__t_1_1ftp.html#a8864eb51182a045fe443a7fdd4557f67">VoidFunc4Int</a>(p1, p2, p3, p4);
+<a name="l00165"></a>00165 <span class="preprocessor">                        #endif</span>
+<a name="l00166"></a>00166 <span class="preprocessor"></span>                        <span class="keywordflow">break</span>;
+<a name="l00167"></a>00167 <span class="preprocessor">#endif</span>
+<a name="l00168"></a>00168 <span class="preprocessor"></span><span class="preprocessor">#ifdef VOID_FUNC_2INT_CHAR</span>
+<a name="l00169"></a>00169 <span class="preprocessor"></span>            <span class="keywordflow">case</span> VOID_FUNC_2INT_CHAR:
+<a name="l00170"></a>00170                         <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da56c795c8d210d3c1e5130ee6130ae81e">TOKENIZER_COMMA</a>);
+<a name="l00171"></a>00171                         p1=<a class="code" href="ubasic_8c.html#a35b4f5a0cea41efdbe11ddedf6997984">expr</a>();
+<a name="l00172"></a>00172                         <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da56c795c8d210d3c1e5130ee6130ae81e">TOKENIZER_COMMA</a>);
+<a name="l00173"></a>00173                         p2=<a class="code" href="ubasic_8c.html#a35b4f5a0cea41efdbe11ddedf6997984">expr</a>();
+<a name="l00174"></a>00174                         <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da56c795c8d210d3c1e5130ee6130ae81e">TOKENIZER_COMMA</a>);
+<a name="l00175"></a>00175                         <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4dac1b8e803f5e2cf08f07ebf39ea572d58">TOKENIZER_STRING</a>);
+<a name="l00176"></a>00176 <span class="preprocessor">                        #if USE_PROGMEM</span>
+<a name="l00177"></a>00177 <span class="preprocessor"></span>                            void (* f4)(int, int, <span class="keywordtype">char</span>*) = (<span class="keywordtype">void</span> (*)(int, int, <span class="keywordtype">char</span>*)) pgm_read_word(&amp;callfunct[idx].funct_ptr.VoidFunc2IntChar);
+<a name="l00178"></a>00178                             f4(p1, p2, (<span class="keywordtype">char</span>*)<a class="code" href="tokenizer_8c.html#ab501252b994dd91f0dd211978483b596">tokenizer_last_string_ptr</a>());
+<a name="l00179"></a>00179 <span class="preprocessor">                        #else</span>
+<a name="l00180"></a>00180 <span class="preprocessor"></span>                            callfunct[idx].<a class="code" href="structcallfunct__t.html#af50addb79feb85339953fb941401777d">funct_ptr</a>.<a class="code" href="unioncallfunct__t_1_1ftp.html#a54506c1058807c07b00410179fea6311">VoidFunc2IntChar</a>(p1, p2, (<span class="keywordtype">char</span>*)<a class="code" href="tokenizer_8c.html#ab501252b994dd91f0dd211978483b596">tokenizer_last_string_ptr</a>());
+<a name="l00181"></a>00181 <span class="preprocessor">                        #endif</span>
+<a name="l00182"></a>00182 <span class="preprocessor"></span>                        <span class="keywordflow">break</span>;
+<a name="l00183"></a>00183 <span class="preprocessor">#endif</span>
+<a name="l00184"></a>00184 <span class="preprocessor"></span><span class="preprocessor">#ifdef UCHAR_FUNC_UCHAR</span>
+<a name="l00185"></a>00185 <span class="preprocessor"></span>            <span class="keywordflow">case</span> UCHAR_FUNC_UCHAR: <span class="comment">// &lt;-- naja, koennte ins Auge gehen...</span>
+<a name="l00186"></a>00186 <span class="preprocessor">#endif</span>
+<a name="l00187"></a>00187 <span class="preprocessor"></span><span class="preprocessor">#ifdef INT_FUNC_INT</span>
+<a name="l00188"></a>00188 <span class="preprocessor"></span>            <span class="keywordflow">case</span> INT_FUNC_INT:
+<a name="l00189"></a>00189                         <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da56c795c8d210d3c1e5130ee6130ae81e">TOKENIZER_COMMA</a>);
+<a name="l00190"></a>00190                         p1=<a class="code" href="ubasic_8c.html#a35b4f5a0cea41efdbe11ddedf6997984">expr</a>();
+<a name="l00191"></a>00191 <span class="preprocessor">                        #if USE_PROGMEM</span>
+<a name="l00192"></a>00192 <span class="preprocessor"></span>                            int (* f5)(int) = (<span class="keywordtype">int</span> (*)(int)) pgm_read_word(&amp;callfunct[idx].funct_ptr.IntFuncInt);
+<a name="l00193"></a>00193                             r=f5(p1);
+<a name="l00194"></a>00194 <span class="preprocessor">                        #else</span>
+<a name="l00195"></a>00195 <span class="preprocessor"></span>                            r=callfunct[idx].<a class="code" href="structcallfunct__t.html#af50addb79feb85339953fb941401777d">funct_ptr</a>.<a class="code" href="unioncallfunct__t_1_1ftp.html#a563faf0ca8e4920b2db55aafbd0d684b">IntFuncInt</a>(p1);
+<a name="l00196"></a>00196 <span class="preprocessor">                        #endif</span>
+<a name="l00197"></a>00197 <span class="preprocessor"></span>                        <span class="keywordflow">break</span>;
+<a name="l00198"></a>00198 <span class="preprocessor">#endif</span>
+<a name="l00199"></a>00199 <span class="preprocessor"></span><span class="preprocessor">#ifdef VOID_FUNC_2INT16</span>
+<a name="l00200"></a>00200 <span class="preprocessor"></span>            <span class="keywordflow">case</span> <a class="code" href="ubasic__call_8h.html#ac2aafe01fee819dc2a4aa06f99710467">VOID_FUNC_2INT16</a>: {
+<a name="l00201"></a>00201                 <span class="comment">// zwei Integer und kein Rueckgabewert</span>
+<a name="l00202"></a>00202                 <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da56c795c8d210d3c1e5130ee6130ae81e">TOKENIZER_COMMA</a>);
+<a name="l00203"></a>00203                 <span class="keyword">const</span> int16_t p1 = <a class="code" href="ubasic_8c.html#a35b4f5a0cea41efdbe11ddedf6997984">expr</a>();
+<a name="l00204"></a>00204                 <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da56c795c8d210d3c1e5130ee6130ae81e">TOKENIZER_COMMA</a>);
+<a name="l00205"></a>00205                 <span class="keyword">const</span> int16_t p2 = <a class="code" href="ubasic_8c.html#a35b4f5a0cea41efdbe11ddedf6997984">expr</a>();
+<a name="l00206"></a>00206                 void (* func)(int16_t, int16_t) = (<span class="keywordtype">void</span> (*)(int16_t, int16_t)) pgm_read_word(&amp;callfunct[idx].funct_ptr.VoidFunc2Int16);
+<a name="l00207"></a>00207                 func(p1, p2);
+<a name="l00208"></a>00208                 <span class="keywordflow">break</span>;
+<a name="l00209"></a>00209             }
+<a name="l00210"></a>00210 <span class="preprocessor">#endif // VOID_FUNC_2INT16</span>
+<a name="l00211"></a>00211 <span class="preprocessor"></span><span class="preprocessor">#ifdef BOOL_FUNC_BEH</span>
+<a name="l00212"></a>00212 <span class="preprocessor"></span>            <span class="keywordflow">case</span> <a class="code" href="ubasic__call_8h.html#a76bd9e7c970854d887c7d15ba785092e">BOOL_FUNC_BEH</a>: {
+<a name="l00213"></a>00213                 uint8_t (* func)(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> *) = (uint8_t (*)(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> *)) pgm_read_word(&amp;callfunct[idx].funct_ptr.BoolFuncBeh);
+<a name="l00214"></a>00214                 r = func(<a class="code" href="behaviour__ubasic_8c.html#a9766017d25959b78c91ed980a6aedf80" title="Verhaltensdatensatz des ubasis-Verhaltens.">ubasic_behaviour_data</a>);
+<a name="l00215"></a>00215                 <span class="keywordflow">break</span>;
+<a name="l00216"></a>00216             }
+<a name="l00217"></a>00217 <span class="preprocessor">#endif // BOOL_FUNC_BEH</span>
+<a name="l00218"></a>00218 <span class="preprocessor"></span><span class="preprocessor">#ifdef VOID_FUNC_RC</span>
+<a name="l00219"></a>00219 <span class="preprocessor"></span>            <span class="keywordflow">case</span> <a class="code" href="ubasic__call_8h.html#aa4c2c870841b055831be220a66f1ea31">VOID_FUNC_RC</a>: {
+<a name="l00220"></a>00220                 <span class="comment">// Remotecall</span>
+<a name="l00221"></a>00221                 <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da56c795c8d210d3c1e5130ee6130ae81e">TOKENIZER_COMMA</a>);
+<a name="l00222"></a>00222                 <span class="keyword">const</span> <span class="keywordtype">char</span> * <span class="keyword">const</span> func = <a class="code" href="tokenizer_8c.html#ab501252b994dd91f0dd211978483b596">tokenizer_last_string_ptr</a>();
+<a name="l00223"></a>00223                 <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4dac1b8e803f5e2cf08f07ebf39ea572d58">TOKENIZER_STRING</a>);
+<a name="l00224"></a>00224                 <a class="code" href="unionremote__call__data__t.html" title="Union fuer Remotecall-Daten.">remote_call_data_t</a> params[<a class="code" href="behaviour__remotecall_8h.html#aa1a56135c6969dc8ca4ab0223a1c3aea" title="Maximale Anzahl an Parametern.">REMOTE_CALL_MAX_PARAM</a>] = { {0} };
+<a name="l00225"></a>00225                 uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00226"></a>00226                 <span class="keywordflow">for</span> (i = 0; i &lt; <a class="code" href="behaviour__remotecall_8h.html#aa1a56135c6969dc8ca4ab0223a1c3aea" title="Maximale Anzahl an Parametern.">REMOTE_CALL_MAX_PARAM</a>; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00227"></a>00227                     <span class="keywordflow">if</span> (<a class="code" href="tokenizer_8c.html#aa49af21826f177d115a28db11be99c1d">tokenizer_token</a>() == <a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da367a0b4b117abff742799bcbb21c5f7c">TOKENIZER_RIGHTPAREN</a>) {
+<a name="l00228"></a>00228                         <span class="keywordflow">break</span>;
+<a name="l00229"></a>00229                     }
+<a name="l00230"></a>00230                     <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da56c795c8d210d3c1e5130ee6130ae81e">TOKENIZER_COMMA</a>);
+<a name="l00231"></a>00231                     params[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="unionremote__call__data__t.html#a148b79413df7654a5211bf5e583c0220" title="16 Bit signed integer">s16</a> = <a class="code" href="ubasic_8c.html#a35b4f5a0cea41efdbe11ddedf6997984">expr</a>();
+<a name="l00232"></a>00232                 }
+<a name="l00233"></a>00233                 int8_t (* rc)(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> *, <span class="keyword">const</span> <span class="keywordtype">char</span> *, <span class="keyword">const</span> <a class="code" href="unionremote__call__data__t.html" title="Union fuer Remotecall-Daten.">remote_call_data_t</a> *) =
+<a name="l00234"></a>00234                     (int8_t (*)(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> *, <span class="keyword">const</span> <span class="keywordtype">char</span> *, <span class="keyword">const</span> <a class="code" href="unionremote__call__data__t.html" title="Union fuer Remotecall-Daten.">remote_call_data_t</a> *)) pgm_read_word(&amp;callfunct[idx].funct_ptr.VoidFuncRC);
+<a name="l00235"></a>00235                 rc(<a class="code" href="behaviour__ubasic_8c.html#a9766017d25959b78c91ed980a6aedf80" title="Verhaltensdatensatz des ubasis-Verhaltens.">ubasic_behaviour_data</a>, func, params);
+<a name="l00236"></a>00236                 <span class="keywordflow">break</span>;
+<a name="l00237"></a>00237             }
+<a name="l00238"></a>00238 <span class="preprocessor">#endif // VOID_FUNC_RC</span>
+<a name="l00239"></a>00239 <span class="preprocessor"></span>
+<a name="l00240"></a>00240             <span class="keywordflow">default</span>:    <a class="code" href="tokenizer_8c.html#a092f2feab0db8090bceeb54fe94436a1">tokenizer_error_print</a>(<a class="code" href="ubasic_8c.html#af683c8ffebc3905e0cb46c1ba77a8bce">current_linenum</a>, <a class="code" href="ubasic_8h.html#a102629ad47cd7a9d741f4c2bde9cdb6e">UNKNOWN_CALL_FUNCT_TYP</a>);
+<a name="l00241"></a>00241                         <a class="code" href="ubasic_8c.html#a487f412fa127eb33657af962f7498d88">ubasic_break</a>();
+<a name="l00242"></a>00242                         <span class="keywordflow">break</span>;
+<a name="l00243"></a>00243         }
+<a name="l00244"></a>00244     }
+<a name="l00245"></a>00245     <span class="comment">// abschliessende rechte Klammer</span>
+<a name="l00246"></a>00246     <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da367a0b4b117abff742799bcbb21c5f7c">TOKENIZER_RIGHTPAREN</a>);
+<a name="l00247"></a>00247     <span class="keywordflow">return</span> <a class="code" href="behaviour__drive__chess_8c.html#ac72f3887834ac55a457ccb5d6c381989">r</a>;
+<a name="l00248"></a>00248 }
+<a name="l00249"></a>00249 <span class="preprocessor">#endif</span>
+<a name="l00250"></a>00250 <span class="preprocessor"></span>
+<a name="l00251"></a>00251 <span class="preprocessor">#endif // BEHAVIOUR_UBASIC_AVAILABLE</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:09 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

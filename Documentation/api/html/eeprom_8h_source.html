@@ -1,0 +1,314 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: eeprom.h Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_9d1e0dccf1391b04e9e09a3367003bd7.html">include</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">eeprom.h</div>  </div>
+</div>
+<div class="contents">
+<a href="eeprom_8h.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00027"></a>00027 <span class="preprocessor">#ifndef EEPROM_H_</span>
+<a name="l00028"></a>00028 <span class="preprocessor"></span><span class="preprocessor">#define EEPROM_H_</span>
+<a name="l00029"></a>00029 <span class="preprocessor"></span>
+<a name="l00030"></a>00030 <span class="preprocessor">#include &lt;stddef.h&gt;</span>
+<a name="l00031"></a>00031 <span class="preprocessor">#include &quot;<a class="code" href="global_8h.html" title="Allgemeine Definitionen und Datentypen.">global.h</a>&quot;</span>
+<a name="l00032"></a>00032 
+<a name="l00034"></a><a class="code" href="unioneeprom__word__t.html">00034</a> <span class="keyword">typedef</span> <span class="keyword">union </span>{
+<a name="l00035"></a><a class="code" href="unioneeprom__word__t.html#affa3985b2938965db86b8cf007047479">00035</a>     uint16_t <a class="code" href="unioneeprom__word__t.html#affa3985b2938965db86b8cf007047479">word</a>;
+<a name="l00036"></a>00036     <span class="keyword">struct </span>{
+<a name="l00037"></a><a class="code" href="unioneeprom__word__t.html#af4de8f2735e5539985e313950d255d9a">00037</a>         uint8_t <a class="code" href="unioneeprom__word__t.html#af4de8f2735e5539985e313950d255d9a">byte_0</a>;
+<a name="l00038"></a><a class="code" href="unioneeprom__word__t.html#aecee96886927f7e04b42041ce8ac623f">00038</a>         uint8_t <a class="code" href="unioneeprom__word__t.html#aecee96886927f7e04b42041ce8ac623f">byte_1</a>;
+<a name="l00039"></a>00039     } bytes;
+<a name="l00040"></a>00040 } <a class="code" href="unioneeprom__word__t.html">eeprom_word_t</a>;
+<a name="l00041"></a>00041 
+<a name="l00043"></a><a class="code" href="unioneeprom__dword__t.html">00043</a> <span class="keyword">typedef</span> <span class="keyword">union </span>{
+<a name="l00044"></a><a class="code" href="unioneeprom__dword__t.html#a2c27f41efc51a1837b1ecceb96a7316a">00044</a>     uint32_t <a class="code" href="unioneeprom__dword__t.html#a2c27f41efc51a1837b1ecceb96a7316a">dword</a>;
+<a name="l00045"></a>00045     <span class="keyword">struct </span>{
+<a name="l00046"></a><a class="code" href="unioneeprom__dword__t.html#ad8dc1d9ed49c9a4a9c84398da98bd288">00046</a>         uint8_t <a class="code" href="unioneeprom__dword__t.html#ad8dc1d9ed49c9a4a9c84398da98bd288">byte_0</a>;
+<a name="l00047"></a><a class="code" href="unioneeprom__dword__t.html#a32fbef9b5a30e8d2176d8e6e00a09a31">00047</a>         uint8_t <a class="code" href="unioneeprom__dword__t.html#a32fbef9b5a30e8d2176d8e6e00a09a31">byte_1</a>;
+<a name="l00048"></a><a class="code" href="unioneeprom__dword__t.html#ade3df70898d88b44acff2f6781fbee82">00048</a>         uint8_t <a class="code" href="unioneeprom__dword__t.html#ade3df70898d88b44acff2f6781fbee82">byte_2</a>;
+<a name="l00049"></a><a class="code" href="unioneeprom__dword__t.html#a0e74f478b01005e29714138c199d625a">00049</a>         uint8_t <a class="code" href="unioneeprom__dword__t.html#a0e74f478b01005e29714138c199d625a">byte_3</a>;
+<a name="l00050"></a>00050     } bytes;
+<a name="l00051"></a>00051 } <a class="code" href="unioneeprom__dword__t.html">eeprom_dword_t</a>;
+<a name="l00052"></a>00052 
+<a name="l00053"></a>00053 <span class="preprocessor">#ifdef MCU</span>
+<a name="l00054"></a>00054 <span class="preprocessor"></span><span class="preprocessor">#include &lt;avr/io.h&gt;</span>
+<a name="l00055"></a>00055 
+<a name="l00057"></a><a class="code" href="eeprom_8h.html#a3f5ebf97c07a164113b82053ed2b5ebe">00057</a> <span class="preprocessor">#define EEPROM __attribute__ ((section (&quot;.eeprom&quot;), aligned(1)))</span>
+<a name="l00058"></a>00058 <span class="preprocessor"></span>
+<a name="l00059"></a>00059 <span class="preprocessor">#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__</span>
+<a name="l00060"></a>00060 <span class="preprocessor"></span><span class="preprocessor">#define EEWE    EEPE</span>
+<a name="l00061"></a>00061 <span class="preprocessor"></span><span class="preprocessor">#define EEMWE   EEMPE</span>
+<a name="l00062"></a>00062 <span class="preprocessor"></span><span class="preprocessor">#endif // MCU_ATMEGA644X || ATmega1284P</span>
+<a name="l00063"></a>00063 <span class="preprocessor"></span>
+<a name="l00068"></a><a class="code" href="eeprom_8h.html#a7ccd65b76bb9ed5ee03855779bae28de">00068</a> <span class="preprocessor">#define eeprom_is_ready() bit_is_clear(EECR, EEWE)</span>
+<a name="l00069"></a>00069 <span class="preprocessor"></span>
+<a name="l00073"></a><a class="code" href="eeprom_8h.html#a44c64ebb425fcb34b8d4dc19c4079869">00073</a> <span class="preprocessor">#define eeprom_busy_wait() do {} while (!eeprom_is_ready())</span>
+<a name="l00074"></a>00074 <span class="preprocessor"></span>
+<a name="l00080"></a>00080 <span class="keyword">static</span> <span class="keyword">inline</span> uint8_t <a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>(<span class="keyword">const</span> uint8_t * address) {
+<a name="l00081"></a>00081     <a class="code" href="eeprom_8h.html#a44c64ebb425fcb34b8d4dc19c4079869">eeprom_busy_wait</a>();
+<a name="l00082"></a>00082 <span class="preprocessor">#if E2END &lt;= 0xFF</span>
+<a name="l00083"></a>00083 <span class="preprocessor"></span>    EEARL = (uint8_t) address;
+<a name="l00084"></a>00084 <span class="preprocessor">#else</span>
+<a name="l00085"></a>00085 <span class="preprocessor"></span>    EEAR = (uint16_t) address;
+<a name="l00086"></a>00086 <span class="preprocessor">#endif</span>
+<a name="l00087"></a>00087 <span class="preprocessor"></span>    uint8_t result;
+<a name="l00088"></a>00088     __asm__ __volatile__(
+<a name="l00089"></a>00089         <span class="stringliteral">&quot;/* START EEPROM READ CRITICAL SECTION */   \n\t&quot;</span>
+<a name="l00090"></a>00090         <span class="stringliteral">&quot;sbi %1, %2                                 \n\t&quot;</span>
+<a name="l00091"></a>00091         <span class="stringliteral">&quot;in %0, %3                                  \n\t&quot;</span>
+<a name="l00092"></a>00092         <span class="stringliteral">&quot;/* END EEPROM READ CRITICAL SECTION */         &quot;</span>
+<a name="l00093"></a>00093         : <span class="stringliteral">&quot;=r&quot;</span> (result)
+<a name="l00094"></a>00094         : <span class="stringliteral">&quot;i&quot;</span> (_SFR_IO_ADDR(EECR)),
+<a name="l00095"></a>00095           <span class="stringliteral">&quot;i&quot;</span> (EERE),
+<a name="l00096"></a>00096           <span class="stringliteral">&quot;i&quot;</span> (_SFR_IO_ADDR(EEDR))
+<a name="l00097"></a>00097     );
+<a name="l00098"></a>00098     <span class="keywordflow">return</span> result;
+<a name="l00099"></a>00099 }
+<a name="l00100"></a>00100 
+<a name="l00106"></a>00106 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> _eeprom_write_byte(uint8_t * address, <span class="keyword">const</span> uint8_t value) {
+<a name="l00107"></a>00107 <span class="preprocessor">#if defined(EEPM0) &amp;&amp; defined(EEPM1)</span>
+<a name="l00108"></a>00108 <span class="preprocessor"></span>    EECR = 0; <span class="comment">// Set programming mode: erase and write</span>
+<a name="l00109"></a>00109 <span class="preprocessor">#elif defined(EEPM0) || defined(EEPM1)</span>
+<a name="l00110"></a>00110 <span class="preprocessor"></span><span class="preprocessor">#error &quot;Unknown EECR register, eeprom_write_byte() has become outdated.&quot;</span>
+<a name="l00111"></a>00111 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00112"></a>00112 <span class="preprocessor"></span>
+<a name="l00113"></a>00113 <span class="preprocessor">#if E2END &lt;= 0xFF</span>
+<a name="l00114"></a>00114 <span class="preprocessor"></span>    EEARL = (unsigned) address;
+<a name="l00115"></a>00115 <span class="preprocessor">#else</span>
+<a name="l00116"></a>00116 <span class="preprocessor"></span>    EEAR = (unsigned) address;
+<a name="l00117"></a>00117 <span class="preprocessor">#endif</span>
+<a name="l00118"></a>00118 <span class="preprocessor"></span>    EEDR = value;
+<a name="l00119"></a>00119 
+<a name="l00120"></a>00120     __asm__ __volatile__(
+<a name="l00121"></a>00121         <span class="stringliteral">&quot;/* START EEPROM WRITE CRITICAL SECTION */  \n\t&quot;</span>
+<a name="l00122"></a>00122         <span class="stringliteral">&quot;in r0, %[__sreg]                           \n\t&quot;</span>
+<a name="l00123"></a>00123         <span class="stringliteral">&quot;cli                                        \n\t&quot;</span>
+<a name="l00124"></a>00124         <span class="stringliteral">&quot;sbi    %[__eecr], %[__eemwe]               \n\t&quot;</span>
+<a name="l00125"></a>00125         <span class="stringliteral">&quot;sbi    %[__eecr], %[__eewe]                \n\t&quot;</span>
+<a name="l00126"></a>00126         <span class="stringliteral">&quot;out    %[__sreg], r0                       \n\t&quot;</span>
+<a name="l00127"></a>00127         <span class="stringliteral">&quot;/* END EEPROM WRITE CRITICAL SECTION */        &quot;</span>
+<a name="l00128"></a>00128         :
+<a name="l00129"></a>00129         : [__eecr]  <span class="stringliteral">&quot;i&quot;</span> (_SFR_IO_ADDR(EECR)),
+<a name="l00130"></a>00130           [__sreg]  <span class="stringliteral">&quot;i&quot;</span> (_SFR_IO_ADDR(SREG)),
+<a name="l00131"></a>00131           [__eemwe] <span class="stringliteral">&quot;i&quot;</span> (EEMWE),
+<a name="l00132"></a>00132           [__eewe]  <span class="stringliteral">&quot;i&quot;</span> (EEWE)
+<a name="l00133"></a>00133         : <span class="stringliteral">&quot;r0&quot;</span>
+<a name="l00134"></a>00134     );
+<a name="l00135"></a>00135 }
+<a name="l00136"></a>00136 
+<a name="l00142"></a>00142 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="eeprom__pc_8c.html#ae1460a09ea2078c972a8f8e420773123">ctbot_eeprom_write_byte</a>(uint8_t * address, <span class="keyword">const</span> uint8_t value) {
+<a name="l00143"></a>00143     <a class="code" href="eeprom_8h.html#a44c64ebb425fcb34b8d4dc19c4079869">eeprom_busy_wait</a>();
+<a name="l00144"></a>00144     _eeprom_write_byte(address, value);
+<a name="l00145"></a>00145 }
+<a name="l00146"></a>00146 
+<a name="l00147"></a>00147 <span class="preprocessor">#else // PC</span>
+<a name="l00148"></a>00148 <span class="preprocessor"></span>
+<a name="l00149"></a>00149 <span class="preprocessor">#ifdef EEPROM_EMU_AVAILABLE</span>
+<a name="l00150"></a>00150 <span class="preprocessor"></span><span class="preprocessor">#ifdef __APPLE__</span>
+<a name="l00151"></a>00151 <span class="preprocessor"></span><span class="comment">/* OS X */</span>
+<a name="l00152"></a>00152 <span class="preprocessor">#define EEPROM __attribute__ ((section (&quot;__eeprom, __data&quot;), aligned(1)))   </span>
+<a name="l00153"></a>00153 <span class="preprocessor">#else</span>
+<a name="l00154"></a>00154 <span class="preprocessor"></span><span class="comment">/* Linux und Windows */</span>
+<a name="l00155"></a>00155 <span class="preprocessor">#define EEPROM __attribute__ ((section (&quot;.eeprom&quot;), aligned(1)))            </span>
+<a name="l00156"></a>00156 <span class="preprocessor">#endif</span>
+<a name="l00157"></a>00157 <span class="preprocessor"></span><span class="preprocessor">#else</span>
+<a name="l00158"></a>00158 <span class="preprocessor"></span><span class="comment">/* keine EEPROM-Emulation */</span>
+<a name="l00159"></a>00159 <span class="preprocessor">#define EEPROM</span>
+<a name="l00160"></a>00160 <span class="preprocessor"></span><span class="preprocessor">#endif // EEPROM_EMU_AVAILABLE</span>
+<a name="l00161"></a>00161 <span class="preprocessor"></span>
+<a name="l00167"></a>00167 uint8_t <a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>(<span class="keyword">const</span> uint8_t * address);
+<a name="l00168"></a>00168 
+<a name="l00174"></a>00174 <span class="keywordtype">void</span> <a class="code" href="eeprom__pc_8c.html#ae1460a09ea2078c972a8f8e420773123">ctbot_eeprom_write_byte</a>(uint8_t * address, <span class="keyword">const</span> uint8_t value);
+<a name="l00175"></a>00175 
+<a name="l00181"></a>00181 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> _eeprom_write_byte(uint8_t * address, <span class="keyword">const</span> uint8_t value) {
+<a name="l00182"></a>00182     <a class="code" href="eeprom__pc_8c.html#ae1460a09ea2078c972a8f8e420773123">ctbot_eeprom_write_byte</a>(address, value);
+<a name="l00183"></a>00183 }
+<a name="l00184"></a>00184 
+<a name="l00193"></a>00193 uint8_t <a class="code" href="eeprom__pc_8c.html#a336de810ea7306c784aa421048de9626">init_eeprom_man</a>(uint8_t init);
+<a name="l00194"></a>00194 
+<a name="l00195"></a>00195 <span class="preprocessor">#endif // MCU</span>
+<a name="l00196"></a>00196 <span class="preprocessor"></span>
+<a name="l00202"></a>00202 <span class="keyword">static</span> <span class="keyword">inline</span> uint16_t ctbot_eeprom_read_word(<span class="keyword">const</span> uint16_t * address) {
+<a name="l00203"></a>00203     <a class="code" href="unioneeprom__word__t.html">eeprom_word_t</a> data;
+<a name="l00204"></a>00204     <span class="keywordtype">size_t</span> eeprom_addr = (size_t) address;
+<a name="l00205"></a>00205 
+<a name="l00206"></a>00206     data.<a class="code" href="unioneeprom__word__t.html#ac6a66ff5f74e1ecb6c934ef1aaa3d471">bytes</a>.<a class="code" href="unioneeprom__word__t.html#af4de8f2735e5539985e313950d255d9a">byte_0</a> = <a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>((<span class="keyword">const</span> uint8_t *) eeprom_addr++);
+<a name="l00207"></a>00207     data.<a class="code" href="unioneeprom__word__t.html#ac6a66ff5f74e1ecb6c934ef1aaa3d471">bytes</a>.<a class="code" href="unioneeprom__word__t.html#aecee96886927f7e04b42041ce8ac623f">byte_1</a> = <a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>((<span class="keyword">const</span> uint8_t *) eeprom_addr);
+<a name="l00208"></a>00208     <span class="keywordflow">return</span> data.<a class="code" href="unioneeprom__word__t.html#affa3985b2938965db86b8cf007047479">word</a>;
+<a name="l00209"></a>00209 }
+<a name="l00210"></a>00210 
+<a name="l00216"></a>00216 <span class="keyword">static</span> <span class="keyword">inline</span> uint32_t ctbot_eeprom_read_dword(<span class="keyword">const</span> uint32_t * address) {
+<a name="l00217"></a>00217     <a class="code" href="unioneeprom__dword__t.html">eeprom_dword_t</a> data;
+<a name="l00218"></a>00218     <span class="keywordtype">size_t</span> eeprom_addr = (size_t)address;
+<a name="l00219"></a>00219 
+<a name="l00220"></a>00220     data.<a class="code" href="unioneeprom__dword__t.html#acf07eb27b570001ca85323a4b8200909">bytes</a>.<a class="code" href="unioneeprom__dword__t.html#ad8dc1d9ed49c9a4a9c84398da98bd288">byte_0</a> = <a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>((<span class="keyword">const</span> uint8_t *) eeprom_addr++);
+<a name="l00221"></a>00221     data.<a class="code" href="unioneeprom__dword__t.html#acf07eb27b570001ca85323a4b8200909">bytes</a>.<a class="code" href="unioneeprom__dword__t.html#a32fbef9b5a30e8d2176d8e6e00a09a31">byte_1</a> = <a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>((<span class="keyword">const</span> uint8_t *) eeprom_addr++);
+<a name="l00222"></a>00222     data.<a class="code" href="unioneeprom__dword__t.html#acf07eb27b570001ca85323a4b8200909">bytes</a>.<a class="code" href="unioneeprom__dword__t.html#ade3df70898d88b44acff2f6781fbee82">byte_2</a> = <a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>((<span class="keyword">const</span> uint8_t *) eeprom_addr++);
+<a name="l00223"></a>00223     data.<a class="code" href="unioneeprom__dword__t.html#acf07eb27b570001ca85323a4b8200909">bytes</a>.<a class="code" href="unioneeprom__dword__t.html#a0e74f478b01005e29714138c199d625a">byte_3</a> = <a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>((<span class="keyword">const</span> uint8_t *) eeprom_addr);
+<a name="l00224"></a>00224     <span class="keywordflow">return</span> data.<a class="code" href="unioneeprom__dword__t.html#a2c27f41efc51a1837b1ecceb96a7316a">dword</a>;
+<a name="l00225"></a>00225 }
+<a name="l00226"></a>00226 
+<a name="l00233"></a>00233 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> ctbot_eeprom_read_block(<span class="keywordtype">void</span> * dst, <span class="keyword">const</span> <span class="keywordtype">void</span> * src, <span class="keywordtype">size_t</span> size) {
+<a name="l00234"></a>00234     uint8_t * p_dst = dst;
+<a name="l00235"></a>00235     <span class="keyword">const</span> uint8_t * p_src = src;
+<a name="l00236"></a>00236     <span class="keywordflow">while</span> (size--) {
+<a name="l00237"></a>00237         *p_dst++ = <a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>(p_src++);
+<a name="l00238"></a>00238     }
+<a name="l00239"></a>00239 }
+<a name="l00240"></a>00240 
+<a name="l00246"></a>00246 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> ctbot_eeprom_write_word(uint16_t * address, <span class="keyword">const</span> uint16_t value) {
+<a name="l00247"></a>00247     <a class="code" href="unioneeprom__word__t.html">eeprom_word_t</a> data;
+<a name="l00248"></a>00248     data.<a class="code" href="unioneeprom__word__t.html#affa3985b2938965db86b8cf007047479">word</a> = value;
+<a name="l00249"></a>00249     <span class="keywordtype">size_t</span> eeprom_addr = (size_t) address;
+<a name="l00250"></a>00250 
+<a name="l00251"></a>00251     <a class="code" href="eeprom__pc_8c.html#ae1460a09ea2078c972a8f8e420773123">ctbot_eeprom_write_byte</a>((uint8_t *) eeprom_addr++, data.<a class="code" href="unioneeprom__word__t.html#ac6a66ff5f74e1ecb6c934ef1aaa3d471">bytes</a>.<a class="code" href="unioneeprom__word__t.html#af4de8f2735e5539985e313950d255d9a">byte_0</a>);
+<a name="l00252"></a>00252     <a class="code" href="eeprom__pc_8c.html#ae1460a09ea2078c972a8f8e420773123">ctbot_eeprom_write_byte</a>((uint8_t *) eeprom_addr, data.<a class="code" href="unioneeprom__word__t.html#ac6a66ff5f74e1ecb6c934ef1aaa3d471">bytes</a>.<a class="code" href="unioneeprom__word__t.html#aecee96886927f7e04b42041ce8ac623f">byte_1</a>);
+<a name="l00253"></a>00253 }
+<a name="l00254"></a>00254 
+<a name="l00260"></a>00260 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> ctbot_eeprom_write_dword(uint32_t * address, <span class="keyword">const</span> uint32_t value) {
+<a name="l00261"></a>00261     <a class="code" href="unioneeprom__dword__t.html">eeprom_dword_t</a> data;
+<a name="l00262"></a>00262     data.<a class="code" href="unioneeprom__dword__t.html#a2c27f41efc51a1837b1ecceb96a7316a">dword</a> = value;
+<a name="l00263"></a>00263     <span class="keywordtype">size_t</span> eeprom_addr = (size_t) address;
+<a name="l00264"></a>00264 
+<a name="l00265"></a>00265     <a class="code" href="eeprom__pc_8c.html#ae1460a09ea2078c972a8f8e420773123">ctbot_eeprom_write_byte</a>((uint8_t *) eeprom_addr++, data.<a class="code" href="unioneeprom__dword__t.html#acf07eb27b570001ca85323a4b8200909">bytes</a>.<a class="code" href="unioneeprom__dword__t.html#ad8dc1d9ed49c9a4a9c84398da98bd288">byte_0</a>);
+<a name="l00266"></a>00266     <a class="code" href="eeprom__pc_8c.html#ae1460a09ea2078c972a8f8e420773123">ctbot_eeprom_write_byte</a>((uint8_t *) eeprom_addr++, data.<a class="code" href="unioneeprom__dword__t.html#acf07eb27b570001ca85323a4b8200909">bytes</a>.<a class="code" href="unioneeprom__dword__t.html#a32fbef9b5a30e8d2176d8e6e00a09a31">byte_1</a>);
+<a name="l00267"></a>00267     <a class="code" href="eeprom__pc_8c.html#ae1460a09ea2078c972a8f8e420773123">ctbot_eeprom_write_byte</a>((uint8_t *) eeprom_addr++, data.<a class="code" href="unioneeprom__dword__t.html#acf07eb27b570001ca85323a4b8200909">bytes</a>.<a class="code" href="unioneeprom__dword__t.html#ade3df70898d88b44acff2f6781fbee82">byte_2</a>);
+<a name="l00268"></a>00268     <a class="code" href="eeprom__pc_8c.html#ae1460a09ea2078c972a8f8e420773123">ctbot_eeprom_write_byte</a>((uint8_t *) eeprom_addr, data.<a class="code" href="unioneeprom__dword__t.html#acf07eb27b570001ca85323a4b8200909">bytes</a>.<a class="code" href="unioneeprom__dword__t.html#a0e74f478b01005e29714138c199d625a">byte_3</a>);
+<a name="l00269"></a>00269 }
+<a name="l00270"></a>00270 
+<a name="l00277"></a>00277 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> ctbot_eeprom_write_block(<span class="keywordtype">void</span> * dst, <span class="keyword">const</span> <span class="keywordtype">void</span> * src, <span class="keywordtype">size_t</span> size) {
+<a name="l00278"></a>00278     uint8_t * p_dst = dst;
+<a name="l00279"></a>00279     <span class="keyword">const</span> uint8_t * p_src = src;
+<a name="l00280"></a>00280     <span class="keywordflow">while</span> (size--) {
+<a name="l00281"></a>00281         <a class="code" href="eeprom__pc_8c.html#ae1460a09ea2078c972a8f8e420773123">ctbot_eeprom_write_byte</a>(p_dst++, *p_src++);
+<a name="l00282"></a>00282     }
+<a name="l00283"></a>00283 }
+<a name="l00284"></a>00284 
+<a name="l00290"></a>00290 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> ctbot_eeprom_update_byte(uint8_t * address, <span class="keyword">const</span> uint8_t value) {
+<a name="l00291"></a>00291     <span class="keywordflow">if</span> (<a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>(address) != value) {
+<a name="l00292"></a>00292         _eeprom_write_byte(address, value);
+<a name="l00293"></a>00293     }
+<a name="l00294"></a>00294 }
+<a name="l00295"></a>00295 
+<a name="l00301"></a>00301 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> ctbot_eeprom_update_word(uint16_t * address, <span class="keyword">const</span> uint16_t value) {
+<a name="l00302"></a>00302     <a class="code" href="unioneeprom__word__t.html">eeprom_word_t</a> data;
+<a name="l00303"></a>00303     data.<a class="code" href="unioneeprom__word__t.html#affa3985b2938965db86b8cf007047479">word</a> = value;
+<a name="l00304"></a>00304     <span class="keywordtype">size_t</span> eeprom_addr = (size_t) address;
+<a name="l00305"></a>00305 
+<a name="l00306"></a>00306     <span class="keywordflow">if</span> (<a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>((uint8_t *) eeprom_addr) != data.<a class="code" href="unioneeprom__word__t.html#ac6a66ff5f74e1ecb6c934ef1aaa3d471">bytes</a>.<a class="code" href="unioneeprom__word__t.html#af4de8f2735e5539985e313950d255d9a">byte_0</a>) {
+<a name="l00307"></a>00307         _eeprom_write_byte((uint8_t *) eeprom_addr, data.<a class="code" href="unioneeprom__word__t.html#ac6a66ff5f74e1ecb6c934ef1aaa3d471">bytes</a>.<a class="code" href="unioneeprom__word__t.html#af4de8f2735e5539985e313950d255d9a">byte_0</a>);
+<a name="l00308"></a>00308     }
+<a name="l00309"></a>00309     eeprom_addr++;
+<a name="l00310"></a>00310     <span class="keywordflow">if</span> (<a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>((uint8_t *) eeprom_addr) != data.<a class="code" href="unioneeprom__word__t.html#ac6a66ff5f74e1ecb6c934ef1aaa3d471">bytes</a>.<a class="code" href="unioneeprom__word__t.html#aecee96886927f7e04b42041ce8ac623f">byte_1</a>) {
+<a name="l00311"></a>00311         _eeprom_write_byte((uint8_t *) eeprom_addr, data.<a class="code" href="unioneeprom__word__t.html#ac6a66ff5f74e1ecb6c934ef1aaa3d471">bytes</a>.<a class="code" href="unioneeprom__word__t.html#aecee96886927f7e04b42041ce8ac623f">byte_1</a>);
+<a name="l00312"></a>00312     }
+<a name="l00313"></a>00313 }
+<a name="l00314"></a>00314 
+<a name="l00320"></a>00320 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> ctbot_eeprom_update_dword(uint32_t * address, <span class="keyword">const</span> uint32_t value) {
+<a name="l00321"></a>00321     <a class="code" href="unioneeprom__dword__t.html">eeprom_dword_t</a> data;
+<a name="l00322"></a>00322     data.<a class="code" href="unioneeprom__dword__t.html#a2c27f41efc51a1837b1ecceb96a7316a">dword</a> = value;
+<a name="l00323"></a>00323     <span class="keywordtype">size_t</span> eeprom_addr = (size_t) address;
+<a name="l00324"></a>00324 
+<a name="l00325"></a>00325     <span class="keywordflow">if</span> (<a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>((uint8_t *) eeprom_addr) != data.<a class="code" href="unioneeprom__dword__t.html#acf07eb27b570001ca85323a4b8200909">bytes</a>.<a class="code" href="unioneeprom__dword__t.html#ad8dc1d9ed49c9a4a9c84398da98bd288">byte_0</a>) {
+<a name="l00326"></a>00326         _eeprom_write_byte((uint8_t *) eeprom_addr, data.<a class="code" href="unioneeprom__dword__t.html#acf07eb27b570001ca85323a4b8200909">bytes</a>.<a class="code" href="unioneeprom__dword__t.html#ad8dc1d9ed49c9a4a9c84398da98bd288">byte_0</a>);
+<a name="l00327"></a>00327     }
+<a name="l00328"></a>00328     eeprom_addr++;
+<a name="l00329"></a>00329     <span class="keywordflow">if</span> (<a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>((uint8_t *) eeprom_addr) != data.<a class="code" href="unioneeprom__dword__t.html#acf07eb27b570001ca85323a4b8200909">bytes</a>.<a class="code" href="unioneeprom__dword__t.html#a32fbef9b5a30e8d2176d8e6e00a09a31">byte_1</a>) {
+<a name="l00330"></a>00330         _eeprom_write_byte((uint8_t *) eeprom_addr, data.<a class="code" href="unioneeprom__dword__t.html#acf07eb27b570001ca85323a4b8200909">bytes</a>.<a class="code" href="unioneeprom__dword__t.html#a32fbef9b5a30e8d2176d8e6e00a09a31">byte_1</a>);
+<a name="l00331"></a>00331     }
+<a name="l00332"></a>00332     eeprom_addr++;
+<a name="l00333"></a>00333     <span class="keywordflow">if</span> (<a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>((uint8_t *) eeprom_addr) != data.<a class="code" href="unioneeprom__dword__t.html#acf07eb27b570001ca85323a4b8200909">bytes</a>.<a class="code" href="unioneeprom__dword__t.html#ade3df70898d88b44acff2f6781fbee82">byte_2</a>) {
+<a name="l00334"></a>00334         _eeprom_write_byte((uint8_t *) eeprom_addr, data.<a class="code" href="unioneeprom__dword__t.html#acf07eb27b570001ca85323a4b8200909">bytes</a>.<a class="code" href="unioneeprom__dword__t.html#ade3df70898d88b44acff2f6781fbee82">byte_2</a>);
+<a name="l00335"></a>00335     }
+<a name="l00336"></a>00336     eeprom_addr++;
+<a name="l00337"></a>00337     <span class="keywordflow">if</span> (<a class="code" href="eeprom__pc_8c.html#a77ca3a10517b6fb65f814edb8fc109bd">ctbot_eeprom_read_byte</a>((uint8_t *) eeprom_addr) != data.<a class="code" href="unioneeprom__dword__t.html#acf07eb27b570001ca85323a4b8200909">bytes</a>.<a class="code" href="unioneeprom__dword__t.html#a0e74f478b01005e29714138c199d625a">byte_3</a>) {
+<a name="l00338"></a>00338         _eeprom_write_byte((uint8_t *) eeprom_addr, data.<a class="code" href="unioneeprom__dword__t.html#acf07eb27b570001ca85323a4b8200909">bytes</a>.<a class="code" href="unioneeprom__dword__t.html#a0e74f478b01005e29714138c199d625a">byte_3</a>);
+<a name="l00339"></a>00339     }
+<a name="l00340"></a>00340 }
+<a name="l00341"></a>00341 <span class="preprocessor">#endif // EEPROM_H_</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:09 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

@@ -391,7 +391,7 @@ static uint8_t observe_get_endpoint(int8_t checkside, uint8_t * behavstate,
 
     // Hindernis oder schon befahren erkannt aber noch kein gueltiger Zwischenendpunkt ermittelt; Ende falls
     // Endeanforderung kam sonst weiter mit Startpunktsuche
-    if ((mapval < 0 || mapval >= MAP_TRACKVAL) && lastpoint->x == 0 && lastpoint->y == 0) {
+    if ((mapval < 0 || mapval >= MAP_TRACKVAL) && &lastpoint->x == 0 && &lastpoint->y == 0) {
 		set_point_to_lastpoint(&observer->point1, 0, 0);
 		*behavstate = (uint8_t) (endrequest ? TRACK_END : 0); // weiter mit Startpunktsuche
 		set_point_to_lastpoint(lastpoint, 0, 0);

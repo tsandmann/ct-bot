@@ -1,0 +1,487 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: sensor-low.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_f02428e3da713fc394853d6cd2afbcd0.html">mcu</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">sensor-low.c</div>  </div>
+</div>
+<div class="contents">
+<a href="sensor-low_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00027"></a>00027 <span class="preprocessor">#ifdef MCU</span>
+<a name="l00028"></a>00028 <span class="preprocessor"></span>
+<a name="l00029"></a>00029 <span class="preprocessor">#include &quot;<a class="code" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot-Funktionalitaeten">ct-Bot.h</a>&quot;</span>
+<a name="l00030"></a>00030 
+<a name="l00031"></a>00031 <span class="preprocessor">#include &lt;avr/io.h&gt;</span>
+<a name="l00032"></a>00032 <span class="preprocessor">#include &lt;string.h&gt;</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#include &lt;math.h&gt;</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include &quot;<a class="code" href="adc_8h.html" title="Routinen zum Einlesen der Analogeingaenge.">adc.h</a>&quot;</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include &quot;<a class="code" href="ena_8h.html" title="Routinen zur Steuerung der Enable-Leitungen.">ena.h</a>&quot;</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include &quot;<a class="code" href="sensor_8h.html" title="Architekturunabhaengiger Teil der Sensorsteuerung.">sensor.h</a>&quot;</span>
+<a name="l00037"></a>00037 <span class="preprocessor">#include &quot;<a class="code" href="mouse_8h.html" title="Routinen fuer die Ansteuerung eines optischen Maussensors.">mouse.h</a>&quot;</span>
+<a name="l00038"></a>00038 <span class="preprocessor">#include &quot;<a class="code" href="motor_8h.html" title="High-Level Routinen fuer die Motorsteuerung des c&#39;t-Bots.">motor.h</a>&quot;</span>
+<a name="l00039"></a>00039 <span class="preprocessor">#include &quot;<a class="code" href="timer_8h.html" title="Timer und Zaehler.">timer.h</a>&quot;</span>
+<a name="l00040"></a>00040 <span class="preprocessor">#include &quot;<a class="code" href="sensor__correction_8h.html" title="Kalibrierungsdaten fuer die IR-Sensoren.">sensor_correction.h</a>&quot;</span>
+<a name="l00041"></a>00041 <span class="preprocessor">#include &quot;<a class="code" href="bot-local_8h.html" title="Konstanten, die den Bot an reale Umgebungen anpassen.">bot-local.h</a>&quot;</span>
+<a name="l00042"></a>00042 <span class="preprocessor">#include &quot;<a class="code" href="bot-logic_8h.html" title="High-Level-Routinen fuer die Steuerung des c&#39;t-Bots.">bot-logic/bot-logic.h</a>&quot;</span>
+<a name="l00043"></a>00043 <span class="preprocessor">#include &quot;<a class="code" href="display_8h.html" title="Routinen zur Displaysteuerung.">display.h</a>&quot;</span>
+<a name="l00044"></a>00044 <span class="preprocessor">#include &quot;<a class="code" href="led_8h.html" title="Routinen zur LED-Steuerung.">led.h</a>&quot;</span>
+<a name="l00045"></a>00045 <span class="preprocessor">#include &quot;<a class="code" href="sensor-low_8h.html" title="Low-Level Routinen fuer die Sensor-Steuerung des c&#39;t-Bots.">sensor-low.h</a>&quot;</span>
+<a name="l00046"></a>00046 <span class="preprocessor">#include &quot;<a class="code" href="i2c_8h.html" title="I2C-Treiber, derzeit nur Master, interruptbasiert.">i2c.h</a>&quot;</span>
+<a name="l00047"></a>00047 <span class="preprocessor">#include &quot;<a class="code" href="ir-rc5_8h.html" title="Routinen fuer die Dekodierung von RC5-Fernbedienungs-Codes.">ir-rc5.h</a>&quot;</span>
+<a name="l00048"></a>00048 <span class="preprocessor">#include &quot;<a class="code" href="math__utils_8h.html" title="Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig.">math_utils.h</a>&quot;</span>
+<a name="l00049"></a>00049 <span class="preprocessor">#include &quot;<a class="code" href="srf10_8h.html" title="Ansteuerung des Ultraschall Entfernungssensors SRF10.">srf10.h</a>&quot;</span>
+<a name="l00050"></a>00050 <span class="preprocessor">#include &quot;<a class="code" href="botfs_8h.html" title="Dateisystem BotFS.">botfs.h</a>&quot;</span>
+<a name="l00051"></a>00051 <span class="preprocessor">#include &quot;<a class="code" href="init_8h.html" title="Initialisierungsroutinen.">init.h</a>&quot;</span>
+<a name="l00052"></a>00052 
+<a name="l00053"></a>00053 <span class="comment">// ADC-PINS</span>
+<a name="l00054"></a><a class="code" href="sensor-low_8c.html#a4cf6b0a7938ea01e677f5da462f92052">00054</a> <span class="preprocessor">#define SENS_ABST_L     0       </span>
+<a name="l00055"></a><a class="code" href="sensor-low_8c.html#abde81e7271567219718e0c8741d6b9a0">00055</a> <span class="preprocessor">#define SENS_ABST_R     1       </span>
+<a name="l00056"></a><a class="code" href="sensor-low_8c.html#ad147c4b4b82d4786859e0d31cfacf20b">00056</a> <span class="preprocessor">#define SENS_M_L        2       </span>
+<a name="l00057"></a><a class="code" href="sensor-low_8c.html#a11499f3dcd448470c259c50b757c2528">00057</a> <span class="preprocessor">#define SENS_M_R        3       </span>
+<a name="l00058"></a><a class="code" href="sensor-low_8c.html#a11b985c292a11a79bd2e8b6a70a03904">00058</a> <span class="preprocessor">#define SENS_LDR_L      4       </span>
+<a name="l00059"></a><a class="code" href="sensor-low_8c.html#a8c6776a19e31ca68e698f30840e9d306">00059</a> <span class="preprocessor">#define SENS_LDR_R      5       </span>
+<a name="l00060"></a><a class="code" href="sensor-low_8c.html#a5bfecf0d018c2faf86e918e7a442c173">00060</a> <span class="preprocessor">#define SENS_KANTE_L    6       </span>
+<a name="l00061"></a><a class="code" href="sensor-low_8c.html#a5de6201daa01fb06153f7c5555273d8f">00061</a> <span class="preprocessor">#define SENS_KANTE_R    7       </span>
+<a name="l00063"></a>00063 <span class="preprocessor">// Sonstige Sensoren</span>
+<a name="l00064"></a><a class="code" href="sensor-low_8c.html#aa1c08177e76d664df58f9c994154a489">00064</a> <span class="preprocessor"></span><span class="preprocessor">#define SENS_DOOR_PINR      PIND    </span>
+<a name="l00065"></a><a class="code" href="sensor-low_8c.html#abda9937e4b9b11b4c0e69ef13a722487">00065</a> <span class="preprocessor">#define SENS_DOOR_DDR       DDRD    </span>
+<a name="l00066"></a><a class="code" href="sensor-low_8c.html#ad73dc3ec3ea21e8a2e681a9a033c4976">00066</a> <span class="preprocessor">#define SENS_DOOR           6       </span>
+<a name="l00068"></a>00068 <span class="preprocessor">#ifdef SPI_AVAILABLE</span>
+<a name="l00069"></a><a class="code" href="sensor-low_8c.html#a37fa202d230c3e877c4e5fc0fb2e3cea">00069</a> <span class="preprocessor"></span><span class="preprocessor">#define SENS_ENCL_PINR      PINC    </span>
+<a name="l00070"></a><a class="code" href="sensor-low_8c.html#ac7a5c3c68459b4d5a9139af7b1e9ee7f">00070</a> <span class="preprocessor">#define SENS_ENCL_DDR       DDRC    </span>
+<a name="l00071"></a><a class="code" href="sensor-low_8c.html#a9d5b57dec4fd0a1612ed477b96b81b07">00071</a> <span class="preprocessor">#define SENS_ENCL           5       </span>
+<a name="l00072"></a>00072 <span class="preprocessor">#else</span>
+<a name="l00073"></a>00073 <span class="preprocessor"></span><span class="preprocessor">#define SENS_ENCL_PINR      PINB    </span>
+<a name="l00074"></a>00074 <span class="preprocessor">#define SENS_ENCL_DDR       DDRB    </span>
+<a name="l00075"></a>00075 <span class="preprocessor">#define SENS_ENCL           4       </span>
+<a name="l00076"></a>00076 <span class="preprocessor">#endif  // SPI_AVAILABLE</span>
+<a name="l00077"></a>00077 <span class="preprocessor"></span>
+<a name="l00078"></a><a class="code" href="sensor-low_8c.html#a81f3df3e9a000e8dcf236679cf1e4e3a">00078</a> <span class="preprocessor">#define SENS_ENCR_PINR      PIND    </span>
+<a name="l00079"></a><a class="code" href="sensor-low_8c.html#a9d0f3e45f495de8be84a796a0b2cfe29">00079</a> <span class="preprocessor">#define SENS_ENCR_DDR       DDRD    </span>
+<a name="l00080"></a><a class="code" href="sensor-low_8c.html#ae832a87f5fef54ceb147c457bcebbb8d">00080</a> <span class="preprocessor">#define SENS_ENCR           3       </span>
+<a name="l00082"></a><a class="code" href="sensor-low_8c.html#af530c435a49cedbad2a29c0d326df724">00082</a> <span class="preprocessor">#define SENS_ERROR_PINR     PINB    </span>
+<a name="l00083"></a><a class="code" href="sensor-low_8c.html#ac5a78b05626571eea0d01bf7d71aeca3">00083</a> <span class="preprocessor">#define SENS_ERROR_DDR      DDRB    </span>
+<a name="l00084"></a><a class="code" href="sensor-low_8c.html#a5bdb6396ebdee9258d0075d48feeb1ce">00084</a> <span class="preprocessor">#define SENS_ERROR          2       </span>
+<a name="l00086"></a><a class="code" href="sensor-low_8c.html#a4a6d4546ddd23ffd375ea579a5d34143">00086</a> <span class="preprocessor">#define SENS_TRANS_PINR     PINB    </span>
+<a name="l00087"></a><a class="code" href="sensor-low_8c.html#abc06d0f38f63d405df0cac87a7ef4791">00087</a> <span class="preprocessor">#define SENS_TRANS_PORT     PORTB   </span>
+<a name="l00088"></a><a class="code" href="sensor-low_8c.html#a9da2f80275b0466b07b360fcc02beef9">00088</a> <span class="preprocessor">#define SENS_TRANS_DDR      DDRB    </span>
+<a name="l00089"></a><a class="code" href="sensor-low_8c.html#abaccd7fc6e770136edfe7a12f49fa556">00089</a> <span class="preprocessor">#define SENS_TRANS          0       </span>
+<a name="l00091"></a><a class="code" href="sensor-low_8c.html#ab53083a08eb65861cf70820ddcdbb3d7">00091</a> <span class="preprocessor">#define ENC_L ((SENS_ENCL_PINR &gt;&gt; SENS_ENCL) &amp; 0x01)    </span>
+<a name="l00092"></a><a class="code" href="sensor-low_8c.html#a56f15d9f330383722213a0f4cba1bb5f">00092</a> <span class="preprocessor">#define ENC_R ((SENS_ENCR_PINR &gt;&gt; SENS_ENCR) &amp; 0x01)    </span>
+<a name="l00094"></a><a class="code" href="sensor-low_8c.html#a02aa9abd462443929310395c8d2cc085">00094</a> <span class="preprocessor">#define ENC_ENTPRELL    12      </span>
+<a name="l00096"></a>00096 <span class="preprocessor">#ifdef SPEED_CONTROL_AVAILABLE</span>
+<a name="l00097"></a><a class="code" href="sensor-low_8c.html#a03be57d56f8af4b9dc48447cd4597958">00097</a> <span class="preprocessor"></span>uint16_t <a class="code" href="sensor-low_8h.html#a03be57d56f8af4b9dc48447cd4597958">encTimeL</a>[8] = {0}; 
+<a name="l00098"></a><a class="code" href="sensor-low_8c.html#aaa86a48f04cfce03e9e3737292042735">00098</a> uint16_t <a class="code" href="sensor-low_8h.html#aaa86a48f04cfce03e9e3737292042735">encTimeR</a>[8] = {0}; 
+<a name="l00099"></a><a class="code" href="sensor-low_8c.html#aebbb8ca1d1d1ea24dba854da6f180f47">00099</a> uint8_t <a class="code" href="sensor-low_8h.html#aebbb8ca1d1d1ea24dba854da6f180f47">i_encTimeL</a> = 0;     
+<a name="l00100"></a><a class="code" href="sensor-low_8c.html#af5485dab743526f82822ac028b7b276f">00100</a> uint8_t <a class="code" href="sensor-low_8h.html#af5485dab743526f82822ac028b7b276f">i_encTimeR</a> = 0;     
+<a name="l00101"></a><a class="code" href="sensor-low_8c.html#af189daca7d183aac7d65d5de5dbbdb0e">00101</a> uint8_t <a class="code" href="sensor-low_8c.html#af189daca7d183aac7d65d5de5dbbdb0e">timeCorrectL</a> = 0;   
+<a name="l00102"></a><a class="code" href="sensor-low_8c.html#ac3dc390c6ad3ab08dc9ee7a02b908ebd">00102</a> uint8_t <a class="code" href="sensor-low_8c.html#ac3dc390c6ad3ab08dc9ee7a02b908ebd">timeCorrectR</a> = 0;   
+<a name="l00103"></a>00103 <span class="preprocessor">#endif // SPEED_CONTROL_AVAILABLE</span>
+<a name="l00104"></a>00104 <span class="preprocessor"></span>
+<a name="l00105"></a>00105 <span class="preprocessor">#ifdef SPEED_LOG_AVAILABLE</span>
+<a name="l00106"></a>00106 <span class="preprocessor"></span><span class="comment">/* Debug-Loggings */</span>
+<a name="l00107"></a>00107 <span class="keyword">volatile</span> uint8_t slog_i[2] = {0,0}; 
+<a name="l00108"></a>00108 slog_t * <span class="keyword">const</span> slog = &amp;<a class="code" href="init_8h.html#a4fe62e026b012a16a6980db83a55c8bf" title="Zugriff auf einzelne MMC-Puffer.">GET_MMC_BUFFER</a>(speedlog); 
+<a name="l00109"></a>00109 <span class="keyword">static</span> botfs_file_descr_t speedlog_file; 
+<a name="l00110"></a>00110 <span class="preprocessor">#define SPEEDLOG_FILE_SIZE (1024 * (1024 / BOTFS_BLOCK_SIZE)) </span>
+<a name="l00111"></a>00111 <span class="preprocessor">#endif // SPEED_LOG_AVAILABLE</span>
+<a name="l00112"></a>00112 <span class="preprocessor"></span>
+<a name="l00116"></a><a class="code" href="sensor-low_8c.html#a6ce53274d0bb826e90a16fc4b06c14c4">00116</a> <span class="keywordtype">void</span> <a class="code" href="sensor-low_8h.html#a6ce53274d0bb826e90a16fc4b06c14c4" title="Initialisiere alle Sensoren.">bot_sens_init</a>(<span class="keywordtype">void</span>) {
+<a name="l00117"></a>00117 <span class="preprocessor">#ifdef BPS_AVAILABLE</span>
+<a name="l00118"></a>00118 <span class="preprocessor"></span>    <a class="code" href="adc_8h.html#ab04c7c6e0b8d32961ffa63cc38c19312">adc_init</a>(0xff &amp; ~_BV(<a class="code" href="ir-rc5_8h.html#a08be1a73def672aebc349f50492a1c5e">BPS_PIN</a>)); <span class="comment">// ADC-Ports (ausser BPS-Pin) aktivieren</span>
+<a name="l00119"></a>00119 <span class="preprocessor">#else</span>
+<a name="l00120"></a>00120 <span class="preprocessor"></span>    <a class="code" href="adc_8h.html#ab04c7c6e0b8d32961ffa63cc38c19312">adc_init</a>(0xff); <span class="comment">// Alle ADC-Ports aktivieren</span>
+<a name="l00121"></a>00121 <span class="preprocessor">#endif // BPS_AVAILABLE</span>
+<a name="l00122"></a>00122 <span class="preprocessor"></span>
+<a name="l00123"></a>00123     <a class="code" href="ena_8h.html#af27d8909f40028c91ab786d6d2bac0cb">ENA_set</a>(<a class="code" href="ena_8h.html#a5a2161dc2fceff67e6756d3540c0ccd2">ENA_RADLED</a> | <a class="code" href="ena_8h.html#a186e55f79d40568950dde526f5d999aa">ENA_ABSTAND</a>); <span class="comment">// Alle Sensoren bis auf Radencoder &amp; Abstandssensoren deaktivieren</span>
+<a name="l00124"></a>00124 
+<a name="l00125"></a>00125     <a class="code" href="sensor-low_8c.html#abda9937e4b9b11b4c0e69ef13a722487">SENS_DOOR_DDR</a> = (uint8_t) (<a class="code" href="sensor-low_8c.html#abda9937e4b9b11b4c0e69ef13a722487">SENS_DOOR_DDR</a> &amp; ~_BV(<a class="code" href="sensor-low_8c.html#ad73dc3ec3ea21e8a2e681a9a033c4976">SENS_DOOR</a>)); <span class="comment">// Input</span>
+<a name="l00126"></a>00126 
+<a name="l00127"></a>00127     <a class="code" href="sensor-low_8c.html#ac5a78b05626571eea0d01bf7d71aeca3">SENS_ERROR_DDR</a> = (uint8_t) (<a class="code" href="sensor-low_8c.html#ac5a78b05626571eea0d01bf7d71aeca3">SENS_ERROR_DDR</a> &amp; ~_BV(<a class="code" href="sensor-low_8c.html#a5bdb6396ebdee9258d0075d48feeb1ce">SENS_ERROR</a>)); <span class="comment">// Input</span>
+<a name="l00128"></a>00128 
+<a name="l00129"></a>00129     <a class="code" href="sensor-low_8c.html#a9da2f80275b0466b07b360fcc02beef9">SENS_TRANS_DDR</a> = (uint8_t) (<a class="code" href="sensor-low_8c.html#a9da2f80275b0466b07b360fcc02beef9">SENS_TRANS_DDR</a> &amp; ~_BV(<a class="code" href="sensor-low_8c.html#abaccd7fc6e770136edfe7a12f49fa556">SENS_TRANS</a>)); <span class="comment">// Input</span>
+<a name="l00130"></a>00130     <a class="code" href="sensor-low_8c.html#abc06d0f38f63d405df0cac87a7ef4791">SENS_TRANS_PORT</a> |= (1 &lt;&lt; <a class="code" href="sensor-low_8c.html#abaccd7fc6e770136edfe7a12f49fa556">SENS_TRANS</a>); <span class="comment">// Pullup an</span>
+<a name="l00131"></a>00131 
+<a name="l00132"></a>00132     <a class="code" href="sensor-low_8c.html#ac7a5c3c68459b4d5a9139af7b1e9ee7f">SENS_ENCL_DDR</a> = (uint8_t) (<a class="code" href="sensor-low_8c.html#ac7a5c3c68459b4d5a9139af7b1e9ee7f">SENS_ENCL_DDR</a> &amp; ~_BV(<a class="code" href="sensor-low_8c.html#a9d5b57dec4fd0a1612ed477b96b81b07">SENS_ENCL</a>)); <span class="comment">// Input</span>
+<a name="l00133"></a>00133     <a class="code" href="sensor-low_8c.html#a9d0f3e45f495de8be84a796a0b2cfe29">SENS_ENCR_DDR</a> = (uint8_t) (<a class="code" href="sensor-low_8c.html#a9d0f3e45f495de8be84a796a0b2cfe29">SENS_ENCR_DDR</a> &amp; ~_BV(<a class="code" href="sensor-low_8c.html#ae832a87f5fef54ceb147c457bcebbb8d">SENS_ENCR</a>)); <span class="comment">// Input</span>
+<a name="l00134"></a>00134 
+<a name="l00135"></a>00135     <span class="comment">/* Reset Encoderstaende */</span>
+<a name="l00136"></a>00136     <a class="code" href="sensor_8c.html#a2ed6effbb05581a060bd26f2af436741">sensEncL</a> = 0;
+<a name="l00137"></a>00137     <a class="code" href="sensor_8c.html#a31470eb8eed6ffed8e0aeb435581efcf">sensEncR</a> = 0;
+<a name="l00138"></a>00138 
+<a name="l00139"></a>00139 <span class="preprocessor">#ifdef SPEED_LOG_AVAILABLE</span>
+<a name="l00140"></a>00140 <span class="preprocessor"></span>    <span class="keywordtype">void</span> * <span class="keyword">const</span> buffer = slog;
+<a name="l00141"></a>00141     <span class="comment">/* Datei oeffnen / anlegen */</span>
+<a name="l00142"></a>00142     int8_t res;
+<a name="l00143"></a>00143     <span class="keywordflow">if</span> ((res = <a class="code" href="botfs_8c.html#aad0605bba52a09999f158cb2e371a5de" title="Oeffnet eine Datei.">botfs_open</a>(<a class="code" href="sensor-low_8h.html#a41fc6003e5ece6f96c4e77c796840bf4" title="Dateiname der Speedlog-Datei.">SPEEDLOG_FILE_NAME</a>, &amp;speedlog_file, <a class="code" href="botfs__config_8h.html#add8cfeb97a2a3b41a11fd612fb849dda" title="lesen und schreiben, Datei wird aber beim Oeffnen geleert">BOTFS_MODE_W</a>, buffer)) != 0) {
+<a name="l00144"></a>00144         <span class="keywordflow">if</span> (res == -1) {
+<a name="l00145"></a>00145             <a class="code" href="botfs_8c.html#a1683850a15cc2ed1af27911aa134f83f" title="Legt eine neue Datei an.">botfs_create</a>(<a class="code" href="sensor-low_8h.html#a41fc6003e5ece6f96c4e77c796840bf4" title="Dateiname der Speedlog-Datei.">SPEEDLOG_FILE_NAME</a>, SPEEDLOG_FILE_SIZE, 0, buffer);
+<a name="l00146"></a>00146             <span class="keywordflow">if</span> (<a class="code" href="botfs_8c.html#aad0605bba52a09999f158cb2e371a5de" title="Oeffnet eine Datei.">botfs_open</a>(<a class="code" href="sensor-low_8h.html#a41fc6003e5ece6f96c4e77c796840bf4" title="Dateiname der Speedlog-Datei.">SPEEDLOG_FILE_NAME</a>, &amp;speedlog_file, <a class="code" href="botfs__config_8h.html#add8cfeb97a2a3b41a11fd612fb849dda" title="lesen und schreiben, Datei wird aber beim Oeffnen geleert">BOTFS_MODE_W</a>, buffer) != 0) {
+<a name="l00147"></a>00147                 <span class="keywordflow">return</span>;
+<a name="l00148"></a>00148             }
+<a name="l00149"></a>00149         }
+<a name="l00150"></a>00150     }
+<a name="l00151"></a>00151 
+<a name="l00152"></a>00152     <span class="comment">/* Typ in den Header schreiben (mit oder ohne Motorregelung) */</span>
+<a name="l00153"></a>00153     uint8_t * header;
+<a name="l00154"></a>00154     <span class="keywordflow">if</span> (<a class="code" href="botfs_8c.html#a4f5aa83fae2a2682310842df4c8458e0" title="Liest die frei verwendbaren Header-Daten einer Datei aus.">botfs_read_header_data</a>(&amp;speedlog_file, &amp;header, buffer) == 0) {
+<a name="l00155"></a>00155 <span class="preprocessor">#ifdef SPEED_CONTROL_AVAILABLE</span>
+<a name="l00156"></a>00156 <span class="preprocessor"></span>        *header = <a class="code" href="sensor-low__pc_8c.html#a31052ca80b9dc203940934ab4f4ec8cc">SLOG_WITH_SPEED_CONTROL</a>;
+<a name="l00157"></a>00157 <span class="preprocessor">#else // ! SPEED_CONTROL_AVAILABLE</span>
+<a name="l00158"></a>00158 <span class="preprocessor"></span>        *header = <a class="code" href="sensor-low__pc_8c.html#a05744c83f612ac8fe90e86c8379c24ab">SLOG_WITHOUT_SPEED_CONTROL</a>;
+<a name="l00159"></a>00159 <span class="preprocessor">#endif // SPEED_CONTROL_AVAILABLE</span>
+<a name="l00160"></a>00160 <span class="preprocessor"></span>        <a class="code" href="botfs_8c.html#a4211d1027e05944d4aff015446e01b62" title="Schreib die frei verwendbaren Header-Daten einer Datei in den Header.">botfs_write_header_data</a>(&amp;speedlog_file, buffer);
+<a name="l00161"></a>00161     }
+<a name="l00162"></a>00162     memset(buffer, 0, <span class="keyword">sizeof</span>(slog));
+<a name="l00163"></a>00163 <span class="preprocessor">#endif // SPEED_LOG_AVAILABLE</span>
+<a name="l00164"></a>00164 <span class="preprocessor"></span>}
+<a name="l00165"></a>00165 
+<a name="l00169"></a><a class="code" href="sensor-low_8c.html#a8dcf4c4272154b7745c90902c9b45f29">00169</a> <span class="keywordtype">void</span> <a class="code" href="sensor-low_8h.html#a8dcf4c4272154b7745c90902c9b45f29" title="Alle Sensoren aktualisieren.">bot_sens</a>(<span class="keywordtype">void</span>) {
+<a name="l00170"></a>00170     <a class="code" href="ena_8h.html#a51c24b2a246e1b3cbd3df73a7ac662ad">ENA_on</a>(<a class="code" href="ena_8h.html#afd9af7a908f3a95304beb1b396de6179">ENA_KANTLED</a>|<a class="code" href="ena_8h.html#a58dc4e34440042a38ff9f501c86d2ba1">ENA_LINE</a>|<a class="code" href="ena_8h.html#a4c2d78b5a330270c96fc518d8c4ffc94">ENA_SCHRANKE</a>|<a class="code" href="ena_8h.html#afca3ba9073be80c7ae83529f2d2fc1b3">ENA_KLAPPLED</a>); <span class="comment">// Die Distanzsensoren sind im Normalfall an, da sie 50 ms zum booten brauchen</span>
+<a name="l00171"></a>00171 
+<a name="l00172"></a>00172 <span class="preprocessor">#ifdef CMPS03_AVAILABLE</span>
+<a name="l00173"></a>00173 <span class="preprocessor"></span>    <a class="code" href="cmps03_8h.html#af79fc160bcb5bf9a6b3ab948c6474e89">cmps03_get_bearing</a>(&amp;<a class="code" href="sensor_8c.html#a96c5db475eb263fd9db2025809a917ab">sensCmps03</a>);
+<a name="l00174"></a>00174 <span class="preprocessor">#endif</span>
+<a name="l00175"></a>00175 <span class="preprocessor"></span>
+<a name="l00176"></a>00176     <span class="comment">/* aktualisiere Distanz-Sensoren, interrupt-driven I/O */</span>
+<a name="l00177"></a>00177 <span class="preprocessor">#ifdef DISTSENS_AVERAGE</span>
+<a name="l00178"></a>00178 <span class="preprocessor"></span>    <span class="keyword">static</span> uint8_t measure_count = 0;
+<a name="l00179"></a>00179     <span class="keyword">static</span> int16_t distLeft[4];
+<a name="l00180"></a>00180     <span class="keyword">static</span> int16_t distRight[4];
+<a name="l00181"></a>00181 <span class="preprocessor">#endif // DISTSENS_AVERAGE</span>
+<a name="l00182"></a>00182 <span class="preprocessor"></span>    <span class="keyword">static</span> uint16_t old_dist; <span class="comment">// Zeit der letzten Messung der Distanzsensoren</span>
+<a name="l00183"></a>00183 
+<a name="l00184"></a>00184     <span class="comment">/* Auswertung der Distanzsensoren alle 50 ms */</span>
+<a name="l00185"></a>00185     uint16_t dist_ticks = <a class="code" href="timer_8h.html#a18263e68cde6252d694ac588634e05bd">TIMER_GET_TICKCOUNT_16</a>;
+<a name="l00186"></a>00186     <span class="keywordflow">if</span> ((uint16_t)(dist_ticks - old_dist) &gt; <a class="code" href="timer_8h.html#a73adf9c10352865ff95b5f46e642c560">MS_TO_TICKS</a>(50)) {
+<a name="l00187"></a>00187         int16_t * pDistL, * pDistR;
+<a name="l00188"></a>00188 <span class="preprocessor">#ifdef DISTSENS_AVERAGE</span>
+<a name="l00189"></a>00189 <span class="preprocessor"></span>        pDistL = &amp;distLeft[measure_count];
+<a name="l00190"></a>00190         pDistR = &amp;distRight[measure_count];
+<a name="l00191"></a>00191 <span class="preprocessor">#else</span>
+<a name="l00192"></a>00192 <span class="preprocessor"></span>        pDistL = &amp;<a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a>;
+<a name="l00193"></a>00193         pDistR = &amp;<a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a>;
+<a name="l00194"></a>00194 <span class="preprocessor">#endif // DISTSENS_AVERAGE</span>
+<a name="l00195"></a>00195 <span class="preprocessor"></span>        <a class="code" href="adc_8h.html#a5aa192f9a1015adcf1f605a54bd3bc69" title="Fuegt einen analogen Kanal in die ADC-Konvertierungsliste ein und wertet ihn per Interrupt aus...">adc_read_int</a>(<a class="code" href="sensor-low_8c.html#a4cf6b0a7938ea01e677f5da462f92052">SENS_ABST_L</a>, pDistL);
+<a name="l00196"></a>00196 <span class="preprocessor">#ifdef BEHAVIOUR_SERVO_AVAILABLE</span>
+<a name="l00197"></a>00197 <span class="preprocessor"></span>        <span class="keywordflow">if</span> ((<a class="code" href="behaviour__servo_8c.html#aba062289ef232038f14ccb7a26214a68" title="0, wenn kein Servo aktiv, sonst Bit der gerade aktiven Servos gesetzt">servo_active</a> &amp; <a class="code" href="motor_8h.html#a8f2a5c30e29a7191cff398b144850d51" title="Servo 1.">SERVO1</a>) == 0) <span class="comment">// wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensor nicht</span>
+<a name="l00198"></a>00198 <span class="preprocessor">#endif</span>
+<a name="l00199"></a>00199 <span class="preprocessor"></span>            <a class="code" href="adc_8h.html#a5aa192f9a1015adcf1f605a54bd3bc69" title="Fuegt einen analogen Kanal in die ADC-Konvertierungsliste ein und wertet ihn per Interrupt aus...">adc_read_int</a>(<a class="code" href="sensor-low_8c.html#abde81e7271567219718e0c8741d6b9a0">SENS_ABST_R</a>, pDistR);
+<a name="l00200"></a>00200 <span class="preprocessor">#ifdef DISTSENS_AVERAGE</span>
+<a name="l00201"></a>00201 <span class="preprocessor"></span>        measure_count++;
+<a name="l00202"></a>00202         measure_count &amp;= 0x3; <span class="comment">// Z/4Z</span>
+<a name="l00203"></a>00203 <span class="preprocessor">#endif</span>
+<a name="l00204"></a>00204 <span class="preprocessor"></span>    }
+<a name="l00205"></a>00205 
+<a name="l00206"></a>00206     <span class="comment">/* die anderen analogen Sensoren, auch int-driven I/O */</span>
+<a name="l00207"></a>00207     <a class="code" href="adc_8h.html#a5aa192f9a1015adcf1f605a54bd3bc69" title="Fuegt einen analogen Kanal in die ADC-Konvertierungsliste ein und wertet ihn per Interrupt aus...">adc_read_int</a>(<a class="code" href="sensor-low_8c.html#ad147c4b4b82d4786859e0d31cfacf20b">SENS_M_L</a>, &amp;<a class="code" href="sensor_8c.html#a56a020f1eb08fbff3d7fa669335921ed">sensLineL</a>);
+<a name="l00208"></a>00208     <a class="code" href="adc_8h.html#a5aa192f9a1015adcf1f605a54bd3bc69" title="Fuegt einen analogen Kanal in die ADC-Konvertierungsliste ein und wertet ihn per Interrupt aus...">adc_read_int</a>(<a class="code" href="sensor-low_8c.html#a11499f3dcd448470c259c50b757c2528">SENS_M_R</a>, &amp;<a class="code" href="sensor_8c.html#ae286bb8f86cced317801e378247dcb18">sensLineR</a>);
+<a name="l00209"></a>00209 
+<a name="l00210"></a>00210 <span class="preprocessor">#ifndef BPS_AVAILABLE</span>
+<a name="l00211"></a>00211 <span class="preprocessor"></span>    <a class="code" href="adc_8h.html#a5aa192f9a1015adcf1f605a54bd3bc69" title="Fuegt einen analogen Kanal in die ADC-Konvertierungsliste ein und wertet ihn per Interrupt aus...">adc_read_int</a>(<a class="code" href="sensor-low_8c.html#a11b985c292a11a79bd2e8b6a70a03904">SENS_LDR_L</a>, &amp;<a class="code" href="sensor_8c.html#a6d0a5c233b4eb9e698d9f78c8a628bb7">sensLDRL</a>);
+<a name="l00212"></a>00212 <span class="preprocessor">#endif</span>
+<a name="l00213"></a>00213 <span class="preprocessor"></span>    <a class="code" href="adc_8h.html#a5aa192f9a1015adcf1f605a54bd3bc69" title="Fuegt einen analogen Kanal in die ADC-Konvertierungsliste ein und wertet ihn per Interrupt aus...">adc_read_int</a>(<a class="code" href="sensor-low_8c.html#a8c6776a19e31ca68e698f30840e9d306">SENS_LDR_R</a>, &amp;<a class="code" href="sensor_8c.html#a69a539530f625ee30aa24c42a763aa99">sensLDRR</a>);
+<a name="l00214"></a>00214 
+<a name="l00215"></a>00215     <a class="code" href="adc_8h.html#a5aa192f9a1015adcf1f605a54bd3bc69" title="Fuegt einen analogen Kanal in die ADC-Konvertierungsliste ein und wertet ihn per Interrupt aus...">adc_read_int</a>(<a class="code" href="sensor-low_8c.html#a5bfecf0d018c2faf86e918e7a442c173">SENS_KANTE_L</a>, &amp;<a class="code" href="sensor_8c.html#a84def4d45c65c50a87cd4882f9462b2e">sensBorderL</a>);
+<a name="l00216"></a>00216     <a class="code" href="adc_8h.html#a5aa192f9a1015adcf1f605a54bd3bc69" title="Fuegt einen analogen Kanal in die ADC-Konvertierungsliste ein und wertet ihn per Interrupt aus...">adc_read_int</a>(<a class="code" href="sensor-low_8c.html#a5de6201daa01fb06153f7c5555273d8f">SENS_KANTE_R</a>, &amp;<a class="code" href="sensor_8c.html#a0fdaee88ee679ed4c544707de739ee9a">sensBorderR</a>);
+<a name="l00217"></a>00217 
+<a name="l00218"></a>00218 <span class="preprocessor">#ifdef MOUSE_AVAILABLE</span>
+<a name="l00219"></a>00219 <span class="preprocessor"></span>    <span class="comment">// Aktualisiere die Position des Maussensors</span>
+<a name="l00220"></a>00220     <a class="code" href="sensor_8c.html#ac3ad636ee074ea70bba8ba26e3028cf2">sensMouseDX</a> = (int8_t) <a class="code" href="mouse_8h.html#a51b8066f598e2adc8679ddd77f3d1a8b">mouse_sens_read</a>(<a class="code" href="mouse_8h.html#a43a1caa6b6e1c32c7d279124cb413ce2">MOUSE_DELTA_X_REG</a>);
+<a name="l00221"></a>00221     <a class="code" href="sensor_8c.html#a90e9f880c4e7721dc2944429db650a44">sensMouseDY</a> = (int8_t) <a class="code" href="mouse_8h.html#a51b8066f598e2adc8679ddd77f3d1a8b">mouse_sens_read</a>(<a class="code" href="mouse_8h.html#aa8aaa6f1021a9480addbf3cc91599dbe">MOUSE_DELTA_Y_REG</a>);
+<a name="l00222"></a>00222 <span class="preprocessor">#endif</span>
+<a name="l00223"></a>00223 <span class="preprocessor"></span>
+<a name="l00224"></a>00224     <span class="comment">/* alle digitalen Sensoren */</span>
+<a name="l00225"></a>00225     <a class="code" href="sensor_8c.html#ad0b5edd09bb7a0e522ea12523ac75a81">sensDoor</a> = (uint8_t) ((<a class="code" href="sensor-low_8c.html#aa1c08177e76d664df58f9c994154a489">SENS_DOOR_PINR</a> &gt;&gt; <a class="code" href="sensor-low_8c.html#ad73dc3ec3ea21e8a2e681a9a033c4976">SENS_DOOR</a>) &amp; 0x01);
+<a name="l00226"></a>00226     <a class="code" href="sensor_8c.html#a34eca1400eac2bb5383dd6f55adf0f72">sensTrans</a> = (uint8_t) ((<a class="code" href="sensor-low_8c.html#a4a6d4546ddd23ffd375ea579a5d34143">SENS_TRANS_PINR</a> &gt;&gt; <a class="code" href="sensor-low_8c.html#abaccd7fc6e770136edfe7a12f49fa556">SENS_TRANS</a>) &amp; 0x01);
+<a name="l00227"></a>00227     <a class="code" href="sensor_8c.html#a7b8447203f867d67fde99f1172a460af">sensError</a> = (uint8_t) ((<a class="code" href="sensor-low_8c.html#af530c435a49cedbad2a29c0d326df724">SENS_ERROR_PINR</a> &gt;&gt; <a class="code" href="sensor-low_8c.html#a5bdb6396ebdee9258d0075d48feeb1ce">SENS_ERROR</a>) &amp; 0x01);
+<a name="l00228"></a>00228 
+<a name="l00229"></a>00229 <span class="preprocessor">#ifdef SPEED_CONTROL_AVAILABLE</span>
+<a name="l00230"></a>00230 <span class="preprocessor"></span>    <span class="comment">/* Aufruf der Motorregler, falls Stillstand */</span>
+<a name="l00231"></a>00231     <span class="keyword">register</span> uint16_t pid_ticks = <a class="code" href="timer_8h.html#a18263e68cde6252d694ac588634e05bd">TIMER_GET_TICKCOUNT_16</a>; <span class="comment">// Ticks sichern [178 us]</span>
+<a name="l00232"></a>00232     <span class="keyword">register</span> uint8_t i_time;
+<a name="l00233"></a>00233     <span class="keyword">register</span> uint8_t * p_time;
+<a name="l00234"></a>00234     <span class="comment">/* Index auf Encodertimestamps zwischenspeichern */</span>
+<a name="l00235"></a>00235     i_time = <a class="code" href="sensor-low_8h.html#aebbb8ca1d1d1ea24dba854da6f180f47">i_encTimeL</a>;
+<a name="l00236"></a>00236     p_time = (uint8_t *) <a class="code" href="sensor-low_8h.html#a03be57d56f8af4b9dc48447cd4597958">encTimeL</a>;
+<a name="l00237"></a>00237     <span class="comment">/* Bei Stillstand Regleraufruf links nach PID_TIME ms */</span>
+<a name="l00238"></a>00238     <span class="keywordflow">if</span> (pid_ticks - *(uint16_t *)(p_time + i_time) &gt; <a class="code" href="bot-local_8h.html#a6d4bd96f5fcc6f3abdeee36e69ac925a">PID_TIME</a> * 50 / <a class="code" href="timer_8h.html#a8c11b7233c1cb69ca3e7b7758399d098">TIMER_STEPS</a> * 20) {
+<a name="l00239"></a>00239         <span class="comment">/* Timestamp links verschieben / speichern */</span>
+<a name="l00240"></a>00240         i_time = (uint8_t) ((i_time + <span class="keyword">sizeof</span>(<a class="code" href="sensor-low_8h.html#a03be57d56f8af4b9dc48447cd4597958">encTimeL</a>[0])) &amp; 0xf); <span class="comment">// encTime ist Z/8Z und jeder Eintrag hat 2 Byte =&gt; 0xf</span>
+<a name="l00241"></a>00241         *(uint16_t *)(p_time + i_time) = pid_ticks;
+<a name="l00242"></a>00242         <a class="code" href="sensor-low_8h.html#aebbb8ca1d1d1ea24dba854da6f180f47">i_encTimeL</a> = i_time;
+<a name="l00243"></a>00243         <span class="comment">/* Regleraufruf */</span>
+<a name="l00244"></a>00244         <a class="code" href="motor_8c.html#abfe2160ced04338d7f24aab6291c7f19" title="Drehzahlregelung fuer die Motoren des c&#39;t-Bots.">speed_control</a>(0,  (int16_t *) &amp;<a class="code" href="motor_8h.html#a878e16240740a521fd0224f33c5570e6" title="zuletzt gestellter Wert linker Motor">motor_left</a>, (uint16_t *) <a class="code" href="sensor-low_8h.html#a03be57d56f8af4b9dc48447cd4597958">encTimeL</a>, <a class="code" href="sensor-low_8h.html#aebbb8ca1d1d1ea24dba854da6f180f47">i_encTimeL</a>, 0);
+<a name="l00245"></a>00245         <a class="code" href="sensor-low_8c.html#af189daca7d183aac7d65d5de5dbbdb0e">timeCorrectL</a> = 1;
+<a name="l00246"></a>00246     }
+<a name="l00247"></a>00247     <span class="comment">/* Bei Stillstand Regleraufruf rechts nach PID_TIME ms */</span>
+<a name="l00248"></a>00248     i_time = <a class="code" href="sensor-low_8h.html#af5485dab743526f82822ac028b7b276f">i_encTimeR</a>;
+<a name="l00249"></a>00249     p_time = (uint8_t *) <a class="code" href="sensor-low_8h.html#aaa86a48f04cfce03e9e3737292042735">encTimeR</a>;
+<a name="l00250"></a>00250     <span class="keywordflow">if</span> (pid_ticks - *(uint16_t *)(p_time + i_time) &gt; <a class="code" href="bot-local_8h.html#a6d4bd96f5fcc6f3abdeee36e69ac925a">PID_TIME</a> * 50 / <a class="code" href="timer_8h.html#a8c11b7233c1cb69ca3e7b7758399d098">TIMER_STEPS</a> * 20) {
+<a name="l00251"></a>00251         <span class="comment">/* Timestamp rechts verschieben / speichern */</span>
+<a name="l00252"></a>00252         i_time = (uint8_t) ((i_time + <span class="keyword">sizeof</span>(<a class="code" href="sensor-low_8h.html#aaa86a48f04cfce03e9e3737292042735">encTimeR</a>[0])) &amp; 0xf); <span class="comment">// encTime ist Z/8Z und jeder Eintrag hat 2 Byte =&gt; 0xf</span>
+<a name="l00253"></a>00253         *(uint16_t *)(p_time + i_time) = pid_ticks;
+<a name="l00254"></a>00254         <a class="code" href="sensor-low_8h.html#af5485dab743526f82822ac028b7b276f">i_encTimeR</a> = i_time;
+<a name="l00255"></a>00255         <span class="comment">/* Regleraufruf rechts */</span>
+<a name="l00256"></a>00256         <a class="code" href="motor_8c.html#abfe2160ced04338d7f24aab6291c7f19" title="Drehzahlregelung fuer die Motoren des c&#39;t-Bots.">speed_control</a>(1, (int16_t *) &amp;<a class="code" href="motor_8h.html#a18ee6f467af5eddad0fb19b3dd274917" title="zuletzt gestellter Wert rechter Motor">motor_right</a>, (uint16_t *) <a class="code" href="sensor-low_8h.html#aaa86a48f04cfce03e9e3737292042735">encTimeR</a>, <a class="code" href="sensor-low_8h.html#af5485dab743526f82822ac028b7b276f">i_encTimeR</a>, 0);
+<a name="l00257"></a>00257         <a class="code" href="sensor-low_8c.html#ac3dc390c6ad3ab08dc9ee7a02b908ebd">timeCorrectR</a> = 1;
+<a name="l00258"></a>00258     }
+<a name="l00259"></a>00259 <span class="preprocessor">#endif // SPEED_CONTROL_AVAILABLE</span>
+<a name="l00260"></a>00260 <span class="preprocessor"></span>
+<a name="l00261"></a>00261 <span class="preprocessor">#ifdef SPEED_LOG_AVAILABLE</span>
+<a name="l00262"></a>00262 <span class="preprocessor"></span>    <span class="comment">/* Speed-Log-Daten auf MMC schreiben, falls Puffer voll */</span>
+<a name="l00263"></a>00263     <span class="keywordflow">if</span> (slog_i[0] &gt; 20 || slog_i[1] &gt; 20) { <span class="comment">// etwas Luft lassen, denn die Daten kommen per ISR</span>
+<a name="l00264"></a>00264         <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code" href="behaviour__drive__chess_8c.html#aa94ff7ddd304b9beb2f209b6174e180e">n</a> = <span class="keyword">sizeof</span>(slog-&gt;data[0]) / <span class="keyword">sizeof</span>(slog-&gt;data[0][0]);
+<a name="l00265"></a>00265         uint8_t <a class="code" href="behaviour__drive__chess_8c.html#aac1217779551b743f5645c17740178e3">j</a>;
+<a name="l00266"></a>00266         <span class="keywordflow">for</span> (j = 0; j &lt; 2; ++<a class="code" href="behaviour__drive__chess_8c.html#aac1217779551b743f5645c17740178e3">j</a>) {
+<a name="l00267"></a>00267             <span class="keyword">const</span> uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a> = (uint8_t) (slog_i[j] + 1);
+<a name="l00268"></a>00268             slog_i[<a class="code" href="behaviour__drive__chess_8c.html#aac1217779551b743f5645c17740178e3">j</a>] = 0; <span class="comment">// Index-Reset</span>
+<a name="l00269"></a>00269             <span class="keyword">const</span> uint16_t length = mul8(<span class="keyword">sizeof</span>(slog_data_t), (uint8_t) (n - i));
+<a name="l00270"></a>00270             memset((uint8_t *) &amp;slog-&gt;data[j][i], 0, length);
+<a name="l00271"></a>00271         }
+<a name="l00272"></a>00272         <a class="code" href="botfs_8c.html#afe7539a83c840b120ef8996557fd0e9a" title="Schreibt BOTFS_BLOCK_SIZE Bytes aus einem Puffer in eine Datei.">botfs_write</a>(&amp;speedlog_file, slog-&gt;data);
+<a name="l00273"></a>00273     }
+<a name="l00274"></a>00274 <span class="preprocessor">#endif // SPEED_LOG_AVAILABLE</span>
+<a name="l00275"></a>00275 <span class="preprocessor"></span>
+<a name="l00276"></a>00276 <span class="preprocessor">#ifdef BPS_AVAILABLE</span>
+<a name="l00277"></a>00277 <span class="preprocessor"></span>    uint16_t tmp = <a class="code" href="ir-rc5_8h.html#a82eff44b303e147ec8a546f5446c7797">ir_read</a>(&amp;<a class="code" href="sensor_8c.html#abecd7e3bb497c7ea63763afc3b6c4d34">bps_ir_data</a>);
+<a name="l00278"></a>00278     <a class="code" href="sensor_8c.html#a34015652b96fbf2ceaca9b98b1715998">sensBPS</a> = tmp != <a class="code" href="bot-local_8h.html#ab55267340d6da933fceb3af57a55445a">BPS_NO_DATA</a> ? tmp &amp; 0xf : <a class="code" href="bot-local_8h.html#ab55267340d6da933fceb3af57a55445a">BPS_NO_DATA</a>; <span class="comment">// untere 4 Bit</span>
+<a name="l00279"></a>00279 <span class="preprocessor">#endif // BPS_AVAILABLE</span>
+<a name="l00280"></a>00280 <span class="preprocessor"></span>
+<a name="l00281"></a>00281     <a class="code" href="sensor_8c.html#a3c4d624e12d5ef3ae57e4b4b4b569f4c">sensor_update</a>(); <span class="comment">// Weiterverarbeitung der rohen Sensordaten</span>
+<a name="l00282"></a>00282 
+<a name="l00283"></a>00283     <span class="keywordflow">if</span> ((uint16_t) (dist_ticks - old_dist) &gt; <a class="code" href="timer_8h.html#a73adf9c10352865ff95b5f46e642c560">MS_TO_TICKS</a>(50)) {
+<a name="l00284"></a>00284         old_dist = dist_ticks;  <span class="comment">// Zeit fuer naechste Messung merken</span>
+<a name="l00285"></a>00285         <span class="comment">// dieser Block braucht insgesamt ca. 80 us (MCU)</span>
+<a name="l00286"></a>00286         <span class="comment">/* Dist-Sensor links */</span>
+<a name="l00287"></a>00287         <span class="keywordflow">while</span> (<a class="code" href="adc_8h.html#ad38acca1544c14d601d911fe7a838116">adc_get_active_channel</a>() &lt; 1) {}
+<a name="l00288"></a>00288         int16_t volt;
+<a name="l00289"></a>00289 <span class="preprocessor">#ifdef DISTSENS_AVERAGE</span>
+<a name="l00290"></a>00290 <span class="preprocessor"></span>        volt = (distLeft[0] + distLeft[1] + distLeft[2] + distLeft[3]) &gt;&gt; 2;
+<a name="l00291"></a>00291 <span class="preprocessor">#else</span>
+<a name="l00292"></a>00292 <span class="preprocessor"></span>        volt = <a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a>;
+<a name="l00293"></a>00293 <span class="preprocessor">#endif</span>
+<a name="l00294"></a>00294 <span class="preprocessor"></span>        (*sensor_update_distance)(&amp;<a class="code" href="sensor_8c.html#a1569dab3dc9cb63de028504cb8bb0335">sensDistL</a>, &amp;<a class="code" href="sensor_8c.html#aab4f26c26726bc36314faf79f5f51dcb">sensDistLToggle</a>, <a class="code" href="sensor_8c.html#a479988bc8d0996b0670e27231263d02b">sensDistDataL</a>, volt);
+<a name="l00295"></a>00295 
+<a name="l00296"></a>00296         <span class="comment">/* Dist-Sensor rechts */</span>
+<a name="l00297"></a>00297         <span class="keywordflow">while</span> (<a class="code" href="adc_8h.html#ad38acca1544c14d601d911fe7a838116">adc_get_active_channel</a>() &lt; 2) {}
+<a name="l00298"></a>00298 <span class="preprocessor">#ifdef DISTSENS_AVERAGE</span>
+<a name="l00299"></a>00299 <span class="preprocessor"></span>        volt = (distRight[0] + distRight[1] + distRight[2] + distRight[3]) &gt;&gt; 2;
+<a name="l00300"></a>00300 <span class="preprocessor">#else</span>
+<a name="l00301"></a>00301 <span class="preprocessor"></span>        volt = <a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a>;
+<a name="l00302"></a>00302 <span class="preprocessor">#endif</span>
+<a name="l00303"></a>00303 <span class="preprocessor"></span>        (*sensor_update_distance)(&amp;<a class="code" href="sensor_8c.html#a7d7172e8d2124e3ffc0497f26c719932">sensDistR</a>, &amp;<a class="code" href="sensor_8c.html#a45777fcdc539dde1c889356f8ad0b4ad">sensDistRToggle</a>, <a class="code" href="sensor_8c.html#a1cbefd5363cf577b7bbbce28e7f06834">sensDistDataR</a>, volt);
+<a name="l00304"></a>00304     }
+<a name="l00305"></a>00305 
+<a name="l00306"></a>00306 <span class="preprocessor">#ifdef CMPS03_AVAILABLE</span>
+<a name="l00307"></a>00307 <span class="preprocessor"></span>    <a class="code" href="cmps03_8h.html#a30930bf33e9e8f83a4a94724c5187dd5">cmps03_finish</a>(&amp;<a class="code" href="sensor_8c.html#a96c5db475eb263fd9db2025809a917ab">sensCmps03</a>);
+<a name="l00308"></a>00308     <a class="code" href="sensor_8c.html#acbf755fc394183b9916d8f9fc2960420">heading_10_int</a> = <a class="code" href="sensor_8c.html#a96c5db475eb263fd9db2025809a917ab">sensCmps03</a>.<a class="code" href="unioncmps03__t.html#ace9f7096110686ffcdd2fc7b973fb19f">bearing</a>;
+<a name="l00309"></a>00309     <a class="code" href="sensor_8c.html#a0bebab40bf945479d36e9190261b5a28">heading_int</a> = <a class="code" href="sensor_8c.html#acbf755fc394183b9916d8f9fc2960420">heading_10_int</a> / 10;
+<a name="l00310"></a>00310     <a class="code" href="sensor_8c.html#ac5682e48513a771560df50e3b213e61a">heading</a> = (float) <a class="code" href="sensor_8c.html#a96c5db475eb263fd9db2025809a917ab">sensCmps03</a>.<a class="code" href="unioncmps03__t.html#ace9f7096110686ffcdd2fc7b973fb19f">bearing</a> / 10.0f;
+<a name="l00311"></a>00311     <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code" href="behaviour__drive__chess_8c.html#aac430e94ef6f27edf759bc1bdcdab16e">h</a> = rad(<a class="code" href="sensor_8c.html#ac5682e48513a771560df50e3b213e61a">heading</a>);
+<a name="l00312"></a>00312     <a class="code" href="sensor_8c.html#abf46f3373ce4937328a613dfae059af7">heading_sin</a> = sinf(<a class="code" href="behaviour__drive__chess_8c.html#aac430e94ef6f27edf759bc1bdcdab16e">h</a>);
+<a name="l00313"></a>00313     <a class="code" href="sensor_8c.html#a569e0f57bd20c90661f2bb6c4b1ba750">heading_cos</a> = cosf(<a class="code" href="behaviour__drive__chess_8c.html#aac430e94ef6f27edf759bc1bdcdab16e">h</a>);
+<a name="l00314"></a>00314 <span class="preprocessor">#endif // CMPS03_AVAILABLE</span>
+<a name="l00315"></a>00315 <span class="preprocessor"></span>
+<a name="l00316"></a>00316 <span class="preprocessor">#ifdef SRF10_AVAILABLE</span>
+<a name="l00317"></a>00317 <span class="preprocessor"></span>    <span class="keyword">static</span> uint16_t srf_time = 0;
+<a name="l00318"></a>00318     <span class="keywordflow">if</span> (timer_ms_passed_16(&amp;srf_time, 250)) {
+<a name="l00319"></a>00319         sensSRF10 = srf10_get_measure();    
+<a name="l00320"></a>00320     }
+<a name="l00321"></a>00321 <span class="preprocessor">#endif // SRF10_AVAILABLE</span>
+<a name="l00322"></a>00322 <span class="preprocessor"></span>
+<a name="l00323"></a>00323     <span class="comment">/* alle anderen analogen Sensoren */</span>
+<a name="l00324"></a>00324     <span class="keywordflow">while</span> (<a class="code" href="adc_8h.html#ad38acca1544c14d601d911fe7a838116">adc_get_active_channel</a>() != 255) {}  <span class="comment">// restliche Zeit verbrauchen</span>
+<a name="l00325"></a>00325     <span class="comment">// in den Testmodi bleibt immer alles an.</span>
+<a name="l00326"></a>00326 <span class="preprocessor">#ifndef BEHAVIOUR_HW_TEST_AVAILABLE</span>
+<a name="l00327"></a>00327 <span class="preprocessor"></span>    <a class="code" href="ena_8h.html#ac992908542eebed9776522f8eafc0ff9">ENA_off</a>(<a class="code" href="ena_8h.html#afd9af7a908f3a95304beb1b396de6179">ENA_KANTLED</a>|<a class="code" href="ena_8h.html#a58dc4e34440042a38ff9f501c86d2ba1">ENA_LINE</a>|<a class="code" href="ena_8h.html#a4c2d78b5a330270c96fc518d8c4ffc94">ENA_SCHRANKE</a>|<a class="code" href="ena_8h.html#afca3ba9073be80c7ae83529f2d2fc1b3">ENA_KLAPPLED</a>); <span class="comment">// Kanten (ENA_KANTLED), Liniensensoren (ENA_LINE), Transportfach-LED und Klappensensor aus</span>
+<a name="l00328"></a>00328 <span class="preprocessor">#endif</span>
+<a name="l00329"></a>00329 <span class="preprocessor"></span>
+<a name="l00330"></a>00330     <span class="comment">/* LEDs updaten */</span>
+<a name="l00331"></a>00331     <a class="code" href="sensor_8c.html#a682da542ec0d880fe15e35c521dca40f" title="Updatet die LEDs je nach Sensorwert.">led_update</a>();
+<a name="l00332"></a>00332 <span class="preprocessor">#ifdef LED_AVAILABLE</span>
+<a name="l00333"></a>00333 <span class="preprocessor"></span>    <span class="comment">/* Sollen die LEDs mit den Rohdaten der Sensoren arbeiten,</span>
+<a name="l00334"></a>00334 <span class="comment">     * kommentiert man die folgenden Zeilen ein */</span>
+<a name="l00335"></a>00335 
+<a name="l00336"></a>00336     <span class="comment">//if (voltL &gt; 80) LED_on(LED_LINKS);</span>
+<a name="l00337"></a>00337     <span class="comment">//else LED_off(LED_LINKS);</span>
+<a name="l00338"></a>00338     <span class="comment">//if (voltR &gt; 80) LED_on(LED_RECHTS);</span>
+<a name="l00339"></a>00339     <span class="comment">//else LED_off(LED_RECHTS);</span>
+<a name="l00340"></a>00340 <span class="preprocessor">#endif // LED_AVAILABLE</span>
+<a name="l00341"></a>00341 <span class="preprocessor"></span>}
+<a name="l00342"></a>00342 
+<a name="l00350"></a><a class="code" href="sensor-low_8c.html#a2746db25d650e08926342d9c189644b1">00350</a> <span class="keywordtype">void</span> <a class="code" href="sensor-low_8h.html#a2746db25d650e08926342d9c189644b1" title="Kuemmert sich um die Radencoder.">bot_encoder_isr</a>(<span class="keywordtype">void</span>) {
+<a name="l00351"></a>00351     <span class="keyword">static</span> uint8_t enc_l = 0; <span class="comment">// Puffer fuer die letzte Encoder-Staende</span>
+<a name="l00352"></a>00352     <span class="keyword">static</span> uint8_t enc_r = 0; <span class="comment">// Puffer fuer die letzte Encoder-Staende</span>
+<a name="l00353"></a>00353     <span class="keyword">static</span> uint8_t enc_l_cnt = 0; <span class="comment">// Entprell-Counter fuer L-Encoder</span>
+<a name="l00354"></a>00354     <span class="keyword">static</span> uint8_t enc_r_cnt = 0; <span class="comment">// Entprell-Counter fuer R-Encoder</span>
+<a name="l00355"></a>00355     <span class="keyword">register</span> uint8_t enc_tmp; <span class="comment">// Pegel der Encoderpins im Register zwischenspeichern</span>
+<a name="l00356"></a>00356 
+<a name="l00357"></a>00357 <span class="preprocessor">#ifdef SPEED_CONTROL_AVAILABLE</span>
+<a name="l00358"></a>00358 <span class="preprocessor"></span>    <span class="keyword">register</span> uint16_t ticks = <a class="code" href="timer_8c.html#a29a6ea2becd6491e8b8aaa86156623a3">tickCount</a>.u16;    <span class="comment">// aktuelle Systemzeit zwischenspeichern</span>
+<a name="l00359"></a>00359     <span class="keyword">register</span> uint8_t i_time;                    <span class="comment">// Index des Timestamparrays zwischenspeichern</span>
+<a name="l00360"></a>00360 <span class="preprocessor">#endif // SPEED_CONTROL_AVAILABLE</span>
+<a name="l00361"></a>00361 <span class="preprocessor"></span>    <span class="comment">/* Rad-Encoder links */</span>
+<a name="l00362"></a>00362     enc_tmp = (uint8_t) <a class="code" href="sensor-low_8c.html#ab53083a08eb65861cf70820ddcdbb3d7">ENC_L</a>;
+<a name="l00363"></a>00363     <span class="keywordflow">if</span> (enc_tmp != enc_l) { <span class="comment">// uns interessieren nur Veraenderungen</span>
+<a name="l00364"></a>00364         enc_l = enc_tmp; <span class="comment">// neuen Wert sichern</span>
+<a name="l00365"></a>00365         enc_l_cnt = 0; <span class="comment">// Counter zuruecksetzen</span>
+<a name="l00366"></a>00366     } <span class="keywordflow">else</span> { <span class="comment">// zaehlen, wie lange Pegel bleibt</span>
+<a name="l00367"></a>00367         <span class="keywordflow">if</span> (enc_l_cnt &lt; <a class="code" href="sensor-low_8c.html#a02aa9abd462443929310395c8d2cc085">ENC_ENTPRELL</a>) { <span class="comment">// Nur bis zur Entprell-Marke</span>
+<a name="l00368"></a>00368             enc_l_cnt++;
+<a name="l00369"></a>00369         } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (enc_l_cnt == <a class="code" href="sensor-low_8c.html#a02aa9abd462443929310395c8d2cc085">ENC_ENTPRELL</a>) { <span class="comment">// wenn lange genug konstant</span>
+<a name="l00370"></a>00370             enc_l_cnt++; <span class="comment">// diese Flanke nur einmal auswerten</span>
+<a name="l00371"></a>00371             <span class="keywordflow">if</span> (<a class="code" href="motor_8c.html#a96703dcd865ea4cfb315cab528b061d8" title="Drehrichtung der Motoren, auch wenn die Speed-Variablen bereits wieder auf Null sind.">direction</a>.<a class="code" href="uniondirection__t.html#a1e736d494e0c299e1c37454d8f3cc90d" title="linksrum">left</a> == <a class="code" href="motor_8h.html#a219f8a888533b454e1891464cd48f68d" title="Drehrichtung vorwaerts.">DIRECTION_FORWARD</a>) { <span class="comment">// Drehrichtung beachten</span>
+<a name="l00372"></a>00372                 <a class="code" href="sensor_8c.html#a2ed6effbb05581a060bd26f2af436741">sensEncL</a>++; <span class="comment">// vorwaerts</span>
+<a name="l00373"></a>00373             } <span class="keywordflow">else</span> {
+<a name="l00374"></a>00374                 <a class="code" href="sensor_8c.html#a2ed6effbb05581a060bd26f2af436741">sensEncL</a>--; <span class="comment">// rueckwaerts</span>
+<a name="l00375"></a>00375             }
+<a name="l00376"></a>00376 <span class="preprocessor">#ifdef SPEED_CONTROL_AVAILABLE</span>
+<a name="l00377"></a>00377 <span class="preprocessor"></span>            <span class="comment">/* Timestamps fuer Regler links verschieben und speichern */</span>
+<a name="l00378"></a>00378             i_time = (uint8_t) ((<a class="code" href="sensor-low_8h.html#aebbb8ca1d1d1ea24dba854da6f180f47">i_encTimeL</a> + <span class="keyword">sizeof</span>(<a class="code" href="sensor-low_8h.html#a03be57d56f8af4b9dc48447cd4597958">encTimeL</a>[0])) &amp; 0xf); <span class="comment">// encTime ist Z/8Z und jeder Eintrag hat 2 Byte =&gt; 0xf</span>
+<a name="l00379"></a>00379             *(uint16_t *)((uint8_t *) <a class="code" href="sensor-low_8h.html#a03be57d56f8af4b9dc48447cd4597958">encTimeL</a> + i_time) = ticks;
+<a name="l00380"></a>00380             <a class="code" href="sensor-low_8h.html#aebbb8ca1d1d1ea24dba854da6f180f47">i_encTimeL</a> = i_time;
+<a name="l00381"></a>00381             <span class="comment">/* Regleraufruf links */</span>
+<a name="l00382"></a>00382             <span class="keywordflow">if</span> (<a class="code" href="sensor-low_8c.html#af189daca7d183aac7d65d5de5dbbdb0e">timeCorrectL</a> == 0) {
+<a name="l00383"></a>00383                 <a class="code" href="motor_8c.html#abfe2160ced04338d7f24aab6291c7f19" title="Drehzahlregelung fuer die Motoren des c&#39;t-Bots.">speed_control</a>(0, (int16_t *) &amp;<a class="code" href="motor_8h.html#a878e16240740a521fd0224f33c5570e6" title="zuletzt gestellter Wert linker Motor">motor_left</a>, (uint16_t *) <a class="code" href="sensor-low_8h.html#a03be57d56f8af4b9dc48447cd4597958">encTimeL</a>, <a class="code" href="sensor-low_8h.html#aebbb8ca1d1d1ea24dba854da6f180f47">i_encTimeL</a>, enc_tmp);
+<a name="l00384"></a>00384             } <span class="keywordflow">else</span> {
+<a name="l00385"></a>00385                 <a class="code" href="sensor-low_8c.html#af189daca7d183aac7d65d5de5dbbdb0e">timeCorrectL</a> = 0;
+<a name="l00386"></a>00386             }
+<a name="l00387"></a>00387             <span class="comment">/* pro TIMER_STEP wird maximal ein Encoder ausgewertet, da max alle 6 ms (Fullspeed) eine Flanke kommen kann */</span>
+<a name="l00388"></a>00388             <span class="keywordflow">return</span>; <span class="comment">// hackhack</span>
+<a name="l00389"></a>00389 <span class="preprocessor">#else // ! SPEED_CONTROL_AVAILABLE</span>
+<a name="l00390"></a>00390 <span class="preprocessor"></span><span class="preprocessor">#ifdef SPEED_LOG_AVAILABLE</span>
+<a name="l00391"></a>00391 <span class="preprocessor"></span>            uint8_t index = slog_i[0];
+<a name="l00392"></a>00392             slog-&gt;data[0][index].pwm = <a class="code" href="motor_8h.html#a878e16240740a521fd0224f33c5570e6" title="zuletzt gestellter Wert linker Motor">motor_left</a>;
+<a name="l00393"></a>00393             slog-&gt;data[0][index].time = <a class="code" href="timer_8c.html#a29a6ea2becd6491e8b8aaa86156623a3">tickCount</a>.u32;
+<a name="l00394"></a>00394             index++;
+<a name="l00395"></a>00395             slog_i[0] = (uint8_t) (index &gt; 24 ? 0 : index); <span class="comment">// Z/25Z</span>
+<a name="l00396"></a>00396 <span class="preprocessor">#endif // SPEED_LOG_AVAILABLE</span>
+<a name="l00397"></a>00397 <span class="preprocessor"></span><span class="preprocessor">#endif // SPEED_CONTROL_AVAILABLE</span>
+<a name="l00398"></a>00398 <span class="preprocessor"></span>        }
+<a name="l00399"></a>00399     }
+<a name="l00400"></a>00400 
+<a name="l00401"></a>00401     <span class="comment">/* Rad-Encoder rechts */</span>
+<a name="l00402"></a>00402     enc_tmp = (uint8_t) <a class="code" href="sensor-low_8c.html#a56f15d9f330383722213a0f4cba1bb5f">ENC_R</a>;
+<a name="l00403"></a>00403     <span class="keywordflow">if</span> (enc_tmp != enc_r) { <span class="comment">// uns interessieren nur Veraenderungen</span>
+<a name="l00404"></a>00404         enc_r = enc_tmp; <span class="comment">// neuen Wert sichern</span>
+<a name="l00405"></a>00405         enc_r_cnt=0; <span class="comment">// Counter zuruecksetzen</span>
+<a name="l00406"></a>00406     } <span class="keywordflow">else</span> { <span class="comment">// zaehlen, wie lange Pegel bleibt</span>
+<a name="l00407"></a>00407         <span class="keywordflow">if</span> (enc_r_cnt &lt; <a class="code" href="sensor-low_8c.html#a02aa9abd462443929310395c8d2cc085">ENC_ENTPRELL</a>) { <span class="comment">// nur bis zur Entprell-Marke</span>
+<a name="l00408"></a>00408             enc_r_cnt++;
+<a name="l00409"></a>00409         } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (enc_r_cnt == <a class="code" href="sensor-low_8c.html#a02aa9abd462443929310395c8d2cc085">ENC_ENTPRELL</a>) { <span class="comment">// wenn lange genug konstant</span>
+<a name="l00410"></a>00410             enc_r_cnt++; <span class="comment">// diese Flanke nur einmal auswerten</span>
+<a name="l00411"></a>00411             <span class="keywordflow">if</span> (<a class="code" href="motor_8c.html#a96703dcd865ea4cfb315cab528b061d8" title="Drehrichtung der Motoren, auch wenn die Speed-Variablen bereits wieder auf Null sind.">direction</a>.<a class="code" href="uniondirection__t.html#ab7c127986c19770ae168d8b24b4b14bb" title="rechtsrum">right</a> == <a class="code" href="motor_8h.html#a219f8a888533b454e1891464cd48f68d" title="Drehrichtung vorwaerts.">DIRECTION_FORWARD</a>) { <span class="comment">// Drehrichtung beachten</span>
+<a name="l00412"></a>00412                 <a class="code" href="sensor_8c.html#a31470eb8eed6ffed8e0aeb435581efcf">sensEncR</a>++; <span class="comment">// vorwaerts</span>
+<a name="l00413"></a>00413             } <span class="keywordflow">else</span> {
+<a name="l00414"></a>00414                 <a class="code" href="sensor_8c.html#a31470eb8eed6ffed8e0aeb435581efcf">sensEncR</a>--; <span class="comment">// rueckwaerts</span>
+<a name="l00415"></a>00415             }
+<a name="l00416"></a>00416 <span class="preprocessor">#ifdef SPEED_CONTROL_AVAILABLE</span>
+<a name="l00417"></a>00417 <span class="preprocessor"></span>            <span class="comment">/* Timestamps fuer Regler rechts verschieben und speichern */</span>
+<a name="l00418"></a>00418             i_time = (uint8_t) ((<a class="code" href="sensor-low_8h.html#af5485dab743526f82822ac028b7b276f">i_encTimeR</a> + <span class="keyword">sizeof</span>(<a class="code" href="sensor-low_8h.html#aaa86a48f04cfce03e9e3737292042735">encTimeR</a>[0])) &amp; 0xf); <span class="comment">// encTime ist Z/8Z und jeder Eintrag hat 2 Byte =&gt; 0xf</span>
+<a name="l00419"></a>00419             *(uint16_t *)((uint8_t *) <a class="code" href="sensor-low_8h.html#aaa86a48f04cfce03e9e3737292042735">encTimeR</a> + i_time) = ticks;
+<a name="l00420"></a>00420             <a class="code" href="sensor-low_8h.html#af5485dab743526f82822ac028b7b276f">i_encTimeR</a> = i_time;
+<a name="l00421"></a>00421             <span class="comment">/* Regleraufruf rechts */</span>
+<a name="l00422"></a>00422             <span class="keywordflow">if</span> (<a class="code" href="sensor-low_8c.html#ac3dc390c6ad3ab08dc9ee7a02b908ebd">timeCorrectR</a> == 0) {
+<a name="l00423"></a>00423                 <a class="code" href="motor_8c.html#abfe2160ced04338d7f24aab6291c7f19" title="Drehzahlregelung fuer die Motoren des c&#39;t-Bots.">speed_control</a>(1, (int16_t *) &amp;<a class="code" href="motor_8h.html#a18ee6f467af5eddad0fb19b3dd274917" title="zuletzt gestellter Wert rechter Motor">motor_right</a>, (uint16_t *) <a class="code" href="sensor-low_8h.html#aaa86a48f04cfce03e9e3737292042735">encTimeR</a>, <a class="code" href="sensor-low_8h.html#af5485dab743526f82822ac028b7b276f">i_encTimeR</a>, enc_tmp);
+<a name="l00424"></a>00424             } <span class="keywordflow">else</span> {
+<a name="l00425"></a>00425                 <a class="code" href="sensor-low_8c.html#ac3dc390c6ad3ab08dc9ee7a02b908ebd">timeCorrectR</a> = 0;
+<a name="l00426"></a>00426             }
+<a name="l00427"></a>00427 <span class="preprocessor">#else // ! SPEED_CONTROL_AVAILABLE</span>
+<a name="l00428"></a>00428 <span class="preprocessor"></span><span class="preprocessor">#ifdef SPEED_LOG_AVAILABLE</span>
+<a name="l00429"></a>00429 <span class="preprocessor"></span>            uint8_t index = slog_i[1];
+<a name="l00430"></a>00430             slog-&gt;data[1][index].pwm = <a class="code" href="motor_8h.html#a18ee6f467af5eddad0fb19b3dd274917" title="zuletzt gestellter Wert rechter Motor">motor_right</a>;
+<a name="l00431"></a>00431             slog-&gt;data[1][index].time = <a class="code" href="timer_8c.html#a29a6ea2becd6491e8b8aaa86156623a3">tickCount</a>.u32;
+<a name="l00432"></a>00432             index++;
+<a name="l00433"></a>00433             slog_i[1] = (uint8_t) (index &gt; 24 ? 0 : index); <span class="comment">// Z/25Z</span>
+<a name="l00434"></a>00434 <span class="preprocessor">#endif // SPEED_LOG_AVAILABLE</span>
+<a name="l00435"></a>00435 <span class="preprocessor"></span><span class="preprocessor">#endif // SPEED_CONTROL_AVAILABLE</span>
+<a name="l00436"></a>00436 <span class="preprocessor"></span>        }
+<a name="l00437"></a>00437     }
+<a name="l00438"></a>00438 }
+<a name="l00439"></a>00439 <span class="preprocessor">#endif // MCU</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:09 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: init-low_pc.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_5e2f2d5041bf6d2345ec9cc9dd1b53a1.html">pc</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#func-members">Funktionen</a>  </div>
+  <div class="headertitle">
+<div class="title">init-low_pc.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Initialisierungsroutinen fuer PC.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="ct-Bot_8h_source.html">ct-Bot.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="init_8h_source.html">init.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="log_8h_source.html">log.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="cmd__tools_8h_source.html">cmd_tools.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="trace_8h_source.html">trace.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="eeprom_8h_source.html">eeprom.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="command_8h_source.html">command.h</a>&quot;</code><br/>
+<code>#include &lt;stdio.h&gt;</code><br/>
+<code>#include &lt;stdlib.h&gt;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für init-low_pc.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="init-low__pc_8c__incl.png" border="0" usemap="#init-low__pc_8c" alt=""/></div>
+<map name="init-low__pc_8c" id="init-low__pc_8c">
+<area shape="rect" id="node3" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot&#45;Funktionalitaeten" alt="" coords="1397,238,1464,266"/><area shape="rect" id="node23" href="init_8h.html" title="Initialisierungsroutinen." alt="" coords="1301,83,1349,111"/><area shape="rect" id="node26" href="eeprom_8h.html" title="EEPROM&#45;Zugriff." alt="" coords="961,161,1039,189"/><area shape="rect" id="node89" href="log_8h.html" title="Routinen zum Loggen von Informationen." alt="" coords="1537,83,1588,111"/><area shape="rect" id="node91" href="cmd__tools_8h.html" title="Funktionen, die per Commandline&#45;Switch aufgerufen werden koennen." alt="" coords="1612,83,1705,111"/><area shape="rect" id="node93" href="trace_8h.html" title="Trace&#45;Modul." alt="" coords="1452,83,1513,111"/><area shape="rect" id="node97" href="command_8h.html" title="Kommando&#45;Management." alt="" coords="927,83,1017,111"/><area shape="rect" id="node5" href="global_8h.html" title="Allgemeine Definitionen und Datentypen." alt="" coords="303,315,372,343"/><area shape="rect" id="node21" href="bot-local_8h.html" title="Konstanten, die den Bot an reale Umgebungen anpassen." alt="" coords="396,315,481,343"/><area shape="rect" id="node11" href="builtins_8h.html" title="Compiler&#45;Builtins mit Fallback fuer aeltere avr&#45;libc Versionen." alt="" coords="435,393,507,421"/><area shape="rect" id="node33" href="bot-logic_8h.html" title="High&#45;Level&#45;Routinen fuer die Steuerung des c&#39;t&#45;Bots." alt="" coords="1497,161,1639,189"/><area shape="rect" id="node79" href="sensor-low_8h.html" title="Low&#45;Level Routinen fuer die Sensor&#45;Steuerung des c&#39;t&#45;Bots." alt="" coords="1143,161,1241,189"/><area shape="rect" id="node81" href="botfs_8h.html" title="Dateisystem BotFS." alt="" coords="1265,161,1327,189"/><area shape="rect" id="node36" href="motor_8h.html" title="High&#45;Level Routinen fuer die Motorsteuerung des c&#39;t&#45;Bots." alt="" coords="4217,393,4284,421"/><area shape="rect" id="node38" href="sensor_8h.html" title="Architekturunabhaengiger Teil der Sensorsteuerung." alt="" coords="4351,238,4423,266"/><area shape="rect" id="node44" href="available__behaviours_8h.html" title="globale Schalter fuer die einzelnen Verhalten" alt="" coords="2171,238,2389,266"/><area shape="rect" id="node40" href="rc5_8h.html" title="RC5&#45;Fernbedienung / Basic&#45;Tasten&#45;Handler." alt="" coords="4356,315,4407,343"/><area shape="rect" id="node42" href="cmps03_8h.html" title="CMPS03&#45;Treiber." alt="" coords="4431,315,4511,343"/><area shape="rect" id="node46" href="behaviour__prototype_8h.html" title="Rohling fuer eigene Verhalten." alt="" coords="3420,315,3633,343"/><area shape="rect" id="node48" href="behaviour__hw__test_8h.html" title="Testcode fuer die Bot&#45;Hardware (ehemals TEST_AVAILABLE_ANALOG, _DIGITAL, _MOTOR)" alt="" coords="3657,315,3857,343"/><area shape="rect" id="node50" href="behaviour__simple_8h.html" title="ganz einfache Beispielverhalten Diese Datei sollte der Einstiegspunkt fuer eigene Experimente sein..." alt="" coords="3881,315,4076,343"/><area shape="rect" id="node52" href="behaviour__drive__square_8h.html" title="Bot faehrt im Quadrat." alt="" coords="505,315,740,343"/><area shape="rect" id="node54" href="behaviour__avoid__border_8h.html" title="Vermeide Abgruende." alt="" coords="764,315,1001,343"/><area shape="rect" id="node56" href="behaviour__avoid__col_8h.html" title="Vermeide Kollisionen." alt="" coords="1025,315,1239,343"/><area shape="rect" id="node58" href="behaviour__hang__on_8h.html" title="Haengenbleiben Notfallverhalten." alt="" coords="1263,315,1471,343"/><area shape="rect" id="node60" href="behaviour__goto_8h.html" title="Bot faehrt einen Punkt an." alt="" coords="1495,315,1676,343"/><area shape="rect" id="node62" href="behaviour__gotoxy_8h.html" title="Bot faehrt eine Position an." alt="" coords="1700,315,1897,343"/><area shape="rect" id="node64" href="behaviour__goto__pos_8h.html" title="Anfahren einer Position." alt="" coords="1921,315,2135,343"/><area shape="rect" id="node66" href="behaviour__goto__obstacle_8h.html" title="Anfahren eines Hindernisses." alt="" coords="2159,315,2401,343"/><area shape="rect" id="node68" href="behaviour__turn_8h.html" title="Drehe den Bot." alt="" coords="4100,315,4276,343"/><area shape="rect" id="node71" href="behaviour__turn__test_8h.html" title="Fuehrt mehrere Drehungen mit bot_turn() aus und misst die Fehler." alt="" coords="2425,315,2631,343"/><area shape="rect" id="node73" href="behaviour__drive__distance_8h.html" title="Bot faehrt ein Stueck." alt="" coords="2655,315,2897,343"/><area shape="rect" id="node75" href="behaviour__measure__distance_8h.html" title="Ermittelt die aktuelle Entfernung eines Hindernisses mit den Distanzsensoren." alt="" coords="2921,315,3188,343"/><area shape="rect" id="node77" href="behaviour__scan_8h.html" title="Scannt die Umgebung und traegt sie in die Karte ein." alt="" coords="3212,315,3396,343"/><area shape="rect" id="node83" href="botfs__config_8h.html" title="Konfig&#45;Optionen fuer Dateisystem BotFS." alt="" coords="1144,238,1248,266"/><area shape="rect" id="node85" href="botfs__types_8h.html" title="Datentypen fuer Dateisystem BotFS." alt="" coords="1272,238,1373,266"/><area shape="rect" id="node100" href="uart_8h.html" title="Routinen zur seriellen Kommunikation." alt="" coords="776,161,829,189"/><area shape="rect" id="node103" href="fifo_8h.html" title="Implementierung einer FIFO." alt="" coords="627,238,675,266"/></map>
+</div>
+</div>
+<p><a href="init-low__pc_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="init-low__pc_8c.html#afe3d8d4da4364107838233aad49fd830">ctbot_init_low_1st</a> (int argc, char *argv[])</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Hardwareabhaengige Initialisierungen, die zuerst ausgefuehrt werden sollen.  <a href="#afe3d8d4da4364107838233aad49fd830"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="init-low__pc_8c.html#a9f0e5e1762bc49dae8746404b841547e">ctbot_init_low_last</a> (void)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Hardwareabhaengige Initialisierungen, die _nach_ der allgemeinen Initialisierung ausgefuehrt werden sollen.  <a href="#a9f0e5e1762bc49dae8746404b841547e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="init-low__pc_8c.html#a803271a98fc0cdc3654f4875407f8508">ctbot_shutdown_low</a> (void)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Faehrt den low-level Code des Bots sauber herunter.  <a href="#a803271a98fc0cdc3654f4875407f8508"></a><br/></td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Initialisierungsroutinen fuer PC. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Timo Sandmann (<a href="mailto:mail@timosandmann.de">mail@timosandmann.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>09.03.2010 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="init-low__pc_8c_source.html">init-low_pc.c</a>.</p>
+</div><hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="afe3d8d4da4364107838233aad49fd830"></a><!-- doxytag: member="init&#45;low_pc.c::ctbot_init_low_1st" ref="afe3d8d4da4364107838233aad49fd830" args="(int argc, char *argv[])" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ctbot_init_low_1st </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>argc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>argv</em>[]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Hardwareabhaengige Initialisierungen, die zuerst ausgefuehrt werden sollen. </p>
+<p>Hardwareabhaengige Initialisierungen, die zuerst ausgefuehrt werden sollen </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">argc</td><td>Anzahl der Kommandozeilenparameter </td></tr>
+    <tr><td class="paramname">*argv</td><td>Zeiger auf Kommandozeilenparameter </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="init-low__pc_8c_source.html#l00043">43</a> der Datei <a class="el" href="init-low__pc_8c_source.html">init-low_pc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="cmd-tools__pc_8c_source.html#l00107">hand_cmd_args()</a>, <a class="el" href="eeprom__pc_8c_source.html#l00511">init_eeprom_man()</a>, <a class="el" href="log_8h_source.html#l00309">LOG_ERROR</a> und <a class="el" href="trace_8c_source.html#l00072">trace_init()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="init_8c_source.html#l00046">ctbot_init()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="init-low__pc_8c_afe3d8d4da4364107838233aad49fd830_cgraph.png" border="0" usemap="#init-low__pc_8c_afe3d8d4da4364107838233aad49fd830_cgraph" alt=""/></div>
+<map name="init-low__pc_8c_afe3d8d4da4364107838233aad49fd830_cgraph" id="init-low__pc_8c_afe3d8d4da4364107838233aad49fd830_cgraph">
+<area shape="rect" id="node3" href="cmd__tools_8h.html#ae1c7028ff0debe29c4678277a854e5e1" title="Behandelt die Kommandozeilen&#45;Argumente." alt="" coords="183,942,300,970"/><area shape="rect" id="node70" href="eeprom__pc_8c.html#a336de810ea7306c784aa421048de9626" title="init_eeprom_man" alt="" coords="372,1322,497,1350"/><area shape="rect" id="node122" href="trace_8h.html#a5ef5d43e7c59f0ee9c490ea4e423c008" title="Initialisiert das Trace&#45;System." alt="" coords="204,1373,279,1401"/><area shape="rect" id="node5" href="botfs_8h.html#a855fac9127fb0e3076b60da2f9a1650f" title="Kopiert eine Datei vom PC&#45;Dateisystem auf das BotFS&#45;Volume." alt="" coords="379,562,491,590"/><area shape="rect" id="node19" href="botfs_8h.html#abf871e61697e33491a47f4af7dd1c061" title="Kopiert eine Datei vom BotfS&#45;Volume ins PC&#45;Dateisystem." alt="" coords="588,765,711,793"/><area shape="rect" id="node25" href="botfs_8c.html#a9452100255630000f8d3a3540f3546a3" title="Initialisiert ein Volume." alt="" coords="827,917,901,945"/><area shape="rect" id="node32" href="botfs_8h.html#a6ed6b6e4817d4435956735eedaeae3e4" title="Management&#45;Tools fuer BotFS." alt="" coords="367,1018,503,1046"/><area shape="rect" id="node34" href="botfs_8h.html#a3b1852754b9352e456042f31f5242d6c" title="Zeigt Informationen ueber jeden Eintrag des Root&#45;Verzeichnisses einer FAT16&#45;Partition an..." alt="" coords="373,1069,496,1097"/><area shape="rect" id="node36" href="sensor-low_8h.html#aba81277dad3bf2bc6bf59a482641badf" title="Konvertiert eine (binaere) Speedlog&#45;Datei (&quot;AVR&#45;Endian&quot;) in eine Textdatei." alt="" coords="588,866,711,894"/><area shape="rect" id="node46" href="mini-fat__pc_8c.html#a2b127e424e8caa1ac63270a4c18cf2f6" title="create_emu_mini_fat_file" alt="" coords="351,1119,519,1147"/><area shape="rect" id="node61" href="mini-fat__pc_8c.html#a698b3ffad1edb0ad8dc1b0f5451799b3" title="create_mini_fat_file" alt="" coords="367,1221,503,1249"/><area shape="rect" id="node63" href="mini-fat__pc_8c.html#a9b717c2f0b367c437210f5cf97abc848" title="delete_emu_mini_fat_file" alt="" coords="351,1170,519,1198"/><area shape="rect" id="node72" href="map_8c.html#aa0e2581b7a7a791c8a20d4e3320ada4d" title="Initialisiert die Karte." alt="" coords="828,613,900,641"/><area shape="rect" id="node74" href="map_8c.html#a11f527d97dcbb43f9ae363ac36e1feea" title="Liest eine Karte aus einer Map&#45;Datei (MiniFAT&#45;Format) ein." alt="" coords="608,613,691,641"/><area shape="rect" id="node84" href="map_8c.html#ac439afb4a034a8a0c4cfc7421a6000db" title="Schreibt eine Karte in eine PGM&#45;Datei." alt="" coords="384,917,485,945"/><area shape="rect" id="node94" href="tcp-server_8h.html#a1064c47dd79ee34077d1983e415b5ca7" title="tcp_server_init" alt="" coords="381,1271,488,1299"/><area shape="rect" id="node96" href="tcp-server_8h.html#ace4243c07e325ba60c2eeb228743ea1b" title="tcp_server_run" alt="" coords="380,131,489,159"/><area shape="rect" id="node109" href="tcp-server_8h.html#ae9f36864880c59f4b2e7f2cdbfa427be" title="tcp_test_client_init" alt="" coords="371,461,499,489"/><area shape="rect" id="node113" href="tcp-server_8h.html#ae95ffb3258b0e976ccc4424b8f22103f" title="tcp_test_client_run" alt="" coords="369,309,500,337"/><area shape="rect" id="node7" href="botfs_8c.html#a1683850a15cc2ed1af27911aa134f83f" title="Legt eine neue Datei an." alt="" coords="601,511,697,539"/><area shape="rect" id="node9" href="botfs_8c.html#afe7539a83c840b120ef8996557fd0e9a" title="Schreibt BOTFS_BLOCK_SIZE Bytes aus einem Puffer in eine Datei." alt="" coords="821,511,907,539"/><area shape="rect" id="node11" href="botfs_8c.html#aad0605bba52a09999f158cb2e371a5de" title="Oeffnet eine Datei." alt="" coords="820,765,908,793"/><area shape="rect" id="node15" href="botfs_8c.html#a51db2e9a9426dc9edb351cc81edd7a70" title="Entfernt eine Datei." alt="" coords="604,562,695,590"/><area shape="rect" id="node13" href="botfs-low_8h.html#ad79b36f6afd1740d03f6551a2418e733" title="Liest einen BOTFS_BLOCK_SIZE Byte grossen Block." alt="" coords="1027,765,1141,793"/><area shape="rect" id="node22" href="botfs_8c.html#a71348fbe8ed02ee7b07b6ab789a400ab" title="Liest BOTFS_BLOCK_SIZE Bytes aus einer Datei in einen Puffer." alt="" coords="821,815,907,843"/><area shape="rect" id="node27" href="botfs-low_8h.html#a2c8ce5783b030602ef6b682f7c67202a" title="Ueberprueft ein geladenes Volume." alt="" coords="997,942,1171,970"/><area shape="rect" id="node29" href="botfs-low_8h.html#a04a8d2f38bf2c9d01e787da13cb73dc8" title="Laedt das Volume." alt="" coords="1033,891,1135,919"/><area shape="rect" id="node40" href="botfs_8c.html#a4f5aa83fae2a2682310842df4c8458e0" title="Liest die frei verwendbaren Header&#45;Daten einer Datei aus." alt="" coords="779,714,949,742"/><area shape="rect" id="node44" href="botfs_8c.html#a186480cb74d92ebd01adbd2e2535a631" title="Beendet BotFS sauber." alt="" coords="793,866,935,894"/><area shape="rect" id="node48" href="mmc-emu_8h.html#a9713f38ad215f9fa39949a6f068f2b7d" title="mmc_emu_get_init_state" alt="" coords="1220,1195,1388,1223"/><area shape="rect" id="node50" href="mmc-emu_8h.html#ab4fc9f8caf4c79352cb259ef70b06d38" title="mmc_emu_init" alt="" coords="811,1119,917,1147"/><area shape="rect" id="node52" href="mmc-emu_8h.html#a4210b74e60ef7cd34612dadb6a197090" title="mmc_emu_get_size" alt="" coords="1013,1119,1155,1147"/><area shape="rect" id="node57" href="mmc-emu_8h.html#aed8e37da5218bc86881ddc1474ac7c43" title="mmc_emu_write_sector" alt="" coords="568,1221,731,1249"/><area shape="rect" id="node67" href="mmc-vm_8c.html#a8908f63f68b42f875acc159be8f97160" title="mmc_clear_file" alt="" coords="593,1322,705,1350"/><area shape="rect" id="node78" href="botfs_8c.html#a5964332bb5b66e2201b3a6b26935e1af" title="Schreibt die Information ueber benutzte Bloecke in den Datei&#45;Header." alt="" coords="780,663,948,691"/><area shape="rect" id="node82" href="botfs_8c.html#a4211d1027e05944d4aff015446e01b62" title="Schreib die frei verwendbaren Header&#45;Daten einer Datei in den Header." alt="" coords="779,562,949,590"/><area shape="rect" id="node86" href="map_8c.html#a5c151bce0e665ee98fac1465d692fef0" title="Haelt den Bot an und schreibt den Map&#45;Update&#45;Cache komplett zurueck." alt="" coords="587,815,712,843"/><area shape="rect" id="node90" href="os__thread__pc_8c.html#ae59b1320daae9dc263c512b326e91c00" title="os_signal_lock" alt="" coords="593,967,705,995"/><area shape="rect" id="node92" href="os__thread__pc_8c.html#aa0b166109be9754de9b8b863b8d197c7" title="os_signal_unlock" alt="" coords="587,917,712,945"/><area shape="rect" id="node98" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189" title="accept" alt="" coords="619,5,680,33"/><area shape="rect" id="node100" href="command_8c.html#a419b75ed34551408822d9caee3cd5206" title="command_write" alt="" coords="591,157,708,185"/><area shape="rect" id="node102" href="tcp_8h.html#aae71e1682727310afab282923a80c968" title="flushSendBuffer" alt="" coords="807,157,921,185"/><area shape="rect" id="node105" href="command_8c.html#a710f03c0bca16a1965fc97647f41ee06" title="command_read" alt="" coords="591,106,708,134"/><area shape="rect" id="node107" href="tcp_8h.html#a533156f7515b0fac54217758ded89cec" title="tcp_closeConnection" alt="" coords="576,207,723,235"/><area shape="rect" id="node111" href="tcp_8h.html#a51de4ded7d342456d31722493c92c969" title="tcp_init" alt="" coords="619,410,680,438"/><area shape="rect" id="node115" href="tcp_8h.html#a294129207dee66dc263765f8dd00351b" title="tcp_read" alt="" coords="612,359,687,387"/><area shape="rect" id="node117" href="tcp_8h.html#abf5327c9ea7eb20615c07b4ffd833abb" title="tcp_write" alt="" coords="612,309,687,337"/><area shape="rect" id="node124" href="fifo_8c.html#a125e7099a807c9ec1e62227f84723248" title="fifo_init" alt="" coords="404,1423,465,1451"/><area shape="rect" id="node126" href="trace_8c.html#aaf256c21b1f3bbc80ca0fda440431bc3" title="Trace&#45;Thread, der die Daten des Puffers in eine Datei schreibt." alt="" coords="391,1373,479,1401"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a9f0e5e1762bc49dae8746404b841547e"></a><!-- doxytag: member="init&#45;low_pc.c::ctbot_init_low_last" ref="a9f0e5e1762bc49dae8746404b841547e" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ctbot_init_low_last </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Hardwareabhaengige Initialisierungen, die _nach_ der allgemeinen Initialisierung ausgefuehrt werden sollen. </p>
+<p>Hardwareabhaengige Initialisierungen, die _nach_ der allgemeinen Initialisierung ausgefuehrt werden sollen </p>
+
+<p>Definiert in Zeile <a class="el" href="init-low__pc_8c_source.html#l00063">63</a> der Datei <a class="el" href="init-low__pc_8c_source.html">init-low_pc.c</a>.</p>
+
+<p>Benutzt <a class="el" href="cmd-tools__pc_8c_source.html#l00493">cmd_init()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="init_8c_source.html#l00046">ctbot_init()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="init-low__pc_8c_a9f0e5e1762bc49dae8746404b841547e_cgraph.png" border="0" usemap="#init-low__pc_8c_a9f0e5e1762bc49dae8746404b841547e_cgraph" alt=""/></div>
+<map name="init-low__pc_8c_a9f0e5e1762bc49dae8746404b841547e_cgraph" id="init-low__pc_8c_a9f0e5e1762bc49dae8746404b841547e_cgraph">
+<area shape="rect" id="node3" href="cmd__tools_8h.html#ae8dd20b10b69ab4dffe697fd277cc728" title="Initialisiert die Eingabekonsole fuer RemoteCalls." alt="" coords="185,5,255,33"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a803271a98fc0cdc3654f4875407f8508"></a><!-- doxytag: member="init&#45;low_pc.c::ctbot_shutdown_low" ref="a803271a98fc0cdc3654f4875407f8508" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ctbot_shutdown_low </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Faehrt den low-level Code des Bots sauber herunter. </p>
+<p>Beendet die Bot-Instanz </p>
+
+<p>Definiert in Zeile <a class="el" href="init-low__pc_8c_source.html#l00070">70</a> der Datei <a class="el" href="init-low__pc_8c_source.html">init-low_pc.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="botcontrol_8c_source.html#l00138">ctbot_shutdown()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:12 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

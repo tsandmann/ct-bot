@@ -1,0 +1,504 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: mmc-vm.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Datenstrukturen</a> &#124;
+<a href="#define-members">Makrodefinitionen</a> &#124;
+<a href="#func-members">Funktionen</a>  </div>
+  <div class="headertitle">
+<div class="title">mmc-vm.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Virtual Memory Management mit MMC / SD-Card.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="ct-Bot_8h_source.html">ct-Bot.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="mmc-vm_8h_source.html">mmc-vm.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="mmc_8h_source.html">mmc.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="mmc-low_8h_source.html">mmc-low.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="mmc-emu_8h_source.html">mmc-emu.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="display_8h_source.html">display.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="timer_8h_source.html">timer.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="mini-fat_8h_source.html">mini-fat.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="log_8h_source.html">log.h</a>&quot;</code><br/>
+<code>#include &lt;stdlib.h&gt;</code><br/>
+<code>#include &lt;stdio.h&gt;</code><br/>
+<code>#include &lt;string.h&gt;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für mmc-vm.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc-vm_8c__incl.png" border="0" usemap="#mmc-vm_8c" alt=""/></div>
+<map name="mmc-vm_8c" id="mmc-vm_8c">
+<area shape="rect" id="node3" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot&#45;Funktionalitaeten" alt="" coords="335,83,401,111"/><area shape="rect" id="node23" href="mmc-vm_8h.html" title="Virtual Memory Management mit MMC / SD&#45;Card." alt="" coords="435,161,517,189"/><area shape="rect" id="node26" href="mmc_8h.html" title="Routinen zum Auslesen / Schreiben einer MMC&#45;Karte." alt="" coords="495,83,556,111"/><area shape="rect" id="node30" href="mmc-low_8h.html" title="Low&#45;Level&#45;Routinen zum Lesen/Schreiben einer MMC / SD&#45;Card." alt="" coords="580,83,665,111"/><area shape="rect" id="node32" href="mmc-emu_8h.html" title="MMC / SD&#45;Card Emulation fuer PC." alt="" coords="689,83,780,111"/><area shape="rect" id="node34" href="display_8h.html" title="Routinen zur Displaysteuerung." alt="" coords="751,161,825,189"/><area shape="rect" id="node37" href="timer_8h.html" title="Timer und Zaehler." alt="" coords="855,83,916,111"/><area shape="rect" id="node39" href="mini-fat_8h.html" title="Routinen zum Auffinden von markierten Files auf einer MMC&#45;Karte." alt="" coords="940,83,1015,111"/><area shape="rect" id="node41" href="log_8h.html" title="Routinen zum Loggen von Informationen." alt="" coords="1039,83,1089,111"/><area shape="rect" id="node5" href="global_8h.html" title="Allgemeine Definitionen und Datentypen." alt="" coords="232,161,301,189"/><area shape="rect" id="node21" href="bot-local_8h.html" title="Konstanten, die den Bot an reale Umgebungen anpassen." alt="" coords="325,161,411,189"/><area shape="rect" id="node11" href="builtins_8h.html" title="Compiler&#45;Builtins mit Fallback fuer aeltere avr&#45;libc Versionen." alt="" coords="176,238,248,266"/><area shape="rect" id="node28" href="available__screens_8h.html" title="Die Schalter fuer sichtbare Screens finden sich hier." alt="" coords="541,161,699,189"/></map>
+</div>
+</div>
+<p><a href="mmc-vm_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="nested-classes"></a>
+Datenstrukturen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvm__cache__t.html">vm_cache_t</a></td></tr>
+<tr><td colspan="2"><h2><a name="define-members"></a>
+Makrodefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-vm_8c.html#a962a20096b575285ee3a00262b36f669">MMC_START_ADDRESS</a>&#160;&#160;&#160;0x2000000</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-vm_8c.html#a56505f14247981580490d0be1384ad3c">MAX_SPACE_IN_SRAM</a>&#160;&#160;&#160;1</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-vm_8c.html#a733442e7f1433071b65e448e6b799eb6">swap_out</a>&#160;&#160;&#160;mmc_write_sector</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-vm_8c.html#ade50f9d1cad5b40125fe8ea7723c5a4b">swap_in</a>&#160;&#160;&#160;mmc_read_sector</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-vm_8c.html#a27b47974c3e9d9a4fe6977e926bb0efa">swap_space</a>&#160;&#160;&#160;mmc_get_size()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-vm_8c.html#abb665bd583cd5eb93ec03d5fa4c50bc1">fat_lookup</a>&#160;&#160;&#160;mini_fat_lookup_adr</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-vm_8c.html#a1d0373153cf3986bffb9f205a9ef94c1">fat_store</a>&#160;&#160;&#160;mini_fat_store_adr</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-vm_8c.html#a08c951b555552d239a1e3599840d1f7d">MAX_PAGES_IN_SRAM</a>&#160;&#160;&#160;MAX_SPACE_IN_SRAM</td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-vm_8c.html#a451514920748291271c1ee5f671f5503">mmcalloc</a> (uint32_t size, uint8_t aligned)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-vm_8c.html#a25aa2c381c261acbae31715c03056db9">mmc_get_data</a> (uint32_t addr)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-vm_8c.html#ad887d55b9fc46765a33062d0b9844672">mmc_page_write_back</a> (uint32_t addr)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-vm_8c.html#a4faad3b4a9ed02fd2ebde88068cd4028">mmc_flush_cache</a> (void)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-vm_8c.html#ae81b117f7248886fb2cc74029301ea93">mmc_fopen_P</a> (const char *filename)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-vm_8c.html#a010ae1c4ffa8d25d8ee752c656c29504">mmc_get_filesize</a> (uint32_t file_start)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="mmc-vm_8c.html#a8908f63f68b42f875acc159be8f97160">mmc_clear_file</a> (uint32_t file_start)</td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Virtual Memory Management mit MMC / SD-Card. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Timo Sandmann (<a href="mailto:mail@timosandmann.de">mail@timosandmann.de</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>30.11.2006 </dd></dl>
+<dl class="see"><dt><b>Siehe auch:</b></dt><dd>Documentation/mmc-vm.html </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="mmc-vm_8c_source.html">mmc-vm.c</a>.</p>
+</div><hr/><h2>Makro-Dokumentation</h2>
+<a class="anchor" id="abb665bd583cd5eb93ec03d5fa4c50bc1"></a><!-- doxytag: member="mmc&#45;vm.c::fat_lookup" ref="abb665bd583cd5eb93ec03d5fa4c50bc1" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define fat_lookup&#160;&#160;&#160;mini_fat_lookup_adr</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Funktion zum FS-Cache auslesen </p>
+
+<p>Definiert in Zeile <a class="el" href="mmc-vm_8c_source.html#l00050">50</a> der Datei <a class="el" href="mmc-vm_8c_source.html">mmc-vm.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1d0373153cf3986bffb9f205a9ef94c1"></a><!-- doxytag: member="mmc&#45;vm.c::fat_store" ref="a1d0373153cf3986bffb9f205a9ef94c1" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define fat_store&#160;&#160;&#160;mini_fat_store_adr</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Funktion zum FS-Cache aktualisieren </p>
+
+<p>Definiert in Zeile <a class="el" href="mmc-vm_8c_source.html#l00051">51</a> der Datei <a class="el" href="mmc-vm_8c_source.html">mmc-vm.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a08c951b555552d239a1e3599840d1f7d"></a><!-- doxytag: member="mmc&#45;vm.c::MAX_PAGES_IN_SRAM" ref="a08c951b555552d239a1e3599840d1f7d" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAX_PAGES_IN_SRAM&#160;&#160;&#160;MAX_SPACE_IN_SRAM</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Anzahl der Cache-Seiten, die maximal im SRAM gehalten werden </p>
+
+<p>Definiert in Zeile <a class="el" href="mmc-vm_8c_source.html#l00065">65</a> der Datei <a class="el" href="mmc-vm_8c_source.html">mmc-vm.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a56505f14247981580490d0be1384ad3c"></a><!-- doxytag: member="mmc&#45;vm.c::MAX_SPACE_IN_SRAM" ref="a56505f14247981580490d0be1384ad3c" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAX_SPACE_IN_SRAM&#160;&#160;&#160;1</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Anzahl der Seiten, die maximal im SRAM gehalten werden [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald diese verwendet wird. </p>
+
+<p>Definiert in Zeile <a class="el" href="mmc-vm_8c_source.html#l00046">46</a> der Datei <a class="el" href="mmc-vm_8c_source.html">mmc-vm.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a962a20096b575285ee3a00262b36f669"></a><!-- doxytag: member="mmc&#45;vm.c::MMC_START_ADDRESS" ref="a962a20096b575285ee3a00262b36f669" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MMC_START_ADDRESS&#160;&#160;&#160;0x2000000</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Startadresse des virtuellen Speichers [512;2^32-1] in Byte - Sinnvoll ist z.B. Haelfte der MMC / SD-Card Groesse, der Speicherplatz davor kann dann fuer ein Dateisystem verwendet werden. </p>
+
+<p>Definiert in Zeile <a class="el" href="mmc-vm_8c_source.html#l00045">45</a> der Datei <a class="el" href="mmc-vm_8c_source.html">mmc-vm.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ade50f9d1cad5b40125fe8ea7723c5a4b"></a><!-- doxytag: member="mmc&#45;vm.c::swap_in" ref="ade50f9d1cad5b40125fe8ea7723c5a4b" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define swap_in&#160;&#160;&#160;mmc_read_sector</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Funktion zum Lesen von der MMC </p>
+
+<p>Definiert in Zeile <a class="el" href="mmc-vm_8c_source.html#l00048">48</a> der Datei <a class="el" href="mmc-vm_8c_source.html">mmc-vm.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a733442e7f1433071b65e448e6b799eb6"></a><!-- doxytag: member="mmc&#45;vm.c::swap_out" ref="a733442e7f1433071b65e448e6b799eb6" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define swap_out&#160;&#160;&#160;mmc_write_sector</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Funktion zum Schreiben auf die MMC </p>
+
+<p>Definiert in Zeile <a class="el" href="mmc-vm_8c_source.html#l00047">47</a> der Datei <a class="el" href="mmc-vm_8c_source.html">mmc-vm.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mmc-vm_8c_source.html#l00375">mmc_flush_cache()</a> und <a class="el" href="mmc-vm_8c_source.html#l00363">mmc_page_write_back()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a27b47974c3e9d9a4fe6977e926bb0efa"></a><!-- doxytag: member="mmc&#45;vm.c::swap_space" ref="a27b47974c3e9d9a4fe6977e926bb0efa" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define swap_space&#160;&#160;&#160;mmc_get_size()</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Funktion zur Groessenermittlung der MMC </p>
+
+<p>Definiert in Zeile <a class="el" href="mmc-vm_8c_source.html#l00049">49</a> der Datei <a class="el" href="mmc-vm_8c_source.html">mmc-vm.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mmc-vm_8c_source.html#l00375">mmc_flush_cache()</a> und <a class="el" href="mmc-vm_8c_source.html#l00316">mmcalloc()</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="a8908f63f68b42f875acc159be8f97160"></a><!-- doxytag: member="mmc&#45;vm.c::mmc_clear_file" ref="a8908f63f68b42f875acc159be8f97160" args="(uint32_t file_start)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mmc_clear_file </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>file_start</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Leert eine Datei im FAT16-Dateisystem auf der MMC / SD-Card, die zuvor mit <a class="el" href="mmc-vm_8h.html#ae37affd34fdfca9ec9591032b2caa768">mmc_fopen()</a> geoeffnet wurde. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">file_start</td><td>(virtuelle) Anfangsadresse der Datei in Byte </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc-vm_8c_source.html#l00442">442</a> der Datei <a class="el" href="mmc-vm_8c_source.html">mmc-vm.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mmc-vm_8c_source.html#l00069">vm_cache_t::addr</a>, <a class="el" href="mmc-vm_8c_source.html#l00075">vm_cache_t::dirty</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="mmc-vm_8c_source.html#l00375">mmc_flush_cache()</a> und <a class="el" href="mmc-vm_8c_source.html#l00347">mmc_get_data()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mini-fat__pc_8c_source.html#l00138">delete_emu_mini_fat_file()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc-vm_8c_a8908f63f68b42f875acc159be8f97160_cgraph.png" border="0" usemap="#mmc-vm_8c_a8908f63f68b42f875acc159be8f97160_cgraph" alt=""/></div>
+<map name="mmc-vm_8c_a8908f63f68b42f875acc159be8f97160_cgraph" id="mmc-vm_8c_a8908f63f68b42f875acc159be8f97160_cgraph">
+<area shape="rect" id="node3" href="mmc-vm_8c.html#a4faad3b4a9ed02fd2ebde88068cd4028" title="mmc_flush_cache" alt="" coords="167,5,295,33"/><area shape="rect" id="node5" href="mmc-vm_8c.html#a25aa2c381c261acbae31715c03056db9" title="mmc_get_data" alt="" coords="176,55,285,83"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a4faad3b4a9ed02fd2ebde88068cd4028"></a><!-- doxytag: member="mmc&#45;vm.c::mmc_flush_cache" ref="a4faad3b4a9ed02fd2ebde88068cd4028" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mmc_flush_cache </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Schreibt alle eingelagerten Seiten auf die MMC / SD-Card zurueck </p>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>0: alles ok, sonst: Summe der Fehler beim Zurueckschreiben </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc-vm_8c_source.html#l00375">375</a> der Datei <a class="el" href="mmc-vm_8c_source.html">mmc-vm.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mmc-vm_8c_source.html#l00075">vm_cache_t::dirty</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="mmc-vm_8c_source.html#l00047">swap_out</a> und <a class="el" href="mmc-vm_8c_source.html#l00049">swap_space</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mmc-vm_8c_source.html#l00442">mmc_clear_file()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae81b117f7248886fb2cc74029301ea93"></a><!-- doxytag: member="mmc&#45;vm.c::mmc_fopen_P" ref="ae81b117f7248886fb2cc74029301ea93" args="(const char *filename)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t mmc_fopen_P </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Oeffnet eine Datei im FAT16-Dateisystem auf der MMC / SD-Card und gibt eine virtuelle Adresse zurueck, mit der man per <a class="el" href="mmc-vm_8c.html#a25aa2c381c261acbae31715c03056db9">mmc_get_data()</a> einen Pointer auf die gewuenschten Daten bekommt. Das Ein- / Auslagern macht das VM-System automatisch. Der Dateiname muss derzeit am Amfang in der Datei stehen. Achtung: Irgendwann muss man die Daten per <a class="el" href="mmc-vm_8c.html#a4faad3b4a9ed02fd2ebde88068cd4028">mmc_flush_cache()</a> oder <a class="el" href="mmc-vm_8c.html#ad887d55b9fc46765a33062d0b9844672">mmc_page_write_back()</a> zurueckschreiben! </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>Dateiname als 0-terminierter String im Flash </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Virtuelle Anfangsadresse der angeforderten Datei in Byte, 0 falls Fehler </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc-vm_8c_source.html#l00396">396</a> der Datei <a class="el" href="mmc-vm_8c_source.html">mmc-vm.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mmc-vm_8c_source.html#l00069">vm_cache_t::addr</a>, <a class="el" href="mmc-vm_8c_source.html#l00075">vm_cache_t::dirty</a>, <a class="el" href="mmc-vm_8c_source.html#l00347">mmc_get_data()</a> und <a class="el" href="mmc-vm_8c_source.html#l00316">mmcalloc()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc-vm_8c_ae81b117f7248886fb2cc74029301ea93_cgraph.png" border="0" usemap="#mmc-vm_8c_ae81b117f7248886fb2cc74029301ea93_cgraph" alt=""/></div>
+<map name="mmc-vm_8c_ae81b117f7248886fb2cc74029301ea93_cgraph" id="mmc-vm_8c_ae81b117f7248886fb2cc74029301ea93_cgraph">
+<area shape="rect" id="node3" href="mmc-vm_8c.html#a25aa2c381c261acbae31715c03056db9" title="mmc_get_data" alt="" coords="164,5,273,33"/><area shape="rect" id="node5" href="mmc-vm_8c.html#a451514920748291271c1ee5f671f5503" title="mmcalloc" alt="" coords="179,55,259,83"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a25aa2c381c261acbae31715c03056db9"></a><!-- doxytag: member="mmc&#45;vm.c::mmc_get_data" ref="a25aa2c381c261acbae31715c03056db9" args="(uint32_t addr)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t* mmc_get_data </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>addr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Gibt einen Zeiger auf einen Speicherblock im RAM zurueck </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">addr</td><td>Eine virtuelle Adresse in Byte </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Zeiger auf uint8_t, NULL falls Fehler </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc-vm_8c_source.html#l00347">347</a> der Datei <a class="el" href="mmc-vm_8c_source.html">mmc-vm.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mmc-vm_8c_source.html#l00075">vm_cache_t::dirty</a> und <a class="el" href="mmc-vm_8c_source.html#l00070">vm_cache_t::p_data</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mmc-vm_8c_source.html#l00442">mmc_clear_file()</a>, <a class="el" href="mmc-emu__pc_8c_source.html#l00276">mmc_emu_test()</a>, <a class="el" href="mmc-vm_8c_source.html#l00396">mmc_fopen_P()</a> und <a class="el" href="mmc-vm_8c_source.html#l00428">mmc_get_filesize()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a010ae1c4ffa8d25d8ee752c656c29504"></a><!-- doxytag: member="mmc&#45;vm.c::mmc_get_filesize" ref="a010ae1c4ffa8d25d8ee752c656c29504" args="(uint32_t file_start)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t mmc_get_filesize </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>file_start</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Liest die Groesse einer Datei im FAT16-Dateisystem auf der MMC / SD-Card aus, die zu zuvor mit <a class="el" href="mmc-vm_8h.html#ae37affd34fdfca9ec9591032b2caa768">mmc_fopen()</a> geoeffnet wurde. </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">file_start</td><td>(virtuelle) Anfangsadresse der Datei in Byte </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Groesse der Datei in Byte </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc-vm_8c_source.html#l00428">428</a> der Datei <a class="el" href="mmc-vm_8c_source.html">mmc-vm.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mmc-vm_8c_source.html#l00347">mmc_get_data()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="mmc-vm_8c_a010ae1c4ffa8d25d8ee752c656c29504_cgraph.png" border="0" usemap="#mmc-vm_8c_a010ae1c4ffa8d25d8ee752c656c29504_cgraph" alt=""/></div>
+<map name="mmc-vm_8c_a010ae1c4ffa8d25d8ee752c656c29504_cgraph" id="mmc-vm_8c_a010ae1c4ffa8d25d8ee752c656c29504_cgraph">
+<area shape="rect" id="node3" href="mmc-vm_8c.html#a25aa2c381c261acbae31715c03056db9" title="mmc_get_data" alt="" coords="183,5,292,33"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ad887d55b9fc46765a33062d0b9844672"></a><!-- doxytag: member="mmc&#45;vm.c::mmc_page_write_back" ref="ad887d55b9fc46765a33062d0b9844672" args="(uint32_t addr)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t mmc_page_write_back </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>addr</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Erzwingt das Zurueckschreiben einer eingelagerten Seite auf die MMC / SD-Card </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">addr</td><td>Eine virtuelle Adresse in Byte </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>0: ok, 1: Seite zurzeit nicht eingelagert, 2: Fehler beim Zurueckschreiben </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc-vm_8c_source.html#l00363">363</a> der Datei <a class="el" href="mmc-vm_8c_source.html">mmc-vm.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mmc-vm_8c_source.html#l00075">vm_cache_t::dirty</a> und <a class="el" href="mmc-vm_8c_source.html#l00047">swap_out</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a451514920748291271c1ee5f671f5503"></a><!-- doxytag: member="mmc&#45;vm.c::mmcalloc" ref="a451514920748291271c1ee5f671f5503" args="(uint32_t size, uint8_t aligned)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t mmcalloc </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>aligned</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Fordert virtuellen Speicher an </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">size</td><td>Groesse des gewuenschten Speicherblocks </td></tr>
+    <tr><td class="paramname">aligned</td><td>ignored </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Rückgabe:</b></dt><dd>Virtuelle Anfangsadresse des angeforderten Speicherblocks in Byte, 0 falls Fehler </dd></dl>
+
+<p>Definiert in Zeile <a class="el" href="mmc-vm_8c_source.html#l00316">316</a> der Datei <a class="el" href="mmc-vm_8c_source.html">mmc-vm.c</a>.</p>
+
+<p>Benutzt <a class="el" href="mmc-vm_8c_source.html#l00049">swap_space</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="mmc-emu__pc_8c_source.html#l00276">mmc_emu_test()</a> und <a class="el" href="mmc-vm_8c_source.html#l00396">mmc_fopen_P()</a>.</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:12 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

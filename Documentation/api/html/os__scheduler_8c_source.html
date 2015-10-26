@@ -1,0 +1,421 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: os_scheduler.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_f02428e3da713fc394853d6cd2afbcd0.html">mcu</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">os_scheduler.c</div>  </div>
+</div>
+<div class="contents">
+<a href="os__scheduler_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00027"></a>00027 <span class="preprocessor">#ifdef MCU</span>
+<a name="l00028"></a>00028 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot-Funktionalitaeten">ct-Bot.h</a>&quot;</span>
+<a name="l00029"></a>00029 
+<a name="l00030"></a>00030 <span class="preprocessor">#ifdef OS_AVAILABLE</span>
+<a name="l00031"></a>00031 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="bot-logic_8h.html" title="High-Level-Routinen fuer die Steuerung des c&#39;t-Bots.">bot-logic/bot-logic.h</a>&quot;</span>
+<a name="l00032"></a>00032 <span class="preprocessor">#include &quot;<a class="code" href="os__scheduler_8h.html" title="Mini-Scheduler fuer BotOS.">os_scheduler.h</a>&quot;</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#include &quot;<a class="code" href="available__screens_8h.html" title="Die Schalter fuer sichtbare Screens finden sich hier.">ui/available_screens.h</a>&quot;</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include &quot;<a class="code" href="os__utils_8h.html" title="Hilfsfunktionen fuer BotOS.">os_utils.h</a>&quot;</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include &quot;<a class="code" href="os__thread_8h.html" title="Threadmanagement fuer BotOS.">os_thread.h</a>&quot;</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include &quot;<a class="code" href="sensor_8h.html" title="Architekturunabhaengiger Teil der Sensorsteuerung.">sensor.h</a>&quot;</span>
+<a name="l00037"></a>00037 <span class="preprocessor">#include &quot;<a class="code" href="rc5-codes_8h.html" title="RC5-Fernbedienungscodes.">rc5-codes.h</a>&quot;</span>
+<a name="l00038"></a>00038 <span class="preprocessor">#include &quot;<a class="code" href="map_8h.html" title="Karte.">map.h</a>&quot;</span>
+<a name="l00039"></a>00039 <span class="preprocessor">#include &quot;<a class="code" href="display_8h.html" title="Routinen zur Displaysteuerung.">display.h</a>&quot;</span>
+<a name="l00040"></a>00040 <span class="preprocessor">#include &quot;<a class="code" href="log_8h.html" title="Routinen zum Loggen von Informationen.">log.h</a>&quot;</span>
+<a name="l00041"></a>00041 <span class="preprocessor">#include &lt;stdlib.h&gt;</span>
+<a name="l00042"></a>00042 <span class="preprocessor">#include &lt;string.h&gt;</span>
+<a name="l00043"></a>00043 
+<a name="l00044"></a>00044 <span class="comment">// avr-gcc &lt; 4.2.2 ?</span>
+<a name="l00045"></a>00045 <span class="preprocessor">#if !(__GNUC__ &gt;= 4 &amp;&amp; ((__GNUC_MINOR__ &gt; 2) || (__GNUC_MINOR__ == 2 &amp;&amp; __GNUC_PATCHLEVEL__ &gt;= 2)))</span>
+<a name="l00046"></a>00046 <span class="preprocessor"></span><span class="preprocessor">#error &quot;Compiler zu alt, mindestens 4.2.2 noetig!&quot;  // fuer __attribute__((OS_task))</span>
+<a name="l00047"></a>00047 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00048"></a>00048 <span class="preprocessor"></span>
+<a name="l00049"></a><a class="code" href="os__scheduler_8c.html#aedb1cbd0b22044c1a271aff9014ac8b4">00049</a> <span class="keyword">volatile</span> uint8_t <a class="code" href="os__scheduler_8h.html#aedb1cbd0b22044c1a271aff9014ac8b4">os_scheduling_allowed</a> = 1; 
+<a name="l00051"></a><a class="code" href="os__scheduler_8c.html#acb003059db99b21fa9103de9f505c216">00051</a> uint8_t <a class="code" href="os__thread_8h.html#a577438ea72f5dcbdff5b1cc72d231440" title="Stack des Idle-Threads.">os_idle_stack</a>[<a class="code" href="os__thread_8h.html#aa6afdd19d3022d101b8fc9942bb8422b" title="Groesse des Idle-Stacks [Byte].">OS_IDLE_STACKSIZE</a>];   
+<a name="l00053"></a>00053 <span class="keyword">static</span> <span class="keyword">volatile</span> uint32_t idle_counter[3];   
+<a name="l00054"></a><a class="code" href="os__scheduler_8c.html#af629cffaf03c264c82fdf0e5f80507ce">00054</a> <span class="preprocessor">#define ZYCLES_PER_IDLERUN  38 </span>
+<a name="l00056"></a>00056 <span class="preprocessor">#ifdef DISPLAY_OS_AVAILABLE</span>
+<a name="l00057"></a><a class="code" href="os__scheduler_8c.html#a776b311cd4fa11cebd26732c9d3c56fc">00057</a> <span class="preprocessor"></span>uint8_t <a class="code" href="os__scheduler_8h.html#a776b311cd4fa11cebd26732c9d3c56fc">uart_log</a> = 0; 
+<a name="l00058"></a>00058 <span class="preprocessor">#endif</span>
+<a name="l00059"></a>00059 <span class="preprocessor"></span>
+<a name="l00060"></a>00060 <span class="preprocessor">#ifdef OS_KERNEL_LOG_AVAILABLE</span>
+<a name="l00061"></a><a class="code" href="structkernel__log__t.html">00061</a> <span class="preprocessor"></span><span class="keyword">typedef</span> <span class="keyword">struct </span>{
+<a name="l00062"></a><a class="code" href="structkernel__log__t.html#ab514329323a36a4b3b02abf731e902ba">00062</a>     uint16_t <a class="code" href="structkernel__log__t.html#ab514329323a36a4b3b02abf731e902ba">time</a>; 
+<a name="l00063"></a><a class="code" href="structkernel__log__t.html#a440a3141ab20e6ca78bfb4003c60cf9c">00063</a>     uint8_t <a class="code" href="structkernel__log__t.html#a440a3141ab20e6ca78bfb4003c60cf9c">from</a>;  
+<a name="l00064"></a><a class="code" href="structkernel__log__t.html#a41f7f17614a0bb8596c87793cf6f28b4">00064</a>     uint8_t <a class="code" href="structkernel__log__t.html#a41f7f17614a0bb8596c87793cf6f28b4">to</a>;    
+<a name="l00065"></a>00065 } <a class="code" href="structkernel__log__t.html">kernel_log_t</a>; 
+<a name="l00066"></a>00066 <span class="keyword">static</span> <a class="code" href="structkernel__log__t.html">kernel_log_t</a> kernel_log[<a class="code" href="os__thread_8h.html#a0be74d4f0538be57711788fcfe6ee3a2" title="Anzahl der Datensaetze, die im Kernel-LOG gepuffert werden koennen.">OS_KERNEL_LOG_SIZE</a>]; 
+<a name="l00067"></a>00067 <span class="keyword">static</span> <a class="code" href="structfifo__t.html">fifo_t</a> kernel_log_fifo; 
+<a name="l00068"></a>00068 <span class="keyword">static</span> <a class="code" href="structkernel__log__t.html">kernel_log_t</a> log_entry; 
+<a name="l00069"></a>00069 <span class="keyword">static</span> uint8_t kernel_log_on = 0; 
+<a name="l00074"></a><a class="code" href="os__scheduler_8c.html#a8dc4e2317522bc6d58ac8a66dc236745">00074</a> <span class="keywordtype">void</span> <a class="code" href="os__thread_8h.html#a8dc4e2317522bc6d58ac8a66dc236745" title="Initialisiert das Kernel-LOG.">os_kernel_log_init</a>(<span class="keywordtype">void</span>) {
+<a name="l00075"></a>00075     memset(kernel_log, 0, <span class="keyword">sizeof</span>(kernel_log));
+<a name="l00076"></a>00076     <a class="code" href="fifo_8c.html#a125e7099a807c9ec1e62227f84723248">fifo_init</a>(&amp;kernel_log_fifo, kernel_log, <span class="keyword">sizeof</span>(kernel_log));
+<a name="l00077"></a>00077 }
+<a name="l00078"></a>00078 <span class="preprocessor">#endif // OS_KERNEL_LOG_AVAILABLE</span>
+<a name="l00079"></a>00079 <span class="preprocessor"></span>
+<a name="l00080"></a>00080 <span class="preprocessor">#ifdef MEASURE_UTILIZATION</span>
+<a name="l00081"></a><a class="code" href="os__scheduler_8c.html#a50c65b2a1d1fb8eb384460cb2f18246e">00081</a> <span class="preprocessor"></span><span class="preprocessor">#define UTIL_LOG_TIME       25  </span>
+<a name="l00082"></a><a class="code" href="os__scheduler_8c.html#a912479d01ab7e15698bdbdbe96118782">00082</a> <span class="preprocessor">#define MAX_UTIL_ENTRIES    256 </span>
+<a name="l00084"></a>00084 <span class="preprocessor">static uint8_t util_data[MAX_UTIL_ENTRIES][OS_MAX_THREADS]; </span>
+<a name="l00085"></a>00085 <span class="preprocessor">static uint16_t missed_deadlines[OS_MAX_THREADS]; </span>
+<a name="l00086"></a>00086 <span class="preprocessor">static uint16_t util_count = 0;      </span>
+<a name="l00087"></a>00087 <span class="preprocessor">static uint16_t last_util_time = 0;  </span>
+<a name="l00088"></a>00088 <span class="preprocessor">static uint32_t first_util_time = 0; </span>
+<a name="l00093"></a><a class="code" href="os__scheduler_8c.html#a04b8344229f191e96270be0ee6c47961">00093</a> <span class="preprocessor">void os_calc_utilization(void) {</span>
+<a name="l00094"></a>00094 <span class="preprocessor"></span>    <span class="keywordflow">if</span> (timer_ms_passed_16(&amp;last_util_time, <a class="code" href="os__scheduler_8c.html#a50c65b2a1d1fb8eb384460cb2f18246e">UTIL_LOG_TIME</a>)) {
+<a name="l00095"></a>00095         <a class="code" href="structos__stat__data__t.html" title="Statistikdaten wie Laufzeit und Anzahl der ueberschrittenen Deadlines.">os_stat_data_t</a> data[<a class="code" href="os__thread_8h.html#a42d66a999c19e795c22714a54fc2b6b2" title="maximale Anzahl an Threads im System">OS_MAX_THREADS</a>];
+<a name="l00096"></a>00096         uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00097"></a>00097 
+<a name="l00098"></a>00098         <span class="comment">/* Daten aus den TCBs holen */</span>
+<a name="l00099"></a>00099         uint16_t sum = 0;
+<a name="l00100"></a>00100         <a class="code" href="os__thread_8h.html#a29e5f7c4cb7a64b0d9157f2a9efdcdc5" title="Schuetzt den folgenden Block (bis os_exitCS()) vor Threadswitches.">os_enterCS</a>();
+<a name="l00101"></a>00101         <span class="keywordflow">for</span> (i = 0; i &lt; <a class="code" href="os__thread_8h.html#a42d66a999c19e795c22714a54fc2b6b2" title="maximale Anzahl an Threads im System">OS_MAX_THREADS</a>; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00102"></a>00102             data[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>] = <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structTcb__t.html#adaa0726733fa213b0779f62c21b15421" title="Statistikdaten des Threads.">statistics</a>;
+<a name="l00103"></a>00103             sum += data[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structos__stat__data__t.html#afe27019d2fc769ebcee29dc36c8c6f05" title="Zeit, die der Thread gelaufen ist [176 us].">runtime</a>;
+<a name="l00104"></a>00104             <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structTcb__t.html#adaa0726733fa213b0779f62c21b15421" title="Statistikdaten des Threads.">statistics</a>.<a class="code" href="structos__stat__data__t.html#afe27019d2fc769ebcee29dc36c8c6f05" title="Zeit, die der Thread gelaufen ist [176 us].">runtime</a> = 0;
+<a name="l00105"></a>00105             <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structTcb__t.html#adaa0726733fa213b0779f62c21b15421" title="Statistikdaten des Threads.">statistics</a>.<a class="code" href="structos__stat__data__t.html#a9e038c838ca50499ea5918b05b928a0e" title="Anzahl der Deadlines, die der Thread ueberschritten hat.">missed_deadlines</a> = 0;
+<a name="l00106"></a>00106         }
+<a name="l00107"></a>00107         <a class="code" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1" title="Beendet den kritischen Abschnitt wieder, der mit os_enterCS began.">os_exitCS</a>();
+<a name="l00108"></a>00108 
+<a name="l00109"></a>00109         <span class="keywordflow">if</span> (sum == 0) {
+<a name="l00110"></a>00110             <span class="keywordflow">return</span>; <span class="comment">// keine neuen Daten vorhanden</span>
+<a name="l00111"></a>00111         }
+<a name="l00112"></a>00112 
+<a name="l00113"></a>00113         <span class="comment">/* Auslastung in % berechnen */</span>
+<a name="l00114"></a>00114         <span class="keywordflow">for</span> (i = 0; i &lt; <a class="code" href="os__thread_8h.html#a42d66a999c19e795c22714a54fc2b6b2" title="maximale Anzahl an Threads im System">OS_MAX_THREADS</a>; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00115"></a>00115             missed_deadlines[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>] += data[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structos__stat__data__t.html#a9e038c838ca50499ea5918b05b928a0e" title="Anzahl der Deadlines, die der Thread ueberschritten hat.">missed_deadlines</a>;
+<a name="l00116"></a>00116             uint32_t tmp = data[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structos__stat__data__t.html#afe27019d2fc769ebcee29dc36c8c6f05" title="Zeit, die der Thread gelaufen ist [176 us].">runtime</a>;
+<a name="l00117"></a>00117             tmp *= 100;
+<a name="l00118"></a>00118             tmp /= sum;
+<a name="l00119"></a>00119             util_data[util_count][<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>] = (uint8_t) tmp;
+<a name="l00120"></a>00120         }
+<a name="l00121"></a>00121         util_count++;
+<a name="l00122"></a>00122         util_count &amp;= <a class="code" href="os__scheduler_8c.html#a912479d01ab7e15698bdbdbe96118782">MAX_UTIL_ENTRIES</a> - 1;
+<a name="l00123"></a>00123     }
+<a name="l00124"></a>00124 }
+<a name="l00125"></a>00125 
+<a name="l00129"></a><a class="code" href="os__scheduler_8c.html#a8709efbe5b47914a0e4c501f0b786a73">00129</a> <span class="keywordtype">void</span> <a class="code" href="os__scheduler_8h.html#a8709efbe5b47914a0e4c501f0b786a73">os_clear_utilization</a>(<span class="keywordtype">void</span>) {
+<a name="l00130"></a>00130     uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00131"></a>00131     <a class="code" href="os__thread_8h.html#a29e5f7c4cb7a64b0d9157f2a9efdcdc5" title="Schuetzt den folgenden Block (bis os_exitCS()) vor Threadswitches.">os_enterCS</a>();
+<a name="l00132"></a>00132     <span class="keywordflow">for</span> (i = 0; i &lt; <a class="code" href="os__thread_8h.html#a42d66a999c19e795c22714a54fc2b6b2" title="maximale Anzahl an Threads im System">OS_MAX_THREADS</a>; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00133"></a>00133         <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structTcb__t.html#adaa0726733fa213b0779f62c21b15421" title="Statistikdaten des Threads.">statistics</a>.<a class="code" href="structos__stat__data__t.html#afe27019d2fc769ebcee29dc36c8c6f05" title="Zeit, die der Thread gelaufen ist [176 us].">runtime</a> = 0;
+<a name="l00134"></a>00134         <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structTcb__t.html#adaa0726733fa213b0779f62c21b15421" title="Statistikdaten des Threads.">statistics</a>.<a class="code" href="structos__stat__data__t.html#a9e038c838ca50499ea5918b05b928a0e" title="Anzahl der Deadlines, die der Thread ueberschritten hat.">missed_deadlines</a> = 0;
+<a name="l00135"></a>00135         missed_deadlines[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>] = 0;
+<a name="l00136"></a>00136     }
+<a name="l00137"></a>00137     first_util_time = <a class="code" href="timer_8h.html#ae992a808717a64e585cbc308a1d5950d">TIMER_GET_TICKCOUNT_32</a>;
+<a name="l00138"></a>00138     memset((<span class="keywordtype">void</span> *)idle_counter, 0, <span class="keyword">sizeof</span>(idle_counter));
+<a name="l00139"></a>00139     util_count = 0;
+<a name="l00140"></a>00140     <a class="code" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1" title="Beendet den kritischen Abschnitt wieder, der mit os_enterCS began.">os_exitCS</a>();
+<a name="l00141"></a>00141 }
+<a name="l00142"></a>00142 
+<a name="l00146"></a><a class="code" href="os__scheduler_8c.html#aa046ca334425d424f289a93f22df6450">00146</a> <span class="keywordtype">void</span> <a class="code" href="os__scheduler_8h.html#aa046ca334425d424f289a93f22df6450">os_print_utilization</a>(<span class="keywordtype">void</span>) {
+<a name="l00147"></a>00147     uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00148"></a>00148     <span class="keywordflow">for</span> (i = 0; i &lt; util_count; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00149"></a>00149 <span class="preprocessor">#if (OS_MAX_THREADS == 2)</span>
+<a name="l00150"></a>00150 <span class="preprocessor"></span>        <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%3u\t%3u&quot;</span>, util_data[i][0], util_data[i][1]);
+<a name="l00151"></a>00151 <span class="preprocessor">#elif (OS_MAX_THREADS == 3)</span>
+<a name="l00152"></a>00152 <span class="preprocessor"></span>        <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%3u\t%3u\t%3u&quot;</span>, util_data[i][0], util_data[i][1], util_data[i][2]);
+<a name="l00153"></a>00153 <span class="preprocessor">#elif (OS_MAX_THREADS == 4)</span>
+<a name="l00154"></a>00154 <span class="preprocessor"></span>        <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%3u\t%3u\t%3u\t%3u&quot;</span>, util_data[i][0], util_data[i][1], util_data[i][2], util_data[i][3]);
+<a name="l00155"></a>00155 <span class="preprocessor">#else</span>
+<a name="l00156"></a>00156 <span class="preprocessor"></span><span class="preprocessor">#error &quot;Auslastungsstatistik fuer OS_MAX_THREADS &gt; 4 nicht implementiert!&quot;</span>
+<a name="l00157"></a>00157 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00158"></a>00158 <span class="preprocessor"></span>    }
+<a name="l00159"></a>00159 
+<a name="l00160"></a>00160     <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;Missed deadlines:&quot;</span>);
+<a name="l00161"></a>00161 <span class="preprocessor">#if (OS_MAX_THREADS == 2)</span>
+<a name="l00162"></a>00162 <span class="preprocessor"></span>    <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%5u\t%5u&quot;</span>, missed_deadlines[0], missed_deadlines[1]);
+<a name="l00163"></a>00163 <span class="preprocessor">#elif (OS_MAX_THREADS == 3)</span>
+<a name="l00164"></a>00164 <span class="preprocessor"></span>    <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%5u\t%5u\t%5u&quot;</span>, missed_deadlines[0], missed_deadlines[1], missed_deadlines[2]);
+<a name="l00165"></a>00165 <span class="preprocessor">#elif (OS_MAX_THREADS == 4)</span>
+<a name="l00166"></a>00166 <span class="preprocessor"></span>    <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%5u\t%5u\t%5u\t%5u&quot;</span>, missed_deadlines[0], missed_deadlines[1], missed_deadlines[2], missed_deadlines[3]);
+<a name="l00167"></a>00167 <span class="preprocessor">#endif</span>
+<a name="l00168"></a>00168 <span class="preprocessor"></span>
+<a name="l00169"></a>00169 <span class="preprocessor">#ifdef LOG_AVAILABLE</span>
+<a name="l00170"></a>00170 <span class="preprocessor"></span>    uint32_t runtime = <a class="code" href="timer_8h.html#ae992a808717a64e585cbc308a1d5950d">TIMER_GET_TICKCOUNT_32</a> - first_util_time;
+<a name="l00171"></a>00171     <span class="comment">/* idle_counter kann nicht atomar inkrementiert werden und wir wissen nicht, bei welcher Instruktion</span>
+<a name="l00172"></a>00172 <span class="comment">     * der idle-Thread unterbrochen wurde. Da es aber 3 Kopien des Idle-Zaehlers gibt, muessen immer</span>
+<a name="l00173"></a>00173 <span class="comment">     * mindesten zwei den korrekten Wert enthalten. Genau dieses Paar suchen wir nun und verwenden den Wert. */</span>
+<a name="l00174"></a>00174     uint32_t idle = idle_counter[0];
+<a name="l00175"></a>00175     uint32_t idle2 = idle_counter[1];
+<a name="l00176"></a>00176     uint32_t idle3 = idle_counter[2];
+<a name="l00177"></a>00177     <span class="keywordflow">if</span> (idle != idle2 &amp;&amp; idle != idle3) {
+<a name="l00178"></a>00178         idle = idle2; <span class="comment">// idle enthaelt den falschen Wert, also sind idle2 und idle3 korrekt</span>
+<a name="l00179"></a>00179     }
+<a name="l00180"></a>00180     uint32_t idle_ticks = (uint32_t) ((<span class="keywordtype">float</span>) idle * (<a class="code" href="os__scheduler_8c.html#af629cffaf03c264c82fdf0e5f80507ce">ZYCLES_PER_IDLERUN</a> * 1000000.0f / <a class="code" href="bot-local_8h.html#a43bafb28b29491ec7f871319b5a3b2f8">F_CPU</a> / <a class="code" href="timer_8h.html#a8c11b7233c1cb69ca3e7b7758399d098">TIMER_STEPS</a>));
+<a name="l00181"></a>00181 
+<a name="l00182"></a>00182     uint8_t idle_pc = (uint8_t) (idle_ticks * 100 / runtime);
+<a name="l00183"></a>00183     <a class="code" href="log_8h.html#a8db73317441b94d67ad5e52f543eae38">LOG_INFO</a>(<span class="stringliteral">&quot;%u %% idle&quot;</span>, idle_pc);
+<a name="l00184"></a>00184 <span class="preprocessor">#endif // LOG_AVAILABLE</span>
+<a name="l00185"></a>00185 <span class="preprocessor"></span>}
+<a name="l00186"></a>00186 <span class="preprocessor">#endif // MEASURE_UTILIZATION</span>
+<a name="l00187"></a>00187 <span class="preprocessor"></span>
+<a name="l00191"></a><a class="code" href="os__scheduler_8c.html#a8dda67f607bcfb93e71845bb7f7bdfc1">00191</a> <span class="keywordtype">void</span> <a class="code" href="os__thread_8h.html#a011a849badc985823e31fee406aa910a" title="Idle-Thread.">os_idle</a>(<span class="keywordtype">void</span>) {
+<a name="l00192"></a>00192     <span class="keywordflow">while</span>(42) {
+<a name="l00193"></a>00193 <span class="preprocessor">#ifndef OS_KERNEL_LOG_AVAILABLE</span>
+<a name="l00194"></a>00194 <span class="preprocessor"></span>        <span class="comment">/* Idle-Counter wird inkrementiert und 3-mal gespeichert.</span>
+<a name="l00195"></a>00195 <span class="comment">         * Durch die 2 Backups gibt es immer mindestens 2 Kopien,</span>
+<a name="l00196"></a>00196 <span class="comment">         * die den korrekten Wert beinhalten. */</span>
+<a name="l00197"></a>00197         uint32_t tmp = idle_counter[0];
+<a name="l00198"></a>00198         tmp++;
+<a name="l00199"></a>00199         idle_counter[0] = tmp;
+<a name="l00200"></a>00200         idle_counter[1] = tmp;
+<a name="l00201"></a>00201         idle_counter[2] = tmp;
+<a name="l00202"></a>00202         <span class="comment">// 38 Zyklen pro Durchlauf =&gt; 2375 ns @ 16 MHz, 1900 ns @ 20 MHz</span>
+<a name="l00203"></a>00203 <span class="preprocessor">#else</span>
+<a name="l00204"></a>00204 <span class="preprocessor"></span>        <span class="keywordflow">if</span> (kernel_log_fifo.<a class="code" href="structfifo__t.html#aac8f651266b8b08e968553fbb95307c1">count</a> &gt; 0) {
+<a name="l00205"></a>00205             <a class="code" href="structkernel__log__t.html">kernel_log_t</a> data;
+<a name="l00206"></a>00206             <a class="code" href="fifo_8c.html#ac4fa5e37b6f7988d56cae519d4ca33b7" title="Liefert length Bytes aus der FIFO.">fifo_get_data</a>(&amp;kernel_log_fifo, &amp;data, <span class="keyword">sizeof</span>(data));
+<a name="l00207"></a>00207             <a class="code" href="log_8h.html#a1b5b494bb3601b5c7698c016722c4821">LOG_RAW</a>(<span class="stringliteral">&quot;%u\t%u&gt;%u\n&quot;</span>, data.<a class="code" href="structkernel__log__t.html#ab514329323a36a4b3b02abf731e902ba">time</a>, data.<a class="code" href="structkernel__log__t.html#a440a3141ab20e6ca78bfb4003c60cf9c">from</a>, data.<a class="code" href="structkernel__log__t.html#a41f7f17614a0bb8596c87793cf6f28b4">to</a>);
+<a name="l00208"></a>00208         }
+<a name="l00209"></a>00209 <span class="preprocessor">#endif // OS_KERNEL_LOG_AVAILABLE</span>
+<a name="l00210"></a>00210 <span class="preprocessor"></span>    }
+<a name="l00211"></a>00211 }
+<a name="l00212"></a>00212 
+<a name="l00217"></a><a class="code" href="os__scheduler_8c.html#aaf0ea29568109bcdfb1d527f223accad">00217</a> <span class="keywordtype">void</span> <a class="code" href="os__scheduler_8h.html#aaf0ea29568109bcdfb1d527f223accad">os_schedule</a>(uint32_t tickcount) {
+<a name="l00218"></a>00218     <span class="comment">/* Mutex abfragen / setzen =&gt; Scheduler ist nicht reentrant! */</span>
+<a name="l00219"></a>00219     <span class="keywordflow">if</span> (test_and_set((uint8_t *) &amp;<a class="code" href="os__scheduler_8h.html#aedb1cbd0b22044c1a271aff9014ac8b4">os_scheduling_allowed</a>, 0) != 1) {
+<a name="l00220"></a>00220         os_scheduling_allowed = 2;
+<a name="l00221"></a>00221         <span class="keywordflow">return</span>;
+<a name="l00222"></a>00222     }
+<a name="l00223"></a>00223 
+<a name="l00224"></a>00224     <span class="comment">/* Naechsten lauffaehigen Thread mit hoechster Prioritaet suchen.</span>
+<a name="l00225"></a>00225 <span class="comment">     * Das ist zwar in O(n), aber wir haben nur eine sehr beschraenkte Anzahl an Threads! */</span>
+<a name="l00226"></a>00226     uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00227"></a>00227     <a class="code" href="structTcb__t.html" title="TCB eines Threads.">Tcb_t</a> * ptr = <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>;
+<a name="l00228"></a>00228     <span class="comment">// os_scheduling_allowed == 0, sonst waeren wir nicht hier</span>
+<a name="l00229"></a>00229     <span class="keywordflow">for</span> (i = os_scheduling_allowed; i &lt; <a class="code" href="os__thread_8h.html#a42d66a999c19e795c22714a54fc2b6b2" title="maximale Anzahl an Threads im System">OS_MAX_THREADS</a>; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>, ++ptr) {
+<a name="l00230"></a>00230         <span class="keywordflow">if</span> (ptr-&gt;<a class="code" href="structTcb__t.html#ade8b5375f525850abde33533a020179d" title="Stack-Pointer.">stack</a> != NULL) {
+<a name="l00231"></a>00231             <span class="comment">/* Es existiert noch ein Thread in der Liste */</span>
+<a name="l00232"></a>00232             <span class="keywordflow">if</span> (ptr-&gt;<a class="code" href="structTcb__t.html#aa17f8203a8bcb6d0037adcdbfceb12f3" title="Zeiger auf Signal, bis zu dessen Freigabe blockiert wird.">wait_for</a>-&gt;<a class="code" href="structos__signal__t.html#a4a6d6e8dc6c5212e819a552b75e6ec7c" title="Signal-Wert.">value</a> == 0 &amp;&amp; ptr-&gt;<a class="code" href="structTcb__t.html#abb8f825f6c182b894ab714617a78894b" title="Zeitpunkt der naechsten Ausfuehrung.">nextSchedule</a> &lt;= tickcount) {
+<a name="l00233"></a>00233                 <span class="comment">/* Der Thread ist nicht blockiert */</span>
+<a name="l00234"></a>00234                 <span class="keywordflow">if</span> (ptr != <a class="code" href="os__thread_8h.html#aa7c832fad63b24918265cadcd962e5ab" title="Zeiger auf den Thread, der zurzeit laeuft.">os_thread_running</a>) {
+<a name="l00235"></a>00235 <span class="preprocessor">#ifdef OS_KERNEL_LOG_AVAILABLE</span>
+<a name="l00236"></a>00236 <span class="preprocessor"></span>                    <span class="keywordflow">if</span> (kernel_log_on != 0) {
+<a name="l00237"></a>00237                         log_entry.<a class="code" href="structkernel__log__t.html#ab514329323a36a4b3b02abf731e902ba">time</a> = (uint16_t) tickcount;
+<a name="l00238"></a>00238                         log_entry.<a class="code" href="structkernel__log__t.html#a440a3141ab20e6ca78bfb4003c60cf9c">from</a> = (uint8_t) (<a class="code" href="os__thread_8h.html#aa7c832fad63b24918265cadcd962e5ab" title="Zeiger auf den Thread, der zurzeit laeuft.">os_thread_running</a> - <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>);
+<a name="l00239"></a>00239                         log_entry.<a class="code" href="structkernel__log__t.html#a41f7f17614a0bb8596c87793cf6f28b4">to</a> = (uint8_t) (ptr - <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>);
+<a name="l00240"></a>00240                         <a class="code" href="fifo_8c.html#a7b3f9ad457273c9717bff49113c84250">fifo_put_data</a>(&amp;kernel_log_fifo, &amp;log_entry, <span class="keyword">sizeof</span>(log_entry));
+<a name="l00241"></a>00241                     }
+<a name="l00242"></a>00242 <span class="preprocessor">#endif // OS_KERNEL_LOG_AVAILABLE</span>
+<a name="l00243"></a>00243 <span class="preprocessor"></span>
+<a name="l00244"></a>00244 <span class="preprocessor">#ifdef MEASURE_UTILIZATION</span>
+<a name="l00245"></a>00245 <span class="preprocessor"></span>                    <a class="code" href="os__thread_8h.html#aa7c832fad63b24918265cadcd962e5ab" title="Zeiger auf den Thread, der zurzeit laeuft.">os_thread_running</a>-&gt;<a class="code" href="structTcb__t.html#adaa0726733fa213b0779f62c21b15421" title="Statistikdaten des Threads.">statistics</a>.<a class="code" href="structos__stat__data__t.html#afe27019d2fc769ebcee29dc36c8c6f05" title="Zeit, die der Thread gelaufen ist [176 us].">runtime</a> += (uint16_t) ((uint16_t) tickcount - <a class="code" href="os__thread_8h.html#aa7c832fad63b24918265cadcd962e5ab" title="Zeiger auf den Thread, der zurzeit laeuft.">os_thread_running</a>-&gt;<a class="code" href="structTcb__t.html#a81c64ef7e0e27dcb5d68e5c19eef39f4" title="Zeitpunkt der letzten Ausfuehrung, untere 16 Bit.">lastSchedule</a>);
+<a name="l00246"></a>00246 <span class="preprocessor">#endif</span>
+<a name="l00247"></a>00247 <span class="preprocessor"></span>                    <span class="comment">/* switch Thread */</span>
+<a name="l00248"></a>00248                     ptr-&gt;<a class="code" href="structTcb__t.html#a81c64ef7e0e27dcb5d68e5c19eef39f4" title="Zeitpunkt der letzten Ausfuehrung, untere 16 Bit.">lastSchedule</a> = (uint16_t) tickcount;
+<a name="l00249"></a>00249                     <span class="comment">//-- hier laeuft noch der alte Thread (SP zeigt auf os_thread_running&#39;s Stack) --//</span>
+<a name="l00250"></a>00250                     <a class="code" href="os__thread_8h.html#afa82438e9832609bc5ffbddad166e1b7" title="Schaltet &quot;von aussen&quot; auf einen neuen Thread um.">os_switch_thread</a>(<a class="code" href="os__thread_8h.html#aa7c832fad63b24918265cadcd962e5ab" title="Zeiger auf den Thread, der zurzeit laeuft.">os_thread_running</a>, ptr);
+<a name="l00251"></a>00251                     <span class="comment">//-- jetzt laeuft bereits der neue Thread (SP zeigt auf ptr&#39;s Stack) --//</span>
+<a name="l00252"></a>00252                     <span class="comment">// =&gt; return fuehrt den NEUEN Thread weiter aus -&gt; (noch) KEIN Ruecksprung zum Caller</span>
+<a name="l00253"></a>00253                     <span class="keywordflow">break</span>;
+<a name="l00254"></a>00254                 } <span class="keywordflow">else</span> {
+<a name="l00255"></a>00255                     <span class="comment">/* aktiver Thread darf weiterlaufen */</span>
+<a name="l00256"></a>00256                     <span class="comment">// =&gt; return fuehrt den ALTEN Thread weiter aus -&gt; Funktionsaufruf mit &quot;normaler&quot; Rueckkehr</span>
+<a name="l00257"></a>00257                     <span class="keywordflow">break</span>;
+<a name="l00258"></a>00258                 }
+<a name="l00259"></a>00259             }
+<a name="l00260"></a>00260         }
+<a name="l00261"></a>00261     }
+<a name="l00262"></a>00262 
+<a name="l00263"></a>00263     <span class="comment">/* Mutex freigeben */</span>
+<a name="l00264"></a>00264     os_scheduling_allowed = 1;
+<a name="l00265"></a>00265     <span class="comment">/* Ruecksprung dorthin, wo der (neu) geschedulte Thread vor SEINER Unterbrechung war,</span>
+<a name="l00266"></a>00266 <span class="comment">     * also nicht zwangsweise in die Funktion, die (direkt) vor dem Scheduler-Aufruf</span>
+<a name="l00267"></a>00267 <span class="comment">     * ausgefuehrt wurde! */</span>
+<a name="l00268"></a>00268 }
+<a name="l00269"></a>00269 
+<a name="l00270"></a>00270 <span class="preprocessor">#ifdef DISPLAY_OS_AVAILABLE</span>
+<a name="l00271"></a>00271 <span class="preprocessor"></span>
+<a name="l00274"></a><a class="code" href="os__scheduler_8c.html#a2e1a487145f7c3379ff393b1a760bbbb">00274</a> <span class="keywordtype">void</span> <a class="code" href="os__scheduler_8h.html#a2e1a487145f7c3379ff393b1a760bbbb">os_display</a>(<span class="keywordtype">void</span>) {
+<a name="l00275"></a>00275     uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00276"></a>00276 <span class="preprocessor">#ifndef OS_KERNEL_LOG_AVAILABLE</span>
+<a name="l00277"></a>00277 <span class="preprocessor"></span>    <span class="keyword">static</span> uint32_t last_time;
+<a name="l00278"></a>00278     <span class="keyword">static</span> uint32_t last_idle;
+<a name="l00279"></a>00279 
+<a name="l00280"></a>00280     <span class="comment">/* CPU-Auslastung berechnen (Durchschnitt seit letztem Aufruf) */</span>
+<a name="l00281"></a>00281     uint32_t time = <a class="code" href="timer_8h.html#ae992a808717a64e585cbc308a1d5950d">TIMER_GET_TICKCOUNT_32</a>;
+<a name="l00282"></a>00282     uint32_t idle = idle_counter[0];
+<a name="l00283"></a>00283     uint32_t time_diff = time - last_time;
+<a name="l00284"></a>00284     uint32_t idle_diff = idle - last_idle;
+<a name="l00285"></a>00285     last_time = time;
+<a name="l00286"></a>00286     last_idle = idle;
+<a name="l00287"></a>00287     uint32_t idle_ticks = (uint32_t) ((<span class="keywordtype">float</span>) idle_diff * (<a class="code" href="os__scheduler_8c.html#af629cffaf03c264c82fdf0e5f80507ce">ZYCLES_PER_IDLERUN</a> * 1000000.0f / <a class="code" href="bot-local_8h.html#a43bafb28b29491ec7f871319b5a3b2f8">F_CPU</a> / <a class="code" href="timer_8h.html#a8c11b7233c1cb69ca3e7b7758399d098">TIMER_STEPS</a>));
+<a name="l00288"></a>00288     uint8_t idle_pc = (uint8_t) (idle_ticks * 100 / time_diff);
+<a name="l00289"></a>00289     uint8_t cpu_pc = (uint8_t) (100 - idle_pc);
+<a name="l00290"></a>00290 
+<a name="l00291"></a>00291     uint8_t uart_pc = (uint8_t) ((<span class="keywordtype">float</span>) <a class="code" href="os__scheduler_8h.html#a776b311cd4fa11cebd26732c9d3c56fc">uart_log</a> * (100.0f / (176.0f / 1000.0f)) / (float) time_diff); <span class="comment">// uart_log wird jede ms inkrementiert</span>
+<a name="l00292"></a>00292     <a class="code" href="os__scheduler_8h.html#a776b311cd4fa11cebd26732c9d3c56fc">uart_log</a> = 0;
+<a name="l00293"></a>00293 
+<a name="l00294"></a>00294     <span class="comment">/* Balken fuer Auslastung ausgeben */</span>
+<a name="l00295"></a>00295     <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(1, 1);
+<a name="l00296"></a>00296     <span class="keywordflow">for</span> (i = 0; i &lt; cpu_pc / 5; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00297"></a>00297         <a class="code" href="display_8h.html#aaa4c090a882c65c5852d8383080b24b9">display_data</a>((<span class="keywordtype">char</span>) 0xff); <span class="comment">// schwarzes Feld</span>
+<a name="l00298"></a>00298     }
+<a name="l00299"></a>00299 
+<a name="l00300"></a>00300     <span class="comment">/* Spaces fuer Idle ausgeben */</span>
+<a name="l00301"></a>00301     <span class="keywordflow">for</span> (; i &lt; 20; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00302"></a>00302         <a class="code" href="display_8h.html#aaa4c090a882c65c5852d8383080b24b9">display_data</a>(0x10); <span class="comment">// Space</span>
+<a name="l00303"></a>00303     }
+<a name="l00304"></a>00304 
+<a name="l00305"></a>00305     <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(2, 1);
+<a name="l00306"></a>00306     <a class="code" href="display_8h.html#a3b34665813cc31ce81d141e4f67162d2">display_printf</a>(<span class="stringliteral">&quot;CPU:%3u%% UART:%3u%%&quot;</span>, cpu_pc, uart_pc);
+<a name="l00307"></a>00307 <span class="preprocessor">#else</span>
+<a name="l00308"></a>00308 <span class="preprocessor"></span>    <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(1, 1);
+<a name="l00309"></a>00309     <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;4: Kernel-LOG &quot;</span>);
+<a name="l00310"></a>00310     <span class="keywordflow">if</span> (kernel_log_on == 0) {
+<a name="l00311"></a>00311         <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;an &quot;</span>);
+<a name="l00312"></a>00312     } <span class="keywordflow">else</span> {
+<a name="l00313"></a>00313         <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;aus&quot;</span>);
+<a name="l00314"></a>00314     }
+<a name="l00315"></a>00315 <span class="preprocessor">#endif //OS_KERNEL_LOG_AVAILABLE</span>
+<a name="l00316"></a>00316 <span class="preprocessor"></span>
+<a name="l00317"></a>00317     <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(3, 1);
+<a name="l00318"></a>00318     <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;dump Stacks: 1: Main&quot;</span>);
+<a name="l00319"></a>00319     <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(4, 6);
+<a name="l00320"></a>00320 <span class="preprocessor">#ifdef MAP_AVAILABLE</span>
+<a name="l00321"></a>00321 <span class="preprocessor"></span>    <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;2: Idle 3: Map&quot;</span>);
+<a name="l00322"></a>00322 <span class="preprocessor">#else</span>
+<a name="l00323"></a>00323 <span class="preprocessor"></span>    <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;2: Idle&quot;</span>);
+<a name="l00324"></a>00324 <span class="preprocessor">#endif</span>
+<a name="l00325"></a>00325 <span class="preprocessor"></span>
+<a name="l00326"></a>00326 <span class="preprocessor">#ifdef OS_DEBUG</span>
+<a name="l00327"></a>00327 <span class="preprocessor"></span>    <span class="comment">/* Debug-Info zum freien Stackspeicher ausgeben */</span>
+<a name="l00328"></a>00328     <a class="code" href="os__thread_8c.html#a03112bc663383c20072a345d7648e89c">os_print_stackusage</a>();
+<a name="l00329"></a>00329 
+<a name="l00330"></a>00330     <span class="keyword">extern</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> * __brkval;
+<a name="l00331"></a>00331 
+<a name="l00332"></a>00332     <span class="comment">/* Idle-Thread suchen */</span>
+<a name="l00333"></a>00333     <a class="code" href="structTcb__t.html" title="TCB eines Threads.">Tcb_t</a> * pIdle = <a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>;
+<a name="l00334"></a>00334     <span class="keywordflow">for</span> (i = 0; i &lt; <a class="code" href="os__thread_8h.html#a42d66a999c19e795c22714a54fc2b6b2" title="maximale Anzahl an Threads im System">OS_MAX_THREADS</a> - 1; ++<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>) {
+<a name="l00335"></a>00335         <span class="keywordflow">if</span> ((pIdle + 1)-&gt;stack != NULL) {
+<a name="l00336"></a>00336             pIdle++;
+<a name="l00337"></a>00337         }
+<a name="l00338"></a>00338     }
+<a name="l00339"></a>00339 <span class="preprocessor">#endif // OS_DEBUG</span>
+<a name="l00340"></a>00340 <span class="preprocessor"></span>
+<a name="l00341"></a>00341 <span class="preprocessor">#ifdef RC5_AVAILABLE</span>
+<a name="l00342"></a>00342 <span class="preprocessor"></span>    <span class="comment">/* Keyhandler */</span>
+<a name="l00343"></a>00343     <span class="keywordflow">switch</span> (<a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a>) {
+<a name="l00344"></a>00344     <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a962b5d2df2417b8e1e8462ddbeedf945">RC5_CODE_1</a>:
+<a name="l00345"></a>00345 <span class="preprocessor">#ifdef OS_DEBUG</span>
+<a name="l00346"></a>00346 <span class="preprocessor"></span>        <a class="code" href="os__thread_8c.html#a772b2312a1edbfeeb3e41510b5e62ef9">os_stack_dump</a>(&amp;<a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>[0], (<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *) RAMEND, (uint16_t) ((<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *) RAMEND - __brkval));
+<a name="l00347"></a>00347 <span class="preprocessor">#endif</span>
+<a name="l00348"></a>00348 <span class="preprocessor"></span>        <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0;
+<a name="l00349"></a>00349         <span class="keywordflow">break</span>;
+<a name="l00350"></a>00350 
+<a name="l00351"></a>00351     <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a0f01a76145d0c1340231733d7721a7f9">RC5_CODE_2</a>:
+<a name="l00352"></a>00352 <span class="preprocessor">#ifdef OS_DEBUG</span>
+<a name="l00353"></a>00353 <span class="preprocessor"></span>        <a class="code" href="os__thread_8c.html#a772b2312a1edbfeeb3e41510b5e62ef9">os_stack_dump</a>(pIdle, &amp;<a class="code" href="os__thread_8h.html#a577438ea72f5dcbdff5b1cc72d231440" title="Stack des Idle-Threads.">os_idle_stack</a>[<a class="code" href="os__thread_8h.html#aa6afdd19d3022d101b8fc9942bb8422b" title="Groesse des Idle-Stacks [Byte].">OS_IDLE_STACKSIZE</a> - 1], <a class="code" href="os__thread_8h.html#aa6afdd19d3022d101b8fc9942bb8422b" title="Groesse des Idle-Stacks [Byte].">OS_IDLE_STACKSIZE</a>);
+<a name="l00354"></a>00354 <span class="preprocessor">#endif</span>
+<a name="l00355"></a>00355 <span class="preprocessor"></span>        <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0;
+<a name="l00356"></a>00356         <span class="keywordflow">break</span>;
+<a name="l00357"></a>00357 
+<a name="l00358"></a>00358 <span class="preprocessor">#ifdef MAP_AVAILABLE</span>
+<a name="l00359"></a>00359 <span class="preprocessor"></span>    <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#aab39f90ee1e4df0d5b0a02959ccc3420">RC5_CODE_3</a>:
+<a name="l00360"></a>00360 <span class="preprocessor">#ifdef OS_DEBUG</span>
+<a name="l00361"></a>00361 <span class="preprocessor"></span>        <a class="code" href="os__thread_8c.html#a772b2312a1edbfeeb3e41510b5e62ef9">os_stack_dump</a>(&amp;<a class="code" href="os__thread_8h.html#a98e9aac6030735e7a03aa7b3681c43a2" title="Thread-Pool (ist gleichzeitig running- und waiting-queue)">os_threads</a>[1], &amp;<a class="code" href="map_8c.html#ae2473394585d550bf87236464d4ba651" title="Stack des Update-Threads.">map_update_stack</a>[<a class="code" href="map_8h.html#a196f0c8d55fc38643b03b3ef2d763a29" title="Groesse des Stacks, der das Map-Update ausfuehrt [Byte].">MAP_UPDATE_STACK_SIZE</a> - 1], <a class="code" href="map_8h.html#a196f0c8d55fc38643b03b3ef2d763a29" title="Groesse des Stacks, der das Map-Update ausfuehrt [Byte].">MAP_UPDATE_STACK_SIZE</a>);
+<a name="l00362"></a>00362 <span class="preprocessor">#endif</span>
+<a name="l00363"></a>00363 <span class="preprocessor"></span>        <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0;
+<a name="l00364"></a>00364         <span class="keywordflow">break</span>;
+<a name="l00365"></a>00365 <span class="preprocessor">#endif // MAP_AVAILABLE</span>
+<a name="l00366"></a>00366 <span class="preprocessor"></span>
+<a name="l00367"></a>00367 <span class="preprocessor">#ifdef OS_KERNEL_LOG_AVAILABLE</span>
+<a name="l00368"></a>00368 <span class="preprocessor"></span>    <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a2460f2e913d9283be23d11ca84fe6c2e">RC5_CODE_4</a>:
+<a name="l00369"></a>00369         kernel_log_on = (uint8_t) ~kernel_log_on;
+<a name="l00370"></a>00370         <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0;
+<a name="l00371"></a>00371         <span class="keywordflow">break</span>;
+<a name="l00372"></a>00372 <span class="preprocessor">#endif // OS_KERNEL_LOG_AVAILABLE</span>
+<a name="l00373"></a>00373 <span class="preprocessor"></span>    }
+<a name="l00374"></a>00374 <span class="preprocessor">#endif // RC5_AVAILABLE</span>
+<a name="l00375"></a>00375 <span class="preprocessor"></span>}
+<a name="l00376"></a>00376 <span class="preprocessor">#endif // DISPLAY_OS_AVAILABLE</span>
+<a name="l00377"></a>00377 <span class="preprocessor"></span>
+<a name="l00378"></a>00378 <span class="preprocessor">#endif // OS_AVAILABLE</span>
+<a name="l00379"></a>00379 <span class="preprocessor"></span><span class="preprocessor">#endif // MCU</span>
+<a name="l00380"></a>00380 <span class="preprocessor"></span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:09 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

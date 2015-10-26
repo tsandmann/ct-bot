@@ -39,7 +39,7 @@ typedef struct {
 	uint16_t end_sect;
 	uint32_t first_sect_offset;
 	uint32_t sectors;
-} PACKED_FORCE botfs_part_entry_t;
+} PACKED botfs_part_entry_t;
 
 /** Master-Boot-Record */
 typedef struct {
@@ -49,7 +49,7 @@ typedef struct {
 	botfs_part_entry_t part2;
 	botfs_part_entry_t part3;
 	uint16_t executable_mark;
-} PACKED_FORCE botfs_mbr_t;
+} PACKED botfs_mbr_t;
 
 /** FAT16-Bootsektor */
 typedef struct {
@@ -74,7 +74,7 @@ typedef struct {
 	char fat_name[8];				// 54-61
 	uint8_t exec_code[448];			// 62-62
 	uint16_t executable_mark;		// 510-512
-} PACKED_FORCE botfs_fat16_bootsector_t;
+} PACKED botfs_fat16_bootsector_t;
 
 /** FAT16-Verzeichniseintrag */
 typedef struct {
@@ -86,7 +86,7 @@ typedef struct {
 	uint16_t date;
 	uint16_t first_cluster;
 	uint32_t size;
-} PACKED_FORCE botfs_fat16_dir_entry_t;
+} PACKED botfs_fat16_dir_entry_t;
 
 #ifdef BOT_FS_AVAILABLE
 /** BotFS-spezifische Datentypen */
@@ -96,7 +96,7 @@ typedef struct {
 	uint16_t start;				/**< Adresse des ersten belegten Blocks (auf Volume, nicht relativ zur Datei) */
 	uint16_t end;				/**< Adresse des letzten belegten Blocks (auf Volume, nicht relativ zur Datei) */
 	uint16_t bytes_last_block;	/**< Anzahl der Bytes in Block end */
-} PACKED_FORCE botfs_file_used_t;
+} PACKED botfs_file_used_t;
 
 /**
  * Datei-Deskriptor
@@ -107,7 +107,7 @@ typedef struct {
 	uint16_t pos;			/**< Blockadresse der aktuellen Position */
 	uint8_t mode;			/**< Modus, in dem die Datei geoeffnet wurde */
 	botfs_file_used_t used;	/**< Benutzte Bloecke dieser Datei */
-} PACKED_FORCE botfs_file_descr_t;
+} PACKED botfs_file_descr_t;
 #define BOTFS_FD_INITIALIZER { 0, 0, 0, 0, { 0, 0, 0 } } /**< Initialisiert einen botfs_file_descr_t Typ */
 
 /** Datei-Header */
@@ -115,13 +115,13 @@ typedef	struct {
 	uint8_t attributes;							/**< Datei-Attribute */
 	botfs_file_used_t used_blocks;				/**< Benutzte Bloecke einer Datei */
 	uint8_t headerdata[BOTFS_HEADER_DATA_SIZE];	/**< Header-Daten zur freien Verwendung */
-} PACKED_FORCE botfs_file_header_t;
+} PACKED botfs_file_header_t;
 
 /** Hauptdaten des Volumes (FAT- und Freelist-Adresse) */
 typedef struct {
 	botfs_file_descr_t rootdir;		/**< Datei-Deskriptor des Root-Verzeichnisses */
 	botfs_file_descr_t freelist;	/**< Datei-Deskriptor der Freelist */
-} PACKED_FORCE botfs_volume_data_t;
+} PACKED botfs_volume_data_t;
 
 /** Volume-Header */
 typedef union {
@@ -132,7 +132,7 @@ typedef union {
 		botfs_volume_data_t ctrldata;	/**< Interne Daten des Volumes */
 		uint16_t first_data;			/**< Blockadresse des ersten Datenblocks */
 		char name[BOTFS_VOL_NAME_SIZE];	/**< Name des Volumes */
-	} PACKED_FORCE data;
+	} PACKED data;
 	uint8_t raw[BOTFS_BLOCK_SIZE];			/**< Raw-Daten (erweitern Header auf Blockgroesse) */
 } botfs_volume_t;
 
@@ -140,28 +140,28 @@ typedef union {
 typedef struct {
 	botfs_file_descr_t descr;			/**< Dateideskriptor */
 	char name[BOTFS_MAX_FILENAME + 1];	/**< Dateiname */
-} PACKED_FORCE botfs_file_t;
+} PACKED botfs_file_t;
 
 /** Root-Dir-Block */
 typedef union {
 	botfs_file_t files[BOTFS_FILE_DESC_CNT]; /**< Dateieintraege des Root-Dir-Blocks */
-} PACKED_FORCE botfs_dir_block_t;
+} PACKED botfs_dir_block_t;
 
 /** Freelist-Eintrag */
 typedef struct {
 	uint16_t block;		/**< Blockadresse des Freibereichs */
 	uint16_t size;		/**< Groesse des Freibereichs in Bloecken */
-} PACKED_FORCE botfs_freelist_entry_t;
+} PACKED botfs_freelist_entry_t;
 
 /** Freelist-Block */
 typedef struct {
 	botfs_freelist_entry_t freeblocks[BOTFS_FREEL_BL_SIZE]; /**< Freelist-Eintraege */
-} PACKED_FORCE botfs_freelist_block_t;
+} PACKED botfs_freelist_block_t;
 
 /** Freelist */
 typedef struct {
 	botfs_freelist_block_t freelistblocks[BOTFS_FREEL_BL_CNT]; /**< Freelist-Bloecke */
-} PACKED_FORCE botfs_freelist_t;
+} PACKED botfs_freelist_t;
 
 #ifdef BOTFS_STREAM_AVAILABLE
 /** Stream-Deskriptor */

@@ -35,7 +35,7 @@ typedef union {
 		unsigned spr0:1; /*!< SPR0 Bit in SPCR */
 		unsigned spr1:1; /*!< SPR1 Bit in SPCR */
 		unsigned spi2x:1; /*!< SPI 2x-Mode in SPSR */
-	} PACKED_FORCE
+	} PACKED
 	data; /*!< Bits der einzelnen Register */
 	uint8_t raw; /*!< alle Bits als Rawdaten */
 } spi_speed_t; /*!< Speed-Einstellung fuer SPI */

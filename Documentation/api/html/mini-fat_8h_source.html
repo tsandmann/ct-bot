@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: mini-fat.h Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_9d1e0dccf1391b04e9e09a3367003bd7.html">include</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">mini-fat.h</div>  </div>
+</div>
+<div class="contents">
+<a href="mini-fat_8h.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> * </span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version. </span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be </span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR </span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public </span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free </span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> * </span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00031"></a>00031 <span class="preprocessor">#ifndef MINIFAT_H_</span>
+<a name="l00032"></a>00032 <span class="preprocessor"></span><span class="preprocessor">#define MINIFAT_H_</span>
+<a name="l00033"></a>00033 <span class="preprocessor"></span>
+<a name="l00034"></a><a class="code" href="mini-fat_8h.html#ab59679f27d33d37ae8af23d10f1c7aa7">00034</a> <span class="preprocessor">#define MMC_FILENAME_MAX    255 </span>
+<a name="l00035"></a><a class="code" href="mini-fat_8h.html#ae63b74f13c51e82d778ce2077619625e">00035</a> <span class="preprocessor">#define MMC_HEADER_DATA_SIZE (512 - sizeof(file_len_t) - (MMC_FILENAME_MAX + 1)) </span>
+<a name="l00038"></a>00038 <span class="preprocessor">typedef union {</span>
+<a name="l00039"></a><a class="code" href="structPACKED.html#a931768113aca36630a960b91661df1e1">00039</a> <span class="preprocessor"></span>    uint32_t <a class="code" href="structPACKED.html#a931768113aca36630a960b91661df1e1">u32</a>;   
+<a name="l00040"></a><a class="code" href="structPACKED.html#a4234528ba58f37ad59e32f031e4d6493">00040</a>     uint8_t u8[4];  
+<a name="l00041"></a>00041 } <a class="code" href="structPACKED.html" title="FAT.">PACKED</a> file_len_t;
+<a name="l00042"></a>00042 
+<a name="l00044"></a>00044 <span class="keyword">typedef</span> <span class="keyword">struct </span>{
+<a name="l00045"></a><a class="code" href="structPACKED.html#aa349a828a6252c8535b41d54038ac9ac">00045</a>     <span class="keyword">const</span> <span class="keywordtype">char</span> filename[<a class="code" href="mini-fat_8h.html#ab59679f27d33d37ae8af23d10f1c7aa7">MMC_FILENAME_MAX</a> + 1];
+<a name="l00046"></a><a class="code" href="structPACKED.html#a38a2517b07147da98d5d1907cd6f3681">00046</a>     file_len_t <a class="code" href="structPACKED.html#a38a2517b07147da98d5d1907cd6f3681">length</a>;
+<a name="l00047"></a><a class="code" href="structPACKED.html#a4bddf12ce624e4c7be6686f16e97462c">00047</a>     uint8_t data[<a class="code" href="mini-fat_8h.html#ae63b74f13c51e82d778ce2077619625e">MMC_HEADER_DATA_SIZE</a>];
+<a name="l00048"></a>00048 } <a class="code" href="structPACKED.html" title="FAT.">PACKED</a> mini_fat_header_t;
+<a name="l00049"></a>00049 
+<a name="l00050"></a>00050 <span class="preprocessor">#ifdef MCU</span>
+<a name="l00051"></a>00051 <span class="preprocessor"></span><span class="preprocessor">#if defined MMC_AVAILABLE &amp;&amp; ! defined BOT_FS_AVAILABLE</span>
+<a name="l00052"></a>00052 <span class="preprocessor"></span><span class="preprocessor">#include &quot;<a class="code" href="mmc_8h.html" title="Routinen zum Auslesen / Schreiben einer MMC-Karte.">mmc.h</a>&quot;</span>
+<a name="l00053"></a>00053 <span class="preprocessor">#include &lt;string.h&gt;</span>
+<a name="l00054"></a>00054 <span class="preprocessor">#include &lt;avr/pgmspace.h&gt;</span>
+<a name="l00055"></a>00055 
+<a name="l00064"></a>00064 uint32_t mini_fat_find_block_P(<span class="keyword">const</span> <span class="keywordtype">char</span> * filename, <span class="keywordtype">void</span> * buffer, uint32_t end_addr);
+<a name="l00065"></a>00065 
+<a name="l00073"></a>00073 <span class="preprocessor">#define mini_fat_find_block(filename, buffer) mini_fat_find_block_P(PSTR(filename), buffer, mmc_get_size());</span>
+<a name="l00074"></a>00074 <span class="preprocessor"></span>
+<a name="l00080"></a>00080 <span class="keywordtype">void</span> mini_fat_clear_file(uint32_t file_start, <span class="keywordtype">void</span> * buffer);
+<a name="l00081"></a>00081 
+<a name="l00088"></a>00088 <span class="keyword">static</span> <span class="keyword">inline</span> mini_fat_header_t * mini_fat_read_header(uint32_t address, <span class="keywordtype">void</span> * buffer) {
+<a name="l00089"></a>00089     <a class="code" href="mmc_8h.html#a7ebc2ededd906eb69ecc1d14e2caae45">mmc_read_sector</a>(address - 1, buffer);
+<a name="l00090"></a>00090     mini_fat_header_t * header = buffer;
+<a name="l00091"></a>00091     <span class="keywordflow">return</span> header;
+<a name="l00092"></a>00092 }
+<a name="l00093"></a>00093 
+<a name="l00100"></a>00100 <span class="keyword">static</span> <span class="keyword">inline</span> uint8_t * mini_fat_read_header_data(uint32_t address, <span class="keywordtype">void</span> * buffer) {
+<a name="l00101"></a>00101     mini_fat_header_t * header = mini_fat_read_header(address, buffer);
+<a name="l00102"></a>00102     <span class="keywordflow">return</span> header-&gt;data;
+<a name="l00103"></a>00103 }
+<a name="l00104"></a>00104 
+<a name="l00110"></a>00110 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> mini_fat_write_header(uint32_t address, mini_fat_header_t * header) {
+<a name="l00111"></a>00111     <a class="code" href="mmc_8h.html#a8b7742b9c060af7db1aa56e1d9676918">mmc_write_sector</a>(address - 1, header);
+<a name="l00112"></a>00112 }
+<a name="l00113"></a>00113 
+<a name="l00120"></a>00120 <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">void</span> mini_fat_write_header_data(uint32_t address, <span class="keyword">const</span> uint8_t * <span class="keyword">const</span> header, <span class="keywordtype">void</span> * <span class="keyword">const</span> buffer) {
+<a name="l00121"></a>00121     mini_fat_header_t * <span class="keyword">const</span> ptr = buffer;
+<a name="l00122"></a>00122     <span class="keywordflow">if</span> (header != ptr-&gt;data) {
+<a name="l00123"></a>00123         <span class="comment">/* Headerdaten liegen nicht im Puffer -&gt; dorthin kopieren */</span>
+<a name="l00124"></a>00124         mini_fat_read_header_data(address, buffer);
+<a name="l00125"></a>00125         memcpy(ptr-&gt;data, header, <a class="code" href="mini-fat_8h.html#ae63b74f13c51e82d778ce2077619625e">MMC_HEADER_DATA_SIZE</a>);
+<a name="l00126"></a>00126     }
+<a name="l00127"></a>00127     mini_fat_write_header(address, buffer);
+<a name="l00128"></a>00128 }
+<a name="l00129"></a>00129 
+<a name="l00136"></a>00136 <span class="keyword">static</span> <span class="keyword">inline</span> uint32_t mini_fat_get_filesize(uint32_t file_start, <span class="keywordtype">void</span> * buffer) {
+<a name="l00137"></a>00137     mini_fat_header_t * header = mini_fat_read_header(file_start, buffer);
+<a name="l00138"></a>00138     file_len_t length = header-&gt;<a class="code" href="structPACKED.html#a38a2517b07147da98d5d1907cd6f3681">length</a>;
+<a name="l00139"></a>00139     <span class="keywordflow">return</span> length.u32;
+<a name="l00140"></a>00140 }
+<a name="l00141"></a>00141 <span class="preprocessor">#endif // MMC_AVAILABLE &amp;&amp; ! BOT_FS_AVAILABLE</span>
+<a name="l00142"></a>00142 <span class="preprocessor"></span>
+<a name="l00143"></a>00143 <span class="preprocessor">#else // ! MCU</span>
+<a name="l00144"></a>00144 <span class="preprocessor"></span>
+<a name="l00152"></a>00152 <span class="keywordtype">void</span> <a class="code" href="mini-fat__pc_8c.html#a698b3ffad1edb0ad8dc1b0f5451799b3">create_mini_fat_file</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * filename, <span class="keyword">const</span> <span class="keywordtype">char</span> * id_string, uint32_t size);
+<a name="l00153"></a>00153 
+<a name="l00163"></a>00163 <span class="keywordtype">void</span> <a class="code" href="mini-fat__pc_8c.html#a2b127e424e8caa1ac63270a4c18cf2f6">create_emu_mini_fat_file</a>(uint32_t addr, <span class="keyword">const</span> <span class="keywordtype">char</span> * id_string, uint32_t size);
+<a name="l00164"></a>00164 
+<a name="l00169"></a>00169 <span class="keywordtype">void</span> <a class="code" href="mini-fat__pc_8c.html#a9b717c2f0b367c437210f5cf97abc848">delete_emu_mini_fat_file</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> * id_string);
+<a name="l00170"></a>00170 <span class="preprocessor">#endif // MCU</span>
+<a name="l00171"></a>00171 <span class="preprocessor"></span>
+<a name="l00172"></a>00172 <span class="preprocessor">#ifdef DISPLAY_MINIFAT_INFO</span>
+<a name="l00173"></a>00173 <span class="preprocessor"></span>
+<a name="l00179"></a>00179 <span class="keywordtype">void</span> mini_fat_display(<span class="keywordtype">void</span>);
+<a name="l00180"></a>00180 <span class="preprocessor">#endif // DISPLAY_MINIFAT_INFO</span>
+<a name="l00181"></a>00181 <span class="preprocessor"></span><span class="preprocessor">#endif // MINIFAT_H_</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:09 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

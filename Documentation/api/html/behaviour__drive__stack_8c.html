@@ -1,0 +1,681 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: behaviour_drive_stack.c-Dateireferenz</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_14c9cc1c75a92f359ad94591d62973a1.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="summary">
+<a href="#define-members">Makrodefinitionen</a> &#124;
+<a href="#func-members">Funktionen</a>  </div>
+  <div class="headertitle">
+<div class="title">behaviour_drive_stack.c-Dateireferenz</div>  </div>
+</div>
+<div class="contents">
+
+<p>Anfahren aller auf dem Stack befindlichen Punkte.  
+<a href="#details">Mehr ...</a></p>
+<div class="textblock"><code>#include &quot;<a class="el" href="bot-logic_8h_source.html">bot-logic/bot-logic.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="available__screens_8h_source.html">ui/available_screens.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="display_8h_source.html">display.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="rc5_8h_source.html">rc5.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="rc5-codes_8h_source.html">rc5-codes.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="pos__store_8h_source.html">pos_store.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="math__utils_8h_source.html">math_utils.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="map_8h_source.html">map.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="command_8h_source.html">command.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="log_8h_source.html">log.h</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="bot-2-bot_8h_source.html">bot-2-bot.h</a>&quot;</code><br/>
+<code>#include &lt;stdlib.h&gt;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+Include-Abhängigkeitsdiagramm für behaviour_drive_stack.c:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__drive__stack_8c__incl.png" border="0" usemap="#behaviour__drive__stack_8c" alt=""/></div>
+<map name="behaviour__drive__stack_8c" id="behaviour__drive__stack_8c">
+<area shape="rect" id="node3" href="bot-logic_8h.html" title="High&#45;Level&#45;Routinen fuer die Steuerung des c&#39;t&#45;Bots." alt="" coords="1808,161,1949,189"/><area shape="rect" id="node17" href="rc5_8h.html" title="RC5&#45;Fernbedienung / Basic&#45;Tasten&#45;Handler." alt="" coords="6407,315,6457,343"/><area shape="rect" id="node52" href="math__utils_8h.html" title="Hilfsfunktionen fuer mathematische Dinge, architekturunabhaengig." alt="" coords="6280,393,6371,421"/><area shape="rect" id="node74" href="available__screens_8h.html" title="Die Schalter fuer sichtbare Screens finden sich hier." alt="" coords="6512,83,6669,111"/><area shape="rect" id="node76" href="display_8h.html" title="Routinen zur Displaysteuerung." alt="" coords="5,161,80,189"/><area shape="rect" id="node80" href="rc5-codes_8h.html" title="RC5&#45;Fernbedienungscodes." alt="" coords="6693,83,6787,111"/><area shape="rect" id="node82" href="pos__store_8h.html" title="Implementierung eines Positionsspeichers mit den ueblichen Stackbefehlen push(), pop() und FIFO&#45;Befeh..." alt="" coords="225,83,316,111"/><area shape="rect" id="node84" href="command_8h.html" title="Kommando&#45;Management." alt="" coords="124,161,215,189"/><area shape="rect" id="node96" href="map_8h.html" title="Karte." alt="" coords="359,83,417,111"/><area shape="rect" id="node104" href="log_8h.html" title="Routinen zum Loggen von Informationen." alt="" coords="6811,83,6861,111"/><area shape="rect" id="node106" href="bot-2-bot_8h.html" title="Bot&#45;2&#45;Bot&#45;Kommunikation." alt="" coords="6885,83,6973,111"/><area shape="rect" id="node5" href="ct-Bot_8h.html" title="globale Schalter fuer die einzelnen Bot&#45;Funktionalitaeten" alt="" coords="340,238,407,266"/><area shape="rect" id="node13" href="motor_8h.html" title="High&#45;Level Routinen fuer die Motorsteuerung des c&#39;t&#45;Bots." alt="" coords="951,393,1017,421"/><area shape="rect" id="node15" href="sensor_8h.html" title="Architekturunabhaengiger Teil der Sensorsteuerung." alt="" coords="6307,238,6379,266"/><area shape="rect" id="node21" href="available__behaviours_8h.html" title="globale Schalter fuer die einzelnen Verhalten" alt="" coords="3152,238,3371,266"/><area shape="rect" id="node7" href="global_8h.html" title="Allgemeine Definitionen und Datentypen." alt="" coords="64,315,133,343"/><area shape="rect" id="node11" href="bot-local_8h.html" title="Konstanten, die den Bot an reale Umgebungen anpassen." alt="" coords="321,315,407,343"/><area shape="rect" id="node19" href="cmps03_8h.html" title="CMPS03&#45;Treiber." alt="" coords="6303,315,6383,343"/><area shape="rect" id="node23" href="behaviour__prototype_8h.html" title="Rohling fuer eigene Verhalten." alt="" coords="4161,315,4375,343"/><area shape="rect" id="node25" href="behaviour__hw__test_8h.html" title="Testcode fuer die Bot&#45;Hardware (ehemals TEST_AVAILABLE_ANALOG, _DIGITAL, _MOTOR)" alt="" coords="4399,315,4599,343"/><area shape="rect" id="node27" href="behaviour__simple_8h.html" title="ganz einfache Beispielverhalten Diese Datei sollte der Einstiegspunkt fuer eigene Experimente sein..." alt="" coords="4623,315,4817,343"/><area shape="rect" id="node29" href="behaviour__drive__square_8h.html" title="Bot faehrt im Quadrat." alt="" coords="4841,315,5076,343"/><area shape="rect" id="node31" href="behaviour__avoid__border_8h.html" title="Vermeide Abgruende." alt="" coords="5100,315,5337,343"/><area shape="rect" id="node33" href="behaviour__avoid__col_8h.html" title="Vermeide Kollisionen." alt="" coords="5361,315,5575,343"/><area shape="rect" id="node35" href="behaviour__hang__on_8h.html" title="Haengenbleiben Notfallverhalten." alt="" coords="5599,315,5807,343"/><area shape="rect" id="node37" href="behaviour__goto_8h.html" title="Bot faehrt einen Punkt an." alt="" coords="5831,315,6012,343"/><area shape="rect" id="node39" href="behaviour__gotoxy_8h.html" title="Bot faehrt eine Position an." alt="" coords="481,315,679,343"/><area shape="rect" id="node41" href="behaviour__goto__pos_8h.html" title="Anfahren einer Position." alt="" coords="703,315,916,343"/><area shape="rect" id="node43" href="behaviour__goto__obstacle_8h.html" title="Anfahren eines Hindernisses." alt="" coords="940,315,1183,343"/><area shape="rect" id="node45" href="behaviour__turn_8h.html" title="Drehe den Bot." alt="" coords="1436,315,1612,343"/><area shape="rect" id="node48" href="behaviour__turn__test_8h.html" title="Fuehrt mehrere Drehungen mit bot_turn() aus und misst die Fehler." alt="" coords="1207,315,1412,343"/><area shape="rect" id="node50" href="behaviour__drive__distance_8h.html" title="Bot faehrt ein Stueck." alt="" coords="6036,315,6279,343"/><area shape="rect" id="node54" href="behaviour__measure__distance_8h.html" title="Ermittelt die aktuelle Entfernung eines Hindernisses mit den Distanzsensoren." alt="" coords="1636,315,1903,343"/><area shape="rect" id="node56" href="behaviour__scan_8h.html" title="Scannt die Umgebung und traegt sie in die Karte ein." alt="" coords="1927,315,2111,343"/><area shape="rect" id="node58" href="behaviour__solve__maze_8h.html" title="Wandfolger durchs Labyrinth." alt="" coords="2135,315,2364,343"/><area shape="rect" id="node60" href="behaviour__follow__line_8h.html" title="Linienverfolger." alt="" coords="2388,315,2607,343"/><area shape="rect" id="node62" href="behaviour__follow__line__enhanced_8h.html" title="erweiterter Linienverfolger, der auch mit Unterbrechungen und Hindernissen klarkommt" alt="" coords="2631,315,2916,343"/><area shape="rect" id="node64" href="behaviour__olympic_8h.html" title="Bot sucht Saeulen und faehrt dann Slalom." alt="" coords="2940,315,3143,343"/><area shape="rect" id="node66" href="behaviour__servo_8h.html" title="kontrolliert die Servos" alt="" coords="3167,315,3356,343"/><area shape="rect" id="node68" href="behaviour__catch__pillar_8h.html" title="Sucht nach einer Dose und faengt sie ein." alt="" coords="3380,315,3604,343"/><area shape="rect" id="node70" href="behaviour__classify__objects_8h.html" title="bot&#45;logic/behaviour_classify_objects.h" alt="" coords="3628,315,3879,343"/><area shape="rect" id="node72" href="behaviour__follow__object_8h.html" title="Verfolgung beweglicher Objekte." alt="" coords="3903,315,4137,343"/><area shape="rect" id="node86" href="eeprom_8h.html" title="EEPROM&#45;Zugriff." alt="" coords="60,238,137,266"/><area shape="rect" id="node89" href="uart_8h.html" title="Routinen zur seriellen Kommunikation." alt="" coords="161,238,215,266"/><area shape="rect" id="node91" href="fifo_8h.html" title="Implementierung einer FIFO." alt="" coords="199,315,247,343"/><area shape="rect" id="node93" href="os__thread_8h.html" title="Threadmanagement fuer BotOS." alt="" coords="197,393,288,421"/><area shape="rect" id="node101" href="botfs_8h.html" title="Dateisystem BotFS." alt="" coords="289,161,351,189"/></map>
+</div>
+</div>
+<p><a href="behaviour__drive__stack_8c_source.html">gehe zum Quellcode dieser Datei</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="define-members"></a>
+Makrodefinitionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__stack_8c.html#ad72dbcf6d0153db1b8d8a58001feed83">DEBUG</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__stack_8c.html#a6423a880df59733d2d9b509c7718d3a9">STACK_SIZE</a>&#160;&#160;&#160;64</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__stack_8c.html#ac8299b112f9f3dd050ea12ac21f89abb">MAX_GRADIENT</a>&#160;&#160;&#160;10</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__stack_8c.html#a2dbe3fefce9be749e923959da5ff48d5">MAX_POS_DIFF</a>&#160;&#160;&#160;(200L * 200L)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__stack_8c.html#a6423a880df59733d2d9b509c7718d3a9">STACK_SIZE</a>&#160;&#160;&#160;POS_STORE_SIZE</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__stack_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(...)&#160;&#160;&#160;{}</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__stack_8c.html#aedfa09855d9988ef90d8e519c6d022ea">DIST_FOR_PUSH</a>&#160;&#160;&#160;14400</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__stack_8c.html#afffe468403b216fe9ff17dd6574ef39c">DIST_FOR_PUSH_TURN</a>&#160;&#160;&#160;3600</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__stack_8c.html#a75370a92bff9e5390f8124b4c361e338">ANGLE_FOR_PUSH</a>&#160;&#160;&#160;20</td></tr>
+<tr><td colspan="2"><h2><a name="func-members"></a>
+Funktionen</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__stack_8c.html#a85b17654e751d3785680460b53e12b6a">bot_drive_stack_behaviour</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *data)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__stack_8c.html#a6b879a7ecac5368a68850300fe947cc9">bot_drive_stack_x</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *caller, uint8_t stack, uint8_t mode)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__stack_8c.html#a27dc4bb2ea3f3057c5a4d5510182b5a8">bot_drive_stack</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *caller)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__stack_8c.html#ab2ed76576e93a2a07d1373453a758b7f">bot_drive_fifo</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *caller)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__stack_8c.html#a384bcf47313698101cf73a5f1083abc3">bot_send_stack_b2b</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *caller, uint8_t bot)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__stack_8c.html#aaea026b5beefd884c7bbd42cce8df942">bot_push_actpos</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *caller, uint8_t stack)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__stack_8c.html#a7d6d596506f029155fc86e68fb11bed9">bot_save_waypos_behaviour</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *data)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__stack_8c.html#a48b7a3665b51ae2cbde5d9b7a97b9adb">bot_save_waypos</a> (<a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *caller, uint8_t optimize)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="behaviour__drive__stack_8c.html#ae39b00373b75911145e456c9da8a1b6b">drive_stack_display</a> (void)</td></tr>
+</table>
+<hr/><a name="details" id="details"></a><h2>Ausführliche Beschreibung</h2>
+<div class="textblock"><p>Anfahren aller auf dem Stack befindlichen Punkte. </p>
+<dl class="author"><dt><b>Autor:</b></dt><dd>Frank Menzel (<a href="mailto:Menzelfr@gmx.net">Menzelfr@gmx.net</a>) </dd></dl>
+<dl class="date"><dt><b>Datum:</b></dt><dd>13.12.2007 </dd></dl>
+
+<p>Definiert in Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+</div><hr/><h2>Makro-Dokumentation</h2>
+<a class="anchor" id="a75370a92bff9e5390f8124b4c361e338"></a><!-- doxytag: member="behaviour_drive_stack.c::ANGLE_FOR_PUSH" ref="a75370a92bff9e5390f8124b4c361e338" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define ANGLE_FOR_PUSH&#160;&#160;&#160;20</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>nach Erreichen dieses Drehwinkels [Grad] wird ebenfalls gepusht </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__stack_8c_source.html#l00216">216</a> der Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad72dbcf6d0153db1b8d8a58001feed83"></a><!-- doxytag: member="behaviour_drive_stack.c::DEBUG" ref="ad72dbcf6d0153db1b8d8a58001feed83" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DEBUG</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__stack_8c_source.html#l00044">44</a> der Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aedfa09855d9988ef90d8e519c6d022ea"></a><!-- doxytag: member="behaviour_drive_stack.c::DIST_FOR_PUSH" ref="aedfa09855d9988ef90d8e519c6d022ea" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DIST_FOR_PUSH&#160;&#160;&#160;14400</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Quadrat des Abstandes [mm^2] zum letzten Punkt, ab dem gepush wird </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__stack_8c_source.html#l00214">214</a> der Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="afffe468403b216fe9ff17dd6574ef39c"></a><!-- doxytag: member="behaviour_drive_stack.c::DIST_FOR_PUSH_TURN" ref="afffe468403b216fe9ff17dd6574ef39c" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define DIST_FOR_PUSH_TURN&#160;&#160;&#160;3600</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Quadrat des Abstandes [mm^2] nach erreichen eines Drehwinkels zum letzten Punkt </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__stack_8c_source.html#l00215">215</a> der Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a754b3d074e0af4ad3c7b918dd77ecb2d"></a><!-- doxytag: member="behaviour_drive_stack.c::LOG_DEBUG" ref="a754b3d074e0af4ad3c7b918dd77ecb2d" args="(...)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define LOG_DEBUG</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em></td><td>)</td>
+          <td>&#160;&#160;&#160;{}</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__stack_8c_source.html#l00061">61</a> der Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__stack_8c_source.html#l00116">bot_drive_stack_x()</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a> und <a class="el" href="behaviour__drive__stack_8c_source.html#l00172">bot_send_stack_b2b()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac8299b112f9f3dd050ea12ac21f89abb"></a><!-- doxytag: member="behaviour_drive_stack.c::MAX_GRADIENT" ref="ac8299b112f9f3dd050ea12ac21f89abb" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAX_GRADIENT&#160;&#160;&#160;10</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Maximale Steigungsdifferenz, die noch als gleich angesehen wird </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__stack_8c_source.html#l00048">48</a> der Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2dbe3fefce9be749e923959da5ff48d5"></a><!-- doxytag: member="behaviour_drive_stack.c::MAX_POS_DIFF" ref="a2dbe3fefce9be749e923959da5ff48d5" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAX_POS_DIFF&#160;&#160;&#160;(200L * 200L)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Quadrat der maximalen Entfernung, bis zu der eine Schleife noch geschlossen wird </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__stack_8c_source.html#l00049">49</a> der Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6423a880df59733d2d9b509c7718d3a9"></a><!-- doxytag: member="behaviour_drive_stack.c::STACK_SIZE" ref="a6423a880df59733d2d9b509c7718d3a9" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define STACK_SIZE&#160;&#160;&#160;64</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Groesse des Positionsspeichers </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__stack_8c_source.html#l00053">53</a> der Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6423a880df59733d2d9b509c7718d3a9"></a><!-- doxytag: member="behaviour_drive_stack.c::STACK_SIZE" ref="a6423a880df59733d2d9b509c7718d3a9" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define STACK_SIZE&#160;&#160;&#160;POS_STORE_SIZE</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Groesse des Positionsspeichers </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__stack_8c_source.html#l00053">53</a> der Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+
+</div>
+</div>
+<hr/><h2>Dokumentation der Funktionen</h2>
+<a class="anchor" id="ab2ed76576e93a2a07d1373453a758b7f"></a><!-- doxytag: member="behaviour_drive_stack.c::bot_drive_fifo" ref="ab2ed76576e93a2a07d1373453a758b7f" args="(Behaviour_t *caller)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_drive_fifo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>caller</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Botenfunktion: Verhalten zum Anfahren aller in der FIFO-Queue befindlichen Punkte </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*caller</td><td>Der Verhaltensdatensatz des Aufrufers </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__stack_8c_source.html#l00162">162</a> der Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__stack_8c_source.html#l00116">bot_drive_stack_x()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__drive__stack_8c_ab2ed76576e93a2a07d1373453a758b7f_cgraph.png" border="0" usemap="#behaviour__drive__stack_8c_ab2ed76576e93a2a07d1373453a758b7f_cgraph" alt=""/></div>
+<map name="behaviour__drive__stack_8c_ab2ed76576e93a2a07d1373453a758b7f_cgraph" id="behaviour__drive__stack_8c_ab2ed76576e93a2a07d1373453a758b7f_cgraph">
+<area shape="rect" id="node3" href="behaviour__drive__stack_8c.html#a6b879a7ecac5368a68850300fe947cc9" title="bot_drive_stack_x" alt="" coords="157,106,288,134"/><area shape="rect" id="node5" href="pos__store_8c.html#adad22546e13c2c737f4bb62242b3bb92" title="pos_store_from_index" alt="" coords="351,5,505,33"/><area shape="rect" id="node7" href="bot-logic_8c.html#a406a628ec04bfa715f5881a84f12e2e4" title="Rueckgabe von True, wenn das Verhalten gerade laeuft (aktiv ist), sonst False." alt="" coords="348,55,508,83"/><area shape="rect" id="node11" href="behaviour__drive__stack_8c.html#a7d6d596506f029155fc86e68fb11bed9" title="bot_save_waypos_behaviour" alt="" coords="760,258,960,286"/><area shape="rect" id="node55" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae..." alt="" coords="788,106,932,134"/><area shape="rect" id="node58" href="behaviour__drive__stack_8c.html#a85b17654e751d3785680460b53e12b6a" title="bot_drive_stack_behaviour" alt="" coords="336,207,520,235"/><area shape="rect" id="node9" href="bot-logic_8c.html#a11e7a95fd56f9703bd2bd9c61300df6c" title="Liefert das Verhalten zurueck, welches durch function implementiert ist." alt="" coords="1032,55,1139,83"/><area shape="rect" id="node13" href="bot-logic_8c.html#ae957e610d7a3b2034084f87277a319de" title="Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg." alt="" coords="1031,207,1140,235"/><area shape="rect" id="node15" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat&#45;Abstands zwischen zwei Punkten." alt="" coords="1051,106,1120,134"/><area shape="rect" id="node17" href="math__utils_8c.html#a9c14e14c49d54828861673702c30eeed" title="Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung." alt="" coords="1036,258,1135,286"/><area shape="rect" id="node19" href="pos__store_8c.html#a5b3b46e55200fee1bfa208eae4a69f69" title="pos_store_top" alt="" coords="1032,309,1139,337"/><area shape="rect" id="node21" href="pos__store_8c.html#af507859ead3d3e4775cf01c6d2b800fc" title="pos_store_pop" alt="" coords="1029,461,1141,489"/><area shape="rect" id="node23" href="pos__store_8c.html#a20ee87405517aba06c9fca997b106131" title="pos_store_dump" alt="" coords="1024,359,1147,387"/><area shape="rect" id="node25" href="command_8c.html#a419b75ed34551408822d9caee3cd5206" title="command_write" alt="" coords="1632,373,1749,401"/><area shape="rect" id="node43" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df" title="Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein; dient zur Visualis..." alt="" coords="1008,157,1163,185"/><area shape="rect" id="node27" href="command_8c.html#a428cf92e37fc9bbc0ffc48912c3022ac" title="command_write_to_internal" alt="" coords="1836,347,2020,375"/><area shape="rect" id="node29" href="tcp_8h.html#aae71e1682727310afab282923a80c968" title="flushSendBuffer" alt="" coords="1871,398,1985,426"/><area shape="rect" id="node31" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1" title="Beendet den kritischen Abschnitt wieder, der mit os_enterCS began." alt="" coords="1887,297,1969,325"/><area shape="rect" id="node33" href="os__scheduler_8h.html#aaf0ea29568109bcdfb1d527f223accad" title="os_schedule" alt="" coords="2069,297,2168,325"/><area shape="rect" id="node35" href="fifo_8c.html#a7b3f9ad457273c9717bff49113c84250" title="fifo_put_data" alt="" coords="2231,271,2329,299"/><area shape="rect" id="node41" href="os__thread_8h.html#afa82438e9832609bc5ffbddad166e1b7" title="Schaltet &quot;von aussen&quot; auf einen neuen Thread um." alt="" coords="2217,322,2343,350"/><area shape="rect" id="node37" href="builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2" title="Disables all interrupts by clearing the global interrupt mask." alt="" coords="2399,246,2513,274"/><area shape="rect" id="node39" href="os__thread__pc_8c.html#aa0b166109be9754de9b8b863b8d197c7" title="os_signal_unlock" alt="" coords="2393,297,2519,325"/><area shape="rect" id="node45" href="map_8c.html#a302393a08814c05999d4be4c75467bc3" title="Konvertiert eine Weltkoordinate in eine Kartenkoordinate." alt="" coords="1215,207,1321,235"/><area shape="rect" id="node47" href="map_8c.html#ac2cc78e9d8a4f1aacb8e60a1a9d32440" title="Zeichnet eine Linie in die Map&#45;Anzeige des Sim." alt="" coords="1211,157,1325,185"/><area shape="rect" id="node49" href="command_8c.html#a1497433f9f7384b363203b7bfd3bfe28" title="command_write_rawdata" alt="" coords="1373,221,1547,249"/><area shape="rect" id="node51" href="command_8c.html#ad1ce17d9fe0aaf21a33d52de4e10af0f" title="command_write_rawdata_to" alt="" coords="1596,297,1785,325"/><area shape="rect" id="node60" href="pos__store_8c.html#ab38bb7f7ff5a9c4f0d356e7f07a3397d" title="pos_store_dequeue" alt="" coords="569,258,711,286"/><area shape="rect" id="node63" href="behaviour__goto__pos_8c.html#a88ddbedd618e291f1181ca34433fcd93" title="Botenfunktion des Positionierungsverhaltens." alt="" coords="588,157,692,185"/><area shape="rect" id="node69" href="behaviour__drive__stack_8c.html#a48b7a3665b51ae2cbde5d9b7a97b9adb" title="bot_save_waypos" alt="" coords="573,207,707,235"/><area shape="rect" id="node66" href="behaviour__goto__pos_8c.html#a438ebcd779ae602e208e9ebe3b9aee44" title="Das Positionierungsverhalten." alt="" coords="775,207,945,235"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a27dc4bb2ea3f3057c5a4d5510182b5a8"></a><!-- doxytag: member="behaviour_drive_stack.c::bot_drive_stack" ref="a27dc4bb2ea3f3057c5a4d5510182b5a8" args="(Behaviour_t *caller)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_drive_stack </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>caller</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Botenfunktion: Verhalten zum Anfahren aller auf dem Stack befindlichen Punkte </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*caller</td><td>Der Verhaltensdatensatz des Aufrufers </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__stack_8c_source.html#l00154">154</a> der Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__stack_8c_source.html#l00116">bot_drive_stack_x()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__follow__object_8c_source.html#l00099">bot_follow_object_behaviour()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__drive__stack_8c_a27dc4bb2ea3f3057c5a4d5510182b5a8_cgraph.png" border="0" usemap="#behaviour__drive__stack_8c_a27dc4bb2ea3f3057c5a4d5510182b5a8_cgraph" alt=""/></div>
+<map name="behaviour__drive__stack_8c_a27dc4bb2ea3f3057c5a4d5510182b5a8_cgraph" id="behaviour__drive__stack_8c_a27dc4bb2ea3f3057c5a4d5510182b5a8_cgraph">
+<area shape="rect" id="node3" href="behaviour__drive__stack_8c.html#a6b879a7ecac5368a68850300fe947cc9" title="bot_drive_stack_x" alt="" coords="171,106,301,134"/><area shape="rect" id="node5" href="pos__store_8c.html#adad22546e13c2c737f4bb62242b3bb92" title="pos_store_from_index" alt="" coords="364,5,519,33"/><area shape="rect" id="node7" href="bot-logic_8c.html#a406a628ec04bfa715f5881a84f12e2e4" title="Rueckgabe von True, wenn das Verhalten gerade laeuft (aktiv ist), sonst False." alt="" coords="361,55,521,83"/><area shape="rect" id="node11" href="behaviour__drive__stack_8c.html#a7d6d596506f029155fc86e68fb11bed9" title="bot_save_waypos_behaviour" alt="" coords="773,258,973,286"/><area shape="rect" id="node55" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae..." alt="" coords="801,106,945,134"/><area shape="rect" id="node58" href="behaviour__drive__stack_8c.html#a85b17654e751d3785680460b53e12b6a" title="bot_drive_stack_behaviour" alt="" coords="349,207,533,235"/><area shape="rect" id="node9" href="bot-logic_8c.html#a11e7a95fd56f9703bd2bd9c61300df6c" title="Liefert das Verhalten zurueck, welches durch function implementiert ist." alt="" coords="1045,55,1152,83"/><area shape="rect" id="node13" href="bot-logic_8c.html#ae957e610d7a3b2034084f87277a319de" title="Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg." alt="" coords="1044,207,1153,235"/><area shape="rect" id="node15" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat&#45;Abstands zwischen zwei Punkten." alt="" coords="1064,106,1133,134"/><area shape="rect" id="node17" href="math__utils_8c.html#a9c14e14c49d54828861673702c30eeed" title="Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung." alt="" coords="1049,258,1148,286"/><area shape="rect" id="node19" href="pos__store_8c.html#a5b3b46e55200fee1bfa208eae4a69f69" title="pos_store_top" alt="" coords="1045,309,1152,337"/><area shape="rect" id="node21" href="pos__store_8c.html#af507859ead3d3e4775cf01c6d2b800fc" title="pos_store_pop" alt="" coords="1043,461,1155,489"/><area shape="rect" id="node23" href="pos__store_8c.html#a20ee87405517aba06c9fca997b106131" title="pos_store_dump" alt="" coords="1037,359,1160,387"/><area shape="rect" id="node25" href="command_8c.html#a419b75ed34551408822d9caee3cd5206" title="command_write" alt="" coords="1645,373,1763,401"/><area shape="rect" id="node43" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df" title="Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein; dient zur Visualis..." alt="" coords="1021,157,1176,185"/><area shape="rect" id="node27" href="command_8c.html#a428cf92e37fc9bbc0ffc48912c3022ac" title="command_write_to_internal" alt="" coords="1849,347,2033,375"/><area shape="rect" id="node29" href="tcp_8h.html#aae71e1682727310afab282923a80c968" title="flushSendBuffer" alt="" coords="1884,398,1999,426"/><area shape="rect" id="node31" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1" title="Beendet den kritischen Abschnitt wieder, der mit os_enterCS began." alt="" coords="1900,297,1983,325"/><area shape="rect" id="node33" href="os__scheduler_8h.html#aaf0ea29568109bcdfb1d527f223accad" title="os_schedule" alt="" coords="2083,297,2181,325"/><area shape="rect" id="node35" href="fifo_8c.html#a7b3f9ad457273c9717bff49113c84250" title="fifo_put_data" alt="" coords="2244,271,2343,299"/><area shape="rect" id="node41" href="os__thread_8h.html#afa82438e9832609bc5ffbddad166e1b7" title="Schaltet &quot;von aussen&quot; auf einen neuen Thread um." alt="" coords="2231,322,2356,350"/><area shape="rect" id="node37" href="builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2" title="Disables all interrupts by clearing the global interrupt mask." alt="" coords="2412,246,2527,274"/><area shape="rect" id="node39" href="os__thread__pc_8c.html#aa0b166109be9754de9b8b863b8d197c7" title="os_signal_unlock" alt="" coords="2407,297,2532,325"/><area shape="rect" id="node45" href="map_8c.html#a302393a08814c05999d4be4c75467bc3" title="Konvertiert eine Weltkoordinate in eine Kartenkoordinate." alt="" coords="1228,207,1335,235"/><area shape="rect" id="node47" href="map_8c.html#ac2cc78e9d8a4f1aacb8e60a1a9d32440" title="Zeichnet eine Linie in die Map&#45;Anzeige des Sim." alt="" coords="1224,157,1339,185"/><area shape="rect" id="node49" href="command_8c.html#a1497433f9f7384b363203b7bfd3bfe28" title="command_write_rawdata" alt="" coords="1387,221,1560,249"/><area shape="rect" id="node51" href="command_8c.html#ad1ce17d9fe0aaf21a33d52de4e10af0f" title="command_write_rawdata_to" alt="" coords="1609,297,1799,325"/><area shape="rect" id="node60" href="pos__store_8c.html#ab38bb7f7ff5a9c4f0d356e7f07a3397d" title="pos_store_dequeue" alt="" coords="583,258,724,286"/><area shape="rect" id="node63" href="behaviour__goto__pos_8c.html#a88ddbedd618e291f1181ca34433fcd93" title="Botenfunktion des Positionierungsverhaltens." alt="" coords="601,157,705,185"/><area shape="rect" id="node69" href="behaviour__drive__stack_8c.html#a48b7a3665b51ae2cbde5d9b7a97b9adb" title="bot_save_waypos" alt="" coords="587,207,720,235"/><area shape="rect" id="node66" href="behaviour__goto__pos_8c.html#a438ebcd779ae602e208e9ebe3b9aee44" title="Das Positionierungsverhalten." alt="" coords="788,207,959,235"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a85b17654e751d3785680460b53e12b6a"></a><!-- doxytag: member="behaviour_drive_stack.c::bot_drive_stack_behaviour" ref="a85b17654e751d3785680460b53e12b6a" args="(Behaviour_t *data)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_drive_stack_behaviour </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Verhalten zum Anfahren aller auf dem Stack befindlichen Punkte, wobei das Fahr-Unterverhalten bot_goto_pos benutzt wird </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*data</td><td>Der Verhaltensdatensatz </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__stack_8c_source.html#l00077">77</a> der Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__goto__pos_8c_source.html#l00282">bot_goto_pos()</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00380">bot_save_waypos()</a>, <a class="el" href="pos__store_8c_source.html#l00289">pos_store_dequeue()</a> und <a class="el" href="pos__store_8c_source.html#l00272">pos_store_pop()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-logic_8c_source.html#l00086">bot_behave_init()</a> und <a class="el" href="behaviour__drive__stack_8c_source.html#l00116">bot_drive_stack_x()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__drive__stack_8c_a85b17654e751d3785680460b53e12b6a_cgraph.png" border="0" usemap="#behaviour__drive__stack_8c_a85b17654e751d3785680460b53e12b6a_cgraph" alt=""/></div>
+<map name="behaviour__drive__stack_8c_a85b17654e751d3785680460b53e12b6a_cgraph" id="behaviour__drive__stack_8c_a85b17654e751d3785680460b53e12b6a_cgraph">
+<area shape="rect" id="node3" href="behaviour__goto__pos_8c.html#a88ddbedd618e291f1181ca34433fcd93" title="Botenfunktion des Positionierungsverhaltens." alt="" coords="257,81,361,109"/><area shape="rect" id="node13" href="behaviour__drive__stack_8c.html#a48b7a3665b51ae2cbde5d9b7a97b9adb" title="bot_save_waypos" alt="" coords="243,258,376,286"/><area shape="rect" id="node24" href="pos__store_8c.html#af507859ead3d3e4775cf01c6d2b800fc" title="pos_store_pop" alt="" coords="699,435,811,463"/><area shape="rect" id="node58" href="pos__store_8c.html#ab38bb7f7ff5a9c4f0d356e7f07a3397d" title="pos_store_dequeue" alt="" coords="239,359,380,387"/><area shape="rect" id="node5" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae..." alt="" coords="457,5,601,33"/><area shape="rect" id="node9" href="behaviour__goto__pos_8c.html#a438ebcd779ae602e208e9ebe3b9aee44" title="Das Positionierungsverhalten." alt="" coords="444,55,615,83"/><area shape="rect" id="node11" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat&#45;Abstands zwischen zwei Punkten." alt="" coords="720,81,789,109"/><area shape="rect" id="node7" href="bot-logic_8c.html#a11e7a95fd56f9703bd2bd9c61300df6c" title="Liefert das Verhalten zurueck, welches durch function implementiert ist." alt="" coords="701,5,808,33"/><area shape="rect" id="node15" href="behaviour__drive__stack_8c.html#a7d6d596506f029155fc86e68fb11bed9" title="bot_save_waypos_behaviour" alt="" coords="429,258,629,286"/><area shape="rect" id="node17" href="bot-logic_8c.html#ae957e610d7a3b2034084f87277a319de" title="Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg." alt="" coords="700,283,809,311"/><area shape="rect" id="node20" href="math__utils_8c.html#a9c14e14c49d54828861673702c30eeed" title="Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung." alt="" coords="705,334,804,362"/><area shape="rect" id="node22" href="pos__store_8c.html#a5b3b46e55200fee1bfa208eae4a69f69" title="pos_store_top" alt="" coords="701,385,808,413"/><area shape="rect" id="node26" href="pos__store_8c.html#a20ee87405517aba06c9fca997b106131" title="pos_store_dump" alt="" coords="693,131,816,159"/><area shape="rect" id="node28" href="command_8c.html#a419b75ed34551408822d9caee3cd5206" title="command_write" alt="" coords="1301,207,1419,235"/><area shape="rect" id="node46" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df" title="Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein; dient zur Visualis..." alt="" coords="677,233,832,261"/><area shape="rect" id="node30" href="command_8c.html#a428cf92e37fc9bbc0ffc48912c3022ac" title="command_write_to_internal" alt="" coords="1505,219,1689,247"/><area shape="rect" id="node32" href="tcp_8h.html#aae71e1682727310afab282923a80c968" title="flushSendBuffer" alt="" coords="1540,169,1655,197"/><area shape="rect" id="node34" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1" title="Beendet den kritischen Abschnitt wieder, der mit os_enterCS began." alt="" coords="1556,270,1639,298"/><area shape="rect" id="node36" href="os__scheduler_8h.html#aaf0ea29568109bcdfb1d527f223accad" title="os_schedule" alt="" coords="1739,270,1837,298"/><area shape="rect" id="node38" href="fifo_8c.html#a7b3f9ad457273c9717bff49113c84250" title="fifo_put_data" alt="" coords="1900,245,1999,273"/><area shape="rect" id="node44" href="os__thread_8h.html#afa82438e9832609bc5ffbddad166e1b7" title="Schaltet &quot;von aussen&quot; auf einen neuen Thread um." alt="" coords="1887,295,2012,323"/><area shape="rect" id="node40" href="builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2" title="Disables all interrupts by clearing the global interrupt mask." alt="" coords="2068,219,2183,247"/><area shape="rect" id="node42" href="os__thread__pc_8c.html#aa0b166109be9754de9b8b863b8d197c7" title="os_signal_unlock" alt="" coords="2063,270,2188,298"/><area shape="rect" id="node48" href="map_8c.html#a302393a08814c05999d4be4c75467bc3" title="Konvertiert eine Weltkoordinate in eine Kartenkoordinate." alt="" coords="884,233,991,261"/><area shape="rect" id="node50" href="map_8c.html#ac2cc78e9d8a4f1aacb8e60a1a9d32440" title="Zeichnet eine Linie in die Map&#45;Anzeige des Sim." alt="" coords="880,283,995,311"/><area shape="rect" id="node52" href="command_8c.html#a1497433f9f7384b363203b7bfd3bfe28" title="command_write_rawdata" alt="" coords="1043,277,1216,305"/><area shape="rect" id="node54" href="command_8c.html#ad1ce17d9fe0aaf21a33d52de4e10af0f" title="command_write_rawdata_to" alt="" coords="1265,270,1455,298"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a6b879a7ecac5368a68850300fe947cc9"></a><!-- doxytag: member="behaviour_drive_stack.c::bot_drive_stack_x" ref="a6b879a7ecac5368a68850300fe947cc9" args="(Behaviour_t *caller, uint8_t stack, uint8_t mode)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_drive_stack_x </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>caller</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>stack</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Botenfunktion: Verhalten zum Anfahren aller auf dem Stack X befindlichen Punkte </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*caller</td><td>Der Verhaltensdatensatz des Aufrufers </td></tr>
+    <tr><td class="paramname">stack</td><td>Nummer des Stacks, der abgefahren werden soll </td></tr>
+    <tr><td class="paramname">mode</td><td>0: Stack, 1: FIFO </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__stack_8c_source.html#l00116">116</a> der Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+
+<p>Benutzt <a class="el" href="bot-logic_8c_source.html#l00432">behaviour_is_activated()</a>, <a class="el" href="bot-logic_8h_source.html#l00040">BEHAVIOUR_OVERRIDE</a>, <a class="el" href="bot-logic_8h_source.html#l00044">BEHAVIOUR_SUBFAIL</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00077">bot_drive_stack_behaviour()</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00061">LOG_DEBUG</a>, <a class="el" href="pos__store_8c_source.html#l00178">pos_store_from_index()</a>, <a class="el" href="bot-logic_8h_source.html#l00057">_Behaviour_t::subResult</a> und <a class="el" href="bot-logic_8c_source.html#l00537">switch_to_behaviour()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__pathplaning_8c_source.html#l00384">bot_calc_wave_behaviour()</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00162">bot_drive_fifo()</a> und <a class="el" href="behaviour__drive__stack_8c_source.html#l00154">bot_drive_stack()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__drive__stack_8c_a6b879a7ecac5368a68850300fe947cc9_cgraph.png" border="0" usemap="#behaviour__drive__stack_8c_a6b879a7ecac5368a68850300fe947cc9_cgraph" alt=""/></div>
+<map name="behaviour__drive__stack_8c_a6b879a7ecac5368a68850300fe947cc9_cgraph" id="behaviour__drive__stack_8c_a6b879a7ecac5368a68850300fe947cc9_cgraph">
+<area shape="rect" id="node3" href="bot-logic_8c.html#a406a628ec04bfa715f5881a84f12e2e4" title="Rueckgabe von True, wenn das Verhalten gerade laeuft (aktiv ist), sonst False." alt="" coords="196,410,356,438"/><area shape="rect" id="node7" href="behaviour__drive__stack_8c.html#a85b17654e751d3785680460b53e12b6a" title="bot_drive_stack_behaviour" alt="" coords="184,258,368,286"/><area shape="rect" id="node11" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae..." alt="" coords="636,359,780,387"/><area shape="rect" id="node20" href="behaviour__drive__stack_8c.html#a7d6d596506f029155fc86e68fb11bed9" title="bot_save_waypos_behaviour" alt="" coords="608,207,808,235"/><area shape="rect" id="node67" href="pos__store_8c.html#adad22546e13c2c737f4bb62242b3bb92" title="pos_store_from_index" alt="" coords="199,461,353,489"/><area shape="rect" id="node5" href="bot-logic_8c.html#a11e7a95fd56f9703bd2bd9c61300df6c" title="Liefert das Verhalten zurueck, welches durch function implementiert ist." alt="" coords="880,410,987,438"/><area shape="rect" id="node9" href="behaviour__goto__pos_8c.html#a88ddbedd618e291f1181ca34433fcd93" title="Botenfunktion des Positionierungsverhaltens." alt="" coords="436,309,540,337"/><area shape="rect" id="node18" href="behaviour__drive__stack_8c.html#a48b7a3665b51ae2cbde5d9b7a97b9adb" title="bot_save_waypos" alt="" coords="421,207,555,235"/><area shape="rect" id="node29" href="pos__store_8c.html#af507859ead3d3e4775cf01c6d2b800fc" title="pos_store_pop" alt="" coords="877,5,989,33"/><area shape="rect" id="node63" href="pos__store_8c.html#ab38bb7f7ff5a9c4f0d356e7f07a3397d" title="pos_store_dequeue" alt="" coords="417,258,559,286"/><area shape="rect" id="node14" href="behaviour__goto__pos_8c.html#a438ebcd779ae602e208e9ebe3b9aee44" title="Das Positionierungsverhalten." alt="" coords="623,258,793,286"/><area shape="rect" id="node16" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat&#45;Abstands zwischen zwei Punkten." alt="" coords="899,359,968,387"/><area shape="rect" id="node22" href="bot-logic_8c.html#ae957e610d7a3b2034084f87277a319de" title="Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg." alt="" coords="879,157,988,185"/><area shape="rect" id="node25" href="math__utils_8c.html#a9c14e14c49d54828861673702c30eeed" title="Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung." alt="" coords="884,207,983,235"/><area shape="rect" id="node27" href="pos__store_8c.html#a5b3b46e55200fee1bfa208eae4a69f69" title="pos_store_top" alt="" coords="880,258,987,286"/><area shape="rect" id="node31" href="pos__store_8c.html#a20ee87405517aba06c9fca997b106131" title="pos_store_dump" alt="" coords="872,309,995,337"/><area shape="rect" id="node33" href="command_8c.html#a419b75ed34551408822d9caee3cd5206" title="command_write" alt="" coords="1480,55,1597,83"/><area shape="rect" id="node51" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df" title="Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein; dient zur Visualis..." alt="" coords="856,106,1011,134"/><area shape="rect" id="node35" href="command_8c.html#a428cf92e37fc9bbc0ffc48912c3022ac" title="command_write_to_internal" alt="" coords="1684,106,1868,134"/><area shape="rect" id="node37" href="tcp_8h.html#aae71e1682727310afab282923a80c968" title="flushSendBuffer" alt="" coords="1719,5,1833,33"/><area shape="rect" id="node39" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1" title="Beendet den kritischen Abschnitt wieder, der mit os_enterCS began." alt="" coords="1735,55,1817,83"/><area shape="rect" id="node41" href="os__scheduler_8h.html#aaf0ea29568109bcdfb1d527f223accad" title="os_schedule" alt="" coords="1917,55,2016,83"/><area shape="rect" id="node43" href="fifo_8c.html#a7b3f9ad457273c9717bff49113c84250" title="fifo_put_data" alt="" coords="2079,30,2177,58"/><area shape="rect" id="node49" href="os__thread_8h.html#afa82438e9832609bc5ffbddad166e1b7" title="Schaltet &quot;von aussen&quot; auf einen neuen Thread um." alt="" coords="2065,81,2191,109"/><area shape="rect" id="node45" href="builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2" title="Disables all interrupts by clearing the global interrupt mask." alt="" coords="2247,5,2361,33"/><area shape="rect" id="node47" href="os__thread__pc_8c.html#aa0b166109be9754de9b8b863b8d197c7" title="os_signal_unlock" alt="" coords="2241,55,2367,83"/><area shape="rect" id="node53" href="map_8c.html#a302393a08814c05999d4be4c75467bc3" title="Konvertiert eine Weltkoordinate in eine Kartenkoordinate." alt="" coords="1063,157,1169,185"/><area shape="rect" id="node55" href="map_8c.html#ac2cc78e9d8a4f1aacb8e60a1a9d32440" title="Zeichnet eine Linie in die Map&#45;Anzeige des Sim." alt="" coords="1059,106,1173,134"/><area shape="rect" id="node57" href="command_8c.html#a1497433f9f7384b363203b7bfd3bfe28" title="command_write_rawdata" alt="" coords="1221,106,1395,134"/><area shape="rect" id="node59" href="command_8c.html#ad1ce17d9fe0aaf21a33d52de4e10af0f" title="command_write_rawdata_to" alt="" coords="1444,106,1633,134"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="aaea026b5beefd884c7bbd42cce8df942"></a><!-- doxytag: member="behaviour_drive_stack.c::bot_push_actpos" ref="aaea026b5beefd884c7bbd42cce8df942" args="(Behaviour_t *caller, uint8_t stack)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_push_actpos </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>caller</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>stack</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Sichern der aktuellen Botposition auf den Stack </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*caller</td><td>einfach nur Zeiger, damit remotecall verwendbar </td></tr>
+    <tr><td class="paramname">stack</td><td>Nummer des Stacks, auf den gepusht werden soll </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__stack_8c_source.html#l00199">199</a> der Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+
+<p>Benutzt <a class="el" href="bot-logic_8h_source.html#l00045">BEHAVIOUR_SUBSUCCESS</a>, <a class="el" href="pos__store_8c_source.html#l00178">pos_store_from_index()</a>, <a class="el" href="pos__store_8c_source.html#l00251">pos_store_push()</a>, <a class="el" href="bot-logic_8h_source.html#l00057">_Behaviour_t::subResult</a>, <a class="el" href="sensor_8c_source.html#l00121">x_pos</a> und <a class="el" href="sensor_8c_source.html#l00122">y_pos</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__drive__stack_8c_aaea026b5beefd884c7bbd42cce8df942_cgraph.png" border="0" usemap="#behaviour__drive__stack_8c_aaea026b5beefd884c7bbd42cce8df942_cgraph" alt=""/></div>
+<map name="behaviour__drive__stack_8c_aaea026b5beefd884c7bbd42cce8df942_cgraph" id="behaviour__drive__stack_8c_aaea026b5beefd884c7bbd42cce8df942_cgraph">
+<area shape="rect" id="node3" href="pos__store_8c.html#adad22546e13c2c737f4bb62242b3bb92" title="pos_store_from_index" alt="" coords="179,5,333,33"/><area shape="rect" id="node5" href="pos__store_8c.html#a036874299445af76339d8d4d5a75e1dc" title="pos_store_push" alt="" coords="197,55,315,83"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a48b7a3665b51ae2cbde5d9b7a97b9adb"></a><!-- doxytag: member="behaviour_drive_stack.c::bot_save_waypos" ref="a48b7a3665b51ae2cbde5d9b7a97b9adb" args="(Behaviour_t *caller, uint8_t optimize)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_save_waypos </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>caller</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>optimize</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Botenfunktion: Verhalten um sich entlang des Fahrweges relevante Koordinaten auf dem Stack zu merken </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*caller</td><td>Der Verhaltensdatensatz des Aufrufers </td></tr>
+    <tr><td class="paramname">optimize</td><td>Optimierungslevel (unnoetige Stackeintraege werden automatisch geloescht) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__stack_8c_source.html#l00380">380</a> der Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="behaviour__drive__stack_8c_source.html#l00077">bot_drive_stack_behaviour()</a> und <a class="el" href="behaviour__follow__object_8c_source.html#l00159">bot_follow_object()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__drive__stack_8c_a48b7a3665b51ae2cbde5d9b7a97b9adb_cgraph.png" border="0" usemap="#behaviour__drive__stack_8c_a48b7a3665b51ae2cbde5d9b7a97b9adb_cgraph" alt=""/></div>
+<map name="behaviour__drive__stack_8c_a48b7a3665b51ae2cbde5d9b7a97b9adb_cgraph" id="behaviour__drive__stack_8c_a48b7a3665b51ae2cbde5d9b7a97b9adb_cgraph">
+<area shape="rect" id="node3" href="behaviour__drive__stack_8c.html#a7d6d596506f029155fc86e68fb11bed9" title="bot_save_waypos_behaviour" alt="" coords="187,182,387,210"/><area shape="rect" id="node5" href="bot-logic_8c.html#ae957e610d7a3b2034084f87277a319de" title="Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg." alt="" coords="457,5,567,33"/><area shape="rect" id="node7" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat&#45;Abstands zwischen zwei Punkten." alt="" coords="477,55,547,83"/><area shape="rect" id="node9" href="math__utils_8c.html#a9c14e14c49d54828861673702c30eeed" title="Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung." alt="" coords="463,106,561,134"/><area shape="rect" id="node11" href="pos__store_8c.html#a5b3b46e55200fee1bfa208eae4a69f69" title="pos_store_top" alt="" coords="459,157,565,185"/><area shape="rect" id="node13" href="pos__store_8c.html#af507859ead3d3e4775cf01c6d2b800fc" title="pos_store_pop" alt="" coords="456,207,568,235"/><area shape="rect" id="node15" href="pos__store_8c.html#a20ee87405517aba06c9fca997b106131" title="pos_store_dump" alt="" coords="451,258,573,286"/><area shape="rect" id="node17" href="command_8c.html#a419b75ed34551408822d9caee3cd5206" title="command_write" alt="" coords="1059,334,1176,362"/><area shape="rect" id="node35" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df" title="Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein; dient zur Visualis..." alt="" coords="435,359,589,387"/><area shape="rect" id="node19" href="command_8c.html#a428cf92e37fc9bbc0ffc48912c3022ac" title="command_write_to_internal" alt="" coords="1263,346,1447,374"/><area shape="rect" id="node21" href="tcp_8h.html#aae71e1682727310afab282923a80c968" title="flushSendBuffer" alt="" coords="1297,295,1412,323"/><area shape="rect" id="node23" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1" title="Beendet den kritischen Abschnitt wieder, der mit os_enterCS began." alt="" coords="1313,397,1396,425"/><area shape="rect" id="node25" href="os__scheduler_8h.html#aaf0ea29568109bcdfb1d527f223accad" title="os_schedule" alt="" coords="1496,397,1595,425"/><area shape="rect" id="node27" href="fifo_8c.html#a7b3f9ad457273c9717bff49113c84250" title="fifo_put_data" alt="" coords="1657,371,1756,399"/><area shape="rect" id="node33" href="os__thread_8h.html#afa82438e9832609bc5ffbddad166e1b7" title="Schaltet &quot;von aussen&quot; auf einen neuen Thread um." alt="" coords="1644,422,1769,450"/><area shape="rect" id="node29" href="builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2" title="Disables all interrupts by clearing the global interrupt mask." alt="" coords="1825,346,1940,374"/><area shape="rect" id="node31" href="os__thread__pc_8c.html#aa0b166109be9754de9b8b863b8d197c7" title="os_signal_unlock" alt="" coords="1820,397,1945,425"/><area shape="rect" id="node37" href="map_8c.html#a302393a08814c05999d4be4c75467bc3" title="Konvertiert eine Weltkoordinate in eine Kartenkoordinate." alt="" coords="641,359,748,387"/><area shape="rect" id="node39" href="map_8c.html#ac2cc78e9d8a4f1aacb8e60a1a9d32440" title="Zeichnet eine Linie in die Map&#45;Anzeige des Sim." alt="" coords="637,410,752,438"/><area shape="rect" id="node41" href="command_8c.html#a1497433f9f7384b363203b7bfd3bfe28" title="command_write_rawdata" alt="" coords="800,403,973,431"/><area shape="rect" id="node43" href="command_8c.html#ad1ce17d9fe0aaf21a33d52de4e10af0f" title="command_write_rawdata_to" alt="" coords="1023,397,1212,425"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a7d6d596506f029155fc86e68fb11bed9"></a><!-- doxytag: member="behaviour_drive_stack.c::bot_save_waypos_behaviour" ref="a7d6d596506f029155fc86e68fb11bed9" args="(Behaviour_t *data)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_save_waypos_behaviour </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Verhalten um sich entlang des Fahrweges relevante Koordinaten auf dem Stack zu merken; Verhalten ist nach Aktivierung via Botenroutine ein Endlosverhalten und sammelt bis zur Deaktivierung die Wegepunkte; deaktiviert wird es via Notaus oder direkt mit Befehl zum Zurueckfahren und damit Start des Stack-Fahrverhaltens </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*data</td><td>Der Verhaltensdatensatz </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">246</a> der Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+
+<p>Benutzt <a class="el" href="behaviour__drive__stack_8c_source.html#l00216">ANGLE_FOR_PUSH</a>, <a class="el" href="bot-logic_8h_source.html#l00044">BEHAVIOUR_SUBFAIL</a>, <a class="el" href="command_8h_source.html#l00103">CMD_MAP</a>, <a class="el" href="command_8c_source.html#l00333">command_write()</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00214">DIST_FOR_PUSH</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00215">DIST_FOR_PUSH_TURN</a>, <a class="el" href="bot-logic_8c_source.html#l00601">exit_behaviour()</a>, <a class="el" href="global_8h_source.html#l00077">False</a>, <a class="el" href="math__utils_8c_source.html#l00084">get_dist()</a>, <a class="el" href="sensor_8c_source.html#l00116">heading</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00175">i</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00191">k</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00061">LOG_DEBUG</a>, <a class="el" href="behaviour__drive__chess_8c_source.html#l00159">m</a>, <a class="el" href="map_8c_source.html#l01237">map_draw_line_world()</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00048">MAX_GRADIENT</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00049">MAX_POS_DIFF</a>, <a class="el" href="pos__store_8c_source.html#l00396">pos_store_dump()</a>, <a class="el" href="pos__store_8c_source.html#l00272">pos_store_pop()</a>, <a class="el" href="pos__store_8c_source.html#l00308">pos_store_top()</a>, <a class="el" href="behaviour__drive__area_8c_source.html#l00071">STACK_SIZE</a>, <a class="el" href="command_8h_source.html#l00111">SUB_MAP_CLEAR_LINES</a>, <a class="el" href="global_8h_source.html#l00076">True</a>, <a class="el" href="math__utils_8c_source.html#l00056">turned_angle()</a>, <a class="el" href="sensor_8c_source.html#l00121">x_pos</a> und <a class="el" href="sensor_8c_source.html#l00122">y_pos</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="bot-logic_8c_source.html#l00086">bot_behave_init()</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00116">bot_drive_stack_x()</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00380">bot_save_waypos()</a> und <a class="el" href="behaviour__drive__stack_8c_source.html#l00172">bot_send_stack_b2b()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__drive__stack_8c_a7d6d596506f029155fc86e68fb11bed9_cgraph.png" border="0" usemap="#behaviour__drive__stack_8c_a7d6d596506f029155fc86e68fb11bed9_cgraph" alt=""/></div>
+<map name="behaviour__drive__stack_8c_a7d6d596506f029155fc86e68fb11bed9_cgraph" id="behaviour__drive__stack_8c_a7d6d596506f029155fc86e68fb11bed9_cgraph">
+<area shape="rect" id="node3" href="command_8c.html#a419b75ed34551408822d9caee3cd5206" title="command_write" alt="" coords="877,44,995,72"/><area shape="rect" id="node21" href="bot-logic_8c.html#ae957e610d7a3b2034084f87277a319de" title="Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg." alt="" coords="276,120,385,148"/><area shape="rect" id="node23" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat&#45;Abstands zwischen zwei Punkten." alt="" coords="296,171,365,199"/><area shape="rect" id="node25" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df" title="Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein; dient zur Visualis..." alt="" coords="253,69,408,97"/><area shape="rect" id="node37" href="pos__store_8c.html#a20ee87405517aba06c9fca997b106131" title="pos_store_dump" alt="" coords="269,221,392,249"/><area shape="rect" id="node39" href="pos__store_8c.html#af507859ead3d3e4775cf01c6d2b800fc" title="pos_store_pop" alt="" coords="275,272,387,300"/><area shape="rect" id="node41" href="pos__store_8c.html#a5b3b46e55200fee1bfa208eae4a69f69" title="pos_store_top" alt="" coords="277,323,384,351"/><area shape="rect" id="node43" href="math__utils_8c.html#a9c14e14c49d54828861673702c30eeed" title="Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung." alt="" coords="281,373,380,401"/><area shape="rect" id="node5" href="command_8c.html#a428cf92e37fc9bbc0ffc48912c3022ac" title="command_write_to_internal" alt="" coords="1081,56,1265,84"/><area shape="rect" id="node7" href="tcp_8h.html#aae71e1682727310afab282923a80c968" title="flushSendBuffer" alt="" coords="1116,5,1231,33"/><area shape="rect" id="node9" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1" title="Beendet den kritischen Abschnitt wieder, der mit os_enterCS began." alt="" coords="1132,107,1215,135"/><area shape="rect" id="node11" href="os__scheduler_8h.html#aaf0ea29568109bcdfb1d527f223accad" title="os_schedule" alt="" coords="1315,107,1413,135"/><area shape="rect" id="node13" href="fifo_8c.html#a7b3f9ad457273c9717bff49113c84250" title="fifo_put_data" alt="" coords="1476,81,1575,109"/><area shape="rect" id="node19" href="os__thread_8h.html#afa82438e9832609bc5ffbddad166e1b7" title="Schaltet &quot;von aussen&quot; auf einen neuen Thread um." alt="" coords="1463,132,1588,160"/><area shape="rect" id="node15" href="builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2" title="Disables all interrupts by clearing the global interrupt mask." alt="" coords="1644,56,1759,84"/><area shape="rect" id="node17" href="os__thread__pc_8c.html#aa0b166109be9754de9b8b863b8d197c7" title="os_signal_unlock" alt="" coords="1639,107,1764,135"/><area shape="rect" id="node27" href="map_8c.html#a302393a08814c05999d4be4c75467bc3" title="Konvertiert eine Weltkoordinate in eine Kartenkoordinate." alt="" coords="460,69,567,97"/><area shape="rect" id="node29" href="map_8c.html#ac2cc78e9d8a4f1aacb8e60a1a9d32440" title="Zeichnet eine Linie in die Map&#45;Anzeige des Sim." alt="" coords="456,120,571,148"/><area shape="rect" id="node31" href="command_8c.html#a1497433f9f7384b363203b7bfd3bfe28" title="command_write_rawdata" alt="" coords="619,113,792,141"/><area shape="rect" id="node33" href="command_8c.html#ad1ce17d9fe0aaf21a33d52de4e10af0f" title="command_write_rawdata_to" alt="" coords="841,107,1031,135"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="a384bcf47313698101cf73a5f1083abc3"></a><!-- doxytag: member="behaviour_drive_stack.c::bot_send_stack_b2b" ref="a384bcf47313698101cf73a5f1083abc3" args="(Behaviour_t *caller, uint8_t bot)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void bot_send_stack_b2b </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="bot-logic_8h.html#a2868abce6a1e6348c6e659db6658254d">Behaviour_t</a> *&#160;</td>
+          <td class="paramname"><em>caller</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>bot</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Schickt den Positionsspeicher per Bot-2-Bot-Kommunikation an einen anderen Bot </p>
+<dl><dt><b>Parameter:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">*caller</td><td>Der Verhaltensdatensatz des Aufrufers </td></tr>
+    <tr><td class="paramname">bot</td><td>Adresse des Zielbots </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__stack_8c_source.html#l00172">172</a> der Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+
+<p>Benutzt <a class="el" href="bot-logic_8h_source.html#l00056">_Behaviour_t::active</a>, <a class="el" href="bot-logic_8h_source.html#l00037">BEHAVIOUR_ACTIVE</a>, <a class="el" href="bot-logic_8h_source.html#l00044">BEHAVIOUR_SUBFAIL</a>, <a class="el" href="bot-logic_8h_source.html#l00045">BEHAVIOUR_SUBSUCCESS</a>, <a class="el" href="bot-2-bot_8c_source.html#l00635">bot_2_bot_start_remotecall()</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00246">bot_save_waypos_behaviour()</a>, <a class="el" href="bot-logic_8c_source.html#l00381">get_behaviour()</a>, <a class="el" href="behaviour__drive__stack_8c_source.html#l00061">LOG_DEBUG</a>, <a class="el" href="pos__store_8c_source.html#l00152">pos_store_from_beh()</a>, <a class="el" href="pos__store_8c_source.html#l00330">pos_store_send_to_bot()</a> und <a class="el" href="bot-logic_8h_source.html#l00057">_Behaviour_t::subResult</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__drive__stack_8c_a384bcf47313698101cf73a5f1083abc3_cgraph.png" border="0" usemap="#behaviour__drive__stack_8c_a384bcf47313698101cf73a5f1083abc3_cgraph" alt=""/></div>
+<map name="behaviour__drive__stack_8c_a384bcf47313698101cf73a5f1083abc3_cgraph" id="behaviour__drive__stack_8c_a384bcf47313698101cf73a5f1083abc3_cgraph">
+<area shape="rect" id="node3" href="bot-2-bot_8c.html#a59effc4fe651a7f3fc6d46ccdeb6c293" title="bot_2_bot_start_remotecall" alt="" coords="203,385,387,413"/><area shape="rect" id="node34" href="bot-logic_8c.html#a11e7a95fd56f9703bd2bd9c61300df6c" title="Liefert das Verhalten zurueck, welches durch function implementiert ist." alt="" coords="1643,1069,1749,1097"/><area shape="rect" id="node101" href="behaviour__drive__stack_8c.html#a7d6d596506f029155fc86e68fb11bed9" title="bot_save_waypos_behaviour" alt="" coords="1099,207,1299,235"/><area shape="rect" id="node122" href="pos__store_8c.html#a64b9646424ab22ab1ca5e903d6930e49" title="pos_store_from_beh" alt="" coords="223,435,367,463"/><area shape="rect" id="node124" href="pos__store_8c.html#a0ea4c6da4fddf088e82b58d8b88ea4e4" title="pos_store_send_to_bot" alt="" coords="213,334,376,362"/><area shape="rect" id="node5" href="bot-2-bot_8c.html#a19ce1cb74c8146d9439806ba4f0b0d19" title="bot_2_bot_send_payload_request" alt="" coords="436,385,663,413"/><area shape="rect" id="node7" href="command_8c.html#a895fa93386026b4934625541b4faf2a0" title="command_write_to" alt="" coords="1132,309,1265,337"/><area shape="rect" id="node13" href="command_8c.html#a419b75ed34551408822d9caee3cd5206" title="command_write" alt="" coords="1395,486,1512,514"/><area shape="rect" id="node19" href="command_8c.html#a710f03c0bca16a1965fc97647f41ee06" title="command_read" alt="" coords="916,435,1033,463"/><area shape="rect" id="node21" href="command_8c.html#a368e349402920fcd2cafc0eeaea97041" title="command_evaluate" alt="" coords="904,1018,1045,1046"/><area shape="rect" id="node97" href="bot-2-sim__pc_8c.html#a9526ad76a1b84a59797e5391c3cadea1" title="receive_until_Frame" alt="" coords="713,461,855,489"/><area shape="rect" id="node9" href="command_8c.html#a428cf92e37fc9bbc0ffc48912c3022ac" title="command_write_to_internal" alt="" coords="1604,435,1788,463"/><area shape="rect" id="node11" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1" title="Beendet den kritischen Abschnitt wieder, der mit os_enterCS began." alt="" coords="1655,385,1737,413"/><area shape="rect" id="node16" href="tcp_8h.html#aae71e1682727310afab282923a80c968" title="flushSendBuffer" alt="" coords="1639,537,1753,565"/><area shape="rect" id="node25" href="mouse_8h.html#a75e23740c984cb8bfcdd97275c01a69a" title="mouse_transmit_picture" alt="" coords="1117,562,1280,590"/><area shape="rect" id="node28" href="behaviour__remotecall_8c.html#a6e58a88e7c3aaf40d4f78c9f5c14653b" title="Listet alle verfuegbaren Remote&#45;Calls auf und verschickt sie als einzelne Kommandos." alt="" coords="1132,714,1265,742"/><area shape="rect" id="node30" href="behaviour__remotecall_8c.html#a2d4d5ffc85a46ea33524f7afc2ff01fb" title="Fuehrt einen RemoteCall aus." alt="" coords="1093,765,1304,793"/><area shape="rect" id="node32" href="behaviour__remotecall_8c.html#abffe83c4d73ee63ce716fa22b67d0d3b" title="Bricht einen laufenden RemoteCall ab." alt="" coords="1120,815,1277,843"/><area shape="rect" id="node36" href="behaviour__remotecall_8c.html#a471b777ece29bb0d0149ef4ac6241945" title="Dieses Verhalten kuemmert sich darum die Verhalten, die von aussen angefragt wurden zu starten und li..." alt="" coords="1364,690,1543,718"/><area shape="rect" id="node40" href="bot-logic_8c.html#a7f318ddb329eb66eb8ac6053e65b415f" title="Deaktiviert alle von diesem Verhalten aufgerufenen Verhalten." alt="" coords="1352,905,1555,933"/><area shape="rect" id="node43" href="map_8c.html#aece4d0dc94340ae683c9837c9895270f" title="Uebertraegt die komplette Karte an den Sim." alt="" coords="1135,967,1263,995"/><area shape="rect" id="node45" href="botcontrol_8c.html#a4a9dbbb1ed8909570afc5eb7afce42b4" title="Faehrt den Bot sauber herunter." alt="" coords="1141,1018,1256,1046"/><area shape="rect" id="node47" href="botfs_8c.html#a51db2e9a9426dc9edb351cc81edd7a70" title="Entfernt eine Datei." alt="" coords="1153,1677,1244,1705"/><area shape="rect" id="node49" href="botfs_8c.html#afe7539a83c840b120ef8996557fd0e9a" title="Schreibt BOTFS_BLOCK_SIZE Bytes aus einem Puffer in eine Datei." alt="" coords="1411,1727,1496,1755"/><area shape="rect" id="node51" href="botfs_8c.html#a1683850a15cc2ed1af27911aa134f83f" title="Legt eine neue Datei an." alt="" coords="1151,1778,1247,1806"/><area shape="rect" id="node54" href="botfs_8c.html#aad0605bba52a09999f158cb2e371a5de" title="Oeffnet eine Datei." alt="" coords="1155,1221,1243,1249"/><area shape="rect" id="node57" href="behaviour__ubasic_8c.html#a027e9064dff19f31ba6e62721032147f" title="uBasic als ct&#45;Bot Verhalten" alt="" coords="1376,1398,1531,1426"/><area shape="rect" id="node59" href="behaviour__abl_8c.html#a1cd24a8c3c8fa71ccdfa91bda3d3be3a" title="Der ABL&#45;Interpreter als Verhalten." alt="" coords="1387,1119,1520,1147"/><area shape="rect" id="node62" href="bot-logic_8c.html#a03b8247dc4df0a3b5fd29d42a5cdc88e" title="Deaktiviert ein Verhalten." alt="" coords="1377,1043,1529,1071"/><area shape="rect" id="node65" href="behaviour__ubasic_8c.html#a7edc7f1641039d97224645cf4282bdb3" title="Laedt ein uBasic&#45;Programm aus deiner BotFS&#45;Datei." alt="" coords="1125,1373,1272,1401"/><area shape="rect" id="node67" href="behaviour__abl_8c.html#a34bf3f33db88903afe41700fb0b1e630" title="Laedt ein ABL&#45;Programm aus einer Datei." alt="" coords="1416,1271,1491,1299"/><area shape="rect" id="node70" href="led_8h.html#a447c990bb9e81e6e533f0ba69f97b1e9" title="LED_on" alt="" coords="1164,1474,1233,1502"/><area shape="rect" id="node72" href="led_8h.html#abd7b28be86683943e4f3cea44ec0de76" title="LED_off" alt="" coords="1164,1525,1233,1553"/><area shape="rect" id="node74" href="botfs_8c.html#a5964332bb5b66e2201b3a6b26935e1af" title="Schreibt die Information ueber benutzte Bloecke in den Datei&#45;Header." alt="" coords="1115,1575,1283,1603"/><area shape="rect" id="node76" href="behaviour__ubasic_8c.html#ae7fbc68b2c593466925c26ad8538f71f" title="Startet das uBasic&#45;Verhalten." alt="" coords="1155,1322,1243,1350"/><area shape="rect" id="node80" href="behaviour__abl_8c.html#a059f6d9c57768eaf43248222031033e3" title="Botenfunktion des ABL&#45;Interpreters." alt="" coords="1165,1271,1232,1299"/><area shape="rect" id="node84" href="behaviour__ubasic_8c.html#a9101526687481802c56146ccc7e5aae8" title="Bricht das aktuelle Basic&#45;Programm ab." alt="" coords="1133,410,1264,438"/><area shape="rect" id="node86" href="behaviour__abl_8c.html#af8800daca69d9c7b1e2a00f443dfd881" title="Bricht ein laufendes ABL&#45;Programm ab." alt="" coords="1155,917,1243,945"/><area shape="rect" id="node93" href="timer_8h.html#a66fc6b2428ce4b7312cae6478361be52" title="system_time_isr" alt="" coords="1140,461,1257,489"/><area shape="rect" id="node95" href="bot-2-bot_8c.html#a095321a598cc4dbfa87bafd2384ed3e0" title="get_bot2bot_cmds" alt="" coords="1132,663,1265,691"/><area shape="rect" id="node38" href="bot-logic_8c.html#ae957e610d7a3b2034084f87277a319de" title="Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg." alt="" coords="1641,486,1751,514"/><area shape="rect" id="node105" href="math__utils_8c.html#a21ef181ca9f0913051fc5e75fb8ae2b7" title="Ermittlung des Quadrat&#45;Abstands zwischen zwei Punkten." alt="" coords="1419,131,1488,159"/><area shape="rect" id="node107" href="map_8c.html#a273efe11a8336c9363ce325fb161e4df" title="Zeichnet eine Linie von Koordinate from nach to in der Farbe color in die Map ein; dient zur Visualis..." alt="" coords="1376,30,1531,58"/><area shape="rect" id="node113" href="pos__store_8c.html#a20ee87405517aba06c9fca997b106131" title="pos_store_dump" alt="" coords="1392,182,1515,210"/><area shape="rect" id="node115" href="pos__store_8c.html#af507859ead3d3e4775cf01c6d2b800fc" title="pos_store_pop" alt="" coords="1397,233,1509,261"/><area shape="rect" id="node117" href="pos__store_8c.html#a5b3b46e55200fee1bfa208eae4a69f69" title="pos_store_top" alt="" coords="1400,283,1507,311"/><area shape="rect" id="node119" href="math__utils_8c.html#a9c14e14c49d54828861673702c30eeed" title="Berechnet die Differenz eines Winkels zur aktuellen Botausrichtung." alt="" coords="1404,81,1503,109"/><area shape="rect" id="node109" href="map_8c.html#a302393a08814c05999d4be4c75467bc3" title="Konvertiert eine Weltkoordinate in eine Kartenkoordinate." alt="" coords="1643,5,1749,33"/><area shape="rect" id="node111" href="map_8c.html#ac2cc78e9d8a4f1aacb8e60a1a9d32440" title="Zeichnet eine Linie in die Map&#45;Anzeige des Sim." alt="" coords="1639,55,1753,83"/></map>
+</div>
+</p>
+
+</div>
+</div>
+<a class="anchor" id="ae39b00373b75911145e456c9da8a1b6b"></a><!-- doxytag: member="behaviour_drive_stack.c::drive_stack_display" ref="ae39b00373b75911145e456c9da8a1b6b" args="(void)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void drive_stack_display </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Display zum Setzen und Anfahren der Stackpunkte </p>
+
+<p>Definiert in Zeile <a class="el" href="behaviour__drive__stack_8c_source.html#l00437">437</a> der Datei <a class="el" href="behaviour__drive__stack_8c_source.html">behaviour_drive_stack.c</a>.</p>
+
+<p>Benutzt <a class="el" href="display_8c_source.html#l00141">display_cursor()</a>, <a class="el" href="display__pc_8c_source.html#l00075">display_printf()</a> und <a class="el" href="display__pc_8c_source.html#l00096">display_puts()</a>.</p>
+
+<p>Wird benutzt von <a class="el" href="gui_8c_source.html#l00334">gui_init()</a>.</p>
+
+<p><div class="dynheader">
+Hier ist ein Graph der zeigt, was diese Funktion aufruft:</div>
+<div class="dyncontent">
+<div class="center"><img src="behaviour__drive__stack_8c_ae39b00373b75911145e456c9da8a1b6b_cgraph.png" border="0" usemap="#behaviour__drive__stack_8c_ae39b00373b75911145e456c9da8a1b6b_cgraph" alt=""/></div>
+<map name="behaviour__drive__stack_8c_ae39b00373b75911145e456c9da8a1b6b_cgraph" id="behaviour__drive__stack_8c_ae39b00373b75911145e456c9da8a1b6b_cgraph">
+<area shape="rect" id="node3" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb" title="display_cursor" alt="" coords="199,5,308,33"/><area shape="rect" id="node5" href="display_8h.html#a3b34665813cc31ce81d141e4f67162d2" title="display_printf" alt="" coords="203,55,304,83"/><area shape="rect" id="node25" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271" title="display_puts" alt="" coords="204,106,303,134"/><area shape="rect" id="node7" href="command_8c.html#a1497433f9f7384b363203b7bfd3bfe28" title="command_write_rawdata" alt="" coords="357,55,531,83"/><area shape="rect" id="node9" href="command_8c.html#ad1ce17d9fe0aaf21a33d52de4e10af0f" title="command_write_rawdata_to" alt="" coords="580,55,769,83"/><area shape="rect" id="node11" href="command_8c.html#a428cf92e37fc9bbc0ffc48912c3022ac" title="command_write_to_internal" alt="" coords="820,55,1004,83"/><area shape="rect" id="node13" href="os__thread_8h.html#a146cd9b383b02d8e5424e2de5bfdf7e1" title="Beendet den kritischen Abschnitt wieder, der mit os_enterCS began." alt="" coords="871,106,953,134"/><area shape="rect" id="node15" href="os__scheduler_8h.html#aaf0ea29568109bcdfb1d527f223accad" title="os_schedule" alt="" coords="1053,106,1152,134"/><area shape="rect" id="node17" href="fifo_8c.html#a7b3f9ad457273c9717bff49113c84250" title="fifo_put_data" alt="" coords="1215,81,1313,109"/><area shape="rect" id="node23" href="os__thread_8h.html#afa82438e9832609bc5ffbddad166e1b7" title="Schaltet &quot;von aussen&quot; auf einen neuen Thread um." alt="" coords="1201,131,1327,159"/><area shape="rect" id="node19" href="builtins_8h.html#a41590bd57be6a89c1b9bcafe523207f2" title="Disables all interrupts by clearing the global interrupt mask." alt="" coords="1383,55,1497,83"/><area shape="rect" id="node21" href="os__thread__pc_8c.html#aa0b166109be9754de9b8b863b8d197c7" title="os_signal_unlock" alt="" coords="1377,106,1503,134"/><area shape="rect" id="node27" href="command_8c.html#aef266284aebb772b9592228ed9019469" title="command_write_data" alt="" coords="600,106,749,134"/></map>
+</div>
+</p>
+
+</div>
+</div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:10 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

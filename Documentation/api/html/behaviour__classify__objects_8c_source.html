@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: behaviour_classify_objects.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_14c9cc1c75a92f359ad94591d62973a1.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">behaviour_classify_objects.c</div>  </div>
+</div>
+<div class="contents">
+<a href="behaviour__classify__objects_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00020"></a>00020 
+<a name="l00034"></a>00034 <span class="preprocessor">#include &quot;<a class="code" href="bot-logic_8h.html" title="High-Level-Routinen fuer die Steuerung des c&#39;t-Bots.">bot-logic/bot-logic.h</a>&quot;</span>
+<a name="l00035"></a>00035 
+<a name="l00036"></a>00036 <span class="preprocessor">#ifdef BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE</span>
+<a name="l00037"></a>00037 <span class="preprocessor"></span><span class="preprocessor">#include &lt;stdlib.h&gt;</span>
+<a name="l00038"></a>00038 <span class="preprocessor">#include &quot;<a class="code" href="log_8h.html" title="Routinen zum Loggen von Informationen.">log.h</a>&quot;</span>
+<a name="l00039"></a>00039 
+<a name="l00040"></a><a class="code" href="behaviour__classify__objects_8c.html#a21e3c77d84e9f103babb7603b6a8c429">00040</a> <span class="preprocessor">#define CO_SEARCH   0</span>
+<a name="l00041"></a><a class="code" href="behaviour__classify__objects_8c.html#a947a396560bd095d11272934358c7eea">00041</a> <span class="preprocessor"></span><span class="preprocessor">#define CO_CATCH    1</span>
+<a name="l00042"></a><a class="code" href="behaviour__classify__objects_8c.html#a7a70d1e73c401b33b5df73626dcd1cbb">00042</a> <span class="preprocessor"></span><span class="preprocessor">#define CO_IDENTIFY 2</span>
+<a name="l00043"></a><a class="code" href="behaviour__classify__objects_8c.html#a798a4e22fe9efcc6e7c7a07560e79d17">00043</a> <span class="preprocessor"></span><span class="preprocessor">#define CO_DRIVE    3</span>
+<a name="l00044"></a><a class="code" href="behaviour__classify__objects_8c.html#a88c2375254a2a98da8a41d3648f7417c">00044</a> <span class="preprocessor"></span><span class="preprocessor">#define CO_UNLOAD   4</span>
+<a name="l00045"></a><a class="code" href="behaviour__classify__objects_8c.html#af14e3080226da25d6311bb6fdb94ead9">00045</a> <span class="preprocessor"></span><span class="preprocessor">#define CO_HOME     5</span>
+<a name="l00046"></a><a class="code" href="behaviour__classify__objects_8c.html#ab3c6091e5ca003357c81288dca748ec5">00046</a> <span class="preprocessor"></span><span class="preprocessor">#define CO_END      99</span>
+<a name="l00047"></a>00047 <span class="preprocessor"></span>
+<a name="l00048"></a>00048 <span class="keyword">static</span> uint8_t state = 0;   
+<a name="l00050"></a>00050 <span class="keyword">static</span> <span class="keyword">struct </span>{
+<a name="l00051"></a><a class="code" href="behaviour__classify__objects_8c.html#ac7ba98d02020939967ee5d16885cdb0e">00051</a>     <span class="keyword">const</span> int16_t <a class="code" href="behaviour__classify__objects_8c.html#ac7ba98d02020939967ee5d16885cdb0e">treshold</a>; 
+<a name="l00052"></a><a class="code" href="behaviour__classify__objects_8c.html#ae1c2d516777e6b42af0d281c9ecc7375">00052</a>     int16_t <a class="code" href="behaviour__drive__chess_8c.html#a6c4b361d72eb3767ba424ac9a6ecf52b">x</a>;              
+<a name="l00053"></a><a class="code" href="behaviour__classify__objects_8c.html#af77b1a54442f2443cf64a4766f916bcd">00053</a>     int16_t <a class="code" href="behaviour__drive__chess_8c.html#a0ed6a908288e0cd87f79c1b5ab56d07c">y</a>;              
+<a name="l00054"></a>00054 } <a class="code" href="structPACKED.html" title="FAT.">PACKED</a> targets[] = {
+<a name="l00055"></a>00055         {0x200, 0, -400}, <span class="comment">// blau</span>
+<a name="l00056"></a>00056         {0x3FF, 200, -400} <span class="comment">// schwarz</span>
+<a name="l00057"></a>00057 };
+<a name="l00058"></a>00058 
+<a name="l00064"></a><a class="code" href="behaviour__classify__objects_8h.html#ae4cb0d087c6e7b70a762848ca3523eb7">00064</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__classify__objects_8c.html#ae4cb0d087c6e7b70a762848ca3523eb7">bot_classify_objects_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00065"></a>00065     <span class="keyword">static</span> uint8_t measure_count;
+<a name="l00066"></a>00066     <span class="keyword">static</span> int16_t object_brightness;
+<a name="l00067"></a>00067 
+<a name="l00068"></a>00068     <span class="keywordflow">switch</span> (state) {
+<a name="l00069"></a>00069     <span class="keywordflow">case</span> <a class="code" href="behaviour__classify__objects_8c.html#a21e3c77d84e9f103babb7603b6a8c429">CO_SEARCH</a>:
+<a name="l00070"></a>00070         <span class="comment">/* Objekte suchen */</span>
+<a name="l00071"></a>00071         state = <a class="code" href="behaviour__classify__objects_8c.html#a947a396560bd095d11272934358c7eea">CO_CATCH</a>;
+<a name="l00072"></a>00072         <span class="comment">/* Such-Algo / Explore-Verhalten */</span>
+<a name="l00073"></a>00073         <span class="comment">//break;</span>
+<a name="l00074"></a>00074 
+<a name="l00075"></a>00075     <span class="keywordflow">case</span> <a class="code" href="behaviour__classify__objects_8c.html#a947a396560bd095d11272934358c7eea">CO_CATCH</a>:
+<a name="l00076"></a>00076         <span class="comment">/* Objekt einfangen */</span>
+<a name="l00077"></a>00077         <a class="code" href="behaviour__catch__pillar_8c.html#abfd23278cfcbad35582c56335c0f936a" title="Fange ein Objekt ein.">bot_catch_pillar_turn</a>(data, 180);
+<a name="l00078"></a>00078         state = <a class="code" href="behaviour__classify__objects_8c.html#a7a70d1e73c401b33b5df73626dcd1cbb">CO_IDENTIFY</a>;
+<a name="l00079"></a>00079         measure_count = 0;
+<a name="l00080"></a>00080         object_brightness = 0;
+<a name="l00081"></a>00081         <span class="keywordflow">break</span>;
+<a name="l00082"></a>00082 
+<a name="l00083"></a>00083     <span class="keywordflow">case</span> <a class="code" href="behaviour__classify__objects_8c.html#a7a70d1e73c401b33b5df73626dcd1cbb">CO_IDENTIFY</a>:
+<a name="l00084"></a>00084         <span class="comment">/* Objekterkennung */</span>
+<a name="l00085"></a>00085         <span class="keywordflow">if</span> (data-&gt;<a class="code" href="struct__Behaviour__t.html#ac854c181b7e05da0fdc40a5c70547054" title="War das aufgerufene Unterverhalten erfolgreich (==1)?">subResult</a> == <a class="code" href="bot-logic_8h.html#a78d9ef1511522ee147d2d386a584a5d7" title="Konstante fuer Behaviour_t-&gt;subResult: Aufgabe nicht abgeschlossen.">BEHAVIOUR_SUBFAIL</a>) {
+<a name="l00086"></a>00086             state = <a class="code" href="behaviour__classify__objects_8c.html#ab3c6091e5ca003357c81288dca748ec5">CO_END</a>;
+<a name="l00087"></a>00087             <a class="code" href="behaviour__turn_8c.html#af8e1b5de92fa7f8f465615dff50b81fb" title="Dreht den Bot im mathematischen Drehsinn.">bot_turn</a>(data, -180);
+<a name="l00088"></a>00088             <span class="keywordflow">break</span>;
+<a name="l00089"></a>00089         }
+<a name="l00090"></a>00090         <span class="keywordflow">if</span> (measure_count &lt; 10) {
+<a name="l00091"></a>00091             <span class="comment">/* Durchschnitt aus 10 Messungen */</span>
+<a name="l00092"></a>00092             object_brightness += <a class="code" href="sensor_8c.html#a56a020f1eb08fbff3d7fa669335921ed">sensLineL</a> + <a class="code" href="sensor_8c.html#ae286bb8f86cced317801e378247dcb18">sensLineR</a>;
+<a name="l00093"></a>00093             measure_count++;
+<a name="l00094"></a>00094         } <span class="keywordflow">else</span> {
+<a name="l00095"></a>00095             <span class="comment">/* Identifizierung */</span>
+<a name="l00096"></a>00096             object_brightness /= 20;
+<a name="l00097"></a>00097             state = <a class="code" href="behaviour__classify__objects_8c.html#a88c2375254a2a98da8a41d3648f7417c">CO_UNLOAD</a>;
+<a name="l00098"></a>00098             uint8_t <a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>;
+<a name="l00099"></a>00099             <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;object_brightness=0x%x&quot;</span>, object_brightness);
+<a name="l00100"></a>00100             <span class="comment">/* Klasse suchen */</span>
+<a name="l00101"></a>00101             <span class="keywordflow">for</span> (i=0; i&lt;<span class="keyword">sizeof</span>(targets)/<span class="keyword">sizeof</span>(int16_t)/3; i++) {
+<a name="l00102"></a>00102                 <span class="keywordflow">if</span> (object_brightness &lt; targets[i].<a class="code" href="behaviour__classify__objects_8c.html#ac7ba98d02020939967ee5d16885cdb0e">treshold</a>) {
+<a name="l00103"></a>00103                     <a class="code" href="command_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d" title="Log-Dummy.">LOG_DEBUG</a>(<span class="stringliteral">&quot;object_class=%u&quot;</span>, i);
+<a name="l00104"></a>00104                     targets[<a class="code" href="behaviour__drive__chess_8c.html#a9aa40e637eff435d9abc0f4dc467b6bb">i</a>].<a class="code" href="structPACKED.html#a4c375797112f9520d770e1df55a45c41" title="Y-Anteil der Position.">y</a> += 100;
+<a name="l00105"></a>00105                     <a class="code" href="behaviour__goto__pos_8c.html#a88ddbedd618e291f1181ca34433fcd93" title="Botenfunktion des Positionierungsverhaltens.">bot_goto_pos</a>(data, targets[i].<a class="code" href="behaviour__drive__chess_8c.html#a6c4b361d72eb3767ba424ac9a6ecf52b">x</a>, targets[i].<a class="code" href="behaviour__drive__chess_8c.html#a0ed6a908288e0cd87f79c1b5ab56d07c">y</a> - 100, 270);
+<a name="l00106"></a>00106                     <span class="keywordflow">break</span>;
+<a name="l00107"></a>00107                 }
+<a name="l00108"></a>00108             }
+<a name="l00109"></a>00109         }
+<a name="l00110"></a>00110         <span class="keywordflow">break</span>;
+<a name="l00111"></a>00111 
+<a name="l00112"></a>00112     <span class="keywordflow">case</span> <a class="code" href="behaviour__classify__objects_8c.html#a88c2375254a2a98da8a41d3648f7417c">CO_UNLOAD</a>:
+<a name="l00113"></a>00113         <span class="comment">/* Objekt ausladen */</span>
+<a name="l00114"></a>00114         <a class="code" href="behaviour__catch__pillar_8c.html#a444e8ac4ffa6c7cf3e36d72b5f95b640" title="Entlaedt das Objekt wieder.">bot_unload_pillar</a>(data);
+<a name="l00115"></a>00115         state = <a class="code" href="behaviour__classify__objects_8c.html#af14e3080226da25d6311bb6fdb94ead9">CO_HOME</a>;
+<a name="l00116"></a>00116         <span class="keywordflow">break</span>;
+<a name="l00117"></a>00117 
+<a name="l00118"></a>00118     <span class="keywordflow">case</span> <a class="code" href="behaviour__classify__objects_8c.html#af14e3080226da25d6311bb6fdb94ead9">CO_HOME</a>:
+<a name="l00119"></a>00119         <span class="comment">/* zurueck zum Startpunkt */</span>
+<a name="l00120"></a>00120         <a class="code" href="behaviour__goto__pos_8c.html#a88ddbedd618e291f1181ca34433fcd93" title="Botenfunktion des Positionierungsverhaltens.">bot_goto_pos</a>(data, 0, 0, 0);
+<a name="l00121"></a>00121         state = <a class="code" href="behaviour__classify__objects_8c.html#a21e3c77d84e9f103babb7603b6a8c429">CO_SEARCH</a>;
+<a name="l00122"></a>00122         <span class="keywordflow">break</span>;
+<a name="l00123"></a>00123 
+<a name="l00124"></a>00124     <span class="keywordflow">default</span>:
+<a name="l00125"></a>00125         <a class="code" href="bot-logic_8c.html#ae957e610d7a3b2034084f87277a319de" title="Kehrt zum aufrufenden Verhalten zurueck und setzt den Status auf Erfolg oder Misserfolg.">exit_behaviour</a>(data, <a class="code" href="bot-logic_8h.html#a78d9ef1511522ee147d2d386a584a5d7" title="Konstante fuer Behaviour_t-&gt;subResult: Aufgabe nicht abgeschlossen.">BEHAVIOUR_SUBFAIL</a>);
+<a name="l00126"></a>00126         <span class="keywordflow">return</span>;
+<a name="l00127"></a>00127     }
+<a name="l00128"></a>00128 }
+<a name="l00129"></a>00129 
+<a name="l00135"></a><a class="code" href="behaviour__classify__objects_8h.html#aa2b0bc4d9847ce4b7bed5ec3c352a28a">00135</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__classify__objects_8c.html#aa2b0bc4d9847ce4b7bed5ec3c352a28a">bot_classify_objects</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller) {
+<a name="l00136"></a>00136     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__classify__objects_8c.html#ae4cb0d087c6e7b70a762848ca3523eb7">bot_classify_objects_behaviour</a>, <a class="code" href="bot-logic_8h.html#ac3101d6686d35c952f2a5c8177b3f262" title="Konstante, wenn Verhalten beim Aufruf alte Wuensche ueberschreiben sollen.">BEHAVIOUR_OVERRIDE</a>);
+<a name="l00137"></a>00137     state = <a class="code" href="behaviour__classify__objects_8c.html#a21e3c77d84e9f103babb7603b6a8c429">CO_SEARCH</a>;
+<a name="l00138"></a>00138 }
+<a name="l00139"></a>00139 
+<a name="l00140"></a>00140 <span class="preprocessor">#endif // BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:08 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

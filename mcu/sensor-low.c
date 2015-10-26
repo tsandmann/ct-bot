@@ -114,7 +114,7 @@ static botfs_file_descr_t speedlog_file; /**< BotFS-Datei fuer das Speed-Log */
  * Initialisiere alle Sensoren
  */
 void bot_sens_init(void) {
-#if defined BPS_AVAILABLE && BPS_PIN == 4
+#ifdef BPS_AVAILABLE
 	adc_init(0xff & ~_BV(BPS_PIN)); // ADC-Ports (ausser BPS-Pin) aktivieren
 #else
 	adc_init(0xff); // Alle ADC-Ports aktivieren
@@ -207,7 +207,7 @@ void bot_sens(void) {
 	adc_read_int(SENS_M_L, &sensLineL);
 	adc_read_int(SENS_M_R, &sensLineR);
 
-#if ! defined BPS_AVAILABLE || BPS_PIN != 4
+#ifndef BPS_AVAILABLE
 	adc_read_int(SENS_LDR_L, &sensLDRL);
 #endif
 	adc_read_int(SENS_LDR_R, &sensLDRR);

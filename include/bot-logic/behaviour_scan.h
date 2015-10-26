@@ -48,7 +48,7 @@ typedef union {
 		unsigned distance:1;	/*!< Distanzsensor-Update an/aus */
 		unsigned border:1;		/*!< Abgrundsensor-Update an/aus */
 		unsigned map_mode:1;	/*!< Kartograhpie-Modus an/aus (Bot stoppt, falls Cache voll) */
-	} PACKED_FORCE data;
+	} PACKED data;
 	uint8_t raw;			/*!< Alle Modi als Raw-Daten */
 } scan_mode_t;
 

@@ -1,0 +1,291 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<title>c&#39;t-Bot: behaviour_ubasic.c Quellcode</title>
+
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+
+
+
+</head>
+<body>
+<div id="top"><!-- do not remove this div! -->
+
+
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  
+  
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">c&#39;t-Bot
+   &#160;<span id="projectnumber">1898</span>
+   </div>
+   
+  </td>
+  
+  
+  
+ </tr>
+ </tbody>
+</table>
+</div>
+
+<!-- Erzeugt von Doxygen 1.7.5.1 -->
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Hauptseite</span></a></li>
+      <li><a href="pages.html"><span>Zusätzliche&#160;Informationen</span></a></li>
+      <li><a href="annotated.html"><span>Datenstrukturen</span></a></li>
+      <li class="current"><a href="files.html"><span>Dateien</span></a></li>
+      <li><a href="dirs.html"><span>Verzeichnisse</span></a></li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Auflistung&#160;der&#160;Dateien</span></a></li>
+      <li><a href="globals.html"><span>Datei-Elemente</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="dir_14c9cc1c75a92f359ad94591d62973a1.html">bot-logic</a>      </li>
+    </ul>
+  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">behaviour_ubasic.c</div>  </div>
+</div>
+<div class="contents">
+<a href="behaviour__ubasic_8c.html">gehe zur Dokumentation dieser Datei</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
+<a name="l00002"></a>00002 <span class="comment"> * c&#39;t-Bot</span>
+<a name="l00003"></a>00003 <span class="comment"> *</span>
+<a name="l00004"></a>00004 <span class="comment"> * This program is free software; you can redistribute it</span>
+<a name="l00005"></a>00005 <span class="comment"> * and/or modify it under the terms of the GNU General</span>
+<a name="l00006"></a>00006 <span class="comment"> * Public License as published by the Free Software</span>
+<a name="l00007"></a>00007 <span class="comment"> * Foundation; either version 2 of the License, or (at your</span>
+<a name="l00008"></a>00008 <span class="comment"> * option) any later version.</span>
+<a name="l00009"></a>00009 <span class="comment"> * This program is distributed in the hope that it will be</span>
+<a name="l00010"></a>00010 <span class="comment"> * useful, but WITHOUT ANY WARRANTY; without even the implied</span>
+<a name="l00011"></a>00011 <span class="comment"> * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR</span>
+<a name="l00012"></a>00012 <span class="comment"> * PURPOSE. See the GNU General Public License for more details.</span>
+<a name="l00013"></a>00013 <span class="comment"> * You should have received a copy of the GNU General Public</span>
+<a name="l00014"></a>00014 <span class="comment"> * License along with this program; if not, write to the Free</span>
+<a name="l00015"></a>00015 <span class="comment"> * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,</span>
+<a name="l00016"></a>00016 <span class="comment"> * MA 02111-1307, USA.</span>
+<a name="l00017"></a>00017 <span class="comment"> *</span>
+<a name="l00018"></a>00018 <span class="comment"> */</span>
+<a name="l00019"></a>00019 
+<a name="l00027"></a>00027 <span class="preprocessor">#include &quot;<a class="code" href="bot-logic_8h.html" title="High-Level-Routinen fuer die Steuerung des c&#39;t-Bots.">bot-logic.h</a>&quot;</span>
+<a name="l00028"></a>00028 <span class="preprocessor">#ifdef BEHAVIOUR_UBASIC_AVAILABLE</span>
+<a name="l00029"></a>00029 <span class="preprocessor"></span>
+<a name="l00030"></a>00030 <span class="preprocessor">#include &quot;<a class="code" href="available__screens_8h.html" title="Die Schalter fuer sichtbare Screens finden sich hier.">ui/available_screens.h</a>&quot;</span>
+<a name="l00031"></a>00031 <span class="preprocessor">#include &quot;<a class="code" href="ubasic__config_8h.html">ubasic_config.h</a>&quot;</span>
+<a name="l00032"></a>00032 <span class="preprocessor">#include &quot;<a class="code" href="tokenizer__access_8h.html">tokenizer_access.h</a>&quot;</span>
+<a name="l00033"></a>00033 <span class="preprocessor">#include &quot;<a class="code" href="ubasic_8h.html">ubasic.h</a>&quot;</span>
+<a name="l00034"></a>00034 <span class="preprocessor">#include &quot;<a class="code" href="ubasic__avr_8h.html">ubasic_avr.h</a>&quot;</span>
+<a name="l00035"></a>00035 <span class="preprocessor">#include &quot;<a class="code" href="ubasic__call_8h.html">ubasic_call.h</a>&quot;</span>
+<a name="l00036"></a>00036 <span class="preprocessor">#include &quot;<a class="code" href="tokenizer_8h.html">tokenizer.h</a>&quot;</span>
+<a name="l00037"></a>00037 <span class="preprocessor">#include &quot;<a class="code" href="ubasic__ext__proc_8h.html">ubasic_ext_proc.h</a>&quot;</span>
+<a name="l00038"></a>00038 <span class="preprocessor">#include &quot;<a class="code" href="botfs_8h.html" title="Dateisystem BotFS.">botfs.h</a>&quot;</span>
+<a name="l00039"></a>00039 <span class="preprocessor">#include &quot;<a class="code" href="init_8h.html" title="Initialisierungsroutinen.">init.h</a>&quot;</span>
+<a name="l00040"></a>00040 <span class="preprocessor">#include &quot;<a class="code" href="log_8h.html" title="Routinen zum Loggen von Informationen.">log.h</a>&quot;</span>
+<a name="l00041"></a>00041 <span class="preprocessor">#include &quot;<a class="code" href="rc5-codes_8h.html" title="RC5-Fernbedienungscodes.">rc5-codes.h</a>&quot;</span>
+<a name="l00042"></a>00042 <span class="preprocessor">#include &quot;<a class="code" href="display_8h.html" title="Routinen zur Displaysteuerung.">display.h</a>&quot;</span>
+<a name="l00043"></a>00043 
+<a name="l00044"></a>00044 <span class="preprocessor">#include &lt;stdio.h&gt;</span>
+<a name="l00045"></a>00045 <span class="preprocessor">#include &lt;string.h&gt;</span>
+<a name="l00046"></a>00046 
+<a name="l00047"></a>00047 <span class="comment">//#define DEBUG_UBASIC_BEHAV /**&lt; Debug-Schalter fuer das uBasic-Verhalten */</span>
+<a name="l00048"></a>00048 
+<a name="l00049"></a><a class="code" href="behaviour__ubasic_8c.html#af5e0f640de74fb1f64d9d8d0b10dc006">00049</a> <span class="preprocessor">#define PROG_FILE_NAME  &quot;/basic/basX.txt&quot; </span>
+<a name="l00050"></a><a class="code" href="behaviour__ubasic_8c.html#a8e50796e96bda57594631c23e8995215">00050</a> <span class="preprocessor">#define PROG_FILE_EXT   &quot;.txt&quot; </span>
+<a name="l00052"></a>00052 <span class="preprocessor">#ifndef LOG_AVAILABLE</span>
+<a name="l00053"></a>00053 <span class="preprocessor"></span><span class="preprocessor">#undef DEBUG_UBASIC_BEHAV</span>
+<a name="l00054"></a>00054 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00055"></a>00055 <span class="preprocessor"></span>
+<a name="l00056"></a>00056 <span class="preprocessor">#ifndef DEBUG_UBASIC_BEHAV</span>
+<a name="l00057"></a>00057 <span class="preprocessor"></span><span class="preprocessor">#undef LOG_DEBUG</span>
+<a name="l00058"></a><a class="code" href="behaviour__ubasic_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">00058</a> <span class="preprocessor"></span><span class="preprocessor">#define LOG_DEBUG(...)</span>
+<a name="l00059"></a>00059 <span class="preprocessor"></span><span class="preprocessor">#endif // DEBUG_UBASIC_BEHAV</span>
+<a name="l00060"></a>00060 <span class="preprocessor"></span>
+<a name="l00061"></a><a class="code" href="behaviour__ubasic_8h.html#a0a321a94c10cb85a2a8cebc49d5b9c70">00061</a> botfs_file_descr_t <a class="code" href="behaviour__ubasic_8c.html#a0a321a94c10cb85a2a8cebc49d5b9c70" title="Basic-Programmdatei.">ubasic_prog_file</a> = <a class="code" href="botfs__types_8h.html#ab44d0bc02e018408e56cda322710b5ba" title="Initialisiert einen botfs_file_descr_t Typ.">BOTFS_FD_INITIALIZER</a>; 
+<a name="l00063"></a>00063 <span class="comment">// wenn Speedvariablen direkt angesprochen werden, dann muessen sie im Verhalten selbst nach jeder Zeile direkt in die echten</span>
+<a name="l00064"></a>00064 <span class="comment">// speedWish-vars geschrieben werden, damit eine fluessige Bewegung erfolgt, denn sonst sind diese in den anderen Steps 0</span>
+<a name="l00065"></a>00065 <span class="keyword">static</span> int16_t speedWishLeftBas = 0; 
+<a name="l00066"></a>00066 <span class="keyword">static</span> int16_t speedWishRightBas = 0; 
+<a name="l00067"></a>00067 <span class="keyword">static</span> uint32_t wait_until = 0; 
+<a name="l00068"></a><a class="code" href="behaviour__ubasic_8h.html#a9766017d25959b78c91ed980a6aedf80">00068</a> <a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * <a class="code" href="behaviour__ubasic_8c.html#a9766017d25959b78c91ed980a6aedf80" title="Verhaltensdatensatz des ubasis-Verhaltens.">ubasic_behaviour_data</a>; 
+<a name="l00069"></a><a class="code" href="behaviour__ubasic_8h.html#aaf32207cc1bc33f8cc05bbed419bed81">00069</a> <span class="keywordtype">char</span> <a class="code" href="behaviour__ubasic_8c.html#aaf32207cc1bc33f8cc05bbed419bed81" title="aktuelles Zeichen des Basic-Programms">ubasic_content</a> = 0; 
+<a name="l00070"></a><a class="code" href="behaviour__ubasic_8h.html#a03829509db74275da714b7aa65f70ad0">00070</a> uint16_t <a class="code" href="behaviour__ubasic_8c.html#a03829509db74275da714b7aa65f70ad0" title="aktuelle Position im Basic-Programm">ubasic_ptr</a> = 0; 
+<a name="l00071"></a><a class="code" href="behaviour__ubasic_8c.html#a44e5ac69cd610a13a2cb3fb41b59bc72">00071</a> <span class="keywordtype">char</span> <a class="code" href="behaviour__ubasic_8c.html#a44e5ac69cd610a13a2cb3fb41b59bc72" title="aktueller Programmname">current_proc</a>[<a class="code" href="ubasic__config_8h.html#a5e885417e9a6806fe9e6934346514f6e">MAX_PROG_NAME_LEN</a>]; 
+<a name="l00072"></a>00072 <span class="keyword">static</span> uint8_t result_behav; 
+<a name="l00079"></a><a class="code" href="behaviour__ubasic_8h.html#a7edc7f1641039d97224645cf4282bdb3">00079</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__ubasic_8c.html#a7edc7f1641039d97224645cf4282bdb3" title="Laedt ein uBasic-Programm aus deiner BotFS-Datei.">bot_ubasic_load_file</a>(<span class="keywordtype">char</span> * filename, botfs_file_descr_t * file) {
+<a name="l00080"></a>00080     (void) filename;
+<a name="l00081"></a>00081     <a class="code" href="behaviour__ubasic_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;f=\&quot;%s\&quot;&quot;</span>, filename);
+<a name="l00082"></a>00082     <a class="code" href="behaviour__ubasic_8c.html#a0a321a94c10cb85a2a8cebc49d5b9c70" title="Basic-Programmdatei.">ubasic_prog_file</a> = *file;
+<a name="l00083"></a>00083     botfs_rewind(file);
+<a name="l00084"></a>00084     <a class="code" href="behaviour__ubasic_8c.html#a03829509db74275da714b7aa65f70ad0" title="aktuelle Position im Basic-Programm">ubasic_ptr</a> = 0xffff;
+<a name="l00085"></a>00085 <span class="preprocessor">#if UBASIC_EXT_PROC</span>
+<a name="l00086"></a>00086 <span class="preprocessor"></span>    strncpy(<a class="code" href="behaviour__ubasic_8c.html#a44e5ac69cd610a13a2cb3fb41b59bc72" title="aktueller Programmname">current_proc</a>, filename, <a class="code" href="ubasic__config_8h.html#a5e885417e9a6806fe9e6934346514f6e">MAX_PROG_NAME_LEN</a>);
+<a name="l00087"></a>00087 <span class="preprocessor">#endif</span>
+<a name="l00088"></a>00088 <span class="preprocessor"></span>}
+<a name="l00089"></a>00089 
+<a name="l00095"></a>00095 <span class="keyword">static</span> int8_t read_ubasic_src(<span class="keyword">const</span> <span class="keywordtype">char</span> keynum) {
+<a name="l00096"></a>00096     <span class="keyword">static</span> <span class="keywordtype">char</span> fname[] = <a class="code" href="behaviour__ubasic_8c.html#af5e0f640de74fb1f64d9d8d0b10dc006" title="Name der Programmdateien, X wird durch 1 bis 9 ersetzt.">PROG_FILE_NAME</a>;
+<a name="l00097"></a>00097     <span class="keyword">const</span> <span class="keywordtype">size_t</span> num = strlen(<a class="code" href="behaviour__ubasic_8c.html#af5e0f640de74fb1f64d9d8d0b10dc006" title="Name der Programmdateien, X wird durch 1 bis 9 ersetzt.">PROG_FILE_NAME</a>) - strlen(<a class="code" href="behaviour__ubasic_8c.html#a8e50796e96bda57594631c23e8995215" title="Dateinamenerweiterung (PROG_FILE_NAME muss hierauf enden)">PROG_FILE_EXT</a>) - 1;
+<a name="l00098"></a>00098     fname[num] = keynum;
+<a name="l00099"></a>00099     <a class="code" href="behaviour__ubasic_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;zu ladende Datei: \&quot;%s\&quot;&quot;</span>, fname);
+<a name="l00100"></a>00100 
+<a name="l00101"></a>00101     <a class="code" href="behaviour__ubasic_8c.html#a0a321a94c10cb85a2a8cebc49d5b9c70" title="Basic-Programmdatei.">ubasic_prog_file</a>.start = 0;
+<a name="l00102"></a>00102     <span class="keywordflow">if</span> (<a class="code" href="botfs_8c.html#aad0605bba52a09999f158cb2e371a5de" title="Oeffnet eine Datei.">botfs_open</a>(fname, &amp;<a class="code" href="behaviour__ubasic_8c.html#a0a321a94c10cb85a2a8cebc49d5b9c70" title="Basic-Programmdatei.">ubasic_prog_file</a>, <a class="code" href="botfs__config_8h.html#aafbba18ae3af70abfb9fc89eb44128e9" title="nur lesen">BOTFS_MODE_r</a>, <a class="code" href="init_8h.html#a4fe62e026b012a16a6980db83a55c8bf" title="Zugriff auf einzelne MMC-Puffer.">GET_MMC_BUFFER</a>(ubasic_buffer)) != 0) {
+<a name="l00103"></a>00103         <a class="code" href="log_8h.html#af3fb0ee7384d6813437103a2c2646fb7">LOG_ERROR</a>(<span class="stringliteral">&quot;Konnte Basic-Programm nicht laden:&quot;</span>);
+<a name="l00104"></a>00104         <a class="code" href="log_8h.html#af3fb0ee7384d6813437103a2c2646fb7">LOG_ERROR</a>(<span class="stringliteral">&quot; Datei \&quot;%s\&quot; nicht vorhanden&quot;</span>, fname);
+<a name="l00105"></a>00105         <span class="keywordflow">return</span> -1;
+<a name="l00106"></a>00106     }
+<a name="l00107"></a>00107 
+<a name="l00108"></a>00108     <a class="code" href="behaviour__ubasic_8c.html#a7edc7f1641039d97224645cf4282bdb3" title="Laedt ein uBasic-Programm aus deiner BotFS-Datei.">bot_ubasic_load_file</a>(fname, &amp;<a class="code" href="behaviour__ubasic_8c.html#a0a321a94c10cb85a2a8cebc49d5b9c70" title="Basic-Programmdatei.">ubasic_prog_file</a>);
+<a name="l00109"></a>00109     <span class="keywordflow">return</span> 0;
+<a name="l00110"></a>00110 }
+<a name="l00111"></a>00111 
+<a name="l00117"></a><a class="code" href="behaviour__ubasic_8h.html#a69b89a3fea91b09215c043edcca231c2">00117</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__ubasic_8c.html#a69b89a3fea91b09215c043edcca231c2" title="Hilfsroutine, um in Basic innerhalb eines Steps beide Variablen mit der Bot-Geschwindigkeit belegen z...">ubasic_set_speed</a>(int16_t speedLeft, int16_t speedRight) {
+<a name="l00118"></a>00118     speedWishLeftBas = speedLeft;
+<a name="l00119"></a>00119     speedWishRightBas = speedRight;
+<a name="l00120"></a>00120 }
+<a name="l00121"></a>00121 
+<a name="l00127"></a><a class="code" href="behaviour__ubasic_8h.html#a40c7476c1c5fd3a789bfa4f6fde4ff1a">00127</a> uint8_t <a class="code" href="behaviour__ubasic_8c.html#a40c7476c1c5fd3a789bfa4f6fde4ff1a" title="Rueckgabe ob das zuletzt aufgerufene Verhalten noch aktiv ist oder nicht; festgestellt anhand der Ver...">ubasic_behaviour_is_active</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * behaviour) {
+<a name="l00128"></a>00128     <span class="keywordflow">return</span> (uint8_t) (behaviour-&gt;<a class="code" href="struct__Behaviour__t.html#ac854c181b7e05da0fdc40a5c70547054" title="War das aufgerufene Unterverhalten erfolgreich (==1)?">subResult</a> == <a class="code" href="bot-logic_8h.html#a8a203f9b141bbfb0d5f5a2ab6502ff16" title="Konstange fuer Behaviour_t-&gt;subResult: Aufgabe wird im Hintergrund bearbeitet.">BEHAVIOUR_SUBBACKGR</a>);
+<a name="l00129"></a>00129 }
+<a name="l00130"></a>00130 
+<a name="l00136"></a><a class="code" href="behaviour__ubasic_8h.html#a902503eedbb89b518aa79663c1c11a4b">00136</a> uint8_t <a class="code" href="behaviour__ubasic_8c.html#a902503eedbb89b518aa79663c1c11a4b" title="Rueckgabe ob das zuletzt aufgerufene Verhalten erfolgreich war oder nicht; in Remotecall wird dazu vi...">behaviour_result</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * behaviour) {
+<a name="l00137"></a>00137     (void) behaviour;
+<a name="l00138"></a>00138     <span class="keywordflow">return</span> result_behav;
+<a name="l00139"></a>00139 
+<a name="l00140"></a>00140 }
+<a name="l00141"></a>00141 
+<a name="l00142"></a><a class="code" href="behaviour__ubasic_8h.html#a2848cba9266f6cab9859fad47aecfb83">00142</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__ubasic_8c.html#a2848cba9266f6cab9859fad47aecfb83">ubasic_push_value</a>(uint16_t value) {
+<a name="l00143"></a>00143     result_behav = (uint8_t) value;
+<a name="l00144"></a>00144     <a class="code" href="behaviour__ubasic_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Var behav_res gesetzt auf: %u&quot;</span>, result_behav);
+<a name="l00145"></a>00145 
+<a name="l00146"></a>00146 }
+<a name="l00147"></a>00147 
+<a name="l00152"></a><a class="code" href="ubasic__avr_8h.html#a4bb8139a7231b6e02e1a112a0e51dfe3">00152</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__ubasic_8c.html#a4bb8139a7231b6e02e1a112a0e51dfe3" title="Implementierung des Basic-Wait-Statements fuer ct-Bot.">wait_statement</a>(<span class="keywordtype">void</span>) {
+<a name="l00153"></a>00153     <a class="code" href="ubasic_8c.html#aa2d72051274fdc2aafa92cf26f8f8189">accept</a>(<a class="code" href="tokenizer__data_8h.html#a16af7b253440dadd46a80a4b9fddba4da7eb3c88de563a0e48b6d7c83005f6ef1">TOKENIZER_WAIT</a>);
+<a name="l00154"></a>00154 
+<a name="l00155"></a>00155     <span class="keyword">const</span> uint32_t <a class="code" href="delay_8h.html#adb7db4d9ef946dcfb58bcfc667ee674a" title="Verzoegert um ms Millisekunden.">delay</a> = (uint32_t) <a class="code" href="ubasic_8c.html#a35b4f5a0cea41efdbe11ddedf6997984">expr</a>();
+<a name="l00156"></a>00156     <span class="comment">/* Wartezeit speichern, wird in bot_ubasic_behaviour() ausgewertet */</span>
+<a name="l00157"></a>00157     wait_until = <a class="code" href="timer_8h.html#ae992a808717a64e585cbc308a1d5950d">TIMER_GET_TICKCOUNT_32</a> + <a class="code" href="timer_8h.html#a73adf9c10352865ff95b5f46e642c560">MS_TO_TICKS</a>(delay);
+<a name="l00158"></a>00158 }
+<a name="l00159"></a>00159 
+<a name="l00164"></a><a class="code" href="behaviour__ubasic_8h.html#a027e9064dff19f31ba6e62721032147f">00164</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__ubasic_8c.html#a027e9064dff19f31ba6e62721032147f" title="uBasic als ct-Bot Verhalten">bot_ubasic_behaviour</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * data) {
+<a name="l00165"></a>00165     <span class="comment">/* keine neue Zeile ausfuehren, falls nach letztem WAIT noch gewartet werden soll */</span>
+<a name="l00166"></a>00166     <span class="keywordflow">if</span> (wait_until &lt;= <a class="code" href="timer_8h.html#ae992a808717a64e585cbc308a1d5950d">TIMER_GET_TICKCOUNT_32</a>) {
+<a name="l00167"></a>00167         <a class="code" href="behaviour__ubasic_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;neue Zeile von uBasic verarbeiten&quot;</span>);
+<a name="l00168"></a>00168         <a class="code" href="ubasic_8c.html#acb3f04a1e0f6cbd21eb0350d8b06ec45">ubasic_run</a>();
+<a name="l00169"></a>00169         <span class="keywordflow">if</span> (<a class="code" href="ubasic_8c.html#a1bcc0f8a7044110cfccad3faf818d5af">ubasic_finished</a>()) {
+<a name="l00170"></a>00170             <a class="code" href="behaviour__ubasic_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;-&gt;-&gt; Endeanforderung &lt;-&lt;-&quot;</span>);
+<a name="l00171"></a>00171             return_from_behaviour(data);
+<a name="l00172"></a>00172             <span class="keywordflow">return</span>;
+<a name="l00173"></a>00173         }
+<a name="l00174"></a>00174     } <span class="keywordflow">else</span> {
+<a name="l00175"></a>00175         <a class="code" href="behaviour__ubasic_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;WAITing&quot;</span>);
+<a name="l00176"></a>00176     }
+<a name="l00177"></a>00177 
+<a name="l00178"></a>00178     <span class="comment">/* Speedvariable setzen */</span>
+<a name="l00179"></a>00179     <a class="code" href="bot-logic_8c.html#a20677c68ecbd2dc4f0de8ff553a01a3d" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links.">speedWishLeft</a> = speedWishLeftBas;
+<a name="l00180"></a>00180     <a class="code" href="bot-logic_8c.html#a65f056079c3d7ed3bc3eb90d46e92813" title="Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts.">speedWishRight</a> = speedWishRightBas;
+<a name="l00181"></a>00181 }
+<a name="l00182"></a>00182 
+<a name="l00187"></a><a class="code" href="behaviour__ubasic_8h.html#ae7fbc68b2c593466925c26ad8538f71f">00187</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__ubasic_8c.html#ae7fbc68b2c593466925c26ad8538f71f" title="Startet das uBasic-Verhalten.">bot_ubasic</a>(<a class="code" href="struct__Behaviour__t.html" title="Verwaltungsstruktur fuer die Verhaltensroutinen.">Behaviour_t</a> * caller) {
+<a name="l00188"></a>00188     <span class="keywordflow">if</span> (<a class="code" href="behaviour__ubasic_8c.html#a0a321a94c10cb85a2a8cebc49d5b9c70" title="Basic-Programmdatei.">ubasic_prog_file</a>.start == 0) {
+<a name="l00189"></a>00189         <a class="code" href="log_8h.html#af3fb0ee7384d6813437103a2c2646fb7">LOG_ERROR</a>(<span class="stringliteral">&quot;Kein Programm geladen&quot;</span>);
+<a name="l00190"></a>00190         <span class="keywordflow">return</span>;
+<a name="l00191"></a>00191     }
+<a name="l00192"></a>00192     <a class="code" href="bot-logic_8c.html#a123152ecfcd89545c2603cb3f2e873c9" title="Ruft ein anderes Verhalten auf und merkt sich den Ruecksprung return_from_behaviour() kehrt dann spae...">switch_to_behaviour</a>(caller, <a class="code" href="behaviour__ubasic_8c.html#a027e9064dff19f31ba6e62721032147f" title="uBasic als ct-Bot Verhalten">bot_ubasic_behaviour</a>, <a class="code" href="bot-logic_8h.html#ac3101d6686d35c952f2a5c8177b3f262" title="Konstante, wenn Verhalten beim Aufruf alte Wuensche ueberschreiben sollen.">BEHAVIOUR_OVERRIDE</a>);
+<a name="l00193"></a>00193     ubasic_behaviour_data = <a class="code" href="bot-logic_8c.html#a11e7a95fd56f9703bd2bd9c61300df6c" title="Liefert das Verhalten zurueck, welches durch function implementiert ist.">get_behaviour</a>(<a class="code" href="behaviour__ubasic_8c.html#a027e9064dff19f31ba6e62721032147f" title="uBasic als ct-Bot Verhalten">bot_ubasic_behaviour</a>);
+<a name="l00194"></a>00194     <a class="code" href="behaviour__ubasic_8c.html#a69b89a3fea91b09215c043edcca231c2" title="Hilfsroutine, um in Basic innerhalb eines Steps beide Variablen mit der Bot-Geschwindigkeit belegen z...">ubasic_set_speed</a>(<a class="code" href="motor_8h.html#a4ed8301d63668c0ded1a0d36c6b7484f" title="Wert ausserhalb von -BOT_SPEED_MAX und BOT_SPEED_MAX wird verwendet um einen Eintrag zu ignorieren...">BOT_SPEED_IGNORE</a>, <a class="code" href="motor_8h.html#a4ed8301d63668c0ded1a0d36c6b7484f" title="Wert ausserhalb von -BOT_SPEED_MAX und BOT_SPEED_MAX wird verwendet um einen Eintrag zu ignorieren...">BOT_SPEED_IGNORE</a>); <span class="comment">// alte Speed-Wuensche neutralisieren</span>
+<a name="l00195"></a>00195 
+<a name="l00196"></a>00196     <a class="code" href="ubasic_8c.html#a82d121290bc9212642dc96fea71b5dd0">ubasic_init</a>(0);
+<a name="l00197"></a>00197 }
+<a name="l00198"></a>00198 
+<a name="l00202"></a><a class="code" href="behaviour__ubasic_8h.html#a9101526687481802c56146ccc7e5aae8">00202</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__ubasic_8c.html#a9101526687481802c56146ccc7e5aae8" title="Bricht das aktuelle Basic-Programm ab.">bot_ubasic_break</a>(<span class="keywordtype">void</span>) {
+<a name="l00203"></a>00203     <a class="code" href="ubasic_8c.html#a487f412fa127eb33657af962f7498d88">ubasic_break</a>();
+<a name="l00204"></a>00204 }
+<a name="l00205"></a>00205 
+<a name="l00210"></a>00210 <span class="preprocessor">#ifdef DISPLAY_UBASIC_AVAILABLE</span>
+<a name="l00211"></a>00211 <span class="preprocessor"></span><span class="keyword">static</span> <span class="keywordtype">void</span> ubasic_disp_key_handler(<span class="keywordtype">void</span>) {
+<a name="l00212"></a>00212     <span class="keywordflow">if</span> (<a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> &gt;= <a class="code" href="rc5-codes_8h.html#a962b5d2df2417b8e1e8462ddbeedf945">RC5_CODE_1</a> &amp;&amp; <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> &lt;= <a class="code" href="rc5-codes_8h.html#ae7019e2cc3b9e1bf615f6f23440d3b46">RC5_CODE_9</a>) {
+<a name="l00213"></a>00213         <span class="comment">/* Programm bas1 bis bas9 laden */</span>
+<a name="l00214"></a>00214         <span class="keyword">const</span> <span class="keywordtype">char</span> key = (char) (<a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> - <a class="code" href="rc5-codes_8h.html#a962b5d2df2417b8e1e8462ddbeedf945">RC5_CODE_1</a> + <span class="charliteral">&#39;1&#39;</span>);
+<a name="l00215"></a>00215         <span class="keywordflow">if</span> (read_ubasic_src(key) == 0) {
+<a name="l00216"></a>00216             <a class="code" href="behaviour__ubasic_8c.html#ae7fbc68b2c593466925c26ad8538f71f" title="Startet das uBasic-Verhalten.">bot_ubasic</a>(NULL);
+<a name="l00217"></a>00217         }
+<a name="l00218"></a>00218         <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0;
+<a name="l00219"></a>00219         <span class="keywordflow">return</span>;
+<a name="l00220"></a>00220     }
+<a name="l00221"></a>00221     <span class="keywordflow">switch</span> (<a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a>) {
+<a name="l00222"></a>00222 <span class="preprocessor">#ifdef RC5_CODE_PLAY</span>
+<a name="l00223"></a>00223 <span class="preprocessor"></span>    <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a54a6edce9c1e27220d33990b3078c08c">RC5_CODE_PLAY</a>:
+<a name="l00224"></a>00224         <span class="comment">/* Abspielen eines geladenen Basic-Programms */</span>
+<a name="l00225"></a>00225         <a class="code" href="behaviour__ubasic_8c.html#ae7fbc68b2c593466925c26ad8538f71f" title="Startet das uBasic-Verhalten.">bot_ubasic</a>(NULL);
+<a name="l00226"></a>00226         <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0;
+<a name="l00227"></a>00227         <span class="keywordflow">break</span>;
+<a name="l00228"></a>00228 <span class="preprocessor">#endif // RC5_CODE_PLAY</span>
+<a name="l00229"></a>00229 <span class="preprocessor"></span>
+<a name="l00230"></a>00230 <span class="preprocessor">#ifdef RC5_CODE_STOP</span>
+<a name="l00231"></a>00231 <span class="preprocessor"></span>    <span class="keywordflow">case</span> <a class="code" href="rc5-codes_8h.html#a852288ae256ddc7b340cdb0c6da22482">RC5_CODE_STOP</a>:
+<a name="l00232"></a>00232         <a class="code" href="behaviour__ubasic_8c.html#a754b3d074e0af4ad3c7b918dd77ecb2d">LOG_DEBUG</a>(<span class="stringliteral">&quot;Breche uBasic-Programm ab&quot;</span>);
+<a name="l00233"></a>00233         <a class="code" href="ubasic_8c.html#a487f412fa127eb33657af962f7498d88">ubasic_break</a>();
+<a name="l00234"></a>00234         <a class="code" href="sensor_8h.html#a0c6d9b2de12c900271241f3044baaa92">RC5_Code</a> = 0;
+<a name="l00235"></a>00235         <span class="keywordflow">break</span>;
+<a name="l00236"></a>00236 <span class="preprocessor">#endif // RC5_CODE_STOP</span>
+<a name="l00237"></a>00237 <span class="preprocessor"></span>    }
+<a name="l00238"></a>00238 }
+<a name="l00239"></a>00239 
+<a name="l00243"></a><a class="code" href="behaviour__ubasic_8h.html#aad825ed95fc49d0eb0a8fee3c324b0ec">00243</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__ubasic_8c.html#aad825ed95fc49d0eb0a8fee3c324b0ec" title="Display fuer das uBasic-Verhalten.">ubasic_display</a>(<span class="keywordtype">void</span>) {
+<a name="l00244"></a>00244     <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(1, 1);
+<a name="l00245"></a>00245     <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;- uBasic -&quot;</span>);
+<a name="l00246"></a>00246 <span class="preprocessor">#ifdef RC5_CODE_PLAY</span>
+<a name="l00247"></a>00247 <span class="preprocessor"></span>    <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(2, 1);
+<a name="l00248"></a>00248     <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;PLAY:Run Prog&quot;</span>);
+<a name="l00249"></a>00249 <span class="preprocessor">#endif</span>
+<a name="l00250"></a>00250 <span class="preprocessor"></span>    <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(3, 1);
+<a name="l00251"></a>00251     <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;1-9:bas1..9.txt&quot;</span>);
+<a name="l00252"></a>00252 <span class="preprocessor">#ifdef RC5_CODE_STOP</span>
+<a name="l00253"></a>00253 <span class="preprocessor"></span>    <a class="code" href="display_8h.html#ad5109335e4419b07f4d9f73db290f2eb">display_cursor</a>(4, 1);
+<a name="l00254"></a>00254     <a class="code" href="display_8h.html#ac5ba4c9512c407150e76ef8b97910271">display_puts</a>(<span class="stringliteral">&quot;STOPP:Prog abbrechen&quot;</span>);
+<a name="l00255"></a>00255 <span class="preprocessor">#endif</span>
+<a name="l00256"></a>00256 <span class="preprocessor"></span>
+<a name="l00257"></a>00257     ubasic_disp_key_handler(); <span class="comment">// Aufruf des Key-Handlers</span>
+<a name="l00258"></a>00258 }
+<a name="l00259"></a>00259 
+<a name="l00260"></a>00260 
+<a name="l00265"></a><a class="code" href="ubasic__ext__proc_8h.html#ab2cf59a4c2c5569048e7c1c2e09c04fc">00265</a> <span class="keywordtype">void</span> <a class="code" href="behaviour__ubasic_8c.html#a7268a645674a1618229c8665a160249f" title="Umschalten des Programm-Kontextes.">switch_proc</a>(<span class="keywordtype">char</span> * p_name) {
+<a name="l00266"></a>00266     botfs_file_descr_t new_prog;
+<a name="l00267"></a>00267     <span class="keywordflow">if</span> (<a class="code" href="botfs_8c.html#aad0605bba52a09999f158cb2e371a5de" title="Oeffnet eine Datei.">botfs_open</a>(p_name, &amp;new_prog, <a class="code" href="botfs__config_8h.html#aafbba18ae3af70abfb9fc89eb44128e9" title="nur lesen">BOTFS_MODE_r</a>, <a class="code" href="init_8h.html#a4fe62e026b012a16a6980db83a55c8bf" title="Zugriff auf einzelne MMC-Puffer.">GET_MMC_BUFFER</a>(ubasic_buffer)) != 0) {
+<a name="l00268"></a>00268         <a class="code" href="tokenizer_8c.html#a092f2feab0db8090bceeb54fe94436a1">tokenizer_error_print</a>(<a class="code" href="ubasic_8c.html#af683c8ffebc3905e0cb46c1ba77a8bce">current_linenum</a>, <a class="code" href="ubasic_8h.html#a9528d64783f61eb950cae44fa6ab4cf0">UNKNOWN_SUBPROC</a>);
+<a name="l00269"></a>00269         <a class="code" href="ubasic_8c.html#a487f412fa127eb33657af962f7498d88">ubasic_break</a>();
+<a name="l00270"></a>00270     } <span class="keywordflow">else</span> {
+<a name="l00271"></a>00271         <a class="code" href="behaviour__ubasic_8c.html#a7edc7f1641039d97224645cf4282bdb3" title="Laedt ein uBasic-Programm aus deiner BotFS-Datei.">bot_ubasic_load_file</a>(p_name, &amp;new_prog);
+<a name="l00272"></a>00272         <a class="code" href="tokenizer_8c.html#a7d36b5e844f9ed6802dba28ae91b19d5">program_ptr</a> = 0;
+<a name="l00273"></a>00273         <a class="code" href="tokenizer_8c.html#ade2d47ca3371da8059f1bc33cbebc331">tokenizer_init</a>(<a class="code" href="tokenizer_8c.html#a7d36b5e844f9ed6802dba28ae91b19d5">program_ptr</a>);
+<a name="l00274"></a>00274     }
+<a name="l00275"></a>00275 }
+<a name="l00276"></a>00276 <span class="preprocessor">#endif // DISPLAY_UBASIC_AVAILABLE</span>
+<a name="l00277"></a>00277 <span class="preprocessor"></span><span class="preprocessor">#endif // BEHAVIOUR_UBASIC_AVAILABLE</span>
+</pre></div></div>
+</div>
+
+
+<hr class="footer"/><address class="footer"><small>
+Erzeugt am Mit Feb 29 2012 14:18:08 für c't-Bot von &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.7.5.1
+</small></address>
+
+</body>
+</html>

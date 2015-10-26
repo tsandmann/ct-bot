@@ -75,7 +75,7 @@
 //#define MAP_AVAILABLE			/*!< Aktiviert die Kartographie */
 #define MAP_2_SIM_AVAILABLE	/*!< Sendet die Map zur Anzeige an den Sim */
 
-#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
+//#define SPEED_CONTROL_AVAILABLE /*!< Aktiviert die Motorregelung */
 //#define ADJUST_PID_PARAMS		/*!< macht PID-Paramter zur Laufzeit per FB einstellbar */
 //#define SPEED_LOG_AVAILABLE 	/*!< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
 
@@ -86,10 +86,10 @@
 //#define MMC_AVAILABLE			/*!< haben wir eine MMC/SD-Karte zur Verfuegung? */
 //#define SPI_AVAILABLE			/*!< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 //#define MMC_VM_AVAILABLE		/*!< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
-#define BOT_FS_AVAILABLE		/*!< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC moeglich) */
+//#define BOT_FS_AVAILABLE		/*!< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC moeglich) */
 #define OS_AVAILABLE			/*!< Aktiviert BotOS fuer Threads und Scheduling */
 
-//#define EEPROM_EMU_AVAILABLE	/*!< Aktiviert die EEPROM-Emulation fuer PC, siehe Hinweise in pc/eeprom_pc.c */
+//#define EEPROM_EMU_AVAILABLE	/*!< Aktiviert die EEPROM-Emulation fuer PC */
 
 //#define BOOTLOADER_AVAILABLE	/*!< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders */
 
