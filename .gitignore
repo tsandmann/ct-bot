@@ -1,9 +1,1 @@
-.DS_Store
 /Debug-*
-/botfs.img
-/map.pgm
-/sim.map
-Documentation/api/html/*.dot
-Documentation/api/html/*.md5
-Documentation/api/html/*.map
-/.dep/

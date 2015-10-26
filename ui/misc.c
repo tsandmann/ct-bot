@@ -17,11 +17,11 @@
  *
  */
 
-/**
- * \file 	misc.c
- * \brief 	Sonstige Display-Anzeigefunktionen, die in keine andere Datei so richtig passen
- * \author 	Timo Sandmann (mail@timosandmann.de)
- * \date 	12.02.2007
+/*!
+ * @file 	misc.c
+ * @brief 	Sonstige Display-Anzeigefunktionen, die in keine andere Datei so richtig passen
+ * @author 	Timo Sandmann (mail@timosandmann.de)
+ * @date 	12.02.2007
  */
 
 #include "ct-Bot.h"
@@ -45,11 +45,11 @@
 #ifdef KEYPAD_AVAILABLE
 static uint8_t new_address = 0;	/*!< True, falls neue Adresse eingegeben wird */
 
-/**
+/*!
  * Setzt die Bot-Adresse auf einen neuen Wert.
  * Wird von der Keypad-Eingabe aufgerufen, sobald
  * die Eingabe abgeschlossen ist.
- * \param *data	Daten-String
+ * @param *data	Daten-String
  */
 static void change_bot_addr_callback(char * data) {
 	new_address = 0;
@@ -60,10 +60,14 @@ static void change_bot_addr_callback(char * data) {
 }
 #endif // KEYPAD_AVAILABLE
 
-/**
+/*!
  * Zeigt ein paar Infos an, die man nicht naeher zuordnen kann
  */
 void misc_display(void) {
+#ifdef TIME_AVAILABLE
+	display_cursor(1, 1);
+	display_printf("Zeit: %04u:%03u", timer_get_s(), timer_get_ms());
+#else
 	/* Anzeige der Bot-Adresse (aenderbar) */
 	display_cursor(1, 1);
 	display_puts("bot_addr=");
@@ -86,6 +90,7 @@ void misc_display(void) {
 #endif
 		display_printf("0x%x", get_bot_address());
 	}
+#endif // TIME_AVAILABLE
 
 #ifdef BEHAVIOUR_AVAILABLE
 	display_cursor(2, 1);
@@ -101,16 +106,13 @@ void misc_display(void) {
 	display_printf("RC=%+4d %+4d", sensEncL, sensEncR);
 
 	display_cursor(4, 1);
-	display_printf("Speed=%+4d", v_center);
-
-	display_cursor(4, 12);
-	display_printf("%4u:%03u", timer_get_s(), timer_get_ms());
+	display_printf("Speed= %04d", (int16_t) v_center);
 }
 #endif // DISPLAY_MISC_AVAILABLE
 
 #ifdef MCU
 #ifdef DISPLAY_RESET_INFO_AVAILABLE
-/**
+/*!
  * Zeigt Informationen ueber Resets an
  */
 void reset_info_display(void) {
@@ -144,7 +146,7 @@ void reset_info_display(void) {
  *                                         __heap_start
  */
 
-/**
+/*!
  * Zeigt die aktuelle Speicherbelegung an.
  * Achtung, die Stackgroesse bezieht sich auf den Stack *dieser* Funktion!
  * Die Heapgroesse stimmt nur, wenn es dort keine Luecken gibt (z.b. durch free())

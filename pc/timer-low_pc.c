@@ -17,11 +17,11 @@
  *
  */
 
-/**
- * \file 	timer-low_pc.c
- * \brief 	Timer und Counter
- * \author 	Benjamin Benz (bbe@heise.de)
- * \date 	26.12.2005
+/*!
+ * @file 	timer-low_pc.c
+ * @brief 	Timer und Counter
+ * @author 	Benjamin Benz (bbe@heise.de)
+ * @date 	26.12.2005
  */
 
 #ifdef PC
@@ -30,14 +30,14 @@
 #include "timer.h"
 #include "sensor.h"
 
-/**
+/*!
  * initialisiert Timer 2 und startet ihn
  */
 void timer_2_init(void) {
 	// Dummy
 }
 
-/**
+/*!
  * Funktion, die die TickCounts um die vergangene Simulzeit erhoeht
  */
 void system_time_isr(void) {
@@ -50,7 +50,7 @@ void system_time_isr(void) {
 	last_simultime = simultime;
 }
 
-/**
+/*
  * Setzt die Systemzeit zurueck auf 0
  */
 void timer_reset(void) {

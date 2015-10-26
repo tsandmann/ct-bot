@@ -17,11 +17,11 @@
  *
  */
 
-/**
- * \file 	bot-2-sim_pc.c
- * \brief 	Verbindung c't-Bot zu c't-Sim
- * \author 	Benjamin Benz (bbe@heise.de)
- * \date 	26.12.2005
+/*!
+ * @file 	bot-2-sim_pc.c
+ * @brief 	Verbindung c't-Bot zu c't-Sim
+ * @author 	Benjamin Benz (bbe@heise.de)
+ * @date 	26.12.2005
  */
 
 #ifdef PC
@@ -57,7 +57,7 @@
 #define _P __P
 #endif
 
-#define low_init tcp_init	/**< Low-level Funktion zum Initialisieren */
+#define low_init tcp_init	/*!< Low-Funktion zum Initialisieren */
 
 #ifdef WIN32
 /* These are winbase.h definitions, but to avoid including
@@ -71,7 +71,7 @@ typedef struct _FILETIME {
 void __stdcall GetSystemTimeAsFileTime(FILETIME*);
 
 void gettimeofday_win(struct timeval * p, void * tz /* IGNORED */) {
-	(void) tz; // kein warning
+	tz = tz; // kein warning
 	union {
 		long long ns100; // time since 1 Jan 1601 in 100ns units
 		FILETIME ft;
@@ -82,12 +82,12 @@ void gettimeofday_win(struct timeval * p, void * tz /* IGNORED */) {
 	p->tv_sec = (long) ((_now.ns100 - (116444736000000000LL)) / 10000000LL);
 	return;
 }
-#endif // WIN32
+#endif	// WIN32
 
-/**
+/*!
  * Schleife, die Kommandos empfaengt und bearbeitet, bis ein Kommando vom Typ frame kommt
- * \param frame	Kommando zum Abbruch
- * \return		Fehlercode
+ * @param frame	Kommando zum Abbruch
+ * @return		Fehlercode
  */
 int8_t receive_until_Frame(uint8_t frame) {
 	int8_t result;
@@ -109,26 +109,21 @@ int8_t receive_until_Frame(uint8_t frame) {
 	return 0;
 }
 
-/**
+/*!
  * Empfaengt alle Kommondos vom Sim
  */
 void bot_2_sim_listen(void) {
 	while (receive_until_Frame(CMD_DONE) != 0) {}
 }
 
-/**
+/*!
  * Ein wenig Initialisierung kann nicht schaden
  */
 void bot_2_sim_init(void) {
 	low_init();
 
 	command_init();
-
-#ifdef ARM_LINUX_BOARD
-	command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0);
-#else
 	flushSendBuffer();
-#endif
 
 	receive_until_Frame(CMD_DONE);
 	command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0);

@@ -30,7 +30,7 @@
 #include "eeprom.h"
 #include "uart.h"
 
-#define MAX_PAYLOAD 253  /**< Max. Anzahl Bytes, die an ein Command angehaengt werden koennen */
+#define MAX_PAYLOAD 255  /**< Max. Anzahl Bytes, die an ein Command angehaengt werden koennen */
 
 #ifdef PC
 #define low_read tcp_read			/**< Which function to use to read data */

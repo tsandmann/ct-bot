@@ -282,23 +282,4 @@ static inline uint16_t mul8(uint8_t a, uint8_t b) {
 position_t calc_resection(position_t a, position_t m, position_t b, float angle_am, float angle_mb);
 #endif // BPS_AVAILABLE
 
-#define CRC_INITIALIZER 0xffff
-
-static inline uint16_t calc_crc_update(uint16_t crc, uint8_t data) {
-#ifdef MCU
-	return _crc_xmodem_update(crc, data);
-#else // PC
-    crc = crc ^ ((uint16_t) data << 8);
-    int i;
-    for (i = 0; i < 8; ++i) {
-        if (crc & 0x8000) {
-            crc = (crc << 1) ^ 0x1021;
-        } else {
-            crc <<= 1;
-        }
-    }
-
-    return crc;
-#endif // PC
-}
 #endif // MATH_UTILS_H_

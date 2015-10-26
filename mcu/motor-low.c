@@ -17,15 +17,14 @@
  *
  */
 
-/**
- * \file 	motor-low.c
- * \brief 	Low-Level Routinen fuer die Motor- und Servosteuerung des c't-Bots
- * \author 	Benjamin Benz (bbe@heise.de)
- * \date 	01.12.2005
- * Benutzt Bit 0 und 1 von GPIOR0 fuer die Servos (auf ATmega1284P)
+/*!
+ * @file 	motor-low.c
+ * @brief 	Low-Level Routinen fuer die Motorsteuerung des c't-Bots
+ * @author 	Benjamin Benz (bbe@heise.de)
+ * @date 	01.12.05
  */
-
 #ifdef MCU
+
 #include "ct-Bot.h"
 #include "motor.h"
 #include "timer.h"
@@ -37,30 +36,49 @@
 #include <stdlib.h>
 
 /* Drehrichtung der Motoren */
-#define BOT_DIR_L_PIN  _BV(PC6)
-#define BOT_DIR_L_PORT PORTC
-#define BOT_DIR_L_DDR  DDRC
+#define BOT_DIR_L_PIN 	(1<<6)	// PC7
+#define BOT_DIR_L_PORT 	PORTC
+#define BOT_DIR_L_DDR 	DDRC
 
-#define BOT_DIR_R_PIN  _BV(PC7)
-#define BOT_DIR_R_PORT PORTC
-#define BOT_DIR_R_DDR  DDRC
+#define BOT_DIR_R_PIN 	(1<<7)	// PC6
+#define BOT_DIR_R_PORT 	PORTC
+#define BOT_DIR_R_DDR 	DDRC
 
-/* PWM der Motoren */
-#define PWM_L OCR1A
-#define PWM_R OCR1B
+#define PWM_L 	OCR1A
+#define PWM_R 	OCR1B
 
-#define PWM_CLK_0 (_BV(CS02) | _BV(CS00)) /**< Prescaler fuer PWM0 = 1024 */
+#define PWM_CLK_0	 (_BV(CS02) | _BV(CS00))			/*!< Prescaler fuer PWM 0 = 1024 */
+//#define PWM_CLK_2	 (_BV(CS22) | _BV(CS21) |_BV(CS20)) /*!< Prescaler fuer PWM 2 = 1024 */
 
-volatile int16_t motor_left;  /**< zuletzt gestellter Wert linker Motor */
-volatile int16_t motor_right; /**< zuletzt gestellter Wert rechter Motor */
+volatile int16_t motor_left;	/*!< zuletzt gestellter Wert linker Motor */
+volatile int16_t motor_right;	/*!< zuletzt gestellter Wert rechter Motor */
 
-/**
+/*!
+ * Timer 0: Kontrolliert den Servo per PWM
+ * Initilaisiert Timer 0 und startet ihn
+ */
+static void pwm_0_init(void) {
+	DDRB |= (1 << 3);	// PWM-Pin als Output
+	TCNT0 = 0x00;		// TIMER0 vorladen
+
+#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
+	TCCR0A = _BV(WGM00) |	// Phase Correct PWM Mode
+			 _BV(COM0A1); 	// Clear on Compare Match when up-counting. Set on Compare Match when down-counting
+
+#else
+	TCCR0 = _BV(WGM00) |	// Phase Correct PWM Mode
+			_BV(COM01);		// Clear on Compare Match when up-counting. Set on Compare Match when down-counting
+
+#endif // MCU_ATMEGA644X || ATmega1284P
+}
+
+/*!
  * Timer 1: Kontrolliert die Motoren per PWM
- * Initialisiert Timer 1 und startet ihn
+ * Initilaisiert Timer 0 und startet ihn
  */
 static void pwm_1_init(void) {
-	DDRD |= _BV(PD4) | _BV(PD5); // PWM-Pins als Output
-	TCNT1 = 0; // TIMER1 vorladen
+	DDRD |= 0x30;	// PWM-Pins als Output
+	TCNT1 = 0x0000;	// TIMER1 vorladen
 
 	TCCR1A = _BV(WGM11)  |				// Fast PWM 9 Bit @ 16 MHz
 #if F_CPU == 20000000 && defined SPEED_CONTROL_AVAILABLE
@@ -71,7 +89,7 @@ static void pwm_1_init(void) {
 
 	TCCR1B = _BV(WGM12) |
 #ifdef SPEED_CONTROL_AVAILABLE
-	_BV(CS10);		// Prescaler = 1	=>	31.2 kHz @ 16 MHz, 19.5 kHz @ 20 MHz 10 Bit Fast PWM
+	_BV(CS10);		// Prescaler = 1	=>	31.2 kHz @ 16 MHz, 19.5 kHz @ 20 MHz
 #else
 	_BV(CS12);		// Prescaler = 256	=>	122 Hz @ 16 MHz, 152.5 Hz @ 20 MHz
 #endif	// SPEED_CONTROL_AVAILABLE
@@ -85,10 +103,52 @@ static void pwm_1_init(void) {
 #endif
 }
 
-/**
+// Kollidiert derzeit mit Timer2 fuer IR
+///*!
+// * Timer 0: Kontrolliert den Servo per PWM
+// * PWM loescht bei erreichen. daher steht in OCR0 255-Speed!!!
+// * initilaisiert Timer 0 und startet ihn
+// */
+//void pwm_2_init(void){
+//	DDRD |= 0x80;			   // PWM-Pin als Output
+//	TCNT2  = 0x00;            // TIMER0 vorladen
+//
+//	TCCR2 = _BV(WGM20) | 	// Normal PWM
+//			_BV(COM21) |    // Clear on Top, Set on Compare
+//			_BV(CS22) | _BV(CS21) |_BV(CS20); 		// Prescaler = 1024
+//
+//	OCR2 = 8;	// PWM loescht bei erreichen. daher steht in OCR0 255-Speed!!!
+//	// TIMSK  |= _BV(OCIE0);	 // enable Output Compare 0 overflow interrupt
+//	//sei();                       // enable interrupts
+//}
+
+/*!
+ *  Initialisiert alles fuer die Motosteuerung
+ */
+void motor_low_init() {
+	BOT_DIR_L_DDR |= BOT_DIR_L_PIN;
+	BOT_DIR_R_DDR |= BOT_DIR_R_PIN;
+
+	pwm_0_init();
+	pwm_1_init();
+//	pwm_2_init();	// Kollidiert mit Timer2 fuer IR-Fernbedienung
+	motor_left  = 0;
+	motor_right = 0;
+#if F_CPU == 20000000 && defined SPEED_CONTROL_AVAILABLE
+	PWM_L = 1023;
+	PWM_R = 1023;
+#else
+	PWM_L = 511;
+	PWM_R = 511;
+#endif	// F_CPU
+	direction.left  = DIRECTION_FORWARD;
+	direction.right = DIRECTION_FORWARD;
+}
+
+/*!
  * Stellt einen PWM-Wert fuer einen Motor ein
  * low-level
- * \param dev Motor (0: links; 1: rechts)
+ * @param dev Motor (0: links; 1: rechts)
  */
 void motor_update(uint8_t dev) {
 	if (dev == 0) {
@@ -119,168 +179,30 @@ void motor_update(uint8_t dev) {
 	}
 }
 
-/**
- * Initialisiert Timer3 fuer Servoansteuerung (nur ATmega1284P)
- */
-static void timer_3_init(void) {
-#ifdef __AVR_ATmega1284P__
-	TCNT3 = 0; // TIMER3 init
-	TIMSK3 = 0; // Timer Interrupts Disable
-	TIFR1 = _BV(TOV3) | _BV(OCF3A) | _BV(OCF3B); // Clear Timer Flags
-	TCCR3A = 0;
-	TCCR3B = _BV(CS31); // normal timer mode, prescaler = 8 -> 20 MHz: 26,2144 ms period, 16 MHz: 32.768 ms period
-	OCR3A = 0;
-	OCR3B = 0;
-#endif // __AVR_ATmega1284P__
-}
-
-/**
- * Initialisiert Ansteuerung fuer Servo 1
- * Auf ATmega1284P mit Timer3, ansonsten mit Timer0
- */
-static void servo_1_init(void) {
-	DDRB |= _BV(DDB3); // PWM-Pin Output
-#ifndef __AVR_ATmega1284P__
-	TCNT0 = 0; // TIMER0 vorladen
-
-#if defined MCU_ATMEGA644X
-	TCCR0A = _BV(WGM00) | // Phase Correct PWM Mode
-			 _BV(COM0A1); // Clear on Compare Match when up-counting. Set on Compare Match when down-counting
-
-#else
-	TCCR0 = _BV(WGM00) | // Phase Correct PWM Mode
-			_BV(COM01);  // Clear on Compare Match when up-counting. Set on Compare Match when down-counting
-
-#endif // MCU_ATMEGA644X
-#endif // ! __AVR_ATmega1284P__
-}
-
-/**
- * Initialisiert Ansteuerung fuer Servo 2 (nur ATmega1284P)
- */
-static void servo_2_init(void) {
-#ifdef __AVR_ATmega1284P__
-	GPIOR0 = 0; // beide Servos aus
-	DDRD |= _BV(DDD7); // PWM-Pin Output
-#endif // __AVR_ATmega1284P__
-}
-
-#ifdef __AVR_ATmega1284P__
-/**
- * Timer3 Overflow Interrupt
- */
-ISR(TIMER3_OVF_vect, ISR_NAKED) {
-	if (GPIOR0 & 1) {
-		PORTB |= _BV(PB3); // PWM0 high
-	}
-	if (GPIOR0 & 2) {
-		PORTD |= _BV(PD7); // PWM2 high
-	}
-	reti();
-}
-
-/**
- * Timer3 Output Compare A Match Interrupt
- */
-ISR(TIMER3_COMPA_vect, ISR_NAKED) {
-	PORTB = (uint8_t) (PORTB & ~_BV(PB3)); // PWM0 low
-	reti();
-}
-
-/**
- * Timer3 Output Compare B Match Interrupt
- */
-ISR(TIMER3_COMPB_vect, ISR_NAKED) {
-	PORTD = (uint8_t) (PORTD & ~_BV(PD7)); // PWM2 low
-	reti();
-}
-#endif // __AVR_ATmega1284P__
-
-/**
+/*!
  * Stellt die Servos
- * \param servo Nummer des Servos (1 oder 2)
- * \param pos Zielwert oder 0 fuer Servo aus
+ * @param servo	Nummer des Servos
+ * @param pos	Zielwert
+ * Sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus
  */
 void servo_low(uint8_t servo, uint8_t pos) {
 	if (servo == SERVO1) {
-#ifdef __AVR_ATmega1284P__
 		if (pos == SERVO_OFF) {
-			GPIOR0 = (uint8_t) (GPIOR0 & ~_BV(0));
-			TIMSK3 = (uint8_t) (TIMSK3 & ~_BV(OCIE3A)); // Timer Interrupt Disable
-			TIFR1 |= _BV(OCF3A); // Clear Timer Flags
-			PORTB = (uint8_t) (PORTB & ~_BV(PB3)); // PWM0 low
-		} else {
-#if F_CPU == 20000000
-			OCR3A = (uint16_t) (pos * 18 + 1400); // PWM value [1418; 5990] -> [0.6 ms; 2.4 ms] pulse
-#elif F_CPU == 16000000
-			OCR3A = (uint16_t) (pos * 13 + 1400); // PWM value [1413; 4715] -> [0.7 ms; 2.4 ms] pulse
+#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
+			TCCR0B = (uint8_t) (TCCR0B & ~PWM_CLK_0); // PWM aus
 #else
-#warning "current F_CPU not supported for servo_low()"
-#endif // F_CPU
-			TIMSK3 |= (uint8_t) (_BV(TOIE3) | _BV(OCIE3A)); // Overflow Interrupt Enable, Output Compare A Match Interrupt Enable
-			GPIOR0 |= _BV(0);
-		}
-#else // ! __AVR_ATmega1284P__
-		if (pos == SERVO_OFF) {
-#ifdef MCU_ATMEGA644X
-			TCCR0B = (uint8_t) (TCCR0B & ~PWM_CLK_0); // PWM0 aus
-#else
-			TCCR0 = (uint8_t) (TCCR0 & ~PWM_CLK_0); // PWM0 aus
-#endif // MCU_ATMEGA644X
+			TCCR0 = (uint8_t) (TCCR0 & ~PWM_CLK_0); // PWM aus
+#endif // MCU_ATMEGA644X || ATmega1284P
 		} else {
-#ifdef MCU_ATMEGA644X
-			TCCR0B |= PWM_CLK_0; // PWM0 an
+#if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
+			TCCR0B |= PWM_CLK_0; // PWM an
 			OCR0A = pos;
 #else
-			TCCR0 |= PWM_CLK_0; // PWM0 an
+			TCCR0 |= PWM_CLK_0; // PWM an
 			OCR0 = pos;
-#endif // MCU_ATMEGA644X
+#endif // MCU_ATMEGA644X || ATmega1284P
 		}
-#endif // __AVR_ATmega1284P__
-	} else if (servo == SERVO2) {
-#ifdef __AVR_ATmega1284P__
-		if (pos == SERVO_OFF) {
-			GPIOR0 = (uint8_t) (GPIOR0 & ~_BV(1));
-			TIMSK3 = (uint8_t) (TIMSK3 & ~_BV(OCIE3B)); // Timer Interrupt Disable
-			TIFR1 |= _BV(OCF3B); // Clear Timer Flags
-			PORTD = (uint8_t) (PORTD & ~_BV(PD7)); // PWM2 low
-		} else {
-#if F_CPU == 20000000
-			OCR3B = (uint16_t) (pos * 18 + 1400); // PWM value [1418; 5990] -> [0.6 ms; 2.4 ms] pulse
-#elif F_CPU == 16000000
-			OCR3B = (uint16_t) (pos * 13 + 1400); // PWM value [1413; 4715] -> [0.7 ms; 2.4 ms] pulse
-#else
-#warning "current F_CPU not supported for servo_low()"
-#endif // F_CPU
-			TIMSK3 |= (uint8_t) (_BV(TOIE3) | _BV(OCIE3B)); // Overflow Interrupt Enable, Output Compare B Match Interrupt Enable
-			GPIOR0 |= _BV(1);
-		}
-#endif //__AVR_ATmega1284P__
 	}
-}
-
-/**
- * Initialisiert alles fuer die Motor- und Servorsteuerung
- */
-void motor_low_init() {
-	BOT_DIR_L_DDR |= BOT_DIR_L_PIN;
-	BOT_DIR_R_DDR |= BOT_DIR_R_PIN;
-
-	pwm_1_init();
-	timer_3_init();
-	servo_1_init();
-	servo_2_init();
-	motor_left  = 0;
-	motor_right = 0;
-#if F_CPU == 20000000 && defined SPEED_CONTROL_AVAILABLE
-	PWM_L = 1023;
-	PWM_R = 1023;
-#else
-	PWM_L = 511;
-	PWM_R = 511;
-#endif // F_CPU
-	direction.left  = DIRECTION_FORWARD;
-	direction.right = DIRECTION_FORWARD;
 }
 
 #endif // MCU
