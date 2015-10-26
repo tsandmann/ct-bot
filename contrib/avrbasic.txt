@@ -1,0 +1,5 @@
+AVR-Basic (uBasic fuer AVR), entwickelt von Uwe Berger:
+Details siehe http://www.mikrocontroller.net/articles/AVR_BASIC#Version_von_Uwe_Berger
+
+Verwendeter Source-Code:
+-r64 svn://mikrocontroller.net/avr-basic/uwe_berger/avr_basic

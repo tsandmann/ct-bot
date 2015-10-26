@@ -129,6 +129,15 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 #undef DISPLAY_ABL_STACK_AVAILABLE
 #endif
 
+#ifndef BEHAVIOUR_DRIVE_NEURALNET_AVAILABLE
+#undef DISPLAY_DRIVE_NEURALNET_AVAILABLE
+#endif
+
+#ifndef BEHAVIOUR_NEURALNET_AVAILABLE
+#undef DISPLAY_NEURALNET_AVAILABLE
+#undef DISPLAY_DRIVE_NEURALNET_AVAILABLE
+#endif
+
 
 int8_t max_screens = 0;	/*!< Anzahl der zurzeit registrierten Screens */
 void (* screen_functions[DISPLAY_SCREENS])(void) = {NULL}; /*!< hier liegen die Zeiger auf die Display-Funktionen */
@@ -402,6 +411,12 @@ void gui_init(void) {
 #endif
 #ifdef DISPLAY_MAP_AVAILABLE
 	register_screen(&map_display);
+#endif
+#ifdef DISPLAY_NEURALNET_AVAILABLE
+	register_screen(&neuralnet_display);
+#endif
+#ifdef DISPLAY_DRIVE_NEURALNET_AVAILABLE
+	register_screen(&neuralnet_learn_display);
 #endif
 }
 

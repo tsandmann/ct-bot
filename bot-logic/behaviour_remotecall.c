@@ -172,6 +172,12 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 #ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_drive_area, 0, "", 0),
 #endif
+#ifdef BEHAVIOUR_NEURALNET_AVAILABLE
+	PREPARE_REMOTE_CALL(bot_neuralnet, 0, "", 0),
+#endif
+#ifdef BEHAVIOUR_DRIVE_NEURALNET_AVAILABLE
+	PREPARE_REMOTE_CALL(bot_drive_neuralnet, 0, "", 0),
+#endif
 
 	/* Fahr- und Positionierungs-Verhalten */
 #ifdef BEHAVIOUR_TURN_AVAILABLE
