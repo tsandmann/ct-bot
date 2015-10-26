@@ -1,6 +1,38 @@
 CHANGELOG fuer c't-Bot
 ======================
-2012-11-25 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Makefile, danke an caramba fuer den Hinweis! Nach einem '\' (Zeilenumbruch) in der Sourcefile-Liste darf kein Leerzeichen folgen. 
+2015-10-26 Timo Sandmann [mail@timosandmann.de]: Release 22
+
+2015-10-18 Timo Sandmann [mail@timosandmann.de]: Kompatibilitaet zu mingw-w64 und msys2 (u.a. fuer Windows 10) 
+
+2015-10-11 Timo Sandmann [mail@timosandmann.de]: Kompatibilitaet zu AVR Toolchain 3.5
+
+2015-10-11 Timo Sandmann [mail@timosandmann.de]: Build-Warnings bei deaktivierter EEPROM-Emulation (Standardeinstellung) beseitigt, siehe pc/eeprom_pc.c zur Aktivierung
+
+2015-09-29 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer BPS Initialisierung
+
+2015-09-10 Timo Sandmann [mail@timosandmann.de]: Bugfix bot_drive_area()
+
+2015-05-23 Timo Sandmann [mail@timosandmann.de]: Bugfix Positionsspeicher
+
+2015-03-21 Timo Sandmann [mail@timosandmann.de]: Bugfix Speedberechnung von Maussensor
+
+2015-03-15 Frank Menzel [Menzelfr@gmx.de]:       Implementierung eines neuronalen Netzwerkes und darauf aufbauende Verhalten behaviour_neuralnet und behaviour_drive_neuralnet 
+
+2013-01-06 Timo Sandmann [mail@timosandmann.de]: Generierte Dokumentation nach /documentation verschoben, um das Source-Verzeichnis (und seine Versionierung) nicht mit 1000 Dateien zu belasten
+
+2013-01-02 Timo Sandmann [mail@timosandmann.de]: Clang-Support unter Mac OS X, uBasic-Quellen umorganisiert
+
+2012-12-20 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer PACKED auf MCU
+
+2012-11-25 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Makefile, danke an caramba fuer den Hinweis! Nach einem '\' (Zeilenumbruch) in der Sourcefile-Liste darf kein Leerzeichen folgen.
+
+2012-11-04 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer gcc 4.7 unter Windows nach Hinweis von palau: packed structs um Attribut "gcc_struct" ergaenzt
+
+2012-07-15 Timo Sandmann [mail@timosandmann.de]: Anzahl der parallelen make-Jobs auf Anzahl der verfuegbaren Prozessoren eingestellt (nur Eclipse 4.2)
+
+2012-05-28 Timo Sandmann [mail@timosandmann.de]: PACKED-Makro umgestaltet: PACKED setzt das packed-Attribut nur noch fuer MCU, PACKED_FORCE setzt es immer. PACKED ist zu verwenden, um Speicher auf MCU zu sparen. PACKED_FORCE falls die Member eines Structs direkt aufeinander folgen muessen (z.B. fuer Kommunikation oder HW-Treiber).
+
+2012-05-24 Timo Sandmann [mail@timosandmann.de]: Falsches Alignment auf ARM fuer floats in gepackten Structs korrigiert (Workaround). Target Debug-ARM-Linux fuer Ubuntu 12.04 angepasst (floating-point ABI hard, FPU vfpv3-d16)
 
 2012-11-04 Timo Sandmann [mail@timosandmann.de]: Vorlaeufiger Bugfix fuer gcc 4.7 unter Windows nach Hinweis von palau
 

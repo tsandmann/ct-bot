@@ -316,7 +316,7 @@ int8_t botfs_copy(botfs_file_descr_t * src, const char * dest, uint16_t src_offs
 /** FAT */
 typedef struct {
 	botfs_dir_block_t dirblocks[BOTFS_DIR_BLOCK_CNT]; /**< Root-Verzeichnis-Bloecke */
-} PACKED botfs_rootdir_t;
+} PACKED_FORCE botfs_rootdir_t;
 
 /**
  * Erzeugt ein neues Volume
