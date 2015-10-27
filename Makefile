@@ -513,10 +513,3 @@ clean_list :
 .PHONY : all begin finish end size gccversion \
 build elf hex eep lss sym coff extcoff \
 clean clean_list program
-
-
-# you need to erase first before loading the program.
-# load (program) the software into the eeprom:
-load: avrledtest.hex
-        uisp -dlpt=/dev/parport0 --erase  -dprog=dapa
-        uisp -dlpt=/dev/parport0 --upload if=$(TARGET).hex -dprog=dapa  -v=3 --hash=32
