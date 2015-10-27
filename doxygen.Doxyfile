@@ -23,7 +23,7 @@ PROJECT_NAME = c't-Bot
 # This could be handy for archiving the generated documentation or 
 # if some version control system is used.
 
-PROJECT_NUMBER = 1898
+PROJECT_NUMBER = 1965 / Release 22
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
@@ -1155,7 +1155,7 @@ DOT_IMAGE_FORMAT = png
 # The tag DOT_PATH can be used to specify the path where the dot tool can be 
 # found. If left blank, it is assumed the dot tool can be found in the path.
 
-DOT_PATH = 
+DOT_PATH = /usr/local/bin/
 
 # The DOTFILE_DIRS tag can be used to specify one or more directories that 
 # contain dot files that are included in the documentation (see the 
