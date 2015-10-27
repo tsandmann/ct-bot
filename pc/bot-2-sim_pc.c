@@ -28,6 +28,7 @@
 
 #include "ct-Bot.h"
 
+#ifdef BOT_2_SIM_AVAILABLE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,7 +44,17 @@
 #include "bot-logic/bot-logic.h"
 #include "motor.h"
 #include "bot-2-bot.h"
+#include "bot-2-atmega.h"
+#include "log.h"
+#include "led.h"
 
+
+//#define DEBUG_BOT_2_SIM       // Schalter, um auf einmal alle Debugs an oder aus zu machen
+
+#ifndef DEBUG_BOT_2_SIM
+#undef LOG_DEBUG
+#define LOG_DEBUG(...) {} /**< Log-Dummy */
+#endif
 
 /* Linux with glibc:
  * _REENTRANT to grab thread-safe libraries
@@ -56,8 +67,6 @@
 #ifdef __linux__
 #define _P __P
 #endif
-
-#define low_init tcp_init	/**< Low-level Funktion zum Initialisieren */
 
 #ifdef WIN32
 /* These are winbase.h definitions, but to avoid including
@@ -85,55 +94,54 @@ void gettimeofday_win(struct timeval * p, void * tz /* IGNORED */) {
 #endif // WIN32
 
 /**
- * Schleife, die Kommandos empfaengt und bearbeitet, bis ein Kommando vom Typ frame kommt
- * \param frame	Kommando zum Abbruch
- * \return		Fehlercode
- */
-int8_t receive_until_Frame(uint8_t frame) {
-	int8_t result;
-	for (;;) {
-		result = command_read();
-		if (result != 0) {
-			/* Fehler werden in command_read() ausgegeben
-			 * -1 kommt auch, wenn das Paket nicht fuer unsere Adresse war */
-			return result;
-		} else {
-			command_evaluate();
-		}
-
-		if (received_command.request.command == frame) {
-			return 0;
-		}
-	}
-
-	return 0;
-}
-
-/**
  * Empfaengt alle Kommondos vom Sim
  */
 void bot_2_sim_listen(void) {
-	while (receive_until_Frame(CMD_DONE) != 0) {}
+	set_bot_2_sim();
+
+#ifndef ARM_LINUX_BOARD
+	while (receive_until_frame(CMD_DONE) != 0) {}
+#else
+	if (tcp_client_connected() && tcp_data_available() >= (int) sizeof(command_t)) {
+		LOG_DEBUG("Data from Sim available");
+		if (command_read() == 0) {
+			LOG_DEBUG("Sim command read");
+			command_evaluate();
+		}
+	}
+#endif // ARM_LINUX_BOARD
 }
 
 /**
- * Ein wenig Initialisierung kann nicht schaden
+ * Setzt den aktiven Kommunikationskanal auf TCP/IP
+ */
+void set_bot_2_sim(void) {
+	cmd_functions.write = tcp_write;
+	cmd_functions.read = tcp_read;
+	cmd_functions.crc_check = tcp_check_crc;
+	cmd_functions.crc_calc = tcp_calc_crc;
+}
+
+/**
+ * Initialisiert die Kommunikation mit dem Sim
  */
 void bot_2_sim_init(void) {
-	low_init();
-
-	command_init();
-
+	/* Bot beim Sim anmelden */
 #ifdef ARM_LINUX_BOARD
-	command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0);
-#else
+	if (! tcp_client_connected()) {
+		return;
+	}
+#endif // ARM_LINUX_BOARD
+	register_bot();
 	flushSendBuffer();
-#endif
 
-	receive_until_Frame(CMD_DONE);
+#ifndef ARM_LINUX_BOARD
+	receive_until_frame(CMD_DONE);
 	command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0);
+#endif // ARM_LINUX_BOARD
+
 #ifdef BOT_2_BOT_AVAILABLE
-	receive_until_Frame(CMD_DONE);
+	receive_until_frame(CMD_DONE);
 	/* hello (bot-)world! */
 	if (get_bot_address() <= 127) {
 		command_write_to(BOT_CMD_WELCOME, SUB_CMD_NORM, CMD_BROADCAST, 0, 0, 0);
@@ -142,4 +150,41 @@ void bot_2_sim_init(void) {
 #endif // BOT_2_BOT_AVAILABLE
 }
 
+/**
+ * Diese Funktion informiert den Sim ueber alle Sensor und Aktuator-Werte.
+ * Dummy fuer PC-Code
+ */
+void bot_2_sim_inform(void) {
+	if (! tcp_client_connected()) {
+		return;
+	}
+#ifdef ARM_LINUX_BOARD
+	set_bot_2_sim();
+
+	command_write(CMD_AKT_MOT, SUB_CMD_NORM, speed_l, speed_r, 0);
+	command_write(CMD_SENS_IR, SUB_CMD_NORM, sensDistL, sensDistR, 0);
+	command_write(CMD_SENS_ENC, SUB_CMD_NORM, sensEncL, sensEncR, 0);
+	command_write(CMD_SENS_BORDER, SUB_CMD_NORM, sensBorderL, sensBorderR, 0);
+	command_write(CMD_SENS_LINE, SUB_CMD_NORM, sensLineL, sensLineR, 0);
+	command_write(CMD_SENS_LDR, SUB_CMD_NORM , sensLDRL, sensLDRR, 0);
+#ifdef BPS_AVAILABLE
+	command_write(CMD_SENS_BPS, SUB_CMD_NORM , (int16_t) sensBPS, 0, 0);
+#endif // BPS_AVAILABLE
+
+#ifdef LED_AVAILABLE
+	command_write(CMD_AKT_LED, SUB_CMD_NORM, led, 0, 0);
+#endif
+	command_write(CMD_SENS_TRANS, SUB_CMD_NORM, sensTrans, 0, 0);
+	command_write(CMD_SENS_DOOR, SUB_CMD_NORM, sensDoor, 0, 0);
+	command_write(CMD_SENS_ERROR, SUB_CMD_NORM, sensError, 0, 0);
+
+#ifdef MOUSE_AVAILABLE
+	command_write(CMD_SENS_MOUSE, SUB_CMD_NORM, sensMouseDX, sensMouseDY, 0);
+#endif
+
+	command_write(CMD_DONE, SUB_CMD_NORM, 0, 0, 0);
+#endif // ARM_LINUX_BOARD
+}
+
+#endif // BOT_2_SIM_AVAILABLE
 #endif // PC

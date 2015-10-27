@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	display.c
- * @brief 	Routinen zur Displaysteuerung
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	20.12.05
+/**
+ * \file 	display.c
+ * \brief 	Routinen zur Displaysteuerung
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	20.12.05
  */
 
 #ifdef MCU
@@ -36,41 +36,42 @@
 #include "display.h"
 #include "delay.h"
 #include "shift.h"
+#include "os_thread.h"
 
-uint8_t display_screen = 0;	/*!< zurzeit aktiver Displayscreen */
+uint8_t display_screen = 0;	/**< zurzeit aktiver Displayscreen */
 
-#define DISPLAY_CLEAR 0x01		/*!< Kommando zum Loeschen */
-#define DISPLAY_CURSORHOME 0x02	/*!< Kommando fuer den Cursor */
-#define DISPLAY_MODE 0x0E		/*!< Display on, Cursor on, Blink off */
-//#define DISPLAY_MODE 0x0F		/*!< Display on, Cursor on, Blink on */
+#define DISPLAY_CLEAR 0x01		/**< Kommando zum Loeschen */
+#define DISPLAY_CURSORHOME 0x02	/**< Kommando fuer den Cursor */
+#define DISPLAY_MODE 0x0E		/**< Display on, Cursor on, Blink off */
+//#define DISPLAY_MODE 0x0F		/**< Display on, Cursor on, Blink on */
 
-#define DISPLAY_OUT 			0x07		/*!< Output-Pins Display */
-#define DISPLAY_IN 				(1<<5)		/*!< Input-Pins Display */
+#define DISPLAY_OUT 			0x07		/**< Output-Pins Display */
+#define DISPLAY_IN 				(1<<5)		/**< Input-Pins Display */
 
-#define DISPLAY_PORT			PORTC		/*!< Port an dem das Display haengt */
-#define DISPLAY_DDR				DDRC		/*!< Port an dem das Display haengt */
-#define DPC (uint8_t) (DISPLAY_PORT & ~DISPLAY_OUT)	/*!< Port des Displays */
+#define DISPLAY_PORT			PORTC		/**< Port an dem das Display haengt */
+#define DISPLAY_DDR				DDRC		/**< Port an dem das Display haengt */
+#define DPC (uint8_t) (DISPLAY_PORT & ~DISPLAY_OUT)	/**< Port des Displays */
 //#define DRC (DDRC & ~DISPLAY_PINS)
 
-//#define DISPLAY_READY_PINR	PINC		/*!< Port an dem das Ready-Flag des Display haengt */
-#define DISPLAY_READY_DDR		DDRC		/*!< Port an dem das Ready-Flag des Display haengt */
-#define DISPLAY_READY_PIN		(1<<5)		/*!< Pin  an dem das Ready-Flag des Display haengt */
+//#define DISPLAY_READY_PINR	PINC		/**< Port an dem das Ready-Flag des Display haengt */
+#define DISPLAY_READY_DDR		DDRC		/**< Port an dem das Ready-Flag des Display haengt */
+#define DISPLAY_READY_PIN		(1<<5)		/**< Pin  an dem das Ready-Flag des Display haengt */
 
-/*!
+/**
  * RS-Leitung
  * legt fest, ob die Daten an das Display in den Textpuffer (RS=1) kommen
  * oder als Steuercode interpretiert werden (RS=0)
  */
 #define DISPLAY_RS				(1<<0)
 
-/*!
+/**
  * RW-Leitung
  * legt fest, ob zum Display geschrieben wird (RW=0)
  * oder davon gelesen wird (RW=1)
  */
 #define DISPLAY_RW				(1<<1)
 
-/*!
+/**
  * Enable Leitung
  * schaltet das Interface ein (E=1).
  * Nur wenn Enable auf High-Pegel liegt, laesst sich das Display ansprechen
@@ -88,13 +89,13 @@ uint8_t display_screen = 0;	/*!< zurzeit aktiver Displayscreen */
  */
 
 #ifdef DISPLAY_REMOTE_AVAILABLE
-static uint8_t remote_column = 0; /*!< Spalte der aktuellen Cursorposition fuer Remote-LCD */
-static uint8_t remote_row = 0;    /*!< Zeile der aktuellen Cursorposition fuer Remote-LCD */
+static uint8_t remote_column = 0; /**< Spalte der aktuellen Cursorposition fuer Remote-LCD */
+static uint8_t remote_row = 0;    /**< Zeile der aktuellen Cursorposition fuer Remote-LCD */
 #endif
 
-/*!
+/**
  * Uebertraegt ein Kommando an das Display
- * @param cmd Das Kommando
+ * \param cmd Das Kommando
  */
 static void display_cmd(uint8_t cmd) {
 	/* Kommando cmd an das Display senden */
@@ -110,9 +111,9 @@ static void display_cmd(uint8_t cmd) {
 	}
 }
 
-/*!
+/**
  * Schreibt ein Zeichen auf das Display
- * @param data Das Zeichen
+ * \param data Das Zeichen
  */
 void display_data(const char data) {
 	/* Zeichen aus data in den Displayspeicher schreiben */
@@ -123,8 +124,8 @@ void display_data(const char data) {
 	DISPLAY_PORT = DPC;	// Alles zurueck setzen ==> Fallende Flanke von Enable
 }
 
-/*!
- * @brief	Loescht das ganze Display
+/**
+ * \brief	Loescht das ganze Display
  */
 void display_clear(void) {
 	display_cmd(DISPLAY_CLEAR); // Display loeschen, Cursor Home
@@ -133,10 +134,10 @@ void display_clear(void) {
 #endif
 }
 
-/*!
+/**
  * Positioniert den Cursor
- * @param row		Zeile
- * @param column	Spalte
+ * \param row		Zeile
+ * \param column	Spalte
  */
 void display_cursor(int16_t row, int16_t column) {
 	const uint8_t r = (uint8_t) (row - 1);
@@ -164,7 +165,7 @@ void display_cursor(int16_t row, int16_t column) {
 #endif
 }
 
-/*!
+/**
  * Initialisiert das Display
  */
 void display_init(void) {
@@ -188,17 +189,17 @@ void display_init(void) {
 	display_cmd(DISPLAY_CLEAR); // Display loeschen, Cursor Home
 }
 
-/*!
+/**
  * Schreibt einen String auf das Display, der im Flash gespeichert ist
- * @param *format 	Format, wie beim printf, Zeiger aber auf String im Flash
- * @param ... 		Variable Argumentenliste, wie beim printf
- * @return			Anzahl der geschriebenen Zeichen
+ * \param *format 	Format, wie beim printf, Zeiger aber auf String im Flash
+ * \param ... 		Variable Argumentenliste, wie beim printf
+ * \return			Anzahl der geschriebenen Zeichen
  * Ganz genauso wie das "alte" display_printf(...) zu benutzen, das Makro
  * define display_printf(format, args...) erledigt alles automatisch, damit der String
  * im Flash verbleibt und erst zur Laufzeit temporaer (jeweils nur eine Zeile) geladen wird.
  */
 uint8_t display_flash_printf(const char * format, ...) {
-	char display_buf[DISPLAY_BUFFER_SIZE]; /*!< Pufferstring fuer Displayausgaben */
+	char display_buf[DISPLAY_BUFFER_SIZE]; /**< Pufferstring fuer Displayausgaben */
 	va_list	args;
 
 	/* Sicher gehen, dass der zur Verfuegung stehende Puffer nicht ueberlaeuft */
@@ -223,10 +224,10 @@ uint8_t display_flash_printf(const char * format, ...) {
 	return len;
 }
 
-/*!
+/**
  * Gibt einen String (im Flash) auf dem Display aus
- * @param *text	Zeiger auf den auszugebenden String
- * @return Anzahl der geschriebenen Zeichen
+ * \param *text	Zeiger auf den auszugebenden String
+ * \return Anzahl der geschriebenen Zeichen
  */
 uint8_t display_flash_puts(const char * text) {
 	const char * ptr = text;
@@ -247,7 +248,7 @@ uint8_t display_flash_puts(const char * text) {
 		command_write_to_internal(CMD_AKT_LCD, SUB_LCD_DATA, CMD_SIM_ADDR, c, r, len);
 		ptr = text;
 		while ((tmp = (char) pgm_read_byte(ptr++)) != 0) {
-			low_write_data(&tmp, 1);
+			cmd_functions.write(&tmp, 1);
 		}
 	os_exitCS();
 #endif // DISPLAY_REMOTE_AVAILABLE

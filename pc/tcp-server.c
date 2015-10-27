@@ -17,16 +17,18 @@
  *
  */
 
-/*!
- * @file 	tcp-server.c
- * @brief 	Demo-TCP-Server
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+/**
+ * \file 	tcp-server.c
+ * \brief 	Demo-TCP-Server
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	26.12.2005
  */
 
 #ifdef PC
 
 #include "ct-Bot.h"
+
+#ifdef BOT_2_SIM_AVAILABLE
 #include "command.h"
 #include "bot-2-sim.h"
 #include "tcp.h"
@@ -39,18 +41,14 @@
 
 /* Linux with glibc:
  *   _REENTRANT to grab thread-safe libraries
- *   _POSIX_SOURCE to get POSIX semantics
  */
 #ifndef WIN32
 #define _REENTRANT
-//#define _POSIX_SOURCE
-#else
-//#define WIN32
 #endif
 
 /* Hack for LinuxThreads */
 #ifdef __linux__
-#  define _P __P
+#define _P __P
 #endif
 
 #ifdef WIN32
@@ -67,13 +65,13 @@ typedef int socklen_t;
 #include <string.h>     // for memset()
 #include <unistd.h>     // for close()
 
-static int server;                    /*!< Server-Socket */
+static int server;                    /**< Server-Socket */
 
-static struct sockaddr_in serverAddr; /*!< Lokale Adresse  */
-static struct sockaddr_in clientAddr; /*!< Client-Adresse  */
-static socklen_t clntLen;          /*!< Laenge der Datenstruktur der Client-Adresse */
+static struct sockaddr_in serverAddr; /**< Lokale Adresse  */
+static struct sockaddr_in clientAddr; /**< Client-Adresse  */
+static socklen_t clntLen;          /**< Laenge der Datenstruktur der Client-Adresse */
 
-/*!
+/**
  * Init TCP-Server
  */
 void tcp_server_init(void) {
@@ -88,7 +86,7 @@ void tcp_server_init(void) {
         printf("Couldn't not find a usable WinSock DLL.\n");
         exit(1);
     }
-#endif
+#endif // WIN32
 
     /* Wir geben uns als Sim aus, weil die Pakete mit derselben Zieladresse
      * wieder zurueckkommen */
@@ -101,12 +99,12 @@ void tcp_server_init(void) {
 	}
 
 	int i = 1;
-	setsockopt(server, SOL_SOCKET, SO_REUSEADDR, (char *)&i, sizeof(i));
+	setsockopt(server, SOL_SOCKET, SO_REUSEADDR, (char *) &i, sizeof(i));
 
-	memset(&serverAddr, 0, sizeof(serverAddr));   // Clean up
-	serverAddr.sin_family = AF_INET;              // Internet address family
+	memset(&serverAddr, 0, sizeof(serverAddr)); // Clean up
+	serverAddr.sin_family = AF_INET; // Internet address family
 	serverAddr.sin_addr.s_addr = htonl(INADDR_ANY); // Any incoming interface
-	serverAddr.sin_port = htons(PORT);      // Local port to listen on
+	serverAddr.sin_port = htons(PORT); // Local port to listen on
 
 	/* Bind to the local address */
 	if (bind(server, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
@@ -121,9 +119,9 @@ void tcp_server_init(void) {
 	}
 }
 
-/*!
+/**
  * Hauptschleife des TCP-Servers
- * @param runs	Anzahl der Durchlaeufe
+ * \param runs	Anzahl der Durchlaeufe
  */
 void tcp_server_run(int runs) {
 	char buffer[MAX_PAYLOAD + sizeof(command_t)];
@@ -182,7 +180,7 @@ void tcp_server_run(int runs) {
 				/* Alles ok, evtl. muessen wir aber eine Payload abholen */
 				if (received_command.payload != 0) {
 					printf("fetching payload (%u bytes)\n", received_command.payload);
-					low_read(buffer, received_command.payload);
+					cmd_functions.read(buffer, received_command.payload);
 				}
 				if (received_command.seq != seq) {
 					printf("Sequenzzaehler falsch! Erwartet: %u Empfangen %u\n", seq, received_command.seq);
@@ -218,7 +216,7 @@ void tcp_server_run(int runs) {
 }
 
 
-/*!
+/**
  * Init TCP-Test-Client
  */
 void tcp_test_client_init(void) {
@@ -226,9 +224,9 @@ void tcp_test_client_init(void) {
 	tcp_init();
 }
 
-/*!
+/**
  * Hauptschleife des TCP-Test-Clients
- * @param runs	Anzahl der Durchlaeufe, 0 fuer unendlich
+ * \param runs	Anzahl der Durchlaeufe, 0 fuer unendlich
  */
 void tcp_test_client_run(int runs) {
 	char buffer[sizeof(command_t)];
@@ -258,4 +256,5 @@ void tcp_test_client_run(int runs) {
 	exit(0);
 }
 
+#endif // BOT_2_SIM_AVAILABLE
 #endif // PC

@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	i2c.c
- * @brief 	I2C-Treiber, derzeit nur Master, interruptbasiert
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	05.09.2007
+/**
+ * \file 	i2c.c
+ * \brief 	I2C-Treiber, derzeit nur Master, interruptbasiert
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	05.09.2007
  */
 
 #ifdef MCU
@@ -34,18 +34,18 @@
 #include "i2c.h"
 #include "timer.h"
 
-#define I2C_PRESCALER 0				/*!< Prescaler fuer I2C-CLK */
+#define I2C_PRESCALER 0				/**< Prescaler fuer I2C-CLK */
 
-static uint8_t sl_addr = 0;			/*!< Adresse des Slaves */
-static uint8_t * pTxData = NULL;	/*!< Zeiger auf Puffer fuer Datenversand */
-static uint8_t * pRxData = NULL;	/*!< Zeiger auf Puffer fuer Datenempfang */
-static uint8_t txSize = 0;			/*!< Anzahl der zu sendenden Datenbytes */
-static uint8_t rxSize = 0;			/*!< Anzahl der zu lesenden Datenbytes */
-static uint8_t i2c_error = 0;		/*!< letzter Bus-Fehler */
-static volatile uint8_t i2c_complete = 0;	/*!< Spin-Lock; 0: ready, 128: Transfer aktiv */
+static uint8_t sl_addr = 0;			/**< Adresse des Slaves */
+static uint8_t * pTxData = NULL;	/**< Zeiger auf Puffer fuer Datenversand */
+static uint8_t * pRxData = NULL;	/**< Zeiger auf Puffer fuer Datenempfang */
+static uint8_t txSize = 0;			/**< Anzahl der zu sendenden Datenbytes */
+static uint8_t rxSize = 0;			/**< Anzahl der zu lesenden Datenbytes */
+static uint8_t i2c_error = 0;		/**< letzter Bus-Fehler */
+static volatile uint8_t i2c_complete = 0;	/**< Spin-Lock; 0: ready, 128: Transfer aktiv */
 
 
-/*!
+/**
  * ISR fuer I2C-Master
  */
 ISR(TWI_vect) {
@@ -135,9 +135,9 @@ ISR(TWI_vect) {
 	}
 }
 
-/*!
+/**
  * Initialisiert das I2C-Modul
- * @param bitrate	Init-Wert fuer Bit Rate Register (TWBR)
+ * \param bitrate	Init-Wert fuer Bit Rate Register (TWBR)
  */
 void i2c_init(uint8_t bitrate) {
 	TWBR = bitrate;
@@ -145,13 +145,13 @@ void i2c_init(uint8_t bitrate) {
 	TWCR = 0;				// I2C aus
 }
 
-/*!
+/**
  * Sendet nTx Bytes an einen I2C-Slave und liest anschliessend nRx Bytes
- * @param sla	Slave-Adresse
- * @param *pTx	Zeiger auf Puffer fuer zu sendende Daten
- * @param nTx	Anzahl der zu sendenden Bytes, [1; 255]
- * @param *pRx	Zeiger auf Puffer fuer zu lesende Daten
- * @param nRx	Anzahl der zu lesenden Bytes, [0; 255]
+ * \param sla	Slave-Adresse
+ * \param *pTx	Zeiger auf Puffer fuer zu sendende Daten
+ * \param nTx	Anzahl der zu sendenden Bytes, [1; 255]
+ * \param *pRx	Zeiger auf Puffer fuer zu lesende Daten
+ * \param nRx	Anzahl der zu lesenden Bytes, [0; 255]
  */
 void i2c_write_read(uint8_t sla, void * pTx, uint8_t nTx, void * pRx, uint8_t nRx) {
 	/* Inits */
@@ -166,12 +166,12 @@ void i2c_write_read(uint8_t sla, void * pTx, uint8_t nTx, void * pRx, uint8_t nR
 	TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWIE) | (1<<TWSTA);
 }
 
-/*!
+/**
  * Sendet ein Byte an einen I2C-Slave und liest anschliessend nRx Bytes
- * @param sla		Slave-Adresse
- * @param txData	Byte, das zunaechst an den Slave gesendet wird
- * @param *pRx		Zeiger auf Puffer fuer zu lesende Daten
- * @param nRx		Anzahl der zu lesenden Bytes
+ * \param sla		Slave-Adresse
+ * \param txData	Byte, das zunaechst an den Slave gesendet wird
+ * \param *pRx		Zeiger auf Puffer fuer zu lesende Daten
+ * \param nRx		Anzahl der zu lesenden Bytes
  */
 void i2c_read(uint8_t sla, uint8_t txData, void * pRx, uint8_t nRx) {
 	static uint8_t data;
@@ -179,9 +179,9 @@ void i2c_read(uint8_t sla, uint8_t txData, void * pRx, uint8_t nRx) {
 	i2c_write_read(sla, &data, 1, pRx, nRx);
 }
 
-/*!
+/**
  * Wartet, bis der aktuelle I2C-Transfer beendet ist
- * @return TW_NO_INFO (0xf8) falls alles ok, sonst Fehlercode
+ * \return TW_NO_INFO (0xf8) falls alles ok, sonst Fehlercode
  */
 uint8_t i2c_wait(void) {
 	uint8_t ticks = TIMER_GET_TICKCOUNT_8;

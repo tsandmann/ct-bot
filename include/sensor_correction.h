@@ -17,16 +17,16 @@
  *
  */
 
-/*!
- * @file 	sensor_correction.h
- * @brief 	Kalibrierungsdaten fuer die IR-Sensoren
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	21.04.2007
+/**
+ * \file 	sensor_correction.h
+ * \brief 	Kalibrierungsdaten fuer die IR-Sensoren
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	21.04.2007
  */
 #ifndef SENSOR_CORRECTION_H_
 #define SENSOR_CORRECTION_H_
 
-//#define DISTSENS_AVERAGE	/*!< Aktiviert die Mittelung ueber 4 Werte aus den Roh-Daten der Sensoren */
+//#define DISTSENS_AVERAGE	/**< Aktiviert die Mittelung ueber 4 Werte aus den Roh-Daten der Sensoren */
 
 /* Mit diesen Daten wird das EEPROM des realen Bots initialisiert.
  * Im Falle eines simulierten Bots fuer den Sim liegen die Daten im RAM.
@@ -36,8 +36,8 @@
  */
 #ifdef MCU
 
-#define SENSDIST_OFFSET	0	/*!< Offset (BOT), das vom Sensorrohwert abgezogen wird vor der Entfernungsberechnung */
-/*!
+#define SENSDIST_OFFSET	0	/**< Offset (BOT), das vom Sensorrohwert abgezogen wird vor der Entfernungsberechnung */
+/**
  * Wertepaare (BOT) fuer IR-Sensoren LINKS. Es ist jeweils (Spannung/2 | Distanz/5) gespeichert.
  * Aufsteigende Sortierung!
  */
@@ -45,7 +45,7 @@
 	{498/2,100/5},{346/2,150/5},{266/2,200/5},{216/2,250/5},{180/2,300/5},{152/2,350/5},{138/2,400/5}, \
 	{116/2,450/5},{104/2,500/5},{96/2,550/5},{84/2,600/5},{74/2,650/5},{76/2,700/5},{64/2,750/5} \
 }
-/*!
+/**
  * Wertepaare (BOT) fuer IR-Sensoren RECHTS. Es ist jeweils (Spannung/2 | Distanz/5) gespeichert.
  * Aufsetigende Sortierung!
  */
@@ -56,8 +56,8 @@
 
 #else
 
-#define SENSDIST_OFFSET	0	/*!< Offset (SIM), das vom Sensorrohwert abgezogen wird vor der Entfernungsberechnung */
-/*!
+#define SENSDIST_OFFSET	0	/**< Offset (SIM), das vom Sensorrohwert abgezogen wird vor der Entfernungsberechnung */
+/**
  * Wertepaare (SIM) fuer IR-Sensoren LINKS. Es ist jeweils (Spannung/2 | Distanz/5) gespeichert.
  * Aufsteigende Sortierung!
  */
@@ -65,7 +65,7 @@
 	{510/2,100/5},{376/2,150/5},{292/2,200/5},{244/2,250/5},{204/2,300/5},{184/2,350/5},{168/2,400/5}, \
 	{156/2,450/5},{144/2,500/5},{136/2,550/5},{130/2,600/5},{126/2,650/5},{120/2,700/5},{114/2,750/5} \
 }
-/*!
+/**
  * Wertepaare (SIM) fuer IR-Sensoren RECHTS. Es ist jeweils (Spannung/2 | Distanz/5) gespeichert.
  * Aufsetigende Sortierung!
  */

@@ -46,10 +46,10 @@ void bot_sens(void);
 void bot_encoder_isr(void);
 
 #ifdef SPEED_CONTROL_AVAILABLE
-extern uint16_t encTimeL[8];	/*!< Timestamps linker Encoder */
-extern uint16_t encTimeR[8];	/*!< Timestamps rechter Encoder */
-extern uint8_t i_encTimeL;		/*!< Array-Index auf letzten Timestampeintrag links */
-extern uint8_t i_encTimeR;		/*!< Array-Index auf letzten Timestampeintrag rechts */
+extern uint16_t encTimeL[8];	/**< Timestamps linker Encoder */
+extern uint16_t encTimeR[8];	/**< Timestamps rechter Encoder */
+extern uint8_t i_encTimeL;		/**< Array-Index auf letzten Timestampeintrag links */
+extern uint8_t i_encTimeR;		/**< Array-Index auf letzten Timestampeintrag rechts */
 #endif // SPEED_CONTROL_AVAILABLE
 
 #ifdef SPEED_LOG_AVAILABLE

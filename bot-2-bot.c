@@ -17,14 +17,14 @@
  *
  */
 
-/*!
- * @file 	bot-2-bot.c
- * @brief 	Bot-2-Bot-Kommunikation
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	19.03.2008
+/**
+ * \file 	bot-2-bot.c
+ * \brief 	Bot-2-Bot-Kommunikation
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	19.03.2008
  */
 
-#define DEBUG_BOT2BOT /*!< Schaltet LOG-Ausgaben (z.B. Bot-Liste) ein oder aus */
+//#define DEBUG_BOT2BOT /**< Schaltet LOG-Ausgaben (z.B. Bot-Liste) ein oder aus */
 
 #include "ct-Bot.h"
 
@@ -44,42 +44,42 @@
 #ifndef DEBUG_BOT2BOT
 #undef LOG_AVAILABLE
 #undef LOG_DEBUG
-#define LOG_DEBUG(a, ...) {} /*!< Log-Dummy */
+#define LOG_DEBUG(a, ...) {} /**< Log-Dummy */
 #endif
 
-bot_list_entry_t * bot_list = NULL; /*!< Liste aller bekannten Bots */
+bot_list_entry_t * bot_list = NULL; /**< Liste aller bekannten Bots */
 
-int16_t my_state = BOT_STATE_AVAILABLE; /*!< Der eigene Status */
+int16_t my_state = BOT_STATE_AVAILABLE; /**< Der eigene Status */
 
 #ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
-static volatile int16_t bot_2_bot_payload_size = 0;	/*!< Anzahl der (noch) zu sendenden oder erwarteten Bytes */
-static uint8_t * bot_2_bot_data = NULL;				/*!< Zeiger auf die zu sendenden oder empfangenen Daten */
-static void (* bot_2_bot_callback)(void) = NULL;	/*!< Callback-Funktion, die nach Abschluss des Empfangs ausgefuehrt wird */
+static volatile int16_t bot_2_bot_payload_size = 0;	/**< Anzahl der (noch) zu sendenden oder erwarteten Bytes */
+static uint8_t * bot_2_bot_data = NULL;				/**< Zeiger auf die zu sendenden oder empfangenen Daten */
+static void (* bot_2_bot_callback)(void) = NULL;	/**< Callback-Funktion, die nach Abschluss des Empfangs ausgefuehrt wird */
 
 #ifdef BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
-static uint8_t payload_test_buffer[255]; /*!< Datenpuffer fuer Bot-2-Bot-Payload-Test */
+static uint8_t payload_test_buffer[255]; /**< Datenpuffer fuer Bot-2-Bot-Payload-Test */
 #endif // BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
 
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
-static char remotecall_buffer[REMOTE_CALL_BUFFER_SIZE]; /*!< Puffer fuer RemoteCall-Empfang von anderem Bot */
+static char remotecall_buffer[REMOTE_CALL_BUFFER_SIZE]; /**< Puffer fuer RemoteCall-Empfang von anderem Bot */
 #endif
 #endif // BOT_2_BOT_PAYLOAD_AVAILABLE
 
 void default_cmd(command_t * cmd);
 
-/*!
+/**
  * Dummy, fuer Kommandos, die nicht bearbeitet werden sollen
- * @param *cmd	Zeiger auf ein Kommando
+ * \param *cmd	Zeiger auf ein Kommando
  */
 void default_cmd(command_t * cmd) {
 	cmd = cmd;
 	// NOP
 }
 
-/*! Dummy-Eintrag fuer Funktionsliste, falls entsprechender Code inaktiv */
+/** Dummy-Eintrag fuer Funktionsliste, falls entsprechender Code inaktiv */
 #define BOT_2_BOT_DUMMY	default_cmd
 
-/*!
+/**
  * Funktionstabelle fuer alle Bot-2-Bot-Kommandos.
  * Hier muss man die Auswertungs-Funktionen eintragen, wenn man
  * die Bot-2-Bot-Kommunikation fuer weitere Zwecke benutzen moechte.
@@ -108,10 +108,10 @@ void (* cmd_functions[])(command_t * cmd) = {
 	};
 
 #ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
-/*! Dummy-Eintrag fuer Payload-Mappings, falls entsprechender Code inaktiv */
+/** Dummy-Eintrag fuer Payload-Mappings, falls entsprechender Code inaktiv */
 #define BOT_2_BOT_PAYLOAD_DUMMY	{ (void (*)(void)) default_cmd, NULL, 0 }
 
-/*!
+/**
  * Tabelle fuer alle Bot-2-Bot-Payload-Zuordnungen.
  * Hier muss man die Callback-Funktionen und Datenpuffer eintragen,
  * wenn man die Bot-2-Bot-Kommunikation mit Payload-Versand fuer
@@ -139,18 +139,18 @@ bot_2_bot_payload_mappings_t bot_2_bot_payload_mappings[] = {
 };
 #endif // BOT_2_BOT_PAYLOAD_AVAILABLE
 
-/*!
+/**
  * Gibt die Anzahl der Kommando-Funktionen zurueck
- * @return	Anzahl der Funktionen in cmd_functions
+ * \return	Anzahl der Funktionen in cmd_functions
  */
 uint8_t get_bot2bot_cmds(void) {
 	return sizeof(cmd_functions) / sizeof(cmd_functions[0]);
 }
 
-/*!
+/**
  * Liefert die Kommando-Nummer zu einer Kommando-Funktion
- * @param *func	Name der auswertenden Funktion
- * @return		Kommando-ID, oder 255, falls Funktion nicht vorhanden
+ * \param *func	Name der auswertenden Funktion
+ * \return		Kommando-ID, oder 255, falls Funktion nicht vorhanden
  */
 uint8_t get_command_of_function(void(* func)(command_t * cmd)) {
 	uint8_t i;
@@ -161,10 +161,10 @@ uint8_t get_command_of_function(void(* func)(command_t * cmd)) {
 	return 255;
 }
 
-/*!
+/**
  * Fuegt der Bot-Liste einen Bot hinzu.
  * Neue Bots sind per Definition erstmal AVAILABLE
- * @param *cmd	Zeiger auf empfangenes Kommando
+ * \param *cmd	Zeiger auf empfangenes Kommando
  */
 void add_bot_to_list(command_t * cmd) {
 	uint8_t addr = cmd->from;
@@ -235,9 +235,9 @@ void add_bot_to_list(command_t * cmd) {
 }
 
 #ifdef DELETE_BOTS
-/*!
+/**
  * Setzt einen Bot in der Liste auf inaktiv / verschwunden
- * @param address	Bot-Adresse
+ * \param address	Bot-Adresse
  */
 void delete_bot_from_list(uint8_t address) {
 	bot_list_entry_t * ptr = bot_list;
@@ -250,10 +250,10 @@ void delete_bot_from_list(uint8_t address) {
 	}
 }
 #endif // DELETE_BOTS
-/*!
+/**
  * Sucht den naechsten verfuegbaren Bot in der Botliste
- * @param *ptr	Zeiger auf letzten Eintrag oder NULL (=Anfang)
- * @return		Zeiger auf verfuegbaren Bot oder NULL (=alle busy)
+ * \param *ptr	Zeiger auf letzten Eintrag oder NULL (=Anfang)
+ * \return		Zeiger auf verfuegbaren Bot oder NULL (=alle busy)
  */
 bot_list_entry_t * get_next_available_bot(bot_list_entry_t * ptr) {
 	while (1) {
@@ -263,9 +263,9 @@ bot_list_entry_t * get_next_available_bot(bot_list_entry_t * ptr) {
 	}
 }
 
-/*!
+/**
  * Setzt einen empfangenen Status eines Bots
- * @param *cmd	Zeiger auf Kommando mit Daten
+ * \param *cmd	Zeiger auf Kommando mit Daten
  */
 void set_received_bot_state(command_t * cmd) {
 	bot_list_entry_t * ptr = NULL;
@@ -284,10 +284,10 @@ void set_received_bot_state(command_t * cmd) {
 	add_bot_to_list(cmd);
 }
 
-/*!
+/**
  * Setzt den eigenen Status auf einen neuen Wert und schickt ihn an
  * alle Bots
- * @param state	Neuer Status
+ * \param state	Neuer Status
  */
 void publish_bot_state(int16_t state) {
 	my_state = state;
@@ -295,10 +295,10 @@ void publish_bot_state(int16_t state) {
 }
 
 #ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
-/*!
+/**
  * Liefert den Payload-Typ (Subkommando) zu einer Auswertungsfunktion
- * @param *func	Name der auswertenden Funktion
- * @return		Subcommand oder 255, falls Funktion nicht vorhanden
+ * \param *func	Name der auswertenden Funktion
+ * \return		Subcommand oder 255, falls Funktion nicht vorhanden
  */
 uint8_t get_type_of_payload_function(void(* func)(void)) {
 	uint8_t i;
@@ -309,15 +309,15 @@ uint8_t get_type_of_payload_function(void(* func)(void)) {
 	return 255;
 }
 
-/*! @todo Bot-Adressen ueberpruefen */
+/** \todo Bot-Adressen ueberpruefen */
 
-/*!
+/**
  * Sendet eine Payload-Transferanfrage an einen anderen Bot
- * @param to			Empfaengeradresse
- * @param type			Typ der Daten fuer den anderen Bot
- * @param *data			Zeiger auf zu sendende Daten
- * @param size			Anzahl der Bytes, die zum anderen Bot uebertragen werden sollen
- * @return				0, falls die Daten korrekt uebertragen wurden, sonst Fehlercode
+ * \param to			Empfaengeradresse
+ * \param type			Typ der Daten fuer den anderen Bot
+ * \param *data			Zeiger auf zu sendende Daten
+ * \param size			Anzahl der Bytes, die zum anderen Bot uebertragen werden sollen
+ * \return				0, falls die Daten korrekt uebertragen wurden, sonst Fehlercode
  */
 int8_t bot_2_bot_send_payload_request(uint8_t to, uint8_t type,
 		void * data, int16_t size) {
@@ -333,24 +333,24 @@ int8_t bot_2_bot_send_payload_request(uint8_t to, uint8_t type,
 	LOG_DEBUG(" zu sendende Daten umfassen %d Bytes @ 0x%lx", size, (size_t) data);
 	command_write_to(BOT_CMD_REQ, 0, to, size, type, 0);
 #ifdef PC
-/*! @todo etwas unschoene Loesung */
+/** \todo etwas unschoene Loesung */
 	command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0);
 #endif
 	bot_2_bot_data = data;
 	bot_2_bot_payload_size = size;
-/*! @todo Timeout */
+/** \todo Timeout */
 	/* warten auf ACK */
 	while (bot_2_bot_payload_size >= 0) {
 #ifdef MCU
-/*! @todo receive_until_Frame() fuer MCU => einheitlicher Code hier fuer MCU und PC */
+/** \todo receive_until_frame() fuer MCU => einheitlicher Code hier fuer MCU und PC */
 		while (uart_data_available() < sizeof(command_t)) {}
 		if (command_read() == 0) {
 			command_evaluate();
 		}
 #else	// PC
 		LOG_DEBUG(" Warte auf (naechstes) ACK von Bot %u", to);
-		if (receive_until_Frame(BOT_CMD_ACK) != 0) {
-			LOG_DEBUG(" receive_until_Frame() meldet Fehler, Abbruch");
+		if (receive_until_frame(BOT_CMD_ACK) != 0) {
+			LOG_DEBUG(" receive_until_frame() meldet Fehler, Abbruch");
 			bot_2_bot_data = NULL;
 			bot_2_bot_callback = NULL;
 			bot_2_bot_payload_size = 0;
@@ -366,12 +366,12 @@ int8_t bot_2_bot_send_payload_request(uint8_t to, uint8_t type,
 	return -4;
 }
 
-/*!
+/**
  * Behandelt eine Payload-Sende-Anfrage
- * @param *cmd	Zeiger auf das empfangene Kommando
+ * \param *cmd	Zeiger auf das empfangene Kommando
  */
 void bot_2_bot_handle_payload_request(command_t * cmd) {
-/*! @todo Nur wenn Bot steht? */
+/** \todo Nur wenn Bot steht? */
 	LOG_DEBUG("Payload-Sendeanfrage von Bot %u erhalten", cmd->from);
 	LOG_DEBUG(" werte Payload-Sendeanfrage aus...");
 	int16_t size = cmd->data_l;
@@ -416,7 +416,7 @@ void bot_2_bot_handle_payload_request(command_t * cmd) {
 		bot_2_bot_data = bot_2_bot_payload_mappings[type].data;
 		LOG_DEBUG("  Datenpuffer @ 0x%lx", (size_t)bot_2_bot_data);
 #ifdef MCU
-/*! @todo Timeout */
+/** \todo Timeout */
 		/* warten auf Kommando, dem die Payload-Daten folgen */
 		while (42) {
 			while (uart_data_available() < sizeof(command_t)) {}
@@ -431,9 +431,9 @@ void bot_2_bot_handle_payload_request(command_t * cmd) {
 	}
 }
 
-/*!
+/**
  * Behandelt eine Payload-Sende-Bestaetigung
- * @param *cmd	Zeiger auf das empfangene Kommando
+ * \param *cmd	Zeiger auf das empfangene Kommando
  */
 void bot_2_bot_handle_payload_ack(command_t * cmd) {
 	if (bot_2_bot_data == NULL) {
@@ -460,7 +460,7 @@ void bot_2_bot_handle_payload_ack(command_t * cmd) {
 			command_write_rawdata_to(BOT_CMD_PAYLOAD, 0, cmd->from, last_packet, 0,
 					window_size, bot_2_bot_data);
 #ifdef PC
-/*! @todo etwas unschoene Loesung */
+/** \todo etwas unschoene Loesung */
 			command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0);
 #endif
 			bot_2_bot_data += window_size;
@@ -490,19 +490,19 @@ void bot_2_bot_handle_payload_ack(command_t * cmd) {
 	}
 }
 
-/*!
+/**
  * Behandelt eingehende Payload-Daten, die von einem anderen Bot kommen
- * @param *cmd	Zeiger auf das empfangene Kommando
+ * \param *cmd	Zeiger auf das empfangene Kommando
  */
 void bot_2_bot_handle_payload_data(command_t * cmd) {
 	uint8_t size = cmd->payload;
 	LOG_DEBUG(" Payload mit %u Bytes angekuendigt", size);
 #ifdef MCU
-/*! @todo Timeout */
+/** \todo Timeout */
 	/* warten, bis Payload-Daten im Empfangspuffer */
 	while (uart_data_available() < size) {}
 #endif // MCU
-	uint8_t n = low_read(bot_2_bot_data, size);
+	uint8_t n = cmd_functions.read(bot_2_bot_data, size);
 	LOG_DEBUG(" %u Bytes der Payload gelesen", n);
 	if (size != n) {
 		int16_t result = 1;
@@ -535,7 +535,7 @@ void bot_2_bot_handle_payload_data(command_t * cmd) {
 	}
 }
 
-/*!
+/**
  * Gibt die empfangenen Daten auf stdout aus (nur PC)
  */
 void bot_2_bot_print_recv_data(void) {
@@ -562,9 +562,9 @@ void bot_2_bot_print_recv_data(void) {
 }
 
 #ifdef BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
-static const char * test_string = "Hey Bot!"; /*!< Testdaten fuer Payload-Test */
+static const char * test_string = "Hey Bot!"; /**< Testdaten fuer Payload-Test */
 
-/*!
+/**
  * Testet den Payload-Empfang
  */
 void bot_2_bot_payload_test_verify(void) {
@@ -587,11 +587,11 @@ void bot_2_bot_payload_test_verify(void) {
 	memset(payload_test_buffer, 0, sizeof(payload_test_buffer));
 }
 
-/*!
+/**
  * Testet den Payload-Versand
- * @param *caller	Dummy-Zeiger, damit per RemoteCall verwendbar
- * @param to		Adresse des Empfangsbots
- * @return			0, falls kein Fehler, sonst Fehlercode
+ * \param *caller	Dummy-Zeiger, damit per RemoteCall verwendbar
+ * \param to		Adresse des Empfangsbots
+ * \return			0, falls kein Fehler, sonst Fehlercode
  */
 int8_t bot_2_bot_pl_test(Behaviour_t * caller, uint8_t to) {
 	uint16_t i;
@@ -615,7 +615,7 @@ int8_t bot_2_bot_pl_test(Behaviour_t * caller, uint8_t to) {
 #endif // BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
 
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
-/*!
+/**
  * Fuehrt einen RemoteCall aus, der von einem
  * anderen Bot kam
  */
@@ -623,14 +623,14 @@ void bot_2_bot_handle_remotecall(void) {
 	bot_remotecall_from_command(remotecall_buffer);
 }
 
-/*!
+/**
  * Startet einen RemoteCall auf einem anderen Bot
- * @param bot_addr	Adresse des anderen Bots
- * @param *function	Name der Botenfunktion des zu startenden Verhaltens
- * @param par1		Erster Parameter des zu startenden Verhaltens
- * @param par2		Zweiter Parameter des zu startenden Verhaltens
- * @param par3		Dritter Parameter des zu startenden Verhaltens
- * @return			Fehlercode (0, falls alles OK)
+ * \param bot_addr	Adresse des anderen Bots
+ * \param *function	Name der Botenfunktion des zu startenden Verhaltens
+ * \param par1		Erster Parameter des zu startenden Verhaltens
+ * \param par2		Zweiter Parameter des zu startenden Verhaltens
+ * \param par3		Dritter Parameter des zu startenden Verhaltens
+ * \return			Fehlercode (0, falls alles OK)
  */
 int8_t bot_2_bot_start_remotecall(uint8_t bot_addr, char * function, remote_call_data_t par1,
 		remote_call_data_t par2, remote_call_data_t par3) {
@@ -665,7 +665,7 @@ int8_t bot_2_bot_start_remotecall(uint8_t bot_addr, char * function, remote_call
 #endif // BOT_2_BOT_PAYLOAD_AVAILABLE
 
 #ifdef LOG_AVAILABLE
-/*!
+/**
  * Gibt die Liste der Bots inkl. Adresse und Status aus
  */
 void print_bot_list(void) {

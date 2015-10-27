@@ -27,7 +27,7 @@
 #include "ct-Bot.h"
 #include "init.h"
 #include "botcontrol.h"
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 
 
 /**
@@ -37,7 +37,7 @@
  * \return Exit-Code
  */
 int main(int argc, char * argv[]) {
-	/* Alles initialisieren */
+	/* alles initialisieren */
 	ctbot_init(argc, argv);
 
 	/* Hauptschleife des Bots */

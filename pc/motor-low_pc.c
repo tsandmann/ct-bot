@@ -82,6 +82,7 @@ void servo_low(uint8_t servo, uint8_t pos) {
 	}
 
 	values[servo - 1] = pos;
+//	LOG_DEBUG("servo_low(): command_write(CMD_AKT_SERVO, SUB_CMD_NORM, %u, %u, 0)", values[0], values[1]);
 	command_write(CMD_AKT_SERVO, SUB_CMD_NORM, values[0], values[1], 0);
 }
 

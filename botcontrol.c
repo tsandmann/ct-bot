@@ -40,8 +40,8 @@
 #include "motor.h"
 #include "map.h"
 #include "init.h"
-
-#include <stdio.h>
+#include "bot-2-atmega.h"
+#include "bot-2-linux.h"
 
 //#define DEBUG_TIMES /**< Gibt Debug-Infos zum Timing aus (PC) */
 
@@ -55,9 +55,17 @@ struct timeval init_start, init_stop; /**< Zeit von Beginn und Ende des Verhalte
  * abzufragen und auf Pakete des Simulators zu reagieren.
  */
 void pre_behaviour(void) {
+#ifdef ARM_LINUX_BOARD
+	/* Daten vom ATmega empfangen */
+	bot_2_atmega_listen();
+#endif // ARM_LINUX_BOARD
+
 #ifdef BOT_2_SIM_AVAILABLE
 	/* Daten vom Sim empfangen */
 	bot_2_sim_listen();
+#ifdef ARM_LINUX_BOARD
+	set_bot_2_atmega();
+#endif // ARM_LINUX_BOARD
 #endif // BOT_2_SIM_AVAILABLE
 
 	/* Sensordaten aktualisieren / auswerten */
@@ -67,8 +75,16 @@ void pre_behaviour(void) {
 	/* Zum Debuggen der Zeiten */
 	GETTIMEOFDAY(&init_start, NULL);
 	int t1 = (init_start.tv_sec - init_stop.tv_sec) * 1000000 + init_start.tv_usec - init_stop.tv_usec;
-	printf("Done-Token (%d) in nach %d usec\n", received_command.data_l, t1);
+	LOG_DEBUG("Done-Token (%d) in nach %d usec", received_command.data_l, t1);
 #endif // PC && DEBUG_TIMES
+
+#ifdef RC5_AVAILABLE
+	rc5_control(); // Abfrage der IR-Fernbedienung
+#endif // RC5_AVAILABLE
+
+#ifdef BOT_2_RPI_AVAILABLE
+	bot_2_linux_inform();
+#endif // BOT_2_RPI_AVAILABLE
 }
 
 /**
@@ -80,6 +96,10 @@ void pre_behaviour(void) {
 void post_behaviour(void) {
 	static uint16_t comm_ticks = 0;
 	static uint8_t uart_gui = 0;
+
+#ifdef BOT_2_RPI_AVAILABLE
+	bot_2_linux_listen();
+#endif // BOT_2_RPI_AVAILABLE
 
 #ifdef CREATE_TRACEFILE_AVAILABLE
 	trace_add_sensors();
@@ -115,18 +135,21 @@ void post_behaviour(void) {
 	trace_add_actuators();
 #endif // CREATE_TRACEFILE_AVAILABLE
 
-	/* Sim ueber naechsten Schleifendurchlauf / Bot-Zyklus informieren */
+	/* Sim oder ATmega ueber naechsten Schleifendurchlauf / Bot-Zyklus informieren */
+#ifdef ARM_LINUX_BOARD
+	set_bot_2_atmega();
+#endif // ARM_LINUX_BOARD
 	command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0); // flusht auch den Sendepuffer
 
 #ifdef DEBUG_TIMES
 	/* Zum Debuggen der Zeiten */
 	GETTIMEOFDAY(&init_stop, NULL);
 	int t2 = (init_stop.tv_sec - init_start.tv_sec) * 1000000 + init_stop.tv_usec - init_start.tv_usec;
-	printf("Done-Token (%d) out after %d usec\n", simultime, t2);
+	LOG_DEBUG("Done-Token (%d) out after %d usec", simultime, t2);
 #endif // DEBUG_TIMES
 #endif // PC
 
-#ifdef OS_AVAILABLE
+#if defined OS_AVAILABLE
 	/* Rest der Zeitscheibe (OS_TIME_SLICE ms) schlafen legen */
 	os_thread_yield();
 #endif // OS_AVAILABLE
@@ -136,7 +159,7 @@ void post_behaviour(void) {
  * Faehrt den Bot sauber herunter
  */
 void ctbot_shutdown(void) {
-	LOG_INFO("Shutting down...");
+	LOG_INFO("Shutting c't-Bot down...");
 
 	motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
 

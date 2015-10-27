@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	ena.c
- * @brief 	Routinen zur Steuerung der Enable-Leitungen
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+/**
+ * \file 	ena.c
+ * \brief 	Routinen zur Steuerung der Enable-Leitungen
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	26.12.2005
  */
 
 #ifdef MCU
@@ -35,21 +35,21 @@
 #include "mouse.h"
 #include "mmc-low.h"
 
-static uint8_t ena = 0; /*!< Sichert den Zustand der Enable-Leitungen */
+static uint8_t ena = 0; /**< Sichert den Zustand der Enable-Leitungen */
 #ifdef MOUSE_AVAILABLE
-static uint8_t mmc_interrupted = 0; /*!< Speichert, ob die MMC vom Maussensor ausgeschaltet wurde */
+static uint8_t mmc_interrupted = 0; /**< Speichert, ob die MMC vom Maussensor ausgeschaltet wurde */
 #endif
 
-/*!
+/**
  * Initialisiert die Enable-Leitungen
  */
-void ENA_init() {
+void ENA_init(void) {
 	DDRD |= 4;
 	shift_init();
 	ENA_set(0x00);
 }
 
-/*!
+/**
  * Schaltet einzelne Enable-Transistoren an
  * andere werden nicht beeinflusst
  * Achtung, die Treiber-Transistoren sind Low-Aktiv!!!
@@ -106,7 +106,7 @@ void ENA_on(uint8_t enable) {
 #endif // EXPANSION_BOARD_AVAILABLE
 }
 
-/*!
+/**
  * Schaltet einzelne Enable-Transistoren aus
  * andere werden nicht beeinflusst
  * Achtung, die Treiber-Transistoren sind Low-Aktiv!!!
@@ -144,7 +144,7 @@ void ENA_off(uint8_t enable) {
 #endif // MOUSE_AVAILABLE
 }
 
-/*!
+/**
  * Schaltet die Enable-Transistoren
  * Achtung, die Treiber-Transistoren sind Low-Aktiv!!!
  * ENA_set bezieht sich auf die Transistoren

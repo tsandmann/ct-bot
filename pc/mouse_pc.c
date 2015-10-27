@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	mouse_pc.c
- * @brief 	Routinen fuer die Ansteuerung eines opt. Maussensors
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+/**
+ * \file 	mouse_pc.c
+ * \brief 	Routinen fuer die Ansteuerung eines opt. Maussensors
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	26.12.2005
  */
 
 #ifdef PC
@@ -30,19 +30,19 @@
 #ifdef MOUSE_AVAILABLE
 #include "mouse.h"
 
-/*!
+/**
  * Initialisiere Maussensor
  */
 void mouse_sens_init(void) {
 }
 
-/*!
+/**
  * Uebertraegt ein Bild vom Maussensor an den PC
  */
 void mouse_transmit_picture(void) {
 }
 
-/*!
+/**
  * Gibt den SQUAL-Wert zurueck. Dieser gibt an, wieviele Merkmale der Sensor
  * im aktuell aufgenommenen Bild des Untergrunds wahrnimmt.
  * Fuer simulierten Bot zur Zeit mit einem fixen Wert belegt, da fuer den

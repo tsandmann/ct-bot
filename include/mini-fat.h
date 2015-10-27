@@ -31,16 +31,16 @@
 #ifndef MINIFAT_H_
 #define MINIFAT_H_
 
-#define MMC_FILENAME_MAX	255 /*!< Maximale Dateienamenlaenge in Zeichen [1;255] */
-#define MMC_HEADER_DATA_SIZE (512 - sizeof(file_len_t) - (MMC_FILENAME_MAX + 1)) /*!< Header-Daten-Groesse [Byte] */
+#define MMC_FILENAME_MAX	255 /**< Maximale Dateienamenlaenge in Zeichen [1;255] */
+#define MMC_HEADER_DATA_SIZE (512 - sizeof(file_len_t) - (MMC_FILENAME_MAX + 1)) /**< Header-Daten-Groesse [Byte] */
 
-/*! Datentyp fuer Mini-Fat-Dateilaenge */
+/** Datentyp fuer Mini-Fat-Dateilaenge */
 typedef union {
-	uint32_t u32;	/*!< Laenge in 32 Bit */
-	uint8_t u8[4];	/*!< Laenge in 4 "einzelnen" Bytes */
+	uint32_t u32;	/**< Laenge in 32 Bit */
+	uint8_t u8[4];	/**< Laenge in 4 "einzelnen" Bytes */
 } file_len_t;
 
-/*! Datentyp fuer Mini-Fat Dateiheader */
+/** Datentyp fuer Mini-Fat Dateiheader */
 typedef struct {
 	const char filename[MMC_FILENAME_MAX + 1];
 	file_len_t length;
@@ -53,7 +53,7 @@ typedef struct {
 #include <string.h>
 #include <avr/pgmspace.h>
 
-/*!
+/**
  * Sucht einen Block auf der MMC-Karte, dessen erste Bytes dem Dateinamen entsprechen
  * \param filename	String im Flash zur Identifikation
  * \param buffer 	Zeiger auf 512 Byte Puffer im SRAM
@@ -63,7 +63,7 @@ typedef struct {
  */
 uint32_t mini_fat_find_block_P(const char * filename, void * buffer, uint32_t end_addr);
 
-/*!
+/**
  * Sucht einen Block auf der MMC-Karte, dessen erste Bytes dem Dateinamen entsprechen
  * \param filename	String zur Identifikation
  * \param buffer 	Zeiger auf 512 Byte Puffer im SRAM
@@ -72,14 +72,14 @@ uint32_t mini_fat_find_block_P(const char * filename, void * buffer, uint32_t en
  */
 #define mini_fat_find_block(filename, buffer) mini_fat_find_block_P(PSTR(filename), buffer, mmc_get_size());
 
-/*!
+/**
  * Leert eine Datei im MiniFAT-Dateisystem auf der MMC/SD-Karte
  * \param file_start	Anfangsblock der Datei
  * \param *buffer		Zeiger auf 512 Byte Puffer im SRAM, wird geloescht!
  */
 void mini_fat_clear_file(uint32_t file_start, void * buffer);
 
-/*!
+/**
  * Liest den Mini-Fat-Header aus einer Mini-Fat-Datei
  * \param address Block-Adresse der Mini-Fat-Datei (erster Datenblock, nicht Header)
  * \param *buffer Puffer von 512 Byte (wird ueberschrieben)
@@ -91,7 +91,7 @@ static inline mini_fat_header_t * mini_fat_read_header(uint32_t address, void * 
 	return header;
 }
 
-/*!
+/**
  * Liest die zusaetzlichen Daten des Mini-Fat-Headers aus
  * \param address Block-Adresse der Mini-Fat-Datei (erster Datenblock, nicht Header)
  * \param *buffer Puffer von 512 Byte (wird ueberschrieben)
@@ -102,7 +102,7 @@ static inline uint8_t * mini_fat_read_header_data(uint32_t address, void * buffe
 	return header->data;
 }
 
-/*!
+/**
  * Schreibt einen Mini-Fat-Header zurueck
  * \param address Block-Adresse der Mini-Fat-Datei (erster Datenblock, nicht Header)
  * \param *header Zeiger auf Header, 512 Byte gross
@@ -111,7 +111,7 @@ static inline void mini_fat_write_header(uint32_t address, mini_fat_header_t * h
 	mmc_write_sector(address - 1, header);
 }
 
-/*!
+/**
  * Schreibt Header-Daten in einen Mini-Fat-Header
  * \param address Block-Adresse der Mini-Fat-Datei (erster Datenblock, nicht Header)
  * \param *header Zeiger auf die Header-Daten, die geschrieben werden sollen
@@ -127,7 +127,7 @@ static inline void mini_fat_write_header_data(uint32_t address, const uint8_t * 
 	mini_fat_write_header(address, buffer);
 }
 
-/*!
+/**
  * Liest die Groesse einer Datei im MiniFAT-Dateisystem auf der MMC/SD-Karte aus
  * \param file_start	Anfangsblock der Datei (Nutzdaten, nicht Header)
  * \param *buffer		Zeiger auf 512 Byte Puffer im SRAM, wird veraendert!
@@ -142,7 +142,7 @@ static inline uint32_t mini_fat_get_filesize(uint32_t file_start, void * buffer)
 
 #else // ! MCU
 
-/*!
+/**
  * Erzeugt eine Datei, die an den ersten 3 Byte die ID- enthaelt. dann folgen 512 - sizeof(id) nullen
  * Danach kommen so viele size kByte Nullen
  * \param filename Der Dateiname der zu erzeugenden Datei
@@ -151,7 +151,7 @@ static inline uint32_t mini_fat_get_filesize(uint32_t file_start, void * buffer)
  */
 void create_mini_fat_file(const char * filename, const char * id_string, uint32_t size);
 
-/*!
+/**
  * Erzeugt eine Mini-Fat-Datei in einer emulierten MMC
  * \param addr			Die Adresse auf der emulierten Karte, an der die Datei beginnen soll
  * \param id_string 	Die ID der Datei, wie sie zu Beginn in der Datei steht
@@ -162,7 +162,7 @@ void create_mini_fat_file(const char * filename, const char * id_string, uint32_
  */
 void create_emu_mini_fat_file(uint32_t addr, const char * id_string, uint32_t size);
 
-/*!
+/**
  * Loescht eine Mini-Fat-Datei in einer emulierten MMC
  * \param id_string 	Die ID der Datei, wie sie zu Beginn in der Datei steht
  */
@@ -170,7 +170,7 @@ void delete_emu_mini_fat_file(const char * id_string);
 #endif // MCU
 
 #ifdef DISPLAY_MINIFAT_INFO
-/*!
+/**
  * Display-Screen fuer Ausgaben des MiniFAT-Treibers, falls dieser welche erzeugt.
  * Da die MiniFat-Funktionen im Wesentlichen den aktuellen Suchstatus der MMC
  * ausgeben, erfolgt die eigentliche Ausgabe in der jeweiligen Schleife der

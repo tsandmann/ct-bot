@@ -151,6 +151,20 @@ static inline void os_thread_sleep(uint32_t ms) {
 }
 
 /**
+ * Blockiert den aktuellten Thread fuer die angegebene Zeit und schaltet
+ * auf einen anderen Thread um
+ * => coorporative threadswitch
+ * \param ticks	Zeit in 176 us, die der aktuelle Thread (mindestens) blockiert wird
+ */
+static inline void os_thread_sleep_ticks(uint16_t ticks) {
+	if (ticks) {
+		uint32_t now = TIMER_GET_TICKCOUNT_32; // Aktuelle Systemzeit
+		os_thread_running->nextSchedule = now + ticks;
+		os_schedule(now); // Aufruf des Schedulers
+	}
+}
+
+/**
  * Entfernt ein Signal vom aktuellen Thread
  * \param *signal	Signal, das entfernt werden soll
  */

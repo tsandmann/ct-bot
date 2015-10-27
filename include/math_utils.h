@@ -269,7 +269,7 @@ static inline uint16_t mul8(uint8_t a, uint8_t b) {
 #endif // MCU
 }
 
-#ifdef BPS_AVAILABLE
+#if defined BPS_AVAILABLE && ! defined BOT_2_RPI_AVAILABLE
 /**
  * Berechnet den Standort via Rueckwaertseinschnitt nach Cassini, wenn drei angepeilte Positionen bekannt sind.
  * \param a			Koordinaten von Bake A [mm]

@@ -17,19 +17,13 @@
  *
  */
 
-/*!
- * @file 	ir-rc5.c
- * @brief 	Routinen fuer die Dekodierung von RC5-Fernbedienungs-Codes
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	20.12.05
+/**
+ * \file 	ir-rc5.c
+ * \brief 	Routinen fuer die Dekodierung von RC5 IR-Fernbedienungs-Codes
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	20.12.2005
  */
 
-// Infos ueber RC6: http://www.xs4all.nl/~sbp/knowledge/ir/rc6.htm
-// http://www.xs4all.nl/~sbp/knowledge/ir/ir.htm
-
-// ========================================================================
-// RC5 Infrarot-Empfaenger
-// ========================================================================
 #ifdef MCU
 
 #include "ct-Bot.h"
@@ -39,26 +33,23 @@
 #include "ir-rc5.h"
 #include "timer.h"
 
-// -----------------------------------------------------------------------------
-// Timing
-// -----------------------------------------------------------------------------
-#define IR_SAMPLES_PER_BIT_MIN		2	/*!< Flanke vor 3 Samples -> Paket verwerfen */
+#define IR_SAMPLES_PER_BIT_MIN		2	/**< Timing: Flanke vor 3 Samples -> Paket verwerfen */
 
-/*!
+/**
  * Interrupt Serviceroutine,
  * wird alle 176 us aufgerufen
- * @param *data Zeiger auf Arbeitsdaten
- * @param pin_r Input-Port
- * @param pin Input-Pin
- * @param pause_samples Anzahl der Samples, bevor ein Startbit erkannt wird
- * @param samples_per_bit Anzahl der Samples / Bit
- * @param bits Anzahl der Bits, die Empfangen werden sollen (inkl. Startbit)
+ * \param *data Zeiger auf Arbeitsdaten
+ * \param pin_r Input-Port
+ * \param pin Input-Pin
+ * \param pause_samples Anzahl der Samples, bevor ein Startbit erkannt wird
+ * \param samples_per_bit Anzahl der Samples / Bit
+ * \param bits Anzahl der Bits, die Empfangen werden sollen (inkl. Startbit)
  */
 void ir_isr(ir_data_t * data, volatile uint8_t * pin_r, const uint8_t pin, const uint8_t pause_samples,
 		const uint8_t samples_per_bit, const uint8_t bits) {
 
-	const uint8_t samples_per_bit_early = (uint8_t)(samples_per_bit - 2); /*!< Flanke fruehestens nach X Samples */
-	const uint8_t samples_per_bit_late = (uint8_t)(samples_per_bit + 2); /*!< Flanke spaetestens nach X Samples */
+	const uint8_t samples_per_bit_early = (uint8_t)(samples_per_bit - 2); /**< Flanke fruehestens nach X Samples */
+	const uint8_t samples_per_bit_late = (uint8_t)(samples_per_bit + 2); /**< Flanke spaetestens nach X Samples */
 
 	/* Sample lesen */
 	uint8_t sample = 1;
@@ -123,10 +114,10 @@ void ir_isr(ir_data_t * data, volatile uint8_t * pin_r, const uint8_t pin, const
 	data->ir_lastsample = sample; // Sample im Samplepuffer ablegen
 }
 
-/*!
+/**
  * IR-Daten lesen
- * @param *data Zeiger auf Arbeitsdaten
- * @return Wert von ir_data, loescht anschliessend ir_data
+ * \param *data Zeiger auf Arbeitsdaten
+ * \return Wert von ir_data, loescht anschliessend ir_data
  */
 uint16_t ir_read(ir_data_t * data) {
 	uint16_t retvalue = data->ir_data;

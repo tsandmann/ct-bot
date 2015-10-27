@@ -43,7 +43,7 @@
 #include <stdlib.h>
 
 #ifdef KEYPAD_AVAILABLE
-static uint8_t new_address = 0;	/*!< True, falls neue Adresse eingegeben wird */
+static uint8_t new_address = 0;	/**< True, falls neue Adresse eingegeben wird */
 
 /**
  * Setzt die Bot-Adresse auf einen neuen Wert.
@@ -179,7 +179,7 @@ void ram_display(void) {
 	display_cursor(2, 1);
 	display_puts("heap:");
 	display_cursor(2, 15);
-	size_t heap_size = (size_t) (__brkval - &__heap_start);
+	size_t heap_size = __brkval == NULL ? 0 : (size_t) (__brkval - &__heap_start);
 	display_printf("%4u B", heap_size);
 	display_cursor(3, 1);
 	display_puts("stack:");
@@ -189,7 +189,7 @@ void ram_display(void) {
 	display_cursor(4, 1);
 	size_t ram_size = (size_t) ((unsigned char *) (RAMEND + 1) - &__data_start);
 	size_t frei = ram_size - (data_size + bss_size + heap_size + stack_size);
-	display_printf("free/all:%5u/%5u", frei, ram_size);
+	display_printf("free: %5u/%5u B", frei, ram_size);
 }
 #endif // DISPLAY_RAM_AVAILABLE
 #endif // MCU

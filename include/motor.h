@@ -53,7 +53,7 @@ extern int16_t speed_r;				/**< Sollgeschwindigkeit des rechten Motors */
 extern volatile int16_t motor_left;		/**< zuletzt gestellter Wert linker Motor */
 extern volatile int16_t motor_right;	/**< zuletzt gestellter Wert rechter Motor */
 
-/*! In diesem Typ steht die Drehrichtung, auch wenn die Speed-Variablen bereits wieder auf Null sind */
+/** In diesem Typ steht die Drehrichtung, auch wenn die Speed-Variablen bereits wieder auf Null sind */
 typedef union {
 	struct {
 		unsigned left:1;	/**< linksrum */

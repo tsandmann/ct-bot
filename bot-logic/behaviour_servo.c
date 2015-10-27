@@ -31,6 +31,8 @@
 
 #include "motor.h"
 #include "timer.h"
+#include "log.h"
+
 static uint8_t servo_nr;	/**< Nr. des aktiven Servos */
 uint8_t servo_active = 0;	/**< 0, wenn kein Servo aktiv, sonst Bit der gerade aktiven Servos gesetzt */
 
@@ -42,6 +44,7 @@ void bot_servo_behaviour(Behaviour_t * data) {
 	BLOCK_BEHAVIOUR(data, 1000); // 1 s warten
 
 	return_from_behaviour(data); // Verhalten aus
+//	LOG_DEBUG("bot_servo_behaviour(): servo_set(%u, %u)", servo_nr, SERVO_OFF);
 	servo_set(servo_nr, SERVO_OFF); // Servo aus
 	servo_active &= (uint8_t) (~servo_nr);
 }
@@ -59,6 +62,7 @@ void bot_servo(Behaviour_t * caller, uint8_t servo, uint8_t pos) {
 	switch_to_behaviour(caller, bot_servo_behaviour, BEHAVIOUR_OVERRIDE); // Warte-Verhalten an
 
 	servo_active |= servo;
+//	LOG_DEBUG("bot_servo(): servo_set(%u, %u)", servo, pos);
 	servo_set(servo, pos); // Servo-PWM einstellen
 	servo_nr = servo; // Servo-Nr speichern
 }

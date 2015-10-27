@@ -384,6 +384,7 @@ void bot_remotecall_behaviour(Behaviour_t * data) {
 			function_name = (char *) &tmp;
 
 			int16_t result = data->subResult;
+			(void) result;
 			if (data->caller) {
 #ifdef BEHAVIOUR_ABL_AVAILABLE
 				abl_push_value((uint16_t) result);

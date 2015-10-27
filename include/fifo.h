@@ -17,19 +17,19 @@
  *
  */
 
-/*!
- * @file 	fifo.h
- * @brief 	Implementierung einer FIFO
- * @author 	http://www.roboternetz.de/wissen/index.php/FIFO_mit_avr-gcc
- * @author	Timo Sandmann
- * @date 	28.02.2007
+/**
+ * \file 	fifo.h
+ * \brief 	Implementierung einer FIFO
+ * \author 	http://www.roboternetz.de/wissen/index.php/FIFO_mit_avr-gcc
+ * \author	Timo Sandmann
+ * \date 	28.02.2007
  * Thread-Safe, abgesichert gegen Interrupts, solange sich Producer bzw. Consumer jeweils auf der gleichen Interrupt-Ebene befinden.
  */
 
 #ifndef _FIFO_H_
 #define _FIFO_H_
 
-//#define DEBUG_FIFO		/*!< Schalter fuer Debug-Ausgaben */
+//#define DEBUG_FIFO		/**< Schalter fuer Debug-Ausgaben */
 
 #include "os_thread.h"
 
@@ -42,17 +42,17 @@
 #define LOG_DEBUG_FIFO LOG_DEBUG
 #endif
 
-/*! FIFO-Datentyp */
+/** FIFO-Datentyp */
 typedef struct {
-	uint8_t volatile count;		/*!< # Zeichen im Puffer */
-	uint8_t size;				/*!< Puffer-Grosse */
-	uint8_t * pread;			/*!< Lesezeiger */
-	uint8_t * pwrite;			/*!< Schreibzeiger */
-	uint8_t read2end;			/*!< # Zeichen bis zum Ueberlauf Lesezeiger */
-	uint8_t write2end;			/*!< # Zeichen bis zum Ueberlauf Schreibzeiger */
-	uint8_t volatile overflow;	/*!< 1, falls die Fifo mal uebergelaufen ist */
+	uint8_t volatile count;		/**< # Zeichen im Puffer */
+	uint8_t size;				/**< Puffer-Grosse */
+	uint8_t * pread;			/**< Lesezeiger */
+	uint8_t * pwrite;			/**< Schreibzeiger */
+	uint8_t read2end;			/**< # Zeichen bis zum Ueberlauf Lesezeiger */
+	uint8_t write2end;			/**< # Zeichen bis zum Ueberlauf Schreibzeiger */
+	uint8_t volatile overflow;	/**< 1, falls die Fifo mal uebergelaufen ist */
 #ifdef OS_AVAILABLE
-	os_signal_t signal;			/*!< Signal das den Fifo-Status meldet */
+	os_signal_t signal;			/**< Signal das den Fifo-Status meldet */
 #else
 #ifdef PC
 	struct {
@@ -62,44 +62,49 @@ typedef struct {
 #endif // OS_AVAILABLE
 } fifo_t;
 
-/*!
+/**
  * Initialisiert die FIFO, setzt Lese- und Schreibzeiger, etc.
- * @param *f		Zeiger auf FIFO-Datenstruktur
- * @param *buffer	Zeiger auf den Puffer der Groesse size fuer die FIFO
- * @param size		Anzahl der Bytes, die die FIFO speichern soll	.
+ * \param *f		Zeiger auf FIFO-Datenstruktur
+ * \param *buffer	Zeiger auf den Puffer der Groesse size fuer die FIFO
+ * \param size		Anzahl der Bytes, die die FIFO speichern soll	.
  */
 void fifo_init(fifo_t * f, void * buffer, const uint8_t size);
 
-/*!
+/**
  * Schreibt length Byte in die FIFO.
  * Achtung, wenn der freie Platz nicht ausreicht, werden die
  * aeltesten Daten verworfen!
- * @param *f		Zeiger auf FIFO-Datenstruktur
- * @param *data		Zeiger auf Quelldaten
- * @param length	Anzahl der zu kopierenden Bytes
+ * \param *f		Zeiger auf FIFO-Datenstruktur
+ * \param *data		Zeiger auf Quelldaten
+ * \param length	Anzahl der zu kopierenden Bytes
  */
 void fifo_put_data(fifo_t * f, const void * data, uint8_t length);
 
 /**
  * Liefert length Bytes aus der FIFO.
  * Wenn OS_AVAILABLE, blockierend, falls Fifo leer.
- * @param *f		Zeiger auf FIFO-Datenstruktur
- * @param *data		Zeiger auf Speicherbereich fuer Zieldaten
- * @param length	Anzahl der zu kopierenden Bytes
- * @return			Anzahl der tatsaechlich gelieferten Bytes
+ * \param *f		Zeiger auf FIFO-Datenstruktur
+ * \param *data		Zeiger auf Speicherbereich fuer Zieldaten
+ * \param length	Anzahl der zu kopierenden Bytes
+ * \return			Anzahl der tatsaechlich gelieferten Bytes
  */
-uint8_t fifo_get_data(fifo_t * f, void * data, uint8_t length);
+int16_t fifo_get_data(fifo_t * f, void * data, int16_t length);
 
-/*!
+/**
  * Schreibt ein Byte in die FIFO.
- * @param *f	Zeiger auf FIFO-Datenstruktur
- * @param data	Das zu schreibende Byte
- * @param isr	wird die Funktion von einer ISR aus aufgerufen?
+ * \param *f	Zeiger auf FIFO-Datenstruktur
+ * \param data	Das zu schreibende Byte
+ * \param isr	wird die Funktion von einer ISR aus aufgerufen?
  */
 static inline void _inline_fifo_put(fifo_t * f, const uint8_t data, uint8_t isr) {
 	if (f->count == f->size) {
 		f->overflow = 1;
 		/* voll */
+
+#ifdef OS_AVAILABLE
+		/* Consumer aufwecken */
+		f->signal.value = 0; // kein Scheduler Aufrufer hier
+#endif // OS_AVAILABLE
 		return;
 	}
 	uint8_t * pwrite = f->pwrite;
@@ -115,6 +120,10 @@ static inline void _inline_fifo_put(fifo_t * f, const uint8_t data, uint8_t isr)
 	f->pwrite = pwrite;
 	if (isr) {
 		f->count++;
+#ifdef OS_AVAILABLE
+		/* Consumer aufwecken */
+		f->signal.value = 0; // kein Scheduler Aufrufer hier
+#endif // OS_AVAILABLE
 	} else {
 #ifdef MCU
 		uint8_t sreg = SREG;
@@ -138,9 +147,9 @@ static inline void _inline_fifo_put(fifo_t * f, const uint8_t data, uint8_t isr)
 /**
  * Liefert das naechste Byte aus der FIFO.
  * Wenn OS_AVAILABLE, blockierend, falls Fifo leer.
- * @param *f	Zeiger auf FIFO-Datenstruktur
- * @param isr	wird die Funktion von einer ISR aus aufgerufen?
- * @return		Das Byte aus der FIFO
+ * \param *f	Zeiger auf FIFO-Datenstruktur
+ * \param isr	wird die Funktion von einer ISR aus aufgerufen?
+ * \return		Das Byte aus der FIFO
  */
 static inline uint8_t _inline_fifo_get(fifo_t * f, uint8_t isr) {
 #ifdef OS_AVAILABLE
@@ -157,7 +166,7 @@ static inline uint8_t _inline_fifo_get(fifo_t * f, uint8_t isr) {
 	}
 #endif // OS_AVAILABLE
 
-	uint8_t * pread = f->pread;
+	uint8_t* pread = f->pread;
 	uint8_t data = *(pread++);
 	uint8_t read2end = f->read2end;
 

@@ -18,23 +18,37 @@
  */
 
 /**
- * \file 	ena_pc.c
- * \brief 	Routinen zur Steuerung der Enable-Leitungen
- * \author 	Benjamin Benz (bbe@heise.de)
- * \date 	26.12.2005
+ * \file 	bot-2-atmega.h
+ * \brief 	Verbindung ARM-Board zu ATmega
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	04.05.2013
  */
 
-#ifdef PC
-#include "ct-Bot.h"
+#ifndef BOT_2_ATMEGA_H_
+#define BOT_2_ATMEGA_H_
 
-#ifdef ENA_AVAILABLE
-#include "ena.h"
+#include "command.h"
 
 /**
- * Initialisiert die Enable-Leitungen
+ * Fuehrt einen Reset auf dem ATmega aus
+ * \return Fehlercode: 0 wenn alles OK
  */
-void ENA_init() {
-	// Dummy
-}
-#endif // ENA_AVAILABLE
-#endif // PC
+int8_t atmega_reset(void);
+
+/**
+ * Initialisiert die Verbindung
+ * \return Fehlercode: 0 korrekt initialisiert
+ */
+int8_t bot_2_atmega_init(void);
+
+/**
+ * Empfaengt alle Daten vom ATmega
+ */
+void bot_2_atmega_listen(void);
+
+/**
+ * Setzt den aktiven Kommunikationskanal auf UART
+ */
+void set_bot_2_atmega(void);
+
+#endif // BOT_2_ATMEGA_H_
