@@ -90,7 +90,7 @@ void pre_behaviour(void) {
 /**
  * Fuehrt die Verarbeitung in der Hauptschleife nach dem
  * Verhaltenscode durch. Dazu gehoert beispielsweise, die
- * Bildschirmanzeige zu steuern und den Simulator √ºber den aktuellen
+ * Bildschirmanzeige zu steuern und den Simulator ueber den aktuellen
  * Zustand zu informieren.
  */
 void post_behaviour(void) {
