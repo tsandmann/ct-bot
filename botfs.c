@@ -23,104 +23,104 @@
  * \author 	Timo Sandmann (mail@timosandmann.de)
  * \date 	18.02.2008
  *
- * - Notwendige Vorbereitungen zur Verwendung:\n
- *   - PC:\n
- *     Keine Vorbereitungen noetig, ist kein Volume vorhanden, wird es automatisch angelegt und dazu eine Datei
- *     mit dem in BOTFS_IMAGE_FILENAME festgeleten Namen angelegt. Achtung, dieses Volume hat dann nicht die fuer
- *     MCU benoetigte Groesse (s.u.). Moechte man Daten zwischen MCU und PC austauschen, kopiert man die Datei von
- *     der MMC / SD-Karte ins Bot-Verzeichnis und ueberschreibt eine evtl. automatisch angelegte Datei.
+ * Notwendige Vorbereitungen zur Verwendung:\n
+ * - PC:\n
+ *   Keine Vorbereitungen noetig, ist kein Volume vorhanden, wird es automatisch angelegt und dazu eine Datei
+ *   mit dem in BOTFS_IMAGE_FILENAME festgeleten Namen angelegt. Achtung, dieses Volume hat dann nicht die fuer
+ *   MCU benoetigte Groesse (s.u.). Moechte man Daten zwischen MCU und PC austauschen, kopiert man die Datei von
+ *   der MMC / SD-Karte ins Bot-Verzeichnis und ueberschreibt eine evtl. automatisch angelegte Datei.
  *
- *   - MCU:\n
- *     Um BotFS auf MCU mit MMC / SD-Karte nutzen zu koennen, muss die Karte einmalig dafuer vorbereitet werden.
- *     Es gibt drei moegliche Varianten:
- *     - Variante 1: Vorgefertigtes Disk-Image auf die SD-Karte uebertragen\n
- *        + SD-Karte braucht nicht manuell partioniert werden\n
- *        + Nur ein Arbeitsschritt noetig\n
- *        -- Loescht die komplette SD-Karte\n
- *        -- unter Windows externes Tool noetig\n
- *     - Variante 2: Manuelle Partionierung, anschliessende Einrichtung mit Hilfsprogramm\n
- *        + volle Kontrolle ueber die Partitionierung\n
- *        + Partions- und Imagegroesse anpassbar (max. 32 MB)\n
- *        -- mehrere Arbeitsschritte noetig\n
- *        -- Partionierung unter Windows evtl. umstaendlich\n
- *        -- Wert von first_block in pc/botfs-low_pc.c muss angepasst werden, wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte\n
- *     - Variante 3: vollstaendig manuelle Einrichtung\n
- *        + volle Kontrolle ueber alle Schritte\n
- *        -- recht umstaendlich\n
- *        -- Wert von first_block in pc/botfs-low_pc.c muss angepasst werden, wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte\n
+ * - MCU:\n
+ *   Um BotFS auf MCU mit MMC / SD-Karte nutzen zu koennen, muss die Karte einmalig dafuer vorbereitet werden.
+ *   Es gibt drei moegliche Varianten:
+ *   - Variante 1: Vorgefertigtes Disk-Image auf die SD-Karte uebertragen\n
+ *      - + SD-Karte braucht nicht manuell partioniert werden\n
+ *      - + Nur ein Arbeitsschritt noetig\n
+ *      - - Loescht die komplette SD-Karte\n
+ *      - - unter Windows externes Tool noetig\n
+ *   - Variante 2: Manuelle Partionierung, anschliessende Einrichtung mit Hilfsprogramm\n
+ *      - + volle Kontrolle ueber die Partitionierung\n
+ *      - + Partions- und Imagegroesse anpassbar (max. 32 MB)\n
+ *      - - mehrere Arbeitsschritte noetig\n
+ *      - - Partionierung unter Windows evtl. umstaendlich\n
+ *      - - Wert von first_block in pc/botfs-low_pc.c muss angepasst werden, wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte\n
+ *   - Variante 3: vollstaendig manuelle Einrichtung\n
+ *      - + volle Kontrolle ueber alle Schritte\n
+ *      - - recht umstaendlich\n
+ *      - - Wert von first_block in pc/botfs-low_pc.c muss angepasst werden, wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte\n
  * \n
- *     - Durchfuehrung Variante 1:\n
- *       Uebertragen des vorgefertigten Disk-Images (befindet sich in contrib/BotFS/sd.img.zip):
- *       - unter Linux:\n
- *         1. Device-Node des Kartenlesers ausfindig machen, z.B /dev/sdb wie im Folgenden\n
- *         2. Evtl. vorhandene Partitionen auf der SD-Karten unmounten\n
- *         3. \code sudo gunzip -c sd.img.zip | dd of=/dev/sdb bs=4k \endcode
- *            (Achtung, /dev/sdb entsprechend anpassen!)\n
- *         4. \code sync \endcode\n
- *       - unter Mac OS X:\n
- *         1. Disk-Nummer des Kartenlesers ausfinden machen (Festplatten-Dienstprogramm -> Info oder diskutil list), im Folgenden Beispiel disk3\n
- *         2. \code sudo diskutil unmountDisk /dev/rdisk3 \endcode
- *         3. \code sudo gunzip -c sd.img.zip | dd of=/dev/rdisk3 bs=4k \endcode
- *            (Achtung, /dev/rdisk3 entsprechend anpassen!)\n
- *         4. \code sync \endcode\n
- *       - unter Windows:\n
- *         0. physdiskwrite + PhysGUI von http://m0n0.ch/wall/physdiskwrite.php herunterladen und entpacken\n
- *         1. sd.img.zip entpacken, erzeugt die Datei sd.img\n
- *         2. PhysGUI.exe (als Administrator) starten\n
- *         3. Rechtsklick auf den Eintrag des Kartenlesers -> Image laden -> Oeffnen -> sd.img auswaehlen -> OK -> Ja\n
- *         4. Hardawre sicher entfernen -> auswerfen ausfuehren\n
+ *   - Durchfuehrung Variante 1:\n
+ *     Uebertragen des vorgefertigten Disk-Images (befindet sich in contrib/BotFS/sd.img.zip):
+ *     - unter Linux:\n
+ *       1. Device-Node des Kartenlesers ausfindig machen, z.B /dev/sdb wie im Folgenden\n
+ *       2. Evtl. vorhandene Partitionen auf der SD-Karten unmounten\n
+ *       3. \code sudo gunzip -c sd.img.zip | dd of=/dev/sdb bs=4k \endcode
+ *          (Achtung, /dev/sdb entsprechend anpassen!)\n
+ *       4. \code sync \endcode\n
+ *     - unter Mac OS X:\n
+ *       1. Disk-Nummer des Kartenlesers ausfinden machen (Festplatten-Dienstprogramm -> Info oder diskutil list), im Folgenden Beispiel disk3\n
+ *       2. \code sudo diskutil unmountDisk /dev/rdisk3 \endcode
+ *       3. \code sudo gunzip -c sd.img.zip | dd of=/dev/rdisk3 bs=4k \endcode
+ *          (Achtung, /dev/rdisk3 entsprechend anpassen!)\n
+ *       4. \code sync \endcode\n
+ *     - unter Windows:\n
+ *       0. physdiskwrite + PhysGUI von http://m0n0.ch/wall/physdiskwrite.php herunterladen und entpacken\n
+ *       1. sd.img.zip entpacken, erzeugt die Datei sd.img\n
+ *       2. PhysGUI.exe (als Administrator) starten\n
+ *       3. Rechtsklick auf den Eintrag des Kartenlesers -> Image laden -> Oeffnen -> sd.img auswaehlen -> OK -> Ja\n
+ *       4. Hardawre sicher entfernen -> auswerfen ausfuehren\n
  * \n
- *     - Durchfuehrung Variante 2:\n
- *       - Einrichtung mit Hilfsprogramm BotFS Helper.
- *         Das Programm legt auf einer maximal 32 MB grossen FAT16-Partition einer SD-Karte ein BotFS-Image an.
- *       - Der Sourcecode des Hilfsprogramms ist im ct-Bot Repository unter other/ct-Bot-botfshelper zu finden.\n
- *       - Zunaechst legt man auf der Karte eine FAT16-Partition an, die maximal 32 MByte gross ist. Diese muss die erste
- *         Partition auf der Karte sein, weitere Partitionen koennen problemlos folgen. Auf der SD-Karte muss unbedingt
- *         eine MBR-Partitionstabelle verwendet werden, GPT wird nicht unterstuetzt! Um durch Rechenweise und Aufrundungen
- *         des verwendeten Partitionstools nicht die 32 MByte-Grenze zu ueberschreiten, empfiehlt es sich, eine Partition von
- *         30 MByte anzulegen - wichtig ist, dass die Groesse der erzeugten Partition 32 MByte, also \f$ 32 * 2^{20} \f$ Byte,
- *         nicht ueberschreitet.\n
- *         Auf der angelegten Partition muessen unbedingt alle Dateien (auch evtl. Versteckte) geloescht werden, so dass die
- *         gesamte Partitionsgroesse als freier Speicher verfuegbar ist.\n
- *         Anschliessend ruft man das Hilfsprogramm aus contrib/BotFS wie folgt auf:\n
- *          - Linux:   "./ct-Bot-botfshelper ABSOLUTER_PFAD_ZUR_SD-KARTE" also z.B. "./ct-Bot-botfshelper /media/SD"\n
- *          - Mac:     "./ct-Bot-botfshelper ABSOLUTER_PFAD_ZUR_SD-KARTE" also z.B. "./ct-Bot-botfshelper /Volumes/SD"\n
- *          - Windows: "ct-Bot-botfshelper.exe ABSOLUTER_PFAD_ZUR_SD-KARTE" also z.B. "ct-Bot-botfshelper.exe e:\"\n
- *         Es bietet sich an, auf der SD-Karte auch eine zweite Partition (Groesse und Typ beliebig) anzulegen und dort eine Kopie
- *         der Datei botfs.img zu speichern. Moechte man einmal das komplette Dateisystem fuer den Bot leeren oder wurde es durch
- *         einen Fehler beschaedigt, kopiert man einfach dieses Backup zurueck auf die erste Partition und muss die obigen Schritte
- *         nicht wiederholen.\n
- *         Wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte, sollte man den Wert von first_block in
- *         pc/botfs-low_pc.c anpassen, damit das Alignment von Dateien (zur Performanzsteigerung z.B. fuer die Map) stimmt.
- *         first_block muss dazu auf den ersten Datensektor der FAT16-Partition gesetzt werden.
- * \n
- *     - Durchfuehrung Variante 3:\n
- *       Anlegen der Partition wie unter Variante 2.\n
- *       Anschliessend ermittelt man die exakte Groesse der Partition (je nach Betriebssystem findet sich diese in den
- *       Eigenschaften / Informationen des Laufwerks) in Byte und notiert sie. Auf der angelegten Partition muessen unbedingt
- *       alle Dateien (auch evtl. Versteckte) geloescht werden, so dass die gesamte Partitionsgroesse als freier Speicher
- *       verfuegbar ist. Die notierte Groesse teil man noch durch 1024 und erhaelt so die gewuenschte Image-Groesse in KByte.
- *       Nun startet man den fuer PC (mit BOT_FS_AVAILABLE) compilierten Bot-Code mit dem Parameter "-f", also "ct-Bot(.exe) -f",
- *       um die BotFS-Verwaltung aufzurufen. Dort gibt man "create volume" ein und bestaetigt das Kommando mit Enter. Als
- *       Dateinamen waehlt man anschliessend einen Namen wie "botfs.img", eine solche Datei darf aber noch nicht existieren.
- *       Eine komplette Pfadangabe ist auch moeglich, ansonsten wird die Datei im aktuellen Arbeitsverzeichnis erstellt.
- *       Als Volume-Name gibt man dann einen beliebigen ein, wie z.B. "BotFS-Volume", als Groesse danach die eben Ermittelte (in
- *       KByte). Jetzt kann die Verwaltung mit dem Kommando 'q' beendet werden und die erzeugte Datei als "botfs.img" (wichtig:
- *       auf der SD-Karte muss die Datei unbedingt "botfs.img" heissen!) auf die SD-Karte (erste Partition) kopiert werden.\n
+ *   - Durchfuehrung Variante 2:\n
+ *     - Einrichtung mit Hilfsprogramm BotFS Helper.
+ *       Das Programm legt auf einer maximal 32 MB grossen FAT16-Partition einer SD-Karte ein BotFS-Image an.
+ *     - Der Sourcecode des Hilfsprogramms ist im ct-Bot Repository unter other/ct-Bot-botfshelper zu finden.\n
+ *     - Zunaechst legt man auf der Karte eine FAT16-Partition an, die maximal 32 MByte gross ist. Diese muss die erste
+ *       Partition auf der Karte sein, weitere Partitionen koennen problemlos folgen. Auf der SD-Karte muss unbedingt
+ *       eine MBR-Partitionstabelle verwendet werden, GPT wird nicht unterstuetzt! Um durch Rechenweise und Aufrundungen
+ *       des verwendeten Partitionstools nicht die 32 MByte-Grenze zu ueberschreiten, empfiehlt es sich, eine Partition von
+ *       30 MByte anzulegen - wichtig ist, dass die Groesse der erzeugten Partition 32 MByte, also \f$ 32 * 2^{20} \f$ Byte,
+ *       nicht ueberschreitet.\n
+ *       Auf der angelegten Partition muessen unbedingt alle Dateien (auch evtl. Versteckte) geloescht werden, so dass die
+ *       gesamte Partitionsgroesse als freier Speicher verfuegbar ist.\n
+ *       Anschliessend ruft man das Hilfsprogramm aus contrib/BotFS wie folgt auf:\n
+ *        - Linux:   "./ct-Bot-botfshelper ABSOLUTER_PFAD_ZUR_SD-KARTE" also z.B. "./ct-Bot-botfshelper /media/SD"\n
+ *        - Mac:     "./ct-Bot-botfshelper ABSOLUTER_PFAD_ZUR_SD-KARTE" also z.B. "./ct-Bot-botfshelper /Volumes/SD"\n
+ *        - Windows: "ct-Bot-botfshelper.exe ABSOLUTER_PFAD_ZUR_SD-KARTE" also z.B. "ct-Bot-botfshelper.exe e:\"\n
+ *       Es bietet sich an, auf der SD-Karte auch eine zweite Partition (Groesse und Typ beliebig) anzulegen und dort eine Kopie
+ *       der Datei botfs.img zu speichern. Moechte man einmal das komplette Dateisystem fuer den Bot leeren oder wurde es durch
+ *       einen Fehler beschaedigt, kopiert man einfach dieses Backup zurueck auf die erste Partition und muss die obigen Schritte
+ *       nicht wiederholen.\n
  *       Wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte, sollte man den Wert von first_block in
  *       pc/botfs-low_pc.c anpassen, damit das Alignment von Dateien (zur Performanzsteigerung z.B. fuer die Map) stimmt.
- *       first_block muss dazu auf den ersten Datensektor der FAT16-Partition gesetzt werden.\n
+ *       first_block muss dazu auf den ersten Datensektor der FAT16-Partition gesetzt werden.
  * \n
- * - Benutzung:\n
- *   - Der Map-Code ist jetzt (mit BOT_FS_AVAILABLE) nicht mehr darauf angewiesen, dass eine Map-Datei (MiniFAT) auf der SD-Karte
- *     bereits vorhanden ist. Sobald das BotFS-Volume einmal auf der SD-Karte eingerichtet ist (s.o.), regelt der Map-Code den
- *     Rest automatisch. Insbesondere das Loeschen einer alten Map (beim Start) geht mit BOT_FS_AVAILABLE dann auch deutlich
- *     schneller.
- *   - Moechte man Daten zwischen dem echten und einem simulierten Bot austauschen, kann man die "botfs.img"-Datei beliebig
- *     zwischen diesen kopieren, oder den simulierten Bot mit dem Parameter "-i" und der Image-Datei (z.B. auch direkt von der
- *     eingelegten SD-Karte) starten.
- *   - In der BotFS-Verwaltung (ueber ct-Bot(.exe) -f [Pfad zur Image-Datei] aufzurufen) zeigt das Kommando "help" eine Uebersicht
- *     aller verfuegbaren Tools an. Wird im Normalbetrieb aber eigentlich nicht benoetigt.
+ *   - Durchfuehrung Variante 3:\n
+ *     Anlegen der Partition wie unter Variante 2.\n
+ *     Anschliessend ermittelt man die exakte Groesse der Partition (je nach Betriebssystem findet sich diese in den
+ *     Eigenschaften / Informationen des Laufwerks) in Byte und notiert sie. Auf der angelegten Partition muessen unbedingt
+ *     alle Dateien (auch evtl. Versteckte) geloescht werden, so dass die gesamte Partitionsgroesse als freier Speicher
+ *     verfuegbar ist. Die notierte Groesse teil man noch durch 1024 und erhaelt so die gewuenschte Image-Groesse in KByte.
+ *     Nun startet man den fuer PC (mit BOT_FS_AVAILABLE) compilierten Bot-Code mit dem Parameter "-f", also "ct-Bot(.exe) -f",
+ *     um die BotFS-Verwaltung aufzurufen. Dort gibt man "create volume" ein und bestaetigt das Kommando mit Enter. Als
+ *     Dateinamen waehlt man anschliessend einen Namen wie "botfs.img", eine solche Datei darf aber noch nicht existieren.
+ *     Eine komplette Pfadangabe ist auch moeglich, ansonsten wird die Datei im aktuellen Arbeitsverzeichnis erstellt.
+ *     Als Volume-Name gibt man dann einen beliebigen ein, wie z.B. "BotFS-Volume", als Groesse danach die eben Ermittelte (in
+ *     KByte). Jetzt kann die Verwaltung mit dem Kommando 'q' beendet werden und die erzeugte Datei als "botfs.img" (wichtig:
+ *     auf der SD-Karte muss die Datei unbedingt "botfs.img" heissen!) auf die SD-Karte (erste Partition) kopiert werden.\n
+ *     Wenn man BotFS-Dateien am PC erzeugen und auf dem echten Bot verwenden moechte, sollte man den Wert von first_block in
+ *     pc/botfs-low_pc.c anpassen, damit das Alignment von Dateien (zur Performanzsteigerung z.B. fuer die Map) stimmt.
+ *     first_block muss dazu auf den ersten Datensektor der FAT16-Partition gesetzt werden.\n
+ * \n
+ * Benutzung:\n
+ * - Der Map-Code ist jetzt (mit BOT_FS_AVAILABLE) nicht mehr darauf angewiesen, dass eine Map-Datei (MiniFAT) auf der SD-Karte
+ *   bereits vorhanden ist. Sobald das BotFS-Volume einmal auf der SD-Karte eingerichtet ist (s.o.), regelt der Map-Code den
+ *   Rest automatisch. Insbesondere das Loeschen einer alten Map (beim Start) geht mit BOT_FS_AVAILABLE dann auch deutlich
+ *   schneller.
+ * - Moechte man Daten zwischen dem echten und einem simulierten Bot austauschen, kann man die "botfs.img"-Datei beliebig
+ *   zwischen diesen kopieren, oder den simulierten Bot mit dem Parameter "-i" und der Image-Datei (z.B. auch direkt von der
+ *   eingelegten SD-Karte) starten.
+ * - In der BotFS-Verwaltung (ueber ct-Bot(.exe) -f [Pfad zur Image-Datei] aufzurufen) zeigt das Kommando "help" eine Uebersicht
+ *   aller verfuegbaren Tools an. Wird im Normalbetrieb aber eigentlich nicht benoetigt.
  *
  */
 
