@@ -67,15 +67,23 @@ int8_t atmega_reset(void) {
 		LOG_ERROR("atmega_reset(): Konnte UART nicht initialisieren");
 		return -1;
 	}
+	uart_flush();
 
 	/* perform reset on ATmega */
 	int fd = open(BOT_RESET_GPIO, O_WRONLY | O_SYNC);
 	if (fd == -1) {
 		LOG_ERROR("Unable to open Reset-GPIO \"%s\"", BOT_RESET_GPIO);
+		uart_close();
 		return -2;
 	}
 
-	write(fd, "1", 2);
+	if (write(fd, "1", 1) != 1) {
+		LOG_ERROR("Unable to write on Reset-GPIO \"%s\"", BOT_RESET_GPIO);
+		close(fd);
+		uart_close();
+		return -3;
+	}
+	fsync(fd);
 
     struct timespec s;
     s.tv_sec = 0;
@@ -84,23 +92,33 @@ int8_t atmega_reset(void) {
     	LOG_ERROR("nanosleed() failed: \"%s\"", strerror(errno));
     	close(fd);
     	uart_close();
-    	return -3;
+    	return -4;
     }
 
-	write(fd, "0", 2);
+	if (write(fd, "0", 1) != 1) {
+		LOG_ERROR("Unable to write on Reset-GPIO \"%s\"", BOT_RESET_GPIO);
+		close(fd);
+		uart_close();
+		return -5;
+	}
+	fsync(fd);
 	close(fd);
 
 	s.tv_nsec = 500000000L;
 	if (nanosleep(&s, NULL)) {
 		LOG_ERROR("nanosleed() failed: \"%s\"", strerror(errno));
     	uart_close();
-    	return -4;
+    	return -6;
 	}
 
 	/* exit bootloader on ATmega immediately */
 	const char buf[] = "SE";
 	uart_write(buf, sizeof(buf) - 1);
 	uart_flush();
+	s.tv_nsec = 200000000L;
+	if (nanosleep(&s, NULL)) {
+		LOG_ERROR("nanosleed() failed: \"%s\"", strerror(errno));
+	}
 	uart_close();
 #endif // BOT_RESET_GPIO
 

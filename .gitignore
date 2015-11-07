@@ -3,5 +3,6 @@
 /botfs.img
 /map.pgm
 /sim.map
-Documentation/api
+/Documentation/api
 /.dep/
+/bot-local-override.h

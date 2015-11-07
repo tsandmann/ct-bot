@@ -39,7 +39,7 @@
 #include <limits.h>
 
 
-//#define DEBUG_UART_PC       // Schalter, um auf einmal alle Debugs an oder aus zu machen
+//#define DEBUG_UART_PC // Schalter, um auf einmal alle Debugs an oder aus zu machen
 
 #ifndef DEBUG_UART_PC
 #undef LOG_DEBUG
@@ -56,7 +56,9 @@ static struct termios old_settings;
  * \return Fehlercode oder 0, wenn alles OK
  */
 uint8_t uart_init(const char * port) {
-#if UART_BAUD == 115200
+#if UART_BAUD == 57600
+	int baudr = B57600;
+#elif UART_BAUD == 115200
 	int baudr = B115200;
 #elif UART_BAUD == 230400
 	int baudr = B230400;

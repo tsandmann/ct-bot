@@ -82,7 +82,6 @@
 //#define SP03_AVAILABLE		/**< Sprachmodul SP03 vorhanden */
 
 //#define MMC_AVAILABLE			/**< haben wir eine MMC/SD-Karte zur Verfuegung? */
-//#define SPI_AVAILABLE			/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 //#define MMC_VM_AVAILABLE		/**< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
 #define BOT_FS_AVAILABLE		/**< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC moeglich) */
 #define OS_AVAILABLE			/**< Aktiviert BotOS fuer Threads und Scheduling */
@@ -98,15 +97,13 @@
  * Some Dependencies!!!
  ************************************************************/
 
+#include "global.h" // ct-Bot Datentypen
+#include "bot-local.h" // Konfig-Optionen die bei den Bots verschieden sein koennen
+
+
 #if ! (defined PC && defined ARM_LINUX_BOARD && defined __arm__ && defined __gnu_linux__)
 #undef ARM_LINUX_BOARD
 #endif
-
-#ifdef DOXYGEN
-/* Beim Generieren der Doku alles anschalten */
-#define PC
-#define MCU
-#endif // DOXYGEN
 
 #ifndef DISPLAY_AVAILABLE
 #undef WELCOME_AVAILABLE
@@ -332,8 +329,5 @@
 #if defined CREATE_TRACEFILE_AVAILABLE && ! defined OS_AVAILABLE
 #define OS_AVAILABLE
 #endif
-
-#include "global.h" // ct-Bot Datentypen
-#include "bot-local.h" // Konfig-Optionen die bei den Bots verschieden sein koennen
 
 #endif // CT_BOT_H_

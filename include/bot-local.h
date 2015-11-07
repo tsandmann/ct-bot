@@ -97,6 +97,7 @@
 #define BOT_RESET_GPIO	"/sys/class/gpio/gpio17/value" /**< Pfad zum Reset-GPIO vom ARM-Linux-Board */
 
 #define EXPANSION_BOARD_AVAILABLE /**< Erweiterungsmodul (MMC / WiPort) installiert */
+//#define SPI_AVAILABLE	/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 
 /* Servo-Parameter */
 #ifndef __AVR_ATmega1284P__
@@ -146,5 +147,8 @@
 /* Konstanten fuer Verhaltensanzeige, Verhalten mit prio von bis sichtbar */
 #define PRIO_VISIBLE_MIN	3	/**< Prioritaet, die ein Verhalten mindestens haben muss, um angezeigt zu werden */
 #define PRIO_VISIBLE_MAX	200	/**< Prioritaet, die ein Verhalten hoechstens haben darf, um angezeigt zu werden */
+
+
+#include <bot-local-override.h>
 
 #endif // BOTLOCAL_H_
