@@ -32,6 +32,7 @@
 #include "command.h"
 #include "bot-2-sim.h"
 #include "bot-2-atmega.h"
+#include "log.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -42,11 +43,28 @@ static char display_buf[DISPLAY_BUFFER_SIZE]; /**< Pufferstring fuer Displayausg
 static int16_t last_row = 0;
 static int16_t last_column = 0;
 
+#if defined ARM_LINUX_BOARD && defined ARM_LINUX_DISPLAY
+static FILE* fp = NULL;
+#endif
+
 /**
  * Loescht das ganze Display
  */
 void display_clear(void) {
+#if defined ARM_LINUX_BOARD && defined ARM_LINUX_DISPLAY
+	if (fp) {
+		fprintf(fp, "\033[2J");
+		fflush(fp);
+	}
+#endif // ARM_LINUX_BOARD && ARM_LINUX_DISPLAY
+
 	command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, 0, 0, 0);
+
+#if defined ARM_LINUX_BOARD && defined BOT_2_SIM_AVAILABLE && defined DISPLAY_REMOTE_AVAILABLE
+	set_bot_2_sim();
+	command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, 0, 0, 0);
+	set_bot_2_atmega();
+#endif // ARM_LINUX_BOARD && BOT_2_SIM_AVAILABLE && DISPLAY_REMOTE_AVAILABLE
 }
 
 /**
@@ -55,16 +73,52 @@ void display_clear(void) {
  * \param column	Spalte
  */
 void display_cursor(int16_t row, int16_t column) {
+#if defined ARM_LINUX_BOARD && defined ARM_LINUX_DISPLAY
+	if (fp) {
+		fprintf(fp, "\033[%d;%dH", row, column);
+		fflush(fp);
+	}
+#endif // ARM_LINUX_BOARD && ARM_LINUX_DISPLAY
+
 	last_row = row - 1;
 	last_column = column - 1;
-/** \todo bot-2-linux anpassen */
 	command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, last_column, last_row, 0);
+
+#if defined ARM_LINUX_BOARD && defined BOT_2_SIM_AVAILABLE && defined DISPLAY_REMOTE_AVAILABLE
+	set_bot_2_sim();
+	command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, last_column, last_row, 0);
+	set_bot_2_atmega();
+#endif // ARM_LINUX_BOARD && BOT_2_SIM_AVAILABLE && DISPLAY_REMOTE_AVAILABLE
 }
 
 /**
  * Initialisiert das Display
  */
 void display_init(void) {
+#if defined ARM_LINUX_BOARD && defined ARM_LINUX_DISPLAY
+	if (strcmp("stdout", ARM_LINUX_DISPLAY) == 0) {
+		fp = stdout;
+	} else {
+		fp = fopen(ARM_LINUX_DISPLAY, "r");
+	}
+	if (fp) {
+		if (fp != stdout) {
+			fclose(fp);
+		}
+
+		if (strcmp("stdout", ARM_LINUX_DISPLAY) == 0) {
+			fp = stdout;
+		} else {
+			fp = fopen(ARM_LINUX_DISPLAY, "w");
+		}
+		if (! fp) {
+			LOG_ERROR("display_init(): Konnte \"%s\" nicht oeffnen.", ARM_LINUX_DISPLAY);
+		}
+	} else {
+		LOG_ERROR("display_init(): Konnte \"%s\" nicht oeffnen.", ARM_LINUX_DISPLAY);
+	}
+#endif // ARM_LINUX_BOARD && ARM_LINUX_DISPLAY
+
 	display_clear();
 }
 
@@ -80,17 +134,8 @@ uint8_t display_printf(const char * format, ...) {
 	va_start(args, format);
 	uint8_t len = vsnprintf(display_buf, DISPLAY_BUFFER_SIZE, format, args);
 	va_end(args);
-	if (len > DISPLAY_LENGTH) {
-		len = DISPLAY_LENGTH;
-	}
 
-	command_write_rawdata(CMD_AKT_LCD, SUB_LCD_DATA, last_column, last_row, len, display_buf);
-#if defined ARM_LINUX_BOARD && defined BOT_2_SIM_AVAILABLE && defined DISPLAY_REMOTE_AVAILABLE
-	set_bot_2_sim();
-	command_write_rawdata(CMD_AKT_LCD, SUB_LCD_DATA, last_column, last_row, len, display_buf);
-	set_bot_2_atmega();
-#endif // ARM_LINUX_BOARD && BOT_2_SIM_AVAILABLE && DISPLAY_REMOTE_AVAILABLE
-	last_column += len;
+	display_puts(display_buf);
 
 	return len;
 }
@@ -106,13 +151,21 @@ uint8_t display_puts(const char * text) {
 		len = DISPLAY_LENGTH;
 	}
 	command_write_rawdata(CMD_AKT_LCD, SUB_LCD_DATA, last_column, last_row, len, text);
+
+#if defined ARM_LINUX_BOARD && defined ARM_LINUX_DISPLAY
+	if (fp) {
+		fprintf(fp, text);
+		fflush(fp);
+	}
+#endif // ARM_LINUX_BOARD && ARM_LINUX_DISPLAY
+
 #if defined ARM_LINUX_BOARD && defined BOT_2_SIM_AVAILABLE && defined DISPLAY_REMOTE_AVAILABLE
 	set_bot_2_sim();
-	command_write_rawdata(CMD_AKT_LCD, SUB_LCD_DATA, last_column, last_row, len, display_buf);
+	command_write_rawdata(CMD_AKT_LCD, SUB_LCD_DATA, last_column, last_row, len, text);
 	set_bot_2_atmega();
 #endif // ARM_LINUX_BOARD && BOT_2_SIM_AVAILABLE && DISPLAY_REMOTE_AVAILABLE
+
 	last_column += len;
-//	command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, last_column, last_row, 0);
 
 	return len;
 }
