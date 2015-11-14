@@ -39,6 +39,10 @@
 #undef BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
 #endif
 
+#ifndef BOT_2_BOT_PAYLOAD_AVAILABLE
+#undef BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
+#endif
+
 /** Datentyp fuer Bot-Liste */
 typedef struct _bot_list_entry_t {
 	uint8_t address;					/**< Bot-Adresse */

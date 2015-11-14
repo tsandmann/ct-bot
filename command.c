@@ -480,7 +480,11 @@ void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, i
 	os_enterCS();
 #ifdef ARM_LINUX_BOARD
 	cmd_func_t old_func = cmd_functions;
-	if (command == CMD_MAP || command == CMD_REMOTE_CALL || command == BOT_CMD_PAYLOAD || command == CMD_LOG) {
+	if (command == CMD_MAP || command == CMD_REMOTE_CALL || command == CMD_LOG
+#ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
+		|| command == BOT_CMD_PAYLOAD
+#endif
+		) {
 		set_bot_2_sim();
 	}
 #endif // ARM_LINUX_BOARD
