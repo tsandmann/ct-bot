@@ -110,8 +110,10 @@
 #define DIR_REQUEST	0			/**< Richtung fuer Anfragen */
 #define DIR_ANSWER	1			/**< Richtung fuer Antworten */
 
-#define CMD_BROADCAST	0xFF	/**< Broadcast-Adresse, Daten gehen an alle Bot */
+#define CMD_BROADCAST	0xFF	/**< Broadcast-Adresse, Daten gehen an alle Bots */
 #define CMD_SIM_ADDR	0xFE	/**< "Bot"-Adresse des Sim */
+#define CMD_IGNORE_ADDR	0xFD	/**< ignoriere Bot-Adresse */
+
 
 #ifdef COMMAND_AVAILABLE
 /** Request Teil eines Kommandos */
@@ -230,8 +232,7 @@ void command_write_data(uint8_t command, uint8_t subcommand, int16_t data_l, int
  * \param payload 		Anzahl der Bytes im Anhang
  * \param *data 		Datenanhang an das eigentliche Command
  */
-void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r,
-	uint8_t payload, const void * data);
+void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload, const void * data);
 
 /**
  * Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort
@@ -242,8 +243,12 @@ void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, i
  * \param payload 		Anzahl der Bytes im Anhang
  * \param *data 		Datenanhang an das eigentliche Command
  */
-void command_write_rawdata(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload,
-	const void * data);
+void command_write_rawdata(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload, const void * data);
+
+/**
+ * Flusht den Sendbuffer
+ */
+void command_flush(void);
 
 /**
  * Wertet das Kommando im Puffer aus

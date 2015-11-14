@@ -58,13 +58,19 @@ void display_clear(void) {
 	}
 #endif // ARM_LINUX_BOARD && ARM_LINUX_DISPLAY
 
+#ifdef ARM_LINUX_BOARD
+	cmd_func_t old_func = cmd_functions;
+	set_bot_2_atmega();
+#endif
 	command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, 0, 0, 0);
 
 #if defined ARM_LINUX_BOARD && defined BOT_2_SIM_AVAILABLE && defined DISPLAY_REMOTE_AVAILABLE
 	set_bot_2_sim();
 	command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, 0, 0, 0);
-	set_bot_2_atmega();
 #endif // ARM_LINUX_BOARD && BOT_2_SIM_AVAILABLE && DISPLAY_REMOTE_AVAILABLE
+#ifdef ARM_LINUX_BOARD
+	cmd_functions = old_func;
+#endif
 }
 
 /**
@@ -82,13 +88,20 @@ void display_cursor(int16_t row, int16_t column) {
 
 	last_row = row - 1;
 	last_column = column - 1;
+
+#ifdef ARM_LINUX_BOARD
+	cmd_func_t old_func = cmd_functions;
+	set_bot_2_atmega();
+#endif
 	command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, last_column, last_row, 0);
 
 #if defined ARM_LINUX_BOARD && defined BOT_2_SIM_AVAILABLE && defined DISPLAY_REMOTE_AVAILABLE
 	set_bot_2_sim();
 	command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, last_column, last_row, 0);
-	set_bot_2_atmega();
 #endif // ARM_LINUX_BOARD && BOT_2_SIM_AVAILABLE && DISPLAY_REMOTE_AVAILABLE
+#ifdef ARM_LINUX_BOARD
+	cmd_functions = old_func;
+#endif
 }
 
 /**
@@ -150,6 +163,11 @@ uint8_t display_puts(const char * text) {
 	if (len > DISPLAY_LENGTH) {
 		len = DISPLAY_LENGTH;
 	}
+
+#ifdef ARM_LINUX_BOARD
+	cmd_func_t old_func = cmd_functions;
+	set_bot_2_atmega();
+#endif
 	command_write_rawdata(CMD_AKT_LCD, SUB_LCD_DATA, last_column, last_row, len, text);
 
 #if defined ARM_LINUX_BOARD && defined ARM_LINUX_DISPLAY
@@ -162,8 +180,11 @@ uint8_t display_puts(const char * text) {
 #if defined ARM_LINUX_BOARD && defined BOT_2_SIM_AVAILABLE && defined DISPLAY_REMOTE_AVAILABLE
 	set_bot_2_sim();
 	command_write_rawdata(CMD_AKT_LCD, SUB_LCD_DATA, last_column, last_row, len, text);
-	set_bot_2_atmega();
 #endif // ARM_LINUX_BOARD && BOT_2_SIM_AVAILABLE && DISPLAY_REMOTE_AVAILABLE
+
+#ifdef ARM_LINUX_BOARD
+	cmd_functions = old_func;
+#endif
 
 	last_column += len;
 

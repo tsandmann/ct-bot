@@ -159,6 +159,7 @@ void bot_2_sim_inform(void) {
 		return;
 	}
 #ifdef ARM_LINUX_BOARD
+	cmd_func_t old_func = cmd_functions;
 	set_bot_2_sim();
 
 	command_write(CMD_AKT_MOT, SUB_CMD_NORM, speed_l, speed_r, 0);
@@ -183,6 +184,7 @@ void bot_2_sim_inform(void) {
 #endif
 
 	command_write(CMD_DONE, SUB_CMD_NORM, 0, 0, 0);
+	cmd_functions = old_func;
 #endif // ARM_LINUX_BOARD
 }
 

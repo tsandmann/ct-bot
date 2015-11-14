@@ -65,7 +65,6 @@ void bot_motor(int16_t left, int16_t right){
 
 	motor_left = left;
 	motor_right = right;
-
 }
 
 /**

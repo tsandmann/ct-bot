@@ -29,8 +29,15 @@
 
 #ifdef BOT_2_BOT_AVAILABLE
 
+#include "uart.h"
+#include "ct-Bot.h"
+
 //#define DELETE_BOTS		/**< wollen wir Bots aus der Liste loeschen koennen? */
-//#define BOT_2_BOT_PAYLOAD_TEST_AVAILABLE	/**< Aktiviert Test-Code fuer Bot-2-Bot Kommunikation mit Payload */
+#define BOT_2_BOT_PAYLOAD_TEST_AVAILABLE	/**< Aktiviert Test-Code fuer Bot-2-Bot Kommunikation mit Payload */
+
+#ifndef BEHAVIOUR_AVAILABLE
+#undef BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
+#endif
 
 /** Datentyp fuer Bot-Liste */
 typedef struct _bot_list_entry_t {
@@ -63,7 +70,7 @@ typedef struct _bot_list_entry_t {
 #endif	// BOT_2_BOT_PAYLOAD_AVAILABLE
 
 extern bot_list_entry_t * bot_list;					/**< Liste aller bekannten Bots */
-extern void (* cmd_functions[])(command_t * cmd);	/**< Funktionstabelle fuer alle Bot-2-Bot-Kommandos */
+extern void (* b2b_cmd_functions[])(command_t * cmd);	/**< Funktionstabelle fuer alle Bot-2-Bot-Kommandos */
 /** Datentyp der Bot-2-Bot-Payload-Zuordnungen */
 typedef struct {
 	void (* function)(void);	/**< Callback-Funktion, die nach Abschluss des Empfangs ausgefuehrt wird */
@@ -91,7 +98,7 @@ void add_bot_to_list(command_t * cmd);
  * \param address	Bot-Adresse
  */
 void delete_bot_from_list(uint8_t address);
-#endif	// DELETE_BOTS
+#endif // DELETE_BOTS
 
 /**
  * Sucht den naechsten verfuegbaren Bot in der Botliste
@@ -126,8 +133,7 @@ uint8_t get_command_of_function(void (* func)(command_t * cmd));
 void set_received_bot_state(command_t * cmd);
 
 /**
- * Setzt den eigenen Status auf einen neuen Wert und schickt ihn an
- * alle Bots
+ * Setzt den eigenen Status auf einen neuen Wert und schickt ihn an alle Bots
  * \param state	Neuer Status
  */
 void publish_bot_state(int16_t state);
@@ -148,8 +154,7 @@ uint8_t get_type_of_payload_function(void(* func)(void));
  * \param size			Anzahl der Bytes, die zum anderen Bot uebertragen werden sollen
  * \return				0, falls die Daten korrekt uebertragen wurden, sonst Fehlercode
  */
-int8_t bot_2_bot_send_payload_request(uint8_t to, uint8_t type,
-		void * data, int16_t size);
+int8_t bot_2_bot_send_payload_request(uint8_t to, uint8_t type, void * data, int16_t size);
 
 /**
  * Behandelt eine Payload-Sende-Anfrage
@@ -205,8 +210,7 @@ void bot_2_bot_handle_remotecall(void);
  * \param par3		Dritter Parameter des zu startenden Verhaltens
  * \return			Fehlercode (0, falls alles OK)
  */
-int8_t bot_2_bot_start_remotecall(uint8_t bot_addr, char * function, remote_call_data_t par1,
-		remote_call_data_t par2, remote_call_data_t par3);
+int8_t bot_2_bot_start_remotecall(uint8_t bot_addr, char * function, remote_call_data_t par1, remote_call_data_t par2, remote_call_data_t par3);
 #endif	// BEHAVIOUR_REMOTECALL_AVAILABLE
 #endif	// BOT_2_BOT_PAYLOAD_AVAILABLE
 

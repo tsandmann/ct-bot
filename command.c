@@ -59,16 +59,15 @@ EEPROM uint8_t bot_address = CMD_BROADCAST; /**< Kommunikations-Adresse des Bots
 #include <stdlib.h>
 
 
-//#define CRC_CHECK							/**< Soll die Kommunikation per CRC-Checksumme abgesichert werden? */
-#define CHECK_CMD_ADDRESS					/**< soll die Zieladresse der Kommandos ueberprueft werden? */
-#define COMMAND_TIMEOUT 15					/**< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
+//#define CRC_CHECK				/**< Soll die Kommunikation per CRC-Checksumme abgesichert werden? */
+#define CHECK_CMD_ADDRESS		/**< soll die Zieladresse der Kommandos ueberprueft werden? */
+#define COMMAND_TIMEOUT 15		/**< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
 
 /* CRC aktivieren fuer ARM-Boards, Adress-Check deaktivieren */
 #ifdef ARM_LINUX_BOARD
 #ifndef CRC_CHECK
 #define CRC_CHECK
 #endif
-#undef CHECK_CMD_ADDRESS
 #endif // ARM_LINUX_BOARD
 
 /* CRC aktivieren fuer ATmega-2-Linux, Adress-Check deaktivieren */
@@ -266,9 +265,7 @@ int8_t command_read(void) {
 
 #ifdef CHECK_CMD_ADDRESS
 		/* Ist das Paket ueberhaupt fuer uns? */
-		if ((command->to != CMD_BROADCAST)
-				&& (command->to != get_bot_address())
-				&& (command->request.command != CMD_WELCOME)) {
+		if ((command->to != CMD_BROADCAST) && (command->to != CMD_IGNORE_ADDR) && (command->to != get_bot_address()) && (command->request.command != CMD_WELCOME)) {
 			LOG_DEBUG("Fehler: Paket To= %d statt %u", command->to, get_bot_address());
 #ifdef LOG_AVAILABLE
 			command_display(command);
@@ -428,7 +425,16 @@ void command_write_to_internal(uint8_t command, uint8_t subcommand, uint8_t to, 
  */
 void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload) {
 	os_enterCS();
+#ifdef ARM_LINUX_BOARD
+	cmd_func_t old_func = cmd_functions;
+	if (to != CMD_IGNORE_ADDR) {
+		set_bot_2_sim();
+	}
+#endif // ARM_LINUX_BOARD
 	command_write_to_internal(command, subcommand, to, data_l, data_r, payload);
+#ifdef ARM_LINUX_BOARD
+	cmd_functions = old_func;
+#endif // ARM_LINUX_BOARD
 	os_exitCS();
 }
 
@@ -442,7 +448,16 @@ void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t d
  */
 void command_write(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload) {
 	os_enterCS();
+#ifdef ARM_LINUX_BOARD
+	cmd_func_t old_func = cmd_functions;
+	if (command == CMD_MAP || command == CMD_REMOTE_CALL) {
+		set_bot_2_sim();
+	}
+#endif // ARM_LINUX_BOARD
 	command_write_to_internal(command, subcommand, CMD_SIM_ADDR, data_l, data_r, payload);
+#ifdef ARM_LINUX_BOARD
+	cmd_functions = old_func;
+#endif // ARM_LINUX_BOARD
 #ifdef PC
 	if (command == CMD_DONE) {
 		flushSendBuffer(); // Flushen hier, bevor das Mutex freigegeben wird!
@@ -465,7 +480,7 @@ void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, i
 	os_enterCS();
 #ifdef ARM_LINUX_BOARD
 	cmd_func_t old_func = cmd_functions;
-	if (command == CMD_MAP || command == CMD_REMOTE_CALL) {
+	if (command == CMD_MAP || command == CMD_REMOTE_CALL || command == BOT_CMD_PAYLOAD || command == CMD_LOG) {
 		set_bot_2_sim();
 	}
 #endif // ARM_LINUX_BOARD
@@ -515,6 +530,17 @@ void command_write_data(uint8_t command, uint8_t subcommand, int16_t data_l, int
 		payload = 0;
 	}
 	command_write_rawdata_to(command, subcommand, CMD_SIM_ADDR, data_l, data_r, payload, data);
+}
+
+/**
+ * Flusht den Sendbuffer
+ */
+void command_flush(void) {
+#ifdef PC
+	os_enterCS();
+	flushSendBuffer();
+	os_exitCS();
+#endif // PC
 }
 
 #ifdef BOT_2_SIM_AVAILABLE
@@ -605,7 +631,7 @@ int8_t command_evaluate(void) {
 #endif // LOG_AVAILABLE
 	/* woher ist das Kommando? */
 #ifdef CHECK_CMD_ADDRESS
-	if (received_command.from == CMD_SIM_ADDR) {
+	if (received_command.from == CMD_SIM_ADDR || received_command.from == CMD_IGNORE_ADDR) {
 #endif
 		/* Daten vom ct-Sim */
 		switch (received_command.request.command) {
@@ -1049,7 +1075,7 @@ int8_t command_evaluate(void) {
 				/* ungueltig */
 				return 0;
 			}
-			cmd_functions[received_command.request.command](&received_command);
+			b2b_cmd_functions[received_command.request.command](&received_command);
 		}
 #endif // BOT_2_BOT_AVAILABLE
 		analyzed = 1;
@@ -1120,8 +1146,8 @@ uint8_t uart_check_crc(command_t * cmd) {
 	}
 	const uint16_t crc_from_cmd = ((uint16_t) cmd->from << 8) | cmd->to;
 
-	cmd->from = CMD_BROADCAST;
-	cmd->to = CMD_BROADCAST;
+	cmd->from = CMD_IGNORE_ADDR;
+	cmd->to = CMD_IGNORE_ADDR;
 
 	if (crc == crc_from_cmd) {
 //		LOG_DEBUG("uart_check_crc(): CRC korrekt: 0x%x", crc);
