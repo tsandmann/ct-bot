@@ -987,23 +987,24 @@ int8_t command_evaluate(void) {
 				uint16_t u16;
 			} high;
 			high.s16 = received_command.data_r;
-			const uint_fast32_t tick = (uint_fast32_t) low.u16 | ((uint_fast32_t) high.u16 << 16);
-			LOG_DEBUG("time_diff=%u us", (uint_fast32_t) (tick - last) * 176);
-			const uint_fast32_t diff = (tick - last) * 176;
+			const uint32_t tick = (uint32_t) low.u16 | ((uint32_t) high.u16 << 16);
+			LOG_DEBUG("time_diff=%lu us", (uint32_t) (tick - last) * 176);
+			const uint32_t diff = (tick - last) * 176;
+			if (diff > 20000UL && last != 0) {
+				LOG_ERROR(" diff=%lu", diff);
+				LOG_DEBUG(" tick=%lu\tlast=%lu", tick, last);
+				LOG_DEBUG(" received_command.data_l=%d\treceived_command.data_r=%d", received_command.data_l, received_command.data_r);
+			}
+			last = tick;
+			tickCount = tick;
 			sum += diff;
 			cnt++;
 			if (cnt == 1024) {
-				LOG_INFO("time_diff avg=%u us", sum / cnt);
-				if (sum / cnt > 20000) {
-					LOG_DEBUG(" tick=%u", tick);
-					LOG_DEBUG(" last=%u", last);
-				}
+				LOG_INFO("time_diff avg=%lu us", sum / cnt);
 				fflush(stdout);
 				cnt = 0;
 				sum = 0;
 			}
-			last = tick;
-			tickCount = tick;
 #else
 			simultime = received_command.data_l;
 			system_time_isr(); // Einmal pro Update-Zyklus aktualisieren wir die Systemzeit

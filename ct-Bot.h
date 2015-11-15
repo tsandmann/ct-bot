@@ -123,16 +123,6 @@
 #undef MEASURE_COUPLED_AVAILABLE
 #endif
 
-#if defined MCU && defined BOT_2_RPI_AVAILABLE
-#define UART_AVAILABLE
-#define COMMAND_AVAILABLE
-
-#undef BOT_2_SIM_AVAILABLE
-#undef BEHAVIOUR_AVAILABLE
-#undef POS_STORE_AVAILABLE
-#undef MAP_AVAILABLE
-#endif // MCU && BOT_2_RPI_AVAILABLE
-
 #ifdef BOT_2_BOT_AVAILABLE
 #define BOT_2_SIM_AVAILABLE
 #endif
@@ -160,9 +150,22 @@
 #endif // PC
 
 #ifdef MCU
-#if defined LOG_CTSIM_AVAILABLE && ! defined BOT_2_RPI_AVAILABLE
+#ifdef LOG_CTSIM_AVAILABLE
 #define BOT_2_SIM_AVAILABLE
 #endif
+
+#if defined MCU && defined BOT_2_RPI_AVAILABLE
+#define UART_AVAILABLE
+#define COMMAND_AVAILABLE
+
+#undef BOT_2_BOT_AVAILABLE
+#undef BOT_2_SIM_AVAILABLE
+#undef LOG_CTSIM_AVAILABLE
+#undef LOG_UART_AVAILABLE
+#undef BEHAVIOUR_AVAILABLE
+#undef POS_STORE_AVAILABLE
+#undef MAP_AVAILABLE
+#endif // MCU && BOT_2_RPI_AVAILABLE
 
 #ifdef BOT_2_SIM_AVAILABLE
 #define UART_AVAILABLE		/**< Serielle Kommunikation */
