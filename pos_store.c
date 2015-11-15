@@ -331,9 +331,11 @@ int8_t pos_store_send_to_bot(pos_store_t * store, uint8_t bot) {
 	if (store == NULL || store->owner == NULL) {
 		return -1;
 	}
-	command_write_to(BOT_CMD_POS_STORE, 0, bot, store->owner->priority, (store->mask + 1) * (int16_t) sizeof(position_t), 0);
-	command_write_to(BOT_CMD_POS_STORE, 1, bot, store->count, store->fp, 0);
-	command_write_to(BOT_CMD_POS_STORE, 2, bot, store->sp, 0, 0);
+	command_write_to(CMD_BOT_2_BOT, BOT_CMD_POS_STORE, bot, 0, store->owner->priority, 0);
+	command_write_to(CMD_BOT_2_BOT, BOT_CMD_POS_STORE, bot, 1, (store->mask + 1) * (int16_t) sizeof(position_t), 0);
+	command_write_to(CMD_BOT_2_BOT, BOT_CMD_POS_STORE, bot, 2, store->count, 0);
+	command_write_to(CMD_BOT_2_BOT, BOT_CMD_POS_STORE, bot, 3, store->fp, 0);
+	command_write_to(CMD_BOT_2_BOT, BOT_CMD_POS_STORE, bot, 4,store->sp, 0);
 	return bot_2_bot_send_payload_request(bot, BOT_2_BOT_POS_STORE, store->data, (store->mask + 1) * (int16_t) sizeof(position_t));
 }
 
@@ -341,21 +343,31 @@ int8_t pos_store_send_to_bot(pos_store_t * store, uint8_t bot) {
  * Verarbeitet eine Positionsspeicher-Empfang-Anfrage
  */
 void bot_2_bot_handle_pos_store(command_t * cmd) {
-	switch (cmd->request.subcommand) {
+	static uint8_t owner = 0;
+	switch (cmd->data_l) {
 	case 0:
-		bot_2_bot_pos_store = pos_store_new_size(get_behaviour_from_prio((uint8_t) cmd->data_l), (pos_store_size_t) cmd->data_r);
+		owner = (uint8_t) cmd->data_r;
 		break;
 
 	case 1:
-		if (bot_2_bot_pos_store->owner != NULL) {
-			bot_2_bot_pos_store->count = (pos_store_size_t) cmd->data_l;
-			bot_2_bot_pos_store->fp = (pos_store_size_t) cmd->data_r;
-		}
+		bot_2_bot_pos_store = pos_store_new_size(get_behaviour_from_prio(owner), (pos_store_size_t) cmd->data_r);
 		break;
 
 	case 2:
 		if (bot_2_bot_pos_store->owner != NULL) {
-			bot_2_bot_pos_store->sp = (pos_store_pointer_t) cmd->data_l;
+			bot_2_bot_pos_store->count = (pos_store_size_t) cmd->data_r;
+		}
+		break;
+
+	case 3:
+		if (bot_2_bot_pos_store->owner != NULL) {
+			bot_2_bot_pos_store->fp = (pos_store_size_t) cmd->data_r;
+		}
+		break;
+
+	case 4:
+		if (bot_2_bot_pos_store->owner != NULL) {
+			bot_2_bot_pos_store->sp = (pos_store_pointer_t) cmd->data_r;
 			if (bot_2_bot_pos_store->data != NULL) {
 				uint8_t index = BOT_2_BOT_POS_STORE;
 				bot_2_bot_payload_mappings[index].size = (bot_2_bot_pos_store->mask + 1) * (int16_t) sizeof(position_t);
@@ -375,8 +387,7 @@ void bot_2_bot_handle_pos_store(command_t * cmd) {
 void bot_2_bot_handle_pos_store_data(void) {
 	if (bot_2_bot_pos_store && bot_2_bot_pos_store->owner) {
 		LOG_DEBUG("Pos-Store fuer Verhalten %u empfangen", bot_2_bot_pos_store->owner->priority);
-		LOG_DEBUG(" Groesse:%u\tfp=%u\tsp=%u\tcount=%u", bot_2_bot_pos_store->mask + 1,
-			bot_2_bot_pos_store->fp, bot_2_bot_pos_store->sp, bot_2_bot_pos_store->count);
+		LOG_DEBUG(" Groesse:%u\tfp=%u\tsp=%u\tcount=%u", bot_2_bot_pos_store->mask + 1, bot_2_bot_pos_store->fp, bot_2_bot_pos_store->sp, bot_2_bot_pos_store->count);
 		LOG_DEBUG(" data=0x%lx", bot_2_bot_pos_store->data);
 #ifdef PC
 		pos_store_dump(bot_2_bot_pos_store);
