@@ -46,7 +46,7 @@
 
 #define BOT_2_SIM_AVAILABLE	/**< Soll der Bot mit dem Sim kommunizieren? */
 //#define BOT_2_BOT_AVAILABLE	/**< Sollen Bots untereinander kommunizieren? */
-//#define BOT_2_BOT_PAYLOAD_AVAILABLE		/**< Aktiviert Payload-Versand per Bot-2-Bot Kommunikation */
+#define BOT_2_BOT_PAYLOAD_AVAILABLE		/**< Aktiviert Payload-Versand per Bot-2-Bot Kommunikation */
 
 #define DISPLAY_AVAILABLE			/**< Display aktiv */
 #define DISPLAY_REMOTE_AVAILABLE	/**< Sende LCD Anzeigedaten an den Simulator */

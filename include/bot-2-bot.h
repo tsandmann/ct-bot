@@ -32,7 +32,6 @@
 #include "uart.h"
 #include "ct-Bot.h"
 
-//#define DELETE_BOTS		/**< wollen wir Bots aus der Liste loeschen koennen? */
 #define BOT_2_BOT_PAYLOAD_TEST_AVAILABLE	/**< Aktiviert Test-Code fuer Bot-2-Bot Kommunikation mit Payload */
 
 #ifndef BEHAVIOUR_AVAILABLE
@@ -96,13 +95,11 @@ uint8_t get_bot2bot_cmds(void);
  */
 void add_bot_to_list(command_t * cmd);
 
-#ifdef DELETE_BOTS
 /**
  * Setzt einen Bot in der Liste auf inaktiv / verschwunden
  * \param address	Bot-Adresse
  */
 void delete_bot_from_list(uint8_t address);
-#endif // DELETE_BOTS
 
 /**
  * Sucht den naechsten verfuegbaren Bot in der Botliste

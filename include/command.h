@@ -107,6 +107,9 @@
 #define SUB_PROGRAM_START	'S' /**< Startet ein uebertragenes Programm auf dem Bot */
 #define SUB_PROGRAM_STOP	'Q' /**< Bricht ein laufendes Programm ab */
 
+#define CMD_BOT_2_BOT		'C' /**< Bot-2-Bot Kommunikation */
+
+
 #define DIR_REQUEST	0			/**< Richtung fuer Anfragen */
 #define DIR_ANSWER	1			/**< Richtung fuer Antworten */
 
@@ -244,11 +247,6 @@ void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, i
  * \param *data 		Datenanhang an das eigentliche Command
  */
 void command_write_rawdata(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload, const void * data);
-
-/**
- * Flusht den Sendbuffer
- */
-void command_flush(void);
 
 /**
  * Wertet das Kommando im Puffer aus

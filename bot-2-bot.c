@@ -44,16 +44,18 @@
 #ifndef DEBUG_BOT2BOT
 #undef LOG_AVAILABLE
 #undef LOG_DEBUG
-#define LOG_DEBUG(a, ...) {} /**< Log-Dummy */
+#define LOG_DEBUG(a, ...) {}
 #endif
 
-bot_list_entry_t * bot_list = NULL; /**< Liste aller bekannten Bots */
+#define COMMAND_TIMEOUT 15 /**< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
 
+bot_list_entry_t * bot_list = NULL; /**< Liste aller bekannten Bots */
 int16_t my_state = BOT_STATE_AVAILABLE; /**< Der eigene Status */
 
 #ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
 static int16_t bot_2_bot_payload_size = 0;			/**< Anzahl der (noch) zu sendenden oder erwarteten Bytes */
 static uint8_t * bot_2_bot_data = NULL;				/**< Zeiger auf die zu sendenden oder empfangenen Daten */
+static uint8_t addr_active_transfer = 0;			/**< Bot-Adresse des derzeit aktiven Transfers */
 static void (* bot_2_bot_callback)(void) = NULL;	/**< Callback-Funktion, die nach Abschluss des Empfangs ausgefuehrt wird */
 
 #ifdef BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
@@ -170,8 +172,7 @@ uint8_t get_command_of_function(void(* func)(command_t * cmd)) {
 void add_bot_to_list(command_t * cmd) {
 	uint8_t addr = cmd->from;
 	/* dem neuen Bot Hallo sagen */
-	command_write_to(BOT_CMD_STATE, 0, addr, my_state, 0, 0);
-	command_flush();
+	command_write_to(CMD_BOT_2_BOT, BOT_CMD_STATE, addr, my_state, 0, 0);
 
 	/* und ihn in die eigene Liste eintragen */
 	bot_list_entry_t * ptr = bot_list;
@@ -240,7 +241,6 @@ void add_bot_to_list(command_t * cmd) {
 #endif
 }
 
-#ifdef DELETE_BOTS
 /**
  * Setzt einen Bot in der Liste auf inaktiv / verschwunden
  * \param address	Bot-Adresse
@@ -255,7 +255,6 @@ void delete_bot_from_list(uint8_t address) {
 		ptr = ptr->next;
 	}
 }
-#endif // DELETE_BOTS
 /**
  * Sucht den naechsten verfuegbaren Bot in der Botliste
  * \param *ptr	Zeiger auf letzten Eintrag oder NULL (=Anfang)
@@ -298,8 +297,7 @@ void set_received_bot_state(command_t * cmd) {
  */
 void publish_bot_state(int16_t state) {
 	my_state = state;
-	command_write_to(BOT_CMD_STATE, 0, CMD_BROADCAST, my_state, 0, 0);
-	command_flush();
+	command_write_to(CMD_BOT_2_BOT, BOT_CMD_STATE, CMD_BROADCAST, my_state, 0, 0);
 }
 
 #ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
@@ -318,8 +316,6 @@ uint8_t get_type_of_payload_function(void(* func)(void)) {
 	return 255;
 }
 
-/** \todo Bot-Adressen ueberpruefen */
-
 /**
  * Sendet eine Payload-Transferanfrage an einen anderen Bot
  * \param to			Empfaengeradresse
@@ -335,25 +331,30 @@ int8_t bot_2_bot_send_payload_request(uint8_t to, uint8_t type, void * data, int
 	}
 	LOG_DEBUG("Fordere Payload-Senderecht (%u) vom Typ %u bei Bot %u an", BOT_CMD_REQ, type, to);
 	LOG_DEBUG(" zu sendende Daten umfassen %d Bytes @ 0x%lx", size, (size_t) data);
-	command_write_to(BOT_CMD_REQ, 0, to, size, type, 0);
-	command_flush();
+	command_write_to(CMD_BOT_2_BOT, BOT_CMD_REQ, to, size, type, 0);
 	bot_2_bot_data = data;
 	bot_2_bot_payload_size = size;
-/** \todo Timeout */
+	addr_active_transfer = to;
 	/* warten auf ACK */
 #ifdef ARM_LINUX_BOARD
 	cmd_func_t old_func = cmd_functions;
 	set_bot_2_sim();
 #endif // ARM_LINUX_BOARD
+#ifdef MCU
+	uint16_t ticks = TIMER_GET_TICKCOUNT_16;
+#endif
 	while (bot_2_bot_payload_size >= 0) {
 #ifdef MCU
-		while (uart_data_available() < sizeof(command_t)) {}
+		while (uart_data_available() < sizeof(command_t) && (uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)) {}
 		if (command_read() == 0) {
 			command_evaluate();
 		}
+		if ((uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) > MS_TO_TICKS(COMMAND_TIMEOUT)) {
+			return -3;
+		}
 #else	// PC
 		LOG_DEBUG(" Warte auf (naechstes) ACK von Bot %u", to);
-		if (receive_until_frame(BOT_CMD_ACK) != 0) {
+		if (receive_until_frame(CMD_BOT_2_BOT/*BOT_CMD_ACK*/) != 0) {
 			LOG_DEBUG(" receive_until_frame() meldet Fehler, Abbruch");
 #ifdef ARM_LINUX_BOARD
 			cmd_functions = old_func;
@@ -361,7 +362,8 @@ int8_t bot_2_bot_send_payload_request(uint8_t to, uint8_t type, void * data, int
 			bot_2_bot_data = NULL;
 			bot_2_bot_callback = NULL;
 			bot_2_bot_payload_size = 0;
-			return -3;
+			addr_active_transfer = 0;
+			return -4;
 		}
 #endif // MCU
 	}
@@ -373,7 +375,7 @@ int8_t bot_2_bot_send_payload_request(uint8_t to, uint8_t type, void * data, int
 		return 0;
 	}
 	LOG_DEBUG(" Sendeversuch mit Fehler abgebrochen, bot_2_bot_payload_size=%d", bot_2_bot_payload_size);
-	return -4;
+	return -5;
 }
 
 /**
@@ -381,7 +383,6 @@ int8_t bot_2_bot_send_payload_request(uint8_t to, uint8_t type, void * data, int
  * \param *cmd	Zeiger auf das empfangene Kommando
  */
 void bot_2_bot_handle_payload_request(command_t * cmd) {
-/** \todo Nur wenn Bot steht? */
 	LOG_DEBUG("Payload-Sendeanfrage von Bot %u erhalten", cmd->from);
 	LOG_DEBUG(" werte Payload-Sendeanfrage aus...");
 	int16_t size = cmd->data_l;
@@ -396,41 +397,47 @@ void bot_2_bot_handle_payload_request(command_t * cmd) {
 	}
 	if (bot_2_bot_payload_mappings[type].data == NULL) {
 		LOG_DEBUG("  Typ %u ist nicht aktiv", type);
-		error++;
+		error = 1;
 	}
 	if (size > bot_2_bot_payload_mappings[type].size) {
 		LOG_DEBUG("  Datenumfang ist fuer Typ %u zu gross, max. %u Bytes", type, bot_2_bot_payload_mappings[type].size);
-		error++;
+		error = 1;
+	}
+	if (v_left != 0 || v_right != 0) {
+		LOG_DEBUG("  Bot steht nicht, lehne Anfrage ab");
+		error = 1;
 	}
 
-	if (error != 0) {
+	if (error) {
 		/* Anfrage ablehnen */
 		LOG_DEBUG(" Lehne Anfrage ab, error=%u", error);
-		int16_t result = 1;
-		command_write_to(BOT_CMD_ACK, 0, cmd->from, 0, result, 0);
+		command_write_to(CMD_BOT_2_BOT, BOT_CMD_ACK, cmd->from, 0, 1, 0);
 		bot_2_bot_payload_size = 0;
 	} else {
 		/* Anfrage ok, ACK senden */
 		int16_t window_size = BOT_2_BOT_PAYLOAD_WINDOW_SIZE;
-		int16_t result = 0;
 		LOG_DEBUG(" Anfrage akzeptiert, setze window_size auf %d", window_size);
-		command_write_to(BOT_CMD_ACK, 0, cmd->from, window_size, result, 0);
+		command_write_to(CMD_BOT_2_BOT, BOT_CMD_ACK, cmd->from, window_size, 0, 0);
 
 		/* Typ setzen */
 		bot_2_bot_callback = bot_2_bot_payload_mappings[type].function;
 		LOG_DEBUG("  Callback-Funktion = 0x%lx", (size_t)bot_2_bot_callback);
 		bot_2_bot_data = bot_2_bot_payload_mappings[type].data;
 		LOG_DEBUG("  Datenpuffer @ 0x%lx", (size_t)bot_2_bot_data);
+		addr_active_transfer = cmd->from;
 #ifdef MCU
-/** \todo Timeout */
 		/* warten auf Kommando, dem die Payload-Daten folgen */
+		uint16_t ticks = TIMER_GET_TICKCOUNT_16;
 		while (42) {
-			while (uart_data_available() < sizeof(command_t)) {}
+			while (uart_data_available() < sizeof(command_t) && (uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)) {}
 			if (command_read() == 0) {
 				command_evaluate();
-				if (received_command.from == cmd->from && received_command.request.command == BOT_CMD_PAYLOAD) {
+				if (received_command.from == cmd->from && received_command.request.command == CMD_BOT_2_BOT && received_command.request.subcommand == BOT_CMD_PAYLOAD) {
 					break;
 				}
+			}
+			if ((uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) > MS_TO_TICKS(COMMAND_TIMEOUT)) {
+				break;
 			}
 		}
 #endif // MCU
@@ -444,6 +451,10 @@ void bot_2_bot_handle_payload_request(command_t * cmd) {
 void bot_2_bot_handle_payload_ack(command_t * cmd) {
 	if (bot_2_bot_data == NULL) {
 		LOG_DEBUG("ACK von Bot %u empfangen, aber gar kein Transfer aktiv!", cmd->from);
+		return;
+	}
+	if (addr_active_transfer != cmd->from) {
+		LOG_DEBUG("ACK von Bot %u empfangen, aber kein Transfer von diesem Bot aktiv!", cmd->from);
 		return;
 	}
 	switch (cmd->data_r) {
@@ -463,8 +474,7 @@ void bot_2_bot_handle_payload_ack(command_t * cmd) {
 			}
 			bot_2_bot_payload_size = to_send;
 			LOG_DEBUG(" Sende %d Bytes zu Bot %u", window_size, cmd->from);
-			command_write_rawdata_to(BOT_CMD_PAYLOAD, 0, cmd->from, last_packet, 0,	window_size, bot_2_bot_data);
-			command_flush();
+			command_write_rawdata_to(CMD_BOT_2_BOT, BOT_CMD_PAYLOAD, cmd->from, last_packet, 0,	window_size, bot_2_bot_data);
 			bot_2_bot_data += window_size;
 			break;
 		}
@@ -475,12 +485,14 @@ void bot_2_bot_handle_payload_ack(command_t * cmd) {
 		bot_2_bot_callback = NULL;
 		bot_2_bot_data = NULL;
 		bot_2_bot_payload_size = -1;
+		addr_active_transfer = 0;
 		break;
 
 	case 2:
 		/* fertig */
 		bot_2_bot_callback = NULL;
 		bot_2_bot_data = NULL;
+		addr_active_transfer = 0;
 		if (bot_2_bot_payload_size != 0) {
 			bot_2_bot_payload_size = -1;
 			LOG_DEBUG(" Bot %u hat Abschluss gemeldet, habe aber noch %d Bytes zu senden", cmd->from, bot_2_bot_payload_size);
@@ -497,19 +509,26 @@ void bot_2_bot_handle_payload_ack(command_t * cmd) {
  * \param *cmd	Zeiger auf das empfangene Kommando
  */
 void bot_2_bot_handle_payload_data(command_t * cmd) {
+	if (addr_active_transfer != cmd->from) {
+		LOG_DEBUG("ACK von Bot %u empfangen, aber kein Transfer von diesem Bot aktiv!", cmd->from);
+		return;
+	}
+
 	uint8_t size = cmd->payload;
 	LOG_DEBUG(" Payload mit %u Bytes angekuendigt", size);
 #ifdef MCU
-/** \todo Timeout */
 	/* warten, bis Payload-Daten im Empfangspuffer */
-	while (uart_data_available() < size) {}
+	uint16_t ticks = TIMER_GET_TICKCOUNT_16;
+	while (uart_data_available() < size && (uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)) {}
+	if ((uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) > MS_TO_TICKS(COMMAND_TIMEOUT)) {
+		return;
+	}
 #endif // MCU
 	uint8_t n = (uint8_t) cmd_functions.read(bot_2_bot_data, size);
 	LOG_DEBUG(" %u Bytes der Payload gelesen", n);
 	if (size != n) {
 		int16_t result = 1;
-		command_write_to(BOT_CMD_ACK, 0, cmd->from, 0, result, 0);
-		command_flush();
+		command_write_to(CMD_BOT_2_BOT, BOT_CMD_ACK, cmd->from, 0, result, 0);
 		bot_2_bot_data = NULL;
 		bot_2_bot_callback = NULL;
 		bot_2_bot_payload_size = 0;
@@ -525,18 +544,18 @@ void bot_2_bot_handle_payload_data(command_t * cmd) {
 		bot_2_bot_data = NULL;
 		bot_2_bot_callback = NULL;
 		bot_2_bot_payload_size = 0;
+		addr_active_transfer = 0;
 		/* letztes ACK senden */
 		LOG_DEBUG(" bestaetige Bot %u den Abschluss der Uebertragung", cmd->from);
 		int16_t result = 2;
-		command_write_to(BOT_CMD_ACK, 0, cmd->from, 0, result, 0);
+		command_write_to(CMD_BOT_2_BOT, BOT_CMD_ACK, cmd->from, 0, result, 0);
 	} else {
 		/* ACK senden */
 		int16_t window_size = BOT_2_BOT_PAYLOAD_WINDOW_SIZE;
 		int16_t result = 0;
 		LOG_DEBUG(" bestaetige Bot %u den Empfang, window_size=%d", cmd->from, window_size);
-		command_write_to(BOT_CMD_ACK, 0, cmd->from, window_size, result, 0);
+		command_write_to(CMD_BOT_2_BOT, BOT_CMD_ACK, cmd->from, window_size, result, 0);
 	}
-	command_flush();
 }
 
 /**
@@ -551,7 +570,7 @@ void bot_2_bot_print_recv_data(void) {
 	uint8_t * ptr = bot_2_bot_data;
 	ptr -= size;
 	printf("data: \n");
-	for (i=0; i<size; i++) {
+	for (i = 0; i < size; i++) {
 		printf("%02x ", *ptr);
 		ptr++;
 		if (i % 4 == 3) {
@@ -574,7 +593,7 @@ static const char * test_string = "Hey Bot!"; /**< Testdaten fuer Payload-Test *
 void bot_2_bot_payload_test_verify(void) {
 	uint8_t i;
 	uint8_t errors = 0;
-	for (i=strlen(test_string)+1; i<sizeof(payload_test_buffer); i++) {
+	for (i = strlen(test_string) + 1; i < sizeof(payload_test_buffer); i++) {
 		if (payload_test_buffer[i] != i) {
 			LOG_DEBUG("  Payload-Testdaten @ %u wurden fehlerhaft empfangen!", i);
 			LOG_DEBUG("  soll: %u\tist: %u", i, payload_test_buffer[i]);

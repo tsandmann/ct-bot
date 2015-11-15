@@ -105,7 +105,7 @@ cmd_func_t cmd_functions = {
 #ifndef DEBUG_COMMAND
 #undef LOG_AVAILABLE
 #undef LOG_DEBUG
-#define LOG_DEBUG(...) {} /**< Log-Dummy */
+#define LOG_DEBUG(...) {}
 #endif
 
 /**
@@ -432,6 +432,11 @@ void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t d
 	}
 #endif // ARM_LINUX_BOARD
 	command_write_to_internal(command, subcommand, to, data_l, data_r, payload);
+#ifdef PC
+	if (command == CMD_BOT_2_BOT) {
+		flushSendBuffer();
+	}
+#endif // PC
 #ifdef ARM_LINUX_BOARD
 	cmd_functions = old_func;
 #endif // ARM_LINUX_BOARD
@@ -480,16 +485,17 @@ void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, i
 	os_enterCS();
 #ifdef ARM_LINUX_BOARD
 	cmd_func_t old_func = cmd_functions;
-	if (command == CMD_MAP || command == CMD_REMOTE_CALL || command == CMD_LOG
-#ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
-		|| command == BOT_CMD_PAYLOAD
-#endif
-		) {
+	if (command == CMD_MAP || command == CMD_REMOTE_CALL || command == CMD_LOG || command == CMD_BOT_2_BOT) {
 		set_bot_2_sim();
 	}
 #endif // ARM_LINUX_BOARD
 	command_write_to_internal(command, subcommand, to, data_l, data_r, payload);
 	cmd_functions.write(data, payload);
+#ifdef PC
+	if (command == CMD_BOT_2_BOT) {
+		flushSendBuffer();
+	}
+#endif // PC
 #ifdef ARM_LINUX_BOARD
 	if (command == CMD_MAP || command == CMD_REMOTE_CALL) {
 		cmd_functions = old_func;
@@ -534,17 +540,6 @@ void command_write_data(uint8_t command, uint8_t subcommand, int16_t data_l, int
 		payload = 0;
 	}
 	command_write_rawdata_to(command, subcommand, CMD_SIM_ADDR, data_l, data_r, payload, data);
-}
-
-/**
- * Flusht den Sendbuffer
- */
-void command_flush(void) {
-#ifdef PC
-	os_enterCS();
-	flushSendBuffer();
-	os_exitCS();
-#endif // PC
 }
 
 #ifdef BOT_2_SIM_AVAILABLE
@@ -626,7 +621,7 @@ int8_t command_evaluate(void) {
 	int8_t analyzed = 1;
 
 #if defined LOG_AVAILABLE && defined CHECK_CMD_ADDRESS
-	if (received_command.from != CMD_SIM_ADDR) {
+	if (received_command.from != CMD_SIM_ADDR && received_command.from != CMD_IGNORE_ADDR) {
 		LOG_DEBUG("Weitergeleitetes Kommando:");
 	}
 #ifdef DEBUG_COMMAND_NOISY
@@ -702,8 +697,7 @@ int8_t command_evaluate(void) {
 				uint8_t buffer[REMOTE_CALL_BUFFER_SIZE];
 				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
 #ifdef MCU
-				while (uart_data_available() < received_command.payload &&
-					(uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
+				while (uart_data_available() < received_command.payload && (uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
 #endif
 				cmd_functions.read(buffer, received_command.payload);
 				if ((uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)) {
@@ -820,15 +814,13 @@ int8_t command_evaluate(void) {
 				}
 				const uint16_t done = (uint16_t) received_command.data_r;
 				const uint8_t type = (uint8_t) received_command.data_l;
-				LOG_DEBUG(" type=%u %u Bytes (%u Bytes insgesamt)", type, received_command.payload,
-					received_command.payload + done);
+				LOG_DEBUG(" type=%u %u Bytes (%u Bytes insgesamt)", type, received_command.payload, received_command.payload + done);
 				void * buffer = type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer);
 				const uint16_t index = (uint16_t) done % BOTFS_BLOCK_SIZE;
 				buffer += index;
 				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
 #ifdef MCU
-				while (uart_data_available() < received_command.payload &&
-					(uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
+				while (uart_data_available() < received_command.payload && (uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
 #endif
 				const uint8_t n = cmd_functions.read(buffer, received_command.payload);
 				if (n != received_command.payload) {
@@ -982,9 +974,9 @@ int8_t command_evaluate(void) {
 #endif // BPS_AVAILABLE
 		case CMD_DONE: {
 #ifdef ARM_LINUX_BOARD
-			static uint_fast32_t last = 0;
-			static uint_fast32_t sum = 0;
-			static uint_fast16_t cnt = 0;
+			static uint32_t last = 0;
+			static uint32_t sum = 0;
+			static uint16_t cnt = 0;
 			union {
 				int16_t s16;
 				uint16_t u16;
@@ -1000,7 +992,7 @@ int8_t command_evaluate(void) {
 			const uint_fast32_t diff = (tick - last) * 176;
 			sum += diff;
 			cnt++;
-			if (cnt == 200) {
+			if (cnt == 1024) {
 				LOG_INFO("time_diff avg=%u us", sum / cnt);
 				if (sum / cnt > 20000) {
 					LOG_DEBUG(" tick=%u", tick);
@@ -1072,14 +1064,18 @@ int8_t command_evaluate(void) {
 #ifdef CHECK_CMD_ADDRESS
 	} else {
 #ifdef BOT_2_BOT_AVAILABLE
-		/* kein loop-back */
-		if (received_command.from != get_bot_address()) {
-			/* Kommando kommt von einem anderen Bot */
-			if (received_command.request.command >= get_bot2bot_cmds()) {
-				/* ungueltig */
-				return 0;
+		if (received_command.request.command == CMD_BOT_2_BOT) {
+			/* kein loop-back */
+			if (received_command.from != get_bot_address()) {
+				/* Kommando kommt von einem anderen Bot */
+				if (received_command.request.subcommand >= get_bot2bot_cmds()) {
+					/* ungueltig */
+					return 0;
+				}
+				b2b_cmd_functions[received_command.request.subcommand](&received_command);
 			}
-			b2b_cmd_functions[received_command.request.command](&received_command);
+		} else {
+			return 0;
 		}
 #endif // BOT_2_BOT_AVAILABLE
 		analyzed = 1;
@@ -1096,7 +1092,8 @@ void command_display(command_t * command) {
 	(void) command;
 #ifdef DEBUG_COMMAND
 #ifdef PC
-	LOG_DEBUG("Start: %c (0x%x)  CMD: %c (0x%x)  Sub: %c (0x%x)  Direction: %u (0x%x)  Data_L: %d (0x%x)  Data_R: %d (0x%x)  Payload: %u  Seq: %u  From: %d  To:%d  CRC: %c (0x%x)",
+	LOG_DEBUG("Start: %c (0x%x)  CMD: %c (0x%x)  Sub: %c (0x%x)  Direction: %u (0x%x)  Data_L: %d (0x%x)  Data_R: %d (0x%x)  Payload: %u  Seq: %u  From: %d"
+			"  To:%d  CRC: %c (0x%x)",
 		(char) command->startCode,
 		(uint8_t) command->startCode,
 		(char) command->request.command,
