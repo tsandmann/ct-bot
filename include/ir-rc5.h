@@ -44,16 +44,15 @@
 #define BPS_PIN		PD2		/**< Pin 2 fuer BPS-Sensor */
 #endif // EXPANSION_BOARD_AVAILABLE
 
-
-#else
-#define RC5_PORT	(*(volatile uint8_t *)NULL) /**< Port B fuer RC5-Fernbedienung */
-#define BPS_PORT	(*(volatile uint8_t *)NULL) /**< Port A fuer BPS-Sensor */
+#else // ! MCU
+#define RC5_PORT	(*(volatile uint8_t *)NULL) /**< Port fuer RC5-Fernbedienung */
+#define BPS_PORT	(*(volatile uint8_t *)NULL) /**< Port fuer BPS-Sensor */
 #define RC5_DDR		(*(volatile uint8_t *)NULL) /**< DDR fuer RC5-Fernbedienung */
 #define BPS_DDR		(*(volatile uint8_t *)NULL) /**< DDR fuer BPS-Sensor */
-#define RC5_PINR	0 /**< Port B input fuer RC5-Fernbedienung */
-#define BPS_PINR	0 /**< Port A input fuer BPS-Sensor */
-#define RC5_PIN		0 /**< Pin 1 fuer RC5-Fernbedienung */
-#define BPS_PIN		0 /**< Pin 4 fuer BPS-Sensor */
+#define RC5_PINR	0 /**< Port input fuer RC5-Fernbedienung */
+#define BPS_PINR	0 /**< Port input fuer BPS-Sensor */
+#define RC5_PIN		0 /**< Pin fuer RC5-Fernbedienung */
+#define BPS_PIN		0 /**< Pin fuer BPS-Sensor */
 #endif // MCU
 
 #define RC5_PAUSE_SAMPLES	250	/**< Startbit ist erst nach 250 Samples ohne Pegelaenderung gueltig -- eigentlich muesste
