@@ -28,17 +28,23 @@
 
 #ifdef MCU
 #define RC5_PORT	PORTB	/**< Port B fuer RC5-Fernbedienung */
-#define BPS_PORT	PORTA	/**< Port A fuer BPS-Sensor */
-//#define BPS_PORT	PORTD	/**< Port D fuer BPS-Sensor */
 #define RC5_DDR		DDRB	/**< DDR fuer RC5-Fernbedienung */
-#define BPS_DDR		DDRA	/**< DDR fuer BPS-Sensor */
-//#define BPS_DDR	DDRD	/**< DDR fuer BPS-Sensor */
 #define RC5_PINR	PINB	/**< Port B input fuer RC5-Fernbedienung */
-#define BPS_PINR	PINA	/**< Port A input fuer BPS-Sensor */
-//#define BPS_PINR	PIND	/**< Port D input fuer BPS-Sensor */
 #define RC5_PIN		PB1		/**< Pin 1 fuer RC5-Fernbedienung */
+
+#ifdef EXPANSION_BOARD_AVAILABLE
+#define BPS_PORT	PORTA	/**< Port A fuer BPS-Sensor */
+#define BPS_DDR		DDRA	/**< DDR fuer BPS-Sensor */
+#define BPS_PINR	PINA	/**< Port A input fuer BPS-Sensor */
 #define BPS_PIN		PA4		/**< Pin 4 fuer BPS-Sensor */
-//#define BPS_PIN	PD2		/**< Pin 2 fuer BPS-Sensor */
+#else
+#define BPS_PORT	PORTD	/**< Port D fuer BPS-Sensor */
+#define BPS_DDR		DDRD	/**< DDR fuer BPS-Sensor */
+#define BPS_PINR	PIND	/**< Port D input fuer BPS-Sensor */
+#define BPS_PIN		PD2		/**< Pin 2 fuer BPS-Sensor */
+#endif // EXPANSION_BOARD_AVAILABLE
+
+
 #else
 #define RC5_PORT	(*(volatile uint8_t *)NULL) /**< Port B fuer RC5-Fernbedienung */
 #define BPS_PORT	(*(volatile uint8_t *)NULL) /**< Port A fuer BPS-Sensor */
