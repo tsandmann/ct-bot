@@ -678,7 +678,7 @@ int8_t command_evaluate(void) {
 			}
 			break;
 
-#ifdef MOUSE_AVAILABLE
+#if defined MOUSE_AVAILABLE && defined BOT_2_SIM_AVAILABLE
 		case CMD_SENS_MOUSE_PICTURE: // Sim fragt nach dem Bild
 			mouse_transmit_picture();
 			break;

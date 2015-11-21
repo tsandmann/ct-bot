@@ -146,7 +146,7 @@ void mouse_sens_init(void) {
 	mouse_sens_write(MOUSE_CONFIG_REG, MOUSE_CFG_FORCEAWAKE); // always on
 }
 
-#if defined BOT_2_SIM_AVAILABLE
+#ifdef BOT_2_SIM_AVAILABLE
 /**
  * Uebertraegt ein Bild vom Maussensor an den PC
  * Insgesamt gibt es 324 Pixel

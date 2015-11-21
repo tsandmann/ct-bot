@@ -44,7 +44,9 @@ static uint8_t mmc_interrupted = 0; /**< Speichert, ob die MMC vom Maussensor au
  * Initialisiert die Enable-Leitungen
  */
 void ENA_init(void) {
-	DDRD |= 4;
+#ifdef EXPANSION_BOARD_AVAILABLE
+	DDRD |= _BV(PD2);
+#endif
 	shift_init();
 	ENA_set(0x00);
 }
@@ -95,8 +97,8 @@ void ENA_on(uint8_t enable) {
 #ifdef EXPANSION_BOARD_AVAILABLE
 	if ((enable & (ENA_MOUSE_SENSOR | ENA_MMC)) != 0) {
 		/* Flipflops takten */
-		PORTD |= 4;
-		PORTD = (uint8_t) (PORTD & ~4);
+		PORTD |= _BV(PD2);
+		PORTD = (uint8_t) (PORTD & ~_BV(PD2));
 #ifdef SPI_AVAILABLE
 		if (enable == ENA_MMC) {
 			SPCR |= _BV(SPE) | _BV(MSTR); // SPI an
@@ -129,13 +131,13 @@ void ENA_off(uint8_t enable) {
 #ifdef EXPANSION_BOARD_AVAILABLE
 	if ((enable & (ENA_MOUSE_SENSOR | ENA_MMC)) != 0) {
 		/* Flipflops takten */
-		PORTD |= 4;
-		PORTD = (uint8_t) (PORTD & ~4);
+		PORTD |= _BV(PD2);
+		PORTD = (uint8_t) (PORTD & ~_BV(PD2));
 	}
 #endif // EXPANSION_BOARD_AVAILABLE
 
 #ifdef MOUSE_AVAILABLE
-	if (mmc_interrupted == 1) {
+	if ((enable & ENA_MOUSE_SENSOR) && mmc_interrupted == 1) {
 		mmc_interrupted = 0;
 		MMC_DDR |= _BV(SPI_DO);
 		MMC_DDR = (uint8_t) (MMC_DDR & (~_BV(SPI_DI)));
