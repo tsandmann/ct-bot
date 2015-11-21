@@ -231,8 +231,8 @@ static inline uint32_t ctbot_eeprom_read_dword(const uint32_t * address) {
  * \param size	Anzahl der zu lesenden Bytes
  */
 static inline void ctbot_eeprom_read_block(void * dst, const void * src, size_t size) {
-	uint8_t * p_dst = dst;
-	const uint8_t * p_src = src;
+	uint8_t * p_dst = (uint8_t *) dst;
+	const uint8_t * p_src = (const uint8_t *) src;
     while (size--) {
     	*p_dst++ = ctbot_eeprom_read_byte(p_src++);
     }
@@ -275,8 +275,8 @@ static inline void ctbot_eeprom_write_dword(uint32_t * address, const uint32_t v
  * \param size	Anzahl der zu schreibenden Bytes
  */
 static inline void ctbot_eeprom_write_block(void * dst, const void * src, size_t size) {
-	uint8_t * p_dst = dst;
-	const uint8_t * p_src = src;
+	uint8_t * p_dst = (uint8_t *) dst;
+	const uint8_t * p_src = (const uint8_t *) src;
     while (size--) {
     	ctbot_eeprom_write_byte(p_dst++, *p_src++);
     }
