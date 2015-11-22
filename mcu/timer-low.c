@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	timer-low.c
- * @brief 	Timer und Counter fuer den Mikrocontroller
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.2005
+/**
+ * \file 	timer-low.c
+ * \brief 	Timer und Counter fuer den Mikrocontroller
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	26.12.2005
  */
 
 #ifdef MCU
@@ -35,15 +35,16 @@
 #include "os_thread.h"
 #include "uart.h"
 #include "sensor.h"
+#include "ui/available_screens.h"
 #include <avr/io.h>
 
 #ifdef OS_AVAILABLE
 static uint8_t scheduler_ticks = 0;
 #endif
 
-// ---- Timer 2 ------
+// ---- Timer 2 ----
 
-/*!
+/**
  Interrupt Handler fuer Timer/Counter 2(A)
  */
 #if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
@@ -87,8 +88,8 @@ ISR(TIMER2_COMP_vect) {
 	/* Scheduling-Frequenz betraegt ca. 1 kHz */
 	if ((uint8_t) ((uint8_t) ticks - scheduler_ticks) > MS_TO_TICKS(1)) {
 #if defined DISPLAY_OS_AVAILABLE && defined UART_AVAILABLE
-		if (uart_outfifo.count != 0) {
-			uart_log++;	// zaehlt die ms, in denen UART inaktiv
+		if (uart_outfifo.count != 0 || uart_infifo.count != 0) {
+			uart_log++;	// zaehlt die ms, in denen das UART aktiv ist
 		}
 #endif // MEASURE_UTILIZATION && UART_AVAILABLE
 		scheduler_ticks = (uint8_t) ticks;
@@ -101,7 +102,7 @@ ISR(TIMER2_COMP_vect) {
 	 * vor seiner Unterbrechung nicht hier war. */
 }
 
-/*!
+/**
  * initialisiert Timer 2 und startet ihn
  */
 void timer_2_init(void) {

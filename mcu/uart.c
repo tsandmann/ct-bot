@@ -17,12 +17,12 @@
  *
  */
 
-/*!
- * @file 	uart.c
- * @brief 	Routinen zur seriellen Kommunikation
- * @author 	Benjamin Benz (bbe@heise.de)
- * @author	Timo Sandmann (mail@timosandmann.de)
- * @date 	26.12.2005
+/**
+ * \file 	uart.c
+ * \brief 	Routinen zur seriellen Kommunikation
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \author	Timo Sandmann (mail@timosandmann.de)
+ * \date 	26.12.2005
  */
 
 #ifdef MCU
@@ -34,13 +34,13 @@
 #include "os_thread.h"
 #include <avr/io.h>
 
-uint8_t inbuf[UART_BUFSIZE_IN]; /*!< Eingangspuffer */
-fifo_t uart_infifo; /*!< Eingangs-FIFO */
+uint8_t inbuf[UART_BUFSIZE_IN]; /**< Eingangspuffer */
+fifo_t uart_infifo; /**< Eingangs-FIFO */
 
-uint8_t outbuf[UART_BUFSIZE_OUT]; /*!< Ausgangspuffer */
-fifo_t uart_outfifo; /*!< Ausgangs-FIFO */
+uint8_t outbuf[UART_BUFSIZE_OUT]; /**< Ausgangspuffer */
+fifo_t uart_outfifo; /**< Ausgangs-FIFO */
 
-/*!
+/**
  * Initialisiert den UART und aktiviert Receiver und Transmitter sowie die Interrupts.
  * Die Ein- und Ausgebe-FIFO werden initialisiert. Das globale Interrupt-Enable-Flag (I-Bit in SREG) wird nicht veraendert.
  */
@@ -81,7 +81,7 @@ void uart_init(void) {
     SREG = sreg;
 }
 
-/*!
+/**
  * Interrupthandler fuer eingehende Daten
  * Empfangene Zeichen werden in die Eingabgs-FIFO gespeichert und warten dort.
  */
@@ -93,7 +93,7 @@ void uart_init(void) {
 	_inline_fifo_put(&uart_infifo, UDR, True);
 }
 
-/*!
+/**
  * Interrupthandler fuer ausgehende Daten
  * Ein Zeichen aus der Ausgabe-FIFO lesen und ausgeben.
  * Ist das Zeichen fertig ausgegeben, wird ein neuer SIG_UART_DATA-IRQ getriggert.
@@ -111,25 +111,30 @@ void uart_init(void) {
 	}
 }
 
-/*!
+/**
  * Sendet Daten per UART im Little Endian
- * @param *data		Zeiger auf Datenpuffer
- * @param length	Groesse des Datenpuffers in Bytes
+ * \param *data		Zeiger auf Datenpuffer
+ * \param length	Groesse des Datenpuffers in Bytes
+ * \return			Anzahl der geschriebenen Bytes
  */
-void uart_write(const void * data, uint8_t length) {
+int16_t uart_write(const void * data, int16_t length) {
 	if (length > UART_BUFSIZE_OUT) {
 		/* das ist zu viel auf einmal => teile und herrsche */
 		uart_write(data, length / 2);
-		uart_write(data + length / 2, (uint8_t) (length - length / 2));
-		return;
+		uart_write(data + length / 2, length - length / 2);
+		return length;
 	}
+
 	/* falls Sendepuffer zu voll, warten bis genug Platz vorhanden ist */
-	while (UART_BUFSIZE_OUT - uart_outfifo.count < length) {
-	}
+	while (UART_BUFSIZE_OUT - uart_outfifo.count < length) {}
+
 	/* Daten in Ausgangs-FIFO kopieren */
-	fifo_put_data(&uart_outfifo, data, length);
+	fifo_put_data(&uart_outfifo, data, (uint8_t) length);
+
 	/* Interrupt an */
 	UCSRB |= (1 << UDRIE);
+
+	return length;
 }
 
 #endif // UART_AVAILABLE

@@ -128,7 +128,7 @@
 #define MAP_STEP_OCCUPIED			5	/**< Um diesen Wert wird ein Feld dekrementiert, wenn es als belegt erkannt wird */
 
 #define MAP_RADIUS					50	/**< Umkreis eines Messpunktes, der als besetzt aktualisiert wird (Streukreis) [mm] */
-/*! Umkreis einen Messpunkt, der als besetzt aktualisiert wird (Streukreis) [Felder] */
+/** Umkreis einen Messpunkt, der als besetzt aktualisiert wird (Streukreis) [Felder] */
 #define MAP_RADIUS_FIELDS			(MAP_RESOLUTION * MAP_RADIUS / 1000)
 
 #define MAP_PRINT_SCALE						/**< Soll das PGM eine Skala erhalten? */
@@ -153,7 +153,7 @@ int16_t map_max_y = MAP_SIZE * MAP_RESOLUTION / 2; /**< belegter Bereich der Kar
 static uint8_t min_max_updated = False; /**< wurden die Min- / Max-Werte veraendert? */
 #endif
 
-/*! Datentyp fuer die Elementarfelder einer Gruppe */
+/** Datentyp fuer die Elementarfelder einer Gruppe */
 typedef struct {
 	int8_t section[MAP_SECTION_POINTS][MAP_SECTION_POINTS]; /**< Einzelne Punkte */
 } map_section_t;
@@ -368,7 +368,7 @@ static int8_t init(uint8_t clean_map) {
 #ifndef BOT_FS_AVAILABLE
 		delete();
 #else
-	memset(map_buffer, 0, sizeof(map_buffer));
+		memset(map_buffer, 0, sizeof(map_buffer));
 #endif
 	} else {
 		/* Block 0 laden */
@@ -970,16 +970,12 @@ static void update_distance(int16_t x, int16_t y, float sin_head, float cos_head
 		int16_t distR, uint8_t location_prob) {
 
 	// Ort des rechten Sensors in Weltkoordinaten
-	int16_t Pr_x = x + (int16_t)(DISTSENSOR_POS_SW * sin_head
-			+ DISTSENSOR_POS_FW * cos_head);
-	int16_t Pr_y = y - (int16_t)(DISTSENSOR_POS_SW * cos_head
-			- DISTSENSOR_POS_FW * sin_head);
+	int16_t Pr_x = x + (int16_t)(DISTSENSOR_POS_SW * sin_head + DISTSENSOR_POS_FW * cos_head);
+	int16_t Pr_y = y - (int16_t)(DISTSENSOR_POS_SW * cos_head - DISTSENSOR_POS_FW * sin_head);
 
 	// Ort des linken Sensors in Weltkoordinaten
-	int16_t Pl_x = x - (int16_t)(DISTSENSOR_POS_SW * sin_head
-			- DISTSENSOR_POS_FW * cos_head);
-	int16_t Pl_y = y + (int16_t)(DISTSENSOR_POS_SW * cos_head
-			+ DISTSENSOR_POS_FW * sin_head);
+	int16_t Pl_x = x - (int16_t)(DISTSENSOR_POS_SW * sin_head - DISTSENSOR_POS_FW * cos_head);
+	int16_t Pl_y = y + (int16_t)(DISTSENSOR_POS_SW * cos_head + DISTSENSOR_POS_FW * sin_head);
 
 	update_sensor_distance(Pl_x, Pl_y, sin_head, cos_head, distL, location_prob);
 	update_sensor_distance(Pr_x, Pr_y, sin_head, cos_head, distR, location_prob);
@@ -1441,6 +1437,7 @@ void map_2_sim_main(void) {
 				botfs_seek(&map_2_sim_botfs_file, (int16_t) cache_copy[i], SEEK_SET);
 				botfs_read(&map_2_sim_botfs_file, map_2_sim_buffer);
 				const int16_t block = (int16_t) (cache_copy[i]);
+//				printf("map_2_sim_main(): block=%d\n", block);
 #else // ! BOT_FS_AVAILABLE
 				mmc_read_sector(map_start_block + cache_copy[i], map_2_sim_buffer);
 				const int16_t block = (int16_t) cache_copy[i];

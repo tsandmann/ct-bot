@@ -36,6 +36,7 @@
 #include "bot-logic/bot-logic.h"
 #include "botfs.h"
 #include "sensor-low.h"
+#include "uart.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -54,11 +55,14 @@ static pthread_t cmd_thread; /**< Thread fuer die RemoteCall-Auswertung per Komm
  * Zeigt Informationen zu den moeglichen Kommandozeilenargumenten an.
  */
 static void usage(void) {
-	puts("USAGE: ct-Bot [-t host] [-a address] [-T] [-h] [-s] [-M FROM] [-m FILE] [-c FILE ID SIZE] [-e ADDR ID SIZE] [-d ID] [-i] [-f [IMAGE]] [-k IMAGE SOURCEFILE DESTFILE] [-F PATH]");
+	puts("USAGE: ct-Bot [-t host] [-a address] [-T] [-h] [-s] [-u RUNS] [-M FROM] [-m FILE] [-c FILE ID SIZE] [-e ADDR ID SIZE] [-d ID] [-i] [-f [IMAGE]] [-k IMAGE SOURCEFILE DESTFILE] [-F PATH]");
 	puts("\t-t\tHostname oder IP Adresse zu der Verbunden werden soll");
 	puts("\t-a\tAdresse des Bots (fuer Bot-2-Bot-Kommunikation), default: 0");
 	puts("\t-T\tTestClient");
 	puts("\t-s\tServermodus");
+#ifdef ARM_LINUX_BOARD
+	puts("\t-u RUNS\tUART-Test");
+#endif
 #ifdef BOT_FS_AVAILABLE
 	puts("\t-M \tKonvertiert eine Bot-Map aus dem BotFS-Image in eine PGM-Datei");
 #else
@@ -115,23 +119,41 @@ void hand_cmd_args(int argc, char * argv[]) {
 
 	int ch;
 	/* Die Kommandozeilenargumente komplett verarbeiten */
-	while ((ch = getopt(argc, argv, "hsTEt:Mm:c:l:e:d:a:i:fk:o:F:")) != -1) {
+	while ((ch = getopt(argc, argv, "hsTu:Et:Mm:c:l:e:d:a:i:fk:o:F:")) != -1) {
 		argc -= optind;
 		argv += optind;
 		switch (ch) {
 
 		case 's': {
+#ifdef BOT_2_SIM_AVAILABLE
 			/* Servermodus [-s] wird verlangt */
 			printf("ARGV[0]= %s\n", argv[0]);
 			tcp_server_init();
 			tcp_server_run(1000); // beendet per exit()
+#else
+			puts("Fehler, Binary wurde ohne BOT_2_SIM_AVAILABLE compiliert!");
+			exit(1);
+#endif // BOT_2_SIM_AVAILABLE
 			break;
 		}
 
 		case 'T': {
+#ifdef BOT_2_SIM_AVAILABLE
 			/* Testclient starten */
 			tcp_test_client_init();
 			tcp_test_client_run(1000); // beendet per exit()
+#else
+			puts("Fehler, Binary wurde ohne BOT_2_SIM_AVAILABLE compiliert!");
+			exit(1);
+#endif // BOT_2_SIM_AVAILABLE
+			break;
+		}
+
+		case 'u': {
+#ifdef ARM_LINUX_BOARD
+			long long int n = atoll(optarg);
+			uart_test((uint32_t) n);
+#endif
 			break;
 		}
 

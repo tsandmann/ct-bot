@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	sensor.c
- * @brief 	Architekturunabhaengiger Teil der Sensorsteuerung
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	15.01.2005
+/**
+ * \file 	sensor.c
+ * \brief 	Architekturunabhaengiger Teil der Sensorsteuerung
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	15.01.2005
  */
 
 #include "ct-Bot.h"
@@ -43,107 +43,107 @@
 #include <stdio.h>
 #include <float.h>
 
-#define HEADING_START		0	/*!< Blickrichtung, mit der sich der Bot initialisiert */
-#define HEADING_SIN_START	0	/*!< sin(HEADING_START) */
-#define HEADING_COS_START	1	/*!< cos(HEADING_START) */
+#define HEADING_START		0	/**< Blickrichtung, mit der sich der Bot initialisiert */
+#define HEADING_SIN_START	0	/**< sin(HEADING_START) */
+#define HEADING_COS_START	1	/**< cos(HEADING_START) */
 
-#define SPEED_UPDATE_TIME	500U	/*!< Zeitspanne zwischen zwei Geschwindigkeits-Berechnungen [ms] */
+#define SPEED_UPDATE_TIME	500U	/**< Zeitspanne zwischen zwei Geschwindigkeits-Berechnungen [ms] */
 
-int16_t sensLDRL = 0;		/*!< Lichtsensor links */
-int16_t sensLDRR = 0;		/*!< Lichtsensor rechts */
+int16_t sensLDRL = 0;		/**< Lichtsensor links */
+int16_t sensLDRR = 0;		/**< Lichtsensor rechts */
 
-int16_t sensDistL = 1023;	/*!< Distanz linker IR-Sensor in [mm], wenn korrekt umgerechnet wird */
-int16_t sensDistR = 1023;	/*!< Distanz rechter IR-Sensor in [mm], wenn korrekt umgerechnet wird */
-uint8_t sensDistLToggle = 0;	/*!< Toggle-Bit des linken IR-Sensors */
-uint8_t sensDistRToggle = 0;	/*!< Toggle-Bit des rechten IR-Sensors */
-/*! Zeiger auf die Auswertungsfunktion fuer die Distanzsensordaten, const. solange sie nicht kalibriert werden */
+int16_t sensDistL = 1023;	/**< Distanz linker IR-Sensor in [mm], wenn korrekt umgerechnet wird */
+int16_t sensDistR = 1023;	/**< Distanz rechter IR-Sensor in [mm], wenn korrekt umgerechnet wird */
+uint8_t sensDistLToggle = 0;	/**< Toggle-Bit des linken IR-Sensors */
+uint8_t sensDistRToggle = 0;	/**< Toggle-Bit des rechten IR-Sensors */
+/** Zeiger auf die Auswertungsfunktion fuer die Distanzsensordaten, const. solange sie nicht kalibriert werden */
 void (* sensor_update_distance)(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t volt) = sensor_dist_lookup;
 
-distSens_t EEPROM sensDistDataL[] = SENSDIST_DATA_LEFT;		/*!< kalibrierte Referenzdaten fuer linken IR-Sensor */
-distSens_t EEPROM sensDistDataR[] = SENSDIST_DATA_RIGHT;	/*!< kalibrierte Referenzdaten fuer rechten IR-Sensor */
-uint8_t EEPROM sensDistOffset = SENSDIST_OFFSET;			/*!< Spannungs-Offset IR-Sensoren */
+distSens_t EEPROM sensDistDataL[] = SENSDIST_DATA_LEFT;		/**< kalibrierte Referenzdaten fuer linken IR-Sensor */
+distSens_t EEPROM sensDistDataR[] = SENSDIST_DATA_RIGHT;	/**< kalibrierte Referenzdaten fuer rechten IR-Sensor */
+uint8_t EEPROM sensDistOffset = SENSDIST_OFFSET;			/**< Spannungs-Offset IR-Sensoren */
 
-int16_t sensBorderL = 0;	/*!< Abgrundsensor links */
-int16_t sensBorderR = 0;	/*!< Abgrundsensor rechts */
+int16_t sensBorderL = 0;	/**< Abgrundsensor links */
+int16_t sensBorderR = 0;	/**< Abgrundsensor rechts */
 
-int16_t sensLineL = 0;	/*!< Lininensensor links */
-int16_t sensLineR = 0;	/*!< Lininensensor rechts */
+int16_t sensLineL = 0;	/**< Lininensensor links */
+int16_t sensLineR = 0;	/**< Lininensensor rechts */
 
-uint8_t sensTrans = 0;	/*!< Sensor Ueberwachung Transportfach */
+uint8_t sensTrans = 0;	/**< Sensor Ueberwachung Transportfach */
 
-uint8_t sensDoor = 0;	/*!< Sensor Ueberwachung Klappe */
+uint8_t sensDoor = 0;	/**< Sensor Ueberwachung Klappe */
 
-uint8_t sensError = 0;	/*!< Ueberwachung Servo oder Batteriefehler [0/1]  1= alles ok */
+uint8_t sensError = 0;	/**< Ueberwachung Servo oder Batteriefehler [0/1]  1= alles ok */
 
+uint16_t sensBPS = BPS_NO_DATA; /**< Bot Positioning System */
 #ifdef BPS_AVAILABLE
-uint16_t sensBPS = BPS_NO_DATA; /*!< Bot Positioning System */
-/*! RC5-Konfiguration fuer BPS-Sensor */
+/** RC5-Konfiguration fuer BPS-Sensor */
 ir_data_t bps_ir_data = {
 	0, 0, 0, 0, 0, BPS_NO_DATA
 };
 #endif // BPS_AVAILABLE
 
 #ifdef MOUSE_AVAILABLE
-int8_t sensMouseDX;		/*!< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-int8_t sensMouseDY;		/*!< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
-int16_t sensMouseX;		/*!< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
-int16_t sensMouseY;		/*!< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
+int8_t sensMouseDX;		/**< Maussensor Delta X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+int8_t sensMouseDY;		/**< Maussensor Delta Y, positive Werte zeigen in Fahrtrichtung */
+int16_t sensMouseX;		/**< Mausposition X, positive Werte zeigen querab der Fahrtrichtung nach rechts */
+int16_t sensMouseY;		/**< Mausposition Y, positive Werte zeigen in Fahrtrichtung  */
 #endif // MOUSE_AVAILABLE
 
-int16_t sensEncL = 0;	/*!< Encoder linkes Rad */
-int16_t sensEncR = 0;	/*!< Encoder rechtes Rad */
+int16_t sensEncL = 0;	/**< Encoder linkes Rad */
+int16_t sensEncR = 0;	/**< Encoder rechtes Rad */
 
-float heading_enc = HEADING_START;	/*!< Blickrichtung aus Encodern */
-float x_enc = 0;		/*!< X-Koordinate aus Encodern [mm] */
-float y_enc = 0;		/*!< Y-Koordinate aus Encodern [mm] */
-int16_t v_enc_left = 0;		/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
-int16_t v_enc_right = 0;	/*!< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
-int16_t v_enc_center = 0;	/*!< Schnittgeschwindigkeit ueber beide Raeder */
+float heading_enc = HEADING_START;	/**< Blickrichtung aus Encodern */
+float x_enc = 0;		/**< X-Koordinate aus Encodern [mm] */
+float y_enc = 0;		/**< Y-Koordinate aus Encodern [mm] */
+int16_t v_enc_left = 0;		/**< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+int16_t v_enc_right = 0;	/**< Abrollgeschwindigkeit des linken Rades in [mm/s] [-128 bis 127] relaisitisch [-50 bis 50] */
+int16_t v_enc_center = 0;	/**< Schnittgeschwindigkeit ueber beide Raeder */
 
 #ifdef PC
-int16_t simultime = 0;	/*!< Simulierte Zeit */
+int16_t simultime = 0;	/**< Simulierte Zeit */
 #endif
 
 #ifdef MEASURE_MOUSE_AVAILABLE
-float heading_mou = HEADING_START;	/*!< Aktuelle Blickrichtung relativ zur Startposition aus Mausmessungen */
-float x_mou = 0;			/*!< Aktuelle X-Koordinate in mm relativ zur Startposition aus Mausmessungen */
-float y_mou = 0;			/*!< Aktuelle Y-Koordinate in mm relativ zur Startposition aus Mausmessungen */
-int16_t v_mou_center = 0;	/*!< Geschwindigkeit in mm/s ausschliesslich aus den Maussensorwerten berechnet */
-int16_t v_mou_left = 0;		/*!< ...aufgeteilt auf linkes Rad */
-int16_t v_mou_right = 0;	/*!< ...aufgeteilt auf rechtes Rad */
+float heading_mou = HEADING_START;	/**< Aktuelle Blickrichtung relativ zur Startposition aus Mausmessungen */
+float x_mou = 0;			/**< Aktuelle X-Koordinate in mm relativ zur Startposition aus Mausmessungen */
+float y_mou = 0;			/**< Aktuelle Y-Koordinate in mm relativ zur Startposition aus Mausmessungen */
+int16_t v_mou_center = 0;	/**< Geschwindigkeit in mm/s ausschliesslich aus den Maussensorwerten berechnet */
+int16_t v_mou_left = 0;		/**< ...aufgeteilt auf linkes Rad */
+int16_t v_mou_right = 0;	/**< ...aufgeteilt auf rechtes Rad */
 #endif // MEASURE_MOUSE_AVAILABLE
 
-float heading = HEADING_START;			/*!< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
-int16_t heading_int = HEADING_START;	/*!< (int16_t) heading */
-int16_t heading_10_int = HEADING_START * 10;	/*!< = (int16_t) (heading * 10.0f) */
-float heading_sin = HEADING_SIN_START;			/*!< = sin(rad(heading)) */
-float heading_cos = HEADING_COS_START;			/*!< = cos(rad(heading)) */
-int16_t x_pos = 0;			/*!< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
-int16_t y_pos = 0;			/*!< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
-int16_t v_left = 0;			/*!< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
-int16_t v_right = 0;		/*!< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
-int16_t v_center = 0;		/*!< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
+float heading = HEADING_START;			/**< Aktuelle Blickrichtung aus Encoder-, Maus- oder gekoppelten Werten */
+int16_t heading_int = HEADING_START;	/**< (int16_t) heading */
+int16_t heading_10_int = HEADING_START * 10;	/**< = (int16_t) (heading * 10.0f) */
+float heading_sin = HEADING_SIN_START;			/**< = sin(rad(heading)) */
+float heading_cos = HEADING_COS_START;			/**< = cos(rad(heading)) */
+int16_t x_pos = 0;			/**< Aktuelle X-Position aus Encoder-, Maus- oder gekoppelten Werten */
+int16_t y_pos = 0;			/**< Aktuelle Y-Position aus Encoder-, Maus- oder gekoppelten Werten */
+int16_t v_left = 0;			/**< Geschwindigkeit linkes Rad aus Encoder-, Maus- oder gekoppelten Werten */
+int16_t v_right = 0;		/**< Geschwindigkeit rechtes Rad aus Encoder-, Maus- oder gekoppelten Werten */
+int16_t v_center = 0;		/**< Geschwindigkeit im Zentrum des Bots aus Encoder-, Maus- oder gekoppelten Werten */
 
 #ifdef MEASURE_POSITION_ERRORS_AVAILABLE
-int16_t pos_error_radius = 0;	/*!< Aktueller Fehlerradius der Position */
+int16_t pos_error_radius = 0;	/**< Aktueller Fehlerradius der Position */
 #endif
 
 #ifdef SRF10_AVAILABLE
-uint16_t sensSRF10;		/*!< Messergebniss Ultraschallsensor */
+uint16_t sensSRF10;		/**< Messergebniss Ultraschallsensor */
 #endif
 
 #ifdef CMPS03_AVAILABLE
-cmps03_t sensCmps03 = {0};	/*!< Lage laut CMPS03-Kompass */
+cmps03_t sensCmps03 = {0};	/**< Lage laut CMPS03-Kompass */
 #endif
 
-/*!
+/**
  * Interpoliert linear zwischen zwei gegebenen Wertepaaren
- * @param x1	groesere Abszisse
- * @param y1	Ordinate zu x1, f(x1)
- * @param x2	kleinere Abszisse
- * @param y2	Ordinate zu x2, f(x2)
- * @param xs	Abzisse des zu interpolierenden Punktes
- * @return		f(xs)
+ * \param x1	groesere Abszisse
+ * \param y1	Ordinate zu x1, f(x1)
+ * \param x2	kleinere Abszisse
+ * \param y2	Ordinate zu x2, f(x2)
+ * \param xs	Abzisse des zu interpolierenden Punktes
+ * \return		f(xs)
  * Gibt den Funktionswert einer Stelle auf der errechneten Geraden durch die zwei Punkte zurueck.
  * Achtung, die Funktion rechnet so weit wie moeglich in 8 Bit, das Ergebnis ist nur korrekt,
  * wenn x1 >= xs >= x2, y2 >= y1, x1 != x2 erfuellt ist!
@@ -157,12 +157,12 @@ static inline uint8_t lin_interpolate(uint8_t x1, uint8_t y1, uint8_t x2, uint8_
 	return (uint8_t) ((uint8_t) ((x_diff * m) >> 8) + y1);	// m war kuenstlich um 8 Bit hochskaliert
 }
 
-/*!
+/**
  * Errechnet aus den rohren Distanzsensordaten die zugehoerige Entfernung
- * @param p_sens	Zeiger auf den (Ziel-)Sensorwert
- * @param p_toggle	Zeiger auf die Toggle-Variable des Zielsensors
- * @param ptr		Zeiger auf auf Sensorrohdaten im EEPROM fuer p_sens
- * @param volt_16	Spannungs-Ist-Wert, zu dem die Distanz gesucht wird (in 16 Bit)
+ * \param p_sens	Zeiger auf den (Ziel-)Sensorwert
+ * \param p_toggle	Zeiger auf die Toggle-Variable des Zielsensors
+ * \param ptr		Zeiger auf auf Sensorrohdaten im EEPROM fuer p_sens
+ * \param volt_16	Spannungs-Ist-Wert, zu dem die Distanz gesucht wird (in 16 Bit)
  */
 void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t volt_16) {
 //	if (sizeof(sensDistDataL) != sizeof(sensDistDataR)) {
@@ -212,12 +212,12 @@ void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const 
 	*p_toggle = (uint8_t) (~*p_toggle);
 }
 
-/*!
+/**
  * Gibt die Eingabedaten des Distanzsensors 1:1 zur Ausgabe
- * @param p_sens	Zeiger auf Ausgabewert
- * @param p_toggle	Zeiger auf die Toggle-Variable des Zielsensors
- * @param ptr		wird nicht ausgewertet
- * @param input		Eingabewert
+ * \param p_sens	Zeiger auf Ausgabewert
+ * \param p_toggle	Zeiger auf die Toggle-Variable des Zielsensors
+ * \param ptr		wird nicht ausgewertet
+ * \param input		Eingabewert
  */
 void sensor_dist_straight(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t input) {
 	(void) ptr;
@@ -229,31 +229,31 @@ void sensor_dist_straight(int16_t * const p_sens, uint8_t * const p_toggle, cons
 	*p_toggle = (uint8_t) (~*p_toggle);
 }
 
-/*!
+/**
  * Kuemmert sich um die Weiterverarbeitung der rohen Sensordaten
  */
 void sensor_update(void) {
 #ifndef OS_AVAILABLE
-	static uint8_t old_pos = 0;		/*!< Ticks fuer Positionsberechnungsschleife */
+	static uint8_t old_pos = 0;		/**< Ticks fuer Positionsberechnungsschleife */
 #endif
 	static uint16_t old_speed = 0;	/* Ticks fuer Geschwindigkeitsberechnungsschleife */
 #ifdef MEASURE_MOUSE_AVAILABLE
-	static int16_t lastMouseX = 0;	/*!< letzter Mauswert X fuer Positionsberechnung */
-	static int16_t lastMouseY = 0;	/*!< letzter Mauswert Y fuer Positionsberechnung */
-	static float lastDistance = 0;	/*!< letzte gefahrene Strecke */
-	static float lastHead = HEADING_START;		/*!< letzter gedrehter Winkel */
-	static float oldHead = HEADING_START;		/*!< Winkel aus dem letzten Durchgang */
-	static float old_x = 0;			/*!< Position X aus dem letzten Durchgang */
-	static float old_y = 0;			/*!< Position Y aus dem letzten Durchgang */
-	float radius = 0;				/*!< errechneter Radius des Drehkreises */
-	float s1 = 0;					/*!< Steigung der Achsengerade aus dem letzten Durchgang */
-	float s2 = 0;					/*!< Steigung der aktuellen Achsengerade */
-	float a1 = 0;					/*!< Y-Achsenabschnitt der Achsengerade aus dem letzten Durchgang */
-	float a2 = 0;					/*!< Y-Achsenabschnitt der aktuellen Achsengerade */
-	float xd = 0;					/*!< X-Koordinate Drehpunkt */
-	float yd = 0;					/*!< Y-Koordinate Drehpunkt */
-	float right_radius = 0;			/*!< Radius des Drehkreises des rechten Rads */
-	float left_radius = 0;			/*!< Radius des Drehkreises des linken Rads */
+	static int16_t lastMouseX = 0;	/**< letzter Mauswert X fuer Positionsberechnung */
+	static int16_t lastMouseY = 0;	/**< letzter Mauswert Y fuer Positionsberechnung */
+	static float lastDistance = 0;	/**< letzte gefahrene Strecke */
+	static float lastHead = HEADING_START;		/**< letzter gedrehter Winkel */
+	static float oldHead = HEADING_START;		/**< Winkel aus dem letzten Durchgang */
+	static float old_x = 0;			/**< Position X aus dem letzten Durchgang */
+	static float old_y = 0;			/**< Position Y aus dem letzten Durchgang */
+	float radius = 0;				/**< errechneter Radius des Drehkreises */
+	float s1 = 0;					/**< Steigung der Achsengerade aus dem letzten Durchgang */
+	float s2 = 0;					/**< Steigung der aktuellen Achsengerade */
+	float a1 = 0;					/**< Y-Achsenabschnitt der Achsengerade aus dem letzten Durchgang */
+	float a2 = 0;					/**< Y-Achsenabschnitt der aktuellen Achsengerade */
+	float xd = 0;					/**< X-Koordinate Drehpunkt */
+	float yd = 0;					/**< Y-Koordinate Drehpunkt */
+	float right_radius = 0;			/**< Radius des Drehkreises des rechten Rads */
+	float left_radius = 0;			/**< Radius des Drehkreises des linken Rads */
 #endif // MEASURE_MOUSE_AVAILABLE
 	static int16_t lastEncL = 0;	/* letzter Encoderwert links fuer Positionsberechnung */
 	static int16_t lastEncR = 0;	/* letzter Encoderwert rechts fuer Positionsberechnung */
@@ -274,12 +274,12 @@ void sensor_update(void) {
 #endif // MEASURE_POSITION_ERRORS_AVAILABLE
 
 #ifdef MEASURE_MOUSE_AVAILABLE
-	int16_t dX;						/*!< Differenz der X-Mauswerte */
-	int16_t dY;						/*!< Differenz der Y-Mauswerte */
-	int8_t modifiedAngles = False;	/*!< Wird True, wenn aufgrund 90 Grad oder 270 Grad die Winkel veraendert werden mussten */
+	int16_t dX;						/**< Differenz der X-Mauswerte */
+	int16_t dY;						/**< Differenz der Y-Mauswerte */
+	int8_t modifiedAngles = False;	/**< Wird True, wenn aufgrund 90 Grad oder 270 Grad die Winkel veraendert werden mussten */
 
-	sensMouseY += sensMouseDY;		/*!< Mausdelta Y aufaddieren */
-	sensMouseX += sensMouseDX;		/*!< Mausdelta X aufaddieren */
+	sensMouseY += sensMouseDY;		/**< Mausdelta Y aufaddieren */
+	sensMouseX += sensMouseDX;		/**< Mausdelta X aufaddieren */
 #endif // MEASURE_MOUSE_AVAILABLE
 
 #ifndef OS_AVAILABLE
@@ -555,7 +555,7 @@ void sensor_update(void) {
 	}
 }
 
-/*!
+/**
  * Setzt die Auswertungen der Sensordaten zurueck
  */
 void sensor_reset(void) {
@@ -583,10 +583,10 @@ void sensor_reset(void) {
 #endif
 }
 
-/*!
+/**
  * Die Funktion gibt aus, ob sich innerhalb einer gewissen Entfernung ein Objekt-Hindernis befindet.
- * @param distance	Entfernung in mm, bis zu welcher ein Objekt gesichtet wird.
- * @return 			Gibt False (0) zurueck, wenn kein Objekt innerhalb von distance gesichtet wird. Ansonsten die Differenz
+ * \param distance	Entfernung in mm, bis zu welcher ein Objekt gesichtet wird.
+ * \return 			Gibt False (0) zurueck, wenn kein Objekt innerhalb von distance gesichtet wird. Ansonsten die Differenz
  * zwischen dem linken und rechten Sensor. Negative Werte besagen, dass das Objekt naeher am linken, positive, dass
  * es naeher am rechten Sensor ist. Sollten beide Sensoren den gleichen Wert haben, gibt die Funktion 1 zurueck, um
  * von False unterscheiden zu koennen.
@@ -606,37 +606,38 @@ int16_t is_obstacle_ahead(int16_t distance) {
  */
 void led_update(void) {
 #ifdef LED_AVAILABLE
+	uint8_t leds = LED_get();
 	if (sensTrans != 0) {
-		LED_on(LED_GELB);
+		leds |= LED_GELB;
 	} else {
-		LED_off(LED_GELB);
+		leds = leds & (uint8_t) ~LED_GELB;
 	}
 	if (sensError != 0) {
-		LED_on(LED_ORANGE);
+		leds |= LED_ORANGE;
 	} else {
-		LED_off(LED_ORANGE);
+		leds = leds & (uint8_t) ~LED_ORANGE;
 	}
-
 	if (sensDistL < 500) {
-		LED_on(LED_LINKS);
+		leds |= LED_LINKS;
 	} else {
-		LED_off(LED_LINKS);
+		leds = leds & (uint8_t) ~LED_LINKS;
 	}
 	if (sensDistR < 500) {
-		LED_on(LED_RECHTS);
+		leds |= LED_RECHTS;
 	} else {
-		LED_off(LED_RECHTS);
+		leds = leds & (uint8_t) ~LED_RECHTS;
 	}
 #if defined MCU && defined UART_AVAILABLE
 	if (uart_infifo.overflow == 1) {
-		LED_on(LED_TUERKIS);
+		leds |= LED_TUERKIS;
 	}
 #endif // MCU && UART_AVAILABLE
+	LED_set(leds);
 #endif // LED_AVAILABLE
 }
 
 #ifdef DISPLAY_SENSOR_AVAILABLE
-/*!
+/**
  * Displayhandler fuer Sensoranzeige
  */
 void sensor_display(void) {
@@ -667,7 +668,7 @@ void sensor_display(void) {
 #endif // DISPLAY_SENSOR_AVAILABLE
 
 #ifdef DISPLAY_ODOMETRIC_INFO
-/*!
+/**
  * Displayhandler fuer Odometrieanzeige
  */
 void odometric_display(void) {

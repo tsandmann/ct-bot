@@ -17,7 +17,7 @@
  *
  */
 
-/*!
+/**
  * \file 	gui.h
  * \brief 	Display-GUI des Bots
  * \author 	Timo Sandmann (mail@timosandmann.de)
@@ -30,10 +30,10 @@
 #ifdef DISPLAY_AVAILABLE
 #include "ui/available_screens.h"
 
-extern int8_t max_screens;	/*!< Anzahl der zurzeit registrierten Screens */
-extern void (* screen_functions[DISPLAY_SCREENS])(void);	/*!< hier liegen die Zeiger auf die Display-Funktionen */
+extern int8_t max_screens;	/**< Anzahl der zurzeit registrierten Screens */
+extern void (* screen_functions[DISPLAY_SCREENS])(void);	/**< hier liegen die Zeiger auf die Display-Funktionen */
 
-/*!
+/**
  * Display-Screen Anzeige
  *
  * Zeigt einen Screen an und fuehrt die RC5-Kommandoauswertung aus, falls noch nicht geschehen.
@@ -41,14 +41,14 @@ extern void (* screen_functions[DISPLAY_SCREENS])(void);	/*!< hier liegen die Ze
  */
 void gui_display(uint8_t screen);
 
-/*!
+/**
  * Display-Screen Initialisierung
  * Traegt die Anzeige-Funktionen in das Array ein.
  */
 void gui_init(void);
 
 #ifdef KEYPAD_AVAILABLE
-/*!
+/**
  * Startet eine neue Keypad-Eingabe.
  *
  * Abgeschlossen wird sie mit der Taste "Play", abgebrochen mit "Stop".
@@ -63,21 +63,21 @@ void gui_keypad_request(void (* callback)(char * result), uint8_t mode, uint8_t 
 #endif // KEYPAD_AVAILABLE
 
 #ifdef DISPLAY_MISC_AVAILABLE
-/*!
+/**
  * Zeigt ein paar Infos an, die man nicht naeher zuordnen kann
  */
 void misc_display(void);
 #endif // DISPLAY_MISC_AVAILABLE
 
 #ifdef DISPLAY_RESET_INFO_AVAILABLE
-/*!
+/**
  * Zeigt Informationen ueber den Reset an
  */
 void reset_info_display(void);
 #endif // DISPLAY_RESET_INFO_AVAILABLE
 
 #ifdef DISPLAY_RAM_AVAILABLE
-/*!
+/**
  * Zeigt die aktuelle Speicherbelegung an.
  * Achtung, die Stackgroesse bezieht sich auf den Stack *dieser* Funktion!
  * Die Heapgroesse stimmt nur, wenn es dort keine Luecken gibt (z.b. durch free())

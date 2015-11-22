@@ -41,47 +41,47 @@
 #include "math_utils.h"
 #include "ui/available_screens.h"
 
-int16_t speed_l = 0;	/*!< Sollgeschwindigkeit linker Motor */
-int16_t speed_r = 0;	/*!< Sollgeschwindigkeit rechter Motor */
+int16_t speed_l = 0; /**< Sollgeschwindigkeit linker Motor */
+int16_t speed_r = 0; /**< Sollgeschwindigkeit rechter Motor */
 
 #ifdef SPEED_CONTROL_AVAILABLE
 #ifdef ADJUST_PID_PARAMS
 /* PID-Parameter variabel */
-int8_t Kp = PID_Kp;	/*!< PID-Parameter proportional */
-int8_t Ki = PID_Ki;	/*!< PID-Parameter intergral */
-int8_t Kd = PID_Kd;	/*!< PID-Parameter differential */
+int8_t Kp = PID_Kp; /**< PID-Parameter proportional */
+int8_t Ki = PID_Ki; /**< PID-Parameter intergral */
+int8_t Kd = PID_Kd; /**< PID-Parameter differential */
 #else
 /* PID-Koeffizienten aus Parametern berechnen */
-#define Q0 ( PID_Kp + PID_Kd/PID_Ta)					/*!< PID-Koeffizient Fehler */
-#define Q1 (-PID_Kp - 2*PID_Kd/PID_Ta + PID_Ki*PID_Ta)	/*!< PID-Koeffizient letzter Fehler */
-#define Q2 ( PID_Kd/PID_Ta)								/*!< PID-Koeffizient vorletzter Fehler */
+#define Q0 ( PID_Kp + PID_Kd/PID_Ta)					/**< PID-Koeffizient Fehler */
+#define Q1 (-PID_Kp - 2*PID_Kd/PID_Ta + PID_Ki*PID_Ta)	/**< PID-Koeffizient letzter Fehler */
+#define Q2 ( PID_Kd/PID_Ta)								/**< PID-Koeffizient vorletzter Fehler */
 #endif	// ADJUST_PID_PARAMS
 
-/*! Dividend fuer Umrechnung von Ticks [176 us] in Geschwindigkeit [mm/s] */
+/** Dividend fuer Umrechnung von Ticks [176 us] in Geschwindigkeit [mm/s] */
 #define TICKS_TO_SPEED		(uint16_t)((float)WHEEL_PERIMETER/ENCODER_MARKS*1000000/TIMER_STEPS)	// = 8475*2
-#define TICKS_TO_SPEED_0	(TICKS_TO_SPEED / 2)		/*!< Dividend fuer shift == 0 */
-#define TICKS_TO_SPEED_1	(TICKS_TO_SPEED / 2 * 2)	/*!< Dividend fuer shift == 1 */
-#define TICKS_TO_SPEED_2	(TICKS_TO_SPEED / 2 * 4) 	/*!< Dividend fuer shift == 2 */
+#define TICKS_TO_SPEED_0	(TICKS_TO_SPEED / 2)		/**< Dividend fuer shift == 0 */
+#define TICKS_TO_SPEED_1	(TICKS_TO_SPEED / 2 * 2)	/**< Dividend fuer shift == 1 */
+#define TICKS_TO_SPEED_2	(TICKS_TO_SPEED / 2 * 4) 	/**< Dividend fuer shift == 2 */
 
-/*! Typ fuer PWM-Lookup-Werte */
+/** Typ fuer PWM-Lookup-Werte */
 typedef struct {
-	uint8_t pwm;	/*!< PWM-Wert/2 */
-	uint8_t rating;	/*!< Qualitaet des PWM-Werts */
+	uint8_t pwm;	/**< PWM-Wert/2 */
+	uint8_t rating;	/**< Qualitaet des PWM-Werts */
 } pwmMap_t;
 
-static uint8_t encoderTargetRate[2] = {0,0};	/*!< Fuehrungsgroesse absolut [0; 256] */
+static uint8_t encoderTargetRate[2] = {0,0}; /**< Fuehrungsgroesse absolut [0; 256] */
 static uint8_t start_signal[2] = {0,0};
-static volatile pwmMap_t pwm_values[4] = {{0,255},{0,255},{0,255},{0,255}};		/*!< Lookup fuer Zuordnung GeschwindigkeitSLOW <-> PWM */
+static volatile pwmMap_t pwm_values[4] = {{0,255},{0,255},{0,255},{0,255}}; /**< Lookup fuer Zuordnung GeschwindigkeitSLOW <-> PWM */
 #ifdef DISPLAY_REGELUNG_AVAILABLE
-uint8_t encoderRateInfo[2];		/*!< Puffer fuer Displayausgabe der Ist-Geschwindigkeit */
+uint8_t encoderRateInfo[2]; /**< Puffer fuer Displayausgabe der Ist-Geschwindigkeit */
 #endif
 
 #endif // SPEED_CONTROL_AVAILABLE
 
 /* EEPROM-Variable immer deklarieren, damit die Adresse sich nicht veraendert je nach #define */
-uint8_t EEPROM pwmSlow[4] = {255, 255, 255, 255};	/*!< EEPROM-Kopie von pwm_values */
+uint8_t EEPROM pwmSlow[4] = {255, 255, 255, 255};	/**< EEPROM-Kopie von pwm_values */
 
-direction_t direction;		/*!< Drehrichtung der Motoren */
+direction_t direction; /**< Drehrichtung der Motoren */
 
 #ifdef SPEED_CONTROL_AVAILABLE
 /**
@@ -281,12 +281,14 @@ void speedcontrol_display(void) {
 		case RC5_CODE_6: Kd--; RC5_Code = 0; break;
 #endif // ADJUST_PID_PARAMS
 
+#ifdef BEHAVIOUR_AVAILABLE
 		case RC5_CODE_7:
 			target_speed_l = BOT_SPEED_FOLLOW; target_speed_r = BOT_SPEED_FOLLOW; RC5_Code = 0; break;
 		case RC5_CODE_8:
 			target_speed_l = BOT_SPEED_MEDIUM; target_speed_r = BOT_SPEED_MEDIUM; RC5_Code = 0; break;
 		case RC5_CODE_9:
 			target_speed_l = BOT_SPEED_FAST; target_speed_r = BOT_SPEED_FAST; RC5_Code = 0; break;
+#endif // BEHAVIOUR_AVAILABLE
 	}
 }
 #endif // DISPLAY_REGELUNG_AVAILABLE
@@ -500,8 +502,11 @@ void motor_init(void) {
  */
 void servo_set(uint8_t servo, uint8_t pos) {
 	if ((servo == SERVO1) && (pos != SERVO_OFF)) {
-		if (pos < DOOR_CLOSE) pos = DOOR_CLOSE;
-		if (pos > DOOR_OPEN) pos = DOOR_OPEN;
+		if (pos < DOOR_CLOSE) {
+			pos = DOOR_CLOSE;
+		} else if (pos > DOOR_OPEN) {
+			pos = DOOR_OPEN;
+		}
 	}
 	servo_low(servo, pos);
 }

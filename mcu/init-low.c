@@ -17,16 +17,16 @@
  *
  */
 
-/*!
- * @file 	init-low.c
- * @brief 	Initialisierungsroutinen fuer MCU
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	09.03.2010
+/**
+ * \file 	init-low.c
+ * \brief 	Initialisierungsroutinen fuer MCU
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	09.03.2010
  */
 
 #include "eeprom.h"
 
-uint8_t EEPROM resetsEEPROM = 0; /*!< Reset-Counter im EEPROM */
+uint8_t EEPROM resetsEEPROM = 0; /**< Reset-Counter im EEPROM */
 
 #ifdef MCU
 #include "ct-Bot.h"
@@ -42,16 +42,16 @@ uint8_t EEPROM resetsEEPROM = 0; /*!< Reset-Counter im EEPROM */
 #include <avr/sleep.h>
 #include <stdlib.h>
 
-/*! Kopie des MCU(C)SR Registers */
+/** Kopie des MCU(C)SR Registers */
 uint8_t mcucsr __attribute__((section(".noinit")));
 
 #ifdef DISPLAY_RESET_INFO_AVAILABLE
-uint8_t soft_resets __attribute__((section(".noinit"))); /*!< Reset-Counter im RAM */
+uint8_t soft_resets __attribute__((section(".noinit"))); /**< Reset-Counter im RAM */
 #endif // DISPLAY_RESET_INFO_AVAILABLE
 
 void init_before_main(void) __attribute__((section(".init3"))) __attribute__((naked));
 
-/*!
+/**
  * MCU(C)SR auslesen und zuruecksetzen, Watchdog ausschalten
  */
 void init_before_main(void) {
@@ -117,10 +117,10 @@ void init_before_main(void) {
 #endif // DISPLAY_RESET_INFO_AVAILABLE
 }
 
-/*!
+/**
  * Hardwareabhaengige Initialisierungen, die zuerst ausgefuehrt werden sollen
- * @param argc Anzahl der Kommandozeilenparameter
- * @param *argv Zeiger auf Kommandozeilenparameter
+ * \param argc Anzahl der Kommandozeilenparameter
+ * \param *argv Zeiger auf Kommandozeilenparameter
  */
 void ctbot_init_low_1st(int argc, char * argv[]) {
 	/* keine warnings */
@@ -148,7 +148,7 @@ void ctbot_init_low_1st(int argc, char * argv[]) {
 #endif // OS_AVAILABLE
 }
 
-/*!
+/**
  * Hardwareabhaengige Initialisierungen, die _nach_ der allgemeinen Initialisierung
  * ausgefuehrt werden sollen
  */
@@ -161,7 +161,7 @@ void ctbot_init_low_last(void) {
 #endif // OS_AVAILABLE
 }
 
-/*!
+/**
  * Faehrt den low-level Code des Bots sauber herunter
  */
 void ctbot_shutdown_low() {
@@ -174,6 +174,7 @@ void ctbot_shutdown_low() {
 	LED_off(0xff);
 #endif
 	ENA_off(0xff);
+
 	do {
 		_SLEEP_CONTROL_REG = (uint8_t) (((_SLEEP_CONTROL_REG & ~(_BV(SM0) | _BV(SM1) | _BV(SM2))) | (SLEEP_MODE_PWR_DOWN)));
 	} while (0);

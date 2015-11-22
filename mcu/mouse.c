@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	mouse.c
- * @brief 	Routinen fuer die Ansteuerung eines opt. Maussensors
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+/**
+ * \file 	mouse.c
+ * \brief 	Routinen fuer die Ansteuerung eines opt. Maussensors
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	26.12.2005
  */
 
 #ifdef MCU
@@ -34,19 +34,19 @@
 #include "ena.h"
 #include "command.h"
 
-#define MOUSE_DDR 		DDRB	/*!< DDR fuer Maus */
-#define MOUSE_PORT 		PORTB	/*!< PORT fuer Maus */
-#define MOUSE_SCK_PIN	(1<<7)	/*!< PIN fuer Maus-SCLK */
+#define MOUSE_DDR 		DDRB	/**< DDR fuer Maus */
+#define MOUSE_PORT 		PORTB	/**< PORT fuer Maus */
+#define MOUSE_SCK_PIN	(1<<7)	/**< PIN fuer Maus-SCLK */
 
-#define MOUSE_SDA_NR	6		/*!< Pin an dem die SDA-Leitung haengt */
-#define MOUSE_SDA_PINR 	PINB	/*!< Leseregister */
-#define MOUSE_SDA_PIN 	(1<<MOUSE_SDA_NR)	/*!< Bit-Wert der SDA-Leitung */
+#define MOUSE_SDA_NR	6		/**< Pin an dem die SDA-Leitung haengt */
+#define MOUSE_SDA_PINR 	PINB	/**< Leseregister */
+#define MOUSE_SDA_PIN 	(1<<MOUSE_SDA_NR) /**< Bit-Wert der SDA-Leitung */
 
 #define MOUSE_Enable()	ENA_on(ENA_MOUSE_SENSOR)
 
-/*!
+/**
  * Uebertraegt ein Byte an den Sensor
- * @param data das Byte
+ * \param data das Byte
  */
 static void mouse_sens_writeByte(uint8_t data) {
 	int8_t i;
@@ -71,9 +71,9 @@ static void mouse_sens_writeByte(uint8_t data) {
 	}
 }
 
-/*!
+/**
  * Liest ein Byte vom Sensor
- * @return das Byte
+ * \return das Byte
  */
 static uint8_t mouse_sens_readByte(void) {
 	int8_t i;
@@ -99,40 +99,39 @@ static uint8_t mouse_sens_readByte(void) {
 	return data;
 }
 
-/*!
+/**
  * wartet 100 us
  */
 static void mouse_sens_wait(void) {
 	delay_us(100);
 }
 
-/*!
+/**
  * Uebertraegt ein write-Kommando an den Sensor
- * @param adr Adresse
- * @param data Datum
+ * \param addr Adresse
+ * \param data Datum
  */
-void mouse_sens_write(uint8_t adr, uint8_t data) {
+void mouse_sens_write(uint8_t addr, uint8_t data) {
 	MOUSE_Enable();
-	mouse_sens_writeByte(adr |= 0x80); // MSB muss 1 sein, Datenblatt S.12 Write Operation
+	mouse_sens_writeByte(addr |= 0x80); // MSB muss 1 sein, Datenblatt S.12 Write Operation
 	mouse_sens_writeByte(data);
 	mouse_sens_wait(); // 100 us Pause
 }
 
-/*!
- * Schickt ein Lesekommando an den Sensor
- * und liest ein Byte zurueck
- * @param adr die Adresse
- * @return das Datum
+/**
+ * Schickt ein Lesekommando an den Sensor und liest ein Byte zurueck
+ * \param addr die Adresse
+ * \return das Datum
  */
-uint8_t mouse_sens_read(uint8_t adr) {
+uint8_t mouse_sens_read(uint8_t addr) {
 	MOUSE_Enable();
-	mouse_sens_writeByte(adr);
+	mouse_sens_writeByte(addr);
 	mouse_sens_wait(); // 100 us Pause
 	return mouse_sens_readByte();
 }
 
-/*!
- * Initialisiere Maussensor
+/**
+ * Initialisiert den Maussensor
  */
 void mouse_sens_init(void) {
 	MOUSE_Enable();
@@ -148,7 +147,7 @@ void mouse_sens_init(void) {
 }
 
 #ifdef BOT_2_SIM_AVAILABLE
-/*!
+/**
  * Uebertraegt ein Bild vom Maussensor an den PC
  * Insgesamt gibt es 324 Pixel
  * <pre>
@@ -170,15 +169,16 @@ void mouse_transmit_picture(void) {
 			do {
 				data = mouse_sens_read(MOUSE_PIXEL_DATA_REG);
 			} while ((data & 0x40) != 0x40);
-			low_write_data(&data, 1);
+			cmd_functions.write(&data, 1);
 		}
 	}
 }
 #endif // BOT_2_SIM_AVAILABLE
 
-/*!
+/**
  * Gibt den SQUAL-Wert zurueck. Dieser gibt an, wieviele Merkmale der Sensor
  * im aktuell aufgenommenen Bild des Untergrunds wahrnimmt
+ * \return SQUAL Wert
  */
 uint8_t mouse_get_squal(void) {
 	return mouse_sens_read(MOUSE_SQUAL_REG);

@@ -71,19 +71,19 @@
 #ifdef LOG_AVAILABLE
 
 #ifndef USE_MINILOG
-/*! Dieser Typ definiert die Typen der Log-Ausgaben. */
+/** Dieser Typ definiert die Typen der Log-Ausgaben. */
 typedef enum {
-	LOG_TYPE_DEBUG = 0,	/*!< Allgemeines Debugging */
-	LOG_TYPE_INFO,		/*!< Allgemeine Informationen */
-	LOG_TYPE_WARN,		/*!< Auftreten einer unerwarteten Situation */
-	LOG_TYPE_ERROR,		/*!< Fehler aufgetreten */
-	LOG_TYPE_FATAL		/*!< Kritischer Fehler */
+	LOG_TYPE_DEBUG = 0,	/**< Allgemeines Debugging */
+	LOG_TYPE_INFO,		/**< Allgemeine Informationen */
+	LOG_TYPE_WARN,		/**< Auftreten einer unerwarteten Situation */
+	LOG_TYPE_ERROR,		/**< Fehler aufgetreten */
+	LOG_TYPE_FATAL		/**< Kritischer Fehler */
 } PACKED LOG_TYPE;
 
 #define LOG_RAW LOG_INFO
 
 #ifdef PC
-/*!
+/**
  * Allgemeines Debugging (Methode DiesUndDas wurde mit Parameter SoUndSo
  * aufgerufen ...)
  */
@@ -92,7 +92,7 @@ typedef enum {
 							log_end();										\
 }
 
-/*!
+/**
  * Allgemeine Informationen (Programm gestartet, Programm beendet, Verbindung
  * zu Host Foo aufgebaut, Verarbeitung dauerte SoUndSoviel Sekunden ...)
  */
@@ -101,7 +101,7 @@ typedef enum {
 							log_end();										\
 }
 
-/*!
+/**
  * Auftreten einer unerwarteten Situation.
  */
 #define LOG_WARN(...) {		log_begin(__FILE__, __LINE__, LOG_TYPE_WARN); 	\
@@ -109,7 +109,7 @@ typedef enum {
 							log_end();										\
 }
 
-/*!
+/**
  * Fehler aufgetreten, Bearbeitung wurde alternativ fortgesetzt.
  */
 #define LOG_ERROR(...) {	log_begin(__FILE__, __LINE__, LOG_TYPE_ERROR); 	\
@@ -117,7 +117,7 @@ typedef enum {
 							log_end();										\
 }
 
-/*!
+/**
  * Kritischer Fehler, Programmabbruch.
  */
 #define LOG_FATAL(...) {	log_begin(__FILE__, __LINE__, LOG_TYPE_FATAL); 	\
@@ -125,28 +125,28 @@ typedef enum {
 							log_end();										\
 }
 
-/*!
+/**
  * Schreibt Angaben ueber Datei, Zeilennummer und den Log-Typ in den Puffer.
  * Achtung, Mutex wird gelockt und muss explizit durch log_end() wieder
  * freigegeben werden!
- * @param filename Dateiname
- * @param line Zeilennummer
- * @param log_type Log-Typ
+ * \param filename Dateiname
+ * \param line Zeilennummer
+ * \param log_type Log-Typ
  */
 void log_begin(const char * filename, unsigned int line, LOG_TYPE log_type);
 
-/*!
+/**
  * Schreibt die eigentliche Ausgabeinformation in den Puffer.
- * @param format Format
+ * \param format Format
  */
 void log_printf(const char * format, ...);
 
-/*!
+/**
  * Gibt den Puffer entsprechend aus.
  */
 void log_end(void);
 #else // ! PC
-/*!
+/**
  * Allgemeines Debugging (Methode DiesUndDas wurde mit Parameter SoUndSo
  * aufgerufen ...)
  */
@@ -157,7 +157,7 @@ void log_end(void);
 									log_end();											\
 }
 
-/*!
+/**
  * Allgemeine Informationen (Programm gestartet, Programm beendet, Verbindung
  * zu Host Foo aufgebaut, Verarbeitung dauerte SoUndSoviel Sekunden ...)
  */
@@ -168,7 +168,7 @@ void log_end(void);
 									log_end();										\
 }
 
-/*!
+/**
  * Auftreten einer unerwarteten Situation.
  */
 #define LOG_WARN(format, ...) {	static const char _file[] PROGMEM = __FILE__;		\
@@ -178,7 +178,7 @@ void log_end(void);
 									log_end();										\
 }
 
-/*!
+/**
  * Fehler aufgetreten, Bearbeitung wurde alternativ fortgesetzt.
  */
 #define LOG_ERROR(format, ...) {	static const char _file[] PROGMEM = __FILE__;		\
@@ -188,7 +188,7 @@ void log_end(void);
 									log_end();											\
 }
 
-/*!
+/**
  * Kritischer Fehler, Programmabbruch.
  */
 #define LOG_FATAL(format, ...) { 	static const char _file[] PROGMEM = __FILE__;		\
@@ -198,46 +198,46 @@ void log_end(void);
 									log_end();											\
 }
 
-/*!
+/**
  * Schreibt Angaben ueber Datei, Zeilennummer und den Log-Typ in den Puffer.
- * @param filename Dateiname
- * @param line Zeilennummer
- * @param log_type Log-Typ
+ * \param filename Dateiname
+ * \param line Zeilennummer
+ * \param log_type Log-Typ
  */
 void log_flash_begin(const char * filename, unsigned int line, LOG_TYPE log_type);
 
-/*!
+/**
  * Schreibt die eigentliche Ausgabeinformation in den Puffer.
- * @param format Format-String
+ * \param format Format-String
  */
 void log_flash_printf(const char * format, ...);
 
-/*!
+/**
  * Gibt den Puffer entsprechend aus.
  */
 void log_end(void);
 #endif // PC
 
 #ifdef LOG_DISPLAY_AVAILABLE
-/*!
+/**
  * Display-Handler fuer das Logging
  */
 void log_display(void);
 #endif // LOG_DISPLAY_AVAILABLE
 
 #else // USE_MINILOG
-/*! Dieser Typ definiert die Typen der Log-Ausgaben. */
+/** Dieser Typ definiert die Typen der Log-Ausgaben. */
 typedef enum {
-	LOG_TYPE_DEBUG = 0,	/*!< Allgemeines Debugging */
-	LOG_TYPE_INFO,		/*!< Allgemeine Informationen */
-	LOG_TYPE_ERROR,		/*!< Fehler aufgetreten */
-	LOG_TYPE_RAW,		/*!< Nur Datenausgabe */
+	LOG_TYPE_DEBUG = 0,	/**< Allgemeines Debugging */
+	LOG_TYPE_INFO,		/**< Allgemeine Informationen */
+	LOG_TYPE_ERROR,		/**< Fehler aufgetreten */
+	LOG_TYPE_RAW,		/**< Nur Datenausgabe */
 } PACKED LOG_TYPE;
 
 #define LOG_WARN	LOG_INFO
 #define LOG_FATAL	LOG_ERROR
 
-/*!
+/**
  * Allgemeines Debugging
  */
 #define LOG_DEBUG(format, ...) { minilog_begin(__LINE__, LOG_TYPE_DEBUG); 		\
@@ -245,7 +245,7 @@ typedef enum {
 								minilog_printf(__data, ## __VA_ARGS__);			\
 }
 
-/*!
+/**
  * Info-Logging
  */
 #define LOG_INFO(format, ...) {	minilog_begin(__LINE__, LOG_TYPE_INFO);			\
@@ -253,7 +253,7 @@ typedef enum {
 								minilog_printf(__data, ## __VA_ARGS__);			\
 }
 
-/*!
+/**
  * Fehler-Logging
  */
 #define LOG_ERROR(format, ...) { minilog_begin(__LINE__, LOG_TYPE_ERROR); 		\
@@ -261,7 +261,7 @@ typedef enum {
 								 minilog_printf(__data, ## __VA_ARGS__);		\
 }
 
-/*!
+/**
  * Reine Datenausgabe
  */
 #define LOG_RAW(format, ...) {	minilog_begin(0, LOG_TYPE_RAW); 				\
@@ -269,17 +269,17 @@ typedef enum {
 								minilog_printf(__data, ## __VA_ARGS__);			\
 }
 
-/*!
+/**
  * Schreibt die Zeilennummer und den Log-Typ in den Puffer
- * @param line		Zeilennummer
- * @param log_type	Log-Typ {DEBUG, INFO, ERROR}
+ * \param line		Zeilennummer
+ * \param log_type	Log-Typ {DEBUG, INFO, ERROR}
  */
 void minilog_begin(uint16_t line, LOG_TYPE log_type);
 
-/*!
+/**
  * Schreibt den Log-Text in den Log-Puffer und versendet die Daten
- * @param format	Format-String, wie bei printf
- * @param ... 		Variable Argumentenliste, wie bei printf
+ * \param format	Format-String, wie bei printf
+ * \param ... 		Variable Argumentenliste, wie bei printf
  */
 void minilog_printf(const char * format, ...);
 #endif // USE_MINILOG

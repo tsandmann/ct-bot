@@ -17,18 +17,18 @@
  * 
  */
 
-/*! 
- * @file 	srf10.h
- * @brief 	Ansteuerung des Ultraschall Entfernungssensors SRF10
- * @author 	Chris efstathiou (hendrix@otenet.gr) & Carsten Giesen (info@cnau.de)
- * @date 	08.04.06
+/**
+ * \file 	srf10.h
+ * \brief 	Ansteuerung des Ultraschall Entfernungssensors SRF10
+ * \author 	Chris Efstathiou (hendrix@otenet.gr) & Carsten Giesen (info@cnau.de)
+ * \date 	08.04.2006
  */
 #ifndef SRF10_H_
 #define SRF10_H_
 
 #ifdef SRF10_AVAILABLE
 
-/*!
+/**
  * Es sind alle moeglichen Adressen eingetragen. In de Regel reicht aber die erste              
  * Der Code geht nur von SRF10_UNIT_0 aus, daher sind die anderen auskommentiert                
  */
@@ -50,54 +50,54 @@
 //#define SRF10_UNIT_14  0xFC  /* the SRF10 MODULE I2C address */
 //#define SRF10_UNIT_15  0xFE  /* the SRF10 MODULE I2C address */
 
-#define SRF10_MIN_GAIN        0      /*!< setze Verstaerung auf 40 */
-#define SRF10_MAX_GAIN        16     /*!< setze Verstaerung auf 700 */
-#define SRF10_MIN_RANGE       0      /*!< Minimale Reichweite 43mm */
-#define SRF10_MAX_RANGE       5977   /*!< Maximale Reichweite 5977mm */
+#define SRF10_MIN_GAIN        0      /**< setze Verstaerung auf 40 */
+#define SRF10_MAX_GAIN        16     /**< setze Verstaerung auf 700 */
+#define SRF10_MIN_RANGE       0      /**< Minimale Reichweite 43mm */
+#define SRF10_MAX_RANGE       5977   /**< Maximale Reichweite 5977mm */
 
-#define SRF10_INCHES          0X50	 /*!< Messung in INCHES */
-#define SRF10_CENTIMETERS     0X51	 /*!< Messung in CM */
-#define SRF10_MICROSECONDS    0X52	 /*!< Messung in Millisekunden */
+#define SRF10_INCHES          0X50	 /**< Messung in INCHES */
+#define SRF10_CENTIMETERS     0X51	 /**< Messung in CM */
+#define SRF10_MICROSECONDS    0X52	 /**< Messung in Millisekunden */
 
-#define SRF10_COMMAND         0		 /*!< W=Befehls-Register R=Firmware*/
-#define SRF10_LIGHT           1		 /*!< W=Verstaerkungsfaktor R=Nicht benutzt */
-#define SRF10_HIB             2		 /*!< W=Reichweite R=Messung High-Byte */
-#define SRF10_LOB             3		 /*!< W=Nicht benutzt R=Messung Low-Byte */
+#define SRF10_COMMAND         0		 /**< W=Befehls-Register R=Firmware*/
+#define SRF10_LIGHT           1		 /**< W=Verstaerkungsfaktor R=Nicht benutzt */
+#define SRF10_HIB             2		 /**< W=Reichweite R=Messung High-Byte */
+#define SRF10_LOB             3		 /**< W=Nicht benutzt R=Messung Low-Byte */
 
-/*!
+/**
  * SRF10 initialsieren
  */
 void srf10_init(void);
 
-/*!
+/**
  * Verstaerkungsfaktor setzen
- * @param gain Verstaerkungsfaktor
+ * \param gain Verstaerkungsfaktor
  */
 void srf10_set_gain(uint8_t gain);
 
-/*!
+/**
  * Reichweite setzen, hat auch Einfluss auf die Messdauer
- * @param millimeters Reichweite in mm
+ * \param millimeters Reichweite in mm
  */
 void srf10_set_range(uint16_t millimeters);
 
-/*!
+/**
  * Messung ausloesen
- * @param metric_unit 0x50 in Zoll, 0x51 in cm, 0x52 ms
- * @return Resultat der Aktion
+ * \param metric_unit 0x50 in Zoll, 0x51 in cm, 0x52 ms
+ * \return Resultat der Aktion
  */
 uint8_t srf10_ping(uint8_t metric_unit);
 
-/*!
+/**
  * Register auslesen
- * @param SRF10_register welches Register soll ausgelsen werden
- * @return Inhalt des Registers
+ * \param SRF10_register welches Register soll ausgelsen werden
+ * \return Inhalt des Registers
  */
 uint8_t srf10_read_register(uint8_t SRF10_register);
 
-/*!
+/**
  * Messung starten Ergebniss aufbereiten und zurueckgeben
- * @return Messergebniss
+ * \return Messergebniss
  */
 uint16_t srf10_get_measure(void);
 

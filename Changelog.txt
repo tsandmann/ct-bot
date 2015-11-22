@@ -1,5 +1,11 @@
 CHANGELOG fuer c't-Bot
 ======================
+2015-11-07 Timo Sandmann [mail@timosandmann.de]: Moeglichkeit zur lokalen Konfiguration ueber bot-local-override.h. Siehe include/bot-local-override.h
+
+2015-10-26 Timo Sandmann [mail@timosandmann.de]: Raspberry Pi Support (derzeit Beta Status!) erweitert: Verbindung zu ct-Sim (via TCP) moeglich, low-level MCU-Code fuer RPi-Anbindung; HW-Test Verhalten ueberarbeitet, Fifo-Code erweitert, Doxygen Doku vereinheitlicht
+
+2015-10-26 Timo Sandmann [mail@timosandmann.de]: Release 22
+
 2015-10-18 Timo Sandmann [mail@timosandmann.de]: Kompatibilitaet zu mingw-w64 und msys2 (u.a. fuer Windows 10) 
 
 2015-10-11 Timo Sandmann [mail@timosandmann.de]: Kompatibilitaet zu AVR Toolchain 3.5

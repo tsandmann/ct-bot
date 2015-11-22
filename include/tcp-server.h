@@ -17,35 +17,35 @@
  * 
  */
 
-/*! 
- * @file 	tcp-server.h
- * @brief 	Demo-TCP-Server
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+/**
+ * \file 	tcp-server.h
+ * \brief 	Demo-TCP-Server
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	26.12.2005
  */
 
 #ifndef TCP_SERVER_H_
 #define TCP_SERVER_H_
 
-/*!
+/**
  * Init TCP-Server
  */
 void tcp_server_init(void);
 
-/*!
+/**
  * Hauptschleife des TCP-Servers
- * @param runs	Anzahl der Durchlaeufe
+ * \param runs	Anzahl der Durchlaeufe
  */
 void tcp_server_run(int runs);
 
-/*!
+/**
  * Init TCP-test-Client
  */
 void tcp_test_client_init(void);
 
-/*!
+/**
  * Hauptschleife des TCP-Test-Clients
- * @param runs	Anzahl der Durchlaeufe, 0 fuer unendlich
+ * \param runs	Anzahl der Durchlaeufe, 0 fuer unendlich
  */
 void tcp_test_client_run(int runs);
 #endif // TCP_SERVER_H_

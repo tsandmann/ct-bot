@@ -17,12 +17,12 @@
  *
  */
 
-/*!
- * @file 	behaviour_scan_beacons.c
- * @brief 	Verhalten, das Landmarken im Umkreis des Bots sucht und die Bot-Position
+/**
+ * \file 	behaviour_scan_beacons.c
+ * \brief 	Verhalten, das Landmarken im Umkreis des Bots sucht und die Bot-Position
  * 			aktualisiert, falls drei oder mehr Landmarken gefunden wurden.
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	01.05.2009
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	01.05.2009
  */
 
 #include "bot-logic/bot-logic.h"
@@ -33,31 +33,31 @@
 #include "log.h"
 #include "math_utils.h"
 
-static uint8_t state;		/*!< Status des Verhaltens */
-static uint8_t pos_update;	/*!< Update der Positionsdaten gewuenscht? */
-static uint8_t turn_mode;	/*!< 0: Auf der Stelle drehen, 1: Kreis um das linke Rad fahren */
-static uint8_t beacon_index;/*!< Index fuer naechste Baken-Daten */
+static uint8_t state;		/**< Status des Verhaltens */
+static uint8_t pos_update;	/**< Update der Positionsdaten gewuenscht? */
+static uint8_t turn_mode;	/**< 0: Auf der Stelle drehen, 1: Kreis um das linke Rad fahren */
+static uint8_t beacon_index;/**< Index fuer naechste Baken-Daten */
 static struct {
-	uint16_t id;					/*!< Landmarken-ID */
-	float heading;					/*!< Bot-Ausrichtung, unter der die Landmarke gesehen wurde */
-} recognized_beacons[3];			/*!< Array aller erkannten Landmarken */
-static float appearance_heading;	/*!< Bot-Ausrichtung, bei der eine Landmarke zuerst gesehen wurde */
-static float last_beacon_heading;	/*!< Bot-Ausrichtung bei letzter Landmarke */
-static float last_heading;			/*!< Letzte Bot-Ausrichtung */
-static float turned;				/*!< Winkel, um den sich der Bot bisher gedreht hat */
+	uint16_t id;					/**< Landmarken-ID */
+	float heading;					/**< Bot-Ausrichtung, unter der die Landmarke gesehen wurde */
+} recognized_beacons[3];			/**< Array aller erkannten Landmarken */
+static float appearance_heading;	/**< Bot-Ausrichtung, bei der eine Landmarke zuerst gesehen wurde */
+static float last_beacon_heading;	/**< Bot-Ausrichtung bei letzter Landmarke */
+static float last_heading;			/**< Letzte Bot-Ausrichtung */
+static float turned;				/**< Winkel, um den sich der Bot bisher gedreht hat */
 
 #define MAX_BEACONS (sizeof(recognized_beacons) / sizeof(recognized_beacons[0]))
-#define BEACON_GRID_SIZE		240	/*!< Raster-Breite fuer die Baken [mm] */
+#define BEACON_GRID_SIZE		240	/**< Raster-Breite fuer die Baken [mm] */
 
-#define SEARCH_APPEARANCE		0	/*!< Punkt suchen, ab dem das Baken-Signal zuerst erkannt wird */
-#define SEARCH_DISAPPEARANCE	1	/*!< Punkt suchen, ab dem das Baken-Signal nicht mehr erkannt wird */
-#define CALC_POSITION			2	/*!< Es wurden genuegend Landmarken erkannt, um die Position berechnen zu koennen */
-#define END						99	/*!< Ende des Verhaltens */
+#define SEARCH_APPEARANCE		0	/**< Punkt suchen, ab dem das Baken-Signal zuerst erkannt wird */
+#define SEARCH_DISAPPEARANCE	1	/**< Punkt suchen, ab dem das Baken-Signal nicht mehr erkannt wird */
+#define CALC_POSITION			2	/**< Es wurden genuegend Landmarken erkannt, um die Position berechnen zu koennen */
+#define END						99	/**< Ende des Verhaltens */
 
-/*!
+/**
  * Ermittelt aus einer Landmarken-ID die Position dieser Landmarke
- * @param id	ID der Landmarke. Darin ist ihre Position codiert
- * @return		Position der Landmarke in Weltkoordinaten
+ * \param id	ID der Landmarke. Darin ist ihre Position codiert
+ * \return		Position der Landmarke in Weltkoordinaten
  */
 static position_t get_position_from_id(uint16_t id) {
 	position_t pos = {0, 0};
@@ -65,7 +65,7 @@ static position_t get_position_from_id(uint16_t id) {
 	pos.x = (id >> 8) * BEACON_GRID_SIZE + (BEACON_GRID_SIZE / 2);
 	pos.y = (id & 0xff) * BEACON_GRID_SIZE + (BEACON_GRID_SIZE / 2);
 #else // MCU
-/*! @todo Nur Test-Daten */
+/** \todo Nur Test-Daten */
 	switch (id) {
 	case 0xd:
 		pos.x = 0;
@@ -86,10 +86,10 @@ static position_t get_position_from_id(uint16_t id) {
 	return pos;
 }
 
-/*!
+/**
  * Verhalten, das Landmarken im Umkreis des Bots sucht und die Bot-Position
  * aktualisiert, falls drei oder mehr Landmarken gefunden wurden.
- * @param *data	Der Verhaltensdatensatz
+ * \param *data	Der Verhaltensdatensatz
  */
 void bot_scan_beacons_behaviour(Behaviour_t * data) {
 	static uint8_t disappeared_counter = 0;
@@ -183,7 +183,7 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 			angle_mb += 360.0f;
 		}
 
-/*! @todo vielleicht laesst sich der Tausch-Spass hier noch optimieren */
+/** \todo vielleicht laesst sich der Tausch-Spass hier noch optimieren */
 		if (angle_am > 180.0f) {
 			uint16_t tmp_id = recognized_beacons[2].id;
 			float tmp_head = recognized_beacons[2].heading;
@@ -285,12 +285,12 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 	}
 }
 
-/*!
+/**
  * Verhalten, das Landmarken im Umkreis des Bots sucht und die Bot-Position
  * aktualisiert, falls drei oder mehr Landmarken gefunden wurden.
- * @param *caller Der Verhaltensdatensatz des Aufrufers
- * @param position_update Sollen die Positionsdaten aktualisiert werden? 1: ja
- * @param mode 0: Auf der Stelle drehen, 1: Kreis um das linke Rad fahren
+ * \param *caller Der Verhaltensdatensatz des Aufrufers
+ * \param position_update Sollen die Positionsdaten aktualisiert werden? 1: ja
+ * \param mode 0: Auf der Stelle drehen, 1: Kreis um das linke Rad fahren
  */
 void bot_scan_beacons(Behaviour_t * caller, uint8_t position_update, uint8_t mode) {
 	pos_update = position_update;

@@ -27,11 +27,11 @@
 
 #ifdef MCU
 #include "ct-Bot.h"
+#include "motor-low.h"
 #include "motor.h"
 #include "timer.h"
 #include "sensor.h"
 #include "display.h"
-#include "motor-low.h"
 
 #include <avr/io.h>
 #include <stdlib.h>

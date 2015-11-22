@@ -17,11 +17,11 @@
  * 
  */
 
-/*! 
- * @file 	cmps03.c
- * @brief 	CMPS03-Treiber
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	05.09.2007
+/**
+ * \file 	cmps03.c
+ * \brief 	CMPS03-Treiber
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	05.09.2007
  */
 
 #ifdef MCU
@@ -34,18 +34,18 @@
 #include <util/twi.h>
 
 
-/*!
+/**
  * Startet das Auslesen der aktuellen Lage per I2C
- * @param *pValue	Zeiger auf Datenablage
+ * \param *pValue	Zeiger auf Datenablage
  */
 void cmps03_get_bearing(cmps03_t * pValue) {
 	/* 2 Bytes aus Register 2 lesen */
 	i2c_read(CMPS03_ADDR, 2, (uint8_t *) pValue, 2);
 }
 
-/*!
+/**
  * Wartet auf die Beendigung des I2C-Transfers und formatiert die Daten korrekt
- * @param *pValue	Zeiger auf Datenablage
+ * \param *pValue	Zeiger auf Datenablage
  */
 void cmps03_finish(cmps03_t * pValue) {
 	/* Auf I2C-Transfer warten */

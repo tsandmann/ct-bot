@@ -384,6 +384,7 @@ void bot_remotecall_behaviour(Behaviour_t * data) {
 			function_name = (char *) &tmp;
 
 			int16_t result = data->subResult;
+			(void) result;
 			if (data->caller) {
 #ifdef BEHAVIOUR_ABL_AVAILABLE
 				abl_push_value((uint16_t) result);
@@ -541,7 +542,7 @@ static uint8_t beh_selected = 0; /**< Status der Eingabe (0: nicht ausgewaehlt, 
  */
 static void keypad_param(char * data) {
 	if (keypad_param_index < REMOTE_CALL_MAX_PARAM && *data != 0) {
-		keypad_params[keypad_param_index].s16 = atoi(data);
+		keypad_params[keypad_param_index].s32 = atoi(data);
 		++keypad_param_index;
 	}
 	beh_selected = 1;

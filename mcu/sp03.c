@@ -17,9 +17,9 @@
  * 
  */
 
-/*! 
- * @file 	sp03.c
- * @brief 	Ansteuerung des Sprachmoduls SP03 Text to Speech mit TWI aka I2C.
+/**
+ * \file 	sp03.c
+ * \brief 	Ansteuerung des Sprachmoduls SP03 Text to Speech mit TWI aka I2C.
  * 
  * Weitere Dokumentation unter Documentation/sp03.pdf
  * 
@@ -74,15 +74,15 @@
  * 
  * 
  * 
- * @author 	Harald W. Leschner (hari@h9l.net)
- * @date 	29.03.08
+ * \author 	Harald W. Leschner (hari@h9l.net)
+ * \date 	29.03.2008
  */
 
-/*!
- * @todo: Abfragen von STATUS bevor neues Sprechen
- * @todo: Ein eigenes Behaviour, LOG_SAY und RemoteCall anlegen ...
- * @todo: Fehler abfangen und evtl. sprachlich ausgeben
- * @todo: testen wirklich langer und komplizierter Texte ...
+/**
+ * \todo: Abfragen von STATUS bevor neues Sprechen
+ * \todo: Ein eigenes Behaviour, LOG_SAY und RemoteCall anlegen ...
+ * \todo: Fehler abfangen und evtl. sprachlich ausgeben
+ * \todo: testen wirklich langer und komplizierter Texte ...
  */
 
 #ifdef MCU 
@@ -98,20 +98,19 @@
 #include "delay.h"
 #include "log.h"
 
-/*! Puffergroesse fuer einen Satz in Bytes */
+/** Puffergroesse fuer einen Satz in Bytes */
 #define SP03_BUFFER_SIZE	(SP03_MAX_TEXT_SIZE+3)
 
-/*!
- * @brief			Laden eines Strings in den SP03, der im Flash gespeichert ist.
+/**
+ * \brief			Laden eines Strings in den SP03, der im Flash gespeichert ist.
  * Schreibt die formatierte Ausgabe der zu sprechenden Zeichen in einen Puffer und
  * uebertraegt sie per I2C an das Sprachmodul. Die eigentliche Aussprache des
  * Textes erfolgt im Macro sp03_say() oder sp03_speakf().
  * 
- * @param format 	Format, wie beim printf
- * @param ... 		Variable Argumentenliste, wie beim printf
+ * \param format 	Format, wie beim printf
+ * \param ... 		Variable Argumentenliste, wie beim printf
  */
 void sp03_flash_speakf(const char * format, ...) {
-
 	char sp03_buf[SP03_BUFFER_SIZE];		 // Pufferstring fuer Sprachausgabe
 	va_list	args;
 	uint8_t state = TW_NO_INFO;
@@ -134,14 +133,13 @@ void sp03_flash_speakf(const char * format, ...) {
 	//LOG_DEBUG("Status buffer set:%x",state);
 }
 
-/*!
+/**
  * SP03 Steuercodes fuer Lautstaerke, Speed und Pitch an Synth senden
- * @param sp03_volume Lautstaerke
- * @param sp03_pitch Geschwindigkeit
- * @param sp03_speed Stimmlage
+ * \param sp03_volume Lautstaerke
+ * \param sp03_pitch Geschwindigkeit
+ * \param sp03_speed Stimmlage
  */
 void sp03_set_voice(uint8_t sp03_volume, uint8_t sp03_pitch, uint8_t sp03_speed) {
-
 	uint8_t bufvox[5];
 	uint8_t state = TW_NO_INFO;
 
@@ -157,11 +155,10 @@ void sp03_set_voice(uint8_t sp03_volume, uint8_t sp03_pitch, uint8_t sp03_speed)
 	//LOG_DEBUG("Status voice set:%x",state);
 }
 
-/*!
+/**
  * SP03 Steuercode fuer Sprechen senden
  */
 void sp03_cmd_speak(void) {
-
 	uint8_t bufspk[2];
 	uint8_t state = TW_NO_INFO;
 
@@ -174,12 +171,11 @@ void sp03_cmd_speak(void) {
 	//LOG_DEBUG("Status speak:%x",state);
 }
 
-/*!
+/**
  * SP03 Vordefinierte Saetze abrufen 1-30 oder 0x01-0x1E
- * @param sp03_pre_id Vordefinierte Satz-ID-Nr
+ * \param sp03_pre_id Vordefinierte Satz-ID-Nr
  */
 void sp03_speak_phrase(uint8_t sp03_pre_id) {
-	
 	if (sp03_pre_id>SP03_MAXNUMPHRASES) {
 		if (sp03_pre_id<1) {
 			sp03_pre_id=SP03_DEFAULT_PHRASE;
@@ -199,11 +195,10 @@ void sp03_speak_phrase(uint8_t sp03_pre_id) {
 	//LOG_DEBUG("Status preid:%x",state);
 }
 
-/*!
+/**
  * SP03 Firmwareversion auslesen
  */
 void sp03_get_version(void) {
-	
 	uint8_t version = 0;
 	uint8_t state = TW_NO_INFO;
 
@@ -225,26 +220,24 @@ void sp03_get_version(void) {
 
 // VERSION 1.0
 #ifdef SP03_V1
-/*!
+/**
  * OBSOLET: SP03 Direktes Sprechen von ASCII Text max. 81 Zeichen. Hier wird in einer Funktion alles uebergeben.
- * @param sp03_volume Lautstaerke
- * @param sp03_speed Geschwindigkeit
- * @param sp03_pitch Stimmlage
- * @param *sp03_text Der zu sprechende Text
+ * \param sp03_volume Lautstaerke
+ * \param sp03_speed Geschwindigkeit
+ * \param sp03_pitch Stimmlage
+ * \param *sp03_text Der zu sprechende Text
  */
 void sp03_speak_string(uint8_t sp03_volume, uint8_t sp03_pitch, uint8_t sp03_speed, char * sp03_text) {
-	
 	sp03_set_voice(sp03_volume, sp03_pitch, sp03_speed);
 	sp03_set_buffer(sp03_text);
 	sp03_cmd_speak();
 }
 
-/*!
+/**
  * OBSOLET: SP03 Text in den Buffer laden, max. 81 ASCII Zeichen
- * @param *sp03_textb Textbuffer
+ * \param *sp03_textb Textbuffer
  */
 void sp03_set_buffer(const char * sp03_textb) {
-
 	// Stringlaenge der Texteingabe berechnen
 	uint8_t len = strlen(sp03_textb);
 	//LOG_DEBUG("Length string:%d",len);

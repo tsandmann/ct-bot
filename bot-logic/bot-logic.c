@@ -644,10 +644,6 @@ void deactivateAllBehaviours(void) {
 void bot_behave(void) {
 	Behaviour_t * job; // Zeiger auf ein Verhalten
 
-#ifdef RC5_AVAILABLE
-	rc5_control(); // Abfrage der IR-Fernbedienung
-#endif
-
 #ifdef BEHAVIOUR_FACTOR_WISH_AVAILABLE
 	float factorLeft = 1.0f; // Puffer fuer Modifikatoren
 	float factorRight = 1.0f; // Puffer fuer Modifikatoren

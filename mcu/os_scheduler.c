@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	os_scheduler.c
- * @brief 	Mini-Scheduler fuer BotOS
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	02.10.2007
+/**
+ * \file 	os_scheduler.c
+ * \brief 	Mini-Scheduler fuer BotOS
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	02.10.2007
  */
 
 #ifdef MCU
@@ -46,29 +46,29 @@
 #error "Compiler zu alt, mindestens 4.2.2 noetig!"	// fuer __attribute__((OS_task))
 #endif
 
-volatile uint8_t os_scheduling_allowed = 1;	/*!< sperrt den Scheduler, falls != 1. Sollte nur per os_enterCS() / os_exitCS() veraendert werden! */
+volatile uint8_t os_scheduling_allowed = 1;	/**< sperrt den Scheduler, falls != 1. Sollte nur per os_enterCS() / os_exitCS() veraendert werden! */
 
-uint8_t os_idle_stack[OS_IDLE_STACKSIZE];	/*!< Stack des Idle-Threads */
+uint8_t os_idle_stack[OS_IDLE_STACKSIZE];	/**< Stack des Idle-Threads */
 
-static volatile uint32_t idle_counter[3];	/*!< Variable, die im Idle-Thread laufend inkrementiert wird */
-#define ZYCLES_PER_IDLERUN	38 /*!< Anzahl der CPU-Zyklen fuer einen Durchlauf der Idle-Schleife */
+static volatile uint32_t idle_counter[3];	/**< Variable, die im Idle-Thread laufend inkrementiert wird */
+#define ZYCLES_PER_IDLERUN	38 /**< Anzahl der CPU-Zyklen fuer einen Durchlauf der Idle-Schleife */
 
 #ifdef DISPLAY_OS_AVAILABLE
-uint8_t uart_log = 0; /*!< Zaehler fuer UART-Auslastung */
+uint8_t uart_log = 0; /**< Zaehler fuer UART-Auslastung */
 #endif
 
 #ifdef OS_KERNEL_LOG_AVAILABLE
 typedef struct {
-	uint16_t time; /*!< Timestamp */
-	uint8_t from;  /*!< Thread, der unterbrochen wurde */
-	uint8_t to;    /*!< Thread, der fortgesetzt wurde */
-} kernel_log_t; /*!< Log-Eintrag fuer Kernel-LOG */
-static kernel_log_t kernel_log[OS_KERNEL_LOG_SIZE]; /*!< Puffer fuer Kernel-LOG-Eintraege */
-static fifo_t kernel_log_fifo; /*!< Fifo fuer Kernel-LOG-Eintraege */
-static kernel_log_t log_entry; /*!< Letzter Kernel-LOG Eintrag */
-static uint8_t kernel_log_on = 0; /*!< Schalter um das Logging an und aus zu schalten */
+	uint16_t time; /**< Timestamp */
+	uint8_t from;  /**< Thread, der unterbrochen wurde */
+	uint8_t to;    /**< Thread, der fortgesetzt wurde */
+} kernel_log_t; /**< Log-Eintrag fuer Kernel-LOG */
+static kernel_log_t kernel_log[OS_KERNEL_LOG_SIZE]; /**< Puffer fuer Kernel-LOG-Eintraege */
+static fifo_t kernel_log_fifo; /**< Fifo fuer Kernel-LOG-Eintraege */
+static kernel_log_t log_entry; /**< Letzter Kernel-LOG Eintrag */
+static uint8_t kernel_log_on = 0; /**< Schalter um das Logging an und aus zu schalten */
 
-/*!
+/**
  * Initialisiert das Kernel-LOG
  */
 void os_kernel_log_init(void) {
@@ -78,16 +78,16 @@ void os_kernel_log_init(void) {
 #endif // OS_KERNEL_LOG_AVAILABLE
 
 #ifdef MEASURE_UTILIZATION
-#define UTIL_LOG_TIME		25  /*!< Zeitintervall zwischen zwei Auslastungsberechnungen [ms] */
-#define MAX_UTIL_ENTRIES	256 /*!< Maximale Anzahl an Auslastungsdatensaetzen (muss 2er-Potenz sein!) */
+#define UTIL_LOG_TIME		25  /**< Zeitintervall zwischen zwei Auslastungsberechnungen [ms] */
+#define MAX_UTIL_ENTRIES	256 /**< Maximale Anzahl an Auslastungsdatensaetzen (muss 2er-Potenz sein!) */
 
-static uint8_t util_data[MAX_UTIL_ENTRIES][OS_MAX_THREADS]; /*!< Puffer fuer Auslastungsstatistik */
-static uint16_t missed_deadlines[OS_MAX_THREADS]; /*!< Anzahl der nicht eingehaltenen Deadlines */
-static uint16_t util_count = 0;		 /*!< Anzahl der Eintraege im Puffer */
-static uint16_t last_util_time = 0;  /*!< Zeitpunkt der letzten Erstellung einer Auslastungsstatistik */
-static uint32_t first_util_time = 0; /*!< Zeitpunkt der ersten Erstellung einer Auslastungsstatistik */
+static uint8_t util_data[MAX_UTIL_ENTRIES][OS_MAX_THREADS]; /**< Puffer fuer Auslastungsstatistik */
+static uint16_t missed_deadlines[OS_MAX_THREADS]; /**< Anzahl der nicht eingehaltenen Deadlines */
+static uint16_t util_count = 0;		 /**< Anzahl der Eintraege im Puffer */
+static uint16_t last_util_time = 0;  /**< Zeitpunkt der letzten Erstellung einer Auslastungsstatistik */
+static uint32_t first_util_time = 0; /**< Zeitpunkt der ersten Erstellung einer Auslastungsstatistik */
 
-/*!
+/**
  * Aktualisiert die Statistikdaten zur CPU-Auslastung
  */
 void os_calc_utilization(void) {
@@ -123,7 +123,7 @@ void os_calc_utilization(void) {
 	}
 }
 
-/*!
+/**
  * Loescht alle Statistikdaten zur CPU-Auslastung
  */
 void os_clear_utilization(void) {
@@ -140,7 +140,7 @@ void os_clear_utilization(void) {
 	os_exitCS();
 }
 
-/*!
+/**
  * Gibt die gesammelten Statistikdaten zur CPU-Auslastung per LOG aus
  */
 void os_print_utilization(void) {
@@ -185,7 +185,7 @@ void os_print_utilization(void) {
 }
 #endif // MEASURE_UTILIZATION
 
-/*!
+/**
  * Idle-Thread
  */
 void os_idle(void) {
@@ -210,9 +210,9 @@ void os_idle(void) {
 	}
 }
 
-/*!
+/**
  * Aktualisiert den Schedule, prioritaetsbasiert
- * @param tickcount	Wert des Timer-Ticks (32 Bit)
+ * \param tickcount	Wert des Timer-Ticks (32 Bit)
  */
 void os_schedule(uint32_t tickcount) {
 	/* Mutex abfragen / setzen => Scheduler ist nicht reentrant! */
@@ -268,7 +268,7 @@ void os_schedule(uint32_t tickcount) {
 }
 
 #ifdef DISPLAY_OS_AVAILABLE
-/*!
+/**
  * Handler fuer OS-Display
  */
 void os_display(void) {

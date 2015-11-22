@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	twi.c
- * @brief 	TWI-Treiber (I2C)
- * @author 	Chris efstathiou hendrix@otenet.gr & Carsten Giesen (info@cnau.de)
- * @date 	08.04.2006
+/**
+ * \file 	twi.c
+ * \brief 	TWI-Treiber (I2C)
+ * \author 	Chris Efstathiou (hendrix@otenet.gr) & Carsten Giesen (info@cnau.de)
+ * \date 	08.04.2006
  */
 
 #ifdef MCU
@@ -42,14 +42,14 @@ static uint8_t Send_adr(uint8_t adr);
 static uint8_t Get_byte(uint8_t * rx_ptr, uint8_t last_byte);
 static uint8_t Send_byte(uint8_t data);
 
-/*!
+/**
  * TWI Buss schliesen
  */
 static void Close_TWI(void) {
-	TWCR = 0;	/*!< TWI-Interface ausschalten */
+	TWCR = 0;	/**< TWI-Interface ausschalten */
 }
 
-/*!
+/**
  * Warte auf TWI interrupt
  */
 static void Wait_TWI_int(void) {
@@ -57,31 +57,31 @@ static void Wait_TWI_int(void) {
 	    ;
 }
 
-/*!
+/**
  * Sende Start Sequence
- * @return Resultat der Aktion
+ * \return Resultat der Aktion
  */
 static uint8_t Send_start(void) {
-	TWCR = ((1<<TWINT)+(1<<TWSTA)+(1<<TWEN)); 		/*!< Sende START */
+	TWCR = ((1<<TWINT)+(1<<TWSTA)+(1<<TWEN)); 		/**< Sende START */
 
-	Wait_TWI_int();									/*!< Warte auf TWI interrupt */
+	Wait_TWI_int();									/**< Warte auf TWI interrupt */
 
-    if((TWSR != START)&&(TWSR != REP_START))		/*!< Ist der Status ein Anderer als Start (0x08) oder wiederholter Start (0x10) */
-		return TWSR;								/*!< -> error  und Rueckgabe TWSR. */
-	return SUCCESS;									/*!< wenn OK Rueckgabe SUCCESS */
+    if((TWSR != START)&&(TWSR != REP_START))		/**< Ist der Status ein Anderer als Start (0x08) oder wiederholter Start (0x10) */
+		return TWSR;								/**< -> error  und Rueckgabe TWSR. */
+	return SUCCESS;									/**< wenn OK Rueckgabe SUCCESS */
 }
 
-/*!
+/**
  * Sende Stop Sequence
  */
 static void Send_stop(void) {
 	TWCR = ((1<<TWEN)+(1<<TWINT)+(1<<TWSTO));
 }
 
-/*!
+/**
  * Hier wird der eigentliche TWI-Treiber angesprochen
- * @param *data_pack Container mit den Daten fuer den Treiber
- * @return Resultat der Aktion
+ * \param *data_pack Container mit den Daten fuer den Treiber
+ * \return Resultat der Aktion
  */
 uint8_t Send_to_TWI(tx_type_t * data_pack) {
 	uint8_t state,i,j;
@@ -93,12 +93,12 @@ uint8_t Send_to_TWI(tx_type_t * data_pack) {
 		if (state == SUCCESS)
 			state = Send_adr(data_pack[i].slave_adr);
 
-		/*!
+		/**
 		 * Abhaengig von W/R senden oder empfangen
 		 */
 		if(!(data_pack[i].slave_adr & R)) {
 			if (state == SUCCESS){
-				/*!
+				/**
 				 * Wenn W bis alle Daten gesendet sind
 				 */
 				for(j=0;((j<data_pack[i].size)&&(state == SUCCESS));j++)
@@ -111,11 +111,11 @@ uint8_t Send_to_TWI(tx_type_t * data_pack) {
 			}
 
 			if (state == SUCCESS){
-				/*!
+				/**
 				 * Wenn R bis alle Daten empfangen sind
 				 */
 				for(j=0;((j<data_pack[i].size)&&(state == SUCCESS));j++){
-					/*!
+					/**
 					 * Wenn wir keine Daten mehr erwarten NACK senden
 					 */
 					if(j == data_pack[i].size-1)
@@ -132,9 +132,9 @@ uint8_t Send_to_TWI(tx_type_t * data_pack) {
 	return state;
 }
 
-/*!
+/**
  * Sende ein Byte
- * @param data das zu uebertragende Byte
+ * \param data das zu uebertragende Byte
  */
 static uint8_t Send_byte(uint8_t data) {
 	Wait_TWI_int();
@@ -146,10 +146,10 @@ static uint8_t Send_byte(uint8_t data) {
 	return SUCCESS;
 }
 
-/*!
+/**
  * Sende Slave Adresse
- * @param adr die gewuenschte Adresse
- * @return Resultat der Aktion
+ * \param adr die gewuenschte Adresse
+ * \return Resultat der Aktion
  */
 static uint8_t Send_adr(uint8_t adr) {
 	Wait_TWI_int();
@@ -161,11 +161,11 @@ static uint8_t Send_adr(uint8_t adr) {
 	return SUCCESS;
 }
 
-/*!
+/**
  * Empfange ein Byte
- * @param *rx_ptr Container fuer die Daten
- * @param last_byte Flag ob noch Daten erwartet werden
- * @return Resultat der Aktion
+ * \param *rx_ptr Container fuer die Daten
+ * \param last_byte Flag ob noch Daten erwartet werden
+ * \return Resultat der Aktion
  */
 static uint8_t Get_byte(uint8_t * rx_ptr, uint8_t last_byte) {
 	Wait_TWI_int();
@@ -182,10 +182,10 @@ static uint8_t Get_byte(uint8_t * rx_ptr, uint8_t last_byte) {
 
 #else
 
-/*!
+/**
  * Datentransfer per I2C-Bus
- * @param *pData	Container mit den Daten fuer den Treiber
- * @return 			Resultat der Aktion
+ * \param *pData	Container mit den Daten fuer den Treiber
+ * \return 			Resultat der Aktion
  */
 uint8_t Send_to_TWI(tx_type_t * pData) {
 	uint8_t toRead = 0;

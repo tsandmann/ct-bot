@@ -17,7 +17,7 @@
  *
  */
 
-/*!
+/**
  * \file 	gui.c
  * \brief 	Display-GUI des Bots
  * \author 	Timo Sandmann (mail@timosandmann.de)
@@ -27,7 +27,7 @@
 #include "ct-Bot.h"
 #include "eeprom.h"
 
-/*! Keymap fuer Keypad-Eingaben */
+/** Keymap fuer Keypad-Eingaben */
 EEPROM uint8_t gui_keypad_table[][5] = {
 	{'.', ',', ':', ';', '0'}, // 0
 	{'-', ' ', '1',   0,   0}, // 1
@@ -44,7 +44,7 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 
 #ifdef DISPLAY_AVAILABLE
 #include "gui.h"
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 #include "rc5.h"
 #include "sensor.h"
 #include "motor.h"
@@ -59,6 +59,7 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 #include "rc5-codes.h"
 #include "os_scheduler.h"
 #include "timer.h"
+#include "bot-2-linux.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -101,6 +102,13 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 #undef DISPLAY_MMC_INFO
 #endif // !MAP_AVAILABLE
 
+#ifdef BOT_2_RPI_AVAILABLE
+#undef DISPLAY_SENSOR_AVAILABLE
+#undef DISPLAY_ODOMETRIC_INFO
+#else
+#undef DISPLAY_LINUX_AVAILABLLE
+#endif // BOT_2_RPI_AVAILABLE
+
 #ifndef BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE
 #undef DISPLAY_TRANSPORT_PILLAR
 #endif
@@ -139,8 +147,8 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 #endif
 
 
-int8_t max_screens = 0;	/*!< Anzahl der zurzeit registrierten Screens */
-void (* screen_functions[DISPLAY_SCREENS])(void) = {NULL}; /*!< hier liegen die Zeiger auf die Display-Funktionen */
+int8_t max_screens = 0;	/**< Anzahl der zurzeit registrierten Screens */
+void (* screen_functions[DISPLAY_SCREENS])(void) = {NULL}; /**< hier liegen die Zeiger auf die Display-Funktionen */
 
 #ifdef KEYPAD_AVAILABLE
 //#define KEYPAD_DEBUG
@@ -150,18 +158,17 @@ void (* screen_functions[DISPLAY_SCREENS])(void) = {NULL}; /*!< hier liegen die 
 #define LOG_DEBUG(...)
 #endif
 
-static uint32_t keypad_last_pressed = 0;	/*!< Zeitpunkt der letzten Tasteneingabe */
-static uint8_t keypad_row = 0;				/*!< Zeile fuer Ausgabe der Eingabe */
-static uint8_t keypad_col = 0;				/*!< Spalte fuer Ausgabe der Eingabe */
-static uint8_t keypad_mode = 0;				/*!< Modus, 0: alphanumerisch, 1: numerisch */
-static char keypad_buffer[21];				/*!< Eingabepuffer */
-static char * keypad_result = NULL;			/*!< aktuelle Position im Puffer */
-static void (* keypad_callback)(char * result) = NULL; /*!< Callback-Funktion nach Abschluss */
+static uint32_t keypad_last_pressed = 0;	/**< Zeitpunkt der letzten Tasteneingabe */
+static uint8_t keypad_row = 0;				/**< Zeile fuer Ausgabe der Eingabe */
+static uint8_t keypad_col = 0;				/**< Spalte fuer Ausgabe der Eingabe */
+static uint8_t keypad_mode = 0;				/**< Modus, 0: alphanumerisch, 1: numerisch */
+static char keypad_buffer[21];				/**< Eingabepuffer */
+static char * keypad_result = NULL;			/**< aktuelle Position im Puffer */
+static void (* keypad_callback)(char * result) = NULL; /**< Callback-Funktion nach Abschluss */
 
 
-/*!
- * \brief Startet eine neue Keypad-Eingabe.
- *
+/**
+ * Startet eine neue Keypad-Eingabe.
  * Abgeschlossen wird sie mit der Taste "Play", abgebrochen mit "Stop".
  * Nach  Abschluss wird die uebergebene Callback-Funktion aufgerufen
  * mit dem Eingabe-String als Parameter.
@@ -178,9 +185,8 @@ void gui_keypad_request(void (* callback)(char * result), uint8_t mode, uint8_t 
 	keypad_result = keypad_buffer - 1;
 }
 
-/*!
- * \brief Ermoeglicht Eingabe von Text und Zahlen ueber eine Ziffern-Fernbedienung.
- *
+/**
+ * Ermoeglicht Eingabe von Text und Zahlen ueber eine Ziffern-Fernbedienung.
  * Diese Funktion prueft, ob derzeit eine Eingabe laeuft und wertet den
  * RC5-Code entsprechend aus.
  * Mit der Taste "Play" wird eine Eingabe abgeschlossen, mit "Stop" verworfen.
@@ -264,8 +270,8 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
 }
 #endif // KEYPAD_AVAILABLE
 
-/*!
- * \brief Display-Screen Registrierung
+/**
+ * Display-Screen Registrierung
  * \param fkt 	Zeiger auf eine Funktion, die den Display-Screen anzeigt
  *
  * Legt einen neuen Display-Screen an und haengt eine Anzeigefunktion ein.
@@ -280,9 +286,8 @@ static int8_t register_screen(void (* fkt)(void)) {
 	return screen_nr;
 }
 
-/*!
+/**
  * Display-Screen Anzeige
- *
  * Zeigt einen Screen an und fuehrt die RC5-Kommandoauswertung aus, falls noch nicht geschehen.
  * \param screen Nummer des Screens, der angezeigt werden soll
  */
@@ -336,7 +341,7 @@ void gui_display(uint8_t screen) {
 #endif // LED_AVAILABLE && RC5_AVAILABLE
 }
 
-/*!
+/**
  * Display-Screen Initialisierung
  * Traegt die Anzeige-Funktionen in das Array ein.
  */
@@ -348,6 +353,9 @@ void gui_init(void) {
 #endif
 #ifdef DISPLAY_RESET_INFO_AVAILABLE
 	register_screen(&reset_info_display);
+#endif
+#ifdef DISPLAY_LINUX_AVAILABLLE
+	register_screen(&linux_display);
 #endif
 #ifdef DISPLAY_SENSOR_AVAILABLE
 	register_screen(&sensor_display);

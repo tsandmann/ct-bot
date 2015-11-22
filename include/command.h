@@ -28,21 +28,8 @@
 #define COMMAND_H_
 
 #include "eeprom.h"
-#include "uart.h"
 
-#define MAX_PAYLOAD 253  /**< Max. Anzahl Bytes, die an ein Command angehaengt werden koennen */
-
-#ifdef PC
-#define low_read tcp_read			/**< Which function to use to read data */
-#define low_write tcp_send_cmd		/**< Which function to use to write data */
-#define low_write_data tcp_write	/**< Which function to use to write data */
-#endif // PC
-
-#ifdef MCU
-#define low_read uart_read 			/**< Which function to use to read data */
-#define low_write uart_send_cmd		/**< Which function to use to write data */
-#define low_write_data uart_write	/**< Which function to use to write data */
-#endif // MCU
+#define MAX_PAYLOAD 255  		/**< Max. Anzahl Bytes, die an ein Command angehaengt werden koennen */
 
 #define CMD_STARTCODE	'>'		/**< Anfang eines Kommandos */
 #define CMD_STOPCODE	'<'		/**< Ende eines Kommandos */
@@ -62,7 +49,7 @@
 #define CMD_SENS_RC5 	'R'		/**< IR-Fernbedienung */
 #define CMD_SENS_BPS	'b'		/**< Bot Positioning System */
 
-#define CMD_SENS_MOUSE_PICTURE	'P'		/**< Bild vom Maussensor in data_l steht, welche Nummer der 1. Pixel hat */
+#define CMD_SENS_MOUSE_PICTURE	'P'	/**< Bild vom Maussensor in data_l steht, welche Nummer der 1. Pixel hat */
 
 // Aktuatoren
 #define CMD_AKT_MOT	    'M'		/**< Motorgeschwindigkeit */
@@ -109,7 +96,7 @@
 #define SUB_MAP_LINE		'L'	/**< Linie zeichnen */
 #define SUB_MAP_CIRCLE		'C'	/**< Kreis zeichnen */
 #define SUB_MAP_CLEAR_LINES	'X'	/**< Linien loeschen */
-#define SUB_MAP_CLEAR_CIRCLES	'Y' /*!< Kreise loeschen */
+#define SUB_MAP_CLEAR_CIRCLES	'Y' /**< Kreise loeschen */
 
 #define CMD_SHUTDOWN		'q' /**< Kommando zum Herunterfahren */
 
@@ -120,11 +107,16 @@
 #define SUB_PROGRAM_START	'S' /**< Startet ein uebertragenes Programm auf dem Bot */
 #define SUB_PROGRAM_STOP	'Q' /**< Bricht ein laufendes Programm ab */
 
+#define CMD_BOT_2_BOT		'C' /**< Bot-2-Bot Kommunikation */
+
+
 #define DIR_REQUEST	0			/**< Richtung fuer Anfragen */
 #define DIR_ANSWER	1			/**< Richtung fuer Antworten */
 
-#define CMD_BROADCAST	0xFF	/**< Broadcast-Adresse, Daten gehen an alle Bot */
+#define CMD_BROADCAST	0xFF	/**< Broadcast-Adresse, Daten gehen an alle Bots */
 #define CMD_SIM_ADDR	0xFE	/**< "Bot"-Adresse des Sim */
+#define CMD_IGNORE_ADDR	0xFD	/**< ignoriere Bot-Adresse */
+
 
 #ifdef COMMAND_AVAILABLE
 /** Request Teil eines Kommandos */
@@ -145,7 +137,7 @@ typedef struct {
 typedef struct {
 	uint8_t startCode;	/**< Markiert den Beginn eines Commands */
 	request_t request; 	/**< Command-ID */
-	uint8_t  payload;	/**< Bytes, die dem Kommando noch folgen */
+	uint8_t payload;	/**< Bytes, die dem Kommando noch folgen */
 	int16_t data_l;		/**< Daten zum Kommando link s*/
 	int16_t data_r;		/**< Daten zum Kommando rechts */
 	uint8_t seq;		/**< Paket-Sequenznummer */
@@ -154,7 +146,24 @@ typedef struct {
 	uint8_t CRC;		/**< Markiert das Ende des Commands */
 } PACKED_FORCE command_t;
 
-extern command_t received_command;	/**< Puffer fuer Kommandos */
+extern command_t received_command; /**< Puffer fuer empfangenes Kommando */
+extern command_t cmd_to_send; /**< Puffer fuer zu sendendes Kommando */
+
+typedef int16_t (* read_func_t)(void * data, int16_t length); /**< Funktion zum Lesen von Daten einer Verbindung */
+typedef int16_t (* write_func_t)(const void * data, int16_t length); /**< Funktion zum Schreiben von Daten einer Verbindung */
+typedef uint8_t (* check_crc_func_t)(command_t * cmd); /**< Funktion zum Ueberpruefen der CRC Checksumme */
+typedef void (* calc_crc_func_t)(command_t * cmd); /**< Funktion zum Berechnen der CRC Checksumme */
+
+/** Verbindungsabhaengige Funktionen zur Kommandoverarbeitung */
+typedef struct {
+	read_func_t read; /**< Daten von der Verbindung lesen */
+	write_func_t write; /**< Daten auf die Verbindung schreiben */
+	check_crc_func_t crc_check; /**< CRC Checksumme ueberpruefen */
+	calc_crc_func_t crc_calc; /**< CRC Checksumme berechnen und ins Kommando schreiben */
+} cmd_func_t;
+
+extern cmd_func_t cmd_functions; /**< Funktionspointer fuer Kommandoverarbeitung */
+
 
 /**
  * Initialisiert die (High-Level-)Kommunikation
@@ -163,10 +172,16 @@ void command_init(void);
 
 /**
  * Liest ein Kommando ein, ist blockierend!
- * greift auf low_read() zurueck
- * \see low_read()
+ * greift auf cmd_functions.read() zurueck
  */
 int8_t command_read(void);
+
+/**
+ * Schleife, die Kommandos empfaengt und bearbeitet, bis ein Kommando vom Typ frame kommt
+ * \param frame Kommando zum Abbruch
+ * \return		Fehlercode
+ */
+int8_t receive_until_frame(uint8_t frame);
 
 /**
  * Uebertraegt ein Kommando und wartet nicht auf eine Antwort. Interne Version, nicht threadsicher!
@@ -220,8 +235,7 @@ void command_write_data(uint8_t command, uint8_t subcommand, int16_t data_l, int
  * \param payload 		Anzahl der Bytes im Anhang
  * \param *data 		Datenanhang an das eigentliche Command
  */
-void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r,
-	uint8_t payload, const void * data);
+void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload, const void * data);
 
 /**
  * Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort
@@ -232,8 +246,7 @@ void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, i
  * \param payload 		Anzahl der Bytes im Anhang
  * \param *data 		Datenanhang an das eigentliche Command
  */
-void command_write_rawdata(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload,
-	const void * data);
+void command_write_rawdata(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload, const void * data);
 
 /**
  * Wertet das Kommando im Puffer aus
@@ -250,6 +263,14 @@ void command_display(command_t * command);
 /** Kommunikations-Adresse des Bots (EEPROM) */
 extern uint8_t bot_address;
 
+#ifdef BOT_2_SIM_AVAILABLE
+/**
+ * Registriert den Bot beim Sim und teilt diesem dabei mit, welche
+ * Features aktiviert sind
+ */
+void register_bot(void);
+#endif // BOT_2_SIM_AVAILABLE
+
 /**
  * Gibt die Kommunikations-Adresse des Bots zurueck
  * \return	Bot-Adresse
@@ -265,6 +286,19 @@ static inline uint8_t get_bot_address(void) {
 static inline void set_bot_address(uint8_t bot_addr) {
 	ctbot_eeprom_update_byte(&bot_address, bot_addr);
 }
+
+/**
+ * Prueft die CRC Checksumme eines Kommandos
+ * \param *cmd Zeiger auf das Kommando
+ * \return True oder False
+ */
+uint8_t uart_check_crc(command_t * cmd);
+
+/**
+ * Berechnet die CRC Checksumme eines Kommandos
+ * \param *cmd Zeiger auf das Kommando
+ */
+void uart_calc_crc(command_t * cmd);
 
 #endif // COMMAND_AVAILABLE
 #endif // COMMAND_H_

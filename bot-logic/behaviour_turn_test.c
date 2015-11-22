@@ -33,7 +33,7 @@
 #include "log.h"
 #include "eeprom.h"
 
-#define FLOAT_PRINTF	/*!< aktiviert float-Ausgaben mit printf ("-Wl,-u,vfprintf -lprintf_flt") */
+//#define FLOAT_PRINTF	/*!< aktiviert float-Ausgaben mit printf ("-Wl,-u,vfprintf -lprintf_flt") */
 
 static uint16_t degrees = 0;
 static uint8_t turn_count = 0;
@@ -45,7 +45,6 @@ extern uint8_t EEPROM turn_err[3];
  * @see			bot_turn_test()
  */
 void bot_turn_test_behaviour(Behaviour_t * data) {
-	static float last_heading = 0.0;
 	static float err = 0.0;
 	if (degrees > 0) {
 		if (turn_count < 10) {
@@ -54,7 +53,6 @@ void bot_turn_test_behaviour(Behaviour_t * data) {
 //				LOG_DEBUG("heading=%f Grad", heading);
 //				LOG_DEBUG("Fehler=%f Grad", turn_last_err);
 			}
-			last_heading = heading;
 			bot_turn(data, (int16_t) degrees);
 			turn_count++;
 		} else {

@@ -17,7 +17,7 @@
  *
  */
 
-/*!
+/**
  * \file 	rc5.c
  * \brief 	RC5-Fernbedienung / Basic-Tasten-Handler
  *
@@ -53,13 +53,13 @@
 #include <stdlib.h>
 
 
-uint16_t RC5_Code = 0;	/*!< Letzter empfangener RC5-Code */
-/*! RC5-Konfiguration fuer Fernbedienung */
+uint16_t RC5_Code = 0;	/**< Letzter empfangener RC5-Code */
+/** RC5-Konfiguration fuer Fernbedienung */
 ir_data_t rc5_ir_data = {
 	0, 0, 0, 0, 0, 0
 };
 
-/*!
+/**
  * Setzt das Display auf eine andere Ausgabe.
  * \param screen Parameter mit dem zu setzenden Screen.
  */
@@ -84,7 +84,7 @@ rc5_screen_set(uint8_t screen) {
 #endif // DISPLAY_AVAILABLE
 }
 
-/*!
+/**
  * Stellt die Not-Aus-Funktion dar.
  * Sie laesst den Bot anhalten und setzt alle Verhalten zurueck mit Sicherung der vorherigen Aktivitaeten.
  */
@@ -102,7 +102,7 @@ static void rc5_emergency_stop(void) {
 #endif // BEHAVIOUR_AVAILABLE
 }
 
-/*!
+/**
  * Aendert die Geschwindigkeit um den angegebenen Wert.
  * \param left	linke, relative Geschwindigkeitsaenderung
  * \param right	rechte, relative Geschwindigkeitsaenderung
@@ -133,7 +133,7 @@ static void rc5_bot_change_speed(int16_t left, int16_t right) {
 #endif // BEHAVIOUR_AVAILABLE
 }
 
-/*!
+/**
  * Setzt den Bot zurueck
  */
 static void bot_reset(void) {
@@ -153,7 +153,7 @@ static void bot_reset(void) {
 //	timer_reset();
 }
 
-/*!
+/**
  * Verarbeitet die Zifferntasten.
  * \param key Parameter mit der betaetigten Zifferntaste
  */
@@ -220,7 +220,7 @@ static void rc5_number(uint8_t key) {
 	}
 }
 
-/*!
+/**
  * Ordnet den Tasten eine Aktion zu und fuehrt diese aus.
  * Hier gehoeren nur die absoluten Basics an Tastenzuordnungen rein, nicht Spezielles! Sonderwuensche
  * evtl. nach rc5_number(), ab besten aber eigenen Screenhandler anlegen und mit GUI/register_screen()
@@ -242,14 +242,15 @@ void default_key_handler(void) {
 		case RC5_CODE_I_II:
 #ifdef COMMAND_AVAILABLE
 			command_write(CMD_SHUTDOWN, SUB_CMD_NORM, 0, 0, 0);
-#endif
-#ifdef MCU
+#endif // COMMAND_AVAILABLE
+#if defined MCU || defined ARM_LINUX_BOARD
 			ctbot_shutdown();
-#endif // MCU
+#endif // MCU || ARM_LINUX_BOARD
 			break;
 #endif // RC5_CODE_I_II
 
 		/* Screenwechsel */
+#ifndef BOT_2_RPI_AVAILABLE
 #ifdef RC5_CODE_GREEN
 		case RC5_CODE_GREEN:	rc5_screen_set(0); break;
 #endif
@@ -259,10 +260,17 @@ void default_key_handler(void) {
 #ifdef RC5_CODE_YELLOW
 		case RC5_CODE_YELLOW:	rc5_screen_set(2); break;
 #endif
-#ifdef RC5_CODE_BLUE
+#if defined RC5_CODE_BLUE && ! defined ARM_LINUX_BOARD
 		case RC5_CODE_BLUE:		rc5_screen_set(3); break;
 #endif
+#ifdef RC5_CODE_TV_VCR
 		case RC5_CODE_TV_VCR:	rc5_screen_set(DISPLAY_SCREEN_TOGGLE); break;
+#endif
+#else // BOT_2_RPI_AVAILABLE
+#ifdef RC5_CODE_BLUE
+		case RC5_CODE_BLUE:		rc5_screen_set(DISPLAY_SCREEN_TOGGLE); break;
+#endif
+#endif // BOT_2_RPI_AVAILABLE
 
 		/* Geschwindigkeitsaenderung */
 		case RC5_CODE_UP:		rc5_bot_change_speed( 10,  10); break;
@@ -294,11 +302,11 @@ void default_key_handler(void) {
 	}
 }
 
-/*!
+/**
  * Liest ein RC5-Codeword und wertet es aus
  */
 void rc5_control(void) {
-	static uint16_t RC5_Last_Toggle = 1; /*!< Toggle-Wert des zuletzt empfangenen RC5-Codes */
+	static uint16_t RC5_Last_Toggle = 1; /**< Toggle-Wert des zuletzt empfangenen RC5-Codes */
 	uint16_t rc5 = ir_read(&rc5_ir_data); // empfangenes RC5-Kommando
 
 	if (rc5 != 0) {

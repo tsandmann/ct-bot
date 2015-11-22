@@ -28,16 +28,16 @@
 #define MMC_LOW_H_
 
 /* Portkonfiguration */
-#define MMC_PORT_OUT	PORTB	/*!< Ausgangs-Port fuer die MMC/SD-Karte */
-#define MMC_PORT_IN		PINB	/*!< Eingangs-Port fuer die MMC/SD-Karte */
-#define MMC_DDR			DDRB	/*!< DDR-Register fuer MMC/SD-Karte */
-#define SPI_DI			6		/*!< Port Pin an dem Data Output der MMC/SD-Karte angeschlossen ist */
-#define SPI_DO			5		/*!< Port Pin an dem Data Input der MMC/SD-Karte angeschlossen ist */
+#define MMC_PORT_OUT	PORTB	/**< Ausgangs-Port fuer die MMC/SD-Karte */
+#define MMC_PORT_IN		PINB	/**< Eingangs-Port fuer die MMC/SD-Karte */
+#define MMC_DDR			DDRB	/**< DDR-Register fuer MMC/SD-Karte */
+#define SPI_DI			6		/**< Port Pin an dem Data Output der MMC/SD-Karte angeschlossen ist */
+#define SPI_DO			5		/**< Port Pin an dem Data Input der MMC/SD-Karte angeschlossen ist */
 
-#define MMC_CLK_DDR		DDRB	/*!< DDR-Register fuer MMC-Clock */
-#define MMC_CLK_PORT	PORTB	/*!< Port fuer MMC-Clock */
-#define SPI_CLK			7		/*!< Port Pin an dem die Clock der MMC/SD-Karte angeschlossen ist (clk) */
+#define MMC_CLK_DDR		DDRB	/**< DDR-Register fuer MMC-Clock */
+#define MMC_CLK_PORT	PORTB	/**< Port fuer MMC-Clock */
+#define SPI_CLK			7		/**< Port Pin an dem die Clock der MMC/SD-Karte angeschlossen ist (clk) */
 
-#define MMC_TIMEOUT		1000	/*!< Wartezyklen auf MMC-Antwort */
+#define MMC_TIMEOUT		1000	/**< Wartezyklen auf MMC-Antwort */
 
 #endif // MMC_LOW_H

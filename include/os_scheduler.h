@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	os_scheduler.h
- * @brief 	Mini-Scheduler fuer BotOS
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	02.10.2007
+/**
+ * \file 	os_scheduler.h
+ * \brief 	Mini-Scheduler fuer BotOS
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	02.10.2007
  */
 
 #ifndef _OS_SCHEDULER_H_
@@ -31,43 +31,43 @@
 
 #ifdef OS_AVAILABLE
 
-#define OS_TIME_SLICE	10	/*!< Dauer einer Zeitscheibe in ms */
+#define OS_TIME_SLICE	10	/**< Dauer einer Zeitscheibe in ms */
 
-//#define MEASURE_UTILIZATION	/*!< Aktiviert Statistik ueber das Scheduling */
+//#define MEASURE_UTILIZATION	/**< Aktiviert Statistik ueber das Scheduling */
 
 #if defined BEHAVIOUR_GET_UTILIZATION_AVAILABLE && !defined MEASURE_UTILIZATION
 #define MEASURE_UTILIZATION
 #endif
 
-extern volatile uint8_t os_scheduling_allowed;	/*!< sperrt den Scheduler, falls != 1. Sollte nur per os_enterCS() / os_exitCS() veraendert werden! */
+extern volatile uint8_t os_scheduling_allowed;	/**< sperrt den Scheduler, falls != 1. Sollte nur per os_enterCS() / os_exitCS() veraendert werden! */
 
-/*!
+/**
  * Aktualisiert den Schedule, prioritaetsbasiert
- * @param tickcount	Wert des Timer-Ticks (32 Bit)
+ * \param tickcount	Wert des Timer-Ticks (32 Bit)
  */
 void os_schedule(uint32_t tickcount);
 
 #ifdef MEASURE_UTILIZATION
-/*!
+/**
  * Aktualisiert die Statistikdaten zur CPU-Auslastung
  */
 void os_calc_utilization(void);
 
-/*!
+/**
  * Loescht alle Statistikdaten zur CPU-Auslastung
  */
 
 void os_clear_utilization(void);
 
-/*!
+/**
  * Gibt die gesammelten Statistikdaten zur CPU-Auslastung per LOG aus
  */
 void os_print_utilization(void);
 #endif // MEASURE_UTILIZATION
 
-extern uint8_t uart_log;	/*!< Zaehler fuer UART-Auslastung */
+extern uint8_t uart_log;	/**< Zaehler fuer UART-Auslastung */
 
-/*!
+/**
  * Handler fuer OS-Display
  */
 void os_display(void);

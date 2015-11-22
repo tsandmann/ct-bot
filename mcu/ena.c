@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	ena.c
- * @brief 	Routinen zur Steuerung der Enable-Leitungen
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+/**
+ * \file 	ena.c
+ * \brief 	Routinen zur Steuerung der Enable-Leitungen
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	26.12.2005
  */
 
 #ifdef MCU
@@ -35,21 +35,23 @@
 #include "mouse.h"
 #include "mmc-low.h"
 
-static uint8_t ena = 0; /*!< Sichert den Zustand der Enable-Leitungen */
+static uint8_t ena = 0; /**< Sichert den Zustand der Enable-Leitungen */
 #ifdef MOUSE_AVAILABLE
-static uint8_t mmc_interrupted = 0; /*!< Speichert, ob die MMC vom Maussensor ausgeschaltet wurde */
+static uint8_t mmc_interrupted = 0; /**< Speichert, ob die MMC vom Maussensor ausgeschaltet wurde */
 #endif
 
-/*!
+/**
  * Initialisiert die Enable-Leitungen
  */
-void ENA_init() {
-	DDRD |= 4;
+void ENA_init(void) {
+#ifdef EXPANSION_BOARD_AVAILABLE
+	DDRD |= _BV(PD2);
+#endif
 	shift_init();
 	ENA_set(0x00);
 }
 
-/*!
+/**
  * Schaltet einzelne Enable-Transistoren an
  * andere werden nicht beeinflusst
  * Achtung, die Treiber-Transistoren sind Low-Aktiv!!!
@@ -95,8 +97,8 @@ void ENA_on(uint8_t enable) {
 #ifdef EXPANSION_BOARD_AVAILABLE
 	if ((enable & (ENA_MOUSE_SENSOR | ENA_MMC)) != 0) {
 		/* Flipflops takten */
-		PORTD |= 4;
-		PORTD = (uint8_t) (PORTD & ~4);
+		PORTD |= _BV(PD2);
+		PORTD = (uint8_t) (PORTD & ~_BV(PD2));
 #ifdef SPI_AVAILABLE
 		if (enable == ENA_MMC) {
 			SPCR |= _BV(SPE) | _BV(MSTR); // SPI an
@@ -106,7 +108,7 @@ void ENA_on(uint8_t enable) {
 #endif // EXPANSION_BOARD_AVAILABLE
 }
 
-/*!
+/**
  * Schaltet einzelne Enable-Transistoren aus
  * andere werden nicht beeinflusst
  * Achtung, die Treiber-Transistoren sind Low-Aktiv!!!
@@ -129,13 +131,13 @@ void ENA_off(uint8_t enable) {
 #ifdef EXPANSION_BOARD_AVAILABLE
 	if ((enable & (ENA_MOUSE_SENSOR | ENA_MMC)) != 0) {
 		/* Flipflops takten */
-		PORTD |= 4;
-		PORTD = (uint8_t) (PORTD & ~4);
+		PORTD |= _BV(PD2);
+		PORTD = (uint8_t) (PORTD & ~_BV(PD2));
 	}
 #endif // EXPANSION_BOARD_AVAILABLE
 
 #ifdef MOUSE_AVAILABLE
-	if (mmc_interrupted == 1) {
+	if ((enable & ENA_MOUSE_SENSOR) && mmc_interrupted == 1) {
 		mmc_interrupted = 0;
 		MMC_DDR |= _BV(SPI_DO);
 		MMC_DDR = (uint8_t) (MMC_DDR & (~_BV(SPI_DI)));
@@ -144,7 +146,7 @@ void ENA_off(uint8_t enable) {
 #endif // MOUSE_AVAILABLE
 }
 
-/*!
+/**
  * Schaltet die Enable-Transistoren
  * Achtung, die Treiber-Transistoren sind Low-Aktiv!!!
  * ENA_set bezieht sich auf die Transistoren
