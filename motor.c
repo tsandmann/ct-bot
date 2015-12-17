@@ -315,7 +315,7 @@ void motor_set(int16_t left, int16_t right) {
 	int8_t speedSignLeft = 1; // 1: vor; -1: zurueck
 	if (left < 0) {
 		speedSignLeft = -1;
-		left = -left;	// Richtung zum Rechnen zunaechst verwerfen
+		left = -left; // Richtung zum Rechnen zunaechst verwerfen
 	}
 	int8_t speedSignRight = 1;
 	if (right < 0) {
@@ -335,7 +335,14 @@ void motor_set(int16_t left, int16_t right) {
 #ifdef SPEED_CONTROL_AVAILABLE
 	/* Bei aktivierter Motorregelung neue Fuehrungsgroesse links setzen */
 	if (speed_l != left * speedSignLeft && (start_signal[0] == 0 || left == 0 || sign16(speed_l) != speedSignLeft)) {
-		int16_t motor_l = 0;
+#ifdef MCU
+		uint8_t sreg = SREG;
+		__builtin_avr_cli();
+#endif // MCU
+		int16_t motor_l = motor_left;
+#ifdef MCU
+		SREG = sreg;
+#endif
 		if (encoderTargetRate[0] == 0) {
 			start_signal[0] = PID_START_DELAY;
 			if (speedSignLeft == speedSignRight) {
@@ -344,8 +351,9 @@ void motor_set(int16_t left, int16_t right) {
 				motor_l = (pwm_values[2].pwm << 1) + PWMSTART_L;
 			}
 		}
-		encoderTargetRate[0] = (uint8_t) (left >> 1); // [0; 225]
+		encoderTargetRate[0] = (uint8_t) (left >> 1); // [0; BOT_SPEED_MAX / 2]
 		if ((left >> 1) == 0) {
+			motor_l = 0;
 			start_signal[0] = 0;
 		}
 
@@ -363,7 +371,7 @@ void motor_set(int16_t left, int16_t right) {
 		}
 		/* PWM-Wert setzen */
 #ifdef MCU
-		uint8_t sreg = SREG;
+		sreg = SREG;
 		__builtin_avr_cli();
 #endif // MCU
 		motor_left = motor_l;
@@ -387,7 +395,14 @@ void motor_set(int16_t left, int16_t right) {
 	}
 	/* Neue Fuehrungsgroesse rechts setzen */
 	if (speed_r != right * speedSignRight && (start_signal[1] == 0 || right == 0 || sign16(speed_r) != speedSignRight)) {
-		int16_t motor_r = 0;
+#ifdef MCU
+		uint8_t sreg = SREG;
+		__builtin_avr_cli();
+#endif // MCU
+		int16_t motor_r = motor_left;
+#ifdef MCU
+		SREG = sreg;
+#endif
 		if (encoderTargetRate[1] == 0) {
 			start_signal[1] = PID_START_DELAY;
 			if (speedSignLeft == speedSignRight) {
@@ -396,8 +411,9 @@ void motor_set(int16_t left, int16_t right) {
 				motor_r = (pwm_values[3].pwm << 1) + PWMSTART_R;
 			}
 		}
-		encoderTargetRate[1] = (uint8_t) (right >> 1); // [0; 225]
+		encoderTargetRate[1] = (uint8_t) (right >> 1); // [0; BOT_SPEED_MAX / 2]
 		if ((right >> 1) == 0) {
+			motor_r = 0;
 			start_signal[1] = 0;
 		}
 
@@ -415,7 +431,7 @@ void motor_set(int16_t left, int16_t right) {
 		}
 		/* PWM-Wert setzen */
 #ifdef MCU
-		uint8_t sreg = SREG;
+		sreg = SREG;
 		__builtin_avr_cli();
 #endif // MCU
 		motor_right = motor_r;
@@ -440,9 +456,9 @@ void motor_set(int16_t left, int16_t right) {
 
 	/* PWM-Lookup im EEPROM updaten */
 	static uint16_t old_pwm_ticks = 0;
-	static uint8_t i = 0;	// nachdem wir 1 Byte geschrieben haben, muessten wir 3.3 ms warten,
+	static uint8_t i = 0; // nachdem wir 1 Byte geschrieben haben, muessten wir 3.3 ms warten,
 	if (i != 0 || timer_ms_passed_16(&old_pwm_ticks, 10000)) {	// alle 10 s
-		uint8_t tmp = pwm_values[i].pwm;	// darum schreiben wir erst im naechsten Aufruf das 2. Byte ins EEPROM usw. :-)
+		uint8_t tmp = pwm_values[i].pwm; // darum schreiben wir erst im naechsten Aufruf das 2. Byte ins EEPROM usw. :-)
 		ctbot_eeprom_update_byte(&pwmSlow[i], tmp);
 		if (++i == 4) {	// alle Daten gesichert => 10 s schlafen
 			i = 0;
