@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2016-01-10 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Endianness-Inkompatibilitaet bestimmer Compiler unter Linux 
+
 2015-10-26 Timo Sandmann [mail@timosandmann.de]: Release 22
 
 2015-10-18 Timo Sandmann [mail@timosandmann.de]: Kompatibilitaet zu mingw-w64 und msys2 (u.a. fuer Windows 10) 
