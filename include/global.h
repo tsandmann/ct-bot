@@ -86,7 +86,13 @@ int putchar(int);
 
 #ifndef BYTE_ORDER
 #if (! defined __BYTE_ORDER) || (! defined __LITTLE_ENDIAN) || (! defined __BIG_ENDIAN)
+#if defined __DARWIN_BYTE_ORDER && defined __DARWIN_LITTLE_ENDIAN && defined __DARWIN_BIG_ENDIAN
+#define BYTE_ORDER __DARWIN_BYTE_ORDER
+#define LITTLE_ENDIAN __DARWIN_LITTLE_ENDIAN
+#define BIG_ENDIAN __DARWIN_BIG_ENDIAN
+#else
 #error "Unable to detect byte order, check include/global.h"
+#endif
 #else
 #define BYTE_ORDER __BYTE_ORDER
 #define LITTLE_ENDIAN __LITTLE_ENDIAN
