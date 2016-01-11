@@ -34,8 +34,8 @@
 #include "motor.h"
 #include "log.h"
 
-volatile int16_t motor_left; /**< zuletzt gestellter Wert linker Motor */
-volatile int16_t motor_right; /**< zuletzt gestellter Wert rechter Motor */
+int16_t motor_left; /**< zuletzt gestellter Wert linker Motor */
+int16_t motor_right; /**< zuletzt gestellter Wert rechter Motor */
 
 /**
  *  Initilisiert alles fuer die Motosteuerung
