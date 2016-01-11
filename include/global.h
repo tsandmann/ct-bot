@@ -83,6 +83,21 @@ int putchar(int);
 #else
 #include <machine/endian.h>
 #endif // WIN32
+
+#ifndef BYTE_ORDER
+#if (! defined __BYTE_ORDER) || (! defined __LITTLE_ENDIAN) || (! defined __BIG_ENDIAN)
+#error "Unable to detect byte order, check include/global.h"
+#else
+#define BYTE_ORDER __BYTE_ORDER
+#define LITTLE_ENDIAN __LITTLE_ENDIAN
+#define BIG_ENDIAN __BIG_ENDIAN
+#endif // __BYTE_ORDER
+#endif // BYTE_ORDER
+
+#if BYTE_ORDER == BIG_ENDIAN
+#warning "Big endian byte order detected which isn't fully supported"
+#endif
+
 #endif // PC
 
 #define binary(var, bit) ((var >> bit) & 1)	/**< gibt das Bit "bit" von "var" zurueck */
