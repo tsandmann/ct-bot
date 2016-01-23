@@ -289,10 +289,10 @@ void default_key_handler(void) {
 		case RC5_CH_MINUS:		bot_servo(NULL, SERVO1, DOOR_OPEN); break;
 #endif
 #ifdef RC5_VOL_PLUS
-		case RC5_VOL_PLUS:		bot_servo(NULL, SERVO2, CAM_LEFT_STEP); break;
+		case RC5_VOL_PLUS:		bot_servo(NULL, SERVO2, 1); break; // verfährt Servo 2 um eine Stufe im Uhrzeigersinn
 #endif
 #ifdef RC5_VOL_MINUS
-		case RC5_VOL_MINUS:		bot_servo(NULL, SERVO2, CAM_RIGHT_STEP); break;
+		case RC5_VOL_MINUS:		bot_servo(NULL, SERVO2, 1); break;  // verfährt Servo 2 um eine Stufe gegen den Uhrzeigersinn
 #endif
 #endif // BEHAVIOUR_SERVO_AVAILABLE
 
