@@ -110,6 +110,41 @@ static botfs_file_descr_t speedlog_file; /**< BotFS-Datei fuer das Speed-Log */
 #define SPEEDLOG_FILE_SIZE (1024 * (1024 / BOTFS_BLOCK_SIZE)) /**< Groesse der Speed-Log-Datei in Bloecken */
 #endif // SPEED_LOG_AVAILABLE
 
+#define FILTER_SIZE (sizeof(dist_fir_coeffs) / sizeof(dist_fir_coeffs[0]))
+
+static const float dist_fir_coeffs[] = { (1.f / 16.f), (4.f / 16.f), (6.f / 16.f), (4.f / 16.f), (1.f / 16.f) };
+static float dist_fir_buffer_l[FILTER_SIZE] = { 0.f };
+static float* dist_fir_position_l = dist_fir_buffer_l;
+static float dist_fir_buffer_r[FILTER_SIZE] = { 0.f };
+static float* dist_fir_position_r = dist_fir_buffer_r;
+
+static float fir_filter(float* fir_buffer, float** fir_pos, float new_value) {
+	const float* p_coeff = dist_fir_coeffs;
+	float* p_buffer = *fir_pos;
+	float result = 0;
+	**fir_pos = new_value;
+
+	while (p_buffer < fir_buffer + FILTER_SIZE) {
+		result += (*p_coeff) * (*p_buffer);
+		++p_coeff;
+		++p_buffer;
+	}
+
+	p_buffer = fir_buffer;
+	while (p_coeff < dist_fir_coeffs + FILTER_SIZE) {
+		result += (*p_coeff) * (*p_buffer);
+		++p_coeff;
+		++p_buffer;
+	}
+
+	if (--*fir_pos < fir_buffer) {
+		*fir_pos = fir_buffer + FILTER_SIZE - 1;
+	}
+
+	return result;
+}
+
+
 /**
  * Initialisiere alle Sensoren
  */
@@ -183,6 +218,7 @@ void bot_sens(void) {
 
 	/* Auswertung der Distanzsensoren alle 50 ms */
 	uint16_t dist_ticks = TIMER_GET_TICKCOUNT_16;
+
 	if ((uint16_t)(dist_ticks - old_dist) > MS_TO_TICKS(50)) {
 		int16_t * pDistL, * pDistR;
 #ifdef DISTSENS_AVERAGE
@@ -241,8 +277,8 @@ void bot_sens(void) {
 		*(uint16_t *)(p_time + i_time) = pid_ticks;
 		i_encTimeL = i_time;
 		/* Regleraufruf */
-		speed_control(0,  (int16_t *) &motor_left, (uint16_t *) encTimeL, i_encTimeL, 0);
 		timeCorrectL = 1;
+		speed_control(0,  &motor_left, (uint16_t *) encTimeL, i_encTimeL, 0);
 	}
 	/* Bei Stillstand Regleraufruf rechts nach PID_TIME ms */
 	i_time = i_encTimeR;
@@ -253,8 +289,8 @@ void bot_sens(void) {
 		*(uint16_t *)(p_time + i_time) = pid_ticks;
 		i_encTimeR = i_time;
 		/* Regleraufruf rechts */
-		speed_control(1, (int16_t *) &motor_right, (uint16_t *) encTimeR, i_encTimeR, 0);
 		timeCorrectR = 1;
+		speed_control(1, &motor_right, (uint16_t *) encTimeR, i_encTimeR, 0);
 	}
 #endif // SPEED_CONTROL_AVAILABLE
 
@@ -289,7 +325,8 @@ void bot_sens(void) {
 #ifdef DISTSENS_AVERAGE
 		volt = (distLeft[0] + distLeft[1] + distLeft[2] + distLeft[3]) >> 2;
 #else
-		volt = sensDistL;
+//		volt = sensDistL;
+		volt = (int16_t) fir_filter(dist_fir_buffer_l, &dist_fir_position_l, (float) sensDistL);
 #endif
 		(*sensor_update_distance)(&sensDistL, &sensDistLToggle, sensDistDataL, volt);
 
@@ -298,7 +335,8 @@ void bot_sens(void) {
 #ifdef DISTSENS_AVERAGE
 		volt = (distRight[0] + distRight[1] + distRight[2] + distRight[3]) >> 2;
 #else
-		volt = sensDistR;
+//		volt = sensDistR;
+		volt = (int16_t) fir_filter(dist_fir_buffer_r, &dist_fir_position_r, (float) sensDistR);
 #endif
 		(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, volt);
 	}
@@ -382,7 +420,7 @@ void bot_encoder_isr(void) {
 			i_encTimeL = i_time;
 			/* Regleraufruf links */
 			if (timeCorrectL == 0) {
-				speed_control(0, (int16_t *) &motor_left, (uint16_t *) encTimeL, i_encTimeL, enc_tmp);
+				speed_control(0, &motor_left, (uint16_t *) encTimeL, i_encTimeL, enc_tmp);
 			} else {
 				timeCorrectL = 0;
 			}
@@ -422,7 +460,7 @@ void bot_encoder_isr(void) {
 			i_encTimeR = i_time;
 			/* Regleraufruf rechts */
 			if (timeCorrectR == 0) {
-				speed_control(1, (int16_t *) &motor_right, (uint16_t *) encTimeR, i_encTimeR, enc_tmp);
+				speed_control(1, &motor_right, (uint16_t *) encTimeR, i_encTimeR, enc_tmp);
 			} else {
 				timeCorrectR = 0;
 			}

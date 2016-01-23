@@ -49,40 +49,40 @@
 #define PWM_L OCR1A
 #define PWM_R OCR1B
 
+#ifdef SPEED_CONTROL_AVAILABLE
+#define PWM_CLK_1 (_BV(CS10)) /**< Prescaler fuer PWM1 = 1 */
+#else
+#define PWM_CLK_1 (_BV(CS10) | _BV(CS11)) /**< Prescaler fuer PWM1 = 64 */
+#endif
+
+#define PWM_FREQUENCY 16129 /**< PWM Frequenz / Hz, ohne SPEED_CONTROL: / 64 Hz */
+#define PWM_TOP (uint16_t)((float) F_CPU / 2.f / PWM_FREQUENCY)
+
+
+/* PWM fuer Servos (ATmega32) */
 #define PWM_CLK_0 (_BV(CS02) | _BV(CS00)) /**< Prescaler fuer PWM0 = 1024 */
 
-volatile int16_t motor_left;  /**< zuletzt gestellter Wert linker Motor */
-volatile int16_t motor_right; /**< zuletzt gestellter Wert rechter Motor */
+
+int16_t motor_left;  /**< zuletzt gestellter Wert linker Motor */
+int16_t motor_right; /**< zuletzt gestellter Wert rechter Motor */
 
 /**
  * Timer 1: Kontrolliert die Motoren per PWM
  * Initialisiert Timer 1 und startet ihn
  */
 static void pwm_1_init(void) {
-	DDRD |= _BV(PD4) | _BV(PD5); // PWM-Pins als Output
-	TCNT1 = 0; // TIMER1 vorladen
+	DDRD |= _BV(PD4) | _BV(PD5); // PWM-Pins output
+	TCNT1 = 0; // TIMER1 init
 
-	TCCR1A = _BV(WGM11)  |				// Fast PWM 9 Bit @ 16 MHz
-#if F_CPU == 20000000 && defined SPEED_CONTROL_AVAILABLE
-			 _BV(WGM10)  |				// Fast PWM 10 Bit @ 20 MHz
-#endif
-			 _BV(COM1A1) |_BV(COM1A0) |	// Clear on Top, Set on Compare
-			 _BV(COM1B1) |_BV(COM1B0);	// Clear on Top, Set on Compare
+	TCCR1A = _BV(COM1A1) |_BV(COM1A0) |	// Clear on top, set on compare
+			 _BV(COM1B1) |_BV(COM1B0);	// Clear on top, set on compare
 
-	TCCR1B = _BV(WGM12) |
-#ifdef SPEED_CONTROL_AVAILABLE
-	_BV(CS10);		// Prescaler = 1	=>	31.2 kHz @ 16 MHz, 19.5 kHz @ 20 MHz 10 Bit Fast PWM
-#else
-	_BV(CS12);		// Prescaler = 256	=>	122 Hz @ 16 MHz, 152.5 Hz @ 20 MHz
-#endif	// SPEED_CONTROL_AVAILABLE
+	TCCR1B = _BV(WGM13) | PWM_CLK_1; // Phase and Frequency Correct PWM, TOP at ICR1
 
-#if F_CPU == 20000000
-	OCR1A = 1023;	// PWM loescht bei erreichen. daher steht in OCR1A 1023-Speed!!!
-	OCR1B = 1023;
-#else
-	OCR1A = 511;	// PWM loescht bei erreichen. daher steht in OCR1A 511-Speed!!!
-	OCR1B = 511;
-#endif
+	ICR1 = PWM_TOP;
+
+	OCR1A = PWM_TOP;
+	OCR1B = PWM_TOP;
 }
 
 /**
@@ -98,11 +98,12 @@ void motor_update(uint8_t dev) {
 		} else {
 			BOT_DIR_L_PORT = (uint8_t) (BOT_DIR_L_PORT & ~BOT_DIR_L_PIN); // rueckwaerts
 		}
-#if F_CPU == 20000000 && defined SPEED_CONTROL_AVAILABLE
-		PWM_L = (uint16_t) (1023 - (motor_left << 1));
-#else
-		PWM_L = (uint16_t) (511 - motor_left);
-#endif	// F_CPU
+
+		uint8_t sreg = SREG;
+		__builtin_avr_cli();
+		const int16_t motor_l = motor_left;
+		SREG = sreg;
+		PWM_L = (uint16_t) (PWM_TOP - ((float) motor_l / 511.f) * PWM_TOP);
 	} else {
 		/* rechter Motor */
 		/* Einer der Motoren ist invertiert, da er ja in die andere Richtung schaut */
@@ -111,11 +112,12 @@ void motor_update(uint8_t dev) {
 		} else {
 			BOT_DIR_R_PORT = (uint8_t) (BOT_DIR_R_PORT & ~BOT_DIR_R_PIN); // vorwaerts
 		}
-#if F_CPU == 20000000 && defined SPEED_CONTROL_AVAILABLE
-		PWM_R = (uint16_t) (1023 - (motor_right << 1));
-#else
-		PWM_R = (uint16_t) (511 - motor_right);
-#endif	// F_CPU
+
+		uint8_t sreg = SREG;
+		__builtin_avr_cli();
+		const int16_t motor_r = motor_right;
+		SREG = sreg;
+		PWM_R = (uint16_t) (PWM_TOP - ((float) motor_r / 511.f) * PWM_TOP);
 	}
 }
 
@@ -272,13 +274,8 @@ void motor_low_init() {
 	servo_2_init();
 	motor_left  = 0;
 	motor_right = 0;
-#if F_CPU == 20000000 && defined SPEED_CONTROL_AVAILABLE
-	PWM_L = 1023;
-	PWM_R = 1023;
-#else
-	PWM_L = 511;
-	PWM_R = 511;
-#endif // F_CPU
+	PWM_L = PWM_TOP;
+	PWM_R = PWM_TOP;
 	direction.left  = DIRECTION_FORWARD;
 	direction.right = DIRECTION_FORWARD;
 }
