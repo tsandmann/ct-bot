@@ -159,6 +159,7 @@ static void bot_reset(void) {
  */
 static void rc5_number(uint8_t key) {
 	switch (key) {	// richtige Aktion heraussuchen
+
 		#ifdef BEHAVIOUR_AVAILABLE
 			case 0:	target_speed_l = BOT_SPEED_STOP; target_speed_r = BOT_SPEED_STOP; break;
 			case 1:	target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
@@ -168,7 +169,7 @@ static void rc5_number(uint8_t key) {
 		#ifdef BEHAVIOUR_TURN_AVAILABLE
 			case 2: bot_turn(NULL, 90); break;
 
-			/* Testcode fuer Bot-2-Bot-RemoteCall */
+//			/* Testcode fuer Bot-2-Bot-RemoteCall */
 //			case 2: {
 //				bot_list_entry_t * ptr = get_next_bot(NULL); // ersten Bot aus der Liste der bekannten Bots ansprechen
 //				if (ptr != NULL) {
@@ -182,11 +183,12 @@ static void rc5_number(uint8_t key) {
 //				}
 //				break;
 //			}
+
 			case 7: bot_turn(NULL, 180); break;
 			case 9: bot_turn(NULL, -180); break;
 		#endif	// BEHAVIOUR_TURN_AVAILABLE
 
-		#if defined BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
+		#ifdef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
 			case 4: bot_follow_line_enh(NULL); break;
 		#elif defined BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 			case 4: bot_follow_line(NULL); break;
@@ -202,7 +204,7 @@ static void rc5_number(uint8_t key) {
 			case 5: bot_solve_maze(NULL); break;
 		#endif	// BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 
-		#if defined BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+		#ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
 			case 6: bot_calibrate_pid(NULL, BOT_SPEED_SLOW); break;
 		#elif defined BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
 			case 6: bot_calibrate_sharps(NULL); break;
@@ -285,6 +287,12 @@ void default_key_handler(void) {
 #endif
 #ifdef RC5_CH_MINUS
 		case RC5_CH_MINUS:		bot_servo(NULL, SERVO1, DOOR_OPEN); break;
+#endif
+#ifdef RC5_VOL_PLUS
+		case RC5_VOL_PLUS:		bot_servo(NULL, SERVO2, CAM_LEFT_STEP); break;
+#endif
+#ifdef RC5_VOL_MINUS
+		case RC5_VOL_MINUS:		bot_servo(NULL, SERVO2, CAM_RIGHT_STEP); break;
 #endif
 #endif // BEHAVIOUR_SERVO_AVAILABLE
 
