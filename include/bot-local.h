@@ -30,6 +30,7 @@
 
 
 /*** Bot-Geometrie ***/
+
 #define BOT_DIAMETER			120			/**< Bot-Durchmesser [mm] */
 #define ENCODER_MARKS			60			/**< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weissen + Anzahl der schwarzen Felder */
 #ifdef PC
@@ -97,8 +98,16 @@
 #define BOT_RESET_GPIO		"/sys/class/gpio/gpio17/value" /**< Pfad zum Reset-GPIO vom ARM-Linux-Board */
 //#define ARM_LINUX_DISPLAY	"/dev/tty1" /**< Konsole fuer Display-Ausgaben auf ARM-Linux-Board. "stdout" fuer Ausgabe auf stdout */
 
-#define EXPANSION_BOARD_AVAILABLE /**< Erweiterungsmodul (MMC / WiPort) installiert */
-//#define SPI_AVAILABLE	/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
+#define EXPANSION_BOARD_AVAILABLE 		/**< Erweiterungsmodul (MMC / WiPort) installiert */
+
+#define EXPANSION_BOARD_MOD_AVAILABLE	/**< modifiziertes Erweiterungsmodul (MMC / WiPort) installiert */
+
+#ifndef EXPANSION_BOARD_AVAILABLE
+#define EXPANSION_BOARD_AVAILABLE		// EXPANSION_BOARD_MOD_AVAILABLE erfordert EXPANSION_BOARD_AVAILABLE
+#endif // EXPANSION_BOARD_AVAILABLE
+
+//#define BPS_AVAILABLE		/**< Bot Positioning System */
+//#define SPI_AVAILABLE		/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 
 /* Servo-Parameter */
 #ifndef __AVR_ATmega1284P__
