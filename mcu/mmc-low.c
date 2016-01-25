@@ -314,7 +314,7 @@ uint8_t mmc_write_sector(uint32_t addr, void * buffer) {
 		"pop r13	\n\t"
 		"ret		    "
 		:: "M" (LED_ROT) /* %0 */, "M" (PORT_OUT) /* %1 */, "M" (_BV(SPI_CLK)) /* %2 */, "M" (SPI_DO) /* %3 */,
-		 "M" (SPI_CLK) /* %4 */, "M" (ENA_MMC) /* %5 */
+		 "M" (SPI_CLK) /* %4 */, "M" (ENA_ERW1) /* %5 */
 		: "memory"
 	);
 
@@ -477,7 +477,7 @@ uint8_t mmc_read_sector(uint32_t addr, void * buffer) {
 		"pop r14				\n\t"
 		"ret		 			    "
 		:: "M" (LED_GRUEN) /* %0 */, "M" (PORT_OUT) /* %1 */, "M" (_BV(SPI_CLK)) /* %2 */, "M" (SPI_DI) /* %3 */,
-		 "M" (PORT_IN) /* %4 */, "M" (ENA_MMC) /* %5 */
+		 "M" (PORT_IN) /* %4 */, "M" (ENA_ERW1) /* %5 */
 		: "memory"
 	);
 

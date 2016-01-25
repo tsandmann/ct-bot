@@ -62,26 +62,26 @@ void ENA_init(void) {
 void ENA_on(uint8_t enable) {
 #ifdef MOUSE_AVAILABLE
 	/* Maussensor und MMC-Karte haengen zusammen */
-	if (enable == ENA_MOUSE_SENSOR) {
-		if ((ena & ENA_MMC) == 0) {	// War die MMC an?
+	if (enable == ENA_ERW2) {
+		if ((ena & ENA_ERW1) == 0) {	// War die MMC an?
 #ifdef SPI_AVAILABLE
 			SPCR = (uint8_t) (SPCR & (~_BV(SPE))); // SPI aus
 #endif
 			/* MMC aus */
-			ena |= ENA_MMC;
+			ena |= ENA_ERW1;
 			mmc_interrupted = 1;
 		}
 		/* Maussensor an */
-		ena = (uint8_t) (ena & (~ENA_MOUSE_SENSOR));
+		ena = (uint8_t) (ena & (~ENA_ERW2));
 	} else
 #endif // MOUSE_AVAILABLE
 #ifdef EXPANSION_BOARD_AVAILABLE
-	if (enable == ENA_MMC) {
+	if (enable == ENA_ERW1) {
 #ifdef MOUSE_AVAILABLE
 		/* Maussensor aus */
-		if ((ena & ENA_MOUSE_SENSOR) == 0) { // War der Maussensor an?
+		if ((ena & ENA_ERW2) == 0) { // War der Maussensor an?
 			mouse_sens_highZ(); // Der Maussensor muss die Datenleitung freigeben
-			ena |= ENA_MOUSE_SENSOR; // Maus aus
+			ena |= ENA_ERW2; // Maus aus
 		}
 #endif // MOUSE_AVAILABLE
 		/* MMC an */
@@ -95,12 +95,12 @@ void ENA_on(uint8_t enable) {
 	ENA_set(ena);
 
 #ifdef EXPANSION_BOARD_AVAILABLE
-	if ((enable & (ENA_MOUSE_SENSOR | ENA_MMC)) != 0) {
+	if ((enable & (ENA_ERW2 | ENA_ERW1)) != 0) {
 		/* Flipflops takten */
 		PORTD |= _BV(PD2);
 		PORTD = (uint8_t) (PORTD & ~_BV(PD2));
 #ifdef SPI_AVAILABLE
-		if (enable == ENA_MMC) {
+		if (enable == ENA_ERW1) {
 			SPCR |= _BV(SPE) | _BV(MSTR); // SPI an
 		}
 #endif // SPI_AVAILABLE
@@ -118,7 +118,7 @@ void ENA_on(uint8_t enable) {
  */
 void ENA_off(uint8_t enable) {
 #ifdef EXPANSION_BOARD_AVAILABLE
-	if ((enable & (ENA_MMC | ENA_MOUSE_SENSOR)) != 0) {
+	if ((enable & (ENA_ERW1 | ENA_ERW2)) != 0) {
 		ena |= enable; // CS der MMC und SCLK fuer Maus haengen an not-Q der FlipFlops!
 	} else
 #endif // EXPANSION_BOARD_AVAILABLE
@@ -129,7 +129,7 @@ void ENA_off(uint8_t enable) {
 	ENA_set(ena);
 
 #ifdef EXPANSION_BOARD_AVAILABLE
-	if ((enable & (ENA_MOUSE_SENSOR | ENA_MMC)) != 0) {
+	if ((enable & (ENA_ERW2 | ENA_ERW1)) != 0) {
 		/* Flipflops takten */
 		PORTD |= _BV(PD2);
 		PORTD = (uint8_t) (PORTD & ~_BV(PD2));
@@ -137,11 +137,11 @@ void ENA_off(uint8_t enable) {
 #endif // EXPANSION_BOARD_AVAILABLE
 
 #ifdef MOUSE_AVAILABLE
-	if ((enable & ENA_MOUSE_SENSOR) && mmc_interrupted == 1) {
+	if ((enable & ENA_ERW2) && mmc_interrupted == 1) {
 		mmc_interrupted = 0;
 		MMC_DDR |= _BV(SPI_DO);
 		MMC_DDR = (uint8_t) (MMC_DDR & (~_BV(SPI_DI)));
-		ENA_on(ENA_MMC);
+		ENA_on(ENA_ERW1);
 	}
 #endif // MOUSE_AVAILABLE
 }
