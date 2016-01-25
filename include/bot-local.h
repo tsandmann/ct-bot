@@ -99,7 +99,6 @@
 //#define ARM_LINUX_DISPLAY	"/dev/tty1" /**< Konsole fuer Display-Ausgaben auf ARM-Linux-Board. "stdout" fuer Ausgabe auf stdout */
 
 #define EXPANSION_BOARD_AVAILABLE 		/**< Erweiterungsmodul (MMC / WiPort) installiert */
-
 #define EXPANSION_BOARD_MOD_AVAILABLE	/**< modifiziertes Erweiterungsmodul (MMC / WiPort) installiert */
 
 #if defined EXPANSION_BOARD_MOD_AVAILABLE
