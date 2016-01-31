@@ -125,7 +125,7 @@ static uint8_t mmc_read_block(uint8_t * cmd, void * buffer, uint16_t count) {
 	mmc_read_byte(); // CRC - Byte wird nicht ausgewertet
 
 	/* MMC/SD-Karte inaktiv schalten */
-	ENA_off(ENA_ERW1);
+	ENA_off(ENA_MMC);
 #ifdef LED_AVAILABLE
 	LED_off(LED_GRUEN);
 #endif // LED_AVAILABLE
@@ -410,12 +410,12 @@ uint8_t mmc_enable(void) {
 			return mmc_init_state;
 		}
 	}
-	ENA_on(ENA_ERW1);
-	ENA_off(ENA_ERW1);
+	ENA_on(ENA_MMC);
+	ENA_off(ENA_MMC);
 
 	mmc_write_byte(0xff);
 
-	ENA_on(ENA_ERW1);
+	ENA_on(ENA_MMC);
 
 	return 0;
 }
@@ -467,8 +467,8 @@ uint8_t mmc_init(void) {
 	MMC_DDR = (uint8_t) (MMC_DDR & ~_BV(SPI_DI));
 	MMC_DDR |= _BV(SPI_DO);
 #endif // SPI_AVAILABLE
-	ENA_on(ENA_ERW1);
-	ENA_off(ENA_ERW1);
+	ENA_on(ENA_MMC);
+	ENA_off(ENA_MMC);
 
 	/* MMC/SD-Karte in den SPI-Mode initialisieren */
 	int8_t i;
@@ -482,7 +482,7 @@ uint8_t mmc_init(void) {
 	uint16_t timeout = 0;
 	while (mmc_write_command(cmd) != 1) {
 		if (timeout++ > MMC_TIMEOUT) {
-			ENA_off(ENA_ERW1);
+			ENA_off(ENA_MMC);
 			mmc_init_state = 1;
 #ifdef LED_AVAILABLE
 			LED_on(LED_TUERKIS);
@@ -498,7 +498,7 @@ uint8_t mmc_init(void) {
 	cmd[5] = 0xFF; // CRC
 	while (mmc_write_command(cmd) != 0) {
 		if (timeout++ > 6 * MMC_TIMEOUT) {
-			ENA_off(ENA_ERW1);
+			ENA_off(ENA_MMC);
 			mmc_init_state = 1;
 #ifdef LED_AVAILABLE
 			LED_on(LED_TUERKIS);

@@ -42,7 +42,7 @@
 #define MOUSE_SDA_PINR 	PINB	/**< Leseregister */
 #define MOUSE_SDA_PIN 	(1<<MOUSE_SDA_NR) /**< Bit-Wert der SDA-Leitung */
 
-#define MOUSE_Enable()	ENA_on(ENA_ERW2)
+#define MOUSE_Enable()	ENA_on(ENA_MOUSE_SENSOR)
 
 /**
  * Uebertraegt ein Byte an den Sensor
