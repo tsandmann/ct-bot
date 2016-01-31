@@ -34,7 +34,7 @@
 
 #ifdef RC5_AVAILABLE
 #include "rc5.h"
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 #include "ui/available_screens.h"
 #include "map.h"
 #include "display.h"
@@ -153,6 +153,7 @@ static void bot_reset(void) {
 //	timer_reset();
 }
 
+#ifdef BEHAVIOUR_SERVO_AVAILABLE
 /**
  * Kamera-Steuerung für Servo 2
  */
@@ -165,6 +166,7 @@ static void rc5_change_servo2(int16_t diff) {
 	bot_servo(NULL, SERVO2, new_pos);
 	old_pos = new_pos;
 }
+#endif // BEHAVIOUR_SERVO_AVAILABLE
 
 /**
  * Verarbeitet die Zifferntasten.
