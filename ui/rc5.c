@@ -156,6 +156,7 @@ static void bot_reset(void) {
 #ifdef BEHAVIOUR_SERVO_AVAILABLE
 /**
  * Kamera-Steuerung für Servo 2
+ * \param diff Wert, um den die Servo-Position veraendert wird
  */
 static void rc5_change_servo2(int16_t diff) {
 	static uint8_t old_pos;
