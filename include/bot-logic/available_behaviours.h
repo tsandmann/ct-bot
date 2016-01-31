@@ -286,10 +286,6 @@
 #undef BEHAVIOUR_PATHPLANING_AVAILABLE
 #endif // BEHAVIOUR_GOTO_POS_AVAILABLE
 
-#if defined BEHAVIOUR_REMOTECALL_AVAILABLE && ! defined BOT_2_SIM_AVAILABLE
-#undef BEHAVIOUR_REMOTECALL_AVAILABLE
-#endif
-
 #include "bot-logic/behaviour_prototype.h"
 
 #include "bot-logic/behaviour_hw_test.h"
