@@ -154,6 +154,19 @@ static void bot_reset(void) {
 }
 
 /**
+ * Kamera-Steuerung für Servo 2
+ */
+static void rc5_change_servo2(int16_t diff) {
+	static uint8_t old_pos;
+	uint8_t new_pos = (uint8_t)(old_pos + diff);
+	if (new_pos < CAM_LEFT || new_pos > CAM_RIGHT) {
+		return;
+	}
+	bot_servo(NULL, SERVO2, new_pos);
+	old_pos = new_pos;
+}
+
+/**
  * Verarbeitet die Zifferntasten.
  * \param key Parameter mit der betaetigten Zifferntaste
  */
@@ -289,10 +302,10 @@ void default_key_handler(void) {
 		case RC5_CH_MINUS:		bot_servo(NULL, SERVO1, DOOR_OPEN); break;
 #endif
 #ifdef RC5_VOL_PLUS
-		case RC5_VOL_PLUS:		bot_servo(NULL, SERVO2, 1); break; // verfährt Servo 2 um eine Stufe im Uhrzeigersinn
+		case RC5_VOL_PLUS:		rc5_change_servo2(1); break; // verfährt Servo 2 um eine Stufe im Uhrzeigersinn
 #endif
 #ifdef RC5_VOL_MINUS
-		case RC5_VOL_MINUS:		bot_servo(NULL, SERVO2, 1); break;  // verfährt Servo 2 um eine Stufe gegen den Uhrzeigersinn
+		case RC5_VOL_MINUS:		rc5_change_servo2(-1); break; // verfährt Servo 2 um eine Stufe gegen den Uhrzeigersinn
 #endif
 #endif // BEHAVIOUR_SERVO_AVAILABLE
 
