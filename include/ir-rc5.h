@@ -44,6 +44,13 @@
 #define BPS_PIN		PD2		/**< Pin 2 fuer BPS-Sensor */
 #endif // EXPANSION_BOARD_AVAILABLE
 
+#ifdef EXPANSION_BOARD_MOD_AVAILABLE
+#define BPS_PORT	PORTD	/**< Port D fuer BPS-Sensor */
+#define BPS_DDR		DDRD	/**< DDR fuer BPS-Sensor */
+#define BPS_PINR	PIND	/**< Port D input fuer BPS-Sensor */
+#define BPS_PIN		PD2		/**< Pin 2 fuer BPS-Sensor */
+#endif // EXPANSION_BOARD_MOD_AVAILABLE
+
 #else // ! MCU
 #define RC5_PORT	(*(volatile uint8_t *)NULL) /**< Port fuer RC5-Fernbedienung */
 #define BPS_PORT	(*(volatile uint8_t *)NULL) /**< Port fuer BPS-Sensor */
