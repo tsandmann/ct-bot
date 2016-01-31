@@ -100,14 +100,13 @@
 
 #define EXPANSION_BOARD_AVAILABLE 		/**< Erweiterungsmodul (MMC / WiPort) installiert */
 
-#define EXPANSION_BOARD_MOD_AVAILABLE	/**< modifiziertes Erweiterungsmodul (MMC / WiPort) installiert */
+//#define EXPANSION_BOARD_MOD_AVAILABLE	/**< modifiziertes Erweiterungsmodul (MMC / WiPort) installiert */
 
 #if defined EXPANSION_BOARD_MOD_AVAILABLE
 #undef EXPANSION_BOARD_AVAILABLE		// EXPANSION_BOARD_MOD_AVAILABLE deaktiviert EXPANSION_BOARD_AVAILABLE
 #undef MOUSE_AVAILABLE					// EXPANSION_BOARD_MOD_AVAILABLE deaktiviert MOUSE_AVAILABLE
 #endif // EXPANSION_BOARD_AVAILABLE
 
-//#define BPS_AVAILABLE		/**< Bot Positioning System */
 //#define SPI_AVAILABLE		/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 
 /* Servo-Parameter */

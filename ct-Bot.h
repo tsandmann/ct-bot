@@ -56,6 +56,8 @@
 //#define MEASURE_COUPLED_AVAILABLE		/**< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
 //#define MEASURE_POSITION_ERRORS_AVAILABLE	/**< Fehlerberechnungen bei der Positionsbestimmung */
 
+//#define BPS_AVAILABLE			/**< Bot Positioning System */
+
 #define ADC_AVAILABLE			/**< A/D-Konverter */
 #define ENA_AVAILABLE			/**< Enable-Leitungen */
 #define SHIFT_AVAILABLE			/**< Shift Register */
