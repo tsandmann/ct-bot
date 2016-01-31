@@ -33,8 +33,8 @@
 //#define BEHAVIOUR_SIMPLE_AVAILABLE /**< sind die Beispielverhalten vorhanden? */
 //#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE /**< Demoverhalten im Quadrat fahren vorhanden? */
 
-#define BEHAVIOUR_AVOID_BORDER_AVAILABLE /**< Abgruenden ausweichen vorhanden? */
-#define BEHAVIOUR_AVOID_COL_AVAILABLE /**< Hindernis ausweichen vorhanden? */
+//#define BEHAVIOUR_AVOID_BORDER_AVAILABLE /**< Abgruenden ausweichen vorhanden? */
+//#define BEHAVIOUR_AVOID_COL_AVAILABLE /**< Hindernis ausweichen vorhanden? */
 //#define BEHAVIOUR_HANG_ON_AVAILABLE /**< Erkennen des Haengenbleibens als Notfallverhalten? */
 //#define BEHAVIOUR_GOTO_AVAILABLE /**< goto vorhanden? */
 //#define BEHAVIOUR_GOTOXY_AVAILABLE /**< gotoxy vorhanden? */
@@ -285,6 +285,10 @@
 #undef BEHAVIOUR_DRIVE_AREA_AVAILABLE
 #undef BEHAVIOUR_PATHPLANING_AVAILABLE
 #endif // BEHAVIOUR_GOTO_POS_AVAILABLE
+
+#if defined BEHAVIOUR_REMOTECALL_AVAILABLE && ! defined BOT_2_SIM_AVAILABLE
+#undef BEHAVIOUR_REMOTECALL_AVAILABLE
+#endif
 
 #include "bot-logic/behaviour_prototype.h"
 
