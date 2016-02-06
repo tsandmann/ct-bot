@@ -30,6 +30,7 @@
 
 
 /*** Bot-Geometrie ***/
+
 #define BOT_DIAMETER			120			/**< Bot-Durchmesser [mm] */
 #define ENCODER_MARKS			60			/**< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weissen + Anzahl der schwarzen Felder */
 #ifdef PC
@@ -97,21 +98,35 @@
 #define BOT_RESET_GPIO		"/sys/class/gpio/gpio17/value" /**< Pfad zum Reset-GPIO vom ARM-Linux-Board */
 //#define ARM_LINUX_DISPLAY	"/dev/tty1" /**< Konsole fuer Display-Ausgaben auf ARM-Linux-Board. "stdout" fuer Ausgabe auf stdout */
 
-#define EXPANSION_BOARD_AVAILABLE /**< Erweiterungsmodul (MMC / WiPort) installiert */
-//#define SPI_AVAILABLE	/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
+#define EXPANSION_BOARD_AVAILABLE 		/**< Erweiterungsmodul (MMC / WiPort) installiert */
+
+//#define EXPANSION_BOARD_MOD_AVAILABLE	/**< modifiziertes Erweiterungsmodul (MMC / WiPort) installiert */
+
+#if defined EXPANSION_BOARD_MOD_AVAILABLE
+#undef EXPANSION_BOARD_AVAILABLE		// EXPANSION_BOARD_MOD_AVAILABLE deaktiviert EXPANSION_BOARD_AVAILABLE
+#undef MOUSE_AVAILABLE					// EXPANSION_BOARD_MOD_AVAILABLE deaktiviert MOUSE_AVAILABLE
+#endif // EXPANSION_BOARD_AVAILABLE
+
+//#define SPI_AVAILABLE		/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 
 /* Servo-Parameter */
 #ifndef __AVR_ATmega1284P__
 #if F_CPU == 16000000L
 #define DOOR_CLOSE 	7  /**< Rechter Anschlag Servo 1 */
 #define DOOR_OPEN	14 /**< Linker Anschlag Servo 1 */
+#define CAM_LEFT 	7  /**< Rechter Anschlag Servo 2 */
+#define CAM_RIGHT	14 /**< Linker Anschlag Servo 2 */
 #else
 #define DOOR_CLOSE 	10 /**< Rechter Anschlag Servo 1 */
 #define DOOR_OPEN	18 /**< Linker Anschlag Servo 1 */
+#define CAM_LEFT 	10 /**< Rechter Anschlag Servo 2 */
+#define CAM_RIGHT	18 /**< Linker Anschlag Servo 2 */
 #endif // F_CPU
 #else
-#define DOOR_CLOSE 	  64  /**< Rechter Anschlag Servo 1 */
-#define DOOR_OPEN	  180 /**< Linker Anschlag Servo 1 */
+#define DOOR_CLOSE 	64  /**< Rechter Anschlag Servo 1 */
+#define DOOR_OPEN	180 /**< Linker Anschlag Servo 1 */
+#define CAM_LEFT 	64  /**< Rechter Anschlag Servo 2 */
+#define CAM_RIGHT	180 /**< Linker Anschlag Servo 2 */
 #endif // ! __AVR_ATmega1284P__
 
 
