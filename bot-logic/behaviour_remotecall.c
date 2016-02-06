@@ -398,6 +398,8 @@ void bot_remotecall_behaviour(Behaviour_t * data) {
 				/* kein Caller, also kam der Aufruf wohl vom Sim */
 				command_write_data(CMD_REMOTE_CALL, SUB_REMOTE_CALL_DONE, result, result, function_name);
 			}
+#else
+			(void) function_name;
 #endif // COMMAND_AVAILABLE
 			LOG_DEBUG("RemoteCall %s beendet (%u)", function_name, result);
 
@@ -526,6 +528,8 @@ void bot_remotecall_list(void) {
 #ifdef COMMAND_AVAILABLE
 		// und uebertragen
 		command_write_rawdata(CMD_REMOTE_CALL, SUB_REMOTE_CALL_ENTRY, (int16_t) i, (int16_t) i, sizeof(remotecall_entry_t), call);
+#else
+		(void) call;
 #endif
 		LOG_DEBUG("%s(%s)", call->name, call->param_info);
 	}
