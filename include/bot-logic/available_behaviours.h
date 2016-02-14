@@ -79,7 +79,7 @@
 #define BEHAVIOUR_DELAY_AVAILABLE /**< Delay-Routinen als Verhalten */
 #define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE /**< Deaktivieren von Verhalten wenn eine Abbruchbedingung erfuellt ist */
 //#define BEHAVIOUR_GET_UTILIZATION_AVAILABLE	/**< CPU-Auslastung eines Verhaltens messen */
-//#define BEHAVIOUR_HW_TEST_AVAILABLE /**< Testverhalten vorhanden? (ehemals TEST_AVAILABLE_ANALOG, _DIGITAL, _MOTOR) */
+#define BEHAVIOUR_HW_TEST_AVAILABLE /**< Testverhalten vorhanden? (ehemals TEST_AVAILABLE_ANALOG, _DIGITAL, _MOTOR) */
 
 /** sonstige Verhalten */
 //#define BEHAVIOUR_NEURALNET_AVAILABLE /**< neuronales Netzwerk vorhanden? */
