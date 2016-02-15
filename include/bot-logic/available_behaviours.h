@@ -40,7 +40,7 @@
 
 /** Positionierungs-Verhalten */
 //#define BEHAVIOUR_GOTO_AVAILABLE 					/** < goto vorhanden? */
-//#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE 		/** < Strecke fahren vorhanden ?*/
+//#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE 		/** < Strecke fahren vorhanden? */
 //#define BEHAVIOUR_GOTOXY_AVAILABLE 				/** < gotoxy vorhanden? */
 #define BEHAVIOUR_TURN_AVAILABLE 					/** < turn vorhanden? */
 //#define BEHAVIOUR_TURN_TEST_AVAILABLE 			/** < turn_test vorhanden? */
