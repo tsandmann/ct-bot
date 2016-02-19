@@ -75,5 +75,14 @@ void gettimeofday_win(struct timeval * p, void * tz /* IGNORED */);
  */
 void set_bot_2_sim(void);
 
+#else // ! BOT_2_SIM_AVAILABLE
+
+/*
+ * Dummy falls BOT_2_SIM_AVAILABLE aus ist
+ */
+static inline void set_bot_2_sim(void) {
+	// NOP
+}
+
 #endif // BOT_2_SIM_AVAILABLE
 #endif // BOT2SIM_H_
