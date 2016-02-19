@@ -43,8 +43,8 @@ static uint8_t testmode =
 #else
 	3
 #endif // TEST_X
-	; /**< Testmodus, 0: analog, 1: digital, 2: Motor */
-static uint16_t calls = 0; /**< Anzahl der Durchlaeufe fuer Motor-Test */
+	; /** < Testmodus, 0: analog, 1: digital, 2: Motor */
+static uint16_t calls = 0; /** < Anzahl der Durchlaeufe fuer Motor-Test */
 
 /**
  * Das Testverhalten
