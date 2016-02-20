@@ -30,7 +30,6 @@
 #define BEHAVIOUR_SERVO_H_
 
 #ifdef BEHAVIOUR_SERVO_AVAILABLE
-extern uint8_t servo_active; /**< 0, wenn kein Servo aktiv, sonst ID des gerade aktiven Servos */
 
 /**
  * Dieses Verhalten fuehrt ein Servo-Kommando aus und schaltet danach den Servo wieder ab

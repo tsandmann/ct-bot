@@ -123,8 +123,9 @@
 #define DOOR_OPEN	180 /**< Linker Anschlag Servo 1 */
 #endif // ! __AVR_ATmega1284P__
 
-#define CAM_LEFT 	64  /**< Rechter Anschlag Servo 2 */
-#define CAM_RIGHT	180 /**< Linker Anschlag Servo 2 */
+#define CAM_LEFT 	60  /**< Rechter Anschlag Servo 2 */
+#define CAM_RIGHT	250 /**< Linker Anschlag Servo 2 */
+#define CAM_CENTER	150 /**< Mittelstellung Servo 2 */
 
 
 /*** Einstellungen fuer die Verhaltensregeln ***/

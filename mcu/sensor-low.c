@@ -229,10 +229,9 @@ void bot_sens(void) {
 		pDistR = &sensDistR;
 #endif // DISTSENS_AVERAGE
 		adc_read_int(SENS_ABST_L, pDistL);
-#ifdef BEHAVIOUR_SERVO_AVAILABLE
-		if (servo_active == SERVO1) // wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensors nicht
-#endif
+		if (servo_get(SERVO1) == SERVO_OFF) { // wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensors nicht
 			adc_read_int(SENS_ABST_R, pDistR);
+		}
 #ifdef DISTSENS_AVERAGE
 		measure_count++;
 		measure_count &= 0x3; // Z/4Z
@@ -362,7 +361,7 @@ void bot_sens(void) {
 	while (adc_get_active_channel() != 255) {}	// restliche Zeit verbrauchen
 	// in den Testmodi bleibt immer alles an.
 #ifndef BEHAVIOUR_HW_TEST_AVAILABLE
-  	ENA_off(ENA_KANTLED|ENA_LINE|ENA_SCHRANKE|ENA_KLAPPLED); // Kanten (ENA_KANTLED), Liniensensoren (ENA_LINE), Transportfach-LED und Klappensensor aus
+  	ENA_off(ENA_KANTLED | ENA_LINE | ENA_SCHRANKE | ENA_KLAPPLED); // Kanten (ENA_KANTLED), Liniensensoren (ENA_LINE), Transportfach-LED und Klappensensor aus
 #endif
 
 #ifndef BOT_2_RPI_AVAILABLE

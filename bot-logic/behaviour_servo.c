@@ -34,7 +34,7 @@
 #include "timer.h"
 #include "log.h"
 
-uint8_t servo_active = 0; /**< 0, wenn kein Servo aktiv, sonst ID des gerade aktiven Servos */
+static uint8_t servo_active = 0; /**< 0, wenn kein Servo aktiv, sonst ID des gerade aktiven Servos */
 
 /**
  * Dieses Verhalten fuehrt ein Servo-Kommando aus und schaltet danach den Servo wieder ab
@@ -61,6 +61,7 @@ void bot_servo_behaviour(Behaviour_t * data) {
  */
 Behaviour_t * bot_servo(Behaviour_t * caller, uint8_t servo, uint8_t pos) {
 	if (servo == SERVO1 && pos == DOOR_CLOSE && sensDoor == 0) {
+		LOG_DEBUG("bot_servo(): Klappe bereits geschlossen");
 		return NULL; // Klappe ist bereits geschlossen
 	}
 	Behaviour_t * data = NULL;

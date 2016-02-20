@@ -162,19 +162,23 @@ static void rc5_change_servo2(int16_t diff) {
 	static uint8_t old_pos;
 	if (old_pos == 0) {
 		/* Initialisierung auf Mitte */
-		const uint8_t center = (CAM_RIGHT - CAM_LEFT) / 2 + CAM_LEFT;
-		if (bot_servo(NULL, SERVO2, center)) {
-			old_pos = center;
+		if (bot_servo(NULL, SERVO2, CAM_CENTER)) {
+			old_pos = CAM_CENTER;
 		}
 		return;
 	}
 
-	uint8_t new_pos = (uint8_t)(old_pos + diff);
-	if (new_pos < CAM_LEFT || new_pos > CAM_RIGHT) {
-		return;
+	int16_t new_pos = old_pos + diff;
+	/* Begrenzungen */
+	if (new_pos < CAM_LEFT) {
+		new_pos = CAM_LEFT;
+	} else if (new_pos > CAM_RIGHT) {
+		new_pos = CAM_RIGHT;
 	}
-	if (bot_servo(NULL, SERVO2, new_pos)) {
-		old_pos = new_pos;
+
+	/* Servo Verhalten starten */
+	if (bot_servo(NULL, SERVO2, (uint8_t) new_pos)) {
+		old_pos = (uint8_t) new_pos;
 	}
 }
 #endif // BEHAVIOUR_SERVO_AVAILABLE
@@ -315,10 +319,10 @@ void default_key_handler(void) {
 		case RC5_CH_MINUS:		bot_servo(NULL, SERVO1, DOOR_OPEN); break;
 #endif
 #ifdef RC5_VOL_PLUS
-		case RC5_VOL_PLUS:		rc5_change_servo2(1); break; // verfährt Servo 2 um eine Stufe im Uhrzeigersinn
+		case RC5_VOL_PLUS:		rc5_change_servo2(10); break; // verfaehrt Servo 2 um eine Stufe im Uhrzeigersinn
 #endif
 #ifdef RC5_VOL_MINUS
-		case RC5_VOL_MINUS:		rc5_change_servo2(-1); break; // verfährt Servo 2 um eine Stufe gegen den Uhrzeigersinn
+		case RC5_VOL_MINUS:		rc5_change_servo2(-10); break; // verfaehrt Servo 2 um eine Stufe gegen den Uhrzeigersinn
 #endif
 #endif // BEHAVIOUR_SERVO_AVAILABLE
 

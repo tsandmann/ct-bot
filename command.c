@@ -1018,8 +1018,8 @@ int8_t command_evaluate(void) {
 			motor_set(received_command.data_l, received_command.data_r);
 			break;
 		case CMD_AKT_SERVO:
-			servo_set(1, (uint8_t) received_command.data_l);
-			servo_set(2, (uint8_t) received_command.data_r);
+			servo_set(SERVO1, (uint8_t) received_command.data_l);
+			servo_set(SERVO2, (uint8_t) received_command.data_r);
 			break;
 		case CMD_AKT_LED:
 			LED_set((uint8_t) received_command.data_l);
