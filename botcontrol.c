@@ -40,6 +40,7 @@
 #include "motor.h"
 #include "map.h"
 #include "init.h"
+#include "ena.h"
 #include "bot-2-atmega.h"
 #include "bot-2-linux.h"
 
@@ -180,6 +181,8 @@ void ctbot_shutdown(void) {
 	display_cursor(1, 1);
 	display_puts("SYSTEM HALTED.");
 #endif // DISPLAY_AVAILABLE
+
+	ENA_off(0xff);
 
 	ctbot_shutdown_low();
 }

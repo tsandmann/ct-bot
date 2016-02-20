@@ -256,11 +256,6 @@ void bot_sens(void) {
 	sensMouseDY = (int8_t) mouse_sens_read(MOUSE_DELTA_Y_REG);
 #endif
 
-	/* alle digitalen Sensoren */
-	sensDoor = (uint8_t) ((SENS_DOOR_PINR >> SENS_DOOR) & 0x01);
-	sensTrans = (uint8_t) ((SENS_TRANS_PINR >> SENS_TRANS) & 0x01);
-	sensError = (uint8_t) ((SENS_ERROR_PINR >> SENS_ERROR) & 0x01);
-
 #ifdef SPEED_CONTROL_AVAILABLE
 	/* Aufruf der Motorregler, falls Stillstand */
 	register uint16_t pid_ticks = TIMER_GET_TICKCOUNT_16; // Ticks sichern [178 us]
@@ -358,10 +353,16 @@ void bot_sens(void) {
 #endif // SRF10_AVAILABLE
 
 	/* alle anderen analogen Sensoren */
-	while (adc_get_active_channel() != 255) {}	// restliche Zeit verbrauchen
-	// in den Testmodi bleibt immer alles an.
+	while (adc_get_active_channel() != 255) {} // restliche Zeit verbrauchen
+
+	/* alle digitalen Sensoren */
+	sensDoor = (uint8_t) ((SENS_DOOR_PINR >> SENS_DOOR) & 0x01);
+	sensTrans = (uint8_t) ((SENS_TRANS_PINR >> SENS_TRANS) & 0x01);
+	sensError = (uint8_t) ((SENS_ERROR_PINR >> SENS_ERROR) & 0x01);
+
 #ifndef BEHAVIOUR_HW_TEST_AVAILABLE
-  	ENA_off(ENA_KANTLED | ENA_LINE | ENA_SCHRANKE | ENA_KLAPPLED); // Kanten (ENA_KANTLED), Liniensensoren (ENA_LINE), Transportfach-LED und Klappensensor aus
+	// Kanten (ENA_KANTLED), Liniensensoren (ENA_LINE), Transportfach-LED und Klappensensor aus, nur in den Testmodi bleibt immer alles an
+  	ENA_off(ENA_KANTLED | ENA_LINE | ENA_SCHRANKE | ENA_KLAPPLED);
 #endif
 
 #ifndef BOT_2_RPI_AVAILABLE
