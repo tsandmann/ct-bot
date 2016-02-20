@@ -160,12 +160,22 @@ static void bot_reset(void) {
  */
 static void rc5_change_servo2(int16_t diff) {
 	static uint8_t old_pos;
+	if (old_pos == 0) {
+		/* Initialisierung auf Mitte */
+		const uint8_t center = (CAM_RIGHT - CAM_LEFT) / 2 + CAM_LEFT;
+		if (bot_servo(NULL, SERVO2, center)) {
+			old_pos = center;
+		}
+		return;
+	}
+
 	uint8_t new_pos = (uint8_t)(old_pos + diff);
 	if (new_pos < CAM_LEFT || new_pos > CAM_RIGHT) {
 		return;
 	}
-	bot_servo(NULL, SERVO2, new_pos);
-	old_pos = new_pos;
+	if (bot_servo(NULL, SERVO2, new_pos)) {
+		old_pos = new_pos;
+	}
 }
 #endif // BEHAVIOUR_SERVO_AVAILABLE
 

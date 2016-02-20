@@ -202,7 +202,7 @@ void bot_sens_init(void) {
  * Alle Sensoren aktualisieren
  */
 void bot_sens(void) {
-	ENA_on(ENA_KANTLED|ENA_LINE|ENA_SCHRANKE|ENA_KLAPPLED);	// Die Distanzsensoren sind im Normalfall an, da sie 50 ms zum booten brauchen
+	ENA_on(ENA_KANTLED | ENA_LINE | ENA_SCHRANKE | ENA_KLAPPLED); // Die Distanzsensoren sind im Normalfall an, da sie 50 ms zum Booten brauchen
 
 #ifdef CMPS03_AVAILABLE
 	cmps03_get_bearing(&sensCmps03);
@@ -230,7 +230,7 @@ void bot_sens(void) {
 #endif // DISTSENS_AVERAGE
 		adc_read_int(SENS_ABST_L, pDistL);
 #ifdef BEHAVIOUR_SERVO_AVAILABLE
-		if ((servo_active & SERVO1) == 0) // wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensors nicht
+		if (servo_active == SERVO1) // wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensors nicht
 #endif
 			adc_read_int(SENS_ABST_R, pDistR);
 #ifdef DISTSENS_AVERAGE
