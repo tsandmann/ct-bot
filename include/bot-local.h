@@ -86,8 +86,8 @@
 #define BPS_NO_DATA			0xffff	/**< Wert des BPS-Sensors, falls keine Daten verfuegbar sind */
 
 /* System-Konstanten */
-//#define F_CPU	16000000L	/**< CPU-Frequenz [Hz] */
-#define F_CPU	20000000L	/**< CPU-Frequenz [Hz] */
+#define F_CPU	16000000L	/**< CPU-Frequenz [Hz] */
+//#define F_CPU	20000000L	/**< CPU-Frequenz [Hz] */
 #define XTAL	F_CPU	/**< CPU-Frequenz [Hz] */
 
 //#define UART_BAUD	57600	/**< Baudrate  57600 fuer UART-Kommunikation */
@@ -107,7 +107,7 @@
 #undef MOUSE_AVAILABLE				// EXPANSION_BOARD_MOD_AVAILABLE deaktiviert MOUSE_AVAILABLE
 #endif // EXPANSION_BOARD_AVAILABLE
 
-#define SPI_AVAILABLE	/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
+//#define SPI_AVAILABLE	/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 
 /* Servo-Parameter */
 #ifndef __AVR_ATmega1284P__
