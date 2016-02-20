@@ -63,6 +63,7 @@
 #include <netinet/tcp.h>
 #include <sys/ioctl.h>
 #include <errno.h>
+#include <signal.h>
 #endif // WIN32
 
 #include <stdio.h>      // for printf() and fprintf()
@@ -274,6 +275,10 @@ void * tcp_init_server(void * ptr) {
 	}
 	LOG_INFO("TCP Client %s connected on port %u.", inet_ntoa(clientAddr.sin_addr), SERVERPORT);
 
+#ifndef __WIN32__
+	signal(SIGPIPE, SIG_IGN); // ignore SIGPIPE signal
+#endif
+
 	return NULL;
 }
 
@@ -335,8 +340,9 @@ int16_t flushSendBuffer(void) {
 		return 0;
 	}
 	sendBufferPtr = 0; // Puffer auf jedenfall leeren
-	if (send(tcp_sock, (char *) &sendBuffer, length, 0) != length) {
-		LOG_ERROR("flushSendBuffer(): send() sent a different number of bytes than expected");
+	const int n = send(tcp_sock, (char *) &sendBuffer, length, 0);
+	if (n != length) {
+		LOG_ERROR("flushSendBuffer(): send() sent a different number of bytes (%d) than expected (%d)", n, length);
 		length = -1;
 	}
 #endif // USE_SEND_BUFFER
