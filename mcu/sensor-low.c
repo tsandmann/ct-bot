@@ -51,53 +51,53 @@
 #include "init.h"
 
 // ADC-PINS
-#define SENS_ABST_L			0		/**< ADC-PIN Abstandssensor Links */
-#define SENS_ABST_R			1		/**< ADC-PIN Abstandssensor Rechts */
-#define SENS_M_L			2		/**< ADC-PIN Liniensensor Links */
-#define SENS_M_R			3		/**< ADC-PIN Liniensensor Rechts */
-#define SENS_LDR_L			4		/**< ADC-PIN Lichtsensor Links */
-#define SENS_LDR_R			5		/**< ADC-PIN Lichtsensor Rechts */
-#define SENS_KANTE_L		6		/**< ADC-PIN Kantensensor Links */
-#define SENS_KANTE_R		7		/**< ADC-PIN Kantensensor Rechts */
+#define SENS_ABST_L		0	/**< ADC-PIN Abstandssensor Links */
+#define SENS_ABST_R		1	/**< ADC-PIN Abstandssensor Rechts */
+#define SENS_M_L		2	/**< ADC-PIN Liniensensor Links */
+#define SENS_M_R		3	/**< ADC-PIN Liniensensor Rechts */
+#define SENS_LDR_L		4	/**< ADC-PIN Lichtsensor Links */
+#define SENS_LDR_R		5	/**< ADC-PIN Lichtsensor Rechts */
+#define SENS_KANTE_L	6	/**< ADC-PIN Kantensensor Links */
+#define SENS_KANTE_R	7	/**< ADC-PIN Kantensensor Rechts */
 
 // Sonstige Sensoren
-#define SENS_DOOR_PINR 		PIND	/**< Port an dem der Klappensensor haengt */
-#define SENS_DOOR_DDR 		DDRD	/**< DDR fuer den Klappensensor */
-#define SENS_DOOR			6		/**< Pin an dem der Klappensensor haengt */
+#define SENS_DOOR_PINR 	PIND	/**< Port an dem der Klappensensor haengt */
+#define SENS_DOOR_DDR 	DDRD	/**< DDR fuer den Klappensensor */
+#define SENS_DOOR		6	/**< Pin an dem der Klappensensor haengt */
 
 #ifdef SPI_AVAILABLE
-#define SENS_ENCL_PINR		PINC	/**< Port an dem der linke Encoder haengt */
-#define SENS_ENCL_DDR		DDRC	/**< DDR fuer den linken Encoder  */
-#define SENS_ENCL			5		/**< Pin an dem der linke Encoder haengt */
+#define SENS_ENCL_PINR	PINC	/**< Port an dem der linke Encoder haengt */
+#define SENS_ENCL_DDR	DDRC	/**< DDR fuer den linken Encoder  */
+#define SENS_ENCL		5	/**< Pin an dem der linke Encoder haengt */
 #else
-#define SENS_ENCL_PINR		PINB	/**< Port an dem der linke Encoder haengt */
-#define SENS_ENCL_DDR		DDRB	/**< DDR fuer den linken Encoder  */
-#define SENS_ENCL			4		/**< Pin an dem der linke Encoder haengt */
+#define SENS_ENCL_PINR	PINB	/**< Port an dem der linke Encoder haengt */
+#define SENS_ENCL_DDR	DDRB	/**< DDR fuer den linken Encoder  */
+#define SENS_ENCL		4	/**< Pin an dem der linke Encoder haengt */
 #endif	// SPI_AVAILABLE
 
-#define SENS_ENCR_PINR		PIND	/**< Port an dem der rechte Encoder haengt */
-#define SENS_ENCR_DDR		DDRD	/**< DDR fuer den rechten Encoder  */
-#define SENS_ENCR			3		/**< Pin an dem der rechte Encoder haengt */
+#define SENS_ENCR_PINR	PIND	/**< Port an dem der rechte Encoder haengt */
+#define SENS_ENCR_DDR	DDRD	/**< DDR fuer den rechten Encoder  */
+#define SENS_ENCR		3	/**< Pin an dem der rechte Encoder haengt */
 
-#define SENS_ERROR_PINR		PINB	/**< Port an dem die Fehlerueberwachung haengt */
-#define SENS_ERROR_DDR		DDRB	/**< DDR fuer die Fehlerueberwachung */
-#define SENS_ERROR			2		/**< Pin an dem die Fehlerueberwachung haengt */
+#define SENS_ERROR_PINR	PINB	/**< Port an dem die Fehlerueberwachung haengt */
+#define SENS_ERROR_DDR	DDRB	/**< DDR fuer die Fehlerueberwachung */
+#define SENS_ERROR		2	/**< Pin an dem die Fehlerueberwachung haengt */
 
-#define SENS_TRANS_PINR		PINB	/**< Port an dem die Transportfachueberwachung haengt */
-#define SENS_TRANS_PORT		PORTB	/**< Port an dem die Transportfachueberwachung haengt */
-#define SENS_TRANS_DDR		DDRB	/**< DDR fuer die Transportfachueberwachung */
-#define SENS_TRANS			0		/**< Pin an dem die Transportfachueberwachung haengt */
+#define SENS_TRANS_PINR	PINB	/**< Port an dem die Transportfachueberwachung haengt */
+#define SENS_TRANS_PORT	PORTB	/**< Port an dem die Transportfachueberwachung haengt */
+#define SENS_TRANS_DDR	DDRB	/**< DDR fuer die Transportfachueberwachung */
+#define SENS_TRANS		0	/**< Pin an dem die Transportfachueberwachung haengt */
 
 #define ENC_L ((SENS_ENCL_PINR >> SENS_ENCL) & 0x01)	/**< Abkuerzung zum Zugriff auf Encoder */
 #define ENC_R ((SENS_ENCR_PINR >> SENS_ENCR) & 0x01)	/**< Abkuerzung zum Zugriff auf Encoder */
 
-#define ENC_ENTPRELL		12		/**< Nur wenn der Encoder ein paar mal den gleichen wert gibt uebernehmen */
+#define ENC_ENTPRELL		12	/**< Nur wenn der Encoder ein paar mal den gleichen wert gibt uebernehmen */
 
 #ifdef SPEED_CONTROL_AVAILABLE
 uint16_t encTimeL[8] = {0};	/**< Timestamps linker Encoder */
 uint16_t encTimeR[8] = {0};	/**< Timestamps rechter Encoder */
-uint8_t i_encTimeL = 0;		/**< Array-Index auf letzten Timestampeintrag links */
-uint8_t i_encTimeR = 0;		/**< Array-Index auf letzten Timestampeintrag rechts */
+uint8_t i_encTimeL = 0;	/**< Array-Index auf letzten Timestampeintrag links */
+uint8_t i_encTimeR = 0;	/**< Array-Index auf letzten Timestampeintrag rechts */
 uint8_t timeCorrectL = 0;	/**< markiert, ob der Encoder-Timestamp des linken Rads ungueltig ist (wg. Stillstand) */
 uint8_t timeCorrectR = 0;	/**< markiert, ob der Encoder-Timestamp des rechten Rads ungueltig ist (wg. Stillstand) */
 #endif // SPEED_CONTROL_AVAILABLE

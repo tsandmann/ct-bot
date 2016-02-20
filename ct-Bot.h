@@ -32,10 +32,10 @@
 
 #define LOG_CTSIM_AVAILABLE					/**< Logging zum ct-Sim (PC und MCU) */
 //#define LOG_DISPLAY_AVAILABLE				/**< Logging ueber das LCD-Display (PC und MCU) */
-//#define LOG_UART_AVAILABLE					/**< Logging ueber UART (nur fuer MCU) */
+//#define LOG_UART_AVAILABLE				/**< Logging ueber UART (nur fuer MCU) */
 #define LOG_STDOUT_AVAILABLE 				/**< Logging auf die Konsole (nur fuer PC) */
 //#define LOG_MMC_AVAILABLE					/**< Logging in eine txt-Datei auf MMC */
-//#define USE_MINILOG							/**< schaltet auf schlankes Logging um */
+//#define USE_MINILOG						/**< schaltet auf schlankes Logging um */
 //#define CREATE_TRACEFILE_AVAILABLE		/**< Aktiviert das Schreiben einer Trace-Datei (nur PC) */
 
 #define LED_AVAILABLE						/**< LEDs aktiv */

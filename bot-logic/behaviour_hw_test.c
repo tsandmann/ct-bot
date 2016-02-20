@@ -29,7 +29,7 @@
 #ifdef BEHAVIOUR_HW_TEST_AVAILABLE
 #include "led.h"
 
-#define TEST_ANALOG		/**< Sollen die LEDs die analoge Sensorwerte anzeigen? */
+#define TEST_ANALOG	/**< Sollen die LEDs die analoge Sensorwerte anzeigen? */
 //#define TEST_DIGITAL	/**< Sollen die LEDs die digitale Sensorwerte anzeigen? */
 //#define TEST_MOTOR	/**< Sollen die Motoren ein wenig drehen? */
 
