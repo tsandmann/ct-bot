@@ -159,9 +159,9 @@ static void bot_reset(void) {
  * \param diff Wert, um den die Servo-Position veraendert wird
  */
 static void rc5_change_servo2(int16_t diff) {
-	static uint8_t old_pos;
+	static uint8_t old_pos;							// Woher weiß der bot was old_pos ist? Zuweisung?
 	uint8_t new_pos = (uint8_t)(old_pos + diff);
-	if (new_pos < CAM_LEFT || new_pos > CAM_RIGHT) {
+	if (new_pos > CAM_LEFT || new_pos < CAM_RIGHT) {
 		return;
 	}
 	bot_servo(NULL, SERVO2, new_pos);

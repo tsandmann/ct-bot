@@ -30,64 +30,64 @@
  * Module switches, to make code smaller if features are not needed *
  ********************************************************************/
 
-#define LOG_CTSIM_AVAILABLE					/** < Logging zum ct-Sim (PC und MCU) */
-//#define LOG_DISPLAY_AVAILABLE				/** < Logging ueber das LCD-Display (PC und MCU) */
-#define LOG_UART_AVAILABLE					/** < Logging ueber UART (nur fuer MCU) */
-#define LOG_STDOUT_AVAILABLE 				/** < Logging auf die Konsole (nur fuer PC) */
-//#define LOG_MMC_AVAILABLE					/** < Logging in eine txt-Datei auf MMC */
-#define USE_MINILOG							/** < schaltet auf schlankes Logging um */
-//#define CREATE_TRACEFILE_AVAILABLE		/** < Aktiviert das Schreiben einer Trace-Datei (nur PC) */
+#define LOG_CTSIM_AVAILABLE					/**< Logging zum ct-Sim (PC und MCU) */
+//#define LOG_DISPLAY_AVAILABLE				/**< Logging ueber das LCD-Display (PC und MCU) */
+//#define LOG_UART_AVAILABLE					/**< Logging ueber UART (nur fuer MCU) */
+#define LOG_STDOUT_AVAILABLE 				/**< Logging auf die Konsole (nur fuer PC) */
+//#define LOG_MMC_AVAILABLE					/**< Logging in eine txt-Datei auf MMC */
+//#define USE_MINILOG							/**< schaltet auf schlankes Logging um */
+//#define CREATE_TRACEFILE_AVAILABLE		/**< Aktiviert das Schreiben einer Trace-Datei (nur PC) */
 
-#define LED_AVAILABLE						/** < LEDs aktiv */
-#define IR_AVAILABLE						/** < Infrarot Fernbedienung aktiv */
-#define RC5_AVAILABLE						/** < Key-Mapping fuer IR-RC aktiv */
-#define KEYPAD_AVAILABLE					/** < Keypad-Eingabe vorhanden? */
+#define LED_AVAILABLE						/**< LEDs aktiv */
+#define IR_AVAILABLE						/**< Infrarot Fernbedienung aktiv */
+#define RC5_AVAILABLE						/**< Key-Mapping fuer IR-RC aktiv */
+#define KEYPAD_AVAILABLE					/**< Keypad-Eingabe vorhanden? */
 
-#define BOT_2_SIM_AVAILABLE					/** < Soll der Bot mit dem Sim kommunizieren? */
-//#define BOT_2_BOT_AVAILABLE				/** < Sollen Bots untereinander kommunizieren? */
-#define BOT_2_BOT_PAYLOAD_AVAILABLE			/** < Aktiviert Payload-Versand per Bot-2-Bot Kommunikation */
+#define BOT_2_SIM_AVAILABLE					/**< Soll der Bot mit dem Sim kommunizieren? */
+//#define BOT_2_BOT_AVAILABLE				/**< Sollen Bots untereinander kommunizieren? */
+#define BOT_2_BOT_PAYLOAD_AVAILABLE			/**< Aktiviert Payload-Versand per Bot-2-Bot Kommunikation */
 
-#define DISPLAY_AVAILABLE					/** < Display aktiv */
-#define DISPLAY_REMOTE_AVAILABLE			/** < Sende LCD Anzeigedaten an den Simulator */
-//#define WELCOME_AVAILABLE					/** < kleiner Willkommensgruss */
+#define DISPLAY_AVAILABLE					/**< Display aktiv */
+#define DISPLAY_REMOTE_AVAILABLE			/**< Sende LCD Anzeigedaten an den Simulator */
+//#define WELCOME_AVAILABLE					/**< kleiner Willkommensgruss */
 
-//#define MOUSE_AVAILABLE					/** < Maus Sensor */
-#define MEASURE_MOUSE_AVAILABLE				/** < Geschwindigkeiten werden aus den Maussensordaten berechnet */
-//#define MEASURE_COUPLED_AVAILABLE			/** < Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
-//#define MEASURE_POSITION_ERRORS_AVAILABLE	/** < Fehlerberechnungen bei der Positionsbestimmung */
+#define MOUSE_AVAILABLE						/**< Maus Sensor */
+#define MEASURE_MOUSE_AVAILABLE				/**< Geschwindigkeiten werden aus den Maussensordaten berechnet */
+//#define MEASURE_COUPLED_AVAILABLE			/**< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
+//#define MEASURE_POSITION_ERRORS_AVAILABLE	/**< Fehlerberechnungen bei der Positionsbestimmung */
 
-//#define BPS_AVAILABLE						/** < Bot Positioning System */
+//#define BPS_AVAILABLE						/**< Bot Positioning System */
 
-#define ADC_AVAILABLE						/** < A/D-Konverter */
-#define ENA_AVAILABLE						/** < Enable-Leitungen */
-#define SHIFT_AVAILABLE						/** < Shift Register */
+#define ADC_AVAILABLE						/**< A/D-Konverter */
+#define ENA_AVAILABLE						/**< Enable-Leitungen */
+#define SHIFT_AVAILABLE						/**< Shift Register */
 
-#define BEHAVIOUR_AVAILABLE					/** < Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
+#define BEHAVIOUR_AVAILABLE					/**< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 
-#define POS_STORE_AVAILABLE					/** < Positionsspeicher vorhanden */
+#define POS_STORE_AVAILABLE					/**< Positionsspeicher vorhanden */
 
-//#define MAP_AVAILABLE						/** < Aktiviert die Kartographie */
-#define MAP_2_SIM_AVAILABLE					/** < Sendet die Map zur Anzeige an den Sim */
+//#define MAP_AVAILABLE						/**< Aktiviert die Kartographie */
+#define MAP_2_SIM_AVAILABLE					/**< Sendet die Map zur Anzeige an den Sim */
 
-//#define MMC_AVAILABLE						/** < haben wir eine MMC/SD-Karte zur Verfuegung? */
-//#define MMC_VM_AVAILABLE					/** < Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
-#define BOT_FS_AVAILABLE					/** < Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC moeglich) */
-#define OS_AVAILABLE						/** < Aktiviert BotOS fuer Threads und Scheduling */
+//#define MMC_AVAILABLE						/**< haben wir eine MMC/SD-Karte zur Verfuegung? */
+//#define MMC_VM_AVAILABLE					/**< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
+#define BOT_FS_AVAILABLE					/**< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC moeglich) */
+#define OS_AVAILABLE						/**< Aktiviert BotOS fuer Threads und Scheduling */
 
-#define SPEED_CONTROL_AVAILABLE 			/** < Aktiviert die Motorregelung */
-//#define ADJUST_PID_PARAMS					/** < macht PID-Paramter zur Laufzeit per FB einstellbar */
-//#define SPEED_LOG_AVAILABLE 				/** < Zeichnet Debug-Infos der Motorregelung auf MMC auf */
+#define SPEED_CONTROL_AVAILABLE 			/**< Aktiviert die Motorregelung */
+//#define ADJUST_PID_PARAMS					/**< macht PID-Paramter zur Laufzeit per FB einstellbar */
+//#define SPEED_LOG_AVAILABLE 				/**< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
 
-//#define SRF10_AVAILABLE					/** < Ultraschallsensor SRF10 vorhanden */
-//#define CMPS03_AVAILABLE					/** < Kompass CMPS03 vorhanden */
-//#define SP03_AVAILABLE					/** < Sprachmodul SP03 vorhanden */
+//#define SRF10_AVAILABLE					/**< Ultraschallsensor SRF10 vorhanden */
+//#define CMPS03_AVAILABLE					/**< Kompass CMPS03 vorhanden */
+//#define SP03_AVAILABLE					/**< Sprachmodul SP03 vorhanden */
 
-#define ARM_LINUX_BOARD						/** < Code fuer ARM-Linux Board aktivieren, wenn ein ARM-Linux-* Target ausgewaehlt wurde. Fuehrt den high-level Code und die Verhalten aus */
-//#define BOT_2_RPI_AVAILABLE				/** < Kommunikation von ATmega mit einem Linux-Board (z.B. Rapsberry Pi) aktivieren. Fuehrt auf dem ATmega den low-level Code aus */
+#define ARM_LINUX_BOARD						/**< Code fuer ARM-Linux Board aktivieren, wenn ein ARM-Linux-* Target ausgewaehlt wurde. Fuehrt den high-level Code und die Verhalten aus */
+//#define BOT_2_RPI_AVAILABLE				/**< Kommunikation von ATmega mit einem Linux-Board (z.B. Rapsberry Pi) aktivieren. Fuehrt auf dem ATmega den low-level Code aus */
 
-//#define EEPROM_EMU_AVAILABLE				/** < Aktiviert die EEPROM-Emulation fuer PC, siehe Hinweise in pc/eeprom_pc.c */
+//#define EEPROM_EMU_AVAILABLE				/**< Aktiviert die EEPROM-Emulation fuer PC, siehe Hinweise in pc/eeprom_pc.c */
 
-//#define BOOTLOADER_AVAILABLE				/** < Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders */
+//#define BOOTLOADER_AVAILABLE				/**< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders */
 
 /************************************************************
  * Some Dependencies!!!
@@ -142,7 +142,7 @@
 #define BOT_2_SIM_AVAILABLE // simulierte Bots brauchen immer Kommunikation zum Sim
 #endif
 
-#define COMMAND_AVAILABLE /** < High-Level Kommunikation */
+#define COMMAND_AVAILABLE /**< High-Level Kommunikation */
 #endif // PC
 
 #ifdef MCU
@@ -164,8 +164,8 @@
 #endif // MCU && BOT_2_RPI_AVAILABLE
 
 #ifdef BOT_2_SIM_AVAILABLE
-#define UART_AVAILABLE		/** < Serielle Kommunikation */
-#define COMMAND_AVAILABLE	/** < High-Level Communication */
+#define UART_AVAILABLE		/**< Serielle Kommunikation */
+#define COMMAND_AVAILABLE	/**< High-Level Communication */
 #else // ! BOT_2_SIM_AVAILABLE
 #undef DISPLAY_REMOTE_AVAILABLE
 #undef MAP_2_SIM_AVAILABLE
@@ -209,25 +209,25 @@
 
 #ifdef LOG_UART_AVAILABLE
 #undef USE_MINILOG
-#define LOG_AVAILABLE /** < LOG aktiv? */
+#define LOG_AVAILABLE /**< LOG aktiv? */
 #endif
 
 #ifdef LOG_CTSIM_AVAILABLE
-#define LOG_AVAILABLE /** < LOG aktiv? */
+#define LOG_AVAILABLE /**< LOG aktiv? */
 #endif
 
 #ifdef LOG_DISPLAY_AVAILABLE
 #undef USE_MINILOG
-#define LOG_AVAILABLE /** < LOG aktiv? */
+#define LOG_AVAILABLE /**< LOG aktiv? */
 #endif
 
 #ifdef LOG_STDOUT_AVAILABLE
 #undef USE_MINILOG
-#define LOG_AVAILABLE /** < LOG aktiv? */
+#define LOG_AVAILABLE /**< LOG aktiv? */
 #endif
 
 #ifdef LOG_MMC_AVAILABLE
-#define LOG_AVAILABLE /** < LOG aktiv? */
+#define LOG_AVAILABLE /**< LOG aktiv? */
 #endif
 
 #ifndef BEHAVIOUR_AVAILABLE
@@ -274,7 +274,7 @@
 
 	/* Es kann immer nur ueber eine Schnittstelle geloggt werden. */
 #ifdef LOG_UART_AVAILABLE
-#define UART_AVAILABLE /** < Serielle Kommunikation */
+#define UART_AVAILABLE /**< Serielle Kommunikation */
 #undef LOG_CTSIM_AVAILABLE
 #undef LOG_DISPLAY_AVAILABLE
 #undef LOG_STDOUT_AVAILABLE
@@ -310,19 +310,19 @@
 
 
 #ifdef SRF10_AVAILABLE
-#define TWI_AVAILABLE /** < TWI-Schnittstelle (I2C) */
+#define TWI_AVAILABLE /**< TWI-Schnittstelle (I2C) */
 #endif
 
 #ifdef CMPS03_AVAILABLE
-#define I2C_AVAILABLE /** < I2C-Treiber */
+#define I2C_AVAILABLE /**< I2C-Treiber */
 #endif
 
 #ifdef SP03_AVAILABLE
-#define I2C_AVAILABLE /** < I2C-Treiber */
+#define I2C_AVAILABLE /**< I2C-Treiber */
 #endif
 
 #ifdef TWI_AVAILABLE
-#define I2C_AVAILABLE /** < I2C-Treiber statt TWI-Implementierung benutzen */
+#define I2C_AVAILABLE /**< I2C-Treiber statt TWI-Implementierung benutzen */
 #endif
 
 #if defined CREATE_TRACEFILE_AVAILABLE && ! defined OS_AVAILABLE

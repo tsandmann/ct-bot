@@ -27,63 +27,63 @@
 
 #ifdef BEHAVIOUR_AVAILABLE
 
-//#define BEHAVIOUR_PROTOTYPE_AVAILABLE 			/** < Prototyp fuer neue Verhalten */
+//#define BEHAVIOUR_PROTOTYPE_AVAILABLE 			/**< Prototyp fuer neue Verhalten */
 
 /** Demo-Verhalten */
-//#define BEHAVIOUR_SIMPLE_AVAILABLE				/** < sind die Beispielverhalten vorhanden? */
-//#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE 			/** < Demoverhalten im Quadrat fahren vorhanden? */
+//#define BEHAVIOUR_SIMPLE_AVAILABLE				/**< sind die Beispielverhalten vorhanden? */
+//#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE 			/**< Demoverhalten im Quadrat fahren vorhanden? */
 
 /** Notfall-Verhalten */
-//#define BEHAVIOUR_AVOID_BORDER_AVAILABLE 			/** < Abgruenden ausweichen vorhanden? */
-//#define BEHAVIOUR_AVOID_COL_AVAILABLE 			/** < Hindernis ausweichen vorhanden? */
-//#define BEHAVIOUR_HANG_ON_AVAILABLE 				/** < Erkennen des Haengenbleibens als Notfallverhalten? */
+//#define BEHAVIOUR_AVOID_BORDER_AVAILABLE 			/**< Abgruenden ausweichen vorhanden? */
+//#define BEHAVIOUR_AVOID_COL_AVAILABLE 			/**< Hindernis ausweichen vorhanden? */
+//#define BEHAVIOUR_HANG_ON_AVAILABLE 				/**< Erkennen des Haengenbleibens als Notfallverhalten? */
 
 /** Positionierungs-Verhalten */
-//#define BEHAVIOUR_GOTO_AVAILABLE 					/** < goto vorhanden? */
-//#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE 		/** < Strecke fahren vorhanden? */
-//#define BEHAVIOUR_GOTOXY_AVAILABLE 				/** < gotoxy vorhanden? */
-#define BEHAVIOUR_TURN_AVAILABLE 					/** < turn vorhanden? */
-//#define BEHAVIOUR_TURN_TEST_AVAILABLE 			/** < turn_test vorhanden? */
-#define BEHAVIOUR_GOTO_POS_AVAILABLE 				/** < goto_pos vorhanden? */
-//#define BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE 		/** < goto_obstacle vorhanden? */
-//#define BEHAVIOUR_DRIVE_STACK_AVAILABLE 			/** < Abfahren der auf dem Stack gesicherten Koordinaten */
-//#define BEHAVIOUR_TEST_ENCODER_AVAILABLE 			/** < Encoder-Test Verhalten vorhanden? */
+//#define BEHAVIOUR_GOTO_AVAILABLE 					/**< goto vorhanden? */
+//#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE 		/**< Strecke fahren vorhanden? */
+//#define BEHAVIOUR_GOTOXY_AVAILABLE 				/**< gotoxy vorhanden? */
+#define BEHAVIOUR_TURN_AVAILABLE 					/**< turn vorhanden? */
+//#define BEHAVIOUR_TURN_TEST_AVAILABLE 			/**< turn_test vorhanden? */
+#define BEHAVIOUR_GOTO_POS_AVAILABLE 				/**< goto_pos vorhanden? */
+//#define BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE 		/**< goto_obstacle vorhanden? */
+//#define BEHAVIOUR_DRIVE_STACK_AVAILABLE 			/**< Abfahren der auf dem Stack gesicherten Koordinaten */
+//#define BEHAVIOUR_TEST_ENCODER_AVAILABLE 			/**< Encoder-Test Verhalten vorhanden? */
 
 /** Anwendungs-Verhalten */
-#define BEHAVIOUR_SOLVE_MAZE_AVAILABLE 				/** < Wandfolger vorhanden? */
-//#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE			/** < Linienfolger vorhanden? */
-//#define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE 	/** < erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernissen klarkommt */
-//#define BEHAVIOUR_PATHPLANING_AVAILABLE 			/** < Pfadplanungsverhalten  */
-//#define BEHAVIOUR_OLYMPIC_AVAILABLE				/** < Olympiadenverhalten vorhanden? */
-//#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE 			/** < Suche eine Dose und fange sie ein */
-//#define BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE 		/** < Trennt zwei Arten von Dosen (hell / dunkel) */
-//#define BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE 		/** < Transport-Pillar Verhalten */
-//#define BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE 		/** < verfolge ein (bewegliches) Objekt */
-//#define BEHAVIOUR_FOLLOW_WALL_AVAILABLE 			/** < Follow Wall Explorer Verhalten */
-//#define BEHAVIOUR_DRIVE_AREA_AVAILABLE 			/** < flaechendeckendes Fahren mit Map */
-//#define BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE 	/** < Linienfolger ueber Kreuzungen zum Ziel */
-//#define BEHAVIOUR_DRIVE_CHESS_AVAILABLE 			/** < Schach fuer den Bot */
-//#define BEHAVIOUR_SCAN_BEACONS_AVAILABLE 			/** < Suchen von Landmarken zur Lokalisierung */
-//#define BEHAVIOUR_UBASIC_AVAILABLE 				/** < uBasic Verhalten */
-//#define BEHAVIOUR_ABL_AVAILABLE 					/** < ABL-Interpreter */
+#define BEHAVIOUR_SOLVE_MAZE_AVAILABLE 				/**< Wandfolger vorhanden? */
+//#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE			/**< Linienfolger vorhanden? */
+//#define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE 	/**< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernissen klarkommt */
+//#define BEHAVIOUR_PATHPLANING_AVAILABLE 			/**< Pfadplanungsverhalten  */
+//#define BEHAVIOUR_OLYMPIC_AVAILABLE				/**< Olympiadenverhalten vorhanden? */
+//#define BEHAVIOUR_CATCH_PILLAR_AVAILABLE 			/**< Suche eine Dose und fange sie ein */
+//#define BEHAVIOUR_CLASSIFY_OBJECTS_AVAILABLE 		/**< Trennt zwei Arten von Dosen (hell / dunkel) */
+//#define BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE 		/**< Transport-Pillar Verhalten */
+//#define BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE 		/**< verfolge ein (bewegliches) Objekt */
+//#define BEHAVIOUR_FOLLOW_WALL_AVAILABLE 			/**< Follow Wall Explorer Verhalten */
+//#define BEHAVIOUR_DRIVE_AREA_AVAILABLE 			/**< flaechendeckendes Fahren mit Map */
+//#define BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE 	/**< Linienfolger ueber Kreuzungen zum Ziel */
+//#define BEHAVIOUR_DRIVE_CHESS_AVAILABLE 			/**< Schach fuer den Bot */
+//#define BEHAVIOUR_SCAN_BEACONS_AVAILABLE 			/**< Suchen von Landmarken zur Lokalisierung */
+//#define BEHAVIOUR_UBASIC_AVAILABLE 				/**< uBasic Verhalten */
+//#define BEHAVIOUR_ABL_AVAILABLE 					/**< ABL-Interpreter */
 
 /** Kalibrierungs-Verhalten */
-//#define BEHAVIOUR_CALIBRATE_PID_AVAILABLE			/** < Kalibrierungsverhalten fuer Motorregelung vorhanden? */
-//#define BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE 		/** < Kalibrierungsverhalten fuer Distanzsensoren vorhanden? */
+//#define BEHAVIOUR_CALIBRATE_PID_AVAILABLE			/**< Kalibrierungsverhalten fuer Motorregelung vorhanden? */
+//#define BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE 		/**< Kalibrierungsverhalten fuer Distanzsensoren vorhanden? */
 
 /** System-Verhalten */
-#define BEHAVIOUR_SCAN_AVAILABLE 					/** < Gegend scannen vorhanden? */
-#define BEHAVIOUR_SERVO_AVAILABLE 					/** < Kontrollverhalten fuer die Servos */
-#define BEHAVIOUR_REMOTECALL_AVAILABLE 				/** < Nehmen wir Remote-Kommandos entgegen? */
-#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE 		/** < Distanzesensorasuwertung vorhanden? */
-#define BEHAVIOUR_DELAY_AVAILABLE 					/** < Delay-Routinen als Verhalten */
-#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE 		/** < Deaktivieren von Verhalten wenn eine Abbruchbedingung erfuellt ist */
-//#define BEHAVIOUR_GET_UTILIZATION_AVAILABLE		/** < CPU-Auslastung eines Verhaltens messen */
-//#define BEHAVIOUR_HW_TEST_AVAILABLE 				/** < Testverhalten vorhanden? (ehemals TEST_AVAILABLE_ANALOG, _DIGITAL, _MOTOR) */
+#define BEHAVIOUR_SCAN_AVAILABLE 					/**< Gegend scannen vorhanden? */
+#define BEHAVIOUR_SERVO_AVAILABLE 					/**< Kontrollverhalten fuer die Servos */
+#define BEHAVIOUR_REMOTECALL_AVAILABLE 				/**< Nehmen wir Remote-Kommandos entgegen? */
+#define BEHAVIOUR_MEASURE_DISTANCE_AVAILABLE 		/**< Distanzesensorasuwertung vorhanden? */
+#define BEHAVIOUR_DELAY_AVAILABLE 					/**< Delay-Routinen als Verhalten */
+#define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE 		/**< Deaktivieren von Verhalten wenn eine Abbruchbedingung erfuellt ist */
+//#define BEHAVIOUR_GET_UTILIZATION_AVAILABLE		/**< CPU-Auslastung eines Verhaltens messen */
+//#define BEHAVIOUR_HW_TEST_AVAILABLE 				/**< Testverhalten vorhanden? (ehemals TEST_AVAILABLE_ANALOG, _DIGITAL, _MOTOR) */
 
 /** sonstige Verhalten */
-//#define BEHAVIOUR_NEURALNET_AVAILABLE 			/** < neuronales Netzwerk vorhanden? */
-//#define BEHAVIOUR_DRIVE_NEURALNET_AVAILABLE 		/** < Fahrverhalten fuer das neuronale Netzwerk vorhanden? */
+//#define BEHAVIOUR_NEURALNET_AVAILABLE 			/**< neuronales Netzwerk vorhanden? */
+//#define BEHAVIOUR_DRIVE_NEURALNET_AVAILABLE 		/**< Fahrverhalten fuer das neuronale Netzwerk vorhanden? */
 
 
 /* Aufgrund einer ganzen Reihe von Abhaengigkeiten sollte man beim Versuch Speicher
