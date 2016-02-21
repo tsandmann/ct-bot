@@ -57,7 +57,7 @@ int16_t sensDistR = 1023;	/**< Distanz rechter IR-Sensor in [mm], wenn korrekt u
 uint8_t sensDistLToggle = 0;	/**< Toggle-Bit des linken IR-Sensors */
 uint8_t sensDistRToggle = 0;	/**< Toggle-Bit des rechten IR-Sensors */
 /** Zeiger auf die Auswertungsfunktion fuer die Distanzsensordaten, const. solange sie nicht kalibriert werden */
-void (* sensor_update_distance)(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t volt) = sensor_dist_lookup;
+void (* sensor_update_distance)(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, uint16_t volt) = sensor_dist_lookup;
 
 distSens_t EEPROM sensDistDataL[] = SENSDIST_DATA_LEFT;		/**< kalibrierte Referenzdaten fuer linken IR-Sensor */
 distSens_t EEPROM sensDistDataR[] = SENSDIST_DATA_RIGHT;	/**< kalibrierte Referenzdaten fuer rechten IR-Sensor */
@@ -145,16 +145,14 @@ cmps03_t sensCmps03 = {0};	/**< Lage laut CMPS03-Kompass */
  * \param xs	Abzisse des zu interpolierenden Punktes
  * \return		f(xs)
  * Gibt den Funktionswert einer Stelle auf der errechneten Geraden durch die zwei Punkte zurueck.
- * Achtung, die Funktion rechnet so weit wie moeglich in 8 Bit, das Ergebnis ist nur korrekt,
- * wenn x1 >= xs >= x2, y2 >= y1, x1 != x2 erfuellt ist!
  */
-static inline uint8_t lin_interpolate(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t xs) {
+static inline uint16_t lin_interpolate(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t xs) {
 	if (x1 == x2) {
-		return 255;
+		return 0xffff;
 	}
-	uint16_t m = ((uint16_t) (y2 - y1) << 8) / (uint8_t) (x1 - x2);	// m >= 0
-	uint8_t x_diff = (uint8_t) (x1 - xs);
-	return (uint8_t) ((uint8_t) ((x_diff * m) >> 8) + y1);	// m war kuenstlich um 8 Bit hochskaliert
+	const uint16_t m = ((y2 - y1) << 8) / (x1 - x2); // m >= 0
+	const uint16_t x_diff = x1 - xs;
+	return ((x_diff * m) >> 8) + y1; // m war kuenstlich um 8 Bit hochskaliert
 }
 
 /**
@@ -164,23 +162,13 @@ static inline uint8_t lin_interpolate(uint8_t x1, uint8_t y1, uint8_t x2, uint8_
  * \param ptr		Zeiger auf auf Sensorrohdaten im EEPROM fuer p_sens
  * \param volt_16	Spannungs-Ist-Wert, zu dem die Distanz gesucht wird (in 16 Bit)
  */
-void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t volt_16) {
-//	if (sizeof(sensDistDataL) != sizeof(sensDistDataR)) {
-//		/* sensDistDataL und sensDistDataR muessen gleich gross sein! */
-//		LOG_ERROR("sensDistData unzulaessig");
-//		return;
-//	}
-	uint8_t i;
+void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, uint16_t volt_16) {
 	uint8_t n = sizeof(sensDistDataL) / sizeof(distSens_t) / 2;
-	uint8_t volt;
-	/* Offset einlesen und Messwerte pruefen */
-	uint8_t offset = ctbot_eeprom_read_byte(&sensDistOffset);
-	if (volt_16 > 255 * 2 + offset) volt = 255;
-	else volt = (uint8_t) ((volt_16 >> 1) - offset);
 
 	/* Spannung in LT-Table suchen */
-	uint8_t pivot = ctbot_eeprom_read_byte(&ptr[n-1].voltage);	// in welcher Region muessen wir suchen?
-	if (volt > pivot) {
+	uint16_t pivot = ctbot_eeprom_read_word(&ptr[n - 1].voltage); // in welcher Region muessen wir suchen?
+	uint8_t i;
+	if (volt_16 > pivot) {
 		/* in unterer Haelfte suchen */
 		i = 0;
 	} else {
@@ -189,27 +177,28 @@ void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const 
 		ptr += n;
 		n = sizeof(sensDistDataL) / sizeof(distSens_t);
 	}
-	uint8_t tmp=0;
-	for (; i<n; i++) {
-		tmp = ctbot_eeprom_read_byte(&ptr->voltage);
-		if (volt > tmp)	// aufsteigend suchen, damit der kritische Fall (kleine Entfernung) schneller gefunden wird
-			break;	// ptr zeigt jetzt auf die naechst kleinere Spannung
+	uint16_t tmp = 0;
+	for (; i < n; i++) {
+		tmp = ctbot_eeprom_read_word(&ptr->voltage);
+		if (volt_16 > tmp) { // aufsteigend suchen, damit der kritische Fall (kleine Entfernung) schneller gefunden wird
+			break; // ptr zeigt jetzt auf die naechst kleinere Spannung
+		}
 		ptr++;
 	}
 	if (i == 0) {
 		/* kleinste Entfernung annehmen, falls reale Entfernung < kleinste bekannte Entfernung */
 		*p_sens = SENS_IR_MIN_DIST;	// SENS_IR_INFINITE waere eigentlich besser, das mag aber maze nicht
 		/* Sensorupdate-Info toggeln und beenden */
-		*p_toggle = (uint8_t) (~*p_toggle);
+		*p_toggle = (uint8_t) (~ *p_toggle);
 		return;
 	}
 
 	/* Entfernung berechnen und speichern */
-	uint8_t distance = lin_interpolate(ctbot_eeprom_read_byte(&(ptr-1)->voltage), ctbot_eeprom_read_byte(&(ptr-1)->dist), tmp, ctbot_eeprom_read_byte(&ptr->dist), volt);
-	*p_sens = distance >= SENS_IR_MAX_DIST/5 ? SENS_IR_INFINITE : distance * 5;	// Distanz ist gefuenftelt in den Ref.-Daten;
+	uint16_t distance = lin_interpolate(ctbot_eeprom_read_word(&(ptr - 1)->voltage), ctbot_eeprom_read_word(&(ptr - 1)->dist), tmp, ctbot_eeprom_read_word(&ptr->dist), volt_16);
+	*p_sens = (int16_t) (distance >= SENS_IR_MAX_DIST ? SENS_IR_INFINITE : distance);
 
 	/* Sensorupdate-Info toggeln */
-	*p_toggle = (uint8_t) (~*p_toggle);
+	*p_toggle = (uint8_t) (~ *p_toggle);
 }
 
 /**
@@ -219,14 +208,14 @@ void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const 
  * \param ptr		wird nicht ausgewertet
  * \param input		Eingabewert
  */
-void sensor_dist_straight(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t input) {
+void sensor_dist_straight(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr,  uint16_t input) {
 	(void) ptr;
 
 	/* Ausgabe = Eingabe */
-	*p_sens = input;
+	*p_sens = (int16_t) input;
 
 	/* Sensorupdate-Info toggeln */
-	*p_toggle = (uint8_t) (~*p_toggle);
+	*p_toggle = (uint8_t) (~ *p_toggle);
 }
 
 /**
@@ -642,7 +631,7 @@ void led_update(void) {
  */
 void sensor_display(void) {
 	display_cursor(1, 1);
-	display_printf("P=%03X %03X D=%03d %03d ", sensLDRL, sensLDRR, sensDistL, sensDistR);
+	display_printf("P%03X %03X D=%4d %4d", sensLDRL, sensLDRR, sensDistL, sensDistR);
 
 	display_cursor(2, 1);
 	display_printf("B=%03X %03X L=%03X %03X ", sensBorderL, sensBorderR, sensLineL, sensLineR);

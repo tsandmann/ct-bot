@@ -108,7 +108,7 @@ int putchar(int);
 
 #define binary(var, bit) ((var >> bit) & 1)	/**< gibt das Bit "bit" von "var" zurueck */
 
-#ifdef WIN32
+#if defined WIN32 || defined MCU
 #define LINE_FEED "\r\n"	/**< Linefeed fuer Windows */
 #else
 #define LINE_FEED "\n"		/**< Linefeed fuer nicht Windows */

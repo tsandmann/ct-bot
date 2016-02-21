@@ -33,8 +33,8 @@
 
 /** Datenstruktur zur Ablage eines IR-Sensor-Wertepaares (Spannung | Distanz) */
 typedef struct {
-	uint8_t voltage;	/**< Spannung des jeweiligen Eintrags (halbiert) */
-	uint8_t dist;		/**< Entfernung des jeweiligen Eintrags (gefuenftelt) */
+	uint16_t voltage;	/**< Spannung des jeweiligen Eintrags */
+	uint16_t dist;		/**< Entfernung des jeweiligen Eintrags */
 } distSens_t;
 
 /* Analoge Sensoren: Der Wertebereich aller analogen Sensoren umfasst 10 Bit. Also 0 bis 1023 */
@@ -43,7 +43,7 @@ extern int16_t sensDistR;			/**< Distanz rechter IR-Sensor [mm] ca. 100 bis 800 
 extern uint8_t sensDistLToggle;	/**< Toggle-Bit des linken IR-Sensors */
 extern uint8_t sensDistRToggle;	/**< Toggle-Bit des rechten IR-Sensors */
 /** Zeiger auf die Auswertungsfunktion fuer die Distanzsensordaten, const. solange sie nicht kalibriert werden */
-extern void (* sensor_update_distance)(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t volt);
+extern void (* sensor_update_distance)(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, uint16_t volt);
 extern distSens_t sensDistDataL[];	/**< kalibrierte Referenzdaten fuer linken IR-Sensor */
 extern distSens_t sensDistDataR[];	/**< kalibrierte Referenzdaten fuer rechten IR-Sensor */
 extern uint8_t sensDistOffset;		/**< Spannungs-Offset IR-Sensoren */
@@ -114,10 +114,16 @@ extern int16_t v_center;		/**< Geschwindigkeit im Zentrum des Bots aus Encoder-,
 
 
 /* Grenzwerte fuer die IR-Sensoren */
+#ifdef DISTSENS_TYPE_GP2Y0A60SZ
+#define SENS_IR_MIN_DIST	60		/**< Untergrenze des Erfassungsbereichs */
+#define SENS_IR_MAX_DIST	1500	/**< Obergrenze des Erfassungsbereichs */
+#define SENS_IR_SAFE_DIST	100		/**< kleinste sichere Distanz innerhalb des Erfassungsbereichs */
+#else
 #define SENS_IR_MIN_DIST	100		/**< Untergrenze des Erfassungsbereichs */
-#define SENS_IR_MAX_DIST	690		/**< Obergrenze des Erfassungsbereichs */
-#define SENS_IR_INFINITE	995		/**< Kennzeichnung fuer "kein Objekt im Erfassungsbereich" */
-#define SENS_IR_SAFE_DIST	120		/**< kleinste Sichere Distanz innerhalb des Erfassungsbereichs */
+#define SENS_IR_MAX_DIST	700		/**< Obergrenze des Erfassungsbereichs */
+#define SENS_IR_SAFE_DIST	120		/**< kleinste sichere Distanz innerhalb des Erfassungsbereichs */
+#endif // DISTSENS_TYPE_GP2Y0A60SZ
+#define SENS_IR_INFINITE	9999	/**< Kennzeichnung fuer "kein Objekt im Erfassungsbereich" */
 
 #ifdef MEASURE_POSITION_ERRORS_AVAILABLE
 extern int16_t pos_error_radius;	/**< Aktueller Fehlerradius der Position */
@@ -148,7 +154,7 @@ void sensor_reset(void);
  * \param ptr		Zeiger auf auf Sensorrohdaten im EEPROM fuer p_sens
  * \param volt_16	Spannungs-Ist-Wert, zu dem die Distanz gesucht wird (in 16 Bit)
  */
-void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t volt_16);
+void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, uint16_t volt_16);
 
 
 /**
@@ -158,7 +164,7 @@ void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const 
  * \param ptr		wird nicht ausgewertet
  * \param input		Eingabewert
  */
-void sensor_dist_straight(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, int16_t input);
+void sensor_dist_straight(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, uint16_t input);
 
 /**
  * Die Funktion gibt aus, ob sich innerhalb einer gewissen Entfernung ein Objekt-Hindernis befindet.
