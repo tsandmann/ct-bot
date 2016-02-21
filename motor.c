@@ -44,6 +44,8 @@
 int16_t speed_l = 0; /**< Sollgeschwindigkeit linker Motor */
 int16_t speed_r = 0; /**< Sollgeschwindigkeit rechter Motor */
 
+uint8_t servo_pos[2] = {SERVO_OFF, SERVO_OFF}; /**< Sollposition Servos */
+
 #ifdef SPEED_CONTROL_AVAILABLE
 #ifdef ADJUST_PID_PARAMS
 /* PID-Parameter variabel */
@@ -539,9 +541,13 @@ void motor_init(void) {
  * \param servo	Nummer des Servos
  * \param pos	Zielwert
  *
- * Sinnvolle Werte liegen zwischen DOOR_CLOSE und DOOR_OPEN, oder SERVO_OFF fuer Servo aus
+ * Sinnvolle Werte liegen zwischen DOOR_CLOSE / CAM_LEFT und DOOR_OPEN / CAM_RIGHT oder SERVO_OFF fuer Servo aus
  */
 void servo_set(uint8_t servo, uint8_t pos) {
+	if (servo < SERVO1 || servo > SERVO2) {
+		return;
+	}
+
 	if ((servo == SERVO1) && (pos != SERVO_OFF)) {
 		if (pos < DOOR_CLOSE) {
 			pos = DOOR_CLOSE;
@@ -549,6 +555,16 @@ void servo_set(uint8_t servo, uint8_t pos) {
 			pos = DOOR_OPEN;
 		}
 	}
+	if ((servo == SERVO2) && (pos != SERVO_OFF)) {
+		if (pos < CAM_LEFT) {
+			pos = CAM_LEFT;
+		} else if (pos > CAM_RIGHT) {
+			pos = CAM_RIGHT;
+		}
+	}
+
+	servo_pos[servo - 1] = pos;
+
 	servo_low(servo, pos);
 }
 
