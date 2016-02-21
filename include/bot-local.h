@@ -31,8 +31,8 @@
 
 /*** Bot-Geometrie ***/
 
-#define BOT_DIAMETER			120	/**< Bot-Durchmesser [mm] */
-#define ENCODER_MARKS			60	/**< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weissen + Anzahl der schwarzen Felder */
+#define BOT_DIAMETER			120			/**< Bot-Durchmesser [mm] */
+#define ENCODER_MARKS			60			/**< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weissen + Anzahl der schwarzen Felder */
 #ifdef PC
 #define WHEEL_DIAMETER			56.7		/**< Durchmesser eines Rades (Sim) [mm] */
 #define WHEEL_PERIMETER			178.1283	/**< Umfang eines Rades (Sim) [mm] */
@@ -118,20 +118,20 @@
 /* Servo-Parameter */
 #ifndef __AVR_ATmega1284P__
 #if F_CPU == 16000000L
-#define DOOR_CLOSE 	7  		/**< Rechter Anschlag Servo 1 */
-#define DOOR_OPEN	14 		/**< Linker Anschlag Servo 1 */
+#define DOOR_CLOSE 	7	/**< Rechter Anschlag Servo 1 */
+#define DOOR_OPEN	14	/**< Linker Anschlag Servo 1 */
 #else
-#define DOOR_CLOSE 	10		/**< Rechter Anschlag Servo 1 */
-#define DOOR_OPEN	18		/**< Linker Anschlag Servo 1 */
+#define DOOR_CLOSE 	10	/**< Rechter Anschlag Servo 1 */
+#define DOOR_OPEN	18	/**< Linker Anschlag Servo 1 */
 #endif // F_CPU
 #else
-#define DOOR_CLOSE 	64		/**< Rechter Anschlag Servo 1 */
-#define DOOR_OPEN	180		/**< Linker Anschlag Servo 1 */
+#define DOOR_CLOSE 	64	/**< Rechter Anschlag Servo 1 */
+#define DOOR_OPEN	180	/**< Linker Anschlag Servo 1 */
 #endif // ! __AVR_ATmega1284P__
 
-#define CAM_LEFT 	60		/**< Rechter Anschlag Servo 2 */
-#define CAM_RIGHT	250		/**< Linker Anschlag Servo 2 */
-#define CAM_CENTER	150		/**< Mittelstellung Servo 2 */
+#define CAM_LEFT 	60	/**< Rechter Anschlag Servo 2 */
+#define CAM_RIGHT	250	/**< Linker Anschlag Servo 2 */
+#define CAM_CENTER	150	/**< Mittelstellung Servo 2 */
 
 
 /*** Einstellungen fuer die Verhaltensregeln ***/
