@@ -94,6 +94,11 @@
 //#define UART_BAUD	230400	/**< Baudrate 230400 fuer UART-Kommunikation */
 //#define UART_BAUD	500000	/**< Baudrate 500000 fuer UART-Kommunikation */
 
+
+/********************************************************************
+ * Module switches, to make code smaller if features are not needed *
+ ********************************************************************/
+
 #define UART_LINUX_PORT		"/dev/ttyAMA0" /**< UART Port vom ARM-Linux-Board fuer Verbinung zum ATmega */
 #define BOT_RESET_GPIO		"/sys/class/gpio/gpio17/value" /**< Pfad zum Reset-GPIO vom ARM-Linux-Board */
 //#define ARM_LINUX_DISPLAY	"/dev/tty1" /**< Konsole fuer Display-Ausgaben auf ARM-Linux-Board. "stdout" fuer Ausgabe auf stdout */
@@ -107,6 +112,8 @@
 #endif // EXPANSION_BOARD_AVAILABLE
 
 //#define SPI_AVAILABLE		/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
+
+/********************************************************************/
 
 /* Servo-Parameter */
 #ifndef __AVR_ATmega1284P__
