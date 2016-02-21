@@ -59,7 +59,7 @@
 #define PID_Ta				1	/**< Abtastzeit */
 #define PID_SHIFT			4	/**< Rechtsshift der Stellgroessenkorrektur */
 #define PID_TIME			333	/**< max. Aufrufinterval [ms] */
-#define PID_SPEED_THRESHOLD	BOT_SPEED_FOLLOW /**< Grenzgeschwindigkeit, ab der die Regelgroesse interpoliert wird */
+#define PID_SPEED_THRESHOLD	BOT_SPEED_FOLLOW	/**< Grenzgeschwindigkeit, ab der die Regelgroesse interpoliert wird */
 #define PWMMAX				511	/**< Maximaler PWM-Wert */
 #define PWMMIN				0	/**< Minimaler PWM-Wert */
 #define PWMSTART_L			100	/**< Basis-PWM-Wert linker Motor (falls keine dauerhaft gespeicherte PWM-LT vorhanden ist) */
@@ -77,7 +77,7 @@
 #define MOUSE_FULL_TURN	1600	/**< Mausaenderung in X-Richtung fuer einen vollen Kreis */
 #endif // PC
 
-#define WHEEL_DISTANCE	(WHEEL_TO_WHEEL_DIAMETER / 2.0f) /**< Abstand eines Rades zur Mitte des Bots [mm] */
+#define WHEEL_DISTANCE	(WHEEL_TO_WHEEL_DIAMETER / 2.0f)	/**< Abstand eines Rades zur Mitte des Bots [mm] */
 #define STUCK_DIFF		100		/**< ab welcher Differenz haben wir durchdrehende Raeder? */
 #define G_SPEED			0.5		/**< Kopplung Encoder- und Maussensor fuer Geschwindigkeiten (0.0=nur Radencoder, 1.0=nur Maussensor) */
 #define G_POS			0.5		/**< Kopplung Encoder- und Maussensor fuer Positionen und Winkel (0.0=nur Radencoder, 1.0=nur Maussensor) */
@@ -145,7 +145,7 @@
 #define COL_FAR				400		/**< Fernbereich [mm] */
 
 /* Zustaende und Konstanten fuer das bot_solve_maze_behaviour-Verhalten */
-#define OPTIMAL_DISTANCE	(int16_t)(BOT_DIAMETER * 1.25f) /**< Optimale Distanz zur Wand [mm]. Etwas mehr als Bot-Durchmesser ist ideal (vergroessert aufgrund der Kennlinien der Sharps) */
+#define OPTIMAL_DISTANCE	(int16_t)(BOT_DIAMETER * 1.25f)	/**< Optimale Distanz zur Wand [mm]. Etwas mehr als Bot-Durchmesser ist ideal (vergroessert aufgrund der Kennlinien der Sharps) */
 #define ADJUST_DISTANCE		10		/**< Toleranzbereich [mm] */
 #define IGNORE_DISTANCE		240		/**< Entfernung, ab der eine Wand ignoriert wird [mm] */
 #define GROUND_GOAL			0x221	/**< Farbe des Zielpads */
