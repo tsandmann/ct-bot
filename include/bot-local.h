@@ -82,7 +82,7 @@
 #define G_SPEED			0.5		/**< Kopplung Encoder- und Maussensor fuer Geschwindigkeiten (0.0=nur Radencoder, 1.0=nur Maussensor) */
 #define G_POS			0.5		/**< Kopplung Encoder- und Maussensor fuer Positionen und Winkel (0.0=nur Radencoder, 1.0=nur Maussensor) */
 
-#define BPS_NO_DATA			0xffff	/**< Wert des BPS-Sensors, falls keine Daten verfuegbar sind */
+#define BPS_NO_DATA		0xffff	/**< Wert des BPS-Sensors, falls keine Daten verfuegbar sind */
 
 /* System-Konstanten */
 #define F_CPU	16000000L	/**< CPU-Frequenz [Hz] */
@@ -111,7 +111,7 @@
 #undef MOUSE_AVAILABLE				// EXPANSION_BOARD_MOD_AVAILABLE deaktiviert MOUSE_AVAILABLE
 #endif // EXPANSION_BOARD_AVAILABLE
 
-//#define SPI_AVAILABLE		/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
+//#define SPI_AVAILABLE	/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 
 /********************************************************************/
 
