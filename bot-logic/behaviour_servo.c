@@ -34,6 +34,13 @@
 #include "timer.h"
 #include "log.h"
 
+//#define DEBUG_SERVO_BEH // Schalter fuer Debug-Ausgaben
+
+#ifndef DEBUG_SERVO_BEH
+#undef LOG_DEBUG
+#define LOG_DEBUG(...) {}
+#endif
+
 static uint8_t servo_active = 0; /**< 0, wenn kein Servo aktiv, sonst ID des gerade aktiven Servos */
 
 /**
