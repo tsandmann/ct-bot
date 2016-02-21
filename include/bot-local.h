@@ -114,20 +114,18 @@
 #if F_CPU == 16000000L
 #define DOOR_CLOSE 	7  /**< Rechter Anschlag Servo 1 */
 #define DOOR_OPEN	14 /**< Linker Anschlag Servo 1 */
-#define CAM_LEFT 	7  /**< Rechter Anschlag Servo 2 */
-#define CAM_RIGHT	14 /**< Linker Anschlag Servo 2 */
 #else
 #define DOOR_CLOSE 	10 /**< Rechter Anschlag Servo 1 */
 #define DOOR_OPEN	18 /**< Linker Anschlag Servo 1 */
-#define CAM_LEFT 	10 /**< Rechter Anschlag Servo 2 */
-#define CAM_RIGHT	18 /**< Linker Anschlag Servo 2 */
 #endif // F_CPU
 #else
 #define DOOR_CLOSE 	64  /**< Rechter Anschlag Servo 1 */
 #define DOOR_OPEN	180 /**< Linker Anschlag Servo 1 */
-#define CAM_LEFT 	64  /**< Rechter Anschlag Servo 2 */
-#define CAM_RIGHT	180 /**< Linker Anschlag Servo 2 */
 #endif // ! __AVR_ATmega1284P__
+
+#define CAM_LEFT 	60  /**< Rechter Anschlag Servo 2 */
+#define CAM_RIGHT	250 /**< Linker Anschlag Servo 2 */
+#define CAM_CENTER	150 /**< Mittelstellung Servo 2 */
 
 
 /*** Einstellungen fuer die Verhaltensregeln ***/

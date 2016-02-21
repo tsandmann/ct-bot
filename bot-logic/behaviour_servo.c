@@ -29,12 +29,19 @@
 #include "bot-logic.h"
 #ifdef BEHAVIOUR_SERVO_AVAILABLE
 
+#include <stddef.h>
 #include "motor.h"
 #include "timer.h"
 #include "log.h"
 
-static uint8_t servo_nr;	/**< Nr. des aktiven Servos */
-uint8_t servo_active = 0;	/**< 0, wenn kein Servo aktiv, sonst Bit der gerade aktiven Servos gesetzt */
+//#define DEBUG_SERVO_BEH // Schalter fuer Debug-Ausgaben
+
+#ifndef DEBUG_SERVO_BEH
+#undef LOG_DEBUG
+#define LOG_DEBUG(...) {}
+#endif
+
+static uint8_t servo_active = 0; /**< 0, wenn kein Servo aktiv, sonst ID des gerade aktiven Servos */
 
 /**
  * Dieses Verhalten fuehrt ein Servo-Kommando aus und schaltet danach den Servo wieder ab
@@ -44,26 +51,34 @@ void bot_servo_behaviour(Behaviour_t * data) {
 	BLOCK_BEHAVIOUR(data, 1000); // 1 s warten
 
 	return_from_behaviour(data); // Verhalten aus
-//	LOG_DEBUG("bot_servo_behaviour(): servo_set(%u, %u)", servo_nr, SERVO_OFF);
-	servo_set(servo_nr, SERVO_OFF); // Servo aus
-	servo_active &= (uint8_t) (~servo_nr);
+	LOG_DEBUG("bot_servo_behaviour(): servo_set(%u, %u)", servo_active, SERVO_OFF);
+	servo_set(servo_active, SERVO_OFF); // Servo aus
+	servo_active = 0;
 }
 
 /**
  * Fahre den Servo an eine Position
+ *
+ * Es kann derzeit immer nur ein Servo aktiv sein!
+ *
  * \param *caller	Der Aufrufer
- * \param servo		Nummer des Servos
+ * \param servo		ID des Servos
  * \param pos		Zielposition des Servos
+ * \return			Zeiger auf Verhaltensdatensatz
  */
-void bot_servo(Behaviour_t * caller, uint8_t servo, uint8_t pos) {
-	if (pos == DOOR_CLOSE && sensDoor == 0) {
-		return;	// Klappe ist bereits geschlossen
+Behaviour_t * bot_servo(Behaviour_t * caller, uint8_t servo, uint8_t pos) {
+	if (servo == SERVO1 && pos == DOOR_CLOSE && sensDoor == 0) {
+		LOG_DEBUG("bot_servo(): Klappe bereits geschlossen");
+		return NULL; // Klappe ist bereits geschlossen
 	}
-	switch_to_behaviour(caller, bot_servo_behaviour, BEHAVIOUR_OVERRIDE); // Warte-Verhalten an
-
-	servo_active |= servo;
-//	LOG_DEBUG("bot_servo(): servo_set(%u, %u)", servo, pos);
-	servo_set(servo, pos); // Servo-PWM einstellen
-	servo_nr = servo; // Servo-Nr speichern
+	Behaviour_t * data = NULL;
+	if (! servo_active && (data = switch_to_behaviour(caller, bot_servo_behaviour, BEHAVIOUR_NOOVERRIDE))) { // Warte-Verhalten an
+		servo_active = servo; // Servo ID speichern
+		LOG_DEBUG("bot_servo(): servo_set(%u, %u)", servo, pos);
+		servo_set(servo, pos); // Servo-PWM einstellen
+	} else {
+		LOG_ERROR("bot_servo(%u, %u): Servo %u noch aktiv, Abbruch", servo, pos, servo_active);
+	}
+	return data;
 }
 #endif // BEHAVIOUR_SERVO_AVAILABLE

@@ -30,7 +30,6 @@
 #define BEHAVIOUR_SERVO_H_
 
 #ifdef BEHAVIOUR_SERVO_AVAILABLE
-extern uint8_t servo_active;	/**< 0, wenn kein Servo aktiv, sonst Bit der gerade aktiven Servos gesetzt */
 
 /**
  * Dieses Verhalten fuehrt ein Servo-Kommando aus und schaltet danach den Servo wieder ab
@@ -40,11 +39,15 @@ void bot_servo_behaviour(Behaviour_t * data);
 
 /**
  * Fahre den Servo an eine Position
+ *
+ * Es kann derzeit immer nur ein Servo aktiv sein!
+ *
  * \param *caller	Der Aufrufer
- * \param servo 	Nummer des Servos
+ * \param servo 	ID des Servos
  * \param pos 		Zielposition des Servos
+ * \return			Zeigen auf Verhaltensdatensatz
  */
-void bot_servo(Behaviour_t * caller, uint8_t servo, uint8_t pos);
+Behaviour_t * bot_servo(Behaviour_t * caller, uint8_t servo, uint8_t pos);
 
 #endif // BEHAVIOUR_SERVO_AVAILABLE
 #endif // BEHAVIOUR_SIMPLE_H_

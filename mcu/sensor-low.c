@@ -202,7 +202,7 @@ void bot_sens_init(void) {
  * Alle Sensoren aktualisieren
  */
 void bot_sens(void) {
-	ENA_on(ENA_KANTLED|ENA_LINE|ENA_SCHRANKE|ENA_KLAPPLED);	// Die Distanzsensoren sind im Normalfall an, da sie 50 ms zum booten brauchen
+	ENA_on(ENA_KANTLED | ENA_LINE | ENA_SCHRANKE | ENA_KLAPPLED); // Die Distanzsensoren sind im Normalfall an, da sie 50 ms zum Booten brauchen
 
 #ifdef CMPS03_AVAILABLE
 	cmps03_get_bearing(&sensCmps03);
@@ -229,10 +229,9 @@ void bot_sens(void) {
 		pDistR = &sensDistR;
 #endif // DISTSENS_AVERAGE
 		adc_read_int(SENS_ABST_L, pDistL);
-#ifdef BEHAVIOUR_SERVO_AVAILABLE
-		if ((servo_active & SERVO1) == 0) // wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensors nicht
-#endif
+		if (servo_get(SERVO1) == SERVO_OFF) { // wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensors nicht
 			adc_read_int(SENS_ABST_R, pDistR);
+		}
 #ifdef DISTSENS_AVERAGE
 		measure_count++;
 		measure_count &= 0x3; // Z/4Z
@@ -256,11 +255,6 @@ void bot_sens(void) {
 	sensMouseDX = (int8_t) mouse_sens_read(MOUSE_DELTA_X_REG);
 	sensMouseDY = (int8_t) mouse_sens_read(MOUSE_DELTA_Y_REG);
 #endif
-
-	/* alle digitalen Sensoren */
-	sensDoor = (uint8_t) ((SENS_DOOR_PINR >> SENS_DOOR) & 0x01);
-	sensTrans = (uint8_t) ((SENS_TRANS_PINR >> SENS_TRANS) & 0x01);
-	sensError = (uint8_t) ((SENS_ERROR_PINR >> SENS_ERROR) & 0x01);
 
 #ifdef SPEED_CONTROL_AVAILABLE
 	/* Aufruf der Motorregler, falls Stillstand */
@@ -359,10 +353,16 @@ void bot_sens(void) {
 #endif // SRF10_AVAILABLE
 
 	/* alle anderen analogen Sensoren */
-	while (adc_get_active_channel() != 255) {}	// restliche Zeit verbrauchen
-	// in den Testmodi bleibt immer alles an.
+	while (adc_get_active_channel() != 255) {} // restliche Zeit verbrauchen
+
+	/* alle digitalen Sensoren */
+	sensDoor = (uint8_t) ((SENS_DOOR_PINR >> SENS_DOOR) & 0x01);
+	sensTrans = (uint8_t) ((SENS_TRANS_PINR >> SENS_TRANS) & 0x01);
+	sensError = (uint8_t) ((SENS_ERROR_PINR >> SENS_ERROR) & 0x01);
+
 #ifndef BEHAVIOUR_HW_TEST_AVAILABLE
-  	ENA_off(ENA_KANTLED|ENA_LINE|ENA_SCHRANKE|ENA_KLAPPLED); // Kanten (ENA_KANTLED), Liniensensoren (ENA_LINE), Transportfach-LED und Klappensensor aus
+	// Kanten (ENA_KANTLED), Liniensensoren (ENA_LINE), Transportfach-LED und Klappensensor aus, nur in den Testmodi bleibt immer alles an
+  	ENA_off(ENA_KANTLED | ENA_LINE | ENA_SCHRANKE | ENA_KLAPPLED);
 #endif
 
 #ifndef BOT_2_RPI_AVAILABLE
