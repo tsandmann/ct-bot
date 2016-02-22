@@ -31,24 +31,25 @@
 
 /*** Bot-Geometrie ***/
 
-#define BOT_DIAMETER			120	/**< Bot-Durchmesser [mm] */
-#define ENCODER_MARKS			60	/**< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weissen + Anzahl der schwarzen Felder */
+#define BOT_DIAMETER			120			/**< Bot-Durchmesser [mm] */
+#define ENCODER_MARKS			60			/**< Anzahl der Flanken, die ein Encoder bei einer Radumdrehung liefert, also Anzahl der weissen + Anzahl der schwarzen Felder */
 #ifdef PC
-#define WHEEL_DIAMETER			56.7		/**< Durchmesser eines Rades (Sim) [mm] */
+#define WHEEL_DIAMETER			56.7	/**< Durchmesser eines Rades (Sim) [mm] */
 #define WHEEL_PERIMETER			178.1283	/**< Umfang eines Rades (Sim) [mm] */
-#define WHEEL_TO_WHEEL_DIAMETER 97.2		/**< Abstand der beiden Raeder (Sim) [mm] */
+#define WHEEL_TO_WHEEL_DIAMETER 97.2	/**< Abstand der beiden Raeder (Sim) [mm] */
 #else // MCU
 /* hier kann man die genauen Werte fuer den eigenen Bot eintragen */
-#define WHEEL_DIAMETER			56.7		/**< Durchmesser eines Rades [mm] */
+#define WHEEL_DIAMETER			56.7	/**< Durchmesser eines Rades [mm] */
 #define WHEEL_PERIMETER			178.1283	/**< Umfang eines Rades [mm] */
-#define WHEEL_TO_WHEEL_DIAMETER 97.2		/**< Abstand der beiden Raeder [mm] */
+#define WHEEL_TO_WHEEL_DIAMETER 97.2	/**< Abstand der beiden Raeder [mm] */
 #endif // PC
 
 #define DISTSENSOR_POS_FW		47	/**< Abstand der Distanzsensoren von der Radachse (in Fahrtrichtung) [mm] */
 #define DISTSENSOR_POS_SW		32	/**< Abstand der Distanzsensoren von der Mittelachse (in Querrichtung) [mm] */
 
-#define BORDERSENSOR_POS_FW		DISTSENSOR_POS_FW		/**< Abgrundsensoren unter Distsensoren */
+#define BORDERSENSOR_POS_FW		DISTSENSOR_POS_FW	/**< Abgrundsensoren unter Distsensoren */
 #define BORDERSENSOR_POS_SW		(DISTSENSOR_POS_SW + 5)	/**< Abgrundsensoren 5 mm weiter aussen als Distsensoren */
+
 
 /*** einstellbare Parameter ***/
 
@@ -59,7 +60,7 @@
 #define PID_Ta				1	/**< Abtastzeit */
 #define PID_SHIFT			4	/**< Rechtsshift der Stellgroessenkorrektur */
 #define PID_TIME			333	/**< max. Aufrufinterval [ms] */
-#define PID_SPEED_THRESHOLD	BOT_SPEED_FOLLOW /**< Grenzgeschwindigkeit, ab der die Regelgroesse interpoliert wird */
+#define PID_SPEED_THRESHOLD	BOT_SPEED_FOLLOW	/**< Grenzgeschwindigkeit, ab der die Regelgroesse interpoliert wird */
 #define PWMMAX				511	/**< Maximaler PWM-Wert */
 #define PWMMIN				0	/**< Minimaler PWM-Wert */
 #define PWMSTART_L			100	/**< Basis-PWM-Wert linker Motor (falls keine dauerhaft gespeicherte PWM-LT vorhanden ist) */
@@ -70,35 +71,41 @@
 
 /* Odometrie-Konstanten */
 #ifdef PC
-#define MOUSE_CPI		400		/**< CPI-Wert aus Kalibrierung (Wert fuer den Sim) */
+#define MOUSE_CPI		400	/**< CPI-Wert aus Kalibrierung (Wert fuer den Sim) */
 #define MOUSE_FULL_TURN	1484	/**< Mausaenderung in X-Richtung fuer einen vollen Kreis (Wert fuer den Sim) */
 #else // MCU
-#define MOUSE_CPI		415		/**< CPI-Wert aus Kalibrierung */
+#define MOUSE_CPI		415	/**< CPI-Wert aus Kalibrierung */
 #define MOUSE_FULL_TURN	1600	/**< Mausaenderung in X-Richtung fuer einen vollen Kreis */
 #endif // PC
 
-#define WHEEL_DISTANCE	(WHEEL_TO_WHEEL_DIAMETER / 2.0f) /**< Abstand eines Rades zur Mitte des Bots [mm] */
-#define STUCK_DIFF		100		/**< ab welcher Differenz haben wir durchdrehende Raeder? */
-#define G_SPEED			0.5		/**< Kopplung Encoder- und Maussensor fuer Geschwindigkeiten (0.0=nur Radencoder, 1.0=nur Maussensor) */
-#define G_POS			0.5		/**< Kopplung Encoder- und Maussensor fuer Positionen und Winkel (0.0=nur Radencoder, 1.0=nur Maussensor) */
+#define WHEEL_DISTANCE	(WHEEL_TO_WHEEL_DIAMETER / 2.0f)	/**< Abstand eines Rades zur Mitte des Bots [mm] */
 
-#define BPS_NO_DATA			0xffff	/**< Wert des BPS-Sensors, falls keine Daten verfuegbar sind */
+#define STUCK_DIFF		100	/**< ab welcher Differenz haben wir durchdrehende Raeder? */
+#define G_SPEED			0.5	/**< Kopplung Encoder- und Maussensor fuer Geschwindigkeiten (0.0=nur Radencoder, 1.0=nur Maussensor) */
+#define G_POS			0.5	/**< Kopplung Encoder- und Maussensor fuer Positionen und Winkel (0.0=nur Radencoder, 1.0=nur Maussensor) */
+
+#define BPS_NO_DATA		0xffff	/**< Wert des BPS-Sensors, falls keine Daten verfuegbar sind */
 
 /* System-Konstanten */
 #define F_CPU	16000000L	/**< CPU-Frequenz [Hz] */
 //#define F_CPU	20000000L	/**< CPU-Frequenz [Hz] */
-#define XTAL	F_CPU		/**< CPU-Frequenz [Hz] */
+#define XTAL	F_CPU	/**< CPU-Frequenz [Hz] */
 
 //#define UART_BAUD	57600	/**< Baudrate  57600 fuer UART-Kommunikation */
 #define UART_BAUD	115200	/**< Baudrate 115200 fuer UART-Kommunikation */
 //#define UART_BAUD	230400	/**< Baudrate 230400 fuer UART-Kommunikation */
 //#define UART_BAUD	500000	/**< Baudrate 500000 fuer UART-Kommunikation */
 
-#define UART_LINUX_PORT		"/dev/ttyAMA0" /**< UART Port vom ARM-Linux-Board fuer Verbinung zum ATmega */
-#define BOT_RESET_GPIO		"/sys/class/gpio/gpio17/value" /**< Pfad zum Reset-GPIO vom ARM-Linux-Board */
-//#define ARM_LINUX_DISPLAY	"/dev/tty1" /**< Konsole fuer Display-Ausgaben auf ARM-Linux-Board. "stdout" fuer Ausgabe auf stdout */
 
-#define EXPANSION_BOARD_AVAILABLE		/**< Erweiterungsmodul (MMC / WiPort) installiert */
+/********************************************************************
+ * Module switches, to make code smaller if features are not needed *
+ ********************************************************************/
+
+#define UART_LINUX_PORT		"/dev/ttyAMA0"	/**< UART Port vom ARM-Linux-Board fuer Verbinung zum ATmega */
+#define BOT_RESET_GPIO		"/sys/class/gpio/gpio17/value"	/**< Pfad zum Reset-GPIO vom ARM-Linux-Board */
+//#define ARM_LINUX_DISPLAY	"/dev/tty1"	/**< Konsole fuer Display-Ausgaben auf ARM-Linux-Board. "stdout" fuer Ausgabe auf stdout */
+
+#define EXPANSION_BOARD_AVAILABLE	/**< Erweiterungsmodul (MMC / WiPort) installiert */
 //#define EXPANSION_BOARD_MOD_AVAILABLE	/**< modifiziertes Erweiterungsmodul (MMC / WiPort) installiert */
 
 #if defined EXPANSION_BOARD_MOD_AVAILABLE
@@ -106,25 +113,27 @@
 #undef MOUSE_AVAILABLE				// EXPANSION_BOARD_MOD_AVAILABLE deaktiviert MOUSE_AVAILABLE
 #endif // EXPANSION_BOARD_AVAILABLE
 
-//#define SPI_AVAILABLE		/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
+//#define SPI_AVAILABLE	/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
+
+/********************************************************************/
 
 /* Servo-Parameter */
 #ifndef __AVR_ATmega1284P__
 #if F_CPU == 16000000L
-#define DOOR_CLOSE 	7  		/**< Rechter Anschlag Servo 1 */
-#define DOOR_OPEN	14 		/**< Linker Anschlag Servo 1 */
+#define DOOR_CLOSE 	7	/**< Rechter Anschlag Servo 1 */
+#define DOOR_OPEN	14	/**< Linker Anschlag Servo 1 */
 #else
-#define DOOR_CLOSE 	10		/**< Rechter Anschlag Servo 1 */
-#define DOOR_OPEN	18		/**< Linker Anschlag Servo 1 */
+#define DOOR_CLOSE 	10	/**< Rechter Anschlag Servo 1 */
+#define DOOR_OPEN	18	/**< Linker Anschlag Servo 1 */
 #endif // F_CPU
 #else
-#define DOOR_CLOSE 	64		/**< Rechter Anschlag Servo 1 */
-#define DOOR_OPEN	180		/**< Linker Anschlag Servo 1 */
+#define DOOR_CLOSE 	64	/**< Rechter Anschlag Servo 1 */
+#define DOOR_OPEN	180	/**< Linker Anschlag Servo 1 */
 #endif // ! __AVR_ATmega1284P__
 
-#define CAM_LEFT 	60		/**< Rechter Anschlag Servo 2 */
-#define CAM_RIGHT	250		/**< Linker Anschlag Servo 2 */
-#define CAM_CENTER	150		/**< Mittelstellung Servo 2 */
+#define CAM_LEFT 	60	/**< Rechter Anschlag Servo 2 */
+#define CAM_RIGHT	250	/**< Linker Anschlag Servo 2 */
+#define CAM_CENTER	150	/**< Mittelstellung Servo 2 */
 
 
 /*** Einstellungen fuer die Verhaltensregeln ***/
@@ -138,7 +147,7 @@
 #define COL_FAR				400		/**< Fernbereich [mm] */
 
 /* Zustaende und Konstanten fuer das bot_solve_maze_behaviour-Verhalten */
-#define OPTIMAL_DISTANCE	(int16_t)(BOT_DIAMETER * 1.25f) /**< Optimale Distanz zur Wand [mm]. Etwas mehr als Bot-Durchmesser ist ideal (vergroessert aufgrund der Kennlinien der Sharps) */
+#define OPTIMAL_DISTANCE	(int16_t)(BOT_DIAMETER * 1.25f)	/**< Optimale Distanz zur Wand [mm]. Etwas mehr als Bot-Durchmesser ist ideal (vergroessert aufgrund der Kennlinien der Sharps) */
 #define ADJUST_DISTANCE		10		/**< Toleranzbereich [mm] */
 #define IGNORE_DISTANCE		240		/**< Entfernung, ab der eine Wand ignoriert wird [mm] */
 #define GROUND_GOAL			0x221	/**< Farbe des Zielpads */
