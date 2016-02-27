@@ -114,7 +114,7 @@ extern int16_t v_center;		/**< Geschwindigkeit im Zentrum des Bots aus Encoder-,
 
 /* Grenzwerte fuer die IR-Sensoren */
 #ifdef DISTSENS_TYPE_GP2Y0A60
-#define SENS_IR_MIN_DIST	60		/**< Untergrenze des Erfassungsbereichs */
+#define SENS_IR_MIN_DIST	70		/**< Untergrenze des Erfassungsbereichs */
 #define SENS_IR_MAX_DIST	1000	/**< Obergrenze des Erfassungsbereichs */
 #define SENS_IR_SAFE_DIST	100		/**< kleinste sichere Distanz innerhalb des Erfassungsbereichs */
 #else

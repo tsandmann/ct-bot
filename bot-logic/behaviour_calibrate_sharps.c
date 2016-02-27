@@ -45,7 +45,12 @@
 #include "command.h"
 #include "bot-2-atmega.h"
 
-#define STEP_COUNT 20 // Anzahl der Entfernungen, an denen gemessen wird
+/* Anzahl der Entfernungen, an denen gemessen wird */
+#ifdef DISTSENS_TYPE_GP2Y0A60
+#define STEP_COUNT 20
+#else
+#define STEP_COUNT 14
+#endif
 
 static uint8_t last_toggle = 0;			/**< letztes Toggle-Bit der Distsensoren */
 static uint8_t step = 0;				/**< Abstand zum naechsten Messpunkt [cm] */

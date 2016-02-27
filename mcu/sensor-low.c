@@ -61,10 +61,13 @@
 #define SENS_KANTE_R	7	/**< ADC-PIN Kantensensor Rechts */
 
 #define DIST_SENS_UPDATE_TIME 50
+#define FILTER_SHIFT 3U
 
 #ifdef DISTSENS_TYPE_GP2Y0A60
 #undef DIST_SENS_UPDATE_TIME
 #define DIST_SENS_UPDATE_TIME 0
+#undef FILTER_SHIFT
+#define FILTER_SHIFT 4U
 #endif // DISTSENS_TYPE_GP2Y0A60
 
 // Sonstige Sensoren
@@ -117,44 +120,7 @@ static botfs_file_descr_t speedlog_file;			/**< BotFS-Datei fuer das Speed-Log *
 #define SPEEDLOG_FILE_SIZE (1024 * (1024 / BOTFS_BLOCK_SIZE)) /**< Groesse der Speed-Log-Datei in Bloecken */
 #endif // SPEED_LOG_AVAILABLE
 
-#define FILTER_SHIFT 3U
 static uint16_t filter_l, filter_r;
-
-#if 0
-#define FILTER_SIZE (sizeof(dist_fir_coeffs) / sizeof(dist_fir_coeffs[0]))
-
-static const float dist_fir_coeffs[] = { 4.f / 64.f, 0.f, -7.f / 64.f, 0.f, 20.f / 64.f, 31.f / 64.f, 20.f / 64.f, 0.f, -7.f / 64.f, 0.f, 4.f / 64.f };
-static float dist_fir_buffer_l[FILTER_SIZE] = { 0.f };
-static float* dist_fir_position_l = dist_fir_buffer_l;
-static float dist_fir_buffer_r[FILTER_SIZE] = { 0.f };
-static float* dist_fir_position_r = dist_fir_buffer_r;
-
-static float fir_filter(float* fir_buffer, float** fir_pos, float new_value) {
-	const float* p_coeff = dist_fir_coeffs;
-	float* p_buffer = *fir_pos;
-	float result = 0;
-	**fir_pos = new_value;
-
-	while (p_buffer < fir_buffer + FILTER_SIZE) {
-		result += (*p_coeff) * (*p_buffer);
-		++p_coeff;
-		++p_buffer;
-	}
-
-	p_buffer = fir_buffer;
-	while (p_coeff < dist_fir_coeffs + FILTER_SIZE) {
-		result += (*p_coeff) * (*p_buffer);
-		++p_coeff;
-		++p_buffer;
-	}
-
-	if (--*fir_pos < fir_buffer) {
-		*fir_pos = fir_buffer + FILTER_SIZE - 1;
-	}
-
-	return result;
-}
-#endif // 0
 
 
 /**
