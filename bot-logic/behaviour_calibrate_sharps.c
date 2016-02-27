@@ -47,9 +47,6 @@
 
 #define STEP_COUNT 20 // Anzahl der Entfernungen, an denen gemessen wird
 
-//static Behaviour_t* data = NULL;
-//static float start_x = 0;
-//static float start_head = 0;
 static uint8_t last_toggle = 0;			/**< letztes Toggle-Bit der Distsensoren */
 static uint8_t step = 0;				/**< Abstand zum naechsten Messpunkt [cm] */
 static uint8_t count = 0;				/**< aktueller Messpunkt */
@@ -68,29 +65,6 @@ static void goto_next_pos(void);		/**< Stellt den Bot auf die naechste Position 
 
 static const uint8_t max_steps = STEP_COUNT; /**< Anzahl der Entfernungen, an denen gemessen wird */
 
-///**
-// * Hilfsfunktion fuer wait_for_stop()
-// * \see wait_for_stop()
-// */
-//static void wait_for_stop_helper(void) {
-//	speedWishLeft = BOT_SPEED_STOP;
-//	speedWishRight = BOT_SPEED_STOP;
-//
-//	/* Nachlauf abwarten */
-//	if (fabs(v_enc_left) < 1.f && fabs(v_enc_right) < 1.f) {
-//		/* zurueck zum Aufrufer */
-//		pNextJob = pLastJob; // wurde zuvor von wait_for_stop() gerettet
-//	}
-//}
-//
-///**
-// * Haelt den Bot an und wartet den Nachlauf ab
-// * anschliessend geht's mit dem Aufrufer weiter
-// */
-//static inline void wait_for_stop(void) {
-//	pLastJob = pNextJob;
-//	pNextJob = wait_for_stop_helper;
-//}
 
 /**
  * Hilfsfunktion fuer wait_for_userinput()
@@ -115,18 +89,10 @@ static inline void wait_for_userinput(void) {
 }
 
 /**
- * Berechnet die aktuelle Entfernung eines Sensors zum Ausganspunkt / dem Hindernis
- * \param sensor	0: links, 1: rechts
- * \return			Entfernung [mm]
+ * Berechnet die aktuelle Entfernung zum Ausganspunkt / dem Hindernis
+ * \return Entfernung [mm]
  */
-static uint16_t calc_distance(uint8_t sensor) {
-	(void) sensor;
-//	float dHead = (start_head - heading) * 2.f * M_PI / 360.f;
-//	float dX = start_x - x_enc;
-//	float s_m = dX / cos(dHead);
-//	float dS = tan(dHead) * DISTSENSOR_POS_SW;
-//	float result = sensor == 0 ? s_m - dS : s_m + dS;
-//	return result;
+static uint16_t calc_distance(void) {
 	return distance * 10; // cm in mm umrechnen
 }
 
@@ -134,11 +100,11 @@ static uint16_t calc_distance(uint8_t sensor) {
  * Schreibt Spannung und Entfernung in den RAM-Puffer
  */
 static void update_data(void) {
-	uint16_t dist = calc_distance(0);
+	uint16_t dist = calc_distance();
 	LOG_DEBUG("%u: links: %u mm = %u", count + 1, dist, distL);
 	buffer[0][count].dist = dist;
 	buffer[0][count].voltage = distL;
-	dist = calc_distance(1);
+	dist = calc_distance();
 	LOG_DEBUG("%u: rechts: %u mm = %u", count + 1, dist, distR);
 	buffer[1][count].dist = dist;
 	buffer[1][count].voltage = distR;
@@ -187,7 +153,6 @@ static void measure_distance(void) {
  * Stellt den Bot auf die naechste Position bzw. laesst den User das tun
  */
 static void goto_next_pos(void) {
-	//bot_drive_distance(data, 0, -50, step); // step cm zurueck
 	if (distance < 10) {
 		distance = 10;
 	} else {
@@ -262,9 +227,6 @@ void bot_calibrate_sharps_behaviour(Behaviour_t* data) {
  */
 void bot_calibrate_sharps(Behaviour_t* caller) {
 	/* Inits */
-//	data = caller;
-//	start_head = heading;
-//	start_x = x_enc + 100;
 	last_toggle = 1;
 	measure_count = -4;
 	step = 5;
