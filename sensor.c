@@ -61,7 +61,6 @@ void (* sensor_update_distance)(int16_t * const p_sens, uint8_t * const p_toggle
 
 distSens_t EEPROM sensDistDataL[] = SENSDIST_DATA_LEFT;		/**< kalibrierte Referenzdaten fuer linken IR-Sensor */
 distSens_t EEPROM sensDistDataR[] = SENSDIST_DATA_RIGHT;	/**< kalibrierte Referenzdaten fuer rechten IR-Sensor */
-uint8_t EEPROM sensDistOffset = SENSDIST_OFFSET;			/**< Spannungs-Offset IR-Sensoren */
 
 int16_t sensBorderL = 0;	/**< Abgrundsensor links */
 int16_t sensBorderR = 0;	/**< Abgrundsensor rechts */

@@ -62,10 +62,10 @@
 
 #define DIST_SENS_UPDATE_TIME 50
 
-#ifdef DISTSENS_TYPE_GP2Y0A60SZ
+#ifdef DISTSENS_TYPE_GP2Y0A60
 #undef DIST_SENS_UPDATE_TIME
 #define DIST_SENS_UPDATE_TIME 0
-#endif // DISTSENS_TYPE_GP2Y0A60SZ
+#endif // DISTSENS_TYPE_GP2Y0A60
 
 // Sonstige Sensoren
 #define SENS_DOOR_PINR 	PIND	/**< Port an dem der Klappensensor haengt */
@@ -221,12 +221,6 @@ void bot_sens(void) {
 #endif
 
 	/* aktualisiere Distanz-Sensoren, interrupt-driven I/O */
-#ifdef DISTSENS_AVERAGE
-	static uint8_t measure_count = 0;
-	static int16_t distLeft[4];
-	static int16_t distRight[4];
-#endif // DISTSENS_AVERAGE
-
 	static uint16_t old_dist; // Zeit der letzten Messung der Distanzsensoren
 
 	/* Auswertung der Distanzsensoren alle DIST_SENS_UPDATE_TIME ms */
@@ -234,21 +228,12 @@ void bot_sens(void) {
 
 	if ((uint16_t)(dist_ticks - old_dist) > MS_TO_TICKS(DIST_SENS_UPDATE_TIME)) {
 		int16_t * pDistL, * pDistR;
-#ifdef DISTSENS_AVERAGE
-		pDistL = &distLeft[measure_count];
-		pDistR = &distRight[measure_count];
-#else
 		pDistL = &sensDistL;
 		pDistR = &sensDistR;
-#endif // DISTSENS_AVERAGE
 		adc_read_int(SENS_ABST_L, pDistL);
 		if (servo_get(SERVO1) == SERVO_OFF) { // wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensors nicht
 			adc_read_int(SENS_ABST_R, pDistR);
 		}
-#ifdef DISTSENS_AVERAGE
-		measure_count++;
-		measure_count &= 0x3; // Z/4Z
-#endif
 	}
 
 	/* die anderen analogen Sensoren, auch int-driven I/O */
@@ -327,30 +312,19 @@ void bot_sens(void) {
 		old_dist = dist_ticks; // Zeit fuer naechste Messung merken
 		/* Dist-Sensor links */
 		while (adc_get_active_channel() < 1) {}
-		uint16_t volt;
-#ifdef DISTSENS_AVERAGE
-		volt = (distLeft[0] + distLeft[1] + distLeft[2] + distLeft[3]) >> 2;
-#else
-//		volt = (uint16_t) sensDistL;
-//		volt = (uint16_t) fir_filter(dist_fir_buffer_l, &dist_fir_position_l, (float) sensDistL);
 
 		filter_l = filter_l - (filter_l >> FILTER_SHIFT) + (uint16_t) sensDistL;
-		volt = (uint16_t) (filter_l >> FILTER_SHIFT);
-#endif
+		uint16_t volt = (uint16_t) (filter_l >> FILTER_SHIFT);
+
 		(*sensor_update_distance)(&sensDistL, &sensDistLToggle, sensDistDataL, volt);
 
 		if (servo_get(SERVO1) == SERVO_OFF) {
 			/* Dist-Sensor rechts */
 			while (adc_get_active_channel() < 2) {}
-#ifdef DISTSENS_AVERAGE
-			volt = (distRight[0] + distRight[1] + distRight[2] + distRight[3]) >> 2;
-#else
-//			volt = (uint16_t) sensDistR;
-//			volt = (uint16_t) fir_filter(dist_fir_buffer_r, &dist_fir_position_r, (float) sensDistR);
 
 			filter_r = filter_r - (filter_r >> FILTER_SHIFT) + (uint16_t) sensDistR;
 			volt = (uint16_t) (filter_r >> FILTER_SHIFT);
-#endif
+
 			(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, volt);
 		}
 	}
@@ -389,15 +363,6 @@ void bot_sens(void) {
 	/* LEDs updaten */
 	led_update();
 #endif // BOT_2_RPI_AVAILABLE
-#ifdef LED_AVAILABLE
-	/* Sollen die LEDs mit den Rohdaten der Sensoren arbeiten,
-	 * kommentiert man die folgenden Zeilen ein */
-
-	//if (voltL > 80) LED_on(LED_LINKS);
-	//else LED_off(LED_LINKS);
-	//if (voltR > 80) LED_on(LED_RECHTS);
-	//else LED_off(LED_RECHTS);
-#endif // LED_AVAILABLE
 }
 
 /**

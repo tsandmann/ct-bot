@@ -42,8 +42,10 @@
 #include "rc5-codes.h"
 #include "log.h"
 #include "eeprom.h"
+#include "command.h"
+#include "bot-2-atmega.h"
 
-#define STEP_COUNT 14 // Anzahl der Entfernungen, an denen gemessen wird
+#define STEP_COUNT 20 // Anzahl der Entfernungen, an denen gemessen wird
 
 //static Behaviour_t* data = NULL;
 //static float start_x = 0;
@@ -133,11 +135,11 @@ static uint16_t calc_distance(uint8_t sensor) {
  */
 static void update_data(void) {
 	uint16_t dist = calc_distance(0);
-	LOG_INFO("%u: links: %u mm = %u", count, dist, distL);
+	LOG_DEBUG("%u: links: %u mm = %u", count + 1, dist, distL);
 	buffer[0][count].dist = dist;
 	buffer[0][count].voltage = distL;
 	dist = calc_distance(1);
-	LOG_INFO("%u: rechts: %u mm = %u", count, dist, distR);
+	LOG_DEBUG("%u: rechts: %u mm = %u", count + 1, dist, distR);
 	buffer[1][count].dist = dist;
 	buffer[1][count].voltage = distR;
 
@@ -166,12 +168,14 @@ static void measure_distance(void) {
 	} else {
 		return;
 	}
+	LOG_DEBUG("%u: sensDistL: %u", count + 1, sensDistL);
 	distL += (uint16_t) sensDistL;
+	LOG_DEBUG("%u: sensDistR: %u", count + 1, sensDistR);
 	distR += (uint16_t) sensDistR;
-	/* acht Messungen abwarten */
-	if (measure_count == 8) {
-		distL >>= 3;
-		distR >>= 3;
+	/* 16 Messungen abwarten */
+	if (measure_count == 16) {
+		distL /= 16;
+		distR /= 16;
 
 		last_toggle = 1;
 		pNextJob = update_data;
@@ -184,7 +188,11 @@ static void measure_distance(void) {
  */
 static void goto_next_pos(void) {
 	//bot_drive_distance(data, 0, -50, step); // step cm zurueck
-	distance = distance + step;
+	if (distance < 10) {
+		distance = 10;
+	} else {
+		distance = distance + step;
+	}
 	count++;
 	pNextJob = measure_distance;
 	wait_for_userinput();
@@ -203,7 +211,16 @@ void bot_calibrate_sharps_behaviour(Behaviour_t* data) {
 	} else {
 		/* fertig! */
 		display_clear();
+
+#ifdef ARM_LINUX_BOARD
+		cmd_func_t old_func = cmd_functions;
+		set_bot_2_atmega();
+		command_write(CMD_SETTINGS, SUB_SETTINGS_DISTSENS, 1, 0, 0);
+		cmd_functions = old_func;
+#else
 		sensor_update_distance = sensor_dist_lookup; // Sensorauswertung wieder aktivieren
+#endif // ARM_LINUX_BOARD
+
 		/* Puffer ins EEPROM schreiben */
 		ctbot_eeprom_write_block(sensDistDataL, buffer[0], max_steps * sizeof(distSens_t));
 		ctbot_eeprom_write_block(sensDistDataR, buffer[1], max_steps * sizeof(distSens_t));
@@ -257,7 +274,14 @@ void bot_calibrate_sharps(Behaviour_t* caller) {
 	count = 0;
 	userinput_done = 0;
 
+#ifdef ARM_LINUX_BOARD
+	cmd_func_t old_func = cmd_functions;
+	set_bot_2_atmega();
+	command_write(CMD_SETTINGS, SUB_SETTINGS_DISTSENS, 0, 0, 0);
+	cmd_functions = old_func;
+#else
 	sensor_update_distance = sensor_dist_straight; // Sensorauswertung deaktivieren
+#endif // ARM_LINUX_BOARD
 
 	uint8_t i;
 	for (i = 0; i < sizeof(screen_functions) / sizeof(screen_functions[0]); ++i) {
@@ -285,16 +309,12 @@ void bot_calibrate_sharps_display(void) {
 	display_cursor(1, 1);
 	if (count != max_steps && pNextJob == wait_for_userinput_helper) {
 		display_printf("Sharp-Kalibr. %2u/%2u", count + 1 , max_steps);
-		LOG_INFO("Sharp-Kalibr. %2u/%2u", count + 1 , max_steps);
 		display_cursor(2, 1);
 		display_printf("Bot bitte auf %2u cm", distance);
-		LOG_INFO("Bot bitte auf %2u cm", distance);
 		display_cursor(3, 1);
 		display_puts("stellen und mit");
-		LOG_INFO("stellen und mit");
 		display_cursor(4, 1);
 		display_puts("\"Mute\" bestaetigen");
-		LOG_INFO("\"Mute\" bestaetigen L=%d R=%d", sensDistL, sensDistR);
 
 		/* Keyhandler */
 		if (RC5_Code == RC5_CODE_MUTE) {
@@ -304,12 +324,10 @@ void bot_calibrate_sharps_display(void) {
 	} else if (pNextJob != NULL) {
 		display_cursor(2, 1);
 		display_puts("thinking...         ");
-		LOG_INFO("thinking...");
 	} else if (count == max_steps) {
 		display_puts("fertig :-)");
 	} else {
 		display_puts("run calibrate_sharps");
-		LOG_INFO("run calibrate_sharps");
 	}
 }
 

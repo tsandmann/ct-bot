@@ -26,51 +26,84 @@
 #ifndef SENSOR_CORRECTION_H_
 #define SENSOR_CORRECTION_H_
 
-//#define DISTSENS_AVERAGE	/**< Aktiviert die Mittelung ueber 4 Werte aus den Roh-Daten der Sensoren */
-
 /* Mit diesen Daten wird das EEPROM des realen Bots initialisiert.
  * Im Falle eines simulierten Bots fuer den Sim liegen die Daten im RAM.
  * Das Kalibrierungsverhalten gibt die hier eizutragenden Daten am Ende
  * schon richtig vorformatiert per LOG aus, so dass man sie nur per
  * copy & paste aus dem LOG-Fenster hierher uebernehmen muss.
  */
-#ifdef MCU
-
-#define SENSDIST_OFFSET	0	/**< Offset (BOT), das vom Sensorrohwert abgezogen wird vor der Entfernungsberechnung */
+#if defined MCU && ! defined DISTSENS_TYPE_GP2Y0A60
 /**
  * Wertepaare (BOT) fuer IR-Sensoren LINKS. Es ist jeweils (Spannung | Distanz) gespeichert.
  * Aufsteigende Sortierung!
  */
-//	{498,100},{346,150},{266,200},{216,250},{180,300},{152,350},{138,400},{116,450},{104,500},{96,550},{84,600},{74,650},{76,700},{64,750}
 #define SENSDIST_DATA_LEFT { \
-	{ 896,  60},{ 661, 110},{ 477, 160},{ 372, 210},{ 315, 260},{ 273, 310},{ 239, 360},{ 220, 410},{ 204, 460},{ 188, 510},{ 178, 560},{ 166, 610},{ 154, 660},{ 150, 710} \
+	{498,100},{346,150},{266,200},{216,250},{180,300},{152,350},{138,400},{116,450},{104,500},{96,550},{84,600},{74,650},{76,700},{64,750} \
 }
 /**
  * Wertepaare (BOT) fuer IR-Sensoren RECHTS. Es ist jeweils (Spannung | Distanz) gespeichert.
  * Aufsetigende Sortierung!
  */
-//	{496,100},{344,150},{266,200},{214,250},{176,300},{144,350},{128,400},{112,450},{96,500},{78,550},{70,600},{72,650},{70,700},{54,750}
 #define SENSDIST_DATA_RIGHT { \
-	{ 894,  60},{ 659, 110},{ 475, 160},{ 400, 210},{ 340, 260},{ 290, 310},{ 250, 360},{ 230, 410},{ 215, 460},{ 200, 510},{ 175, 560},{ 165, 610},{ 155, 660},{ 150, 710} \
+	{496,100},{344,150},{266,200},{214,250},{176,300},{144,350},{128,400},{112,450},{96,500},{78,550},{70,600},{72,650},{70,700},{54,750} \
 }
+#endif
 
-#else
-
-#define SENSDIST_OFFSET	0	/**< Offset (SIM), das vom Sensorrohwert abgezogen wird vor der Entfernungsberechnung */
+#if defined MCU && defined DISTSENS_TYPE_GP2Y0A60
 /**
- * Wertepaare (SIM) fuer IR-Sensoren LINKS. Es ist jeweils (Spannung/2 | Distanz/5) gespeichert.
+ * Wertepaare (BOT) fuer IR-Sensoren LINKS. Es ist jeweils (Spannung | Distanz) gespeichert.
  * Aufsteigende Sortierung!
  */
 #define SENSDIST_DATA_LEFT { \
-	{510,100},{376,150},{292,200},{244,250},{204,300},{184,350},{168,400},{156,450},{144,500},{136,550},{130,600},{126,650},{120,700},{114,750} \
+	{ 889,  60},{ 720, 100},{ 517, 150},{ 403, 200},{ 335, 250},{ 292, 300},{ 261, 350},{ 237, 400},{ 224, 450},{ 207, 500}, \
+	{ 189, 550},{ 179, 600},{ 161, 650},{ 155, 700},{ 144, 750},{ 144, 800},{ 134, 850},{ 130, 900},{ 118, 950},{ 134,1000}  \
 }
 /**
- * Wertepaare (SIM) fuer IR-Sensoren RECHTS. Es ist jeweils (Spannung/2 | Distanz/5) gespeichert.
+ * Wertepaare (BOT) fuer IR-Sensoren RECHTS. Es ist jeweils (Spannung | Distanz) gespeichert.
  * Aufsetigende Sortierung!
  */
 #define SENSDIST_DATA_RIGHT { \
-	{494,100},{356,150},{276,200},{230,250},{188,300},{164,350},{144,400},{128,450},{116,500},{106,550},{98,600},{90,650},{84,700},{80,750} \
+	{ 865,  60},{ 635, 100},{ 370, 150},{ 247, 200},{ 233, 250},{ 221, 300},{ 192, 350},{ 175, 400},{ 159, 450},{ 156, 500}, \
+	{ 119, 550},{  87, 600},{  73, 650},{  61, 700},{  54, 750},{  50, 800},{  45, 850},{  40, 900},{  35, 950},{  30,1000}  \
 }
-#endif	// MCU
+#endif
+
+#if defined PC && ! defined DISTSENS_TYPE_GP2Y0A60
+/**
+ * Wertepaare (SIM) fuer IR-Sensoren LINKS. Es ist jeweils (Spannung | Distanz) gespeichert.
+ * Aufsteigende Sortierung!
+ */
+#define SENSDIST_DATA_LEFT { \
+	{510/2,100/5},{376/2,150/5},{292/2,200/5},{244/2,250/5},{204/2,300/5},{184/2,350/5},{168/2,400/5}, \
+	{156/2,450/5},{144/2,500/5},{136/2,550/5},{130/2,600/5},{126/2,650/5},{120/2,700/5},{114/2,750/5}  \
+}
+/**
+ * Wertepaare (SIM) fuer IR-Sensoren RECHTS. Es ist jeweils (Spannung | Distanz) gespeichert.
+ * Aufsetigende Sortierung!
+ */
+#define SENSDIST_DATA_RIGHT { \
+	{494/2,100/5},{356/2,150/5},{276/2,200/5},{230/2,250/5},{188/2,300/5},{164/2,350/5},{144/2,400/5}, \
+	{128/2,450/5},{116/2,500/5},{106/2,550/5},{98/2,600/5},{90/2,650/5},{84/2,700/5},{80/2,750/5}      \
+}
+#endif
+
+#if defined PC && defined DISTSENS_TYPE_GP2Y0A60
+/**
+ * Wertepaare (SIM) fuer IR-Sensoren LINKS. Es ist jeweils (Spannung | Distanz) gespeichert.
+ * Aufsteigende Sortierung!
+ */
+#define SENSDIST_DATA_LEFT { \
+	{ 889,  60},{ 720, 100},{ 517, 150},{ 403, 200},{ 335, 250},{ 292, 300},{ 261, 350},{ 237, 400},{ 224, 450},{ 207, 500}, \
+	{ 189, 550},{ 179, 600},{ 161, 650},{ 155, 700},{ 144, 750},{ 144, 800},{ 134, 850},{ 130, 900},{ 118, 950},{ 134,1000}  \
+}
+/**
+ * Wertepaare (SIM) fuer IR-Sensoren RECHTS. Es ist jeweils (Spannung | Distanz) gespeichert.
+ * Aufsetigende Sortierung!
+ */
+#define SENSDIST_DATA_RIGHT { \
+	{ 865,  60},{ 635, 100},{ 370, 150},{ 247, 200},{ 233, 250},{ 221, 300},{ 192, 350},{ 175, 400},{ 159, 450},{ 156, 500}, \
+	{ 119, 550},{  87, 600},{  73, 650},{  61, 700},{  54, 750},{  50, 800},{  45, 850},{  40, 900},{  35, 950},{  30,1000}  \
+}
+#endif
 
 #endif // SENSOR_CORRECTION_H_

@@ -46,7 +46,6 @@ extern uint8_t sensDistRToggle;	/**< Toggle-Bit des rechten IR-Sensors */
 extern void (* sensor_update_distance)(int16_t * const p_sens, uint8_t * const p_toggle, const distSens_t * ptr, uint16_t volt);
 extern distSens_t sensDistDataL[];	/**< kalibrierte Referenzdaten fuer linken IR-Sensor */
 extern distSens_t sensDistDataR[];	/**< kalibrierte Referenzdaten fuer rechten IR-Sensor */
-extern uint8_t sensDistOffset;		/**< Spannungs-Offset IR-Sensoren */
 
 
 extern int16_t sensLDRL;	/**< Lichtsensor links [0-1023];  1023 = dunkel*/
@@ -114,15 +113,15 @@ extern int16_t v_center;		/**< Geschwindigkeit im Zentrum des Bots aus Encoder-,
 
 
 /* Grenzwerte fuer die IR-Sensoren */
-#ifdef DISTSENS_TYPE_GP2Y0A60SZ
+#ifdef DISTSENS_TYPE_GP2Y0A60
 #define SENS_IR_MIN_DIST	60		/**< Untergrenze des Erfassungsbereichs */
-#define SENS_IR_MAX_DIST	1500	/**< Obergrenze des Erfassungsbereichs */
+#define SENS_IR_MAX_DIST	1000	/**< Obergrenze des Erfassungsbereichs */
 #define SENS_IR_SAFE_DIST	100		/**< kleinste sichere Distanz innerhalb des Erfassungsbereichs */
 #else
 #define SENS_IR_MIN_DIST	100		/**< Untergrenze des Erfassungsbereichs */
 #define SENS_IR_MAX_DIST	700		/**< Obergrenze des Erfassungsbereichs */
 #define SENS_IR_SAFE_DIST	120		/**< kleinste sichere Distanz innerhalb des Erfassungsbereichs */
-#endif // DISTSENS_TYPE_GP2Y0A60SZ
+#endif // DISTSENS_TYPE_GP2Y0A60
 #define SENS_IR_INFINITE	9999	/**< Kennzeichnung fuer "kein Objekt im Erfassungsbereich" */
 
 #ifdef MEASURE_POSITION_ERRORS_AVAILABLE
