@@ -50,9 +50,6 @@
 #define BORDERSENSOR_POS_FW		DISTSENSOR_POS_FW		/**< Abgrundsensoren unter Distsensoren */
 #define BORDERSENSOR_POS_SW		(DISTSENSOR_POS_SW + 5)	/**< Abgrundsensoren 5 mm weiter aussen als Distsensoren */
 
-#define BORDERSENSOR_POS_FW		DISTSENSOR_POS_FW  		/**< Abgrundsensoren unter Distsensoren */
-#define BORDERSENSOR_POS_SW		(DISTSENSOR_POS_SW + 5) /**< Abgrundsensoren 5 mm weiter aussen als Distsensoren */
-
 /*** einstellbare Parameter ***/
 
 /* Parameter der Motorregelung */
@@ -150,10 +147,10 @@
 
 /* bot_follow_line_behaviour() */
 #ifdef PC
-/** Konstante fuer das bot_follow_line_behaviour-Verhalten im Sim */
+/* Konstante fuer das bot_follow_line_behaviour-Verhalten im Sim */
 #define LINE_SENSE		0x350		/**< Linie im Sim = 0x350 */
 #else
-/** Konstante fuer das bot_follow_line_behaviour-Verhalten auf dem echten Bot*/
+/* Konstante fuer das bot_follow_line_behaviour-Verhalten auf dem echten Bot*/
 #define LINE_SENSE		0x200		/**< Ab wann ist es eine Linie? (schwarz ca. 0x300, helle Tischflaeche 0x50) */
 #endif // PC
 

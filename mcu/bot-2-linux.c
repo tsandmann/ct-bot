@@ -109,10 +109,6 @@ void bot_2_linux_listen(void) {
  * Diese Funktion informiert den Steuercode auf dem Linux-Board ueber alle Sensor- und Aktuator-Werte
  */
 void bot_2_linux_inform(void) {
-	static uint16_t last_rc5 = 0;
-	static uint8_t last_error = 0;
-	static uint8_t last_trans = 0;
-	static uint8_t last_door = 0;
 	command_write_to(CMD_SENS_IR, SUB_CMD_NORM, CMD_IGNORE_ADDR, sensDistL, sensDistR, 0);
 	command_write_to(CMD_SENS_ENC, SUB_CMD_NORM, CMD_IGNORE_ADDR, sensEncL, sensEncR, 0);
 	command_write_to(CMD_SENS_BORDER, SUB_CMD_NORM, CMD_IGNORE_ADDR, sensBorderL, sensBorderR, 0);
@@ -121,22 +117,10 @@ void bot_2_linux_inform(void) {
 #ifdef BPS_AVAILABLE
 	command_write_to(CMD_SENS_BPS, SUB_CMD_NORM, CMD_IGNORE_ADDR, (int16_t) sensBPS, 0, 0);
 #endif
-	if (last_trans != sensTrans) {
-		command_write_to(CMD_SENS_TRANS, SUB_CMD_NORM, CMD_IGNORE_ADDR, sensTrans, 0, 0);
-		last_trans = sensTrans;
-	}
-	if (last_door != sensDoor) {
-		command_write_to(CMD_SENS_DOOR, SUB_CMD_NORM, CMD_IGNORE_ADDR, sensDoor, 0, 0);
-		last_door = sensDoor;
-	}
-	if (last_error != sensError) {
-		command_write_to(CMD_SENS_ERROR, SUB_CMD_NORM, CMD_IGNORE_ADDR, sensError, 0, 0);
-		last_error = sensError;
-	}
-	if (last_rc5 != RC5_Code) {
-		command_write_to(CMD_SENS_RC5, SUB_CMD_NORM, CMD_IGNORE_ADDR, (int16_t) RC5_Code, 0, 0);
-		last_rc5 = RC5_Code;
-	}
+	command_write_to(CMD_SENS_TRANS, SUB_CMD_NORM, CMD_IGNORE_ADDR, sensTrans, 0, 0);
+	command_write_to(CMD_SENS_DOOR, SUB_CMD_NORM, CMD_IGNORE_ADDR, sensDoor, 0, 0);
+	command_write_to(CMD_SENS_ERROR, SUB_CMD_NORM, CMD_IGNORE_ADDR, sensError, 0, 0);
+	command_write_to(CMD_SENS_RC5, SUB_CMD_NORM, CMD_IGNORE_ADDR, (int16_t) RC5_Code, 0, 0);
 
 #ifdef MOUSE_AVAILABLE
 	command_write_to(CMD_SENS_MOUSE, SUB_CMD_NORM, CMD_IGNORE_ADDR, sensMouseDX, sensMouseDY, 0);

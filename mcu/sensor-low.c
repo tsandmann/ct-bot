@@ -324,15 +324,17 @@ void bot_sens(void) {
 #endif
 		(*sensor_update_distance)(&sensDistL, &sensDistLToggle, sensDistDataL, volt);
 
-		/* Dist-Sensor rechts */
-		while (adc_get_active_channel() < 2) {}
+		if (servo_get(SERVO1) == SERVO_OFF) {
+			/* Dist-Sensor rechts */
+			while (adc_get_active_channel() < 2) {}
 #ifdef DISTSENS_AVERAGE
-		volt = (distRight[0] + distRight[1] + distRight[2] + distRight[3]) >> 2;
+			volt = (distRight[0] + distRight[1] + distRight[2] + distRight[3]) >> 2;
 #else
-//		volt = sensDistR;
-		volt = (int16_t) fir_filter(dist_fir_buffer_r, &dist_fir_position_r, (float) sensDistR);
+//			volt = sensDistR;
+			volt = (int16_t) fir_filter(dist_fir_buffer_r, &dist_fir_position_r, (float) sensDistR);
 #endif
-		(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, volt);
+			(*sensor_update_distance)(&sensDistR, &sensDistRToggle, sensDistDataR, volt);
+		}
 	}
 
 #ifdef CMPS03_AVAILABLE

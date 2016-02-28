@@ -39,6 +39,7 @@ uint8_t led = 0;	/**< Status der LEDs */
  * Initialisiert die LEDs
  */
 void LED_init() {
+	// NOP
 }
 
 /**
@@ -66,7 +67,7 @@ void LED_off(uint8_t LED) {
  * \param LED Wert, der gezeigt werden soll
  */
 void LED_set(uint8_t LED) {
-	int16_t led = LED;
+	led = LED;
 	command_write(CMD_AKT_LED, SUB_CMD_NORM, led, 0, 0);
 }
 
