@@ -85,8 +85,8 @@
 
 #define BPS_NO_DATA		0xffff		/**< Wert des BPS-Sensors, falls keine Daten verfuegbar sind */
 
-/* System-Konstanten */
-/* --> Diese Änderungen sind mit lokalen Hardware-Anpassungen verbunden! */
+/* System-Konstanten
+   --> Diese Aenderungen sind mit lokalen Hardware-Anpassungen verbunden! */
 
 #define F_CPU	16000000L	/**< CPU-Frequenz [Hz] */
 //#define F_CPU	20000000L	/**< CPU-Frequenz [Hz] */
