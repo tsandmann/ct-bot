@@ -90,11 +90,9 @@ void ENA_on(uint8_t enable) {
 		ena &= (uint8_t) (~enable);	// CS der MMC und SCLK fuer Maus haengen an not-Q der FlipFlops!
 	} else
 #endif // EXPANSION_BOARD_AVAILABLE
-
 	{
 		ena |= enable;
 	}
-
 	ENA_set(ena);
 
 #ifdef EXPANSION_BOARD_AVAILABLE
@@ -109,20 +107,6 @@ void ENA_on(uint8_t enable) {
 #endif // SPI_AVAILABLE
 	}
 #endif // EXPANSION_BOARD_AVAILABLE
-
-#ifdef EXPANSION_BOARD_MOD_AVAILABLE
-	//	if ((enable & (ENA_ERW2 | ENA_ERW1)) != 0) {
-	//		/* Flipflops takten */
-	//		PORTD |= _BV(PD2);
-	//		PORTD = (uint8_t) (PORTD & ~_BV(PD2));
-	//#ifdef SPI_AVAILABLE
-	//		if (enable == ENA_ERW1) {
-	//			SPCR |= _BV(SPE) | _BV(MSTR); // SPI an
-	//		}
-	//#endif // SPI_AVAILABLE
-	//	}
-#endif // EXPANSION_BOARD_MOD_AVAILABLE
-
 }
 
 /**

@@ -40,5 +40,4 @@
 //#undef PID_Kd
 //#define PID_Kd	20 /**< PID-Parameter differential */
 
-
 #endif /* INCLUDE_BOT_LOCAL_OVERRIDE_DUMMY_H_ */
