@@ -92,7 +92,7 @@
 #define UART_BAUD	115200	/**< Baudrate 115200 fuer UART-Kommunikation */
 //#define UART_BAUD	500000	/**< Baudrate 500000 fuer UART-Kommunikation */
 
-#define EXPANSION_BOARD_AVAILABLE /*!< Erweiterungsmodul (MMC / WiPort) installiert */
+//#define EXPANSION_BOARD_AVAILABLE /*!< Erweiterungsmodul (MMC / WiPort) installiert */
 
 /* Servo-Parameter */
 #if F_CPU == 16000000L

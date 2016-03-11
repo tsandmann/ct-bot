@@ -44,7 +44,7 @@
 #define RC5_AVAILABLE		/*!< Key-Mapping fuer IR-RC aktiv */
 #define KEYPAD_AVAILABLE	/*!< Keypad-Eingabe vorhanden? */
 
-#define BOT_2_SIM_AVAILABLE	/*!< Soll der Bot mit dem Sim kommunizieren? */
+//#define BOT_2_SIM_AVAILABLE	/*!< Soll der Bot mit dem Sim kommunizieren? */
 //#define BOT_2_BOT_AVAILABLE	/*!< Sollen Bots untereinander kommunizieren? */
 //#define BOT_2_BOT_PAYLOAD_AVAILABLE		/*!< Aktiviert Payload-Versand per Bot-2-Bot Kommunikation */
 
@@ -61,7 +61,7 @@
 
 #define ADC_AVAILABLE		/*!< A/D-Konverter */
 
-//#define MOUSE_AVAILABLE	/*!< Maus Sensor */
+#define MOUSE_AVAILABLE	/*!< Maus Sensor */
 
 #define ENA_AVAILABLE		/*!< Enable-Leitungen */
 #define SHIFT_AVAILABLE		/*!< Shift Register */
