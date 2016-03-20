@@ -278,23 +278,16 @@
 #define RC5_CODE_9			(0x1149 & RC5_MASK)		/**< Taste 9 			   */
 
 #define RC5_CODE_PWR		(0x114C & RC5_MASK)		/**< Taste An, Aus         */
-#define RC5_CODE_VIEW		RC5_NOT_AVAIL			/**< Taste nicht vorhanden */
-#define RC5_CODE_SELECT		RC5_NOT_AVAIL			/**< Taste nicht vorhanden */
 
 #define RC5_CODE_UP			(0x1160 & RC5_MASK)		/**< Taste Hoch            */
 #define RC5_CODE_DOWN		(0x1161 & RC5_MASK)		/**< Taste Runter          */
 #define RC5_CODE_LEFT		(0x0171 & RC5_MASK)		/**< Taste Links           */
 #define RC5_CODE_RIGHT		(0x0170 & RC5_MASK)		/**< Taste Rechts          */
 
-#define RC5_CODE_FWD		RC5_NOT_AVAIL			/**< Taste nicht vorhanden */
-#define RC5_CODE_BWD		RC5_NOT_AVAIL			/**< Taste nicht vorhanden */
 #define RC5_CODE_RED		(0x1172 & RC5_MASK)		/**< rote Taste            */
 #define RC5_CODE_GREEN		(0x1176 & RC5_MASK)		/**< gruene Taste          */
 #define RC5_CODE_YELLOW		(0x1175 & RC5_MASK)		/**< gelbe Taste           */
 #define RC5_CODE_BLUE		(0x1174 & RC5_MASK)		/**< blaue Taste           */
-
-#define RC5_CODE_I_II		RC5_CODE_SELECT
-#define RC5_CODE_TV_VCR		RC5_CODE_VIEW
 #endif // RC_HAVE_VIVANCO_UR89
 
 /**
@@ -351,9 +344,7 @@
 #define RC5_CODE_SELECT	RC5_CODE_RETURN			/**< Taste Return & Exit werden genutzt fuer SELECT-Funktion */
 #define RC5_CODE_BWD	RC5_CODE_GREEN_LEFT		/**< Taste links  (gruen) wird genutzt fuer BWD-Funktion (backward)*/
 #define RC5_CODE_FWD	RC5_CODE_GREEN_RIGHT	/**< Taste rechts (gruen) wird genutzt fuer FWD-Funktion (forward)*/
-
-#define RC5_CODE_I_II	RC5_CODE_SELECT
-#define RC5_CODE_TV_VCR	RC5_CODE_VIEW
+#define RC5_CODE_I_II	RC5_CODE_SELECT			/**< Taste I/II wird genutzt fuer SELECT-Funktion */
 #endif // RC_HAVE_VIVANCO_UR89_TV_CODE_089
 
 /**
@@ -428,46 +419,6 @@
 #define RC5_CODE_BLUE	(0x3034 & RC5_MASK)		/**< Taste FFWD / Blau */
 #define RC5_CODE_TV_VCR	(0x300D	& RC5_MASK)		/**< Taste Mute */
 #endif // RC_HAVE_LIFETEC_LT3607
-
-/**
- * Default-Philips-Fernbedienung
- */
-#ifdef RC_HAVE_DEFAULT	/**< Default RC5-Codes falls keine FB definiert wurde */
-#define RC5_CODE_0			(0x3940 & RC5_MASK)		/**< Taste 0 */
-#define RC5_CODE_1			(0x3941 & RC5_MASK)		/**< Taste 1 */
-#define RC5_CODE_2			(0x3942 & RC5_MASK)		/**< Taste 2 */
-#define RC5_CODE_3			(0x3943 & RC5_MASK)		/**< Taste 3 */
-#define RC5_CODE_4			(0x3944 & RC5_MASK)		/**< Taste 4 */
-#define RC5_CODE_5			(0x3945 & RC5_MASK)		/**< Taste 5 */
-#define RC5_CODE_6			(0x3946 & RC5_MASK)		/**< Taste 6 */
-#define RC5_CODE_7			(0x3947 & RC5_MASK)		/**< Taste 7 */
-#define RC5_CODE_8			(0x3948 & RC5_MASK)		/**< Taste 8 */
-#define RC5_CODE_9			(0x3949 & RC5_MASK)		/**< Taste 9 */
-
-#define RC5_CODE_UP			(0x2950 & RC5_MASK)		/**< Taste Hoch */
-#define RC5_CODE_DOWN		(0x2951 & RC5_MASK)		/**< Taste Runter */
-#define RC5_CODE_LEFT		(0x2955 & RC5_MASK)		/**< Taste Links */
-#define RC5_CODE_RIGHT		(0x2956 & RC5_MASK)		/**< Taste Rechts */
-
-#define RC5_CODE_PWR		(0x394C & RC5_MASK)		/**< Taste An/Aus */
-
-#define RC5_CODE_RED		(0x100B & RC5_MASK)		/**< Rote Taste */
-#define RC5_CODE_GREEN		(0x102E & RC5_MASK)		/**< Gruene Taste */
-#define RC5_CODE_YELLOW		(0x1038 & RC5_MASK)		/**< Gelbe Taste */
-#define RC5_CODE_BLUE		(0x1029 & RC5_MASK)		/**< Blaue Taste */
-#define RC5_CODE_VIEW		(0x000F & RC5_MASK)		/**< Instant View Taste */
-
-#define RC5_CODE_SELECT		(0x100B & RC5_MASK)		/**< Select Taste */
-
-#define RC5_CODE_BWD		(0x1025 & RC5_MASK)		/**< Backward Taste */
-#define RC5_CODE_FWD		(0x1026 & RC5_MASK)		/**< Forward Taste */
-
-#define RC5_CODE_I_II		RC5_CODE_SELECT
-#define RC5_CODE_TV_VCR	RC5_CODE_VIEW
-
-#define RC5_CH_PLUS			RC5_NOT_AVAIL			/**< Ch + Taste */
-#define RC5_CH_MINUS		RC5_NOT_AVAIL			/**< Ch - Taste */
-#endif // RC_HAVE_DEFAULT
 
 /**
  * Fernbedienung Total Control
@@ -552,5 +503,46 @@
 //#define RC5_CODE_BWD  (0x103C & RC5_MASK)  /**< Backward Taste */
 //#define RC5_CODE_FWD  (0x102E & RC5_MASK)  /**< Forward Taste */
 #endif // RC_HAVE_TOTAL_CONTROL
+
+
+#ifndef RC5_CODE_1
+#define RC_HAVE_DEFAULT
+#endif
+
+/**
+ * Default-Philips-Fernbedienung
+ */
+#ifdef RC_HAVE_DEFAULT	/**< Default RC5-Codes falls keine FB definiert wurde */
+#define RC5_CODE_0			(0x3940 & RC5_MASK)		/**< Taste 0 */
+#define RC5_CODE_1			(0x3941 & RC5_MASK)		/**< Taste 1 */
+#define RC5_CODE_2			(0x3942 & RC5_MASK)		/**< Taste 2 */
+#define RC5_CODE_3			(0x3943 & RC5_MASK)		/**< Taste 3 */
+#define RC5_CODE_4			(0x3944 & RC5_MASK)		/**< Taste 4 */
+#define RC5_CODE_5			(0x3945 & RC5_MASK)		/**< Taste 5 */
+#define RC5_CODE_6			(0x3946 & RC5_MASK)		/**< Taste 6 */
+#define RC5_CODE_7			(0x3947 & RC5_MASK)		/**< Taste 7 */
+#define RC5_CODE_8			(0x3948 & RC5_MASK)		/**< Taste 8 */
+#define RC5_CODE_9			(0x3949 & RC5_MASK)		/**< Taste 9 */
+
+#define RC5_CODE_UP			(0x2950 & RC5_MASK)		/**< Taste Hoch */
+#define RC5_CODE_DOWN		(0x2951 & RC5_MASK)		/**< Taste Runter */
+#define RC5_CODE_LEFT		(0x2955 & RC5_MASK)		/**< Taste Links */
+#define RC5_CODE_RIGHT		(0x2956 & RC5_MASK)		/**< Taste Rechts */
+
+#define RC5_CODE_PWR		(0x394C & RC5_MASK)		/**< Taste An/Aus */
+
+#define RC5_CODE_RED		(0x100B & RC5_MASK)		/**< Rote Taste */
+#define RC5_CODE_GREEN		(0x102E & RC5_MASK)		/**< Gruene Taste */
+#define RC5_CODE_YELLOW		(0x1038 & RC5_MASK)		/**< Gelbe Taste */
+#define RC5_CODE_BLUE		(0x1029 & RC5_MASK)		/**< Blaue Taste */
+#define RC5_CODE_VIEW		(0x000F & RC5_MASK)		/**< Instant View Taste */
+
+#define RC5_CODE_SELECT		(0x100B & RC5_MASK)		/**< Select Taste */
+
+#define RC5_CODE_BWD		(0x1025 & RC5_MASK)		/**< Backward Taste */
+#define RC5_CODE_FWD		(0x1026 & RC5_MASK)		/**< Forward Taste */
+
+#define RC5_CODE_TV_VCR	    RC5_CODE_VIEW
+#endif // RC_HAVE_DEFAULT
 
 #endif // RC5CODE_H_
