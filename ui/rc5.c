@@ -136,7 +136,7 @@ static void rc5_bot_change_speed(int16_t left, int16_t right) {
 /**
  * Setzt den Bot zurueck
  */
-static void bot_reset(void) {
+static inline void bot_reset(void) {
 	/* Motoren aus */
 	motor_set(BOT_SPEED_STOP, BOT_SPEED_STOP);
 	/* alle Verhalten aus */
@@ -336,7 +336,11 @@ void default_key_handler(void) {
 		case RC5_CODE_6:		rc5_number(6); break;
 		case RC5_CODE_7:		rc5_number(7); break;
 		case RC5_CODE_8:		rc5_number(8); break;
+#if RC5_CODE_0 != RC5_CODE_9
 		case RC5_CODE_9:		rc5_number(9); break;
+#else
+#warning "Ausgewaehlte Fernbedienung verwendet denselben Code fuer Taste 0 und Taste 9, deaktiviere Taste 9"
+#endif // workaround Technisat_TTS35AI
 	}
 }
 
