@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2016-03-20 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Fernbedienung Technisat_TTS35AI nach Hinweis von anonybot. Weitere Fernbedienungscodes etwas aufgeraeumt.
+
 2016-01-10 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Endianness-Inkompatibilitaet bestimmer Compiler unter Linux 
 
 2015-10-26 Timo Sandmann [mail@timosandmann.de]: Release 22
