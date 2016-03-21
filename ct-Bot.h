@@ -126,6 +126,12 @@
 #undef KEYPAD_AVAILABLE
 #endif
 
+#include "rc5-codes.h"
+
+#if ! defined RC5_CODE_DOT || ! defined RC5_CODE_STOP || ! defined RC5_CODE_PLAY
+#undef KEYPAD_AVAILABLE
+#endif
+
 #ifndef MOUSE_AVAILABLE
 #undef MEASURE_MOUSE_AVAILABLE
 #undef MEASURE_COUPLED_AVAILABLE
