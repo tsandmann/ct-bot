@@ -161,7 +161,7 @@ void ctbot_init_low_last(void) {
 #endif // OS_AVAILABLE
 
 #ifdef EXPANSION_BOARD_MOD_AVAILABLE
-   ENA_off(ENA_WIPORT); // Der WiPort ist (vorlaeufig) standardmaessig eingeschaltet.
+   ENA_on(ENA_WIPORT); // Der WiPort ist (vorlaeufig) standardmaessig eingeschaltet.
    ENA_on(ENA_DISPLAYLIGHT); // Die Displaybeleuchtung ist (vorlaeufig) standardmaessig eingeschaltet.
 #endif
 }
@@ -172,7 +172,7 @@ void ctbot_init_low_last(void) {
 void ctbot_shutdown_low() {
 
 #ifdef EXPANSION_BOARD_MOD_AVAILABLE
-	ENA_on(ENA_WIPORT); // WiPort aus
+	ENA_off(ENA_WIPORT); // WiPort aus
 	ENA_off(ENA_DISPLAYLIGHT); // Displaybeleuchtung aus
 #endif
 
