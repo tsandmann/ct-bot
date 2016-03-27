@@ -1056,6 +1056,17 @@ int8_t command_evaluate(void) {
 			}
 			}
 			break;
+		case CMD_SETTINGS:
+			switch (received_command.request.subcommand) {
+			case SUB_SETTINGS_DISTSENS:
+				if (received_command.data_l == 0) {
+					sensor_update_distance = sensor_dist_straight;
+				} else if (received_command.data_l == 1) {
+					sensor_update_distance = sensor_dist_lookup;
+				}
+				break;
+			}
+			break;
 #endif // BOT_2_RPI_AVAILABLE
 
 		default:
