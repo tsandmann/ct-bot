@@ -106,6 +106,8 @@
 
 //#define SPI_AVAILABLE	/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 
+//#define DISTSENS_TYPE_GP2Y0A60 /**< Distanzsensor Typ GP2Y0A60 */
+
 /* Servo-Parameter */
 #ifndef __AVR_ATmega1284P__
 #if F_CPU == 16000000L

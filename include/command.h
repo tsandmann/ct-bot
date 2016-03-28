@@ -57,6 +57,9 @@
 #define CMD_AKT_LED	    'l'		/**< LEDs steuern */
 #define CMD_AKT_LCD     'c'     /**< LCD Anzeige */
 
+#define CMD_SETTINGS	's'		/**< Einstellungen uebertragen */
+#define SUB_SETTINGS_DISTSENS	'e'	/**< Auswertung der Sensordaten (L: Rohwerte 0 / vorverarbeitet 1) */
+
 #define CMD_DONE        'X'    	/**< Markiert das Ende einer Uebertragung */
 
 #define CMD_ID			'A'		/**< Adressverwaltung */
