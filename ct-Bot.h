@@ -38,64 +38,79 @@
 #define LOG_STDOUT_AVAILABLE 				/**< Logging auf die Konsole (nur fuer PC) */
 //#define LOG_MMC_AVAILABLE					/**< Logging in eine txt-Datei auf MMC */
 #define USE_MINILOG							/**< schaltet auf schlankes Logging um */
-//#define CREATE_TRACEFILE_AVAILABLE		/**< Aktiviert das Schreiben einer Trace-Datei (nur PC) */
 
 
-/* Standard-Hardware-Komponenten */
-
-#define LED_AVAILABLE						/**< LEDs aktiv */
-#define IR_AVAILABLE						/**< Infrarot Fernbedienung aktiv */
-#define RC5_AVAILABLE						/**< Key-Mapping fuer IR-RC aktiv */
-#define KEYPAD_AVAILABLE					/**< Keypad-Eingabe vorhanden? */
-
-#define ADC_AVAILABLE						/**< A/D-Konverter */
-#define ENA_AVAILABLE						/**< Enable-Leitungen */
-#define SHIFT_AVAILABLE						/**< Shift Register */
-
-#define DISPLAY_AVAILABLE					/**< Display aktiv */
-#define DISPLAY_REMOTE_AVAILABLE			/**< Sende LCD Anzeigedaten an den Simulator */
-//#define WELCOME_AVAILABLE					/**< kleiner Willkommensgruss */
-
-//#define MOUSE_AVAILABLE					/**< Maus Sensor */
-//#define MEASURE_MOUSE_AVAILABLE			/**< Geschwindigkeiten werden aus den Maussensordaten berechnet */
-//#define MEASURE_COUPLED_AVAILABLE			/**< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
-//#define MEASURE_POSITION_ERRORS_AVAILABLE	/**< Fehlerberechnungen bei der Positionsbestimmung */
-
-
-/* Sonstiges */
+/* Kommunikation */
 
 #define BOT_2_SIM_AVAILABLE					/**< Soll der Bot mit dem Sim kommunizieren? */
+#define DISPLAY_REMOTE_AVAILABLE			/**< Sende LCD Anzeigedaten an den Simulator */
 //#define BOT_2_BOT_AVAILABLE				/**< Sollen Bots untereinander kommunizieren? */
 #define BOT_2_BOT_PAYLOAD_AVAILABLE			/**< Aktiviert Payload-Versand per Bot-2-Bot Kommunikation */
+#define KEYPAD_AVAILABLE					/**< Keypad-Eingabe vorhanden? */
 
-#define BEHAVIOUR_AVAILABLE					/**< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
 
-#define POS_STORE_AVAILABLE					/**< Positionsspeicher vorhanden */
+/* Sensorauswertung */
+
+//#define MEASURE_MOUSE_AVAILABLE			/**< Geschwindigkeiten werden aus den Maussensordaten berechnet */
+//#define MEASURE_COUPLED_AVAILABLE			/**< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
+//#define MOUSE_AVAILABLE					/**< Maus Sensor */
+//#define SRF10_AVAILABLE					/**< Ultraschallsensor SRF10 vorhanden */
+//#define CMPS03_AVAILABLE					/**< Kompass CMPS03 vorhanden */
+//#define SP03_AVAILABLE					/**< Sprachmodul SP03 vorhanden */
+//#define BPS_AVAILABLE						/**< Bot Positioning System */
+
+
+/* Umgebungskarte */
 
 //#define MAP_AVAILABLE						/**< Aktiviert die Kartographie */
 #define MAP_2_SIM_AVAILABLE					/**< Sendet die Map zur Anzeige an den Sim */
 
-//#define MMC_AVAILABLE						/**< haben wir eine MMC/SD-Karte zur Verfuegung? */
-//#define MMC_VM_AVAILABLE					/**< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
-#define BOT_FS_AVAILABLE					/**< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC moeglich) */
-#define OS_AVAILABLE						/**< Aktiviert BotOS fuer Threads und Scheduling */
+
+/* Motoransteuerung */
 
 #define SPEED_CONTROL_AVAILABLE 			/**< Aktiviert die Motorregelung */
 //#define ADJUST_PID_PARAMS					/**< macht PID-Paramter zur Laufzeit per FB einstellbar */
 //#define SPEED_LOG_AVAILABLE 				/**< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
 
-//#define EEPROM_EMU_AVAILABLE				/**< Aktiviert die EEPROM-Emulation fuer PC, siehe Hinweise in pc/eeprom_pc.c */
+
+/* MMC-/SD-Karte als Speichererweiterung (Erweiterungsmodul) */
+
+//#define MMC_AVAILABLE						/**< haben wir eine MMC/SD-Karte zur Verfuegung? */
+/** #define SPI_AVAILABLE ist mit einer Hardware-Aenderung verbunden und befindet sich daher in bot-local.h **/
+#define BOT_FS_AVAILABLE					/**< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC moeglich) */
+//#define MMC_VM_AVAILABLE					/**< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
+
+
+/* Bootloader */
 
 //#define BOOTLOADER_AVAILABLE				/**< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders */
 
 
-/* Sonstige Hardware-Erweiterungen */
+/* Hardware-Komponenten */
 
-//#define SRF10_AVAILABLE					/**< Ultraschallsensor SRF10 vorhanden */
-//#define CMPS03_AVAILABLE					/**< Kompass CMPS03 vorhanden */
-//#define SP03_AVAILABLE					/**< Sprachmodul SP03 vorhanden */
+#define LED_AVAILABLE						/**< LEDs aktiv */
+#define IR_AVAILABLE						/**< Infrarot Fernbedienung aktiv */
+#define RC5_AVAILABLE						/**< Key-Mapping fuer IR-RC aktiv */
+#define ADC_AVAILABLE						/**< A/D-Konverter */
+#define ENA_AVAILABLE						/**< Enable-Leitungen */
+#define SHIFT_AVAILABLE						/**< Shift Register */
+#define DISPLAY_AVAILABLE					/**< Display aktiv */
 
-//#define BPS_AVAILABLE						/**< Bot Positioning System */
+
+/* Bot-Verhalten */
+
+#define BEHAVIOUR_AVAILABLE					/**< Nur wenn dieser Parameter gesetzt ist, exisitiert das Verhaltenssystem */
+
+
+/* Sonstiges */
+
+#define OS_AVAILABLE						/**< Aktiviert BotOS fuer Threads und Scheduling */
+//#define EEPROM_EMU_AVAILABLE				/**< Aktiviert die EEPROM-Emulation fuer PC, siehe Hinweise in pc/eeprom_pc.c */
+#define POS_STORE_AVAILABLE					/**< Positionsspeicher vorhanden */
+
+//#define WELCOME_AVAILABLE					/**< kleiner Willkommensgruss */
+//#define MEASURE_POSITION_ERRORS_AVAILABLE	/**< Fehlerberechnungen bei der Positionsbestimmung */
+//#define CREATE_TRACEFILE_AVAILABLE		/**< Aktiviert das Schreiben einer Trace-Datei (nur PC) */
 
 #define ARM_LINUX_BOARD						/**< Code fuer ARM-Linux Board aktivieren, wenn ein ARM-Linux-* Target ausgewaehlt wurde. Fuehrt den high-level Code und die Verhalten aus */
 //#define BOT_2_RPI_AVAILABLE				/**< Kommunikation von ATmega mit einem Linux-Board (z.B. Rapsberry Pi) aktivieren. Fuehrt auf dem ATmega den low-level Code aus */
