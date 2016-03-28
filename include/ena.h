@@ -36,7 +36,7 @@
 
 #ifdef EXPANSION_BOARD_MOD_AVAILABLE
 #define ENA_WIPORT			(1<<6)		/**< Enable-Leitung Reserve 1 */
-#define ENA_BPS				(1<<7)		/**< Enable-Leitung Reserve 2 */
+#define ENA_DISPLAYLIGHT	(1<<7)		/**< Enable-Leitung Reserve 2 */
 #else
 #define ENA_MMC				(1<<6)		/**< Enable-Leitung Reserve 1 */
 #define ENA_MOUSE_SENSOR	(1<<7)		/**< Enable-Leitung Reserve 2 */

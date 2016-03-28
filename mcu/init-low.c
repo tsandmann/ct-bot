@@ -159,21 +159,35 @@ void ctbot_init_low_last(void) {
 #endif
 	os_create_thread(&os_idle_stack[OS_IDLE_STACKSIZE - 1], os_idle);
 #endif // OS_AVAILABLE
+
+#ifdef EXPANSION_BOARD_MOD_AVAILABLE
+   ENA_on(ENA_WIPORT); // Der WiPort ist (vorlaeufig) standardmaessig eingeschaltet.
+   ENA_on(ENA_DISPLAYLIGHT); // Die Displaybeleuchtung ist (vorlaeufig) standardmaessig eingeschaltet.
+#endif
 }
 
 /**
  * Faehrt den low-level Code des Bots sauber herunter
  */
 void ctbot_shutdown_low() {
+
+#ifdef EXPANSION_BOARD_MOD_AVAILABLE
+	ENA_off(ENA_WIPORT); // WiPort aus
+	ENA_off(ENA_DISPLAYLIGHT); // Displaybeleuchtung aus
+#endif
+
 #ifdef UART_AVAILABLE
 	while (uart_outfifo.count > 0) {} // Commands flushen
 #endif
+
 	__builtin_avr_cli();
 	UCSRB = 0; // UART aus
+
 #ifdef LED_AVAILABLE
-	LED_off(0xff);
+	LED_off(0xff); // LEDs aus
 #endif
-	ENA_off(0xff);
+
+	ENA_off(0xff); // Enable-Leitungen aus
 
 	do {
 		_SLEEP_CONTROL_REG = (uint8_t) (((_SLEEP_CONTROL_REG & ~(_BV(SM0) | _BV(SM1) | _BV(SM2))) | (SLEEP_MODE_PWR_DOWN)));
@@ -183,4 +197,5 @@ void ctbot_shutdown_low() {
 
 	/* kehrt nie zurueck */
 }
+
 #endif // MCU
