@@ -24,8 +24,6 @@
  * @author 	Timo Sandmann (mail@timosandmann.de) Version 2
  * @author 	Frank Menzel (Menzelfr@gmx.de) Version 3
  * @date 	21.09.2007
- *
- * \todo	Version 3 funktioniert auf dem echten Bot nicht sehr zuverlaessig (Probleme bei Winkeln < 120 Grad)
  */
 
 #include "bot-logic/bot-logic.h"

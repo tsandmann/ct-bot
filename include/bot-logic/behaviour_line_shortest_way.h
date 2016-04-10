@@ -29,8 +29,6 @@
  *
  * \author 	Frank Menzel (Menzelfr@gmx.de)
  * \date 	21.12.2008
- *
- * \todo	Unterstuetzung fuer Linienlabyrinthe mit Zyklen
  */
 
 #ifndef BEHAVIOUR_LINE_SHORTEST_WAY_H_
