@@ -789,7 +789,7 @@ void botfs_read_fat16(const char * path) {
 	strncpy(tmp_string, p_bs->fat_name, 8);
 	printf("Partitionstyp:\t\t%s\n", tmp_string);
 	if (strncmp(tmp_string, "FAT16", 5) != 0) {
-/** \todo: lt. Spezifikation steht hier nicht zwingend der FAT-Typ */
+		// lt. Spezifikation steht hier nicht zwingend der FAT-Typ, wir beschraenken uns hier aber mal darauf
 		puts("Keine FAT16-Partition!");
 		fclose(fp);
 		return;
