@@ -66,6 +66,8 @@
 //#define BEHAVIOUR_SCAN_BEACONS_AVAILABLE 			/**< Suchen von Landmarken zur Lokalisierung */
 //#define BEHAVIOUR_UBASIC_AVAILABLE 				/**< uBasic Verhalten */
 //#define BEHAVIOUR_ABL_AVAILABLE 					/**< ABL-Interpreter */
+//#define BEHAVIOUR_NEURALNET_AVAILABLE 			/**< neuronales Netzwerk */
+//#define BEHAVIOUR_DRIVE_NEURALNET_AVAILABLE 		/**< Fahrverhalten fuer das neuronale Netzwerk */
 
 /** Kalibrierungs-Verhalten */
 //#define BEHAVIOUR_CALIBRATE_PID_AVAILABLE			/**< Kalibrierungsverhalten fuer Motorregelung */
@@ -80,10 +82,6 @@
 #define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE 		/**< Deaktivieren von Verhalten, wenn eine Abbruchbedingung erfuellt ist */
 //#define BEHAVIOUR_GET_UTILIZATION_AVAILABLE		/**< CPU-Auslastung eines Verhaltens messen */
 //#define BEHAVIOUR_HW_TEST_AVAILABLE 				/**< Testverhalten (ehemals TEST_AVAILABLE_ANALOG, _DIGITAL, _MOTOR) */
-
-/** sonstige Verhalten */
-//#define BEHAVIOUR_NEURALNET_AVAILABLE 			/**< neuronales Netzwerk */
-//#define BEHAVIOUR_DRIVE_NEURALNET_AVAILABLE 		/**< Fahrverhalten fuer das neuronale Netzwerk */
 
 
 /* Aufgrund einer ganzen Reihe von Abhaengigkeiten sollte man beim Versuch Speicher
