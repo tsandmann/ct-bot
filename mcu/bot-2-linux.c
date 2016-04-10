@@ -43,6 +43,7 @@
 
 
 #define CRC_ERROR_TIME 2000UL
+#define UART_TIMEOUT 500UL
 
 /**
  * Initialisiert die Kommunikation mit dem Linux-Board
@@ -67,12 +68,12 @@ void bot_2_linux_init(void) {
  * Empfaengt alle Kommondos vom Linux-Board.
  * Die Funktion nimmt die Daten vom Linux-Board entgegen und
  * wertet sie aus. Dazu nutzt sie die Funktion command_evaluate().
- * \todo add Timeout
  */
 void bot_2_linux_listen(void) {
 	static uint32_t last_crc_error = 0 - MS_TO_TICKS(CRC_ERROR_TIME);
+	static uint32_t last_uart_recv = 0 - MS_TO_TICKS(UART_TIMEOUT);
 
-	const uint32_t now = TIMER_GET_TICKCOUNT_32;
+	uint32_t now = TIMER_GET_TICKCOUNT_32;
 	if (now < last_crc_error + MS_TO_TICKS(CRC_ERROR_TIME)) {
 		LED_on(LED_TUERKIS);
 	} else {
@@ -80,8 +81,9 @@ void bot_2_linux_listen(void) {
 	}
 
 	uint16_t i = 0;
-	while (42) {
+	while (now < last_uart_recv + MS_TO_TICKS(UART_TIMEOUT)) {
 		if (uart_data_available() >= sizeof(command_t)) {
+			last_uart_recv = now;
 			const int8_t result = command_read();
 			if (result == 0) {
 				command_evaluate();
@@ -102,6 +104,7 @@ void bot_2_linux_listen(void) {
 			display_cursor(4, 20);
 			display_puts("|");
 		}
+		now = TIMER_GET_TICKCOUNT_32;
 	}
 }
 
