@@ -134,15 +134,14 @@ static uint32_t botfs_get_image_sector(char * imagename, void * buffer) {
 //					PRINT_MSG("next_cluster=0x%04x", next_cluster);
 					if (next_cluster != last_cluster + 1) {
 						if (next_cluster >= 0xfff0) {
-							/* Dateiende */
-							break;
+							/* Dateiende -> keine Fragmentierung */
+							return file_block;
 						}
 						PRINT_MSG(" Image-Datei fragmentiert, Abbruch");
 						return 0;
 					}
 					last_cluster = next_cluster;
 				}
-				return file_block;
 			}
 			p_dir_entry++;
 		}

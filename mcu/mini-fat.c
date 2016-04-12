@@ -151,13 +151,17 @@ static void mini_fat_store_adr(uint32_t block) {
 static uint32_t check_fragmentation(uint32_t block, void * buffer) {
 	LOG_DEBUG("block=0x%04x", block - 1);
 	/* MBR lesen */
-	mmc_read_sector(0, buffer);
+	if (mmc_read_sector(0, buffer) != 0) {
+		return 0xffffffff;
+	}
 	botfs_mbr_t * p_mbr = buffer;
 	uint16_t first_sect = (uint16_t) p_mbr->part0.first_sect_offset;
 	LOG_DEBUG("first_sect=0x%04x", first_sect);
 
 	/* Bootsektor von Partition 1 lesen */
-	mmc_read_sector(first_sect, buffer);
+	if (mmc_read_sector(first_sect, buffer) != 0) {
+		return 0xffffffff;
+	}
 	botfs_fat16_bootsector_t * p_bs = buffer;
 	p_bs->fat_name[7] = 0;
 	if (strcmp_P(p_bs->fat_name, PSTR("FAT16  ")) != 0) {
@@ -184,36 +188,50 @@ static uint32_t check_fragmentation(uint32_t block, void * buffer) {
 	uint16_t first_cluster = (uint16_t) ((block - 1 - data_offset) / sect_per_cluster + 2);
 	LOG_DEBUG("first_cluster=0x%04x", first_cluster);
 
-	/* 1. FAT-Eintrag der Datei einlesen */
-	uint16_t fat_block = fat_offset + first_cluster / (512 / sizeof(uint16_t));
-	LOG_DEBUG("fat_block=0x%04x", fat_block);
-	mmc_read_sector(fat_block, buffer);
-	uint16_t entry_offset = first_cluster % (512 / sizeof(uint16_t));
-	LOG_DEBUG("entry_offset=0x%04x", entry_offset);
-	uint16_t * ptr = buffer;
-	uint16_t entry = ptr[entry_offset];
-
-	mmc_read_sector(block - 1, buffer);	// Dateiheader wieder in Puffer laden
-
-	LOG_DEBUG("Fat-Eintrag=0x%04x", entry);
-	if (entry < 0xfff8 && entry != first_cluster + 1) {
-		/* Datei ist fragmentiert */
+	uint16_t next_cluster = first_cluster;
+	uint16_t last_cluster = next_cluster;
+	uint16_t last_fat_block = 0;
+	while (42) {
+		/* alle FAT-Eintraege der Datei einlesen und auf Fragmentierung checken */
+		uint16_t fat_block = fat_offset + next_cluster / (512 / sizeof(uint16_t));
+		LOG_DEBUG("fat_block=0x%04x", fat_block);
+		if (fat_block != last_fat_block) {
+			if (mmc_read_sector(fat_block, buffer) != 0) {
+				return 0xffffffff;
+			}
+			last_fat_block = fat_block;
+		}
+		uint16_t entry_offset = first_cluster % (512 / sizeof(uint16_t));
+		LOG_DEBUG("entry_offset=0x%04x", entry_offset);
+		uint16_t * ptr = buffer;
+		next_cluster = ptr[entry_offset];
+		LOG_DEBUG("next_cluster=0x%04x", next_cluster);
+		if (next_cluster != last_cluster + 1) {
+			if (next_cluster >= 0xfff0) {
+				/* Dateiende -> keine Fragmentierung */
+				break;
+			}
+			/* Datei ist fragmentiert */
 #ifdef DISPLAY_MINIFAT_INFO
-		display_cursor(2, 1);
-		display_puts("Datei fragmentiert  ");
+			display_cursor(2, 1);
+			display_puts("Datei fragmentiert  ");
 #endif
-		LOG_ERROR("Datei ist fragmentiert!");
+			LOG_ERROR("Datei ist fragmentiert!");
 #ifdef LED_AVAILABLE
-		LED_on(LED_TUERKIS);
+			LED_on(LED_TUERKIS);
 #endif	// LED_AVAILABLE
+			mmc_read_sector(block - 1, buffer);	// Dateiheader wieder in Puffer laden
+			return 0xffffffff;
+		}
+	}
+	if (mmc_read_sector(block - 1, buffer) != 0) { // Dateiheader wieder in Puffer laden
 		return 0xffffffff;
 	}
-/** \todo: Schleife */
 
 	/* alles gut */
 #ifdef DISPLAY_MINIFAT_INFO
-		display_cursor(2, 1);
-		display_puts("Datei ok");
+	display_cursor(2, 1);
+	display_puts("Datei ok");
 #endif
 	LOG_DEBUG("Datei ist nicht fragmentiert");
 	return block;
