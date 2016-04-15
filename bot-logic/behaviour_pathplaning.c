@@ -83,7 +83,6 @@
 #ifdef PC
 #define MAP_SIZE_LOWRES			12288LL	/*!< Breite / Hoehe der Karte [mm] */
 #else
-/*! \todo Groessere Karte auch fuer MCU waere wuenschenswert */
 #define MAP_SIZE_LOWRES			4096LL	/*!< Breite / Hoehe der Karte [mm] */
 #endif // PC
 
@@ -166,7 +165,6 @@ static int16_t world_to_map_lowres(int16_t koord) {
  * \param value	Neuer Wert des Feldes
  * \param set	0 zum Lesen, 1 zum Schreiben
  * \return      Mapwert
- * \todo Sectiongroesse von 512 Byte waere besser, um auf MMC auslagern zu koennen.
  */
 static int8_t access_field_lowres(position_t field, int8_t value, uint8_t set) {
 	int16_t section_x, section_y, index_x, index_y;

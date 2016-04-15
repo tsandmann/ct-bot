@@ -138,16 +138,16 @@ void bot_follow_line_enh_behaviour(Behaviour_t * data) {
 		break;
 
 	case TURN_AROUND_HAZARD: // auf jeden Fall erst mal in Ausgangsrichtung drehen
-/*! \todo	beim Drehen in beide Richtungen ermitteln, ob schon Kante, also Ende, des Hindernisses (Stein auf Linie) gesehen wird und
-			weil umgehen in diese Richtung kuerzer ist, dortlang drehen und Hindernisumgeher starten; solve_maze geht leider nur wenn bot sich
-			hier links dreht und dann rechts die Wand hat */
+		/* beim Drehen in beide Richtungen ermitteln, ob schon Kante, also Ende des Hindernisses (Stein auf Linie) gesehen wird und
+		 * weil umgehen in diese Richtung kuerzer ist, dortlang drehen und Hindernisumgeher starten; solve_maze geht leider nur wenn bot sich
+		 * hier links dreht und dann rechts die Wand hat */
 		bot_turn(data, 70); // links drehen
 		line_state_enh = GO_AROUND_HAZARD; // naechsten Einsprung setzen
 		break;
 
 	case GO_AROUND_HAZARD: // etwas vorwaerts fahren um von Linie wegzukommen
-/*! \todo	beim Drehen in beide Richtungen ermitteln, ob schon Kante, also Ende, des Hindernisses (Stein auf Linie) gesehen wird und
-			weil umgehen in diese Richtung kuerzer ist, dortlang drehen und Hindernisumgeher starten */
+		/* beim Drehen in beide Richtungen ermitteln, ob schon Kante, also Ende des Hindernisses (Stein auf Linie) gesehen wird und
+		 * weil umgehen in diese Richtung kuerzer ist, dortlang drehen und Hindernisumgeher starten */
 		bot_goto_dist(data, 50, 1); // etwas vorwaerts fahren um von Linie wegzukommen
 		line_state_enh = START_SOLVE_MAZE; // naechster Einsprung: Start solve_maze zum Umrunden des Hindernisses
 		break;

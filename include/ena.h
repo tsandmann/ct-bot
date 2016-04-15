@@ -33,8 +33,14 @@
 #define ENA_KANTLED			(1<<3)		/**< Enable-Leitung Angrundsensor */
 #define ENA_KLAPPLED		(1<<4)		/**< Enable-Leitung Schieberueberwachung */
 #define ENA_LINE			(1<<5)		/**< Enable-Leitung Liniensensor auf Mausplatine (ENA_MAUS im Schaltplan) */
+
+#ifdef EXPANSION_BOARD_MOD_AVAILABLE
+#define ENA_WIPORT			(1<<6)		/**< Enable-Leitung Reserve 1 */
+#define ENA_DISPLAYLIGHT	(1<<7)		/**< Enable-Leitung Reserve 2 */
+#else
 #define ENA_MMC				(1<<6)		/**< Enable-Leitung Reserve 1 */
 #define ENA_MOUSE_SENSOR	(1<<7)		/**< Enable-Leitung Reserve 2 */
+#endif // EXPANSION_BOARD_MOD_AVAILABLE
 
 #ifndef __ASSEMBLER__
 

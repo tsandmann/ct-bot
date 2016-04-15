@@ -5,5 +5,6 @@
 /sim.map
 /Documentation/api
 /.dep/
-/.settings/language.settings.xml
+/README.md
 /bot-local-override.h
+

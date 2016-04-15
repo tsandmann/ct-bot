@@ -1,10 +1,34 @@
 CHANGELOG fuer c't-Bot
 ======================
-2016-01-10 Timo Sandmann [mail@timosandmann.de]: Bugfix fuer Endianness-Inkompatibilitaet bestimmer Compiler unter Linux 
+2016-03-22: Schalter in ct-Bot.h gemaess Doku sortiert und Kategorien ergaenzt (Nightwalker-01)
 
-2015-11-07 Timo Sandmann [mail@timosandmann.de]: Moeglichkeit zur lokalen Konfiguration ueber bot-local-override.h. Siehe include/bot-local-override.h
+2016-03-20: Bugfix fuer Fernbedienung Technisat_TTS35AI nach Hinweis von anonybot. Weitere Fernbedienungscodes etwas aufgeraeumt.
 
-2015-10-26 Timo Sandmann [mail@timosandmann.de]: Raspberry Pi Support (derzeit Beta Status!) erweitert: Verbindung zu ct-Sim (via TCP) moeglich, low-level MCU-Code fuer RPi-Anbindung; HW-Test Verhalten ueberarbeitet, Fifo-Code erweitert, Doxygen Doku vereinheitlicht
+2016-03-05: Build-Target fuer Raspberry Pi 3
+
+2016-02-27: Unterstuetzung fuer alternativen Distanzsensor Typ GP2Y0A60
+
+2016-02-21: Auswertungsreihenfolge der Sensoren aktualisiert, mehr Zeit fuer die digitalen Sensoren, die per ENA deaktiviert werden; LED Flackern auf RPi behoben; Bugfix Distanzsensor wenn Klappe bewegt wird
+
+2016-02-20: Bugfix Ansteuerung Servo 2: Initialisierung auf Mittelstellung, Servo-Verhalten fuer 2. Servo angepasst
+
+2016-02-19: Bugfix fuer Raspberry Pi Code, falls BOT_2_SIM_AVAILABLE aus ist
+
+2016-01-23: Steuerung Servo 2 per VOL +/- Taste auf der Fernbedienung; Bot-Verhalten entsprechend der Web-Dokumentation sortiert (Nightwalker-01)
+
+2016-01-10: Bugfix fuer Endianness-Inkompatibilitaet bestimmer Compiler unter Linux 
+
+2015-11-21: Bugfix Maus- / ENA-Code
+
+2015-11-15: Uebertragen von Positionsspeicher per Bot-2-Bot auch fuer Raspberry Pi Bots
+
+2015-11-14: Bot-2-Bot-Kommunikation auch fuer Raspberry Pi Bots
+
+2015-11-08: Bugfix RemoteCall-Display (fuer negative Paramterwerte); Bugfix Remotedisplay (ct-Sim) auf RPi; Unterstuetzung von Display-Ausgabe auf Linux-Konsole fuer RPi (stdout oder externes Display)
+
+2015-11-07: Moeglichkeit zur lokalen Konfiguration ueber bot-local-override.h. Siehe include/bot-local-override.h
+
+2015-10-26: Raspberry Pi Support (derzeit Beta Status!) erweitert: Verbindung zu ct-Sim (via TCP) moeglich, low-level MCU-Code fuer RPi-Anbindung; HW-Test Verhalten ueberarbeitet, Fifo-Code erweitert, Doxygen Doku vereinheitlicht
 
 2015-10-26 Timo Sandmann [mail@timosandmann.de]: Release 22
 

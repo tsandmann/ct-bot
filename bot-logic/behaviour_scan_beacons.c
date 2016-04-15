@@ -65,7 +65,7 @@ static position_t get_position_from_id(uint16_t id) {
 	pos.x = (id >> 8) * BEACON_GRID_SIZE + (BEACON_GRID_SIZE / 2);
 	pos.y = (id & 0xff) * BEACON_GRID_SIZE + (BEACON_GRID_SIZE / 2);
 #else // MCU
-/** \todo Nur Test-Daten */
+	/* Test-Daten */
 	switch (id) {
 	case 0xd:
 		pos.x = 0;
@@ -183,7 +183,7 @@ void bot_scan_beacons_behaviour(Behaviour_t * data) {
 			angle_mb += 360.0f;
 		}
 
-/** \todo vielleicht laesst sich der Tausch-Spass hier noch optimieren */
+		/* Bei Winkeln > 180 Grad Reihenfolge tauschen */
 		if (angle_am > 180.0f) {
 			uint16_t tmp_id = recognized_beacons[2].id;
 			float tmp_head = recognized_beacons[2].heading;

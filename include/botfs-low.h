@@ -65,14 +65,12 @@ void botfs_close_volume_low(void);
 /**
  * Wartet, bis ein Mutex verfuegbar ist und sperrt es dann
  * \param *p_mutex Zeiger auf das gewuenschte Mutex
- * \todo: Auslagern in allgemeine Fkt. os_mutex_lock()
  */
 void botfs_acquire_lock_low(botfs_mutex_t * p_mutex);
 
 /**
  * Gibt ein Mutex wieder frei
  * \param *p_mutex Zeiger auf das Mutex
- * \todo: Auslagern in allgemeine Fkt. os_mutex_unlock()
  */
 static inline void botfs_release_lock_low(botfs_mutex_t * p_mutex) {
 	*p_mutex = 0;
@@ -83,7 +81,6 @@ static inline void botfs_release_lock_low(botfs_mutex_t * p_mutex) {
 /**
  * Wartet, bis ein Mutex verfuegbar ist und sperrt es dann
  * \param *p_mutex Zeiger auf das gewuenschte Mutex
- * \todo: Auslagern in allgemeine Fkt. os_mutex_lock()
  */
 static inline void botfs_acquire_lock_low(botfs_mutex_t * p_mutex) {
 	pthread_mutex_lock(p_mutex);
@@ -92,7 +89,6 @@ static inline void botfs_acquire_lock_low(botfs_mutex_t * p_mutex) {
 /**
  * Gibt ein Mutex wieder frei
  * \param *p_mutex Zeiger auf das Mutex
- * \todo: Auslagern in allgemeine Fkt. os_mutex_unlock()
  */
 static inline void botfs_release_lock_low(botfs_mutex_t * p_mutex) {
 	pthread_mutex_unlock(p_mutex);

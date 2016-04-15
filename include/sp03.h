@@ -61,7 +61,7 @@
  * \param ... 		Variable Argumentenliste, wie beim printf
  */
 extern void sp03_flash_speakf(const char* format, ...);
-	
+
 /**
  * Endanwender-Makro fuer die Sprachausgabe mit default Stimmparameter.
  * \param format	Format, wie beim speakf
@@ -88,7 +88,7 @@ extern void sp03_flash_speakf(const char* format, ...);
 	sp03_flash_speakf(data, ## args);		\
 	sp03_cmd_speak();						\
 }
-	 
+
 /**
  * SP03 Steuercodes fuer Lautstaerke, Speed und Pitch an Synth senden
  * \param sp03_volume Lautstaerke
@@ -99,7 +99,7 @@ void sp03_set_voice(uint8_t sp03_volume, uint8_t sp03_pitch, uint8_t sp03_speed)
 
 /**
  * SP03 Steuercode fuer Sprechen senden
- */ 
+ */
 void sp03_cmd_speak(void);
 
 /**
@@ -112,7 +112,6 @@ void sp03_speak_phrase(uint8_t sp03_pre_id);
  * SP03 Firmwareversion auslesen
  */
 void sp03_get_version(void);
-
 
 // VERSION 1.0
 #ifdef SP03_V1

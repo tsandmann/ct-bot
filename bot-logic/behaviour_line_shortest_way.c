@@ -29,8 +29,6 @@
  *
  * \author 	Frank Menzel (Menzelfr@gmx.de)
  * \date 	21.12.2008
- *
- * \todo	Unterstuetzung fuer Linienlabyrinthe mit Zyklen
  */
 
 #include "bot-logic/bot-logic.h"
@@ -514,7 +512,6 @@ void bot_line_shortest_way_behaviour(Behaviour_t * data) {
 		break;
 
 	case GO_FORWARD: // Erkennung ob Abgrund und Ende, falls nicht weiter bis Liniensensoren auf Krezung
-/*! \todo schlaegt auch bei Kreuzungen zu, muss ueberarbeitet werden! */
 //		if (sensBorderL > BORDER_DANGEROUS || sensBorderR > BORDER_DANGEROUS) {
 //			LOG_DEBUG("Abgrund und Ende %1d %1d", sensBorderL, sensBorderR);
 //			lineState = GOAL_FOUND; // Verhalten Ende

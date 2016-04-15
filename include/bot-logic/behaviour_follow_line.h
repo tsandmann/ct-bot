@@ -31,7 +31,8 @@
 
 #ifdef BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 
-/* Version 1: Altes Verfahren; Version 2: auf linke Kante gefahren; Version 3: linke Kante als auch beide */
+/* Version 1: Altes Verfahren; Version 2: auf linke Kante gefahren; Version 3: linke Kante als auch beide
+ * Version 3 funktioniert auf dem echten Bot nicht sehr zuverlaessig (Probleme bei Winkeln < 120 Grad) */
 #ifdef BEHAVIOUR_LINE_SHORTEST_WAY_AVAILABLE
 #define FOLLOW_LINE_VERSION	3
 #else
