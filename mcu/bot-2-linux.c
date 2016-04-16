@@ -71,7 +71,6 @@ void bot_2_linux_init(void) {
  */
 void bot_2_linux_listen(void) {
 	static uint32_t last_crc_error = 0 - MS_TO_TICKS(CRC_ERROR_TIME);
-	static uint32_t last_uart_recv = 0 - MS_TO_TICKS(UART_TIMEOUT);
 
 	uint32_t now = TIMER_GET_TICKCOUNT_32;
 	if (now < last_crc_error + MS_TO_TICKS(CRC_ERROR_TIME)) {
@@ -81,9 +80,9 @@ void bot_2_linux_listen(void) {
 	}
 
 	uint16_t i = 0;
-	while (now < last_uart_recv + MS_TO_TICKS(UART_TIMEOUT)) {
+	uint32_t timeout = now + MS_TO_TICKS(UART_TIMEOUT);
+	while (now < timeout) {
 		if (uart_data_available() >= sizeof(command_t)) {
-			last_uart_recv = now;
 			const int8_t result = command_read();
 			if (result == 0) {
 				command_evaluate();
