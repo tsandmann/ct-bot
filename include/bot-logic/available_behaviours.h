@@ -29,16 +29,16 @@
 
 //#define BEHAVIOUR_PROTOTYPE_AVAILABLE 			/**< Prototyp fuer neue Verhalten */
 
-/** Demo-Verhalten */
+/* Demo-Verhalten */
 //#define BEHAVIOUR_SIMPLE_AVAILABLE				/**< Beispielverhalten */
 //#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE 			/**< Demoverhalten im Quadrat fahren */
 
-/** Notfall-Verhalten */
+/* Notfall-Verhalten */
 //#define BEHAVIOUR_AVOID_BORDER_AVAILABLE 			/**< Abgruenden ausweichen */
 //#define BEHAVIOUR_AVOID_COL_AVAILABLE 			/**< Hindernis ausweichen */
 //#define BEHAVIOUR_HANG_ON_AVAILABLE 				/**< Erkennen des Haengenbleibens als Notfallverhalten */
 
-/** Positionierungs-Verhalten */
+/* Positionierungs-Verhalten */
 //#define BEHAVIOUR_GOTO_AVAILABLE 					/**< Goto Verhalten*/
 //#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE 		/**< Strecke fahren */
 //#define BEHAVIOUR_GOTOXY_AVAILABLE 				/**< Punkt XY anfahren */
@@ -49,7 +49,7 @@
 //#define BEHAVIOUR_DRIVE_STACK_AVAILABLE 			/**< Abfahren der auf dem Stack gesicherten Koordinaten */
 //#define BEHAVIOUR_TEST_ENCODER_AVAILABLE 			/**< Encoder-Test Verhalten */
 
-/** Anwendungs-Verhalten */
+/* Anwendungs-Verhalten */
 #define BEHAVIOUR_SOLVE_MAZE_AVAILABLE 				/**< Wandfolger */
 //#define BEHAVIOUR_FOLLOW_LINE_AVAILABLE			/**< Linienfolger */
 //#define BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE 	/**< erweiterter Linienfolger, der auch mit Unterbrechungen und Hindernissen klarkommt */
@@ -69,11 +69,11 @@
 //#define BEHAVIOUR_NEURALNET_AVAILABLE 			/**< neuronales Netzwerk */
 //#define BEHAVIOUR_DRIVE_NEURALNET_AVAILABLE 		/**< Fahrverhalten fuer das neuronale Netzwerk */
 
-/** Kalibrierungs-Verhalten */
+/* Kalibrierungs-Verhalten */
 //#define BEHAVIOUR_CALIBRATE_PID_AVAILABLE			/**< Kalibrierungsverhalten fuer Motorregelung */
 //#define BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE 		/**< Kalibrierungsverhalten fuer Distanzsensoren */
 
-/** System-Verhalten */
+/* System-Verhalten */
 #define BEHAVIOUR_SCAN_AVAILABLE 					/**< Gegend scannen */
 #define BEHAVIOUR_SERVO_AVAILABLE 					/**< Kontrollverhalten fuer die Servos */
 #define BEHAVIOUR_REMOTECALL_AVAILABLE 				/**< Remote-Kommandos */
