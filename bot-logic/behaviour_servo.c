@@ -77,7 +77,7 @@ Behaviour_t * bot_servo(Behaviour_t * caller, uint8_t servo, uint8_t pos) {
 		servo_set(servo, pos); // Servo-PWM einstellen
 		servo_id = servo;
 	} else {
-		LOG_ERROR("bot_servo(%u, %u): Servo %u noch aktiv, Abbruch", servo, pos, servo_active);
+		LOG_ERROR("bot_servo(%u, %u): Servo %u noch aktiv, Abbruch", servo, pos, servo_id);
 	}
 	return data;
 }
