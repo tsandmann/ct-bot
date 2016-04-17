@@ -270,11 +270,6 @@ uint8_t os_delay_func(os_delayed_func_ptr_t p_func, void* p_data, uint32_t delay
 			os_delayed_func[i].runtime = now + MS_TO_TICKS(delay_ms);
 
 			os_delayed_next_p = os_delayed_func_search_next(); // next Zeiger aktualisieren
-//			display_cursor(1, 1);
-//			display_printf("next_p=0x%x     ", os_delayed_next_p);
-//			display_cursor(2, 1);
-//			display_printf("p_func=0x%x     ", os_delayed_next_p->p_func);
-
 			os_exitCS();
 			return 0;
 		}

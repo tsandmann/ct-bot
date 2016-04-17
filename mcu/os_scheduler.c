@@ -38,7 +38,6 @@
 #include "map.h"
 #include "display.h"
 #include "log.h"
-#include "led.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -52,7 +51,7 @@ volatile uint8_t os_scheduling_allowed = 1;	/**< sperrt den Scheduler, falls != 
 uint8_t os_idle_stack[OS_IDLE_STACKSIZE];	/**< Stack des Idle-Threads */
 
 static volatile uint32_t idle_counter[3];	/**< Variable, die im Idle-Thread laufend inkrementiert wird */
-#define ZYCLES_PER_IDLERUN	64 /**< Anzahl der CPU-Zyklen fuer einen Durchlauf der Idle-Schleife */
+#define ZYCLES_PER_IDLERUN	61 /**< Anzahl der CPU-Zyklen fuer einen Durchlauf der Idle-Schleife */
 
 #ifdef DISPLAY_OS_AVAILABLE
 uint8_t uart_log = 0; /**< Zaehler fuer UART-Auslastung */
@@ -191,38 +190,24 @@ void os_print_utilization(void) {
  */
 void os_idle(void) {
 	while (42) {
-		const uint32_t now = TIMER_GET_TICKCOUNT_32;
 		const uint8_t sreg = SREG;
 		__builtin_avr_cli();
+		const uint32_t now = tickCount.u32;
 		os_delayed_func_t* ptr = (os_delayed_func_t*) os_delayed_next_p; // cast away volatile
-		os_delayed_func_ptr_t p_func = NULL;
-		if (ptr) {
-			p_func = ptr->p_func; // avoid race-conditions on p_func
-		}
 		SREG = sreg;
 
-		if (p_func && ptr->runtime <= now) { // Funktion registriert und Ausfuehrungszeit erreicht
-//			os_enterCS();
-//			LED_on(LED_ROT);
-//			os_exitCS();
-			p_func(ptr->p_data);
+		if (ptr->p_func && ptr->runtime <= now) { // Funktion registriert und Ausfuehrungszeit erreicht
+			ptr->p_func(ptr->p_data);
 			ptr->p_func = NULL;
 			ptr->runtime = (uint32_t) -1;
 
 			/* next Zeiger updaten */
 			ptr = os_delayed_func_search_next();
-			os_enterCS();
+			const uint8_t sreg = SREG;
+			__builtin_avr_cli();
 			os_delayed_next_p = ptr;
-			os_exitCS();
+			SREG = sreg;
 		}
-
-//		os_enterCS();
-//		display_cursor(3, 1);
-//		display_printf("ptr=0x%x       ", ptr);
-//		display_cursor(4, 1);
-//		display_printf("p_func=0x%x    ", p_func);
-//		os_exitCS();
-
 
 #ifndef OS_KERNEL_LOG_AVAILABLE
 		/* Idle-Counter wird inkrementiert und 3-mal gespeichert.
@@ -234,7 +219,7 @@ void os_idle(void) {
 		idle_counter[1] = tmp;
 		idle_counter[2] = tmp;
 
-		// 64 Zyklen pro Durchlauf => 4 us @ 16 MHz, 3200 ns @ 20 MHz
+		// 61 Zyklen pro Durchlauf => 3812 ns @ 16 MHz, 3050 ns @ 20 MHz
 #else
 		if (kernel_log_fifo.count > 0) {
 			kernel_log_t data;

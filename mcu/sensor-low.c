@@ -197,7 +197,7 @@ void bot_sens(void) {
 		pDistL = &sensDistL;
 		pDistR = &sensDistR;
 		adc_read_int(SENS_ABST_L, pDistL);
-		if (servo_get(SERVO1) == SERVO_OFF) { // wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensors nicht
+		if (servo_get_active(SERVO1) == 0) { // wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensors nicht
 			adc_read_int(SENS_ABST_R, pDistR);
 		}
 	}
@@ -284,7 +284,7 @@ void bot_sens(void) {
 
 		(*sensor_update_distance)(&sensDistL, &sensDistLToggle, sensDistDataL, volt);
 
-		if (servo_get(SERVO1) == SERVO_OFF) {
+		if (servo_get_active(SERVO1) == 0) {
 			/* Dist-Sensor rechts */
 			while (adc_get_active_channel() < 2) {}
 

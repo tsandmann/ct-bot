@@ -57,7 +57,7 @@ typedef struct {
 
 #define OS_MAX_THREADS		4	/**< maximale Anzahl an Threads im System */
 #define OS_KERNEL_STACKSIZE	36	/**< Groesse des Kernel-Stacks (fuer Timer-ISR) [Byte] */
-#define OS_IDLE_STACKSIZE	256	/**< Groesse des Idle-Stacks [Byte] */
+#define OS_IDLE_STACKSIZE	64	/**< Groesse des Idle-Stacks [Byte] */
 #define OS_CONTEXT_SIZE		19	/**< Groesse des Kontextes eines Threads [Byte], muss zum Code in os_switch_thread() passen! */
 #define OS_DELAYED_FUNC_CNT	8	/**< Anzahl der maximal registrierbaren Funktionen zur verzoegerten Ausfuehrung */
 

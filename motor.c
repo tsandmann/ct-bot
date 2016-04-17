@@ -44,7 +44,8 @@
 int16_t speed_l = 0; /**< Sollgeschwindigkeit linker Motor */
 int16_t speed_r = 0; /**< Sollgeschwindigkeit rechter Motor */
 
-uint8_t servo_pos[2] = {SERVO_OFF, SERVO_OFF}; /**< Sollposition Servos */
+uint8_t servo_pos[2] = {DOOR_OPEN, CAM_CENTER}; /**< Positionen der Servos */
+uint8_t servo_active[2] = {0, 0}; /**< Aktivitaet der Servos */
 
 #ifdef SPEED_CONTROL_AVAILABLE
 #ifdef ADJUST_PID_PARAMS
@@ -554,6 +555,7 @@ void servo_set(uint8_t servo, uint8_t pos) {
 		} else if (pos > DOOR_OPEN) {
 			pos = DOOR_OPEN;
 		}
+		servo_pos[0] = pos;
 	}
 	if ((servo == SERVO2) && (pos != SERVO_OFF)) {
 		if (pos < CAM_LEFT) {
@@ -561,9 +563,10 @@ void servo_set(uint8_t servo, uint8_t pos) {
 		} else if (pos > CAM_RIGHT) {
 			pos = CAM_RIGHT;
 		}
+		servo_pos[1] = pos;
 	}
 
-	servo_pos[servo - 1] = pos;
+	servo_active[servo - 1] = pos != SERVO_OFF;
 
 	servo_low(servo, pos);
 }
