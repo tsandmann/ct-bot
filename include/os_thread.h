@@ -45,10 +45,21 @@ typedef struct {
 #endif
 } os_signal_t;
 
+
+typedef void (* os_delayed_func_ptr_t)(void*); /** Zeiger-Typ fuer verzoegerte Funktionen */
+
+/** Interne Datenstruktur fuer die Registrierung von verzoegert auszufuehrende Funktionen */
+typedef struct {
+	os_delayed_func_ptr_t p_func; /**< Zeiger auf Funktion */
+	void* p_data; /**< Zeiger auf Daten fuer Funktion (optional) */
+	uint32_t runtime; /**< fruehst moegliche Ausfuehrungszeit in Timer-Ticks */
+} os_delayed_func_t;
+
 #define OS_MAX_THREADS		4	/**< maximale Anzahl an Threads im System */
 #define OS_KERNEL_STACKSIZE	36	/**< Groesse des Kernel-Stacks (fuer Timer-ISR) [Byte] */
 #define OS_IDLE_STACKSIZE	64	/**< Groesse des Idle-Stacks [Byte] */
 #define OS_CONTEXT_SIZE		19	/**< Groesse des Kontextes eines Threads [Byte], muss zum Code in os_switch_thread() passen! */
+#define OS_DELAYED_FUNC_CNT	8	/**< Anzahl der maximal registrierbaren Funktionen zur verzoegerten Ausfuehrung */
 
 //#define OS_DEBUG				/**< Schalter fuer Debug-Code */
 //#define OS_KERNEL_LOG_AVAILABLE	/**< Aktiviert das Kernel-LOG mit laufenden Debug-Ausgaben */
@@ -95,6 +106,9 @@ extern Tcb_t * os_thread_running;			/**< Zeiger auf den Thread, der zurzeit laeu
 extern uint8_t os_kernel_stack[];			/**< Kernel-Stack */
 extern uint8_t os_idle_stack[];				/**< Stack des Idle-Threads */
 extern os_signal_t dummy_signal; 			/**< Signal, das referenziert wird, wenn sonst keins gesetzt ist */
+extern os_delayed_func_t os_delayed_func[];	/**< Registrierte Funktionen zur verzoegerten Ausfuehrung */
+extern volatile os_delayed_func_t* os_delayed_next_p; /**< Zeiger auf die naechste auszufuehrende verzoegerte Funktion */
+
 
 #ifdef OS_KERNEL_LOG_AVAILABLE
 #define OS_KERNEL_LOG_SIZE	32	/**< Anzahl der Datensaetze, die im Kernel-LOG gepuffert werden koennen */
@@ -260,6 +274,21 @@ void os_thread_yield(void);
  * \param *signal	Zeiger auf Signal
  */
 void os_signal_set(os_signal_t * signal);
+
+/**
+ * Sucht die als naechstes auszufuehrende Funktion heraus, wird intern benutzt.
+ * @return Naechste auszufuehrende Funktion oder NULL, falls keine Funktion registriert
+ */
+os_delayed_func_t* os_delayed_func_search_next(void);
+
+/**
+ * Registriert eine Funktion zur spaeteren Ausfuehrung.
+ * @param p_func Zeiger auf die Funktion
+ * @param p_data Zeiger auf Daten fuer die Funktion oder NULL
+ * @param delay_ms Zeit in ms, nach der die Funktion (fruehestens) ausgefuehrt werden soll
+ * @return 0, falls Funktion korrekt registriert werden konnte, 1 sonst
+ */
+uint8_t os_delay_func(os_delayed_func_ptr_t p_func, void* p_data, uint32_t delay_ms);
 
 #ifdef OS_DEBUG
 /**

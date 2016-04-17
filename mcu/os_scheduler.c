@@ -51,7 +51,7 @@ volatile uint8_t os_scheduling_allowed = 1;	/**< sperrt den Scheduler, falls != 
 uint8_t os_idle_stack[OS_IDLE_STACKSIZE];	/**< Stack des Idle-Threads */
 
 static volatile uint32_t idle_counter[3];	/**< Variable, die im Idle-Thread laufend inkrementiert wird */
-#define ZYCLES_PER_IDLERUN	38 /**< Anzahl der CPU-Zyklen fuer einen Durchlauf der Idle-Schleife */
+#define ZYCLES_PER_IDLERUN	61 /**< Anzahl der CPU-Zyklen fuer einen Durchlauf der Idle-Schleife */
 
 #ifdef DISPLAY_OS_AVAILABLE
 uint8_t uart_log = 0; /**< Zaehler fuer UART-Auslastung */
@@ -177,7 +177,7 @@ void os_print_utilization(void) {
 	if (idle != idle2 && idle != idle3) {
 		idle = idle2; // idle enthaelt den falschen Wert, also sind idle2 und idle3 korrekt
 	}
-	uint32_t idle_ticks = (uint32_t) ((float) idle * (ZYCLES_PER_IDLERUN * 1000000.0f / F_CPU / TIMER_STEPS));
+	uint32_t idle_ticks = (uint32_t) ((float) idle * (ZYCLES_PER_IDLERUN * 1000000.f / F_CPU / TIMER_STEPS));
 
 	uint8_t idle_pc = (uint8_t) (idle_ticks * 100 / runtime);
 	LOG_INFO("%u %% idle", idle_pc);
@@ -189,7 +189,26 @@ void os_print_utilization(void) {
  * Idle-Thread
  */
 void os_idle(void) {
-	while(42) {
+	while (42) {
+		const uint8_t sreg = SREG;
+		__builtin_avr_cli();
+		const uint32_t now = tickCount.u32;
+		os_delayed_func_t* ptr = (os_delayed_func_t*) os_delayed_next_p; // cast away volatile
+		SREG = sreg;
+
+		if (ptr->p_func && ptr->runtime <= now) { // Funktion registriert und Ausfuehrungszeit erreicht
+			ptr->p_func(ptr->p_data);
+			ptr->p_func = NULL;
+			ptr->runtime = (uint32_t) -1;
+
+			/* next Zeiger updaten */
+			ptr = os_delayed_func_search_next();
+			const uint8_t sreg = SREG;
+			__builtin_avr_cli();
+			os_delayed_next_p = ptr;
+			SREG = sreg;
+		}
+
 #ifndef OS_KERNEL_LOG_AVAILABLE
 		/* Idle-Counter wird inkrementiert und 3-mal gespeichert.
 		 * Durch die 2 Backups gibt es immer mindestens 2 Kopien,
@@ -199,7 +218,8 @@ void os_idle(void) {
 		idle_counter[0] = tmp;
 		idle_counter[1] = tmp;
 		idle_counter[2] = tmp;
-		// 38 Zyklen pro Durchlauf => 2375 ns @ 16 MHz, 1900 ns @ 20 MHz
+
+		// 61 Zyklen pro Durchlauf => 3812 ns @ 16 MHz, 3050 ns @ 20 MHz
 #else
 		if (kernel_log_fifo.count > 0) {
 			kernel_log_t data;
@@ -279,12 +299,22 @@ void os_display(void) {
 
 	/* CPU-Auslastung berechnen (Durchschnitt seit letztem Aufruf) */
 	uint32_t time = TIMER_GET_TICKCOUNT_32;
+
+	/* idle_counter kann nicht atomar inkrementiert werden und wir wissen nicht, bei welcher Instruktion
+	 * der idle-Thread unterbrochen wurde. Da es aber 3 Kopien des Idle-Zaehlers gibt, muessen immer
+	 * mindesten zwei den korrekten Wert enthalten. Genau dieses Paar suchen wir nun und verwenden den Wert. */
 	uint32_t idle = idle_counter[0];
+	uint32_t idle2 = idle_counter[1];
+	uint32_t idle3 = idle_counter[2];
+	if (idle != idle2 && idle != idle3) {
+		idle = idle2; // idle enthaelt den falschen Wert, also sind idle2 und idle3 korrekt
+	}
+
 	uint32_t time_diff = time - last_time;
 	uint32_t idle_diff = idle - last_idle;
 	last_time = time;
 	last_idle = idle;
-	uint32_t idle_ticks = (uint32_t) ((float) idle_diff * (ZYCLES_PER_IDLERUN * 1000000.0f / F_CPU / TIMER_STEPS));
+	uint32_t idle_ticks = (uint32_t) ((float) idle_diff * (ZYCLES_PER_IDLERUN * 1000000.f / F_CPU / TIMER_STEPS));
 	uint8_t idle_pc = (uint8_t) (idle_ticks * 100 / time_diff);
 	uint8_t cpu_pc = (uint8_t) (100 - idle_pc);
 

@@ -36,6 +36,7 @@
 #include "os_utils.h"
 #include "log.h"
 #include "map.h"
+#include "display.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -52,6 +53,8 @@ Tcb_t os_threads[OS_MAX_THREADS];				/**< Array aller TCBs */
 Tcb_t * os_thread_running = NULL;				/**< Zeiger auf den TCB des Threads, der gerade laeuft */
 uint8_t os_kernel_stack[OS_KERNEL_STACKSIZE];	/**< Kernel-Stack */
 os_signal_t dummy_signal;						/**< Signal, das referenziert wird, wenn sonst keins gesetzt ist */
+os_delayed_func_t os_delayed_func[OS_DELAYED_FUNC_CNT]; /**< Registrierte Funktionen zur verzoegerten Ausfuehrung */
+volatile os_delayed_func_t* os_delayed_next_p = os_delayed_func; /**< Zeiger auf die naechste auszufuehrende verzoegerte Funktion */
 
 /**
  * Legt einen neuen Thread an.
@@ -230,6 +233,51 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to) {
 		:	"memory"
 	);
 }
+
+/**
+ * Sucht die als naechstes auszufuehrende Funktion heraus, wird intern benutzt.
+ * @return Naechste auszufuehrende Funktion oder NULL, falls keine Funktion registriert
+ */
+os_delayed_func_t* os_delayed_func_search_next(void) {
+	uint32_t next = (uint32_t) -1;
+	os_delayed_func_t* ptr = NULL;
+	uint8_t i;
+	for (i = 0; i < sizeof(os_delayed_func) / sizeof(os_delayed_func_t); ++i) {
+		if (os_delayed_func[i].runtime && os_delayed_func[i].runtime < next) {
+			ptr = &os_delayed_func[i];
+			next = ptr->runtime;
+		}
+	}
+
+	return ptr;
+}
+
+/**
+ * Registriert eine Funktion zur spaeteren Ausfuehrung.
+ * @param p_func Zeiger auf die Funktion
+ * @param p_data Zeiger auf Daten fuer die Funktion oder NULL
+ * @param delay_ms Zeit in ms, nach der die Funktion (fruehestens) ausgefuehrt werden soll
+ * @return 0, falls Funktion korrekt registriert werden konnte, 1 sonst
+ */
+uint8_t os_delay_func(os_delayed_func_ptr_t p_func, void* p_data, uint32_t delay_ms) {
+	const uint32_t now = TIMER_GET_TICKCOUNT_32;
+	uint8_t i;
+	os_enterCS();
+	for (i = 0; i < sizeof(os_delayed_func) / sizeof(os_delayed_func_t); ++i) { // freien Platz suchen
+		if (! os_delayed_func[i].p_func) {
+			os_delayed_func[i].p_func = p_func;
+			os_delayed_func[i].p_data = p_data;
+			os_delayed_func[i].runtime = now + MS_TO_TICKS(delay_ms);
+
+			os_delayed_next_p = os_delayed_func_search_next(); // next Zeiger aktualisieren
+			os_exitCS();
+			return 0;
+		}
+	}
+	os_exitCS();
+	return 1;
+}
+
 
 #ifdef OS_DEBUG
 /**

@@ -36,6 +36,7 @@ uint8_t EEPROM resetsEEPROM = 0; /**< Reset-Counter im EEPROM */
 #include "led.h"
 #include "ena.h"
 #include "uart.h"
+#include "motor.h"
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/wdt.h>
@@ -117,6 +118,14 @@ void init_before_main(void) {
 #endif // DISPLAY_RESET_INFO_AVAILABLE
 }
 
+
+static void servo_init_stop(void* p_data) {
+	(void) p_data;
+
+	servo_set(SERVO1, SERVO_OFF);
+	servo_set(SERVO2, SERVO_OFF);
+}
+
 /**
  * Hardwareabhaengige Initialisierungen, die zuerst ausgefuehrt werden sollen
  * \param argc Anzahl der Kommandozeilenparameter
@@ -158,6 +167,12 @@ void ctbot_init_low_last(void) {
 	os_mask_stack(os_idle_stack, OS_IDLE_STACKSIZE);
 #endif
 	os_create_thread(&os_idle_stack[OS_IDLE_STACKSIZE - 1], os_idle);
+
+	servo_set(SERVO1, DOOR_OPEN);
+	servo_set(SERVO2, CAM_CENTER);
+	if (os_delay_func(servo_init_stop, NULL, 2000)) {
+		LED_on(LED_TUERKIS);
+	}
 #endif // OS_AVAILABLE
 
 #ifdef EXPANSION_BOARD_MOD_AVAILABLE
