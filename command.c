@@ -1021,9 +1021,12 @@ int8_t command_evaluate(void) {
 			servo_set(SERVO1, (uint8_t) received_command.data_l);
 			servo_set(SERVO2, (uint8_t) received_command.data_r);
 			break;
-		case CMD_AKT_LED:
-			LED_set((uint8_t) received_command.data_l);
-			break;
+		case CMD_AKT_LED: {
+				uint8_t led = LED_get() & LED_TUERKIS;
+				led = (uint8_t) (led | (received_command.data_l & ~LED_TUERKIS)); // LED_TUERKIS wird fuer Fehleranzeige auf ATmega-Seite verwendet
+				LED_set(led);
+				break;
+		}
 		case CMD_AKT_LCD:
 			switch (received_command.request.subcommand) {
 			case SUB_LCD_CLEAR:

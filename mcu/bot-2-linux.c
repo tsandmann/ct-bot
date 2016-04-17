@@ -42,8 +42,8 @@
 #include <string.h>
 
 
-#define CRC_ERROR_TIME 2000UL
-#define UART_TIMEOUT 500UL
+#define ERROR_TIME		1000UL	/**< Zeitdauer fuer Error-Anzeige (CRC oder Timeout) via tuerkis LED in ms  */
+#define UART_TIMEOUT	5		/**< Timeout in ms fuer UART-Kommunikation mit Linux-Board */
 
 /**
  * Initialisiert die Kommunikation mit dem Linux-Board
@@ -70,10 +70,11 @@ void bot_2_linux_init(void) {
  * wertet sie aus. Dazu nutzt sie die Funktion command_evaluate().
  */
 void bot_2_linux_listen(void) {
-	static uint32_t last_crc_error = 0 - MS_TO_TICKS(CRC_ERROR_TIME);
+	static uint32_t last_crc_error = 0 - MS_TO_TICKS(ERROR_TIME);
+	static uint32_t last_uart_timeout = 0 - MS_TO_TICKS(ERROR_TIME);
 
 	uint32_t now = TIMER_GET_TICKCOUNT_32;
-	if (now < last_crc_error + MS_TO_TICKS(CRC_ERROR_TIME)) {
+	if (now < last_crc_error + MS_TO_TICKS(ERROR_TIME) || now < last_uart_timeout + MS_TO_TICKS(ERROR_TIME)) {
 		LED_on(LED_TUERKIS);
 	} else {
 		LED_off(LED_TUERKIS);
@@ -82,13 +83,15 @@ void bot_2_linux_listen(void) {
 	uint16_t i = 0;
 	uint32_t timeout = now + MS_TO_TICKS(UART_TIMEOUT);
 	while (now < timeout) {
+		now = TIMER_GET_TICKCOUNT_32;
 		if (uart_data_available() >= sizeof(command_t)) {
+			timeout = now + MS_TO_TICKS(UART_TIMEOUT);
 			const int8_t result = command_read();
 			if (result == 0) {
 				command_evaluate();
 			} else if (result == -20) {
 				/* CRC Fehler */
-				last_crc_error = TIMER_GET_TICKCOUNT_32;
+				last_crc_error = now;
 			}
 
 			if (received_command.request.command == CMD_DONE) {
@@ -103,8 +106,9 @@ void bot_2_linux_listen(void) {
 			display_cursor(4, 20);
 			display_puts("|");
 		}
-		now = TIMER_GET_TICKCOUNT_32;
 	}
+	last_uart_timeout = now;
+	LED_on(LED_TUERKIS);
 }
 
 /**
