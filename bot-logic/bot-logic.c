@@ -558,7 +558,7 @@ Behaviour_t * switch_to_behaviour(Behaviour_t * from, void (* to)(Behaviour_t *)
 	tmp.byte = (uint8_t) ((mode & 2) >> 1);
 	beh_mode.background = tmp.bit;
 
-	if (job->caller) { // Ist das auzurufende Verhalten noch beschaeftigt?
+	if (job->caller || job->active || job->subResult == BEHAVIOUR_SUBRUNNING) { // Ist das auzurufende Verhalten noch beschaeftigt?
 		if (beh_mode.override == BEHAVIOUR_NOOVERRIDE) { // nicht ueberschreiben, sofortige Rueckkehr
 			if (from) {
 				from->subResult = BEHAVIOUR_SUBFAIL;

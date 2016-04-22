@@ -106,20 +106,18 @@ ISR(TIMER2_COMP_vect) {
  * initialisiert Timer 2 und startet ihn
  */
 void timer_2_init(void) {
-	TCNT2 = 0x00; // TIMER vorladen
+	TCNT2 = 0; // TIMER vorladen
 
-	// aendert man den Prescaler muss man die Formel fuer OCR2 anpassen !!!
-	// Compare Register nur 8-Bit breit --> evtl. Teiler anpassen
 #if defined MCU_ATMEGA644X || defined __AVR_ATmega1284P__
-	TCCR2A = _BV(WGM21);	// CTC Mode
-	TCCR2B = _BV(CS22);		// Prescaler = CLK/64
-	OCR2A = ((XTAL/64/TIMER_2_CLOCK) - 1);	// Timer2A
-	TIMSK2  |= _BV(OCIE2A);	// TIMER2 Output Compare Match A Interrupt an
+	TCCR2A = _BV(WGM21); // CTC Mode
+	TCCR2B = _BV(CS22); // Prescaler 64
+	OCR2A = ((F_CPU / 64 / TIMER_2_CLOCK) - 1); // Timer2A
+	TIMSK2  |= _BV(OCIE2A); // TIMER2 Output Compare Match A Interrupt an
 #else
 	// use CLK/64 prescale value, clear timer/counter on compare match
 	TCCR2 = _BV(WGM21) | _BV(CS22);
-	OCR2 = ((XTAL/64/TIMER_2_CLOCK) - 1);
-	TIMSK  |= _BV(OCIE2);	// enable Output Compare 0 overflow interrupt
+	OCR2 = ((F_CPU / 64 / TIMER_2_CLOCK) - 1);
+	TIMSK  |= _BV(OCIE2); // enable Output Compare 0 overflow interrupt
 #endif // MCU_ATMEGA644X || ATmega1284P
 
 	__builtin_avr_sei(); // enable interrupts

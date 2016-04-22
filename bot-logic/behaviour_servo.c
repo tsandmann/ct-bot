@@ -48,7 +48,7 @@ static uint8_t servo_id = 0; /**< 0, wenn kein Servo aktiv, sonst ID des gerade 
  * \param *data der Verhaltensdatensatz
  */
 void bot_servo_behaviour(Behaviour_t * data) {
-	BLOCK_BEHAVIOUR(data, 1000); // 1 s warten
+	BLOCK_BEHAVIOUR(data, 1500); // 1.5 s warten
 
 	return_from_behaviour(data); // Verhalten aus
 	LOG_DEBUG("bot_servo_behaviour(): servo_set(%u, %u)", servo_active, SERVO_OFF);

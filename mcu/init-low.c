@@ -175,7 +175,7 @@ void ctbot_init_low_last(void) {
 
 	servo_set(SERVO1, DOOR_OPEN);
 	servo_set(SERVO2, CAM_CENTER);
-	if (os_delay_func(servo_init_stop, NULL, 2000)) {
+	if (os_delay_func(servo_init_stop, NULL, 3000)) {
 		LED_on(LED_TUERKIS);
 	}
 #endif // OS_AVAILABLE

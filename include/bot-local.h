@@ -88,9 +88,8 @@
 /* System-Konstanten
    --> Diese Aenderungen sind mit lokalen Hardware-Anpassungen verbunden! */
 
-#define F_CPU	16000000L	/**< CPU-Frequenz [Hz] */
-//#define F_CPU	20000000L	/**< CPU-Frequenz [Hz] */
-#define XTAL	F_CPU		/**< CPU-Frequenz [Hz] */
+#define F_CPU	16000000UL	/**< CPU-Frequenz [Hz] */
+//#define F_CPU	20000000UL	/**< CPU-Frequenz [Hz] */
 
 //#define UART_BAUD	57600	/**< Baudrate  57600 fuer UART-Kommunikation */
 #define UART_BAUD	115200	/**< Baudrate 115200 fuer UART-Kommunikation */
@@ -109,22 +108,12 @@
 //#define DISTSENS_TYPE_GP2Y0A60 /**< Distanzsensor Typ GP2Y0A60 */
 
 /* Servo-Parameter */
-#ifndef __AVR_ATmega1284P__
-#if F_CPU == 16000000L
-#define DOOR_CLOSE 	7		/**< Rechter Anschlag Servo 1 */
-#define DOOR_OPEN	14		/**< Linker Anschlag Servo 1 */
-#else
-#define DOOR_CLOSE 	10		/**< Rechter Anschlag Servo 1 */
-#define DOOR_OPEN	18		/**< Linker Anschlag Servo 1 */
-#endif // F_CPU
-#else
-#define DOOR_CLOSE 	64		/**< Rechter Anschlag Servo 1 */
-#define DOOR_OPEN	180		/**< Linker Anschlag Servo 1 */
-#endif // ! __AVR_ATmega1284P__
+#define DOOR_CLOSE 	65	/**< Rechter Anschlag Servo 1 (fuer ATmega32/644: Schrittweite 18, Offset 7) */
+#define DOOR_OPEN	185	/**< Linker Anschlag Servo 1 (fuer ATmega32/644: Schrittweite 18, Offset 7) */
 
-#define CAM_LEFT 	60		/**< Rechter Anschlag Servo 2 */
-#define CAM_RIGHT	250		/**< Linker Anschlag Servo 2 */
-#define CAM_CENTER	150		/**< Mittelstellung Servo 2 */
+#define CAM_LEFT 	10	/**< Rechter Anschlag Servo 2 */
+#define CAM_RIGHT	250	/**< Linker Anschlag Servo 2 */
+#define CAM_CENTER	120	/**< Mittelstellung Servo 2 */
 
 
 /*** Einstellungen fuer die Verhaltensregeln ***/

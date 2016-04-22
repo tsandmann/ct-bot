@@ -159,14 +159,7 @@ static inline void bot_reset(void) {
  * \param diff Wert, um den die Servo-Position veraendert wird
  */
 static void __attribute__ ((unused)) rc5_change_servo2(int16_t diff) {
-	static uint8_t old_pos;
-	if (old_pos == 0) {
-		/* Initialisierung auf Mitte */
-		if (bot_servo(NULL, SERVO2, CAM_CENTER)) {
-			old_pos = CAM_CENTER;
-		}
-		return;
-	}
+	static uint8_t old_pos = CAM_CENTER / 10 * 10;
 
 	int16_t new_pos = old_pos + diff;
 	/* Begrenzungen */
