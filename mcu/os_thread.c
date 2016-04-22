@@ -240,7 +240,7 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to) {
  */
 os_delayed_func_t* os_delayed_func_search_next(void) {
 	uint32_t next = (uint32_t) -1;
-	os_delayed_func_t* ptr = NULL;
+	os_delayed_func_t* ptr = os_delayed_func;
 	uint8_t i;
 	for (i = 0; i < sizeof(os_delayed_func) / sizeof(os_delayed_func_t); ++i) {
 		if (os_delayed_func[i].runtime && os_delayed_func[i].runtime < next) {

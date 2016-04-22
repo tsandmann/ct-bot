@@ -118,13 +118,18 @@ void init_before_main(void) {
 #endif // DISPLAY_RESET_INFO_AVAILABLE
 }
 
-
+#ifdef OS_AVAILABLE
+/**
+ * Hilfsfunktion, die beide Servos ausschaltet
+ * @param p_data wird nicht ausgewertet
+ */
 static void servo_init_stop(void* p_data) {
 	(void) p_data;
 
 	servo_set(SERVO1, SERVO_OFF);
 	servo_set(SERVO2, SERVO_OFF);
 }
+#endif // OS_AVAILABLE
 
 /**
  * Hardwareabhaengige Initialisierungen, die zuerst ausgefuehrt werden sollen
