@@ -296,6 +296,7 @@ void os_display(void) {
 #ifndef OS_KERNEL_LOG_AVAILABLE
 	static uint32_t last_time;
 	static uint32_t last_idle;
+	static char display_buf[20];
 
 	/* CPU-Auslastung berechnen (Durchschnitt seit letztem Aufruf) */
 	uint32_t time = TIMER_GET_TICKCOUNT_32;
@@ -322,15 +323,16 @@ void os_display(void) {
 	uart_log = 0;
 
 	/* Balken fuer Auslastung ausgeben */
-	display_cursor(1, 1);
 	for (i = 0; i < cpu_pc / 5; ++i) {
-		display_data((char) 0xff); // schwarzes Feld
+		display_buf[i] = (char) 0xff; // schwarzes Feld
 	}
 
 	/* Spaces fuer Idle ausgeben */
 	for (; i < 20; ++i) {
-		display_data(0x10); // Space
+		display_buf[i] = 0x10; // Space
 	}
+	display_cursor(1, 1);
+	display_printf("%s", display_buf);
 
 	display_cursor(2, 1);
 	display_printf("CPU:%3u%% UART:%3u%%", cpu_pc, uart_pc);
@@ -342,7 +344,7 @@ void os_display(void) {
 	} else {
 		display_puts("aus");
 	}
-#endif //OS_KERNEL_LOG_AVAILABLE
+#endif // OS_KERNEL_LOG_AVAILABLE
 
 	display_cursor(3, 1);
 	display_puts("dump Stacks: 1: Main");

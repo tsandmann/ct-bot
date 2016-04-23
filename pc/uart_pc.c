@@ -91,41 +91,49 @@ uint8_t uart_init_baud(const char * port, int baudr) {
 		return 1;
 	}
 
+	if (tcflush(fd, TCIOFLUSH)) {
+		LOG_ERROR("Unable to flush serial port \"%s\"", port);
+		return 2;
+	}
+
 	int r = tcgetattr(fd, &old_settings);
 	if (r != 0) {
 		LOG_ERROR("Unable to read settings of port \"%s\"", port);
 		uart_close();
-		return 2;
+		return 3;
 	}
 
 	struct termios settings;
 	memset(&settings, 0, sizeof(settings));
 
+
 	settings.c_cflag = baudr | CS8 | CLOCAL | CREAD;
 	settings.c_iflag = IGNPAR;
 	settings.c_oflag = 0;
 	settings.c_lflag = 0;
-	settings.c_cc[VMIN] = 1;	// block until n bytes are received
-	settings.c_cc[VTIME] = 0;	// block until timeout (n * 100 ms)
+	settings.c_cc[VMIN] = 1; // block until n bytes are received
+	settings.c_cc[VTIME] = 0; // block until timeout (n * 100 ms)
+//	cfmakeraw(&settings);
+
 	r = tcsetattr(fd, TCSANOW, &settings);
 	if (r != 0) {
 		LOG_ERROR("Unable to set settings to port \"%s\"", port);
 		uart_close();
-		return 3;
+		return 4;
 	}
 
 	int status;
 	if (ioctl(fd, TIOCMGET, &status) == -1) {
 		LOG_ERROR("Unable to get status of port \"%s\"", port);
 		uart_close();
-		return 4;
+		return 5;
 	}
 
 	int bytes_available;
 	if (ioctl(fd, FIONREAD, &bytes_available) == -1) {
 		LOG_ERROR("Unable to get available bytes of port \"%s\"", port);
 		uart_close();
-		return 5;
+		return 6;
 	}
 
 	LOG_DEBUG("uart_init_baud(): Reading available %d bytes from port %s ...", bytes_available, port);
@@ -134,7 +142,7 @@ uint8_t uart_init_baud(const char * port, int baudr) {
 		if (uart_read(&tmp, 1) != 1) {
 			LOG_ERROR("Unable to read available bytes of port \"%s\"", port);
 			uart_close();
-			return 6;
+			return 7;
 		}
 	}
 
@@ -196,6 +204,19 @@ int16_t uart_write(const void * data, int16_t length) {
 	int16_t n = write(fd, data, length);
 	LOG_DEBUG("uart_write(): %d bytes written", n);
 	return n;
+}
+
+/**
+ * Prueft, ob Daten vom UART verfuegbar
+ * \return	Anzahl der verfuegbaren Bytes oder -1 bei Fehler
+ */
+int16_t uart_data_available(void) {
+	int bytes_available;
+	if (ioctl(fd, FIONREAD, &bytes_available) == -1) {
+		LOG_ERROR("uart_data_available(): ioctl() failed");
+		return -1;
+	}
+	return (int16_t) bytes_available;
 }
 
 #endif // PC

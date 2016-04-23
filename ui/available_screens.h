@@ -53,6 +53,7 @@
 #define DISPLAY_UBASIC_AVAILABLE	    	/**< Steuerung des uBasic-Verhaltens */
 #define DISPLAY_ABL_STACK_AVAILABLE			/**< Stack Trace des ABL-Interpreters */
 #define DISPLAY_LINUX_AVAILABLLE			/**< zeigt den vom Linux-Board uebertragenen Displayinhalt an */
+#define DISPLAY_ATMEGA_AVAILABLLE			/**< zeigt den vom ATmega uebertragenen Displayinhalt an */
 
 #endif // DISPLAY_AVAILABLE
 #endif // AVAILABLE_SCREENS_H_

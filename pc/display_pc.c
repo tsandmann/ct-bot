@@ -33,6 +33,7 @@
 #include "bot-2-sim.h"
 #include "bot-2-atmega.h"
 #include "log.h"
+#include "tcp.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -51,6 +52,7 @@ static FILE* fp = NULL;
  * Loescht das ganze Display
  */
 void display_clear(void) {
+	/* ARM-Linux Display */
 #if defined ARM_LINUX_BOARD && defined ARM_LINUX_DISPLAY
 	if (fp) {
 		fprintf(fp, "\033[2J");
@@ -58,17 +60,26 @@ void display_clear(void) {
 	}
 #endif // ARM_LINUX_BOARD && ARM_LINUX_DISPLAY
 
+	/* MCU-Display fuer ARM-Linux oder Sim-Display fuer PC */
+#if ! defined ARM_LINUX_BOARD || defined DISPLAY_MCU_AVAILABLE
 #ifdef ARM_LINUX_BOARD
 	cmd_func_t old_func = cmd_functions;
 	set_bot_2_atmega();
 #endif
 	command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, 0, 0, 0);
+#endif // ! ARM_LINUX_BOARD || DISPLAY_MCU_AVAILABLE
 
+	/* Sim-Display fuer ARM-Linux */
 #if defined ARM_LINUX_BOARD && defined BOT_2_SIM_AVAILABLE && defined DISPLAY_REMOTE_AVAILABLE
-	set_bot_2_sim();
-	command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, 0, 0, 0);
+	if (tcp_client_connected()) {
+		cmd_func_t old_func = cmd_functions;
+		set_bot_2_sim();
+		command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, 0, 0, 0);
+		cmd_functions = old_func;
+	}
 #endif // ARM_LINUX_BOARD && BOT_2_SIM_AVAILABLE && DISPLAY_REMOTE_AVAILABLE
-#ifdef ARM_LINUX_BOARD
+
+#if defined ARM_LINUX_BOARD && defined DISPLAY_MCU_AVAILABLE
 	cmd_functions = old_func;
 #endif
 }
@@ -79,6 +90,7 @@ void display_clear(void) {
  * \param column	Spalte
  */
 void display_cursor(int16_t row, int16_t column) {
+	/* ARM-Linux Display */
 #if defined ARM_LINUX_BOARD && defined ARM_LINUX_DISPLAY
 	if (fp) {
 		fprintf(fp, "\033[%d;%dH", row, column);
@@ -89,17 +101,26 @@ void display_cursor(int16_t row, int16_t column) {
 	last_row = row - 1;
 	last_column = column - 1;
 
+	/* MCU-Display fuer ARM-Linux oder Sim-Display fuer PC */
+#if ! defined ARM_LINUX_BOARD || defined DISPLAY_MCU_AVAILABLE
 #ifdef ARM_LINUX_BOARD
 	cmd_func_t old_func = cmd_functions;
 	set_bot_2_atmega();
 #endif
 	command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, last_column, last_row, 0);
+#endif // ! ARM_LINUX_BOARD || DISPLAY_MCU_AVAILABLE
 
+	/* Sim-Display fuer ARM-Linux */
 #if defined ARM_LINUX_BOARD && defined BOT_2_SIM_AVAILABLE && defined DISPLAY_REMOTE_AVAILABLE
-	set_bot_2_sim();
-	command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, last_column, last_row, 0);
+	if (tcp_client_connected()) {
+		cmd_func_t old_func = cmd_functions;
+		set_bot_2_sim();
+		command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, last_column, last_row, 0);
+		cmd_functions = old_func;
+	}
 #endif // ARM_LINUX_BOARD && BOT_2_SIM_AVAILABLE && DISPLAY_REMOTE_AVAILABLE
-#ifdef ARM_LINUX_BOARD
+
+#if defined ARM_LINUX_BOARD && defined DISPLAY_MCU_AVAILABLE
 	cmd_functions = old_func;
 #endif
 }
@@ -108,6 +129,7 @@ void display_cursor(int16_t row, int16_t column) {
  * Initialisiert das Display
  */
 void display_init(void) {
+	/* ARM-Linux Display */
 #if defined ARM_LINUX_BOARD && defined ARM_LINUX_DISPLAY
 	if (strcmp("stdout", ARM_LINUX_DISPLAY) == 0) {
 		fp = stdout;
@@ -164,31 +186,54 @@ uint8_t display_puts(const char * text) {
 		len = DISPLAY_LENGTH;
 	}
 
+	/* ARM-Linux Display */
+#if defined ARM_LINUX_BOARD && defined ARM_LINUX_DISPLAY
+	if (fp) {
+		fprintf(fp, text);
+//		fflush(fp);
+	}
+#endif // ARM_LINUX_BOARD && ARM_LINUX_DISPLAY
+
+	/* MCU-Display fuer ARM-Linux oder Sim-Display fuer PC */
+#if ! defined ARM_LINUX_BOARD || defined DISPLAY_MCU_AVAILABLE
 #ifdef ARM_LINUX_BOARD
 	cmd_func_t old_func = cmd_functions;
 	set_bot_2_atmega();
 #endif
 	command_write_rawdata(CMD_AKT_LCD, SUB_LCD_DATA, last_column, last_row, len, text);
+#endif // ! ARM_LINUX_BOARD || DISPLAY_MCU_AVAILABLE
 
-#if defined ARM_LINUX_BOARD && defined ARM_LINUX_DISPLAY
-	if (fp) {
-		fprintf(fp, text);
-		fflush(fp);
-	}
-#endif // ARM_LINUX_BOARD && ARM_LINUX_DISPLAY
-
+	/* Sim-Display fuer ARM-Linux */
 #if defined ARM_LINUX_BOARD && defined BOT_2_SIM_AVAILABLE && defined DISPLAY_REMOTE_AVAILABLE
-	set_bot_2_sim();
-	command_write_rawdata(CMD_AKT_LCD, SUB_LCD_DATA, last_column, last_row, len, text);
+	if (tcp_client_connected()) {
+		cmd_func_t old_func = cmd_functions;
+		set_bot_2_sim();
+		command_write_rawdata(CMD_AKT_LCD, SUB_LCD_DATA, last_column, last_row, len, text);
+		cmd_functions = old_func;
+	}
 #endif // ARM_LINUX_BOARD && BOT_2_SIM_AVAILABLE && DISPLAY_REMOTE_AVAILABLE
 
-#ifdef ARM_LINUX_BOARD
+#if defined ARM_LINUX_BOARD && defined DISPLAY_MCU_AVAILABLE
 	cmd_functions = old_func;
 #endif
 
 	last_column += len;
 
 	return len;
+}
+
+/**
+ * Schreibt ein Zeichen auf das Display
+ * \param data 	Das Zeichen
+ */
+void display_data(const char data) {
+	char buffer[2] = {data, 0};
+	if (buffer[0] < 0x20) {
+		buffer[0] = ' ';
+	} else if (buffer[0] > 0x7e) {
+		buffer[0] = '#';
+	}
+	display_puts(buffer);
 }
 #endif // DISPLAY_AVAILABLE
 #endif // PC

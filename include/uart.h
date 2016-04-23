@@ -142,6 +142,12 @@ void uart_flush(void);
  */
 int16_t uart_read(void * data, int16_t length);
 
+/**
+ * Prueft, ob Daten vom UART verfuegbar
+ * \return	Anzahl der verfuegbaren Bytes oder -1 bei Fehler
+ */
+int16_t uart_data_available(void);
+
 #ifdef ARM_LINUX_BOARD
 
 void uart_test(uint32_t runs);

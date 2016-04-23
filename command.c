@@ -1013,6 +1013,80 @@ int8_t command_evaluate(void) {
 		}
 #endif // PC
 
+		case CMD_AKT_LCD: {
+#if defined DISPLAY_MCU_AVAILABLE || defined ARM_LINUX_BOARD
+			void (* display_func)(void) = NULL;
+#ifdef BOT_2_RPI_AVAILABLE
+			display_func = linux_display;
+#elif defined ARM_LINUX_BOARD
+			display_func = atmega_display;
+#endif
+			switch (received_command.request.subcommand) {
+			case SUB_LCD_CLEAR:
+				if (screen_functions[display_screen] == display_func) {
+					display_clear();
+					LOG_DEBUG("command_evaluate(): SUB_LCD_CLEAR: display_clear() from ATmega");
+				}
+				break;
+			case SUB_LCD_CURSOR:
+				if (screen_functions[display_screen] == display_func) {
+					display_cursor((uint8_t) (received_command.data_r + 1), (uint8_t) (received_command.data_l + 1));
+					LOG_DEBUG("command_evaluate(): SUB_LCD_CURSOR: display_cursor(%d, %d) from ATmega", received_command.data_r + 1, received_command.data_l + 1);
+				}
+				break;
+			case SUB_LCD_DATA: {
+				if (screen_functions[display_screen] == display_func) {
+					display_cursor((uint8_t) (received_command.data_r + 1), (uint8_t) (received_command.data_l + 1));
+					LOG_DEBUG("command_evaluate(): SUB_LCD_DATA: display_cursor(%d, %d) from ATmega", received_command.data_r + 1, received_command.data_l + 1);
+					LOG_DEBUG(" payload=%u", received_command.payload);
+				}
+#ifdef MCU
+				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
+#endif
+#ifdef ARM_LINUX_BOARD
+#ifdef DEBUG_COMMAND
+				char debug_buf[21];
+				memset(debug_buf, 0, sizeof(debug_buf));
+				struct timeval start, now;
+				gettimeofday(&start, NULL);
+#endif // DEBUG_COMMAND
+#endif // ARM_LINUX_BOARD
+				uint8_t i;
+				for (i = 0; i < received_command.payload; ++i) {
+#ifdef MCU
+					while (uart_data_available() < 1 && (uint16_t)(TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)) {}
+#endif
+					uint8_t n;
+					char buffer;
+					if ((n = cmd_functions.read(&buffer, 1)) != 1) {
+						LOG_ERROR("command_evaluate(): SUB_LCD_DATA: error while receiving display data, n=%d i=%u", n, i);
+						LOG_ERROR(" uart_data_available()=%d", uart_data_available());
+						i = 0;
+						break;
+					}
+					if (i < 20 && screen_functions[display_screen] == display_func) {
+						display_data(buffer);
+#ifdef DEBUG_COMMAND
+						debug_buf[i] = buffer;
+#endif
+					}
+				}
+#ifdef DEBUG_COMMAND
+				gettimeofday(&now, NULL);
+				const uint64_t t = (now.tv_sec - start.tv_sec) * 1000000UL + now.tv_usec - start.tv_usec;
+				LOG_DEBUG("command_evaluate(): SUB_LCD_DATA: receive took %llu us", t);
+				if (i) {
+					LOG_DEBUG("command_evaluate(): SUB_LCD_DATA: display_data() %u bytes from ATmega", i);
+					LOG_DEBUG(" \"%s\"", debug_buf);
+				}
+#endif // DEBUG_COMMAND
+			}
+			break;
+			}
+#endif // DISPLAY_MCU_AVAILABLE || PC
+			break;
+			}
+
 #ifdef BOT_2_RPI_AVAILABLE
 		case CMD_AKT_MOT:
 			motor_set(received_command.data_l, received_command.data_r);
@@ -1027,38 +1101,6 @@ int8_t command_evaluate(void) {
 				LED_set(led);
 				break;
 		}
-		case CMD_AKT_LCD:
-			switch (received_command.request.subcommand) {
-			case SUB_LCD_CLEAR:
-				if (screen_functions[display_screen] == linux_display) {
-					display_clear();
-				}
-				break;
-			case SUB_LCD_CURSOR:
-				if (screen_functions[display_screen] == linux_display) {
-					display_cursor((uint8_t) (received_command.data_r + 1), (uint8_t) (received_command.data_l + 1));
-				}
-				break;
-			case SUB_LCD_DATA: {
-				if (screen_functions[display_screen] == linux_display) {
-					display_cursor((uint8_t) (received_command.data_r + 1), (uint8_t) (received_command.data_l + 1));
-				}
-				char buffer;
-				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
-				uint8_t i;
-				for (i = 0; i < received_command.payload && i < 20; ++i) {
-#ifdef MCU
-					while (uart_data_available() < 1 && (uint16_t)(TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
-#endif
-					int8_t n = (int8_t) cmd_functions.read(&buffer, 1);
-					if (n == 1 && screen_functions[display_screen] == linux_display) {
-						display_data(buffer);
-					}
-				}
-				break;
-			}
-			}
-			break;
 		case CMD_SETTINGS:
 			switch (received_command.request.subcommand) {
 			case SUB_SETTINGS_DISTSENS:

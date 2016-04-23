@@ -47,8 +47,9 @@
 
 
 /* Display-Funktionen */
-#define DISPLAY_AVAILABLE					/**< Display aktiv */
+#define DISPLAY_AVAILABLE					/**< Display-Funktionen aktiv */
 #define KEYPAD_AVAILABLE					/**< Keypad-Eingabe vorhanden? */
+#define DISPLAY_MCU_AVAILABLE				/**< lokales Display (an ATmega) vorhanden */
 #define DISPLAY_REMOTE_AVAILABLE			/**< Sende LCD Anzeigedaten an den Simulator */
 //#define WELCOME_AVAILABLE					/**< kleiner Willkommensgruss */
 
@@ -113,11 +114,6 @@
 #undef ARM_LINUX_BOARD
 #endif
 
-#ifndef DISPLAY_AVAILABLE
-#undef WELCOME_AVAILABLE
-#undef DISPLAY_REMOTE_AVAILABLE
-#endif
-
 #ifndef IR_AVAILABLE
 #undef RC5_AVAILABLE
 #endif
@@ -145,6 +141,7 @@
 #ifndef DOXYGEN
 /* Folgende Optionen deaktivieren, es gibt sie nicht fuer PC */
 #undef UART_AVAILABLE
+#undef SHIFT_AVAILABLE
 #undef SRF10_AVAILABLE
 #undef TWI_AVAILABLE
 #undef SPEED_CONTROL_AVAILABLE
@@ -179,15 +176,30 @@
 #undef BEHAVIOUR_AVAILABLE
 #undef POS_STORE_AVAILABLE
 #undef MAP_AVAILABLE
+#ifdef DISPLAY_MCU_AVAILABLE
+#undef DISPLAY_REMOTE_AVAILABLE
+#endif
 #endif // MCU && BOT_2_RPI_AVAILABLE
 
 #ifdef BOT_2_SIM_AVAILABLE
 #define UART_AVAILABLE		/**< Serielle Kommunikation */
-#define COMMAND_AVAILABLE	/**< High-Level Communication */
+#define COMMAND_AVAILABLE	/**< High-Level Kommunikation */
 #else // ! BOT_2_SIM_AVAILABLE
+#ifndef BOT_2_RPI_AVAILABLE
 #undef DISPLAY_REMOTE_AVAILABLE
+#endif
 #undef MAP_2_SIM_AVAILABLE
 #endif // BOT_2_SIM_AVAILABLE
+
+#if ! (defined DISPLAY_MCU_AVAILABLE || defined DISPLAY_REMOTE_AVAILABLE || defined ARM_LINUX_DISPLAY)
+#undef DISPLAY_AVAILABLE
+#endif
+
+#ifndef DISPLAY_AVAILABLE
+#undef WELCOME_AVAILABLE
+#undef DISPLAY_MCU_AVAILABLE
+#undef DISPLAY_REMOTE_AVAILABLE
+#endif
 
 #undef EEPROM_EMU_AVAILABLE
 #undef CREATE_TRACEFILE_AVAILABLE
