@@ -56,6 +56,8 @@ void bot_2_linux_init(void) {
 	display_printf("*** Waiting for");
 	display_cursor(2, 1);
 	display_printf("*** connection...");
+#else
+	delay_us(50);
 #endif // DISPLAY_MCU_AVAILABLE
 	if (((PINB >> 2) & 1) == 1) { // error sensor
 		LED_on(LED_GRUEN | LED_ORANGE);
