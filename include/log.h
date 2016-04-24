@@ -56,6 +56,7 @@
  * 								BOT_2_SIM_AVAILABLE muss zusaetzlich definiert sein.
  * 3. Logging ueber Display:	LOG_DISPLAY_AVAILABLE muss definiert sein, sowie DISPLAY_AVAILABLE.
  * 4. Logging in txt auf MMC:	MMC_AVAILABLE und BOT_FS_AVAILABLE muessen an sein.
+ * 5. Logging zum RPi			LOG_RPI_AVAILABLE muss definiert sein.
  * </pre>
  *
  * Alternativ schlankere Variante fuer LOG_CTSIM_AVAILABLE oder LOG_MMC_AVAILABLE, indem man USE_MINILOG aktiviert.
@@ -77,10 +78,9 @@ typedef enum {
 	LOG_TYPE_INFO,		/**< Allgemeine Informationen */
 	LOG_TYPE_WARN,		/**< Auftreten einer unerwarteten Situation */
 	LOG_TYPE_ERROR,		/**< Fehler aufgetreten */
-	LOG_TYPE_FATAL		/**< Kritischer Fehler */
+	LOG_TYPE_FATAL,		/**< Kritischer Fehler */
+	LOG_TYPE_RAW,		/**< Reine Datenausgabe */
 } PACKED LOG_TYPE;
-
-#define LOG_RAW LOG_INFO
 
 #ifdef PC
 /**
@@ -126,6 +126,14 @@ typedef enum {
 }
 
 /**
+ * Reine Datenausgabe
+ */
+#define LOG_RAW(...) {		log_begin(__FILE__, __LINE__, LOG_TYPE_RAW); 	\
+							log_printf(__VA_ARGS__);						\
+							log_end();										\
+}
+
+/**
  * Schreibt Angaben ueber Datei, Zeilennummer und den Log-Typ in den Puffer.
  * Achtung, Mutex wird gelockt und muss explizit durch log_end() wieder
  * freigegeben werden!
@@ -146,6 +154,9 @@ void log_printf(const char * format, ...);
  */
 void log_end(void);
 #else // ! PC
+
+#define LOG_RAW LOG_INFO
+
 /**
  * Allgemeines Debugging (Methode DiesUndDas wurde mit Parameter SoUndSo
  * aufgerufen ...)

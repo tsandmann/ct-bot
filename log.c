@@ -80,6 +80,7 @@
 #include "command.h"
 #include "uart.h"
 #include "mmc-vm.h"
+#include "bot-2-sim.h"
 
 #ifdef PC
 #include <pthread.h>
@@ -150,7 +151,6 @@ static char screen_output[4][LOG_BUFFER_SIZE];	/**< Puffer, damit mehr als eine 
  * \param log_type Log-Typ
  */
 void log_begin(const char * filename, unsigned int line, LOG_TYPE log_type) {
-
 	/* Ausgaben ueber das LCD-Display werden ohne Dateiname und Zeilennumer
 	 * gemacht. Der Log-Typ versteckt sich im ersten Buchstaben. Durch eine
 	 * die Markierung mit '>' erkennt man das letzte Logging.
@@ -170,24 +170,24 @@ void log_begin(const char * filename, unsigned int line, LOG_TYPE log_type) {
 	}
 	snprintf(log_buffer, LOG_BUFFER_SIZE, ">%c:", *(log_get_type_str(log_type)+2));
 #else // !LOG_DISPLAY_AVAILABLE
+	if (log_type != LOG_TYPE_RAW) {
+		const char * ptr = NULL;
 
-	const char * ptr = NULL;
+		/* Nur den Dateinamen loggen, ohne Verzeichnisangabe */
+		ptr = strrchr(filename, '/');
+		if (ptr == NULL) {
+			ptr = filename;
+		} else {
+			ptr++;
+		}
 
-	/* Nur den Dateinamen loggen, ohne Verzeichnisangabe */
-	ptr = strrchr(filename, '/');
-
-	if (ptr == NULL)
-		ptr = filename;
-	else
-		ptr++;
-
-	LOCK();
-
-	snprintf(log_buffer, LOG_BUFFER_SIZE, "%s(%d) %s ", ptr, line, log_get_type_str(log_type));
-
+		LOCK();
+		snprintf(log_buffer, LOG_BUFFER_SIZE, "%s(%d) %s ", ptr, line, log_get_type_str(log_type));
+	} else {
+		log_buffer[0] = 0;
+		LOCK();
+	}
 #endif // LOG_DISPLAY_AVAILABLE
-
-	return;
 }
 #else // MCU
 /**
@@ -281,8 +281,6 @@ void log_printf(const char * format, ...) {
 	va_start(args, format);
 	vsnprintf(&log_buffer[len], LOG_BUFFER_SIZE - len, format, args);
 	va_end(args);
-
-	return;
 }
 #else // MCU
 /**
@@ -299,8 +297,6 @@ void log_flash_printf(const char * format, ...) {
 	va_start(args, format);
 	vsnprintf(&log_buffer[len], LOG_BUFFER_SIZE - len, flash_str, args);
 	va_end(args);
-
-	return;
 }
 #endif // PC
 
@@ -316,8 +312,15 @@ void log_end(void) {
 #endif // LOG_UART_AVAILABLE
 
 #ifdef LOG_CTSIM_AVAILABLE
-	/* Kommando an ct-Sim senden, ohne Line feed am Ende. */
+	/* Kommando an ct-Sim senden, ohne Linefeed am Ende. */
+#ifdef ARM_LINUX_BOARD
+	cmd_func_t old_func = cmd_functions;
+	set_bot_2_sim();
+#endif
 	command_write_data(CMD_LOG, SUB_CMD_NORM, 0, 0, log_buffer);
+#ifdef ARM_LINUX_BOARD
+	cmd_functions = old_func;
+#endif
 #endif // LOG_CTSIM_AVAILABLE
 
 #ifdef LOG_DISPLAY_AVAILABLE
@@ -325,7 +328,10 @@ void log_end(void) {
 	memcpy(screen_output[log_line-1], log_buffer, strlen(log_buffer));
 	/* Zeile weiterschalten */
 	log_line++;
-	if (log_line > 4) log_line = 1;
+	if (log_line > 4) {
+		log_line = 1;
+	}
+	return; // no UNLOCK()
 #endif // LOG_DISPLAY_AVAILABLE
 
 /* Wenn das Logging aktiviert und keine Ausgabeschnittstelle
@@ -361,8 +367,6 @@ void log_end(void) {
 #endif // LOG_MMC_AVAILABLE
 
 	UNLOCK();
-
-	return;
 }
 
 #ifdef LOG_MMC_AVAILABLE
@@ -415,6 +419,9 @@ static const char * log_get_type_str(LOG_TYPE log_type) {
 
 		case LOG_TYPE_FATAL:
 			return fatal_str;
+
+		case LOG_TYPE_RAW:
+			return "";
 	}
 	return debug_str;
 }

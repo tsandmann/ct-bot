@@ -87,9 +87,12 @@ ISR(TIMER2_COMP_vect) {
 
 	/* Scheduling-Frequenz betraegt ca. 1 kHz */
 	if ((uint8_t) ((uint8_t) ticks - scheduler_ticks) > MS_TO_TICKS(1)) {
-#if defined DISPLAY_OS_AVAILABLE && defined UART_AVAILABLE
-		if (uart_outfifo.count != 0 || uart_infifo.count != 0) {
-			uart_log++;	// zaehlt die ms, in denen das UART aktiv ist
+#if defined OS_AVAILABLE && defined UART_AVAILABLE
+		if (uart_outfifo.count != 0) {
+			++uart_log_out; // zaehlt die ms, in denen das UART aktiv ist
+		}
+		if (uart_infifo.count != 0) {
+			++uart_log_in; // zaehlt die ms, in denen das UART aktiv ist
 		}
 #endif // MEASURE_UTILIZATION && UART_AVAILABLE
 		scheduler_ticks = (uint8_t) ticks;

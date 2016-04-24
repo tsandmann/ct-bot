@@ -1080,12 +1080,29 @@ int8_t command_evaluate(void) {
 					LOG_DEBUG(" \"%s\"", debug_buf);
 				}
 #endif // DEBUG_COMMAND
+				break;
 			}
+			} // switch subcommand
+#endif // DISPLAY_MCU_AVAILABLE || ARM_LINUX_BOARD
 			break;
+		}
+
+#ifdef ARM_LINUX_BOARD
+		case CMD_LOG: {
+			char log_buffer[received_command.payload + 1];
+			log_buffer[received_command.payload] = 0;
+			uint8_t i, n;
+			for (i = 0; i < received_command.payload; ++i) {
+				if ((n = cmd_functions.read(&log_buffer[i], 1)) != 1) {
+					LOG_ERROR("command_evaluate(): CMD_LOG: error while receiving log data, n=%d i=%u", n, i);
+					LOG_ERROR(" uart_data_available()=%d", uart_data_available());
+					break;
+				}
 			}
-#endif // DISPLAY_MCU_AVAILABLE || PC
+			LOG_RAW("MCU - %s", log_buffer);
 			break;
-			}
+		}
+#endif // ARM_LINUX_BOARD
 
 #ifdef BOT_2_RPI_AVAILABLE
 		case CMD_AKT_MOT:
@@ -1119,7 +1136,7 @@ int8_t command_evaluate(void) {
 			break;
 		}
 #ifdef CHECK_CMD_ADDRESS
-	} else {
+	} else { // woher ist das Kommando?
 #ifdef BOT_2_BOT_AVAILABLE
 		if (received_command.request.command == CMD_BOT_2_BOT) {
 			/* kein loop-back */
