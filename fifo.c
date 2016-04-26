@@ -40,6 +40,7 @@ void fifo_init(fifo_t * f, void * buffer, const uint8_t size) {
 	f->count = 0;
 	f->pread = f->pwrite = buffer;
 	f->read2end = f->write2end = f->size = size;
+	f->written = 0;
 #ifdef OS_AVAILABLE
 	f->signal.value = 0; // Fifo leer
 #endif
@@ -117,6 +118,7 @@ void fifo_put_data(fifo_t * f, const void * data, uint8_t length) {
 
 	f->write2end = write2end;
 	f->pwrite = pwrite;
+	f->written += length;
 
 #ifdef MCU
 	uint8_t sreg = SREG;
