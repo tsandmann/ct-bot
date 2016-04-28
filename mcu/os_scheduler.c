@@ -38,6 +38,7 @@
 #include "map.h"
 #include "display.h"
 #include "log.h"
+#include "uart.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -52,9 +53,6 @@ uint8_t os_idle_stack[OS_IDLE_STACKSIZE];	/**< Stack des Idle-Threads */
 
 static volatile uint32_t idle_counter[3];	/**< Variable, die im Idle-Thread laufend inkrementiert wird */
 #define ZYCLES_PER_IDLERUN	61 /**< Anzahl der CPU-Zyklen fuer einen Durchlauf der Idle-Schleife */
-
-uint16_t uart_log_in;	/**< Zaehler fuer UART-Auslastung (eingehend) */
-uint16_t uart_log_out;	/**< Zaehler fuer UART-Auslastung (ausgehend) */
 
 #ifdef OS_KERNEL_LOG_AVAILABLE
 typedef struct {
@@ -292,9 +290,11 @@ void os_schedule(uint32_t tickcount) {
  * @param uart_in Zeiger auf Ausgabeparameter fuer UART-Auslastung eingehend
  * @param uart_out Zeiger auf Ausgabeparameter fuer UART-Auslastung ausgehend
  */
-void os_get_utilizations(uint8_t* cpu, uint8_t* uart_in, uint8_t* uart_out) {
+void os_get_utilizations(uint8_t* cpu, uint16_t* uart_in, uint16_t* uart_out) {
 	static uint32_t last_time = 0;
 	static uint32_t last_idle = 0;
+	static uint32_t last_uart_in = 0;
+	static uint32_t last_uart_out = 0;
 
 	/* CPU-Auslastung berechnen (Durchschnitt seit letztem Aufruf) */
 	const uint32_t time = TIMER_GET_TICKCOUNT_32;
@@ -319,14 +319,16 @@ void os_get_utilizations(uint8_t* cpu, uint8_t* uart_in, uint8_t* uart_out) {
 	*cpu = (uint8_t) (100 - idle_pc);
 	const uint8_t sreg = SREG;
 	__builtin_avr_cli();
-	const uint16_t uart_l_in = uart_log_in;
-	const uint16_t uart_l_out = uart_log_out;
-	uart_log_in = 0;
-	uart_log_out = 0;
+	const uint32_t uart_in_tmp = uart_infifo.written;
+	const uint32_t uart_out_tmp = uart_outfifo.written;
 	SREG = sreg;
+	const uint32_t uart_diff_in = uart_in_tmp - last_uart_in;
+	last_uart_in = uart_in_tmp;
+	const uint32_t uart_diff_out = uart_out_tmp - last_uart_out;
+	last_uart_out = uart_out_tmp;
 
-	*uart_in = (uint8_t) (uart_l_in / ((float) time_diff * (176.f / 1000.f / 100.f))); // uart_log_ wird jede ms inkrementiert
-	*uart_out = (uint8_t) (uart_l_out / ((float) time_diff * (176.f / 1000.f / 100.f))); // uart_log_ wird jede ms inkrementiert
+	*uart_in = (uint16_t) ((float) uart_diff_in / (float) time_diff / (176.f / 1000000.f)); // byte / s
+	*uart_out = (uint16_t) ((float) uart_diff_out / (float) time_diff / (176.f / 1000000.f)); // byte / s
 }
 
 #ifdef DISPLAY_OS_AVAILABLE
@@ -338,7 +340,8 @@ void os_display(void) {
 #ifndef OS_KERNEL_LOG_AVAILABLE
 	static char display_buf[20];
 
-	uint8_t cpu_pc, uart_pc_in, uart_pc_out;
+	uint8_t cpu_pc;
+	uint16_t uart_pc_in, uart_pc_out;
 	os_get_utilizations(&cpu_pc, &uart_pc_in, &uart_pc_out);
 
 	/* Balken fuer Auslastung ausgeben */
