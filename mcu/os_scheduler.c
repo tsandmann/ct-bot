@@ -290,7 +290,7 @@ void os_schedule(uint32_t tickcount) {
  * @param uart_in Zeiger auf Ausgabeparameter fuer UART-Auslastung eingehend
  * @param uart_out Zeiger auf Ausgabeparameter fuer UART-Auslastung ausgehend
  */
-void os_get_utilizations(uint8_t* cpu, uint16_t* uart_in, uint16_t* uart_out) {
+void os_get_utilizations(uint8_t* cpu, uint8_t* uart_in, uint8_t* uart_out) {
 	static uint32_t last_time = 0;
 	static uint32_t last_idle = 0;
 	static uint32_t last_uart_in = 0;
@@ -326,9 +326,10 @@ void os_get_utilizations(uint8_t* cpu, uint16_t* uart_in, uint16_t* uart_out) {
 	last_uart_in = uart_in_tmp;
 	const uint32_t uart_diff_out = uart_out_tmp - last_uart_out;
 	last_uart_out = uart_out_tmp;
+	const uint16_t uart_max = UART_BAUD / 10;
 
-	*uart_in = (uint16_t) ((float) uart_diff_in / (float) time_diff / (176.f / 1000000.f)); // byte / s
-	*uart_out = (uint16_t) ((float) uart_diff_out / (float) time_diff / (176.f / 1000000.f)); // byte / s
+	*uart_in = (uint8_t) ((float) uart_diff_in / (float) time_diff / (176.f / 1000000.f / 100.f) / uart_max); // %
+	*uart_out = (uint8_t) ((float) uart_diff_out / (float) time_diff / (176.f / 1000000.f / 100.f) / uart_max); // %
 }
 
 #ifdef DISPLAY_OS_AVAILABLE
@@ -340,8 +341,7 @@ void os_display(void) {
 #ifndef OS_KERNEL_LOG_AVAILABLE
 	static char display_buf[20];
 
-	uint8_t cpu_pc;
-	uint16_t uart_pc_in, uart_pc_out;
+	uint8_t cpu_pc, uart_pc_in, uart_pc_out;
 	os_get_utilizations(&cpu_pc, &uart_pc_in, &uart_pc_out);
 
 	/* Balken fuer Auslastung ausgeben */

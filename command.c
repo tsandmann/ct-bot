@@ -1058,7 +1058,7 @@ int8_t command_evaluate(void) {
 #endif
 					uint8_t n;
 					char buffer;
-					if ((n = cmd_functions.read(&buffer, 1)) != 1) {
+					if ((n = (uint8_t) (cmd_functions.read(&buffer, 1))) != 1) {
 						LOG_ERROR("command_evaluate(): SUB_LCD_DATA: error while receiving display data, n=%d i=%u", n, i);
 						LOG_ERROR(" uart_data_available()=%d", uart_data_available());
 						i = 0;
