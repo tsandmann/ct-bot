@@ -44,7 +44,7 @@
 #include "bot-2-atmega.h"
 #include "bot-2-linux.h"
 
-//#define DEBUG_TIMES /**< Gibt Debug-Infos zum Timing aus (PC) */
+//#define DEBUG_TIMES /**< Gibt Debug-Infos zu Timing / Auslastung aus */
 
 #if defined PC && defined DEBUG_TIMES
 struct timeval init_start, init_stop; /**< Zeit von Beginn und Ende des Verhaltensdurchlaufs */
@@ -97,6 +97,9 @@ void pre_behaviour(void) {
 void post_behaviour(void) {
 	static uint16_t comm_ticks = 0;
 	static uint8_t uart_gui = 0;
+#if defined MCU && defined DEBUG_TIMES
+	static uint32_t log_ticks = 0;
+#endif
 
 #ifdef BOT_2_RPI_AVAILABLE
 	bot_2_linux_listen();
@@ -130,6 +133,14 @@ void post_behaviour(void) {
 			uart_gui = 0; // naechstes Mal wieder mit GUI anfangen
 		}
 	}
+
+#if defined MCU && defined DEBUG_TIMES
+	if (timer_ms_passed_32(&log_ticks, 1000UL)) {
+		uint8_t cpu, uart_in, uart_out;
+		os_get_utilizations(&cpu, &uart_in, &uart_out);
+		LOG_INFO("CPU=%3u%% UART_IN=%3u%% UART_OUT=%3u%%", cpu, uart_in, uart_out);
+	}
+#endif // MCU && DEBUG_TIMES
 
 #ifdef PC
 #ifdef CREATE_TRACEFILE_AVAILABLE
