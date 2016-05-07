@@ -43,6 +43,7 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 };
 
 #ifdef DISPLAY_AVAILABLE
+#include "ena.h"
 #include "gui.h"
 #include "bot-logic.h"
 #include "rc5.h"
@@ -339,6 +340,17 @@ void gui_display(uint8_t screen) {
 #if defined LED_AVAILABLE && defined RC5_AVAILABLE
 	LED_off(LED_WEISS);
 #endif // LED_AVAILABLE && RC5_AVAILABLE
+
+	/* Steuerung der Display-Beleuchtung in Abhängigkeit von der Umgebungshelligkeit */
+#ifdef EXPANSION_BOARD_MOD_AVAILABLE
+int sensLDR_average = (sensLDRR + sensLDRL)/2;
+	if (sensLDR_average > 512) {
+		ENA_on(ENA_DISPLAYLIGHT);
+	}
+	else {
+		ENA_off(ENA_DISPLAYLIGHT);
+	}
+#endif // EXPANSION_BOARD_AVAILABLE
 }
 
 /**
