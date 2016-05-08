@@ -214,12 +214,15 @@ uint8_t display_flash_printf(const char * format, ...) {
 
 	/* Sicher gehen, dass der zur Verfuegung stehende Puffer nicht ueberlaeuft */
 	va_start(args, format);
-	const uint8_t len = (uint8_t) vsnprintf_P(display_buf, DISPLAY_BUFFER_SIZE, format, args);
+	uint8_t len = (uint8_t) vsnprintf_P(display_buf, DISPLAY_BUFFER_SIZE, format, args);
 	va_end(args);
+	if (len > DISPLAY_LENGTH) {
+		len = DISPLAY_LENGTH;
+	}
 
 #ifdef DISPLAY_MCU_AVAILABLE
 	/* Ausgeben bis Puffer leer ist */
-	char * ptr = display_buf;
+	char* ptr = display_buf;
 	uint8_t i;
 	for (i = len; i > 0; --i) {
 		display_data(*ptr++);
@@ -231,7 +234,7 @@ uint8_t display_flash_printf(const char * format, ...) {
 	const int16_t r = remote_row;
 	remote_column = (uint8_t) (remote_column + len);
 #ifndef BOT_2_RPI_AVAILABLE
-	command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, c, r, display_buf);
+	command_write_rawdata(CMD_AKT_LCD, SUB_LCD_DATA, c, r, len, display_buf);
 #else
 	command_write_rawdata_to(CMD_AKT_LCD, SUB_LCD_DATA, CMD_IGNORE_ADDR, c, r, len, display_buf);
 #endif // BOT_2_RPI_AVAILABLE
@@ -247,22 +250,20 @@ uint8_t display_flash_printf(const char * format, ...) {
  */
 uint8_t display_flash_puts(const char * text) {
 	uint8_t len = 0;
-	const char * ptr = text;
+#if defined DISPLAY_MCU_AVAILABLE || defined DISPLAY_REMOTE_AVAILABLE
+	const char* ptr = text;
 	char tmp;
+	while ((tmp = (char) pgm_read_byte(ptr++)) != 0 && len < DISPLAY_LENGTH) {
 #ifdef DISPLAY_MCU_AVAILABLE
-	while ((tmp = (char) pgm_read_byte(ptr++)) != 0) {
 		display_data(tmp);
+#endif
 		++len;
 	}
-#endif // DISPLAY_MCU_AVAILABLE
 
 #ifdef DISPLAY_REMOTE_AVAILABLE
 	const int16_t c = remote_column;
 	const int16_t r = remote_row;
-
-	while (pgm_read_byte(ptr++) != 0) {
-		++len;
-	}
+	remote_column = (uint8_t) (remote_column + len);
 
 	os_enterCS();
 #ifndef BOT_2_RPI_AVAILABLE
@@ -271,12 +272,14 @@ uint8_t display_flash_puts(const char * text) {
 	command_write_to_internal(CMD_AKT_LCD, SUB_LCD_DATA, CMD_IGNORE_ADDR, c, r, len);
 #endif // BOT_2_RPI_AVAILABLE
 	ptr = text;
-	while ((tmp = (char) pgm_read_byte(ptr++)) != 0) {
+	uint8_t i;
+	for (i = 0; i < len; ++i) {
+		tmp = (char) pgm_read_byte(ptr++);
 		cmd_functions.write(&tmp, 1);
 	}
 	os_exitCS();
-	remote_column = (uint8_t) (remote_column + len);
 #endif // DISPLAY_REMOTE_AVAILABLE
+#endif // DISPLAY_MCU_AVAILABLE || DISPLAY_REMOTE_AVAILABLE
 
 	return len;
 }

@@ -77,6 +77,9 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 
 #if ! defined ARM_LINUX_BOARD || defined DISPLAY_MCU_AVAILABLE
 #undef DISPLAY_ATMEGA_AVAILABLLE
+#endif
+
+#if ! defined BOT_2_RPI_AVAILABLE || ! defined DISPLAY_MCU_AVAILABLE
 #undef DISPLAY_LINUX_AVAILABLLE
 #endif
 
@@ -111,8 +114,6 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 #ifdef BOT_2_RPI_AVAILABLE
 #undef DISPLAY_SENSOR_AVAILABLE
 #undef DISPLAY_ODOMETRIC_INFO
-#else
-#undef DISPLAY_LINUX_AVAILABLLE
 #endif // BOT_2_RPI_AVAILABLE
 
 #ifndef BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE
