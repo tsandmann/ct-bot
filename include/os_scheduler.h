@@ -65,7 +65,13 @@ void os_clear_utilization(void);
 void os_print_utilization(void);
 #endif // MEASURE_UTILIZATION
 
-extern uint8_t uart_log;	/**< Zaehler fuer UART-Auslastung */
+/**
+ * Berechnet CPU und UART Auslastung
+ * @param cpu Zeiger auf Ausgabeparameter fuer CPU-Auslastung
+ * @param uart_in Zeiger auf Ausgabeparameter fuer UART-Auslastung eingehend
+ * @param uart_out Zeiger auf Ausgabeparameter fuer UART-Auslastung ausgehend
+ */
+void os_get_utilizations(uint8_t* cpu, uint8_t* uart_in, uint8_t* uart_out);
 
 /**
  * Handler fuer OS-Display

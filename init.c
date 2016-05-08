@@ -31,6 +31,7 @@
 #include "bot-2-sim.h"
 #include "bot-2-atmega.h"
 #include "bot-2-linux.h"
+#include "shift.h"
 #include "display.h"
 #include "led.h"
 #include "ena.h"
@@ -73,6 +74,9 @@ void ctbot_init(int argc, char * argv[]) {
 #endif
 #ifdef BOT_2_SIM_AVAILABLE
 	bot_2_sim_init();
+#endif
+#ifdef SHIFT_AVAILABLE
+	shift_init();
 #endif
 #ifdef DISPLAY_AVAILABLE
 	display_init();

@@ -38,6 +38,7 @@
 #include "map.h"
 #include "display.h"
 #include "log.h"
+#include "uart.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -52,10 +53,6 @@ uint8_t os_idle_stack[OS_IDLE_STACKSIZE];	/**< Stack des Idle-Threads */
 
 static volatile uint32_t idle_counter[3];	/**< Variable, die im Idle-Thread laufend inkrementiert wird */
 #define ZYCLES_PER_IDLERUN	61 /**< Anzahl der CPU-Zyklen fuer einen Durchlauf der Idle-Schleife */
-
-#ifdef DISPLAY_OS_AVAILABLE
-uint8_t uart_log = 0; /**< Zaehler fuer UART-Auslastung */
-#endif
 
 #ifdef OS_KERNEL_LOG_AVAILABLE
 typedef struct {
@@ -287,18 +284,20 @@ void os_schedule(uint32_t tickcount) {
 	 * ausgefuehrt wurde! */
 }
 
-#ifdef DISPLAY_OS_AVAILABLE
 /**
- * Handler fuer OS-Display
+ * Berechnet CPU und UART Auslastung
+ * @param cpu Zeiger auf Ausgabeparameter fuer CPU-Auslastung
+ * @param uart_in Zeiger auf Ausgabeparameter fuer UART-Auslastung eingehend
+ * @param uart_out Zeiger auf Ausgabeparameter fuer UART-Auslastung ausgehend
  */
-void os_display(void) {
-	uint8_t i;
-#ifndef OS_KERNEL_LOG_AVAILABLE
-	static uint32_t last_time;
-	static uint32_t last_idle;
+void os_get_utilizations(uint8_t* cpu, uint8_t* uart_in, uint8_t* uart_out) {
+	static uint32_t last_time = 0;
+	static uint32_t last_idle = 0;
+	static uint32_t last_uart_in = 0;
+	static uint32_t last_uart_out = 0;
 
 	/* CPU-Auslastung berechnen (Durchschnitt seit letztem Aufruf) */
-	uint32_t time = TIMER_GET_TICKCOUNT_32;
+	const uint32_t time = TIMER_GET_TICKCOUNT_32;
 
 	/* idle_counter kann nicht atomar inkrementiert werden und wir wissen nicht, bei welcher Instruktion
 	 * der idle-Thread unterbrochen wurde. Da es aber 3 Kopien des Idle-Zaehlers gibt, muessen immer
@@ -310,30 +309,55 @@ void os_display(void) {
 		idle = idle2; // idle enthaelt den falschen Wert, also sind idle2 und idle3 korrekt
 	}
 
-	uint32_t time_diff = time - last_time;
-	uint32_t idle_diff = idle - last_idle;
+	const uint32_t time_diff = time - last_time;
+	const uint32_t idle_diff = idle - last_idle;
 	last_time = time;
 	last_idle = idle;
-	uint32_t idle_ticks = (uint32_t) ((float) idle_diff * (ZYCLES_PER_IDLERUN * 1000000.f / F_CPU / TIMER_STEPS));
-	uint8_t idle_pc = (uint8_t) (idle_ticks * 100 / time_diff);
-	uint8_t cpu_pc = (uint8_t) (100 - idle_pc);
+	const uint32_t idle_ticks = (uint32_t) ((float) idle_diff * (ZYCLES_PER_IDLERUN * 1000000.f / F_CPU / TIMER_STEPS));
+	const uint8_t idle_pc = (uint8_t) (idle_ticks * 100 / time_diff);
 
-	uint8_t uart_pc = (uint8_t) ((float) uart_log * (100.0f / (176.0f / 1000.0f)) / (float) time_diff); // uart_log wird jede ms inkrementiert
-	uart_log = 0;
+	*cpu = (uint8_t) (100 - idle_pc);
+	const uint8_t sreg = SREG;
+	__builtin_avr_cli();
+	const uint32_t uart_in_tmp = uart_infifo.written;
+	const uint32_t uart_out_tmp = uart_outfifo.written;
+	SREG = sreg;
+	const uint32_t uart_diff_in = uart_in_tmp - last_uart_in;
+	last_uart_in = uart_in_tmp;
+	const uint32_t uart_diff_out = uart_out_tmp - last_uart_out;
+	last_uart_out = uart_out_tmp;
+	const uint16_t uart_max = UART_BAUD / 10;
+
+	*uart_in = (uint8_t) ((float) uart_diff_in / (float) time_diff / (176.f / 1000000.f / 100.f) / uart_max); // %
+	*uart_out = (uint8_t) ((float) uart_diff_out / (float) time_diff / (176.f / 1000000.f / 100.f) / uart_max); // %
+}
+
+#ifdef DISPLAY_OS_AVAILABLE
+/**
+ * Handler fuer OS-Display
+ */
+void os_display(void) {
+	uint8_t i;
+#ifndef OS_KERNEL_LOG_AVAILABLE
+	static char display_buf[20];
+
+	uint8_t cpu_pc, uart_pc_in, uart_pc_out;
+	os_get_utilizations(&cpu_pc, &uart_pc_in, &uart_pc_out);
 
 	/* Balken fuer Auslastung ausgeben */
-	display_cursor(1, 1);
 	for (i = 0; i < cpu_pc / 5; ++i) {
-		display_data((char) 0xff); // schwarzes Feld
+		display_buf[i] = (char) 0xff; // schwarzes Feld
 	}
 
 	/* Spaces fuer Idle ausgeben */
 	for (; i < 20; ++i) {
-		display_data(0x10); // Space
+		display_buf[i] = 0x10; // Space
 	}
+	display_cursor(1, 1);
+	display_printf("%s", display_buf);
 
 	display_cursor(2, 1);
-	display_printf("CPU:%3u%% UART:%3u%%", cpu_pc, uart_pc);
+	display_printf("CPU%3u%% I/O%3u%%|%3u%%", cpu_pc, uart_pc_in, uart_pc_out);
 #else
 	display_cursor(1, 1);
 	display_puts("4: Kernel-LOG ");
@@ -342,7 +366,7 @@ void os_display(void) {
 	} else {
 		display_puts("aus");
 	}
-#endif //OS_KERNEL_LOG_AVAILABLE
+#endif // OS_KERNEL_LOG_AVAILABLE
 
 	display_cursor(3, 1);
 	display_puts("dump Stacks: 1: Main");

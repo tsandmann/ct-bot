@@ -51,6 +51,7 @@ typedef struct {
 	uint8_t read2end;			/**< # Zeichen bis zum Ueberlauf Lesezeiger */
 	uint8_t write2end;			/**< # Zeichen bis zum Ueberlauf Schreibzeiger */
 	uint8_t volatile overflow;	/**< 1, falls die Fifo mal uebergelaufen ist */
+	uint32_t written;			/**< Anzahl an Bytes, die ins Fifo geschrieben wurden seit Initialisierung */
 #ifdef OS_AVAILABLE
 	os_signal_t signal;			/**< Signal das den Fifo-Status meldet */
 #else
@@ -118,6 +119,7 @@ static inline void _inline_fifo_put(fifo_t * f, const uint8_t data, uint8_t isr)
 
 	f->write2end = write2end;
 	f->pwrite = pwrite;
+	++f->written;
 	if (isr) {
 		f->count++;
 #ifdef OS_AVAILABLE

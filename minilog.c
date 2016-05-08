@@ -34,6 +34,7 @@
 #include "sensor.h"
 #include "rc5-codes.h"
 #include "init.h"
+#include "bot-2-sim.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -46,7 +47,7 @@ static const char debug_str[]	PROGMEM	= "DEBUG "; /**< Log-Typ DEBUG */
 static const char info_str[]	PROGMEM	= "INFO  "; /**< Log-Typ INFO */
 static const char error_str[]	PROGMEM	= "ERROR "; /**< Log-Typ ERROR */
 static PGM_P p_log_type;							/**< Zeiger auf Log-Types im Flash */
-static PGM_P log_types[] PROGMEM = {debug_str, info_str, error_str}; /**< Log-Typ-Array im Flash */
+static PGM_P const log_types[] PROGMEM = {debug_str, info_str, error_str}; /**< Log-Typ-Array im Flash */
 #ifndef LOG_MMC_AVAILABLE
 static char minilog_buffer[LOG_BUFFER_SIZE]; /**< Log-Puffer */
 static char * p_buffer = minilog_buffer; /**< Zeiger auf Puffer */
@@ -97,7 +98,19 @@ void minilog_printf(const char * format, ...) {
 	va_end(args);
 
 #ifdef LOG_CTSIM_AVAILABLE
+#ifdef ARM_LINUX_BOARD
+	cmd_func_t old_func = cmd_functions;
+	set_bot_2_sim();
+#endif
 	command_write_data(CMD_LOG, SUB_CMD_NORM, 0, 0, minilog_buffer);
+#ifdef ARM_LINUX_BOARD
+	cmd_functions = old_func;
+#endif
+#endif
+
+#ifdef LOG_RPI_AVAILABLE
+	const uint8_t len = (uint8_t) strlen(minilog_buffer);
+	command_write_rawdata_to(CMD_LOG, SUB_CMD_NORM, CMD_IGNORE_ADDR, 0, 0, len, minilog_buffer);
 #endif
 
 #ifdef LOG_MMC_AVAILABLE

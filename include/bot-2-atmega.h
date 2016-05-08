@@ -51,4 +51,11 @@ void bot_2_atmega_listen(void);
  */
 void set_bot_2_atmega(void);
 
+#ifdef DISPLAY_AVAILABLE
+/**
+ * Display Screen fuer Inhalte vom ATmega
+ */
+void atmega_display(void);
+#endif // DISPLAY_AVAILABLE
+
 #endif // BOT_2_ATMEGA_H_

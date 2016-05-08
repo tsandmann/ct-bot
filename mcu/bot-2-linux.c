@@ -50,17 +50,23 @@
  */
 void bot_2_linux_init(void) {
 	LED_set(0);
+#ifdef DISPLAY_MCU_AVAILABLE
 	display_clear();
 	display_cursor(1, 1);
 	display_printf("*** Waiting for");
 	display_cursor(2, 1);
 	display_printf("*** connection...");
+#else
+	delay_us(50);
+#endif // DISPLAY_MCU_AVAILABLE
 	if (((PINB >> 2) & 1) == 1) { // error sensor
 		LED_on(LED_GRUEN | LED_ORANGE);
 	} else {
 		LED_on(LED_ROT);
+#ifdef DISPLAY_MCU_AVAILABLE
 		display_cursor(3, 1);
 		display_printf("Low battery!");
+#endif // DISPLAY_MCU_AVAILABLE
 	}
 }
 
@@ -99,6 +105,7 @@ void bot_2_linux_listen(void) {
 			}
 		}
 		++i;
+#ifdef DISPLAY_MCU_AVAILABLE
 		if (i % 5000 < 2500) {
 			display_cursor(4, 20);
 			display_puts("-");
@@ -106,6 +113,7 @@ void bot_2_linux_listen(void) {
 			display_cursor(4, 20);
 			display_puts("|");
 		}
+#endif // DISPLAY_MCU_AVAILABLE
 	}
 	last_uart_timeout = now;
 	LED_on(LED_TUERKIS);

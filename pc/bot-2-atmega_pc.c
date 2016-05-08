@@ -47,13 +47,14 @@
 
 //#define DEBUG_BOT_2_ATMEGA // Schalter, um auf einmal alle Debugs an oder aus zu machen
 
+#define UART_TIMEOUT 20 /**< Timeout fuer UART-Kommunikation in ms */
+
 #ifndef DEBUG_BOT_2_ATMEGA
 #undef LOG_DEBUG
 #define LOG_DEBUG(...) {} /**< Log-Dummy */
 #endif
 
-static pthread_mutex_t atmega_monitor_mutex = PTHREAD_MUTEX_INITIALIZER;
-static struct timeval atmega_last_receive;
+static struct timeval atmega_last_receive; /**< Zeitpunkt des letzten Datenempfangs vom ATmega zu Debugging-Zwecken */
 
 
 /**
@@ -143,7 +144,6 @@ int8_t bot_2_atmega_init(void) {
 	}
 
 	gettimeofday(&atmega_last_receive, NULL);
-	atmega_last_receive.tv_sec += 1; // give the ATmega some time to init itself
 
 	return 0;
 }
@@ -171,7 +171,7 @@ void bot_2_atmega_listen(void) {
 	while (receive_until_frame(CMD_DONE) != 0) {
 		gettimeofday(&now, NULL);
 		const uint64_t t = (now.tv_sec - start.tv_sec) * 1000000UL + now.tv_usec - start.tv_usec;
-		if (t > 20000UL) {
+		if (t > UART_TIMEOUT * 1000UL) {
 			LOG_ERROR("bot_2_atmega_listen(): Timeout, t = %llu us", t);
 			break;
 		}
@@ -179,13 +179,20 @@ void bot_2_atmega_listen(void) {
 //	gettimeofday(&now, NULL);
 //	const uint64_t t = (now.tv_sec - start.tv_sec) * 1000000UL + now.tv_usec - start.tv_usec;
 //	LOG_INFO("bot_2_atmega_listen(): receive took %llu us", t);
-	pthread_mutex_lock(&atmega_monitor_mutex);
 	gettimeofday(&atmega_last_receive, NULL);
-	pthread_mutex_unlock(&atmega_monitor_mutex);
 //	uint64_t t = (atmega_last_receive.tv_sec - start.tv_sec) * 1000000UL + atmega_last_receive.tv_usec - start.tv_usec;
 //	LOG_INFO("bot_2_atmega_listen(): t = %llu us", t);
 	LOG_DEBUG("bot_2_atmega_listen() done.");
 }
+
+#ifdef DISPLAY_AVAILABLE
+/**
+ * Display Screen fuer Inhalte vom ATmega
+ */
+void atmega_display(void) {
+	// leer, wird von command_evaluate() gefuellt
+}
+#endif // DISPLAY_AVAILABLE
 
 #endif // ARM_LINUX_BOARD
 #endif // PC

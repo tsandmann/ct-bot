@@ -273,7 +273,9 @@ void * tcp_init_server(void * ptr) {
 	if ((tcp_sock = accept(server, (struct sockaddr *) &clientAddr, &clntLen)) < 0) {
 		LOG_ERROR("accept() failed");
 	}
+#ifndef LOG_CTSIM_AVAILABLE
 	LOG_INFO("TCP Client %s connected on port %u.", inet_ntoa(clientAddr.sin_addr), SERVERPORT);
+#endif
 
 #ifndef __WIN32__
 	signal(SIGPIPE, SIG_IGN); // ignore SIGPIPE signal
