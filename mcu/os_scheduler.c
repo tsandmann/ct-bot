@@ -293,8 +293,10 @@ void os_schedule(uint32_t tickcount) {
 void os_get_utilizations(uint8_t* cpu, uint8_t* uart_in, uint8_t* uart_out) {
 	static uint32_t last_time = 0;
 	static uint32_t last_idle = 0;
+#ifdef UART_AVAILABLE
 	static uint32_t last_uart_in = 0;
 	static uint32_t last_uart_out = 0;
+#endif
 
 	/* CPU-Auslastung berechnen (Durchschnitt seit letztem Aufruf) */
 	const uint32_t time = TIMER_GET_TICKCOUNT_32;
@@ -317,6 +319,7 @@ void os_get_utilizations(uint8_t* cpu, uint8_t* uart_in, uint8_t* uart_out) {
 	const uint8_t idle_pc = (uint8_t) (idle_ticks * 100 / time_diff);
 
 	*cpu = (uint8_t) (100 - idle_pc);
+#ifdef UART_AVAILABLE
 	const uint8_t sreg = SREG;
 	__builtin_avr_cli();
 	const uint32_t uart_in_tmp = uart_infifo.written;
@@ -330,6 +333,10 @@ void os_get_utilizations(uint8_t* cpu, uint8_t* uart_in, uint8_t* uart_out) {
 
 	*uart_in = (uint8_t) ((float) uart_diff_in / (float) time_diff / (176.f / 1000000.f / 100.f) / uart_max); // %
 	*uart_out = (uint8_t) ((float) uart_diff_out / (float) time_diff / (176.f / 1000000.f / 100.f) / uart_max); // %
+#else
+	*uart_in = 0;
+	*uart_out = 0;
+#endif // UART_AVAILABLE
 }
 
 #ifdef DISPLAY_OS_AVAILABLE

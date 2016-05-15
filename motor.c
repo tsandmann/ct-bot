@@ -130,7 +130,8 @@ void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_
 				slog->data[dev][index].err = encoderTargetRate[dev]; // Regeldifferenz
 				slog->data[dev][index].pwm = *actVar; // Stellgroesse
 				slog->data[dev][index].targetRate = encoderTargetRate[dev]; // Fuehrungsgroesse
-				slog->data[dev][index++].time = tickCount.u32; // Timestamp
+				slog->data[dev][index].time = tickCount.u32; // Timestamp
+				slog->data[dev][index++].enc = enc; // Encoder Pegel
 				slog_i[dev] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
 			}
 #endif // SPEED_LOG_AVAILABLE
@@ -207,7 +208,8 @@ void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_
 				slog->data[dev][index].err = err; // Regeldifferenz
 				slog->data[dev][index].pwm = *actVar; // Stellgroesse
 				slog->data[dev][index].targetRate = encoderTargetRate[dev]; // Fuehrungsgroesse
-				slog->data[dev][index++].time = tickCount.u32; // Timestamp
+				slog->data[dev][index].time = tickCount.u32; // Timestamp
+				slog->data[dev][index++].enc = enc; // Encoder Pegel
 				slog_i[dev] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
 			}
 #endif // SPEED_LOG_AVAILABLE

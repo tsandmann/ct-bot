@@ -34,6 +34,7 @@
 #include "sensor.h"
 #include "rc5-codes.h"
 #include "init.h"
+#include "uart.h"
 #include "bot-2-sim.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -106,6 +107,12 @@ void minilog_printf(const char * format, ...) {
 #ifdef ARM_LINUX_BOARD
 	cmd_functions = old_func;
 #endif
+#endif
+
+#ifdef LOG_UART_AVAILABLE
+	const uint8_t len = (uint8_t) strlen(minilog_buffer);
+	uart_write(minilog_buffer, len);
+	uart_write((uint8_t *) LINE_FEED, strlen(LINE_FEED));
 #endif
 
 #ifdef LOG_RPI_AVAILABLE

@@ -172,7 +172,6 @@
 
 #undef BOT_2_BOT_AVAILABLE
 #undef BOT_2_SIM_AVAILABLE
-//#undef LOG_CTSIM_AVAILABLE
 #undef LOG_UART_AVAILABLE
 #undef BEHAVIOUR_AVAILABLE
 #undef POS_STORE_AVAILABLE
@@ -211,7 +210,6 @@
 #endif
 
 #ifndef MMC_AVAILABLE
-#undef SPEED_LOG_AVAILABLE
 #ifdef MCU
 #undef MAP_AVAILABLE // Map geht auf dem MCU nur mit MMC
 #undef MMC_VM_AVAILABLE
@@ -267,7 +265,6 @@
 #endif
 
 #ifdef LOG_UART_AVAILABLE
-#undef USE_MINILOG
 #define LOG_AVAILABLE
 #endif
 
@@ -280,7 +277,7 @@
 #define LOG_AVAILABLE
 #endif
 
-#ifdef LOG_STDOUT_AVAILABLE
+#if defined LOG_STDOUT_AVAILABLE && defined PC
 #undef USE_MINILOG
 #define LOG_AVAILABLE
 #endif
@@ -295,11 +292,6 @@
 
 #ifndef BEHAVIOUR_AVAILABLE
 #undef MAP_AVAILABLE
-#endif
-
-#if defined SPEED_LOG_AVAILABLE && ! defined BOT_FS_AVAILABLE
-#warning "Speed-Log braucht BOT_FS_AVAILABLE. Schalte Speed-Log aus"
-#undef SPEED_LOG_AVAILABLE
 #endif
 
 #ifdef MAP_AVAILABLE
@@ -337,8 +329,8 @@
 #endif
 
 #ifdef LOG_STDOUT_AVAILABLE
-#undef LOG_MMC_AVAILABLE
 #undef LOG_RPI_AVAILABLE
+#undef LOG_MMC_AVAILABLE
 #endif
 
 #ifdef LOG_RPI_AVAILABLE

@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2016-05-15: Verwendung von Speedlog ohne MMC mit UART-Ausgabe. Konfiguration: SPEED_LOG_AVAILABLE an, LOG_UART_AVAILABLE an, USE_MINILOG an, BOT_2_SIM_AVAILABLE aus, MMC_AVAILABLE aus
+
 2016-05-08: Zusaetzliche Display-/Log-Funktionen: Uebertragung der MCU-Displayausgaben an RPi, Logging von MCU zu RPi via LOG_RPI_AVAILABLE, Auslastungsanzeige fuer CPU und UART verbessert
 
 2016-04-17: Abfragemoeglichkeit der Servoposition mittels servo_get_pos(); verzoegerte Ausfuehrung von Funktionen mittels os_delay_func() (nur fuer MCU)

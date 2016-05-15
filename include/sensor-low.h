@@ -62,6 +62,7 @@ typedef struct {
 #endif // SPEED_CONTROL_AVAILABLE
 	int16_t pwm;		/**< aktueller PWM-Wert */
 	uint32_t time;		/**< Timestamp */
+	uint8_t enc;		/**< Encoder Pegel */
 } PACKED_FORCE slog_data_t;
 
 #define SLOG_WITH_SPEED_CONTROL	1

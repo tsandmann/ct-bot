@@ -1060,7 +1060,9 @@ int8_t command_evaluate(void) {
 					char buffer;
 					if ((n = (uint8_t) (cmd_functions.read(&buffer, 1))) != 1) {
 						LOG_ERROR("command_evaluate(): SUB_LCD_DATA: error while receiving display data, n=%d i=%u", n, i);
+#ifdef MCU
 						LOG_ERROR(" uart_data_available()=%d", uart_data_available());
+#endif
 						i = 0;
 						break;
 					}
