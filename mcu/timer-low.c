@@ -33,6 +33,7 @@
 #include "bot-local.h"
 #include "os_scheduler.h"
 #include "os_thread.h"
+#include "os_utils.h"
 #include "uart.h"
 #include "sensor.h"
 #include "ui/available_screens.h"
@@ -55,15 +56,9 @@ ISR(TIMER2_COMP_vect) {
 	/* ----- TIMER ----- */
 	uint32_t ticks = tickCount.u32; // TickCounter [176 us] erhoehen
 	ticks++;
-	tickCount.u32 = ticks; // optimiert volatile weg, weil Ints eh aus sind
+	tickCount.u32 = ticks; // optimiert volatile weg
 
-#ifdef OS_AVAILABLE
-	/* ab hier Kernel-Stack verwenden */
-	void * user_stack;
-	user_stack = (void *) SP;
-	SP = (unsigned) &os_kernel_stack[OS_KERNEL_STACKSIZE - 1];
-#endif // OS_AVAILABLE
-
+	os_enterCS();
 	__builtin_avr_sei(); // Interrupts wieder an, z.B. UART-Kommunikation kann parallel zu RC5 und Encoderauswertung laufen
 
 	/* - FERNBEDIENUNG - */
@@ -81,22 +76,17 @@ ISR(TIMER2_COMP_vect) {
 
 	/* --- SCHEDULER --- */
 #ifdef OS_AVAILABLE
-	/* zurueck zum User-Stack */
 	__builtin_avr_cli();
-	SP = (unsigned) user_stack;
-
-	/* Scheduling-Frequenz betraegt ca. 1 kHz */
-	if ((uint8_t) ((uint8_t) ticks - scheduler_ticks) > MS_TO_TICKS(1)) {
-//#if defined OS_AVAILABLE && defined UART_AVAILABLE
-//		if (uart_outfifo.count != 0) {
-//			++uart_log_out; // zaehlt die ms, in denen das UART aktiv ist
-//		}
-//		if (uart_infifo.count != 0) {
-//			++uart_log_in; // zaehlt die ms, in denen das UART aktiv ist
-//		}
-//#endif // OS_AVAILABLE && UART_AVAILABLE
-		scheduler_ticks = (uint8_t) ticks;
-		os_schedule(ticks);
+	{ /* integrierte Version von os_exitCS() */
+		if (test_and_set((uint8_t *) &os_scheduling_allowed, 1) == 2) {
+			scheduler_ticks = (uint8_t) ticks;
+			os_schedule(ticks);
+		} else 	if ((uint8_t) ((uint8_t) ticks - scheduler_ticks) > MS_TO_TICKS(1)) {
+			/* Scheduling-Frequenz betraegt ca. 1 kHz */
+			scheduler_ticks = (uint8_t) ticks;
+			os_schedule(ticks);
+		}
+		__asm__ __volatile__("":::"memory");
 	}
 #endif // OS_AVAILABLE
 	/* Achtung, hier darf (falls OS_AVAILABLE) kein Code mehr folgen, der bei jedem Aufruf

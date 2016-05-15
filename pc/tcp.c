@@ -294,6 +294,7 @@ int tcp_data_available(void) {
 	if (ret < 0)	{
 		int err = errno;
 		LOG_ERROR("tcp_data_available(): ioctl() failed: %d; %d", ret, err);
+		(void) err;
 		return -1;
 	}
 

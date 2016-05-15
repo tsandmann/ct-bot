@@ -197,6 +197,9 @@ void display_cursor(int16_t row, int16_t column) {
 	remote_column = c;
 	remote_row = r;
 #endif
+
+	(void) r;
+	(void) c;
 }
 
 /**
@@ -280,6 +283,9 @@ uint8_t display_flash_puts(const char * text) {
 	os_exitCS();
 #endif // DISPLAY_REMOTE_AVAILABLE
 #endif // DISPLAY_MCU_AVAILABLE || DISPLAY_REMOTE_AVAILABLE
+
+	(void) ptr;
+	(void) tmp;
 
 	return len;
 }

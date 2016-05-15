@@ -137,7 +137,7 @@ static void servo_init_stop(void* p_data) {
  * \param *argv Zeiger auf Kommandozeilenparameter
  */
 void ctbot_init_low_1st(int argc, char * argv[]) {
-	/* keine warnings */
+	/* keine Warnings */
 	(void) argc;
 	(void) argv;
 
@@ -149,16 +149,22 @@ void ctbot_init_low_1st(int argc, char * argv[]) {
 #endif // DISPLAY_RESET_INFO_AVAILABLE
 
 #ifdef OS_AVAILABLE
-	os_create_thread((void *) SP, NULL); // Hauptthread anlegen
+	const uint8_t sreg = SREG;
+	__builtin_avr_cli();
+
+	os_create_thread((void*) SP, NULL); // Hauptthread anlegen
 #ifdef OS_DEBUG
-	extern unsigned char * __brkval;
-	extern size_t __malloc_margin;
-	malloc(0); // initialisiert __brkval
-	os_mask_stack(__brkval, (size_t) ((unsigned char *) SP - __brkval) - __malloc_margin);
+	const uint16_t heap_free = SP - (size_t) __brkval - 1024;
+	void* ptr = malloc(heap_free);
+	if (ptr) {
+		os_mask_stack(ptr, heap_free);
+		free(ptr);
+	}
 #endif // OS_DEBUG
 #ifdef OS_KERNEL_LOG_AVAILABLE
 	os_kernel_log_init();
 #endif // OS_KERNEL_LOG_AVAILABLE
+	SREG = sreg;
 #endif // OS_AVAILABLE
 }
 

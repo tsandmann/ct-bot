@@ -51,7 +51,6 @@ typedef union {
 
 Tcb_t os_threads[OS_MAX_THREADS];				/**< Array aller TCBs */
 Tcb_t * os_thread_running = NULL;				/**< Zeiger auf den TCB des Threads, der gerade laeuft */
-uint8_t os_kernel_stack[OS_KERNEL_STACKSIZE];	/**< Kernel-Stack */
 os_signal_t dummy_signal;						/**< Signal, das referenziert wird, wenn sonst keins gesetzt ist */
 os_delayed_func_t os_delayed_func[OS_DELAYED_FUNC_CNT]; /**< Registrierte Funktionen zur verzoegerten Ausfuehrung */
 volatile os_delayed_func_t* os_delayed_next_p = os_delayed_func; /**< Zeiger auf die naechste auszufuehrende verzoegerte Funktion */
@@ -73,13 +72,12 @@ Tcb_t * os_create_thread(void * pStack, void (* pIp)(void)) {
 	for (i = os_scheduling_allowed; i < OS_MAX_THREADS; ++i, ++ptr) {
 		if (ptr->stack == NULL) {
 			ptr->wait_for = &dummy_signal; // wait_for belegen
-			if (os_thread_running == NULL) {
+			ptr->lastSchedule = 0;
+			ptr->nextSchedule = 0;
+			if (pIp == NULL) {
 				/* Main-Thread anlegen (laeuft bereits) */
 				os_thread_running = ptr;
 				ptr->stack = pStack;
-#ifdef OS_DEBUG
-				os_mask_stack(os_kernel_stack, OS_KERNEL_STACKSIZE);
-#endif
 			} else {
 				/* "normalen" Thread anlegen */
 				os_ip_t tmp;
@@ -286,8 +284,18 @@ uint8_t os_delay_func(os_delayed_func_ptr_t p_func, void* p_data, uint32_t delay
  * \param *stack	Anfangsadresse des Stacks
  * \param size		Groesse des Stacks in Byte
  */
-void os_mask_stack(void * stack, size_t size) {
-	memset(stack, 0x42, size);
+void os_mask_stack(void* stack, size_t size) {
+	uint8_t* ptr = stack;
+	uint16_t i;
+	const uint8_t sreg = SREG;
+	__builtin_avr_cli();
+	for (i = 0; i < size; ++i) {
+		if (&ptr[i] >= (uint8_t*) SP) {
+			break;
+		}
+		ptr[i] = 0x42;
+	}
+	SREG = sreg;
 }
 
 /**
@@ -297,8 +305,8 @@ void os_mask_stack(void * stack, size_t size) {
  * os_stack_mask() praepariert worden sein!
  * \param *stack	Anfangsadresse des Stacks
  */
-static uint16_t os_stack_unused(void * stack) {
-	uint8_t * ptr = stack;
+uint16_t os_stack_unused(void* stack) {
+	uint8_t* ptr = stack;
 	uint16_t unused = 0;
 	while (*ptr == 0x42) {
 		unused++;
@@ -328,11 +336,12 @@ void os_print_stackusage(void) {
 	}
 #endif // MAP_2_SIM_AVAILABLE
 #endif // MAP_AVAILABLE
-	static uint16_t kernel_stack_free = UINT16_MAX;
-	tmp = os_stack_unused(os_kernel_stack);
-	if (tmp < kernel_stack_free) {
-		kernel_stack_free = tmp;
-		LOG_INFO("Kernel-Stack unused=%u", tmp);
+
+	static uint16_t main_stack_free = UINT16_MAX;
+	tmp = os_stack_unused(__brkval + __malloc_margin);
+	if (tmp < main_stack_free) {
+		main_stack_free = tmp;
+		LOG_INFO("Main-Stack unused=%u", tmp);
 	}
 	static uint16_t idle_stack_free = UINT16_MAX;
 	tmp = os_stack_unused(os_idle_stack);

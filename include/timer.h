@@ -39,6 +39,8 @@
  */
 #define MS_TO_TICKS(ms)		((ms) * (1000 / 8) / (TIMER_STEPS / 8))
 
+#define US_TO_TICKS(us)		((us) / TIMER_STEPS)
+
 /**
  * Diese Funktion liefert den Millisekundenanteil der Systemzeit zurueck.
  * \return Millisekunden der Systemzeit

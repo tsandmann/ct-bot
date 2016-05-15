@@ -238,47 +238,47 @@ void os_schedule(uint32_t tickcount) {
 		return;
 	}
 
-	/* Naechsten lauffaehigen Thread mit hoechster Prioritaet suchen.
-	 * Das ist zwar in O(n), aber wir haben nur eine sehr beschraenkte Anzahl an Threads! */
-	uint8_t i;
-	Tcb_t * ptr = os_threads;
-	// os_scheduling_allowed == 0, sonst waeren wir nicht hier
-	for (i = os_scheduling_allowed; i < OS_MAX_THREADS; ++i, ++ptr) {
-		if (ptr->stack != NULL) {
-			/* Es existiert noch ein Thread in der Liste */
-			if (ptr->wait_for->value == 0 && ptr->nextSchedule <= tickcount) {
-				/* Der Thread ist nicht blockiert */
-				if (ptr != os_thread_running) {
+	do {
+		/* Naechsten lauffaehigen Thread mit hoechster Prioritaet suchen.
+		 * Das ist zwar in O(n), aber wir haben nur eine sehr beschraenkte Anzahl an Threads! */
+		uint8_t i;
+		Tcb_t * ptr = os_threads;
+		// os_scheduling_allowed == 0, sonst waeren wir nicht hier
+		for (i = os_scheduling_allowed; i < OS_MAX_THREADS; ++i, ++ptr) {
+			if (ptr->stack != NULL) {
+				/* Es existiert noch ein Thread in der Liste */
+				if (ptr->wait_for->value == 0 && ptr->nextSchedule <= tickcount) {
+					/* Der Thread ist nicht blockiert */
+					if (ptr != os_thread_running) {
 #ifdef OS_KERNEL_LOG_AVAILABLE
-					if (kernel_log_on != 0) {
-						log_entry.time = (uint16_t) tickcount;
-						log_entry.from = (uint8_t) (os_thread_running - os_threads);
-						log_entry.to = (uint8_t) (ptr - os_threads);
-						fifo_put_data(&kernel_log_fifo, &log_entry, sizeof(log_entry));
-					}
+						if (kernel_log_on != 0) {
+							log_entry.time = (uint16_t) tickcount;
+							log_entry.from = (uint8_t) (os_thread_running - os_threads);
+							log_entry.to = (uint8_t) (ptr - os_threads);
+							fifo_put_data(&kernel_log_fifo, &log_entry, sizeof(log_entry));
+						}
 #endif // OS_KERNEL_LOG_AVAILABLE
 
 #ifdef MEASURE_UTILIZATION
-					os_thread_running->statistics.runtime += (uint16_t) ((uint16_t) tickcount - os_thread_running->lastSchedule);
+						os_thread_running->statistics.runtime += (uint16_t) ((uint16_t) tickcount - os_thread_running->lastSchedule);
 #endif
-					/* switch Thread */
-					ptr->lastSchedule = (uint16_t) tickcount;
-					//-- hier laeuft noch der alte Thread (SP zeigt auf os_thread_running's Stack) --//
-					os_switch_thread(os_thread_running, ptr);
-					//-- jetzt laeuft bereits der neue Thread (SP zeigt auf ptr's Stack) --//
-					// => return fuehrt den NEUEN Thread weiter aus -> (noch) KEIN Ruecksprung zum Caller
-					break;
-				} else {
-					/* aktiver Thread darf weiterlaufen */
-					// => return fuehrt den ALTEN Thread weiter aus -> Funktionsaufruf mit "normaler" Rueckkehr
-					break;
+						/* switch Thread */
+						ptr->lastSchedule = (uint16_t) tickcount;
+						//-- hier laeuft noch der alte Thread (SP zeigt auf os_thread_running's Stack) --//
+						os_switch_thread(os_thread_running, ptr);
+						//-- jetzt laeuft bereits der neue Thread (SP zeigt auf ptr's Stack) --//
+						// => return fuehrt den NEUEN Thread weiter aus -> (noch) KEIN Ruecksprung zum Caller
+						break;
+					} else {
+						/* aktiver Thread darf weiterlaufen */
+						// => return fuehrt den ALTEN Thread weiter aus -> Funktionsaufruf mit "normaler" Rueckkehr
+						break;
+					}
 				}
 			}
 		}
-	}
+	} while (test_and_set((uint8_t *) &os_scheduling_allowed, 1) == 2); // Mutex freigeben
 
-	/* Mutex freigeben */
-	os_scheduling_allowed = 1;
 	/* Ruecksprung dorthin, wo der (neu) geschedulte Thread vor SEINER Unterbrechung war,
 	 * also nicht zwangsweise in die Funktion, die (direkt) vor dem Scheduler-Aufruf
 	 * ausgefuehrt wurde! */
@@ -322,8 +322,12 @@ void os_get_utilizations(uint8_t* cpu, uint8_t* uart_in, uint8_t* uart_out) {
 #ifdef UART_AVAILABLE
 	const uint8_t sreg = SREG;
 	__builtin_avr_cli();
+#ifdef FIFO_STATS_ENABLED
 	const uint32_t uart_in_tmp = uart_infifo.written;
 	const uint32_t uart_out_tmp = uart_outfifo.written;
+#else
+	const uint32_t uart_in_tmp = 0, uart_out_tmp = 0;
+#endif
 	SREG = sreg;
 	const uint32_t uart_diff_in = uart_in_tmp - last_uart_in;
 	last_uart_in = uart_in_tmp;
@@ -388,8 +392,6 @@ void os_display(void) {
 	/* Debug-Info zum freien Stackspeicher ausgeben */
 	os_print_stackusage();
 
-	extern unsigned char * __brkval;
-
 	/* Idle-Thread suchen */
 	Tcb_t * pIdle = os_threads;
 	for (i = 0; i < OS_MAX_THREADS - 1; ++i) {
@@ -402,12 +404,13 @@ void os_display(void) {
 #ifdef RC5_AVAILABLE
 	/* Keyhandler */
 	switch (RC5_Code) {
-	case RC5_CODE_1:
+	case RC5_CODE_1: {
 #ifdef OS_DEBUG
 		os_stack_dump(&os_threads[0], (unsigned char *) RAMEND, (uint16_t) ((unsigned char *) RAMEND - __brkval));
 #endif
 		RC5_Code = 0;
 		break;
+	}
 
 	case RC5_CODE_2:
 #ifdef OS_DEBUG
@@ -416,14 +419,14 @@ void os_display(void) {
 		RC5_Code = 0;
 		break;
 
-#ifdef MAP_AVAILABLE
 	case RC5_CODE_3:
+#ifdef MAP_AVAILABLE
 #ifdef OS_DEBUG
 		os_stack_dump(&os_threads[1], &map_update_stack[MAP_UPDATE_STACK_SIZE - 1], MAP_UPDATE_STACK_SIZE);
 #endif
+#endif // MAP_AVAILABLE
 		RC5_Code = 0;
 		break;
-#endif // MAP_AVAILABLE
 
 #ifdef OS_KERNEL_LOG_AVAILABLE
 	case RC5_CODE_4:

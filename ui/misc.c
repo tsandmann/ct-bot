@@ -34,6 +34,7 @@
 #include "sensor.h"
 #include "log.h"
 #include "init.h"
+#include "os_thread.h"
 
 #ifdef DISPLAY_MISC_AVAILABLE
 #include "bot-logic/bot-logic.h"
@@ -175,21 +176,31 @@ void ram_display(void) {
 	size_t data_size = (size_t) (&__bss_start - &__data_start);
 	size_t bss_size = (size_t) (&__heap_start - &__bss_start);
 	display_cursor(1, 1);
-	display_printf("bss/data:%4u/%4u B", bss_size, data_size);
+	display_puts("bss/data:");
+	display_cursor(1, 10);
+	display_printf("%5u/%5u", bss_size, data_size);
 	display_cursor(2, 1);
 	display_puts("heap:");
-	display_cursor(2, 15);
+	display_cursor(2, 16);
 	size_t heap_size = __brkval == NULL ? 0 : (size_t) (__brkval - &__heap_start);
-	display_printf("%4u B", heap_size);
+	display_printf("%5u", heap_size);
 	display_cursor(3, 1);
-	display_puts("stack:");
-	display_cursor(3, 15);
-	size_t stack_size = (size_t) ((unsigned char *) RAMEND - sp);
-	display_printf("%4u B", stack_size);
-	display_cursor(4, 1);
 	size_t ram_size = (size_t) ((unsigned char *) (RAMEND + 1) - &__data_start);
+	size_t stack_size = (size_t) ((unsigned char *) RAMEND - sp);
+	display_puts("stack:");
+#ifdef OS_DEBUG
+	size_t stack_size_max = ram_size - (os_stack_unused(__brkval + __malloc_margin) + data_size + bss_size + heap_size);
+	display_cursor(3, 10);
+	display_printf("%5u/%5u", stack_size, stack_size_max);
+#else
+	display_cursor(3, 16);
+	display_printf("%5u", stack_size);
+#endif // OS_DEBUG
+	display_cursor(4, 1);
 	size_t frei = ram_size - (data_size + bss_size + heap_size + stack_size);
-	display_printf("free: %5u/%5u B", frei, ram_size);
+	display_puts("free/ram:");
+	display_cursor(4, 10);
+	display_printf("%5u/%5u", frei, ram_size);
 }
 #endif // DISPLAY_RAM_AVAILABLE
 #endif // MCU
