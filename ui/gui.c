@@ -341,24 +341,26 @@ void gui_display(uint8_t screen) {
 	LED_off(LED_WEISS);
 #endif // LED_AVAILABLE && RC5_AVAILABLE
 
-	/* Steuerung der Display-Beleuchtung in Abhängigkeit von der Umgebungshelligkeit */
+/* Steuerung der Display-Beleuchtung in Abhängigkeit von der Umgebungshelligkeit */
 #ifdef EXPANSION_BOARD_MOD_AVAILABLE
-// Tiefpass zur Vermeidung eines flackernden Displays im Wertebereich der definierten minimalen Umgebungshelligkeit
-#define Rc_LDR 8  // Wert zwischen 1 und 9 einstellbar
-int sensLDR_average;
-sensLDR_average = (sensLDRR + sensLDRL)/2;
-static int sensLDR_average_old;
+	/* Bestimmung der mittleren Helligkeit aus beiden Sensoren */
+	int sensLDR_average;
+	sensLDR_average = (sensLDRR + sensLDRL)/2;
 
-sensLDR_average = (Rc_LDR * sensLDR_average_old + (10 - Rc_LDR) * sensLDR_average)/10;
-sensLDR_average_old = sensLDR_average;
+	/* Tiefpass zur Vermeidung eines flackernden Displays im Wertebereich der definierten minimalen Umgebungshelligkeit */
+	#define Rc_LDR 8  // Wert zwischen 1 und 9 einstellbar
+	static int sensLDR_average_old;
+	sensLDR_average = (Rc_LDR * sensLDR_average_old + (10 - Rc_LDR) * sensLDR_average)/10;
+	sensLDR_average_old = sensLDR_average;
 
-if (sensLDR_average > 300) {
+	/* falls der eingestellte Wert überschritten wird, Display einschalten und umgekehrt */
+	if (sensLDR_average > 300) {
 		ENA_on(ENA_DISPLAYLIGHT);
-	}
-	else {
-		ENA_off(ENA_DISPLAYLIGHT);
-	}
-#endif // EXPANSION_BOARD_AVAILABLE
+		}
+		else {
+			ENA_off(ENA_DISPLAYLIGHT);
+		}
+#endif // EXPANSION_BOARD_MOD_AVAILABLE
 }
 
 /**
