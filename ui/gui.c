@@ -343,8 +343,16 @@ void gui_display(uint8_t screen) {
 
 	/* Steuerung der Display-Beleuchtung in Abhängigkeit von der Umgebungshelligkeit */
 #ifdef EXPANSION_BOARD_MOD_AVAILABLE
-int sensLDR_average = (sensLDRR + sensLDRL)/2;
-	if (sensLDR_average > 512) {
+// Tiefpass zur Vermeidung eines flackernden Displays im Wertebereich der definierten minimalen Umgebungshelligkeit
+#define Rc_LDR 8  // Wert zwischen 1 und 9 einstellbar
+int sensLDR_average;
+sensLDR_average = (sensLDRR + sensLDRL)/2;
+static int sensLDR_average_old;
+
+sensLDR_average = (Rc_LDR * sensLDR_average_old + (10 - Rc_LDR) * sensLDR_average)/10;
+sensLDR_average_old = sensLDR_average;
+
+if (sensLDR_average > 300) {
 		ENA_on(ENA_DISPLAYLIGHT);
 	}
 	else {
