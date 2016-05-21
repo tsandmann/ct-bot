@@ -565,9 +565,11 @@ Behaviour_t * switch_to_behaviour(Behaviour_t * from, void (* to)(Behaviour_t *)
 			}
 			return NULL;
 		}
-		// Wir wollen also ueberschreiben, aber nett zum alten Aufrufer sein und ihn darueber benachrichtigen
-		job->caller->active = BEHAVIOUR_ACTIVE;	// alten Aufrufer reaktivieren
-		job->caller->subResult = BEHAVIOUR_SUBFAIL;	// er bekam aber nicht das gewuenschte Resultat
+		if (job->caller) {
+			// Wir wollenalso ueberschreiben, aber nett zum alten Aufrufer sein und ihn darueber benachrichtigen
+			job->caller->active = BEHAVIOUR_ACTIVE;	// alten Aufrufer reaktivieren
+			job->caller->subResult = BEHAVIOUR_SUBFAIL;	// er bekam aber nicht das gewuenschte Resultat
+		}
 	}
 
 	if (from) {
