@@ -85,6 +85,15 @@
 
 #define BPS_NO_DATA		0xffff		/**< Wert des BPS-Sensors, falls keine Daten verfuegbar sind */
 
+/* Servo-Parameter */
+#define DOOR_CLOSE 	65	/**< Rechter Anschlag Servo 1 (fuer ATmega32/644: Schrittweite 18, Offset 7) */
+#define DOOR_OPEN	185	/**< Linker Anschlag Servo 1 (fuer ATmega32/644: Schrittweite 18, Offset 7) */
+
+#define CAM_LEFT 	10	/**< Rechter Anschlag Servo 2 */
+#define CAM_RIGHT	250	/**< Linker Anschlag Servo 2 */
+#define CAM_CENTER	120	/**< Mittelstellung Servo 2 */
+
+
 /* System-Konstanten
    --> Diese Aenderungen sind mit lokalen Hardware-Anpassungen verbunden! */
 
@@ -107,14 +116,6 @@
 //#define SPI_AVAILABLE	/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 
 //#define DISTSENS_TYPE_GP2Y0A60 /**< Distanzsensor Typ GP2Y0A60 */
-
-/* Servo-Parameter */
-#define DOOR_CLOSE 	65	/**< Rechter Anschlag Servo 1 (fuer ATmega32/644: Schrittweite 18, Offset 7) */
-#define DOOR_OPEN	185	/**< Linker Anschlag Servo 1 (fuer ATmega32/644: Schrittweite 18, Offset 7) */
-
-#define CAM_LEFT 	10	/**< Rechter Anschlag Servo 2 */
-#define CAM_RIGHT	250	/**< Linker Anschlag Servo 2 */
-#define CAM_CENTER	120	/**< Mittelstellung Servo 2 */
 
 
 /*** Einstellungen fuer die Verhaltensregeln ***/
