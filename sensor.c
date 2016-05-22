@@ -49,8 +49,8 @@
 
 #define SPEED_UPDATE_TIME	500U	/**< Zeitspanne zwischen zwei Geschwindigkeits-Berechnungen [ms] */
 
-int16_t sensLDRL = 0;		/**< Lichtsensor links */
-int16_t sensLDRR = 0;		/**< Lichtsensor rechts */
+int16_t sensLDRL = 0;		/**< Helligkeit Lichtsensor links */
+int16_t sensLDRR = 0;		/**< Helligkeit Lichtsensor rechts */
 
 int16_t sensDistL = 1023;	/**< Distanz linker IR-Sensor in [mm], wenn korrekt umgerechnet wird */
 int16_t sensDistR = 1023;	/**< Distanz rechter IR-Sensor in [mm], wenn korrekt umgerechnet wird */

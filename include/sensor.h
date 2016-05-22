@@ -48,8 +48,8 @@ extern distSens_t sensDistDataL[];	/**< kalibrierte Referenzdaten fuer linken IR
 extern distSens_t sensDistDataR[];	/**< kalibrierte Referenzdaten fuer rechten IR-Sensor */
 
 
-extern int16_t sensLDRL;	/**< Lichtsensor links [0-1023];  1023 = dunkel*/
-extern int16_t sensLDRR;	/**< Lichtsensor rechts [0-1023];  1023 = dunkel*/
+extern int16_t sensLDRL;	/**< Helligkeit Lichtsensor links [0-1023];  1023 = dunkel*/
+extern int16_t sensLDRR;	/**< Helligkeit Lichtsensor rechts [0-1023];  1023 = dunkel*/
 
 extern int16_t sensBorderL;	/**< Abgrundsensor links [0-1023];  1023 = dunkel*/
 extern int16_t sensBorderR;	/**<  Abgrundsensor rechts [0-1023];  1023 = dunkel*/

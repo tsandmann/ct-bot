@@ -85,6 +85,15 @@
 
 #define BPS_NO_DATA		0xffff		/**< Wert des BPS-Sensors, falls keine Daten verfuegbar sind */
 
+/* Servo-Parameter */
+#define DOOR_CLOSE 	65	/**< Rechter Anschlag Servo 1 (fuer ATmega32/644: Schrittweite 18, Offset 7) */
+#define DOOR_OPEN	185	/**< Linker Anschlag Servo 1 (fuer ATmega32/644: Schrittweite 18, Offset 7) */
+
+#define CAM_LEFT 	10	/**< Rechter Anschlag Servo 2 */
+#define CAM_RIGHT	250	/**< Linker Anschlag Servo 2 */
+#define CAM_CENTER	120	/**< Mittelstellung Servo 2 */
+
+
 /* System-Konstanten
    --> Diese Aenderungen sind mit lokalen Hardware-Anpassungen verbunden! */
 
@@ -94,7 +103,8 @@
 //#define UART_BAUD	57600	/**< Baudrate  57600 fuer UART-Kommunikation */
 #define UART_BAUD	115200	/**< Baudrate 115200 fuer UART-Kommunikation */
 //#define UART_BAUD	230400	/**< Baudrate 230400 fuer UART-Kommunikation */
-//#define UART_BAUD	500000	/**< Baudrate 500000 fuer UART-Kommunikation */
+//#define UART_BAUD	460800	/**< Baudrate 460800 fuer UART-Kommunikation */
+//#define UART_BAUD	500000	/**< Baudrate 500k fuer UART-Kommunikation */
 
 #define UART_LINUX_PORT		"/dev/ttyAMA0"	/**< UART Port vom ARM-Linux-Board fuer Verbinung zum ATmega */
 #define BOT_RESET_GPIO		"/sys/class/gpio/gpio17/value"	/**< Pfad zum Reset-GPIO vom ARM-Linux-Board */
@@ -106,14 +116,6 @@
 //#define SPI_AVAILABLE	/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 
 //#define DISTSENS_TYPE_GP2Y0A60 /**< Distanzsensor Typ GP2Y0A60 */
-
-/* Servo-Parameter */
-#define DOOR_CLOSE 	65	/**< Rechter Anschlag Servo 1 (fuer ATmega32/644: Schrittweite 18, Offset 7) */
-#define DOOR_OPEN	185	/**< Linker Anschlag Servo 1 (fuer ATmega32/644: Schrittweite 18, Offset 7) */
-
-#define CAM_LEFT 	10	/**< Rechter Anschlag Servo 2 */
-#define CAM_RIGHT	250	/**< Linker Anschlag Servo 2 */
-#define CAM_CENTER	120	/**< Mittelstellung Servo 2 */
 
 
 /*** Einstellungen fuer die Verhaltensregeln ***/
