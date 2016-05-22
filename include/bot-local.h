@@ -103,7 +103,7 @@
 //#define UART_BAUD	57600	/**< Baudrate  57600 fuer UART-Kommunikation */
 #define UART_BAUD	115200	/**< Baudrate 115200 fuer UART-Kommunikation */
 //#define UART_BAUD	230400	/**< Baudrate 230400 fuer UART-Kommunikation */
-//#define UART_BAUD	250000	/**< Baudrate 250k fuer UART-Kommunikation */
+//#define UART_BAUD	460800	/**< Baudrate 460800 fuer UART-Kommunikation */
 //#define UART_BAUD	500000	/**< Baudrate 500k fuer UART-Kommunikation */
 
 #define UART_LINUX_PORT		"/dev/ttyAMA0"	/**< UART Port vom ARM-Linux-Board fuer Verbinung zum ATmega */
