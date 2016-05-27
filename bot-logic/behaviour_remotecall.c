@@ -123,6 +123,7 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 #endif
 #ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_drive_square, 0, "", 0),
+	PREPARE_REMOTE_CALL(bot_drive_square_len, 1, "int16 length", 2),
 #endif
 
 	/* Hardware-Test Verhalten */

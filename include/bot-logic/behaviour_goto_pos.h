@@ -62,9 +62,22 @@ Behaviour_t * bot_goto_pos_rel(Behaviour_t * caller, int16_t x, int16_t y, int16
  * \param *caller	Der Verhaltensdatensatz des Aufrufers
  * \param distance	Distanz in mm, die der Bot fahren soll
  * \param dir		Fahrtrichtung: >=0: vorwaerts, <0 rueckwaerts
+ * \param head		neue Blickrichtung am Zielpunkt oder 999, falls egal
  * \return			Zeiger auf Verhaltensdatensatz
  */
-Behaviour_t * bot_goto_dist(Behaviour_t * caller, int16_t distance, int8_t dir);
+Behaviour_t * bot_goto_dist_head(Behaviour_t * caller, int16_t distance, int8_t dir, int16_t head);
+
+/**
+ * Botenfunktion des Distanz-Positionierungsverhaltens.
+ * Bewegt den Bot um distance mm in aktueller Blickrichtung ("drive_distance(...)")
+ * \param *caller	Der Verhaltensdatensatz des Aufrufers
+ * \param distance	Distanz in mm, die der Bot fahren soll
+ * \param dir		Fahrtrichtung: >=0: vorwaerts, <0 rueckwaerts
+ * \return			Zeiger auf Verhaltensdatensatz
+ */
+static inline Behaviour_t * bot_goto_dist(Behaviour_t * caller, int16_t distance, int8_t dir) {
+	return bot_goto_dist_head(caller, distance, dir, heading_int);
+}
 
 #else // BEHAVIOUR_GOTO_POS_AVAILABLE
 #ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
