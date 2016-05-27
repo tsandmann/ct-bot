@@ -62,6 +62,7 @@ EEPROM uint8_t bot_address = CMD_BROADCAST; /**< Kommunikations-Adresse des Bots
 //#define CRC_CHECK				/**< Soll die Kommunikation per CRC-Checksumme abgesichert werden? */
 #define CHECK_CMD_ADDRESS		/**< soll die Zieladresse der Kommandos ueberprueft werden? */
 #define COMMAND_TIMEOUT 15		/**< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
+#define BOT_2_RPI_TIMEOUT 20000UL /**< Timeout fuer ARM-Boards */
 
 /* CRC aktivieren fuer ARM-Boards, Adress-Check deaktivieren */
 #ifdef ARM_LINUX_BOARD
@@ -76,7 +77,7 @@ EEPROM uint8_t bot_address = CMD_BROADCAST; /**< Kommunikations-Adresse des Bots
 #define CRC_CHECK
 #endif
 #undef CHECK_CMD_ADDRESS
-#endif
+#endif // BOT_2_RPI_AVAILABLE
 
 #define RCVBUFSIZE (sizeof(command_t) * 2)	/**< Groesse des Empfangspuffers */
 
@@ -990,7 +991,7 @@ int8_t command_evaluate(void) {
 			const uint32_t tick = (uint32_t) low.u16 | ((uint32_t) high.u16 << 16);
 			LOG_DEBUG("time_diff=%lu us", (uint32_t) (tick - last) * 176);
 			const uint32_t diff = (tick - last) * 176;
-			if (diff > 20000UL && last != 0) {
+			if (diff > BOT_2_RPI_TIMEOUT && last != 0) {
 				LOG_ERROR(" diff=%lu", diff);
 				LOG_DEBUG(" tick=%lu\tlast=%lu", tick, last);
 				LOG_DEBUG(" received_command.data_l=%d\treceived_command.data_r=%d", received_command.data_l, received_command.data_r);
