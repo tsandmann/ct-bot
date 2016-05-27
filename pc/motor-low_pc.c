@@ -49,7 +49,7 @@ void motor_low_init() {
  * \param left PWM links
  * \param right PWM rechts
 */
-void bot_motor(int16_t left, int16_t right){
+void bot_motor(int16_t left, int16_t right) {
 	command_write(CMD_AKT_MOT, SUB_CMD_NORM, left, right, 0);
 
 	if (right < 0) {

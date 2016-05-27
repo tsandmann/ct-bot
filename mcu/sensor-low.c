@@ -427,7 +427,7 @@ void bot_encoder_isr(void) {
 				timeCorrectL = 0;
 			}
 			/* pro TIMER_STEP wird maximal ein Encoder ausgewertet, da max alle 6 ms (Fullspeed) eine Flanke kommen kann */
-			return; // hackhack
+			return;
 #else // ! SPEED_CONTROL_AVAILABLE
 #ifdef SPEED_LOG_AVAILABLE
 			uint8_t index = slog_i[0];
