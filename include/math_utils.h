@@ -165,7 +165,7 @@ float calc_angle_diff_rad(int16_t xDiff, int16_t yDiff);
  * \return 		Berechnete Winkeldifferenz [Grad]
  */
 static inline float calc_angle_diff(int16_t xDiff, int16_t yDiff) {
-	return deg(calc_angle_diff_rad(xDiff, yDiff));
+	return (float) deg(calc_angle_diff_rad(xDiff, yDiff));
 }
 
 /**
@@ -242,7 +242,7 @@ static inline int16_t muls8(int8_t a, int8_t b) {
 	);
 	return result;
 #else
-	return a * b;
+	return (int16_t) (a * b);
 #endif // MCU
 }
 
@@ -265,7 +265,7 @@ static inline uint16_t mul8(uint8_t a, uint8_t b) {
 	);
 	return result;
 #else
-	return a * b;
+	return (uint16_t) (a * b);
 #endif // MCU
 }
 
@@ -288,13 +288,13 @@ static inline uint16_t calc_crc_update(uint16_t crc, uint8_t data) {
 #ifdef MCU
 	return _crc_xmodem_update(crc, data);
 #else // PC
-    crc = crc ^ ((uint16_t) data << 8);
+    crc = (uint16_t) (crc ^ ((uint16_t) data << 8));
     int i;
     for (i = 0; i < 8; ++i) {
         if (crc & 0x8000) {
-            crc = (crc << 1) ^ 0x1021;
+            crc = (uint16_t) ((crc << 1) ^ 0x1021);
         } else {
-            crc <<= 1;
+            crc = (uint16_t) (crc << 1);
         }
     }
 
