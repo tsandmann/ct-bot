@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2016-05-28: Verhalten bot_goto_pos verbessert, bot_drive_square aktualisiert fuer die Benutzung von bot_goto_pos
+
 2016-05-15: Verwendung von Speedlog ohne MMC mit UART-Ausgabe. Konfiguration: SPEED_LOG_AVAILABLE an, LOG_UART_AVAILABLE an, USE_MINILOG an, BOT_2_SIM_AVAILABLE aus, MMC_AVAILABLE aus
 
 2016-05-08: Zusaetzliche Display-/Log-Funktionen: Uebertragung der MCU-Displayausgaben an RPi, Logging von MCU zu RPi via LOG_RPI_AVAILABLE, Auslastungsanzeige fuer CPU und UART verbessert
