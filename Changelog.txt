@@ -1,5 +1,9 @@
 CHANGELOG fuer c't-Bot
 ======================
+2016-07-09: Release 23
+
+2016-07-03: Unterstuetzung der MSYS2 Toolchain unter Windows, siehe https://www.heise.de/ct/projekte/machmit/ctbot/wiki/InstallationsanleitungR23 zur Einrichtung
+
 2016-05-28: Verhalten bot_goto_pos verbessert, bot_drive_square aktualisiert fuer die Benutzung von bot_goto_pos
 
 2016-05-15: Verwendung von Speedlog ohne MMC mit UART-Ausgabe. Konfiguration: SPEED_LOG_AVAILABLE an, LOG_UART_AVAILABLE an, USE_MINILOG an, BOT_2_SIM_AVAILABLE aus, MMC_AVAILABLE aus
@@ -25,6 +29,8 @@ CHANGELOG fuer c't-Bot
 2016-01-23: Steuerung Servo 2 per VOL +/- Taste auf der Fernbedienung; Bot-Verhalten entsprechend der Web-Dokumentation sortiert (Nightwalker-01)
 
 2016-01-10: Bugfix fuer Endianness-Inkompatibilitaet bestimmer Compiler unter Linux 
+
+2015-12-12: Motor- und Servoansteuerung ueberarbeitet
 
 2015-11-21: Bugfix Maus- / ENA-Code
 
