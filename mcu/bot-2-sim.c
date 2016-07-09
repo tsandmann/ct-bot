@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	bot-2-sim.c
- * @brief 	Verbindung zwischen c't-Bot und c't-Sim
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	28.02.2006
+/**
+ * \file 	bot-2-sim.c
+ * \brief 	Verbindung zwischen c't-Bot und c't-Sim
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	28.02.2006
  */
 
 #ifdef MCU
@@ -42,7 +42,7 @@
 #include <string.h>
 
 
-/*!
+/**
  * Diese Funktion nimmt die Daten vom PC entgegen
  * und wertet sie aus. Dazu nutzt sie die Funktion command_evaluate()
  */
@@ -59,7 +59,7 @@ void bot_2_sim_listen(void) {
 	}
 }
 
-/*!
+/**
  * Diese Funktion informiert den PC ueber alle Sensor und Aktuator-Werte
  */
 void bot_2_sim_inform(void) {
@@ -87,11 +87,39 @@ void bot_2_sim_inform(void) {
 	command_write(CMD_DONE, SUB_CMD_NORM, 0, 0, 0);
 }
 
-/*!
+/**
  * Meldet den Bot am c't-Sim an
  */
 void bot_2_sim_init(void) {
-	command_init();
+	// Nop
+}
+
+/**
+ * Berechnet die CRC Checksumme eines Kommandos
+ * \param *cmd Zeiger auf das Kommando
+ */
+static void calc_crc_dummy(command_t * cmd) {
+	(void) cmd;
+}
+
+/**
+ * Prueft die CRC Checksumme eines Kommandos
+ * \param *cmd Zeiger auf das Kommando
+ * \return True oder False
+ */
+static uint8_t check_crc_dummy(command_t * cmd) {
+	(void) cmd;
+	return True;
+}
+
+/**
+ * Setzt den aktiven Kommunikationskanal auf TCP/IP
+ */
+void set_bot_2_sim(void) {
+	cmd_functions.write = uart_write;
+	cmd_functions.read = uart_read;
+	cmd_functions.crc_check = check_crc_dummy;
+	cmd_functions.crc_calc = calc_crc_dummy;
 }
 
 #endif // BOT_2_SIM_AVAILABLE

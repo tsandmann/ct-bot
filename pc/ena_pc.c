@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	ena_pc.c
- * @brief 	Routinen zur Steuerung der Enable-Leitungen
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.2005
+/**
+ * \file 	ena_pc.c
+ * \brief 	Routinen zur Steuerung der Enable-Leitungen
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	26.12.2005
  */
 
 #ifdef PC
@@ -30,10 +30,17 @@
 #ifdef ENA_AVAILABLE
 #include "ena.h"
 
-/*!
- * Initialisiert die Enable-Leitungen
- */
 void ENA_init() {
+	// Dummy
+}
+
+void ENA_on(uint8_t enable) {
+	(void) enable;
+	// Dummy
+}
+
+void ENA_off(uint8_t enable) {
+	(void) enable;
 	// Dummy
 }
 #endif // ENA_AVAILABLE

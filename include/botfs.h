@@ -85,7 +85,7 @@ static inline void botfs_seek(botfs_file_descr_t * file, int16_t offset, uint8_t
 	uint16_t tmp;
 	switch(origin) {
 	case SEEK_SET:
-		tmp = file->start + 1;
+		tmp = (uint16_t) (file->start + 1);
 		break;
 	case SEEK_CUR:
 		tmp = file->pos;
@@ -195,7 +195,7 @@ int8_t botfs_write_header_data(botfs_file_descr_t * file, void * buffer);
  * \return		Dateigroesse in Bloecken
  */
 static inline uint16_t botfs_get_filesize(botfs_file_descr_t * file) {
-	return file->end - file->start - (BOTFS_HEADER_SIZE - 1);
+	return (uint16_t) (file->end - file->start - (uint16_t) (BOTFS_HEADER_SIZE - 1));
 }
 
 /**

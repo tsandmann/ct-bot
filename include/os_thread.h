@@ -28,9 +28,8 @@
 #define _OS_THREAD_H_
 
 #ifdef PC
-#undef OS_DEBUG
 #include <pthread.h>
-#endif // PC
+#endif
 
 #ifdef OS_AVAILABLE
 #include "timer.h"
@@ -45,17 +44,36 @@ typedef struct {
 #endif
 } os_signal_t;
 
-#define OS_MAX_THREADS		4	/**< maximale Anzahl an Threads im System */
-#define OS_KERNEL_STACKSIZE	36	/**< Groesse des Kernel-Stacks (fuer Timer-ISR) [Byte] */
-#define OS_IDLE_STACKSIZE	64	/**< Groesse des Idle-Stacks [Byte] */
-#define OS_CONTEXT_SIZE		19	/**< Groesse des Kontextes eines Threads [Byte], muss zum Code in os_switch_thread() passen! */
 
-//#define OS_DEBUG				/**< Schalter fuer Debug-Code */
+typedef void (* os_delayed_func_ptr_t)(void*); /** Zeiger-Typ fuer verzoegerte Funktionen */
+
+/** Interne Datenstruktur fuer die Registrierung von verzoegert auszufuehrende Funktionen */
+typedef struct {
+	os_delayed_func_ptr_t p_func; /**< Zeiger auf Funktion */
+	void* p_data; /**< Zeiger auf Daten fuer Funktion (optional) */
+	uint32_t runtime; /**< fruehst moegliche Ausfuehrungszeit in Timer-Ticks */
+} os_delayed_func_t;
+
+#define OS_MAX_THREADS		4	/**< maximale Anzahl an Threads im System */
+#define OS_IDLE_STACKSIZE	96	/**< Groesse des Idle-Stacks [Byte] */
+#define OS_CONTEXT_SIZE		19	/**< Groesse des Kontextes eines Threads [Byte], muss zum Code in os_switch_thread() passen! */
+#define OS_DELAYED_FUNC_CNT	8	/**< Anzahl der maximal registrierbaren Funktionen zur verzoegerten Ausfuehrung */
+
+//#define OS_DEBUG					/**< Schalter fuer Debug-Code */
 //#define OS_KERNEL_LOG_AVAILABLE	/**< Aktiviert das Kernel-LOG mit laufenden Debug-Ausgaben */
+
+#ifdef PC
+#undef OS_DEBUG
+#endif
+
+#ifdef OS_DEBUG
+extern unsigned char* __brkval;
+extern size_t __malloc_margin;
+#endif
 
 #ifdef OS_KERNEL_LOG_AVAILABLE
 #undef OS_IDLE_STACKSIZE
-#define OS_IDLE_STACKSIZE	192
+#define OS_IDLE_STACKSIZE	256
 #endif
 
 #if OS_MAX_THREADS < 2
@@ -63,8 +81,8 @@ typedef struct {
 #endif
 
 #ifdef MAP_AVAILABLE
-#if OS_MAX_THREADS < 3
-#error "OS_MAX_THREADS muss >= 3 sein, wenn MAP_AVAILABLE"
+#if OS_MAX_THREADS < 4
+#error "OS_MAX_THREADS muss >= 4 sein, wenn MAP_AVAILABLE"
 #endif
 #endif
 
@@ -92,9 +110,11 @@ typedef struct {
 
 extern Tcb_t os_threads[OS_MAX_THREADS];	/**< Thread-Pool (ist gleichzeitig running- und waiting-queue) */
 extern Tcb_t * os_thread_running;			/**< Zeiger auf den Thread, der zurzeit laeuft */
-extern uint8_t os_kernel_stack[];			/**< Kernel-Stack */
 extern uint8_t os_idle_stack[];				/**< Stack des Idle-Threads */
 extern os_signal_t dummy_signal; 			/**< Signal, das referenziert wird, wenn sonst keins gesetzt ist */
+extern os_delayed_func_t os_delayed_func[];	/**< Registrierte Funktionen zur verzoegerten Ausfuehrung */
+extern volatile os_delayed_func_t* os_delayed_next_p; /**< Zeiger auf die naechste auszufuehrende verzoegerte Funktion */
+
 
 #ifdef OS_KERNEL_LOG_AVAILABLE
 #define OS_KERNEL_LOG_SIZE	32	/**< Anzahl der Datensaetze, die im Kernel-LOG gepuffert werden koennen */
@@ -148,6 +168,20 @@ static inline void os_thread_sleep(uint32_t ms) {
 	uint32_t now = TIMER_GET_TICKCOUNT_32;  // Aktuelle Systemzeit
 	os_thread_running->nextSchedule = now + sleep_ticks;
 	os_schedule(now); // Aufruf des Schedulers
+}
+
+/**
+ * Blockiert den aktuellten Thread fuer die angegebene Zeit und schaltet
+ * auf einen anderen Thread um
+ * => coorporative threadswitch
+ * \param ticks	Zeit in 176 us, die der aktuelle Thread (mindestens) blockiert wird
+ */
+static inline void os_thread_sleep_ticks(uint16_t ticks) {
+	if (ticks) {
+		uint32_t now = TIMER_GET_TICKCOUNT_32; // Aktuelle Systemzeit
+		os_thread_running->nextSchedule = now + ticks;
+		os_schedule(now); // Aufruf des Schedulers
+	}
 }
 
 /**
@@ -247,6 +281,21 @@ void os_thread_yield(void);
  */
 void os_signal_set(os_signal_t * signal);
 
+/**
+ * Sucht die als naechstes auszufuehrende Funktion heraus, wird intern benutzt.
+ * @return Naechste auszufuehrende Funktion oder NULL, falls keine Funktion registriert
+ */
+os_delayed_func_t* os_delayed_func_search_next(void);
+
+/**
+ * Registriert eine Funktion zur spaeteren Ausfuehrung.
+ * @param p_func Zeiger auf die Funktion
+ * @param p_data Zeiger auf Daten fuer die Funktion oder NULL
+ * @param delay_ms Zeit in ms, nach der die Funktion (fruehestens) ausgefuehrt werden soll
+ * @return 0, falls Funktion korrekt registriert werden konnte, 1 sonst
+ */
+uint8_t os_delay_func(os_delayed_func_ptr_t p_func, void* p_data, uint32_t delay_ms);
+
 #ifdef OS_DEBUG
 /**
  * Maskiert einen Stack, um spaeter ermitteln zu koennen,
@@ -255,6 +304,15 @@ void os_signal_set(os_signal_t * signal);
  * \param size		Groesse des Stacks in Byte
  */
 void os_mask_stack(void * stack, size_t size);
+
+/**
+ * Ermittelt wieviel Bytes auf einem Stack bisher
+ * ungenutzt sind. Der Stack muss dafuer VOR der
+ * Initialisierung seines Threads mit
+ * os_stack_mask() praepariert worden sein!
+ * \param *stack	Anfangsadresse des Stacks
+ */
+uint16_t os_stack_unused(void* stack);
 
 /**
  * Gibt per LOG aus, wieviel Bytes auf den Stacks der Threads noch nie benutzt wurden

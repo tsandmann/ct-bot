@@ -17,11 +17,11 @@
  * 
  */
 
-/*! 
- * @file 	cmps03.h
- * @brief 	CMPS03-Treiber
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	05.09.2007
+/**
+ * \file 	cmps03.h
+ * \brief 	CMPS03-Treiber
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	05.09.2007
  */
 
 #ifndef CMPS03_H_
@@ -29,9 +29,9 @@
 
 #ifdef CMPS03_AVAILABLE
 
-#define CMPS03_ADDR	0xc0	/*!< I2C-Adresse des Kompass */
+#define CMPS03_ADDR	0xc0 /**< I2C-Adresse des Kompass */
 
-/*! Kompass-Datentyp fuer Lage */
+/** Kompass-Datentyp fuer Lage */
 typedef union {
 	int16_t bearing;
 	struct {
@@ -40,15 +40,15 @@ typedef union {
 	};
 } cmps03_t;
 
-/*!
+/**
  * Startet das Auslesen der aktuellen Lage per I2C
- * @param *pValue	Zeiger auf Datenablage
+ * \param *pValue	Zeiger auf Datenablage
  */
 void cmps03_get_bearing(cmps03_t * pValue);
 
-/*!
+/**
  * Wartet auf die Beendigung des I2C-Transfers und formatiert die Daten korrekt
- * @param *pValue	Zeiger auf Datenablage
+ * \param *pValue	Zeiger auf Datenablage
  */
 void cmps03_finish(cmps03_t * pValue);
 #endif // CMPS03_AVAILABLE

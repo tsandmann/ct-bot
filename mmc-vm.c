@@ -17,12 +17,12 @@
  * 
  */
 
-/*! 
- * @file 	mmc-vm.c
- * @brief 	Virtual Memory Management mit MMC / SD-Card
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	30.11.2006
- * @see		Documentation/mmc-vm.html
+/**
+ * \file 	mmc-vm.c
+ * \brief 	Virtual Memory Management mit MMC / SD-Card
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	30.11.2006
+ * \see		Documentation/mmc-vm.html
  */
 
 
@@ -42,72 +42,72 @@
 #include <string.h>
 
 #ifdef MCU
-#define MMC_START_ADDRESS 0x2000000		/*!< Startadresse des virtuellen Speichers [512;2^32-1] in Byte - Sinnvoll ist z.B. Haelfte der MMC / SD-Card Groesse, der Speicherplatz davor kann dann fuer ein Dateisystem verwendet werden. */
-#define MAX_SPACE_IN_SRAM 1				/*!< Anzahl der Seiten, die maximal im SRAM gehalten werden [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald diese verwendet wird. */
-#define swap_out	mmc_write_sector	/*!< Funktion zum Schreiben auf die MMC */
-#define swap_in		mmc_read_sector		/*!< Funktion zum Lesen von der MMC */
-#define swap_space	mmc_get_size()		/*!< Funktion zur Groessenermittlung der MMC */
-#define fat_lookup	mini_fat_lookup_adr	/*!< Funktion zum FS-Cache auslesen */
-#define fat_store	mini_fat_store_adr	/*!< Funktion zum FS-Cache aktualisieren */
+#define MMC_START_ADDRESS 0x2000000		/**< Startadresse des virtuellen Speichers [512;2^32-1] in Byte - Sinnvoll ist z.B. Haelfte der MMC / SD-Card Groesse, der Speicherplatz davor kann dann fuer ein Dateisystem verwendet werden. */
+#define MAX_SPACE_IN_SRAM 1				/**< Anzahl der Seiten, die maximal im SRAM gehalten werden [1;127] - Pro Page werden 512 Byte im SRAM belegt, sobald diese verwendet wird. */
+#define swap_out	mmc_write_sector	/**< Funktion zum Schreiben auf die MMC */
+#define swap_in		mmc_read_sector		/**< Funktion zum Lesen von der MMC */
+#define swap_space	mmc_get_size()		/**< Funktion zur Groessenermittlung der MMC */
+#define fat_lookup	mini_fat_lookup_adr	/**< Funktion zum FS-Cache auslesen */
+#define fat_store	mini_fat_store_adr	/**< Funktion zum FS-Cache aktualisieren */
 #else // PC
-#define MMC_START_ADDRESS 0x1000000			/*!< Startadresse des virtuellen Speichers [512;2^32-1] in Byte - Sinnvoll ist z.B. Haelfte der MMC / SD-Card Groesse, der Speicherplatz davor kann dann fuer ein Dateisystem verwendet werden. */
-#define MAX_SPACE_IN_SRAM 5					/*!< Anzahl der Seiten, die maximal im RAM gehalten werden [1;127] - Pro Page werden 512 Byte im RAM belegt, sobald diese verwendet wird. */
-#define swap_out	mmc_emu_write_sector	/*!< Funktion zum Schreiben auf die emulierte MMC */
-#define swap_in		mmc_emu_read_sector		/*!< Funktion zum Lsen von der emulierte MMC */
-#define swap_space	mmc_emu_get_size()		/*!< Funktion zur Groessenermittlung der emulierten MMC */
-#define fat_lookup	mmc_emu_fat_lookup_adr	/*!< Funktion zum FS-Cache auslesen */
-#define fat_store	mmc_emu_fat_store_adr	/*!< Funktion zum FS-Cache aktualisieren */
-#define mini_fat_find_block_P	mmc_emu_find_block	/*!< Funktion um Mini-FAT-Datei zu oeffnen */
-#define mini_fat_get_filesize(addr, buffer) mmc_emu_get_filesize(addr)	/*!< Funktion um Groesse einer Mini-FAT-Datei auszulesen */
-#define mini_fat_clear_file(addr, buffer) mmc_emu_clear_file(addr)	/*!< Funktion um eine Mini-FAT-Datei zu loeschen */
+#define MMC_START_ADDRESS 0x1000000			/**< Startadresse des virtuellen Speichers [512;2^32-1] in Byte - Sinnvoll ist z.B. Haelfte der MMC / SD-Card Groesse, der Speicherplatz davor kann dann fuer ein Dateisystem verwendet werden. */
+#define MAX_SPACE_IN_SRAM 5					/**< Anzahl der Seiten, die maximal im RAM gehalten werden [1;127] - Pro Page werden 512 Byte im RAM belegt, sobald diese verwendet wird. */
+#define swap_out	mmc_emu_write_sector	/**< Funktion zum Schreiben auf die emulierte MMC */
+#define swap_in		mmc_emu_read_sector		/**< Funktion zum Lsen von der emulierte MMC */
+#define swap_space	mmc_emu_get_size()		/**< Funktion zur Groessenermittlung der emulierten MMC */
+#define fat_lookup	mmc_emu_fat_lookup_adr	/**< Funktion zum FS-Cache auslesen */
+#define fat_store	mmc_emu_fat_store_adr	/**< Funktion zum FS-Cache aktualisieren */
+#define mini_fat_find_block_P	mmc_emu_find_block	/**< Funktion um Mini-FAT-Datei zu oeffnen */
+#define mini_fat_get_filesize(addr, buffer) mmc_emu_get_filesize(addr)	/**< Funktion um Groesse einer Mini-FAT-Datei auszulesen */
+#define mini_fat_clear_file(addr, buffer) mmc_emu_clear_file(addr)	/**< Funktion um eine Mini-FAT-Datei zu loeschen */
 #endif // MCU
 
-#define MAX_PAGES_IN_SRAM MAX_SPACE_IN_SRAM		/*!< Anzahl der Cache-Seiten, die maximal im SRAM gehalten werden */
+#define MAX_PAGES_IN_SRAM MAX_SPACE_IN_SRAM		/**< Anzahl der Cache-Seiten, die maximal im SRAM gehalten werden */
 
-/*! Struktur eines Cacheeintrags */
+/** Struktur eines Cacheeintrags */
 typedef struct {
-	uint32_t addr;		/*!< Tag = MMC-Blockadresse der ins RAM geladenen Seite */
-	uint8_t * p_data;	/*!< Daten = Zeiger auf 512 Byte grosse Seite im RAM */
+	uint32_t addr;		/**< Tag = MMC-Blockadresse der ins RAM geladenen Seite */
+	uint8_t * p_data;	/**< Daten = Zeiger auf 512 Byte grosse Seite im RAM */
 #if MAX_PAGES_IN_SRAM > 2
-	uint8_t	succ;		/*!< Zeiger auf Nachfolger (LRU) */
-	uint8_t	prec;		/*!< Zeiger auf Vorgaenger (LRU) */
+	uint8_t	succ;		/**< Zeiger auf Nachfolger (LRU) */
+	uint8_t	prec;		/**< Zeiger auf Vorgaenger (LRU) */
 #endif
-	uint8_t	dirty;		/*!< Dirty-Bit (0: Daten wurden bereits auf die MMC / SD-Card zurueckgeschrieben) */
+	uint8_t	dirty;		/**< Dirty-Bit (0: Daten wurden bereits auf die MMC / SD-Card zurueckgeschrieben) */
 } vm_cache_t;
 
 #ifdef VM_STATS_AVAILABLE
 typedef struct{
-	uint32_t page_access;		/*!< Anzahl der Seitenzugriffe seit Systemstart */
-	uint32_t swap_ins;		/*!< Anzahl der Seiteneinlagerungen seit Systemstart */
-	uint32_t swap_outs;		/*!< Anzahl der Seitenauslagerungen seit Systemstart */
-	uint32_t vm_used_bytes;	/*!< Anzahl der vom VM belegten Bytes auf der MMC / SD-Card */
-	uint32_t time;			/*!< Timestamp bei erster Speicheranforderung */
+	uint32_t page_access;		/**< Anzahl der Seitenzugriffe seit Systemstart */
+	uint32_t swap_ins;		/**< Anzahl der Seiteneinlagerungen seit Systemstart */
+	uint32_t swap_outs;		/**< Anzahl der Seitenauslagerungen seit Systemstart */
+	uint32_t vm_used_bytes;	/**< Anzahl der vom VM belegten Bytes auf der MMC / SD-Card */
+	uint32_t time;			/**< Timestamp bei erster Speicheranforderung */
 } vm_stats_t;
 
 vm_stats_t stats_data = {0};
 #endif // VM_STATS_AVAILABLE
 
-static uint32_t mmc_start_address = MMC_START_ADDRESS;	/*!< physische Adresse der MMC / SD-Card, wo unser VM beginnt */
-static uint32_t next_mmc_address = MMC_START_ADDRESS;		/*!< naechste freie virtuelle Adresse */
-static uint8_t pages_in_sram = MAX_PAGES_IN_SRAM;			/*!< Groesse des Caches im RAM */
-static int8_t allocated_pages = 0;						/*!< Anzahl bereits belegter Cachebloecke */
-static uint8_t oldest_cacheblock = 0;						/*!< Zeiger auf den am laengsten nicht genutzten Eintrag (LRU) */
-static uint8_t recent_cacheblock = 0;						/*!< Zeiger auf den letzten genutzten Eintrag (LRU) */
+static uint32_t mmc_start_address = MMC_START_ADDRESS;	/**< physische Adresse der MMC / SD-Card, wo unser VM beginnt */
+static uint32_t next_mmc_address = MMC_START_ADDRESS;		/**< naechste freie virtuelle Adresse */
+static uint8_t pages_in_sram = MAX_PAGES_IN_SRAM;			/**< Groesse des Caches im RAM */
+static int8_t allocated_pages = 0;						/**< Anzahl bereits belegter Cachebloecke */
+static uint8_t oldest_cacheblock = 0;						/**< Zeiger auf den am laengsten nicht genutzten Eintrag (LRU) */
+static uint8_t recent_cacheblock = 0;						/**< Zeiger auf den letzten genutzten Eintrag (LRU) */
 
-static vm_cache_t page_cache[MAX_PAGES_IN_SRAM];				/*!< der eigentliche Cache, vollassoziativ, LRU-Policy */
+static vm_cache_t page_cache[MAX_PAGES_IN_SRAM];				/**< der eigentliche Cache, vollassoziativ, LRU-Policy */
 
 #ifdef VM_STATS_AVAILABLE
-/*!
+/**
  * Gibt die Anzahl der Pagefaults seit Systemstart bzw. Ueberlauf zurueck
- * @return		#Pagefaults
+ * \return		#Pagefaults
  */
 uint32_t mmc_get_pagefaults(void) {
 	return stats_data.swap_ins;
 }
 
-/*!
+/**
  * Erstellt eine kleine Statistik ueber den VM
- * @return		Zeiger auf Statistikdaten
+ * \return		Zeiger auf Statistikdaten
  */
 vm_extern_stats_t * mmc_get_vm_stats(void) {
 	static vm_extern_stats_t extern_stats = {0};
@@ -125,7 +125,7 @@ vm_extern_stats_t * mmc_get_vm_stats(void) {
 	return &extern_stats;
 }
 
-/*!
+/**
  * Gibt eine kleine Statistik ueber den VM aus
  */
 void mmc_print_statistic(void) {
@@ -168,10 +168,10 @@ void mmc_print_statistic(void) {
 }
 #endif // VM_STATS_AVAILABLE
 
-/*! 
+/**
  * Gibt die Blockadresse einer Seite zurueck
- * @param addr	Eine virtuelle Adresse in Byte
- * @return		Blockadresse
+ * \param addr	Eine virtuelle Adresse in Byte
+ * \return		Blockadresse
  */
 static inline uint32_t mmc_get_mmcblock_of_page(uint32_t addr) {
 #ifdef MCU
@@ -193,19 +193,19 @@ static inline uint32_t mmc_get_mmcblock_of_page(uint32_t addr) {
 #endif // MCU
 }	
 	
-/*! 
+/**
  * Gibt die letzte Adresse einer Seite zurueck
- * @param addr	Eine virtuelle Adresse in Byte
- * @return		Adresse in Byte
+ * \param addr	Eine virtuelle Adresse in Byte
+ * \return		Adresse in Byte
  */
 static inline uint32_t mmc_get_end_of_page(uint32_t addr) {
 	return addr | 0x1ff;	// die unteren 9 Bit sind gesetzt, da Blockgroesse = 512 Byte
 }
 
-/*! 
+/**
  * Gibt den Index einer Seite im Cache zurueck
- * @param addr	Eine virtuelle Adresse in Byte
- * @return		Index des Cacheblocks, -1 falls Cache-Miss
+ * \param addr	Eine virtuelle Adresse in Byte
+ * \return		Index des Cacheblocks, -1 falls Cache-Miss
  */
 static int8_t mmc_get_cacheblock_of_page(uint32_t addr) {
 	uint32_t page_addr = mmc_get_mmcblock_of_page(addr);
@@ -216,10 +216,10 @@ static int8_t mmc_get_cacheblock_of_page(uint32_t addr) {
 	return -1;	// Seite nicht im Cache
 }
 
-/*! 
+/**
  * Laedt eine Seite in den Cache, falls sie noch nicht geladen ist
- * @param addr	Eine virtuelle Adresse in Byte
- * @return		0: ok, 1: ungueltige Adresse, 2: Fehler bei swap_out, 3: Fehler bei swap_in
+ * \param addr	Eine virtuelle Adresse in Byte
+ * \return		0: ok, 1: ungueltige Adresse, 2: Fehler bei swap_out, 3: Fehler bei swap_in
  */
 static uint8_t mmc_load_page(uint32_t addr) {
 	if (addr >= next_mmc_address) return 1;	// ungueltige virtuelle Adresse :(
@@ -307,11 +307,11 @@ static uint8_t mmc_load_page(uint32_t addr) {
 	return 0;
 }
 
-/*! 
+/**
  * Fordert virtuellen Speicher an
- * @param size		Groesse des gewuenschten Speicherblocks
- * @param aligned	ignored
- * @return			Virtuelle Anfangsadresse des angeforderten Speicherblocks in Byte, 0 falls Fehler 
+ * \param size		Groesse des gewuenschten Speicherblocks
+ * \param aligned	ignored
+ * \return			Virtuelle Anfangsadresse des angeforderten Speicherblocks in Byte, 0 falls Fehler
  */
 uint32_t mmcalloc(uint32_t size, uint8_t aligned) {
 	aligned = aligned;
@@ -339,10 +339,10 @@ uint32_t mmcalloc(uint32_t size, uint8_t aligned) {
 	return start_addr;
 }
 
-/*! 
+/**
  * Gibt einen Zeiger auf einen Speicherblock im RAM zurueck
- * @param addr	Eine virtuelle Adresse in Byte
- * @return		Zeiger auf uint8_t, NULL falls Fehler
+ * \param addr	Eine virtuelle Adresse in Byte
+ * \return		Zeiger auf uint8_t, NULL falls Fehler
  */
 uint8_t * mmc_get_data(uint32_t addr) {
 	/* Seite der gewuenschten Adresse laden */
@@ -355,10 +355,10 @@ uint8_t * mmc_get_data(uint32_t addr) {
 	return page_cache[cacheblock].p_data + offset;
 }
 
-/*! 
+/**
  * Erzwingt das Zurueckschreiben einer eingelagerten Seite auf die MMC / SD-Card   
- * @param addr	Eine virtuelle Adresse in Byte
- * @return		0: ok, 1: Seite zurzeit nicht eingelagert, 2: Fehler beim Zurueckschreiben
+ * \param addr	Eine virtuelle Adresse in Byte
+ * \return		0: ok, 1: Seite zurzeit nicht eingelagert, 2: Fehler beim Zurueckschreiben
  */
 uint8_t mmc_page_write_back(uint32_t addr) {
 	int8_t cacheblock = mmc_get_cacheblock_of_page(addr);
@@ -368,9 +368,9 @@ uint8_t mmc_page_write_back(uint32_t addr) {
 	return 0;
 }
 
-/*! 
+/**
  * Schreibt alle eingelagerten Seiten auf die MMC / SD-Card zurueck  
- * @return		0: alles ok, sonst: Summe der Fehler beim Zurueckschreiben
+ * \return		0: alles ok, sonst: Summe der Fehler beim Zurueckschreiben
  */
 uint8_t mmc_flush_cache(void) {
 	uint8_t i;
@@ -385,13 +385,13 @@ uint8_t mmc_flush_cache(void) {
 	return result;	
 }
 
-/*! 
+/**
  * Oeffnet eine Datei im FAT16-Dateisystem auf der MMC / SD-Card und gibt eine virtuelle Adresse zurueck,
  * mit der man per mmc_get_data() einen Pointer auf die gewuenschten Daten bekommt. Das Ein- / Auslagern
  * macht das VM-System automatisch. Der Dateiname muss derzeit am Amfang in der Datei stehen.
  * Achtung: Irgendwann muss man die Daten per mmc_flush_cache() oder mmc_page_write_back() zurueckschreiben! 
- * @param filename	Dateiname als 0-terminierter String im Flash 
- * @return			Virtuelle Anfangsadresse der angeforderten Datei in Byte, 0 falls Fehler 
+ * \param filename	Dateiname als 0-terminierter String im Flash
+ * \return			Virtuelle Anfangsadresse der angeforderten Datei in Byte, 0 falls Fehler
  */
 uint32_t mmc_fopen_P(const char * filename) {
 	/* Pufferspeicher organisieren */
@@ -419,11 +419,11 @@ uint32_t mmc_fopen_P(const char * filename) {
 	return 0;
 }
 
-/*!
+/**
  * Liest die Groesse einer Datei im FAT16-Dateisystem auf der MMC / SD-Card aus, die zu zuvor mit 
  * mmc_fopen() geoeffnet wurde.
- * @param file_start	(virtuelle) Anfangsadresse der Datei in Byte
- * @return				Groesse der Datei in Byte
+ * \param file_start	(virtuelle) Anfangsadresse der Datei in Byte
+ * \return				Groesse der Datei in Byte
  */
 uint32_t mmc_get_filesize(uint32_t file_start) {
 	/* Puffer erzeugen */
@@ -435,9 +435,9 @@ uint32_t mmc_get_filesize(uint32_t file_start) {
 	return 0;
 }
 
-/*! 
+/**
  * Leert eine Datei im FAT16-Dateisystem auf der MMC / SD-Card, die zuvor mit mmc_fopen() geoeffnet wurde.
- * @param file_start	(virtuelle) Anfangsadresse der Datei in Byte
+ * \param file_start	(virtuelle) Anfangsadresse der Datei in Byte
  */
 void mmc_clear_file(uint32_t file_start) {
 	/* Cache sichern */

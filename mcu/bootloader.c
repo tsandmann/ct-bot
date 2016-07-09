@@ -40,12 +40,12 @@
  *
  */
 
-/*!
- * @file 	bootloader.c
- * @brief 	AVR109 kompatibler Bootloader fuer den c't-Bot
- * @author	Martin Thomas (eversmith@heizung-thomas.de)
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	17.01.2007
+/**
+ * \file 	bootloader.c
+ * \brief 	AVR109 kompatibler Bootloader fuer den c't-Bot
+ * \author	Martin Thomas (eversmith@heizung-thomas.de)
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	17.01.2007
  */
 
 #ifdef MCU
@@ -57,7 +57,7 @@
    which is the "correct" value for a bootloader.
    avrdude may only detect the part-code for ISP */
 //#define DEVTYPE     DEVTYPE_BOOT
-#define DEVTYPE     DEVTYPE_ISP		/*!< Device-Typ des emulierten Programmers */
+#define DEVTYPE     DEVTYPE_ISP		/**< Device-Typ des emulierten Programmers */
 
 /* Boot Size in Words */
 #if defined __AVR_ATmega32__ // => Fuse Bits: low: 0xFF, high: 0xDC
@@ -71,13 +71,13 @@
 //#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0x1F800 startet"
 #endif
 
-/*! Startup-Timeout */
+/** Startup-Timeout */
 #define START_WAIT
 
-/*! character to start the bootloader in mode START_WAIT */
+/** character to start the bootloader in mode START_WAIT */
 #define START_WAIT_UARTCHAR 'S'
 
-/*! wait 5s in START_WAIT mode (10ms steps) */
+/** wait 5s in START_WAIT mode (10ms steps) */
 #define WAIT_VALUE 500
 
 /*
@@ -87,8 +87,8 @@
  */
 //#define ENABLEREADFUSELOCK
 
-#define VERSION_HIGH '0'	/*!< Versionsnummer */
-#define VERSION_LOW  '9'	/*!< Versionsnummer */
+#define VERSION_HIGH '0'	/**< Versionsnummer */
+#define VERSION_LOW  '9'	/**< Versionsnummer */
 
 #include "uart.h" // UART Baudrate
 #include <stdint.h>
@@ -106,12 +106,12 @@
 #error "AVR processor does not provide bootloader support!"
 #endif
 
-#define APP_END (FLASHEND - (BOOTSIZE * 2))	/*!< Ende des Flash-Bereichs fuer Programm */
+#define APP_END (FLASHEND - (BOOTSIZE * 2))	/**< Ende des Flash-Bereichs fuer Programm */
 
 #if (SPM_PAGESIZE > UINT8_MAX)
-typedef uint16_t pagebuf_t; /*!< Seitengroesse */
+typedef uint16_t pagebuf_t; /**< Seitengroesse */
 #else
-typedef uint8_t pagebuf_t; /*!< Seitengroesse */
+typedef uint8_t pagebuf_t; /**< Seitengroesse */
 #endif
 
 #if defined(__AVR_ATmega32__)
@@ -210,20 +210,20 @@ typedef uint8_t pagebuf_t; /*!< Seitengroesse */
 #endif
 // end Chipdefs
 
-static uint8_t gBuffer[SPM_PAGESIZE];	/*!< Puffer */
+static uint8_t gBuffer[SPM_PAGESIZE];	/**< Puffer */
 
 /* all inline! Sonst stimmt die Startadresse der bl_main nicht */
-static void __attribute__ ((always_inline)) sendchar(uint8_t data) {
+inline static void __attribute__ ((always_inline)) sendchar(uint8_t data) {
 	while (!(UART_STATUS & (1<<UART_TXREADY)));
 	UART_DATA = data;
 }
 
-static uint8_t __attribute__ ((always_inline)) recvchar(void) {
+inline static uint8_t __attribute__ ((always_inline)) recvchar(void) {
 	while (!(UART_STATUS & (1<<UART_RXREADY)));
 	return UART_DATA;
 }
 
-static void __attribute__ ((always_inline)) eraseFlash(void) {
+inline static void __attribute__ ((always_inline)) eraseFlash(void) {
 	// erase only main section (bootloader protection)
 	uint32_t addr = 0;
 	while (APP_END > addr) {
@@ -234,7 +234,7 @@ static void __attribute__ ((always_inline)) eraseFlash(void) {
 	boot_rww_enable();
 }
 
-static void __attribute__ ((always_inline)) recvBuffer(pagebuf_t size) {
+inline static void __attribute__ ((always_inline)) recvBuffer(pagebuf_t size) {
 	pagebuf_t cnt;
 	uint8_t *tmp = gBuffer;
 
@@ -242,7 +242,7 @@ static void __attribute__ ((always_inline)) recvBuffer(pagebuf_t size) {
 		*tmp++ = (uint8_t) ((cnt < size) ? recvchar() : 0xff);
 }
 
-static uint16_t __attribute__ ((always_inline)) writeFlashPage(uint16_t waddr, pagebuf_t size) {
+inline static uint16_t __attribute__ ((always_inline)) writeFlashPage(uint16_t waddr, pagebuf_t size) {
 	uint32_t pagestart = (uint32_t)waddr<<1;
 	uint32_t baddr = pagestart;
 	uint16_t data;
@@ -264,7 +264,7 @@ static uint16_t __attribute__ ((always_inline)) writeFlashPage(uint16_t waddr, p
 	return (uint16_t) (baddr >> 1);
 }
 
-static uint16_t __attribute__ ((always_inline)) writeEEpromPage(uint16_t address, pagebuf_t size) {
+inline static uint16_t __attribute__ ((always_inline)) writeEEpromPage(uint16_t address, pagebuf_t size) {
 	uint8_t *tmp = gBuffer;
 
 	do {
@@ -288,7 +288,7 @@ static uint16_t __attribute__ ((always_inline)) writeEEpromPage(uint16_t address
 	return address;
 }
 
-static uint16_t __attribute__ ((always_inline)) readFlashPage(uint16_t waddr, pagebuf_t size) {
+inline static uint16_t __attribute__ ((always_inline)) readFlashPage(uint16_t waddr, pagebuf_t size) {
 	uint32_t baddr = (uint32_t)waddr<<1;
 	uint16_t data;
 
@@ -307,7 +307,7 @@ static uint16_t __attribute__ ((always_inline)) readFlashPage(uint16_t waddr, pa
 	return (uint16_t) (baddr >> 1);
 }
 
-static uint16_t __attribute__ ((always_inline)) readEEpromPage(uint16_t address, pagebuf_t size) {
+inline static uint16_t __attribute__ ((always_inline)) readEEpromPage(uint16_t address, pagebuf_t size) {
 	do {
 		EEARL = (uint8_t) address; // Setup EEPROM address
 		EEARH = (uint8_t) (address >> 8);
@@ -343,7 +343,7 @@ static uint8_t __attribute__ ((always_inline)) read_fuse_lock(uint16_t addr) {
 }
 #endif
 
-static void __attribute__ ((always_inline)) send_boot(void) {
+inline static void __attribute__ ((always_inline)) send_boot(void) {
 	sendchar('A');
 	sendchar('V');
 	sendchar('R');
@@ -357,7 +357,7 @@ static void (*jump_to_app)(void) = 0x0000;
 
 void bootloader_main(void) __attribute__ ((section (".bootloader")));
 
-/* Der eigentliche Bootloader. Die Section "bootloader" muss dort beginnen,
+/** Der eigentliche Bootloader. Die Section "bootloader" muss dort beginnen,
  * wohin die MCU beim Booten springt (=> Fuse Bits). Deshalb die Linkereinstellungen
  * anpassen, wie oben beschrieben!
  */
@@ -379,9 +379,11 @@ void bootloader_main(void) {
 	uint16_t cnt = 0;
 
 	while (1) {
-		if (UART_STATUS & (1 << UART_RXREADY))
-			if (UART_DATA == START_WAIT_UARTCHAR)
+		if (UART_STATUS & (1 << UART_RXREADY)) {
+			if (UART_DATA == START_WAIT_UARTCHAR) {
 				break;
+			}
+		}
 
 		if (cnt++ >= WAIT_VALUE) {
 			jump_to_app();			// Jump to application sector
@@ -520,7 +522,7 @@ void bootloader_main(void) {
 			sendchar(SIG_BYTE1);
 
 		/* ESC */
-		} else if(val != 0x1b) {
+		} else if (val != 0x1b) {
 			sendchar('?');
 		}
 	}

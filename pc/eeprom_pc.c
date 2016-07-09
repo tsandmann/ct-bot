@@ -18,10 +18,10 @@
  */
 
 /**
- * @file 	eeprom_pc.c
- * @brief 	Low-Level Routinen fuer den Zugriff auf das emulierte EEPROM des Sim-c't-Bots
- * @author 	Achim Pankalla (achim.pankalla@gmx.de)
- * @date 	07.06.2007
+ * \file 	eeprom_pc.c
+ * \brief 	Low-Level Routinen fuer den Zugriff auf das emulierte EEPROM des Sim-c't-Bots
+ * \author 	Achim Pankalla (achim.pankalla@gmx.de)
+ * \date 	07.06.2007
  *
  *
  * Bei aktivierter EEPROM-Emulation muessen folgende Post-Build Aktionen in den Projekteinstellungeun (C/C++ Build -> Settings -> Build Steps) eingetragen werden:
@@ -53,7 +53,7 @@
 #include "gui.h"
 #include "init.h"
 
-//#define DEBUG_EEPROM		// Schalter um LOG-Ausgaben anzumachen
+//#define DEBUG_EEPROM // Schalter um LOG-Ausgaben anzumachen
 
 #ifndef DEBUG_EEPROM
 #undef LOG_INFO
@@ -67,35 +67,35 @@
 extern uint8_t __attribute__ ((section (".s1eeprom"), aligned(1))) _eeprom_start1__;
 extern uint8_t __attribute__ ((section (".s2eeprom"), aligned(1))) _eeprom_start2__;
 
-/*! Normiert PC EEPROM Adressen */
+/** Normiert PC EEPROM Adressen */
 #define EEPROM_ADDR(x) ((size_t)x - (size_t)&_eeprom_start2__ - ((size_t)&_eeprom_start2__ - (size_t)&_eeprom_start1__))
-/*! Makros zum Mitloggen von EEPROM Zugriffen */
+/** Makros zum Mitloggen von EEPROM Zugriffen */
 #define LOG_LOAD 	if(addrconv) {LOG_DEBUG("LOAD:%s : %u", ctab[lastctabi].varname, eeprom[address]);}\
 					else {LOG_DEBUG("load-addr=0x%x/%u", address, eeprom[address]);}
 #define LOG_STORE 	if(addrconv) {LOG_DEBUG("STORE:%s : %d", ctab[lastctabi].varname, value);}\
 					else {LOG_DEBUG("load-addr=0x%x/%d", address, value);}
 
-/*! Positionen der Daten in den Map-Dateien */
+/** Positionen der Daten in den Map-Dateien */
 #ifdef WIN32
-#define SADDR_POS 54	/*!< Pos. der Adresse in PC Map Datei */
-#define SNAME_POS 60	/*!< Pos. des Variablennamen ohne _ */
-#define BADDR_POS  0	/*!< Pos. der Adresse in MCU Map Datei */
-#define BNAME_POS 34	/*!< Pos. des Variablennamen in MCU Map */
-#define BSIZE_POS 28	/*!< Pos. der Variablengroesse in MCU Map */
+#define SADDR_POS 54	/**< Pos. der Adresse in PC Map Datei */
+#define SNAME_POS 60	/**< Pos. des Variablennamen ohne _ */
+#define BADDR_POS  0	/**< Pos. der Adresse in MCU Map Datei */
+#define BNAME_POS 34	/**< Pos. des Variablennamen in MCU Map */
+#define BSIZE_POS 28	/**< Pos. der Variablengroesse in MCU Map */
 #endif
 #ifdef __linux__
-#define SADDR_POS  0	/*!< Pos. der Adresse in PC Map Datei */
-#define SNAME_POS 46	/*!< Pos. des Variablennamen ohne _ */
-#define BADDR_POS  0	/*!< Pos. der Adresse in MCU Map Datei */
-#define BNAME_POS 34	/*!< Pos. des Variablennamen in MCU Map */
-#define BSIZE_POS 28	/*!< Pos. der Variablengroesse in MCU Map */
+#define SADDR_POS  0	/**< Pos. der Adresse in PC Map Datei */
+#define SNAME_POS 46	/**< Pos. des Variablennamen ohne _ */
+#define BADDR_POS  0	/**< Pos. der Adresse in MCU Map Datei */
+#define BNAME_POS 34	/**< Pos. des Variablennamen in MCU Map */
+#define BSIZE_POS 28	/**< Pos. der Variablengroesse in MCU Map */
 #endif
 #ifdef __APPLE__
-#define SADDR_POS  0	/*!< Pos. der Adresse in PC Map Datei */
-#define SNAME_POS 59	/*!< Pos. des Variablennamen ohne _ */
-#define BADDR_POS  0	/*!< Pos. der Adresse in MCU Map Datei */
-#define BNAME_POS 34	/*!< Pos. des Variablennamen in MCU Map */
-#define BSIZE_POS 28	/*!< Pos. der Variablengroesse in MCU Map */
+#define SADDR_POS  0	/**< Pos. der Adresse in PC Map Datei */
+#define SNAME_POS 59	/**< Pos. des Variablennamen ohne _ */
+#define BADDR_POS  0	/**< Pos. der Adresse in MCU Map Datei */
+#define BNAME_POS 34	/**< Pos. des Variablennamen in MCU Map */
+#define BSIZE_POS 28	/**< Pos. der Variablengroesse in MCU Map */
 #endif
 
 #if 1
@@ -110,39 +110,39 @@ extern uint8_t __attribute__ ((section (".s2eeprom"), aligned(1))) _eeprom_start
 #endif // MCU-Typ
 #endif
 
-const char * MCU_EEPROM_FN = "./mcu_eeprom.bin";	/*!< Name und Pfad der EEPROM Datei fuer MCU-Modus*/
-const char * PC_EEPROM_FN = "./pc_eeprom.bin"; 		/*!< Name und Pfad der EEPROM Datei fuer PC-Modus*/
-#define MAX_VAR 200  						/*!< Maximale Anzahl von Variablen*/
-const char * EEMAP_PC = "./eeprom_pc.map";	/*!< Pfad fuer PC-MAP Datei */
-const char * EEP_PC = "./ct-Bot.eep";		/*!< Pfad fuer PC-EEP Datei */
+const char * MCU_EEPROM_FN = "./mcu_eeprom.bin";	/**< Name und Pfad der EEPROM Datei fuer MCU-Modus*/
+const char * PC_EEPROM_FN = "./pc_eeprom.bin"; 		/**< Name und Pfad der EEPROM Datei fuer PC-Modus*/
+#define MAX_VAR 200  						/**< Maximale Anzahl von Variablen*/
+const char * EEMAP_PC = "./eeprom_pc.map";	/**< Pfad fuer PC-MAP Datei */
+const char * EEP_PC = "./ct-Bot.eep";		/**< Pfad fuer PC-EEP Datei */
 const char * EEMAP_MCU[4] = {
 	"../Debug-MCU-m32/eeprom_mcu.map",
 	"../Debug-MCU-m644/eeprom_mcu.map",
 	"../Debug-MCU-m644p/eeprom_mcu.map",
 	"../Debug-MCU-m1284p/eeprom_mcu.map"
-}; /*!< Pfad fuer MCU MAP Datei */
+}; /**< Pfad fuer MCU MAP Datei */
 
 typedef struct addrtab {
 	char varname[30];
 	size_t simaddr;
 	size_t botaddr;
 	uint16_t size;
-} AddrCTab_t; /*!< Spezieller Datentyp fuer Adresskonvertierung */
+} AddrCTab_t; /**< Spezieller Datentyp fuer Adresskonvertierung */
 
-static AddrCTab_t ctab[MAX_VAR]; /*!< Adresskonvertierungstabelle */
-static uint16_t tsize = 0; /*!< Anzahl Eintraege in der Tabelle */
-static uint16_t esize = 0; /*!< Summe der EEPROM Variablen */
-static uint8_t addrconv = 0; /*!< Adresskonvertierung ein-/ausschalten */
-static uint16_t lastctabi = 0; /*!< Letzter Zugriffsindex auf ctab */
-static uint8_t eeprom[EE_SIZE]; /*!< EEPROM Speicher im RAM */
-static FILE * ee_file; /*!< Zeiger auf EEPROM-Datei */
+static AddrCTab_t ctab[MAX_VAR]; /**< Adresskonvertierungstabelle */
+static uint16_t tsize = 0; /**< Anzahl Eintraege in der Tabelle */
+static uint16_t esize = 0; /**< Summe der EEPROM Variablen */
+static uint8_t addrconv = 0; /**< Adresskonvertierung ein-/ausschalten */
+static uint16_t lastctabi = 0; /**< Letzter Zugriffsindex auf ctab */
+static uint8_t eeprom[EE_SIZE]; /**< EEPROM Speicher im RAM */
+static FILE * ee_file; /**< Zeiger auf EEPROM-Datei */
 
-/*!
+/**
  * Diese Funktion konvertiert die Adressen der EEPROM Variablen des PC so,
  * dass sie den Adressen im realen ct-Bot entsprechen. Dafuer wird mit der Funktion
  * create_ctab ein Adresstabelle angelegt, diese nutzt diese Funktion.
- * @param addr	Adresse im EEPROM zwischen 0 und EE_SIZE-1
- * @return 		Die neue Adresse fuer den realen Bot
+ * \param addr	Adresse im EEPROM zwischen 0 und EE_SIZE-1
+ * \return 		Die neue Adresse fuer den realen Bot
  */
 static uint32_t conv_eeaddr(uint32_t addr) {
 	int8_t i;
@@ -162,7 +162,7 @@ static uint32_t conv_eeaddr(uint32_t addr) {
 	return (0xffffffff);
 }
 
-/*!
+/**
  * Diese Funktion uberprueft das vorhanden sein der eeprom.bin und initialisiert sie
  * gegebenenfalls mit der Initwerten der eep Datei.
  * Es wird dabei die Adresskovertierung benutzt, wenn die EEPROM Simulation im MCU-Modus
@@ -171,10 +171,10 @@ static uint32_t conv_eeaddr(uint32_t addr) {
  *  0 = EEPROM Datei OK
  *  1 = Fehler aufgetreten
  * -----
- * @param initfile		EEP-Datei des PC Codes
- * @param eeprom_init	Flag fuer Initialisierung (1 ja, 0 nein)
- * @param fn			Dateiname der EEPROM-Datei
- * @return 				Status der Funktion
+ * \param initfile		EEP-Datei des PC Codes
+ * \param eeprom_init	Flag fuer Initialisierung (1 ja, 0 nein)
+ * \param fn			Dateiname der EEPROM-Datei
+ * \return 				Status der Funktion
  */
 static uint16_t check_eeprom_file(const char * initfile, uint8_t eeprom_init, const char * fn) {
 	FILE * fpr, * fpw; // Filepointer fuer Dateizugriffe
@@ -239,7 +239,7 @@ static uint16_t check_eeprom_file(const char * initfile, uint8_t eeprom_init, co
 	return (0);
 }
 
-/*!
+/**
  * Diese Funktion erstellt aus den beiden im Post erstellten MAP Dateien eine Tabelle
  * zum umrechnen der PC-Adressen in die des avr-Compilers. Dadurch kann die EEPROM
  * Datei in einen zum EEPROM des Bot kompatiblen Format gehalten werden.
@@ -254,9 +254,9 @@ static uint16_t check_eeprom_file(const char * initfile, uint8_t eeprom_init, co
  * 5 = EEPROM voll
  * 6 = Unterschiedliche Variablenanzahl
  *
- * @param simfile	MAP mit den Adressen der EEPROM-Variablen in der PC exe/elf
- * @param botfile	MAP mit den Adressen der EEPROM-Variablen im MCU elf
- * @return 			Statuscode
+ * \param simfile	MAP mit den Adressen der EEPROM-Variablen in der PC exe/elf
+ * \param botfile	MAP mit den Adressen der EEPROM-Variablen im MCU elf
+ * \return 			Statuscode
  */
 static uint16_t create_ctab(const char * simfile, const char * botfile) {
 	FILE * fps, * fpb;
@@ -401,13 +401,13 @@ static uint16_t create_ctab(const char * simfile, const char * botfile) {
 	return (0);
 }
 
-/*!
+/**
  * Diese Funktion initialisiert die eeprom-emulation. Sie sorgt fuer die Erstellung der
  * eeprom.bin, falls nicht vorhanden und erstellt ueber eine Hilfsfunktion eine Adress-
  * konvertierungstabelle fuer die EEPROM-Adressen, wenn die benoetigten Daten vorliegen.
  * Statusinformationen werden ueber DEBUG_INFO angezeigt.
- * @param init	gibt an, ob das EEPROM mit Hilfer einer eep-Datei initialisiert werden soll (0 nein, 1 ja)
- * @return		0: alles ok, 1: Fehler
+ * \param init	gibt an, ob das EEPROM mit Hilfer einer eep-Datei initialisiert werden soll (0 nein, 1 ja)
+ * \return		0: alles ok, 1: Fehler
  */
 uint8_t init_eeprom_man(uint8_t init) {
 	uint16_t sflag; // Sectionstatus
@@ -466,7 +466,7 @@ uint8_t init_eeprom_man(uint8_t init) {
 	return 0;
 }
 
-/*!
+/**
  * Schreibt den kompletten Inhalt des EEPROM-Caches in die Datei zurueck
  */
 static inline void flush_eeprom_cache(void) {
@@ -478,10 +478,10 @@ static inline void flush_eeprom_cache(void) {
 	fflush(ee_file);
 }
 
-/*!
+/**
  * Liest ein Byte aus dem EEPROM
- * @param *address	Adresse des zu lesenden Bytes im EEPROM
- * @return			Das zu lesende Byte
+ * \param *address	Adresse des zu lesenden Bytes im EEPROM
+ * \return			Das zu lesende Byte
  */
 uint8_t ctbot_eeprom_read_byte(const uint8_t * address) {
 	uint16_t addr = conv_eeaddr(EEPROM_ADDR(address));
@@ -490,10 +490,10 @@ uint8_t ctbot_eeprom_read_byte(const uint8_t * address) {
 	return eeprom[addr];
 }
 
-/*!
+/**
  * Schreibt ein Byte in das EEPROM
- * @param *address	Adresse des Bytes im EEPROM
- * @param value		Das zu schreibende Byte
+ * \param *address	Adresse des Bytes im EEPROM
+ * \param value		Das zu schreibende Byte
  */
 void ctbot_eeprom_write_byte(uint8_t * address, uint8_t value) {
 	uint16_t addr = conv_eeaddr(EEPROM_ADDR(address));
@@ -504,32 +504,32 @@ void ctbot_eeprom_write_byte(uint8_t * address, uint8_t value) {
 }
 
 #else // EEPROM-Emulation deaktiviert
-/*!
+/**
  * Diese Funktion initialisiert die eeprom-emulation. Sie sorgt fuer die Erstellung der
  * eeprom.bin, falls nicht vorhanden und erstellt ueber eine Hilfsfunktion eine Adress-
  * konvertierungstabelle fuer die EEPROM-Adressen, wenn die benoetigten Daten vorliegen.
  * Statusinformationen werden ueber DEBUG_INFO angezeigt.
- * @param init	gibt an, ob das EEPROM mit Hilfer einer eep-Datei initialisiert werden soll (0 nein, 1 ja)
- * @return		0: alles ok, 1: Fehler
+ * \param init	gibt an, ob das EEPROM mit Hilfer einer eep-Datei initialisiert werden soll (0 nein, 1 ja)
+ * \return		0: alles ok, 1: Fehler
  */
 uint8_t init_eeprom_man(uint8_t init) {
 	(void) init;
 	return 0;
 }
 
-/*!
+/**
  * Schreibt ein Byte in das EEPROM
- * @param *address	Adresse des Bytes im EEPROM
- * @param value		Das zu schreibende Byte
+ * \param *address	Adresse des Bytes im EEPROM
+ * \param value		Das zu schreibende Byte
  */
 void ctbot_eeprom_write_byte(uint8_t * address, uint8_t value) {
 	*address = value;
 }
 
-/*!
+/**
  * Liest ein Byte aus dem EEPROM
- * @param *address	Adresse des zu lesenden Bytes im EEPROM
- * @return			Das zu lesende Byte
+ * \param *address	Adresse des zu lesenden Bytes im EEPROM
+ * \return			Das zu lesende Byte
  */
 uint8_t ctbot_eeprom_read_byte(const uint8_t * address) {
 	return *address;

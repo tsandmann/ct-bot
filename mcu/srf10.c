@@ -17,11 +17,11 @@
  * 
  */
 
-/*! 
- * @file 	srf10.c  
- * @brief 	Ansteuerung des Ultraschall Entfernungssensors SRF10
- * @author 	Carsten Giesen (info@cnau.de)
- * @date 	08.04.06
+/**
+ * \file 	srf10.c
+ * \brief 	Ansteuerung des Ultraschall Entfernungssensors SRF10
+ * \author 	Carsten Giesen (info@cnau.de)
+ * \date 	08.04.2006
  */
 
 #ifdef MCU 
@@ -35,7 +35,7 @@
 
 static uint8_t address = SRF10_UNIT_0;
 
-/*!
+/**
  * SRF10 initialsieren
  */
 void srf10_init(void) {
@@ -44,9 +44,9 @@ void srf10_init(void) {
 	return;
 }
 
-/*!
+/**
  * Verstaerkungsfaktor setzen
- * @param gain Verstaerkungsfaktor
+ * \param gain Verstaerkungsfaktor
  */
 void srf10_set_gain(uint8_t gain) {
 	if (gain > 16) {
@@ -70,9 +70,9 @@ void srf10_set_gain(uint8_t gain) {
 	state = Send_to_TWI(tx_frame);
 }
 
-/*!
+/**
  * Reichweite setzen, hat auch Einfluss auf die Messdauer
- * @param millimeters Reichweite in mm
+ * \param millimeters Reichweite in mm
  */
 void srf10_set_range(uint16_t millimeters) {
 	uint8_t temp[2];
@@ -94,10 +94,10 @@ void srf10_set_range(uint16_t millimeters) {
 	state = Send_to_TWI(tx_frame);
 }
 
-/*!
+/**
  * Messung ausloesen
- * @param metric_unit 0x50 in Zoll, 0x51 in cm, 0x52 ms
- * @return Resultat der Aktion
+ * \param metric_unit 0x50 in Zoll, 0x51 in cm, 0x52 ms
+ * \return Resultat der Aktion
  */
 uint8_t srf10_ping(uint8_t metric_unit) {
 	uint8_t temp[2];
@@ -119,10 +119,10 @@ uint8_t srf10_ping(uint8_t metric_unit) {
 	return state;
 }
 
-/*!
+/**
  * Register auslesen
- * @param srf10_register welches Register soll ausgelsen werden
- * @return Inhalt des Registers
+ * \param srf10_register welches Register soll ausgelsen werden
+ * \return Inhalt des Registers
  */
 uint8_t srf10_read_register(uint8_t srf10_register) {
 	uint8_t temp;
@@ -149,9 +149,9 @@ uint8_t srf10_read_register(uint8_t srf10_register) {
 	return value;
 }
 
-/*!
+/**
  * Messung starten Ergebniss aufbereiten und zurueckgeben
- * @return Messergebniss
+ * \return Messergebniss
  */
 uint16_t srf10_get_measure() {
 	uint8_t hib;

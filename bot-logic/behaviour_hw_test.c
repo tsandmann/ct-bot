@@ -29,7 +29,7 @@
 #ifdef BEHAVIOUR_HW_TEST_AVAILABLE
 #include "led.h"
 
-#define TEST_ANALOG		/**< Sollen die LEDs die analoge Sensorwerte anzeigen? */
+#define TEST_ANALOG	/**< Sollen die LEDs die analoge Sensorwerte anzeigen? */
 //#define TEST_DIGITAL	/**< Sollen die LEDs die digitale Sensorwerte anzeigen? */
 //#define TEST_MOTOR	/**< Sollen die Motoren ein wenig drehen? */
 
@@ -52,8 +52,8 @@ static uint16_t calls = 0; /**< Anzahl der Durchlaeufe fuer Motor-Test */
  */
 void bot_hw_test_behaviour(Behaviour_t * data) {
 #ifdef LED_AVAILABLE
-	static uint8_t led_status = 0; // static als Workaround fuer avr-gcc Bug
-	led_t * status = (led_t *) &led_status;
+	led_t status;
+	uint8_t led_status;
 	bit_t tmp;
 #endif // LED_AVAILABLE
 
@@ -63,22 +63,23 @@ void bot_hw_test_behaviour(Behaviour_t * data) {
 	case 0: // analog
 #ifdef LED_AVAILABLE
 		tmp.byte = (uint8_t) (sensDistR >> 8);
-		(*status).rechts = tmp.bit;
+		status.rechts = tmp.bit;
 		tmp.byte = (uint8_t) (sensDistL >> 8);
-		(*status).links = tmp.bit;
+		status.links = tmp.bit;
 		tmp.byte = (uint8_t) (sensLineL >> 9);
-		(*status).rot = tmp.bit;
+		status.rot = tmp.bit;
 		tmp.byte = (uint8_t) (sensLineR >> 9);
-		(*status).orange =  tmp.bit;
+		status.orange =  tmp.bit;
 		tmp.byte = (uint8_t) (sensLDRL >> 8);
-		(*status).gelb = tmp.bit;
+		status.gelb = tmp.bit;
 		tmp.byte = (uint8_t) (sensLDRR >> 8);
-		(*status).gruen = tmp.bit;
+		status.gruen = tmp.bit;
 		tmp.byte = (uint8_t) (sensBorderL >> 9);
-		(*status).tuerkis = tmp.bit;
+		status.tuerkis = tmp.bit;
 		tmp.byte = (uint8_t) (sensBorderR >> 9);
-		(*status).weiss = tmp.bit;
+		status.weiss = tmp.bit;
 
+		memcpy(&led_status, &status, sizeof(led_status));
 		LED_set(led_status);
 #endif // LED_AVAILABLE
 		break;
@@ -86,26 +87,27 @@ void bot_hw_test_behaviour(Behaviour_t * data) {
 	case 1: // digital
 #ifdef LED_AVAILABLE
 		tmp.byte = (uint8_t) sensEncR;
-		(*status).rechts = tmp.bit;
+		status.rechts = tmp.bit;
 		tmp.byte = (uint8_t) sensEncL;
-		(*status).links = tmp.bit;
+		status.links = tmp.bit;
 		tmp.byte = sensTrans;
-		(*status).rot = tmp.bit;
+		status.rot = tmp.bit;
 		tmp.byte = sensError;
-		(*status).orange = tmp.bit;
+		status.orange = tmp.bit;
 		tmp.byte = sensDoor;
-		(*status).gelb = tmp.bit;
+		status.gelb = tmp.bit;
 #ifdef MOUSE_AVAILABLE
 		tmp.byte = (uint8_t) (sensMouseDX >> 1);
-		(*status).gruen = tmp.bit;
+		status.gruen = tmp.bit;
 		tmp.byte = (uint8_t) (sensMouseDY >> 1);
-		(*status).tuerkis = tmp.bit;
+		status.tuerkis = tmp.bit;
 #endif // MOUSE_AVAILABLE
 #ifdef RC5_AVAILABLE
 		tmp.byte = (uint8_t) rc5_ir_data.ir_data;
-		(*status).weiss = tmp.bit;
+		status.weiss = tmp.bit;
 #endif // RC5_AVAILABLE
 
+		memcpy(&led_status, &status, sizeof(led_status));
 		LED_set(led_status);
 #endif // LED_AVAILABLE
 		break;

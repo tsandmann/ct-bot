@@ -17,33 +17,39 @@
  *
  */
 
-/*!
- * @file 	ena.h
- * @brief 	Routinen zur Steuerung der Enable-Leitungen
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+/**
+ * \file 	ena.h
+ * \brief 	Routinen zur Steuerung der Enable-Leitungen
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	26.12.2005
  */
 
 #ifndef ENA_H_
 #define ENA_H_
 
-#define ENA_ABSTAND			(1<<0)		/*!< Enable-Leitung Abstandssensoren */
-#define ENA_RADLED			(1<<1)		/*!< Enable-Leitung Radencoder */
-#define ENA_SCHRANKE		(1<<2)		/*!< Enable-Leitung Fachueberwachung */
-#define ENA_KANTLED			(1<<3)		/*!< Enable-Leitung Angrundsensor */
-#define ENA_KLAPPLED		(1<<4)		/*!< Enable-Leitung Schieberueberwachung */
-#define ENA_LINE			(1<<5)		/*!< Enable-Leitung Liniensensor auf Mausplatine (ENA_MAUS im Schaltplan) */
-#define ENA_MMC				(1<<6)		/*!< Enable-Leitung Reserve 1 */
-#define ENA_MOUSE_SENSOR	(1<<7)		/*!< Enable-Leitung Reserve 2 */
+#define ENA_ABSTAND			(1<<0)		/**< Enable-Leitung Abstandssensoren */
+#define ENA_RADLED			(1<<1)		/**< Enable-Leitung Radencoder */
+#define ENA_SCHRANKE		(1<<2)		/**< Enable-Leitung Fachueberwachung */
+#define ENA_KANTLED			(1<<3)		/**< Enable-Leitung Angrundsensor */
+#define ENA_KLAPPLED		(1<<4)		/**< Enable-Leitung Schieberueberwachung */
+#define ENA_LINE			(1<<5)		/**< Enable-Leitung Liniensensor auf Mausplatine (ENA_MAUS im Schaltplan) */
+
+#ifdef EXPANSION_BOARD_MOD_AVAILABLE
+#define ENA_WIPORT			(1<<6)		/**< Enable-Leitung Reserve 1 */
+#define ENA_DISPLAYLIGHT	(1<<7)		/**< Enable-Leitung Reserve 2 */
+#else
+#define ENA_MMC				(1<<6)		/**< Enable-Leitung Reserve 1 */
+#define ENA_MOUSE_SENSOR	(1<<7)		/**< Enable-Leitung Reserve 2 */
+#endif // EXPANSION_BOARD_MOD_AVAILABLE
 
 #ifndef __ASSEMBLER__
 
-/*!
+/**
  * Initialisiert die Enable-Leitungen
  */
 void ENA_init(void);
 
-/*!
+/**
  * Schaltet einzelne Enable-Transistoren an
  * andere werden nicht beeinflusst
  * Achtung, die Treiber-Transistoren sind Low-Aktiv!!!
@@ -53,7 +59,7 @@ void ENA_init(void);
  */
 void ENA_on(uint8_t enable);
 
-/*!
+/**
  * Schaltet einzelne Enable-Transistoren aus
  * andere werden nicht beeinflusst
  * Achtung, die Treiber-Transistoren sind Low-Aktiv!!!
@@ -63,7 +69,7 @@ void ENA_on(uint8_t enable);
  */
 void ENA_off(uint8_t enable);
 
-/*!
+/**
  * Schaltet die Enable-Transistoren
  * Achtung, die Treiber-Transistoren sind Low-Aktiv!!!
  * ENA_set bezieht sich auf die Transistoren

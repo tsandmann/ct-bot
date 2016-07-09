@@ -35,10 +35,11 @@
 
 /**
  * Initialisiere alle Sensoren.
- * Dummy fuer PC-Code
  */
 void bot_sens_init(void) {
-	// NOP
+#ifdef ARM_LINUX_BOARD
+	sensor_update_distance = sensor_dist_straight; // Distanzsensordaten 1:1 weiterreichen
+#endif
 }
 
 /**

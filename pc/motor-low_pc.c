@@ -34,8 +34,8 @@
 #include "motor.h"
 #include "log.h"
 
-volatile int16_t motor_left; /**< zuletzt gestellter Wert linker Motor */
-volatile int16_t motor_right; /**< zuletzt gestellter Wert rechter Motor */
+int16_t motor_left; /**< zuletzt gestellter Wert linker Motor */
+int16_t motor_right; /**< zuletzt gestellter Wert rechter Motor */
 
 /**
  *  Initilisiert alles fuer die Motosteuerung
@@ -49,7 +49,7 @@ void motor_low_init() {
  * \param left PWM links
  * \param right PWM rechts
 */
-void bot_motor(int16_t left, int16_t right){
+void bot_motor(int16_t left, int16_t right) {
 	command_write(CMD_AKT_MOT, SUB_CMD_NORM, left, right, 0);
 
 	if (right < 0) {
@@ -65,13 +65,12 @@ void bot_motor(int16_t left, int16_t right){
 
 	motor_left = left;
 	motor_right = right;
-
 }
 
 /**
  * Stellt die Servos
  * \param servo Nummer des Servos (1 oder 2)
- * \param pos Zielwert, sinnvolle Werte liegen zwischen 7 und 16, oder 0 fuer Servo aus
+ * \param pos Zielwert [1; 255] oder 0 fuer Servo aus
  */
 void servo_low(uint8_t servo, uint8_t pos) {
 	static uint8_t values[2] = {0, 0};
@@ -82,7 +81,12 @@ void servo_low(uint8_t servo, uint8_t pos) {
 	}
 
 	values[servo - 1] = pos;
+//	LOG_DEBUG("servo_low(): command_write(CMD_AKT_SERVO, SUB_CMD_NORM, %u, %u, 0)", values[0], values[1]);
+#ifndef ARM_LINUX_BOARD
+	command_write(CMD_AKT_SERVO, SUB_CMD_NORM, values[0] / 8, values[1], 0);
+#else
 	command_write(CMD_AKT_SERVO, SUB_CMD_NORM, values[0], values[1], 0);
+#endif
 }
 
 #endif // PC

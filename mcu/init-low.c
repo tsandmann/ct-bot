@@ -17,16 +17,16 @@
  *
  */
 
-/*!
- * @file 	init-low.c
- * @brief 	Initialisierungsroutinen fuer MCU
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	09.03.2010
+/**
+ * \file 	init-low.c
+ * \brief 	Initialisierungsroutinen fuer MCU
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	09.03.2010
  */
 
 #include "eeprom.h"
 
-uint8_t EEPROM resetsEEPROM = 0; /*!< Reset-Counter im EEPROM */
+uint8_t EEPROM resetsEEPROM = 0; /**< Reset-Counter im EEPROM */
 
 #ifdef MCU
 #include "ct-Bot.h"
@@ -36,22 +36,23 @@ uint8_t EEPROM resetsEEPROM = 0; /*!< Reset-Counter im EEPROM */
 #include "led.h"
 #include "ena.h"
 #include "uart.h"
+#include "motor.h"
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/wdt.h>
 #include <avr/sleep.h>
 #include <stdlib.h>
 
-/*! Kopie des MCU(C)SR Registers */
+/** Kopie des MCU(C)SR Registers */
 uint8_t mcucsr __attribute__((section(".noinit")));
 
 #ifdef DISPLAY_RESET_INFO_AVAILABLE
-uint8_t soft_resets __attribute__((section(".noinit"))); /*!< Reset-Counter im RAM */
+uint8_t soft_resets __attribute__((section(".noinit"))); /**< Reset-Counter im RAM */
 #endif // DISPLAY_RESET_INFO_AVAILABLE
 
 void init_before_main(void) __attribute__((section(".init3"))) __attribute__((naked));
 
-/*!
+/**
  * MCU(C)SR auslesen und zuruecksetzen, Watchdog ausschalten
  */
 void init_before_main(void) {
@@ -117,13 +118,26 @@ void init_before_main(void) {
 #endif // DISPLAY_RESET_INFO_AVAILABLE
 }
 
-/*!
+#ifdef OS_AVAILABLE
+/**
+ * Hilfsfunktion, die beide Servos ausschaltet
+ * @param p_data wird nicht ausgewertet
+ */
+static void servo_init_stop(void* p_data) {
+	(void) p_data;
+
+	servo_set(SERVO1, SERVO_OFF);
+	servo_set(SERVO2, SERVO_OFF);
+}
+#endif // OS_AVAILABLE
+
+/**
  * Hardwareabhaengige Initialisierungen, die zuerst ausgefuehrt werden sollen
- * @param argc Anzahl der Kommandozeilenparameter
- * @param *argv Zeiger auf Kommandozeilenparameter
+ * \param argc Anzahl der Kommandozeilenparameter
+ * \param *argv Zeiger auf Kommandozeilenparameter
  */
 void ctbot_init_low_1st(int argc, char * argv[]) {
-	/* keine warnings */
+	/* keine Warnings */
 	(void) argc;
 	(void) argv;
 
@@ -135,20 +149,26 @@ void ctbot_init_low_1st(int argc, char * argv[]) {
 #endif // DISPLAY_RESET_INFO_AVAILABLE
 
 #ifdef OS_AVAILABLE
-	os_create_thread((void *) SP, NULL); // Hauptthread anlegen
+	const uint8_t sreg = SREG;
+	__builtin_avr_cli();
+
+	os_create_thread((void*) SP, NULL); // Hauptthread anlegen
 #ifdef OS_DEBUG
-	extern unsigned char * __brkval;
-	extern size_t __malloc_margin;
-	malloc(0); // initialisiert __brkval
-	os_mask_stack(__brkval, (size_t) ((unsigned char *) SP - __brkval) - __malloc_margin);
+	const uint16_t heap_free = SP - (size_t) __brkval - 1024;
+	void* ptr = malloc(heap_free);
+	if (ptr) {
+		os_mask_stack(ptr, heap_free);
+		free(ptr);
+	}
 #endif // OS_DEBUG
 #ifdef OS_KERNEL_LOG_AVAILABLE
 	os_kernel_log_init();
 #endif // OS_KERNEL_LOG_AVAILABLE
+	SREG = sreg;
 #endif // OS_AVAILABLE
 }
 
-/*!
+/**
  * Hardwareabhaengige Initialisierungen, die _nach_ der allgemeinen Initialisierung
  * ausgefuehrt werden sollen
  */
@@ -158,22 +178,43 @@ void ctbot_init_low_last(void) {
 	os_mask_stack(os_idle_stack, OS_IDLE_STACKSIZE);
 #endif
 	os_create_thread(&os_idle_stack[OS_IDLE_STACKSIZE - 1], os_idle);
+
+	servo_set(SERVO1, DOOR_OPEN);
+	servo_set(SERVO2, CAM_CENTER);
+	if (os_delay_func(servo_init_stop, NULL, 3000)) {
+		LED_on(LED_TUERKIS);
+	}
 #endif // OS_AVAILABLE
+
+#ifdef EXPANSION_BOARD_MOD_AVAILABLE
+   ENA_off(ENA_WIPORT); // Der WiPort ist (vorlaeufig) standardmaessig ausgeschaltet.
+   ENA_on(ENA_DISPLAYLIGHT); // Die Displaybeleuchtung ist (vorlaeufig) standardmaessig eingeschaltet.
+#endif
 }
 
-/*!
+/**
  * Faehrt den low-level Code des Bots sauber herunter
  */
 void ctbot_shutdown_low() {
+
+#ifdef EXPANSION_BOARD_MOD_AVAILABLE
+	ENA_off(ENA_WIPORT); // WiPort aus
+	ENA_off(ENA_DISPLAYLIGHT); // Displaybeleuchtung aus
+#endif
+
 #ifdef UART_AVAILABLE
 	while (uart_outfifo.count > 0) {} // Commands flushen
 #endif
+
 	__builtin_avr_cli();
 	UCSRB = 0; // UART aus
+
 #ifdef LED_AVAILABLE
-	LED_off(0xff);
+	LED_off(0xff); // LEDs aus
 #endif
-	ENA_off(0xff);
+
+	ENA_off(0xff); // Enable-Leitungen aus
+
 	do {
 		_SLEEP_CONTROL_REG = (uint8_t) (((_SLEEP_CONTROL_REG & ~(_BV(SM0) | _BV(SM1) | _BV(SM2))) | (SLEEP_MODE_PWR_DOWN)));
 	} while (0);
@@ -182,4 +223,5 @@ void ctbot_shutdown_low() {
 
 	/* kehrt nie zurueck */
 }
+
 #endif // MCU

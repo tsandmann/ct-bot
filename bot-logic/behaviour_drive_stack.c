@@ -175,8 +175,7 @@ void bot_send_stack_b2b(Behaviour_t * caller, uint8_t bot) {
 	} result = {BEHAVIOUR_SUBFAIL};
 	LOG_DEBUG("pos_store_send_to_bot(0x%x, %u)", pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot);
 	if (pos_store_send_to_bot(pos_store_from_beh(get_behaviour(bot_save_waypos_behaviour)), bot) == 0) {
-		if (bot_2_bot_start_remotecall(bot, "bot_drive_fifo", (remote_call_data_t) 0, (remote_call_data_t) 0,
-			(remote_call_data_t) 0) == 0) {
+		if (bot_2_bot_start_remotecall(bot, "bot_drive_fifo", (remote_call_data_t) 0, (remote_call_data_t) 0, (remote_call_data_t) 0) == 0) {
 			result.subresult = BEHAVIOUR_SUBSUCCESS;
 		} else {
 			LOG_DEBUG("Fehler, konnte bot_drive_fifo() nicht starten");
@@ -273,8 +272,7 @@ void bot_save_waypos_behaviour(Behaviour_t * data) {
 		}
 
 		// bei Drehwinkelaenderung und Uberschreitung einer gewissen Groesse mit geringer Abstandsentfernung zum letzten Punkt kommt er in den Stack
-		if (turned_angle(last_heading) > ANGLE_FOR_PUSH && get_dist(last_pos.x,
-				last_pos.y, x_pos, y_pos) > DIST_FOR_PUSH_TURN) {
+		if (turned_angle(last_heading) > ANGLE_FOR_PUSH && get_dist(last_pos.x,	last_pos.y, x_pos, y_pos) > DIST_FOR_PUSH_TURN) {
 			set_pos_to_last();
 			update = True;
 		}
@@ -366,7 +364,6 @@ void bot_save_waypos_behaviour(Behaviour_t * data) {
 #endif // MAP_2_SIM_AVAILABLE
 #endif // DEBUG
 		}
-
 		break;
 	} // case 1
 	} // switch
@@ -426,7 +423,6 @@ static void drivestack_disp_key_handler(void) {
 			pos_store_clear(pos_store);
 		}
 		break;
-
 	} // switch
 } // Ende Keyhandler
 
@@ -444,7 +440,7 @@ void drive_stack_display(void) {
 	display_cursor(4, 1);
 	display_puts("Start WayPushPos: 5");
 
-	drivestack_disp_key_handler(); // aufrufen des Key-Handlers
+	drivestack_disp_key_handler(); // Aufruf des Key-Handlers
 }
 #endif	// DISPLAY_DRIVE_STACK_AVAILABLE
 #endif // BEHAVIOUR_DRIVE_STACK_AVAILABLE

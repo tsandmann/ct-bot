@@ -17,12 +17,12 @@
  *
  */
 
-/*!
- * @file 	pos_store.c
- * @brief 	Implementierung eines Positionsspeichers mit den ueblichen Stackbefehlen push(), pop()
+/**
+ * \file 	pos_store.c
+ * \brief 	Implementierung eines Positionsspeichers mit den ueblichen Stackbefehlen push(), pop()
  * 			und FIFO-Befehlen queue(), dequeue()
- * @author 	Frank Menzel (Menzelfr@gmx.net)
- * @date 	13.12.2007
+ * \author 	Frank Menzel (Menzelfr@gmx.net)
+ * \date 	13.12.2007
  */
 
 #include "ct-Bot.h"
@@ -46,16 +46,16 @@
 #define LOG_DEBUG(...) {}
 #endif
 
-#define SLOT_COUNT	4	/*!< Anzahl der Plaetze im Array */
+#define SLOT_COUNT	4	/**< Anzahl der Plaetze im Array */
 
-static pos_store_t pos_stores[SLOT_COUNT];	/*!< Liste der Positionsspeicher */
+static pos_store_t pos_stores[SLOT_COUNT];	/**< Liste der Positionsspeicher */
 
-/*!
+/**
  * Erzeugt einen neuen Positionsspeicher angegebener Groesse
- * @param *owner	Zeiger Verhaltensdatensatz
- * @param *data		NULL oder Zeiger auf Speicher fuer size * sizeof(position_t) Bytes
- * @param size		Groesse des Speichers, <= POS_STORE_SIZE
- * @return			Zeiger auf neuen Positionsspeicher oder NULL
+ * \param *owner	Zeiger Verhaltensdatensatz
+ * \param *data		NULL oder Zeiger auf Speicher fuer size * sizeof(position_t) Bytes
+ * \param size		Groesse des Speichers, <= POS_STORE_SIZE
+ * \return			Zeiger auf neuen Positionsspeicher oder NULL
  */
 pos_store_t * pos_store_create_size(Behaviour_t * owner, void * data, pos_store_size_t size) {
 	if (owner == NULL) {
@@ -112,9 +112,9 @@ pos_store_t * pos_store_create_size(Behaviour_t * owner, void * data, pos_store_
 	return store;
 }
 
-/*!
+/**
  * Loescht einen Positionsspeicher
- * @param *store	Zeiger auf Positionsspeicher
+ * \param *store	Zeiger auf Positionsspeicher
  */
 void pos_store_release(pos_store_t * store) {
 	LOG_DEBUG("Gebe Positionsspeicher 0x%lx frei", (size_t) store);
@@ -130,7 +130,7 @@ void pos_store_release(pos_store_t * store) {
 	}
 }
 
-/*!
+/**
  * Loescht alle Positionsspeicher
  */
 void pos_store_release_all(void) {
@@ -144,10 +144,10 @@ void pos_store_release_all(void) {
 	}
 }
 
-/*!
+/**
  * Ermittelt den Positionsspeicher, der zu einem Verhalten gehoert
- * @param *owner	Zeiger auf Verhaltensdatensatz
- * @return			Zeiger auf Positionsspeicher oder NULL
+ * \param *owner	Zeiger auf Verhaltensdatensatz
+ * \return			Zeiger auf Positionsspeicher oder NULL
  */
 pos_store_t * pos_store_from_beh(Behaviour_t * owner) {
 	pos_store_t * store;
@@ -159,10 +159,10 @@ pos_store_t * pos_store_from_beh(Behaviour_t * owner) {
 	return NULL;
 }
 
-/*!
+/**
  * Ermittelt den Index eines Positionsspeichers
- * @param *store	Zeiger auf Positionsspeicher
- * @return			Index des Positionsspeichers im Array
+ * \param *store	Zeiger auf Positionsspeicher
+ * \return			Index des Positionsspeichers im Array
  */
 uint8_t pos_store_get_index(pos_store_t * store) {
 	size_t index = (size_t) store - (size_t) pos_stores; // Offset abziehen
@@ -170,10 +170,10 @@ uint8_t pos_store_get_index(pos_store_t * store) {
 	return (uint8_t) index;
 }
 
-/*!
+/**
  * Ermittelt den Positionsspeicher, der den gegebenen Index im Array hat
- * @param index	Index des Positionsspeichers im Array
- * @return		Zeiger auf Positionsspeicher oder NULL
+ * \param index	Index des Positionsspeichers im Array
+ * \return		Zeiger auf Positionsspeicher oder NULL
  */
 pos_store_t * pos_store_from_index(uint8_t index) {
 	if (index > SLOT_COUNT - 1) {
@@ -182,9 +182,9 @@ pos_store_t * pos_store_from_index(uint8_t index) {
 	return &pos_stores[index];
 }
 
-/*!
+/**
  * Leert den Positionsspeicher
- * @param *store	Zeiger auf Positionsspeicher
+ * \param *store	Zeiger auf Positionsspeicher
  */
 void pos_store_clear(pos_store_t * store) {
 	LOG_DEBUG("Loesche Positionsspeicher 0x%lx", (size_t) store);
@@ -197,9 +197,9 @@ void pos_store_clear(pos_store_t * store) {
 	store->count = 0;
 }
 
-/*!
+/**
  * Speicher leer?
- * @return True falls Speicher leer sonst False
+ * \return True falls Speicher leer sonst False
  */
 static uint8_t is_empty(pos_store_t * store) {
 	if (store == NULL) {
@@ -209,9 +209,9 @@ static uint8_t is_empty(pos_store_t * store) {
 	return (uint8_t) (store->count == 0);
 }
 
-/*!
+/**
  * Speicher voll?
- * @return True falls Speicher voll, sonst False
+ * \return True falls Speicher voll, sonst False
  */
 static uint8_t is_full(pos_store_t * store) {
 	if (store == NULL || store->data == NULL) {
@@ -221,11 +221,11 @@ static uint8_t is_full(pos_store_t * store) {
 	return (uint8_t) (store->count > store->mask);
 }
 
-/*!
+/**
  * Speichern einer Koordinate vorne im Speicher
- * @param *store	Zeiger auf Positionsspeicher
- * @param pos		X/Y-Koordinaten des zu sichernden Punktes
- * @return			True wenn erfolgreich sonst False wenn Array voll ist
+ * \param *store	Zeiger auf Positionsspeicher
+ * \param pos		X/Y-Koordinaten des zu sichernden Punktes
+ * \return			True wenn erfolgreich sonst False wenn Array voll ist
  */
 uint8_t pos_store_insert(pos_store_t * store, position_t pos) {
 	if (is_full(store)) {
@@ -242,11 +242,11 @@ uint8_t pos_store_insert(pos_store_t * store, position_t pos) {
 	return True;
 }
 
-/*!
+/**
  * Speichern einer Koordinate auf dem Stack
- * @param *store	Zeiger auf Positionsspeicher
- * @param pos		X/Y-Koordinaten des zu sichernden Punktes
- * @return			True wenn erfolgreich sonst False wenn Array voll ist
+ * \param *store	Zeiger auf Positionsspeicher
+ * \param pos		X/Y-Koordinaten des zu sichernden Punktes
+ * \return			True wenn erfolgreich sonst False wenn Array voll ist
  */
 uint8_t pos_store_push(pos_store_t * store, position_t pos) {
 	if (is_full(store)) {
@@ -263,11 +263,11 @@ uint8_t pos_store_push(pos_store_t * store, position_t pos) {
 	return True;
 }
 
-/*!
+/**
  * Pop-Routine zur Rueckgabe des letzten auf dem Stack gepushten Punktes
- * @param *store	Zeiger auf Positionsspeicher
- * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
- * @return			False falls Pop nicht erfolgreich, d.h. kein Punkt mehr auf dem Stack, sonst True nach erfolgreichem Pop
+ * \param *store	Zeiger auf Positionsspeicher
+ * \param *pos		Zeiger auf Rueckgabe-Speicher der Position
+ * \return			False falls Pop nicht erfolgreich, d.h. kein Punkt mehr auf dem Stack, sonst True nach erfolgreichem Pop
  */
 uint8_t pos_store_pop(pos_store_t * store, position_t * pos) {
 	if (is_empty(store)) {
@@ -280,11 +280,11 @@ uint8_t pos_store_pop(pos_store_t * store, position_t * pos) {
 	return True;
 }
 
-/*!
+/**
  * Erweiterung des Stacks zur Queue; Element wird vorn entnommen
- * @param *store	Zeiger auf Positionsspeicher
- * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
- * @return 			True wenn Element erfolgreich entnommen werden konnte sonst False falls kein Element mehr enthalten ist
+ * \param *store	Zeiger auf Positionsspeicher
+ * \param *pos		Zeiger auf Rueckgabe-Speicher der Position
+ * \return 			True wenn Element erfolgreich entnommen werden konnte sonst False falls kein Element mehr enthalten ist
  */
 uint8_t pos_store_dequeue(pos_store_t * store, position_t * pos) {
 	if (is_empty(store)) {
@@ -297,13 +297,13 @@ uint8_t pos_store_dequeue(pos_store_t * store, position_t * pos) {
 	return True;
 }
 
-/*!
+/**
  * Gibt das n-letzte Element des Stacks / der Queue zurueck, entfernt es aber nicht.
  * pos_store_top(&store,  &pos, 2) gibt z.B. das vorletzte Element zurueck
- * @param *store	Zeiger auf Positionsspeicher
- * @param *pos		Zeiger auf Rueckgabe-Speicher der Position
- * @param index		Index des gewuenschten Elements vom Ende aus gezaehlt, 1-based
- * @return			True, wenn ein Element im Speicher ist, sonst False
+ * \param *store	Zeiger auf Positionsspeicher
+ * \param *pos		Zeiger auf Rueckgabe-Speicher der Position
+ * \param index		Index des gewuenschten Elements vom Ende aus gezaehlt, 1-based
+ * \return			True, wenn ein Element im Speicher ist, sonst False
  */
 uint8_t pos_store_top(pos_store_t * store, position_t * pos, uint8_t index) {
 	if (store == NULL) {
@@ -321,41 +321,53 @@ uint8_t pos_store_top(pos_store_t * store, position_t * pos, uint8_t index) {
 #ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
 pos_store_t * bot_2_bot_pos_store;
 
-/*!
+/**
  * Uebertraegt einen Positionsspeicher an einen anderen Bot
- * @param *store	Zeiger auf den zu uebertragenden Positionsspeicher
- * @param bot		Adresse des Zielbots
- * @return			Fehlercode (0: alles ok)
+ * \param *store	Zeiger auf den zu uebertragenden Positionsspeicher
+ * \param bot		Adresse des Zielbots
+ * \return			Fehlercode (0: alles ok)
  */
 int8_t pos_store_send_to_bot(pos_store_t * store, uint8_t bot) {
 	if (store == NULL || store->owner == NULL) {
 		return -1;
 	}
-	command_write_to(BOT_CMD_POS_STORE, 0, bot, store->owner->priority, (store->mask + 1) * (int16_t) sizeof(position_t), 0);
-	command_write_to(BOT_CMD_POS_STORE, 1, bot, store->count, store->fp, 0);
-	command_write_to(BOT_CMD_POS_STORE, 2, bot, store->sp, 0, 0);
+	command_write_to(CMD_BOT_2_BOT, BOT_CMD_POS_STORE, bot, 0, store->owner->priority, 0);
+	command_write_to(CMD_BOT_2_BOT, BOT_CMD_POS_STORE, bot, 1, (store->mask + 1) * (int16_t) sizeof(position_t), 0);
+	command_write_to(CMD_BOT_2_BOT, BOT_CMD_POS_STORE, bot, 2, store->count, 0);
+	command_write_to(CMD_BOT_2_BOT, BOT_CMD_POS_STORE, bot, 3, store->fp, 0);
+	command_write_to(CMD_BOT_2_BOT, BOT_CMD_POS_STORE, bot, 4,store->sp, 0);
 	return bot_2_bot_send_payload_request(bot, BOT_2_BOT_POS_STORE, store->data, (store->mask + 1) * (int16_t) sizeof(position_t));
 }
 
-/*!
+/**
  * Verarbeitet eine Positionsspeicher-Empfang-Anfrage
  */
 void bot_2_bot_handle_pos_store(command_t * cmd) {
-	switch (cmd->request.subcommand) {
+	static uint8_t owner = 0;
+	switch (cmd->data_l) {
 	case 0:
-		bot_2_bot_pos_store = pos_store_new_size(get_behaviour_from_prio((uint8_t) cmd->data_l), (pos_store_size_t) cmd->data_r);
+		owner = (uint8_t) cmd->data_r;
 		break;
 
 	case 1:
-		if (bot_2_bot_pos_store->owner != NULL) {
-			bot_2_bot_pos_store->count = (pos_store_size_t) cmd->data_l;
-			bot_2_bot_pos_store->fp = (pos_store_size_t) cmd->data_r;
-		}
+		bot_2_bot_pos_store = pos_store_new_size(get_behaviour_from_prio(owner), (pos_store_size_t) cmd->data_r);
 		break;
 
 	case 2:
 		if (bot_2_bot_pos_store->owner != NULL) {
-			bot_2_bot_pos_store->sp = (pos_store_pointer_t) cmd->data_l;
+			bot_2_bot_pos_store->count = (pos_store_size_t) cmd->data_r;
+		}
+		break;
+
+	case 3:
+		if (bot_2_bot_pos_store->owner != NULL) {
+			bot_2_bot_pos_store->fp = (pos_store_size_t) cmd->data_r;
+		}
+		break;
+
+	case 4:
+		if (bot_2_bot_pos_store->owner != NULL) {
+			bot_2_bot_pos_store->sp = (pos_store_pointer_t) cmd->data_r;
 			if (bot_2_bot_pos_store->data != NULL) {
 				uint8_t index = BOT_2_BOT_POS_STORE;
 				bot_2_bot_payload_mappings[index].size = (bot_2_bot_pos_store->mask + 1) * (int16_t) sizeof(position_t);
@@ -369,14 +381,13 @@ void bot_2_bot_handle_pos_store(command_t * cmd) {
 	}
 }
 
-/*!
+/**
  * Verarbeitet einen Positionsspeicher-Empfang
  */
 void bot_2_bot_handle_pos_store_data(void) {
 	if (bot_2_bot_pos_store && bot_2_bot_pos_store->owner) {
 		LOG_DEBUG("Pos-Store fuer Verhalten %u empfangen", bot_2_bot_pos_store->owner->priority);
-		LOG_DEBUG(" Groesse:%u\tfp=%u\tsp=%u\tcount=%u", bot_2_bot_pos_store->mask + 1,
-			bot_2_bot_pos_store->fp, bot_2_bot_pos_store->sp, bot_2_bot_pos_store->count);
+		LOG_DEBUG(" Groesse:%u\tfp=%u\tsp=%u\tcount=%u", bot_2_bot_pos_store->mask + 1, bot_2_bot_pos_store->fp, bot_2_bot_pos_store->sp, bot_2_bot_pos_store->count);
 		LOG_DEBUG(" data=0x%lx", bot_2_bot_pos_store->data);
 #ifdef PC
 		pos_store_dump(bot_2_bot_pos_store);
@@ -389,9 +400,9 @@ void bot_2_bot_handle_pos_store_data(void) {
 #endif // BOT_2_BOT_PAYLOAD_AVAILABLE
 
 #ifdef PC
-/*!
+/**
  * Gibt alle Eintraege auf stdout aus
- * @param *store Zeiger auf Positionsspeicher
+ * \param *store Zeiger auf Positionsspeicher
  */
 void pos_store_dump(pos_store_t * store) {
 	int i;
@@ -403,7 +414,7 @@ void pos_store_dump(pos_store_t * store) {
 	printf("fp=%u\tsp=%u\tcount=%u\tsize=%u\t\n\n", store->fp, store->sp, store->count, store->mask + 1);
 }
 
-/*!
+/**
  * Testet push(), pop() und dequeue()
  */
 void pos_store_test(void) {

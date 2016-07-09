@@ -123,6 +123,7 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 #endif
 #ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_drive_square, 0, "", 0),
+	PREPARE_REMOTE_CALL(bot_drive_square_len, 1, "int16 length", 2),
 #endif
 
 	/* Hardware-Test Verhalten */
@@ -384,6 +385,7 @@ void bot_remotecall_behaviour(Behaviour_t * data) {
 			function_name = (char *) &tmp;
 
 			int16_t result = data->subResult;
+			(void) result;
 			if (data->caller) {
 #ifdef BEHAVIOUR_ABL_AVAILABLE
 				abl_push_value((uint16_t) result);
@@ -397,6 +399,8 @@ void bot_remotecall_behaviour(Behaviour_t * data) {
 				/* kein Caller, also kam der Aufruf wohl vom Sim */
 				command_write_data(CMD_REMOTE_CALL, SUB_REMOTE_CALL_DONE, result, result, function_name);
 			}
+#else
+			(void) function_name;
 #endif // COMMAND_AVAILABLE
 			LOG_DEBUG("RemoteCall %s beendet (%u)", function_name, result);
 
@@ -525,6 +529,8 @@ void bot_remotecall_list(void) {
 #ifdef COMMAND_AVAILABLE
 		// und uebertragen
 		command_write_rawdata(CMD_REMOTE_CALL, SUB_REMOTE_CALL_ENTRY, (int16_t) i, (int16_t) i, sizeof(remotecall_entry_t), call);
+#else
+		(void) call;
 #endif
 		LOG_DEBUG("%s(%s)", call->name, call->param_info);
 	}
@@ -541,7 +547,7 @@ static uint8_t beh_selected = 0; /**< Status der Eingabe (0: nicht ausgewaehlt, 
  */
 static void keypad_param(char * data) {
 	if (keypad_param_index < REMOTE_CALL_MAX_PARAM && *data != 0) {
-		keypad_params[keypad_param_index].s16 = atoi(data);
+		keypad_params[keypad_param_index].s32 = atoi(data);
 		++keypad_param_index;
 	}
 	beh_selected = 1;

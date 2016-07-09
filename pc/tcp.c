@@ -17,34 +17,33 @@
  *
  */
 
-/*!
- * @file 	tcp.c
- * @brief 	TCP/IP-Kommunikation
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+/**
+ * \file 	tcp.c
+ * \brief 	TCP/IP-Kommunikation
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	26.12.2005
  */
 
 #ifdef PC
 #include "ct-Bot.h"
+#include "tcp.h"
+#include "display.h"
 #include "log.h"
 #include "command.h"
 
-#define USE_SEND_BUFFER				/*!< Schalter fuer Sendepuffer an/aus */
-#define TCP_SEND_BUFFER_SIZE 4096	/*!< Groesse des Sendepuffers */
+#define USE_SEND_BUFFER				/**< Schalter fuer Sendepuffer an/aus */
+#define TCP_SEND_BUFFER_SIZE 4096	/**< Groesse des Sendepuffers / Byte */
 
-//#define DEBUG_TCP	/*!< Schalter fuer Debug-Ausgaben */
+//#define DEBUG_TCP	/**< Schalter fuer Debug-Ausgaben */
 
 #ifndef DEBUG_TCP
 #undef LOG_AVAILABLE
 #undef LOG_DEBUG
-#define LOG_DEBUG(...) {}	/*!< Log-Dummy */
+#define LOG_DEBUG(...) {}	/**< Log-Dummy */
 #endif
 
 #ifndef WIN32
-#define _REENTRANT		/*!< to grab thread-safe libraries */
-//#define _POSIX_SOURCE	/*!< to get POSIX semantics */
-#else
-//#define WIN32
+#define _REENTRANT		/**< to grab thread-safe libraries */
 #endif
 
 /* Hack for LinuxThreads */
@@ -62,28 +61,34 @@
 #include <netinet/in.h>
 #include <netdb.h>		// for gethostbyname()
 #include <netinet/tcp.h>
+#include <sys/ioctl.h>
+#include <errno.h>
+#include <signal.h>
 #endif // WIN32
-
 
 #include <stdio.h>      // for printf() and fprintf()
 #include <stdlib.h>     // for atoi() and exit()
 #include <string.h>     // for memset()
 #include <unistd.h>     // for close()
 
-#include "tcp.h"
-#include "display.h"
+int tcp_sock = 0;			/**< Unser TCP-Socket */
+char * tcp_hostname = NULL;	/**< Hostname, auf dem ct-Sim laeuft */
 
-int tcp_sock = 0;			/*!< Unser TCP-Socket */
-char * tcp_hostname = NULL;	/*!< Hostname, auf dem ct-Sim laeuft */
+static uint8_t sendBuffer[TCP_SEND_BUFFER_SIZE];	/**< Sendepuffer fuer ausgehende Packete */
+static int sendBufferPtr = 0;						/**< Index in den Sendepuffer */
 
-static uint8_t sendBuffer[TCP_SEND_BUFFER_SIZE];	/*!< Sendepuffer fuer ausgehende Packete */
-static int sendBufferPtr = 0;						/*!< Index in den Sendepuffer */
+#ifndef __WIN32__
+static int server; /**< Server-Socket */
+static struct sockaddr_in serverAddr; /**< lokale Adresse */
+static struct sockaddr_in clientAddr; /**< Client-Adresse  */
+static socklen_t clntLen; /**< Laenge der Datenstruktur der Client-Adresse */
+#endif // __WIN32__
 
 
-/*!
+/**
  * Oeffnet eine TCP-Verbindung zum Server
- * @param *hostname	Symbolischer Name des Host, auf dem ct-Sim laeuft
- * @return			Der Socket
+ * \param *hostname	Symbolischer Name des Host, auf dem ct-Sim laeuft
+ * \return			Der Socket
  */
 int tcp_openConnection(const char * hostname) {
 	struct sockaddr_in servAddr;	// server address
@@ -127,9 +132,9 @@ int tcp_openConnection(const char * hostname) {
 	return sock;
 }
 
-/*!
+/**
  * Schliesst eine TCP-Connection
- * @param sock	Der Socket
+ * \param sock	Der Socket
  */
 void tcp_closeConnection(int sock) {
 	close(sock);
@@ -138,51 +143,13 @@ void tcp_closeConnection(int sock) {
 #endif
 }
 
-/*!
- * Sende Kommando per TCP/IP im Little Endian
- * Diese Funktion setzt vorraus, dass die Symbole BYTE_ORDER und BIG_ENDIAN
- * bzw. LITTLE_ENDIAN definiert wurden. Damit dies auf Linux/Unix
- * funktioniert darf _POSIX_SOURCE nicht definiert werden. Fuer Windows
- * wird dies in der Headerdatei tcp.h erledigt.
- * Getestet wurde dies bisher auf folgenden Systemen:
- *  - MacOSX (PPC, big endian, i386 / x86-64 little endian)
- *  - Linux (hppa, big endian, i386 / x86-64 little endian)
- *  - OpenBSD (i386, little endian)
- *  - Windows 2000 - Vista (i386, little endian mit dem MinGW)
- * Sollten in command_t weitere Werte mit mehr bzw. weniger als 8 Bit
- * aufgenommen werden muss hier eine entsprechende Anpassung erfolgen.
- *
- * @param *cmd	Zeiger auf das Kommando
- * @return		Anzahl der gesendete Bytes
- */
-int tcp_send_cmd(command_t * cmd) {
-#if BYTE_ORDER == BIG_ENDIAN
-	command_t le_cmd;
-
-	/* Kopieren des Kommandos und auf Little Endian wandeln */
-	memcpy(&le_cmd, cmd, sizeof(command_t));
-
-	/* Alle 16 Bit Werte in Little Endian wandeln */
-	le_cmd.data_l = cmd->data_l << 8;
-	le_cmd.data_l |= (cmd->data_l >> 8) & 0xff;
-	le_cmd.data_r = cmd->data_r << 8;
-	le_cmd.data_r |= (cmd->data_r >> 8) & 0xff;
-	le_cmd.seq = cmd->seq << 8;
-	le_cmd.seq |= (cmd->seq >> 8) & 0xff;
-
-	return tcp_write(&le_cmd, sizeof(command_t));
-#else	// LITTLE_ENDIAN
-	return tcp_write(cmd, sizeof(command_t));
-#endif	// BIG_ENDIAN
-}
-
-/*!
+/**
  * Puffert Daten im Sendepuffer zwischen
- * @param *data		Zeiger auf die Daten
- * @param length	Anzahl der Bytes
- * @return 			Anzahl der kopierten Bytes, -1 wenn Puffer zu klein
+ * \param *data		Zeiger auf die Daten
+ * \param length	Anzahl der Bytes
+ * \return 			Anzahl der kopierten Bytes, -1 wenn Puffer zu klein
  */
-static int copy2Buffer(const void * data, unsigned length) {
+static inline int16_t copy2Buffer(const void * data, unsigned length) {
 	if ((sendBufferPtr + length) > sizeof(sendBuffer)) {
 		LOG_DEBUG("Sendbuffer filled with %u/%u bytes, another %d bytes pending.", sendBufferPtr, (unsigned int)sizeof(sendBuffer), length);
 		LOG_DEBUG("  ==> Trying to recover by calling flushSendBuffer()...");
@@ -195,22 +162,27 @@ static int copy2Buffer(const void * data, unsigned length) {
 			LOG_DEBUG("  ==> Succeeded, data copied");
 		}
 	}
-//	printf("Store %d bytes", length);
+	LOG_DEBUG("Store %d bytes", length);
 	// Auf dem PC kopieren wir nur alles in den Ausgangspuffer
 	memcpy(&sendBuffer[sendBufferPtr], data, length);
 	sendBufferPtr += length;
-//	printf(" %d bytes now in buffer\n", sendBufferPtr);
+	LOG_DEBUG(" %d bytes now in buffer", sendBufferPtr);
 	return length;
 }
 
-/*!
+/**
  * Uebertrage Daten per TCP/IP
- * @param *data		Zeiger auf die Daten
- * @param length	Anzahl der Bytes
- * @return 			Anzahl der gesendeten Byte, -1 wenn Fehler
+ * \param *data		Zeiger auf die Daten
+ * \param length	Anzahl der Bytes
+ * \return 			Anzahl der gesendeten Byte, -1 wenn Fehler
  */
-int tcp_write(const void * data, int length) {
-	int bytes_sent;
+int16_t tcp_write(const void * data, int16_t length) {
+#ifdef ARM_LINUX_BOARD
+	if (tcp_sock == 0) {
+		return 0;
+	}
+#endif // ARM_LINUX_BOARD
+	int16_t bytes_sent;
 #ifdef USE_SEND_BUFFER
 	bytes_sent = copy2Buffer(data, length);
 #else
@@ -220,19 +192,22 @@ int tcp_write(const void * data, int length) {
 		bytes_sent = -1;
 	}
 #endif	// USE_SEND_BUFFER
+	LOG_DEBUG("sent %d bytes", bytes_sent);
 	return bytes_sent;
 }
 
-/*!
+/**
  * Lese Daten von TCP/IP-Verbindung.
  * Achtung: blockierend!
- * @param *data		Zeiger auf die Daten
- * @param length	Anzahl der gewuenschten Bytes
- * @return 			Anzahl der uebertragenen Bytes
+ * \param *data		Zeiger auf die Daten
+ * \param length	Anzahl der gewuenschten Bytes
+ * \return 			Anzahl der uebertragenen Bytes
  */
-int tcp_read(void * data, int length) {
-	if (length == 0) return 0; // NOP, aber auch kein Programmabbruch noetig
-	int bytesReceived = 0;
+int16_t tcp_read(void * data, int16_t length) {
+	if (tcp_sock == 0 || length == 0) {
+		return 0; // NOP, aber auch kein Programmabbruch noetig
+	}
+	int16_t bytesReceived = 0;
 
 	if ((bytesReceived = recv(tcp_sock, data, length, 0)) <= 0) {
 		printf("recv() failed or connection closed prematurely\n");
@@ -242,10 +217,95 @@ int tcp_read(void * data, int length) {
 	return bytesReceived;
 }
 
-/*!
+/**
  * Initialisiere TCP/IP Verbindung
  */
 void tcp_init(void) {
+#ifndef ARM_LINUX_BOARD
+	tcp_init_client();
+#else
+	static pthread_t thread;
+	pthread_create(&thread, NULL, tcp_init_server, NULL);
+#endif // ARM_LINUX_BOARD
+}
+
+#ifndef __WIN32__
+/**
+ * Initialisiere TCP/IP Verbindung als Server
+ * \param *ptr Datenparameter fuer pthread, wird nicht verwendet
+ * \return NULL
+ */
+void * tcp_init_server(void * ptr) {
+	(void) ptr;
+	/* Create socket for incoming connections */
+	if ((server = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+		LOG_ERROR("socket() failed");
+		exit(1);
+	}
+
+	int i = 1;
+	setsockopt(server, SOL_SOCKET, SO_REUSEADDR, (char *) &i, sizeof(i));
+
+//	fcntl(server, F_SETFL, O_NONBLOCK); // non-blocking
+
+	memset(&serverAddr, 0, sizeof(serverAddr)); // clean up
+	serverAddr.sin_family = AF_INET; // internet address family
+	serverAddr.sin_addr.s_addr = htonl(INADDR_ANY); // any incoming interface
+	serverAddr.sin_port = htons(SERVERPORT); // local port to listen on
+
+	/* bind to the local address */
+	if (bind(server, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
+		LOG_ERROR("bind() failed");
+		exit(1);
+	}
+
+	/* mark the socket so it will listen for incoming connections */
+	if (listen(server, 5) < 0) {
+		LOG_ERROR("listen() failed");
+		exit(1);
+	}
+
+	/* set the size of the in-out parameter */
+	clntLen = sizeof(clientAddr);
+
+	/* wait for a client to connect */
+	LOG_INFO("Waiting for TCP client (in background)...");
+	if ((tcp_sock = accept(server, (struct sockaddr *) &clientAddr, &clntLen)) < 0) {
+		LOG_ERROR("accept() failed");
+	}
+#ifndef LOG_CTSIM_AVAILABLE
+	LOG_INFO("TCP Client %s connected on port %u.", inet_ntoa(clientAddr.sin_addr), SERVERPORT);
+#endif
+
+#ifndef __WIN32__
+	signal(SIGPIPE, SIG_IGN); // ignore SIGPIPE signal
+#endif
+
+	return NULL;
+}
+
+/**
+ * Ermittelt wie viele Bytes auf dem TCP-Server Socket zur Verfuegung stehen
+ * \return Bytes verfuegbar
+ */
+int tcp_data_available(void) {
+	int bytes_avail;
+	int ret = ioctl(tcp_sock, FIONREAD, &bytes_avail);
+	if (ret < 0)	{
+		int err = errno;
+		LOG_ERROR("tcp_data_available(): ioctl() failed: %d; %d", ret, err);
+		(void) err;
+		return -1;
+	}
+
+	return bytes_avail;
+}
+#endif // __WIN32__
+
+/**
+ * Initialisiere TCP/IP Verbindung als Client (Verbindung zum Sim)
+ */
+void tcp_init_client(void) {
 #ifdef WIN32
 	WSADATA wsaData;
 	WORD wVersionRequested;
@@ -266,25 +326,48 @@ void tcp_init(void) {
 		exit(1);
 	}
 
+	sendBufferPtr = 0; // Puffer leeren
 }
 
-/*!
+/**
  * Schreibt den Sendepuffer auf einen Schlag raus
- * @return -1 bei Fehlern, sonst Anzahl der uebertragenen Bytes
+ * \return -1 bei Fehlern, sonst Anzahl der uebertragenen Bytes
  */
-int flushSendBuffer(void) {
-	int length = 0;
+int16_t flushSendBuffer(void) {
+	int16_t length = 0;
 #ifdef USE_SEND_BUFFER
-//	printf("Flushing Buffer with %d bytes\n",sendBufferPtr);
+	LOG_DEBUG("Flushing Buffer with %d bytes", sendBufferPtr);
 
 	length = sendBufferPtr;
+	if (length == 0) {
+		return 0;
+	}
 	sendBufferPtr = 0; // Puffer auf jedenfall leeren
-	if (send(tcp_sock, (char *)&sendBuffer, length, 0) != length) {
-		printf("send() sent a different number of bytes than expected\n");
+	const int n = send(tcp_sock, (char *) &sendBuffer, length, 0);
+	if (n != length) {
+		LOG_ERROR("flushSendBuffer(): send() sent a different number of bytes (%d) than expected (%d)", n, length);
 		length = -1;
 	}
 #endif // USE_SEND_BUFFER
 	return length;
 }
 
+/**
+ * Prueft die CRC Checksumme eines Kommandos
+ * \param *cmd Zeiger auf das Kommando
+ * \return True oder False
+ */
+uint8_t tcp_check_crc(command_t * cmd) {
+	(void) cmd;
+	return True; // wir vertrauen hier auf TCP/IP
+}
+
+/**
+ * Berechnet die CRC Checksumme eines Kommandos
+ * \param *cmd Zeiger auf das Kommando
+ */
+void tcp_calc_crc(command_t * cmd) {
+	(void) cmd;
+	// wir vertrauen hier auf TCP/IP
+}
 #endif // PC

@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	led_pc.c
- * @brief 	Routinen zur LED-Steuerung
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+/**
+ * \file 	led_pc.c
+ * \brief 	Routinen zur LED-Steuerung
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	26.12.205
  */
 
 #ifdef PC
@@ -33,41 +33,42 @@
 #include "led.h"
 #include "log.h"
 
-uint8_t led = 0;	/*!< Status der LEDs */
+uint8_t led = 0;	/**< Status der LEDs */
 
-/*!
+/**
  * Initialisiert die LEDs
  */
 void LED_init() {
+	// NOP
 }
 
-/*!
+/**
  * Schaltet einzelne LEDs an
  * andere werden nicht beeinflusst
- * @param LED Bitmaske der anzuschaltenden LEDs
+ * \param LED Bitmaske der anzuschaltenden LEDs
  */
 void LED_on(uint8_t LED) {
 	led |= LED;
 	LED_set(led);
 }
 
-/*!
+/**
  * Schaltet einzelne LEDs aus
  * andere werden nicht beeinflusst
- * @param LED Bitmaske der anzuschaltenden LEDs
+ * \param LED Bitmaske der anzuschaltenden LEDs
  */
 void LED_off(uint8_t LED) {
 	led &= ~LED;
 	LED_set(led);
 }
 
-/*!
+/**
  * Zeigt eine 8-Bit-Variable mit den LEDs an
- * @param LED Wert, der gezeigt werden soll
+ * \param LED Wert, der gezeigt werden soll
  */
 void LED_set(uint8_t LED) {
-	int16_t led = LED;
-	command_write(CMD_AKT_LED, SUB_CMD_NORM, led, led, 0);
+	led = LED;
+	command_write(CMD_AKT_LED, SUB_CMD_NORM, led, 0, 0);
 }
 
 #endif // LED_AVAILABLE

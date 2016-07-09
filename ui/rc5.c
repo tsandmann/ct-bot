@@ -17,7 +17,7 @@
  *
  */
 
-/*!
+/**
  * \file 	rc5.c
  * \brief 	RC5-Fernbedienung / Basic-Tasten-Handler
  *
@@ -34,7 +34,7 @@
 
 #ifdef RC5_AVAILABLE
 #include "rc5.h"
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 #include "ui/available_screens.h"
 #include "map.h"
 #include "display.h"
@@ -53,13 +53,13 @@
 #include <stdlib.h>
 
 
-uint16_t RC5_Code = 0;	/*!< Letzter empfangener RC5-Code */
-/*! RC5-Konfiguration fuer Fernbedienung */
+uint16_t RC5_Code = 0;	/**< Letzter empfangener RC5-Code */
+/** RC5-Konfiguration fuer Fernbedienung */
 ir_data_t rc5_ir_data = {
 	0, 0, 0, 0, 0, 0
 };
 
-/*!
+/**
  * Setzt das Display auf eine andere Ausgabe.
  * \param screen Parameter mit dem zu setzenden Screen.
  */
@@ -84,7 +84,7 @@ rc5_screen_set(uint8_t screen) {
 #endif // DISPLAY_AVAILABLE
 }
 
-/*!
+/**
  * Stellt die Not-Aus-Funktion dar.
  * Sie laesst den Bot anhalten und setzt alle Verhalten zurueck mit Sicherung der vorherigen Aktivitaeten.
  */
@@ -102,7 +102,7 @@ static void rc5_emergency_stop(void) {
 #endif // BEHAVIOUR_AVAILABLE
 }
 
-/*!
+/**
  * Aendert die Geschwindigkeit um den angegebenen Wert.
  * \param left	linke, relative Geschwindigkeitsaenderung
  * \param right	rechte, relative Geschwindigkeitsaenderung
@@ -133,7 +133,7 @@ static void rc5_bot_change_speed(int16_t left, int16_t right) {
 #endif // BEHAVIOUR_AVAILABLE
 }
 
-/*!
+/**
  * Setzt den Bot zurueck
  */
 static inline void bot_reset(void) {
@@ -153,12 +153,36 @@ static inline void bot_reset(void) {
 //	timer_reset();
 }
 
-/*!
+#ifdef BEHAVIOUR_SERVO_AVAILABLE
+/**
+ * Kamera-Steuerung fuer Servo 2
+ * \param diff Wert, um den die Servo-Position veraendert wird
+ */
+static void __attribute__ ((unused)) rc5_change_servo2(int16_t diff) {
+	static uint8_t old_pos = CAM_CENTER / 10 * 10;
+
+	int16_t new_pos = old_pos + diff;
+	/* Begrenzungen */
+	if (new_pos < CAM_LEFT) {
+		new_pos = CAM_LEFT;
+	} else if (new_pos > CAM_RIGHT) {
+		new_pos = CAM_RIGHT;
+	}
+
+	/* Servo Verhalten starten */
+	if (bot_servo(NULL, SERVO2, (uint8_t) new_pos)) {
+		old_pos = (uint8_t) new_pos;
+	}
+}
+#endif // BEHAVIOUR_SERVO_AVAILABLE
+
+/**
  * Verarbeitet die Zifferntasten.
  * \param key Parameter mit der betaetigten Zifferntaste
  */
 static void rc5_number(uint8_t key) {
 	switch (key) {	// richtige Aktion heraussuchen
+
 		#ifdef BEHAVIOUR_AVAILABLE
 			case 0:	target_speed_l = BOT_SPEED_STOP; target_speed_r = BOT_SPEED_STOP; break;
 			case 1:	target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
@@ -168,7 +192,7 @@ static void rc5_number(uint8_t key) {
 		#ifdef BEHAVIOUR_TURN_AVAILABLE
 			case 2: bot_turn(NULL, 90); break;
 
-			/* Testcode fuer Bot-2-Bot-RemoteCall */
+//			/* Testcode fuer Bot-2-Bot-RemoteCall */
 //			case 2: {
 //				bot_list_entry_t * ptr = get_next_bot(NULL); // ersten Bot aus der Liste der bekannten Bots ansprechen
 //				if (ptr != NULL) {
@@ -182,11 +206,12 @@ static void rc5_number(uint8_t key) {
 //				}
 //				break;
 //			}
+
 			case 7: bot_turn(NULL, 180); break;
 			case 9: bot_turn(NULL, -180); break;
 		#endif	// BEHAVIOUR_TURN_AVAILABLE
 
-		#if defined BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
+		#ifdef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
 			case 4: bot_follow_line_enh(NULL); break;
 		#elif defined BEHAVIOUR_FOLLOW_LINE_AVAILABLE
 			case 4: bot_follow_line(NULL); break;
@@ -202,7 +227,7 @@ static void rc5_number(uint8_t key) {
 			case 5: bot_solve_maze(NULL); break;
 		#endif	// BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 
-		#if defined BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+		#ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
 			case 6: bot_calibrate_pid(NULL, BOT_SPEED_SLOW); break;
 		#elif defined BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
 			case 6: bot_calibrate_sharps(NULL); break;
@@ -220,7 +245,7 @@ static void rc5_number(uint8_t key) {
 	}
 }
 
-/*!
+/**
  * Ordnet den Tasten eine Aktion zu und fuehrt diese aus.
  * Hier gehoeren nur die absoluten Basics an Tastenzuordnungen rein, nicht Spezielles! Sonderwuensche
  * evtl. nach rc5_number(), ab besten aber eigenen Screenhandler anlegen und mit GUI/register_screen()
@@ -242,14 +267,15 @@ void default_key_handler(void) {
 		case RC5_CODE_I_II:
 #ifdef COMMAND_AVAILABLE
 			command_write(CMD_SHUTDOWN, SUB_CMD_NORM, 0, 0, 0);
-#endif
-#ifdef MCU
+#endif // COMMAND_AVAILABLE
+#if defined MCU || defined ARM_LINUX_BOARD
 			ctbot_shutdown();
-#endif // MCU
+#endif // MCU || ARM_LINUX_BOARD
 			break;
 #endif // RC5_CODE_I_II
 
 		/* Screenwechsel */
+#ifndef BOT_2_RPI_AVAILABLE
 #ifdef RC5_CODE_GREEN
 		case RC5_CODE_GREEN:	rc5_screen_set(0); break;
 #endif
@@ -259,12 +285,17 @@ void default_key_handler(void) {
 #ifdef RC5_CODE_YELLOW
 		case RC5_CODE_YELLOW:	rc5_screen_set(2); break;
 #endif
-#ifdef RC5_CODE_BLUE
+#if defined RC5_CODE_BLUE && ! defined ARM_LINUX_BOARD
 		case RC5_CODE_BLUE:		rc5_screen_set(3); break;
 #endif
 #ifdef RC5_CODE_TV_VCR
 		case RC5_CODE_TV_VCR:	rc5_screen_set(DISPLAY_SCREEN_TOGGLE); break;
 #endif
+#else // BOT_2_RPI_AVAILABLE
+#ifdef RC5_CODE_BLUE
+		case RC5_CODE_BLUE:		rc5_screen_set(DISPLAY_SCREEN_TOGGLE); break;
+#endif
+#endif // BOT_2_RPI_AVAILABLE
 
 		/* Geschwindigkeitsaenderung */
 		case RC5_CODE_UP:		rc5_bot_change_speed( 10,  10); break;
@@ -279,6 +310,12 @@ void default_key_handler(void) {
 #endif
 #ifdef RC5_CH_MINUS
 		case RC5_CH_MINUS:		bot_servo(NULL, SERVO1, DOOR_OPEN); break;
+#endif
+#ifdef RC5_VOL_PLUS
+		case RC5_VOL_PLUS:		rc5_change_servo2(10); break; // verfaehrt Servo 2 um eine Stufe im Uhrzeigersinn
+#endif
+#ifdef RC5_VOL_MINUS
+		case RC5_VOL_MINUS:		rc5_change_servo2(-10); break; // verfaehrt Servo 2 um eine Stufe gegen den Uhrzeigersinn
 #endif
 #endif // BEHAVIOUR_SERVO_AVAILABLE
 
@@ -300,19 +337,19 @@ void default_key_handler(void) {
 	}
 }
 
-/*!
+/**
  * Liest ein RC5-Codeword und wertet es aus
  */
 void rc5_control(void) {
-	static uint16_t RC5_Last_Toggle = 1; /*!< Toggle-Wert des zuletzt empfangenen RC5-Codes */
+	static uint16_t RC5_Last_Toggle = 1; /**< Toggle-Wert des zuletzt empfangenen RC5-Codes */
 	uint16_t rc5 = ir_read(&rc5_ir_data); // empfangenes RC5-Kommando
 
 	if (rc5 != 0) {
-		/* Toggle kommt nicht im Simulator, immer gewechseltes Toggle-Bit sicherstellen */
 #ifdef PC
+		/* Toggle kommt nicht im Simulator, immer gewechseltes Toggle-Bit sicherstellen */
 		RC5_Last_Toggle = (uint16_t) (!(rc5 & RC5_TOGGLE));
 #endif
-		/* Bei Aenderung des Toggle-Bits, entspricht neuem Tastendruck, gehts nur weiter */
+		/* Bei Aenderung des Toggle-Bits, entspricht neuem Tastendruck, gehts weiter */
 		if ((rc5 & RC5_TOGGLE) != RC5_Last_Toggle) { // Nur Toggle-Bit abfragen, bei Ungleichheit weiter
 			RC5_Last_Toggle = rc5 & RC5_TOGGLE; // Toggle-Bit neu belegen
 			RC5_Code = rc5 & RC5_MASK; // alle uninteressanten Bits ausblenden

@@ -17,11 +17,11 @@
  * 
  */
 
-/*! 
- * @file 	led.c 
- * @brief 	Routinen zur LED-Steuerung
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+/**
+ * \file 	led.c
+ * \brief 	Routinen zur LED-Steuerung
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	26.12.2005
  */
 
 #ifdef MCU 
@@ -32,9 +32,9 @@
 #include "led.h"
 #include "shift.h"
 
-uint8_t led = 0; /*!< Zustand der LEDs */
+uint8_t led = 0; /**< Zustand der LEDs */
 
-/*!
+/**
  * Initialisiert die LEDs
  */
 void LED_init() {
@@ -42,27 +42,27 @@ void LED_init() {
 	LED_set(0);
 }
 
-/*! 
+/**
  * Schaltet einzelne LEDs an
  * andere werden nicht beeinflusst
- * @param LED Bitmaske der anzuschaltenden LEDs
+ * \param LED Bitmaske der anzuschaltenden LEDs
  */
 void LED_on(uint8_t LED) {
 	LED_set(led | LED);
 }
 
-/*! 
+/**
  * Schaltet einzelne LEDs aus
  * andere werden nicht beeinflusst
- * @param LED Bitmaske der anzuschaltenden LEDs
+ * \param LED Bitmaske der anzuschaltenden LEDs
  */
 void LED_off(uint8_t LED) {
 	LED_set(led & (uint8_t) (~LED));
 }
 
-/*!
+/**
  * Zeigt eine 8-Bit Variable mit den LEDs an
- * @param LED Wert der gezeigt werden soll
+ * \param LED Wert der gezeigt werden soll
  */
 void LED_set(uint8_t LED) {
 	led = LED;

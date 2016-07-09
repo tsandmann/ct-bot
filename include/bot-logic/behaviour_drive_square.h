@@ -17,11 +17,11 @@
  * 
  */
 
-/*! 
- * @file 	behaviour_drive_square.h
- * @brief 	Bot faehrt im Quadrat
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	03.11.2006
+/**
+ * \file 	behaviour_drive_square.h
+ * \brief 	Bot faehrt im Quadrat
+ * \author 	Benjamin Benz (bbe\heise.de)
+ * \date 	03.11.2006
  */
 
 
@@ -29,20 +29,28 @@
 #define BEHAVIOUR_DRIVE_SQUARE_H_
 
 #ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
-/*!
+/**
  * Laesst den Roboter ein Quadrat abfahren.
  * Einfaches Beispiel fuer ein Verhalten, das einen Zustand besitzt.
- * Es greift auf andere Behaviours zurueck und setzt daher 
- * selbst keine speedWishes.
- * @param *data der Verhaltensdatensatz
+ * Es greift auf andere Behaviours zurueck und setzt daher selbst keine speedWishes.
+ * \param *data der Verhaltensdatensatz
  */
-void bot_drive_square_behaviour(Behaviour_t * data);
+void bot_drive_square_behaviour(Behaviour_t* data);
 
-/*! 
+/**
  * Laesst den Roboter ein Quadrat abfahren.
- * @param *caller Der obligatorische Verhaltensdatensatz des aufrufers
+ * \param *caller	Der obligatorische Verhaltensdatensatz des Aufrufers
+ * \param length	Seitenlaenge des Quadrats in mm
  */
-void bot_drive_square(Behaviour_t * caller);
+Behaviour_t* bot_drive_square_len(Behaviour_t* caller, int16_t length);
+
+/**
+ * Laesst den Roboter ein Quadrat abfahren.
+ * \param *caller Der obligatorische Verhaltensdatensatz des Aufrufers
+ */
+static inline Behaviour_t* bot_drive_square(Behaviour_t* caller) {
+	return bot_drive_square_len(caller, 400);
+}
 
 #endif // BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
 #endif // BEHAVIOUR_DRIVE_SQUARE_H_

@@ -17,11 +17,12 @@
  *
  */
 
-/*! @file 	delay.c
- * @brief 	Hilfsroutinen fuer Wartezeiten
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	20.12.2005
-*/
+/**
+ * \file 	delay.c
+ * \brief 	Hilfsroutinen fuer Wartezeiten
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	20.12.2005
+ */
 
 #ifdef MCU
 
@@ -29,9 +30,9 @@
 #include "delay.h"
 #include "timer.h"
 
-/*!
+/**
  * Verzoegert um ms Millisekunden
- * @param ms Anzahl der Millisekunden
+ * \param ms Anzahl der Millisekunden
  */
 void delay(uint16_t ms) {
 	uint32_t start = TIMER_GET_TICKCOUNT_32;

@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	init-low_pc.c
- * @brief 	Initialisierungsroutinen fuer PC
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	09.03.2010
+/**
+ * \file 	init-low_pc.c
+ * \brief 	Initialisierungsroutinen fuer PC
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	09.03.2010
  */
 
 #ifdef PC
@@ -32,13 +32,38 @@
 #include "trace.h"
 #include "eeprom.h"
 #include "command.h"
+#include "bot-2-atmega.h"
+#include "uart.h"
+#include "botcontrol.h"
+#include "delay.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-/*!
+#ifndef __WIN32__
+#include <signal.h>
+
+void sig_handler(int signum);
+
+void sig_handler(int signum) {
+	if (signum == SIGINT) {
+		puts("\nCTRL+C pressed, initiating Shutdown...");
+		ctbot_shutdown();
+	}
+}
+#endif // ! __WIN32__
+
+
+//#define DEBUG_INIT_LOW_PC       // Schalter, um auf einmal alle Debugs an oder aus zu machen
+
+#ifndef DEBUG_INIT_LOW_PC
+#undef LOG_DEBUG
+#define LOG_DEBUG(...) {} /**< Log-Dummy */
+#endif
+
+/**
  * Hardwareabhaengige Initialisierungen, die zuerst ausgefuehrt werden sollen
- * @param argc Anzahl der Kommandozeilenparameter
- * @param *argv Zeiger auf Kommandozeilenparameter
+ * \param argc Anzahl der Kommandozeilenparameter
+ * \param *argv Zeiger auf Kommandozeilenparameter
  */
 void ctbot_init_low_1st(int argc, char * argv[]) {
 	/* PC-EEPROM-Init vor hand_cmd_args() */
@@ -56,19 +81,36 @@ void ctbot_init_low_1st(int argc, char * argv[]) {
 #endif // CREATE_TRACEFILE_AVAILABLE
 }
 
-/*!
+/**
  * Hardwareabhaengige Initialisierungen, die _nach_ der allgemeinen Initialisierung
  * ausgefuehrt werden sollen
  */
 void ctbot_init_low_last(void) {
+#ifndef __WIN32__
+	signal(SIGINT, sig_handler);
+#endif // ! __WIN32__
+
 	cmd_init();
+
+#ifdef ARM_LINUX_BOARD
+	set_bot_2_atmega();
+	LOG_DEBUG("ctbot_init_low_last(): Sending CMD_DONE to ATmega...");
+	command_write(CMD_DONE, SUB_CMD_NORM, simultime, 0, 0);
+#endif // ARM_LINUX_BOARD
 }
 
-/*!
+/**
  * Beendet die Bot-Instanz
  */
 void ctbot_shutdown_low(void) {
-	puts("c't-Bot shutdown.");
+#ifdef ARM_LINUX_BOARD
+	set_bot_2_atmega();
+	command_write(CMD_SHUTDOWN, SUB_CMD_NORM, 0, 0, 0);
+	delay(300);
+	uart_flush();
+	uart_close();
+#endif // ARM_LINUX_BOARD
+	puts("c't-Bot shutdown. So long, and thanks for all the fish.");
 	exit(0);
 }
 #endif // PC

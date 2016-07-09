@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	timer-low_pc.c
- * @brief 	Timer und Counter
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.2005
+/**
+ * \file 	timer-low_pc.c
+ * \brief 	Timer und Counter
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	26.12.2005
  */
 
 #ifdef PC
@@ -30,14 +30,14 @@
 #include "timer.h"
 #include "sensor.h"
 
-/*!
+/**
  * initialisiert Timer 2 und startet ihn
  */
 void timer_2_init(void) {
 	// Dummy
 }
 
-/*!
+/**
  * Funktion, die die TickCounts um die vergangene Simulzeit erhoeht
  */
 void system_time_isr(void) {
@@ -46,11 +46,15 @@ void system_time_isr(void) {
 	static int last_simultime = -11; // kommt vom Sim zuerst als -1, warum auch immer!?!
 	int tmp = simultime - last_simultime;
 	if (tmp < 0) tmp += 10000; // der Sim setzt simultime alle 10s zurueck auf 0
+#ifdef ARM_LINUX_BOARD
+	tickCount = tickCount + (uint_fast32_t) MS_TO_TICKS(tmp);
+#else
 	tickCount += MS_TO_TICKS((float) tmp);
+#endif
 	last_simultime = simultime;
 }
 
-/*
+/**
  * Setzt die Systemzeit zurueck auf 0
  */
 void timer_reset(void) {

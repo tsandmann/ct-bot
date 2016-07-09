@@ -108,7 +108,7 @@ position_t calc_point_in_distance(float alpha, int16_t dx, int16_t dy) {
 	return dest;
 }
 
-#ifdef BPS_AVAILABLE
+#if defined BPS_AVAILABLE && ! defined BOT_2_RPI_AVAILABLE
 /**
  * Berechnet den Standort via Rueckwaertseinschnitt nach Cassini, wenn drei angepeilte Positionen bekannt sind.
  * \param a			Koordinaten von Bake A [mm]

@@ -17,7 +17,7 @@
  * 
  */
 
-/*!
+/**
  * \file 	rc5.h
  * \brief 	RC5-Fernbedienung / Basic-Tasten-Handler
  *
@@ -36,14 +36,14 @@
 #ifdef RC5_AVAILABLE
 #include "ir-rc5.h"
 
-extern ir_data_t rc5_ir_data; /*!< RC5-Konfiguration fuer Fernbedienung */
+extern ir_data_t rc5_ir_data; /**< RC5-Konfiguration fuer Fernbedienung */
 
-/*!
+/**
  * Liest ein RC5-Codeword und wertet es aus
  */
 void rc5_control(void);
 
-/*!
+/**
  * Ordnet den Tasten eine Aktion zu und fuehrt diese aus
  */
 void default_key_handler(void);
