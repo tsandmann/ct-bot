@@ -93,6 +93,7 @@ static uint8_t remote_column = 0; /**< Spalte der aktuellen Cursorposition fuer 
 static uint8_t remote_row = 0;    /**< Zeile der aktuellen Cursorposition fuer Remote-LCD */
 #endif
 
+#ifdef DISPLAY_MCU_AVAILABLE
 /**
  * Uebertraegt ein Kommando an das Display
  * \param cmd Das Kommando
@@ -123,14 +124,44 @@ void display_data(const char data) {
 	delay_us(47);
 	DISPLAY_PORT = DPC;	// Alles zurueck setzen ==> Fallende Flanke von Enable
 }
+#endif // DISPLAY_MCU_AVAILABLE
+
+/**
+ * Initialisiert das Display
+ */
+void display_init(void) {
+#ifdef DISPLAY_MCU_AVAILABLE
+	DISPLAY_DDR |= DISPLAY_OUT; // Ausgaenge
+	DISPLAY_DDR = (uint8_t) (DISPLAY_DDR & ~DISPLAY_IN); // Eingaenge
+
+	delay(12); // Display steht erst 10ms nach dem Booten bereit
+
+	/* Register in 8-Bit-Modus 3x uebertragen, dazwischen warten */
+	uint8_t i;
+	for (i = 3; i > 0; --i) {
+		shift_data_out(0x38, SHIFT_LATCH, SHIFT_REGISTER_DISPLAY);
+		DISPLAY_PORT = DPC;
+		delay(5);
+	}
+
+	display_cmd(DISPLAY_MODE); // Display an und Cursor-Modus setzen
+	display_cmd(DISPLAY_CLEAR); // Display loeschen, Cursor Home
+#endif // DISPLAY_MCU_AVAILABLE
+}
 
 /**
  * \brief	Loescht das ganze Display
  */
 void display_clear(void) {
+#ifdef DISPLAY_MCU_AVAILABLE
 	display_cmd(DISPLAY_CLEAR); // Display loeschen, Cursor Home
+#endif
 #ifdef DISPLAY_REMOTE_AVAILABLE
+#ifndef BOT_2_RPI_AVAILABLE
 	command_write(CMD_AKT_LCD, SUB_LCD_CLEAR, 0, 0, 0);
+#else
+	command_write_to(CMD_AKT_LCD, SUB_LCD_CLEAR, CMD_IGNORE_ADDR, 0, 0, 0);
+#endif // BOT_2_RPI_AVAILABLE
 #endif
 }
 
@@ -142,6 +173,8 @@ void display_clear(void) {
 void display_cursor(int16_t row, int16_t column) {
 	const uint8_t r = (uint8_t) (row - 1);
 	const uint8_t c = (uint8_t) (column - 1);
+
+#ifdef DISPLAY_MCU_AVAILABLE
 	switch (r) {
 	case 0:
 		display_cmd((uint8_t) (0x80 + c));
@@ -158,35 +191,15 @@ void display_cursor(int16_t row, int16_t column) {
 	default:
 		break;
 	}
+#endif // DISPLAY_MCU_AVAILABLE
 
 #ifdef DISPLAY_REMOTE_AVAILABLE
 	remote_column = c;
 	remote_row = r;
 #endif
-}
 
-/**
- * Initialisiert das Display
- */
-void display_init(void) {
-	shift_init();
-
-	DISPLAY_DDR |= DISPLAY_OUT; // Ausgaenge
-	DISPLAY_DDR = (uint8_t) (DISPLAY_DDR & ~DISPLAY_IN); // Eingaenge
-
-	delay(12); // Display steht erst 10ms nach dem Booten bereit
-
-	/* Register in 8-Bit-Modus 3x uebertragen, dazwischen warten */
-	uint8_t i;
-	for (i = 3; i > 0; --i) {
-		shift_data_out(0x38, SHIFT_LATCH, SHIFT_REGISTER_DISPLAY);
-		DISPLAY_PORT = DPC;
-		delay(5);
-	}
-
-	display_cmd(DISPLAY_MODE); // Display an und Cursor-Modus setzen
-
-	display_cmd(DISPLAY_CLEAR); // Display loeschen, Cursor Home
+	(void) r;
+	(void) c;
 }
 
 /**
@@ -204,23 +217,32 @@ uint8_t display_flash_printf(const char * format, ...) {
 
 	/* Sicher gehen, dass der zur Verfuegung stehende Puffer nicht ueberlaeuft */
 	va_start(args, format);
-	const uint8_t len = (uint8_t) vsnprintf_P(display_buf, DISPLAY_BUFFER_SIZE, format, args);
+	uint8_t len = (uint8_t) vsnprintf_P(display_buf, DISPLAY_BUFFER_SIZE, format, args);
 	va_end(args);
+	if (len > DISPLAY_LENGTH) {
+		len = DISPLAY_LENGTH;
+	}
 
+#ifdef DISPLAY_MCU_AVAILABLE
 	/* Ausgeben bis Puffer leer ist */
-	char * ptr = display_buf;
+	char* ptr = display_buf;
 	uint8_t i;
 	for (i = len; i > 0; --i) {
 		display_data(*ptr++);
 	}
+#endif // DISPLAY_MCU_AVAILABLE
 
 #ifdef DISPLAY_REMOTE_AVAILABLE
 	const int16_t c = remote_column;
 	const int16_t r = remote_row;
 	remote_column = (uint8_t) (remote_column + len);
-//	command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, c, r, 0);
-	command_write_data(CMD_AKT_LCD, SUB_LCD_DATA, c, r, display_buf);
-#endif
+#ifndef BOT_2_RPI_AVAILABLE
+	command_write_rawdata(CMD_AKT_LCD, SUB_LCD_DATA, c, r, len, display_buf);
+#else
+	command_write_rawdata_to(CMD_AKT_LCD, SUB_LCD_DATA, CMD_IGNORE_ADDR, c, r, len, display_buf);
+#endif // BOT_2_RPI_AVAILABLE
+
+#endif // DISPLAY_REMOTE_AVAILABLE
 	return len;
 }
 
@@ -230,11 +252,14 @@ uint8_t display_flash_printf(const char * format, ...) {
  * \return Anzahl der geschriebenen Zeichen
  */
 uint8_t display_flash_puts(const char * text) {
-	const char * ptr = text;
 	uint8_t len = 0;
+#if defined DISPLAY_MCU_AVAILABLE || defined DISPLAY_REMOTE_AVAILABLE
+	const char* ptr = text;
 	char tmp;
-	while ((tmp = (char) pgm_read_byte(ptr++)) != 0) {
+	while ((tmp = (char) pgm_read_byte(ptr++)) != 0 && len < DISPLAY_LENGTH) {
+#ifdef DISPLAY_MCU_AVAILABLE
 		display_data(tmp);
+#endif
 		++len;
 	}
 
@@ -242,16 +267,25 @@ uint8_t display_flash_puts(const char * text) {
 	const int16_t c = remote_column;
 	const int16_t r = remote_row;
 	remote_column = (uint8_t) (remote_column + len);
-//	command_write(CMD_AKT_LCD, SUB_LCD_CURSOR, c, r, 0);
 
 	os_enterCS();
-		command_write_to_internal(CMD_AKT_LCD, SUB_LCD_DATA, CMD_SIM_ADDR, c, r, len);
-		ptr = text;
-		while ((tmp = (char) pgm_read_byte(ptr++)) != 0) {
-			cmd_functions.write(&tmp, 1);
-		}
+#ifndef BOT_2_RPI_AVAILABLE
+	command_write_to_internal(CMD_AKT_LCD, SUB_LCD_DATA, CMD_SIM_ADDR, c, r, len);
+#else
+	command_write_to_internal(CMD_AKT_LCD, SUB_LCD_DATA, CMD_IGNORE_ADDR, c, r, len);
+#endif // BOT_2_RPI_AVAILABLE
+	ptr = text;
+	uint8_t i;
+	for (i = 0; i < len; ++i) {
+		tmp = (char) pgm_read_byte(ptr++);
+		cmd_functions.write(&tmp, 1);
+	}
 	os_exitCS();
 #endif // DISPLAY_REMOTE_AVAILABLE
+#endif // DISPLAY_MCU_AVAILABLE || DISPLAY_REMOTE_AVAILABLE
+
+	(void) ptr;
+	(void) tmp;
 
 	return len;
 }

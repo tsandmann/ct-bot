@@ -43,6 +43,7 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 };
 
 #ifdef DISPLAY_AVAILABLE
+#include "ena.h"
 #include "gui.h"
 #include "bot-logic.h"
 #include "rc5.h"
@@ -60,6 +61,7 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 #include "os_scheduler.h"
 #include "timer.h"
 #include "bot-2-linux.h"
+#include "bot-2-atmega.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -73,6 +75,14 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 #undef DISPLAY_RAM_AVAILABLE
 #undef DISPLAY_OS_AVAILABLE
 #endif // !MCU
+
+#if ! defined ARM_LINUX_BOARD || defined DISPLAY_MCU_AVAILABLE
+#undef DISPLAY_ATMEGA_AVAILABLLE
+#endif
+
+#if ! defined BOT_2_RPI_AVAILABLE || ! defined DISPLAY_MCU_AVAILABLE
+#undef DISPLAY_LINUX_AVAILABLLE
+#endif
 
 #if ! defined KEYPAD_AVAILABLE || ! defined BEHAVIOUR_REMOTECALL_AVAILABLE
 #undef DISPLAY_REMOTECALL_AVAILABLE
@@ -105,8 +115,6 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 #ifdef BOT_2_RPI_AVAILABLE
 #undef DISPLAY_SENSOR_AVAILABLE
 #undef DISPLAY_ODOMETRIC_INFO
-#else
-#undef DISPLAY_LINUX_AVAILABLLE
 #endif // BOT_2_RPI_AVAILABLE
 
 #ifndef BEHAVIOUR_TRANSPORT_PILLAR_AVAILABLE
@@ -339,6 +347,25 @@ void gui_display(uint8_t screen) {
 #if defined LED_AVAILABLE && defined RC5_AVAILABLE
 	LED_off(LED_WEISS);
 #endif // LED_AVAILABLE && RC5_AVAILABLE
+
+#ifdef EXPANSION_BOARD_MOD_AVAILABLE
+#define RC_LDR 8 // Wert zwischen 1 und 9 einstellbar
+	/* Steuerung der Display-Beleuchtung in Abhaengigkeit von der Umgebungshelligkeit */
+	/* Bestimmung der mittleren Helligkeit aus beiden Sensoren */
+	int sensLDR_average = (sensLDRR + sensLDRL) / 2;
+
+	/* Tiefpass zur Vermeidung eines flackernden Displays im Wertebereich der definierten minimalen Umgebungshelligkeit */
+	static int sensLDR_average_old;
+	sensLDR_average = (RC_LDR * sensLDR_average_old + (10 - RC_LDR) * sensLDR_average) / 10;
+	sensLDR_average_old = sensLDR_average;
+
+	/* falls der eingestellte Wert ueberschritten wird, Display einschalten und umgekehrt */
+	if (sensLDR_average > 300) {
+		ENA_on(ENA_DISPLAYLIGHT);
+	} else {
+		ENA_off(ENA_DISPLAYLIGHT);
+	}
+#endif // EXPANSION_BOARD_MOD_AVAILABLE
 }
 
 /**
@@ -346,7 +373,9 @@ void gui_display(uint8_t screen) {
  * Traegt die Anzeige-Funktionen in das Array ein.
  */
 void gui_init(void) {
-//	register_screen(NULL); // erzeugt einen leeren Display-Screen an erster Position
+#if defined MCU && ! defined DISPLAY_MCU_AVAILABLE && defined DISPLAY_REMOTE_AVAILABLE
+	register_screen(NULL); // erzeugt einen leeren Display-Screen an erster Position
+#endif
 #ifdef DISPLAY_MINIFAT_INFO
 	/* MiniFAT wird vor GUI initialisiert und schreibt deshalb einfach auf's leere Display, der Dummy hier verhindert nur das Ueberschreiben in den anschliessenden Bot-Zyklen, damit man die Daten noch lesen kann */
 	register_screen(&mini_fat_display);
@@ -425,6 +454,9 @@ void gui_init(void) {
 #endif
 #ifdef DISPLAY_DRIVE_NEURALNET_AVAILABLE
 	register_screen(&neuralnet_learn_display);
+#endif
+#ifdef DISPLAY_ATMEGA_AVAILABLLE
+	register_screen(&atmega_display);
 #endif
 }
 

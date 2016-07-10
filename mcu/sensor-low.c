@@ -49,6 +49,7 @@
 #include "srf10.h"
 #include "botfs.h"
 #include "init.h"
+#include "log.h"
 
 // ADC-PINS
 #define SENS_ABST_L		0	/**< ADC-PIN Abstandssensor Links */
@@ -114,9 +115,16 @@ uint8_t timeCorrectR = 0;		/**< markiert, ob der Encoder-Timestamp des rechten R
 
 #ifdef SPEED_LOG_AVAILABLE
 /* Debug-Loggings */
+#ifdef BOT_FS_AVAILABLE
+#define SPEED_LOG_ENTRIES 20
+#else
+#define SPEED_LOG_ENTRIES 15
+#endif //BOT_FS_AVAILABLE
 volatile uint8_t slog_i[2] = {0,0}; /**< Array-Index */
 slog_t * const slog = &GET_MMC_BUFFER(speedlog);	/**< Puffer fuer Speed-Log Daten */
+#ifdef BOT_FS_AVAILABLE
 static botfs_file_descr_t speedlog_file;			/**< BotFS-Datei fuer das Speed-Log */
+#endif
 #define SPEEDLOG_FILE_SIZE (1024 * (1024 / BOTFS_BLOCK_SIZE)) /**< Groesse der Speed-Log-Datei in Bloecken */
 #endif // SPEED_LOG_AVAILABLE
 
@@ -150,6 +158,7 @@ void bot_sens_init(void) {
 	sensEncR = 0;
 
 #ifdef SPEED_LOG_AVAILABLE
+#ifdef BOT_FS_AVAILABLE
 	void * const buffer = slog;
 	/* Datei oeffnen / anlegen */
 	int8_t res;
@@ -173,6 +182,13 @@ void bot_sens_init(void) {
 		botfs_write_header_data(&speedlog_file, buffer);
 	}
 	memset(buffer, 0, sizeof(slog));
+#else
+#ifdef SPEED_CONTROL_AVAILABLE
+	LOG_RAW("time_l\tenc_l\tencRate_l\ttargetRate_l\ttime_r\tenc_r\tencRate_r\ttargetRate_r");
+#else
+	LOG_RAW("time_l\tenc_l\ttime_r\tenc_r");
+#endif
+#endif // BOT_FS_AVAILABLE
 #endif // SPEED_LOG_AVAILABLE
 }
 
@@ -197,7 +213,7 @@ void bot_sens(void) {
 		pDistL = &sensDistL;
 		pDistR = &sensDistR;
 		adc_read_int(SENS_ABST_L, pDistL);
-		if (servo_get(SERVO1) == SERVO_OFF) { // wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensors nicht
+		if (servo_get_active(SERVO1) == 0) { // wenn die Transportfachklappe bewegt wird, stimmt der Messwert des rechten Sensors nicht
 			adc_read_int(SENS_ABST_R, pDistR);
 		}
 	}
@@ -253,17 +269,52 @@ void bot_sens(void) {
 #endif // SPEED_CONTROL_AVAILABLE
 
 #ifdef SPEED_LOG_AVAILABLE
-	/* Speed-Log-Daten auf MMC schreiben, falls Puffer voll */
-	if (slog_i[0] > 20 || slog_i[1] > 20) { // etwas Luft lassen, denn die Daten kommen per ISR
-		const size_t n = sizeof(slog->data[0]) / sizeof(slog->data[0][0]);
-		uint8_t j;
-		for (j = 0; j < 2; ++j) {
-			const uint8_t i = (uint8_t) (slog_i[j] + 1);
-			slog_i[j] = 0; // Index-Reset
-			const uint16_t length = mul8(sizeof(slog_data_t), (uint8_t) (n - i));
-			memset((uint8_t *) &slog->data[j][i], 0, length);
+	/* Speed-Log-Daten auf MMC schreiben / per UART versenden, falls Puffer voll */
+	const uint8_t sreg = SREG;
+	__builtin_avr_cli();
+	uint8_t idx_l = slog_i[0];
+	uint8_t idx_r = slog_i[1];
+	if (idx_l > SPEED_LOG_ENTRIES || idx_r > SPEED_LOG_ENTRIES) {
+		const uint8_t max = idx_l > idx_r ? idx_l : idx_r;
+		slog_i[0] = max;
+		slog_i[1] = max;
+		SREG = sreg;
+		if (max > idx_l) {
+			memset(&slog->data[0][idx_l], 0, sizeof(slog_data_t) * (size_t) (max - idx_l));
+		} else if (max > idx_r) {
+			memset(&slog->data[1][idx_r], 0, sizeof(slog_data_t) * (size_t) (max - idx_r));
 		}
+#ifndef BOT_FS_AVAILABLE
+		/* Daten via UART senden */
+		uint8_t i;
+		for (i = 0; i < max; ++i) {
+#ifdef SPEED_CONTROL_AVAILABLE
+			LOG_RAW("%lu\t%u\t%u\t%u\t%lu\t%u\t%u\t%u", slog->data[0][i].time, slog->data[0][i].enc, slog->data[0][i].encRate, slog->data[0][i].targetRate,
+				slog->data[1][i].time, slog->data[1][i].enc, slog->data[1][i].encRate, slog->data[1][i].targetRate);
+#else
+			LOG_RAW("%lu\t%u\t%lu\t%u", slog->data[0][i].time, slog->data[0][i].enc, slog->data[1][i].time, slog->data[1][i].enc);
+#endif // SPEED_CONTROL_AVAILABLE
+		}
+#endif
+#ifdef BOT_FS_AVAILABLE
 		botfs_write(&speedlog_file, slog->data);
+#endif // BOT_FS_AVAILABLE
+		const uint8_t sreg = SREG;
+		__builtin_avr_cli();
+		uint8_t diff = (uint8_t) (slog_i[0] - max);
+		if (diff) {
+			memmove(&slog->data[0][0], &slog->data[0][max], sizeof(slog_data_t) * diff);
+		}
+		slog_i[0] = diff;
+
+		diff = (uint8_t) (slog_i[1] - max);
+		if (diff) {
+			memmove(&slog->data[1][0], &slog->data[1][max], sizeof(slog_data_t) * diff);
+		}
+		slog_i[1] = diff;
+		SREG = sreg;
+	} else {
+		SREG = sreg;
 	}
 #endif // SPEED_LOG_AVAILABLE
 
@@ -284,7 +335,7 @@ void bot_sens(void) {
 
 		(*sensor_update_distance)(&sensDistL, &sensDistLToggle, sensDistDataL, volt);
 
-		if (servo_get(SERVO1) == SERVO_OFF) {
+		if (servo_get_active(SERVO1) == 0) {
 			/* Dist-Sensor rechts */
 			while (adc_get_active_channel() < 2) {}
 
@@ -376,11 +427,12 @@ void bot_encoder_isr(void) {
 				timeCorrectL = 0;
 			}
 			/* pro TIMER_STEP wird maximal ein Encoder ausgewertet, da max alle 6 ms (Fullspeed) eine Flanke kommen kann */
-			return; // hackhack
+			return;
 #else // ! SPEED_CONTROL_AVAILABLE
 #ifdef SPEED_LOG_AVAILABLE
 			uint8_t index = slog_i[0];
 			slog->data[0][index].pwm = motor_left;
+			slog->data[0][index].enc = enc_tmp & 1;
 			slog->data[0][index].time = tickCount.u32;
 			index++;
 			slog_i[0] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
@@ -419,6 +471,7 @@ void bot_encoder_isr(void) {
 #ifdef SPEED_LOG_AVAILABLE
 			uint8_t index = slog_i[1];
 			slog->data[1][index].pwm = motor_right;
+			slog->data[1][index].enc = enc_tmp & 1;
 			slog->data[1][index].time = tickCount.u32;
 			index++;
 			slog_i[1] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z

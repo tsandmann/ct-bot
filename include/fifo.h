@@ -30,7 +30,9 @@
 #define _FIFO_H_
 
 //#define DEBUG_FIFO		/**< Schalter fuer Debug-Ausgaben */
+#define FIFO_STATS_ENABLED	/**< Speichert, wie viel Daten seit Initialisierung ins Fifo geschrieben wurden */
 
+#include "ct-Bot.h"
 #include "os_thread.h"
 
 #ifndef LOG_AVAILABLE
@@ -51,6 +53,9 @@ typedef struct {
 	uint8_t read2end;			/**< # Zeichen bis zum Ueberlauf Lesezeiger */
 	uint8_t write2end;			/**< # Zeichen bis zum Ueberlauf Schreibzeiger */
 	uint8_t volatile overflow;	/**< 1, falls die Fifo mal uebergelaufen ist */
+#ifdef FIFO_STATS_ENABLED
+	uint32_t written;			/**< Anzahl an Bytes, die ins Fifo geschrieben wurden seit Initialisierung */
+#endif
 #ifdef OS_AVAILABLE
 	os_signal_t signal;			/**< Signal das den Fifo-Status meldet */
 #else
@@ -118,6 +123,9 @@ static inline void _inline_fifo_put(fifo_t * f, const uint8_t data, uint8_t isr)
 
 	f->write2end = write2end;
 	f->pwrite = pwrite;
+#ifdef FIFO_STATS_ENABLED
+	++f->written;
+#endif
 	if (isr) {
 		f->count++;
 #ifdef OS_AVAILABLE

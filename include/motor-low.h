@@ -51,7 +51,7 @@ void motor_update(uint8_t dev);
 /**
  * Stellt die Servos
  * \param servo Nummer des Servos (1 oder 2)
- * \param pos Zielwert oder 0 fuer Servo aus
+ * \param pos Zielwert [1; 255] oder 0 fuer Servo aus
  */
 void servo_low(uint8_t servo, uint8_t pos);
 

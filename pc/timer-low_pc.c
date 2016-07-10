@@ -46,7 +46,11 @@ void system_time_isr(void) {
 	static int last_simultime = -11; // kommt vom Sim zuerst als -1, warum auch immer!?!
 	int tmp = simultime - last_simultime;
 	if (tmp < 0) tmp += 10000; // der Sim setzt simultime alle 10s zurueck auf 0
+#ifdef ARM_LINUX_BOARD
+	tickCount = tickCount + (uint_fast32_t) MS_TO_TICKS(tmp);
+#else
 	tickCount += MS_TO_TICKS((float) tmp);
+#endif
 	last_simultime = simultime;
 }
 

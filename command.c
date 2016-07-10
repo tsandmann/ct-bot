@@ -62,6 +62,7 @@ EEPROM uint8_t bot_address = CMD_BROADCAST; /**< Kommunikations-Adresse des Bots
 //#define CRC_CHECK				/**< Soll die Kommunikation per CRC-Checksumme abgesichert werden? */
 #define CHECK_CMD_ADDRESS		/**< soll die Zieladresse der Kommandos ueberprueft werden? */
 #define COMMAND_TIMEOUT 15		/**< Anzahl an ms, die maximal auf fehlende Daten gewartet wird */
+#define BOT_2_RPI_TIMEOUT 20000UL /**< Timeout fuer ARM-Boards */
 
 /* CRC aktivieren fuer ARM-Boards, Adress-Check deaktivieren */
 #ifdef ARM_LINUX_BOARD
@@ -76,7 +77,7 @@ EEPROM uint8_t bot_address = CMD_BROADCAST; /**< Kommunikations-Adresse des Bots
 #define CRC_CHECK
 #endif
 #undef CHECK_CMD_ADDRESS
-#endif
+#endif // BOT_2_RPI_AVAILABLE
 
 #define RCVBUFSIZE (sizeof(command_t) * 2)	/**< Groesse des Empfangspuffers */
 
@@ -990,7 +991,7 @@ int8_t command_evaluate(void) {
 			const uint32_t tick = (uint32_t) low.u16 | ((uint32_t) high.u16 << 16);
 			LOG_DEBUG("time_diff=%lu us", (uint32_t) (tick - last) * 176);
 			const uint32_t diff = (tick - last) * 176;
-			if (diff > 20000UL && last != 0) {
+			if (diff > BOT_2_RPI_TIMEOUT && last != 0) {
 				LOG_ERROR(" diff=%lu", diff);
 				LOG_DEBUG(" tick=%lu\tlast=%lu", tick, last);
 				LOG_DEBUG(" received_command.data_l=%d\treceived_command.data_r=%d", received_command.data_l, received_command.data_r);
@@ -1013,6 +1014,99 @@ int8_t command_evaluate(void) {
 		}
 #endif // PC
 
+		case CMD_AKT_LCD: {
+#if defined DISPLAY_MCU_AVAILABLE || defined ARM_LINUX_BOARD
+			void (* display_func)(void) = NULL;
+#ifdef BOT_2_RPI_AVAILABLE
+			display_func = linux_display;
+#elif defined ARM_LINUX_BOARD
+			display_func = atmega_display;
+#endif
+			switch (received_command.request.subcommand) {
+			case SUB_LCD_CLEAR:
+				if (screen_functions[display_screen] == display_func) {
+					display_clear();
+					LOG_DEBUG("command_evaluate(): SUB_LCD_CLEAR: display_clear() from ATmega");
+				}
+				break;
+			case SUB_LCD_CURSOR:
+				if (screen_functions[display_screen] == display_func) {
+					display_cursor((uint8_t) (received_command.data_r + 1), (uint8_t) (received_command.data_l + 1));
+					LOG_DEBUG("command_evaluate(): SUB_LCD_CURSOR: display_cursor(%d, %d) from ATmega", received_command.data_r + 1, received_command.data_l + 1);
+				}
+				break;
+			case SUB_LCD_DATA: {
+				if (screen_functions[display_screen] == display_func) {
+					display_cursor((uint8_t) (received_command.data_r + 1), (uint8_t) (received_command.data_l + 1));
+					LOG_DEBUG("command_evaluate(): SUB_LCD_DATA: display_cursor(%d, %d) from ATmega", received_command.data_r + 1, received_command.data_l + 1);
+					LOG_DEBUG(" payload=%u", received_command.payload);
+				}
+#ifdef MCU
+				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
+#endif
+#ifdef ARM_LINUX_BOARD
+#ifdef DEBUG_COMMAND
+				char debug_buf[21];
+				memset(debug_buf, 0, sizeof(debug_buf));
+				struct timeval start, now;
+				gettimeofday(&start, NULL);
+#endif // DEBUG_COMMAND
+#endif // ARM_LINUX_BOARD
+				uint8_t i;
+				for (i = 0; i < received_command.payload; ++i) {
+#ifdef MCU
+					while (uart_data_available() < 1 && (uint16_t)(TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)) {}
+#endif
+					uint8_t n;
+					char buffer;
+					if ((n = (uint8_t) (cmd_functions.read(&buffer, 1))) != 1) {
+						LOG_ERROR("command_evaluate(): SUB_LCD_DATA: error while receiving display data, n=%d i=%u", n, i);
+#ifdef MCU
+						LOG_ERROR(" uart_data_available()=%d", uart_data_available());
+#endif
+						i = 0;
+						break;
+					}
+					if (i < 20 && screen_functions[display_screen] == display_func) {
+						display_data(buffer);
+#ifdef DEBUG_COMMAND
+						debug_buf[i] = buffer;
+#endif
+					}
+				}
+#ifdef DEBUG_COMMAND
+				gettimeofday(&now, NULL);
+				const uint64_t t = (now.tv_sec - start.tv_sec) * 1000000UL + now.tv_usec - start.tv_usec;
+				LOG_DEBUG("command_evaluate(): SUB_LCD_DATA: receive took %llu us", t);
+				if (i) {
+					LOG_DEBUG("command_evaluate(): SUB_LCD_DATA: display_data() %u bytes from ATmega", i);
+					LOG_DEBUG(" \"%s\"", debug_buf);
+				}
+#endif // DEBUG_COMMAND
+				break;
+			}
+			} // switch subcommand
+#endif // DISPLAY_MCU_AVAILABLE || ARM_LINUX_BOARD
+			break;
+		}
+
+#ifdef ARM_LINUX_BOARD
+		case CMD_LOG: {
+			char log_buffer[received_command.payload + 1];
+			log_buffer[received_command.payload] = 0;
+			uint8_t i, n;
+			for (i = 0; i < received_command.payload; ++i) {
+				if ((n = cmd_functions.read(&log_buffer[i], 1)) != 1) {
+					LOG_ERROR("command_evaluate(): CMD_LOG: error while receiving log data, n=%d i=%u", n, i);
+					LOG_ERROR(" uart_data_available()=%d", uart_data_available());
+					break;
+				}
+			}
+			LOG_RAW("MCU - %s", log_buffer);
+			break;
+		}
+#endif // ARM_LINUX_BOARD
+
 #ifdef BOT_2_RPI_AVAILABLE
 		case CMD_AKT_MOT:
 			motor_set(received_command.data_l, received_command.data_r);
@@ -1021,41 +1115,12 @@ int8_t command_evaluate(void) {
 			servo_set(SERVO1, (uint8_t) received_command.data_l);
 			servo_set(SERVO2, (uint8_t) received_command.data_r);
 			break;
-		case CMD_AKT_LED:
-			LED_set((uint8_t) received_command.data_l);
-			break;
-		case CMD_AKT_LCD:
-			switch (received_command.request.subcommand) {
-			case SUB_LCD_CLEAR:
-				if (screen_functions[display_screen] == linux_display) {
-					display_clear();
-				}
+		case CMD_AKT_LED: {
+				uint8_t led = LED_get() & LED_TUERKIS;
+				led = (uint8_t) (led | (received_command.data_l & ~LED_TUERKIS)); // LED_TUERKIS wird fuer Fehleranzeige auf ATmega-Seite verwendet
+				LED_set(led);
 				break;
-			case SUB_LCD_CURSOR:
-				if (screen_functions[display_screen] == linux_display) {
-					display_cursor((uint8_t) (received_command.data_r + 1), (uint8_t) (received_command.data_l + 1));
-				}
-				break;
-			case SUB_LCD_DATA: {
-				if (screen_functions[display_screen] == linux_display) {
-					display_cursor((uint8_t) (received_command.data_r + 1), (uint8_t) (received_command.data_l + 1));
-				}
-				char buffer;
-				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
-				uint8_t i;
-				for (i = 0; i < received_command.payload && i < 20; ++i) {
-#ifdef MCU
-					while (uart_data_available() < 1 && (uint16_t)(TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
-#endif
-					int8_t n = (int8_t) cmd_functions.read(&buffer, 1);
-					if (n == 1 && screen_functions[display_screen] == linux_display) {
-						display_data(buffer);
-					}
-				}
-				break;
-			}
-			}
-			break;
+		}
 		case CMD_SETTINGS:
 			switch (received_command.request.subcommand) {
 			case SUB_SETTINGS_DISTSENS:
@@ -1074,7 +1139,7 @@ int8_t command_evaluate(void) {
 			break;
 		}
 #ifdef CHECK_CMD_ADDRESS
-	} else {
+	} else { // woher ist das Kommando?
 #ifdef BOT_2_BOT_AVAILABLE
 		if (received_command.request.command == CMD_BOT_2_BOT) {
 			/* kein loop-back */

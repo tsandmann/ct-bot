@@ -159,14 +159,7 @@ static inline void bot_reset(void) {
  * \param diff Wert, um den die Servo-Position veraendert wird
  */
 static void __attribute__ ((unused)) rc5_change_servo2(int16_t diff) {
-	static uint8_t old_pos;
-	if (old_pos == 0) {
-		/* Initialisierung auf Mitte */
-		if (bot_servo(NULL, SERVO2, CAM_CENTER)) {
-			old_pos = CAM_CENTER;
-		}
-		return;
-	}
+	static uint8_t old_pos = CAM_CENTER / 10 * 10;
 
 	int16_t new_pos = old_pos + diff;
 	/* Begrenzungen */
@@ -352,11 +345,11 @@ void rc5_control(void) {
 	uint16_t rc5 = ir_read(&rc5_ir_data); // empfangenes RC5-Kommando
 
 	if (rc5 != 0) {
-		/* Toggle kommt nicht im Simulator, immer gewechseltes Toggle-Bit sicherstellen */
 #ifdef PC
+		/* Toggle kommt nicht im Simulator, immer gewechseltes Toggle-Bit sicherstellen */
 		RC5_Last_Toggle = (uint16_t) (!(rc5 & RC5_TOGGLE));
 #endif
-		/* Bei Aenderung des Toggle-Bits, entspricht neuem Tastendruck, gehts nur weiter */
+		/* Bei Aenderung des Toggle-Bits, entspricht neuem Tastendruck, gehts weiter */
 		if ((rc5 & RC5_TOGGLE) != RC5_Last_Toggle) { // Nur Toggle-Bit abfragen, bei Ungleichheit weiter
 			RC5_Last_Toggle = rc5 & RC5_TOGGLE; // Toggle-Bit neu belegen
 			RC5_Code = rc5 & RC5_MASK; // alle uninteressanten Bits ausblenden

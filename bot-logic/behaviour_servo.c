@@ -41,19 +41,19 @@
 #define LOG_DEBUG(...) {}
 #endif
 
-static uint8_t servo_active = 0; /**< 0, wenn kein Servo aktiv, sonst ID des gerade aktiven Servos */
+static uint8_t servo_id = 0; /**< 0, wenn kein Servo aktiv, sonst ID des gerade aktiven Servos */
 
 /**
  * Dieses Verhalten fuehrt ein Servo-Kommando aus und schaltet danach den Servo wieder ab
  * \param *data der Verhaltensdatensatz
  */
 void bot_servo_behaviour(Behaviour_t * data) {
-	BLOCK_BEHAVIOUR(data, 1000); // 1 s warten
+	BLOCK_BEHAVIOUR(data, 1500); // 1.5 s warten
 
 	return_from_behaviour(data); // Verhalten aus
 	LOG_DEBUG("bot_servo_behaviour(): servo_set(%u, %u)", servo_active, SERVO_OFF);
-	servo_set(servo_active, SERVO_OFF); // Servo aus
-	servo_active = 0;
+	servo_set(servo_id, SERVO_OFF); // Servo aus
+	servo_id = 0;
 }
 
 /**
@@ -72,12 +72,12 @@ Behaviour_t * bot_servo(Behaviour_t * caller, uint8_t servo, uint8_t pos) {
 		return NULL; // Klappe ist bereits geschlossen
 	}
 	Behaviour_t * data = NULL;
-	if (! servo_active && (data = switch_to_behaviour(caller, bot_servo_behaviour, BEHAVIOUR_NOOVERRIDE))) { // Warte-Verhalten an
-		servo_active = servo; // Servo ID speichern
+	if (! servo_get_active(servo) && (data = switch_to_behaviour(caller, bot_servo_behaviour, BEHAVIOUR_NOOVERRIDE))) { // Warte-Verhalten an
 		LOG_DEBUG("bot_servo(): servo_set(%u, %u)", servo, pos);
 		servo_set(servo, pos); // Servo-PWM einstellen
+		servo_id = servo;
 	} else {
-		LOG_ERROR("bot_servo(%u, %u): Servo %u noch aktiv, Abbruch", servo, pos, servo_active);
+		LOG_ERROR("bot_servo(%u, %u): Servo %u noch aktiv, Abbruch", servo, pos, servo_id);
 	}
 	return data;
 }

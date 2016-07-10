@@ -49,8 +49,8 @@
 
 #define SPEED_UPDATE_TIME	500U	/**< Zeitspanne zwischen zwei Geschwindigkeits-Berechnungen [ms] */
 
-int16_t sensLDRL = 0;		/**< Lichtsensor links */
-int16_t sensLDRR = 0;		/**< Lichtsensor rechts */
+int16_t sensLDRL = 0;		/**< Helligkeit Lichtsensor links */
+int16_t sensLDRR = 0;		/**< Helligkeit Lichtsensor rechts */
 
 int16_t sensDistL = 1023;	/**< Distanz linker IR-Sensor in [mm], wenn korrekt umgerechnet wird */
 int16_t sensDistR = 1023;	/**< Distanz rechter IR-Sensor in [mm], wenn korrekt umgerechnet wird */
@@ -686,7 +686,7 @@ void odometric_display(void) {
 #ifdef MEASURE_POSITION_ERRORS_AVAILABLE
 	display_printf("v_c: %3d err: %5d", v_center, pos_error_radius);
 #else
-	display_printf("v_c: %3d", v_center);
+	display_printf("v_c: %3d s:%3u | %3u", v_center, servo_get_pos(SERVO1), servo_get_pos(SERVO2));
 #endif // MEASURE_POSITION_ERRORS_AVAILABLE
 #endif // BPS_AVAILABLE
 }

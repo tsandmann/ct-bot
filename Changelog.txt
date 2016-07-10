@@ -1,5 +1,17 @@
 CHANGELOG fuer c't-Bot
 ======================
+2016-07-09: Release 23 (v1.23)
+
+2016-07-03: Unterstuetzung der MSYS2 Toolchain unter Windows, siehe https://www.heise.de/ct/projekte/machmit/ctbot/wiki/InstallationsanleitungR23 zur Einrichtung
+
+2016-05-28: Verhalten bot_goto_pos verbessert, bot_drive_square aktualisiert fuer die Benutzung von bot_goto_pos
+
+2016-05-15: Verwendung von Speedlog ohne MMC mit UART-Ausgabe. Konfiguration: SPEED_LOG_AVAILABLE an, LOG_UART_AVAILABLE an, USE_MINILOG an, BOT_2_SIM_AVAILABLE aus, MMC_AVAILABLE aus
+
+2016-05-08: Zusaetzliche Display-/Log-Funktionen: Uebertragung der MCU-Displayausgaben an RPi, Logging von MCU zu RPi via LOG_RPI_AVAILABLE, Auslastungsanzeige fuer CPU und UART verbessert
+
+2016-04-17: Abfragemoeglichkeit der Servoposition mittels servo_get_pos(); verzoegerte Ausfuehrung von Funktionen mittels os_delay_func() (nur fuer MCU)
+
 2016-03-22: Schalter in ct-Bot.h gemaess Doku sortiert und Kategorien ergaenzt (Nightwalker-01)
 
 2016-03-20: Bugfix fuer Fernbedienung Technisat_TTS35AI nach Hinweis von anonybot. Weitere Fernbedienungscodes etwas aufgeraeumt.
@@ -17,6 +29,8 @@ CHANGELOG fuer c't-Bot
 2016-01-23: Steuerung Servo 2 per VOL +/- Taste auf der Fernbedienung; Bot-Verhalten entsprechend der Web-Dokumentation sortiert (Nightwalker-01)
 
 2016-01-10: Bugfix fuer Endianness-Inkompatibilitaet bestimmer Compiler unter Linux 
+
+2015-12-12: Motor- und Servoansteuerung ueberarbeitet
 
 2015-11-21: Bugfix Maus- / ENA-Code
 

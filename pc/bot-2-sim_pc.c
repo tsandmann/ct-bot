@@ -41,7 +41,7 @@
 #include "tcp.h"
 #include "display.h"
 #include "sensor.h"
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 #include "motor.h"
 #include "bot-2-bot.h"
 #include "bot-2-atmega.h"

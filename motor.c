@@ -44,7 +44,8 @@
 int16_t speed_l = 0; /**< Sollgeschwindigkeit linker Motor */
 int16_t speed_r = 0; /**< Sollgeschwindigkeit rechter Motor */
 
-uint8_t servo_pos[2] = {SERVO_OFF, SERVO_OFF}; /**< Sollposition Servos */
+uint8_t servo_pos[2] = {DOOR_OPEN, CAM_CENTER}; /**< Positionen der Servos */
+uint8_t servo_active[2] = {0, 0}; /**< Aktivitaet der Servos */
 
 #ifdef SPEED_CONTROL_AVAILABLE
 #ifdef ADJUST_PID_PARAMS
@@ -129,7 +130,8 @@ void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_
 				slog->data[dev][index].err = encoderTargetRate[dev]; // Regeldifferenz
 				slog->data[dev][index].pwm = *actVar; // Stellgroesse
 				slog->data[dev][index].targetRate = encoderTargetRate[dev]; // Fuehrungsgroesse
-				slog->data[dev][index++].time = tickCount.u32; // Timestamp
+				slog->data[dev][index].time = tickCount.u32; // Timestamp
+				slog->data[dev][index++].enc = enc; // Encoder Pegel
 				slog_i[dev] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
 			}
 #endif // SPEED_LOG_AVAILABLE
@@ -206,7 +208,8 @@ void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_
 				slog->data[dev][index].err = err; // Regeldifferenz
 				slog->data[dev][index].pwm = *actVar; // Stellgroesse
 				slog->data[dev][index].targetRate = encoderTargetRate[dev]; // Fuehrungsgroesse
-				slog->data[dev][index++].time = tickCount.u32; // Timestamp
+				slog->data[dev][index].time = tickCount.u32; // Timestamp
+				slog->data[dev][index++].enc = enc; // Encoder Pegel
 				slog_i[dev] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
 			}
 #endif // SPEED_LOG_AVAILABLE
@@ -337,14 +340,7 @@ void motor_set(int16_t left, int16_t right) {
 #ifdef SPEED_CONTROL_AVAILABLE
 	/* Bei aktivierter Motorregelung neue Fuehrungsgroesse links setzen */
 	if (speed_l != left * speedSignLeft && (start_signal[0] == 0 || left == 0 || sign16(speed_l) != speedSignLeft)) {
-#ifdef MCU
-		uint8_t sreg = SREG;
-		__builtin_avr_cli();
-#endif // MCU
-		int16_t motor_l = motor_left;
-#ifdef MCU
-		SREG = sreg;
-#endif
+		int16_t motor_l = 0;
 		if (encoderTargetRate[0] == 0) {
 			start_signal[0] = PID_START_DELAY;
 			if (speedSignLeft == speedSignRight) {
@@ -371,40 +367,23 @@ void motor_set(int16_t left, int16_t right) {
 		} else {
 			speed_l = 0;
 		}
-		/* PWM-Wert setzen */
-#ifdef MCU
-		sreg = SREG;
-		__builtin_avr_cli();
-#endif // MCU
-		motor_left = motor_l;
-#ifdef MCU
-		SREG = sreg;
-#endif
-		motor_update(0);
 
-#ifdef SPEED_LOG_AVAILABLE
-		/* Daten loggen */
-		register uint8_t index = slog_i[0];
-		if (index < 24) {
-			slog->data[0][index].encRate = 1; // Regelgroesse
-			slog->data[0][index].err = 0; // Regeldifferenz
-			slog->data[0][index].pwm = 0; // Stellgroesse
-			slog->data[0][index].targetRate = encoderTargetRate[0]; // Fuehrungsgroesse
-			slog->data[0][index++].time = tickCount.u32; // Timestamp
-			slog_i[0] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
+		if (motor_l) {
+			/* PWM-Wert setzen */
+#ifdef MCU
+			uint8_t sreg = SREG;
+			__builtin_avr_cli();
+#endif // MCU
+			motor_left = motor_l;
+#ifdef MCU
+			SREG = sreg;
+#endif
+			motor_update(0);
 		}
-#endif // SPEED_LOG_AVAILABLE
 	}
 	/* Neue Fuehrungsgroesse rechts setzen */
 	if (speed_r != right * speedSignRight && (start_signal[1] == 0 || right == 0 || sign16(speed_r) != speedSignRight)) {
-#ifdef MCU
-		uint8_t sreg = SREG;
-		__builtin_avr_cli();
-#endif // MCU
-		int16_t motor_r = motor_left;
-#ifdef MCU
-		SREG = sreg;
-#endif
+		int16_t motor_r = 0;
 		if (encoderTargetRate[1] == 0) {
 			start_signal[1] = PID_START_DELAY;
 			if (speedSignLeft == speedSignRight) {
@@ -431,29 +410,18 @@ void motor_set(int16_t left, int16_t right) {
 		} else {
 			speed_r = 0;
 		}
-		/* PWM-Wert setzen */
+		if (motor_r) {
+			/* PWM-Wert setzen */
 #ifdef MCU
-		sreg = SREG;
-		__builtin_avr_cli();
+			uint8_t sreg = SREG;
+			__builtin_avr_cli();
 #endif // MCU
-		motor_right = motor_r;
+			motor_right = motor_r;
 #ifdef MCU
-		SREG = sreg;
+			SREG = sreg;
 #endif
-		motor_update(1);
-
-#ifdef SPEED_LOG_AVAILABLE
-		/* Daten loggen */
-		register uint8_t index = slog_i[1];
-		if (index < 24) {
-			slog->data[1][index].encRate = 1; // Regelgroesse
-			slog->data[1][index].err = 0; // Regeldifferenz
-			slog->data[1][index].pwm = 0; // Stellgroesse
-			slog->data[1][index].targetRate = encoderTargetRate[1]; // Fuehrungsgroesse
-			slog->data[1][index++].time = tickCount.u32; // Timestamp
-			slog_i[1] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
+			motor_update(1);
 		}
-#endif // SPEED_LOG_AVAILABLE
 	}
 
 	/* PWM-Lookup im EEPROM updaten */
@@ -554,6 +522,7 @@ void servo_set(uint8_t servo, uint8_t pos) {
 		} else if (pos > DOOR_OPEN) {
 			pos = DOOR_OPEN;
 		}
+		servo_pos[0] = pos;
 	}
 	if ((servo == SERVO2) && (pos != SERVO_OFF)) {
 		if (pos < CAM_LEFT) {
@@ -561,9 +530,10 @@ void servo_set(uint8_t servo, uint8_t pos) {
 		} else if (pos > CAM_RIGHT) {
 			pos = CAM_RIGHT;
 		}
+		servo_pos[1] = pos;
 	}
 
-	servo_pos[servo - 1] = pos;
+	servo_active[servo - 1] = pos != SERVO_OFF;
 
 	servo_low(servo, pos);
 }
