@@ -33,12 +33,12 @@
 //#define DEBUG_TURN // Schalter fuer Debug-Ausgaben
 
 #ifdef MCU
-#define TURN_ERR		{30, 110, 220, 380, 550, 800} 	/*!< Fehler bei Drehungen im EEPROM */
+#define TURN_ERR		{30, 110, 220, 380, 550, 800} 	/**< Fehler bei Drehungen im EEPROM */
 #else
-#define TURN_ERR		{0, 0, 0, 0, 0, 0} 				/*!< Fehler bei Drehungen im EEPROM */
+#define TURN_ERR		{0, 0, 0, 0, 0, 0} 				/**< Fehler bei Drehungen im EEPROM */
 #endif // MCU
 
-uint16_t EEPROM turn_err[6] = TURN_ERR;	/*!< Fehler bei Drehungen (im EEPROM gespeichert) */
+uint16_t EEPROM turn_err[6] = TURN_ERR;	/**< Fehler bei Drehungen (im EEPROM gespeichert) */
 
 #ifdef BEHAVIOUR_TURN_AVAILABLE
 #include <stdlib.h>
@@ -51,15 +51,16 @@ uint16_t EEPROM turn_err[6] = TURN_ERR;	/*!< Fehler bei Drehungen (im EEPROM ges
 #endif
 
 /* Parameter fuer das bot_turn_behaviour() */
-static int16_t target = 0;				/*!< Zielwinkel der Drehung * 10 + 360 Grad */
-static int16_t old_heading = 0;			/*!< letztes heading*10 */
-static int8_t turn_direction = 0;		/*!< Richtung der Drehung, 0: pos. math. Drehsinn, -1: Uhrzeigersinn */
-static int16_t d_max_speed = 0;			/*!< Anfangsgeschwindigkeit - Endgeschwindigkeit*/
-static int16_t min_speed = 0;			/*!< Endgeschwindigkeit */
-static uint8_t state = 0;				/*!< Status des Verhaltens */
+static int16_t target = 0;				/**< Zielwinkel der Drehung * 10 + 360 Grad */
+static int16_t old_heading = 0;			/**< letztes heading*10 */
+static int8_t turn_direction = 0;		/**< Richtung der Drehung, 0: pos. math. Drehsinn, -1: Uhrzeigersinn */
+static int16_t d_max_speed = 0;			/**< Anfangsgeschwindigkeit - Endgeschwindigkeit*/
+static int16_t min_speed = 0;			/**< Endgeschwindigkeit */
+static uint8_t state = 0;				/**< Status des Verhaltens */
+static uint8_t wait_cnt = 0;			/**< Zaehler fuer Wartezyklen */
 #ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
-static float target_fl = 0.0f;			/*!< Zielwinkel * 10 als float */
-float turn_last_err = 0.0f;				/*!< letzter Drehfehler in Grad */
+static float target_fl = 0.0f;			/**< Zielwinkel * 10 als float */
+float turn_last_err = 0.0f;				/**< letzter Drehfehler in Grad */
 #endif // BEHAVIOUR_TURN_TEST_AVAILABLE
 
 #define ERR_SPEED_1		60
@@ -68,9 +69,9 @@ float turn_last_err = 0.0f;				/*!< letzter Drehfehler in Grad */
 #define ERR_SPEED_4		250
 #define ERR_SPEED_5		280
 
-#define STATE_RUNNNING		0	/*!< Drehen aktiv */
-#define STATE_WAIT_FOR_STOP	1	/*!< Warten bis Bot stillsteht */
-#define STATE_END			99	/*!< Verhalten fertig */
+#define STATE_RUNNNING		0	/**< Drehen aktiv */
+#define STATE_WAIT_FOR_STOP	1	/**< Warten bis Bot stillsteht */
+#define STATE_END			99	/**< Verhalten fertig */
 
 /**
  * Das Verhalten laesst den Bot eine Punktdrehung durchfuehren.
@@ -148,14 +149,18 @@ void bot_turn_behaviour(Behaviour_t * data) {
 				speedWishLeft  = BOT_SPEED_STOP;
 				speedWishRight = BOT_SPEED_STOP;
 				state = STATE_WAIT_FOR_STOP;
-				LOG_DEBUG("last_speed=%u", last_speed);
+				LOG_DEBUG("diff=%d, err=%d, last_speed=%u", diff, err, last_speed);
 			}
 			break;
 		}
 
 		case STATE_WAIT_FOR_STOP: {
 			if (v_enc_left == 0 && v_enc_right == 0) {
-				state = STATE_END;
+				if (wait_cnt-- == 0) {
+					state = STATE_END;
+				}
+			} else {
+				wait_cnt = 2;
 			}
 			break;
 		}
@@ -207,6 +212,7 @@ Behaviour_t * bot_turn_speed(Behaviour_t * caller, int16_t degrees, int16_t mins
  	d_max_speed -= min_speed;
 
  	LOG_DEBUG("degrees=%d, min_speed=%d, d_max_speed=%d", degrees, min_speed, d_max_speed);
+ 	LOG_DEBUG("heading@start=%d", heading_int);
 
 	/* Zielwinkel berechnen */
 #ifdef BEHAVIOUR_TURN_TEST_AVAILABLE
@@ -219,8 +225,13 @@ Behaviour_t * bot_turn_speed(Behaviour_t * caller, int16_t degrees, int16_t mins
  	turn_direction = (int8_t) (degrees < 0 ? -1 : 0);
 
 	/* Verhalten aktiv schalten */
- 	state = STATE_RUNNNING;
-	return switch_to_behaviour(caller, bot_turn_behaviour, BEHAVIOUR_OVERRIDE);
+ 	if (degrees) {
+ 		state = STATE_RUNNNING;
+ 		wait_cnt = 2;
+ 		return switch_to_behaviour(caller, bot_turn_behaviour, BEHAVIOUR_OVERRIDE);
+ 	} else {
+ 		return NULL;
+ 	}
 }
 
 /**

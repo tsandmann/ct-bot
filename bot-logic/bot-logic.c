@@ -558,16 +558,18 @@ Behaviour_t * switch_to_behaviour(Behaviour_t * from, void (* to)(Behaviour_t *)
 	tmp.byte = (uint8_t) ((mode & 2) >> 1);
 	beh_mode.background = tmp.bit;
 
-	if (job->caller) { // Ist das auzurufende Verhalten noch beschaeftigt?
+	if (job->caller || job->active || job->subResult == BEHAVIOUR_SUBRUNNING) { // Ist das auzurufende Verhalten noch beschaeftigt?
 		if (beh_mode.override == BEHAVIOUR_NOOVERRIDE) { // nicht ueberschreiben, sofortige Rueckkehr
 			if (from) {
 				from->subResult = BEHAVIOUR_SUBFAIL;
 			}
 			return NULL;
 		}
-		// Wir wollen also ueberschreiben, aber nett zum alten Aufrufer sein und ihn darueber benachrichtigen
-		job->caller->active = BEHAVIOUR_ACTIVE;	// alten Aufrufer reaktivieren
-		job->caller->subResult = BEHAVIOUR_SUBFAIL;	// er bekam aber nicht das gewuenschte Resultat
+		if (job->caller) {
+			// Wir wollenalso ueberschreiben, aber nett zum alten Aufrufer sein und ihn darueber benachrichtigen
+			job->caller->active = BEHAVIOUR_ACTIVE;	// alten Aufrufer reaktivieren
+			job->caller->subResult = BEHAVIOUR_SUBFAIL;	// er bekam aber nicht das gewuenschte Resultat
+		}
 	}
 
 	if (from) {
@@ -643,10 +645,6 @@ void deactivateAllBehaviours(void) {
  */
 void bot_behave(void) {
 	Behaviour_t * job; // Zeiger auf ein Verhalten
-
-#ifdef RC5_AVAILABLE
-	rc5_control(); // Abfrage der IR-Fernbedienung
-#endif
 
 #ifdef BEHAVIOUR_FACTOR_WISH_AVAILABLE
 	float factorLeft = 1.0f; // Puffer fuer Modifikatoren

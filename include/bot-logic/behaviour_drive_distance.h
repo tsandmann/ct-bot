@@ -65,11 +65,11 @@ Behaviour_t * bot_drive_distance(Behaviour_t * caller, int8_t curve, int16_t spe
 /* wenn goto_pos() vorhanden ist und USE_GOTO_POS_DIST an, leiten wir alle drive_distance()-Aufurfe dorthin um */
 #undef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 #include "math_utils.h"
-Behaviour_t * bot_goto_dist(Behaviour_t *, int16_t, int8_t);
+static Behaviour_t * bot_goto_dist(Behaviour_t *, int16_t, int8_t);
 
 static inline Behaviour_t * bot_drive_distance(Behaviour_t * caller, int8_t curve, const int16_t speed, const int16_t cm) {
 	(void) curve;
-	return bot_goto_dist(caller, cm * 10, sign16(speed));
+	return bot_goto_dist(caller, (int16_t) (cm * 10), sign16(speed));
 }
 #endif // USE_GOTO_POS_DIST
 #endif // BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE

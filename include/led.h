@@ -17,64 +17,72 @@
  *
  */
 
-/*!
- * @file 	led.h
- * @brief 	Routinen zur LED-Steuerung
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.2005
+/**
+ * \file 	led.h
+ * \brief 	Routinen zur LED-Steuerung
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	26.12.2005
  */
 
 #ifndef LED_H_
 #define LED_H_
 
-#define LED_RECHTS	(1<<0)		/*!< LED (blau) in Fahrichtung rechts */
-#define LED_LINKS	(1<<1)		/*!< LED (blau) in Fahrichtung links */
-#define LED_ROT     (1<<2)		/*!< LED rot */
-#define LED_ORANGE  (1<<3)		/*!< LED orange */
-#define LED_GELB    (1<<4)		/*!< LED gelb */
-#define LED_GRUEN   (1<<5)		/*!< LED gruen */
-#define LED_TUERKIS (1<<6)		/*!< LED tuerkis (blau) */
-#define LED_WEISS   (1<<7)		/*!< LED weiss */
+#define LED_RECHTS	(1<<0)		/**< LED (blau) in Fahrichtung rechts */
+#define LED_LINKS	(1<<1)		/**< LED (blau) in Fahrichtung links */
+#define LED_ROT     (1<<2)		/**< LED rot */
+#define LED_ORANGE  (1<<3)		/**< LED orange */
+#define LED_GELB    (1<<4)		/**< LED gelb */
+#define LED_GRUEN   (1<<5)		/**< LED gruen */
+#define LED_TUERKIS (1<<6)		/**< LED tuerkis (blau) */
+#define LED_WEISS   (1<<7)		/**< LED weiss */
 
-#define LED_ALL    0xFF		/*!< LED Alle */
+#define LED_ALL    0xFF		/**< LED Alle */
 
 #ifndef __ASSEMBLER__
-/*! Datenfeld fuer den Zugriff auf die LEDs */
+/** Datenfeld fuer den Zugriff auf die LEDs */
 typedef struct {
-	unsigned rechts:1;	/*!< LED in Fahrichtung rechts */
-	unsigned links:1;	/*!< LED in Fahrichtung links */
-	unsigned rot:1;		/*!< LED Rot */
-	unsigned orange:1;	/*!< LED Orange */
-	unsigned gelb:1;	/*!< LED Gelb */
-	unsigned gruen:1;	/*!< LED Gruen */
-	unsigned tuerkis:1;	/*!< LED Tuerkis */
-	unsigned weiss:1;	/*!< LED Weiss */
+	unsigned rechts:1;	/**< LED in Fahrichtung rechts */
+	unsigned links:1;	/**< LED in Fahrichtung links */
+	unsigned rot:1;		/**< LED Rot */
+	unsigned orange:1;	/**< LED Orange */
+	unsigned gelb:1;	/**< LED Gelb */
+	unsigned gruen:1;	/**< LED Gruen */
+	unsigned tuerkis:1;	/**< LED Tuerkis */
+	unsigned weiss:1;	/**< LED Weiss */
 } PACKED_FORCE led_t;
 
-extern uint8_t led;	/*!< Zustand der LEDs */
+extern uint8_t led;	/**< Zustand der LEDs */
 
-/*!
+/**
  * Initialisiert die LEDs
  */
 void LED_init(void);
 
-/*!
+/**
+ * Gibt den aktuellen LED-Zustand zurueck
+ * \return LED-Bitmaske
+ */
+static inline uint8_t LED_get(void) {
+	return led;
+}
+
+/**
  * Zeigt eine 8-Bit Variable mit den LEDs an
- * @param LED Wert der gezeigt werden soll
+ * \param LED Wert der gezeigt werden soll
  */
 void LED_set(uint8_t LED);
 
-/*!
+/**
  * Schaltet einzelne LEDs aus
  * andere werden nicht beeinflusst
- * @param LED Bitmaske der anzuschaltenden LEDs
+ * \param LED Bitmaske der anzuschaltenden LEDs
  */
 void LED_off(uint8_t LED);
 
-/*!
+/**
  * Schaltet einzelne LEDs an
  * andere werden nicht beeinflusst
- * @param LED Bitmaske der anzuschaltenden LEDs
+ * \param LED Bitmaske der anzuschaltenden LEDs
  */
 void LED_on(uint8_t LED);
 

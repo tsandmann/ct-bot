@@ -17,7 +17,7 @@
  *
  */
 
-/*!
+/**
  * \file 	mini-fat.c
  * \brief 	Routinen zum Auffinden von markierten Files auf einer MMC-Karte.
  *
@@ -31,10 +31,10 @@
 #include "eeprom.h"
 
 /* EEPROM-Variable immer deklarieren, damit die Adresse sich nicht veraendert je nach #define */
-uint32_t EEPROM eefat[10] = {0};	/*!< EEPROM-Cache fuer FAT-Eintraege */
+uint32_t EEPROM eefat[10] = {0};	/**< EEPROM-Cache fuer FAT-Eintraege */
 
-#define MINI_FAT_CHECK_FRAGMENTATION	/*!< Prueft automatisch, ob eine Mini-FAT-Datei fragmentiert ist */
-//#define MINI_FAT_DEBUG				/*!< Schalter fuer Debug-Ausgaben */
+#define MINI_FAT_CHECK_FRAGMENTATION	/**< Prueft automatisch, ob eine Mini-FAT-Datei fragmentiert ist */
+//#define MINI_FAT_DEBUG				/**< Schalter fuer Debug-Ausgaben */
 
 
 #ifdef MCU
@@ -58,7 +58,7 @@ uint32_t EEPROM eefat[10] = {0};	/*!< EEPROM-Cache fuer FAT-Eintraege */
 
 
 #ifdef DISPLAY_MINIFAT_INFO
-/*!
+/**
  * Hilfsfunktion, die eine 23-Bit Blockadresse auf dem Display als hex anzeigt.
  * Da display_printf() @MCU maximal mit 16 Bit Zahlen umgehen kann, zerlegt diese Funktion die Adresse ein zwei Teile.
  */
@@ -68,7 +68,7 @@ static void display_block(uint32_t addr) {
 	display_printf("0x%02x%04x", high, low);
 }
 
-/*!
+/**
  * Display-Screen fuer Ausgaben des MiniFAT-Treibers, falls dieser welche erzeugt.
  * Da die MiniFat-Funktionen im Wesentlichen den aktuellen Suchstatus der MMC
  * ausgeben, erfolgt die eigentliche Ausgabe in der jeweiligen Schleife der
@@ -80,7 +80,7 @@ void mini_fat_display(void) {
 }
 #endif // DISPLAY_MINIFAT_INFO
 
-/*!
+/**
  * \brief Sucht die Adresse einer MiniFAT-Datei im EERROM
  * \param filename	Datei-ID
  * \param buffer	Zeiger auf 512 Byte grossen Speicherbereich (wird ueberschrieben)
@@ -112,7 +112,7 @@ static uint32_t mini_fat_lookup_adr(const char * filename, void * buffer) {
 	return 0;
 }
 
-/*!
+/**
  * \brief Speichert die Adresse einer MiniFAT-Datei in einem EERROM-Slab
  * \param block		(Block-)Adresse der Datei, die gespeichert werden soll
  *
@@ -142,7 +142,7 @@ static void mini_fat_store_adr(uint32_t block) {
 }
 
 #ifdef MINI_FAT_CHECK_FRAGMENTATION
-/*!
+/**
  * Prueft, ob eine Mini-FAT-Datei fragmentiert ist.
  * \param block		Adresse des ersten Nutzdatenblocks einer Datei (nicht Header!)
  * \param *buffer	Zeiger auf 512 Byte grossen Puffer (enthaelt anschliessend den Dateiheader)
@@ -151,13 +151,17 @@ static void mini_fat_store_adr(uint32_t block) {
 static uint32_t check_fragmentation(uint32_t block, void * buffer) {
 	LOG_DEBUG("block=0x%04x", block - 1);
 	/* MBR lesen */
-	mmc_read_sector(0, buffer);
+	if (mmc_read_sector(0, buffer) != 0) {
+		return 0xffffffff;
+	}
 	botfs_mbr_t * p_mbr = buffer;
 	uint16_t first_sect = (uint16_t) p_mbr->part0.first_sect_offset;
 	LOG_DEBUG("first_sect=0x%04x", first_sect);
 
 	/* Bootsektor von Partition 1 lesen */
-	mmc_read_sector(first_sect, buffer);
+	if (mmc_read_sector(first_sect, buffer) != 0) {
+		return 0xffffffff;
+	}
 	botfs_fat16_bootsector_t * p_bs = buffer;
 	p_bs->fat_name[7] = 0;
 	if (strcmp_P(p_bs->fat_name, PSTR("FAT16  ")) != 0) {
@@ -184,42 +188,56 @@ static uint32_t check_fragmentation(uint32_t block, void * buffer) {
 	uint16_t first_cluster = (uint16_t) ((block - 1 - data_offset) / sect_per_cluster + 2);
 	LOG_DEBUG("first_cluster=0x%04x", first_cluster);
 
-	/* 1. FAT-Eintrag der Datei einlesen */
-	uint16_t fat_block = fat_offset + first_cluster / (512 / sizeof(uint16_t));
-	LOG_DEBUG("fat_block=0x%04x", fat_block);
-	mmc_read_sector(fat_block, buffer);
-	uint16_t entry_offset = first_cluster % (512 / sizeof(uint16_t));
-	LOG_DEBUG("entry_offset=0x%04x", entry_offset);
-	uint16_t * ptr = buffer;
-	uint16_t entry = ptr[entry_offset];
-
-	mmc_read_sector(block - 1, buffer);	// Dateiheader wieder in Puffer laden
-
-	LOG_DEBUG("Fat-Eintrag=0x%04x", entry);
-	if (entry < 0xfff8 && entry != first_cluster + 1) {
-		/* Datei ist fragmentiert */
+	uint16_t next_cluster = first_cluster;
+	uint16_t last_cluster = next_cluster;
+	uint16_t last_fat_block = 0;
+	while (42) {
+		/* alle FAT-Eintraege der Datei einlesen und auf Fragmentierung checken */
+		uint16_t fat_block = fat_offset + next_cluster / (512 / sizeof(uint16_t));
+		LOG_DEBUG("fat_block=0x%04x", fat_block);
+		if (fat_block != last_fat_block) {
+			if (mmc_read_sector(fat_block, buffer) != 0) {
+				return 0xffffffff;
+			}
+			last_fat_block = fat_block;
+		}
+		uint16_t entry_offset = first_cluster % (512 / sizeof(uint16_t));
+		LOG_DEBUG("entry_offset=0x%04x", entry_offset);
+		uint16_t * ptr = buffer;
+		next_cluster = ptr[entry_offset];
+		LOG_DEBUG("next_cluster=0x%04x", next_cluster);
+		if (next_cluster != last_cluster + 1) {
+			if (next_cluster >= 0xfff0) {
+				/* Dateiende -> keine Fragmentierung */
+				break;
+			}
+			/* Datei ist fragmentiert */
 #ifdef DISPLAY_MINIFAT_INFO
-		display_cursor(2, 1);
-		display_puts("Datei fragmentiert  ");
+			display_cursor(2, 1);
+			display_puts("Datei fragmentiert  ");
 #endif
-		LOG_ERROR("Datei ist fragmentiert!");
+			LOG_ERROR("Datei ist fragmentiert!");
 #ifdef LED_AVAILABLE
-		LED_on(LED_TUERKIS);
+			LED_on(LED_TUERKIS);
 #endif	// LED_AVAILABLE
+			mmc_read_sector(block - 1, buffer);	// Dateiheader wieder in Puffer laden
+			return 0xffffffff;
+		}
+	}
+	if (mmc_read_sector(block - 1, buffer) != 0) { // Dateiheader wieder in Puffer laden
 		return 0xffffffff;
 	}
-/*! \todo: Schleife */
 
 	/* alles gut */
 #ifdef DISPLAY_MINIFAT_INFO
-		display_cursor(2, 1);
-		display_puts("Datei ok");
+	display_cursor(2, 1);
+	display_puts("Datei ok");
 #endif
 	LOG_DEBUG("Datei ist nicht fragmentiert");
 	return block;
 }
 #else
-/*!
+/**
  * Keine Ueberpruefung auf Fragmentierung gewuescht, daher nur Dummy
  * \param block		Adresse des ersten Nutzdatenblocks einer Datei (nicht Header!)
  * \param *buffer	Zeiger auf 512 Byte grossen Puffer
@@ -230,7 +248,7 @@ static uint32_t check_fragmentation(uint32_t block, void * buffer) {
 }
 #endif // MINI_FAT_CHECK_FRAGMENTATION
 
-/*!
+/**
  * \brief Sucht einen Block auf der MMC-Karte, dessen erste Bytes dem Dateinamen entsprechen
  * \param filename 	String im Flash zur Identifikation
  * \param buffer 	Zeiger auf 512 Byte Puffer im SRAM
@@ -287,7 +305,7 @@ uint32_t mini_fat_find_block_P(const char * filename, void * buffer, uint32_t en
 	return 0xffffffff;
 }
 
-/*!
+/**
  * Leert eine Datei im MiniFAT-Dateisystem auf der MMC/SD-Karte
  * \param file_start	Anfangsblock der Datei
  * \param *buffer		Zeiger auf 512 Byte Puffer im SRAM, wird geloescht!

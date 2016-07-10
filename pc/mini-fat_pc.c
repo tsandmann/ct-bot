@@ -34,12 +34,12 @@
 #include <stdio.h>
 #include <string.h>
 
-/*!
+/**
  * Erzeugt eine Datei, die an den ersten Bytes die ID enthaelt. Dann folgen 512 - sizeof(id) nullen
  * Danach kommen so viele size kByte Nullen
- * @param filename Der Dateiname der zu erzeugenden Datei
- * @param id_string Die ID des Files, wie sie zu beginn steht
- * @param size kByte Nutzdaten, die der MCU spaeter beschreiben darf
+ * \param filename Der Dateiname der zu erzeugenden Datei
+ * \param id_string Die ID des Files, wie sie zu beginn steht
+ * \param size kByte Nutzdaten, die der MCU spaeter beschreiben darf
  */
 void create_mini_fat_file(const char * filename, const char * id_string, uint32_t size){
 	printf("Erstelle eine Mini-Fat-Datei mit dem Namen %s\n", filename);
@@ -64,11 +64,11 @@ void create_mini_fat_file(const char * filename, const char * id_string, uint32_
 	fclose(fp);
 }
 
-/*!
+/**
  * Erzeugt eine Mini-Fat-Datei in einer emulierten MMC
- * @param addr			Die Adresse auf der emulierten Karte, an der die Datei beginnen soll
- * @param id_string 	Die ID der Datei, wie sie zu Beginn in der Datei steht
- * @param size 			KByte Nutzdaten, die die Datei umfasst
+ * \param addr			Die Adresse auf der emulierten Karte, an der die Datei beginnen soll
+ * \param id_string 	Die ID der Datei, wie sie zu Beginn in der Datei steht
+ * \param size 			KByte Nutzdaten, die die Datei umfasst
  * Erzeugt eine Datei, die an den ersten Bytes die ID enthaelt. Dann folgen 512 - sizeof(id) Nullen
  * Danach kommen size * 1024 Nullen
  */
@@ -131,9 +131,9 @@ void create_emu_mini_fat_file(uint32_t addr, const char * id_string, uint32_t si
 #endif // MMC_VM_AVAILABLE
 }
 
-/*!
+/**
  * Loescht eine Mini-Fat-Datei in einer emulierten MMC
- * @param id_string 	Die ID der Datei, wie sie zu Beginn in der Datei steht
+ * \param id_string 	Die ID der Datei, wie sie zu Beginn in der Datei steht
  */
 void delete_emu_mini_fat_file(const char * id_string) {
 #ifndef MMC_VM_AVAILABLE

@@ -31,10 +31,10 @@
 #ifdef MMC_AVAILABLE
 #include "ui/available_screens.h"
 
-#define MMC_AGGRESSIVE_OPTIMIZATION	/*!< Aktiviert explizites Timing im SPI-Code (ca. 13 % schneller) */
+#define MMC_AGGRESSIVE_OPTIMIZATION	/**< Aktiviert explizites Timing im SPI-Code (ca. 13 % schneller) */
 
-#define MMC_INFO_AVAILABLE			/*!< Die Karte kann uns einiges ueber sich verrraten, wenn wir sie danach fragen. Aber es kostet halt Platz im Flash */
-//#define MMC_WRITE_TEST_AVAILABLE	/*!< Achtung dieser Test zerstoert die Daten auf der Karte ab Sektor 0x20000 (^= 64 MB)!!! DISPLAY_MMC_INFO muss an sein */
+#define MMC_INFO_AVAILABLE			/**< Die Karte kann uns einiges ueber sich verrraten, wenn wir sie danach fragen. Aber es kostet halt Platz im Flash */
+//#define MMC_WRITE_TEST_AVAILABLE	/**< Achtung dieser Test zerstoert die Daten auf der Karte ab Sektor 0x20000 (^= 64 MB)!!! DISPLAY_MMC_INFO muss an sein */
 
 #if defined MMC_WRITE_TEST_AVAILABLE && defined MAP_AVAILABLE
 #error "MMC_WRITE_TEST_AVAILABLE und MAP_AVAILABLE duerfen nicht gleichzeitig aktiv sein!"
@@ -50,7 +50,7 @@
 #define mmc_write_sector(addr, buffer)		mmc_write_sector_spi(addr, buffer)
 #endif // SPI_AVAILABLE
 
-extern uint8_t mmc_init_state;	/*!< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
+extern uint8_t mmc_init_state;	/**< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
 
 /**
  * Checkt Initialisierung der Karte

@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	os_thread.c
- * @brief 	Threadmanagement fuer BotOS
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	02.10.2007
+/**
+ * \file 	os_thread.c
+ * \brief 	Threadmanagement fuer BotOS
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	02.10.2007
  */
 
 /*
@@ -36,31 +36,33 @@
 #include "os_utils.h"
 #include "log.h"
 #include "map.h"
+#include "display.h"
 #include <string.h>
 #include <stdio.h>
 
-/*! Datentyp fuer Instruction-Pointer */
+/** Datentyp fuer Instruction-Pointer */
 typedef union {
-	void (* ip)(void);	/*!< Instruction-Pointer des Threads */
+	void (* ip)(void);	/**< Instruction-Pointer des Threads */
 	struct {
-		uint8_t lo8;	/*!< untere 8 Bit der Adresse */
-		uint8_t hi8;	/*!< obere 8 Bit der Adresse */
+		uint8_t lo8;	/**< untere 8 Bit der Adresse */
+		uint8_t hi8;	/**< obere 8 Bit der Adresse */
 	} PACKED_FORCE bytes;
 } os_ip_t;
 
-Tcb_t os_threads[OS_MAX_THREADS];				/*!< Array aller TCBs */
-Tcb_t * os_thread_running = NULL;				/*!< Zeiger auf den TCB des Threads, der gerade laeuft */
-uint8_t os_kernel_stack[OS_KERNEL_STACKSIZE];	/*!< Kernel-Stack */
-os_signal_t dummy_signal;						/*!< Signal, das referenziert wird, wenn sonst keins gesetzt ist */
+Tcb_t os_threads[OS_MAX_THREADS];				/**< Array aller TCBs */
+Tcb_t * os_thread_running = NULL;				/**< Zeiger auf den TCB des Threads, der gerade laeuft */
+os_signal_t dummy_signal;						/**< Signal, das referenziert wird, wenn sonst keins gesetzt ist */
+os_delayed_func_t os_delayed_func[OS_DELAYED_FUNC_CNT]; /**< Registrierte Funktionen zur verzoegerten Ausfuehrung */
+volatile os_delayed_func_t* os_delayed_next_p = os_delayed_func; /**< Zeiger auf die naechste auszufuehrende verzoegerte Funktion */
 
-/*!
+/**
  * Legt einen neuen Thread an.
  * Der zuerst angelegt Thread bekommt die hoechste Prioritaet,
  * je spaeter ein Thread erzeugt wird, desto niedriger ist seine
  * Prioritaet, das laesst sich auch nicht mehr aendern!
- * @param *pStack	Zeiger auf den Stack (Ende!) des neuen Threads
- * @param *pIp		Zeiger auf die Main-Funktion des Threads (Instruction-Pointer)
- * @return			Zeiger auf den TCB des angelegten Threads
+ * \param *pStack	Zeiger auf den Stack (Ende!) des neuen Threads
+ * \param *pIp		Zeiger auf die Main-Funktion des Threads (Instruction-Pointer)
+ * \return			Zeiger auf den TCB des angelegten Threads
  */
 Tcb_t * os_create_thread(void * pStack, void (* pIp)(void)) {
 	os_enterCS(); // Scheduler deaktivieren
@@ -70,13 +72,12 @@ Tcb_t * os_create_thread(void * pStack, void (* pIp)(void)) {
 	for (i = os_scheduling_allowed; i < OS_MAX_THREADS; ++i, ++ptr) {
 		if (ptr->stack == NULL) {
 			ptr->wait_for = &dummy_signal; // wait_for belegen
-			if (os_thread_running == NULL) {
+			ptr->lastSchedule = 0;
+			ptr->nextSchedule = 0;
+			if (pIp == NULL) {
 				/* Main-Thread anlegen (laeuft bereits) */
 				os_thread_running = ptr;
 				ptr->stack = pStack;
-#ifdef OS_DEBUG
-				os_mask_stack(os_kernel_stack, OS_KERNEL_STACKSIZE);
-#endif
 			} else {
 				/* "normalen" Thread anlegen */
 				os_ip_t tmp;
@@ -101,7 +102,7 @@ Tcb_t * os_create_thread(void * pStack, void (* pIp)(void)) {
 	return NULL; // Fehler :(
 }
 
-/*!
+/**
  * Beendet den kritischen Abschnitt wieder, der mit os_enterCS began.
  * Falls ein Scheduler-Aufruf ansteht, wird er nun ausgefuehrt.
  */
@@ -112,7 +113,7 @@ void os_exitCS(void) {
 	__asm__ __volatile__("":::"memory");
 }
 
-/*!
+/**
  * Schaltet auf den Thread mit der naechst niedrigeren Prioritaet um, der lauffaehig ist,
  * indem diesem der Rest der Zeitscheibe geschenkt wird.
  */
@@ -146,22 +147,22 @@ void os_thread_yield(void) {
 	}
 }
 
-/*!
+/**
  * Blockiert den aktuellen Thread, bis ein Signal freigegeben wird
- * @param *signal	Zeiger auf Signal
+ * \param *signal	Zeiger auf Signal
  */
 void os_signal_set(os_signal_t * signal) {
 	os_thread_running->wait_for = signal;
 	os_schedule(TIMER_GET_TICKCOUNT_32);
 }
 
-/*!
+/**
  * Schaltet "von aussen" auf einen neuen Thread um.
  * => kernel threadswitch
  * Achtung, es wird erwartet, dass Interrupts an sind.
  * Sollte eigentlich nur vom Scheduler aus aufgerufen werden!
- * @param *from	Zeiger auf TCB des aktuell laufenden Threads
- * @param *to	Zeiger auf TCB des Threads, der nun laufen soll
+ * \param *from	Zeiger auf TCB des aktuell laufenden Threads
+ * \param *to	Zeiger auf TCB des Threads, der nun laufen soll
  */
 void os_switch_thread(Tcb_t * from, Tcb_t * to) {
 	os_thread_running = to;
@@ -231,26 +232,81 @@ void os_switch_thread(Tcb_t * from, Tcb_t * to) {
 	);
 }
 
-#ifdef OS_DEBUG
-/*!
- * Maskiert einen Stack, um spaeter ermitteln zu koennen,
- * wieviel Byte ungenutzt bleiben
- * @param *stack	Anfangsadresse des Stacks
- * @param size		Groesse des Stacks in Byte
+/**
+ * Sucht die als naechstes auszufuehrende Funktion heraus, wird intern benutzt.
+ * @return Naechste auszufuehrende Funktion oder NULL, falls keine Funktion registriert
  */
-void os_mask_stack(void * stack, size_t size) {
-	memset(stack, 0x42, size);
+os_delayed_func_t* os_delayed_func_search_next(void) {
+	uint32_t next = (uint32_t) -1;
+	os_delayed_func_t* ptr = os_delayed_func;
+	uint8_t i;
+	for (i = 0; i < sizeof(os_delayed_func) / sizeof(os_delayed_func_t); ++i) {
+		if (os_delayed_func[i].runtime && os_delayed_func[i].runtime < next) {
+			ptr = &os_delayed_func[i];
+			next = ptr->runtime;
+		}
+	}
+
+	return ptr;
 }
 
-/*!
+/**
+ * Registriert eine Funktion zur spaeteren Ausfuehrung.
+ * @param p_func Zeiger auf die Funktion
+ * @param p_data Zeiger auf Daten fuer die Funktion oder NULL
+ * @param delay_ms Zeit in ms, nach der die Funktion (fruehestens) ausgefuehrt werden soll
+ * @return 0, falls Funktion korrekt registriert werden konnte, 1 sonst
+ */
+uint8_t os_delay_func(os_delayed_func_ptr_t p_func, void* p_data, uint32_t delay_ms) {
+	const uint32_t now = TIMER_GET_TICKCOUNT_32;
+	uint8_t i;
+	os_enterCS();
+	for (i = 0; i < sizeof(os_delayed_func) / sizeof(os_delayed_func_t); ++i) { // freien Platz suchen
+		if (! os_delayed_func[i].p_func) {
+			os_delayed_func[i].p_func = p_func;
+			os_delayed_func[i].p_data = p_data;
+			os_delayed_func[i].runtime = now + MS_TO_TICKS(delay_ms);
+
+			os_delayed_next_p = os_delayed_func_search_next(); // next Zeiger aktualisieren
+			os_exitCS();
+			return 0;
+		}
+	}
+	os_exitCS();
+	return 1;
+}
+
+
+#ifdef OS_DEBUG
+/**
+ * Maskiert einen Stack, um spaeter ermitteln zu koennen,
+ * wieviel Byte ungenutzt bleiben
+ * \param *stack	Anfangsadresse des Stacks
+ * \param size		Groesse des Stacks in Byte
+ */
+void os_mask_stack(void* stack, size_t size) {
+	uint8_t* ptr = stack;
+	uint16_t i;
+	const uint8_t sreg = SREG;
+	__builtin_avr_cli();
+	for (i = 0; i < size; ++i) {
+		if (&ptr[i] >= (uint8_t*) SP) {
+			break;
+		}
+		ptr[i] = 0x42;
+	}
+	SREG = sreg;
+}
+
+/**
  * Ermittelt wieviel Bytes auf einem Stack bisher
  * ungenutzt sind. Der Stack muss dafuer VOR der
  * Initialisierung seines Threads mit
  * os_stack_mask() praepariert worden sein!
- * @param *stack	Anfangsadresse des Stacks
+ * \param *stack	Anfangsadresse des Stacks
  */
-static uint16_t os_stack_unused(void * stack) {
-	uint8_t * ptr = stack;
+uint16_t os_stack_unused(void* stack) {
+	uint8_t* ptr = stack;
 	uint16_t unused = 0;
 	while (*ptr == 0x42) {
 		unused++;
@@ -259,7 +315,7 @@ static uint16_t os_stack_unused(void * stack) {
 	return unused;
 }
 
-/*!
+/**
  * Gibt per LOG aus, wieviel Bytes auf den Stacks der Threads noch nie benutzt wurden
  */
 void os_print_stackusage(void) {
@@ -280,11 +336,12 @@ void os_print_stackusage(void) {
 	}
 #endif // MAP_2_SIM_AVAILABLE
 #endif // MAP_AVAILABLE
-	static uint16_t kernel_stack_free = UINT16_MAX;
-	tmp = os_stack_unused(os_kernel_stack);
-	if (tmp < kernel_stack_free) {
-		kernel_stack_free = tmp;
-		LOG_INFO("Kernel-Stack unused=%u", tmp);
+
+	static uint16_t main_stack_free = UINT16_MAX;
+	tmp = os_stack_unused(__brkval + __malloc_margin);
+	if (tmp < main_stack_free) {
+		main_stack_free = tmp;
+		LOG_INFO("Main-Stack unused=%u", tmp);
 	}
 	static uint16_t idle_stack_free = UINT16_MAX;
 	tmp = os_stack_unused(os_idle_stack);
@@ -294,11 +351,11 @@ void os_print_stackusage(void) {
 	}
 }
 
-/*!
+/**
  * Gibt den Inhalt des Stacks eines Threads per LOG aus
- * @param *thread	Zeiger auf den TCB des Threads
- * @param *stack	Zeiger auf die hoechste Adresse des Stacks (Anfang)
- * @param size		Groesse des Stacks in Byte
+ * \param *thread	Zeiger auf den TCB des Threads
+ * \param *stack	Zeiger auf die hoechste Adresse des Stacks (Anfang)
+ * \param size		Groesse des Stacks in Byte
  */
 void os_stack_dump(Tcb_t * thread, void * stack, uint16_t size) {
 	size_t n;

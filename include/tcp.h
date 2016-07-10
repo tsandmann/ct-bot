@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	tcp.h
- * @brief 	TCP/IP-Kommunikation
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	26.12.05
+/**
+ * \file 	tcp.h
+ * \brief 	TCP/IP-Kommunikation
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	26.12.2005
  */
 
 #ifndef TCP_H_
@@ -29,59 +29,94 @@
 
 #ifdef PC
 
-#define IP "localhost"		/*!<  IP, mit der verbunden werden soll (normalerweise localhost) */
-#define PORT 10001			/*!<  Port, mit dem verbunden werden soll  */
+#include "command.h"
 
-extern int tcp_sock;		/*!< Unser TCP-Socket */
-extern char * tcp_hostname;	/*!< Hostname, auf dem ct-Sim laeuft */
+#define IP "localhost"		/**< IP, mit der verbunden werden soll (normalerweise localhost) */
+#define PORT 10001			/**< Port, mit dem verbunden werden soll */
+#define SERVERPORT 10002	/**< Port fuer TCP-Server */
 
-/*!
- * Sende Kommando per TCP/IP im Little Endian
- * @param *cmd	Zeiger auf das Kommando
- * @return 		Anzahl der gesendete Bytes
- */
-int tcp_send_cmd(command_t * cmd);
+extern int tcp_sock;		/**< Unser TCP-Socket */
+extern char * tcp_hostname;	/**< Hostname, auf dem ct-Sim laeuft */
 
-
-/*!
+/**
  * Uebertrage Daten per TCP/IP
- * @param *data		Zeiger auf die Daten
- * @param length	Anzahl der Bytes
- * @return 			Anzahl der gesendeten Byte, -1 wenn Fehler
+ * \param *data		Zeiger auf die Daten
+ * \param length	Anzahl der Bytes
+ * \return 			Anzahl der gesendeten Byte, -1 wenn Fehler
  */
-int tcp_write(const void * data, int length);
+int16_t tcp_write(const void * data, int16_t length);
 
-/*!
+/**
  * Lese Daten von TCP/IP-Verbindung.
  * Achtung: blockierend!
- * @param *data		Zeiger auf die Daten
- * @param length	Anzahl der gewuenschten Bytes
- * @return 			Anzahl der uebertragenen Bytes
+ * \param *data		Zeiger auf die Daten
+ * \param length	Anzahl der gewuenschten Bytes
+ * \return 			Anzahl der uebertragenen Bytes
  */
-int tcp_read(void * data, int length);
+int16_t tcp_read(void * data, int16_t length);
 
-/*!
+/**
  * Oeffnet eine TCP-Verbindung zum Server
- * @param *hostname	Symbolischer Name des Host, auf dem ct-Sim laeuft
- * @return 			Der Socket
+ * \param *hostname	Symbolischer Name des Host, auf dem ct-Sim laeuft
+ * \return 			Der Socket
  */
 int tcp_openConnection(const char * hostname);
 
-/*!
+/**
  * Initialisiere TCP/IP Verbindung
  */
 void tcp_init(void);
 
-/*!
- * Schreibt den Sendepuffer auf einen Schlag raus
- * @return -1 bei Fehlern, sonst Anzahl der uebertragenen Bytes
+/**
+ * Initialisiere TCP/IP Verbindung als Client (Verbindung zum Sim)
  */
-int flushSendBuffer(void);
+void tcp_init_client(void);
 
-/*!
+#ifndef __WIN32__
+/**
+ * Initialisiere TCP/IP Verbindung als Server
+ * \param *ptr Datenparameter fuer pthread, wird nicht verwendet
+ * \return NULL
+ */
+void * tcp_init_server(void * ptr);
+
+/**
+ * Ermittelt wie viele Bytes auf dem TCP-Server Socket zur Verfuegung stehen
+ * \return Bytes verfuegbar
+ */
+int tcp_data_available(void);
+#endif // __WIN32__
+/**
+ * Gibt an, ob derzeit ein TCP-Client verbunden ist
+ * \return True oder False
+ */
+static inline uint8_t tcp_client_connected(void) {
+	return tcp_sock != 0;
+}
+
+/**
+ * Schreibt den Sendepuffer auf einen Schlag raus
+ * \return -1 bei Fehlern, sonst Anzahl der uebertragenen Bytes
+ */
+int16_t flushSendBuffer(void);
+
+/**
  * Schliesst eine TCP-Connection
- * @param sock Der Socket
+ * \param sock Der Socket
  */
 void tcp_closeConnection(int sock);
+
+/**
+ * Prueft die CRC Checksumme eines Kommandos
+ * \param *cmd Zeiger auf das Kommando
+ * \return True oder False
+ */
+uint8_t tcp_check_crc(command_t * cmd);
+
+/**
+ * Berechnet die CRC Checksumme eines Kommandos
+ * \param *cmd Zeiger auf das Kommando
+ */
+void tcp_calc_crc(command_t * cmd);
 #endif // PC
 #endif // TCP_H_

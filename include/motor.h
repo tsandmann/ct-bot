@@ -50,10 +50,13 @@
 extern int16_t speed_l;				/**< Sollgeschwindigkeit des linken Motors */
 extern int16_t speed_r;				/**< Sollgeschwindigkeit des rechten Motors */
 
-extern volatile int16_t motor_left;		/**< zuletzt gestellter Wert linker Motor */
-extern volatile int16_t motor_right;	/**< zuletzt gestellter Wert rechter Motor */
+extern int16_t motor_left;			/**< zuletzt gestellter Wert linker Motor */
+extern int16_t motor_right;			/**< zuletzt gestellter Wert rechter Motor */
 
-/*! In diesem Typ steht die Drehrichtung, auch wenn die Speed-Variablen bereits wieder auf Null sind */
+extern uint8_t servo_pos[2];		/**< Positionen der Servos */
+extern uint8_t servo_active[2];		/**< Aktivitaet der Servos */
+
+/** In diesem Typ steht die Drehrichtung, auch wenn die Speed-Variablen bereits wieder auf Null sind */
 typedef union {
 	struct {
 		unsigned left:1;	/**< linksrum */
@@ -84,9 +87,35 @@ void motor_set(int16_t left, int16_t right);
  * \param servo	Nummer des Servos
  * \param pos	Zielwert
  *
- * Sinnvolle Werte liegen zwischen DOOR_CLOSE und DOOR_OPEN, oder SERVO_OFF fuer Servo aus
+ * Sinnvolle Werte liegen zwischen DOOR_CLOSE / CAM_LEFT und DOOR_OPEN / CAM_RIGHT oder SERVO_OFF fuer Servo aus
  */
 void servo_set(uint8_t servo, uint8_t pos);
+
+/**
+ * \brief Gibt die Sollposition der Servos zurueck
+ * @param servo Servo ID
+ * @return Sollposition
+ */
+static inline uint8_t servo_get_pos(uint8_t servo) {
+	if (servo < SERVO1 || servo > SERVO2) {
+		return 0xff;
+	}
+
+	return servo_pos[servo - 1];
+}
+
+/**
+ * \brief Gibt die Aktivitaet der Servos zurueck
+ * @param servo Servo ID
+ * @return 1, falls Servo aktiv, 0 sonst
+ */
+static inline uint8_t servo_get_active(uint8_t servo) {
+	if (servo < SERVO1 || servo > SERVO2) {
+		return 0xff;
+	}
+
+	return servo_active[servo - 1];
+}
 
 #ifdef SPEED_CONTROL_AVAILABLE
 /**

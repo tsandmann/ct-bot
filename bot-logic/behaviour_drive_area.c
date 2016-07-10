@@ -776,10 +776,10 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 
 		// ist der Weg voraus nicht frei laut Map, dann gar nicht erst fahren und verwerfen
 		if (!free1) {
-/*! \todo	Diese Strecke nicht gleich verwerfen sondern evtl untersuchen und Teilstrecken bilden; evtl. mit Pfadplanung andere Teilstrecke anfahren
-			oder erst einmal mit anderem Weg tauschen, der gerade frei ist.
-			da jetzt auch eigener Linienstack verwendet wird, koennte man einen Zaehler mitfuehren wie oft eine Strecke schon zurueckgestellt wurde und erst ab
-			einem Schwellwert wirklich verwerfen */
+			/* Diese Strecke nicht gleich verwerfen sondern evtl untersuchen und Teilstrecken bilden; evtl. mit Pfadplanung andere Teilstrecke anfahren
+			 * oder erst einmal mit anderem Weg tauschen, der gerade frei ist.
+			 * da jetzt auch eigener Linienstack verwendet wird, koennte man einen Zaehler mitfuehren wie oft eine Strecke schon zurueckgestellt wurde und erst ab
+			 * einem Schwellwert wirklich verwerfen */
 			track_state = GET_LINE_FROM_STACK;
 			LOG_DEBUG("Weg versperrt zu Zwischenpunkt %1d %1d, Endpunkt %1d %1d", pos.x, pos.y, nextline.point2.x, nextline.point2.y);
 #if defined MAP_2_SIM_AVAILABLE && defined DEBUG_BEHAVIOUR_AREA
@@ -1145,7 +1145,7 @@ void bot_drive_area_behaviour(Behaviour_t * data) {
 						LOG_DEBUG("Weg nicht frei, >> Pfadplanung zu P2 nach Tausch wg. zu geringem Abstand << %1d %1d",
 							nextline.point1.x, nextline.point1.y);
 					}
-/*! \todo Pfadplanung ueber befahrenes Gebiet */
+					/* Pfadplanung ueber befahrenes Gebiet */
 					bot_calc_wave(data, nextline.point1.x, nextline.point1.y, /*MAP_DRIVEN_THRESHOLD*/ 0);
 					track_state = TURN_TO_DESTINATION; // muss sich hiernach zum Zielpunkt ausrichten
 					break;

@@ -17,11 +17,11 @@
  * 
  */
 
-/*!
- * @file 	ir-rc5_pc.c
- * @brief 	Routinen fuer die Dekodierung von RC5-Fernbedienungs-Codes
- * @author 	Benjamin Benz (bbe@heise.de)
- * @date 	20.12.05
+/**
+ * \file 	ir-rc5_pc.c
+ * \brief 	Routinen fuer die Dekodierung von RC5-Fernbedienungs-Codes
+ * \author 	Benjamin Benz (bbe@heise.de)
+ * \date 	20.12.2005
  */
 
 #ifdef PC
@@ -32,10 +32,10 @@
 #include "command.h"
 #include "bot-2-sim.h"
 
-/*!
+/**
  * IR-Daten lesen
- * @param *data Zeiger auf Arbeitsdaten
- * @return Wert von ir_data, loescht anschliessend ir_data
+ * \param *data Zeiger auf Arbeitsdaten
+ * \return Wert von ir_data, loescht anschliessend ir_data
  */
 uint16_t ir_read(ir_data_t * data) {
 	uint16_t retvalue = data->ir_data;

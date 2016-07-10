@@ -41,47 +41,50 @@
 #include "math_utils.h"
 #include "ui/available_screens.h"
 
-int16_t speed_l = 0;	/*!< Sollgeschwindigkeit linker Motor */
-int16_t speed_r = 0;	/*!< Sollgeschwindigkeit rechter Motor */
+int16_t speed_l = 0; /**< Sollgeschwindigkeit linker Motor */
+int16_t speed_r = 0; /**< Sollgeschwindigkeit rechter Motor */
+
+uint8_t servo_pos[2] = {DOOR_OPEN, CAM_CENTER}; /**< Positionen der Servos */
+uint8_t servo_active[2] = {0, 0}; /**< Aktivitaet der Servos */
 
 #ifdef SPEED_CONTROL_AVAILABLE
 #ifdef ADJUST_PID_PARAMS
 /* PID-Parameter variabel */
-int8_t Kp = PID_Kp;	/*!< PID-Parameter proportional */
-int8_t Ki = PID_Ki;	/*!< PID-Parameter intergral */
-int8_t Kd = PID_Kd;	/*!< PID-Parameter differential */
+int8_t Kp = PID_Kp; /**< PID-Parameter proportional */
+int8_t Ki = PID_Ki; /**< PID-Parameter intergral */
+int8_t Kd = PID_Kd; /**< PID-Parameter differential */
 #else
 /* PID-Koeffizienten aus Parametern berechnen */
-#define Q0 ( PID_Kp + PID_Kd/PID_Ta)					/*!< PID-Koeffizient Fehler */
-#define Q1 (-PID_Kp - 2*PID_Kd/PID_Ta + PID_Ki*PID_Ta)	/*!< PID-Koeffizient letzter Fehler */
-#define Q2 ( PID_Kd/PID_Ta)								/*!< PID-Koeffizient vorletzter Fehler */
+#define Q0 ( PID_Kp + PID_Kd/PID_Ta)					/**< PID-Koeffizient Fehler */
+#define Q1 (-PID_Kp - 2*PID_Kd/PID_Ta + PID_Ki*PID_Ta)	/**< PID-Koeffizient letzter Fehler */
+#define Q2 ( PID_Kd/PID_Ta)								/**< PID-Koeffizient vorletzter Fehler */
 #endif	// ADJUST_PID_PARAMS
 
-/*! Dividend fuer Umrechnung von Ticks [176 us] in Geschwindigkeit [mm/s] */
+/** Dividend fuer Umrechnung von Ticks [176 us] in Geschwindigkeit [mm/s] */
 #define TICKS_TO_SPEED		(uint16_t)((float)WHEEL_PERIMETER/ENCODER_MARKS*1000000/TIMER_STEPS)	// = 8475*2
-#define TICKS_TO_SPEED_0	(TICKS_TO_SPEED / 2)		/*!< Dividend fuer shift == 0 */
-#define TICKS_TO_SPEED_1	(TICKS_TO_SPEED / 2 * 2)	/*!< Dividend fuer shift == 1 */
-#define TICKS_TO_SPEED_2	(TICKS_TO_SPEED / 2 * 4) 	/*!< Dividend fuer shift == 2 */
+#define TICKS_TO_SPEED_0	(TICKS_TO_SPEED / 2)		/**< Dividend fuer shift == 0 */
+#define TICKS_TO_SPEED_1	(TICKS_TO_SPEED / 2 * 2)	/**< Dividend fuer shift == 1 */
+#define TICKS_TO_SPEED_2	(TICKS_TO_SPEED / 2 * 4) 	/**< Dividend fuer shift == 2 */
 
-/*! Typ fuer PWM-Lookup-Werte */
+/** Typ fuer PWM-Lookup-Werte */
 typedef struct {
-	uint8_t pwm;	/*!< PWM-Wert/2 */
-	uint8_t rating;	/*!< Qualitaet des PWM-Werts */
+	uint8_t pwm;	/**< PWM-Wert/2 */
+	uint8_t rating;	/**< Qualitaet des PWM-Werts */
 } pwmMap_t;
 
-static uint8_t encoderTargetRate[2] = {0,0};	/*!< Fuehrungsgroesse absolut [0; 256] */
+static uint8_t encoderTargetRate[2] = {0,0}; /**< Fuehrungsgroesse absolut [0; 256] */
 static uint8_t start_signal[2] = {0,0};
-static volatile pwmMap_t pwm_values[4] = {{0,255},{0,255},{0,255},{0,255}};		/*!< Lookup fuer Zuordnung GeschwindigkeitSLOW <-> PWM */
+static volatile pwmMap_t pwm_values[4] = {{0,255},{0,255},{0,255},{0,255}}; /**< Lookup fuer Zuordnung GeschwindigkeitSLOW <-> PWM */
 #ifdef DISPLAY_REGELUNG_AVAILABLE
-uint8_t encoderRateInfo[2];		/*!< Puffer fuer Displayausgabe der Ist-Geschwindigkeit */
+uint8_t encoderRateInfo[2]; /**< Puffer fuer Displayausgabe der Ist-Geschwindigkeit */
 #endif
 
 #endif // SPEED_CONTROL_AVAILABLE
 
 /* EEPROM-Variable immer deklarieren, damit die Adresse sich nicht veraendert je nach #define */
-uint8_t EEPROM pwmSlow[4] = {255, 255, 255, 255};	/*!< EEPROM-Kopie von pwm_values */
+uint8_t EEPROM pwmSlow[4] = {255, 255, 255, 255};	/**< EEPROM-Kopie von pwm_values */
 
-direction_t direction;		/*!< Drehrichtung der Motoren */
+direction_t direction; /**< Drehrichtung der Motoren */
 
 #ifdef SPEED_CONTROL_AVAILABLE
 /**
@@ -127,7 +130,8 @@ void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_
 				slog->data[dev][index].err = encoderTargetRate[dev]; // Regeldifferenz
 				slog->data[dev][index].pwm = *actVar; // Stellgroesse
 				slog->data[dev][index].targetRate = encoderTargetRate[dev]; // Fuehrungsgroesse
-				slog->data[dev][index++].time = tickCount.u32; // Timestamp
+				slog->data[dev][index].time = tickCount.u32; // Timestamp
+				slog->data[dev][index++].enc = enc; // Encoder Pegel
 				slog_i[dev] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
 			}
 #endif // SPEED_LOG_AVAILABLE
@@ -204,7 +208,8 @@ void speed_control(uint8_t dev, int16_t * actVar, uint16_t * encTime, uint8_t i_
 				slog->data[dev][index].err = err; // Regeldifferenz
 				slog->data[dev][index].pwm = *actVar; // Stellgroesse
 				slog->data[dev][index].targetRate = encoderTargetRate[dev]; // Fuehrungsgroesse
-				slog->data[dev][index++].time = tickCount.u32; // Timestamp
+				slog->data[dev][index].time = tickCount.u32; // Timestamp
+				slog->data[dev][index++].enc = enc; // Encoder Pegel
 				slog_i[dev] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
 			}
 #endif // SPEED_LOG_AVAILABLE
@@ -246,7 +251,11 @@ void speedcontrol_display(void) {
 		display_printf("e = %4d", abs(speed_l) - (encoderRateInfo[0] << 1));
 #endif
 		display_cursor(3, 1);
-		display_printf("L = %4d", motor_left);
+		uint8_t sreg = SREG;
+		__builtin_avr_cli();
+		const int16_t motor_l = motor_left;
+		SREG = sreg;
+		display_printf("L = %4d", motor_l);
 	}
 	if (speed_r != 0) {
 		display_cursor(1, 12);
@@ -256,7 +265,11 @@ void speedcontrol_display(void) {
 		display_printf("e = %4d", abs(speed_r) - (encoderRateInfo[1] << 1));
 #endif
 		display_cursor(3, 11);
-		display_printf("R = %4d", motor_right);
+		uint8_t sreg = SREG;
+		__builtin_avr_cli();
+		const int16_t motor_r = motor_right;
+		SREG = sreg;
+		display_printf("R = %4d", motor_r);
 	}
 #ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
 	display_cursor(2, 1);
@@ -281,12 +294,14 @@ void speedcontrol_display(void) {
 		case RC5_CODE_6: Kd--; RC5_Code = 0; break;
 #endif // ADJUST_PID_PARAMS
 
+#ifdef BEHAVIOUR_AVAILABLE
 		case RC5_CODE_7:
 			target_speed_l = BOT_SPEED_FOLLOW; target_speed_r = BOT_SPEED_FOLLOW; RC5_Code = 0; break;
 		case RC5_CODE_8:
 			target_speed_l = BOT_SPEED_MEDIUM; target_speed_r = BOT_SPEED_MEDIUM; RC5_Code = 0; break;
 		case RC5_CODE_9:
 			target_speed_l = BOT_SPEED_FAST; target_speed_r = BOT_SPEED_FAST; RC5_Code = 0; break;
+#endif // BEHAVIOUR_AVAILABLE
 	}
 }
 #endif // DISPLAY_REGELUNG_AVAILABLE
@@ -298,14 +313,14 @@ void speedcontrol_display(void) {
  * \param right	Geschwindigkeit fuer den rechten Motor
  *
  * Geschwindigkeit liegt zwischen -450 und +450. 0 bedeutet Stillstand, 450 volle Kraft voraus, -450 volle Kraft zurueck.
- * Sinnvoll ist die Verwendung der Konstanten: BOT_SPEED_XXX, also z.B. motor_set(BOT_SPEED_SLOW,-BOT_SPEED_SLOW) fuer eine langsame Drehung
+ * Sinnvoll ist die Verwendung der Konstanten: BOT_SPEED_XXX, also z.B. motor_set(BOT_SPEED_SLOW, -BOT_SPEED_SLOW) fuer eine langsame Drehung
  */
 void motor_set(int16_t left, int16_t right) {
 	/* Drehrichtung fuer beide Motoren ermitteln */
 	int8_t speedSignLeft = 1; // 1: vor; -1: zurueck
 	if (left < 0) {
 		speedSignLeft = -1;
-		left = -left;	// Richtung zum Rechnen zunaechst verwerfen
+		left = -left; // Richtung zum Rechnen zunaechst verwerfen
 	}
 	int8_t speedSignRight = 1;
 	if (right < 0) {
@@ -325,17 +340,18 @@ void motor_set(int16_t left, int16_t right) {
 #ifdef SPEED_CONTROL_AVAILABLE
 	/* Bei aktivierter Motorregelung neue Fuehrungsgroesse links setzen */
 	if (speed_l != left * speedSignLeft && (start_signal[0] == 0 || left == 0 || sign16(speed_l) != speedSignLeft)) {
+		int16_t motor_l = 0;
 		if (encoderTargetRate[0] == 0) {
 			start_signal[0] = PID_START_DELAY;
 			if (speedSignLeft == speedSignRight) {
-				motor_left = (pwm_values[0].pwm << 1) + (int16_t)(PWMSTART_L * 1.5f); // [0; 511]
+				motor_l = (pwm_values[0].pwm << 1) + (int16_t)(PWMSTART_L * 1.5f); // [0; 511]
 			} else {
-				motor_left = (pwm_values[2].pwm << 1) + PWMSTART_L;
+				motor_l = (pwm_values[2].pwm << 1) + PWMSTART_L;
 			}
 		}
-		encoderTargetRate[0] = (uint8_t) (left >> 1); // [0; 225]
+		encoderTargetRate[0] = (uint8_t) (left >> 1); // [0; BOT_SPEED_MAX / 2]
 		if ((left >> 1) == 0) {
-			motor_left = 0;
+			motor_l = 0;
 			start_signal[0] = 0;
 		}
 
@@ -351,35 +367,34 @@ void motor_set(int16_t left, int16_t right) {
 		} else {
 			speed_l = 0;
 		}
-		/* PWM-Wert setzen */
-		motor_update(0);
 
-#ifdef SPEED_LOG_AVAILABLE
-		/* Daten loggen */
-		register uint8_t index = slog_i[0];
-		if (index < 24) {
-			slog->data[0][index].encRate = 1; // Regelgroesse
-			slog->data[0][index].err = 0; // Regeldifferenz
-			slog->data[0][index].pwm = 0; // Stellgroesse
-			slog->data[0][index].targetRate = encoderTargetRate[0]; // Fuehrungsgroesse
-			slog->data[0][index++].time = tickCount.u32; // Timestamp
-			slog_i[0] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
+		if (motor_l) {
+			/* PWM-Wert setzen */
+#ifdef MCU
+			uint8_t sreg = SREG;
+			__builtin_avr_cli();
+#endif // MCU
+			motor_left = motor_l;
+#ifdef MCU
+			SREG = sreg;
+#endif
+			motor_update(0);
 		}
-#endif // SPEED_LOG_AVAILABLE
 	}
 	/* Neue Fuehrungsgroesse rechts setzen */
 	if (speed_r != right * speedSignRight && (start_signal[1] == 0 || right == 0 || sign16(speed_r) != speedSignRight)) {
+		int16_t motor_r = 0;
 		if (encoderTargetRate[1] == 0) {
 			start_signal[1] = PID_START_DELAY;
 			if (speedSignLeft == speedSignRight) {
-				motor_right = (pwm_values[1].pwm << 1) + (int16_t)(PWMSTART_R * 1.5f); // [0; 511]
+				motor_r = (pwm_values[1].pwm << 1) + (int16_t)(PWMSTART_R * 1.5f); // [0; 511]
 			} else {
-				motor_right = (pwm_values[3].pwm << 1) + PWMSTART_R;
+				motor_r = (pwm_values[3].pwm << 1) + PWMSTART_R;
 			}
 		}
-		encoderTargetRate[1] = (uint8_t) (right >> 1); // [0; 225]
+		encoderTargetRate[1] = (uint8_t) (right >> 1); // [0; BOT_SPEED_MAX / 2]
 		if ((right >> 1) == 0) {
-			motor_right = 0;
+			motor_r = 0;
 			start_signal[1] = 0;
 		}
 
@@ -395,27 +410,25 @@ void motor_set(int16_t left, int16_t right) {
 		} else {
 			speed_r = 0;
 		}
-		motor_update(1);
-
-#ifdef SPEED_LOG_AVAILABLE
-		/* Daten loggen */
-		register uint8_t index = slog_i[1];
-		if (index < 24) {
-			slog->data[1][index].encRate = 1; // Regelgroesse
-			slog->data[1][index].err = 0; // Regeldifferenz
-			slog->data[1][index].pwm = 0; // Stellgroesse
-			slog->data[1][index].targetRate = encoderTargetRate[1]; // Fuehrungsgroesse
-			slog->data[1][index++].time = tickCount.u32; // Timestamp
-			slog_i[1] = (uint8_t) (index > 24 ? 0 : index); // Z/25Z
+		if (motor_r) {
+			/* PWM-Wert setzen */
+#ifdef MCU
+			uint8_t sreg = SREG;
+			__builtin_avr_cli();
+#endif // MCU
+			motor_right = motor_r;
+#ifdef MCU
+			SREG = sreg;
+#endif
+			motor_update(1);
 		}
-#endif // SPEED_LOG_AVAILABLE
 	}
 
 	/* PWM-Lookup im EEPROM updaten */
 	static uint16_t old_pwm_ticks = 0;
-	static uint8_t i = 0;	// nachdem wir 1 Byte geschrieben haben, muessten wir 3.3 ms warten,
+	static uint8_t i = 0; // nachdem wir 1 Byte geschrieben haben, muessten wir 3.3 ms warten,
 	if (i != 0 || timer_ms_passed_16(&old_pwm_ticks, 10000)) {	// alle 10 s
-		uint8_t tmp = pwm_values[i].pwm;	// darum schreiben wir erst im naechsten Aufruf das 2. Byte ins EEPROM usw. :-)
+		uint8_t tmp = pwm_values[i].pwm; // darum schreiben wir erst im naechsten Aufruf das 2. Byte ins EEPROM usw. :-)
 		ctbot_eeprom_update_byte(&pwmSlow[i], tmp);
 		if (++i == 4) {	// alle Daten gesichert => 10 s schlafen
 			i = 0;
@@ -433,7 +446,7 @@ void motor_set(int16_t left, int16_t right) {
 	}
 	int16_t pwm;
 	if (left <= BOT_SPEED_NORMAL) {
-		pwm = (int16_t)(((float)PWMMAX / (BOT_SPEED_MAX * 4.0f)) * left) + 50;
+		pwm = (int16_t)(((float)PWMMAX / (BOT_SPEED_MAX * 2.f)) * left) + 30;
 	} else {
 		pwm = (int16_t)(((float)PWMMAX / (BOT_SPEED_MAX * 1.1f)) * left) - 30;
 	}
@@ -446,7 +459,7 @@ void motor_set(int16_t left, int16_t right) {
 		speed_r = -right;
 	}
 	if (right <= BOT_SPEED_NORMAL) {
-		pwm = (int16_t)(((float)PWMMAX / (BOT_SPEED_MAX * 4.0f)) * right) + 50;
+		pwm = (int16_t)(((float)PWMMAX / (BOT_SPEED_MAX * 2.f)) * right) + 30;
 	} else {
 		pwm = (int16_t)(((float)PWMMAX / (BOT_SPEED_MAX * 1.1f)) * right) - 30;
 	}
@@ -455,8 +468,13 @@ void motor_set(int16_t left, int16_t right) {
 	motor_update(1);
 #else
 	/* PC-Version */
+#ifdef ARM_LINUX_BOARD
+	speed_l = left * speedSignLeft;
+	speed_r = right * speedSignRight;
+#else
 	speed_l = left * speedSignLeft / 2;
 	speed_r = right * speedSignRight / 2;
+#endif // ARM_LINUX_BOARD
 	bot_motor(speed_l, speed_r);
 #endif // MCU
 #endif // SPEED_CONTROL_AVAILABLE
@@ -491,13 +509,32 @@ void motor_init(void) {
  * \param servo	Nummer des Servos
  * \param pos	Zielwert
  *
- * Sinnvolle Werte liegen zwischen DOOR_CLOSE und DOOR_OPEN, oder SERVO_OFF fuer Servo aus
+ * Sinnvolle Werte liegen zwischen DOOR_CLOSE / CAM_LEFT und DOOR_OPEN / CAM_RIGHT oder SERVO_OFF fuer Servo aus
  */
 void servo_set(uint8_t servo, uint8_t pos) {
-	if ((servo == SERVO1) && (pos != SERVO_OFF)) {
-		if (pos < DOOR_CLOSE) pos = DOOR_CLOSE;
-		if (pos > DOOR_OPEN) pos = DOOR_OPEN;
+	if (servo < SERVO1 || servo > SERVO2) {
+		return;
 	}
+
+	if ((servo == SERVO1) && (pos != SERVO_OFF)) {
+		if (pos < DOOR_CLOSE) {
+			pos = DOOR_CLOSE;
+		} else if (pos > DOOR_OPEN) {
+			pos = DOOR_OPEN;
+		}
+		servo_pos[0] = pos;
+	}
+	if ((servo == SERVO2) && (pos != SERVO_OFF)) {
+		if (pos < CAM_LEFT) {
+			pos = CAM_LEFT;
+		} else if (pos > CAM_RIGHT) {
+			pos = CAM_RIGHT;
+		}
+		servo_pos[1] = pos;
+	}
+
+	servo_active[servo - 1] = pos != SERVO_OFF;
+
 	servo_low(servo, pos);
 }
 

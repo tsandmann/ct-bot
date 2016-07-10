@@ -17,11 +17,11 @@
  *
  */
 
-/*!
- * @file 	os_scheduler.c
- * @brief 	Mini-Scheduler fuer BotOS
- * @author 	Timo Sandmann (mail@timosandmann.de)
- * @date 	02.10.2007
+/**
+ * \file 	os_scheduler.c
+ * \brief 	Mini-Scheduler fuer BotOS
+ * \author 	Timo Sandmann (mail@timosandmann.de)
+ * \date 	02.10.2007
  */
 
 #ifdef MCU
@@ -38,6 +38,7 @@
 #include "map.h"
 #include "display.h"
 #include "log.h"
+#include "uart.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -46,29 +47,25 @@
 #error "Compiler zu alt, mindestens 4.2.2 noetig!"	// fuer __attribute__((OS_task))
 #endif
 
-volatile uint8_t os_scheduling_allowed = 1;	/*!< sperrt den Scheduler, falls != 1. Sollte nur per os_enterCS() / os_exitCS() veraendert werden! */
+volatile uint8_t os_scheduling_allowed = 1;	/**< sperrt den Scheduler, falls != 1. Sollte nur per os_enterCS() / os_exitCS() veraendert werden! */
 
-uint8_t os_idle_stack[OS_IDLE_STACKSIZE];	/*!< Stack des Idle-Threads */
+uint8_t os_idle_stack[OS_IDLE_STACKSIZE];	/**< Stack des Idle-Threads */
 
-static volatile uint32_t idle_counter[3];	/*!< Variable, die im Idle-Thread laufend inkrementiert wird */
-#define ZYCLES_PER_IDLERUN	38 /*!< Anzahl der CPU-Zyklen fuer einen Durchlauf der Idle-Schleife */
-
-#ifdef DISPLAY_OS_AVAILABLE
-uint8_t uart_log = 0; /*!< Zaehler fuer UART-Auslastung */
-#endif
+static volatile uint32_t idle_counter[3];	/**< Variable, die im Idle-Thread laufend inkrementiert wird */
+#define ZYCLES_PER_IDLERUN	61 /**< Anzahl der CPU-Zyklen fuer einen Durchlauf der Idle-Schleife */
 
 #ifdef OS_KERNEL_LOG_AVAILABLE
 typedef struct {
-	uint16_t time; /*!< Timestamp */
-	uint8_t from;  /*!< Thread, der unterbrochen wurde */
-	uint8_t to;    /*!< Thread, der fortgesetzt wurde */
-} kernel_log_t; /*!< Log-Eintrag fuer Kernel-LOG */
-static kernel_log_t kernel_log[OS_KERNEL_LOG_SIZE]; /*!< Puffer fuer Kernel-LOG-Eintraege */
-static fifo_t kernel_log_fifo; /*!< Fifo fuer Kernel-LOG-Eintraege */
-static kernel_log_t log_entry; /*!< Letzter Kernel-LOG Eintrag */
-static uint8_t kernel_log_on = 0; /*!< Schalter um das Logging an und aus zu schalten */
+	uint16_t time; /**< Timestamp */
+	uint8_t from;  /**< Thread, der unterbrochen wurde */
+	uint8_t to;    /**< Thread, der fortgesetzt wurde */
+} kernel_log_t; /**< Log-Eintrag fuer Kernel-LOG */
+static kernel_log_t kernel_log[OS_KERNEL_LOG_SIZE]; /**< Puffer fuer Kernel-LOG-Eintraege */
+static fifo_t kernel_log_fifo; /**< Fifo fuer Kernel-LOG-Eintraege */
+static kernel_log_t log_entry; /**< Letzter Kernel-LOG Eintrag */
+static uint8_t kernel_log_on = 0; /**< Schalter um das Logging an und aus zu schalten */
 
-/*!
+/**
  * Initialisiert das Kernel-LOG
  */
 void os_kernel_log_init(void) {
@@ -78,16 +75,16 @@ void os_kernel_log_init(void) {
 #endif // OS_KERNEL_LOG_AVAILABLE
 
 #ifdef MEASURE_UTILIZATION
-#define UTIL_LOG_TIME		25  /*!< Zeitintervall zwischen zwei Auslastungsberechnungen [ms] */
-#define MAX_UTIL_ENTRIES	256 /*!< Maximale Anzahl an Auslastungsdatensaetzen (muss 2er-Potenz sein!) */
+#define UTIL_LOG_TIME		25  /**< Zeitintervall zwischen zwei Auslastungsberechnungen [ms] */
+#define MAX_UTIL_ENTRIES	256 /**< Maximale Anzahl an Auslastungsdatensaetzen (muss 2er-Potenz sein!) */
 
-static uint8_t util_data[MAX_UTIL_ENTRIES][OS_MAX_THREADS]; /*!< Puffer fuer Auslastungsstatistik */
-static uint16_t missed_deadlines[OS_MAX_THREADS]; /*!< Anzahl der nicht eingehaltenen Deadlines */
-static uint16_t util_count = 0;		 /*!< Anzahl der Eintraege im Puffer */
-static uint16_t last_util_time = 0;  /*!< Zeitpunkt der letzten Erstellung einer Auslastungsstatistik */
-static uint32_t first_util_time = 0; /*!< Zeitpunkt der ersten Erstellung einer Auslastungsstatistik */
+static uint8_t util_data[MAX_UTIL_ENTRIES][OS_MAX_THREADS]; /**< Puffer fuer Auslastungsstatistik */
+static uint16_t missed_deadlines[OS_MAX_THREADS]; /**< Anzahl der nicht eingehaltenen Deadlines */
+static uint16_t util_count = 0;		 /**< Anzahl der Eintraege im Puffer */
+static uint16_t last_util_time = 0;  /**< Zeitpunkt der letzten Erstellung einer Auslastungsstatistik */
+static uint32_t first_util_time = 0; /**< Zeitpunkt der ersten Erstellung einer Auslastungsstatistik */
 
-/*!
+/**
  * Aktualisiert die Statistikdaten zur CPU-Auslastung
  */
 void os_calc_utilization(void) {
@@ -123,7 +120,7 @@ void os_calc_utilization(void) {
 	}
 }
 
-/*!
+/**
  * Loescht alle Statistikdaten zur CPU-Auslastung
  */
 void os_clear_utilization(void) {
@@ -140,7 +137,7 @@ void os_clear_utilization(void) {
 	os_exitCS();
 }
 
-/*!
+/**
  * Gibt die gesammelten Statistikdaten zur CPU-Auslastung per LOG aus
  */
 void os_print_utilization(void) {
@@ -177,7 +174,7 @@ void os_print_utilization(void) {
 	if (idle != idle2 && idle != idle3) {
 		idle = idle2; // idle enthaelt den falschen Wert, also sind idle2 und idle3 korrekt
 	}
-	uint32_t idle_ticks = (uint32_t) ((float) idle * (ZYCLES_PER_IDLERUN * 1000000.0f / F_CPU / TIMER_STEPS));
+	uint32_t idle_ticks = (uint32_t) ((float) idle * (ZYCLES_PER_IDLERUN * 1000000.f / F_CPU / TIMER_STEPS));
 
 	uint8_t idle_pc = (uint8_t) (idle_ticks * 100 / runtime);
 	LOG_INFO("%u %% idle", idle_pc);
@@ -185,11 +182,30 @@ void os_print_utilization(void) {
 }
 #endif // MEASURE_UTILIZATION
 
-/*!
+/**
  * Idle-Thread
  */
 void os_idle(void) {
-	while(42) {
+	while (42) {
+		const uint8_t sreg = SREG;
+		__builtin_avr_cli();
+		const uint32_t now = tickCount.u32;
+		os_delayed_func_t* ptr = (os_delayed_func_t*) os_delayed_next_p; // cast away volatile
+		SREG = sreg;
+
+		if (ptr->p_func && ptr->runtime <= now) { // Funktion registriert und Ausfuehrungszeit erreicht
+			ptr->p_func(ptr->p_data);
+			ptr->p_func = NULL;
+			ptr->runtime = (uint32_t) -1;
+
+			/* next Zeiger updaten */
+			ptr = os_delayed_func_search_next();
+			const uint8_t sreg = SREG;
+			__builtin_avr_cli();
+			os_delayed_next_p = ptr;
+			SREG = sreg;
+		}
+
 #ifndef OS_KERNEL_LOG_AVAILABLE
 		/* Idle-Counter wird inkrementiert und 3-mal gespeichert.
 		 * Durch die 2 Backups gibt es immer mindestens 2 Kopien,
@@ -199,7 +215,8 @@ void os_idle(void) {
 		idle_counter[0] = tmp;
 		idle_counter[1] = tmp;
 		idle_counter[2] = tmp;
-		// 38 Zyklen pro Durchlauf => 2375 ns @ 16 MHz, 1900 ns @ 20 MHz
+
+		// 61 Zyklen pro Durchlauf => 3812 ns @ 16 MHz, 3050 ns @ 20 MHz
 #else
 		if (kernel_log_fifo.count > 0) {
 			kernel_log_t data;
@@ -210,9 +227,9 @@ void os_idle(void) {
 	}
 }
 
-/*!
+/**
  * Aktualisiert den Schedule, prioritaetsbasiert
- * @param tickcount	Wert des Timer-Ticks (32 Bit)
+ * \param tickcount	Wert des Timer-Ticks (32 Bit)
  */
 void os_schedule(uint32_t tickcount) {
 	/* Mutex abfragen / setzen => Scheduler ist nicht reentrant! */
@@ -221,89 +238,137 @@ void os_schedule(uint32_t tickcount) {
 		return;
 	}
 
-	/* Naechsten lauffaehigen Thread mit hoechster Prioritaet suchen.
-	 * Das ist zwar in O(n), aber wir haben nur eine sehr beschraenkte Anzahl an Threads! */
-	uint8_t i;
-	Tcb_t * ptr = os_threads;
-	// os_scheduling_allowed == 0, sonst waeren wir nicht hier
-	for (i = os_scheduling_allowed; i < OS_MAX_THREADS; ++i, ++ptr) {
-		if (ptr->stack != NULL) {
-			/* Es existiert noch ein Thread in der Liste */
-			if (ptr->wait_for->value == 0 && ptr->nextSchedule <= tickcount) {
-				/* Der Thread ist nicht blockiert */
-				if (ptr != os_thread_running) {
+	do {
+		/* Naechsten lauffaehigen Thread mit hoechster Prioritaet suchen.
+		 * Das ist zwar in O(n), aber wir haben nur eine sehr beschraenkte Anzahl an Threads! */
+		uint8_t i;
+		Tcb_t * ptr = os_threads;
+		// os_scheduling_allowed == 0, sonst waeren wir nicht hier
+		for (i = os_scheduling_allowed; i < OS_MAX_THREADS; ++i, ++ptr) {
+			if (ptr->stack != NULL) {
+				/* Es existiert noch ein Thread in der Liste */
+				if (ptr->wait_for->value == 0 && ptr->nextSchedule <= tickcount) {
+					/* Der Thread ist nicht blockiert */
+					if (ptr != os_thread_running) {
 #ifdef OS_KERNEL_LOG_AVAILABLE
-					if (kernel_log_on != 0) {
-						log_entry.time = (uint16_t) tickcount;
-						log_entry.from = (uint8_t) (os_thread_running - os_threads);
-						log_entry.to = (uint8_t) (ptr - os_threads);
-						fifo_put_data(&kernel_log_fifo, &log_entry, sizeof(log_entry));
-					}
+						if (kernel_log_on != 0) {
+							log_entry.time = (uint16_t) tickcount;
+							log_entry.from = (uint8_t) (os_thread_running - os_threads);
+							log_entry.to = (uint8_t) (ptr - os_threads);
+							fifo_put_data(&kernel_log_fifo, &log_entry, sizeof(log_entry));
+						}
 #endif // OS_KERNEL_LOG_AVAILABLE
 
 #ifdef MEASURE_UTILIZATION
-					os_thread_running->statistics.runtime += (uint16_t) ((uint16_t) tickcount - os_thread_running->lastSchedule);
+						os_thread_running->statistics.runtime += (uint16_t) ((uint16_t) tickcount - os_thread_running->lastSchedule);
 #endif
-					/* switch Thread */
-					ptr->lastSchedule = (uint16_t) tickcount;
-					//-- hier laeuft noch der alte Thread (SP zeigt auf os_thread_running's Stack) --//
-					os_switch_thread(os_thread_running, ptr);
-					//-- jetzt laeuft bereits der neue Thread (SP zeigt auf ptr's Stack) --//
-					// => return fuehrt den NEUEN Thread weiter aus -> (noch) KEIN Ruecksprung zum Caller
-					break;
-				} else {
-					/* aktiver Thread darf weiterlaufen */
-					// => return fuehrt den ALTEN Thread weiter aus -> Funktionsaufruf mit "normaler" Rueckkehr
-					break;
+						/* switch Thread */
+						ptr->lastSchedule = (uint16_t) tickcount;
+						//-- hier laeuft noch der alte Thread (SP zeigt auf os_thread_running's Stack) --//
+						os_switch_thread(os_thread_running, ptr);
+						//-- jetzt laeuft bereits der neue Thread (SP zeigt auf ptr's Stack) --//
+						// => return fuehrt den NEUEN Thread weiter aus -> (noch) KEIN Ruecksprung zum Caller
+						break;
+					} else {
+						/* aktiver Thread darf weiterlaufen */
+						// => return fuehrt den ALTEN Thread weiter aus -> Funktionsaufruf mit "normaler" Rueckkehr
+						break;
+					}
 				}
 			}
 		}
-	}
+	} while (test_and_set((uint8_t *) &os_scheduling_allowed, 1) == 2); // Mutex freigeben
 
-	/* Mutex freigeben */
-	os_scheduling_allowed = 1;
 	/* Ruecksprung dorthin, wo der (neu) geschedulte Thread vor SEINER Unterbrechung war,
 	 * also nicht zwangsweise in die Funktion, die (direkt) vor dem Scheduler-Aufruf
 	 * ausgefuehrt wurde! */
 }
 
+/**
+ * Berechnet CPU und UART Auslastung
+ * @param cpu Zeiger auf Ausgabeparameter fuer CPU-Auslastung
+ * @param uart_in Zeiger auf Ausgabeparameter fuer UART-Auslastung eingehend
+ * @param uart_out Zeiger auf Ausgabeparameter fuer UART-Auslastung ausgehend
+ */
+void os_get_utilizations(uint8_t* cpu, uint8_t* uart_in, uint8_t* uart_out) {
+	static uint32_t last_time = 0;
+	static uint32_t last_idle = 0;
+#ifdef UART_AVAILABLE
+	static uint32_t last_uart_in = 0;
+	static uint32_t last_uart_out = 0;
+#endif
+
+	/* CPU-Auslastung berechnen (Durchschnitt seit letztem Aufruf) */
+	const uint32_t time = TIMER_GET_TICKCOUNT_32;
+
+	/* idle_counter kann nicht atomar inkrementiert werden und wir wissen nicht, bei welcher Instruktion
+	 * der idle-Thread unterbrochen wurde. Da es aber 3 Kopien des Idle-Zaehlers gibt, muessen immer
+	 * mindesten zwei den korrekten Wert enthalten. Genau dieses Paar suchen wir nun und verwenden den Wert. */
+	uint32_t idle = idle_counter[0];
+	uint32_t idle2 = idle_counter[1];
+	uint32_t idle3 = idle_counter[2];
+	if (idle != idle2 && idle != idle3) {
+		idle = idle2; // idle enthaelt den falschen Wert, also sind idle2 und idle3 korrekt
+	}
+
+	const uint32_t time_diff = time - last_time;
+	const uint32_t idle_diff = idle - last_idle;
+	last_time = time;
+	last_idle = idle;
+	const uint32_t idle_ticks = (uint32_t) ((float) idle_diff * (ZYCLES_PER_IDLERUN * 1000000.f / F_CPU / TIMER_STEPS));
+	const uint8_t idle_pc = (uint8_t) (idle_ticks * 100 / time_diff);
+
+	*cpu = (uint8_t) (100 - idle_pc);
+#ifdef UART_AVAILABLE
+	const uint8_t sreg = SREG;
+	__builtin_avr_cli();
+#ifdef FIFO_STATS_ENABLED
+	const uint32_t uart_in_tmp = uart_infifo.written;
+	const uint32_t uart_out_tmp = uart_outfifo.written;
+#else
+	const uint32_t uart_in_tmp = 0, uart_out_tmp = 0;
+#endif
+	SREG = sreg;
+	const uint32_t uart_diff_in = uart_in_tmp - last_uart_in;
+	last_uart_in = uart_in_tmp;
+	const uint32_t uart_diff_out = uart_out_tmp - last_uart_out;
+	last_uart_out = uart_out_tmp;
+	const uint16_t uart_max = UART_BAUD / 10;
+
+	*uart_in = (uint8_t) ((float) uart_diff_in / (float) time_diff / (176.f / 1000000.f / 100.f) / uart_max); // %
+	*uart_out = (uint8_t) ((float) uart_diff_out / (float) time_diff / (176.f / 1000000.f / 100.f) / uart_max); // %
+#else
+	*uart_in = 0;
+	*uart_out = 0;
+#endif // UART_AVAILABLE
+}
+
 #ifdef DISPLAY_OS_AVAILABLE
-/*!
+/**
  * Handler fuer OS-Display
  */
 void os_display(void) {
 	uint8_t i;
 #ifndef OS_KERNEL_LOG_AVAILABLE
-	static uint32_t last_time;
-	static uint32_t last_idle;
+	static char display_buf[20];
 
-	/* CPU-Auslastung berechnen (Durchschnitt seit letztem Aufruf) */
-	uint32_t time = TIMER_GET_TICKCOUNT_32;
-	uint32_t idle = idle_counter[0];
-	uint32_t time_diff = time - last_time;
-	uint32_t idle_diff = idle - last_idle;
-	last_time = time;
-	last_idle = idle;
-	uint32_t idle_ticks = (uint32_t) ((float) idle_diff * (ZYCLES_PER_IDLERUN * 1000000.0f / F_CPU / TIMER_STEPS));
-	uint8_t idle_pc = (uint8_t) (idle_ticks * 100 / time_diff);
-	uint8_t cpu_pc = (uint8_t) (100 - idle_pc);
-
-	uint8_t uart_pc = (uint8_t) ((float) uart_log * (100.0f / (176.0f / 1000.0f)) / (float) time_diff); // uart_log wird jede ms inkrementiert
-	uart_log = 0;
+	uint8_t cpu_pc, uart_pc_in, uart_pc_out;
+	os_get_utilizations(&cpu_pc, &uart_pc_in, &uart_pc_out);
 
 	/* Balken fuer Auslastung ausgeben */
-	display_cursor(1, 1);
 	for (i = 0; i < cpu_pc / 5; ++i) {
-		display_data((char) 0xff); // schwarzes Feld
+		display_buf[i] = (char) 0xff; // schwarzes Feld
 	}
 
 	/* Spaces fuer Idle ausgeben */
 	for (; i < 20; ++i) {
-		display_data(0x10); // Space
+		display_buf[i] = 0x10; // Space
 	}
+	display_cursor(1, 1);
+	display_printf("%s", display_buf);
 
 	display_cursor(2, 1);
-	display_printf("CPU:%3u%% UART:%3u%%", cpu_pc, uart_pc);
+	display_printf("CPU%3u%% I/O%3u%%|%3u%%", cpu_pc, uart_pc_in, uart_pc_out);
 #else
 	display_cursor(1, 1);
 	display_puts("4: Kernel-LOG ");
@@ -312,7 +377,7 @@ void os_display(void) {
 	} else {
 		display_puts("aus");
 	}
-#endif //OS_KERNEL_LOG_AVAILABLE
+#endif // OS_KERNEL_LOG_AVAILABLE
 
 	display_cursor(3, 1);
 	display_puts("dump Stacks: 1: Main");
@@ -327,8 +392,6 @@ void os_display(void) {
 	/* Debug-Info zum freien Stackspeicher ausgeben */
 	os_print_stackusage();
 
-	extern unsigned char * __brkval;
-
 	/* Idle-Thread suchen */
 	Tcb_t * pIdle = os_threads;
 	for (i = 0; i < OS_MAX_THREADS - 1; ++i) {
@@ -341,12 +404,13 @@ void os_display(void) {
 #ifdef RC5_AVAILABLE
 	/* Keyhandler */
 	switch (RC5_Code) {
-	case RC5_CODE_1:
+	case RC5_CODE_1: {
 #ifdef OS_DEBUG
 		os_stack_dump(&os_threads[0], (unsigned char *) RAMEND, (uint16_t) ((unsigned char *) RAMEND - __brkval));
 #endif
 		RC5_Code = 0;
 		break;
+	}
 
 	case RC5_CODE_2:
 #ifdef OS_DEBUG
@@ -355,14 +419,14 @@ void os_display(void) {
 		RC5_Code = 0;
 		break;
 
-#ifdef MAP_AVAILABLE
 	case RC5_CODE_3:
+#ifdef MAP_AVAILABLE
 #ifdef OS_DEBUG
 		os_stack_dump(&os_threads[1], &map_update_stack[MAP_UPDATE_STACK_SIZE - 1], MAP_UPDATE_STACK_SIZE);
 #endif
+#endif // MAP_AVAILABLE
 		RC5_Code = 0;
 		break;
-#endif // MAP_AVAILABLE
 
 #ifdef OS_KERNEL_LOG_AVAILABLE
 	case RC5_CODE_4:

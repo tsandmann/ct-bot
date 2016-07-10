@@ -4,24 +4,53 @@ eclipse.preferences.version=1
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1077176217=<?xml version\="1.0" encoding\="UTF-8"?>\n<environment>\n<variable name\="CPATH" operation\="remove"/>\n<variable name\="C_INCLUDE_PATH" operation\="remove"/>\n</environment>\n
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1077176217.177267905/CPATH/delimiter=;
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1077176217.177267905/CPATH/operation=remove
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1077176217.177267905/CPLUS_INCLUDE_PATH/delimiter=;
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1077176217.177267905/CPLUS_INCLUDE_PATH/operation=remove
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1077176217.177267905/C_INCLUDE_PATH/delimiter=;
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1077176217.177267905/C_INCLUDE_PATH/operation=remove
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1077176217.177267905/append=true
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1077176217.177267905/appendContributed=true
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1152668458.56973385.1653895231/CPATH/delimiter=\:
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1152668458.56973385.1653895231/CPATH/operation=remove
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1152668458.56973385.1653895231/CPLUS_INCLUDE_PATH/delimiter=\:
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1152668458.56973385.1653895231/CPLUS_INCLUDE_PATH/operation=remove
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1152668458.56973385.1653895231/C_INCLUDE_PATH/delimiter=\:
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1152668458.56973385.1653895231/C_INCLUDE_PATH/operation=remove
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1152668458.56973385.1653895231/append=true
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1152668458.56973385.1653895231/appendContributed=true
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1197043799=<?xml version\="1.0" encoding\="UTF-8"?>\n<environment>\n<variable name\="CPATH" operation\="remove"/>\n<variable name\="C_INCLUDE_PATH" operation\="remove"/>\n</environment>\n
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1197043799.2016949464=<?xml version\="1.0" encoding\="UTF-8"?>\n<environment>\n<variable name\="CPATH" operation\="remove"/>\n<variable name\="C_INCLUDE_PATH" operation\="remove"/>\n</environment>\n
-environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988/CPATH/delimiter=;
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988/CPATH/delimiter=\:
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988/CPATH/operation=remove
-environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988/C_INCLUDE_PATH/delimiter=;
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988/CPLUS_INCLUDE_PATH/delimiter=\:
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988/CPLUS_INCLUDE_PATH/operation=remove
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988/C_INCLUDE_PATH/delimiter=\:
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988/C_INCLUDE_PATH/operation=remove
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988/append=true
 environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988/appendContributed=true
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498/CPATH/delimiter=\:
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498/CPATH/operation=remove
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498/CPLUS_INCLUDE_PATH/operation=remove
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498/C_INCLUDE_PATH/delimiter=\:
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498/C_INCLUDE_PATH/operation=remove
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498/append=true
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498/appendContributed=true
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659/CPATH/delimiter=\:
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659/CPATH/operation=remove
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659/CPLUS_INCLUDE_PATH/delimiter=\:
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659/CPLUS_INCLUDE_PATH/operation=remove
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659/C_INCLUDE_PATH/delimiter=\:
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659/C_INCLUDE_PATH/operation=remove
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659/append=true
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659/appendContributed=true
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867/CPATH/delimiter=\:
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867/CPATH/operation=remove
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867/CPLUS_INCLUDE_PATH/delimiter=\:
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867/CPLUS_INCLUDE_PATH/operation=remove
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867/C_INCLUDE_PATH/delimiter=\:
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867/C_INCLUDE_PATH/operation=remove
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867/append=true
+environment/buildEnvironmentInclude/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867/appendContributed=true
 environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.1077176217=<?xml version\="1.0" encoding\="UTF-8"?>\n<environment>\n<variable name\="LIBRARY_PATH" operation\="remove"/>\n</environment>\n
 environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.1077176217.177267905/LIBRARY_PATH/delimiter=;
 environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.1077176217.177267905/LIBRARY_PATH/operation=remove
@@ -33,10 +62,22 @@ environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.115266
 environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.1152668458.56973385.1653895231/appendContributed=true
 environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.1197043799=<?xml version\="1.0" encoding\="UTF-8"?>\n<environment>\n<variable name\="LIBRARY_PATH" operation\="remove"/>\n</environment>\n
 environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.1197043799.2016949464=<?xml version\="1.0" encoding\="UTF-8"?>\n<environment>\n<variable name\="LIBRARY_PATH" operation\="remove"/>\n</environment>\n
-environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988/LIBRARY_PATH/delimiter=;
+environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988/LIBRARY_PATH/delimiter=\:
 environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988/LIBRARY_PATH/operation=remove
 environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988/append=true
 environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988/appendContributed=true
+environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498/LIBRARY_PATH/delimiter=\:
+environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498/LIBRARY_PATH/operation=remove
+environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498/append=true
+environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498/appendContributed=true
+environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659/LIBRARY_PATH/delimiter=\:
+environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659/LIBRARY_PATH/operation=remove
+environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659/append=true
+environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659/appendContributed=true
+environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867/LIBRARY_PATH/delimiter=\:
+environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867/LIBRARY_PATH/operation=remove
+environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867/append=true
+environment/buildEnvironmentLibrary/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867/appendContributed=true
 environment/project=<?xml version\="1.0" encoding\="UTF-8"?>\n<environment/>\n
 environment/project/cdt.managedbuild.config.gnu.exe.debug.1077176217=<?xml version\="1.0" encoding\="UTF-8"?>\n<environment/>\n
 environment/project/cdt.managedbuild.config.gnu.exe.debug.1197043799=<?xml version\="1.0" encoding\="UTF-8"?>\n<environment>\n<variable delimiter\="\:" name\="PATH" operation\="append" value\="/usr/local/avr/bin"/>\n</environment>\n

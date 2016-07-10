@@ -209,7 +209,9 @@ int8_t botfs_write_low(uint16_t block, void * buffer) {
  */
 void botfs_close_volume_low(void) {
 	botfs_acquire_lock_low(&file_mutex);
-	fclose(image_file);
+	if (image_file != NULL) {
+		fclose(image_file);
+	}
 	botfs_release_lock_low(&file_mutex);
 }
 

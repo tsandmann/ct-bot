@@ -24,8 +24,9 @@
  * \date 	28.11.2007
  *
  *
- *
- *** ABL in EBNF: ***
+ */
+
+/* ABL in EBNF:
  *
  * letter          = 'a' | 'b' | ... | 'z' | 'A' | 'B' | ... | 'Z' ;
  * digit           = '0' | '1' | ... | '9' ;							(* true=1; false=0 *)

@@ -1,2 +1,10 @@
+.DS_Store
 /Debug-*
-bot-local-override.h
+/botfs.img
+/map.pgm
+/sim.map
+/Documentation/api
+/.dep/
+/README.md
+/bot-local-override.h
+

@@ -25,8 +25,13 @@
  */
 
 #include "init.h"
+#include "timer.h"
 #include "uart.h"
+#include "tcp.h"
 #include "bot-2-sim.h"
+#include "bot-2-atmega.h"
+#include "bot-2-linux.h"
+#include "shift.h"
 #include "display.h"
 #include "led.h"
 #include "ena.h"
@@ -37,6 +42,11 @@
 #include "i2c.h"
 #include "twi.h"
 #include "gui.h"
+#include "motor.h"
+#include "ir-rc5.h"
+#include "botfs.h"
+#include <stdlib.h>
+
 
 mmc_buffers_t mmc_buffers; /**< Puffer fuer alle MMC-Transfers */
 
@@ -51,8 +61,22 @@ void ctbot_init(int argc, char * argv[]) {
 #ifdef UART_AVAILABLE
 	uart_init();
 #endif
+#if defined PC && defined BOT_2_SIM_AVAILABLE
+	tcp_init();
+#endif
+#ifdef ARM_LINUX_BOARD
+	if (bot_2_atmega_init() != 0) {
+		exit(1);
+	}
+#endif
+#ifdef COMMAND_AVAILABLE
+	command_init();
+#endif
 #ifdef BOT_2_SIM_AVAILABLE
 	bot_2_sim_init();
+#endif
+#ifdef SHIFT_AVAILABLE
+	shift_init();
 #endif
 #ifdef DISPLAY_AVAILABLE
 	display_init();
@@ -117,6 +141,9 @@ void ctbot_init(int argc, char * argv[]) {
 #ifdef DISPLAY_AVAILABLE
 	gui_init();
 #endif
+#ifdef BOT_2_RPI_AVAILABLE
+	bot_2_linux_init();
+#endif
 
 	ctbot_init_low_last();
 
@@ -132,5 +159,3 @@ void ctbot_init(int argc, char * argv[]) {
 #endif
 #endif // WELCOME_AVAILABLE
 }
-
-

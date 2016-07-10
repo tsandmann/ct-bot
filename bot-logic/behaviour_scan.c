@@ -160,10 +160,8 @@ void bot_scan_onthefly_behaviour(Behaviour_t * data) {
 		uint16_t diff = (uint16_t) get_dist(x_pos, y_pos, last_border_x, last_border_y);
 		// ermitteln, wie weit der Bot gedreht hat
 		int16_t turned = turned_angle(last_border_head);
-		if ((
-			  (diff > (SCAN_OTF_RESOLUTION_DISTANCE_BORDER * SCAN_OTF_RESOLUTION_DISTANCE_BORDER)) ||
-			  (turned > SCAN_OTF_RESOLUTION_ANGLE_BORDER)
-			) && ((sensBorderL > BORDER_DANGEROUS) || (sensBorderR > BORDER_DANGEROUS))) {
+		if (((diff > (SCAN_OTF_RESOLUTION_DISTANCE_BORDER * SCAN_OTF_RESOLUTION_DISTANCE_BORDER)) || (turned > SCAN_OTF_RESOLUTION_ANGLE_BORDER))
+			&& ((sensBorderL > BORDER_DANGEROUS) || (sensBorderR > BORDER_DANGEROUS))) {
 				cache_tmp->mode.data.border = 1;
 				cache_tmp->mode.data.distance = 0;
 				cache_tmp->dataL = (uint8_t) (sensBorderL > BORDER_DANGEROUS);

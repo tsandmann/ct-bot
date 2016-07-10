@@ -46,10 +46,10 @@ void bot_sens(void);
 void bot_encoder_isr(void);
 
 #ifdef SPEED_CONTROL_AVAILABLE
-extern uint16_t encTimeL[8];	/*!< Timestamps linker Encoder */
-extern uint16_t encTimeR[8];	/*!< Timestamps rechter Encoder */
-extern uint8_t i_encTimeL;		/*!< Array-Index auf letzten Timestampeintrag links */
-extern uint8_t i_encTimeR;		/*!< Array-Index auf letzten Timestampeintrag rechts */
+extern uint16_t encTimeL[8];	/**< Timestamps linker Encoder */
+extern uint16_t encTimeR[8];	/**< Timestamps rechter Encoder */
+extern uint8_t i_encTimeL;		/**< Array-Index auf letzten Timestampeintrag links */
+extern uint8_t i_encTimeR;		/**< Array-Index auf letzten Timestampeintrag rechts */
 #endif // SPEED_CONTROL_AVAILABLE
 
 #ifdef SPEED_LOG_AVAILABLE
@@ -62,6 +62,7 @@ typedef struct {
 #endif // SPEED_CONTROL_AVAILABLE
 	int16_t pwm;		/**< aktueller PWM-Wert */
 	uint32_t time;		/**< Timestamp */
+	uint8_t enc;		/**< Encoder Pegel */
 } PACKED_FORCE slog_data_t;
 
 #define SLOG_WITH_SPEED_CONTROL	1

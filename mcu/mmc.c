@@ -66,7 +66,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-uint8_t mmc_init_state = 1;	/*!< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
+uint8_t mmc_init_state = 1;	/**< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
 
 #ifndef SPI_AVAILABLE
 /**
@@ -139,8 +139,8 @@ static uint8_t mmc_read_block(uint8_t * cmd, void * buffer, uint16_t count) {
 }
 #else // SPI_AVAILABLE
 
-#define mmc_read_byte	SPI_MasterReceive /*!< read_byte() per SPI */
-#define mmc_write_byte	SPI_MasterTransmit /*!< write_byte() per SPI */
+#define mmc_read_byte	SPI_MasterReceive /**< read_byte() per SPI */
+#define mmc_write_byte	SPI_MasterTransmit /**< write_byte() per SPI */
 
 /**
  * wartet, bis MMC mit "data" antwortet oder der Timeout zuschlaegt
