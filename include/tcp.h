@@ -32,7 +32,7 @@
 #include "command.h"
 
 #define IP "localhost"		/**< IP, mit der verbunden werden soll (normalerweise localhost) */
-#define PORT 10001			/**< Port, mit dem verbunden werden soll */
+#define PORT 10003			/**< Port, mit dem verbunden werden soll */
 #define SERVERPORT 10002	/**< Port fuer TCP-Server */
 
 extern int tcp_sock;		/**< Unser TCP-Socket */

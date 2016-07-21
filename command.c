@@ -1001,8 +1001,8 @@ int8_t command_evaluate(void) {
 			sum += diff;
 			cnt++;
 			if (cnt == 1024) {
-				LOG_INFO("time_diff avg=%lu us", sum / cnt);
-				fflush(stdout);
+//				LOG_INFO("time_diff avg=%lu us", sum / cnt);
+//				fflush(stdout);
 				cnt = 0;
 				sum = 0;
 			}
