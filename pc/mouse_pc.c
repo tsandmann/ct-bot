@@ -36,11 +36,13 @@
 void mouse_sens_init(void) {
 }
 
+#ifdef BOT_2_SIM_AVAILABLE
 /**
  * Uebertraegt ein Bild vom Maussensor an den PC
  */
 void mouse_transmit_picture(void) {
 }
+#endif // BOT_2_SIM_AVAILABLE
 
 /**
  * Gibt den SQUAL-Wert zurueck. Dieser gibt an, wieviele Merkmale der Sensor
