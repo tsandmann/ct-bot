@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2016-09-18: Konfigurationsoptionen aufgeraeumt, Dokumentation ueberarbeitet
+
 2016-07-09: Release 23 (v1.23)
 
 2016-07-03: Unterstuetzung der MSYS2 Toolchain unter Windows, siehe https://www.heise.de/ct/projekte/machmit/ctbot/wiki/InstallationsanleitungR23 zur Einrichtung
