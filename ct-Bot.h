@@ -26,9 +26,9 @@
 #ifndef CT_BOT_H_
 #define CT_BOT_H_
 
-/********************************************************************
- * Module switches, to make code smaller if features are not needed *
- ********************************************************************/
+/*** Konfigurierbare Optionen
+ * Die Optionen lassen sich jeweils per #define ein- oder ausschalten. Das Ausschalten erfolgt durch die Kommentarzeichen am Anfang der Zeile.
+ * Ausgeschaltete Optionen belegen keinen Platz im Flash-Speicher des Controllers. ***/
 
 /* Logging-Funktionen */
 //#define LOG_CTSIM_AVAILABLE					/**< Logging zum ct-Sim (PC und MCU) */
@@ -79,7 +79,6 @@
 /* MMC-/SD-Karte als Speichererweiterung (Erweiterungsmodul) */
 //#define MMC_AVAILABLE						/**< haben wir eine MMC/SD-Karte zur Verfuegung? */
 #define BOT_FS_AVAILABLE					/**< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC moeglich) */
-//#define MMC_VM_AVAILABLE					/**< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
 
 
 /* Hardware-Treiber */
@@ -97,15 +96,17 @@
 #define POS_STORE_AVAILABLE					/**< Positionsspeicher vorhanden */
 #define OS_AVAILABLE						/**< Aktiviert BotOS fuer Threads und Scheduling */
 //#define BOOTLOADER_AVAILABLE				/**< Aktiviert den Bootloadercode - das ist nur noetig fuer die einmalige "Installation" des Bootloaders */
-//#define EEPROM_EMU_AVAILABLE				/**< Aktiviert die EEPROM-Emulation fuer PC, siehe Hinweise in pc/eeprom_pc.c */
 #define ARM_LINUX_BOARD						/**< Code fuer ARM-Linux Board aktivieren, wenn ein ARM-Linux-* Target ausgewaehlt wurde. Fuehrt den high-level Code und die Verhalten aus */
 //#define BOT_2_RPI_AVAILABLE					/**< Kommunikation von ATmega mit einem Linux-Board (z.B. Rapsberry Pi) aktivieren. Fuehrt auf dem ATmega den low-level Code aus */
 
 
+/* Veraltete Optionen */
+//#define MMC_VM_AVAILABLE					/**< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
+//#define EEPROM_EMU_AVAILABLE				/**< Aktiviert die EEPROM-Emulation fuer PC, siehe Hinweise in pc/eeprom_pc.c */
 
-/************************************************************
- * Some Dependencies!!!
- ************************************************************/
+
+
+/*** Abhaengigkeiten ***/
 
 #include "global.h" // ct-Bot Datentypen
 #include "bot-local.h" // Konfig-Optionen die bei den Bots verschieden sein koennen

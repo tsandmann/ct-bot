@@ -631,7 +631,7 @@ void deactivateAllBehaviours(void) {
 	Behaviour_t * job; // Zeiger auf ein Verhalten
 	// Einmal durch die Liste gehen und (fast) alle deaktivieren, Grundverhalten nicht
 	for (job = behaviour; job; job = job->next) {
-		if ((job->priority >= PRIO_VISIBLE_MIN) && (job->priority <= PRIO_VISIBLE_MAX)) {
+		if ((job->priority >= BEHAVIOUR_PRIO_MIN) && (job->priority <= BEHAVIOUR_PRIO_MAX)) {
             // Verhalten deaktivieren
 			LOG_DEBUG("Verhalten %u wird deaktiviert", job->priority);
 			job->active = BEHAVIOUR_INACTIVE;
@@ -801,14 +801,14 @@ void behaviour_display(void) {
 	Behaviour_t * behaviours[8] = { NULL }; // speichert Zeiger auf die Verhalten fuer den Keyhandler zwischen
 	uint8_t i, j, k = 0;
 	Behaviour_t * ptr = behaviour;
-	while (ptr != NULL && ptr->priority > PRIO_VISIBLE_MAX) {
+	while (ptr != NULL && ptr->priority > BEHAVIOUR_PRIO_MAX) {
 		ptr = ptr->next; // alles ausserhalb der Sichtbarkeit ueberspringen
 	}
 	/* Verhalten auf vorherigen Seiten ueberspringen */
 	if (behaviour_page > 0) {
 		for (i = 1; i <= (behaviour_page << 3); ++i) { // 8 Verhalten pro Seite
 			ptr = ptr->next;
-			while (ptr != NULL && ptr->priority > PRIO_VISIBLE_MAX) {
+			while (ptr != NULL && ptr->priority > BEHAVIOUR_PRIO_MAX) {
 				ptr = ptr->next; // alles ausserhalb der Sichtbarkeit ueberspringen
 			}
 			if (ptr == NULL) {
@@ -821,10 +821,10 @@ void behaviour_display(void) {
 	/* max. 4 Zeilen mit jeweils 2 Verhalten (= 8 Verhalten) anzeigbar */
 	for (i = 1; i <= 20; i = (uint8_t) (i + 11)) { // Spalten
 		for (j = 1; j <= 4; ++j) { // Zeilen
-			while (ptr != NULL && ptr->priority > PRIO_VISIBLE_MAX) {
+			while (ptr != NULL && ptr->priority > BEHAVIOUR_PRIO_MAX) {
 				ptr = ptr->next; // alles ausserhalb der Sichtbarkeit ueberspringen
 			}
-			if (ptr == NULL || ptr->priority < PRIO_VISIBLE_MIN) {
+			if (ptr == NULL || ptr->priority < BEHAVIOUR_PRIO_MIN) {
 				if (i == 1 && j == 1 && behaviour_page > 0) {
 					behaviour_page--; // keine unnoetige leere Seite anzeigen
 				}
