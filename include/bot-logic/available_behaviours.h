@@ -27,11 +27,11 @@
 
 #ifdef BEHAVIOUR_AVAILABLE
 
-//#define BEHAVIOUR_PROTOTYPE_AVAILABLE 			/**< Prototyp fuer neue Verhalten */
+#define BEHAVIOUR_PROTOTYPE_AVAILABLE 			/**< Prototyp fuer neue Verhalten */
 
 /* Demo-Verhalten */
-//#define BEHAVIOUR_SIMPLE_AVAILABLE				/**< Beispielverhalten */
-//#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE 			/**< Demoverhalten im Quadrat fahren */
+#define BEHAVIOUR_SIMPLE_AVAILABLE				/**< Beispielverhalten */
+#define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE 			/**< Demoverhalten im Quadrat fahren */
 
 /* Notfall-Verhalten */
 //#define BEHAVIOUR_AVOID_BORDER_AVAILABLE 			/**< Abgruenden ausweichen */

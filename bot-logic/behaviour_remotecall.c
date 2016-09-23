@@ -83,7 +83,9 @@ static const uint8_t * parameter_length = NULL; /**< Hier speichern wir die Laen
  *    jeweilige Parameter benoetigt: Will man also einen uint16_t uebergeben steht da 2,
  *    will man einen float uebergeben 4.
  */
-#define PREPARE_REMOTE_CALL(func, count, param, ...)  {count, {__VA_ARGS__}, #func, param, (Behaviour_t * (*) (Behaviour_t *, ...)) func}
+#define PREPARE_REMOTE_CALL(func, count, param, ...)  {count, {__VA_ARGS__}, #func, param, (Behaviour_t * (*) (Behaviour_t *, ...)) func, func##_behaviour}
+
+#define PREPARE_REMOTE_CALL_ALIAS(func, count, param, ...)  {count, {__VA_ARGS__}, #func, param, (Behaviour_t * (*) (Behaviour_t *, ...)) func, NULL}
 
 /**
  * \brief Hier muessen alle Boten-Funktionen rein, die remote aufgerufen werden sollen.
@@ -183,12 +185,12 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 	/* Fahr- und Positionierungs-Verhalten */
 #ifdef BEHAVIOUR_TURN_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_turn, 1, "int16 degrees", 2),
-	PREPARE_REMOTE_CALL(bot_turn_speed, 3, "int16 degrees, uint16 min, uint16 max", 2, 2, 2),
+	PREPARE_REMOTE_CALL_ALIAS(bot_turn_speed, 3, "int16 degrees, uint16 min, uint16 max", 2, 2, 2),
 #endif
 #ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
-	PREPARE_REMOTE_CALL(bot_goto_dist, 2, "int16 distance, int8 dir", 2, 1),
 	PREPARE_REMOTE_CALL(bot_goto_pos, 3, "int16 x, int16 y, int16 head", 2, 2, 2),
-	PREPARE_REMOTE_CALL(bot_goto_pos_rel, 3, "int16 x, int16 y, int16 head", 2, 2, 2),
+	PREPARE_REMOTE_CALL_ALIAS(bot_goto_dist, 2, "int16 distance, int8 dir", 2, 1),
+	PREPARE_REMOTE_CALL_ALIAS(bot_goto_pos_rel, 3, "int16 x, int16 y, int16 head", 2, 2, 2),
 #endif
 #ifdef BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_goto_obstacle, 2, "int16 distance, uint8 parallel", 2, 1),
@@ -245,7 +247,7 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 #ifdef BEHAVIOUR_ABL_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_abl_check, 1, "uint16 line", 2),
 #endif
-	{0, {0}, "", "", NULL}
+	{0, {0}, "", "", NULL, NULL}
 };
 
 /** Anzahl der Remote-Calls im Array */
@@ -347,9 +349,9 @@ void bot_remotecall_behaviour(Behaviour_t * data) {
 			}
 
 #ifdef PC
-			void (* func) (Behaviour_t * data, ...);
+			Behaviour_t * (* func) (Behaviour_t * data, ...);
 			// Auf dem PC liegt die remotecall_beh_list-Struktur im RAM
-			func = (void (*) (Behaviour_t *, ...)) remotecall_beh_list[function_id].func;
+			func = (Behaviour_t * (*) (Behaviour_t *, ...)) remotecall_beh_list[function_id].func;
 #else // MCU
 			void (* func) (Behaviour_t * data, remote_call_data_t dword1, remote_call_data_t dword2);
 			// Auf dem MCU liegt die remotecall_beh_list-Struktur im Flash und muss erst geholt werden
@@ -370,7 +372,7 @@ void bot_remotecall_behaviour(Behaviour_t * data) {
 			bot_remotecall_fl_dummy(data, parameter[0].fl32, parameter[1].fl32, parameter[2].fl32);
 			func(data, parameter[0], parameter[1], parameter[2]);
 #else // MCU
-			func(data, parameter[1], parameter[0]);	// "rueckwaerts", denn kleinere Parameter-Nr liegen an hoereren Register-Nr.!
+			func(data, parameter[1], parameter[0]); // "rueckwaerts", denn kleinere Parameter-Nr liegen an hoereren Register-Nr.!
 #endif // PC
 			running_behaviour = REMOTE_CALL_RUNNING;
 			break;
@@ -632,6 +634,17 @@ void remotecall_display(void) {
 
 		ptr_call = &remotecall_beh_list[row];
 		display_cursor(i, 1);
+		const Behaviour_t* p_beh = get_behaviour(ptr_call->beh_func);
+		if (p_beh) {
+			LOG_DEBUG("p_beh->prio = %d", p_beh->priority);
+			LOG_DEBUG("p_beh->active = %d", p_beh->active);
+			if (p_beh->active == BEHAVIOUR_ACTIVE) {
+				display_puts("A");
+			} else if (p_beh->subResult == BEHAVIOUR_SUBRUNNING || p_beh->subResult == BEHAVIOUR_SUBBACKGR) {
+				display_puts("S");
+			}
+		}
+		display_cursor(i, 2);
 		const char tmp = (char) (i == (selected_row + 1) ? '>' : ' ');
 		display_printf("%c", tmp);
 		display_flash_puts(ptr_call->name + (sizeof("bot_") - 1));
