@@ -162,7 +162,7 @@ static const char endf[];	/**< Schluesselwort fuer for-Block Ende */
 static const char psh[];	/**< Schluesselwort fuer Stack-push */
 static const char pop[];	/**< Schluesselwort fuer Stack-pop */
 static const char lbl[];	/**< Schluesselwort fuer Sprungmarke */
-static PGM_P keywords[];	/**< Zeiger auf Schluesselwoerter im Flash */
+static PGM_P const keywords[];	/**< Zeiger auf Schluesselwoerter im Flash */
 
 static const char jmp[]		PROGMEM = "jmp";	/**< Schluesselwort fuer Spruenge */
 static const char if_[]		PROGMEM = "if";		/**< Schluesselwort fuer if() */
@@ -176,7 +176,7 @@ static const char lbl[]		PROGMEM = "lbl";	/**< Schluesselwort fuer Sprungmarke *
 static PGM_P p_keywords;						/**< Speicher zur Ablage eines Schluesselwortes im RAM */
 
 /** Zeiger auf Schluesselwoerter im Flash */
-static PGM_P keywords[]	PROGMEM = { jmp, if_, else_, fi_, for_, endf, psh, pop, lbl };
+static PGM_P const keywords[] PROGMEM = { jmp, if_, else_, fi_, for_, endf, psh, pop, lbl };
 
 /** Handler fuer jump-Keyword */
 static void jump_handler(void);
@@ -738,7 +738,14 @@ void bot_abl(Behaviour_t * caller, const char * filename) {
 	}
 	switch_to_behaviour(caller, bot_abl_behaviour, BEHAVIOUR_OVERRIDE);
 	if_state = 0;
+#if __GNUC__ >= 6
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
 	pForState = for_state - 1;
+#if __GNUC__ >= 6
+#pragma GCC diagnostic pop
+#endif
 	abl_sp = ABL_STACK_SIZE - 1;
 	LOG_DEBUG("bot_abl(): loading first segment (512 bytes) of instructions");
 	load_program(0); // i_fetch() checks for NULL
