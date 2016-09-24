@@ -320,12 +320,12 @@ void motor_set(int16_t left, int16_t right) {
 	int8_t speedSignLeft = 1; // 1: vor; -1: zurueck
 	if (left < 0) {
 		speedSignLeft = -1;
-		left = -left; // Richtung zum Rechnen zunaechst verwerfen
+		left = (int16_t) -left; // Richtung zum Rechnen zunaechst verwerfen
 	}
 	int8_t speedSignRight = 1;
 	if (right < 0) {
 		speedSignRight = -1;
-		right = -right;
+		right = (int16_t) -right;
 	}
 	/* Geschwindigkeiten pruefen und begrenzen */
 	if (left == BOT_SPEED_IGNORE) left = BOT_SPEED_STOP;
@@ -469,8 +469,8 @@ void motor_set(int16_t left, int16_t right) {
 #else
 	/* PC-Version */
 #ifdef ARM_LINUX_BOARD
-	speed_l = left * speedSignLeft;
-	speed_r = right * speedSignRight;
+	speed_l = (int16_t) (left * speedSignLeft);
+	speed_r = (int16_t) (right * speedSignRight);
 #else
 	speed_l = left * speedSignLeft / 2;
 	speed_r = right * speedSignRight / 2;

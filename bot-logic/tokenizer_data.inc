@@ -7,7 +7,7 @@
 
 #if USE_PROGMEM
 
-unsigned char aucAVRBasic [] PROGMEM = {
+const unsigned char aucAVRBasic [] PROGMEM = {
 
 #else
 

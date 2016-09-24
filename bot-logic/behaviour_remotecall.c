@@ -693,7 +693,7 @@ void remotecall_display(void) {
 		const char * p_info_end = strchr_P(p_info, ',');
 		if (p_info_end != NULL) {
 			uint8_t len = (uint8_t) (p_info_end - p_info);
-			display_cursor(2, len + 1);
+			display_cursor(2, (int16_t) (len + 1));
 			for (i = len; i < DISPLAY_LENGTH; ++i) {
 				display_puts(" ");
 			}

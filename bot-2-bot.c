@@ -464,7 +464,7 @@ void bot_2_bot_handle_payload_ack(command_t * cmd) {
 			int16_t to_send = bot_2_bot_payload_size;
 			LOG_DEBUG(" ACK von Bot %u, habe noch %d Bytes zu senden", cmd->from, to_send);
 			LOG_DEBUG("  Bot %u hat window_size=%d festgelegt", cmd->from, window_size);
-			to_send -= window_size;
+			to_send = (int16_t) (to_send - window_size);
 			int16_t last_packet = 0;
 			if (to_send < 0) {
 				/* Rest */
@@ -591,7 +591,7 @@ static const char * test_string = "Hey Bot!"; /**< Testdaten fuer Payload-Test *
  * Testet den Payload-Empfang
  */
 void bot_2_bot_payload_test_verify(void) {
-	uint8_t i;
+	size_t i;
 	uint8_t errors = 0;
 	for (i = strlen(test_string) + 1; i < sizeof(payload_test_buffer); i++) {
 		if (payload_test_buffer[i] != i) {
@@ -617,12 +617,12 @@ void bot_2_bot_payload_test_verify(void) {
  * \return			0, falls kein Fehler, sonst Fehlercode
  */
 int8_t bot_2_bot_pl_test(Behaviour_t * caller, uint8_t to) {
-	uint16_t i;
+	size_t i;
 	const char * tmp = "Hey Bot!";
 	memset(payload_test_buffer, 0, sizeof(payload_test_buffer));
 	strncpy((char *) payload_test_buffer, tmp, sizeof(payload_test_buffer) - 1);
 	for (i = strlen((char *) payload_test_buffer) + 1; i < sizeof(payload_test_buffer); i++) {
-		payload_test_buffer[i] = i;
+		payload_test_buffer[i] = (uint8_t) i;
 	}
 	int8_t result = bot_2_bot_send_payload_request(to, BOT_2_BOT_PAYLOAD_TEST, payload_test_buffer, sizeof(payload_test_buffer));
 	LOG_INFO("bot_2_bot_payload_test(%u) abgeschlossen mit %d", to, result);

@@ -196,7 +196,7 @@ static uint8_t check_pad(int16_t value_pad, int16_t value_bpad) {
 				(sensBorderR >= value_bpad - COL_TOL && sensBorderR <= value_bpad + COL_TOL));
 		}
 #else
-		value_bpad = value_bpad;
+		(void) value_bpad;
 #endif // CHECK_BORDERSENS_FOR_COL
 	}
 	return ret;

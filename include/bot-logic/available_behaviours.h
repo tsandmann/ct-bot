@@ -39,9 +39,6 @@
 //#define BEHAVIOUR_HANG_ON_AVAILABLE 				/**< Erkennen des Haengenbleibens als Notfallverhalten */
 
 /* Positionierungs-Verhalten */
-//#define BEHAVIOUR_GOTO_AVAILABLE 					/**< Goto Verhalten*/
-//#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE 		/**< Strecke fahren */
-//#define BEHAVIOUR_GOTOXY_AVAILABLE 				/**< Punkt XY anfahren */
 #define BEHAVIOUR_TURN_AVAILABLE 					/**< Dreh Verhalten */
 //#define BEHAVIOUR_TURN_TEST_AVAILABLE 			/**< Test des Dreh Verhaltens */
 #define BEHAVIOUR_GOTO_POS_AVAILABLE 				/**< Position anfahren */
@@ -82,6 +79,11 @@
 #define BEHAVIOUR_CANCEL_BEHAVIOUR_AVAILABLE 		/**< Deaktivieren von Verhalten, wenn eine Abbruchbedingung erfuellt ist */
 //#define BEHAVIOUR_GET_UTILIZATION_AVAILABLE		/**< CPU-Auslastung eines Verhaltens messen */
 //#define BEHAVIOUR_HW_TEST_AVAILABLE 				/**< Testverhalten (ehemals TEST_AVAILABLE_ANALOG, _DIGITAL, _MOTOR) */
+
+/* Veraltete Verhalten */
+//#define BEHAVIOUR_GOTO_AVAILABLE 					/**< Goto Verhalten [veraltet, durch BEHAVIOUR_GOTO_POS_AVAILABLE ersetzt]*/
+//#define BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE 		/**< Strecke fahren [veraltet, durch BEHAVIOUR_GOTO_POS_AVAILABLE ersetzt]*/
+//#define BEHAVIOUR_GOTOXY_AVAILABLE 				/**< Punkt XY anfahren [veraltet, durch BEHAVIOUR_GOTO_POS_AVAILABLE ersetzt]*/
 
 
 /* Aufgrund einer ganzen Reihe von Abhaengigkeiten sollte man beim Versuch Speicher

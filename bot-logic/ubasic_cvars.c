@@ -34,7 +34,7 @@
 
 // Variablenpointertabelle
 #if USE_PROGMEM
-cvars_t cvars[] PROGMEM = {
+const cvars_t cvars[] PROGMEM = {
 #else
 cvars_t cvars[] = {
 #endif

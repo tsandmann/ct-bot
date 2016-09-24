@@ -30,6 +30,10 @@
 
 #include <stdlib.h>
 
+#ifdef PC
+#define random rand
+#endif
+
 static uint8_t state = 0;	/*!< Status des Verhaltens */
 
 /*!
