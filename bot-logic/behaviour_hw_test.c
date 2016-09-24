@@ -28,6 +28,7 @@
 
 #ifdef BEHAVIOUR_HW_TEST_AVAILABLE
 #include "led.h"
+#include <string.h>
 
 #define TEST_ANALOG	/**< Sollen die LEDs die analoge Sensorwerte anzeigen? */
 //#define TEST_DIGITAL	/**< Sollen die LEDs die digitale Sensorwerte anzeigen? */

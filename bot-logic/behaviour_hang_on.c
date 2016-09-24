@@ -51,7 +51,7 @@ void hang_on_handler(void) {
  * @param *data der Verhaltensdatensatz
  */
 void bot_hang_on_behaviour(Behaviour_t * data) {
-	data = data;
+	(void) data;
 	if  ( !((abs(v_enc_left-v_mou_left) < STUCK_DIFF) && (abs(v_enc_right-v_mou_right) < STUCK_DIFF)) ) {            
 		// Es kann entweder durch die eigene Notfallroutine rueckwaertsgefahren werden oder die Notverhalten 
 		// machen dies in ihren eigenen registrierten Notfallroutinen

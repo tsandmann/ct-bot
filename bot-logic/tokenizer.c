@@ -513,7 +513,7 @@ int iFastParserGetKeyWord (void)  {
   unsigned char   ucRC,                 // "Referenz"-Zeichen (zu vergleichendes Zeichen im Baum)
                   ucS,                  // Niedrigstes erstes ASCII-Zeichen im Baum
                   ucE;                  // Höchstes erstes ASCII-Zeichen im Baum
-  unsigned char  *pucPT = aucAVRBasic,  // Arbeitszeiger (mit Zeiger auf "Gesamtstruktur")
+  const unsigned char  *pucPT = aucAVRBasic,  // Arbeitszeiger (mit Zeiger auf "Gesamtstruktur")
                  *pucTable;             // Zeiger auf Anfang des Baumes (nach Einsprungtabelle)
 
 #ifndef SFP_USES_16BIT

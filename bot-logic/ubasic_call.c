@@ -41,7 +41,7 @@
 
 // Funktionspointertabelle
 #if USE_PROGMEM
-callfunct_t callfunct[] PROGMEM = {
+const callfunct_t callfunct[] PROGMEM = {
 #else
 callfunct_t callfunct[] = {
 #endif
