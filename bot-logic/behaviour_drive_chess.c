@@ -485,7 +485,9 @@ static uint8_t chess_go(void) {
 		LOG_DEBUG("Zug wurde eingegeben und parsen");
 	} else {
 		K = I;
-		timer = -128 << st; // set time control
+//		timer = -128 << st; // set time control
+		const long tmp = 128 << st; // set time control, avoid "left shift of negative value" warning
+		timer = -tmp;
 		clean_move_digits();
 		LOG_DEBUG("Ich denke...");
 	}

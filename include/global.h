@@ -149,6 +149,7 @@ int putchar(int);
 #include <avr/pgmspace.h>
 #else // PC
 #include <string.h>
+#include <strings.h>
 #define PROGMEM /**< Attribut fuer Programmspeicher, fuer PC nicht noetig */
 #define PGM_P const char * /**< Zeiger auf Programmspeicher, auf PC Zeiger auf const char */
 #define strcmp_P strcmp /**< strcmp fuer PROGMEM-Daten, fuer PC Weiterleitung auf strcmp() */
