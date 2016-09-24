@@ -823,18 +823,18 @@ int8_t command_evaluate(void) {
 #ifdef MCU
 				while (uart_data_available() < received_command.payload && (uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT));
 #endif
-				const uint8_t n = cmd_functions.read(buffer, received_command.payload);
+				const int16_t n = cmd_functions.read(buffer, received_command.payload);
 				if (n != received_command.payload) {
 					LOG_DEBUG(" Datenempfang fehlerhaft");
 					prog_size = 0;
 					break;
 				}
-				prog_size -= n;
+				prog_size -= (uint16_t) n;
 				LOG_DEBUG(" prog_size=%u", prog_size);
 				if ((uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)) {
 					/* OK */
 //					puts(buffer);
-					if (index + n == BOTFS_BLOCK_SIZE || prog_size == 0) {
+					if (index + (uint16_t) n == BOTFS_BLOCK_SIZE || prog_size == 0) {
 						/* Puffer in Datei schreiben */
 						LOG_DEBUG(" Puffer rausschreiben...");
 #ifdef BOT_FS_AVAILABLE

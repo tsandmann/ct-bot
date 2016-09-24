@@ -1405,7 +1405,7 @@ void map_2_sim_main(void) {
 		uint8_t size;
 		/* Daten aus Fifo holen
 		 * Thread blockiert hier, falls Fifo leer */
-		size = fifo_get_data(&map_2_sim_fifo, &cache_copy, MAP_2_SIM_BUFFER_SIZE * sizeof(cache_copy[0]));
+		size = (uint8_t) fifo_get_data(&map_2_sim_fifo, &cache_copy, MAP_2_SIM_BUFFER_SIZE * sizeof(cache_copy[0]));
 		os_signal_set(&map_2_sim_signal);
 		uint8_t i;
 		int8_t j;
