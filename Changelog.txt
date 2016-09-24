@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2016-09-24: Verhaltenskonfiguration aufgeraeumt
+
 2016-09-24: Kompatibilitaet mit aktuellem AVR Compiler (4.9.2) und gcc 6.2
 
 2016-09-18: Konfigurationsoptionen aufgeraeumt, Dokumentation ueberarbeitet
