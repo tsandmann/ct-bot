@@ -31,6 +31,7 @@
 
 #include "uart.h"
 #include "ct-Bot.h"
+#include "bot-logic.h"
 
 #define BOT_2_BOT_PAYLOAD_TEST_AVAILABLE	/**< Aktiviert Test-Code fuer Bot-2-Bot Kommunikation mit Payload */
 
