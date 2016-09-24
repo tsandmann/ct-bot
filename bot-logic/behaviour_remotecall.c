@@ -87,6 +87,8 @@ static const uint8_t * parameter_length = NULL; /**< Hier speichern wir die Laen
 
 #define PREPARE_REMOTE_CALL_ALIAS(func, count, param, ...)  {count, {__VA_ARGS__}, #func, param, (Behaviour_t * (*) (Behaviour_t *, ...)) func, NULL}
 
+#define PREPARE_REMOTE_CALL_MANUAL(func, beh_func, count, param, ...)  {count, {__VA_ARGS__}, #func, param, (Behaviour_t * (*) (Behaviour_t *, ...)) func, beh_func}
+
 /**
  * \brief Hier muessen alle Boten-Funktionen rein, die remote aufgerufen werden sollen.
  *
@@ -125,7 +127,7 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 #endif
 #ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_drive_square, 0, "", 0),
-	PREPARE_REMOTE_CALL(bot_drive_square_len, 1, "int16 length", 2),
+	PREPARE_REMOTE_CALL_ALIAS(bot_drive_square_len, 1, "int16 length", 2),
 #endif
 
 	/* Hardware-Test Verhalten */
@@ -167,7 +169,7 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 	PREPARE_REMOTE_CALL(bot_follow_object, 0, "", 0),
 #endif
 #ifdef BEHAVIOUR_FOLLOW_WALL_AVAILABLE
-	PREPARE_REMOTE_CALL(bot_do_wall_explore, 0, "", 0),
+	PREPARE_REMOTE_CALL_MANUAL(bot_do_wall_explore, bot_follow_wall_behaviour, 0, "", 0),
 #endif
 #ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_do_slalom, 0, "", 0),
@@ -208,12 +210,12 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 	PREPARE_REMOTE_CALL(bot_calc_wave, 3, "int16 dest_x, int16 dest_y, int8 compare", 2, 2, 1),
 #endif
 #ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-	PREPARE_REMOTE_CALL(bot_push_actpos, 0, "", 0),
+	PREPARE_REMOTE_CALL_ALIAS(bot_push_actpos, 0, "", 0),
 	PREPARE_REMOTE_CALL(bot_drive_stack, 0, "", 0),
-	PREPARE_REMOTE_CALL(bot_drive_fifo, 0, "", 0),
+	PREPARE_REMOTE_CALL_ALIAS(bot_drive_fifo, 0, "", 0),
 	PREPARE_REMOTE_CALL(bot_save_waypos, 1, "uint8 optimize", 1),
 #ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
-	PREPARE_REMOTE_CALL(bot_send_stack_b2b, 1, "uint8 bot", 1),
+	PREPARE_REMOTE_CALL_ALIAS(bot_send_stack_b2b, 1, "uint8 bot", 1),
 #endif
 #endif // BEHAVIOUR_DRIVE_STACK_AVAILABLE
 
@@ -241,11 +243,11 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 	PREPARE_REMOTE_CALL(bot_test_encoder, 0, "", 0),
 #endif
 #ifdef BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
-	PREPARE_REMOTE_CALL(bot_2_bot_pl_test, 1, "uint8 to", 1),
+	PREPARE_REMOTE_CALL_ALIAS(bot_2_bot_pl_test, 1, "uint8 to", 1),
 #endif
 
 #ifdef BEHAVIOUR_ABL_AVAILABLE
-	PREPARE_REMOTE_CALL(bot_abl_check, 1, "uint16 line", 2),
+	PREPARE_REMOTE_CALL_ALIAS(bot_abl_check, 1, "uint16 line", 2),
 #endif
 	{0, {0}, "", "", NULL, NULL}
 };
