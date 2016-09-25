@@ -83,7 +83,11 @@ static const uint8_t * parameter_length = NULL; /**< Hier speichern wir die Laen
  *    jeweilige Parameter benoetigt: Will man also einen uint16_t uebergeben steht da 2,
  *    will man einen float uebergeben 4.
  */
-#define PREPARE_REMOTE_CALL(func, count, param, ...)  {count, {__VA_ARGS__}, #func, param, (Behaviour_t * (*) (Behaviour_t *, ...)) func}
+#define PREPARE_REMOTE_CALL(func, count, param, ...)  {count, {__VA_ARGS__}, #func, param, (Behaviour_t * (*) (Behaviour_t *, ...)) func, func##_behaviour}
+
+#define PREPARE_REMOTE_CALL_ALIAS(func, count, param, ...)  {count, {__VA_ARGS__}, #func, param, (Behaviour_t * (*) (Behaviour_t *, ...)) func, NULL}
+
+#define PREPARE_REMOTE_CALL_MANUAL(func, beh_func, count, param, ...)  {count, {__VA_ARGS__}, #func, param, (Behaviour_t * (*) (Behaviour_t *, ...)) func, beh_func}
 
 /**
  * \brief Hier muessen alle Boten-Funktionen rein, die remote aufgerufen werden sollen.
@@ -123,7 +127,7 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 #endif
 #ifdef BEHAVIOUR_DRIVE_SQUARE_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_drive_square, 0, "", 0),
-	PREPARE_REMOTE_CALL(bot_drive_square_len, 1, "int16 length", 2),
+	PREPARE_REMOTE_CALL_ALIAS(bot_drive_square_len, 1, "int16 length", 2),
 #endif
 
 	/* Hardware-Test Verhalten */
@@ -165,7 +169,7 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 	PREPARE_REMOTE_CALL(bot_follow_object, 0, "", 0),
 #endif
 #ifdef BEHAVIOUR_FOLLOW_WALL_AVAILABLE
-	PREPARE_REMOTE_CALL(bot_do_wall_explore, 0, "", 0),
+	PREPARE_REMOTE_CALL_MANUAL(bot_do_wall_explore, bot_follow_wall_behaviour, 0, "", 0),
 #endif
 #ifdef BEHAVIOUR_OLYMPIC_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_do_slalom, 0, "", 0),
@@ -183,12 +187,12 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 	/* Fahr- und Positionierungs-Verhalten */
 #ifdef BEHAVIOUR_TURN_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_turn, 1, "int16 degrees", 2),
-	PREPARE_REMOTE_CALL(bot_turn_speed, 3, "int16 degrees, uint16 min, uint16 max", 2, 2, 2),
+	PREPARE_REMOTE_CALL_ALIAS(bot_turn_speed, 3, "int16 degrees, uint16 min, uint16 max", 2, 2, 2),
 #endif
 #ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
-	PREPARE_REMOTE_CALL(bot_goto_dist, 2, "int16 distance, int8 dir", 2, 1),
 	PREPARE_REMOTE_CALL(bot_goto_pos, 3, "int16 x, int16 y, int16 head", 2, 2, 2),
-	PREPARE_REMOTE_CALL(bot_goto_pos_rel, 3, "int16 x, int16 y, int16 head", 2, 2, 2),
+	PREPARE_REMOTE_CALL_ALIAS(bot_goto_dist, 2, "int16 distance, int8 dir", 2, 1),
+	PREPARE_REMOTE_CALL_ALIAS(bot_goto_pos_rel, 3, "int16 x, int16 y, int16 head", 2, 2, 2),
 #endif
 #ifdef BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
 	PREPARE_REMOTE_CALL(bot_goto_obstacle, 2, "int16 distance, uint8 parallel", 2, 1),
@@ -206,12 +210,12 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 	PREPARE_REMOTE_CALL(bot_calc_wave, 3, "int16 dest_x, int16 dest_y, int8 compare", 2, 2, 1),
 #endif
 #ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
-	PREPARE_REMOTE_CALL(bot_push_actpos, 0, "", 0),
+	PREPARE_REMOTE_CALL_ALIAS(bot_push_actpos, 0, "", 0),
 	PREPARE_REMOTE_CALL(bot_drive_stack, 0, "", 0),
-	PREPARE_REMOTE_CALL(bot_drive_fifo, 0, "", 0),
+	PREPARE_REMOTE_CALL_ALIAS(bot_drive_fifo, 0, "", 0),
 	PREPARE_REMOTE_CALL(bot_save_waypos, 1, "uint8 optimize", 1),
 #ifdef BOT_2_BOT_PAYLOAD_AVAILABLE
-	PREPARE_REMOTE_CALL(bot_send_stack_b2b, 1, "uint8 bot", 1),
+	PREPARE_REMOTE_CALL_ALIAS(bot_send_stack_b2b, 1, "uint8 bot", 1),
 #endif
 #endif // BEHAVIOUR_DRIVE_STACK_AVAILABLE
 
@@ -239,13 +243,13 @@ const remotecall_entry_t remotecall_beh_list[] PROGMEM = {
 	PREPARE_REMOTE_CALL(bot_test_encoder, 0, "", 0),
 #endif
 #ifdef BOT_2_BOT_PAYLOAD_TEST_AVAILABLE
-	PREPARE_REMOTE_CALL(bot_2_bot_pl_test, 1, "uint8 to", 1),
+	PREPARE_REMOTE_CALL_ALIAS(bot_2_bot_pl_test, 1, "uint8 to", 1),
 #endif
 
 #ifdef BEHAVIOUR_ABL_AVAILABLE
-	PREPARE_REMOTE_CALL(bot_abl_check, 1, "uint16 line", 2),
+	PREPARE_REMOTE_CALL_ALIAS(bot_abl_check, 1, "uint16 line", 2),
 #endif
-	{0, {0}, "", "", NULL}
+	{0, {0}, "", "", NULL, NULL}
 };
 
 /** Anzahl der Remote-Calls im Array */
@@ -347,9 +351,9 @@ void bot_remotecall_behaviour(Behaviour_t * data) {
 			}
 
 #ifdef PC
-			void (* func) (Behaviour_t * data, ...);
+			Behaviour_t * (* func) (Behaviour_t * data, ...);
 			// Auf dem PC liegt die remotecall_beh_list-Struktur im RAM
-			func = (void (*) (Behaviour_t *, ...)) remotecall_beh_list[function_id].func;
+			func = (Behaviour_t * (*) (Behaviour_t *, ...)) remotecall_beh_list[function_id].func;
 #else // MCU
 			void (* func) (Behaviour_t * data, remote_call_data_t dword1, remote_call_data_t dword2);
 			// Auf dem MCU liegt die remotecall_beh_list-Struktur im Flash und muss erst geholt werden
@@ -370,7 +374,7 @@ void bot_remotecall_behaviour(Behaviour_t * data) {
 			bot_remotecall_fl_dummy(data, parameter[0].fl32, parameter[1].fl32, parameter[2].fl32);
 			func(data, parameter[0], parameter[1], parameter[2]);
 #else // MCU
-			func(data, parameter[1], parameter[0]);	// "rueckwaerts", denn kleinere Parameter-Nr liegen an hoereren Register-Nr.!
+			func(data, parameter[1], parameter[0]); // "rueckwaerts", denn kleinere Parameter-Nr liegen an hoereren Register-Nr.!
 #endif // PC
 			running_behaviour = REMOTE_CALL_RUNNING;
 			break;
@@ -568,6 +572,11 @@ static void keypad_param(char * data) {
 void remotecall_display(void) {
 	static uint8_t first_row = 0; // erste Verhaltens-ID, die auf dem Display angezeigt wird
 	static int8_t selected_row = 0; // Offset der markierten Zeile (relativ zu first_row)
+	static uint8_t show_running_beh = 0;
+
+	if (running_behaviour == REMOTE_CALL_IDLE) {
+		show_running_beh = 0;
+	}
 
 	/* Keyhandler */
 	switch (RC5_Code) {
@@ -579,7 +588,7 @@ void remotecall_display(void) {
 		break;
 
 	case RC5_CODE_DOWN: // vor blaettern oder laufenden RC abbrechen
-		if (running_behaviour == REMOTE_CALL_RUNNING) {
+		if (running_behaviour == REMOTE_CALL_RUNNING && show_running_beh) {
 			bot_remotecall_cancel();
 		} else {
 			++selected_row;
@@ -590,6 +599,12 @@ void remotecall_display(void) {
 		break;
 
 	case RC5_CODE_PLAY: // auswahlen / starten
+		if (running_behaviour == REMOTE_CALL_RUNNING) {
+			show_running_beh = ! show_running_beh;
+			break;
+		}
+
+		show_running_beh = 1;
 		beh_selected = 1;
 		first_row = (uint8_t) (first_row + selected_row);
 		if (first_row > STORED_CALLS - 2) {
@@ -618,10 +633,10 @@ void remotecall_display(void) {
 
 	uint8_t row;
 	const remotecall_entry_t * ptr_call;
-	const uint8_t n = (uint8_t) (beh_selected > 0 || running_behaviour == REMOTE_CALL_RUNNING ? 1 : 3);
+	const uint8_t n = (uint8_t) (beh_selected > 0 || (running_behaviour == REMOTE_CALL_RUNNING && show_running_beh) ? 1 : 3);
 	uint8_t i;
 	for (i = 1; i <= n; ++i) {
-		if (running_behaviour == REMOTE_CALL_RUNNING) {
+		if (running_behaviour == REMOTE_CALL_RUNNING && show_running_beh) {
 			row = function_id;
 		} else {
 			row = (uint8_t) (first_row + (i - 1));
@@ -632,13 +647,32 @@ void remotecall_display(void) {
 
 		ptr_call = &remotecall_beh_list[row];
 		display_cursor(i, 1);
-		const char tmp = (char) (i == (selected_row + 1) ? '>' : ' ');
-		display_printf("%c", tmp);
+		const Behaviour_t* p_beh = ptr_call->beh_func ? get_behaviour(ptr_call->beh_func) : NULL;
+		if (p_beh) {
+//			LOG_DEBUG("p_beh->prio = %u", p_beh->priority);
+//			LOG_DEBUG("p_beh->active = %d", p_beh->active);
+			if (! show_running_beh) {
+				if (p_beh->active == BEHAVIOUR_ACTIVE) {
+					display_puts("A");
+				} else if (p_beh->subResult == BEHAVIOUR_SUBRUNNING || p_beh->subResult == BEHAVIOUR_SUBBACKGR) {
+					display_puts("S");
+				}
+			}
+			if (i == selected_row + 1) {
+				display_cursor(4, 16);
+				display_printf("P=%3u", p_beh->priority);
+			}
+		}
+		display_cursor(i, 2);
+		if (! show_running_beh) {
+			const char tmp = (char) (i == (selected_row + 1) ? '>' : ' ');
+			display_printf("%c", tmp);
+		}
 		display_flash_puts(ptr_call->name + (sizeof("bot_") - 1));
 	}
 
 	display_cursor(4, 1);
-	if (running_behaviour == REMOTE_CALL_RUNNING) {
+	if (running_behaviour == REMOTE_CALL_RUNNING && show_running_beh) {
 		display_puts("Abbruch: Stopp");
 		display_cursor(3, 1);
 		display_puts(" gestartet.");
@@ -692,7 +726,7 @@ void remotecall_display(void) {
 			beh_selected = 2;
 			gui_keypad_request(keypad_param, 1, 3, 9);
 		}
-	} else if (par_count - keypad_param_index == 0) {
+	} else if (par_count - keypad_param_index == 0 && running_behaviour == REMOTE_CALL_IDLE) {
 		display_puts("Start: Play");
 		if (beh_selected == 1) {
 			beh_selected = 0;
@@ -702,9 +736,12 @@ void remotecall_display(void) {
 			LOG_DEBUG("starte \"%s\"", remotecall_beh_list[first_row].name);
 #endif
 			bot_remotecall_from_id(NULL, first_row, keypad_params);
+			show_running_beh = 1;
 		}
-	} else if (beh_selected == 0) {
-		display_puts("Auswaehlen: Play");
+	} else if (beh_selected == 0 && running_behaviour == REMOTE_CALL_IDLE) {
+		display_puts("Auswahl: Play");
+	} else if (running_behaviour == REMOTE_CALL_RUNNING) {
+		display_puts("Details: Play");
 	}
 }
 #endif // DISPLAY_REMOTECALL_AVAILABLE
