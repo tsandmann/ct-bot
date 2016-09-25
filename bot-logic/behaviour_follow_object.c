@@ -97,6 +97,7 @@ static void update_speed(int16_t * pSensDist, int16_t * pSpeed) {
  * @param *data	Der Verhaltensdatensatz
  */
 void bot_follow_object_behaviour(Behaviour_t * data) {
+	(void) data;
 	static uint8_t distToggle = 0;
 #ifdef BEHAVIOUR_DRIVE_STACK_AVAILABLE
 	static uint8_t movedState = 0;

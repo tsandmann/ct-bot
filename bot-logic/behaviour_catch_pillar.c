@@ -89,10 +89,11 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 			if (sensDistL < MAX_PILLAR_DISTANCE && sensDistR > MAX_PILLAR_DISTANCE) { // sieht der linke Sensor schon was?
 				angle=heading;
 				catch_pillar_state=LEFT_FOUND;
-			} else
+			} else {
 				speedWishLeft=-BOT_SPEED_SLOW;
 				speedWishRight=+BOT_SPEED_SLOW;
 				//bot_turn(data,5);	// Ein Stueck drehen
+			}
 			break;
 
 		case LEFT_FOUND:
@@ -109,10 +110,11 @@ void bot_catch_pillar_behaviour(Behaviour_t * data) {
 				angle= heading - angle/2;
 				catch_pillar_state=TURN_MIDDLE;
 //				bot_turn(data,-angle/2);
-			} else
+			} else {
 				speedWishLeft=-BOT_SPEED_SLOW;
 				speedWishRight=+BOT_SPEED_SLOW;
 //				bot_turn(data,5); // Eins Stueck drehen
+			}
 			break;
 
 		case TURN_MIDDLE:
