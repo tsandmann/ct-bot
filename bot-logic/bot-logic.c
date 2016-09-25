@@ -748,6 +748,8 @@ void start_registered_emergency_procs(void) {
 
 
 #ifdef DISPLAY_BEHAVIOUR_AVAILABLE
+#warning "DISPLAY_BEHAVIOUR_AVAILABLE ist veraltet, besser DISPLAY_REMOTECALL_AVAILABLE benutzen, siehe ui/available_screens.h"
+
 /**
  * Behandelt die Tasten fuer die Verhaltensanezeige, die das jeweilige Verhalten aktivieren oder deaktivieren.
  * \param **data Zeiger auf ein Array mit Verhaltensdatensatzzeigern
