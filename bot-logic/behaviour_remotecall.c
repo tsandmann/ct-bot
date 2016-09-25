@@ -636,14 +636,18 @@ void remotecall_display(void) {
 
 		ptr_call = &remotecall_beh_list[row];
 		display_cursor(i, 1);
-		const Behaviour_t* p_beh = get_behaviour(ptr_call->beh_func);
+		const Behaviour_t* p_beh = ptr_call->beh_func ? get_behaviour(ptr_call->beh_func) : NULL;
 		if (p_beh) {
-			LOG_DEBUG("p_beh->prio = %d", p_beh->priority);
-			LOG_DEBUG("p_beh->active = %d", p_beh->active);
+//			LOG_DEBUG("p_beh->prio = %u", p_beh->priority);
+//			LOG_DEBUG("p_beh->active = %d", p_beh->active);
 			if (p_beh->active == BEHAVIOUR_ACTIVE) {
 				display_puts("A");
 			} else if (p_beh->subResult == BEHAVIOUR_SUBRUNNING || p_beh->subResult == BEHAVIOUR_SUBBACKGR) {
 				display_puts("S");
+			}
+			if (i == selected_row + 1) {
+				display_cursor(4, 16);
+				display_printf("P=%3u", p_beh->priority);
 			}
 		}
 		display_cursor(i, 2);
@@ -719,7 +723,7 @@ void remotecall_display(void) {
 			bot_remotecall_from_id(NULL, first_row, keypad_params);
 		}
 	} else if (beh_selected == 0) {
-		display_puts("Auswaehlen: Play");
+		display_puts("Auswahl: Play");
 	}
 }
 #endif // DISPLAY_REMOTECALL_AVAILABLE
