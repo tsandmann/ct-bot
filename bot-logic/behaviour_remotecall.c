@@ -735,7 +735,8 @@ void remotecall_display(void) {
 #ifdef PC
 			LOG_DEBUG("starte \"%s\"", remotecall_beh_list[first_row].name);
 #endif
-			bot_remotecall_from_id(NULL, first_row, keypad_params);
+			Behaviour_t* const beh = get_behaviour(bot_remotecall_behaviour);
+			bot_remotecall_from_id(beh, first_row, keypad_params);
 			show_running_beh = 1;
 		}
 	} else if (beh_selected == 0 && running_behaviour == REMOTE_CALL_IDLE) {
