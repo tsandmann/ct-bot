@@ -194,15 +194,5 @@ Behaviour_t * get_next_behaviour(Behaviour_t * beh);
 /* Includes aller verfuegbaren Verhalten */
 #include "bot-logic/available_behaviours.h"
 
-/**
- * Zeigt Informationen ueber Verhalten an, 'A' fuer Verhalten aktiv, 'I' fuer Verhalten inaktiv.
- * Es werden zwei Spalten mit jeweils 4 Verhalten angezeigt. Gibt es mehr Verhalten in der Liste, kommt man
- * mit der Taste DOWN auf eine weitere Seite (die aber kein extra Screen ist). Mit der Taste UP geht's bei Bedarf
- * wieder zurueck. Vor den Prioritaeten steht eine Nummer von 1 bis 8, drueckt man die entsprechende Zifferntaste
- * auf der Fernbedienung, so wird das Verhalten aktiv oder inaktiv geschaltet, komplementaer zum aktuellen Status.
- * Den Keyhandler dazu stellt beh_disp_key_handler() dar.
- */
-void behaviour_display(void);
-
 #endif // BEHAVIOUR_AVAILABLE
 #endif // BOT_LOGIC_H_

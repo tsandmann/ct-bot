@@ -411,9 +411,6 @@ void gui_init(void) {
 #ifdef DISPLAY_MISC_AVAILABLE
 	register_screen(&misc_display);
 #endif
-#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-	register_screen(&behaviour_display);
-#endif
 #ifdef LOG_DISPLAY_AVAILABLE
 	register_screen(&log_display);
 #endif
