@@ -17,14 +17,14 @@
  *
  */
 
-/*!
- * @file 	behaviour_solve_maze.c
- * @brief 	Wandfolger durchs Labyrinth
- * @author 	Torsten Evers (tevers@onlinehome.de)
- * @date 	03.11.06
+/**
+ * \file 	behaviour_solve_maze.c
+ * \brief 	Wandfolger durchs Labyrinth
+ * \author 	Torsten Evers (tevers@onlinehome.de)
+ * \date 	03.11.2006
  */
 
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 
 #ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 #include <math.h>
@@ -33,38 +33,54 @@
 #include "timer.h"
 #include "math_utils.h"
 
-/* Parameter fuer das check_wall_behaviour() */
-static int8_t wall_detected = 0;	/*!< enthaelt True oder False, je nach Ergebnis des Verhaltens */
-static int8_t check_direction = 0;	/*!< enthaelt CHECK_WALL_LEFT oder CHECK_WALL_RIGHT */
-static int16_t wall_distance = 0;	/*!< enthaelt gemessene Entfernung */
-static int8_t checkState = 0;		/*!< wenn die Wand noch da ist aber aus dem Blickfeld rueckt, Entfernung und Winkel korrigieren */
+/* Parameter fuer das bot_check_wall_behaviour() */
+static int8_t wall_detected = 0;	/**< enthaelt True oder False, je nach Ergebnis des Verhaltens */
+static int8_t check_direction = 0;	/**< enthaelt CHECK_WALL_LEFT oder CHECK_WALL_RIGHT */
+static int16_t wall_distance = 0;	/**< enthaelt gemessene Entfernung */
+static int8_t checkState = 0;		/**< Zustand des bot_check_wall_behaviour-Verhaltens */
 
-
-/* Konstanten fuer check_wall_behaviour-Verhalten */
+/* Konstanten fuer bot_check_wall_behaviour-Verhalten */
 #define CHECK_WALL_RIGHT			0
 #define CHECK_WALL_LEFT				1
 
-/* Parameter fuer das measure_angle_behaviour() */
-static int8_t measure_direction;		/*!< enthaelt MEASURE_RIGHT oder MEASURE_LEFT */
-static int16_t measure_distance;		/*!< enthaelt maximale Messentfernung, enthaelt nach der Messung die Entfernung */
-static int16_t measured_angle;			/*!< enthaelt gedrehten Winkel oder 0, falls nichts entdeckt */
+/* Parameter fuer das bot_measure_angle_behaviour() */
+static int8_t measureState = 0;		/**< Zustand des bot_measure_angle-Verhaltens */
+static int8_t measure_direction;	/**< enthaelt MEASURE_RIGHT oder MEASURE_LEFT */
+static int16_t measure_distance;	/**< enthaelt maximale Messentfernung, enthaelt nach der Messung die Entfernung */
+static int16_t measured_angle;		/**< enthaelt gedrehten Winkel oder 0, falls nichts entdeckt */
 #ifdef MEASURE_MOUSE_AVAILABLE
-static int16_t start_heading;		/*!< Blickwinkel des Bots zu Beginn der Messung */
+static int16_t start_heading;		/**< Blickwinkel des Bots zu Beginn der Messung */
 #else
-static int16_t startEncL;			/*!< enthaelt Encoderstand zu Beginn der Messung */
-static int16_t startEncR;			/*!< enthaelt Encoderstand zu Beginn der Messung */
+static int16_t startEncL;			/**< enthaelt Encoderstand zu Beginn der Messung */
+static int16_t startEncR;			/**< enthaelt Encoderstand zu Beginn der Messung */
 #endif
-/* Konstanten fuer measure_angle_behaviour-Verhalten */
+
+/* Konstanten fuer bot_measure_angle_behaviour-Verhalten */
 #define MEASURE_LEFT				1
 #define MEASURE_RIGHT				-1
 
+/* Zustaende fuer das bot_solve_maze_behaviour-Verhalten */
+#define CHECK_FOR_STARTPAD			0
+#define CHECK_FOR_WALL_RIGHT		1
+#define CHECK_FOR_WALL_LEFT			2
+#define CHECK_WALL_PRESENT			3
+#define SOLVE_MAZE_LOOP				4
+#define SOLVE_TURN_WALL				5
+#define CHECK_CONDITION				6
+#define TURN_TO_BRANCH				7
+#define DETECTED_CROSS_BRANCH		8
+#define APPROACH_CORNER				9
+#define AVOID_ABYSS					10
+#define REACHED_GOAL				11
+static int8_t mazeState = 0;	/**< Zustand des bot_solve_maze-Verhaltens */
 
-/*!
+
+/**
  * Das Verhalten dreht sich um 45 Grad in die angegebene Richtung (0=rechts, 1=links)
  * und prueft, ob auf dem Sensor auf der Seite der angegebenen Richtung eine Wand
  * im Abstand von 12cm zu sehen ist. Wenn dem so ist, wird die Variable wall_present
  * auf True gesetzt, sonst False
- * @param *data	Verhaltensdatensatz
+ * \param *data	Verhaltensdatensatz
  */
 void bot_check_wall_behaviour(Behaviour_t * data) {
 	/* Konstantenfuer check_wall_behaviour-Verhalten */
@@ -86,7 +102,7 @@ void bot_check_wall_behaviour(Behaviour_t * data) {
 	/* letzter Messwert */
 	static int16_t lastSensor = 0;
 
-	int16_t sensor;	/*!< fuer temporaer benutzte Senorwerte */
+	int16_t sensor;	/**< fuer temporaer benutzte Senorwerte */
 
 	switch(checkState) {
 		case CHECK_WALL_TURN:
@@ -217,31 +233,36 @@ void bot_check_wall_behaviour(Behaviour_t * data) {
 }
 
 
-/*!
+/**
  * Das Verhalten dreht sich um 45 Grad in die angegebene Richtung (0=rechts, 1=links)
  * und prueft, ob auf dem Sensor auf der Seite der angegebenen Richtung eine Wand
  * im Abstand von 12-22cm zu sehen ist. Wenn dem so ist, wird die Variable wall_present
  * auf True gesetzt, sonst False
- * @param *caller	Verhaltensdatensatz des Aufrufers
- * @param direction	Richtung
+ * \param *caller	Verhaltensdatensatz des Aufrufers
+ * \param direction	Richtung
+ * \return			Zeiger auf Verhaltensdatensatz
  */
-static void bot_check_wall(Behaviour_t * caller, int8_t direction) {
+static Behaviour_t* bot_check_wall(Behaviour_t * caller, int8_t direction) {
 	check_direction = direction;
 	wall_detected = False;
 	checkState = CHECK_WALL_TURN;
-	switch_to_behaviour(caller, bot_check_wall_behaviour, BEHAVIOUR_NOOVERRIDE);
+	wall_distance = 0;
+
+	Behaviour_t* ret = switch_to_behaviour(caller, bot_check_wall_behaviour, BEHAVIOUR_NOOVERRIDE);
+	if (! ret) {
+		LOG_DEBUG("bot_solve_maze(): switch_to_behaviour(bot_check_wall_behaviour) failed");
+	}
+	return ret;
 }
 
-static int8_t measureState = 0;	/*!< Zustand des measure_angle-Verhaltens*/
-
 #ifdef MEASURE_MOUSE_AVAILABLE
-static int8_t measureCount = 0;	/*!< enthaelt Anzahl der +/-5 identischen Messungen */
+static int8_t measureCount = 0;	/**< enthaelt Anzahl der +/-5 identischen Messungen */
 
-/*!
+/**
  * Das Verhalten dreht den Bot in die angegebene Richtung bis ein Hindernis
  * im Sichtbereich erscheint, das eine Entfernung bis max. zur angegebenen
  * Distanz zum Bot hat.
- * @param *data	Verhaltensdatensatz
+ * \param *data	Verhaltensdatensatz
  */
 void bot_measure_angle_behaviour(Behaviour_t * data) {
 	/* Zustaende measure_angle_behaviour-Verhalten */
@@ -329,15 +350,16 @@ void bot_measure_angle_behaviour(Behaviour_t * data) {
 	}
 }
 
-/*!
+/**
  * Das Verhalten dreht den Bot in die angegebene Richtung bis ein Hindernis
  * im Sichtbereich erscheint, das eine Entfernung bis max. zur angegebenen
  * Distanz zum Bot hat.
- * @param *caller	Verhaltensdatensatz des Aufrufers
- * @param direction	Richtung
- * @param distance	max. Distanz
+ * \param *caller	Verhaltensdatensatz des Aufrufers
+ * \param direction	Richtung
+ * \param distance	max. Distanz
+ * \return			Zeiger auf Verhaltensdatensatz
  */
-static void bot_measure_angle(Behaviour_t * caller, int8_t direction, int16_t distance) {
+static Behaviour_t* bot_measure_angle(Behaviour_t * caller, int8_t direction, int16_t distance) {
 	/* maximale Messentfernung und Richtung setzen */
 	measure_direction = direction;
 	measure_distance = distance;
@@ -345,14 +367,19 @@ static void bot_measure_angle(Behaviour_t * caller, int8_t direction, int16_t di
 	start_heading = (int16_t) heading_mou;
 	measureState = MEASURE_TURN;
 	measureCount = 0;
-	switch_to_behaviour(caller, bot_measure_angle_behaviour, BEHAVIOUR_NOOVERRIDE);
+
+	Behaviour_t* ret = switch_to_behaviour(caller, bot_measure_angle_behaviour, BEHAVIOUR_NOOVERRIDE);
+	if (! ret) {
+		LOG_DEBUG("bot_solve_maze(): switch_to_behaviour(bot_measure_angle_behaviour) failed");
+	}
+	return ret;
 }
 #else
-/*!
+/**
  * Das Verhalten dreht den Bot in die angegebene Richtung bis ein Hindernis
  * im Sichtbereich erscheint, das eine Entfernung bis max. zur angegebenen
  * Distanz zum Bot hat.
- * @param *data	Verhaltensdatensatz
+ * \param *data	Verhaltensdatensatz
  */
 void bot_measure_angle_behaviour(Behaviour_t * data) {
 	/* Zustaende measure_angle_behaviour-Verhalten */
@@ -363,7 +390,7 @@ void bot_measure_angle_behaviour(Behaviour_t * data) {
 	#define CORRECT_ANGLE				4
 	#define MEASUREMENT_DONE			5
 
-	/*! Hilfskonstante */
+	/** Hilfskonstante */
 	#define ANGLE_CONSTANT		(WHEEL_TO_WHEEL_DIAMETER * ENCODER_MARKS / WHEEL_DIAMETER)
 
 	/* bereits gedrehte Strecke errechnen */
@@ -459,15 +486,16 @@ void bot_measure_angle_behaviour(Behaviour_t * data) {
 	}
 }
 
-/*!
+/**
  * Das Verhalten dreht den Bot in die angegebene Richtung bis ein Hindernis
  * im Sichtbereich erscheint, das eine Entfernung bis max. zur angegebenen
  * Distanz zum Bot hat.
- * @param *caller	Verhaltensdatensatz des Aufrufers
- * @param direction	Richtung
- * @param distance	max. Distanz
+ * \param *caller	Verhaltensdatensatz des Aufrufers
+ * \param direction	Richtung
+ * \param distance	max. Distanz
+ * \return			Zeiger auf Verhaltensdatensatz
  */
-static void bot_measure_angle(Behaviour_t * caller, int8_t direction, int16_t distance) {
+static Behaviour_t* bot_measure_angle(Behaviour_t * caller, int8_t direction, int16_t distance) {
 	/* maximale Messentfernung und Richtung setzen */
 	measure_direction = direction;
 	measure_distance = distance;
@@ -475,31 +503,21 @@ static void bot_measure_angle(Behaviour_t * caller, int8_t direction, int16_t di
 	startEncL = sensEncL;
 	startEncR = sensEncR;
 	measureState = MEASURE_TURN;
-	switch_to_behaviour(caller, bot_measure_angle_behaviour, BEHAVIOUR_NOOVERRIDE);
+
+	Behaviour_t* ret = switch_to_behaviour(caller, bot_measure_angle_behaviour, BEHAVIOUR_NOOVERRIDE);
+	if (! ret) {
+		LOG_DEBUG("bot_solve_maze(): switch_to_behaviour(bot_measure_angle_behaviour) failed");
+	}
+	return ret;
 }
-#endif	// MEASURE_MOUSE_AVAILABLE
+#endif // MEASURE_MOUSE_AVAILABLE
 
-/* Zustaende fuer das bot_solve_maze_behaviour-Verhalten */
-#define CHECK_FOR_STARTPAD			0
-#define CHECK_FOR_WALL_RIGHT		1
-#define CHECK_FOR_WALL_LEFT			2
-#define CHECK_WALL_PRESENT			3
-#define SOLVE_MAZE_LOOP				4
-#define SOLVE_TURN_WALL				5
-#define CHECK_CONDITION				6
-#define TURN_TO_BRANCH				7
-#define DETECTED_CROSS_BRANCH		8
-#define APPROACH_CORNER				9
-#define AVOID_ABYSS					10
-#define REACHED_GOAL				11
-static int8_t mazeState = 0;	/*!< Zustand des solve_maze-Verhaltens */
-
-/*!
+/**
  * Das Verhalten findet seinen Weg durch ein Labyrinth, das nach gewissen Grundregeln gebaut ist
  * in nicht immer optimaler Weise aber in jedem Fall. Es arbeitet nach dem Hoehlenforscher-Algorithmus.
  * Einschraenkung: Objekte im Labyrinth, die Endlossschleifen verursachen koennen, z.b. ein einzeln
  * stehender Pfeiler im Labyrinth um den der Bot dann immer wieder herum fahren wuerde.
- * @param *data	Verhaltensdatensatz
+ * \param *data	Verhaltensdatensatz
  */
 void bot_solve_maze_behaviour(Behaviour_t * data) {
 	static int8_t followWall = -1;
@@ -647,15 +665,21 @@ void bot_solve_maze_behaviour(Behaviour_t * data) {
 	}
 }
 
-/*!
+/**
  * Das Verhalten findet seinen Weg durch ein Labyrinth, das nach gewissen Grundregeln gebaut ist
  * in nicht immer optimaler Weise aber in jedem Fall. Es arbeitet nach dem Hoehlenforscher-Algorithmus.
  * Einschraenkung: Objekte im Labyrinth, die Endlossschleifen verursachen koennen, z.b. ein einzeln
  * stehender Pfeiler im Labyrinth um den der Bot dann immer wieder herum fahren wuerde.
- * @param *caller	Verhaltensdatensatz des Aufrufers
+ * \param *caller	Verhaltensdatensatz des Aufrufers
+ * \return			Zeiger auf Verhaltensdatensatz
  */
-void bot_solve_maze(Behaviour_t * caller) {
-	switch_to_behaviour(caller, bot_solve_maze_behaviour, BEHAVIOUR_NOOVERRIDE);
+Behaviour_t* bot_solve_maze(Behaviour_t * caller) {
 	mazeState = CHECK_FOR_STARTPAD;
+	Behaviour_t* ret = switch_to_behaviour(caller, bot_solve_maze_behaviour, BEHAVIOUR_NOOVERRIDE);
+	if (! ret) {
+		LOG_DEBUG("bot_solve_maze(): switch_to_behaviour(bot_solve_maze_behaviour) failed");
+	}
+	return ret;
 }
+
 #endif // BEHAVIOUR_SOLVE_MAZE_AVAILABLE

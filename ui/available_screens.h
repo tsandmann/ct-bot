@@ -29,11 +29,10 @@
 
 #ifdef DISPLAY_AVAILABLE
 
-#define DISPLAY_SCREENS 10 /**< max. Anzahl an Screens */
+#define DISPLAY_SCREENS 22 /**< max. Anzahl an Screens */
 
 #define DISPLAY_SENSOR_AVAILABLE			/**< zeigt die Sensordaten an */
 #define DISPLAY_REMOTECALL_AVAILABLE		/**< Steuerung der Verhalten inkl. Parametereingabe */
-//#define DISPLAY_BEHAVIOUR_AVAILABLE		/**< zeigt den Status aller Verhalten an */
 #define DISPLAY_ODOMETRIC_INFO				/**< zeigt Positions- und Geschwindigkeitsdaten an */
 //#define DISPLAY_REGELUNG_AVAILABLE		/**< Gibt Debug-Infos der Motorregelung aus */
 //#define DISPLAY_MISC_AVAILABLE			/**< aehm ja, der Rest irgendwie... */
