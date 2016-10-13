@@ -30,9 +30,6 @@
 #include "ct-Bot.h"
 
 #ifdef BEHAVIOUR_AVAILABLE
-#include "motor.h"
-#include "sensor.h"
-
 #define BEHAVIOUR_INACTIVE	0	/**< Verhalten ist aus */
 #define BEHAVIOUR_ACTIVE	1	/**< Verhalten ist an */
 
@@ -66,14 +63,13 @@ typedef struct {
 	unsigned background:1;	/**< 0 wenn Verhalten im Vordergrund laufen sollen (default), also z.B. die Motoren beeinflussen; 1 sonst */
 } PACKED behaviour_mode_t;
 
+extern int16_t target_speed_l;	/**< Sollgeschwindigkeit linker Motor */
+extern int16_t target_speed_r;	/**< Sollgeschwindigkeit rechter Motor */
 extern int16_t speedWishLeft;	/**< Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links */
 extern int16_t speedWishRight;	/**< Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts */
-
 extern float factorWishLeft;	/**< Puffervariable fuer die Verhaltensfunktionen Modifikationsfaktor links */
 extern float factorWishRight;	/**< Puffervariable fuer die Verhaltensfunktionen Modifikationsfaktor rechts */
 
-extern int16_t target_speed_l;	/**< Sollgeschwindigkeit linker Motor */
-extern int16_t target_speed_r;	/**< Sollgeschwindigkeit rechter Motor */
 
 /**
  * Zentrale Verhaltens-Routine, wird regelmaessig aufgerufen.

@@ -225,12 +225,6 @@
 #undef BEHAVIOUR_GET_UTILIZATION_AVAILABLE
 #endif // MCU
 
-#ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
-#define SPEED_CONTROL_AVAILABLE		// Wenn die Regelung kalibriert werden soll, muss sie auch an sein!
-#define DISPLAY_REGELUNG_AVAILABLE	// speichert Ist-Speed global
-#define ADJUST_PID_PARAMS			// ja also die Parameter muessen schon einstellbar sein...
-#endif // BEHAVIOUR_CALIBRATE_PID_AVAILABLE
-
 #ifdef BEHAVIOUR_SERVO_AVAILABLE
 #define BEHAVIOUR_DELAY_AVAILABLE
 #endif
@@ -260,8 +254,12 @@
 
 #ifdef MCU
 #ifndef SPEED_CONTROL_AVAILABLE
-// goto_pos geht nur, wenn wir uns auf die eingestellte Geschwindigkeit verlassen koennen
+#ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+#warning "BEHAVIOUR_CALIBRATE_PID_AVAILABLE benoetigt SPEED_CONTROL_AVAILABLE (siehe ct-Bot.h)"
+#endif
+#undef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
 #ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
+// goto_pos geht nur, wenn wir uns auf die eingestellte Geschwindigkeit verlassen koennen
 #warning "GotoPos-Verhalten benoetigt SPEED_CONTROL_AVAILABLE (siehe ct-Bot.h)"
 #endif
 #undef BEHAVIOUR_GOTO_POS_AVAILABLE
@@ -273,81 +271,59 @@
 #endif // SPEED_CONTROL_AVAILABLE
 #endif // MCU
 
+#ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+#define DISPLAY_REGELUNG_AVAILABLE	// speichert Ist-Speed global
+#define ADJUST_PID_PARAMS			// ja also die Parameter muessen schon einstellbar sein...
+#endif // BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+
 #ifndef BEHAVIOUR_GOTO_POS_AVAILABLE
 #undef BEHAVIOUR_GOTO_OBSTACLE_AVAILABLE
 #undef BEHAVIOUR_DRIVE_AREA_AVAILABLE
 #undef BEHAVIOUR_PATHPLANING_AVAILABLE
 #endif // BEHAVIOUR_GOTO_POS_AVAILABLE
 
-#include "bot-logic/behaviour_prototype.h"
-
-#include "bot-logic/behaviour_hw_test.h"
-#include "bot-logic/behaviour_simple.h"
-#include "bot-logic/behaviour_drive_square.h"
-
-#include "bot-logic/behaviour_avoid_border.h"
-#include "bot-logic/behaviour_avoid_col.h"
-#include "bot-logic/behaviour_hang_on.h"
-
-#include "bot-logic/behaviour_goto.h"
-#include "bot-logic/behaviour_gotoxy.h"
-#include "bot-logic/behaviour_goto_pos.h"
-#include "bot-logic/behaviour_goto_obstacle.h"
-
-#include "bot-logic/behaviour_turn.h"
-#include "bot-logic/behaviour_turn_test.h"
-#include "bot-logic/behaviour_drive_distance.h"
-
-#include "bot-logic/behaviour_measure_distance.h"
-
-#include "bot-logic/behaviour_scan.h"
-
-#include "bot-logic/behaviour_solve_maze.h"
-#include "bot-logic/behaviour_follow_line.h"
-#include "bot-logic/behaviour_follow_line_enhanced.h"
-
-#include "bot-logic/behaviour_olympic.h"
-
-#include "bot-logic/behaviour_servo.h"
-#include "bot-logic/behaviour_catch_pillar.h"
-#include "bot-logic/behaviour_classify_objects.h"
-
-#include "bot-logic/behaviour_follow_object.h"
-
-#include "bot-logic/behaviour_remotecall.h"
-
-#include "bot-logic/behaviour_follow_wall.h"
-
-#include "bot-logic/behaviour_calibrate_pid.h"
-#include "bot-logic/behaviour_calibrate_sharps.h"
-
-#include "bot-logic/behaviour_delay.h"
-
-#include "bot-logic/behaviour_cancel_behaviour.h"
-#include "bot-logic/behaviour_get_utilization.h"
-
-#include "bot-logic/behaviour_transport_pillar.h"
-
-#include "bot-logic/behaviour_drive_stack.h"
-
-#include "bot-logic/behaviour_drive_area.h"
-
-#include "bot-logic/behaviour_drive_chess.h"
-
-#include "bot-logic/behaviour_pathplaning.h"
-
-#include "bot-logic/behaviour_line_shortest_way.h"
-
-#include "bot-logic/behaviour_scan_beacons.h"
-
-#include "bot-logic/behaviour_test_encoder.h"
-
-#include "bot-logic/behaviour_ubasic.h"
-
+#include "behaviour_prototype.h"
+#include "behaviour_hw_test.h"
+#include "behaviour_simple.h"
+#include "behaviour_drive_square.h"
+#include "behaviour_avoid_border.h"
+#include "behaviour_avoid_col.h"
+#include "behaviour_hang_on.h"
+#include "behaviour_goto.h"
+#include "behaviour_gotoxy.h"
+#include "behaviour_goto_pos.h"
+#include "behaviour_goto_obstacle.h"
+#include "behaviour_turn.h"
+#include "behaviour_turn_test.h"
+#include "behaviour_drive_distance.h"
+#include "behaviour_measure_distance.h"
+#include "behaviour_scan.h"
+#include "behaviour_solve_maze.h"
+#include "behaviour_follow_line.h"
+#include "behaviour_follow_line_enhanced.h"
+#include "behaviour_olympic.h"
+#include "behaviour_servo.h"
+#include "behaviour_catch_pillar.h"
+#include "behaviour_classify_objects.h"
+#include "behaviour_follow_object.h"
+#include "behaviour_remotecall.h"
+#include "behaviour_follow_wall.h"
+#include "behaviour_calibrate_pid.h"
+#include "behaviour_calibrate_sharps.h"
+#include "behaviour_delay.h"
+#include "behaviour_cancel_behaviour.h"
+#include "behaviour_get_utilization.h"
+#include "behaviour_transport_pillar.h"
+#include "behaviour_drive_stack.h"
+#include "behaviour_drive_area.h"
+#include "behaviour_drive_chess.h"
+#include "behaviour_pathplaning.h"
+#include "behaviour_line_shortest_way.h"
+#include "behaviour_scan_beacons.h"
+#include "behaviour_test_encoder.h"
+#include "behaviour_ubasic.h"
 #include "behaviour_abl.h"
-
 #include "behaviour_neuralnet.h"
-
 #include "behaviour_drive_neuralnet.h"
 
 #endif // BEHAVIOUR_AVAILABLE

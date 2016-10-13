@@ -135,10 +135,6 @@
 /* bot_catch_pillar_behaviour() */
 #define MAX_PILLAR_DISTANCE	500	/**< max. Entfernung zum Objekt [mm] */
 
-/* Verhaltenssteuerung, Verhalten mit Prioritaet zwischen MIN und MAX werden mit Notaus-Taste deaktiviert */
-#define BEHAVIOUR_PRIO_MIN	3	/**< Prioritaet, die ein Verhalten mindestens haben muss, um deaktiviert zu werden */
-#define BEHAVIOUR_PRIO_MAX	200	/**< Prioritaet, die ein Verhalten hoechstens haben darf, um deaktiviert zu werden */
-
 
 #include <bot-local-override.h>
 
