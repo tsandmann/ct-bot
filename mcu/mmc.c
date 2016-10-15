@@ -805,20 +805,6 @@ void mmc_display(void) {
 	display_cursor(1, 1);
 	display_printf("MMC/SD: %4u MByte ", mmc_size >> 20);
 
-//	uint8_t dummy = mmc_init();
-//	/* hat sich was geaendert? */
-//	if (dummy != mmc_state) {
-//		mmc_state = dummy;
-//
-//		display_cursor(1, 1);
-//		if (mmc_state != 0) {
-//			display_clear();
-//			display_printf("MMC/SD not init (%u)", mmc_state);
-//			return;
-//		}
-//		uint32_t size = mmc_get_size();
-//		display_printf("MMC/SD: %4u MByte ", size >> 20);
-
 #ifndef MMC_WRITE_TEST_AVAILABLE
 	uint8_t csd[16];
 	mmc_read_csd(csd);
@@ -834,7 +820,6 @@ void mmc_display(void) {
 		display_printf("%02x", csd[i]);
 	}
 #endif // MMC_WRITE_TEST_AVAILABLE
-//	}
 #ifdef MMC_WRITE_TEST_AVAILABLE
 	static uint8_t buffer[512];
 	if (mmc_size) {
