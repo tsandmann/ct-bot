@@ -66,6 +66,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+//#define DEBUG_MMC // Schalter, um auf einmal alle Debugs an oder aus zu machen
+
+#ifndef DEBUG_MMC
+#undef LOG_AVAILABLE
+#undef LOG_DEBUG
+#define LOG_DEBUG(...) {}
+#endif // DEBUG_MMC
+
 uint8_t mmc_init_state = 1;	/**< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
 
 #ifndef SPI_AVAILABLE
@@ -405,10 +413,13 @@ uint8_t mmc_write_sector_spi(uint32_t addr, void * buffer) {
  */
 uint8_t mmc_enable(void) {
 	if (mmc_init_state != 0) {
+		LOG_DEBUG("mmc_enable(): MMC not init, will try again...");
 		mmc_init();
 		if (mmc_init_state != 0) {
+			LOG_DEBUG("mmc_enable(): MMC init failed, mmc_init_state=%u", mmc_init_state);
 			return mmc_init_state;
 		}
+		LOG_DEBUG("mmc_enable(): MMC init successful");
 	}
 	ENA_on(ENA_MMC);
 	ENA_off(ENA_MMC);
@@ -430,6 +441,7 @@ static uint8_t mmc_write_command(uint8_t * cmd) {
 	uint16_t timeout = 0;
 
 	if (mmc_enable() != 0) {
+		LOG_DEBUG("mmc_write_command(): abort, mmc_enable() failed");
 		return 0xff; // MMC / SD-Card aktiv schalten
 	}
 
@@ -444,6 +456,7 @@ static uint8_t mmc_write_command(uint8_t * cmd) {
 	while (result == 0xff) {
 		result = mmc_read_byte();
 		if (timeout++ > MMC_TIMEOUT) {
+			LOG_DEBUG("mmc_write_command(): abort, timeout=%u", timeout);
 			break; // Abbruch da die MMC/SD-Karte nicht antwortet
 		}
 	}
@@ -456,6 +469,11 @@ static uint8_t mmc_write_command(uint8_t * cmd) {
  * \return	0 wenn allles ok, sonst Nummer des Kommandos bei dem abgebrochen wurde
  */
 uint8_t mmc_init(void) {
+	if (mmc_init_state == 0) {
+		return 0;
+	}
+
+	LOG_DEBUG("mmc_init() started...");
 	os_enterCS();
 	mmc_init_state = 0;
 
@@ -480,7 +498,8 @@ uint8_t mmc_init(void) {
 	/* Kommando CMD0 an MMC/SD-Karte senden */
 	uint8_t cmd[] = { 0x40, 0x00, 0x00, 0x00, 0x00, 0x95 };
 	uint16_t timeout = 0;
-	while (mmc_write_command(cmd) != 1) {
+	uint8_t res;
+	while ((res = mmc_write_command(cmd)) != 1) {
 		if (timeout++ > MMC_TIMEOUT) {
 			ENA_off(ENA_MMC);
 			mmc_init_state = 1;
@@ -488,6 +507,7 @@ uint8_t mmc_init(void) {
 			LED_on(LED_TUERKIS);
 #endif // LED_AVAILABLE
 			os_exitCS();
+			LOG_DEBUG("mmc_init(): CMD0 timeout, res=%u", res);
 			return 1; // Abbruch bei Kommando 1 (Return Code 1)
 		}
 	}
@@ -496,7 +516,7 @@ uint8_t mmc_init(void) {
 	timeout = 0;
 	cmd[0] = 0x41; // Kommando 1
 	cmd[5] = 0xFF; // CRC
-	while (mmc_write_command(cmd) != 0) {
+	while ((res = mmc_write_command(cmd)) != 0) {
 		if (timeout++ > 6 * MMC_TIMEOUT) {
 			ENA_off(ENA_MMC);
 			mmc_init_state = 1;
@@ -504,6 +524,7 @@ uint8_t mmc_init(void) {
 			LED_on(LED_TUERKIS);
 #endif // LED_AVAILABLE
 			os_exitCS();
+			LOG_DEBUG("mmc_init(): CMD1 timeout, res=%u", res);
 			return 2; // Abbruch bei Kommando 2 (Return Code 2)
 		}
 	}
@@ -517,6 +538,7 @@ uint8_t mmc_init(void) {
 	LED_off(LED_TUERKIS);
 #endif // LED_AVAILABLE
 	os_exitCS();
+	LOG_DEBUG("mmc_init() done.");
 	return 0;
 }
 
@@ -768,39 +790,56 @@ uint8_t mmc_test(uint8_t * buffer) {
  */
 void mmc_display(void) {
 #ifdef MMC_INFO_AVAILABLE
-	static uint8_t mmc_state = 0xff;
+	static uint32_t mmc_size;
 
-	uint8_t dummy = mmc_init();
-	/* hat sich was geaendert? */
-	if (dummy != mmc_state) {
-		mmc_state = dummy;
-
-		display_cursor(1, 1);
-		if (mmc_state != 0) {
+	mmc_size = mmc_get_size();
+	if (! mmc_size) {
+		const uint8_t mmc_state = mmc_init();
+		if (mmc_state) {
 			display_clear();
-			display_printf("MMC not init (%u)", mmc_state);
+			display_printf("MMC/SD not init (%u)", mmc_state);
 			return;
 		}
-		uint32_t size = mmc_get_size();
-		display_printf("  MMC: %4u MByte ", size >> 20);
+		mmc_size = mmc_get_size();
+	}
+	display_cursor(1, 1);
+	display_printf("MMC/SD: %4u MByte ", mmc_size >> 20);
+
+//	uint8_t dummy = mmc_init();
+//	/* hat sich was geaendert? */
+//	if (dummy != mmc_state) {
+//		mmc_state = dummy;
+//
+//		display_cursor(1, 1);
+//		if (mmc_state != 0) {
+//			display_clear();
+//			display_printf("MMC/SD not init (%u)", mmc_state);
+//			return;
+//		}
+//		uint32_t size = mmc_get_size();
+//		display_printf("MMC/SD: %4u MByte ", size >> 20);
 
 #ifndef MMC_WRITE_TEST_AVAILABLE
-		uint8_t csd[16];
-		mmc_read_csd(csd);
-		display_cursor(3, 1);
-		uint8_t i;
-		for (i=0; i<16; i++) {
-			if (i == 8) display_cursor(4, 1);
-			if (i%2 == 0) display_puts(" ");
-			display_printf("%02x", csd[i]);
+	uint8_t csd[16];
+	mmc_read_csd(csd);
+	display_cursor(3, 1);
+	uint8_t i;
+	for (i = 0; i < 16; ++i) {
+		if (i == 8) {
+			display_cursor(4, 1);
 		}
-#endif // MMC_WRITE_TEST_AVAILABLE
+		if (i % 2 == 0) {
+			display_puts(" ");
+		}
+		display_printf("%02x", csd[i]);
 	}
+#endif // MMC_WRITE_TEST_AVAILABLE
+//	}
 #ifdef MMC_WRITE_TEST_AVAILABLE
-	if (mmc_state == 0) {
-		static uint8_t buffer[512];
+	static uint8_t buffer[512];
+	if (mmc_size) {
 		uint8_t result = mmc_test(buffer);
-		if (result != 0) {
+		if (result) {
 			display_cursor(3, 1);
 			display_printf("mmc_test()=%u :(", result);
 		}
