@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2016-10-15: Bugfix fuer MMC/SD-Karte falls MOUSE_AVAILABLE an ist. MMC-Code etwas aufgeraeumt.
+
 2016-09-24: Kompatibilitaet mit aktuellem AVR Compiler (4.9.2) und gcc 6.2
 
 2016-07-09: Release 23 (v1.23)
