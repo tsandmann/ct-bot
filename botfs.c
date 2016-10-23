@@ -126,7 +126,7 @@
 
 #include "ct-Bot.h"
 
-#ifdef BOT_FS_AVAILABLE
+#if defined BOT_FS_AVAILABLE && ! defined SDFAT_AVAILABLE
 #include "os_thread.h"
 #include "botfs.h"
 #include "botfs-low.h"
@@ -946,4 +946,21 @@ int8_t botfs_copy(botfs_file_descr_t * src, const char * dest, uint16_t src_offs
 	return 0;
 }
 #endif // BOTFS_COPY_AVAILABLE
-#endif // BOT_FS_AVAILABLE
+#endif // BOT_FS_AVAILABLE && ! SDFAT_AVAILABLE
+
+#if defined BOT_FS_AVAILABLE && defined SDFAT_AVAILABLE
+#include "botfs.h"
+
+int8_t botfs_create(const char* filename, uint16_t size, uint16_t alignment, void* buffer) {
+	(void) alignment;
+	botfs_file_descr_t tmp = BOTFS_FD_INITIALIZER;
+	if (! botfs_open(filename, &tmp, 'c', NULL)) {
+		int16_t filesize = size > 0 ? (int16_t) ((size - 1) * BOTFS_BLOCK_SIZE) : 0;
+		botfs_seek(&tmp, filesize, SEEK_SET);
+		memset(buffer, 0, BOTFS_BLOCK_SIZE);
+		return botfs_write(&tmp, buffer);
+	} else {
+		return 1;
+	}
+}
+#endif // BOT_FS_AVAILABLE && SDFAT_AVAILABLE

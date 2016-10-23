@@ -28,7 +28,6 @@
 #include "ct-Bot.h"
 #include "cmd_tools.h"
 #include "tcp-server.h"
-#include "mini-fat.h"
 #include "map.h"
 #include "eeprom.h"
 #include "command.h"
@@ -352,6 +351,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 #endif // BOT_FS_AVAILABLE
 		}
 
+#if 0
 		case 'c': {
 			/* Datei fuer den Bot (mini-fat) soll erzeugt werden. */
 			const int len = strlen(optarg) + 1;
@@ -364,7 +364,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 				exit(1);
 			}
 			const size_t id_len = strlen(argv[0]);
-			if (id_len >= MMC_FILENAME_MAX) {
+			if (id_len >= 255) {
 				puts("ID zu lang");
 				exit(1);
 			}
@@ -401,6 +401,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 			delete_emu_mini_fat_file(optarg);
 			exit(0);
 		}
+#endif // 0
 
 		case 'l': {
 #ifdef BOT_FS_AVAILABLE

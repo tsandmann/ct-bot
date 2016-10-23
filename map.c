@@ -35,7 +35,6 @@
 #include "sensor_correction.h"
 #include "map.h"
 #include "mmc.h"
-#include "mini-fat.h"
 #include "rc5-codes.h"
 #include "sensor.h"
 #include "display.h"

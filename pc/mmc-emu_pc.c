@@ -50,7 +50,6 @@
 #include <string.h>
 #include "mmc-emu.h"
 #include "mmc-vm.h"
-#include "mini-fat.h"
 #include "display.h"
 #include "ui/available_screens.h"
 #include "delay.h"

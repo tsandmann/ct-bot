@@ -35,7 +35,6 @@
 #include "mmc-emu.h"
 #include "display.h"
 #include "timer.h"
-#include "mini-fat.h"
 #include "log.h"
 #include <stdlib.h>
 #include <stdio.h>

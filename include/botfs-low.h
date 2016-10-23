@@ -27,7 +27,9 @@
 #ifndef BOTFSLOW_H_
 #define BOTFSLOW_H_
 
-#ifdef BOT_FS_AVAILABLE
+#include "ct-Bot.h"
+
+#if defined BOT_FS_AVAILABLE && ! defined SDFAT_AVAILABLE
 
 extern uint32_t first_block; /**< Adresse des ersten Blocks des Volumes */
 
@@ -147,5 +149,5 @@ void botfs_flush_log(FILE * fd);
 #endif // defined DEBUG_BOTFS || defined DEBUG_BOTFS_LOGFILE
 #endif // PC
 
-#endif // BOT_FS_AVAILABLE
+#endif // BOT_FS_AVAILABLE && ! SDFAT_AVAILABLE
 #endif // BOTFSLOW_H_

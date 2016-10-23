@@ -27,7 +27,7 @@
 #ifdef MCU
 #include "ct-Bot.h"
 
-#ifdef BOT_FS_AVAILABLE
+#if defined BOT_FS_AVAILABLE && ! defined SDFAT_AVAILABLE
 #include "botfs.h"
 #include "botfs-low.h"
 #include "os_thread.h"
@@ -237,5 +237,5 @@ void botfs_close_volume_low(void) {
 	// nichts zu tun
 	PRINT_MSG("botfs_close_volume_low() done.");
 }
-#endif // BOT_FS_AVAILABLE
+#endif // BOT_FS_AVAILABLE && ! SDFAT_AVAILABLE
 #endif // MCU

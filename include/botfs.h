@@ -30,10 +30,14 @@
 //#define DEBUG_BOTFS /**< schaltet Debug-Ausgaben an */
 //#define DEBUG_BOTFS_LOGFILE /**< schaltet Debug-Ausgaben in botfs.log an */
 
+#include "ct-Bot.h"
 #include "botfs_config.h"
-#ifdef BOT_FS_AVAILABLE
 #include "botfs_types.h"
+#include "log.h"
 #include <stdio.h>
+#include <string.h>
+
+#if defined BOT_FS_AVAILABLE && ! defined SDFAT_AVAILABLE
 
 #ifndef LOG_AVAILABLE
 #undef DEBUG_BOTFS
@@ -385,5 +389,167 @@ void botfs_print_freelist(void * buffer);
 void botfs_read_fat16(const char * path);
 #endif // PC
 
-#endif // BOT_FS_AVAILABLE
+#endif // BOT_FS_AVAILABLE && ! SDFAT_AVAILABLE
+
+#if defined BOT_FS_AVAILABLE && defined SDFAT_AVAILABLE
+#include "sdcard_wrapper.h"
+
+/**
+ * Initialisiert ein Volume
+ * \param *image	Dateiname des Images
+ * \param *buffer	Puffer fuer mindestens BOTFS_BLOCK_SIZE Byte
+ * \param create	Soll das Volume erzeugt werden, falls es nicht existiert?
+ * \return			0, falls kein Fehler
+ */
+static inline int8_t botfs_init(char* image, void* buffer, uint8_t create) {
+	(void) image;
+	(void) buffer;
+	(void) create;
+	return 0;
+}
+
+/**
+ * Oeffnet eine Datei
+ * \param filename	Dateiname
+ * \param *file		Zeiger auf Datei-Deskriptor
+ * \param mode		Modus, in dem die Datei geoeffnet wird
+ * \param *buffer	Puffer fuer mindestens BOTFS_BLOCK_SIZE Byte
+ * \return			0, falls kein Fehler
+ */
+static inline int8_t botfs_open(const char* filename, botfs_file_descr_t* file, uint8_t mode, void* buffer) {
+	(void) buffer;
+
+	uint8_t fat_mode = 1;
+	if (mode == BOTFS_MODE_R) {
+		fat_mode |= 2;
+	} else if (mode == BOTFS_MODE_W) {
+		fat_mode |= 2 | 0x10;
+	} else if (mode == 'c') {
+		fat_mode |= 2 | 0x40;
+	}
+
+	int8_t res = sdfat_open(filename, &file->start, fat_mode);
+	return res;
+}
+
+/**
+ * Setzt den Dateizeiger an eine neue Position
+ * \param *file		Zeiger auf Datei-Deskriptor
+ * \param offset	Offset der Dateiposition, an die gesprungen werden soll, in Bloecken
+ * \param origin	SEEK_SET, SEEK_CUR oder SEEK_END
+ */
+static inline void botfs_seek(botfs_file_descr_t* file, int16_t offset, uint8_t origin) {
+	void* ptr = (void*) file->start;
+	sdfat_seek(ptr, offset, origin);
+}
+
+/**
+ * Setzt den Dateizeiger auf den Anfang einer Datei zurueck
+ * \param *file	Datei-Deskriptor
+ */
+static inline void botfs_rewind(botfs_file_descr_t* file) {
+	void* ptr = (void*) file->start;
+	sdfat_rewind(ptr);
+}
+
+/**
+ * Liest BOTFS_BLOCK_SIZE Bytes aus einer Datei in einen Puffer
+ * \param *file		Zeiger auf Datei-Deskriptor
+ * \param *buffer	Puffer fuer mindestens BOTFS_BLOCK_SIZE Byte, in die Daten geschrieben werden
+ * \return			0, falls kein Fehler
+ */
+static inline int8_t botfs_read(botfs_file_descr_t* file, void* buffer) {
+	void* ptr = (void*) file->start;
+	return sdfat_read(ptr, buffer, BOTFS_BLOCK_SIZE) == BOTFS_BLOCK_SIZE ? 0 : 1;
+}
+
+/**
+ * Schreibt BOTFS_BLOCK_SIZE Bytes aus einem Puffer in eine Datei
+ * \param *file		Zeiger auf Datei-Deskriptor
+ * \param *buffer	Puffer mit mindestens BOTFS_BLOCK_SIZE Byte, dessen Daten in die Datei geschrieben werden
+ * \return			0, falls kein Fehler
+ */
+static inline int8_t botfs_write(botfs_file_descr_t* file, void* buffer) {
+	void* ptr = (void*) file->start;
+	int16_t res = sdfat_write(ptr, buffer, BOTFS_BLOCK_SIZE);
+	if (res != BOTFS_BLOCK_SIZE) {
+		LOG_ERROR("botfs_write() failed with %d", res);
+		return 1;
+	}
+	return 0;
+}
+
+/**
+ * Legt eine neue Datei an
+ * \param *filename	Dateiname
+ * \param size		Groesse der Datei in Bloecken
+ * \param alignment	Ausrichtung des Dateianfangs an einer X-Blockgrenze (normalerweise 0)
+ * \param *buffer	Puffer fuer mindestens BOTFS_BLOCK_SIZE Byte
+ * \return			0, falls kein Fehler
+ */
+int8_t botfs_create(const char* filename, uint16_t size, uint16_t alignment, void* buffer);
+
+/**
+ * Entfernt eine Datei
+ * \param *filename	Dateiname
+ * \param *buffer	Puffer fuer mindestens BOTFS_BLOCK_SIZE Byte
+ * \return			0, falls kein Fehler
+ */
+static inline int8_t botfs_unlink(const char* filename, void* buffer) {
+	(void) buffer;
+	return sdfat_unlink(filename);
+}
+
+/**
+ * Benennt eine Datei um
+ * \param *filename	Dateiname
+ * \param *new_name	Neuer Dateiname
+ * \param *buffer	Puffer fuer mindestens BOTFS_BLOCK_SIZE Byte
+ * \return			0, falls kein Fehler
+ */
+static inline int8_t botfs_rename(const char* filename, const char* new_name, void* buffer) {
+	(void) buffer;
+	return sdfat_rename(filename, new_name);
+}
+
+/**
+ * Schreibt die Information ueber benutzte Bloecke in den Datei-Header
+ * \param *file		Zeiger auf Datei-Deskriptor
+ * \param *buffer	Puffer mit mindestens BOTFS_BLOCK_SIZE Byte
+ * \return			0, falls kein Fehler
+ */
+static inline int8_t botfs_flush_used_blocks(botfs_file_descr_t* file, void* buffer) {
+	(void) file;
+	(void) buffer;
+	return 0;
+}
+
+/**
+ * Schliesst eine Datei, d.h. gepufferte Daten werden zurueckgeschrieben
+ * \param *file		Zeiger auf Dateideskriptor
+ * \param *buffer	Puffer mit mindestens BOTFS_BLOCK_SIZE Byte
+ */
+static inline void botfs_close(botfs_file_descr_t* file, void* buffer) {
+	(void) buffer;
+	void* ptr = (void*) file->start;
+	sdfat_close(ptr);
+}
+
+/**
+ * Gibt die Groesse einer Datei zurueck
+ * \param *file	Zeiger auf Dateideskriptor
+ * \return		Dateigroesse in Bloecken
+ */
+static inline uint16_t botfs_get_filesize(botfs_file_descr_t* file) {
+	void* ptr = (void*) file->start;
+	return (uint16_t) ((uint32_t) sdfat_get_filesize(ptr) / BOTFS_BLOCK_SIZE);
+}
+
+/**
+ * Beendet BotFS sauber
+ */
+static inline void botfs_close_volume(void) {
+	sdfat_sync();
+}
+#endif // BOT_FS_AVAILABLE && SDFAT_AVAILABLE
 #endif // BOTFS_H_

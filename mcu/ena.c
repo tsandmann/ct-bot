@@ -33,7 +33,6 @@
 #include "ena.h"
 #include "shift.h"
 #include "mouse.h"
-#include "mmc-low.h"
 
 static uint8_t ena = 0; /**< Sichert den Zustand der Enable-Leitungen */
 #ifdef MOUSE_AVAILABLE

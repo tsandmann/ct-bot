@@ -48,7 +48,9 @@
 #include <stdlib.h>
 
 
+#ifndef SDFAT_AVAILABLE
 mmc_buffers_t mmc_buffers; /**< Puffer fuer alle MMC-Transfers */
+#endif
 
 /**
  * Initialisierung
@@ -97,7 +99,7 @@ void ctbot_init(int argc, char * argv[]) {
 		}
 	}
 #endif
-#ifdef BOT_FS_AVAILABLE
+#if defined BOT_FS_AVAILABLE && ! defined SDFAT_AVAILABLE
 	{
 		void * buf = &mmc_buffers;
 		const int8_t res = botfs_init(botfs_volume_image_file, buf, True);
@@ -105,7 +107,7 @@ void ctbot_init(int argc, char * argv[]) {
 			LOG_ERROR("botfs_init()=%d", res);
 		}
 	}
-#endif // BOT_FS_AVAILABLE
+#endif // BOT_FS_AVAILABLE && ! SDFAT_AVAILABLE
 	bot_sens_init();
 #ifdef BEHAVIOUR_AVAILABLE
 	bot_behave_init();

@@ -33,16 +33,16 @@
 /* Logging-Funktionen */
 //#define LOG_CTSIM_AVAILABLE					/**< Logging zum ct-Sim (PC und MCU) */
 //#define LOG_DISPLAY_AVAILABLE				/**< Logging ueber das LCD-Display (PC und MCU) */
-//#define LOG_UART_AVAILABLE					/**< Logging ueber UART (nur fuer MCU) */
+#define LOG_UART_AVAILABLE					/**< Logging ueber UART (nur fuer MCU) */
 //#define LOG_RPI_AVAILABLE					/**< Logging vom ATmega zum ARM-Linux Board z.B. RPi (nur MCU) */
-#define LOG_STDOUT_AVAILABLE 				/**< Logging auf die Konsole (nur fuer PC) */
+//#define LOG_STDOUT_AVAILABLE 				/**< Logging auf die Konsole (nur fuer PC) */
 //#define LOG_MMC_AVAILABLE					/**< Logging in eine txt-Datei auf MMC */
 #define USE_MINILOG							/**< schaltet auf schlankes Logging um */
 //#define CREATE_TRACEFILE_AVAILABLE			/**< Aktiviert das Schreiben einer Trace-Datei (nur PC) */
 
 
 /* Kommunikation */
-#define BOT_2_SIM_AVAILABLE					/**< Soll der Bot mit dem Sim kommunizieren? */
+//#define BOT_2_SIM_AVAILABLE					/**< Soll der Bot mit dem Sim kommunizieren? */
 //#define BOT_2_BOT_AVAILABLE					/**< Sollen Bots untereinander kommunizieren? */
 #define BOT_2_BOT_PAYLOAD_AVAILABLE			/**< Aktiviert Payload-Versand per Bot-2-Bot Kommunikation */
 
@@ -56,7 +56,7 @@
 
 
 /* Sensorauswertung */
-//#define MOUSE_AVAILABLE						/**< Maus Sensor */
+#define MOUSE_AVAILABLE						/**< Maus Sensor */
 #define MEASURE_MOUSE_AVAILABLE				/**< Geschwindigkeiten werden aus den Maussensordaten berechnet */
 //#define MEASURE_COUPLED_AVAILABLE			/**< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
 //#define MEASURE_POSITION_ERRORS_AVAILABLE	/**< Fehlerberechnungen bei der Positionsbestimmung */
@@ -77,8 +77,9 @@
 
 
 /* MMC-/SD-Karte als Speichererweiterung (Erweiterungsmodul) */
-//#define MMC_AVAILABLE						/**< haben wir eine MMC/SD-Karte zur Verfuegung? */
-#define BOT_FS_AVAILABLE					/**< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC moeglich) */
+#define MMC_AVAILABLE						/**< haben wir eine MMC/SD-Karte zur Verfuegung? */
+#define BOT_FS_AVAILABLE					/**< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC/SD moeglich) */
+#define SDFAT_AVAILABLE						/**< Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf MMC/SD-Karte */
 
 
 /* Hardware-Treiber */
@@ -153,7 +154,8 @@
 #undef CMPS03_AVAILABLE
 #undef SP03_AVAILABLE
 #undef BOT_2_RPI_AVAILABLE
-#endif
+#undef SDFAT_AVAILABLE
+#endif // ! DOXYGEN
 
 #if !defined BOT_2_SIM_AVAILABLE && ! defined ARM_LINUX_BOARD
 #define BOT_2_SIM_AVAILABLE // simulierte Bots brauchen immer Kommunikation zum Sim
@@ -204,6 +206,12 @@
 
 #undef EEPROM_EMU_AVAILABLE
 #undef CREATE_TRACEFILE_AVAILABLE
+
+#if ! defined __AVR_ATmega1284P__ && ! defined __AVR_ATmega644__ && ! defined __AVR_ATmega644P__
+#undef MMC_AVAILABLE
+#undef BOT_FS_AVAILABLE
+#undef SDFAT_AVAILABLE
+#endif // ATmega1284P / ATmega644X
 #endif // MCU
 
 #ifndef SPEED_CONTROL_AVAILABLE
@@ -215,6 +223,7 @@
 #undef MAP_AVAILABLE // Map geht auf dem MCU nur mit MMC
 #undef MMC_VM_AVAILABLE
 #undef BOT_FS_AVAILABLE
+#undef SDFAT_AVAILABLE
 #endif // MCU
 #endif // ! MMC_AVAILABLE
 
@@ -248,7 +257,7 @@
 #undef LOG_CTSIM_AVAILABLE
 #endif // ! BOT_2_RPI_AVAILABLE
 #endif // BOT_2_SIM_AVAILABLE
-#else // PC
+#else // ! MCU
 #undef LOG_RPI_AVAILABLE
 #endif // MCU
 
