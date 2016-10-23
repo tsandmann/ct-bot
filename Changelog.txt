@@ -1,5 +1,7 @@
 CHANGELOG fuer c't-Bot
 ======================
+2016-10-23: Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf SD-Karten (experimentell!). Unterstuetzung fuer SDHC-Karten.
+
 2016-10-15: Bugfix fuer MMC/SD-Karte falls MOUSE_AVAILABLE an ist. MMC-Code etwas aufgeraeumt.
 
 2016-09-25: Remotecall-Display (DISPLAY_REMOTECALL_AVAILABLE) erweitert um Statusanzeige der Verhalten. Kann damit das Verhaltensdisplay (DISPLAY_BEHAVIOUR_AVAILABLE) ersetzen.
