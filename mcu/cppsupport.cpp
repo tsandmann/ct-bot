@@ -25,6 +25,7 @@
  */
 
 #ifdef MCU
+#include <stddef.h>
 #include <stdlib.h>
 
 extern "C" {
@@ -42,6 +43,24 @@ void __cxa_pure_virtual() {
 void __cxa_deleted_virtual() {
 	LOG_ERROR("deleted virtual method called, abort.");
 	abort();
+}
+
+void* operator new(size_t size) {
+	auto ptr(malloc(size));
+	if (! ptr) {
+		LOG_ERROR("malloc() failed, abort.");
+		abort();
+	}
+	return ptr;
+}
+
+void* operator new(size_t size, void* ptr);
+void* operator new(size_t, void* ptr) {
+	return ptr;
+}
+
+void operator delete(void* ptr) {
+	free(ptr);
 }
 
 #endif // MCU

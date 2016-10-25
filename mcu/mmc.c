@@ -206,8 +206,7 @@ static int8_t botfs_test(void) {
 	}
 
 	uint32_t start_ticks, end_ticks;
-	botfs_file_descr_t file = BOTFS_FD_INITIALIZER;
-
+	botfs_file_descr_t file;
 	int8_t result = botfs_open("test.bin", &file, 'c', NULL);
 	if (result) {
 		LOG_ERROR("botfs_test(): botfs_open() failed: %d", result);

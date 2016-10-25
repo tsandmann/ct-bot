@@ -85,19 +85,19 @@ union cache_t {
 class FatCache {
 public:
 	/** Cached block is dirty */
-	static const uint8_t CACHE_STATUS_DIRTY = 1;
+	static constexpr uint8_t const CACHE_STATUS_DIRTY = 1;
 	/** Cashed block is FAT entry and must be mirrored in second FAT. */
-	static const uint8_t CACHE_STATUS_MIRROR_FAT = 2;
+	static constexpr uint8_t const CACHE_STATUS_MIRROR_FAT = 2;
 	/** Cache block status bits */
-	static const uint8_t CACHE_STATUS_MASK = CACHE_STATUS_DIRTY | CACHE_STATUS_MIRROR_FAT;
+	static constexpr uint8_t const CACHE_STATUS_MASK = CACHE_STATUS_DIRTY | CACHE_STATUS_MIRROR_FAT;
 	/** Sync existing block but do not read new block. */
-	static const uint8_t CACHE_OPTION_NO_READ = 4;
+	static constexpr uint8_t const CACHE_OPTION_NO_READ = 4;
 	/** Cache block for read. */
-	static uint8_t const CACHE_FOR_READ = 0;
+	static constexpr uint8_t const CACHE_FOR_READ = 0;
 	/** Cache block for write. */
-	static uint8_t const CACHE_FOR_WRITE = CACHE_STATUS_DIRTY;
+	static constexpr uint8_t const CACHE_FOR_WRITE = CACHE_STATUS_DIRTY;
 	/** Reserve cache block for write - do not read from block device. */
-	static uint8_t const CACHE_RESERVE_FOR_WRITE = CACHE_STATUS_DIRTY | CACHE_OPTION_NO_READ;
+	static constexpr uint8_t const CACHE_RESERVE_FOR_WRITE = CACHE_STATUS_DIRTY | CACHE_OPTION_NO_READ;
 
 	/** \return Cache block address. */
 	cache_t* block() {

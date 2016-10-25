@@ -48,9 +48,7 @@
 #include <stdlib.h>
 
 
-#ifndef SDFAT_AVAILABLE
 mmc_buffers_t mmc_buffers; /**< Puffer fuer alle MMC-Transfers */
-#endif
 
 /**
  * Initialisierung

@@ -62,7 +62,7 @@ static inline uint8_t mmc_get_init_state(void) {
  * \return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 17
  */
 static inline uint8_t mmc_read_sector(uint32_t addr, void* buffer) {
-	return sd_card_read_sector(addr, buffer) != 1;
+	return sd_card_read_block(addr, buffer) != 1;
 }
 
 /**
@@ -72,7 +72,7 @@ static inline uint8_t mmc_read_sector(uint32_t addr, void* buffer) {
  * \return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 24, 2 wenn Timeout bei busy
  */
 static inline uint8_t mmc_write_sector(uint32_t addr, void* buffer) {
-	return sd_card_write_sector(addr, buffer) != 1;
+	return sd_card_write_block(addr, buffer) != 1;
 }
 
 /**

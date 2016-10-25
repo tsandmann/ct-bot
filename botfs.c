@@ -953,7 +953,7 @@ int8_t botfs_copy(botfs_file_descr_t * src, const char * dest, uint16_t src_offs
 
 int8_t botfs_create(const char* filename, uint16_t size, uint16_t alignment, void* buffer) {
 	(void) alignment;
-	botfs_file_descr_t tmp = BOTFS_FD_INITIALIZER;
+	botfs_file_descr_t tmp;
 	if (! botfs_open(filename, &tmp, 'c', NULL)) {
 		int16_t filesize = size > 0 ? (int16_t) ((size - 1) * BOTFS_BLOCK_SIZE) : 0;
 		botfs_seek(&tmp, filesize, SEEK_SET);
@@ -962,5 +962,21 @@ int8_t botfs_create(const char* filename, uint16_t size, uint16_t alignment, voi
 	} else {
 		return 1;
 	}
+}
+
+int8_t botfs_open(const char* filename, botfs_file_descr_t* p_file, uint8_t mode, void* buffer) {
+	(void) buffer;
+
+	uint8_t fat_mode = 1;
+	if (mode == BOTFS_MODE_R) {
+		fat_mode |= 2;
+	} else if (mode == BOTFS_MODE_W) {
+		fat_mode |= 2 | 0x10;
+	} else if (mode == 'c') {
+		fat_mode |= 2 | 0x40;
+	}
+
+	int8_t res = sdfat_open(filename, p_file, fat_mode);
+	return res;
 }
 #endif // BOT_FS_AVAILABLE && SDFAT_AVAILABLE

@@ -1172,7 +1172,8 @@ bool FatFile::sync() {
 	}
 	if (m_vol->cacheSync()) {
 		return true;
-	} DBG_FAIL_MACRO;
+	}
+	DBG_FAIL_MACRO;
 
 fail:
 	m_error |= WRITE_ERROR;

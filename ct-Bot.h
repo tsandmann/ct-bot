@@ -56,7 +56,7 @@
 
 
 /* Sensorauswertung */
-#define MOUSE_AVAILABLE						/**< Maus Sensor */
+//#define MOUSE_AVAILABLE						/**< Maus Sensor */
 #define MEASURE_MOUSE_AVAILABLE				/**< Geschwindigkeiten werden aus den Maussensordaten berechnet */
 //#define MEASURE_COUPLED_AVAILABLE			/**< Geschwindigkeiten werden aus Maus- und Encoderwerten ermittelt und gekoppelt */
 //#define MEASURE_POSITION_ERRORS_AVAILABLE	/**< Fehlerberechnungen bei der Positionsbestimmung */
@@ -68,11 +68,11 @@
 /* Motoransteuerung */
 #define SPEED_CONTROL_AVAILABLE 			/**< Aktiviert die Motorregelung */
 //#define ADJUST_PID_PARAMS					/**< macht PID-Paramter zur Laufzeit per FB einstellbar */
-//#define SPEED_LOG_AVAILABLE 				/**< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
+#define SPEED_LOG_AVAILABLE 				/**< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
 
 
 /* Umgebungskarte */
-#define MAP_AVAILABLE						/**< Aktiviert die Kartographie */
+//#define MAP_AVAILABLE						/**< Aktiviert die Kartographie */
 #define MAP_2_SIM_AVAILABLE					/**< Sendet die Map zur Anzeige an den Sim */
 
 

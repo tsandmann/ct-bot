@@ -58,14 +58,8 @@ typedef union {
 #if defined LOG_MMC_AVAILABLE && defined USE_MINILOG
 		char minilog_buffer[BOTFS_BLOCK_SIZE]; /**< Puffer fuer LOG_MMC */
 #endif
-#ifdef SPEED_LOG_AVAILABLE
-		slog_t speedlog; /**< Speed-Log Puffer */
-#endif
 		uint8_t end[0];
 	} PACKED data;
-#ifdef BOT_FS_AVAILABLE
-	uint8_t dummy_botfs[BOTFS_BLOCK_SIZE]; /**< Mindestgroesse auf 512 Byte setzen, falls BOT_FS aktiv */
-#endif
 	uint8_t dummy[0];
 } mmc_buffers_t; /**< Puffer-Struktur fuer alle MMC-Puffer */
 

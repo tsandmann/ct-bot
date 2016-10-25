@@ -32,10 +32,6 @@
 
 #ifdef MMC_AVAILABLE
 static SdFat sd;
-#if defined BOT_FS_AVAILABLE && defined SDFAT_AVAILABLE
-static FatFile botfs_file;
-#endif // BOT_FS_AVAILABLE && SDFAT_AVAILABLE
-
 
 static bool init_state = false;
 #if SDFAT_PRINT_SUPPORT
@@ -76,16 +72,16 @@ uint8_t sd_card_init() {
 	return 0;
 }
 
-uint8_t sd_card_read_sector(uint32_t addr, void* buffer) {
+uint8_t sd_card_read_block(uint32_t addr, void* buffer) {
 	os_enterCS();
 //	starttime = timer_get_us8();
 	const auto res(sd.card()->read_block(addr, static_cast<uint8_t*>(buffer)));
 //	const auto endtime = timer_get_us8();
+	os_exitCS();
 	if (! res) {
 		init_state = false;
 	}
-	os_exitCS();
-//	LOG_DEBUG("readBlock() took %u us", endtime - starttime);
+//	LOG_DEBUG("read_block() took %u us", endtime - starttime);
 //	LOG_DEBUG(" cardcommand took %u us", cardcommand - starttime);
 //	LOG_DEBUG(" ready took %u us", ready - cardcommand);
 //	LOG_DEBUG(" spi_rcv took %u us", spi_rcv - ready);
@@ -94,23 +90,23 @@ uint8_t sd_card_read_sector(uint32_t addr, void* buffer) {
 	return res;
 }
 
-uint8_t sd_card_write_sector(uint32_t addr, const void* buffer) {
+uint8_t sd_card_write_block(uint32_t addr, const void* buffer) {
 	os_enterCS();
 	const auto res(sd.card()->write_block(addr, static_cast<const uint8_t*>(buffer), true));
+	os_exitCS();
 	if (! res) {
 		init_state = false;
 	}
-	os_exitCS();
 	return res;
 }
 
 uint32_t sd_card_get_size() {
 	os_enterCS();
 	const auto res(sd.card()->get_size() / 2U);
+	os_exitCS();
 	if (! res) {
 		init_state = false;
 	}
-	os_exitCS();
 	return res;
 }
 
@@ -121,115 +117,79 @@ uint8_t sd_card_get_type() {
 uint8_t sd_card_read_csd(csd_t* p_csd) {
 	os_enterCS();
 	const auto res(sd.card()->read_csd(p_csd));
+	os_exitCS();
 	if (! res) {
 		init_state = false;
 	}
-	os_exitCS();
 	return res;
 }
 
 uint8_t sd_card_read_cid(cid_t* p_cid) {
 	os_enterCS();
 	const auto res(sd.card()->read_cid(p_cid));
+	os_exitCS();
 	if (! res) {
 		init_state = false;
 	}
-	os_exitCS();
 	return res;
 }
 
 #ifdef SDFAT_AVAILABLE
-int8_t sdfat_open(const char* filename, void* p_file, uint8_t mode) {
-	os_enterCS();
-#ifdef BOT_FS_AVAILABLE
-	if (botfs_file.isOpen()) {
-		LOG_DEBUG("sdfat_open(): file was already opened.");
-		botfs_file.close();
-	}
-
-	auto ptr(reinterpret_cast<FatFile**>(p_file));
+int8_t sdfat_open(const char* filename, FatFile** p_file, uint8_t mode) {
 //	LOG_DEBUG("sdfat_open(\"%s\", 0x%x, %u)", filename, *((uint16_t*) p_file), mode);
-	const auto res(botfs_file.open(filename, mode));
+	auto ptr(new FatFile);
+	os_enterCS();
+	const auto res(ptr->open(filename, mode));
+	os_exitCS();
 	if (res) {
-//		LOG_DEBUG("&botfs_file=0x%x", &botfs_file);
-		*ptr = &botfs_file;
-//		LOG_DEBUG("ptr=0x%x", ptr);
-//		LOG_DEBUG("*ptr=0x%x", *ptr);
-//		LOG_DEBUG("p_file=0x%x", p_file);
-//		LOG_DEBUG("*p_file=0x%x", *((uint16_t*) p_file));
-		os_exitCS();
+		*p_file = ptr;
 		return 0;
 	} else {
-		*ptr = nullptr;
-		init_state = false;
-		os_exitCS();
-		LOG_ERROR("sdfat_open(): botfs_file.open() failed");
+		*p_file = nullptr;
+		LOG_ERROR("sdfat_open(): ptr->open() failed");
 		LOG_DEBUG("sdlib-error=0x%x", sd.card()->get_error_code());
 		return 1;
 	}
-#else // BOT_FS_AVAILABLE
-	(void) filename;
-	(void) p_file;
-	(void) mode;
-	return 1;
-#endif // BOT_FS_AVAILABLE
 }
 
-void sdfat_seek(void* p_file, int16_t offset, uint8_t origin) {
-	os_enterCS();
-	auto ptr(reinterpret_cast<FatFile*>(p_file));
+void sdfat_seek(pFatFile p_file, int16_t offset, uint8_t origin) {
 	switch (origin) {
 	case SEEK_SET:
-		ptr->seekSet(offset);
+		p_file->seekSet(offset);
 		break;
 
 	case SEEK_CUR:
-		ptr->seekCur(offset);
+		p_file->seekCur(offset);
 		break;
 
 	case SEEK_END:
-		ptr->seekEnd(offset);
+		p_file->seekEnd(offset);
 		break;
 	}
-	os_exitCS();
 }
 
-void sdfat_rewind(void* p_file) {
-	os_enterCS();
-	auto ptr(reinterpret_cast<FatFile*>(p_file));
-	ptr->rewind();
-	os_exitCS();
+void sdfat_rewind(pFatFile p_file) {
+	p_file->rewind();
 }
 
-int16_t sdfat_read(void* p_file, void* buffer, uint16_t length) {
+int16_t sdfat_read(pFatFile p_file, void* buffer, uint16_t length) {
 	os_enterCS();
-	auto ptr(reinterpret_cast<FatFile*>(p_file));
-	auto res(ptr->read(buffer, length));
-	if (res != static_cast<int16_t>(length)) {
-		init_state = false;
-	}
+	auto res(p_file->read(buffer, length));
 	os_exitCS();
 	return res;
 }
 
-int16_t sdfat_write(void* p_file, void* buffer, uint16_t length) {
+int16_t sdfat_write(pFatFile p_file, void* buffer, uint16_t length) {
 	os_enterCS();
-	auto ptr(reinterpret_cast<FatFile*>(p_file));
-	const auto res(ptr->write(buffer, length));
-	if (res != static_cast<int16_t>(length)) {
-		init_state = false;
-	}
+	const auto res(p_file->write(buffer, length));
 	os_exitCS();
-//	LOG_DEBUG(" write(0x%x, %u)=%d", buffer, length, res);
+//	LOG_DEBUG("sdfat_write(0x%x, 0x%x, %u)=%d", p_file, buffer, length, res);
 	return res;
 }
 
 int8_t sdfat_unlink(const char* filename) {
 	os_enterCS();
 	auto res(! sd.remove(filename));
-	if (res) {
-		init_state = false;
-	}
 	os_exitCS();
 	return res;
 }
@@ -237,48 +197,45 @@ int8_t sdfat_unlink(const char* filename) {
 int8_t sdfat_rename(const char* filename, const char* new_name) {
 	os_enterCS();
 	auto res(! sd.rename(filename, new_name));
-	if (res) {
-		init_state = false;
-	}
 	os_exitCS();
 	return res;
 }
 
-int8_t sdfat_close(void* p_file) {
+int8_t sdfat_sync(pFatFile p_file) {
 	os_enterCS();
-	auto ptr(reinterpret_cast<FatFile*>(p_file));
-	auto res(! ptr->close());
-	if (res) {
-		init_state = false;
-	}
+	auto res(! p_file->sync());
 	os_exitCS();
 	return res;
 }
 
-uint32_t sdfat_get_filesize(void* p_file) {
-	auto ptr(reinterpret_cast<FatFile*>(p_file));
-	return ptr->fileSize();
-}
-
-int8_t sdfat_get_filename(void* p_file, char* p_name, uint16_t size) {
-	auto ptr(reinterpret_cast<FatFile*>(p_file));
-	return ! ptr->getName(p_name, size);
-}
-
-int8_t sdfat_sync() {
+int8_t sdfat_close(pFatFile p_file) {
 	os_enterCS();
-	bool res(true);
-#ifdef BOT_FS_AVAILABLE
-	res = botfs_file.sync();
-#endif
-	res &= sd.vol()->cacheSync();
-	if (! res) {
-		init_state = false;
+	auto res(! p_file->close());
+	os_exitCS();
+	return res;
+}
+
+void sdfat_free(pFatFile p_file) {
+	if (p_file->isOpen()) {
+		sdfat_close(p_file);
 	}
+	delete p_file;
+}
+
+uint32_t sdfat_get_filesize(pFatFile p_file) {
+	return p_file->fileSize();
+}
+
+int8_t sdfat_get_filename(pFatFile p_file, char* p_name, uint16_t size) {
+	return ! p_file->getName(p_name, size);
+}
+
+int8_t sdfat_sync_vol() {
+	os_enterCS();
+	auto res(sd.vol()->cacheSync());
 	os_exitCS();
 	return ! res;
 }
-
 #endif // SDFAT_AVAILABLE
 
 #if 0
@@ -367,7 +324,7 @@ size_t Uart_Print::write(uint8_t data) {
 	return uart_write(&data, 1);
 }
 
-size_t Uart_Print::write(const uint8_t *buffer, size_t size) {
+size_t Uart_Print::write(const uint8_t* buffer, size_t size) {
 	return uart_write(buffer, size);
 }
 #endif // SDFAT_PRINT_SUPPORT

@@ -88,7 +88,7 @@ typedef struct {
 	uint32_t size;
 } PACKED_FORCE botfs_fat16_dir_entry_t;
 
-#ifdef BOT_FS_AVAILABLE
+#if defined BOT_FS_AVAILABLE && ! defined SDFAT_AVAILABLE
 /** BotFS-spezifische Datentypen */
 
 /** Benutzte Bloecke einer Datei */
@@ -174,5 +174,9 @@ typedef struct {
 
 #define BOTFS_STREAM_INITIALIZER {NULL, 0, NULL, (uint16_t) ~0U} /**< Initialisiert ein Stream-Objekt */
 #endif // BOTFS_STREAM_AVAILABLE
-#endif // BOT_FS_AVAILABLE
+#endif // BOT_FS_AVAILABLE && ! SDFAT_AVAILABLE
+
+#if defined BOT_FS_AVAILABLE && defined SDFAT_AVAILABLE
+typedef void* botfs_file_descr_t;
+#endif // BOT_FS_AVAILABLE && SDFAT_AVAILABLE
 #endif // BOTFS_TYPES_H_

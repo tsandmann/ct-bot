@@ -37,6 +37,8 @@ uint8_t EEPROM resetsEEPROM = 0; /**< Reset-Counter im EEPROM */
 #include "ena.h"
 #include "uart.h"
 #include "motor.h"
+#include "sensor-low.h"
+#include "sdcard_wrapper.h"
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/wdt.h>
@@ -196,6 +198,9 @@ void ctbot_init_low_last(void) {
  * Faehrt den low-level Code des Bots sauber herunter
  */
 void ctbot_shutdown_low() {
+#if defined SDFAT_AVAILABLE && defined SPEED_LOG_AVAILABLE
+	sdfat_close(speedlog_file);
+#endif
 
 #ifdef EXPANSION_BOARD_MOD_AVAILABLE
 	ENA_off(ENA_WIPORT); // WiPort aus

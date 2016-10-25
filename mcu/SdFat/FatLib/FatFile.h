@@ -76,15 +76,15 @@ struct fname_t {
 };
 
 /** Derived from a LFN with loss or conversion of characters. */
-const uint8_t FNAME_FLAG_LOST_CHARS = 0X01;
+constexpr uint8_t const FNAME_FLAG_LOST_CHARS = 0X01;
 /** Base-name or extension has mixed case. */
-const uint8_t FNAME_FLAG_MIXED_CASE = 0X02;
+constexpr uint8_t const FNAME_FLAG_MIXED_CASE = 0X02;
 /** LFN entries are required for file name. */
-const uint8_t FNAME_FLAG_NEED_LFN = FNAME_FLAG_LOST_CHARS | FNAME_FLAG_MIXED_CASE;
+constexpr uint8_t const FNAME_FLAG_NEED_LFN = FNAME_FLAG_LOST_CHARS | FNAME_FLAG_MIXED_CASE;
 /** Filename base-name is all lower case */
-const uint8_t FNAME_FLAG_LC_BASE = DIR_NT_LC_BASE;
+constexpr uint8_t const FNAME_FLAG_LC_BASE = DIR_NT_LC_BASE;
 /** Filename extension is all lower case. */
-const uint8_t FNAME_FLAG_LC_EXT = DIR_NT_LC_EXT;
+constexpr uint8_t const FNAME_FLAG_LC_EXT = DIR_NT_LC_EXT;
 
 /**
  * \class FatFile
@@ -93,9 +93,7 @@ const uint8_t FNAME_FLAG_LC_EXT = DIR_NT_LC_EXT;
 class FatFile {
 public:
 	/** Create an instance. */
-	FatFile() :
-		m_attr(FILE_ATTR_CLOSED), m_error(0) {
-	}
+	FatFile() :	m_attr(FILE_ATTR_CLOSED), m_error(0) {}
 
 	/**  Create a file object and open it in the current working directory.
 	 *
@@ -104,9 +102,7 @@ public:
 	 * \param[in] oflag Values for \a oflag are constructed by a bitwise-inclusive
 	 * OR of open flags. see FatFile::open(FatFile*, const char*, uint8_t).
 	 */
-	FatFile(const char* path, uint8_t oflag) {
-		m_attr = FILE_ATTR_CLOSED;
-		m_error = 0;
+	FatFile(const char* path, uint8_t oflag) : m_attr(FILE_ATTR_CLOSED), m_error(0) {
 		open(path, oflag);
 	}
 
