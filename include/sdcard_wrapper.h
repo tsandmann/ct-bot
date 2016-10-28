@@ -31,49 +31,112 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
+#include "SdFat.h"
+
 class FatFile;
 using pFatFile = FatFile*;
+using pSdFat = SdFat*;
 
 extern "C" {
 #include "ct-Bot.h"
 #else
 typedef void* pFatFile;
+typedef void* pSdFat;
 #endif // __cplusplus
 
 #ifdef MMC_AVAILABLE
 #include "sdinfo.h"
 
-uint8_t sd_card_init(void);
-uint8_t sd_card_read_block(uint32_t addr, void* buffer);
-uint8_t sd_card_write_block(uint32_t addr, const void* buffer);
-uint32_t sd_card_get_size(void);
-uint8_t sd_card_get_type(void);
-uint8_t sd_card_read_csd(csd_t* p_csd);
-uint8_t sd_card_read_cid(cid_t* p_cid);
+extern pSdFat const p_sd;
+
+static inline __attribute__((always_inline)) pSdFat get_sd(void) {
+	return p_sd;
+}
+
+extern uint8_t (*sd_card_init)(pSdFat, uint8_t);
+extern uint8_t (*sd_card_read_block)(pSdFat, uint32_t , uint8_t*);
+extern uint8_t (*sd_card_write_block)(pSdFat, uint32_t, const uint8_t*, uint8_t);
+extern uint32_t (*sd_card_get_size)(pSdFat);
+extern uint8_t (*sd_card_get_type)(pSdFat);
+extern uint8_t (*sd_card_read_csd)(pSdFat, csd_t*);
+extern uint8_t (*sd_card_read_cid)(pSdFat, cid_t*);
 
 #ifdef SDFAT_AVAILABLE
-int8_t sdfat_open(const char* filename, pFatFile* p_file, uint8_t mode);
-void sdfat_seek(pFatFile p_file, int16_t offset, uint8_t origin);
-void sdfat_rewind(pFatFile p_file);
-int16_t sdfat_read(pFatFile p_file, void* buffer, uint16_t length);
-int16_t sdfat_write(pFatFile p_file, void* buffer, uint16_t length);
-int8_t sdfat_unlink(const char* filename);
-int8_t sdfat_rename(const char* filename, const char* new_name);
-int8_t sdfat_sync(pFatFile p_file);
-int8_t sdfat_close(pFatFile p_file);
-void sdfat_free(pFatFile p_file);
-uint32_t sdfat_get_filesize(pFatFile p_file);
-int8_t sdfat_get_filename(pFatFile p_file, char* p_name, uint16_t size);
-int8_t sdfat_sync_vol(void);
+extern uint8_t (*sdfat_open)(const char*, pFatFile*, uint8_t);
+extern void (*sdfat_seek)(pFatFile, int16_t, uint8_t);
+extern void (*sdfat_rewind)(pFatFile);
+extern int16_t (*sdfat_read)(pFatFile, void*, uint16_t);
+extern int16_t (*sdfat_write)(pFatFile, const void*, uint16_t);
+extern uint8_t (*sdfat_remove)(pSdFat, const char*);
+extern uint8_t (*sdfat_rename)(pSdFat, const char*, const char*);
+extern uint8_t (*sdfat_sync)(pFatFile);
+extern uint8_t (*sdfat_close)(pFatFile);
+extern void (*sdfat_free)(pFatFile);
+extern uint32_t (*sdfat_get_filesize)(pFatFile);
+extern uint8_t (*sdfat_get_filename)(pFatFile, char*, uint16_t);
+extern uint8_t (*sdfat_sync_vol)(pSdFat);
 
 #if 0
 uint8_t sd_fat_test(void);
 #endif // 0
 #endif // SDFAT_AVAILABLE
 
-#endif // MMC_AVAILABLE
 #ifdef __cplusplus
 }
-#endif
+
+class SdFatWrapper : public SdFat {
+	static bool init_state;
+
+public:
+	static uint8_t init(SdFat* p_instance, uint8_t devisor);
+	static uint8_t read_block(SdFat* p_instance, uint32_t block, uint8_t* dst);
+	static uint8_t write_block(SdFat* p_instance, uint32_t block, const uint8_t* src, uint8_t sync);
+	static uint32_t get_size(SdFat* p_instance);
+	static uint8_t get_type(SdFat* p_instance) {
+		return p_instance->card()->get_type();
+	}
+	static uint8_t read_csd(SdFat* p_instance, csd_t* p_csd);
+	static uint8_t read_cid(SdFat* p_instance, cid_t* p_cid);
+	static uint8_t remove(SdFat* p_instance, const char* path);
+	static uint8_t rename(SdFat* p_instance, const char* old_path, const char* new_path);
+	static uint8_t sync_vol(SdFat* p_instance);
+
+	static constexpr bool const debug_mode { false };
+	struct debug_times_t {
+		uint16_t starttime;
+		uint16_t cardcommand;
+		uint16_t readdata;
+		uint16_t ready;
+		uint16_t spi_rcv;
+		uint16_t discard_crc;
+	};
+	static debug_times_t debug_times;
+};
+
+
+#ifdef SDFAT_AVAILABLE
+class FatFileWrapper : public FatFile {
+public:
+	static uint8_t open(const char* filename, FatFile** p_file, uint8_t mode);
+	static void seek(FatFile* p_instance, int16_t offset, uint8_t origin);
+	static void rewind(FatFile* p_instance) {
+		p_instance->rewind();
+	}
+	static int16_t read(FatFile* p_instance, void* buffer, uint16_t length);
+	static int16_t write(FatFile* p_instance, const void* buffer, uint16_t length);
+	static uint8_t sync(FatFile* p_instance);
+	static uint8_t close(FatFile* p_instance);
+	static void free(FatFile* p_instance);
+	static uint32_t get_filesize(FatFile* p_instance) {
+		return p_instance->fileSize();
+	}
+	static uint8_t get_filename(FatFile* p_instance, char* p_name, uint16_t size) {
+		return ! p_instance->getName(p_name, size);
+	}
+};
+#endif // SDFAT_AVAILABLE
+#endif // __cplusplus
+
+#endif // MMC_AVAILABLE
 #endif // MCU
 #endif /* MCU_SDCARD_WRAPPER_H_ */

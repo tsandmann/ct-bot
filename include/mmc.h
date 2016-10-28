@@ -45,55 +45,6 @@
 #warning "MMC_WRITE_TEST_AVAILABLE braucht DISPLAY_MMC_INFO (ui/available_screens.h)"
 #endif
 
-extern uint8_t mmc_init_state;	/**< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
-
-/**
- * Checkt Initialisierung der Karte
- * \return	0, wenn initialisiert
- */
-static inline uint8_t mmc_get_init_state(void) {
-	return mmc_init_state;
-}
-
-/**
- * Liest einen Block von der Karte
- * \param addr 		Nummer des 512-Byte Blocks
- * \param *buffer 	Zeiger auf Puffer von mindestens 512 Byte
- * \return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 17
- */
-static inline uint8_t mmc_read_sector(uint32_t addr, void* buffer) {
-	return sd_card_read_block(addr, buffer) != 1;
-}
-
-/**
- * Schreibt einen 512-Byte Sektor auf die Karte
- * \param addr 		Nummer des 512-Byte Blocks
- * \param *buffer 	Zeiger auf Puffer von mindestens 512 Byte
- * \return 			0 wenn alles ok ist, 1 wenn Init nicht moeglich oder Timeout vor / nach Kommando 24, 2 wenn Timeout bei busy
- */
-static inline uint8_t mmc_write_sector(uint32_t addr, void* buffer) {
-	return sd_card_write_block(addr, buffer) != 1;
-}
-
-/**
- * Initialisiere die MMC/SD-Karte
- * \return 0 wenn allles ok, sonst Nummer des Kommandos bei dem abgebrochen wurde
- */
-static inline uint8_t mmc_init (void) {
-	mmc_init_state = sd_card_init();
-	return mmc_init_state;
-}
-
-#ifdef MMC_VM_AVAILABLE
-/**
- * Liefert die Groesse der Karte zurueck
- * \return	Groesse der Karte in KByte
- */
-static inline uint32_t mmc_get_size(void) {
-	return sd_card_get_size();
-}
-#endif // MMC_VM_AVAILABLE
-
 #ifdef DISPLAY_MMC_INFO
 /**
  * Zeigt die Daten der MMC-Karte an

@@ -976,7 +976,7 @@ int8_t botfs_open(const char* filename, botfs_file_descr_t* p_file, uint8_t mode
 		fat_mode |= 2 | 0x40;
 	}
 
-	int8_t res = sdfat_open(filename, p_file, fat_mode);
+	int8_t res = (int8_t) sdfat_open(filename, p_file, fat_mode);
 	return res;
 }
 #endif // BOT_FS_AVAILABLE && SDFAT_AVAILABLE

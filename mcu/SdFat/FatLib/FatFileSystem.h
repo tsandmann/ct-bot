@@ -118,6 +118,7 @@ public:
 		FatFile::setCwd(vwd());
 	}
 
+#if 0
 	/**
 	 * Test for the existence of a file.
 	 *
@@ -128,6 +129,7 @@ public:
 	bool exists(const char* path) {
 		return vwd()->exists(path);
 	}
+#endif // 0
 
 #if SDFAT_PRINT_SUPPORT
 	/** List the directory contents of the volume working directory.

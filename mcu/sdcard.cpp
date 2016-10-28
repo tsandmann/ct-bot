@@ -31,13 +31,12 @@
 #ifdef MCU
 #include "sdcard.h"
 #include "SdFatConfig.h"
+#include "sdcard_wrapper.h"
 
 extern "C" {
 #include "ena.h"
 #include "led.h"
 #include "log.h"
-
-//extern uint16_t starttime, cardcommand, readdata, ready, spi_rcv, discard_crc;
 }
 
 #if USE_SD_CRC
@@ -202,7 +201,7 @@ bool SdCard::init(uint8_t sckDivisor) {
 
 	LOG_DEBUG("SdCard::init(): done.");
 #ifdef LED_AVAILABLE
-	LED_off(LED_GRUEN |LED_ROT | LED_TUERKIS);
+	LED_off(LED_GRUEN | LED_ROT | LED_TUERKIS);
 #endif //LED_AVAILABLE
 	return true;
 }
@@ -287,12 +286,16 @@ bool SdCard::read_block(uint32_t blockNumber, uint8_t* dst) {
 	if (send_cmd(CMD17, blockNumber)) {
 		return error_handler(SD_CARD_ERROR_CMD17);
 	}
-//	cardcommand = timer_get_us8();
+	if (SdFatWrapper::debug_mode) {
+		SdFatWrapper::debug_times.cardcommand = timer_get_us8();
+	}
 
 	if (! read_data(dst, 512)) {
 		return error_handler(0);
 	}
-//	readdata = timer_get_us8();
+	if (SdFatWrapper::debug_mode) {
+		SdFatWrapper::debug_times.readdata = timer_get_us8();
+	}
 
 	cs_high();
 	return true;
@@ -330,14 +333,18 @@ bool SdCard::read_data(uint8_t* dst, size_t count) {
 	}
 
 	if (m_status != DATA_START_BLOCK) {
-		LOG_DEBUG("read_data(): m_status=%u", m_status);
+//		LOG_DEBUG("read_data(): m_status=%u", m_status);
 		return error_handler(SD_CARD_ERROR_READ);
 	}
-//	ready = timer_get_us8();
+	if (SdFatWrapper::debug_mode) {
+		SdFatWrapper::debug_times.ready = timer_get_us8();
+	}
 
 	/* transfer data */
 	SPI::receive(dst, count);
-//	spi_rcv = timer_get_us8();
+	if (SdFatWrapper::debug_mode) {
+		SdFatWrapper::debug_times.spi_rcv = timer_get_us8();
+	}
 
 #if USE_SD_CRC
 	// get crc
@@ -350,7 +357,9 @@ bool SdCard::read_data(uint8_t* dst, size_t count) {
 	SPI::receive();
 	SPI::receive();
 #endif // USE_SD_CRC
-//	discard_crc = timer_get_us8();
+	if (SdFatWrapper::debug_mode) {
+		SdFatWrapper::debug_times.discard_crc = timer_get_us8();
+	}
 
 #ifdef LED_AVAILABLE
 	LED_off(LED_GRUEN);
@@ -530,8 +539,8 @@ bool SdCard::error_handler(uint8_t error_code) {
 #endif
 	if (error_code) {
 		set_error(error_code);
-		LOG_ERROR("SdCard: error 0x%x", error_code);
-		LOG_DEBUG("ticks: 0x%04x%04x", static_cast<uint16_t>(now32 >> 16), static_cast<uint16_t>(now32 & 0xffff));
+		LOG_ERROR("SdCard::error_handler(): error_code=0x%x", error_code);
+		LOG_DEBUG(" time=0x%04x%04x", static_cast<uint16_t>(now32 >> 16), static_cast<uint16_t>(now32 & 0xffff));
 	}
 	cs_high();
 #ifdef LED_AVAILABLE

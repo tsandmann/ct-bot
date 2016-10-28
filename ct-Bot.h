@@ -68,7 +68,7 @@
 /* Motoransteuerung */
 #define SPEED_CONTROL_AVAILABLE 			/**< Aktiviert die Motorregelung */
 //#define ADJUST_PID_PARAMS					/**< macht PID-Paramter zur Laufzeit per FB einstellbar */
-#define SPEED_LOG_AVAILABLE 				/**< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
+//#define SPEED_LOG_AVAILABLE 				/**< Zeichnet Debug-Infos der Motorregelung auf MMC auf */
 
 
 /* Umgebungskarte */
@@ -102,7 +102,6 @@
 
 
 /* Veraltete Optionen */
-//#define MMC_VM_AVAILABLE					/**< Virtual Memory Management mit MMC / SD-Card oder PC-Emulation */
 //#define EEPROM_EMU_AVAILABLE				/**< Aktiviert die EEPROM-Emulation fuer PC, siehe Hinweise in pc/eeprom_pc.c */
 
 

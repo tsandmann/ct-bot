@@ -270,6 +270,7 @@ public:
 	void dmpFile(print_t* pr, uint32_t pos, size_t n);
 #endif // SDFAT_PRINT_SUPPORT
 
+#if 0
 	/** Test for the existence of a file in a directory
 	 *
 	 * \param[in] path Path of the file to be tested for.
@@ -285,6 +286,7 @@ public:
 		FatFile file;
 		return file.open(this, path, O_READ);
 	}
+#endif // 0
 
 	/**
 	 * Get a string from a file.
@@ -307,6 +309,7 @@ public:
 	 * If no data is read, fgets() returns zero for EOF or -1 if an error occurred.
 	 */
 	int16_t fgets(char* str, int16_t num, char* delim = 0);
+
 	/** \return The total number of bytes in a file. */
 	uint32_t fileSize() const {
 		return m_fileSize;
@@ -897,6 +900,7 @@ public:
 	 * the value false is returned for failure.
 	 */
 	bool truncate(uint32_t length);
+
 	/** \return FatVolume that contains this file. */
 	FatVolume* volume() const {
 		return m_vol;
@@ -960,9 +964,10 @@ private:
 	/** Attributes to copy from directory entry */
 	static const uint8_t FILE_ATTR_COPY = DIR_ATT_READ_ONLY | DIR_ATT_HIDDEN | DIR_ATT_SYSTEM | DIR_ATT_DIRECTORY;
 
+#if 0
 	/** experimental don't use */
-
 	bool openParent(FatFile* dir);
+#endif // 0
 
 	// private functions
 	bool addCluster();

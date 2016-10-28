@@ -479,7 +479,7 @@ int8_t botfs_create(const char* filename, uint16_t size, uint16_t alignment, voi
  */
 static inline int8_t botfs_unlink(const char* filename, void* buffer) {
 	(void) buffer;
-	return sdfat_unlink(filename);
+	return  (int8_t) sdfat_remove(get_sd(), filename);
 }
 
 /**
@@ -491,7 +491,7 @@ static inline int8_t botfs_unlink(const char* filename, void* buffer) {
  */
 static inline int8_t botfs_rename(const char* filename, const char* new_name, void* buffer) {
 	(void) buffer;
-	return sdfat_rename(filename, new_name);
+	return (int8_t) sdfat_rename(get_sd(), filename, new_name);
 }
 
 /**
@@ -517,7 +517,7 @@ static inline uint16_t botfs_get_filesize(botfs_file_descr_t* p_file) {
  * Beendet BotFS sauber
  */
 static inline void botfs_close_volume(void) {
-	sdfat_sync_vol();
+	sdfat_sync_vol(get_sd());
 }
 #endif // BOT_FS_AVAILABLE && SDFAT_AVAILABLE
 #endif // BOTFS_H_

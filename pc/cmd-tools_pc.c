@@ -32,7 +32,7 @@
 #include "eeprom.h"
 #include "command.h"
 #include "tcp.h"
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 #include "botfs.h"
 #include "sensor-low.h"
 #include "uart.h"
@@ -402,22 +402,6 @@ void hand_cmd_args(int argc, char * argv[]) {
 			exit(0);
 		}
 #endif // 0
-
-		case 'l': {
-#ifdef BOT_FS_AVAILABLE
-			/* Speedlog-Datei soll in txt konvertiert werden */
-			const size_t len = strlen(optarg) + 1;
-			if (len > 1024) {
-				puts("Dateiname ungueltig");
-				exit(1);
-			}
-			convert_slog_file(optarg);
-			exit(0);
-#else
-			puts("Fehler, Binary wurde ohne BOT_FS_AVAILABLE compiliert!");
-			exit(1);
-#endif // BOT_FS_AVAILABLE
-		}
 
 		case 'E': {
 			/* EEPROM-Init */

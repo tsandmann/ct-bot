@@ -28,9 +28,7 @@
 
 #include "ct-Bot.h"
 
-#include <avr/io.h>
-#include <string.h>
-#include <math.h>
+#include "bot-logic.h"
 #include "adc.h"
 #include "ena.h"
 #include "sensor.h"
@@ -39,7 +37,6 @@
 #include "timer.h"
 #include "sensor_correction.h"
 #include "bot-local.h"
-#include "bot-logic/bot-logic.h"
 #include "display.h"
 #include "led.h"
 #include "sensor-low.h"
@@ -49,6 +46,9 @@
 #include "srf10.h"
 #include "init.h"
 #include "log.h"
+#include <avr/io.h>
+#include <string.h>
+#include <math.h>
 
 // ADC-PINS
 #define SENS_ABST_L		0	/**< ADC-PIN Abstandssensor Links */
@@ -330,7 +330,7 @@ void bot_sens(void) {
 	} else {
 		SREG = sreg;
 #ifdef SDFAT_AVAILABLE
-		if (slog_file_dirty && target_speed_l == 0 && target_speed_r == 0 && speedlog_file) {
+		if (slog_file_dirty && speed_l == 0 && speed_r == 0 && speedlog_file) {
 			sdfat_sync(speedlog_file);
 			slog_file_dirty = 0;
 		}

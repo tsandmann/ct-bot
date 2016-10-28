@@ -585,6 +585,7 @@ fail:
 	return false;
 }
 
+#if 0
 /** Open a file's parent directory.
  *
  * \param[in] file Parent of this directory will be opened.  Must not be root.
@@ -641,6 +642,7 @@ bool FatFile::openParent(FatFile* dirFile) {
 fail:
 	return false;
 }
+#endif // 0
 
 bool FatFile::openRoot(FatVolume* vol) {
 	// error if file is already open

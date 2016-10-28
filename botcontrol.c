@@ -183,8 +183,8 @@ void ctbot_shutdown(void) {
 	log_flush();
 #endif
 
-#ifdef BOT_FS_AVAILABLE
-	botfs_close_volume();
+#ifdef SDFAT_AVAILABLE
+	sdfat_sync_vol(get_sd());
 #endif
 
 #ifdef DISPLAY_AVAILABLE

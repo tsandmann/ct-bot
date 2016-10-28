@@ -91,8 +91,8 @@ void ctbot_init(int argc, char * argv[]) {
 #endif
 #ifdef MMC_AVAILABLE
 	{
-		const uint8_t res = mmc_init();
-		if (res != 0) {
+		const uint8_t res = sd_card_init(get_sd(), SPI_SPEED);
+		if (res) {
 			LOG_ERROR("mmc_init()=%u", res);
 		}
 	}

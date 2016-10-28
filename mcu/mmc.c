@@ -68,7 +68,6 @@
 #define LOG_DEBUG(...) {}
 #endif // DEBUG_MMC
 
-uint8_t mmc_init_state = 1;	/**< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
 static uint32_t time_read = 0;
 static uint32_t time_write = 0;
 static uint32_t n = 0;
@@ -82,13 +81,6 @@ static uint32_t n = 0;
  */
 uint8_t mmc_test(uint8_t* buffer) {
 	static uint32_t sector = 0x20000;
-	/* Initialisierung checken */
-	if (mmc_init_state != 0 && mmc_init() != 0) {
-		time_read = time_write = n = 0;
-		sector = 0x20000;
-		return 1;
-	}
-
 	uint16_t i;
 	uint8_t result = 0;
 
@@ -104,13 +96,13 @@ uint8_t mmc_test(uint8_t* buffer) {
 	start_ticks = timer_get_us32();
 
 	// und schreiben
-	result = mmc_write_sector(sector, buffer);
+	result = sd_card_write_block(get_sd(), sector, buffer, True);
 
 	/* Zeitmessung beenden */
 	end_ticks = timer_get_us32();
 	time_write = time_write + (uint16_t) (end_ticks - start_ticks);
 
-	if (result != 0) {
+	if (! result) {
 		return (uint8_t) (result * 10 + 2);
 	}
 
@@ -123,13 +115,13 @@ uint8_t mmc_test(uint8_t* buffer) {
 	start_ticks = timer_get_us32();
 
 	// und schreiben
-	result = mmc_write_sector(sector + 1, buffer);
+	result = sd_card_write_block(get_sd(), sector + 1, buffer, True);
 
 	/* Zeitmessung beenden */
 	end_ticks = timer_get_us32();
 	time_write = time_write + (uint16_t) (end_ticks - start_ticks);
 
-	if (result != 0) {
+	if (! result) {
 		return (uint8_t) (result * 10 + 3);
 	}
 
@@ -137,13 +129,13 @@ uint8_t mmc_test(uint8_t* buffer) {
 	start_ticks = timer_get_us32();
 
 	// Puffer lesen
-	result = mmc_read_sector(sector++, buffer);
+	result = sd_card_read_block(get_sd(), sector++, buffer);
 
 	/* Zeitmessung beenden */
 	end_ticks = timer_get_us32();
 	time_read = time_read + (uint16_t) (end_ticks - start_ticks);
 
-	if (result != 0) {
+	if (! result) {
 		sector--;
 		return (uint8_t) (result * 10 + 4);
 	}
@@ -160,13 +152,13 @@ uint8_t mmc_test(uint8_t* buffer) {
 	start_ticks = timer_get_us32();
 
 	// Puffer lesen
-	result = mmc_read_sector(sector++, buffer);
+	result = sd_card_read_block(get_sd(), sector++, buffer);
 
 	/* Zeitmessung beenden */
 	end_ticks = timer_get_us32();
 	time_read = time_read + (uint16_t) (end_ticks - start_ticks);
 
-	if (result != 0) {
+	if (! result) {
 		sector--;
 		return (uint8_t) (result * 10 + 6);
 	}
@@ -199,11 +191,6 @@ uint8_t mmc_test(uint8_t* buffer) {
 #if defined BOT_FS_AVAILABLE && defined SDFAT_AVAILABLE && ! defined MMC_WRITE_TEST_AVAILABLE
 static int8_t botfs_test(void) {
 	static uint8_t buffer[512];
-
-	if (mmc_init_state) {
-		time_read = time_write = n = 0;
-		return -1;
-	}
 
 	uint32_t start_ticks, end_ticks;
 	botfs_file_descr_t file;
@@ -287,26 +274,24 @@ void mmc_display(void) {
 	static uint32_t card_size = 0;
 
 	display_clear();
-	card_size = sd_card_get_size();
+	card_size = sd_card_get_size(get_sd());
 	if (! card_size) {
-		mmc_init_state = 1;
 		time_read = time_write = n = 0;
-		display_printf("MMC/SD not init (%u)", mmc_init_state);
-		mmc_init_state = sd_card_init();
-		if (mmc_init_state) {
+		display_printf("MMC/SD not init");
+		if (sd_card_init(get_sd(), SPI_SPEED)) {
 			return;
 		}
-		card_size = sd_card_get_size();
+		card_size = sd_card_get_size(get_sd());
 	}
-	const uint8_t type = sd_card_get_type();
+	const uint8_t type = sd_card_get_type(get_sd());
 	display_cursor(1, 1);
 	display_printf("%s: %6u MiB  ", type == 0 ? "SDv1" : type == 1 ? "SDv2" : "SDHC", card_size >> 10);
 
 #if ! defined MMC_WRITE_TEST_AVAILABLE
 	cid_t cid;
-	sd_card_read_cid(&cid);
+	sd_card_read_cid(get_sd(), &cid);
 	csd_t csd;
-	sd_card_read_csd(&csd);
+	sd_card_read_csd(get_sd(), &csd);
 	display_cursor(2, 1);
 	display_printf("%.2s %.5s %2u/%4u ^%u ", cid.oid, cid.pnm, cid.mdt_month, 2000 + cid.mdt_year_low + 10 * cid.mdt_year_high, csd.v2.write_bl_len_high << 2 | csd.v2.write_bl_len_low);
 
