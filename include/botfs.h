@@ -501,7 +501,7 @@ static inline int8_t botfs_rename(const char* filename, const char* new_name, vo
  */
 static inline void botfs_close(botfs_file_descr_t* p_file, void* buffer) {
 	(void) buffer;
-	sdfat_close(*p_file);
+	sdfat_free(*p_file);
 }
 
 /**
