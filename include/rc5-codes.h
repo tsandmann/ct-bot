@@ -27,6 +27,8 @@
 #ifndef RC5CODE_H_
 #define RC5CODE_H_
 
+#include "bot-local.h"
+
 #define RC5_TOGGLE	0x0800 /**< Das RC5-Toggle-Bit */
 #define RC5_ADDRESS	0x07C0 /**< Der Adressbereich */
 #define RC5_COMMAND	0x103F /**< Der Kommandobereich */
@@ -55,26 +57,8 @@
  * in der c't-Bot-Mailingliste vorgestellt werden. (mb/18.03.2006)
  */
 
-#ifdef MCU
-/** Dies ist die Standard-Fernbedienung fuer den Bot */
-#define RC_HAVE_HQ_RC_UNIVERS29_334
 
-//#define RC_HAVE_HAUPPAUGE_WINTV
-//#define RC_HAVE_HAUPPAUGE_MediaMPV
-//#define RC_HAVE_CONRAD_PROMO8
-//#define RC_HAVE_VIVANCO_UR89
-//#define RC_HAVE_VIVANCO_UR89_TV_CODE_089
-//#define RC_HAVE_Technisat_TTS35AI
-//#define RC_HAVE_LIFETEC_LT3607
-//#define RC_HAVE_TOTAL_CONTROL
-#else // PC
-/** Dies ist die Standard-Fernbedienung fuer den Sim */
-#define RC_HAVE_HQ_RC_UNIVERS29_334
-//#define RC_HAVE_HAUPPAUGE_WINTV
-#endif // MCU
-
-
-/**
+/*
  * Default-Fernbedienung
  * HQ RC Univers 29, Geraetecode 334
  */
@@ -126,7 +110,7 @@
 #define RC5_CODE_RIGHT		RC5_CODE_FWD			/**< Taste Rechts */
 #endif // RC_HAVE_HQ_RC_UNIVERS29_334
 
-/**
+/*
  * Fernbedienung Hauppauge (simple WinTV-Karten Fernbedienung)
  */
 #ifdef RC_HAVE_HAUPPAUGE_WINTV
@@ -154,7 +138,7 @@
 #define RC5_CODE_TV_VCR		RC5_CODE_FULL
 #endif // RC_HAVE_HAUPPAUGE_WINTV
 
-/**
+/*
  * Fernbedienung Hauppauge erweitert
  */
 #ifdef RC_HAVE_HAUPPAUGE_MediaMPV
@@ -206,7 +190,7 @@
 #define RC5_CH_MINUS 		RC5_CODE_FWD		/**< Taste fuer Transportfach oeffnen */
 #endif // RC_HAVE_HAUPPAUGE_MediaMPV
 
-/**
+/*
  * Fernbedienung Conrad Promo 8
  */
 #ifdef RC_HAVE_CONRAD_PROMO8
@@ -252,7 +236,7 @@
 #define RC5_CODE_MUTE		RC5_CODE_ENTER
 #endif // RC_HAVE_CONRAD_PROMO8
 
-/**
+/*
  * Fernbedienung VIVANCO UR89, vor Verwendung auf VCR druecken
  * \author Andreas Staudenmayer
  */
@@ -281,7 +265,7 @@
 #define RC5_CODE_BLUE		(0x1174 & RC5_MASK)		/**< blaue Taste           */
 #endif // RC_HAVE_VIVANCO_UR89
 
-/**
+/*
  * Fernbedienung VIVANCO UR89, TV Modus (Alle Tasten funktionieren)
  * vor Verwendung fuer TV den Code 089 auf der Fernbedienung programmieren
  * \author Ulrich Scheffler
@@ -338,7 +322,7 @@
 #define RC5_CODE_I_II	RC5_CODE_SELECT			/**< Taste I/II wird genutzt fuer SELECT-Funktion */
 #endif // RC_HAVE_VIVANCO_UR89_TV_CODE_089
 
-/**
+/*
  * Fernbedienung Technisat_TTS35AI (Receiver Digit CIP)
  * \author Joerg Bullmann
  */
@@ -376,7 +360,7 @@
 #define RC5_CODE_I_II	RC5_CODE_OK				/**< Taste OK - umgewidmet als Select-Taste */
 #endif // RC_HAVE_Technisat_TTS35AI
 
-/**
+/*
  * Fernbedienung Lifetec LT3607 (aeltere, lernfaehige Medion-Fernbedienung)
  */
 #ifdef RC_HAVE_LIFETEC_LT3607
@@ -411,7 +395,7 @@
 #define RC5_CODE_TV_VCR	(0x100D	& RC5_MASK)		/**< Taste Mute */
 #endif // RC_HAVE_LIFETEC_LT3607
 
-/**
+/*
  * Fernbedienung Total Control
  */
 #ifdef RC_HAVE_TOTAL_CONTROL
@@ -494,15 +478,10 @@
 //#define RC5_CODE_FWD		(0x102E & RC5_MASK) /**< Forward Taste */
 #endif // RC_HAVE_TOTAL_CONTROL
 
-
-#ifndef RC5_CODE_1
-#define RC_HAVE_DEFAULT
-#endif
-
-/**
+/*
  * Default-Philips-Fernbedienung
  */
-#ifdef RC_HAVE_DEFAULT	/**< Default RC5-Codes falls keine FB definiert wurde */
+#ifdef RC_HAVE_PHILIPS_DEFAULT
 #define RC5_CODE_0			(0x3940 & RC5_MASK)		/**< Taste 0 */
 #define RC5_CODE_1			(0x3941 & RC5_MASK)		/**< Taste 1 */
 #define RC5_CODE_2			(0x3942 & RC5_MASK)		/**< Taste 2 */
@@ -533,6 +512,6 @@
 #define RC5_CODE_FWD		(0x1026 & RC5_MASK)		/**< Forward Taste */
 
 #define RC5_CODE_TV_VCR	    RC5_CODE_VIEW
-#endif // RC_HAVE_DEFAULT
+#endif // RC_HAVE_PHILIPS_DEFAULT
 
 #endif // RC5CODE_H_
