@@ -760,7 +760,7 @@
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.669092324" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="MCU"/>
 								</option>
-								<option id="gnu.c.compiler.option.misc.other.670643860" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -mmcu=atmega1284p -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations" valueType="string"/>
+								<option id="gnu.c.compiler.option.misc.other.670643860" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -mmcu=atmega1284p -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -ffunction-sections -fdata-sections" valueType="string"/>
 								<option id="gnu.c.compiler.option.debugging.gprof.627091778" name="Generate gprof information (-pg)" superClass="gnu.c.compiler.option.debugging.gprof" useByScannerDiscovery="false" value="false" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.debugging.prof.1485545327" name="Generate prof information (-p)" superClass="gnu.c.compiler.option.debugging.prof" useByScannerDiscovery="false" value="false" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.optimization.flags.2121663714" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" useByScannerDiscovery="false" value="-Os" valueType="string"/>
@@ -786,7 +786,7 @@
 							<tool command="avr-g++" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1600275719" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.283865822" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.size" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.166871041" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.other.other.1015534209" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -mmcu=atmega1284p -fno-exceptions -fno-threadsafe-statics -Wmissing-declarations -felide-constructors" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.other.other.1015534209" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -mmcu=atmega1284p -fno-exceptions -fno-threadsafe-statics -Wmissing-declarations -felide-constructors -ffunction-sections -fdata-sections" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.warnings.extrawarn.1857600798" name="Extra warnings (-Wextra)" superClass="gnu.cpp.compiler.option.warnings.extrawarn" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.warnings.wconversion.1550367535" name="Implicit conversion warnings (-Wconversion)" superClass="gnu.cpp.compiler.option.warnings.wconversion" useByScannerDiscovery="false" value="false" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1008639624" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
@@ -828,7 +828,7 @@
 								<option id="gnu.cpp.link.option.libs.1049550861" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="m"/>
 								</option>
-								<option id="gnu.cpp.link.option.flags.1455176128" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-mmcu=atmega1284p -Wl,--section-start=.bootloader=0x1F800" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.1455176128" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-mmcu=atmega1284p -Wl,--section-start=.bootloader=0x1F800 -Wl,--gc-sections" valueType="string"/>
 								<option id="gnu.cpp.link.option.paths.49060165" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1204586601" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
