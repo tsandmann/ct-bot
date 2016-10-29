@@ -42,7 +42,6 @@
 #include "rc5-codes.h"
 #include "gui.h"
 #include "mmc.h"
-#include "mmc-vm.h"
 #include "command.h"
 #include "pos_store.h"
 #include "timer.h"

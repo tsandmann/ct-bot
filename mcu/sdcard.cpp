@@ -30,7 +30,6 @@
 
 #ifdef MCU
 #include "sdcard.h"
-#include "SdFatConfig.h"
 #include "sdcard_wrapper.h"
 
 extern "C" {

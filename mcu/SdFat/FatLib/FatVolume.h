@@ -257,7 +257,7 @@ public:
 	 * \param[in] pr print stream for status dots.
 	 * \return true for success else false.
 	 */
-	bool wipe(print_t* pr = 0);
+	bool wipe(print_t* pr = nullptr);
 #endif // SDFAT_PRINT_SUPPORT && SDFAT_WIPE_SUPPORT
 
 	bool cacheSync() {

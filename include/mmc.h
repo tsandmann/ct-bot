@@ -52,15 +52,5 @@
 void mmc_display(void);
 #endif // DISPLAY_MMC_INFO
 
-#ifdef MMC_WRITE_TEST_AVAILABLE
-/**
- * Testet die MMC-Karte. Schreibt nacheinander 2 Sektoren a 512 Byte mit Testdaten voll und liest sie wieder aus
- * !!! Achtung loescht die Karte ab Sektor 0x20000 (^= 64 MB)
- * \param *buffer	Zeiger auf einen 512 Byte grossen Puffer
- * \return 			0, wenn alles ok
- */
-uint8_t mmc_test(uint8_t* buffer);
-#endif // MMC_WRITE_TEST_AVAILABLE
-
 #endif // MMC_AVAILABLE
 #endif // MMC_H_

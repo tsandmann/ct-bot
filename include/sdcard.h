@@ -34,6 +34,7 @@
 
 #ifdef MCU
 #include "sdinfo.h"
+#include "SdFatConfig.h"
 #include "spimaster.h"
 #include "spimaster_soft.h"
 #include <avr/io.h>

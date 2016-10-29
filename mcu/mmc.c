@@ -72,14 +72,13 @@ static uint32_t time_read = 0;
 static uint32_t time_write = 0;
 static uint32_t n = 0;
 
-#ifdef MMC_WRITE_TEST_AVAILABLE
 /**
  * Testet die MMC-Karte. Schreibt nacheinander 2 Sektoren a 512 Byte mit Testdaten voll und liest sie wieder aus
  * !!! Achtung loescht die Karte ab Sektor 0x20000 (^= 64 MB)
  * \param *buffer	Zeiger auf einen 512 Byte grossen Puffer
  * \return 			0, wenn alles ok
  */
-uint8_t mmc_test(uint8_t* buffer) {
+static inline uint8_t mmc_test(uint8_t* buffer) {
 	static uint32_t sector = 0x20000;
 	uint16_t i;
 	uint8_t result = 0;
@@ -186,10 +185,9 @@ uint8_t mmc_test(uint8_t* buffer) {
 
 	return 0;
 }
-#endif // MMC_WRITE_TEST_AVAILABLE
 
-#if defined BOT_FS_AVAILABLE && defined SDFAT_AVAILABLE && ! defined MMC_WRITE_TEST_AVAILABLE
-static int8_t botfs_test(void) {
+#ifdef BOT_FS_AVAILABLE
+static inline int8_t botfs_test(void) {
 	static uint8_t buffer[512];
 
 	uint32_t start_ticks, end_ticks;
@@ -263,7 +261,7 @@ static int8_t botfs_test(void) {
 	os_exitCS();
 	return result;
 }
-#endif // BOT_FS_AVAILABLE && SDFAT_AVAILABLE && ! MMC_WRITE_TEST_AVAILABLE
+#endif // BOT_FS_AVAILABLE
 
 #ifdef DISPLAY_MMC_INFO
 /**

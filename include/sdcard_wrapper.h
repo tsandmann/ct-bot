@@ -76,9 +76,7 @@ extern uint32_t (*sdfat_get_filesize)(pFatFile);
 extern uint8_t (*sdfat_get_filename)(pFatFile, char*, uint16_t);
 extern uint8_t (*sdfat_sync_vol)(pSdFat);
 
-#if 0
 uint8_t sd_fat_test(void);
-#endif // 0
 #endif // SDFAT_AVAILABLE
 
 #ifdef __cplusplus

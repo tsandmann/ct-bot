@@ -209,7 +209,7 @@ int8_t botfs_read_low(uint16_t block, void * buffer) {
 	/* spinlock */
 	botfs_acquire_lock_low(&botfs_mutex);
 	/* MMC-read */
-	tmp = (int8_t) mmc_read_sector(get_sector(block), buffer);
+	tmp = (int8_t) sd_card_read_block(get_sd(), get_sector(block), buffer);
 	botfs_release_lock_low(&botfs_mutex);
 	return tmp;
 }
@@ -225,7 +225,7 @@ int8_t botfs_write_low(uint16_t block, void * buffer) {
 	/* spinlock */
 	botfs_acquire_lock_low(&botfs_mutex);
 	/* MMC-write */
-	tmp = (int8_t) mmc_write_sector(get_sector(block), buffer);
+	tmp = (int8_t) sd_card_write_block(get_sd(), get_sector(block), buffer, True);
 	botfs_release_lock_low(&botfs_mutex);
 	return tmp;
 }

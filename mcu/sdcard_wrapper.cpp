@@ -228,31 +228,32 @@ void FatFileWrapper::free(FatFile* p_instance) {
 #endif // SDFAT_AVAILABLE
 
 extern "C" {
-uint8_t (*sd_card_init)(pSdFat, uint8_t) = SdFatWrapper::init;
-uint8_t (*sd_card_get_type)(pSdFat) = SdFatWrapper::get_type;
-uint8_t (*sd_card_read_block)(pSdFat, uint32_t, uint8_t*) = SdFatWrapper::read_block;
-uint8_t (*sd_card_write_block)(pSdFat, uint32_t, const uint8_t*, uint8_t) = SdFatWrapper::write_block;
-uint32_t (*sd_card_get_size)(pSdFat) = SdFatWrapper::get_size;
-uint8_t (*sd_card_read_csd)(pSdFat, csd_t*) = SdFatWrapper::read_csd;
-uint8_t (*sd_card_read_cid)(pSdFat, cid_t*) = SdFatWrapper::read_cid;
+uint8_t (*sd_card_init)(pSdFat, uint8_t) { SdFatWrapper::init };
+uint8_t (*sd_card_get_type)(pSdFat) { SdFatWrapper::get_type };
+uint8_t (*sd_card_read_block)(pSdFat, uint32_t, uint8_t*) { SdFatWrapper::read_block };
+uint8_t (*sd_card_write_block)(pSdFat, uint32_t, const uint8_t*, uint8_t) { SdFatWrapper::write_block };
+uint32_t (*sd_card_get_size)(pSdFat) { SdFatWrapper::get_size };
+uint8_t (*sd_card_read_csd)(pSdFat, csd_t*) { SdFatWrapper::read_csd };
+uint8_t (*sd_card_read_cid)(pSdFat, cid_t*) { SdFatWrapper::read_cid };
 
 #ifdef SDFAT_AVAILABLE
-uint8_t (*sdfat_open)(const char*, pFatFile*, uint8_t) = FatFileWrapper::open;
-void (*sdfat_seek)(pFatFile, int16_t, uint8_t) = FatFileWrapper::seek;
-void (*sdfat_rewind)(pFatFile) = FatFileWrapper::rewind;
-int16_t (*sdfat_read)(pFatFile, void*, uint16_t) = FatFileWrapper::read;
-int16_t (*sdfat_write)(pFatFile, const void*, uint16_t) = FatFileWrapper::write;
-uint8_t (*sdfat_remove)(pSdFat, const char*) = SdFatWrapper::remove;
-uint8_t (*sdfat_rename)(pSdFat, const char*, const char*) = SdFatWrapper::rename;
-uint8_t (*sdfat_sync)(pFatFile) = FatFileWrapper::sync;
-uint8_t (*sdfat_close)(pFatFile) = FatFileWrapper::close;
-void (*sdfat_free)(pFatFile) = FatFileWrapper::free;
-uint32_t (*sdfat_get_filesize)(pFatFile) = FatFileWrapper::get_filesize;
-uint8_t (*sdfat_get_filename)(pFatFile, char*, uint16_t) = FatFileWrapper::get_filename;
-uint8_t (*sdfat_sync_vol)(pSdFat) = SdFatWrapper::sync_vol;
+uint8_t (*sdfat_open)(const char*, pFatFile*, uint8_t) { FatFileWrapper::open };
+void (*sdfat_seek)(pFatFile, int16_t, uint8_t) { FatFileWrapper::seek };
+void (*sdfat_rewind)(pFatFile) { FatFileWrapper::rewind };
+int16_t (*sdfat_read)(pFatFile, void*, uint16_t) { FatFileWrapper::read };
+int16_t (*sdfat_write)(pFatFile, const void*, uint16_t) { FatFileWrapper::write };
+uint8_t (*sdfat_remove)(pSdFat, const char*) { SdFatWrapper::remove };
+uint8_t (*sdfat_rename)(pSdFat, const char*, const char*)  { SdFatWrapper::rename };
+uint8_t (*sdfat_sync)(pFatFile) { FatFileWrapper::sync };
+uint8_t (*sdfat_close)(pFatFile) { FatFileWrapper::close };
+void (*sdfat_free)(pFatFile) { FatFileWrapper::free };
+uint32_t (*sdfat_get_filesize)(pFatFile) { FatFileWrapper::get_filesize };
+uint8_t (*sdfat_get_filename)(pFatFile, char*, uint16_t) { FatFileWrapper::get_filename };
+uint8_t (*sdfat_sync_vol)(pSdFat) { SdFatWrapper::sync_vol };
 #endif // SDFAT_AVAILABLE
 
-#if 0
+
+#ifdef SDFAT_AVAILABLE
 uint8_t sd_fat_test() {
 	if (! sd.begin()) {
 		if (sd.card()->get_error_code()) {
@@ -329,7 +330,7 @@ uint8_t sd_fat_test() {
 
 	return true;
 }
-#endif // 0
+#endif // SDFAT_AVAILABLE
 
 } // extern C
 
