@@ -49,10 +49,6 @@ typedef void* pSdFat;
 
 extern pSdFat const p_sd;
 
-static inline __attribute__((always_inline)) pSdFat get_sd(void) {
-	return p_sd;
-}
-
 extern uint8_t (*sd_card_init)(pSdFat, uint8_t);
 extern uint8_t (*sd_card_read_block)(pSdFat, uint32_t , uint8_t*);
 extern uint8_t (*sd_card_write_block)(pSdFat, uint32_t, const uint8_t*, uint8_t);
@@ -62,6 +58,34 @@ extern uint8_t (*sd_card_get_error_code)(pSdFat);
 extern uint8_t (*sd_card_get_error_data)(pSdFat);
 extern uint8_t (*sd_card_read_csd)(pSdFat, csd_t*);
 extern uint8_t (*sd_card_read_cid)(pSdFat, cid_t*);
+
+static inline uint8_t sd_init(uint8_t devisor) {
+	return sd_card_init(p_sd, devisor);
+}
+static inline uint8_t sd_read_block(uint32_t block, uint8_t* dst) {
+	return sd_card_read_block(p_sd, block, dst);
+}
+static inline uint8_t sd_write_block(uint32_t block, const uint8_t* src, uint8_t sync) {
+	return sd_card_write_block(p_sd, block, src, sync);
+}
+static inline uint32_t sd_get_size(void) {
+	return sd_card_get_size(p_sd);
+}
+static inline uint8_t sd_get_type(void) {
+	return sd_card_get_type(p_sd);
+}
+static inline uint8_t sd_get_error_code(void) {
+	return sd_card_get_error_code(p_sd);
+}
+static inline uint8_t sd_get_error_data(void) {
+	return sd_card_get_error_data(p_sd);
+}
+static inline uint8_t sd_read_csd(csd_t* p_csd) {
+	return sd_card_read_csd(p_sd, p_csd);
+}
+static inline uint8_t sd_read_cid(cid_t* p_cid) {
+	return sd_card_read_cid(p_sd, p_cid);
+}
 
 #ifdef SDFAT_AVAILABLE
 extern uint8_t (*sdfat_open)(const char*, pFatFile*, uint8_t);
@@ -79,6 +103,16 @@ extern uint8_t (*sdfat_get_filename)(pFatFile, char*, uint16_t);
 extern uint8_t (*sdfat_sync_vol)(pSdFat);
 
 uint8_t sd_fat_test(void);
+
+static inline uint8_t sdfat_c_remove(const char* path) {
+	return sdfat_remove(p_sd, path);
+}
+static inline uint8_t sdfat_c_rename(const char* old_path, const char* new_path) {
+	return sdfat_rename(p_sd, old_path, new_path);
+}
+static inline uint8_t sdfat_c_sync_vol(void) {
+	return sdfat_sync_vol(p_sd);
+}
 #endif // SDFAT_AVAILABLE
 
 #ifdef __cplusplus

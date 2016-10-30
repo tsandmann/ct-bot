@@ -184,7 +184,7 @@ void ctbot_shutdown(void) {
 #endif
 
 #ifdef SDFAT_AVAILABLE
-	sdfat_sync_vol(get_sd());
+	sdfat_c_sync_vol();
 #endif
 
 #ifdef DISPLAY_AVAILABLE

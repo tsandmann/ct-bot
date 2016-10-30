@@ -100,7 +100,7 @@ static inline uint8_t mmc_test(uint8_t* buffer) {
 	start_ticks = timer_get_us32();
 
 	// und schreiben
-	result = sd_card_write_block(get_sd(), sector, buffer, True);
+	result = sd_write_block(sector, buffer, True);
 
 	/* Zeitmessung beenden */
 	end_ticks = timer_get_us32();
@@ -119,7 +119,7 @@ static inline uint8_t mmc_test(uint8_t* buffer) {
 	start_ticks = timer_get_us32();
 
 	// und schreiben
-	result = sd_card_write_block(get_sd(), sector + 1, buffer, True);
+	result = sd_write_block(sector + 1, buffer, True);
 
 	/* Zeitmessung beenden */
 	end_ticks = timer_get_us32();
@@ -133,7 +133,7 @@ static inline uint8_t mmc_test(uint8_t* buffer) {
 	start_ticks = timer_get_us32();
 
 	// Puffer lesen
-	result = sd_card_read_block(get_sd(), sector++, buffer);
+	result = sd_read_block(sector++, buffer);
 
 	/* Zeitmessung beenden */
 	end_ticks = timer_get_us32();
@@ -156,7 +156,7 @@ static inline uint8_t mmc_test(uint8_t* buffer) {
 	start_ticks = timer_get_us32();
 
 	// Puffer lesen
-	result = sd_card_read_block(get_sd(), sector++, buffer);
+	result = sd_read_block(sector++, buffer);
 
 	/* Zeitmessung beenden */
 	end_ticks = timer_get_us32();
@@ -278,34 +278,34 @@ static inline int8_t botfs_test(void) {
  */
 void mmc_display(void) {
 #ifdef MMC_INFO_AVAILABLE
-	card_size = sd_card_get_size(get_sd());
+	card_size = sd_get_size();
 	if (! card_size) {
 		time_read = time_write = n = 0;
 		if (! last_error_code) {
-			last_error_code = sd_card_get_error_code(get_sd());
-			last_error_data = sd_card_get_error_data(get_sd());
+			last_error_code = sd_get_error_code();
+			last_error_data = sd_get_error_data();
 		}
 		display_clear();
 		display_printf("No card detected");
 		display_cursor(2, 1);
 		display_printf("error code=0x%02x 0x%02x", last_error_code, last_error_data);
-		if (sd_card_init(get_sd(), SPI_SPEED)) {
-			last_error_code = sd_card_get_error_code(get_sd());
-			last_error_data = sd_card_get_error_data(get_sd());
+		if (sd_init(SPI_SPEED)) {
+			last_error_code = sd_get_error_code();
+			last_error_data = sd_get_error_data();
 			LOG_ERROR("sd_card_init() failed: error code=0x%02x 0x%02x", last_error_code, last_error_data);
 			return;
 		}
-		card_size = sd_card_get_size(get_sd());
+		card_size = sd_get_size();
 	}
-	const uint8_t type = sd_card_get_type(get_sd());
+	const uint8_t type = sd_get_type();
 	display_clear();
 	display_printf("%s: %6u MiB  ", type == 0 ? "SDv1" : type == 1 ? "SDv2" : "SDHC", card_size >> 10);
 
 #if ! defined MMC_WRITE_TEST_AVAILABLE
 	cid_t cid;
-	sd_card_read_cid(get_sd(), &cid);
+	sd_read_cid(&cid);
 	csd_t csd;
-	sd_card_read_csd(get_sd(), &csd);
+	sd_read_csd(&csd);
 	display_cursor(2, 1);
 	display_printf("%.2s %.5s %2u/%4u ^%u ", cid.oid, cid.pnm, cid.mdt_month, 2000 + cid.mdt_year_low + 10 * cid.mdt_year_high, csd.v2.write_bl_len_high << 2 | csd.v2.write_bl_len_low);
 
