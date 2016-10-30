@@ -68,9 +68,8 @@
 #define LOG_DEBUG(...) {}
 #endif // DEBUG_MMC
 
-static uint32_t time_read = 0;
-static uint32_t time_write = 0;
-static uint32_t n = 0;
+static uint32_t card_size, time_read, time_write, n;
+static uint8_t last_error_code, last_error_data;
 
 /**
  * Testet die MMC-Karte. Schreibt nacheinander 2 Sektoren a 512 Byte mit Testdaten voll und liest sie wieder aus
@@ -80,6 +79,12 @@ static uint32_t n = 0;
  */
 static inline uint8_t mmc_test(uint8_t* buffer) {
 	static uint32_t sector = 0x20000;
+
+	if (! card_size) {
+		sector = 0x20000;
+		return 1;
+	}
+
 	uint16_t i;
 	uint8_t result = 0;
 
@@ -190,6 +195,10 @@ static inline uint8_t mmc_test(uint8_t* buffer) {
 static inline int8_t botfs_test(void) {
 	static uint8_t buffer[512];
 
+	if (! card_size) {
+		return 1;
+	}
+
 	uint32_t start_ticks, end_ticks;
 	botfs_file_descr_t file;
 	int8_t result = botfs_open("test.bin", &file, 'c', NULL);
@@ -269,20 +278,27 @@ static inline int8_t botfs_test(void) {
  */
 void mmc_display(void) {
 #ifdef MMC_INFO_AVAILABLE
-	static uint32_t card_size = 0;
-
-	display_clear();
 	card_size = sd_card_get_size(get_sd());
 	if (! card_size) {
 		time_read = time_write = n = 0;
-		display_printf("MMC/SD not init");
+		if (! last_error_code) {
+			last_error_code = sd_card_get_error_code(get_sd());
+			last_error_data = sd_card_get_error_data(get_sd());
+		}
+		display_clear();
+		display_printf("No card detected");
+		display_cursor(2, 1);
+		display_printf("error code=0x%02x 0x%02x", last_error_code, last_error_data);
 		if (sd_card_init(get_sd(), SPI_SPEED)) {
+			last_error_code = sd_card_get_error_code(get_sd());
+			last_error_data = sd_card_get_error_data(get_sd());
+			LOG_ERROR("sd_card_init() failed: error code=0x%02x 0x%02x", last_error_code, last_error_data);
 			return;
 		}
 		card_size = sd_card_get_size(get_sd());
 	}
 	const uint8_t type = sd_card_get_type(get_sd());
-	display_cursor(1, 1);
+	display_clear();
 	display_printf("%s: %6u MiB  ", type == 0 ? "SDv1" : type == 1 ? "SDv2" : "SDHC", card_size >> 10);
 
 #if ! defined MMC_WRITE_TEST_AVAILABLE

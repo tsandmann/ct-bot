@@ -198,7 +198,7 @@ bool SdCard::init(uint8_t sckDivisor) {
 	cs_high();
 	SPI::set_speed(sckDivisor);
 
-	LOG_DEBUG("SdCard::init(): done.");
+	LOG_DEBUG("SdCard::init(): done");
 #ifdef LED_AVAILABLE
 	LED_off(LED_GRUEN | LED_ROT | LED_TUERKIS);
 #endif //LED_AVAILABLE
@@ -214,6 +214,7 @@ uint8_t SdCard::send_cmd(uint8_t cmd, uint32_t arg) {
 
 	/* wait if busy */
 	if (! SPI::wait_not_busy(SD_WRITE_TIMEOUT) && cmd != CMD0) {
+		m_status = 0xff;
 		return ! error_handler(SD_CARD_ERROR_COMMAND);
 	}
 
@@ -538,7 +539,7 @@ bool SdCard::error_handler(uint8_t error_code) {
 #endif
 	if (error_code) {
 		set_error(error_code);
-		LOG_ERROR("SdCard::error_handler(): error_code=0x%x", error_code);
+		LOG_DEBUG("SdCard::error_handler(): error=0x%02x 0x%02x", error_code, m_status);
 		LOG_DEBUG(" time=0x%04x%04x", static_cast<uint16_t>(now32 >> 16), static_cast<uint16_t>(now32 & 0xffff));
 	}
 	cs_high();

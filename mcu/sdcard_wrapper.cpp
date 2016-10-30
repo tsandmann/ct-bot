@@ -53,22 +53,17 @@ uint8_t SdFatWrapper::init(SdFat* p_instance, uint8_t devisor) {
 	}
 
 	os_enterCS();
+#ifndef SDFAT_AVAILABLE
 	auto res(p_instance->card()->init(devisor));;
+#else
+	auto res(p_instance->init(devisor));
+#endif // ! SDFAT_AVAILABLE
 	os_exitCS();
 	if (! res) {
-		LOG_DEBUG("SdFatWrapper::init(): 1 error=0x%x", p_instance->card()->get_error_code());
+		LOG_DEBUG("SdFatWrapper::init(): error=0x%02x 0x%02x", p_instance->card()->get_error_code(), p_instance->card()->get_error_data());
+		init_state = false;
 		return 1;
 	}
-
-#ifdef SDFAT_AVAILABLE
-	os_enterCS();
-	res = p_instance->init(devisor);
-	os_exitCS();
-	if (! res) {
-		LOG_DEBUG("SdFatWrapper::init(): 2 error=0x%x", p_instance->card()->get_error_code());
-		return 2;
-	}
-#endif // SDFAT_AVAILABLE
 
 	init_state = true;
 	return 0;
@@ -105,6 +100,10 @@ uint8_t SdFatWrapper::write_block(SdFat* p_instance, uint32_t block, const uint8
 }
 
 uint32_t SdFatWrapper::get_size(SdFat* p_instance) {
+	if (! init_state) {
+		return 0;
+	}
+
 	os_enterCS();
 	const auto res(p_instance->card()->get_size() / 2U);
 	os_exitCS();
@@ -229,10 +228,12 @@ void FatFileWrapper::free(FatFile* p_instance) {
 
 extern "C" {
 uint8_t (*sd_card_init)(pSdFat, uint8_t) { SdFatWrapper::init };
-uint8_t (*sd_card_get_type)(pSdFat) { SdFatWrapper::get_type };
 uint8_t (*sd_card_read_block)(pSdFat, uint32_t, uint8_t*) { SdFatWrapper::read_block };
 uint8_t (*sd_card_write_block)(pSdFat, uint32_t, const uint8_t*, uint8_t) { SdFatWrapper::write_block };
 uint32_t (*sd_card_get_size)(pSdFat) { SdFatWrapper::get_size };
+uint8_t (*sd_card_get_type)(pSdFat) { SdFatWrapper::get_type };
+uint8_t (*sd_card_get_error_code)(pSdFat) { SdFatWrapper::get_error_code };
+uint8_t (*sd_card_get_error_data)(pSdFat) { SdFatWrapper::get_error_data };
 uint8_t (*sd_card_read_csd)(pSdFat, csd_t*) { SdFatWrapper::read_csd };
 uint8_t (*sd_card_read_cid)(pSdFat, cid_t*) { SdFatWrapper::read_cid };
 

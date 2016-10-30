@@ -58,6 +58,8 @@ extern uint8_t (*sd_card_read_block)(pSdFat, uint32_t , uint8_t*);
 extern uint8_t (*sd_card_write_block)(pSdFat, uint32_t, const uint8_t*, uint8_t);
 extern uint32_t (*sd_card_get_size)(pSdFat);
 extern uint8_t (*sd_card_get_type)(pSdFat);
+extern uint8_t (*sd_card_get_error_code)(pSdFat);
+extern uint8_t (*sd_card_get_error_data)(pSdFat);
 extern uint8_t (*sd_card_read_csd)(pSdFat, csd_t*);
 extern uint8_t (*sd_card_read_cid)(pSdFat, cid_t*);
 
@@ -92,6 +94,12 @@ public:
 	static uint32_t get_size(SdFat* p_instance);
 	static uint8_t get_type(SdFat* p_instance) {
 		return p_instance->card()->get_type();
+	}
+	static uint8_t get_error_code(SdFat* p_instance) {
+		return p_instance->card()->get_error_code();
+	}
+	static uint8_t get_error_data(SdFat* p_instance) {
+		return p_instance->card()->get_error_data();
 	}
 	static uint8_t read_csd(SdFat* p_instance, csd_t* p_csd);
 	static uint8_t read_cid(SdFat* p_instance, cid_t* p_cid);

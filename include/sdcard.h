@@ -199,6 +199,7 @@ private:
 	}
 
 	uint8_t send_cmd(uint8_t cmd, uint32_t arg);
+
 	bool read_register(uint8_t cmd, void* buf);
 
 	/** Start a read multiple blocks sequence.

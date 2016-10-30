@@ -90,11 +90,8 @@ void ctbot_init(int argc, char * argv[]) {
 	ENA_init();
 #endif
 #ifdef MMC_AVAILABLE
-	{
-		const uint8_t res = sd_card_init(get_sd(), SPI_SPEED);
-		if (res) {
-			LOG_ERROR("mmc_init()=%u", res);
-		}
+	if(sd_card_init(get_sd(), SPI_SPEED)) {
+		LOG_ERROR("sd_card_init() failed: error code=0x%02x 0x%02x", sd_card_get_error_code(get_sd()), sd_card_get_error_data(get_sd()));
 	}
 #endif
 #if defined BOT_FS_AVAILABLE && ! defined SDFAT_AVAILABLE
