@@ -157,7 +157,6 @@ uint8_t SdFatWrapper::sync_vol(SdFat* p_instance) {
 
 
 uint8_t FatFileWrapper::open(const char* filename, FatFile** p_file, uint8_t mode) {
-//	LOG_DEBUG("FatFileWrapper::open(\"%s\", 0x%x, %u)", filename, *((uint16_t*) p_file), mode);
 	auto ptr(new FatFile);
 	os_enterCS();
 	const auto res(ptr->open(filename, mode));
@@ -200,7 +199,6 @@ int16_t FatFileWrapper::write(FatFile* p_instance, const void* buffer, uint16_t 
 	os_enterCS();
 	const auto res(p_instance->write(buffer, length));
 	os_exitCS();
-//	LOG_DEBUG("FatFileWrapper::write(0x%x, 0x%x, %u)=%d", p_file, buffer, length, res);
 	return res;
 }
 

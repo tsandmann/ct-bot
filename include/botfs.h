@@ -395,20 +395,6 @@ void botfs_read_fat16(const char * path);
 #include "sdcard_wrapper.h"
 
 /**
- * Initialisiert ein Volume
- * \param *image
- * \param *buffer
- * \param create
- * \return 0, falls kein Fehler
- */
-static inline int8_t botfs_init(char* image, void* buffer, uint8_t create) {
-	(void) image;
-	(void) buffer;
-	(void) create;
-	return 0;
-}
-
-/**
  * Oeffnet eine Datei
  * \param filename	Dateiname
  * \param *file		Zeiger auf Datei-Deskriptor
@@ -453,12 +439,7 @@ static inline int8_t botfs_read(botfs_file_descr_t* p_file, void* buffer) {
  * \return			0, falls kein Fehler
  */
 static inline int8_t botfs_write(botfs_file_descr_t* p_file, void* buffer) {
-	int16_t res = sdfat_write(*p_file, buffer, BOTFS_BLOCK_SIZE);
-	if (res != BOTFS_BLOCK_SIZE) {
-//		LOG_ERROR("botfs_write() failed with %d", res);
-		return 1;
-	}
-	return 0;
+	return sdfat_write(*p_file, buffer, BOTFS_BLOCK_SIZE) == BOTFS_BLOCK_SIZE ? 0 : 1;
 }
 
 /**
