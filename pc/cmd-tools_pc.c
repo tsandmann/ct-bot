@@ -84,20 +84,6 @@ static void usage(void) {
 	puts("\t-l \tKonvertiert eine SpeedLog-Datei in eine txt-Datei");
 	puts("\t   FILE\tBotFS-Image-Datei");
 	puts("\t-E \tInitialisiert das EEPROM mit den Daten der EEP-Datei");
-#ifdef BOT_FS_AVAILABLE
-	puts("\t-i FILE\tverwendet FILE als Volume-Image fuer BotFS");
-	puts("\t-f \tStartet die BotFS-Verwaltung");
-	puts("\t   [IMAGE] \tPfad zur Image-Datei");
-	puts("\t-k \tKopiert eine Datei auf ein BotFS-Volume");
-	puts("\t   IMAGE \tPfad zur Image-Datei");
-	puts("\t   SOURCEFILE \tPfad zur Datei, die kopiert werden soll (Quelldatei)");
-	puts("\t   DESTFILE \tDateiname der Zieldatei");
-	puts("\t-o \tKopiert eine Datei vom BotFS-Volume ins PC-Dateisystem");
-	puts("\t   IMAGE \tPfad zur Image-Datei");
-	puts("\t   SOURCEFILE \tDateiname der Quelldatei");
-	puts("\t   DESTFILE \tPfad zur Datei, auf die kopiert werden soll (Zieldatei)");
-	puts("\t-F \tZeigt Informationen ueber Dateien eines FAT16-Dateisystems an");
-#endif // BOT_FS_AVAILABLE
 	puts("\t   PATH \tPfad zum Dateisystem / Image-Datei");
 	puts("\t-h\tZeigt diese Hilfe an");
 }
@@ -182,27 +168,6 @@ void hand_cmd_args(int argc, char * argv[]) {
 			break;
 		}
 
-		case 'i': {
-			/* angegebenes BotFS Image verwenden */
-#ifdef BOT_FS_AVAILABLE
-			const size_t len = strlen(optarg) + 1;
-			if (len > 1024) {
-				puts("Image-Pfad ungueltig");
-				exit(1);
-			}
-			botfs_volume_image_file = malloc(len);
-			if (NULL == botfs_volume_image_file) {
-				exit(1);
-			}
-			strcpy(botfs_volume_image_file, optarg);
-			printf("Verwende \"%s\" als BotFS-Volume-Image\n", botfs_volume_image_file);
-#else
-			puts("Fehler, Binary wurde ohne BOT_FS_AVAILABLE compiliert!");
-			exit(1);
-#endif // BOT_FS_AVAILABLE
-			break;
-		}
-
 		case 'M': {
 			/* Dateiname fuer die Map wurde uebergeben. Der String wird in from gesichert. */
 #ifndef MAP_AVAILABLE
@@ -271,137 +236,6 @@ void hand_cmd_args(int argc, char * argv[]) {
 #endif // MAP_AVAILABLE
 			break;
 		}
-
-		case 'f': {
-			/* BotFS Tool */
-#ifdef BOT_FS_AVAILABLE
-			char * image = argv[0];
-			botfs_management(image);
-#else
-			puts("Fehler, Binary wurde ohne BOT_FS_AVAILABLE compiliert!");
-			exit(1);
-#endif // BOT_FS_AVAILABLE
-			break;
-		}
-
-		case 'k' : {
-			/* BotFS file copy */
-#ifdef BOT_FS_AVAILABLE
-			char * image = optarg;
-			char buffer[BOTFS_BLOCK_SIZE];
-			if (botfs_init(image, buffer, False) != 0) {
-				printf("Konnte BotFS mit Image \"%s\" nicht initialisieren\n", image);
-				exit(1);
-			}
-			if (argc != 2) {
-				usage();
-				exit(1);
-			}
-			const char * source_file = argv[0];
-			const char * dest_file = argv[1];
-			if (botfs_copy_file(dest_file, source_file, buffer) == 0) {
-				puts("Datei erfolgreich kopiert");
-				exit(0);
-			} else {
-				puts("Fehler beim Kopieren");
-				exit(1);
-			}
-#else
-			puts("Fehler, Binary wurde ohne BOT_FS_AVAILABLE compiliert!");
-			exit(1);
-#endif // BOT_FS_AVAILABLE
-		}
-
-		case 'o' : {
-			/* BotFS file extract */
-#ifdef BOT_FS_AVAILABLE
-			char * image = optarg;
-			char buffer[BOTFS_BLOCK_SIZE];
-			if (botfs_init(image, buffer, False) != 0) {
-				printf("Konnte BotFS mit Image \"%s\" nicht initialisieren\n", image);
-				exit(1);
-			}
-			if (argc != 2) {
-				usage();
-				exit(1);
-			}
-			const char * source_file = argv[0];
-			const char * dest_file = argv[1];
-			if (botfs_extract_file(dest_file, source_file, 0, 0, buffer) == 0) {
-				puts("Datei erfolgreich kopiert");
-				exit(0);
-			} else {
-				puts("Fehler beim Kopieren");
-				exit(1);
-			}
-#else
-			puts("Fehler, Binary wurde ohne BOT_FS_AVAILABLE compiliert!");
-			exit(1);
-#endif // BOT_FS_AVAILABLE
-		}
-
-		case 'F': {
-			/* Fat16-Tool */
-#ifdef BOT_FS_AVAILABLE
-			botfs_read_fat16(optarg);
-			exit(0);
-#else
-			puts("Fehler, Binary wurde ohne BOT_FS_AVAILABLE compiliert!");
-			exit(1);
-#endif // BOT_FS_AVAILABLE
-		}
-
-#if 0
-		case 'c': {
-			/* Datei fuer den Bot (mini-fat) soll erzeugt werden. */
-			const int len = strlen(optarg) + 1;
-			if (len > 1024) {
-				puts("Dateiname ungueltig");
-				exit(1);
-			}
-			if (argc != 2) {
-				usage();
-				exit(1);
-			}
-			const size_t id_len = strlen(argv[0]);
-			if (id_len >= 255) {
-				puts("ID zu lang");
-				exit(1);
-			}
-			const int size = atoi(argv[1]);
-			printf("Mini-Fat-Datei (%s) mit %d kByte und ID=%s fuer den Bot soll erstellt werden.\n",
-				optarg, size, argv[0]);
-			create_mini_fat_file(optarg, argv[0], size);
-			exit(0);
-		}
-
-		case 'e': {
-			/* Datei fuer den Sim (mini-fat) soll erzeugt werden. */
-			if (argc != 2) {
-				usage();
-				exit(1);
-			}
-
-			const int size = atoi(argv[1]);
-			uint32_t addr = atoi(optarg);
-			printf("Mini-Fat-Datei mit ID=%s an Adresse 0x%x mit %d kByte auf der emulierten MMC soll erstellt werden.\n",
-				argv[0], addr, size);
-			create_emu_mini_fat_file(addr, argv[0], size);
-			exit(0);
-		}
-
-		case 'd': {
-			/* Datei fuer den Sim (mini-fat) soll geloescht werden. */
-			if (argc != 0) {
-				usage();
-				exit(1);
-			}
-
-			printf("Mini-Fat-Datei mit ID %s auf der emulierten MMC soll geloescht werden.\n", optarg);
-			delete_emu_mini_fat_file(optarg);
-			exit(0);
-		}
-#endif // 0
 
 		case 'E': {
 			/* EEPROM-Init */

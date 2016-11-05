@@ -23,11 +23,11 @@
 #ifdef MCU
 // use the gnu style oflag in open()
 /** open() oflag for reading */
-constexpr uint8_t const O_READ = 0X01;
+constexpr uint8_t const O_READ = 0x01;
 /** open() oflag - same as O_IN */
 constexpr uint8_t const O_RDONLY = O_READ;
 /** open() oflag for write */
-constexpr uint8_t const O_WRITE = 0X02;
+constexpr uint8_t const O_WRITE = 0x02;
 /** open() oflag - same as O_WRITE */
 constexpr uint8_t const O_WRONLY = O_WRITE;
 /** open() oflag for reading and writing */
@@ -35,17 +35,17 @@ constexpr uint8_t const O_RDWR = (O_READ | O_WRITE);
 /** open() oflag mask for access modes */
 constexpr uint8_t const O_ACCMODE = (O_READ | O_WRITE);
 /** The file offset shall be set to the end of the file prior to each write. */
-constexpr uint8_t const O_APPEND = 0X04;
+constexpr uint8_t const O_APPEND = 0x04;
 /** synchronous writes - call sync() after each write */
-constexpr uint8_t const O_SYNC = 0X08;
+constexpr uint8_t const O_SYNC = 0x08;
 /** truncate the file to zero length */
-constexpr uint8_t const O_TRUNC = 0X10;
+constexpr uint8_t const O_TRUNC = 0x10;
 /** set the initial position at the end of the file */
-constexpr uint8_t const O_AT_END = 0X20;
+constexpr uint8_t const O_AT_END = 0x20;
 /** create the file if nonexistent */
-constexpr uint8_t const O_CREAT = 0X40;
+constexpr uint8_t const O_CREAT = 0x40;
 /** If O_CREAT and O_EXCL are set, open() shall fail if the file exists */
-constexpr uint8_t const O_EXCL = 0X80;
+constexpr uint8_t const O_EXCL = 0x80;
 
 // FatFile class static and const definitions
 // flags for ls()

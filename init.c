@@ -90,13 +90,13 @@ void ctbot_init(int argc, char * argv[]) {
 	ENA_init();
 #endif
 #ifdef MMC_AVAILABLE
-	if(sd_init(SPI_SPEED)) {
+	if (sd_init(SPI_SPEED)) {
 		LOG_ERROR("sd_card_init() failed: error code=0x%02x 0x%02x", sd_get_error_code(), sd_get_error_data());
 	}
 #endif
-#if defined BOT_FS_AVAILABLE && ! defined SDFAT_AVAILABLE
+#if defined BOT_FS_AVAILABLE && MCU && ! defined SDFAT_AVAILABLE
 	{
-		void * buf = &mmc_buffers;
+		void* buf = &mmc_buffers;
 		const int8_t res = botfs_init(botfs_volume_image_file, buf, True);
 		if (res != 0) {
 			LOG_ERROR("botfs_init()=%d", res);

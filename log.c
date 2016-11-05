@@ -79,7 +79,6 @@
 #include "display.h"
 #include "command.h"
 #include "uart.h"
-#include "mmc-vm.h"
 #include "bot-2-sim.h"
 
 #ifdef PC

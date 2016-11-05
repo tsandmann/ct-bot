@@ -32,6 +32,21 @@
 #include "sdcard.h"
 #include "sdcard_wrapper.h"
 
+#define DEBUG_SDFAT
+
+#ifdef LOG_MMC_AVAILABLE
+#undef DEBUG_SDFAT
+#undef LOG_INFO
+#define LOG_INFO(...) {}
+#undef LOG_ERROR
+#define LOG_ERROR(...) {}
+#endif // LOG_MMC_AVAILABLE
+#ifndef DEBUG_SDFAT
+#undef LOG_AVAILABLE
+#undef LOG_DEBUG
+#define LOG_DEBUG(...) {}
+#endif
+
 extern "C" {
 #include "ena.h"
 #include "led.h"

@@ -37,7 +37,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#if defined BOT_FS_AVAILABLE && ! defined SDFAT_AVAILABLE
+#if defined BOT_FS_AVAILABLE && defined MCU && ! defined SDFAT_AVAILABLE
 
 #ifndef LOG_AVAILABLE
 #undef DEBUG_BOTFS
@@ -127,7 +127,7 @@ int8_t botfs_read(botfs_file_descr_t * file, void * buffer);
  * \param *buffer	Puffer mit mindestens BOTFS_BLOCK_SIZE Byte, dessen Daten in die Datei geschrieben werden
  * \return			0, falls kein Fehler
  */
-int8_t botfs_write(botfs_file_descr_t * file, void * buffer);
+int8_t botfs_write(botfs_file_descr_t * file, const void * buffer);
 
 /**
  * Legt eine neue Datei an
@@ -389,10 +389,58 @@ void botfs_print_freelist(void * buffer);
 void botfs_read_fat16(const char * path);
 #endif // PC
 
-#endif // BOT_FS_AVAILABLE && ! SDFAT_AVAILABLE
+#endif // BOT_FS_AVAILABLE && MCU && ! SDFAT_AVAILABLE
 
-#if defined BOT_FS_AVAILABLE && defined SDFAT_AVAILABLE
+#if defined BOT_FS_AVAILABLE && defined PC
+typedef void* pFatFile;
+typedef void* pSdFat;
+
+uint8_t sdfat_open(const char* filename, pFatFile* p_file, uint8_t mode);
+
+void sdfat_seek(pFatFile p_file, int32_t offset, uint8_t origin);
+
+int32_t sdfat_tell(pFatFile p_file);
+
+void sdfat_rewind(pFatFile p_file);
+
+int16_t sdfat_read(pFatFile p_file, void* buffer, uint16_t length);
+
+int16_t sdfat_write(pFatFile p_file, const void* buffer, uint16_t length);
+
+uint8_t sdfat_remove(pSdFat p_instance, const char* path);
+
+uint8_t sdfat_rename(pSdFat p_instance, const char* old_path, const char* new_path);
+
+uint8_t sdfat_flush(pFatFile p_file);
+
+uint8_t sdfat_close(pFatFile p_file);
+
+void sdfat_free(pFatFile p_file);
+
+uint32_t sdfat_get_filesize(pFatFile p_file);
+
+uint8_t sdfat_get_filename(pFatFile p_file, char* p_name, uint16_t size);
+
+uint8_t sdfat_sync_vol(pSdFat p_instance);
+
+
+void sdfat_test(void);
+#endif // BOT_FS_AVAILABLE && PC
+
+#if defined BOT_FS_AVAILABLE && ((defined MCU && defined SDFAT_AVAILABLE) || defined PC)
+#ifdef MCU
 #include "sdcard_wrapper.h"
+#else
+static inline uint8_t sdfat_c_remove(const char* path) {
+	return sdfat_remove(NULL, path);
+}
+static inline uint8_t sdfat_c_rename(const char* old_path, const char* new_path) {
+	return sdfat_rename(NULL, old_path, new_path);
+}
+static inline uint8_t sdfat_c_sync_vol(void) {
+	return sdfat_sync_vol(NULL);
+}
+#endif // MCU
 
 /**
  * Oeffnet eine Datei
@@ -411,7 +459,11 @@ int8_t botfs_open(const char* filename, botfs_file_descr_t* p_file, uint8_t mode
  * \param origin	SEEK_SET, SEEK_CUR oder SEEK_END
  */
 static inline void botfs_seek(botfs_file_descr_t* p_file, int16_t offset, uint8_t origin) {
-	sdfat_seek(*p_file, offset, origin);
+	sdfat_seek(*p_file, (int32_t) offset * BOTFS_BLOCK_SIZE, origin);
+}
+
+static inline uint16_t botfs_tell(botfs_file_descr_t* p_file) {
+	return (uint16_t) (sdfat_tell(*p_file) / BOTFS_BLOCK_SIZE);
 }
 
 /**
@@ -438,7 +490,7 @@ static inline int8_t botfs_read(botfs_file_descr_t* p_file, void* buffer) {
  * \param *buffer	Puffer mit mindestens BOTFS_BLOCK_SIZE Byte, dessen Daten in die Datei geschrieben werden
  * \return			0, falls kein Fehler
  */
-static inline int8_t botfs_write(botfs_file_descr_t* p_file, void* buffer) {
+static inline int8_t botfs_write(botfs_file_descr_t* p_file, const void* buffer) {
 	return sdfat_write(*p_file, buffer, BOTFS_BLOCK_SIZE) == BOTFS_BLOCK_SIZE ? 0 : 1;
 }
 
@@ -500,5 +552,5 @@ static inline uint16_t botfs_get_filesize(botfs_file_descr_t* p_file) {
 static inline void botfs_close_volume(void) {
 	sdfat_c_sync_vol();
 }
-#endif // BOT_FS_AVAILABLE && SDFAT_AVAILABLE
+#endif // BOT_FS_AVAILABLE && ((MCU && SDFAT_AVAILABLE) || PC)
 #endif // BOTFS_H_

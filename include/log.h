@@ -292,7 +292,7 @@ void minilog_begin(uint16_t line, LOG_TYPE log_type);
  * \param format	Format-String, wie bei printf
  * \param ... 		Variable Argumentenliste, wie bei printf
  */
-void minilog_printf(const char * format, ...);
+void minilog_printf(const char* format, ...);
 #endif // USE_MINILOG
 
 #ifdef LOG_MMC_AVAILABLE
@@ -302,7 +302,7 @@ void minilog_printf(const char * format, ...);
 void log_mmc_init(void);
 
 /**
- * Schreibt den aktuellen Inhalt des Log-Puffers auf die MMC
+ * Flusht die Log-Datei
  */
 void log_flush(void);
 

@@ -89,13 +89,14 @@ static inline uint8_t sd_read_cid(cid_t* p_cid) {
 
 #ifdef SDFAT_AVAILABLE
 extern uint8_t (*sdfat_open)(const char*, pFatFile*, uint8_t);
-extern void (*sdfat_seek)(pFatFile, int16_t, uint8_t);
+extern void (*sdfat_seek)(pFatFile, int32_t, uint8_t);
+extern int32_t (*sdfat_tell)(pFatFile p_file);
 extern void (*sdfat_rewind)(pFatFile);
 extern int16_t (*sdfat_read)(pFatFile, void*, uint16_t);
 extern int16_t (*sdfat_write)(pFatFile, const void*, uint16_t);
 extern uint8_t (*sdfat_remove)(pSdFat, const char*);
 extern uint8_t (*sdfat_rename)(pSdFat, const char*, const char*);
-extern uint8_t (*sdfat_sync)(pFatFile);
+extern uint8_t (*sdfat_flush)(pFatFile);
 extern uint8_t (*sdfat_close)(pFatFile);
 extern void (*sdfat_free)(pFatFile);
 extern uint32_t (*sdfat_get_filesize)(pFatFile);
@@ -158,13 +159,17 @@ public:
 class FatFileWrapper : public FatFile {
 public:
 	static uint8_t open(const char* filename, FatFile** p_file, uint8_t mode);
-	static void seek(FatFile* p_instance, int16_t offset, uint8_t origin);
+	static int32_t tell(FatFile* p_instance) {
+		const auto pos(p_instance->curPosition());
+		return static_cast<int32_t>(pos < INT32_MAX ? pos : -1);
+	}
+	static void seek(FatFile* p_instance, int32_t offset, uint8_t origin);
 	static void rewind(FatFile* p_instance) {
 		p_instance->rewind();
 	}
 	static int16_t read(FatFile* p_instance, void* buffer, uint16_t length);
 	static int16_t write(FatFile* p_instance, const void* buffer, uint16_t length);
-	static uint8_t sync(FatFile* p_instance);
+	static uint8_t flush(FatFile* p_instance);
 	static uint8_t close(FatFile* p_instance);
 	static void free(FatFile* p_instance);
 	static uint32_t get_filesize(FatFile* p_instance) {

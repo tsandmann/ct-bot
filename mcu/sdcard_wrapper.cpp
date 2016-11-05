@@ -30,6 +30,22 @@
 #include "SdFat.h"
 #include <stdio.h>
 
+
+//#define DEBUG_SDFAT
+
+#ifdef LOG_MMC_AVAILABLE
+#undef DEBUG_SDFAT
+#undef LOG_INFO
+#define LOG_INFO(...) {}
+#undef LOG_ERROR
+#define LOG_ERROR(...) {}
+#endif // LOG_MMC_AVAILABLE
+#ifndef DEBUG_SDFAT
+#undef LOG_AVAILABLE
+#undef LOG_DEBUG
+#define LOG_DEBUG(...) {}
+#endif
+
 #ifdef MMC_AVAILABLE
 static SdFat sd;
 pSdFat const p_sd(&sd);
@@ -85,6 +101,8 @@ uint8_t SdFatWrapper::read_block(SdFat* p_instance, uint32_t block, uint8_t* dst
 		LOG_DEBUG(" spi_rcv took %u us", debug_times.spi_rcv - debug_times.ready);
 		LOG_DEBUG(" discard_crc took %u us", debug_times.discard_crc - debug_times.spi_rcv);
 		LOG_DEBUG(" readdata took %u us", debug_times.readdata - debug_times.cardcommand);
+		(void) starttime;
+		(void) endtime;
 	}
 	return res;
 }
@@ -172,7 +190,7 @@ uint8_t FatFileWrapper::open(const char* filename, FatFile** p_file, uint8_t mod
 	}
 }
 
-void FatFileWrapper::seek(FatFile* p_instance, int16_t offset, uint8_t origin) {
+void FatFileWrapper::seek(FatFile* p_instance, int32_t offset, uint8_t origin) {
 	switch (origin) {
 	case SEEK_SET:
 		p_instance->seekSet(offset);
@@ -202,7 +220,7 @@ int16_t FatFileWrapper::write(FatFile* p_instance, const void* buffer, uint16_t 
 	return res;
 }
 
-uint8_t FatFileWrapper::sync(FatFile* p_instance) {
+uint8_t FatFileWrapper::flush(FatFile* p_instance) {
 	os_enterCS();
 	auto res(! p_instance->sync());
 	os_exitCS();
@@ -237,13 +255,14 @@ uint8_t (*sd_card_read_cid)(pSdFat, cid_t*) { SdFatWrapper::read_cid };
 
 #ifdef SDFAT_AVAILABLE
 uint8_t (*sdfat_open)(const char*, pFatFile*, uint8_t) { FatFileWrapper::open };
-void (*sdfat_seek)(pFatFile, int16_t, uint8_t) { FatFileWrapper::seek };
+void (*sdfat_seek)(pFatFile, int32_t, uint8_t) { FatFileWrapper::seek };
+int32_t (*sdfat_tell)(pFatFile p_file) {FatFileWrapper::tell};
 void (*sdfat_rewind)(pFatFile) { FatFileWrapper::rewind };
 int16_t (*sdfat_read)(pFatFile, void*, uint16_t) { FatFileWrapper::read };
 int16_t (*sdfat_write)(pFatFile, const void*, uint16_t) { FatFileWrapper::write };
 uint8_t (*sdfat_remove)(pSdFat, const char*) { SdFatWrapper::remove };
 uint8_t (*sdfat_rename)(pSdFat, const char*, const char*)  { SdFatWrapper::rename };
-uint8_t (*sdfat_sync)(pFatFile) { FatFileWrapper::sync };
+uint8_t (*sdfat_flush)(pFatFile) { FatFileWrapper::flush };
 uint8_t (*sdfat_close)(pFatFile) { FatFileWrapper::close };
 void (*sdfat_free)(pFatFile) { FatFileWrapper::free };
 uint32_t (*sdfat_get_filesize)(pFatFile) { FatFileWrapper::get_filesize };
