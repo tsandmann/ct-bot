@@ -139,9 +139,9 @@ static uint8_t if_state = 0;				/**< Zustandsspeicher fuer offene if/else-Bloeck
 static uint8_t for_state[FOR_DEPTH];		/**< Zustandsspeicher fuer for-Schleifen */
 static uint8_t * pForState = for_state - 1;	/**< Zustandsspeicher fuer offene for-Schleifen */
 #ifdef BOT_FS_AVAILABLE
-static botfs_file_descr_t abl_file = BOTFS_FD_INITIALIZER; /**< ABL-Programmdatei */
+static pFatFile abl_file;					/**< ABL-Programmdatei */
 static char last_file[ABL_PATHNAME_LENGTH + 1];	/**< letzte geladene Programmdatei */
-#define ABL_FILE_NAME	"/abl/ablX.txt" 	/**< Name der Programmdateien, X wird durch 1 bis 9 ersetzt */
+#define ABL_FILE_NAME	"ablX.txt" 			/**< Name der Programmdateien, X wird durch 1 bis 9 ersetzt */
 #define ABL_FILE_EXT	".txt"				/**< Dateinamenerweiterung (PROG_FILE_NAME muss hierauf enden) */
 #else
 static uint16_t addr = 0;					/**< Adresse (Offset) des aktuellen Instruktionsblocks (EEPROM) */
@@ -210,7 +210,11 @@ static void (* keyword_handler[])(void) = {
  */
 static int8_t init(void) {
 #ifdef BOT_FS_AVAILABLE
-	if (botfs_open(last_file, &abl_file, BOTFS_MODE_r, abl_prg_data) != 0) {
+	if (! strlen(last_file)) {
+		LOG_ERROR("ABL: Keine Datei gesetzt");
+		return -1;
+	}
+	if (sdfat_open(last_file, &abl_file, 0x1)) {
 		LOG_ERROR("ABL: Datei \"%s\" nicht vorhanden", last_file);
 		return -1;
 	}
@@ -228,17 +232,17 @@ static int8_t init(void) {
 static void load_program(int8_t direction) {
 #ifdef BOT_FS_AVAILABLE
 	if (direction > 0) {
-		botfs_seek(&abl_file, 1, SEEK_CUR);
+		sdfat_seek(abl_file, BOTFS_BLOCK_SIZE, SEEK_CUR);
 	} else if (direction < 0) {
-		botfs_seek(&abl_file, -1, SEEK_CUR);
+		sdfat_seek(abl_file, -BOTFS_BLOCK_SIZE, SEEK_CUR);
 	}
-	int8_t res = botfs_read(&abl_file, p_abl_i_data);
-	if (res != 0) {
+	const int16_t res = sdfat_read(abl_file, p_abl_i_data, BOTFS_BLOCK_SIZE);
+	if (res != BOTFS_BLOCK_SIZE) {
 		LOG_DEBUG("load_program(): botfs_read() failed: %d", res);
 		p_abl_i_data = NULL;
 		return;
 	}
-	botfs_seek(&abl_file, -1, SEEK_CUR);
+	sdfat_seek(abl_file, -BOTFS_BLOCK_SIZE, SEEK_CUR);
 #else // EEPROM
 #if defined __AVR_ATmega1284P__ || defined PC
 	/* on ATmega1284P or PC we have 3584 Bytes EEPROM for ABL */
@@ -679,7 +683,7 @@ void abl_push(void) {
  * Der ABL-Interpreter als Verhalten
  * \param *data Der Verhaltensdatensatz
  */
-void bot_abl_behaviour(Behaviour_t * data) {
+void bot_abl_behaviour(Behaviour_t* data) {
 	/* get next instruction */
 	LOG_DEBUG("bot_abl_behaviour(): trying to fetch next instruction...");
 	const instruction_t i_type = i_fetch();
@@ -693,7 +697,7 @@ void bot_abl_behaviour(Behaviour_t * data) {
 #ifdef ERROR_CHECKS
 			LOG_ERROR("RemoteCall %s not found", abl_i_cache);
 #ifdef BOT_FS_AVAILABLE
-			botfs_close(&abl_file, abl_prg_data);
+			sdfat_close(abl_file);
 #endif
 			return_from_behaviour(data);
 			return;
@@ -705,7 +709,7 @@ void bot_abl_behaviour(Behaviour_t * data) {
 	else if (i_type == I_UNKNOWN) {
 		LOG_DEBUG("bot_abl_behaviour(): end of program reached! exit!");
 #ifdef BOT_FS_AVAILABLE
-		botfs_close(&abl_file, abl_prg_data);
+		sdfat_close(abl_file);
 #endif
 		return_from_behaviour(data);
 		return;
@@ -719,7 +723,7 @@ void bot_abl_behaviour(Behaviour_t * data) {
  * \param *caller	Zeiger auf den Verhaltensdatensatz des Aufrufers
  * \param *filename	Programmdatei oder NULL, falls EEPROM / vorherige Programmdatei
  */
-void bot_abl(Behaviour_t * caller, const char * filename) {
+void bot_abl(Behaviour_t* caller, const char* filename) {
 	/* Instructionpointer- & I-Cache-init */
 #ifdef BOT_FS_AVAILABLE
 	if (abl_load(filename) != 0) {
@@ -759,7 +763,7 @@ void bot_abl(Behaviour_t * caller, const char * filename) {
  * \param *filename Dateiname
  * \return Fehlercode: 0, falls alles ok
  */
-int8_t abl_load(const char * filename) {
+int8_t abl_load(const char* filename) {
 #ifdef BOT_FS_AVAILABLE
 	if (filename) {
 #ifdef ERROR_CHECKS
@@ -828,7 +832,7 @@ void bot_abl_check(Behaviour_t * caller, uint16_t line) {
  * Bricht ein laufendes ABL-Programm ab
  */
 void abl_cancel(void) {
-	Behaviour_t * const beh = get_behaviour(bot_abl_behaviour);
+	Behaviour_t* const beh = get_behaviour(bot_abl_behaviour);
 	deactivate_called_behaviours(beh);
 	deactivate_behaviour(beh);
 	/* evtl. hatte ABL einen RemoteCall gestartet, daher dort aufraeumen */

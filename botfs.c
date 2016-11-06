@@ -1016,11 +1016,18 @@ uint8_t sdfat_open(const char* filename, pFatFile* p_file, uint8_t mode) {
 	}
 
 	*p_file = fopen(filename, file_mode);
+	if (! *p_file) {
+		LOG_ERROR("sdfat_open(\"%s\"): fopen failed:", filename);
+		perror(NULL);
+	}
 	return *p_file ? 0 : 1;
 }
 
 void sdfat_seek(pFatFile p_file, int32_t offset, uint8_t origin) {
-	fseek(p_file, offset, origin);
+	if (fseek(p_file, offset, origin)) {
+		LOG_ERROR("sdfat_seek(): fseek(%d, %u) failed:", offset, origin);
+		perror(NULL);
+	}
 }
 
 int32_t sdfat_tell(pFatFile p_file) {
@@ -1033,7 +1040,12 @@ void sdfat_rewind(pFatFile p_file) {
 }
 
 int16_t sdfat_read(pFatFile p_file, void* buffer, uint16_t length) {
-	return fread(buffer, 1, length, p_file);
+	const size_t res = fread(buffer, 1, length, p_file);
+	if (res != length) {
+		LOG_ERROR("sdfat_read(): fread(%d) = %d failed:", length, res);
+		perror(NULL);
+	}
+	return res;
 }
 
 int16_t sdfat_write(pFatFile p_file, const void* buffer, uint16_t length) {

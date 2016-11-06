@@ -67,7 +67,9 @@ static inline void _ubasic_update_ptr(uint16_t offset) {
 
 	if (block != last_block) {
 		botfs_seek(&ubasic_prog_file, (int16_t) block, SEEK_SET);
-		botfs_read(&ubasic_prog_file, GET_MMC_BUFFER(ubasic_buffer));
+		if (botfs_read(&ubasic_prog_file, GET_MMC_BUFFER(ubasic_buffer))) {
+			LOG_ERROR("_ubasic_update_ptr(): botfs_read() failed.");
+		}
 	}
 
 	ubasic_content = (char) GET_MMC_BUFFER(ubasic_buffer)[index];
