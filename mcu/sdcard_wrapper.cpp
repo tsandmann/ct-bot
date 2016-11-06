@@ -27,7 +27,6 @@
 #ifdef MCU
 #include "sdcard_wrapper.h"
 #include "ctbot_comp.h"
-#include "SdFat.h"
 #include <stdio.h>
 
 

@@ -28,7 +28,7 @@
 #define BEHAVIOUR_UBASIC_H_
 
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
-#include "botfs.h"
+#include "sdfat_fs.h"
 
 extern pFatFile ubasic_prog_file; /**< Basic-Programmdatei */
 extern Behaviour_t * ubasic_behaviour_data; /**< Verhaltensdatensatz des ubasis-Verhaltens */

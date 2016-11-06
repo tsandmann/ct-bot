@@ -33,7 +33,6 @@
 #include "command.h"
 #include "tcp.h"
 #include "bot-logic.h"
-#include "botfs.h"
 #include "sensor-low.h"
 #include "uart.h"
 
@@ -62,11 +61,7 @@ static void usage(void) {
 #ifdef ARM_LINUX_BOARD
 	puts("\t-u RUNS\tUART-Test");
 #endif
-#ifdef BOT_FS_AVAILABLE
-	puts("\t-M \tKonvertiert eine Bot-Map aus dem BotFS-Image in eine PGM-Datei");
-#else
 	puts("\t-M FROM \tKonvertiert eine Bot-Map aus Datei FROM in eine PGM-Datei");
-#endif
 	puts("\t-m FILE\tGibt den Pfad zu einer MiniFat-Datei an, die vom Map-Code verwendet wird (Ex- und Import)");
 #ifndef MAP_AVAILABLE
 	puts("\t\tACHTUNG, das Programm wurde ohne MAP_AVAILABLE uebersetzt, die Optionen -M / -m stehen derzeit also NICHT zur Verfuegung");
@@ -176,14 +171,8 @@ void hand_cmd_args(int argc, char * argv[]) {
 			puts("und neu compilieren.");
 			exit(1);
 #endif
-#ifdef MMC_VM_AVAILABLE
-			puts("Executable wurde mit MMC_VM_AVAILABLE compiliert.");
-			puts("Um Karten des echten Bots einlesen zu koennen, bitte den Code bitte ohne MMC_VM_AVAILABLE neu uebersetzen.");
-			exit(1);
-#endif
 #ifdef MAP_AVAILABLE
 			/* Karte in pgm konvertieren */
-#ifndef BOT_FS_AVAILABLE
 			if (argc != 1) {
 				usage();
 				exit(1);
@@ -195,17 +184,6 @@ void hand_cmd_args(int argc, char * argv[]) {
 			}
 			printf("Konvertiere Karte %s in PGM %s\n", argv[0], "map.pgm");
 			map_read(argv[0]);
-#else
-			uint8_t buffer[BOTFS_BLOCK_SIZE];
-			if (botfs_init(botfs_volume_image_file, buffer, False) != 0) {
-				puts("BotFS konnte nicht initialisiert werden");
-				exit(1);
-			}
-			if (map_init() != 0) {
-				puts("Map-Subsystem konnte nicht initialisiert werde");
-				exit(1);
-			}
-#endif // BOT_FS_AVAILABLE
 			map_to_pgm("map.pgm");
 			exit(0);
 #endif // MAP_AVAILABLE
@@ -225,13 +203,6 @@ void hand_cmd_args(int argc, char * argv[]) {
 				exit(1);
 			}
 			printf("Lese Karte von \"%s\" ein\n", optarg);
-#ifdef BOT_FS_AVAILABLE
-			uint8_t buffer[BOTFS_BLOCK_SIZE];
-			if (botfs_init(botfs_volume_image_file, buffer, False) != 0) {
-				puts("BotFS konnte nicht initialisiert werden");
-				exit(1);
-			}
-#endif // BOT_FS_AVAILABLE
 			map_read(optarg);
 #endif // MAP_AVAILABLE
 			break;

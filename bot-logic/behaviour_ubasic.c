@@ -80,7 +80,7 @@ void bot_ubasic_load_file(char* filename, pFatFile* file) {
 	LOG_DEBUG("bot_ubasic_load_file(\"%s\")", filename);
 	ubasic_prog_file = *file;
 	LOG_DEBUG(" ubasic_prog_file=%p", ubasic_prog_file);
-	botfs_rewind(file);
+	sdfat_rewind(*file);
 	ubasic_ptr = 0xffff;
 #if UBASIC_EXT_PROC
 	strncpy(current_proc, filename, MAX_PROG_NAME_LEN);
@@ -98,7 +98,7 @@ static int8_t read_ubasic_src(const char keynum) {
 	fname[num] = keynum;
 	LOG_DEBUG("zu ladende Datei: \"%s\"", fname);
 
-	if (botfs_open(fname, &ubasic_prog_file, BOTFS_MODE_r, GET_MMC_BUFFER(ubasic_buffer)) != 0) {
+	if (sdfat_open(fname, &ubasic_prog_file, 0x1)) {
 		LOG_ERROR("Konnte Basic-Programm nicht laden:");
 		LOG_ERROR(" Datei \"%s\" nicht vorhanden", fname);
 		return -1;
@@ -261,9 +261,9 @@ void ubasic_display(void) {
  * Umschalten des Programm-Kontextes
  * \param p_name Programmname
  */
-void switch_proc(char * p_name) {
-	botfs_file_descr_t new_prog;
-	if (botfs_open(p_name, &new_prog, BOTFS_MODE_r, GET_MMC_BUFFER(ubasic_buffer)) != 0) {
+void switch_proc(char* p_name) {
+	pFatFile new_prog;
+	if (sdfat_open(p_name, &new_prog, 0x1)) {
 		tokenizer_error_print(current_linenum, UNKNOWN_SUBPROC);
 		ubasic_break();
 	} else {

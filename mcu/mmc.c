@@ -56,7 +56,7 @@
 #include "os_thread.h"
 #include "sensor.h"
 #include "log.h"
-#include "botfs.h"
+#include "sdfat_fs.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -191,8 +191,8 @@ static inline uint8_t mmc_test(uint8_t* buffer) {
 	return 0;
 }
 
-#ifdef BOT_FS_AVAILABLE
-static inline int8_t botfs_test(void) {
+#ifdef SDFAT_AVAILABLE
+static inline uint8_t sdfat_test(void) {
 	static uint8_t buffer[512];
 
 	if (! card_size) {
@@ -200,10 +200,10 @@ static inline int8_t botfs_test(void) {
 	}
 
 	uint32_t start_ticks, end_ticks;
-	botfs_file_descr_t file;
-	int8_t result = botfs_open("test.bin", &file, 'c', NULL);
+	pFatFile file;
+	const uint8_t result = sdfat_open("test.bin", &file, 0x1 | 0x2 | 0x10 | 0x40);
 	if (result) {
-		LOG_ERROR("botfs_test(): botfs_open() failed: %d", result);
+		LOG_ERROR("sdfat_test(): sdfat_open() failed: %d", result);
 		return result;
 	}
 
@@ -217,11 +217,10 @@ static inline int8_t botfs_test(void) {
 	start_ticks = timer_get_us32();
 
 	/* Puffer schreiben */
-	result = botfs_write(&file, buffer);
-	if (result) {
-		LOG_ERROR("botfs_test(): botfs_write() failed: %d", result);
-		botfs_close(&file, NULL);
-		return result;
+	if (sdfat_write(file, buffer, 512) != 512) {
+		LOG_ERROR("sdfat_test(): sdfat_write() failed");
+		sdfat_close(file);
+		return 2;
 	}
 
 	/* Zeitmessung beenden */
@@ -236,25 +235,24 @@ static inline int8_t botfs_test(void) {
 	start_ticks = timer_get_us32();
 
 	/* Puffer lesen */
-	botfs_rewind(&file);
-	result = botfs_read(&file, buffer);
-	if (result) {
-		LOG_ERROR("botfs_test(): botfs_read() failed: %d", result);
-		botfs_close(&file, NULL);
-		return result;
+	sdfat_rewind(file);
+	if (sdfat_read(file, buffer, 512) != 512) {
+		LOG_ERROR("sdfat_test(): sdfat_read() failed");
+		sdfat_close(file);
+		return 3;
 	}
 
 	/* Zeitmessung beenden */
 	end_ticks = timer_get_us32();
 
-	botfs_close(&file, NULL);
+	sdfat_close(file);
 
 	time_read += end_ticks - start_ticks;
 
 	/* Puffer vergleichen */
 	for (i = 0; i < 512; ++i) {
 		if (buffer[i] != 255 - (i & 0xff)) {
-			LOG_ERROR("i:%u\tread:0x%x\texpected:0x%x", i, buffer[i], 255 - (i & 0xff));
+			LOG_ERROR("sdfat_test(): i:%u\tread:0x%x\texpected:0x%x", i, buffer[i], 255 - (i & 0xff));
 			return 5;
 		}
 	}
@@ -268,9 +266,9 @@ static inline int8_t botfs_test(void) {
 	display_cursor(4, 1);
 	display_printf("time r/w:%5u/%5u", t_read, t_write);
 	os_exitCS();
-	return result;
+	return 0;
 }
-#endif // BOT_FS_AVAILABLE
+#endif // SDFAT_AVAILABLE
 
 #ifdef DISPLAY_MMC_INFO
 /**
@@ -309,7 +307,7 @@ void mmc_display(void) {
 	display_cursor(2, 1);
 	display_printf("%.2s %.5s %2u/%4u ^%u ", cid.oid, cid.pnm, cid.mdt_month, 2000 + cid.mdt_year_low + 10 * cid.mdt_year_high, csd.v2.write_bl_len_high << 2 | csd.v2.write_bl_len_low);
 
-#if ! defined SDFAT_AVAILABLE || ! defined BOT_FS_AVAILABLE
+#if ! defined SDFAT_AVAILABLE
 	display_cursor(3, 1);
 	uint8_t i;
 	for (i = 0; i < 16; ++i) {
@@ -321,18 +319,18 @@ void mmc_display(void) {
 		}
 		display_printf("%02x", csd.raw[i]);
 	}
-#endif // ! SDFAT_AVAILABLE || ! BOT_FS_AVAILABLE
+#endif // ! SDFAT_AVAILABLE
 #endif // ! MMC_WRITE_TEST_AVAILABLE
 
-#if ! defined MMC_WRITE_TEST_AVAILABLE && defined SDFAT_AVAILABLE && defined BOT_FS_AVAILABLE
+#if ! defined MMC_WRITE_TEST_AVAILABLE && defined SDFAT_AVAILABLE
 	if (card_size) {
-		int8_t result = botfs_test();
+		const uint8_t result = sdfat_test();
 		if (result) {
 			display_cursor(4, 1);
-			display_printf("botfs_test()=%d :(", result);
+			display_printf("sdfat_test()=%d :(", result);
 		}
 	}
-#endif // ! MMC_WRITE_TEST_AVAILABLE && SDFAT_AVAILABLE && BOT_FS_AVAILABLE
+#endif // ! MMC_WRITE_TEST_AVAILABLE && SDFAT_AVAILABLE
 
 #ifdef MMC_WRITE_TEST_AVAILABLE
 	static uint8_t buffer[512];

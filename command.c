@@ -45,7 +45,7 @@ EEPROM uint8_t bot_address = CMD_BROADCAST; /**< Kommunikations-Adresse des Bots
 #include "bot-2-bot.h"
 #include "os_thread.h"
 #include "map.h"
-#include "botfs.h"
+#include "sdfat_fs.h"
 #include "botcontrol.h"
 #include "init.h"
 #include "motor.h"
@@ -374,7 +374,8 @@ static int16_t send_cmd(command_t * cmd) {
 }
 
 /**
- * Uebertraegt ein Kommando und wartet nicht auf eine Antwort. Interne Version, nicht threadsicher!
+ * Uebertraegt ein KomSDFAT_AVAILABLE
+ * mando und wartet nicht auf eine Antwort. Interne Version, nicht threadsicher!
  * \param command		Kennung zum Command
  * \param subcommand	Kennung des Subcommand
  * \param to			Adresse des Empfaengers
@@ -614,9 +615,9 @@ int8_t command_evaluate(void) {
 	static uint16_t RC5_Last_Toggle = 0xffff;
 #endif
 #if defined BEHAVIOUR_UBASIC_AVAILABLE || defined BEHAVIOUR_ABL_AVAILABLE
-#ifdef BOT_FS_AVAILABLE
+#ifdef SDFAT_AVAILABLE
 	static pFatFile prog_file;
-#endif
+#endif // SDFAT_AVAILABLE
 	static uint16_t prog_size = 0;
 #endif // BEHAVIOUR_UBASIC_AVAILABLE || BEHAVIOUR_ABL_AVAILABLE
 	int8_t analyzed = 1;
@@ -759,9 +760,7 @@ int8_t command_evaluate(void) {
 					filename[len] = 0;
 					LOG_DEBUG(" Datei:\"%s\"", filename);
 					void* buffer = type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer);
-#ifdef BOT_FS_AVAILABLE
-//					/* Datei loeschen, falls vorhanden */
-//					sdfat_c_remove(filename);
+#ifdef SDFAT_AVAILABLE
 					/* Datei anlegen */
 					LOG_DEBUG(" prog_size=%u", prog_size);
 					if (sdfat_open(filename, &prog_file, 0x1 | 0x2 | 0x10 | 0x40)) {
@@ -769,8 +768,8 @@ int8_t command_evaluate(void) {
 						prog_size = 0;
 						break;
 					}
-#endif //BOT_FS_AVAILABLE
-					memset(buffer, 0, BOTFS_BLOCK_SIZE);
+#endif // SDFAT_AVAILABLE
+					memset(buffer, 0, SD_BLOCK_SIZE);
 					/* falls uBasic / ABL laeuft, abbrechen */
 #if defined BEHAVIOUR_UBASIC_AVAILABLE && defined BEHAVIOUR_ABL_AVAILABLE
 					Behaviour_t* const beh = type == 0 ? get_behaviour(bot_ubasic_behaviour) : get_behaviour(bot_abl_behaviour);
@@ -816,7 +815,7 @@ int8_t command_evaluate(void) {
 				const uint8_t type = (uint8_t) received_command.data_l;
 				LOG_DEBUG(" type=%u %u Bytes (%u Bytes insgesamt)", type, received_command.payload, received_command.payload + done);
 				void* buffer = type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer);
-				const uint16_t index = (uint16_t) done % BOTFS_BLOCK_SIZE;
+				const uint16_t index = (uint16_t) done % SD_BLOCK_SIZE;
 				buffer += index;
 				uint16_t ticks = TIMER_GET_TICKCOUNT_16;
 #ifdef MCU
@@ -833,18 +832,18 @@ int8_t command_evaluate(void) {
 				if ((uint16_t) (TIMER_GET_TICKCOUNT_16 - ticks) < MS_TO_TICKS(COMMAND_TIMEOUT)) {
 					/* OK */
 //					puts(buffer);
-					if (index + (uint16_t) n == BOTFS_BLOCK_SIZE || prog_size == 0) {
+					if (index + (uint16_t) n == SD_BLOCK_SIZE || prog_size == 0) {
 						/* Puffer in Datei schreiben */
 						LOG_DEBUG(" Puffer rausschreiben...");
-#ifdef BOT_FS_AVAILABLE
-						if (sdfat_write(prog_file, type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer), BOTFS_BLOCK_SIZE) != BOTFS_BLOCK_SIZE) {
+#ifdef SDFAT_AVAILABLE
+						if (sdfat_write(prog_file, type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer), SD_BLOCK_SIZE) != SD_BLOCK_SIZE) {
 							/* Fehler */
 							LOG_ERROR("Fehler beim Dateizugriff");
 							prog_size = 0;
 							break;
 						}
 #else // EEPROM
-						const uint16_t block = (uint16_t) done / BOTFS_BLOCK_SIZE;
+						const uint16_t block = (uint16_t) done / SD_BLOCK_SIZE;
 #if defined __AVR_ATmega1284P__ || defined PC
 						if (block > 6) {
 #elif defined MCU_ATMEGA644X
@@ -861,8 +860,8 @@ int8_t command_evaluate(void) {
 #ifdef LED_AVAILABLE
 						LED_off(LED_ROT);
 #endif
-#endif // BOT_FS_AVAILABLE
-						memset(type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer), 0, BOTFS_BLOCK_SIZE);
+#endif // SDFAT_AVAILABLE
+						memset(type == 0 ? GET_MMC_BUFFER(ubasic_buffer) : GET_MMC_BUFFER(abl_buffer), 0, SD_BLOCK_SIZE);
 						if (prog_size == 0) {
 							/* Progamm vollstaendig empfangen */
 							LOG_DEBUG("->fertig");

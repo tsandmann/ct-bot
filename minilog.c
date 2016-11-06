@@ -29,7 +29,7 @@
 #if defined LOG_AVAILABLE && defined USE_MINILOG
 #include "log.h"
 #include "command.h"
-#include "botfs.h"
+#include "sdfat_fs.h"
 #include "display.h"
 #include "sensor.h"
 #include "rc5-codes.h"
@@ -60,9 +60,9 @@ static uint16_t line_displayed; /**< aktuell auf dem Display angezeigte Zeile */
 static uint16_t line_cache[LOG_SCROLLBACK]; /**< Cache fuer Dateiposition pro Zeile */
 static uint32_t file_pos_off; /**< letztes Offset in Log-Datei (obere 16 Bit) */
 
-#if ! defined BOT_FS_AVAILABLE || (! defined SDFAT_AVAILABLE && defined MCU)
-#error "LOG_MMC mit MINILOG geht nur mit BOT_FS_AVAILABLE"
-#endif // BOT_FS_AVAILABLE
+#ifndef SDFAT_AVAILABLE
+#error "LOG_MMC mit MINILOG geht nur mit SDFAT_AVAILABLE"
+#endif // SDFAT_AVAILABLE
 #endif // LOG_MMC_AVAILABLE
 
 void minilog_begin(uint16_t line, LOG_TYPE log_type) {

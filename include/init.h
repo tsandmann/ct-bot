@@ -29,9 +29,9 @@
 
 #include "ct-Bot.h"
 #include "eeprom.h"
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 #include "sensor-low.h"
-#include "botfs.h"
+#include "sdfat_fs.h"
 
 extern uint8_t EEPROM resetsEEPROM;	/**< Reset-Counter im EEPROM */
 
@@ -50,12 +50,12 @@ typedef union {
 		uint8_t map_2_sim_buffer[0]; /**< Map-2-Sim-Puffer inaktiv */
 #endif // MAP_2_SIM_AVAILABLE
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
-		uint8_t ubasic_buffer[BOTFS_BLOCK_SIZE]; /**< uBasic-MMC-Puffer */
+		uint8_t ubasic_buffer[SD_BLOCK_SIZE]; /**< uBasic-MMC-Puffer */
 #else
 		uint8_t ubasic_buffer[0]; /**< uBasic-MMC-Puffer inaktiv */
 #endif
 #ifdef BEHAVIOUR_ABL_AVAILABLE
-		uint8_t abl_buffer[BOTFS_BLOCK_SIZE]; /**< ABL-MMC-Puffer */
+		uint8_t abl_buffer[SD_BLOCK_SIZE]; /**< ABL-MMC-Puffer */
 #else
 		uint8_t abl_buffer[0]; /**< ABL-MMC-Puffer inaktiv */
 #endif

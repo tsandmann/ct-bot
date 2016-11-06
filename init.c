@@ -44,7 +44,6 @@
 #include "gui.h"
 #include "motor.h"
 #include "ir-rc5.h"
-#include "botfs.h"
 #include <stdlib.h>
 
 
@@ -94,15 +93,6 @@ void ctbot_init(int argc, char * argv[]) {
 		LOG_ERROR("sd_card_init() failed: error code=0x%02x 0x%02x", sd_get_error_code(), sd_get_error_data());
 	}
 #endif
-#if defined BOT_FS_AVAILABLE && MCU && ! defined SDFAT_AVAILABLE
-	{
-		void* buf = &mmc_buffers;
-		const int8_t res = botfs_init(botfs_volume_image_file, buf, True);
-		if (res != 0) {
-			LOG_ERROR("botfs_init()=%d", res);
-		}
-	}
-#endif // BOT_FS_AVAILABLE && ! SDFAT_AVAILABLE
 	bot_sens_init();
 #ifdef BEHAVIOUR_AVAILABLE
 	bot_behave_init();

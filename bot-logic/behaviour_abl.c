@@ -101,7 +101,7 @@ char EEPROM abl_eeprom_data[512] = ABL_PROG; /**< 512 Byte grosser EEPROM-Bereic
 #include "ui/available_screens.h"
 #include "init.h"
 #include "log.h"
-#include "botfs.h"
+#include "sdfat_fs.h"
 #include "display.h"
 #include "led.h"
 #include "rc5-codes.h"
@@ -138,14 +138,14 @@ uint8_t abl_sp = ABL_STACK_SIZE - 1;		/**< Stackpointer */
 static uint8_t if_state = 0;				/**< Zustandsspeicher fuer offene if/else-Bloecke */
 static uint8_t for_state[FOR_DEPTH];		/**< Zustandsspeicher fuer for-Schleifen */
 static uint8_t * pForState = for_state - 1;	/**< Zustandsspeicher fuer offene for-Schleifen */
-#ifdef BOT_FS_AVAILABLE
+#ifdef SDFAT_AVAILABLE
 static pFatFile abl_file;					/**< ABL-Programmdatei */
 static char last_file[ABL_PATHNAME_LENGTH + 1];	/**< letzte geladene Programmdatei */
 #define ABL_FILE_NAME	"ablX.txt" 			/**< Name der Programmdateien, X wird durch 1 bis 9 ersetzt */
 #define ABL_FILE_EXT	".txt"				/**< Dateinamenerweiterung (PROG_FILE_NAME muss hierauf enden) */
 #else
 static uint16_t addr = 0;					/**< Adresse (Offset) des aktuellen Instruktionsblocks (EEPROM) */
-#endif // BOT_FS_AVAILABLE
+#endif // SDFAT_AVAILABLE
 
 /** Instruktionstypen */
 typedef enum {
@@ -209,7 +209,7 @@ static void (* keyword_handler[])(void) = {
  * \return Fehlercode: 0, falls alles ok
  */
 static int8_t init(void) {
-#ifdef BOT_FS_AVAILABLE
+#ifdef SDFAT_AVAILABLE
 	if (! strlen(last_file)) {
 		LOG_ERROR("ABL: Keine Datei gesetzt");
 		return -1;
@@ -221,7 +221,7 @@ static int8_t init(void) {
 	p_abl_i_data = abl_prg_data;
 #else // EEPROM
 	p_abl_i_data = abl_prg_data;
-#endif // BOT_FS_AVAILABLE
+#endif // SDFAT_AVAILABLE
 	return 0;
 }
 
@@ -230,19 +230,19 @@ static int8_t init(void) {
  * \param direction Richtung, in die gesprungen wird (-1 zurueck, 0 gar nicht, 1 vor)
  */
 static void load_program(int8_t direction) {
-#ifdef BOT_FS_AVAILABLE
+#ifdef SDFAT_AVAILABLE
 	if (direction > 0) {
-		sdfat_seek(abl_file, BOTFS_BLOCK_SIZE, SEEK_CUR);
+		sdfat_seek(abl_file, SD_BLOCK_SIZE, SEEK_CUR);
 	} else if (direction < 0) {
-		sdfat_seek(abl_file, -BOTFS_BLOCK_SIZE, SEEK_CUR);
+		sdfat_seek(abl_file, -SD_BLOCK_SIZE, SEEK_CUR);
 	}
-	const int16_t res = sdfat_read(abl_file, p_abl_i_data, BOTFS_BLOCK_SIZE);
-	if (res != BOTFS_BLOCK_SIZE) {
-		LOG_DEBUG("load_program(): botfs_read() failed: %d", res);
+	const int16_t res = sdfat_read(abl_file, p_abl_i_data, SD_BLOCK_SIZE);
+	if (res != SD_BLOCK_SIZE) {
+		LOG_DEBUG("load_program(): sdfat_read() failed: %d", res);
 		p_abl_i_data = NULL;
 		return;
 	}
-	sdfat_seek(abl_file, -BOTFS_BLOCK_SIZE, SEEK_CUR);
+	sdfat_seek(abl_file, -SD_BLOCK_SIZE, SEEK_CUR);
 #else // EEPROM
 #if defined __AVR_ATmega1284P__ || defined PC
 	/* on ATmega1284P or PC we have 3584 Bytes EEPROM for ABL */
@@ -271,7 +271,7 @@ static void load_program(int8_t direction) {
 	addr = 0;
 #endif // MCU Typ
 	ctbot_eeprom_read_block(p_abl_i_data, &abl_eeprom_data[addr], 512);
-#endif // BOT_FS_AVAILABLE
+#endif // SDFAT_AVAILABLE
 }
 
 /**
@@ -696,7 +696,7 @@ void bot_abl_behaviour(Behaviour_t* data) {
 		if (bot_remotecall(data, abl_i_cache, abl_params) != 0) {
 #ifdef ERROR_CHECKS
 			LOG_ERROR("RemoteCall %s not found", abl_i_cache);
-#ifdef BOT_FS_AVAILABLE
+#ifdef SDFAT_AVAILABLE
 			sdfat_close(abl_file);
 #endif
 			return_from_behaviour(data);
@@ -708,7 +708,7 @@ void bot_abl_behaviour(Behaviour_t* data) {
 	/* check for errors */
 	else if (i_type == I_UNKNOWN) {
 		LOG_DEBUG("bot_abl_behaviour(): end of program reached! exit!");
-#ifdef BOT_FS_AVAILABLE
+#ifdef SDFAT_AVAILABLE
 		sdfat_close(abl_file);
 #endif
 		return_from_behaviour(data);
@@ -725,7 +725,7 @@ void bot_abl_behaviour(Behaviour_t* data) {
  */
 void bot_abl(Behaviour_t* caller, const char* filename) {
 	/* Instructionpointer- & I-Cache-init */
-#ifdef BOT_FS_AVAILABLE
+#ifdef SDFAT_AVAILABLE
 	if (abl_load(filename) != 0) {
 		LOG_ERROR("bot_abl(): can't load file \"%s\" as ABL-programm", filename);
 		return;
@@ -735,7 +735,7 @@ void bot_abl(Behaviour_t* caller, const char* filename) {
 	(void) filename;
 	addr = 0;
 	LOG_DEBUG("bot_abl(): using EEPROM as ABL-programm");
-#endif // BOT_FS_AVAILABLE
+#endif // SDFAT_AVAILABLE
 	if (init() != 0) {
 		LOG_ERROR("bot_abl(): can't load file \"%s\" as ABL-programm", filename);
 		return;
@@ -764,7 +764,7 @@ void bot_abl(Behaviour_t* caller, const char* filename) {
  * \return Fehlercode: 0, falls alles ok
  */
 int8_t abl_load(const char* filename) {
-#ifdef BOT_FS_AVAILABLE
+#ifdef SDFAT_AVAILABLE
 	if (filename) {
 #ifdef ERROR_CHECKS
 		if (strlen(filename) > ABL_PATHNAME_LENGTH) {
@@ -777,7 +777,7 @@ int8_t abl_load(const char* filename) {
 	}
 #else
 	(void) filename;
-#endif // BOT_FS_AVAILABLE
+#endif // SDFAT_AVAILABLE
 
 	return 0;
 }
@@ -869,7 +869,7 @@ void abl_stack_trace(void) {
 #ifdef RC5_AVAILABLE
 	/* Keyhandler */
 	if (RC5_Code >= RC5_CODE_1 && RC5_Code <= RC5_CODE_9) {
-#ifdef BOT_FS_AVAILABLE
+#ifdef SDFAT_AVAILABLE
 		/* Programm abl1.txt bis abl9.txt laden */
 		const char key = (char) (RC5_Code - RC5_CODE_1 + '1');
 		static char fname[] = ABL_FILE_NAME;
@@ -880,7 +880,7 @@ void abl_stack_trace(void) {
 		bot_abl(NULL, fname);
 #else // EEPROM
 		bot_abl(NULL, NULL);
-#endif // BOT_FS_AVAILABLE
+#endif // SDFAT_AVAILABLE
 
 		RC5_Code = 0;
 		return;

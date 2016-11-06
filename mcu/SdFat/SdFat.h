@@ -32,6 +32,10 @@
 #include "FatLib/FatLib.h"
 #include "ctbot_comp.h"
 
+extern "C" {
+#include "ct-Bot.h"
+}
+
 #ifdef MMC_AVAILABLE
 
 /** SdFat version YYYYMMDD */

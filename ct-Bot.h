@@ -33,9 +33,9 @@
 /* Logging-Funktionen */
 //#define LOG_CTSIM_AVAILABLE					/**< Logging zum ct-Sim (PC und MCU) */
 //#define LOG_DISPLAY_AVAILABLE				/**< Logging ueber das LCD-Display (PC und MCU) */
-#define LOG_UART_AVAILABLE					/**< Logging ueber UART (nur fuer MCU) */
+//#define LOG_UART_AVAILABLE					/**< Logging ueber UART (nur fuer MCU) */
 //#define LOG_RPI_AVAILABLE					/**< Logging vom ATmega zum ARM-Linux Board z.B. RPi (nur MCU) */
-//#define LOG_STDOUT_AVAILABLE 				/**< Logging auf die Konsole (nur fuer PC) */
+#define LOG_STDOUT_AVAILABLE 				/**< Logging auf die Konsole (nur fuer PC) */
 //#define LOG_MMC_AVAILABLE					/**< Logging in eine txt-Datei auf MMC */
 #define USE_MINILOG							/**< schaltet auf schlankes Logging um */
 //#define CREATE_TRACEFILE_AVAILABLE			/**< Aktiviert das Schreiben einer Trace-Datei (nur PC) */
@@ -78,7 +78,6 @@
 
 /* MMC-/SD-Karte als Speichererweiterung (Erweiterungsmodul) */
 #define MMC_AVAILABLE						/**< haben wir eine MMC/SD-Karte zur Verfuegung? */
-#define BOT_FS_AVAILABLE					/**< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC/SD moeglich) */
 #define SDFAT_AVAILABLE						/**< Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf MMC/SD-Karte */
 
 
@@ -153,7 +152,6 @@
 #undef CMPS03_AVAILABLE
 #undef SP03_AVAILABLE
 #undef BOT_2_RPI_AVAILABLE
-#undef SDFAT_AVAILABLE
 #endif // ! DOXYGEN
 
 #if !defined BOT_2_SIM_AVAILABLE && ! defined ARM_LINUX_BOARD
@@ -208,7 +206,6 @@
 
 #if ! defined __AVR_ATmega1284P__ && ! defined __AVR_ATmega644__ && ! defined __AVR_ATmega644P__
 #undef MMC_AVAILABLE
-#undef BOT_FS_AVAILABLE
 #undef SDFAT_AVAILABLE
 #endif // ATmega1284P / ATmega644X
 #endif // MCU
@@ -220,25 +217,18 @@
 #ifndef MMC_AVAILABLE
 #ifdef MCU
 #undef MAP_AVAILABLE // Map geht auf dem MCU nur mit MMC
-#undef MMC_VM_AVAILABLE
-#undef BOT_FS_AVAILABLE
 #undef SDFAT_AVAILABLE
 #endif // MCU
 #endif // ! MMC_AVAILABLE
 
-#if !defined BEHAVIOUR_AVAILABLE && defined POS_STORE_AVAILABLE
+#if ! defined BEHAVIOUR_AVAILABLE && defined POS_STORE_AVAILABLE
 #undef POS_STORE_AVAILABLE
 #warning "POS_STORE_AVAILABLE benoetigt BEHAVIOUR_AVAILABLE"
 #endif
 
-#if !defined OS_AVAILABLE && defined BOT_FS_AVAILABLE
-#undef BOT_FS_AVAILABLE
-#warning "BOT_FS_AVAILABLE benoetigt OS_AVAILABLE"
-#endif
-
-#if defined MMC_VM_AVAILABLE && defined BOT_FS_AVAILABLE
-#warning "MMC_VM_AVAILABLE und BOT_FS_AVAILABLE nicht gleichzeitig moeglich! MMC_VM_AVAILABLE wird deaktiviert. Wenn benoetigt, BOT_FS_AVAILABLE ausschalten"
-#undef MMC_VM_AVAILABLE
+#if ! defined OS_AVAILABLE && defined SDFAT_AVAILABLE
+#undef SDFAT_AVAILABLE
+#warning "SDFAT_AVAILABLE benoetigt OS_AVAILABLE"
 #endif
 
 #ifdef PC
@@ -265,9 +255,9 @@
 #undef LOG_DISPLAY_AVAILABLE
 #endif
 
-#if ! defined BOT_FS_AVAILABLE && defined USE_MINILOG
+#if ! defined SDFAT_AVAILABLE && defined USE_MINILOG
 #undef LOG_MMC_AVAILABLE
-#endif // BOT_FS_AVAILABLE && USE_MINILOG
+#endif // SDFAT_AVAILABLE && USE_MINILOG
 
 #ifndef BOT_2_RPI_AVAILABLE
 #undef LOG_RPI_AVAILABLE
@@ -346,7 +336,7 @@
 #undef LOG_MMC_AVAILABLE
 #endif
 
-#ifndef BOT_FS_AVAILABLE
+#ifndef SDFAT_AVAILABLE
 #undef LOG_MMC_AVAILABLE
 #endif
 

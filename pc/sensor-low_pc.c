@@ -30,7 +30,6 @@
 #include "bot-2-sim.h"
 #include "command.h"
 #include "sensor.h"
-#include "botfs.h"
 #include <string.h>
 
 /**
