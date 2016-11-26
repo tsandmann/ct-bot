@@ -35,6 +35,7 @@
 
 extern "C" {
 #include "timer.h"
+#include "motor.h"
 }
 
 class SpiMasterSoft {
@@ -49,9 +50,12 @@ protected:
 	}
 
 	uint8_t receive() const {
+		disable_servo();
+
 		uint8_t clk_high, clk_low, port_data, data;
 		__asm__ __volatile__(
 			"in	%2, %4		; load PORTB 		\n\t"
+			"cbr %2, %9		; PB3 low			\n\t"
 			"cbr %2, %7		; CLK low			\n\t"
 			"sbr %2, %8		; MOSI high			\n\t"
 			"out %4, %2		; CLK low			\n\t"
@@ -97,7 +101,7 @@ protected:
 			"bst %3, %6							\n\t"
 			"bld %0, 0							    "
 			: "=&r" (data) /* %0 */, "=&r" (clk_high) /* %1 */, "=&r" (clk_low) /* %2 */, "=&r" (port_data) /* %3 */
-			: "M" (_SFR_IO_ADDR(PORTB)) /* %4 */, "M" (_SFR_IO_ADDR(PINB)) /* %5 */, "M" (PB6) /* %6 */, "M" (_BV(PB7)) /* %7 */, "M" (_BV(PB5)) /* %8 */
+			: "M" (_SFR_IO_ADDR(PORTB)) /* %4 */, "M" (_SFR_IO_ADDR(PINB)) /* %5 */, "M" (PB6) /* %6 */, "M" (_BV(PB7)) /* %7 */, "M" (_BV(PB5)) /* %8 */, "M" (_BV(PB3)) /* %9 */
 			: "memory"
 		);
 
@@ -113,9 +117,12 @@ protected:
 	}
 
 	void send(uint8_t data) const {
+		disable_servo();
+
 		uint8_t tmp;
 		__asm__ __volatile__(
 			"in %0, %2		; load PORTB 		\n\t"
+			"cbr %0, %6		; PB3 low			\n\t"
 			"cbr %0, %5		; CLK low			\n\t"
 			"bst %1, 7		; send bit 7		\n\t"
 			"bld %0, %3		; data to DO		\n\t"
@@ -151,7 +158,7 @@ protected:
 			"sbi %2, %4							\n\t"
 			"sbi %2, %3		; DO high		    	"
 			: "=&r" (tmp) /* %0 */
-			: "r" (data) /* %1 */, "M" (_SFR_IO_ADDR(PORTB)) /* %2 */, "M" (PB5) /* %3 */, "M" (PB7) /* %4 */, "M" (_BV(PB7)) /* %5 */
+			: "r" (data) /* %1 */, "M" (_SFR_IO_ADDR(PORTB)) /* %2 */, "M" (PB5) /* %3 */, "M" (PB7) /* %4 */, "M" (_BV(PB7)) /* %5 */, "M" (_BV(PB3)) /* %6 */
 			: "memory"
 		);
 	}
@@ -185,9 +192,12 @@ private:
 	}
 
 	void receive_512(void* buf) const {
+		disable_servo();
+
 		__asm__ __volatile__(
 			"2:									\n\t"
 			"in	r20, %0		; load PORTB 		\n\t"
+			"cbr r20, %6	; PB3 low			\n\t"
 			"cbr r20, %1	; CLK low			\n\t"
 			"sbr r20, %5	; MOSI high			\n\t"
 			"out %0, r20	; CLK low			\n\t"
@@ -246,7 +256,7 @@ private:
 			"rjmp 1b							\n\t"
 			"3:									\n\t"
 			"out %0, r19	; CLK high				"
-			:: "M" (_SFR_IO_ADDR(PORTB)) /* %0 */, "M" (_BV(PB7)) /* %1 */, "M" (PB6) /* %2 */, "M" (_SFR_IO_ADDR(PINB)) /* %3 */, "y" (buf) /* %4 */, "M" (_BV(PB5)) /* %5 */
+			:: "M" (_SFR_IO_ADDR(PORTB)) /* %0 */, "M" (_BV(PB7)) /* %1 */, "M" (PB6) /* %2 */, "M" (_SFR_IO_ADDR(PINB)) /* %3 */, "y" (buf) /* %4 */, "M" (_BV(PB5)) /* %5 */, "M" (_BV(PB3)) /* %6 */
 			: "r18", "r19", "r20", "r24", "r25", "r26", "memory"
 		);
 	}
@@ -258,8 +268,11 @@ private:
 	}
 
 	void send_512(const void* buf) const {
+		disable_servo();
+
 		__asm__ __volatile__(
 			"in r26, %0		; load PORTB 			\n\t"
+			"cbr r26, %5	; PB3 low				\n\t"
 			"cbr r26, %1	; CLK low				\n\t"
 			"ldi r18, 2		; r18 = 2				\n\t"
 			"clr r27		; r27 = 0				\n\t"
@@ -306,10 +319,15 @@ private:
 			"rjmp 1b								\n\t"
 			"3:										\n\t"
 			"sbi %0, %2		; DO high					"
-			:: "M" (_SFR_IO_ADDR(PORTB)) /* %0 */, "M" (_BV(PB7)) /* %1 */, "M" (PB5) /* %2 */,
-			"M" (PB7) /* %3 */, "y" (buf) /* %4 */
+			:: "M" (_SFR_IO_ADDR(PORTB)) /* %0 */, "M" (_BV(PB7)) /* %1 */, "M" (PB5) /* %2 */,	"M" (PB7) /* %3 */, "y" (buf) /* %4 */, "M" (_BV(PB3)) /* %5 */
 			: "r18", "r25", "r26", "r27", "memory"
 		);
+	}
+
+	void disable_servo() const {
+#ifdef __AVR_ATmega1284P__
+		servo_set(SERVO1, SERVO_OFF);
+#endif
 	}
 };
 

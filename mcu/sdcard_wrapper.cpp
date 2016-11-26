@@ -175,6 +175,9 @@ uint8_t SdFatWrapper::sync_vol(SdFat* p_instance) {
 
 uint8_t FatFileWrapper::open(const char* filename, FatFile** p_file, uint8_t mode) {
 	auto ptr(new FatFile);
+	if (! ptr) {
+		return 1;
+	}
 	os_enterCS();
 	const auto res(ptr->open(filename, mode));
 	os_exitCS();

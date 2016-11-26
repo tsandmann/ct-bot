@@ -199,6 +199,8 @@ static inline uint8_t sdfat_test(void) {
 		return 1;
 	}
 
+	LOG_DEBUG("sdfat_test(): opening file...");
+
 	uint32_t start_ticks, end_ticks;
 	pFatFile file;
 	const uint8_t result = sdfat_open("test.bin", &file, 0x1 | 0x2 | 0x10 | 0x40);
@@ -207,11 +209,15 @@ static inline uint8_t sdfat_test(void) {
 		return result;
 	}
 
+	LOG_DEBUG("sdfat_test(): file opened.");
+
 	/* Puffer vorbereiten */
 	uint16_t i;
 	for (i = 0; i < 512; ++i) {
 		buffer[i] = (uint8_t) (255 - (i & 0xff));
 	}
+
+	LOG_DEBUG("sdfat_test(): starting write...");
 
 	/* Zeitmessung starten */
 	start_ticks = timer_get_us32();
@@ -226,10 +232,14 @@ static inline uint8_t sdfat_test(void) {
 	/* Zeitmessung beenden */
 	end_ticks = timer_get_us32();
 
+	LOG_DEBUG("sdfat_test(): write done.");
+
 	time_write += end_ticks - start_ticks;
 
 	/* Puffer loeschen */
 	memset(buffer, 0, sizeof(buffer));
+
+	LOG_DEBUG("sdfat_test(): starting read...");
 
 	/* Zeitmessung starten */
 	start_ticks = timer_get_us32();
@@ -244,6 +254,8 @@ static inline uint8_t sdfat_test(void) {
 
 	/* Zeitmessung beenden */
 	end_ticks = timer_get_us32();
+
+	LOG_DEBUG("sdfat_test(): read done.");
 
 	sdfat_close(file);
 
@@ -260,12 +272,13 @@ static inline uint8_t sdfat_test(void) {
 	++n;
 	const uint16_t t_read = (uint16_t) (time_read / n);
 	const uint16_t t_write = (uint16_t) (time_write / n);
-	os_enterCS();
 	display_cursor(3, 1);
 	display_printf("file r/w:%5u KiB/s", (uint16_t) ((uint32_t) (512.f * 1000000.f / 1024.f * 2.f) / (t_read + t_write)));
 	display_cursor(4, 1);
 	display_printf("time r/w:%5u/%5u", t_read, t_write);
-	os_exitCS();
+
+	LOG_DEBUG("sdfat_test(): done.");
+
 	return 0;
 }
 #endif // SDFAT_AVAILABLE
