@@ -225,7 +225,7 @@ static inline uint8_t sdfat_test(void) {
 	/* Puffer schreiben */
 	if (sdfat_write(file, buffer, 512) != 512) {
 		LOG_ERROR("sdfat_test(): sdfat_write() failed");
-		sdfat_close(file);
+		sdfat_free(file);
 		return 2;
 	}
 
@@ -248,7 +248,7 @@ static inline uint8_t sdfat_test(void) {
 	sdfat_rewind(file);
 	if (sdfat_read(file, buffer, 512) != 512) {
 		LOG_ERROR("sdfat_test(): sdfat_read() failed");
-		sdfat_close(file);
+		sdfat_free(file);
 		return 3;
 	}
 
@@ -257,7 +257,7 @@ static inline uint8_t sdfat_test(void) {
 
 	LOG_DEBUG("sdfat_test(): read done.");
 
-	sdfat_close(file);
+	sdfat_free(file);
 
 	time_read += end_ticks - start_ticks;
 

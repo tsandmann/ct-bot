@@ -185,6 +185,7 @@ uint8_t FatFileWrapper::open(const char* filename, FatFile** p_file, uint8_t mod
 		*p_file = ptr;
 		return 0;
 	} else {
+		delete ptr;
 		*p_file = nullptr;
 		LOG_ERROR("FatFileWrapper::open(): ptr->open() failed");
 		LOG_DEBUG("sdlib-error=0x%x", static_cast<SdFatBase*>(ptr->volume())->card()->get_error_code());
