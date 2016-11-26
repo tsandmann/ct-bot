@@ -43,8 +43,8 @@
 #include <string.h>
 
 // avr-gcc < 4.2.2 ?
-#if !(__GNUC__ >= 4 && ((__GNUC_MINOR__ > 2) || (__GNUC_MINOR__ == 2 && __GNUC_PATCHLEVEL__ >= 2)))
-#error "Compiler zu alt, mindestens 4.2.2 noetig!"	// fuer __attribute__((OS_task))
+#if GCC_VERSION < 40202
+#error "Compiler zu alt, mindestens avr-gcc 4.2.2 noetig!" // fuer __attribute__((OS_task))
 #endif
 
 volatile uint8_t os_scheduling_allowed = 1;	/**< sperrt den Scheduler, falls != 1. Sollte nur per os_enterCS() / os_exitCS() veraendert werden! */
