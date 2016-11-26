@@ -66,7 +66,7 @@ endef
 
 define SRCPC
 	pc/bot-2-atmega_pc.c pc/bot-2-sim_pc.c \
-	pc/cmd-tools_pc.c pc/delay_pc.c pc/display_pc.c pc/eeprom_pc.c pc/ena_pc.c pc/init-low_pc.c \
+	pc/cmd-tools_pc.c pc/delay_pc.c pc/display_pc.c pc/ena_pc.c pc/init-low_pc.c \
 	pc/ir-rc5_pc.c pc/led_pc.c pc/motor-low_pc.c pc/mouse_pc.c \
 	pc/os_thread_pc.c pc/sdfat_fs_pc.c pc/sensor-low_pc.c pc/tcp-server.c pc/tcp.c pc/timer-low_pc.c pc/trace.c \
 	pc/uart-test_pc.c pc/uart_pc.c
@@ -120,7 +120,7 @@ SRCBEHAVIOUR = $(SRCMAIN) $(SRCLOGIC)
 # Even though the DOS/Win* filesystem matches both .s and .S the same,
 # it will preserve the spelling of the filenames, and gcc itself does
 # care about how the name is spelled on its command-line.
-ASRC = 1st_init.S
+ASRC = 
 
 MATH_LIB = -lm
 

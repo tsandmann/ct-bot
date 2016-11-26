@@ -100,10 +100,6 @@
 //#define BOT_2_RPI_AVAILABLE					/**< Kommunikation von ATmega mit einem Linux-Board (z.B. Rapsberry Pi) aktivieren. Fuehrt auf dem ATmega den low-level Code aus */
 
 
-/* Veraltete Optionen */
-//#define EEPROM_EMU_AVAILABLE				/**< Aktiviert die EEPROM-Emulation fuer PC, siehe Hinweise in pc/eeprom_pc.c */
-
-
 
 /*** Abhaengigkeiten ***/
 
@@ -201,7 +197,6 @@
 #undef DISPLAY_REMOTE_AVAILABLE
 #endif
 
-#undef EEPROM_EMU_AVAILABLE
 #undef CREATE_TRACEFILE_AVAILABLE
 
 #if ! defined __AVR_ATmega1284P__ && ! defined __AVR_ATmega644__ && ! defined __AVR_ATmega644P__

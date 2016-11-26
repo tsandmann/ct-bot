@@ -44,6 +44,7 @@
 #include "gui.h"
 #include "motor.h"
 #include "ir-rc5.h"
+#include "sdfat_fs.h"
 #include <stdlib.h>
 
 

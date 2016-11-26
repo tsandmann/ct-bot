@@ -53,7 +53,7 @@ static pthread_t cmd_thread; /**< Thread fuer die RemoteCall-Auswertung per Komm
  * Zeigt Informationen zu den moeglichen Kommandozeilenargumenten an.
  */
 static void usage(void) {
-	puts("USAGE: ct-Bot [-t host] [-a address] [-T] [-h] [-s] [-u RUNS] [-M FROM] [-m FILE] [-c FILE ID SIZE] [-e ADDR ID SIZE] [-d ID] [-i] [-f [IMAGE]] [-k IMAGE SOURCEFILE DESTFILE] [-F PATH]");
+	puts("USAGE: ct-Bot [-t host] [-a address] [-T] [-s] [-u RUNS] [-M FILE] [-m FILE] [-h]");
 	puts("\t-t\tHostname oder IP Adresse zu der Verbunden werden soll");
 	puts("\t-a\tAdresse des Bots (fuer Bot-2-Bot-Kommunikation), default: 0");
 	puts("\t-T\tTestClient");
@@ -61,25 +61,12 @@ static void usage(void) {
 #ifdef ARM_LINUX_BOARD
 	puts("\t-u RUNS\tUART-Test");
 #endif
-	puts("\t-M FROM \tKonvertiert eine Bot-Map aus Datei FROM in eine PGM-Datei");
-	puts("\t-m FILE\tGibt den Pfad zu einer MiniFat-Datei an, die vom Map-Code verwendet wird (Ex- und Import)");
-#ifndef MAP_AVAILABLE
+#ifdef MAP_AVAILABLE
+	puts("\t-M FILE \tKonvertiert eine Bot-Map aus Datei FILE in eine PGM-Datei");
+	puts("\t-m FILE\tGibt den Pfad zu einer Datei FILE an, die vom Map-Code verwendet wird (Ex- und Import)");
+#else
 	puts("\t\tACHTUNG, das Programm wurde ohne MAP_AVAILABLE uebersetzt, die Optionen -M / -m stehen derzeit also NICHT zur Verfuegung");
 #endif
-	puts("\t-c \tErzeugt eine Mini-Fat-Datei fuer den Bot.");
-	puts("\t   FILE\tDateiname");
-	puts("\t   ID  \tDie ID aus ASCII-Zeichen");
-	puts("\t   SIZE\tDie Nutzgroesse der Datei in KByte");
-	puts("\t-e \tErzeugt eine Mini-Fat-Datei fuer den Sim (emulierte MMC).");
-	puts("\t   ADDR\tStartadresse der Mini-Fat-Datei");
-	puts("\t   ID  \tDie ID aus ASCII-Zeichen");
-	puts("\t   SIZE\tDie Nutzgroesse der Datei in KByte");
-	puts("\t-d \tLoescht eine Mini-Fat-Datei fuer den Sim (emulierte MMC).");
-	puts("\t   ID  \tDie ID aus ASCII-Zeichen");
-	puts("\t-l \tKonvertiert eine SpeedLog-Datei in eine txt-Datei");
-	puts("\t   FILE\tBotFS-Image-Datei");
-	puts("\t-E \tInitialisiert das EEPROM mit den Daten der EEP-Datei");
-	puts("\t   PATH \tPfad zum Dateisystem / Image-Datei");
 	puts("\t-h\tZeigt diese Hilfe an");
 }
 
@@ -206,17 +193,6 @@ void hand_cmd_args(int argc, char * argv[]) {
 			map_read(optarg);
 #endif // MAP_AVAILABLE
 			break;
-		}
-
-		case 'E': {
-			/* EEPROM-Init */
-			printf("EEPROM soll mit den Daten einer eep-Datei initialisiert werden.\n");
-			if (init_eeprom_man(1) != 0) {
-				puts("Fehler bei EEPROM-Initialisierung!");
-			} else {
-				puts("done.");
-			}
-			exit(0);
 		}
 
 		case 'h':

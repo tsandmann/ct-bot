@@ -146,32 +146,25 @@ static inline void ctbot_eeprom_write_byte(uint8_t * address, const uint8_t valu
 
 #else // PC
 
-#ifdef EEPROM_EMU_AVAILABLE
-#ifdef __APPLE__
-/* OS X */
-#define EEPROM __attribute__ ((section ("__eeprom, __data"), aligned(1)))	/**< EEPROM-Section */
-#else
-/* Linux und Windows */
-#define EEPROM __attribute__ ((section (".eeprom"), aligned(1)))			/**< EEPROM-Section */
-#endif
-#else
-/* keine EEPROM-Emulation */
-#define EEPROM
-#endif // EEPROM_EMU_AVAILABLE
-
-/**
- * Liest ein Byte aus dem EEPROM
- * \param *address	Adresse des zu lesenden Bytes im EEPROM
- * \return			Das zu lesende Byte
- */
-uint8_t ctbot_eeprom_read_byte(const uint8_t * address);
+#define EEPROM // Dummy
 
 /**
  * Schreibt ein Byte in das EEPROM
  * \param *address	Adresse des Bytes im EEPROM
  * \param value		Das zu schreibende Byte
  */
-void ctbot_eeprom_write_byte(uint8_t * address, const uint8_t value);
+static inline void ctbot_eeprom_write_byte(uint8_t * address, uint8_t value) {
+	*address = value;
+}
+
+/**
+ * Liest ein Byte aus dem EEPROM
+ * \param *address	Adresse des zu lesenden Bytes im EEPROM
+ * \return			Das zu lesende Byte
+ */
+static inline uint8_t ctbot_eeprom_read_byte(const uint8_t * address) {
+	return *address;
+}
 
 /**
  * Interne Funktion, um ein Byte in das EEPROM zu schreiben
@@ -181,17 +174,6 @@ void ctbot_eeprom_write_byte(uint8_t * address, const uint8_t value);
 static inline void _eeprom_write_byte(uint8_t * address, const uint8_t value) {
 	ctbot_eeprom_write_byte(address, value);
 }
-
-/**
- * Diese Funktion initialisiert die EEPROM-Emulation. Sie sorgt fuer die Erstellung der
- * pc_eeprom.bin, falls nicht vorhanden und erstellt ueber eine Hilfsfunktion eine Adress-
- * konvertierungstabelle fuer die EEPROM-Adressen, wenn die benoetigten Daten vorliegen.
- * Statusinformationen werden ueber DEBUG_INFO angezeigt.
- * \param init	gibt an, ob das EEPROM mit Hilfer einer eep-Datei initialisiert werden soll (0 nein, 1 ja)
- * \return		0: alles ok, 1: Fehler
- */
-uint8_t init_eeprom_man(uint8_t init);
-
 #endif // MCU
 
 /**
