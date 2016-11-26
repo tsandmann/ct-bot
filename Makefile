@@ -56,10 +56,12 @@ MSG_DEVICE = Target device is $(DEVICE)
 
 # List C source files here. (C dependencies are automatically generated.)
 define SRCMCU
-	mcu/adc.c mcu/bootloader.c mcu/bot-2-linux.c mcu/bot-2-sim.c mcu/cmps03.c mcu/delay.c \
+	mcu/adc.c mcu/bootloader.c mcu/bot-2-linux.c mcu/bot-2-sim.c mcu/cmps03.c mcu/cppsupport.cpp mcu/delay.c \
 	mcu/display.c mcu/ena.c mcu/i2c.c mcu/init-low.c mcu/ir-rc5.c mcu/led.c \
-	mcu/mmc.c mcu/motor-low.c mcu/mouse.c mcu/os_scheduler.c mcu/os_thread.c mcu/sensor-low.c mcu/shift.c \
-	mcu/sp03.c mcu/srf10.c mcu/timer-low.c mcu/twi.c mcu/uart.c
+	mcu/mmc.c mcu/motor-low.c mcu/mouse.c mcu/os_scheduler.c mcu/os_thread.c mcu/sdcard_wrapper.cpp mcu/sdcard.cpp mcu/sensor-low.c mcu/shift.c \
+	mcu/sp03.c mcu/srf10.c mcu/timer-low.c mcu/twi.c mcu/uart.c \
+	mcu/SdFat/Print.cpp mcu/SdFat/FatLib/FatFile.cpp mcu/SdFat/FatLib/FatFileLFN.cpp mcu/SdFat/FatLib/FatFilePrint.cpp mcu/SdFat/FatLib/FatFileSFN.cpp \
+	mcu/SdFat/FatLib/FatVolume.cpp mcu/SdFat/FatLib/FmtNumber.cpp
 endef 
 
 define SRCPC
@@ -124,7 +126,7 @@ MATH_LIB = -lm
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
-EXTRAINCDIRS = . ./include ./include/bot-logic
+EXTRAINCDIRS = . ./include ./include/bot-logic ./mcu/SdFat
 ifeq ($(DEVICE),MCU)
 	# Assembler flags.
 	#  -Wa,...:   tell GCC to pass this to the assembler.
@@ -135,6 +137,9 @@ ifeq ($(DEVICE),MCU)
 	#             files -- see avr-libc docs [FIXME: not yet described there]
 	# ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs 
 	ASFLAGS =
+	
+	CFLAGS = -ffunction-sections -fdata-sections
+	CXXFLAGS = -fno-exceptions -fno-threadsafe-statics -felide-constructors -ffunction-sections -fdata-sections
 	
 	
 	#Additional libraries.
@@ -159,8 +164,8 @@ ifeq ($(DEVICE),MCU)
 	# Linker flags.
 	#  -Wl,...:     tell GCC to pass this to linker.
 	LDFLAGS = -mmcu=$(MCU)
-	LDFLAGS += -Wl,--section-start=.bootloader=0x7C00
-	LDFLAGS += -Wl,--whole-archive
+	LDFLAGS += -Wl,--section-start=.bootloader=0x1F800
+	LDFLAGS += -Wl,--whole-archive -Wl,--gc-sections
 	
 	LIBS = -Wl,--no-whole-archive 
 	LIBS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
@@ -209,6 +214,7 @@ ifeq ($(DEVICE),MCU)
 	AR = avr-ar
 	AVRDUDE = avrdude
 	CC = avr-gcc
+	CXX = avr-g++
 	NM = avr-nm
 	OBJCOPY = avr-objcopy
 	OBJDUMP = avr-objdump
@@ -228,6 +234,7 @@ else
 	AR = ar
 	CC = gcc
 	#CC = clang
+	CXX = g++
 	RANLIB = ranlib
 	SIZE = size
 	
@@ -252,6 +259,7 @@ COPY = cp
 # c99   - ISO C99 standard (not yet fully implemented)
 # gnu99 - c99 plus GCC extensions
 CSTANDARD = 
+CXXSTANDARD = -std=gnu++11
 
 
 # Compiler flags.
@@ -261,9 +269,8 @@ CSTANDARD =
 #  -Wall...:     warning level
 #  -Wa,...:      tell GCC to pass this to the assembler.
 #    -adhlns...: create assembler listing
-CFLAGS = -g3
+CFLAGS += -g3
 CFLAGS += -O$(OPT)
-CFLAGS += -pipe
 CFLAGS += -fmessage-length=0
 CFLAGS += -Wall -Wstrict-prototypes
 CFLAGS += -Wextra -Wmissing-prototypes -Wmissing-declarations
@@ -275,6 +282,17 @@ ifeq ($(DEVICE),MCU)
 endif
 ifdef SAVE_TEMPS
 CFLAGS += -save-temps -fverbose-asm -dA
+endif
+
+CXXFLAGS += -g3
+CXXFLAGS += -O$(OPT)
+CXXFLAGS += -fmessage-length=0
+CXXFLAGS += -Wall -Wextra -Wmissing-declarations
+CXXFLAGS += -MMD
+CXXFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
+CXXFLAGS += $(CXXSTANDARD)
+ifdef SAVE_TEMPS
+CXXFLAGS += -save-temps -fverbose-asm -dA
 endif
 
 ASFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
@@ -305,7 +323,8 @@ MSG_CREATING_LIBRARY = Creating library:
 
 
 # Define all object files.
-OBJLIBRARY = $(ASRC:.S=.o) $(SRCLIBRARY:.c=.o)
+OBJLIBRARY_ = $(patsubst %.S,%.o,$(ASRC)) $(patsubst %.c,%.o,$(SRCLIBRARY)) 
+OBJLIBRARY = $(patsubst %.cpp,%.o,$(OBJLIBRARY_)) 
 OBJBEHAVIOUR = $(SRCBEHAVIOUR:.c=.o)
 
 # Define all listing files.
@@ -320,9 +339,11 @@ GENDEPFLAGS = -MP -MT"$(*F).o" -MF".dep/$(@F).d"
 # Add target processor to flags.
 ifeq ($(DEVICE),MCU)
 	ALL_CFLAGS = -mmcu=$(MCU) $(CFLAGS) $(GENDEPFLAGS) -D$(DEVICE)
+	ALL_CXXFLAGS = -mmcu=$(MCU) $(CXXFLAGS) $(GENDEPFLAGS) -D$(DEVICE)
 	ALL_ASFLAGS = -mmcu=$(MCU) -x assembler-with-cpp $(ASFLAGS) -D$(DEVICE)
 else
 	ALL_CFLAGS = $(CFLAGS) $(GENDEPFLAGS) -D$(DEVICE)
+	ALL_CXXFLAGS = $(CXXFLAGS) $(GENDEPFLAGS) -D$(DEVICE)
 	ALL_ASFLAGS = -x assembler-with-cpp $(ASFLAGS) -D$(DEVICE)
 endif
 
@@ -438,7 +459,7 @@ $(LIBRARY): $(OBJLIBRARY)
 $(OUTPUT): $(OBJBEHAVIOUR) $(LIBRARY)
 	@echo
 	@echo $(MSG_LINKING) $@
-	$(CC) --output $@ $(LDFLAGS) $^ $(LIBS)
+	$(CXX) --output $@ $(LDFLAGS) $^ $(LIBS)
 
 
 # Compile: create object files from C source files.
@@ -447,10 +468,18 @@ $(OUTPUT): $(OBJBEHAVIOUR) $(LIBRARY)
 	@echo $(MSG_COMPILING) $<
 	$(CC) -c $(ALL_CFLAGS) $< -o $@ 
 
+%.o : %.cpp
+	@echo
+	@echo $(MSG_COMPILING) $<
+	$(CXX) -c $(ALL_CXXFLAGS) $< -o $@ 
+
 
 # Compile: create assembler files from C source files.
 %.s : %.c
 	$(CC) -S $(ALL_CFLAGS) $< -o $@
+	
+%.s : %.cpp
+	$(CXX) -S $(ALL_CXXFLAGS) $< -o $@
 
 
 # Assemble: create object files from assembler source files.
@@ -479,29 +508,8 @@ clean_list :
 	$(REMOVE) $(TARGET).sym
 	$(REMOVE) $(TARGET).lnk
 	$(REMOVE) $(TARGET).lss
-	$(REMOVE) $(LIBRARY)
-	$(REMOVE) $(OBJBEHAVIOUR)
-	$(REMOVE) $(ASRC:.S=.o)
-	$(REMOVE) $(SRCHIGHLEVEL:.c=.o)
-	$(REMOVE) $(SRCUI:.c=.o)
-	$(REMOVE) $(SRCMCU:.c=.o)
-	$(REMOVE) $(SRCPC:.c=.o)
 	$(REMOVE) $(LST)
-	$(REMOVE) $(notdir $(SRCBEHAVIOUR:.c=.s))
-	$(REMOVE) $(notdir $(SRCHIGHLEVEL:.c=.s))
-	$(REMOVE) $(notdir $(SRCUI:.c=.s))
-	$(REMOVE) $(notdir $(SRCMCU:.c=.s))
-	$(REMOVE) $(notdir $(SRCPC:.c=.s))
-	$(REMOVE) $(notdir $(SRCBEHAVIOUR:.c=.i))
-	$(REMOVE) $(notdir $(SRCHIGHLEVEL:.c=.i))
-	$(REMOVE) $(notdir $(SRCUI:.c=.i))
-	$(REMOVE) $(notdir $(SRCMCU:.c=.i))
-	$(REMOVE) $(notdir $(SRCPC:.c=.i))
-	$(REMOVE) $(SRCBEHAVIOUR:.c=.d)
-	$(REMOVE) $(SRCHIGHLEVEL:.c=.d)
-	$(REMOVE) $(SRCUI:.c=.d)
-	$(REMOVE) $(SRCMCU:.c=.d)
-	$(REMOVE) $(SRCPC:.c=.d)
+	$(REMOVE) $(OBJBEHAVIOUR) $(OBJLIBRARY) $(LIBRARY)
 	$(REMOVE) .dep/*
 
 
