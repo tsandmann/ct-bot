@@ -327,9 +327,6 @@ OBJLIBRARY_ = $(patsubst %.S,%.o,$(ASRC)) $(patsubst %.c,%.o,$(SRCLIBRARY))
 OBJLIBRARY = $(patsubst %.cpp,%.o,$(OBJLIBRARY_)) 
 OBJBEHAVIOUR = $(SRCBEHAVIOUR:.c=.o)
 
-# Define all listing files.
-LST = $(ASRC:.S=.lst) $(SRC:.c=.lst)
-
 
 # Compiler flags to generate dependency files.
 GENDEPFLAGS = -MP -MT"$(*F).o" -MF".dep/$(@F).d"
@@ -393,6 +390,8 @@ size:
 # Display compiler version information.
 gccversion : 
 	@$(CC) --version
+	@echo
+	@$(CXX) --version
 
 
 # Program the device.  
@@ -508,7 +507,6 @@ clean_list :
 	$(REMOVE) $(TARGET).sym
 	$(REMOVE) $(TARGET).lnk
 	$(REMOVE) $(TARGET).lss
-	$(REMOVE) $(LST)
 	$(REMOVE) $(OBJBEHAVIOUR) $(OBJLIBRARY) $(LIBRARY)
 	$(REMOVE) .dep/*
 
