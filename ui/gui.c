@@ -179,12 +179,12 @@ void gui_keypad_request(void (* callback)(char * result), uint8_t mode, uint8_t 
 	keypad_row = row;
 	keypad_col = col;
 	keypad_mode = mode;
-#if __GNUC__ >= 6
+#if __clang__ != 1 && GCC_VERSION >= 60000
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
 	keypad_result = keypad_buffer - 1;
-#if __GNUC__ >= 6
+#if __clang__ != 1 && GCC_VERSION >= 60000
 #pragma GCC diagnostic pop
 #endif
 }
