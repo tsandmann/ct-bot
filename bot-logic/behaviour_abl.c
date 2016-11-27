@@ -738,12 +738,12 @@ void bot_abl(Behaviour_t * caller, const char * filename) {
 	}
 	switch_to_behaviour(caller, bot_abl_behaviour, BEHAVIOUR_OVERRIDE);
 	if_state = 0;
-#if __GNUC__ >= 6
+#if __clang__ != 1 && GCC_VERSION >= 60000
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
 	pForState = for_state - 1;
-#if __GNUC__ >= 6
+#if __clang__ != 1 && GCC_VERSION >= 60000
 #pragma GCC diagnostic pop
 #endif
 	abl_sp = ABL_STACK_SIZE - 1;
