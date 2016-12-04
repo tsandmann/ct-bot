@@ -120,6 +120,8 @@
 #define CMD_SIM_ADDR	0xFE	/**< "Bot"-Adresse des Sim */
 #define CMD_IGNORE_ADDR	0xFD	/**< ignoriere Bot-Adresse */
 
+/** Kommunikations-Adresse des Bots (EEPROM) */
+extern uint8_t bot_address;
 
 #ifdef COMMAND_AVAILABLE
 /** Request Teil eines Kommandos */
@@ -262,9 +264,6 @@ int8_t command_evaluate(void);
  * \param *command Zeiger auf das anzuzeigende Kommando
  */
 void command_display(command_t * command);
-
-/** Kommunikations-Adresse des Bots (EEPROM) */
-extern uint8_t bot_address;
 
 #ifdef BOT_2_SIM_AVAILABLE
 /**

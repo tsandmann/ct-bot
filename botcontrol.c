@@ -167,6 +167,12 @@ void post_behaviour(void) {
 #endif // OS_AVAILABLE
 }
 
+extern uint8_t gui_keypad_table[][5];
+extern uint8_t pwmSlow[];
+extern uint16_t goto_pos_err[];
+extern uint16_t turn_err[];
+extern char abl_eeprom_data[];
+
 /**
  * Faehrt den Bot sauber herunter
  */
@@ -196,4 +202,16 @@ void ctbot_shutdown(void) {
 	ENA_off(0xff);
 
 	ctbot_shutdown_low();
+
+
+	uint8_t tmp;
+	tmp = * (volatile uint8_t*) gui_keypad_table;
+	tmp = * (volatile uint8_t*) pwmSlow;
+	tmp = * (volatile uint8_t*) sensDistDataL;
+	tmp = * (volatile uint8_t*) sensDistDataR;
+	tmp = * (volatile uint8_t*) &bot_address;
+	tmp = * (volatile uint8_t*) goto_pos_err;
+	tmp = * (volatile uint8_t*) turn_err;
+	tmp = * (volatile uint8_t*) abl_eeprom_data;
+	(void) tmp;
 }

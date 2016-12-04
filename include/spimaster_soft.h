@@ -277,7 +277,7 @@ private:
 			"ldi r18, 2		; r18 = 2				\n\t"
 			"clr r27		; r27 = 0				\n\t"
 			"1:										\n\t"
-			"ld r25, Y+		; load byte from SRAM 	\n\t"
+			"ld r25, Z+		; load byte from SRAM 	\n\t"
 			"bst r25, 7		; send bit 7			\n\t"
 			"bld r26, %2							\n\t"
 			"out %0, r26	; send data				\n\t"
@@ -319,7 +319,7 @@ private:
 			"rjmp 1b								\n\t"
 			"3:										\n\t"
 			"sbi %0, %2		; DO high					"
-			:: "M" (_SFR_IO_ADDR(PORTB)) /* %0 */, "M" (_BV(PB7)) /* %1 */, "M" (PB5) /* %2 */,	"M" (PB7) /* %3 */, "y" (buf) /* %4 */, "M" (_BV(PB3)) /* %5 */
+			:: "M" (_SFR_IO_ADDR(PORTB)) /* %0 */, "M" (_BV(PB7)) /* %1 */, "M" (PB5) /* %2 */,	"M" (PB7) /* %3 */, "z" (buf) /* %4 */, "M" (_BV(PB3)) /* %5 */
 			: "r18", "r25", "r26", "r27", "memory"
 		);
 	}

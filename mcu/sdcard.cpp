@@ -32,6 +32,8 @@
 #include "sdcard.h"
 #include "sdcard_wrapper.h"
 
+#ifdef MMC_AVAILABLE
+
 #define DEBUG_SDFAT
 
 #ifdef LOG_MMC_AVAILABLE
@@ -609,5 +611,6 @@ bool SdCard::single_block_erasable() {
 	return read_csd(&csd) ? csd.v1.erase_blk_en : false;
 }
 
-#endif // MCU
 #endif // SDCARD_ERASE_SUPPORT
+#endif // MMC_AVAILABLE
+#endif // MCU

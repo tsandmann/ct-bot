@@ -124,12 +124,19 @@ static inline uint8_t sdfat_c_sync_vol(void) {
 	return sdfat_sync_vol(p_sd);
 }
 #endif // SDFAT_AVAILABLE
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 #endif // MMC_AVAILABLE
 #endif // MCU
 
 
 #ifdef PC
 #ifdef SDFAT_AVAILABLE
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 typedef void* pFatFile;
 typedef void* pSdFat;
 
@@ -172,10 +179,11 @@ static inline uint8_t sdfat_c_rename(const char* old_path, const char* new_path)
 static inline uint8_t sdfat_c_sync_vol(void) {
 	return sdfat_sync_vol(NULL);
 }
-#endif // SDFAT_AVAILABLE
-#endif // PC
 
 #ifdef __cplusplus
 }
 #endif // __cplusplus
+#endif // SDFAT_AVAILABLE
+#endif // PC
+
 #endif /* INCLUDE_SDFAT_FS_H_ */

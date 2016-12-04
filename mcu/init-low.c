@@ -145,9 +145,11 @@ void ctbot_init_low_1st(int argc, char * argv[]) {
 
 	_delay_ms(100);
 
-#ifdef DISPLAY_RESET_INFO_AVAILABLE
 	uint8_t resets = (uint8_t) (ctbot_eeprom_read_byte(&resetsEEPROM) + 1);
+#ifdef DISPLAY_RESET_INFO_AVAILABLE
 	ctbot_eeprom_write_byte(&resetsEEPROM, resets);
+#else
+	(void) resets;
 #endif // DISPLAY_RESET_INFO_AVAILABLE
 
 #ifdef OS_AVAILABLE
