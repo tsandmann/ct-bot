@@ -156,13 +156,13 @@
 									<listOptionValue builtIn="false" value="PC"/>
 								</option>
 								<option id="gnu.c.compiler.option.misc.other.156999295" name="Other flags" superClass="gnu.c.compiler.option.misc.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -flto -Wextra -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations" valueType="string"/>
-								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.354570131" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.more" valueType="enumerated"/>
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.354570131" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.1936367648" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.dialect.std.1176824901" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.c11" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.809879335" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1524222260" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
-								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.73666421" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.73666421" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.2077322762" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.dialect.std.1759687793" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.dialect.flags.1365020864" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++1y" valueType="string"/>
@@ -182,10 +182,10 @@
 								</inputType>
 							</tool>
 							<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1883163242" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
-								<option id="gnu.cpp.link.option.libs.2079051916" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+								<option id="gnu.cpp.link.option.libs.2079051916" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
-								<option id="gnu.cpp.link.option.flags.505705149" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-flto" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.505705149" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-O3 -flto" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1291926494" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -193,7 +193,7 @@
 							</tool>
 							<tool command="gcc" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1816835863" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
 								<option id="gnu.both.asm.option.flags.131722941" name="Assembler flags" superClass="gnu.both.asm.option.flags" useByScannerDiscovery="false" value="-x assembler-with-cpp -c -DPC -flto" valueType="string"/>
-								<option id="gnu.both.asm.option.include.paths.828003147" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+								<option id="gnu.both.asm.option.include.paths.828003147" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 								</option>
@@ -256,7 +256,7 @@
 								</inputType>
 							</tool>
 							<tool command="clang++" id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base.165359080" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base">
-								<option id="macosx.cpp.link.option.flags.2100559431" name="Linker flags" superClass="macosx.cpp.link.option.flags" useByScannerDiscovery="false" value="-flto" valueType="string"/>
+								<option id="macosx.cpp.link.option.flags.2100559431" name="Linker flags" superClass="macosx.cpp.link.option.flags" useByScannerDiscovery="false" value="-O3 -flto" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.70661007" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -264,7 +264,7 @@
 							</tool>
 							<tool command="clang" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.macosx.base.480343457" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.macosx.base">
 								<option id="gnu.both.asm.option.flags.393292857" name="Assembler flags" superClass="gnu.both.asm.option.flags" useByScannerDiscovery="false" value="-x assembler-with-cpp -c -DPC -flto" valueType="string"/>
-								<option id="gnu.both.asm.option.include.paths.1172841850" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+								<option id="gnu.both.asm.option.include.paths.1172841850" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 								</option>
@@ -285,6 +285,7 @@
 								<option id="gnu.cpp.compiler.option.dialect.flags.1213048320" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.2144064948" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.other.other.2049630967" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -Wmissing-declarations -flto" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.optimization.level.890757405" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1212685355" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool command="clang" errorParsers="org.eclipse.cdt.core.GCCErrorParser" id="cdt.managedbuild.tool.gnu.c.compiler.macosx.base.1782602418" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.base">
@@ -299,7 +300,7 @@
 								<option id="gnu.c.compiler.option.preprocessor.nostdinc.214383529" name="Do not search system directories (-nostdinc)" superClass="gnu.c.compiler.option.preprocessor.nostdinc" useByScannerDiscovery="false"/>
 								<option id="gnu.c.compiler.option.preprocessor.preprocess.1900470871" name="Preprocess only (-E)" superClass="gnu.c.compiler.option.preprocessor.preprocess" useByScannerDiscovery="false"/>
 								<option id="gnu.c.compiler.option.preprocessor.undef.symbol.1964657704" name="Undefined symbols (-U)" superClass="gnu.c.compiler.option.preprocessor.undef.symbol" useByScannerDiscovery="false"/>
-								<option id="gnu.c.compiler.option.optimization.level.45742687" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.more" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.optimization.level.45742687" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.optimization.flags.1776176965" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" useByScannerDiscovery="false"/>
 								<option id="gnu.c.compiler.option.debugging.level.473899774" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.other.1275562413" name="Other debugging flags" superClass="gnu.c.compiler.option.debugging.other" useByScannerDiscovery="false"/>
@@ -809,7 +810,7 @@
 									<listOptionValue builtIn="false" value="m"/>
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
-								<option id="gnu.cpp.link.option.flags.1979034246" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-flto" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.1979034246" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-O3 -flto" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1179715954" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -908,11 +909,11 @@
 								</inputType>
 							</tool>
 							<tool command="armv8l-linux-gnueabihf-gcc" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.287936320" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
-								<option id="gnu.cpp.link.option.libs.1642023756" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+								<option id="gnu.cpp.link.option.libs.1642023756" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
 									<listOptionValue builtIn="false" value="m"/>
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
-								<option id="gnu.cpp.link.option.flags.1923622329" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-flto" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.1923622329" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-O3 -flto" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.465958562" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -920,7 +921,7 @@
 							</tool>
 							<tool command="armv8l-linux-gnueabihf-gcc" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1571294472" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
 								<option id="gnu.both.asm.option.flags.1978411079" name="Assembler flags" superClass="gnu.both.asm.option.flags" useByScannerDiscovery="false" value="-mcpu=cortex-a53 -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -x assembler-with-cpp -c -DPC -flto" valueType="string"/>
-								<option id="gnu.both.asm.option.include.paths.244664196" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+								<option id="gnu.both.asm.option.include.paths.244664196" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 								</option>
