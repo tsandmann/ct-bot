@@ -51,7 +51,7 @@
 #define DISPLAY_AVAILABLE					/**< Display-Funktionen aktiv */
 #define KEYPAD_AVAILABLE					/**< Keypad-Eingabe vorhanden? */
 #define DISPLAY_MCU_AVAILABLE				/**< lokales Display (an ATmega) vorhanden */
-#define DISPLAY_REMOTE_AVAILABLE			/**< Sende LCD Anzeigedaten an den Simulator */
+//#define DISPLAY_REMOTE_AVAILABLE			/**< Sende LCD Anzeigedaten an den Simulator */
 //#define WELCOME_AVAILABLE					/**< kleiner Willkommensgruss */
 
 
@@ -77,8 +77,8 @@
 
 
 /* MMC-/SD-Karte als Speichererweiterung (Erweiterungsmodul) */
-#define MMC_AVAILABLE						/**< haben wir eine MMC/SD-Karte zur Verfuegung? */
-#define SDFAT_AVAILABLE						/**< Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf MMC/SD-Karte */
+//#define MMC_AVAILABLE						/**< haben wir eine MMC/SD-Karte zur Verfuegung? */
+//#define SDFAT_AVAILABLE						/**< Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf MMC/SD-Karte */
 
 
 /* Hardware-Treiber */
@@ -164,7 +164,7 @@
 
 #if defined MCU && defined BOT_2_RPI_AVAILABLE
 #define UART_AVAILABLE
-#define COMMAND_AVAILABLE
+//#define COMMAND_AVAILABLE
 
 #undef BOT_2_BOT_AVAILABLE
 #undef BOT_2_SIM_AVAILABLE

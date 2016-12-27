@@ -25,6 +25,7 @@
  */
 
 #include "ct-Bot.h"
+#undef BOT_2_RPI_AVAILABLE // disabled for new serial protocol (see serial_protocol.h)
 #if defined MCU && defined BOT_2_RPI_AVAILABLE
 
 #include "command.h"

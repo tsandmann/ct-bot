@@ -259,6 +259,8 @@ uint8_t display_flash_puts(const char * text) {
 	while ((tmp = (char) pgm_read_byte(ptr++)) != 0 && len < DISPLAY_LENGTH) {
 #ifdef DISPLAY_MCU_AVAILABLE
 		display_data(tmp);
+#else
+		(void) tmp;
 #endif
 		++len;
 	}
@@ -281,11 +283,12 @@ uint8_t display_flash_puts(const char * text) {
 		cmd_functions.write(&tmp, 1);
 	}
 	os_exitCS();
+#else
+	(void) ptr;
 #endif // DISPLAY_REMOTE_AVAILABLE
 #endif // DISPLAY_MCU_AVAILABLE || DISPLAY_REMOTE_AVAILABLE
 
-	(void) ptr;
-	(void) tmp;
+	(void) text;
 
 	return len;
 }

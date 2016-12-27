@@ -368,7 +368,7 @@
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="elf" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="Realer Bot mit ATmega644" errorParsers="" id="cdt.managedbuild.config.gnu.exe.debug.1197043799.1823427091.854831847.162987371" name="Debug-MCU-m644" parent="cdt.managedbuild.config.gnu.exe.debug" postannouncebuildStep="Post-build for AVR" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size -C --mcu=atmega644 ct-Bot.elf | grep &quot;bytes&quot;; avr-objdump -t ct-Bot.elf | grep &quot;O \.eeprom&quot; &gt;  eeprom_mcu.map">
+				<configuration artifactExtension="elf" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="Realer Bot mit ATmega644" errorParsers="" id="cdt.managedbuild.config.gnu.exe.debug.1197043799.1823427091.854831847.162987371" name="Debug-MCU-m644" parent="cdt.managedbuild.config.gnu.exe.debug" postannouncebuildStep="Post-build for AVR" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size -C --mcu=atmega644 ct-Bot.elf | grep &quot;bytes&quot;">
 					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.1197043799.1823427091.854831847.162987371." name="/" resourcePath="">
 						<toolChain errorParsers="" id="cdt.managedbuild.toolchain.gnu.exe.debug.743522646" name="GCC Tool Chain" nonInternalBuilderId="cdt.managedbuild.target.gnu.builder.exe.debug" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.MachO64;org.eclipse.cdt.core.PE;org.eclipse.cdt.core.GNU_ELF" id="cdt.managedbuild.target.gnu.platform.exe.debug.1660446662" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
@@ -447,7 +447,7 @@
 								</inputType>
 							</tool>
 							<tool command="avr-g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1313328474" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
-								<option id="gnu.cpp.link.option.libs.1097732155" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+								<option id="gnu.cpp.link.option.libs.1097732155" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
 									<listOptionValue builtIn="false" value="m"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.948849863" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-mmcu=atmega644 -Wl,--section-start=.bootloader=0xF800 -Wl,--gc-sections" valueType="string"/>
@@ -458,7 +458,7 @@
 							</tool>
 							<tool command="avr-gcc" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.103580297" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
 								<option id="gnu.both.asm.option.flags.797773408" name="Assembler flags" superClass="gnu.both.asm.option.flags" useByScannerDiscovery="false" value="-x assembler-with-cpp -c -mmcu=atmega644 -DMCU" valueType="string"/>
-								<option id="gnu.both.asm.option.include.paths.575014902" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+								<option id="gnu.both.asm.option.include.paths.575014902" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 								</option>
@@ -497,7 +497,7 @@
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="elf" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="Realer Bot mit ATmega644P" errorParsers="org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator" id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.713113437" name="Debug-MCU-m644p" parent="cdt.managedbuild.config.gnu.exe.debug" postannouncebuildStep="Post-build for AVR" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size -C --mcu=atmega644p ct-Bot.elf | grep &quot;bytes&quot;; avr-objdump -t ct-Bot.elf | grep &quot;O \.eeprom&quot; &gt;  eeprom_mcu.map" preannouncebuildStep="" prebuildStep="">
+				<configuration artifactExtension="elf" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="Realer Bot mit ATmega644P" errorParsers="org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator" id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.713113437" name="Debug-MCU-m644p" parent="cdt.managedbuild.config.gnu.exe.debug" postannouncebuildStep="Post-build for AVR" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size -C --mcu=atmega644p ct-Bot.elf | grep &quot;bytes&quot;" preannouncebuildStep="" prebuildStep="">
 					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.713113437." name="/" resourcePath="">
 						<toolChain errorParsers="" id="cdt.managedbuild.toolchain.gnu.exe.debug.442076656" name="GCC Tool Chain" nonInternalBuilderId="cdt.managedbuild.target.gnu.builder.exe.debug" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.MachO64;org.eclipse.cdt.core.PE;org.eclipse.cdt.core.GNU_ELF" id="cdt.managedbuild.target.gnu.platform.exe.debug.1593374653" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
@@ -576,7 +576,7 @@
 								</inputType>
 							</tool>
 							<tool command="avr-g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1454870777" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
-								<option id="gnu.cpp.link.option.libs.51012477" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+								<option id="gnu.cpp.link.option.libs.51012477" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
 									<listOptionValue builtIn="false" value="m"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.310151771" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-mmcu=atmega644p -Wl,--section-start=.bootloader=0xF800 -Wl,--gc-sections " valueType="string"/>
@@ -587,7 +587,7 @@
 							</tool>
 							<tool command="avr-gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.440060863" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
 								<option id="gnu.both.asm.option.flags.1100541118" name="Assembler flags" superClass="gnu.both.asm.option.flags" useByScannerDiscovery="false" value="-x assembler-with-cpp -c -mmcu=atmega644p -DMCU" valueType="string"/>
-								<option id="gnu.both.asm.option.include.paths.1181362699" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+								<option id="gnu.both.asm.option.include.paths.1181362699" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 								</option>
@@ -623,7 +623,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="elf" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="Realer Bot mit ATmega1284P" errorParsers="org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator" id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988" name="Debug-MCU-m1284p" parent="cdt.managedbuild.config.gnu.exe.debug" postannouncebuildStep="Post-build for AVR" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size -C --mcu=atmega1284p ct-Bot.elf | grep &quot;bytes&quot;; avr-objdump -t ct-Bot.elf | grep &quot;O \.eeprom&quot; &gt;  eeprom_mcu.map" preannouncebuildStep="" prebuildStep="">
+				<configuration artifactExtension="elf" artifactName="ct-Bot" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="Realer Bot mit ATmega1284P" errorParsers="org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser;org.eclipse.cdt.core.GmakeErrorParser;org.eclipse.cdt.core.CWDLocator" id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988" name="Debug-MCU-m1284p" parent="cdt.managedbuild.config.gnu.exe.debug" postannouncebuildStep="Post-build for AVR" postbuildStep="avr-objcopy -O ihex -R .eeprom ct-Bot.elf ct-Bot.hex; avr-objcopy -j .eeprom --set-section-flags=.eeprom=&quot;alloc,load&quot; --change-section-lma .eeprom=0 -O ihex ct-Bot.elf ct-Bot.eep; avr-size -C --mcu=atmega1284p ct-Bot.elf | grep &quot;bytes&quot;" preannouncebuildStep="" prebuildStep="">
 					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988." name="/" resourcePath="">
 						<toolChain errorParsers="" id="cdt.managedbuild.toolchain.gnu.exe.debug.1159595898" name="GCC Tool Chain" nonInternalBuilderId="cdt.managedbuild.target.gnu.builder.base" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.MachO64;org.eclipse.cdt.core.PE;org.eclipse.cdt.core.GNU_ELF" id="cdt.managedbuild.target.gnu.platform.exe.debug.1518976846" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
@@ -670,10 +670,11 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include/bot-logic&quot;"/>
-									<listOptionValue builtIn="false" value="../mcu/SdFat"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/contrib/c++/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/mcu/SdFat&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.699476605" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.dialect.flags.1323880319" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++11" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.dialect.flags.1323880319" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++14" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1636021516" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="MCU"/>
 								</option>
@@ -702,11 +703,14 @@
 								</inputType>
 							</tool>
 							<tool command="avr-g++" id="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug.1772316660" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.exe.debug">
-								<option id="gnu.cpp.link.option.libs.1049550861" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+								<option id="gnu.cpp.link.option.libs.1049550861" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" useByScannerDiscovery="false" valueType="libs">
+									<listOptionValue builtIn="false" value="stdc++"/>
 									<listOptionValue builtIn="false" value="m"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.1455176128" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-mmcu=atmega1284p -Wl,--section-start=.bootloader=0x1F800 -Wl,--gc-sections" valueType="string"/>
-								<option id="gnu.cpp.link.option.paths.49060165" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths"/>
+								<option id="gnu.cpp.link.option.paths.49060165" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/contrib/c++&quot;"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1204586601" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -714,7 +718,7 @@
 							</tool>
 							<tool command="avr-gcc" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.tool.gnu.assembler.exe.debug.1281420680" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.exe.debug">
 								<option id="gnu.both.asm.option.flags.1250783110" name="Assembler flags" superClass="gnu.both.asm.option.flags" useByScannerDiscovery="false" value="-x assembler-with-cpp -c -mmcu=atmega1284p -DMCU" valueType="string"/>
-								<option id="gnu.both.asm.option.include.paths.408309543" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+								<option id="gnu.both.asm.option.include.paths.408309543" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 								</option>
@@ -724,6 +728,7 @@
 						</toolChain>
 					</folderInfo>
 					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988.983318430" name="sdfat_fs.h" rcbsApplicability="disable" resourcePath="include/sdfat_fs.h" toolsToInvoke=""/>
+					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988.833863504" name="debug.h" rcbsApplicability="disable" resourcePath="include/logging.h" toolsToInvoke=""/>
 					<sourceEntries>
 						<entry excluding="Documentation|bot-logic/basic|contrib|doc|bot-logic/abl" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
@@ -993,10 +998,20 @@
 			<content-type-mapping configuration="" content-type="org.eclipse.cdt.core.cSource" language="org.eclipse.cdt.core.gcc"/>
 			<content-type-mapping configuration="" content-type="org.eclipse.cdt.core.cxxHeader" language="org.eclipse.cdt.core.g++"/>
 			<content-type-mapping configuration="" content-type="org.eclipse.cdt.core.cxxSource" language="org.eclipse.cdt.core.g++"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/client_server_base.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/crc_engine.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/debug.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/ll_command.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/logging.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/sdcard.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/sdcard_wrapper.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/sdfat_fs.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/sdinfo.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/serial_conncection_avr.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/serial_connection.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/serial_protocol.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/serial_protocol_clock.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/serial_protocol_handler.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/spimaster.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/spimaster_soft.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FatApiConstants.h"/>
