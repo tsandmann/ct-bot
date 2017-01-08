@@ -284,7 +284,14 @@ void bot_calibrate_sharps_display(void) {
 		display_puts("\"Mute\" bestaetigen");
 
 		/* Keyhandler */
+#ifdef RC5_CODE_MUTE
 		if (RC5_Code == RC5_CODE_MUTE) {
+#elif defined RC5_CODE_OK
+		if (RC5_Code == RC5_CODE_OK) {
+#else
+#error "Weder RC5_CODE_MUTE noch RC5_CODE_OK vorhanden"
+			if (0) {
+#endif
 			userinput_done = 1;
 			RC5_Code = 0;
 		}

@@ -136,6 +136,7 @@
 
 #define RC5_CODE_I_II		RC5_CODE_SOURCE
 #define RC5_CODE_TV_VCR		RC5_CODE_FULL
+#define RC5_CODE_MUTE		RC5_CODE_FULL
 #endif // RC_HAVE_HAUPPAUGE_WINTV
 
 /*
@@ -184,7 +185,6 @@
 #define RC5_CODE_MENU		(0x17CD & RC5_MASK)		/**< Taste Menue */
 #define RC5_CODE_GO			(0x17FB & RC5_MASK)		/**< Taste GO */
 
-#define RC5_CODE_I_II		RC5_CODE_SELECT
 #define RC5_CODE_TV_VCR		RC5_CODE_VIEW
 #define RC5_CH_PLUS			RC5_CODE_BWD		/**< Taste fuer Transprtfach schliessen */
 #define RC5_CH_MINUS 		RC5_CODE_FWD		/**< Taste fuer Transportfach oeffnen */
@@ -393,6 +393,7 @@
 #define RC5_CODE_YELLOW	(0x1032 & RC5_MASK)		/**< Taste PLAY / Gelb */
 #define RC5_CODE_BLUE	(0x1034 & RC5_MASK)		/**< Taste FFWD / Blau */
 #define RC5_CODE_TV_VCR	(0x100D	& RC5_MASK)		/**< Taste Mute */
+#define RC5_CODE_MUTE	RC5_CODE_TV_VCR
 #endif // RC_HAVE_LIFETEC_LT3607
 
 /*
@@ -461,10 +462,10 @@
 #define RC5_CH_MINUS	(0x1021 & RC5_MASK) /**< Ch - Taste - rc5.c */
 #define RC5_CODE_I_II	(0x100A & RC5_MASK) /**< Taste I/II - rc5.c */
 #define RC5_CODE_TV_VCR	(0x1038 & RC5_MASK) /**< Tase AV - rc5.c */
-#define RC5_CODE_DOT	RC5_CODE_YELLOW	/**< Gelbe Taste - gui.c */
-#define RC5_CODE_MUTE	RC5_CODE_ENTER	/**< Enter Taste - behaviour_calbirate_sharps.c */
+#define RC5_CODE_DOT	RC5_CODE_YELLOW		/**< Gelbe Taste - gui.c */
+#define RC5_CODE_ENTER	(0x0017 & RC5_MASK) /**< Enter-Taste */
+#define RC5_CODE_MUTE	RC5_CODE_ENTER		/**< Enter Taste - behaviour_calbirate_sharps.c */
 /* nicht verwendete Codes: */
-//#define RC5_CODE_ENTER	(0x0017 & RC5_MASK) /**< Enter-Taste */
 //#define RC5_CODE_AV		(0x1038 & RC5_MASK) /**< Taste AV */
 //#define RC5_VOL_PLUS		(0x1010 & RC5_MASK) /**< Vol + Taste */
 //#define RC5_VOL_MINUS		(0x1011 & RC5_MASK) /**< Vol - Taste */
