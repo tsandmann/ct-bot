@@ -20,11 +20,6 @@
 /**
  * \file 	rc5.c
  * \brief 	RC5-Fernbedienung / Basic-Tasten-Handler
- *
- * Um RC5-Codes fuer eine eigene Fernbedienung anzupassen, reicht es diese
- * in eine Header-Datei auszulagern und anstatt der rc5code.h einzubinden.
- * Die Maskierung fuer die Auswertung der Codes nicht vergessen!
- *
  * \author 	Benjamin Benz (bbe@heise.de)
  * \author 	Timo Sandmann (mail@timosandmann.de)
  * \date 	12.02.2007
