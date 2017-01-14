@@ -318,6 +318,19 @@
 /*
  * Fernbedienung Technisat_TTS35AI (Receiver Digit CIP)
  * \author Joerg Bullmann
+ *
+ * Mapping auf HQ_RC_UNIVERS29_334:
+ * 11		-> -/--
+ * 12		-> A/B
+ * Play		-> OK
+ * Dot		-> SFI
+ * I/II		-> Exit
+ * TV/VCR	-> Info
+ * CH*P/C	-> TV
+ * Vol+		-> Hilfe
+ * Vol-		-> TXT
+ * Ch+		-> Stop
+ * Ch-		-> Ext
  */
 #ifdef RC_HAVE_Technisat_TTS35AI
 #define RC5_CODE_PWR	(0x128C & RC5_MASK)		/**< Taste an/aus */
@@ -360,7 +373,7 @@
 #define RC5_CODE_DOT	RC5_CODE_SFI			/**< Taste SFI als DOT */
 #define RC5_CODE_I_II	RC5_CODE_EXIT			/**< Taste Exit als I/II */
 #define RC5_CODE_TV_VCR	RC5_CODE_INFO			/**< Taste Info als TV/VCR */
-#define RC5_CODE_CH_PC	RC5_CODE_TV				/**< Taste TV als PH*P/C */
+#define RC5_CODE_CH_PC	RC5_CODE_TV				/**< Taste TV als CH*P/C */
 
 #define RC5_CODE_MENU	(0x0292 & RC5_MASK)		/**< Taste Menu */
 #define RC5_CODE_HELP	(0x128F & RC5_MASK)		/**< Taste Hilfe */
