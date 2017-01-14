@@ -107,12 +107,12 @@
 
 /* Fernbedienung */
 #ifdef MCU
-#define RC_HAVE_HQ_RC_UNIVERS29_334	/**< Dies ist die Standard-Fernbedienung */
+#define RC_HAVE_HQ_RC_UNIVERS29_334 /**< Dies ist die Standard-Fernbedienung */
+//#define RC_HAVE_VIVANCO_UR89_TV_CODE_089
 //#define RC_HAVE_HAUPPAUGE_WINTV
 //#define RC_HAVE_HAUPPAUGE_MediaMPV
 //#define RC_HAVE_CONRAD_PROMO8
 //#define RC_HAVE_VIVANCO_UR89
-//#define RC_HAVE_VIVANCO_UR89_TV_CODE_089
 //#define RC_HAVE_Technisat_TTS35AI
 //#define RC_HAVE_LIFETEC_LT3607
 //#define RC_HAVE_TOTAL_CONTROL
