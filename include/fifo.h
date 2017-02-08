@@ -34,6 +34,7 @@
 
 #include "ct-Bot.h"
 #include "os_thread.h"
+#include "log.h"
 
 #ifndef LOG_AVAILABLE
 #undef DEBUG_FIFO
