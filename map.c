@@ -1409,7 +1409,7 @@ void map_2_sim_main(void) {
 		os_signal_set(&map_2_sim_signal);
 		uint8_t i;
 		int8_t j;
-		int8_t count = (int8_t) (size / sizeof(cache_copy[0])); // Anzahl der Eintraege
+		const int8_t count = (int8_t) (size / sizeof(cache_copy[0])); // Anzahl der Eintraege
 #ifdef MAP_2_SIM_DEBUG
 		if (count > max_entries) {
 			max_entries = count;
@@ -1418,7 +1418,7 @@ void map_2_sim_main(void) {
 #endif // MAP_2_SIM_DEBUG
 		for (i = 0; i < count; ++i) {
 			/* eingetragenen Block in der Liste der bereits Gesendeten suchen */
-			for (j = count; j > i; --j) {
+			for (j = count - 1; j > i; --j) {
 				if (cache_copy[i] == cache_copy[j]) {
 //					printf("ueberspringe Block %u\n", cache_copy[i]);
 					cache_copy[i] = 0;
