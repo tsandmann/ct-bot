@@ -46,6 +46,7 @@ void fifo_init(fifo_t * f, void * buffer, const uint8_t size) {
 	f->signal.value = 0; // Fifo leer
 #endif
 	f->overflow = 0;
+	f->locked = 0;
 #ifdef PC
 	pthread_mutex_init(&f->signal.mutex, NULL);
 #ifdef OS_AVAILABLE
@@ -69,13 +70,13 @@ void fifo_put_data(fifo_t * f, const void * data, uint8_t length) {
 	}
 	uint8_t space;
 	if (length > (space = (uint8_t) (f->size - f->count))) {
-		/* nicht genug Platz */
-		LOG_ERROR("FIFO 0x%08x overflow, size=%u", f, f->size);
-		f->overflow = 1;
-		return; // workaround race-condition
-
-#if 0
 		/* nicht genug Platz -> alte Daten rauswerfen */
+		f->overflow = 1;
+		LOG_DEBUG_FIFO("FIFO 0x%08x overflow, size=%u", f, f->size);
+		while (f->locked) {
+			os_thread_yield();
+		}
+
 		uint8_t to_discard = (uint8_t) (length - space);
 		LOG_DEBUG_FIFO("verwerfe %u Bytes in Fifo 0x%08x", to_discard, f);
 		LOG_DEBUG_FIFO(" size=%u, count=%u, length=%u", f->size, f->count, length);
@@ -103,9 +104,7 @@ void fifo_put_data(fifo_t * f, const void * data, uint8_t length) {
 #else
 		pthread_mutex_unlock(&f->signal.mutex);
 #endif
-#endif // workaround race-condition
 	}
-
 	const uint8_t * src = data;
 	uint8_t * pwrite = f->pwrite;
 	uint8_t write2end = f->write2end;
@@ -176,6 +175,7 @@ int16_t fifo_get_data(fifo_t * f, void * data, int16_t length) {
 //	if (count < l) {
 //		l = count;
 //	}
+	f->locked = 1;
 	uint8_t* pread = f->pread;
 	uint8_t read2end = f->read2end;
 	uint8_t n = l > read2end ? read2end : l;
@@ -208,6 +208,7 @@ int16_t fifo_get_data(fifo_t * f, void * data, int16_t length) {
 #else
 	pthread_mutex_unlock(&f->signal.mutex);
 #endif
+	f->locked = 0;
 
 	return l;
 }
