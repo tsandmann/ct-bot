@@ -192,6 +192,14 @@ void sensor_dist_lookup(int16_t * const p_sens, uint8_t * const p_toggle, const 
 		return;
 	}
 
+	if (i == n) {
+		/* groesste Entfernung annehmen, falls reale Entfernung > groesste bekannte Entfernung */
+		*p_sens = SENS_IR_INFINITE;
+		/* Sensorupdate-Info toggeln und beenden */
+		*p_toggle = (uint8_t) (~ *p_toggle);
+		return;
+	}
+
 	/* Entfernung berechnen und speichern */
 	uint16_t distance = lin_interpolate(ctbot_eeprom_read_word(&(ptr - 1)->voltage), ctbot_eeprom_read_word(&(ptr - 1)->dist), tmp, ctbot_eeprom_read_word(&ptr->dist), volt_16);
 	*p_sens = (int16_t) (distance >= SENS_IR_MAX_DIST ? SENS_IR_INFINITE : distance);

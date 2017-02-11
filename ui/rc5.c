@@ -20,11 +20,6 @@
 /**
  * \file 	rc5.c
  * \brief 	RC5-Fernbedienung / Basic-Tasten-Handler
- *
- * Um RC5-Codes fuer eine eigene Fernbedienung anzupassen, reicht es diese
- * in eine Header-Datei auszulagern und anstatt der rc5code.h einzubinden.
- * Die Maskierung fuer die Auswertung der Codes nicht vergessen!
- *
  * \author 	Benjamin Benz (bbe@heise.de)
  * \author 	Timo Sandmann (mail@timosandmann.de)
  * \date 	12.02.2007
@@ -182,66 +177,64 @@ static void __attribute__ ((unused)) rc5_change_servo2(int16_t diff) {
  */
 static void rc5_number(uint8_t key) {
 	switch (key) {	// richtige Aktion heraussuchen
+#ifdef BEHAVIOUR_AVAILABLE
+		case 0:	target_speed_l = BOT_SPEED_STOP; target_speed_r = BOT_SPEED_STOP; break;
+		case 1:	target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
+		case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
+#endif // BEHAVIOUR_AVAILABLE
 
-		#ifdef BEHAVIOUR_AVAILABLE
-			case 0:	target_speed_l = BOT_SPEED_STOP; target_speed_r = BOT_SPEED_STOP; break;
-			case 1:	target_speed_l = BOT_SPEED_SLOW; target_speed_r = BOT_SPEED_SLOW; break;
-			case 3: target_speed_l = BOT_SPEED_NORMAL; target_speed_r = BOT_SPEED_NORMAL; break;
-		#endif	// BEHAVIOUR_AVAILABLE
+#ifdef BEHAVIOUR_TURN_AVAILABLE
+		case 2: bot_turn(NULL, 90); break;
 
-		#ifdef BEHAVIOUR_TURN_AVAILABLE
-			case 2: bot_turn(NULL, 90); break;
-
-//			/* Testcode fuer Bot-2-Bot-RemoteCall */
-//			case 2: {
-//				bot_list_entry_t * ptr = get_next_bot(NULL); // ersten Bot aus der Liste der bekannten Bots ansprechen
-//				if (ptr != NULL) {
-//					remote_call_data_t par1;
-//					par1.s16 = 400; // Parameter 1 des Verhaltens
-//					remote_call_data_t par2;
-//					par2.s16 = -100; // Parameter 2 des Verhaltens
-//					remote_call_data_t par3;
-//					par3.u16 = 90; // Parameter 3 des Verhaltens
-//					bot_2_bot_start_remotecall(ptr->address, "bot_goto_pos", par1, par2, par3); // bot_goto_pos(400, -100, 90)
-//				}
-//				break;
+//		/* Testcode fuer Bot-2-Bot-RemoteCall */
+//		case 2: {
+//			bot_list_entry_t * ptr = get_next_bot(NULL); // ersten Bot aus der Liste der bekannten Bots ansprechen
+//			if (ptr != NULL) {
+//				remote_call_data_t par1;
+//				par1.s16 = 400; // Parameter 1 des Verhaltens
+//				remote_call_data_t par2;
+//				par2.s16 = -100; // Parameter 2 des Verhaltens
+//				remote_call_data_t par3;
+//				par3.u16 = 90; // Parameter 3 des Verhaltens
+//				bot_2_bot_start_remotecall(ptr->address, "bot_goto_pos", par1, par2, par3); // bot_goto_pos(400, -100, 90)
 //			}
+//			break;
+//		}
 
-			case 7: bot_turn(NULL, 180); break;
-			case 9: bot_turn(NULL, -180); break;
-		#endif	// BEHAVIOUR_TURN_AVAILABLE
+		case 7: bot_turn(NULL, 180); break;
+		case 9: bot_turn(NULL, -180); break;
+#endif // BEHAVIOUR_TURN_AVAILABLE
 
-		#ifdef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
-			case 4: bot_follow_line_enh(NULL); break;
-		#elif defined BEHAVIOUR_FOLLOW_LINE_AVAILABLE
-			case 4: bot_follow_line(NULL); break;
-		#elif defined BEHAVIOUR_CATCH_PILLAR_AVAILABLE
-			case 4: bot_catch_pillar(NULL); break;
-		#elif defined BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
-			case 4: bot_follow_object(NULL); break;
-		#endif
+#ifdef BEHAVIOUR_FOLLOW_LINE_ENHANCED_AVAILABLE
+		case 4: bot_follow_line_enh(NULL); break;
+#elif defined BEHAVIOUR_FOLLOW_LINE_AVAILABLE
+		case 4: bot_follow_line(NULL); break;
+#elif defined BEHAVIOUR_CATCH_PILLAR_AVAILABLE
+		case 4: bot_catch_pillar(NULL); break;
+#elif defined BEHAVIOUR_FOLLOW_OBJECT_AVAILABLE
+		case 4: bot_follow_object(NULL); break;
+#endif
 
-		#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
-			/* Taste 5 ist bot_solve_maze() vorbehalten
-			 * fuer die Autostartfunktion des ct-Sim */
-			case 5: bot_solve_maze(NULL); break;
-		#endif	// BEHAVIOUR_SOLVE_MAZE_AVAILABLE
+#ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
+		/* Taste 5 ist bot_solve_maze() vorbehalten fuer die Autostartfunktion des ct-Sim */
+		case 5: bot_solve_maze(NULL); break;
+#endif // BEHAVIOUR_SOLVE_MAZE_AVAILABLE
 
-		#ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
-			case 6: bot_calibrate_pid(NULL, BOT_SPEED_SLOW); break;
-		#elif defined BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
-			case 6: bot_calibrate_sharps(NULL); break;
-		#elif defined BEHAVIOUR_TURN_AVAILABLE
-			case 6: bot_turn(NULL, -90); break;
-		#endif	// BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+#ifdef BEHAVIOUR_CALIBRATE_PID_AVAILABLE
+		case 6: bot_calibrate_pid(NULL, BOT_SPEED_SLOW); break;
+#elif defined BEHAVIOUR_CALIBRATE_SHARPS_AVAILABLE
+		case 6: bot_calibrate_sharps(NULL); break;
+#elif defined BEHAVIOUR_TURN_AVAILABLE
+		case 6: bot_turn(NULL, -90); break;
+#endif // BEHAVIOUR_CALIBRATE_PID_AVAILABLE
 
-		#ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
-			case 8: bot_drive_area(NULL); break;
-		#elif defined BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
-			case 8: bot_drive_distance(NULL, 0, BOT_SPEED_NORMAL, 10); break;
-		#elif defined BEHAVIOUR_GOTO_POS_AVAILABLE
-			case 8: bot_goto_dist(NULL, 100, 1); break;
-		#endif	// BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+#ifdef BEHAVIOUR_DRIVE_AREA_AVAILABLE
+		case 8: bot_drive_area(NULL); break;
+#elif defined BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+		case 8: bot_drive_distance(NULL, 0, BOT_SPEED_NORMAL, 10); break;
+#elif defined BEHAVIOUR_GOTO_POS_AVAILABLE
+		case 8: bot_goto_dist(NULL, 100, 1); break;
+#endif // BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 	}
 }
 
@@ -302,6 +295,9 @@ void default_key_handler(void) {
 		case RC5_CODE_DOWN:		rc5_bot_change_speed(-10, -10); break;
 		case RC5_CODE_LEFT:		rc5_bot_change_speed(-10,  10); break;
 		case RC5_CODE_RIGHT:	rc5_bot_change_speed( 10, -10); break;
+#ifdef RC5_CODE_PLAY
+		case RC5_CODE_PLAY:		target_speed_l = BOT_SPEED_STOP; target_speed_r = BOT_SPEED_STOP; break;
+#endif
 
 		/* Servoaktivitaet */
 #ifdef BEHAVIOUR_SERVO_AVAILABLE
@@ -329,11 +325,7 @@ void default_key_handler(void) {
 		case RC5_CODE_6:		rc5_number(6); break;
 		case RC5_CODE_7:		rc5_number(7); break;
 		case RC5_CODE_8:		rc5_number(8); break;
-#if RC5_CODE_0 != RC5_CODE_9
 		case RC5_CODE_9:		rc5_number(9); break;
-#else
-#warning "Ausgewaehlte Fernbedienung verwendet denselben Code fuer Taste 0 und Taste 9, deaktiviere Taste 9"
-#endif // workaround Technisat_TTS35AI
 	}
 }
 

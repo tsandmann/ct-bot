@@ -34,7 +34,7 @@
 #define RC5_COMMAND	0x103F /**< Der Kommandobereich */
 
 /* Im Normalbetrieb hilft die Beschraenkung der RC5_MASK auf RC5_COMMAND dem Bot, moeglichst viele FBs zu erkennen.
- * Zum erfassen neuer Codes sollte man unbedingt RC5_MASK auf (RC5_COMMAND | RC5_ADDRESS) setzen */
+ * Zum Erfassen neuer Codes sollte man unbedingt RC5_MASK auf (RC5_COMMAND | RC5_ADDRESS) setzen */
 
 // Normalbetrieb
 #define RC5_MASK (RC5_COMMAND)					/**< Welcher Teil des Kommandos wird ausgewertet? */
@@ -43,12 +43,9 @@
 
 
 /**
- * Definition RC5-Codes verschiedener Fernbedienungen. Wer eine neue FB
- * einfuegen will, sollte
- *
+ * Definition RC5-Codes verschiedener Fernbedienungen. Wer eine neue FB einfuegen will, sollte
  * 	- 	eine Definition per cut&paste duplizieren,
- * 	- 	eine geeignete Konstante RC_HAVE_{Herstellername}_{Fernbedienungsname}
- * 		waehlen,
+ * 	- 	eine geeignete Konstante RC_HAVE_{Herstellername}_{Fernbedienungsname} waehlen,
  * 	-	diese Konstante in die obere Liste der FB-Selektion eintragen,
  * 	-	die alte FB-Konstante im kopierten Bereich ersetzen,
  * 	-	die eigentlichen, herausgefunden Codes eintragen.
@@ -83,31 +80,27 @@
 #define RC5_CODE_YELLOW		(0x01B1 & RC5_MASK)		/**< Gelbe Taste */
 #define RC5_CODE_BLUE		(0x01B0 & RC5_MASK)		/**< Blaue Taste */
 
-#define RC5_CODE_I_II		(0x11AB & RC5_MASK)		/**< I/II-Taste */
-#define RC5_CODE_TV_VCR		(0x11B8 & RC5_MASK)		/**< TV/VCR-Taste */
-
+#define RC5_CODE_I_II		(0x11AB & RC5_MASK)		/**< I/II Taste */
+#define RC5_CODE_TV_VCR		(0x11B8 & RC5_MASK)		/**< TV/VCR Taste */
 #define RC5_CODE_DOT		(0x11B7 & RC5_MASK)		/**< Taste mit rundem Punkt */
+#define RC5_CODE_CH_PC		(0x11BF & RC5_MASK)		/**< CH*P/C Taste */
 
-#define RC5_CODE_PLAY		(0x11B5 & RC5_MASK)		/**< PLAY-Taste */
+#define RC5_CODE_PLAY		(0x11B5 & RC5_MASK)		/**< Play Taste */
 #define RC5_CODE_STILL		(0x11A9 & RC5_MASK)		/**< Pause Taste */
 #define RC5_CODE_STOP		(0x11B6 & RC5_MASK)		/**< Stopp Taste */
 #define RC5_CODE_BWD		(0x11B2 & RC5_MASK)		/**< Backward Taste */
 #define RC5_CODE_FWD		(0x11B4 & RC5_MASK)		/**< Forward Taste */
 
-#define RC5_CODE_CH_PC		(0x11BF & RC5_MASK)		/**< CH*P/C Taste */
-#define RC5_CODE_MUTE		(0x01BF & RC5_MASK)		/**< Mute-Taste */
-
-#define RC5_VOL_PLUS		(0x1190 & RC5_MASK)		/**< Vol + Taste */
-#define RC5_VOL_MINUS		(0x1191 & RC5_MASK)		/**< Vol - Taste */
-
-#define RC5_CH_PLUS			(0x11A0 & RC5_MASK)		/**< Ch + Taste */
-#define RC5_CH_MINUS		(0x11A1 & RC5_MASK)		/**< Ch - Taste */
-
-
 #define RC5_CODE_UP			RC5_CODE_STILL			/**< Taste Hoch */
 #define RC5_CODE_DOWN		RC5_CODE_STOP			/**< Taste Runter */
 #define RC5_CODE_LEFT		RC5_CODE_BWD			/**< Taste Links */
 #define RC5_CODE_RIGHT		RC5_CODE_FWD			/**< Taste Rechts */
+
+#define RC5_CODE_MUTE		(0x01BF & RC5_MASK)		/**< Mute Taste */
+#define RC5_VOL_PLUS		(0x1190 & RC5_MASK)		/**< Vol+ Taste */
+#define RC5_VOL_MINUS		(0x1191 & RC5_MASK)		/**< Vol- Taste */
+#define RC5_CH_PLUS			(0x11A0 & RC5_MASK)		/**< Ch+ Taste */
+#define RC5_CH_MINUS		(0x11A1 & RC5_MASK)		/**< Ch- Taste */
 #endif // RC_HAVE_HQ_RC_UNIVERS29_334
 
 /*
@@ -136,6 +129,7 @@
 
 #define RC5_CODE_I_II		RC5_CODE_SOURCE
 #define RC5_CODE_TV_VCR		RC5_CODE_FULL
+#define RC5_CODE_MUTE		RC5_CODE_FULL
 #endif // RC_HAVE_HAUPPAUGE_WINTV
 
 /*
@@ -184,7 +178,6 @@
 #define RC5_CODE_MENU		(0x17CD & RC5_MASK)		/**< Taste Menue */
 #define RC5_CODE_GO			(0x17FB & RC5_MASK)		/**< Taste GO */
 
-#define RC5_CODE_I_II		RC5_CODE_SELECT
 #define RC5_CODE_TV_VCR		RC5_CODE_VIEW
 #define RC5_CH_PLUS			RC5_CODE_BWD		/**< Taste fuer Transprtfach schliessen */
 #define RC5_CH_MINUS 		RC5_CODE_FWD		/**< Taste fuer Transportfach oeffnen */
@@ -325,39 +318,74 @@
 /*
  * Fernbedienung Technisat_TTS35AI (Receiver Digit CIP)
  * \author Joerg Bullmann
+ *
+ * Mapping auf HQ_RC_UNIVERS29_334:
+ * 11		-> -/--
+ * 12		-> A/B
+ * Play		-> OK
+ * Dot		-> SFI
+ * I/II		-> Exit
+ * TV/VCR	-> Info
+ * CH*P/C	-> TV
+ * Vol+		-> Hilfe
+ * Vol-		-> TXT
+ * Ch+		-> Stop
+ * Ch-		-> Ext
  */
 #ifdef RC_HAVE_Technisat_TTS35AI
-#define RC5_CODE_0		(0x1289 & RC5_MASK)		/**< Taste 0 			   */
-#define RC5_CODE_1		(0x1281 & RC5_MASK)		/**< Taste 1 			   */
-#define RC5_CODE_2		(0x1282 & RC5_MASK)		/**< Taste 2 			   */
-#define RC5_CODE_3		(0x1283 & RC5_MASK)		/**< Taste 3 			   */
-#define RC5_CODE_4		(0x1284 & RC5_MASK)		/**< Taste 4 			   */
-#define RC5_CODE_5		(0x1285 & RC5_MASK)		/**< Taste 5 			   */
-#define RC5_CODE_6		(0x1286 & RC5_MASK)		/**< Taste 6 			   */
-#define RC5_CODE_7		(0x1287 & RC5_MASK)		/**< Taste 7 			   */
-#define RC5_CODE_8		(0x1288 & RC5_MASK)		/**< Taste 8 			   */
-#define RC5_CODE_9		(0x1289 & RC5_MASK)		/**< Taste 9 			   */
+#define RC5_CODE_PWR	(0x128C & RC5_MASK)		/**< Taste an/aus */
+#define RC5_CODE_MUTE	(0x128D & RC5_MASK)		/**< Taste Mute */
 
-#define RC5_CODE_PWR	(0x128C & RC5_MASK)		/**< Taste An, Aus         */
-#define RC5_CODE_INFO	(0x028F & RC5_MASK)		/**< Taste i               */
-#define RC5_CODE_OK		(0x0297 & RC5_MASK)		/**< Taste ok              */
+#define RC5_CODE_1		(0x1281 & RC5_MASK)		/**< Taste 1 */
+#define RC5_CODE_2		(0x1282 & RC5_MASK)		/**< Taste 2 */
+#define RC5_CODE_3		(0x1283 & RC5_MASK)		/**< Taste 3 */
+#define RC5_CODE_4		(0x1284 & RC5_MASK)		/**< Taste 4 */
+#define RC5_CODE_5		(0x1285 & RC5_MASK)		/**< Taste 5 */
+#define RC5_CODE_6		(0x1286 & RC5_MASK)		/**< Taste 6 */
+#define RC5_CODE_7		(0x1287 & RC5_MASK)		/**< Taste 7 */
+#define RC5_CODE_8		(0x1288 & RC5_MASK)		/**< Taste 8 */
+#define RC5_CODE_9		(0x1289 & RC5_MASK)		/**< Taste 9 */
+#define RC5_CODE_0		(0x1280 & RC5_MASK)		/**< Taste 0 */
+#define RC5_CODE___		(0x128A & RC5_MASK)		/**< Taste -/-- */
+#define RC5_CODE_AB		(0x12A3 & RC5_MASK)		/**< Taste A/B */
 
-#define RC5_CODE_UP		(0x12A0 & RC5_MASK)		/**< Taste Hoch            */
-#define RC5_CODE_DOWN	(0x12A1 & RC5_MASK)		/**< Taste Runter          */
-#define RC5_CODE_LEFT	(0x1291 & RC5_MASK)		/**< Taste Links           */
-#define RC5_CODE_RIGHT	(0x1290 & RC5_MASK)		/**< Taste Rechts          */
+#define RC5_CODE_11		RC5_CODE___				/**< Taste -/-- als 11 */
+#define RC5_CODE_12		RC5_CODE_AB				/**< Taste A/B als 12 */
 
-#define RC5_CODE_TV		(0x0293 & RC5_MASK)		/**< Taste TV              */
-#define RC5_CODE_MENU	(0x0292 & RC5_MASK)		/**< Taste Menu            */
-#define RC5_CODE_RED	(0x02AB & RC5_MASK)		/**< rote Taste            */
-#define RC5_CODE_GREEN	(0x02AC & RC5_MASK)		/**< gruene Taste          */
-#define RC5_CODE_YELLOW	(0x02AD & RC5_MASK)		/**< gelbe Taste           */
-#define RC5_CODE_BLUE	(0x02AE & RC5_MASK)		/**< blaue Taste           */
+#define RC5_CODE_RED	(0x02AB & RC5_MASK)		/**< rote Taste */
+#define RC5_CODE_GREEN	(0x02AC & RC5_MASK)		/**< gruene Taste */
+#define RC5_CODE_YELLOW	(0x02AD & RC5_MASK)		/**< gelbe Taste */
+#define RC5_CODE_BLUE	(0x02AE & RC5_MASK)		/**< blaue Taste */
 
-#define RC5_CODE_FWD	RC5_CODE_TV				/**< Taste TV - umgewidmet als FWD-Taste */
-#define RC5_CODE_BWD	RC5_CODE_MENU			/**< Taste Menu - umgewidmet als BWD-Taste */
-#define RC5_CODE_TV_VCR	RC5_CODE_INFO			/**< Taste INFO - umgewidmet als View-Taste */
-#define RC5_CODE_I_II	RC5_CODE_OK				/**< Taste OK - umgewidmet als Select-Taste */
+#define RC5_CODE_UP		(0x12A0 & RC5_MASK)		/**< Taste Hoch */
+#define RC5_CODE_DOWN	(0x12A1 & RC5_MASK)		/**< Taste Runter */
+#define RC5_CODE_LEFT	(0x1291 & RC5_MASK)		/**< Taste Links */
+#define RC5_CODE_RIGHT	(0x1290 & RC5_MASK)		/**< Taste Rechts */
+#define RC5_CODE_OK		(0x0297 & RC5_MASK)		/**< Taste OK */
+
+#define RC5_CODE_PLAY	RC5_CODE_OK				/**< Taste OK als Play */
+
+#define RC5_CODE_SFI	(0x12AF & RC5_MASK)		/**< Taste SFI */
+#define RC5_CODE_EXIT	(0x12A2 & RC5_MASK)		/**< Taste Exit / -><- */
+#define RC5_CODE_INFO	(0x028F & RC5_MASK)		/**< Taste Info / i */
+#define RC5_CODE_TV		(0x0293 & RC5_MASK)		/**< Taste TV */
+
+#define RC5_CODE_DOT	RC5_CODE_SFI			/**< Taste SFI als DOT */
+#define RC5_CODE_I_II	RC5_CODE_EXIT			/**< Taste Exit als I/II */
+#define RC5_CODE_TV_VCR	RC5_CODE_INFO			/**< Taste Info als TV/VCR */
+#define RC5_CODE_CH_PC	RC5_CODE_TV				/**< Taste TV als CH*P/C */
+
+#define RC5_CODE_MENU	(0x0292 & RC5_MASK)		/**< Taste Menu */
+#define RC5_CODE_HELP	(0x128F & RC5_MASK)		/**< Taste Hilfe */
+#define RC5_CODE_TXT	(0x12BC & RC5_MASK)		/**< Taste TXT */
+#define RC5_CODE_STOP	(0x12A9 & RC5_MASK)		/**< Taste Stop */
+#define RC5_CODE_EXT	(0x12B8 & RC5_MASK)		/**< Taste EXT */
+#define RC5_CODE_CHECK	(0x02B6 & RC5_MASK)		/**< Taste v / Check */
+
+#define RC5_VOL_PLUS	RC5_CODE_HELP			/**< Taste Hilfe als Vol+ */
+#define RC5_VOL_MINUS	RC5_CODE_TXT			/**< Taste TXT als Vol- */
+#define RC5_CH_PLUS		RC5_CODE_STOP			/**< Taste Stop als Ch+ */
+#define RC5_CH_MINUS	RC5_CODE_EXT			/**< Taste EXT als Ch- */
 #endif // RC_HAVE_Technisat_TTS35AI
 
 /*
@@ -393,6 +421,7 @@
 #define RC5_CODE_YELLOW	(0x1032 & RC5_MASK)		/**< Taste PLAY / Gelb */
 #define RC5_CODE_BLUE	(0x1034 & RC5_MASK)		/**< Taste FFWD / Blau */
 #define RC5_CODE_TV_VCR	(0x100D	& RC5_MASK)		/**< Taste Mute */
+#define RC5_CODE_MUTE	RC5_CODE_TV_VCR
 #endif // RC_HAVE_LIFETEC_LT3607
 
 /*
@@ -461,10 +490,10 @@
 #define RC5_CH_MINUS	(0x1021 & RC5_MASK) /**< Ch - Taste - rc5.c */
 #define RC5_CODE_I_II	(0x100A & RC5_MASK) /**< Taste I/II - rc5.c */
 #define RC5_CODE_TV_VCR	(0x1038 & RC5_MASK) /**< Tase AV - rc5.c */
-#define RC5_CODE_DOT	RC5_CODE_YELLOW	/**< Gelbe Taste - gui.c */
-#define RC5_CODE_MUTE	RC5_CODE_ENTER	/**< Enter Taste - behaviour_calbirate_sharps.c */
+#define RC5_CODE_DOT	RC5_CODE_YELLOW		/**< Gelbe Taste - gui.c */
+#define RC5_CODE_ENTER	(0x0017 & RC5_MASK) /**< Enter-Taste */
+#define RC5_CODE_MUTE	RC5_CODE_ENTER		/**< Enter Taste - behaviour_calbirate_sharps.c */
 /* nicht verwendete Codes: */
-//#define RC5_CODE_ENTER	(0x0017 & RC5_MASK) /**< Enter-Taste */
 //#define RC5_CODE_AV		(0x1038 & RC5_MASK) /**< Taste AV */
 //#define RC5_VOL_PLUS		(0x1010 & RC5_MASK) /**< Vol + Taste */
 //#define RC5_VOL_MINUS		(0x1011 & RC5_MASK) /**< Vol - Taste */
