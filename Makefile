@@ -261,9 +261,8 @@ CSTANDARD =
 #  -Wall...:     warning level
 #  -Wa,...:      tell GCC to pass this to the assembler.
 #    -adhlns...: create assembler listing
-CFLAGS = -g3
+CFLAGS = -g
 CFLAGS += -O$(OPT)
-CFLAGS += -pipe
 CFLAGS += -fmessage-length=0
 CFLAGS += -Wall -Wstrict-prototypes
 CFLAGS += -Wextra -Wmissing-prototypes -Wmissing-declarations
