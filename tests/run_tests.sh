@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for filename in pc/tests/*.h; do
+for filename in tests/pc/*.h; do
 	cp -v $filename bot-local-override.h
 	make DEVICE=PC
 	rc=$?
@@ -11,7 +11,7 @@ for filename in pc/tests/*.h; do
 	make DEVICE=PC clean
 done
 
-for filename in mcu/tests/*.h; do
+for filename in tests/mcu/*.h; do
 	cp -v $filename bot-local-override.h
 	make DEVICE=MCU
 	rc=$?
