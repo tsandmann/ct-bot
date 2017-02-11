@@ -283,7 +283,7 @@
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.2042751367" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.dialect.flags.1213048320" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="" valueType="string"/>
-								<option id="gnu.cpp.compiler.option.debugging.level.2144064948" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.debugging.level.2144064948" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.default" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.other.other.2049630967" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -Wmissing-declarations -flto" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.optimization.level.1233982488" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1212685355" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -302,7 +302,7 @@
 								<option id="gnu.c.compiler.option.preprocessor.undef.symbol.1964657704" name="Undefined symbols (-U)" superClass="gnu.c.compiler.option.preprocessor.undef.symbol" useByScannerDiscovery="false"/>
 								<option id="gnu.c.compiler.option.optimization.level.45742687" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.c.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.optimization.flags.1776176965" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" useByScannerDiscovery="false"/>
-								<option id="gnu.c.compiler.option.debugging.level.473899774" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.debugging.level.473899774" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.default" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.other.1275562413" name="Other debugging flags" superClass="gnu.c.compiler.option.debugging.other" useByScannerDiscovery="false"/>
 								<option id="gnu.c.compiler.option.debugging.gprof.1205939481" name="Generate gprof information (-pg)" superClass="gnu.c.compiler.option.debugging.gprof" useByScannerDiscovery="false"/>
 								<option id="gnu.c.compiler.option.debugging.prof.6473672" name="Generate prof information (-p)" superClass="gnu.c.compiler.option.debugging.prof" useByScannerDiscovery="false"/>
@@ -332,7 +332,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.archiver.macosx.base.2092198945" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.macosx.base.1546640588"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.base.170286629" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.macosx.base.1402159240">
 								<option id="gnu.cpp.compiler.option.optimization.level.820830438" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.debugging.level.752015406" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.debugging.level.752015406" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.default" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.208088819" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.macosx.base.1651107320" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.macosx.base.1782602418">
