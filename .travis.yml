@@ -10,5 +10,5 @@ before_script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y gcc-avr binutils-avr avr-libc; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew tap osx-cross/avr; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install avr-libc49; fi
-	
+
 script: ./tests/run_tests.sh
