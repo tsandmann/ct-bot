@@ -27,7 +27,6 @@
  */
 
 #include "ct-Bot.h"
-#include "log.h"
 #include "fifo.h"
 
 /**
@@ -70,8 +69,13 @@ void fifo_put_data(fifo_t * f, const void * data, uint8_t length) {
 	}
 	uint8_t space;
 	if (length > (space = (uint8_t) (f->size - f->count))) {
-		/* nicht genug Platz -> alte Daten rauswerfen */
+		/* nicht genug Platz */
+		LOG_ERROR("FIFO 0x%08x overflow, size=%u", f, f->size);
 		f->overflow = 1;
+		return; // workaround race-condition
+
+#if 0
+		/* nicht genug Platz -> alte Daten rauswerfen */
 		uint8_t to_discard = (uint8_t) (length - space);
 		LOG_DEBUG_FIFO("verwerfe %u Bytes in Fifo 0x%08x", to_discard, f);
 		LOG_DEBUG_FIFO(" size=%u, count=%u, length=%u", f->size, f->count, length);
@@ -99,7 +103,9 @@ void fifo_put_data(fifo_t * f, const void * data, uint8_t length) {
 #else
 		pthread_mutex_unlock(&f->signal.mutex);
 #endif
+#endif // workaround race-condition
 	}
+
 	const uint8_t * src = data;
 	uint8_t * pwrite = f->pwrite;
 	uint8_t write2end = f->write2end;
