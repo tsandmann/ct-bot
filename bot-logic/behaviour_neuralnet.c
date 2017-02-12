@@ -116,9 +116,7 @@ float error;
 /**< Gesamt-Fehlerwert aller Patterns */
 float total_error;
 
-/**< ein paar Variablen */
-static int t;
-static int i;
+static uint16_t t;
 
 /**
  * Initialisierung Zufallsgenerator
@@ -127,7 +125,7 @@ static void srand_statement(void) {
 #ifdef PC
 	srand(time(NULL));
 #else
-#warning "Zufallszahlengenerator fuer MCU fehlt noch"
+	srand(TIMER_GET_TICKCOUNT_16);
 #endif
 }
 
@@ -201,7 +199,7 @@ void net_get_test_out(uint8_t *out1, uint8_t *out2) {
  *  Initialzustand mit den vordefinierten Inputpatterns und deren Teachoutput wiederherstellen
  */
 void set_init_patterns_in_array(void) {
-	int i, j;
+	uint16_t i, j;
 
 	no_of_pairs = NO_PAIRS; // Anzahl der Eintrage wieder auf Initial setzen
 
@@ -295,7 +293,7 @@ void bot_neuralnet_behaviour(Behaviour_t* data) {
 		if (t >= max_trainings || ((total_error > 0) && (total_error < ERROR_THRESHOLD))) {
 			neuralnet_state = STATE_NEURALNET_DONE; //Ende
 		} else {
-			i = 0;
+			uint16_t i = 0;
 			error = 0;
 
 			// hier werden alle vorhandenen Patterns dem Netz vorgelegt zur immer weiteren Verringerung
