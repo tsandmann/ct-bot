@@ -738,15 +738,14 @@ net_fbscan (FILE *file)
   free (arglist);
 
   /* read network constants */
-  fread (&net->momentum, sizeof (float), 1, file);
-  fread (&net->learning_rate, sizeof (float), 1, file);
-  fread (&net->global_error, sizeof (float), 1, file);
+  (void) fread (&net->momentum, sizeof (float), 1, file);
+  (void) fread (&net->learning_rate, sizeof (float), 1, file);
+  (void) fread (&net->global_error, sizeof (float), 1, file);
 
   /* read network weights */
   for (l = 1; l < net->no_of_layers; l++) {
     for (nu = 0; nu < net->layer[l].no_of_neurons; nu++) {
-      fread (net->layer[l].neuron[nu].weight, sizeof (float),
-             net->layer[l - 1].no_of_neurons + 1, file);
+    	(void) fread (net->layer[l].neuron[nu].weight, sizeof (float), net->layer[l - 1].no_of_neurons + 1, file);
     }
   }
 
