@@ -45,6 +45,7 @@ void trace_add_sensors(void);
  */
 void trace_add_actuators(void);
 
+#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 /**
  * Fueht dem Trace-Puffer einen RemoteCall-Aufruf hinzu
  * \param *fkt_name		Funktionsname des RemoteCalls
@@ -52,6 +53,7 @@ void trace_add_actuators(void);
  * \param *params		Zeiger auf RemoteCall-Parameterdaten
  */
 void trace_add_remotecall(const char * fkt_name, uint8_t param_count, remote_call_data_t * params);
+#endif // BEHAVIOUR_REMOTECALL_AVAILABLE
 
 #endif // CREATE_TRACEFILE_AVAILABLE
 #endif // TRACE_H_
