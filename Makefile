@@ -51,6 +51,8 @@ DEVICE ?= MCU
 #DEVICE ?= PC
 
 SAVE_TEMPS ?=
+WERROR ?=
+WCONVERSION ?=
 
 MSG_DEVICE = Target device is $(DEVICE)
 
@@ -159,7 +161,7 @@ ifeq ($(DEVICE),MCU)
 	# Linker flags.
 	#  -Wl,...:     tell GCC to pass this to linker.
 	LDFLAGS = -mmcu=$(MCU)
-	LDFLAGS += -Wl,--section-start=.bootloader=0x7C00
+	LDFLAGS += -Wl,--section-start=.bootloader=0x1F800
 	LDFLAGS += -Wl,--whole-archive
 	
 	LIBS = -Wl,--no-whole-archive 
@@ -270,10 +272,15 @@ CFLAGS += -MMD
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
 ifeq ($(DEVICE),MCU)
+ifeq ($(WCONVERSION),1)
 	CFLAGS += -Wconversion
+endif
 endif
 ifdef SAVE_TEMPS
 CFLAGS += -save-temps -fverbose-asm -dA
+endif
+ifeq ($(WERROR),1)
+CFLAGS += -Werror
 endif
 
 ASFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
