@@ -5,3 +5,5 @@ The official c't-project website can be found at http://www.heise.de/ct/projekte
 The repository here is used for further (experimental) development (branch development) and testing, each stable release is tagged, the master branch always points to the lastest one. Each release can also be found at the original SVN of the c't-Bot project at https://www.heise.de/svn/ctbot (see https://www.heise.de/ct/projekte/machmit/ctbot/wiki for more information). 
 
 Feel free to fork from this repository, add your own extensions or improvements and create a pull request to get them integrated.
+
+![Build status](https://travis-ci.org/tsandmann/ct-bot.svg?branch=features/sdcard-fat "Build status of branch features/sdcard-fat")

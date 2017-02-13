@@ -54,12 +54,9 @@ void srf10_set_gain(uint8_t gain) {
 	}
 
 	uint8_t temp[2];
-	uint8_t state;
 	tx_type_t tx_frame[2];
 
-	state = SUCCESS;
-
-	tx_frame[0].slave_adr = address+W;
+	tx_frame[0].slave_adr = address + W;
 	tx_frame[0].size = 2;
 	tx_frame[0].data_ptr = temp;
 	tx_frame[0].data_ptr[0] = 1;
@@ -67,7 +64,7 @@ void srf10_set_gain(uint8_t gain) {
 
 	tx_frame[1].slave_adr = OWN_ADR;
 
-	state = Send_to_TWI(tx_frame);
+	Send_to_TWI(tx_frame);
 }
 
 /**
@@ -76,10 +73,7 @@ void srf10_set_gain(uint8_t gain) {
  */
 void srf10_set_range(uint16_t millimeters) {
 	uint8_t temp[2];
-	uint8_t state;
 	tx_type_t tx_frame[2];
-
-	state = SUCCESS;
 
 	millimeters = millimeters / 43;
 
@@ -91,7 +85,7 @@ void srf10_set_range(uint16_t millimeters) {
 
 	tx_frame[1].slave_adr = OWN_ADR;
 
-	state = Send_to_TWI(tx_frame);
+	Send_to_TWI(tx_frame);
 }
 
 /**
@@ -126,14 +120,10 @@ uint8_t srf10_ping(uint8_t metric_unit) {
  */
 uint8_t srf10_read_register(uint8_t srf10_register) {
 	uint8_t temp;
-	uint8_t value;
-	uint8_t state;
+	uint8_t value = 0;
 	tx_type_t tx_frame[3];
 
-	state = SUCCESS;
-	value = 0;
-
-	tx_frame[0].slave_adr = address+W;
+	tx_frame[0].slave_adr = address + W;
 	tx_frame[0].size = 1;
 	tx_frame[0].data_ptr = &temp;
 	tx_frame[0].data_ptr[0] = srf10_register;
@@ -144,7 +134,7 @@ uint8_t srf10_read_register(uint8_t srf10_register) {
 
 	tx_frame[2].slave_adr = OWN_ADR;
 
-	state = Send_to_TWI(tx_frame);
+	Send_to_TWI(tx_frame);
 
 	return value;
 }
@@ -157,9 +147,7 @@ uint16_t srf10_get_measure() {
 	uint8_t hib;
 	uint8_t lob;
 
-	uint8_t state = SUCCESS;
-
-	state = srf10_ping(SRF10_CENTIMETERS);
+	srf10_ping(SRF10_CENTIMETERS);
 	delay(10);	// Optimierungs-Potential
 	lob = srf10_read_register(SRF10_LOB);
 	delay(10);	// Optimierungs-Potential

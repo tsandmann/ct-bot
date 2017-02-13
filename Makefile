@@ -51,6 +51,8 @@ DEVICE ?= MCU
 #DEVICE ?= PC
 
 SAVE_TEMPS ?=
+WERROR ?=
+WCONVERSION ?=
 
 MSG_DEVICE = Target device is $(DEVICE)
 
@@ -269,7 +271,7 @@ CXXSTANDARD = -std=gnu++11
 #  -Wall...:     warning level
 #  -Wa,...:      tell GCC to pass this to the assembler.
 #    -adhlns...: create assembler listing
-CFLAGS += -g3
+CFLAGS = -g
 CFLAGS += -O$(OPT)
 CFLAGS += -fmessage-length=0
 CFLAGS += -Wall -Wstrict-prototypes
@@ -278,13 +280,18 @@ CFLAGS += -MMD
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
 ifeq ($(DEVICE),MCU)
+ifeq ($(WCONVERSION),1)
 	CFLAGS += -Wconversion
+endif
 endif
 ifdef SAVE_TEMPS
 CFLAGS += -save-temps -fverbose-asm -dA
 endif
+ifeq ($(WERROR),1)
+CFLAGS += -Werror
+endif
 
-CXXFLAGS += -g3
+CXXFLAGS += -g
 CXXFLAGS += -O$(OPT)
 CXXFLAGS += -fmessage-length=0
 CXXFLAGS += -Wall -Wextra -Wmissing-declarations
@@ -293,6 +300,9 @@ CXXFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CXXFLAGS += $(CXXSTANDARD)
 ifdef SAVE_TEMPS
 CXXFLAGS += -save-temps -fverbose-asm -dA
+endif
+ifeq ($(WERROR),1)
+CXXFLAGS += -Werror
 endif
 
 ASFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))

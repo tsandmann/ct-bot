@@ -289,7 +289,10 @@ void bot_calibrate_sharps_display(void) {
 #elif defined RC5_CODE_OK
 		if (RC5_Code == RC5_CODE_OK) {
 #else
-#error "Weder RC5_CODE_MUTE noch RC5_CODE_OK vorhanden"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic warning "-Wcpp"
+#warning "Weder RC5_CODE_MUTE noch RC5_CODE_OK vorhanden, bot_calibrate_sharps() funktioniert nicht."
+#pragma GCC diagnostic pop
 			if (0) {
 #endif
 			userinput_done = 1;

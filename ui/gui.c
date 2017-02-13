@@ -86,7 +86,10 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 #if ! defined KEYPAD_AVAILABLE || ! defined BEHAVIOUR_REMOTECALL_AVAILABLE
 #undef DISPLAY_REMOTECALL_AVAILABLE
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
+#pragma GCC diagnostic push
+#pragma GCC diagnostic warning "-Wcpp"
 #warning "RemoteCall-Display geht nur mit aktivem Keypad, Display wurde daher deaktiviert"
+#pragma GCC diagnostic pop
 #endif // BEHAVIOUR_REMOTECALL_AVAILABLE
 #endif // ! KEYPAD_AVAILABLE || ! BEHAVIOUR_REMOTECALL_AVAILABLE
 

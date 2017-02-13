@@ -254,6 +254,11 @@
 #undef LOG_MMC_AVAILABLE
 #endif // SDFAT_AVAILABLE && USE_MINILOG
 
+#ifndef SDFAT_AVAILABLE
+#undef SPEED_LOG_AVAILABLE
+#undef MAP_AVAILABLE
+#endif
+
 #ifndef BOT_2_RPI_AVAILABLE
 #undef LOG_RPI_AVAILABLE
 #endif
@@ -333,6 +338,7 @@
 
 #ifndef SDFAT_AVAILABLE
 #undef LOG_MMC_AVAILABLE
+#undef SPEED_LOG_AVAILABLE
 #endif
 
 #if ! defined LOG_CTSIM_AVAILABLE && ! defined LOG_DISPLAY_AVAILABLE && ! defined LOG_UART_AVAILABLE && \

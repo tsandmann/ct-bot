@@ -43,8 +43,10 @@
 #include "twi.h"
 #include "gui.h"
 #include "motor.h"
+#include "sensor.h"
 #include "ir-rc5.h"
 #include "sdfat_fs.h"
+#include "sp03.h"
 #include <stdlib.h>
 
 
