@@ -211,6 +211,7 @@ ifeq ($(DEVICE),MCU)
 	AR = avr-ar
 	AVRDUDE = avrdude
 	CC = avr-gcc
+	CXX = avr-g++
 	NM = avr-nm
 	OBJCOPY = avr-objcopy
 	OBJDUMP = avr-objdump
@@ -229,7 +230,7 @@ else
 
 	AR = ar
 	CC = gcc
-	#CC = clang
+	CXX = g++
 	RANLIB = ranlib
 	SIZE = size
 	
@@ -251,10 +252,6 @@ COPY = cp
 # Compiler flag to set the C/C++ Standard level.
 CSTANDARD = -std=gnu11
 CXXSTANDARD = -std=gnu++1y
-# c99   - ISO C99 standard (not yet fully implemented)
-# gnu99 - c99 plus GCC extensions
-CSTANDARD = 
-
 
 # Compiler flags.
 #  -g:           generate debugging information
@@ -377,7 +374,7 @@ size:
 
 # Display compiler version information.
 gccversion : 
-	@$(CC) --version
+	@$(CXX) --version
 
 
 # Program the device.  
