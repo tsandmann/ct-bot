@@ -50,7 +50,7 @@
 #define MAP_2_SIM_AVAILABLE					/**< Sendet die Map zur Anzeige an den Sim */
 
 /* MMC-/SD-Karte als Speichererweiterung (Erweiterungsmodul) */
-#undef  BOT_FS_AVAILABLE						/**< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC moeglich) */
+#undef SDFAT_AVAILABLE						/**< Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf MMC/SD-Karte */
 
 /* Hardware-Treiber */
 #define ADC_AVAILABLE						/**< A/D-Konverter */
