@@ -115,7 +115,7 @@
 #undef  BEHAVIOUR_UBASIC_AVAILABLE 					/**< uBasic Verhalten */
 #undef  BEHAVIOUR_ABL_AVAILABLE 					/**< ABL-Interpreter */
 #define BEHAVIOUR_NEURALNET_AVAILABLE 				/**< neuronales Netzwerk */
-#define  BEHAVIOUR_DRIVE_NEURALNET_AVAILABLE 		/**< Fahrverhalten fuer das neuronale Netzwerk */
+#define BEHAVIOUR_DRIVE_NEURALNET_AVAILABLE 		/**< Fahrverhalten fuer das neuronale Netzwerk */
 
 /* Kalibrierungs-Verhalten */
 #define BEHAVIOUR_CALIBRATE_PID_AVAILABLE			/**< Kalibrierungsverhalten fuer Motorregelung */
