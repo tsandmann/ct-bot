@@ -34,6 +34,7 @@
 
 #include "ct-Bot.h"
 #include "os_thread.h"
+#include "log.h"
 
 #ifndef LOG_AVAILABLE
 #undef DEBUG_FIFO
@@ -53,6 +54,7 @@ typedef struct {
 	uint8_t read2end;			/**< # Zeichen bis zum Ueberlauf Lesezeiger */
 	uint8_t write2end;			/**< # Zeichen bis zum Ueberlauf Schreibzeiger */
 	uint8_t volatile overflow;	/**< 1, falls die Fifo mal uebergelaufen ist */
+	uint8_t volatile locked;	/**< 1, falls die Fifo gesperrt ist */
 #ifdef FIFO_STATS_ENABLED
 	uint32_t written;			/**< Anzahl an Bytes, die ins Fifo geschrieben wurden seit Initialisierung */
 #endif

@@ -1,0 +1,15 @@
+language: cpp
+sudo: required
+dist: trusty
+
+os:
+  - linux
+  - osx
+
+before_script:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y gcc-avr binutils-avr avr-libc; fi
+
+script: 
+  - ./tests/run_tests_pc.sh
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./tests/run_tests_mcu.sh; fi

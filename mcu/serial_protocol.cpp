@@ -5,6 +5,10 @@
  * \brief  Data transfer protocol for serial connections like UART, SPI, etc.
  */
 
+#include "ct-Bot.h"
+
+#ifdef BOT_2_RPI_AVAILABLE
+
 #include "client_server_base.h"
 #include "serial_protocol.h"
 #include "crc_engine.h"
@@ -478,3 +482,5 @@ template int SerialProtocol::slave_process_request<char*>(header&, char*&, const
 template int SerialProtocol::slave_process_request<std::streambuf>(header&, std::streambuf&, const std::size_t);
 
 } /* namespace ctbot */
+
+#endif // BOT_2_RPI_AVAILABLE

@@ -294,7 +294,7 @@ void default_key_handler(void) {
 		case RC5_CODE_DOWN:		rc5_bot_change_speed(-10, -10); break;
 		case RC5_CODE_LEFT:		rc5_bot_change_speed(-10,  10); break;
 		case RC5_CODE_RIGHT:	rc5_bot_change_speed( 10, -10); break;
-#ifdef RC5_CODE_PLAY
+#if defined RC5_CODE_PLAY && defined BEHAVIOUR_AVAILABLE
 		case RC5_CODE_PLAY:		target_speed_l = BOT_SPEED_STOP; target_speed_r = BOT_SPEED_STOP; break;
 #endif
 

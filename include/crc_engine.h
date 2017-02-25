@@ -8,10 +8,11 @@
 #ifndef CRC_ENGINE_H_
 #define CRC_ENGINE_H_
 
+#ifdef MCU
 #include <cstddef>
 #include <streambuf>
 #include <sstream>
-#include <util/crc16.h>
+#include "math_utils.h"
 
 namespace ctbot {
 
@@ -81,4 +82,5 @@ using crc_data   = CrcEngine<uint16_t, 0x1021, 0xFFFF, 0>;
 
 } /* namespace ctbot */
 
+#endif // MCU
 #endif /* CRC_ENGINE_H_ */

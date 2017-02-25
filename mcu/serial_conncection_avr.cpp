@@ -5,6 +5,9 @@
  *      Author: ts
  */
 
+#include "ct-Bot.h"
+
+#ifdef BOT_2_RPI_AVAILABLE
 #include "serial_conncection_avr.h"
 #include "crc_engine.h"
 #include <cstring>
@@ -154,3 +157,4 @@ std::size_t SerialConnectionAVR::send(std::streambuf& buf, const std::size_t siz
 	}
 	return size;
 }
+#endif // BOT_2_RPI_AVAILABLE

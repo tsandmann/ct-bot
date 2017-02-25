@@ -51,14 +51,17 @@ DEVICE ?= MCU
 #DEVICE ?= PC
 
 SAVE_TEMPS ?=
+WERROR ?=
+WCONVERSION ?=
 
 MSG_DEVICE = Target device is $(DEVICE)
 
 # List C source files here. (C dependencies are automatically generated.)
 define SRCMCU
 	mcu/adc.c mcu/bootloader.c mcu/bot-2-linux.c mcu/bot-2-sim.c mcu/cmps03.c mcu/cppsupport.cpp mcu/delay.c \
-	mcu/display.c mcu/ena.c mcu/i2c.c mcu/init-low.c mcu/ir-rc5.c mcu/led.c \
-	mcu/mmc.c mcu/motor-low.c mcu/mouse.c mcu/os_scheduler.c mcu/os_thread.c mcu/sdcard_wrapper.cpp mcu/sdcard.cpp mcu/sensor-low.c mcu/shift.c \
+	mcu/display.c mcu/ena.c mcu/i2c.c mcu/init-low.c mcu/ir-rc5.c mcu/led.c mcu/ll_command.cpp \
+	mcu/mmc.c mcu/motor-low.c mcu/mouse.c mcu/os_scheduler.c mcu/os_thread.c mcu/sdcard_wrapper.cpp mcu/sdcard.cpp mcu/sensor-low.c \
+	mcu/serial_conncection_avr.cpp mcu/serial_protocol_handler.cpp mcu/serial_protocol.cpp mcu/shift.c \
 	mcu/sp03.c mcu/srf10.c mcu/timer-low.c mcu/twi.c mcu/uart.c \
 	mcu/SdFat/Print.cpp mcu/SdFat/FatLib/FatFile.cpp mcu/SdFat/FatLib/FatFileLFN.cpp mcu/SdFat/FatLib/FatFilePrint.cpp mcu/SdFat/FatLib/FatFileSFN.cpp \
 	mcu/SdFat/FatLib/FatVolume.cpp mcu/SdFat/FatLib/FmtNumber.cpp
@@ -126,7 +129,7 @@ MATH_LIB = -lm
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
-EXTRAINCDIRS = . ./include ./include/bot-logic ./mcu/SdFat
+EXTRAINCDIRS = . ./include ./include/bot-logic ./contrib/c++/include ./mcu/SdFat
 ifeq ($(DEVICE),MCU)
 	# Assembler flags.
 	#  -Wa,...:   tell GCC to pass this to the assembler.
@@ -164,11 +167,12 @@ ifeq ($(DEVICE),MCU)
 	# Linker flags.
 	#  -Wl,...:     tell GCC to pass this to linker.
 	LDFLAGS = -mmcu=$(MCU)
+	LDFLAGS += -L./contrib/c++
 	LDFLAGS += -Wl,--section-start=.bootloader=0x1F800
 	LDFLAGS += -Wl,--whole-archive -Wl,--gc-sections
 	
 	LIBS = -Wl,--no-whole-archive 
-	LIBS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
+	LIBS += $(PRINTF_LIB) $(SCANF_LIB) -lstdc++ $(MATH_LIB)
 	
 	
 	# Programming support using avrdude. Settings and variables.
@@ -233,7 +237,6 @@ else
 
 	AR = ar
 	CC = gcc
-	#CC = clang
 	CXX = g++
 	RANLIB = ranlib
 	SIZE = size
@@ -258,8 +261,8 @@ COPY = cp
 # gnu89 - c89 plus GCC extensions
 # c99   - ISO C99 standard (not yet fully implemented)
 # gnu99 - c99 plus GCC extensions
-CSTANDARD = 
-CXXSTANDARD = -std=gnu++11
+CSTANDARD = -std=gnu11
+CXXSTANDARD = -std=gnu++14
 
 
 # Compiler flags.
@@ -269,7 +272,7 @@ CXXSTANDARD = -std=gnu++11
 #  -Wall...:     warning level
 #  -Wa,...:      tell GCC to pass this to the assembler.
 #    -adhlns...: create assembler listing
-CFLAGS += -g3
+CFLAGS = -g
 CFLAGS += -O$(OPT)
 CFLAGS += -fmessage-length=0
 CFLAGS += -Wall -Wstrict-prototypes
@@ -278,13 +281,18 @@ CFLAGS += -MMD
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
 ifeq ($(DEVICE),MCU)
+ifeq ($(WCONVERSION),1)
 	CFLAGS += -Wconversion
+endif
 endif
 ifdef SAVE_TEMPS
 CFLAGS += -save-temps -fverbose-asm -dA
 endif
+ifeq ($(WERROR),1)
+CFLAGS += -Werror
+endif
 
-CXXFLAGS += -g3
+CXXFLAGS += -g
 CXXFLAGS += -O$(OPT)
 CXXFLAGS += -fmessage-length=0
 CXXFLAGS += -Wall -Wextra -Wmissing-declarations
@@ -293,6 +301,9 @@ CXXFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CXXFLAGS += $(CXXSTANDARD)
 ifdef SAVE_TEMPS
 CXXFLAGS += -save-temps -fverbose-asm -dA
+endif
+ifeq ($(WERROR),1)
+CXXFLAGS += -Werror
 endif
 
 ASFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))

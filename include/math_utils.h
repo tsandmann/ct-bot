@@ -27,6 +27,15 @@
 #ifndef MATH_UTILS_H_
 #define MATH_UTILS_H_
 
+#ifdef __cplusplus
+#include <cmath>
+extern "C" {
+#else
+#include <math.h>
+#endif
+
+#include "global.h"
+
 #ifdef MCU
 #include <util/crc16.h>
 #include <avr/version.h>
@@ -301,4 +310,8 @@ static inline uint16_t calc_crc_update(uint16_t crc, uint8_t data) {
     return crc;
 #endif // PC
 }
+
+#ifdef __cplusplus
+}
+#endif
 #endif // MATH_UTILS_H_

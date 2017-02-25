@@ -36,6 +36,7 @@
 #include "trace.h"
 #include "fifo.h"
 #include "sensor.h"
+#include "motor.h"
 #include "os_thread.h"
 #include <stdio.h>
 #include <string.h>
@@ -109,12 +110,14 @@ void trace_add_actuators(void) {
 	long time = simultime + time_overflow * 10000;
 	int n = snprintf(trace_buffer[buf_index], TRACEBUFFER_SIZE, "time=\t%ld\tmotorL=\t%+d\tmotorR=\t%+d", time, motor_left, motor_right);
 
+#ifdef BEHAVIOUR_AVAILABLE
 	Behaviour_t * ptr = get_next_behaviour(NULL);
 	do {
 		if (ptr->active == BEHAVIOUR_ACTIVE && n < TRACEBUFFER_SIZE) {
 			n += snprintf(&trace_buffer[buf_index][n], TRACEBUFFER_SIZE - n, "\tbeh=\t%u", ptr->priority);
 		}
 	} while ((ptr = get_next_behaviour(ptr)) != NULL);
+#endif // BEHAVIOUR_AVAILABLE
 
 	if (n < TRACEBUFFER_SIZE) {
 		snprintf(&trace_buffer[buf_index][n], TRACEBUFFER_SIZE - n, "\n");
@@ -125,6 +128,7 @@ void trace_add_actuators(void) {
 	buf_index %= sizeof(trace_entries);
 }
 
+#ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
 /**
  * Fueht dem Trace-Puffer einen RemoteCall-Aufruf hinzu
  * \param *fkt_name		Funktionsname des RemoteCalls
@@ -148,6 +152,7 @@ void trace_add_remotecall(const char * fkt_name, uint8_t param_count, remote_cal
 	buf_index++;
 	buf_index %= sizeof(trace_entries);
 }
+#endif // BEHAVIOUR_REMOTECALL_AVAILABLE
 
 #endif // CREATE_TRACEFILE_AVAILABLE
 #endif // PC
