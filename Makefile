@@ -235,7 +235,6 @@ else
 
 	AR = ar
 	CC = gcc
-	#CC = clang
 	CXX = g++
 	RANLIB = ranlib
 	SIZE = size
@@ -255,14 +254,9 @@ SHELL = sh
 REMOVE = rm -f
 COPY = cp
 
-# Compiler flag to set the C Standard level.
-# c89   - "ANSI" C
-# gnu89 - c89 plus GCC extensions
-# c99   - ISO C99 standard (not yet fully implemented)
-# gnu99 - c99 plus GCC extensions
-CSTANDARD = 
-CXXSTANDARD = -std=gnu++11
-
+# Compiler flag to set the C/C++ Standard level.
+CSTANDARD = -std=gnu11
+CXXSTANDARD = -std=gnu++1y
 
 # Compiler flags.
 #  -g:           generate debugging information
@@ -399,8 +393,6 @@ size:
 
 # Display compiler version information.
 gccversion : 
-	@$(CC) --version
-	@echo
 	@$(CXX) --version
 
 
