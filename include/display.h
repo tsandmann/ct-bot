@@ -60,7 +60,7 @@ void display_cursor(int16_t row, int16_t column);
  * \param data 	Das Zeichen
  */
 void display_data(const char data);
-#endif // #ifdef DISPLAY_MCU_AVAILABLE
+#endif // DISPLAY_MCU_AVAILABLE
 
 #ifdef PC
 /**
