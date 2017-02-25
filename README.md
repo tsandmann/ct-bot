@@ -6,4 +6,9 @@ The repository here is used for further (experimental) development (branch devel
 
 Feel free to fork from this repository, add your own extensions or improvements and create a pull request to get them integrated.
 
-![Build status](https://travis-ci.org/tsandmann/ct-bot.svg?branch=features/serial-cmd "Build status of branch features/serial-cmd")
+
+| Branch              | Build status  |
+|:------------------- |:------------- |
+| develop             | ![Build status](https://travis-ci.org/tsandmann/ct-bot.svg?branch=develop "Build status of branch develop") |
+| features/sdcard-fat | ![Build status](https://travis-ci.org/tsandmann/ct-bot.svg?branch=features/sdcard-fat "Build status of branch features/sdcard-fat") |
+| features/serial-cmd | ![Build status](https://travis-ci.org/tsandmann/ct-bot.svg?branch=features/serial-cmd "Build status of branch features/serial-cmd") |

@@ -66,7 +66,6 @@
 #define OS_AVAILABLE						/**< Aktiviert BotOS fuer Threads und Scheduling */
 #define ARM_LINUX_BOARD						/**< Code fuer ARM-Linux Board aktivieren, wenn ein ARM-Linux-* Target ausgewaehlt wurde. Fuehrt den high-level Code und die Verhalten aus */
 
-
 /* Demo-Verhalten */
 #define BEHAVIOUR_SIMPLE_AVAILABLE				/**< Beispielverhalten */
 #define BEHAVIOUR_DRIVE_SQUARE_AVAILABLE 			/**< Demoverhalten im Quadrat fahren */

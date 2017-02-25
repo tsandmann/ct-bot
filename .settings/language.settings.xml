@@ -3,7 +3,7 @@
 	<configuration id="cdt.managedbuild.config.gnu.exe.debug.1077176217.177267905" name="Debug-W32">
 		<extension point="org.eclipse.cdt.core.LanguageSettingsProvider">
 			<provider copy-of="extension" id="org.eclipse.cdt.ui.UserLanguageSettingsProvider"/>
-			<provider class="org.eclipse.cdt.managedbuilder.language.settings.providers.GCCBuiltinSpecsDetector" console="false" env-hash="1308088801355955451" id="org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetector" keep-relative-paths="false" name="CDT GCC Built-in Compiler Settings" parameter="${COMMAND} ${FLAGS} -E -P -v -dD &quot;${INPUTS}&quot;" prefer-non-shared="true" store-entries-with-project="false">
+			<provider class="org.eclipse.cdt.managedbuilder.language.settings.providers.GCCBuiltinSpecsDetector" console="false" env-hash="1355303085980851352" id="org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetector" keep-relative-paths="false" name="CDT GCC Built-in Compiler Settings" parameter="${COMMAND} ${FLAGS} -E -P -v -dD &quot;${INPUTS}&quot;" prefer-non-shared="true" store-entries-with-project="false">
 				<language-scope id="org.eclipse.cdt.core.gcc"/>
 				<language-scope id="org.eclipse.cdt.core.g++"/>
 			</provider>
@@ -23,7 +23,7 @@
 	<configuration id="cdt.managedbuild.config.gnu.exe.debug.1197043799.1823427091.854831847.162987371" name="Debug-MCU-m644">
 		<extension point="org.eclipse.cdt.core.LanguageSettingsProvider">
 			<provider copy-of="extension" id="org.eclipse.cdt.ui.UserLanguageSettingsProvider"/>
-			<provider class="org.eclipse.cdt.managedbuilder.language.settings.providers.GCCBuiltinSpecsDetector" console="false" env-hash="1398279661244170644" id="org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetector" keep-relative-paths="false" name="CDT GCC Built-in Compiler Settings" parameter="${COMMAND} ${FLAGS} -mmcu=atmega644 -E -P -v -dD &quot;${INPUTS}&quot;" prefer-non-shared="true" store-entries-with-project="false">
+			<provider class="org.eclipse.cdt.managedbuilder.language.settings.providers.GCCBuiltinSpecsDetector" console="false" env-hash="1304416987101886227" id="org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetector" keep-relative-paths="false" name="CDT GCC Built-in Compiler Settings" parameter="${COMMAND} ${FLAGS} -mmcu=atmega644 -E -P -v -dD &quot;${INPUTS}&quot;" prefer-non-shared="true" store-entries-with-project="false">
 				<language-scope id="org.eclipse.cdt.core.gcc"/>
 				<language-scope id="org.eclipse.cdt.core.g++"/>
 			</provider>
@@ -33,7 +33,7 @@
 	<configuration id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.713113437" name="Debug-MCU-m644p">
 		<extension point="org.eclipse.cdt.core.LanguageSettingsProvider">
 			<provider copy-of="extension" id="org.eclipse.cdt.ui.UserLanguageSettingsProvider"/>
-			<provider class="org.eclipse.cdt.managedbuilder.language.settings.providers.GCCBuiltinSpecsDetector" console="false" env-hash="1315652664582720962" id="org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetector" keep-relative-paths="false" name="CDT GCC Built-in Compiler Settings" parameter="${COMMAND} ${FLAGS} -mmcu=atmega644p -E -P -v -dD &quot;${INPUTS}&quot;" prefer-non-shared="true" store-entries-with-project="false">
+			<provider class="org.eclipse.cdt.managedbuilder.language.settings.providers.GCCBuiltinSpecsDetector" console="false" env-hash="1356955415564372003" id="org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetector" keep-relative-paths="false" name="CDT GCC Built-in Compiler Settings" parameter="${COMMAND} ${FLAGS} -mmcu=atmega644p -E -P -v -dD &quot;${INPUTS}&quot;" prefer-non-shared="true" store-entries-with-project="false">
 				<language-scope id="org.eclipse.cdt.core.gcc"/>
 				<language-scope id="org.eclipse.cdt.core.g++"/>
 			</provider>
@@ -43,7 +43,7 @@
 	<configuration id="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988" name="Debug-MCU-m1284p">
 		<extension point="org.eclipse.cdt.core.LanguageSettingsProvider">
 			<provider copy-of="extension" id="org.eclipse.cdt.ui.UserLanguageSettingsProvider"/>
-			<provider class="org.eclipse.cdt.managedbuilder.language.settings.providers.GCCBuiltinSpecsDetector" console="true" env-hash="1327816550774493605" id="org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetector" keep-relative-paths="false" name="CDT GCC Built-in Compiler Settings" parameter="avr-g++ ${FLAGS}  -mmcu=atmega1284p -E -P -v -dD &quot;${INPUTS}&quot;" prefer-non-shared="true" store-entries-with-project="false">
+			<provider class="org.eclipse.cdt.managedbuilder.language.settings.providers.GCCBuiltinSpecsDetector" console="true" env-hash="1378441395949300675" id="org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetector" keep-relative-paths="false" name="CDT GCC Built-in Compiler Settings" parameter="${COMMAND} ${FLAGS}  -mmcu=atmega1284p -E -P -v -dD &quot;${INPUTS}&quot;" prefer-non-shared="true" store-entries-with-project="false">
 				<language-scope id="org.eclipse.cdt.core.gcc"/>
 				<language-scope id="org.eclipse.cdt.core.g++"/>
 			</provider>
@@ -53,7 +53,7 @@
 	<configuration id="cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498" name="Debug-ARM-Linux-RPi2">
 		<extension point="org.eclipse.cdt.core.LanguageSettingsProvider">
 			<provider copy-of="extension" id="org.eclipse.cdt.ui.UserLanguageSettingsProvider"/>
-			<provider class="org.eclipse.cdt.managedbuilder.language.settings.providers.GCCBuiltinSpecsDetector" console="false" env-hash="1319493258506952876" id="org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetector" keep-relative-paths="false" name="CDT GCC Built-in Compiler Settings" parameter="${COMMAND} ${FLAGS} -E -P -v -dD &quot;${INPUTS}&quot;" prefer-non-shared="true" store-entries-with-project="false">
+			<provider class="org.eclipse.cdt.managedbuilder.language.settings.providers.GCCBuiltinSpecsDetector" console="false" env-hash="1347409542196861592" id="org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetector" keep-relative-paths="false" name="CDT GCC Built-in Compiler Settings" parameter="${COMMAND} ${FLAGS} -E -P -v -dD &quot;${INPUTS}&quot;" prefer-non-shared="true" store-entries-with-project="false">
 				<language-scope id="org.eclipse.cdt.core.gcc"/>
 				<language-scope id="org.eclipse.cdt.core.g++"/>
 			</provider>
@@ -63,7 +63,7 @@
 	<configuration id="cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498.48681013" name="Debug-ARM-Linux-RPi3">
 		<extension point="org.eclipse.cdt.core.LanguageSettingsProvider">
 			<provider copy-of="extension" id="org.eclipse.cdt.ui.UserLanguageSettingsProvider"/>
-			<provider class="org.eclipse.cdt.managedbuilder.language.settings.providers.GCCBuiltinSpecsDetector" console="false" env-hash="1300963427791194092" id="org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetector" keep-relative-paths="false" name="CDT GCC Built-in Compiler Settings" parameter="${COMMAND} ${FLAGS} -E -P -v -dD &quot;${INPUTS}&quot;" prefer-non-shared="true" store-entries-with-project="false">
+			<provider class="org.eclipse.cdt.managedbuilder.language.settings.providers.GCCBuiltinSpecsDetector" console="false" env-hash="1342388826659739736" id="org.eclipse.cdt.managedbuilder.core.GCCBuiltinSpecsDetector" keep-relative-paths="false" name="CDT GCC Built-in Compiler Settings" parameter="${COMMAND} ${FLAGS} -E -P -v -dD &quot;${INPUTS}&quot;" prefer-non-shared="true" store-entries-with-project="false">
 				<language-scope id="org.eclipse.cdt.core.gcc"/>
 				<language-scope id="org.eclipse.cdt.core.g++"/>
 			</provider>
