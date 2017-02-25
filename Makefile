@@ -248,9 +248,9 @@ SHELL = sh
 REMOVE = rm -f
 COPY = cp
 
-# Compiler flag to set the C Standard level.
-# c89   - "ANSI" C
-# gnu89 - c89 plus GCC extensions
+# Compiler flag to set the C/C++ Standard level.
+CSTANDARD = -std=gnu11
+CXXSTANDARD = -std=gnu++1y
 # c99   - ISO C99 standard (not yet fully implemented)
 # gnu99 - c99 plus GCC extensions
 CSTANDARD = 
@@ -444,7 +444,7 @@ $(LIBRARY): $(OBJLIBRARY)
 $(OUTPUT): $(OBJBEHAVIOUR) $(LIBRARY)
 	@echo
 	@echo $(MSG_LINKING) $@
-	$(CC) --output $@ $(LDFLAGS) $^ $(LIBS)
+	$(CXX) --output $@ $(LDFLAGS) $^ $(LIBS)
 
 
 # Compile: create object files from C source files.
@@ -453,10 +453,18 @@ $(OUTPUT): $(OBJBEHAVIOUR) $(LIBRARY)
 	@echo $(MSG_COMPILING) $<
 	$(CC) -c $(ALL_CFLAGS) $< -o $@ 
 
+%.o : %.cpp
+	@echo
+	@echo $(MSG_COMPILING) $<
+	$(CXX) -c $(ALL_CXXFLAGS) $< -o $@ 
+
 
 # Compile: create assembler files from C source files.
 %.s : %.c
 	$(CC) -S $(ALL_CFLAGS) $< -o $@
+	
+%.s : %.cpp
+	$(CXX) -S $(ALL_CXXFLAGS) $< -o $@
 
 
 # Assemble: create object files from assembler source files.
@@ -485,29 +493,7 @@ clean_list :
 	$(REMOVE) $(TARGET).sym
 	$(REMOVE) $(TARGET).lnk
 	$(REMOVE) $(TARGET).lss
-	$(REMOVE) $(LIBRARY)
-	$(REMOVE) $(OBJBEHAVIOUR)
-	$(REMOVE) $(ASRC:.S=.o)
-	$(REMOVE) $(SRCHIGHLEVEL:.c=.o)
-	$(REMOVE) $(SRCUI:.c=.o)
-	$(REMOVE) $(SRCMCU:.c=.o)
-	$(REMOVE) $(SRCPC:.c=.o)
-	$(REMOVE) $(LST)
-	$(REMOVE) $(notdir $(SRCBEHAVIOUR:.c=.s))
-	$(REMOVE) $(notdir $(SRCHIGHLEVEL:.c=.s))
-	$(REMOVE) $(notdir $(SRCUI:.c=.s))
-	$(REMOVE) $(notdir $(SRCMCU:.c=.s))
-	$(REMOVE) $(notdir $(SRCPC:.c=.s))
-	$(REMOVE) $(notdir $(SRCBEHAVIOUR:.c=.i))
-	$(REMOVE) $(notdir $(SRCHIGHLEVEL:.c=.i))
-	$(REMOVE) $(notdir $(SRCUI:.c=.i))
-	$(REMOVE) $(notdir $(SRCMCU:.c=.i))
-	$(REMOVE) $(notdir $(SRCPC:.c=.i))
-	$(REMOVE) $(SRCBEHAVIOUR:.c=.d)
-	$(REMOVE) $(SRCHIGHLEVEL:.c=.d)
-	$(REMOVE) $(SRCUI:.c=.d)
-	$(REMOVE) $(SRCMCU:.c=.d)
-	$(REMOVE) $(SRCPC:.c=.d)
+	$(REMOVE) $(OBJBEHAVIOUR) $(OBJLIBRARY) $(LIBRARY)
 	$(REMOVE) .dep/*
 
 
