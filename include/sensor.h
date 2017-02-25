@@ -134,7 +134,7 @@ extern uint16_t sensSRF10;	/**< Messergebniss Ultraschallsensor */
 #endif
 
 #ifdef CMPS03_AVAILABLE
-cmps03_t sensCmps03;		/**< Lage laut CMPS03-Kompass */
+extern cmps03_t sensCmps03;		/**< Lage laut CMPS03-Kompass */
 #endif
 
 /**
