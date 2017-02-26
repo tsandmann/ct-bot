@@ -138,6 +138,9 @@ ifeq ($(DEVICE),MCU)
 	# ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs 
 	ASFLAGS =
 	
+	CFLAGS = -ffunction-sections -fdata-sections
+	CXXFLAGS = -fno-exceptions -fno-threadsafe-statics -felide-constructors -ffunction-sections -fdata-sections
+	
 	
 	#Additional libraries.
 	
@@ -280,6 +283,20 @@ ifeq ($(WERROR),1)
 CFLAGS += -Werror
 endif
 
+CXXFLAGS += -g
+CXXFLAGS += -O$(OPT)
+CXXFLAGS += -fmessage-length=0
+CXXFLAGS += -Wall -Wextra -Wmissing-declarations
+CXXFLAGS += -MMD
+CXXFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
+CXXFLAGS += $(CXXSTANDARD)
+ifdef SAVE_TEMPS
+CXXFLAGS += -save-temps -fverbose-asm -dA
+endif
+ifeq ($(WERROR),1)
+CXXFLAGS += -Werror
+endif
+
 ASFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 
 # Flags for the library archiver (ar)
@@ -308,11 +325,9 @@ MSG_CREATING_LIBRARY = Creating library:
 
 
 # Define all object files.
-OBJLIBRARY = $(ASRC:.S=.o) $(SRCLIBRARY:.c=.o)
+OBJLIBRARY_ = $(patsubst %.S,%.o,$(ASRC)) $(patsubst %.c,%.o,$(SRCLIBRARY)) 
+OBJLIBRARY = $(patsubst %.cpp,%.o,$(OBJLIBRARY_)) 
 OBJBEHAVIOUR = $(SRCBEHAVIOUR:.c=.o)
-
-# Define all listing files.
-LST = $(ASRC:.S=.lst) $(SRC:.c=.lst)
 
 
 # Compiler flags to generate dependency files.
@@ -323,9 +338,11 @@ GENDEPFLAGS = -MP -MT"$(*F).o" -MF".dep/$(@F).d"
 # Add target processor to flags.
 ifeq ($(DEVICE),MCU)
 	ALL_CFLAGS = -mmcu=$(MCU) $(CFLAGS) $(GENDEPFLAGS) -D$(DEVICE)
+	ALL_CXXFLAGS = -mmcu=$(MCU) $(CXXFLAGS) $(GENDEPFLAGS) -D$(DEVICE)
 	ALL_ASFLAGS = -mmcu=$(MCU) -x assembler-with-cpp $(ASFLAGS) -D$(DEVICE)
 else
 	ALL_CFLAGS = $(CFLAGS) $(GENDEPFLAGS) -D$(DEVICE)
+	ALL_CXXFLAGS = $(CXXFLAGS) $(GENDEPFLAGS) -D$(DEVICE)
 	ALL_ASFLAGS = -x assembler-with-cpp $(ASFLAGS) -D$(DEVICE)
 endif
 
