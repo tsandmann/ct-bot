@@ -1,16 +1,19 @@
 #!/bin/bash
 
-for filename in tests/pc/*.h; do
-	cp -v $filename bot-local-override.h
+export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+cd $MYDIR/../
+for filename in $MYDIR/pc/*.h; do
+	cp -v $filename $MYDIR/../bot-local-override.h
 	cores=$(grep -c "^processor" /proc/cpuinfo 2>/dev/null || sysctl -n hw.ncpu)
 	echo "using $cores parallel jobs"
 	make DEVICE=PC WERROR=1 -j$cores
 	rc=$?
-	rm bot-local-override.h
+	rm $MYDIR/../bot-local-override.h
 	if [[ $rc != 0 ]]; then
 		echo ""; echo ""; echo "TEST $filename FAILED."; echo ""; echo ""
 		make DEVICE=PC clean >/dev/null
-		exit $rc; 
+		exit $rc;
 	fi
 	make DEVICE=PC clean >/dev/null
 done
