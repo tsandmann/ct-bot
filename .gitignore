@@ -7,4 +7,5 @@
 /.dep/
 /README.md
 /bot-local-override.h
-
+/tests/avr8-gnu-toolchain-osx.tar.gz
+/tests/avr8-gnu-toolchain-darwin_x86_64

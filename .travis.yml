@@ -7,9 +7,6 @@ os:
   - linux
   - osx
 
-before_script:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; brew tap osx-cross/avr && brew install avr-libc fi
-
 script:
   - ./tests/run_tests_pc.sh
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./tests/run_tests_mcu.sh; fi
+  - ./tests/run_tests_mcu.sh
