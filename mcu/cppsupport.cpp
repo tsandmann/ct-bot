@@ -34,6 +34,7 @@ extern "C" {
 
 extern "C" void __cxa_pure_virtual(void) __attribute__ ((__noreturn__));
 extern "C" void __cxa_deleted_virtual(void) __attribute__ ((__noreturn__));
+extern "C" int atexit(void (*)()) __attribute__((weak));
 
 void __cxa_pure_virtual() {
 	LOG_ERROR("pure virtual method called, abort.");
@@ -43,6 +44,10 @@ void __cxa_pure_virtual() {
 void __cxa_deleted_virtual() {
 	LOG_ERROR("deleted virtual method called, abort.");
 	abort();
+}
+
+int atexit(void (*)()) {
+	return 0;
 }
 
 void* operator new(size_t size) {
