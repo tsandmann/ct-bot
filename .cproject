@@ -845,6 +845,29 @@
 			<content-type-mapping configuration="" content-type="org.eclipse.cdt.core.cxxSource" language="org.eclipse.cdt.core.g++"/>
 		</project-mappings>
 	</storageModule>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Debug-ARM-Linux-RPi3">
+			<resource resourceType="PROJECT" workspacePath="/ct-Bot"/>
+		</configuration>
+		<configuration configurationName="Debug-MCU-m1284p">
+			<resource resourceType="PROJECT" workspacePath="/ct-Bot"/>
+		</configuration>
+		<configuration configurationName="Debug-W32">
+			<resource resourceType="PROJECT" workspacePath="/ct-Bot"/>
+		</configuration>
+		<configuration configurationName="Debug-ARM-Linux-RPi2">
+			<resource resourceType="PROJECT" workspacePath="/ct-Bot"/>
+		</configuration>
+		<configuration configurationName="Debug-MCU-m644p">
+			<resource resourceType="PROJECT" workspacePath="/ct-Bot"/>
+		</configuration>
+		<configuration configurationName="Debug-MCU-m644">
+			<resource resourceType="PROJECT" workspacePath="/ct-Bot"/>
+		</configuration>
+		<configuration configurationName="Debug-Linux_Mac">
+			<resource resourceType="PROJECT" workspacePath="/ct-Bot"/>
+		</configuration>
+	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile"/>
 		<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile">
@@ -1027,6 +1050,49 @@
 			</profile>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988;cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.403957366.174358988.;cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1600275719;cdt.managedbuild.tool.gnu.cpp.compiler.input.787026533">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile"/>
+			<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="true"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="makefileGenerator">
+					<runAction arguments="-f ${project_name}_scd.mk" command="make" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfile">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="true"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}" command="gcc" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfileCPP">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="true"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.cpp" command="g++" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+			<profile id="org.eclipse.cdt.managedbuilder.core.GCCWinManagedMakePerProjectProfileC">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="true"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="-E -P -v -dD ${plugin_state_location}/specs.c" command="gcc" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.debug.1077176217.177267905;cdt.managedbuild.config.gnu.exe.debug.1077176217.177267905.;cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1774229274;cdt.managedbuild.tool.gnu.cpp.compiler.input.1939571647">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile"/>
 			<profile id="org.eclipse.cdt.make.core.GCCStandardMakePerFileProfile">
 				<buildOutputProvider>
@@ -2697,28 +2763,5 @@
 				</scannerInfoProvider>
 			</profile>
 		</scannerConfigBuildInfo>
-	</storageModule>
-	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="Debug-ARM-Linux-RPi3">
-			<resource resourceType="PROJECT" workspacePath="/ct-Bot"/>
-		</configuration>
-		<configuration configurationName="Debug-MCU-m1284p">
-			<resource resourceType="PROJECT" workspacePath="/ct-Bot"/>
-		</configuration>
-		<configuration configurationName="Debug-W32">
-			<resource resourceType="PROJECT" workspacePath="/ct-Bot"/>
-		</configuration>
-		<configuration configurationName="Debug-ARM-Linux-RPi2">
-			<resource resourceType="PROJECT" workspacePath="/ct-Bot"/>
-		</configuration>
-		<configuration configurationName="Debug-MCU-m644p">
-			<resource resourceType="PROJECT" workspacePath="/ct-Bot"/>
-		</configuration>
-		<configuration configurationName="Debug-MCU-m644">
-			<resource resourceType="PROJECT" workspacePath="/ct-Bot"/>
-		</configuration>
-		<configuration configurationName="Debug-Linux_Mac">
-			<resource resourceType="PROJECT" workspacePath="/ct-Bot"/>
-		</configuration>
 	</storageModule>
 </cproject>
