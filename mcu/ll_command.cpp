@@ -5,6 +5,10 @@
  * \brief  Low level command interface between ATmega and RPi.
  */
 
+#include "ct-Bot.h"
+
+#ifdef BOT_2_RPI_AVAILABLE
+
 #include "ll_command.h"
 #include <stdexcept>
 
@@ -61,3 +65,5 @@ template class LLCommand<LLCommandAct>;
 template class LLCommand<LLCommandLcd>;
 
 } /* namespace ctbot */
+
+#endif // BOT_2_RPI_AVAILABLE
