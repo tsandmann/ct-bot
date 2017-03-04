@@ -7,8 +7,11 @@ os:
   - linux
   - osx
 
+before_script:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then apt-get -qq update; fi 
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then apt-get install -y g++-arm-linux-gnueabihf; fi
+
 script:
   - ./tests/run_tests_pc.sh
   - ./tests/run_tests_mcu.sh
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./tests/run_tests_rpi2.sh; fi
-  

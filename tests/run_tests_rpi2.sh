@@ -3,8 +3,6 @@
 export ARM_TARGET=arm-linux-gnueabihf
 export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-command -v arm-linux-gnueabihf-g++ >/dev/null 2>&1 || { git clone --depth=1 --branch=gcc-5.4 https://github.com/tsandmann/arm-toolchain-linux.git $MYDIR/arm-unknown-linux-gnueabihf; export PATH=$MYDIR/arm-unknown-linux-gnueabihf/bin:$PATH; }
-
 cd $MYDIR/../
 for filename in $MYDIR/pc/*.h; do
 	cp -v $filename $MYDIR/../bot-local-override.h
