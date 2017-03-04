@@ -5,8 +5,7 @@ export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 if [[ "`uname`" == "Darwin" ]]; then
 	if [[ ! -e $MYDIR/armv8l-unknown-linux-gnueabihf ]]; then
-		git clone --depth=1 --branch=gcc-5.4 https://github.com/tsandmann/armv8l-toolchain-mac.git $MYDIR/armv8l-unknown-linux-gnueabihf
-		export PATH=$MYDIR/armv8l-unknown-linux-gnueabihf/bin:$PATH
+		command -v arm-linux-gnueabihf-g++ >/dev/null 2>&1 || { git clone --depth=1 --branch=gcc-5.4 https://github.com/tsandmann/armv8l-toolchain-mac.git $MYDIR/armv8l-unknown-linux-gnueabihf; export PATH=$MYDIR/armv8l-unknown-linux-gnueabihf/bin:$PATH; }
 	fi
 fi
 
