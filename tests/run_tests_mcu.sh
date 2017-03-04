@@ -15,13 +15,13 @@ for filename in $MYDIR/mcu/*.h; do
 	rc=$?
 	rm $MYDIR/../bot-local-override.h
 	if [[ $rc != 0 ]]; then
-		echo ""; echo ""; echo "TEST $filename FAILED."; echo ""; echo ""
+		echo ""; echo ""; echo "TEST $filename FOR MCU FAILED."; echo ""; echo ""
 		make DEVICE=MCU clean >/dev/null
 		exit $rc;
 	fi
 	make DEVICE=MCU clean >/dev/null
 done
 
-echo ""; echo ""; echo "ALL TESTS PASSED."; echo ""; echo ""
+echo ""; echo ""; echo "ALL TESTS FOR MCU PASSED."; echo ""; echo ""
 
 exit 0;
