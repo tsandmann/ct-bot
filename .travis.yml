@@ -1,6 +1,6 @@
 language: cpp
 dist: trusty
-sudo: false
+sudo: true
 osx_image: xcode8.2
 
 os:
@@ -8,8 +8,8 @@ os:
   - osx
 
 before_script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then apt-get -qq update; fi 
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then apt-get install -y g++-arm-linux-gnueabihf; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update; fi 
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y g++-arm-linux-gnueabihf; fi
 
 script:
   - ./tests/run_tests_pc.sh
