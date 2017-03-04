@@ -11,13 +11,13 @@ for filename in $MYDIR/pc/*.h; do
 	rc=$?
 	rm $MYDIR/../bot-local-override.h
 	if [[ $rc != 0 ]]; then
-		echo ""; echo ""; echo "TEST $filename FAILED."; echo ""; echo ""
+		echo ""; echo ""; echo "TEST $filename FOR PC FAILED."; echo ""; echo ""
 		make DEVICE=PC clean >/dev/null
 		exit $rc;
 	fi
 	make DEVICE=PC clean >/dev/null
 done
 
-echo ""; echo ""; echo "ALL TESTS PASSED."; echo ""; echo ""
+echo ""; echo ""; echo "ALL TESTS FOR PC PASSED."; echo ""; echo ""
 
 exit 0;

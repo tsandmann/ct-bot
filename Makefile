@@ -53,6 +53,7 @@ DEVICE ?= MCU
 SAVE_TEMPS ?=
 WERROR ?=
 WCONVERSION ?=
+ARM_TARGET ?=
 
 MSG_DEVICE = Target device is $(DEVICE)
 
@@ -235,11 +236,19 @@ else
 	PTHREAD_LIB = -lpthread
 	LIBS = $(PTHREAD_LIB) $(MATH_LIB)
 
+ifdef ARM_TARGET
+	AR = $(ARM_TARGET)-ar
+	CC = $(ARM_TARGET)-gcc
+	CXX = $(ARM_TARGET)-g++
+	RANLIB = $(ARM_TARGET)-ranlib
+	SIZE = $(ARM_TARGET)-size
+else
 	AR = ar
 	CC = gcc
 	CXX = g++
 	RANLIB = ranlib
 	SIZE = size
+endif
 	
 	# Optimization level, can be [0, 1, 2, 3, s]. 
 	# 0 = turn off optimization. s = optimize for size.
@@ -279,6 +288,12 @@ ifeq ($(DEVICE),MCU)
 ifeq ($(WCONVERSION),1)
 	CFLAGS += -Wconversion
 endif
+endif
+ifeq ($(ARM_TARGET),arm-linux-gnueabihf)
+CFLAGS += -mcpu=cortex-a7 -mtune=cortex-a7 -mfloat-abi=hard -mfpu=vfpv4
+endif
+ifeq ($(ARM_TARGET),armv8l-linux-gnueabihf)
+CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8
 endif
 ifdef SAVE_TEMPS
 CFLAGS += -save-temps -fverbose-asm -dA
