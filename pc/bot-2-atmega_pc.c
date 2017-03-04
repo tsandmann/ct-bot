@@ -30,6 +30,8 @@
 #include "ct-Bot.h"
 
 #ifdef ARM_LINUX_BOARD
+#error "Test error for travis test"
+
 #include "bot-2-atmega.h"
 #include "bot-2-sim.h"
 #include "command.h"

@@ -10,3 +10,5 @@ os:
 script:
   - ./tests/run_tests_pc.sh
   - ./tests/run_tests_mcu.sh
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./tests/run_tests_rpi2.sh; fi
+  
