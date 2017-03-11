@@ -45,38 +45,19 @@ uint8_t display_screen = 0;	/**< zurzeit aktiver Displayscreen */
 #define DISPLAY_MODE 0x0E		/**< Display on, Cursor on, Blink off */
 //#define DISPLAY_MODE 0x0F		/**< Display on, Cursor on, Blink on */
 
-#define DISPLAY_OUT 			0x07		/**< Output-Pins Display */
-#define DISPLAY_IN 				(1<<5)		/**< Input-Pins Display */
+#define DISPLAY_OUT 			(_BV(PINC0) | _BV(PINC1) | _BV(PINC2)) /**< Output-Pins Display */
+#define DISPLAY_IN 				_BV(PINC5)	/**< Input-Pins Display */
 
 #define DISPLAY_PORT			PORTC		/**< Port an dem das Display haengt */
 #define DISPLAY_DDR				DDRC		/**< Port an dem das Display haengt */
-#define DPC (uint8_t) (DISPLAY_PORT & ~DISPLAY_OUT)	/**< Port des Displays */
-//#define DRC (DDRC & ~DISPLAY_PINS)
-
-//#define DISPLAY_READY_PINR	PINC		/**< Port an dem das Ready-Flag des Display haengt */
-#define DISPLAY_READY_DDR		DDRC		/**< Port an dem das Ready-Flag des Display haengt */
-#define DISPLAY_READY_PIN		(1<<5)		/**< Pin  an dem das Ready-Flag des Display haengt */
+#define DPC (uint8_t) (DISPLAY_PORT & ~DISPLAY_OUT)	/**< Kontroll-Signale des Displays */
 
 /**
  * RS-Leitung
  * legt fest, ob die Daten an das Display in den Textpuffer (RS=1) kommen
  * oder als Steuercode interpretiert werden (RS=0)
  */
-#define DISPLAY_RS				(1<<0)
-
-/**
- * RW-Leitung
- * legt fest, ob zum Display geschrieben wird (RW=0)
- * oder davon gelesen wird (RW=1)
- */
-#define DISPLAY_RW				(1<<1)
-
-/**
- * Enable Leitung
- * schaltet das Interface ein (E=1).
- * Nur wenn Enable auf High-Pegel liegt, laesst sich das Display ansprechen
- */
-#define DISPLAY_EN				(1<<2)
+#define DISPLAY_RS				_BV(PINC0)
 
 /*
  * Im Moment der Low-High-Flanke von ENABLE liest das Dislplay
@@ -132,7 +113,9 @@ void display_data(const char data) {
 void display_init(void) {
 #ifdef DISPLAY_MCU_AVAILABLE
 	DISPLAY_DDR |= DISPLAY_OUT; // Ausgaenge
-	DISPLAY_DDR = (uint8_t) (DISPLAY_DDR & ~DISPLAY_IN); // Eingaenge
+#ifndef SPI_AVAILABLE
+	DISPLAY_DDR = (uint8_t) (DISPLAY_DDR & ~DISPLAY_IN); // Eingang
+#endif
 
 	delay(12); // Display steht erst 10ms nach dem Booten bereit
 
