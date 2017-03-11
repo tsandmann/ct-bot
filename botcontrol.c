@@ -167,6 +167,10 @@ void post_behaviour(void) {
 #endif // OS_AVAILABLE
 }
 
+#ifdef BOOTLOADER_AVAILABLE
+void bootloader_main(void);
+#endif // BOOTLOADER_AVAILABLE
+
 /**
  * Faehrt den Bot sauber herunter
  */
@@ -196,4 +200,8 @@ void ctbot_shutdown(void) {
 	ENA_off(0xff);
 
 	ctbot_shutdown_low();
+
+#ifdef BOOTLOADER_AVAILABLE
+	bootloader_main();
+#endif // BOOTLOADER_AVAILABLE
 }
