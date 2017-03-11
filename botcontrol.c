@@ -173,6 +173,10 @@ extern uint16_t goto_pos_err[];
 extern uint16_t turn_err[];
 extern char abl_eeprom_data[];
 
+#ifdef BOOTLOADER_AVAILABLE
+void bootloader_main(void);
+#endif // BOOTLOADER_AVAILABLE
+
 /**
  * Faehrt den Bot sauber herunter
  */
@@ -214,4 +218,8 @@ void ctbot_shutdown(void) {
 	tmp = * (volatile uint8_t*) turn_err;
 	tmp = * (volatile uint8_t*) abl_eeprom_data;
 	(void) tmp;
+
+#ifdef BOOTLOADER_AVAILABLE
+	bootloader_main();
+#endif // BOOTLOADER_AVAILABLE
 }
