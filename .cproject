@@ -302,6 +302,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include/bot-logic&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/mcu/SdFat&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1311814044" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -424,6 +425,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include/bot-logic&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/mcu/SdFat&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1714723" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="MCU"/>
@@ -553,6 +555,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/include/bot-logic&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/mcu/SdFat&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.699476605" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.default" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.dialect.flags.1323880319" name="Other dialect flags" superClass="gnu.cpp.compiler.option.dialect.flags" useByScannerDiscovery="true" value="-std=gnu++1y" valueType="string"/>
@@ -843,6 +846,26 @@
 			<content-type-mapping configuration="" content-type="org.eclipse.cdt.core.cSource" language="org.eclipse.cdt.core.gcc"/>
 			<content-type-mapping configuration="" content-type="org.eclipse.cdt.core.cxxHeader" language="org.eclipse.cdt.core.g++"/>
 			<content-type-mapping configuration="" content-type="org.eclipse.cdt.core.cxxSource" language="org.eclipse.cdt.core.g++"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/sdcard.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/sdcard_wrapper.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/sdfat_fs.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/sdinfo.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/spimaster.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/spimaster_soft.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/ctbot_comp.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FatApiConstants.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FatFile.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FatFileSystem.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FatLib.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FatLibConfig.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FatStructs.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FatVolume.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FmtNumber.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/Print.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/Printable.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/SdFat.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/SdFatConfig.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/WString.h"/>
 		</project-mappings>
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="2">

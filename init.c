@@ -45,7 +45,7 @@
 #include "motor.h"
 #include "sensor.h"
 #include "ir-rc5.h"
-#include "botfs.h"
+#include "sdfat_fs.h"
 #include "sp03.h"
 #include <stdlib.h>
 
@@ -92,22 +92,10 @@ void ctbot_init(int argc, char * argv[]) {
 	ENA_init();
 #endif
 #ifdef MMC_AVAILABLE
-	{
-		const uint8_t res = mmc_init();
-		if (res != 0) {
-			LOG_ERROR("mmc_init()=%u", res);
-		}
+	if (sd_init(SPI_SPEED)) {
+		LOG_ERROR("sd_card_init() failed: error code=0x%02x 0x%02x", sd_get_error_code(), sd_get_error_data());
 	}
 #endif
-#ifdef BOT_FS_AVAILABLE
-	{
-		void * buf = &mmc_buffers;
-		const int8_t res = botfs_init(botfs_volume_image_file, buf, True);
-		if (res != 0) {
-			LOG_ERROR("botfs_init()=%d", res);
-		}
-	}
-#endif // BOT_FS_AVAILABLE
 	bot_sens_init();
 #ifdef BEHAVIOUR_AVAILABLE
 	bot_behave_init();

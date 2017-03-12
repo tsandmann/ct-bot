@@ -59,23 +59,25 @@ MSG_DEVICE = Target device is $(DEVICE)
 
 # List C source files here. (C dependencies are automatically generated.)
 define SRCMCU
-	mcu/adc.c mcu/bootloader.c mcu/bot-2-linux.c mcu/bot-2-sim.c mcu/botfs-low.c mcu/cmps03.c mcu/delay.c \
-	mcu/display.c mcu/ena.c mcu/i2c.c mcu/init-low.c mcu/ir-rc5.c mcu/led.c mcu/mini-fat.c mcu/mmc-low.c \
-	mcu/mmc.c mcu/motor-low.c mcu/mouse.c mcu/os_scheduler.c mcu/os_thread.c mcu/sensor-low.c mcu/shift.c \
-	mcu/sp03.c mcu/spi.c mcu/srf10.c mcu/timer-low.c mcu/twi.c mcu/uart.c
+	mcu/adc.c mcu/bootloader.c mcu/bot-2-linux.c mcu/bot-2-sim.c mcu/cmps03.c mcu/cppsupport.cpp mcu/delay.c \
+	mcu/display.c mcu/ena.c mcu/i2c.c mcu/init-low.c mcu/ir-rc5.c mcu/led.c \
+	mcu/mmc.c mcu/motor-low.c mcu/mouse.c mcu/os_scheduler.c mcu/os_thread.c mcu/sdcard_wrapper.cpp mcu/sdcard.cpp mcu/sensor-low.c mcu/shift.c \
+	mcu/sp03.c mcu/srf10.c mcu/timer-low.c mcu/twi.c mcu/uart.c \
+	mcu/SdFat/Print.cpp mcu/SdFat/FatLib/FatFile.cpp mcu/SdFat/FatLib/FatFileLFN.cpp mcu/SdFat/FatLib/FatFilePrint.cpp mcu/SdFat/FatLib/FatFileSFN.cpp \
+	mcu/SdFat/FatLib/FatVolume.cpp mcu/SdFat/FatLib/FmtNumber.cpp
 endef 
 
 define SRCPC
-	pc/bot-2-atmega_pc.c pc/bot-2-sim_pc.c pc/botfs-low_pc.c pc/botfs-tools_pc.c pc/botfs_pc.c \
-	pc/cmd-tools_pc.c pc/delay_pc.c pc/display_pc.c pc/eeprom_pc.c pc/ena_pc.c pc/init-low_pc.c \
-	pc/ir-rc5_pc.c pc/led_pc.c pc/mini-fat_pc.c pc/mmc-emu_pc.c pc/motor-low_pc.c pc/mouse_pc.c \
-	pc/os_thread_pc.c pc/sensor-low_pc.c pc/tcp-server.c pc/tcp.c pc/timer-low_pc.c pc/trace.c \
+	pc/bot-2-atmega_pc.c pc/bot-2-sim_pc.c \
+	pc/cmd-tools_pc.c pc/delay_pc.c pc/display_pc.c pc/ena_pc.c pc/init-low_pc.c \
+	pc/ir-rc5_pc.c pc/led_pc.c pc/motor-low_pc.c pc/mouse_pc.c \
+	pc/os_thread_pc.c pc/sdfat_fs_pc.c pc/sensor-low_pc.c pc/tcp-server.c pc/tcp.c pc/timer-low_pc.c pc/trace.c \
 	pc/uart-test_pc.c pc/uart_pc.c
 endef
 
 define SRCHIGHLEVEL
-	bot-2-bot.c botcontrol.c botfs.c command.c fifo.c init.c log.c map.c math_utils.c \
-	minilog.c mmc-vm.c motor.c pos_store.c sensor.c timer.c
+	bot-2-bot.c botcontrol.c command.c fifo.c init.c log.c map.c math_utils.c \
+	minilog.c motor.c pos_store.c sensor.c timer.c
 endef 
 
 define SRCLOGIC
@@ -121,13 +123,13 @@ SRCBEHAVIOUR = $(SRCMAIN) $(SRCLOGIC)
 # Even though the DOS/Win* filesystem matches both .s and .S the same,
 # it will preserve the spelling of the filenames, and gcc itself does
 # care about how the name is spelled on its command-line.
-ASRC = 1st_init.S
+ASRC = 
 
 MATH_LIB = -lm
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
-EXTRAINCDIRS = . ./include ./include/bot-logic
+EXTRAINCDIRS = . ./include ./include/bot-logic ./mcu/SdFat
 ifeq ($(DEVICE),MCU)
 	# Assembler flags.
 	#  -Wa,...:   tell GCC to pass this to the assembler.
@@ -166,7 +168,7 @@ ifeq ($(DEVICE),MCU)
 	#  -Wl,...:     tell GCC to pass this to linker.
 	LDFLAGS = -mmcu=$(MCU)
 	LDFLAGS += -Wl,--section-start=.bootloader=0x1F800
-	LDFLAGS += -Wl,--whole-archive
+	LDFLAGS += -Wl,--whole-archive -Wl,--gc-sections
 	
 	LIBS = -Wl,--no-whole-archive 
 	LIBS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)

@@ -97,6 +97,7 @@
 #define EXPANSION_BOARD_AVAILABLE		/**< Erweiterungsmodul (MMC / WiPort) installiert */
 //#define EXPANSION_BOARD_MOD_AVAILABLE	/**< modifiziertes Erweiterungsmodul (MMC / WiPort) installiert */
 //#define SPI_AVAILABLE	/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
+#define SPI_SPEED	2	/**< SPI-Clockfrequenz (falls SPI_AVAILABLE) als Teiler von F_CPU (moegliche Werte sind 2, 4, 8, 16, 32, 64, 128) */
 //#define DISTSENS_TYPE_GP2Y0A60 /**< Distanzsensor Typ GP2Y0A60 */
 
 /* I/O-Schnittstellen fuer Raspberry Pi */
