@@ -71,6 +71,10 @@
 //#warning "Bitte pruefen, ob der Linker auch mit den Optionen: -Wl,--section-start=.bootloader=0x1F800 startet"
 #endif
 
+#if UART_BAUD != 115200
+#warning "Set UART_BAUD to 115200 for bootloader"
+#endif
+
 /** Startup-Timeout */
 #define START_WAIT
 
