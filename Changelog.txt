@@ -2,7 +2,7 @@ CHANGELOG fuer c't-Bot
 ======================
 2017-03-12: Release 24 (v1.24)
 
-2017-03-12: Dokumentation fuer Technisat TTS35AI Fernebdienung erweitert
+2017-03-12: Dokumentation fuer Technisat TTS35AI Fernbedienung erweitert
 
 2017-03-12: Display und Shiftregister Code aufgeraeumt
 
