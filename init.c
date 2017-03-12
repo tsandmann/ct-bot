@@ -43,8 +43,10 @@
 #include "twi.h"
 #include "gui.h"
 #include "motor.h"
+#include "sensor.h"
 #include "ir-rc5.h"
 #include "botfs.h"
+#include "sp03.h"
 #include <stdlib.h>
 
 
@@ -61,13 +63,14 @@ void ctbot_init(int argc, char * argv[]) {
 #ifdef UART_AVAILABLE
 	uart_init();
 #endif
+#ifdef ARM_LINUX_BOARD
+	const int8_t ret = bot_2_atmega_init();
+	if (ret != 0) {
+		LOG_ERROR("ctbot_init(): bot_2_atmega_init() failed with %d", ret);
+	}
+#endif // ARM_LINUX_BOARD
 #if defined PC && defined BOT_2_SIM_AVAILABLE
 	tcp_init();
-#endif
-#ifdef ARM_LINUX_BOARD
-	if (bot_2_atmega_init() != 0) {
-		exit(1);
-	}
 #endif
 #ifdef COMMAND_AVAILABLE
 	command_init();

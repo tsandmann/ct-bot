@@ -43,6 +43,7 @@ typedef struct {
    const char name[REMOTE_CALL_FUNCTION_NAME_LEN + 1];	/**< Text, maximal TEXT_LEN Zeichen lang +  1 Zeichen Terminierung */
    const char param_info[PARAM_TEXT_LEN + 1];			/**< String, der Angibt, welche und was fuer Parameter die Fkt erwartet */
    Behaviour_t * (* func) (Behaviour_t *, ...);			/**< Zeiger auf die auszufuehrende (Boten-)Funktion */
+   BehaviourFunc_t beh_func;
 } PACKED remotecall_entry_t;
 
 /** Union fuer Remotecall-Daten */

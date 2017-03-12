@@ -26,6 +26,7 @@
 
 #ifndef BEHAVIOUR_GOTO_POS_H_
 #define BEHAVIOUR_GOTO_POS_H_
+#include "sensor.h"
 
 #ifdef BEHAVIOUR_GOTO_POS_AVAILABLE
 /**
@@ -81,6 +82,8 @@ static inline Behaviour_t * bot_goto_dist(Behaviour_t * caller, int16_t distance
 
 #else // BEHAVIOUR_GOTO_POS_AVAILABLE
 #ifdef BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+#include "motor.h"
+
 Behaviour_t * bot_drive_distance(Behaviour_t * caller, int8_t curve, int16_t speed, int16_t cm);
 
 /**
@@ -97,6 +100,6 @@ static inline Behaviour_t * bot_goto_dist(Behaviour_t * caller, int16_t distance
 	}
 	return bot_drive_distance(caller, 0, BOT_SPEED_NORMAL * dir, distance / 10);
 }
-#endif //BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
+#endif // BEHAVIOUR_DRIVE_DISTANCE_AVAILABLE
 #endif // BEHAVIOUR_GOTO_POS_AVAILABLE
 #endif // BEHAVIOUR_GOTO_POS_H_

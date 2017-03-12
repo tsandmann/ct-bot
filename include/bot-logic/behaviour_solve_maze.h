@@ -17,49 +17,50 @@
  *
  */
 
-/*!
- * @file 	behaviour_solve_maze.h
- * @brief 	Wandfolger durchs Labyrinth
- * @author 	Torsten Evers (tevers@onlinehome.de)
- * @date 	03.11.06
+/**
+ * \file 	behaviour_solve_maze.h
+ * \brief 	Wandfolger durchs Labyrinth
+ * \author 	Torsten Evers (tevers@onlinehome.de)
+ * \date 	03.11.2006
  */
 
 #ifndef BEHAVIOUR_SOLVE_MAZE_H_
 #define BEHAVIOUR_SOLVE_MAZE_H_
 
 #ifdef BEHAVIOUR_SOLVE_MAZE_AVAILABLE
-/*!
+/**
  * Das Verhalten findet seinen Weg durch ein Labyrinth, das nach gewissen Grundregeln gebaut ist
  * in nicht immer optimaler Weise aber in jedem Fall. Es arbeitet nach dem Hoehlenforscher-Algorithmus.
  * Einschraenkung: Objekte im Labyrinth, die Endlossschleifen verursachen koennen, z.b. ein einzeln
  * stehender Pfeiler im Labyrinth um den der Bot dann immer wieder herum fahren wuerde.
- * @param *caller	Verhaltensdatensatz des Aufrufers
+ * \param *caller	Verhaltensdatensatz des Aufrufers
+ * \return			Zeiger auf Verhaltensdatensatz
  */
-void bot_solve_maze(Behaviour_t * caller);
+Behaviour_t* bot_solve_maze(Behaviour_t * caller);
 
-/*!
+/**
  * Das Verhalten findet seinen Weg durch ein Labyrinth, das nach gewissen Grundregeln gebaut ist
  * in nicht immer optimaler Weise aber in jedem Fall. Es arbeitet nach dem Hoehlenforscher-Algorithmus.
  * Einschraenkung: Objekte im Labyrinth, die Endlossschleifen verursachen koennen, z.b. ein einzeln
  * stehender Pfeiler im Labyrinth um den der Bot dann immer wieder herum fahren wuerde.
- * @param *data	Verhaltensdatensatz
+ * \param *data	Verhaltensdatensatz
  */
 void bot_solve_maze_behaviour(Behaviour_t * data);
 
-/*!
+/**
  * Das Verhalten dreht den Bot in die angegebene Richtung bis ein Hindernis
  * im Sichtbereich erscheint, das eine Entfernung bis max. zur angegebenen
  * Distanz zum Bot hat.
- * @param *data	Verhaltensdatensatz
+ * \param *data	Verhaltensdatensatz
  */
 void bot_measure_angle_behaviour(Behaviour_t * data);
 
-/*!
+/**
  * Das Verhalten dreht sich um 45 Grad in die angegebene Richtung (0=rechts, 1=links)
  * und prueft, ob auf dem Sensor auf der Seite der angegebenen Richtung eine Wand
  * im Abstand von 12cm zu sehen ist. Wenn dem so ist, wird die Variable wall_present
  * auf True gesetzt, sonst False
- * @param *data	Verhaltensdatensatz
+ * \param *data	Verhaltensdatensatz
  */
 void bot_check_wall_behaviour(Behaviour_t * data);
 

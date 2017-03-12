@@ -67,6 +67,7 @@ extern uint8_t sensError;	/**< Ueberwachung Servo oder Batteriefehler [0/1]  1= 
 
 extern uint16_t RC5_Code;	/**< Letzter empfangener RC5-Code */
 
+#define BPS_NO_DATA 0xffff	/**< Wert des BPS-Sensors, falls keine Daten verfuegbar sind */
 extern uint16_t sensBPS;	/**< Bot Positioning System */
 #ifdef BPS_AVAILABLE
 extern ir_data_t bps_ir_data; /**< RC5-Konfiguration fuer BPS-Sensor */
@@ -133,7 +134,7 @@ extern uint16_t sensSRF10;	/**< Messergebniss Ultraschallsensor */
 #endif
 
 #ifdef CMPS03_AVAILABLE
-cmps03_t sensCmps03;		/**< Lage laut CMPS03-Kompass */
+extern cmps03_t sensCmps03;		/**< Lage laut CMPS03-Kompass */
 #endif
 
 /**

@@ -32,7 +32,7 @@
 #include "i2c.h"
 #include <avr/io.h>
 
-#define SHIFT_OUT				0x1F	/**< Alle Pins die Ausgaenge sind */
+#define SHIFT_OUT				(_BV(PINC0) | _BV(PINC1) | _BV(PINC2) | _BV(PINC3) | _BV(PINC4)) /**< Alle Pins die Ausgaenge sind */
 #define SHIFT_PORT				PORTC	/**< Port an dem die Register haengen */
 #define SHIFT_DDR				DDRC	/**< DDR des Ports an dem die Register haengen */
 
@@ -44,7 +44,7 @@ static void shift_clear(void) {
 }
 
 /**
- * Initialisert die Shift-Register
+ * Initialisiert die Shift-Register
  */
 void shift_init(void) {
 	SHIFT_DDR |= SHIFT_OUT; // Ausgaenge Schalten

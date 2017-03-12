@@ -28,14 +28,13 @@
 #define SHIFT_H_
 
 
-#define SHIFT_LATCH	(1<<1)			/**< Clock to store Data into shiftregister */
-
-#define SHIFT_REGISTER_DISPLAY	0x04	/**< Port-Pin for shiftregister latch (display) */
-#define SHIFT_REGISTER_LED	0x10	/**< Port-Pin for shiftregister latch (leds) */
-#define SHIFT_REGISTER_ENA	0x08	/**< Port-Pin for shiftregister latch (enable) */
+#define SHIFT_LATCH				_BV(PINC1)	/**< Clock to store Data into shiftregister (SCK for display, RCK for LED and ENA) */
+#define SHIFT_REGISTER_DISPLAY	_BV(PINC2)	/**< Port-Pin for shiftregister latch RCK (display) */
+#define SHIFT_REGISTER_LED		_BV(PINC4)	/**< Port-Pin for shiftregister latch SCK (leds) */
+#define SHIFT_REGISTER_ENA		_BV(PINC3)	/**< Port-Pin for shiftregister latch SCK (enable) */
 
 /**
- * Initialisert die Shift-Register
+ * Initialisiert die Shift-Register
  */
 void shift_init(void);
 

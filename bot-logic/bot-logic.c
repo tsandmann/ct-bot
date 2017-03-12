@@ -33,7 +33,7 @@
  */
 
 
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 
 #ifdef BEHAVIOUR_AVAILABLE
 #include "display.h"
@@ -46,6 +46,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
 //#define DEBUG_BOT_LOGIC	// Schalter um recht viel Debug-Code anzumachen
 
 #ifndef DEBUG_BOT_LOGIC
@@ -53,19 +54,19 @@
 #define LOG_DEBUG(...) {}
 #endif
 
+/* Verhaltenssteuerung, Verhalten mit Prioritaet zwischen MIN und MAX werden mit Notaus-Taste deaktiviert */
+#define BEHAVIOUR_PRIO_MIN	3	/**< Prioritaet, die ein Verhalten mindestens haben muss, um deaktiviert zu werden */
+#define BEHAVIOUR_PRIO_MAX	200	/**< Prioritaet, die ein Verhalten hoechstens haben darf, um deaktiviert zu werden */
+
+static Behaviour_t * behaviour = NULL; /**< Liste mit allen Verhalten */
+int16_t target_speed_l = BOT_SPEED_STOP; /**< Sollgeschwindigkeit linker Motor - darum kuemmert sich bot_base() */
+int16_t target_speed_r = BOT_SPEED_STOP; /**< Sollgeschwindigkeit rechter Motor - darum kuemmert sich bot_base() */
 int16_t speedWishLeft;	/**< Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit links */
 int16_t speedWishRight;	/**< Puffervariable fuer die Verhaltensfunktionen absolute Geschwindigkeit rechts */
-
 #ifdef BEHAVIOUR_FACTOR_WISH_AVAILABLE
 float factorWishLeft;	/**< Puffervariable fuer die Verhaltensfunktionen Modifikationsfaktor links */
 float factorWishRight;	/**< Puffervariable fuer die Verhaltensfunktionen Modifikationsfaktor rechts */
-#endif
-
-int16_t target_speed_l = BOT_SPEED_STOP; /**< Sollgeschwindigkeit linker Motor - darum kuemmert sich bot_base() */
-int16_t target_speed_r = BOT_SPEED_STOP; /**< Sollgeschwindigkeit rechter Motor - darum kuemmert sich bot_base() */
-
-/** Liste mit allen Verhalten */
-static Behaviour_t * behaviour = NULL;
+#endif // BEHAVIOUR_FACTOR_WISH_AVAILABLE
 
 /* Forward-Deklarationen */
 static void insert_behaviour_to_list(Behaviour_t * * list, Behaviour_t * behave);
@@ -76,15 +77,16 @@ int8_t register_emergency_proc(void (* fkt)(void));
 
 /**
  * Initialisiert alle Verhalten
+ * \todo Doku (Kommantare innerhalb der Funktion) ueberarbeiten!
  */
 void bot_behave_init(void) {
 
 #ifdef BEHAVIOUR_PROTOTYPE_AVAILABLE
-	insert_behaviour_to_list(&behaviour, new_behaviour(102, bot_prototype_behaviour, BEHAVIOUR_ACTIVE));
+	insert_behaviour_to_list(&behaviour, new_behaviour(102, bot_prototype_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
-	// Dieses Verhalten kann andere starten
+	// Dieses Verhalten kann andere Verhalten starten
 	insert_behaviour_to_list(&behaviour, new_behaviour(254, bot_remotecall_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 
@@ -92,14 +94,14 @@ void bot_behave_init(void) {
 	insert_behaviour_to_list(&behaviour, new_behaviour(253, bot_servo_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 
-
 #ifdef BEHAVIOUR_SIMPLE_AVAILABLE
-	// Demo-Verhalten, ganz einfach, bot_simple wird unten sofort aktiv geschaltet.
-	// Achtung, im Moment hat es eine hoehere Prioritaet als die Gefahrenerkenner!
-	insert_behaviour_to_list(&behaviour, new_behaviour(252, bot_simple_behaviour, BEHAVIOUR_ACTIVE));
+	/* Demo-Verhalten, ganz einfach, bot_simple wird unten sofort aktiv geschaltet.
+	 * Achtung, im Moment hat es eine hoehere Prioritaet als die Gefahrenerkenner! */
+	insert_behaviour_to_list(&behaviour, new_behaviour(252, bot_simple_behaviour, BEHAVIOUR_INACTIVE));
 	insert_behaviour_to_list(&behaviour, new_behaviour(251, bot_simple2_behaviour, BEHAVIOUR_INACTIVE));
 
 	// Um das Simple2-Behaviour zu nutzen, die Kommentarzeichen der folgenden beiden Zeilen tauschen
+	activateBehaviour(NULL, bot_simple_behaviour);
 	//activateBehaviour(NULL, bot_simple2_behaviour);
 #endif
 
@@ -108,9 +110,7 @@ void bot_behave_init(void) {
 	insert_behaviour_to_list(&behaviour, new_behaviour(250, bot_scan_onthefly_behaviour, BEHAVIOUR_ACTIVE));
 #endif
 
-	// Sehr hohe Prioritaet haben die Notfall Verhalten
-
-	// Verhalten zum Schutz des Bots, hohe Prioritaet, aktiv
+	/* Notfall Verhalten zum Schutz des Bots, hohe Prioritaet, sofort aktiv */
 #ifdef BEHAVIOUR_AVOID_BORDER_AVAILABLE
 	insert_behaviour_to_list(&behaviour, new_behaviour(249, bot_avoid_border_behaviour, BEHAVIOUR_ACTIVE));
 #endif
@@ -142,7 +142,7 @@ void bot_behave_init(void) {
 #endif
 
 	// Alle Hilfsroutinen sind relativ wichtig, da sie auch von den Notverhalten her genutzt werden
-	// Hilfsverhalten, die Befehle von Boten-Funktionen ausfuehren, erst inaktiv, werden von Boten aktiviert
+	// Hilfsverhalten, die Befehle von Boten-Funktionen ausfuehren, erstmal inaktiv, werden von Boten aktiviert
 #ifdef BEHAVIOUR_TURN_AVAILABLE
 	insert_behaviour_to_list(&behaviour, new_behaviour(150, bot_turn_behaviour, BEHAVIOUR_INACTIVE));
 #endif
@@ -170,14 +170,14 @@ void bot_behave_init(void) {
 #endif
 
 #ifdef BEHAVIOUR_DRIVE_NEURALNET_AVAILABLE
-	//Fahrverhalten fuer das neuronale Netz; setzt dieses natuerlich voraus
+	// Fahrverhalten fuer das neuronale Netz; setzt dieses natuerlich voraus
 	insert_behaviour_to_list(&behaviour, new_behaviour(135, bot_drive_neuralnet_behaviour, BEHAVIOUR_INACTIVE));
 	// Unterverhalten zum Checken der Sektoren links Mitte und rechts vom Bot
 	insert_behaviour_to_list(&behaviour, new_behaviour(134, bot_check_sector_behaviour, BEHAVIOUR_INACTIVE));
 #endif
 
 #ifdef BEHAVIOUR_NEURALNET_AVAILABLE
-	//Training des neuronalen Netzes sofort Losstarten bei Vorhandensein, da initiale Lernpattern vorhanden sind
+	// Training des neuronalen Netzes sofort Losstarten bei Vorhandensein, da initiale Lernpattern vorhanden sind
 	insert_behaviour_to_list(&behaviour, new_behaviour(102, bot_neuralnet_behaviour, BEHAVIOUR_ACTIVE));
 #endif
 
@@ -475,13 +475,17 @@ static uint8_t isInCallHierarchy(Behaviour_t * job, Behaviour_t * caller_beh) {
  * \param *caller Zeiger auf den Aufrufer
  */
 void deactivate_called_behaviours(Behaviour_t * caller) {
-	Behaviour_t * job; // Zeiger auf ein Verhalten
+	if (! caller) {
+		LOG_DEBUG("Parameter caller invalid");
+		return;
+	}
 
 	LOG_DEBUG(""); // new line
-	LOG_DEBUG("Callees von Verhalten %u sollen abgeschaltet werden.", get_behaviour(function)->priority);
+	LOG_DEBUG("Callees von Verhalten %u sollen abgeschaltet werden.", caller->priority);
 	LOG_DEBUG("Beginne mit dem Durchsuchen der Liste");
 	// Einmal durch die Liste gehen, und alle aktiven Funktionen pruefen, ob sie von dem uebergebenen Verhalten aktiviert wurden
 	uint8_t i = 0;
+	Behaviour_t * job; // Zeiger auf ein Verhalten
 	Behaviour_t * beh_of_function = NULL;
 	for (job = behaviour; job; job = job->next) { // n mal
 		if (job->active == BEHAVIOUR_ACTIVE) {
@@ -505,6 +509,7 @@ void deactivate_called_behaviours(Behaviour_t * caller) {
 				if (beh == NULL) {
 					LOG_DEBUG("  Verhalten %u wird in Tiefe %u abgeschaltet", tmp->priority, level);
 					tmp->active = BEHAVIOUR_INACTIVE; // callee abschalten
+					tmp->subResult = BEHAVIOUR_SUBCANCEL;
 					tmp->caller = NULL; // Caller loeschen, damit Verhalten auch ohne BEHAVIOUR_OVERRIDE neu gestartet werden koennen
 				}
 			}	// O(n^2)
@@ -631,10 +636,11 @@ void deactivateAllBehaviours(void) {
 	Behaviour_t * job; // Zeiger auf ein Verhalten
 	// Einmal durch die Liste gehen und (fast) alle deaktivieren, Grundverhalten nicht
 	for (job = behaviour; job; job = job->next) {
-		if ((job->priority >= PRIO_VISIBLE_MIN) && (job->priority <= PRIO_VISIBLE_MAX)) {
+		if ((job->priority >= BEHAVIOUR_PRIO_MIN) && (job->priority <= BEHAVIOUR_PRIO_MAX)) {
             // Verhalten deaktivieren
 			LOG_DEBUG("Verhalten %u wird deaktiviert", job->priority);
 			job->active = BEHAVIOUR_INACTIVE;
+			job->subResult = BEHAVIOUR_SUBCANCEL;
 			job->caller = NULL; // Caller loeschen, damit Verhalten auch ohne BEHAVIOUR_OVERRIDE neu gestartet werden koennen
 		}
 	}
@@ -745,104 +751,4 @@ void start_registered_emergency_procs(void) {
 		}
 	}
 }
-
-
-#ifdef DISPLAY_BEHAVIOUR_AVAILABLE
-/**
- * Behandelt die Tasten fuer die Verhaltensanezeige, die das jeweilige Verhalten aktivieren oder deaktivieren.
- * \param **data Zeiger auf ein Array mit Verhaltensdatensatzzeigern
- */
-static void beh_disp_key_handler(Behaviour_t * * data) {
-	Behaviour_t * callee = NULL;
-	/* Keyhandling um Verhalten ein- / auszuschalten */
-	switch (RC5_Code) {
-		case RC5_CODE_1: callee = data[0]; break;
-		case RC5_CODE_2: callee = data[1]; break;
-		case RC5_CODE_3: callee = data[2]; break;
-		case RC5_CODE_4: callee = data[3]; break;
-		case RC5_CODE_5: callee = data[4]; break;
-		case RC5_CODE_6: callee = data[5]; break;
-		case RC5_CODE_7: callee = data[6]; break;
-		case RC5_CODE_8: callee = data[7]; break;
-	}
-	/* Verhaltensstatus toggeln */
-	if (callee != NULL) {
-		RC5_Code = 0;
-		bit_t tmp;
-		tmp.bit = callee->active;
-		tmp.byte = (uint8_t) (~ tmp.byte);
-		callee->active = tmp.bit;
-	}
-}
-
-/**
- * Zeigt Informationen ueber Verhalten an, 'A' fuer Verhalten aktiv, 'I' fuer Verhalten inaktiv.
- * Es werden zwei Spalten mit jeweils 4 Verhalten angezeigt. Gibt es mehr Verhalten in der Liste, kommt man
- * mit der Taste DOWN auf eine weitere Seite (die aber kein extra Screen ist). Mit der Taste UP geht's bei Bedarf
- * wieder zurueck. Vor den Prioritaeten steht eine Nummer von 1 bis 8, drueckt man die entsprechende Zifferntaste
- * auf der Fernbedienung, so wird das Verhalten aktiv oder inaktiv geschaltet, komplementaer zum aktuellen Status.
- * Den Keyhandler dazu stellt beh_disp_key_handler() dar.
- */
-void behaviour_display(void) {
-	static uint8_t behaviour_page = 0; /**< zuletzt angezeigte Verhaltensseite */
-	if (RC5_Code == RC5_CODE_DOWN) {
-		/* naechste Seite */
-		behaviour_page++;
-		display_clear(); // Screen-Nr. wechselt nicht => Screen selbst loeschen
-		RC5_Code = 0; // Taste behandelt
-	} else if (RC5_Code == RC5_CODE_UP) {
-		/* vorherige Seite */
-		if (behaviour_page > 0) {
-			behaviour_page--;
-		}
-		display_clear();
-		RC5_Code = 0;
-	}
-	Behaviour_t * behaviours[8] = { NULL }; // speichert Zeiger auf die Verhalten fuer den Keyhandler zwischen
-	uint8_t i, j, k = 0;
-	Behaviour_t * ptr = behaviour;
-	while (ptr != NULL && ptr->priority > PRIO_VISIBLE_MAX) {
-		ptr = ptr->next; // alles ausserhalb der Sichtbarkeit ueberspringen
-	}
-	/* Verhalten auf vorherigen Seiten ueberspringen */
-	if (behaviour_page > 0) {
-		for (i = 1; i <= (behaviour_page << 3); ++i) { // 8 Verhalten pro Seite
-			ptr = ptr->next;
-			while (ptr != NULL && ptr->priority > PRIO_VISIBLE_MAX) {
-				ptr = ptr->next; // alles ausserhalb der Sichtbarkeit ueberspringen
-			}
-			if (ptr == NULL) {
-				behaviour_page--; // kein Verhalten mehr da => beim naechsten Aufruf stimmt's so aber wieder
-				return;
-			}
-		}
-	}
-	char status[2] = "IA"; // I: inactive, A: active
-	/* max. 4 Zeilen mit jeweils 2 Verhalten (= 8 Verhalten) anzeigbar */
-	for (i = 1; i <= 20; i = (uint8_t) (i + 11)) { // Spalten
-		for (j = 1; j <= 4; ++j) { // Zeilen
-			while (ptr != NULL && ptr->priority > PRIO_VISIBLE_MAX) {
-				ptr = ptr->next; // alles ausserhalb der Sichtbarkeit ueberspringen
-			}
-			if (ptr == NULL || ptr->priority < PRIO_VISIBLE_MIN) {
-				if (i == 1 && j == 1 && behaviour_page > 0) {
-					behaviour_page--; // keine unnoetige leere Seite anzeigen
-				}
-				if (RC5_Code != 0) {
-					beh_disp_key_handler(behaviours); // Tasten auswerten
-				}
-				return; // fertig, da ptr == NULL oder Prioritaet bereits zu klein
-			}
-			/* Ausgabe */
-			display_cursor(j, i);
-			display_printf("%u: %3d=%c ", k + 1, ptr->priority, status[ptr->active]);
-			behaviours[k++] = ptr; // speichern fuer Tastenhandler
-			ptr = ptr->next;
-		}
-	}
-	if (RC5_Code !=0) {
-		beh_disp_key_handler(behaviours); // Tasten auswerten
-	}
-}
-#endif // DISPLAY_BEHAVIOUR_AVAILABLE
 #endif // BEHAVIOUR_AVAILABLE

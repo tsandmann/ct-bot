@@ -36,6 +36,7 @@
 #include "uart.h"
 #include "botcontrol.h"
 #include "delay.h"
+#include "sensor.h"
 #include <stdio.h>
 #include <stdlib.h>
 

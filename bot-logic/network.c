@@ -479,6 +479,8 @@ net_set_bias (network_t *net, int l, int nu, float weight)
 }
 
 #ifdef PC
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
 /****************************************
  * File I/O
  ****************************************/
@@ -745,8 +747,7 @@ net_fbscan (FILE *file)
   /* read network weights */
   for (l = 1; l < net->no_of_layers; l++) {
     for (nu = 0; nu < net->layer[l].no_of_neurons; nu++) {
-      fread (net->layer[l].neuron[nu].weight, sizeof (float),
-             net->layer[l - 1].no_of_neurons + 1, file);
+    	fread (net->layer[l].neuron[nu].weight, sizeof (float), net->layer[l - 1].no_of_neurons + 1, file);
     }
   }
 
@@ -798,6 +799,7 @@ net_bload (const char *filename)
 
   return net;
 }
+#pragma GCC diagnostic pop
 #endif // PC
 
 /****************************************
