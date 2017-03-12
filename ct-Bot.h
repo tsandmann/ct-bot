@@ -42,7 +42,7 @@
 
 
 /* Kommunikation */
-//#define BOT_2_SIM_AVAILABLE					/**< Soll der Bot mit dem Sim kommunizieren? */
+#define BOT_2_SIM_AVAILABLE					/**< Soll der Bot mit dem Sim kommunizieren? */
 //#define BOT_2_BOT_AVAILABLE					/**< Sollen Bots untereinander kommunizieren? */
 #define BOT_2_BOT_PAYLOAD_AVAILABLE			/**< Aktiviert Payload-Versand per Bot-2-Bot Kommunikation */
 
@@ -72,12 +72,12 @@
 
 
 /* Umgebungskarte */
-//#define MAP_AVAILABLE						/**< Aktiviert die Kartographie */
+#define MAP_AVAILABLE						/**< Aktiviert die Kartographie */
 #define MAP_2_SIM_AVAILABLE					/**< Sendet die Map zur Anzeige an den Sim */
 
 
 /* MMC-/SD-Karte als Speichererweiterung (Erweiterungsmodul) */
-#define MMC_AVAILABLE						/**< haben wir eine MMC/SD-Karte zur Verfuegung? */
+//#define MMC_AVAILABLE						/**< haben wir eine MMC/SD-Karte zur Verfuegung? */
 #define SDFAT_AVAILABLE						/**< Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf MMC/SD-Karte */
 
 
