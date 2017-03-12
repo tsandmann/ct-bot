@@ -1,6 +1,28 @@
 CHANGELOG fuer c't-Bot
 ======================
-2016-10-23: Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf SD-Karten (experimentell!). Unterstuetzung fuer SDHC-Karten.
+2017-03-12: Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf SD-Karten. Unterstuetzung fuer SDHC-Karten.
+
+2017-03-12: Release 24 (v1.24)
+
+2017-03-12: Dokumentation fuer Technisat TTS35AI Fernbedienung erweitert
+
+2017-03-12: Display und Shiftregister Code aufgeraeumt
+
+2017-03-11: Bugfix Bootloader 
+
+2017-02-25: Buildsettings fuer Linux und macOS kombiniert (Debug-Linux_Mac)
+
+2017-02-18: Dokumenation um Messprotokoll von anonybot ergaenzt
+
+2017-02-12: Automatisierte Build Tests eingefuehrt, diverse Warnings beseitigt
+
+2017-02-11: Bugfix fuer Fifo: Race-Condition korrigiert 
+
+2017-02-08: Bugfix fuer map-2-sim und Distanzsensorauswertung (out-of-bounds Zugriffe)
+
+2017-01-14: Tastenmapping fuer Technisat TTS35AI Fernebdienung aktualisiert
+
+2016-10-29: Fernbedienungskonfiguration nach bot-local.h verschoben
 
 2016-10-15: Bugfix fuer MMC/SD-Karte falls MOUSE_AVAILABLE an ist. MMC-Code etwas aufgeraeumt.
 
