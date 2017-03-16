@@ -27,17 +27,19 @@
 #ifndef TIMER_H_
 #define TIMER_H_
 
+#include "ct-Bot.h"
+
 /**
  * Makro zur Umrechnung von Ticks in ms
  * (ms / ticks evtl. nach uint32_t casten, fuer grosse Werte)
  */
-#define TICKS_TO_MS(ticks)	((ticks) * (TIMER_STEPS / 8) / (1000 / 8))
+#define TICKS_TO_MS(ticks)	((ticks) * (TIMER_STEPS / 8U) / (1000U / 8U))
 
 /**
  * Makro zur Umrechnung von ms in Ticks
  * (ms / ticks evtl. nach uint32_t casten, fuer grosse Werte)
  */
-#define MS_TO_TICKS(ms)		((ms) * (1000 / 8) / (TIMER_STEPS / 8))
+#define MS_TO_TICKS(ms)		((ms) * (1000U / 8U) / (TIMER_STEPS / 8U))
 
 #define US_TO_TICKS(us)		((us) / TIMER_STEPS)
 
@@ -79,6 +81,18 @@ uint16_t timer_get_tickCount16(void);
  * liefert Ticks in 32 Bit seit Systemstart [176 us]
  */
 uint32_t timer_get_tickCount32(void);
+
+static inline
+__attribute__((always_inline))
+uint16_t timer_get_us8(void) {
+	return (uint16_t) (tickCount * 176.);
+}
+
+static inline
+__attribute__((always_inline))
+uint32_t timer_get_us32(void) {
+	return (uint32_t) (tickCount * 176.);
+}
 
 #define TIMER_GET_TICKCOUNT_8 (uint8_t) timer_get_tickCount16() /**< Systemzeit [176 us] in 8 Bit */
 #define TIMER_GET_TICKCOUNT_16 timer_get_tickCount16() /**< Systemzeit [176 us] in 16 Bit */
@@ -140,15 +154,40 @@ uint32_t timer_get_tickcount_32(void) {
 	SREG = sreg;
 	return ticks;
 }
+
+static inline
+__attribute__((always_inline))
+uint16_t timer_get_us8(void) {
+	uint8_t microticks1 = TCNT2;
+	uint8_t ticks = tickCount.u8;
+	uint8_t microticks2 = TCNT2;
+	if (microticks2 < microticks1) {
+		ticks = tickCount.u8;
+		microticks1 = microticks2;
+	}
+
+	return (uint16_t) ticks * 176U + (uint16_t) microticks1 * 4U;
+}
+
+static inline
+__attribute__((always_inline))
+uint32_t timer_get_us32(void) {
+	uint8_t sreg = SREG;
+	uint32_t ticks = tickCount.u32;
+	uint8_t microticks = TCNT2;
+	SREG = sreg;
+
+	return ticks * 176U + microticks * 4U;
+}
 #endif // PC
 
 // Die Werte fuer TIMER_X_CLOCK sind Angaben in Hz
 
 /** Frequenz von Timer 2 in Hz */
-#define TIMER_2_CLOCK 5619	// Derzeit genutzt fuer RC5-Dekodierung
+#define TIMER_2_CLOCK 5619U	// Derzeit genutzt fuer RC5-Dekodierung
 
 /** Mikrosekunden, die zwischen zwei Timer-Aufrufen liegen */
-#define TIMER_STEPS 176
+#define TIMER_STEPS 176U
 
 /**
  * Prueft, ob seit dem letzten Aufruf mindestens ms Millisekunden vergangen sind.

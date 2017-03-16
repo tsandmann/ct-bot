@@ -30,12 +30,12 @@
 #include "log.h"
 #include "cmd_tools.h"
 #include "trace.h"
-#include "eeprom.h"
 #include "command.h"
 #include "bot-2-atmega.h"
 #include "uart.h"
 #include "botcontrol.h"
 #include "delay.h"
+#include "sensor.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -66,11 +66,6 @@ void sig_handler(int signum) {
  * \param *argv Zeiger auf Kommandozeilenparameter
  */
 void ctbot_init_low_1st(int argc, char * argv[]) {
-	/* PC-EEPROM-Init vor hand_cmd_args() */
-	if (init_eeprom_man(0) != 0) {
-		LOG_ERROR("EEPROM-Manager nicht korrekt initialisiert!");
-	}
-
 	/* Kommandozeilen-Argumente auswerten */
 	hand_cmd_args(argc, argv);
 

@@ -21,18 +21,13 @@
  * \file 	mcu/mmc.c
  * \brief 	Routinen zum Auslesen/Schreiben einer MMC-Karte
  * \author 	Benjamin Benz (bbe@heise.de)
- * \author  Ulrich Radig (mail@ulrichradig.de) www.ulrichradig.de
  * \author	Timo Sandmann (mail@timosandmann.de)
  * \date 	07.11.2006
  */
 
 
-/* Die (zeitkritischen) Low-Level-Funktionen read_ und write_byte bzw. _sector liegen jetzt
- * in mmc-low.c. Der Assembler-Code ist a) wesentlich schneller und macht b) das Timing
- * unabhaengig vom verwendeten Compiler.
- * Die Portkonfiguration findet sich in mmc-low.h.
- *
- * Die MMC kann auf zwei Weisen angesprochen werden:
+/*
+ *  Die MMC kann auf zwei Weisen angesprochen werden:
  * Entweder per Software-Steuerung (das ist die Standard-Einstellung), dafuer muss
  * SPI_AVAILABLE in ct-Bot.h AUS sein.
  * Oder per Hardware-SPI-Steuerung, dafuer ist ein kleiner Hardware-Umbau noetig, man
@@ -53,616 +48,48 @@
 
 #ifdef MMC_AVAILABLE
 #include "mmc.h"
-#include "spi.h"
 #include "ena.h"
 #include "timer.h"
 #include "display.h"
 #include "led.h"
 #include "map.h"
-#include "mmc-low.h"
-#include "mmc-vm.h"
 #include "os_thread.h"
+#include "sensor.h"
 #include "log.h"
+#include "sdfat_fs.h"
 #include <stdlib.h>
 #include <string.h>
 
-uint8_t mmc_init_state = 1;	/**< Initialierungsstatus der Karte, 0: ok, 1: Fehler  */
+//#define DEBUG_MMC // Schalter, um auf einmal alle Debugs an oder aus zu machen
 
-#ifndef SPI_AVAILABLE
-/**
- * Schreibt ein Byte an die Karte
- * \param data	Das zu sendende Byte
- */
-void mmc_write_byte(uint8_t data);
+#ifndef DEBUG_MMC
+#undef LOG_AVAILABLE
+#undef LOG_DEBUG
+#define LOG_DEBUG(...) {}
+#endif // DEBUG_MMC
 
-/**
- * Liest ein Byte von der Karte
- * \return Das gelesene Byte
- */
-uint8_t mmc_read_byte(void);
+static uint32_t card_size, time_read, time_write, n;
+static uint8_t last_error_code, last_error_data;
 
-static uint8_t mmc_write_command(uint8_t * cmd);
-
-/**
- * Liest einen Block von der Karte
- * \param cmd 		Zeiger auf das Kommando, das erstmal an die Karte geht
- * \param *buffer 	Zeiger auf Puffer mit mindestens count Bytes
- * \param count 	Anzahl der zu lesenden Bytes
- */
-static uint8_t mmc_read_block(uint8_t * cmd, void * buffer, uint16_t count) {
-	os_enterCS();
-	/* Kommando cmd an MMC/SD-Karte senden */
-	if (mmc_write_command(cmd) != 0) {
-		mmc_init_state = 1;
-		os_exitCS();
-		return 1;
-	}
-
-#ifdef LED_AVAILABLE
-	LED_on(LED_GRUEN);
-#endif // LED_AVAILABLE
-	os_exitCS();
-	/* Warten auf Start Byte von der MMC/SD-Karte (FEh/Start Byte) */
-	uint8_t timeout = 0;
-	uint8_t result = 0;
-	while (result != 0xfe) {
-		os_enterCS();
-		result = mmc_read_byte();
-		os_exitCS();
-		if (--timeout == 0) break;
-	}
-
-	os_enterCS();
-	uint16_t i;
-	uint8_t * ptr = buffer;
-	/* Lesen des Blocks (max 512 Bytes) von MMC/SD-Karte */
-	for (i = 0; i < count; ++i) {
-		*ptr++ = mmc_read_byte();
-	}
-
-	/* CRC-Byte auslesen */
-	mmc_read_byte(); // CRC - Byte wird nicht ausgewertet
-	mmc_read_byte(); // CRC - Byte wird nicht ausgewertet
-
-	/* MMC/SD-Karte inaktiv schalten */
-	ENA_off(ENA_MMC);
-#ifdef LED_AVAILABLE
-	LED_off(LED_GRUEN);
-#endif // LED_AVAILABLE
-	os_exitCS();
-	if (timeout == 0) {
-		mmc_init_state = 1;
-		return 1; // Abbruch durch Timeout
-	}
-
-	return 0; // alles ok
-}
-#else // SPI_AVAILABLE
-
-#define mmc_read_byte	SPI_MasterReceive /**< read_byte() per SPI */
-#define mmc_write_byte	SPI_MasterTransmit /**< write_byte() per SPI */
-
-/**
- * wartet, bis MMC mit "data" antwortet oder der Timeout zuschlaegt
- * \param data	Das erwartete Antwortbyte
- * \return		Rest vom Timeout oder 0 im Fehlerfall
- */
-static uint32_t wait_for_byte(uint8_t data) {
-	uint32_t timeout = 0x1ffff;
-	/* warten, bis Karte mit "data" antwortet */
-	uint8_t response = 0;
-	do {
-		SPDR = 0xff;
-		if (--timeout == 0) break;
-		while(!(SPSR & (1 << SPIF))) {}
-		response = SPDR;
-	} while (response != data);
-	return timeout;
-}
-
-/**
- * bereitet Lesen oder Schreiben eines Blocks vor
- * \param cmd	1. Byte des Kommandos an die Karte
- * \param addr	Adresse des Blocks in Byte
- * \return		0: alles ok, sonst Fehlercode von mmc_enable()
- */
-static uint8_t prepare_transfer_spi(uint8_t cmd, uint32_t addr) {
-	/* Init-Check */
-	uint8_t result = mmc_enable();
-	if (result != 0) {
-		return result;
-	}
-
-	/* (addr <<= 1) & 0x00ff ffff */
-	__asm__ __volatile__(
-		"lsl %A0		\n\t"
-		"rol %B0		\n\t"
-		"rol %C0			"
-		:	"=r"	(addr)
-		:	"0"		(addr)
-	);
-
-	/* Kommando senden */
-	SPI_MasterTransmit(cmd); // 0x51: lesen, 0x schreiben
-	typedef union {
-		uint32_t u32;
-		uint8_t u8[4];
-	} mmc_addr_t;
-
-	mmc_addr_t tmp;
-	tmp.u32 = addr;
-	SPI_MasterTransmit(tmp.u8[2]); // Byteadresse des Blocks ("big-endian")
-	SPI_MasterTransmit(tmp.u8[1]);
-	SPI_MasterTransmit(tmp.u8[0]);
-	SPI_MasterTransmit(0x00);
-	SPI_MasterTransmit(0xff); // CRC
-	return 0;
-}
-
-/**
- * Liest einen Block von der Karte
- * \param cmd		Kommando zum Lesen (0x51 fuer 512-Byte Block)
- * \param addr 		Adresse des Blocks
- * \param *buffer 	Zeiger auf Puffer fuer die Daten
- * \return 			0 wenn alles ok ist, 1 wenn prepare_transfer_spi() Fehler meldet, 3 bei Timeout
- */
-uint8_t mmc_read_sector_spi(uint8_t cmd, uint32_t addr, void * buffer) {
-	os_enterCS();
-	/* cmd[] = {0x51,addr,addr,addr,0x00,0xFF} */
-	if (prepare_transfer_spi(cmd, addr) != 0) {
-		os_exitCS();
-		return 1;
-	}
-
-#ifdef LED_AVAILABLE
-	LED_on(LED_GRUEN);
-#endif // LED_AVAILABLE
-
-	/* Warten auf Start-Byte von der MMC/SD-Karte (0xfe == Start-Byte) */
-	if (wait_for_byte(0xfe) == 0) {
-		mmc_init_state = 1;
-#ifdef LED_AVAILABLE
-		LED_off(LED_GRUEN);
-#endif // LED_AVAILABLE
-		os_exitCS();
-		return 3; // Abbruch durch Timeout
-	}
-
-	/* Lesen des Blocks (512 Bytes) von MMC/SD-Karte */
-#ifdef MMC_AGGRESSIVE_OPTIMIZATION
-	SPDR = 0;	// start 1st SPI-transfer
-	int16_t i = cmd != 0x51 ? 15 : 511; // num of bytes to read
-	uint8_t tmp;
-	__asm__ __volatile__(
-		"%=:						\n\t"
-		"adiw %2,1	 	; 2 nop		\n\t" // wait 16 cycles for reception complete
-		"sbiw %2,1		; 2 nop		\n\t"
-		"adiw %2,1		; 2 nop		\n\t"
-		"sbiw %2,1		; 2 nop		\n\t"
-		"nop			; 1 nop		\n\t"
-		"in %0,%3		; tmp		\n\t" // load from SPDR
-		"out %3,__zero_reg__		\n\t" // start next SPI-transfer
-		"st Z+,%0	 	; tmp		\n\t" // save to *buffer
-		"sbiw %A1,1		; i			\n\t" // i--
-		"sbrs %B1,7		; i			\n\t" // i == 0?
-		"rjmp %=b						"
-		: "=&r" (tmp)
-		: "w" (i), "z" (buffer), "M" (_SFR_IO_ADDR(SPDR))
-		: "memory"
-	);
-#else
-	uint8_t i,j,k;
-	if (cmd != 0x51) {
-		k = 248;
-	} else {
-		k = 0;
-	}
-	SPDR = 0;	// start SPI-transfer
-	uint8_t * ptr = buffer;
-	for (i=2; i>0; i--) {
-		j = k;
-		uint8_t tmp;
-		do {
-			while(!(SPSR & (1<<SPIF))) {} // wait for reception complete
-			tmp = SPDR; // load from SPDR
-			SPDR = 0; // start next SPI-transfer
-			*ptr = tmp; // save to *buffer
-			ptr++;
-		} while (++j != 0);
-	}
-#endif // MMC_AGGRESSIVE_OPTIMIZATION
-
-	/* CRC-Bytes auslesen */
-	SPI_MasterReceive(); // CRC-Byte wird nicht ausgewertet
-	SPI_MasterReceive(); // CRC-Byte wird nicht ausgewertet
-
-#ifdef LED_AVAILABLE
-	LED_off(LED_GRUEN);
-#endif // LED_AVAILABLE
-	os_exitCS();
-	return 0;
-}
-
-/**
- * Schreibt einen 512-Byte Sektor auf die Karte
- * \param addr 		Adresse des 512-Byte Blocks
- * \param *buffer 	Zeiger auf den Puffer
- * \return 			0 wenn alles ok ist, 1 wenn prepare_transfer_spi() Fehler meldet, 3 wenn Timeout bis zur Bestaetigung
- */
-uint8_t mmc_write_sector_spi(uint32_t addr, void * buffer) {
-	os_enterCS();
-	/* cmd[] = {0x58,addr,addr,addr,0x00,0xFF} */
-	if (prepare_transfer_spi(0x58, addr) != 0) {
-		os_exitCS();
-		return 1;
-	}
-
-#ifdef LED_AVAILABLE
-	LED_on(LED_ROT);
-#endif // LED_AVAILABLE
-
-	/* Startbyte an MMC/SD-Karte senden */
-	SPI_MasterTransmit(0xfe);
-
-	/* Schreiben des Blocks (512 Bytes) auf MMC/SD-Karte */
-#ifdef MMC_AGGRESSIVE_OPTIMIZATION
-	int16_t i = 511;
-	uint8_t tmp;
-	__asm__ __volatile__(
-		"%=:						\n\t"
-		"ld %0,Y	 	; tmp		\n\t" // load from *buffer
-		"out %3,%0					\n\t" // start next SPI-transfer
-		"adiw %2,1 		; 2 nop		\n\t" // wait 16 cycles for reception complete
-		"sbiw %2,1		; 2 nop		\n\t"
-		"adiw %2,1		; 2 nop		\n\t"
-		"sbiw %2,1		; 2 nop		\n\t"
-		"adiw %2,1		; buffer++	\n\t"
-		"sbiw %A1,1		; i			\n\t"
-		"sbrs %B1,7		; i			\n\t"
-		"rjmp %=b						"
-		: "=&r" (tmp)
-		: "w" (i), "y" (buffer), "M" (_SFR_IO_ADDR(SPDR))
-		: "memory"
-	);
-	/* Wait for SPI ready */
-	while (!(SPSR & (1 << SPIF))) {}
-#else
-	uint8_t i,j, tmp;
-	uint8_t * ptr = buffer;
-	tmp = *ptr; // load from *buffer
-	ptr++;
-	for (i=2; i>0; i--) {
-		j = 0;
-		do {
-			SPDR = tmp; // save to SPDR
-			tmp = *ptr; // load from *buffer
-			ptr++;
-			j++;
-			if (j == 0) {
-				while(!(SPSR & (1<<SPIF))) {}
-				break; // exit inner loop
-			}
-			while(!(SPSR & (1<<SPIF))) {} // wait for transmission to complete
-		} while (1);
-	}
-#endif // MMC_AGGRESSIVE_OPTIMIZATION
-
-	/* CRC-Dummy schreiben */
-	SPI_MasterTransmit(0xff);
-	SPI_MasterTransmit(0xff);
-
-	/* warten, bis Karte nicht mehr busy */
-	os_exitCS();
-	uint8_t timeout_high = 0;
-#ifdef MMC_AGGRESSIVE_OPTIMIZATION
-	uint16_t timeout;
-	SPDR = 0xff;
-	__asm__ __volatile__(
-		"ldi %A0,255		; timeout	\n\t"
-		"ldi %B0,1			; =			\n\t"
-		"mov %1,%B0			; 0x01ffff	\n\t"
-		"ldi %B0,255					\n\t"
-		"1:								\n\t"
-		"subi %A0,1			; timeout--	\n\t"
-		"sbci %B0,0						\n\t"
-		"sbc %1,__zero_reg__			\n\t"
-		"breq 2f						\n\t"
-		"adiw r28,1			; 2 nop		\n\t"
-		"sbiw r28,1			; 2 nop		\n\t"
-		"adiw r28,1			; 2 nop		\n\t"
-		"sbiw r28,1			; 2 nop		\n\t"
-		"ldi r25,lo8(-1)	; 1 nop		\n\t"
-		"in r24,%2			;			\n\t"
-		"out %2,r25			;			\n\t"
-		"cpi r24,lo8(-1)	; == 0xff?	\n\t"
-		"brne 1b						\n\t"
-		"2:									"
-		: "=&d"	(timeout), "=&r" (timeout_high)
-		: "M" (_SFR_IO_ADDR(SPDR))
-		: "r24", "r25"
-	);
-#else
-	uint32_t timeout = wait_for_byte(0xff);
-#endif // MMC_AMMC_AGGRESSIVE_OPTIMIZATION
-
-	os_enterCS();
-#ifdef LED_AVAILABLE
-	LED_off(LED_ROT);
-#endif // LED_AVAILABLE
-	os_exitCS();
-
-	if (timeout == 0 && timeout_high == 0) {
-		mmc_init_state = 1;
-		return 3;
-	}
-	return 0;
-}
-#endif // SPI_AVAILABLE
-
-/**
- * Schaltet die Karte aktiv und checkt dabei die Initialisierung
- * \return 0 wenn alles ok ist, 1 wenn Init nicht moeglich
- */
-uint8_t mmc_enable(void) {
-	if (mmc_init_state != 0) {
-		mmc_init();
-		if (mmc_init_state != 0) {
-			return mmc_init_state;
-		}
-	}
-	ENA_on(ENA_MMC);
-	ENA_off(ENA_MMC);
-
-	mmc_write_byte(0xff);
-
-	ENA_on(ENA_MMC);
-
-	return 0;
-}
-
-/**
- * Schickt ein Kommando an die Karte
- * \param *cmd 	Ein Zeiger auf das Kommando
- * \return 		Die Antwort der Karte oder 0xFF im Fehlerfall
- */
-static uint8_t mmc_write_command(uint8_t * cmd) {
-	uint8_t result = 0xff;
-	uint16_t timeout = 0;
-
-	if (mmc_enable() != 0) {
-		return 0xff; // MMC / SD-Card aktiv schalten
-	}
-
-	// sendet 6 Byte Kommando
-	int8_t i;
-	for (i = 5; i >= 0; --i) {
-		// sendet 6 Byte Kommando zur MMC/SD-Karte
-		mmc_write_byte(*cmd++);
-	}
-
-	// Wartet auf eine gueltige Antwort von der MMC/SD-Karte
-	while (result == 0xff) {
-		result = mmc_read_byte();
-		if (timeout++ > MMC_TIMEOUT) {
-			break; // Abbruch da die MMC/SD-Karte nicht antwortet
-		}
-	}
-
-	return result;
-}
-
-/**
- * Initialisiere die MMC/SD-Karte
- * \return	0 wenn allles ok, sonst Nummer des Kommandos bei dem abgebrochen wurde
- */
-uint8_t mmc_init(void) {
-	os_enterCS();
-	mmc_init_state = 0;
-
-#ifdef SPI_AVAILABLE
-	spi_speed_t speed = SPI_SPEED_250KHZ;
-	SPI_MasterInit(speed);
-#else
-	MMC_CLK_DDR |= _BV(SPI_CLK);
-	MMC_DDR = (uint8_t) (MMC_DDR & ~_BV(SPI_DI));
-	MMC_DDR |= _BV(SPI_DO);
-#endif // SPI_AVAILABLE
-	ENA_on(ENA_MMC);
-	ENA_off(ENA_MMC);
-
-	/* MMC/SD-Karte in den SPI-Mode initialisieren */
-	int8_t i;
-	for (i = 16; i >= 0; --i) {
-		// Sendet min. 74 Clocks an die MMC/SD-Karte
-		mmc_write_byte(0xff);
-	}
-
-	/* Kommando CMD0 an MMC/SD-Karte senden */
-	uint8_t cmd[] = { 0x40, 0x00, 0x00, 0x00, 0x00, 0x95 };
-	uint16_t timeout = 0;
-	while (mmc_write_command(cmd) != 1) {
-		if (timeout++ > MMC_TIMEOUT) {
-			ENA_off(ENA_MMC);
-			mmc_init_state = 1;
-#ifdef LED_AVAILABLE
-			LED_on(LED_TUERKIS);
-#endif // LED_AVAILABLE
-			os_exitCS();
-			return 1; // Abbruch bei Kommando 1 (Return Code 1)
-		}
-	}
-
-	/* Kommando CMD1 an MMC/SD-Karte senden */
-	timeout = 0;
-	cmd[0] = 0x41; // Kommando 1
-	cmd[5] = 0xFF; // CRC
-	while (mmc_write_command(cmd) != 0) {
-		if (timeout++ > 6 * MMC_TIMEOUT) {
-			ENA_off(ENA_MMC);
-			mmc_init_state = 1;
-#ifdef LED_AVAILABLE
-			LED_on(LED_TUERKIS);
-#endif // LED_AVAILABLE
-			os_exitCS();
-			return 2; // Abbruch bei Kommando 2 (Return Code 2)
-		}
-	}
-
-#ifdef SPI_AVAILABLE
-	spi_speed_t speed_high = SPI_SPEED_MAX;
-	SPI_MasterInit(speed_high);
-#endif // SPI_AVAILABLE
-
-#ifdef LED_AVAILABLE
-	LED_off(LED_TUERKIS);
-#endif // LED_AVAILABLE
-	os_exitCS();
-	return 0;
-}
-
-#ifdef MMC_INFO_AVAILABLE
-//#ifdef DISPLAY_MMC_INFO
-///**
-// * Liest das CID-Register (16 Byte) von der Karte
-// * \param *buffer	Zeiger auf Puffer von mindestens 16 Byte
-// * \return			0, falls alles OK
-// */
-//uint8_t mmc_read_cid(void * buffer) {
-//	uint8_t cmd[] = {0x4A,0x00,0x00,0x00,0x00,0xFF}; // Kommando zum Lesen des CID Registers
-//	if (mmc_read_block(cmd, buffer, 16) != 0) {
-//		memset(buffer, 0, 16);
-//		return 1;
-//	}
-//	return 0;
-//}
-//#endif // DISPLAY_MMC_INFO
-
-/**
- * Liest das CSD-Register (16 Byte) von der Karte
- * \param *buffer	Zeiger auf Puffer von mindestens 16 Byte
- * \return			0, falls alles OK
- */
-uint8_t mmc_read_csd(void * buffer) {
-	uint8_t cmd[] = {0x49,0x00,0x00,0x00,0x00,0xFF}; // Kommando zum Lesen des CSD Registers
-	uint8_t result = mmc_read_block(cmd, buffer, 16);
-	if (result != 0) {
-		memset(buffer, result, 16);
-		return 1;
-	}
-	return 0;
-}
-
-/**
- * Liefert die Groesse der Karte zurueck
- * \return	Groesse der Karte in Byte. Bei einer 4 GByte-Karte kommt 0xFFFFFFFF zurueck
- */
-uint32_t mmc_get_size(void) {
-	uint8_t csd[16];
-
-	if (mmc_read_csd(csd) != 0) {
-		return 0;
-	}
-
-	uint16_t size = (uint16_t)((csd[8] >> 6) + (csd[7] << 2) + ((csd[6] & 0x03) << 10)); // c_size
-	size += 1; // Fest in der Formel drin
-
-	uint8_t shift = 2; // eine 2 ist fest in der Formel drin
-	shift = (uint8_t) (shift + (csd[10] >> 7) + ((csd[9] & 0x03) << 1)); // c_size_mult beruecksichtigen
-	shift = (uint8_t) (shift + (csd[5] & 0x0f)); // Blockgroesse beruecksichtigen
-
-	uint32_t result = (uint32_t)size << shift;
-
-	return result;
-}
-
-#endif // MMC_INFO_AVAILABLE
-
-#ifdef MMC_WRITE_TEST_AVAILABLE
 /**
  * Testet die MMC-Karte. Schreibt nacheinander 2 Sektoren a 512 Byte mit Testdaten voll und liest sie wieder aus
  * !!! Achtung loescht die Karte ab Sektor 0x20000 (^= 64 MB)
  * \param *buffer	Zeiger auf einen 512 Byte grossen Puffer
  * \return 			0, wenn alles ok
  */
-uint8_t mmc_test(uint8_t * buffer) {
+static inline uint8_t mmc_test(uint8_t* buffer) {
 	static uint32_t sector = 0x20000;
-	/* Initialisierung checken */
-	if (mmc_init_state != 0 && mmc_init() != 0) {
+
+	if (! card_size) {
+		sector = 0x20000;
 		return 1;
 	}
-#ifdef MMC_VM_AVAILABLE // Version mit virtuellen Aressen
-	uint16_t i;
-	static uint16_t pagefaults = 0;
-	static uint16_t old_pf;
-	/* virtuelle Adressen holen */
-	static uint32_t v_addr1 = 0;
-	static uint32_t v_addr2 = 0;
-	static uint32_t v_addr3 = 0;
-	static uint32_t v_addr4 = 0;
-	if (v_addr1 == 0) v_addr1 = mmcalloc(512, 1); // Testdaten 1
-	if (v_addr2 == 0) v_addr2 = mmcalloc(512, 1); // Testdaten 2
-	if (v_addr3 == 0) v_addr3 = mmcalloc(512, 1); // Dummy 1
-	if (v_addr4 == 0) v_addr4 = mmcalloc(512, 1); // Dummy 2
-	/* Zeitmessung starten */
-	uint16_t start_ticks=TIMER_GET_TICKCOUNT_16;
-	uint8_t start_reg=TCNT2;
-	/* Pointer auf Puffer holen */
-	uint8_t * p_addr = mmc_get_data(v_addr1); // Cache-Hit, CB 0
-	if (p_addr == NULL) return 2;
-	/* Testdaten schreiben */
-	for (i=0; i<512; i++)
-	p_addr[i] = (i & 0xff);
-	/* Pointer auf zweiten Speicherbereich holen */
-	p_addr = mmc_get_data(v_addr2); // Cache-Hit, CB 1
-	if (p_addr == NULL) return 3;
-	/* Testdaten Teil 2 schreiben */
-	for (i=0; i<512; i++)
-	p_addr[i] = 255 - (i & 0xff);
-	/* kleiner LRU-Test */
-	//			p_addr = mmc_get_data(v_addr1);	// Cache-Hit, CB 0
-	//			p_addr = mmc_get_data(v_addr4);	// Cache-Miss, => CB 1
-	//			p_addr = mmc_get_data(v_addr1);	// Cache-Hit, CB 0
-	//			p_addr = mmc_get_data(v_addr3);	// Cache-Miss, => CB 1
-	//			p_addr = mmc_get_data(v_addr1);	// Cache-Hit, CB 0
-	//			p_addr = mmc_get_data(v_addr4);	// Cache-Miss, => CB 1
-	/* Pointer auf Testdaten Teil 1 holen */
-	p_addr = mmc_get_data(v_addr1); // Cache-Hit, CB 0
-	if (p_addr == NULL) return 4;
-	/* Testdaten 1 vergleichen */
-	for (i=0; i<512; i++)
-	if (p_addr[i] != (i & 0xff)) return 5;
-	/* Pointer auf Testdaten Teil 2 holen */
-	p_addr = mmc_get_data(v_addr2); // Cache-Miss, => CB 1
-	if (p_addr == NULL) return 6;
-	/* Testdaten 2 vergleichen */
-	for (i=0; i<512; i++)
-	if (p_addr[i] != (255 - (i & 0xff))) return 7;
 
-	p_addr = mmc_get_data(v_addr4);
-	/* Zeitmessung beenden */
-	int8_t timer_reg=TCNT2;
-	uint16_t end_ticks=TIMER_GET_TICKCOUNT_16;
-	timer_reg -= start_reg;
-#ifdef VM_STATS_AVAILABLE
-	/* Pagefaults merken */
-	old_pf = pagefaults;
-	pagefaults = mmc_get_pagefaults();
-#endif
-	/* kleine Statistik ausgeben */
-	display_cursor(3, 1);
-	display_printf("Pagefaults: %5u   ", pagefaults);
-	display_cursor(4, 1);
-	display_printf("Bei %3u PF: %5u us", pagefaults - old_pf, (end_ticks-start_ticks)*176 + timer_reg*4);
-#else // alte Version
 	uint16_t i;
 	uint8_t result = 0;
 
 	/* Zeitmessung */
-	uint16_t start_ticks;
-	uint16_t end_ticks;
-	static uint32_t time_read = 0;
-	static uint32_t time_write = 0;
-	static uint32_t n = 0;
+	uint32_t start_ticks, end_ticks;
 
 	// Puffer vorbereiten
 	for (i = 0; i < 512; i++) {
@@ -670,16 +97,16 @@ uint8_t mmc_test(uint8_t * buffer) {
 	}
 
 	/* Zeitmessung starten */
-	start_ticks = TIMER_GET_TICKCOUNT_16;
+	start_ticks = timer_get_us32();
 
 	// und schreiben
-	result = mmc_write_sector(sector, buffer);
+	result = sd_write_block(sector, buffer, True);
 
 	/* Zeitmessung beenden */
-	end_ticks = TIMER_GET_TICKCOUNT_16;
-	time_write = time_write + (uint16_t) ((end_ticks - start_ticks) * 176U);
+	end_ticks = timer_get_us32();
+	time_write = time_write + (uint16_t) (end_ticks - start_ticks);
 
-	if (result != 0) {
+	if (! result) {
 		return (uint8_t) (result * 10 + 2);
 	}
 
@@ -689,30 +116,30 @@ uint8_t mmc_test(uint8_t * buffer) {
 	}
 
 	/* Zeitmessung starten */
-	start_ticks = TIMER_GET_TICKCOUNT_16;
+	start_ticks = timer_get_us32();
 
 	// und schreiben
-	result = mmc_write_sector(sector + 1, buffer);
+	result = sd_write_block(sector + 1, buffer, True);
 
 	/* Zeitmessung beenden */
-	end_ticks = TIMER_GET_TICKCOUNT_16;
-	time_write = time_write + (uint16_t) ((end_ticks - start_ticks) * 176U);
+	end_ticks = timer_get_us32();
+	time_write = time_write + (uint16_t) (end_ticks - start_ticks);
 
-	if (result != 0) {
+	if (! result) {
 		return (uint8_t) (result * 10 + 3);
 	}
 
 	/* Zeitmessung starten */
-	start_ticks = TIMER_GET_TICKCOUNT_16;
+	start_ticks = timer_get_us32();
 
 	// Puffer lesen
-	result = mmc_read_sector(sector++, buffer);
+	result = sd_read_block(sector++, buffer);
 
 	/* Zeitmessung beenden */
-	end_ticks = TIMER_GET_TICKCOUNT_16;
-	time_read = time_read + (uint16_t) ((end_ticks - start_ticks) * 176U);
+	end_ticks = timer_get_us32();
+	time_read = time_read + (uint16_t) (end_ticks - start_ticks);
 
-	if (result != 0) {
+	if (! result) {
 		sector--;
 		return (uint8_t) (result * 10 + 4);
 	}
@@ -726,16 +153,16 @@ uint8_t mmc_test(uint8_t * buffer) {
 	}
 
 	/* Zeitmessung starten */
-	start_ticks = TIMER_GET_TICKCOUNT_16;
+	start_ticks = timer_get_us32();
 
 	// Puffer lesen
-	result = mmc_read_sector(sector++, buffer);
+	result = sd_read_block(sector++, buffer);
 
 	/* Zeitmessung beenden */
-	end_ticks = TIMER_GET_TICKCOUNT_16;
-	time_read = time_read + (uint16_t) ((end_ticks - start_ticks) * 176U);
+	end_ticks = timer_get_us32();
+	time_read = time_read + (uint16_t) (end_ticks - start_ticks);
 
-	if (result != 0) {
+	if (! result) {
 		sector--;
 		return (uint8_t) (result * 10 + 6);
 	}
@@ -747,20 +174,114 @@ uint8_t mmc_test(uint8_t * buffer) {
 		}
 	}
 
-	/* kleine Statistik ausgeben */
-	os_enterCS();
-	display_cursor(3, 1);
+	/* Statistik ausgeben */
 	n += 2;
-	display_printf("Dauer r/w%5u/%5u", (uint16_t) (time_read / n), (uint16_t) (time_write / n));
+	const uint16_t t_read = (uint16_t) (time_read / n);
+	const uint16_t t_write = (uint16_t) (time_write / n);
+	os_enterCS();
+	display_cursor(2, 1);
+	display_printf("sector:   0x%04x", (sector - 2) >> 16);
+	display_printf("%04x", (sector - 2) & 0xffff);
+	display_cursor(3, 1);
+	display_printf("raw  r/w:%5u KiB/s", (uint16_t) ((uint32_t) (512.f * 1000000.f / 1024.f * 2.f) / (t_read + t_write)));
 	display_cursor(4, 1);
-	display_printf("Sektor: 0x%04x", (sector-2) >> 16);
-	display_printf("%04x  ", (sector-2) & 0xffff);
+	display_printf("time r/w:%5u/%5u", t_read, t_write);
 	os_exitCS();
-#endif // MMC_VM_AVAILABLE
-	// hierher kommen wir nur, wenn alles ok ist
+
 	return 0;
 }
-#endif // MMC_WRITE_TEST_AVAILABLE
+
+#ifdef SDFAT_AVAILABLE
+static inline uint8_t sdfat_test(void) {
+	static uint8_t buffer[512];
+
+	if (! card_size) {
+		return 1;
+	}
+
+	LOG_DEBUG("sdfat_test(): opening file...");
+
+	uint32_t start_ticks, end_ticks;
+	pFatFile file;
+	const uint8_t result = sdfat_open("test.bin", &file, 0x1 | 0x2 | 0x10 | 0x40);
+	if (result) {
+		LOG_ERROR("sdfat_test(): sdfat_open() failed: %d", result);
+		return result;
+	}
+
+	LOG_DEBUG("sdfat_test(): file opened.");
+
+	/* Puffer vorbereiten */
+	uint16_t i;
+	for (i = 0; i < 512; ++i) {
+		buffer[i] = (uint8_t) (255 - (i & 0xff));
+	}
+
+	LOG_DEBUG("sdfat_test(): starting write...");
+
+	/* Zeitmessung starten */
+	start_ticks = timer_get_us32();
+
+	/* Puffer schreiben */
+	if (sdfat_write(file, buffer, 512) != 512) {
+		LOG_ERROR("sdfat_test(): sdfat_write() failed");
+		sdfat_free(file);
+		return 2;
+	}
+
+	/* Zeitmessung beenden */
+	end_ticks = timer_get_us32();
+
+	LOG_DEBUG("sdfat_test(): write done.");
+
+	time_write += end_ticks - start_ticks;
+
+	/* Puffer loeschen */
+	memset(buffer, 0, sizeof(buffer));
+
+	LOG_DEBUG("sdfat_test(): starting read...");
+
+	/* Zeitmessung starten */
+	start_ticks = timer_get_us32();
+
+	/* Puffer lesen */
+	sdfat_rewind(file);
+	if (sdfat_read(file, buffer, 512) != 512) {
+		LOG_ERROR("sdfat_test(): sdfat_read() failed");
+		sdfat_free(file);
+		return 3;
+	}
+
+	/* Zeitmessung beenden */
+	end_ticks = timer_get_us32();
+
+	LOG_DEBUG("sdfat_test(): read done.");
+
+	sdfat_free(file);
+
+	time_read += end_ticks - start_ticks;
+
+	/* Puffer vergleichen */
+	for (i = 0; i < 512; ++i) {
+		if (buffer[i] != 255 - (i & 0xff)) {
+			LOG_ERROR("sdfat_test(): i:%u\tread:0x%x\texpected:0x%x", i, buffer[i], 255 - (i & 0xff));
+			return 5;
+		}
+	}
+
+	++n;
+	const uint16_t t_read = (uint16_t) (time_read / n);
+	const uint16_t t_write = (uint16_t) (time_write / n);
+	display_cursor(3, 1);
+	display_printf("file r/w:%5u KiB/s", (uint16_t) ((uint32_t) (512.f * 1000000.f / 1024.f * 2.f) / (t_read + t_write)));
+	display_cursor(4, 1);
+	display_printf("time r/w:%5u/%5u", t_read, t_write);
+
+	LOG_DEBUG("sdfat_test(): done.");
+
+	return 0;
+}
+#endif // SDFAT_AVAILABLE
 
 #ifdef DISPLAY_MMC_INFO
 /**
@@ -768,51 +289,72 @@ uint8_t mmc_test(uint8_t * buffer) {
  */
 void mmc_display(void) {
 #ifdef MMC_INFO_AVAILABLE
-	static uint8_t mmc_state = 0xff;
-
-	uint8_t dummy = mmc_init();
-	/* hat sich was geaendert? */
-	if (dummy != mmc_state) {
-		mmc_state = dummy;
-
-		display_cursor(1, 1);
-		if (mmc_state != 0) {
-			display_clear();
-			display_printf("MMC not init (%u)", mmc_state);
+	card_size = sd_get_size();
+	if (! card_size) {
+		time_read = time_write = n = 0;
+		if (! last_error_code) {
+			last_error_code = sd_get_error_code();
+			last_error_data = sd_get_error_data();
+		}
+		display_clear();
+		display_printf("No card detected");
+		display_cursor(2, 1);
+		display_printf("error code=0x%02x 0x%02x", last_error_code, last_error_data);
+		if (sd_init(SPI_SPEED)) {
+			last_error_code = sd_get_error_code();
+			last_error_data = sd_get_error_data();
+			LOG_ERROR("sd_card_init() failed: error code=0x%02x 0x%02x", last_error_code, last_error_data);
 			return;
 		}
-		uint32_t size = mmc_get_size();
-		display_printf("  MMC: %4u MByte ", size >> 20);
-
-#ifndef MMC_WRITE_TEST_AVAILABLE
-		uint8_t csd[16];
-		mmc_read_csd(csd);
-		display_cursor(3, 1);
-		uint8_t i;
-		for (i=0; i<16; i++) {
-			if (i == 8) display_cursor(4, 1);
-			if (i%2 == 0) display_puts(" ");
-			display_printf("%02x", csd[i]);
-		}
-#endif // MMC_WRITE_TEST_AVAILABLE
+		card_size = sd_get_size();
 	}
+	const uint8_t type = sd_get_type();
+	display_clear();
+	display_printf("%s: %6u MiB  ", type == 0 ? "SDv1" : type == 1 ? "SDv2" : "SDHC", card_size >> 10);
+
+#if ! defined MMC_WRITE_TEST_AVAILABLE
+	cid_t cid;
+	sd_read_cid(&cid);
+	csd_t csd;
+	sd_read_csd(&csd);
+	display_cursor(2, 1);
+	display_printf("%.2s %.5s %2u/%4u ^%u ", cid.oid, cid.pnm, cid.mdt_month, 2000 + cid.mdt_year_low + 10 * cid.mdt_year_high, csd.v2.write_bl_len_high << 2 | csd.v2.write_bl_len_low);
+
+#if ! defined SDFAT_AVAILABLE
+	display_cursor(3, 1);
+	uint8_t i;
+	for (i = 0; i < 16; ++i) {
+		if (i == 8) {
+			display_cursor(4, 1);
+		}
+		if (i % 2 == 0) {
+			display_puts(" ");
+		}
+		display_printf("%02x", csd.raw[i]);
+	}
+#endif // ! SDFAT_AVAILABLE
+#endif // ! MMC_WRITE_TEST_AVAILABLE
+
+#if ! defined MMC_WRITE_TEST_AVAILABLE && defined SDFAT_AVAILABLE
+	if (card_size) {
+		const uint8_t result = sdfat_test();
+		if (result) {
+			display_cursor(4, 1);
+			display_printf("sdfat_test()=%d :(", result);
+		}
+	}
+#endif // ! MMC_WRITE_TEST_AVAILABLE && SDFAT_AVAILABLE
+
 #ifdef MMC_WRITE_TEST_AVAILABLE
-	if (mmc_state == 0) {
-		static uint8_t buffer[512];
+	static uint8_t buffer[512];
+	if (card_size) {
 		uint8_t result = mmc_test(buffer);
-		if (result != 0) {
+		if (result) {
 			display_cursor(3, 1);
 			display_printf("mmc_test()=%u :(", result);
 		}
 	}
 #endif // MMC_WRITE_TEST_AVAILABLE
-#else
-#ifdef MMC_VM_AVAILABLE
-#ifdef PC
-	display_cursor(3, 1);
-	display_printf("mmc_emu_test() = %u ", mmc_emu_test());
-#endif // PC
-#endif // MMC_VM_AVAILABLE
 #endif // MMC_INFO_AVAILABLE
 }
 #endif // DISPLAY_MMC_INFO

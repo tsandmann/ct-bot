@@ -97,12 +97,30 @@
 #define EXPANSION_BOARD_AVAILABLE		/**< Erweiterungsmodul (MMC / WiPort) installiert */
 //#define EXPANSION_BOARD_MOD_AVAILABLE	/**< modifiziertes Erweiterungsmodul (MMC / WiPort) installiert */
 //#define SPI_AVAILABLE	/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
+#define SPI_SPEED	2	/**< SPI-Clockfrequenz (falls SPI_AVAILABLE) als Teiler von F_CPU (moegliche Werte sind 2, 4, 8, 16, 32, 64, 128) */
 //#define DISTSENS_TYPE_GP2Y0A60 /**< Distanzsensor Typ GP2Y0A60 */
 
 /* I/O-Schnittstellen fuer Raspberry Pi */
 #define UART_LINUX_PORT		"/dev/ttyAMA0"	/**< UART Port vom ARM-Linux-Board fuer Verbinung zum ATmega */
 #define BOT_RESET_GPIO		"/sys/class/gpio/gpio17/value"	/**< Pfad zum Reset-GPIO vom ARM-Linux-Board */
 //#define ARM_LINUX_DISPLAY	"/dev/tty1"	/**< Konsole fuer Display-Ausgaben auf ARM-Linux-Board. "stdout" fuer Ausgabe auf stdout */
+
+/* Fernbedienung */
+#ifdef MCU
+#define RC_HAVE_HQ_RC_UNIVERS29_334 /**< Dies ist die Standard-Fernbedienung */
+//#define RC_HAVE_VIVANCO_UR89_TV_CODE_089
+//#define RC_HAVE_HAUPPAUGE_WINTV
+//#define RC_HAVE_HAUPPAUGE_MediaMPV
+//#define RC_HAVE_CONRAD_PROMO8
+//#define RC_HAVE_VIVANCO_UR89
+//#define RC_HAVE_Technisat_TTS35AI
+//#define RC_HAVE_LIFETEC_LT3607
+//#define RC_HAVE_TOTAL_CONTROL
+//#define RC_HAVE_PHILIPS_DEFAULT
+#else // PC
+#define RC_HAVE_HQ_RC_UNIVERS29_334	/**< Dies ist die Standard-Fernbedienung */
+//#define RC_HAVE_HAUPPAUGE_WINTV
+#endif // MCU
 
 
 /*** Einstellungen fuer die Verhaltensregeln ***/
@@ -147,6 +165,7 @@
 
 #ifdef EXPANSION_BOARD_MOD_AVAILABLE
 #undef EXPANSION_BOARD_AVAILABLE	// deaktiviert EXPANSION_BOARD_AVAILABLE
+#undef MMC_AVAILABLE
 #undef MOUSE_AVAILABLE				// deaktiviert MOUSE_AVAILABLE
 #endif // EXPANSION_BOARD_AVAILABLE
 

@@ -53,7 +53,6 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 #include "mmc.h"
 #include "log.h"
 #include "led.h"
-#include "mini-fat.h"
 #include "map.h"
 #include "command.h"
 #include "pos_store.h"
@@ -87,23 +86,16 @@ EEPROM uint8_t gui_keypad_table[][5] = {
 #if ! defined KEYPAD_AVAILABLE || ! defined BEHAVIOUR_REMOTECALL_AVAILABLE
 #undef DISPLAY_REMOTECALL_AVAILABLE
 #ifdef BEHAVIOUR_REMOTECALL_AVAILABLE
+#pragma GCC diagnostic push
+#pragma GCC diagnostic warning "-Wcpp"
 #warning "RemoteCall-Display geht nur mit aktivem Keypad, Display wurde daher deaktiviert"
+#pragma GCC diagnostic pop
 #endif // BEHAVIOUR_REMOTECALL_AVAILABLE
 #endif // ! KEYPAD_AVAILABLE || ! BEHAVIOUR_REMOTECALL_AVAILABLE
 
 #ifndef MMC_AVAILABLE
 #undef DISPLAY_MMC_INFO
-#undef DISPLAY_MINIFAT_INFO
-#ifdef PC
-#ifndef MMC_VM_AVAILABLE
-#undef DISPLAY_MINIFAT_INFO
-#endif
-#endif // PC
 #endif // !MMC_AVAILABLE
-
-#ifdef BOT_FS_AVAILABLE
-#undef DISPLAY_MINIFAT_INFO
-#endif
 
 #ifndef MAP_AVAILABLE
 #undef DISPLAY_MAP_AVAILABLE
@@ -190,12 +182,12 @@ void gui_keypad_request(void (* callback)(char * result), uint8_t mode, uint8_t 
 	keypad_row = row;
 	keypad_col = col;
 	keypad_mode = mode;
-#if __GNUC__ >= 6
+#if __clang__ != 1 && GCC_VERSION >= 60000
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
 	keypad_result = keypad_buffer - 1;
-#if __GNUC__ >= 6
+#if __clang__ != 1 && GCC_VERSION >= 60000
 #pragma GCC diagnostic pop
 #endif
 }
@@ -382,10 +374,6 @@ void gui_display(uint8_t screen) {
 void gui_init(void) {
 #if defined MCU && ! defined DISPLAY_MCU_AVAILABLE && defined DISPLAY_REMOTE_AVAILABLE
 	register_screen(NULL); // erzeugt einen leeren Display-Screen an erster Position
-#endif
-#ifdef DISPLAY_MINIFAT_INFO
-	/* MiniFAT wird vor GUI initialisiert und schreibt deshalb einfach auf's leere Display, der Dummy hier verhindert nur das Ueberschreiben in den anschliessenden Bot-Zyklen, damit man die Daten noch lesen kann */
-	register_screen(&mini_fat_display);
 #endif
 #ifdef DISPLAY_RESET_INFO_AVAILABLE
 	register_screen(&reset_info_display);
