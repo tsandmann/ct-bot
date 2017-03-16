@@ -30,6 +30,8 @@
 #include "bot-2-sim.h"
 #include "command.h"
 #include "sensor.h"
+#include "motor.h"
+#include "log.h"
 #include <string.h>
 
 #include "tcp.h"
