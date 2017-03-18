@@ -104,10 +104,10 @@
 
 
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
-#ifndef BOT_FS_AVAILABLE
-#warning "uBasic-Verhalten benoetigt BOT_FS_AVAILABLE (siehe ct-Bot.h)"
+#ifndef SDFAT_AVAILABLE
+#warning "uBasic-Verhalten benoetigt SDFAT_AVAILABLE (siehe ct-Bot.h)"
 #undef BEHAVIOUR_UBASIC_AVAILABLE
-#endif // BOT_FS_AVAILABLE
+#endif // SDFAT_AVAILABLE
 #endif // BEHAVIOUR_UBASIC_AVAILABLE
 
 #ifdef BEHAVIOUR_ABL_AVAILABLE

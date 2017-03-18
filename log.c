@@ -55,7 +55,7 @@
  * 2. Logging ueber ct-Sim:		LOG_CTSIM_AVAILABLE muss definiert sein.
  * 								BOT_2_SIM_AVAILABLE muss zusaetzlich definiert sein.
  * 3. Logging ueber Display:	LOG_DISPLAY_AVAILABLE muss definiert sein, sowie DISPLAY_AVAILABLE.
- * 4. Logging in txt auf MMC:	MMC_AVAILABLE und MMC_VM_AVAILABLE muessen an sein.
+ * 4. Logging in txt auf MMC:	MMC_AVAILABLE und SDFAT_AVAILABLE muessen an sein.
  * </pre>
  *
  * Alternativ schlankere Variante fuer MCU und CTSIM, indem man USE_MINILOG aktiviert.
@@ -79,7 +79,6 @@
 #include "display.h"
 #include "command.h"
 #include "uart.h"
-#include "mmc-vm.h"
 #include "bot-2-sim.h"
 
 #ifdef PC

@@ -29,9 +29,9 @@
 
 #include "ct-Bot.h"
 #include "eeprom.h"
-#include "bot-logic/bot-logic.h"
+#include "bot-logic.h"
 #include "sensor-low.h"
-#include "botfs.h"
+#include "sdfat_fs.h"
 
 extern uint8_t EEPROM resetsEEPROM;	/**< Reset-Counter im EEPROM */
 
@@ -41,31 +41,26 @@ typedef union {
 	struct {
 #ifdef MAP_AVAILABLE
 		uint8_t map_buffer[512]; /**< Map-Puffer */
+#else
+		uint8_t map_buffer[0]; /**< Map-Puffer inaktiv */
+#endif // MAP_AVAILABLE
 #ifdef MAP_2_SIM_AVAILABLE
 		uint8_t map_2_sim_buffer[512]; /**< Map-2-Sim-Puffer */
+#else
+		uint8_t map_2_sim_buffer[0]; /**< Map-2-Sim-Puffer inaktiv */
 #endif // MAP_2_SIM_AVAILABLE
-#endif // MAP_AVAILABLE
 #ifdef BEHAVIOUR_UBASIC_AVAILABLE
-		uint8_t ubasic_buffer[BOTFS_BLOCK_SIZE]; /**< uBasic-MMC-Puffer */
+		uint8_t ubasic_buffer[SD_BLOCK_SIZE]; /**< uBasic-MMC-Puffer */
 #else
 		uint8_t ubasic_buffer[0]; /**< uBasic-MMC-Puffer inaktiv */
 #endif
 #ifdef BEHAVIOUR_ABL_AVAILABLE
-		uint8_t abl_buffer[BOTFS_BLOCK_SIZE]; /**< ABL-MMC-Puffer */
+		uint8_t abl_buffer[SD_BLOCK_SIZE]; /**< ABL-MMC-Puffer */
 #else
 		uint8_t abl_buffer[0]; /**< ABL-MMC-Puffer inaktiv */
 #endif
-#if defined LOG_MMC_AVAILABLE && defined USE_MINILOG
-		char minilog_buffer[BOTFS_BLOCK_SIZE]; /**< Puffer fuer LOG_MMC */
-#endif
-#ifdef SPEED_LOG_AVAILABLE
-		slog_t speedlog; /**< Speed-Log Puffer */
-#endif
 		uint8_t end[0];
 	} PACKED data;
-#ifdef BOT_FS_AVAILABLE
-	uint8_t dummy_botfs[BOTFS_BLOCK_SIZE]; /**< Mindestgroesse auf 512 Byte setzen, falls BOT_FS aktiv */
-#endif
 	uint8_t dummy[0];
 } mmc_buffers_t; /**< Puffer-Struktur fuer alle MMC-Puffer */
 

@@ -28,9 +28,7 @@
 
 #include "ct-Bot.h"
 
-#include <avr/io.h>
-#include <string.h>
-#include <math.h>
+#include "bot-logic.h"
 #include "adc.h"
 #include "ena.h"
 #include "sensor.h"
@@ -39,7 +37,6 @@
 #include "timer.h"
 #include "sensor_correction.h"
 #include "bot-local.h"
-#include "bot-logic/bot-logic.h"
 #include "display.h"
 #include "led.h"
 #include "sensor-low.h"
@@ -47,9 +44,13 @@
 #include "ir-rc5.h"
 #include "math_utils.h"
 #include "srf10.h"
-#include "botfs.h"
 #include "init.h"
 #include "log.h"
+#include "sdfat_fs.h"
+#include <avr/io.h>
+#include <string.h>
+#include <math.h>
+#include <stdio.h>
 
 // ADC-PINS
 #define SENS_ABST_L		0	/**< ADC-PIN Abstandssensor Links */
@@ -115,17 +116,19 @@ uint8_t timeCorrectR = 0;		/**< markiert, ob der Encoder-Timestamp des rechten R
 
 #ifdef SPEED_LOG_AVAILABLE
 /* Debug-Loggings */
-#ifdef BOT_FS_AVAILABLE
+#ifdef SDFAT_AVAILABLE
 #define SPEED_LOG_ENTRIES 20
 #else
 #define SPEED_LOG_ENTRIES 15
-#endif //BOT_FS_AVAILABLE
+#endif // SDFAT_AVAILABLE
 volatile uint8_t slog_i[2] = {0,0}; /**< Array-Index */
-slog_t * const slog = &GET_MMC_BUFFER(speedlog);	/**< Puffer fuer Speed-Log Daten */
-#ifdef BOT_FS_AVAILABLE
-static botfs_file_descr_t speedlog_file;			/**< BotFS-Datei fuer das Speed-Log */
+static slog_t slog_buffer;
+slog_t* const slog = &slog_buffer;	/**< Puffer fuer Speed-Log Daten */
+#ifdef SDFAT_AVAILABLE
+pFatFile speedlog_file;				/**< Datei fuer das Speed-Log */
+static char slog_out_buffer[256];
+static uint8_t slog_file_dirty = 0;
 #endif
-#define SPEEDLOG_FILE_SIZE (1024 * (1024 / BOTFS_BLOCK_SIZE)) /**< Groesse der Speed-Log-Datei in Bloecken */
 #endif // SPEED_LOG_AVAILABLE
 
 static uint16_t filter_l, filter_r;
@@ -158,37 +161,34 @@ void bot_sens_init(void) {
 	sensEncR = 0;
 
 #ifdef SPEED_LOG_AVAILABLE
-#ifdef BOT_FS_AVAILABLE
-	void * const buffer = slog;
+#ifdef SDFAT_AVAILABLE
 	/* Datei oeffnen / anlegen */
-	int8_t res;
-	if ((res = botfs_open(SPEEDLOG_FILE_NAME, &speedlog_file, BOTFS_MODE_W, buffer)) != 0) {
-		if (res == -1) {
-			botfs_create(SPEEDLOG_FILE_NAME, SPEEDLOG_FILE_SIZE, 0, buffer);
-			if (botfs_open(SPEEDLOG_FILE_NAME, &speedlog_file, BOTFS_MODE_W, buffer) != 0) {
-				return;
-			}
-		}
+	if (sdfat_open(SPEEDLOG_FILE_NAME, &speedlog_file, 2 | 0x10 | 0x40) != 0) {
+		LOG_ERROR("sdfat_open(%s) failed", SPEEDLOG_FILE_NAME);
 	}
 
-	/* Typ in den Header schreiben (mit oder ohne Motorregelung) */
-	uint8_t * header;
-	if (botfs_read_header_data(&speedlog_file, &header, buffer) == 0) {
+	if (speedlog_file) {
+		int16_t n = snprintf_P(slog_out_buffer, sizeof(slog_out_buffer) - 1,
 #ifdef SPEED_CONTROL_AVAILABLE
-		*header = SLOG_WITH_SPEED_CONTROL;
-#else // ! SPEED_CONTROL_AVAILABLE
-		*header = SLOG_WITHOUT_SPEED_CONTROL;
-#endif // SPEED_CONTROL_AVAILABLE
-		botfs_write_header_data(&speedlog_file, buffer);
-	}
-	memset(buffer, 0, sizeof(slog));
+			PSTR("time_l\tenc_l\tencRate_l\ttargetRate_l\ttime_r\tenc_r\tencRate_r\ttargetRate_r\n")
 #else
+			PSTR("time_l\tenc_l\ttime_r\tenc_r\n")
+#endif
+		);
+		if (sdfat_write(speedlog_file, slog_out_buffer, (uint16_t) n) != n) {
+			LOG_ERROR("sdfat_write(%d) failed.", n);
+		}
+		if (sdfat_sync_vol(speedlog_file)) {
+			LOG_ERROR("sdfat_sync_vol() failed");
+		}
+	}
+#else // SDFAT_AVAILABLE
 #ifdef SPEED_CONTROL_AVAILABLE
 	LOG_RAW("time_l\tenc_l\tencRate_l\ttargetRate_l\ttime_r\tenc_r\tencRate_r\ttargetRate_r");
 #else
 	LOG_RAW("time_l\tenc_l\ttime_r\tenc_r");
 #endif
-#endif // BOT_FS_AVAILABLE
+#endif // SDFAT_AVAILABLE
 #endif // SPEED_LOG_AVAILABLE
 }
 
@@ -238,9 +238,9 @@ void bot_sens(void) {
 
 #ifdef SPEED_CONTROL_AVAILABLE
 	/* Aufruf der Motorregler, falls Stillstand */
-	register uint16_t pid_ticks = TIMER_GET_TICKCOUNT_16; // Ticks sichern [178 us]
-	register uint8_t i_time;
-	register uint8_t * p_time;
+	uint16_t pid_ticks = TIMER_GET_TICKCOUNT_16; // Ticks sichern [178 us]
+	uint8_t i_time;
+	uint8_t * p_time;
 	/* Index auf Encodertimestamps zwischenspeichern */
 	i_time = i_encTimeL;
 	p_time = (uint8_t *) encTimeL;
@@ -284,21 +284,37 @@ void bot_sens(void) {
 		} else if (max > idx_r) {
 			memset(&slog->data[1][idx_r], 0, sizeof(slog_data_t) * (size_t) (max - idx_r));
 		}
-#ifndef BOT_FS_AVAILABLE
+#ifndef SDFAT_AVAILABLE
 		/* Daten via UART senden */
 		uint8_t i;
 		for (i = 0; i < max; ++i) {
 #ifdef SPEED_CONTROL_AVAILABLE
-			LOG_RAW("%lu\t%u\t%u\t%u\t%lu\t%u\t%u\t%u", slog->data[0][i].time, slog->data[0][i].enc, slog->data[0][i].encRate, slog->data[0][i].targetRate,
-				slog->data[1][i].time, slog->data[1][i].enc, slog->data[1][i].encRate, slog->data[1][i].targetRate);
+			LOG_RAW("%lu\t%u\t%u\t%u\t%lu\t%u\t%u\t%u", slog->data[0][i].time, slog->data[0][i].enc, slog->data[0][i].encRate,
+				slog->data[0][i].targetRate, slog->data[1][i].time, slog->data[1][i].enc, slog->data[1][i].encRate, slog->data[1][i].targetRate);
 #else
 			LOG_RAW("%lu\t%u\t%lu\t%u", slog->data[0][i].time, slog->data[0][i].enc, slog->data[1][i].time, slog->data[1][i].enc);
 #endif // SPEED_CONTROL_AVAILABLE
 		}
-#endif
-#ifdef BOT_FS_AVAILABLE
-		botfs_write(&speedlog_file, slog->data);
-#endif // BOT_FS_AVAILABLE
+#endif // SDFAT_AVAILABLE
+#ifdef SDFAT_AVAILABLE
+		if (speedlog_file) {
+			uint8_t i;
+			for (i = 0; i < max; ++i) {
+				int16_t n = snprintf_P(slog_out_buffer, sizeof(slog_out_buffer) - 1,
+#ifdef SPEED_CONTROL_AVAILABLE
+					PSTR("%lu\t%u\t%u\t%u\t%lu\t%u\t%u\t%u\n"), slog->data[0][i].time, slog->data[0][i].enc, slog->data[0][i].encRate,
+					slog->data[0][i].targetRate, slog->data[1][i].time, slog->data[1][i].enc, slog->data[1][i].encRate, slog->data[1][i].targetRate
+#else
+					PSTR("%lu\t%u\t%lu\t%u\n"), slog->data[0][i].time, slog->data[0][i].enc, slog->data[1][i].time, slog->data[1][i].enc
+#endif // SPEED_CONTROL_AVAILABLE
+				);
+				if (sdfat_write(speedlog_file, slog_out_buffer, (uint16_t) n) != n) {
+					LOG_ERROR("sdfat_write(%u) failed.", n);
+				}
+			}
+			slog_file_dirty = 1;
+		}
+#endif // SDFAT_AVAILABLE
 		const uint8_t sreg = SREG;
 		__builtin_avr_cli();
 		uint8_t diff = (uint8_t) (slog_i[0] - max);
@@ -315,6 +331,12 @@ void bot_sens(void) {
 		SREG = sreg;
 	} else {
 		SREG = sreg;
+#ifdef SDFAT_AVAILABLE
+		if (slog_file_dirty && speed_l == 0 && speed_r == 0 && speedlog_file) {
+			sdfat_sync_vol(speedlog_file);
+			slog_file_dirty = 0;
+		}
+#endif // SDFAT_AVAILABLE
 	}
 #endif // SPEED_LOG_AVAILABLE
 

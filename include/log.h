@@ -55,7 +55,7 @@
  * 2. Logging ueber ct-Sim:		LOG_CTSIM_AVAILABLE muss definiert sein.
  * 								BOT_2_SIM_AVAILABLE muss zusaetzlich definiert sein.
  * 3. Logging ueber Display:	LOG_DISPLAY_AVAILABLE muss definiert sein, sowie DISPLAY_AVAILABLE.
- * 4. Logging in txt auf MMC:	MMC_AVAILABLE und BOT_FS_AVAILABLE muessen an sein.
+ * 4. Logging in txt auf MMC:	MMC_AVAILABLE und SDFAT_AVAILABLE muessen an sein.
  * 5. Logging zum RPi			LOG_RPI_AVAILABLE muss definiert sein.
  * </pre>
  *
@@ -292,7 +292,7 @@ void minilog_begin(uint16_t line, LOG_TYPE log_type);
  * \param format	Format-String, wie bei printf
  * \param ... 		Variable Argumentenliste, wie bei printf
  */
-void minilog_printf(const char * format, ...);
+void minilog_printf(const char* format, ...);
 #endif // USE_MINILOG
 
 #ifdef LOG_MMC_AVAILABLE
@@ -302,7 +302,7 @@ void minilog_printf(const char * format, ...);
 void log_mmc_init(void);
 
 /**
- * Schreibt den aktuellen Inhalt des Log-Puffers auf die MMC
+ * Flusht die Log-Datei
  */
 void log_flush(void);
 

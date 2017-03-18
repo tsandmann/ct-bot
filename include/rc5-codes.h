@@ -318,19 +318,29 @@
 /*
  * Fernbedienung Technisat_TTS35AI (Receiver Digit CIP)
  * \author Joerg Bullmann
+ * Ueberarbeitung 2017: Timo Sandmann, anonybot@posteo.net
  *
- * Mapping auf HQ_RC_UNIVERS29_334:
- * 11		-> -/--
- * 12		-> A/B
- * Play		-> OK
- * Dot		-> SFI
- * I/II		-> Exit
- * TV/VCR	-> Info
- * CH*P/C	-> TV
- * Vol+		-> Hilfe
- * Vol-		-> TXT
- * Ch+		-> Stop
- * Ch-		-> Ext
+ * Die Doppeltasten PROG+/- und VOL+/- dieser FB sind im Unterschied zur Standard-FB HQ_RC_UNIVERS29_334
+ * identisch mit den Tasten Pfeil-Hoch/Runter/Links/Rechts (senden dasselbe IR-Signal).
+ * Desweiteren fehlen einige Tasten der HQ_RC_UNIVERS29_334 gaenzlich.
+ * Um die auf die HQ_RC_UNIVERS29_334 ausgelegten Funktionsaufrufe abzubilden, wurde
+ * folgende Zuordnung (Mapping) auf die HQ_RC_UNIVERS29_334 vorgenommen:
+ *
+ * Taste HQ_RC_UNIVERS29_334	-> Taste Technisat_TTS35AI
+ * 11 ---------------------------> -/--
+ * 12 ---------------------------> A/B
+ * Play	-------------------------> OK
+ * Dot --------------------------> SFI
+ * I/II -------------------------> EXIT
+ * TV/VCR -----------------------> INFO
+ * CH*P/C -----------------------> TV
+ * Vol+ -------------------------> HILFE
+ * Vol-	-------------------------> TXT
+ * Ch+ --------------------------> STOP
+ * Ch- --------------------------> EXT
+ *
+ * Nachfolgende Zuordnung in Reihenfolge der phys. Tasten oben->unten und links->rechts sowie
+ * Abschnittweise das oben genannte Mapping bestimmter Tasten (siehe Kommentarfeld "Mapping Taste X als Y")
  */
 #ifdef RC_HAVE_Technisat_TTS35AI
 #define RC5_CODE_PWR	(0x128C & RC5_MASK)		/**< Taste an/aus */
