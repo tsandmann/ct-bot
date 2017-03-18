@@ -685,6 +685,7 @@ static void after_input(void) {
 #ifdef DISPLAY_DRIVE_CHESS_AVAILABLE
 static void drivechess_disp_key_handler(void) {
 	switch (RC5_Code) {
+#ifdef RC5_CODE_STOP
 	case RC5_CODE_STOP:
 		/* Newgame */
 		RC5_Code = 0;
@@ -692,7 +693,9 @@ static void drivechess_disp_key_handler(void) {
 		// Verhaltensstart Newgame
 		bot_drive_chess(NULL);
 		break;
+#endif // RC5_CODE_STOP
 
+#if defined RC5_CH_PLUS && RC5_CH_PLUS != RC5_CODE_STOP // workaround fuer RC_HAVE_Technisat_TTS35AI
 	case RC5_CH_PLUS:
 		/* Level veraendern */
 		RC5_Code = 0;
@@ -700,7 +703,9 @@ static void drivechess_disp_key_handler(void) {
 		st++;
 		LOG_DEBUG("Level erhoeht auf %1d", st);
 		break;
+#endif // RC5_CH_PLUS
 
+#ifdef RC5_CH_MINUS
 	case RC5_CH_MINUS:
 		/* Level veraendern */
 		RC5_Code = 0;
@@ -708,7 +713,9 @@ static void drivechess_disp_key_handler(void) {
 		st--;
 		LOG_DEBUG("Level verringert auf %1d", st);
 		break;
+#endif // RC5_CH_MINUS
 
+#ifdef RC5_CODE_BLUE
 	case RC5_CODE_BLUE:
 		/* Zugzeile loeschen */
 		RC5_Code = 0;
@@ -718,7 +725,9 @@ static void drivechess_disp_key_handler(void) {
 		clean_move_digits();
 		W = 0;
 		break;
+#endif // RC5_CODE_BLUE
 
+#ifdef RC5_CODE_PLAY
 	case RC5_CODE_PLAY:
 		/* GO */
 		RC5_Code = 0;
@@ -732,6 +741,7 @@ static void drivechess_disp_key_handler(void) {
 		}
 		c[W] = GO;
 		break;
+#endif // RC5_CODE_PLAY
 
 	default:
 		/* wird immer durchlaufen fuer alle anderen Tasten als oben angegeben */

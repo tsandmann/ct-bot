@@ -51,7 +51,7 @@
 #define BORDERSENSOR_POS_SW		(DISTSENSOR_POS_SW + 5)	/**< Abgrundsensoren 5 mm weiter aussen als Distsensoren */
 
 
-/*** einstellbare Parameter ***/
+/*** Parameter zur Abstimmung des eigenen ct-Bots ***/
 
 /* Parameter der Motorregelung */
 #define PID_Kp				70	/**< PID-Parameter proportional */
@@ -83,34 +83,43 @@
 #define G_SPEED			0.5		/**< Kopplung Encoder- und Maussensor fuer Geschwindigkeiten (0.0=nur Radencoder, 1.0=nur Maussensor) */
 #define G_POS			0.5		/**< Kopplung Encoder- und Maussensor fuer Positionen und Winkel (0.0=nur Radencoder, 1.0=nur Maussensor) */
 
-#define BPS_NO_DATA		0xffff		/**< Wert des BPS-Sensors, falls keine Daten verfuegbar sind */
-
 /* Servo-Parameter */
 #define DOOR_CLOSE 	65	/**< Rechter Anschlag Servo 1 (fuer ATmega32/644: Schrittweite 18, Offset 7) */
 #define DOOR_OPEN	185	/**< Linker Anschlag Servo 1 (fuer ATmega32/644: Schrittweite 18, Offset 7) */
-
 #define CAM_LEFT 	10	/**< Rechter Anschlag Servo 2 */
 #define CAM_RIGHT	250	/**< Linker Anschlag Servo 2 */
 #define CAM_CENTER	120	/**< Mittelstellung Servo 2 */
 
-
-/* System-Konstanten
-   --> Diese Aenderungen sind mit lokalen Hardware-Anpassungen verbunden! */
-
+/* System-Konfiguration
+   --> Diese Einstellungen sind von der lokalen Hardware abhaengig, Veraenderungen sind nur bei Hardware-Umbauten noetig */
 #define F_CPU	16000000UL	/**< CPU-Frequenz [Hz] (16000000UL oder 20000000UL) */
-
 #define UART_BAUD	115200	/**< Baudrate fuer UART-Kommunikation (moegliche Werte sind 57600, 115200, 230400, 500000) */
+#define EXPANSION_BOARD_AVAILABLE		/**< Erweiterungsmodul (MMC / WiPort) installiert */
+//#define EXPANSION_BOARD_MOD_AVAILABLE	/**< modifiziertes Erweiterungsmodul (MMC / WiPort) installiert */
+//#define SPI_AVAILABLE	/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
+//#define DISTSENS_TYPE_GP2Y0A60 /**< Distanzsensor Typ GP2Y0A60 */
 
+/* I/O-Schnittstellen fuer Raspberry Pi */
 #define UART_LINUX_PORT		"/dev/ttyAMA0"	/**< UART Port vom ARM-Linux-Board fuer Verbinung zum ATmega */
 #define BOT_RESET_GPIO		"/sys/class/gpio/gpio17/value"	/**< Pfad zum Reset-GPIO vom ARM-Linux-Board */
 //#define ARM_LINUX_DISPLAY	"/dev/tty1"	/**< Konsole fuer Display-Ausgaben auf ARM-Linux-Board. "stdout" fuer Ausgabe auf stdout */
 
-#define EXPANSION_BOARD_AVAILABLE		/**< Erweiterungsmodul (MMC / WiPort) installiert */
-//#define EXPANSION_BOARD_MOD_AVAILABLE	/**< modifiziertes Erweiterungsmodul (MMC / WiPort) installiert */
-
-//#define SPI_AVAILABLE	/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
-
-//#define DISTSENS_TYPE_GP2Y0A60 /**< Distanzsensor Typ GP2Y0A60 */
+/* Fernbedienung */
+#ifdef MCU
+#define RC_HAVE_HQ_RC_UNIVERS29_334 /**< Dies ist die Standard-Fernbedienung */
+//#define RC_HAVE_VIVANCO_UR89_TV_CODE_089
+//#define RC_HAVE_HAUPPAUGE_WINTV
+//#define RC_HAVE_HAUPPAUGE_MediaMPV
+//#define RC_HAVE_CONRAD_PROMO8
+//#define RC_HAVE_VIVANCO_UR89
+//#define RC_HAVE_Technisat_TTS35AI
+//#define RC_HAVE_LIFETEC_LT3607
+//#define RC_HAVE_TOTAL_CONTROL
+//#define RC_HAVE_PHILIPS_DEFAULT
+#else // PC
+#define RC_HAVE_HQ_RC_UNIVERS29_334	/**< Dies ist die Standard-Fernbedienung */
+//#define RC_HAVE_HAUPPAUGE_WINTV
+#endif // MCU
 
 
 /*** Einstellungen fuer die Verhaltensregeln ***/
@@ -123,7 +132,7 @@
 #define COL_NEAR			300		/**< Nahbereich [mm] */
 #define COL_FAR				400		/**< Fernbereich [mm] */
 
-/* Zustaende und Konstanten fuer das bot_solve_maze_behaviour-Verhalten */
+/* bot_solve_maze_behaviour() */
 #define OPTIMAL_DISTANCE	(int16_t)(BOT_DIAMETER * 1.25f)	/**< Optimale Distanz zur Wand [mm]. Etwas mehr als Bot-Durchmesser ist ideal (vergroessert aufgrund der Kennlinien der Sharps) */
 #define ADJUST_DISTANCE		10		/**< Toleranzbereich [mm] */
 #define IGNORE_DISTANCE		240		/**< Entfernung, ab der eine Wand ignoriert wird [mm] */
@@ -134,25 +143,20 @@
 /* bot_follow_line_behaviour() */
 #ifdef PC
 /* Konstante fuer das bot_follow_line_behaviour-Verhalten im Sim */
-#define LINE_SENSE		0x350		/**< Linie im Sim = 0x350 */
+#define LINE_SENSE		0x350	/**< Linie im Sim = 0x350 */
 #else
 /* Konstante fuer das bot_follow_line_behaviour-Verhalten auf dem echten Bot*/
-#define LINE_SENSE		0x200		/**< Ab wann ist es eine Linie? (schwarz ca. 0x300, helle Tischflaeche 0x50) */
+#define LINE_SENSE		0x200	/**< Ab wann ist es eine Linie? (schwarz ca. 0x300, helle Tischflaeche 0x50) */
 #endif // PC
 
-/* Konstanten fuer bot_catch_pillar_behaviour() */
-#define MAX_PILLAR_DISTANCE	500 	/**< max. Entfernung zum Objekt [mm] */
-
-/* Konstanten fuer Verhaltensanzeige, Verhalten mit prio von bis sichtbar */
-#define PRIO_VISIBLE_MIN	3		/**< Prioritaet, die ein Verhalten mindestens haben muss, um angezeigt zu werden */
-#define PRIO_VISIBLE_MAX	200		/**< Prioritaet, die ein Verhalten hoechstens haben darf, um angezeigt zu werden */
+/* bot_catch_pillar_behaviour() */
+#define MAX_PILLAR_DISTANCE	500	/**< max. Entfernung zum Objekt [mm] */
 
 
 #include <bot-local-override.h>
 
-/************************************************************
- * Some Dependencies!!!
- ************************************************************/
+
+/*** Abhaengigkeiten ***/
 
 #ifdef PC
 #undef EXPANSION_BOARD_MOD_AVAILABLE
@@ -160,9 +164,8 @@
 
 #ifdef EXPANSION_BOARD_MOD_AVAILABLE
 #undef EXPANSION_BOARD_AVAILABLE	// deaktiviert EXPANSION_BOARD_AVAILABLE
+#undef MMC_AVAILABLE
 #undef MOUSE_AVAILABLE				// deaktiviert MOUSE_AVAILABLE
 #endif // EXPANSION_BOARD_AVAILABLE
-
-/************************************************************/
 
 #endif // BOTLOCAL_H_

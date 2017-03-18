@@ -80,6 +80,18 @@ uint16_t timer_get_tickCount16(void);
  */
 uint32_t timer_get_tickCount32(void);
 
+static inline
+__attribute__((always_inline))
+uint16_t timer_get_us8(void) {
+	return (uint16_t) (tickCount * 176.);
+}
+
+static inline
+__attribute__((always_inline))
+uint32_t timer_get_us32(void) {
+	return (uint32_t) (tickCount * 176.);
+}
+
 #define TIMER_GET_TICKCOUNT_8 (uint8_t) timer_get_tickCount16() /**< Systemzeit [176 us] in 8 Bit */
 #define TIMER_GET_TICKCOUNT_16 timer_get_tickCount16() /**< Systemzeit [176 us] in 16 Bit */
 #define TIMER_GET_TICKCOUNT_32 timer_get_tickCount32() /**< Systemzeit [176 us] in 32 Bit */

@@ -354,7 +354,8 @@ static int8_t init(uint8_t clean_map) {
 	map_start_block &= 0xFFFFFC00;
 
 	// Map-Offset im Datei-Header (0x120-0x123) speichern
-	*((uint32_t *) &map_buffer[0x120]) = map_start_block - file_block;
+	void * ptr = &map_buffer[0x120];
+	*((uint32_t *) ptr) = map_start_block - file_block;
 	if (mmc_write_sector(file_block - 1, map_buffer) != 0) {
 		return 3;
 	}
@@ -1409,7 +1410,7 @@ void map_2_sim_main(void) {
 		os_signal_set(&map_2_sim_signal);
 		uint8_t i;
 		int8_t j;
-		int8_t count = (int8_t) (size / sizeof(cache_copy[0])); // Anzahl der Eintraege
+		const int8_t count = (int8_t) (size / sizeof(cache_copy[0])); // Anzahl der Eintraege
 #ifdef MAP_2_SIM_DEBUG
 		if (count > max_entries) {
 			max_entries = count;
@@ -1418,7 +1419,7 @@ void map_2_sim_main(void) {
 #endif // MAP_2_SIM_DEBUG
 		for (i = 0; i < count; ++i) {
 			/* eingetragenen Block in der Liste der bereits Gesendeten suchen */
-			for (j = count; j > i; --j) {
+			for (j = (int8_t) (count - 1); j > i; --j) {
 				if (cache_copy[i] == cache_copy[j]) {
 //					printf("ueberspringe Block %u\n", cache_copy[i]);
 					cache_copy[i] = 0;
