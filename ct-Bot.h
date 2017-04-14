@@ -76,8 +76,8 @@
 #define MAP_2_SIM_AVAILABLE					/**< Sendet die Map zur Anzeige an den Sim */
 
 
-/* MMC-/SD-Karte als Speichererweiterung (Erweiterungsmodul) */
-//#define MMC_AVAILABLE						/**< Aktiviert die Erkennung von MMC/SD-Karten ueber das Erweiterungsmodul */
+/* MMC-/SD-Karte als Speichererweiterung (opt. Erweiterungsmodul) */
+//#define MMC_AVAILABLE						/**< Aktiviert die Erkennung von MMC/SD-Karten im Erweiterungsmodul */
 #define BOT_FS_AVAILABLE					/**< Aktiviert das Dateisystem BotFS (auf MCU nur mit MMC moeglich) */
 
 
