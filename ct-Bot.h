@@ -76,8 +76,8 @@
 #define MAP_2_SIM_AVAILABLE					/**< Sendet die Map zur Anzeige an den Sim */
 
 
-/* MMC-/SD-Karte als Speichererweiterung (Erweiterungsmodul) */
-//#define MMC_AVAILABLE						/**< haben wir eine MMC/SD-Karte zur Verfuegung? */
+/* MMC-/SD-Karte als Speichererweiterung (opt. Erweiterungsmodul) */
+//#define MMC_AVAILABLE						/**< Aktiviert Unterstuetzung von MMC/SD-Karten im Erweiterungsmodul */
 #define SDFAT_AVAILABLE						/**< Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf MMC/SD-Karte */
 
 
