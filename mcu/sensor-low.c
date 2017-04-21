@@ -178,8 +178,8 @@ void bot_sens_init(void) {
 		if (sdfat_write(speedlog_file, slog_out_buffer, (uint16_t) n) != n) {
 			LOG_ERROR("sdfat_write(%d) failed.", n);
 		}
-		if (sdfat_sync_vol(speedlog_file)) {
-			LOG_ERROR("sdfat_sync_vol() failed");
+		if (sdfat_flush(speedlog_file)) {
+			LOG_ERROR("sdfat_flush() failed");
 		}
 	}
 #else // SDFAT_AVAILABLE
@@ -333,7 +333,9 @@ void bot_sens(void) {
 		SREG = sreg;
 #ifdef SDFAT_AVAILABLE
 		if (slog_file_dirty && speed_l == 0 && speed_r == 0 && speedlog_file) {
-			sdfat_sync_vol(speedlog_file);
+			if (sdfat_flush(speedlog_file)) {
+				LOG_ERROR("sdfat_flush() failed");
+			}
 			slog_file_dirty = 0;
 		}
 #endif // SDFAT_AVAILABLE

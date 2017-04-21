@@ -1732,16 +1732,6 @@ void map_to_pgm(const char* filename) {
 }
 
 /**
- * Speichert eine Map in eine (MiniFAT-)Datei, die mit map_read() wieder eingelesen werden kann
- * \param *filename Zieldatei
- * \return Fehlercode, 0 falls alles ok
- */
-static int map_export(const char* filename) {
-	(void) filename;
-	return 1;
-}
-
-/**
  * Liest eine Karte aus einer Map-Datei (MiniFAT-Format) ein
  * \param *filename Quelldatei
  * \return Fehlercode, 0 falls alles ok
@@ -1965,15 +1955,13 @@ static void info(void) {
 void map_display(void) {
 	display_cursor(1, 1);
 	display_puts("1: print 2: delete");
-#ifdef PC
 	display_cursor(2, 1);
+#ifdef PC
 	display_puts("3: draw_scheme");
 	display_cursor(4, 1);
-	display_puts("6: export 7: clean");
-#else // MCU
-	display_cursor(2, 1);
 	display_puts("7: clean");
 #endif // PC
+	display_puts("7: clean");
 #ifdef MAP_INFO_AVAILABLE
 	display_cursor(3, 1);
 	display_puts("4: map_info");
@@ -1999,9 +1987,6 @@ void map_display(void) {
 		case RC5_CODE_5:
 		map_test_get_ratio(); RC5_Code = 0; break;
 #endif
-
-		case RC5_CODE_6:
-		map_export(map_file); RC5_Code = 0; break;
 #endif // PC
 		case RC5_CODE_7:
 		map_clean(); RC5_Code = 0; break;
