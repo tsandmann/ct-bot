@@ -41,10 +41,9 @@ extern "C" {
 class SpiMasterSoft {
 protected:
 	void init() {
-		/* Set SS, MOSI and SCK output, MISO input */
-		PORTB |= _BV(PB4); // SS high
+		/* Set MOSI and SCK output, MISO input */
 		uint8_t ddrb = DDRB;
-		ddrb |=  _BV(DDB5) | _BV(DDB7) | _BV(DDB4);
+		ddrb |=  _BV(DDB5) | _BV(DDB7);
 		ddrb = (uint8_t) (ddrb & ~_BV(DDB6));
 		DDRB = ddrb;
 	}
