@@ -19,8 +19,8 @@
 
 /**
  * \file 	mcu/sdcard_wrapper.cpp
- * \brief	Wrapper for use of SdCard class and SdFat library by William Greiman with ct-Bot framework.
- * \author	Timo Sandmann (mail@timosandmann.de)
+ * \brief	Wrapper for use of SdCard class and SdFat library by William Greiman with ct-Bot framework
+ * \author	Timo Sandmann
  * \date 	23.10.2016
  */
 
@@ -47,7 +47,7 @@
 
 #ifdef MMC_AVAILABLE
 static SdFat sd;
-pSdFat const p_sd(&sd);
+pSdFat const p_sd { &sd };
 
 #if SDFAT_PRINT_SUPPORT
 Uart_Print Serial;
@@ -60,11 +60,14 @@ extern "C" {
 }
 
 SdFatWrapper::debug_times_t SdFatWrapper::debug_times;
-bool SdFatWrapper::init_state(false);
+bool SdFatWrapper::init_state { false };
 
 uint8_t SdFatWrapper::init(SdFat* p_instance, uint8_t devisor) {
 	if (init_state) {
 		return 0;
+	}
+	if (! p_instance) {
+		return 1;
 	}
 
 	os_enterCS();
@@ -77,7 +80,7 @@ uint8_t SdFatWrapper::init(SdFat* p_instance, uint8_t devisor) {
 	if (! res) {
 		LOG_DEBUG("SdFatWrapper::init(): error=0x%02x 0x%02x", p_instance->card()->get_error_code(), p_instance->card()->get_error_data());
 		init_state = false;
-		return 1;
+		return 2;
 	}
 
 	init_state = true;
@@ -85,6 +88,9 @@ uint8_t SdFatWrapper::init(SdFat* p_instance, uint8_t devisor) {
 }
 
 uint8_t SdFatWrapper::read_block(SdFat* p_instance, uint32_t block, uint8_t* dst) {
+	if (! p_instance) {
+		return 0;
+	}
 	os_enterCS();
 	const auto starttime(debug_mode ? timer_get_us8() : 0);
 	const auto res(p_instance->card()->read_block(block, dst));
@@ -107,6 +113,9 @@ uint8_t SdFatWrapper::read_block(SdFat* p_instance, uint32_t block, uint8_t* dst
 }
 
 uint8_t SdFatWrapper::write_block(SdFat* p_instance, uint32_t block, const uint8_t* src, uint8_t sync) {
+	if (! p_instance) {
+		return 0;
+	}
 	os_enterCS();
 	const auto res(p_instance->card()->write_block(block, src, static_cast<bool>(sync)));
 	os_exitCS();
@@ -117,7 +126,7 @@ uint8_t SdFatWrapper::write_block(SdFat* p_instance, uint32_t block, const uint8
 }
 
 uint32_t SdFatWrapper::get_size(SdFat* p_instance) {
-	if (! init_state) {
+	if (! init_state || ! p_instance) {
 		return 0;
 	}
 
@@ -131,6 +140,9 @@ uint32_t SdFatWrapper::get_size(SdFat* p_instance) {
 }
 
 uint8_t SdFatWrapper::read_csd(SdFat* p_instance, csd_t* p_csd) {
+	if (! p_instance) {
+		return 0;
+	}
 	os_enterCS();
 	const auto res(p_instance->card()->read_csd(p_csd));
 	os_exitCS();
@@ -141,6 +153,9 @@ uint8_t SdFatWrapper::read_csd(SdFat* p_instance, csd_t* p_csd) {
 }
 
 uint8_t SdFatWrapper::read_cid(SdFat* p_instance, cid_t* p_cid) {
+	if (! p_instance) {
+		return 0;
+	}
 	os_enterCS();
 	const auto res(p_instance->card()->read_cid(p_cid));
 	os_exitCS();
@@ -152,6 +167,9 @@ uint8_t SdFatWrapper::read_cid(SdFat* p_instance, cid_t* p_cid) {
 
 #ifdef SDFAT_AVAILABLE
 uint8_t SdFatWrapper::remove(SdFat* p_instance, const char* path) {
+	if (! p_instance) {
+		return 1;
+	}
 	os_enterCS();
 	auto res(! p_instance->remove(path));
 	os_exitCS();
@@ -159,6 +177,9 @@ uint8_t SdFatWrapper::remove(SdFat* p_instance, const char* path) {
 }
 
 uint8_t SdFatWrapper::rename(SdFat* p_instance, const char* old_path, const char* new_path) {
+	if (! p_instance) {
+		return 1;
+	}
 	os_enterCS();
 	auto res(! p_instance->rename(old_path, new_path));
 	os_exitCS();
@@ -166,6 +187,9 @@ uint8_t SdFatWrapper::rename(SdFat* p_instance, const char* old_path, const char
 }
 
 uint8_t SdFatWrapper::sync_vol(SdFat* p_instance) {
+	if (! p_instance) {
+		return 1;
+	}
 	os_enterCS();
 	auto res(p_instance->vol()->cacheSync());
 	os_exitCS();
@@ -194,6 +218,9 @@ uint8_t FatFileWrapper::open(const char* filename, FatFile** p_file, uint8_t mod
 }
 
 void FatFileWrapper::seek(FatFile* p_instance, int32_t offset, uint8_t origin) {
+	if (! p_instance) {
+		return;
+	}
 	switch (origin) {
 	case SEEK_SET:
 		p_instance->seekSet(offset);
@@ -210,6 +237,9 @@ void FatFileWrapper::seek(FatFile* p_instance, int32_t offset, uint8_t origin) {
 }
 
 int16_t FatFileWrapper::read(FatFile* p_instance, void* buffer, uint16_t length) {
+	if (! p_instance) {
+		return -1;
+	}
 	os_enterCS();
 	auto res(p_instance->read(buffer, length));
 	os_exitCS();
@@ -217,6 +247,9 @@ int16_t FatFileWrapper::read(FatFile* p_instance, void* buffer, uint16_t length)
 }
 
 int16_t FatFileWrapper::write(FatFile* p_instance, const void* buffer, uint16_t length) {
+	if (! p_instance) {
+		return -1;
+	}
 	os_enterCS();
 	const auto res(p_instance->write(buffer, length));
 	os_exitCS();
@@ -224,6 +257,9 @@ int16_t FatFileWrapper::write(FatFile* p_instance, const void* buffer, uint16_t 
 }
 
 uint8_t FatFileWrapper::flush(FatFile* p_instance) {
+	if (! p_instance) {
+		return 1;
+	}
 	os_enterCS();
 	auto res(! p_instance->sync());
 	os_exitCS();
@@ -231,6 +267,9 @@ uint8_t FatFileWrapper::flush(FatFile* p_instance) {
 }
 
 uint8_t FatFileWrapper::close(FatFile* p_instance) {
+	if (! p_instance) {
+		return 1;
+	}
 	os_enterCS();
 	auto res(! p_instance->close());
 	os_exitCS();
@@ -238,6 +277,9 @@ uint8_t FatFileWrapper::close(FatFile* p_instance) {
 }
 
 void FatFileWrapper::free(FatFile* p_instance) {
+	if (! p_instance) {
+		return;
+	}
 	if (p_instance->isOpen()) {
 		close(p_instance);
 	}
@@ -259,12 +301,12 @@ uint8_t (*sd_card_read_cid)(pSdFat, cid_t*) { SdFatWrapper::read_cid };
 #ifdef SDFAT_AVAILABLE
 uint8_t (*sdfat_open)(const char*, pFatFile*, uint8_t) { FatFileWrapper::open };
 void (*sdfat_seek)(pFatFile, int32_t, uint8_t) { FatFileWrapper::seek };
-int32_t (*sdfat_tell)(pFatFile p_file) {FatFileWrapper::tell};
+int32_t (*sdfat_tell)(pFatFile p_file) { FatFileWrapper::tell };
 void (*sdfat_rewind)(pFatFile) { FatFileWrapper::rewind };
 int16_t (*sdfat_read)(pFatFile, void*, uint16_t) { FatFileWrapper::read };
 int16_t (*sdfat_write)(pFatFile, const void*, uint16_t) { FatFileWrapper::write };
 uint8_t (*sdfat_remove)(pSdFat, const char*) { SdFatWrapper::remove };
-uint8_t (*sdfat_rename)(pSdFat, const char*, const char*)  { SdFatWrapper::rename };
+uint8_t (*sdfat_rename)(pSdFat, const char*, const char*) { SdFatWrapper::rename };
 uint8_t (*sdfat_flush)(pFatFile) { FatFileWrapper::flush };
 uint8_t (*sdfat_close)(pFatFile) { FatFileWrapper::close };
 void (*sdfat_free)(pFatFile) { FatFileWrapper::free };

@@ -22,7 +22,7 @@
  * \brief 	SdCard class for V2 SD/SDHC cards. Based on Arduino SdSpiCard library by William Greiman.
  * \see		https://github.com/greiman/SdFat
  * \author	William Greiman
- * \author	Timo Sandmann (mail@timosandmann.de)
+ * \author	Timo Sandmann
  * \date 	23.10.2016
  *
  * For use with Arduino SdFat library by William Greiman (https://github.com/greiman/SdFat).
