@@ -20,10 +20,10 @@
 /**
  * \file 	spimaster.h
  * \brief 	SPI master driver
- * \author	Timo Sandmann (mail@timosandmann.de)
+ * \author	Timo Sandmann
  * \date 	23.10.2016
  *
- * For use with Arduino SdFat library by William Greiman (https://github.com/greiman/SdFat).
+ * For use with Arduino SdFat library by William Greiman (https://github.com/greiman/SdFat)
  */
 
 #ifndef SPIMASTER_H_
@@ -37,8 +37,15 @@ extern "C" {
 #include "timer.h"
 }
 
+/**
+ * SPI master driver for ATmega using SPI module of the controller
+ */
 class SpiMaster {
 protected:
+	/**
+	 * Initializes the SPI module as a master
+	 * \note Sets SS, MOSI and SCK pins as output and MISO as input, SS is driven high (permanently)
+	 */
 	void init() {
 		/* Set SS, MOSI and SCK output, MISO input */
 		PORTB |= _BV(PB4); // SS high
@@ -48,12 +55,22 @@ protected:
 		DDRB = ddrb;
 	}
 
+	/**
+	 * Receives a byte from the SPI bus
+	 * \return The received data byte
+	 * \note Blocking until data is received, 0xff is sent out
+	 */
 	uint8_t __attribute__((always_inline)) receive() const {
 		SPDR = 0xff;
 		while (! (SPSR & _BV(SPIF))) {}
 		return SPDR;
 	}
 
+	/**
+	 * Receives n byte from the SPI bus
+	 * \param[out] buf Pointer to buffer for the received bytes (with space for at least n byte)
+	 * \param[in] n Number of bytes to be received
+	 */
 	void receive(uint8_t* buf, size_t n) const {
 		if (n-- == 0) {
 			return;
@@ -95,11 +112,21 @@ protected:
 		}
 	}
 
+	/**
+	 * Sends a byte to the SPI bus.
+	 * \param[in] data The data byte to send
+	 * \note Blocking until byte is sent out
+	 */
 	void __attribute__((always_inline)) send(uint8_t data) const {
 		SPDR = data;
 		while (!( SPSR & _BV(SPIF))) {}
 	}
 
+	/**
+	 * Sends n byte to the SPI bus
+	 * \param[in] buf Pointer to buffer for data to send
+	 * \param[in] n Number of bytes to send
+	 */
 	void send(const uint8_t* buf, size_t n) const {
 		if (n == 0) {
 			return;
@@ -141,6 +168,11 @@ protected:
 		while (! (SPSR & _BV(SPIF))) {}
 	}
 
+	/**
+	 * Waits until data != 0xff received from the SPI bus or timeout occurs
+	 * \param[in] timeout_ms Maximum wait time in ms
+	 * \return false, iff timeout; true otherwise
+	 */
 	bool wait_not_busy(uint16_t timeout_ms) const {
 		const auto starttime(TIMER_GET_TICKCOUNT_16);
 		const uint16_t timeout_ticks(timeout_ms * (1000U / TIMER_STEPS + 1));
@@ -184,13 +216,17 @@ protected:
 		}
 	}
 
+	/**
+	 * Sets the SPI bus speed to fraction of F_CPU: speed = F_CPU / (2 * divisor)
+	 * \param[in] divisor Devides (F_CPU / 2) to get SPI bus speed
+	 */
 	void set_speed(uint8_t divisor) {
 		uint8_t b(2);
 		uint8_t r(0);
 		m_divisor = divisor;
 
 		/* see AVR processor documentation */
-		for (; divisor > b && r < 7; b <<= 1, r += r < 5 ? 1 : 2) {}
+		for (; divisor > b && r < 7; b <<= 1, r += r < 5 ? 1 : 2) {} // well, monsters live here
 		SPCR = _BV(SPE) | _BV(MSTR) | (r >> 1);
 		SPSR = r & 1 ? 0 : _BV(SPI2X);
 	}

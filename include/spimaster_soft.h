@@ -20,10 +20,10 @@
 /**
  * \file 	spimaster_soft.h
  * \brief 	Software SPI master driver
- * \author	Timo Sandmann (mail@timosandmann.de)
+ * \author	Timo Sandmann
  * \date 	23.10.2016
  *
- * For use with Arduino SdFat library by William Greiman (https://github.com/greiman/SdFat).
+ * For use with Arduino SdFat library by William Greiman (https://github.com/greiman/SdFat)
  */
 
 #ifndef SPIMASTER_SOFT_H_
@@ -38,8 +38,15 @@ extern "C" {
 #include "motor.h"
 }
 
+/**
+ * Software emulation SPI master driver for ATmega using bit banging
+ */
 class SpiMasterSoft {
 protected:
+	/**
+	 * Initializes the SPI master
+	 * \note Sets MOSI and SCK pins as output and MISO as input
+	 */
 	void init() {
 		/* Set MOSI and SCK output, MISO input */
 		uint8_t ddrb = DDRB;
@@ -48,6 +55,11 @@ protected:
 		DDRB = ddrb;
 	}
 
+	/**
+	 * Receives a byte from the SPI bus
+	 * \return The received data byte
+	 * \note Blocking until data is received, 0xff is sent out
+	 */
 	uint8_t receive() const {
 		disable_servo();
 
@@ -107,6 +119,11 @@ protected:
 		return data;
 	}
 
+	/**
+	 * Receives n byte from the SPI bus
+	 * \param[out] buf Pointer to buffer for the received bytes (with space for at least n byte)
+	 * \param[in] n Number of bytes to be received
+	 */
 	void __attribute__((always_inline)) receive(uint8_t* buf, size_t n) const {
 		if (n != 512) {
 			receive_n(buf, n);
@@ -115,6 +132,11 @@ protected:
 		}
 	}
 
+	/**
+	 * Sends a byte to the SPI bus.
+	 * \param[in] data The data byte to send
+	 * \note Blocking until byte is sent out
+	 */
 	void send(uint8_t data) const {
 		disable_servo();
 
@@ -162,6 +184,11 @@ protected:
 		);
 	}
 
+	/**
+	 * Sends n byte to the SPI bus
+	 * \param[in] buf Pointer to buffer for data to send
+	 * \param[in] n Number of bytes to send
+	 */
 	void __attribute__((always_inline)) send(const uint8_t* buf, size_t n) const {
 		if (n != 512) {
 			send_n(buf, n);
@@ -170,6 +197,11 @@ protected:
 		}
 	}
 
+	/**
+	 * Waits until data != 0xff received from the SPI bus or timeout occurs
+	 * \param[in] timeout_ms Maximum wait time in ms
+	 * \return false, iff timeout; true otherwise
+	 */
 	bool wait_not_busy(uint16_t timeout_ms) const {
 		const auto starttime(TIMER_GET_TICKCOUNT_16);
 		const uint16_t timeout_ticks(timeout_ms * (1000U / TIMER_STEPS + 1));
@@ -181,15 +213,28 @@ protected:
 		return true;
 	}
 
+	/**
+	 * Sets the SPI bus speed to fraction of F_CPU: speed = F_CPU / (2 * divisor)
+	 * \note Currently not implemented!
+	 */
 	void set_speed(uint8_t) {}
 
 private:
+	/**
+	 * Receives n byte from the SPI bus, used for n != 512
+	 * \param[out] buf Pointer to buffer for the received bytes (with space for at least n byte)
+	 * \param[in] n Number of bytes to be received
+	 */
 	void receive_n(uint8_t* buf, size_t n) const {
 		for (size_t i(0); i < n; ++i) {
 			buf[i] = this->receive();
 		}
 	}
 
+	/**
+	 * Receives 512 byte from the SPI bus, optimized version
+	 * \param[out] buf Pointer to buffer for the received bytes (with space for at least 512 byte)
+	 */
 	void receive_512(void* buf) const {
 		disable_servo();
 
@@ -260,12 +305,21 @@ private:
 		);
 	}
 
+	/**
+	 * Sends n byte to the SPI bus, used for n != 512
+	 * \param[out] buf Pointer to buffer for data to send
+	 * \param[in] n Number of bytes to send
+	 */
 	void send_n(const uint8_t* buf, size_t n) const {
 		for (size_t i(0); i < n; ++i) {
 			this->send(buf[i]);
 		}
 	}
 
+	/**
+	 * Sends 512 byte to the SPI bus, optimized version
+	 * \param[out] buf Pointer to buffer for the data to send
+	 */
 	void send_512(const void* buf) const {
 		disable_servo();
 
@@ -323,6 +377,9 @@ private:
 		);
 	}
 
+	/**
+	 * Sets SERVO1 to OFF on ATmega1284P
+	 */
 	void disable_servo() const {
 #ifdef __AVR_ATmega1284P__
 		servo_set(SERVO1, SERVO_OFF);
