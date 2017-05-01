@@ -35,7 +35,7 @@
 #define ENA_LINE			(1 << 5)	/**< Enable-Leitung Liniensensor auf Mausplatine (ENA_MAUS im Schaltplan) */
 
 #ifdef EXPANSION_BOARD_MOD_AVAILABLE
-#define ENA_WIPORT			(1 << 6)	/**< Enable-Leitung Reserve 1 */
+#define ENA_VOLTAGE_3V3		(1 << 6)	/**< Enable-Leitung Reserve 1 */
 #define ENA_DISPLAYLIGHT	(1 << 7)	/**< Enable-Leitung Reserve 2 */
 #else
 #define ENA_MMC				(1 << 6)	/**< Enable-Leitung Reserve 1 */
