@@ -17,11 +17,6 @@ extern "C" {
 #include "os_thread.h"
 }
 
-//decltype(SerialConnection_set_wait_callback) SerialConnection_set_wait_callback { SerialConnectionAVR::set_wait_callback };
-void SerialConnection_set_wait_callback(void (*callback)(const void*)) {
-	SerialConnectionAVR::set_wait_callback(callback);
-}
-
 decltype(SerialConnectionAVR::wait_callback) SerialConnectionAVR::wait_callback(nullptr);
 
 uint16_t SerialConnectionAVR::wait_for_data(const uint16_t size, const uint16_t timeout_ms) const noexcept {

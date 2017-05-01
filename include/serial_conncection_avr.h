@@ -47,7 +47,4 @@ public:
 	virtual std::size_t send(std::streambuf& buf, const std::size_t size) override;
 };
 
-//extern "C" void (*SerialConnection_set_wait_callback)(void (*)(const void*));
-extern "C" void SerialConnection_set_wait_callback(void (*)(const void*));
-
 #endif /* SERIAL_CONNECTION_AVR_H_ */

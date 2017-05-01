@@ -136,7 +136,7 @@ int serial_protocol_handler() {
 		return -130;
 	}
 
-	const auto res(protocol.slave_process_request(head, buffer, 100));
+	const auto res(protocol.slave_process_request(head, buffer, sizeof(recv_buf)));
 	return res;
 }
 
@@ -182,7 +182,7 @@ void bot_2_linux_init(void) {
 		display_printf("Low battery!");
 	}
 
-	SerialConnection_set_wait_callback(wait_handler);
+	SerialConnectionAVR::set_wait_callback(wait_handler);
 
 	servo_low(SERVO1, DOOR_OPEN);
 	servo_low(SERVO2, CAM_CENTER);
@@ -210,7 +210,7 @@ void bot_2_linux_listen(void) {
 		}
 	} while (processed != 1);
 
-	SerialConnection_set_wait_callback(nullptr);
+	SerialConnectionAVR::set_wait_callback(nullptr);
 
 	os_thread_running->lastSchedule = (uint16_t) (TIMER_GET_TICKCOUNT_32 - (MS_TO_TICKS(OS_TIME_SLICE) + 1)); // don't sleep on os_thread_yield()
 }
