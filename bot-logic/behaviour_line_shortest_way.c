@@ -200,7 +200,7 @@ void bot_check_reverse_direction_behaviour(Behaviour_t * data) {
 		reverse_state = 1;
 		bot_reverse = False;
 		//LOG_DEBUG("-Start Check reverse mit ang %1d", last_heading);
-		/* no break */
+		CASE_NO_BREAK;
 	case 1:
 		// bei Drehwinkelaenderung und Uberschreitung einer gewissen Groesse (um 180 Grad) feuern
 		angle_t = turned_angle(last_heading);
