@@ -1158,7 +1158,7 @@ static void statement(void) {
   case TOKENIZER_LET:
     accept(TOKENIZER_LET);
     /* Fall through. */
-    // no break
+    CASE_NO_BREAK;
   case TOKENIZER_VARIABLE:
 #if UBASIC_STRING
   case TOKENIZER_STRINGVAR:

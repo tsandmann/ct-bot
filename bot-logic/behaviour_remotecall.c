@@ -411,7 +411,7 @@ void bot_remotecall_behaviour(Behaviour_t * data) {
 			// Aufrauemen
 			function_id = 255;
 		}
-		/* no break */
+		CASE_NO_BREAK;
 		default:
 			running_behaviour = REMOTE_CALL_IDLE;
 			return_from_behaviour(data); // und Verhalten auch aus

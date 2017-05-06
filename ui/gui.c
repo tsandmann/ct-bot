@@ -217,13 +217,13 @@ static uint16_t gui_keypad_check(uint16_t rc5) {
 	case RC5_CODE_STOP:
 		/* Abbruch */
 		*keypad_buffer = 0;
-		// no break
+		CASE_NO_BREAK;
 	case RC5_CODE_PLAY:
 		/* fertig */
 		keypad_callback(keypad_buffer);
 		keypad_callback = NULL;
 		memset(keypad_buffer, 0, 21);
-		/* no break */
+		CASE_NO_BREAK;
 	case 0:
 		/* keine neue Eingabe */
 		return 0;

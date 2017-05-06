@@ -48,7 +48,7 @@ void bot_get_utilization_behaviour(Behaviour_t * data) {
 		if (beh->active == BEHAVIOUR_ACTIVE) {
 			os_clear_utilization();
 			state = 1;
-			/* no break */
+			CASE_NO_BREAK;
 		} else {
 			break;
 		}
