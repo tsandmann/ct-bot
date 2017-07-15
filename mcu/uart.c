@@ -49,6 +49,10 @@ void uart_init(void) {
     fifo_init(&uart_infifo, inbuf, UART_BUFSIZE_IN);
     fifo_init(&uart_outfifo, outbuf, UART_BUFSIZE_OUT);
 
+#ifdef ENABLE_RX0_PULLUP
+    PORTD |= PIND0; // Pullup an
+#endif
+
 	/* Interrupts kurz deaktivieren */
     uint8_t sreg = SREG;
     __builtin_avr_cli();
