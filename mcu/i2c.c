@@ -56,7 +56,7 @@ ISR(TWI_vect) {
 	switch (state) {
 		/* Start gesendet */
 		case TW_START:
-			/* no break */
+			CASE_NO_BREAK;
 		case TW_REP_START: {
 			if (txSize > 0) {
 				/* Adresse+W senden */
@@ -81,7 +81,7 @@ ISR(TWI_vect) {
 				TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWIE) | (1<<TWSTA);	// ReStart senden
 				break;
 			}
-			/* no break */
+			CASE_NO_BREAK;
 		}
 		/* SLA+W, ACK empfangen */
 		case TW_MT_SLA_ACK: {
