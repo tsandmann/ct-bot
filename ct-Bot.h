@@ -72,7 +72,7 @@
 
 
 /* Umgebungskarte */
-#define MAP_AVAILABLE						/**< Aktiviert die Kartographie */
+#define MAP_AVAILABLE						/**< Aktiviert die Kartographie; wenn aktiviert, funktioniert ui/available-screens.h/DISPLAY_MMC_INFO nicht */
 #define MAP_2_SIM_AVAILABLE					/**< Sendet die Map zur Anzeige an den Sim */
 
 
