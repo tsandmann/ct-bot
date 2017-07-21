@@ -868,7 +868,7 @@
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/sdcard_wrapper.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/sdfat_fs.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/sdinfo.h"/>
-			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/serial_conncection_avr.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/serial_connection_avr.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/serial_protocol.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/serial_protocol_clock.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/serial_protocol_handler.h"/>

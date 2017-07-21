@@ -10,7 +10,7 @@
 #ifdef BOT_2_RPI_AVAILABLE
 
 #include "serial_protocol_handler.h"
-#include "serial_conncection_avr.h"
+#include "serial_connection_avr.h"
 #include "serial_protocol.h"
 #include "ll_command.h"
 #include "crc_engine.h"

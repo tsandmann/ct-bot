@@ -1,5 +1,5 @@
 /*
- * serial_conncection_avr.h
+ * serial_connection_avr.h
  *
  *  Created on: 26.12.2016
  *      Author: ts

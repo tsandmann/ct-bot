@@ -1,5 +1,5 @@
 /*
- * serial_conncection_avr.cpp
+ * serial_connection_avr.cpp
  *
  *  Created on: 26.12.2016
  *      Author: ts
@@ -8,7 +8,7 @@
 #include "ct-Bot.h"
 
 #ifdef BOT_2_RPI_AVAILABLE
-#include "serial_conncection_avr.h"
+#include "serial_connection_avr.h"
 #include "crc_engine.h"
 #include <cstring>
 
