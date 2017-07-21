@@ -94,6 +94,7 @@
    --> Diese Einstellungen sind von der lokalen Hardware abhaengig, Veraenderungen sind nur bei Hardware-Umbauten noetig */
 #define F_CPU	16000000UL	/**< CPU-Frequenz [Hz] (16000000UL oder 20000000UL) */
 #define UART_BAUD	115200	/**< Baudrate fuer UART-Kommunikation (moegliche Werte sind 57600, 115200, 230400, 500000) */
+//#define ENABLE_RX0_PULLUP	/**< Aktiviert den internen Pullup fuer die RX-Leitung. Nicht aktivieren, falls entsprechender Hardware-Mod eingebaut ist! */
 #define EXPANSION_BOARD_AVAILABLE		/**< Erweiterungsmodul (MMC / WiPort) installiert */
 //#define EXPANSION_BOARD_MOD_AVAILABLE	/**< modifiziertes Erweiterungsmodul (MMC / WiPort) installiert */
 //#define SPI_AVAILABLE	/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
@@ -161,6 +162,10 @@
 
 #ifdef PC
 #undef EXPANSION_BOARD_MOD_AVAILABLE
+#endif
+
+#ifdef EXPANSION_BOARD_AVAILABLE
+#undef ENABLE_RX0_PULLUP // Erweiterungsboard verwendet pull-down fuer RX0, also Kurzschluss verhindern
 #endif
 
 #ifdef EXPANSION_BOARD_MOD_AVAILABLE
