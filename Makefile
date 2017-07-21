@@ -62,7 +62,7 @@ define SRCMCU
 	mcu/adc.c mcu/bootloader.c mcu/bot-2-linux.c mcu/bot-2-sim.c mcu/cmps03.c mcu/cppsupport.cpp mcu/delay.c \
 	mcu/display.c mcu/ena.c mcu/i2c.c mcu/init-low.c mcu/ir-rc5.c mcu/led.c mcu/ll_command.cpp \
 	mcu/mmc.c mcu/motor-low.c mcu/mouse.c mcu/os_scheduler.c mcu/os_thread.c mcu/sdcard_wrapper.cpp mcu/sdcard.cpp mcu/sensor-low.c \
-	mcu/serial_conncection_avr.cpp mcu/serial_protocol_handler.cpp mcu/serial_protocol.cpp mcu/shift.c \
+	mcu/serial_connection_avr.cpp mcu/serial_protocol_handler.cpp mcu/serial_protocol.cpp mcu/shift.c \
 	mcu/sp03.c mcu/srf10.c mcu/timer-low.c mcu/twi.c mcu/uart.c \
 	mcu/SdFat/Print.cpp mcu/SdFat/FatLib/FatFile.cpp mcu/SdFat/FatLib/FatFileLFN.cpp mcu/SdFat/FatLib/FatFilePrint.cpp mcu/SdFat/FatLib/FatFileSFN.cpp \
 	mcu/SdFat/FatLib/FatVolume.cpp mcu/SdFat/FatLib/FmtNumber.cpp
