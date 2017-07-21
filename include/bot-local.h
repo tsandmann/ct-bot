@@ -169,9 +169,9 @@
 #endif
 
 #ifdef EXPANSION_BOARD_MOD_AVAILABLE
-#undef EXPANSION_BOARD_AVAILABLE	// deaktiviert EXPANSION_BOARD_AVAILABLE
-#undef MMC_AVAILABLE
-#undef MOUSE_AVAILABLE				// deaktiviert MOUSE_AVAILABLE
+#undef EXPANSION_BOARD_AVAILABLE	// deaktiviert EXPANSION_BOARD
+#undef SDFAT_AVAILABLE				// deaktiviert SDFAT
+#undef MOUSE_AVAILABLE				// deaktiviert Maussensor
 #endif // EXPANSION_BOARD_AVAILABLE
 
 #endif // BOTLOCAL_H_
