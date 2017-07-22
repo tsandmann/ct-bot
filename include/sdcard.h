@@ -37,6 +37,7 @@
 #include "SdFatConfig.h"
 #include "spimaster.h"
 #include "spimaster_soft.h"
+#include "spi_select.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
@@ -45,11 +46,11 @@ extern "C" {
 }
 
 
-template <class SPI>
-class SdCardBase : public SPI {
+template <class SPI, class CSELECT>
+class SdCardBase : public SPI, public CSELECT {
 protected:
 	using spi_type = SPI;
-
+	using cs_type = CSELECT;
 };
 
 namespace SdCardTypes {
@@ -58,13 +59,19 @@ using SpiType = SpiMaster;
 #else
 using SpiType = SpiMasterSoft;
 #endif
+
+#ifndef EXPANSION_BOARD_MOD_AVAILABLE
+using CsType = SelectEna;
+#else
+using CsType = SelectPB4;
+#endif
 } // namespace SdCardTypes
 
 /**
  * \class SdCard
  * \brief Raw access to SD and SDHC flash memory cards via SPI protocol.
  */
-class SdCard : public SdCardBase<SdCardTypes::SpiType> {
+class SdCard : public SdCardBase<SdCardTypes::SpiType, SdCardTypes::CsType> {
 public:
 	/** Construct an instance of SdSpiCard. */
 	SdCard() : m_selected(false), m_errorCode(SD_CARD_ERROR_INIT_NOT_CALLED), m_type(0) {}
@@ -176,6 +183,7 @@ public:
 
 private:
 	using SPI = spi_type;
+	using CSELECT = cs_type;
 
 	/** Set the SD chip select pin high, send a dummy byte, and call SPI endTransaction.
 	 * This function should only be called by programs doing raw I/O to the SD.

@@ -850,9 +850,9 @@
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/sdcard_wrapper.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/sdfat_fs.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/sdinfo.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/spi_select.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/spimaster.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="include/spimaster_soft.h"/>
-			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/ctbot_comp.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FatApiConstants.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FatFile.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/FatLib/FatFileSystem.h"/>
@@ -866,6 +866,7 @@
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/SdFat.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/SdFatConfig.h"/>
 			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/WString.h"/>
+			<file-mapping configuration="" language="org.eclipse.cdt.core.g++" path="mcu/SdFat/ctbot_comp.h"/>
 		</project-mappings>
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="2">

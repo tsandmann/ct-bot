@@ -27,29 +27,28 @@
 #ifndef ENA_H_
 #define ENA_H_
 
-#define ENA_ABSTAND			(1 << 0)	/**< Enable-Leitung Abstandssensoren */
-#define ENA_RADLED			(1 << 1)	/**< Enable-Leitung Radencoder */
-#define ENA_SCHRANKE		(1 << 2)	/**< Enable-Leitung Fachueberwachung */
-#define ENA_KANTLED			(1 << 3)	/**< Enable-Leitung Angrundsensor */
-#define ENA_KLAPPLED		(1 << 4)	/**< Enable-Leitung Schieberueberwachung */
-#define ENA_LINE			(1 << 5)	/**< Enable-Leitung Liniensensor auf Mausplatine (ENA_MAUS im Schaltplan) */
+#define ENA_ABSTAND			(1 << 0)	 /**< Enable-Leitung Abstandssensoren */
+#define ENA_RADLED			(1 << 1)	 /**< Enable-Leitung Radencoder */
+#define ENA_SCHRANKE			(1 << 2)	 /**< Enable-Leitung Fachueberwachung */
+#define ENA_KANTLED			(1 << 3)	 /**< Enable-Leitung Angrundsensor */
+#define ENA_KLAPPLED			(1 << 4)	 /**< Enable-Leitung Schieberueberwachung */
+#define ENA_LINE				(1 << 5)	 /**< Enable-Leitung Liniensensor auf Mausplatine (ENA_MAUS im Schaltplan) */
+#define ENA_MMC				(1 << 6)	 /**< Enable-Leitung Reserve 1 */
+#define ENA_MOUSE_SENSOR		(1 << 7)	 /**< Enable-Leitung Reserve 2 */
 
 #ifdef EXPANSION_BOARD_MOD_AVAILABLE
-#define ENA_WIPORT			(1 << 6)	/**< Enable-Leitung Reserve 1 */
-#define ENA_DISPLAYLIGHT	(1 << 7)	/**< Enable-Leitung Reserve 2 */
-#else
-#define ENA_MMC				(1 << 6)	/**< Enable-Leitung Reserve 1 */
-#define ENA_MOUSE_SENSOR	(1 << 7)	/**< Enable-Leitung Reserve 2 */
+#define ENA_WIPORT			(1 << 6)	 /**< Enable-Leitung Reserve 1 */
+#define ENA_DISPLAYLIGHT		(1 << 7) /**< Enable-Leitung Reserve 2 */
 #endif // EXPANSION_BOARD_MOD_AVAILABLE
 
-#define MMC_PORT_OUT		PORTB		/**< Ausgangs-Port fuer die MMC/SD-Karte */
+#define MMC_PORT_OUT			PORTB	/**< Ausgangs-Port fuer die MMC/SD-Karte */
 #define MMC_PORT_IN			PINB		/**< Eingangs-Port fuer die MMC/SD-Karte */
 #define MMC_DDR				DDRB		/**< DDR-Register fuer MMC/SD-Karte */
-#define SPI_DI				PB6			/**< Port Pin an dem Data Output der MMC/SD-Karte angeschlossen ist */
-#define SPI_DO				PB5			/**< Port Pin an dem Data Input der MMC/SD-Karte angeschlossen ist */
+#define SPI_DI				PB6		/**< Port Pin an dem Data Output der MMC/SD-Karte angeschlossen ist */
+#define SPI_DO				PB5		/**< Port Pin an dem Data Input der MMC/SD-Karte angeschlossen ist */
 #define MMC_CLK_DDR			DDRB		/**< DDR-Register fuer MMC-Clock */
-#define MMC_CLK_PORT		PORTB		/**< Port fuer MMC-Clock */
-#define SPI_CLK				PB7			/**< Port Pin an dem die Clock der MMC/SD-Karte angeschlossen ist (clk) */
+#define MMC_CLK_PORT			PORTB	/**< Port fuer MMC-Clock */
+#define SPI_CLK				PB7		/**< Port Pin an dem die Clock der MMC/SD-Karte angeschlossen ist (clk) */
 
 /**
  * Initialisiert die Enable-Leitungen
