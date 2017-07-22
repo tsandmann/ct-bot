@@ -70,7 +70,7 @@ void bot_classify_objects_behaviour(Behaviour_t * data) {
 		/* Objekte suchen */
 		state = CO_CATCH;
 		/* Such-Algo / Explore-Verhalten */
-		//break;
+		CASE_NO_BREAK;
 
 	case CO_CATCH:
 		/* Objekt einfangen */

@@ -328,7 +328,7 @@ void bot_do_slalom_behaviour(Behaviour_t * data) {
 		deactivateBehaviour(bot_avoid_col_behaviour);
 #endif
 		slalom_state = SLALOM_STATE_TURN_1;
-		// break;
+		CASE_NO_BREAK;
 	case SLALOM_STATE_TURN_1:
 		turn = (slalom_orientation == SLALOM_ORIENTATION_LEFT) ? 90 : -90;
 		bot_turn(data, turn);

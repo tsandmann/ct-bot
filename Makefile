@@ -267,7 +267,7 @@ COPY = cp
 
 # Compiler flag to set the C/C++ Standard level.
 CSTANDARD = -std=gnu11
-CXXSTANDARD = -std=gnu++1y
+CXXSTANDARD = -std=gnu++14
 
 # Compiler flags.
 #  -g:           generate debugging information
