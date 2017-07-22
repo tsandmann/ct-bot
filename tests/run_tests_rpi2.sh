@@ -13,7 +13,7 @@ fi
 
 if [[ "`uname`" == "Linux" ]]; then
 	if [[ ! -e $MYDIR/arm-unknown-linux-gnueabihf ]]; then
-		command -v arm-linux-gnueabihf-g++ >/dev/null 2>&1 || { git clone --depth=1 --branch=master https://github.com/tsandmann/arm-toolchain-linux.git $MYDIR/arm-unknown-linux-gnueabihf; }
+		command -v arm-linux-gnueabihf-g++ >/dev/null 2>&1 || { git clone --depth=1 --branch=gcc-5.4 https://github.com/tsandmann/arm-toolchain-linux.git $MYDIR/arm-unknown-linux-gnueabihf; }
 	fi
 
 	export PATH=$MYDIR/arm-unknown-linux-gnueabihf/bin:$PATH
