@@ -6,7 +6,7 @@ The repository here is used for further (experimental) development (branch devel
 
 Feel free to fork from this repository, add your own extensions or improvements and create a pull request to get them integrated.
 
-Eclipse may update the file .settings/language.settings.xml every time your local build environment changes. To stop git complaining about these updates, execute the following command at the ct-bot top-level directory: <code>git update-index --skip-worktree .settings/language.settings.xml</code>
+Eclipse may update the file .settings/language.settings.xml every time your local build environment changes. To stop git complaining about these updates, execute the following command at the ct-bot top-level directory: <code>git update-index --skip-worktree -- .settings/language.settings.xml</code>
 
 
 | Branch              | Build status  |
