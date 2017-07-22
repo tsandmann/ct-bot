@@ -5,13 +5,13 @@ export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 if [[ "`uname`" == "Darwin" ]]; then
 	if [[ ! -e $MYDIR/armv8l-unknown-linux-gnueabihf ]]; then
-		command -v arm-linux-gnueabihf-g++ >/dev/null 2>&1 || { git clone --depth=1 --branch=master https://github.com/tsandmann/armv8l-toolchain-mac.git $MYDIR/armv8l-unknown-linux-gnueabihf; export PATH=$MYDIR/armv8l-unknown-linux-gnueabihf/bin:$PATH; }
+		command -v armv8l-linux-gnueabihf-g++ >/dev/null 2>&1 || { git clone --depth=1 --branch=master https://github.com/tsandmann/armv8l-toolchain-mac.git $MYDIR/armv8l-unknown-linux-gnueabihf; export PATH=$MYDIR/armv8l-unknown-linux-gnueabihf/bin:$PATH; }
 	fi
 fi
 
 if [[ "`uname`" == "Linux" ]]; then
 	if [[ ! -e $MYDIR/armv8l-unknown-linux-gnueabihf ]]; then
-		command -v arm-linux-gnueabihf-g++ >/dev/null 2>&1 || { git clone --depth=1 --branch=master https://github.com/tsandmann/armv8l-toolchain-linux.git $MYDIR/armv8l-unknown-linux-gnueabihf; export PATH=$MYDIR/armv8l-unknown-linux-gnueabihf/bin:$PATH; }
+		command -v armv8l-linux-gnueabihf-g++ >/dev/null 2>&1 || { git clone --depth=1 --branch=master https://github.com/tsandmann/armv8l-toolchain-linux.git $MYDIR/armv8l-unknown-linux-gnueabihf; export PATH=$MYDIR/armv8l-unknown-linux-gnueabihf/bin:$PATH; }
 	fi
 fi
 
