@@ -9,6 +9,12 @@ if [[ "`uname`" == "Darwin" ]]; then
 	fi
 fi
 
+if [[ "`uname`" == "Linux" ]]; then
+	if [[ ! -e $MYDIR/armv8l-unknown-linux-gnueabihf ]]; then
+		command -v arm-linux-gnueabihf-g++ >/dev/null 2>&1 || { git clone --depth=1 --branch=master https://github.com/tsandmann/armv8l-toolchain-linux.git $MYDIR/armv8l-unknown-linux-gnueabihf; export PATH=$MYDIR/armv8l-unknown-linux-gnueabihf/bin:$PATH; }
+	fi
+fi
+
 cd $MYDIR/../
 for filename in $MYDIR/pc/*.h; do
 	cp -v $filename $MYDIR/../bot-local-override.h
