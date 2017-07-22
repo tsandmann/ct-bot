@@ -36,8 +36,8 @@
 
 #define ENA_MMC				(1 << 6)	/**< Enable-Leitung Reserve 1 */
 #define ENA_MOUSE_SENSOR	(1 << 7)	/**< Enable-Leitung Reserve 2 */
-#define ENA_VOLTAGE_3V3		(1 << 6)	/**< Enable-Leitung Reserve 1 modifiziert */
-#define ENA_DISPLAYLIGHT	(1 << 7)	/**< Enable-Leitung Reserve 2 modifiziert */
+#define ENA_VOLTAGE_3V3		(1 << 6)	/**< Enable-Leitung Reserve 1 für modifiziertes Erweiterungsboard */
+#define ENA_DISPLAYLIGHT	(1 << 7)	/**< Enable-Leitung Reserve 2 für modifiziertes Erweiterungsboard */
 
 #define MMC_PORT_OUT		PORTB		/**< Ausgangs-Port fuer die MMC/SD-Karte */
 #define MMC_PORT_IN			PINB		/**< Eingangs-Port fuer die MMC/SD-Karte */
