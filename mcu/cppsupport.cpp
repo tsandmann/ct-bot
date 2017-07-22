@@ -19,8 +19,8 @@
 
 /**
  * \file 	mcu/cppsupport.cpp
- * \brief 	AVR-Support for C++ virtual functions
- * \author	Timo Sandmann (mail@timosandmann.de)
+ * \brief 	AVR-Support for C++ virtual functions and new/delete
+ * \author	Timo Sandmann
  * \date 	23.10.2016
  */
 
@@ -59,12 +59,17 @@ void* operator new(size_t size) {
 	return ptr;
 }
 
+void operator delete(void* ptr) {
+	free(ptr);
+}
+
 void* operator new(size_t size, void* ptr);
 void* operator new(size_t, void* ptr) {
 	return ptr;
 }
 
-void operator delete(void* ptr) {
+void operator delete(void* ptr, unsigned int size);
+void operator delete(void* ptr, unsigned int) {
 	free(ptr);
 }
 

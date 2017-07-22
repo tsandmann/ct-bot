@@ -54,13 +54,13 @@ void display_clear(void);
  */
 void display_cursor(int16_t row, int16_t column);
 
-#ifdef DISPLAY_MCU_AVAILABLE
+#if defined DISPLAY_MCU_AVAILABLE || defined PC
 /**
  * Schreibt ein Zeichen auf das Display
  * \param data 	Das Zeichen
  */
 void display_data(const char data);
-#endif // DISPLAY_MCU_AVAILABLE
+#endif // DISPLAY_MCU_AVAILABLE || PC
 
 #ifdef PC
 /**

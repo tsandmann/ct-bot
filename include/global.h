@@ -197,4 +197,10 @@ typedef union {
 
 #define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 
+#if GCC_VERSION >= 70000
+#define CASE_NO_BREAK __attribute__ ((fallthrough))
+#else
+#define CASE_NO_BREAK
+#endif
+
 #endif // GLOBAL_H_

@@ -70,7 +70,7 @@ public:
 	SdCard() : m_selected(false), m_errorCode(SD_CARD_ERROR_INIT_NOT_CALLED), m_type(0) {}
 
 	/** Initialize the SD card.
-	 * \param[in] spi SPI object.
+	 * \param[in] sckDivisor SPI speed divisor
 	 * \return true for success else false.
 	 */
 	bool init(uint8_t sckDivisor);
@@ -158,6 +158,7 @@ public:
 	 * Writes a 512 byte block.
 	 * \param[in] blockNumber Logical block to be written.
 	 * \param[in] src Pointer to the location of the data to be written.
+	 * \param sync Wait for flash programming to complete?
 	 * \return The value true is returned for success and
 	 * the value false is returned for failure.
 	 */

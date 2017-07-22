@@ -72,12 +72,12 @@
 
 
 /* Umgebungskarte */
-#define MAP_AVAILABLE						/**< Aktiviert die Kartographie */
+#define MAP_AVAILABLE						/**< Aktiviert die Kartographie; wenn aktiviert, funktioniert ui/available-screens.h/DISPLAY_MMC_INFO nicht */
 #define MAP_2_SIM_AVAILABLE					/**< Sendet die Map zur Anzeige an den Sim */
 
 
-/* MMC-/SD-Karte als Speichererweiterung (Erweiterungsmodul) */
-//#define MMC_AVAILABLE						/**< haben wir eine MMC/SD-Karte zur Verfuegung? */
+/* MMC-/SD-Karte als Speichererweiterung (opt. Erweiterungsmodul) */
+//#define MMC_AVAILABLE						/**< Aktiviert Unterstuetzung von MMC/SD-Karten im Erweiterungsmodul */
 #define SDFAT_AVAILABLE						/**< Unterstuetzung fuer FAT-Dateisystem (FAT16 und FAT32) auf MMC/SD-Karte */
 
 
@@ -148,6 +148,7 @@
 #undef CMPS03_AVAILABLE
 #undef SP03_AVAILABLE
 #undef BOT_2_RPI_AVAILABLE
+#undef BOOTLOADER_AVAILABLE
 #endif // ! DOXYGEN
 
 #if !defined BOT_2_SIM_AVAILABLE && ! defined ARM_LINUX_BOARD
