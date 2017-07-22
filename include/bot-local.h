@@ -169,7 +169,7 @@
 #endif // EXPANSION_BOARD_AVAILABLE
 
 #ifdef EXPANSION_BOARD_MOD_AVAILABLE
-#undef EXPANSION_BOARD_AVAILABLE	// deaktiviert EXPANSION_BOARD
+#undef EXPANSION_BOARD_AVAILABLE	// deaktiviert Erweiterungsboard (gem. Bausatz)
 #undef MOUSE_AVAILABLE				// deaktiviert Maussensor
 #endif // EXPANSION_BOARD_MOD_AVAILABLE
 
