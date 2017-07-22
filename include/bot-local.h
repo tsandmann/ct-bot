@@ -165,7 +165,7 @@
 #endif
 
 #ifdef EXPANSION_BOARD_MOD_AVAILABLE
-#undef EXPANSION_BOARD_AVAILABLE	// deaktiviert EXPANSION_BOARD_AVAILABLE
+#undef EXPANSION_BOARD_AVAILABLE	// deaktiviert Erweiterungsboard (gem. Bausatz)
 #undef ENABLE_RX0_PULLUP // mod. Erweiterungsboard verwendet pull-down fuer RX0, also Kurzschluss verhindern
 #undef MOUSE_AVAILABLE // deaktiviert MOUSE_AVAILABLE
 #endif // EXPANSION_BOARD_AVAILABLE

@@ -27,7 +27,7 @@
 
 
 /*
- *  Die MMC kann auf zwei Weisen angesprochen werden:
+ * Die MMC kann auf zwei Weisen angesprochen werden:
  * Entweder per Software-Steuerung (das ist die Standard-Einstellung), dafuer muss
  * SPI_AVAILABLE in ct-Bot.h AUS sein.
  * Oder per Hardware-SPI-Steuerung, dafuer ist ein kleiner Hardware-Umbau noetig, man
