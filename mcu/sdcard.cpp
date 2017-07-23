@@ -50,7 +50,6 @@
 #endif
 
 extern "C" {
-#include "ena.h"
 #include "led.h"
 #include "log.h"
 }
@@ -284,14 +283,14 @@ uint32_t SdCard::get_size() {
 
 void SdCard::cs_high() {
 	m_selected = false;
-	ENA_off(ENA_MMC);
+	CSELECT::set_cs(true);
 	/* insure MISO goes high impedance */
 	SPI::send(0xff);
 }
 
 void SdCard::cs_low() {
 	m_selected = true;
-	ENA_on(ENA_MMC);
+	CSELECT::set_cs(false);
 }
 
 bool SdCard::read_block(uint32_t blockNumber, uint8_t* dst) {

@@ -131,7 +131,7 @@
 
 /* bot_avoid_col_behaviour() */
 #define COL_CLOSEST			200		/**< Abstand [mm], den wir als zu nah betrachten -- je nach echtem Sensor ist das schon zu nah! */
-#define COL_NEAR			300		/**< Nahbereich [mm] */
+#define COL_NEAR				300		/**< Nahbereich [mm] */
 #define COL_FAR				400		/**< Fernbereich [mm] */
 
 /* bot_solve_maze_behaviour() */
@@ -164,14 +164,15 @@
 #undef EXPANSION_BOARD_MOD_AVAILABLE
 #endif
 
+#ifdef EXPANSION_BOARD_MOD_AVAILABLE
+#undef EXPANSION_BOARD_AVAILABLE	// deaktiviert Erweiterungsboard (gem. Bausatz)
+#undef ENABLE_RX0_PULLUP // mod. Erweiterungsboard verwendet pull-down fuer RX0, also Kurzschluss verhindern
+#undef MOUSE_AVAILABLE // deaktiviert MOUSE_AVAILABLE
+#define SPI_AVAILABLE // mod. Erweiterungsboard verwendet Hardware-SPI-Modus fuer die MMC-Anbindung
+#endif // EXPANSION_BOARD_AVAILABLE
+
 #ifdef EXPANSION_BOARD_AVAILABLE
 #undef ENABLE_RX0_PULLUP // Erweiterungsboard verwendet pull-down fuer RX0, also Kurzschluss verhindern
 #endif
-
-#ifdef EXPANSION_BOARD_MOD_AVAILABLE
-#undef EXPANSION_BOARD_AVAILABLE	// deaktiviert EXPANSION_BOARD_AVAILABLE
-#undef MMC_AVAILABLE
-#undef MOUSE_AVAILABLE				// deaktiviert MOUSE_AVAILABLE
-#endif // EXPANSION_BOARD_AVAILABLE
 
 #endif // BOTLOCAL_H_
