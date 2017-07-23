@@ -96,7 +96,7 @@
 #define UART_BAUD	115200	/**< Baudrate fuer UART-Kommunikation (moegliche Werte sind 57600, 115200, 230400, 500000) */
 //#define ENABLE_RX0_PULLUP	/**< Aktiviert den internen Pullup fuer die RX-Leitung. Nicht aktivieren, falls entsprechender Hardware-Mod eingebaut ist! */
 #define EXPANSION_BOARD_AVAILABLE		/**< Erweiterungsmodul (MMC / WiPort) installiert */
-//#define EXPANSION_BOARD_MOD_AVAILABLE	/**< modifiziertes Erweiterungsmodul (MMC / WiPort) installiert */
+//#define EXPANSION_BOARD_MOD_AVAILABLE	/**< modifiziertes Erweiterungsmodul installiert */
 //#define SPI_AVAILABLE	/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 #define SPI_SPEED	2	/**< SPI-Clockfrequenz (falls SPI_AVAILABLE) als Teiler von F_CPU (moegliche Werte sind 2, 4, 8, 16, 32, 64, 128) */
 //#define DISTSENS_TYPE_GP2Y0A60 /**< Distanzsensor Typ GP2Y0A60 */
@@ -164,11 +164,11 @@
 #undef EXPANSION_BOARD_MOD_AVAILABLE
 #endif
 
-#ifdef EXPANSION_BOARD_MOD_AVAILABLE
+#ifdef EXPANSION_BOARD_MOD_AVAILABLE // Anpassungen fuer modifiziertes Erweiterungsboard
 #undef EXPANSION_BOARD_AVAILABLE	// deaktiviert Erweiterungsboard (gem. Bausatz)
-#undef ENABLE_RX0_PULLUP // mod. Erweiterungsboard verwendet pull-down fuer RX0, also Kurzschluss verhindern
-#undef MOUSE_AVAILABLE // deaktiviert MOUSE_AVAILABLE
-#define SPI_AVAILABLE // mod. Erweiterungsboard verwendet Hardware-SPI-Modus fuer die MMC-Anbindung
+#undef ENABLE_RX0_PULLUP // Verwendung von Pull-down fuer RX0, also Kurzschluss verhindern
+#undef MOUSE_AVAILABLE // deaktiviert Maus-Sensor wegen Nutzung der ATMega SPI-Schnittstelle fuer den SD-Schacht
+#define SPI_AVAILABLE // Hardware-SPI-Modus des Controllers für die Anbindung des SD-Schachts.
 #endif // EXPANSION_BOARD_AVAILABLE
 
 #ifdef EXPANSION_BOARD_AVAILABLE
