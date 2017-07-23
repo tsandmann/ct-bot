@@ -168,6 +168,7 @@
 #undef EXPANSION_BOARD_AVAILABLE	// deaktiviert Erweiterungsboard (gem. Bausatz)
 #undef ENABLE_RX0_PULLUP // mod. Erweiterungsboard verwendet pull-down fuer RX0, also Kurzschluss verhindern
 #undef MOUSE_AVAILABLE // deaktiviert MOUSE_AVAILABLE
+#define SPI_AVAILABLE // mod. Erweiterungsboard verwendet Hardware-SPI-Modus fuer die MMC-Anbindung
 #endif // EXPANSION_BOARD_AVAILABLE
 
 #ifdef EXPANSION_BOARD_AVAILABLE
