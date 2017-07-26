@@ -19,7 +19,7 @@
 
 /**
  * \file 	bot-local.h
- * \brief 	Konstanten, die den Bot an reale Umgebungen anpassen
+ * \brief 	Konstanten, die den Bot an reale Umgebungen anpassen und lokale Hardwarekonfigurationen
  * \author 	Benjamin Benz (bbe@heise.de)
  * \author  Christoph Grimmer (c.grimmer@futurio.de)
  * \date 	28.02.2006
@@ -96,7 +96,7 @@
 #define UART_BAUD	115200	/**< Baudrate fuer UART-Kommunikation (moegliche Werte sind 57600, 115200, 230400, 500000) */
 //#define ENABLE_RX0_PULLUP	/**< Aktiviert den internen Pullup fuer die RX-Leitung. Nicht aktivieren, falls entsprechender Hardware-Mod eingebaut ist! */
 #define EXPANSION_BOARD_AVAILABLE		/**< Erweiterungsmodul (MMC / WiPort) installiert */
-//#define EXPANSION_BOARD_MOD_AVAILABLE	/**< modifiziertes Erweiterungsmodul (MMC / WiPort) installiert */
+//#define EXPANSION_BOARD_MOD_AVAILABLE	/**< modifiziertes Erweiterungsmodul installiert */
 //#define SPI_AVAILABLE	/**< verwendet den Hardware-SPI-Modus des Controllers, um mit der MMC zu kommunizieren. Muss ausserdem _immer_ an sein, wenn der Hardware-SPI-Umbau durchgefuehrt wurde! Hinweise in mcu/mmc.c beachten! */
 #define SPI_SPEED	2	/**< SPI-Clockfrequenz (falls SPI_AVAILABLE) als Teiler von F_CPU (moegliche Werte sind 2, 4, 8, 16, 32, 64, 128) */
 //#define DISTSENS_TYPE_GP2Y0A60 /**< Distanzsensor Typ GP2Y0A60 */
@@ -131,7 +131,7 @@
 
 /* bot_avoid_col_behaviour() */
 #define COL_CLOSEST			200		/**< Abstand [mm], den wir als zu nah betrachten -- je nach echtem Sensor ist das schon zu nah! */
-#define COL_NEAR			300		/**< Nahbereich [mm] */
+#define COL_NEAR				300		/**< Nahbereich [mm] */
 #define COL_FAR				400		/**< Fernbereich [mm] */
 
 /* bot_solve_maze_behaviour() */
@@ -156,22 +156,5 @@
 
 
 #include <bot-local-override.h>
-
-
-/*** Abhaengigkeiten ***/
-
-#ifdef PC
-#undef EXPANSION_BOARD_MOD_AVAILABLE
-#endif
-
-#ifdef EXPANSION_BOARD_AVAILABLE
-#undef ENABLE_RX0_PULLUP // Erweiterungsboard verwendet pull-down fuer RX0, also Kurzschluss verhindern
-#endif
-
-#ifdef EXPANSION_BOARD_MOD_AVAILABLE
-#undef EXPANSION_BOARD_AVAILABLE	// deaktiviert EXPANSION_BOARD_AVAILABLE
-#undef MMC_AVAILABLE
-#undef MOUSE_AVAILABLE				// deaktiviert MOUSE_AVAILABLE
-#endif // EXPANSION_BOARD_AVAILABLE
 
 #endif // BOTLOCAL_H_
