@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export ARM_TARGET=arm-linux-gnueabihf
+export BUILD_TARGET=arm-linux-gnueabihf
 export MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 if [[ "`uname`" == "Darwin" ]]; then

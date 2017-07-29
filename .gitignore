@@ -9,6 +9,7 @@
 /bot-local-override.h
 /tests/avr8-gnu-toolchain-*.tar.gz
 /tests/avr8-gnu-toolchain-*_x86_64
+/tests/armv8l-*
 /libctbot.a
 /ct-Bot.eep
 /ct-Bot.elf

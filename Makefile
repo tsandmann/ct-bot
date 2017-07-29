@@ -53,7 +53,7 @@ DEVICE ?= MCU
 SAVE_TEMPS ?=
 WERROR ?=
 WCONVERSION ?=
-ARM_TARGET ?=
+BUILD_TARGET ?=
 
 MSG_DEVICE = Target device is $(DEVICE)
 
@@ -234,12 +234,12 @@ else
 	PTHREAD_LIB = -lpthread
 	LIBS = $(PTHREAD_LIB) $(MATH_LIB)
 
-ifdef ARM_TARGET
-	AR = $(ARM_TARGET)-ar
-	CC = $(ARM_TARGET)-gcc
-	CXX = $(ARM_TARGET)-g++
-	RANLIB = $(ARM_TARGET)-ranlib
-	SIZE = $(ARM_TARGET)-size
+ifdef BUILD_TARGET
+	AR = $(BUILD_TARGET)-ar
+	CC = $(BUILD_TARGET)-gcc
+	CXX = $(BUILD_TARGET)-g++
+	RANLIB = $(BUILD_TARGET)-ranlib
+	SIZE = $(BUILD_TARGET)-size
 else
 	AR = ar
 	CC = gcc
@@ -287,11 +287,14 @@ ifeq ($(WCONVERSION),1)
 	CFLAGS += -Wconversion
 endif
 endif
-ifeq ($(ARM_TARGET),arm-linux-gnueabihf)
+ifeq ($(BUILD_TARGET),arm-linux-gnueabihf)
 CFLAGS += -mcpu=cortex-a7 -mtune=cortex-a7 -mfloat-abi=hard -mfpu=vfpv4
 endif
-ifeq ($(ARM_TARGET),armv8l-linux-gnueabihf)
+ifeq ($(BUILD_TARGET),armv8l-linux-gnueabihf)
 CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8
+endif
+ifeq ($(BUILD_TARGET),x86_64-w64-mingw32)
+LIBS += -lws2_32
 endif
 ifdef SAVE_TEMPS
 CFLAGS += -save-temps -fverbose-asm -dA
