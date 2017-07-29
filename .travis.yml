@@ -1,6 +1,6 @@
 language: cpp
 dist: trusty
-sudo: true
+sudo: false
 osx_image: xcode8.2
 
 os:
@@ -10,4 +10,5 @@ os:
 script:
   - ./tests/run_tests_pc.sh
   - ./tests/run_tests_mcu.sh
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ./tests/run_tests_rpi3.sh; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./tests/run_tests_rpi3.sh; fi
