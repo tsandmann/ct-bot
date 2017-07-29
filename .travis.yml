@@ -1,15 +1,11 @@
 language: cpp
 dist: trusty
-sudo: true
+sudo: false
 osx_image: xcode8.2
 
 os:
   - linux
   - osx
-
-before_script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y curl; fi
 
 script:
   - ./tests/run_tests_pc.sh
