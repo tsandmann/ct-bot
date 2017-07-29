@@ -85,20 +85,20 @@ void vpoke_statement(void) {
 	int *var_temp;
 #endif
 
-	accept(TOKENIZER_VPOKE);
-    accept(TOKENIZER_LEFTPAREN);
+	ubasic_accept(TOKENIZER_VPOKE);
+    ubasic_accept(TOKENIZER_LEFTPAREN);
 	// Variablenname ermitteln
 	if(tokenizer_token() == TOKENIZER_STRING) {
 		tokenizer_next();
 	}
 	idx=search_cvars(tokenizer_last_string_ptr());
-	accept(TOKENIZER_RIGHTPAREN);
-	accept(TOKENIZER_EQ);
+	ubasic_accept(TOKENIZER_RIGHTPAREN);
+	ubasic_accept(TOKENIZER_EQ);
 #if USE_PROGMEM
 	var_temp=(int *)pgm_read_word(&cvars[idx].pvar);
-	*var_temp=expr();
+	*var_temp=ubasic_expr();
 #else
-	*cvars[idx].pvar = expr();
+	*cvars[idx].pvar = ubasic_expr();
 #endif
 	//tokenizer_next();
 }
@@ -110,9 +110,9 @@ int vpeek_expression(void) {
 	int16_t *var_temp;
 #endif
 
-	accept(TOKENIZER_VPEEK);
+	ubasic_accept(TOKENIZER_VPEEK);
 	// Parameterliste wird durch linke Klammer eingeleitet
-    accept(TOKENIZER_LEFTPAREN);
+    ubasic_accept(TOKENIZER_LEFTPAREN);
 	// Variablenname ermitteln
 	if(tokenizer_token() == TOKENIZER_STRING) {
 		tokenizer_next();
@@ -124,7 +124,7 @@ int vpeek_expression(void) {
 #else
 	r = *cvars[idx].pvar;
 #endif
-    accept(TOKENIZER_RIGHTPAREN);
+    ubasic_accept(TOKENIZER_RIGHTPAREN);
 	return r;
 }
 #endif

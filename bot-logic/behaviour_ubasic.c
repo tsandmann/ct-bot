@@ -149,9 +149,9 @@ void ubasic_push_value(uint16_t value) {
  * Das eigentliche Warten erfolgt dabei ueber das Verhalten.
  */
 void wait_statement(void) {
-	accept(TOKENIZER_WAIT);
+	ubasic_accept(TOKENIZER_WAIT);
 
-	const uint32_t delay = (uint32_t) expr();
+	const uint32_t delay = (uint32_t) ubasic_expr();
 	/* Wartezeit speichern, wird in bot_ubasic_behaviour() ausgewertet */
 	wait_until = TIMER_GET_TICKCOUNT_32 + MS_TO_TICKS(delay);
 }

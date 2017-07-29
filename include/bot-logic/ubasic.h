@@ -142,8 +142,8 @@ char* strexpr(void);
 void ubasic_set_strvariable(struct varinfo_t var, char *str);
 #endif
 
-void accept(int token);
-int expr(void);
+void ubasic_accept(int token);
+int ubasic_expr(void);
 void ubasic_break(void);
 
 #endif // BEHAVIOUR_UBASIC_AVAILABLE
