@@ -353,6 +353,9 @@ int8_t receive_until_frame(uint8_t frame) {
  * \return		Anzahl der gesendete Bytes
  */
 static int16_t send_cmd(command_t * cmd) {
+	if (! cmd_functions.write) {
+		return 0;
+	}
 #if defined PC && BYTE_ORDER == BIG_ENDIAN
 	command_t le_cmd;
 
@@ -484,6 +487,9 @@ void command_write(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t 
  * \param *data 		Datenanhang an das eigentliche Command
  */
 void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload, const void * data) {
+	if (! cmd_functions.write) {
+		return;
+	}
 	os_enterCS();
 #ifdef ARM_LINUX_BOARD
 	cmd_func_t old_func = cmd_functions;

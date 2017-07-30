@@ -179,7 +179,7 @@ static struct {
 	int16_t y;			/**< Y-Koordinate des Blocks */
 } map_current_block = { 0, False, 0, 0 }; /**< Daten des aktuellen Blocks */
 
-static uint8_t init_state = 0; /**< Status der Initialisierung (0 (Fehler), 1 (alles OK) oder 2 (Threads angelegt)) */
+static uint8_t init_state = 0; /**< Status der Initialisierung (0 (nicht initialisiert), 1 (alles OK)) */
 
 #ifdef MAP_2_SIM_AVAILABLE
 void map_2_sim_main(void) OS_TASK_ATTR;
@@ -334,7 +334,6 @@ static int8_t init(uint8_t clean_map) {
 #ifdef MAP_2_SIM_AVAILABLE
 		map_2_sim_worker = os_create_thread(&map_2_sim_worker_stack[MAP_2_SIM_STACK_SIZE] - 1, map_2_sim_main);
 #endif // MAP_2_SIM_AVAILABLE
-		init_state = 2;
 	}
 
 	init_state = 1;
@@ -372,6 +371,12 @@ void map_flush_cache(void) {
 
 	sdfat_flush(map_file_desc);
 
+	sdfat_rewind(map_file_desc);
+	if (sdfat_read(map_file_desc, map_buffer, sizeof(map_header_t)) != sizeof(map_header_t)) {
+		LOG_ERROR("map::map_flush_cache(): Headerdaten konnten nicht gelesen werden");
+		return;
+	}
+
 	map_header_t* p_head_data = (map_header_t*) map_buffer;
 	p_head_data->map_min_x = map_min_x;
 	p_head_data->map_max_x = map_max_x;
@@ -379,12 +384,12 @@ void map_flush_cache(void) {
 	p_head_data->map_max_y = map_max_y;
 	sdfat_rewind(map_file_desc);
 	if (sdfat_write(map_file_desc, p_head_data, sizeof(map_header_t)) != sizeof(map_header_t)) {
-		LOG_DEBUG("map::map_flush_cache(): Headerdaten konnten nicht geschrieben werden");
+		LOG_ERROR("map::map_flush_cache(): Headerdaten konnten nicht geschrieben werden");
 	}
 
 	sdfat_seek(map_file_desc, map_current_block.block * MAP_BLOCK_SIZE + sizeof(map_header_t), SEEK_SET);
 	if (sdfat_read(map_file_desc, map_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
-		LOG_DEBUG("map::map_flush_cache(): Block 0 der Map konnte nicht gelesen werden.");
+		LOG_ERROR("map::map_flush_cache(): Block %u der Map konnte nicht gelesen werden.", map_current_block.block);
 	}
 }
 
@@ -1453,12 +1458,12 @@ void map_clean(void) {
 }
 
 /**
- * Kopiert die aktuelle Karte in eine BotFS-Datei
+ * Exportiert die aktuelle Karte in eine Datei
  * \param *file Name der Zieldatei (wird geloescht, falls sie schon existiert)
  * \return 0 falls kein Fehler, sonst Fehlercode
  */
 int8_t map_save_to_file(const char* file) {
-	LOG_DEBUG("map_save_to_file(\"%s\")", file);
+	LOG_INFO("map_save_to_file(\"%s\")", file);
 
 	if (strcmp(file, MAP_FILENAME) == 0) {
 		return 0;
@@ -1467,39 +1472,46 @@ int8_t map_save_to_file(const char* file) {
 	/* warten bis Karte frei ist */
 	map_flush_cache();
 
-	LOG_DEBUG(" map_min_x=0x%x, map_max_x=0x%x, map_min_y=0x%x, map_max_y=0x%x", map_min_x, map_max_x, map_min_y, map_max_y);
+	LOG_INFO("map::map_save_to_file(): map_min_x=0x%x, map_max_x=0x%x, map_min_y=0x%x, map_max_y=0x%x", map_min_x, map_max_x, map_min_y, map_max_y);
 
-	int32_t pos = sdfat_tell(map_file_desc);
 	pFatFile dest;
 	if (sdfat_open(file, &dest, 0x1 | 0x2 | 0x10 | 0x40)) {
 		LOG_ERROR("map::map_save_to_file(): file create failed");
 		return 1;
 	}
 
+	const uint32_t size = sdfat_get_filesize(map_file_desc) / MAP_BLOCK_SIZE;
+	LOG_INFO("map::map_save_to_file(): size=%u blocks", size);
+	sdfat_rewind(map_file_desc);
 	uint32_t i;
-	for (i = 0; i < sdfat_get_filesize(map_file_desc); ++i) {
-		uint8_t tmp;
-		if (sdfat_read(map_file_desc, &tmp, sizeof(tmp)) != sizeof(tmp)) {
+	for (i = 0; i < size; ++i) {
+		if (sdfat_read(map_file_desc, map_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
 			LOG_ERROR("map::map_save_to_file(): sdfat_read() failed, i=0x%x", i);
 			return 2;
 		}
-		if (sdfat_write(dest, &tmp, sizeof(tmp)) != sizeof(tmp)) {
+		if (sdfat_write(dest, map_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
 			LOG_ERROR("map::map_save_to_file(): sdfat_write() failed, i=0x%x", i);
 			return 3;
 		}
 	}
 
-	sdfat_seek(map_file_desc, pos, SEEK_SET);
+	/* aktuellen Block wieder laden */
+	sdfat_seek(map_file_desc, map_current_block.block * MAP_BLOCK_SIZE + sizeof(map_header_t), SEEK_SET);
+	if (sdfat_read(map_file_desc, map_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
+		LOG_DEBUG("map::map_load_from_file(): Block %u der Map konnte nicht gelesen werden.", map_current_block.block);
+		return 4;
+	}
+
 	return 0;
 }
 
 /**
- * Laedt die Karte aus einer BotFS-Datei, aktuelle Karte wird dadurch geloescht
- * \param *file Name der zu ladenden BotFS-Datei
+ * Laedt die Karte aus einer Datei, die aktuelle Karte wird dadurch geloescht
+ * \param *file Name der zu ladenden Datei
  * \return 0 falls kein Fehler, sonst Fehlercode
  */
 int8_t map_load_from_file(const char* file) {
-	LOG_DEBUG("map_load_from_file(\"%s\")", file);
+	LOG_INFO("map_load_from_file(\"%s\")", file);
 
 	if (strcmp(file, MAP_FILENAME) == 0) {
 		return 0;
@@ -1520,26 +1532,50 @@ int8_t map_load_from_file(const char* file) {
 		return 2;
 	}
 
+	map_header_t* p_head_buffer = (map_header_t*) map_buffer;
+	if (sdfat_read(src_file, p_head_buffer, sizeof(map_header_t)) != sizeof(map_header_t)) {
+		LOG_ERROR("map::map_load_from_file(): Headerdaten konnten nicht gelesen werden");
+		sdfat_close(src_file);
+		return 3;
+	}
+
+	/* Groesse initialisieren */
+	map_min_x = p_head_buffer->map_min_x;
+	map_max_x = p_head_buffer->map_max_x;
+	map_min_y = p_head_buffer->map_min_y;
+	map_max_y = p_head_buffer->map_max_y;
+	min_max_updated = True;
+	LOG_INFO("map::map_load_from_file(): min_x=%u, max_x=%u, min_y=%u, max_y=%u", map_min_x, map_max_x, map_min_y, map_max_y);
+
 	/* Quelldatei nach Map-Datei kopieren */
+	sdfat_rewind(src_file);
+	const uint32_t size = sdfat_get_filesize(src_file) / MAP_BLOCK_SIZE;
 	uint32_t i;
-	for (i = 0; i < sdfat_get_filesize(src_file); ++i) {
-		uint8_t tmp;
-		if (sdfat_read(src_file, &tmp, sizeof(tmp)) != sizeof(tmp)) {
+	for (i = 0; i < size; ++i) {
+		if (sdfat_read(src_file, map_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
 			LOG_ERROR("map::map_load_from_file(): sdfat_read() failed, i=0x%x", i);
-			return 3;
-		}
-		if (sdfat_write(map_file_desc, &tmp, sizeof(tmp)) != sizeof(tmp)) {
-			LOG_ERROR("map::map_load_from_file(): sdfat_write() failed, i=0x%x", i);
+			sdfat_close(src_file);
 			return 4;
+		}
+		if (sdfat_write(map_file_desc, map_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
+			LOG_ERROR("map::map_load_from_file(): sdfat_write() failed, i=0x%x", i);
+			sdfat_close(src_file);
+			return 5;
 		}
 	}
 
-	LOG_DEBUG(" filesize=0x%x blocks", sdfat_get_filesize(src_file) / MAP_BLOCK_SIZE);
+	LOG_INFO("map::map_load_from_file(): filesize=0x%x blocks", size);
 	sdfat_close(src_file);
 
-	/* Mapsystem mit neuer Karte initialisieren */
-	init_state = 2;
-	init(False);
+	map_current_block.updated = False;
+	map_current_block.block = 0;
+
+	/* Block 0 laden */
+	sdfat_seek(map_file_desc, map_current_block.block * MAP_BLOCK_SIZE + sizeof(map_header_t), SEEK_SET);
+	if (sdfat_read(map_file_desc, map_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
+		LOG_DEBUG("map::map_load_from_file(): Block 0 der Map konnte nicht gelesen werden.");
+		return 6;
+	}
 
 #if defined PC && defined MAP_2_SIM_AVAILABLE
 	map_2_sim_send();
@@ -1595,6 +1631,8 @@ static void draw_test_scheme(void) {
 	os_signal_unlock(&lock_signal);
 }
 
+#if 0
+// FIXME: ist shrink() erforderlich?
 /**
  * Verkleinert die Karte vom uebergebenen auf den benutzten Bereich. Achtung,
  * unter Umstaenden muss man vorher die Puffervariablen sinnvoll initialisieren!!!
@@ -1603,7 +1641,7 @@ static void draw_test_scheme(void) {
  * \param min_y Zeiger auf einen uint16_t, der den minimalen Y-Wert puffert
  * \param max_y Zeiger auf einen uint16_t, der den maximalen Y-Wert puffert
  */
-static inline void shrink(int16_t * min_x, int16_t * max_x, int16_t * min_y, int16_t * max_y) {
+static void shrink(int16_t * min_x, int16_t * max_x, int16_t * min_y, int16_t * max_y) {
 	int16_t x, y;
 
 	// lokale Variablen mit den defaults befuellen
@@ -1661,16 +1699,17 @@ static inline void shrink(int16_t * min_x, int16_t * max_x, int16_t * min_y, int
 	}
 	os_signal_unlock(&lock_signal);
 }
+#endif // 0
 
 /**
  * Schreibt eine Karte in eine PGM-Datei
  * \param *filename Zieldatei
  */
 void map_to_pgm(const char* filename) {
-	printf("Speichere Karte nach %s\n", filename);
+	LOG_INFO("map::map_to_pgm(): Speichere Karte nach %s", filename);
 	FILE* fp = fopen(filename, "wb");
 	if (fp == NULL) {
-		printf("Konnte Datei nicht oeffnen, Abbruch\n");
+		LOG_ERROR("map::map_to_pgm(): Konnte Datei nicht oeffnen, Abbruch");
 		return;
 	}
 
@@ -1689,7 +1728,7 @@ void map_to_pgm(const char* filename) {
 #else
 	fprintf(fp,"P5 %d %d 255 ", map_size_x, map_size_y);
 #endif // MAP_PRINT_SCALE
-	printf("Karte beginnt bei X=%d,Y=%d und geht bis X=%d,Y=%d (%d * %d Punkte)\n", min_x, min_y, max_x, max_y, map_size_x, map_size_y);
+	LOG_INFO("map::map_to_pgm(): Karte beginnt bei X=%d,Y=%d und geht bis X=%d,Y=%d (%d * %d Punkte)", min_x, min_y, max_x, max_y, map_size_x, map_size_y);
 
 	/* warten bis Karte frei ist */
 	map_flush_cache();
@@ -1732,79 +1771,73 @@ void map_to_pgm(const char* filename) {
 }
 
 /**
- * Liest eine Karte aus einer Map-Datei (MiniFAT-Format) ein
+ * Liest eine Karte aus einer Map-Datei ein
  * \param *filename Quelldatei
  * \return Fehlercode, 0 falls alles ok
  */
 int map_read(const char* filename) {
-	map_init();
+// FIXME: map_load_from_file() verwenden?
+	LOG_INFO("map::map_read(): Lese Karte aus Datei \"%s\" ein...", filename);
 
-	printf("Lese Karte aus Datei \"%s\" im MiniFAT-Format ein...\n", filename);
-	FILE* fp = fopen(filename, "rb");
-	if (fp == NULL) {
-		puts("Datei konnte nicht geoeffnet werden!");
+	os_signal_lock(&lock_signal);
+	pFatFile file_to_read;
+	uint8_t res = sdfat_open(filename, &file_to_read, 0x1);
+	LOG_DEBUG("map::map_read(): sdfat_open()=%d", res);
+	if (res != 0) {
+		LOG_DEBUG("map::map_read(): Dateioeffnen lieferte %d", res);
+		LOG_ERROR("map::map_read(): Fehler beim Oeffnen / Anlegen der Datei");
+		sdfat_close(file_to_read);
+		os_signal_unlock(&lock_signal);
 		return 1;
 	}
 
-	uint8_t buffer[512];
-	if (fread(buffer, 1, 512, fp) != 512) {
-		puts("Konnte Datei-Header nicht einlesen!");
-		fclose(fp);
+	map_header_t head_buffer;
+	if (sdfat_read(file_to_read, &head_buffer, sizeof(map_header_t)) != sizeof(map_header_t)) {
+		LOG_ERROR("map::map_read(): Headerdaten konnten nicht gelesen werden");
+		sdfat_close(file_to_read);
+		os_signal_unlock(&lock_signal);
 		return 2;
 	}
 
-	if (buffer[0] != 'M' || buffer[1] != 'A' || buffer[2] != 'P') {
-		printf("Datei \"%s\" enthaelt keinen Map-Header, trotzdem laden? [j/N] ", filename);
-		int force = getchar();
-		if (toupper(force) == 'J') {
-			memset(buffer, 0, 512);
-			fseek(fp, 0, SEEK_SET);
-		} else {
-			fclose(fp);
-			return 3;
-		}
-	}
+	/* Groesse initialisieren */
+	map_min_x = head_buffer.map_min_x;
+	map_max_x = head_buffer.map_max_x;
+	map_min_y = head_buffer.map_min_y;
+	map_max_y = head_buffer.map_max_y;
+	LOG_INFO("map::map_read(): min_x=%u, max_x=%u, min_y=%u, max_y=%u", map_min_x, map_max_x, map_min_y, map_max_y);
 
+#if 0 // FIXME: noetig?? sinnvoll??
 	/* um Makroblock-Offset vorspulen */
-	uint32_t offset = (uint32_t) buffer[0x120] | (uint32_t) buffer[0x121] << 8;
-	printf("Makroblock-Offset=0x%04x\n", offset);
-	if (fseek(fp, offset * 512, SEEK_CUR) != 0) {
-		puts("Fehler beim Dateizugriff!");
-		fclose(fp);
-		return 4;
-	}
+	uint16_t offset = head_buffer.alignment_offset;
+	LOG_INFO("map::map_read(): Makroblock-Offset=0x%04x", offset);
+	sdfat_seek(file_to_read, offset * MAP_BLOCK_SIZE, SEEK_CUR);
+#endif
 
 	sdfat_seek(map_file_desc, sizeof(map_header_t), SEEK_SET);
 	uint8_t file_buffer[MAP_BLOCK_SIZE];
 	uint32_t i;
 	for (i = 0; i < (uint32_t) ((uint32_t) (MAP_SIZE * MAP_RESOLUTION) * (uint32_t)  (MAP_SIZE * MAP_RESOLUTION)) / MAP_BLOCK_SIZE; ++i) {
-		if (fread(file_buffer, MAP_BLOCK_SIZE, 1, fp) != 1) {
-			fclose(fp);
-			printf("Fehler beim Lesen, %u von %u Bloecken gelesen\n", i,
+		if (sdfat_read(file_to_read, file_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
+			LOG_ERROR("map::map_read(): Fehler beim Lesen, %u von %u Bloecken gelesen", i,
 				(uint32_t) ((uint32_t) (MAP_SIZE * MAP_RESOLUTION) * (uint32_t)  (MAP_SIZE * MAP_RESOLUTION)) / MAP_BLOCK_SIZE);
-			return 5;
+			sdfat_close(file_to_read);
+			os_signal_unlock(&lock_signal);
+			return 3;
 		}
+
 		if (sdfat_write(map_file_desc, file_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
-			printf("Fehler beim Schreiben, %u von %u Bloecken geschrieben\n", i,
+			LOG_ERROR("map::map_read(): Fehler beim Schreiben, %u von %u Bloecken geschrieben", i,
 				(uint32_t) ((uint32_t) (MAP_SIZE * MAP_RESOLUTION) * (uint32_t)  (MAP_SIZE * MAP_RESOLUTION)) / MAP_BLOCK_SIZE);
-			fclose(fp);
-			return 6;
+			sdfat_close(file_to_read);
+			os_signal_unlock(&lock_signal);
+			return 4;
 		}
 	}
 
-	fclose(fp);
-
-	/* Groesse neu initialisieren */
-	map_min_x = 0;
-	map_max_x = MAP_SIZE * MAP_RESOLUTION;
-	map_min_y = 0;
-	map_max_y = MAP_SIZE * MAP_RESOLUTION;
-
-	/* und Karte verkleinern */
-	shrink(&map_min_x, &map_max_x, &map_min_y, &map_max_y);
+	sdfat_close(file_to_read);
 
 	min_max_updated = False;
-	map_header_t* p_head_data = (map_header_t *) map_buffer;
+	map_header_t* p_head_data = (map_header_t *) file_buffer;
 	sdfat_rewind(map_file_desc);
 	sdfat_read(map_file_desc, p_head_data, sizeof(map_header_t));
 	/* Min- / Max-Werte speichern */
@@ -1815,7 +1848,18 @@ int map_read(const char* filename) {
 	sdfat_rewind(map_file_desc);
 	sdfat_write(map_file_desc, p_head_data, sizeof(map_header_t));
 
-	printf("Map wurde aus \"%s\" importiert.\n", filename);
+	map_current_block.updated = False;
+	map_current_block.block = 0;
+
+	/* Block 0 laden */
+	sdfat_seek(map_file_desc, map_current_block.block * MAP_BLOCK_SIZE + sizeof(map_header_t), SEEK_SET);
+	if (sdfat_read(map_file_desc, map_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
+		LOG_DEBUG("map::map_load_from_file(): Block 0 der Map konnte nicht gelesen werden.");
+		return 6;
+	}
+
+	os_signal_unlock(&lock_signal);
+	LOG_INFO("map::map_read(): Map wurde aus \"%s\" importiert.", filename);
 
 	return 0;
 }
@@ -1954,58 +1998,76 @@ static void info(void) {
  */
 void map_display(void) {
 	display_cursor(1, 1);
-	display_puts("1: print 2: delete");
+	display_puts("1: print  2: delete");
 	display_cursor(2, 1);
-#ifdef PC
 	display_puts("3: draw_scheme");
-	display_cursor(4, 1);
-	display_puts("7: clean");
-#endif // PC
-	display_puts("7: clean");
-#ifdef MAP_INFO_AVAILABLE
 	display_cursor(3, 1);
-	display_puts("4: map_info");
+#ifdef MAP_INFO_AVAILABLE
+	display_puts("4: info   7: clean");
+#else
+	display_puts("7: clean");
 #endif
+	display_cursor(4, 1);
+	display_puts("8/9: export/import");
 
 #ifdef RC5_AVAILABLE
 	/* Keyhandler */
 	switch (RC5_Code) {
-		case RC5_CODE_1:
-		map_print(); RC5_Code = 0; break;
-		case RC5_CODE_2:
-		delete(); RC5_Code = 0; break;
+	case RC5_CODE_1:
+		map_print();
+		RC5_Code = 0;
+		break;
+
+	case RC5_CODE_2:
+		delete();
+		RC5_Code = 0;
+		break;
+
 #ifdef PC
-		case RC5_CODE_3:
-		draw_test_scheme(); RC5_Code = 0; break;
-#endif
+	case RC5_CODE_3:
+		draw_test_scheme();
+		RC5_Code = 0;
+		break;
+#endif // PC
+
 #ifdef MAP_INFO_AVAILABLE
-		case RC5_CODE_4:
-		info(); RC5_Code = 0; break;
-#endif
+	case RC5_CODE_4:
+		info();
+		RC5_Code = 0;
+		break;
+#endif // MAP_INFO_AVAILABLE
+
 #ifdef PC
 #ifdef MAP_TESTS_AVAILABLE
-		case RC5_CODE_5:
-		map_test_get_ratio(); RC5_Code = 0; break;
-#endif
+	case RC5_CODE_5:
+		map_test_get_ratio();
+		RC5_Code = 0;
+		break;
+#endif // MAP_TESTS_AVAILABLE
 #endif // PC
-		case RC5_CODE_7:
-		map_clean(); RC5_Code = 0; break;
 
-		case RC5_CODE_8: {
-			int8_t res = map_save_to_file("exported.map");
-			if (res != 0) {
-				LOG_ERROR("map_save_to_file() schlug fehl: %d", res);
-			}
-			RC5_Code = 0; break;
-		}
+	case RC5_CODE_7:
+		map_clean();
+		RC5_Code = 0;
+		break;
 
-		case RC5_CODE_9: {
-			int8_t res = map_load_from_file("exported.map");
-			if (res !=0) {
-				LOG_ERROR("map_load_from_file() schlug fehl: %d", res);
-			}
-			RC5_Code = 0; break;
+	case RC5_CODE_8: {
+		int8_t res = map_save_to_file("exported.map");
+		if (res != 0) {
+			LOG_ERROR("map_save_to_file() schlug fehl: %d", res);
 		}
+		RC5_Code = 0;
+		break;
+	}
+
+	case RC5_CODE_9: {
+		int8_t res = map_load_from_file("exported.map");
+		if (res != 0) {
+			LOG_ERROR("map_load_from_file() schlug fehl: %d", res);
+		}
+		RC5_Code = 0;
+		break;
+	}
 	}
 #endif // RC5_AVAILABLE
 }
