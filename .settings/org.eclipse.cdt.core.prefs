@@ -22,7 +22,7 @@ environment/project/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.7
 environment/project/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.713113437/append=true
 environment/project/cdt.managedbuild.config.gnu.exe.debug.1197043799.953204100.713113437/appendContributed=true
 environment/project/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498.48681013/PATH/delimiter=\:
-environment/project/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498.48681013/PATH/operation=append
+environment/project/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498.48681013/PATH/operation=replace
 environment/project/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498.48681013/PATH/value=${PATH}
 environment/project/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498.48681013/append=true
 environment/project/cdt.managedbuild.config.gnu.exe.debug.2039935845.312441075.1247540867.665793659.45794498.48681013/appendContributed=true
