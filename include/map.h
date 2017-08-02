@@ -48,7 +48,7 @@
 #define MAP_UPDATE_STACK_SIZE	220
 #endif
 #define MAP_UPDATE_CACHE_SIZE	16	/**< Groesse des Map-Caches [# Eintraege] */
-#define MAP_2_SIM_STACK_SIZE		256	/**< Groesse des Map-2-Sim-Thread-Stacks [Byte]*/ // FIXME: check stack size
+#define MAP_2_SIM_STACK_SIZE		256	/**< Groesse des Map-2-Sim-Thread-Stacks [Byte] */
 
 #define MAP_2_SIM_BUFFER_SIZE	32	/**< Anzahl der Bloecke, die fuer Map-2-Sim gecached werden koennen */
 
@@ -58,7 +58,7 @@
 #define MAP_RATIO_NONE	0		/**< Rueckgabe von map_get_ratio(), falls kein Feld den Kriterien entspricht */
 #define MAP_RATIO_FULL	255		/**< Rueckgabe von map_get_tatio(), falls alle Felder den Kriterien entsprechen */
 
-/* Die folgenden Variablen/konstanten NICHT direkt benutzen, sondern die zugehoerigen Makros: get_map_min_x() und Co!
+/* Die folgenden Variablen/Konstanten NICHT direkt benutzen, sondern die zugehoerigen Makros: get_map_min_x() und Co!
  * Denn sonst erhaelt man Karten- und nicht Weltkoordinaten! */
 extern int16_t map_min_x;		/**< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
 extern int16_t map_max_x;		/**< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */

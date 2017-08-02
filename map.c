@@ -337,7 +337,7 @@ static int8_t init(uint8_t clean_map) {
 		map_update_thread = os_create_thread(&map_update_stack[MAP_UPDATE_STACK_SIZE - 1], map_update_main);
 
 #ifdef MAP_2_SIM_AVAILABLE
-		map_2_sim_worker = os_create_thread(&map_2_sim_worker_stack[MAP_2_SIM_STACK_SIZE] - 1, map_2_sim_main);
+		map_2_sim_worker = os_create_thread(&map_2_sim_worker_stack[MAP_2_SIM_STACK_SIZE - 1], map_2_sim_main);
 #endif // MAP_2_SIM_AVAILABLE
 	}
 
@@ -1332,23 +1332,22 @@ void map_update_main(void) {
  * Main-Funktion des Map-2-Sim-Threads
  */
 void map_2_sim_main(void) {
-	uint16_t cache_copy[MAP_2_SIM_BUFFER_SIZE] = {0};
+	static uint16_t cache_copy[MAP_2_SIM_BUFFER_SIZE] = {0};
 #ifdef MAP_2_SIM_DEBUG
 	static int8_t max_entries = 0;
 #endif
 
+#ifdef PC
 	map_2_sim_send();
+#endif
 
 	/* Endlosschleife -> Thread wird vom OS blockiert / gibt die Kontrolle ab,
 	 * wenn der Puffer leer ist */
 	while (1) {
-		uint8_t size;
 		/* Daten aus Fifo holen
 		 * Thread blockiert hier, falls Fifo leer */
-		size = (uint8_t) fifo_get_data(&map_2_sim_fifo, &cache_copy, MAP_2_SIM_BUFFER_SIZE * sizeof(cache_copy[0]));
+		uint8_t size = (uint8_t) fifo_get_data(&map_2_sim_fifo, &cache_copy, MAP_2_SIM_BUFFER_SIZE * sizeof(cache_copy[0]));
 		os_signal_set(&map_2_sim_signal);
-		uint8_t i;
-		int8_t j;
 		const int8_t count = (int8_t) (size / sizeof(cache_copy[0])); // Anzahl der Eintraege
 #ifdef MAP_2_SIM_DEBUG
 		if (count > max_entries) {
@@ -1356,8 +1355,10 @@ void map_2_sim_main(void) {
 			LOG_INFO("max_entries=%d", max_entries);
 		}
 #endif // MAP_2_SIM_DEBUG
+		uint8_t i;
 		for (i = 0; i < count; ++i) {
 			/* eingetragenen Block in der Liste der bereits Gesendeten suchen */
+			int8_t j;
 			for (j = (int8_t) (count - 1); j > i; --j) {
 				if (cache_copy[i] == cache_copy[j]) {
 //					printf("ueberspringe Block %u\n", cache_copy[i]);
@@ -1368,16 +1369,16 @@ void map_2_sim_main(void) {
 			if (j == i) {
 				const uint16_t max_block = (uint16_t) (MAP_SECTIONS * MAP_SECTIONS / 2);
 				if (cache_copy[i] > max_block) {
-					LOG_ERROR("Block %u ausserhalb der Karte!", cache_copy[i]);
+					LOG_ERROR("map_2_sim_main(): Block %u ausserhalb der Karte!", cache_copy[i]);
 					continue;
 				}
 				/* Block nicht gefunden -> wurde noch nicht gesendet, also jetzt senden */
 //				printf("sende Block %u\n", cache_copy[i]);
 				sdfat_seek(map_2_sim_file_desc, (int32_t) (cache_copy[i] * MAP_BLOCK_SIZE) + sizeof(map_header_t), SEEK_SET);
 				if (sdfat_read(map_2_sim_file_desc, map_2_sim_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
-					LOG_DEBUG("map::map_2_sim_main(): Block %u der Map konnte nicht gelesen werden.", cache_copy[i]);
+					LOG_DEBUG("map_2_sim_main(): sdfat_read(0x%x) failed", cache_copy[i]);
 				}
-				const int16_t block = (int16_t) (cache_copy[i]);
+				const int16_t block = (int16_t) cache_copy[i];
 //				printf("map_2_sim_main(): block=%d\n", block);
 				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, block, map_2_sim_data.pos.x, 128, map_2_sim_buffer);
 				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, block, map_2_sim_data.pos.y, 128, &map_2_sim_buffer[128]);
