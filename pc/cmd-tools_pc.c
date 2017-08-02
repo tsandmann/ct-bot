@@ -168,7 +168,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 			}
 			printf("Konvertiere Karte \"%s\" in PGM \"%s\"\n", optarg, "map.pgm");
 			map_init();
-			map_read(optarg);
+			map_load_from_file(optarg);
 			map_to_pgm("map.pgm");
 			exit(0);
 #endif // MAP_AVAILABLE
@@ -190,7 +190,7 @@ void hand_cmd_args(int argc, char * argv[]) {
 			}
 			printf("Lese Karte von \"%s\" ein\n", optarg);
 			map_init();
-			map_read(optarg);
+			map_load_from_file(optarg);
 #endif // MAP_AVAILABLE
 			break;
 		}
