@@ -40,7 +40,7 @@ extern "C" {
 /** Macro for debug. */
 #define DEBUG_MODE 0
 #if DEBUG_MODE
-#define DBG_FAIL_MACRO LOG_ERROR("%u", __LINE__);
+#define DBG_FAIL_MACRO LOG_ERROR("%s()", __FUNCTION__);
 #define DBG_PRINT_IF(b) //if (b) {LOG_ERROR(#b); DBG_FAIL_MACRO;}
 #define DBG_HALT_IF(b) //if (b) {LOG_ERROR(#b); DBG_FAIL_MACRO;}
 #else // DEBUG_MODE

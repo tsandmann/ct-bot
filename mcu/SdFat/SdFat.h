@@ -88,16 +88,16 @@ private:
 	uint8_t cardErrorData() const {
 		return m_sdCard.get_error_data();
 	}
-	bool readBlock(uint32_t block, uint8_t* dst) {
+	bool readBlock(uint32_t block, uint8_t* dst) override {
 		return m_sdCard.read_block(block, dst);
 	}
-	bool writeBlock(uint32_t block, const uint8_t* src) {
+	bool writeBlock(uint32_t block, const uint8_t* src) override {
 		return m_sdCard.write_block(block, src);
 	}
-	bool readBlocks(uint32_t block, uint8_t* dst, size_t n) {
+	bool readBlocks(uint32_t block, uint8_t* dst, size_t n) override {
 		return m_sdCard.read_block(block, dst, n);
 	}
-	bool writeBlocks(uint32_t block, const uint8_t* src, size_t n) {
+	bool writeBlocks(uint32_t block, const uint8_t* src, size_t n) override {
 		return m_sdCard.write_block(block, src, n);
 	}
 };

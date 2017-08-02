@@ -300,6 +300,7 @@ bool SdCard::read_block(uint32_t blockNumber, uint8_t* dst) {
 	}
 
 	if (send_cmd(CMD17, blockNumber)) {
+		LOG_DEBUG("SdCard::read_block(0x%x%x) failed", blockNumber >> 16, blockNumber && 0xffff);
 		return error_handler(SD_CARD_ERROR_CMD17);
 	}
 	if (SdFatWrapper::debug_mode) {
@@ -307,6 +308,7 @@ bool SdCard::read_block(uint32_t blockNumber, uint8_t* dst) {
 	}
 
 	if (! read_data(dst, 512)) {
+		LOG_DEBUG("SdCard::read_block(0x%x%x) failed", blockNumber >> 16, blockNumber && 0xffff);
 		return error_handler(0);
 	}
 	if (SdFatWrapper::debug_mode) {
@@ -349,7 +351,7 @@ bool SdCard::read_data(uint8_t* dst, size_t count) {
 	}
 
 	if (m_status != DATA_START_BLOCK) {
-//		LOG_DEBUG("read_data(): m_status=%u", m_status);
+		LOG_DEBUG("read_data(): m_status=%u", m_status);
 		return error_handler(SD_CARD_ERROR_READ);
 	}
 	if (SdFatWrapper::debug_mode) {
@@ -439,6 +441,7 @@ bool SdCard::write_block(uint32_t blockNumber, const uint8_t* src, bool sync) {
 	}
 
 	if (send_cmd(CMD24, blockNumber)) {
+		LOG_DEBUG("SdCard::write_block(0x%x%x) failed", blockNumber >> 16, blockNumber && 0xffff);
 		return error_handler(SD_CARD_ERROR_CMD24);
 	}
 
@@ -449,6 +452,7 @@ bool SdCard::write_block(uint32_t blockNumber, const uint8_t* src, bool sync) {
 	if (sync) {
 		/* wait for flash programming to complete */
 		if (! SPI::wait_not_busy(SD_WRITE_TIMEOUT)) {
+			LOG_DEBUG("SdCard::write_block(0x%x%x) failed", blockNumber >> 16, blockNumber && 0xffff);
 			return error_handler(SD_CARD_ERROR_WRITE_TIMEOUT);
 		}
 
