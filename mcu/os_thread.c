@@ -282,15 +282,15 @@ uint8_t os_delay_func(os_delayed_func_ptr_t p_func, void* p_data, uint32_t delay
  * Maskiert einen Stack, um spaeter ermitteln zu koennen,
  * wieviel Byte ungenutzt bleiben
  * \param *stack	Anfangsadresse des Stacks
- * \param size		Groesse des Stacks in Byte
+ * \param size	Groesse des Stacks in Byte
  */
 void os_mask_stack(void* stack, size_t size) {
 	uint8_t* ptr = stack;
-	uint16_t i;
 	const uint8_t sreg = SREG;
 	__builtin_avr_cli();
+	uint16_t i;
 	for (i = 0; i < size; ++i) {
-		if (&ptr[i] >= (uint8_t*) SP) {
+		if (&ptr[i] >= (uint8_t*) SP - 8) {
 			break;
 		}
 		ptr[i] = 0x42;
