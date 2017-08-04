@@ -376,7 +376,7 @@ void map_flush_cache(void) {
 
 	sdfat_rewind(map_file_desc);
 	if (sdfat_read(map_file_desc, map_buffer, sizeof(map_header_t)) != sizeof(map_header_t)) {
-		LOG_ERROR("map_flush_cache(): Headerdaten konnten nicht gelesen werden");
+		LOG_ERROR("map_flush_cache(): sdfat_read(head) failed");
 		return;
 	}
 
@@ -388,7 +388,7 @@ void map_flush_cache(void) {
 
 	sdfat_rewind(map_file_desc);
 	if (sdfat_write(map_file_desc, p_head_data, sizeof(map_header_t)) != sizeof(map_header_t)) {
-		LOG_ERROR("map_flush_cache(): Headerdaten konnten nicht geschrieben werden");
+		LOG_ERROR("map_flush_cache(): sdfat_write(head) failed");
 	}
 
 	if (sdfat_seek(map_file_desc, (int32_t) (map_current_block.block * MAP_BLOCK_SIZE) + sizeof(map_header_t), SEEK_SET)) {
@@ -445,7 +445,7 @@ static map_section_t* get_section(int16_t x, int16_t y) {
 
 	/* Sicherheitscheck */
 	if (((uint16_t) x >= (uint16_t) (MAP_SIZE * MAP_RESOLUTION)) || ((uint16_t) y >= (uint16_t) (MAP_SIZE * MAP_RESOLUTION))) {
-		LOG_ERROR("Versuch auf ein Feld ausserhalb der Karte zu zugreifen!! x=%u y=%u", x, y);
+		LOG_ERROR("Versuch auf ein Feld ausserhalb der Karte zu zugreifen x=%u y=%u", x, y);
 		return NULL;
 	}
 
@@ -1367,24 +1367,32 @@ void map_2_sim_main(void) {
 				}
 			}
 			if (j == i) {
-				const uint16_t max_block = (uint16_t) (MAP_SECTIONS * MAP_SECTIONS / 2);
-				if (cache_copy[i] > max_block) {
-					LOG_ERROR("map_2_sim_main(): Block %u ausserhalb der Karte!", cache_copy[i]);
+				const int16_t max_block = MAP_SECTIONS * MAP_SECTIONS / 2;
+				const int16_t block = (int16_t) cache_copy[i];
+				cache_copy[i] = 0;
+				if (block > max_block) {
+					LOG_ERROR("map_2_sim_main(): Block %u ausserhalb der Karte!", block);
 					continue;
 				}
 				/* Block nicht gefunden -> wurde noch nicht gesendet, also jetzt senden */
-//				printf("sende Block %u\n", cache_copy[i]);
-				sdfat_seek(map_2_sim_file_desc, (int32_t) (cache_copy[i] * MAP_BLOCK_SIZE) + sizeof(map_header_t), SEEK_SET);
-				if (sdfat_read(map_2_sim_file_desc, map_2_sim_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
-					LOG_DEBUG("map_2_sim_main(): sdfat_read(0x%x) failed", cache_copy[i]);
+//				printf("sende Block %u\n", block);
+				if (sdfat_seek(map_2_sim_file_desc, (int32_t) (block * MAP_BLOCK_SIZE) + sizeof(map_header_t), SEEK_SET)) {
+					LOG_DEBUG("map_2_sim_main(): sdfat_seek(0x%x) failed", block);
+					continue;
 				}
-				const int16_t block = (int16_t) cache_copy[i];
-//				printf("map_2_sim_main(): block=%d\n", block);
+				if (sdfat_read(map_2_sim_file_desc, map_2_sim_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
+					LOG_DEBUG("map_2_sim_main(): sdfat_read(0x%x) failed", block);
+					continue;
+				}
+
+				os_thread_sleep(20);
 				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_1, block, map_2_sim_data.pos.x, 128, map_2_sim_buffer);
+				os_thread_sleep(20);
 				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_2, block, map_2_sim_data.pos.y, 128, &map_2_sim_buffer[128]);
+				os_thread_sleep(20);
 				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_3, block, map_2_sim_data.heading, 128, &map_2_sim_buffer[256]);
+				os_thread_sleep(20);
 				command_write_rawdata(CMD_MAP, SUB_MAP_DATA_4, block, 0, 128, &map_2_sim_buffer[384]);
-				cache_copy[i] = 0;
 			}
 		}
 #ifdef MEASURE_POSITION_ERRORS_AVAILABLE
