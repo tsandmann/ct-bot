@@ -235,6 +235,7 @@ uint8_t FatFileWrapper::seek(FatFile* p_instance, int32_t offset, uint8_t origin
 	if (! p_instance) {
 		return 1;
 	}
+	os_enterCS();
 	bool res;
 	switch (origin) {
 	case SEEK_SET:
@@ -253,6 +254,7 @@ uint8_t FatFileWrapper::seek(FatFile* p_instance, int32_t offset, uint8_t origin
 		res = 1;
 		break;
 	}
+	os_exitCS();
 
 	if (res) {
 		LOG_ERROR("FatFileWrapper::seek(): error=0x%02x 0x%02x", static_cast<SdFatBase*>(p_instance->volume())->card()->get_error_code(), static_cast<SdFatBase*>(p_instance->volume())->card()->get_error_data());
