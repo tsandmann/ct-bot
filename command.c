@@ -385,8 +385,9 @@ static int16_t send_cmd(command_t * cmd) {
  * \param data_l 		Daten fuer den linken Kanal
  * \param data_r 		Daten fuer den rechten Kanal
  * \param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
+ * \return				Fehlercode, 0 falls alles ok
  */
-void command_write_to_internal(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload) {
+uint8_t command_write_to_internal(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload) {
 	request_t request;
 	request.command = command;
 
@@ -416,7 +417,11 @@ void command_write_to_internal(uint8_t command, uint8_t subcommand, uint8_t to, 
 	cmd_functions.crc_calc(&cmd_to_send);
 #endif // CRC_CHECK
 
-	send_cmd(&cmd_to_send);
+	if (send_cmd(&cmd_to_send) != sizeof(command_t)) {
+		return 1;
+	}
+
+	return 0;
 }
 
 /**
@@ -497,8 +502,9 @@ void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, i
 		set_bot_2_sim();
 	}
 #endif // ARM_LINUX_BOARD
-	command_write_to_internal(command, subcommand, to, data_l, data_r, payload);
-	cmd_functions.write(data, payload);
+	if (! command_write_to_internal(command, subcommand, to, data_l, data_r, payload)) {
+		cmd_functions.write(data, payload);
+	}
 #ifdef PC
 	if (command == CMD_BOT_2_BOT) {
 		flushSendBuffer();
@@ -522,7 +528,7 @@ void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, i
  * \param *data 		Datenanhang an das eigentliche Command
  */
 void command_write_rawdata(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload, const void * data) {
-	command_write_rawdata_to(command, subcommand, CMD_SIM_ADDR, data_l, data_r,	payload, data);
+	command_write_rawdata_to(command, subcommand, CMD_SIM_ADDR, data_l, data_r, payload, data);
 }
 
 /**

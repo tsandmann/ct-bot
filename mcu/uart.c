@@ -118,7 +118,7 @@ void uart_init(void) {
 /**
  * Sendet Daten per UART im Little Endian
  * \param *data		Zeiger auf Datenpuffer
- * \param length	Groesse des Datenpuffers in Bytes
+ * \param length		Groesse des Datenpuffers in Bytes
  * \return			Anzahl der geschriebenen Bytes
  */
 int16_t uart_write(const void * data, int16_t length) {
@@ -133,7 +133,9 @@ int16_t uart_write(const void * data, int16_t length) {
 	while (UART_BUFSIZE_OUT - uart_outfifo.count < length) {}
 
 	/* Daten in Ausgangs-FIFO kopieren */
-	fifo_put_data(&uart_outfifo, data, (uint8_t) length);
+	if (fifo_put_data(&uart_outfifo, data, (uint8_t) length)) {
+		return 0;
+	}
 
 	/* Interrupt an */
 	UCSRB |= (1 << UDRIE);
