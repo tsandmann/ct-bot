@@ -152,6 +152,7 @@ typedef void* pFatFile;
 extern uint8_t (*sdfat_open)(const char*, pFatFile*, uint8_t); /**< \see FatFileWrapper::open(), implements the C binding */
 extern uint8_t (*sdfat_seek)(pFatFile, int32_t, uint8_t); /**< \see FatFileWrapper::seek(), implements the C binding */
 extern int32_t (*sdfat_tell)(pFatFile p_file); /**< \see FatFileWrapper::tell(), implements the C binding */
+extern uint32_t (*sdfat_get_first_block)(pFatFile p_file); /**< \see FatFileWrapper::get_first_block(), implements the C binding */
 extern void (*sdfat_rewind)(pFatFile); /**< \see FatFileWrapper::rewind(), implements the C binding */
 extern int16_t (*sdfat_read)(pFatFile, void*, uint16_t); /**< \see FatFileWrapper::read(), implements the C binding */
 extern int16_t (*sdfat_write)(pFatFile, const void*, uint16_t); /**< \see FatFileWrapper::write(), implements the C binding */
@@ -218,6 +219,7 @@ typedef void* pSdFat;
 uint8_t sdfat_open(const char* filename, pFatFile* p_file, uint8_t mode); /**< \see FatFileWrapper::open() */
 uint8_t sdfat_seek(pFatFile p_file, int32_t offset, uint8_t origin); /**< \see FatFileWrapper::seek() */
 int32_t sdfat_tell(pFatFile p_file); /**< \see FatFileWrapper::tell() */
+uint32_t sdfat_get_first_block(pFatFile p_file); /**< \see FatFileWrapper::get_first_block(), implements the C binding */
 void sdfat_rewind(pFatFile p_file); /**< \see FatFileWrapper::rewind() */
 int16_t sdfat_read(pFatFile p_file, void* buffer, uint16_t length); /**< \see FatFileWrapper::read() */
 int16_t sdfat_write(pFatFile p_file, const void* buffer, uint16_t length); /**< \see FatFileWrapper::write() */

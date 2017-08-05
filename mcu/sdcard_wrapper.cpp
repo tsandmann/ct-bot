@@ -215,11 +215,14 @@ uint8_t SdFatWrapper::sync_vol(SdFat* p_instance) {
 uint8_t FatFileWrapper::open(const char* filename, FatFile** p_file, uint8_t mode) {
 	auto ptr(new FatFile);
 	if (! ptr) {
+		LOG_DEBUG("FatFileWrapper::open(): new failed");
 		return 1;
 	}
+	LOG_DEBUG("FatFileWrapper::open(): ptr->open(\"%s\", 0x%x)...", filename, mode);
 	os_enterCS();
 	const auto res(ptr->open(filename, mode));
 	os_exitCS();
+	LOG_DEBUG("FatFileWrapper::open(): ptr->open()= %u", res);
 	if (res) {
 		*p_file = ptr;
 		return 0;
@@ -345,6 +348,7 @@ uint8_t (*sd_card_read_cid)(pSdFat, cid_t*) { SdFatWrapper::read_cid };
 uint8_t (*sdfat_open)(const char*, pFatFile*, uint8_t) { FatFileWrapper::open };
 uint8_t (*sdfat_seek)(pFatFile, int32_t, uint8_t) { FatFileWrapper::seek };
 int32_t (*sdfat_tell)(pFatFile p_file) { FatFileWrapper::tell };
+uint32_t (*sdfat_get_first_block)(pFatFile p_file) { FatFileWrapper::get_first_block };
 void (*sdfat_rewind)(pFatFile) { FatFileWrapper::rewind };
 int16_t (*sdfat_read)(pFatFile, void*, uint16_t) { FatFileWrapper::read };
 int16_t (*sdfat_write)(pFatFile, const void*, uint16_t) { FatFileWrapper::write };

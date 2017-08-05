@@ -300,7 +300,7 @@ bool SdCard::read_block(uint32_t blockNumber, uint8_t* dst) {
 	}
 
 	if (send_cmd(CMD17, blockNumber)) {
-		LOG_DEBUG("SdCard::read_block(0x%x%x) failed", blockNumber >> 16, blockNumber && 0xffff);
+		LOG_DEBUG("SdCard::read_block(0x%x%x) failed", static_cast<uint16_t>(blockNumber >> 16), static_cast<uint16_t>(blockNumber));
 		return error_handler(SD_CARD_ERROR_CMD17);
 	}
 	if (SdFatWrapper::debug_mode) {
@@ -308,7 +308,7 @@ bool SdCard::read_block(uint32_t blockNumber, uint8_t* dst) {
 	}
 
 	if (! read_data(dst, 512)) {
-		LOG_DEBUG("SdCard::read_block(0x%x%x) failed", blockNumber >> 16, blockNumber && 0xffff);
+		LOG_DEBUG("SdCard::read_block(0x%x%x) failed", static_cast<uint16_t>(blockNumber >> 16), static_cast<uint16_t>(blockNumber));
 		return error_handler(0);
 	}
 	if (SdFatWrapper::debug_mode) {
@@ -441,7 +441,7 @@ bool SdCard::write_block(uint32_t blockNumber, const uint8_t* src, bool sync) {
 	}
 
 	if (send_cmd(CMD24, blockNumber)) {
-		LOG_DEBUG("SdCard::write_block(0x%x%x) failed", blockNumber >> 16, blockNumber && 0xffff);
+		LOG_DEBUG("SdCard::write_block(0x%x%x) failed", static_cast<uint16_t>(blockNumber >> 16), static_cast<uint16_t>(blockNumber));
 		return error_handler(SD_CARD_ERROR_CMD24);
 	}
 
@@ -452,7 +452,7 @@ bool SdCard::write_block(uint32_t blockNumber, const uint8_t* src, bool sync) {
 	if (sync) {
 		/* wait for flash programming to complete */
 		if (! SPI::wait_not_busy(SD_WRITE_TIMEOUT)) {
-			LOG_DEBUG("SdCard::write_block(0x%x%x) failed", blockNumber >> 16, blockNumber && 0xffff);
+			LOG_DEBUG("SdCard::write_block(0x%x%x) failed", static_cast<uint16_t>(blockNumber >> 16), static_cast<uint16_t>(blockNumber));
 			return error_handler(SD_CARD_ERROR_WRITE_TIMEOUT);
 		}
 
@@ -560,7 +560,7 @@ bool SdCard::error_handler(uint8_t error_code) {
 	if (error_code) {
 		set_error(error_code);
 		LOG_DEBUG("SdCard::error_handler(): error=0x%02x 0x%02x", error_code, m_status);
-		LOG_DEBUG(" time=0x%04x%04x", static_cast<uint16_t>(now32 >> 16), static_cast<uint16_t>(now32 & 0xffff));
+		LOG_DEBUG(" time=0x%04x%04x", static_cast<uint16_t>(now32 >> 16), static_cast<uint16_t>(now32));
 	}
 	cs_high();
 #ifdef LED_AVAILABLE

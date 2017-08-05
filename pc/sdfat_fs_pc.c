@@ -84,6 +84,11 @@ int32_t sdfat_tell(pFatFile p_file) {
 	return pos >= 0 ? pos : 0xffff;
 }
 
+uint32_t sdfat_get_first_block(pFatFile p_file) {
+	(void) p_file;
+	return 0;
+}
+
 void sdfat_rewind(pFatFile p_file) {
 	sdfat_seek(p_file, 0, SEEK_SET);
 }

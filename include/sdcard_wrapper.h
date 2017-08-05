@@ -191,6 +191,15 @@ public:
 	}
 
 	/**
+	 *
+	 * @param[in] p_instance
+	 * @return
+	 */
+	static uint32_t get_first_block(FatFile* p_instance) {
+		return p_instance->volume()->clusterStartBlock(p_instance->firstCluster());
+	}
+
+	/**
 	 * Sets a file's position
 	 * \param[in] p_instance Pointer to FatFile instance returned by FatFileWrapper::open() (for C bindings)
 	 * \param[in] offset Offset of new position

@@ -91,7 +91,12 @@ constexpr uint8_t const SPI_SCK_INIT_DIVISOR = 128;
  * for FAT table entries. This improves performance for large writes
  * that are not a multiple of 512 bytes.
  */
+#define USE_SEPARATE_FAT_CACHE 1
+
+#ifndef __AVR_ATmega1284P__
+#undef USE_SEPARATE_FAT_CACHE
 #define USE_SEPARATE_FAT_CACHE 0
+#endif // __AVR_ATmega1284P__
 
 /**
  * Set USE_MULTI_BLOCK_IO nonzero to use multi-block SD read/write.
