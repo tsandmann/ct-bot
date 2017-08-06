@@ -1383,6 +1383,7 @@ void map_2_sim_main(void) {
 		 * Thread blockiert hier, falls Fifo leer */
 		uint8_t size = (uint8_t) fifo_get_data(&map_2_sim_fifo, &cache_copy, MAP_2_SIM_BUFFER_SIZE * sizeof(cache_copy[0]));
 		os_signal_set(&map_2_sim_signal);
+		os_signal_release(&map_2_sim_signal);
 		const int8_t count = (int8_t) (size / sizeof(cache_copy[0])); // Anzahl der Eintraege
 #ifdef MAP_2_SIM_DEBUG
 		if (count > max_entries) {
@@ -1435,7 +1436,6 @@ void map_2_sim_main(void) {
 		map_draw_circle(map_2_sim_data.pos, map_2_sim_data.error, 0);
 #endif
 //		printf("\n");
-		os_signal_release(&map_2_sim_signal);
 	}
 }
 
@@ -1603,8 +1603,6 @@ int8_t map_load_from_file(const char* file) {
 	LOG_DEBUG("map_load_from_file(): waiting for lock...");
 	map_flush_cache();
 	LOG_DEBUG("map_load_from_file(): map_flush_cache() done.");
-// FIXME: stop update und map-2-sim
-//	os_signal_lock(&lock_signal);
 
 	/* Quelldatei oeffnen */
 	pFatFile src_file;
@@ -1618,6 +1616,7 @@ int8_t map_load_from_file(const char* file) {
 	/* Map loeschen */
 	delete();
 
+	os_signal_lock(&lock_signal);
 	map_header_t* p_head_buffer = (map_header_t*) map_buffer;
 	if (sdfat_read(src_file, p_head_buffer, sizeof(map_header_t)) != sizeof(map_header_t)) {
 		LOG_ERROR("map_load_from_file(): sdfat_read(head) failed");
@@ -1640,7 +1639,7 @@ int8_t map_load_from_file(const char* file) {
 	if (sdfat_write(map_file_desc, p_head_buffer, sizeof(map_header_t)) != sizeof(map_header_t)) {
 		LOG_ERROR("map_load_from_file(): sdfat_write(head) failed");
 		sdfat_close(src_file);
-//		os_signal_unlock(&lock_signal);
+		os_signal_unlock(&lock_signal);
 		return 4;
 	}
 	min_max_updated = False;
@@ -1651,14 +1650,14 @@ int8_t map_load_from_file(const char* file) {
 	if (sdfat_seek(src_file, src_alignment_offset * MAP_BLOCK_SIZE + sizeof(map_header_t), SEEK_SET)) {
 		LOG_ERROR("map_load_from_file(): sdfat_seek(0x%x) failed", src_alignment_offset * MAP_BLOCK_SIZE + sizeof(map_header_t));
 		sdfat_close(src_file);
-//		os_signal_unlock(&lock_signal);
+		os_signal_unlock(&lock_signal);
 		return 5;
 	}
 
 	if (sdfat_seek(map_file_desc, alignment_offset * MAP_BLOCK_SIZE + sizeof(map_header_t), SEEK_SET)) {
 		LOG_ERROR("map_load_from_file(): sdfat_seek(0x%x) failed", alignment_offset * MAP_BLOCK_SIZE + sizeof(map_header_t));
 		sdfat_close(src_file);
-//		os_signal_unlock(&lock_signal);
+		os_signal_unlock(&lock_signal);
 		return 6;
 	}
 
@@ -1667,13 +1666,13 @@ int8_t map_load_from_file(const char* file) {
 		if (sdfat_read(src_file, map_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
 			LOG_ERROR("map_load_from_file(): sdfat_read() failed, i=0x%x", i);
 			sdfat_close(src_file);
-//			os_signal_unlock(&lock_signal);
+			os_signal_unlock(&lock_signal);
 			return 7;
 		}
 		if (sdfat_write(map_file_desc, map_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
 			LOG_ERROR("map_load_from_file(): sdfat_write() failed, i=0x%x", i);
 			sdfat_close(src_file);
-//			os_signal_unlock(&lock_signal);
+			os_signal_unlock(&lock_signal);
 			return 8;
 		}
 	}
@@ -1687,16 +1686,16 @@ int8_t map_load_from_file(const char* file) {
 	/* Block 0 laden */
 	if (sdfat_seek(map_file_desc, (int32_t) ((map_current_block.block + alignment_offset) * MAP_BLOCK_SIZE) + sizeof(map_header_t), SEEK_SET)) {
 		LOG_DEBUG("map_load_from_file(): sdfat_seek(0x%x) failed", map_current_block.block + alignment_offset);
-//		os_signal_unlock(&lock_signal);
+		os_signal_unlock(&lock_signal);
 		return 9;
 	}
 	if (sdfat_read(map_file_desc, map_buffer, MAP_BLOCK_SIZE) != MAP_BLOCK_SIZE) {
 		LOG_ERROR("map_load_from_file(): sdfat_read(0x%x) failed", map_current_block.block + alignment_offset);
-//		os_signal_unlock(&lock_signal);
+		os_signal_unlock(&lock_signal);
 		return 10;
 	}
 
-//	os_signal_unlock(&lock_signal);
+	os_signal_unlock(&lock_signal);
 
 #if defined PC && defined MAP_2_SIM_AVAILABLE
 	map_2_sim_send();
