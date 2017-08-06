@@ -191,6 +191,15 @@ public:
 	}
 
 	/**
+	 *
+	 * @param[in] p_instance
+	 * @return
+	 */
+	static uint32_t get_first_block(FatFile* p_instance) {
+		return p_instance->volume()->clusterStartBlock(p_instance->firstCluster());
+	}
+
+	/**
 	 * Sets a file's position
 	 * \param[in] p_instance Pointer to FatFile instance returned by FatFileWrapper::open() (for C bindings)
 	 * \param[in] offset Offset of new position
@@ -205,7 +214,7 @@ public:
      *          A negative offset places the access position before the end of file, and
      *          a positive offset places the access position after the end of file.
 	 */
-	static void seek(FatFile* p_instance, int32_t offset, uint8_t origin);
+	static uint8_t seek(FatFile* p_instance, int32_t offset, uint8_t origin);
 
 	/**
 	 * Sets the file's current position to zero

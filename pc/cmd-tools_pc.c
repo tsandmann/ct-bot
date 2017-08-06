@@ -62,7 +62,7 @@ static void usage(void) {
 	puts("\t-u RUNS\tUART-Test");
 #endif
 #ifdef MAP_AVAILABLE
-	puts("\t-M FILE \tKonvertiert eine Bot-Map aus Datei FILE in eine PGM-Datei");
+	puts("\t-M FILE\tKonvertiert eine Bot-Map aus Datei FILE in eine PGM-Datei");
 	puts("\t-m FILE\tGibt den Pfad zu einer Datei FILE an, die vom Map-Code verwendet wird (Ex- und Import)");
 #else
 	puts("\t\tACHTUNG, das Programm wurde ohne MAP_AVAILABLE uebersetzt, die Optionen -M / -m stehen derzeit also NICHT zur Verfuegung");
@@ -86,11 +86,11 @@ void hand_cmd_args(int argc, char * argv[]) {
 
 	int ch;
 	/* Die Kommandozeilenargumente komplett verarbeiten */
-	while ((ch = getopt(argc, argv, "hsTu:Et:Mm:c:l:e:d:a:i:fk:o:F:")) != -1) {
+	while ((ch = getopt(argc, argv, "hsTu:Et:M:m:c:l:e:d:a:i:fk:o:F:")) != -1) {
 		argc -= optind;
 		argv += optind;
-		switch (ch) {
 
+		switch (ch) {
 		case 's': {
 #ifdef BOT_2_SIM_AVAILABLE
 			/* Servermodus [-s] wird verlangt */
@@ -160,17 +160,15 @@ void hand_cmd_args(int argc, char * argv[]) {
 #endif
 #ifdef MAP_AVAILABLE
 			/* Karte in pgm konvertieren */
-			if (argc != 1) {
+			const size_t len = strlen(optarg);
+			if (! len) {
+				puts("Dateiname ungueltig");
 				usage();
 				exit(1);
 			}
-			const size_t len = strlen(argv[0]) + 1;
-			if (len > 1024) {
-				puts("Dateiname ungueltig");
-				exit(1);
-			}
-			printf("Konvertiere Karte %s in PGM %s\n", argv[0], "map.pgm");
-			map_read(argv[0]);
+			printf("Konvertiere Karte \"%s\" in PGM \"%s\"\n", optarg, "map.pgm");
+			map_init();
+			map_load_from_file(optarg);
 			map_to_pgm("map.pgm");
 			exit(0);
 #endif // MAP_AVAILABLE
@@ -184,13 +182,15 @@ void hand_cmd_args(int argc, char * argv[]) {
 			exit(1);
 #else
 			/* Karte einlesen */
-			const size_t len = strlen(optarg) + 1;
-			if (len > 1024) {
+			const size_t len = strlen(optarg);
+			if (! len) {
 				puts("Dateiname ungueltig");
+				usage();
 				exit(1);
 			}
 			printf("Lese Karte von \"%s\" ein\n", optarg);
-			map_read(optarg);
+			map_init();
+			map_load_from_file(optarg);
 #endif // MAP_AVAILABLE
 			break;
 		}

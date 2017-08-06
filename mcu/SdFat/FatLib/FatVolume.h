@@ -40,7 +40,7 @@ extern "C" {
 /** Macro for debug. */
 #define DEBUG_MODE 0
 #if DEBUG_MODE
-#define DBG_FAIL_MACRO LOG_ERROR("%u", __LINE__);
+#define DBG_FAIL_MACRO LOG_ERROR("%s()", __FUNCTION__);
 #define DBG_PRINT_IF(b) //if (b) {LOG_ERROR(#b); DBG_FAIL_MACRO;}
 #define DBG_HALT_IF(b) //if (b) {LOG_ERROR(#b); DBG_FAIL_MACRO;}
 #else // DEBUG_MODE
@@ -260,9 +260,17 @@ public:
 	bool wipe(print_t* pr = nullptr);
 #endif // SDFAT_PRINT_SUPPORT && SDFAT_WIPE_SUPPORT
 
+#if USE_SEPARATE_FAT_CACHE
+	bool cacheSync() {
+		return m_cache.sync() && m_fatCache.sync();
+	}
+#else
 	bool cacheSync() {
 		return m_cache.sync();
 	}
+#endif // USE_SEPARATE_FAT_CACHE
+
+	uint32_t clusterStartBlock(uint32_t cluster) const;
 
 	/** Debug access to FAT table
 	 *
@@ -315,12 +323,9 @@ private:
 #if USE_SEPARATE_FAT_CACHE
 	FatCache m_fatCache;
 	cache_t* cacheFetchFat(uint32_t blockNumber, uint8_t options) {
-		return m_fatCache.read(blockNumber,	options | FatCache::CACHE_STATUS_MIRROR_FAT);
+		return m_fatCache.read(blockNumber, options | FatCache::CACHE_STATUS_MIRROR_FAT);
 	}
 
-	bool cacheSync() {
-		return m_cache.sync() && m_fatCache.sync();
-	}
 #else
 
 	cache_t* cacheFetchFat(uint32_t blockNumber, uint8_t options) {
@@ -359,7 +364,6 @@ private:
 		return (position >> 9) & m_clusterBlockMask;
 	}
 
-	uint32_t clusterStartBlock(uint32_t cluster) const;
 	int8_t fatGet(uint32_t cluster, uint32_t* value);
 	bool fatPut(uint32_t cluster, uint32_t value);
 
@@ -373,6 +377,7 @@ private:
 		return cluster > m_lastCluster;
 	}
 
+protected:
 	// Virtual block I/O functions.
 	virtual bool readBlock(uint32_t block, uint8_t* dst) = 0;
 	virtual bool writeBlock(uint32_t block, const uint8_t* src) = 0;

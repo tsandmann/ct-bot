@@ -49,12 +49,12 @@
 typedef struct {
 	uint8_t volatile count;		/**< # Zeichen im Puffer */
 	uint8_t size;				/**< Puffer-Grosse */
-	uint8_t * pread;			/**< Lesezeiger */
+	uint8_t * pread;				/**< Lesezeiger */
 	uint8_t * pwrite;			/**< Schreibzeiger */
 	uint8_t read2end;			/**< # Zeichen bis zum Ueberlauf Lesezeiger */
 	uint8_t write2end;			/**< # Zeichen bis zum Ueberlauf Schreibzeiger */
 	uint8_t volatile overflow;	/**< 1, falls die Fifo mal uebergelaufen ist */
-	uint8_t volatile locked;	/**< 1, falls die Fifo gesperrt ist */
+	uint8_t volatile locked;		/**< 1, falls die Fifo gesperrt ist */
 #ifdef FIFO_STATS_ENABLED
 	uint32_t written;			/**< Anzahl an Bytes, die ins Fifo geschrieben wurden seit Initialisierung */
 #endif
@@ -71,7 +71,7 @@ typedef struct {
 
 /**
  * Initialisiert die FIFO, setzt Lese- und Schreibzeiger, etc.
- * \param *f		Zeiger auf FIFO-Datenstruktur
+ * \param *f			Zeiger auf FIFO-Datenstruktur
  * \param *buffer	Zeiger auf den Puffer der Groesse size fuer die FIFO
  * \param size		Anzahl der Bytes, die die FIFO speichern soll	.
  */
@@ -82,18 +82,19 @@ void fifo_init(fifo_t * f, void * buffer, const uint8_t size);
  * Achtung, wenn der freie Platz nicht ausreicht, werden die
  * aeltesten Daten verworfen!
  * \param *f		Zeiger auf FIFO-Datenstruktur
- * \param *data		Zeiger auf Quelldaten
+ * \param *data	Zeiger auf Quelldaten
  * \param length	Anzahl der zu kopierenden Bytes
+ * \return		Fehlercode, 0 falls kein Fehler
  */
-void fifo_put_data(fifo_t * f, const void * data, uint8_t length);
+uint8_t fifo_put_data(fifo_t * f, const void * data, uint8_t length);
 
 /**
  * Liefert length Bytes aus der FIFO.
  * Wenn OS_AVAILABLE, blockierend, falls Fifo leer.
  * \param *f		Zeiger auf FIFO-Datenstruktur
- * \param *data		Zeiger auf Speicherbereich fuer Zieldaten
+ * \param *data	Zeiger auf Speicherbereich fuer Zieldaten
  * \param length	Anzahl der zu kopierenden Bytes
- * \return			Anzahl der tatsaechlich gelieferten Bytes
+ * \return		Anzahl der tatsaechlich gelieferten Bytes
  */
 int16_t fifo_get_data(fifo_t * f, void * data, int16_t length);
 
@@ -157,7 +158,7 @@ static inline void _inline_fifo_put(fifo_t * f, const uint8_t data, uint8_t isr)
 /**
  * Liefert das naechste Byte aus der FIFO.
  * Wenn OS_AVAILABLE, blockierend, falls Fifo leer.
- * \param *f	Zeiger auf FIFO-Datenstruktur
+ * \param *f		Zeiger auf FIFO-Datenstruktur
  * \param isr	wird die Funktion von einer ISR aus aufgerufen?
  * \return		Das Byte aus der FIFO
  */

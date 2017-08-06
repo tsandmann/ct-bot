@@ -70,16 +70,23 @@ uint8_t sdfat_open(const char* filename, pFatFile* p_file, uint8_t mode) {
 	return *p_file ? 0 : 1;
 }
 
-void sdfat_seek(pFatFile p_file, int32_t offset, uint8_t origin) {
+uint8_t sdfat_seek(pFatFile p_file, int32_t offset, uint8_t origin) {
 	if (fseek(p_file, offset, origin)) {
 		LOG_ERROR("sdfat_seek(): fseek(%d, %u) failed:", offset, origin);
 		perror(NULL);
+		return 1;
 	}
+	return 0;
 }
 
 int32_t sdfat_tell(pFatFile p_file) {
 	int pos = ftell(p_file);
 	return pos >= 0 ? pos : 0xffff;
+}
+
+uint32_t sdfat_get_first_block(pFatFile p_file) {
+	(void) p_file;
+	return 0;
 }
 
 void sdfat_rewind(pFatFile p_file) {

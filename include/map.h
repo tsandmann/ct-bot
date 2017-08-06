@@ -40,15 +40,15 @@
 #define MAP_SIZE			(MAP_SIZE_MM / 1000.0)	/**< Kantenlaenge der Karte in m (also MAP_SIZE_MM / 1000). Zentrum ist der Startplatz des Bots. */
 #define MAP_RESOLUTION 		125		/**< Aufloesung der Karte in Punkte / m */
 #define MAP_SECTION_POINTS 	16		/**< Kantenlaenge einer Section in Punkten ==> eine Section braucht MAP_SECTION_POINTS * MAP_SECTION_POINTS Byte */
-#define MAP_BLOCK_SIZE		(MAP_SECTION_POINTS * MAP_SECTION_POINTS * 2)
+#define MAP_BLOCK_SIZE		(2L * MAP_SECTION_POINTS * MAP_SECTION_POINTS)
 
-#define MAP_UPDATE_STACK_SIZE	180	/**< Groesse des Stacks, der das Map-Update ausfuehrt [Byte] */
+#define MAP_UPDATE_STACK_SIZE	300	/**< Groesse des Stacks, der das Map-Update ausfuehrt [Byte] */
 #ifdef DEBUG_BOTFS
 #undef MAP_UPDATE_STACK_SIZE
 #define MAP_UPDATE_STACK_SIZE	220
 #endif
 #define MAP_UPDATE_CACHE_SIZE	16	/**< Groesse des Map-Caches [# Eintraege] */
-#define MAP_2_SIM_STACK_SIZE	150	/**< Groesse des Map-2-Sim-Thread-Stacks [Byte]*/
+#define MAP_2_SIM_STACK_SIZE		256	/**< Groesse des Map-2-Sim-Thread-Stacks [Byte] */
 
 #define MAP_2_SIM_BUFFER_SIZE	32	/**< Anzahl der Bloecke, die fuer Map-2-Sim gecached werden koennen */
 
@@ -58,7 +58,7 @@
 #define MAP_RATIO_NONE	0		/**< Rueckgabe von map_get_ratio(), falls kein Feld den Kriterien entspricht */
 #define MAP_RATIO_FULL	255		/**< Rueckgabe von map_get_tatio(), falls alle Felder den Kriterien entsprechen */
 
-/* Die folgenden Variablen/konstanten NICHT direkt benutzen, sondern die zugehoerigen Makros: get_map_min_x() und Co!
+/* Die folgenden Variablen/Konstanten NICHT direkt benutzen, sondern die zugehoerigen Makros: get_map_min_x() und Co!
  * Denn sonst erhaelt man Karten- und nicht Weltkoordinaten! */
 extern int16_t map_min_x;		/**< belegter Bereich der Karte [Kartenindex]: kleinste X-Koordinate */
 extern int16_t map_max_x;		/**< belegter Bereich der Karte [Kartenindex]: groesste X-Koordinate */
@@ -266,13 +266,6 @@ void map_draw_circle(position_t center, int16_t radius, uint8_t color);
 
 #ifdef PC
 extern char* map_file; /**< Dateiname fuer Ex- / Import */
-
-/**
- * Liest eine Karte aus einer Map-Datei (MiniFAT-Format) ein
- * \param *filename Quelldatei
- * \return Fehlercode, 0 falls alles ok
- */
-int map_read(const char* filename);
 
 /**
  * Schreibt einbe Karte in eine PGM-Datei

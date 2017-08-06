@@ -158,10 +158,9 @@ void ctbot_init_low_1st(int argc, char * argv[]) {
 
 	os_create_thread((void*) SP, NULL); // Hauptthread anlegen
 #ifdef OS_DEBUG
-	const uint16_t heap_free = SP - (size_t) __brkval - 1024;
-	void* ptr = malloc(heap_free);
+	void* ptr = malloc(1);
 	if (ptr) {
-		os_mask_stack(ptr, heap_free);
+		os_mask_stack(ptr + __malloc_margin, SP - (size_t) ptr);
 		free(ptr);
 	}
 #endif // OS_DEBUG

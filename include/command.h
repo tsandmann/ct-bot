@@ -191,19 +191,20 @@ int8_t receive_until_frame(uint8_t frame);
 /**
  * Uebertraegt ein Kommando und wartet nicht auf eine Antwort. Interne Version, nicht threadsicher!
  * \param command		Kennung zum Command
- * \param subcommand	Kennung des Subcommand
- * \param to			Adresse des Empfaengers
+ * \param subcommand		Kennung des Subcommand
+ * \param to				Adresse des Empfaengers
  * \param data_l 		Daten fuer den linken Kanal
  * \param data_r 		Daten fuer den rechten Kanal
  * \param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
+ * \return				Fehlercode, 0 falls alles ok
  */
-void command_write_to_internal(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload);
+uint8_t command_write_to_internal(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload);
 
 /**
  * Uebertraegt ein Kommando und wartet nicht auf eine Antwort
  * \param command		Kennung zum Command
- * \param subcommand	Kennung des Subcommand
- * \param to			Adresse des Empfaengers
+ * \param subcommand		Kennung des Subcommand
+ * \param to				Adresse des Empfaengers
  * \param data_l 		Daten fuer den linken Kanal
  * \param data_r 		Daten fuer den rechten Kanal
  * \param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
@@ -213,7 +214,7 @@ void command_write_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t d
 /**
  * Uebertraegt ein Kommando an den ct-Sim und wartet nicht auf eine Antwort
  * \param command		Kennung zum Command
- * \param subcommand	Kennung des Subcommand
+ * \param subcommand		Kennung des Subcommand
  * \param data_l 		Daten fuer den linken Kanal
  * \param data_r 		Daten fuer den rechten Kanal
  * \param payload 		Anzahl der Bytes, die diesem Kommando als Payload folgen
@@ -224,32 +225,32 @@ void command_write(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t 
  * Gibt dem Simulator Daten mit String-Anhang und wartet nicht auf Antwort
  * \param command 		Kennung zum Command
  * \param subcommand 	Kennung des Subcommand
- * \param data_l		Daten fuer den linken Kanal
- * \param data_r		Daten fuer den rechten Kanal
- * \param *data 		Datenanhang an das eigentliche Command, null-terminiert
+ * \param data_l			Daten fuer den linken Kanal
+ * \param data_r			Daten fuer den rechten Kanal
+ * \param *data 			Datenanhang an das eigentliche Command, null-terminiert
  */
 void command_write_data(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, const char * data);
 
 /**
  * Versendet Daten mit Anhang und wartet nicht auf Antwort
  * \param command 		Kennung zum Command
- * \param subcommand	Kennung des Subcommand
- * \param to			Adresse, an die die Daten gesendet werden sollen
+ * \param subcommand		Kennung des Subcommand
+ * \param to				Adresse, an die die Daten gesendet werden sollen
  * \param data_l 		Daten fuer den linken Kanal
- * \param data_r		Daten fuer den rechten Kanal
+ * \param data_r			Daten fuer den rechten Kanal
  * \param payload 		Anzahl der Bytes im Anhang
- * \param *data 		Datenanhang an das eigentliche Command
+ * \param *data 			Datenanhang an das eigentliche Command
  */
 void command_write_rawdata_to(uint8_t command, uint8_t subcommand, uint8_t to, int16_t data_l, int16_t data_r, uint8_t payload, const void * data);
 
 /**
  * Gibt dem Simulator Daten mit Anhang und wartet nicht auf Antwort
  * \param command 		Kennung zum Command
- * \param subcommand	Kennung des Subcommand
+ * \param subcommand		Kennung des Subcommand
  * \param data_l 		Daten fuer den linken Kanal
  * \param data_r 		Daten fuer den rechten Kanal
  * \param payload 		Anzahl der Bytes im Anhang
- * \param *data 		Datenanhang an das eigentliche Command
+ * \param *data 			Datenanhang an das eigentliche Command
  */
 void command_write_rawdata(uint8_t command, uint8_t subcommand, int16_t data_l, int16_t data_r, uint8_t payload, const void * data);
 

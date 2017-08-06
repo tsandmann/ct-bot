@@ -109,7 +109,7 @@ void os_thread_sleep(uint32_t ms) {
 	// NOP
 	Tcb_t * thread = get_this_thread();
 	if (DEBUG_THREAD_N == -1 || thread == &os_threads[DEBUG_THREAD_N]) {
-		LOG_DEBUG("Thread 0x%08x soll %u ms schlafen, os_thread_sleep() ist aber nicht implementiert", thread, ms);
+		LOG_DEBUG("Thread %p soll %u ms schlafen, os_thread_sleep() ist aber nicht implementiert", thread, ms);
 	}
 }
 
@@ -120,16 +120,16 @@ void os_thread_sleep(uint32_t ms) {
 void os_signal_set(os_signal_t * signal) {
 	Tcb_t * thread = get_this_thread();
 	if (DEBUG_THREAD_N == -1 || thread == &os_threads[DEBUG_THREAD_N]) {
-		LOG_DEBUG("Setze Signal 0x%08x fuer Thread 0x%08x", signal, thread);
+		LOG_DEBUG("Setze Signal %p fuer Thread %p", signal, thread);
 	}
 	pthread_mutex_lock(&signal->mutex);
 	if (signal->value == 1) {
 		if (DEBUG_THREAD_N == -1 || thread == &os_threads[DEBUG_THREAD_N]) {
-			LOG_DEBUG("Thread 0x%08x wird blockiert", thread);
+			LOG_DEBUG("Thread %p wird blockiert", thread);
 		}
 		pthread_cond_wait(&signal->cond, &signal->mutex);
 		if (DEBUG_THREAD_N == -1 || thread == &os_threads[DEBUG_THREAD_N]) {
-			LOG_DEBUG("Thread 0x%08x laeuft weiter", thread);
+			LOG_DEBUG("Thread %p laeuft weiter", thread);
 		}
 	}
 }
@@ -142,7 +142,7 @@ void os_signal_release(os_signal_t * signal) {
 	pthread_mutex_unlock(&signal->mutex);
 	Tcb_t * thread = get_this_thread();
 	if (DEBUG_THREAD_N == -1 || thread == &os_threads[DEBUG_THREAD_N]) {
-		LOG_DEBUG("Entferne Signal 0x%08x von Thread 0x%08x", signal, thread);
+		LOG_DEBUG("Entferne Signal %p von Thread %p", signal, thread);
 	}
 }
 
@@ -156,7 +156,7 @@ void os_signal_lock(os_signal_t * signal) {
 	pthread_mutex_unlock(&signal->mutex);
 	Tcb_t * thread = get_this_thread();
 	if (DEBUG_THREAD_N == -1 || thread == &os_threads[DEBUG_THREAD_N]) {
-		LOG_DEBUG("Signal 0x%08x gesperrt", signal);
+		LOG_DEBUG("Signal %p gesperrt", signal);
 	}
 }
 
