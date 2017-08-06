@@ -42,12 +42,24 @@ extern "C" {
 #define SD_FAT_VERSION 20160719
 
 /**
- * \class SdFatBase
- * \brief Virtual base class for %SdFat library.
+ * \class SdFatInterface
+ * \brief Virtual base class interface for SdFat library.
  */
-class SdFatBase
+class SdFatInterface {
+protected:
+	virtual bool readBlock(uint32_t block, uint8_t* dst) = 0;
+	virtual bool writeBlock(uint32_t block, const uint8_t* src) = 0;
+	virtual bool readBlocks(uint32_t block, uint8_t* dst, size_t n) = 0;
+	virtual bool writeBlocks(uint32_t block, const uint8_t* src, size_t n) = 0;
+};
+
+/**
+ * \class SdFatBase
+ * \brief Base class for SdFat library.
+ */
+class SdFatBase : public SdFatInterface
 #ifdef SDFAT_AVAILABLE
-	: public FatFileSystem
+	, public FatFileSystem
 #endif
 {
 private:
@@ -85,19 +97,24 @@ private:
 	uint8_t cardErrorCode() const {
 		return m_sdCard.get_error_code();
 	}
+
 	uint8_t cardErrorData() const {
 		return m_sdCard.get_error_data();
 	}
-	bool readBlock(uint32_t block, uint8_t* dst) override {
+
+	virtual bool readBlock(uint32_t block, uint8_t* dst) override {
 		return m_sdCard.read_block(block, dst);
 	}
-	bool writeBlock(uint32_t block, const uint8_t* src) override {
+
+	virtual bool writeBlock(uint32_t block, const uint8_t* src) override {
 		return m_sdCard.write_block(block, src);
 	}
-	bool readBlocks(uint32_t block, uint8_t* dst, size_t n) override {
+
+	virtual bool readBlocks(uint32_t block, uint8_t* dst, size_t n) override {
 		return m_sdCard.read_block(block, dst, n);
 	}
-	bool writeBlocks(uint32_t block, const uint8_t* src, size_t n) override {
+
+	virtual bool writeBlocks(uint32_t block, const uint8_t* src, size_t n) override {
 		return m_sdCard.write_block(block, src, n);
 	}
 };

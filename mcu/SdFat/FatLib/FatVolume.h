@@ -377,6 +377,7 @@ private:
 		return cluster > m_lastCluster;
 	}
 
+protected:
 	// Virtual block I/O functions.
 	virtual bool readBlock(uint32_t block, uint8_t* dst) = 0;
 	virtual bool writeBlock(uint32_t block, const uint8_t* src) = 0;
