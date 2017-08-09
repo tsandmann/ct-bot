@@ -91,6 +91,8 @@ uint8_t SdFatWrapper::read_block(SdFat* p_instance, uint32_t block, uint8_t* dst
 	if (! p_instance) {
 		return 0;
 	}
+
+/** \todo enter/exit CS should be done in SdCard::read_block() */
 	os_enterCS();
 	const auto starttime(debug_mode ? timer_get_us8() : 0);
 	const auto res(p_instance->card()->read_block(block, dst));
@@ -117,6 +119,8 @@ uint8_t SdFatWrapper::write_block(SdFat* p_instance, uint32_t block, const uint8
 	if (! p_instance) {
 		return 0;
 	}
+
+/** \todo enter/exit CS should be done in SdCard::write_block() */
 	os_enterCS();
 	const auto res(p_instance->card()->write_block(block, src, static_cast<bool>(sync)));
 	os_exitCS();
@@ -238,6 +242,8 @@ uint8_t FatFileWrapper::seek(FatFile* p_instance, int32_t offset, uint8_t origin
 	if (! p_instance) {
 		return 1;
 	}
+
+/** \todo enter/exit CS should be done in FatFile::seekX()? best solution might be to synchronize inside FatCache::read(). */
 	os_enterCS();
 	bool res;
 	switch (origin) {
@@ -270,6 +276,8 @@ int16_t FatFileWrapper::read(FatFile* p_instance, void* buffer, uint16_t length)
 	if (! p_instance) {
 		return -1;
 	}
+
+/** \todo enter/exit CS should be done in FatFile::read() */
 	os_enterCS();
 	const auto res(p_instance->read(buffer, length));
 	os_exitCS();
@@ -284,6 +292,8 @@ int16_t FatFileWrapper::write(FatFile* p_instance, const void* buffer, uint16_t 
 	if (! p_instance) {
 		return -1;
 	}
+
+/** \todo enter/exit CS should be done in FatFile::write() */
 	os_enterCS();
 	const auto res(p_instance->write(buffer, length));
 	os_exitCS();

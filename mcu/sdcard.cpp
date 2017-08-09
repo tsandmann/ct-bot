@@ -402,10 +402,12 @@ bool SdCard::read_ocr(uint32_t* ocr) {
 bool SdCard::read_register(uint8_t cmd, void* buf) {
 	uint8_t* dst(reinterpret_cast<uint8_t*>(buf));
 	if (send_cmd(cmd, 0)) {
+		cs_high();
 		return error_handler(SD_CARD_ERROR_READ_REG);
 	}
 
 	if (! read_data(dst, 16)) {
+		cs_high();
 		return error_handler(0);
 	}
 
@@ -577,7 +579,6 @@ bool SdCard::error_handler(uint8_t error_code) {
 bool SdCard::erase(uint32_t firstBlock, uint32_t lastBlock) {
 	csd_t csd;
 	if (! read_csd(&csd)) {
-		cs_high();
 		return false;
 	}
 	/* check for single block erase */
@@ -587,7 +588,6 @@ bool SdCard::erase(uint32_t firstBlock, uint32_t lastBlock) {
 		if ((firstBlock & m) != 0 || ((lastBlock + 1) & m) != 0) {
 			/* error card can't erase specified area */
 			set_error(SD_CARD_ERROR_ERASE_SINGLE_BLOCK);
-			cs_high();
 			return false;
 		}
 	}

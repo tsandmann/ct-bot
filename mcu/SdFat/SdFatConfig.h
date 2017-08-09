@@ -102,7 +102,7 @@ constexpr uint8_t const SPI_SCK_INIT_DIVISOR = 128;
  * Set USE_MULTI_BLOCK_IO nonzero to use multi-block SD read/write.
  * Don't use mult-block read/write on small AVR boards.
  */
-#define USE_MULTI_BLOCK_IO 1
+#define USE_MULTI_BLOCK_IO 0
 
 
 #define SDCARD_ERASE_SUPPORT 1

@@ -124,7 +124,7 @@ public:
 	}
 
 	/** \return Logical block number for cached block. */
-	uint32_t lbn() {
+	uint32_t lbn() const {
 		return m_lbn;
 	}
 
@@ -349,7 +349,7 @@ private:
 		return m_cache.block();
 	}
 
-	uint32_t cacheBlockNumber() {
+	uint32_t cacheBlockNumber() const {
 		return m_cache.lbn();
 	}
 
