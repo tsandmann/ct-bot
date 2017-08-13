@@ -178,10 +178,10 @@ protected:
 		const auto starttime(TIMER_GET_TICKCOUNT_16);
 		auto yield_start_time(starttime);
 		const uint16_t timeout_ticks(timeout_ms * (1000U / TIMER_STEPS + 1));
-		if (m_divisor == 2) {
+		if (m_divisor == 2 && 0 /* deactivated because of ToDo below */) {
 			bool ret;
 			__asm__ __volatile__(
-/** \todo os_exit_CS() */
+/** \todo call os_exit_CS() in asm code */
 				"ldi %A0,0			; 	 		\n\t"
 				"ldi %B0,lo8(-1)		; 	 		\n\t"
 				"jmp 2f				; 			\n\t"
@@ -211,14 +211,15 @@ protected:
 			return ret;
 		} else {
 			while (receive() != 0xff) {
-				if (static_cast<uint16_t>(TIMER_GET_TICKCOUNT_16 - starttime) > timeout_ticks) {
+				const auto now16(TIMER_GET_TICKCOUNT_16);
+				if (static_cast<uint16_t>(now16 - starttime) > timeout_ticks) {
 					return false;
 				}
 
-				if (static_cast<uint16_t>(tickCount.u16 - yield_start_time) > 5 * (1000U / TIMER_STEPS + 1)) {
+				if (static_cast<uint16_t>(now16 - yield_start_time) > 1 * (1000U / TIMER_STEPS + 1)) {
 					os_exitCS();
 					os_enterCS();
-					yield_start_time = TIMER_GET_TICKCOUNT_16;
+					yield_start_time = now16;
 				}
 			}
 			return true;

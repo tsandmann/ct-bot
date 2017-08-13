@@ -221,6 +221,7 @@ uint8_t FatFileWrapper::open(const char* filename, FatFile** p_file, uint8_t mod
 	}
 	LOG_DEBUG("FatFileWrapper::open(): ptr->open(\"%s\", 0x%x)...", filename, mode);
 
+	os_enterCS();
 	while (busy) {
 		os_exitCS();
 		os_thread_yield();
@@ -370,16 +371,9 @@ void FatFileWrapper::free(FatFile* p_instance) {
 		return;
 	}
 
-	while (busy) {
-		os_thread_yield();
-	}
-	busy = true;
-
 	if (p_instance->isOpen()) {
 		close(p_instance);
 	}
-
-	busy = false;
 
 	delete p_instance;
 }

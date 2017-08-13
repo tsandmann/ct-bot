@@ -209,18 +209,19 @@ protected:
 		auto yield_start_time(starttime);
 		const uint16_t timeout_ticks(timeout_ms * (1000U / TIMER_STEPS + 1));
 		while (this->receive() != 0xff) {
-			if (static_cast<uint16_t>(tickCount.u16 - starttime) > timeout_ticks) {
+			const auto now16(TIMER_GET_TICKCOUNT_16);
+			if (static_cast<uint16_t>(now16 - starttime) > timeout_ticks) {
 				return false;
 			}
 
-			if (static_cast<uint16_t>(tickCount.u16 - yield_start_time) > 1 * (1000U / TIMER_STEPS + 1)) {
+			if (static_cast<uint16_t>(now16 - yield_start_time) > 1 * (1000U / TIMER_STEPS + 1)) {
 				os_exitCS();
-//				LOG_DEBUG("wait_not_busy(): yieldtime: %u %u", tickCount.u16 - yield_start_time, timeout_ms);
+//				LOG_DEBUG("wait_not_busy(): yieldtime: %u %u", now16 - yield_start_time, timeout_ms);
 				os_enterCS();
-				yield_start_time = TIMER_GET_TICKCOUNT_16;
+				yield_start_time = now16;
 			}
 		}
-//		LOG_DEBUG("wait_not_busy(): took: %u %u", tickCount.u16 - starttime, timeout_ms);
+//		LOG_DEBUG("wait_not_busy(): took: %u %u", TIMER_GET_TICKCOUNT_16 - starttime, timeout_ms);
 		return true;
 	}
 

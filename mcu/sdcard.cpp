@@ -357,15 +357,16 @@ bool SdCard::read_data(uint8_t* dst, size_t count, bool& lock_set) {
 	auto yield_start_time(starttime);
 	const uint16_t timeout_ticks(SD_READ_TIMEOUT * (1000U / TIMER_STEPS + 1));
 	while ((m_status = SPI::receive()) == 0xff) {
-		if (static_cast<uint16_t>(tickCount.u16 - starttime) > timeout_ticks) {
+		const auto now16(TIMER_GET_TICKCOUNT_16);
+		if (static_cast<uint16_t>(now16 - starttime) > timeout_ticks) {
 			return error_handler(SD_CARD_ERROR_READ_TIMEOUT, lock_set);
 		}
 
-		if (static_cast<uint16_t>(tickCount.u16 - yield_start_time) > 1 * (1000U / TIMER_STEPS + 1)) {
+		if (static_cast<uint16_t>(now16 - yield_start_time) > 1 * (1000U / TIMER_STEPS + 1)) {
 			os_exitCS();
-//			LOG_DEBUG("read_data(): yieldtime: %u", tickCount.u16 - yield_start_time);
+//			LOG_DEBUG("read_data(): yieldtime: %u", now16 - yield_start_time);
 			os_enterCS();
-			yield_start_time = TIMER_GET_TICKCOUNT_16;
+			yield_start_time = now16;
 		}
 	}
 
