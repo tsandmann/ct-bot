@@ -31,7 +31,6 @@
 #include "bot-logic/bot-logic.h"
 #include "os_scheduler.h"
 #include "ui/available_screens.h"
-#include "os_utils.h"
 #include "os_thread.h"
 #include "sensor.h"
 #include "rc5-codes.h"

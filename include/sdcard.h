@@ -43,6 +43,7 @@
 
 extern "C" {
 #include "ct-Bot.h"
+#include "os_thread.h"
 }
 
 
@@ -74,13 +75,36 @@ using CsType = SelectPB4;
 class SdCard : public SdCardBase<SdCardTypes::SpiType, SdCardTypes::CsType> {
 public:
 	/** Construct an instance of SdSpiCard. */
-	SdCard() : m_selected(false), m_errorCode(SD_CARD_ERROR_INIT_NOT_CALLED), m_type(0) {}
+	SdCard() : m_selected(false), m_errorCode(SD_CARD_ERROR_INIT_NOT_CALLED), m_type(0), m_last_error_time(0) {}
 
-	/** Initialize the SD card.
+	/**
+	 * Initialize the SD card.
 	 * \param[in] sckDivisor SPI speed divisor
 	 * \return true for success else false.
 	 */
 	bool init(uint8_t sckDivisor);
+
+	/**
+	 *
+	 * \return
+	 */
+	static bool os_lock() {
+		return os_enterCS_ret() == 0;
+	}
+
+	/**
+	 *
+	 * \param[in] lock_set
+	 * \return
+	 */
+	static bool os_unlock(const bool& lock_set) {
+		if (lock_set) {
+			os_exitCS();
+			return true;
+		}
+
+		return false;
+	}
 
 	/**
 	 * Determines the size of the card.
@@ -108,11 +132,20 @@ public:
 		return m_status;
 	}
 
-	/** Return the card type: SD V1, SD V2 or SDHC
+	/**
+	 * Return the card type: SD V1, SD V2 or SDHC
 	 * \return 0 - SD V1, 1 - SD V2, or 3 - SDHC.
 	 */
 	uint8_t get_type() const {
 		return m_type;
+	}
+
+	/**
+	 *
+	 * \return
+	 */
+	uint32_t get_last_error_time() const {
+		return m_last_error_time;
 	}
 
 	/**
@@ -165,7 +198,7 @@ public:
 	 * Writes a 512 byte block.
 	 * \param[in] blockNumber Logical block to be written.
 	 * \param[in] src Pointer to the location of the data to be written.
-	 * \param sync Wait for flash programming to complete?
+	 * \param[in] sync Wait for flash programming to complete?
 	 * \return The value true is returned for success and
 	 * the value false is returned for failure.
 	 */
@@ -185,12 +218,14 @@ private:
 	using SPI = spi_type;
 	using CSELECT = cs_type;
 
-	/** Set the SD chip select pin high, send a dummy byte, and call SPI endTransaction.
+	/**
+	 * Set the SD chip select pin high, send a dummy byte, and call SPI endTransaction.
 	 * This function should only be called by programs doing raw I/O to the SD.
 	 */
 	void cs_high();
 
-	/** Set the SD chip select pin low and call SPI beginTransaction.
+	/**
+	 * Set the SD chip select pin low and call SPI beginTransaction.
 	 * This function should only be called by programs doing raw I/O to the SD.
 	 */
 	void cs_low();
@@ -200,89 +235,128 @@ private:
 		return m_selected;
 	}
 
-	bool error_handler(uint8_t error_code);
+	/**
+	 *
+	 * \param[in] error_code
+	 * \param[in] lock_set
+	 * \return
+	 */
+	bool error_handler(uint8_t error_code, const bool& lock_set);
 
+	/**
+	 *
+	 * \param[in] cmd
+	 * \param[in] arg
+	 * \return
+	 */
 	uint8_t send_app_cmd(uint8_t cmd, uint32_t arg) {
 		send_cmd(CMD55, 0);
 		return send_cmd(cmd, arg);
 	}
 
+	/**
+	 *
+	 * \param[in] cmd
+	 * \param[in] arg
+	 * \return
+	 */
 	uint8_t send_cmd(uint8_t cmd, uint32_t arg);
 
+	/**
+	 *
+	 * \param[in] cmd
+	 * \param[out] buf
+	 * \return
+	 */
 	bool read_register(uint8_t cmd, void* buf);
 
-	/** Start a read multiple blocks sequence.
+	/**
+	 * Start a read multiple blocks sequence.
 	 * \param[in] blockNumber Address of first block in sequence.
-	 * \note This function is used with readData() and readStop() for optimized
-	 * multiple block reads.  SPI chipSelect must be low for the entire sequence.
-	 * \return The value true is returned for success and
-	 * the value false is returned for failure.
+	 * \return The value true is returned for success and the value false is returned for failure.
+	 * \note This function is used with readData() and readStop() for optimized multiple block reads.  SPI chipSelect must be low for the entire sequence.
 	 */
 	bool read_start(uint32_t blockNumber);
 
-	/** End a read multiple blocks sequence.
-	 * \return The value true is returned for success and
-	 * the value false is returned for failure.
+	/**
+	 * End a read multiple blocks sequence.
+	 * \param[in] lock_set
+	 * \return The value true is returned for success and the value false is returned for failure.
 	 */
-	bool read_stop();
+	bool read_stop(const bool& lock_set);
 
-	/** Read one data block in a multiple block read sequence
+	/**
+	 * Read one data block in a multiple block read sequence
 	 * \param[out] dst Pointer to the location for the data to be read.
-	 * \return The value true is returned for success and
-	 * the value false is returned for failure.
+	 * \param[in] lock_set
+	 * \return The value true is returned for success and the value false is returned for failure.
 	 */
-	bool read_data(uint8_t *dst) {
-		return read_data(dst, 512);
+	bool read_data(uint8_t *dst, bool& lock_set) {
+		return read_data(dst, 512, lock_set);
 	}
 
-	bool read_data(uint8_t* dst, size_t count);
+	/**
+	 *
+	 * \param[out] dst
+	 * \param[in] count
+	 * \param[in] lock_set
+	 * \return
+	 */
+	bool read_data(uint8_t* dst, size_t count, bool& lock_set);
 
+	/**
+	 *
+	 * \param value
+	 */
 	void set_type(uint8_t value) {
 		m_type = value;
 	}
 
-	/** Write one data block in a multiple block write sequence.
+	/**
+	 * Write one data block in a multiple block write sequence.
 	 * \param[in] src Pointer to the location of the data to be written.
-	 * \return The value true is returned for success and
-	 * the value false is returned for failure.
+	 * \return The value true is returned for success and the value false is returned for failure.
 	 */
 	bool write_data(const uint8_t* src);
 
+	/**
+	 *
+	 * \param[in] token
+	 * \param[in] src
+	 * \return
+	 */
 	bool write_data(uint8_t token, const uint8_t* src);
 
-	/** Start a write multiple blocks sequence.
+	/**
+	 * Start a write multiple blocks sequence.
 	 * \param[in] blockNumber Address of first block in sequence.
 	 * \param[in] eraseCount The number of blocks to be pre-erased.
-	 * \note This function is used with writeData() and writeStop()
-	 * for optimized multiple block writes.
-	 * \return The value true is returned for success and
-	 * the value false is returned for failure.
+	 * \return The value true is returned for success and the value false is returned for failure.
+	 * \note This function is used with writeData() and writeStop() for optimized multiple block writes.
 	 */
 	bool write_start(uint32_t blockNumber, uint32_t eraseCount);
 
-	/** End a write multiple blocks sequence.
-	 * \return The value true is returned for success and
-	 * the value false is returned for failure.
+	/**
+	 * End a write multiple blocks sequence.
+	 * \param[in] lock_set
+	 * \return The value true is returned for success and the value false is returned for failure.
 	 */
-	bool write_stop();
+	bool write_stop(const bool& lock_set);
 
 #if SDCARD_ERASE_SUPPORT
-	/** Erase a range of blocks.
+	/**
+	 * Erase a range of blocks.
 	 * \param[in] firstBlock The address of the first block in the range.
 	 * \param[in] lastBlock The address of the last block in the range.
-	 * \note This function requests the SD card to do a flash erase for a
-	 * range of blocks.  The data on the card after an erase operation is
-	 * either 0 or 1, depends on the card vendor.  The card must support
-	 * single block erase.
-	 * \return The value true is returned for success and
-	 * the value false is returned for failure.
+	 * \return The value true is returned for success and the value false is returned for failure.
+	 * \note This function requests the SD card to do a flash erase for a range of blocks.
+	 * The data on the card after an erase operation is either 0 or 1, depends on the card vendor. The card must support single block erase.
 	 */
 	bool erase(uint32_t firstBlock, uint32_t lastBlock);
 
-	/** Determine if card supports single block erase.
-	 *
-	 * \return true is returned if single block erase is supported.
-	 * false is returned if single block erase is not supported.
+	/**
+	 * Determine if card supports single block erase.
+	 * \return true is returned if single block erase is supported. false is returned if single block erase is not supported.
 	 */
 	bool single_block_erasable();
 #endif // SDCARD_ERASE_SUPPORT
@@ -291,6 +365,7 @@ private:
 	uint8_t m_errorCode;
 	uint8_t m_status;
 	uint8_t m_type;
+	uint32_t m_last_error_time;
 };
 
 #endif // MCU

@@ -34,6 +34,7 @@
 
 extern "C" {
 #include "ct-Bot.h"
+#include "os_thread.h"
 #include "log.h"
 }
 
@@ -375,6 +376,19 @@ private:
 
 	bool isEOC(uint32_t cluster) const {
 		return cluster > m_lastCluster;
+	}
+
+	static bool os_lock() {
+		return os_enterCS_ret() == 0;
+	}
+
+	static bool os_unlock(const bool& lock_set) {
+		if (lock_set) {
+			os_exitCS();
+			return true;
+		}
+
+		return false;
 	}
 
 protected:

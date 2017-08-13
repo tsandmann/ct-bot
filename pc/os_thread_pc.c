@@ -29,7 +29,6 @@
 
 #ifdef OS_AVAILABLE
 #include "os_thread.h"
-#include "os_utils.h"
 #include "log.h"
 
 //#define DEBUG_THREADING	/**< Schalter fuer Debug-Ausgaben */

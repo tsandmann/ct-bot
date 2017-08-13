@@ -82,7 +82,7 @@ public:
 	 * \return 0 for SD V1, 1 for SD V2, or 3 for SDHC
 	 */
 	static uint8_t get_type(SdFat* p_instance) {
-		return p_instance->card()->get_type();
+		return p_instance ? p_instance->card()->get_type() : -1;
 	}
 
 	/**
@@ -91,7 +91,7 @@ public:
 	 * \return Error code
 	 */
 	static uint8_t get_error_code(SdFat* p_instance) {
-		return p_instance->card()->get_error_code();
+		return p_instance ? p_instance->card()->get_error_code() : 0;
 	}
 
 	/**
@@ -100,7 +100,16 @@ public:
 	 * \return Last data byte received
 	 */
 	static uint8_t get_error_data(SdFat* p_instance) {
-		return p_instance->card()->get_error_data();
+		return p_instance ? p_instance->card()->get_error_data() : 0;
+	}
+
+	/**
+	 *
+	 * \param[in] p_instance
+	 * \return
+	 */
+	static uint32_t get_last_error_time(SdFat* p_instance) {
+		return p_instance ? p_instance->card()->get_last_error_time() : 0;
 	}
 
 	/**
@@ -168,6 +177,9 @@ protected:
  * Wrapper class for FatFile class of SdFat library to support C language bindings
  */
 class FatFileWrapper : protected FatFile {
+protected:
+	static volatile bool busy; /**< Flag to indicate that a file operation is in progress */
+
 public:
 	/**
 	 * Opens a file in the current working directory

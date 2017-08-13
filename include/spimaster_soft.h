@@ -35,6 +35,8 @@
 
 extern "C" {
 #include "timer.h"
+#include "os_thread.h"
+#include "log.h"
 #include "motor.h"
 }
 
@@ -204,12 +206,21 @@ protected:
 	 */
 	bool wait_not_busy(uint16_t timeout_ms) const {
 		const auto starttime(TIMER_GET_TICKCOUNT_16);
+		auto yield_start_time(starttime);
 		const uint16_t timeout_ticks(timeout_ms * (1000U / TIMER_STEPS + 1));
 		while (this->receive() != 0xff) {
 			if (static_cast<uint16_t>(tickCount.u16 - starttime) > timeout_ticks) {
 				return false;
 			}
+
+			if (static_cast<uint16_t>(tickCount.u16 - yield_start_time) > 1 * (1000U / TIMER_STEPS + 1)) {
+				os_exitCS();
+//				LOG_DEBUG("wait_not_busy(): yieldtime: %u %u", tickCount.u16 - yield_start_time, timeout_ms);
+				os_enterCS();
+				yield_start_time = TIMER_GET_TICKCOUNT_16;
+			}
 		}
+//		LOG_DEBUG("wait_not_busy(): took: %u %u", tickCount.u16 - starttime, timeout_ms);
 		return true;
 	}
 

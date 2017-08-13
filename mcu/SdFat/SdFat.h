@@ -72,12 +72,18 @@ public:
 	 * \return true for success else false.
 	 */
 	bool begin(uint8_t divisor = 2) {
-		return m_sdCard.init(divisor)
+		const auto res(m_sdCard.init(divisor));
 #ifdef SDFAT_AVAILABLE
-			&& FatFileSystem::begin()
+		if (res) {
+			const auto lock_set(m_sdCard.os_lock());
+			const auto res(FatFileSystem::begin());
+			m_sdCard.os_unlock(lock_set);
+			return res;
+		}
 #endif
-		;
+		return res;
 	}
+
 	/** \return Pointer to SD card object */
 	decltype(m_sdCard)* card() {
 		return &m_sdCard;

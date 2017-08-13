@@ -58,6 +58,7 @@ extern uint32_t (*sd_card_get_size)(pSdFat); /**< \see SdFatWrapper::get_size(),
 extern uint8_t (*sd_card_get_type)(pSdFat); /**< \see SdFatWrapper::get_type(), implements the C binding */
 extern uint8_t (*sd_card_get_error_code)(pSdFat); /**< \see SdFatWrapper::get_error_code(), implements the C binding */
 extern uint8_t (*sd_card_get_error_data)(pSdFat); /**< \see SdFatWrapper::get_error_data(), implements the C binding */
+extern uint32_t (*sd_card_get_last_error_time)(pSdFat); /**< \see SdFatWrapper::sd_card_get_last_error_time(), implements the C binding */
 extern uint8_t (*sd_card_read_csd)(pSdFat, csd_t*); /**< \see SdFatWrapper::read_csd(), implements the C binding */
 extern uint8_t (*sd_card_read_cid)(pSdFat, cid_t*); /**< \see SdFatWrapper::read_cid(), implements the C binding */
 
@@ -121,6 +122,14 @@ static inline uint8_t sd_get_error_code(void) {
  */
 static inline uint8_t sd_get_error_data(void) {
 	return sd_card_get_error_data(p_sd);
+}
+
+/**
+ *
+ * \return
+ */
+static inline uint32_t sd_get_last_error_time(void) {
+	return sd_card_get_last_error_time(p_sd);
 }
 
 /**

@@ -33,7 +33,6 @@
 
 #ifdef OS_AVAILABLE
 #include "os_thread.h"
-#include "os_utils.h"
 #include "log.h"
 #include "map.h"
 #include "display.h"
